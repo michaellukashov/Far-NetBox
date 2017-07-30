@@ -246,7 +246,7 @@ TCustomFarFileSystem * TCustomFarPlugin::GetPanelFileSystem(bool Another,
   RECT ActivePanelBounds = GetPanelBounds(PANEL_ACTIVE);
   RECT PassivePanelBounds = GetPanelBounds(PANEL_PASSIVE);
 
-  TCustomFarFileSystem * FarFileSystem = nullptr;
+  TCustomFarFileSystem * FarFileSystem;
   intptr_t Index = 0;
   while (!Result && (Index < FOpenedPlugins->GetCount()))
   {
@@ -826,10 +826,10 @@ void TFarMessageDialog::Init(uintptr_t AFlags,
         (FParams->TimeoutButton == static_cast<size_t>(Index)))
     {
       FTimeoutButtonCaption = Caption;
-      Caption = FORMAT(FParams->TimeoutStr.c_str(), Caption.c_str(), static_cast<int>(FParams->Timeout / 1000));
+      Caption = FORMAT(FParams->TimeoutStr, Caption, static_cast<int>(FParams->Timeout / 1000));
       FTimeoutButton = Button;
     }
-    Button->SetCaption(FORMAT(L" %s ", Caption.c_str()));
+    Button->SetCaption(FORMAT(" %s ", Caption));
     Button->SetTop(GetBorderBox()->GetBottom() + ButtonOffset);
     Button->SetBottom(Button->GetTop());
     Button->SetResult(Index + 1);
@@ -940,8 +940,8 @@ void TFarMessageDialog::Idle()
     else
     {
       UnicodeString Caption =
-        FORMAT(L" %s ", ::Format(FParams->TimeoutStr.c_str(),
-          FTimeoutButtonCaption.c_str(), static_cast<int>((FParams->Timeout - Running) / 1000)).c_str()).c_str();
+        FORMAT(" %s ", FORMAT(FParams->TimeoutStr,
+          FTimeoutButtonCaption, static_cast<int>((FParams->Timeout - Running) / 1000)));
       intptr_t sz = FTimeoutButton->GetCaption().Length() > Caption.Length() ? FTimeoutButton->GetCaption().Length() - Caption.Length() : 0;
       Caption += ::StringOfChar(L' ', sz);
       FTimeoutButton->SetCaption(Caption);
@@ -1082,7 +1082,7 @@ intptr_t TCustomFarPlugin::Message(DWORD Flags,
     FarControl(FCTL_SETUSERSCREEN, 0, 0);
   }
 
-  intptr_t Result = -1;
+  intptr_t Result;
   if (Buttons != nullptr)
   {
     TFarMessageParams DefaultParams;
@@ -1119,9 +1119,9 @@ intptr_t TCustomFarPlugin::Menu(DWORD Flags, UnicodeString Title,
   int & BreakCode)
 {
   DebugAssert(Items && Items->GetCount());
-  if (Items)
+  if (!Items)
     return -1;
-  intptr_t Result = 0;
+  intptr_t Result;
   FarMenuItemEx * MenuItems = nb::calloc<FarMenuItemEx*>(sizeof(FarMenuItemEx) * (1 + Items->GetCount()));
   SCOPE_EXIT
   {
@@ -1177,8 +1177,8 @@ bool TCustomFarPlugin::InputBox(UnicodeString Title,
   UnicodeString Prompt, UnicodeString & Text, DWORD Flags,
   UnicodeString HistoryName, intptr_t MaxLen, TFarInputBoxValidateEvent OnValidate)
 {
-  bool Repeat = false;
-  int Result = 0;
+  bool Repeat;
+  int Result;
   do
   {
     UnicodeString DestText;
@@ -1487,7 +1487,7 @@ UnicodeString TCustomFarPlugin::FormatConsoleTitle() const
   UnicodeString Title;
   if (FCurrentProgress >= 0)
   {
-    Title = FORMAT(L"{%d%%} %s", FCurrentProgress, FCurrentTitle.c_str());
+    Title = FORMAT("{%d%%} %s", FCurrentProgress, FCurrentTitle);
   }
   else
   {
@@ -1691,7 +1691,7 @@ intptr_t TCustomFarPlugin::GetFarVersion() const
 
 UnicodeString TCustomFarPlugin::FormatFarVersion(intptr_t Version) const
 {
-  return FORMAT(L"%d.%d.%d", (Version >> 8) & 0xFF, Version & 0xFF, Version >> 16);
+  return FORMAT("%d.%d.%d", (Version >> 8) & 0xFF, Version & 0xFF, Version >> 16);
 }
 
 UnicodeString TCustomFarPlugin::GetTemporaryDir() const
@@ -1932,7 +1932,6 @@ intptr_t TCustomFarFileSystem::MakeDirectory(const wchar_t ** Name, int OpMode)
 {
   ResetCachedInfo();
   FNameStr = *Name;
-  intptr_t Result = 0;
   SCOPE_EXIT
   {
     if (FNameStr != *Name)
@@ -1940,7 +1939,7 @@ intptr_t TCustomFarFileSystem::MakeDirectory(const wchar_t ** Name, int OpMode)
       *Name = FNameStr.c_str();
     }
   };
-  Result = MakeDirectoryEx(FNameStr, OpMode);
+  intptr_t Result = MakeDirectoryEx(FNameStr, OpMode);
   return Result;
 }
 
@@ -1958,7 +1957,7 @@ intptr_t TCustomFarFileSystem::GetFiles(struct PluginPanelItem * PanelItem,
 {
   ResetCachedInfo();
   std::unique_ptr<TObjectList> PanelItems(CreatePanelItemList(PanelItem, ItemsNumber));
-  intptr_t Result = 0;
+  intptr_t Result;
   FDestPathStr = *DestPath;
   {
     SCOPE_EXIT
@@ -1979,9 +1978,8 @@ intptr_t TCustomFarFileSystem::PutFiles(struct PluginPanelItem * PanelItem,
 {
   (void)srcPath;
   ResetCachedInfo();
-  intptr_t Result = 0;
   std::unique_ptr<TObjectList> PanelItems(CreatePanelItemList(PanelItem, ItemsNumber));
-  Result = PutFilesEx(PanelItems.get(), Move > 0, OpMode);
+  intptr_t Result = PutFilesEx(PanelItems.get(), Move > 0, OpMode);
   return Result;
 }
 
@@ -2854,7 +2852,7 @@ UnicodeString TGlobalFunctions::GetMsg(intptr_t Id) const
 UnicodeString TGlobalFunctions::GetCurrDirectory() const
 {
   UnicodeString Path(NB_MAX_PATH, 0);
-  int Length = 0;
+  int Length;
   if (FarPlugin)
   {
     Length = FarPlugin->GetFarStandardFunctions().GetCurrentDirectory(static_cast<DWORD>(Path.Length()), const_cast<wchar_t *>(Path.c_str())) - 1;

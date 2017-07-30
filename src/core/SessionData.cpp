@@ -1,7 +1,6 @@
 #include <vcl.h>
 #pragma hdrstop
 
-#include <algorithm>
 #include <rdestl/vector.h>
 #include <Winhttp.h>
 
@@ -17,7 +16,7 @@
 #include "TextsCore.h"
 #include "PuttyIntf.h"
 #include "RemoteFiles.h"
-#include "SFTPFileSystem.h"
+#include "SftpFileSystem.h"
 
 const wchar_t * PingTypeNames = L"Off;Null;Dummy";
 const wchar_t * ProxyMethodNames = L"None;SOCKS4;SOCKS5;HTTP;Telnet;Cmd";
@@ -737,6 +736,7 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool PuttyImport, bool
   READ_BUG(Ignore2);
   READ_BUG(OldGex2);
   READ_BUG(WinAdj);
+  READ_BUG(ChanReq);
 #undef READ_BUG
 
   if ((GetBug(sbHMAC2) == asAuto) &&
@@ -1087,6 +1087,7 @@ void TSessionData::DoSave(THierarchicalStorage * Storage,
   WRITE_BUG(Ignore2);
   WRITE_BUG(OldGex2);
   WRITE_BUG(WinAdj);
+  WRITE_BUG(ChanReq);
 #undef WRITE_BUG
 #undef WRITE_DATA_CONV_FUNC
 
@@ -1659,7 +1660,7 @@ void TSessionData::CacheHostKeyIfNotCached()
   Storage->SetAccessMode(smReadWrite);
   if (Storage->OpenRootKey(true))
   {
-    UnicodeString HostKeyName = PuttyMungeStr(FORMAT(L"%s@%d:%s", KeyType.c_str(), GetPortNumber(), GetHostName().c_str()));
+    UnicodeString HostKeyName = PuttyMungeStr(FORMAT("%s@%d:%s", KeyType, GetPortNumber(), GetHostName()));
     if (!Storage->ValueExists(HostKeyName))
     {
       // fingerprint is MD5 of host key, so it cannot be translated back to host key,
@@ -2206,7 +2207,7 @@ void TSessionData::ValidateName(UnicodeString Name)
   // keep consistent with MakeValidName
   if (Name.LastDelimiter(L"/") > 0)
   {
-    throw Exception(FMTLOAD(ITEM_NAME_INVALID, Name.c_str(), L"/"));
+    throw Exception(FMTLOAD(ITEM_NAME_INVALID, Name, L"/"));
   }
 }
 
@@ -2247,10 +2248,10 @@ bool TSessionData::GetCanLogin() const
 
 UnicodeString TSessionData::GetSessionKey() const
 {
-  UnicodeString Result = FORMAT(L"%s@%s", SessionGetUserName().c_str(), GetHostName().c_str());
+  UnicodeString Result = FORMAT("%s@%s", SessionGetUserName(), GetHostName());
   if (GetPortNumber() != GetDefaultPort(GetFSProtocol(), GetFtps()))
   {
-    Result += FORMAT(L":%d", GetPortNumber());
+    Result += FORMAT(":%d", GetPortNumber());
   }
   return Result;
 }
@@ -2273,7 +2274,7 @@ UnicodeString TSessionData::GetStorageKey() const
 
 UnicodeString TSessionData::FormatSiteKey(UnicodeString HostName, intptr_t PortNumber)
 {
-  return FORMAT(L"%s:%d", HostName.c_str(), static_cast<int>(PortNumber));
+  return FORMAT("%s:%d", HostName, static_cast<int>(PortNumber));
 }
 
 UnicodeString TSessionData::GetSiteKey() const
@@ -2499,16 +2500,14 @@ void TSessionData::SetAlgoList(AlgoT * List, const AlgoT * DefaultList, const Un
   rde::vector<AlgoT> NewList(Count);
 
   bool HasWarnAlgo = (WarnAlgo >= AlgoT());
-  const AlgoT * WarnPtr;
   intptr_t WarnDefaultIndex;
   if (!HasWarnAlgo)
   {
-    WarnPtr = nullptr;
     WarnDefaultIndex = -1;
   }
   else
   {
-    WarnPtr = std::find(DefaultList, DefaultList + Count, WarnAlgo);
+    const AlgoT * WarnPtr = std::find(DefaultList, DefaultList + Count, WarnAlgo);
     DebugAssert(WarnPtr != nullptr);
     WarnDefaultIndex = (WarnPtr - DefaultList);
   }
@@ -2892,7 +2891,7 @@ UnicodeString TSessionData::GetDefaultSessionName() const
   {
     // If we ever choose to include port number,
     // we have to escape IPv6 literals in HostName
-    Result = FORMAT(L"%s@%s", UserName.c_str(), HostName.c_str());
+    Result = FORMAT("%s@%s", UserName, HostName);
   }
   else if (!HostName.IsEmpty())
   {
@@ -3073,17 +3072,17 @@ UnicodeString TSessionData::GenerateSessionUrl(uintptr_t Flags) const
 
 void TSessionData::AddSwitchValue(UnicodeString & Result, UnicodeString Name, UnicodeString Value)
 {
-  AddSwitch(Result, FORMAT(L"%s=%s", Name.c_str(), Value.c_str()));
+  AddSwitch(Result, FORMAT("%s=%s", Name, Value));
 }
 
 void TSessionData::AddSwitch(UnicodeString & Result, UnicodeString Switch)
 {
-  Result += FORMAT(L" -%s", Switch.c_str());
+  Result += FORMAT(" -%s", Switch);
 }
 
 void TSessionData::AddSwitch(UnicodeString & Result, UnicodeString AName, UnicodeString Value)
 {
-  AddSwitchValue(Result, AName, FORMAT(L"\"%s\"", EscapeParam(Value).c_str()));
+  AddSwitchValue(Result, AName, FORMAT("\"%s\"", EscapeParam(Value)));
 }
 
 void TSessionData::AddSwitch(UnicodeString & Result, UnicodeString AName, intptr_t Value)
@@ -3179,9 +3178,9 @@ UnicodeString TSessionData::GenerateOpenCommandArgs() const
       // Do not quote if it is all-numeric
       if (IntToStr(StrToIntDef(Value, -1)) != Value)
       {
-        Value = FORMAT(L"\"%s\"", EscapeParam(Value).c_str());
+        Value = FORMAT("\"%s\"", EscapeParam(Value));
       }
-      Result += FORMAT(L" %s=%s", Name.c_str(), Value.c_str());
+      Result += FORMAT(" %s=%s", Name, Value);
     }
 #endif
   }
@@ -3212,7 +3211,7 @@ void TSessionData::AddAssemblyProperty(
       break;
   }
 
-  Result += FORMAT(PropertyCode.c_str(), Name.c_str(), Type.c_str(), Member.c_str());
+  Result += FORMAT(PropertyCode, Name, Type, Member);
 }
 
 UnicodeString TSessionData::AssemblyString(TAssemblyLanguage Language, UnicodeString S)
@@ -3223,20 +3222,20 @@ UnicodeString TSessionData::AssemblyString(TAssemblyLanguage Language, UnicodeSt
     case alCSharp:
       if (Result.Pos(L"\\") > 0)
       {
-        Result = FORMAT(L"@\"%s\"", ReplaceStr(Result, L"\"", L"\"\"").c_str());
+        Result = FORMAT(L"@\"%s\"", ReplaceStr(Result, L"\"", L"\"\""));
       }
       else
       {
-        Result = FORMAT(L"\"%s\"", ReplaceStr(Result, L"\"", L"\\\"").c_str());
+        Result = FORMAT(L"\"%s\"", ReplaceStr(Result, L"\"", L"\\\""));
       }
       break;
 
     case alVBNET:
-      Result = FORMAT(L"\"%s\"", ReplaceStr(Result, L"\"", L"\"\"").c_str());
+      Result = FORMAT(L"\"%s\"", ReplaceStr(Result, L"\"", L"\"\""));
       break;
 
     case alPowerShell:
-      Result = FORMAT(L"\"%s\"", ReplaceStr(Result, L"\"", L"`\"").c_str());
+      Result = FORMAT(L"\"%s\"", ReplaceStr(Result, L"\"", L"`\""));
       break;
 
     default:
@@ -3268,7 +3267,7 @@ void TSessionData::AddAssemblyPropertyRaw(
       break;
   }
 
-  Result += FORMAT(PropertyCode.c_str(), Name.c_str(), Value.c_str());
+  Result += FORMAT(PropertyCode, Name, Value);
 }
 
 void TSessionData::AddAssemblyProperty(
@@ -3336,7 +3335,7 @@ UnicodeString TSessionData::GenerateAssemblyCode(
 
     case alPowerShell:
       SessionOptionsPreamble =
-        FORMAT(L"# %s\n", LoadStr(CODE_PS_ADD_TYPE).c_str()) +
+        FORMAT(L"# %s\n", LoadStr(CODE_PS_ADD_TYPE)) +
         L"Add-Type -Path \"WinSCPnet.dll\"\n"
         L"\n"
         L"# %s\n"
@@ -3348,7 +3347,7 @@ UnicodeString TSessionData::GenerateAssemblyCode(
       break;
   }
 
-  Result = FORMAT(SessionOptionsPreamble.c_str(), LoadStr(CODE_SESSION_OPTIONS).c_str());
+  Result = FORMAT(SessionOptionsPreamble, LoadStr(CODE_SESSION_OPTIONS));
 
   UnicodeString ProtocolMember;
   switch (SessionData->GetFSProtocol())
@@ -3520,7 +3519,7 @@ UnicodeString TSessionData::GenerateAssemblyCode(
           SettingsCode = L"$sessionOptions.AddRawSettings(\"%s\", %s)\n";
           break;
       }
-      Result += FORMAT(SettingsCode, Name.c_str(), AssemblyString(Language, Value).c_str());
+      Result += FORMAT(SettingsCode, Name, AssemblyString(Language, Value));
     }
 #endif
   }
@@ -3574,7 +3573,7 @@ UnicodeString TSessionData::GenerateAssemblyCode(
   }
 #endif
 
-  Result += FORMAT(SessionCode.c_str(), LoadStr(CODE_CONNECT).c_str(), LoadStr(CODE_YOUR_CODE).c_str());
+  Result += FORMAT(SessionCode, LoadStr(CODE_CONNECT), LoadStr(CODE_YOUR_CODE));
 
   return Result;
 }
@@ -4240,14 +4239,14 @@ UnicodeString TSessionData::GetInfoTip() const
   if (GetUsesSsh())
   {
     return FMTLOAD(SESSION_INFO_TIP2,
-        GetHostName().c_str(), SessionGetUserName().c_str(),
-         (GetPublicKeyFile().IsEmpty() ? LoadStr(NO_STR).c_str() : LoadStr(YES_STR).c_str()),
-         GetFSProtocolStr().c_str());
+        GetHostName(), SessionGetUserName(),
+        (GetPublicKeyFile().IsEmpty() ? LoadStr(NO_STR) : LoadStr(YES_STR)),
+        GetFSProtocolStr());
   }
   else
   {
     return FMTLOAD(SESSION_INFO_TIP_NO_SSH,
-      GetHostName().c_str(), SessionGetUserName().c_str(), GetFSProtocolStr().c_str());
+      GetHostName(), SessionGetUserName(), GetFSProtocolStr());
   }
 }
 
@@ -4391,6 +4390,8 @@ TFSProtocol TSessionData::TranslateFSProtocolNumber(intptr_t FSProtocol)
       SetFtps(ftpsImplicit);
       Result = fsWebDAV;
       break;
+    default: 
+      break;
     }
   }
   // DebugAssert(Result != -1);
@@ -4458,7 +4459,7 @@ TStoredSessionList::~TStoredSessionList()
   SAFE_DESTROY(FDefaultSettings);
   for (intptr_t Index = 0; Index < GetCount(); ++Index)
   {
-    delete AtObject(Index);
+    delete TNamedObjectList::AtObject(Index);
     SetItem(Index, nullptr);
   }
 }
@@ -4508,11 +4509,7 @@ void TStoredSessionList::Load(THierarchicalStorage * Storage,
           // if the list was empty before loading, do not waste time trying to
           // find existing sites to overwrite (we rely on underlying storage
           // to secure uniqueness of the key names)
-          if (WasEmpty)
-          {
-            SessionData = nullptr;
-          }
-          else
+          if (!WasEmpty)
           {
             SessionData = dyn_cast<TSessionData>(FindByName(SessionName));
           }
@@ -4619,7 +4616,7 @@ void TStoredSessionList::DoSave(THierarchicalStorage * Storage,
         if (RecryptPasswordOnly && DebugAlwaysTrue(RecryptPasswordErrors != nullptr) &&
             ExceptionMessage(&E, Message))
         {
-          RecryptPasswordErrors->Add(FORMAT(L"%s: %s", SessionData->GetSessionName().c_str(), Message.c_str()));
+          RecryptPasswordErrors->Add(FORMAT("%s: %s", SessionData->GetSessionName(), Message));
         }
         else
         {
@@ -4822,7 +4819,7 @@ void TStoredSessionList::ImportFromKnownHosts(TStrings * Lines)
               UnicodeString NameStr = HostNameStr;
               if (PortNumber >= 0)
               {
-                NameStr = FORMAT(L"%s:%d", (NameStr, PortNumber));
+                NameStr = FORMAT(L"%s:%d", NameStr, static_cast<int>(PortNumber));
               }
 
               std::unique_ptr<TSessionData> SessionDataOwner;
@@ -4843,7 +4840,7 @@ void TStoredSessionList::ImportFromKnownHosts(TStrings * Lines)
               const struct ssh_signkey * Algorithm = find_pubkey_alg(AlgorithmName);
               if (Algorithm == nullptr)
               {
-                throw Exception(FORMAT(L"Unknown public key algorithm \"%s\".", (AlgorithmName)));
+                throw Exception(FORMAT(L"Unknown public key algorithm \"%s\".", AlgorithmName));
               }
 
               void * Key = Algorithm->newkey(Algorithm, reinterpret_cast<const char *>(PubBlob), PubBlobLen);
@@ -4859,9 +4856,9 @@ void TStoredSessionList::ImportFromKnownHosts(TStrings * Lines)
                 }
                 char * Fingerprint = Algorithm->fmtkey(Key);
                 UnicodeString KeyKey =
-                  FORMAT(L"%s@%d:%s", Algorithm->keytype, SessionData->GetPortNumber(), HostNameStr.c_str());
+                  FORMAT(L"%s@%d:%s", Algorithm->keytype, SessionData->GetPortNumber(), HostNameStr);
                 UnicodeString HostKey =
-                  FORMAT(L"%s:%s=%s", Algorithm->name, KeyKey.c_str(), Fingerprint);
+                  FORMAT(L"%s:%s=%s", Algorithm->name, KeyKey, Fingerprint);
                 sfree(Fingerprint);
                 UnicodeString HostKeyList = SessionData->GetHostKey();
                 AddToList(HostKeyList, HostKey, L";");
@@ -4910,7 +4907,7 @@ void TStoredSessionList::ImportFromKnownHosts(TStrings * Lines)
     UnicodeString Message = LoadStr(KNOWN_HOSTS_NO_SITES);
     if (!FirstError.IsEmpty())
     {
-      Message = FORMAT(L"%s\n(%s)", Message.c_str(), FirstError.c_str());
+      Message = FORMAT(L"%s\n(%s)", Message, FirstError);
     }
 
     throw Exception(Message);
@@ -5243,7 +5240,7 @@ void TStoredSessionList::ImportHostKeys(
         TSessionData * Session = Sessions->GetSession(Index);
         if (!OnlySelected || Session->GetSelected())
         {
-          UnicodeString HostKeyName = PuttyMungeStr(FORMAT(L"@%d:%s", Session->GetPortNumber(), Session->GetHostNameExpanded().c_str()));
+          UnicodeString HostKeyName = PuttyMungeStr(FORMAT("@%d:%s", Session->GetPortNumber(), Session->GetHostNameExpanded()));
           for (intptr_t KeyIndex = 0; KeyIndex < KeyList->GetCount(); ++KeyIndex)
           {
             UnicodeString KeyName = KeyList->GetString(KeyIndex);
@@ -5550,22 +5547,22 @@ UnicodeString GetExpandedLogFileName(UnicodeString LogFileName, TDateTime Starte
       {
       case L'y':
         // Replacement = FormatDateTime(L"yyyy", N);
-        Replacement = FORMAT(L"%04d", Y);
+        Replacement = FORMAT("%04d", Y);
         break;
 
       case L'm':
         // Replacement = FormatDateTime(L"mm", N);
-        Replacement = FORMAT(L"%02d", M);
+        Replacement = FORMAT("%02d", M);
         break;
 
       case L'd':
         // Replacement = FormatDateTime(L"dd", N);
-        Replacement = FORMAT(L"%02d", D);
+        Replacement = FORMAT("%02d", D);
         break;
 
       case L't':
         // Replacement = FormatDateTime("hhnnss", N);
-        Replacement = FORMAT(L"%02d%02d%02d", H, NN, S);
+        Replacement = FORMAT("%02d%02d%02d", H, NN, S);
         break;
 
       case 'p':

@@ -12,7 +12,9 @@
 #include "Interface.h"
 #include "CoreMain.h"
 #include "WinSCPSecurity.h"
+#if defined(_MSC_VER) && !defined(__clang__)
 #include <shlobj.h>
+#endif // if defined(_MSC_VER) && !defined(__clang__)
 #include <System.IOUtils.hpp>
 #include <System.StrUtils.hpp>
 
@@ -92,11 +94,13 @@ TConfiguration::TConfiguration(TObjectClassId Kind) :
   }
   else
   {
+#if defined(_MSC_VER) && !defined(__clang__)
     RandomSeedPath = ::GetShellFolderPath(CSIDL_LOCAL_APPDATA);
     if (RandomSeedPath.IsEmpty())
     {
       RandomSeedPath = ::GetShellFolderPath(CSIDL_APPDATA);
     }
+#endif // if defined(_MSC_VER) && !defined(__clang__)
   }
 
   FDefaultRandomSeedFile = ::IncludeTrailingBackslash(RandomSeedPath) + "winscp.rnd";
@@ -672,7 +676,7 @@ UnicodeString TConfiguration::BannerHash(UnicodeString Banner) const
 bool TConfiguration::ShowBanner(const UnicodeString SessionKey,
   UnicodeString Banner)
 {
-  bool Result = false;
+  bool Result;
   std::unique_ptr<THierarchicalStorage> Storage(CreateConfigStorage());
   try__finally
   {
@@ -717,7 +721,7 @@ void TConfiguration::NeverShowBanner(const UnicodeString SessionKey,
 
 UnicodeString TConfiguration::FormatFingerprintKey(UnicodeString SiteKey, UnicodeString FingerprintType) const
 {
-  return FORMAT(L"%s:%s", SiteKey.c_str(), FingerprintType.c_str());
+  return FORMAT("%s:%s", SiteKey, FingerprintType);
 }
 
 void TConfiguration::RememberLastFingerprint(UnicodeString SiteKey, UnicodeString FingerprintType, UnicodeString Fingerprint)
@@ -1056,7 +1060,7 @@ UnicodeString TConfiguration::GetProductVersionStr() const
       FullVersion += L" " + AReleaseType;
     }
 
-    Result = FMTLOAD(VERSION2, GetProductVersion().c_str(), Build);
+    Result = FMTLOAD(VERSION2, GetProductVersion(), Build);
 
 #if 0
 #ifndef BUILD_OFFICIAL
@@ -1436,7 +1440,10 @@ TStoredSessionList * TConfiguration::SelectFilezillaSessionsForImport(
   std::unique_ptr<TStoredSessionList> ImportSessionList(new TStoredSessionList(true));
   ImportSessionList->SetDefaultSettings(Sessions->GetDefaultSettings());
 
-  UnicodeString AppDataPath = GetShellFolderPath(CSIDL_APPDATA);
+  UnicodeString AppDataPath;
+#if defined(_MSC_VER) && !defined(__clang__)
+  AppDataPath = GetShellFolderPath(CSIDL_APPDATA);
+#endif // if defined(_MSC_VER) && !defined(__clang__)
   UnicodeString FilezillaSiteManagerFile =
     ::IncludeTrailingBackslash(AppDataPath) + L"FileZilla\\sitemanager.xml";
   UnicodeString FilezillaConfigurationFile =
@@ -1452,12 +1459,12 @@ TStoredSessionList * TConfiguration::SelectFilezillaSessionsForImport(
     }
     else
     {
-      Error = FMTLOAD(FILEZILLA_NO_SITES, FilezillaSiteManagerFile.c_str());
+      Error = FMTLOAD(FILEZILLA_NO_SITES, FilezillaSiteManagerFile);
     }
   }
   else
   {
-    Error = FMTLOAD(FILEZILLA_SITE_MANAGER_NOT_FOUND, FilezillaSiteManagerFile.c_str());
+    Error = FMTLOAD(FILEZILLA_SITE_MANAGER_NOT_FOUND, FilezillaSiteManagerFile);
   }
 
   return ImportSessionList.release();
@@ -1483,7 +1490,10 @@ TStoredSessionList * TConfiguration::SelectKnownHostsSessionsForImport(
   std::unique_ptr<TStoredSessionList> ImportSessionList(new TStoredSessionList(true));
   ImportSessionList->SetDefaultSettings(Sessions->GetDefaultSettings());
 
-  UnicodeString ProfilePath = GetShellFolderPath(CSIDL_PROFILE);
+  UnicodeString ProfilePath;
+#if defined(_MSC_VER) && !defined(__clang__)
+  ProfilePath = GetShellFolderPath(CSIDL_PROFILE);
+#endif // if defined(_MSC_VER) && !defined(__clang__)
   UnicodeString KnownHostsFile = IncludeTrailingBackslash(ProfilePath) + L".ssh\\known_hosts";
 
   try
@@ -1503,7 +1513,7 @@ TStoredSessionList * TConfiguration::SelectKnownHostsSessionsForImport(
   }
   catch (Exception & E)
   {
-    Error = FORMAT(L"%s\n(%s)", E.Message.c_str(), KnownHostsFile.c_str());
+    Error = FORMAT(L"%s\n(%s)", E.Message, KnownHostsFile);
   }
 
   return ImportSessionList.release();

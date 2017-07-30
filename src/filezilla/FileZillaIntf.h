@@ -6,7 +6,7 @@
 
 #include <time.h>
 #include <FileZillaOpt.h>
-#include <FileZillaTools.h>
+#include <FilezillaTools.h>
 
 class CFileZillaApi;
 class TFileZillaIntern;

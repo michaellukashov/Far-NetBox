@@ -1339,7 +1339,7 @@ void TTerminalItem::InitTerminalItem(intptr_t Index)
   std::unique_ptr<TBackgroundTerminal> Terminal(new TBackgroundTerminal(FQueue->FTerminal));
   try
   {
-    Terminal->Init(FQueue->FSessionData, FQueue->FConfiguration, this, FORMAT(L"Background %d", Index));
+    Terminal->Init(FQueue->FSessionData, FQueue->FConfiguration, this, FORMAT("Background %d", Index));
     Terminal->SetUseBusyCursor(false);
 
     Terminal->SetOnQueryUser(nb::bind(&TTerminalItem::TerminalQueryUser, this));
@@ -1532,10 +1532,10 @@ bool TTerminalItem::WaitForUserAction(
   TQueueItem::TStatus ItemStatus, TUserAction * UserAction)
 {
   DebugAssert(FItem != nullptr);
+  if (!FItem)
+	  return false;
   DebugAssert((FItem->GetStatus() == TQueueItem::qsProcessing) ||
     (FItem->GetStatus() == TQueueItem::qsConnecting));
-  if (FItem)
-    return false;
 
   bool Result;
 
@@ -1987,7 +1987,7 @@ bool TQueueItemProxy::ProcessUserAction()
 {
   DebugAssert(FQueueItem != nullptr);
 
-  bool Result = false;
+  bool Result;
   FProcessingUserAction = true;
   try__finally
   {

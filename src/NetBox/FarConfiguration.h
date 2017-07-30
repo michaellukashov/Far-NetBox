@@ -18,8 +18,8 @@ public:
 
   virtual void Load();
   virtual void Save(bool All, bool Explicit);
-  virtual void Default();
-  virtual THierarchicalStorage * CreateStorage(bool & SessionList);
+  virtual void Default() override;
+  virtual THierarchicalStorage * CreateStorage(bool & SessionList) override;
   void CacheFarSettings();
 
   const TCustomFarPlugin * GetPlugin() const { return FFarPlugin; }
@@ -79,14 +79,14 @@ public:
   void SetBookmarks(UnicodeString Key, TBookmarkList * Value);
 
 protected:
-  virtual bool GetConfirmOverwriting() const;
-  virtual void SetConfirmOverwriting(bool Value);
+  virtual bool GetConfirmOverwriting() const override;
+  virtual void SetConfirmOverwriting(bool Value) override;
 
-  virtual void SaveData(THierarchicalStorage * Storage, bool All);
-  virtual void LoadData(THierarchicalStorage * Storage);
+  virtual void SaveData(THierarchicalStorage * Storage, bool All) override;
+  virtual void LoadData(THierarchicalStorage * Storage) override;
 
-  virtual UnicodeString ModuleFileName() const;
-  virtual void Saved();
+  virtual UnicodeString ModuleFileName() const override;
+  virtual void Saved() override;
 
 private:
   TCustomFarPlugin * FFarPlugin;

@@ -8,7 +8,9 @@
 #include <TextsCore.h>
 #include <Terminal.h>
 #include <CoreMain.h>
+#if defined(_MSC_VER) && !defined(__clang__)
 #include <shlobj.h>
+#endif // if defined(_MSC_VER) && !defined(__clang__)
 
 const intptr_t ccLocal = ccUser;
 const intptr_t ccShowResults = ccUser << 1;
@@ -211,7 +213,7 @@ UnicodeString TCopyParamRule::GetInfoStr(UnicodeString Separator) const
   UnicodeString Result;
 #define ADD(FMT, ELEM) \
     if (!FData.ELEM.IsEmpty()) \
-      Result += (Result.IsEmpty() ? UnicodeString() : Separator) + FMTLOAD(FMT, FData.ELEM.c_str());
+      Result += (Result.IsEmpty() ? UnicodeString() : Separator) + FMTLOAD(FMT, FData.ELEM);
   ADD(COPY_RULE_HOSTNAME, HostName);
   ADD(COPY_RULE_USERNAME, UserName);
   ADD(COPY_RULE_REMOTE_DIR, RemoteDirectory);
@@ -264,12 +266,14 @@ void TCopyParamList::ValidateName(UnicodeString Name)
 {
   if (Name.LastDelimiter(CONST_INVALID_CHARS) > 0)
   {
-    throw Exception(FMTLOAD(ITEM_NAME_INVALID, Name.c_str(), CONST_INVALID_CHARS));
+    throw Exception(FMTLOAD(ITEM_NAME_INVALID, Name, CONST_INVALID_CHARS));
   }
 }
 
 TCopyParamList & TCopyParamList::operator=(const TCopyParamList & rhl)
 {
+  if (this == &rhl)
+    return *this;
   Clear();
 
   for (intptr_t Index = 0; Index < rhl.GetCount(); ++Index)
@@ -597,7 +601,9 @@ void TGUIConfiguration::Default()
   FQueueAutoPopup = true;
   FSessionRememberPassword = true;
   UnicodeString ProgramsFolder;
+#if defined(_MSC_VER) && !defined(__clang__)
   SpecialFolderLocation(CSIDL_PROGRAM_FILES, ProgramsFolder);
+#endif // if defined(_MSC_VER) && !defined(__clang__)
   FDefaultPuttyPathOnly = ::IncludeTrailingBackslash(ProgramsFolder) + OriginalPuttyExecutable;
   FDefaultPuttyPath = L"%PROGRAMFILES%\\PuTTY\\" + OriginalPuttyExecutable;
   FPuttyPath = FormatCommand(FDefaultPuttyPath, L"");
@@ -1456,7 +1462,7 @@ TStoredSessionList * TGUIConfiguration::SelectPuttySessionsForImport(
   }
   else
   {
-    // Error = FMTLOAD(PUTTY_NO_SITES, PuttySessionsKey.c_str());
+    // Error = FMTLOAD(PUTTY_NO_SITES, PuttySessionsKey);
   }
 
   return ImportSessionList.release();

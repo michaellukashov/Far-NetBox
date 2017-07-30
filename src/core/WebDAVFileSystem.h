@@ -1,7 +1,6 @@
 
 #pragma once
 
-
 #include <ne_uri.h>
 #include <ne_utils.h>
 #include <ne_string.h>
@@ -27,14 +26,14 @@ public:
   explicit TWebDAVFileSystem(TTerminal * ATerminal);
   virtual ~TWebDAVFileSystem();
 
-  virtual void Init(void *);
-  virtual void FileTransferProgress(int64_t TransferSize, int64_t Bytes);
+  virtual void Init(void *) override;
+  virtual void FileTransferProgress(int64_t TransferSize, int64_t Bytes) override;
 
-  virtual void Open();
-  virtual void Close();
-  virtual bool GetActive() const;
-  virtual void CollectUsage();
-  virtual void Idle();
+  virtual void Open() override;
+  virtual void Close() override;
+  virtual bool GetActive() const override;
+  virtual void CollectUsage() override;
+  virtual void Idle() override;
   virtual UnicodeString GetAbsolutePath(UnicodeString APath, bool Local) override;
   virtual UnicodeString GetAbsolutePath(UnicodeString APath, bool Local) const override;
   virtual void AnyCommand(UnicodeString Command,
@@ -122,8 +121,8 @@ protected:
     TFileOperationProgressType * OperationProgress,
     const TOverwriteFileParams * FileParams, const TCopyParamType * CopyParam,
     intptr_t Params,
-    OUT TOverwriteMode & OverwriteMode,
-    OUT uintptr_t & Answer);
+    TOverwriteMode & OverwriteMode,
+    uintptr_t & Answer);
   void CheckStatus(intptr_t NeonStatus);
   void ClearNeonError();
   static void NeonPropsResult(

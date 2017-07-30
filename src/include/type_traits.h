@@ -1,3 +1,5 @@
+#pragma once
+
 //===- llvm/Support/type_traits.h - Simplfied type traits
 //
 //                     The LLVM Compiler Infrastructure
@@ -8,9 +10,6 @@
 //
 // This file provides useful additions to the standard type_traits library.
 //
-
-#ifndef NB_SUPPORT_TYPE_TRAITS_H
-#define NB_SUPPORT_TYPE_TRAITS_H
 
 #include <type_traits>
 #include <utility>
@@ -104,6 +103,4 @@ struct add_const_past_pointer<
 
 #ifdef NB_DEFINED_HAS_FEATURE
 #undef __has_feature
-#endif
-
 #endif

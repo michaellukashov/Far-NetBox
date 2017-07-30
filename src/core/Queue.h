@@ -43,8 +43,8 @@ public:
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TSignalThread) || TSimpleThread::is(Kind); }
 public:
   void InitSignalThread(bool LowPriority);
-  virtual void Start();
-  virtual void Terminate();
+  virtual void Start() override;
+  virtual void Terminate() override;
   void TriggerEvent() const;
 
 protected:
@@ -56,7 +56,7 @@ protected:
 
   virtual bool WaitForEvent();
   uintptr_t WaitForEvent(uint32_t Timeout) const;
-  virtual void Execute();
+  virtual void Execute() override;
   virtual void ProcessEvent() = 0;
 };
 
@@ -410,8 +410,8 @@ protected:
   {
   }
 
-  virtual void DoExecute(TTerminal * Terminal);
-  virtual UnicodeString GetStartupDirectory() const;
+  virtual void DoExecute(TTerminal * Terminal) override;
+  virtual UnicodeString GetStartupDirectory() const override;
 
 private:
   UnicodeString FCurrentDir;
@@ -439,11 +439,11 @@ protected:
   DWORD FLastParallelOperationAdded;
   TParallelOperation * FParallelOperation;
 
-  virtual intptr_t DefaultCPSLimit() const;
-  virtual void DoExecute(TTerminal * Terminal);
+  virtual intptr_t DefaultCPSLimit() const override;
+  virtual void DoExecute(TTerminal * Terminal) override;
   virtual void DoTransferExecute(TTerminal * Terminal, TParallelOperation * ParallelOperation) = 0;
-  virtual void ProgressUpdated();
-  virtual TQueueItem * CreateParallelOperation();
+  virtual void ProgressUpdated() override;
+  virtual TQueueItem * CreateParallelOperation() override;
 
 public:
   TParallelOperation * GetParallelOperation() const { return FParallelOperation; }
@@ -464,7 +464,7 @@ public:
   }
 
 protected:
-  virtual void DoTransferExecute(TTerminal * Terminal, TParallelOperation * ParallelOperation);
+  virtual void DoTransferExecute(TTerminal * Terminal, TParallelOperation * ParallelOperation) override;
 };
 
 class NB_CORE_EXPORT TDownloadQueueItem : public TTransferQueueItem
@@ -481,7 +481,7 @@ public:
   }
 
 protected:
-  virtual void DoTransferExecute(TTerminal * Terminal, TParallelOperation * ParallelOperation);
+  virtual void DoTransferExecute(TTerminal * Terminal, TParallelOperation * ParallelOperation) override;
 };
 
 class TUserAction;

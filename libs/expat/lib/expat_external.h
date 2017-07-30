@@ -65,7 +65,8 @@
 #endif
 #endif  /* not defined XML_STATIC */
 
-#if !defined(XMLIMPORT) && defined(__GNUC__) && (__GNUC__ >= 4)
+/* Don't change symbol visibility if used as a static link libraray */
+#if !defined(XML_STATIC) && !defined(XMLIMPORT) && defined(__GNUC__) && (__GNUC__ >= 4)
 #define XMLIMPORT __attribute__ ((visibility ("default")))
 #endif
 

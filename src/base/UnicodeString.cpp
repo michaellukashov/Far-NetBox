@@ -510,6 +510,13 @@ UTF8String UTF8String::operator+(const UTF8String & rhs) const
   return UTF8String(Result);
 }
 
+UTF8String UTF8String::operator+(const char * rhs) const
+{
+  string_t Result(Data);
+  Result += rhs;
+  return UTF8String(Result);
+}
+
 UTF8String & UTF8String::operator+=(const UTF8String & rhs)
 {
   Data.Append(rhs.Data.c_str(), static_cast<int>(rhs.Length()));
@@ -529,6 +536,12 @@ UTF8String & UTF8String::operator+=(const char Ch)
   return *this;
 }
 
+UTF8String & UTF8String::operator+=(const char * rhs)
+{
+  Data.Append(rhs);
+  return *this;
+}
+
 bool operator==(const UTF8String & lhs, const UTF8String & rhs)
 {
   return lhs.Data == rhs.Data;
@@ -539,9 +552,9 @@ bool operator!=(const UTF8String & lhs, const UTF8String & rhs)
   return lhs.Data != rhs.Data;
 }
 
-UnicodeString::UnicodeString(const UnicodeString & Str)
+UnicodeString::UnicodeString(const UnicodeString & Str) :
+  Data(Str.c_str(), static_cast<int>(Str.GetLength()))
 {
-  Init(Str.c_str(), Str.GetLength());
 }
 
 UnicodeString::UnicodeString(const UTF8String & Str) :
@@ -764,14 +777,6 @@ UnicodeString UnicodeString::TrimRight() const
 void UnicodeString::Unique()
 {
   Init(Data.c_str(), Data.GetLength());
-}
-
-void UnicodeString::sprintf(const wchar_t * fmt, ...)
-{
-  va_list args;
-  va_start(args, fmt);
-  Data = ::FormatV(fmt, args).c_str();
-  va_end(args);
 }
 
 UnicodeString & UnicodeString::operator=(UnicodeString StrCopy)

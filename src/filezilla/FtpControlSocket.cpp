@@ -1,9 +1,9 @@
 
 #include "stdafx.h"
 #include "FtpControlSocket.h"
-#include "mainthread.h"
-#include "transfersocket.h"
-#include "asyncproxysocketlayer.h"
+#include "MainThread.h"
+#include "TransferSocket.h"
+#include "AsyncProxySocketLayer.h"
 #include "AsyncSslSocketLayer.h"
 #ifndef MPEXT_NO_GSS
 #include "AsyncGssSocketLayer.h"

@@ -347,7 +347,7 @@ void TMessageTimeout::UpdateButton()
 {
   DebugAssert(FButton != nullptr);
   FButton->Caption =
-    !Enabled ? FOrigCaption : FMTLOAD(TIMEOUT_BUTTON, FOrigCaption.c_str(), int(FTimeout / MSecsPerSec));
+    !Enabled ? FOrigCaption : FMTLOAD(TIMEOUT_BUTTON, FOrigCaption, int(FTimeout / MSecsPerSec));
 }
 
 void TMessageTimeout::DoTimer(TObject * /*Sender*/)
@@ -603,7 +603,7 @@ uintptr_t ExceptionMessageDialog(Exception * /*E*/, TQueryType /*Type*/,
   }
 
   return MoreMessageDialog(
-    FORMAT(UnicodeString(MessageFormat.IsEmpty() ? UnicodeString(L"%s") : MessageFormat).c_str(), Message.c_str()),
+    FORMAT(UnicodeString(MessageFormat.IsEmpty() ? UnicodeString(L"%s") : MessageFormat), Message),
     MoreMessages, Type, Answers, HelpKeyword, Params);
 #endif
   ThrowNotImplemented(3018);
@@ -900,7 +900,7 @@ __fastcall TCustomCommandPromptsDialog::TCustomCommandPromptsDialog(
 {
 
   FCustomCommandName = CustomCommandName;
-  Caption = FMTLOAD(CUSTOM_COMMANDS_PARAMS_TITLE, (FCustomCommandName));
+  Caption = FMTLOAD(CUSTOM_COMMANDS_PARAMS_TITLE, FCustomCommandName);
 
   FPrompts = Prompts;
   DebugAssert(FPrompts.size() == Defaults.size());
@@ -953,10 +953,10 @@ void TWinInteractiveCustomCommand::Prompt(
 #if 0
   if (APrompt.IsEmpty())
   {
-    APrompt = FMTLOAD(CUSTOM_COMMANDS_PARAM_PROMPT, FCustomCommandName.c_str());
+    APrompt = FMTLOAD(CUSTOM_COMMANDS_PARAM_PROMPT, FCustomCommandName);
   }
   std::unique_ptr<TStrings> History(CloneStrings(CustomWinConfiguration->History[L"CustomCommandParam"]));
-  if (InputDialog(FMTLOAD(CUSTOM_COMMANDS_PARAM_TITLE, FCustomCommandName.c_str()),
+  if (InputDialog(FMTLOAD(CUSTOM_COMMANDS_PARAM_TITLE, FCustomCommandName),
         APrompt, Value, HELP_CUSTOM_COMMAND_PARAM, History.get()))
   {
     CustomWinConfiguration->History[L"CustomCommandParam"] = History.get();
@@ -1005,11 +1005,11 @@ void TWinInteractiveCustomCommand::Execute(
     };
     if (!::CreatePipe(&StdOutOutput, &StdOutInput, &SecurityAttributes, 0))
     {
-      throw Exception(FMTLOAD(SHELL_PATTERN_ERROR, Command.c_str(), L"out"));
+      throw Exception(FMTLOAD(SHELL_PATTERN_ERROR, Command, L"out"));
     }
     else if (!::CreatePipe(&StdInOutput, &StdInInput, &SecurityAttributes, 0))
     {
-      throw Exception(FMTLOAD(SHELL_PATTERN_ERROR, Command.c_str(), L"in"));
+      throw Exception(FMTLOAD(SHELL_PATTERN_ERROR, Command, L"in"));
     }
     else
     {
@@ -1026,7 +1026,7 @@ void TWinInteractiveCustomCommand::Execute(
       if (!::CreateProcess(nullptr, Command.c_str(), &SecurityAttributes, &SecurityAttributes,
             TRUE, NORMAL_PRIORITY_CLASS, nullptr, nullptr, &StartupInfo, &ProcessInformation))
       {
-        throw Exception(FMTLOAD(SHELL_PATTERN_ERROR, Command.c_str(), L"process"));
+        throw Exception(FMTLOAD(SHELL_PATTERN_ERROR, Command, L"process"));
       }
       else
       {
@@ -1052,7 +1052,7 @@ void TWinInteractiveCustomCommand::Execute(
                 break;
 
               default:
-                throw Exception(FMTLOAD(SHELL_PATTERN_ERROR, Command.c_str(), L"wait"));
+                throw Exception(FMTLOAD(SHELL_PATTERN_ERROR, Command, L"wait"));
             }
           }
 
@@ -1064,7 +1064,7 @@ void TWinInteractiveCustomCommand::Execute(
           {
             if (!ReadFile(StdOutOutput, &Buffer, Read, &Read, nullptr))
             {
-              throw Exception(FMTLOAD(SHELL_PATTERN_ERROR, Command.c_str(), L"read"));
+              throw Exception(FMTLOAD(SHELL_PATTERN_ERROR, Command, L"read"));
             }
             else if (Read > 0)
             {

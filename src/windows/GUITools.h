@@ -27,9 +27,9 @@ NB_CORE_EXPORT bool SpecialFolderLocation(intptr_t PathID, UnicodeString & APath
 NB_CORE_EXPORT UnicodeString UniqTempDir(const UnicodeString BaseDir,
   const UnicodeString Identity, bool Mask = false);
 NB_CORE_EXPORT bool DeleteDirectory(const UnicodeString ADirName);
-NB_CORE_EXPORT UnicodeString GetPersonalFolder();
 NB_CORE_EXPORT UnicodeString ItemsFormatString(UnicodeString SingleItemFormat,
   UnicodeString MultiItemsFormat, intptr_t Count, UnicodeString FirstItem);
+NB_CORE_EXPORT UnicodeString GetPersonalFolder();
 NB_CORE_EXPORT UnicodeString ItemsFormatString(UnicodeString SingleItemFormat,
   UnicodeString MultiItemsFormat, const TStrings * Items);
 NB_CORE_EXPORT UnicodeString FileNameFormatString(UnicodeString SingleFileFormat,

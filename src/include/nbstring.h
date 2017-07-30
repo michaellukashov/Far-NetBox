@@ -47,7 +47,7 @@ NB_CORE_DLL(void) nbstr_unlock(CMStringData* pThis);
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-enum CMStringDataFormat { FORMAT };
+enum CMStringDataFormat { CM_FORMAT };
 
 struct CMStringData
 {
@@ -91,7 +91,7 @@ public:
 };
 
 template< typename BaseType >
-class CMSimpleStringT
+class NB_CORE_EXPORT CMSimpleStringT
 {
 CUSTOM_MEM_ALLOCATION_IMPL
 public:

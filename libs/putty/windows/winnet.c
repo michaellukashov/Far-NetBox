@@ -1791,8 +1791,8 @@ void select_result(WPARAM wParam, LPARAM lParam)
 	}
 	if (err != 0)
 	{
-		plug_closing(s->plug, winsock_error_string(err), err, 0);
-		return;
+	    plug_closing(s->plug, winsock_error_string(err), err, 0);
+	    return;
 	}
     }
 

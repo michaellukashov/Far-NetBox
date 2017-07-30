@@ -65,7 +65,7 @@ void TSynchronizeController::StartStop(TObject * /*Sender*/,
       if (FLAGSET(FSynchronizeParams.Options, soRecurse))
       {
         SynchronizeLog(slScan,
-          FMTLOAD(SYNCHRONIZE_SCAN, FSynchronizeParams.LocalDirectory.c_str()));
+          FMTLOAD(SYNCHRONIZE_SCAN, FSynchronizeParams.LocalDirectory));
       }
       ThrowNotImplemented(256);
       /*
@@ -126,7 +126,7 @@ void TSynchronizeController::SynchronizeChange(
         LocalDirectory.Length() - RootLocalDirectory.Length()));
 
     SynchronizeLog(slChange, FMTLOAD(SYNCHRONIZE_CHANGE,
-      ::ExcludeTrailingBackslash(LocalDirectory).c_str()));
+      ::ExcludeTrailingBackslash(LocalDirectory)));
 
     if (FOnSynchronize != nullptr)
     {
@@ -195,7 +195,7 @@ void TSynchronizeController::LogOperation(TSynchronizeOperation Operation,
   {
   case soDelete:
     Entry = slDelete;
-    Message = FMTLOAD(SYNCHRONIZE_DELETED, AFileName.c_str());
+    Message = FMTLOAD(SYNCHRONIZE_DELETED, AFileName);
     break;
 
   default:
@@ -204,7 +204,7 @@ void TSynchronizeController::LogOperation(TSynchronizeOperation Operation,
 
   case soUpload:
     Entry = slUpload;
-    Message = FMTLOAD(SYNCHRONIZE_UPLOADED, AFileName.c_str());
+    Message = FMTLOAD(SYNCHRONIZE_UPLOADED, AFileName);
     break;
   }
   SynchronizeLog(Entry, Message);

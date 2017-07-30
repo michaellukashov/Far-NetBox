@@ -1,7 +1,7 @@
 
 #pragma once
 
-#include <system.hpp>
+#include <System.hpp>
 #include <contnrs.hpp>
 
 #define CONST_HIDDEN_PREFIX L"_!_"
@@ -42,7 +42,7 @@ public:
 public:
   intptr_t GetCount() const;
   intptr_t GetCountIncludingHidden() const;
-  virtual void Notify(void * Ptr, TListNotification Action);
+  virtual void Notify(void * Ptr, TListNotification Action) override;
   void SetCount(intptr_t Value);
 protected:
   intptr_t FHiddenCount;

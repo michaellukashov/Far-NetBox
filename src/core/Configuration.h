@@ -14,13 +14,7 @@
 
 extern const wchar_t * AutoSwitchNames;
 extern const wchar_t * NotAutoSwitchNames;
-
-enum TAutoSwitch
-{
-  asOn,
-  asOff,
-  asAuto,
-};
+enum TAutoSwitch { asOn, asOff, asAuto }; // Has to match PuTTY FORCE_ON, FORCE_OFF, AUTO
 
 enum TFtpEncryptionSwitch_219
 {
@@ -173,7 +167,7 @@ protected:
 
 public:
   virtual TStorage GetStorage() const;
-  virtual void Changed();
+  virtual void Changed() override;
   virtual void SaveData(THierarchicalStorage * Storage, bool All);
   virtual void LoadData(THierarchicalStorage * Storage);
   virtual void LoadFrom(THierarchicalStorage * Storage);

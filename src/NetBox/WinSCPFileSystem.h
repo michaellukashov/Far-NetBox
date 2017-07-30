@@ -120,8 +120,8 @@ protected:
   virtual void HandleException(Exception * E, int OpMode = 0);
   void KeepaliveThreadCallback();
 
-  inline bool IsSessionList() const;
-  inline bool Connected() const;
+  bool IsSessionList() const;
+  bool Connected() const;
   TWinSCPPlugin * GetWinSCPPlugin();
   void ShowOperationProgress(TFileOperationProgressType & ProgressData,
     bool Force);
@@ -163,8 +163,8 @@ protected:
   bool CopyDialog(bool ToRemote, bool Move, const TStrings * AFileList,
     intptr_t Options,
     intptr_t CopyParamAttrs,
-    OUT UnicodeString & TargetDirectory,
-    OUT TGUICopyParamType * Params);
+    UnicodeString & TargetDirectory,
+    TGUICopyParamType * Params);
   bool LinkDialog(UnicodeString & AFileName, UnicodeString & PointTo, bool & Symbolic,
     bool Edit, bool AllowSymbolic);
   void FileSystemInfoDialog(const TSessionInfo & SessionInfo,

@@ -90,7 +90,7 @@ TCustomScpExplorerForm * CreateScpExplorer()
 
 UnicodeString SshVersionString()
 {
-  return FORMAT(L"WinSCP-release-%s", (Configuration->Version));
+  return FORMAT(L"WinSCP-release-%s", Configuration->GetVersion());
 }
 
 UnicodeString AppNameString()
@@ -275,7 +275,7 @@ void ShowExtendedExceptionEx(TTerminal * Terminal,
         {
           UnicodeString MessageFormat =
             MainInstructions((Manager->Count > 1) ?
-              FMTLOAD(DISCONNECT_ON_COMPLETION, (Manager->Count - 1)) :
+              FMTLOAD(DISCONNECT_ON_COMPLETION, Manager->Count - 1) :
               LoadStr(EXIT_ON_COMPLETION));
           Result = FatalExceptionMessageDialog(E, qtInformation, 0,
             MessageFormat,

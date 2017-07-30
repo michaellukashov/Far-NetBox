@@ -374,7 +374,7 @@ public:
   UnicodeString GetRememberedPassword() const;
   UnicodeString GetRememberedTunnelPassword() const;
   bool GetStoredCredentialsTried() const;
-  inline bool InTransaction() const;
+  bool InTransaction() const;
   void SaveCapabilities(TFileSystemInfo & FileSystemInfo);
   static UnicodeString SynchronizeModeStr(TSynchronizeMode Mode);
   static UnicodeString SynchronizeParamsStr(intptr_t Params);
@@ -385,7 +385,6 @@ protected:
   bool FTunnelOpening;
   TCustomFileSystem * FFileSystem;
 
-public:
   void DoStartReadDirectory();
   void DoReadDirectoryProgress(intptr_t Progress, intptr_t ResolvedLinks, bool & Cancel);
   void DoReadDirectory(bool ReloadOnly);
@@ -408,7 +407,7 @@ public:
   intptr_t FileOperationLoop(TFileOperationEvent CallBackFunc,
     TFileOperationProgressType * OperationProgress, bool AllowSkip,
     UnicodeString Message, void * Param1 = nullptr, void * Param2 = nullptr);
-  bool GetIsCapable(TFSCapability Capability) const;
+  bool GetIsCapableProtected(TFSCapability Capability) const;
   bool ProcessFiles(const TStrings * AFileList, TFileOperation Operation,
     TProcessFileEvent ProcessFile, void * Param = nullptr, TOperationSide Side = osRemote,
     bool Ex = false);
@@ -426,12 +425,12 @@ public:
     TFileOperationProgressType * OperationProgress,
     bool Resume,
     bool NoConfirmation,
-    OUT HANDLE * AHandle);
+    HANDLE * AHandle);
   HANDLE TerminalCreateLocalFile(UnicodeString LocalFileName, DWORD DesiredAccess,
     DWORD ShareMode, DWORD CreationDisposition, DWORD FlagsAndAttributes);
   void TerminalOpenLocalFile(UnicodeString AFileName, DWORD Access,
-    OUT OPTIONAL uintptr_t * AAttrs, OUT OPTIONAL HANDLE * AHandle, OUT OPTIONAL int64_t * ACTime,
-    OUT OPTIONAL int64_t * AMTime, OUT OPTIONAL int64_t * AATime, OUT OPTIONAL int64_t * ASize,
+    uintptr_t * AAttrs, HANDLE * AHandle, int64_t * ACTime,
+    int64_t * AMTime, int64_t * AATime, int64_t * ASize,
     bool TryWriteReadOnly = true);
   bool AllowLocalFileTransfer(UnicodeString AFileName,
     const TCopyParamType * CopyParam, TFileOperationProgressType * OperationProgress);
@@ -446,7 +445,7 @@ public:
     const TSearchRec & Rec, /*int64_t*/ void * Size);
   bool CalculateLocalFilesSize(const TStrings * AFileList,
     const TCopyParamType * CopyParam, bool AllowDirs, TStrings * Files,
-    OUT int64_t & Size);
+    int64_t & Size);
   TBatchOverwrite EffectiveBatchOverwrite(
     UnicodeString ASourceFullFileName, const TCopyParamType * CopyParam, intptr_t Params,
     TFileOperationProgressType * OperationProgress, bool Special) const;
@@ -478,7 +477,7 @@ public:
   TStrings * GetFixedPaths() const;
   void DoStartup();
   virtual bool DoQueryReopen(Exception * E);
-  virtual void FatalError(Exception * E, UnicodeString Msg, UnicodeString HelpKeyword = L"");
+  virtual void FatalError(Exception * E, UnicodeString Msg, UnicodeString HelpKeyword = L"") override;
   void ResetConnection();
   virtual bool DoPromptUser(TSessionData * Data, TPromptKind Kind,
     UnicodeString Name, UnicodeString Instructions, TStrings * Prompts,
@@ -488,33 +487,33 @@ public:
   void DoInformation(UnicodeString Str, bool Status, intptr_t Phase = -1);
   bool PromptUser(TSessionData * Data, TPromptKind Kind,
     UnicodeString AName, UnicodeString Instructions, UnicodeString Prompt, bool Echo,
-    intptr_t MaxLen, OUT UnicodeString & AResult);
+    intptr_t MaxLen, UnicodeString & AResult);
   void FileFind(UnicodeString AFileName, const TRemoteFile * AFile, void * Param);
   void DoFilesFind(UnicodeString Directory, TFilesFindParams & Params, UnicodeString RealDirectory);
   bool DoCreateLocalFile(UnicodeString AFileName,
     TFileOperationProgressType * OperationProgress,
     bool Resume,
     bool NoConfirmation,
-    OUT HANDLE * AHandle);
+    HANDLE * AHandle);
   void LockFile(UnicodeString AFileName, const TRemoteFile * AFile, void * AParam);
   void UnlockFile(UnicodeString AFileName, const TRemoteFile * AFile, void * AParam);
   void DoLockFile(UnicodeString AFileName, const TRemoteFile * AFile);
   void DoUnlockFile(UnicodeString AFileName, const TRemoteFile * AFile);
 
-  virtual void Information(UnicodeString Str, bool Status);
+  virtual void Information(UnicodeString Str, bool Status) override;
   virtual uintptr_t QueryUser(UnicodeString Query,
     TStrings * MoreMessages, uintptr_t Answers, const TQueryParams * Params,
-    TQueryType QueryType = qtConfirmation);
+    TQueryType QueryType = qtConfirmation) override;
   virtual uintptr_t QueryUserException(UnicodeString Query,
     Exception * E, uintptr_t Answers, const TQueryParams * Params,
-    TQueryType QueryType = qtConfirmation);
+    TQueryType QueryType = qtConfirmation) override;
   virtual bool PromptUser(TSessionData * Data, TPromptKind Kind,
-    UnicodeString AName, UnicodeString Instructions, TStrings * Prompts, TStrings * Results);
-  virtual void DisplayBanner(UnicodeString Banner);
-  virtual void Closed();
-  virtual void ProcessGUI();
+    UnicodeString AName, UnicodeString Instructions, TStrings * Prompts, TStrings * Results) override;
+  virtual void DisplayBanner(UnicodeString Banner) override;
+  virtual void Closed() override;
+  virtual void ProcessGUI() override;
   void Progress(TFileOperationProgressType * OperationProgress);
-  virtual void HandleExtendedException(Exception * E);
+  virtual void HandleExtendedException(Exception * E) override;
   bool IsListenerFree(uintptr_t PortNumber) const;
   void DoProgress(TFileOperationProgressType & ProgressData);
   void DoFinished(TFileOperation Operation, TOperationSide Side, bool Temp,
@@ -669,7 +668,7 @@ public:
 
   const TSessionInfo & GetSessionInfo() const;
   const TFileSystemInfo & GetFileSystemInfo(bool Retrieve = false);
-  void inline LogEvent(UnicodeString Str);
+  void LogEvent(UnicodeString Str);
   void GetSupportedChecksumAlgs(TStrings * Algs) const;
   UnicodeString ChangeFileName(const TCopyParamType * CopyParam,
     UnicodeString AFileName, TOperationSide Side, bool FirstLevel) const;
@@ -723,6 +722,7 @@ public:
   __property int TunnelLocalPortNumber = { read = FTunnelLocalPortNumber };
 #endif
 
+  bool GetIsCapable(TFSCapability Capability) const { return GetIsCapableProtected(Capability); }
   void SetMasks(UnicodeString Value);
 
   void SetLocalFileTime(UnicodeString LocalFileName,
@@ -831,11 +831,11 @@ public:
   TTerminal * GetMainTerminal() const { return FMainTerminal; }
 
 protected:
-  virtual void DirectoryLoaded(TRemoteFileList * FileList);
+  virtual void DirectoryLoaded(TRemoteFileList * FileList) override;
   virtual void DirectoryModified(UnicodeString APath,
-    bool SubDirs);
-  virtual const TTerminal * GetPasswordSource() const { return FMainTerminal; }
-  virtual TTerminal * GetPasswordSource();
+    bool SubDirs) override;
+  virtual const TTerminal * GetPasswordSource() const override { return FMainTerminal; }
+  virtual TTerminal * GetPasswordSource() override;
 
 private:
   TTerminal * FMainTerminal;
@@ -969,7 +969,7 @@ public:
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TChecklistItem) || TObject::is(Kind); }
 public:
 
-  struct TFileInfo : public TObject
+  struct NB_CORE_EXPORT TFileInfo : public TObject
   {
     UnicodeString FileName;
     UnicodeString Directory;

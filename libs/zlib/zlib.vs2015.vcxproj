@@ -26,9 +26,6 @@
     <ClCompile Include="src\deflate_medium.c" />
     <ClCompile Include="src\deflate_fast.c" />
     <ClCompile Include="src\arch\x86\crc_folding.c" />
-    <ClCompile Include="src\arch\x86\deflate_quick.c" />
-    <ClCompile Include="src\arch\x86\fill_window_sse.c" />
-    <ClCompile Include="src\arch\x86\insert_string_sse.c" />
     <ClCompile Include="src\arch\x86\x86.c" />
     <ClCompile Include="src\infback.c" />
     <ClCompile Include="src\inffast.c" />
@@ -56,7 +53,7 @@
     <ProjectGuid>{E9F6071A-D2BC-471E-8899-5F49B024AA04}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>zlib</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.10586.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">

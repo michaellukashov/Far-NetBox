@@ -1,14 +1,15 @@
 
 #pragma once
 
-#include <headers.hpp>
+#include "FormatUtils.h"
+
 #include <nbcore.h>
 
 #include <tchar.h>
 #include <assert.h>
 
-#define FORMAT(S, ...) ::Format(S, ##__VA_ARGS__)
-#define FMTLOAD(Id, ...) ::FmtLoadStr(Id, ##__VA_ARGS__)
+#define FORMAT(S, ...) nb::Sprintf(S, __VA_ARGS__)
+#define FMTLOAD(Id, ...) nb::FmtLoadStr(Id, __VA_ARGS__)
 #ifndef LENOF
 #define LENOF(x) (_countof(X))
 #endif
@@ -50,7 +51,7 @@ private:
 #define DebugCheck(p)    (p)
 #define DebugFail()      (void)0
 #else // if !defined(_DEBUG) || defined(DESIGN_ONLY)
-void DoAssert(const wchar_t * Message, const wchar_t * Filename, uintptr_t LineNumber);
+NB_CORE_EXPORT void DoAssert(const wchar_t * Message, const wchar_t * Filename, uintptr_t LineNumber);
 #define DebugAssert(p) ((p) ? (void)0 : DoAssert(TEXT(#p), TEXT(__FILE__), __LINE__))
 #define DebugCheck(p) { bool __CHECK_RESULT__ = (p); DebugAssert(__CHECK_RESULT__); }
 #define DebugFail() DebugAssert(false)

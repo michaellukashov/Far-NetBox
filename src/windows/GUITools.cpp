@@ -2,8 +2,10 @@
 #include <vcl.h>
 #pragma hdrstop
 
+#if defined(_MSC_VER) && !defined(__clang__)
 #include <shlobj.h>
 #include <shellapi.h>
+#endif // if defined(_MSC_VER) && !defined(__clang__)
 #include <Common.h>
 
 #include "GUITools.h"
@@ -173,13 +175,13 @@ void OpenSessionInPutty(UnicodeString PuttyPath,
       intptr_t P = Params2.LowerCase().Pos(LoadSwitch + L" ");
       if ((P == 0) || ((P > 1) && (Params2[P - 1] != L' ')))
       {
-        AddToList(PuttyParams, FORMAT(L"%s %s", LoadSwitch.c_str(), EscapePuttyCommandParam(SessionName).c_str()), L" ");
+        AddToList(PuttyParams, FORMAT(L"%s %s", LoadSwitch, EscapePuttyCommandParam(SessionName)), L" ");
       }
     }
 
     if (!Password.IsEmpty() && !RemoteCustomCommand.IsPasswordCommand(Params))
     {
-      AddToList(PuttyParams, FORMAT(L"-pw %s", EscapePuttyCommandParam(Password).c_str()), L" ");
+      AddToList(PuttyParams, FORMAT("-pw %s", EscapePuttyCommandParam(Password)), L" ");
     }
 
     AddToList(PuttyParams, Params2, L" ");
@@ -190,7 +192,7 @@ void OpenSessionInPutty(UnicodeString PuttyPath,
   }
   else
   {
-    throw Exception(FMTLOAD(FILE_NOT_FOUND, Program.c_str()));
+    throw Exception(FMTLOAD(FILE_NOT_FOUND, Program));
   }
 }
 
@@ -262,7 +264,7 @@ void ExecuteShellChecked(const UnicodeString APath, const UnicodeString Params, 
 {
   if (!DoExecuteShell(APath, Params, ChangeWorkingDirectory, nullptr))
   {
-    throw EOSExtException(FMTLOAD(EXECUTE_APP_ERROR, APath.c_str()));
+    throw EOSExtException(FMTLOAD(EXECUTE_APP_ERROR, APath));
   }
 }
 
@@ -288,7 +290,7 @@ void ExecuteShellCheckedAndWait(HINSTANCE Handle, const UnicodeString Command,
   bool Result = DoExecuteShell(Program, Params, false, &ProcessHandle);
   if (!Result)
   {
-    throw EOSExtException(FMTLOAD(EXECUTE_APP_ERROR, Program.c_str()));
+    throw EOSExtException(FMTLOAD(EXECUTE_APP_ERROR, Program));
   }
   if (ProcessMessages != nullptr)
   {
@@ -313,6 +315,7 @@ void ExecuteShellCheckedAndWait(HINSTANCE Handle, const UnicodeString Command,
 
 bool SpecialFolderLocation(intptr_t PathID, UnicodeString & APath)
 {
+#if defined(_MSC_VER) && !defined(__clang__)
   LPITEMIDLIST Pidl;
   wchar_t Buf[MAX_PATH];
   if (::SHGetSpecialFolderLocation(nullptr, static_cast<int>(PathID), &Pidl) == NO_ERROR &&
@@ -321,6 +324,7 @@ bool SpecialFolderLocation(intptr_t PathID, UnicodeString & APath)
     APath = UnicodeString(Buf);
     return true;
   }
+#endif // if defined(_MSC_VER) && !defined(__clang__)
   return false;
 }
 
@@ -330,11 +334,11 @@ UnicodeString ItemsFormatString(UnicodeString SingleItemFormat,
   UnicodeString Result;
   if (Count == 1)
   {
-    Result = FORMAT(SingleItemFormat.c_str(), FirstItem.c_str());
+    Result = FORMAT(SingleItemFormat, FirstItem);
   }
   else
   {
-    Result = FORMAT(MultiItemsFormat.c_str(), Count);
+    Result = FORMAT(MultiItemsFormat, Count);
   }
   return Result;
 }

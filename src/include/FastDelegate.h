@@ -58,6 +58,14 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
+#ifdef FASTDELEGATE_EXPORT
+#define FASTDELEGATE_LIB __declspec(dllexport)
+#elif defined(FASTDELEGATE_IMPORT)
+#define FASTDELEGATE_LIB __declspec(dllimport)
+#else
+#define FASTDELEGATE_LIB
+#endif
+
 // Uncomment the following #define for optimally-sized delegates.
 // In this case, the generated asm code is almost identical to the code you'd get
 // if the compiler had native support for delegates.
@@ -556,7 +564,7 @@ struct SimplifyMemFunc<SINGLE_MEMFUNCPTR_SIZE + 3*sizeof(int) >
 // Note that the Sun C++ and MSVC documentation explicitly state that they 
 // support static_cast between void * and function pointers.
 
-class DelegateMemento {
+class FASTDELEGATE_LIB DelegateMemento {
 protected: 
 	// the data is protected, not private, because many
 	// compilers have problems with template friends.
@@ -661,7 +669,7 @@ protected:
 namespace detail {
 
 template < class GenericMemFunc, class StaticFuncPtr, class UnvoidStaticFuncPtr>
-class ClosurePtr : public DelegateMemento {
+class FASTDELEGATE_LIB ClosurePtr : public DelegateMemento {
 public:
 	// These functions are for setting the delegate to a member function.
 
@@ -852,7 +860,7 @@ public:
 
 //N=0
 template<class RetType=detail::DefaultVoid>
-class FastDelegate0 {
+class FASTDELEGATE_LIB FastDelegate0 {
 private:
 	typedef typename detail::DefaultVoidToVoid<RetType>::type DesiredRetType;
 	typedef DesiredRetType (*StaticFunctionPtr)();
@@ -937,7 +945,7 @@ private:	// Invoker for static functions
 
 //N=1
 template<class RetType=detail::DefaultVoid, class Param1=detail::DefaultVoid>
-class FastDelegate1 {
+class FASTDELEGATE_LIB FastDelegate1 {
 private:
 	typedef typename detail::DefaultVoidToVoid<RetType>::type DesiredRetType;
 	typedef DesiredRetType (*StaticFunctionPtr)(Param1 p1);
@@ -1022,7 +1030,7 @@ private:	// Invoker for static functions
 
 //N=2
 template<class RetType=detail::DefaultVoid, class Param1=detail::DefaultVoid, class Param2=detail::DefaultVoid>
-class FastDelegate2 {
+class FASTDELEGATE_LIB FastDelegate2 {
 private:
 	typedef typename detail::DefaultVoidToVoid<RetType>::type DesiredRetType;
 	typedef DesiredRetType (*StaticFunctionPtr)(Param1 p1, Param2 p2);
@@ -1107,7 +1115,7 @@ private:	// Invoker for static functions
 
 //N=3
 template<class RetType=detail::DefaultVoid, class Param1=detail::DefaultVoid, class Param2=detail::DefaultVoid, class Param3=detail::DefaultVoid>
-class FastDelegate3 {
+class FASTDELEGATE_LIB FastDelegate3 {
 private:
 	typedef typename detail::DefaultVoidToVoid<RetType>::type DesiredRetType;
 	typedef DesiredRetType (*StaticFunctionPtr)(Param1 p1, Param2 p2, Param3 p3);
@@ -1192,7 +1200,7 @@ private:	// Invoker for static functions
 
 //N=4
 template<class RetType=detail::DefaultVoid, class Param1=detail::DefaultVoid, class Param2=detail::DefaultVoid, class Param3=detail::DefaultVoid, class Param4=detail::DefaultVoid>
-class FastDelegate4 {
+class FASTDELEGATE_LIB FastDelegate4 {
 private:
 	typedef typename detail::DefaultVoidToVoid<RetType>::type DesiredRetType;
 	typedef DesiredRetType (*StaticFunctionPtr)(Param1 p1, Param2 p2, Param3 p3, Param4 p4);
@@ -1277,7 +1285,7 @@ private:	// Invoker for static functions
 
 //N=5
 template<class RetType=detail::DefaultVoid, class Param1=detail::DefaultVoid, class Param2=detail::DefaultVoid, class Param3=detail::DefaultVoid, class Param4=detail::DefaultVoid, class Param5=detail::DefaultVoid>
-class FastDelegate5 {
+class FASTDELEGATE_LIB FastDelegate5 {
 private:
 	typedef typename detail::DefaultVoidToVoid<RetType>::type DesiredRetType;
 	typedef DesiredRetType (*StaticFunctionPtr)(Param1 p1, Param2 p2, Param3 p3, Param4 p4, Param5 p5);
@@ -1362,7 +1370,7 @@ private:	// Invoker for static functions
 
 //N=6
 template<class RetType=detail::DefaultVoid, class Param1=detail::DefaultVoid, class Param2=detail::DefaultVoid, class Param3=detail::DefaultVoid, class Param4=detail::DefaultVoid, class Param5=detail::DefaultVoid, class Param6=detail::DefaultVoid>
-class FastDelegate6 {
+class FASTDELEGATE_LIB FastDelegate6 {
 private:
 	typedef typename detail::DefaultVoidToVoid<RetType>::type DesiredRetType;
 	typedef DesiredRetType (*StaticFunctionPtr)(Param1 p1, Param2 p2, Param3 p3, Param4 p4, Param5 p5, Param6 p6);
@@ -1447,7 +1455,7 @@ private:	// Invoker for static functions
 
 //N=7
 template<class RetType=detail::DefaultVoid, class Param1=detail::DefaultVoid, class Param2=detail::DefaultVoid, class Param3=detail::DefaultVoid, class Param4=detail::DefaultVoid, class Param5=detail::DefaultVoid, class Param6=detail::DefaultVoid, class Param7=detail::DefaultVoid>
-class FastDelegate7 {
+class FASTDELEGATE_LIB FastDelegate7 {
 private:
 	typedef typename detail::DefaultVoidToVoid<RetType>::type DesiredRetType;
 	typedef DesiredRetType (*StaticFunctionPtr)(Param1 p1, Param2 p2, Param3 p3, Param4 p4, Param5 p5, Param6 p6, Param7 p7);
@@ -1532,7 +1540,7 @@ private:	// Invoker for static functions
 
 //N=8
 template<class RetType=detail::DefaultVoid, class Param1=detail::DefaultVoid, class Param2=detail::DefaultVoid, class Param3=detail::DefaultVoid, class Param4=detail::DefaultVoid, class Param5=detail::DefaultVoid, class Param6=detail::DefaultVoid, class Param7=detail::DefaultVoid, class Param8=detail::DefaultVoid>
-class FastDelegate8 {
+class FASTDELEGATE_LIB FastDelegate8 {
 private:
 	typedef typename detail::DefaultVoidToVoid<RetType>::type DesiredRetType;
 	typedef DesiredRetType (*StaticFunctionPtr)(Param1 p1, Param2 p2, Param3 p3, Param4 p4, Param5 p5, Param6 p6, Param7 p7, Param8 p8);

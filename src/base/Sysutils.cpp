@@ -2,7 +2,6 @@
 #include <vcl.h>
 #pragma hdrstop
 
-#include <iostream>
 #include <iomanip>
 
 #include <Classes.hpp>
@@ -131,7 +130,7 @@ void RaiseLastOSError(DWORD LastError)
   UnicodeString ErrorMsg;
   if (LastError != 0)
   {
-    ErrorMsg = FMTLOAD(SOSError, LastError, ::SysErrorMessage(LastError).c_str());
+    ErrorMsg = FMTLOAD(SOSError, LastError, ::SysErrorMessage(LastError));
   }
   else
   {
@@ -157,15 +156,13 @@ namespace Sysutils {
 
 UnicodeString IntToStr(intptr_t Value)
 {
-  UnicodeString Result;
-  Result.sprintf(L"%d", Value);
+  UnicodeString Result = FORMAT("%d", Value);
   return Result;
 }
 
 UnicodeString Int64ToStr(int64_t Value)
 {
-  UnicodeString Result;
-  Result.sprintf(L"%lld", Value);
+  UnicodeString Result = FORMAT(L"%lld", Value);
   return Result;
 }
 
@@ -254,7 +251,7 @@ UnicodeString TrimRight(UnicodeString Str)
   UnicodeString Result = Str;
   intptr_t Len = Result.Length();
   while (Len > 0 &&
-    ((Result[Len] == L' ') || (Result[Len] == L'\n')))
+    ((Result[Len] == L' ') || (Result[Len] == L'\n') || (Result[Len] == L'\r') || (Result[Len] == L'\x00')))
   {
     Len--;
   }
@@ -288,7 +285,7 @@ UnicodeString AnsiReplaceStr(UnicodeString Str, UnicodeString From,
   UnicodeString To)
 {
   UnicodeString Result = Str;
-  intptr_t Pos = 0;
+  intptr_t Pos;
   while ((Pos = Result.Pos(From)) > 0)
   {
     Result.Replace(Pos, From.Length(), To);
@@ -468,7 +465,7 @@ double StrToFloat(UnicodeString Value)
 
 double StrToFloatDef(UnicodeString Value, double DefVal)
 {
-  double Result = 0.0;
+  double Result;
   try
   {
     Result = _wtof(Value.c_str());
@@ -495,7 +492,7 @@ bool IsZero(double Value)
 
 TTimeStamp DateTimeToTimeStamp(const TDateTime & DateTime)
 {
-  TTimeStamp Result = {0, 0};
+  TTimeStamp Result;
   double intpart;
   double fractpart = modf(DateTime, &intpart);
   Result.Time = static_cast<int>(fractpart * MSecsPerDay + 0.5);
@@ -505,7 +502,7 @@ TTimeStamp DateTimeToTimeStamp(const TDateTime & DateTime)
 
 int64_t FileRead(HANDLE AHandle, void * Buffer, int64_t Count)
 {
-  int64_t Result = -1;
+  int64_t Result;
   DWORD Res = 0;
   if (::ReadFile(AHandle, reinterpret_cast<LPVOID>(Buffer), static_cast<DWORD>(Count), &Res, nullptr))
   {
@@ -520,7 +517,7 @@ int64_t FileRead(HANDLE AHandle, void * Buffer, int64_t Count)
 
 int64_t FileWrite(HANDLE AHandle, const void * Buffer, int64_t Count)
 {
-  int64_t Result = -1;
+  int64_t Result;
   DWORD Res = 0;
   if (::WriteFile(AHandle, Buffer, static_cast<DWORD>(Count), &Res, nullptr))
   {
@@ -691,10 +688,9 @@ UnicodeString FormatV(const wchar_t * Format, va_list Args)
 
 AnsiString FormatA(const char * Format, ...)
 {
-  AnsiString Result(64, 0);
   va_list Args;
   va_start(Args, Format);
-  Result = ::FormatA(Format, Args);
+  AnsiString Result = ::FormatA(Format, Args);
   va_end(Args);
   return Result;
 }
@@ -769,7 +765,6 @@ UnicodeString WrapText(UnicodeString Line, intptr_t MaxWidth)
   UnicodeString Result;
 
   intptr_t LenBuffer = 0;
-  intptr_t SpaceLeft = MaxWidth;
 
   if (MaxWidth == 0)
   {
@@ -808,7 +803,7 @@ UnicodeString WrapText(UnicodeString Line, intptr_t MaxWidth)
     const wchar_t * s = NextWord(Line.c_str());
     while (*s)
     {
-      SpaceLeft = MaxWidth;
+      intptr_t SpaceLeft = MaxWidth;
 
       /* force the first word to always be completely copied */
       while (*s)
@@ -1000,7 +995,7 @@ UnicodeString ExpandUNCFileName(UnicodeString AFileName)
 static DWORD FindMatchingFile(TSearchRec & Rec)
 {
   TFileTime LocalFileTime = {0};
-  DWORD Result = ERROR_SUCCESS;
+  DWORD Result;
   while ((Rec.FindData.dwFileAttributes && Rec.ExcludeAttr) != 0)
   {
     if (!::FindNextFileW(Rec.FindHandle, &Rec.FindData))
@@ -1224,7 +1219,7 @@ uintptr_t HexToInt(UnicodeString Hex, uintptr_t MinChars)
     intptr_t A = Digits.FindFirstOf(UpCase(Hex[Index]));
     if (A == NPOS)
     {
-      if ((MinChars == NPOS) || (Index <= static_cast<intptr_t>(MinChars)))
+      if ((static_cast<intptr_t>(MinChars) == NPOS) || (Index <= static_cast<intptr_t>(MinChars)))
       {
         Result = 0;
       }
@@ -1240,8 +1235,7 @@ uintptr_t HexToInt(UnicodeString Hex, uintptr_t MinChars)
 
 UnicodeString IntToHex(uintptr_t Int, uintptr_t MinChars)
 {
-  UnicodeString Result;
-  Result.sprintf(L"%X", Int);
+  UnicodeString Result = FORMAT("%X", Int);
   intptr_t Pad = MinChars - Result.Length();
   if (Pad > 0)
   {
@@ -1279,7 +1273,6 @@ static bool DecodeDateFully(const TDateTime & DateTime,
   static const int D4 = D1 * 4 + 1;
   static const int D100 = D4 * 25 - 1;
   static const int D400 = D100 * 4 + 1;
-  bool Result = false;
   int T = DateTimeToTimeStamp(DateTime).Date;
   if (T <= 0)
   {
@@ -1315,7 +1308,7 @@ static bool DecodeDateFully(const TDateTime & DateTime,
     D += ToWord(D1);
   }
   Y += I;
-  Result = IsLeapYear(ToWord(Y));
+  bool Result = IsLeapYear(ToWord(Y));
   const TDayTable * DayTable = &MonthDays[Result];
   uintptr_t M = 1;
   while (true)
@@ -1426,12 +1419,12 @@ UnicodeString DateTimeToStr(UnicodeString & Result, UnicodeString Format,
 {
   (void)Result;
   (void)Format;
-  return DateTime.FormatString(static_cast<wchar_t *>(L""));
+  return DateTime.FormatString(const_cast<wchar_t *>(L""));
 }
 
 UnicodeString DateTimeToString(const TDateTime & DateTime)
 {
-  return DateTime.FormatString(static_cast<wchar_t *>(L""));
+  return DateTime.FormatString(const_cast<wchar_t *>(L""));
 }
 
 // DayOfWeek returns the day of the week of the given date. The Result is an
@@ -1482,7 +1475,7 @@ UnicodeString FormatDateTime(UnicodeString Fmt, const TDateTime & ADateTime)
       EncodeTimeVerbose(Hour, Minutes, Seconds, Milliseconds);
     DateTime.DecodeDate(Y, M, D);
     DateTime.DecodeTime(H, Mm, S, MS);
-    Result = FORMAT(L"%02d.%02d.%04d %02d:%02d:%02d ", D, M, Y, H, Mm, S);
+    Result = FORMAT("%02d.%02d.%04d %02d:%02d:%02d ", D, M, Y, H, Mm, S);
   }
   else if (Fmt == L"nnzzz")
   {
@@ -1512,8 +1505,7 @@ static TDateTime ComposeDateTime(const TDateTime & Date, const TDateTime & Time)
 
 TDateTime SystemTimeToDateTime(const SYSTEMTIME & SystemTime)
 {
-  TDateTime Result(0.0);
-  Result = ComposeDateTime(EncodeDate(SystemTime.wYear, SystemTime.wMonth, SystemTime.wDay),
+  TDateTime Result = ComposeDateTime(EncodeDate(SystemTime.wYear, SystemTime.wMonth, SystemTime.wDay),
     EncodeTime(SystemTime.wHour, SystemTime.wMinute, SystemTime.wSecond, SystemTime.wMilliseconds));
   return Result;
 }
@@ -1677,7 +1669,7 @@ UnicodeString VersionNumberToStr(uintptr_t VersionNumber)
   DWORD Major = (VersionNumber >> 16) & 0xFF;
   DWORD Minor = (VersionNumber >> 8) & 0xFF;
   DWORD Revision = (VersionNumber & 0xFF);
-  UnicodeString Result = FORMAT(L"%d.%d.%d", Major, Minor, Revision);
+  UnicodeString Result = FORMAT("%d.%d.%d", Major, Minor, Revision);
   return Result;
 }
 
@@ -1709,7 +1701,7 @@ DWORD FindFirst(UnicodeString AFileName, DWORD LocalFileAttrs, TSearchRec & Rec)
   const DWORD faSpecial = faHidden | faSysFile | faDirectory;
   Rec.ExcludeAttr = (~LocalFileAttrs) & faSpecial;
   Rec.FindHandle = ::FindFirstFileW(ApiPath(AFileName).c_str(), &Rec.FindData);
-  DWORD Result = ERROR_SUCCESS;
+  DWORD Result;
   if (Rec.FindHandle != INVALID_HANDLE_VALUE)
   {
     Result = FindMatchingFile(Rec);
@@ -1727,7 +1719,7 @@ DWORD FindFirst(UnicodeString AFileName, DWORD LocalFileAttrs, TSearchRec & Rec)
 
 DWORD FindNext(TSearchRec & Rec)
 {
-  DWORD Result = 0;
+  DWORD Result;
   if (::FindNextFileW(Rec.FindHandle, &Rec.FindData))
     Result = FindMatchingFile(Rec);
   else

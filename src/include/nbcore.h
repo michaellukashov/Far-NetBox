@@ -103,10 +103,10 @@ NB_CORE_DLL(char *) nbcore_urlEncode(const char *szUrl);
 ///////////////////////////////////////////////////////////////////////////////
 // language packs support
 
-NB_CORE_DLL(unsigned int) nbcore_hash(const void * key, unsigned int len);
+NB_CORE_DLL(uint32_t) nbcore_hash(const void * key, uint32_t len);
 
 #pragma optimize("gt", on)
-__forceinline unsigned int nbcore_hashstr(const char * key)
+__forceinline uint32_t nbcore_hashstr(const char * key)
 {
   if (key == nullptr)
   {
@@ -114,12 +114,12 @@ __forceinline unsigned int nbcore_hashstr(const char * key)
   }
   else
   {
-    unsigned int len = (unsigned int)strlen((const char *)key);
+    uint32_t len = (uint32_t)strlen((const char *)key);
     return nbcore_hash(key, len);
   }
 }
 
-__forceinline unsigned int nbcore_hashstrW(const wchar_t * key)
+__forceinline uint32_t nbcore_hashstrW(const wchar_t * key)
 {
   if (key == nullptr)
   {
@@ -127,7 +127,7 @@ __forceinline unsigned int nbcore_hashstrW(const wchar_t * key)
   }
   else
   {
-    unsigned int len = (unsigned int)wcslen((const wchar_t*)key);
+    uint32_t len = (uint32_t)wcslen((const wchar_t*)key);
     return nbcore_hash(key, len * sizeof(wchar_t));
   }
 }
@@ -150,7 +150,7 @@ typedef int (*FSortFunc)(void *, void *);  // sort function prototype
 
 typedef struct
 {
-  void **    items;
+  void**   items;
   int      realCount;
   int      limit;
   int      increment;
@@ -260,8 +260,6 @@ struct PROTO_INTERFACE;
 
 NB_CORE_DLL(intptr_t) ProtoBroadcastAck(LPCSTR szModule, int type, int result, HANDLE hProcess, LPARAM lParam);
 
-// avatar support functions
-
 ///////////////////////////////////////////////////////////////////////////////
 // sha1 functions
 
@@ -321,8 +319,8 @@ NB_CORE_DLL(wchar_t*) ltrimw(wchar_t *str);
 NB_CORE_DLL(char *)  ltrimp(char *str);  // returns pointer to the trimmed portion of string
 NB_CORE_DLL(wchar_t *) ltrimpw(wchar_t *str);
 
-NB_CORE_DLL(char *) strdel(char *str, size_t len);
-NB_CORE_DLL(wchar_t *) strdelw(wchar_t *str, size_t len);
+NB_CORE_DLL(char *) strdel(char *str, int len);
+NB_CORE_DLL(wchar_t *) strdelw(wchar_t *str, int len);
 
 NB_CORE_DLL(int) wildcmp(const char *name, const char *mask);
 NB_CORE_DLL(int) wildcmpw(const wchar_t *name, const wchar_t *mask);

@@ -48,6 +48,7 @@ public:
 
   UTF8String operator+(const UTF8String & rhs) const;
   UTF8String operator+(const RawByteString & rhs) const;
+  UTF8String operator+(const char * rhs) const;
   UTF8String & operator+=(const UTF8String & rhs);
   UTF8String & operator+=(const RawByteString & rhs);
   UTF8String & operator+=(const char Ch);
@@ -75,7 +76,7 @@ public:
   UnicodeString(const char * Str, intptr_t Length);
   UnicodeString(const char * Str, intptr_t Length, int CodePage);
   UnicodeString(const char * Str);
-  UnicodeString(intptr_t Length, wchar_t Ch) : Data(Ch, Length) {}
+  UnicodeString(intptr_t Length, wchar_t Ch) : Data(Ch, (int)Length) {}
 
   UnicodeString(const UnicodeString &Str);
   explicit UnicodeString(const UTF8String & Str);
@@ -148,8 +149,6 @@ public:
 
   void Unique();
 
-  void sprintf(const wchar_t * fmt, ...);
-
 public:
   UnicodeString & operator=(UnicodeString StrCopy);
   UnicodeString & operator=(const RawByteString & StrCopy);
@@ -206,7 +205,7 @@ CUSTOM_MEM_ALLOCATION_IMPL
 public:
   AnsiString() {}
   AnsiString(const AnsiString & rhs);
-  AnsiString(intptr_t Length, char Ch) : Data(Ch, Length) {}
+  AnsiString(intptr_t Length, char Ch) : Data(Ch, (int)Length) {}
   explicit AnsiString(const wchar_t * Str);
   explicit AnsiString(const wchar_t * Str, intptr_t Length);
   explicit AnsiString(const wchar_t * Str, intptr_t Length, int CodePage);

@@ -37,14 +37,14 @@ public:
   explicit TSFTPFileSystem(TTerminal * ATerminal);
   virtual ~TSFTPFileSystem();
 
-  virtual void Init(void * Data /*TSecureShell* */);
-  virtual void FileTransferProgress(int64_t /*TransferSize*/, int64_t /*Bytes*/) {}
+  virtual void Init(void * Data /*TSecureShell* */) override;
+  virtual void FileTransferProgress(int64_t /*TransferSize*/, int64_t /*Bytes*/) override {}
 
-  virtual void Open();
-  virtual void Close();
-  virtual bool GetActive() const;
-  virtual void CollectUsage();
-  virtual void Idle();
+  virtual void Open() override;
+  virtual void Close() override;
+  virtual bool GetActive() const override;
+  virtual void CollectUsage() override;
+  virtual void Idle() override;
   virtual UnicodeString GetAbsolutePath(UnicodeString APath, bool Local) override;
   virtual UnicodeString GetAbsolutePath(UnicodeString APath, bool Local) const override;
   virtual void AnyCommand(UnicodeString Command,
@@ -193,7 +193,7 @@ protected:
   void SFTPConfirmOverwrite(UnicodeString ASourceFullFileName, UnicodeString & ATargetFileName,
     const TCopyParamType * CopyParam, intptr_t AParams, TFileOperationProgressType * OperationProgress,
     const TOverwriteFileParams * FileParams,
-    OUT TOverwriteMode & OverwriteMode);
+    TOverwriteMode & OverwriteMode);
   bool SFTPConfirmResume(UnicodeString DestFileName, bool PartialBiggerThanSource,
     TFileOperationProgressType * OperationProgress);
   void SFTPSinkRobust(UnicodeString AFileName,

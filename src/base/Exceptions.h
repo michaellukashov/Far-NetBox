@@ -40,7 +40,7 @@ public:
   explicit ExtException(UnicodeString Msg, UnicodeString MoreMessages, UnicodeString HelpKeyword = L"");
   explicit ExtException(TObjectClassId Kind, UnicodeString Msg, UnicodeString MoreMessages, UnicodeString HelpKeyword = L"");
   explicit ExtException(UnicodeString Msg, TStrings * MoreMessages, bool Own, UnicodeString HelpKeyword = L"");
-  virtual ~ExtException(void);
+  virtual ~ExtException() noexcept;
 #if 0
   __property TStrings* MoreMessages = {read=FMoreMessages};
   __property UnicodeString HelpKeyword = {read=FHelpKeyword};
@@ -90,7 +90,7 @@ private:
     explicit inline NAME(TObjectClassId Kind, UnicodeString Msg, intptr_t AHelpContext) : BASE(Kind, Msg, AHelpContext) {} \
     explicit inline NAME(UnicodeString Msg, intptr_t AHelpContext) : BASE(OBJECT_CLASS_##NAME, Msg, AHelpContext) {} \
     virtual inline ~NAME(void) {} \
-    virtual ExtException * Clone() const { return new NAME(this, L""); } \
+    virtual ExtException * Clone() const override { return new NAME(this, L""); } \
   };
 
 DERIVE_EXT_EXCEPTION(ESsh, ExtException)
@@ -138,7 +138,7 @@ public:
   bool GetReopenQueried() const { return FReopenQueried; }
   void SetReopenQueried(bool Value) { FReopenQueried = Value; }
 
-  virtual ExtException * Clone() const;
+  virtual ExtException * Clone() const override;
 
 private:
   void Init(const Exception * E);
@@ -153,7 +153,7 @@ private:
     virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_##NAME) || BASE::is(Kind); } \
   public: \
     explicit inline NAME(const Exception * E, UnicodeString Msg, UnicodeString HelpKeyword = L"") : BASE(OBJECT_CLASS_##NAME, E, Msg, HelpKeyword) {} \
-    virtual ExtException * Clone() const { return new NAME(this, L""); } \
+    virtual ExtException * Clone() const override { return new NAME(this, L""); } \
   };
 
 DERIVE_FATAL_EXCEPTION(ESshFatal, EFatal)
@@ -176,8 +176,8 @@ public:
   {
   }
 
-  virtual ExtException * Clone() const;
-  virtual void Rethrow();
+  virtual ExtException * Clone() const override;
+  virtual void Rethrow() override;
 
   TOnceDoneOperation Operation;
   UnicodeString TargetLocalPath;

@@ -50,8 +50,8 @@ public:
   void Load(THierarchicalStorage * Storage);
   void Save(THierarchicalStorage * Storage);
 
-  virtual void Default();
-  virtual void Assign(const TCopyParamType * Source);
+  virtual void Default() override;
+  virtual void Assign(const TCopyParamType * Source) override;
   TGUICopyParamType & operator=(const TGUICopyParamType & rhp);
   TGUICopyParamType & operator=(const TCopyParamType & rhp);
 
@@ -78,7 +78,7 @@ private:
   bool FQueueParallel;
 };
 
-struct TCopyParamRuleData : public TObject
+struct NB_CORE_EXPORT TCopyParamRuleData : public TObject
 {
   UnicodeString HostName;
   UnicodeString UserName;
@@ -127,7 +127,7 @@ public:
   bool GetEmpty() const;
 };
 
-class TLocaleInfo : public TObject
+class NB_CORE_EXPORT TLocaleInfo : public TObject
 {
 public:
   LCID Locale;
@@ -245,8 +245,8 @@ protected:
   LCID FLocale;
 
 public:
-  virtual void SaveData(THierarchicalStorage * Storage, bool All);
-  virtual void LoadData(THierarchicalStorage * Storage);
+  virtual void SaveData(THierarchicalStorage * Storage, bool All) override;
+  virtual void LoadData(THierarchicalStorage * Storage) override;
   virtual LCID GetLocale();
   void SetLocale(LCID Value);
   LCID GetLocaleSafe() { return GetLocale(); }
@@ -260,7 +260,7 @@ public:
   void AddLocale(LCID Locale, UnicodeString Name);
   void FreeResourceModule(HANDLE Instance);
   void SetDefaultCopyParam(const TGUICopyParamType & Value);
-  virtual bool GetRememberPassword() const;
+  virtual bool GetRememberPassword() const override;
   TCopyParamList * GetCopyParamList() const;
   void SetCopyParamList(const TCopyParamList * Value);
   virtual void DefaultLocalized();
@@ -271,7 +271,7 @@ public:
   void SetCopyParamIndex(intptr_t Value);
   void SetCopyParamCurrent(UnicodeString Value);
   void SetNewDirectoryProperties(const TRemoteProperties & Value);
-  virtual void Saved();
+  virtual void Saved() override;
   void SetQueueTransfersLimit(intptr_t Value);
   void SetQueueKeepDoneItems(bool Value);
   void SetQueueKeepDoneItemsFor(intptr_t Value);
@@ -289,8 +289,8 @@ public:
 public:
   TGUIConfiguration(TObjectClassId Kind);
   virtual ~TGUIConfiguration();
-  virtual void Default();
-  virtual void UpdateStaticUsage();
+  virtual void Default() override;
+  virtual void UpdateStaticUsage() override;
 
   HANDLE ChangeToDefaultResourceModule();
   HANDLE ChangeResourceModule(HANDLE Instance);

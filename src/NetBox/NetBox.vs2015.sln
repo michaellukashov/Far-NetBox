@@ -25,13 +25,13 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libneon.vs2015", "..\..\lib
 		{27250AA6-FED6-F96F-E32B-E8E9719F8FEB} = {27250AA6-FED6-F96F-E32B-E8E9719F8FEB}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libapr.vs2015", "..\..\libs\apr\build\libapr.vs2015.vcxproj", "{74BFD665-A62B-4745-8A2A-EE1A2A63CD08}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mfc.vs2015", "..\..\libs\atlmfc\mfc.vs2015.vcxproj", "{EC262402-898F-49D4-8599-850B0C19C1C6}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "dlmalloc.vs2015", "..\..\libs\dlmalloc\dlmalloc.vs2015.vcxproj", "{5423DD5F-C5F6-40A0-BA13-4B0DEB51D38E}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "rdestl.vs2015", "..\..\libs\rdestl\rdestl.vs2015.vcxproj", "{77BA777C-4766-4CA4-AA41-7C089679A948}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "fmt.vs2015", "..\..\libs\fmt\fmt.vs2015.vcxproj", "{D4974AF2-C241-491B-A257-C0B381494D6B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -121,6 +121,14 @@ Global
 		{77BA777C-4766-4CA4-AA41-7C089679A948}.Release|Win32.Build.0 = Release|Win32
 		{77BA777C-4766-4CA4-AA41-7C089679A948}.Release|x64.ActiveCfg = Release|x64
 		{77BA777C-4766-4CA4-AA41-7C089679A948}.Release|x64.Build.0 = Release|x64
+		{D4974AF2-C241-491B-A257-C0B381494D6B}.Debug|Win32.ActiveCfg = Debug|Win32
+		{D4974AF2-C241-491B-A257-C0B381494D6B}.Debug|Win32.Build.0 = Debug|Win32
+		{D4974AF2-C241-491B-A257-C0B381494D6B}.Debug|x64.ActiveCfg = Debug|x64
+		{D4974AF2-C241-491B-A257-C0B381494D6B}.Debug|x64.Build.0 = Debug|x64
+		{D4974AF2-C241-491B-A257-C0B381494D6B}.Release|Win32.ActiveCfg = Release|Win32
+		{D4974AF2-C241-491B-A257-C0B381494D6B}.Release|Win32.Build.0 = Release|Win32
+		{D4974AF2-C241-491B-A257-C0B381494D6B}.Release|x64.ActiveCfg = Release|x64
+		{D4974AF2-C241-491B-A257-C0B381494D6B}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

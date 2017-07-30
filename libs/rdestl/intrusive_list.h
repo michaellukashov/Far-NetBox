@@ -87,7 +87,7 @@ private:
 };
 
 //=============================================================================
-class intrusive_list_base
+class RDESTL_LIB intrusive_list_base
 {
 public:
 	typedef ::size_t	size_type;

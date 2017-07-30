@@ -11,6 +11,10 @@
 #include "putty.h"
 #include "misc.h"
 
+#ifdef USE_DLMALLOC
+#include <nbglobals.h>
+#endif
+
 /*
  * Parse a string block size specification. This is approximately a
  * subset of the block size specs supported by GNU fileutils:
@@ -806,7 +810,11 @@ void *safemalloc(size_t n, size_t size)
 #ifdef MINEFIELD
 	p = minefield_c_malloc(size);
 #else
-	p = malloc(size);
+#ifdef USE_DLMALLOC
+    p = nb_malloc(size);
+#else
+    p = malloc(size);
+#endif
 #endif
     }
 
@@ -841,13 +849,21 @@ void *saferealloc(void *ptr, size_t n, size_t size)
 #ifdef MINEFIELD
 	    p = minefield_c_malloc(size);
 #else
-	    p = malloc(size);
+#ifdef USE_DLMALLOC
+        p = nb_malloc(size);
+#else
+        p = malloc(size);
+#endif
 #endif
 	} else {
 #ifdef MINEFIELD
 	    p = minefield_c_realloc(ptr, size);
 #else
-	    p = realloc(ptr, size);
+#ifdef USE_DLMALLOC
+        p = nb_realloc(ptr, size);
+#else
+        p = realloc(ptr, size);
+#endif
 #endif
 	}
     }
@@ -881,7 +897,11 @@ void safefree(void *ptr)
 #ifdef MINEFIELD
 	minefield_c_free(ptr);
 #else
-	free(ptr);
+#ifdef USE_DLMALLOC
+    nb_free(ptr);
+#else
+    free(ptr);
+#endif
 #endif
     }
 #ifdef MALLOC_LOG
@@ -1222,6 +1242,9 @@ char *buildinfo(const char *newline)
     }
 #endif
 
+#if defined _WINDOWS && defined MINEFIELD
+    strbuf_catf(buf, "%sBuild option: MINEFIELD", newline);
+#endif
 #ifdef NO_SECURITY
     strbuf_catf(buf, "%sBuild option: NO_SECURITY", newline);
 #endif

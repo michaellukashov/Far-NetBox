@@ -145,7 +145,7 @@ UnicodeString ExtractFileName(UnicodeString APath, bool Unix)
   }
 }
 
-bool ExtractCommonPath(const TStrings * AFiles, OUT UnicodeString & APath)
+bool ExtractCommonPath(const TStrings * AFiles, UnicodeString & APath)
 {
   DebugAssert(AFiles->GetCount() > 0);
 
@@ -172,7 +172,7 @@ bool ExtractCommonPath(const TStrings * AFiles, OUT UnicodeString & APath)
   return Result;
 }
 
-bool UnixExtractCommonPath(const TStrings * const AFiles, OUT UnicodeString & APath)
+bool UnixExtractCommonPath(const TStrings * const AFiles, UnicodeString & APath)
 {
   DebugAssert(AFiles->GetCount() > 0);
 
@@ -424,12 +424,12 @@ UnicodeString UserModificationStr(const TDateTime & DateTime,
     case mfNone:
       return L"";
     case mfMDY:
-      return FORMAT(L"%3s %2d %2d", EngShortMonthNames[Month-1], Day, Year);
+      return FORMAT("%3s %2d %2d", EngShortMonthNames[Month-1], Day, Year);
     case mfMDHM:
-      return FORMAT(L"%3s %2d %2d:%2.2d",
+      return FORMAT("%3s %2d %2d:%2.2d",
         EngShortMonthNames[Month-1], Day, Hour, Min);
     case mfFull:
-      return FORMAT(L"%3s %2d %2d:%2.2d:%2.2d %4d",
+      return FORMAT("%3s %2d %2d:%2.2d:%2.2d %4d",
         EngShortMonthNames[Month-1], Day, Hour, Min, Sec, Year);
     default:
       DebugAssert(false);
@@ -449,10 +449,10 @@ UnicodeString ModificationStr(const TDateTime & DateTime,
       return L"";
 
     case mfMDY:
-      return FORMAT(L"%3s %2d %2d", EngShortMonthNames[Month-1], Day, Year);
+      return FORMAT("%3s %2d %2d", EngShortMonthNames[Month-1], Day, Year);
 
     case mfMDHM:
-      return FORMAT(L"%3s %2d %2d:%2.2d",
+      return FORMAT("%3s %2d %2d:%2.2d",
         EngShortMonthNames[Month-1], Day, Hour, Min);
 
     default:
@@ -460,7 +460,7 @@ UnicodeString ModificationStr(const TDateTime & DateTime,
       // fall thru
 
     case mfFull:
-      return FORMAT(L"%3s %2d %2d:%2.2d:%2.2d %4d",
+      return FORMAT("%3s %2d %2d:%2.2d:%2.2d %4d",
         EngShortMonthNames[Month-1], Day, Hour, Min, Sec, Year);
   }
 }
@@ -536,7 +536,7 @@ UnicodeString FormatMultiFilesToOneConfirmation(UnicodeString ATarget, bool Unix
     Name = ExtractFileName(ATarget, Unix);
     Path = ::IncludeTrailingBackslash(ATarget);
   }
-  return FMTLOAD(MULTI_FILES_TO_ONE, Name.c_str(), Dir.c_str(), Path.c_str());
+  return FMTLOAD(MULTI_FILES_TO_ONE, Name, Dir, Path);
 }
 
 #endif // #if 0
@@ -671,7 +671,7 @@ UnicodeString TRemoteToken::GetDisplayText() const
 
 UnicodeString TRemoteToken::GetLogText() const
 {
-  return FORMAT(L"\"%s\" [%d]", FName.c_str(), static_cast<int>(FID));
+  return FORMAT("\"%s\" [%d]", FName, static_cast<int>(FID));
 }
 
 
@@ -785,7 +785,7 @@ void TRemoteTokenList::Log(TTerminal * Terminal, const wchar_t * Title)
 {
   if (!FTokens.empty())
   {
-    Terminal->LogEvent(FORMAT(L"Following %s found:", Title));
+    Terminal->LogEvent(FORMAT("Following %s found:", Title));
     for (intptr_t Index = 0; Index < static_cast<intptr_t>(FTokens.size()); ++Index)
     {
       Terminal->LogEvent(UnicodeString(L"  ") + FTokens[Index].GetLogText());
@@ -793,7 +793,7 @@ void TRemoteTokenList::Log(TTerminal * Terminal, const wchar_t * Title)
   }
   else
   {
-    Terminal->LogEvent(FORMAT(L"No %s found.", Title));
+    Terminal->LogEvent(FORMAT("No %s found.", Title));
   }
 }
 
@@ -1234,143 +1234,172 @@ void TRemoteFile::SetListingStr(UnicodeString Value)
       else
       {
         bool DayMonthFormat = false;
-        // format dd mmm or mmm dd ?
-        Day = ::ToWord(::StrToIntDef(Col, 0));
-        if (Day > 0)
+        // format yyyy-mm-dd hh:mm:ss.ms ? // example: 2017-07-27 10:44:52.404136754 +0300 .
+        int Y, M, D;
+        int Filled =
+          swscanf(Col.c_str(), L"%04d-%02d-%02d", &Y, &M, &D);
+        if (Filled == 3)
         {
-          DayMonthFormat = true;
+          Year = Y;
+          Month = M;
+          Day = D;
           GetCol();
-        }
-        Month = 0;
-        auto Col2Month = [&]()
-        {
-          for (Word IMonth = 0; IMonth < 12; IMonth++)
-            if (!Col.CompareIC(EngShortMonthNames[IMonth]))
-            {
-              Month = IMonth;
-              Month++;
-              break;
-            }
-        };
-
-        Col2Month();
-        // if the column is not known month name, it may have been "yyyy-mm-dd"
-        // for --full-time format
-        if ((Month == 0) && (Col.Length() == 10) && (Col[5] == L'-') && (Col[8] == L'-'))
-        {
-          Year = ToWord(Col.SubString(1, 4).ToInt());
-          Month = ToWord(Col.SubString(6, 2).ToInt());
-          Day = ToWord(Col.SubString(9, 2).ToInt());
-          GetCol();
-          Hour = ToWord(Col.SubString(1, 2).ToInt());
-          Min = ToWord(Col.SubString(4, 2).ToInt());
-          if (Col.Length() >= 8)
+          int H, Mn, S, MS;
+          Filled =
+            swscanf(Col.c_str(), L"%02d:%02d:%02d.%d", &H, &Mn, &S, &MS);
+          if (Filled == 4)
           {
-            Sec = ToWord(::StrToInt64(Col.SubString(7, 2)));
+            Hour = H;
+            Min = Mn;
+            Sec = S;
+            FModificationFmt = mfFull;
+            // skip TZ (TODO)
+            // do not trim leading space of filename
+            GetNCol();
           }
-          else
-          {
-            Sec = 0;
-          }
-          FModificationFmt = mfFull;
-          // skip TZ (TODO)
-          // do not trim leading space of filename
-          GetNCol();
         }
         else
         {
-          bool FullTime = false;
-          // or it may have been day name for another format of --full-time
-          if (Month == 0)
+          // format dd mmm or mmm dd ?
+          Day = ::ToWord(::StrToIntDef(Col, 0));
+          if (Day > 0)
           {
+            DayMonthFormat = true;
             GetCol();
-            Col2Month();
-            // neither standard, not --full-time format
-            if (Month == 0)
+          }
+          Month = 0;
+          auto Col2Month = [&]()
+          {
+            for (Word IMonth = 0; IMonth < 12; IMonth++)
+              if (!Col.CompareIC(EngShortMonthNames[IMonth]))
+              {
+                Month = IMonth;
+                Month++;
+                break;
+              }
+          };
+
+          Col2Month();
+          // if the column is not known month name, it may have been "yyyy-mm-dd"
+          // for --full-time format
+          if ((Month == 0) && (Col.Length() == 10) && (Col[5] == L'-') && (Col[8] == L'-'))
+          {
+            Year = ToWord(Col.SubString(1, 4).ToInt());
+            Month = ToWord(Col.SubString(6, 2).ToInt());
+            Day = ToWord(Col.SubString(9, 2).ToInt());
+            GetCol();
+            Hour = ToWord(Col.SubString(1, 2).ToInt());
+            Min = ToWord(Col.SubString(4, 2).ToInt());
+            if (Col.Length() >= 8)
             {
-              Abort();
+              Sec = ToWord(::StrToInt64(Col.SubString(7, 2)));
             }
             else
             {
-              FullTime = true;
+              Sec = 0;
             }
-          }
-
-          if (Day == 0)
-          {
-            GetNCol();
-            Day = ToWord(::StrToInt64(Col));
-          }
-          if ((Day < 1) || (Day > 31))
-          {
-            Abort();
-          }
-
-          // second full-time format
-          // ddd mmm dd hh:nn:ss yyyy
-          if (FullTime)
-          {
-            GetCol();
-            if (Col.Length() != 8)
-            {
-              Abort();
-            }
-            Hour = ToWord(::StrToInt64(Col.SubString(1, 2)));
-            Min = ToWord(::StrToInt64(Col.SubString(4, 2)));
-            Sec = ToWord(::StrToInt64(Col.SubString(7, 2)));
             FModificationFmt = mfFull;
+            // skip TZ (TODO)
             // do not trim leading space of filename
             GetNCol();
-            Year = ToWord(::StrToInt64(Col));
           }
           else
           {
-            // for format dd mmm the below description seems not to be true,
-            // the year is not aligned to 5 characters
-            if (DayMonthFormat)
+            bool FullTime = false;
+            // or it may have been day name for another format of --full-time
+            if (Month == 0)
             {
               GetCol();
-            }
-            else
-            {
-              // Time/Year indicator is always 5 characters long (???), on most
-              // systems year is aligned to right (_YYYY), but on some to left (YYYY_),
-              // we must ensure that trailing space is also deleted, so real
-              // separator space is not treated as part of file name
-              Col = Line.SubString(1, 6).Trim();
-              Line.Delete(1, 6);
-            }
-            // GetNCol(); // We don't want to trim input strings (name with space at beginning???)
-            // Check if we got time (contains :) or year
-            intptr_t P;
-            if ((P = ToWord(Col.Pos(L':'))) > 0)
-            {
-              Hour = ToWord(::StrToInt64(Col.SubString(1, P - 1)));
-              Min = ToWord(::StrToInt64(Col.SubString(P + 1, Col.Length() - P)));
-              if ((Hour > 23) || (Min > 59))
-                Abort();
-              // When we don't got year, we assume current year
-              // with exception that the date would be in future
-              // in this case we assume last year.
-              ::DecodeDate(::Date(), Year, CurrMonth, CurrDay);
-              if ((Month > CurrMonth) ||
-                  (Month == CurrMonth && Day > CurrDay))
+              Col2Month();
+              // neither standard, not --full-time format
+              if (Month == 0)
               {
-                Year--;
+                Abort();
               }
-              Sec = 0;
-              FModificationFmt = mfMDHM;
+              else
+              {
+                FullTime = true;
+              }
+            }
+
+            if (Day == 0)
+            {
+              GetNCol();
+              Day = ToWord(::StrToInt64(Col));
+            }
+            if ((Day < 1) || (Day > 31))
+            {
+              Abort();
+            }
+
+            // second full-time format
+            // ddd mmm dd hh:nn:ss yyyy
+            if (FullTime)
+            {
+              GetCol();
+              if (Col.Length() != 8)
+              {
+                Abort();
+              }
+              Hour = ToWord(::StrToInt64(Col.SubString(1, 2)));
+              Min = ToWord(::StrToInt64(Col.SubString(4, 2)));
+              Sec = ToWord(::StrToInt64(Col.SubString(7, 2)));
+              FModificationFmt = mfFull;
+              // do not trim leading space of filename
+              GetNCol();
+              Year = ToWord(::StrToInt64(Col));
             }
             else
             {
-              Year = ToWord(::StrToInt64(Col));
-              if (Year > 10000)
-                Abort();
-              // When we don't got time we assume midnight
-              Hour = 0;
-              Min = 0;
-              Sec = 0;
-              FModificationFmt = mfMDY;
+              // for format dd mmm the below description seems not to be true,
+              // the year is not aligned to 5 characters
+              if (DayMonthFormat)
+              {
+                GetCol();
+              }
+              else
+              {
+                // Time/Year indicator is always 5 characters long (???), on most
+                // systems year is aligned to right (_YYYY), but on some to left (YYYY_),
+                // we must ensure that trailing space is also deleted, so real
+                // separator space is not treated as part of file name
+                Col = Line.SubString(1, 6).Trim();
+                Line.Delete(1, 6);
+              }
+            }
+            {
+              // GetNCol(); // We don't want to trim input strings (name with space at beginning???)
+              // Check if we got time (contains :) or year
+              intptr_t P;
+              if ((P = ToWord(Col.Pos(L':'))) > 0)
+              {
+                Hour = ToWord(::StrToInt64(Col.SubString(1, P - 1)));
+                Min = ToWord(::StrToInt64(Col.SubString(P + 1, Col.Length() - P)));
+                if ((Hour > 23) || (Min > 59))
+                  Abort();
+                // When we don't got year, we assume current year
+                // with exception that the date would be in future
+                // in this case we assume last year.
+                ::DecodeDate(::Date(), Year, CurrMonth, CurrDay);
+                if ((Month > CurrMonth) ||
+                    (Month == CurrMonth && Day > CurrDay))
+                {
+                  Year--;
+                }
+                Sec = 0;
+                FModificationFmt = mfMDHM;
+              }
+              else
+              {
+                Year = ToWord(::StrToInt64(Col));
+                if (Year > 10000)
+                  Abort();
+                // When we don't got time we assume midnight
+                Hour = 0;
+                Min = 0;
+                Sec = 0;
+                FModificationFmt = mfMDY;
+              }
             }
           }
         }
@@ -1421,7 +1450,7 @@ void TRemoteFile::SetListingStr(UnicodeString Value)
   }
   catch (Exception & E)
   {
-    throw ETerminal(&E, FMTLOAD(LIST_LINE_ERROR, Value.c_str()), HELP_LIST_LINE_ERROR);
+    throw ETerminal(&E, FMTLOAD(LIST_LINE_ERROR, Value), HELP_LIST_LINE_ERROR);
   }
 }
 
@@ -1513,11 +1542,11 @@ UnicodeString TRemoteFile::GetListingStr() const
   {
     LinkPart = UnicodeString(SYMLINKSTR) + GetLinkTo();
   }
-  return FORMAT(L"%s%s %3s %-8s %-8s %9s %-12s %s%s",
-    GetType(), GetRights()->GetText().c_str(), ::Int64ToStr(FINodeBlocks).c_str(), GetFileOwner().GetName().c_str(), GetFileGroup().GetName().c_str(),
-    ::Int64ToStr(GetSize()).c_str(), // explicitly using size even for directories
-    GetModificationStr().c_str(), GetFileName().c_str(),
-    LinkPart.c_str());
+  return FORMAT("%s%s %3s %-8s %-8s %9s %-12s %s%s",
+    GetType(), GetRights()->GetText(), ::Int64ToStr(FINodeBlocks), GetFileOwner().GetName(), GetFileGroup().GetName(),
+    ::Int64ToStr(GetSize()),  // explicitly using size even for directories
+    GetModificationStr(), GetFileName(),
+    LinkPart);
 }
 
 UnicodeString TRemoteFile::GetFullFileName() const
@@ -1840,14 +1869,14 @@ void TRemoteDirectory::SetIncludeThisDirectory(Boolean Value)
 
 TRemoteDirectoryCache::TRemoteDirectoryCache() : TStringList()
 {
-  SetSorted(true);
+  TStringList::SetSorted(true);
   SetDuplicates(dupError);
-  SetCaseSensitive(true);
+  TStringList::SetCaseSensitive(true);
 }
 
 TRemoteDirectoryCache::~TRemoteDirectoryCache()
 {
-  Clear();
+  TRemoteDirectoryCache::Clear();
 }
 
 void TRemoteDirectoryCache::Clear()
@@ -2325,7 +2354,7 @@ void TRights::SetText(UnicodeString Value)
         (!GetAllowUndef() && (Value.Pos(UndefSymbol) > 0)) ||
         (Value.Pos(L" ") > 0))
     {
-      throw Exception(FMTLOAD(RIGHTS_ERROR, Value.c_str()));
+      throw Exception(FMTLOAD(RIGHTS_ERROR, Value));
     }
 
     FSet = 0;
@@ -2452,7 +2481,7 @@ void TRights::SetOctal(UnicodeString AValue)
 
     if (!Correct)
     {
-      throw Exception(FMTLOAD(INVALID_OCTAL_PERMISSIONS, AValue.c_str()));
+      throw Exception(FMTLOAD(INVALID_OCTAL_PERMISSIONS, AValue));
     }
 
     SetNumber(static_cast<uint16_t>(

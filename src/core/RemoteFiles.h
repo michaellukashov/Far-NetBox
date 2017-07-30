@@ -327,7 +327,7 @@ private:
   Boolean FIncludeParentDirectory;
   Boolean FIncludeThisDirectory;
 public:
-  virtual void SetDirectory(UnicodeString Value);
+  virtual void SetDirectory(UnicodeString Value) override;
   Boolean GetLoaded() const;
   void SetIncludeParentDirectory(Boolean Value);
   void SetIncludeThisDirectory(Boolean Value);
@@ -335,9 +335,9 @@ public:
 public:
   explicit TRemoteDirectory(TTerminal * ATerminal, TRemoteDirectory * Template = nullptr);
   virtual ~TRemoteDirectory();
-  virtual void AddFile(TRemoteFile * AFile);
-  virtual void DuplicateTo(TRemoteFileList * Copy) const;
-  virtual void Reset();
+  virtual void AddFile(TRemoteFile * AFile) override;
+  virtual void DuplicateTo(TRemoteFileList * Copy) const override;
+  virtual void Reset() override;
 #if 0
   __property TTerminal * Terminal = { read = FTerminal, write = FTerminal };
   __property Boolean IncludeParentDirectory = { read = FIncludeParentDirectory, write = SetIncludeParentDirectory };
@@ -639,8 +639,8 @@ NB_CORE_EXPORT UnicodeString UnixExtractFileName(UnicodeString APath);
 NB_CORE_EXPORT UnicodeString UnixExtractFileExt(UnicodeString APath);
 NB_CORE_EXPORT Boolean UnixSamePath(UnicodeString APath1, UnicodeString APath2);
 NB_CORE_EXPORT bool UnixIsChildPath(UnicodeString AParent, UnicodeString AChild);
-NB_CORE_EXPORT bool ExtractCommonPath(const TStrings * AFiles, OUT UnicodeString & APath);
-NB_CORE_EXPORT bool UnixExtractCommonPath(const TStrings * AFiles, OUT UnicodeString & APath);
+NB_CORE_EXPORT bool ExtractCommonPath(const TStrings * AFiles, UnicodeString & APath);
+NB_CORE_EXPORT bool UnixExtractCommonPath(const TStrings * AFiles, UnicodeString & APath);
 NB_CORE_EXPORT UnicodeString ExtractFileName(UnicodeString APath, bool Unix);
 NB_CORE_EXPORT bool IsUnixRootPath(UnicodeString APath);
 NB_CORE_EXPORT bool IsUnixHiddenFile(UnicodeString APath);

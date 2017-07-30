@@ -317,7 +317,7 @@ static void ExecuteProcessAndReadOutput(const
     if (!CreatePipe(&PipeRead, &PipeWrite, &SecurityAttributes, 0) ||
         !SetHandleInformation(PipeRead, HANDLE_FLAG_INHERIT, 0))
     {
-      throw EOSExtException(FMTLOAD(EXECUTE_APP_ERROR, (Command)));
+      throw EOSExtException(FMTLOAD(EXECUTE_APP_ERROR, Command));
     }
 
     PROCESS_INFORMATION ProcessInformation;
@@ -337,7 +337,7 @@ static void ExecuteProcessAndReadOutput(const
 
         if (!CreateProcess(NULL, Command.c_str(), NULL, NULL, TRUE, 0, NULL, NULL, &StartupInfo, &ProcessInformation))
         {
-          throw EOSExtException(FMTLOAD(EXECUTE_APP_ERROR, (Command)));
+          throw EOSExtException(FMTLOAD(EXECUTE_APP_ERROR, Command));
         }
       }
       __finally
@@ -427,7 +427,7 @@ void ExecuteNewInstance(UnicodeString Param)
   UnicodeString Arg = Param;
   if (!Arg.IsEmpty())
   {
-    Arg = FORMAT(L"\"%s\" %s", (Arg, TProgramParams::FormatSwitch(NEWINSTANCE_SWICH)));
+    Arg = FORMAT(L"\"%s\" %s", Arg, TProgramParams::FormatSwitch(NEWINSTANCE_SWICH));
   }
 
   ExecuteShellChecked(Application->ExeName, Arg);
@@ -542,7 +542,7 @@ IShellLink * CreateDesktopSessionShortCut(
   {
     InfoTip = FMTLOAD(
       (IsFolder ? SHORTCUT_INFO_TIP_FOLDER : SHORTCUT_INFO_TIP_WORKSPACE),
-      (SessionName));
+      SessionName);
 
     if (Name.IsEmpty())
     {
@@ -556,7 +556,7 @@ IShellLink * CreateDesktopSessionShortCut(
     TSessionData * SessionData =
       StoredSessions->ParseUrl(EncodeUrlString(SessionName), NULL, DefaultsOnly);
     InfoTip =
-      FMTLOAD(SHORTCUT_INFO_TIP, (SessionName, SessionData->InfoTip));
+      FMTLOAD(SHORTCUT_INFO_TIP, SessionName, SessionData->InfoTip);
     if (Name.IsEmpty())
     {
       // no slashes in filename
@@ -567,7 +567,7 @@ IShellLink * CreateDesktopSessionShortCut(
 
   return
     CreateDesktopShortCut(ValidLocalFileName(Name), Application->ExeName,
-      FORMAT(L"\"%s\"%s%s", (EncodeUrlString(SessionName), (AdditionalParams.IsEmpty() ? L"" : L" "), AdditionalParams)),
+      FORMAT(L"\"%s\"%s%s", EncodeUrlString(SessionName), (AdditionalParams.IsEmpty() ? L"" : L" "), AdditionalParams),
       InfoTip, SpecialFolder, IconIndex, Return);
 }
 
@@ -662,7 +662,7 @@ void OpenFolderInExplorer(UnicodeString Path)
   if ((int)ShellExecute(Application->Handle, L"explore",
       (wchar_t*)Path.data(), NULL, NULL, SW_SHOWNORMAL) <= 32)
   {
-    throw Exception(FMTLOAD(EXPLORE_LOCAL_DIR_ERROR, (Path)));
+    throw Exception(FMTLOAD(EXPLORE_LOCAL_DIR_ERROR, Path));
   }
 }
 
@@ -678,7 +678,7 @@ void ShowHelp(UnicodeString AHelpKeyword)
   UnicodeString HelpKeyword = AHelpKeyword;
   const wchar_t FragmentSeparator = L'#';
   UnicodeString HelpPath = CutToChar(HelpKeyword, FragmentSeparator, false);
-  UnicodeString HelpUrl = FMTLOAD(DOCUMENTATION_KEYWORD_URL2, (HelpPath, Configuration->ProductVersion, GUIConfiguration->AppliedLocaleHex));
+  UnicodeString HelpUrl = FMTLOAD(DOCUMENTATION_KEYWORD_URL2, HelpPath, Configuration->ProductVersion, GUIConfiguration->AppliedLocaleHex);
   AddToList(HelpUrl, HelpKeyword, FragmentSeparator);
   OpenBrowser(HelpUrl);
 }
@@ -757,19 +757,19 @@ static bool GetResource(
     Size = SizeofResource(HInstance, Resource);
     if (!Size)
     {
-      throw Exception(FORMAT(L"Cannot get size of resource %s", (ResName)));
+      throw Exception(FORMAT(L"Cannot get size of resource %s", ResName));
     }
 
     Content = LoadResource(HInstance, Resource);
     if (!Content)
     {
-      throw Exception(FORMAT(L"Cannot read resource %s", (ResName)));
+      throw Exception(FORMAT(L"Cannot read resource %s", ResName));
     }
 
     Content = LockResource(Content);
     if (!Content)
     {
-      throw Exception(FORMAT(L"Cannot lock resource %s", (ResName)));
+      throw Exception(FORMAT(L"Cannot lock resource %s", ResName));
     }
   }
 
@@ -788,11 +788,11 @@ bool DumpResourceToFile(const UnicodeString ResName,
     FILE * f = _wfopen(ApiPath(FileName).c_str(), L"wb");
     if (!f)
     {
-      throw Exception(FORMAT(L"Cannot create file %s", (FileName)));
+      throw Exception(FORMAT(L"Cannot create file %s", FileName));
     }
     if (fwrite(Content, 1, Size, f) != Size)
     {
-      throw Exception(FORMAT(L"Cannot write to file %s", (FileName)));
+      throw Exception(FORMAT(L"Cannot write to file %s", FileName));
     }
     fclose(f);
   }
@@ -1130,7 +1130,7 @@ static void ConvertKey(UnicodeString & FileName, TKeyType Type)
   {
     if (!InputDialog(
       LoadStr(PASSPHRASE_TITLE),
-      FORMAT(LoadStr(PROMPT_KEY_PASSPHRASE).c_str(), Comment.c_str()),
+      FORMAT(LoadStr(PROMPT_KEY_PASSPHRASE), Comment),
       Passphrase, HELP_NONE, nullptr, false, nullptr, false))
     {
       Abort();
@@ -1154,7 +1154,7 @@ static void ConvertKey(UnicodeString & FileName, TKeyType Type)
 
     SaveKey(ktSSH2, FileName, Passphrase, PrivateKey);
 
-    MessageDialog(MainInstructions(FMTLOAD(CONVERTKEY_SAVED, FileName.c_str())), qtInformation, qaOK);
+    MessageDialog(MainInstructions(FMTLOAD(CONVERTKEY_SAVED, FileName)), qtInformation, qaOK);
   }
   __finally
   {
@@ -1184,12 +1184,12 @@ static void DoVerifyKey(
       case ktSSHCom:
         {
           UnicodeString TypeName = ((Type == ktOpenSSHPEM) || (Type == ktOpenSSHNew)) ? L"OpenSSH" : L"ssh.com";
-          Message = FMTLOAD(KEY_TYPE_UNSUPPORTED2, AFileName.c_str(), TypeName.c_str());
+          Message = FMTLOAD(KEY_TYPE_UNSUPPORTED2, AFileName, TypeName);
 
           if (Convert)
           {
             // Configuration->Usage->Inc(L"PrivateKeyConvertSuggestionsNative");
-            UnicodeString ConvertMessage = FMTLOAD(KEY_TYPE_CONVERT3, TypeName.c_str(), RemoveMainInstructionsTag(Message).c_str());
+            UnicodeString ConvertMessage = FMTLOAD(KEY_TYPE_CONVERT3, TypeName, RemoveMainInstructionsTag(Message));
             Message = UnicodeString();
             if (MoreMessageDialog(ConvertMessage, nullptr, qtConfirmation, qaOK | qaCancel, HelpKeyword) == qaOK)
             {
@@ -1215,7 +1215,7 @@ static void DoVerifyKey(
           Message =
             MainInstructions(
               FMTLOAD(KEY_TYPE_DIFFERENT_SSH,
-                AFileName.c_str(), (Type == ktSSH1 ? L"SSH-1" : L"PuTTY SSH-2")));
+                AFileName, Type == ktSSH1 ? L"SSH-1" : L"PuTTY SSH-2"));
         }
         break;
 
@@ -1227,7 +1227,7 @@ static void DoVerifyKey(
         break;
 
       case ktUnopenable:
-        Message = MainInstructions(FMTLOAD(KEY_TYPE_UNOPENABLE, AFileName.c_str()));
+        Message = MainInstructions(FMTLOAD(KEY_TYPE_UNOPENABLE, AFileName));
         if (Error != ERROR_SUCCESS)
         {
           MoreMessages.reset(TextToStringList(SysErrorMessageForError(Error)));
@@ -1238,7 +1238,7 @@ static void DoVerifyKey(
         DebugFail();
         // fallthru
       case ktUnknown:
-        Message = MainInstructions(FMTLOAD(KEY_TYPE_UNKNOWN2, AFileName.c_str()));
+        Message = MainInstructions(FMTLOAD(KEY_TYPE_UNKNOWN2, AFileName));
         break;
     }
 

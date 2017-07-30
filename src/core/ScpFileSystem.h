@@ -17,14 +17,14 @@ public:
   explicit TSCPFileSystem(TTerminal * ATerminal);
   virtual ~TSCPFileSystem();
 
-  virtual void Init(void * /*TSecureShell * */);
-  virtual void FileTransferProgress(int64_t /*TransferSize*/, int64_t /*Bytes*/) {}
+  virtual void Init(void * /*TSecureShell * */) override;
+  virtual void FileTransferProgress(int64_t /*TransferSize*/, int64_t /*Bytes*/) override {}
 
-  virtual void Open();
-  virtual void Close();
-  virtual bool GetActive() const;
-  virtual void CollectUsage();
-  virtual void Idle();
+  virtual void Open() override;
+  virtual void Close() override;
+  virtual bool GetActive() const override;
+  virtual void CollectUsage() override;
+  virtual void Idle() override;
   virtual UnicodeString GetAbsolutePath(UnicodeString APath, bool Local) override;
   virtual UnicodeString GetAbsolutePath(UnicodeString APath, bool Local) const override;
   virtual void AnyCommand(UnicodeString Command,
@@ -113,9 +113,11 @@ private:
   bool IsLastLine(UnicodeString & Line);
   static bool IsTotalListingLine(UnicodeString Line);
   void EnsureLocation();
-  void ExecCommand2(UnicodeString Cmd, intptr_t Params,
-    UnicodeString CmdString);
-  void ExecCommand(TFSCommand Cmd, intptr_t Params, ...);
+  void ExecCommand(TFSCommand Cmd, intptr_t Params, fmt::ArgList args);
+  FMT_VARIADIC_W(void, ExecCommand, TFSCommand, intptr_t)
+
+  void ExecCommand(const UnicodeString & Cmd, intptr_t Params,
+    const UnicodeString & CmdString);
 #if 0
   void ExecCommand(TFSCommand Cmd, const TVarRec * args = nullptr,
     int size = 0, int Params = -1);

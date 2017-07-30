@@ -1,7 +1,9 @@
 #include <vcl.h>
 #pragma hdrstop
 
+#ifndef PUTTY_DO_GLOBALS
 #define PUTTY_DO_GLOBALS
+#endif
 #include <Exceptions.h>
 #include <StrUtils.hpp>
 
@@ -75,7 +77,7 @@ void DontSaveRandomSeed()
 
 extern "C" char * do_select(Plug plug, SOCKET skt, int startup)
 {
-  void * frontend = nullptr;
+  void * frontend;
 
   if (!is_ssh(plug) && !is_pfwd(plug))
   {
@@ -282,7 +284,7 @@ int askhk(void * /*frontend*/, const char * /*algname*/, const char * /*betteral
   return 1;
 }
 
-void old_keyfile_warning(void)
+void old_keyfile_warning()
 {
   // no reference to TSecureShell instance available
 }
@@ -670,7 +672,7 @@ void SaveKey(TKeyType KeyType, UnicodeString FileName,
     if (!ssh2_save_userkey(KeyFile, Ssh2Key, PassphrasePtr))
     {
       intptr_t Error = errno;
-      throw EOSExtException(FMTLOAD(KEY_SAVE_ERROR, FileName.c_str()), Error);
+      throw EOSExtException(FMTLOAD(KEY_SAVE_ERROR, FileName), Error);
     }
     break;
 

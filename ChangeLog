@@ -1,5 +1,9 @@
-NetBox 2.4.4.513 16.07.2017
+NetBox 2.4.4.518 29.07.2017
 --------------------
+  * Issue #246: SCP: check unusual listing format 
+    (https://github.com/michaellukashov/Far-NetBox/issues/246)
+  * FTP: use QUIT to disconnect from server
+  * Update expat sources to 2.2.2
   * Fix AV after reopen connection
 
 NetBox 2.4.3.512 09.07.2017

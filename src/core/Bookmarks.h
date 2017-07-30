@@ -60,7 +60,7 @@ public:
   void Delete(TBookmark *& Bookmark);
   TBookmark * FindByName(UnicodeString Node, UnicodeString Name) const;
   TBookmark * FindByShortCut(const TShortCut & ShortCut);
-  virtual void Assign(const TPersistent * Source);
+  virtual void Assign(const TPersistent * Source) override;
   void LoadOptions(THierarchicalStorage * Storage);
   void SaveOptions(THierarchicalStorage * Storage) const;
   void ShortCuts(TShortCuts & ShortCuts);
@@ -103,7 +103,7 @@ public:
 public:
   TBookmark();
 
-  virtual void Assign(const TPersistent * Source);
+  virtual void Assign(const TPersistent * Source) override;
 
 #if 0
   __property UnicodeString Name = { read = FName, write = SetName };

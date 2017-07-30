@@ -660,10 +660,10 @@ public:
 
 protected:
   virtual void Prompt(intptr_t Index, UnicodeString Prompt,
-    UnicodeString & Value) const;
+    UnicodeString & Value) const override;
   virtual void Execute(UnicodeString Command,
     UnicodeString & Value) const override;
-  virtual void PatternHint(intptr_t Index, UnicodeString Pattern);
+  virtual void PatternHint(intptr_t Index, UnicodeString Pattern) override;
 
 private:
   UnicodeString FCustomCommandName;

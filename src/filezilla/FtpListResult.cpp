@@ -2392,7 +2392,7 @@ BOOL CFtpListResult::parseAsOther(const char *line, const int linelen, t_directo
         {
           direntry.dir = TRUE;
           tokenlen -= 5;
-          while (tokenlen && str[tokenlen - 1] == ' ' || str[tokenlen - 1] == '\t')
+          while (tokenlen && (str[tokenlen - 1] == ' ' || str[tokenlen - 1] == '\t'))
             tokenlen--;
         }
         if (!tokenlen)
@@ -3140,7 +3140,7 @@ bool CFtpListResult::ParseSize(const char *str, int len, int64_t &size) const
       return false;
   }
 
-  // Check for digit before or after delimiterr
+  // Check for digit before or after delimiter
   if (!delimiter || delimiter == len)
     return false;
 

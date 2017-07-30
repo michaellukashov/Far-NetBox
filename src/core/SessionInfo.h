@@ -66,7 +66,7 @@ CUSTOM_MEM_ALLOCATION_IMPL
   bool IsCapable[fcCount];
 };
 
-class TSessionUI : public TObject
+class NB_CORE_EXPORT TSessionUI : public TObject
 {
 public:
   static inline bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TSessionUI); }
