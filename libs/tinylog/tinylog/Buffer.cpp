@@ -5,16 +5,15 @@
 
 namespace tinylog {
 
-Buffer::Buffer(uint32_t l_capacity)
+Buffer::Buffer(uint32_t l_capacity) :
+  l_size_(0),
+  l_capacity_(l_capacity)
 {
   pt_data_ = nb::chcalloc(l_capacity);
-  l_size_ = 0;
-  l_capacity_ = l_capacity;
 }
 
 Buffer::~Buffer()
 {
-  // TODO: custom allocator/deallocator
   nb_free(pt_data_);
 }
 
