@@ -1656,7 +1656,9 @@ target_compile_options(testnetbox_01 PRIVATE
   ${NETBOX_UNICODE_FLAGS}
 )
 
-target_link_libraries(testnetbox_01 ${NETBOX_LIBRARIES})
+target_link_libraries(testnetbox_01  PRIVATE
+  ${NETBOX_LIBRARIES}
+)
 
 #-------------------------------------------------------
 # target testnetbox_02
@@ -1685,7 +1687,9 @@ set_target_properties(testnetbox_02
   LINK_FLAGS "${CMAKE_LINK_FLAGS} /ignore:4099 /verbose:lib"
 )
 
-target_link_libraries(testnetbox_02 ${NETBOX_LIBRARIES})
+target_link_libraries(testnetbox_02 PRIVATE
+  ${NETBOX_LIBRARIES}
+)
 
 #-------------------------------------------------------
 # target testnetbox_03
@@ -1714,7 +1718,9 @@ target_compile_options(testnetbox_03 PRIVATE
   ${NETBOX_UNICODE_FLAGS}
 )
 
-target_link_libraries(testnetbox_03 ${NETBOX_LIBRARIES})
+target_link_libraries(testnetbox_03 PRIVATE
+  ${NETBOX_LIBRARIES}
+)
 
 #-------------------------------------------------------
 # target testnetbox_04
@@ -1748,7 +1754,8 @@ target_compile_options(testnetbox_04 PRIVATE
 #  calculator_dll
 #)
 
-target_link_libraries(testnetbox_04 ${NETBOX_LIBRARIES}
+target_link_libraries(testnetbox_04 PRIVATE
+  ${NETBOX_LIBRARIES}
 )
 
 endif(OPT_COMPILE_TESTS)
