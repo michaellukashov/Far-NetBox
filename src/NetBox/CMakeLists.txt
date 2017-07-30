@@ -1606,7 +1606,6 @@ set(test_includes
   ../../libs/openssl/${OPENSSL_INC_DIR}/include
   ../../libs/putty
   ../../libs/putty/windows
-  ../../libs/apr/include
   ../../libs/tinyxml2
   ../../libs/rdestl
   ../../libs/atlmfc/include
@@ -1693,7 +1692,6 @@ add_dependencies(testnetbox_02
   putty
   tinyxml2
   neon
-  apr
   expat
   zlib
 )
@@ -1731,7 +1729,6 @@ add_dependencies(testnetbox_03
   putty
   tinyxml2
   neon
-  apr
   expat
   zlib
 )
