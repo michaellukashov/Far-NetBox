@@ -1391,6 +1391,7 @@ set(NETBOX_SOURCES
   ../base/MsgIDs.h
   ../base/vcl.h
   ../base/FileBuffer.h
+  ../base/FormatUtils.h
   ../base/ObjIDs.h
 
   ../core/WebDAVFileSystem.h
@@ -1611,6 +1612,8 @@ set(test_includes
   ../../libs/atlmfc/include
   ../../libs/neon/src
   ../../libs/expat/lib
+  ../../libs/fmt
+  ../../libs/tinylog
   ../filezilla
   ../filezilla/misc
   ../base
@@ -1638,6 +1641,7 @@ set(TESTNETBOX_01_SOURCES
   ../base/Common.cpp
   ../base/Exceptions.cpp
   ../base/FileBuffer.cpp
+  ../base/FormatUtils.cpp
   ../../tests/testnetbox_01.cpp
 )
 
@@ -1656,6 +1660,8 @@ add_dependencies(testnetbox_01
   atlmfc
   putty
   tinyxml2
+  fmt
+  tinylog
 )
 
 target_link_libraries(testnetbox_01 ${NETBOX_LIBRARIES})
@@ -1691,6 +1697,8 @@ add_dependencies(testnetbox_02
   atlmfc
   putty
   tinyxml2
+  fmt
+  tinylog
   neon
   expat
   zlib
@@ -1728,6 +1736,8 @@ target_compile_options(testnetbox_03 PRIVATE
 add_dependencies(testnetbox_03
   putty
   tinyxml2
+  fmt
+  tinylog
   neon
   expat
   zlib
@@ -1768,6 +1778,13 @@ target_compile_options(testnetbox_04 PRIVATE
 #)
 
 target_link_libraries(testnetbox_04 ${NETBOX_LIBRARIES}
+  putty
+  tinyxml2
+  fmt
+  tinylog
+#  neon
+#  expat
+#  zlib
 )
 
 endif(OPT_COMPILE_TESTS)
