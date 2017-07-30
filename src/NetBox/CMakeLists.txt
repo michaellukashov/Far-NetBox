@@ -1656,14 +1656,6 @@ target_compile_options(testnetbox_01 PRIVATE
   ${NETBOX_UNICODE_FLAGS}
 )
 
-add_dependencies(testnetbox_01
-  atlmfc
-  putty
-  tinyxml2
-  fmt
-  tinylog
-)
-
 target_link_libraries(testnetbox_01 ${NETBOX_LIBRARIES})
 
 #-------------------------------------------------------
@@ -1693,17 +1685,6 @@ set_target_properties(testnetbox_02
   LINK_FLAGS "${CMAKE_LINK_FLAGS} /ignore:4099 /verbose:lib"
 )
 
-add_dependencies(testnetbox_02
-  atlmfc
-  putty
-  tinyxml2
-  fmt
-  tinylog
-  neon
-  expat
-  zlib
-)
-
 target_link_libraries(testnetbox_02 ${NETBOX_LIBRARIES})
 
 #-------------------------------------------------------
@@ -1731,16 +1712,6 @@ set_target_properties(testnetbox_03
 target_compile_options(testnetbox_03 PRIVATE
   -D_CRT_SECURE_NO_WARNINGS -D_CRT_NON_CONFORMING_SWPRINTFS
   ${NETBOX_UNICODE_FLAGS}
-)
-
-add_dependencies(testnetbox_03
-  putty
-  tinyxml2
-  fmt
-  tinylog
-  neon
-  expat
-  zlib
 )
 
 target_link_libraries(testnetbox_03 ${NETBOX_LIBRARIES})
@@ -1778,13 +1749,6 @@ target_compile_options(testnetbox_04 PRIVATE
 #)
 
 target_link_libraries(testnetbox_04 ${NETBOX_LIBRARIES}
-  putty
-  tinyxml2
-  fmt
-  tinylog
-#  neon
-#  expat
-#  zlib
 )
 
 endif(OPT_COMPILE_TESTS)
