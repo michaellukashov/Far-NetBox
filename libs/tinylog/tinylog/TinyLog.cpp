@@ -1,6 +1,8 @@
 #include "TinyLog.h"
 #include "Config.h"
 
+#include "platform_win32.h"
+
 namespace tinylog {
 
 TinyLog::TinyLog(FILE *file) :

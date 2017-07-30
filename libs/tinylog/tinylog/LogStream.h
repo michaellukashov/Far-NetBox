@@ -1,7 +1,5 @@
 #pragma once
 
-#include "platform_win32.h"
-
 #include "Buffer.h"
 #include "Utils.h"
 

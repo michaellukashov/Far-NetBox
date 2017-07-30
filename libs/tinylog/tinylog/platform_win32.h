@@ -59,6 +59,11 @@ typedef uint64_t            off64_t;
 #define FMT64               "I64"
 #endif // #if 0
 
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable: 4505) // unreferenced local function has been removed
+#endif // _MSC_VER
+
 static int pthread_create(pthread_t *th, pthread_attr_t *attr, void *(*func) (void *), void *ctx)
 {
   th[0] = (pthread_t)_beginthreadex(0, 0, (unsigned(__stdcall *)(void *))func, ctx, 0, 0);
@@ -334,3 +339,7 @@ inline int pthread_cond_destroy(pthread_cond_t *cv)
   CloseHandle(cv->events_[pthread_cond_t_::E_BROADCAST]);
   return 0;
 }
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif // _MSC_VER

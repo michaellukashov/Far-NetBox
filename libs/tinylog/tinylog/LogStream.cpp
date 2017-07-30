@@ -4,6 +4,8 @@
 #include "LogStream.h"
 #include "Config.h"
 
+#include "platform_win32.h"
+
 namespace tinylog {
 
 LogStream::LogStream(FILE *file, pthread_mutex_t &mutex, pthread_cond_t &cond, bool &already_swap) :
