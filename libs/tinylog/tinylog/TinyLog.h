@@ -1,9 +1,10 @@
 #pragma once
 
-#include "LogStream.h"
 #include "Utils.h"
 
 namespace tinylog {
+
+class TinyLogImpl;
 
 class TinyLog
 {
@@ -22,21 +23,11 @@ public:
   void Close();
 
 private:
-  static DWORD WINAPI ThreadFunc(void *pt_arg);
-  int32_t MainLoop();
+  TinyLogImpl * impl_;
 
 private:
   TinyLog(TinyLog const &);
   void operator=(TinyLog const &);
-
-  LogStream *pt_logstream_;
-  pthread_t thrd_;
-  DWORD ThreadId_;
-  Utils::LogLevel e_log_level_;
-  bool b_run_;
-  pthread_mutex_t mutex_;
-  pthread_cond_t cond_;
-  bool already_swap_;
 };
 
 } // namespace tinylog

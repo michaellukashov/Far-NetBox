@@ -1,5 +1,5 @@
-#include "Utils.h"
 #include "platform_win32.h"
+#include "Utils.h"
 
 namespace tinylog {
 

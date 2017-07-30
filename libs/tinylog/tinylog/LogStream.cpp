@@ -1,10 +1,11 @@
 #include <io.h>
 #include <fcntl.h>
 
+#include "platform_win32.h"
+
 #include "LogStream.h"
 #include "Config.h"
 
-#include "platform_win32.h"
 
 namespace tinylog {
 

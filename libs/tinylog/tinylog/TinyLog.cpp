@@ -1,11 +1,44 @@
-#include "TinyLog.h"
-#include "Config.h"
-
 #include "platform_win32.h"
+
+#include "TinyLog.h"
+#include "LogStream.h"
+#include "Config.h"
 
 namespace tinylog {
 
-TinyLog::TinyLog(FILE *file) :
+class TinyLogImpl
+{
+  CUSTOM_MEM_ALLOCATION_IMPL
+public:
+  explicit TinyLogImpl(FILE * file);
+  ~TinyLogImpl();
+
+  void SetLogLevel(Utils::LogLevel e_log_level);
+  Utils::LogLevel GetLogLevel() const;
+
+  intptr_t Write(const void *data, intptr_t ToWrite);
+  void Close();
+
+private:
+  TinyLogImpl(TinyLogImpl const &);
+  void operator=(TinyLogImpl const &);
+
+private:
+  static DWORD WINAPI ThreadFunc(void *pt_arg);
+  int32_t MainLoop();
+
+  LogStream *pt_logstream_;
+  Utils::LogLevel e_log_level_;
+
+  pthread_t thrd_;
+  DWORD ThreadId_;
+  pthread_mutex_t mutex_;
+  pthread_cond_t cond_;
+  bool b_run_;
+  bool already_swap_;
+};
+
+TinyLogImpl::TinyLogImpl(FILE *file) :
   pt_logstream_(nullptr),
   thrd_(INVALID_HANDLE_VALUE),
   ThreadId_(0),
@@ -20,42 +53,34 @@ TinyLog::TinyLog(FILE *file) :
 
   thrd_ = ::CreateThread(nullptr,
       0,
-      static_cast<LPTHREAD_START_ROUTINE>(&TinyLog::ThreadFunc),
+      static_cast<LPTHREAD_START_ROUTINE>(&TinyLogImpl::ThreadFunc),
       Parameter,
-      0, &ThreadId_);
+  0, &ThreadId_);
 }
 
-TinyLog::~TinyLog()
+TinyLogImpl::~TinyLogImpl()
 {
   Close();
   pthread_cond_destroy(&cond_);
   pthread_mutex_destroy(&mutex_);
 }
 
-void TinyLog::SetLogLevel(Utils::LogLevel e_log_level)
+void TinyLogImpl::SetLogLevel(Utils::LogLevel e_log_level)
 {
   e_log_level_ = e_log_level;
 }
 
-Utils::LogLevel TinyLog::GetLogLevel() const
+Utils::LogLevel TinyLogImpl::GetLogLevel() const
 {
   return e_log_level_;
 }
 
-#if 0
-LogStream &TinyLog::GetLogStream(const char *pt_file, int i_line, const char *pt_func, Utils::LogLevel e_log_level)
-{
-  pt_logstream_->SetPrefix(pt_file, i_line, pt_func, e_log_level);
-  return *pt_logstream_;
-}
-#endif // #if 0
-
-intptr_t TinyLog::Write(const void *data, intptr_t ToWrite)
+intptr_t TinyLogImpl::Write(const void *data, intptr_t ToWrite)
 {
   return pt_logstream_->Write(data, ToWrite);
 }
 
-void TinyLog::Close()
+void TinyLogImpl::Close()
 {
   if (b_run_)
   {
@@ -66,15 +91,15 @@ void TinyLog::Close()
   }
 }
 
-DWORD WINAPI TinyLog::ThreadFunc(void *pt_arg)
+DWORD WINAPI TinyLogImpl::ThreadFunc(void *pt_arg)
 {
-  TinyLog *pt_tinylog = static_cast<TinyLog *>(pt_arg);
+  TinyLogImpl *pt_tinylog = static_cast<TinyLogImpl *>(pt_arg);
   pt_tinylog->MainLoop();
 
   return 0;
 }
 
-int32_t TinyLog::MainLoop()
+int32_t TinyLogImpl::MainLoop()
 {
   while (b_run_)
   {
@@ -103,6 +128,45 @@ int32_t TinyLog::MainLoop()
   }
 
   return 0;
+}
+
+
+TinyLog::TinyLog(FILE *file) :
+  impl_(new TinyLogImpl(file))
+{
+}
+
+TinyLog::~TinyLog()
+{
+  delete impl_;
+}
+
+void TinyLog::SetLogLevel(Utils::LogLevel e_log_level)
+{
+  impl_->SetLogLevel(e_log_level);
+}
+
+Utils::LogLevel TinyLog::GetLogLevel() const
+{
+  return impl_->GetLogLevel();
+}
+
+#if 0
+LogStream &TinyLog::GetLogStream(const char *pt_file, int i_line, const char *pt_func, Utils::LogLevel e_log_level)
+{
+  pt_logstream_->SetPrefix(pt_file, i_line, pt_func, e_log_level);
+  return *pt_logstream_;
+}
+#endif // #if 0
+
+intptr_t TinyLog::Write(const void *data, intptr_t ToWrite)
+{
+  return impl_->Write(data, ToWrite);
+}
+
+void TinyLog::Close()
+{
+  impl_->Close();
 }
 
 } // namespace tinylog
