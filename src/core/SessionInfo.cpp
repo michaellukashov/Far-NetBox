@@ -1205,7 +1205,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
           AddToList(Bugs, EnumName(Data->GetBug(static_cast<TSshBug>(Index)), AutoSwitchNames), L",");
         }
         ADF("SSH Bugs: %s", Bugs);
-        ADF("Simple channel: %s", BooleanToEngStr(Data->GetSshSimple()).c_str());
+        ADF("Simple channel: %s", BooleanToEngStr(Data->GetSshSimple()));
         ADF("Return code variable: %s; Lookup user groups: %s",
           Data->GetDetectReturnVar() ? UnicodeString(L"Autodetect") : Data->GetReturnVar(),
           EnumName(Data->GetLookupUserGroups(), AutoSwitchNames));
