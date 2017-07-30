@@ -1054,47 +1054,47 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
       }
     }
 #if 0
-    ADF(L"Log level: %s", LogStr.c_str());
-    ADF(L"Local account: %s", UserName.c_str());
+    ADF(L"Log level: %s", LogStr);
+    ADF(L"Local account: %s", UserName);
 #endif // #if 0
-    ADF(L"Working directory: %s", GetCurrentDir().c_str());
+    ADF(L"Working directory: %s", GetCurrentDir());
     ADF(L"Process ID: %d", intptr_t(GetCurrentProcessId()));
 #if 0
-    ADF(L"Command-line: %s", GetCmdLineLog().c_ctr());
+    ADF(L"Command-line: %s", GetCmdLineLog());
     if (FConfiguration->GetLogProtocol() >= 1)
     {
       AddOptions(GetGlobalOptions());
     }
 #endif // #if 0
-    ADF(L"Time zone: %s", GetTimeZoneLogString().c_str());
+    ADF(L"Time zone: %s", GetTimeZoneLogString());
     if (!AdjustClockForDSTEnabled())
     {
       ADF(L"Warning: System option \"Automatically adjust clock for Daylight Saving Time\" is disabled, timestamps will not be represented correctly");
     }
 #if 0
-    ADF(L"Login time: %s", dt.c_str());
+    ADF(L"Login time: %s", dt);
 #endif // #if 0
     AddSeparator();
   }
   else
   {
 #if 0
-    ADF(L"Session name: %s (%s)", Data->GetSessionName().c_str(), Data->GetSource().c_str());
-    ADF(L"Host name: %s (Port: %d)", Data->GetHostNameExpanded().c_str(), Data->GetPortNumber());
+    ADF(L"Session name: %s (%s)", Data->GetSessionName(), Data->GetSource());
+    ADF(L"Host name: %s (Port: %d)", Data->GetHostNameExpanded(), Data->GetPortNumber());
     ADF(L"User name: %s (Password: %s, Key file: %s, Passphrase: %s)",
-      Data->GetUserNameExpanded().c_str(), LogSensitive(Data->GetPassword()).c_str(),
-       LogSensitive(Data->GetPublicKeyFile()).c_str(), LogSensitive(Data->GetPassphrase()).c_str())
+      Data->GetUserNameExpanded(), LogSensitive(Data->GetPassword()),
+      LogSensitive(Data->GetPublicKeyFile()), LogSensitive(Data->GetPassphrase()))
 #endif // #if 0
     if (Data->GetUsesSsh())
     {
-      ADF(L"Tunnel: %s", BooleanToEngStr(Data->GetTunnel()).c_str());
+      ADF(L"Tunnel: %s", BooleanToEngStr(Data->GetTunnel()));
       if (Data->GetTunnel())
       {
         ADF(L"Tunnel: Host name: %s (Port: %d)", Data->GetTunnelHostName().c_str(), Data->GetTunnelPortNumber());
 #if 0
         ADF(L"Tunnel: User name: %s (Password: %s, Key file: %s)",
-           Data->GetTunnelUserName().c_str(), BooleanToEngStr(!Data->GetTunnelPassword().IsEmpty()).c_str(),
-           BooleanToEngStr(!Data->GetTunnelPublicKeyFile().IsEmpty()).c_str());
+           Data->GetTunnelUserName(), BooleanToEngStr(!Data->GetTunnelPassword().IsEmpty()),
+           BooleanToEngStr(!Data->GetTunnelPublicKeyFile().IsEmpty()));
         ADF(L"Tunnel: Local port number: %d", Data->GetTunnelLocalPortNumber());
 #endif // #if 0
       }
@@ -1125,8 +1125,8 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
       UnicodeString fp = FORMAT(L"FTP proxy %d", Data->GetFtpProxyLogonType());
       ADF(L"Proxy: %s",
         (Data->GetFtpProxyLogonType() != 0) ?
-          fp.c_str() :
-          EnumName(ProxyMethod, ProxyMethodNames).c_str());
+          fp :
+          EnumName(ProxyMethod, ProxyMethodNames));
     }
     if ((Data->GetFtpProxyLogonType() != 0) || (ProxyMethod != ::pmNone))
     {
