@@ -1,6 +1,7 @@
 
 #pragma once
 
+#include <tinylog/TinyLog.h>
 #include "SessionData.h"
 #include "Interface.h"
 
@@ -299,7 +300,7 @@ private:
   TSessionLog * FParent;
   TCriticalSection FCriticalSection;
   bool FLogging;
-  void * FFile;
+  tinylog::TinyLog * FLogger;
   UnicodeString FCurrentLogFileName;
   UnicodeString FCurrentFileName;
   int64_t FCurrentFileSize;
@@ -370,7 +371,7 @@ private:
   TConfiguration * FConfiguration;
   TCriticalSection FCriticalSection;
   bool FLogging;
-  void * FFile;
+  tinylog::TinyLog * FLogger;
   UnicodeString FCurrentLogFileName;
   UnicodeString FCurrentFileName;
   UnicodeString FIndent;
