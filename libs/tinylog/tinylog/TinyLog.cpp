@@ -40,9 +40,9 @@ private:
 
 TinyLogImpl::TinyLogImpl(FILE *file) :
   pt_logstream_(nullptr),
+  e_log_level_(Utils::LEVEL_INFO),
   thrd_(INVALID_HANDLE_VALUE),
   ThreadId_(0),
-  e_log_level_(Utils::LEVEL_INFO),
   b_run_(true),
   already_swap_(false)
 {
