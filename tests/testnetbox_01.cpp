@@ -563,7 +563,7 @@ TEST_CASE_METHOD(base_fixture_t, "test22", "netbox")
                     OPEN_ALWAYS, // OPEN_EXISTING,
                     0, // FILE_ATTRIBUTE_NORMAL, // 0,
                     nullptr);
-    DEBUG_PRINTF(L"File = %d", File);
+    DEBUG_PRINTF(L"File = %p", File);
     TStream * FileStream = new TSafeHandleStream(File);
     TFileBuffer * BlockBuf = new TFileBuffer();
     BlockBuf->ReadStream(FileStream, str.size(), true);
