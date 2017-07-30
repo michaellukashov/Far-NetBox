@@ -168,7 +168,7 @@ void StrPair::TransferTo( StrPair* other )
 void StrPair::Reset()
 {
     if ( _flags & NEEDS_DELETE ) {
-        delete [] _start;
+        nb_free(_start);
     }
     _flags = 0;
     _start = 0;
@@ -182,7 +182,7 @@ void StrPair::SetStr( const char* str, int flags )
     Reset();
     ::size_t len = strlen( str );
     TIXMLASSERT( _start == 0 );
-    _start = new char[ len+1 ];
+    _start = nb::chcalloc(len+1);
     memcpy( _start, str, len+1 );
     _end = _start + len;
     _flags = flags | NEEDS_DELETE;
@@ -2029,7 +2029,7 @@ void XMLDocument::Clear()
 #endif
     ClearError();
 
-    delete [] _charBuffer;
+    nb_free(_charBuffer);
     _charBuffer = 0;
 
 #if 0
@@ -2204,7 +2204,7 @@ XMLError XMLDocument::LoadFile( FILE* fp )
 
     const ::size_t size = filelength;
     TIXMLASSERT( _charBuffer == 0 );
-    _charBuffer = new char[size+1];
+    _charBuffer = nb::chcalloc(size+1);
     ::size_t read = fread( _charBuffer, 1, size, fp );
     if ( read != size ) {
         SetError( XML_ERROR_FILE_READ_ERROR, 0, 0, 0 );
@@ -2254,7 +2254,7 @@ XMLError XMLDocument::Parse( const char* p, ::size_t len )
         len = strlen( p );
     }
     TIXMLASSERT( _charBuffer == 0 );
-    _charBuffer = new char[ len+1 ];
+    _charBuffer = nb::chcalloc(len+1);
     memcpy( _charBuffer, p, len );
     _charBuffer[len] = 0;
 
