@@ -1223,10 +1223,10 @@ add_library(tinylog STATIC
 )
 
 target_include_directories(tinylog PRIVATE
+  ../base
 )
 
 target_compile_options(tinylog PRIVATE
-  -DWIN32
   -DTINYLOG_EXPORT
   ${NETBOX_UNICODE_FLAGS}
 )
