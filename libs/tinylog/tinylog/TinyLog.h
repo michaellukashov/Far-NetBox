@@ -1,7 +1,5 @@
 #pragma once
 
-#include <apr_portable.h>
-
 #ifdef TINYLOG_EXPORT
 #define TINYLOG_API __declspec(dllexport)
 #elif defined(TINYLOG_IMPORT)
@@ -11,56 +9,54 @@
 #define TINYLOG_API
 #endif
 
-#include "LogStream.h"
 #include "Utils.h"
 
 namespace tinylog {
 
+class TinyLogImpl;
+
 class TINYLOG_API TinyLog
 {
+  CUSTOM_MEM_ALLOCATION_IMPL
 public:
-  static TinyLog& GetInstance()
-  {
-    static TinyLog instance;
-    return instance;
-  }
-
-  TinyLog();
+  explicit TinyLog(FILE * file);
   ~TinyLog();
 
-  int32_t MainLoop();
   void SetLogLevel(Utils::LogLevel e_log_level);
   Utils::LogLevel GetLogLevel() const;
-  LogStream& GetLogStream(const char *pt_file, int i_line, const char *pt_func, Utils::LogLevel e_log_level);
+#if 0
+  LogStream &GetLogStream(const char *pt_file, int i_line, const char *pt_func, Utils::LogLevel e_log_level);
+#endif // #if 0
+
+  intptr_t Write(const void *data, intptr_t ToWrite);
+  void Close();
+
+private:
+  TinyLogImpl * impl_;
 
 private:
   TinyLog(TinyLog const &);
   void operator=(TinyLog const &);
-
-  LogStream *pt_logstream_;
-  apr_thread_t * thrd_;
-  Utils::LogLevel e_log_level_;
-  bool b_run_;
 };
 
 } // namespace tinylog
 
-#define g_tinylog (tinylog::TinyLog::GetInstance())
+//#define g_tinylog (tinylog::TinyLog::GetInstance())
 
-#define LOG_TRACE if (g_tinylog.GetLogLevel() <= Utils::TRACE)\
-  g_tinylog.GetLogStream(__FILE__, __LINE__, __func__, Utils::TRACE)
+#define TINYLOG_TRACE(logger) if (logger.GetLogLevel() <= Utils::LEVEL_TRACE)\
+  g_tinylog.GetLogStream(__FILE__, __LINE__, __func__, Utils::LEVEL_TRACE)
 
-#define LOG_DEBUG if (g_tinylog.GetLogLevel() <= Utils::DEBUG)\
-  g_tinylog.GetLogStream(__FILE__, __LINE__, __func__, Utils::DEBUG)
+#define TINYLOG_DEBUG(logger) if (logger.GetLogLevel() <= Utils::LEVEL_DEBUG)\
+  g_tinylog.GetLogStream(__FILE__, __LINE__, __func__, Utils::LEVEL_DEBUG)
 
-#define LOG_INFO if (g_tinylog.GetLogLevel() <= Utils::INFO)\
-  g_tinylog.GetLogStream(__FILE__, __LINE__, __func__, Utils::INFO)
+#define TINYLOG_INFO(logger) if (logger.GetLogLevel() <= Utils::LEVEL_INFO)\
+  g_tinylog.GetLogStream(__FILE__, __LINE__, __func__, Utils::LEVEL_INFO)
 
-#define LOG_WARNING if (g_tinylog.GetLogLevel() <= Utils::WARNING) \
-  g_tinylog.GetLogStream(__FILE__, __LINE__, __func__, Utils::WARNING)
+#define TINYLOG_WARNING(logger) if (logger.GetLogLevel() <= Utils::LEVEL_WARNING) \
+  g_tinylog.GetLogStream(__FILE__, __LINE__, __func__, Utils::LEVEL_WARNING)
 
-#define LOG_ERROR if (g_tinylog.GetLogLevel() <= Utils::ERROR) \
-  g_tinylog.GetLogStream(__FILE__, __LINE__, __func__, Utils::ERROR)
+#define TINYLOG_ERROR(logger) if (logger.GetLogLevel() <= Utils::LEVEL_ERROR) \
+  g_tinylog.GetLogStream(__FILE__, __LINE__, __func__, Utils::LEVEL_ERROR)
 
-#define LOG_FATAL if (g_tinylog.GetLogLevel() <= Utils::FATAL) \
-  g_tinylog.GetLogStream(__FILE__, __LINE__, __func__, Utils::FATAL)
+#define TINYLOG_FATAL(logger) if (logger.GetLogLevel() <= Utils::LEVEL_FATAL) \
+  g_tinylog.GetLogStream(__FILE__, __LINE__, __func__, Utils::LEVEL_FATAL)

@@ -1,7 +1,7 @@
 
 #include "stdafx.h"
 #include "TransferSocket.h"
-#include "mainthread.h"
+#include "MainThread.h"
 #include "AsyncProxySocketLayer.h"
 #include "TextsFileZilla.h"
 #ifndef MPEXT_NO_GSS
@@ -361,7 +361,7 @@ void CTransferSocket::ConfigureSocket()
 
   // Following post claims that TCP_NODELAY
   // has to be set before connect()
-  // http://stackoverflow.com/q/22583941/850848#25871250
+  // https://stackoverflow.com/q/22583941/850848#25871250
 
   int nodelay = GetOptionVal(OPTION_MPEXT_NODELAY);
   if (nodelay != 0)

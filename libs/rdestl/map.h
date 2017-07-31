@@ -10,7 +10,7 @@ namespace rde
 {
 template<typename Tk, typename Tv, 
 	class TAllocator = rde::allocator>
-class map 
+class RDESTL_LIB map
 {
 	template<typename TNodePtr, typename TPtr, typename TRef>
 	class node_iterator
@@ -78,7 +78,7 @@ class map
 		const map*	m_map;
 	};
 	template<typename Tkm, typename Tvm>
-	struct map_pair : public rde::pair<Tkm, Tvm>
+	struct RDESTL_LIB map_pair : public rde::pair<Tkm, Tvm>
 	{
 		map_pair() {}
 		map_pair(const Tkm& k, const Tvm& v): pair<Tkm, Tvm>(k, v) {}

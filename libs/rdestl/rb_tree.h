@@ -35,14 +35,14 @@ struct rb_tree_traits
 } // internal
 
 template<class TTreeTraits, class TAllocator = rde::allocator>
-class rb_tree_base : public internal::rb_tree_base
+class RDESTL_LIB rb_tree_base : public internal::rb_tree_base
 {
 public:
 	typedef typename TTreeTraits::key_type		key_type;
 	typedef typename TTreeTraits::value_type	value_type;
 	typedef TAllocator							allocator_type;
 
-	struct node
+    struct RDESTL_LIB node
 	{
 		node() {}
 		node(color_e color_, node* left_, node* right_, node* parent_)
@@ -523,11 +523,8 @@ private:
 	node*			m_root;
 	size_type		m_size;
 	allocator_type	m_allocator;
-	static node		ms_sentinel;
+    node		ms_sentinel;
 };
-template<class TTreeTraits, class TAllocator>
-typename rb_tree_base<TTreeTraits, TAllocator>::node rb_tree_base<TTreeTraits, TAllocator>::ms_sentinel(
-	internal::rb_tree_base::black, &ms_sentinel, &ms_sentinel, &ms_sentinel);
 
 template<typename TKey, class TAllocator = rde::allocator>
 class rb_tree : public rb_tree_base<internal::rb_tree_traits<TKey>, TAllocator>

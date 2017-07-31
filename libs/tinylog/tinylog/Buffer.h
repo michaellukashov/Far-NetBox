@@ -1,29 +1,32 @@
 #pragma once
 
-#include <cstdint>
-#include <string>
+#include <stdio.h>
 
 #include "Utils.h"
 
 namespace tinylog {
 
-class Buffer {
+class Buffer
+{
+  CUSTOM_MEM_ALLOCATION_IMPL
 public:
-    Buffer(uint32_t l_capacity);
-    ~Buffer();
+  explicit Buffer(uint32_t l_capacity);
+  ~Buffer();
 
-    int32_t TryAppend(apr_os_exp_time_t *pt_time, long u_sec, const char *pt_file, int i_line,
-                      const char *pt_func, std::string &str_log_level, const char *pt_log);
+  int32_t TryAppend(const void *pt_log, intptr_t ToWrite);
 
-    void Clear();
-    apr_ssize_t Size() const;
-    apr_ssize_t Capacity() const;
-    int32_t Flush(int fd);
+  void Clear();
+  size_t Size() const;
+  size_t Capacity() const;
+  int32_t Flush(FILE *file);
 
 private:
-    char *pt_data_;
-    apr_ssize_t l_size_;
-    apr_ssize_t l_capacity_;
+  Buffer(const Buffer &);
+  Buffer &operator=(const Buffer &);
+
+  char *pt_data_;
+  size_t l_size_;
+  size_t l_capacity_;
 };
 
 } // namespace tinylog

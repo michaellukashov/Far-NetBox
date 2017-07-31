@@ -96,7 +96,7 @@ bool TWinSCPPlugin::ConfigureEx(intptr_t /*Item*/)
   MenuItems->AddSeparator();
   intptr_t MAbout = MenuItems->Add(GetMsg(NB_CONFIG_ABOUT));
 
-  intptr_t Result = 0;
+  intptr_t Result;
 
   do
   {
@@ -388,11 +388,11 @@ void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
 
   MenuItems->SetDisabled(MLog, !FSVisible || (FileSystem && !FileSystem->IsLogging()));
   MenuItems->SetDisabled(MClearCaches, !FSVisible || (FileSystem && FileSystem->AreCachesEmpty()));
-  MenuItems->SetDisabled(MPutty, !FSVisible || !FileExistsEx(::ExpandEnvironmentVariables(ExtractProgram(GetFarConfiguration()->GetPuttyPath()))));
+  MenuItems->SetDisabled(MPutty, !FSVisible || !::FileExists(::ExpandEnvVars(ExtractProgram(GetFarConfiguration()->GetPuttyPath()))));
   MenuItems->SetDisabled(MEditHistory, !FSConnected || (FileSystem && FileSystem->IsEditHistoryEmpty()));
   MenuItems->SetChecked(MSynchronizeBrowsing, FSVisible && (FileSystem && FileSystem->IsSynchronizedBrowsing()));
-  MenuItems->SetDisabled(MPageant, !FileExistsEx(::ExpandEnvironmentVariables(ExtractProgram(GetFarConfiguration()->GetPageantPath()))));
-  MenuItems->SetDisabled(MPuttygen, !FileExistsEx(::ExpandEnvironmentVariables(ExtractProgram(GetFarConfiguration()->GetPuttygenPath()))));
+  MenuItems->SetDisabled(MPageant, !::FileExists(::ExpandEnvVars(ExtractProgram(GetFarConfiguration()->GetPageantPath()))));
+  MenuItems->SetDisabled(MPuttygen, !::FileExists(::ExpandEnvVars(ExtractProgram(GetFarConfiguration()->GetPuttygenPath()))));
 
   intptr_t Result = Menu(FMENU_WRAPMODE, GetMsg(NB_MENU_COMMANDS), L"", MenuItems.get());
 
@@ -481,8 +481,8 @@ void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
       UnicodeString Path = (Result == MPageant) ?
         GetFarConfiguration()->GetPageantPath() : GetFarConfiguration()->GetPuttygenPath();
       UnicodeString Program, Params, Dir;
-      SplitCommand(::ExpandEnvironmentVariables(Path), Program, Params, Dir);
-      ExecuteShell(Program, Params);
+      SplitCommand(::ExpandEnvVars(Path), Program, Params, Dir);
+      ::ExecuteShellChecked(Program, Params);
     }
     else if ((Result == MClearCaches) && FileSystem)
     {
@@ -537,12 +537,8 @@ struct TFarMessageData : public TObject
 {
 NB_DISABLE_COPY(TFarMessageData)
 public:
-  static inline bool classof(const TObject * Obj)
-  {
-    return
-      Obj->GetKind() == OBJECT_CLASS_TFarMessageData;
-  }
-
+  static inline bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TFarMessageData); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TFarMessageData) || TObject::is(Kind); }
 public:
   TFarMessageData() :
     TObject(OBJECT_CLASS_TFarMessageData),
@@ -580,11 +576,11 @@ void TWinSCPPlugin::MessageClick(void * Token, uintptr_t Result, bool & Close)
   }
 }
 
-uintptr_t TWinSCPPlugin::MoreMessageDialog(const UnicodeString & Str,
+uintptr_t TWinSCPPlugin::MoreMessageDialog(UnicodeString Str,
   TStrings * MoreMessages, TQueryType Type, uintptr_t Answers,
   const TMessageParams * Params)
 {
-  uintptr_t Result = 0;
+  uintptr_t Result;
   UnicodeString DialogStr = Str;
   std::unique_ptr<TStrings> ButtonLabels(new TStringList());
   uintptr_t Flags = 0;

@@ -268,12 +268,14 @@ void hmacmd5_do_hmac(void *handle, unsigned char const *blk, int len,
 #undef SHA512_Init
 #undef SHA512_Final
 
+#if 0
 #define SHA_Init putty_SHA_Init
 #define SHA_Final putty_SHA_Final
 #define SHA256_Init putty_SHA256_Init
 #define SHA256_Final putty_SHA256_Final
 #define SHA512_Init putty_SHA512_Init
 #define SHA512_Final putty_SHA512_Final
+#endif // #if 0
 #endif
 #endif
 
@@ -290,12 +292,14 @@ void putty_SHA_Simple(const void *p, int len, unsigned char *output);
 
 void hmac_sha1_simple(void *key, int keylen, void *data, int datalen,
 		      unsigned char *output);
+
 typedef struct {
     uint32 h[8];
     unsigned char block[64];
     int blkused;
     uint32 lenhi, lenlo;
 } SHA256_State;
+
 void putty_SHA256_Init(SHA256_State * s);
 void putty_SHA256_Bytes(SHA256_State * s, const void *p, int len);
 void putty_SHA256_Final(SHA256_State * s, unsigned char *output);
@@ -508,7 +512,11 @@ void aes_ssh2_decrypt_blk(void *handle, unsigned char *blk, int len);
 /*
  * PuTTY version number formatted as an SSH version string. 
  */
-extern char sshver[50];
+extern
+#ifndef MPEXT
+  const
+#endif
+  char sshver[];
 
 /*
  * Gross hack: pscp will try to start SFTP but fall back to scp1 if
@@ -784,6 +792,11 @@ char *ssh2_fingerprint_blob(const void *blob, int bloblen);
 char *ssh2_fingerprint(const struct ssh_signkey *alg, void *data);
 int key_type(const Filename *filename);
 const char *key_type_to_str(int type);
+#ifdef MPEXT
+unsigned char *openssh_loadpub_line(const char * line, char **algorithm,
+                                    int *pub_blob_len, char **commentptr,
+                                    const char **errorstr);
+#endif
 
 int import_possible(int type);
 int import_target_type(int type);

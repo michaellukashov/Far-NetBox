@@ -72,16 +72,24 @@ template <class T>
 inline const T Round(const T a, const T b) { return a / b + (a % b * 2 > b ? 1 : 0); }
 
 template <class T>
-inline void * ToPtr(const T a) { return reinterpret_cast<void *>((intptr_t)a); }
-
-template <class T>
 inline double ToDouble(const T a) { return static_cast<double>(a); }
 
 template <class T>
 inline Word ToWord(const T a) { return static_cast<Word>(a); }
 
 template <class T>
-inline intptr_t ToInt(T a) { return reinterpret_cast<intptr_t>(a); }
+inline typename std::is_convertible<T, intptr_t>::value
+ToInt(T a) { return static_cast<intptr_t>(a); }
+
+template <class T>
+inline typename std::enable_if<std::is_pointer<T>::value, intptr_t>::type
+ToInt(T a) { return (intptr_t)(a); }
+
+template <class T>
+inline typename std::is_convertible<T, void *>::value
+ToPtr(T a) { return const_cast<void *>(a); }
+template <class T>
+inline void * ToPtr(T a) { return reinterpret_cast<void *>((intptr_t)(a)); }
 
 template<typename T>
 inline void ClearStruct(T & s) { ::ZeroMemory(&s, sizeof(s)); }

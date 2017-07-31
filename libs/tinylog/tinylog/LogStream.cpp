@@ -1,22 +1,24 @@
 #include <io.h>
 #include <fcntl.h>
 
-#include <apr_arch_threadproc.h>
-#include <apr_arch_thread_cond.h>
+#include "platform_win32.h"
 
 #include "LogStream.h"
 #include "Config.h"
 
+
 namespace tinylog {
 
-extern apr_thread_mutex_t g_mutex;
-extern apr_thread_cond_t g_cond;
-extern bool g_already_swap;
-
-LogStream::LogStream()
+LogStream::LogStream(FILE *file, pthread_mutex_t &mutex, pthread_cond_t &cond, bool &already_swap) :
+  file_(file),
+  pt_file_(nullptr),
+  i_line_(0),
+  pt_func_(nullptr),
+  pt_tm_base_(nullptr),
+  mutex_(mutex),
+  cond_(cond),
+  already_swap_(already_swap)
 {
-  log_file_fd_ = open(LOG_PATH, _O_WRONLY | _O_CREAT);
-
   pt_front_buff_ = new Buffer(BUFFER_SIZE);
   pt_back_buff_  = new Buffer(BUFFER_SIZE);
 
@@ -25,10 +27,19 @@ LogStream::LogStream()
 
 LogStream::~LogStream()
 {
-  delete(pt_front_buff_);
-  delete(pt_back_buff_);
+  delete pt_front_buff_;
+  delete pt_back_buff_;
 
-  close(log_file_fd_);
+  if (file_ != nullptr)
+  {
+    fclose(file_);
+    file_ = nullptr;
+  }
+}
+
+intptr_t LogStream::Write(const void *data, intptr_t ToWrite)
+{
+  return InternalWrite(data, ToWrite);
 }
 
 /*
@@ -48,78 +59,80 @@ void LogStream::SwapBuffer()
  */
 void LogStream::WriteBuffer()
 {
-  pt_back_buff_->Flush(log_file_fd_);
+  pt_back_buff_->Flush(file_);
   pt_back_buff_->Clear();
 }
 
-LogStream& LogStream::operator<<(const char *pt_log)
+LogStream &LogStream::operator<<(const char *pt_log)
 {
-  UpdateBaseTime();
-
-  apr_thread_mutex_lock(&g_mutex);
-
-  if (pt_front_buff_->TryAppend(pt_tm_base_, (long)tv_base_.tm_usec, pt_file_, i_line_, pt_func_, str_log_level_, pt_log) < 0)
-  {
-    SwapBuffer();
-    g_already_swap = true;
-    pt_front_buff_->TryAppend(pt_tm_base_, (long)tv_base_.tm_usec, pt_file_, i_line_, pt_func_, str_log_level_, pt_log);
-  }
-
-  apr_thread_cond_signal(&g_cond);
-  apr_thread_mutex_unlock(&g_mutex);
+  InternalWrite(pt_log, strlen(pt_log));
 
   return *this;
 }
 
-LogStream& LogStream::operator<<(const std::string &ref_log)
-{
-  return this->operator<<(ref_log.c_str());
-}
-
 void LogStream::UpdateBaseTime()
 {
-  apr_time_exp_t aprexptime;
-  apr_time_t now = apr_time_now();
-  apr_time_exp_lt(&aprexptime, now);
+  struct timeval tv;
+  time_t now = time(nullptr);
+  tv.tv_sec = (long)now;
+  tv.tv_usec = 0;
+  struct tm *tm = localtime(&now);
 
-  apr_os_exp_time_get(&pt_tm_base_, &aprexptime);
-
-  if (aprexptime.tm_sec != tv_base_.tm_sec)
+  if (tv.tv_sec != tv_base_.tv_sec)
   {
-    int new_sec = pt_tm_base_->wSecond + int(aprexptime.tm_sec - tv_base_.tm_sec);
+    int new_sec = pt_tm_base_->tm_sec + int(tm->tm_sec - tv_base_.tv_sec);
     if (new_sec >= 60)
     {
-      pt_tm_base_->wSecond = new_sec % 60;
-      int new_min = pt_tm_base_->wMinute + new_sec / 60;
+      pt_tm_base_->tm_sec = new_sec % 60;
+      int new_min = pt_tm_base_->tm_min + new_sec / 60;
       if (new_min >= 60)
       {
-        pt_tm_base_->wMinute = new_min % 60;
-        int new_hour = pt_tm_base_->wHour + new_min / 60;
+        pt_tm_base_->tm_min = new_min % 60;
+        int new_hour = pt_tm_base_->tm_hour + new_min / 60;
         if (new_hour >= 24)
         {
-          Utils::CurrentTime(&aprexptime, &pt_tm_base_);
+          Utils::CurrentTime(&tv, &pt_tm_base_);
         }
         else
         {
-          pt_tm_base_->wHour = new_hour;
+          pt_tm_base_->tm_hour = new_hour;
         }
       }
       else
       {
-        pt_tm_base_->wMinute = new_min;
+        pt_tm_base_->tm_min = new_min;
       }
     }
     else
     {
-      pt_tm_base_->wSecond = new_sec;
+      pt_tm_base_->tm_sec = new_sec;
     }
 
-    tv_base_ = aprexptime;
+    tv_base_ = tv;
   }
   else
   {
-    tv_base_.tm_usec = aprexptime.tm_usec;
+    tv_base_.tv_usec = tv.tv_usec;
   }
+}
+
+intptr_t LogStream::InternalWrite(const void *data, intptr_t ToWrite)
+{
+  intptr_t Result = ToWrite;
+  UpdateBaseTime();
+
+  pthread_mutex_lock(&mutex_);
+
+  if (pt_front_buff_->TryAppend(data, ToWrite) < 0)
+  {
+    SwapBuffer();
+    already_swap_ = true;
+    pt_front_buff_->TryAppend(data, ToWrite);
+  }
+
+  pthread_cond_signal(&cond_);
+  pthread_mutex_unlock(&mutex_);
+  return Result;
 }
 
 } // namespace tinylog

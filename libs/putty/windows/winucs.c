@@ -5,6 +5,9 @@
 #include <assert.h>
 
 #include "putty.h"
+
+#ifndef MPEXT
+
 #if 0
 #include "terminal.h"
 #endif // #if 0
@@ -1195,6 +1198,8 @@ int wc_to_mb(int codepage, int flags, const wchar_t *wcstr, int wclen,
 	return WideCharToMultiByte(codepage, flags, wcstr, wclen,
 				   mbstr, mblen, defchr, defused);
 }
+
+#endif
 
 int mb_to_wc(int codepage, int flags, const char *mbstr, int mblen,
 	     wchar_t *wcstr, int wclen)

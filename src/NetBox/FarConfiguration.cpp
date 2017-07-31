@@ -14,7 +14,7 @@ TFarConfiguration::TFarConfiguration(TCustomFarPlugin * APlugin) :
   FBookmarks(new TBookmarks()),
   FFarConfirmations(-1)
 {
-  Default();
+  TFarConfiguration::Default();
   CacheFarSettings();
 }
 
@@ -183,11 +183,8 @@ intptr_t TFarConfiguration::FarConfirmations() const
   {
     return GetPlugin()->FarAdvControl(ACTL_GETCONFIRMATIONS);
   }
-  else
-  {
-    DebugAssert(FFarConfirmations >= 0);
-    return FFarConfirmations;
-  }
+  DebugAssert(FFarConfirmations >= 0);
+  return FFarConfirmations;
 }
 
 bool TFarConfiguration::GetConfirmOverwriting() const
@@ -196,11 +193,8 @@ bool TFarConfiguration::GetConfirmOverwriting() const
   {
     return TGUIConfiguration::GetConfirmOverwriting();
   }
-  else
-  {
-    // DebugAssert(GetPlugin());
-    return (FarConfirmations() & FCS_COPYOVERWRITE) != 0;
-  }
+  // DebugAssert(GetPlugin());
+  return (FarConfirmations() & FCS_COPYOVERWRITE) != 0;
 }
 
 void TFarConfiguration::SetConfirmOverwriting(bool Value)
@@ -231,14 +225,14 @@ UnicodeString TFarConfiguration::ModuleFileName() const
   return GetPlugin()->GetModuleName();
 }
 
-void TFarConfiguration::SetBookmarks(const UnicodeString & Key,
+void TFarConfiguration::SetBookmarks(UnicodeString Key,
   TBookmarkList * Value)
 {
   FBookmarks->SetBookmarks(Key, Value);
   Changed();
 }
 
-TBookmarkList * TFarConfiguration::GetBookmarks(const UnicodeString & Key)
+TBookmarkList * TFarConfiguration::GetBookmarks(UnicodeString Key)
 {
   return FBookmarks->GetBookmarks(Key);
 }

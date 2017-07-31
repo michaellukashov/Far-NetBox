@@ -1,7 +1,9 @@
+#include "platform_win32.h"
 #include "Utils.h"
 
 namespace tinylog {
 
+#if 0
 std::string Utils::CurrentTime()
 {
   apr_time_t now = apr_time_now();
@@ -34,15 +36,14 @@ void Utils::CurrentTime(std::string &ref_time)
 
   ref_time = buff;
 }
+#endif // #if 0
 
-void Utils::CurrentTime(apr_time_exp_t *aprexptime, apr_os_exp_time_t ** ostime)
+void Utils::CurrentTime(struct timeval *tv, struct tm **tm)
 {
-  apr_time_t now = apr_time_now();
-
-  if (apr_time_exp_lt(aprexptime, now) == APR_SUCCESS)
-  {
-    apr_os_exp_time_get(ostime, aprexptime);
-  }
+  time_t now = time(nullptr);
+  tv->tv_sec = (long)now;
+  tv->tv_usec = 0;
+  *tm = localtime(&now);
 }
 
 } // namespace tinylog

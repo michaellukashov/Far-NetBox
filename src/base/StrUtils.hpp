@@ -2,6 +2,6 @@
 
 #include <Classes.hpp>
 
-NB_CORE_EXPORT UnicodeString ReplaceStr(const UnicodeString & Str, const UnicodeString & What, const UnicodeString & ByWhat);
-NB_CORE_EXPORT bool StartsStr(const UnicodeString & SubStr, const UnicodeString & Str);
-NB_CORE_EXPORT bool EndsStr(const UnicodeString & SubStr, const UnicodeString & Str);
+NB_CORE_EXPORT UnicodeString ReplaceStr(UnicodeString Str, UnicodeString What, UnicodeString ByWhat);
+NB_CORE_EXPORT bool StartsStr(UnicodeString SubStr, UnicodeString Str);
+NB_CORE_EXPORT bool EndsStr(UnicodeString SubStr, UnicodeString Str);

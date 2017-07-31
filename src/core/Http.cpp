@@ -2,7 +2,6 @@
 #include <vcl.h>
 #pragma hdrstop
 
-#include <openssldefs.h>
 #include <ne_request.h>
 #include <openssl/ssl.h>
 
@@ -23,11 +22,11 @@ THttp::THttp() :
 
 THttp::~THttp()
 {
-  delete FResponseHeaders;
-  delete FRequestHeaders;
+  SAFE_DESTROY(FResponseHeaders);
+  SAFE_DESTROY(FRequestHeaders);
 }
 
-void THttp::SendRequest(const char * Method, const UnicodeString & Request)
+void THttp::SendRequest(const char * Method, UnicodeString Request)
 {
   std::unique_ptr<TStringList> AttemptedUrls(CreateSortedStringList());
   AttemptedUrls->Add(GetURL());
@@ -66,12 +65,7 @@ void THttp::SendRequest(const char * Method, const UnicodeString & Request)
     FCertificateError.SetLength(0);
     FException.reset(nullptr);
 
-    TProxyMethod ProxyMethod = GetProxyHost().IsEmpty() ? ::pmNone : pmHTTP;
-
-    ne_session_s * NeonSession =
-      CreateNeonSession(
-        uri, ProxyMethod, GetProxyHost(), GetProxyPort(), UnicodeString(), UnicodeString());
-
+    ne_session_s * NeonSession = CreateNeonSession(uri);
     try__finally
     {
       SCOPE_EXIT
@@ -79,6 +73,9 @@ void THttp::SendRequest(const char * Method, const UnicodeString & Request)
         DestroyNeonSession(NeonSession);
         ne_uri_free(&uri);
       };
+
+      TProxyMethod ProxyMethod = GetProxyHost().IsEmpty() ? ::pmNone : pmHTTP;
+      InitNeonSession(NeonSession, ProxyMethod, GetProxyHost(), GetProxyPort(), UnicodeString(), UnicodeString());
 
       if (IsTls)
       {
@@ -106,10 +103,9 @@ void THttp::SendRequest(const char * Method, const UnicodeString & Request)
           }
         }
 
-        UTF8String RequestUtf;
         if (!Request.IsEmpty())
         {
-          RequestUtf = UTF8String(Request);
+          UTF8String RequestUtf = UTF8String(Request);
           ne_set_request_body_buffer(NeonRequest, RequestUtf.c_str(), RequestUtf.Length());
         }
 
@@ -158,17 +154,17 @@ void THttp::SendRequest(const char * Method, const UnicodeString & Request)
       }
       __finally
       {
-/*
+#if 0
         ne_request_destroy(NeonRequest);
-*/
+#endif // #if 0
       };
     }
     __finally
     {
-/*
+#if 0
       DestroyNeonSession(NeonSession);
       ne_uri_free(&uri);
-*/
+#endif // #if 0
     };
   }
   while (Retry);
@@ -179,7 +175,7 @@ void THttp::Get()
   SendRequest("GET", UnicodeString());
 }
 
-void THttp::Post(const UnicodeString & Request)
+void THttp::Post(UnicodeString Request)
 {
   SendRequest("POST", Request);
 }

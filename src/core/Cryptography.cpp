@@ -47,6 +47,8 @@
 
 */
 
+#include <memory.h>
+
 #define sha1_ctx                  SHA_State
 #define sha1_begin(ctx)           putty_SHA_Init(ctx)
 #define sha1_hash(buf, len, ctx)  putty_SHA_Bytes(ctx, buf, len)
@@ -108,7 +110,7 @@ static void hmac_sha1_data(const uint8_t data[], uint32_t data_len, hmac_ctx cx[
 
     /* xor ipad into key value  */
     for (uint32 i = 0; i < (IN_BLOCK_LENGTH >> 2); ++i)
-      ((uint32_t*)cx->key)[i] ^= 0x36363636;
+      reinterpret_cast<uint32_t*>(cx->key)[i] ^= 0x36363636;
 
     /* and start hash operation */
     sha1_begin(cx->ctx);
@@ -131,13 +133,13 @@ static void hmac_sha1_end(uint8_t mac[], uint32_t mac_len, hmac_ctx cx[1])
 
   /* if no data has been entered perform a null data phase        */
   if (cx->klen != HMAC_IN_DATA)
-    hmac_sha1_data((const uint8_t *)nullptr, 0, cx);
+    hmac_sha1_data(static_cast<const uint8_t *>(nullptr), 0, cx);
 
   sha1_end(dig, cx->ctx); /* complete the inner hash      */
 
   /* set outer key value using opad and removing ipad */
   for (i = 0; i < (IN_BLOCK_LENGTH >> 2); ++i)
-    ((uint32_t*)cx->key)[i] ^= 0x36363636 ^ 0x5c5c5c5c;
+    reinterpret_cast<uint32_t*>(cx->key)[i] ^= 0x36363636 ^ 0x5c5c5c5c;
 
   /* perform the outer hash operation */
   sha1_begin(cx->ctx);
@@ -186,7 +188,7 @@ typedef struct
 {
   uint8_t nonce[BLOCK_SIZE]; /* the CTR nonce          */
   uint8_t encr_bfr[BLOCK_SIZE]; /* encrypt buffer         */
-  void* encr_ctx; /* encryption context     */
+  void * encr_ctx; /* encryption context     */
   hmac_ctx auth_ctx; /* authentication context */
   uint32_t encr_pos; /* block position (enc)   */
   uint32_t pwd_len; /* password length        */
@@ -217,12 +219,12 @@ typedef struct
 /* buffers and using 32 bit operations          */
 
 static void derive_key(const uint8_t pwd[], /* the PASSWORD     */
-                       uint32_t pwd_len, /* and its length   */
-                       const uint8_t salt[], /* the SALT and its */
-                       uint32_t salt_len, /* length           */
-                       uint32_t iter, /* the number of iterations */
-                       uint8_t key[], /* space for the output key */
-                       uint32_t key_len)/* and its required length  */
+  uint32_t pwd_len, /* and its length   */
+  const uint8_t salt[], /* the SALT and its */
+  uint32_t salt_len, /* length           */
+  uint32_t iter, /* the number of iterations */
+  uint8_t key[], /* space for the output key */
+  uint32_t key_len)/* and its required length  */
 {
   uint8_t uu[OUT_BLOCK_LENGTH], ux[OUT_BLOCK_LENGTH];
   hmac_ctx c1[1] = {0}, c2[1] = {0}, c3[1] = {0};
@@ -247,13 +249,13 @@ static void derive_key(const uint8_t pwd[], /* the PASSWORD     */
     memmove(c3, c2, sizeof(hmac_ctx));
 
     /* enter additional data for 1st block into uu  */
-    uu[0] = (uint8_t)((i + 1) >> 24);
-    uu[1] = (uint8_t)((i + 1) >> 16);
-    uu[2] = (uint8_t)((i + 1) >> 8);
-    uu[3] = (uint8_t)(i + 1);
+    uu[0] = static_cast<uint8_t>((i + 1) >> 24);
+    uu[1] = static_cast<uint8_t>((i + 1) >> 16);
+    uu[2] = static_cast<uint8_t>((i + 1) >> 8);
+    uu[3] = static_cast<uint8_t>(i + 1);
 
     /* this is the key mixing iteration         */
-    for (uint32_t j = 0 , k = 4; j < iter; ++j)
+    for (uint32_t j = 0, k = 4; j < iter; ++j)
     {
       /* add previous round data to HMAC      */
       hmac_sha1_data(uu, k, c3);
@@ -315,7 +317,7 @@ static void fcrypt_init(
 
   /* derive the encryption and authentication keys and the password verifier   */
   derive_key(pwd, pwd_len, salt, SALT_LENGTH(mode), KEYING_ITERATIONS,
-             kbuf, 2 * KEY_LENGTH(mode) + PWD_VER_LENGTH);
+    kbuf, 2 * KEY_LENGTH(mode) + PWD_VER_LENGTH);
 
   /* initialise the encryption nonce and buffer pos   */
   cx->encr_pos = BLOCK_SIZE;
@@ -382,7 +384,7 @@ static RawByteString AES256Salt()
   return Result;
 }
 
-void AES256EncryptWithMAC(const RawByteString & Input, const UnicodeString & Password,
+void AES256EncryptWithMAC(RawByteString Input, UnicodeString Password,
   RawByteString & Salt, RawByteString & Output, RawByteString & Mac)
 {
   fcrypt_ctx aes;
@@ -393,8 +395,8 @@ void AES256EncryptWithMAC(const RawByteString & Input, const UnicodeString & Pas
   DebugAssert(Salt.Length() == SALT_LENGTH(PASSWORD_MANAGER_AES_MODE));
   UTF8String UtfPassword = UTF8String(Password);
   fcrypt_init(PASSWORD_MANAGER_AES_MODE,
-              reinterpret_cast<const uint8_t *>(UtfPassword.c_str()), static_cast<uint32_t>(UtfPassword.Length()),
-              reinterpret_cast<const uint8_t *>(Salt.c_str()), nullptr, &aes);
+    reinterpret_cast<const uint8_t *>(UtfPassword.c_str()), static_cast<uint32_t>(UtfPassword.Length()),
+    reinterpret_cast<const uint8_t *>(Salt.c_str()), nullptr, &aes);
   Output = Input;
   Output.Unique();
   fcrypt_encrypt(reinterpret_cast<uint8_t *>(const_cast<char *>(Output.c_str())), static_cast<uint32_t>(Output.Length()), &aes);
@@ -402,7 +404,7 @@ void AES256EncryptWithMAC(const RawByteString & Input, const UnicodeString & Pas
   fcrypt_end(reinterpret_cast<uint8_t *>(const_cast<char *>(Mac.c_str())), &aes);
 }
 
-void AES256EncryptWithMAC(const RawByteString & Input, const UnicodeString & Password,
+void AES256EncryptWithMAC(RawByteString Input, UnicodeString Password,
   RawByteString & Output)
 {
   RawByteString Salt;
@@ -412,15 +414,15 @@ void AES256EncryptWithMAC(const RawByteString & Input, const UnicodeString & Pas
   Output = Salt + Encrypted + Mac;
 }
 
-bool AES256DecryptWithMAC(const RawByteString & Input, const UnicodeString & Password,
-  const RawByteString & Salt, RawByteString & Output, const RawByteString & Mac)
+bool AES256DecryptWithMAC(RawByteString Input, UnicodeString Password,
+  RawByteString Salt, RawByteString & Output, RawByteString Mac)
 {
   fcrypt_ctx aes;
   DebugAssert(Salt.Length() == SALT_LENGTH(PASSWORD_MANAGER_AES_MODE));
   UTF8String UtfPassword = UTF8String(Password);
   fcrypt_init(PASSWORD_MANAGER_AES_MODE,
-              reinterpret_cast<const uint8_t *>(UtfPassword.c_str()), static_cast<uint32_t>(UtfPassword.Length()),
-              reinterpret_cast<const uint8_t *>(Salt.c_str()), nullptr, &aes);
+    reinterpret_cast<const uint8_t *>(UtfPassword.c_str()), static_cast<uint32_t>(UtfPassword.Length()),
+    reinterpret_cast<const uint8_t *>(Salt.c_str()), nullptr, &aes);
   Output = Input;
   Output.Unique();
   fcrypt_decrypt(reinterpret_cast<uint8_t *>(const_cast<char *>(Output.c_str())), static_cast<uint32_t>(Output.Length()), &aes);
@@ -431,7 +433,7 @@ bool AES256DecryptWithMAC(const RawByteString & Input, const UnicodeString & Pas
   return (Mac2 == Mac);
 }
 
-bool AES256DecryptWithMAC(const RawByteString & Input, const UnicodeString & Password,
+bool AES256DecryptWithMAC(RawByteString Input, UnicodeString Password,
   RawByteString & Output)
 {
   bool Result =
@@ -450,7 +452,7 @@ bool AES256DecryptWithMAC(const RawByteString & Input, const UnicodeString & Pas
   return Result;
 }
 
-void AES256CreateVerifier(const UnicodeString & Input, RawByteString & Verifier)
+void AES256CreateVerifier(UnicodeString Input, RawByteString & Verifier)
 {
   RawByteString Salt = AES256Salt();
   RawByteString Dummy = AES256Salt();
@@ -462,7 +464,7 @@ void AES256CreateVerifier(const UnicodeString & Input, RawByteString & Verifier)
   Verifier = Salt + Dummy + Mac;
 }
 
-bool AES256Verify(const UnicodeString & Input, const RawByteString & Verifier)
+bool AES256Verify(UnicodeString Input, RawByteString Verifier)
 {
   int SaltLength = SALT_LENGTH(PASSWORD_MANAGER_AES_MODE);
   RawByteString Salt = Verifier.SubString(1, SaltLength);
@@ -501,7 +503,7 @@ static uint8_t SScrambleTable[256] =
 uint8_t * ScrambleTable;
 uint8_t * UnscrambleTable;
 
-RawByteString ScramblePassword(const UnicodeString & Password)
+RawByteString ScramblePassword(UnicodeString Password)
 {
 #define SCRAMBLE_LENGTH_EXTENSION 50
   UTF8String UtfPassword = UTF8String(Password);
@@ -513,19 +515,19 @@ RawByteString ScramblePassword(const UnicodeString & Password)
     int P = 0;
     while ((P <= 0) || (P > 255) || IsDigit(static_cast<wchar_t>(P)))
     {
-      P = (int)((double)rand() / ((double)RAND_MAX / 256.0));
+      P = static_cast<int>(static_cast<double>(rand()) / (static_cast<double>(RAND_MAX) / 256.0));
     }
-    Buf[Index] = (uint8_t)P;
+    Buf[Index] = static_cast<uint8_t>(P);
   }
-  Buf[Padding] = (char)('0' + (Len % 10));
-  Buf[Padding + 1] = (char)('0' + ((Len / 10) % 10));
-  Buf[Padding + 2] = (char)('0' + ((Len / 100) % 10));
+  Buf[Padding] = static_cast<char>('0' + (Len % 10));
+  Buf[Padding + 1] = static_cast<char>('0' + ((Len / 10) % 10));
+  Buf[Padding + 2] = static_cast<char>('0' + ((Len / 100) % 10));
   strcpy_s(Buf + Padding + 3, UtfPassword.Length(), const_cast<char *>((UtfPassword.c_str())));
   char * S = Buf;
   int Last = 31;
   while (*S != '\0')
   {
-    Last = (Last + (uint8_t)*S) % 255 + 1;
+    Last = (Last + static_cast<uint8_t>(*S)) % 255 + 1;
     *S = ScrambleTable[Last];
     S++;
   }
@@ -535,19 +537,19 @@ RawByteString ScramblePassword(const UnicodeString & Password)
   return Result;
 }
 
-bool UnscramblePassword(const RawByteString & Scrambled, UnicodeString & Password)
+bool UnscramblePassword(RawByteString Scrambled, UnicodeString & Password)
 {
   RawByteString LocalScrambled = Scrambled;
   char * S = const_cast<char *>(LocalScrambled.c_str());
   int Last = 31;
   while (*S != '\0')
   {
-    int X = (int)UnscrambleTable[(uint8_t)*S] - 1 - (Last % 255);
+    int X = static_cast<int>(UnscrambleTable[static_cast<uint8_t>(*S)]) - 1 - (Last % 255);
     if (X <= 0)
     {
       X += 255;
     }
-    *S = (char)X;
+    *S = static_cast<char>(X);
     Last = (Last + X) % 255 + 1;
     S++;
   }
@@ -585,9 +587,9 @@ void CryptographyInitialize()
   UnscrambleTable = nb::calloc<uint8_t *>(256);
   for (intptr_t Index = 0; Index < 256; ++Index)
   {
-    UnscrambleTable[SScrambleTable[Index]] = (uint8_t)Index;
+    UnscrambleTable[SScrambleTable[Index]] = static_cast<uint8_t>(Index);
   }
-  srand((uint32_t)time(nullptr) ^ (uint32_t)_getpid());
+  srand(static_cast<uint32_t>(time(nullptr)) ^ static_cast<uint32_t>(_getpid()));
 }
 
 void CryptographyFinalize()
@@ -602,38 +604,35 @@ int PasswordMaxLength()
   return 128;
 }
 
-int IsValidPassword(const UnicodeString & Password)
+int IsValidPassword(UnicodeString Password)
 {
   if (Password.IsEmpty() || (Password.Length() > PasswordMaxLength()))
   {
     return -1;
   }
-  else
+  int A = 0;
+  int B = 0;
+  int C = 0;
+  int D = 0;
+  for (intptr_t Index = 1; Index <= Password.Length(); ++Index)
   {
-    int A = 0;
-    int B = 0;
-    int C = 0;
-    int D = 0;
-    for (intptr_t Index = 1; Index <= Password.Length(); ++Index)
+    if (IsLowerCaseLetter(Password[Index]))
     {
-      if (IsLowerCaseLetter(Password[Index]))
-      {
-        A = 1;
-      }
-      else if (IsUpperCaseLetter(Password[Index]))
-      {
-        B = 1;
-      }
-      else if (IsDigit(Password[Index]))
-      {
-        C = 1;
-      }
-      else
-      {
-        D = 1;
-      }
+      A = 1;
     }
-    return (Password.Length() >= 6) && ((A + B + C + D) >= 2);
+    else if (IsUpperCaseLetter(Password[Index]))
+    {
+      B = 1;
+    }
+    else if (IsDigit(Password[Index]))
+    {
+      C = 1;
+    }
+    else
+    {
+      D = 1;
+    }
   }
+  return (Password.Length() >= 6) && ((A + B + C + D) >= 2);
 }
 
