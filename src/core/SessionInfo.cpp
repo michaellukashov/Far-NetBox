@@ -1123,10 +1123,8 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
     TProxyMethod ProxyMethod = Data->GetActualProxyMethod();
     {
       UnicodeString fp = FORMAT(L"FTP proxy %d", Data->GetFtpProxyLogonType());
-      ADF(L"Proxy: %s",
-        (Data->GetFtpProxyLogonType() != 0) ?
-          fp.c_str() :
-          EnumName(ProxyMethod, ProxyMethodNames).c_str());
+      ADF("Proxy: %s",
+          (Data->GetFtpProxyLogonType() != 0) ? fp : EnumName(ProxyMethod, ProxyMethodNames));
     }
     if ((Data->GetFtpProxyLogonType() != 0) || (ProxyMethod != ::pmNone))
     {
@@ -1168,8 +1166,8 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
       {
         AddToList(Bugs, EnumName(Data->GetBug(static_cast<TSshBug>(Index)), AutoSwitchNames), L",");
       }
-      ADF(L"SSH Bugs: %s", Bugs.c_str());
-      ADF(L"Simple channel: %s", BooleanToEngStr(Data->GetSshSimple()).c_str());
+      ADF(L"SSH Bugs: %s", Bugs);
+      ADF("Simple channel: %s", BooleanToEngStr(Data->GetSshSimple()));
       ADF(L"Return code variable: %s; Lookup user groups: %s",
           Data->GetDetectReturnVar() ? UnicodeString(L"Autodetect") : Data->GetReturnVar(),
           EnumName(Data->GetLookupUserGroups(), AutoSwitchNames));
