@@ -204,6 +204,8 @@ bool TryStrToInt(const UnicodeString & StrValue, int64_t & Value)
     errno = 0;
     Value = _wtoi64(StrValue.c_str());
     Result = (errno != EINVAL) && (errno != ERANGE);
+    if (Result && (Value == 0))
+      Result = (StrValue == L"0");
   }
   return Result;
 }
