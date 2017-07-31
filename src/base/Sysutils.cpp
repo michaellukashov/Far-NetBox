@@ -3,6 +3,7 @@
 #pragma hdrstop
 
 #include <iomanip>
+#include <time.h>
 
 #include <Classes.hpp>
 #include <Common.h>
