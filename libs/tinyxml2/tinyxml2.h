@@ -42,6 +42,8 @@ distribution.
 #endif
 #include <stdint.h>
 
+#include <nbglobals.h>
+
 /*
    TODO: intern strings instead of allocation.
 */
@@ -200,7 +202,7 @@ public:
 
     ~DynArray() {
         if ( _mem != _pool ) {
-            delete [] _mem;
+            nb_free(_mem);
         }
     }
 
@@ -290,11 +292,11 @@ private:
         if ( cap > _allocated ) {
             TIXMLASSERT( cap <= INT_MAX / 2 );
             int newAllocated = cap * 2;
-            T* newMem = new T[newAllocated];
+            T* newMem = static_cast<T*>(nb_calloc(newAllocated, sizeof(T)));
             TIXMLASSERT( newAllocated >= _size );
             memcpy( newMem, _mem, sizeof(T)*_size );	// warning: not using constructors, only works for PODs
             if ( _mem != _pool ) {
-                delete [] _mem;
+                nb_free(_mem);
             }
             _mem = newMem;
             _allocated = newAllocated;
@@ -432,6 +434,7 @@ private:
         char    itemData[ITEM_SIZE];
     };
     struct Block {
+        CUSTOM_MEM_ALLOCATION_IMPL
         Item items[ITEMS_PER_BLOCK];
     };
     DynArray< Block*, 10 > _blockPtrs;
@@ -604,7 +607,7 @@ public:
     static void ToStr( bool v, char* buffer, int bufferSize );
     static void ToStr( float v, char* buffer, int bufferSize );
     static void ToStr( double v, char* buffer, int bufferSize );
-	static void ToStr(int64_t v, char* buffer, int bufferSize);
+    static void ToStr(int64_t v, char* buffer, int bufferSize);
 
     // converts strings to primitive types
     static bool	ToInt( const char* str, int* value );
@@ -654,6 +657,7 @@ private:
 */
 class TINYXML2_LIB XMLNode
 {
+    CUSTOM_MEM_ALLOCATION_IMPL
     friend class XMLDocument;
     friend class XMLElement;
 public:
@@ -1120,6 +1124,7 @@ private:
 */
 class TINYXML2_LIB XMLAttribute
 {
+    CUSTOM_MEM_ALLOCATION_IMPL
     friend class XMLElement;
 public:
     /// The name of the attribute.
@@ -1945,6 +1950,7 @@ inline NodeType* XMLDocument::CreateUnlinkedNode( MemPoolT<PoolElementSize>& poo
 */
 class TINYXML2_LIB XMLHandle
 {
+    CUSTOM_MEM_ALLOCATION_IMPL
 public:
     /// Create a handle from any node (at any depth of the tree.) This can be a null pointer.
     XMLHandle( XMLNode* node )												{
@@ -2029,6 +2035,7 @@ private:
 */
 class TINYXML2_LIB XMLConstHandle
 {
+    CUSTOM_MEM_ALLOCATION_IMPL
 public:
     XMLConstHandle( const XMLNode* node )											{
         _node = node;
@@ -2136,6 +2143,7 @@ private:
 */
 class TINYXML2_LIB XMLPrinter : public XMLVisitor
 {
+    CUSTOM_MEM_ALLOCATION_IMPL
 public:
     /** Construct the printer. If the FILE* is specified,
     	this will print to the FILE. Else it will print
@@ -2156,8 +2164,8 @@ public:
     void PushAttribute( const char* name, const char* value );
     void PushAttribute( const char* name, int value );
     void PushAttribute( const char* name, unsigned value );
-	void PushAttribute( const char* name, int64_t value );
-	void PushAttribute( const char* name, bool value );
+    void PushAttribute( const char* name, int64_t value );
+    void PushAttribute( const char* name, bool value );
     void PushAttribute( const char* name, double value );
     /// If streaming, close the Element.
     virtual void CloseElement( bool compactMode=false );
