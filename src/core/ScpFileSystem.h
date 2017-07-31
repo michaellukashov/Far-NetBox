@@ -116,8 +116,8 @@ private:
   void ExecCommand(TFSCommand Cmd, intptr_t Params, fmt::ArgList args);
   FMT_VARIADIC_W(void, ExecCommand, TFSCommand, intptr_t)
 
-  void ExecCommand(const UnicodeString & Cmd, intptr_t Params,
-    const UnicodeString & CmdString);
+  void ExecCommand(UnicodeString Cmd, intptr_t Params,
+    UnicodeString CmdString);
 #if 0
   void ExecCommand(TFSCommand Cmd, const TVarRec * args = nullptr,
     int size = 0, int Params = -1);

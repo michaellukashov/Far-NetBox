@@ -726,7 +726,7 @@ void TSCPFileSystem::ReadCommandOutput(intptr_t Params, const UnicodeString * Cm
   };
 }
 
-void TSCPFileSystem::ExecCommand(const UnicodeString & Cmd, intptr_t Params,
+void TSCPFileSystem::ExecCommand(UnicodeString Cmd, intptr_t Params,
   UnicodeString CmdString)
 {
   if (Params < 0)

@@ -1240,18 +1240,18 @@ void TRemoteFile::SetListingStr(UnicodeString Value)
           swscanf(Col.c_str(), L"%04d-%02d-%02d", &Y, &M, &D);
         if (Filled == 3)
         {
-          Year = Y;
-          Month = M;
-          Day = D;
+          Year = ToWord(Y);
+          Month = ToWord(M);
+          Day = ToWord(D);
           GetCol();
           int H, Mn, S, MS;
           Filled =
             swscanf(Col.c_str(), L"%02d:%02d:%02d.%d", &H, &Mn, &S, &MS);
           if (Filled == 4)
           {
-            Hour = H;
-            Min = Mn;
-            Sec = S;
+            Hour = ToWord(H);
+            Min = ToWord(Mn);
+            Sec = ToWord(S);
             FModificationFmt = mfFull;
             // skip TZ (TODO)
             // do not trim leading space of filename
