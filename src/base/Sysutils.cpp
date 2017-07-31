@@ -13,11 +13,10 @@
 intptr_t __cdecl debug_printf(const wchar_t * format, ...)
 {
   (void)format;
-  intptr_t len = 0;
 #ifndef NDEBUG
   va_list args;
   va_start(args, format);
-  len = _vscwprintf(format, args);
+  intptr_t len = _vscwprintf(format, args);
   std::wstring buf(len + 1, 0);
   vswprintf(const_cast<wchar_t *>(buf.c_str()), buf.size(), format, args);
   va_end(args);
@@ -29,11 +28,10 @@ intptr_t __cdecl debug_printf(const wchar_t * format, ...)
 intptr_t __cdecl debug_printf2(const char * format, ...)
 {
   (void)format;
-  intptr_t len = 0;
 #ifndef NDEBUG
   va_list args;
   va_start(args, format);
-  len = _vscprintf(format, args);
+  intptr_t len = _vscprintf(format, args);
   std::string buf(len + sizeof(char), 0);
   vsprintf_s(&buf[0], buf.size(), format, args);
   va_end(args);
@@ -1568,15 +1566,13 @@ TDateTime IncMonth(const TDateTime & AValue, const Int64 NumberOfMonths)
 
 TDateTime IncWeek(const TDateTime & AValue, const Int64 ANumberOfWeeks)
 {
-  TDateTime Result;
-  Result = AValue + ANumberOfWeeks * DaysPerWeek;
+  TDateTime Result(AValue + ANumberOfWeeks * DaysPerWeek);
   return Result;
 }
 
 TDateTime IncDay(const TDateTime & AValue, const Int64 ANumberOfDays)
 {
-  TDateTime Result;
-  Result = AValue + ANumberOfDays;
+  TDateTime Result(AValue + ANumberOfDays);
   return Result;
 }
 
