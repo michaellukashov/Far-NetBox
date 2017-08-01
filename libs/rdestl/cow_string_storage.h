@@ -1,6 +1,8 @@
 #ifndef RDESTL_COW_STRING_STORAGE_H
 #define RDESTL_COW_STRING_STORAGE_H
 
+#include "rdestl_common.h"
+
 namespace rde
 {
 //=============================================================================
