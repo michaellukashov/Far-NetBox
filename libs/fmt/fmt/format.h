@@ -37,9 +37,10 @@
 #include <limits>
 #include <memory>
 #include <stdexcept>
-#include <string>
+//#include <string>
 #include <vector>
 #include <utility>  // for std::pair
+#include <locale.h>
 #undef FMT_INCLUDE
 
 #include <nbglobals.h>
@@ -803,11 +804,11 @@ class MemoryBuffer : private Allocator, public Buffer<T> {
   }
 
  public:
-  MemoryBuffer(MemoryBuffer &&other) {
+  MemoryBuffer(MemoryBuffer &&other) FMT_NOEXCEPT {
     move(other);
   }
 
-  MemoryBuffer &operator=(MemoryBuffer &&other) {
+  MemoryBuffer &operator=(MemoryBuffer &&other) FMT_NOEXCEPT {
     assert(this != &other);
     deallocate();
     move(other);
@@ -1304,12 +1305,12 @@ class MakeValue : public Arg {
   //   fmt::format("{}", L"test");
   // To fix this, use a wide format string: fmt::format(L"{}", L"test").
 #if !FMT_MSC_VER || defined(_NATIVE_WCHAR_T_DEFINED)
-  MakeValue(typename WCharHelper<wchar_t, Char>::Unsupported);
+  explicit MakeValue(typename WCharHelper<wchar_t, Char>::Unsupported);
 #endif
-  MakeValue(typename WCharHelper<wchar_t *, Char>::Unsupported);
-  MakeValue(typename WCharHelper<const wchar_t *, Char>::Unsupported);
-  MakeValue(typename WCharHelper<const std::wstring &, Char>::Unsupported);
-  MakeValue(typename WCharHelper<WStringRef, Char>::Unsupported);
+  explicit MakeValue(typename WCharHelper<wchar_t *, Char>::Unsupported);
+  explicit MakeValue(typename WCharHelper<const wchar_t *, Char>::Unsupported);
+  explicit MakeValue(typename WCharHelper<const std::wstring &, Char>::Unsupported);
+  explicit MakeValue(typename WCharHelper<WStringRef, Char>::Unsupported);
 
   void set_string(StringRef str) {
     string.value = str.data();
@@ -1355,7 +1356,7 @@ class MakeValue : public Arg {
       long_long_value = value;
   }
   static uint64_t type(long) {
-    return sizeof(long) == sizeof(int) ? Arg::INT : Arg::LONG_LONG;
+    return sizeof(long) == sizeof(int) ? INT : LONG_LONG;
   }
 
   MakeValue(unsigned long value) {
@@ -1366,7 +1367,7 @@ class MakeValue : public Arg {
   }
   static uint64_t type(unsigned long) {
     return sizeof(unsigned long) == sizeof(unsigned) ?
-          Arg::UINT : Arg::ULONG_LONG;
+          UINT : ULONG_LONG;
   }
 
   FMT_MAKE_VALUE(LongLong, long_long_value, LONG_LONG)
@@ -2402,7 +2403,7 @@ inline uint64_t make_type(FMT_GEN15(FMT_ARG_TYPE_DEFAULT)) {
 */
 class SystemError : public internal::RuntimeError {
  private:
-  FMT_API void init(int err_code, CStringRef format_str, ArgList args);
+  FMT_API virtual void init(int err_code, CStringRef format_str, ArgList args);
 
  protected:
   int error_code_;
@@ -2431,7 +2432,7 @@ class SystemError : public internal::RuntimeError {
    \endrst
   */
   SystemError(int error_code, CStringRef message) {
-    init(error_code, message, ArgList());
+    SystemError::init(error_code, message, ArgList());
   }
   FMT_DEFAULTED_COPY_CTOR(SystemError)
   FMT_VARIADIC_CTOR(SystemError, init, int, CStringRef)
@@ -3174,7 +3175,7 @@ class BasicMemoryWriter : public BasicWriter<Char> {
     of the other object to it.
     \endrst
    */
-  BasicMemoryWriter(BasicMemoryWriter &&other)
+  BasicMemoryWriter(BasicMemoryWriter &&other) FMT_NOEXCEPT
     : BasicWriter<Char>(buffer_), buffer_(std::move(other.buffer_)) {
   }
 
@@ -3252,7 +3253,7 @@ FMT_API void report_system_error(int error_code,
 /** A Windows error. */
 class WindowsError : public SystemError {
  private:
-  FMT_API void init(int error_code, CStringRef format_str, ArgList args);
+  FMT_API void init(int error_code, CStringRef format_str, ArgList args) override;
 
  public:
   /**
@@ -3284,7 +3285,7 @@ class WindowsError : public SystemError {
    \endrst
   */
   WindowsError(int error_code, CStringRef message) {
-    init(error_code, message, ArgList());
+    WindowsError::init(error_code, message, ArgList());
   }
   FMT_VARIADIC_CTOR(WindowsError, init, int, CStringRef)
 };
