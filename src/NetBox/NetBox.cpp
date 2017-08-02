@@ -1,10 +1,8 @@
 #include "afxdll.h"
 #include <vcl.h>
 
-#include <Common.h>
 #include <Sysutils.hpp>
 
-#include "FarUtils.h"
 #include "FarDialog.h"
 
 extern void InitExtensionModule(HINSTANCE HInst);
