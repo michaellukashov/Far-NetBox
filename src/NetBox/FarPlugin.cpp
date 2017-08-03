@@ -325,7 +325,7 @@ void * TCustomFarPlugin::OpenPlugin(const struct OpenInfo * Info)
 
     if (Result)
     {
-      if (OpenFrom == OPEN_ANALYSE)
+      if (Info->OpenFrom == OPEN_ANALYSE)
       {
         Result->SetOwnerFileSystem(GetPanelFileSystem());
       }
