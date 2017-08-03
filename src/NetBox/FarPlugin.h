@@ -254,6 +254,7 @@ private:
       lhs.right == rhs.right &&
       lhs.bottom == rhs.bottom;
   }
+  void CloseFileSystem(TCustomFarFileSystem * FileSystem);
 };
 
 class TCustomFarFileSystem : public TObject
@@ -334,12 +335,15 @@ protected:
 protected:
   TCriticalSection FCriticalSection;
   void InvalidateOpenPanelInfo();
+  TCustomFarFileSystem * GetOwnerFileSystem() { return FOwnerFileSystem; }
+  void SetOwnerFileSystem(TCustomFarFileSystem * Value) { FOwnerFileSystem = Value; }
 
 private:
   UnicodeString FNameStr;
   UnicodeString FDestPathStr;
   OpenPanelInfo FOpenPanelInfo;
   bool FOpenPanelInfoValid;
+  TCustomFarFileSystem * FOwnerFileSystem;
   TFarPanelInfo * FPanelInfo[2];
   static uintptr_t FInstances;
 

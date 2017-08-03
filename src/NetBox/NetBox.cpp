@@ -1,11 +1,9 @@
 #include "afxdll.h"
 #include <vcl.h>
 
-#include <Common.h>
 #include <Sysutils.hpp>
 
 #include "resource.h"
-#include "FarUtils.h"
 #include "FarDialog.h"
 #include "plugin_version.hpp"
 
@@ -22,8 +20,7 @@ public:
   }
 };
 
-extern "C"
-{
+extern "C" {
 
 void WINAPI GetGlobalInfoW(struct GlobalInfo * Info)
 {
