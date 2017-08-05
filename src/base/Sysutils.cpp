@@ -10,6 +10,7 @@
 #include <rtlconsts.h>
 #include <Sysutils.hpp>
 
+#if 0
 intptr_t __cdecl debug_printf(const wchar_t * format, ...)
 {
   (void)format;
@@ -39,6 +40,7 @@ intptr_t __cdecl debug_printf2(const char * format, ...)
 #endif
   return Len;
 }
+#endif // #if 0
 
 UnicodeString MB2W(const char * src, const UINT cp)
 {

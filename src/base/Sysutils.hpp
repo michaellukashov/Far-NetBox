@@ -55,8 +55,10 @@ enum FileAttributesEnum
   faAnyFile = 0x0000003f,
 };
 
+#if 0
 NB_CORE_EXPORT intptr_t __cdecl debug_printf(const wchar_t * format, ...);
 NB_CORE_EXPORT intptr_t __cdecl debug_printf2(const char * format, ...);
+#endif // #if 0
 
 #define NB_TEXT(T) L#T
 #ifndef NDEBUG
