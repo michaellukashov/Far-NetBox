@@ -153,7 +153,7 @@ void TCustomFarPlugin::GetPluginInfo(struct PluginInfo * Info)
 #define COMPOSESTRINGARRAY(NAME) \
         if (NAME.GetCount()) \
         { \
-          wchar_t ** StringArray = nb::calloc<wchar_t **>(sizeof(wchar_t *) * (1 + NAME.GetCount())); \
+          wchar_t ** StringArray = nb::calloc<wchar_t **>(1 + NAME.GetCount(), sizeof(wchar_t *)); \
           FPluginInfo.NAME = StringArray; \
           FPluginInfo.NAME ## Number = ToInt(NAME.GetCount()); \
           for (intptr_t Index = 0; Index < NAME.GetCount(); ++Index) \
@@ -220,7 +220,7 @@ wchar_t * TCustomFarPlugin::DuplicateStr(UnicodeString Str, bool AllowEmpty)
     return nullptr;
   }
   const size_t sz = Str.Length() + 1;
-  wchar_t * Result = nb::wchcalloc(sizeof(wchar_t) * (1 + sz));
+  wchar_t * Result = nb::wchcalloc(1 + sz);
   wcscpy_s(Result, sz, Str.c_str());
   return Result;
 }
@@ -1073,7 +1073,7 @@ intptr_t TCustomFarPlugin::FarMessage(DWORD Flags,
     MessageLines->Add(Buttons->GetString(Index));
   }
 
-  Items = nb::calloc<wchar_t **>(sizeof(wchar_t *) * (1 + MessageLines->GetCount()));
+  Items = nb::calloc<wchar_t **>(1 + MessageLines->GetCount(), sizeof(wchar_t *));
   for (intptr_t Index = 0; Index < MessageLines->GetCount(); ++Index)
   {
     UnicodeString S = MessageLines->GetString(Index);
@@ -1140,7 +1140,7 @@ intptr_t TCustomFarPlugin::Menu(DWORD Flags, UnicodeString Title,
   if (!Items)
     return -1;
   intptr_t Result;
-  FarMenuItemEx * MenuItems = nb::calloc<FarMenuItemEx*>(sizeof(FarMenuItemEx) * (1 + Items->GetCount()));
+  FarMenuItemEx * MenuItems = nb::calloc<FarMenuItemEx*>(1 + Items->GetCount(), sizeof(FarMenuItemEx));
   SCOPE_EXIT
   {
     nb_free(MenuItems);
@@ -1678,7 +1678,7 @@ intptr_t TCustomFarPlugin::FarEditorControl(uintptr_t Command, void * Param)
 TFarEditorInfo * TCustomFarPlugin::EditorInfo()
 {
   TFarEditorInfo * Result = nullptr;
-  ::EditorInfo * Info = nb::calloc<::EditorInfo *>(sizeof(::EditorInfo));
+  ::EditorInfo * Info = nb::calloc<::EditorInfo *>(1, sizeof(::EditorInfo));
   try
   {
     if (FarEditorControl(ECTL_GETINFO, Info))
@@ -1878,7 +1878,7 @@ intptr_t TCustomFarFileSystem::GetFindData(
   bool Result = !FClosed && GetFindDataEx(PanelItems.get(), OpMode);
   if (Result && PanelItems->GetCount())
   {
-    *PanelItem = nb::calloc<PluginPanelItem*>(sizeof(PluginPanelItem) * PanelItems->GetCount());
+    *PanelItem = nb::calloc<PluginPanelItem*>(PanelItems->GetCount(), sizeof(PluginPanelItem));
     *ItemsNumber = ToInt(PanelItems->GetCount());
     for (intptr_t Index = 0; Index < PanelItems->GetCount(); ++Index)
     {
@@ -2024,7 +2024,7 @@ TFarPanelInfo ** TCustomFarFileSystem::GetPanelInfo(int Another)
   bool bAnother = Another != 0;
   if (FPanelInfo[bAnother] == nullptr)
   {
-    PanelInfo * Info = nb::calloc<PanelInfo*>(sizeof(PanelInfo));
+    PanelInfo * Info = nb::calloc<PanelInfo*>(1, sizeof(PanelInfo));
     bool Res = (FPlugin->FarControl(FCTL_GETPANELINFO, 0, ToIntPtr(Info),
       !bAnother ? PANEL_ACTIVE : PANEL_PASSIVE) > 0);
     if (!Res)
@@ -2173,7 +2173,7 @@ void TFarPanelModes::SetPanelMode(size_t Mode, UnicodeString ColumnTypes,
   DebugAssert(!ColumnTitles || (ColumnTitles->GetCount() == ColumnTypesCount));
 
   ClearPanelMode(FPanelModes[Mode]);
-  wchar_t ** Titles = nb::calloc<wchar_t **>(sizeof(wchar_t *) * (1 + ColumnTypesCount));
+  wchar_t ** Titles = nb::calloc<wchar_t **>(1 + ColumnTypesCount, sizeof(wchar_t *));
   FPanelModes[Mode].ColumnTypes = TCustomFarPlugin::DuplicateStr(ColumnTypes);
   FPanelModes[Mode].ColumnWidths = TCustomFarPlugin::DuplicateStr(ColumnWidths);
   if (ColumnTitles)
@@ -2224,7 +2224,7 @@ void TFarPanelModes::FillOpenPluginInfo(struct OpenPluginInfo * Info)
 {
   DebugAssert(Info);
   Info->PanelModesNumber = _countof(FPanelModes);
-  PanelMode * PanelModesArray = nb::calloc<PanelMode*>(sizeof(PanelMode) * _countof(FPanelModes));
+  PanelMode * PanelModesArray = nb::calloc<PanelMode*>(_countof(FPanelModes), sizeof(PanelMode));
   memmove(PanelModesArray, &FPanelModes, sizeof(FPanelModes));
   Info->PanelModesArray = PanelModesArray;
   FReferenced = true;
@@ -2337,7 +2337,7 @@ void TFarKeyBarTitles::ClearKeyBarTitles(KeyBarTitles & Titles)
 void TFarKeyBarTitles::FillOpenPluginInfo(struct OpenPluginInfo * Info)
 {
   DebugAssert(Info);
-  KeyBarTitles * KeyBar = nb::calloc<KeyBarTitles *>(sizeof(KeyBarTitles));
+  KeyBarTitles * KeyBar = nb::calloc<KeyBarTitles *>(1, sizeof(KeyBarTitles));
   Info->KeyBar = KeyBar;
   memmove(KeyBar, &FKeyBarTitles, sizeof(FKeyBarTitles));
   FReferenced = true;
@@ -2375,7 +2375,7 @@ void TCustomFarPanelItem::FillPanelItem(struct PluginPanelItem * PanelItem)
   PanelItem->FindData.lpwszFileName = TCustomFarPlugin::DuplicateStr(FileName);
   PanelItem->Description = TCustomFarPlugin::DuplicateStr(Description);
   PanelItem->Owner = TCustomFarPlugin::DuplicateStr(Owner);
-  wchar_t ** CustomColumnData = nb::calloc<wchar_t **>(sizeof(wchar_t *) * (1 + PanelItem->CustomColumnNumber));
+  wchar_t ** CustomColumnData = nb::calloc<wchar_t **>(1 + PanelItem->CustomColumnNumber, sizeof(wchar_t *));
   for (intptr_t Index = 0; Index < PanelItem->CustomColumnNumber; ++Index)
   {
     CustomColumnData[Index] =
@@ -2512,7 +2512,7 @@ intptr_t TFarPanelInfo::GetSelectedCount(bool CountCurrentItem) const
   if ((Count == 1) && FOwner && !CountCurrentItem)
   {
     intptr_t size = FOwner->FarControl(FCTL_GETSELECTEDPANELITEM, 0, 0);
-    PluginPanelItem * ppi = nb::calloc<PluginPanelItem *>(size);
+    PluginPanelItem * ppi = nb::calloc<PluginPanelItem *>(1, size);
     FOwner->FarControl(FCTL_GETSELECTEDPANELITEM, 0, ToIntPtr(ppi));
     if ((ppi->Flags & PPIF_SELECTED) == 0)
     {
@@ -2539,7 +2539,7 @@ TObjectList * TFarPanelInfo::GetItems()
     {
       TODO("move to common function");
       intptr_t size = FOwner->FarControl(FCTL_GETPANELITEM, Index, 0);
-      PluginPanelItem * ppi = nb::calloc<PluginPanelItem *>(size);
+      PluginPanelItem * ppi = nb::calloc<PluginPanelItem *>(1, size);
       FOwner->FarControl(FCTL_GETPANELITEM, Index, ToIntPtr(ppi));
       FItems->Add(new TFarPanelItem(ppi, /*OwnsItem=*/true));
     }
