@@ -154,7 +154,7 @@ void LoadListViewStr(TListView * ListView, UnicodeString ALayoutStr)
   while (!LayoutStr.IsEmpty() && (Index < ListView->Columns->Count))
   {
     int Width;
-    if (TryStrToInt(CutToChar(LayoutStr, L',', true), Width))
+    if (TryStrToInt64(CutToChar(LayoutStr, L',', true), Width))
     {
       ListView->Column[Index]->Width = LoadDimension(Width, PixelsPerInch, ListView);
     }

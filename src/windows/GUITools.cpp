@@ -605,7 +605,7 @@ static void DoSelectScaledImageList(TImageList * ImageList)
       UnicodeString OtherListPixelsPerInchStr =
         OtherList->Name.SubString(
           ImageList->Name.Length() + 1, OtherList->Name.Length() - ImageList->Name.Length());
-      intptr_t OtherListPixelsPerInch = StrToInt(OtherListPixelsPerInchStr);
+      intptr_t OtherListPixelsPerInch = StrToIntPtr(OtherListPixelsPerInchStr);
       if ((OtherListPixelsPerInch <= PixelsPerInch) &&
           ((MatchingList == nullptr) ||
            (MachingPixelsPerInch < OtherListPixelsPerInch)))
@@ -1161,7 +1161,7 @@ void TFrameAnimation::DoInit()
 
       if (SameText(FName, FrameName))
       {
-        intptr_t FrameIndex = StrToInt(CutToChar(FrameData, L'_', false));
+        intptr_t FrameIndex = StrToIntPtr(CutToChar(FrameData, L'_', false));
         if (FFirstFrame < 0)
         {
           FFirstFrame = Frame;
@@ -1320,7 +1320,7 @@ void TFrameAnimation::CalculateNextFrameTick()
   // skip index (is not really used)
   CutToChar(Duration, L'_', false);
   // This should overflow, when tick count wraps.
-  FNextFrameTick += StrToInt(Duration) * 10;
+  FNextFrameTick += StrToIntPtr(Duration) * 10;
 }
 
 

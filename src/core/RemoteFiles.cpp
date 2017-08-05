@@ -1171,7 +1171,7 @@ void TRemoteFile::SetListingStr(UnicodeString Value)
     Line = Line.TrimLeft();
 
     GetCol();
-    if (!::TryStrToInt(Col, FINodeBlocks))
+    if (!::TryStrToInt64(Col, FINodeBlocks))
     {
       // if the column is not an integer, suppose it's owner
       // (Android BusyBox)

@@ -252,7 +252,7 @@ bool TOptions::SwitchValue(UnicodeString Switch, bool Default, bool DefaultOnNon
   {
     Result = false;
   }
-  else if (::TryStrToInt(Value, IntValue))
+  else if (::TryStrToInt64(Value, IntValue))
   {
     Result = (IntValue != 0);
   }

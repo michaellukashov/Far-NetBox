@@ -167,20 +167,20 @@ UnicodeString Int64ToStr(int64_t Value)
   return Result;
 }
 
-intptr_t StrToInt(UnicodeString Value)
+intptr_t StrToIntPtr(UnicodeString Value)
 {
   int64_t Result = 0;
-  if (TryStrToInt(Value, Result))
+  if (TryStrToInt64(Value, Result))
   {
     return static_cast<intptr_t>(Result);
   }
   return 0;
 }
 
-int64_t ToInt(UnicodeString Value)
+int64_t ToInt64(UnicodeString Value)
 {
   int64_t Result = 0;
-  if (TryStrToInt(Value, Result))
+  if (TryStrToInt64(Value, Result))
   {
     return Result;
   }
@@ -190,7 +190,7 @@ int64_t ToInt(UnicodeString Value)
 intptr_t StrToIntDef(UnicodeString Value, intptr_t DefVal)
 {
   int64_t Result = DefVal;
-  if (TryStrToInt(Value, Result))
+  if (TryStrToInt64(Value, Result))
   {
     return static_cast<intptr_t>(Result);
   }
@@ -199,20 +199,20 @@ intptr_t StrToIntDef(UnicodeString Value, intptr_t DefVal)
 
 int64_t StrToInt64(UnicodeString Value)
 {
-  return ToInt(Value);
+  return ToInt64(Value);
 }
 
 int64_t StrToInt64Def(UnicodeString Value, int64_t DefVal)
 {
   int64_t Result = DefVal;
-  if (TryStrToInt(Value, Result))
+  if (TryStrToInt64(Value, Result))
   {
     return Result;
   }
   return DefVal;
 }
 
-bool TryStrToInt(UnicodeString StrValue, int64_t & Value)
+bool TryStrToInt64(UnicodeString StrValue, int64_t & Value)
 {
   bool Result = !StrValue.IsEmpty(); // && (StrValue.FindFirstNotOf(L"+-0123456789") == -1);
   if (Result)
@@ -224,11 +224,6 @@ bool TryStrToInt(UnicodeString StrValue, int64_t & Value)
       Result = (StrValue == L"0");
   }
   return Result;
-}
-
-bool TryStrToInt64(UnicodeString StrValue, int64_t & Value)
-{
-  return TryStrToInt(StrValue, Value);
 }
 
 UnicodeString Trim(UnicodeString Str)
@@ -1206,7 +1201,7 @@ UnicodeString HexToStr(UnicodeString Hex)
   return Result;
 }
 
-uintptr_t HexToInt(UnicodeString Hex, uintptr_t MinChars)
+uintptr_t HexToIntPtr(UnicodeString Hex, uintptr_t MinChars)
 {
   UnicodeString Digits = "0123456789ABCDEF";
   uintptr_t Result = 0;
@@ -1246,7 +1241,7 @@ UnicodeString IntToHex(uintptr_t Int, uintptr_t MinChars)
 
 char HexToChar(UnicodeString Hex, uintptr_t MinChars)
 {
-  return static_cast<char>(HexToInt(Hex, MinChars));
+  return static_cast<char>(HexToIntPtr(Hex, MinChars));
 }
 
 static void ConvertError(intptr_t ErrorID)

@@ -224,7 +224,7 @@ NB_CORE_EXPORT UnicodeString IncludeTrailingPathDelimiter(UnicodeString Str);
 
 NB_CORE_EXPORT UnicodeString StrToHex(UnicodeString Str, bool UpperCase = true, wchar_t Separator = L'\0');
 NB_CORE_EXPORT UnicodeString HexToStr(UnicodeString Hex);
-NB_CORE_EXPORT uintptr_t HexToInt(UnicodeString Hex, uintptr_t MinChars = 0);
+NB_CORE_EXPORT uintptr_t HexToIntPtr(UnicodeString Hex, uintptr_t MinChars = 0);
 NB_CORE_EXPORT UnicodeString IntToHex(uintptr_t Int, uintptr_t MinChars = 0);
 NB_CORE_EXPORT char HexToChar(UnicodeString Hex, uintptr_t MinChars = 0);
 
@@ -286,13 +286,12 @@ NB_CORE_EXPORT int StringCmpI(const wchar_t * S1, const wchar_t * S2);
 
 NB_CORE_EXPORT UnicodeString IntToStr(intptr_t Value);
 NB_CORE_EXPORT UnicodeString Int64ToStr(int64_t Value);
-NB_CORE_EXPORT intptr_t StrToInt(UnicodeString Value);
-NB_CORE_EXPORT int64_t ToInt(UnicodeString Value);
+NB_CORE_EXPORT intptr_t StrToIntPtr(UnicodeString Value);
+NB_CORE_EXPORT int64_t ToInt64(UnicodeString Value);
 NB_CORE_EXPORT intptr_t StrToIntDef(UnicodeString Value, intptr_t DefVal);
 NB_CORE_EXPORT int64_t StrToInt64(UnicodeString Value);
 NB_CORE_EXPORT int64_t StrToInt64Def(UnicodeString Value, int64_t DefVal);
-NB_CORE_EXPORT bool TryStrToInt(UnicodeString StrValue, int64_t & Value);
-bool TryStrToInt64(UnicodeString StrValue, int64_t & Value);
+NB_CORE_EXPORT bool TryStrToInt64(UnicodeString StrValue, int64_t & Value);
 
 NB_CORE_EXPORT double StrToFloat(UnicodeString Value);
 NB_CORE_EXPORT double StrToFloatDef(UnicodeString Value, double DefVal);

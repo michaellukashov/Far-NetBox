@@ -1240,7 +1240,7 @@ void CenterButtonImage(TButton * Button)
 
 int AdjustLocaleFlag(UnicodeString S, TLocaleFlagOverride LocaleFlagOverride, bool Recommended, int On, int Off)
 {
-  int Result = !S.IsEmpty() && StrToInt(S);
+  int Result = !S.IsEmpty() && StrToInt64(S);
   switch (LocaleFlagOverride)
   {
     default:

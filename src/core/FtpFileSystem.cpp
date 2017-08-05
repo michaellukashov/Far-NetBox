@@ -3977,7 +3977,7 @@ void TFTPFileSystem::HandleReplyStatus(UnicodeString Response)
 
   bool HasCodePrefix =
     (Response.Length() >= 3) &&
-    ::TryStrToInt(Response.SubString(1, 3), Code) &&
+    ::TryStrToInt64(Response.SubString(1, 3), Code) &&
     (Code >= 100) && (Code <= 599) &&
     ((Response.Length() == 3) || (Response[4] == L' ') || (Response[4] == L'-'));
 

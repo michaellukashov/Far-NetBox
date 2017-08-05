@@ -757,7 +757,7 @@ static void SessionColorSetGetColorInfo(
 
 static TColor RestoreColor(UnicodeString CStr)
 {
-  return TColor(StrToInt(UnicodeString(L"$") + CStr));
+  return TColor(StrToInt64(UnicodeString(L"$") + CStr));
 }
 
 static UnicodeString StoreColor(TColor Color)

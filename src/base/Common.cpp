@@ -435,7 +435,7 @@ bool IsNumber(UnicodeString Str)
   int64_t Value = 0;
   if (Str == L"0")
     return true;
-  return TryStrToInt(Str, Value);
+  return TryStrToInt64(Str, Value);
 }
 
 UnicodeString GetSystemTemporaryDirectory()
@@ -1742,7 +1742,7 @@ bool TryRelativeStrToDateTime(UnicodeString AStr, TDateTime & DateTime, bool Add
   }
   UnicodeString NumberStr = S.SubString(1, Index - 1);
   int64_t Number = 0;
-  bool Result = TryStrToInt(NumberStr, Number);
+  bool Result = TryStrToInt64(NumberStr, Number);
   if (Result)
   {
     if (!Add)

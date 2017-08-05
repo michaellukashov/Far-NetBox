@@ -612,7 +612,7 @@ bool TSCPFileSystem::RemoveLastLine(UnicodeString & Line,
     UnicodeString ReturnCodeStr = Line.SubString(Pos + LastLine.Length() + 1,
       Line.Length() - Pos + LastLine.Length());
     int64_t Code = 0;
-    if (::TryStrToInt(ReturnCodeStr, Code))
+    if (::TryStrToInt64(ReturnCodeStr, Code))
     {
       IsLastLine = true;
       Line.SetLength(Pos - 1);

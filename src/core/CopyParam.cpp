@@ -935,7 +935,7 @@ static bool TryGetSpeedLimit(UnicodeString Text, uintptr_t & Speed)
   else
   {
     int64_t SSpeed;
-    Result = TryStrToInt(Text, SSpeed) && (SSpeed >= 0);
+    Result = TryStrToInt64(Text, SSpeed) && (SSpeed >= 0);
     if (Result)
     {
       Speed = static_cast<uintptr_t>(SSpeed) * 1024;
