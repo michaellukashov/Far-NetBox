@@ -953,7 +953,7 @@ UnicodeString TFTPFileSystem::GetActualCurrentDirectory() const
 {
   UnicodeString CurrentPath(NB_MAX_PATH, 0);
   UnicodeString Result;
-  if (FFileZillaIntf->GetCurrentPath(const_cast<wchar_t *>(CurrentPath.c_str()), CurrentPath.Length()))
+  if (FFileZillaIntf->GetCurrentPath(ToWChar(CurrentPath), CurrentPath.Length()))
   {
     Result = base::UnixExcludeTrailingBackslash(CurrentPath);
   }

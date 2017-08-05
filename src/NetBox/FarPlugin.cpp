@@ -1078,7 +1078,7 @@ intptr_t TCustomFarPlugin::FarMessage(DWORD Flags,
   {
     UnicodeString S = MessageLines->GetString(Index);
     MessageLines->SetString(Index, UnicodeString(S));
-    Items[Index] = const_cast<wchar_t *>(MessageLines->GetStringRef(Index).c_str());
+    Items[Index] = ToWChar(MessageLines->GetStringRef(Index));
   }
 
   TFarEnvGuard Guard;
@@ -1210,7 +1210,7 @@ bool TCustomFarPlugin::InputBox(UnicodeString Title,
         Prompt.c_str(),
         HistoryName.c_str(),
         Text.c_str(),
-        const_cast<wchar_t *>(DestText.c_str()),
+        ToWChar(DestText),
         static_cast<int>(MaxLen),
         nullptr,
         FIB_ENABLEEMPTY | FIB_BUTTONS | Flags);
@@ -1716,7 +1716,7 @@ UnicodeString TCustomFarPlugin::GetTemporaryDir() const
 {
   UnicodeString Result(NB_MAX_PATH, 0);
   TFarEnvGuard Guard;
-  FFarStandardFunctions.MkTemp(const_cast<wchar_t *>(Result.c_str()), static_cast<DWORD>(Result.Length()), nullptr);
+  FFarStandardFunctions.MkTemp(ToWChar(Result), static_cast<DWORD>(Result.Length()), nullptr);
   PackStr(Result);
   return Result;
 }
@@ -2845,13 +2845,15 @@ HINSTANCE TGlobalFunctions::GetInstanceHandle() const
 
 UnicodeString TGlobalFunctions::GetMsg(intptr_t Id) const
 {
-//  HINSTANCE hInstance = GetGlobalFunctions()->GetInstanceHandle();
-//  intptr_t Length = ::LoadString(hInstance, static_cast<UINT>(Id),
-//    const_cast<wchar_t *>(Fmt.c_str()), static_cast<int>(Fmt.GetLength()));
-//  if (!Length)
-//  {
-//    DEBUG_PRINTF(L"Unknown resource string id: %d\n", Id);
-//  }
+#if 0
+  HINSTANCE hInstance = GetGlobalFunctions()->GetInstanceHandle();
+  intptr_t Length = ::LoadString(hInstance, static_cast<UINT>(Id),
+    ToWChar(Fmt), static_cast<int>(Fmt.GetLength()));
+  if (!Length)
+  {
+    DEBUG_PRINTF(L"Unknown resource string id: %d\n", Id);
+  }
+#endif // #if 0
   // map Id to PluginString value
   intptr_t PluginStringId = Id;
   const TFarPluginStrings * CurFarPluginStrings = &FarPluginStrings[0];
@@ -2874,11 +2876,11 @@ UnicodeString TGlobalFunctions::GetCurrDirectory() const
   int Length;
   if (FarPlugin)
   {
-    Length = FarPlugin->GetFarStandardFunctions().GetCurrentDirectory(static_cast<DWORD>(Path.Length()), const_cast<wchar_t *>(Path.c_str())) - 1;
+    Length = FarPlugin->GetFarStandardFunctions().GetCurrentDirectory(static_cast<DWORD>(Path.Length()), ToWChar(Path)) - 1;
   }
   else
   {
-    Length = ::GetCurrentDirectory(static_cast<DWORD>(Path.Length()), const_cast<wchar_t *>(Path.c_str()));
+    Length = ::GetCurrentDirectory(static_cast<DWORD>(Path.Length()), ToWChar(Path));
   }
   UnicodeString Result = UnicodeString(Path.c_str(), Length);
   return Result;

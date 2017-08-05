@@ -45,7 +45,7 @@ const UnicodeString Ellipsis(TraceInitStr(L"..."));
 UnicodeString ReplaceChar(UnicodeString Str, wchar_t A, wchar_t B)
 {
   UnicodeString Result = Str;
-  wchar_t * Buffer = const_cast<wchar_t *>(Result.c_str());
+  wchar_t * Buffer = ToWChar(Result);
   for (wchar_t * Ch = Buffer; Ch && *Ch; ++Ch)
     if (*Ch == A)
     {
@@ -579,12 +579,12 @@ static wchar_t * ReplaceChar(
 
     AFileName.Insert(ByteToHex(static_cast<uint8_t>(AFileName[Index])), Index + 1);
     AFileName[Index] = TokenPrefix;
-    InvalidChar = const_cast<wchar_t *>(AFileName.c_str() + Index + 2);
+    InvalidChar = ToWChar(AFileName) + Index + 2;
   }
   else
   {
     AFileName[Index] = InvalidCharsReplacement;
-    InvalidChar = const_cast<wchar_t *>(AFileName.c_str() + Index);
+    InvalidChar = ToWChar(AFileName) + Index;
   }
   return InvalidChar;
 }
@@ -605,7 +605,7 @@ UnicodeString ValidLocalFileName(
     bool ATokenReplacement = (AInvalidCharsReplacement == TokenReplacement);
     UnicodeString CharsStr = ATokenReplacement ? ATokenizibleChars : ALocalInvalidChars;
     const wchar_t * Chars = CharsStr.c_str();
-    wchar_t * InvalidChar = const_cast<wchar_t *>(Result.c_str());
+    wchar_t * InvalidChar = ToWChar(Result);
     while ((InvalidChar = wcspbrk(InvalidChar, Chars)) != nullptr)
     {
       intptr_t Pos = (InvalidChar - Result.c_str() + 1);
@@ -629,7 +629,7 @@ UnicodeString ValidLocalFileName(
         ((Result[Result.Length()] == L' ') ||
          (Result[Result.Length()] == L'.')))
     {
-      ReplaceChar(Result, const_cast<wchar_t *>(Result.c_str() + Result.Length() - 1), AInvalidCharsReplacement);
+      ReplaceChar(Result, ToWChar(Result) + Result.Length() - 1, AInvalidCharsReplacement);
     }
 
     if (IsReservedName(Result))

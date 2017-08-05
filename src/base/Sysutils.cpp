@@ -19,7 +19,7 @@ intptr_t __cdecl debug_printf(const wchar_t * format, ...)
   va_start(args, format);
   intptr_t Len = _vscwprintf(format, args);
   UnicodeString Buf(Len + 1, 0);
-  vswprintf(const_cast<wchar_t *>(Buf.c_str()), Buf.GetLength(), format, args);
+  vswprintf(ToWChar(Buf), Buf.GetLength(), format, args);
   va_end(args);
   OutputDebugStringW(Buf.c_str());
 #endif
@@ -738,7 +738,7 @@ NextWord(const wchar_t * Input)
   wchar_t * pBuffer = Buffer.SetLength(NBChTraitsCRT<wchar_t>::SafeStringLen(Input));
   static const wchar_t * text = nullptr;
 
-  wchar_t * endOfBuffer = const_cast<wchar_t *>(Buffer.c_str()) + Buffer.GetLength() - 1;
+  wchar_t * endOfBuffer = ToWChar(Buffer) + Buffer.GetLength() - 1;
 
   if (Input)
   {
@@ -926,7 +926,7 @@ void AppendPathDelimiterW(UnicodeString & Str)
 UnicodeString ExpandEnvVars(UnicodeString Str)
 {
   UnicodeString Buf(NB_MAX_PATH, 0);
-  intptr_t Size = ::ExpandEnvironmentStringsW(Str.c_str(), const_cast<wchar_t *>(Buf.c_str()), static_cast<DWORD>(NB_MAX_PATH - 1));
+  intptr_t Size = ::ExpandEnvironmentStringsW(Str.c_str(), ToWChar(Buf), static_cast<DWORD>(NB_MAX_PATH - 1));
   UnicodeString Result = UnicodeString(Buf.c_str(), Size - 1);
   return Result;
 }
@@ -961,12 +961,12 @@ static UnicodeString ExpandFileName(UnicodeString AFileName)
 {
   UnicodeString Buf(NB_MAX_PATH + 1, 0);
   intptr_t Size = ::GetFullPathNameW(ApiPath(AFileName).c_str(), static_cast<DWORD>(Buf.Length() - 1),
-    reinterpret_cast<LPWSTR>(const_cast<wchar_t *>(Buf.c_str())), nullptr);
+    reinterpret_cast<LPWSTR>(ToWChar(Buf)), nullptr);
   if (Size > Buf.Length())
   {
     Buf.SetLength(Size);
     Size = ::GetFullPathNameW(ApiPath(AFileName).c_str(), static_cast<DWORD>(Buf.Length() - 1),
-      reinterpret_cast<LPWSTR>(const_cast<wchar_t *>(Buf.c_str())), nullptr);
+      reinterpret_cast<LPWSTR>(ToWChar(Buf)), nullptr);
   }
   UnicodeString Result = UnicodeString(Buf.c_str(), Size);
   return Result;

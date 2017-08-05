@@ -399,9 +399,9 @@ void AES256EncryptWithMAC(RawByteString Input, UnicodeString Password,
     reinterpret_cast<const uint8_t *>(Salt.c_str()), nullptr, &aes);
   Output = Input;
   Output.Unique();
-  fcrypt_encrypt(reinterpret_cast<uint8_t *>(const_cast<char *>(Output.c_str())), static_cast<uint32_t>(Output.Length()), &aes);
+  fcrypt_encrypt(reinterpret_cast<uint8_t *>(ToChar(Output)), static_cast<uint32_t>(Output.Length()), &aes);
   Mac.SetLength(MAC_LENGTH(PASSWORD_MANAGER_AES_MODE));
-  fcrypt_end(reinterpret_cast<uint8_t *>(const_cast<char *>(Mac.c_str())), &aes);
+  fcrypt_end(reinterpret_cast<uint8_t *>(ToChar(Mac)), &aes);
 }
 
 void AES256EncryptWithMAC(RawByteString Input, UnicodeString Password,
@@ -425,11 +425,11 @@ bool AES256DecryptWithMAC(RawByteString Input, UnicodeString Password,
     reinterpret_cast<const uint8_t *>(Salt.c_str()), nullptr, &aes);
   Output = Input;
   Output.Unique();
-  fcrypt_decrypt(reinterpret_cast<uint8_t *>(const_cast<char *>(Output.c_str())), static_cast<uint32_t>(Output.Length()), &aes);
+  fcrypt_decrypt(reinterpret_cast<uint8_t *>(ToChar(Output)), static_cast<uint32_t>(Output.Length()), &aes);
   RawByteString Mac2;
   Mac2.SetLength(MAC_LENGTH(PASSWORD_MANAGER_AES_MODE));
   DebugAssert(Mac.Length() == Mac2.Length());
-  fcrypt_end(reinterpret_cast<uint8_t *>(const_cast<char *>(Mac2.c_str())), &aes);
+  fcrypt_end(reinterpret_cast<uint8_t *>(ToChar(Mac2)), &aes);
   return (Mac2 == Mac);
 }
 
@@ -522,7 +522,7 @@ RawByteString ScramblePassword(UnicodeString Password)
   Buf[Padding] = static_cast<char>('0' + (Len % 10));
   Buf[Padding + 1] = static_cast<char>('0' + ((Len / 10) % 10));
   Buf[Padding + 2] = static_cast<char>('0' + ((Len / 100) % 10));
-  strcpy_s(Buf + Padding + 3, UtfPassword.Length(), const_cast<char *>((UtfPassword.c_str())));
+  strcpy_s(Buf + Padding + 3, UtfPassword.Length(), ToChar(UtfPassword));
   char * S = Buf;
   int Last = 31;
   while (*S != '\0')
@@ -540,7 +540,7 @@ RawByteString ScramblePassword(UnicodeString Password)
 bool UnscramblePassword(RawByteString Scrambled, UnicodeString & Password)
 {
   RawByteString LocalScrambled = Scrambled;
-  char * S = const_cast<char *>(LocalScrambled.c_str());
+  char * S = ToChar(LocalScrambled);
   int Last = 31;
   while (*S != '\0')
   {
@@ -554,7 +554,7 @@ bool UnscramblePassword(RawByteString Scrambled, UnicodeString & Password)
     S++;
   }
 
-  S = const_cast<char *>(LocalScrambled.c_str());
+  S = ToChar(LocalScrambled);
   while ((*S != '\0') && ((*S < '0') || (*S > '9')))
   {
     S++;

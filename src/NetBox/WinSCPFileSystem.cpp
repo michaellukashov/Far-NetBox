@@ -3805,7 +3805,7 @@ void TWinSCPFileSystem::ProcessEditorEvent(intptr_t Event, void * /*Param*/)
           UnicodeString FullFileName = base::UnixIncludeTrailingBackslash(it->second.Directory) +
             it->second.FileTitle;
           GetWinSCPPlugin()->FarEditorControl(ECTL_SETTITLE,
-            static_cast<void *>(const_cast<wchar_t *>(FullFileName.c_str())));
+            ToPtr(ToWChar(FullFileName)));
         }
       }
     }
@@ -3924,7 +3924,7 @@ void TWinSCPFileSystem::ProcessEditorEvent(intptr_t Event, void * /*Param*/)
             it->second.FileTitle;
           // note that we need to reset the title periodically (see EE_REDRAW)
           GetWinSCPPlugin()->FarEditorControl(ECTL_SETTITLE,
-            static_cast<void *>(const_cast<wchar_t *>(FullFileName.c_str())));
+            ToPtr(ToWChar(FullFileName)));
         }
 
         if (GetFarConfiguration()->GetEditorUploadOnSave())
@@ -4048,7 +4048,7 @@ void TWinSCPFileSystem::MultipleEdit(UnicodeString Directory,
       ClearStruct(Window);
       Window.Pos = static_cast<int>(Pos);
       UnicodeString EditedFileName(1024, 0);
-      Window.Name = const_cast<wchar_t *>(EditedFileName.c_str());
+      Window.Name = ToWChar(EditedFileName);
       Window.NameSize = static_cast<int>(EditedFileName.GetLength());
       if (FarPlugin->FarAdvControl(ACTL_GETWINDOWINFO, &Window) != 0)
       {

@@ -376,7 +376,7 @@ void TStrings::SetTextStr(UnicodeString Text)
       }
       UnicodeString S;
       S.SetLength(P - Start);
-      memmove(const_cast<wchar_t *>(S.c_str()), Start, (P - Start) * sizeof(wchar_t));
+      memmove(ToWChar(S), Start, (P - Start) * sizeof(wchar_t));
       Add(S);
       if (*P == 0x0D)
       {

@@ -1153,7 +1153,7 @@ void TAboutDialog::UrlTextClick(TFarDialogItem * /*Item*/,
   MOUSE_EVENT_RECORD * /*Event*/)
 {
   UnicodeString Address = GetMsg(NB_ABOUT_URL);
-  ::ShellExecute(nullptr, L"open", const_cast<wchar_t *>(Address.c_str()), nullptr, nullptr, SW_SHOWNORMAL);
+  ::ShellExecute(nullptr, L"open", ToWChar(Address), nullptr, nullptr, SW_SHOWNORMAL);
 }
 
 void TAboutDialog::UrlButtonClick(TFarButton * Sender, bool & /*Close*/)
@@ -1168,7 +1168,7 @@ void TAboutDialog::UrlButtonClick(TFarButton * Sender, bool & /*Close*/)
     Address = GetMsg(NB_ABOUT_URL) + L"forum/";
     break;
   }
-  ::ShellExecute(nullptr, L"open", const_cast<wchar_t *>(Address.c_str()), nullptr, nullptr, SW_SHOWNORMAL);
+  ::ShellExecute(nullptr, L"open", ToWChar(Address), nullptr, nullptr, SW_SHOWNORMAL);
 }
 
 void TWinSCPPlugin::AboutDialog()
