@@ -947,7 +947,7 @@ void TWinInteractiveCustomCommand::PatternHint(intptr_t Index, UnicodeString Pat
 }
 
 void TWinInteractiveCustomCommand::Prompt(
-  intptr_t Index, UnicodeString Prompt, UnicodeString & Value) const
+  intptr_t /*Index*/, UnicodeString Prompt, UnicodeString & /*Value*/) const
 {
   UnicodeString APrompt = Prompt;
 #if 0
