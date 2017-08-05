@@ -1942,7 +1942,7 @@ template <typename Char>
 class ArgMap {
  private:
   typedef std::vector<
-    std::pair<fmt::BasicStringRef<Char>, internal::Arg> > MapType;
+    std::pair<fmt::BasicStringRef<Char>, internal::Arg>, custom_nballocator_t<std::pair<fmt::BasicStringRef<Char>, internal::Arg>> > MapType;
   typedef typename MapType::value_type Pair;
 
   MapType map_;
