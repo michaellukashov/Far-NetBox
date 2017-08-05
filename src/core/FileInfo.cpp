@@ -2,6 +2,7 @@
 #pragma hdrstop
 
 #include <Common.h>
+#include <nbutils.h>
 #include <Exceptions.h>
 #include <FileBuffer.h>
 #include <Windows.hpp>

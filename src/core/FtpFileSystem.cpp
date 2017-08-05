@@ -12,6 +12,7 @@
 #include "FileZillaIntf.h"
 
 #include <Common.h>
+#include <nbutils.h>
 #include <Exceptions.h>
 #include "Terminal.h"
 #include "TextsCore.h"

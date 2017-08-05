@@ -9,6 +9,7 @@
 #include <Common.h>
 #include <rtlconsts.h>
 #include <Sysutils.hpp>
+#include <nbutils.h>
 
 #if 0
 intptr_t __cdecl debug_printf(const wchar_t * format, ...)

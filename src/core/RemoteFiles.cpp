@@ -3,6 +3,7 @@
 #pragma hdrstop
 
 #include <Common.h>
+#include <nbutils.h>
 #include <Sysutils.hpp>
 #include <StrUtils.hpp>
 
