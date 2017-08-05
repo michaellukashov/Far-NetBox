@@ -16,7 +16,6 @@
 #define nb_realloc(ptr, size) dlrealloc(ptr, size)
 
 #if defined(__cplusplus)
-//#define nb_free(ptr) dlfree(reinterpret_cast<void *>(const_cast<T>(ptr)))
 template<typename T>
 void nb_free(const T * ptr) { dlfree(reinterpret_cast<void *>(const_cast<T *>(ptr))); }
 #else
@@ -57,16 +56,16 @@ void nb_free(const T * ptr) { ::free(reinterpret_cast<void *>(const_cast<T *>(pt
 namespace nb {
 
 template<typename T>
-inline T calloc(size_t size) { return static_cast<T>(nb_calloc(1, size)); }
+inline T calloc(size_t count, size_t size) { return static_cast<T>(nb_calloc(count, size)); }
 template<typename T>
 inline T realloc(T ptr, size_t size) { return static_cast<T>(nb_realloc(ptr, size)); }
 
-inline char *chcalloc(size_t size) { return calloc<char *>(size); }
-inline wchar_t *wchcalloc(size_t size) { return calloc<wchar_t *>(size); }
+inline char *chcalloc(size_t size) { return calloc<char *>(1, size); }
+inline wchar_t *wchcalloc(size_t size) { return calloc<wchar_t *>(1, size * sizeof(wchar_t)); }
 
 inline void * operator_new(size_t size)
 {
-  void * p = nb_calloc(1, size);
+  void * p = calloc<void *>(1, size);
   /*if (!p)
   {
     static std::bad_alloc badalloc;
@@ -199,7 +198,7 @@ struct custom_nballocator_t
   {
     if (0 == s)
       return nullptr;
-    pointer temp = nb::calloc<pointer>(s * sizeof(T));
+    pointer temp = nb::calloc<pointer>(s, sizeof(T));
 #if !defined(__MINGW32__)
     if (temp == nullptr)
       throw std::bad_alloc();
