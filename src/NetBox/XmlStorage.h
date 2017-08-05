@@ -55,7 +55,7 @@ private:
   UnicodeString ToUnicodeString(const char * String) const { return ::MB2W(String ? String : ""); }
   void RemoveIfExists(UnicodeString Name);
   void AddNewElement(UnicodeString Name, UnicodeString Value);
-  tinyxml2::XMLElement * FindChildElement(const std::string & subKey) const;
+  tinyxml2::XMLElement * FindChildElement(AnsiString SubKey) const;
   UnicodeString GetValue(tinyxml2::XMLElement * Element) const;
 
   bool ReadXml();
