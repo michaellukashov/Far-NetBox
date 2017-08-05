@@ -317,11 +317,14 @@ NB_CORE_EXPORT bool RemoveFile(UnicodeString AFileName);
 NB_CORE_EXPORT bool CreateDir(UnicodeString ADir, LPSECURITY_ATTRIBUTES SecurityAttributes = nullptr);
 NB_CORE_EXPORT bool RemoveDir(UnicodeString ADir);
 
+// not used
+#if 0
 NB_CORE_EXPORT UnicodeString Format(const wchar_t * Format, ...);
 NB_CORE_EXPORT UnicodeString FormatV(const wchar_t * Format, va_list Args);
 NB_CORE_EXPORT AnsiString FormatA(const char * Format, ...);
 NB_CORE_EXPORT AnsiString FormatA(const char * Format, va_list Args);
 NB_CORE_EXPORT UnicodeString FmtLoadStr(intptr_t Id, ...);
+#endif // #if 0
 
 NB_CORE_EXPORT UnicodeString WrapText(UnicodeString Line, intptr_t MaxWidth = 40);
 

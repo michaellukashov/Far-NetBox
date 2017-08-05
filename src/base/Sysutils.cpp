@@ -664,6 +664,7 @@ bool RemoveFile(UnicodeString AFileName)
   return !::FileExists(AFileName);
 }
 
+#if 0
 UnicodeString Format(const wchar_t * Format, ...)
 {
   va_list Args;
@@ -725,6 +726,7 @@ UnicodeString FmtLoadStr(intptr_t Id, ...)
   DEBUG_PRINTF("Unknown resource string id: %d\n", Id);
   return UnicodeString();
 }
+#endif // #if 0
 
 // Returns the next available word, ignoring whitespace
 static const wchar_t *
