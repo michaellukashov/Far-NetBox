@@ -279,8 +279,8 @@ void TCustomFarPlugin::InvalidateOpenPanelInfo()
 {
   for (intptr_t Index = 0; Index < FOpenedPlugins->GetCount(); ++Index)
   {
-    TCustomFarFileSystem * FarFileSystem =
-      FOpenedPlugins->GetAs<TCustomFarFileSystem>(Index);
+    TCustomFarFileSystem * FarFileSystem = FOpenedPlugins->GetAs<TCustomFarFileSystem>(Index);
+    DebugAssert(FarFileSystem);
     FarFileSystem->InvalidateOpenPanelInfo();
   }
 }
@@ -351,7 +351,9 @@ void TCustomFarPlugin::ClosePanel(void * Plugin)
   try
   {
     ResetCachedInfo();
-    TCustomFarFileSystem * FarFileSystem = get_as<TCustomFarFileSystem>(Plugin);
+    TCustomFarFileSystem * FarFileSystem = reinterpret_cast<TCustomFarFileSystem *>(Plugin);
+    if (!FarFileSystem || !FOpenedPlugins || (FOpenedPlugins->IndexOf(FarFileSystem) == NPOS))
+      return;
     CloseFileSystem(FarFileSystem);
   }
   catch (Exception & E)
@@ -405,8 +407,8 @@ void TCustomFarPlugin::GetOpenPanelInfo(struct OpenPanelInfo * Info)
 {
   if (!Info)
     return;
-  TCustomFarFileSystem * FarFileSystem = get_as<TCustomFarFileSystem>(Info->hPanel);
-  if (!FOpenedPlugins || !FarFileSystem || (FOpenedPlugins->IndexOf(FarFileSystem) == NPOS))
+  TCustomFarFileSystem * FarFileSystem = reinterpret_cast<TCustomFarFileSystem *>(Info->hPanel);
+  if (!FarFileSystem || !FOpenedPlugins || (FOpenedPlugins->IndexOf(FarFileSystem) == NPOS))
     return;
   try
   {
@@ -424,8 +426,8 @@ void TCustomFarPlugin::GetOpenPanelInfo(struct OpenPanelInfo * Info)
 
 intptr_t TCustomFarPlugin::GetFindData(struct GetFindDataInfo * Info)
 {
-  TCustomFarFileSystem * FarFileSystem = get_as<TCustomFarFileSystem>(Info->hPanel);
-  if (!FarFileSystem)
+  TCustomFarFileSystem * FarFileSystem = reinterpret_cast<TCustomFarFileSystem *>(Info->hPanel);
+  if (!FarFileSystem || !FOpenedPlugins || (FOpenedPlugins->IndexOf(FarFileSystem) == NPOS))
     return 0;
   try
   {
@@ -447,7 +449,9 @@ intptr_t TCustomFarPlugin::GetFindData(struct GetFindDataInfo * Info)
 
 void TCustomFarPlugin::FreeFindData(const struct FreeFindDataInfo * Info)
 {
-  TCustomFarFileSystem * FarFileSystem = get_as<TCustomFarFileSystem>(Info->hPanel);
+  TCustomFarFileSystem * FarFileSystem = reinterpret_cast<TCustomFarFileSystem *>(Info->hPanel);
+  if (!FarFileSystem || !FOpenedPlugins || (FOpenedPlugins->IndexOf(FarFileSystem) == NPOS))
+    return;
   try
   {
     ResetCachedInfo();
@@ -467,7 +471,9 @@ void TCustomFarPlugin::FreeFindData(const struct FreeFindDataInfo * Info)
 
 intptr_t TCustomFarPlugin::ProcessHostFile(const struct ProcessHostFileInfo * Info)
 {
-  TCustomFarFileSystem * FarFileSystem = get_as<TCustomFarFileSystem>(Info->hPanel);
+  TCustomFarFileSystem * FarFileSystem = reinterpret_cast<TCustomFarFileSystem *>(Info->hPanel);
+  if (!FarFileSystem || !FOpenedPlugins || (FOpenedPlugins->IndexOf(FarFileSystem) == NPOS))
+    return 0;
   try
   {
     ResetCachedInfo();
@@ -495,7 +501,9 @@ intptr_t TCustomFarPlugin::ProcessHostFile(const struct ProcessHostFileInfo * In
 
 intptr_t TCustomFarPlugin::ProcessPanelInput(const struct ProcessPanelInputInfo * Info)
 {
-  TCustomFarFileSystem * FarFileSystem = get_as<TCustomFarFileSystem>(Info->hPanel);
+  TCustomFarFileSystem * FarFileSystem = reinterpret_cast<TCustomFarFileSystem *>(Info->hPanel);
+  if (!FarFileSystem || !FOpenedPlugins || (FOpenedPlugins->IndexOf(FarFileSystem) == NPOS))
+    return 0;
   try
   {
     ResetCachedInfo();
@@ -525,8 +533,8 @@ intptr_t TCustomFarPlugin::ProcessPanelInput(const struct ProcessPanelInputInfo 
 
 intptr_t TCustomFarPlugin::ProcessPanelEvent(const struct ProcessPanelEventInfo * Info)
 {
-  TCustomFarFileSystem * FarFileSystem = get_as<TCustomFarFileSystem>(Info->hPanel);
-  if (!FarFileSystem)
+  TCustomFarFileSystem * FarFileSystem = reinterpret_cast<TCustomFarFileSystem *>(Info->hPanel);
+  if (!FarFileSystem || !FOpenedPlugins || (FOpenedPlugins->IndexOf(FarFileSystem) == NPOS))
     return 0;
   try
   {
@@ -561,7 +569,9 @@ intptr_t TCustomFarPlugin::ProcessPanelEvent(const struct ProcessPanelEventInfo 
 
 intptr_t TCustomFarPlugin::SetDirectory(const struct SetDirectoryInfo * Info)
 {
-  TCustomFarFileSystem * FarFileSystem = get_as<TCustomFarFileSystem>(Info->hPanel);
+  TCustomFarFileSystem * FarFileSystem = reinterpret_cast<TCustomFarFileSystem *>(Info->hPanel);
+  if (!FarFileSystem || !FOpenedPlugins || (FOpenedPlugins->IndexOf(FarFileSystem) == NPOS))
+    return 0;
   DebugAssert(FarFileSystem);
   if (!FarFileSystem)
   {
@@ -605,7 +615,9 @@ intptr_t TCustomFarPlugin::SetDirectory(const struct SetDirectoryInfo * Info)
 
 intptr_t TCustomFarPlugin::MakeDirectory(struct MakeDirectoryInfo * Info)
 {
-  TCustomFarFileSystem * FarFileSystem = get_as<TCustomFarFileSystem>(Info->hPanel);
+  TCustomFarFileSystem * FarFileSystem = reinterpret_cast<TCustomFarFileSystem *>(Info->hPanel);
+  if (!FarFileSystem || !FOpenedPlugins || (FOpenedPlugins->IndexOf(FarFileSystem) == NPOS))
+    return 0;
   try
   {
     ResetCachedInfo();
@@ -626,7 +638,9 @@ intptr_t TCustomFarPlugin::MakeDirectory(struct MakeDirectoryInfo * Info)
 
 intptr_t TCustomFarPlugin::DeleteFiles(const struct DeleteFilesInfo * Info)
 {
-  TCustomFarFileSystem * FarFileSystem = get_as<TCustomFarFileSystem>(Info->hPanel);
+  TCustomFarFileSystem * FarFileSystem = reinterpret_cast<TCustomFarFileSystem *>(Info->hPanel);
+  if (!FarFileSystem || !FOpenedPlugins || (FOpenedPlugins->IndexOf(FarFileSystem) == NPOS))
+    return 0;
   try
   {
     ResetCachedInfo();
@@ -647,7 +661,9 @@ intptr_t TCustomFarPlugin::DeleteFiles(const struct DeleteFilesInfo * Info)
 
 intptr_t TCustomFarPlugin::GetFiles(struct GetFilesInfo * Info)
 {
-  TCustomFarFileSystem * FarFileSystem = get_as<TCustomFarFileSystem>(Info->hPanel);
+  TCustomFarFileSystem * FarFileSystem = reinterpret_cast<TCustomFarFileSystem *>(Info->hPanel);
+  if (!FarFileSystem || !FOpenedPlugins || (FOpenedPlugins->IndexOf(FarFileSystem) == NPOS))
+    return 0;
   try
   {
     ResetCachedInfo();
@@ -669,9 +685,9 @@ intptr_t TCustomFarPlugin::GetFiles(struct GetFilesInfo * Info)
 
 intptr_t TCustomFarPlugin::PutFiles(const struct PutFilesInfo * Info)
 {
-  TCustomFarFileSystem * FarFileSystem = get_as<TCustomFarFileSystem>(Info->hPanel);
-  if (!FarFileSystem)
-    return 1;
+  TCustomFarFileSystem * FarFileSystem = reinterpret_cast<TCustomFarFileSystem *>(Info->hPanel);
+  if (!FarFileSystem || !FOpenedPlugins || (FOpenedPlugins->IndexOf(FarFileSystem) == NPOS))
+    return 0;
   try
   {
     ResetCachedInfo();

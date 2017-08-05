@@ -51,11 +51,11 @@ protected:
 private:
   UnicodeString GetSubKeyText(const UnicodeString & Name) const;
   tinyxml2::XMLElement * FindElement(const UnicodeString & Name) const;
-  std::string ToStdString(const UnicodeString & String) const { return std::string(::W2MB(String.c_str()).c_str()); }
+  //std::string ToStdString(UnicodeString String) const { return std::string(::W2MB(String.c_str()).c_str()); }
   UnicodeString ToUnicodeString(const char * String) const { return ::MB2W(String ? String : ""); }
   void RemoveIfExists(const UnicodeString & Name);
   void AddNewElement(const UnicodeString & Name, const UnicodeString & Value);
-  tinyxml2::XMLElement * FindChildElement(const std::string & subKey) const;
+  tinyxml2::XMLElement * FindChildElement(const AnsiString & subKey) const;
   UnicodeString GetValue(tinyxml2::XMLElement * Element) const;
 
   bool ReadXml();

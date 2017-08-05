@@ -441,8 +441,8 @@ intptr_t UTF8String::Pos(char Ch) const
 
 int UTF8String::vprintf(const char * Format, va_list ArgList)
 {
-  SetLength(32 * 1024);
-  int Size = vsnprintf_s((char *)Data.c_str(), Data.GetLength(), _TRUNCATE, Format, ArgList);
+  char * Buf = SetLength(32 * 1024);
+  int Size = vsnprintf_s(Buf, Data.GetLength(), _TRUNCATE, Format, ArgList);
   Data.Truncate(Size);
   return Size;
 }

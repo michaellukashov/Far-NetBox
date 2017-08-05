@@ -4230,10 +4230,10 @@ void TWinSCPFileSystem::ShowLog()
 UnicodeString TWinSCPFileSystem::GetFileNameHash(const UnicodeString & AFileName) const
 {
   RawByteString Result;
-  Result.SetLength(16);
+  char * Buf = Result.SetLength(16);
   md5checksum(
     reinterpret_cast<const char *>(AFileName.c_str()), static_cast<int>(AFileName.Length() * sizeof(wchar_t)),
-    reinterpret_cast<uint8_t *>(const_cast<char *>(Result.c_str())));
+    reinterpret_cast<uint8_t *>(Buf));
   return BytesToHex(Result);
 }
 
