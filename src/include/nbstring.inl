@@ -489,6 +489,7 @@ CMStringT<BaseType, StringTraits>::CMStringT(CMStringDataFormat, const XCHAR *ps
   va_list args;
   va_start(args, pszFormat);
   FormatV(pszFormat, args);
+  va_end(args);
 }
 
 template< typename BaseType, class StringTraits >
