@@ -1075,7 +1075,7 @@ double __fastcall TCustomIniFileStorage::ReadFloat(const UnicodeString Name, dou
         }
         else
         {
-          Result = static_cast<double>(StrToFloat(Value));
+          Result = ToDouble(StrToFloat(Value));
         }
       }
       catch(...)

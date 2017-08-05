@@ -515,7 +515,7 @@ RawByteString ScramblePassword(UnicodeString Password)
     int P = 0;
     while ((P <= 0) || (P > 255) || IsDigit(static_cast<wchar_t>(P)))
     {
-      P = ToInt(static_cast<double>(rand()) / (static_cast<double>(RAND_MAX) / 256.0));
+      P = ToInt(ToDouble(rand()) / (ToDouble(RAND_MAX) / 256.0));
     }
     Buf[Index] = static_cast<uint8_t>(P);
   }

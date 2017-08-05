@@ -1351,7 +1351,7 @@ static bool TryEncodeDate(int Year, int Month, int Day, TDateTime & Date)
       Day += (*DayTable)[Index - 1];
     }
     int Idx = Year - 1;
-    Date = TDateTime(static_cast<double>(Idx * 365 + Idx / 4 - Idx / 100 + Idx / 400 + Day - DateDelta));
+    Date = TDateTime(ToDouble(Idx * 365 + Idx / 4 - Idx / 100 + Idx / 400 + Day - DateDelta));
     return true;
   }
   return false;

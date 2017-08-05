@@ -1586,23 +1586,23 @@ static const TDateTimeParams * GetDateTimeParams(uint16_t Year)
     }
 
     Result->BaseDifferenceSec = TZI.Bias;
-    Result->BaseDifference = static_cast<double>(TZI.Bias) / MinsPerDay;
+    Result->BaseDifference = ToDouble(TZI.Bias) / MinsPerDay;
     Result->BaseDifferenceSec *= SecsPerMin;
 
     Result->CurrentDifferenceSec = TZI.Bias +
       Result->CurrentDaylightDifferenceSec;
     Result->CurrentDifference =
-      static_cast<double>(Result->CurrentDifferenceSec) / MinsPerDay;
+      ToDouble(Result->CurrentDifferenceSec) / MinsPerDay;
     Result->CurrentDifferenceSec *= SecsPerMin;
 
     Result->CurrentDaylightDifference =
-      static_cast<double>(Result->CurrentDaylightDifferenceSec) / MinsPerDay;
+      ToDouble(Result->CurrentDaylightDifferenceSec) / MinsPerDay;
     Result->CurrentDaylightDifferenceSec *= SecsPerMin;
 
     Result->DaylightDifferenceSec = TZI.DaylightBias * SecsPerMin;
-    Result->DaylightDifference = static_cast<double>(TZI.DaylightBias) / MinsPerDay;
+    Result->DaylightDifference = ToDouble(TZI.DaylightBias) / MinsPerDay;
     Result->StandardDifferenceSec = TZI.StandardBias * SecsPerMin;
-    Result->StandardDifference = static_cast<double>(TZI.StandardBias) / MinsPerDay;
+    Result->StandardDifference = ToDouble(TZI.StandardBias) / MinsPerDay;
 
     Result->SystemStandardDate = TZI.StandardDate;
     Result->SystemDaylightDate = TZI.DaylightDate;
@@ -1697,7 +1697,7 @@ TDateTime UnixToDateTime(int64_t TimeStamp, TDSTMode DSTMode)
 {
   DebugAssert(int(EncodeDateVerbose(1970, 1, 1)) == UnixDateDelta);
 
-  TDateTime Result = TDateTime(UnixDateDelta + (static_cast<double>(TimeStamp) / SecsPerDay));
+  TDateTime Result = TDateTime(UnixDateDelta + (ToDouble(TimeStamp) / SecsPerDay));
   const TDateTimeParams * Params = GetDateTimeParams(DecodeYear(Result));
 
   if (Params->DaylightHack)
@@ -1861,7 +1861,7 @@ static int64_t DateTimeToUnix(const TDateTime & DateTime)
 
   DebugAssert(int(EncodeDateVerbose(1970, 1, 1)) == UnixDateDelta);
 
-  return Round(static_cast<double>(DateTime - UnixDateDelta) * SecsPerDay) +
+  return Round(ToDouble(DateTime - UnixDateDelta) * SecsPerDay) +
     CurrentParams->CurrentDifferenceSec;
 }
 
@@ -2907,7 +2907,7 @@ UnicodeString FormatDateTimeSpan(const UnicodeString TimeFormat, TDateTime DateT
     }
     // days are decremented, because when there are to many of them,
     // "integer overflow" error occurs
-    Result += FormatDateTime(TimeFormat, DateTime - TDateTime(static_cast<double>(static_cast<int64_t>(DateTime))));
+    Result += FormatDateTime(TimeFormat, DateTime - TDateTime(ToDouble(static_cast<int64_t>(DateTime))));
   }
   catch (...)
   {

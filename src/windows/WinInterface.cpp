@@ -701,7 +701,7 @@ void BusyEnd(void * /*Token*/)
 
 static DWORD MainThread = 0;
 static TDateTime LastGUIUpdate(0.0);
-static double GUIUpdateIntervalFrac = static_cast<double>(OneSecond / 1000 * GUIUpdateInterval); // 1/5 sec
+static double GUIUpdateIntervalFrac = ToDouble(OneSecond / 1000 * GUIUpdateInterval); // 1/5 sec
 static bool NoGUI = false;
 
 void SetNoGUI()
