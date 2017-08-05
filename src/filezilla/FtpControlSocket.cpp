@@ -6132,8 +6132,8 @@ CString CFtpControlSocket::ConvertDomainName(CString domain)
 
   LPCWSTR buffer = T2CW(domain);
 
-  char *utf8 = nb::chcalloc(wcslen(buffer) * 2 + 2);
-  if (!WideCharToMultiByte(CP_UTF8, 0, buffer, -1, utf8, (int)(wcslen(buffer) * 2 + 2), 0, 0))
+  char *utf8 = nb::chcalloc(nb::StrLength(buffer) * 2 + 2);
+  if (!WideCharToMultiByte(CP_UTF8, 0, buffer, -1, utf8, (int)(nb::StrLength(buffer) * 2 + 2), 0, 0))
   {
     nb_free(utf8);
     LogMessage(FZ_LOG_WARNING, L"Could not convert domain name");

@@ -12,6 +12,7 @@
 #include "FileZillaIntf.h"
 
 #include <Common.h>
+#include <nbutils.h>
 #include <Exceptions.h>
 #include "Terminal.h"
 #include "TextsCore.h"
@@ -4365,9 +4366,9 @@ UnicodeString FormatContact(const TFtpsCertificateData::TContact & Contact)
         Contact.Organization, Contact.Unit).c_str(), Contact.CommonName).c_str(), Contact.Mail).c_str())
   ;
 
-  if ((wcslen(Contact.Country) > 0) ||
-    (wcslen(Contact.StateProvince) > 0) ||
-    (wcslen(Contact.Town) > 0))
+  if ((nb::StrLength(Contact.Country) > 0) ||
+    (nb::StrLength(Contact.StateProvince) > 0) ||
+    (nb::StrLength(Contact.Town) > 0))
   {
     Result +=
       FORMAT(LoadStrPart(VERIFY_CERT_CONTACT, 2).c_str(),
@@ -4376,7 +4377,7 @@ UnicodeString FormatContact(const TFtpsCertificateData::TContact & Contact)
       ;
   }
 
-  if (wcslen(Contact.Other) > 0)
+  if (nb::StrLength(Contact.Other) > 0)
   {
     Result += FORMAT(LoadStrPart(VERIFY_CERT_CONTACT, 3).c_str(), Contact.Other);
   }
@@ -4874,7 +4875,7 @@ bool TFTPFileSystem::HandleListData(const wchar_t * Path,
         File->SetFileName(Entry->Name);
         try
         {
-          intptr_t PermissionsLen = wcslen(Entry->Permissions);
+          intptr_t PermissionsLen = nb::StrLength(Entry->Permissions);
           if (PermissionsLen >= 10)
           {
             File->GetRights()->SetText(Entry->Permissions + 1);
