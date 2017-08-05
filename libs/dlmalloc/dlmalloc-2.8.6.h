@@ -49,27 +49,27 @@ extern "C" {
 #if !ONLY_MSPACES
 
 #ifndef USE_DL_PREFIX
-#define dlcalloc               calloc
-#define dlfree                 free
-#define dlmalloc               malloc
-#define dlmemalign             memalign
-#define dlposix_memalign       posix_memalign
-#define dlrealloc              realloc
-#define dlvalloc               valloc
-#define dlpvalloc              pvalloc
-#define dlmallinfo             mallinfo
-#define dlmallopt              mallopt
-#define dlmalloc_trim          malloc_trim
-#define dlmalloc_stats         malloc_stats
-#define dlmalloc_usable_size   malloc_usable_size
-#define dlmalloc_footprint     malloc_footprint
-#define dlmalloc_max_footprint malloc_max_footprint
-#define dlmalloc_footprint_limit malloc_footprint_limit
-#define dlmalloc_set_footprint_limit malloc_set_footprint_limit
-#define dlmalloc_inspect_all   malloc_inspect_all
-#define dlindependent_calloc   independent_calloc
-#define dlindependent_comalloc independent_comalloc
-#define dlbulk_free            bulk_free
+#define dlcalloc               ::calloc
+#define dlfree                 ::free
+#define dlmalloc               ::malloc
+#define dlmemalign             ::memalign
+#define dlposix_memalign       ::posix_memalign
+#define dlrealloc              ::realloc
+#define dlvalloc               ::valloc
+#define dlpvalloc              ::pvalloc
+#define dlmallinfo             ::mallinfo
+#define dlmallopt              ::mallopt
+#define dlmalloc_trim          ::malloc_trim
+#define dlmalloc_stats         ::malloc_stats
+#define dlmalloc_usable_size   ::malloc_usable_size
+#define dlmalloc_footprint     ::malloc_footprint
+#define dlmalloc_max_footprint ::malloc_max_footprint
+#define dlmalloc_footprint_limit ::malloc_footprint_limit
+#define dlmalloc_set_footprint_limit ::malloc_set_footprint_limit
+#define dlmalloc_inspect_all   ::malloc_inspect_all
+#define dlindependent_calloc   ::independent_calloc
+#define dlindependent_comalloc ::independent_comalloc
+#define dlbulk_free            ::bulk_free
 #endif /* USE_DL_PREFIX */
 
 #if !NO_MALLINFO 
