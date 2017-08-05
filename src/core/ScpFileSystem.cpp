@@ -218,7 +218,7 @@ void TCommandSet::SetCommands(TFSCommand Cmd, UnicodeString Value)
 {
   CHECK_CMD;
   AnsiString AnsiValue(Value);
-  strcpy_s(const_cast<char *>(CommandSet[Cmd].Command), MaxCommandLen, AnsiValue.SubString(1, MaxCommandLen - 1).c_str());
+  strcpy_s(const_cast<char *>(CommandSet[Cmd].Command.c_str()), MaxCommandLen, AnsiValue.SubString(1, MaxCommandLen - 1).c_str());
 }
 
 UnicodeString TCommandSet::GetCommands(TFSCommand Cmd) const
