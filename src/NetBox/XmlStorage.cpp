@@ -49,7 +49,7 @@ bool TXmlStorage::ReadXml()
     return false;
   }
   AnsiString buff(buffSize, 0);
-  if (!xmlFile.Read(&buff[0], buffSize))
+  if (!xmlFile.Read(&buff[1], buffSize))
   {
     return false;
   }
