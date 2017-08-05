@@ -328,7 +328,7 @@ int __stdcall CMSimpleStringT<BaseType>::StringLength(const char* psz)
   if (psz == nullptr)
     return(0);
 
-  return (int(strlen(psz)));
+  return (int)strlen(psz);
 }
 
 template<typename BaseType>
@@ -337,7 +337,7 @@ int __stdcall CMSimpleStringT<BaseType>::StringLength(const wchar_t* psz)
   if (psz == nullptr)
     return 0;
 
-  return int(wcslen(psz));
+  return (int)wcslen(psz);
 }
 
 template<typename BaseType>
