@@ -20,7 +20,7 @@ public:
 
   ~UTF8String() {}
 
-  operator const char *() const { return c_str(); }
+  operator const char *() const { return this->c_str(); }
   const char * c_str() const { return Data.c_str(); }
   intptr_t Length() const { return Data.GetLength(); }
   intptr_t GetLength() const { return Length(); }
@@ -299,7 +299,7 @@ public:
   RawByteString(const UTF8String & Str);
   ~RawByteString() {}
 
-  operator const char *() const { return Data.c_str(); }
+  operator const char *() const { return this->c_str(); }
   operator UnicodeString() const;
   const char * c_str() const { return Data.c_str(); }
   intptr_t Length() const { return Data.GetLength(); }

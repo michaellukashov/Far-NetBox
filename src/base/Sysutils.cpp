@@ -16,13 +16,13 @@ intptr_t __cdecl debug_printf(const wchar_t * format, ...)
 #ifndef NDEBUG
   va_list args;
   va_start(args, format);
-  intptr_t len = _vscwprintf(format, args);
-  std::wstring buf(len + 1, 0);
-  vswprintf(const_cast<wchar_t *>(buf.c_str()), buf.size(), format, args);
+  intptr_t Len = _vscwprintf(format, args);
+  UnicodeString Buf(Len + 1, 0);
+  vswprintf(const_cast<wchar_t *>(Buf.c_str()), Buf.GetLength(), format, args);
   va_end(args);
-  OutputDebugStringW(buf.c_str());
+  OutputDebugStringW(Buf.c_str());
 #endif
-  return len;
+  return Len;
 }
 
 intptr_t __cdecl debug_printf2(const char * format, ...)
@@ -31,13 +31,13 @@ intptr_t __cdecl debug_printf2(const char * format, ...)
 #ifndef NDEBUG
   va_list args;
   va_start(args, format);
-  intptr_t len = _vscprintf(format, args);
-  std::string buf(len + sizeof(char), 0);
-  vsprintf_s(&buf[0], buf.size(), format, args);
+  intptr_t Len = _vscprintf(format, args);
+  AnsiString Buf(Len + sizeof(char), 0);
+  vsprintf_s(&Buf[0], Buf.GetLength(), format, args);
   va_end(args);
-  OutputDebugStringA(buf.c_str());
+  OutputDebugStringA(Buf.c_str());
 #endif
-  return len;
+  return Len;
 }
 
 UnicodeString MB2W(const char * src, const UINT cp)
@@ -730,11 +730,11 @@ UnicodeString FmtLoadStr(intptr_t Id, ...)
 static const wchar_t *
 NextWord(const wchar_t * Input)
 {
-  static UnicodeString buffer(1024, 0);
+  static UnicodeString Buffer;
+  wchar_t * pBuffer = Buffer.SetLength(NBChTraitsCRT<wchar_t>::SafeStringLen(Input));
   static const wchar_t * text = nullptr;
 
-  wchar_t * endOfBuffer = const_cast<wchar_t *>(buffer.c_str()) + buffer.GetLength() - 1;
-  wchar_t * pBuffer = const_cast<wchar_t *>(buffer.c_str());
+  wchar_t * endOfBuffer = const_cast<wchar_t *>(Buffer.c_str()) + Buffer.GetLength() - 1;
 
   if (Input)
   {
@@ -758,7 +758,7 @@ NextWord(const wchar_t * Input)
 
   *pBuffer = 0;
 
-  return buffer.c_str();
+  return Buffer.c_str();
 }
 
 UnicodeString WrapText(UnicodeString Line, intptr_t MaxWidth)
@@ -930,7 +930,7 @@ void AppendPathDelimiterW(UnicodeString & Str)
 UnicodeString ExpandEnvVars(UnicodeString Str)
 {
   UnicodeString Buf(NB_MAX_PATH, 0);
-  intptr_t Size = ::ExpandEnvironmentStringsW(Str.c_str(), const_cast<wchar_t *>(Buf.c_str()), static_cast<DWORD>(32 * 1024 - 1));
+  intptr_t Size = ::ExpandEnvironmentStringsW(Str.c_str(), const_cast<wchar_t *>(Buf.c_str()), static_cast<DWORD>(NB_MAX_PATH - 1));
   UnicodeString Result = UnicodeString(Buf.c_str(), Size - 1);
   return Result;
 }
@@ -963,20 +963,20 @@ UnicodeString ExtractFileExt(UnicodeString AFileName)
 
 static UnicodeString ExpandFileName(UnicodeString AFileName)
 {
-  UnicodeString Result;
-  UnicodeString Buf(NB_MAX_PATH, 0);
-  intptr_t Size = ::GetFullPathNameW(AFileName.c_str(), static_cast<DWORD>(Buf.Length() - 1),
+  UnicodeString Buf(NB_MAX_PATH + 1, 0);
+  intptr_t Size = ::GetFullPathNameW(ApiPath(AFileName).c_str(), static_cast<DWORD>(Buf.Length() - 1),
     reinterpret_cast<LPWSTR>(const_cast<wchar_t *>(Buf.c_str())), nullptr);
   if (Size > Buf.Length())
   {
     Buf.SetLength(Size);
-    Size = ::GetFullPathNameW(AFileName.c_str(), static_cast<DWORD>(Buf.Length() - 1),
+    Size = ::GetFullPathNameW(ApiPath(AFileName).c_str(), static_cast<DWORD>(Buf.Length() - 1),
       reinterpret_cast<LPWSTR>(const_cast<wchar_t *>(Buf.c_str())), nullptr);
   }
-  return UnicodeString(Buf.c_str(), Size);
+  UnicodeString Result = UnicodeString(Buf.c_str(), Size);
+  return Result;
 }
 
-static UnicodeString GetUniversalName(UnicodeString & AFileName)
+static UnicodeString GetUniversalName(UnicodeString AFileName)
 {
   UnicodeString Result = AFileName;
   return Result;
