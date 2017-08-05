@@ -49,10 +49,10 @@ UnicodeString UnMungeStr(const UnicodeString & Str)
   // Cut the string at null character
   PackStr(Dest);
   UnicodeString Result;
-  const std::string Bom(CONST_BOM);
+  const AnsiString Bom(CONST_BOM);
   if (Dest.Pos(Bom.c_str()) == 1)
   {
-    Dest.Delete(1, Bom.size());
+    Dest.Delete(1, Bom.GetLength());
     Result = UTF8ToString(Dest);
   }
   else
