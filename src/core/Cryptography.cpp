@@ -560,7 +560,7 @@ bool UnscramblePassword(RawByteString Scrambled, UnicodeString & Password)
     S++;
   }
   bool Result = false;
-  if (strlen(S) >= 3)
+  if (NBChTraitsCRT<char>::SafeStringLen(S) >= 3)
   {
     int Len = (S[0] - '0') + 10 * (S[1] - '0') + 100 * (S[2] - '0');
     int Total = (((Len + 3) / 17) * 17 + 17);

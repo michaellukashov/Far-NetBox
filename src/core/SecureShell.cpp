@@ -667,7 +667,7 @@ void TSecureShell::Init()
 
 UnicodeString TSecureShell::ConvertFromPutty(const char * Str, intptr_t Length) const
 {
-  intptr_t BomLength = strlen(MPEXT_BOM);
+  intptr_t BomLength = NBChTraitsCRT<char>::SafeStringLen(MPEXT_BOM);
   if ((Length >= BomLength) &&
     (strncmp(Str, MPEXT_BOM, BomLength) == 0))
   {
@@ -678,7 +678,7 @@ UnicodeString TSecureShell::ConvertFromPutty(const char * Str, intptr_t Length) 
 
 void TSecureShell::PuttyLogEvent(const char * AStr)
 {
-  UnicodeString Str = ConvertFromPutty(AStr, static_cast<intptr_t>(strlen(AStr)));
+  UnicodeString Str = ConvertFromPutty(AStr, static_cast<intptr_t>(NBChTraitsCRT<char>::SafeStringLen(AStr)));
 #define SERVER_VERSION_MSG L"Server version: "
   // Gross hack
   if (Str.Pos(SERVER_VERSION_MSG) == 1)

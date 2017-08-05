@@ -185,8 +185,8 @@ static AnsiString PathEscape(const char * Path)
 
 static UTF8String PathUnescape(const char * Path)
 {
-  char * UnescapedPath = ne_path_unescape(Path);
-  UTF8String Result(UnescapedPath, strlen(NullToEmptyA(UnescapedPath)));
+  char * UnescapedPath = ne_path_unescape(NullToEmptyA(Path));
+  UTF8String Result(UnescapedPath, NBChTraitsCRT<char>::SafeStringLen(UnescapedPath));
   ne_free(UnescapedPath);
   return Result;
 }

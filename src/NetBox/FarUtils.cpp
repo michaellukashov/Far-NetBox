@@ -108,7 +108,7 @@ DWORD CNBFile::SaveFile(const wchar_t * fileName, const char * fileContent)
   CNBFile f;
   if (f.OpenWrite(fileName) && *fileContent)
   {
-    f.Write(fileContent, strlen(fileContent));
+    f.Write(fileContent, NBChTraitsCRT<char>::SafeStringLen(fileContent));
   }
   return f.LastError();
 }

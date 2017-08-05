@@ -3071,7 +3071,7 @@ static int PemPasswordCallback(char * Buf, int Size, int /*RWFlag*/, void * User
   strncpy(Buf, UtfPassphrase.c_str(), Size);
   Shred(UtfPassphrase);
   Buf[Size - 1] = '\0';
-  return static_cast<int>(strlen(Buf));
+  return static_cast<int>(NBChTraitsCRT<char>::SafeStringLen(Buf));
 }
 
 
