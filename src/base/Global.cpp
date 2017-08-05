@@ -295,7 +295,7 @@ void DoTrace(const wchar_t * SourceFile, const wchar_t * Func,
   }
 #else
   DWORD Written;
-  WriteFile(TraceFile, Buffer.c_str(), static_cast<DWORD>(Buffer.Length()), &Written, nullptr);
+  WriteFile(TraceFile, Buffer.c_str(), ToDWord(Buffer.Length()), &Written, nullptr);
 #endif // TRACE_IN_MEMORY
 }
 

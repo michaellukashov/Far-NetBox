@@ -1361,7 +1361,7 @@ int64_t THandleStream::Write(const void * Buffer, int64_t Count)
 
 int64_t THandleStream::Seek(int64_t Offset, int Origin)
 {
-  int64_t Result = ::FileSeek(FHandle, Offset, static_cast<DWORD>(Origin));
+  int64_t Result = ::FileSeek(FHandle, Offset, ToDWord(Origin));
   return Result;
 }
 
@@ -1700,7 +1700,7 @@ void TRegistry::GetKeyNames(TStrings * Names) const
     for (DWORD Index = 0; Index < Info.NumSubKeys; Index++)
     {
       DWORD Len = Info.MaxSubKeyLen + 1;
-      RegEnumKeyEx(GetCurrentKey(), static_cast<DWORD>(Index), &S[1], &Len, nullptr, nullptr, nullptr, nullptr);
+      RegEnumKeyEx(GetCurrentKey(), ToDWord(Index), &S[1], &Len, nullptr, nullptr, nullptr, nullptr);
       Names->Add(S);
     }
   }
@@ -1769,7 +1769,7 @@ bool TRegistry::DeleteKey(UnicodeString Key)
       for (intptr_t Index = static_cast<intptr_t>(Info.NumSubKeys) - 1; Index >= 0; Index--)
       {
         DWORD Len = Info.MaxSubKeyLen + 1;
-        if (RegEnumKeyEx(DeleteKey, static_cast<DWORD>(Index), &KeyName[1], &Len,
+        if (RegEnumKeyEx(DeleteKey, ToDWord(Index), &KeyName[1], &Len,
                          nullptr, nullptr, nullptr, nullptr) == ERROR_SUCCESS)
         {
           this->DeleteKey(KeyName);
@@ -1846,7 +1846,7 @@ DWORD TRegistry::GetDataSize(UnicodeString ValueName) const
   }
   else
   {
-    Result = static_cast<DWORD>(-1);
+    Result = ToDWord(-1);
   }
   return Result;
 }
@@ -1970,7 +1970,7 @@ void TRegistry::PutData(UnicodeString Name, const void * Buffer,
 {
   DWORD DataType = RegDataToDataType(RegData);
   if (::RegSetValueEx(GetCurrentKey(), Name.c_str(), 0, DataType,
-                    reinterpret_cast<const BYTE *>(Buffer), static_cast<DWORD>(BufSize)) != ERROR_SUCCESS)
+                    reinterpret_cast<const BYTE *>(Buffer), ToDWord(ABufSize)) != ERROR_SUCCESS)
   {
     throw Exception(L"RegSetValueEx failed"); // ERegistryException(); // FIXME .CreateResFmt(SRegSetDataFailed, Name.c_str());
   }
@@ -2004,7 +2004,7 @@ void TRegistry::WriteStringRaw(UnicodeString Name, UnicodeString Value)
 
 void TRegistry::WriteInteger(UnicodeString Name, intptr_t Value)
 {
-  DWORD Val = static_cast<DWORD>(Value);
+  DWORD Val = ToDWord(Value);
   PutData(Name, &Val, sizeof(Val), rdInteger);
 }
 

@@ -394,7 +394,7 @@ void TSimpleThread::Close()
 
 void TSimpleThread::WaitFor(uintptr_t Milliseconds) const
 {
-  ::WaitForSingleObject(FThread, static_cast<DWORD>(Milliseconds));
+  ::WaitForSingleObject(FThread, ToDWord(Milliseconds));
 }
 
 // TSignalThread
@@ -1313,7 +1313,7 @@ bool TBackgroundTerminal::DoQueryReopen(Exception * /*E*/)
   }
   else
   {
-    ::Sleep(static_cast<DWORD>(GetConfiguration()->GetSessionReopenBackground()));
+    ::Sleep(ToDWord(GetConfiguration()->GetSessionReopenBackground()));
     Result = true;
   }
   return Result;

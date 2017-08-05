@@ -463,7 +463,7 @@ bool TRegistryStorage::Copy(TRegistryStorage * Storage)
     while ((Index < Names->GetCount()) && Result)
     {
       UnicodeString Name = MungeStr(Names->GetString(Index), GetForceAnsi());
-      DWORD Size = static_cast<DWORD>(Buffer.size());
+      DWORD Size = ToDWord(Buffer.size());
       DWORD Type;
       int RegResult;
       do

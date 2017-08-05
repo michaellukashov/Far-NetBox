@@ -277,7 +277,7 @@ void TKeepaliveThread::Execute()
 {
   while (!IsFinished())
   {
-    if ((::WaitForSingleObject(FEvent, static_cast<DWORD>(
+    if ((::WaitForSingleObject(FEvent, ToDWord(
          ToDouble(FInterval) * MSecsPerDay)) != WAIT_FAILED) &&
         !IsFinished())
     {

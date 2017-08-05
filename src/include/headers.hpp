@@ -76,6 +76,8 @@ inline double ToDouble(const T a) { return static_cast<double>(a); }
 
 template <class T>
 inline Word ToWord(const T a) { return static_cast<Word>(a); }
+template <class T>
+inline DWORD ToDWord(const T a) { return static_cast<DWORD>(a); }
 
 template <class T>
 inline typename std::is_convertible<T, intptr_t>::value

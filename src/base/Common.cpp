@@ -798,12 +798,12 @@ UnicodeString ExpandEnvironmentVariables(UnicodeString Str)
   intptr_t Size = 1024;
 
   Buf.SetLength(Size);
-  intptr_t Len = ::ExpandEnvironmentStringsW(Str.c_str(), const_cast<LPWSTR>(Buf.c_str()), static_cast<DWORD>(Size));
+  intptr_t Len = ::ExpandEnvironmentStringsW(Str.c_str(), const_cast<LPWSTR>(Buf.c_str()), ToDWord(Size));
 
   if (Len > Size)
   {
     Buf.SetLength(Len);
-    ::ExpandEnvironmentStringsW(Str.c_str(), const_cast<LPWSTR>(Buf.c_str()), static_cast<DWORD>(Len));
+    ::ExpandEnvironmentStringsW(Str.c_str(), const_cast<LPWSTR>(Buf.c_str()), ToDWord(Len));
   }
 
   PackStr(Buf);
@@ -3401,7 +3401,7 @@ UnicodeString GetEnvVariable(UnicodeString AEnvVarName)
   if (Len > 0)
   {
     wchar_t * Buffer = Result.SetLength(Len - 1);
-    ::GetEnvironmentVariableW(AEnvVarName.c_str(), reinterpret_cast<LPWSTR>(Buffer), static_cast<DWORD>(Len));
+    ::GetEnvironmentVariableW(AEnvVarName.c_str(), reinterpret_cast<LPWSTR>(Buffer), ToDWord(Len));
   }
   return Result;
 }

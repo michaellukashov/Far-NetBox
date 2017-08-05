@@ -507,7 +507,7 @@ int64_t FileRead(HANDLE AHandle, void * Buffer, int64_t Count)
 {
   int64_t Result;
   DWORD Res = 0;
-  if (::ReadFile(AHandle, reinterpret_cast<LPVOID>(Buffer), static_cast<DWORD>(Count), &Res, nullptr))
+  if (::ReadFile(AHandle, reinterpret_cast<LPVOID>(Buffer), ToDWord(Count), &Res, nullptr))
   {
     Result = Res;
   }
@@ -522,7 +522,7 @@ int64_t FileWrite(HANDLE AHandle, const void * Buffer, int64_t Count)
 {
   int64_t Result;
   DWORD Res = 0;
-  if (::WriteFile(AHandle, Buffer, static_cast<DWORD>(Count), &Res, nullptr))
+  if (::WriteFile(AHandle, Buffer, ToDWord(Count), &Res, nullptr))
   {
     Result = Res;
   }
@@ -926,7 +926,7 @@ void AppendPathDelimiterW(UnicodeString & Str)
 UnicodeString ExpandEnvVars(UnicodeString Str)
 {
   UnicodeString Buf(NB_MAX_PATH, 0);
-  intptr_t Size = ::ExpandEnvironmentStringsW(Str.c_str(), ToWChar(Buf), static_cast<DWORD>(NB_MAX_PATH - 1));
+  intptr_t Size = ::ExpandEnvironmentStringsW(Str.c_str(), ToWChar(Buf), ToDWord(NB_MAX_PATH - 1));
   UnicodeString Result = UnicodeString(Buf.c_str(), Size - 1);
   return Result;
 }
@@ -960,12 +960,12 @@ UnicodeString ExtractFileExt(UnicodeString AFileName)
 static UnicodeString ExpandFileName(UnicodeString AFileName)
 {
   UnicodeString Buf(NB_MAX_PATH + 1, 0);
-  intptr_t Size = ::GetFullPathNameW(ApiPath(AFileName).c_str(), static_cast<DWORD>(Buf.Length() - 1),
+  intptr_t Size = ::GetFullPathNameW(ApiPath(AFileName).c_str(), ToDWord(Buf.Length() - 1),
     reinterpret_cast<LPWSTR>(ToWChar(Buf)), nullptr);
   if (Size > Buf.Length())
   {
     Buf.SetLength(Size);
-    Size = ::GetFullPathNameW(ApiPath(AFileName).c_str(), static_cast<DWORD>(Buf.Length() - 1),
+    Size = ::GetFullPathNameW(ApiPath(AFileName).c_str(), ToDWord(Buf.Length() - 1),
       reinterpret_cast<LPWSTR>(ToWChar(Buf)), nullptr);
   }
   UnicodeString Result = UnicodeString(Buf.c_str(), Size);

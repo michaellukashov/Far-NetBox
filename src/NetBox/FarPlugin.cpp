@@ -1153,7 +1153,7 @@ intptr_t TCustomFarPlugin::Menu(DWORD Flags, UnicodeString Title,
     if (FLAGCLEAR(Flags2, MIF_HIDDEN))
     {
       ClearStruct(MenuItems[Count]);
-      MenuItems[Count].Flags = static_cast<DWORD>(Flags2);
+      MenuItems[Count].Flags = ToDWord(Flags2);
       if (MenuItems[Count].Flags & MIF_SELECTED)
       {
         DebugAssert(Selected == NPOS);
@@ -1255,7 +1255,7 @@ void TCustomFarPlugin::FlushText()
 void TCustomFarPlugin::FarWriteConsole(UnicodeString Str)
 {
   DWORD Written;
-  ::WriteConsole(FConsoleOutput, Str.c_str(), static_cast<DWORD>(Str.Length()), &Written, nullptr);
+  ::WriteConsole(FConsoleOutput, Str.c_str(), ToDWord(Str.Length()), &Written, nullptr);
 }
 
 void TCustomFarPlugin::FarCopyToClipboard(UnicodeString Str)
@@ -1716,7 +1716,7 @@ UnicodeString TCustomFarPlugin::GetTemporaryDir() const
 {
   UnicodeString Result(NB_MAX_PATH, 0);
   TFarEnvGuard Guard;
-  FFarStandardFunctions.MkTemp(ToWChar(Result), static_cast<DWORD>(Result.Length()), nullptr);
+  FFarStandardFunctions.MkTemp(ToWChar(Result), ToDWord(Result.Length()), nullptr);
   PackStr(Result);
   return Result;
 }
@@ -2876,11 +2876,11 @@ UnicodeString TGlobalFunctions::GetCurrDirectory() const
   int Length;
   if (FarPlugin)
   {
-    Length = FarPlugin->GetFarStandardFunctions().GetCurrentDirectory(static_cast<DWORD>(Path.Length()), ToWChar(Path)) - 1;
+    Length = FarPlugin->GetFarStandardFunctions().GetCurrentDirectory(ToDWord(Path.Length()), ToWChar(Path)) - 1;
   }
   else
   {
-    Length = ::GetCurrentDirectory(static_cast<DWORD>(Path.Length()), ToWChar(Path));
+    Length = ::GetCurrentDirectory(ToDWord(Path.Length()), ToWChar(Path));
   }
   UnicodeString Result = UnicodeString(Path.c_str(), Length);
   return Result;
