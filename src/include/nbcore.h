@@ -114,7 +114,7 @@ __forceinline uint32_t nbcore_hashstr(const char * key)
   }
   else
   {
-    uint32_t len = (uint32_t)strlen((const char *)key);
+    uint32_t len = (uint32_t)strlen(key);
     return nbcore_hash(key, len);
   }
 }
