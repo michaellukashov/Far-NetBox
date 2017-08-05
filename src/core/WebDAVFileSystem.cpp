@@ -1774,7 +1774,7 @@ void TWebDAVFileSystem::DirectorySource(UnicodeString DirectoryName,
     [&]()
     {
       FindOK =
-        (FindFirstChecked(FindPath.c_str(), FindAttrs, SearchRec) == 0);
+        (FindFirstChecked(FindPath, FindAttrs, SearchRec) == 0);
     });
 
     try__finally

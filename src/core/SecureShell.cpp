@@ -377,7 +377,7 @@ Conf * TSecureShell::StoreToConfig(TSessionData * Data, bool Simple)
       else
       {
         conf_set_int(conf, CONF_ssh_subsys, FALSE);
-        conf_set_str(conf, CONF_remote_cmd, AnsiString(Data->GetSftpServer().c_str()).c_str());
+        conf_set_str(conf, CONF_remote_cmd, AnsiString(Data->GetSftpServer()).c_str());
       }
 
       if (Data->GetFSProtocol() != fsSFTPonly)
@@ -395,7 +395,7 @@ Conf * TSecureShell::StoreToConfig(TSessionData * Data, bool Simple)
         }
         else
         {
-          conf_set_str(conf, CONF_remote_cmd2, AnsiString(Data->GetShell().c_str()).c_str());
+          conf_set_str(conf, CONF_remote_cmd2, AnsiString(Data->GetShell()).c_str());
         }
       }
 
@@ -1271,11 +1271,11 @@ UnicodeString TSecureShell::ConvertInput(const RawByteString & Input, uintptr_t 
   UnicodeString Result;
   if (GetUtfStrings())
   {
-    Result = UnicodeString(UTF8String(Input.c_str()));
+    Result = UnicodeString(UTF8String(Input.c_str(), Input.GetLength()));
   }
   else
   {
-//    Result = UnicodeString(AnsiString(Input.c_str()));
+//    Result = UnicodeString(AnsiString(Input.c_str(), Input.GetLength()));
     Result = ::MB2W(Input.c_str(), static_cast<UINT>(CodePage));
   }
   return Result;

@@ -665,7 +665,7 @@ public:
   // the content should be pure ASCII (e.g. extension names, etc.)
   UnicodeString GetAnsiString() const
   {
-    return UnicodeString(AnsiToString(GetRawByteString().c_str()));
+    return UnicodeString(AnsiToString(GetRawByteString()));
   }
 
   RawByteString GetFileHandle() const
@@ -1509,7 +1509,7 @@ protected:
     catch (Exception & E) // prevent crash when server unexpectedly closes connection
     {
       DebugUsedParam(E);
-      DEBUG_PRINTF("ReceiveHandler: %s\n", E.Message.c_str());
+      DEBUG_PRINTF("ReceiveHandler: %s\n", E.Message);
     }
   }
 

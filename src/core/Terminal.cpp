@@ -4535,7 +4535,7 @@ void TTerminal::ChangeFileProperties(UnicodeString AFileName,
       UnicodeString dt = FORMAT("%02d.%02d.%04d %02d:%02d:%02d ", D, M, Y, H, N, S);
       LogEvent(FORMAT(" - last access: \"%s\"",
 //       FormatDateTime(L"dddddd tt",
-//         ::UnixToDateTime(RProperties->LastAccess, GetSessionData()->GetDSTMode())).c_str()));
+//         ::UnixToDateTime(RProperties->LastAccess, GetSessionData()->GetDSTMode()))));
          dt));
     }
   }

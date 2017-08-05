@@ -1631,7 +1631,7 @@ void TSCPFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
 
   FScpFatalError = false;
   SendCommand(FCommandSet->FullCommand(fsCopyToRemote,
-    Options.c_str(), DelimitStr(base::UnixExcludeTrailingBackslash(TargetDir)).c_str()));
+    Options, DelimitStr(base::UnixExcludeTrailingBackslash(TargetDir))));
   SkipFirstLine();
 
   try__finally
@@ -2389,7 +2389,7 @@ void TSCPFileSystem::CopyToLocal(const TStrings * AFilesToCopy,
       {
         bool Success = true; // Have to be set to True (see ::SCPSink)
         SendCommand(FCommandSet->FullCommand(fsCopyToLocal,
-          Options.c_str(), DelimitStr(FileName).c_str()));
+          Options, DelimitStr(FileName)));
         SkipFirstLine();
 
         // Filename is used for error messaging and excluding files only

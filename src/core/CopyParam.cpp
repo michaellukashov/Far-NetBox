@@ -211,7 +211,7 @@ void TCopyParamType::DoGetInfoStr(
     DebugAssert(GetInvalidCharsReplacement() == NoReplacement);
     if (GetInvalidCharsReplacement() == NoReplacement)
     {
-      ADD(LoadStr(COPY_INFO_DONT_REPLACE_INV_CHARS).c_str(), cpaIncludeMaskOnly);
+      ADD(LoadStr(COPY_INFO_DONT_REPLACE_INV_CHARS), cpaIncludeMaskOnly);
     }
 
     NoScriptArgs = true;

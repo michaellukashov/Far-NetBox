@@ -2465,7 +2465,7 @@ void TRights::SetOctal(UnicodeString AValue)
     Value = L"0" + Value;
   }
 
-  if (GetOctal() != Value.c_str())
+  if (GetOctal() != Value)
   {
     bool Correct = (Value.Length() == 4);
     if (Correct)
