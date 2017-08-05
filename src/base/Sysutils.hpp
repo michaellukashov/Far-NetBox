@@ -328,7 +328,6 @@ NB_CORE_EXPORT UnicodeString WrapText(UnicodeString Line, intptr_t MaxWidth = 40
 NB_CORE_EXPORT UnicodeString TranslateExceptionMessage(Exception * E);
 
 NB_CORE_EXPORT void AppendWChar(UnicodeString & Str, const wchar_t Ch);
-NB_CORE_EXPORT void AppendChar(std::string & Str, const char Ch);
 
 NB_CORE_EXPORT void AppendPathDelimiterW(UnicodeString & Str);
 

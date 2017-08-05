@@ -911,14 +911,6 @@ void AppendWChar(UnicodeString & Str, const wchar_t Ch)
   }
 }
 
-void AppendChar(std::string & Str, const char Ch)
-{
-  if (!Str.empty() && Str[Str.length() - 1] != Ch)
-  {
-    Str += Ch;
-  }
-}
-
 void AppendPathDelimiterW(UnicodeString & Str)
 {
   if (!Str.IsEmpty() && Str[Str.Length()] != L'/' && Str[Str.Length()] != L'\\')
