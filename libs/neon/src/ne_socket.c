@@ -1071,7 +1071,7 @@ char *ne_iaddr_print(const ne_inet_addr *ia, char *buf, socklen_t bufsiz)
 	ne_strnzcpy(buf, "[IP address]", bufsiz);
 #elif defined(USE_GETADDRINFO) && defined(NI_NUMERICHOST)
     /* use getnameinfo instead for Win32, which lacks inet_ntop: */
-    if (getnameinfo(ia->ai_addr, ia->ai_addrlen, buf, bufsiz, NULL, 0,
+    if (getnameinfo(ia->ai_addr, (socklen_t)ia->ai_addrlen, buf, bufsiz, NULL, 0,
                     NI_NUMERICHOST))
         ne_strnzcpy(buf, "[IP address]", bufsiz);
 #else /* USE_GETADDRINFO */
@@ -1160,7 +1160,7 @@ ne_inet_addr *ne_iaddr_parse(const char *addr, ne_iaddr_type type)
 int ne_iaddr_reverse(const ne_inet_addr *ia, char *buf, socklen_t bufsiz)
 {
 #ifdef USE_GETADDRINFO
-    return getnameinfo(ia->ai_addr, ia->ai_addrlen, buf, bufsiz,
+    return getnameinfo(ia->ai_addr, (socklen_t)ia->ai_addrlen, buf, bufsiz,
                        NULL, 0, 0);
 #else
     struct hostent *hp;
