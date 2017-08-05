@@ -4093,7 +4093,7 @@ void TSFTPFileSystem::ChangeFileProperties(UnicodeString AFileName,
       try
       {
         FTerminal->ProcessDirectory(AFileName, nb::bind(&TTerminal::ChangeFileProperties, FTerminal),
-          static_cast<void *>(const_cast<TRemoteProperties *>(AProperties)));
+          ToPtr(const_cast<TRemoteProperties *>(AProperties)));
       }
       catch (...)
       {

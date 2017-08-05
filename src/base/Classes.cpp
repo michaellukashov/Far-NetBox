@@ -1902,7 +1902,7 @@ UnicodeString TRegistry::ReadString(UnicodeString Name) const
   {
     TRegDataType RegData = rdUnknown;
     wchar_t * Buffer = Result.SetLength(Len);
-    GetData(Name, static_cast<void *>(Buffer), Len, RegData);
+    GetData(Name, ToPtr(Buffer), Len, RegData);
     if ((RegData == rdString) || (RegData == rdExpandString))
     {
       PackStr(Result);

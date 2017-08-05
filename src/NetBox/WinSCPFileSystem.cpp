@@ -56,7 +56,7 @@ void TSessionPanelItem::GetData(
   UnicodeString & /*Owner*/, void *& UserData, int & /*CustomColumnNumber*/)
 {
   AFileName = base::UnixExtractFileName(FSessionData->GetName());
-  UserData = static_cast<void *>(const_cast<TSessionData *>(FSessionData));
+  UserData = ToPtr(const_cast<TSessionData *>(FSessionData));
 }
 
 TSessionFolderPanelItem::TSessionFolderPanelItem(UnicodeString Folder) :

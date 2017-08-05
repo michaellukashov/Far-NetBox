@@ -1523,7 +1523,7 @@ void TCustomFarPlugin::UpdateProgress(intptr_t State, intptr_t Progress) const
     PROGRESSVALUE pv;
     pv.Completed = Progress < 0 ? 0 : Progress > 100 ? 100 : Progress;
     pv.Total = 100;
-    FarAdvControl(ACTL_SETPROGRESSVALUE, static_cast<void *>(&pv));
+    FarAdvControl(ACTL_SETPROGRESSVALUE, ToPtr(&pv));
   }
 }
 
@@ -2056,7 +2056,7 @@ bool TCustomFarFileSystem::UpdatePanel(bool ClearSelection, bool Another)
 
 void TCustomFarFileSystem::RedrawPanel(bool Another)
 {
-  FPlugin->FarControl(FCTL_REDRAWPANEL, 0, ToIntPtr(static_cast<void *>(nullptr)), Another ? PANEL_PASSIVE : PANEL_ACTIVE);
+  FPlugin->FarControl(FCTL_REDRAWPANEL, 0, ToIntPtr(ToPtr(nullptr)), Another ? PANEL_PASSIVE : PANEL_ACTIVE);
 }
 
 void TCustomFarFileSystem::ClosePlugin()
