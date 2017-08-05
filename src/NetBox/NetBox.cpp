@@ -2,6 +2,7 @@
 #include <vcl.h>
 
 #include <Sysutils.hpp>
+#include <nbutils.h>
 
 #include "resource.h"
 #include "FarDialog.h"
@@ -207,7 +208,7 @@ HANDLE WINAPI AnalyseW(const struct AnalyseInfo * Info)
     return nullptr;
   }
 
-  const size_t fileNameLen = wcslen(Info->FileName);
+  const size_t fileNameLen = nb::StrLength(Info->FileName);
   if (fileNameLen < 8 || _wcsicmp(Info->FileName + fileNameLen - 7, L".netbox") != 0)
   {
     return nullptr;

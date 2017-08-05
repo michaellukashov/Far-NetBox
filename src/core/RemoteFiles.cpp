@@ -2,6 +2,7 @@
 #pragma hdrstop
 
 #include <Common.h>
+#include <nbutils.h>
 #include <Sysutils.hpp>
 #include <StrUtils.hpp>
 
@@ -1433,7 +1434,7 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
           if (P)
           {
             FLinkTo = ListingStr.SubString(
-              P + wcslen(SYMLINKSTR), ListingStr.Length() - P + wcslen(SYMLINKSTR) + 1);
+              P + nb::StrLength(SYMLINKSTR), ListingStr.Length() - P + nb::StrLength(SYMLINKSTR) + 1);
             ListingStr.SetLength(P - 1);
           }
           else
