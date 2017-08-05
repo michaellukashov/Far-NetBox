@@ -413,7 +413,7 @@ bool AnsiContainsText(UnicodeString Str1, UnicodeString Str2)
   return ::Pos(Str1, Str2) > 0;
 }
 
-bool ContainsStr(const AnsiString & Str1, const AnsiString & Str2)
+bool ContainsStr(AnsiString Str1, AnsiString Str2)
 {
   return Str1.Pos(Str2) > 0;
 }
@@ -436,7 +436,7 @@ intptr_t PosEx(UnicodeString SubStr, UnicodeString Str, intptr_t Offset)
   return Result;
 }
 
-UnicodeString UTF8ToString(const RawByteString & Str)
+UnicodeString UTF8ToString(RawByteString Str)
 {
   return UnicodeString (Str.c_str(), Str.GetLength(), CP_UTF8);
 }

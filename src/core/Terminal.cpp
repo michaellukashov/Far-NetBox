@@ -1305,7 +1305,7 @@ RawByteString TTerminal::EncryptPassword(UnicodeString APassword) const
   return FConfiguration->EncryptPassword(APassword, GetSessionData()->GetSessionName());
 }
 
-UnicodeString TTerminal::DecryptPassword(const RawByteString & APassword) const
+UnicodeString TTerminal::DecryptPassword(RawByteString APassword) const
 {
   UnicodeString Result;
   try

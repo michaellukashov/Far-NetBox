@@ -360,7 +360,7 @@ RawByteString THierarchicalStorage::ReadBinaryData(UnicodeString Name) const
   return Value;
 }
 
-RawByteString THierarchicalStorage::ReadStringAsBinaryData(UnicodeString Name, const RawByteString & Default) const
+RawByteString THierarchicalStorage::ReadStringAsBinaryData(UnicodeString Name, RawByteString Default) const
 {
   UnicodeString UnicodeDefault = AnsiToString(Default);
   // This should be exactly the same operation as calling ReadString in
@@ -384,13 +384,12 @@ void THierarchicalStorage::WriteString(UnicodeString Name, UnicodeString Value)
   }
 }
 
-void THierarchicalStorage::WriteBinaryData(UnicodeString Name,
-  const RawByteString & Value)
+void THierarchicalStorage::WriteBinaryData(UnicodeString Name, RawByteString Value)
 {
   WriteBinaryData(Name, Value.c_str(), Value.Length());
 }
 
-void THierarchicalStorage::WriteBinaryDataAsString(UnicodeString Name, const RawByteString & Value)
+void THierarchicalStorage::WriteBinaryDataAsString(UnicodeString Name, RawByteString Value)
 {
   // This should be exactly the same operation as calling WriteString in
   // C++Builder 6 (non-Unicode) on Unicode-based OS

@@ -434,7 +434,7 @@ void ExecuteNewInstance(UnicodeString Param)
 }
 
 IShellLink * CreateDesktopShortCut(UnicodeString Name,
-  const UnicodeString &File, UnicodeString Params, UnicodeString Description,
+  UnicodeString File, UnicodeString Params, UnicodeString Description,
   int SpecialFolder, int IconIndex, bool Return)
 {
   IShellLink* pLink = NULL;

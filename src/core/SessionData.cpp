@@ -2222,12 +2222,12 @@ RawByteString TSessionData::EncryptPassword(UnicodeString Password, UnicodeStrin
   return GetConfiguration()->EncryptPassword(Password, Key);
 }
 
-RawByteString TSessionData::StronglyRecryptPassword(const RawByteString & Password, UnicodeString Key)
+RawByteString TSessionData::StronglyRecryptPassword(RawByteString Password, UnicodeString Key)
 {
   return GetConfiguration()->StronglyRecryptPassword(Password, Key);
 }
 
-UnicodeString TSessionData::DecryptPassword(const RawByteString & Password, UnicodeString Key)
+UnicodeString TSessionData::DecryptPassword(RawByteString Password, UnicodeString Key)
 {
   UnicodeString Result;
   try

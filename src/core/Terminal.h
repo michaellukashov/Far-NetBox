@@ -524,7 +524,7 @@ protected:
     TCallSessionAction * Action);
   TRemoteFileList * DoReadDirectoryListing(UnicodeString ADirectory, bool UseCache);
   RawByteString EncryptPassword(UnicodeString APassword) const;
-  UnicodeString DecryptPassword(const RawByteString & APassword) const;
+  UnicodeString DecryptPassword(RawByteString APassword) const;
   UnicodeString GetRemoteFileInfo(TRemoteFile * AFile) const;
   void LogRemoteFile(TRemoteFile * AFile);
   UnicodeString FormatFileDetailsForLog(UnicodeString AFileName, const TDateTime & AModification, int64_t Size);

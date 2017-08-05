@@ -2909,14 +2909,14 @@ void TWebDAVFileSystem::LockResult(void * UserData, const struct ne_lock * Lock,
   }
 }
 
-struct ne_lock * TWebDAVFileSystem::FindLock(const RawByteString & APath) const
+struct ne_lock * TWebDAVFileSystem::FindLock(RawByteString APath) const
 {
   ne_uri Uri = {nullptr};
   Uri.path = const_cast<char *>(APath.c_str());
   return ne_lockstore_findbyuri(FNeonLockStore, &Uri);
 }
 
-void TWebDAVFileSystem::DiscardLock(const RawByteString & APath)
+void TWebDAVFileSystem::DiscardLock(RawByteString APath)
 {
   TGuard Guard(FNeonLockStoreSection);
   if (FNeonLockStore != nullptr)

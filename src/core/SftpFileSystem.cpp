@@ -291,7 +291,7 @@ public:
     memmove(GetData(), Source, Len);
   }
 
-  explicit TSFTPPacket(const RawByteString & Source, uintptr_t codePage) :
+  explicit TSFTPPacket(RawByteString Source, uintptr_t codePage) :
     TObject(OBJECT_CLASS_TSFTPPacket)
   {
     Init(codePage);
@@ -374,13 +374,13 @@ public:
     AddString(::W2MB(ValueW.c_str(), static_cast<UINT>(FCodePage)).c_str());
   }
 
-  void AddString(const RawByteString & Value)
+  void AddString(RawByteString Value)
   {
     AddCardinal(static_cast<uint32_t>(Value.Length()));
     Add(Value.c_str(), Value.Length());
   }
 
-  void AddUtfString(const UTF8String & Value)
+  void AddUtfString(UTF8String Value)
   {
     AddString(Value);
   }
@@ -1550,7 +1550,7 @@ public:
   {
   }
 
-  bool Init(intptr_t QueueLen, const RawByteString & AHandle, int64_t ATransferred,
+  bool Init(intptr_t QueueLen, RawByteString AHandle, int64_t ATransferred,
     TFileOperationProgressType * AOperationProgress)
   {
     FHandle = AHandle;
@@ -1628,7 +1628,7 @@ public:
 
   bool Init(UnicodeString AFileName,
     HANDLE AFile, TFileOperationProgressType * AOperationProgress,
-    const RawByteString & AHandle, int64_t ATransferred,
+    RawByteString AHandle, int64_t ATransferred,
     intptr_t ConvertParams)
   {
     FFileName = AFileName;
@@ -2421,7 +2421,7 @@ uint32_t TSFTPFileSystem::TransferBlockSize(uint32_t Overhead,
   return Result;
 }
 
-uint32_t TSFTPFileSystem::UploadBlockSize(const RawByteString & Handle,
+uint32_t TSFTPFileSystem::UploadBlockSize(RawByteString Handle,
   TFileOperationProgressType * OperationProgress) const
 {
   // handle length + offset + data size
@@ -5608,7 +5608,7 @@ intptr_t TSFTPFileSystem::SFTPOpenRemote(void * AOpenParams, void * /*Param2*/)
   return 0;
 }
 
-void TSFTPFileSystem::SFTPCloseRemote(const RawByteString & Handle,
+void TSFTPFileSystem::SFTPCloseRemote(RawByteString Handle,
   UnicodeString AFileName, TFileOperationProgressType * OperationProgress,
   bool TransferFinished, bool Request, TSFTPPacket * Packet)
 {

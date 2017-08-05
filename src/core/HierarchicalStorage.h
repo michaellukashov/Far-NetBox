@@ -56,7 +56,7 @@ public:
 
   virtual UnicodeString ReadString(UnicodeString Name, UnicodeString Default) const;
   RawByteString ReadBinaryData(UnicodeString Name) const;
-  virtual RawByteString ReadStringAsBinaryData(UnicodeString Name, const RawByteString & Default) const;
+  virtual RawByteString ReadStringAsBinaryData(UnicodeString Name, RawByteString Default) const;
 
   virtual void WriteBool(UnicodeString Name, bool Value) = 0;
   virtual void WriteStringRaw(UnicodeString Name, UnicodeString Value) = 0;
@@ -67,8 +67,8 @@ public:
   virtual void WriteBinaryData(UnicodeString Name, const void * Buffer, size_t Size) = 0;
 
   virtual void WriteString(UnicodeString Name, UnicodeString Value);
-  void WriteBinaryData(UnicodeString Name, const RawByteString & Value);
-  virtual void WriteBinaryDataAsString(UnicodeString Name, const RawByteString & Value);
+  void WriteBinaryData(UnicodeString Name, RawByteString Value);
+  virtual void WriteBinaryDataAsString(UnicodeString Name, RawByteString Value);
 
   virtual void Flush();
 

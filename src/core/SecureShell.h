@@ -111,7 +111,7 @@ public:
   void SendBuffer(intptr_t & Result);
   uintptr_t TimeoutPrompt(TQueryParamsTimerEvent PoolEvent);
   bool TryFtp();
-  UnicodeString ConvertInput(const RawByteString & Input, uintptr_t CodePage = CP_ACP) const;
+  UnicodeString ConvertInput(RawByteString Input, uintptr_t CodePage = CP_ACP) const;
   void GetRealHost(UnicodeString & Host, intptr_t & Port) const;
   UnicodeString RetrieveHostKey(UnicodeString Host, intptr_t Port, const UnicodeString KeyType) const;
 

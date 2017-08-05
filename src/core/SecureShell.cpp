@@ -1266,7 +1266,7 @@ UnicodeString TSecureShell::ReceiveLine()
   return Result;
 }
 
-UnicodeString TSecureShell::ConvertInput(const RawByteString & Input, uintptr_t CodePage) const
+UnicodeString TSecureShell::ConvertInput(RawByteString Input, uintptr_t CodePage) const
 {
   UnicodeString Result;
   if (GetUtfStrings())
