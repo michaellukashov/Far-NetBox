@@ -239,15 +239,15 @@ void logevent(void * frontend, const char * str)
 void connection_fatal(void * frontend, const char * fmt, ...)
 {
   va_list Param;
-  std::string Buf;
-  Buf.resize(32 * 1024);
+  AnsiString Str;
+  char * Buf = Str.SetLength(32 * 1024);
   va_start(Param, fmt);
-  vsnprintf_s(const_cast<char *>(Buf.c_str()), Buf.size(), _TRUNCATE, fmt, Param);
-  Buf[Buf.size() - 1] = '\0';
+  vsnprintf_s(Buf, Str.GetLength(), _TRUNCATE, fmt, Param);
+  Str[Str.GetLength() - 1] = '\0';
   va_end(Param);
 
   DebugAssert(frontend != nullptr);
-  get_as<TSecureShell>(frontend)->PuttyFatalError(UnicodeString(Buf.c_str()));
+  get_as<TSecureShell>(frontend)->PuttyFatalError(UnicodeString(Str));
 }
 
 int verify_ssh_host_key(void * frontend, char * host, int port, const char * keytype,
@@ -298,15 +298,15 @@ void display_banner(void * frontend, const char * banner, int size)
 
 static void SSHFatalError(const char * Format, va_list Param)
 {
-  std::string Buf;
-  Buf.resize(32 * 1024);
-  vsnprintf_s(const_cast<char *>(Buf.c_str()), Buf.size(), _TRUNCATE, Format, Param);
-  Buf[Buf.size() - 1] = '\0';
+  AnsiString Str;
+  char * Buf = Str.SetLength(32 * 1024);
+  vsnprintf_s(Buf, Str.GetLength(), _TRUNCATE, Format, Param);
+  Str[Str.GetLength() - 1] = '\0';
 
   // Only few calls from putty\winnet.c might be connected with specific
   // TSecureShell. Otherwise called only for really fatal errors
   // like 'out of memory' from putty\ssh.c.
-  throw ESshFatal(nullptr, Buf.c_str());
+  throw ESshFatal(nullptr, Str.c_str());
 }
 
 void fatalbox(const char * fmt, ...)
@@ -623,7 +623,7 @@ TPrivateKey * LoadKey(TKeyType KeyType, UnicodeString FileName, UnicodeString Pa
   case ktOpenSSHPEM:
   case ktOpenSSHNew:
   case ktSSHCom:
-    Ssh2Key = import_ssh2(KeyFile, KeyType, const_cast<char *>(AnsiPassphrase.c_str()), &ErrorStr);
+    Ssh2Key = import_ssh2(KeyFile, KeyType, AnsiPassphrase.c_str(), &ErrorStr);
     break;
 
   default:

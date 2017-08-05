@@ -379,8 +379,8 @@ static void FillBufferWithRandomData(char * Buf, intptr_t Len)
 static RawByteString AES256Salt()
 {
   RawByteString Result;
-  Result.SetLength(SALT_LENGTH(PASSWORD_MANAGER_AES_MODE));
-  FillBufferWithRandomData(const_cast<char *>(Result.c_str()), Result.Length());
+  char * Buf = Result.SetLength(SALT_LENGTH(PASSWORD_MANAGER_AES_MODE));
+  FillBufferWithRandomData(Buf, Result.Length());
   return Result;
 }
 

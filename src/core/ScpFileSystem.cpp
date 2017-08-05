@@ -1281,7 +1281,6 @@ void TSCPFileSystem::RemoteRenameFile(UnicodeString AFileName,
 void TSCPFileSystem::RemoteCopyFile(UnicodeString AFileName,
   UnicodeString ANewName)
 {
-  // ExecCommand2(fsCopyFile, 0, DelimitStr(AFileName).c_str(), DelimitStr(NewName).c_str());
   UnicodeString DelimitedFileName = DelimitStr(AFileName);
   UnicodeString DelimitedNewName = DelimitStr(ANewName);
   const UnicodeString AdditionalSwitches = L"-T";

@@ -355,8 +355,8 @@ RawByteString THierarchicalStorage::ReadBinaryData(UnicodeString Name) const
 {
   size_t Size = BinaryDataSize(Name);
   RawByteString Value;
-  Value.SetLength(Size);
-  ReadBinaryData(Name, static_cast<void *>(const_cast<char *>(Value.c_str())), Size);
+  char * Buf = Value.SetLength(Size);
+  ReadBinaryData(Name, Buf, Size);
   return Value;
 }
 
@@ -368,7 +368,7 @@ RawByteString THierarchicalStorage::ReadStringAsBinaryData(UnicodeString Name, c
   // (conversion is done by Ansi layer of the OS)
   UnicodeString String = ReadString(Name, UnicodeDefault);
   AnsiString Ansi = AnsiString(String);
-  RawByteString Result = RawByteString(Ansi.c_str(), Ansi.Length());
+  RawByteString Result = RawByteString(Ansi);
   return Result;
 }
 

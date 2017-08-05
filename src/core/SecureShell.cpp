@@ -364,7 +364,7 @@ Conf * TSecureShell::StoreToConfig(TSessionData * Data, bool Simple)
       }
       else
       {
-        conf_set_str(conf, CONF_remote_cmd, AnsiString(Data->GetShell().c_str()).c_str());
+        conf_set_str(conf, CONF_remote_cmd, AnsiString(Data->GetShell()).c_str());
       }
     }
     else
@@ -1241,8 +1241,8 @@ UnicodeString TSecureShell::ReceiveLine()
       }
       EOL = static_cast<Boolean>(Index && (Pending[Index - 1] == '\n'));
       intptr_t PrevLen = Line.Length();
-      Line.SetLength(PrevLen + Index);
-      Receive(reinterpret_cast<uint8_t *>(const_cast<char *>(Line.c_str()) + PrevLen), Index);
+      char * Buf = Line.SetLength(PrevLen + Index);
+      Receive(reinterpret_cast<uint8_t *>(Buf + PrevLen), Index);
     }
 
     // If buffer don't contain end-of-line character
@@ -1429,19 +1429,19 @@ void TSecureShell::SendNull()
 void TSecureShell::SendLine(UnicodeString Line)
 {
   CheckConnection();
-  RawByteString Buf;
+  RawByteString Str;
   if (GetUtfStrings())
   {
-    Buf = RawByteString(UTF8String(Line));
+    Str = RawByteString(UTF8String(Line));
   }
   else
   {
-    Buf = RawByteString(AnsiString(::W2MB(Line.c_str(), static_cast<UINT>(FSessionData->GetCodePageAsNumber()))));
+    Str = RawByteString(AnsiString(::W2MB(Line.c_str(), static_cast<UINT>(FSessionData->GetCodePageAsNumber()))));
   }
-  Buf += "\n";
+  Str += "\n";
 
   // FLog->Add(llInput, Line);
-  Send(reinterpret_cast<const uint8_t *>(Buf.c_str()), Buf.Length());
+  Send(reinterpret_cast<const uint8_t *>(Str.c_str()), Str.Length());
 }
 
 int TSecureShell::TranslatePuttyMessage(
