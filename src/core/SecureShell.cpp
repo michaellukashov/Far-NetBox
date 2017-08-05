@@ -2308,10 +2308,10 @@ void TSecureShell::GetRealHost(UnicodeString & Host, intptr_t & Port) const
 UnicodeString TSecureShell::RetrieveHostKey(UnicodeString Host, intptr_t Port, const UnicodeString KeyType) const
 {
   AnsiString AnsiStoredKeys;
-  AnsiStoredKeys.SetLength(10 * 1024);
+  char * Buf = AnsiStoredKeys.SetLength(10 * 1024);
   UnicodeString Result;
   if (retrieve_host_key(AnsiString(Host).c_str(), static_cast<int>(Port), AnsiString(KeyType).c_str(),
-        const_cast<char *>(AnsiStoredKeys.c_str()), static_cast<int>(AnsiStoredKeys.Length())) == 0)
+        Buf, static_cast<int>(AnsiStoredKeys.Length())) == 0)
   {
     PackStr(AnsiStoredKeys);
     Result = UnicodeString(AnsiStoredKeys);
