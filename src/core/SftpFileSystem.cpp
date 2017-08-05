@@ -1081,7 +1081,7 @@ public:
       FCapacity = ACapacity;
       if (FCapacity > 0)
       {
-        uint8_t * NData = nb::calloc<uint8_t *>(FCapacity + FSendPrefixLen);
+        uint8_t * NData = nb::calloc<uint8_t *>(1, FCapacity + FSendPrefixLen);
         NData += FSendPrefixLen;
         if (FData)
         {

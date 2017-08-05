@@ -1533,7 +1533,7 @@ void * TMemoryStream::Realloc(int64_t & NewCapacity)
     {
       if (FCapacity == 0)
       {
-        Result = nb::calloc<void *>(static_cast<::size_t>(NewCapacity));
+        Result = nb::calloc<void *>(1, static_cast<::size_t>(NewCapacity));
       }
       else
       {

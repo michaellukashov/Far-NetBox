@@ -2598,7 +2598,7 @@ void CFtpListResult::copyStr(CString &target, int pos, const char *source, int l
       int len = MultiByteToWideChar(CP_UTF8, 0, (LPCSTR)p, -1, NULL, 0);
       if (len != 0)
       {
-        LPWSTR p1 = nb::wchcalloc((len + 1) * sizeof(WCHAR));
+        LPWSTR p1 = nb::wchcalloc(len + 1);
         MultiByteToWideChar(CP_UTF8, 0, (LPCSTR)p, -1 , (LPWSTR)p1, len + 1);
         target = target.Left(pos) + W2CT(p1);
         nb_free(p1);
@@ -2613,7 +2613,7 @@ void CFtpListResult::copyStr(CString &target, int pos, const char *source, int l
     int len = MultiByteToWideChar(*m_nCodePage, 0, (LPCSTR)p, -1, NULL, 0);
     if (len != 0)
     {
-      LPWSTR p1 = nb::wchcalloc((len + 1) * sizeof(WCHAR));
+      LPWSTR p1 = nb::wchcalloc(len + 1);
       MultiByteToWideChar(*m_nCodePage, 0, (LPCSTR)p, -1 , (LPWSTR)p1, len + 1);
       target = target.Left(pos) + W2CT(p1);
       nb_free(p1);

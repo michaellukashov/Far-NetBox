@@ -584,7 +584,7 @@ bool UnscramblePassword(RawByteString Scrambled, UnicodeString & Password)
 void CryptographyInitialize()
 {
   ScrambleTable = SScrambleTable;
-  UnscrambleTable = nb::calloc<uint8_t *>(256);
+  UnscrambleTable = nb::calloc<uint8_t *>(1, 256);
   for (intptr_t Index = 0; Index < 256; ++Index)
   {
     UnscrambleTable[SScrambleTable[Index]] = static_cast<uint8_t>(Index);

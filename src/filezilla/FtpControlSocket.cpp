@@ -1283,7 +1283,7 @@ void CFtpControlSocket::OnReceive(int nErrorCode)
               m_RecvBuffer.back() = "";
             else
             {
-              LPWSTR p1 = nb::wchcalloc((len + 1) * sizeof(WCHAR));
+              LPWSTR p1 = nb::wchcalloc(len + 1);
               MultiByteToWideChar(CP_UTF8, 0, utf8, -1 , (LPWSTR)p1, len + 1);
               ShowStatus(W2CT(p1), FZ_LOG_REPLY);
               nb_free(p1);
@@ -1298,7 +1298,7 @@ void CFtpControlSocket::OnReceive(int nErrorCode)
             m_RecvBuffer.back() = "";
           else
           {
-            LPWSTR p1 = nb::wchcalloc((len + 1) * sizeof(WCHAR));
+            LPWSTR p1 = nb::wchcalloc(len + 1);
             MultiByteToWideChar(m_nCodePage, 0, str, -1 , (LPWSTR)p1, len + 1);
             ShowStatus(W2CT(p1), FZ_LOG_REPLY);
             nb_free(p1);
@@ -3473,7 +3473,7 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
         if (HandleSize(code, size))
         {
           DebugAssert(!pData->pFileSize);
-          pData->pFileSize=nb::calloc<_int64*>(sizeof(_int64));
+          pData->pFileSize=nb::calloc<_int64*>(1, sizeof(_int64));
           *pData->pFileSize=size;
         }
       }
@@ -6338,7 +6338,7 @@ CString CFtpControlSocket::GetReply()
     }
     else
     {
-      LPWSTR p1 = nb::wchcalloc((len + 1) * sizeof(WCHAR));
+      LPWSTR p1 = nb::wchcalloc(len + 1);
       MultiByteToWideChar(CP_UTF8, 0, line, -1 , (LPWSTR)p1, len + 1);
       CString reply = W2CT(p1);
       nb_free(p1);
@@ -6358,7 +6358,7 @@ CString CFtpControlSocket::GetReply()
     }
     else
     {
-      LPWSTR p1 = nb::wchcalloc((len + 1) * sizeof(WCHAR));
+      LPWSTR p1 = nb::wchcalloc(len + 1);
       MultiByteToWideChar(m_nCodePage, 0, line, -1 , (LPWSTR)p1, len + 1);
       CString reply = W2CT(p1);
       nb_free(p1);
