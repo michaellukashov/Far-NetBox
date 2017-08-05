@@ -377,3 +377,7 @@ inline bool operator>(const S & lhs, const S & rhs)
 
 }  // namespace rde
 
+template <class T>
+inline char * ToChar(T & a) { return const_cast<char *>(a.c_str()); }
+template <class T>
+inline wchar_t * ToWChar(T & a) { return const_cast<wchar_t *>(a.c_str()); }
