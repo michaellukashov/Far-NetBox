@@ -106,7 +106,7 @@ public:
 
   intptr_t Compare(UnicodeString Str) const;
   intptr_t CompareIC(UnicodeString Str) const;
-  intptr_t ToInt() const;
+  intptr_t ToIntPtr() const;
   intptr_t FindFirstOf(const wchar_t Ch) const;
   intptr_t FindFirstOf(const wchar_t * Str, size_t Offset = 0) const;
 //  intptr_t FindFirstNotOf(const wchar_t * Str) const { return (intptr_t)Data.find_first_not_of(Str); }

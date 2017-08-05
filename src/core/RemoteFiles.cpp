@@ -1282,12 +1282,12 @@ void TRemoteFile::SetListingStr(UnicodeString Value)
         // for --full-time format
         if ((Month == 0) && (Col.Length() == 10) && (Col[5] == L'-') && (Col[8] == L'-'))
         {
-          Year = ToWord(Col.SubString(1, 4).ToInt());
-          Month = ToWord(Col.SubString(6, 2).ToInt());
-          Day = ToWord(Col.SubString(9, 2).ToInt());
+          Year = ToWord(Col.SubString(1, 4).ToIntPtr());
+          Month = ToWord(Col.SubString(6, 2).ToIntPtr());
+          Day = ToWord(Col.SubString(9, 2).ToIntPtr());
           GetCol();
-          Hour = ToWord(Col.SubString(1, 2).ToInt());
-          Min = ToWord(Col.SubString(4, 2).ToInt());
+          Hour = ToWord(Col.SubString(1, 2).ToIntPtr());
+          Min = ToWord(Col.SubString(4, 2).ToIntPtr());
           if (Col.Length() >= 8)
           {
             Sec = ToWord(::StrToInt64(Col.SubString(7, 2)));

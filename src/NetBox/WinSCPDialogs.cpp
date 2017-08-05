@@ -2842,8 +2842,8 @@ static void AdjustRemoteDir(
     {
       UnicodeString Port = Dir.SubString(P2 + 1, Dir.Length() - P2);
       Dir.SetLength(P2 - 1);
-      if (Port.ToInt())
-        PortNumberEdit->SetAsInteger(Port.ToInt());
+      if (Port.ToIntPtr())
+        PortNumberEdit->SetAsInteger(Port.ToIntPtr());
     }
     HostName.SetLength(P - 1);
   }

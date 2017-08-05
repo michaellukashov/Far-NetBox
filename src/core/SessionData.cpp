@@ -3885,7 +3885,7 @@ void TSessionData::FromURI(UnicodeString ProxyURI,
   if (Pos > 0)
   {
     ProxyUrl = ProxyURI.SubString(1, Pos - 1).Trim();
-    ProxyPort = ProxyURI.SubString(Pos + 1).Trim().ToInt();
+    ProxyPort = ProxyURI.SubString(Pos + 1).Trim().ToIntPtr();
   }
   // remove scheme from Url e.g. "socks5://" "https://"
   Pos = ProxyUrl.Pos(L"://");
