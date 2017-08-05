@@ -1951,12 +1951,12 @@ UnicodeString TRegistry::ReadStringRaw(UnicodeString Name) const
 }
 
 int TRegistry::GetData(UnicodeString Name, void * Buffer,
-  intptr_t BufSize, TRegDataType & RegData) const
+  intptr_t ABufSize, TRegDataType & RegData) const
 {
   DWORD DataType = REG_NONE;
-  DWORD bufSize = static_cast<DWORD>(BufSize);
+  DWORD BufSize = ToDWord(ABufSize);
   if (::RegQueryValueEx(GetCurrentKey(), Name.c_str(), nullptr, &DataType,
-    reinterpret_cast<BYTE *>(Buffer), &bufSize) != ERROR_SUCCESS)
+    reinterpret_cast<BYTE *>(Buffer), &BufSize) != ERROR_SUCCESS)
   {
     throw Exception(L"RegQueryValueEx failed"); // FIXME ERegistryException.CreateResFmt(@SRegGetDataFailed, [Name]);
   }
@@ -1966,7 +1966,7 @@ int TRegistry::GetData(UnicodeString Name, void * Buffer,
 }
 
 void TRegistry::PutData(UnicodeString Name, const void * Buffer,
-  intptr_t BufSize, TRegDataType RegData)
+  intptr_t ABufSize, TRegDataType RegData)
 {
   DWORD DataType = RegDataToDataType(RegData);
   if (::RegSetValueEx(GetCurrentKey(), Name.c_str(), 0, DataType,
