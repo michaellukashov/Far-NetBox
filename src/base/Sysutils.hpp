@@ -276,7 +276,7 @@ NB_CORE_EXPORT bool ContainsText(UnicodeString Str1, UnicodeString Str2);
 NB_CORE_EXPORT UnicodeString RightStr(UnicodeString Str, intptr_t ACount);
 NB_CORE_EXPORT intptr_t PosEx(UnicodeString SubStr, UnicodeString Str, intptr_t Offset = 1);
 
-NB_CORE_EXPORT UnicodeString UTF8ToString(const RawByteString & Str);
+NB_CORE_EXPORT UnicodeString UTF8ToString(RawByteString Str);
 NB_CORE_EXPORT UnicodeString UTF8ToString(const char * Str, intptr_t Len);
 
 NB_CORE_EXPORT int StringCmp(const wchar_t * S1, const wchar_t * S2);
