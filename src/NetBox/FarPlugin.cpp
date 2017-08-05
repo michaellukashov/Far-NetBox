@@ -315,6 +315,10 @@ void * TCustomFarPlugin::OpenPlugin(int OpenFrom, intptr_t Item)
 
     if (Result)
     {
+      if (OpenFrom == OPEN_ANALYSE)
+      {
+        Result->SetOwnerFileSystem(GetPanelFileSystem());
+      }
       FOpenedPlugins->Add(Result);
     }
     else
@@ -338,25 +342,33 @@ void TCustomFarPlugin::ClosePlugin(void * Plugin)
   {
     ResetCachedInfo();
     TCustomFarFileSystem * FarFileSystem = get_as<TCustomFarFileSystem>(Plugin);
-    DebugAssert(FOpenedPlugins->IndexOf(FarFileSystem) != NPOS);
-    {
-      SCOPE_EXIT
-      {
-        FOpenedPlugins->Remove(FarFileSystem);
-      };
-      TGuard Guard(FarFileSystem->GetCriticalSection());
-      FarFileSystem->Close();
-    }
-    SAFE_DESTROY(FarFileSystem);
-#ifdef USE_DLMALLOC
-    // dlmalloc_trim(0); // 64 * 1024);
-#endif
+    CloseFileSystem(FarFileSystem);
   }
   catch (Exception & E)
   {
     DEBUG_PRINTF("before HandleException");
     HandleException(&E);
   }
+}
+
+void TCustomFarPlugin::CloseFileSystem(TCustomFarFileSystem * FileSystem)
+{
+  if (!FileSystem)
+    return;
+  DebugAssert(FOpenedPlugins->IndexOf(FileSystem) != NPOS);
+  {
+    SCOPE_EXIT
+    {
+      FOpenedPlugins->Remove(FileSystem);
+    };
+    TGuard Guard(FileSystem->GetCriticalSection());
+    FileSystem->Close();
+  }
+  CloseFileSystem(FileSystem->GetOwnerFileSystem());
+  SAFE_DESTROY(FileSystem);
+#ifdef USE_DLMALLOC
+  // dlmalloc_trim(0); // 64 * 1024);
+#endif
 }
 
 void TCustomFarPlugin::HandleFileSystemException(
@@ -385,7 +397,7 @@ void TCustomFarPlugin::GetOpenPluginInfo(HANDLE Plugin,
   if (!Info)
     return;
   TCustomFarFileSystem * FarFileSystem = get_as<TCustomFarFileSystem>(Plugin);
-  if (!FOpenedPlugins || !FarFileSystem)
+  if (!FOpenedPlugins || !FarFileSystem || (FOpenedPlugins->IndexOf(FarFileSystem) == NPOS))
     return;
   try
   {
@@ -405,6 +417,8 @@ intptr_t TCustomFarPlugin::GetFindData(HANDLE Plugin,
   struct PluginPanelItem ** PanelItem, int * ItemsNumber, int OpMode)
 {
   TCustomFarFileSystem * FarFileSystem = get_as<TCustomFarFileSystem>(Plugin);
+  if (!FarFileSystem)
+    return 0;
   try
   {
     ResetCachedInfo();
@@ -501,6 +515,8 @@ intptr_t TCustomFarPlugin::ProcessKey(HANDLE Plugin, int Key,
 intptr_t TCustomFarPlugin::ProcessEvent(HANDLE Plugin, int Event, void * Param)
 {
   TCustomFarFileSystem * FarFileSystem = get_as<TCustomFarFileSystem>(Plugin);
+  if (!FarFileSystem)
+    return 0;
   try
   {
     //ResetCachedInfo();
@@ -640,6 +656,8 @@ intptr_t TCustomFarPlugin::PutFiles(HANDLE Plugin,
   struct PluginPanelItem * PanelItem, intptr_t ItemsNumber, int Move, const wchar_t * srcPath, int OpMode)
 {
   TCustomFarFileSystem * FarFileSystem = get_as<TCustomFarFileSystem>(Plugin);
+  if (!FarFileSystem)
+    return 1;
   try
   {
     ResetCachedInfo();
@@ -1739,6 +1757,7 @@ TCustomFarFileSystem::TCustomFarFileSystem(TObjectClassId Kind, TCustomFarPlugin
   TObject(Kind),
   FPlugin(APlugin),
   FClosed(false),
+  FOwnerFileSystem(nullptr),
   FOpenPluginInfoValid(false)
 {
   ClearArray(FPanelInfo);

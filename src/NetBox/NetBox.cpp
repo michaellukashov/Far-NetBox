@@ -1,7 +1,6 @@
 #include "afxdll.h"
 #include <vcl.h>
 
-#include <Common.h>
 #include <Sysutils.hpp>
 
 #include "FarDialog.h"
@@ -19,8 +18,7 @@ public:
   }
 };
 
-extern "C"
-{
+extern "C" {
 
 int WINAPI GetMinFarVersionW()
 {
@@ -206,7 +204,7 @@ HANDLE WINAPI OpenFilePluginW(const wchar_t * fileName, const uint8_t * fileHead
   return Handle;
 }
 
-  static int Processes = 0;
+static int Processes = 0;
 
 BOOL DllProcessAttach(HINSTANCE HInstance)
 {
