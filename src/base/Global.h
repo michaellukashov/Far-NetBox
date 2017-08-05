@@ -131,7 +131,7 @@ inline T * DoCheckNotNull(T * p, const wchar_t * Message, const wchar_t * Filena
 
 #endif // #if defined(_DEBUG)
 
-#define MB_TEXT(x) ToWChar(::MB2W(x))
+#define MB_TEXT(x) ::MB2W(x)
 
 #define TShellExecuteInfoW _SHELLEXECUTEINFOW
 #define TSHFileInfoW SHFILEINFOW
