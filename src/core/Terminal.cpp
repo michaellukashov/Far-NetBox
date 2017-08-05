@@ -1994,7 +1994,7 @@ bool TTerminal::DoPromptUser(TSessionData * /*Data*/, TPromptKind Kind,
   {
     if (PasswordOrPassphrasePrompt && !GetConfiguration()->GetRememberPassword())
     {
-      Prompts->SetObj(0, ToObj(ToInt(Prompts->GetObj(0)) | pupRemember));
+      Prompts->SetObj(0, ToObj(ToIntPtr(Prompts->GetObj(0)) | pupRemember));
     }
 
     if (GetOnPromptUser() != nullptr)
@@ -2015,7 +2015,7 @@ bool TTerminal::DoPromptUser(TSessionData * /*Data*/, TPromptKind Kind,
     }
 
     if (Result && PasswordOrPassphrasePrompt &&
-      (GetConfiguration()->GetRememberPassword() || FLAGSET(ToInt(Prompts->GetObj(0)), pupRemember)))
+      (GetConfiguration()->GetRememberPassword() || FLAGSET(ToIntPtr(Prompts->GetObj(0)), pupRemember)))
     {
       RawByteString EncryptedPassword = EncryptPassword(Response->GetString(0));
       if (FTunnelOpening)
@@ -5293,7 +5293,7 @@ void TTerminal::AnyCommand(UnicodeString Command,
           FAction.AddOutput(Str, true);
           break;
         case cotExitCode:
-          FAction.ExitCode(StrToInt(Str));
+          FAction.ExitCode(StrToIntPtr(Str));
           break;
       }
 

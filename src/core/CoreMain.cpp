@@ -80,7 +80,7 @@ bool IsAuthenticationPrompt(TPromptKind Kind)
 bool IsPasswordOrPassphrasePrompt(TPromptKind Kind, TStrings * Prompts)
 {
   return
-    (Prompts->GetCount() == 1) && FLAGCLEAR(ToInt(Prompts->GetObj(0)), pupEcho) &&
+    (Prompts->GetCount() == 1) && FLAGCLEAR(ToIntPtr(Prompts->GetObj(0)), pupEcho) &&
     ((Kind == pkPassword) || (Kind == pkPassphrase) || (Kind == pkKeybInteractive) ||
      (Kind == pkTIS) || (Kind == pkCryptoCard));
 }

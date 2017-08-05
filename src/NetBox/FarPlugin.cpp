@@ -229,7 +229,7 @@ RECT TCustomFarPlugin::GetPanelBounds(HANDLE PanelHandle)
 {
   PanelInfo Info;
   ClearStruct(Info);
-  FarControl(FCTL_GETPANELINFO, 0, ToInt(&Info), PanelHandle);
+  FarControl(FCTL_GETPANELINFO, 0, ToIntPtr(&Info), PanelHandle);
   RECT Bounds;
   ClearStruct(Bounds);
   if (Info.Plugin)
@@ -308,7 +308,7 @@ void * TCustomFarPlugin::OpenPlugin(int OpenFrom, intptr_t Item)
     if ((OpenFrom == OPEN_SHORTCUT) || (OpenFrom == OPEN_COMMANDLINE))
     {
       Buf = reinterpret_cast<wchar_t *>(Item);
-      Item = ToInt(Buf.c_str());
+      Item = ToIntPtr(Buf.c_str());
     }
 
     TCustomFarFileSystem * Result = OpenPluginEx(OpenFrom, Item);
@@ -852,7 +852,7 @@ void TFarMessageDialog::Init(uintptr_t AFlags,
     Button->SetBottom(Button->GetTop());
     Button->SetResult(Index + 1);
     Button->SetCenterGroup(true);
-    Button->SetTag(ToInt(Buttons->GetObj(Index)));
+    Button->SetTag(ToIntPtr(Buttons->GetObj(Index)));
     if (PrevButton != nullptr)
     {
       Button->Move(PrevButton->GetRight() - Button->GetLeft() + 1, 0);
@@ -1173,9 +1173,9 @@ intptr_t TCustomFarPlugin::Menu(DWORD Flags, UnicodeString Title,
     Result = MenuItems[ResultItem].UserData;
     if (Selected >= 0)
     {
-      Items->SetObj(Selected, ToObj(ToInt(Items->GetObj(Selected)) & ~MIF_SELECTED));
+      Items->SetObj(Selected, ToObj(ToIntPtr(Items->GetObj(Selected)) & ~MIF_SELECTED));
     }
-    Items->SetObj(Result, ToObj(ToInt(Items->GetObj(Result)) | MIF_SELECTED));
+    Items->SetObj(Result, ToObj(ToIntPtr(Items->GetObj(Result)) | MIF_SELECTED));
   }
   else
   {
@@ -2025,7 +2025,7 @@ TFarPanelInfo ** TCustomFarFileSystem::GetPanelInfo(int Another)
   if (FPanelInfo[bAnother] == nullptr)
   {
     PanelInfo * Info = nb::calloc<PanelInfo*>(sizeof(PanelInfo));
-    bool Res = (FPlugin->FarControl(FCTL_GETPANELINFO, 0, ToInt(Info),
+    bool Res = (FPlugin->FarControl(FCTL_GETPANELINFO, 0, ToIntPtr(Info),
       !bAnother ? PANEL_ACTIVE : PANEL_PASSIVE) > 0);
     if (!Res)
     {
@@ -2056,7 +2056,7 @@ bool TCustomFarFileSystem::UpdatePanel(bool ClearSelection, bool Another)
 
 void TCustomFarFileSystem::RedrawPanel(bool Another)
 {
-  FPlugin->FarControl(FCTL_REDRAWPANEL, 0, ToInt(static_cast<void *>(nullptr)), Another ? PANEL_PASSIVE : PANEL_ACTIVE);
+  FPlugin->FarControl(FCTL_REDRAWPANEL, 0, ToIntPtr(static_cast<void *>(nullptr)), Another ? PANEL_PASSIVE : PANEL_ACTIVE);
 }
 
 void TCustomFarFileSystem::ClosePlugin()
@@ -2513,7 +2513,7 @@ intptr_t TFarPanelInfo::GetSelectedCount(bool CountCurrentItem) const
   {
     intptr_t size = FOwner->FarControl(FCTL_GETSELECTEDPANELITEM, 0, 0);
     PluginPanelItem * ppi = nb::calloc<PluginPanelItem *>(size);
-    FOwner->FarControl(FCTL_GETSELECTEDPANELITEM, 0, ToInt(ppi));
+    FOwner->FarControl(FCTL_GETSELECTEDPANELITEM, 0, ToIntPtr(ppi));
     if ((ppi->Flags & PPIF_SELECTED) == 0)
     {
       Count = 0;
@@ -2540,7 +2540,7 @@ TObjectList * TFarPanelInfo::GetItems()
       TODO("move to common function");
       intptr_t size = FOwner->FarControl(FCTL_GETPANELITEM, Index, 0);
       PluginPanelItem * ppi = nb::calloc<PluginPanelItem *>(size);
-      FOwner->FarControl(FCTL_GETPANELITEM, Index, ToInt(ppi));
+      FOwner->FarControl(FCTL_GETPANELITEM, Index, ToIntPtr(ppi));
       FItems->Add(new TFarPanelItem(ppi, /*OwnsItem=*/true));
     }
   }
@@ -2586,7 +2586,7 @@ void TFarPanelInfo::ApplySelection()
 {
   // for "another panel info", there's no owner
   DebugAssert(FOwner != nullptr);
-  FOwner->FarControl(FCTL_SETSELECTION, 0, ToInt(FPanelInfo));
+  FOwner->FarControl(FCTL_SETSELECTION, 0, ToIntPtr(FPanelInfo));
 }
 
 TFarPanelItem * TFarPanelInfo::GetFocusedItem() const
@@ -2630,7 +2630,7 @@ void TFarPanelInfo::SetFocusedIndex(intptr_t Value)
     ClearStruct(PanelInfo);
     PanelInfo.CurrentItem = FPanelInfo->CurrentItem;
     PanelInfo.TopPanelItem = FPanelInfo->TopPanelItem;
-    FOwner->FarControl(FCTL_REDRAWPANEL, 0, ToInt(&PanelInfo));
+    FOwner->FarControl(FCTL_REDRAWPANEL, 0, ToIntPtr(&PanelInfo));
   }
 }
 
@@ -2673,7 +2673,7 @@ UnicodeString TFarPanelInfo::GetCurrDirectory() const
     Result.SetLength(Size);
     FarPlugin->FarControl(FCTL_GETPANELDIR,
       Size,
-      ToInt(Result.c_str()),
+      ToIntPtr(Result.c_str()),
       FOwner != nullptr ? PANEL_ACTIVE : PANEL_PASSIVE);
   }
   PackStr(Result);

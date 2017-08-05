@@ -884,7 +884,7 @@ bool TWinSCPFileSystem::ExecuteCommand(UnicodeString Command)
           RedrawPanel(true);
         }
       };
-      FarControl(FCTL_SETCMDLINE, 0, ToInt(L""));
+      FarControl(FCTL_SETCMDLINE, 0, ToIntPtr(L""));
       TWinSCPPlugin * WinSCPPlugin =  GetWinSCPPlugin();
       WinSCPPlugin->ShowConsoleTitle(Command);
       {
@@ -1891,7 +1891,7 @@ void TWinSCPFileSystem::InsertTokenOnCommandLine(UnicodeString Token, bool Separ
       Token2 += L" ";
     }
 
-    FarControl(FCTL_INSERTCMDLINE, 0, ToInt(Token2.c_str()));
+    FarControl(FCTL_INSERTCMDLINE, 0, ToIntPtr(Token2.c_str()));
   }
 }
 
@@ -2137,7 +2137,7 @@ bool TWinSCPFileSystem::SynchronizeBrowsing(UnicodeString NewPath)
   UnicodeString LocalPath = ::IncludeTrailingBackslash(NewPath);
   if (!FarControl(FCTL_SETPANELDIR,
     0,
-    ToInt(LocalPath.c_str()),
+    ToIntPtr(LocalPath.c_str()),
     reinterpret_cast<HANDLE>(PANEL_PASSIVE)))
   {
     Result = false;
@@ -2154,7 +2154,7 @@ bool TWinSCPFileSystem::SynchronizeBrowsing(UnicodeString NewPath)
       // previous directory.
       FarControl(FCTL_SETPANELDIR,
         0,
-        ToInt(OldPath.c_str()),
+        ToIntPtr(OldPath.c_str()),
         reinterpret_cast<HANDLE>(PANEL_PASSIVE));
       Result = false;
     }

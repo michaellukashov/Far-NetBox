@@ -81,11 +81,11 @@ inline DWORD ToDWord(const T a) { return static_cast<DWORD>(a); }
 
 template <class T>
 inline typename std::is_convertible<T, intptr_t>::value
-ToInt(T a) { return static_cast<intptr_t>(a); }
+ToIntPtr(T a) { return static_cast<intptr_t>(a); }
 
 template <class T>
 inline typename std::enable_if<std::is_pointer<T>::value, intptr_t>::type
-ToInt(T a) { return (intptr_t)(a); }
+ToIntPtr(T a) { return (intptr_t)(a); }
 
 template <class T>
 inline typename std::is_convertible<T, void *>::value
