@@ -335,7 +335,7 @@ LONG_PTR WINAPI TFarDialog::DialogProcGeneral(HANDLE Handle, int Msg, int Param1
   {
     DebugAssert(Dialogs.find(Handle) == Dialogs.end());
     Dialogs[Handle] = Param2;
-    Dialog = reinterpret_cast<TFarDialog *>(Param2);
+    Dialog = dyn_cast<TFarDialog>(ToObj(Param2));
     Dialog->FHandle = Handle;
   }
   else
@@ -349,7 +349,7 @@ LONG_PTR WINAPI TFarDialog::DialogProcGeneral(HANDLE Handle, int Msg, int Param1
     }
     else
     {
-      Dialog = reinterpret_cast<TFarDialog *>(Dialogs[Handle]);
+      Dialog = dyn_cast<TFarDialog>(ToObj(Dialogs[Handle]));
     }
   }
 
