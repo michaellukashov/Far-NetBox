@@ -683,8 +683,8 @@ void TSecureShell::PuttyLogEvent(const char * AStr)
   // Gross hack
   if (Str.Pos(SERVER_VERSION_MSG) == 1)
   {
-    FSessionInfo.SshVersionString = Str.SubString(wcslen(SERVER_VERSION_MSG) + 1,
-      Str.Length() - wcslen(SERVER_VERSION_MSG));
+    FSessionInfo.SshVersionString = Str.SubString(nb::StrLength(SERVER_VERSION_MSG) + 1,
+      Str.Length() - nb::StrLength(SERVER_VERSION_MSG));
 
     const wchar_t * Ptr = wcschr(FSessionInfo.SshVersionString.c_str(), L'-');
     if (Ptr != nullptr)
@@ -696,8 +696,8 @@ void TSecureShell::PuttyLogEvent(const char * AStr)
 #define FORWARDING_FAILURE_MSG L"Forwarded connection refused by server: "
   else if (Str.Pos(FORWARDING_FAILURE_MSG) == 1)
   {
-    FLastTunnelError = Str.SubString(wcslen(FORWARDING_FAILURE_MSG) + 1,
-      Str.Length() - wcslen(FORWARDING_FAILURE_MSG));
+    FLastTunnelError = Str.SubString(nb::StrLength(FORWARDING_FAILURE_MSG) + 1,
+      Str.Length() - nb::StrLength(FORWARDING_FAILURE_MSG));
 
     static const TPuttyTranslation Translation[] =
     {
@@ -1464,7 +1464,7 @@ int TSecureShell::TranslatePuttyMessage(
     }
     else
     {
-      size_t OriginalLen = wcslen(Original);
+      size_t OriginalLen = nb::StrLength(Original);
       size_t PrefixLen = Div - Original;
       size_t SuffixLen = OriginalLen - PrefixLen - 1;
       if ((static_cast<size_t>(Message.Length()) >= OriginalLen - 1) &&

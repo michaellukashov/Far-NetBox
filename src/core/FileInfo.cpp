@@ -66,7 +66,7 @@ static uintptr_t VERSION_GetFileVersionInfo_PE(const wchar_t * FileName, uintptr
             };
             VS_VERSION_INFO_STRUCT32 * VersionInfo = static_cast<VS_VERSION_INFO_STRUCT32 *>(LockResource(Mem));
             const VS_FIXEDFILEINFO * FixedInfo =
-              reinterpret_cast<VS_FIXEDFILEINFO *>(DWORD_ALIGN(VersionInfo, VersionInfo->szKey + wcslen(VersionInfo->szKey) + 1));
+              reinterpret_cast<VS_FIXEDFILEINFO *>(DWORD_ALIGN(VersionInfo, VersionInfo->szKey + nb::StrLength(VersionInfo->szKey) + 1));
 
             if (FixedInfo->dwSignature != VS_FFI_SIGNATURE)
             {

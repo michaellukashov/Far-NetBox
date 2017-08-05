@@ -826,7 +826,7 @@ UnicodeString WrapText(UnicodeString Line, intptr_t MaxWidth)
       }
 
       /* copy as many words as will fit onto the current line */
-      while (*s && static_cast<intptr_t>(wcslen(s) + 1) <= SpaceLeft)
+      while (*s && (nb::StrLength(s) + 1) <= SpaceLeft)
       {
         if (Result.Length() == 0)
         {

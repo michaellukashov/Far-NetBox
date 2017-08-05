@@ -4476,9 +4476,9 @@ UnicodeString FormatContact(const TFtpsCertificateData::TContact & Contact)
       FormatContactList(FormatContactList(FormatContactList(
         Contact.Organization, Contact.Unit), Contact.CommonName), Contact.Mail));
 
-  if ((wcslen(Contact.Country) > 0) ||
-    (wcslen(Contact.StateProvince) > 0) ||
-    (wcslen(Contact.Town) > 0))
+  if ((nb::StrLength(Contact.Country) > 0) ||
+    (nb::StrLength(Contact.StateProvince) > 0) ||
+    (nb::StrLength(Contact.Town) > 0))
   {
     Result +=
       FORMAT(LoadStrPart(VERIFY_CERT_CONTACT, 2),
@@ -4486,7 +4486,7 @@ UnicodeString FormatContact(const TFtpsCertificateData::TContact & Contact)
         Contact.Country, Contact.StateProvince), Contact.Town));
   }
 
-  if (wcslen(Contact.Other) > 0)
+  if (nb::StrLength(Contact.Other) > 0)
   {
     Result += FORMAT(LoadStrPart(VERIFY_CERT_CONTACT, 3), Contact.Other);
   }
@@ -4983,7 +4983,7 @@ bool TFTPFileSystem::HandleListData(const wchar_t * Path,
         File->SetFileName(Entry->Name);
         try
         {
-          intptr_t PermissionsLen = wcslen(Entry->Permissions);
+          intptr_t PermissionsLen = nb::StrLength(Entry->Permissions);
           if (PermissionsLen >= 10)
           {
             File->GetRights()->SetText(Entry->Permissions + 1);
@@ -5001,7 +5001,7 @@ bool TFTPFileSystem::HandleListData(const wchar_t * Path,
         File->SetHumanRights(Entry->HumanPerm);
 
         // deprecated, to be replaced with Owner/Group
-        if (wcslen(Entry->OwnerGroup) > 0)
+        if (nb::StrLength(Entry->OwnerGroup) > 0)
         {
           const wchar_t * Space = wcschr(Entry->OwnerGroup, L' ');
           if (Space != nullptr)

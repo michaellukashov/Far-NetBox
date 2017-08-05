@@ -1433,7 +1433,7 @@ void TRemoteFile::SetListingStr(UnicodeString Value)
           if (P)
           {
             FLinkTo = Line.SubString(
-              P + wcslen(SYMLINKSTR), Line.Length() - P + wcslen(SYMLINKSTR) + 1);
+              P + nb::StrLength(SYMLINKSTR), Line.Length() - P + nb::StrLength(SYMLINKSTR) + 1);
             Line.SetLength(P - 1);
           }
           else

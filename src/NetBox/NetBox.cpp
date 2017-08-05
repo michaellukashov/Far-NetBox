@@ -2,6 +2,7 @@
 #include <vcl.h>
 
 #include <Sysutils.hpp>
+#include <nbutils.h>
 
 #include "FarDialog.h"
 
@@ -190,7 +191,7 @@ HANDLE WINAPI OpenFilePluginW(const wchar_t * fileName, const uint8_t * fileHead
     return INVALID_HANDLE_VALUE;
   }
 
-  const size_t fileNameLen = wcslen(fileName);
+  const size_t fileNameLen = nb::StrLength(fileName);
   if (fileNameLen < 8 || _wcsicmp(fileName + fileNameLen - 7, L".netbox") != 0)
   {
     return INVALID_HANDLE_VALUE;
