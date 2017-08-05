@@ -77,7 +77,8 @@ NB_CORE_EXPORT extern uintptr_t CallstackTls;
 extern "C" NB_CORE_EXPORT void DoTrace(const wchar_t * SourceFile, const wchar_t * Func,
   uintptr_t Line, const wchar_t * Message);
 NB_CORE_EXPORT void DoTraceFmt(const wchar_t * SourceFile, const wchar_t * Func,
-  uintptr_t Line, const wchar_t * AFormat, va_list Args);
+  uintptr_t Line, const wchar_t * AFormat, fmt::ArgList args);
+FMT_VARIADIC_W(void, DoTraceFmt, const wchar_t *, const wchar_t *, uintptr_t, const wchar_t *)
 
 #ifdef TRACE_IN_MEMORY
 NB_CORE_EXPORT void TraceDumpToFile();
