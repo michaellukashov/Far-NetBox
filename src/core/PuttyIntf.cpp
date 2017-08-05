@@ -514,7 +514,7 @@ long reg_query_winscp_value_ex(HKEY Key, const char * ValueName, unsigned long *
     DebugAssert(Type != nullptr);
     *Type = REG_SZ;
     char * DataStr = reinterpret_cast<char *>(Data);
-    int sz = static_cast<int>(*DataSize);
+    int sz = ToInt(*DataSize);
     if (sz > 0)
     {
       strncpy(DataStr, Value.c_str(), sz);
@@ -798,7 +798,7 @@ UnicodeString GetPuTTYVersion()
 UnicodeString Sha256(const char * Data, size_t Size)
 {
   unsigned char Digest[32];
-  putty_SHA256_Simple(Data, static_cast<int>(Size), Digest);
+  putty_SHA256_Simple(Data, ToInt(Size), Digest);
   UnicodeString Result(BytesToHex(Digest, _countof(Digest)));
   return Result;
 }

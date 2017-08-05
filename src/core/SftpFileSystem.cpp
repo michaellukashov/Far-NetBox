@@ -726,7 +726,7 @@ public:
       static wchar_t * Types = const_cast<wchar_t *>(L"U-DLSUOCBF");
       if (FXType > static_cast<uint8_t>(nb::StrLength(Types)))
       {
-        throw Exception(FMTLOAD(SFTP_UNKNOWN_FILE_TYPE, static_cast<int>(FXType)));
+        throw Exception(FMTLOAD(SFTP_UNKNOWN_FILE_TYPE, ToInt(FXType)));
       }
       AFile->SetType(Types[FXType]);
     }
@@ -1140,7 +1140,7 @@ public:
       TYPE_CASE(SSH_FXP_EXTENDED);
       TYPE_CASE(SSH_FXP_EXTENDED_REPLY);
     default:
-      return FORMAT("Unknown message (%d)", static_cast<int>(GetType()));
+      return FORMAT("Unknown message (%d)", ToInt(GetType()));
     }
   }
 
@@ -1167,7 +1167,7 @@ private:
   {
     if (Size > GetRemainingLength())
     {
-      throw Exception(FMTLOAD(SFTP_PACKET_ERROR, static_cast<int>(FPosition), static_cast<int>(Size), static_cast<int>(FLength)));
+      throw Exception(FMTLOAD(SFTP_PACKET_ERROR, ToInt(FPosition), ToInt(Size), ToInt(FLength)));
     }
   }
 
@@ -2482,8 +2482,8 @@ void TSFTPFileSystem::SendPacket(const TSFTPPacket * Packet)
         }
         FTerminal->GetLog()->Add(llInput, FORMAT("Type: %s, Size: %d, Number: %d",
           Packet->GetTypeName(),
-          static_cast<int>(Packet->GetLength()),
-          static_cast<int>(Packet->GetMessageNumber())));
+          ToInt(Packet->GetLength()),
+          ToInt(Packet->GetMessageNumber())));
 #if 0
         if (FTerminal->GetConfiguration()->GetActualLogProtocol() >= 2)
         {
@@ -2601,8 +2601,8 @@ SSH_FX_TYPES TSFTPFileSystem::GotStatusPacket(TSFTPPacket * Packet,
     if (FTerminal->GetLog()->GetLogging())
     {
       FTerminal->GetLog()->Add(llOutput, FORMAT("Status code: %d, Message: %d, Server: %s, Language: %s ",
-        static_cast<int>(Code),
-        static_cast<int>(Packet->GetMessageNumber()),
+        ToInt(Code),
+        ToInt(Packet->GetMessageNumber()),
         ServerMessage,
         LanguageTag));
     }
@@ -2633,7 +2633,7 @@ SSH_FX_TYPES TSFTPFileSystem::GotStatusPacket(TSFTPPacket * Packet,
   }
   if (!FNotLoggedPackets || Code)
   {
-    FTerminal->GetLog()->Add(llOutput, FORMAT("Status code: %d", static_cast<int>(Code)));
+    FTerminal->GetLog()->Add(llOutput, FORMAT("Status code: %d", ToInt(Code)));
   }
   return Code;
 }
@@ -2735,8 +2735,8 @@ SSH_FX_TYPES TSFTPFileSystem::ReceivePacket(TSFTPPacket * Packet,
             }
             FTerminal->GetLog()->Add(llOutput, FORMAT("Type: %s, Size: %d, Number: %d",
               Packet->GetTypeName(),
-              static_cast<int>(Packet->GetLength()),
-              static_cast<int>(Packet->GetMessageNumber())));
+              ToInt(Packet->GetLength()),
+              ToInt(Packet->GetMessageNumber())));
 #if 0
             if (FTerminal->GetConfiguration()->GetActualLogProtocol() >= 2)
             {
@@ -2812,7 +2812,7 @@ SSH_FX_TYPES TSFTPFileSystem::ReceivePacket(TSFTPPacket * Packet,
       }
       else if (ExpectedType != Packet->GetType())
       {
-        FTerminal->FatalError(nullptr, FMTLOAD(SFTP_INVALID_TYPE, static_cast<int>(Packet->GetType())));
+        FTerminal->FatalError(nullptr, FMTLOAD(SFTP_INVALID_TYPE, ToInt(Packet->GetType())));
       }
     }
   }
@@ -2881,8 +2881,8 @@ SSH_FX_TYPES TSFTPFileSystem::ReceiveResponse(
     if (MessageNumber != AResponse->GetMessageNumber())
     {
       FTerminal->FatalError(nullptr, FMTLOAD(SFTP_MESSAGE_NUMBER,
-        static_cast<int>(AResponse->GetMessageNumber()),
-        static_cast<int>(MessageNumber)));
+        ToInt(AResponse->GetMessageNumber()),
+        ToInt(MessageNumber)));
     }
   }
   __finally
@@ -3280,7 +3280,7 @@ void TSFTPFileSystem::DoStartup()
             }
             uint8_t Drive = RootsPacket.GetByte();
             uint8_t MaybeType = RootsPacket.GetByte();
-            FTerminal->LogEvent(FORMAT("  %s: (type %d)", static_cast<char>(Drive), static_cast<int>(MaybeType)));
+            FTerminal->LogEvent(FORMAT("  %s: (type %d)", static_cast<char>(Drive), ToInt(MaybeType)));
             FFixedPaths->Add(FORMAT("%s:", static_cast<char>(Drive)));
           }
         }
@@ -3685,7 +3685,7 @@ void TSFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
       }
       else
       {
-        FTerminal->FatalError(nullptr, FMTLOAD(SFTP_INVALID_TYPE, static_cast<int>(Response.GetType())));
+        FTerminal->FatalError(nullptr, FMTLOAD(SFTP_INVALID_TYPE, ToInt(Response.GetType())));
       }
     }
     while (!isEOF);
@@ -6338,8 +6338,8 @@ void TSFTPFileSystem::SFTPSink(UnicodeString AFileName,
                 FTerminal->LogEvent(FORMAT(
                   L"Received incomplete data packet before end of file, "
                   L"offset: %s, size: %d, requested: %d",
-                  ::Int64ToStr(OperationProgress->GetTransferredSize()), static_cast<int>(DataLen),
-                  static_cast<int>(BlockSize)));
+                  ::Int64ToStr(OperationProgress->GetTransferredSize()), ToInt(DataLen),
+                  ToInt(BlockSize)));
                 FTerminal->TerminalError(nullptr, LoadStr(SFTP_INCOMPLETE_BEFORE_EOF));
               }
 

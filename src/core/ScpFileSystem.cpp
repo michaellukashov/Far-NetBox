@@ -786,8 +786,8 @@ void TSCPFileSystem::ExecCommand(TFSCommand Cmd, intptr_t Params, fmt::ArgList a
   {
     int MinL = FCommandSet->GetMinLines(Cmd);
     int MaxL = FCommandSet->GetMaxLines(Cmd);
-    if (((MinL >= 0) && (MinL > static_cast<int>(FOutput->GetCount()))) ||
-        ((MaxL >= 0) && (MaxL > static_cast<int>(FOutput->GetCount()))))
+    if (((MinL >= 0) && (MinL > ToInt(FOutput->GetCount()))) ||
+        ((MaxL >= 0) && (MaxL > ToInt(FOutput->GetCount()))))
     {
       FTerminal->TerminalError(FMTLOAD(INVALID_OUTPUT_ERROR,
         FullCommand, GetOutput()->GetText()));
@@ -2064,7 +2064,7 @@ void TSCPFileSystem::SCPSource(UnicodeString AFileName,
               FTerminal->LogEvent(FORMAT("Sending BINARY data (%u bytes)",
                 BlockBuf.GetSize()));
             }
-            FSecureShell->Send(reinterpret_cast<const uint8_t *>(BlockBuf.GetData()), static_cast<int>(BlockBuf.GetSize()));
+            FSecureShell->Send(reinterpret_cast<const uint8_t *>(BlockBuf.GetData()), ToInt(BlockBuf.GetSize()));
             OperationProgress->AddTransferred(BlockBuf.GetSize());
           }
 
@@ -2505,7 +2505,7 @@ void TSCPFileSystem::SCPSendError(const UnicodeString Message, bool Fatal)
 {
   uint8_t ErrorLevel = static_cast<uint8_t>(Fatal ? 2 : 1);
   FTerminal->LogEvent(FORMAT("Sending SCP error (%d) to remote side:",
-    static_cast<int>(ErrorLevel)));
+    ToInt(ErrorLevel)));
   FSecureShell->Send(&ErrorLevel, 1);
   // We don't send exact error message, because some unspecified
   // characters can terminate remote scp

@@ -229,7 +229,7 @@ void TraceDumpToFile()
 
       TimeString =
         FormatDateTime(TimestampFormat,
-          IncMilliSecond(N, -static_cast<int>(Ticks - i->Ticks)));
+          IncMilliSecond(N, -ToInt(Ticks - i->Ticks)));
       Buffer = UTF8String(FORMAT("[%s] [%.4X] [%s:%d:%s] %s\n",
         TimeString, int(i->Thread), SourceFile,
          i->Line, i->Func, i->Message));

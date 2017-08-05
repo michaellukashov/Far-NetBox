@@ -369,7 +369,7 @@ static void ExecuteProcessAndReadOutput(const
         }
         else
         {
-          throw ExtException(MainInstructions(FMTLOAD(COMMAND_FAILED_CODEONLY, (static_cast<int>(ExitCode)))), Output, HelpKeyword);
+          throw ExtException(MainInstructions(FMTLOAD(COMMAND_FAILED_CODEONLY, (ToInt(ExitCode)))), Output, HelpKeyword);
         }
       }
     }

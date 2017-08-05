@@ -21,7 +21,7 @@ wchar_t __cdecl Lower(wchar_t Ch)
 
 intptr_t __cdecl StrCmpNNI(const wchar_t * s1, intptr_t n1, const wchar_t * s2, intptr_t n2)
 {
-  return ::CompareString(0, NORM_IGNORECASE | NORM_STOP_ON_NULL | SORT_STRINGSORT, s1, static_cast<int>(n1), s2, static_cast<int>(n2)) - 2;
+  return ::CompareString(0, NORM_IGNORECASE | NORM_STOP_ON_NULL | SORT_STRINGSORT, s1, ToInt(n1), s2, ToInt(n2)) - 2;
 }
 
 intptr_t __cdecl StrLIComp(const wchar_t * s1, const wchar_t * s2, intptr_t n)
@@ -36,7 +36,7 @@ intptr_t __cdecl FarStrCmpI(const wchar_t * s1, const wchar_t * s2)
 
 intptr_t __cdecl StrCmpNN(const wchar_t * s1, intptr_t n1, const wchar_t * s2, intptr_t n2)
 {
-  return ::CompareString(0, NORM_STOP_ON_NULL | SORT_STRINGSORT, s1, static_cast<int>(n1), s2, static_cast<int>(n2)) - 2;
+  return ::CompareString(0, NORM_STOP_ON_NULL | SORT_STRINGSORT, s1, ToInt(n1), s2, ToInt(n2)) - 2;
 }
 
 

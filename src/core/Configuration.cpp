@@ -668,7 +668,7 @@ UnicodeString TConfiguration::BannerHash(UnicodeString Banner) const
   RawByteString Result;
   char * Buf = Result.SetLength(16);
   md5checksum(
-    reinterpret_cast<const char *>(Banner.c_str()), static_cast<int>(Banner.Length() * sizeof(wchar_t)),
+    reinterpret_cast<const char *>(Banner.c_str()), ToInt(Banner.Length() * sizeof(wchar_t)),
     reinterpret_cast<uint8_t *>(Buf));
   return BytesToHex(Result);
 }

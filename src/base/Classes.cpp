@@ -1961,7 +1961,7 @@ int TRegistry::GetData(UnicodeString Name, void * Buffer,
     throw Exception(L"RegQueryValueEx failed"); // FIXME ERegistryException.CreateResFmt(@SRegGetDataFailed, [Name]);
   }
   RegData = DataTypeToRegData(DataType);
-  int Result = static_cast<int>(BufSize);
+  int Result = ToInt(BufSize);
   return Result;
 }
 

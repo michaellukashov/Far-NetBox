@@ -671,7 +671,7 @@ UnicodeString TRemoteToken::GetDisplayText() const
 
 UnicodeString TRemoteToken::GetLogText() const
 {
-  return FORMAT("\"%s\" [%d]", FName, static_cast<int>(FID));
+  return FORMAT("\"%s\" [%d]", FName, ToInt(FID));
 }
 
 

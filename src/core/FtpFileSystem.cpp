@@ -570,14 +570,14 @@ void TFTPFileSystem::Open()
     TAutoFlag OpeningFlag(FOpening);
 
     FActive = FFileZillaIntf->Connect(
-      HostName.c_str(), static_cast<int>(Data->GetPortNumber()), UserName.c_str(),
+      HostName.c_str(), ToInt(Data->GetPortNumber()), UserName.c_str(),
       Password.c_str(), Account.c_str(), Path.c_str(),
-      ServerType, static_cast<int>(Pasv), static_cast<int>(TimeZoneOffset), UTF8,
-      static_cast<int>(CodePage),
-      static_cast<int>(Data->GetFtpForcePasvIp()),
-      static_cast<int>(Data->GetFtpUseMlsd()),
-      static_cast<int>(Data->GetFtpDupFF()),
-      static_cast<int>(Data->GetFtpUndupFF()),
+      ServerType, ToInt(Pasv), ToInt(TimeZoneOffset), UTF8,
+      ToInt(CodePage),
+      ToInt(Data->GetFtpForcePasvIp()),
+      ToInt(Data->GetFtpUseMlsd()),
+      ToInt(Data->GetFtpDupFF()),
+      ToInt(Data->GetFtpUndupFF()),
       FCertificate, FPrivateKey);
 
     DebugAssert(FActive);
@@ -1570,7 +1570,7 @@ void TFTPFileSystem::ReadDirectoryProgress(int64_t Bytes)
   // with FTP we do not know exactly how many entries we have received,
   // instead we know number of bytes received only.
   // so we report approximation based on average size of entry.
-  int Progress = static_cast<int>(Bytes / 80);
+  int Progress = ToInt(Bytes / 80);
   if (Progress - FLastReadDirectoryProgress >= 10)
   {
     bool Cancel = false;
@@ -1649,7 +1649,7 @@ void TFTPFileSystem::FileTransfer(UnicodeString AFileName,
   [&]()
   {
     FFileZillaIntf->FileTransfer(ApiPath(LocalFile).c_str(), RemoteFile.c_str(),
-      RemotePath.c_str(), Get, Size, static_cast<int>(Type), &UserData);
+      RemotePath.c_str(), Get, Size, ToInt(Type), &UserData);
     // we may actually catch response code of the listing
     // command (when checking for existence of the remote file)
     uintptr_t Reply = WaitForCommandReply();
@@ -3741,7 +3741,7 @@ UnicodeString TFTPFileSystem::GotReply(uintptr_t Reply, uintptr_t Flags,
            TFileZillaIntf::REPLY_IDLE | TFileZillaIntf::REPLY_NOTINITIALIZED |
            TFileZillaIntf::REPLY_ALREADYINIZIALIZED))
     {
-      FTerminal->FatalError(nullptr, FMTLOAD(INTERNAL_ERROR, "ftp#2", FORMAT("0x%x", static_cast<int>(Reply))));
+      FTerminal->FatalError(nullptr, FMTLOAD(INTERNAL_ERROR, "ftp#2", FORMAT("0x%x", ToInt(Reply))));
     }
     else
     {
@@ -5097,7 +5097,7 @@ bool TFTPFileSystem::HandleReply(intptr_t Command, uintptr_t Reply)
   }
   if (FTerminal->GetConfiguration()->GetActualLogProtocol() >= 1)
   {
-    FTerminal->LogEvent(FORMAT("Got reply %x to the command %d", static_cast<int>(Reply), Command));
+    FTerminal->LogEvent(FORMAT("Got reply %x to the command %d", ToInt(Reply), Command));
   }
 
   // reply with Command 0 is not associated with current operation

@@ -5251,7 +5251,7 @@ public:
       FAction.AddOutput(Str, true);
       break;
     case cotExitCode:
-      FAction.ExitCode(static_cast<int>(::StrToInt64(Str)));
+      FAction.ExitCode(ToInt(::StrToInt64(Str)));
       break;
     }
 
@@ -5954,7 +5954,7 @@ UnicodeString TTerminal::SynchronizeParamsStr(intptr_t Params)
   AddFlagName(ParamsStr, Params, spMirror, L"Mirror");
   if (Params > 0)
   {
-    AddToList(ParamsStr, FORMAT("0x%x", static_cast<int>(Params)), L", ");
+    AddToList(ParamsStr, FORMAT("0x%x", ToInt(Params)), L", ");
   }
   return ParamsStr;
 }

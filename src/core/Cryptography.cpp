@@ -515,7 +515,7 @@ RawByteString ScramblePassword(UnicodeString Password)
     int P = 0;
     while ((P <= 0) || (P > 255) || IsDigit(static_cast<wchar_t>(P)))
     {
-      P = static_cast<int>(static_cast<double>(rand()) / (static_cast<double>(RAND_MAX) / 256.0));
+      P = ToInt(static_cast<double>(rand()) / (static_cast<double>(RAND_MAX) / 256.0));
     }
     Buf[Index] = static_cast<uint8_t>(P);
   }
@@ -544,7 +544,7 @@ bool UnscramblePassword(RawByteString Scrambled, UnicodeString & Password)
   int Last = 31;
   while (*S != '\0')
   {
-    int X = static_cast<int>(UnscrambleTable[static_cast<uint8_t>(*S)]) - 1 - (Last % 255);
+    int X = ToInt(UnscrambleTable[static_cast<uint8_t>(*S)]) - 1 - (Last % 255);
     if (X <= 0)
     {
       X += 255;

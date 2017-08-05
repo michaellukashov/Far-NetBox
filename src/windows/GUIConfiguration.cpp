@@ -788,7 +788,7 @@ void TGUIConfiguration::LoadData(THierarchicalStorage * Storage)
       FDefaultCopyParam.Load(Storage);
 
       intptr_t CopyParamListCount = Storage->ReadInteger("CopyParamList", -1);
-      FCopyParamListDefaults = (static_cast<int>(CopyParamListCount) <= 0);
+      FCopyParamListDefaults = (ToInt(CopyParamListCount) <= 0);
       if (!FCopyParamListDefaults)
       {
         FCopyParamList->Clear();
@@ -929,7 +929,7 @@ HINSTANCE TGUIConfiguration::LoadNewResourceModule(LCID ALocale,
 
   if (!NewInstance && !Internal)
   {
-    throw Exception(FMTLOAD(LOCALE_LOAD_ERROR, static_cast<int>(ALocale)));
+    throw Exception(FMTLOAD(LOCALE_LOAD_ERROR, ToInt(ALocale)));
   }
   if (Internal)
   {

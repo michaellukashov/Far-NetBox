@@ -655,7 +655,7 @@ bool TWinSCPPlugin::EnduranceConfigurationDialog()
   ResumeSmartButton->SetChecked(CopyParam.GetResumeSupport() == rsSmart);
   ResumeOffButton->SetChecked(CopyParam.GetResumeSupport() == rsOff);
   ResumeThresholdEdit->SetAsInteger(
-    static_cast<int>(CopyParam.GetResumeThreshold() / 1024));
+    ToInt(CopyParam.GetResumeThreshold() / 1024));
 
   SessionReopenAutoCheck->SetChecked((GetConfiguration()->GetSessionReopenAuto() > 0));
   SessionReopenAutoEdit->SetAsInteger((GetConfiguration()->GetSessionReopenAuto() > 0 ?
@@ -1098,7 +1098,7 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
     Text->Move(0, 1);
   }
   Text->SetCaption(GetMsg(NB_ABOUT_URL));
-  // FIXME Text->SetColor(static_cast<int>((GetSystemColor(COL_DIALOGTEXT) & 0xF0) | 0x09));
+  // FIXME Text->SetColor(ToInt((GetSystemColor(COL_DIALOGTEXT) & 0xF0) | 0x09));
   Text->SetCenterGroup(true);
   Text->SetOnMouseClick(nb::bind(&TAboutDialog::UrlTextClick, this));
 
@@ -1277,7 +1277,7 @@ void TPasswordDialog::GenerateLabel(UnicodeString ACaption,
   }
   FPrompt += Caption;
 
-  if (GetSize().x - 10 < static_cast<int>(Caption.Length()))
+  if (GetSize().x - 10 < ToInt(Caption.Length()))
   {
     Caption.SetLength(GetSize().x - 10 - 4);
     Caption += L" ...";
@@ -1300,7 +1300,7 @@ void TPasswordDialog::GeneratePrompt(bool ShowSavePassword,
   FEdits->Clear();
   TPoint S = TPoint(40, ShowSavePassword ? 1 : 0);
 
-  int x = static_cast<int>(Instructions.Length());
+  int x = ToInt(Instructions.Length());
   if (S.x < x)
   {
     S.x = x;
@@ -1312,7 +1312,7 @@ void TPasswordDialog::GeneratePrompt(bool ShowSavePassword,
 
   for (intptr_t Index = 0; Index < Prompts->GetCount(); ++Index)
   {
-    int l = static_cast<int>(Prompts->GetString(Index).Length());
+    int l = ToInt(Prompts->GetString(Index).Length());
     if (S.x < l)
     {
       S.x = l;
@@ -5680,7 +5680,7 @@ bool TWinSCPPlugin::CopyParamDialog(UnicodeString Caption,
   TCopyParamsContainer * CopyParamsContainer = new TCopyParamsContainer(
     Dialog, 0, CopyParamAttrs);
 
-  Dialog->SetSize(TPoint(78, 2 + static_cast<int>(CopyParamsContainer->GetHeight()) + 3));
+  Dialog->SetSize(TPoint(78, 2 + ToInt(CopyParamsContainer->GetHeight()) + 3));
 
   Dialog->SetNextItemPosition(ipNewLine);
 
@@ -5966,7 +5966,7 @@ TFileSystemInfoDialog::TFileSystemInfoDialog(TCustomFarPlugin * AFarPlugin,
 
   SpaceAvailablePathEdit = new TFarEdit(this);
   SpaceAvailablePathEdit->SetRight(
-    - (static_cast<int>(GetMsg(NB_SPACE_AVAILABLE_CHECK_SPACE).Length() + 11)));
+    - (ToInt(GetMsg(NB_SPACE_AVAILABLE_CHECK_SPACE).Length() + 11)));
 
   TFarButton * Button = new TFarButton(this);
   Button->SetCaption(GetMsg(NB_SPACE_AVAILABLE_CHECK_SPACE));
@@ -7310,7 +7310,7 @@ void TSynchronizeChecklistDialog::AdaptSize()
     if (Ratio[Index] >= 0)
     {
       double W = ToDouble(Ratio[Index]) * (Width - FixedRatio) / TotalRatio;
-      FWidths[Index] = static_cast<int>(floor(W));
+      FWidths[Index] = ToInt(floor(W));
       Temp[Index] = W - FWidths[Index];
     }
     else

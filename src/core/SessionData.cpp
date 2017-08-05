@@ -2274,7 +2274,7 @@ UnicodeString TSessionData::GetStorageKey() const
 
 UnicodeString TSessionData::FormatSiteKey(UnicodeString HostName, intptr_t PortNumber)
 {
-  return FORMAT("%s:%d", HostName, static_cast<int>(PortNumber));
+  return FORMAT("%s:%d", HostName, ToInt(PortNumber));
 }
 
 UnicodeString TSessionData::GetSiteKey() const
@@ -4819,7 +4819,7 @@ void TStoredSessionList::ImportFromKnownHosts(TStrings * Lines)
               UnicodeString NameStr = HostNameStr;
               if (PortNumber >= 0)
               {
-                NameStr = FORMAT(L"%s:%d", NameStr, static_cast<int>(PortNumber));
+                NameStr = FORMAT(L"%s:%d", NameStr, ToInt(PortNumber));
               }
 
               std::unique_ptr<TSessionData> SessionDataOwner;
@@ -5566,7 +5566,7 @@ UnicodeString GetExpandedLogFileName(UnicodeString LogFileName, TDateTime Starte
         break;
 
       case 'p':
-        Replacement = ::Int64ToStr(static_cast<int>(::GetCurrentProcessId()));
+        Replacement = ::Int64ToStr(ToInt(::GetCurrentProcessId()));
         break;
 
       case L'@':

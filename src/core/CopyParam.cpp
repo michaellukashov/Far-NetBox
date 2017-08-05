@@ -708,7 +708,7 @@ UnicodeString TCopyParamType::GetLogStr() const
       CaseC[GetFileNameCase()],
       CharToHex(GetInvalidCharsReplacement()),
       ResumeC[GetResumeSupport()],
-      static_cast<int>(GetResumeThreshold()),
+      ToInt(GetResumeThreshold()),
       BooleanToEngStr(GetCalculateSize()),
       GetFileMask()) +
     FORMAT(

@@ -452,7 +452,7 @@ UnicodeString GetShellFolderPath(intptr_t CSIdl)
   UnicodeString Result;
 #if defined(_MSC_VER) && !defined(__clang__)
   wchar_t Path[2 * MAX_PATH + 10] = L"\0";
-  if (SUCCEEDED(::SHGetFolderPath(nullptr, static_cast<int>(CSIdl), nullptr, SHGFP_TYPE_CURRENT, Path)))
+  if (SUCCEEDED(::SHGetFolderPath(nullptr, ToInt(CSIdl), nullptr, SHGFP_TYPE_CURRENT, Path)))
   {
     Result = Path;
   }
@@ -858,7 +858,7 @@ intptr_t CompareLogicalText(UnicodeString S1, UnicodeString S2)
     return -1;
   }
 #if defined(_MSC_VER) && !defined(__clang__)
-  return ::StrCmpNCW(S1.c_str(), S2.c_str(), static_cast<int>(S1.Length()));
+  return ::StrCmpNCW(S1.c_str(), S2.c_str(), ToInt(S1.Length()));
 #else
     return S1.Compare(S2);
 #endif
@@ -2965,7 +2965,7 @@ UnicodeString TrimVersion(UnicodeString Version)
 
 UnicodeString FormatVersion(intptr_t MajorVersion, intptr_t MinorVersion, intptr_t Patch)
 {
-  return FORMAT("%d.%d.%d", static_cast<int>(MajorVersion), static_cast<int>(MinorVersion), static_cast<int>(Patch));
+  return FORMAT("%d.%d.%d", ToInt(MajorVersion), ToInt(MinorVersion), ToInt(Patch));
 }
 
 TFormatSettings GetEngFormatSettings()
@@ -3071,7 +3071,7 @@ static int PemPasswordCallback(char * Buf, int Size, int /*RWFlag*/, void * User
   strncpy(Buf, UtfPassphrase.c_str(), Size);
   Shred(UtfPassphrase);
   Buf[Size - 1] = '\0';
-  return static_cast<int>(NBChTraitsCRT<char>::SafeStringLen(Buf));
+  return ToInt(NBChTraitsCRT<char>::SafeStringLen(Buf));
 }
 
 

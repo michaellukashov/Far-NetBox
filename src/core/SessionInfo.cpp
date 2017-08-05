@@ -1267,7 +1267,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
     UnicodeString TimeInfo;
     if ((Data->GetFSProtocol() == fsSFTP) || (Data->GetFSProtocol() == fsSFTPonly) || (Data->GetFSProtocol() == fsSCPonly) || (Data->GetFSProtocol() == fsWebDAV))
     {
-      AddToList(TimeInfo, FORMAT(L"DST mode: %s", EnumName(static_cast<int>(Data->GetDSTMode()), DSTModeNames)), L";");
+      AddToList(TimeInfo, FORMAT(L"DST mode: %s", EnumName(ToInt(Data->GetDSTMode()), DSTModeNames)), L";");
     }
     if ((Data->GetFSProtocol() == fsSCPonly) || (Data->GetFSProtocol() == fsFTP))
     {

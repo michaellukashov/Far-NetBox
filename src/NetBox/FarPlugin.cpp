@@ -155,7 +155,7 @@ void TCustomFarPlugin::GetPluginInfo(struct PluginInfo * Info)
         { \
           wchar_t ** StringArray = nb::calloc<wchar_t **>(sizeof(wchar_t *) * (1 + NAME.GetCount())); \
           FPluginInfo.NAME = StringArray; \
-          FPluginInfo.NAME ## Number = static_cast<int>(NAME.GetCount()); \
+          FPluginInfo.NAME ## Number = ToInt(NAME.GetCount()); \
           for (intptr_t Index = 0; Index < NAME.GetCount(); ++Index) \
           { \
             StringArray[Index] = DuplicateStr(NAME.GetString(Index)); \
@@ -844,7 +844,7 @@ void TFarMessageDialog::Init(uintptr_t AFlags,
         (FParams->TimeoutButton == static_cast<size_t>(Index)))
     {
       FTimeoutButtonCaption = Caption;
-      Caption = FORMAT(FParams->TimeoutStr, Caption, static_cast<int>(FParams->Timeout / 1000));
+      Caption = FORMAT(FParams->TimeoutStr, Caption, ToInt(FParams->Timeout / 1000));
       FTimeoutButton = Button;
     }
     Button->SetCaption(FORMAT(" %s ", Caption));
@@ -898,8 +898,8 @@ void TFarMessageDialog::Init(uintptr_t AFlags,
 
   TRect rect = GetClientRect();
   TPoint S(
-    static_cast<int>(rect.Left + MaxLen - rect.Right),
-    static_cast<int>(rect.Top + MessageLines->GetCount() +
+    ToInt(rect.Left + MaxLen - rect.Right),
+    ToInt(rect.Top + MessageLines->GetCount() +
       (FParams->MoreMessages != nullptr ? 1 : 0) + ButtonLines +
       (!FParams->CheckBoxLabel.IsEmpty() ? 1 : 0) +
       (-(rect.Bottom + 1))));
@@ -919,7 +919,7 @@ void TFarMessageDialog::Init(uintptr_t AFlags,
     DebugAssert(MoreMessagesSeparator != nullptr);
     MoreMessagesSeparator->SetPosition(
       MoreMessagesLister->GetTop() + MoreMessagesLister->GetHeight());
-    S.y += static_cast<int>(MoreMessagesLister->GetHeight()) + 1;
+    S.y += ToInt(MoreMessagesLister->GetHeight()) + 1;
   }
   SetSize(S);
 }
@@ -959,7 +959,7 @@ void TFarMessageDialog::Idle()
     {
       UnicodeString Caption =
         FORMAT(" %s ", FORMAT(FParams->TimeoutStr,
-          FTimeoutButtonCaption, static_cast<int>((FParams->Timeout - Running) / 1000)));
+          FTimeoutButtonCaption, ToInt((FParams->Timeout - Running) / 1000)));
       intptr_t sz = FTimeoutButton->GetCaption().Length() > Caption.Length() ? FTimeoutButton->GetCaption().Length() - Caption.Length() : 0;
       Caption += ::StringOfChar(L' ', sz);
       FTimeoutButton->SetCaption(Caption);
@@ -1083,8 +1083,8 @@ intptr_t TCustomFarPlugin::FarMessage(DWORD Flags,
 
   TFarEnvGuard Guard;
   intptr_t Result = static_cast<intptr_t>(FStartupInfo.Message(FStartupInfo.ModuleNumber,
-    Flags | FMSG_LEFTALIGN, nullptr, Items, static_cast<int>(MessageLines->GetCount()),
-    static_cast<int>(Buttons->GetCount())));
+    Flags | FMSG_LEFTALIGN, nullptr, Items, ToInt(MessageLines->GetCount()),
+    ToInt(Buttons->GetCount())));
 
   return Result;
 }
@@ -1129,7 +1129,7 @@ intptr_t TCustomFarPlugin::Menu(DWORD Flags, UnicodeString Title,
   TFarEnvGuard Guard;
   return static_cast<intptr_t>(FStartupInfo.Menu(FStartupInfo.ModuleNumber, -1, -1, 0,
     Flags, Title.c_str(), Bottom.c_str(), nullptr, BreakKeys,
-    &BreakCode, Items, static_cast<int>(Count)));
+    &BreakCode, Items, ToInt(Count)));
 }
 
 intptr_t TCustomFarPlugin::Menu(DWORD Flags, UnicodeString Title,
@@ -1211,7 +1211,7 @@ bool TCustomFarPlugin::InputBox(UnicodeString Title,
         HistoryName.c_str(),
         Text.c_str(),
         ToWChar(DestText),
-        static_cast<int>(MaxLen),
+        ToInt(MaxLen),
         nullptr,
         FIB_ENABLEEMPTY | FIB_BUTTONS | Flags);
     }
@@ -1560,7 +1560,7 @@ void TCustomFarPlugin::HandleException(Exception * E, int /*OpMode*/)
 UnicodeString TCustomFarPlugin::GetMsg(intptr_t MsgId) const
 {
   TFarEnvGuard Guard;
-  UnicodeString Result = FStartupInfo.GetMsg(FStartupInfo.ModuleNumber, static_cast<int>(MsgId));
+  UnicodeString Result = FStartupInfo.GetMsg(FStartupInfo.ModuleNumber, ToInt(MsgId));
   return Result;
 }
 
@@ -1643,13 +1643,13 @@ intptr_t TCustomFarPlugin::FarControl(uintptr_t Command, intptr_t Param1, intptr
   }
 
   TFarEnvGuard Guard;
-  return FStartupInfo.Control(Plugin, static_cast<int>(Command), static_cast<int>(Param1), Param2);
+  return FStartupInfo.Control(Plugin, ToInt(Command), ToInt(Param1), Param2);
 }
 
 intptr_t TCustomFarPlugin::FarAdvControl(uintptr_t Command, void * Param) const
 {
   TFarEnvGuard Guard;
-  return FStartupInfo.AdvControl(FStartupInfo.ModuleNumber, static_cast<int>(Command), Param);
+  return FStartupInfo.AdvControl(FStartupInfo.ModuleNumber, ToInt(Command), Param);
 }
 
 intptr_t TCustomFarPlugin::FarEditorControl(uintptr_t Command, void * Param)
@@ -1672,7 +1672,7 @@ intptr_t TCustomFarPlugin::FarEditorControl(uintptr_t Command, void * Param)
   }
 
   TFarEnvGuard Guard;
-  return static_cast<intptr_t>(FStartupInfo.EditorControl(static_cast<int>(Command), Param));
+  return static_cast<intptr_t>(FStartupInfo.EditorControl(ToInt(Command), Param));
 }
 
 TFarEditorInfo * TCustomFarPlugin::EditorInfo()
@@ -1879,7 +1879,7 @@ intptr_t TCustomFarFileSystem::GetFindData(
   if (Result && PanelItems->GetCount())
   {
     *PanelItem = nb::calloc<PluginPanelItem*>(sizeof(PluginPanelItem) * PanelItems->GetCount());
-    *ItemsNumber = static_cast<int>(PanelItems->GetCount());
+    *ItemsNumber = ToInt(PanelItems->GetCount());
     for (intptr_t Index = 0; Index < PanelItems->GetCount(); ++Index)
     {
       PanelItems->GetAs<TCustomFarPanelItem>(Index)->FillPanelItem(
@@ -2625,7 +2625,7 @@ void TFarPanelInfo::SetFocusedIndex(intptr_t Value)
   if (GetFocusedIndex() != Value)
   {
     DebugAssert(Value != NPOS && Value < static_cast<intptr_t>(FPanelInfo->ItemsNumber));
-    FPanelInfo->CurrentItem = static_cast<int>(Value);
+    FPanelInfo->CurrentItem = ToInt(Value);
     PanelRedrawInfo PanelInfo;
     ClearStruct(PanelInfo);
     PanelInfo.CurrentItem = FPanelInfo->CurrentItem;
@@ -2848,7 +2848,7 @@ UnicodeString TGlobalFunctions::GetMsg(intptr_t Id) const
 #if 0
   HINSTANCE hInstance = GetGlobalFunctions()->GetInstanceHandle();
   intptr_t Length = ::LoadString(hInstance, static_cast<UINT>(Id),
-    ToWChar(Fmt), static_cast<int>(Fmt.GetLength()));
+    ToWChar(Fmt), ToInt(Fmt.GetLength()));
   if (!Length)
   {
     DEBUG_PRINTF(L"Unknown resource string id: %d\n", Id);

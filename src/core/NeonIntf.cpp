@@ -78,11 +78,11 @@ void InitNeonSession(ne_session * Session, TProxyMethod ProxyMethod, UnicodeStri
     if ((ProxyMethod == pmSocks4) || (ProxyMethod == pmSocks5))
     {
       enum ne_sock_sversion vers = (ProxyMethod == pmSocks4) ? NE_SOCK_SOCKSV4A : NE_SOCK_SOCKSV5;
-      ne_session_socks_proxy(Session, vers, StrToNeon(ProxyHost), static_cast<int>(ProxyPort), StrToNeon(ProxyUsername), StrToNeon(ProxyPassword));
+      ne_session_socks_proxy(Session, vers, StrToNeon(ProxyHost), ToInt(ProxyPort), StrToNeon(ProxyUsername), StrToNeon(ProxyPassword));
     }
     else if (!ProxyHost.IsEmpty())
     {
-      ne_session_proxy(Session, StrToNeon(ProxyHost), static_cast<int>(ProxyPort));
+      ne_session_proxy(Session, StrToNeon(ProxyHost), ToInt(ProxyPort));
 
       if (!ProxyUsername.IsEmpty())
       {

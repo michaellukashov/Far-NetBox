@@ -88,6 +88,14 @@ inline typename std::enable_if<std::is_pointer<T>::value, intptr_t>::type
 ToIntPtr(T a) { return (intptr_t)(a); }
 
 template <class T>
+inline typename std::is_convertible<T, int>::value
+ToInt(T a) { return static_cast<int>(a); }
+
+template <class T>
+inline int
+ToInt(T a) { return static_cast<int>(a); }
+
+template <class T>
 inline typename std::is_convertible<T, void *>::value
 ToPtr(T a) { return const_cast<void *>(a); }
 template <class T>

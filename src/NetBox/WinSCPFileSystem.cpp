@@ -3436,7 +3436,7 @@ void TWinSCPFileSystem::ShowOperationProgress(
 
     UnicodeString ProgressBarCurrentFile;
     UnicodeString Message2;
-    UnicodeString Title = GetMsg(Captions[static_cast<int>(ProgressData.GetOperation() - 1)]);
+    UnicodeString Title = GetMsg(Captions[ToInt(ProgressData.GetOperation() - 1)]);
     UnicodeString FileName = ProgressData.GetFileName();
     // for upload from temporary directory,
     // do not show source directory
@@ -4046,10 +4046,10 @@ void TWinSCPFileSystem::MultipleEdit(UnicodeString Directory,
     {
       WindowInfo Window;
       ClearStruct(Window);
-      Window.Pos = static_cast<int>(Pos);
+      Window.Pos = ToInt(Pos);
       UnicodeString EditedFileName(1024, 0);
       Window.Name = ToWChar(EditedFileName);
-      Window.NameSize = static_cast<int>(EditedFileName.GetLength());
+      Window.NameSize = ToInt(EditedFileName.GetLength());
       if (FarPlugin->FarAdvControl(ACTL_GETWINDOWINFO, &Window) != 0)
       {
         if ((Window.Type == WTYPE_EDITOR) &&
@@ -4160,7 +4160,7 @@ UnicodeString TWinSCPFileSystem::GetFileNameHash(UnicodeString AFileName) const
   RawByteString Result;
   char * Buf = Result.SetLength(16);
   md5checksum(
-    reinterpret_cast<const char *>(AFileName.c_str()), static_cast<int>(AFileName.Length() * sizeof(wchar_t)),
+    reinterpret_cast<const char *>(AFileName.c_str()), ToInt(AFileName.Length() * sizeof(wchar_t)),
     reinterpret_cast<uint8_t *>(Buf));
   return BytesToHex(Result);
 }

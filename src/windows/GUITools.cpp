@@ -318,7 +318,7 @@ bool SpecialFolderLocation(intptr_t PathID, UnicodeString & APath)
 #if defined(_MSC_VER) && !defined(__clang__)
   LPITEMIDLIST Pidl;
   wchar_t Buf[MAX_PATH];
-  if (::SHGetSpecialFolderLocation(nullptr, static_cast<int>(PathID), &Pidl) == NO_ERROR &&
+  if (::SHGetSpecialFolderLocation(nullptr, ToInt(PathID), &Pidl) == NO_ERROR &&
     ::SHGetPathFromIDList(Pidl, Buf))
   {
     APath = UnicodeString(Buf);
@@ -1216,7 +1216,7 @@ void TFrameAnimation::Start()
     if (FTimer == nullptr)
     {
       FTimer = new TTimer(GetParentForm(FPaintBox));
-      FTimer->Interval = static_cast<int>(GUIUpdateInterval);
+      FTimer->Interval = ToInt(GUIUpdateInterval);
       FTimer->OnTimer = Timer;
     }
     else

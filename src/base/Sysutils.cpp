@@ -144,7 +144,7 @@ int RandSeed = 0;
 
 int random(int range)
 {
-  return static_cast<int>(ToDouble(rand()) / (ToDouble(RAND_MAX) / range));
+  return ToInt(ToDouble(rand()) / (ToDouble(RAND_MAX) / range));
 }
 
 void Randomize()
@@ -445,12 +445,12 @@ UnicodeString UTF8ToString(const char * Str, intptr_t Len)
     return UnicodeString(L"");
   }
 
-  intptr_t reqLength = ::MultiByteToWideChar(CP_UTF8, 0, Str, static_cast<int>(Len), nullptr, 0);
+  intptr_t reqLength = ::MultiByteToWideChar(CP_UTF8, 0, Str, ToInt(Len), nullptr, 0);
   UnicodeString Result;
   if (reqLength)
   {
     Result.SetLength(reqLength);
-    ::MultiByteToWideChar(CP_UTF8, 0, Str, static_cast<int>(Len), const_cast<LPWSTR>(Result.c_str()), static_cast<int>(reqLength));
+    ::MultiByteToWideChar(CP_UTF8, 0, Str, ToInt(Len), const_cast<LPWSTR>(Result.c_str()), ToInt(reqLength));
     Result.SetLength(Result.Length() - 1); //remove NULL character
   }
   return Result;
@@ -493,8 +493,8 @@ TTimeStamp DateTimeToTimeStamp(const TDateTime & DateTime)
   TTimeStamp Result;
   double intpart;
   double fractpart = modf(DateTime, &intpart);
-  Result.Time = static_cast<int>(fractpart * MSecsPerDay + 0.5);
-  Result.Date = static_cast<int>(intpart + DateDelta);
+  Result.Time = ToInt(fractpart * MSecsPerDay + 0.5);
+  Result.Date = ToInt(intpart + DateDelta);
   return Result;
 }
 
@@ -1021,7 +1021,7 @@ UnicodeString SysErrorMessage(intptr_t ErrorCode)
 {
   wchar_t Buffer[255];
   intptr_t Len = ::FormatMessageW(FORMAT_MESSAGE_FROM_SYSTEM |
-    FORMAT_MESSAGE_ARGUMENT_ARRAY, nullptr, static_cast<int>(ErrorCode), 0,
+    FORMAT_MESSAGE_ARGUMENT_ARRAY, nullptr, ToInt(ErrorCode), 0,
     static_cast<LPTSTR>(Buffer),
     _countof(Buffer), nullptr);
   while ((Len > 0) && ((Buffer[Len - 1] != 0) &&
@@ -1218,7 +1218,7 @@ uintptr_t HexToIntPtr(UnicodeString Hex, uintptr_t MinChars)
       break;
     }
 
-    Result = (Result * 16) + (static_cast<int>(A) - 1);
+    Result = (Result * 16) + (ToInt(A) - 1);
 
     ++Index;
   }
