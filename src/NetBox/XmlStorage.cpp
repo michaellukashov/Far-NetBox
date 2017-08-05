@@ -48,7 +48,7 @@ bool TXmlStorage::ReadXml()
   {
     return false;
   }
-  std::string buff(buffSize, 0);
+  AnsiString buff(buffSize, 0);
   if (!xmlFile.Read(&buff[0], buffSize))
   {
     return false;
@@ -75,7 +75,7 @@ bool TXmlStorage::ReadXml()
   uintptr_t Version = ::StrToVersionNumber(UnicodeString(Attr));
   if (Version < MAKEVERSIONNUMBER(2,0,0))
     return false;
-  tinyxml2::XMLElement * Element = xmlRoot->FirstChildElement(ToStdString(FStoredSessionsSubKey).c_str());
+  tinyxml2::XMLElement * Element = xmlRoot->FirstChildElement(AnsiString(FStoredSessionsSubKey).c_str());
   if (Element != nullptr)
   {
     FCurrentElement = FXmlDoc->RootElement();
@@ -231,9 +231,9 @@ void TXmlStorage::RemoveIfExists(UnicodeString Name)
 
 void TXmlStorage::AddNewElement(UnicodeString Name, UnicodeString Value)
 {
-  std::string name = ToStdString(Name);
-  std::string StrValue = ToStdString(Value);
-  tinyxml2::XMLElement * Element = FXmlDoc->NewElement(name.c_str());
+  AnsiString StrName(Name);
+  AnsiString StrValue(Value);
+  tinyxml2::XMLElement * Element = FXmlDoc->NewElement(StrName.c_str());
   Element->LinkEndChild(FXmlDoc->NewText(StrValue.c_str()));
   FCurrentElement->LinkEndChild(Element);
 }
