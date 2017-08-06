@@ -193,6 +193,7 @@ private:
 template <class T, int INITIAL_SIZE>
 class DynArray
 {
+    CUSTOM_MEM_ALLOCATION_IMPL
 public:
     DynArray() {
         _mem = _pool;
@@ -292,7 +293,7 @@ private:
         if ( cap > _allocated ) {
             TIXMLASSERT( cap <= INT_MAX / 2 );
             int newAllocated = cap * 2;
-            T* newMem = static_cast<T*>(nb_calloc(newAllocated, sizeof(T)));
+            T* newMem = nb::calloc<T*>(newAllocated, sizeof(T));
             TIXMLASSERT( newAllocated >= _size );
             memcpy( newMem, _mem, sizeof(T)*_size );	// warning: not using constructors, only works for PODs
             if ( _mem != _pool ) {
@@ -344,7 +345,7 @@ public:
         // Delete the blocks.
         while( !_blockPtrs.Empty()) {
             Block* lastBlock = _blockPtrs.Pop();
-            delete lastBlock;
+            nb_free(lastBlock);
         }
         _root = 0;
         _currentAllocs = 0;
@@ -469,6 +470,7 @@ private:
 */
 class TINYXML2_LIB XMLVisitor
 {
+    CUSTOM_MEM_ALLOCATION_IMPL
 public:
     virtual ~XMLVisitor() {}
 
@@ -2176,9 +2178,9 @@ public:
     void PushText( int value );
     /// Add a text node from an unsigned.
     void PushText( unsigned value );
-	/// Add a text node from an unsigned.
-	void PushText(int64_t value);
-	/// Add a text node from a bool.
+    /// Add a text node from an unsigned.
+    void PushText(int64_t value);
+    /// Add a text node from a bool.
     void PushText( bool value );
     /// Add a text node from a float.
     void PushText( float value );
@@ -2250,7 +2252,7 @@ private:
     int _depth;
     int _textDepth;
     bool _processEntities;
-	bool _compactMode;
+    bool _compactMode;
 
     enum {
         ENTITY_RANGE = 64,

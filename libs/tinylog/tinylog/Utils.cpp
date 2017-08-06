@@ -3,6 +3,18 @@
 
 namespace tinylog {
 
+static uint64_t getCurrentTimeMs()
+{
+  FILETIME filetime;
+  GetSystemTimeAsFileTime(&filetime);
+
+  uint64_t nowWindows = (uint64_t)filetime.dwLowDateTime
+    + ((uint64_t)(filetime.dwHighDateTime) << 32ULL);
+
+  uint64_t nowUnix = nowWindows - 116444736000000000ULL;
+  return nowUnix / 10000ULL;
+}
+
 #if 0
 std::string Utils::CurrentTime()
 {
@@ -40,10 +52,12 @@ void Utils::CurrentTime(std::string &ref_time)
 
 void Utils::CurrentTime(struct timeval *tv, struct tm **tm)
 {
-  time_t now = time(nullptr);
-  tv->tv_sec = (long)now;
-  tv->tv_usec = 0;
-  *tm = localtime(&now);
+//  gettimeofday(tv, NULL);
+//  *tm = localtime(&tv->tv_sec);
+//  time_t rawtime;
+//  time(&rawtime);
+  time_t time = (time_t)tv->tv_sec;
+  *tm = localtime(&time);
 }
 
 } // namespace tinylog

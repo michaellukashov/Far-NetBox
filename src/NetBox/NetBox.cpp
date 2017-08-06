@@ -25,7 +25,7 @@ int WINAPI GetMinFarVersionW()
 {
   DebugAssert(FarPlugin);
   TFarPluginGuard Guard;
-  return static_cast<int>(FarPlugin->GetMinFarVersion());
+  return ToInt(FarPlugin->GetMinFarVersion());
 }
 
 void WINAPI SetStartupInfoW(const struct PluginStartupInfo * psi)
@@ -53,7 +53,7 @@ int WINAPI ConfigureW(int item)
 {
   DebugAssert(FarPlugin);
   TFarPluginGuard Guard;
-  return static_cast<int>(FarPlugin->Configure(static_cast<intptr_t>(item)));
+  return ToInt(FarPlugin->Configure(static_cast<intptr_t>(item)));
 }
 
 HANDLE WINAPI OpenPluginW(int openFrom, intptr_t item)
@@ -95,7 +95,7 @@ int WINAPI GetFindDataW(HANDLE Plugin, PluginPanelItem ** PanelItem, int * items
 {
   DebugAssert(FarPlugin);
   TFarPluginGuard Guard;
-  return static_cast<int>(FarPlugin->GetFindData(Plugin, PanelItem, itemsNumber, OpMode));
+  return ToInt(FarPlugin->GetFindData(Plugin, PanelItem, itemsNumber, OpMode));
 }
 
 void WINAPI FreeFindDataW(HANDLE Plugin, PluginPanelItem * PanelItem, int itemsNumber)
@@ -110,28 +110,28 @@ int WINAPI ProcessHostFileW(HANDLE Plugin,
 {
   DebugAssert(FarPlugin);
   TFarPluginGuard Guard;
-  return static_cast<int>(FarPlugin->ProcessHostFile(Plugin, PanelItem, ItemsNumber, OpMode));
+  return ToInt(FarPlugin->ProcessHostFile(Plugin, PanelItem, ItemsNumber, OpMode));
 }
 
 int WINAPI ProcessKeyW(HANDLE Plugin, int key, unsigned int controlState)
 {
   DebugAssert(FarPlugin);
   TFarPluginGuard Guard;
-  return static_cast<int>(FarPlugin->ProcessKey(Plugin, key, controlState));
+  return ToInt(FarPlugin->ProcessKey(Plugin, key, controlState));
 }
 
 int WINAPI ProcessEventW(HANDLE Plugin, int Event, void * Param)
 {
   DebugAssert(FarPlugin);
   TFarPluginGuard Guard;
-  return static_cast<int>(FarPlugin->ProcessEvent(Plugin, Event, Param));
+  return ToInt(FarPlugin->ProcessEvent(Plugin, Event, Param));
 }
 
 int WINAPI SetDirectoryW(HANDLE Plugin, const wchar_t * Dir, int OpMode)
 {
   DebugAssert(FarPlugin);
   TFarPluginGuard Guard;
-  int Result = static_cast<int>(FarPlugin->SetDirectory(Plugin, Dir, OpMode));
+  int Result = ToInt(FarPlugin->SetDirectory(Plugin, Dir, OpMode));
   return Result;
 }
 
@@ -139,7 +139,7 @@ int WINAPI MakeDirectoryW(HANDLE Plugin, const wchar_t ** Name, int OpMode)
 {
   DebugAssert(FarPlugin);
   TFarPluginGuard Guard;
-  int Result = static_cast<int>(FarPlugin->MakeDirectory(Plugin, Name, OpMode));
+  int Result = ToInt(FarPlugin->MakeDirectory(Plugin, Name, OpMode));
   return Result;
 }
 
@@ -147,7 +147,7 @@ int WINAPI DeleteFilesW(HANDLE Plugin, PluginPanelItem * PanelItem, int itemsNum
 {
   DebugAssert(FarPlugin);
   TFarPluginGuard Guard;
-  return static_cast<int>(FarPlugin->DeleteFiles(Plugin, PanelItem, itemsNumber, OpMode));
+  return ToInt(FarPlugin->DeleteFiles(Plugin, PanelItem, itemsNumber, OpMode));
 }
 
 int WINAPI GetFilesW(HANDLE Plugin, PluginPanelItem * PanelItem, int itemsNumber,
@@ -155,7 +155,7 @@ int WINAPI GetFilesW(HANDLE Plugin, PluginPanelItem * PanelItem, int itemsNumber
 {
   DebugAssert(FarPlugin);
   TFarPluginGuard Guard;
-  return static_cast<int>(FarPlugin->GetFiles(Plugin, PanelItem, itemsNumber,
+  return ToInt(FarPlugin->GetFiles(Plugin, PanelItem, itemsNumber,
     Move, destPath, OpMode));
 }
 
@@ -163,7 +163,7 @@ int WINAPI PutFilesW(HANDLE Plugin, PluginPanelItem * PanelItem, int itemsNumber
 {
   DebugAssert(FarPlugin);
   TFarPluginGuard Guard;
-  int Result = static_cast<int>(FarPlugin->PutFiles(Plugin, PanelItem, itemsNumber,
+  int Result = ToInt(FarPlugin->PutFiles(Plugin, PanelItem, itemsNumber,
     Move, SrcPath, OpMode));
   return Result;
 }
@@ -172,14 +172,14 @@ int WINAPI ProcessEditorEventW(int Event, void * Param)
 {
   DebugAssert(FarPlugin);
   TFarPluginGuard Guard;
-  return static_cast<int>(FarPlugin->ProcessEditorEvent(Event, Param));
+  return ToInt(FarPlugin->ProcessEditorEvent(Event, Param));
 }
 
 int WINAPI ProcessEditorInputW(const INPUT_RECORD * Rec)
 {
   DebugAssert(FarPlugin);
   TFarPluginGuard Guard;
-  return static_cast<int>(FarPlugin->ProcessEditorInput(Rec));
+  return ToInt(FarPlugin->ProcessEditorInput(Rec));
 }
 
 HANDLE WINAPI OpenFilePluginW(const wchar_t * fileName, const uint8_t * fileHeader, int fileHeaderSize, int /*OpMode*/)
@@ -201,7 +201,7 @@ HANDLE WINAPI OpenFilePluginW(const wchar_t * fileName, const uint8_t * fileHead
     return INVALID_HANDLE_VALUE;
   }
   HANDLE Handle = static_cast<HANDLE>(FarPlugin->OpenPlugin(OPEN_ANALYSE,
-    ToInt(fileName)));
+    ToIntPtr(fileName)));
   return Handle;
 }
 

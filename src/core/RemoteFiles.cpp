@@ -672,7 +672,7 @@ UnicodeString TRemoteToken::GetDisplayText() const
 
 UnicodeString TRemoteToken::GetLogText() const
 {
-  return FORMAT("\"%s\" [%d]", FName, static_cast<int>(FID));
+  return FORMAT("\"%s\" [%d]", FName, ToInt(FID));
 }
 
 
@@ -1172,7 +1172,7 @@ void TRemoteFile::SetListingStr(UnicodeString Value)
     Line = Line.TrimLeft();
 
     GetCol();
-    if (!::TryStrToInt(Col, FINodeBlocks))
+    if (!::TryStrToInt64(Col, FINodeBlocks))
     {
       // if the column is not an integer, suppose it's owner
       // (Android BusyBox)
@@ -1283,12 +1283,12 @@ void TRemoteFile::SetListingStr(UnicodeString Value)
         // for --full-time format
         if ((Month == 0) && (Col.Length() == 10) && (Col[5] == L'-') && (Col[8] == L'-'))
         {
-          Year = ToWord(Col.SubString(1, 4).ToInt());
-          Month = ToWord(Col.SubString(6, 2).ToInt());
-          Day = ToWord(Col.SubString(9, 2).ToInt());
+          Year = ToWord(Col.SubString(1, 4).ToIntPtr());
+          Month = ToWord(Col.SubString(6, 2).ToIntPtr());
+          Day = ToWord(Col.SubString(9, 2).ToIntPtr());
           GetCol();
-          Hour = ToWord(Col.SubString(1, 2).ToInt());
-          Min = ToWord(Col.SubString(4, 2).ToInt());
+          Hour = ToWord(Col.SubString(1, 2).ToIntPtr());
+          Min = ToWord(Col.SubString(4, 2).ToIntPtr());
           if (Col.Length() >= 8)
           {
             Sec = ToWord(::StrToInt64(Col.SubString(7, 2)));
@@ -1362,8 +1362,8 @@ void TRemoteFile::SetListingStr(UnicodeString Value)
               // systems year is aligned to right (_YYYY), but on some to left (YYYY_),
               // we must ensure that trailing space is also deleted, so real
               // separator space is not treated as part of file name
-              Col = ListingStr.SubString(1, 6).Trim();
-              ListingStr.Delete(1, 6);
+              Col = Line.SubString(1, 6).Trim();
+              Line.Delete(1, 6);
             }
           }
           {
@@ -1434,7 +1434,7 @@ void TRemoteFile::SetListingStr(UnicodeString Value)
           if (P)
           {
             FLinkTo = Line.SubString(
-              P + nb::StrLength(SYMLINKSTR), ListingStr.Length() - P + nb::StrLength(SYMLINKSTR) + 1);
+              P + nb::StrLength(SYMLINKSTR), Line.Length() - P + nb::StrLength(SYMLINKSTR) + 1);
             Line.SetLength(P - 1);
           }
           else
@@ -2466,7 +2466,7 @@ void TRights::SetOctal(UnicodeString AValue)
     Value = L"0" + Value;
   }
 
-  if (GetOctal() != Value.c_str())
+  if (GetOctal() != Value)
   {
     bool Correct = (Value.Length() == 4);
     if (Correct)

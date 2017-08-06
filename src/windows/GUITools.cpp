@@ -2,10 +2,7 @@
 #include <vcl.h>
 #pragma hdrstop
 
-#if defined(_MSC_VER) && !defined(__clang__)
-#include <shlobj.h>
-#include <shellapi.h>
-#endif // if defined(_MSC_VER) && !defined(__clang__)
+#include <System.ShlObj.hpp>
 #include <Common.h>
 
 #include "GUITools.h"
@@ -243,8 +240,8 @@ static bool DoExecuteShell(const UnicodeString APath, const UnicodeString Params
       SEE_MASK_FLAG_NO_UI |
       FLAGMASK((Handle != nullptr), SEE_MASK_NOCLOSEPROCESS);
     ExecuteInfo.hwnd = reinterpret_cast<HWND>(::GetModuleHandle(nullptr));
-    ExecuteInfo.lpFile = const_cast<wchar_t *>(APath.data());
-    ExecuteInfo.lpParameters = const_cast<wchar_t *>(Params.data());
+    ExecuteInfo.lpFile = ToWChar(APath);
+    ExecuteInfo.lpParameters = ToWChar(Params);
     ExecuteInfo.lpDirectory = (ChangeWorkingDirectory ? Directory.c_str() : nullptr);
     ExecuteInfo.nShow = SW_SHOW;
 
@@ -318,7 +315,7 @@ bool SpecialFolderLocation(intptr_t PathID, UnicodeString & APath)
 #if defined(_MSC_VER) && !defined(__clang__)
   LPITEMIDLIST Pidl;
   wchar_t Buf[MAX_PATH];
-  if (::SHGetSpecialFolderLocation(nullptr, static_cast<int>(PathID), &Pidl) == NO_ERROR &&
+  if (::SHGetSpecialFolderLocation(nullptr, ToInt(PathID), &Pidl) == NO_ERROR &&
     ::SHGetPathFromIDList(Pidl, Buf))
   {
     APath = UnicodeString(Buf);
@@ -605,7 +602,7 @@ static void DoSelectScaledImageList(TImageList * ImageList)
       UnicodeString OtherListPixelsPerInchStr =
         OtherList->Name.SubString(
           ImageList->Name.Length() + 1, OtherList->Name.Length() - ImageList->Name.Length());
-      intptr_t OtherListPixelsPerInch = StrToInt(OtherListPixelsPerInchStr);
+      intptr_t OtherListPixelsPerInch = StrToIntPtr(OtherListPixelsPerInchStr);
       if ((OtherListPixelsPerInch <= PixelsPerInch) &&
           ((MatchingList == nullptr) ||
            (MachingPixelsPerInch < OtherListPixelsPerInch)))
@@ -1161,7 +1158,7 @@ void TFrameAnimation::DoInit()
 
       if (SameText(FName, FrameName))
       {
-        intptr_t FrameIndex = StrToInt(CutToChar(FrameData, L'_', false));
+        intptr_t FrameIndex = StrToIntPtr(CutToChar(FrameData, L'_', false));
         if (FFirstFrame < 0)
         {
           FFirstFrame = Frame;
@@ -1216,7 +1213,7 @@ void TFrameAnimation::Start()
     if (FTimer == nullptr)
     {
       FTimer = new TTimer(GetParentForm(FPaintBox));
-      FTimer->Interval = static_cast<int>(GUIUpdateInterval);
+      FTimer->Interval = ToInt(GUIUpdateInterval);
       FTimer->OnTimer = Timer;
     }
     else
@@ -1320,7 +1317,7 @@ void TFrameAnimation::CalculateNextFrameTick()
   // skip index (is not really used)
   CutToChar(Duration, L'_', false);
   // This should overflow, when tick count wraps.
-  FNextFrameTick += StrToInt(Duration) * 10;
+  FNextFrameTick += StrToIntPtr(Duration) * 10;
 }
 
 

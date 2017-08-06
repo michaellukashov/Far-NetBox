@@ -40,3 +40,9 @@ std::basic_ostream<wchar_t> &operator<<(std::basic_ostream<wchar_t> &os, const U
   return os;
 }
 
+std::basic_ostream<char> &operator<<(std::basic_ostream<char> &os, const AnsiString &value)
+{
+  os << value.c_str();
+  return os;
+}
+

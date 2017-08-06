@@ -293,7 +293,7 @@ void CTransferSocket::OnReceive(int nErrorCode)
     }
     CATCH(CFileException,e)
     {
-      LPTSTR msg = nb::wchcalloc(BUFSIZE * sizeof(TCHAR));
+      LPTSTR msg = nb::wchcalloc(BUFSIZE);
       if (e->GetErrorMessage(msg, BUFSIZE))
         m_pOwner->ShowStatus(msg, FZ_LOG_ERROR);
       nb_free(msg);

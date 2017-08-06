@@ -15,7 +15,7 @@ class fixed_sorted_vector : public sorted_vector<TKey, TValue, TCompare,
 		TGrowOnOverflow> >
 {
 public:
-	explicit fixed_sorted_vector(const allocator_type& allocator = allocator_type())
+	explicit fixed_sorted_vector(const TAllocator& allocator = TAllocator())
 	:	sorted_vector(allocator)
 	{
 		/**/

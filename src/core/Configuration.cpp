@@ -12,9 +12,7 @@
 #include "Interface.h"
 #include "CoreMain.h"
 #include "WinSCPSecurity.h"
-#if defined(_MSC_VER) && !defined(__clang__)
-#include <shlobj.h>
-#endif // if defined(_MSC_VER) && !defined(__clang__)
+#include <System.ShlObj.hpp>
 #include <System.IOUtils.hpp>
 #include <System.StrUtils.hpp>
 
@@ -668,7 +666,7 @@ UnicodeString TConfiguration::BannerHash(UnicodeString Banner) const
   RawByteString Result;
   char * Buf = Result.SetLength(16);
   md5checksum(
-    reinterpret_cast<const char *>(Banner.c_str()), static_cast<int>(Banner.Length() * sizeof(wchar_t)),
+    reinterpret_cast<const char *>(Banner.c_str()), ToInt(Banner.Length() * sizeof(wchar_t)),
     reinterpret_cast<uint8_t *>(Buf));
   return BytesToHex(Result);
 }
@@ -1167,7 +1165,7 @@ UnicodeString TConfiguration::GetFileFileInfoString(const UnicodeString AKey,
       catch (const std::exception & e)
       {
         (void)e;
-        DEBUG_PRINTF("Error: %s", ::MB2W(e.what()).c_str());
+        DEBUG_PRINTF("Error: %s", ::MB2W(e.what()));
         Result.Clear();
       }
     }

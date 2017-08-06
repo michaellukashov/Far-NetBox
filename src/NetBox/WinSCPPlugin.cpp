@@ -741,7 +741,7 @@ uintptr_t TWinSCPPlugin::MoreMessageDialog(UnicodeString Str,
     FarParams.MoreMessages = nullptr;
   }
 
-  Result = Message(static_cast<DWORD>(Flags), GetMsg(TitleId), DialogStr, ButtonLabels.get(), &FarParams);
+  Result = Message(ToDWord(Flags), GetMsg(TitleId), DialogStr, ButtonLabels.get(), &FarParams);
   if (FarParams.TimerAnswer > 0)
   {
     Result = FarParams.TimerAnswer;

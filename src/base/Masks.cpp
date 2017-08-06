@@ -138,7 +138,7 @@ TMask::TMask(UnicodeString Mask) :
 
 bool TMask::Matches(UnicodeString Str) const
 {
-  return CmpName(FMask.c_str(), Str.c_str()) == TRUE;
+  return CmpName(FMask.c_str(), Str.c_str()) != FALSE;
 }
 
 } // namespace Masks

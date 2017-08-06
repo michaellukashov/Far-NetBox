@@ -33,7 +33,7 @@ public:
   CAsyncSocketExHelperWindow(CAsyncSocketEx::t_AsyncSocketExThreadData* pThreadData)
   {
     //Initialize data
-    m_pAsyncSocketExWindowData = nb::calloc<t_AsyncSocketExWindowData*>(512 * sizeof(t_AsyncSocketExWindowData)); //Reserve space for 512 active sockets
+    m_pAsyncSocketExWindowData = nb::calloc<t_AsyncSocketExWindowData*>(512, sizeof(t_AsyncSocketExWindowData)); //Reserve space for 512 active sockets
     memset(m_pAsyncSocketExWindowData, 0, 512*sizeof(t_AsyncSocketExWindowData));
     m_nWindowDataSize=512;
     m_nSocketCount=0;
@@ -89,7 +89,7 @@ public:
     {
       DebugAssert(!m_nSocketCount);
       m_nWindowDataSize=512;
-      m_pAsyncSocketExWindowData=nb::calloc<t_AsyncSocketExWindowData*>(512 * sizeof(t_AsyncSocketExWindowData)); //Reserve space for 512 active sockets
+      m_pAsyncSocketExWindowData=nb::calloc<t_AsyncSocketExWindowData*>(512, sizeof(t_AsyncSocketExWindowData)); //Reserve space for 512 active sockets
       memset(m_pAsyncSocketExWindowData, 0, 512*sizeof(t_AsyncSocketExWindowData));
     }
 
@@ -111,7 +111,7 @@ public:
       if (m_nWindowDataSize>MAX_SOCKETS)
         m_nWindowDataSize=MAX_SOCKETS;
       t_AsyncSocketExWindowData *tmp=m_pAsyncSocketExWindowData;
-      m_pAsyncSocketExWindowData = nb::calloc<t_AsyncSocketExWindowData*>(m_nWindowDataSize * sizeof(t_AsyncSocketExWindowData));
+      m_pAsyncSocketExWindowData = nb::calloc<t_AsyncSocketExWindowData*>(m_nWindowDataSize, sizeof(t_AsyncSocketExWindowData));
       memcpy(m_pAsyncSocketExWindowData, tmp, nOldWindowDataSize * sizeof(t_AsyncSocketExWindowData));
       memset(m_pAsyncSocketExWindowData+nOldWindowDataSize, 0, (m_nWindowDataSize-nOldWindowDataSize)*sizeof(t_AsyncSocketExWindowData));
       nb_free(tmp);

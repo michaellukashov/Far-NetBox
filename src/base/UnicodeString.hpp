@@ -20,7 +20,7 @@ public:
 
   ~UTF8String() {}
 
-  operator const char *() const { return c_str(); }
+  operator const char *() const { return this->c_str(); }
   const char * c_str() const { return Data.c_str(); }
   intptr_t Length() const { return Data.GetLength(); }
   intptr_t GetLength() const { return Length(); }
@@ -106,7 +106,7 @@ public:
 
   intptr_t Compare(UnicodeString Str) const;
   intptr_t CompareIC(UnicodeString Str) const;
-  intptr_t ToInt() const;
+  intptr_t ToIntPtr() const;
   intptr_t FindFirstOf(const wchar_t Ch) const;
   intptr_t FindFirstOf(const wchar_t * Str, size_t Offset = 0) const;
 //  intptr_t FindFirstNotOf(const wchar_t * Str) const { return (intptr_t)Data.find_first_not_of(Str); }
@@ -299,7 +299,7 @@ public:
   RawByteString(const UTF8String & Str);
   ~RawByteString() {}
 
-  operator const char *() const { return Data.c_str(); }
+  operator const char *() const { return this->c_str(); }
   operator UnicodeString() const;
   const char * c_str() const { return Data.c_str(); }
   intptr_t Length() const { return Data.GetLength(); }
@@ -377,3 +377,7 @@ inline bool operator>(const S & lhs, const S & rhs)
 
 }  // namespace rde
 
+template <class T>
+inline char * ToChar(T & a) { return const_cast<char *>(a.c_str()); }
+template <class T>
+inline wchar_t * ToWChar(T & a) { return const_cast<wchar_t *>(a.c_str()); }

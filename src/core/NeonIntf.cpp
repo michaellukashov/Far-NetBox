@@ -78,11 +78,11 @@ void InitNeonSession(ne_session * Session, TProxyMethod ProxyMethod, UnicodeStri
     if ((ProxyMethod == pmSocks4) || (ProxyMethod == pmSocks5))
     {
       enum ne_sock_sversion vers = (ProxyMethod == pmSocks4) ? NE_SOCK_SOCKSV4A : NE_SOCK_SOCKSV5;
-      ne_session_socks_proxy(Session, vers, StrToNeon(ProxyHost), static_cast<int>(ProxyPort), StrToNeon(ProxyUsername), StrToNeon(ProxyPassword));
+      ne_session_socks_proxy(Session, vers, StrToNeon(ProxyHost), ToInt(ProxyPort), StrToNeon(ProxyUsername), StrToNeon(ProxyPassword));
     }
     else if (!ProxyHost.IsEmpty())
     {
-      ne_session_proxy(Session, StrToNeon(ProxyHost), static_cast<int>(ProxyPort));
+      ne_session_proxy(Session, StrToNeon(ProxyHost), ToInt(ProxyPort));
 
       if (!ProxyUsername.IsEmpty())
       {
@@ -234,7 +234,7 @@ void ne_init_ssl_session(struct ssl_st * Ssl, ne_session * Session)
 
 void SetNeonTlsInit(ne_session * Session, TNeonTlsInit OnNeonTlsInit)
 {
-  ne_set_session_private(Session, SESSION_TLS_INIT_KEY, static_cast<void *>(OnNeonTlsInit));
+  ne_set_session_private(Session, SESSION_TLS_INIT_KEY, ToPtr(OnNeonTlsInit));
 }
 
 AnsiString NeonExportCertificate(const ne_ssl_certificate * Certificate)
@@ -245,7 +245,7 @@ AnsiString NeonExportCertificate(const ne_ssl_certificate * Certificate)
   return Result;
 }
 
-bool NeonWindowsValidateCertificate(int & Failures, const AnsiString & AsciiCert, UnicodeString & Error)
+bool NeonWindowsValidateCertificate(int & Failures, AnsiString AsciiCert, UnicodeString & Error)
 {
   bool Result = false;
   // We can accept only unknown certificate authority.

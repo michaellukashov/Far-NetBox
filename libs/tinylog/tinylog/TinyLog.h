@@ -1,12 +1,21 @@
 #pragma once
 
+#ifdef TINYLOG_EXPORT
+#define TINYLOG_API __declspec(dllexport)
+#elif defined(TINYLOG_IMPORT)
+#define TINYLOG_API __declspec(dllimport)
+#endif
+#ifndef TINYLOG_API
+#define TINYLOG_API
+#endif
+
 #include "Utils.h"
 
 namespace tinylog {
 
 class TinyLogImpl;
 
-class TinyLog
+class TINYLOG_API TinyLog
 {
   CUSTOM_MEM_ALLOCATION_IMPL
 public:

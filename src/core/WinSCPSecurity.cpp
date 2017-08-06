@@ -45,7 +45,7 @@ RawByteString EncryptPassword(UnicodeString UnicodePassword, UnicodeString Unico
   }
   Password = Key + Password;
   intptr_t Shift = (Password.Length() < PWALG_SIMPLE_MAXLEN) ?
-                     static_cast<uint8_t>(random(PWALG_SIMPLE_MAXLEN - static_cast<int>(Password.Length()))) : 0;
+                     static_cast<uint8_t>(random(PWALG_SIMPLE_MAXLEN - ToInt(Password.Length()))) : 0;
   Result += SimpleEncryptChar(static_cast<uint8_t>(PWALG_SIMPLE_FLAG)); // Flag
   Result += SimpleEncryptChar(static_cast<uint8_t>(PWALG_SIMPLE_INTERNAL)); // Dummy
   Result += SimpleEncryptChar(static_cast<uint8_t>(Password.Length()));
@@ -115,7 +115,7 @@ bool WindowsValidateCertificate(const uint8_t * Certificate, size_t Len, Unicode
   // Parse the certificate into a context.
   const CERT_CONTEXT * CertContext =
     CertCreateCertificateContext(
-      X509_ASN_ENCODING | PKCS_7_ASN_ENCODING, Certificate, static_cast<DWORD>(Len));
+      X509_ASN_ENCODING | PKCS_7_ASN_ENCODING, Certificate, ToDWord(Len));
 
   if (CertContext != nullptr)
   {

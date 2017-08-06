@@ -663,9 +663,9 @@ private:
   void SetCurrentKey(HKEY Value) { FCurrentKey = Value; }
   bool GetKeyInfo(TRegKeyInfo & Value) const;
   int GetData(UnicodeString Name, void * Buffer,
-    intptr_t BufSize, TRegDataType & RegData) const;
+    intptr_t ABufSize, TRegDataType & RegData) const;
   void PutData(UnicodeString Name, const void * Buffer,
-    intptr_t BufSize, TRegDataType RegData);
+    intptr_t ABufSize, TRegDataType RegData);
 
 public:
   void SetAccess(uint32_t Value);

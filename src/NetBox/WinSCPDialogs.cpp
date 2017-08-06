@@ -655,7 +655,7 @@ bool TWinSCPPlugin::EnduranceConfigurationDialog()
   ResumeSmartButton->SetChecked(CopyParam.GetResumeSupport() == rsSmart);
   ResumeOffButton->SetChecked(CopyParam.GetResumeSupport() == rsOff);
   ResumeThresholdEdit->SetAsInteger(
-    static_cast<int>(CopyParam.GetResumeThreshold() / 1024));
+    ToInt(CopyParam.GetResumeThreshold() / 1024));
 
   SessionReopenAutoCheck->SetChecked((GetConfiguration()->GetSessionReopenAuto() > 0));
   SessionReopenAutoEdit->SetAsInteger((GetConfiguration()->GetSessionReopenAuto() > 0 ?
@@ -1098,7 +1098,7 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
     Text->Move(0, 1);
   }
   Text->SetCaption(GetMsg(NB_ABOUT_URL));
-  // FIXME Text->SetColor(static_cast<int>((GetSystemColor(COL_DIALOGTEXT) & 0xF0) | 0x09));
+  // FIXME Text->SetColor(ToInt((GetSystemColor(COL_DIALOGTEXT) & 0xF0) | 0x09));
   Text->SetCenterGroup(true);
   Text->SetOnMouseClick(nb::bind(&TAboutDialog::UrlTextClick, this));
 
@@ -1153,7 +1153,7 @@ void TAboutDialog::UrlTextClick(TFarDialogItem * /*Item*/,
   MOUSE_EVENT_RECORD * /*Event*/)
 {
   UnicodeString Address = GetMsg(NB_ABOUT_URL);
-  ::ShellExecute(nullptr, L"open", const_cast<wchar_t *>(Address.c_str()), nullptr, nullptr, SW_SHOWNORMAL);
+  ::ShellExecute(nullptr, L"open", ToWChar(Address), nullptr, nullptr, SW_SHOWNORMAL);
 }
 
 void TAboutDialog::UrlButtonClick(TFarButton * Sender, bool & /*Close*/)
@@ -1168,7 +1168,7 @@ void TAboutDialog::UrlButtonClick(TFarButton * Sender, bool & /*Close*/)
     Address = GetMsg(NB_ABOUT_URL) + L"forum/";
     break;
   }
-  ::ShellExecute(nullptr, L"open", const_cast<wchar_t *>(Address.c_str()), nullptr, nullptr, SW_SHOWNORMAL);
+  ::ShellExecute(nullptr, L"open", ToWChar(Address), nullptr, nullptr, SW_SHOWNORMAL);
 }
 
 void TWinSCPPlugin::AboutDialog()
@@ -1213,7 +1213,7 @@ TPasswordDialog::TPasswordDialog(TCustomFarPlugin * AFarPlugin,
   bool ShowSavePassword = false;
   if (((Kind == pkPassword) || (Kind == pkTIS) || (Kind == pkCryptoCard) ||
       (Kind == pkKeybInteractive)) &&
-    (Prompts->GetCount() == 1) && // FLAGSET(ToInt(Prompts->GetObject(0)), pupRemember) &&
+    (Prompts->GetCount() == 1) && // FLAGSET(ToIntPtr(Prompts->GetObject(0)), pupRemember) &&
     !SessionName.IsEmpty())
   //    // StoredCredentialsTried)
   {
@@ -1277,7 +1277,7 @@ void TPasswordDialog::GenerateLabel(UnicodeString ACaption,
   }
   FPrompt += Caption;
 
-  if (GetSize().x - 10 < static_cast<int>(Caption.Length()))
+  if (GetSize().x - 10 < ToInt(Caption.Length()))
   {
     Caption.SetLength(GetSize().x - 10 - 4);
     Caption += L" ...";
@@ -1300,7 +1300,7 @@ void TPasswordDialog::GeneratePrompt(bool ShowSavePassword,
   FEdits->Clear();
   TPoint S = TPoint(40, ShowSavePassword ? 1 : 0);
 
-  int x = static_cast<int>(Instructions.Length());
+  int x = ToInt(Instructions.Length());
   if (S.x < x)
   {
     S.x = x;
@@ -1312,7 +1312,7 @@ void TPasswordDialog::GeneratePrompt(bool ShowSavePassword,
 
   for (intptr_t Index = 0; Index < Prompts->GetCount(); ++Index)
   {
-    int l = static_cast<int>(Prompts->GetString(Index).Length());
+    int l = ToInt(Prompts->GetString(Index).Length());
     if (S.x < l)
     {
       S.x = l;
@@ -1338,7 +1338,7 @@ void TPasswordDialog::GeneratePrompt(bool ShowSavePassword,
   {
     GenerateLabel(Prompts->GetString(Index), Truncated);
 
-    FEdits->Add(GenerateEdit(FLAGSET(ToInt(Prompts->GetObj(Index)), pupEcho)));
+    FEdits->Add(GenerateEdit(FLAGSET(ToIntPtr(Prompts->GetObj(Index)), pupEcho)));
   }
 }
 
@@ -2842,8 +2842,8 @@ static void AdjustRemoteDir(
     {
       UnicodeString Port = Dir.SubString(P2 + 1, Dir.Length() - P2);
       Dir.SetLength(P2 - 1);
-      if (Port.ToInt())
-        PortNumberEdit->SetAsInteger(Port.ToInt());
+      if (Port.ToIntPtr())
+        PortNumberEdit->SetAsInteger(Port.ToIntPtr());
     }
     HostName.SetLength(P - 1);
   }
@@ -3699,7 +3699,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     for (intptr_t Index5 = 0; Index5 < CIPHER_COUNT; ++Index5)
     {
       TObject * Obj = as_object(CipherListBox->GetItems()->GetObj(Index5));
-      SessionData->SetCipher(Index5, static_cast<TCipher>(ToInt(Obj)));
+      SessionData->SetCipher(Index5, static_cast<TCipher>(ToIntPtr(Obj)));
     }
 
     // KEX tab
@@ -3709,7 +3709,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
 
     for (intptr_t Index6 = 0; Index6 < KEX_COUNT; ++Index6)
     {
-      SessionData->SetKex(Index6, static_cast<TKex>(ToInt(KexListBox->GetItems()->GetObj(Index))));
+      SessionData->SetKex(Index6, static_cast<TKex>(ToIntPtr(KexListBox->GetItems()->GetObj(Index))));
     }
 
     // Authentication tab
@@ -3829,7 +3829,7 @@ intptr_t TSessionDialog::ProxyMethodToIndex(TProxyMethod ProxyMethod, TFarList *
   for (intptr_t Index = 0; Index < Items->GetCount(); ++Index)
   {
     TObject * Obj = as_object(Items->GetObj(Index));
-    TProxyMethod Method = static_cast<TProxyMethod>(ToInt(Obj));
+    TProxyMethod Method = static_cast<TProxyMethod>(ToIntPtr(Obj));
     if (Method == ProxyMethod)
       return Index;
   }
@@ -3842,7 +3842,7 @@ TProxyMethod TSessionDialog::IndexToProxyMethod(intptr_t Index, TFarList * Items
   if (Index >= 0 && Index < Items->GetCount())
   {
     TObject * Obj = as_object(Items->GetObj(Index));
-    Result = static_cast<TProxyMethod>(ToInt(Obj));
+    Result = static_cast<TProxyMethod>(ToIntPtr(Obj));
   }
   return Result;
 }
@@ -4454,6 +4454,7 @@ void TRightsContainer::UpdateControls()
       }
       catch (...)
       {
+        DEBUG_PRINTF("TRightsContainer::UpdateControls: error during OctalEditExit");
       }
     }
   }
@@ -5679,7 +5680,7 @@ bool TWinSCPPlugin::CopyParamDialog(UnicodeString Caption,
   TCopyParamsContainer * CopyParamsContainer = new TCopyParamsContainer(
     Dialog, 0, CopyParamAttrs);
 
-  Dialog->SetSize(TPoint(78, 2 + static_cast<int>(CopyParamsContainer->GetHeight()) + 3));
+  Dialog->SetSize(TPoint(78, 2 + ToInt(CopyParamsContainer->GetHeight()) + 3));
 
   Dialog->SetNextItemPosition(ipNewLine);
 
@@ -5965,7 +5966,7 @@ TFileSystemInfoDialog::TFileSystemInfoDialog(TCustomFarPlugin * AFarPlugin,
 
   SpaceAvailablePathEdit = new TFarEdit(this);
   SpaceAvailablePathEdit->SetRight(
-    - (static_cast<int>(GetMsg(NB_SPACE_AVAILABLE_CHECK_SPACE).Length() + 11)));
+    - (ToInt(GetMsg(NB_SPACE_AVAILABLE_CHECK_SPACE).Length() + 11)));
 
   TFarButton * Button = new TFarButton(this);
   Button->SetCaption(GetMsg(NB_SPACE_AVAILABLE_CHECK_SPACE));
@@ -6487,7 +6488,7 @@ bool TWinSCPFileSystem::OpenDirectoryDialog(
       }
       else if (BreakCode == 2)
       {
-        FarControl(FCTL_INSERTCMDLINE, 0, ToInt(BookmarkPaths->GetStringRef(ItemFocused).c_str()));
+        FarControl(FCTL_INSERTCMDLINE, 0, ToIntPtr(BookmarkPaths->GetStringRef(ItemFocused).c_str()));
       }
       else if (BreakCode == 3 || BreakCode == 4)
       {
@@ -6637,6 +6638,7 @@ void TApplyCommandDialog::Change()
     }
     catch (...)
     {
+      DEBUG_PRINTF("TApplyCommandDialog::Change: error");
     }
 
     RecursiveCheck->SetEnabled(AllowRecursive);
@@ -7308,7 +7310,7 @@ void TSynchronizeChecklistDialog::AdaptSize()
     if (Ratio[Index] >= 0)
     {
       double W = ToDouble(Ratio[Index]) * (Width - FixedRatio) / TotalRatio;
-      FWidths[Index] = static_cast<int>(floor(W));
+      FWidths[Index] = ToInt(floor(W));
       Temp[Index] = W - FWidths[Index];
     }
     else

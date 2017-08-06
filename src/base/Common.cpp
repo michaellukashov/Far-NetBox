@@ -3,6 +3,7 @@
 #include <vcl.h>
 #pragma hdrstop
 
+#include <System.ShlObj.hpp>
 #include <Exceptions.h>
 #include <TextsCore.h>
 //#include <Interface.h>
@@ -12,11 +13,6 @@
 #include <math.h>
 #include <rdestl/map.h>
 #include <rdestl/vector.h>
-#if defined(_MSC_VER) && !defined(__clang__)
-//#include <shellapi.h>
-#include <shlobj.h>
-#include <shlwapi.h>
-#endif // if defined(_MSC_VER) && !defined(__clang__)
 #if defined(HAVE_OPENSSL)
 #include <openssl/pkcs12.h>
 #include <openssl/pem.h>
@@ -45,7 +41,7 @@ const UnicodeString Ellipsis(TraceInitStr(L"..."));
 UnicodeString ReplaceChar(UnicodeString Str, wchar_t A, wchar_t B)
 {
   UnicodeString Result = Str;
-  wchar_t * Buffer = const_cast<wchar_t *>(Result.c_str());
+  wchar_t * Buffer = ToWChar(Result);
   for (wchar_t * Ch = Buffer; Ch && *Ch; ++Ch)
     if (*Ch == A)
     {
@@ -113,7 +109,7 @@ void Shred(AnsiString & Str)
   DoShred(Str);
 }
 
-UnicodeString AnsiToString(const RawByteString & S)
+UnicodeString AnsiToString(RawByteString S)
 {
   return UnicodeString(AnsiString(S));
 }
@@ -435,7 +431,7 @@ bool IsNumber(UnicodeString Str)
   int64_t Value = 0;
   if (Str == L"0")
     return true;
-  return TryStrToInt(Str, Value);
+  return TryStrToInt64(Str, Value);
 }
 
 UnicodeString GetSystemTemporaryDirectory()
@@ -443,6 +439,7 @@ UnicodeString GetSystemTemporaryDirectory()
   UnicodeString TempDir;
   TempDir.SetLength(NB_MAX_PATH);
   TempDir.SetLength(::GetTempPath(NB_MAX_PATH, const_cast<LPWSTR>(TempDir.c_str())));
+  PackStr(TempDir);
   return TempDir;
 }
 
@@ -451,7 +448,7 @@ UnicodeString GetShellFolderPath(intptr_t CSIdl)
   UnicodeString Result;
 #if defined(_MSC_VER) && !defined(__clang__)
   wchar_t Path[2 * MAX_PATH + 10] = L"\0";
-  if (SUCCEEDED(::SHGetFolderPath(nullptr, static_cast<int>(CSIdl), nullptr, SHGFP_TYPE_CURRENT, Path)))
+  if (SUCCEEDED(::SHGetFolderPath(nullptr, ToInt(CSIdl), nullptr, SHGFP_TYPE_CURRENT, Path)))
   {
     Result = Path;
   }
@@ -578,12 +575,12 @@ static wchar_t * ReplaceChar(
 
     AFileName.Insert(ByteToHex(static_cast<uint8_t>(AFileName[Index])), Index + 1);
     AFileName[Index] = TokenPrefix;
-    InvalidChar = const_cast<wchar_t *>(AFileName.c_str() + Index + 2);
+    InvalidChar = ToWChar(AFileName) + Index + 2;
   }
   else
   {
     AFileName[Index] = InvalidCharsReplacement;
-    InvalidChar = const_cast<wchar_t *>(AFileName.c_str() + Index);
+    InvalidChar = ToWChar(AFileName) + Index;
   }
   return InvalidChar;
 }
@@ -604,7 +601,7 @@ UnicodeString ValidLocalFileName(
     bool ATokenReplacement = (AInvalidCharsReplacement == TokenReplacement);
     UnicodeString CharsStr = ATokenReplacement ? ATokenizibleChars : ALocalInvalidChars;
     const wchar_t * Chars = CharsStr.c_str();
-    wchar_t * InvalidChar = const_cast<wchar_t *>(Result.c_str());
+    wchar_t * InvalidChar = ToWChar(Result);
     while ((InvalidChar = wcspbrk(InvalidChar, Chars)) != nullptr)
     {
       intptr_t Pos = (InvalidChar - Result.c_str() + 1);
@@ -628,7 +625,7 @@ UnicodeString ValidLocalFileName(
         ((Result[Result.Length()] == L' ') ||
          (Result[Result.Length()] == L'.')))
     {
-      ReplaceChar(Result, const_cast<wchar_t *>(Result.c_str() + Result.Length() - 1), AInvalidCharsReplacement);
+      ReplaceChar(Result, ToWChar(Result) + Result.Length() - 1, AInvalidCharsReplacement);
     }
 
     if (IsReservedName(Result))
@@ -797,12 +794,12 @@ UnicodeString ExpandEnvironmentVariables(UnicodeString Str)
   intptr_t Size = 1024;
 
   Buf.SetLength(Size);
-  intptr_t Len = ::ExpandEnvironmentStringsW(Str.c_str(), const_cast<LPWSTR>(Buf.c_str()), static_cast<DWORD>(Size));
+  intptr_t Len = ::ExpandEnvironmentStringsW(Str.c_str(), const_cast<LPWSTR>(Buf.c_str()), ToDWord(Size));
 
   if (Len > Size)
   {
     Buf.SetLength(Len);
-    ::ExpandEnvironmentStringsW(Str.c_str(), const_cast<LPWSTR>(Buf.c_str()), static_cast<DWORD>(Len));
+    ::ExpandEnvironmentStringsW(Str.c_str(), const_cast<LPWSTR>(Buf.c_str()), ToDWord(Len));
   }
 
   PackStr(Buf);
@@ -857,7 +854,7 @@ intptr_t CompareLogicalText(UnicodeString S1, UnicodeString S2)
     return -1;
   }
 #if defined(_MSC_VER) && !defined(__clang__)
-  return ::StrCmpNCW(S1.c_str(), S2.c_str(), static_cast<int>(S1.Length()));
+  return ::StrCmpNCW(S1.c_str(), S2.c_str(), ToInt(S1.Length()));
 #else
     return S1.Compare(S2);
 #endif
@@ -1168,7 +1165,7 @@ UnicodeString ApiPath(UnicodeString APath)
   return Result;
 }
 
-UnicodeString DisplayableStr(const RawByteString & Str)
+UnicodeString DisplayableStr(RawByteString Str)
 {
   bool Displayable = true;
   intptr_t Index1 = 1;
@@ -1255,7 +1252,7 @@ UnicodeString BytesToHex(const uint8_t * B, uintptr_t Length, bool UpperCase, wc
   return Result;
 }
 
-UnicodeString BytesToHex(const RawByteString & Str, bool UpperCase, wchar_t Separator)
+UnicodeString BytesToHex(RawByteString Str, bool UpperCase, wchar_t Separator)
 {
   return BytesToHex(reinterpret_cast<const uint8_t *>(Str.c_str()), Str.Length(), UpperCase, Separator);
 }
@@ -1585,23 +1582,23 @@ static const TDateTimeParams * GetDateTimeParams(uint16_t Year)
     }
 
     Result->BaseDifferenceSec = TZI.Bias;
-    Result->BaseDifference = static_cast<double>(TZI.Bias) / MinsPerDay;
+    Result->BaseDifference = ToDouble(TZI.Bias) / MinsPerDay;
     Result->BaseDifferenceSec *= SecsPerMin;
 
     Result->CurrentDifferenceSec = TZI.Bias +
       Result->CurrentDaylightDifferenceSec;
     Result->CurrentDifference =
-      static_cast<double>(Result->CurrentDifferenceSec) / MinsPerDay;
+      ToDouble(Result->CurrentDifferenceSec) / MinsPerDay;
     Result->CurrentDifferenceSec *= SecsPerMin;
 
     Result->CurrentDaylightDifference =
-      static_cast<double>(Result->CurrentDaylightDifferenceSec) / MinsPerDay;
+      ToDouble(Result->CurrentDaylightDifferenceSec) / MinsPerDay;
     Result->CurrentDaylightDifferenceSec *= SecsPerMin;
 
     Result->DaylightDifferenceSec = TZI.DaylightBias * SecsPerMin;
-    Result->DaylightDifference = static_cast<double>(TZI.DaylightBias) / MinsPerDay;
+    Result->DaylightDifference = ToDouble(TZI.DaylightBias) / MinsPerDay;
     Result->StandardDifferenceSec = TZI.StandardBias * SecsPerMin;
-    Result->StandardDifference = static_cast<double>(TZI.StandardBias) / MinsPerDay;
+    Result->StandardDifference = ToDouble(TZI.StandardBias) / MinsPerDay;
 
     Result->SystemStandardDate = TZI.StandardDate;
     Result->SystemDaylightDate = TZI.DaylightDate;
@@ -1696,7 +1693,7 @@ TDateTime UnixToDateTime(int64_t TimeStamp, TDSTMode DSTMode)
 {
   DebugAssert(int(EncodeDateVerbose(1970, 1, 1)) == UnixDateDelta);
 
-  TDateTime Result = TDateTime(UnixDateDelta + (static_cast<double>(TimeStamp) / SecsPerDay));
+  TDateTime Result = TDateTime(UnixDateDelta + (ToDouble(TimeStamp) / SecsPerDay));
   const TDateTimeParams * Params = GetDateTimeParams(DecodeYear(Result));
 
   if (Params->DaylightHack)
@@ -1741,7 +1738,7 @@ bool TryRelativeStrToDateTime(UnicodeString AStr, TDateTime & DateTime, bool Add
   }
   UnicodeString NumberStr = S.SubString(1, Index - 1);
   int64_t Number = 0;
-  bool Result = TryStrToInt(NumberStr, Number);
+  bool Result = TryStrToInt64(NumberStr, Number);
   if (Result)
   {
     if (!Add)
@@ -1860,7 +1857,7 @@ static int64_t DateTimeToUnix(const TDateTime & DateTime)
 
   DebugAssert(int(EncodeDateVerbose(1970, 1, 1)) == UnixDateDelta);
 
-  return Round(static_cast<double>(DateTime - UnixDateDelta) * SecsPerDay) +
+  return Round(ToDouble(DateTime - UnixDateDelta) * SecsPerDay) +
     CurrentParams->CurrentDifferenceSec;
 }
 
@@ -2212,6 +2209,7 @@ bool AdjustClockForDSTEnabled()
   }
   catch (...)
   {
+    DEBUG_PRINTF("AdjustClockForDSTEnabled: error");
   }
   return !DynamicDaylightTimeDisabled;
 }
@@ -2841,6 +2839,7 @@ UnicodeString WindowsProductName()
   }
   catch (...)
   {
+    DEBUG_PRINTF("WindowsProductName: error");
   }
   return Result;
 }
@@ -2904,11 +2903,12 @@ UnicodeString FormatDateTimeSpan(const UnicodeString TimeFormat, TDateTime DateT
     }
     // days are decremented, because when there are to many of them,
     // "integer overflow" error occurs
-    Result += FormatDateTime(TimeFormat, DateTime - TDateTime(static_cast<double>(static_cast<int64_t>(DateTime))));
+    Result += FormatDateTime(TimeFormat, DateTime - TDateTime(ToDouble(static_cast<int64_t>(DateTime))));
   }
   catch (...)
   {
-    //TODO: log error
+    //log error
+    DEBUG_PRINTF("FormatDateTimeSpan: error, params: %s, %f", TimeFormat, DateTime.GetValue());
   }
   return Result;
 }
@@ -2961,7 +2961,7 @@ UnicodeString TrimVersion(UnicodeString Version)
 
 UnicodeString FormatVersion(intptr_t MajorVersion, intptr_t MinorVersion, intptr_t Patch)
 {
-  return FORMAT("%d.%d.%d", static_cast<int>(MajorVersion), static_cast<int>(MinorVersion), static_cast<int>(Patch));
+  return FORMAT("%d.%d.%d", ToInt(MajorVersion), ToInt(MinorVersion), ToInt(Patch));
 }
 
 TFormatSettings GetEngFormatSettings()
@@ -3067,7 +3067,7 @@ static int PemPasswordCallback(char * Buf, int Size, int /*RWFlag*/, void * User
   strncpy(Buf, UtfPassphrase.c_str(), Size);
   Shred(UtfPassphrase);
   Buf[Size - 1] = '\0';
-  return static_cast<int>(strlen(Buf));
+  return ToInt(NBChTraitsCRT<char>::SafeStringLen(Buf));
 }
 
 
@@ -3397,7 +3397,7 @@ UnicodeString GetEnvVariable(UnicodeString AEnvVarName)
   if (Len > 0)
   {
     wchar_t * Buffer = Result.SetLength(Len - 1);
-    ::GetEnvironmentVariableW(AEnvVarName.c_str(), reinterpret_cast<LPWSTR>(Buffer), static_cast<DWORD>(Len));
+    ::GetEnvironmentVariableW(AEnvVarName.c_str(), reinterpret_cast<LPWSTR>(Buffer), ToDWord(Len));
   }
   return Result;
 }
@@ -3539,7 +3539,7 @@ UnicodeString ExtractFileName(UnicodeString APath, bool Unix)
 
 #endif // #if 0
 
-bool ExtractCommonPath(const TStrings * AFiles, OUT UnicodeString & APath)
+bool ExtractCommonPath(const TStrings * AFiles, UnicodeString & APath)
 {
   DebugAssert(AFiles->GetCount() > 0);
 
@@ -3566,7 +3566,7 @@ bool ExtractCommonPath(const TStrings * AFiles, OUT UnicodeString & APath)
   return Result;
 }
 
-bool UnixExtractCommonPath(const TStrings * const AFiles, OUT UnicodeString & APath)
+bool UnixExtractCommonPath(const TStrings * const AFiles, UnicodeString & APath)
 {
   DebugAssert(AFiles->GetCount() > 0);
 

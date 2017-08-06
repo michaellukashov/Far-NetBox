@@ -185,8 +185,8 @@ static AnsiString PathEscape(const char * Path)
 
 static UTF8String PathUnescape(const char * Path)
 {
-  char * UnescapedPath = ne_path_unescape(Path);
-  UTF8String Result(UnescapedPath, strlen(NullToEmptyA(UnescapedPath)));
+  char * UnescapedPath = ne_path_unescape(NullToEmptyA(Path));
+  UTF8String Result(UnescapedPath, NBChTraitsCRT<char>::SafeStringLen(UnescapedPath));
   ne_free(UnescapedPath);
   return Result;
 }
@@ -417,9 +417,9 @@ void TWebDAVFileSystem::InitSession(ne_session_s * Session)
     Session, Data->GetProxyMethod(), Data->GetProxyHost(), Data->GetProxyPort(),
     Data->GetProxyUsername(), Data->GetProxyPassword());
 
-  ne_set_read_timeout(FNeonSession, static_cast<int>(Data->GetTimeout()));
+  ne_set_read_timeout(FNeonSession, ToInt(Data->GetTimeout()));
 
-  ne_set_connect_timeout(FNeonSession, static_cast<int>(Data->GetTimeout()));
+  ne_set_connect_timeout(FNeonSession, ToInt(Data->GetTimeout()));
 
   ne_set_session_private(Session, SESSION_FS_KEY, this);
 }
@@ -1774,7 +1774,7 @@ void TWebDAVFileSystem::DirectorySource(UnicodeString DirectoryName,
     [&]()
     {
       FindOK =
-        (FindFirstChecked(FindPath.c_str(), FindAttrs, SearchRec) == 0);
+        (FindFirstChecked(FindPath, FindAttrs, SearchRec) == 0);
     });
 
     try__finally
@@ -2909,14 +2909,14 @@ void TWebDAVFileSystem::LockResult(void * UserData, const struct ne_lock * Lock,
   }
 }
 
-struct ne_lock * TWebDAVFileSystem::FindLock(const RawByteString & APath) const
+struct ne_lock * TWebDAVFileSystem::FindLock(RawByteString APath) const
 {
   ne_uri Uri = {nullptr};
-  Uri.path = const_cast<char *>(APath.c_str());
+  Uri.path = ToChar(APath);
   return ne_lockstore_findbyuri(FNeonLockStore, &Uri);
 }
 
-void TWebDAVFileSystem::DiscardLock(const RawByteString & APath)
+void TWebDAVFileSystem::DiscardLock(RawByteString APath)
 {
   TGuard Guard(FNeonLockStoreSection);
   if (FNeonLockStore != nullptr)

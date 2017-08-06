@@ -571,14 +571,14 @@ void TFTPFileSystem::Open()
     TAutoFlag OpeningFlag(FOpening);
 
     FActive = FFileZillaIntf->Connect(
-      HostName.c_str(), static_cast<int>(Data->GetPortNumber()), UserName.c_str(),
+      HostName.c_str(), ToInt(Data->GetPortNumber()), UserName.c_str(),
       Password.c_str(), Account.c_str(), Path.c_str(),
-      ServerType, static_cast<int>(Pasv), static_cast<int>(TimeZoneOffset), UTF8,
-      static_cast<int>(CodePage),
-      static_cast<int>(Data->GetFtpForcePasvIp()),
-      static_cast<int>(Data->GetFtpUseMlsd()),
-      static_cast<int>(Data->GetFtpDupFF()),
-      static_cast<int>(Data->GetFtpUndupFF()),
+      ServerType, ToInt(Pasv), ToInt(TimeZoneOffset), UTF8,
+      ToInt(CodePage),
+      ToInt(Data->GetFtpForcePasvIp()),
+      ToInt(Data->GetFtpUseMlsd()),
+      ToInt(Data->GetFtpDupFF()),
+      ToInt(Data->GetFtpUndupFF()),
       FCertificate, FPrivateKey);
 
     DebugAssert(FActive);
@@ -954,7 +954,7 @@ UnicodeString TFTPFileSystem::GetActualCurrentDirectory() const
 {
   UnicodeString CurrentPath(NB_MAX_PATH, 0);
   UnicodeString Result;
-  if (FFileZillaIntf->GetCurrentPath(const_cast<wchar_t *>(CurrentPath.c_str()), CurrentPath.Length()))
+  if (FFileZillaIntf->GetCurrentPath(ToWChar(CurrentPath), CurrentPath.Length()))
   {
     Result = base::UnixExcludeTrailingBackslash(CurrentPath);
   }
@@ -1120,7 +1120,7 @@ void TFTPFileSystem::ChangeFileProperties(UnicodeString AFileName,
         try
         {
           FTerminal->ProcessDirectory(AFileName, nb::bind(&TTerminal::ChangeFileProperties, FTerminal),
-            static_cast<void *>(const_cast<TRemoteProperties *>(Properties)));
+            ToPtr(const_cast<TRemoteProperties *>(Properties)));
         }
         catch (...)
         {
@@ -1571,7 +1571,7 @@ void TFTPFileSystem::ReadDirectoryProgress(int64_t Bytes)
   // with FTP we do not know exactly how many entries we have received,
   // instead we know number of bytes received only.
   // so we report approximation based on average size of entry.
-  int Progress = static_cast<int>(Bytes / 80);
+  int Progress = ToInt(Bytes / 80);
   if (Progress - FLastReadDirectoryProgress >= 10)
   {
     bool Cancel = false;
@@ -1650,7 +1650,7 @@ void TFTPFileSystem::FileTransfer(UnicodeString AFileName,
   [&]()
   {
     FFileZillaIntf->FileTransfer(ApiPath(LocalFile).c_str(), RemoteFile.c_str(),
-      RemotePath.c_str(), Get, Size, static_cast<int>(Type), &UserData);
+      RemotePath.c_str(), Get, Size, ToInt(Type), &UserData);
     // we may actually catch response code of the listing
     // command (when checking for existence of the remote file)
     uintptr_t Reply = WaitForCommandReply();
@@ -3742,7 +3742,7 @@ UnicodeString TFTPFileSystem::GotReply(uintptr_t Reply, uintptr_t Flags,
            TFileZillaIntf::REPLY_IDLE | TFileZillaIntf::REPLY_NOTINITIALIZED |
            TFileZillaIntf::REPLY_ALREADYINIZIALIZED))
     {
-      FTerminal->FatalError(nullptr, FMTLOAD(INTERNAL_ERROR, "ftp#2", FORMAT("0x%x", static_cast<int>(Reply))));
+      FTerminal->FatalError(nullptr, FMTLOAD(INTERNAL_ERROR, "ftp#2", FORMAT("0x%x", ToInt(Reply))));
     }
     else
     {
@@ -3978,7 +3978,7 @@ void TFTPFileSystem::HandleReplyStatus(UnicodeString Response)
 
   bool HasCodePrefix =
     (Response.Length() >= 3) &&
-    ::TryStrToInt(Response.SubString(1, 3), Code) &&
+    ::TryStrToInt64(Response.SubString(1, 3), Code) &&
     (Code >= 100) && (Code <= 599) &&
     ((Response.Length() == 3) || (Response[4] == L' ') || (Response[4] == L'-'));
 
@@ -5002,7 +5002,7 @@ bool TFTPFileSystem::HandleListData(const wchar_t * Path,
         File->SetHumanRights(Entry->HumanPerm);
 
         // deprecated, to be replaced with Owner/Group
-        if (wcslen(Entry->OwnerGroup) > 0)
+        if (nb::StrLength(Entry->OwnerGroup) > 0)
         {
           const wchar_t * Space = wcschr(Entry->OwnerGroup, L' ');
           if (Space != nullptr)
@@ -5098,7 +5098,7 @@ bool TFTPFileSystem::HandleReply(intptr_t Command, uintptr_t Reply)
   }
   if (FTerminal->GetConfiguration()->GetActualLogProtocol() >= 1)
   {
-    FTerminal->LogEvent(FORMAT("Got reply %x to the command %d", static_cast<int>(Reply), Command));
+    FTerminal->LogEvent(FORMAT("Got reply %x to the command %d", ToInt(Reply), Command));
   }
 
   // reply with Command 0 is not associated with current operation

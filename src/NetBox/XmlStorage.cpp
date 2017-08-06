@@ -138,23 +138,23 @@ bool TXmlStorage::DoOpenSubKey(UnicodeString MungedSubKey, bool CanCreate)
 {
   tinyxml2::XMLElement * OldCurrentElement = FCurrentElement;
   tinyxml2::XMLElement * Element = nullptr;
-  AnsiString subKey(MungedSubKey);
+  AnsiString SubKey = AnsiString(MungedSubKey);
   if (CanCreate)
   {
     if (FStoredSessionsOpened)
     {
       Element = FXmlDoc->NewElement(CONST_SESSION_NODE);
-      Element->SetAttribute(CONST_NAME_ATTR, subKey.c_str());
+      Element->SetAttribute(CONST_NAME_ATTR, SubKey.c_str());
     }
     else
     {
-      Element = FXmlDoc->NewElement(subKey.c_str());
+      Element = FXmlDoc->NewElement(SubKey.c_str());
     }
     FCurrentElement->LinkEndChild(Element);
   }
   else
   {
-    Element = FindChildElement(subKey);
+    Element = FindChildElement(SubKey);
   }
   bool Result = Element != nullptr;
   if (Result)
@@ -266,21 +266,21 @@ tinyxml2::XMLElement * TXmlStorage::FindElement(UnicodeString Name) const
   return nullptr;
 }
 
-tinyxml2::XMLElement * TXmlStorage::FindChildElement(const AnsiString & subKey) const
+tinyxml2::XMLElement * TXmlStorage::FindChildElement(AnsiString SubKey) const
 {
   tinyxml2::XMLElement * Result = nullptr;
   // DebugAssert(FCurrentElement);
   if (FStoredSessionsOpened)
   {
     tinyxml2::XMLElement * Element = FCurrentElement->FirstChildElement(CONST_SESSION_NODE);
-    if (Element && !strcmp(Element->Attribute(CONST_NAME_ATTR), subKey.c_str()))
+    if (Element && !strcmp(Element->Attribute(CONST_NAME_ATTR), SubKey.c_str()))
     {
       Result = Element;
     }
   }
   else if (FCurrentElement)
   {
-    Result = FCurrentElement->FirstChildElement(subKey.c_str());
+    Result = FCurrentElement->FirstChildElement(SubKey.c_str());
   }
   return Result;
 }

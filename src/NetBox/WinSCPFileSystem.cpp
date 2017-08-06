@@ -56,7 +56,7 @@ void TSessionPanelItem::GetData(
   UnicodeString & /*Owner*/, void *& UserData, int & /*CustomColumnNumber*/)
 {
   AFileName = base::UnixExtractFileName(FSessionData->GetName());
-  UserData = static_cast<void *>(const_cast<TSessionData *>(FSessionData));
+  UserData = ToPtr(const_cast<TSessionData *>(FSessionData));
 }
 
 TSessionFolderPanelItem::TSessionFolderPanelItem(UnicodeString Folder) :
@@ -277,7 +277,7 @@ void TKeepaliveThread::Execute()
 {
   while (!IsFinished())
   {
-    if ((::WaitForSingleObject(FEvent, static_cast<DWORD>(
+    if ((::WaitForSingleObject(FEvent, ToDWord(
          ToDouble(FInterval) * MSecsPerDay)) != WAIT_FAILED) &&
         !IsFinished())
     {
@@ -884,7 +884,7 @@ bool TWinSCPFileSystem::ExecuteCommand(UnicodeString Command)
           RedrawPanel(true);
         }
       };
-      FarControl(FCTL_SETCMDLINE, 0, ToInt(L""));
+      FarControl(FCTL_SETCMDLINE, 0, ToIntPtr(L""));
       TWinSCPPlugin * WinSCPPlugin =  GetWinSCPPlugin();
       WinSCPPlugin->ShowConsoleTitle(Command);
       {
@@ -1144,6 +1144,7 @@ void TWinSCPFileSystem::TemporarilyDownloadFiles(TStrings * AFileList, TCopyPara
       }
       catch (...)
       {
+        DEBUG_PRINTF("TWinSCPFileSystem::TemporarilyDownloadFiles: error during RecursiveDeleteFile");
       }
       throw;
     }
@@ -1890,7 +1891,7 @@ void TWinSCPFileSystem::InsertTokenOnCommandLine(UnicodeString Token, bool Separ
       Token2 += L" ";
     }
 
-    FarControl(FCTL_INSERTCMDLINE, 0, ToInt(Token2.c_str()));
+    FarControl(FCTL_INSERTCMDLINE, 0, ToIntPtr(Token2.c_str()));
   }
 }
 
@@ -2136,7 +2137,7 @@ bool TWinSCPFileSystem::SynchronizeBrowsing(UnicodeString NewPath)
   UnicodeString LocalPath = ::IncludeTrailingBackslash(NewPath);
   if (!FarControl(FCTL_SETPANELDIR,
     0,
-    ToInt(LocalPath.c_str()),
+    ToIntPtr(LocalPath.c_str()),
     reinterpret_cast<HANDLE>(PANEL_PASSIVE)))
   {
     Result = false;
@@ -2153,7 +2154,7 @@ bool TWinSCPFileSystem::SynchronizeBrowsing(UnicodeString NewPath)
       // previous directory.
       FarControl(FCTL_SETPANELDIR,
         0,
-        ToInt(OldPath.c_str()),
+        ToIntPtr(OldPath.c_str()),
         reinterpret_cast<HANDLE>(PANEL_PASSIVE));
       Result = false;
     }
@@ -3435,7 +3436,7 @@ void TWinSCPFileSystem::ShowOperationProgress(
 
     UnicodeString ProgressBarCurrentFile;
     UnicodeString Message2;
-    UnicodeString Title = GetMsg(Captions[static_cast<int>(ProgressData.GetOperation() - 1)]);
+    UnicodeString Title = GetMsg(Captions[ToInt(ProgressData.GetOperation() - 1)]);
     UnicodeString FileName = ProgressData.GetFileName();
     // for upload from temporary directory,
     // do not show source directory
@@ -3804,7 +3805,7 @@ void TWinSCPFileSystem::ProcessEditorEvent(intptr_t Event, void * /*Param*/)
           UnicodeString FullFileName = base::UnixIncludeTrailingBackslash(it->second.Directory) +
             it->second.FileTitle;
           GetWinSCPPlugin()->FarEditorControl(ECTL_SETTITLE,
-            static_cast<void *>(const_cast<wchar_t *>(FullFileName.c_str())));
+            ToPtr(ToWChar(FullFileName)));
         }
       }
     }
@@ -3923,7 +3924,7 @@ void TWinSCPFileSystem::ProcessEditorEvent(intptr_t Event, void * /*Param*/)
             it->second.FileTitle;
           // note that we need to reset the title periodically (see EE_REDRAW)
           GetWinSCPPlugin()->FarEditorControl(ECTL_SETTITLE,
-            static_cast<void *>(const_cast<wchar_t *>(FullFileName.c_str())));
+            ToPtr(ToWChar(FullFileName)));
         }
 
         if (GetFarConfiguration()->GetEditorUploadOnSave())
@@ -4045,10 +4046,10 @@ void TWinSCPFileSystem::MultipleEdit(UnicodeString Directory,
     {
       WindowInfo Window;
       ClearStruct(Window);
-      Window.Pos = static_cast<int>(Pos);
+      Window.Pos = ToInt(Pos);
       UnicodeString EditedFileName(1024, 0);
-      Window.Name = const_cast<wchar_t *>(EditedFileName.c_str());
-      Window.NameSize = static_cast<int>(EditedFileName.GetLength());
+      Window.Name = ToWChar(EditedFileName);
+      Window.NameSize = ToInt(EditedFileName.GetLength());
       if (FarPlugin->FarAdvControl(ACTL_GETWINDOWINFO, &Window) != 0)
       {
         if ((Window.Type == WTYPE_EDITOR) &&
@@ -4159,7 +4160,7 @@ UnicodeString TWinSCPFileSystem::GetFileNameHash(UnicodeString AFileName) const
   RawByteString Result;
   char * Buf = Result.SetLength(16);
   md5checksum(
-    reinterpret_cast<const char *>(AFileName.c_str()), static_cast<int>(AFileName.Length() * sizeof(wchar_t)),
+    reinterpret_cast<const char *>(AFileName.c_str()), ToInt(AFileName.Length() * sizeof(wchar_t)),
     reinterpret_cast<uint8_t *>(Buf));
   return BytesToHex(Result);
 }

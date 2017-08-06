@@ -379,8 +379,8 @@ static void FillBufferWithRandomData(char * Buf, intptr_t Len)
 static RawByteString AES256Salt()
 {
   RawByteString Result;
-  Result.SetLength(SALT_LENGTH(PASSWORD_MANAGER_AES_MODE));
-  FillBufferWithRandomData(const_cast<char *>(Result.c_str()), Result.Length());
+  char * Buf = Result.SetLength(SALT_LENGTH(PASSWORD_MANAGER_AES_MODE));
+  FillBufferWithRandomData(Buf, Result.Length());
   return Result;
 }
 
@@ -399,9 +399,9 @@ void AES256EncryptWithMAC(RawByteString Input, UnicodeString Password,
     reinterpret_cast<const uint8_t *>(Salt.c_str()), nullptr, &aes);
   Output = Input;
   Output.Unique();
-  fcrypt_encrypt(reinterpret_cast<uint8_t *>(const_cast<char *>(Output.c_str())), static_cast<uint32_t>(Output.Length()), &aes);
+  fcrypt_encrypt(reinterpret_cast<uint8_t *>(ToChar(Output)), static_cast<uint32_t>(Output.Length()), &aes);
   Mac.SetLength(MAC_LENGTH(PASSWORD_MANAGER_AES_MODE));
-  fcrypt_end(reinterpret_cast<uint8_t *>(const_cast<char *>(Mac.c_str())), &aes);
+  fcrypt_end(reinterpret_cast<uint8_t *>(ToChar(Mac)), &aes);
 }
 
 void AES256EncryptWithMAC(RawByteString Input, UnicodeString Password,
@@ -425,11 +425,11 @@ bool AES256DecryptWithMAC(RawByteString Input, UnicodeString Password,
     reinterpret_cast<const uint8_t *>(Salt.c_str()), nullptr, &aes);
   Output = Input;
   Output.Unique();
-  fcrypt_decrypt(reinterpret_cast<uint8_t *>(const_cast<char *>(Output.c_str())), static_cast<uint32_t>(Output.Length()), &aes);
+  fcrypt_decrypt(reinterpret_cast<uint8_t *>(ToChar(Output)), static_cast<uint32_t>(Output.Length()), &aes);
   RawByteString Mac2;
   Mac2.SetLength(MAC_LENGTH(PASSWORD_MANAGER_AES_MODE));
   DebugAssert(Mac.Length() == Mac2.Length());
-  fcrypt_end(reinterpret_cast<uint8_t *>(const_cast<char *>(Mac2.c_str())), &aes);
+  fcrypt_end(reinterpret_cast<uint8_t *>(ToChar(Mac2)), &aes);
   return (Mac2 == Mac);
 }
 
@@ -515,14 +515,14 @@ RawByteString ScramblePassword(UnicodeString Password)
     int P = 0;
     while ((P <= 0) || (P > 255) || IsDigit(static_cast<wchar_t>(P)))
     {
-      P = static_cast<int>(static_cast<double>(rand()) / (static_cast<double>(RAND_MAX) / 256.0));
+      P = ToInt(ToDouble(rand()) / (ToDouble(RAND_MAX) / 256.0));
     }
     Buf[Index] = static_cast<uint8_t>(P);
   }
   Buf[Padding] = static_cast<char>('0' + (Len % 10));
   Buf[Padding + 1] = static_cast<char>('0' + ((Len / 10) % 10));
   Buf[Padding + 2] = static_cast<char>('0' + ((Len / 100) % 10));
-  strcpy_s(Buf + Padding + 3, UtfPassword.Length(), const_cast<char *>((UtfPassword.c_str())));
+  strcpy_s(Buf + Padding + 3, UtfPassword.Length(), ToChar(UtfPassword));
   char * S = Buf;
   int Last = 31;
   while (*S != '\0')
@@ -540,11 +540,11 @@ RawByteString ScramblePassword(UnicodeString Password)
 bool UnscramblePassword(RawByteString Scrambled, UnicodeString & Password)
 {
   RawByteString LocalScrambled = Scrambled;
-  char * S = const_cast<char *>(LocalScrambled.c_str());
+  char * S = ToChar(LocalScrambled);
   int Last = 31;
   while (*S != '\0')
   {
-    int X = static_cast<int>(UnscrambleTable[static_cast<uint8_t>(*S)]) - 1 - (Last % 255);
+    int X = ToInt(UnscrambleTable[static_cast<uint8_t>(*S)]) - 1 - (Last % 255);
     if (X <= 0)
     {
       X += 255;
@@ -554,13 +554,13 @@ bool UnscramblePassword(RawByteString Scrambled, UnicodeString & Password)
     S++;
   }
 
-  S = const_cast<char *>(LocalScrambled.c_str());
+  S = ToChar(LocalScrambled);
   while ((*S != '\0') && ((*S < '0') || (*S > '9')))
   {
     S++;
   }
   bool Result = false;
-  if (strlen(S) >= 3)
+  if (NBChTraitsCRT<char>::SafeStringLen(S) >= 3)
   {
     int Len = (S[0] - '0') + 10 * (S[1] - '0') + 100 * (S[2] - '0');
     int Total = (((Len + 3) / 17) * 17 + 17);
@@ -584,7 +584,7 @@ bool UnscramblePassword(RawByteString Scrambled, UnicodeString & Password)
 void CryptographyInitialize()
 {
   ScrambleTable = SScrambleTable;
-  UnscrambleTable = nb::calloc<uint8_t *>(256);
+  UnscrambleTable = nb::calloc<uint8_t *>(1, 256);
   for (intptr_t Index = 0; Index < 256; ++Index)
   {
     UnscrambleTable[SScrambleTable[Index]] = static_cast<uint8_t>(Index);

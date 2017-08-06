@@ -701,7 +701,7 @@ void BusyEnd(void * /*Token*/)
 
 static DWORD MainThread = 0;
 static TDateTime LastGUIUpdate(0.0);
-static double GUIUpdateIntervalFrac = static_cast<double>(OneSecond / 1000 * GUIUpdateInterval); // 1/5 sec
+static double GUIUpdateIntervalFrac = ToDouble(OneSecond / 1000 * GUIUpdateInterval); // 1/5 sec
 static bool NoGUI = false;
 
 void SetNoGUI()
@@ -947,7 +947,7 @@ void TWinInteractiveCustomCommand::PatternHint(intptr_t Index, UnicodeString Pat
 }
 
 void TWinInteractiveCustomCommand::Prompt(
-  intptr_t Index, UnicodeString Prompt, UnicodeString & Value) const
+  intptr_t /*Index*/, UnicodeString Prompt, UnicodeString & /*Value*/) const
 {
   UnicodeString APrompt = Prompt;
 #if 0
@@ -1240,7 +1240,7 @@ void CenterButtonImage(TButton * Button)
 
 int AdjustLocaleFlag(UnicodeString S, TLocaleFlagOverride LocaleFlagOverride, bool Recommended, int On, int Off)
 {
-  int Result = !S.IsEmpty() && StrToInt(S);
+  int Result = !S.IsEmpty() && StrToInt64(S);
   switch (LocaleFlagOverride)
   {
     default:

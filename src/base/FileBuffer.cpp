@@ -102,8 +102,8 @@ int64_t TFileBuffer::LoadStream(TStream * Stream, const int64_t Len, bool ForceL
 void TFileBuffer::Convert(char * Source, char * Dest, intptr_t Params,
   bool & Token)
 {
-  DebugAssert(strlen(Source) <= 2);
-  DebugAssert(strlen(Dest) <= 2);
+  DebugAssert(NBChTraitsCRT<char>::SafeStringLen(Source) <= 2);
+  DebugAssert(NBChTraitsCRT<char>::SafeStringLen(Dest) <= 2);
 
   const std::string Bom(CONST_BOM);
   if (FLAGSET(Params, cpRemoveBOM) && (GetSize() >= 3) &&

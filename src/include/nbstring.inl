@@ -531,7 +531,7 @@ CMStringT<BaseType, StringTraits>::CMStringT(wchar_t ch, int nLength) :
     if (ch != L'\0')
       nBaseTypeCharLen = StringTraits::GetBaseTypeLength(pszCh);
 
-    XCHAR *buffBaseTypeChar = nb::calloc<XCHAR *>(sizeof(XCHAR) * (nBaseTypeCharLen + 1)); // XCHAR[nBaseTypeCharLen + 1];
+    XCHAR *buffBaseTypeChar = nb::calloc<XCHAR *>(nBaseTypeCharLen + 1, sizeof(XCHAR));
     StringTraits::ConvertToBaseType(buffBaseTypeChar, nBaseTypeCharLen + 1, pszCh, 1);
     //allocate enough characters in String and flood (replicate) with the (converted character)*nLength
     PXSTR pszBuffer = this->GetBuffer(nLength*nBaseTypeCharLen);

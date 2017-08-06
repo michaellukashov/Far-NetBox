@@ -184,7 +184,7 @@ protected:
   RawByteString SFTPOpenRemoteFile(UnicodeString AFileName,
     SSH_FXF_TYPES OpenType, int64_t Size = -1);
   intptr_t SFTPOpenRemote(void * AOpenParams, void * Param2);
-  void SFTPCloseRemote(const RawByteString & Handle,
+  void SFTPCloseRemote(RawByteString Handle,
     UnicodeString AFileName, TFileOperationProgressType * OperationProgress,
     bool TransferFinished, bool Request, TSFTPPacket * Packet);
   void SFTPDirectorySource(UnicodeString DirectoryName,
@@ -214,7 +214,7 @@ protected:
     TFileOperationProgressType * OperationProgress,
     uint32_t MinPacketSize = 0,
     uint32_t MaxPacketSize = 0) const;
-  uint32_t UploadBlockSize(const RawByteString & Handle,
+  uint32_t UploadBlockSize(RawByteString Handle,
     TFileOperationProgressType * OperationProgress) const;
   uint32_t DownloadBlockSize(
     TFileOperationProgressType * OperationProgress) const;

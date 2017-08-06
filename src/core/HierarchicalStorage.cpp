@@ -46,7 +46,7 @@ UnicodeString UnMungeStr(UnicodeString Str)
   RawByteString Source = Str;
   RawByteString Dest;
   char * Buffer = Dest.SetLength(Source.GetLength());
-  putty_unmungestr(Source.c_str(), Buffer, static_cast<int>(Source.GetLength()));
+  putty_unmungestr(Source.c_str(), Buffer, ToInt(Source.GetLength()));
   // Cut the string at null character
   PackStr(Dest);
   UnicodeString Result;
@@ -355,12 +355,12 @@ RawByteString THierarchicalStorage::ReadBinaryData(UnicodeString Name) const
 {
   size_t Size = BinaryDataSize(Name);
   RawByteString Value;
-  Value.SetLength(Size);
-  ReadBinaryData(Name, static_cast<void *>(const_cast<char *>(Value.c_str())), Size);
+  char * Buf = Value.SetLength(Size);
+  ReadBinaryData(Name, Buf, Size);
   return Value;
 }
 
-RawByteString THierarchicalStorage::ReadStringAsBinaryData(UnicodeString Name, const RawByteString & Default) const
+RawByteString THierarchicalStorage::ReadStringAsBinaryData(UnicodeString Name, RawByteString Default) const
 {
   UnicodeString UnicodeDefault = AnsiToString(Default);
   // This should be exactly the same operation as calling ReadString in
@@ -368,7 +368,7 @@ RawByteString THierarchicalStorage::ReadStringAsBinaryData(UnicodeString Name, c
   // (conversion is done by Ansi layer of the OS)
   UnicodeString String = ReadString(Name, UnicodeDefault);
   AnsiString Ansi = AnsiString(String);
-  RawByteString Result = RawByteString(Ansi.c_str(), Ansi.Length());
+  RawByteString Result = RawByteString(Ansi);
   return Result;
 }
 
@@ -384,13 +384,12 @@ void THierarchicalStorage::WriteString(UnicodeString Name, UnicodeString Value)
   }
 }
 
-void THierarchicalStorage::WriteBinaryData(UnicodeString Name,
-  const RawByteString & Value)
+void THierarchicalStorage::WriteBinaryData(UnicodeString Name, RawByteString Value)
 {
   WriteBinaryData(Name, Value.c_str(), Value.Length());
 }
 
-void THierarchicalStorage::WriteBinaryDataAsString(UnicodeString Name, const RawByteString & Value)
+void THierarchicalStorage::WriteBinaryDataAsString(UnicodeString Name, RawByteString Value)
 {
   // This should be exactly the same operation as calling WriteString in
   // C++Builder 6 (non-Unicode) on Unicode-based OS
@@ -464,7 +463,7 @@ bool TRegistryStorage::Copy(TRegistryStorage * Storage)
     while ((Index < Names->GetCount()) && Result)
     {
       UnicodeString Name = MungeStr(Names->GetString(Index), GetForceAnsi());
-      DWORD Size = static_cast<DWORD>(Buffer.size());
+      DWORD Size = ToDWord(Buffer.size());
       DWORD Type;
       int RegResult;
       do
@@ -1076,7 +1075,7 @@ double __fastcall TCustomIniFileStorage::ReadFloat(const UnicodeString Name, dou
         }
         else
         {
-          Result = static_cast<double>(StrToFloat(Value));
+          Result = ToDouble(StrToFloat(Value));
         }
       }
       catch(...)

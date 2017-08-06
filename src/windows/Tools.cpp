@@ -154,7 +154,7 @@ void LoadListViewStr(TListView * ListView, UnicodeString ALayoutStr)
   while (!LayoutStr.IsEmpty() && (Index < ListView->Columns->Count))
   {
     int Width;
-    if (TryStrToInt(CutToChar(LayoutStr, L',', true), Width))
+    if (TryStrToInt64(CutToChar(LayoutStr, L',', true), Width))
     {
       ListView->Column[Index]->Width = LoadDimension(Width, PixelsPerInch, ListView);
     }
@@ -369,7 +369,7 @@ static void ExecuteProcessAndReadOutput(const
         }
         else
         {
-          throw ExtException(MainInstructions(FMTLOAD(COMMAND_FAILED_CODEONLY, (static_cast<int>(ExitCode)))), Output, HelpKeyword);
+          throw ExtException(MainInstructions(FMTLOAD(COMMAND_FAILED_CODEONLY, (ToInt(ExitCode)))), Output, HelpKeyword);
         }
       }
     }
@@ -434,7 +434,7 @@ void ExecuteNewInstance(UnicodeString Param)
 }
 
 IShellLink * CreateDesktopShortCut(UnicodeString Name,
-  const UnicodeString &File, UnicodeString Params, UnicodeString Description,
+  UnicodeString File, UnicodeString Params, UnicodeString Description,
   int SpecialFolder, int IconIndex, bool Return)
 {
   IShellLink* pLink = NULL;

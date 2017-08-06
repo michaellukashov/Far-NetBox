@@ -3,6 +3,7 @@
 #pragma hdrstop
 
 #include <iomanip>
+#include <time.h>
 
 #include <Classes.hpp>
 #include <Common.h>
@@ -10,37 +11,37 @@
 #include <Sysutils.hpp>
 #include <nbutils.h>
 
+#if 0
 intptr_t __cdecl debug_printf(const wchar_t * format, ...)
 {
   (void)format;
-  intptr_t len = 0;
 #ifndef NDEBUG
   va_list args;
   va_start(args, format);
-  len = _vscwprintf(format, args);
-  std::wstring buf(len + 1, 0);
-  vswprintf(const_cast<wchar_t *>(buf.c_str()), buf.size(), format, args);
+  intptr_t Len = _vscwprintf(format, args);
+  UnicodeString Buf(Len + 1, 0);
+  vswprintf(ToWChar(Buf), Buf.GetLength(), format, args);
   va_end(args);
-  OutputDebugStringW(buf.c_str());
+  OutputDebugStringW(Buf.c_str());
 #endif
-  return len;
+  return Len;
 }
 
 intptr_t __cdecl debug_printf2(const char * format, ...)
 {
   (void)format;
-  intptr_t len = 0;
 #ifndef NDEBUG
   va_list args;
   va_start(args, format);
-  len = _vscprintf(format, args);
-  std::string buf(len + sizeof(char), 0);
-  vsprintf_s(&buf[0], buf.size(), format, args);
+  intptr_t Len = _vscprintf(format, args);
+  AnsiString Buf(Len + sizeof(char), 0);
+  vsprintf_s(&Buf[0], Buf.GetLength(), format, args);
   va_end(args);
-  OutputDebugStringA(buf.c_str());
+  OutputDebugStringA(Buf.c_str());
 #endif
-  return len;
+  return Len;
 }
+#endif // #if 0
 
 UnicodeString MB2W(const char * src, const UINT cp)
 {
@@ -144,7 +145,7 @@ int RandSeed = 0;
 
 int random(int range)
 {
-  return static_cast<int>(ToDouble(rand()) / (ToDouble(RAND_MAX) / range));
+  return ToInt(ToDouble(rand()) / (ToDouble(RAND_MAX) / range));
 }
 
 void Randomize()
@@ -167,20 +168,20 @@ UnicodeString Int64ToStr(int64_t Value)
   return Result;
 }
 
-intptr_t StrToInt(UnicodeString Value)
+intptr_t StrToIntPtr(UnicodeString Value)
 {
   int64_t Result = 0;
-  if (TryStrToInt(Value, Result))
+  if (TryStrToInt64(Value, Result))
   {
     return static_cast<intptr_t>(Result);
   }
   return 0;
 }
 
-int64_t ToInt(UnicodeString Value)
+int64_t ToInt64(UnicodeString Value)
 {
   int64_t Result = 0;
-  if (TryStrToInt(Value, Result))
+  if (TryStrToInt64(Value, Result))
   {
     return Result;
   }
@@ -190,7 +191,7 @@ int64_t ToInt(UnicodeString Value)
 intptr_t StrToIntDef(UnicodeString Value, intptr_t DefVal)
 {
   int64_t Result = DefVal;
-  if (TryStrToInt(Value, Result))
+  if (TryStrToInt64(Value, Result))
   {
     return static_cast<intptr_t>(Result);
   }
@@ -199,20 +200,20 @@ intptr_t StrToIntDef(UnicodeString Value, intptr_t DefVal)
 
 int64_t StrToInt64(UnicodeString Value)
 {
-  return ToInt(Value);
+  return ToInt64(Value);
 }
 
 int64_t StrToInt64Def(UnicodeString Value, int64_t DefVal)
 {
   int64_t Result = DefVal;
-  if (TryStrToInt(Value, Result))
+  if (TryStrToInt64(Value, Result))
   {
     return Result;
   }
   return DefVal;
 }
 
-bool TryStrToInt(UnicodeString StrValue, int64_t & Value)
+bool TryStrToInt64(UnicodeString StrValue, int64_t & Value)
 {
   bool Result = !StrValue.IsEmpty(); // && (StrValue.FindFirstNotOf(L"+-0123456789") == -1);
   if (Result)
@@ -224,11 +225,6 @@ bool TryStrToInt(UnicodeString StrValue, int64_t & Value)
       Result = (StrValue == L"0");
   }
   return Result;
-}
-
-bool TryStrToInt64(UnicodeString StrValue, int64_t & Value)
-{
-  return TryStrToInt(StrValue, Value);
 }
 
 UnicodeString Trim(UnicodeString Str)
@@ -415,7 +411,7 @@ bool AnsiContainsText(UnicodeString Str1, UnicodeString Str2)
   return ::Pos(Str1, Str2) > 0;
 }
 
-bool ContainsStr(const AnsiString & Str1, const AnsiString & Str2)
+bool ContainsStr(AnsiString Str1, AnsiString Str2)
 {
   return Str1.Pos(Str2) > 0;
 }
@@ -438,9 +434,9 @@ intptr_t PosEx(UnicodeString SubStr, UnicodeString Str, intptr_t Offset)
   return Result;
 }
 
-UnicodeString UTF8ToString(const RawByteString & Str)
+UnicodeString UTF8ToString(RawByteString Str)
 {
-  return MB2W(Str.c_str(), CP_UTF8);
+  return UnicodeString (Str.c_str(), Str.GetLength(), CP_UTF8);
 }
 
 UnicodeString UTF8ToString(const char * Str, intptr_t Len)
@@ -450,12 +446,12 @@ UnicodeString UTF8ToString(const char * Str, intptr_t Len)
     return UnicodeString(L"");
   }
 
-  intptr_t reqLength = ::MultiByteToWideChar(CP_UTF8, 0, Str, static_cast<int>(Len), nullptr, 0);
+  intptr_t reqLength = ::MultiByteToWideChar(CP_UTF8, 0, Str, ToInt(Len), nullptr, 0);
   UnicodeString Result;
   if (reqLength)
   {
     Result.SetLength(reqLength);
-    ::MultiByteToWideChar(CP_UTF8, 0, Str, static_cast<int>(Len), const_cast<LPWSTR>(Result.c_str()), static_cast<int>(reqLength));
+    ::MultiByteToWideChar(CP_UTF8, 0, Str, ToInt(Len), const_cast<LPWSTR>(Result.c_str()), ToInt(reqLength));
     Result.SetLength(Result.Length() - 1); //remove NULL character
   }
   return Result;
@@ -498,8 +494,8 @@ TTimeStamp DateTimeToTimeStamp(const TDateTime & DateTime)
   TTimeStamp Result;
   double intpart;
   double fractpart = modf(DateTime, &intpart);
-  Result.Time = static_cast<int>(fractpart * MSecsPerDay + 0.5);
-  Result.Date = static_cast<int>(intpart + DateDelta);
+  Result.Time = ToInt(fractpart * MSecsPerDay + 0.5);
+  Result.Date = ToInt(intpart + DateDelta);
   return Result;
 }
 
@@ -507,7 +503,7 @@ int64_t FileRead(HANDLE AHandle, void * Buffer, int64_t Count)
 {
   int64_t Result;
   DWORD Res = 0;
-  if (::ReadFile(AHandle, reinterpret_cast<LPVOID>(Buffer), static_cast<DWORD>(Count), &Res, nullptr))
+  if (::ReadFile(AHandle, reinterpret_cast<LPVOID>(Buffer), ToDWord(Count), &Res, nullptr))
   {
     Result = Res;
   }
@@ -522,7 +518,7 @@ int64_t FileWrite(HANDLE AHandle, const void * Buffer, int64_t Count)
 {
   int64_t Result;
   DWORD Res = 0;
-  if (::WriteFile(AHandle, Buffer, static_cast<DWORD>(Count), &Res, nullptr))
+  if (::WriteFile(AHandle, Buffer, ToDWord(Count), &Res, nullptr))
   {
     Result = Res;
   }
@@ -666,6 +662,7 @@ bool RemoveFile(UnicodeString AFileName)
   return !::FileExists(AFileName);
 }
 
+#if 0
 UnicodeString Format(const wchar_t * Format, ...)
 {
   va_list Args;
@@ -727,16 +724,17 @@ UnicodeString FmtLoadStr(intptr_t Id, ...)
   DEBUG_PRINTF("Unknown resource string id: %d\n", Id);
   return UnicodeString();
 }
+#endif // #if 0
 
 // Returns the next available word, ignoring whitespace
 static const wchar_t *
 NextWord(const wchar_t * Input)
 {
-  static UnicodeString buffer(1024, 0);
+  static UnicodeString Buffer;
+  wchar_t * pBuffer = Buffer.SetLength(NBChTraitsCRT<wchar_t>::SafeStringLen(Input));
   static const wchar_t * text = nullptr;
 
-  wchar_t * endOfBuffer = const_cast<wchar_t *>(buffer.c_str()) + buffer.GetLength() - 1;
-  wchar_t * pBuffer = const_cast<wchar_t *>(buffer.c_str());
+  wchar_t * endOfBuffer = ToWChar(Buffer) + Buffer.GetLength() - 1;
 
   if (Input)
   {
@@ -760,7 +758,7 @@ NextWord(const wchar_t * Input)
 
   *pBuffer = 0;
 
-  return buffer.c_str();
+  return Buffer.c_str();
 }
 
 UnicodeString WrapText(UnicodeString Line, intptr_t MaxWidth)
@@ -913,14 +911,6 @@ void AppendWChar(UnicodeString & Str, const wchar_t Ch)
   }
 }
 
-void AppendChar(std::string & Str, const char Ch)
-{
-  if (!Str.empty() && Str[Str.length() - 1] != Ch)
-  {
-    Str += Ch;
-  }
-}
-
 void AppendPathDelimiterW(UnicodeString & Str)
 {
   if (!Str.IsEmpty() && Str[Str.Length()] != L'/' && Str[Str.Length()] != L'\\')
@@ -932,7 +922,7 @@ void AppendPathDelimiterW(UnicodeString & Str)
 UnicodeString ExpandEnvVars(UnicodeString Str)
 {
   UnicodeString Buf(NB_MAX_PATH, 0);
-  intptr_t Size = ::ExpandEnvironmentStringsW(Str.c_str(), const_cast<wchar_t *>(Buf.c_str()), static_cast<DWORD>(32 * 1024 - 1));
+  intptr_t Size = ::ExpandEnvironmentStringsW(Str.c_str(), ToWChar(Buf), ToDWord(NB_MAX_PATH - 1));
   UnicodeString Result = UnicodeString(Buf.c_str(), Size - 1);
   return Result;
 }
@@ -965,20 +955,20 @@ UnicodeString ExtractFileExt(UnicodeString AFileName)
 
 static UnicodeString ExpandFileName(UnicodeString AFileName)
 {
-  UnicodeString Result;
-  UnicodeString Buf(NB_MAX_PATH, 0);
-  intptr_t Size = ::GetFullPathNameW(AFileName.c_str(), static_cast<DWORD>(Buf.Length() - 1),
-    reinterpret_cast<LPWSTR>(const_cast<wchar_t *>(Buf.c_str())), nullptr);
+  UnicodeString Buf(NB_MAX_PATH + 1, 0);
+  intptr_t Size = ::GetFullPathNameW(ApiPath(AFileName).c_str(), ToDWord(Buf.Length() - 1),
+    reinterpret_cast<LPWSTR>(ToWChar(Buf)), nullptr);
   if (Size > Buf.Length())
   {
     Buf.SetLength(Size);
-    Size = ::GetFullPathNameW(AFileName.c_str(), static_cast<DWORD>(Buf.Length() - 1),
-      reinterpret_cast<LPWSTR>(const_cast<wchar_t *>(Buf.c_str())), nullptr);
+    Size = ::GetFullPathNameW(ApiPath(AFileName).c_str(), ToDWord(Buf.Length() - 1),
+      reinterpret_cast<LPWSTR>(ToWChar(Buf)), nullptr);
   }
-  return UnicodeString(Buf.c_str(), Size);
+  UnicodeString Result = UnicodeString(Buf.c_str(), Size);
+  return Result;
 }
 
-static UnicodeString GetUniversalName(UnicodeString & AFileName)
+static UnicodeString GetUniversalName(UnicodeString AFileName)
 {
   UnicodeString Result = AFileName;
   return Result;
@@ -1032,7 +1022,7 @@ UnicodeString SysErrorMessage(intptr_t ErrorCode)
 {
   wchar_t Buffer[255];
   intptr_t Len = ::FormatMessageW(FORMAT_MESSAGE_FROM_SYSTEM |
-    FORMAT_MESSAGE_ARGUMENT_ARRAY, nullptr, static_cast<int>(ErrorCode), 0,
+    FORMAT_MESSAGE_ARGUMENT_ARRAY, nullptr, ToInt(ErrorCode), 0,
     static_cast<LPTSTR>(Buffer),
     _countof(Buffer), nullptr);
   while ((Len > 0) && ((Buffer[Len - 1] != 0) &&
@@ -1212,7 +1202,7 @@ UnicodeString HexToStr(UnicodeString Hex)
   return Result;
 }
 
-uintptr_t HexToInt(UnicodeString Hex, uintptr_t MinChars)
+uintptr_t HexToIntPtr(UnicodeString Hex, uintptr_t MinChars)
 {
   UnicodeString Digits = "0123456789ABCDEF";
   uintptr_t Result = 0;
@@ -1229,7 +1219,7 @@ uintptr_t HexToInt(UnicodeString Hex, uintptr_t MinChars)
       break;
     }
 
-    Result = (Result * 16) + (static_cast<int>(A) - 1);
+    Result = (Result * 16) + (ToInt(A) - 1);
 
     ++Index;
   }
@@ -1252,7 +1242,7 @@ UnicodeString IntToHex(uintptr_t Int, uintptr_t MinChars)
 
 char HexToChar(UnicodeString Hex, uintptr_t MinChars)
 {
-  return static_cast<char>(HexToInt(Hex, MinChars));
+  return static_cast<char>(HexToIntPtr(Hex, MinChars));
 }
 
 static void ConvertError(intptr_t ErrorID)
@@ -1362,7 +1352,7 @@ static bool TryEncodeDate(int Year, int Month, int Day, TDateTime & Date)
       Day += (*DayTable)[Index - 1];
     }
     int Idx = Year - 1;
-    Date = TDateTime(static_cast<double>(Idx * 365 + Idx / 4 - Idx / 100 + Idx / 400 + Day - DateDelta));
+    Date = TDateTime(ToDouble(Idx * 365 + Idx / 4 - Idx / 100 + Idx / 400 + Day - DateDelta));
     return true;
   }
   return false;
@@ -1570,15 +1560,13 @@ TDateTime IncMonth(const TDateTime & AValue, const Int64 NumberOfMonths)
 
 TDateTime IncWeek(const TDateTime & AValue, const Int64 ANumberOfWeeks)
 {
-  TDateTime Result;
-  Result = AValue + ANumberOfWeeks * DaysPerWeek;
+  TDateTime Result(AValue + ANumberOfWeeks * DaysPerWeek);
   return Result;
 }
 
 TDateTime IncDay(const TDateTime & AValue, const Int64 ANumberOfDays)
 {
-  TDateTime Result;
-  Result = AValue + ANumberOfDays;
+  TDateTime Result(AValue + ANumberOfDays);
   return Result;
 }
 
@@ -1660,7 +1648,7 @@ uintptr_t StrToVersionNumber(UnicodeString VersionMumberStr)
   while (!Version.IsEmpty())
   {
     UnicodeString Num = CutToChar(Version, L'.', true);
-    Result += static_cast<uintptr_t>(Num.ToInt()) << Shift;
+    Result += static_cast<uintptr_t>(Num.ToIntPtr()) << Shift;
     if (Shift >= 8)
       Shift -= 8;
   }

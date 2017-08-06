@@ -147,7 +147,7 @@ bool GetFileVersionInfoFix(const wchar_t * FileName, uint32_t Handle,
     if (Result)
     {
       static const char Signature[] = "FE2X";
-      uintptr_t BufSize = static_cast<uintptr_t>(VersionInfo->wLength + strlen(Signature));
+      uintptr_t BufSize = static_cast<uintptr_t>(VersionInfo->wLength + NBChTraitsCRT<char>::SafeStringLen(Signature));
 
       if (DataSize >= BufSize)
       {
@@ -158,7 +158,7 @@ bool GetFileVersionInfoFix(const wchar_t * FileName, uint32_t Handle,
   }
   else
   {
-    Result = ::GetFileVersionInfo(FileName, Handle, static_cast<DWORD>(DataSize), Data) != 0;
+    Result = ::GetFileVersionInfo(FileName, Handle, ToDWord(DataSize), Data) != 0;
   }
 
   return Result;
@@ -175,7 +175,7 @@ void * CreateFileInfo(UnicodeString AFileName)
   // If size is valid
   if (Size > 0)
   {
-    Result = nb::calloc<void *>(Size);
+    Result = nb::calloc<void *>(1, Size);
     // Get file version info block
     if (!GetFileVersionInfoFix(AFileName.c_str(), Handle, Size, Result))
     {

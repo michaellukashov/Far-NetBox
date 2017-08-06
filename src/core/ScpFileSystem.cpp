@@ -612,7 +612,7 @@ bool TSCPFileSystem::RemoveLastLine(UnicodeString & Line,
     UnicodeString ReturnCodeStr = Line.SubString(Pos + LastLine.Length() + 1,
       Line.Length() - Pos + LastLine.Length());
     int64_t Code = 0;
-    if (::TryStrToInt(ReturnCodeStr, Code))
+    if (::TryStrToInt64(ReturnCodeStr, Code))
     {
       IsLastLine = true;
       Line.SetLength(Pos - 1);
@@ -786,8 +786,8 @@ void TSCPFileSystem::ExecCommand(TFSCommand Cmd, intptr_t Params, fmt::ArgList a
   {
     int MinL = FCommandSet->GetMinLines(Cmd);
     int MaxL = FCommandSet->GetMaxLines(Cmd);
-    if (((MinL >= 0) && (MinL > static_cast<int>(FOutput->GetCount()))) ||
-        ((MaxL >= 0) && (MaxL > static_cast<int>(FOutput->GetCount()))))
+    if (((MinL >= 0) && (MinL > ToInt(FOutput->GetCount()))) ||
+        ((MaxL >= 0) && (MaxL > ToInt(FOutput->GetCount()))))
     {
       FTerminal->TerminalError(FMTLOAD(INVALID_OUTPUT_ERROR,
         FullCommand, GetOutput()->GetText()));
@@ -1281,7 +1281,6 @@ void TSCPFileSystem::RemoteRenameFile(UnicodeString AFileName,
 void TSCPFileSystem::RemoteCopyFile(UnicodeString AFileName,
   UnicodeString ANewName)
 {
-  // ExecCommand2(fsCopyFile, 0, DelimitStr(AFileName).c_str(), DelimitStr(NewName).c_str());
   UnicodeString DelimitedFileName = DelimitStr(AFileName);
   UnicodeString DelimitedNewName = DelimitStr(ANewName);
   const UnicodeString AdditionalSwitches = L"-T";
@@ -1623,7 +1622,7 @@ void TSCPFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
 
   FScpFatalError = false;
   SendCommand(FCommandSet->FullCommand(fsCopyToRemote,
-    Options.c_str(), DelimitStr(base::UnixExcludeTrailingBackslash(TargetDir)).c_str()));
+    Options, DelimitStr(base::UnixExcludeTrailingBackslash(TargetDir))));
   SkipFirstLine();
 
   try__finally
@@ -2057,7 +2056,7 @@ void TSCPFileSystem::SCPSource(UnicodeString AFileName,
               FTerminal->LogEvent(FORMAT("Sending BINARY data (%u bytes)",
                 BlockBuf.GetSize()));
             }
-            FSecureShell->Send(reinterpret_cast<const uint8_t *>(BlockBuf.GetData()), static_cast<int>(BlockBuf.GetSize()));
+            FSecureShell->Send(reinterpret_cast<const uint8_t *>(BlockBuf.GetData()), ToInt(BlockBuf.GetSize()));
             OperationProgress->AddTransferred(BlockBuf.GetSize());
           }
 
@@ -2373,7 +2372,7 @@ void TSCPFileSystem::CopyToLocal(const TStrings * AFilesToCopy,
       {
         bool Success = true; // Have to be set to True (see ::SCPSink)
         SendCommand(FCommandSet->FullCommand(fsCopyToLocal,
-          Options.c_str(), DelimitStr(FileName).c_str()));
+          Options, DelimitStr(FileName)));
         SkipFirstLine();
 
         // Filename is used for error messaging and excluding files only
@@ -2490,7 +2489,7 @@ void TSCPFileSystem::SCPSendError(const UnicodeString Message, bool Fatal)
 {
   uint8_t ErrorLevel = static_cast<uint8_t>(Fatal ? 2 : 1);
   FTerminal->LogEvent(FORMAT("Sending SCP error (%d) to remote side:",
-    static_cast<int>(ErrorLevel)));
+    ToInt(ErrorLevel)));
   FSecureShell->Send(&ErrorLevel, 1);
   // We don't send exact error message, because some unspecified
   // characters can terminate remote scp

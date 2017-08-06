@@ -229,7 +229,7 @@ void TraceDumpToFile()
 
       TimeString =
         FormatDateTime(TimestampFormat,
-          IncMilliSecond(N, -static_cast<int>(Ticks - i->Ticks)));
+          IncMilliSecond(N, -ToInt(Ticks - i->Ticks)));
       Buffer = UTF8String(FORMAT("[%s] [%.4X] [%s:%d:%s] %s\n",
         TimeString, int(i->Thread), SourceFile,
          i->Line, i->Func, i->Message));
@@ -295,16 +295,16 @@ void DoTrace(const wchar_t * SourceFile, const wchar_t * Func,
   }
 #else
   DWORD Written;
-  WriteFile(TraceFile, Buffer.c_str(), static_cast<DWORD>(Buffer.Length()), &Written, nullptr);
+  WriteFile(TraceFile, Buffer.c_str(), ToDWord(Buffer.Length()), &Written, nullptr);
 #endif // TRACE_IN_MEMORY
 }
 
 void DoTraceFmt(const wchar_t * SourceFile, const wchar_t * Func,
-  uintptr_t Line, const wchar_t * AFormat, va_list Args)
+  uintptr_t Line, const wchar_t * AFormat, fmt::ArgList args)
 {
   DebugAssert(IsTracing);
 
-  UnicodeString Message = FormatV(AFormat, Args);
+  UnicodeString Message = nb::Format(AFormat, args);
   DoTrace(SourceFile, Func, Line, Message.c_str());
 }
 

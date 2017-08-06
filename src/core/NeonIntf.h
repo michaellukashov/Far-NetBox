@@ -22,6 +22,6 @@ void CheckRedirectLoop(UnicodeString RedirectUrl, TStrings * AttemptedUrls);
 typedef void (*TNeonTlsInit)(struct ssl_st * Ssl, ne_session * Session);
 void SetNeonTlsInit(ne_session * Session, TNeonTlsInit OnNeonTlsInit);
 AnsiString NeonExportCertificate(const ne_ssl_certificate * Certificate);
-bool NeonWindowsValidateCertificate(int & Failures, const AnsiString & AsciiCert, UnicodeString & Error);
+bool NeonWindowsValidateCertificate(int & Failures, AnsiString AsciiCert, UnicodeString & Error);
 UnicodeString NeonCertificateFailuresErrorStr(int Failures, UnicodeString HostName);
 

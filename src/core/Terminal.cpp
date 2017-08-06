@@ -1305,7 +1305,7 @@ RawByteString TTerminal::EncryptPassword(UnicodeString APassword) const
   return FConfiguration->EncryptPassword(APassword, GetSessionData()->GetSessionName());
 }
 
-UnicodeString TTerminal::DecryptPassword(const RawByteString & APassword) const
+UnicodeString TTerminal::DecryptPassword(RawByteString APassword) const
 {
   UnicodeString Result;
   try
@@ -1994,7 +1994,7 @@ bool TTerminal::DoPromptUser(TSessionData * /*Data*/, TPromptKind Kind,
   {
     if (PasswordOrPassphrasePrompt && !GetConfiguration()->GetRememberPassword())
     {
-      Prompts->SetObj(0, ToObj(ToInt(Prompts->GetObj(0)) | pupRemember));
+      Prompts->SetObj(0, ToObj(ToIntPtr(Prompts->GetObj(0)) | pupRemember));
     }
 
     if (GetOnPromptUser() != nullptr)
@@ -2015,7 +2015,7 @@ bool TTerminal::DoPromptUser(TSessionData * /*Data*/, TPromptKind Kind,
     }
 
     if (Result && PasswordOrPassphrasePrompt &&
-      (GetConfiguration()->GetRememberPassword() || FLAGSET(ToInt(Prompts->GetObj(0)), pupRemember)))
+      (GetConfiguration()->GetRememberPassword() || FLAGSET(ToIntPtr(Prompts->GetObj(0)), pupRemember)))
     {
       RawByteString EncryptedPassword = EncryptPassword(Response->GetString(0));
       if (FTunnelOpening)
@@ -4535,7 +4535,7 @@ void TTerminal::ChangeFileProperties(UnicodeString AFileName,
       UnicodeString dt = FORMAT("%02d.%02d.%04d %02d:%02d:%02d ", D, M, Y, H, N, S);
       LogEvent(FORMAT(" - last access: \"%s\"",
 //       FormatDateTime(L"dddddd tt",
-//         ::UnixToDateTime(RProperties->LastAccess, GetSessionData()->GetDSTMode())).c_str()));
+//         ::UnixToDateTime(RProperties->LastAccess, GetSessionData()->GetDSTMode()))));
          dt));
     }
   }
@@ -4839,6 +4839,12 @@ void TTerminal::TerminalMoveFile(UnicodeString AFileName,
   ReactOnCommand(fsMoveFile);
 }
 
+typedef nb::FastDelegate0<void> TAnonFunction;
+
+#define SCOPE_EXIT2 \
+  const auto ANONYMOUS_VARIABLE(scope_exit_guard) = detail::make_scope_guard() << // FastDelegate here
+
+
 bool TTerminal::MoveFiles(TStrings * AFileList, UnicodeString Target,
   UnicodeString FileMask)
 {
@@ -4847,6 +4853,12 @@ bool TTerminal::MoveFiles(TStrings * AFileList, UnicodeString Target,
   Params.FileMask = FileMask;
   DirectoryModified(Target, true);
   bool Result;
+
+  TAnonFunction func = nb::bind(&TTerminal::AnonFunction, this);
+  SCOPE_EXIT2 func;
+  {
+
+  };
   BeginTransaction();
   try__finally
   {
@@ -5251,7 +5263,7 @@ public:
       FAction.AddOutput(Str, true);
       break;
     case cotExitCode:
-      FAction.ExitCode(static_cast<int>(::StrToInt64(Str)));
+      FAction.ExitCode(ToInt(::StrToInt64(Str)));
       break;
     }
 
@@ -5293,7 +5305,7 @@ void TTerminal::AnyCommand(UnicodeString Command,
           FAction.AddOutput(Str, true);
           break;
         case cotExitCode:
-          FAction.ExitCode(StrToInt(Str));
+          FAction.ExitCode(StrToIntPtr(Str));
           break;
       }
 
@@ -5735,6 +5747,7 @@ void TTerminal::CalculateLocalFileSize(UnicodeString AFileName,
     catch (...)
     {
       // ignore
+      DEBUG_PRINTF("TTerminal::CalculateLocalFileSize: error occured");
     }
   }
 }
@@ -5953,7 +5966,7 @@ UnicodeString TTerminal::SynchronizeParamsStr(intptr_t Params)
   AddFlagName(ParamsStr, Params, spMirror, L"Mirror");
   if (Params > 0)
   {
-    AddToList(ParamsStr, FORMAT("0x%x", static_cast<int>(Params)), L", ");
+    AddToList(ParamsStr, FORMAT("0x%x", ToInt(Params)), L", ");
   }
   return ParamsStr;
 }

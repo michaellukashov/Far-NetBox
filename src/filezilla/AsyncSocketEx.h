@@ -308,7 +308,7 @@ enum SocketState
 
 inline TCHAR * Inet6AddrToString(in6_addr & addr)
 {
-  LPTSTR buf = nb::wchcalloc(512 * sizeof(TCHAR));
+  LPTSTR buf = nb::wchcalloc(512);
 
   _sntprintf(buf, 512, L"%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x",
        addr.s6_bytes[0], addr.s6_bytes[1], addr.s6_bytes[2], addr.s6_bytes[3],

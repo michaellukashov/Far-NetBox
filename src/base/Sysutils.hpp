@@ -55,22 +55,24 @@ enum FileAttributesEnum
   faAnyFile = 0x0000003f,
 };
 
+#if 0
 NB_CORE_EXPORT intptr_t __cdecl debug_printf(const wchar_t * format, ...);
 NB_CORE_EXPORT intptr_t __cdecl debug_printf2(const char * format, ...);
+#endif // #if 0
 
 #define NB_TEXT(T) L#T
 #ifndef NDEBUG
 #if defined(_MSC_VER)
 #if (_MSC_VER >= 1900)
-#define DEBUG_PRINTF(format, ...) nb::Sprintf(L"Plugin: [%s:%d] %s: " format L"\n", ::ExtractFilename(__FILEW__, L'\\'), __LINE__, ::MB2W(__FUNCTION__), __VA_ARGS__)
-#define DEBUG_PRINTF2(format, ...) nb::Sprintf("Plugin: [%s:%d] %s: " format "\n", W2MB(::ExtractFilename(__FILEW__, '\\')), __LINE__, __FUNCTION__, __VA_ARGS__)
+#define DEBUG_PRINTF(format, ...) OutputDebugStringW(nb::Sprintf(L"Plugin: [%s:%d] %s: " format L"\n", ::ExtractFilename(__FILEW__, L'\\'), __LINE__, ::MB2W(__FUNCTION__), __VA_ARGS__).c_str())
+#define DEBUG_PRINTFA(format, ...) OutputDebugStringW(nb::Sprintf("Plugin: [%s:%d] %s: " format "\n", W2MB(::ExtractFilename(__FILEW__, '\\')), __LINE__, __FUNCTION__, __VA_ARGS__).c_str())
 #else
-#define DEBUG_PRINTF(format, ...) nb::Sprintf(L"Plugin: [%s:%d] %s: "NB_TEXT(format) L"\n", ::ExtractFilename(__FILEW__, L'\\'), __LINE__, ::MB2W(__FUNCTION__), __VA_ARGS__)
-#define DEBUG_PRINTF2(format, ...) nb::Sprintf("Plugin: [%s:%d] %s: "format "\n", W2MB(::ExtractFilename(__FILEW__, '\\')), __LINE__, __FUNCTION__, __VA_ARGS__)
+#define DEBUG_PRINTF(format, ...) OutputDebugStringW(nb::Sprintf(L"Plugin: [%s:%d] %s: "NB_TEXT(format) L"\n", ::ExtractFilename(__FILEW__, L'\\'), __LINE__, ::MB2W(__FUNCTION__), __VA_ARGS__).c_str())
+#define DEBUG_PRINTFA(format, ...) OutputDebugStringW(nb::Sprintf("Plugin: [%s:%d] %s: "format "\n", W2MB(::ExtractFilename(__FILEW__, '\\')), __LINE__, __FUNCTION__, __VA_ARGS__).c_str())
 #endif
 #else
-#define DEBUG_PRINTF(format, ...) nb::Sprintf(L"Plugin: [%s:%d] %s: " format L"\n", ::ExtractFilename(MB2W(__FILE__), L'\\'), __LINE__, ::MB2W(__FUNCTION__), __VA_ARGS__)
-#define DEBUG_PRINTF2(format, ...) nb::Sprintf("Plugin: [%s:%d] %s: " format "\n", W2MB(::ExtractFilename(MB2W(__FILE__), '\\')), __LINE__, __FUNCTION__, __VA_ARGS__)
+#define DEBUG_PRINTF(format, ...) OutputDebugStringW(nb::Sprintf(L"Plugin: [%s:%d] %s: " format L"\n", ::ExtractFilename(MB2W(__FILE__), L'\\'), __LINE__, ::MB2W(__FUNCTION__), __VA_ARGS__).c_str())
+#define DEBUG_PRINTFA(format, ...) OutputDebugStringW(nb::Sprintf("Plugin: [%s:%d] %s: " format "\n", W2MB(::ExtractFilename(MB2W(__FILE__), '\\')), __LINE__, __FUNCTION__, __VA_ARGS__).c_str())
 #endif
 #else
 #define DEBUG_PRINTF(format, ...)
@@ -222,7 +224,7 @@ NB_CORE_EXPORT UnicodeString IncludeTrailingPathDelimiter(UnicodeString Str);
 
 NB_CORE_EXPORT UnicodeString StrToHex(UnicodeString Str, bool UpperCase = true, wchar_t Separator = L'\0');
 NB_CORE_EXPORT UnicodeString HexToStr(UnicodeString Hex);
-NB_CORE_EXPORT uintptr_t HexToInt(UnicodeString Hex, uintptr_t MinChars = 0);
+NB_CORE_EXPORT uintptr_t HexToIntPtr(UnicodeString Hex, uintptr_t MinChars = 0);
 NB_CORE_EXPORT UnicodeString IntToHex(uintptr_t Int, uintptr_t MinChars = 0);
 NB_CORE_EXPORT char HexToChar(UnicodeString Hex, uintptr_t MinChars = 0);
 
@@ -271,12 +273,12 @@ NB_CORE_EXPORT intptr_t AnsiCompareText(UnicodeString Str1, UnicodeString Str2);
 NB_CORE_EXPORT intptr_t AnsiCompareIC(UnicodeString Str1, UnicodeString Str2);
 NB_CORE_EXPORT bool AnsiSameStr(UnicodeString Str1, UnicodeString Str2);
 NB_CORE_EXPORT bool AnsiContainsText(UnicodeString Str1, UnicodeString Str2);
-NB_CORE_EXPORT bool ContainsStr(const AnsiString & Str1, const AnsiString & Str2);
+NB_CORE_EXPORT bool ContainsStr(AnsiString Str1, AnsiString Str2);
 NB_CORE_EXPORT bool ContainsText(UnicodeString Str1, UnicodeString Str2);
 NB_CORE_EXPORT UnicodeString RightStr(UnicodeString Str, intptr_t ACount);
 NB_CORE_EXPORT intptr_t PosEx(UnicodeString SubStr, UnicodeString Str, intptr_t Offset = 1);
 
-NB_CORE_EXPORT UnicodeString UTF8ToString(const RawByteString & Str);
+NB_CORE_EXPORT UnicodeString UTF8ToString(RawByteString Str);
 NB_CORE_EXPORT UnicodeString UTF8ToString(const char * Str, intptr_t Len);
 
 NB_CORE_EXPORT int StringCmp(const wchar_t * S1, const wchar_t * S2);
@@ -284,13 +286,12 @@ NB_CORE_EXPORT int StringCmpI(const wchar_t * S1, const wchar_t * S2);
 
 NB_CORE_EXPORT UnicodeString IntToStr(intptr_t Value);
 NB_CORE_EXPORT UnicodeString Int64ToStr(int64_t Value);
-NB_CORE_EXPORT intptr_t StrToInt(UnicodeString Value);
-NB_CORE_EXPORT int64_t ToInt(UnicodeString Value);
+NB_CORE_EXPORT intptr_t StrToIntPtr(UnicodeString Value);
+NB_CORE_EXPORT int64_t ToInt64(UnicodeString Value);
 NB_CORE_EXPORT intptr_t StrToIntDef(UnicodeString Value, intptr_t DefVal);
 NB_CORE_EXPORT int64_t StrToInt64(UnicodeString Value);
 NB_CORE_EXPORT int64_t StrToInt64Def(UnicodeString Value, int64_t DefVal);
-NB_CORE_EXPORT bool TryStrToInt(UnicodeString StrValue, int64_t & Value);
-bool TryStrToInt64(UnicodeString StrValue, int64_t & Value);
+NB_CORE_EXPORT bool TryStrToInt64(UnicodeString StrValue, int64_t & Value);
 
 NB_CORE_EXPORT double StrToFloat(UnicodeString Value);
 NB_CORE_EXPORT double StrToFloatDef(UnicodeString Value, double DefVal);
@@ -317,18 +318,20 @@ NB_CORE_EXPORT bool RemoveFile(UnicodeString AFileName);
 NB_CORE_EXPORT bool CreateDir(UnicodeString ADir, LPSECURITY_ATTRIBUTES SecurityAttributes = nullptr);
 NB_CORE_EXPORT bool RemoveDir(UnicodeString ADir);
 
+// not used
+#if 0
 NB_CORE_EXPORT UnicodeString Format(const wchar_t * Format, ...);
 NB_CORE_EXPORT UnicodeString FormatV(const wchar_t * Format, va_list Args);
 NB_CORE_EXPORT AnsiString FormatA(const char * Format, ...);
 NB_CORE_EXPORT AnsiString FormatA(const char * Format, va_list Args);
 NB_CORE_EXPORT UnicodeString FmtLoadStr(intptr_t Id, ...);
+#endif // #if 0
 
 NB_CORE_EXPORT UnicodeString WrapText(UnicodeString Line, intptr_t MaxWidth = 40);
 
 NB_CORE_EXPORT UnicodeString TranslateExceptionMessage(Exception * E);
 
 NB_CORE_EXPORT void AppendWChar(UnicodeString & Str, const wchar_t Ch);
-NB_CORE_EXPORT void AppendChar(std::string & Str, const char Ch);
 
 NB_CORE_EXPORT void AppendPathDelimiterW(UnicodeString & Str);
 
@@ -460,9 +463,6 @@ private:
 
 #define SCOPED_ACTION(RAII_type) \
 const RAII_type ANONYMOUS_VARIABLE(scoped_object_)
-
-//#define STR(x) #x
-#define WSTR(x) L###x
 
 namespace detail
 {

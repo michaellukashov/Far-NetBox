@@ -480,8 +480,8 @@ public:
   void CopyNonCoreData(TSessionData * SourceData);
   UnicodeString GetNormalizedPuttyProtocol() const;
   static RawByteString EncryptPassword(UnicodeString Password, UnicodeString Key);
-  static UnicodeString DecryptPassword(const RawByteString & Password, UnicodeString Key);
-  static RawByteString StronglyRecryptPassword(const RawByteString & Password, UnicodeString Key);
+  static UnicodeString DecryptPassword(RawByteString Password, UnicodeString Key);
+  static RawByteString StronglyRecryptPassword(RawByteString Password, UnicodeString Key);
   static bool DoIsProtocolUrl(UnicodeString Url, UnicodeString Protocol, intptr_t & ProtocolLen);
   static bool IsProtocolUrl(UnicodeString Url, UnicodeString Protocol, intptr_t & ProtocolLen);
   static void AddSwitchValue(UnicodeString & Result, UnicodeString Name, UnicodeString Value);

@@ -2222,12 +2222,12 @@ RawByteString TSessionData::EncryptPassword(UnicodeString Password, UnicodeStrin
   return GetConfiguration()->EncryptPassword(Password, Key);
 }
 
-RawByteString TSessionData::StronglyRecryptPassword(const RawByteString & Password, UnicodeString Key)
+RawByteString TSessionData::StronglyRecryptPassword(RawByteString Password, UnicodeString Key)
 {
   return GetConfiguration()->StronglyRecryptPassword(Password, Key);
 }
 
-UnicodeString TSessionData::DecryptPassword(const RawByteString & Password, UnicodeString Key)
+UnicodeString TSessionData::DecryptPassword(RawByteString Password, UnicodeString Key)
 {
   UnicodeString Result;
   try
@@ -2274,7 +2274,7 @@ UnicodeString TSessionData::GetStorageKey() const
 
 UnicodeString TSessionData::FormatSiteKey(UnicodeString HostName, intptr_t PortNumber)
 {
-  return FORMAT("%s:%d", HostName, static_cast<int>(PortNumber));
+  return FORMAT("%s:%d", HostName, ToInt(PortNumber));
 }
 
 UnicodeString TSessionData::GetSiteKey() const
@@ -3885,7 +3885,7 @@ void TSessionData::FromURI(UnicodeString ProxyURI,
   if (Pos > 0)
   {
     ProxyUrl = ProxyURI.SubString(1, Pos - 1).Trim();
-    ProxyPort = ProxyURI.SubString(Pos + 1).Trim().ToInt();
+    ProxyPort = ProxyURI.SubString(Pos + 1).Trim().ToIntPtr();
   }
   // remove scheme from Url e.g. "socks5://" "https://"
   Pos = ProxyUrl.Pos(L"://");
@@ -4819,7 +4819,7 @@ void TStoredSessionList::ImportFromKnownHosts(TStrings * Lines)
               UnicodeString NameStr = HostNameStr;
               if (PortNumber >= 0)
               {
-                NameStr = FORMAT(L"%s:%d", NameStr, static_cast<int>(PortNumber));
+                NameStr = FORMAT(L"%s:%d", NameStr, ToInt(PortNumber));
               }
 
               std::unique_ptr<TSessionData> SessionDataOwner;
@@ -5566,7 +5566,7 @@ UnicodeString GetExpandedLogFileName(UnicodeString LogFileName, TDateTime Starte
         break;
 
       case 'p':
-        Replacement = ::Int64ToStr(static_cast<int>(::GetCurrentProcessId()));
+        Replacement = ::Int64ToStr(ToInt(::GetCurrentProcessId()));
         break;
 
       case L'@':

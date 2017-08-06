@@ -630,8 +630,8 @@ TFileSystemInfo::TFileSystemInfo()
 static FILE * LocalOpenLogFile(UnicodeString LogFileName, TDateTime Started, TSessionData * SessionData, bool Append, UnicodeString & ANewFileName)
 {
   UnicodeString NewFileName = StripPathQuotes(GetExpandedLogFileName(LogFileName, Started, SessionData));
-  FILE * Result = _fsopen(::W2MB(ApiPath(NewFileName).c_str()).c_str(),
-    Append ? "ab" : "wb", SH_DENYWR);
+  FILE * Result = _wfsopen(ApiPath(NewFileName).c_str(),
+    Append ? L"ab" : L"wb", SH_DENYWR);
   if (Result != nullptr)
   {
     setvbuf(Result, nullptr, _IONBF, BUFSIZ);
@@ -709,6 +709,7 @@ void TSessionLog::DoAddToSelf(TLogLineType Type, UnicodeString ALine)
     catch (...)
     {
       // TODO: log error
+      DEBUG_PRINTF("TSessionLog::DoAddToSelf: error");
     }
   }
 }
@@ -1008,7 +1009,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
     AddSeparator();
     UnicodeString OS = WindowsVersionLong();
     AddToList(OS, WindowsProductName(), L" - ");
-    ADF(L"NetBox %s (OS %s)", FConfiguration->GetProductVersionStr().c_str(), OS.c_str());
+    ADF("NetBox %s (OS %s)", FConfiguration->GetProductVersionStr(), OS);
     {
       std::unique_ptr<THierarchicalStorage> Storage(FConfiguration->CreateConfigStorage());
       DebugAssert(Storage.get());
@@ -1055,53 +1056,53 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
       }
     }
 #if 0
-    ADF(L"Log level: %s", LogStr);
-    ADF(L"Local account: %s", UserName);
+    ADF("Log level: %s", LogStr);
+    ADF("Local account: %s", UserName);
 #endif // #if 0
-    ADF(L"Working directory: %s", GetCurrentDir());
-    ADF(L"Process ID: %d", intptr_t(GetCurrentProcessId()));
+    ADF("Working directory: %s", GetCurrentDir());
+    ADF("Process ID: %d", intptr_t(GetCurrentProcessId()));
 #if 0
-    ADF(L"Command-line: %s", GetCmdLineLog());
+    ADF("Command-line: %s", GetCmdLineLog());
     if (FConfiguration->GetLogProtocol() >= 1)
     {
       AddOptions(GetGlobalOptions());
     }
 #endif // #if 0
-    ADF(L"Time zone: %s", GetTimeZoneLogString());
+    ADF("Time zone: %s", GetTimeZoneLogString());
     if (!AdjustClockForDSTEnabled())
     {
-      ADF(L"Warning: System option \"Automatically adjust clock for Daylight Saving Time\" is disabled, timestamps will not be represented correctly");
+      ADF("Warning: System option \"Automatically adjust clock for Daylight Saving Time\" is disabled, timestamps will not be represented correctly");
     }
 #if 0
-    ADF(L"Login time: %s", dt);
+    ADF("Login time: %s", dt);
 #endif // #if 0
     AddSeparator();
   }
   else
   {
 #if 0
-    ADF(L"Session name: %s (%s)", Data->GetSessionName(), Data->GetSource());
-    ADF(L"Host name: %s (Port: %d)", Data->GetHostNameExpanded(), Data->GetPortNumber());
-    ADF(L"User name: %s (Password: %s, Key file: %s, Passphrase: %s)",
+    ADF("Session name: %s (%s)", Data->GetSessionName(), Data->GetSource());
+    ADF("Host name: %s (Port: %d)", Data->GetHostNameExpanded(), Data->GetPortNumber());
+    ADF("User name: %s (Password: %s, Key file: %s, Passphrase: %s)",
       Data->GetUserNameExpanded(), LogSensitive(Data->GetPassword()),
       LogSensitive(Data->GetPublicKeyFile()), LogSensitive(Data->GetPassphrase()))
 #endif // #if 0
     if (Data->GetUsesSsh())
     {
-      ADF(L"Tunnel: %s", BooleanToEngStr(Data->GetTunnel()));
+      ADF("Tunnel: %s", BooleanToEngStr(Data->GetTunnel()));
       if (Data->GetTunnel())
       {
-        ADF(L"Tunnel: Host name: %s (Port: %d)", Data->GetTunnelHostName().c_str(), Data->GetTunnelPortNumber());
+        ADF("Tunnel: Host name: %s (Port: %d)", Data->GetTunnelHostName(), Data->GetTunnelPortNumber());
 #if 0
-        ADF(L"Tunnel: User name: %s (Password: %s, Key file: %s)",
+        ADF("Tunnel: User name: %s (Password: %s, Key file: %s)",
            Data->GetTunnelUserName(), BooleanToEngStr(!Data->GetTunnelPassword().IsEmpty()),
            BooleanToEngStr(!Data->GetTunnelPublicKeyFile().IsEmpty()));
-        ADF(L"Tunnel: Local port number: %d", Data->GetTunnelLocalPortNumber());
+        ADF("Tunnel: Local port number: %d", Data->GetTunnelLocalPortNumber());
 #endif // #if 0
       }
     }
-    ADF(L"Transfer Protocol: %s", Data->GetFSProtocolStr().c_str());
-    ADF(L"Code Page: %d", Data->GetCodePageAsNumber());
+    ADF("Transfer Protocol: %s", Data->GetFSProtocolStr());
+    ADF("Code Page: %d", Data->GetCodePageAsNumber());
     if (Data->GetUsesSsh() || (Data->GetFSProtocol() == fsFTP))
     {
       TPingType PingType;
@@ -1116,9 +1117,9 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
         PingType = Data->GetPingType();
         PingInterval = Data->GetPingInterval();
       }
-      ADF(L"Ping type: %s, Ping interval: %d sec; Timeout: %d sec",
+      ADF("Ping type: %s, Ping interval: %d sec; Timeout: %d sec",
         EnumName(PingType, PingTypeNames), PingInterval, Data->GetTimeout());
-      ADF(L"Disable Nagle: %s",
+      ADF("Disable Nagle: %s",
         BooleanToEngStr(Data->GetTcpNoDelay()));
     }
     TProxyMethod ProxyMethod = Data->GetActualProxyMethod();
@@ -1129,55 +1130,55 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
     }
     if ((Data->GetFtpProxyLogonType() != 0) || (ProxyMethod != ::pmNone))
     {
-      ADF(L"ProxyHostName: %s (Port: %d); ProxyUsername: %s; Passwd: %s",
+      ADF("ProxyHostName: %s (Port: %d); ProxyUsername: %s; Passwd: %s",
         Data->GetProxyHost(), Data->GetProxyPort(),
         Data->GetProxyUsername(), BooleanToEngStr(!Data->GetProxyPassword().IsEmpty()));
       if (ProxyMethod == pmTelnet)
       {
-        ADF(L"Telnet command: %s", Data->GetProxyTelnetCommand().c_str());
+        ADF("Telnet command: %s", Data->GetProxyTelnetCommand());
       }
       if (ProxyMethod == pmCmd)
       {
-        ADF(L"Local command: %s", Data->GetProxyLocalCommand().c_str());
+        ADF("Local command: %s", Data->GetProxyLocalCommand());
       }
     }
     if (Data->GetUsesSsh() || (Data->GetFSProtocol() == fsFTP))
     {
-      ADF(L"Send buffer: %d", Data->GetSendBuf());
+      ADF("Send buffer: %d", Data->GetSendBuf());
     }
     if (Data->GetUsesSsh())
     {
-      ADF(L"SSH protocol version: %s; Compression: %s",
+      ADF("SSH protocol version: %s; Compression: %s",
         Data->GetSshProtStr(), BooleanToEngStr(Data->GetCompression()));
-      ADF(L"Bypass authentication: %s",
+      ADF("Bypass authentication: %s",
         BooleanToEngStr(Data->GetSshNoUserAuth()));
-      ADF(L"Try agent: %s; Agent forwarding: %s; TIS/CryptoCard: %s; KI: %s; GSSAPI: %s",
+      ADF("Try agent: %s; Agent forwarding: %s; TIS/CryptoCard: %s; KI: %s; GSSAPI: %s",
         BooleanToEngStr(Data->GetTryAgent()), BooleanToEngStr(Data->GetAgentFwd()), BooleanToEngStr(Data->GetAuthTIS()),
         BooleanToEngStr(Data->GetAuthKI()), BooleanToEngStr(Data->GetAuthGSSAPI()));
       if (Data->GetAuthGSSAPI())
       {
-        ADF(L"GSSAPI: Forwarding: %s",
+        ADF("GSSAPI: Forwarding: %s",
           BooleanToEngStr(Data->GetGSSAPIFwdTGT()));
       }
-      ADF(L"Ciphers: %s; Ssh2DES: %s",
+      ADF("Ciphers: %s; Ssh2DES: %s",
         Data->GetCipherList(), BooleanToEngStr(Data->GetSsh2DES()));
-      ADF(L"KEX: %s", Data->GetKexList().c_str());
+      ADF("KEX: %s", Data->GetKexList());
       UnicodeString Bugs;
       for (intptr_t Index = 0; Index < BUG_COUNT; ++Index)
       {
         AddToList(Bugs, EnumName(Data->GetBug(static_cast<TSshBug>(Index)), AutoSwitchNames), L",");
       }
-      ADF(L"SSH Bugs: %s", Bugs.c_str());
+      ADF("SSH Bugs: %s", Bugs);
       ADF("Simple channel: %s", BooleanToEngStr(Data->GetSshSimple()));
-      ADF(L"Return code variable: %s; Lookup user groups: %s",
+      ADF("Return code variable: %s; Lookup user groups: %s",
         Data->GetDetectReturnVar() ? UnicodeString(L"Autodetect") : Data->GetReturnVar(),
         EnumName(Data->GetLookupUserGroups(), AutoSwitchNames));
-      ADF(L"Shell: %s", Data->GetShell().IsEmpty() ? UnicodeString(L"default").c_str() : Data->GetShell().c_str());
-      ADF(L"EOL: %s, UTF: %s", EnumName(Data->GetEOLType(), EOLTypeNames).c_str(), EnumName(Data->GetNotUtf(), NotAutoSwitchNames).c_str()); // NotUtf duplicated in FTP branch
-      ADF(L"Clear aliases: %s, Unset nat.vars: %s, Resolve symlinks: %s; Follow directory symlinks: %s",
+      ADF("Shell: %s", Data->GetShell().IsEmpty() ? UnicodeString(L"default") : Data->GetShell());
+      ADF("EOL: %s, UTF: %s", EnumName(Data->GetEOLType(), EOLTypeNames), EnumName(Data->GetNotUtf(), NotAutoSwitchNames)); // NotUtf duplicated in FTP branch
+      ADF("Clear aliases: %s, Unset nat.vars: %s, Resolve symlinks: %s; Follow directory symlinks: %s",
         BooleanToEngStr(Data->GetClearAliases()), BooleanToEngStr(Data->GetUnsetNationalVars()),
         BooleanToEngStr(Data->GetResolveSymlinks()), BooleanToEngStr(Data->GetFollowDirectorySymlinks()));
-      ADF(L"LS: %s, Ign LS warn: %s, Scp1 Comp: %s",
+      ADF("LS: %s, Ign LS warn: %s, Scp1 Comp: %s",
         Data->GetListingCommand(),
         BooleanToEngStr(Data->GetIgnoreLsWarnings()),
         BooleanToEngStr(Data->GetScp1Compatibility()));
@@ -1189,13 +1190,13 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
       {
         AddToList(Bugs, EnumName(Data->GetSFTPBug(static_cast<TSftpBug>(Index)), AutoSwitchNames), L",");
       }
-      ADF(L"SFTP Bugs: %s", Bugs.c_str());
-      ADF(L"SFTP Server: %s", Data->GetSftpServer().IsEmpty()? UnicodeString(L"default").c_str() : Data->GetSftpServer().c_str());
+      ADF("SFTP Bugs: %s", Bugs);
+      ADF("SFTP Server: %s", Data->GetSftpServer().IsEmpty()? UnicodeString(L"default") : Data->GetSftpServer());
     }
     bool FtpsOn = false;
     if (Data->GetFSProtocol() == fsFTP)
     {
-      ADF(L"UTF: %s", EnumName(Data->GetNotUtf(), NotAutoSwitchNames).c_str()); // duplicated in UsesSsh branch
+      ADF("UTF: %s", EnumName(Data->GetNotUtf(), NotAutoSwitchNames)); // duplicated in UsesSsh branch
       UnicodeString Ftps;
       switch (Data->GetFtps())
       {
@@ -1222,52 +1223,52 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
       // kind of hidden option, so do not reveal it unless it is set
       if (Data->GetFtpTransferActiveImmediately() != asAuto)
       {
-        ADF(L"Transfer active immediately: %s", EnumName(Data->GetFtpTransferActiveImmediately(), AutoSwitchNames).c_str());
+        ADF("Transfer active immediately: %s", EnumName(Data->GetFtpTransferActiveImmediately(), AutoSwitchNames));
       }
-      ADF(L"FTPS: %s [Client certificate: %s]",
-        Ftps.c_str(), LogSensitive(Data->GetTlsCertificateFile()).c_str());
-      ADF(L"FTP: Passive: %s [Force IP: %s]; MLSD: %s [List all: %s]; HOST: %s",
-        BooleanToEngStr(Data->GetFtpPasvMode()).c_str(),
-         EnumName(Data->GetFtpForcePasvIp(), AutoSwitchNames).c_str(),
-         EnumName(Data->GetFtpUseMlsd(), AutoSwitchNames).c_str(),
-         EnumName(Data->GetFtpListAll(), AutoSwitchNames).c_str(),
-         EnumName(Data->GetFtpHost(), AutoSwitchNames).c_str());
+      ADF("FTPS: %s [Client certificate: %s]",
+        Ftps, LogSensitive(Data->GetTlsCertificateFile()));
+      ADF("FTP: Passive: %s [Force IP: %s]; MLSD: %s [List all: %s]; HOST: %s",
+        BooleanToEngStr(Data->GetFtpPasvMode()),
+        EnumName(Data->GetFtpForcePasvIp(), AutoSwitchNames),
+        EnumName(Data->GetFtpUseMlsd(), AutoSwitchNames),
+        EnumName(Data->GetFtpListAll(), AutoSwitchNames),
+        EnumName(Data->GetFtpHost(), AutoSwitchNames));
     }
     if (Data->GetFSProtocol() == fsWebDAV)
     {
       FtpsOn = (Data->GetFtps() != ftpsNone);
-      ADF(L"HTTPS: %s [Client certificate: %s]",
-        BooleanToEngStr(FtpsOn).c_str(), LogSensitive(Data->GetTlsCertificateFile()).c_str());
+      ADF("HTTPS: %s [Client certificate: %s]",
+        BooleanToEngStr(FtpsOn), LogSensitive(Data->GetTlsCertificateFile()));
     }
     if (FtpsOn)
     {
       if (Data->GetFSProtocol() == fsFTP)
       {
-        ADF(L"Session reuse: %s", BooleanToEngStr(Data->GetSslSessionReuse()).c_str());
+        ADF("Session reuse: %s", BooleanToEngStr(Data->GetSslSessionReuse()));
       }
-      ADF(L"TLS/SSL versions: %s-%s", GetTlsVersionName(Data->GetMinTlsVersion()).c_str(), GetTlsVersionName(Data->GetMaxTlsVersion()).c_str());
+      ADF("TLS/SSL versions: %s-%s", GetTlsVersionName(Data->GetMinTlsVersion()), GetTlsVersionName(Data->GetMaxTlsVersion()));
     }
-    ADF(L"Local directory: %s, Remote directory: %s, Update: %s, Cache: %s",
+    ADF("Local directory: %s, Remote directory: %s, Update: %s, Cache: %s",
       Data->GetLocalDirectory().IsEmpty() ? UnicodeString(L"default") : Data->GetLocalDirectory(),
       Data->GetRemoteDirectory().IsEmpty() ? UnicodeString(L"home") : Data->GetRemoteDirectory(),
       BooleanToEngStr(Data->GetUpdateDirectories()),
       BooleanToEngStr(Data->GetCacheDirectories()));
-    ADF(L"Cache directory changes: %s, Permanent: %s",
+    ADF("Cache directory changes: %s, Permanent: %s",
       BooleanToEngStr(Data->GetCacheDirectoryChanges()),
       BooleanToEngStr(Data->GetPreserveDirectoryChanges()));
-    ADF(L"Recycle bin: Delete to: %s, Overwritten to: %s, Bin path: %s",
+    ADF("Recycle bin: Delete to: %s, Overwritten to: %s, Bin path: %s",
       BooleanToEngStr(Data->GetDeleteToRecycleBin()),
       BooleanToEngStr(Data->GetOverwrittenToRecycleBin()),
       Data->GetRecycleBinPath());
     if (Data->GetTrimVMSVersions())
     {
-      ADF(L"Trim VMS versions: %s",
-        BooleanToEngStr(Data->GetTrimVMSVersions()).c_str());
+      ADF("Trim VMS versions: %s",
+        BooleanToEngStr(Data->GetTrimVMSVersions()));
     }
     UnicodeString TimeInfo;
     if ((Data->GetFSProtocol() == fsSFTP) || (Data->GetFSProtocol() == fsSFTPonly) || (Data->GetFSProtocol() == fsSCPonly) || (Data->GetFSProtocol() == fsWebDAV))
     {
-      AddToList(TimeInfo, FORMAT(L"DST mode: %s", EnumName(static_cast<int>(Data->GetDSTMode()), DSTModeNames)), L";");
+      AddToList(TimeInfo, FORMAT(L"DST mode: %s", EnumName(ToInt(Data->GetDSTMode()), DSTModeNames)), L";");
     }
     if ((Data->GetFSProtocol() == fsSCPonly) || (Data->GetFSProtocol() == fsFTP))
     {
@@ -1278,7 +1279,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
 
     if (Data->GetFSProtocol() == fsWebDAV)
     {
-      ADF(L"Compression: %s",
+      ADF("Compression: %s",
         BooleanToEngStr(Data->GetCompression()));
     }
 
