@@ -807,6 +807,8 @@ private:
   void InternalTryOpen();
   void InternalDoTryOpen();
   void InitFileSystem();
+
+  void AnonFunction() {}
 };
 
 class NB_CORE_EXPORT TSecondaryTerminal : public TTerminal

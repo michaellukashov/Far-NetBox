@@ -4839,6 +4839,12 @@ void TTerminal::TerminalMoveFile(UnicodeString AFileName,
   ReactOnCommand(fsMoveFile);
 }
 
+typedef nb::FastDelegate0<void> TAnonFunction;
+
+#define SCOPE_EXIT2 \
+  const auto ANONYMOUS_VARIABLE(scope_exit_guard) = detail::make_scope_guard() << // FastDelegate here
+
+
 bool TTerminal::MoveFiles(TStrings * AFileList, UnicodeString Target,
   UnicodeString FileMask)
 {
@@ -4847,6 +4853,12 @@ bool TTerminal::MoveFiles(TStrings * AFileList, UnicodeString Target,
   Params.FileMask = FileMask;
   DirectoryModified(Target, true);
   bool Result;
+
+  TAnonFunction func = nb::bind(&TTerminal::AnonFunction, this);
+  SCOPE_EXIT2 func;
+  {
+
+  };
   BeginTransaction();
   try__finally
   {
