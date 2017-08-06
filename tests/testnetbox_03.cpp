@@ -379,7 +379,7 @@ TEST_CASE_METHOD(base_fixture_t, "testStringFuncs3", "netbox")
   UnicodeString str_value = ::IntToStr(1234);
   INFO("str_value = " << W2MB(str_value.c_str()));
   REQUIRE(W2MB(str_value.c_str()) == "1234");
-  intptr_t int_value = ::StrToInt(L"1234");
+  intptr_t int_value = ::StrToIntPtr(L"1234");
   INFO("int_value = " << int_value);
   REQUIRE(int_value == 1234);
 }
