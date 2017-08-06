@@ -62,6 +62,10 @@ public:
   }
 public:
   void AnonFunction() { printf("in base_fixture_t::AnonFunction\n"); }
+  void AnonFunction2(void * Param)
+  {
+    printf("in base_fixture_t::AnonFunction2: param: %d\n", *(int *)Param);
+  }
 protected:
 private:
 };
@@ -828,7 +832,9 @@ TEST_CASE_METHOD(base_fixture_t, "test_scope_exit2", "netbox")
   {
      printf("in TEST_CASE_METHOD test_lambda2\n");
   };
-  SCOPE_EXIT2(base_fixture_t::AnonFunction);
+  int Param = 42;
+  SCOPE_EXIT2(base_fixture_t::AnonFunction2, (void*)&Param);
+  // detail::scope_guard2<nb::FastDelegate1<void, int>, int> guard(nb::bind(&base_fixture_t::AnonFunction2, this), Param);
   printf("in TEST_CASE_METHOD test_scope_exit2\n");
   const auto ANONYMOUS_VARIABLE(scope_exit_guard) = detail::make_scope_guard() << \
     test_lambda2;
