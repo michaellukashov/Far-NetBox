@@ -497,8 +497,8 @@ namespace detail
 class NullFunc
 {
 public:
-  NullFunc(const std::function<void()> & f) { (void)(f); }
-  ~NullFunc() { }
+  NullFunc(const std::function<void()> &) {}
+  ~NullFunc() {}
 };
 
 #define try__catch
