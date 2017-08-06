@@ -61,7 +61,9 @@ public:
     ::SetGlobals(nullptr);
   }
 public:
+  void AnonFunction() { printf("in base_fixture_t::AnonFunction\n"); }
 protected:
+private:
 };
 
 // mocks
@@ -414,7 +416,7 @@ TEST_CASE_METHOD(base_fixture_t, "test13", "netbox")
   UnicodeString str_value = ::IntToStr(1234);
   INFO("str_value = " << str_value);
   REQUIRE(W2MB(str_value.c_str()) == "1234");
-  intptr_t int_value = ::StrToInt(L"1234");
+  intptr_t int_value = ::StrToIntPtr(L"1234");
   INFO("int_value = " << int_value);
   REQUIRE(int_value == 1234);
 }
@@ -806,3 +808,30 @@ TEST_CASE_METHOD(base_fixture_t, "test30", "netbox")
 }
 //------------------------------------------------------------------------------
 
+typedef nb::FastDelegate0<void> TAnonFunction;
+
+class TTestAnonFunc
+{
+public:
+  void AnonFunction() { printf("in AnonFunction\n"); }
+};
+
+TEST_CASE_METHOD(base_fixture_t, "test_scope_exit2", "netbox")
+{
+  // TTestAnonFunc TestAnonFunc;
+  // TAnonFunction func = nb::bind(&TTestAnonFunc::AnonFunction, &TestAnonFunc);
+  auto test_lambda1 = [&]()
+  {
+     printf("in TEST_CASE_METHOD test_lambda1\n");
+  };
+  auto test_lambda2 = [&]()
+  {
+     printf("in TEST_CASE_METHOD test_lambda2\n");
+  };
+  SCOPE_EXIT2(base_fixture_t::AnonFunction);
+  printf("in TEST_CASE_METHOD test_scope_exit2\n");
+  const auto ANONYMOUS_VARIABLE(scope_exit_guard) = detail::make_scope_guard() << \
+    test_lambda2;
+  test_lambda1();
+//  TAnonFunction func(test_lambda2, this);
+}
