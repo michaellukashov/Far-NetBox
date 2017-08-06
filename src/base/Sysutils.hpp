@@ -490,6 +490,10 @@ namespace detail
 #define SCOPE_EXIT \
   const auto ANONYMOUS_VARIABLE(scope_exit_guard) = detail::make_scope_guard() << [&]() /* lambda body here */
 
+#define SCOPE_EXIT2(FUNC) \
+  const auto ANONYMOUS_VARIABLE(scope_exit_guard) = detail::make_scope_guard() << \
+    nb::bind(&FUNC, this)
+
 class NullFunc
 {
 public:
