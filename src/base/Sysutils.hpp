@@ -478,6 +478,19 @@ namespace detail
     const F m_f;
   };
 
+  template<typename F, typename P>
+  class scope_guard2
+  {
+  public:
+    explicit scope_guard2(F && f, P p) : m_f(std::move(f)), m_p(p) {}
+    ~scope_guard2() { m_f(m_p); }
+
+  private:
+    scope_guard2 & operator=(const scope_guard2 &);
+    const F m_f;
+    P m_p;
+  };
+
   class make_scope_guard
   {
   public:
@@ -490,9 +503,9 @@ namespace detail
 #define SCOPE_EXIT \
   const auto ANONYMOUS_VARIABLE(scope_exit_guard) = detail::make_scope_guard() << [&]() /* lambda body here */
 
-#define SCOPE_EXIT2(FUNC) \
-  const auto ANONYMOUS_VARIABLE(scope_exit_guard) = detail::make_scope_guard() << \
-    nb::bind(&FUNC, this)
+#define SCOPE_EXIT2(FUNC, PARAM) \
+  const auto ANONYMOUS_VARIABLE(scope_exit_guard) = \
+    detail::scope_guard2<nb::FastDelegate1<void, void *>, void *>(nb::bind(&FUNC, this), PARAM)
 
 class NullFunc
 {
