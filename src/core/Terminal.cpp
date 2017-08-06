@@ -4851,47 +4851,8 @@ bool TTerminal::MoveFiles(TStrings * AFileList, UnicodeString Target,
   BeginTransaction();
   try__finally
   {
-    SCOPE_EXIT
-    {
-      if (GetActive())
-      {
-        // UnicodeString WithTrailing = base::UnixIncludeTrailingBackslash(this->GetCurrDirectory());
-        bool PossiblyMoved = false;
-        // check if we was moving current directory.
-        // this is just optimization to avoid checking existence of current
-        // directory after each move operation.
-        UnicodeString CurrentDirectory = this->RemoteGetCurrentDirectory();
-        for (intptr_t Index = 0; !PossiblyMoved && (Index < AFileList->GetCount()); ++Index)
-        {
-          const TRemoteFile * File = AFileList->GetAs<TRemoteFile>(Index);
-          // File can be nullptr, and filename may not be full path,
-          // but currently this is the only way we can move (at least in GUI)
-          // current directory
-          UnicodeString Str = AFileList->GetString(Index);
-          if ((File != nullptr) &&
-            File->GetIsDirectory() &&
-            ((CurrentDirectory.SubString(1, Str.Length()) == Str) &&
-              ((Str.Length() == CurrentDirectory.Length()) ||
-                (CurrentDirectory[Str.Length() + 1] == L'/'))))
-          {
-            PossiblyMoved = true;
-          }
-        }
-
-        if (PossiblyMoved && !this->FileExists(CurrentDirectory))
-        {
-          UnicodeString NearestExisting = CurrentDirectory;
-          do
-          {
-            NearestExisting = base::UnixExtractFileDir(NearestExisting);
-          }
-          while (!base::IsUnixRootPath(NearestExisting) && !this->FileExists(NearestExisting));
-
-          RemoteChangeDirectory(NearestExisting);
-        }
-      }
-      EndTransaction();
-    };
+    SCOPE_EXIT2(TTerminal::AfterMoveFiles, (void *)AFileList);
+    // nb::FastDelegate1<void, TStrings *> func = nb::bind(&TTerminal::AfterMoveFiles, this, AFileList);
     Result = ProcessFiles(AFileList, foRemoteMove, nb::bind(&TTerminal::TerminalMoveFile, this), &Params);
   }
   __finally
@@ -4937,6 +4898,51 @@ bool TTerminal::MoveFiles(TStrings * AFileList, UnicodeString Target,
 #endif // #if 0
   };
   return Result;
+}
+
+void TTerminal::AfterMoveFiles(void * Params)
+{
+  TStrings * AFileList = reinterpret_cast<TStrings *>(Params);
+  {
+    if (GetActive())
+    {
+      // UnicodeString WithTrailing = base::UnixIncludeTrailingBackslash(this->GetCurrDirectory());
+      bool PossiblyMoved = false;
+      // check if we was moving current directory.
+      // this is just optimization to avoid checking existence of current
+      // directory after each move operation.
+      UnicodeString CurrentDirectory = this->RemoteGetCurrentDirectory();
+      for (intptr_t Index = 0; !PossiblyMoved && (Index < AFileList->GetCount()); ++Index)
+      {
+        const TRemoteFile * File = AFileList->GetAs<TRemoteFile>(Index);
+        // File can be nullptr, and filename may not be full path,
+        // but currently this is the only way we can move (at least in GUI)
+        // current directory
+        UnicodeString Str = AFileList->GetString(Index);
+        if ((File != nullptr) &&
+          File->GetIsDirectory() &&
+          ((CurrentDirectory.SubString(1, Str.Length()) == Str) &&
+            ((Str.Length() == CurrentDirectory.Length()) ||
+              (CurrentDirectory[Str.Length() + 1] == L'/'))))
+        {
+          PossiblyMoved = true;
+        }
+      }
+
+      if (PossiblyMoved && !this->FileExists(CurrentDirectory))
+      {
+        UnicodeString NearestExisting = CurrentDirectory;
+        do
+        {
+          NearestExisting = base::UnixExtractFileDir(NearestExisting);
+        }
+        while (!base::IsUnixRootPath(NearestExisting) && !this->FileExists(NearestExisting));
+
+        RemoteChangeDirectory(NearestExisting);
+      }
+    }
+    EndTransaction();
+  }
 }
 
 void TTerminal::DoCopyFile(UnicodeString AFileName,
