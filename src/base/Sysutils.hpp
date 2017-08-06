@@ -464,9 +464,6 @@ private:
 #define SCOPED_ACTION(RAII_type) \
 const RAII_type ANONYMOUS_VARIABLE(scoped_object_)
 
-//#define STR(x) #x
-#define WSTR(x) L###x
-
 namespace detail
 {
   template<typename F>
