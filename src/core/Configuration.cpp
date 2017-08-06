@@ -12,9 +12,7 @@
 #include "Interface.h"
 #include "CoreMain.h"
 #include "WinSCPSecurity.h"
-#if defined(_MSC_VER) && !defined(__clang__)
-#include <shlobj.h>
-#endif // if defined(_MSC_VER) && !defined(__clang__)
+#include <System.ShlObj.hpp>
 #include <System.IOUtils.hpp>
 #include <System.StrUtils.hpp>
 

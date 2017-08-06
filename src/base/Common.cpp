@@ -3,6 +3,7 @@
 #include <vcl.h>
 #pragma hdrstop
 
+#include <System.ShlObj.hpp>
 #include <Exceptions.h>
 #include <TextsCore.h>
 //#include <Interface.h>
@@ -12,11 +13,6 @@
 #include <math.h>
 #include <rdestl/map.h>
 #include <rdestl/vector.h>
-#if defined(_MSC_VER) && !defined(__clang__)
-//#include <shellapi.h>
-#include <shlobj.h>
-#include <shlwapi.h>
-#endif // if defined(_MSC_VER) && !defined(__clang__)
 #if defined(HAVE_OPENSSL)
 #include <openssl/pkcs12.h>
 #include <openssl/pem.h>

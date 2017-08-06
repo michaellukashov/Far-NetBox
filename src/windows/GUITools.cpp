@@ -2,10 +2,7 @@
 #include <vcl.h>
 #pragma hdrstop
 
-#if defined(_MSC_VER) && !defined(__clang__)
-#include <shlobj.h>
-#include <shellapi.h>
-#endif // if defined(_MSC_VER) && !defined(__clang__)
+#include <System.ShlObj.hpp>
 #include <Common.h>
 
 #include "GUITools.h"

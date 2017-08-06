@@ -1,5 +1,8 @@
 #include <vcl.h>
 #pragma hdrstop
+
+#include <System.ShlObj.hpp>
+
 #include <LanguagesDEPfix.hpp>
 #include "GUIConfiguration.h"
 #include "GUITools.h"
@@ -8,9 +11,6 @@
 #include <TextsCore.h>
 #include <Terminal.h>
 #include <CoreMain.h>
-#if defined(_MSC_VER) && !defined(__clang__)
-#include <shlobj.h>
-#endif // if defined(_MSC_VER) && !defined(__clang__)
 
 const intptr_t ccLocal = ccUser;
 const intptr_t ccShowResults = ccUser << 1;
