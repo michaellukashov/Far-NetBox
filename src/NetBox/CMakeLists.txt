@@ -1657,7 +1657,7 @@ target_compile_options(testnetbox_01 PRIVATE
   ${NETBOX_UNICODE_FLAGS}
 )
 
-target_link_libraries(testnetbox_01  PRIVATE
+target_link_libraries(testnetbox_01 PRIVATE
   ${NETBOX_LIBRARIES}
 )
 
