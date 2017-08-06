@@ -1097,6 +1097,7 @@ add_library(expat STATIC
   ../../libs/expat/lib/xmlrole.c
   ../../libs/expat/lib/xmltok.c
   ../../libs/expat/lib/xmltok_impl.c
+  ../../libs/expat/lib/loadlibrary.c
 #  ../../libs/expat/lib/xmltok_ns.c
 )
 

@@ -8,6 +8,7 @@
 #include <sspi.h>
 
 #include <Common.h>
+#include <nbutils.h>
 #include <Exceptions.h>
 
 #include "SessionInfo.h"
@@ -55,7 +56,7 @@ static UnicodeString DoXmlEscape(UnicodeString AStr, bool NewLine)
     {
       Str[Index] = L'&';
       Str.Insert(Repl, Index + 1);
-      Index += wcslen(Repl);
+      Index += nb::StrLength(Repl);
     }
   }
   return Str;

@@ -724,7 +724,7 @@ public:
       // SSH-2.0-cryptlib returns file type 0 in response to SSH_FXP_LSTAT,
       // handle this undefined value as "unknown"
       static wchar_t * Types = const_cast<wchar_t *>(L"U-DLSUOCBF");
-      if (FXType > static_cast<uint8_t>(wcslen(Types)))
+      if (FXType > static_cast<uint8_t>(nb::StrLength(Types)))
       {
         throw Exception(FMTLOAD(SFTP_UNKNOWN_FILE_TYPE, static_cast<int>(FXType)));
       }

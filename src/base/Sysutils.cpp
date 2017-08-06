@@ -8,6 +8,7 @@
 #include <Common.h>
 #include <rtlconsts.h>
 #include <Sysutils.hpp>
+#include <nbutils.h>
 
 intptr_t __cdecl debug_printf(const wchar_t * format, ...)
 {
@@ -219,6 +220,8 @@ bool TryStrToInt(UnicodeString StrValue, int64_t & Value)
     errno = 0;
     Value = _wtoi64(StrValue.c_str());
     Result = (errno != EINVAL) && (errno != ERANGE);
+    if (Result && (Value == 0))
+      Result = (StrValue == L"0");
   }
   return Result;
 }
@@ -825,7 +828,7 @@ UnicodeString WrapText(UnicodeString Line, intptr_t MaxWidth)
       }
 
       /* copy as many words as will fit onto the current line */
-      while (*s && static_cast<intptr_t>(wcslen(s) + 1) <= SpaceLeft)
+      while (*s && (nb::StrLength(s) + 1) <= SpaceLeft)
       {
         if (Result.Length() == 0)
         {

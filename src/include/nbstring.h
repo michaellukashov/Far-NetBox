@@ -389,7 +389,7 @@ public:
   static int __stdcall GetBaseTypeLength(LPCSTR pszSrc)
   {
     // Returns required buffer length in XCHARs
-    return int(strlen(pszSrc));
+    return (int)strlen(pszSrc);
   }
 
   static int __stdcall GetBaseTypeLength(LPCSTR pszSrc, int nLength)
@@ -479,13 +479,13 @@ public:
   static int __stdcall SafeStringLen(LPCSTR psz)
   {
     // returns length in bytes
-    return (psz != nullptr) ? int(strlen(psz)) : 0;
+    return (psz != nullptr) ? (int)strlen(psz) : 0;
   }
 
   static int __stdcall SafeStringLen(LPCWSTR psz)
   {
     // returns length in wchar_ts
-    return (psz != nullptr) ? int(wcslen(psz)) : 0;
+    return (psz != nullptr) ? (int)wcslen(psz) : 0;
   }
 
   static int __stdcall GetCharLen(const wchar_t* pch)
