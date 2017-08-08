@@ -2670,6 +2670,16 @@ void CFtpControlSocket::OnClose(int nErrorCode)
     DoClose();
 }
 
+static CString StripFileName(CString fn)
+{
+  CString Result(fn);
+  if (Result.Find(L"\\\\?\\") == 0)
+  {
+    Result = Result.Mid(4);
+  }
+  return Result;
+}
+
 void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFinish/*=FALSE*/,int nError/*=0*/)
 {
   USES_CONVERSION;
@@ -2912,7 +2922,7 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
 
     CString str;
     str.Format(transferfile->get?IDS_STATUSMSG_DOWNLOADSTART:IDS_STATUSMSG_UPLOADSTART,
-          transferfile->get ? (LPCTSTR)transferfile->remotepath.FormatFilename(transferfile->remotefile) : (LPCTSTR)transferfile->localfile);
+          transferfile->get ? (LPCTSTR)transferfile->remotepath.FormatFilename(transferfile->remotefile) : (LPCTSTR)StripFileName(transferfile->localfile));
     ShowStatus(str,FZ_LOG_STATUS);
 
     m_Operation.nOpMode=CSMODE_TRANSFER|(transferfile->get?CSMODE_DOWNLOAD:CSMODE_UPLOAD);
