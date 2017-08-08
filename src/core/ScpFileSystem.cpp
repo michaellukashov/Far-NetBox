@@ -1620,7 +1620,6 @@ void TSCPFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
   DebugAssert(AFilesToCopy && OperationProgress);
 
   Params &= ~(cpAppend | cpResume);
-  UnicodeString Options;
   bool CheckExistence = core::UnixSamePath(TargetDir, FTerminal->GetCurrDirectory()) &&
     (FTerminal->GetFiles() != nullptr) && FTerminal->GetFiles()->GetLoaded();
   bool CopyBatchStarted = false;
@@ -1629,14 +1628,7 @@ void TSCPFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
 
   UnicodeString TargetDirFull = core::UnixIncludeTrailingBackslash(TargetDir);
 
-  if (CopyParam->GetPreserveRights())
-  {
-    Options = L"-p";
-  }
-  if (FTerminal->GetSessionData()->GetScp1Compatibility())
-  {
-    Options += L" -1";
-  }
+  UnicodeString Options = InitOptionsStr(CopyParam);
 
   FScpFatalError = false;
   SendCommand(FCommandSet->FullCommand(fsCopyToRemote,
@@ -2344,15 +2336,7 @@ void TSCPFileSystem::CopyToLocal(const TStrings * AFilesToCopy,
 {
   bool CloseSCP = False;
   Params &= ~(cpAppend | cpResume);
-  UnicodeString Options;
-  if (CopyParam->GetPreserveRights() || CopyParam->GetPreserveTime())
-  {
-    Options = L"-p";
-  }
-  if (FTerminal->GetSessionData()->GetScp1Compatibility())
-  {
-    Options += L" -1";
-  }
+  UnicodeString Options = InitOptionsStr(CopyParam);
 
   FTerminal->LogEvent(FORMAT(L"Copying %d files/directories to local directory "
     L"\"%s\"", AFilesToCopy->GetCount(), TargetDir.c_str()));
@@ -2996,3 +2980,19 @@ void TSCPFileSystem::UpdateFromMain(TCustomFileSystem * /*MainFileSystem*/)
 {
   // noop
 }
+
+UnicodeString TSCPFileSystem::InitOptionsStr(const TCopyParamType * CopyParam) const
+{
+  UnicodeString Options;
+  if (CopyParam->GetPreserveRights() || CopyParam->GetPreserveTime())
+  {
+    Options = L"-p";
+  }
+  if (FTerminal->GetSessionData()->GetScp1Compatibility())
+  {
+    Options += L" -1";
+  }
+
+  return Options;
+}
+

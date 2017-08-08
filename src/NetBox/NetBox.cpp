@@ -1,10 +1,9 @@
 #include "afxdll.h"
 #include <vcl.h>
 
-#include <Common.h>
 #include <Sysutils.hpp>
+#include <nbutils.h>
 
-#include "FarUtils.h"
 #include "FarDialog.h"
 
 extern void InitExtensionModule(HINSTANCE HInst);
@@ -20,8 +19,7 @@ public:
   }
 };
 
-extern "C"
-{
+extern "C" {
 
 int WINAPI GetMinFarVersionW()
 {
@@ -193,7 +191,7 @@ HANDLE WINAPI OpenFilePluginW(const wchar_t * fileName, const uint8_t * fileHead
     return INVALID_HANDLE_VALUE;
   }
 
-  const size_t fileNameLen = wcslen(fileName);
+  const size_t fileNameLen = nb::StrLength(fileName);
   if (fileNameLen < 8 || _wcsicmp(fileName + fileNameLen - 7, L".netbox") != 0)
   {
     return INVALID_HANDLE_VALUE;
@@ -207,7 +205,7 @@ HANDLE WINAPI OpenFilePluginW(const wchar_t * fileName, const uint8_t * fileHead
   return Handle;
 }
 
-  static int Processes = 0;
+static int Processes = 0;
 
 BOOL DllProcessAttach(HINSTANCE HInstance)
 {
