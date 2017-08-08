@@ -138,7 +138,7 @@ bool TXmlStorage::DoOpenSubKey(UnicodeString MungedSubKey, bool CanCreate)
 {
   tinyxml2::XMLElement * OldCurrentElement = FCurrentElement;
   tinyxml2::XMLElement * Element = nullptr;
-  AnsiString SubKey = AnsiString(MungedSubKey);
+  AnsiString SubKey(MungedSubKey);
   if (CanCreate)
   {
     if (FStoredSessionsOpened)

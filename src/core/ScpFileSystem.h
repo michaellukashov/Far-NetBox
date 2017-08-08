@@ -155,5 +155,6 @@ private:
 
   static bool RemoveLastLine(UnicodeString & Line,
     intptr_t & ReturnCode, UnicodeString ALastLine = L"");
+  UnicodeString InitOptionsStr(const TCopyParamType * CopyParam) const;
 };
 

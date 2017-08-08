@@ -1,4 +1,4 @@
-NetBox 2.4.4.521 03.08.2017
+NetBox 2.4.4.522 05.08.2017
 --------------------
   * Issue #249: Update expat sources to 2.2.3
   * Issue #247: bug when session is opened by Ctrl-PgDown
