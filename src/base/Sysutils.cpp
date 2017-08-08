@@ -731,7 +731,7 @@ static const wchar_t *
 NextWord(const wchar_t * Input)
 {
   static UnicodeString Buffer;
-  wchar_t * pBuffer = Buffer.SetLength(NBChTraitsCRT<wchar_t>::SafeStringLen(Input));
+  wchar_t * pBuffer = Buffer.SetLength(1024);
   static const wchar_t * text = nullptr;
 
   wchar_t * endOfBuffer = ToWChar(Buffer) + Buffer.GetLength() - 1;
@@ -802,12 +802,12 @@ UnicodeString WrapText(UnicodeString Line, intptr_t MaxWidth)
            SpaceLeft := SpaceLeft - Width(Word) + SpaceWidth
     */
     const wchar_t * s = NextWord(Line.c_str());
-    while (*s)
+    while (s && *s)
     {
       intptr_t SpaceLeft = MaxWidth;
 
       /* force the first word to always be completely copied */
-      while (*s)
+      while (s && *s)
       {
         if (Result.Length() == 0)
         {
