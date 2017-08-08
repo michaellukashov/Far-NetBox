@@ -3118,7 +3118,6 @@ uintptr_t TTerminal::ConfirmFileOverwrite(
   TOperationSide Side, const TCopyParamType * CopyParam, intptr_t Params, TFileOperationProgressType * OperationProgress,
   UnicodeString AMessage)
 {
-  UnicodeString Message = AMessage;
   uintptr_t Result = 0;
   TBatchOverwrite BatchOverwrite;
   bool CanAlternateResume =
@@ -3167,15 +3166,16 @@ uintptr_t TTerminal::ConfirmFileOverwrite(
       }
       else
       {
-        if (Message.IsEmpty())
+        UnicodeString Msg = AMessage;
+        if (Msg.IsEmpty())
         {
           // Side refers to destination side here
-          Message = FMTLOAD((Side == osLocal ? LOCAL_FILE_OVERWRITE2 :
+          Msg = FMTLOAD((Side == osLocal ? LOCAL_FILE_OVERWRITE2 :
             REMOTE_FILE_OVERWRITE2), ATargetFileName, ATargetFileName);
         }
         if (FileParams != nullptr)
         {
-          Message = FMTLOAD(FILE_OVERWRITE_DETAILS, Message,
+          AMessage = FMTLOAD(FILE_OVERWRITE_DETAILS, Msg,
             ::Int64ToStr(FileParams->SourceSize),
             base::UserModificationStr(FileParams->SourceTimestamp, FileParams->SourcePrecision),
             ::Int64ToStr(FileParams->DestSize),
@@ -3185,7 +3185,7 @@ uintptr_t TTerminal::ConfirmFileOverwrite(
         {
           QueryParams->HelpKeyword = HELP_OVERWRITE;
         }
-        Result = QueryUser(Message, nullptr, Answers, QueryParams);
+        Result = QueryUser(AMessage, nullptr, Answers, QueryParams);
         switch (Result)
         {
         case qaNeverAskAgain:
