@@ -436,7 +436,7 @@ intptr_t PosEx(UnicodeString SubStr, UnicodeString Str, intptr_t Offset)
 
 UnicodeString UTF8ToString(RawByteString Str)
 {
-  return UnicodeString (Str.c_str(), Str.GetLength(), CP_UTF8);
+  return UnicodeString(Str.c_str(), Str.GetLength(), CP_UTF8);
 }
 
 UnicodeString UTF8ToString(const char *Str, intptr_t Len)
