@@ -1,7 +1,9 @@
-NetBox 2.4.4.522 05.08.2017
+NetBox 2.4.4.523 08.08.2017
 --------------------
   * Issue #249: Update expat sources to 2.2.3
+    (https://github.com/michaellukashov/Far-NetBox/issues/249)
   * Issue #247: bug when session is opened by Ctrl-PgDown
+    (https://github.com/michaellukashov/Far-NetBox/issues/247)
   * Issue #246: SCP: check unusual listing format 
     (https://github.com/michaellukashov/Far-NetBox/issues/246)
   * FTP: use QUIT to disconnect from server
