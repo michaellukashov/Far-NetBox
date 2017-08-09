@@ -873,9 +873,10 @@ bool TWinSCPFileSystem::ExecuteCommand(const UnicodeString & Command)
     {
       SCOPE_EXIT
       {
+        if (FTerminal->InTransaction())
+          FTerminal->EndTransaction();
         if (FTerminal->GetActive())
         {
-          FTerminal->EndTransaction();
           UpdatePanel();
         }
         else
