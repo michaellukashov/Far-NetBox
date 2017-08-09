@@ -888,9 +888,10 @@ bool TWinSCPFileSystem::ExecuteCommand(const UnicodeString & Command)
     {
       SCOPE_EXIT
       {
+        if (FTerminal->InTransaction())
+          FTerminal->EndTransaction();
         if (FTerminal->GetActive())
         {
-          FTerminal->EndTransaction();
           UpdatePanel();
         }
         else
@@ -900,7 +901,7 @@ bool TWinSCPFileSystem::ExecuteCommand(const UnicodeString & Command)
         }
       };
       FarControl(FCTL_SETCMDLINE, 0, reinterpret_cast<void *>(L""));
-      TWinSCPPlugin * WinSCPPlugin =  GetWinSCPPlugin();
+      TWinSCPPlugin * WinSCPPlugin = GetWinSCPPlugin();
       WinSCPPlugin->ShowConsoleTitle(Command);
       {
         SCOPE_EXIT
