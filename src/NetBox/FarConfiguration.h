@@ -8,23 +8,23 @@ class TBookmarkList;
 
 class TFarConfiguration : public TGUIConfiguration
 {
-NB_DISABLE_COPY(TFarConfiguration)
+  NB_DISABLE_COPY(TFarConfiguration)
 public:
-  static inline bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TFarConfiguration); }
+  static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TFarConfiguration); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TFarConfiguration) || TGUIConfiguration::is(Kind); }
 public:
-  explicit TFarConfiguration(TCustomFarPlugin * APlugin);
+  explicit TFarConfiguration(TCustomFarPlugin *APlugin);
   virtual ~TFarConfiguration();
 
   virtual void Load();
   virtual void Save(bool All, bool Explicit);
   virtual void Default() override;
-  virtual THierarchicalStorage * CreateStorage(bool & SessionList) override;
+  virtual THierarchicalStorage *CreateStorage(bool &SessionList) override;
   void CacheFarSettings();
 
-  const TCustomFarPlugin * GetPlugin() const { return FFarPlugin; }
-  TCustomFarPlugin * GetPlugin() { return FFarPlugin; }
-  void SetPlugin(TCustomFarPlugin * Value);
+  const TCustomFarPlugin *GetPlugin() const { return FFarPlugin; }
+  TCustomFarPlugin *GetPlugin() { return FFarPlugin; }
+  void SetPlugin(TCustomFarPlugin *Value);
   bool GetConfirmOverwritingOverride() const { return FConfirmOverwritingOverride; }
   void SetConfirmOverwritingOverride(bool Value) { FConfirmOverwritingOverride = Value; }
   bool GetConfirmDeleting() const;
@@ -75,22 +75,22 @@ public:
   void SetPageantPath(UnicodeString Value) { FPageantPath = Value; }
   UnicodeString GetPuttygenPath() const { return FPuttygenPath; }
   void SetPuttygenPath(UnicodeString Value) { FPuttygenPath = Value; }
-  TBookmarkList * GetBookmarks(UnicodeString Key);
-  void SetBookmarks(UnicodeString Key, TBookmarkList * Value);
+  TBookmarkList *GetBookmarks(UnicodeString Key);
+  void SetBookmarks(UnicodeString Key, TBookmarkList *Value);
 
 protected:
   virtual bool GetConfirmOverwriting() const override;
   virtual void SetConfirmOverwriting(bool Value) override;
 
-  virtual void SaveData(THierarchicalStorage * Storage, bool All) override;
-  virtual void LoadData(THierarchicalStorage * Storage) override;
+  virtual void SaveData(THierarchicalStorage *Storage, bool All) override;
+  virtual void LoadData(THierarchicalStorage *Storage) override;
 
   virtual UnicodeString ModuleFileName() const override;
   virtual void Saved() override;
 
 private:
-  TCustomFarPlugin * FFarPlugin;
-  TBookmarks * FBookmarks;
+  TCustomFarPlugin *FFarPlugin;
+  TBookmarks *FBookmarks;
   intptr_t FFarConfirmations;
   bool FConfirmOverwritingOverride;
   bool FConfirmSynchronizedBrowsing;
@@ -122,5 +122,5 @@ private:
   intptr_t FarConfirmations() const;
 };
 
-TFarConfiguration * GetFarConfiguration();
+TFarConfiguration *GetFarConfiguration();
 

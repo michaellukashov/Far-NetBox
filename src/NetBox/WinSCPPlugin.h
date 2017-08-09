@@ -10,35 +10,35 @@ class TCopyParamType;
 
 class TWinSCPPlugin : public TCustomFarPlugin
 {
-friend class TWinSCPFileSystem;
+  friend class TWinSCPFileSystem;
 public:
-  static inline bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TWinSCPPlugin); }
+  static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TWinSCPPlugin); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TWinSCPPlugin) || TCustomFarPlugin::is(Kind); }
 public:
   explicit TWinSCPPlugin(HINSTANCE HInst);
   virtual ~TWinSCPPlugin();
   virtual intptr_t GetMinFarVersion() const override;
 
-  virtual void HandleException(Exception * E, int OpMode = 0) override;
-  uintptr_t MoreMessageDialog(UnicodeString Str, TStrings * MoreMessages,
-    TQueryType Type, uintptr_t Answers, const TMessageParams * Params = nullptr);
-  void ShowExtendedException(Exception * E);
-  bool CopyParamCustomDialog(TCopyParamType & CopyParam,
+  virtual void HandleException(Exception *E, int OpMode = 0) override;
+  uintptr_t MoreMessageDialog(UnicodeString Str, TStrings *MoreMessages,
+    TQueryType Type, uintptr_t Answers, const TMessageParams *Params = nullptr);
+  void ShowExtendedException(Exception *E);
+  bool CopyParamCustomDialog(TCopyParamType &CopyParam,
     intptr_t CopyParamAttrs);
-  virtual void SetStartupInfo(const struct PluginStartupInfo * Info) override;
+  virtual void SetStartupInfo(const struct PluginStartupInfo *Info) override;
 
 protected:
   virtual bool HandlesFunction(THandlesFunction Function) const override;
-  virtual void GetPluginInfoEx(DWORD & Flags, TStrings * DiskMenuStrings,
-    TStrings * PluginMenuStrings, TStrings * PluginConfigStrings,
-    TStrings * CommandPrefixes) override;
-  virtual TCustomFarFileSystem * OpenPluginEx(intptr_t OpenFrom, intptr_t Item) override;
+  virtual void GetPluginInfoEx(DWORD &Flags, TStrings *DiskMenuStrings,
+    TStrings *PluginMenuStrings, TStrings *PluginConfigStrings,
+    TStrings *CommandPrefixes) override;
+  virtual TCustomFarFileSystem *OpenPluginEx(intptr_t OpenFrom, intptr_t Item) override;
   virtual bool ConfigureEx(intptr_t Item) override;
-  virtual intptr_t ProcessEditorEventEx(intptr_t Event, void * Param) override;
-  virtual intptr_t ProcessEditorInputEx(const INPUT_RECORD * Rec) override;
-  bool CopyParamDialog(UnicodeString Caption, TCopyParamType & CopyParam,
+  virtual intptr_t ProcessEditorEventEx(intptr_t Event, void *Param) override;
+  virtual intptr_t ProcessEditorInputEx(const INPUT_RECORD *Rec) override;
+  bool CopyParamDialog(UnicodeString Caption, TCopyParamType &CopyParam,
     intptr_t CopyParamAttrs);
-  void MessageClick(void * Token, uintptr_t Result, bool & Close);
+  void MessageClick(void *Token, uintptr_t Result, bool &Close);
 
   void CommandsMenu(bool FromFileSystem);
   bool ConfigurationDialog();
@@ -55,8 +55,8 @@ protected:
 private:
   void CleanupConfiguration();
   void CoreInitializeOnce();
-  void ParseCommandLine(UnicodeString & CommandLine,
-    TOptions * Options);
+  void ParseCommandLine(UnicodeString &CommandLine,
+    TOptions *Options);
 
 private:
   bool FInitialized;

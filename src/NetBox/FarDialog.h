@@ -19,37 +19,37 @@ enum TItemPosition
 };
 
 #if 0
-typedef void __fastcall (__closure * TFarKeyEvent)
-  (TFarDialog * Sender, TFarDialogItem * Item, long KeyCode, bool & Handled);
+typedef void __fastcall (__closure *TFarKeyEvent)
+(TFarDialog *Sender, TFarDialogItem *Item, long KeyCode, bool &Handled);
 #endif // #if 0
 typedef nb::FastDelegate4<void,
-  TFarDialog * /*Sender*/, TFarDialogItem * /*Item*/, long /*KeyCode*/, bool & /*Handled*/> TFarKeyEvent;
+        TFarDialog * /*Sender*/, TFarDialogItem * /*Item*/, long /*KeyCode*/, bool & /*Handled*/> TFarKeyEvent;
 #if 0
-typedef void __fastcall (__closure * TFarMouseClickEvent)
-  (TFarDialogItem * Item, MOUSE_EVENT_RECORD * Event);
+typedef void __fastcall (__closure *TFarMouseClickEvent)
+(TFarDialogItem *Item, MOUSE_EVENT_RECORD *Event);
 #endif // #if 0
 typedef nb::FastDelegate2<void,
-  TFarDialogItem * /*Item*/, MOUSE_EVENT_RECORD * /*Event*/> TFarMouseClickEvent;
+        TFarDialogItem * /*Item*/, MOUSE_EVENT_RECORD * /*Event*/> TFarMouseClickEvent;
 #if 0
-typedef void __fastcall (__closure * TFarProcessGroupEvent)
-  (TFarDialogItem * Item, void * Arg);
+typedef void __fastcall (__closure *TFarProcessGroupEvent)
+(TFarDialogItem *Item, void *Arg);
 #endif // #if 0
 typedef nb::FastDelegate2<void,
-  TFarDialogItem * /*Item*/, void * /*Arg*/> TFarProcessGroupEvent;
+        TFarDialogItem * /*Item*/, void * /*Arg*/> TFarProcessGroupEvent;
 
 class TFarDialog : public TObject
 {
-friend class TFarDialogItem;
-friend class TFarDialogContainer;
-friend class TFarButton;
-friend class TFarList;
-friend class TFarListBox;
-NB_DISABLE_COPY(TFarDialog)
+  friend class TFarDialogItem;
+  friend class TFarDialogContainer;
+  friend class TFarButton;
+  friend class TFarList;
+  friend class TFarListBox;
+  NB_DISABLE_COPY(TFarDialog)
 public:
-  static inline bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TFarDialog); }
+  static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TFarDialog); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TFarDialog) || TObject::is(Kind); }
 public:
-  explicit TFarDialog(TCustomFarPlugin * AFarPlugin);
+  explicit TFarDialog(TCustomFarPlugin *AFarPlugin);
   virtual ~TFarDialog();
 
   intptr_t ShowModal();
@@ -74,12 +74,12 @@ public:
   UnicodeString GetCaption() const;
   void SetCaption(UnicodeString Value);
   HANDLE GetHandle() const { return FHandle; }
-  TFarButton * GetDefaultButton() const { return FDefaultButton; }
-  TFarBox * GetBorderBox() const { return FBorderBox; }
-  intptr_t GetType(TFarDialogItem * Item) const;
-  intptr_t GetItem(TFarDialogItem * Item) const;
-  TFarDialogItem * GetItem(intptr_t Index) const;
-  TFarDialogItem * GetControl(intptr_t Index) const { return GetItem(Index); }
+  TFarButton *GetDefaultButton() const { return FDefaultButton; }
+  TFarBox *GetBorderBox() const { return FBorderBox; }
+  intptr_t GetType(TFarDialogItem *Item) const;
+  intptr_t GetItem(TFarDialogItem *Item) const;
+  TFarDialogItem *GetItem(intptr_t Index) const;
+  TFarDialogItem *GetControl(intptr_t Index) const { return GetItem(Index); }
   intptr_t GetItemCount() const;
   intptr_t GetControlCount() const { return GetItemCount(); }
   TItemPosition GetNextItemPosition() const { return FNextItemPosition; }
@@ -88,8 +88,8 @@ public:
   void SetDefaultGroup(intptr_t Value) { FDefaultGroup = Value; }
   intptr_t GetTag() const { return FTag; }
   void SetTag(intptr_t Value) { FTag = Value; }
-  TFarDialogItem * GetItemFocused() const { return FItemFocused; }
-  void SetItemFocused(TFarDialogItem * Value);
+  TFarDialogItem *GetItemFocused() const { return FItemFocused; }
+  void SetItemFocused(TFarDialogItem *Value);
   intptr_t GetResult() const { return FResult; }
   TPoint GetMaxSize();
 
@@ -103,55 +103,55 @@ public:
   bool HotKey(uintptr_t Key) const;
 
 protected:
-  TCustomFarPlugin * GetFarPlugin() const { return FFarPlugin; }
-  TCustomFarPlugin * GetFarPlugin() { return FFarPlugin; }
-  TObjectList * GetItems() const { return FItems; }
-  TObjectList * GetItems() { return FItems; }
-  void Add(TFarDialogItem * DialogItem);
-  void Add(TFarDialogContainer * Container);
+  TCustomFarPlugin *GetFarPlugin() const { return FFarPlugin; }
+  TCustomFarPlugin *GetFarPlugin() { return FFarPlugin; }
+  TObjectList *GetItems() const { return FItems; }
+  TObjectList *GetItems() { return FItems; }
+  void Add(TFarDialogItem *DialogItem);
+  void Add(TFarDialogContainer *Container);
   LONG_PTR SendDlgMessage(int Msg, intptr_t Param1, LONG_PTR Param2);
   virtual LONG_PTR DialogProc(int Msg, intptr_t Param1, LONG_PTR Param2);
   virtual LONG_PTR FailDialogProc(int Msg, intptr_t Param1, LONG_PTR Param2);
   LONG_PTR DefaultDialogProc(int Msg, intptr_t Param1, LONG_PTR Param2);
-  virtual bool MouseEvent(MOUSE_EVENT_RECORD * Event);
-  virtual bool Key(TFarDialogItem * Item, LONG_PTR KeyCode);
+  virtual bool MouseEvent(MOUSE_EVENT_RECORD *Event);
+  virtual bool Key(TFarDialogItem *Item, LONG_PTR KeyCode);
   virtual void Change();
   virtual void Init();
   virtual bool CloseQuery();
   UnicodeString GetMsg(intptr_t MsgId) const;
-  void GetNextItemPosition(intptr_t & Left, intptr_t & Top);
+  void GetNextItemPosition(intptr_t &Left, intptr_t &Top);
   void RefreshBounds();
   virtual void Idle();
   void BreakSynchronize();
   void Synchronize(TThreadMethod Method);
-  void Close(TFarButton * Button);
-  void ProcessGroup(intptr_t Group, TFarProcessGroupEvent Callback, void * Arg);
-  void ShowItem(TFarDialogItem * Item, void * Arg);
-  void EnableItem(TFarDialogItem * Item, void * Arg);
+  void Close(TFarButton *Button);
+  void ProcessGroup(intptr_t Group, TFarProcessGroupEvent Callback, void *Arg);
+  void ShowItem(TFarDialogItem *Item, void *Arg);
+  void EnableItem(TFarDialogItem *Item, void *Arg);
   bool ChangesLocked() const;
-  TFarDialogItem * ItemAt(intptr_t X, intptr_t Y);
+  TFarDialogItem *ItemAt(intptr_t X, intptr_t Y);
 
   static LONG_PTR WINAPI DialogProcGeneral(HANDLE Handle, int Msg, int Param1, LONG_PTR Param2);
 
-  virtual void SetBounds(const TRect & Value);
+  virtual void SetBounds(const TRect &Value);
 
 private:
-  mutable TCustomFarPlugin * FFarPlugin;
+  mutable TCustomFarPlugin *FFarPlugin;
   TRect FBounds;
   DWORD FFlags;
   UnicodeString FHelpTopic;
   bool FVisible;
-  TObjectList * FItems;
-  TObjectList * FContainers;
+  TObjectList *FItems;
+  TObjectList *FContainers;
   HANDLE FHandle;
-  TFarButton * FDefaultButton;
-  TFarBox * FBorderBox;
+  TFarButton *FDefaultButton;
+  TFarBox *FBorderBox;
   TItemPosition FNextItemPosition;
   intptr_t FDefaultGroup;
   intptr_t FTag;
-  TFarDialogItem * FItemFocused;
+  TFarDialogItem *FItemFocused;
   TFarKeyEvent FOnKey;
-  FarDialogItem * FDialogItems;
+  FarDialogItem *FDialogItems;
   intptr_t FDialogItemsCapacity;
   intptr_t FChangesLocked;
   bool FChangesPending;
@@ -163,11 +163,11 @@ private:
 
 class TFarDialogContainer : public TObject
 {
-friend class TFarDialog;
-friend class TFarDialogItem;
-NB_DISABLE_COPY(TFarDialogContainer)
+  friend class TFarDialog;
+  friend class TFarDialogItem;
+  NB_DISABLE_COPY(TFarDialogContainer)
 public:
-  static inline bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TFarDialogContainer); }
+  static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TFarDialogContainer); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TFarDialogContainer) || TObject::is(Kind); }
 public:
   intptr_t GetLeft() const { return FLeft; }
@@ -180,22 +180,22 @@ public:
   intptr_t GetItemCount() const;
 
 protected:
-  explicit TFarDialogContainer(TObjectClassId Kind, TFarDialog * ADialog);
+  explicit TFarDialogContainer(TObjectClassId Kind, TFarDialog *ADialog);
   virtual ~TFarDialogContainer();
 
-  TFarDialog * GetDialog() const { return FDialog; }
-  TFarDialog * GetDialog() { return FDialog; }
+  TFarDialog *GetDialog() const { return FDialog; }
+  TFarDialog *GetDialog() { return FDialog; }
 
-  void Add(TFarDialogItem * Item);
-  void Remove(TFarDialogItem * Item);
+  void Add(TFarDialogItem *Item);
+  void Remove(TFarDialogItem *Item);
   virtual void Change();
   UnicodeString GetMsg(intptr_t MsgId) const;
 
 private:
   intptr_t FLeft;
   intptr_t FTop;
-  TObjectList * FItems;
-  TFarDialog * FDialog;
+  TObjectList *FItems;
+  TFarDialog *FDialog;
   bool FEnabled;
 };
 
@@ -203,13 +203,13 @@ private:
 
 class TFarDialogItem : public TObject
 {
-friend class TFarDialog;
-friend class TFarMessageDialog;
-friend class TFarDialogContainer;
-friend class TFarList;
-NB_DISABLE_COPY(TFarDialogItem)
+  friend class TFarDialog;
+  friend class TFarMessageDialog;
+  friend class TFarDialogContainer;
+  friend class TFarList;
+  NB_DISABLE_COPY(TFarDialogItem)
 public:
-  static inline bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TFarDialogItem); }
+  static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TFarDialogItem); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TFarDialogItem) || TObject::is(Kind); }
 public:
   TRect GetBounds() const { return FBounds; }
@@ -229,12 +229,12 @@ public:
   bool GetEnabled() const { return FEnabled; }
   void SetEnabled(bool Value);
   bool GetIsEnabled() const { return FIsEnabled; }
-  TFarDialogItem * GetEnabledFollow() const { return FEnabledFollow; }
-  void SetEnabledFollow(TFarDialogItem * Value);
-  TFarDialogItem * GetEnabledDependency() const { return FEnabledDependency; }
-  void SetEnabledDependency(TFarDialogItem * Value);
-  TFarDialogItem * GetEnabledDependencyNegative() const { return FEnabledDependencyNegative; }
-  void SetEnabledDependencyNegative(TFarDialogItem * Value);
+  TFarDialogItem *GetEnabledFollow() const { return FEnabledFollow; }
+  void SetEnabledFollow(TFarDialogItem *Value);
+  TFarDialogItem *GetEnabledDependency() const { return FEnabledDependency; }
+  void SetEnabledDependency(TFarDialogItem *Value);
+  TFarDialogItem *GetEnabledDependencyNegative() const { return FEnabledDependencyNegative; }
+  void SetEnabledDependencyNegative(TFarDialogItem *Value);
   virtual bool GetIsEmpty() const;
   intptr_t GetGroup() const { return FGroup; }
   void SetGroup(intptr_t Value) { FGroup = Value; }
@@ -244,10 +244,10 @@ public:
   void SetTabStop(bool Value) { SetFlag(DIF_NOFOCUS | DIF_INVERSE, Value); }
   intptr_t GetTag() const { return FTag; }
   void SetTag(intptr_t Value) { FTag = Value; }
-  TFarDialog * GetDialog() const { return FDialog; }
-  TFarDialog * GetDialog() { return FDialog; }
-  const TFarDialog * GetOwner() const { return FDialog; }
-  TFarDialog * GetOwner() { return FDialog; }
+  TFarDialog *GetDialog() const { return FDialog; }
+  TFarDialog *GetDialog() { return FDialog; }
+  const TFarDialog *GetOwner() const { return FDialog; }
+  TFarDialog *GetOwner() { return FDialog; }
 
   TNotifyEvent GetOnExit() const { return FOnExit; }
   void SetOnExit(TNotifyEvent Value) { FOnExit = Value; }
@@ -284,11 +284,11 @@ protected:
   TNotifyEvent FOnExit;
   TFarMouseClickEvent FOnMouseClick;
 
-  explicit TFarDialogItem(TObjectClassId Kind, TFarDialog * ADialog, uintptr_t AType);
+  explicit TFarDialogItem(TObjectClassId Kind, TFarDialog *ADialog, uintptr_t AType);
   virtual ~TFarDialogItem();
 
-  const FarDialogItem * GetDialogItem() const;
-  FarDialogItem * GetDialogItem();
+  const FarDialogItem *GetDialogItem() const;
+  FarDialogItem *GetDialogItem();
   bool GetCenterGroup() const { return GetFlag(DIF_CENTERGROUP); }
   void SetCenterGroup(bool Value) { SetFlag(DIF_CENTERGROUP, Value); }
   virtual UnicodeString GetData() const;
@@ -299,17 +299,17 @@ protected:
   intptr_t GetItem() const { return FItem; }
   intptr_t GetSelected() const;
   void SetSelected(intptr_t Value);
-  TFarDialogContainer * GetContainer() const { return FContainer; }
-  void SetContainer(TFarDialogContainer * Value);
+  TFarDialogContainer *GetContainer() const { return FContainer; }
+  void SetContainer(TFarDialogContainer *Value);
   bool GetChecked() const;
   void SetChecked(bool Value);
-  void SetBounds(const TRect & Value);
+  void SetBounds(const TRect &Value);
   DWORD GetFlags() const;
   void SetFlags(DWORD Value);
   void UpdateFlags(DWORD Value);
   intptr_t GetCoordinate(intptr_t Index) const;
   void SetCoordinate(intptr_t Index, intptr_t Value);
-  TFarDialogItem * GetPrevItem() const;
+  TFarDialogItem *GetPrevItem() const;
   void UpdateFocused(bool Value);
   void UpdateEnabled();
 
@@ -330,23 +330,23 @@ protected:
   virtual void ResetBounds();
   virtual void Init();
   virtual bool CloseQuery();
-  virtual bool MouseMove(intptr_t X, intptr_t Y, MOUSE_EVENT_RECORD * Event);
-  virtual bool MouseClick(MOUSE_EVENT_RECORD * Event);
-  TPoint MouseClientPosition(MOUSE_EVENT_RECORD * Event);
+  virtual bool MouseMove(intptr_t X, intptr_t Y, MOUSE_EVENT_RECORD *Event);
+  virtual bool MouseClick(MOUSE_EVENT_RECORD *Event);
+  TPoint MouseClientPosition(MOUSE_EVENT_RECORD *Event);
   void Text(intptr_t X, intptr_t Y, uintptr_t Color, UnicodeString Str);
   void Redraw();
   virtual bool HotKey(char HotKey);
 
 private:
-  const struct PluginStartupInfo * GetPluginStartupInfo() const;
+  const struct PluginStartupInfo *GetPluginStartupInfo() const;
 
 private:
-  TFarDialog * FDialog;
+  TFarDialog *FDialog;
   TRect FBounds;
-  TFarDialogItem * FEnabledFollow;
-  TFarDialogItem * FEnabledDependency;
-  TFarDialogItem * FEnabledDependencyNegative;
-  TFarDialogContainer * FContainer;
+  TFarDialogItem *FEnabledFollow;
+  TFarDialogItem *FEnabledDependency;
+  TFarDialogItem *FEnabledDependencyNegative;
+  TFarDialogContainer *FContainer;
   intptr_t FItem;
   uint32_t FColors;
   uint32_t FColorMask;
@@ -357,7 +357,7 @@ private:
 class TFarBox : public TFarDialogItem
 {
 public:
-  explicit TFarBox(TFarDialog * ADialog);
+  explicit TFarBox(TFarDialog *ADialog);
 
   virtual UnicodeString GetCaption() const { return GetData(); }
   virtual void SetCaption(UnicodeString Value) { SetData(Value); }
@@ -366,7 +366,7 @@ public:
 };
 
 typedef nb::FastDelegate2<void,
-  TFarButton * /*Sender*/, bool & /*Close*/> TFarButtonClickEvent;
+        TFarButton * /*Sender*/, bool & /*Close*/> TFarButtonClickEvent;
 enum TFarButtonBrackets
 {
   brNone,
@@ -378,11 +378,11 @@ enum TFarButtonBrackets
 class TFarButton : public TFarDialogItem
 {
 public:
-  static inline bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TFarButton); }
+  static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TFarButton); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TFarButton) || TFarDialogItem::is(Kind); }
 public:
-  explicit TFarButton(TFarDialog * ADialog);
-  explicit TFarButton(TObjectClassId Kind, TFarDialog * ADialog);
+  explicit TFarButton(TFarDialog *ADialog);
+  explicit TFarButton(TObjectClassId Kind, TFarDialog *ADialog);
   virtual ~TFarButton() {}
 
   virtual UnicodeString GetCaption() const { return GetData(); }
@@ -413,16 +413,16 @@ private:
 };
 
 typedef nb::FastDelegate3<void,
-  TFarDialogItem * /*Sender*/, intptr_t /*NewState*/, bool & /*AllowChange*/> TFarAllowChangeEvent;
+        TFarDialogItem * /*Sender*/, intptr_t /*NewState*/, bool & /*AllowChange*/> TFarAllowChangeEvent;
 
 class TFarCheckBox : public TFarDialogItem
 {
-NB_DISABLE_COPY(TFarCheckBox)
+  NB_DISABLE_COPY(TFarCheckBox)
 public:
-  static inline bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TFarCheckBox); }
+  static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TFarCheckBox); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TFarCheckBox) || TFarDialogItem::is(Kind); }
 public:
-  explicit TFarCheckBox(TFarDialog * ADialog);
+  explicit TFarCheckBox(TFarDialog *ADialog);
 
   virtual UnicodeString GetCaption() const { return GetData(); }
   virtual void SetCaption(UnicodeString Value) { SetData(Value); }
@@ -445,7 +445,7 @@ protected:
 class TFarRadioButton : public TFarDialogItem
 {
 public:
-  explicit TFarRadioButton(TFarDialog * ADialog);
+  explicit TFarRadioButton(TFarDialog *ADialog);
 
   bool GetChecked() const { return TFarDialogItem::GetChecked(); }
   void SetChecked(bool Value) { TFarDialogItem::SetChecked(Value); }
@@ -464,10 +464,10 @@ protected:
 class TFarEdit : public TFarDialogItem
 {
 public:
-  static inline bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TFarEdit); }
+  static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TFarEdit); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TFarEdit) || TFarDialogItem::is(Kind); }
 public:
-  explicit TFarEdit(TFarDialog * ADialog);
+  explicit TFarEdit(TFarDialog *ADialog);
 
   virtual UnicodeString GetText() const { return GetData(); }
   virtual void SetText(UnicodeString Value) { SetData(Value); }
@@ -500,7 +500,7 @@ private:
 class TFarSeparator : public TFarDialogItem
 {
 public:
-  explicit TFarSeparator(TFarDialog * ADialog);
+  explicit TFarSeparator(TFarDialog *ADialog);
 
   bool GetDouble() const;
   void SetDouble(bool Value);
@@ -516,10 +516,10 @@ protected:
 class TFarText : public TFarDialogItem
 {
 public:
-  static inline bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TFarText); }
+  static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TFarText); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TFarText) || TFarDialogItem::is(Kind); }
 public:
-  explicit TFarText(TFarDialog * ADialog);
+  explicit TFarText(TFarDialog *ADialog);
 
   virtual UnicodeString GetCaption() const { return GetData(); }
   virtual void SetCaption(UnicodeString Value) { SetData(Value); }
@@ -538,18 +538,18 @@ class TFarLister;
 
 class TFarList : public TStringList
 {
-friend class TFarListBox;
-friend class TFarLister;
-friend class TFarComboBox;
-NB_DISABLE_COPY(TFarList)
+  friend class TFarListBox;
+  friend class TFarLister;
+  friend class TFarComboBox;
+  NB_DISABLE_COPY(TFarList)
 public:
-  static inline bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TFarList); }
+  static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TFarList); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TFarList) || TStringList::is(Kind); }
 public:
-  explicit TFarList(TFarDialogItem * ADialogItem = nullptr);
+  explicit TFarList(TFarDialogItem *ADialogItem = nullptr);
   virtual ~TFarList();
 
-  virtual void Assign(const TPersistent * Source) override;
+  virtual void Assign(const TPersistent *Source) override;
 
   intptr_t GetSelected() const;
   void SetSelected(intptr_t Value);
@@ -577,14 +577,14 @@ protected:
   void SetCurPos(intptr_t Position, intptr_t TopIndex);
   void UpdateItem(intptr_t Index);
 
-  FarList * GetListItems() const { return FListItems; }
-  FarList * GetListItems() { return FListItems; }
-  TFarDialogItem * GetDialogItem() const { return FDialogItem; }
-  TFarDialogItem * GetDialogItem() { return FDialogItem; }
+  FarList *GetListItems() const { return FListItems; }
+  FarList *GetListItems() { return FListItems; }
+  TFarDialogItem *GetDialogItem() const { return FDialogItem; }
+  TFarDialogItem *GetDialogItem() { return FDialogItem; }
 
 private:
-  FarList * FListItems;
-  TFarDialogItem * FDialogItem;
+  FarList *FListItems;
+  TFarDialogItem *FDialogItem;
   bool FNoDialogUpdate;
 };
 
@@ -597,15 +597,15 @@ enum TFarListBoxAutoSelect
 
 class TFarListBox : public TFarDialogItem
 {
-NB_DISABLE_COPY(TFarListBox)
+  NB_DISABLE_COPY(TFarListBox)
 public:
-  static inline bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TFarListBox); }
+  static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TFarListBox); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TFarListBox) || TFarDialogItem::is(Kind); }
 public:
-  explicit TFarListBox(TFarDialog * ADialog);
+  explicit TFarListBox(TFarDialog *ADialog);
   virtual ~TFarListBox();
 
-  void SetItems(TStrings * Value);
+  void SetItems(TStrings *Value);
 
   bool GetNoAmpersand() const { return GetFlag(DIF_LISTNOAMPERSAND); }
   void SetNoAmpersand(bool Value) { SetFlag(DIF_LISTNOAMPERSAND, Value); }
@@ -615,9 +615,9 @@ public:
   void SetNoBox(bool Value) { SetFlag(DIF_LISTNOBOX, Value); }
   bool GetWrapMode() const { return GetFlag(DIF_LISTWRAPMODE); }
   void SetWrapMode(bool Value) { SetFlag(DIF_LISTWRAPMODE, Value); }
-  TFarList * GetItems() const { return FList; }
-  TFarList * GetItems() { return FList; }
-  void SetList(TFarList * Value);
+  TFarList *GetItems() const { return FList; }
+  TFarList *GetItems() { return FList; }
+  void SetList(TFarList *Value);
   TFarListBoxAutoSelect GetAutoSelect() { return FAutoSelect; }
   void SetAutoSelect(TFarListBoxAutoSelect Value);
 
@@ -630,16 +630,16 @@ private:
   void UpdateMouseReaction();
 
 private:
-  TFarList * FList;
+  TFarList *FList;
   TFarListBoxAutoSelect FAutoSelect;
   bool FDenyClose;
 };
 
 class TFarComboBox : public TFarDialogItem
 {
-NB_DISABLE_COPY(TFarComboBox)
+  NB_DISABLE_COPY(TFarComboBox)
 public:
-  explicit TFarComboBox(TFarDialog * ADialog);
+  explicit TFarComboBox(TFarDialog *ADialog);
   virtual ~TFarComboBox();
 
   void ResizeToFitContent();
@@ -650,7 +650,7 @@ public:
   void SetAutoHighlight(bool Value) { SetFlag(DIF_LISTAUTOHIGHLIGHT, Value); }
   bool GetWrapMode() const { return GetFlag(DIF_LISTWRAPMODE); }
   void SetWrapMode(bool Value) { SetFlag(DIF_LISTWRAPMODE, Value); }
-  TFarList * GetItems() const { return FList; }
+  TFarList *GetItems() const { return FList; }
   virtual UnicodeString GetText() const { return GetData(); }
   virtual void SetText(UnicodeString Value) { SetData(Value); }
   bool GetAutoSelect() const { return GetFlag(DIF_SELECTONENTRY); }
@@ -665,18 +665,18 @@ protected:
   virtual void Init();
 
 private:
-  TFarList * FList;
+  TFarList *FList;
 };
 
 class TFarLister : public TFarDialogItem
 {
-NB_DISABLE_COPY(TFarLister)
+  NB_DISABLE_COPY(TFarLister)
 public:
-  explicit TFarLister(TFarDialog * ADialog);
+  explicit TFarLister(TFarDialog *ADialog);
   virtual ~TFarLister();
 
-  TStrings * GetItems() const;
-  void SetItems(const TStrings * Value);
+  TStrings *GetItems() const;
+  void SetItems(const TStrings *Value);
   intptr_t GetTopIndex() const { return FTopIndex; }
   void SetTopIndex(intptr_t Value);
   bool GetScrollBar() const;
@@ -686,10 +686,10 @@ protected:
   virtual void DoFocus();
 
 private:
-  void ItemsChange(TObject * Sender);
+  void ItemsChange(TObject *Sender);
 
 private:
-  TStringList * FItems;
+  TStringList *FItems;
   intptr_t FTopIndex;
 };
 
