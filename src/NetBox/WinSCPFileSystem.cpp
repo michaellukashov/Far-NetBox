@@ -885,7 +885,7 @@ bool TWinSCPFileSystem::ExecuteCommand(const UnicodeString & Command)
         }
       };
       FarControl(FCTL_SETCMDLINE, 0, ToInt(L""));
-      TWinSCPPlugin * WinSCPPlugin =  GetWinSCPPlugin();
+      TWinSCPPlugin * WinSCPPlugin = GetWinSCPPlugin();
       WinSCPPlugin->ShowConsoleTitle(Command);
       {
         SCOPE_EXIT
