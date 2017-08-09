@@ -18,8 +18,7 @@
 #pragma warning(disable: 4201 4127 4706)
 
 #if defined(__cplusplus)
-extern "C"
-{
+extern "C" {
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -578,7 +577,7 @@ NB_CORE_DLL(int) GetPluginLangByInstance(HINSTANCE);
 NB_CORE_DLL(void) UnloadCoreModule(void);
 
 #if defined(__cplusplus)
-}
+} // extern "C"
 
 template <size_t _Size>
 inline int nbcore_snprintf(char(&buffer)[_Size], const char *fmt, ...)

@@ -25,10 +25,9 @@ TGlobals * GetGlobals()
 
 #if (_MSC_VER >= 1900)
 
-extern "C"
-{
+extern "C" {
   FILE * __iob_func = nullptr;
-}
+} // extern "C"
 #endif
 
 void Abort()
