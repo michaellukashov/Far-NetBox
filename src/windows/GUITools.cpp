@@ -37,7 +37,7 @@
 extern const UnicodeString PageantTool = L"pageant.exe";
 extern const UnicodeString PuttygenTool = L"puttygen.exe";
 
-bool FindFile(UnicodeString & APath)
+bool FindFile(UnicodeString &APath)
 {
   bool Result = ::FileExists(ApiPath(APath));
   if (!Result)
@@ -75,7 +75,7 @@ bool FindFile(UnicodeString & APath)
 }
 
 void OpenSessionInPutty(UnicodeString PuttyPath,
-  TSessionData * SessionData)
+  TSessionData *SessionData)
 {
   UnicodeString Program, Params, Dir;
   SplitCommand(PuttyPath, Program, Params, Dir);
@@ -97,9 +97,9 @@ void OpenSessionInPutty(UnicodeString PuttyPath,
     if (!RemoteCustomCommand.IsSiteCommand(Params))
     {
       UnicodeString SessionName;
-      TRegistryStorage * Storage = nullptr;
-      TSessionData * ExportData = nullptr;
-      TRegistryStorage * SourceStorage = nullptr;
+      TRegistryStorage *Storage = nullptr;
+      TSessionData *ExportData = nullptr;
+      TRegistryStorage *SourceStorage = nullptr;
       try__finally
       {
         SCOPE_EXIT
@@ -193,7 +193,7 @@ void OpenSessionInPutty(UnicodeString PuttyPath,
   }
 }
 
-bool FindTool(UnicodeString Name, UnicodeString & APath)
+bool FindTool(UnicodeString Name, UnicodeString &APath)
 {
   UnicodeString AppPath = ::IncludeTrailingBackslash(::ExtractFilePath(GetConfiguration()->ModuleFileName()));
   APath = AppPath + Name;
@@ -225,7 +225,7 @@ bool CopyCommandToClipboard(UnicodeString Command)
 }
 
 static bool DoExecuteShell(const UnicodeString APath, const UnicodeString Params,
-  bool ChangeWorkingDirectory, HANDLE * Handle)
+  bool ChangeWorkingDirectory, HANDLE *Handle)
 {
   bool Result = CopyCommandToClipboard(FormatCommand(APath, Params));
 
@@ -273,7 +273,7 @@ void ExecuteShellChecked(const UnicodeString Command)
 }
 
 bool ExecuteShell(const UnicodeString Path, const UnicodeString Params,
-  HANDLE & Handle)
+  HANDLE &Handle)
 {
   return DoExecuteShell(Path, Params, false, &Handle);
 }
@@ -310,7 +310,7 @@ void ExecuteShellCheckedAndWait(HINSTANCE Handle, const UnicodeString Command,
   }
 }
 
-bool SpecialFolderLocation(intptr_t PathID, UnicodeString & APath)
+bool SpecialFolderLocation(intptr_t PathID, UnicodeString &APath)
 {
 #if defined(_MSC_VER) && !defined(__clang__)
   LPITEMIDLIST Pidl;
@@ -341,14 +341,14 @@ UnicodeString ItemsFormatString(UnicodeString SingleItemFormat,
 }
 
 UnicodeString ItemsFormatString(UnicodeString SingleItemFormat,
-  UnicodeString MultiItemsFormat, const TStrings * Items)
+  UnicodeString MultiItemsFormat, const TStrings *Items)
 {
   return ItemsFormatString(SingleItemFormat, MultiItemsFormat,
-    Items->GetCount(), (Items->GetCount() > 0 ? Items->GetString(0) : UnicodeString()));
+      Items->GetCount(), (Items->GetCount() > 0 ? Items->GetString(0) : UnicodeString()));
 }
 
 UnicodeString FileNameFormatString(UnicodeString SingleFileFormat,
-  UnicodeString MultiFilesFormat, const TStrings * AFiles, bool Remote)
+  UnicodeString MultiFilesFormat, const TStrings *AFiles, bool Remote)
 {
   DebugAssert(AFiles != nullptr);
   UnicodeString Item;
@@ -358,7 +358,7 @@ UnicodeString FileNameFormatString(UnicodeString SingleFileFormat,
       base::ExtractFileName(AFiles->GetString(0), true);
   }
   return ItemsFormatString(SingleFileFormat, MultiFilesFormat,
-    AFiles ? AFiles->GetCount() : 0, Item);
+      AFiles ? AFiles->GetCount() : 0, Item);
 }
 
 UnicodeString UniqTempDir(const UnicodeString BaseDir, const UnicodeString Identity,
@@ -402,7 +402,8 @@ bool DeleteDirectory(const UnicodeString ADirName)
     if (retval)
     {
       while (FindNextChecked(sr) == 0)
-      { // VCL Function
+      {
+        // VCL Function
         if (FLAGSET(sr.Attr, faDirectory))
         {
           if (sr.Name != L"." && sr.Name != L"..")
@@ -425,7 +426,7 @@ bool DeleteDirectory(const UnicodeString ADirName)
 #if 0
 
 void AddSessionColorImage(
-  TCustomImageList * ImageList, TColor Color, intptr_t MaskIndex)
+  TCustomImageList *ImageList, TColor Color, intptr_t MaskIndex)
 {
 
   // This overly complex drawing is here to support color button on SiteAdvanced
@@ -476,21 +477,21 @@ void AddSessionColorImage(
   ImageList->AddMasked(Bitmap.get(), TransparentColor);
 }
 
-void SetSubmenu(TTBXCustomItem * Item)
+void SetSubmenu(TTBXCustomItem *Item)
 {
   class TTBXPublicItem : public TTBXCustomItem
   {
   public:
     __property ItemStyle;
   };
-  TTBXPublicItem * PublicItem = reinterpret_cast<TTBXPublicItem *>(Item);
+  TTBXPublicItem *PublicItem = reinterpret_cast<TTBXPublicItem *>(Item);
   DebugAssert(PublicItem != nullptr);
   // See TTBItemViewer.IsPtInButtonPart (called from TTBItemViewer.MouseDown)
   PublicItem->ItemStyle = PublicItem->ItemStyle << tbisSubmenu;
 }
 
 bool IsEligibleForApplyingTabs(
-  UnicodeString Line, intptr_t & TabPos, UnicodeString & Start, UnicodeString & Remaining)
+  UnicodeString Line, intptr_t &TabPos, UnicodeString &Start, UnicodeString &Remaining)
 {
   bool Result = false;
   TabPos = Line.Pos(L"\t");
@@ -527,8 +528,8 @@ static intptr_t CalculateWidthByLength(UnicodeString Text, void * /*Arg*/)
 }
 
 void ApplyTabs(
-  UnicodeString & Text, wchar_t Padding,
-  TCalculateWidth CalculateWidth, void * CalculateWidthArg)
+  UnicodeString &Text, wchar_t Padding,
+  TCalculateWidth CalculateWidth, void *CalculateWidthArg)
 {
   if (CalculateWidth == nullptr)
   {
@@ -585,27 +586,27 @@ void ApplyTabs(
   }
 }
 
-static void DoSelectScaledImageList(TImageList * ImageList)
+static void DoSelectScaledImageList(TImageList *ImageList)
 {
-  TImageList * MatchingList = nullptr;
+  TImageList *MatchingList = nullptr;
   intptr_t MachingPixelsPerInch = 0;
   intptr_t PixelsPerInch = GetComponentPixelsPerInch(ImageList);
 
   for (intptr_t Index = 0; Index < ImageList->Owner->ComponentCount; Index++)
   {
-    TImageList * OtherList = dynamic_cast<TImageList *>(ImageList->Owner->Components[Index]);
+    TImageList *OtherList = dynamic_cast<TImageList *>(ImageList->Owner->Components[Index]);
 
     if ((OtherList != nullptr) &&
-        (OtherList != ImageList) &&
-        ::StartsStr(ImageList->Name, OtherList->Name))
+      (OtherList != ImageList) &&
+      ::StartsStr(ImageList->Name, OtherList->Name))
     {
       UnicodeString OtherListPixelsPerInchStr =
         OtherList->Name.SubString(
           ImageList->Name.Length() + 1, OtherList->Name.Length() - ImageList->Name.Length());
       intptr_t OtherListPixelsPerInch = StrToIntPtr(OtherListPixelsPerInchStr);
       if ((OtherListPixelsPerInch <= PixelsPerInch) &&
-          ((MatchingList == nullptr) ||
-           (MachingPixelsPerInch < OtherListPixelsPerInch)))
+        ((MatchingList == nullptr) ||
+          (MachingPixelsPerInch < OtherListPixelsPerInch)))
       {
         MatchingList = OtherList;
         MachingPixelsPerInch = OtherListPixelsPerInch;
@@ -619,8 +620,8 @@ static void DoSelectScaledImageList(TImageList * ImageList)
 
     if (ImageList->Owner->FindComponent(ImageListBackupName) == nullptr)
     {
-      TImageList * ImageListBackup;
-      TPngImageList * PngImageList = dynamic_cast<TPngImageList *>(ImageList);
+      TImageList *ImageListBackup;
+      TPngImageList *PngImageList = dynamic_cast<TPngImageList *>(ImageList);
       if (PngImageList != nullptr)
       {
         ImageListBackup = new TPngImageList(ImageList->Owner);
@@ -639,24 +640,24 @@ static void DoSelectScaledImageList(TImageList * ImageList)
   }
 }
 
-static void ImageListRescale(TComponent * Sender, TObject * /*Token*/)
+static void ImageListRescale(TComponent *Sender, TObject * /*Token*/)
 {
-  TImageList * ImageList = DebugNotNull(dynamic_cast<TImageList *>(Sender));
+  TImageList *ImageList = DebugNotNull(dynamic_cast<TImageList *>(Sender));
   DoSelectScaledImageList(ImageList);
 }
 
-void SelectScaledImageList(TImageList * ImageList)
+void SelectScaledImageList(TImageList *ImageList)
 {
   DoSelectScaledImageList(ImageList);
 
   SetRescaleFunction(ImageList, ImageListRescale);
 }
 
-void CopyImageList(TImageList * TargetList, TImageList * SourceList)
+void CopyImageList(TImageList *TargetList, TImageList *SourceList)
 {
   // Maybe this is not necessary, once the TPngImageList::Assign was fixed
-  TPngImageList * PngTargetList = dynamic_cast<TPngImageList *>(TargetList);
-  TPngImageList * PngSourceList = dynamic_cast<TPngImageList *>(SourceList);
+  TPngImageList *PngTargetList = dynamic_cast<TPngImageList *>(TargetList);
+  TPngImageList *PngSourceList = dynamic_cast<TPngImageList *>(SourceList);
 
   TargetList->Clear();
   TargetList->Height = SourceList->Height;
@@ -674,17 +675,17 @@ void CopyImageList(TImageList * TargetList, TImageList * SourceList)
   }
 }
 
-static bool DoLoadDialogImage(TImage * Image, UnicodeString ImageName)
+static bool DoLoadDialogImage(TImage *Image, UnicodeString ImageName)
 {
   bool Result = false;
   if (GlyphsModule != nullptr)
   {
-    TPngImageList * DialogImages = GetDialogImages(Image);
+    TPngImageList *DialogImages = GetDialogImages(Image);
 
     intptr_t Index;
     for (Index = 0; Index < DialogImages->PngImages->Count; Index++)
     {
-      TPngImageCollectionItem * PngItem = DialogImages->PngImages->Items[Index];
+      TPngImageCollectionItem *PngItem = DialogImages->PngImages->Items[Index];
       if (SameText(PngItem->Name, ImageName))
       {
         Image->Picture->Assign(PngItem->PngImage);
@@ -716,32 +717,32 @@ public:
   UnicodeString ImageName;
 };
 
-static void DialogImageRescale(TComponent * Sender, TObject * Token)
+static void DialogImageRescale(TComponent *Sender, TObject *Token)
 {
-  TImage * Image = DebugNotNull(dynamic_cast<TImage *>(Sender));
-  TDialogImageName * DialogImageName = DebugNotNull(dynamic_cast<TDialogImageName *>(Token));
+  TImage *Image = DebugNotNull(dynamic_cast<TImage *>(Sender));
+  TDialogImageName *DialogImageName = DebugNotNull(dynamic_cast<TDialogImageName *>(Token));
   DoLoadDialogImage(Image, DialogImageName->ImageName);
 }
 
-void LoadDialogImage(TImage * Image, UnicodeString ImageName)
+void LoadDialogImage(TImage *Image, UnicodeString ImageName)
 {
   if (DoLoadDialogImage(Image, ImageName))
   {
-    TDialogImageName * DialogImageName = new TDialogImageName();
+    TDialogImageName *DialogImageName = new TDialogImageName();
     DialogImageName->ImageName = ImageName;
     SetRescaleFunction(Image, DialogImageRescale, DialogImageName, true);
   }
 }
 
-intptr_t DialogImageSize(TForm * Form)
+intptr_t DialogImageSize(TForm *Form)
 {
   return ScaleByPixelsPerInch(32, Form);
 }
 
-void HideComponentsPanel(TForm * Form)
+void HideComponentsPanel(TForm *Form)
 {
-  TComponent * Component = DebugNotNull(Form->FindComponent(L"ComponentsPanel"));
-  TPanel * Panel = DebugNotNull(dynamic_cast<TPanel *>(Component));
+  TComponent *Component = DebugNotNull(Form->FindComponent(L"ComponentsPanel"));
+  TPanel *Panel = DebugNotNull(dynamic_cast<TPanel *>(Component));
   DebugAssert(Panel->Align == alBottom);
   intptr_t Offset = Panel->Height;
   Panel->Visible = false;
@@ -750,13 +751,13 @@ void HideComponentsPanel(TForm * Form)
 
   for (intptr_t Index = 0; Index < Form->ControlCount; Index++)
   {
-    TControl * Control = Form->Controls[Index];
+    TControl *Control = Form->Controls[Index];
 
     // Shift back bottom-anchored controls
     // (needed for toolbar panel on Progress window and buttons on Preferences dialog),
     if ((Control->Align == alNone) &&
-        Control->Anchors.Contains(akBottom) &&
-        !Control->Anchors.Contains(akTop))
+      Control->Anchors.Contains(akBottom) &&
+      !Control->Anchors.Contains(akTop))
     {
       Control->Top += Offset;
     }
@@ -764,7 +765,7 @@ void HideComponentsPanel(TForm * Form)
     // Resize back all-anchored controls
     // (needed for main panel on Preferences dialog),
     if (Control->Anchors.Contains(akBottom) &&
-        Control->Anchors.Contains(akTop))
+      Control->Anchors.Contains(akTop))
     {
       Control->Height += Offset;
     }
@@ -774,28 +775,28 @@ void HideComponentsPanel(TForm * Form)
 class TBrowserViewer : public TWebBrowserEx
 {
 public:
-  virtual TBrowserViewer(TComponent* AOwner);
+  virtual TBrowserViewer(TComponent *AOwner);
 
   void AddLinkHandler(
     UnicodeString Url, TNotifyEvent Handler);
   void NavigateToUrl(UnicodeString Url);
 
-  TControl * LoadingPanel;
+  TControl *LoadingPanel;
 
 protected:
-  DYNAMIC void DoContextPopup(const TPointptr_t & MousePos, bool & Handled);
+  DYNAMIC void DoContextPopup(const TPointptr_t &MousePos, bool &Handled);
   void DocumentComplete(
-    TObject * Sender, const _di_IDispatch Disp, const OleVariant & URL);
+    TObject *Sender, const _di_IDispatch Disp, const OleVariant &URL);
   void BeforeNavigate2(
-    TObject * Sender, const _di_IDispatch Disp, const OleVariant & URL,
-    const OleVariant & Flags, const OleVariant & TargetFrameName,
-    const OleVariant & PostData, const OleVariant & Headers, WordBool & Cancel);
+    TObject *Sender, const _di_IDispatch Disp, const OleVariant &URL,
+    const OleVariant &Flags, const OleVariant &TargetFrameName,
+    const OleVariant &PostData, const OleVariant &Headers, WordBool &Cancel);
 
   bool FComplete;
   std::map<UnicodeString, TNotifyEvent> FHandlers;
 };
 
-TBrowserViewer::TBrowserViewer(TComponent* AOwner) :
+TBrowserViewer::TBrowserViewer(TComponent *AOwner) :
   TWebBrowserEx(AOwner)
 {
   FComplete = false;
@@ -811,7 +812,7 @@ void TBrowserViewer::AddLinkHandler(
   FHandlers.insert(std::make_pair(Url, Handler));
 }
 
-void TBrowserViewer::DoContextPopup(const TPointptr_t & MousePos, bool & Handled)
+void TBrowserViewer::DoContextPopup(const TPointptr_t &MousePos, bool &Handled)
 {
   // suppress built-in context menu
   Handled = true;
@@ -819,7 +820,7 @@ void TBrowserViewer::DoContextPopup(const TPointptr_t & MousePos, bool & Handled
 }
 
 void TBrowserViewer::DocumentComplete(
-    TObject * /*Sender*/, const _di_IDispatch /*Disp*/, const OleVariant & /*URL*/)
+  TObject * /*Sender*/, const _di_IDispatch /*Disp*/, const OleVariant & /*URL*/)
 {
   SetBrowserDesignModeOff(this);
 
@@ -832,9 +833,9 @@ void TBrowserViewer::DocumentComplete(
 }
 
 void TBrowserViewer::BeforeNavigate2(
-  TObject * /*Sender*/, const _di_IDispatch /*Disp*/, const OleVariant & AURL,
+  TObject * /*Sender*/, const _di_IDispatch /*Disp*/, const OleVariant &AURL,
   const OleVariant & /*Flags*/, const OleVariant & /*TargetFrameName*/,
-  const OleVariant & /*PostData*/, const OleVariant & /*Headers*/, WordBool & Cancel)
+  const OleVariant & /*PostData*/, const OleVariant & /*Headers*/, WordBool &Cancel)
 {
   // If OnDocumentComplete was not called yet, is has to be our initial message URL,
   // opened using TWebBrowserEx::Navigate(), allow it.
@@ -862,18 +863,18 @@ void TBrowserViewer::NavigateToUrl(UnicodeString Url)
   Navigate(Url.c_str());
 }
 
-TPanel * CreateLabelPanel(TPanel * Parent, UnicodeString Label)
+TPanel *CreateLabelPanel(TPanel *Parent, UnicodeString Label)
 {
-  TPanel * Result = CreateBlankPanel(Parent);
+  TPanel *Result = CreateBlankPanel(Parent);
   Result->Parent = Parent;
   Result->Align = alClient;
   Result->Caption = Label;
   return Result;
 }
 
-TWebBrowserEx * CreateBrowserViewer(TPanel * Parent, UnicodeString LoadingLabel)
+TWebBrowserEx *CreateBrowserViewer(TPanel *Parent, UnicodeString LoadingLabel)
 {
-  TBrowserViewer * Result = new TBrowserViewer(Parent);
+  TBrowserViewer *Result = new TBrowserViewer(Parent);
   // TWebBrowserEx has its own unrelated Name and Parent properties.
   // The name is used in DownloadUpdate().
   static_cast<TWinControl *>(Result)->Name = L"BrowserViewer";
@@ -886,7 +887,7 @@ TWebBrowserEx * CreateBrowserViewer(TPanel * Parent, UnicodeString LoadingLabel)
   return Result;
 }
 
-void SetBrowserDesignModeOff(TWebBrowserEx * WebBrowser)
+void SetBrowserDesignModeOff(TWebBrowserEx *WebBrowser)
 {
   if (DebugAlwaysTrue(WebBrowser->Document2 != nullptr))
   {
@@ -894,30 +895,30 @@ void SetBrowserDesignModeOff(TWebBrowserEx * WebBrowser)
   }
 }
 
-void AddBrowserLinkHandler(TWebBrowserEx * WebBrowser,
+void AddBrowserLinkHandler(TWebBrowserEx *WebBrowser,
   UnicodeString Url, TNotifyEvent Handler)
 {
-  TBrowserViewer * BrowserViewer = dynamic_cast<TBrowserViewer *>(WebBrowser);
+  TBrowserViewer *BrowserViewer = dynamic_cast<TBrowserViewer *>(WebBrowser);
   if (DebugAlwaysTrue(BrowserViewer != nullptr))
   {
     BrowserViewer->AddLinkHandler(Url, Handler);
   }
 }
 
-void NavigateBrowserToUrl(TWebBrowserEx * WebBrowser, UnicodeString Url)
+void NavigateBrowserToUrl(TWebBrowserEx *WebBrowser, UnicodeString Url)
 {
-  TBrowserViewer * BrowserViewer = dynamic_cast<TBrowserViewer *>(WebBrowser);
+  TBrowserViewer *BrowserViewer = dynamic_cast<TBrowserViewer *>(WebBrowser);
   if (DebugAlwaysTrue(BrowserViewer != nullptr))
   {
     BrowserViewer->NavigateToUrl(Url);
   }
 }
 
-TComponent * FindComponentRecursively(TComponent * Root, UnicodeString Name)
+TComponent *FindComponentRecursively(TComponent *Root, UnicodeString Name)
 {
   for (intptr_t Index = 0; Index < Root->ComponentCount; Index++)
   {
-    TComponent * Component = Root->Components[Index];
+    TComponent *Component = Root->Components[Index];
     if (CompareText(Component->Name, Name) == 0)
     {
       return Component;
@@ -939,13 +940,13 @@ TLocalCustomCommand::TLocalCustomCommand()
 }
 
 TLocalCustomCommand::TLocalCustomCommand(
-  const TCustomCommandData & Data, UnicodeString RemotePath, UnicodeString LocalPath) :
+  const TCustomCommandData &Data, UnicodeString RemotePath, UnicodeString LocalPath) :
   TFileCustomCommand(Data, RemotePath)
 {
   FLocalPath = LocalPath;
 }
 
-TLocalCustomCommand::TLocalCustomCommand(const TCustomCommandData & Data,
+TLocalCustomCommand::TLocalCustomCommand(const TCustomCommandData &Data,
   UnicodeString RemotePath, UnicodeString LocalPath, UnicodeString FileName,
   UnicodeString LocalFileName, UnicodeString FileList) :
   TFileCustomCommand(Data, RemotePath, FileName, FileList)
@@ -973,7 +974,7 @@ intptr_t TLocalCustomCommand::PatternLen(UnicodeString Command, intptr_t Index) 
 }
 
 bool TLocalCustomCommand::PatternReplacement(
-  intptr_t Index, UnicodeString Pattern, UnicodeString & Replacement, bool & Delimit) const
+  intptr_t Index, UnicodeString Pattern, UnicodeString &Replacement, bool &Delimit) const
 {
   bool Result;
   if (Pattern == L"!\\")
@@ -1040,13 +1041,13 @@ intptr_t NormalizePixelsPerInch(intptr_t PixelsPerInch)
   return PixelsPerInch;
 }
 
-static intptr_t NeedImagesModule(TControl * Control)
+static intptr_t NeedImagesModule(TControl *Control)
 {
   intptr_t PixelsPerInch = NormalizePixelsPerInch(GetControlPixelsPerInch(Control));
 
   if (AnimationsImages.find(PixelsPerInch) == AnimationsImages.end())
   {
-    TDataModule * ImagesModule;
+    TDataModule *ImagesModule;
     HANDLE ResourceModule = GUIConfiguration->ChangeToDefaultResourceModule();
     try
     {
@@ -1070,15 +1071,15 @@ static intptr_t NeedImagesModule(TControl * Control)
 
       ImagesModules.insert(ImagesModule);
 
-      TPngImageList * AAnimationImages =
+      TPngImageList *AAnimationImages =
         DebugNotNull(dynamic_cast<TPngImageList *>(ImagesModule->FindComponent(L"AnimationImages")));
       AnimationsImages.insert(std::make_pair(PixelsPerInch, AAnimationImages));
 
-      TImageList * AButtonImages =
+      TImageList *AButtonImages =
         DebugNotNull(dynamic_cast<TImageList *>(ImagesModule->FindComponent(L"ButtonImages")));
       ButtonImages.insert(std::make_pair(PixelsPerInch, AButtonImages));
 
-      TPngImageList * ADialogImages =
+      TPngImageList *ADialogImages =
         DebugNotNull(dynamic_cast<TPngImageList *>(ImagesModule->FindComponent(L"DialogImages")));
       DialogImages.insert(std::make_pair(PixelsPerInch, ADialogImages));
     }
@@ -1091,19 +1092,19 @@ static intptr_t NeedImagesModule(TControl * Control)
   return PixelsPerInch;
 }
 
-TPngImageList * GetAnimationsImages(TControl * Control)
+TPngImageList *GetAnimationsImages(TControl *Control)
 {
   intptr_t PixelsPerInch = NeedImagesModule(Control);
   return DebugNotNull(AnimationsImages[PixelsPerInch]);
 }
 
-TImageList * GetButtonImages(TControl * Control)
+TImageList *GetButtonImages(TControl *Control)
 {
   intptr_t PixelsPerInch = NeedImagesModule(Control);
   return DebugNotNull(ButtonImages[PixelsPerInch]);
 }
 
-TPngImageList * GetDialogImages(TControl * Control)
+TPngImageList *GetDialogImages(TControl *Control)
 {
   intptr_t PixelsPerInch = NeedImagesModule(Control);
   return DebugNotNull(DialogImages[PixelsPerInch]);
@@ -1126,7 +1127,7 @@ TFrameAnimation::TFrameAnimation()
   FFirstFrame = -1;
 }
 
-void TFrameAnimation::Init(TPaintBox * PaintBox, UnicodeString Name)
+void TFrameAnimation::Init(TPaintBox *PaintBox, UnicodeString Name)
 {
   FName = Name;
   FPaintBox = PaintBox;
@@ -1187,9 +1188,9 @@ void TFrameAnimation::DoInit()
   Stop();
 }
 
-void TFrameAnimation::PaintBoxRescale(TComponent * /*Sender*/, TObject * Token)
+void TFrameAnimation::PaintBoxRescale(TComponent * /*Sender*/, TObject *Token)
 {
-  TFrameAnimation * FrameAnimation = reinterpret_cast<TFrameAnimation *>(Token);
+  TFrameAnimation *FrameAnimation = reinterpret_cast<TFrameAnimation *>(Token);
   FrameAnimation->Rescale();
 }
 
@@ -1230,7 +1231,7 @@ void TFrameAnimation::Timer(TObject * /*Sender*/)
   Animate();
 }
 
-void TFrameAnimation::PaintBoxPaint(TObject * Sender)
+void TFrameAnimation::PaintBoxPaint(TObject *Sender)
 {
   if (FFirstFrame >= 0)
   {
@@ -1243,7 +1244,7 @@ void TFrameAnimation::PaintBoxPaint(TObject * Sender)
     Bitmap->Canvas->Brush->Color = FPaintBox->Color;
     TRect Rect(0, 0, Bitmap->Width, Bitmap->Height);
     Bitmap->Canvas->FillRect(Rect);
-    TGraphic * Graphic = GetCurrentImage()->PngImage;
+    TGraphic *Graphic = GetCurrentImage()->PngImage;
     DebugAssert(Graphic->Width == FPaintBox->Width);
     DebugAssert(Graphic->Height == FPaintBox->Height);
     Bitmap->Canvas->Draw(0, 0, Graphic);
@@ -1304,14 +1305,14 @@ void TFrameAnimation::Animate()
   }
 }
 
-TPngImageCollectionItem * TFrameAnimation::GetCurrentImage()
+TPngImageCollectionItem *TFrameAnimation::GetCurrentImage()
 {
   return FImageList->PngImages->Items[FCurrentFrame];
 }
 
 void TFrameAnimation::CalculateNextFrameTick()
 {
-  TPngImageCollectionItem * ImageItem = GetCurrentImage();
+  TPngImageCollectionItem *ImageItem = GetCurrentImage();
   UnicodeString Duration = ImageItem->Name;
   CutToChar(Duration, L'_', false);
   // skip index (is not really used)
@@ -1328,36 +1329,36 @@ void TFrameAnimation::CalculateNextFrameTick()
 // - HintLabel (hintptr_t and persistent hint, multipline)
 // - status bar hints
 
-TScreenTipHintWindow::TScreenTipHintWindow(TComponent * Owner) :
+TScreenTipHintWindow::TScreenTipHintWindow(TComponent *Owner) :
   THintWindow(Owner)
 {
   FParentPainting = false;
 }
 
-intptr_t TScreenTipHintWindow::GetTextFlags(TControl * Control)
+intptr_t TScreenTipHintWindow::GetTextFlags(TControl *Control)
 {
   return DT_LEFT | DT_WORDBREAK | DT_NOPREFIX | Control->DrawTextBiDiModeFlagsReadingOnly();
 }
 
-bool TScreenTipHintWindow::UseBoldShortHint(TControl * HintControl)
+bool TScreenTipHintWindow::UseBoldShortHint(TControl *HintControl)
 {
   return
     (dynamic_cast<TTBCustomDockableWindow *>(HintControl) != nullptr) ||
     (dynamic_cast<TTBPopupWindow *>(HintControl) != nullptr);
 }
 
-bool TScreenTipHintWindow::IsPathLabel(TControl * HintControl)
+bool TScreenTipHintWindow::IsPathLabel(TControl *HintControl)
 {
   return (dynamic_cast<TPathLabel *>(HintControl) != nullptr);
 }
 
-bool TScreenTipHintWindow::IsHintPopup(TControl * HintControl, UnicodeString Hint)
+bool TScreenTipHintWindow::IsHintPopup(TControl *HintControl, UnicodeString Hint)
 {
-  TLabel * HintLabel = dynamic_cast<TLabel *>(HintControl);
+  TLabel *HintLabel = dynamic_cast<TLabel *>(HintControl);
   return (HintLabel != nullptr) && HasLabelHintPopup(HintLabel, Hint);
 }
 
-intptr_t TScreenTipHintWindow::GetMargin(TControl * HintControl, UnicodeString Hint)
+intptr_t TScreenTipHintWindow::GetMargin(TControl *HintControl, UnicodeString Hint)
 {
   intptr_t Result;
 
@@ -1375,9 +1376,9 @@ intptr_t TScreenTipHintWindow::GetMargin(TControl * HintControl, UnicodeString H
   return Result;
 }
 
-TFont * TScreenTipHintWindow::GetFont(TControl * HintControl, UnicodeString Hint)
+TFont *TScreenTipHintWindow::GetFont(TControl *HintControl, UnicodeString Hint)
 {
-  TFont * Result;
+  TFont *Result;
   if (IsHintPopup(HintControl, Hint) || IsPathLabel(HintControl))
   {
     Result = reinterpret_cast<TLabel *>(dynamic_cast<TCustomLabel *>(HintControl))->Font;
@@ -1392,15 +1393,15 @@ TFont * TScreenTipHintWindow::GetFont(TControl * HintControl, UnicodeString Hint
   return Result;
 }
 
-void TScreenTipHintWindow::CalcHintTextRect(TControl * Control, TCanvas * Canvas, TRect & Rect, UnicodeString Hint)
+void TScreenTipHintWindow::CalcHintTextRect(TControl *Control, TCanvas *Canvas, TRect &Rect, UnicodeString Hint)
 {
   const intptr_t Flags = DT_CALCRECT | GetTextFlags(Control);
   DrawText(Canvas->Handle, Hint.c_str(), -1, &Rect, Flags);
 }
 
-TRect TScreenTipHintWindow::CalcHintRect(intptr_t MaxWidth, const UnicodeString AHint, void * AData)
+TRect TScreenTipHintWindow::CalcHintRect(intptr_t MaxWidth, const UnicodeString AHint, void *AData)
 {
-  TControl * HintControl = GetHintControl(AData);
+  TControl *HintControl = GetHintControl(AData);
   intptr_t Margin = GetMargin(HintControl, AHint);
   const UnicodeString ShortHint = GetShortHint(AHint);
   const UnicodeString LongHint = GetLongHintIfAny(AHint);
@@ -1470,7 +1471,7 @@ TRect TScreenTipHintWindow::CalcHintRect(intptr_t MaxWidth, const UnicodeString 
   return Result;
 }
 
-void TScreenTipHintWindow::ActivateHintData(const TRect & ARect, const UnicodeString AHint, void * AData)
+void TScreenTipHintWindow::ActivateHintData(const TRect &ARect, const UnicodeString AHint, void *AData)
 {
   FShortHint = GetShortHint(AHint);
   FLongHint = GetLongHintIfAny(AHint);
@@ -1494,7 +1495,7 @@ void TScreenTipHintWindow::ActivateHintData(const TRect & ARect, const UnicodeSt
   THintWindow::ActivateHintData(Rect, FShortHint, AData);
 }
 
-TControl * TScreenTipHintWindow::GetHintControl(void * Data)
+TControl *TScreenTipHintWindow::GetHintControl(void *Data)
 {
   return reinterpret_cast<TControl *>(DebugNotNull(Data));
 }
@@ -1510,26 +1511,26 @@ UnicodeString TScreenTipHintWindow::GetLongHintIfAny(UnicodeString AHint)
   return Result;
 }
 
-void TScreenTipHintWindow::Dispatch(void * AMessage)
+void TScreenTipHintWindow::Dispatch(void *AMessage)
 {
-  TMessage * Message = static_cast<TMessage*>(AMessage);
+  TMessage *Message = static_cast<TMessage *>(AMessage);
   switch (Message->Msg)
   {
-    case WM_GETTEXTLENGTH:
-      if (FParentPainting)
-      {
-        // make THintWindow::Paint() not paint the Caption
-        Message->Result = 0;
-      }
-      else
-      {
-        THintWindow::Dispatch(AMessage);
-      }
-      break;
-
-    default:
+  case WM_GETTEXTLENGTH:
+    if (FParentPainting)
+    {
+      // make THintWindow::Paint() not paint the Caption
+      Message->Result = 0;
+    }
+    else
+    {
       THintWindow::Dispatch(AMessage);
-      break;
+    }
+    break;
+
+  default:
+    THintWindow::Dispatch(AMessage);
+    break;
   }
 }
 
