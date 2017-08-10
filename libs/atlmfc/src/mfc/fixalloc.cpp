@@ -105,7 +105,7 @@ CFixedAlloc::~CFixedAlloc()
 void CFixedAlloc::FreeAll()
 {	
 	EnterCriticalSection(&m_protect);
-#if !defined(__MINGW32__)
+#if defined(_MSC_VER) && !defined(__clang__)
 	__try
 #else
 	try
@@ -113,7 +113,7 @@ void CFixedAlloc::FreeAll()
 	{
 		base::FreeAll();
 	}
-#if !defined(__MINGW32__)
+#if defined(_MSC_VER) && !defined(__clang__)
 	__finally
 	{
 		LeaveCriticalSection(&m_protect);
@@ -152,15 +152,15 @@ void CFixedAlloc::Free(void* p)
 	if (p != NULL)
 	{		
 		EnterCriticalSection(&m_protect);
-#if !defined(__MINGW32__)
-		__try
+#if defined(_MSC_VER) && !defined(__clang__)
+	__try
 #else
 		try
 #endif
 		{
 			base::Free(p);
 		}
-#if !defined(__MINGW32__)
+#if defined(_MSC_VER) && !defined(__clang__)
 		__finally
 		{
 			LeaveCriticalSection(&m_protect);

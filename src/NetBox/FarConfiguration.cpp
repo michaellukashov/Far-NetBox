@@ -24,13 +24,13 @@ enum NetBoxConfirmationsSettings
 	// NBCS_OVERWRITEDELETEROFILES         = 0x00000400,
 };
 
-TFarConfiguration::TFarConfiguration(TCustomFarPlugin * APlugin) :
+TFarConfiguration::TFarConfiguration(TCustomFarPlugin *APlugin) :
   TGUIConfiguration(OBJECT_CLASS_TFarConfiguration),
   FFarPlugin(APlugin),
   FBookmarks(new TBookmarks()),
   FFarConfirmations(-1)
 {
-  Default();
+  TFarConfiguration::Default();
   CacheFarSettings();
 }
 
@@ -75,7 +75,7 @@ void TFarConfiguration::Default()
   FBookmarks->Clear();
 }
 
-THierarchicalStorage * TFarConfiguration::CreateStorage(bool & /*SessionList*/)
+THierarchicalStorage *TFarConfiguration::CreateStorage(bool & /*SessionList*/)
 {
   DebugAssert(FFarPlugin);
   return FFarPlugin ? new TFar3Storage(GetRegistryStorageKey(), MainGuid, FFarPlugin->GetStartupInfo()->SettingsControl) : nullptr;
@@ -123,7 +123,7 @@ void TFarConfiguration::Saved()
     KEY(Bool,     ConfirmSynchronizedBrowsing); \
   )
 
-void TFarConfiguration::SaveData(THierarchicalStorage * Storage, bool All)
+void TFarConfiguration::SaveData(THierarchicalStorage *Storage, bool All)
 {
   TGUIConfiguration::SaveData(Storage, All);
 
@@ -140,7 +140,7 @@ void TFarConfiguration::SaveData(THierarchicalStorage * Storage, bool All)
   }
 }
 
-void TFarConfiguration::LoadData(THierarchicalStorage * Storage)
+void TFarConfiguration::LoadData(THierarchicalStorage *Storage)
 {
   TGUIConfiguration::LoadData(Storage);
 
@@ -177,7 +177,7 @@ void TFarConfiguration::Save(bool All, bool Explicit)
   TGUIConfiguration::DoSave(All, Explicit);
 }
 
-void TFarConfiguration::SetPlugin(TCustomFarPlugin * Value)
+void TFarConfiguration::SetPlugin(TCustomFarPlugin *Value)
 {
   if (GetPlugin() != Value)
   {
@@ -257,11 +257,8 @@ intptr_t TFarConfiguration::FarConfirmations() const
   {
     return GetConfirmationsSettings();
   }
-  else
-  {
-    DebugAssert(FFarConfirmations >= 0);
-    return FFarConfirmations;
-  }
+  DebugAssert(FFarConfirmations >= 0);
+  return FFarConfirmations;
 }
 
 bool TFarConfiguration::GetConfirmOverwriting() const
@@ -270,11 +267,8 @@ bool TFarConfiguration::GetConfirmOverwriting() const
   {
     return TGUIConfiguration::GetConfirmOverwriting();
   }
-  else
-  {
-    // DebugAssert(GetPlugin());
-    return (FarConfirmations() & NBCS_COPYOVERWRITE) != 0;
-  }
+  // DebugAssert(GetPlugin());
+  return (FarConfirmations() & NBCS_COPYOVERWRITE) != 0;
 }
 
 void TFarConfiguration::SetConfirmOverwriting(bool Value)
@@ -305,19 +299,19 @@ UnicodeString TFarConfiguration::ModuleFileName() const
   return GetPlugin()->GetModuleName();
 }
 
-void TFarConfiguration::SetBookmarks(const UnicodeString & Key,
-  TBookmarkList * Value)
+void TFarConfiguration::SetBookmarks(UnicodeString Key,
+  TBookmarkList *Value)
 {
   FBookmarks->SetBookmarks(Key, Value);
   Changed();
 }
 
-TBookmarkList * TFarConfiguration::GetBookmarks(const UnicodeString & Key)
+TBookmarkList *TFarConfiguration::GetBookmarks(UnicodeString Key)
 {
   return FBookmarks->GetBookmarks(Key);
 }
 
-TFarConfiguration * GetFarConfiguration()
+TFarConfiguration *GetFarConfiguration()
 {
   return dyn_cast<TFarConfiguration>(GetConfiguration());
 }

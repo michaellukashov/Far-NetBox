@@ -235,6 +235,9 @@
 #define FILEZILLA_SITE_NOT_EXIST 736
 #define SFTP_AS_FTP_ERROR       737
 #define LOG_FATAL_ERROR         738
+#define SIZE_INVALID            739
+#define KNOWN_HOSTS_NOT_FOUND   740
+#define KNOWN_HOSTS_NO_SITES    741
 
 #define CORE_CONFIRMATION_STRINGS 300
 #define CONFIRM_PROLONG_TIMEOUT3 301
@@ -272,7 +275,7 @@
 #define NEW_PASSWORD_CURRENT_PROMPT 340
 #define NEW_PASSWORD_NEW_PROMPT 341
 #define NEW_PASSWORD_CONFIRM_PROMPT 342
-#define TUNNEL_INSTRUCTION      343
+#define TUNNEL_INSTRUCTION2     343
 #define RENAME_TITLE            344
 #define RENAME_PROMPT2          345
 #define VERIFY_CERT_PROMPT3     346
@@ -430,6 +433,8 @@
 #define CODE_PS_ADD_TYPE        553
 #define COPY_INFO_PRESERVE_TIME_DIRS 554
 #define TEXT_FILE_ENCODING      555
+#define AND_STR                 556
+#define AUTH_CHANGING_PASSWORD  557
 
 #define CORE_VARIABLE_STRINGS   600
 #define PUTTY_BASED_ON          601
@@ -448,7 +453,6 @@
 #define NEON_COPYRIGHT          614
 #define NEON_URL                615
 #define EXPAT_BASED_ON          616
-#define EXPAT_COPYRIGHT         617
 #define EXPAT_URL               618
 #define PUTTY_LICENSE_URL       625
 #define MAIN_MSG_TAG            631

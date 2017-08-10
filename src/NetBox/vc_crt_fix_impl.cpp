@@ -44,7 +44,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endif // END FAR_USE_INTERNALS
 
 template <typename T>
-T GetFunctionPointer(const wchar_t* ModuleName, const char* FunctionName, T Replacement)
+T GetFunctionPointer(const wchar_t * ModuleName, const char * FunctionName, T Replacement)
 {
   const auto Address = GetProcAddress(GetModuleHandleW(ModuleName), FunctionName);
   return Address ? reinterpret_cast<T>(Address) : Replacement;
@@ -80,11 +80,11 @@ extern "C" PVOID WINAPI DecodePointerWrapper(PVOID Ptr)
 }
 
 // GetModuleHandleExW (VC2012)
-extern "C" BOOL WINAPI GetModuleHandleExWWrapper(DWORD Flags, LPCWSTR ModuleName, HMODULE* Module)
+extern "C" BOOL WINAPI GetModuleHandleExWWrapper(DWORD Flags, LPCWSTR ModuleName, HMODULE * Module)
 {
   struct implementation
   {
-    static BOOL WINAPI GetModuleHandleExW(DWORD Flags, LPCWSTR ModuleName, HMODULE* Module)
+    static BOOL WINAPI GetModuleHandleExW(DWORD Flags, LPCWSTR ModuleName, HMODULE * Module)
     {
       if (Flags)
       {

@@ -60,13 +60,13 @@ CAsyncSocketExLayer *CAsyncSocketExLayer::AddLayer(CAsyncSocketExLayer *pLayer, 
   return m_pNextLayer;
 }
 
-int CAsyncSocketExLayer::Receive(void* lpBuf, int nBufLen, int nFlags /*=0*/)
+int CAsyncSocketExLayer::Receive(void * lpBuf, int nBufLen, int nFlags /*=0*/)
 {
   int Result = ReceiveNext(lpBuf, nBufLen, nFlags);
   return Result;
 }
 
-int CAsyncSocketExLayer::Send(const void* lpBuf, int nBufLen, int nFlags /*=0*/)
+int CAsyncSocketExLayer::Send(const void * lpBuf, int nBufLen, int nFlags /*=0*/)
 {
   int Result = SendNext(lpBuf, nBufLen, nFlags);
   return Result;
@@ -782,7 +782,7 @@ BOOL CAsyncSocketExLayer::CreateNext(UINT nSocketPort, int nSocketType, long lEv
   return res;
 }
 
-int CAsyncSocketExLayer::DoLayerCallback(int nType, intptr_t nParam1, intptr_t nParam2, char* str /*=0*/)
+int CAsyncSocketExLayer::DoLayerCallback(int nType, intptr_t nParam1, intptr_t nParam2, char *str /*=0*/)
 {
   if (!m_pOwnerSocket)
     return 0;

@@ -9,9 +9,9 @@ public:
   // static TProgramParams * Instance();
 
   explicit TProgramParams();
-  explicit TProgramParams(const UnicodeString & CmdLine);
+  explicit TProgramParams(UnicodeString CmdLine);
 
 private:
-  void Init(const UnicodeString & CmdLine);
+  void Init(UnicodeString CmdLine);
 };
 

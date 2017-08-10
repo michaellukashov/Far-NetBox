@@ -13,7 +13,7 @@
 #include "FarConfiguration.h"
 #include "XmlStorage.h"
 
-TCustomFarPlugin * CreateFarPlugin(HINSTANCE HInst)
+TCustomFarPlugin *CreateFarPlugin(HINSTANCE HInst)
 {
   return new TWinSCPPlugin(HInst);
 }
@@ -43,25 +43,25 @@ VersionInfo TWinSCPPlugin::GetMinFarVersion() const
   return MAKEFARVERSION(FARMANAGERVERSION_MAJOR, FARMANAGERVERSION_MINOR, FARMANAGERVERSION_REVISION, FARMANAGERVERSION_BUILD, FARMANAGERVERSION_STAGE);
 }
 
-void TWinSCPPlugin::SetStartupInfo(const struct PluginStartupInfo * Info)
+void TWinSCPPlugin::SetStartupInfo(const struct PluginStartupInfo *Info)
 {
   try
   {
     TCustomFarPlugin::SetStartupInfo(Info);
   }
-  catch (Exception & E)
+  catch (Exception &E)
   {
     HandleException(&E);
   }
 }
 
-void TWinSCPPlugin::GetPluginInfoEx(PLUGIN_FLAGS & Flags,
-  TStrings * DiskMenuStrings, TStrings * PluginMenuStrings,
-  TStrings * PluginConfigStrings, TStrings * CommandPrefixes)
+void TWinSCPPlugin::GetPluginInfoEx(PLUGIN_FLAGS &Flags,
+  TStrings *DiskMenuStrings, TStrings *PluginMenuStrings,
+  TStrings *PluginConfigStrings, TStrings *CommandPrefixes)
 {
   CoreInitializeOnce();
   Flags = PF_FULLCMDLINE;
-  TFarConfiguration * FarConfiguration = GetFarConfiguration();
+  TFarConfiguration *FarConfiguration = GetFarConfiguration();
   if (FarConfiguration->GetDisksMenu())
   {
     DiskMenuStrings->AddObject(GetMsg(NB_PLUGIN_NAME),
@@ -99,7 +99,7 @@ bool TWinSCPPlugin::ConfigureEx(const GUID * /* Item */)
   MenuItems->AddSeparator();
   intptr_t MAbout = MenuItems->Add(GetMsg(NB_CONFIG_ABOUT));
 
-  intptr_t Result = 0;
+  intptr_t Result;
 
   do
   {
@@ -187,7 +187,7 @@ bool TWinSCPPlugin::ConfigureEx(const GUID * /* Item */)
   return Change;
 }
 
-intptr_t TWinSCPPlugin::ProcessEditorEventEx(const struct ProcessEditorEventInfo * Info)
+intptr_t TWinSCPPlugin::ProcessEditorEventEx(const struct ProcessEditorEventInfo *Info)
 {
   // for performance reasons, do not pass the event to file systems on redraw
   if ((Info->Event != EE_REDRAW) || GetFarConfiguration()->GetEditorUploadOnSave() ||
@@ -195,7 +195,7 @@ intptr_t TWinSCPPlugin::ProcessEditorEventEx(const struct ProcessEditorEventInfo
   {
     for (intptr_t Index = 0; Index < FOpenedPlugins->GetCount(); ++Index)
     {
-      TWinSCPFileSystem * FileSystem = FOpenedPlugins->GetAs<TWinSCPFileSystem>(Index);
+      TWinSCPFileSystem *FileSystem = FOpenedPlugins->GetAs<TWinSCPFileSystem>(Index);
       FileSystem->ProcessEditorEvent(Info->Event, Info->Param);
     }
   }
@@ -203,7 +203,7 @@ intptr_t TWinSCPPlugin::ProcessEditorEventEx(const struct ProcessEditorEventInfo
   return 0;
 }
 
-intptr_t TWinSCPPlugin::ProcessEditorInputEx(const INPUT_RECORD * Rec)
+intptr_t TWinSCPPlugin::ProcessEditorInputEx(const INPUT_RECORD *Rec)
 {
   intptr_t Result = 0;
   if ((Rec->EventType == KEY_EVENT) &&
@@ -219,7 +219,7 @@ intptr_t TWinSCPPlugin::ProcessEditorInputEx(const INPUT_RECORD * Rec)
   return Result;
 }
 
-TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom, intptr_t Item)
+TCustomFarFileSystem *TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom, intptr_t Item)
 {
   std::unique_ptr<TWinSCPFileSystem> FileSystem;
   CoreInitializeOnce();
@@ -266,7 +266,7 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom, intptr_t I
         }
 
         bool Another = !(Flags & FOSF_ACTIVE);
-        TWinSCPFileSystem * PanelSystem = dyn_cast<TWinSCPFileSystem>(GetPanelFileSystem());
+        TWinSCPFileSystem *PanelSystem = dyn_cast<TWinSCPFileSystem>(GetPanelFileSystem());
 
         if (PanelSystem && PanelSystem->Connected() &&
           PanelSystem->GetTerminal()->GetSessionData()->GenerateSessionUrl(sufComplete) == CommandLine)
@@ -304,13 +304,13 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom, intptr_t I
     else if (OpenFrom == OPEN_ANALYSE)
     {
       OpenAnalyseInfo *Info = reinterpret_cast<OpenAnalyseInfo *>(Item);
-      const wchar_t * XmlFileName = Info->Info->FileName;
+      const wchar_t *XmlFileName = Info->Info->FileName;
       std::unique_ptr<THierarchicalStorage> ImportStorage(new TXmlStorage(XmlFileName, GetConfiguration()->GetStoredSessionsSubKey()));
 
       ImportStorage->Init();
       ImportStorage->SetAccessMode(smRead);
       if (!(ImportStorage->OpenSubKey(GetConfiguration()->GetStoredSessionsSubKey(), false) &&
-        ImportStorage->HasSubKeys()))
+          ImportStorage->HasSubKeys()))
       {
         DebugAssert(false);
         Abort();
@@ -335,8 +335,8 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom, intptr_t I
   return FileSystem.release();
 }
 
-void TWinSCPPlugin::ParseCommandLine(UnicodeString & CommandLine,
-  TOptions * Options)
+void TWinSCPPlugin::ParseCommandLine(UnicodeString &CommandLine,
+  TOptions *Options)
 {
   UnicodeString CmdLine = CommandLine;
   intptr_t Index = 1;
@@ -373,8 +373,8 @@ void TWinSCPPlugin::ParseCommandLine(UnicodeString & CommandLine,
 void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
 {
   std::unique_ptr<TFarMenuItems> MenuItems(new TFarMenuItems());
-  TWinSCPFileSystem * FileSystem;
-  TWinSCPFileSystem * AnotherFileSystem;
+  TWinSCPFileSystem *FileSystem;
+  TWinSCPFileSystem *AnotherFileSystem;
   FileSystem = dyn_cast<TWinSCPFileSystem>(GetPanelFileSystem());
   AnotherFileSystem = dyn_cast<TWinSCPFileSystem>(GetPanelFileSystem(true));
   bool FSConnected = (FileSystem != nullptr) && FileSystem->Connected();
@@ -407,11 +407,11 @@ void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
 
   MenuItems->SetDisabled(MLog, !FSVisible || (FileSystem && !FileSystem->IsLogging()));
   MenuItems->SetDisabled(MClearCaches, !FSVisible || (FileSystem && FileSystem->AreCachesEmpty()));
-  MenuItems->SetDisabled(MPutty, !FSVisible || !FileExistsEx(::ExpandEnvironmentVariables(ExtractProgram(GetFarConfiguration()->GetPuttyPath()))));
+  MenuItems->SetDisabled(MPutty, !FSVisible || !::FileExists(::ExpandEnvVars(ExtractProgram(GetFarConfiguration()->GetPuttyPath()))));
   MenuItems->SetDisabled(MEditHistory, !FSConnected || (FileSystem && FileSystem->IsEditHistoryEmpty()));
   MenuItems->SetChecked(MSynchronizeBrowsing, FSVisible && (FileSystem && FileSystem->IsSynchronizedBrowsing()));
-  MenuItems->SetDisabled(MPageant, !FileExistsEx(::ExpandEnvironmentVariables(ExtractProgram(GetFarConfiguration()->GetPageantPath()))));
-  MenuItems->SetDisabled(MPuttygen, !FileExistsEx(::ExpandEnvironmentVariables(ExtractProgram(GetFarConfiguration()->GetPuttygenPath()))));
+  MenuItems->SetDisabled(MPageant, !::FileExists(::ExpandEnvVars(ExtractProgram(GetFarConfiguration()->GetPageantPath()))));
+  MenuItems->SetDisabled(MPuttygen, !::FileExists(::ExpandEnvVars(ExtractProgram(GetFarConfiguration()->GetPuttygenPath()))));
 
   intptr_t Result = Menu(FMENU_WRAPMODE, GetMsg(NB_MENU_COMMANDS), L"", MenuItems.get());
 
@@ -500,8 +500,8 @@ void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
       UnicodeString Path = (Result == MPageant) ?
         GetFarConfiguration()->GetPageantPath() : GetFarConfiguration()->GetPuttygenPath();
       UnicodeString Program, Params, Dir;
-      SplitCommand(::ExpandEnvironmentVariables(Path), Program, Params, Dir);
-      ExecuteShell(Program, Params);
+      SplitCommand(::ExpandEnvVars(Path), Program, Params, Dir);
+      ::ExecuteShellChecked(Program, Params);
     }
     else if ((Result == MClearCaches) && FileSystem)
     {
@@ -525,7 +525,7 @@ void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
   }
 }
 
-void TWinSCPPlugin::ShowExtendedException(Exception * E)
+void TWinSCPPlugin::ShowExtendedException(Exception *E)
 {
   if (E && !E->Message.IsEmpty())
   {
@@ -533,7 +533,7 @@ void TWinSCPPlugin::ShowExtendedException(Exception * E)
     {
       TQueryType Type = isa<ESshTerminate>(E) ? qtInformation : qtError;
 
-      TStrings * MoreMessages = nullptr;
+      TStrings *MoreMessages = nullptr;
       if (isa<ExtException>(E))
       {
         MoreMessages = dyn_cast<ExtException>(E)->GetMoreMessages();
@@ -544,7 +544,7 @@ void TWinSCPPlugin::ShowExtendedException(Exception * E)
   }
 }
 
-void TWinSCPPlugin::HandleException(Exception * E, OPERATION_MODES OpMode)
+void TWinSCPPlugin::HandleException(Exception *E, OPERATION_MODES OpMode)
 {
   if (((OpMode & OPM_FIND) == 0) || isa<EFatal>(E))
   {
@@ -554,14 +554,10 @@ void TWinSCPPlugin::HandleException(Exception * E, OPERATION_MODES OpMode)
 
 struct TFarMessageData : public TObject
 {
-NB_DISABLE_COPY(TFarMessageData)
+  NB_DISABLE_COPY(TFarMessageData)
 public:
-  static inline bool classof(const TObject * Obj)
-  {
-    return
-      Obj->GetKind() == OBJECT_CLASS_TFarMessageData;
-  }
-
+  static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TFarMessageData); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TFarMessageData) || TObject::is(Kind); }
 public:
   TFarMessageData() :
     TObject(OBJECT_CLASS_TFarMessageData),
@@ -571,15 +567,15 @@ public:
     ClearArray(Buttons);
   }
 
-  const TMessageParams * Params;
+  const TMessageParams *Params;
   uintptr_t Buttons[15 + 1];
   uintptr_t ButtonCount;
 };
 
-void TWinSCPPlugin::MessageClick(void * Token, uintptr_t Result, bool & Close)
+void TWinSCPPlugin::MessageClick(void *Token, uintptr_t Result, bool &Close)
 {
   DebugAssert(Token);
-  TFarMessageData & Data = *get_as<TFarMessageData>(Token);
+  TFarMessageData &Data = *get_as<TFarMessageData>(Token);
 
   DebugAssert(Result != static_cast<uintptr_t>(-1) && Result < Data.ButtonCount);
 
@@ -587,7 +583,7 @@ void TWinSCPPlugin::MessageClick(void * Token, uintptr_t Result, bool & Close)
   {
     for (uintptr_t Index = 0; Index < Data.Params->AliasesCount; ++Index)
     {
-      const TQueryButtonAlias & Alias = Data.Params->Aliases[Index];
+      const TQueryButtonAlias &Alias = Data.Params->Aliases[Index];
       if ((Alias.Button == Data.Buttons[Result]) &&
         (Alias.OnClick))
       {
@@ -599,11 +595,11 @@ void TWinSCPPlugin::MessageClick(void * Token, uintptr_t Result, bool & Close)
   }
 }
 
-uintptr_t TWinSCPPlugin::MoreMessageDialog(const UnicodeString & Str,
-  TStrings * MoreMessages, TQueryType Type, uintptr_t Answers,
-  const TMessageParams * Params)
+uintptr_t TWinSCPPlugin::MoreMessageDialog(UnicodeString Str,
+  TStrings *MoreMessages, TQueryType Type, uintptr_t Answers,
+  const TMessageParams *Params)
 {
-  uintptr_t Result = 0;
+  uintptr_t Result;
   UnicodeString DialogStr = Str;
   std::unique_ptr<TStrings> ButtonLabels(new TStringList());
   uintptr_t Flags = 0;
@@ -732,7 +728,7 @@ uintptr_t TWinSCPPlugin::MoreMessageDialog(const UnicodeString & Str,
   {
     FarParams.CheckBoxLabel =
       (Answers == qaOK) ? GetMsg(MSG_CHECK_NEVER_SHOW_AGAIN) :
-        GetMsg(MSG_CHECK_NEVER_ASK_AGAIN);
+      GetMsg(MSG_CHECK_NEVER_ASK_AGAIN);
   }
 
   if (Params != nullptr)
@@ -764,7 +760,7 @@ uintptr_t TWinSCPPlugin::MoreMessageDialog(const UnicodeString & Str,
     FarParams.MoreMessages = nullptr;
   }
 
-  Result = Message(static_cast<DWORD>(Flags), GetMsg(TitleId), DialogStr, ButtonLabels.get(), &FarParams);
+  Result = Message(ToDWord(Flags), GetMsg(TitleId), DialogStr, ButtonLabels.get(), &FarParams);
   if (FarParams.TimerAnswer > 0)
   {
     Result = FarParams.TimerAnswer;

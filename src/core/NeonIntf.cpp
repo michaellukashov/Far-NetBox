@@ -16,12 +16,12 @@
 #define SESSION_PROXY_AUTH_KEY "proxyauth"
 #define SESSION_TLS_INIT_KEY "tlsinit"
 
-void NeonParseUrl(const UnicodeString & Url, ne_uri & uri)
+void NeonParseUrl(UnicodeString Url, ne_uri &uri)
 {
   if (ne_uri_parse(StrToNeon(Url), &uri) != 0)
   {
     // should never happen
-    throw Exception(FMTLOAD(INVALID_URL, Url.c_str()));
+    throw Exception(FMTLOAD(INVALID_URL, Url));
   }
 
   // Will never happen for initial URL, but may happen for redirect URLs
@@ -31,22 +31,22 @@ void NeonParseUrl(const UnicodeString & Url, ne_uri & uri)
   }
 }
 
-bool IsTlsUri(const ne_uri & uri)
+bool IsTlsUri(const ne_uri &uri)
 {
-  return SameText(StrFromNeon(uri.scheme), WebDAVSProtocol);
+  return SameText(StrFromNeon(uri.scheme), HttpsProtocol);
 }
 
 struct TProxyAuthData
 {
-CUSTOM_MEM_ALLOCATION_IMPL
+  CUSTOM_MEM_ALLOCATION_IMPL
   UnicodeString UserName;
   UnicodeString Password;
 };
 
 static int NeonProxyAuth(
-  void * UserData, const char * /*Realm*/, int Attempt, char * UserName, char * Password)
+  void *UserData, const char * /*Realm*/, int Attempt, char *UserName, char *Password)
 {
-  TProxyAuthData * ProxyAuthData = static_cast<TProxyAuthData *>(UserData);
+  TProxyAuthData *ProxyAuthData = static_cast<TProxyAuthData *>(UserData);
 
   int Result;
   // no point trying too many times as we always return the same credentials
@@ -65,26 +65,28 @@ static int NeonProxyAuth(
   return Result;
 }
 
-ne_session * CreateNeonSession(
-  const ne_uri & uri, TProxyMethod ProxyMethod, const UnicodeString & ProxyHost,
-  intptr_t ProxyPort, const UnicodeString & ProxyUsername, const UnicodeString & ProxyPassword)
+ne_session *CreateNeonSession(const ne_uri &uri)
 {
-  ne_session * Session = ne_session_create(uri.scheme, uri.host, uri.port);
+  return ne_session_create(uri.scheme, uri.host, uri.port);
+}
 
+void InitNeonSession(ne_session *Session, TProxyMethod ProxyMethod, UnicodeString ProxyHost,
+  intptr_t ProxyPort, UnicodeString ProxyUsername, UnicodeString ProxyPassword)
+{
   if (ProxyMethod != ::pmNone)
   {
     if ((ProxyMethod == pmSocks4) || (ProxyMethod == pmSocks5))
     {
       enum ne_sock_sversion vers = (ProxyMethod == pmSocks4) ? NE_SOCK_SOCKSV4A : NE_SOCK_SOCKSV5;
-      ne_session_socks_proxy(Session, vers, StrToNeon(ProxyHost), (int)ProxyPort, StrToNeon(ProxyUsername), StrToNeon(ProxyPassword));
+      ne_session_socks_proxy(Session, vers, StrToNeon(ProxyHost), ToInt(ProxyPort), StrToNeon(ProxyUsername), StrToNeon(ProxyPassword));
     }
     else if (!ProxyHost.IsEmpty())
     {
-      ne_session_proxy(Session, StrToNeon(ProxyHost), (int)ProxyPort);
+      ne_session_proxy(Session, StrToNeon(ProxyHost), ToInt(ProxyPort));
 
       if (!ProxyUsername.IsEmpty())
       {
-        TProxyAuthData * ProxyAuthData = new TProxyAuthData();
+        TProxyAuthData *ProxyAuthData = new TProxyAuthData();
         ProxyAuthData->UserName = ProxyUsername;
         ProxyAuthData->Password = ProxyPassword;
         ne_set_session_private(Session, SESSION_PROXY_AUTH_KEY, ProxyAuthData);
@@ -101,14 +103,12 @@ ne_session * CreateNeonSession(
   }
 
   ne_redirect_register(Session);
-  ne_set_useragent(Session, StrToNeon(FORMAT(L"%s/%s", GetAppNameString().c_str(), GetConfiguration()->GetVersion().c_str())));
-
-  return Session;
+  ne_set_useragent(Session, StrToNeon(FORMAT("%s/%s", GetAppNameString(), GetConfiguration()->GetVersion())));
 }
 
-void DestroyNeonSession(ne_session * Session)
+void DestroyNeonSession(ne_session *Session)
 {
-  TProxyAuthData * ProxyAuthData =
+  TProxyAuthData *ProxyAuthData =
     static_cast<TProxyAuthData *>(ne_get_session_private(Session, SESSION_PROXY_AUTH_KEY));
   if (ProxyAuthData != nullptr)
   {
@@ -117,13 +117,13 @@ void DestroyNeonSession(ne_session * Session)
   ne_session_destroy(Session);
 }
 
-UnicodeString GetNeonError(ne_session * Session)
+UnicodeString GetNeonError(ne_session *Session)
 {
   return StrFromNeon(ne_get_error(Session));
 }
 
-void CheckNeonStatus(ne_session * Session, int NeonStatus,
-  const UnicodeString & AHostName, const UnicodeString & CustomError)
+void CheckNeonStatus(ne_session *Session, intptr_t NeonStatus,
+  UnicodeString AHostName, UnicodeString CustomError)
 {
   if (NeonStatus == NE_OK)
   {
@@ -169,18 +169,18 @@ void CheckNeonStatus(ne_session * Session, int NeonStatus,
         break;
 
       case NE_REDIRECT:
-        {
-          char* Uri = ne_uri_unparse(ne_redirect_location(Session));
-          Error = FMTLOAD(REQUEST_REDIRECTED, Uri);
-          ne_free(Uri);
-        }
-        break;
+      {
+        char *Uri = ne_uri_unparse(ne_redirect_location(Session));
+        Error = FMTLOAD(REQUEST_REDIRECTED, Uri);
+        ne_free(Uri);
+      }
+      break;
 
       case NE_FAILED: // never used by neon as of 0.30.0
       case NE_RETRY: // not sure if this is a public API
       default:
         DebugFail();
-        Error = FORMAT(L"Unexpected neon error %d", NeonStatus);
+        Error = FORMAT("Unexpected neon error %d", NeonStatus);
         break;
       }
     }
@@ -189,10 +189,10 @@ void CheckNeonStatus(ne_session * Session, int NeonStatus,
   }
 }
 
-UnicodeString GetNeonRedirectUrl(ne_session * Session)
+UnicodeString GetNeonRedirectUrl(ne_session *Session)
 {
-  const ne_uri * RedirectUri = ne_redirect_location(Session);
-  char * RedirectUriStr = ne_uri_unparse(RedirectUri);
+  const ne_uri *RedirectUri = ne_redirect_location(Session);
+  char *RedirectUriStr = ne_uri_unparse(RedirectUri);
   UnicodeString Result = StrFromNeon(RedirectUriStr);
   ne_free(RedirectUriStr);
   return Result;
@@ -200,7 +200,7 @@ UnicodeString GetNeonRedirectUrl(ne_session * Session)
 
 #define MAX_REDIRECT_ATTEMPTS 5
 
-void CheckRedirectLoop(const UnicodeString & RedirectUrl, TStrings * AttemptedUrls)
+void CheckRedirectLoop(UnicodeString RedirectUrl, TStrings *AttemptedUrls)
 {
   if (AttemptedUrls->GetCount() > MAX_REDIRECT_ATTEMPTS)
   {
@@ -217,8 +217,7 @@ void CheckRedirectLoop(const UnicodeString & RedirectUrl, TStrings * AttemptedUr
   }
 }
 
-extern "C"
-{
+extern "C" {
 
 void ne_init_ssl_session(struct ssl_st * Ssl, ne_session * Session)
 {
@@ -232,26 +231,26 @@ void ne_init_ssl_session(struct ssl_st * Ssl, ne_session * Session)
 
 } // extern "C"
 
-void SetNeonTlsInit(ne_session * Session, TNeonTlsInit OnNeonTlsInit)
+void SetNeonTlsInit(ne_session *Session, TNeonTlsInit OnNeonTlsInit)
 {
-  ne_set_session_private(Session, SESSION_TLS_INIT_KEY, (void*)OnNeonTlsInit);
+  ne_set_session_private(Session, SESSION_TLS_INIT_KEY, ToPtr(OnNeonTlsInit));
 }
 
-AnsiString NeonExportCertificate(const ne_ssl_certificate * Certificate)
+AnsiString NeonExportCertificate(const ne_ssl_certificate *Certificate)
 {
-  char * AsciiCert = ne_ssl_cert_export(Certificate);
+  char *AsciiCert = ne_ssl_cert_export(Certificate);
   AnsiString Result = AsciiCert;
   ne_free(AsciiCert);
   return Result;
 }
 
-bool NeonWindowsValidateCertificate(int & Failures, const AnsiString & AsciiCert, UnicodeString & Error)
+bool NeonWindowsValidateCertificate(int &Failures, AnsiString AsciiCert, UnicodeString &Error)
 {
   bool Result = false;
   // We can accept only unknown certificate authority.
   if (FLAGSET(Failures, NE_SSL_UNTRUSTED))
   {
-    unsigned char * Certificate = nullptr;
+    unsigned char *Certificate = nullptr;
     size_t CertificateLen = ne_unbase64(AsciiCert.c_str(), &Certificate);
 
     if (CertificateLen > 0)
@@ -268,7 +267,7 @@ bool NeonWindowsValidateCertificate(int & Failures, const AnsiString & AsciiCert
   return Result;
 }
 
-UnicodeString NeonCertificateFailuresErrorStr(int Failures, const UnicodeString & HostName)
+UnicodeString NeonCertificateFailuresErrorStr(int Failures, UnicodeString HostName)
 {
   int FailuresToList = Failures;
 
@@ -286,7 +285,7 @@ UnicodeString NeonCertificateFailuresErrorStr(int Failures, const UnicodeString 
   // NEON checks certificate host name on its own
   if (FLAGSET(FailuresToList, NE_SSL_IDMISMATCH))
   {
-    AddToList(Result, FMTLOAD(CERT_NAME_MISMATCH, HostName.c_str()), L" ");
+    AddToList(Result, FMTLOAD(CERT_NAME_MISMATCH, HostName), L" ");
     FailuresToList &= ~NE_SSL_IDMISMATCH;
   }
   if (FLAGSET(FailuresToList, NE_SSL_UNTRUSTED))

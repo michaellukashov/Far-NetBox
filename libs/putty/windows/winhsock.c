@@ -125,6 +125,11 @@ static void sk_handle_close(Socket s)
 {
     Handle_Socket ps = (Handle_Socket) s;
 
+    if (ps->defer_close) {
+        ps->deferred_close = TRUE;
+        return;
+    }
+
 #ifdef MPEXT
     // WinSCP core uses do_select as signalization of connection up/down
     do_select(ps->plug, INVALID_SOCKET, 0);
@@ -352,6 +357,8 @@ Socket make_handle_socket(HANDLE send_H, HANDLE recv_H, HANDLE stderr_H,
     if (ret->stderr_H)
         ret->stderr_h = handle_input_new(ret->stderr_H, handle_stderr,
                                          ret, flags);
+
+    ret->defer_close = ret->deferred_close = FALSE;
 
 #ifdef MPEXT
     // WinSCP core uses do_select as signalization of connection up/down

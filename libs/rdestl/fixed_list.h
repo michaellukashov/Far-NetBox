@@ -40,7 +40,7 @@ private:
 	struct node
 	{
 		node() {}
-		explicit node(const T& v, int i): value(v), index((index_type)i) {}
+		explicit node(const T& v, int i): value(v), index(static_cast<index_type>(i)) {}
 		void reset()
 		{
 			index = index_next = index_prev = 0;
@@ -318,12 +318,12 @@ private:
 	void init_free_indices()
 	{
 		for (int i = 0; i < TCapacity + 1; ++i)
-			m_free_indices[i] = (index_type)i;
+			m_free_indices[i] = static_cast<index_type>(i);
 		m_free_index_top = TCapacity;
 	}
 	RDE_FORCEINLINE node* get_nodes() const
 	{
-		return (node*)(&m_node_mem[0]);
+		return static_cast<node*>(&m_node_mem[0]);
 	}
 	void copy(const fixed_list& rhs, int_to_type<true>)
 	{
@@ -336,7 +336,7 @@ private:
 	RDE_FORCEINLINE node* get_root() const
 	{
 		// I'll be nice and inline it for the compiler (=get_nodes()).
-		return (node*)(&m_node_mem[0]);
+		return static_cast<node*>(&m_node_mem[0]);
 	}
 
 	typedef typename aligned_as<node>::res	etype_t;

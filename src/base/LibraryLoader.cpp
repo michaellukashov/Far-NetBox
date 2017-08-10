@@ -5,7 +5,7 @@
 #include "LibraryLoader.hpp"
 
 
-TLibraryLoader::TLibraryLoader(const UnicodeString & LibraryName, bool AllowFailure) :
+TLibraryLoader::TLibraryLoader(UnicodeString LibraryName, bool AllowFailure) :
   FHModule(nullptr)
 {
   Load(LibraryName, AllowFailure);
@@ -21,7 +21,7 @@ TLibraryLoader::~TLibraryLoader()
   Unload();
 }
 
-void TLibraryLoader::Load(const UnicodeString & LibraryName, bool AllowFailure)
+void TLibraryLoader::Load(UnicodeString LibraryName, bool AllowFailure)
 {
   DebugAssert(FHModule == nullptr);
 
@@ -44,7 +44,7 @@ void TLibraryLoader::Unload()
 }
 
 // Get procedure address from loaded library by name
-FARPROC TLibraryLoader::GetProcAddress(const AnsiString & ProcedureName) const
+FARPROC TLibraryLoader::GetProcAddress(AnsiString ProcedureName) const
 {
   return ::GetProcAddress(FHModule, ProcedureName.c_str());
 }
@@ -52,7 +52,5 @@ FARPROC TLibraryLoader::GetProcAddress(const AnsiString & ProcedureName) const
 // Get procedure address from loaded library by ordinal value
 FARPROC TLibraryLoader::GetProcAddress(intptr_t ProcedureOrdinal) const
 {
-  return ::GetProcAddress(FHModule, (LPCSTR)nullptr + ProcedureOrdinal);
+  return ::GetProcAddress(FHModule, static_cast<LPCSTR>(nullptr) + ProcedureOrdinal);
 }
-
-

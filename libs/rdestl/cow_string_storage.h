@@ -1,6 +1,8 @@
 #ifndef RDESTL_COW_STRING_STORAGE_H
 #define RDESTL_COW_STRING_STORAGE_H
 
+#include "rdestl_common.h"
+
 namespace rde
 {
 //=============================================================================
@@ -148,7 +150,7 @@ public:
 	{
 		string_rep* rep = get_rep();
 		make_unique(size);
-		rep->size = (short)size;
+		rep->size = static_cast<short>(size);
 		m_data[size] = 0;
 	}
 

@@ -55,7 +55,7 @@ public:
 	void assign(const value_type* str)
 	{
 		RDE_ASSERT(str != data());
-		const size_type len = (size_type)rde::strlen(str);
+		const size_type len = static_cast<size_type>(rde::strlen(str));
 		const size_type toCopy = len < N ? len : N;
 		Sys::MemCpy(data(), str, toCopy * sizeof(value_type));
 		data()[toCopy] = value_type(0);
@@ -67,8 +67,8 @@ public:
 
 	void append(const value_type* str)
 	{
-		const size_type strLen = (size_type)rde::strlen(str);
-		const size_type ourLen = (size_type)rde::strlen(data());
+		const size_type strLen = static_cast<size_type>(rde::strlen(str));
+		const size_type ourLen = static_cast<size_type>(rde::strlen(data()));
 		size_type toAppend = strLen;
 		if (ourLen + toAppend > N)
 			toAppend = N - ourLen;

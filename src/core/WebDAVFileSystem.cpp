@@ -23,6 +23,9 @@
 #include <ne_locks.h>
 #include <expat.h>
 
+#include <StrUtils.hpp>
+#include <NeonIntf.h>
+
 #include "WebDAVFileSystem.h"
 
 #include "Interface.h"
@@ -34,8 +37,25 @@
 #include "HelpCore.h"
 #include "CoreMain.h"
 #include "Security.h"
-#include <NeonIntf.h>
 #include <openssl/ssl.h>
+
+#if 0
+#pragma package(smart_init)
+
+#define FILE_OPERATION_LOOP_TERMINAL FTerminal
+
+const int tfFirstLevel = 0x01;
+
+struct TSinkFileParams
+{
+  UnicodeString TargetDir;
+  const TCopyParamType *CopyParam;
+  int Params;
+  TFileOperationProgressType *OperationProgress;
+  bool Skipped;
+  unsigned int Flags;
+};
+#endif // #if 0
 
 struct TWebDAVCertificateData
 {
@@ -67,33 +87,35 @@ static const int HttpUnauthorized = 401;
 #define PROP_QUOTA_USED "quota-used-bytes"
 #define PROP_EXECUTABLE "executable"
 #define PROP_OWNER "owner"
+#define PROP_DISPLAY_NAME "displayname"
 
-static std::unique_ptr<TCriticalSection> DebugSection(new TCriticalSection);
+static std::unique_ptr<TCriticalSection> DebugSection(TraceInitPtr(new TCriticalSection));
 
-//static rde::set<TWebDAVFileSystem *> FileSystems;
+#if 0
+static rde::set<TWebDAVFileSystem *> FileSystems;
+#endif // #if 0
 
-extern "C"
-{
+extern "C" {
 
 void ne_debug(void * Context, int Channel, const char * Format, ...)
 {
   bool DoLog;
 
   if (FLAGSET(Channel, NE_DBG_SOCKET) ||
-      FLAGSET(Channel, NE_DBG_HTTP) ||
-      FLAGSET(Channel, NE_DBG_HTTPAUTH) ||
-      FLAGSET(Channel, NE_DBG_SSL))
+    FLAGSET(Channel, NE_DBG_HTTP) ||
+    FLAGSET(Channel, NE_DBG_HTTPAUTH) ||
+    FLAGSET(Channel, NE_DBG_SSL))
   {
     DoLog = true;
   }
   else if (FLAGSET(Channel, NE_DBG_XML) ||
-           FLAGSET(Channel, NE_DBG_WINSCP_HTTP_DETAIL))
+    FLAGSET(Channel, NE_DBG_WINSCP_HTTP_DETAIL))
   {
     DoLog = (GetConfiguration()->GetActualLogProtocol() >= 1);
   }
   else if (FLAGSET(Channel, NE_DBG_LOCKS) ||
-           FLAGSET(Channel, NE_DBG_XMLPARSE) ||
-           FLAGSET(Channel, NE_DBG_HTTPBODY))
+    FLAGSET(Channel, NE_DBG_XMLPARSE) ||
+    FLAGSET(Channel, NE_DBG_HTTPBODY))
   {
     DoLog = (GetConfiguration()->GetActualLogProtocol() >= 2);
   }
@@ -103,9 +125,9 @@ void ne_debug(void * Context, int Channel, const char * Format, ...)
     DebugFail();
   }
 
-  #ifndef _DEBUG
+#ifndef _DEBUG
   if (DoLog)
-  #endif
+#endif
   {
     va_list Args;
     va_start(Args, Format);
@@ -132,10 +154,12 @@ void ne_debug(void * Context, int Channel, const char * Format, ...)
         TGuard Guard(*DebugSection.get());
 
         TODO("implement");
-        /*if (FileSystems.size() == 1)
-        {
-          FileSystem = *FileSystems.begin();
-        }*/
+#if 0
+      if (FileSystems.size() == 1)
+      {
+        FileSystem = *FileSystems.begin();
+      }
+#endif // #if 0
       }
 
       if (FileSystem != nullptr)
@@ -151,18 +175,18 @@ void ne_debug(void * Context, int Channel, const char * Format, ...)
 
 // ne_path_escape returns 7-bit string, so it does not really matter if we use
 // AnsiString or UTF8String here, though UTF8String might be more safe
-static AnsiString PathEscape(const char * Path)
+static AnsiString PathEscape(const char *Path)
 {
-  char * EscapedPath = ne_path_escape(Path);
+  char *EscapedPath = ne_path_escape(Path);
   AnsiString Result = EscapedPath;
   ne_free(EscapedPath);
   return Result;
 }
 
-static UTF8String PathUnescape(const char * Path)
+static UTF8String PathUnescape(const char *Path)
 {
-  char * UnescapedPath = ne_path_unescape(Path);
-  UTF8String Result(UnescapedPath, strlen(NullToEmptyA(UnescapedPath)));
+  char *UnescapedPath = ne_path_unescape(NullToEmptyA(Path));
+  UTF8String Result(UnescapedPath, NBChTraitsCRT<char>::SafeStringLen(UnescapedPath));
   ne_free(UnescapedPath);
   return Result;
 }
@@ -219,11 +243,11 @@ UnicodeString NeonVersion()
 
 UnicodeString ExpatVersion()
 {
-  return FORMAT(L"%d.%d.%d", XML_MAJOR_VERSION, XML_MINOR_VERSION, XML_MICRO_VERSION);
+  return FORMAT("%d.%d.%d", XML_MAJOR_VERSION, XML_MINOR_VERSION, XML_MICRO_VERSION);
 }
 
 
-TWebDAVFileSystem::TWebDAVFileSystem(TTerminal * ATerminal) :
+TWebDAVFileSystem::TWebDAVFileSystem(TTerminal *ATerminal) :
   TCustomFileSystem(OBJECT_CLASS_TWebDAVFileSystem, ATerminal),
   FActive(false),
   FHasTrailingSlash(false),
@@ -268,11 +292,13 @@ TWebDAVFileSystem::~TWebDAVFileSystem()
     }
   }
 
+#if 0
+  delete FNeonLockStoreSection;
+#endif // #if 0
 }
 
 void TWebDAVFileSystem::Open()
 {
-
   if (!NeonInitialized)
   {
     throw Exception(LoadStr(NEON_INIT_FAILED));
@@ -291,17 +317,17 @@ void TWebDAVFileSystem::Open()
   FTlsVersionStr.Clear();
   FCapabilities = 0;
 
-  TSessionData * Data = FTerminal->GetSessionData();
+  TSessionData *Data = FTerminal->GetSessionData();
 
   FSessionInfo.LoginTime = Now();
 
   UnicodeString HostName = Data->GetHostNameExpanded();
   size_t Port = Data->GetPortNumber();
-  UnicodeString ProtocolName = (FTerminal->GetSessionData()->GetFtps() == ftpsNone) ? WebDAVProtocol : WebDAVSProtocol;
+  UnicodeString ProtocolName = (GetFtps() == ftpsNone) ? HttpProtocol : HttpsProtocol;
   UnicodeString Path = Data->GetRemoteDirectory();
   // PathToNeon is not used as we cannot call AbsolutePath here
   UnicodeString EscapedPath = StrFromNeon(PathEscape(StrToNeon(Path)).c_str());
-  UnicodeString Url = FORMAT(L"%s://%s:%d%s", ProtocolName.c_str(), HostName.c_str(), Port, EscapedPath.c_str());
+  UnicodeString Url = FORMAT("%s://%s:%d%s", ProtocolName, HostName, Port, EscapedPath);
 
   FTerminal->Information(LoadStr(STATUS_CONNECT), true);
   FActive = false;
@@ -309,7 +335,7 @@ void TWebDAVFileSystem::Open()
   {
     OpenUrl(Url);
   }
-  catch (Exception & E)
+  catch (Exception &E)
   {
     CloseNeonSession();
     FTerminal->Closed();
@@ -318,7 +344,7 @@ void TWebDAVFileSystem::Open()
   FActive = true;
 }
 
-UnicodeString TWebDAVFileSystem::ParsePathFromUrl(const UnicodeString & Url) const
+UnicodeString TWebDAVFileSystem::ParsePathFromUrl(UnicodeString Url) const
 {
   UnicodeString Result;
   ne_uri ParsedUri;
@@ -330,7 +356,7 @@ UnicodeString TWebDAVFileSystem::ParsePathFromUrl(const UnicodeString & Url) con
   return Result;
 }
 
-void TWebDAVFileSystem::OpenUrl(const UnicodeString & Url)
+void TWebDAVFileSystem::OpenUrl(UnicodeString Url)
 {
   UnicodeString CorrectedUrl;
   NeonClientOpenSessionInternal(CorrectedUrl, Url);
@@ -348,9 +374,8 @@ void TWebDAVFileSystem::OpenUrl(const UnicodeString & Url)
   }
 }
 
-void TWebDAVFileSystem::NeonClientOpenSessionInternal(UnicodeString & CorrectedUrl, UnicodeString Url)
+void TWebDAVFileSystem::NeonClientOpenSessionInternal(UnicodeString &CorrectedUrl, UnicodeString Url)
 {
-  // TraceCallstack();
   std::unique_ptr<TStringList> AttemptedUrls(CreateSortedStringList());
   AttemptedUrls->Add(Url);
   while (true)
@@ -369,10 +394,37 @@ void TWebDAVFileSystem::NeonClientOpenSessionInternal(UnicodeString & CorrectedU
   }
 
   CorrectedUrl = Url;
-  // TraceExit();
 }
 
-void TWebDAVFileSystem::NeonOpen(UnicodeString & CorrectedUrl, const UnicodeString & Url)
+void TWebDAVFileSystem::SetSessionTls(ne_session_s *Session, bool Aux)
+{
+  SetNeonTlsInit(Session, InitSslSession);
+
+  // When the CA certificate or server certificate has
+  // verification problems, neon will call our verify function before
+  // outright rejection of the connection.
+  ne_ssl_verify_fn Callback = Aux ? NeonServerSSLCallbackAux : NeonServerSSLCallbackMain;
+  ne_ssl_set_verify(Session, Callback, this);
+
+  ne_ssl_trust_default_ca(Session);
+}
+
+void TWebDAVFileSystem::InitSession(ne_session_s *Session)
+{
+  TSessionData *Data = FTerminal->GetSessionData();
+
+  InitNeonSession(
+    Session, Data->GetProxyMethod(), Data->GetProxyHost(), Data->GetProxyPort(),
+    Data->GetProxyUsername(), Data->GetProxyPassword());
+
+  ne_set_read_timeout(FNeonSession, ToInt(Data->GetTimeout()));
+
+  ne_set_connect_timeout(FNeonSession, ToInt(Data->GetTimeout()));
+
+  ne_set_session_private(Session, SESSION_FS_KEY, this);
+}
+
+void TWebDAVFileSystem::NeonOpen(UnicodeString &CorrectedUrl, UnicodeString Url)
 {
   ne_uri uri;
   NeonParseUrl(Url, uri);
@@ -385,23 +437,18 @@ void TWebDAVFileSystem::NeonOpen(UnicodeString & CorrectedUrl, const UnicodeStri
   bool Ssl = IsTlsUri(uri);
   FSessionInfo.SecurityProtocolName = Ssl ? LoadStr(FTPS_IMPLICIT) : UnicodeString();
 
-  if (Ssl != (FTerminal->GetSessionData()->GetFtps() != ftpsNone))
+  if (Ssl != (GetFtps() != ftpsNone))
   {
-    FTerminal->LogEvent(FORMAT(L"Warning: %s", LoadStr(UNENCRYPTED_REDIRECT).c_str()));
+    FTerminal->LogEvent(FORMAT("Warning: %s", LoadStr(UNENCRYPTED_REDIRECT)));
   }
 
-  TSessionData * Data = FTerminal->GetSessionData();
-
   DebugAssert(FNeonSession == nullptr);
-  FNeonSession =
-    CreateNeonSession(
-      uri, Data->GetProxyMethod(), Data->GetProxyHost(), Data->GetProxyPort(),
-      Data->GetProxyUsername(), Data->GetProxyPassword());
-
+  FNeonSession = CreateNeonSession(uri);
+  InitSession(FNeonSession);
 
   UTF8String Path(uri.path);
   ne_uri_free(&uri);
-  ne_set_session_private(FNeonSession, SESSION_FS_KEY, this);
+  ne_set_aux_request_init(FNeonSession, NeonAuxRequestInit, this);
 
   // Other flags:
   // NE_DBG_FLUSH - used only in native implementation of ne_debug
@@ -418,22 +465,11 @@ void TWebDAVFileSystem::NeonOpen(UnicodeString & CorrectedUrl, const UnicodeStri
     NE_DBG_SSL |
     FLAGMASK(GetConfiguration()->GetLogSensitive(), NE_DBG_HTTPPLAIN);
 
-  ne_set_read_timeout(FNeonSession, (int)Data->GetTimeout());
-
-  ne_set_connect_timeout(FNeonSession, (int)Data->GetTimeout());
-
   NeonAddAuthentication(Ssl);
 
   if (Ssl)
   {
-    SetNeonTlsInit(FNeonSession, InitSslSession);
-
-    // When the CA certificate or server certificate has
-    // verification problems, neon will call our verify function before
-    // outright rejection of the connection.
-    ne_ssl_set_verify(FNeonSession, NeonServerSSLCallback, this);
-
-    ne_ssl_trust_default_ca(FNeonSession);
+    SetSessionTls(FNeonSession, false);
 
     ne_ssl_provide_clicert(FNeonSession, NeonProvideClientCert, this);
   }
@@ -448,9 +484,24 @@ void TWebDAVFileSystem::NeonOpen(UnicodeString & CorrectedUrl, const UnicodeStri
   ExchangeCapabilities(Path.c_str(), CorrectedUrl);
 }
 
+void TWebDAVFileSystem::NeonAuxRequestInit(ne_session *Session, ne_request * /*Request*/, void *UserData)
+{
+  TWebDAVFileSystem *FileSystem = static_cast<TWebDAVFileSystem *>(UserData);
+  FileSystem->InitSession(Session);
+
+  ne_uri uri = {nullptr};
+  ne_fill_server_uri(Session, &uri);
+  bool Tls = IsTlsUri(uri);
+  ne_uri_free(&uri);
+
+  if (Tls)
+  {
+    FileSystem->SetSessionTls(Session, true);
+  }
+}
+
 void TWebDAVFileSystem::NeonAddAuthentication(bool UseNegotiate)
 {
-  // TraceCallstack();
   unsigned int NeonAuthTypes = NE_AUTH_BASIC | NE_AUTH_DIGEST | NE_AUTH_PASSPORT;
   if (UseNegotiate)
   {
@@ -462,11 +513,11 @@ void TWebDAVFileSystem::NeonAddAuthentication(bool UseNegotiate)
 UnicodeString TWebDAVFileSystem::GetRedirectUrl() const
 {
   UnicodeString Result = GetNeonRedirectUrl(FNeonSession);
-  FTerminal->LogEvent(FORMAT(L"Redirected to \"%s\".", Result.c_str()));
+  FTerminal->LogEvent(FORMAT("Redirected to \"%s\".", Result));
   return Result;
 }
 
-void TWebDAVFileSystem::ExchangeCapabilities(const char * APath, UnicodeString & CorrectedUrl)
+void TWebDAVFileSystem::ExchangeCapabilities(const char *APath, UnicodeString &CorrectedUrl)
 {
   ClearNeonError();
 
@@ -498,7 +549,7 @@ void TWebDAVFileSystem::ExchangeCapabilities(const char * APath, UnicodeString &
         }
         Capability <<= 1;
       }
-      FTerminal->LogEvent(FORMAT(L"Server capabilities: %s", Str.c_str()));
+      FTerminal->LogEvent(FORMAT("Server capabilities: %s", Str));
       FFileSystemInfo.AdditionalInfo +=
         LoadStr(WEBDAV_EXTENSION_INFO) + sLineBreak +
         L"  " + Str + sLineBreak;
@@ -559,6 +610,13 @@ void TWebDAVFileSystem::CollectUsage()
 //    GetConfiguration()->GetUsage()->Inc(L"OpenedSessionsWebDAVSCertificate");
   }
 
+  // The Authorization header for passport method is included only in the first request,
+  // so we have to use FLastAuthorizationProtocol
+  if (SameText(FLastAuthorizationProtocol, L"Passport1.4"))
+  {
+//    Configuration->Usage->Inc(L"OpenedSessionsWebDAVSPassport");
+  }
+
   UnicodeString RemoteSystem = FFileSystemInfo.RemoteSystem;
   if (ContainsText(RemoteSystem, L"Microsoft-IIS"))
   {
@@ -580,17 +638,17 @@ void TWebDAVFileSystem::CollectUsage()
   }
 }
 
-const TSessionInfo & TWebDAVFileSystem::GetSessionInfo() const
+const TSessionInfo &TWebDAVFileSystem::GetSessionInfo() const
 {
   return FSessionInfo;
 }
 
-const TFileSystemInfo & TWebDAVFileSystem::GetFileSystemInfo(bool /*Retrieve*/)
+const TFileSystemInfo &TWebDAVFileSystem::GetFileSystemInfo(bool /*Retrieve*/)
 {
   return FFileSystemInfo;
 }
 
-bool TWebDAVFileSystem::TemporaryTransferFile(const UnicodeString & /*AFileName*/)
+bool TWebDAVFileSystem::TemporaryTransferFile(UnicodeString /*AFileName*/)
 {
   return false;
 }
@@ -600,7 +658,7 @@ bool TWebDAVFileSystem::GetStoredCredentialsTried() const
   return FStoredPasswordTried;
 }
 
-UnicodeString TWebDAVFileSystem::FSGetUserName() const
+UnicodeString TWebDAVFileSystem::RemoteGetUserName() const
 {
   return FUserName;
 }
@@ -611,7 +669,7 @@ void TWebDAVFileSystem::Idle()
   // noop
 }
 
-UnicodeString TWebDAVFileSystem::GetAbsolutePath(const UnicodeString & APath, bool /*Local*/) const
+UnicodeString TWebDAVFileSystem::GetAbsolutePath(UnicodeString APath, bool /*Local*/) const
 {
   bool AddTrailingBackslash;
 
@@ -626,18 +684,18 @@ UnicodeString TWebDAVFileSystem::GetAbsolutePath(const UnicodeString & APath, bo
     AddTrailingBackslash = (APath[APath.Length()] == L'/');
   }
 
-  UnicodeString Result = core::AbsolutePath(GetCurrDirectory(), APath);
+  UnicodeString Result = base::AbsolutePath(RemoteGetCurrentDirectory(), APath);
   // We must preserve trailing slash, because particularly for mod_dav,
   // it really matters if the slash in there or not
   if (AddTrailingBackslash)
   {
-    Result = core::UnixIncludeTrailingBackslash(Result);
+    Result = base::UnixIncludeTrailingBackslash(Result);
   }
 
   return Result;
 }
 
-UnicodeString TWebDAVFileSystem::GetAbsolutePath(const UnicodeString & APath, bool Local)
+UnicodeString TWebDAVFileSystem::GetAbsolutePath(UnicodeString APath, bool Local)
 {
   return static_cast<const TWebDAVFileSystem *>(this)->GetAbsolutePath(APath, Local);
 }
@@ -652,9 +710,12 @@ bool TWebDAVFileSystem::IsCapable(intptr_t Capability) const
   case fcMoveToQueue:
   case fcPreservingTimestampUpload:
   case fcCheckingSpaceAvailable:
-    // Only to make double-click on file edit/open the file,
-    // instead of trying to open it as directory
+  // Only to make double-click on file edit/open the file,
+  // instead of trying to open it as directory
   case fcResolveSymlink:
+  case fsSkipTransfer:
+  case fsParallelTransfers:
+  case fcRemoteCopy:
     return true;
 
   case fcUserGroupListing:
@@ -677,9 +738,9 @@ bool TWebDAVFileSystem::IsCapable(intptr_t Capability) const
   case fcGroupOwnerChangingByID:
   case fcRemoveCtrlZUpload:
   case fcRemoveBOMUpload:
-  case fcRemoteCopy:
   case fcPreservingTimestampDirs:
   case fcResumeSupport:
+  case fcChangePassword:
     return false;
 
   case fcLocking:
@@ -691,7 +752,7 @@ bool TWebDAVFileSystem::IsCapable(intptr_t Capability) const
   }
 }
 
-UnicodeString TWebDAVFileSystem::GetCurrDirectory() const
+UnicodeString TWebDAVFileSystem::RemoteGetCurrentDirectory() const
 {
   return FCurrentDirectory;
 }
@@ -707,6 +768,7 @@ void TWebDAVFileSystem::DoStartup()
 void TWebDAVFileSystem::ClearNeonError()
 {
   FCancelled = false;
+  FSkipped = false;
   FAuthenticationRequested = false;
   ne_set_error(FNeonSession, "");
 }
@@ -716,12 +778,22 @@ UnicodeString TWebDAVFileSystem::GetNeonError() const
   return ::GetNeonError(FNeonSession);
 }
 
-void TWebDAVFileSystem::CheckStatus(int NeonStatus)
+void TWebDAVFileSystem::CheckStatus(intptr_t NeonStatus)
 {
-  if ((NeonStatus == NE_ERROR) && FCancelled)
+  if ((NeonStatus == NE_ERROR) && (FCancelled || FSkipped))
   {
-    FCancelled = false;
-    Abort();
+    if (FCancelled)
+    {
+      FCancelled = false;
+      FSkipped = false; // just in case
+      Abort();
+    }
+    else
+    {
+      DebugAssert(FSkipped);
+      FSkipped = false;
+      ThrowSkipFileNull();
+    }
   }
   else
   {
@@ -752,17 +824,16 @@ void TWebDAVFileSystem::HomeDirectory()
   ChangeDirectory(L"/");
 }
 
-UnicodeString TWebDAVFileSystem::DirectoryPath(const UnicodeString & APath) const
+UnicodeString TWebDAVFileSystem::DirectoryPath(UnicodeString APath) const
 {
   if (FHasTrailingSlash)
   {
-    return core::UnixIncludeTrailingBackslash(APath);
+    return base::UnixIncludeTrailingBackslash(APath);
   }
-  else
-    return APath;
+  return APath;
 }
 
-UnicodeString TWebDAVFileSystem::FilePath(const TRemoteFile * AFile) const
+UnicodeString TWebDAVFileSystem::FilePath(const TRemoteFile *AFile) const
 {
   UnicodeString Result = AFile->GetFullFileName();
   if (AFile->GetIsDirectory())
@@ -772,13 +843,13 @@ UnicodeString TWebDAVFileSystem::FilePath(const TRemoteFile * AFile) const
   return Result;
 }
 
-void TWebDAVFileSystem::TryOpenDirectory(const UnicodeString & ADirectory)
+void TWebDAVFileSystem::TryOpenDirectory(UnicodeString ADirectory)
 {
-  UnicodeString Directory = DirectoryPath(ADirectory);
-  FTerminal->LogEvent(FORMAT(L"Trying to open directory \"%s\".", Directory.c_str()));
-  TRemoteFile * File;
-  ReadFile(Directory, File);
-  delete File;
+  ADirectory = DirectoryPath(ADirectory);
+  FTerminal->LogEvent(FORMAT("Trying to open directory \"%s\".", ADirectory));
+  TRemoteFile *File = nullptr;
+  ReadFile(ADirectory, File);
+  SAFE_DESTROY(File);
 }
 
 void TWebDAVFileSystem::AnnounceFileListOperation()
@@ -786,7 +857,7 @@ void TWebDAVFileSystem::AnnounceFileListOperation()
   // noop
 }
 
-void TWebDAVFileSystem::ChangeDirectory(const UnicodeString & ADirectory)
+void TWebDAVFileSystem::ChangeDirectory(UnicodeString ADirectory)
 {
   UnicodeString Path = GetAbsolutePath(ADirectory, false);
 
@@ -797,28 +868,29 @@ void TWebDAVFileSystem::ChangeDirectory(const UnicodeString & ADirectory)
   FCachedDirectoryChange = Path;
 }
 
-void TWebDAVFileSystem::CachedChangeDirectory(const UnicodeString & Directory)
+void TWebDAVFileSystem::CachedChangeDirectory(UnicodeString Directory)
 {
-  FCachedDirectoryChange = core::UnixExcludeTrailingBackslash(Directory);
+  FCachedDirectoryChange = base::UnixExcludeTrailingBackslash(Directory);
 }
 
 struct TReadFileData
 {
-CUSTOM_MEM_ALLOCATION_IMPL
-  TWebDAVFileSystem * FileSystem;
-  TRemoteFile * File;
-  TRemoteFileList * FileList;
+  CUSTOM_MEM_ALLOCATION_IMPL
+  TWebDAVFileSystem *FileSystem;
+  TRemoteFile *File;
+  TRemoteFileList *FileList;
 };
 
-int TWebDAVFileSystem::ReadDirectoryInternal(const UnicodeString & APath, TRemoteFileList * AFileList)
+int TWebDAVFileSystem::ReadDirectoryInternal(
+  UnicodeString APath, TRemoteFileList *AFileList)
 {
   TReadFileData Data;
   Data.FileSystem = this;
   Data.File = nullptr;
   Data.FileList = AFileList;
   ClearNeonError();
-  ne_propfind_handler * PropFindHandler = ne_propfind_create(FNeonSession, PathToNeon(APath), NE_DEPTH_ONE);
-  void * DiscoveryContext = ne_lock_register_discovery(PropFindHandler);
+  ne_propfind_handler *PropFindHandler = ne_propfind_create(FNeonSession, PathToNeon(APath), NE_DEPTH_ONE);
+  void *DiscoveryContext = ne_lock_register_discovery(PropFindHandler);
   int Result;
   try__finally
   {
@@ -831,15 +903,15 @@ int TWebDAVFileSystem::ReadDirectoryInternal(const UnicodeString & APath, TRemot
   }
   __finally
   {
-/*
+#if 0
     ne_lock_discovery_free(DiscoveryContext);
     ne_propfind_destroy(PropFindHandler);
-*/
+#endif // #if 0
   };
   return Result;
 }
 
-bool TWebDAVFileSystem::IsValidRedirect(int NeonStatus, UnicodeString & APath) const
+bool TWebDAVFileSystem::IsValidRedirect(intptr_t NeonStatus, UnicodeString &APath) const
 {
   bool Result = (NeonStatus == NE_REDIRECT);
   if (Result)
@@ -866,7 +938,7 @@ bool TWebDAVFileSystem::IsValidRedirect(int NeonStatus, UnicodeString & APath) c
   return Result;
 }
 
-void TWebDAVFileSystem::ReadDirectory(TRemoteFileList * AFileList)
+void TWebDAVFileSystem::ReadDirectory(TRemoteFileList *AFileList)
 {
   UnicodeString Path = DirectoryPath(AFileList->GetDirectory());
   TOperationVisualizer Visualizer(FTerminal->GetUseBusyCursor());
@@ -886,24 +958,24 @@ void TWebDAVFileSystem::ReadSymlink(TRemoteFile * /*SymlinkFile*/,
   DebugFail();
 }
 
-void TWebDAVFileSystem::ReadFile(const UnicodeString & AFileName,
-  TRemoteFile *& AFile)
+void TWebDAVFileSystem::ReadFile(UnicodeString AFileName,
+  TRemoteFile *&AFile)
 {
   CustomReadFile(AFileName, AFile, nullptr);
 }
 
 void TWebDAVFileSystem::NeonPropsResult(
-  void * UserData, const ne_uri * Uri, const ne_prop_result_set * Results)
+  void *UserData, const ne_uri *Uri, const ne_prop_result_set *Results)
 {
   UnicodeString Path = StrFromNeon(PathUnescape(Uri->path).c_str());
 
-  TReadFileData & Data = *static_cast<TReadFileData *>(UserData);
+  TReadFileData &Data = *static_cast<TReadFileData *>(UserData);
   if (Data.FileList != nullptr)
   {
     UnicodeString FileListPath = Data.FileSystem->GetAbsolutePath(Data.FileList->GetDirectory(), false);
-    if (core::UnixSamePath(Path, FileListPath))
+    if (base::UnixSamePath(Path, FileListPath))
     {
-      Path = core::UnixIncludeTrailingBackslash(core::UnixIncludeTrailingBackslash(Path) + L"..");
+      Path = base::UnixIncludeTrailingBackslash(base::UnixIncludeTrailingBackslash(Path) + L"..");
     }
     std::unique_ptr<TRemoteFile> File(new TRemoteFile());
     File->SetTerminal(Data.FileSystem->FTerminal);
@@ -916,8 +988,8 @@ void TWebDAVFileSystem::NeonPropsResult(
   }
 }
 
-const char * TWebDAVFileSystem::GetNeonProp(
-  const ne_prop_result_set * Results, const char * Name, const char * NameSpace)
+const char *TWebDAVFileSystem::GetNeonProp(
+  const ne_prop_result_set *Results, const char *Name, const char *NameSpace)
 {
   ne_propname Prop;
   Prop.nspace = (NameSpace == nullptr) ? DAV_PROP_NAMESPACE : NameSpace;
@@ -925,23 +997,24 @@ const char * TWebDAVFileSystem::GetNeonProp(
   return ne_propset_value(Results, &Prop);
 }
 
-void TWebDAVFileSystem::ParsePropResultSet(TRemoteFile * AFile,
-  const UnicodeString & APath, const ne_prop_result_set * Results)
+void TWebDAVFileSystem::ParsePropResultSet(TRemoteFile *AFile,
+  UnicodeString APath, const ne_prop_result_set *Results)
 {
-  AFile->SetFullFileName(core::UnixExcludeTrailingBackslash(APath));
+  AFile->SetFullFileName(base::UnixExcludeTrailingBackslash(APath));
   // Some servers do not use DAV:collection tag, but indicate the folder by trailing slash only.
   // It seems that all servers actually use the trailing slash, including IIS, mod_Dav, IT Hit, OpenDrive, etc.
   bool Collection = (AFile->GetFullFileName() != APath);
   AFile->SetFileName(base::UnixExtractFileName(AFile->GetFullFileName()));
-  const char * ContentLength = GetNeonProp(Results, PROP_CONTENT_LENGTH);
+  const char *ContentLength = GetNeonProp(Results, PROP_CONTENT_LENGTH);
   // some servers, for example iFiles, do not provide "getcontentlength" for folders
   if (ContentLength != nullptr)
   {
     AFile->SetSize(StrToInt64Def(ContentLength, 0));
   }
-  const char * LastModified = GetNeonProp(Results, PROP_LAST_MODIFIED);
-  const char * CreationDate = GetNeonProp(Results, PROP_CREATIONDATE);
-  const char * Modified = LastModified ? LastModified : CreationDate;
+  const char *LastModified = GetNeonProp(Results, PROP_LAST_MODIFIED);
+  const char *CreationDate = GetNeonProp(Results, PROP_CREATIONDATE);
+  const char *Modified = LastModified ? LastModified : CreationDate;
+  // We've seen a server (t=24891) that does not set "getlastmodified" for the "this" folder entry.
   if (DebugAlwaysTrue(Modified != nullptr))
   {
     char WeekDay[4] = {L'\0'};
@@ -961,8 +1034,8 @@ void TWebDAVFileSystem::ParsePropResultSet(TRemoteFile * AFile,
       if (Month >= 1)
       {
         TDateTime Modification =
-          EncodeDateVerbose((unsigned short)Year, (unsigned short)Month, (unsigned short)Day) +
-          EncodeTimeVerbose((unsigned short)Hour, (unsigned short)Min, (unsigned short)Sec, 0);
+          EncodeDateVerbose(static_cast<unsigned short>(Year), static_cast<unsigned short>(Month), static_cast<unsigned short>(Day)) +
+          EncodeTimeVerbose(static_cast<unsigned short>(Hour), static_cast<unsigned short>(Min), static_cast<unsigned short>(Sec), 0);
         AFile->SetModification(ConvertTimestampFromUTC(Modification));
         AFile->SetModificationFmt(mfFull);
       }
@@ -974,7 +1047,7 @@ void TWebDAVFileSystem::ParsePropResultSet(TRemoteFile * AFile,
   {
     // This is possibly redundant code as all servers we know (see a comment above)
     // indicate the folder by trailing slash too
-    const char * ResourceType = GetNeonProp(Results, PROP_RESOURCE_TYPE);
+    const char *ResourceType = GetNeonProp(Results, PROP_RESOURCE_TYPE);
     if (ResourceType != nullptr)
     {
       // property has XML value
@@ -989,16 +1062,22 @@ void TWebDAVFileSystem::ParsePropResultSet(TRemoteFile * AFile,
 
   AFile->SetType(Collection ? FILETYPE_DIRECTORY : FILETYPE_DEFAULT);
   // this is MS extension (draft-hopmann-collection-props-00)
-  const char * IsHidden = GetNeonProp(Results, PROP_HIDDEN);
+  const char *IsHidden = GetNeonProp(Results, PROP_HIDDEN);
   if (IsHidden != nullptr)
   {
     AFile->SetIsHidden(StrToIntDef(IsHidden, 0) != 0);
   }
 
-  const char * Owner = GetNeonProp(Results, PROP_OWNER);
+  const char *Owner = GetNeonProp(Results, PROP_OWNER);
   if (Owner != nullptr)
   {
     AFile->GetFileOwner().SetName(Owner);
+  }
+
+  const char *DisplayName = GetNeonProp(Results, PROP_DISPLAY_NAME);
+  if (DisplayName != nullptr)
+  {
+    AFile->SetDisplayName(StrFromNeon(DisplayName));
   }
 
   const UnicodeString RightsDelimiter(L", ");
@@ -1006,7 +1085,7 @@ void TWebDAVFileSystem::ParsePropResultSet(TRemoteFile * AFile,
 
   // Proprietary property of mod_dav
   // http://www.webdav.org/mod_dav/#imp
-  const char * Executable = GetNeonProp(Results, PROP_EXECUTABLE, MODDAV_PROP_NAMESPACE);
+  const char *Executable = GetNeonProp(Results, PROP_EXECUTABLE, MODDAV_PROP_NAMESPACE);
   if (Executable != nullptr)
   {
     if (strcmp(Executable, "T") == 0)
@@ -1025,7 +1104,7 @@ void TWebDAVFileSystem::ParsePropResultSet(TRemoteFile * AFile,
     }
   }
 
-  struct ne_lock * Lock = static_cast<struct ne_lock *>(ne_propset_private(Results));
+  struct ne_lock *Lock = static_cast<struct ne_lock *>(ne_propset_private(Results));
   if ((Lock != nullptr) && (Lock->token != nullptr))
   {
     UnicodeString Owner2;
@@ -1044,7 +1123,7 @@ void TWebDAVFileSystem::ParsePropResultSet(TRemoteFile * AFile,
       LockRights = LoadStr(LOCKED);
       if (!Owner2.IsEmpty())
       {
-        LockRights = FORMAT(L"%s (%s)", LockRights.c_str(), Owner2.c_str());
+        LockRights = FORMAT("%s (%s)", LockRights, Owner2);
       }
     }
 
@@ -1054,8 +1133,8 @@ void TWebDAVFileSystem::ParsePropResultSet(TRemoteFile * AFile,
   AFile->SetHumanRights(HumanRights);
 }
 
-int TWebDAVFileSystem::CustomReadFileInternal(const UnicodeString & AFileName,
-  TRemoteFile *& AFile, TRemoteFile * ALinkedByFile)
+intptr_t TWebDAVFileSystem::CustomReadFileInternal(UnicodeString AFileName,
+  TRemoteFile *&AFile, TRemoteFile *ALinkedByFile)
 {
   std::unique_ptr<TRemoteFile> File(new TRemoteFile(ALinkedByFile));
   TReadFileData Data;
@@ -1070,16 +1149,16 @@ int TWebDAVFileSystem::CustomReadFileInternal(const UnicodeString & AFileName,
   {
     AFile = File.release();
   }
-  return Result;
+  return static_cast<intptr_t>(Result);
 }
 
-void TWebDAVFileSystem::CustomReadFile(const UnicodeString & AFileName,
-  TRemoteFile *& AFile, TRemoteFile * ALinkedByFile)
+void TWebDAVFileSystem::CustomReadFile(UnicodeString AFileName,
+  TRemoteFile *&AFile, TRemoteFile *ALinkedByFile)
 {
   UnicodeString FileName = AFileName;
   TOperationVisualizer Visualizer(FTerminal->GetUseBusyCursor());
 
-  int NeonStatus = CustomReadFileInternal(AFileName, AFile, ALinkedByFile);
+  intptr_t NeonStatus = CustomReadFileInternal(AFileName, AFile, ALinkedByFile);
   if (IsValidRedirect(NeonStatus, FileName))
   {
     NeonStatus = CustomReadFileInternal(FileName, AFile, ALinkedByFile);
@@ -1087,8 +1166,8 @@ void TWebDAVFileSystem::CustomReadFile(const UnicodeString & AFileName,
   CheckStatus(NeonStatus);
 }
 
-void TWebDAVFileSystem::RemoteDeleteFile(const UnicodeString & /*AFileName*/,
-  const TRemoteFile * AFile, intptr_t /*Params*/, TRmSessionAction & Action)
+void TWebDAVFileSystem::RemoteDeleteFile(UnicodeString /*AFileName*/,
+  const TRemoteFile *AFile, intptr_t /*Params*/, TRmSessionAction &Action)
 {
   Action.Recursive();
   ClearNeonError();
@@ -1105,15 +1184,15 @@ void TWebDAVFileSystem::RemoteDeleteFile(const UnicodeString & /*AFileName*/,
   DiscardLock(Path);
 }
 
-int TWebDAVFileSystem::RenameFileInternal(const UnicodeString & AFileName,
-  const UnicodeString & ANewName)
+int TWebDAVFileSystem::RenameFileInternal(UnicodeString AFileName,
+  UnicodeString ANewName)
 {
   // 0 = no overwrite
   return ne_move(FNeonSession, 0, PathToNeon(AFileName), PathToNeon(ANewName));
 }
 
-void TWebDAVFileSystem::RemoteRenameFile(const UnicodeString & AFileName,
-  const UnicodeString & ANewName)
+void TWebDAVFileSystem::RemoteRenameFile(UnicodeString AFileName,
+  UnicodeString ANewName)
 {
   ClearNeonError();
   TOperationVisualizer Visualizer(FTerminal->GetUseBusyCursor());
@@ -1129,17 +1208,16 @@ void TWebDAVFileSystem::RemoteRenameFile(const UnicodeString & AFileName,
   DiscardLock(PathToNeon(Path));
 }
 
-int TWebDAVFileSystem::CopyFileInternal(const UnicodeString & AFileName,
-  const UnicodeString & ANewName)
+int TWebDAVFileSystem::CopyFileInternal(UnicodeString AFileName,
+  UnicodeString ANewName)
 {
   // 0 = no overwrite
   return ne_copy(FNeonSession, 0, NE_DEPTH_INFINITE, PathToNeon(AFileName), PathToNeon(ANewName));
 }
 
-void TWebDAVFileSystem::RemoteCopyFile(const UnicodeString & AFileName,
-  const UnicodeString & ANewName)
+void TWebDAVFileSystem::RemoteCopyFile(UnicodeString AFileName,
+  UnicodeString ANewName)
 {
-  // TraceCallstack();
   ClearNeonError();
   TOperationVisualizer Visualizer(FTerminal->GetUseBusyCursor());
 
@@ -1152,21 +1230,21 @@ void TWebDAVFileSystem::RemoteCopyFile(const UnicodeString & AFileName,
   CheckStatus(NeonStatus);
 }
 
-void TWebDAVFileSystem::RemoteCreateDirectory(const UnicodeString & ADirName)
+void TWebDAVFileSystem::RemoteCreateDirectory(UnicodeString ADirName)
 {
   ClearNeonError();
   TOperationVisualizer Visualizer(FTerminal->GetUseBusyCursor());
   CheckStatus(ne_mkcol(FNeonSession, PathToNeon(ADirName)));
 }
 
-void TWebDAVFileSystem::CreateLink(const UnicodeString & /*AFileName*/,
-  const UnicodeString & /*PointTo*/, bool /*Symbolic*/)
+void TWebDAVFileSystem::CreateLink(UnicodeString /*AFileName*/,
+  UnicodeString /*PointTo*/, bool /*Symbolic*/)
 {
   DebugFail();
   // ThrowNotImplemented(1014);
 }
 
-void TWebDAVFileSystem::ChangeFileProperties(const UnicodeString & /*AFileName*/,
+void TWebDAVFileSystem::ChangeFileProperties(UnicodeString /*AFileName*/,
   const TRemoteFile * /*AFile*/, const TRemoteProperties * /*Properties*/,
   TChmodSessionAction & /*Action*/)
 {
@@ -1180,7 +1258,7 @@ bool TWebDAVFileSystem::LoadFilesProperties(TStrings * /*FileList*/)
   return false;
 }
 
-void TWebDAVFileSystem::CalculateFilesChecksum(const UnicodeString & /*Alg*/,
+void TWebDAVFileSystem::CalculateFilesChecksum(UnicodeString /*Alg*/,
   TStrings * /*FileList*/, TStrings * /*Checksums*/,
   TCalculatedChecksumEvent /*OnCalculatedChecksum*/)
 {
@@ -1188,12 +1266,12 @@ void TWebDAVFileSystem::CalculateFilesChecksum(const UnicodeString & /*Alg*/,
 }
 
 void TWebDAVFileSystem::ConfirmOverwrite(
-  const UnicodeString & ASourceFullFileName, UnicodeString & ATargetFileName,
-  TFileOperationProgressType * OperationProgress,
-  const TOverwriteFileParams * FileParams, const TCopyParamType * CopyParam,
+  UnicodeString ASourceFullFileName, UnicodeString &ATargetFileName,
+  TFileOperationProgressType *OperationProgress,
+  const TOverwriteFileParams *FileParams, const TCopyParamType *CopyParam,
   intptr_t Params,
-  OUT TOverwriteMode & /*OverwriteMode*/,
-  OUT uintptr_t & Answer)
+  TOverwriteMode & /*OverwriteMode*/,
+  uintptr_t &Answer)
 {
   // all = "yes to newer"
   int Answers = qaYes | qaNo | qaCancel | qaYesToAll | qaNoToAll | qaAll;
@@ -1217,7 +1295,7 @@ void TWebDAVFileSystem::ConfirmOverwrite(
     Answer =
       FTerminal->ConfirmFileOverwrite(
         ASourceFullFileName, ATargetFileName, FileParams, Answers, &QueryParams,
-        (OperationProgress->Side == osLocal) ? osRemote : osLocal,
+        (OperationProgress->GetSide() == osLocal) ? osRemote : osLocal,
         CopyParam, Params, OperationProgress);
   }
 
@@ -1230,47 +1308,44 @@ void TWebDAVFileSystem::ConfirmOverwrite(
   case qaNo:
     ThrowSkipFileNull();
 
-  default:
-    DebugFail();
   case qaCancel:
-    if (!OperationProgress->Cancel)
-    {
-      OperationProgress->Cancel = csCancel;
-    }
+    OperationProgress->SetCancelAtLeast(csCancel);
     Abort();
     break;
+
+  default:
+    DebugFail();
   }
 }
 
-void TWebDAVFileSystem::CustomCommandOnFile(const UnicodeString & /*AFileName*/,
-  const TRemoteFile * /*AFile*/, const UnicodeString & /*Command*/, intptr_t /*Params*/, TCaptureOutputEvent /*OutputEvent*/)
+void TWebDAVFileSystem::CustomCommandOnFile(UnicodeString /*AFileName*/,
+  const TRemoteFile * /*AFile*/, UnicodeString /*Command*/, intptr_t /*Params*/, TCaptureOutputEvent /*OutputEvent*/)
 {
   DebugFail();
 }
 
-void TWebDAVFileSystem::AnyCommand(const UnicodeString & /*Command*/,
+void TWebDAVFileSystem::AnyCommand(UnicodeString /*Command*/,
   TCaptureOutputEvent /*OutputEvent*/)
 {
   DebugFail();
-  // ThrowNotImplemented(1008);
 }
 
-TStrings * TWebDAVFileSystem::GetFixedPaths() const
+TStrings *TWebDAVFileSystem::GetFixedPaths() const
 {
   return nullptr;
 }
 
 void TWebDAVFileSystem::NeonQuotaResult(
-  void * UserData, const ne_uri * /*Uri*/, const ne_prop_result_set * Results)
+  void *UserData, const ne_uri * /*Uri*/, const ne_prop_result_set *Results)
 {
-  TSpaceAvailable & SpaceAvailable = *static_cast<TSpaceAvailable *>(UserData);
+  TSpaceAvailable &SpaceAvailable = *static_cast<TSpaceAvailable *>(UserData);
 
-  const char * Value = GetNeonProp(Results, PROP_QUOTA_AVAILABLE);
+  const char *Value = GetNeonProp(Results, PROP_QUOTA_AVAILABLE);
   if (Value != nullptr)
   {
     SpaceAvailable.UnusedBytesAvailableToUser = StrToInt64(StrFromNeon(Value));
 
-    const char * Value2 = GetNeonProp(Results, PROP_QUOTA_USED);
+    const char *Value2 = GetNeonProp(Results, PROP_QUOTA_USED);
     if (Value2 != nullptr)
     {
       SpaceAvailable.BytesAvailableToUser =
@@ -1279,8 +1354,8 @@ void TWebDAVFileSystem::NeonQuotaResult(
   }
 }
 
-void TWebDAVFileSystem::SpaceAvailable(const UnicodeString & APath,
-  TSpaceAvailable & ASpaceAvailable)
+void TWebDAVFileSystem::SpaceAvailable(UnicodeString APath,
+  TSpaceAvailable &ASpaceAvailable)
 {
   // RFC4331: https://tools.ietf.org/html/rfc4331
 
@@ -1301,6 +1376,9 @@ void TWebDAVFileSystem::SpaceAvailable(const UnicodeString & APath,
   // WWW-Authenticate: Basic realm="Yandex.Disk"
   // Server: MochiWeb/1.0
 
+  // OneDrive:
+  // it sends the properties unconditionally, even when not explicitly requested
+
   UnicodeString Path = DirectoryPath(APath);
 
   ne_propname QuotaProps[3];
@@ -1319,20 +1397,22 @@ void TWebDAVFileSystem::SpaceAvailable(const UnicodeString & APath,
       NeonQuotaResult, &ASpaceAvailable));
 }
 
-void TWebDAVFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
-  const UnicodeString & ATargetDir, const TCopyParamType * CopyParam,
-  intptr_t Params, TFileOperationProgressType * OperationProgress,
-  TOnceDoneOperation & OnceDoneOperation)
+void TWebDAVFileSystem::CopyToRemote(const TStrings *AFilesToCopy,
+  UnicodeString ATargetDir, const TCopyParamType *CopyParam,
+  intptr_t Params, TFileOperationProgressType *OperationProgress,
+  TOnceDoneOperation &OnceDoneOperation)
 {
   DebugAssert((AFilesToCopy != nullptr) && (OperationProgress != nullptr));
+  if (!AFilesToCopy)
+    return;
 
   Params &= ~cpAppend;
   UnicodeString TargetDir = GetAbsolutePath(ATargetDir, false);
-  UnicodeString FullTargetDir = core::UnixIncludeTrailingBackslash(TargetDir);
+  UnicodeString FullTargetDir = base::UnixIncludeTrailingBackslash(TargetDir);
   intptr_t Index = 0;
-  while ((Index < AFilesToCopy->GetCount()) && !OperationProgress->Cancel)
+  while ((Index < AFilesToCopy->GetCount()) && OperationProgress && !OperationProgress->GetCancel())
   {
-    TRemoteFile * File = AFilesToCopy->GetAs<TRemoteFile>(Index);
+    TRemoteFile *File = AFilesToCopy->GetAs<TRemoteFile>(Index);
     bool Success = false;
     UnicodeString FileName = AFilesToCopy->GetString(Index);
     UnicodeString RealFileName = File ? File->GetFileName() : FileName;
@@ -1356,10 +1436,10 @@ void TWebDAVFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
           }
         }
         SourceRobust(FileName, File, FullTargetDir, CopyParam, Params, OperationProgress,
-                     tfFirstLevel);
+          tfFirstLevel);
         Success = true;
       }
-      catch (ESkipFile & E)
+      catch (ESkipFile &E)
       {
         TSuspendFileOperationProgress Suspend(OperationProgress);
         if (!FTerminal->HandleException(&E))
@@ -1370,18 +1450,18 @@ void TWebDAVFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
     }
     __finally
     {
-/*
+#if 0
       OperationProgress->Finish(FileName, Success, OnceDoneOperation);
-*/
+#endif // #if 0
     };
     ++Index;
   }
 }
 
-void TWebDAVFileSystem::SourceRobust(const UnicodeString & AFileName,
-  const TRemoteFile * AFile,
-  const UnicodeString & TargetDir, const TCopyParamType * CopyParam, intptr_t Params,
-  TFileOperationProgressType * OperationProgress, uintptr_t Flags)
+void TWebDAVFileSystem::SourceRobust(UnicodeString AFileName,
+  const TRemoteFile *AFile,
+  UnicodeString TargetDir, const TCopyParamType *CopyParam, intptr_t Params,
+  TFileOperationProgressType *OperationProgress, uintptr_t Flags)
 {
   // the same in TSFTPFileSystem
 
@@ -1394,9 +1474,9 @@ void TWebDAVFileSystem::SourceRobust(const UnicodeString & AFileName,
     try
     {
       Source(AFileName, AFile, TargetDir, CopyParam, Params, OperationProgress,
-             Flags, Action, ChildError);
+        Flags, Action, ChildError);
     }
-    catch (Exception & E)
+    catch (Exception &E)
     {
       if (!RobustLoop.TryReopen(E))
       {
@@ -1420,11 +1500,11 @@ void TWebDAVFileSystem::SourceRobust(const UnicodeString & AFileName,
   while (RobustLoop.Retry());
 }
 
-void TWebDAVFileSystem::Source(const UnicodeString & AFileName,
-  const TRemoteFile * AFile,
-  const UnicodeString & TargetDir, const TCopyParamType * CopyParam, intptr_t Params,
-  TFileOperationProgressType * OperationProgress, uintptr_t Flags,
-  TUploadSessionAction & Action, bool & ChildError)
+void TWebDAVFileSystem::Source(UnicodeString AFileName,
+  const TRemoteFile *AFile,
+  UnicodeString TargetDir, const TCopyParamType *CopyParam, intptr_t Params,
+  TFileOperationProgressType *OperationProgress, uintptr_t Flags,
+  TUploadSessionAction &Action, bool &ChildError)
 {
   UnicodeString RealFileName = AFile ? AFile->GetFileName() : AFileName;
   Action.SetFileName(::ExpandUNCFileName(RealFileName));
@@ -1436,13 +1516,13 @@ void TWebDAVFileSystem::Source(const UnicodeString & AFileName,
     ThrowSkipFileNull();
   }
 
-  HANDLE File;
+  HANDLE LocalFileHandle;
   int64_t MTime;
   int64_t Size;
   uintptr_t LocalFileAttrs = 0;
 
-  FTerminal->TerminalOpenLocalFile(RealFileName, GENERIC_READ, &File,
-    &LocalFileAttrs, nullptr, nullptr, &MTime, &Size);
+  FTerminal->TerminalOpenLocalFile(RealFileName, GENERIC_READ,
+    &LocalFileAttrs, &LocalFileHandle, nullptr, nullptr, &MTime, &Size);
 
   bool Dir = FLAGSET(LocalFileAttrs, faDirectory);
 
@@ -1457,9 +1537,9 @@ void TWebDAVFileSystem::Source(const UnicodeString & AFileName,
         // but it crashes code guard
         _close(FD);
       }
-      else if (File != nullptr)
+      else if (LocalFileHandle != nullptr)
       {
-        SAFE_CLOSE_HANDLE(File);
+        SAFE_CLOSE_HANDLE(LocalFileHandle);
       }
     };
     OperationProgress->SetFileInProgress();
@@ -1477,14 +1557,13 @@ void TWebDAVFileSystem::Source(const UnicodeString & AFileName,
           CopyParam, base::ExtractFileName(RealFileName, false), osLocal,
           FLAGSET(Flags, tfFirstLevel));
 
-      FTerminal->LogEvent(FORMAT(L"Copying \"%s\" to remote directory started.", RealFileName.c_str()));
+      FTerminal->LogEvent(FORMAT("Copying \"%s\" to remote directory started.", RealFileName));
 
       OperationProgress->SetLocalSize(Size);
 
       // Suppose same data size to transfer as to read
       // (not true with ASCII transfer)
-      OperationProgress->SetTransferSize(OperationProgress->LocalSize);
-      OperationProgress->TransferingFile = false;
+      OperationProgress->SetTransferSize(OperationProgress->GetLocalSize());
 
       UnicodeString DestFullName = TargetDir + DestFileName;
 
@@ -1495,7 +1574,7 @@ void TWebDAVFileSystem::Source(const UnicodeString & AFileName,
         FIgnoreAuthenticationFailure = iafWaiting;
 
         // this should not throw
-        TRemoteFile * RemoteFilePtr = nullptr;
+        TRemoteFile *RemoteFilePtr = nullptr;
         CustomReadFileInternal(DestFullName, RemoteFilePtr, nullptr);
         RemoteFile.reset(RemoteFilePtr);
       }
@@ -1531,12 +1610,25 @@ void TWebDAVFileSystem::Source(const UnicodeString & AFileName,
       // (not really true as we do not support changing file name on overwrite dialog)
       Action.Destination(DestFullName);
 
-      FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(TRANSFER_ERROR, RealFileName.c_str()), "",
+#if 0
+      wchar_t *MimeOut = nullptr;
+      if (FindMimeFromData(nullptr, DestFileName.c_str(), nullptr, 0, nullptr, FMFD_URLASFILENAME, &MimeOut, 0) == S_OK)
+      {
+        FUploadMimeType = MimeOut;
+        CoTaskMemFree(MimeOut);
+      }
+      else
+#endif // #if 0
+      {
+        FUploadMimeType = L"";
+      }
+
+      FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(TRANSFER_ERROR, RealFileName), "",
       [&]()
       {
-        SetFilePointer(File, 0, nullptr, FILE_BEGIN);
+        SetFilePointer(LocalFileHandle, 0, nullptr, FILE_BEGIN);
 
-        FD = _open_osfhandle((intptr_t)File, O_BINARY);
+        FD = _open_osfhandle(reinterpret_cast<intptr_t>(LocalFileHandle), O_BINARY);
         if (FD < 0)
         {
           ThrowSkipFileNull();
@@ -1550,13 +1642,13 @@ void TWebDAVFileSystem::Source(const UnicodeString & AFileName,
 
       if (CopyParam->GetPreserveTime())
       {
-        FTerminal->LogEvent(FORMAT(L"Preserving timestamp [%s]",
-          StandardTimestamp(Modification).c_str()));
+        FTerminal->LogEvent(FORMAT("Preserving timestamp [%s]",
+            StandardTimestamp(Modification)));
 
         TTouchSessionAction TouchAction(FTerminal->GetActionLog(), DestFullName, Modification);
         try
         {
-          TDateTime ModificationUTC = ConvertTimestampToUTC(Modification);
+          TDateTime ModificationUTC = ::ConvertTimestampToUTC(Modification);
 #if 0
           TFormatSettings FormatSettings = GetEngFormatSettings();
           UnicodeString LastModified =
@@ -1566,7 +1658,7 @@ void TWebDAVFileSystem::Source(const UnicodeString & AFileName,
           TDateTime DateTime = ModificationUTC;
           DateTime.DecodeDate(Y, M, D);
           DateTime.DecodeTime(H, NN, S, MS);
-          UnicodeString LastModified = FORMAT(L"%04d, %d %02d %04d %02d:%02d%02d 'GMT'", D, D, M, Y, H, NN, D);
+          UnicodeString LastModified = FORMAT("%04d, %d %02d %04d %02d:%02d%02d 'GMT'", D, D, M, Y, H, NN, D);
 
           UTF8String NeonLastModified(LastModified);
           // second element is "NULL-terminating"
@@ -1581,13 +1673,16 @@ void TWebDAVFileSystem::Source(const UnicodeString & AFileName,
           int Status = ne_proppatch(FNeonSession, PathToNeon(DestFullName), Operations);
           if (Status == NE_ERROR)
           {
-            FTerminal->LogEvent(FORMAT(L"Preserving timestamp failed, ignoring: %s",
-              GetNeonError().c_str()));
+            FTerminal->LogEvent(FORMAT("Preserving timestamp failed, ignoring: %s",
+                GetNeonError()));
             // Ignore errors as major WebDAV servers (like IIS), do not support
             // changing getlastmodified.
             // The only server we found that supports this is TradeMicro SafeSync.
             // But it announces itself as "Server: Apache",
             // so it's not reliable to autodetect the support.
+            // Microsoft Office alegedly uses <Win32LastModifiedTime>
+            // http://sabre.io/dav/clients/msoffice/
+            // Carot DAV does that too. But we do not know what server does support this.
             TouchAction.Cancel();
           }
           else
@@ -1595,7 +1690,7 @@ void TWebDAVFileSystem::Source(const UnicodeString & AFileName,
             CheckStatus(Status);
           }
         }
-        catch (Exception & E)
+        catch (Exception &E)
         {
           TouchAction.Rollback(&E);
           ChildError = true;
@@ -1603,12 +1698,12 @@ void TWebDAVFileSystem::Source(const UnicodeString & AFileName,
         }
       }
 
-      FTerminal->LogFileDone(OperationProgress);
+      FTerminal->LogFileDone(OperationProgress, DestFullName);
     }
   }
   __finally
   {
-/*
+#if 0
     if (FD >= 0)
     {
       // _close calls CloseHandle internally (even doc states, we should not call CloseHandle),
@@ -1619,7 +1714,7 @@ void TWebDAVFileSystem::Source(const UnicodeString & AFileName,
     {
       CloseHandle(File);
     }
-*/
+#endif // #if 0
   };
 
   // TODO : Delete also read-only files.
@@ -1627,32 +1722,32 @@ void TWebDAVFileSystem::Source(const UnicodeString & AFileName,
   {
     if (!Dir)
     {
-      FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(CORE_DELETE_LOCAL_FILE_ERROR, RealFileName.c_str()), "",
+      FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(CORE_DELETE_LOCAL_FILE_ERROR, RealFileName), "",
       [&]()
       {
-        THROWOSIFFALSE(::RemoveFile(RealFileName));
+        THROWOSIFFALSE(Sysutils::RemoveFile(ApiPath(RealFileName)));
       });
     }
   }
   else if (CopyParam->GetClearArchive() && FLAGSET(LocalFileAttrs, faArchive))
   {
-    FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(CANT_SET_ATTRS, RealFileName.c_str()), "",
+    FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(CANT_SET_ATTRS, RealFileName), "",
     [&]()
     {
-      THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(ApiPath(RealFileName), LocalFileAttrs & ~faArchive) == 0);
+      THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(ApiPath(RealFileName), LocalFileAttrs & ~faArchive));
     });
   }
 }
 
-void TWebDAVFileSystem::DirectorySource(const UnicodeString & DirectoryName,
-  const UnicodeString & TargetDir, uintptr_t Attrs, const TCopyParamType * CopyParam,
-  intptr_t Params, TFileOperationProgressType * OperationProgress, uintptr_t Flags)
+void TWebDAVFileSystem::DirectorySource(UnicodeString DirectoryName,
+  UnicodeString TargetDir, uintptr_t Attrs, const TCopyParamType *CopyParam,
+  intptr_t Params, TFileOperationProgressType *OperationProgress, uintptr_t Flags)
 {
   UnicodeString DestDirectoryName =
     FTerminal->ChangeFileName(
       CopyParam, base::ExtractFileName(::ExcludeTrailingBackslash(DirectoryName), false),
       osLocal, FLAGSET(Flags, tfFirstLevel));
-  UnicodeString DestFullName = core::UnixIncludeTrailingBackslash(TargetDir + DestDirectoryName);
+  UnicodeString DestFullName = base::UnixIncludeTrailingBackslash(TargetDir + DestDirectoryName);
   // create DestFullName if it does not exist
   if (!FTerminal->FileExists(DestFullName))
   {
@@ -1667,94 +1762,97 @@ void TWebDAVFileSystem::DirectorySource(const UnicodeString & DirectoryName,
 
   OperationProgress->SetFile(DirectoryName);
 
-  DWORD FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
-  TSearchRecChecked SearchRec;
-  bool FindOK = false;
-
-  UnicodeString FindPath = ApiPath(DirectoryName) + L"*.*";
-
-  FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()), "",
-  [&]()
+  if (FLAGCLEAR(Params, cpNoRecurse))
   {
-    FindOK =
-      (FindFirstChecked(FindPath.c_str(), FindAttrs, SearchRec) == 0);
-  });
+    DWORD FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
+    TSearchRecChecked SearchRec;
+    bool FindOK = false;
 
-  try__finally
-  {
-    SCOPE_EXIT
+    UnicodeString FindPath = ApiPath(DirectoryName) + L"*.*";
+
+    FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(LIST_DIR_ERROR, DirectoryName), "",
+    [&]()
     {
-      base::FindClose(SearchRec);
+      FindOK =
+        (FindFirstChecked(FindPath, FindAttrs, SearchRec) == 0);
+    });
+
+    try__finally
+    {
+      SCOPE_EXIT
+      {
+        base::FindClose(SearchRec);
+      };
+      while (FindOK && !OperationProgress->GetCancel())
+      {
+        UnicodeString FileName = DirectoryName + SearchRec.Name;
+        try
+        {
+          if ((SearchRec.Name != THISDIRECTORY) && (SearchRec.Name != PARENTDIRECTORY))
+          {
+            SourceRobust(FileName, nullptr, DestFullName, CopyParam, Params, OperationProgress,
+              Flags & ~(tfFirstLevel));
+          }
+        }
+        catch (ESkipFile &E)
+        {
+          // If ESkipFile occurs, just log it and continue with next file
+          TSuspendFileOperationProgress Suspend(OperationProgress);
+          // here a message to user was displayed, which was not appropriate
+          // when user refused to overwrite the file in subdirectory.
+          // hopefully it won't be missing in other situations.
+          if (!FTerminal->HandleException(&E))
+          {
+            throw;
+          }
+        }
+
+        FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(LIST_DIR_ERROR, DirectoryName), "",
+        [&]()
+        {
+          FindOK = FindNextChecked(SearchRec) == 0;
+        });
+      }
+    }
+    __finally
+    {
+#if 0
+      ::FindClose(SearchRec);
+#endif // #if 0
     };
-    while (FindOK && !OperationProgress->Cancel)
+    // TODO : Delete also read-only directories.
+    // TODO : Show error message on failure.
+    if (!OperationProgress->GetCancel())
     {
-      UnicodeString FileName = DirectoryName + SearchRec.Name;
-      try
+      if (FLAGSET(Params, cpDelete))
       {
-        if ((SearchRec.Name != THISDIRECTORY) && (SearchRec.Name != PARENTDIRECTORY))
-        {
-          SourceRobust(FileName, nullptr, DestFullName, CopyParam, Params, OperationProgress,
-                       Flags & ~(tfFirstLevel));
-        }
+        FTerminal->RemoveLocalDirectory(ApiPath(DirectoryName));
       }
-      catch (ESkipFile & E)
+      else if (CopyParam->GetClearArchive() && FLAGSET(Attrs, faArchive))
       {
-        // If ESkipFile occurs, just log it and continue with next file
-        TSuspendFileOperationProgress Suspend(OperationProgress);
-        // here a message to user was displayed, which was not appropriate
-        // when user refused to overwrite the file in subdirectory.
-        // hopefully it won't be missing in other situations.
-        if (!FTerminal->HandleException(&E))
+        FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(CANT_SET_ATTRS, DirectoryName), "",
+        [&]()
         {
-          throw;
-        }
+          THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(ApiPath(DirectoryName), Attrs & ~faArchive));
+        });
       }
-
-      FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()), "",
-      [&]()
-      {
-        FindOK = FindNextChecked(SearchRec) == 0;
-      });
-    }
-  }
-  __finally
-  {
-/*
-    ::FindClose(SearchRec);
-*/
-  };
-  // TODO : Delete also read-only directories.
-  // TODO : Show error message on failure.
-  if (!OperationProgress->Cancel)
-  {
-    if (FLAGSET(Params, cpDelete))
-    {
-      FTerminal->RemoveLocalDirectory(ApiPath(DirectoryName));
-    }
-    else if (CopyParam->GetClearArchive() && FLAGSET(Attrs, faArchive))
-    {
-      FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(CANT_SET_ATTRS, DirectoryName.c_str()), "",
-      [&]()
-      {
-        THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(ApiPath(DirectoryName), Attrs & ~faArchive) == 0);
-      });
     }
   }
 }
 
-void TWebDAVFileSystem::CopyToLocal(const TStrings * AFilesToCopy,
-  const UnicodeString & TargetDir, const TCopyParamType * CopyParam,
-  intptr_t Params, TFileOperationProgressType * OperationProgress,
-  TOnceDoneOperation & OnceDoneOperation)
+void TWebDAVFileSystem::CopyToLocal(const TStrings *AFilesToCopy,
+  UnicodeString TargetDir, const TCopyParamType *CopyParam,
+  intptr_t Params, TFileOperationProgressType *OperationProgress,
+  TOnceDoneOperation &OnceDoneOperation)
 {
   Params &= ~cpAppend;
   UnicodeString FullTargetDir = ::IncludeTrailingBackslash(TargetDir);
 
   intptr_t Index = 0;
-  while (Index < AFilesToCopy->GetCount() && !OperationProgress->Cancel)
+  while (Index < AFilesToCopy->GetCount() && !OperationProgress->GetCancel())
   {
     UnicodeString FileName = AFilesToCopy->GetString(Index);
-    const TRemoteFile * File = AFilesToCopy->GetAs<TRemoteFile>(Index);
+    const TRemoteFile *File = AFilesToCopy->GetAs<TRemoteFile>(Index);
     bool Success = false;
     try__finally
     {
@@ -1767,10 +1865,10 @@ void TWebDAVFileSystem::CopyToLocal(const TStrings * AFilesToCopy,
       try
       {
         SinkRobust(AbsoluteFilePath, File, TargetDirectory, CopyParam, Params,
-                   OperationProgress, tfFirstLevel);
+          OperationProgress, tfFirstLevel);
         Success = true;
       }
-      catch (ESkipFile & E)
+      catch (ESkipFile &E)
       {
         TSuspendFileOperationProgress Suspend(OperationProgress);
         if (!FTerminal->HandleException(&E))
@@ -1781,18 +1879,18 @@ void TWebDAVFileSystem::CopyToLocal(const TStrings * AFilesToCopy,
     }
     __finally
     {
-/*
+#if 0
       OperationProgress->Finish(FileName, Success, OnceDoneOperation);
-*/
+#endif // #if 0
     };
     ++Index;
   }
 }
 
-void TWebDAVFileSystem::SinkRobust(const UnicodeString & AFileName,
-  const TRemoteFile * AFile, const UnicodeString & TargetDir,
-  const TCopyParamType * CopyParam, intptr_t Params,
-  TFileOperationProgressType * OperationProgress, uintptr_t Flags)
+void TWebDAVFileSystem::SinkRobust(UnicodeString AFileName,
+  const TRemoteFile *AFile, UnicodeString TargetDir,
+  const TCopyParamType *CopyParam, intptr_t Params,
+  TFileOperationProgressType *OperationProgress, uintptr_t Flags)
 {
   // the same in TSFTPFileSystem
 
@@ -1805,9 +1903,9 @@ void TWebDAVFileSystem::SinkRobust(const UnicodeString & AFileName,
     try
     {
       Sink(AFileName, AFile, TargetDir, CopyParam, Params, OperationProgress,
-           Flags, Action, ChildError);
+        Flags, Action, ChildError);
     }
-    catch (Exception & E)
+    catch (Exception &E)
     {
       if (!RobustLoop.TryReopen(E))
       {
@@ -1824,7 +1922,7 @@ void TWebDAVFileSystem::SinkRobust(const UnicodeString & AFileName,
       OperationProgress->RollbackTransfer();
       Action.Restart();
       DebugAssert(AFile != nullptr);
-      if (!AFile->GetIsDirectory())
+      if (AFile && !AFile->GetIsDirectory())
       {
         // prevent overwrite confirmations
         Params |= cpNoConfirmation;
@@ -1835,18 +1933,18 @@ void TWebDAVFileSystem::SinkRobust(const UnicodeString & AFileName,
 }
 
 void TWebDAVFileSystem::NeonCreateRequest(
-  ne_request * Request, void * UserData, const char * /*Method*/, const char * /*Uri*/)
+  ne_request *Request, void *UserData, const char * /*Method*/, const char * /*Uri*/)
 {
-  TWebDAVFileSystem * FileSystem = static_cast<TWebDAVFileSystem *>(UserData);
+  TWebDAVFileSystem *FileSystem = static_cast<TWebDAVFileSystem *>(UserData);
   ne_set_request_private(Request, SESSION_FS_KEY, FileSystem);
   ne_add_response_body_reader(Request, NeonBodyAccepter, NeonBodyReader, Request);
   FileSystem->FNtlmAuthenticationFailed = false;
 }
 
 void TWebDAVFileSystem::NeonPreSend(
-  ne_request * Request, void * UserData, ne_buffer * Header)
+  ne_request *Request, void *UserData, ne_buffer *Header)
 {
-  TWebDAVFileSystem * FileSystem = static_cast<TWebDAVFileSystem *>(UserData);
+  TWebDAVFileSystem *FileSystem = static_cast<TWebDAVFileSystem *>(UserData);
 
   FileSystem->FAuthorizationProtocol = L"";
   UnicodeString HeaderBuf(StrFromNeon(UTF8String(Header->data, Header->used)));
@@ -1860,6 +1958,7 @@ void TWebDAVFileSystem::NeonPreSend(
     {
       UnicodeString AuthorizationHeader = HeaderBuf.SubString(P, P2 - P).Trim();
       FileSystem->FAuthorizationProtocol = CutToChar(AuthorizationHeader, L' ', false);
+      FileSystem->FLastAuthorizationProtocol = FileSystem->FAuthorizationProtocol;
     }
   }
 
@@ -1878,15 +1977,16 @@ void TWebDAVFileSystem::NeonPreSend(
     ne_buffer_zappend(Header, "Translate: f\r\n");
   }
 
+  const UnicodeString ContentTypeHeaderPrefix(L"Content-Type: ");
   if (FileSystem->FTerminal->GetLog()->GetLogging())
   {
-    const char * Buffer;
+    const char *Buffer;
     size_t Size;
     if (ne_get_request_body_buffer(Request, &Buffer, &Size))
     {
       // all neon request types that use ne_add_request_header
       // use XML content-type, so it's text-based
-      DebugAssert(ContainsStr(AnsiString(HeaderBuf), AnsiString("Content-Type: " NE_XML_MEDIA_TYPE)));
+      DebugAssert(AnsiContainsText(HeaderBuf, ContentTypeHeaderPrefix + NE_XML_MEDIA_TYPE));
       FileSystem->FTerminal->GetLog()->Add(llInput, UnicodeString(UTF8String(Buffer, Size)));
     }
   }
@@ -1895,15 +1995,20 @@ void TWebDAVFileSystem::NeonPreSend(
   {
     ne_set_request_body_provider_pre(Request,
       FileSystem->NeonUploadBodyProvider, FileSystem);
+    if (!FileSystem->FUploadMimeType.IsEmpty())
+    {
+      UnicodeString ContentTypeHeader = ContentTypeHeaderPrefix + FileSystem->FUploadMimeType + L"\r\n";
+      ne_buffer_zappend(Header, AnsiString(ContentTypeHeader).c_str());
+    }
   }
 
   FileSystem->FResponse = L"";
 }
 
-int TWebDAVFileSystem::NeonPostSend(ne_request * /*Req*/, void * UserData,
+int TWebDAVFileSystem::NeonPostSend(ne_request * /*Req*/, void *UserData,
   const ne_status * /*Status*/)
 {
-  TWebDAVFileSystem * FileSystem = static_cast<TWebDAVFileSystem *>(UserData);
+  TWebDAVFileSystem *FileSystem = static_cast<TWebDAVFileSystem *>(UserData);
   if (!FileSystem->FResponse.IsEmpty())
   {
     FileSystem->FTerminal->GetLog()->Add(llOutput, FileSystem->FResponse);
@@ -1931,7 +2036,7 @@ void TWebDAVFileSystem::HttpAuthenticationFailed()
       // protocol will itself ensure that other protocols are tried (we haven't seen this behaviour).
       // IIS will return only Negotiate response if the request was Negotiate, so there's no fallback.
       // We have to retry with a fresh request. That's what FAuthenticationRetry does.
-      FTerminal->LogEvent(FORMAT(L"%s challenge failed, will try different challenge", FAuthorizationProtocol.c_str()));
+      FTerminal->LogEvent(FORMAT("%s challenge failed, will try different challenge", FAuthorizationProtocol));
       ne_remove_server_auth(FNeonSession);
       NeonAddAuthentication(false);
       FAuthenticationRetry = true;
@@ -1944,18 +2049,18 @@ void TWebDAVFileSystem::HttpAuthenticationFailed()
   }
 }
 
-void TWebDAVFileSystem::NeonPostHeaders(ne_request * /*Req*/, void * UserData, const ne_status * Status)
+void TWebDAVFileSystem::NeonPostHeaders(ne_request * /*Req*/, void *UserData, const ne_status *Status)
 {
-  TWebDAVFileSystem * FileSystem = static_cast<TWebDAVFileSystem *>(UserData);
+  TWebDAVFileSystem *FileSystem = static_cast<TWebDAVFileSystem *>(UserData);
   if (Status->code == HttpUnauthorized)
   {
     FileSystem->HttpAuthenticationFailed();
   }
 }
 
-ssize_t TWebDAVFileSystem::NeonUploadBodyProvider(void * UserData, char * /*Buffer*/, size_t /*BufLen*/)
+ssize_t TWebDAVFileSystem::NeonUploadBodyProvider(void *UserData, char * /*Buffer*/, size_t /*BufLen*/)
 {
-  TWebDAVFileSystem * FileSystem = static_cast<TWebDAVFileSystem *>(UserData);
+  TWebDAVFileSystem *FileSystem = static_cast<TWebDAVFileSystem *>(UserData);
   ssize_t Result;
   if (FileSystem->CancelTransfer())
   {
@@ -1968,19 +2073,19 @@ ssize_t TWebDAVFileSystem::NeonUploadBodyProvider(void * UserData, char * /*Buff
   return Result;
 }
 
-static void AddHeaderValueToList(UnicodeString & List, ne_request * Request, const char * Name)
+static void AddHeaderValueToList(UnicodeString &List, ne_request *Request, const char *Name)
 {
-  const char * Value = ne_get_response_header(Request, Name);
+  const char *Value = ne_get_response_header(Request, Name);
   if (Value != nullptr)
   {
     AddToList(List, StrFromNeon(Value), L"; ");
   }
 }
 
-int TWebDAVFileSystem::NeonBodyAccepter(void * UserData, ne_request * Request, const ne_status * Status)
+int TWebDAVFileSystem::NeonBodyAccepter(void *UserData, ne_request *Request, const ne_status *Status)
 {
   DebugAssert(UserData == Request);
-  TWebDAVFileSystem * FileSystem =
+  TWebDAVFileSystem *FileSystem =
     static_cast<TWebDAVFileSystem *>(ne_get_request_private(Request, SESSION_FS_KEY));
 
   bool AuthenticationFailureCode = (Status->code == HttpUnauthorized);
@@ -2053,20 +2158,28 @@ int TWebDAVFileSystem::NeonBodyAccepter(void * UserData, ne_request * Request, c
 bool TWebDAVFileSystem::CancelTransfer()
 {
   bool Result = false;
+  TFileOperationProgressType *OperationProgress = FTerminal->GetOperationProgress();
   if ((FUploading || FDownloading) &&
-    (FTerminal->GetOperationProgress() != nullptr) &&
-    (FTerminal->GetOperationProgress()->Cancel != csContinue))
+    (OperationProgress != nullptr) &&
+    (OperationProgress->GetCancel() != csContinue))
   {
-    FCancelled = true;
+    if (OperationProgress->ClearCancelFile())
+    {
+      FSkipped = true;
+    }
+    else
+    {
+      FCancelled = true;
+    }
     Result = true;
   }
   return Result;
 }
 
-int TWebDAVFileSystem::NeonBodyReader(void * UserData, const char * Buf, size_t Len)
+int TWebDAVFileSystem::NeonBodyReader(void *UserData, const char *Buf, size_t Len)
 {
-  ne_request * Request = static_cast<ne_request *>(UserData);
-  TWebDAVFileSystem * FileSystem =
+  ne_request *Request = static_cast<ne_request *>(UserData);
+  TWebDAVFileSystem *FileSystem =
     static_cast<TWebDAVFileSystem *>(ne_get_request_private(Request, SESSION_FS_KEY));
 
   if (FileSystem->FTerminal->GetLog()->GetLogging())
@@ -2093,11 +2206,11 @@ int TWebDAVFileSystem::NeonBodyReader(void * UserData, const char * Buf, size_t 
   return Result;
 }
 
-void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
-  const TRemoteFile * AFile, const UnicodeString & TargetDir,
-  const TCopyParamType * CopyParam, intptr_t AParams,
-  TFileOperationProgressType * OperationProgress, uintptr_t Flags,
-  TDownloadSessionAction & Action, bool & ChildError)
+void TWebDAVFileSystem::Sink(UnicodeString AFileName,
+  const TRemoteFile *AFile, UnicodeString TargetDir,
+  const TCopyParamType *CopyParam, intptr_t AParams,
+  TFileOperationProgressType *OperationProgress, uintptr_t Flags,
+  TDownloadSessionAction &Action, bool &ChildError)
 {
   UnicodeString FileNameOnly = base::UnixExtractFileName(AFileName);
 
@@ -2111,7 +2224,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
   UnicodeString BaseFileName = FTerminal->GetBaseFileName(AFileName);
   if (!CopyParam->AllowTransfer(BaseFileName, osRemote, AFile->GetIsDirectory(), MaskParams))
   {
-    FTerminal->LogEvent(FORMAT(L"File \"%s\" excluded from transfer", AFileName.c_str()));
+    FTerminal->LogEvent(FORMAT("File \"%s\" excluded from transfer", AFileName));
     ThrowSkipFileNull();
   }
 
@@ -2135,7 +2248,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
     Action.Cancel();
     if (DebugAlwaysTrue(FTerminal->CanRecurseToDirectory(AFile)))
     {
-      FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(NOT_DIRECTORY_ERROR, DestFullName.c_str()), "",
+      FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(NOT_DIRECTORY_ERROR, DestFullName), "",
       [&]()
       {
         DWORD LocalFileAttrs = FTerminal->GetLocalFileAttributes(ApiPath(DestFullName));
@@ -2145,28 +2258,31 @@ void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
         }
       });
 
-      FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(CREATE_DIR_ERROR, DestFullName.c_str()), "",
+      FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(CREATE_DIR_ERROR, DestFullName), "",
       [&]()
       {
         THROWOSIFFALSE(::ForceDirectories(ApiPath(DestFullName)));
       });
 
-      TSinkFileParams SinkFileParams;
-      SinkFileParams.TargetDir = ::IncludeTrailingBackslash(DestFullName);
-      SinkFileParams.CopyParam = CopyParam;
-      SinkFileParams.Params = AParams;
-      SinkFileParams.OperationProgress = OperationProgress;
-      SinkFileParams.Skipped = false;
-      SinkFileParams.Flags = Flags & ~tfFirstLevel;
-
-      FTerminal->ProcessDirectory(AFileName, nb::bind(&TWebDAVFileSystem::SinkFile, this), &SinkFileParams);
-
-      // Do not delete directory if some of its files were skip.
-      // Throw "skip file" for the directory to avoid attempt to deletion
-      // of any parent directory
-      if (FLAGSET(AParams, cpDelete) && SinkFileParams.Skipped)
+      if (FLAGCLEAR(AParams, cpNoRecurse))
       {
-        ThrowSkipFileNull();
+        TSinkFileParams SinkFileParams;
+        SinkFileParams.TargetDir = ::IncludeTrailingBackslash(DestFullName);
+        SinkFileParams.CopyParam = CopyParam;
+        SinkFileParams.Params = AParams;
+        SinkFileParams.OperationProgress = OperationProgress;
+        SinkFileParams.Skipped = false;
+        SinkFileParams.Flags = Flags & ~tfFirstLevel;
+
+        FTerminal->ProcessDirectory(AFileName, nb::bind(&TWebDAVFileSystem::SinkFile, this), &SinkFileParams);
+
+        // Do not delete directory if some of its files were skip.
+        // Throw "skip file" for the directory to avoid attempt to deletion
+        // of any parent directory
+        if (FLAGSET(AParams, cpDelete) && SinkFileParams.Skipped)
+        {
+          ThrowSkipFileNull();
+        }
       }
     }
     else
@@ -2177,7 +2293,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
   }
   else
   {
-    FTerminal->LogEvent(FORMAT(L"Copying \"%s\" to local directory started.", AFileName.c_str()));
+    FTerminal->LogEvent(FORMAT("Copying \"%s\" to local directory started.", AFileName));
     if (::FileExists(ApiPath(DestFullName)))
     {
       int64_t Size = 0;
@@ -2190,7 +2306,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
       FileParams.SourceTimestamp = AFile->GetModification();
       FileParams.DestSize = Size;
       FileParams.DestTimestamp = ::UnixToDateTime(MTime,
-        FTerminal->GetSessionData()->GetDSTMode());
+          FTerminal->GetSessionData()->GetDSTMode());
 
       TOverwriteMode OverwriteMode = omOverwrite;
       uintptr_t Answer = 0;
@@ -2201,10 +2317,10 @@ void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
 
     // Suppose same data size to transfer as to write
     OperationProgress->SetTransferSize(AFile->GetSize());
-    OperationProgress->SetLocalSize(OperationProgress->TransferSize);
+    OperationProgress->SetLocalSize(OperationProgress->GetTransferSize());
 
     DWORD LocalFileAttrs = INVALID_FILE_ATTRIBUTES;
-    FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(NOT_FILE_ERROR, DestFullName.c_str()), "",
+    FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(NOT_FILE_ERROR, DestFullName), "",
     [&]()
     {
       LocalFileAttrs = FTerminal->GetLocalFileAttributes(ApiPath(DestFullName));
@@ -2214,23 +2330,20 @@ void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
       }
     });
 
-    OperationProgress->TransferingFile = false; // not set with WebDAV protocol
-
-    UnicodeString FilePath = core::UnixExtractFilePath(AFileName);
+    UnicodeString FilePath = base::UnixExtractFilePath(AFileName);
     if (FilePath.IsEmpty())
     {
       FilePath = L"/";
     }
 
-    Action.Destination(::ExpandUNCFileName(DestFullName));
+    UnicodeString ExpandedDestFullName(::ExpandUNCFileName(DestFullName));
+    Action.Destination(ExpandedDestFullName);
 
-    FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(TRANSFER_ERROR, AFileName.c_str()), "",
+    FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(TRANSFER_ERROR, AFileName), "",
     [&]()
     {
       HANDLE LocalFileHandle = FTerminal->TerminalCreateLocalFile(DestFullName,
-        GENERIC_WRITE, 0, CREATE_ALWAYS, 0);
-//      if (!FTerminal->CreateLocalFile(DestFullName, OperationProgress,
-//             &LocalFileHandle, FLAGSET(Params, cpNoConfirmation)))
+          GENERIC_WRITE, 0, FLAGSET(AParams, cpNoConfirmation) ? CREATE_ALWAYS : CREATE_NEW, 0);
       if (LocalFileHandle == INVALID_HANDLE_VALUE)
       {
         ThrowSkipFileNull();
@@ -2256,15 +2369,15 @@ void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
 
           if (DeleteLocalFile)
           {
-            FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(CORE_DELETE_LOCAL_FILE_ERROR, DestFullName.c_str()), "",
+            FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(CORE_DELETE_LOCAL_FILE_ERROR, DestFullName), "",
             [&]()
             {
-              THROWOSIFFALSE(::RemoveFile(DestFullName));
+              THROWOSIFFALSE(Sysutils::RemoveFile(ApiPath(DestFullName)));
             });
           }
         };
 
-        FD = _open_osfhandle((intptr_t)LocalFileHandle, O_BINARY);
+        FD = _open_osfhandle(reinterpret_cast<intptr_t>(LocalFileHandle), O_BINARY);
         if (FD < 0)
         {
           ThrowSkipFileNull();
@@ -2280,14 +2393,14 @@ void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
         {
           TDateTime Modification = AFile->GetModification();
           FILETIME WrTime = DateTimeToFileTime(Modification, FTerminal->GetSessionData()->GetDSTMode());
-          FTerminal->LogEvent(FORMAT(L"Preserving timestamp [%s]",
-            StandardTimestamp(Modification).c_str()));
+          FTerminal->LogEvent(FORMAT("Preserving timestamp [%s]",
+              StandardTimestamp(Modification)));
           SetFileTime(LocalFileHandle, nullptr, nullptr, &WrTime);
         }
       }
       __finally
       {
-/*
+#if 0
         if (FD >= 0)
         {
           // _close calls CloseHandle internally (even doc states, we should not call CloseHandle),
@@ -2301,13 +2414,13 @@ void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
 
         if (DeleteLocalFile)
         {
-          FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(CORE_DELETE_LOCAL_FILE_ERROR, DestFullName.c_str()), "",
+          FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(CORE_DELETE_LOCAL_FILE_ERROR, DestFullName), "",
           [&]()
           {
-            THROWOSIFFALSE(::RemoveFile(DestFullName));
+            THROWOSIFFALSE(Sysutils::RemoveFile(ApiPath(DestFullName)));
           });
         }
-*/
+#endif // #if 0
       };
     });
 
@@ -2318,18 +2431,19 @@ void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
     DWORD NewAttrs = CopyParam->LocalFileAttrs(*AFile->GetRights());
     if ((NewAttrs & LocalFileAttrs) != NewAttrs)
     {
-      FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(CANT_SET_ATTRS, DestFullName.c_str()), "",
+      FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(CANT_SET_ATTRS, DestFullName), "",
       [&]()
       {
-        THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(ApiPath(DestFullName), LocalFileAttrs | NewAttrs) == 0);
+        THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(ApiPath(DestFullName), LocalFileAttrs | NewAttrs));
       });
     }
 
-    FTerminal->LogFileDone(OperationProgress);
+    FTerminal->LogFileDone(OperationProgress, ExpandedDestFullName);
   }
 
   if (FLAGSET(AParams, cpDelete))
   {
+    DebugAssert(FLAGCLEAR(AParams, cpNoRecurse));
     ChildError = true;
     // If file is directory, do not delete it recursively, because it should be
     // empty already. If not, it should not be deleted (some files were
@@ -2340,19 +2454,19 @@ void TWebDAVFileSystem::Sink(const UnicodeString & AFileName,
   }
 }
 
-void TWebDAVFileSystem::SinkFile(const UnicodeString & AFileName,
-  const TRemoteFile * AFile, void * Param)
+void TWebDAVFileSystem::SinkFile(UnicodeString AFileName,
+  const TRemoteFile *AFile, void *Param)
 {
-  TSinkFileParams * Params = get_as<TSinkFileParams>(Param);
+  TSinkFileParams *Params = get_as<TSinkFileParams>(Param);
   DebugAssert(Params->OperationProgress);
   try
   {
     SinkRobust(AFileName, AFile, Params->TargetDir, Params->CopyParam,
       Params->Params, Params->OperationProgress, Params->Flags);
   }
-  catch (ESkipFile & E)
+  catch (ESkipFile &E)
   {
-    TFileOperationProgressType * OperationProgress = Params->OperationProgress;
+    TFileOperationProgressType *OperationProgress = Params->OperationProgress;
 
     Params->Skipped = true;
 
@@ -2364,14 +2478,14 @@ void TWebDAVFileSystem::SinkFile(const UnicodeString & AFileName,
       }
     }
 
-    if (OperationProgress->Cancel)
+    if (OperationProgress->GetCancel())
     {
       Abort();
     }
   }
 }
 
-bool TWebDAVFileSystem::VerifyCertificate(const TWebDAVCertificateData & Data)
+bool TWebDAVFileSystem::VerifyCertificate(const TWebDAVCertificateData &Data, bool Aux)
 {
   FSessionInfo.CertificateFingerprint = Data.Fingerprint;
 
@@ -2383,8 +2497,8 @@ bool TWebDAVFileSystem::VerifyCertificate(const TWebDAVCertificateData & Data)
   else
   {
     FTerminal->LogEvent(
-      FORMAT(L"Verifying certificate for \"%s\" with fingerprint %s and %2.2X failures",
-        Data.Subject.c_str(), Data.Fingerprint.c_str(), Data.Failures));
+      FORMAT("Verifying certificate for \"%s\" with fingerprint %s and %2.2X failures",
+        Data.Subject, Data.Fingerprint, Data.Failures));
 
     int Failures = Data.Failures;
 
@@ -2404,7 +2518,7 @@ bool TWebDAVFileSystem::VerifyCertificate(const TWebDAVCertificateData & Data)
       else
       {
         FTerminal->LogEvent(
-          FORMAT(L"Certificate failed to verify against Windows certificate store: %s", DefaultStr(WindowsCertificateError, L"no details").c_str()));
+          FORMAT("Certificate failed to verify against Windows certificate store: %s", DefaultStr(WindowsCertificateError, L"no details")));
       }
     }
 
@@ -2421,12 +2535,12 @@ bool TWebDAVFileSystem::VerifyCertificate(const TWebDAVCertificateData & Data)
     UnicodeString ValidityTimeFormat = L"ddddd tt";
     FSessionInfo.Certificate =
       FMTLOAD(CERT_TEXT,
-        UnicodeString(Data.Issuer + L"\n").c_str(),
-        UnicodeString(Data.Subject + L"\n").c_str(),
-        FormatDateTime(ValidityTimeFormat, Data.ValidFrom).c_str(),
-        FormatDateTime(ValidityTimeFormat, Data.ValidUntil).c_str(),
-        Data.Fingerprint.c_str(),
-        Summary.c_str());
+        UnicodeString(Data.Issuer + L"\n"),
+        UnicodeString(Data.Subject + L"\n"),
+        FormatDateTime(ValidityTimeFormat, Data.ValidFrom),
+        FormatDateTime(ValidityTimeFormat, Data.ValidUntil),
+        Data.Fingerprint,
+        Summary);
 
     if (!Result)
     {
@@ -2444,8 +2558,8 @@ bool TWebDAVFileSystem::VerifyCertificate(const TWebDAVCertificateData & Data)
       Params.Aliases = Aliases;
       Params.AliasesCount = _countof(Aliases);
       uintptr_t Answer = FTerminal->QueryUser(
-        FMTLOAD(VERIFY_CERT_PROMPT3, FSessionInfo.Certificate.c_str()),
-        nullptr, qaYes | qaNo | qaCancel | qaRetry, &Params, qtWarning);
+          FMTLOAD(VERIFY_CERT_PROMPT3, FSessionInfo.Certificate),
+          nullptr, qaYes | qaNo | qaCancel | qaRetry, &Params, qtWarning);
       switch (Answer)
       {
       case qaYes:
@@ -2463,19 +2577,19 @@ bool TWebDAVFileSystem::VerifyCertificate(const TWebDAVCertificateData & Data)
         break;
 
       case qaCancel:
-        //          FTerminal->GetConfiguration()->GetUsage()->Inc(L"HostNotVerified");
+        // FTerminal->GetConfiguration()->GetUsage()->Inc(L"HostNotVerified");
         Result = false;
         break;
       }
 
-      if (Result)
+      if (Result && !Aux)
       {
         FTerminal->GetConfiguration()->RememberLastFingerprint(
           FTerminal->GetSessionData()->GetSiteKey(), TlsFingerprintType, FSessionInfo.CertificateFingerprint);
       }
     }
 
-    if (Result)
+    if (Result && !Aux)
     {
       CollectTLSSessionInfo();
     }
@@ -2492,20 +2606,20 @@ void TWebDAVFileSystem::CollectTLSSessionInfo()
   FTlsVersionStr = StrFromNeon(ne_ssl_get_version(FNeonSession));
   AddToList(FSessionInfo.SecurityProtocolName, FTlsVersionStr, L", ");
 
-  char * cipher = ne_ssl_get_cipher(FNeonSession);
+  char *cipher = ne_ssl_get_cipher(FNeonSession);
   UnicodeString Cipher = StrFromNeon(cipher);
   ne_free(cipher);
   FSessionInfo.CSCipher = Cipher;
   FSessionInfo.SCCipher = Cipher;
 
   // see CAsyncSslSocketLayer::PrintSessionInfo()
-  FTerminal->LogEvent(FORMAT(L"Using %s, cipher %s", FTlsVersionStr.c_str(), Cipher.c_str()));
+  FTerminal->LogEvent(FORMAT("Using %s, cipher %s", FTlsVersionStr, Cipher));
 }
 
 // A neon-session callback to validate the SSL certificate when the CA
 // is unknown (e.g. a self-signed cert), or there are other SSL
 // certificate problems.
-int TWebDAVFileSystem::NeonServerSSLCallback(void * UserData, int Failures, const ne_ssl_certificate * Certificate)
+int TWebDAVFileSystem::DoNeonServerSSLCallback(void *UserData, int Failures, const ne_ssl_certificate *Certificate, bool Aux)
 {
   TWebDAVCertificateData Data;
 
@@ -2517,10 +2631,10 @@ int TWebDAVFileSystem::NeonServerSSLCallback(void * UserData, int Failures, cons
   Data.Fingerprint = StrFromNeon(Fingerprint);
   Data.AsciiCert = NeonExportCertificate(Certificate);
 
-  char * Subject = ne_ssl_readable_dname(ne_ssl_cert_subject(Certificate));
+  char *Subject = ne_ssl_readable_dname(ne_ssl_cert_subject(Certificate));
   Data.Subject = StrFromNeon(Subject);
   ne_free(Subject);
-  char * Issuer = ne_ssl_readable_dname(ne_ssl_cert_issuer(Certificate));
+  char *Issuer = ne_ssl_readable_dname(ne_ssl_cert_issuer(Certificate));
   Data.Issuer = StrFromNeon(Issuer);
   ne_free(Issuer);
 
@@ -2532,37 +2646,47 @@ int TWebDAVFileSystem::NeonServerSSLCallback(void * UserData, int Failures, cons
   Data.ValidFrom = UnixToDateTime(ValidFrom, dstmWin);
   Data.ValidUntil = UnixToDateTime(ValidUntil, dstmWin);
 
-  TWebDAVFileSystem * FileSystem = static_cast<TWebDAVFileSystem *>(UserData);
+  TWebDAVFileSystem *FileSystem = static_cast<TWebDAVFileSystem *>(UserData);
 
-  return FileSystem->VerifyCertificate(Data) ? NE_OK : NE_ERROR;
+  return FileSystem->VerifyCertificate(Data, Aux) ? NE_OK : NE_ERROR;
 }
 
-void TWebDAVFileSystem::NeonProvideClientCert(void * UserData, ne_session * Sess,
-  const ne_ssl_dname * const * /*DNames*/, int /*DNCount*/)
+int TWebDAVFileSystem::NeonServerSSLCallbackMain(void *UserData, int Failures, const ne_ssl_certificate *Certificate)
 {
-  TWebDAVFileSystem * FileSystem = static_cast<TWebDAVFileSystem *>(UserData);
+  return DoNeonServerSSLCallback(UserData, Failures, Certificate, false);
+}
+
+int TWebDAVFileSystem::NeonServerSSLCallbackAux(void *UserData, int Failures, const ne_ssl_certificate *Certificate)
+{
+  return DoNeonServerSSLCallback(UserData, Failures, Certificate, true);
+}
+
+void TWebDAVFileSystem::NeonProvideClientCert(void *UserData, ne_session *Sess,
+  const ne_ssl_dname *const * /*DNames*/, int /*DNCount*/)
+{
+  TWebDAVFileSystem *FileSystem = static_cast<TWebDAVFileSystem *>(UserData);
 
   FileSystem->FTerminal->LogEvent(LoadStr(NEED_CLIENT_CERTIFICATE));
 
-  X509 * Certificate;
-  EVP_PKEY * PrivateKey;
+  X509 *Certificate;
+  EVP_PKEY *PrivateKey;
   if (FileSystem->FTerminal->LoadTlsCertificate(Certificate, PrivateKey))
   {
-    ne_ssl_client_cert * NeonCertificate = ne_ssl_clicert_create(Certificate, PrivateKey);
+    ne_ssl_client_cert *NeonCertificate = ne_ssl_clicert_create(Certificate, PrivateKey);
     ne_ssl_set_clicert(Sess, NeonCertificate);
     ne_ssl_clicert_free(NeonCertificate);
   }
 }
 
 int TWebDAVFileSystem::NeonRequestAuth(
-  void * UserData, const char * Realm, int Attempt, char * UserName, char * Password)
+  void *UserData, const char *Realm, int Attempt, char *UserName, char *Password)
 {
   DebugUsedParam(Realm);
   DebugUsedParam(Attempt);
-  TWebDAVFileSystem * FileSystem = static_cast<TWebDAVFileSystem *>(UserData);
+  TWebDAVFileSystem *FileSystem = static_cast<TWebDAVFileSystem *>(UserData);
 
-  TTerminal * Terminal = FileSystem->FTerminal;
-  TSessionData * SessionData = Terminal->GetSessionData();
+  TTerminal *Terminal = FileSystem->FTerminal;
+  TSessionData *SessionData = Terminal->GetSessionData();
 
   bool Result = true;
 
@@ -2576,7 +2700,7 @@ int TWebDAVFileSystem::NeonRequestAuth(
     else
     {
       if (!Terminal->PromptUser(SessionData, pkUserName, LoadStr(USERNAME_TITLE), L"",
-            LoadStr(USERNAME_PROMPT2), true, NE_ABUFSIZ, FileSystem->FUserName))
+          LoadStr(USERNAME_PROMPT2), true, NE_ABUFSIZ, FileSystem->FUserName))
       {
         // note that we never get here actually
         Result = false;
@@ -2649,10 +2773,10 @@ int TWebDAVFileSystem::NeonRequestAuth(
   return Result ? 0 : -1;
 }
 
-void TWebDAVFileSystem::NeonNotifier(void * UserData, ne_session_status Status, const ne_session_status_info * StatusInfo)
+void TWebDAVFileSystem::NeonNotifier(void *UserData, ne_session_status Status, const ne_session_status_info *StatusInfo)
 {
-  TWebDAVFileSystem * FileSystem = static_cast<TWebDAVFileSystem *>(UserData);
-  TFileOperationProgressType * OperationProgress = FileSystem->FTerminal->GetOperationProgress();
+  TWebDAVFileSystem *FileSystem = static_cast<TWebDAVFileSystem *>(UserData);
+  TFileOperationProgressType *OperationProgress = FileSystem->FTerminal->GetOperationProgress();
 
   // We particularly have to filter out response to "put" request,
   // handling that would reset the upload progress back to low number (response is small).
@@ -2661,7 +2785,7 @@ void TWebDAVFileSystem::NeonNotifier(void * UserData, ne_session_status Status, 
     DebugAlwaysTrue(OperationProgress != nullptr))
   {
     int64_t Progress = StatusInfo->sr.progress;
-    int64_t Diff = Progress - OperationProgress->TransferedSize;
+    int64_t Diff = Progress - OperationProgress->GetTransferredSize();
 
     if (Diff > 0)
     {
@@ -2675,39 +2799,39 @@ void TWebDAVFileSystem::NeonNotifier(void * UserData, ne_session_status Status, 
     {
       if (Diff >= 0)
       {
-        OperationProgress->AddTransfered(Diff);
+        OperationProgress->AddTransferred(Diff);
       }
       else
       {
         // Session total has been reset. A new stream started
-        OperationProgress->AddTransfered(Progress);
+        OperationProgress->AddTransferred(Progress);
       }
     }
     else
     {
       OperationProgress->SetTransferSize(Total);
-      OperationProgress->AddTransfered(Diff);
+      OperationProgress->AddTransferred(Diff);
     }
   }
 }
 
-void TWebDAVFileSystem::NeonDebug(const UnicodeString & Message)
+void TWebDAVFileSystem::NeonDebug(UnicodeString Message)
 {
   FTerminal->LogEvent(Message);
 }
 
-void TWebDAVFileSystem::InitSslSession(ssl_st * Ssl, ne_session * Session)
+void TWebDAVFileSystem::InitSslSession(ssl_st *Ssl, ne_session *Session)
 {
-  TWebDAVFileSystem * FileSystem =
+  TWebDAVFileSystem *FileSystem =
     static_cast<TWebDAVFileSystem *>(ne_get_session_private(Session, SESSION_FS_KEY));
   FileSystem->InitSslSessionImpl(Ssl);
 }
 
-void TWebDAVFileSystem::InitSslSessionImpl(ssl_st * Ssl) const
+void TWebDAVFileSystem::InitSslSessionImpl(ssl_st *Ssl) const
 {
   // See also CAsyncSslSocketLayer::InitSSLConnection
-  TSessionData * Data = FTerminal->GetSessionData();
-  #define MASK_TLS_VERSION(VERSION, FLAG) ((Data->GetMinTlsVersion() > VERSION) || (Data->GetMaxTlsVersion() < VERSION) ? FLAG : 0)
+  TSessionData *Data = FTerminal->GetSessionData();
+#define MASK_TLS_VERSION(VERSION, FLAG) ((Data->GetMinTlsVersion() > VERSION) || (Data->GetMaxTlsVersion() < VERSION) ? FLAG : 0)
   int Options =
     MASK_TLS_VERSION(ssl2, SSL_OP_NO_SSLv2) |
     MASK_TLS_VERSION(ssl3, SSL_OP_NO_SSLv3) |
@@ -2723,10 +2847,10 @@ void TWebDAVFileSystem::GetSupportedChecksumAlgs(TStrings * /*Algs*/)
   // NOOP
 }
 
-void TWebDAVFileSystem::LockFile(const UnicodeString & /*AFileName*/, const TRemoteFile * AFile)
+void TWebDAVFileSystem::LockFile(UnicodeString /*AFileName*/, const TRemoteFile *AFile)
 {
   ClearNeonError();
-  struct ne_lock * Lock = ne_lock_create();
+  struct ne_lock *Lock = ne_lock_create();
   try__finally
   {
     SCOPE_EXIT
@@ -2754,12 +2878,12 @@ void TWebDAVFileSystem::LockFile(const UnicodeString & /*AFileName*/, const TRem
   }
   __finally
   {
-/*
+#if 0
     if (Lock != nullptr)
     {
       ne_lock_destroy(Lock);
     }
-*/
+#endif // #if 0
   };
 }
 
@@ -2774,30 +2898,30 @@ void TWebDAVFileSystem::RequireLockStore()
   }
 }
 
-void TWebDAVFileSystem::LockResult(void * UserData, const struct ne_lock * Lock,
+void TWebDAVFileSystem::LockResult(void *UserData, const struct ne_lock *Lock,
   const ne_uri * /*Uri*/, const ne_status * /*Status*/)
 {
   // Is NULL on failure (Status is not NULL then)
   if (Lock != nullptr)
   {
-    RawByteString & LockToken = *static_cast<RawByteString *>(UserData);
+    RawByteString &LockToken = *static_cast<RawByteString *>(UserData);
     LockToken = Lock->token;
   }
 }
 
-struct ne_lock * TWebDAVFileSystem::FindLock(const RawByteString & APath) const
+struct ne_lock *TWebDAVFileSystem::FindLock(RawByteString APath) const
 {
   ne_uri Uri = {nullptr};
-  Uri.path = const_cast<char *>(APath.c_str());
+  Uri.path = ToChar(APath);
   return ne_lockstore_findbyuri(FNeonLockStore, &Uri);
 }
 
-void TWebDAVFileSystem::DiscardLock(const RawByteString & APath)
+void TWebDAVFileSystem::DiscardLock(RawByteString APath)
 {
   TGuard Guard(FNeonLockStoreSection);
   if (FNeonLockStore != nullptr)
   {
-    struct ne_lock * Lock = FindLock(APath);
+    struct ne_lock *Lock = FindLock(APath);
     if (Lock != nullptr)
     {
       ne_lockstore_remove(FNeonLockStore, Lock);
@@ -2805,10 +2929,10 @@ void TWebDAVFileSystem::DiscardLock(const RawByteString & APath)
   }
 }
 
-void TWebDAVFileSystem::UnlockFile(const UnicodeString & AFileName, const TRemoteFile * AFile)
+void TWebDAVFileSystem::UnlockFile(UnicodeString AFileName, const TRemoteFile *AFile)
 {
   ClearNeonError();
-  struct ne_lock * Lock = ne_lock_create();
+  struct ne_lock *Lock = ne_lock_create();
   try__finally
   {
     SCOPE_EXIT
@@ -2818,7 +2942,7 @@ void TWebDAVFileSystem::UnlockFile(const UnicodeString & AFileName, const TRemot
     RawByteString Path = PathToNeon(FilePath(AFile));
     RawByteString LockToken;
 
-    struct ne_lock * Lock2 = nullptr;
+    struct ne_lock *Lock2 = nullptr;
 
     {
       TGuard Guard(FNeonLockStoreSection);
@@ -2838,11 +2962,11 @@ void TWebDAVFileSystem::UnlockFile(const UnicodeString & AFileName, const TRemot
 
     if ((Lock2 == nullptr) && (LockToken.IsEmpty()))
     {
-      throw Exception(FMTLOAD(NOT_LOCKED, AFileName.c_str()));
+      throw Exception(FMTLOAD(NOT_LOCKED, AFileName));
     }
     else
     {
-      struct ne_lock * Unlock;
+      struct ne_lock *Unlock;
       if (Lock2 == nullptr)
       {
         DebugAssert(!LockToken.IsEmpty());
@@ -2866,15 +2990,15 @@ void TWebDAVFileSystem::UnlockFile(const UnicodeString & AFileName, const TRemot
   }
   __finally
   {
-/*
+#if 0
     ne_lock_destroy(Lock);
-*/
+#endif // #if 0
   };
 }
 
-void TWebDAVFileSystem::UpdateFromMain(TCustomFileSystem * AMainFileSystem)
+void TWebDAVFileSystem::UpdateFromMain(TCustomFileSystem *AMainFileSystem)
 {
-  TWebDAVFileSystem * MainFileSystem = dyn_cast<TWebDAVFileSystem>(AMainFileSystem);
+  TWebDAVFileSystem *MainFileSystem = dyn_cast<TWebDAVFileSystem>(AMainFileSystem);
   if (DebugAlwaysTrue(MainFileSystem != nullptr))
   {
     TGuard Guard(FNeonLockStoreSection);
@@ -2882,7 +3006,7 @@ void TWebDAVFileSystem::UpdateFromMain(TCustomFileSystem * AMainFileSystem)
 
     if (FNeonLockStore != nullptr)
     {
-      struct ne_lock * Lock;
+      struct ne_lock *Lock;
       while ((Lock = ne_lockstore_first(FNeonLockStore)) != nullptr)
       {
         ne_lockstore_remove(FNeonLockStore, Lock);
@@ -2892,7 +3016,7 @@ void TWebDAVFileSystem::UpdateFromMain(TCustomFileSystem * AMainFileSystem)
     if (DebugAlwaysTrue(MainFileSystem->FNeonLockStore != nullptr))
     {
       RequireLockStore();
-      struct ne_lock * Lock = ne_lockstore_first(MainFileSystem->FNeonLockStore);
+      struct ne_lock *Lock = ne_lockstore_first(MainFileSystem->FNeonLockStore);
       while (Lock != nullptr)
       {
         ne_lockstore_add(FNeonLockStore, ne_lock_copy(Lock));
@@ -2902,3 +3026,7 @@ void TWebDAVFileSystem::UpdateFromMain(TCustomFileSystem * AMainFileSystem)
   }
 }
 
+TFtps TWebDAVFileSystem::GetFtps() const
+{
+  return FTerminal->GetSessionData()->GetFtps();
+}

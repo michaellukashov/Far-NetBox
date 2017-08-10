@@ -81,7 +81,7 @@ CUSTOM_MEM_ALLOCATION_IMPL
   int nType;
   intptr_t nParam1;
   intptr_t nParam2;
-  char* str;
+  char *str;
 };
 
 class CAsyncSocketEx
@@ -113,10 +113,10 @@ public:
   BOOL GetSockName(SOCKADDR* lpSockAddr, int* lpSockAddrLen);
 
   // Retrieves a socket option.
-  BOOL GetSockOpt(int nOptionName, void* lpOptionValue, int* lpOptionLen, int nLevel = SOL_SOCKET);
+  BOOL GetSockOpt(int nOptionName, void * lpOptionValue, int* lpOptionLen, int nLevel = SOL_SOCKET);
 
   // Sets a socket option.
-  BOOL SetSockOpt(int nOptionName, const void* lpOptionValue, int nOptionLen, int nLevel = SOL_SOCKET);
+  BOOL SetSockOpt(int nOptionName, const void * lpOptionValue, int nOptionLen, int nLevel = SOL_SOCKET);
 
   // Gets the socket family
   int GetFamily() const;
@@ -308,7 +308,7 @@ enum SocketState
 
 inline TCHAR * Inet6AddrToString(in6_addr & addr)
 {
-  LPTSTR buf = nb::wchcalloc(512 * sizeof(TCHAR));
+  LPTSTR buf = nb::wchcalloc(512);
 
   _sntprintf(buf, 512, L"%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x",
        addr.s6_bytes[0], addr.s6_bytes[1], addr.s6_bytes[2], addr.s6_bytes[3],

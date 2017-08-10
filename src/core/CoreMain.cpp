@@ -13,7 +13,7 @@
 #endif
 #include "WebDAVFileSystem.h"
 
-TStoredSessionList * StoredSessions = nullptr;
+TStoredSessionList *StoredSessions = nullptr;
 
 TQueryButtonAlias::TQueryButtonAlias() :
   Button(0),
@@ -23,9 +23,10 @@ TQueryButtonAlias::TQueryButtonAlias() :
   GrouppedShiftState(ssShift),
   ElevationRequired(false)
 {
+  MenuButton = false;
 }
 
-TQueryParams::TQueryParams(uintptr_t AParams, const UnicodeString & AHelpKeyword) :
+TQueryParams::TQueryParams(uintptr_t AParams, UnicodeString AHelpKeyword) :
   Aliases(nullptr),
   AliasesCount(0),
   Params(AParams),
@@ -41,30 +42,30 @@ TQueryParams::TQueryParams(uintptr_t AParams, const UnicodeString & AHelpKeyword
 {
 }
 
-TQueryParams::TQueryParams(const TQueryParams & Source)
+TQueryParams::TQueryParams(const TQueryParams &Source)
 {
   Assign(Source);
 }
 
-void TQueryParams::Assign(const TQueryParams & Source)
+void TQueryParams::Assign(const TQueryParams &Source)
 {
-  Params = Source.Params;
-  Aliases = Source.Aliases;
-  AliasesCount = Source.AliasesCount;
-  Timer = Source.Timer;
-  TimerEvent = Source.TimerEvent;
-  TimerMessage = Source.TimerMessage;
-  TimerAnswers = Source.TimerAnswers;
-  TimerQueryType = Source.TimerQueryType;
-  Timeout = Source.Timeout;
-  TimeoutAnswer = Source.TimeoutAnswer;
-  NoBatchAnswers = Source.NoBatchAnswers;
-  HelpKeyword = Source.HelpKeyword;
+  *this = Source;
 }
 
-TQueryParams & TQueryParams::operator=(const TQueryParams & other)
+TQueryParams &TQueryParams::operator=(const TQueryParams &other)
 {
-  Assign(other);
+  Params = other.Params;
+  Aliases = other.Aliases;
+  AliasesCount = other.AliasesCount;
+  Timer = other.Timer;
+  TimerEvent = other.TimerEvent;
+  TimerMessage = other.TimerMessage;
+  TimerAnswers = other.TimerAnswers;
+  TimerQueryType = other.TimerQueryType;
+  Timeout = other.Timeout;
+  TimeoutAnswer = other.TimeoutAnswer;
+  NoBatchAnswers = other.NoBatchAnswers;
+  HelpKeyword = other.HelpKeyword;
   return *this;
 }
 
@@ -76,24 +77,24 @@ bool IsAuthenticationPrompt(TPromptKind Kind)
     (Kind == pkPassword) || (Kind == pkNewPassword);
 }
 
-bool IsPasswordOrPassphrasePrompt(TPromptKind Kind, TStrings * Prompts)
+bool IsPasswordOrPassphrasePrompt(TPromptKind Kind, TStrings *Prompts)
 {
   return
-    (Prompts->GetCount() == 1) && FLAGCLEAR(ToInt(Prompts->GetObj(0)), pupEcho) &&
+    (Prompts->GetCount() == 1) && FLAGCLEAR(ToIntPtr(Prompts->GetObj(0)), pupEcho) &&
     ((Kind == pkPassword) || (Kind == pkPassphrase) || (Kind == pkKeybInteractive) ||
       (Kind == pkTIS) || (Kind == pkCryptoCard));
 }
 
-bool IsPasswordPrompt(TPromptKind Kind, TStrings * Prompts)
+bool IsPasswordPrompt(TPromptKind Kind, TStrings *Prompts)
 {
   return
     IsPasswordOrPassphrasePrompt(Kind, Prompts) &&
     (Kind != pkPassphrase);
 }
 
-TConfiguration * GetConfiguration()
+TConfiguration *GetConfiguration()
 {
-  static TConfiguration * Configuration = nullptr;
+  static TConfiguration *Configuration = nullptr;
   if (Configuration == nullptr)
   {
     Configuration = CreateConfiguration();
@@ -106,7 +107,7 @@ void DeleteConfiguration()
   static bool ConfigurationDeleted = false;
   if (!ConfigurationDeleted)
   {
-    TConfiguration * Conf = GetConfiguration();
+    TConfiguration *Conf = GetConfiguration();
     SAFE_DESTROY(Conf);
     ConfigurationDeleted = true;
   }
@@ -116,7 +117,7 @@ void CoreLoad()
 {
   bool SessionList = false;
   std::unique_ptr<THierarchicalStorage> SessionsStorage(GetConfiguration()->CreateStorage(SessionList));
-  THierarchicalStorage * ConfigStorage = nullptr;
+  THierarchicalStorage *ConfigStorage;
   std::unique_ptr<THierarchicalStorage> ConfigStorageAuto;
   if (!SessionList)
   {
@@ -135,12 +136,12 @@ void CoreLoad()
   {
     GetConfiguration()->Load(ConfigStorage);
   }
-  catch (Exception & E)
+  catch (Exception &E)
   {
     ShowExtendedException(&E);
   }
 
-  // should be noop, unless exception occurred above
+  // should be noop, unless exception occured above
   ConfigStorage->CloseAll();
 
   StoredSessions = new TStoredSessionList();
@@ -152,7 +153,7 @@ void CoreLoad()
       StoredSessions->Load(SessionsStorage.get());
     }
   }
-  catch (Exception & E)
+  catch (Exception &E)
   {
     ShowExtendedException(&E);
   }
@@ -185,7 +186,7 @@ void CoreFinalize()
   {
     // GetConfiguration()->Save();
   }
-  catch (Exception & E)
+  catch (Exception &E)
   {
     ShowExtendedException(&E);
   }
@@ -203,7 +204,7 @@ void CoreFinalize()
   WinFinalize();
 }
 
-void CoreSetResourceModule(void * ResourceHandle)
+void CoreSetResourceModule(void *ResourceHandle)
 {
 #ifndef NO_FILEZILLA
   TFileZillaIntf::SetResourceModule(ResourceHandle);
@@ -216,6 +217,7 @@ void CoreMaintenanceTask()
 {
   DontSaveRandomSeed();
 }
+
 
 TOperationVisualizer::TOperationVisualizer(bool UseBusyCursor) :
   FUseBusyCursor(UseBusyCursor),
@@ -234,6 +236,7 @@ TOperationVisualizer::~TOperationVisualizer()
     BusyEnd(FToken);
   }
 }
+
 
 TInstantOperationVisualizer::TInstantOperationVisualizer() :
   TOperationVisualizer(true),

@@ -46,8 +46,8 @@ public:
   BOOL m_bBusy;
   unsigned int m_nInternalMessageID;
   BOOL IsConnected();
-  __int64 GetAsyncRequestID() const;
-  __int64 GetNextAsyncRequestID();
+  int64_t GetAsyncRequestID() const;
+  int64_t GetNextAsyncRequestID();
   virtual int OnThreadMessage(UINT Msg, WPARAM wParam, LPARAM lParam);
   DWORD SuspendThread();
   DWORD ResumeThread();
@@ -62,7 +62,7 @@ protected:
   CCriticalSection m_CriticalSection;
 
   CFtpControlSocket * m_pControlSocket;
-  __int64 m_nAsyncRequestID;
+  int64_t m_nAsyncRequestID;
   void OnTimer(WPARAM wParam, LPARAM lParam);
 
 protected:
