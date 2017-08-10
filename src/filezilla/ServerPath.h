@@ -7,7 +7,6 @@ class CServerPath
 CUSTOM_MEM_ALLOCATION_IMPL
 public:
   BOOL AddSubdir(CString subdir);
-  CString GetSafePath() const;
   const BOOL IsEmpty() const;
   CServerPath GetParent() const;
   BOOL HasParent() const;
@@ -24,11 +23,12 @@ public:
   BOOL SetPath(CString & newpath, BOOL bIsFile);
   BOOL SetPath(CString newpath);
   const CString GetPath() const;
+  const CString GetPathUnterminated() const;
 
   CServerPath & operator=(const CServerPath & op);
 
-  const bool operator == (const CServerPath & op) const;
-  const bool operator != (const CServerPath & op) const;
+  const bool operator==(const CServerPath & op) const;
+  const bool operator!=(const CServerPath & op) const;
 
   CString FormatFilename(CString fn, bool omitPath = false) const;
 
@@ -39,8 +39,11 @@ protected:
   typedef rde::list<CString>::const_iterator tConstIter;
   CString m_Prefix;
   int m_nServerType;
+
+private:
+  const CString DoGetPath(bool unterminated) const;
 };
 
-const BOOL operator == (const CServerPath & a, const CString & b);
+const BOOL operator==(const CServerPath & a, const CString & b);
 
 

@@ -71,7 +71,7 @@ public:
 	{
 		RDE_ASSERT(rhs.invariant());
 		if (this != &rhs) {
-            TStorage::operator=((TStorage&)rhs);
+            TStorage::operator=(static_cast<TStorage&>(rhs));
 		}
 		RDE_ASSERT(invariant());
 		return *this;
@@ -160,7 +160,7 @@ public:
 
   size_type find_first_of(E _Ch, size_type _Off = 0) const
   {	// look for _Ch at or after _Off
-    return (find((const E *)&_Ch, _Off, 1));
+    return (find(static_cast<const E *>(&_Ch), _Off, 1));
   }
 
   int compare(const value_type* str) const

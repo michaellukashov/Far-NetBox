@@ -94,7 +94,7 @@ struct standard_vector_storage
 // Mimics std::vector.
 template<typename T, class TAllocator = rde::allocator,
 	class TStorage = standard_vector_storage<T, TAllocator> >
-class vector : public base_vector, private TStorage
+class RDESTL_LIB vector : public base_vector, private TStorage
 {
 private:
     using TStorage::m_begin;

@@ -1,7 +1,7 @@
 
 #include "stdafx.h"
 #include "TransferSocket.h"
-#include "mainthread.h"
+#include "MainThread.h"
 #include "AsyncProxySocketLayer.h"
 #include "TextsFileZilla.h"
 #ifndef MPEXT_NO_GSS
@@ -293,7 +293,7 @@ void CTransferSocket::OnReceive(int nErrorCode)
     }
     CATCH(CFileException,e)
     {
-      LPTSTR msg = nb::wchcalloc(BUFSIZE * sizeof(TCHAR));
+      LPTSTR msg = nb::wchcalloc(BUFSIZE);
       if (e->GetErrorMessage(msg, BUFSIZE))
         m_pOwner->ShowStatus(msg, FZ_LOG_ERROR);
       nb_free(msg);
@@ -361,7 +361,7 @@ void CTransferSocket::ConfigureSocket()
 
   // Following post claims that TCP_NODELAY
   // has to be set before connect()
-  // http://stackoverflow.com/q/22583941/850848#25871250
+  // https://stackoverflow.com/q/22583941/850848#25871250
 
   int nodelay = GetOptionVal(OPTION_MPEXT_NODELAY);
   if (nodelay != 0)

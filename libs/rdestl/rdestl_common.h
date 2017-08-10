@@ -24,6 +24,14 @@
 
 #	define RDE_ASSERT	assert
 
+#ifdef RDESTL_EXPORT
+#define RDESTL_LIB __declspec(dllexport)
+#elif defined(RDESTL_IMPORT)
+#define RDESTL_LIB __declspec(dllimport)
+#else
+#define RDESTL_LIB
+#endif
+
 // NOOB
 #include <cstdint>
 

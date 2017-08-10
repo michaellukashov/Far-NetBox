@@ -7,7 +7,8 @@
 #include "RemoteFiles.h"
 #include "CopyParam.h"
 
-TCustomFileSystem::TCustomFileSystem(TObjectClassId Kind, TTerminal * ATerminal) :
+
+TCustomFileSystem::TCustomFileSystem(TObjectClassId Kind, TTerminal *ATerminal) :
   TObject(Kind),
   FTerminal(ATerminal)
 {
@@ -15,13 +16,13 @@ TCustomFileSystem::TCustomFileSystem(TObjectClassId Kind, TTerminal * ATerminal)
 }
 
 UnicodeString TCustomFileSystem::CreateTargetDirectory(
-  IN const UnicodeString & AFileName,
-  IN const UnicodeString & ADirectory,
-  IN const TCopyParamType * CopyParam)
+  IN UnicodeString AFileName,
+  IN UnicodeString ADirectory,
+  IN const TCopyParamType *CopyParam)
 {
   UnicodeString Result = ADirectory;
   UnicodeString DestFileName = CopyParam->ChangeFileName(base::UnixExtractFileName(AFileName),
-    osRemote, true);
+      osRemote, true);
   UnicodeString FileNamePath = ::ExtractFilePath(DestFileName);
   if (!FileNamePath.IsEmpty())
   {

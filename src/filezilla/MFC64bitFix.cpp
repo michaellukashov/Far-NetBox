@@ -2,7 +2,7 @@
 #include "stdafx.h"
 #include "MFC64bitFix.h"
 
-__int64 GetLength64(CFile &file)
+int64_t GetLength64(CFile &file)
 {
   DWORD low;
   DWORD high;
