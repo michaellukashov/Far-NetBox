@@ -10,7 +10,7 @@ class TNamedObjectList;
 class NB_CORE_EXPORT TNamedObject : public TPersistent
 {
 public:
-  static inline bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TNamedObject); }
+  static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TNamedObject); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TNamedObject) || TPersistent::is(Kind); }
 public:
 #if 0
@@ -27,8 +27,8 @@ public:
   virtual ~TNamedObject() {}
 
   bool IsSameName(UnicodeString AName) const;
-  virtual intptr_t Compare(const TNamedObject * Other) const;
-  void MakeUniqueIn(TNamedObjectList * List);
+  virtual intptr_t Compare(const TNamedObject *Other) const;
+  void MakeUniqueIn(TNamedObjectList *List);
 private:
   UnicodeString FName;
   bool FHidden;
@@ -37,12 +37,12 @@ private:
 class NB_CORE_EXPORT TNamedObjectList : public TObjectList
 {
 public:
-  static inline bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TNamedObjectList); }
+  static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TNamedObjectList); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TNamedObjectList) || TObjectList::is(Kind); }
 public:
   intptr_t GetCount() const;
   intptr_t GetCountIncludingHidden() const;
-  virtual void Notify(void * Ptr, TListNotification Action) override;
+  virtual void Notify(void *Ptr, TListNotification Action) override;
   void SetCount(intptr_t Value);
 protected:
   intptr_t FHiddenCount;
@@ -57,16 +57,16 @@ public:
 
   explicit TNamedObjectList(TObjectClassId Kind = OBJECT_CLASS_TNamedObjectList);
   void AlphaSort();
-  intptr_t Add(TObject * AObject);
-  virtual const TNamedObject * AtObject(intptr_t Index) const;
-  virtual TNamedObject * AtObject(intptr_t Index);
-  const TNamedObject * FindByName(UnicodeString Name) const;
-  TNamedObject * FindByName(UnicodeString Name);
+  intptr_t Add(TObject *AObject);
+  virtual const TNamedObject *AtObject(intptr_t Index) const;
+  virtual TNamedObject *AtObject(intptr_t Index);
+  const TNamedObject *FindByName(UnicodeString Name) const;
+  TNamedObject *FindByName(UnicodeString Name);
 #if 0
   __property int Count = { read = GetCount, write = SetCount };
   __property int CountIncludingHidden = { read = GetCountIncludingHidden };
 #endif // #if 0
 };
 
-int NamedObjectSortProc(void * Item1, void * Item2);
+int NamedObjectSortProc(void *Item1, void *Item2);
 

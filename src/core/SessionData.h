@@ -48,7 +48,7 @@ enum TLoginType
   ltNormal = 1,
 };
 
-extern const wchar_t * ProxyMethodNames;
+extern const wchar_t *ProxyMethodNames;
 
 enum TProxyMethod
 {
@@ -75,7 +75,8 @@ enum TGssLib
 #define GSSLIB_COUNT (gssCustom + 1)
 // names have to match PuTTY registry entries (see settings.c)
 enum TSshBug { sbIgnore1, sbPlainPW1, sbRSA1, sbHMAC2, sbDeriveKey2, sbRSAPad2,
-  sbPKSessID2, sbRekey2, sbMaxPkt2, sbIgnore2, sbOldGex2, sbWinAdj, sbChanReq };
+  sbPKSessID2, sbRekey2, sbMaxPkt2, sbIgnore2, sbOldGex2, sbWinAdj, sbChanReq
+};
 #define BUG_COUNT (sbChanReq + 1)
 
 
@@ -86,7 +87,7 @@ enum TSftpBug
 };
 #define SFTP_BUG_COUNT (sbSignedTS + 1)
 
-extern const wchar_t * PingTypeNames;
+extern const wchar_t *PingTypeNames;
 
 enum TPingType
 {
@@ -176,10 +177,10 @@ class TStoredSessionList;
 
 class NB_CORE_EXPORT TSessionData : public TNamedObject
 {
-friend class TStoredSessionList;
-NB_DISABLE_COPY(TSessionData)
+  friend class TStoredSessionList;
+  NB_DISABLE_COPY(TSessionData)
 public:
-  static inline bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TSessionData); }
+  static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TSessionData); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TSessionData) || TNamedObject::is(Kind); }
 private:
   UnicodeString FHostName;
@@ -340,10 +341,10 @@ public:
 
   void SetPuttyProtocol(UnicodeString Value);
   bool GetCanLogin() const;
-  void SetPingIntervalDT(const TDateTime & Value);
+  void SetPingIntervalDT(const TDateTime &Value);
   TDateTime GetPingIntervalDT() const;
   TDateTime GetFtpPingIntervalDT() const;
-  void SetTimeDifference(const TDateTime & Value);
+  void SetTimeDifference(const TDateTime &Value);
   void SetTimeDifferenceAuto(bool Value);
   void SetPingType(TPingType Value);
   UnicodeString GetSessionName() const;
@@ -461,51 +462,51 @@ public:
   void SetNote(UnicodeString Value);
   void SetWinTitle(UnicodeString Value);
   TDateTime GetTimeoutDT() const;
-  void SavePasswords(THierarchicalStorage * Storage, bool PuttyExport, bool DoNotEncryptPasswords);
+  void SavePasswords(THierarchicalStorage *Storage, bool PuttyExport, bool DoNotEncryptPasswords);
   UnicodeString GetLocalName() const;
   UnicodeString GetFolderName() const;
   void Modify();
   UnicodeString GetSource() const;
-  void DoLoad(THierarchicalStorage * Storage, bool PuttyImport, bool & RewritePassword);
-  void DoSave(THierarchicalStorage * Storage,
-    bool PuttyExport, const TSessionData * Default, bool DoNotEncryptPasswords);
+  void DoLoad(THierarchicalStorage *Storage, bool PuttyImport, bool &RewritePassword);
+  void DoSave(THierarchicalStorage *Storage,
+    bool PuttyExport, const TSessionData *Default, bool DoNotEncryptPasswords);
 #if 0
   UnicodeString ReadXmlNode(_di_IXMLNode Node, UnicodeString Name, UnicodeString Default);
   int ReadXmlNode(_di_IXMLNode Node, UnicodeString Name, int Default);
 #endif // #if 0
-  bool IsSame(const TSessionData * Default, bool AdvancedOnly, TStrings * DifferentProperties) const;
+  bool IsSame(const TSessionData *Default, bool AdvancedOnly, TStrings *DifferentProperties) const;
   UnicodeString GetNameWithoutHiddenPrefix() const;
   bool HasStateData() const;
-  void CopyStateData(TSessionData * SourceData);
-  void CopyNonCoreData(TSessionData * SourceData);
+  void CopyStateData(TSessionData *SourceData);
+  void CopyNonCoreData(TSessionData *SourceData);
   UnicodeString GetNormalizedPuttyProtocol() const;
   static RawByteString EncryptPassword(UnicodeString Password, UnicodeString Key);
   static UnicodeString DecryptPassword(RawByteString Password, UnicodeString Key);
   static RawByteString StronglyRecryptPassword(RawByteString Password, UnicodeString Key);
-  static bool DoIsProtocolUrl(UnicodeString Url, UnicodeString Protocol, intptr_t & ProtocolLen);
-  static bool IsProtocolUrl(UnicodeString Url, UnicodeString Protocol, intptr_t & ProtocolLen);
-  static void AddSwitchValue(UnicodeString & Result, UnicodeString Name, UnicodeString Value);
-  static void AddSwitch(UnicodeString & Result, UnicodeString Switch);
-  static void AddSwitch(UnicodeString & Result, UnicodeString AName, UnicodeString Value);
-  static void AddSwitch(UnicodeString & Result, UnicodeString AName, intptr_t Value);
+  static bool DoIsProtocolUrl(UnicodeString Url, UnicodeString Protocol, intptr_t &ProtocolLen);
+  static bool IsProtocolUrl(UnicodeString Url, UnicodeString Protocol, intptr_t &ProtocolLen);
+  static void AddSwitchValue(UnicodeString &Result, UnicodeString Name, UnicodeString Value);
+  static void AddSwitch(UnicodeString &Result, UnicodeString Switch);
+  static void AddSwitch(UnicodeString &Result, UnicodeString AName, UnicodeString Value);
+  static void AddSwitch(UnicodeString &Result, UnicodeString AName, intptr_t Value);
 #if 0
   static void AddAssemblyProperty(
-    UnicodeString & Result, TAssemblyLanguage Language,
+    UnicodeString &Result, TAssemblyLanguage Language,
     UnicodeString Name, UnicodeString Value);
   static void AddAssemblyProperty(
-    UnicodeString & Result, TAssemblyLanguage Language,
+    UnicodeString &Result, TAssemblyLanguage Language,
     UnicodeString Name, UnicodeString Type,
     UnicodeString Member);
   static void AddAssemblyProperty(
-    UnicodeString & Result, TAssemblyLanguage Language,
+    UnicodeString &Result, TAssemblyLanguage Language,
     UnicodeString Name, int Value);
   void AddAssemblyProperty(
-    UnicodeString & Result, TAssemblyLanguage Language,
+    UnicodeString &Result, TAssemblyLanguage Language,
     UnicodeString Name, bool Value);
 #endif // #if 0
-  TStrings * SaveToOptions(const TSessionData * Default);
+  TStrings *SaveToOptions(const TSessionData *Default);
   template<class AlgoT>
-  void SetAlgoList(AlgoT * List, const AlgoT * DefaultList, const UnicodeString * Names,
+  void SetAlgoList(AlgoT *List, const AlgoT *DefaultList, const UnicodeString *Names,
     intptr_t Count, AlgoT WarnAlgo, UnicodeString AValue);
 
 #if 0
@@ -524,7 +525,7 @@ private:
   intptr_t FNumberOfRetries;
   uintptr_t FSessionVersion;
 
-  mutable TIEProxyConfig * FIEProxyConfig;
+  mutable TIEProxyConfig *FIEProxyConfig;
 
 public:
   void SetSFTPMinPacketSize(intptr_t Value);
@@ -545,17 +546,17 @@ public:
 public:
   explicit TSessionData(UnicodeString AName);
   virtual ~TSessionData();
-  TSessionData * Clone() const;
+  TSessionData *Clone() const;
   void Default();
   void NonPersistant();
-  void Load(THierarchicalStorage * Storage, bool PuttyImport);
-  void ApplyRawSettings(THierarchicalStorage * Storage);
+  void Load(THierarchicalStorage *Storage, bool PuttyImport);
+  void ApplyRawSettings(THierarchicalStorage *Storage);
 #if 0
   void ImportFromFilezilla(_di_IXMLNode Node, UnicodeString APath);
 #endif // #if 0
-  void Save(THierarchicalStorage * Storage, bool PuttyExport,
-    const TSessionData * Default = nullptr);
-  void SaveRecryptedPasswords(THierarchicalStorage * Storage);
+  void Save(THierarchicalStorage *Storage, bool PuttyExport,
+    const TSessionData *Default = nullptr);
+  void SaveRecryptedPasswords(THierarchicalStorage *Storage);
   void RecryptPasswords();
   bool HasPassword() const;
   bool HasAnySessionPassword() const;
@@ -563,24 +564,24 @@ public:
   void ClearSessionPasswords();
   void Remove();
   void CacheHostKeyIfNotCached();
-  virtual void Assign(const TPersistent * Source) override;
-  virtual intptr_t Compare(const TNamedObject * Other) const override;
-  void CopyData(TSessionData * SourceData);
-  void CopyDirectoriesStateData(TSessionData * SourceData);
-  bool ParseUrl(UnicodeString AUrl, TOptions * Options,
-    TStoredSessionList * AStoredSessions, bool & DefaultsOnly,
-    UnicodeString * AFileName, bool * AProtocolDefined, UnicodeString * MaskedUrl);
-  bool ParseOptions(TOptions * Options);
+  virtual void Assign(const TPersistent *Source) override;
+  virtual intptr_t Compare(const TNamedObject *Other) const override;
+  void CopyData(TSessionData *SourceData);
+  void CopyDirectoriesStateData(TSessionData *SourceData);
+  bool ParseUrl(UnicodeString AUrl, TOptions *Options,
+    TStoredSessionList *AStoredSessions, bool &DefaultsOnly,
+    UnicodeString *AFileName, bool *AProtocolDefined, UnicodeString *MaskedUrl);
+  bool ParseOptions(TOptions *Options);
   void ConfigureTunnel(intptr_t APortNumber);
   void RollbackTunnel();
   void ExpandEnvironmentVariables();
   void DisableAuthentationsExceptPassword();
-  bool IsSame(const TSessionData * Default, bool AdvancedOnly) const;
-  bool IsSameSite(const TSessionData * Default) const;
+  bool IsSame(const TSessionData *Default, bool AdvancedOnly) const;
+  bool IsSameSite(const TSessionData *Default) const;
   bool IsInFolderOrWorkspace(UnicodeString AFolder) const;
   UnicodeString GenerateSessionUrl(uintptr_t Flags) const;
   UnicodeString GenerateOpenCommandArgs() const;
-  void GenerateAssemblyCode(TAssemblyLanguage Language, UnicodeString & Head, UnicodeString & Tail, int & Indent);
+  void GenerateAssemblyCode(TAssemblyLanguage Language, UnicodeString &Head, UnicodeString &Tail, int &Indent);
   void LookupLastFingerprint();
   bool GetIsSecure() const;
   static void ValidatePath(UnicodeString APath);
@@ -873,7 +874,7 @@ public:
   void SetNumberOfRetries(intptr_t Value) { FNumberOfRetries = Value; }
   uintptr_t GetSessionVersion() const { return FSessionVersion; }
   void SetSessionVersion(uintptr_t Value) { FSessionVersion = Value; }
-  void RemoveProtocolPrefix(UnicodeString & HostName) const;
+  void RemoveProtocolPrefix(UnicodeString &HostName) const;
 
 private:
   uintptr_t GetDefaultVersion() const { return ::GetCurrentVersionNumber(); }
@@ -885,15 +886,15 @@ private:
   void PrepareProxyData() const;
   void ParseIEProxyConfig() const;
   void FromURI(UnicodeString ProxyURI,
-    UnicodeString & ProxyUrl, intptr_t & ProxyPort, TProxyMethod & ProxyMethod) const;
-  void AdjustHostName(UnicodeString & HostName, UnicodeString Prefix) const;
+    UnicodeString &ProxyUrl, intptr_t &ProxyPort, TProxyMethod &ProxyMethod) const;
+  void AdjustHostName(UnicodeString &HostName, UnicodeString Prefix) const;
 };
 
 class NB_CORE_EXPORT TStoredSessionList : public TNamedObjectList
 {
-NB_DISABLE_COPY(TStoredSessionList)
+  NB_DISABLE_COPY(TStoredSessionList)
 public:
-  static inline bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TStoredSessionList); }
+  static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TStoredSessionList); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TStoredSessionList) || TNamedObjectList::is(Kind); }
 public:
   explicit TStoredSessionList(bool AReadOnly = false);
@@ -901,77 +902,77 @@ public:
   void Save(bool All, bool Explicit);
   void Saved();
   void ImportFromFilezilla(const UnicodeString FileName, const UnicodeString ConfigurationFileName);
-  void ImportFromKnownHosts(TStrings * Lines);
+  void ImportFromKnownHosts(TStrings *Lines);
   void Export(UnicodeString AFileName);
-  void Load(THierarchicalStorage * Storage, bool AsModified = false,
+  void Load(THierarchicalStorage *Storage, bool AsModified = false,
     bool UseDefaults = false, bool PuttyImport = false);
-  void Save(THierarchicalStorage * Storage, bool All = false);
+  void Save(THierarchicalStorage *Storage, bool All = false);
   void SelectAll(bool Select);
-  void Import(TStoredSessionList * From, bool OnlySelected, TList * Imported);
-  void RecryptPasswords(TStrings * RecryptPasswordErrors);
-  TSessionData * AtSession(intptr_t Index) { return static_cast<TSessionData *>(AtObject(Index)); }
-  void SelectSessionsToImport(TStoredSessionList * Dest, bool SSHOnly);
+  void Import(TStoredSessionList *From, bool OnlySelected, TList *Imported);
+  void RecryptPasswords(TStrings *RecryptPasswordErrors);
+  TSessionData *AtSession(intptr_t Index) { return static_cast<TSessionData *>(AtObject(Index)); }
+  void SelectSessionsToImport(TStoredSessionList *Dest, bool SSHOnly);
   void Cleanup();
   void UpdateStaticUsage();
-  intptr_t IndexOf(TSessionData * Data) const;
-  const TSessionData * FindSame(TSessionData * Data);
-  TSessionData * NewSession(UnicodeString SessionName, TSessionData * Session);
-  void NewWorkspace(UnicodeString Name, TList * DataList);
+  intptr_t IndexOf(TSessionData *Data) const;
+  const TSessionData *FindSame(TSessionData *Data);
+  TSessionData *NewSession(UnicodeString SessionName, TSessionData *Session);
+  void NewWorkspace(UnicodeString Name, TList *DataList);
   bool GetIsFolder(UnicodeString Name) const;
   bool GetIsWorkspace(UnicodeString Name) const;
-  TSessionData * ParseUrl(UnicodeString Url, TOptions * Options, bool & DefaultsOnly,
-    UnicodeString * AFileName = nullptr, bool * AProtocolDefined = nullptr, UnicodeString * MaskedUrl = nullptr);
+  TSessionData *ParseUrl(UnicodeString Url, TOptions *Options, bool &DefaultsOnly,
+    UnicodeString *AFileName = nullptr, bool *AProtocolDefined = nullptr, UnicodeString *MaskedUrl = nullptr);
   bool IsUrl(UnicodeString Url);
-  bool CanLogin(TSessionData * Data);
-  void GetFolderOrWorkspace(UnicodeString Name, TList * List);
-  TStrings * GetFolderOrWorkspaceList(UnicodeString Name);
-  TStrings * GetWorkspaces();
+  bool CanLogin(TSessionData *Data);
+  void GetFolderOrWorkspace(UnicodeString Name, TList *List);
+  TStrings *GetFolderOrWorkspaceList(UnicodeString Name);
+  TStrings *GetWorkspaces();
   bool HasAnyWorkspace();
-  TSessionData * SaveWorkspaceData(TSessionData * Data);
+  TSessionData *SaveWorkspaceData(TSessionData *Data);
   virtual ~TStoredSessionList();
 #if 0
   __property TSessionData * Sessions[int Index]  = { read=AtSession };
   __property TSessionData * DefaultSettings  = { read=FDefaultSettings, write=SetDefaultSettings };
 #endif // #if 0
-  const TSessionData * GetSession(intptr_t Index) const { return dyn_cast<TSessionData>(AtObject(Index)); }
-  TSessionData * GetSession(intptr_t Index) { return dyn_cast<TSessionData>(AtObject(Index)); }
-  const TSessionData * GetDefaultSettings() const { return FDefaultSettings; }
-  TSessionData * GetDefaultSettings() { return FDefaultSettings; }
-  void SetDefaultSettings(const TSessionData * Value);
-  const TSessionData * GetSessionByName(UnicodeString SessionName) const;
+  const TSessionData *GetSession(intptr_t Index) const { return dyn_cast<TSessionData>(AtObject(Index)); }
+  TSessionData *GetSession(intptr_t Index) { return dyn_cast<TSessionData>(AtObject(Index)); }
+  const TSessionData *GetDefaultSettings() const { return FDefaultSettings; }
+  TSessionData *GetDefaultSettings() { return FDefaultSettings; }
+  void SetDefaultSettings(const TSessionData *Value);
+  const TSessionData *GetSessionByName(UnicodeString SessionName) const;
 
   static void ImportHostKeys(
-    UnicodeString SourceKey, TStoredSessionList * Sessions,
+    UnicodeString SourceKey, TStoredSessionList *Sessions,
     bool OnlySelected);
-  static void ImportSelectedKnownHosts(TStoredSessionList * Sessions);
+  static void ImportSelectedKnownHosts(TStoredSessionList *Sessions);
 
 private:
-  TSessionData * FDefaultSettings;
+  TSessionData *FDefaultSettings;
   bool FReadOnly;
-  void DoSave(THierarchicalStorage * Storage, bool All,
-    bool RecryptPasswordOnly, TStrings * RecryptPasswordErrors);
+  void DoSave(THierarchicalStorage *Storage, bool All,
+    bool RecryptPasswordOnly, TStrings *RecryptPasswordErrors);
   void DoSave(bool All, bool Explicit, bool RecryptPasswordOnly,
-    TStrings * RecryptPasswordErrors);
-  void DoSave(THierarchicalStorage * Storage,
-    TSessionData * Data, bool All, bool RecryptPasswordOnly,
-    TSessionData * FactoryDefaults);
-  TSessionData * ResolveWorkspaceData(TSessionData * Data);
+    TStrings *RecryptPasswordErrors);
+  void DoSave(THierarchicalStorage *Storage,
+    TSessionData *Data, bool All, bool RecryptPasswordOnly,
+    TSessionData *FactoryDefaults);
+  TSessionData *ResolveWorkspaceData(TSessionData *Data);
   void Load(UnicodeString AKey, bool UseDefaults);
   bool IsFolderOrWorkspace(UnicodeString Name, bool Workspace) const;
-  TSessionData * CheckIsInFolderOrWorkspaceAndResolve(
-    TSessionData * Data, UnicodeString Name);
+  TSessionData *CheckIsInFolderOrWorkspaceAndResolve(
+    TSessionData *Data, UnicodeString Name);
 #if 0
   void ImportLevelFromFilezilla(_di_IXMLNode Node, UnicodeString Path);
 #endif // #if 0
-  static THierarchicalStorage * CreateHostKeysStorageForWritting();
-  static bool OpenHostKeysSubKey(THierarchicalStorage * Storage, bool CanCreate);
+  static THierarchicalStorage *CreateHostKeysStorageForWritting();
+  static bool OpenHostKeysSubKey(THierarchicalStorage *Storage, bool CanCreate);
 };
 
-NB_CORE_EXPORT bool GetCodePageInfo(UINT CodePage, CPINFOEX & CodePageInfoEx);
+NB_CORE_EXPORT bool GetCodePageInfo(UINT CodePage, CPINFOEX &CodePageInfoEx);
 NB_CORE_EXPORT uintptr_t GetCodePageAsNumber(UnicodeString CodePage);
 NB_CORE_EXPORT UnicodeString GetCodePageAsString(uintptr_t CodePage);
 
-NB_CORE_EXPORT UnicodeString GetExpandedLogFileName(UnicodeString LogFileName, TDateTime Started, TSessionData * SessionData);
+NB_CORE_EXPORT UnicodeString GetExpandedLogFileName(UnicodeString LogFileName, TDateTime Started, TSessionData *SessionData);
 NB_CORE_EXPORT bool GetIsSshProtocol(TFSProtocol FSProtocol);
 NB_CORE_EXPORT intptr_t GetDefaultPort(TFSProtocol FSProtocol, TFtps Ftps);
 

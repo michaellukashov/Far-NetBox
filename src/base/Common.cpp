@@ -22,7 +22,7 @@
 
 #pragma warning(disable: 4996) // https://msdn.microsoft.com/en-us/library/ttcz0bys.aspx The compiler encountered a deprecated declaration
 
-const wchar_t * DSTModeNames = L"Win;Unix;Keep";
+const wchar_t *DSTModeNames = L"Win;Unix;Keep";
 
 
 const wchar_t EngShortMonthNames[12][4] =
@@ -41,8 +41,8 @@ const UnicodeString Ellipsis(TraceInitStr(L"..."));
 UnicodeString ReplaceChar(UnicodeString Str, wchar_t A, wchar_t B)
 {
   UnicodeString Result = Str;
-  wchar_t * Buffer = ToWChar(Result);
-  for (wchar_t * Ch = Buffer; Ch && *Ch; ++Ch)
+  wchar_t *Buffer = ToWChar(Result);
+  for (wchar_t *Ch = Buffer; Ch && *Ch; ++Ch)
     if (*Ch == A)
     {
       *Ch = B;
@@ -62,29 +62,29 @@ UnicodeString DeleteChar(UnicodeString Str, wchar_t C)
 }
 
 template <typename T>
-void DoPackStr(T & Str)
+void DoPackStr(T &Str)
 {
   // Following will free unnecessary bytes
   Str = Str.c_str();
 }
 
-void PackStr(UnicodeString & Str)
+void PackStr(UnicodeString &Str)
 {
   DoPackStr(Str);
 }
 
-void PackStr(RawByteString & Str)
+void PackStr(RawByteString &Str)
 {
   DoPackStr(Str);
 }
 
-void PackStr(AnsiString & Str)
+void PackStr(AnsiString &Str)
 {
   DoPackStr(Str);
 }
 
 template <typename T>
-void DoShred(T & Str)
+void DoShred(T &Str)
 {
   if (!Str.IsEmpty())
   {
@@ -94,17 +94,17 @@ void DoShred(T & Str)
   }
 }
 
-void Shred(UnicodeString & Str)
+void Shred(UnicodeString &Str)
 {
   DoShred(Str);
 }
 
-void Shred(UTF8String & Str)
+void Shred(UTF8String &Str)
 {
   DoShred(Str);
 }
 
-void Shred(AnsiString & Str)
+void Shred(AnsiString &Str)
 {
   DoShred(Str);
 }
@@ -114,7 +114,7 @@ UnicodeString AnsiToString(RawByteString S)
   return UnicodeString(AnsiString(S));
 }
 
-UnicodeString AnsiToString(const char * S, size_t Len)
+UnicodeString AnsiToString(const char *S, size_t Len)
 {
   return UnicodeString(AnsiString(S, Len));
 }
@@ -175,7 +175,7 @@ UnicodeString DefaultStr(UnicodeString Str, UnicodeString Default)
   return Default;
 }
 
-UnicodeString CutToChar(UnicodeString & Str, wchar_t Ch, bool Trim)
+UnicodeString CutToChar(UnicodeString &Str, wchar_t Ch, bool Trim)
 {
   intptr_t P = Str.Pos(Ch);
   UnicodeString Result;
@@ -197,8 +197,8 @@ UnicodeString CutToChar(UnicodeString & Str, wchar_t Ch, bool Trim)
   return Result;
 }
 
-UnicodeString CopyToChars(UnicodeString Str, intptr_t & From, UnicodeString Chs, bool Trim,
-  wchar_t * Delimiter, bool DoubleDelimiterEscapes)
+UnicodeString CopyToChars(UnicodeString Str, intptr_t &From, UnicodeString Chs, bool Trim,
+  wchar_t *Delimiter, bool DoubleDelimiterEscapes)
 {
   UnicodeString Result;
 
@@ -208,8 +208,8 @@ UnicodeString CopyToChars(UnicodeString Str, intptr_t & From, UnicodeString Chs,
     if (::IsDelimiter(Chs, Str, P))
     {
       if (DoubleDelimiterEscapes &&
-          (P < Str.Length()) &&
-          ::IsDelimiter(Chs, Str, P + 1))
+        (P < Str.Length()) &&
+        ::IsDelimiter(Chs, Str, P + 1))
       {
         Result += Str[P];
         P++;
@@ -285,7 +285,7 @@ UnicodeString ShellDelimitStr(UnicodeString Str, wchar_t Quote)
   return DelimitStr(Str, Chars);
 }
 
-UnicodeString ExceptionLogString(Exception * E)
+UnicodeString ExceptionLogString(Exception *E)
 {
   DebugAssert(E);
   if (isa<Exception>(E))
@@ -293,7 +293,7 @@ UnicodeString ExceptionLogString(Exception * E)
     UnicodeString Msg = FORMAT("%s", UnicodeString(E->what()));
     if (isa<ExtException>(E))
     {
-      TStrings * MoreMessages = dyn_cast<ExtException>(E)->GetMoreMessages();
+      TStrings *MoreMessages = dyn_cast<ExtException>(E)->GetMoreMessages();
       if (MoreMessages)
       {
         Msg += L"\n" +
@@ -303,9 +303,9 @@ UnicodeString ExceptionLogString(Exception * E)
     return Msg;
   }
 #if defined(__BORLANDC__)
-    wchar_t Buffer[1024];
-    ExceptionErrorMessage(ExceptObject(), ExceptAddr(), Buffer, _countof(Buffer));
-    return UnicodeString(Buffer);
+  wchar_t Buffer[1024];
+  ExceptionErrorMessage(ExceptObject(), ExceptAddr(), Buffer, _countof(Buffer));
+  return UnicodeString(Buffer);
 #else
   return UnicodeString(E->what());
 #endif
@@ -342,7 +342,7 @@ UnicodeString MainInstructionsFirstParagraph(UnicodeString S)
   return Result;
 }
 
-bool ExtractMainInstructions(UnicodeString & S, UnicodeString & MainInstructions)
+bool ExtractMainInstructions(UnicodeString &S, UnicodeString &MainInstructions)
 {
   bool Result = false;
   UnicodeString MainMsgTag = LoadStr(MAIN_MSG_TAG);
@@ -369,7 +369,7 @@ static intptr_t FindInteractiveMsgStart(UnicodeString S)
   intptr_t Result = 0;
   UnicodeString InteractiveMsgTag = LoadStr(INTERACTIVE_MSG_TAG);
   if (EndsStr(InteractiveMsgTag, S) &&
-      (S.Length() >= 2 * InteractiveMsgTag.Length()))
+    (S.Length() >= 2 * InteractiveMsgTag.Length()))
   {
     Result = S.Length() - 2 * InteractiveMsgTag.Length() + 1;
     while ((Result > 0) && (S.SubString(Result, InteractiveMsgTag.Length()) != InteractiveMsgTag))
@@ -538,7 +538,7 @@ UnicodeString GetDesktopFolder()
 UnicodeString StripPathQuotes(UnicodeString APath)
 {
   if ((APath.Length() >= 2) &&
-      (APath[1] == L'\"') && (APath[APath.Length()] == L'\"'))
+    (APath[1] == L'\"') && (APath[APath.Length()] == L'\"'))
   {
     return APath.SubString(2, APath.Length() - 2);
   }
@@ -561,8 +561,8 @@ UnicodeString AddPathQuotes(UnicodeString APath)
   return AddQuotes(Result);
 }
 
-static wchar_t * ReplaceChar(
-  UnicodeString & AFileName, wchar_t * InvalidChar, wchar_t InvalidCharsReplacement)
+static wchar_t *ReplaceChar(
+  UnicodeString &AFileName, wchar_t *InvalidChar, wchar_t InvalidCharsReplacement)
 {
   intptr_t Index = InvalidChar - AFileName.c_str() + 1;
   if (InvalidCharsReplacement == TokenReplacement)
@@ -600,16 +600,16 @@ UnicodeString ValidLocalFileName(
   {
     bool ATokenReplacement = (AInvalidCharsReplacement == TokenReplacement);
     UnicodeString CharsStr = ATokenReplacement ? ATokenizibleChars : ALocalInvalidChars;
-    const wchar_t * Chars = CharsStr.c_str();
-    wchar_t * InvalidChar = ToWChar(Result);
+    const wchar_t *Chars = CharsStr.c_str();
+    wchar_t *InvalidChar = ToWChar(Result);
     while ((InvalidChar = wcspbrk(InvalidChar, Chars)) != nullptr)
     {
       intptr_t Pos = (InvalidChar - Result.c_str() + 1);
       wchar_t Char;
       if (ATokenReplacement &&
-          (*InvalidChar == TokenPrefix) &&
-          (((Result.Length() - Pos) <= 1) ||
-           (((Char = static_cast<wchar_t>(HexToByte(Result.SubString(Pos + 1, 2)))) == L'\0') ||
+        (*InvalidChar == TokenPrefix) &&
+        (((Result.Length() - Pos) <= 1) ||
+          (((Char = static_cast<wchar_t>(HexToByte(Result.SubString(Pos + 1, 2)))) == L'\0') ||
             (ATokenizibleChars.Pos(Char) == 0))))
       {
         InvalidChar++;
@@ -622,8 +622,8 @@ UnicodeString ValidLocalFileName(
 
     // Windows trim trailing space or dot, hence we must encode it to preserve it
     if (!Result.IsEmpty() &&
-        ((Result[Result.Length()] == L' ') ||
-         (Result[Result.Length()] == L'.')))
+      ((Result[Result.Length()] == L' ') ||
+        (Result[Result.Length()] == L'.')))
     {
       ReplaceChar(Result, ToWChar(Result) + Result.Length() - 1, AInvalidCharsReplacement);
     }
@@ -641,8 +641,8 @@ UnicodeString ValidLocalFileName(
   return Result;
 }
 
-void SplitCommand(UnicodeString Command, UnicodeString & Program,
-  UnicodeString & Params, UnicodeString & Dir)
+void SplitCommand(UnicodeString Command, UnicodeString &Program,
+  UnicodeString &Params, UnicodeString &Dir)
 {
   UnicodeString Cmd = Command.Trim();
   Params.Clear();
@@ -715,7 +715,7 @@ UnicodeString FormatCommand(UnicodeString Program, UnicodeString AParams)
 
 const wchar_t ShellCommandFileNamePattern[] = L"!.!";
 
-void ReformatFileNameCommand(UnicodeString & Command)
+void ReformatFileNameCommand(UnicodeString &Command)
 {
   if (!Command.IsEmpty())
   {
@@ -733,7 +733,7 @@ UnicodeString ExpandFileNameCommand(UnicodeString Command,
   UnicodeString AFileName)
 {
   return AnsiReplaceStr(Command, ShellCommandFileNamePattern,
-    AddPathQuotes(AFileName));
+      AddPathQuotes(AFileName));
 }
 
 UnicodeString EscapeParam(UnicodeString AParam)
@@ -856,7 +856,7 @@ intptr_t CompareLogicalText(UnicodeString S1, UnicodeString S2)
 #if defined(_MSC_VER) && !defined(__clang__)
   return ::StrCmpNCW(S1.c_str(), S2.c_str(), ToInt(S1.Length()));
 #else
-    return S1.Compare(S2);
+  return S1.Compare(S2);
 #endif
 }
 
@@ -934,7 +934,7 @@ static bool PathIsRelative_CorrectedForMicrosoftStupidity(UnicodeString APath)
 #endif // if defined(_MSC_VER) && !defined(__clang__)
 }
 
-static intptr_t GetOffsetAfterPathRoot(UnicodeString APath, PATH_PREFIX_TYPE & PrefixType)
+static intptr_t GetOffsetAfterPathRoot(UnicodeString APath, PATH_PREFIX_TYPE &PrefixType)
 {
   // Checks if 'pPath' begins with the drive, share, prefix, etc
   // EXAMPLES:
@@ -1100,32 +1100,32 @@ static UnicodeString MakeUnicodeLargePath(UnicodeString APath)
     switch (PrefixType)
     {
     case PPT_ABSOLUTE:
+    {
+      // First we need to check if its an absolute path relative to the root
+      bool AddPrefix = true;
+      if ((APath.Length() >= 1) &&
+        ((APath[1] == L'\\') || (APath[1] == L'/')))
       {
-        // First we need to check if its an absolute path relative to the root
-        bool AddPrefix = true;
-        if ((APath.Length() >= 1) &&
-          ((APath[1] == L'\\') || (APath[1] == L'/')))
-        {
-          AddPrefix = false;
+        AddPrefix = false;
 
-          // Get current root path
-          UnicodeString CurrentDir = GetCurrentDir();
-          PATH_PREFIX_TYPE PrefixType2; // unused
-          intptr_t Following = GetOffsetAfterPathRoot(CurrentDir, PrefixType2);
-          if (Following > 0)
-          {
-            AddPrefix = true;
-            Result = CurrentDir.SubString(1, Following - 1) + Result.SubString(2, Result.Length() - 1);
-          }
-        }
-
-        if (AddPrefix)
+        // Get current root path
+        UnicodeString CurrentDir = GetCurrentDir();
+        PATH_PREFIX_TYPE PrefixType2; // unused
+        intptr_t Following = GetOffsetAfterPathRoot(CurrentDir, PrefixType2);
+        if (Following > 0)
         {
-          // Add \\?\ prefix
-          Result = L"\\\\?\\" + Result;
+          AddPrefix = true;
+          Result = CurrentDir.SubString(1, Following - 1) + Result.SubString(2, Result.Length() - 1);
         }
       }
-      break;
+
+      if (AddPrefix)
+      {
+        // Add \\?\ prefix
+        Result = L"\\\\?\\" + Result;
+      }
+    }
+    break;
 
     case PPT_UNC:
       // First we need to remove the opening slashes for UNC share
@@ -1172,7 +1172,7 @@ UnicodeString DisplayableStr(RawByteString Str)
   while ((Index1 <= Str.Length()) && Displayable)
   {
     if (((Str[Index1] < '\x20') || (static_cast<uint8_t>(Str[Index1]) >= static_cast<uint8_t >('\x80'))) &&
-        (Str[Index1] != '\n') && (Str[Index1] != '\r') && (Str[Index1] != '\t') && (Str[Index1] != '\b'))
+      (Str[Index1] != '\n') && (Str[Index1] != '\r') && (Str[Index1] != '\t') && (Str[Index1] != '\b'))
     {
       Displayable = false;
     }
@@ -1230,7 +1230,7 @@ UnicodeString ByteToHex(uint8_t B, bool UpperCase)
   UnicodeString UpperDigits = "0123456789ABCDEF";
   UnicodeString LowerDigits = "0123456789abcdef";
 
-  const wchar_t * Digits = (UpperCase ? UpperDigits.c_str() : LowerDigits.c_str());
+  const wchar_t *Digits = (UpperCase ? UpperDigits.c_str() : LowerDigits.c_str());
   UnicodeString Result;
   Result.SetLength(2);
   Result[1] = Digits[(B & 0xF0) >> 4];
@@ -1238,7 +1238,7 @@ UnicodeString ByteToHex(uint8_t B, bool UpperCase)
   return Result;
 }
 
-UnicodeString BytesToHex(const uint8_t * B, uintptr_t Length, bool UpperCase, wchar_t Separator)
+UnicodeString BytesToHex(const uint8_t *B, uintptr_t Length, bool UpperCase, wchar_t Separator)
 {
   UnicodeString Result;
   for (uintptr_t Index = 0; Index < Length; ++Index)
@@ -1334,13 +1334,13 @@ DWORD FindCheck(DWORD Result, UnicodeString APath)
   return Result;
 }
 
-DWORD FindFirstUnchecked(UnicodeString APath, DWORD LocalFileAttrs, TSearchRecChecked & F)
+DWORD FindFirstUnchecked(UnicodeString APath, DWORD LocalFileAttrs, TSearchRecChecked &F)
 {
   F.Path = APath;
   return base::FindFirst(ApiPath(APath), LocalFileAttrs, F);
 }
 
-DWORD FindFirstChecked(UnicodeString APath, DWORD LocalFileAttrs, TSearchRecChecked & F)
+DWORD FindFirstChecked(UnicodeString APath, DWORD LocalFileAttrs, TSearchRecChecked &F)
 {
   // return FindCheck(FindFirst(Path, LocalFileAttrs, F));
   DWORD Result = FindFirstUnchecked(APath, LocalFileAttrs, F);
@@ -1348,7 +1348,7 @@ DWORD FindFirstChecked(UnicodeString APath, DWORD LocalFileAttrs, TSearchRecChec
 }
 
 // Equivalent to FindNext, just to complement to FindFirstUnchecked
-DWORD FindNextUnchecked(TSearchRecChecked & F)
+DWORD FindNextUnchecked(TSearchRecChecked &F)
 {
   return base::FindNext(F);
 }
@@ -1356,12 +1356,12 @@ DWORD FindNextUnchecked(TSearchRecChecked & F)
 // It can make sense to use FindNextChecked, even if unchecked FindFirst is used.
 // I.e. even if we do not care that FindFirst failed, if FindNext
 // fails after successful FindFirst, it mean some terrible problem
-DWORD FindNextChecked(TSearchRecChecked & F)
+DWORD FindNextChecked(TSearchRecChecked &F)
 {
   return FindCheck(FindNextUnchecked(F), F.Path);
 }
 
-bool FileSearchRec(UnicodeString AFileName, TSearchRec & Rec)
+bool FileSearchRec(UnicodeString AFileName, TSearchRec &Rec)
 {
   DWORD FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
   bool Result = (base::FindFirst(ApiPath(AFileName), FindAttrs, Rec) == 0);
@@ -1373,7 +1373,7 @@ bool FileSearchRec(UnicodeString AFileName, TSearchRec & Rec)
 }
 
 void ProcessLocalDirectory(UnicodeString ADirName,
-  TProcessLocalFileEvent CallBackFunc, void * Param,
+  TProcessLocalFileEvent CallBackFunc, void *Param,
   DWORD FindAttrs)
 {
   DebugAssert(CallBackFunc);
@@ -1422,7 +1422,7 @@ TDateTime EncodeDateVerbose(Word Year, Word Month, Word Day)
   {
     Result = EncodeDate(Year, Month, Day);
   }
-  catch (EConvertError & E)
+  catch (EConvertError &E)
   {
     throw EConvertError(FORMAT("%s [%04u-%02u-%02u]", E.Message, int(Year), int(Month), int(Day)));
   }
@@ -1436,21 +1436,21 @@ TDateTime EncodeTimeVerbose(Word Hour, Word Min, Word Sec, Word MSec)
   {
     Result = EncodeTime(Hour, Min, Sec, MSec);
   }
-  catch (EConvertError & E)
+  catch (EConvertError &E)
   {
     throw EConvertError(FORMAT("%s [%02u:%02u:%02u.%04u]", E.Message, int(Hour), int(Min), int(Sec), int(MSec)));
   }
   return Result;
 }
 
-TDateTime SystemTimeToDateTimeVerbose(const SYSTEMTIME & SystemTime)
+TDateTime SystemTimeToDateTimeVerbose(const SYSTEMTIME &SystemTime)
 {
   try
   {
     TDateTime DateTime = SystemTimeToDateTime(SystemTime);
     return DateTime;
   }
-  catch (EConvertError & E)
+  catch (EConvertError &E)
   {
     throw EConvertError(FORMAT("%s [%d-%2.2d-%2.2d %2.2d:%2.2d:%2.2d.%3.3d]", E.Message, int(SystemTime.wYear), int(SystemTime.wMonth), int(SystemTime.wDay), int(SystemTime.wHour), int(SystemTime.wMinute), int(SystemTime.wSecond), int(SystemTime.wMilliseconds)));
   }
@@ -1517,21 +1517,21 @@ struct TDateTimeParams : public TObject
 typedef rde::map<int, TDateTimeParams> TYearlyDateTimeParams;
 static TYearlyDateTimeParams YearlyDateTimeParams;
 static TCriticalSection DateTimeParamsSection;
-static void EncodeDSTMargin(const SYSTEMTIME & Date, uint16_t Year,
-  TDateTime & Result);
+static void EncodeDSTMargin(const SYSTEMTIME &Date, uint16_t Year,
+  TDateTime &Result);
 
-static uint16_t DecodeYear(const TDateTime & DateTime)
+static uint16_t DecodeYear(const TDateTime &DateTime)
 {
   uint16_t Year, Month, Day;
   DecodeDate(DateTime, Year, Month, Day);
   return Year;
 }
 
-static const TDateTimeParams * GetDateTimeParams(uint16_t Year)
+static const TDateTimeParams *GetDateTimeParams(uint16_t Year)
 {
   TGuard Guard(DateTimeParamsSection);
 
-  TDateTimeParams * Result;
+  TDateTimeParams *Result;
 
   TYearlyDateTimeParams::iterator it = YearlyDateTimeParams.find(Year);
   if (it != YearlyDateTimeParams.end())
@@ -1548,7 +1548,7 @@ static const TDateTimeParams * GetDateTimeParams(uint16_t Year)
 
     HINSTANCE Kernel32 = ::GetModuleHandle(L"kernel32.dll");
     typedef BOOL (WINAPI * TGetTimeZoneInformationForYear)
-      (USHORT wYear, PDYNAMIC_TIME_ZONE_INFORMATION pdtzi, LPTIME_ZONE_INFORMATION ptzi);
+    (USHORT wYear, PDYNAMIC_TIME_ZONE_INFORMATION pdtzi, LPTIME_ZONE_INFORMATION ptzi);
     TGetTimeZoneInformationForYear GetTimeZoneInformationForYear =
       reinterpret_cast<TGetTimeZoneInformationForYear>(::GetProcAddress(Kernel32, "GetTimeZoneInformationForYear"));
 
@@ -1619,8 +1619,8 @@ static const TDateTimeParams * GetDateTimeParams(uint16_t Year)
   return Result;
 }
 
-static void EncodeDSTMargin(const SYSTEMTIME & Date, uint16_t Year,
-  TDateTime & Result)
+static void EncodeDSTMargin(const SYSTEMTIME &Date, uint16_t Year,
+  TDateTime &Result)
 {
   if (Date.wYear == 0)
   {
@@ -1643,7 +1643,7 @@ static void EncodeDSTMargin(const SYSTEMTIME & Date, uint16_t Year,
       }
     }
     Result += EncodeTimeVerbose(Date.wHour, Date.wMinute, Date.wSecond,
-      Date.wMilliseconds);
+        Date.wMilliseconds);
   }
   else
   {
@@ -1652,9 +1652,9 @@ static void EncodeDSTMargin(const SYSTEMTIME & Date, uint16_t Year,
   }
 }
 
-static bool IsDateInDST(const TDateTime & DateTime)
+static bool IsDateInDST(const TDateTime &DateTime)
 {
-  const TDateTimeParams * Params = GetDateTimeParams(DecodeYear(DateTime));
+  const TDateTimeParams *Params = GetDateTimeParams(DecodeYear(DateTime));
 
   bool Result;
 
@@ -1694,13 +1694,13 @@ TDateTime UnixToDateTime(int64_t TimeStamp, TDSTMode DSTMode)
   DebugAssert(int(EncodeDateVerbose(1970, 1, 1)) == UnixDateDelta);
 
   TDateTime Result = TDateTime(UnixDateDelta + (ToDouble(TimeStamp) / SecsPerDay));
-  const TDateTimeParams * Params = GetDateTimeParams(DecodeYear(Result));
+  const TDateTimeParams *Params = GetDateTimeParams(DecodeYear(Result));
 
   if (Params->DaylightHack)
   {
     if ((DSTMode == dstmWin) || (DSTMode == dstmUnix))
     {
-      const TDateTimeParams * CurrentParams = GetDateTimeParams(0);
+      const TDateTimeParams *CurrentParams = GetDateTimeParams(0);
       Result -= CurrentParams->CurrentDifference;
     }
     else if (DSTMode == dstmKeep)
@@ -1728,7 +1728,7 @@ int64_t Round(double Number)
   return static_cast<int64_t>(((Number - Floor) > (Ceil - Number)) ? Ceil : Floor);
 }
 
-bool TryRelativeStrToDateTime(UnicodeString AStr, TDateTime & DateTime, bool Add)
+bool TryRelativeStrToDateTime(UnicodeString AStr, TDateTime &DateTime, bool Add)
 {
   UnicodeString S = AStr.Trim();
   intptr_t Index = 1;
@@ -1782,7 +1782,7 @@ const wchar_t MegaSize = L'M';
 const wchar_t GigaSize = L'G';
 
 // Keep consistent with parse_blocksize
-bool TryStrToSize(UnicodeString SizeStr, int64_t & Size)
+bool TryStrToSize(UnicodeString SizeStr, int64_t &Size)
 {
   intptr_t Index = 0;
   while ((Index + 1 <= SizeStr.Length()) && IsDigit(SizeStr[Index + 1]))
@@ -1804,10 +1804,10 @@ bool TryStrToSize(UnicodeString SizeStr, int64_t & Size)
         {
         case GigaSize:
           Size *= 1024;
-          // fallthru
+        // fallthru
         case MegaSize:
           Size *= 1024;
-          // fallthru
+        // fallthru
         case KiloSize:
           Size *= 1024;
           break;
@@ -1851,9 +1851,9 @@ UnicodeString SizeToStr(int64_t Size)
   return Result;
 }
 
-static int64_t DateTimeToUnix(const TDateTime & DateTime)
+static int64_t DateTimeToUnix(const TDateTime &DateTime)
 {
-  const TDateTimeParams * CurrentParams = GetDateTimeParams(0);
+  const TDateTimeParams *CurrentParams = GetDateTimeParams(0);
 
   DebugAssert(int(EncodeDateVerbose(1970, 1, 1)) == UnixDateDelta);
 
@@ -1861,12 +1861,12 @@ static int64_t DateTimeToUnix(const TDateTime & DateTime)
     CurrentParams->CurrentDifferenceSec;
 }
 
-FILETIME DateTimeToFileTime(const TDateTime & DateTime,
+FILETIME DateTimeToFileTime(const TDateTime &DateTime,
   TDSTMode /*DSTMode*/)
 {
   int64_t UnixTimeStamp = ::DateTimeToUnix(DateTime);
 
-  const TDateTimeParams * Params = GetDateTimeParams(DecodeYear(DateTime));
+  const TDateTimeParams *Params = GetDateTimeParams(DecodeYear(DateTime));
   if (!Params->DaylightHack)
   {
     // We should probably use reversed code of FileTimeToDateTime here instead of custom implementation
@@ -1876,22 +1876,22 @@ FILETIME DateTimeToFileTime(const TDateTime & DateTime,
     // (as it did in Belarus from GMT+2 to GMT+3 between 2011 and 2012)
 
     UnixTimeStamp += (IsDateInDST(DateTime) ?
-      Params->DaylightDifferenceSec : Params->StandardDifferenceSec) +
+        Params->DaylightDifferenceSec : Params->StandardDifferenceSec) +
       Params->BaseDifferenceSec;
 
-    const TDateTimeParams * CurrentParams = GetDateTimeParams(0);
+    const TDateTimeParams *CurrentParams = GetDateTimeParams(0);
     UnixTimeStamp -=
       CurrentParams->CurrentDaylightDifferenceSec +
       CurrentParams->BaseDifferenceSec;
   }
 
   FILETIME Result;
-  (*reinterpret_cast<int64_t*>(&(Result)) = (static_cast<int64_t>(UnixTimeStamp) + 11644473600LL) * 10000000LL);
+  (*reinterpret_cast<int64_t *>(&(Result)) = (static_cast<int64_t>(UnixTimeStamp) + 11644473600LL) * 10000000LL);
 
   return Result;
 }
 
-TDateTime FileTimeToDateTime(const FILETIME & FileTime)
+TDateTime FileTimeToDateTime(const FILETIME &FileTime)
 {
   // duplicated in DirView.pas
   TDateTime Result;
@@ -1937,10 +1937,10 @@ TDateTime FileTimeToDateTime(const FILETIME & FileTime)
   return Result;
 }
 
-int64_t ConvertTimestampToUnix(const FILETIME & FileTime,
+int64_t ConvertTimestampToUnix(const FILETIME &FileTime,
   TDSTMode DSTMode)
 {
-  int64_t Result = ((*(int64_t *)& (FileTime)) / 10000000LL - 11644473600LL);
+  int64_t Result = ((*(int64_t *) & (FileTime)) / 10000000LL - 11644473600LL);
   if (UsesDaylightHack())
   {
     if ((DSTMode == dstmUnix) || (DSTMode == dstmKeep))
@@ -1950,13 +1950,13 @@ int64_t ConvertTimestampToUnix(const FILETIME & FileTime,
       FileTimeToLocalFileTime(&FileTime, &LocalFileTime);
       FileTimeToSystemTime(&LocalFileTime, &SystemTime);
       TDateTime DateTime = SystemTimeToDateTimeVerbose(SystemTime);
-      const TDateTimeParams * Params = GetDateTimeParams(DecodeYear(DateTime));
+      const TDateTimeParams *Params = GetDateTimeParams(DecodeYear(DateTime));
       Result += (IsDateInDST(DateTime) ?
-        Params->DaylightDifferenceSec : Params->StandardDifferenceSec);
+          Params->DaylightDifferenceSec : Params->StandardDifferenceSec);
 
       if (DSTMode == dstmKeep)
       {
-        const TDateTimeParams * CurrentParams = GetDateTimeParams(0);
+        const TDateTimeParams *CurrentParams = GetDateTimeParams(0);
         Result -= CurrentParams->CurrentDaylightDifferenceSec;
       }
     }
@@ -1970,55 +1970,55 @@ int64_t ConvertTimestampToUnix(const FILETIME & FileTime,
       FileTimeToLocalFileTime(&FileTime, &LocalFileTime);
       FileTimeToSystemTime(&LocalFileTime, &SystemTime);
       TDateTime DateTime = SystemTimeToDateTimeVerbose(SystemTime);
-      const TDateTimeParams * Params = GetDateTimeParams(DecodeYear(DateTime));
+      const TDateTimeParams *Params = GetDateTimeParams(DecodeYear(DateTime));
       Result -= (IsDateInDST(DateTime) ?
-        Params->DaylightDifferenceSec : Params->StandardDifferenceSec);
+          Params->DaylightDifferenceSec : Params->StandardDifferenceSec);
     }
   }
 
   return Result;
 }
 
-TDateTime ConvertTimestampToUTC(const TDateTime & DateTime)
+TDateTime ConvertTimestampToUTC(const TDateTime &DateTime)
 {
   TDateTime Result = DateTime;
 
-  const TDateTimeParams * Params = GetDateTimeParams(DecodeYear(DateTime));
+  const TDateTimeParams *Params = GetDateTimeParams(DecodeYear(DateTime));
   Result += DSTDifferenceForTime(DateTime);
   Result += Params->BaseDifference;
 
   if (Params->DaylightHack)
   {
-    const TDateTimeParams * CurrentParams = GetDateTimeParams(0);
+    const TDateTimeParams *CurrentParams = GetDateTimeParams(0);
     Result += CurrentParams->CurrentDaylightDifference;
   }
 
   return Result;
 }
 
-TDateTime ConvertTimestampFromUTC(const TDateTime & DateTime)
+TDateTime ConvertTimestampFromUTC(const TDateTime &DateTime)
 {
   TDateTime Result = DateTime;
 
-  const TDateTimeParams * Params = GetDateTimeParams(DecodeYear(Result));
+  const TDateTimeParams *Params = GetDateTimeParams(DecodeYear(Result));
   Result -= DSTDifferenceForTime(DateTime);
   Result -= Params->BaseDifference;
 
   if (Params->DaylightHack)
   {
-    const TDateTimeParams * CurrentParams = GetDateTimeParams(0);
+    const TDateTimeParams *CurrentParams = GetDateTimeParams(0);
     Result -= CurrentParams->CurrentDaylightDifference;
   }
 
   return Result;
 }
 
-int64_t ConvertTimestampToUnixSafe(const FILETIME & FileTime,
+int64_t ConvertTimestampToUnixSafe(const FILETIME &FileTime,
   TDSTMode DSTMode)
 {
   int64_t Result;
   if ((FileTime.dwLowDateTime == 0) &&
-      (FileTime.dwHighDateTime == 0))
+    (FileTime.dwHighDateTime == 0))
   {
     Result = ::DateTimeToUnix(Now());
   }
@@ -2029,10 +2029,10 @@ int64_t ConvertTimestampToUnixSafe(const FILETIME & FileTime,
   return Result;
 }
 
-double DSTDifferenceForTime(const TDateTime & DateTime)
+double DSTDifferenceForTime(const TDateTime &DateTime)
 {
   double Result;
-  const TDateTimeParams * Params = GetDateTimeParams(DecodeYear(DateTime));
+  const TDateTimeParams *Params = GetDateTimeParams(DecodeYear(DateTime));
   if (IsDateInDST(DateTime))
   {
     Result = Params->DaylightDifference;
@@ -2044,17 +2044,17 @@ double DSTDifferenceForTime(const TDateTime & DateTime)
   return Result;
 }
 
-TDateTime AdjustDateTimeFromUnix(const TDateTime & DateTime, TDSTMode DSTMode)
+TDateTime AdjustDateTimeFromUnix(const TDateTime &DateTime, TDSTMode DSTMode)
 {
   TDateTime Result = DateTime;
 
-  const TDateTimeParams * Params = GetDateTimeParams(DecodeYear(Result));
+  const TDateTimeParams *Params = GetDateTimeParams(DecodeYear(Result));
 
   if (Params->DaylightHack)
   {
     if ((DSTMode == dstmWin) || (DSTMode == dstmUnix))
     {
-      const TDateTimeParams * CurrentParams = GetDateTimeParams(0);
+      const TDateTimeParams *CurrentParams = GetDateTimeParams(0);
       Result = Result - CurrentParams->CurrentDaylightDifference;
     }
 
@@ -2117,7 +2117,7 @@ UnicodeString FixedLenDateTimeFormat(UnicodeString Format)
     else
     {
       if (!AsIs && (wcschr(L"dDeEmMhHnNsS", F) != nullptr) &&
-          ((Index == Result.Length()) || (Result[Index + 1] != F)))
+        ((Index == Result.Length()) || (Result[Index + 1] != F)))
       {
         Result.Insert(F, Index);
       }
@@ -2156,7 +2156,7 @@ UnicodeString FormatTimeZone(intptr_t /*Sec*/)
 
 UnicodeString GetTimeZoneLogString()
 {
-  const TDateTimeParams * CurrentParams = GetDateTimeParams(0);
+  const TDateTimeParams *CurrentParams = GetDateTimeParams(0);
 
   UnicodeString Result =
     FORMAT("Current: GMT%s", FormatTimeZone(CurrentParams->CurrentDifferenceSec));
@@ -2191,9 +2191,9 @@ bool AdjustClockForDSTEnabled()
   {
     Registry->SetRootKey(HKEY_LOCAL_MACHINE);
     if (Registry->OpenKey("SYSTEM", false) &&
-        Registry->OpenKey("CurrentControlSet", false) &&
-        Registry->OpenKey("Control", false) &&
-        Registry->OpenKey("TimeZoneInformation", false))
+      Registry->OpenKey("CurrentControlSet", false) &&
+      Registry->OpenKey("Control", false) &&
+      Registry->OpenKey("TimeZoneInformation", false))
     {
       if (Registry->ValueExists("DynamicDaylightTimeDisabled"))
       {
@@ -2228,7 +2228,7 @@ UnicodeString StandardDatestamp()
 #endif
 }
 
-UnicodeString StandardTimestamp(const TDateTime & DateTime)
+UnicodeString StandardTimestamp(const TDateTime &DateTime)
 {
 #if defined(__BORLANDC__)
   return FormatDateTime(L"yyyy'-'mm'-'dd'T'hh':'nn':'ss'.'zzz'Z'", ConvertTimestampToUTC(DateTime));
@@ -2247,7 +2247,7 @@ UnicodeString StandardTimestamp()
   return StandardTimestamp(Now());
 }
 
-intptr_t CompareFileTime(const TDateTime & T1, const TDateTime & T2)
+intptr_t CompareFileTime(const TDateTime &T1, const TDateTime &T2)
 {
   TDateTime TwoSeconds(0, 0, 2, 0);
   // "FAT" time precision
@@ -2275,22 +2275,22 @@ intptr_t CompareFileTime(const TDateTime & T1, const TDateTime & T2)
   return Result;
 }
 
-intptr_t TimeToMSec(const TDateTime & T)
+intptr_t TimeToMSec(const TDateTime &T)
 {
   return int(Round(double(T) * double(MSecsPerDay)));
 }
 
-intptr_t TimeToSeconds(const TDateTime & T)
+intptr_t TimeToSeconds(const TDateTime &T)
 {
   return TimeToMSec(T) / MSecsPerSec;
 }
 
-intptr_t TimeToMinutes(const TDateTime & T)
+intptr_t TimeToMinutes(const TDateTime &T)
 {
   return TimeToSeconds(T) / SecsPerMin;
 }
 
-static bool DoRecursiveDeleteFile(UnicodeString AFileName, bool ToRecycleBin, UnicodeString & AErrorPath)
+static bool DoRecursiveDeleteFile(UnicodeString AFileName, bool ToRecycleBin, UnicodeString &AErrorPath)
 {
   bool Result;
 
@@ -2551,9 +2551,9 @@ UnicodeString DoEncodeUrl(UnicodeString S, bool EncodeSlash)
   {
     wchar_t C = Result[Index];
     if (IsLetter(C) ||
-        IsDigit(C) ||
-        (C == L'_') || (C == L'-') || (C == L'.') ||
-        ((C == L'/') && !EncodeSlash))
+      IsDigit(C) ||
+      (C == L'_') || (C == L'-') || (C == L'.') ||
+      ((C == L'/') && !EncodeSlash))
     {
       ++Index;
     }
@@ -2638,8 +2638,8 @@ UnicodeString EscapeHotkey(UnicodeString Caption)
 }
 
 // duplicated in console's Main.cpp
-static bool DoCutToken(UnicodeString & AStr, UnicodeString & AToken,
-  UnicodeString * ARawToken, UnicodeString * ASeparator, bool EscapeQuotesInQuotesOnly)
+static bool DoCutToken(UnicodeString &AStr, UnicodeString &AToken,
+  UnicodeString *ARawToken, UnicodeString *ASeparator, bool EscapeQuotesInQuotesOnly)
 {
   bool Result;
 
@@ -2717,19 +2717,19 @@ static bool DoCutToken(UnicodeString & AStr, UnicodeString & AToken,
   return Result;
 }
 
-bool CutToken(UnicodeString & AStr, UnicodeString & AToken,
-  UnicodeString * ARawToken, UnicodeString * ASeparator)
+bool CutToken(UnicodeString &AStr, UnicodeString &AToken,
+  UnicodeString *ARawToken, UnicodeString *ASeparator)
 {
   return DoCutToken(AStr, AToken, ARawToken, ASeparator, false);
 }
 
-bool CutTokenEx(UnicodeString & Str, UnicodeString & Token,
-  UnicodeString * RawToken, UnicodeString * Separator)
+bool CutTokenEx(UnicodeString &Str, UnicodeString &Token,
+  UnicodeString *RawToken, UnicodeString *Separator)
 {
   return DoCutToken(Str, Token, RawToken, Separator, true);
 }
 
-void AddToList(UnicodeString & List, UnicodeString Value, UnicodeString Delimiter)
+void AddToList(UnicodeString &List, UnicodeString Value, UnicodeString Delimiter)
 {
   if (!Value.IsEmpty())
   {
@@ -2799,14 +2799,14 @@ UnicodeString DefaultEncodingName()
   return DefaultEncodingName;
 }
 
-bool GetWindowsProductType(DWORD & Type)
+bool GetWindowsProductType(DWORD &Type)
 {
   bool Result;
   HINSTANCE Kernel32 = ::GetModuleHandle(L"kernel32.dll");
   typedef BOOL (WINAPI
-  * TGetProductInfo
+    * TGetProductInfo
   )
-  (DWORD , DWORD , DWORD , DWORD , PDWORD);
+  (DWORD, DWORD, DWORD, DWORD, PDWORD);
   TGetProductInfo GetProductInfo =
     reinterpret_cast<TGetProductInfo>(::GetProcAddress(Kernel32, "GetProductInfo"));
   if (GetProductInfo == nullptr)
@@ -2871,7 +2871,7 @@ bool IsDirectoryWriteable(UnicodeString APath)
     ::IncludeTrailingPathDelimiter(APath) +
     FORMAT("wscp_%s_%d.tmp", FormatDateTime(L"nnzzz", Now()), int(GetCurrentProcessId()));
   HANDLE LocalFileHandle = ::CreateFile(ApiPath(FileName).c_str(), GENERIC_READ | GENERIC_WRITE, 0, nullptr,
-    CREATE_NEW, FILE_ATTRIBUTE_TEMPORARY | FILE_FLAG_DELETE_ON_CLOSE, nullptr);
+      CREATE_NEW, FILE_ATTRIBUTE_TEMPORARY | FILE_FLAG_DELETE_ON_CLOSE, nullptr);
   bool Result = (LocalFileHandle != INVALID_HANDLE_VALUE);
   if (Result)
   {
@@ -2919,14 +2919,14 @@ UnicodeString ExtractFileBaseName(UnicodeString APath)
   return ChangeFileExt(base::ExtractFileName(APath, false), L"");
 }
 
-TStringList * TextToStringList(UnicodeString Text)
+TStringList *TextToStringList(UnicodeString Text)
 {
   std::unique_ptr<TStringList> List(new TStringList());
   List->SetText(Text);
   return List.release();
 }
 
-UnicodeString StringsToText(TStrings * Strings)
+UnicodeString StringsToText(TStrings *Strings)
 {
   UnicodeString Result;
   if (Strings->GetCount() == 1)
@@ -2940,7 +2940,7 @@ UnicodeString StringsToText(TStrings * Strings)
   return Result;
 }
 
-TStrings * CloneStrings(TStrings * Strings)
+TStrings *CloneStrings(TStrings *Strings)
 {
   std::unique_ptr<TStringList> List(new TStringList());
   List->AddStrings(Strings);
@@ -2990,9 +2990,9 @@ intptr_t ParseShortEngMonthName(UnicodeString MonthStr)
   return IndexStr(MonthStr) + 1;
 }
 
-TStringList * CreateSortedStringList(bool CaseSensitive, TDuplicatesEnum Duplicates)
+TStringList *CreateSortedStringList(bool CaseSensitive, TDuplicatesEnum Duplicates)
 {
-  TStringList * Result = new TStringList();
+  TStringList *Result = new TStringList();
   Result->SetCaseSensitive(CaseSensitive);
   Result->SetSorted(true);
   Result->SetDuplicates(Duplicates);
@@ -3017,7 +3017,7 @@ static UnicodeString NormalizeIdent(UnicodeString Ident)
   return Result;
 }
 
-UnicodeString FindIdent(UnicodeString Ident, TStrings * Idents)
+UnicodeString FindIdent(UnicodeString Ident, TStrings *Idents)
 {
   UnicodeString NormalizedIdent(NormalizeIdent(Ident));
   for (intptr_t Index = 0; Index < Idents->GetCount(); Index++)
@@ -3041,9 +3041,9 @@ static UnicodeString GetTlsErrorStr(int Err)
 }
 
 
-static FILE * OpenCertificate(UnicodeString Path)
+static FILE *OpenCertificate(UnicodeString Path)
 {
-  FILE * Result = _wfopen(ApiPath(Path).c_str(), L"rb");
+  FILE *Result = _wfopen(ApiPath(Path).c_str(), L"rb");
   if (Result == nullptr)
   {
     int Error = errno;
@@ -3056,13 +3056,13 @@ static FILE * OpenCertificate(UnicodeString Path)
 
 struct TPemPasswordCallbackData
 {
-  UnicodeString * Passphrase;
+  UnicodeString *Passphrase;
 };
 
 
-static int PemPasswordCallback(char * Buf, int Size, int /*RWFlag*/, void * UserData)
+static int PemPasswordCallback(char *Buf, int Size, int /*RWFlag*/, void *UserData)
 {
-  TPemPasswordCallbackData & Data = *reinterpret_cast<TPemPasswordCallbackData *>(UserData);
+  TPemPasswordCallbackData &Data = *reinterpret_cast<TPemPasswordCallbackData *>(UserData);
   UTF8String UtfPassphrase = UTF8String(*Data.Passphrase);
   strncpy(Buf, UtfPassphrase.c_str(), Size);
   Shred(UtfPassphrase);
@@ -3099,18 +3099,18 @@ static void ThrowTlsCertificateErrorIgnorePassphraseErrors(UnicodeString Path, b
 
 
 void ParseCertificate(const UnicodeString Path,
-  const UnicodeString Passphrase, X509 *& Certificate, EVP_PKEY *& PrivateKey,
-  bool & WrongPassphrase)
+  const UnicodeString Passphrase, X509 *&Certificate, EVP_PKEY *&PrivateKey,
+  bool &WrongPassphrase)
 {
   Certificate = nullptr;
   PrivateKey = nullptr;
   bool HasPassphrase = !Passphrase.IsEmpty();
 
   // Inspired by neon's ne_ssl_clicert_read
-  FILE * File = OpenCertificate(Path);
+  FILE *File = OpenCertificate(Path);
   // openssl pkcs12 -inkey cert.pem -in cert.crt -export -out cert.pfx
   // Binary file
-  PKCS12 * Pkcs12 = d2i_PKCS12_fp(File, nullptr);
+  PKCS12 *Pkcs12 = d2i_PKCS12_fp(File, nullptr);
   fclose(File);
 
   if (Pkcs12 != nullptr)
@@ -3253,22 +3253,22 @@ void ParseCertificate(const UnicodeString Path,
     }
     __finally
     {
-/*
-      // We loaded private key, but failed to load certificate, discard the certificate
-      // (either exception was thrown or WrongPassphrase)
-      if ((PrivateKey != nullptr) && (Certificate == nullptr))
-      {
-        EVP_PKEY_free(PrivateKey);
-        PrivateKey = nullptr;
-      }
-      // Certificate was verified, but passphrase was wrong when loading private key,
-      // so discard the certificate
-      else if ((Certificate != nullptr) && (PrivateKey == nullptr))
-      {
-        X509_free(Certificate);
-        Certificate = nullptr;
-      }
-*/
+      /*
+            // We loaded private key, but failed to load certificate, discard the certificate
+            // (either exception was thrown or WrongPassphrase)
+            if ((PrivateKey != nullptr) && (Certificate == nullptr))
+            {
+              EVP_PKEY_free(PrivateKey);
+              PrivateKey = nullptr;
+            }
+            // Certificate was verified, but passphrase was wrong when loading private key,
+            // so discard the certificate
+            else if ((Certificate != nullptr) && (PrivateKey == nullptr))
+            {
+              X509_free(Certificate);
+              Certificate = nullptr;
+            }
+      */
     };
   }
 }
@@ -3276,8 +3276,8 @@ void ParseCertificate(const UnicodeString Path,
 
 void CheckCertificate(UnicodeString Path)
 {
-  X509 * Certificate;
-  EVP_PKEY * PrivateKey;
+  X509 *Certificate;
+  EVP_PKEY *PrivateKey;
   bool WrongPassphrase;
 
   ParseCertificate(Path, L"", Certificate, PrivateKey, WrongPassphrase);
@@ -3396,7 +3396,7 @@ UnicodeString GetEnvVariable(UnicodeString AEnvVarName)
   intptr_t Len = ::GetEnvironmentVariableW(AEnvVarName.c_str(), nullptr, 0);
   if (Len > 0)
   {
-    wchar_t * Buffer = Result.SetLength(Len - 1);
+    wchar_t *Buffer = Result.SetLength(Len - 1);
     ::GetEnvironmentVariableW(AEnvVarName.c_str(), reinterpret_cast<LPWSTR>(Buffer), ToDWord(Len));
   }
   return Result;
@@ -3436,9 +3436,9 @@ UnicodeString UnixExcludeTrailingBackslash(UnicodeString APath, bool Simple)
 {
   UnicodeString Result;
   if (APath.IsEmpty() ||
-      (APath == ROOTDIRECTORY) ||
-      !APath.IsDelimiter(SLASH, APath.Length()) ||
-      (!Simple && ((APath.Length() == 3) && base::IsUnixStyleWindowsPath(APath))))
+    (APath == ROOTDIRECTORY) ||
+    !APath.IsDelimiter(SLASH, APath.Length()) ||
+    (!Simple && ((APath.Length() == 3) && base::IsUnixStyleWindowsPath(APath))))
   {
     Result = APath;
   }
@@ -3539,7 +3539,7 @@ UnicodeString ExtractFileName(UnicodeString APath, bool Unix)
 
 #endif // #if 0
 
-bool ExtractCommonPath(const TStrings * AFiles, UnicodeString & APath)
+bool ExtractCommonPath(const TStrings *AFiles, UnicodeString &APath)
 {
   DebugAssert(AFiles->GetCount() > 0);
 
@@ -3566,7 +3566,7 @@ bool ExtractCommonPath(const TStrings * AFiles, UnicodeString & APath)
   return Result;
 }
 
-bool UnixExtractCommonPath(const TStrings * const AFiles, UnicodeString & APath)
+bool UnixExtractCommonPath(const TStrings *const AFiles, UnicodeString &APath)
 {
   DebugAssert(AFiles->GetCount() > 0);
 
@@ -3619,7 +3619,7 @@ UnicodeString AbsolutePath(UnicodeString Base, UnicodeString APath)
   else
   {
     Result = base::UnixIncludeTrailingBackslash(
-      base::UnixIncludeTrailingBackslash(Base) + APath);
+        base::UnixIncludeTrailingBackslash(Base) + APath);
     intptr_t P;
     while ((P = Result.Pos(L"/../")) > 0)
     {
@@ -3654,7 +3654,7 @@ UnicodeString ToUnixPath(UnicodeString APath)
   return ReplaceStr(APath, BACKSLASH, SLASH);
 }
 
-static void CutFirstDirectory(UnicodeString & S, bool Unix)
+static void CutFirstDirectory(UnicodeString &S, bool Unix)
 {
   UnicodeString Sep = Unix ? SLASH : BACKSLASH;
   if (S == Sep)
@@ -3751,7 +3751,7 @@ UnicodeString MinimizeName(UnicodeString AFileName, intptr_t MaxLen, bool Unix)
   return Result;
 }
 
-UnicodeString MakeFileList(const TStrings * AFileList)
+UnicodeString MakeFileList(const TStrings *AFileList)
 {
   UnicodeString Result;
   for (intptr_t Index = 0; Index < AFileList->GetCount(); ++Index)
@@ -3764,7 +3764,7 @@ UnicodeString MakeFileList(const TStrings * AFileList)
 }
 
 // copy from BaseUtils.pas
-TDateTime ReduceDateTimePrecision(const TDateTime & ADateTime,
+TDateTime ReduceDateTimePrecision(const TDateTime &ADateTime,
   TModificationFmt Precision)
 {
   TDateTime DateTime = ADateTime;
@@ -3807,7 +3807,7 @@ TModificationFmt LessDateTimePrecision(
   return (Precision1 < Precision2) ? Precision1 : Precision2;
 }
 
-UnicodeString UserModificationStr(const TDateTime & DateTime,
+UnicodeString UserModificationStr(const TDateTime &DateTime,
   TModificationFmt Precision)
 {
   Word Year, Month, Day, Hour, Min, Sec, MSec;
@@ -3818,20 +3818,20 @@ UnicodeString UserModificationStr(const TDateTime & DateTime,
   case mfNone:
     return L"";
   case mfMDY:
-    return FORMAT(L"%3s %2d %2d", EngShortMonthNames[Month-1], Day, Year);
+    return FORMAT(L"%3s %2d %2d", EngShortMonthNames[Month - 1], Day, Year);
   case mfMDHM:
     return FORMAT(L"%3s %2d %2d:%2.2d",
-      EngShortMonthNames[Month-1], Day, Hour, Min);
+        EngShortMonthNames[Month - 1], Day, Hour, Min);
   case mfFull:
     return FORMAT(L"%3s %2d %2d:%2.2d:%2.2d %4d",
-      EngShortMonthNames[Month-1], Day, Hour, Min, Sec, Year);
+        EngShortMonthNames[Month - 1], Day, Hour, Min, Sec, Year);
   default:
     DebugAssert(false);
   }
   return UnicodeString();
 }
 
-UnicodeString ModificationStr(const TDateTime & DateTime,
+UnicodeString ModificationStr(const TDateTime &DateTime,
   TModificationFmt Precision)
 {
   uint16_t Year, Month, Day, Hour, Min, Sec, MSec;
@@ -3843,19 +3843,19 @@ UnicodeString ModificationStr(const TDateTime & DateTime,
     return L"";
 
   case mfMDY:
-    return FORMAT(L"%3s %2d %2d", EngShortMonthNames[Month-1], Day, Year);
+    return FORMAT(L"%3s %2d %2d", EngShortMonthNames[Month - 1], Day, Year);
 
   case mfMDHM:
     return FORMAT(L"%3s %2d %2d:%2.2d",
-      EngShortMonthNames[Month-1], Day, Hour, Min);
+        EngShortMonthNames[Month - 1], Day, Hour, Min);
 
   default:
     DebugFail();
-    // fall thru
+  // fall thru
 
   case mfFull:
     return FORMAT(L"%3s %2d %2d:%2.2d:%2.2d %4d",
-      EngShortMonthNames[Month-1], Day, Hour, Min, Sec, Year);
+        EngShortMonthNames[Month - 1], Day, Hour, Min, Sec, Year);
   }
 }
 
@@ -3868,8 +3868,8 @@ int FakeFileImageIndex(UnicodeString /*AFileName*/, uint32_t /*Attrs*/,
   TSHFileInfoW SHFileInfo = {0};
   // On Win2k we get icon of "ZIP drive" for ".." (parent directory)
   if ((FileName == L"..") ||
-      ((FileName.Length() == 2) && (FileName[2] == L':') && IsLetter(FileName[1])) ||
-      IsReservedName(FileName))
+    ((FileName.Length() == 2) && (FileName[2] == L':') && IsLetter(FileName[1])) ||
+    IsReservedName(FileName))
   {
     FileName = L"dumb";
   }
@@ -3883,8 +3883,8 @@ int FakeFileImageIndex(UnicodeString /*AFileName*/, uint32_t /*Attrs*/,
 
   int Icon;
   if (SHGetFileInfo(FileName.c_str(),
-        Attrs, &SHFileInfo, sizeof(SHFileInfo),
-        SHGFI_SYSICONINDEX | SHGFI_USEFILEATTRIBUTES | SHGFI_TYPENAME) != 0)
+      Attrs, &SHFileInfo, sizeof(SHFileInfo),
+      SHGFI_SYSICONINDEX | SHGFI_USEFILEATTRIBUTES | SHGFI_TYPENAME) != 0)
   {
 
     if (TypeName != nullptr)

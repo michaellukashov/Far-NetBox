@@ -93,7 +93,7 @@ int FontStylesToInt(const TFontStyles value)
   return Result;
 }
 
-bool SameFont(TFont * Font1, TFont * Font2)
+bool SameFont(TFont *Font1, TFont *Font2)
 {
   // keep in sync with TFontConfiguration::operator!=
   return
@@ -122,14 +122,14 @@ TColor GetNonZeroColor(TColor Color)
   return Color;
 }
 
-void CenterFormOn(TForm * Form, TControl * CenterOn)
+void CenterFormOn(TForm *Form, TControl *CenterOn)
 {
   TPoint ScreenPoint = CenterOn->ClientToScreen(TPoint(0, 0));
   Form->Left = ScreenPoint.x + (CenterOn->Width / 2) - (Form->Width / 2);
   Form->Top = ScreenPoint.y + (CenterOn->Height / 2) - (Form->Height / 2);
 }
 
-UnicodeString GetListViewStr(TListView * ListView)
+UnicodeString GetListViewStr(TListView *ListView)
 {
   UnicodeString Result;
   for (int Index = 0; Index < ListView->Columns->Count; Index++)
@@ -146,7 +146,7 @@ UnicodeString GetListViewStr(TListView * ListView)
   return Result;
 }
 
-void LoadListViewStr(TListView * ListView, UnicodeString ALayoutStr)
+void LoadListViewStr(TListView *ListView, UnicodeString ALayoutStr)
 {
   UnicodeString LayoutStr = CutToChar(ALayoutStr, L';', true);
   int PixelsPerInch = LoadPixelsPerInch(CutToChar(ALayoutStr, L';', true), ListView);
@@ -162,12 +162,12 @@ void LoadListViewStr(TListView * ListView, UnicodeString ALayoutStr)
   }
 }
 
-void __fastcall RestoreForm(UnicodeString Data, TForm * Form, bool PositionOnly)
+void __fastcall RestoreForm(UnicodeString Data, TForm *Form, bool PositionOnly)
 {
   DebugAssert(Form);
   if (!Data.IsEmpty())
   {
-    Forms::TMonitor * Monitor = FormMonitor(Form);
+    Forms::TMonitor *Monitor = FormMonitor(Form);
 
     UnicodeString LeftStr = CutToChar(Data, L';', true);
     UnicodeString TopStr = CutToChar(Data, L';', true);
@@ -210,10 +210,10 @@ void __fastcall RestoreForm(UnicodeString Data, TForm * Form, bool PositionOnly)
       }
 
       if (DefaultPos ||
-          ((Bounds.Left < Monitor->Left) ||
-           (Bounds.Left > Monitor->Left + Monitor->WorkareaRect.Width() - 20) ||
-           (Bounds.Top < Monitor->Top) ||
-           (Bounds.Top > Monitor->Top + Monitor->WorkareaRect.Height() - 20)))
+        ((Bounds.Left < Monitor->Left) ||
+          (Bounds.Left > Monitor->Left + Monitor->WorkareaRect.Width() - 20) ||
+          (Bounds.Top < Monitor->Top) ||
+          (Bounds.Top > Monitor->Top + Monitor->WorkareaRect.Height() - 20)))
       {
         if (Monitor->Primary)
         {
@@ -268,21 +268,21 @@ void __fastcall RestoreForm(UnicodeString Data, TForm * Form, bool PositionOnly)
   }
 }
 
-UnicodeString StoreForm(TCustomForm * Form)
+UnicodeString StoreForm(TCustomForm *Form)
 {
   DebugAssert(Form);
   TRect Bounds = Form->BoundsRect;
   OffsetRect(Bounds, -Form->Monitor->Left, -Form->Monitor->Top);
   return FORMAT(L"%d;%d;%d;%d;%d;%s", (SaveDimension(Bounds.Left), SaveDimension(Bounds.Top),
-    SaveDimension(Bounds.Right), SaveDimension(Bounds.Bottom),
-    // we do not want WinSCP to start minimized next time (we cannot handle that anyway).
-    // note that WindowState is wsNormal when window in minimized for some reason.
-    // actually it is wsMinimized only when minimized by MSVDM
-    (int)(Form->WindowState == wsMinimized ? wsNormal : Form->WindowState),
-    SavePixelsPerInch(Form)));
+        SaveDimension(Bounds.Right), SaveDimension(Bounds.Bottom),
+        // we do not want WinSCP to start minimized next time (we cannot handle that anyway).
+        // note that WindowState is wsNormal when window in minimized for some reason.
+        // actually it is wsMinimized only when minimized by MSVDM
+        (int)(Form->WindowState == wsMinimized ? wsNormal : Form->WindowState),
+        SavePixelsPerInch(Form)));
 }
 
-void RestoreFormSize(UnicodeString Data, TForm * Form)
+void RestoreFormSize(UnicodeString Data, TForm *Form)
 {
   // This has to be called only after DoFormWindowProc(CM_SHOWINGCHANGED).
   // See comment in ResizeForm.
@@ -295,13 +295,13 @@ void RestoreFormSize(UnicodeString Data, TForm * Form)
   ResizeForm(Form, Width, Height);
 }
 
-UnicodeString StoreFormSize(TForm * Form)
+UnicodeString StoreFormSize(TForm *Form)
 {
   return FORMAT(L"%d,%d,%s", (Form->Width, Form->Height, SavePixelsPerInch(Form)));
 }
 
 static void ExecuteProcessAndReadOutput(const
-  UnicodeString & Command, UnicodeString HelpKeyword, UnicodeString & Output)
+  UnicodeString &Command, UnicodeString HelpKeyword, UnicodeString &Output)
 {
   if (!CopyCommandToClipboard(Command))
   {
@@ -315,7 +315,7 @@ static void ExecuteProcessAndReadOutput(const
     HANDLE PipeWrite = INVALID_HANDLE_VALUE;
 
     if (!CreatePipe(&PipeRead, &PipeWrite, &SecurityAttributes, 0) ||
-        !SetHandleInformation(PipeRead, HANDLE_FLAG_INHERIT, 0))
+      !SetHandleInformation(PipeRead, HANDLE_FLAG_INHERIT, 0))
     {
       throw EOSExtException(FMTLOAD(EXECUTE_APP_ERROR, Command));
     }
@@ -359,7 +359,7 @@ static void ExecuteProcessAndReadOutput(const
 
       DWORD ExitCode;
       if (DebugAlwaysTrue(GetExitCodeProcess(ProcessInformation.hProcess, &ExitCode)) &&
-          (ExitCode != 0))
+        (ExitCode != 0))
       {
         UnicodeString Buf = Output;
         UnicodeString Buf2;
@@ -382,7 +382,7 @@ static void ExecuteProcessAndReadOutput(const
 }
 
 void ExecuteProcessChecked(
-  UnicodeString Command, UnicodeString HelpKeyword, UnicodeString * Output)
+  UnicodeString Command, UnicodeString HelpKeyword, UnicodeString *Output)
 {
   if (Output == NULL)
   {
@@ -395,7 +395,7 @@ void ExecuteProcessChecked(
 }
 
 void ExecuteProcessCheckedAndWait(
-  UnicodeString Command, UnicodeString HelpKeyword, UnicodeString * Output)
+  UnicodeString Command, UnicodeString HelpKeyword, UnicodeString *Output)
 {
   if (Output == NULL)
   {
@@ -433,11 +433,11 @@ void ExecuteNewInstance(UnicodeString Param)
   ExecuteShellChecked(Application->ExeName, Arg);
 }
 
-IShellLink * CreateDesktopShortCut(UnicodeString Name,
+IShellLink *CreateDesktopShortCut(UnicodeString Name,
   UnicodeString File, UnicodeString Params, UnicodeString Description,
   int SpecialFolder, int IconIndex, bool Return)
 {
-  IShellLink* pLink = NULL;
+  IShellLink *pLink = NULL;
 
   if (SpecialFolder < 0)
   {
@@ -447,7 +447,7 @@ IShellLink * CreateDesktopShortCut(UnicodeString Name,
   try
   {
     if (SUCCEEDED(CoCreateInstance(CLSID_ShellLink, NULL, CLSCTX_INPROC_SERVER,
-         IID_IShellLink, (void **) &pLink)))
+          IID_IShellLink, (void **) &pLink)))
     {
       try
       {
@@ -459,9 +459,9 @@ IShellLink * CreateDesktopShortCut(UnicodeString Name,
         // without this icons are not shown at least in Windows 7 jumplist
         pLink->SetIconLocation(File.c_str(), IconIndex);
 
-        IPersistFile* pPersistFile;
+        IPersistFile *pPersistFile;
         if (!Return &&
-            SUCCEEDED(pLink->QueryInterface(IID_IPersistFile, (void **)&pPersistFile)))
+          SUCCEEDED(pLink->QueryInterface(IID_IPersistFile, (void **)&pPersistFile)))
         {
           try
           {
@@ -495,7 +495,7 @@ IShellLink * CreateDesktopShortCut(UnicodeString Name,
         }
 
         // this is necessary for Windows 7 taskbar jump list links
-        IPropertyStore * PropertyStore;
+        IPropertyStore *PropertyStore;
         if (SUCCEEDED(pLink->QueryInterface(IID_IPropertyStore, (void **)&PropertyStore)))
         {
           PROPVARIANT Prop;
@@ -519,7 +519,7 @@ IShellLink * CreateDesktopShortCut(UnicodeString Name,
       }
     }
   }
-  catch(Exception & E)
+  catch(Exception &E)
   {
     throw ExtException(&E, LoadStr(CREATE_SHORTCUT_ERROR));
   }
@@ -527,7 +527,7 @@ IShellLink * CreateDesktopShortCut(UnicodeString Name,
   return pLink;
 }
 
-IShellLink * CreateDesktopSessionShortCut(
+IShellLink *CreateDesktopSessionShortCut(
   UnicodeString SessionName, UnicodeString Name,
   UnicodeString AdditionalParams, int SpecialFolder, int IconIndex,
   bool Return)
@@ -541,8 +541,8 @@ IShellLink * CreateDesktopSessionShortCut(
   if (IsFolder || IsWorkspace)
   {
     InfoTip = FMTLOAD(
-      (IsFolder ? SHORTCUT_INFO_TIP_FOLDER : SHORTCUT_INFO_TIP_WORKSPACE),
-      SessionName);
+        (IsFolder ? SHORTCUT_INFO_TIP_FOLDER : SHORTCUT_INFO_TIP_WORKSPACE),
+        SessionName);
 
     if (Name.IsEmpty())
     {
@@ -553,7 +553,7 @@ IShellLink * CreateDesktopSessionShortCut(
   else
   {
     // this should not be done for workspaces and folders
-    TSessionData * SessionData =
+    TSessionData *SessionData =
       StoredSessions->ParseUrl(EncodeUrlString(SessionName), NULL, DefaultsOnly);
     InfoTip =
       FMTLOAD(SHORTCUT_INFO_TIP, SessionName, SessionData->InfoTip);
@@ -572,7 +572,7 @@ IShellLink * CreateDesktopSessionShortCut(
 }
 
 template<class TEditControl>
-void ValidateMaskEditT(UnicodeString Mask, TEditControl * Edit, int ForceDirectoryMasks)
+void ValidateMaskEditT(UnicodeString Mask, TEditControl *Edit, int ForceDirectoryMasks)
 {
   DebugAssert(Edit != NULL);
   TFileMasks Masks(ForceDirectoryMasks);
@@ -580,7 +580,7 @@ void ValidateMaskEditT(UnicodeString Mask, TEditControl * Edit, int ForceDirecto
   {
     Masks = Mask;
   }
-  catch(EFileMasksException & E)
+  catch(EFileMasksException &E)
   {
     ShowExtendedException(&E);
     Edit->SetFocus();
@@ -592,34 +592,34 @@ void ValidateMaskEditT(UnicodeString Mask, TEditControl * Edit, int ForceDirecto
   }
 }
 
-void ValidateMaskEdit(TComboBox * Edit)
+void ValidateMaskEdit(TComboBox *Edit)
 {
   ValidateMaskEditT(Edit->Text, Edit, -1);
 }
 
-void ValidateMaskEdit(TEdit * Edit)
+void ValidateMaskEdit(TEdit *Edit)
 {
   ValidateMaskEditT(Edit->Text, Edit, -1);
 }
 
-void ValidateMaskEdit(TMemo * Edit, bool Directory)
+void ValidateMaskEdit(TMemo *Edit, bool Directory)
 {
   UnicodeString Mask = TFileMasks::ComposeMaskStr(GetUnwrappedMemoLines(Edit), Directory);
   ValidateMaskEditT(Mask, Edit, Directory ? 1 : 0);
 }
 
-TStrings * GetUnwrappedMemoLines(TMemo * Memo)
+TStrings *GetUnwrappedMemoLines(TMemo *Memo)
 {
   // This removes soft linebreakes when text in memo wraps
   // (Memo->Lines includes soft linebreaks, while Memo->Text does not)
   return TextToStringList(Memo->Text);
 }
 
-void ExitActiveControl(TForm * Form)
+void ExitActiveControl(TForm *Form)
 {
   if (Form->ActiveControl != NULL)
   {
-    TNotifyEvent OnExit = ((TEdit*)Form->ActiveControl)->OnExit;
+    TNotifyEvent OnExit = ((TEdit *)Form->ActiveControl)->OnExit;
     if (OnExit != NULL)
     {
       OnExit(Form->ActiveControl);
@@ -660,7 +660,7 @@ void OpenBrowser(UnicodeString URL)
 void OpenFolderInExplorer(UnicodeString Path)
 {
   if ((int)ShellExecute(Application->Handle, L"explore",
-      (wchar_t*)Path.data(), NULL, NULL, SW_SHOWNORMAL) <= 32)
+      (wchar_t *)Path.data(), NULL, NULL, SW_SHOWNORMAL) <= 32)
   {
     throw Exception(FMTLOAD(EXPLORE_LOCAL_DIR_ERROR, Path));
   }
@@ -694,7 +694,7 @@ bool IsFormatInClipboard(unsigned int Format)
   return Result;
 }
 
-HANDLE OpenTextFromClipboard(const wchar_t *& Text)
+HANDLE OpenTextFromClipboard(const wchar_t *&Text)
 {
   HANDLE Result = NULL;
   if (OpenClipboard(0))
@@ -703,7 +703,7 @@ HANDLE OpenTextFromClipboard(const wchar_t *& Text)
     Result = GetClipboardData(CF_UNICODETEXT);
     if (Result != NULL)
     {
-      Text = static_cast<const wchar_t*>(GlobalLock(Result));
+      Text = static_cast<const wchar_t *>(GlobalLock(Result));
     }
     else
     {
@@ -722,9 +722,9 @@ void CloseTextFromClipboard(HANDLE Handle)
   CloseClipboard();
 }
 
-bool TextFromClipboard(UnicodeString & Text, bool Trim)
+bool TextFromClipboard(UnicodeString &Text, bool Trim)
 {
-  const wchar_t * AText = NULL;
+  const wchar_t *AText = NULL;
   HANDLE Handle = OpenTextFromClipboard(AText);
   bool Result = (Handle != NULL);
   if (Result)
@@ -739,7 +739,7 @@ bool TextFromClipboard(UnicodeString & Text, bool Trim)
   return Result;
 }
 
-bool NonEmptyTextFromClipboard(UnicodeString & Text)
+bool NonEmptyTextFromClipboard(UnicodeString &Text)
 {
   return
     TextFromClipboard(Text, true) &&
@@ -747,10 +747,10 @@ bool NonEmptyTextFromClipboard(UnicodeString & Text)
 }
 
 static bool GetResource(
-  const UnicodeString ResName, void *& Content, unsigned long & Size)
+  const UnicodeString ResName, void *&Content, unsigned long &Size)
 {
   HRSRC Resource = FindResourceEx(HInstance, RT_RCDATA, ResName.c_str(),
-    MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL));
+      MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL));
   bool Result = (Resource != NULL);
   if (Result)
   {
@@ -779,13 +779,13 @@ static bool GetResource(
 bool DumpResourceToFile(const UnicodeString ResName,
   const UnicodeString FileName)
 {
-  void * Content;
+  void *Content;
   unsigned long Size;
   bool Result = GetResource(ResName, Content, Size);
 
   if (Result)
   {
-    FILE * f = _wfopen(ApiPath(FileName).c_str(), L"wb");
+    FILE *f = _wfopen(ApiPath(FileName).c_str(), L"wb");
     if (!f)
     {
       throw Exception(FORMAT(L"Cannot create file %s", FileName));
@@ -802,7 +802,7 @@ bool DumpResourceToFile(const UnicodeString ResName,
 
 UnicodeString ReadResource(const UnicodeString ResName)
 {
-  void * Content;
+  void *Content;
   unsigned long Size;
   UnicodeString Result;
 
@@ -815,7 +815,7 @@ UnicodeString ReadResource(const UnicodeString ResName)
 }
 
 template <class T>
-void BrowseForExecutableT(T * Control, UnicodeString Title,
+void BrowseForExecutableT(T *Control, UnicodeString Title,
   UnicodeString Filter, bool FileNameCommand, bool Escape)
 {
   UnicodeString Executable, Program, Params, Dir;
@@ -826,7 +826,7 @@ void BrowseForExecutableT(T * Control, UnicodeString Title,
   }
   SplitCommand(Executable, Program, Params, Dir);
 
-  TOpenDialog * FileDialog = new TOpenDialog(Application);
+  TOpenDialog *FileDialog = new TOpenDialog(Application);
   try
   {
     if (Escape)
@@ -877,22 +877,22 @@ void BrowseForExecutableT(T * Control, UnicodeString Title,
   }
 }
 
-void BrowseForExecutable(TEdit * Control, UnicodeString Title,
+void BrowseForExecutable(TEdit *Control, UnicodeString Title,
   UnicodeString Filter, bool FileNameCommand, bool Escape)
 {
   BrowseForExecutableT(Control, Title, Filter, FileNameCommand, Escape);
 }
 
-void BrowseForExecutable(TComboBox * Control, UnicodeString Title,
+void BrowseForExecutable(TComboBox *Control, UnicodeString Title,
   UnicodeString Filter, bool FileNameCommand, bool Escape)
 {
   BrowseForExecutableT(Control, Title, Filter, FileNameCommand, Escape);
 }
 
-bool FontDialog(TFont * Font)
+bool FontDialog(TFont *Font)
 {
   bool Result;
-  TFontDialog * Dialog = new TFontDialog(Application);
+  TFontDialog *Dialog = new TFontDialog(Application);
   try
   {
     Dialog->Device = fdScreen;
@@ -912,11 +912,11 @@ bool FontDialog(TFont * Font)
 }
 
 bool SaveDialog(UnicodeString Title, UnicodeString Filter,
-  UnicodeString DefaultExt, UnicodeString & FileName)
+  UnicodeString DefaultExt, UnicodeString &FileName)
 {
   bool Result;
 #if 0
-  TFileSaveDialog * Dialog = new TFileSaveDialog(Application);
+  TFileSaveDialog *Dialog = new TFileSaveDialog(Application);
   try
   {
     Dialog->Title = Title;
@@ -941,7 +941,7 @@ bool SaveDialog(UnicodeString Title, UnicodeString Filter,
     delete Dialog;
   }
 #else
-  TSaveDialog * Dialog = new TSaveDialog(Application);
+  TSaveDialog *Dialog = new TSaveDialog(Application);
   try
   {
     Dialog->Title = Title;
@@ -971,7 +971,7 @@ bool SaveDialog(UnicodeString Title, UnicodeString Filter,
 #endif // #if 0
 
 bool SaveDialog(UnicodeString ATitle, UnicodeString Filter,
-  UnicodeString ADefaultExt, UnicodeString & AFileName)
+  UnicodeString ADefaultExt, UnicodeString &AFileName)
 {
   bool Result = false;
   DebugUsedParam(Filter);
@@ -986,7 +986,7 @@ bool SaveDialog(UnicodeString ATitle, UnicodeString Filter,
 void CopyToClipboard(UnicodeString Text)
 {
   HANDLE Data;
-  void * DataPtr;
+  void *DataPtr;
 
   if (OpenClipboard(0))
   {
@@ -1038,7 +1038,7 @@ void CopyToClipboard(UnicodeString Text)
 }
 #endif // #if 0
 
-void CopyToClipboard(TStrings * Strings)
+void CopyToClipboard(TStrings *Strings)
 {
   if (Strings->GetCount() > 0)
   {
@@ -1091,7 +1091,7 @@ void ShutDownWindows()
 
   // Shut down the system and force all applications to close.
   Win32Check(FALSE != ExitWindowsEx(EWX_SHUTDOWN | EWX_POWEROFF,
-    SHTDN_REASON_MAJOR_OTHER | SHTDN_REASON_MINOR_OTHER | SHTDN_REASON_FLAG_PLANNED));
+      SHTDN_REASON_MAJOR_OTHER | SHTDN_REASON_MINOR_OTHER | SHTDN_REASON_FLAG_PLANNED));
 }
 
 #if 0
@@ -1121,7 +1121,7 @@ void EditSelectBaseName(HWND Edit)
 
 #endif // #if 0
 
-static void ConvertKey(UnicodeString & FileName, TKeyType Type)
+static void ConvertKey(UnicodeString &FileName, TKeyType Type)
 {
   UnicodeString Passphrase;
 
@@ -1129,15 +1129,15 @@ static void ConvertKey(UnicodeString & FileName, TKeyType Type)
   if (IsKeyEncrypted(Type, FileName, Comment))
   {
     if (!InputDialog(
-      LoadStr(PASSPHRASE_TITLE),
-      FORMAT(LoadStr(PROMPT_KEY_PASSPHRASE), Comment),
-      Passphrase, HELP_NONE, nullptr, false, nullptr, false))
+        LoadStr(PASSPHRASE_TITLE),
+        FORMAT(LoadStr(PROMPT_KEY_PASSPHRASE), Comment),
+        Passphrase, HELP_NONE, nullptr, false, nullptr, false))
     {
       Abort();
     }
   }
 
-  TPrivateKey * PrivateKey = LoadKey(Type, FileName, Passphrase);
+  TPrivateKey *PrivateKey = LoadKey(Type, FileName, Passphrase);
 
   try__finally
   {
@@ -1179,67 +1179,67 @@ static void DoVerifyKey(
     std::unique_ptr<TStrings> MoreMessages;
     switch (Type)
     {
-      case ktOpenSSHPEM:
-      case ktOpenSSHNew:
-      case ktSSHCom:
+    case ktOpenSSHPEM:
+    case ktOpenSSHNew:
+    case ktSSHCom:
+    {
+      UnicodeString TypeName = ((Type == ktOpenSSHPEM) || (Type == ktOpenSSHNew)) ? L"OpenSSH" : L"ssh.com";
+      Message = FMTLOAD(KEY_TYPE_UNSUPPORTED2, AFileName, TypeName);
+
+      if (Convert)
+      {
+        // Configuration->Usage->Inc(L"PrivateKeyConvertSuggestionsNative");
+        UnicodeString ConvertMessage = FMTLOAD(KEY_TYPE_CONVERT3, TypeName, RemoveMainInstructionsTag(Message));
+        Message = UnicodeString();
+        if (MoreMessageDialog(ConvertMessage, nullptr, qtConfirmation, qaOK | qaCancel, HelpKeyword) == qaOK)
         {
-          UnicodeString TypeName = ((Type == ktOpenSSHPEM) || (Type == ktOpenSSHNew)) ? L"OpenSSH" : L"ssh.com";
-          Message = FMTLOAD(KEY_TYPE_UNSUPPORTED2, AFileName, TypeName);
-
-          if (Convert)
-          {
-            // Configuration->Usage->Inc(L"PrivateKeyConvertSuggestionsNative");
-            UnicodeString ConvertMessage = FMTLOAD(KEY_TYPE_CONVERT3, TypeName, RemoveMainInstructionsTag(Message));
-            Message = UnicodeString();
-            if (MoreMessageDialog(ConvertMessage, nullptr, qtConfirmation, qaOK | qaCancel, HelpKeyword) == qaOK)
-            {
-              ConvertKey(FileName, Type);
-              // Configuration->Usage->Inc(L"PrivateKeyConverted");
-            }
-            else
-            {
-              Abort();
-            }
-          }
-          else
-          {
-            HelpKeyword = ""; // HELP_KEY_TYPE_UNSUPPORTED;
-          }
+          ConvertKey(FileName, Type);
+          // Configuration->Usage->Inc(L"PrivateKeyConverted");
         }
-        break;
-
-      case ktSSH1:
-      case ktSSH2:
-        if ((Type == ktSSH1) != (SshProt == ssh1only))
+        else
         {
-          Message =
-            MainInstructions(
-              FMTLOAD(KEY_TYPE_DIFFERENT_SSH,
-                AFileName, Type == ktSSH1 ? L"SSH-1" : L"PuTTY SSH-2"));
+          Abort();
         }
-        break;
+      }
+      else
+      {
+        HelpKeyword = ""; // HELP_KEY_TYPE_UNSUPPORTED;
+      }
+    }
+    break;
 
-      case ktSSH1Public:
-      case ktSSH2PublicRFC4716:
-      case ktSSH2PublicOpenSSH:
-        // noop
-        // Do not even bother checking SSH protocol version
-        break;
+    case ktSSH1:
+    case ktSSH2:
+      if ((Type == ktSSH1) != (SshProt == ssh1only))
+      {
+        Message =
+          MainInstructions(
+            FMTLOAD(KEY_TYPE_DIFFERENT_SSH,
+              AFileName, Type == ktSSH1 ? L"SSH-1" : L"PuTTY SSH-2"));
+      }
+      break;
 
-      case ktUnopenable:
-        Message = MainInstructions(FMTLOAD(KEY_TYPE_UNOPENABLE, AFileName));
-        if (Error != ERROR_SUCCESS)
-        {
-          MoreMessages.reset(TextToStringList(SysErrorMessageForError(Error)));
-        }
-        break;
+    case ktSSH1Public:
+    case ktSSH2PublicRFC4716:
+    case ktSSH2PublicOpenSSH:
+      // noop
+      // Do not even bother checking SSH protocol version
+      break;
 
-      default:
-        DebugFail();
-        // fallthru
-      case ktUnknown:
-        Message = MainInstructions(FMTLOAD(KEY_TYPE_UNKNOWN2, AFileName));
-        break;
+    case ktUnopenable:
+      Message = MainInstructions(FMTLOAD(KEY_TYPE_UNOPENABLE, AFileName));
+      if (Error != ERROR_SUCCESS)
+      {
+        MoreMessages.reset(TextToStringList(SysErrorMessageForError(Error)));
+      }
+      break;
+
+    default:
+      DebugFail();
+    // fallthru
+    case ktUnknown:
+      Message = MainInstructions(FMTLOAD(KEY_TYPE_UNKNOWN2, AFileName));
+      break;
     }
 
     if (!Message.IsEmpty())
@@ -1271,7 +1271,7 @@ void VerifyCertificate(UnicodeString FileName)
     {
       CheckCertificate(FileName);
     }
-    catch (Exception & E)
+    catch (Exception &E)
     {
       if (ExceptionMessageDialog(&E, qtWarning, L"", qaIgnore | qaAbort) == qaAbort)
       {
@@ -1317,7 +1317,7 @@ bool DetectSystemExternalEditor(
         {
           Executable = ExecutableBuf;
           if (Executable.IsEmpty() ||
-              !FileExists(ApiPath(Executable)))
+            !FileExists(ApiPath(Executable)))
           {
             UsageState = "N";
           }
@@ -1325,7 +1325,7 @@ bool DetectSystemExternalEditor(
           {
             UnicodeString ExecutableName = ExtractFileName(Executable);
             if (!AllowDefaultEditor &&
-                SameText(ExecutableName, TEditorPreferences::GetDefaultExternalEditor()))
+              SameText(ExecutableName, TEditorPreferences::GetDefaultExternalEditor()))
             {
               UsageState = "P";
               Executable = L"";
@@ -1365,7 +1365,7 @@ bool DetectSystemExternalEditor(
   return Result;
 }
 
-static bool GetProxyUrlFromIE(UnicodeString & Proxy)
+static bool GetProxyUrlFromIE(UnicodeString &Proxy)
 {
   bool Result = false;
   // Code from http://gentoo.osuosl.org/distfiles/cl331.zip/io/
@@ -1374,9 +1374,9 @@ static bool GetProxyUrlFromIE(UnicodeString & Proxy)
   TLibraryLoader LibraryLoader(L"winhttp.dll", true);
   if (LibraryLoader.Loaded())
   {
-    typedef BOOL (WINAPI *FWinHttpGetIEProxyConfigForCurrentUser)(WINHTTP_CURRENT_USER_IE_PROXY_CONFIG *);
+    typedef BOOL (WINAPI * FWinHttpGetIEProxyConfigForCurrentUser)(WINHTTP_CURRENT_USER_IE_PROXY_CONFIG *);
     FWinHttpGetIEProxyConfigForCurrentUser GetIEProxyConfig = reinterpret_cast<FWinHttpGetIEProxyConfigForCurrentUser>(
-      LibraryLoader.GetProcAddress("WinHttpGetIEProxyConfigForCurrentUser"));
+        LibraryLoader.GetProcAddress("WinHttpGetIEProxyConfigForCurrentUser"));
     if (GetIEProxyConfig && GetIEProxyConfig(&IEProxyInfo))
     {
       if (IEProxyInfo.lpszProxy != nullptr)
@@ -1416,7 +1416,7 @@ static bool GetProxyUrlFromIE(UnicodeString & Proxy)
   return Result;
 }
 
-bool AutodetectProxy(UnicodeString & AHostName, intptr_t & APortNumber)
+bool AutodetectProxy(UnicodeString &AHostName, intptr_t &APortNumber)
 {
   bool Result = false;
 
@@ -1430,9 +1430,9 @@ bool AutodetectProxy(UnicodeString & AHostName, intptr_t & APortNumber)
   TLibraryLoader LibraryLoader(L"winhttp.dll", true);
   if (LibraryLoader.Loaded())
   {
-    typedef BOOL (WINAPI *FWinHttpGetDefaultProxyConfiguration)(WINHTTP_PROXY_INFO*);
+    typedef BOOL (WINAPI * FWinHttpGetDefaultProxyConfiguration)(WINHTTP_PROXY_INFO *);
     FWinHttpGetDefaultProxyConfiguration GetDefaultProxyConfiguration = reinterpret_cast<FWinHttpGetDefaultProxyConfiguration>(
-      LibraryLoader.GetProcAddress("WinHttpGetDefaultProxyConfiguration"));
+        LibraryLoader.GetProcAddress("WinHttpGetDefaultProxyConfiguration"));
     if (GetDefaultProxyConfiguration)
     {
       if (GetDefaultProxyConfiguration(&ProxyInfo))
@@ -1490,7 +1490,7 @@ public:
   virtual bool CanShowALink(const UnicodeString ALink, const UnicodeString FileName);
   virtual bool CanShowTopic(const UnicodeString Topic, const UnicodeString FileName);
   virtual bool CanShowContext(const int Context, const UnicodeString FileName);
-  virtual TStringList * GetHelpStrings(const UnicodeString ALink);
+  virtual TStringList *GetHelpStrings(const UnicodeString ALink);
   virtual UnicodeString GetHelpPath();
   virtual UnicodeString GetDefaultHelpFile();
 
@@ -1502,8 +1502,8 @@ class TCustomHelpSelector : public TInterfacedObject, public IHelpSelector
 public:
   TCustomHelpSelector(UnicodeString Name);
 
-  virtual int SelectKeyword(TStrings * Keywords);
-  virtual int TableOfContents(TStrings * Contents);
+  virtual int SelectKeyword(TStrings *Keywords);
+  virtual int TableOfContents(TStrings *Contents);
 
   IUNKNOWN
 
@@ -1511,7 +1511,7 @@ private:
   UnicodeString FName;
 };
 
-void AssignHelpSelector(IHelpSelector * HelpSelector)
+void AssignHelpSelector(IHelpSelector *HelpSelector)
 {
   _di_IHelpSystem HelpSystem;
   if (GetHelpSystem(HelpSystem))
@@ -1520,7 +1520,7 @@ void AssignHelpSelector(IHelpSelector * HelpSelector)
   }
 }
 
-void InitializeCustomHelp(ICustomHelpViewer * HelpViewer)
+void InitializeCustomHelp(ICustomHelpViewer *HelpViewer)
 {
   _di_IHelpManager HelpManager;
   RegisterViewer(HelpViewer, HelpManager);
@@ -1557,10 +1557,10 @@ bool TWinHelpTester::CanShowContext(const int /*Context*/,
   return !Application->HelpFile.IsEmpty();
 }
 
-TStringList * TWinHelpTester::GetHelpStrings(const UnicodeString ALink)
+TStringList *TWinHelpTester::GetHelpStrings(const UnicodeString ALink)
 {
   DebugFail();
-  TStringList * Result = new TStringList();
+  TStringList *Result = new TStringList();
   Result->Add(ViewerName + L": " + ALink);
   return Result;
 }
@@ -1588,7 +1588,7 @@ int TCustomHelpSelector::SelectKeyword(TStrings * /*Keywords*/)
   return 0;
 }
 
-int TCustomHelpSelector::TableOfContents(TStrings * Contents)
+int TCustomHelpSelector::TableOfContents(TStrings *Contents)
 {
   return Contents->IndexOf(FName);
 }

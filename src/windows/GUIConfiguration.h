@@ -37,23 +37,23 @@ const int soContinueOnError = 0x08;
 class NB_CORE_EXPORT TGUICopyParamType : public TCopyParamType
 {
 public:
-  static inline bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TGUICopyParamType); }
+  static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TGUICopyParamType); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TGUICopyParamType) || TCopyParamType::is(Kind); }
 public:
   TGUICopyParamType();
-  TGUICopyParamType(const TCopyParamType & Source);
-  explicit TGUICopyParamType(const TGUICopyParamType & Source);
+  TGUICopyParamType(const TCopyParamType &Source);
+  explicit TGUICopyParamType(const TGUICopyParamType &Source);
   virtual ~TGUICopyParamType()
   {
   }
 
-  void Load(THierarchicalStorage * Storage);
-  void Save(THierarchicalStorage * Storage);
+  void Load(THierarchicalStorage *Storage);
+  void Save(THierarchicalStorage *Storage);
 
   virtual void Default() override;
-  virtual void Assign(const TCopyParamType * Source) override;
-  TGUICopyParamType & operator=(const TGUICopyParamType & rhp);
-  TGUICopyParamType & operator=(const TCopyParamType & rhp);
+  virtual void Assign(const TCopyParamType *Source) override;
+  TGUICopyParamType &operator=(const TGUICopyParamType &rhp);
+  TGUICopyParamType &operator=(const TCopyParamType &rhp);
 
 #if 0
   __property bool Queue = { read = FQueue, write = FQueue };
@@ -70,7 +70,7 @@ public:
 
 protected:
   void GUIDefault();
-  void GUIAssign(const TGUICopyParamType * Source);
+  void GUIAssign(const TGUICopyParamType *Source);
 
 private:
   bool FQueue;
@@ -91,20 +91,20 @@ struct NB_CORE_EXPORT TCopyParamRuleData : public TObject
 class NB_CORE_EXPORT TCopyParamRule : public TObject
 {
 public:
-  static inline bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TCopyParamRule); }
+  static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TCopyParamRule); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TCopyParamRule) || TObject::is(Kind); }
 public:
   explicit TCopyParamRule();
-  explicit TCopyParamRule(const TCopyParamRuleData & Data);
-  explicit TCopyParamRule(const TCopyParamRule & Source);
+  explicit TCopyParamRule(const TCopyParamRuleData &Data);
+  explicit TCopyParamRule(const TCopyParamRule &Source);
 
-  bool Matches(const TCopyParamRuleData & Value) const;
-  void Load(THierarchicalStorage * Storage);
-  void Save(THierarchicalStorage * Storage) const;
+  bool Matches(const TCopyParamRuleData &Value) const;
+  void Load(THierarchicalStorage *Storage);
+  void Save(THierarchicalStorage *Storage) const;
 
   UnicodeString GetInfoStr(UnicodeString Separator) const;
 
-  bool operator==(const TCopyParamRule & rhp) const;
+  bool operator==(const TCopyParamRule &rhp) const;
 
 #if 0
   __property TCopyParamRuleData Data = { read = FData, write = FData };
@@ -112,10 +112,10 @@ public:
 #endif // #if 0
 
   TCopyParamRuleData GetData() const { return FData; }
-  void SetData(const TCopyParamRuleData & Value) { FData = Value; }
+  void SetData(const TCopyParamRuleData &Value) { FData = Value; }
 
 public:
-  TCopyParamRule & operator=(const TCopyParamRule & other);
+  TCopyParamRule &operator=(const TCopyParamRule &other);
 
 private:
   TCopyParamRuleData FData;
@@ -137,29 +137,29 @@ public:
 
 class NB_CORE_EXPORT TCopyParamList : public TObject
 {
-friend class TGUIConfiguration;
+  friend class TGUIConfiguration;
 public:
   explicit TCopyParamList();
-  explicit TCopyParamList(const TCopyParamList & other);
+  explicit TCopyParamList(const TCopyParamList &other);
 
   virtual ~TCopyParamList();
-  intptr_t Find(const TCopyParamRuleData & Value) const;
+  intptr_t Find(const TCopyParamRuleData &Value) const;
 
-  void Load(THierarchicalStorage * Storage, intptr_t ACount);
-  void Save(THierarchicalStorage * Storage) const;
+  void Load(THierarchicalStorage *Storage, intptr_t ACount);
+  void Save(THierarchicalStorage *Storage) const;
 
   static void ValidateName(UnicodeString Name);
 
-  TCopyParamList & operator=(const TCopyParamList & rhl);
-  bool operator==(const TCopyParamList & rhl) const;
+  TCopyParamList &operator=(const TCopyParamList &rhl);
+  bool operator==(const TCopyParamList &rhl) const;
 
   void Clear();
   void Add(UnicodeString Name,
-    TCopyParamType * CopyParam, TCopyParamRule * Rule);
+    TCopyParamType *CopyParam, TCopyParamRule *Rule);
   void Insert(intptr_t Index, UnicodeString Name,
-    TCopyParamType * CopyParam, TCopyParamRule * Rule);
+    TCopyParamType *CopyParam, TCopyParamRule *Rule);
   void Change(intptr_t Index, UnicodeString Name,
-    TCopyParamType * CopyParam, TCopyParamRule * Rule);
+    TCopyParamType *CopyParam, TCopyParamRule *Rule);
   void Move(intptr_t CurIndex, intptr_t NewIndex);
   void Delete(intptr_t Index);
   intptr_t IndexOfName(UnicodeString Name) const;
@@ -176,36 +176,36 @@ public:
 
 private:
   static UnicodeString FInvalidChars;
-  TList * FRules;
-  TList * FCopyParams;
-  TStrings * FNames;
-  mutable TStrings * FNameList;
+  TList *FRules;
+  TList *FCopyParams;
+  TStrings *FNames;
+  mutable TStrings *FNameList;
   bool FModified;
 
 public:
   intptr_t GetCount() const;
   UnicodeString GetName(intptr_t Index) const;
-  const TCopyParamRule * GetRule(intptr_t Index) const;
-  const TCopyParamType * GetCopyParam(intptr_t Index) const;
+  const TCopyParamRule *GetRule(intptr_t Index) const;
+  const TCopyParamType *GetCopyParam(intptr_t Index) const;
   bool GetModified() const { return FModified; }
-  TStrings * GetNameList() const;
+  TStrings *GetNameList() const;
   bool GetAnyRule() const;
 
 private:
   void Reset();
   void Modify();
-  bool CompareItem(intptr_t Index, const TCopyParamType * CopyParam,
-    const TCopyParamRule * Rule) const;
+  bool CompareItem(intptr_t Index, const TCopyParamType *CopyParam,
+    const TCopyParamRule *Rule) const;
 };
 
 class NB_CORE_EXPORT TGUIConfiguration : public TConfiguration
 {
-NB_DISABLE_COPY(TGUIConfiguration)
+  NB_DISABLE_COPY(TGUIConfiguration)
 public:
-  static inline bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TGUIConfiguration); }
+  static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TGUIConfiguration); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TGUIConfiguration) || TConfiguration::is(Kind); }
 private:
-  TObjectList * FLocales;
+  TObjectList *FLocales;
   UnicodeString FLastLocalesExts;
   bool FContinueOnError;
   bool FConfirmCommandSession;
@@ -230,7 +230,7 @@ private:
   UnicodeString FBeepSound;
   UnicodeString FDefaultPuttyPathOnly;
   UnicodeString FDefaultPuttyPath;
-  TCopyParamList * FCopyParamList;
+  TCopyParamList *FCopyParamList;
   bool FCopyParamListDefaults;
   UnicodeString FCopyParamCurrent;
   TRemoteProperties FNewDirectoryProperties;
@@ -245,24 +245,24 @@ protected:
   LCID FLocale;
 
 public:
-  virtual void SaveData(THierarchicalStorage * Storage, bool All) override;
-  virtual void LoadData(THierarchicalStorage * Storage) override;
+  virtual void SaveData(THierarchicalStorage *Storage, bool All) override;
+  virtual void LoadData(THierarchicalStorage *Storage) override;
   virtual LCID GetLocale();
   void SetLocale(LCID Value);
   LCID GetLocaleSafe() { return GetLocale(); }
   void SetLocaleSafe(LCID Value);
   UnicodeString GetAppliedLocaleHex() const;
   virtual HINSTANCE LoadNewResourceModule(LCID ALocale,
-    UnicodeString & AFileName);
+    UnicodeString &AFileName);
   HANDLE GetResourceModule();
   void SetResourceModule(HINSTANCE Instance);
-  TObjectList * GetLocales();
+  TObjectList *GetLocales();
   void AddLocale(LCID Locale, UnicodeString Name);
   void FreeResourceModule(HANDLE Instance);
-  void SetDefaultCopyParam(const TGUICopyParamType & Value);
+  void SetDefaultCopyParam(const TGUICopyParamType &Value);
   virtual bool GetRememberPassword() const override;
-  TCopyParamList * GetCopyParamList() const;
-  void SetCopyParamList(const TCopyParamList * Value);
+  TCopyParamList *GetCopyParamList() const;
+  void SetCopyParamList(const TCopyParamList *Value);
   virtual void DefaultLocalized();
   intptr_t GetCopyParamIndex() const;
   TGUICopyParamType GetCurrentCopyParam() const;
@@ -270,7 +270,7 @@ public:
   bool GetHasCopyParamPreset(UnicodeString Name) const;
   void SetCopyParamIndex(intptr_t Value);
   void SetCopyParamCurrent(UnicodeString Value);
-  void SetNewDirectoryProperties(const TRemoteProperties & Value);
+  void SetNewDirectoryProperties(const TRemoteProperties &Value);
   virtual void Saved() override;
   void SetQueueTransfersLimit(intptr_t Value);
   void SetQueueKeepDoneItems(bool Value);
@@ -281,10 +281,10 @@ public:
   bool GetCanApplyLocaleImmediately() const;
   UnicodeString GetTranslationModule(UnicodeString Path) const;
   UnicodeString AddTranslationsSubFolder(UnicodeString Path) const;
-  void FindLocales(UnicodeString LocalesMask, TStrings * Exts, UnicodeString & LocalesExts);
+  void FindLocales(UnicodeString LocalesMask, TStrings *Exts, UnicodeString &LocalesExts);
   virtual int GetResourceModuleCompleteness(HINSTANCE Module);
   virtual bool IsTranslationComplete(HINSTANCE Module);
-  static intptr_t LocalesCompare(void * Item1, void * Item2);
+  static intptr_t LocalesCompare(void *Item1, void *Item2);
 
 public:
   TGUIConfiguration(TObjectClassId Kind);
@@ -297,8 +297,8 @@ public:
   LCID InternalLocale() const;
   UnicodeString AppliedLocaleCopyright() const;
   UnicodeString AppliedLocaleVersion();
-  TStoredSessionList * SelectPuttySessionsForImport(TStoredSessionList * Sessions, UnicodeString & Error);
-  bool AnyPuttySessionForImport(TStoredSessionList * Sessions);
+  TStoredSessionList *SelectPuttySessionsForImport(TStoredSessionList *Sessions, UnicodeString &Error);
+  bool AnyPuttySessionForImport(TStoredSessionList *Sessions);
 
 #if 0
   __property bool ContinueOnError = { read = FContinueOnError, write = FContinueOnError };
@@ -376,14 +376,14 @@ public:
   UnicodeString GetPuttySession() const;
   void SetPuttySession(UnicodeString Value);
   TDateTime GetIgnoreCancelBeforeFinish() const { return FIgnoreCancelBeforeFinish; }
-  void SetIgnoreCancelBeforeFinish(const TDateTime & Value) { FIgnoreCancelBeforeFinish = Value; }
-  TGUICopyParamType & GetDefaultCopyParam() { return FDefaultCopyParam; }
+  void SetIgnoreCancelBeforeFinish(const TDateTime &Value) { FIgnoreCancelBeforeFinish = Value; }
+  TGUICopyParamType &GetDefaultCopyParam() { return FDefaultCopyParam; }
   bool GetBeepOnFinish() const { return FBeepOnFinish; }
   void SetBeepOnFinish(bool Value) { FBeepOnFinish = Value; }
   TDateTime GetBeepOnFinishAfter() const { return FBeepOnFinishAfter; }
-  void SetBeepOnFinishAfter(const TDateTime & Value) { FBeepOnFinishAfter = Value; }
+  void SetBeepOnFinishAfter(const TDateTime &Value) { FBeepOnFinishAfter = Value; }
   UnicodeString GetCopyParamCurrent() const;
-  const TRemoteProperties & GetNewDirectoryProperties() const { return FNewDirectoryProperties; }
+  const TRemoteProperties &GetNewDirectoryProperties() const { return FNewDirectoryProperties; }
   intptr_t GetKeepUpToDateChangeDelay() const { return FKeepUpToDateChangeDelay; }
   void SetKeepUpToDateChangeDelay(intptr_t Value) { FKeepUpToDateChangeDelay = Value; }
   UnicodeString GetChecksumAlg() const;
@@ -393,5 +393,5 @@ public:
   LCID GetAppliedLocale() const { return FAppliedLocale; }
 };
 
-NB_CORE_EXPORT TGUIConfiguration * GetGUIConfiguration();
+NB_CORE_EXPORT TGUIConfiguration *GetGUIConfiguration();
 

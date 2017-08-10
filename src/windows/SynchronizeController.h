@@ -97,16 +97,16 @@ enum TSynchronizeOperation
 
 class NB_CORE_EXPORT TSynchronizeController : public TObject
 {
-NB_DISABLE_COPY(TSynchronizeController)
+  NB_DISABLE_COPY(TSynchronizeController)
 public:
   explicit TSynchronizeController(TSynchronizeEvent AOnSynchronize,
     TSynchronizeInvalidEvent AOnSynchronizeInvalid,
     TSynchronizeTooManyDirectoriesEvent AOnTooManyDirectories);
   virtual ~TSynchronizeController();
 
-  void StartStop(TObject * Sender, bool Start,
-    const TSynchronizeParamType & Params, const TCopyParamType & CopyParam,
-    TSynchronizeOptions * Options,
+  void StartStop(TObject *Sender, bool Start,
+    const TSynchronizeParamType &Params, const TCopyParamType &CopyParam,
+    TSynchronizeOptions *Options,
     TSynchronizeAbortEvent OnAbort, TSynchronizeThreadsEvent OnSynchronizeThreads,
     TSynchronizeLogEvent OnSynchronizeLog);
   void LogOperation(TSynchronizeOperation Operation, UnicodeString AFileName);
@@ -114,24 +114,24 @@ public:
 private:
   TSynchronizeEvent FOnSynchronize;
   TSynchronizeParamType FSynchronizeParams;
-  TSynchronizeOptions * FOptions;
+  TSynchronizeOptions *FOptions;
   TSynchronizeThreadsEvent FOnSynchronizeThreads;
-  Discmon::TDiscMonitor * FSynchronizeMonitor;
+  Discmon::TDiscMonitor *FSynchronizeMonitor;
   TSynchronizeAbortEvent FSynchronizeAbort;
   TSynchronizeInvalidEvent FOnSynchronizeInvalid;
   TSynchronizeTooManyDirectoriesEvent FOnTooManyDirectories;
   TSynchronizeLogEvent FSynchronizeLog;
   TCopyParamType FCopyParam;
 
-  void SynchronizeChange(TObject * Sender, UnicodeString Directory,
-    bool & SubdirsChanged);
+  void SynchronizeChange(TObject *Sender, UnicodeString Directory,
+    bool &SubdirsChanged);
   void SynchronizeAbort(bool Close);
   void SynchronizeLog(TSynchronizeLogEntry Entry, UnicodeString Message);
-  void SynchronizeInvalid(TObject * Sender, UnicodeString Directory,
+  void SynchronizeInvalid(TObject *Sender, UnicodeString Directory,
     UnicodeString ErrorStr);
-  void SynchronizeFilter(TObject * Sender, UnicodeString DirectoryName,
-    bool & Add);
-  void SynchronizeTooManyDirectories(TObject * Sender, intptr_t & MaxDirectories);
-  void SynchronizeDirectoriesChange(TObject * Sender, intptr_t Directories);
+  void SynchronizeFilter(TObject *Sender, UnicodeString DirectoryName,
+    bool &Add);
+  void SynchronizeTooManyDirectories(TObject *Sender, intptr_t &MaxDirectories);
+  void SynchronizeDirectoriesChange(TObject *Sender, intptr_t Directories);
 };
 

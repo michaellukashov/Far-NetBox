@@ -89,7 +89,7 @@ private:
   intptr_t FCPSLimit;
   bool FTotalSizeSet;
   bool FSuspended;
-  TFileOperationProgressType * FParent;
+  TFileOperationProgressType *FParent;
 
   // when it was last time suspended (to calculate suspend time in Resume())
   uintptr_t FSuspendTime;
@@ -105,8 +105,8 @@ private:
   bool FCounterSet;
   rde::vector<intptr_t> FTicks;
   rde::vector<int64_t> FTotalTransferredThen;
-  TCriticalSection * FSection;
-  TCriticalSection * FUserSelectionsSection;
+  TCriticalSection *FSection;
+  TCriticalSection *FUserSelectionsSection;
 
 public:
   int64_t GetTotalTransferred() const;
@@ -200,10 +200,10 @@ public:
   explicit TFileOperationProgressType();
   explicit TFileOperationProgressType(
     TFileOperationProgressEvent AOnProgress, TFileOperationFinishedEvent AOnFinished,
-    TFileOperationProgressType * Parent = nullptr);
+    TFileOperationProgressType *Parent = nullptr);
   virtual ~TFileOperationProgressType();
-  void Assign(const TFileOperationProgressType & Other);
-  void AssignButKeepSuspendState(const TFileOperationProgressType & Other);
+  void Assign(const TFileOperationProgressType &Other);
+  void AssignButKeepSuspendState(const TFileOperationProgressType &Other);
   void AddLocallyUsed(int64_t ASize);
   void AddTransferred(int64_t ASize, bool AddToTotals = true);
   void AddResumed(int64_t ASize);
@@ -211,7 +211,7 @@ public:
   void Clear();
   uintptr_t CPS() const;
   void Finish(UnicodeString AFileName, bool Success,
-    TOnceDoneOperation & OnceDoneOperation);
+    TOnceDoneOperation &OnceDoneOperation);
   void Progress();
   uintptr_t LocalBlockSize();
   bool IsLocallyDone() const;
@@ -261,9 +261,9 @@ public:
 
 class NB_CORE_EXPORT TSuspendFileOperationProgress : public TObject
 {
-NB_DISABLE_COPY(TSuspendFileOperationProgress)
+  NB_DISABLE_COPY(TSuspendFileOperationProgress)
 public:
-  explicit TSuspendFileOperationProgress(TFileOperationProgressType * OperationProgress) :
+  explicit TSuspendFileOperationProgress(TFileOperationProgressType *OperationProgress) :
     FOperationProgress(OperationProgress)
   {
     if (FOperationProgress != nullptr)
@@ -281,6 +281,6 @@ public:
   }
 
 private:
-  TFileOperationProgressType * FOperationProgress;
+  TFileOperationProgressType *FOperationProgress;
 };
 

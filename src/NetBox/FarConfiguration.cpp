@@ -8,7 +8,7 @@
 #include "FarPlugin.h"
 #include "CoreMain.h"
 
-TFarConfiguration::TFarConfiguration(TCustomFarPlugin * APlugin) :
+TFarConfiguration::TFarConfiguration(TCustomFarPlugin *APlugin) :
   TGUIConfiguration(OBJECT_CLASS_TFarConfiguration),
   FFarPlugin(APlugin),
   FBookmarks(new TBookmarks()),
@@ -59,7 +59,7 @@ void TFarConfiguration::Default()
   FBookmarks->Clear();
 }
 
-THierarchicalStorage * TFarConfiguration::CreateStorage(bool & SessionList)
+THierarchicalStorage *TFarConfiguration::CreateStorage(bool &SessionList)
 {
   return TGUIConfiguration::CreateStorage(SessionList);
 }
@@ -106,7 +106,7 @@ void TFarConfiguration::Saved()
     KEY(Bool,     ConfirmSynchronizedBrowsing); \
   )
 
-void TFarConfiguration::SaveData(THierarchicalStorage * Storage, bool All)
+void TFarConfiguration::SaveData(THierarchicalStorage *Storage, bool All)
 {
   TGUIConfiguration::SaveData(Storage, All);
 
@@ -123,7 +123,7 @@ void TFarConfiguration::SaveData(THierarchicalStorage * Storage, bool All)
   }
 }
 
-void TFarConfiguration::LoadData(THierarchicalStorage * Storage)
+void TFarConfiguration::LoadData(THierarchicalStorage *Storage)
 {
   TGUIConfiguration::LoadData(Storage);
 
@@ -160,7 +160,7 @@ void TFarConfiguration::Save(bool All, bool Explicit)
   TGUIConfiguration::DoSave(All, Explicit);
 }
 
-void TFarConfiguration::SetPlugin(TCustomFarPlugin * Value)
+void TFarConfiguration::SetPlugin(TCustomFarPlugin *Value)
 {
   if (GetPlugin() != Value)
   {
@@ -226,18 +226,18 @@ UnicodeString TFarConfiguration::ModuleFileName() const
 }
 
 void TFarConfiguration::SetBookmarks(UnicodeString Key,
-  TBookmarkList * Value)
+  TBookmarkList *Value)
 {
   FBookmarks->SetBookmarks(Key, Value);
   Changed();
 }
 
-TBookmarkList * TFarConfiguration::GetBookmarks(UnicodeString Key)
+TBookmarkList *TFarConfiguration::GetBookmarks(UnicodeString Key)
 {
   return FBookmarks->GetBookmarks(Key);
 }
 
-TFarConfiguration * GetFarConfiguration()
+TFarConfiguration *GetFarConfiguration()
 {
   return dyn_cast<TFarConfiguration>(GetConfiguration());
 }

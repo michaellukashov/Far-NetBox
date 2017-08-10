@@ -21,7 +21,7 @@ TFileOperationProgressType::TFileOperationProgressType() :
 
 TFileOperationProgressType::TFileOperationProgressType(
   TFileOperationProgressEvent AOnProgress, TFileOperationFinishedEvent AOnFinished,
-  TFileOperationProgressType * Parent) :
+  TFileOperationProgressType *Parent) :
   FParent(Parent),
   FOnProgress(AOnProgress),
   FOnFinished(AOnFinished),
@@ -45,7 +45,7 @@ void TFileOperationProgressType::Init()
   FUserSelectionsSection = new TCriticalSection();
 }
 
-void TFileOperationProgressType::Assign(const TFileOperationProgressType & Other)
+void TFileOperationProgressType::Assign(const TFileOperationProgressType &Other)
 {
   TValueRestorer<TCriticalSection *> SectionRestorer(FSection);
   TValueRestorer<TCriticalSection *> UserSelectionsSectionRestorer(FUserSelectionsSection);
@@ -55,7 +55,7 @@ void TFileOperationProgressType::Assign(const TFileOperationProgressType & Other
   *this = Other;
 }
 
-void TFileOperationProgressType::AssignButKeepSuspendState(const TFileOperationProgressType & Other)
+void TFileOperationProgressType::AssignButKeepSuspendState(const TFileOperationProgressType &Other)
 {
   TGuard Guard(*FSection);
   TValueRestorer<uintptr_t> SuspendTimeRestorer(FSuspendTime);
@@ -284,7 +284,7 @@ void TFileOperationProgressType::DoProgress()
 }
 
 void TFileOperationProgressType::Finish(UnicodeString AFileName,
-  bool Success, TOnceDoneOperation & OnceDoneOperation)
+  bool Success, TOnceDoneOperation &OnceDoneOperation)
 {
   DebugAssert(FInProgress);
 
@@ -649,8 +649,8 @@ void TFileOperationProgressType::AddTransferredToTotals(int64_t ASize)
   FTotalTransferred += ASize;
   intptr_t Ticks = static_cast<intptr_t>(::GetTickCount());
   if (FTicks.empty() ||
-      (FTicks.back() > Ticks) || // ticks wrap after 49.7 days
-      ((Ticks - FTicks.back()) >= MSecsPerSec))
+    (FTicks.back() > Ticks) || // ticks wrap after 49.7 days
+    ((Ticks - FTicks.back()) >= MSecsPerSec))
   {
     FTicks.push_back(Ticks);
     FTotalTransferredThen.push_back(FTotalTransferred);
@@ -824,7 +824,7 @@ TDateTime TFileOperationProgressType::TotalTimeLeft() const
   if ((CurCps > 0) && (FTotalSize > FTotalSkipped + FTotalTransferred))
   {
     return TDateTime(ToDouble(ToDouble(FTotalSize - FTotalSkipped) / CurCps) /
-      SecsPerDay);
+        SecsPerDay);
   }
   return TDateTime(0.0);
 }

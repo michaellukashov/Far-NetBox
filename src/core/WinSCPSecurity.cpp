@@ -18,13 +18,13 @@ RawByteString SimpleEncryptChar(uint8_t Ch)
     PWALG_SIMPLE_STRING.SubString(((Ch & 0x0F) >> 0) + 1, 1);
 }
 
-uint8_t SimpleDecryptNextChar(RawByteString & Str)
+uint8_t SimpleDecryptNextChar(RawByteString &Str)
 {
   if (Str.Length() > 0)
   {
     uint8_t Result = static_cast<uint8_t>(
-      ~((((PWALG_SIMPLE_STRING.Pos(Str.c_str()[0]) - 1) << 4) +
-        ((PWALG_SIMPLE_STRING.Pos(Str.c_str()[1]) - 1) << 0)) ^ PWALG_SIMPLE_MAGIC));
+        ~((((PWALG_SIMPLE_STRING.Pos(Str.c_str()[0]) - 1) << 4) +
+            ((PWALG_SIMPLE_STRING.Pos(Str.c_str()[1]) - 1) << 0)) ^ PWALG_SIMPLE_MAGIC));
     Str.Delete(1, 2);
     return Result;
   }
@@ -45,7 +45,7 @@ RawByteString EncryptPassword(UnicodeString UnicodePassword, UnicodeString Unico
   }
   Password = Key + Password;
   intptr_t Shift = (Password.Length() < PWALG_SIMPLE_MAXLEN) ?
-                     static_cast<uint8_t>(random(PWALG_SIMPLE_MAXLEN - ToInt(Password.Length()))) : 0;
+    static_cast<uint8_t>(random(PWALG_SIMPLE_MAXLEN - ToInt(Password.Length()))) : 0;
   Result += SimpleEncryptChar(static_cast<uint8_t>(PWALG_SIMPLE_FLAG)); // Flag
   Result += SimpleEncryptChar(static_cast<uint8_t>(PWALG_SIMPLE_INTERNAL)); // Dummy
   Result += SimpleEncryptChar(static_cast<uint8_t>(Password.Length()));
@@ -96,7 +96,7 @@ RawByteString SetExternalEncryptedPassword(RawByteString Password)
   return Result;
 }
 
-bool GetExternalEncryptedPassword(RawByteString Encrypted, RawByteString & Password)
+bool GetExternalEncryptedPassword(RawByteString Encrypted, RawByteString &Password)
 {
   bool Result =
     (SimpleDecryptNextChar(Encrypted) == PWALG_SIMPLE_FLAG) &&
@@ -108,12 +108,12 @@ bool GetExternalEncryptedPassword(RawByteString Encrypted, RawByteString & Passw
   return Result;
 }
 
-bool WindowsValidateCertificate(const uint8_t * Certificate, size_t Len, UnicodeString & Error)
+bool WindowsValidateCertificate(const uint8_t *Certificate, size_t Len, UnicodeString &Error)
 {
   bool Result = false;
 
   // Parse the certificate into a context.
-  const CERT_CONTEXT * CertContext =
+  const CERT_CONTEXT *CertContext =
     CertCreateCertificateContext(
       X509_ASN_ENCODING | PKCS_7_ASN_ENCODING, Certificate, ToDWord(Len));
 
@@ -151,11 +151,11 @@ bool WindowsValidateCertificate(const uint8_t * Certificate, size_t Len, Unicode
     bool ChainEngineResult = CertCreateCertificateChainEngine(&ChainConfig, &ChainEngine) != FALSE;
     if (ChainEngineResult)
     {
-      const CERT_CHAIN_CONTEXT * ChainContext = nullptr;
+      const CERT_CHAIN_CONTEXT *ChainContext = nullptr;
       if (CertGetCertificateChain(ChainEngine, CertContext, nullptr, nullptr, &ChainPara,
-        CERT_CHAIN_CACHE_END_CERT |
-        CERT_CHAIN_REVOCATION_CHECK_CHAIN_EXCLUDE_ROOT,
-        nullptr, &ChainContext))
+          CERT_CHAIN_CACHE_END_CERT |
+          CERT_CHAIN_REVOCATION_CHECK_CHAIN_EXCLUDE_ROOT,
+          nullptr, &ChainContext))
       {
         CERT_CHAIN_POLICY_PARA PolicyPara;
 
@@ -167,7 +167,7 @@ bool WindowsValidateCertificate(const uint8_t * Certificate, size_t Len, Unicode
         PolicyStatus.cbSize = sizeof(PolicyStatus);
 
         if (CertVerifyCertificateChainPolicy(CERT_CHAIN_POLICY_SSL,
-          ChainContext, &PolicyPara, &PolicyStatus))
+            ChainContext, &PolicyPara, &PolicyStatus))
         {
           // Windows thinks the certificate is valid.
           Result = (PolicyStatus.dwError == S_OK);

@@ -21,26 +21,26 @@
 
 class NB_CORE_EXPORT TGuard
 {
-CUSTOM_MEM_ALLOCATION_IMPL
-NB_DISABLE_COPY(TGuard)
+  CUSTOM_MEM_ALLOCATION_IMPL
+  NB_DISABLE_COPY(TGuard)
 public:
-  explicit TGuard(const TCriticalSection & ACriticalSection);
+  explicit TGuard(const TCriticalSection &ACriticalSection);
   ~TGuard();
 
 private:
-  const TCriticalSection & FCriticalSection;
+  const TCriticalSection &FCriticalSection;
 };
 
 class NB_CORE_EXPORT TUnguard
 {
-CUSTOM_MEM_ALLOCATION_IMPL
-NB_DISABLE_COPY(TUnguard)
+  CUSTOM_MEM_ALLOCATION_IMPL
+  NB_DISABLE_COPY(TUnguard)
 public:
-  explicit TUnguard(TCriticalSection & ACriticalSection);
+  explicit TUnguard(TCriticalSection &ACriticalSection);
   ~TUnguard();
 
 private:
-  TCriticalSection & FCriticalSection;
+  TCriticalSection &FCriticalSection;
 };
 
 
@@ -51,7 +51,7 @@ private:
 #define DebugCheck(p)    (p)
 #define DebugFail()      (void)0
 #else // if !defined(_DEBUG) || defined(DESIGN_ONLY)
-NB_CORE_EXPORT void DoAssert(const wchar_t * Message, const wchar_t * Filename, uintptr_t LineNumber);
+NB_CORE_EXPORT void DoAssert(const wchar_t *Message, const wchar_t *Filename, uintptr_t LineNumber);
 #define DebugAssert(p) ((p) ? (void)0 : DoAssert(TEXT(#p), TEXT(__FILE__), __LINE__))
 #define DebugCheck(p) { bool __CHECK_RESULT__ = (p); DebugAssert(__CHECK_RESULT__); }
 #define DebugFail() DebugAssert(false)
@@ -74,22 +74,22 @@ NB_CORE_EXPORT void CleanupTracing();
 NB_CORE_EXPORT extern bool IsTracing;
 NB_CORE_EXPORT extern const uintptr_t CallstackTlsOff;
 NB_CORE_EXPORT extern uintptr_t CallstackTls;
-extern "C" NB_CORE_EXPORT void DoTrace(const wchar_t * SourceFile, const wchar_t * Func,
-  uintptr_t Line, const wchar_t * Message);
-NB_CORE_EXPORT void DoTraceFmt(const wchar_t * SourceFile, const wchar_t * Func,
-  uintptr_t Line, const wchar_t * AFormat, fmt::ArgList args);
+extern "C" NB_CORE_EXPORT void DoTrace(const wchar_t *SourceFile, const wchar_t *Func,
+  uintptr_t Line, const wchar_t *Message);
+NB_CORE_EXPORT void DoTraceFmt(const wchar_t *SourceFile, const wchar_t *Func,
+  uintptr_t Line, const wchar_t *AFormat, fmt::ArgList args);
 FMT_VARIADIC_W(void, DoTraceFmt, const wchar_t *, const wchar_t *, uintptr_t, const wchar_t *)
 
 #ifdef TRACE_IN_MEMORY
 NB_CORE_EXPORT void TraceDumpToFile();
-NB_CORE_EXPORT void TraceInMemoryCallback(const wchar_t * Msg);
+NB_CORE_EXPORT void TraceInMemoryCallback(const wchar_t *Msg);
 
 #endif // TRACE_IN_MEMORY
 
 #define ACCESS_VIOLATION_TEST { (*((int*)nullptr)) = 0; }
 
-NB_CORE_EXPORT void DoAssert(const wchar_t * Message, const wchar_t * Filename, uintptr_t LineNumber);
-inline bool DoAlwaysTrue(bool Value, const wchar_t * Message, const wchar_t * Filename, uintptr_t LineNumber)
+NB_CORE_EXPORT void DoAssert(const wchar_t *Message, const wchar_t *Filename, uintptr_t LineNumber);
+inline bool DoAlwaysTrue(bool Value, const wchar_t *Message, const wchar_t *Filename, uintptr_t LineNumber)
 {
   if (!Value)
   {
@@ -98,7 +98,7 @@ inline bool DoAlwaysTrue(bool Value, const wchar_t * Message, const wchar_t * Fi
   return Value;
 }
 
-inline bool DoAlwaysFalse(bool Value, const wchar_t * Message, const wchar_t * Filename, uintptr_t LineNumber)
+inline bool DoAlwaysFalse(bool Value, const wchar_t *Message, const wchar_t *Filename, uintptr_t LineNumber)
 {
   if (Value)
   {
@@ -108,7 +108,7 @@ inline bool DoAlwaysFalse(bool Value, const wchar_t * Message, const wchar_t * F
 }
 
 template<typename T>
-inline T * DoCheckNotNull(T * p, const wchar_t * Message, const wchar_t * Filename, uintptr_t LineNumber)
+inline T *DoCheckNotNull(T *p, const wchar_t *Message, const wchar_t *Filename, uintptr_t LineNumber)
 {
   if (p == nullptr)
   {

@@ -18,8 +18,7 @@
 #pragma warning(disable: 4201 4127 4706)
 
 #if defined(__cplusplus)
-extern "C"
-{
+extern "C" {
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -62,8 +61,8 @@ NB_CORE_DLL(int)     NotifyFastHook(HANDLE hEvent, WPARAM wParam = 0, LPARAM lPa
 
 NB_CORE_DLL(HANDLE)  HookEvent(const char *name, NETBOXHOOK hookProc);
 NB_CORE_DLL(HANDLE)  HookEventParam(const char *name, NETBOXHOOKPARAM hookProc, LPARAM lParam = 0);
-NB_CORE_DLL(HANDLE)  HookEventObj(const char *name, NETBOXHOOKOBJ hookProc, void * object);
-NB_CORE_DLL(HANDLE)  HookEventObjParam(const char *name, NETBOXHOOKOBJPARAM hookProc, void * object, LPARAM lParam);
+NB_CORE_DLL(HANDLE)  HookEventObj(const char *name, NETBOXHOOKOBJ hookProc, void *object);
+NB_CORE_DLL(HANDLE)  HookEventObjParam(const char *name, NETBOXHOOKOBJPARAM hookProc, void *object, LPARAM lParam);
 NB_CORE_DLL(HANDLE)  HookEventMessage(const char *name, HWND hwnd, UINT message);
 NB_CORE_DLL(int)     UnhookEvent(HANDLE hHook);
 NB_CORE_DLL(void)    KillObjectEventHooks(void *pObject);
@@ -71,8 +70,8 @@ NB_CORE_DLL(void)    KillModuleEventHooks(HINSTANCE pModule);
 
 NB_CORE_DLL(HANDLE)  CreateServiceFunction(const char *name, NETBOXSERVICE serviceProc);
 NB_CORE_DLL(HANDLE)  CreateServiceFunctionParam(const char *name, NETBOXSERVICEPARAM serviceProc, LPARAM lParam);
-NB_CORE_DLL(HANDLE)  CreateServiceFunctionObj(const char *name, NETBOXSERVICEOBJ serviceProc, void * object);
-NB_CORE_DLL(HANDLE)  CreateServiceFunctionObjParam(const char *name, NETBOXSERVICEOBJPARAM serviceProc, void * object, LPARAM lParam);
+NB_CORE_DLL(HANDLE)  CreateServiceFunctionObj(const char *name, NETBOXSERVICEOBJ serviceProc, void *object);
+NB_CORE_DLL(HANDLE)  CreateServiceFunctionObjParam(const char *name, NETBOXSERVICEOBJPARAM serviceProc, void *object, LPARAM lParam);
 NB_CORE_DLL(HANDLE)  CreateProtoServiceFunction(const char *szModule, const char *szService, NETBOXSERVICE serviceProc);
 NB_CORE_DLL(int)     DestroyServiceFunction(HANDLE hService);
 NB_CORE_DLL(int)     ServiceExists(const char *name);
@@ -82,7 +81,7 @@ NB_CORE_DLL(intptr_t) CallServiceSync(const char *name, WPARAM wParam = 0, LPARA
 
 NB_CORE_DLL(int)     CallFunctionAsync(void (__stdcall *func)(void *), void *arg);
 NB_CORE_DLL(void)    KillModuleServices(HINSTANCE hInst);
-NB_CORE_DLL(void)    KillObjectServices(void * pObject);
+NB_CORE_DLL(void)    KillObjectServices(void *pObject);
 
 NB_CORE_DLL(int)      ProtoServiceExists(LPCSTR szModule, const char *szService);
 NB_CORE_DLL(intptr_t)  CallProtoService(LPCSTR szModule, const char *szService, WPARAM wParam = 0, LPARAM lParam = 0);
@@ -90,7 +89,7 @@ NB_CORE_DLL(intptr_t)  CallProtoService(LPCSTR szModule, const char *szService, 
 ///////////////////////////////////////////////////////////////////////////////
 // exceptions
 
-typedef uint32_t (__cdecl *pfnExceptionFilter)(uint32_t code, EXCEPTION_POINTERS* info);
+typedef uint32_t (__cdecl *pfnExceptionFilter)(uint32_t code, EXCEPTION_POINTERS *info);
 
 NB_CORE_DLL(pfnExceptionFilter) GetExceptionFilter(void);
 NB_CORE_DLL(pfnExceptionFilter) SetExceptionFilter(pfnExceptionFilter pMirandaExceptFilter);
@@ -103,10 +102,10 @@ NB_CORE_DLL(char *) nbcore_urlEncode(const char *szUrl);
 ///////////////////////////////////////////////////////////////////////////////
 // language packs support
 
-NB_CORE_DLL(uint32_t) nbcore_hash(const void * key, uint32_t len);
+NB_CORE_DLL(uint32_t) nbcore_hash(const void *key, uint32_t len);
 
 #pragma optimize("gt", on)
-__forceinline uint32_t nbcore_hashstr(const char * key)
+__forceinline uint32_t nbcore_hashstr(const char *key)
 {
   if (key == nullptr)
   {
@@ -119,7 +118,7 @@ __forceinline uint32_t nbcore_hashstr(const char * key)
   }
 }
 
-__forceinline uint32_t nbcore_hashstrW(const wchar_t * key)
+__forceinline uint32_t nbcore_hashstrW(const wchar_t *key)
 {
   if (key == nullptr)
   {
@@ -127,7 +126,7 @@ __forceinline uint32_t nbcore_hashstrW(const wchar_t * key)
   }
   else
   {
-    uint32_t len = (uint32_t)wcslen((const wchar_t*)key);
+    uint32_t len = (uint32_t)wcslen((const wchar_t *)key);
     return nbcore_hash(key, len * sizeof(wchar_t));
   }
 }
@@ -150,7 +149,7 @@ typedef int (*FSortFunc)(void *, void *);  // sort function prototype
 
 typedef struct
 {
-  void**   items;
+  void   **items;
   int      realCount;
   int      limit;
   int      increment;
@@ -159,17 +158,17 @@ typedef struct
 }
 SortedList;
 
-NB_CORE_DLL(SortedList*) List_Create(int p_limit, int p_increment);
-NB_CORE_DLL(void)        List_Destroy(SortedList* p_list);
-NB_CORE_DLL(void *)       List_Find(SortedList* p_list, void * p_value);
-NB_CORE_DLL(int)         List_GetIndex(SortedList* p_list, void * p_value, int* p_index);
-NB_CORE_DLL(int)         List_IndexOf(SortedList* p_list, void * p_value);
-NB_CORE_DLL(int)         List_Insert(SortedList* p_list, void * p_value, int p_index);
-NB_CORE_DLL(int)         List_InsertPtr(SortedList* list, void * p);
-NB_CORE_DLL(int)         List_Remove(SortedList* p_list, int index);
-NB_CORE_DLL(int)         List_RemovePtr(SortedList* list, void * p);
-NB_CORE_DLL(void)        List_Copy(SortedList* s, SortedList* d, size_t itemSize);
-NB_CORE_DLL(void)        List_ObjCopy(SortedList* s, SortedList* d, size_t itemSize);
+NB_CORE_DLL(SortedList *) List_Create(int p_limit, int p_increment);
+NB_CORE_DLL(void)        List_Destroy(SortedList *p_list);
+NB_CORE_DLL(void *)       List_Find(SortedList *p_list, void *p_value);
+NB_CORE_DLL(int)         List_GetIndex(SortedList *p_list, void *p_value, int *p_index);
+NB_CORE_DLL(int)         List_IndexOf(SortedList *p_list, void *p_value);
+NB_CORE_DLL(int)         List_Insert(SortedList *p_list, void *p_value, int p_index);
+NB_CORE_DLL(int)         List_InsertPtr(SortedList *list, void *p);
+NB_CORE_DLL(int)         List_Remove(SortedList *p_list, int index);
+NB_CORE_DLL(int)         List_RemovePtr(SortedList *list, void *p);
+NB_CORE_DLL(void)        List_Copy(SortedList *s, SortedList *d, size_t itemSize);
+NB_CORE_DLL(void)        List_ObjCopy(SortedList *s, SortedList *d, size_t itemSize);
 
 ///////////////////////////////////////////////////////////////////////////////
 // logging functions
@@ -196,15 +195,15 @@ typedef struct nbcore_md5_state_s
 NB_CORE_DLL(void) nbcore_md5_init(nbcore_md5_state_t *pms);
 NB_CORE_DLL(void) nbcore_md5_append(nbcore_md5_state_t *pms, const uint8_t *data, size_t nbytes);
 NB_CORE_DLL(void) nbcore_md5_finish(nbcore_md5_state_t *pms, uint8_t digest[16]);
-NB_CORE_DLL(void) nbcore_md5_hash(const uint8_t * data, size_t len, uint8_t digest[16]);
+NB_CORE_DLL(void) nbcore_md5_hash(const uint8_t *data, size_t len, uint8_t digest[16]);
 
 ///////////////////////////////////////////////////////////////////////////////
 // memory functions
 
 NB_C_CORE_DLL(void *) nbcore_alloc(size_t);
 NB_C_CORE_DLL(void *) nbcore_calloc(size_t);
-NB_C_CORE_DLL(void *) nbcore_realloc(void * ptr, size_t);
-NB_C_CORE_DLL(void)   nbcore_free(void * ptr);
+NB_C_CORE_DLL(void *) nbcore_realloc(void *ptr, size_t);
+NB_C_CORE_DLL(void)   nbcore_free(void *ptr);
 
 NB_CORE_DLL(size_t)   nbcore_strlen(const char *p);
 NB_CORE_DLL(size_t)   nbcore_wstrlen(const wchar_t *p);
@@ -243,7 +242,7 @@ NB_CORE_DLL(wchar_t *) nbcore_wstrndup(const wchar_t *str, size_t len);
 NB_CORE_DLL(void) RegisterModule(HINSTANCE hInst);
 NB_CORE_DLL(void) UnregisterModule(HINSTANCE hInst);
 
-NB_CORE_DLL(HINSTANCE) GetInstByAddress(void * codePtr);
+NB_CORE_DLL(HINSTANCE) GetInstByAddress(void *codePtr);
 
 ///////////////////////////////////////////////////////////////////////////////
 // print functions
@@ -273,12 +272,12 @@ typedef struct nbcore_sha1_ctx_
   uint32_t sizeHi, sizeLo;
 } nbcore_sha1_ctx;
 
-NB_CORE_DLL(void) nbcore_sha1_init(nbcore_sha1_ctx * ctx);
-NB_CORE_DLL(void) nbcore_sha1_append(nbcore_sha1_ctx * ctx, const uint8_t * dataIn, int len);
-NB_CORE_DLL(void) nbcore_sha1_finish(nbcore_sha1_ctx * ctx, uint8_t hashout[NB_SHA1_HASH_SIZE]);
-NB_CORE_DLL(void) nbcore_sha1_hash(uint8_t * dataIn, int len, uint8_t hashout[NB_SHA1_HASH_SIZE]);
+NB_CORE_DLL(void) nbcore_sha1_init(nbcore_sha1_ctx *ctx);
+NB_CORE_DLL(void) nbcore_sha1_append(nbcore_sha1_ctx *ctx, const uint8_t *dataIn, int len);
+NB_CORE_DLL(void) nbcore_sha1_finish(nbcore_sha1_ctx *ctx, uint8_t hashout[NB_SHA1_HASH_SIZE]);
+NB_CORE_DLL(void) nbcore_sha1_hash(uint8_t *dataIn, int len, uint8_t hashout[NB_SHA1_HASH_SIZE]);
 
-NB_CORE_DLL(void) nbcore_hmac_sha1(uint8_t hashout[NB_SHA1_HASH_SIZE], const uint8_t * key, size_t keylen, const uint8_t * text, size_t textlen);
+NB_CORE_DLL(void) nbcore_hmac_sha1(uint8_t hashout[NB_SHA1_HASH_SIZE], const uint8_t *key, size_t keylen, const uint8_t *text, size_t textlen);
 
 ///////////////////////////////////////////////////////////////////////////////
 // sha256 functions
@@ -293,17 +292,17 @@ typedef struct SHA256_CONTEXT_
   int  count;
 } SHA256_CONTEXT;
 
-NB_CORE_DLL(void) nbcore_sha256_init(SHA256_CONTEXT * ctx);
-NB_CORE_DLL(void) nbcore_sha256_write(SHA256_CONTEXT * ctx, const void * dataIn, size_t len);
-NB_CORE_DLL(void) nbcore_sha256_final(SHA256_CONTEXT * ctx, uint8_t hashout[NB_SHA256_HASH_SIZE]);
-NB_CORE_DLL(void) nbcore_sha256_hash(const void * dataIn, size_t len, uint8_t hashout[NB_SHA256_HASH_SIZE]);
+NB_CORE_DLL(void) nbcore_sha256_init(SHA256_CONTEXT *ctx);
+NB_CORE_DLL(void) nbcore_sha256_write(SHA256_CONTEXT *ctx, const void *dataIn, size_t len);
+NB_CORE_DLL(void) nbcore_sha256_final(SHA256_CONTEXT *ctx, uint8_t hashout[NB_SHA256_HASH_SIZE]);
+NB_CORE_DLL(void) nbcore_sha256_hash(const void *dataIn, size_t len, uint8_t hashout[NB_SHA256_HASH_SIZE]);
 
 ///////////////////////////////////////////////////////////////////////////////
 // strings
 
-NB_CORE_DLL(void *) nbcore_base64_decode(const char * input, unsigned * outputLen);
-NB_CORE_DLL(char *) nbcore_base64_encode(const uint8_t * input, unsigned inputLen);
-NB_CORE_DLL(char *) nbcore_base64_encodebuf(const uint8_t * input, unsigned inputLen, char * output, unsigned outLen);
+NB_CORE_DLL(void *) nbcore_base64_decode(const char *input, unsigned *outputLen);
+NB_CORE_DLL(char *) nbcore_base64_encode(const uint8_t *input, unsigned inputLen);
+NB_CORE_DLL(char *) nbcore_base64_encodebuf(const uint8_t *input, unsigned inputLen, char *output, unsigned outLen);
 
 __forceinline unsigned nbcore_base64_encode_bufsize(uint32_t inputLen)
 {
@@ -311,10 +310,10 @@ __forceinline unsigned nbcore_base64_encode_bufsize(uint32_t inputLen)
 }
 
 NB_CORE_DLL(char *)  rtrim(char *str);
-NB_CORE_DLL(wchar_t*) rtrimw(wchar_t *str);
+NB_CORE_DLL(wchar_t *) rtrimw(wchar_t *str);
 
 NB_CORE_DLL(char *)  ltrim(char *str);   // returns pointer to the beginning of string
-NB_CORE_DLL(wchar_t*) ltrimw(wchar_t *str);
+NB_CORE_DLL(wchar_t *) ltrimw(wchar_t *str);
 
 NB_CORE_DLL(char *)  ltrimp(char *str);  // returns pointer to the trimmed portion of string
 NB_CORE_DLL(wchar_t *) ltrimpw(wchar_t *str);
@@ -408,7 +407,7 @@ NB_CORE_DLL(char *)  nbcore_u2a(const wchar_t *src);
 
 class _A2T
 {
-  wchar_t* buf;
+  wchar_t *buf;
 
 public:
   __forceinline _A2T(const char *s) : buf(nbcore_a2t(s)) {}
@@ -416,16 +415,16 @@ public:
   ~_A2T() { nbcore_free(buf); }
 
   __forceinline operator LPARAM() const { return (LPARAM)buf; }
-  __forceinline operator wchar_t*() const { return buf; }
+  __forceinline operator wchar_t *() const { return buf; }
 };
 
 class _T2A
 {
-  char * buf;
+  char *buf;
 
 public:
-  __forceinline _T2A(const wchar_t* s) : buf(nbcore_t2a(s)) {}
-  __forceinline _T2A(const wchar_t* s, int cp) : buf(nbcore_t2a_cp(s, cp)) {}
+  __forceinline _T2A(const wchar_t *s) : buf(nbcore_t2a(s)) {}
+  __forceinline _T2A(const wchar_t *s, int cp) : buf(nbcore_t2a_cp(s, cp)) {}
   __forceinline ~_T2A() { nbcore_free(buf); }
 
   __forceinline operator LPARAM() const { return (LPARAM)buf; }
@@ -439,37 +438,37 @@ public:
 
 typedef void (__cdecl *pThreadFunc)(void *);
 typedef unsigned (__stdcall *pThreadFuncEx)(void *);
-typedef unsigned (__cdecl *pThreadFuncOwner)(void *owner, void * param);
+typedef unsigned (__cdecl *pThreadFuncOwner)(void *owner, void *param);
 
 #if defined( __cplusplus )
-NB_CORE_DLL(intptr_t) Thread_Push(HINSTANCE hInst, void * pOwner=nullptr);
+NB_CORE_DLL(intptr_t) Thread_Push(HINSTANCE hInst, void *pOwner = nullptr);
 #else
-NB_CORE_DLL(intptr_t) Thread_Push(HINSTANCE hInst, void * pOwner);
+NB_CORE_DLL(intptr_t) Thread_Push(HINSTANCE hInst, void *pOwner);
 #endif
 NB_CORE_DLL(intptr_t) Thread_Pop(void);
 NB_CORE_DLL(void)    Thread_Wait(void);
 
 NB_CORE_DLL(UINT_PTR) forkthread(pThreadFunc, unsigned long stacksize, void *arg);
-NB_CORE_DLL(UINT_PTR) forkthreadex(void *sec, unsigned stacksize, pThreadFuncEx, void * owner, void *arg, unsigned *thraddr);
+NB_CORE_DLL(UINT_PTR) forkthreadex(void *sec, unsigned stacksize, pThreadFuncEx, void *owner, void *arg, unsigned *thraddr);
 
-__forceinline HANDLE nbcore_forkthread(pThreadFunc aFunc, void * arg)
+__forceinline HANDLE nbcore_forkthread(pThreadFunc aFunc, void *arg)
 {
   return (HANDLE)forkthread(aFunc, 0, arg);
 }
 
-__forceinline HANDLE nbcore_forkthreadex(pThreadFuncEx aFunc, void * arg, unsigned* pThreadID)
+__forceinline HANDLE nbcore_forkthreadex(pThreadFuncEx aFunc, void *arg, unsigned *pThreadID)
 {
   return (HANDLE)forkthreadex(nullptr, 0, aFunc, nullptr, arg, pThreadID);
 }
 
-__forceinline HANDLE nbcore_forkthreadowner(pThreadFuncOwner aFunc, void * owner, void * arg, unsigned* pThreadID)
+__forceinline HANDLE nbcore_forkthreadowner(pThreadFuncOwner aFunc, void *owner, void *arg, unsigned *pThreadID)
 {
   return (HANDLE)forkthreadex(nullptr, 0, (pThreadFuncEx)aFunc, owner, arg, pThreadID);
 }
 
 NB_CORE_DLL(void) Thread_SetName(const char *szThreadName);
 
-NB_CORE_DLL(void) KillObjectThreads(void * pObject);
+NB_CORE_DLL(void) KillObjectThreads(void *pObject);
 
 ///////////////////////////////////////////////////////////////////////////////
 // utf8 interface
@@ -531,7 +530,7 @@ public:
     return res;
   }
 
-  __forceinline char& operator[](size_t idx) const { return m_str[idx]; }
+  __forceinline char &operator[](size_t idx) const { return m_str[idx]; }
   __forceinline operator char *() const { return m_str; }
   __forceinline operator unsigned char *() const { return (unsigned char *)m_str; }
   __forceinline operator LPARAM() const { return (LPARAM)m_str; }
@@ -578,7 +577,7 @@ NB_CORE_DLL(int) GetPluginLangByInstance(HINSTANCE);
 NB_CORE_DLL(void) UnloadCoreModule(void);
 
 #if defined(__cplusplus)
-}
+} // extern "C"
 
 template <size_t _Size>
 inline int nbcore_snprintf(char(&buffer)[_Size], const char *fmt, ...)
@@ -591,7 +590,7 @@ inline int nbcore_snprintf(char(&buffer)[_Size], const char *fmt, ...)
 }
 
 template <size_t _Size>
-inline int nbcore_snwprintf(wchar_t(&buffer)[_Size], const wchar_t* fmt, ...)
+inline int nbcore_snwprintf(wchar_t(&buffer)[_Size], const wchar_t *fmt, ...)
 {
   va_list args;
   va_start(args, fmt);
@@ -607,7 +606,7 @@ inline int nbcore_vsnprintf(char(&buffer)[_Size], const char *fmt, va_list va)
 }
 
 template <size_t _Size>
-inline int nbcore_vsnwprintf(wchar_t(&buffer)[_Size], const wchar_t* fmt, va_list va)
+inline int nbcore_vsnwprintf(wchar_t(&buffer)[_Size], const wchar_t *fmt, va_list va)
 {
   return nbcore_vsnwprintf(buffer, _Size, fmt, va);
 }
