@@ -1655,7 +1655,7 @@ __int64 TCustomFarPlugin::GetSystemSetting(HANDLE & Settings, const wchar_t * Na
   return 0;
 }
 
-__int64 TCustomFarPlugin::GetFarSystemSettings() const
+intptr_t TCustomFarPlugin::GetFarSystemSettings() const
 {
   if (!FValidFarSystemSettings)
   {

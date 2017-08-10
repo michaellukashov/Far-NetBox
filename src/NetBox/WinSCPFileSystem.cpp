@@ -3250,11 +3250,11 @@ bool TWinSCPFileSystem::TerminalSetLocalFileAttributes(UnicodeString LocalFileNa
 {
   if (!GetWinSCPPlugin()->GetSystemFunctions())
   {
-    return ::SetFileAttributes(ApiPath(LocalFileName).c_str(), FileAttributes);
+    return ::SetFileAttributes(ApiPath(LocalFileName).c_str(), FileAttributes) != FALSE;
   }
   else
   {
-    return GetWinSCPPlugin()->SetLocalFileAttributes(LocalFileName, FileAttributes);
+    return GetWinSCPPlugin()->SetLocalFileAttributes(LocalFileName, FileAttributes) != FALSE;
   }
 }
 
@@ -3266,7 +3266,7 @@ bool TWinSCPFileSystem::TerminalMoveLocalFile(UnicodeString LocalFileName, Unico
   }
   else
   {
-    return GetWinSCPPlugin()->MoveLocalFile(LocalFileName, NewLocalFileName, Flags);
+    return GetWinSCPPlugin()->MoveLocalFile(LocalFileName, NewLocalFileName, Flags) != FALSE;
   }
 }
 
@@ -3278,7 +3278,7 @@ bool TWinSCPFileSystem::TerminalRemoveLocalDirectory(UnicodeString LocalDirName)
   }
   else
   {
-    return GetWinSCPPlugin()->RemoveLocalDirectory(LocalDirName);
+    return GetWinSCPPlugin()->RemoveLocalDirectory(LocalDirName) != FALSE;
   }
 }
 bool TWinSCPFileSystem::TerminalCreateLocalDirectory(UnicodeString LocalDirName, LPSECURITY_ATTRIBUTES SecurityAttributes)
@@ -3289,7 +3289,7 @@ bool TWinSCPFileSystem::TerminalCreateLocalDirectory(UnicodeString LocalDirName,
   }
   else
   {
-    return GetWinSCPPlugin()->CreateLocalDirectory(LocalDirName, SecurityAttributes);
+    return GetWinSCPPlugin()->CreateLocalDirectory(LocalDirName, SecurityAttributes) != FALSE;
   }
 }
 
