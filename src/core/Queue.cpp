@@ -14,21 +14,21 @@ class TBackgroundTerminal;
 class TParallelTransferQueueItem : public TLocatedQueueItem
 {
 public:
-  static inline bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TParallelTransferQueueItem); }
+  static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TParallelTransferQueueItem); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TParallelTransferQueueItem) || TLocatedQueueItem::is(Kind); }
 public:
-  TParallelTransferQueueItem(const TLocatedQueueItem * ParentItem, TParallelOperation * ParallelOperation);
+  TParallelTransferQueueItem(const TLocatedQueueItem *ParentItem, TParallelOperation *ParallelOperation);
 
 protected:
-  virtual void DoExecute(TTerminal * Terminal) override;
+  virtual void DoExecute(TTerminal *Terminal) override;
 
 private:
-  TParallelOperation * FParallelOperation;
+  TParallelOperation *FParallelOperation;
 };
 
 class TUserAction : public TObject
 {
-NB_DISABLE_COPY(TUserAction)
+  NB_DISABLE_COPY(TUserAction)
 public:
   explicit TUserAction()
   {
@@ -38,13 +38,13 @@ public:
   {
   }
 
-  virtual void Execute(void * Arg) = 0;
+  virtual void Execute(void *Arg) = 0;
   virtual bool Force() const { return false; }
 };
 
 class TNotifyAction : public TUserAction
 {
-NB_DISABLE_COPY(TNotifyAction)
+  NB_DISABLE_COPY(TNotifyAction)
 public:
   explicit TNotifyAction(TNotifyEvent AOnNotify) :
     TUserAction(),
@@ -62,12 +62,12 @@ public:
   }
 
   TNotifyEvent OnNotify;
-  TObject * Sender;
+  TObject *Sender;
 };
 
 class TInformationUserAction : public TUserAction
 {
-NB_DISABLE_COPY(TInformationUserAction)
+  NB_DISABLE_COPY(TInformationUserAction)
 public:
   explicit TInformationUserAction(TInformationEvent AOnInformation) :
     OnInformation(AOnInformation),
@@ -93,7 +93,7 @@ public:
   }
 
   TInformationEvent OnInformation;
-  TTerminal * Terminal;
+  TTerminal *Terminal;
   UnicodeString Str;
   bool Status;
   intptr_t Phase;
@@ -101,7 +101,7 @@ public:
 
 class TQueryUserAction : public TUserAction
 {
-NB_DISABLE_COPY(TQueryUserAction)
+  NB_DISABLE_COPY(TQueryUserAction)
 public:
   explicit TQueryUserAction(TQueryUserEvent AOnQueryUser) :
     OnQueryUser(AOnQueryUser),
@@ -114,7 +114,7 @@ public:
   {
   }
 
-  virtual void Execute(void * Arg) override
+  virtual void Execute(void *Arg) override
   {
     if (OnQueryUser != nullptr)
     {
@@ -123,18 +123,18 @@ public:
   }
 
   TQueryUserEvent OnQueryUser;
-  TObject * Sender;
+  TObject *Sender;
   UnicodeString Query;
-  TStrings * MoreMessages;
+  TStrings *MoreMessages;
   uintptr_t Answers;
-  const TQueryParams * Params;
+  const TQueryParams *Params;
   uintptr_t Answer;
   TQueryType Type;
 };
 
 class TPromptUserAction : public TUserAction
 {
-NB_DISABLE_COPY(TPromptUserAction)
+  NB_DISABLE_COPY(TPromptUserAction)
 public:
   explicit TPromptUserAction(TPromptUserEvent AOnPromptUser) :
     OnPromptUser(AOnPromptUser),
@@ -151,7 +151,7 @@ public:
     SAFE_DESTROY(Results);
   }
 
-  virtual void Execute(void * Arg) override
+  virtual void Execute(void *Arg) override
   {
     if (OnPromptUser != nullptr)
     {
@@ -160,18 +160,18 @@ public:
   }
 
   TPromptUserEvent OnPromptUser;
-  TTerminal * Terminal;
+  TTerminal *Terminal;
   TPromptKind Kind;
   UnicodeString Name;
   UnicodeString Instructions;
-  TStrings * Prompts;
-  TStrings * Results;
+  TStrings *Prompts;
+  TStrings *Results;
   bool Result;
 };
 
 class TShowExtendedExceptionAction : public TUserAction
 {
-NB_DISABLE_COPY(TShowExtendedExceptionAction)
+  NB_DISABLE_COPY(TShowExtendedExceptionAction)
 public:
   explicit TShowExtendedExceptionAction(TExtendedExceptionEvent AOnShowExtendedException) :
     OnShowExtendedException(AOnShowExtendedException),
@@ -180,7 +180,7 @@ public:
   {
   }
 
-  virtual void Execute(void * Arg) override
+  virtual void Execute(void *Arg) override
   {
     if (OnShowExtendedException != nullptr)
     {
@@ -189,13 +189,13 @@ public:
   }
 
   TExtendedExceptionEvent OnShowExtendedException;
-  TTerminal * Terminal;
-  Exception * E;
+  TTerminal *Terminal;
+  Exception *E;
 };
 
 class TDisplayBannerAction : public TUserAction
 {
-NB_DISABLE_COPY(TDisplayBannerAction)
+  NB_DISABLE_COPY(TDisplayBannerAction)
 public:
   explicit TDisplayBannerAction(TDisplayBannerEvent AOnDisplayBanner) :
     OnDisplayBanner(AOnDisplayBanner),
@@ -214,7 +214,7 @@ public:
   }
 
   TDisplayBannerEvent OnDisplayBanner;
-  TTerminal * Terminal;
+  TTerminal *Terminal;
   UnicodeString SessionName;
   UnicodeString Banner;
   bool NeverShowAgain;
@@ -223,7 +223,7 @@ public:
 
 class TReadDirectoryAction : public TUserAction
 {
-NB_DISABLE_COPY(TReadDirectoryAction)
+  NB_DISABLE_COPY(TReadDirectoryAction)
 public:
   explicit TReadDirectoryAction(TReadDirectoryEvent AOnReadDirectory) :
     OnReadDirectory(AOnReadDirectory),
@@ -241,13 +241,13 @@ public:
   }
 
   TReadDirectoryEvent OnReadDirectory;
-  TObject * Sender;
+  TObject *Sender;
   bool ReloadOnly;
 };
 
 class TReadDirectoryProgressAction : public TUserAction
 {
-NB_DISABLE_COPY(TReadDirectoryProgressAction)
+  NB_DISABLE_COPY(TReadDirectoryProgressAction)
 public:
   explicit TReadDirectoryProgressAction(TReadDirectoryProgressEvent AOnReadDirectoryProgress) :
     OnReadDirectoryProgress(AOnReadDirectoryProgress),
@@ -267,7 +267,7 @@ public:
   }
 
   TReadDirectoryProgressEvent OnReadDirectoryProgress;
-  TObject * Sender;
+  TObject *Sender;
   intptr_t Progress;
   intptr_t ResolvedLinks;
   bool Cancel;
@@ -275,57 +275,57 @@ public:
 
 class TTerminalItem : public TSignalThread
 {
-friend class TQueueItem;
-friend class TBackgroundTerminal;
-NB_DISABLE_COPY(TTerminalItem)
+  friend class TQueueItem;
+  friend class TBackgroundTerminal;
+  NB_DISABLE_COPY(TTerminalItem)
 public:
-  static inline bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TTerminalItem); }
+  static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TTerminalItem); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TTerminalItem) || TSignalThread::is(Kind); }
 public:
-  explicit TTerminalItem(TTerminalQueue * Queue);
+  explicit TTerminalItem(TTerminalQueue *Queue);
   virtual ~TTerminalItem();
   void InitTerminalItem(intptr_t Index);
 
-  void Process(TQueueItem * Item);
-  bool ProcessUserAction(void * Arg);
+  void Process(TQueueItem *Item);
+  bool ProcessUserAction(void *Arg);
   void Cancel();
   void Idle();
   bool Pause();
   bool Resume();
 
 protected:
-  TTerminalQueue * FQueue;
-  TBackgroundTerminal * FTerminal;
-  TQueueItem * FItem;
+  TTerminalQueue *FQueue;
+  TBackgroundTerminal *FTerminal;
+  TQueueItem *FItem;
   TCriticalSection FCriticalSection;
-  TUserAction * FUserAction;
+  TUserAction *FUserAction;
   bool FCancel;
   bool FPause;
 
   virtual void ProcessEvent() override;
   virtual void Finished() override;
-  bool WaitForUserAction(TQueueItem::TStatus ItemStatus, TUserAction * UserAction);
-  bool OverrideItemStatus(TQueueItem::TStatus & ItemStatus) const;
+  bool WaitForUserAction(TQueueItem::TStatus ItemStatus, TUserAction *UserAction);
+  bool OverrideItemStatus(TQueueItem::TStatus &ItemStatus) const;
 
-  void TerminalQueryUser(TObject * Sender,
-    UnicodeString AQuery, TStrings * MoreMessages, uintptr_t Answers,
-    const TQueryParams * Params, uintptr_t & Answer, TQueryType Type, void * Arg);
-  void TerminalPromptUser(TTerminal * Terminal, TPromptKind Kind,
+  void TerminalQueryUser(TObject *Sender,
+    UnicodeString AQuery, TStrings *MoreMessages, uintptr_t Answers,
+    const TQueryParams *Params, uintptr_t &Answer, TQueryType Type, void *Arg);
+  void TerminalPromptUser(TTerminal *Terminal, TPromptKind Kind,
     UnicodeString Name, UnicodeString Instructions,
-    TStrings * Prompts, TStrings * Results, bool & Result, void * Arg);
-  void TerminalShowExtendedException(TTerminal * Terminal,
-    Exception * E, void * Arg);
+    TStrings *Prompts, TStrings *Results, bool &Result, void *Arg);
+  void TerminalShowExtendedException(TTerminal *Terminal,
+    Exception *E, void *Arg);
   void OperationFinished(TFileOperation Operation, TOperationSide Side,
     bool Temp, UnicodeString AFileName, bool Success,
-    TOnceDoneOperation & OnceDoneOperation);
-  void OperationProgress(TFileOperationProgressType & ProgressData);
+    TOnceDoneOperation &OnceDoneOperation);
+  void OperationProgress(TFileOperationProgressType &ProgressData);
 };
 
 // TSignalThread
 
-int TSimpleThread::ThreadProc(void * Thread)
+int TSimpleThread::ThreadProc(void *Thread)
 {
-  TSimpleThread * SimpleThread = get_as<TSimpleThread>(Thread);
+  TSimpleThread *SimpleThread = get_as<TSimpleThread>(Thread);
   DebugAssert(SimpleThread != nullptr);
   if (!SimpleThread)
     return 0;
@@ -484,8 +484,8 @@ void TSignalThread::Terminate()
 
 // TTerminalQueue
 
-TTerminalQueue::TTerminalQueue(TTerminal * ATerminal,
-  TConfiguration * AConfiguration) :
+TTerminalQueue::TTerminalQueue(TTerminal *ATerminal,
+  TConfiguration *AConfiguration) :
   TSignalThread(OBJECT_CLASS_TTerminalQueue, true),
   FOnQueryUser(nullptr),
   FOnPromptUser(nullptr),
@@ -551,7 +551,7 @@ TTerminalQueue::~TTerminalQueue()
 
     while (FTerminals->GetCount() > 0)
     {
-      TTerminalItem * TerminalItem = FTerminals->GetAs<TTerminalItem>(0);
+      TTerminalItem *TerminalItem = FTerminals->GetAs<TTerminalItem>(0);
       FTerminals->Delete(0);
       TerminalItem->Terminate();
       TerminalItem->WaitFor();
@@ -567,17 +567,17 @@ TTerminalQueue::~TTerminalQueue()
   SAFE_DESTROY_EX(TSessionData, FSessionData);
 }
 
-void TTerminalQueue::FreeItemsList(TList *& List) const
+void TTerminalQueue::FreeItemsList(TList *&List) const
 {
   for (intptr_t Index = 0; Index < List->GetCount(); ++Index)
   {
-    TQueueItem * Item = GetItem(List, Index);
+    TQueueItem *Item = GetItem(List, Index);
     SAFE_DESTROY(Item);
   }
   SAFE_DESTROY(List);
 }
 
-void TTerminalQueue::TerminalFinished(TTerminalItem * TerminalItem)
+void TTerminalQueue::TerminalFinished(TTerminalItem *TerminalItem)
 {
   if (!FTerminated)
   {
@@ -609,7 +609,7 @@ void TTerminalQueue::TerminalFinished(TTerminalItem * TerminalItem)
   }
 }
 
-bool TTerminalQueue::TerminalFree(TTerminalItem * TerminalItem)
+bool TTerminalQueue::TerminalFree(TTerminalItem *TerminalItem)
 {
   bool Result = true;
 
@@ -641,7 +641,7 @@ intptr_t TTerminalQueue::GetParallelDurationThreshold() const
   return FConfiguration->GetParallelDurationThreshold();
 }
 
-void TTerminalQueue::AddItem(TQueueItem * Item)
+void TTerminalQueue::AddItem(TQueueItem *Item)
 {
   DebugAssert(!FTerminated);
 
@@ -659,7 +659,7 @@ void TTerminalQueue::AddItem(TQueueItem * Item)
   TriggerEvent();
 }
 
-void TTerminalQueue::RetryItem(TQueueItem * Item)
+void TTerminalQueue::RetryItem(TQueueItem *Item)
 {
   if (!FTerminated)
   {
@@ -679,7 +679,7 @@ void TTerminalQueue::RetryItem(TQueueItem * Item)
   }
 }
 
-void TTerminalQueue::DeleteItem(TQueueItem * Item, bool CanKeep)
+void TTerminalQueue::DeleteItem(TQueueItem *Item, bool CanKeep)
 {
   if (!FTerminated)
   {
@@ -732,23 +732,23 @@ void TTerminalQueue::DeleteItem(TQueueItem * Item, bool CanKeep)
   }
 }
 
-TQueueItem * TTerminalQueue::GetItem(TList * List, intptr_t Index)
+TQueueItem *TTerminalQueue::GetItem(TList *List, intptr_t Index)
 {
   return List->GetAs<TQueueItem>(Index);
 }
 
-TQueueItem * TTerminalQueue::GetItem(intptr_t Index) const
+TQueueItem *TTerminalQueue::GetItem(intptr_t Index) const
 {
   return FItems->GetAs<TQueueItem>(Index);
 }
 
 void TTerminalQueue::UpdateStatusForList(
-  TTerminalQueueStatus * Status, TList * List, TTerminalQueueStatus * Current)
+  TTerminalQueueStatus *Status, TList *List, TTerminalQueueStatus *Current)
 {
   for (intptr_t Index = 0; Index < List->GetCount(); ++Index)
   {
-    TQueueItem * Item = GetItem(List, Index);
-    TQueueItemProxy * ItemProxy = nullptr;
+    TQueueItem *Item = GetItem(List, Index);
+    TQueueItemProxy *ItemProxy = nullptr;
     if (Current)
     {
       ItemProxy = Current->FindByQueueItem(Item);
@@ -767,7 +767,7 @@ void TTerminalQueue::UpdateStatusForList(
   }
 }
 
-TTerminalQueueStatus * TTerminalQueue::CreateStatus(TTerminalQueueStatus * Current)
+TTerminalQueueStatus *TTerminalQueue::CreateStatus(TTerminalQueueStatus *Current)
 {
   std::unique_ptr<TTerminalQueueStatus> Status(new TTerminalQueueStatus());
   try__catch
@@ -808,8 +808,8 @@ TTerminalQueueStatus * TTerminalQueue::CreateStatus(TTerminalQueueStatus * Curre
   return Status.release();
 }
 
-bool TTerminalQueue::ItemGetData(TQueueItem * Item,
-  TQueueItemProxy * Proxy)
+bool TTerminalQueue::ItemGetData(TQueueItem *Item,
+  TQueueItemProxy *Proxy)
 {
   // to prevent deadlocks when closing queue from other thread
   bool Result = !FFinished;
@@ -827,13 +827,13 @@ bool TTerminalQueue::ItemGetData(TQueueItem * Item,
   return Result;
 }
 
-bool TTerminalQueue::ItemProcessUserAction(TQueueItem * Item, void * Arg)
+bool TTerminalQueue::ItemProcessUserAction(TQueueItem *Item, void *Arg)
 {
   // to prevent deadlocks when closing queue from other thread
   bool Result = !FFinished;
   if (Result)
   {
-    TTerminalItem * TerminalItem = nullptr;
+    TTerminalItem *TerminalItem = nullptr;
 
     {
       TGuard Guard(FItemsSection);
@@ -855,7 +855,7 @@ bool TTerminalQueue::ItemProcessUserAction(TQueueItem * Item, void * Arg)
   return Result;
 }
 
-bool TTerminalQueue::ItemMove(TQueueItem * Item, TQueueItem * BeforeItem)
+bool TTerminalQueue::ItemMove(TQueueItem *Item, TQueueItem *BeforeItem)
 {
   // to prevent deadlocks when closing queue from other thread
   bool Result = !FFinished;
@@ -885,7 +885,7 @@ bool TTerminalQueue::ItemMove(TQueueItem * Item, TQueueItem * BeforeItem)
   return Result;
 }
 
-bool TTerminalQueue::ItemExecuteNow(TQueueItem * Item)
+bool TTerminalQueue::ItemExecuteNow(TQueueItem *Item)
 {
   // to prevent deadlocks when closing queue from other thread
   bool Result = !FFinished;
@@ -927,7 +927,7 @@ bool TTerminalQueue::ItemExecuteNow(TQueueItem * Item)
   return Result;
 }
 
-bool TTerminalQueue::ItemDelete(TQueueItem * Item)
+bool TTerminalQueue::ItemDelete(TQueueItem *Item)
 {
   // to prevent deadlocks when closing queue from other thread
   bool Result = !FFinished;
@@ -976,20 +976,20 @@ bool TTerminalQueue::ItemDelete(TQueueItem * Item)
   return Result;
 }
 
-bool TTerminalQueue::ItemPause(TQueueItem * Item, bool Pause)
+bool TTerminalQueue::ItemPause(TQueueItem *Item, bool Pause)
 {
   // to prevent deadlocks when closing queue from other thread
   bool Result = !FFinished;
   if (Result)
   {
-    TTerminalItem * TerminalItem = nullptr;
+    TTerminalItem *TerminalItem = nullptr;
 
     {
       TGuard Guard(FItemsSection);
 
       Result = (FItems->IndexOf(Item) >= 0) &&
-      ((Pause && (Item->GetStatus() == TQueueItem::qsProcessing)) ||
-        (!Pause && (Item->GetStatus() == TQueueItem::qsPaused)));
+        ((Pause && (Item->GetStatus() == TQueueItem::qsProcessing)) ||
+          (!Pause && (Item->GetStatus() == TQueueItem::qsPaused)));
       if (Result)
       {
         TerminalItem = Item->FTerminalItem;
@@ -1012,7 +1012,7 @@ bool TTerminalQueue::ItemPause(TQueueItem * Item, bool Pause)
   return Result;
 }
 
-bool TTerminalQueue::ItemSetCPSLimit(TQueueItem * Item, intptr_t CPSLimit)
+bool TTerminalQueue::ItemSetCPSLimit(TQueueItem *Item, intptr_t CPSLimit)
 {
   // to prevent deadlocks when closing queue from other thread
   bool Result = !FFinished;
@@ -1030,7 +1030,7 @@ bool TTerminalQueue::ItemSetCPSLimit(TQueueItem * Item, intptr_t CPSLimit)
   return Result;
 }
 
-bool TTerminalQueue::ItemGetCPSLimit(TQueueItem * Item, intptr_t & CPSLimit) const
+bool TTerminalQueue::ItemGetCPSLimit(TQueueItem *Item, intptr_t &CPSLimit) const
 {
   CPSLimit = 0;
   // to prevent deadlocks when closing queue from other thread
@@ -1055,7 +1055,7 @@ void TTerminalQueue::Idle()
   if (N - FLastIdle > FIdleInterval)
   {
     FLastIdle = N;
-    TTerminalItem * TerminalItem = nullptr;
+    TTerminalItem *TerminalItem = nullptr;
 
     if (FFreeTerminals > 0)
     {
@@ -1087,11 +1087,11 @@ bool TTerminalQueue::WaitForEvent()
 
 void TTerminalQueue::ProcessEvent()
 {
-  TTerminalItem * TerminalItem;
+  TTerminalItem *TerminalItem;
   do
   {
     TerminalItem = nullptr;
-    TQueueItem * Item1 = nullptr;
+    TQueueItem *Item1 = nullptr;
 
     {
       TGuard Guard(FItemsSection);
@@ -1107,7 +1107,7 @@ void TTerminalQueue::ProcessEvent()
         }
         for (intptr_t Index = 0; Index < FDoneItems->GetCount(); ++Index)
         {
-          TQueueItem * Item2 = GetItem(FDoneItems, Index);
+          TQueueItem *Item2 = GetItem(FDoneItems, Index);
           if (Item2->FDoneAt <= RemoveDoneItemsBefore)
           {
             FDoneItems->Delete(Index);
@@ -1161,7 +1161,7 @@ void TTerminalQueue::ProcessEvent()
   while (!FTerminated && (TerminalItem != nullptr));
 }
 
-void TTerminalQueue::DoQueueItemUpdate(TQueueItem * Item)
+void TTerminalQueue::DoQueueItemUpdate(TQueueItem *Item)
 {
   if (GetOnQueueItemUpdate() != nullptr)
   {
@@ -1239,7 +1239,7 @@ bool TTerminalQueue::GetIsEmpty() const
   return (FItems->GetCount() == 0);
 }
 
-bool TTerminalQueue::TryAddParallelOperation(TQueueItem * Item, bool Force)
+bool TTerminalQueue::TryAddParallelOperation(TQueueItem *Item, bool Force)
 {
   TGuard Guard(FItemsSection);
 
@@ -1266,38 +1266,38 @@ bool TTerminalQueue::ContinueParallelOperation() const
 
 class TBackgroundTerminal : public TSecondaryTerminal
 {
-friend class TTerminalItem;
+  friend class TTerminalItem;
 public:
-  static inline bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TBackgroundTerminal); }
+  static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TBackgroundTerminal); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TBackgroundTerminal) || TSecondaryTerminal::is(Kind); }
 
 public:
-  explicit TBackgroundTerminal(TTerminal * MainTerminal);
+  explicit TBackgroundTerminal(TTerminal *MainTerminal);
 
   virtual ~TBackgroundTerminal()
   {
   }
 
   void Init(
-    TSessionData * SessionData, TConfiguration * Configuration,
-    TTerminalItem * Item, UnicodeString Name);
+    TSessionData *SessionData, TConfiguration *Configuration,
+    TTerminalItem *Item, UnicodeString Name);
 
 protected:
-  virtual bool DoQueryReopen(Exception * E) override;
+  virtual bool DoQueryReopen(Exception *E) override;
 
 private:
-  TTerminalItem * FItem;
+  TTerminalItem *FItem;
 };
 
-TBackgroundTerminal::TBackgroundTerminal(TTerminal * MainTerminal) :
+TBackgroundTerminal::TBackgroundTerminal(TTerminal *MainTerminal) :
   TSecondaryTerminal(OBJECT_CLASS_TBackgroundTerminal, MainTerminal),
   FItem(nullptr)
 {
 }
 
 void TBackgroundTerminal::Init(
-    TSessionData * SessionData, TConfiguration * Configuration, TTerminalItem * Item,
-    UnicodeString Name)
+  TSessionData *SessionData, TConfiguration *Configuration, TTerminalItem *Item,
+  UnicodeString Name)
 {
   TSecondaryTerminal::Init(SessionData, Configuration, Name);
   FItem = Item;
@@ -1321,7 +1321,7 @@ bool TBackgroundTerminal::DoQueryReopen(Exception * /*E*/)
 
 // TTerminalItem
 
-TTerminalItem::TTerminalItem(TTerminalQueue * Queue) :
+TTerminalItem::TTerminalItem(TTerminalQueue *Queue) :
   TSignalThread(OBJECT_CLASS_TTerminalItem, true),
   FQueue(Queue),
   FTerminal(nullptr),
@@ -1369,7 +1369,7 @@ TTerminalItem::~TTerminalItem()
   SAFE_DESTROY(FTerminal);
 }
 
-void TTerminalItem::Process(TQueueItem * Item)
+void TTerminalItem::Process(TQueueItem *Item)
 {
   {
     TGuard Guard(FCriticalSection);
@@ -1417,7 +1417,7 @@ void TTerminalItem::ProcessEvent()
       FItem->Execute(this);
     }
   }
-  catch (Exception & E)
+  catch (Exception &E)
   {
     UnicodeString Message;
     if (ExceptionMessageFormatted(&E, Message))
@@ -1425,7 +1425,7 @@ void TTerminalItem::ProcessEvent()
       // do not show error messages, if task was canceled anyway
       // (for example if transfer is canceled during reconnection attempts)
       if (!FCancel &&
-          (FTerminal->QueryUserException(L"", &E, qaOK | qaCancel, nullptr, qtError) == qaCancel))
+        (FTerminal->QueryUserException(L"", &E, qaOK | qaCancel, nullptr, qtError) == qaCancel))
       {
         FCancel = true;
       }
@@ -1436,7 +1436,7 @@ void TTerminalItem::ProcessEvent()
 
   FItem->FTerminalItem = nullptr;
 
-  TQueueItem * Item = FItem;
+  TQueueItem *Item = FItem;
   FItem = nullptr;
 
   if (Retry && !FCancel)
@@ -1449,7 +1449,7 @@ void TTerminalItem::ProcessEvent()
   }
 
   if (!FTerminal->GetActive() ||
-      !FQueue->TerminalFree(this))
+    !FQueue->TerminalFree(this))
   {
     Terminate();
   }
@@ -1480,7 +1480,7 @@ void TTerminalItem::Cancel()
 {
   FCancel = true;
   if ((FItem->GetStatus() == TQueueItem::qsPaused) ||
-      TQueueItem::IsUserActionStatus(FItem->GetStatus()))
+    TQueueItem::IsUserActionStatus(FItem->GetStatus()))
   {
     TriggerEvent();
   }
@@ -1508,7 +1508,7 @@ bool TTerminalItem::Resume()
   return Result;
 }
 
-bool TTerminalItem::ProcessUserAction(void * Arg)
+bool TTerminalItem::ProcessUserAction(void *Arg)
 {
   // When status is changed twice quickly, the controller when responding
   // to the first change (non-user-action) can be so slow to check only after
@@ -1529,11 +1529,11 @@ bool TTerminalItem::ProcessUserAction(void * Arg)
 }
 
 bool TTerminalItem::WaitForUserAction(
-  TQueueItem::TStatus ItemStatus, TUserAction * UserAction)
+  TQueueItem::TStatus ItemStatus, TUserAction *UserAction)
 {
   DebugAssert(FItem != nullptr);
   if (!FItem)
-	  return false;
+    return false;
   DebugAssert((FItem->GetStatus() == TQueueItem::qsProcessing) ||
     (FItem->GetStatus() == TQueueItem::qsConnecting));
 
@@ -1573,9 +1573,9 @@ void TTerminalItem::Finished()
   FQueue->TerminalFinished(this);
 }
 
-void TTerminalItem::TerminalQueryUser(TObject * Sender,
-  UnicodeString AQuery, TStrings * MoreMessages, uintptr_t Answers,
-  const TQueryParams * Params, uintptr_t & Answer, TQueryType Type, void * Arg)
+void TTerminalItem::TerminalQueryUser(TObject *Sender,
+  UnicodeString AQuery, TStrings *MoreMessages, uintptr_t Answers,
+  const TQueryParams *Params, uintptr_t &Answer, TQueryType Type, void *Arg)
 {
   // so far query without queue item can occur only for key confirmation
   // on re-key with non-cached host key. make it fail.
@@ -1606,9 +1606,9 @@ void TTerminalItem::TerminalQueryUser(TObject * Sender,
   }
 }
 
-void TTerminalItem::TerminalPromptUser(TTerminal * Terminal,
-  TPromptKind Kind, UnicodeString Name, UnicodeString Instructions, TStrings * Prompts,
-  TStrings * Results, bool & Result, void * Arg)
+void TTerminalItem::TerminalPromptUser(TTerminal *Terminal,
+  TPromptKind Kind, UnicodeString Name, UnicodeString Instructions, TStrings *Prompts,
+  TStrings *Results, bool &Result, void *Arg)
 {
   if (FItem == nullptr)
   {
@@ -1639,13 +1639,13 @@ void TTerminalItem::TerminalPromptUser(TTerminal * Terminal,
 }
 
 void TTerminalItem::TerminalShowExtendedException(
-  TTerminal * Terminal, Exception * E, void * Arg)
+  TTerminal *Terminal, Exception *E, void *Arg)
 {
   DebugUsedParam(Arg);
   DebugAssert(Arg == nullptr);
 
   if ((FItem != nullptr) &&
-      ShouldDisplayException(E))
+    ShouldDisplayException(E))
   {
     TShowExtendedExceptionAction Action(FQueue->GetOnShowExtendedException());
     Action.Terminal = Terminal;
@@ -1663,7 +1663,7 @@ void TTerminalItem::OperationFinished(TFileOperation /*Operation*/,
 }
 
 void TTerminalItem::OperationProgress(
-  TFileOperationProgressType & ProgressData)
+  TFileOperationProgressType &ProgressData)
 {
   if (FPause && !FTerminated && !FCancel && FItem)
   {
@@ -1711,7 +1711,7 @@ void TTerminalItem::OperationProgress(
   FItem->SetProgress(ProgressData);
 }
 
-bool TTerminalItem::OverrideItemStatus(TQueueItem::TStatus & ItemStatus) const
+bool TTerminalItem::OverrideItemStatus(TQueueItem::TStatus &ItemStatus) const
 {
   DebugAssert(FTerminal != nullptr);
   bool Result = (FTerminal && FTerminal->GetStatus() < ssOpened) && (ItemStatus == TQueueItem::qsProcessing);
@@ -1799,7 +1799,7 @@ void TQueueItem::ProgressUpdated()
 }
 
 void TQueueItem::SetProgress(
-  TFileOperationProgressType & ProgressData)
+  TFileOperationProgressType &ProgressData)
 {
   {
     TGuard Guard(FSection);
@@ -1820,7 +1820,7 @@ void TQueueItem::SetProgress(
   FQueue->DoQueueItemUpdate(this);
 }
 
-void TQueueItem::GetData(TQueueItemProxy * Proxy) const
+void TQueueItem::GetData(TQueueItemProxy *Proxy) const
 {
   TGuard Guard(FSection);
 
@@ -1841,7 +1841,7 @@ void TQueueItem::GetData(TQueueItemProxy * Proxy) const
   }
 }
 
-void TQueueItem::Execute(TTerminalItem * TerminalItem)
+void TQueueItem::Execute(TTerminalItem *TerminalItem)
 {
   {
     DebugAssert(FProgressData == nullptr);
@@ -1879,15 +1879,15 @@ intptr_t TQueueItem::GetCPSLimit() const
   return Result;
 }
 
-TQueueItem * TQueueItem::CreateParallelOperation()
+TQueueItem *TQueueItem::CreateParallelOperation()
 {
   return nullptr;
 }
 
 // TQueueItemProxy
 
-TQueueItemProxy::TQueueItemProxy(TTerminalQueue * Queue,
-  TQueueItem * QueueItem) :
+TQueueItemProxy::TQueueItemProxy(TTerminalQueue *Queue,
+  TQueueItem *QueueItem) :
   TObject(OBJECT_CLASS_TQueueItemProxy),
   FProgressData(new TFileOperationProgressType()),
   FStatus(TQueueItem::qsPending),
@@ -1907,7 +1907,7 @@ TQueueItemProxy::~TQueueItemProxy()
   SAFE_DESTROY(FInfo);
 }
 
-TFileOperationProgressType * TQueueItemProxy::GetProgressData() const
+TFileOperationProgressType *TQueueItemProxy::GetProgressData() const
 {
   return (FProgressData->GetOperation() == foNone) ? nullptr : FProgressData;
 }
@@ -1918,7 +1918,7 @@ int64_t TQueueItemProxy::GetTotalTransferred() const
   // for which GetProgressData() is nullptr
   return
     (FProgressData->GetOperation() == GetInfo()->Operation) || (GetStatus() == TQueueItem::qsDone) ?
-      FProgressData->GetTotalTransferred() : -1;
+    FProgressData->GetTotalTransferred() : -1;
 }
 
 bool TQueueItemProxy::Update()
@@ -1963,7 +1963,7 @@ bool TQueueItemProxy::Move(bool Sooner)
   return Result;
 }
 
-bool TQueueItemProxy::Move(TQueueItemProxy * BeforeItem)
+bool TQueueItemProxy::Move(TQueueItemProxy *BeforeItem)
 {
   return FQueue->ItemMove(FQueueItem, BeforeItem->FQueueItem);
 }
@@ -2006,7 +2006,7 @@ bool TQueueItemProxy::ProcessUserAction()
   return Result;
 }
 
-bool TQueueItemProxy::GetCPSLimit(intptr_t & CPSLimit) const
+bool TQueueItemProxy::GetCPSLimit(intptr_t &CPSLimit) const
 {
   return FQueue->ItemGetCPSLimit(FQueueItem, CPSLimit);
 }
@@ -2040,7 +2040,7 @@ TTerminalQueueStatus::~TTerminalQueueStatus()
 {
   for (intptr_t Index = 0; Index < FList->GetCount(); ++Index)
   {
-    TQueueItemProxy * Item = GetItem(Index);
+    TQueueItemProxy *Item = GetItem(Index);
     SAFE_DESTROY(Item);
   }
   SAFE_DESTROY(FList);
@@ -2114,7 +2114,7 @@ intptr_t TTerminalQueueStatus::GetActiveAndPendingPrimaryCount() const
   return FActiveAndPendingPrimaryCount;
 }
 
-void TTerminalQueueStatus::Add(TQueueItemProxy * ItemProxy)
+void TTerminalQueueStatus::Add(TQueueItemProxy *ItemProxy)
 {
   ItemProxy->FQueueStatus = this;
 
@@ -2136,7 +2136,7 @@ void TTerminalQueueStatus::Add(TQueueItemProxy * ItemProxy)
   ResetStats();
 }
 
-void TTerminalQueueStatus::Delete(TQueueItemProxy * ItemProxy)
+void TTerminalQueueStatus::Delete(TQueueItemProxy *ItemProxy)
 {
   FList->Extract(ItemProxy);
   ItemProxy->FQueueStatus = nullptr;
@@ -2148,22 +2148,22 @@ intptr_t TTerminalQueueStatus::GetCount() const
   return FList->GetCount();
 }
 
-TQueueItemProxy * TTerminalQueueStatus::GetItem(intptr_t Index) const
+TQueueItemProxy *TTerminalQueueStatus::GetItem(intptr_t Index) const
 {
   return const_cast<TTerminalQueueStatus *>(this)->GetItem(Index);
 }
 
-TQueueItemProxy * TTerminalQueueStatus::GetItem(intptr_t Index)
+TQueueItemProxy *TTerminalQueueStatus::GetItem(intptr_t Index)
 {
   return FList->GetAs<TQueueItemProxy>(Index);
 }
 
-TQueueItemProxy * TTerminalQueueStatus::FindByQueueItem(
-  TQueueItem * QueueItem)
+TQueueItemProxy *TTerminalQueueStatus::FindByQueueItem(
+  TQueueItem *QueueItem)
 {
   for (intptr_t Index = 0; Index < FList->GetCount(); ++Index)
   {
-    TQueueItemProxy * Item = GetItem(Index);
+    TQueueItemProxy *Item = GetItem(Index);
     DebugAssert(Item);
     if (Item->FQueueItem == QueueItem)
     {
@@ -2175,14 +2175,14 @@ TQueueItemProxy * TTerminalQueueStatus::FindByQueueItem(
 
 // TLocatedQueueItem
 
-TLocatedQueueItem::TLocatedQueueItem(TObjectClassId Kind, TTerminal * Terminal) :
+TLocatedQueueItem::TLocatedQueueItem(TObjectClassId Kind, TTerminal *Terminal) :
   TQueueItem(Kind)
 {
   DebugAssert(Terminal != nullptr);
   FCurrentDir = Terminal->RemoteGetCurrentDirectory();
 }
 
-TLocatedQueueItem::TLocatedQueueItem(const TLocatedQueueItem & Source) :
+TLocatedQueueItem::TLocatedQueueItem(const TLocatedQueueItem &Source) :
   TQueueItem(OBJECT_CLASS_TLocatedQueueItem)
 {
   FCurrentDir = Source.FCurrentDir;
@@ -2193,7 +2193,7 @@ UnicodeString TLocatedQueueItem::GetStartupDirectory() const
   return FCurrentDir;
 }
 
-void TLocatedQueueItem::DoExecute(TTerminal * Terminal)
+void TLocatedQueueItem::DoExecute(TTerminal *Terminal)
 {
   DebugAssert(Terminal != nullptr);
   if (Terminal)
@@ -2202,9 +2202,9 @@ void TLocatedQueueItem::DoExecute(TTerminal * Terminal)
 
 // TTransferQueueItem
 
-TTransferQueueItem::TTransferQueueItem(TObjectClassId Kind, TTerminal * Terminal,
-  const TStrings * AFilesToCopy, UnicodeString TargetDir,
-  const TCopyParamType * CopyParam, intptr_t Params, TOperationSide Side,
+TTransferQueueItem::TTransferQueueItem(TObjectClassId Kind, TTerminal *Terminal,
+  const TStrings *AFilesToCopy, UnicodeString TargetDir,
+  const TCopyParamType *CopyParam, intptr_t Params, TOperationSide Side,
   bool SingleFile, bool Parallel) :
   TLocatedQueueItem(Kind, Terminal),
   FFilesToCopy(new TStringList()),
@@ -2226,7 +2226,7 @@ TTransferQueueItem::TTransferQueueItem(TObjectClassId Kind, TTerminal * Terminal
   {
     FFilesToCopy->AddObject(AFilesToCopy->GetString(Index),
       ((AFilesToCopy->GetObj(Index) == nullptr) || (Side == osLocal)) ? nullptr :
-        AFilesToCopy->GetAs<TRemoteFile>(Index)->Duplicate());
+      AFilesToCopy->GetAs<TRemoteFile>(Index)->Duplicate());
   }
 
   FTargetDir = TargetDir;
@@ -2247,7 +2247,7 @@ TTransferQueueItem::~TTransferQueueItem()
 {
   for (intptr_t Index = 0; Index < FFilesToCopy->GetCount(); ++Index)
   {
-    TObject * Object = FFilesToCopy->GetObj(Index);
+    TObject *Object = FFilesToCopy->GetObj(Index);
     SAFE_DESTROY(Object);
   }
   SAFE_DESTROY(FFilesToCopy);
@@ -2259,7 +2259,7 @@ intptr_t TTransferQueueItem::DefaultCPSLimit() const
   return FCopyParam->GetCPSLimit();
 }
 
-void TTransferQueueItem::DoExecute(TTerminal * Terminal)
+void TTransferQueueItem::DoExecute(TTerminal *Terminal)
 {
   TLocatedQueueItem::DoExecute(Terminal);
 
@@ -2329,7 +2329,7 @@ void TTransferQueueItem::ProgressUpdated()
   }
 }
 
-TQueueItem * TTransferQueueItem::CreateParallelOperation()
+TQueueItem *TTransferQueueItem::CreateParallelOperation()
 {
   DebugAssert(FParallelOperation != nullptr);
 
@@ -2339,9 +2339,9 @@ TQueueItem * TTransferQueueItem::CreateParallelOperation()
 
 // TUploadQueueItem
 
-TUploadQueueItem::TUploadQueueItem(TTerminal * Terminal,
-  const TStrings * AFilesToCopy, UnicodeString TargetDir,
-  const TCopyParamType * CopyParam, intptr_t Params, bool SingleFile, bool Parallel) :
+TUploadQueueItem::TUploadQueueItem(TTerminal *Terminal,
+  const TStrings *AFilesToCopy, UnicodeString TargetDir,
+  const TCopyParamType *CopyParam, intptr_t Params, bool SingleFile, bool Parallel) :
   TTransferQueueItem(OBJECT_CLASS_TUploadQueueItem, Terminal, AFilesToCopy, TargetDir, CopyParam, Params, osLocal, SingleFile, Parallel)
 {
   if (AFilesToCopy->GetCount() > 1)
@@ -2381,7 +2381,7 @@ TUploadQueueItem::TUploadQueueItem(TTerminal * Terminal,
   FInfo->ModifiedRemote = base::UnixIncludeTrailingBackslash(TargetDir);
 }
 
-void TUploadQueueItem::DoTransferExecute(TTerminal * Terminal, TParallelOperation * ParallelOperation)
+void TUploadQueueItem::DoTransferExecute(TTerminal *Terminal, TParallelOperation *ParallelOperation)
 {
   Terminal->CopyToRemote(FFilesToCopy, FTargetDir, FCopyParam, FParams, ParallelOperation);
 }
@@ -2389,7 +2389,7 @@ void TUploadQueueItem::DoTransferExecute(TTerminal * Terminal, TParallelOperatio
 // TParallelTransferQueueItem
 
 TParallelTransferQueueItem::TParallelTransferQueueItem(
-    const TLocatedQueueItem * ParentItem, TParallelOperation * ParallelOperation) :
+  const TLocatedQueueItem *ParentItem, TParallelOperation *ParallelOperation) :
   TLocatedQueueItem(*ParentItem),
   FParallelOperation(ParallelOperation)
 {
@@ -2403,7 +2403,7 @@ TParallelTransferQueueItem::TParallelTransferQueueItem(
   FInfo->GroupToken = ParentItem->FInfo->GroupToken;
 }
 
-void TParallelTransferQueueItem::DoExecute(TTerminal * Terminal)
+void TParallelTransferQueueItem::DoExecute(TTerminal *Terminal)
 {
   TLocatedQueueItem::DoExecute(Terminal);
 
@@ -2454,9 +2454,9 @@ void TParallelTransferQueueItem::DoExecute(TTerminal * Terminal)
 
 // TDownloadQueueItem
 
-TDownloadQueueItem::TDownloadQueueItem(TTerminal * Terminal,
-  const TStrings * AFilesToCopy, UnicodeString TargetDir,
-  const TCopyParamType * CopyParam, intptr_t Params, bool SingleFile, bool Parallel) :
+TDownloadQueueItem::TDownloadQueueItem(TTerminal *Terminal,
+  const TStrings *AFilesToCopy, UnicodeString TargetDir,
+  const TCopyParamType *CopyParam, intptr_t Params, bool SingleFile, bool Parallel) :
   TTransferQueueItem(OBJECT_CLASS_TDownloadQueueItem, Terminal, AFilesToCopy, TargetDir, CopyParam, Params, osRemote, SingleFile, Parallel)
 {
   if (AFilesToCopy->GetCount() > 1)
@@ -2499,7 +2499,7 @@ TDownloadQueueItem::TDownloadQueueItem(TTerminal * Terminal,
   FInfo->ModifiedLocal = ::IncludeTrailingBackslash(TargetDir);
 }
 
-void TDownloadQueueItem::DoTransferExecute(TTerminal * Terminal, TParallelOperation * ParallelOperation)
+void TDownloadQueueItem::DoTransferExecute(TTerminal *Terminal, TParallelOperation *ParallelOperation)
 {
   DebugAssert(Terminal != nullptr);
   Terminal->CopyToLocal(FFilesToCopy, FTargetDir, FCopyParam, FParams, ParallelOperation);
@@ -2507,7 +2507,7 @@ void TDownloadQueueItem::DoTransferExecute(TTerminal * Terminal, TParallelOperat
 
 // TTerminalThread
 
-TTerminalThread::TTerminalThread(TTerminal * Terminal) :
+TTerminalThread::TTerminalThread(TTerminal *Terminal) :
   TSignalThread(OBJECT_CLASS_TTerminalThread, false),
   FTerminal(Terminal),
   FOnInformation(nullptr),
@@ -2655,32 +2655,32 @@ void TTerminalThread::RunAction(TNotifyEvent Action)
           break;
 
         case WAIT_TIMEOUT:
+        {
+          if (FUserAction != nullptr)
           {
-            if (FUserAction != nullptr)
+            try
             {
-              try
-              {
-                FUserAction->Execute(nullptr);
-              }
-              catch (Exception & E)
-              {
-                SaveException(E, FException);
-              }
+              FUserAction->Execute(nullptr);
+            }
+            catch (Exception &E)
+            {
+              SaveException(E, FException);
+            }
 
-              FUserAction = nullptr;
-              TriggerEvent();
-              Wait = 0;
-            }
-            else
-            {
-              if (FOnIdle != nullptr)
-              {
-                FOnIdle(nullptr);
-              }
-              Wait = Min(Wait + 10, MaxWait);
-            }
+            FUserAction = nullptr;
+            TriggerEvent();
+            Wait = 0;
           }
-          break;
+          else
+          {
+            if (FOnIdle != nullptr)
+            {
+              FOnIdle(nullptr);
+            }
+            Wait = Min(Wait + 10, MaxWait);
+          }
+        }
+        break;
 
         default:
           throw Exception(L"Error waiting for background session task to complete");
@@ -2734,7 +2734,7 @@ void TTerminalThread::ProcessEvent()
   {
     FAction(nullptr);
   }
-  catch (Exception & E)
+  catch (Exception &E)
   {
     SaveException(E, FException);
   }
@@ -2742,7 +2742,7 @@ void TTerminalThread::ProcessEvent()
   ::SetEvent(FActionEvent);
 }
 
-void TTerminalThread::Rethrow(Exception *& AException)
+void TTerminalThread::Rethrow(Exception *&AException)
 {
   if (AException != nullptr)
   {
@@ -2763,7 +2763,7 @@ void TTerminalThread::Rethrow(Exception *& AException)
   }
 }
 
-void TTerminalThread::SaveException(Exception & E, Exception *& Exception)
+void TTerminalThread::SaveException(Exception &E, Exception *&Exception)
 {
   DebugAssert(Exception == nullptr);
 
@@ -2784,7 +2784,7 @@ void TTerminalThread::CheckCancel()
   }
 }
 
-void TTerminalThread::WaitForUserAction(TUserAction * UserAction)
+void TTerminalThread::WaitForUserAction(TUserAction *UserAction)
 {
   DWORD Thread = GetCurrentThreadId();
   // we can get called from the main thread from within Idle,
@@ -2811,7 +2811,7 @@ void TTerminalThread::WaitForUserAction(TUserAction * UserAction)
 
     // have to save it as we can go recursive via TQueryParams::TimerEvent,
     // see TTerminalThread::TerminalQueryUser
-    TUserAction * PrevUserAction = FUserAction;
+    TUserAction *PrevUserAction = FUserAction;
     try__finally
     {
       SCOPE_EXIT
@@ -2838,7 +2838,7 @@ void TTerminalThread::WaitForUserAction(TUserAction * UserAction)
             {
               FTerminal->Idle();
             }
-            catch (Exception & E)
+            catch (Exception &E)
             {
               SaveException(E, FIdleException);
             }
@@ -2887,7 +2887,7 @@ void TTerminalThread::WaitForUserAction(TUserAction * UserAction)
 }
 
 void TTerminalThread::TerminalInformation(
-  TTerminal * Terminal, UnicodeString Str, bool Status, intptr_t Phase)
+  TTerminal *Terminal, UnicodeString Str, bool Status, intptr_t Phase)
 {
   TInformationUserAction Action(FOnInformation);
   Action.Terminal = Terminal;
@@ -2898,9 +2898,9 @@ void TTerminalThread::TerminalInformation(
   WaitForUserAction(&Action);
 }
 
-void TTerminalThread::TerminalQueryUser(TObject * Sender,
-  UnicodeString AQuery, TStrings * MoreMessages, uintptr_t Answers,
-  const TQueryParams * Params, uintptr_t & Answer, TQueryType Type, void * Arg)
+void TTerminalThread::TerminalQueryUser(TObject *Sender,
+  UnicodeString AQuery, TStrings *MoreMessages, uintptr_t Answers,
+  const TQueryParams *Params, uintptr_t &Answer, TQueryType Type, void *Arg)
 {
   DebugUsedParam(Arg);
   DebugAssert(Arg == nullptr);
@@ -2928,7 +2928,7 @@ void TTerminalThread::TerminalQueryUser(TObject * Sender,
   Answer = Action.Answer;
 }
 
-void TTerminalThread::TerminalInitializeLog(TObject * Sender)
+void TTerminalThread::TerminalInitializeLog(TObject *Sender)
 {
   if (FOnInitializeLog != nullptr)
   {
@@ -2941,9 +2941,9 @@ void TTerminalThread::TerminalInitializeLog(TObject * Sender)
   }
 }
 
-void TTerminalThread::TerminalPromptUser(TTerminal * Terminal,
-  TPromptKind Kind, UnicodeString Name, UnicodeString Instructions, TStrings * Prompts,
-  TStrings * Results, bool & Result, void * Arg)
+void TTerminalThread::TerminalPromptUser(TTerminal *Terminal,
+  TPromptKind Kind, UnicodeString Name, UnicodeString Instructions, TStrings *Prompts,
+  TStrings *Results, bool &Result, void *Arg)
 {
   DebugUsedParam(Arg);
   DebugAssert(Arg == nullptr);
@@ -2964,7 +2964,7 @@ void TTerminalThread::TerminalPromptUser(TTerminal * Terminal,
 }
 
 void TTerminalThread::TerminalShowExtendedException(
-  TTerminal * Terminal, Exception * E, void * Arg)
+  TTerminal *Terminal, Exception *E, void *Arg)
 {
   DebugUsedParam(Arg);
   DebugAssert(Arg == nullptr);
@@ -2976,9 +2976,9 @@ void TTerminalThread::TerminalShowExtendedException(
   WaitForUserAction(&Action);
 }
 
-void TTerminalThread::TerminalDisplayBanner(TTerminal * Terminal,
+void TTerminalThread::TerminalDisplayBanner(TTerminal *Terminal,
   UnicodeString SessionName, UnicodeString Banner,
-  bool & NeverShowAgain, intptr_t Options)
+  bool &NeverShowAgain, intptr_t Options)
 {
   TDisplayBannerAction Action(FOnDisplayBanner);
   Action.Terminal = Terminal;
@@ -2992,7 +2992,7 @@ void TTerminalThread::TerminalDisplayBanner(TTerminal * Terminal,
   NeverShowAgain = Action.NeverShowAgain;
 }
 
-void TTerminalThread::TerminalChangeDirectory(TObject * Sender)
+void TTerminalThread::TerminalChangeDirectory(TObject *Sender)
 {
   TNotifyAction Action(FOnChangeDirectory);
   Action.Sender = Sender;
@@ -3000,7 +3000,7 @@ void TTerminalThread::TerminalChangeDirectory(TObject * Sender)
   WaitForUserAction(&Action);
 }
 
-void TTerminalThread::TerminalReadDirectory(TObject * Sender, Boolean ReloadOnly)
+void TTerminalThread::TerminalReadDirectory(TObject *Sender, Boolean ReloadOnly)
 {
   TReadDirectoryAction Action(FOnReadDirectory);
   Action.Sender = Sender;
@@ -3009,7 +3009,7 @@ void TTerminalThread::TerminalReadDirectory(TObject * Sender, Boolean ReloadOnly
   WaitForUserAction(&Action);
 }
 
-void TTerminalThread::TerminalStartReadDirectory(TObject * Sender)
+void TTerminalThread::TerminalStartReadDirectory(TObject *Sender)
 {
   TNotifyAction Action(FOnStartReadDirectory);
   Action.Sender = Sender;
@@ -3018,7 +3018,7 @@ void TTerminalThread::TerminalStartReadDirectory(TObject * Sender)
 }
 
 void TTerminalThread::TerminalReadDirectoryProgress(
-  TObject * Sender, intptr_t Progress, intptr_t ResolvedLinks, bool & Cancel)
+  TObject *Sender, intptr_t Progress, intptr_t ResolvedLinks, bool &Cancel)
 {
   TReadDirectoryProgressAction Action(FOnReadDirectoryProgress);
   Action.Sender = Sender;

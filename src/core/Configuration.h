@@ -12,8 +12,8 @@
 
 #define CONST_DEFAULT_NUMBER_OF_RETRIES 2
 
-extern const wchar_t * AutoSwitchNames;
-extern const wchar_t * NotAutoSwitchNames;
+extern const wchar_t *AutoSwitchNames;
+extern const wchar_t *NotAutoSwitchNames;
 enum TAutoSwitch { asOn, asOff, asAuto }; // Has to match PuTTY FORCE_ON, FORCE_OFF, AUTO
 
 enum TFtpEncryptionSwitch_219
@@ -28,9 +28,9 @@ class TStoredSessionList;
 
 class NB_CORE_EXPORT TConfiguration : public TObject
 {
-NB_DISABLE_COPY(TConfiguration)
+  NB_DISABLE_COPY(TConfiguration)
 public:
-  static inline bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TConfiguration); }
+  static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TConfiguration); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TConfiguration) || TObject::is(Kind); }
 private:
   bool FDontSave;
@@ -38,7 +38,7 @@ private:
   intptr_t FUpdating;
   TNotifyEvent FOnChange;
 
-  mutable void * FApplicationInfo;
+  mutable void *FApplicationInfo;
   // TUsage * FUsage;
   bool FLogging;
   bool FPermanentLogging;
@@ -91,14 +91,14 @@ private:
   bool FDefaultCollectUsage;
 
 public:
-  TVSFixedFileInfo * GetFixedApplicationInfo() const;
-  void * GetApplicationInfo() const;
+  TVSFixedFileInfo *GetFixedApplicationInfo() const;
+  void *GetApplicationInfo() const;
   virtual UnicodeString GetProductVersion() const;
   UnicodeString GetVersion();
   UnicodeString GetFileProductVersion() const;
   UnicodeString GetProductName() const;
   UnicodeString GetCompanyName() const;
-  UnicodeString GetFileVersion(TVSFixedFileInfo * Info);
+  UnicodeString GetFileVersion(TVSFixedFileInfo *Info);
   UnicodeString GetStoredSessionsSubKey() const;
   UnicodeString GetPuttySessionsKey() const;
   void SetRandomSeedFile(UnicodeString Value);
@@ -134,8 +134,8 @@ public:
   UnicodeString GetIniFileStorageName(bool ReadingOnly);
 #endif // #if 0
   void SetIniFileStorageName(UnicodeString Value);
-  void SetOptionsStorage(TStrings * Value);
-  TStrings * GetOptionsStorage();
+  void SetOptionsStorage(TStrings *Value);
+  TStrings *GetOptionsStorage();
   UnicodeString GetPartialExt() const;
   UnicodeString GetFileInfoString(UnicodeString Key) const;
   void SetSessionReopenAuto(intptr_t Value);
@@ -168,11 +168,11 @@ protected:
 public:
   virtual TStorage GetStorage() const;
   virtual void Changed() override;
-  virtual void SaveData(THierarchicalStorage * Storage, bool All);
-  virtual void LoadData(THierarchicalStorage * Storage);
-  virtual void LoadFrom(THierarchicalStorage * Storage);
-  virtual void CopyData(THierarchicalStorage * Source, THierarchicalStorage * Target);
-  virtual void LoadAdmin(THierarchicalStorage * Storage);
+  virtual void SaveData(THierarchicalStorage *Storage, bool All);
+  virtual void LoadData(THierarchicalStorage *Storage);
+  virtual void LoadFrom(THierarchicalStorage *Storage);
+  virtual void CopyData(THierarchicalStorage *Source, THierarchicalStorage *Target);
+  virtual void LoadAdmin(THierarchicalStorage *Storage);
   virtual UnicodeString GetDefaultKeyFile() const;
   virtual void Saved();
   void CleanupRegistry(UnicodeString CleanupSubKey);
@@ -197,7 +197,7 @@ public:
 
   UnicodeString GetFileFileInfoString(const UnicodeString AKey,
     const UnicodeString AFileName, bool AllowEmpty = false) const;
-  void * GetFileApplicationInfo(const UnicodeString AFileName) const;
+  void *GetFileApplicationInfo(const UnicodeString AFileName) const;
   UnicodeString GetFileProductVersion(const UnicodeString AFileName) const;
   UnicodeString GetFileProductName(const UnicodeString AFileName) const;
   UnicodeString GetFileCompanyName(const UnicodeString AFileName) const;
@@ -219,7 +219,7 @@ public:
   virtual ~TConfiguration();
   virtual void Default();
   virtual void UpdateStaticUsage();
-  void Load(THierarchicalStorage * Storage);
+  void Load(THierarchicalStorage *Storage);
   void Save();
   void SaveExplicit();
   void MoveStorage(TStorage AStorage, UnicodeString ACustomIniFileStorageName);
@@ -238,15 +238,15 @@ public:
   void EndUpdate();
   void DontSave();
   void LoadDirectoryChangesCache(const UnicodeString SessionKey,
-    TRemoteDirectoryChangesCache * DirectoryChangesCache);
+    TRemoteDirectoryChangesCache *DirectoryChangesCache);
   void SaveDirectoryChangesCache(const UnicodeString SessionKey,
-    TRemoteDirectoryChangesCache * DirectoryChangesCache);
+    TRemoteDirectoryChangesCache *DirectoryChangesCache);
   bool ShowBanner(const UnicodeString SessionKey, UnicodeString Banner);
   void NeverShowBanner(const UnicodeString SessionKey, UnicodeString Banner);
   void RememberLastFingerprint(UnicodeString SiteKey, UnicodeString FingerprintType, UnicodeString Fingerprint);
   UnicodeString GetLastFingerprint(UnicodeString SiteKey, UnicodeString FingerprintType);
-  virtual THierarchicalStorage * CreateConfigStorage();
-  virtual THierarchicalStorage * CreateStorage(bool & SessionList);
+  virtual THierarchicalStorage *CreateConfigStorage();
+  virtual THierarchicalStorage *CreateStorage(bool &SessionList);
   void TemporaryLogging(const UnicodeString ALogFileName);
   void TemporaryActionsLogging(const UnicodeString ALogFileName);
   void TemporaryLogProtocol(intptr_t ALogProtocol);
@@ -259,13 +259,13 @@ public:
   UnicodeString GetFileDescription(UnicodeString AFileName) const;
   UnicodeString GetFileVersion(UnicodeString AFileName);
 
-  TStoredSessionList * SelectFilezillaSessionsForImport(
-    TStoredSessionList * Sessions, UnicodeString & Error);
-  bool AnyFilezillaSessionForImport(TStoredSessionList * Sessions);
-  TStoredSessionList * SelectKnownHostsSessionsForImport(
-    TStoredSessionList * Sessions, UnicodeString & Error);
-  TStoredSessionList * SelectKnownHostsSessionsForImport(
-    TStrings * Lines, TStoredSessionList * Sessions, UnicodeString & Error);
+  TStoredSessionList *SelectFilezillaSessionsForImport(
+    TStoredSessionList *Sessions, UnicodeString &Error);
+  bool AnyFilezillaSessionForImport(TStoredSessionList *Sessions);
+  TStoredSessionList *SelectKnownHostsSessionsForImport(
+    TStoredSessionList *Sessions, UnicodeString &Error);
+  TStoredSessionList *SelectKnownHostsSessionsForImport(
+    TStrings *Lines, TStoredSessionList *Sessions, UnicodeString &Error);
 
 #if 0
   __property TVSFixedFileInfo *FixedApplicationInfo  = { read=GetFixedApplicationInfo };
@@ -368,8 +368,8 @@ public:
 class NB_CORE_EXPORT TShortCuts : public TObject
 {
 public:
-  void Add(const TShortCut & ShortCut);
-  bool Has(const TShortCut & ShortCut) const;
+  void Add(const TShortCut &ShortCut);
+  bool Has(const TShortCut &ShortCut) const;
 
 private:
   rde::vector<TShortCut> FShortCuts;

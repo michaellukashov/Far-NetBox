@@ -13,7 +13,7 @@
 #endif
 #include "WebDAVFileSystem.h"
 
-TStoredSessionList * StoredSessions = nullptr;
+TStoredSessionList *StoredSessions = nullptr;
 
 TQueryButtonAlias::TQueryButtonAlias() :
   Button(0),
@@ -42,17 +42,17 @@ TQueryParams::TQueryParams(uintptr_t AParams, UnicodeString AHelpKeyword) :
 {
 }
 
-TQueryParams::TQueryParams(const TQueryParams & Source)
+TQueryParams::TQueryParams(const TQueryParams &Source)
 {
   Assign(Source);
 }
 
-void TQueryParams::Assign(const TQueryParams & Source)
+void TQueryParams::Assign(const TQueryParams &Source)
 {
   *this = Source;
 }
 
-TQueryParams & TQueryParams::operator=(const TQueryParams & other)
+TQueryParams &TQueryParams::operator=(const TQueryParams &other)
 {
   Params = other.Params;
   Aliases = other.Aliases;
@@ -77,24 +77,24 @@ bool IsAuthenticationPrompt(TPromptKind Kind)
     (Kind == pkPassword) || (Kind == pkNewPassword);
 }
 
-bool IsPasswordOrPassphrasePrompt(TPromptKind Kind, TStrings * Prompts)
+bool IsPasswordOrPassphrasePrompt(TPromptKind Kind, TStrings *Prompts)
 {
   return
     (Prompts->GetCount() == 1) && FLAGCLEAR(ToIntPtr(Prompts->GetObj(0)), pupEcho) &&
     ((Kind == pkPassword) || (Kind == pkPassphrase) || (Kind == pkKeybInteractive) ||
-     (Kind == pkTIS) || (Kind == pkCryptoCard));
+      (Kind == pkTIS) || (Kind == pkCryptoCard));
 }
 
-bool IsPasswordPrompt(TPromptKind Kind, TStrings * Prompts)
+bool IsPasswordPrompt(TPromptKind Kind, TStrings *Prompts)
 {
   return
     IsPasswordOrPassphrasePrompt(Kind, Prompts) &&
     (Kind != pkPassphrase);
 }
 
-TConfiguration * GetConfiguration()
+TConfiguration *GetConfiguration()
 {
-  static TConfiguration * Configuration = nullptr;
+  static TConfiguration *Configuration = nullptr;
   if (Configuration == nullptr)
   {
     Configuration = CreateConfiguration();
@@ -107,7 +107,7 @@ void DeleteConfiguration()
   static bool ConfigurationDeleted = false;
   if (!ConfigurationDeleted)
   {
-    TConfiguration * Conf = GetConfiguration();
+    TConfiguration *Conf = GetConfiguration();
     SAFE_DESTROY(Conf);
     ConfigurationDeleted = true;
   }
@@ -117,7 +117,7 @@ void CoreLoad()
 {
   bool SessionList = false;
   std::unique_ptr<THierarchicalStorage> SessionsStorage(GetConfiguration()->CreateStorage(SessionList));
-  THierarchicalStorage * ConfigStorage;
+  THierarchicalStorage *ConfigStorage;
   std::unique_ptr<THierarchicalStorage> ConfigStorageAuto;
   if (!SessionList)
   {
@@ -136,7 +136,7 @@ void CoreLoad()
   {
     GetConfiguration()->Load(ConfigStorage);
   }
-  catch (Exception & E)
+  catch (Exception &E)
   {
     ShowExtendedException(&E);
   }
@@ -153,7 +153,7 @@ void CoreLoad()
       StoredSessions->Load(SessionsStorage.get());
     }
   }
-  catch (Exception & E)
+  catch (Exception &E)
   {
     ShowExtendedException(&E);
   }
@@ -186,7 +186,7 @@ void CoreFinalize()
   {
     GetConfiguration()->Save();
   }
-  catch (Exception & E)
+  catch (Exception &E)
   {
     ShowExtendedException(&E);
   }
@@ -204,7 +204,7 @@ void CoreFinalize()
   WinFinalize();
 }
 
-void CoreSetResourceModule(void * ResourceHandle)
+void CoreSetResourceModule(void *ResourceHandle)
 {
 #ifndef NO_FILEZILLA
   TFileZillaIntf::SetResourceModule(ResourceHandle);

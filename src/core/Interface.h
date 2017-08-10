@@ -25,39 +25,39 @@
 #define NONEWERONLY_SWICH L"noneweronly"
 #define DELETE_SWITCH L"delete"
 #define REFRESH_SWITCH L"refresh"
-extern const wchar_t * TransferModeNames[];
+extern const wchar_t *TransferModeNames[];
 extern const int TransferModeNamesCount;
-extern const wchar_t * ToggleNames[];
+extern const wchar_t *ToggleNames[];
 enum TToggle { ToggleOff, ToggleOn };
 
 #if defined(FARPLUGIN)
 
-NB_CORE_EXPORT TConfiguration * CreateConfiguration();
+NB_CORE_EXPORT TConfiguration *CreateConfiguration();
 class TOptions;
-NB_CORE_EXPORT TOptions * GetGlobalOptions();
+NB_CORE_EXPORT TOptions *GetGlobalOptions();
 
 #endif // FARPLUGIN
 
-NB_CORE_EXPORT void ShowExtendedException(Exception * E);
-NB_CORE_EXPORT bool AppendExceptionStackTraceAndForget(TStrings *& MoreMessages);
+NB_CORE_EXPORT void ShowExtendedException(Exception *E);
+NB_CORE_EXPORT bool AppendExceptionStackTraceAndForget(TStrings *&MoreMessages);
 #if 0
-void IgnoreException(const std::type_info & ExceptionType);
+void IgnoreException(const std::type_info &ExceptionType);
 UnicodeString GetExceptionDebugInfo();
 #endif // #if 0
 
 NB_CORE_EXPORT UnicodeString GetCompanyRegistryKey();
 NB_CORE_EXPORT UnicodeString GetRegistryKey();
-NB_CORE_EXPORT void * BusyStart();
-NB_CORE_EXPORT void BusyEnd(void * Token);
+NB_CORE_EXPORT void *BusyStart();
+NB_CORE_EXPORT void BusyEnd(void *Token);
 NB_CORE_EXPORT extern const uint32_t GUIUpdateInterval;
 NB_CORE_EXPORT void SetNoGUI();
 NB_CORE_EXPORT bool ProcessGUI(bool Force = false);
 NB_CORE_EXPORT UnicodeString GetAppNameString();
 NB_CORE_EXPORT UnicodeString GetSshVersionString();
 NB_CORE_EXPORT void CopyToClipboard(UnicodeString Text);
-NB_CORE_EXPORT HANDLE StartThread(void * SecurityAttributes, DWORD StackSize,
-  /*TThreadFunc ThreadFunc,*/ void * Parameter, DWORD CreationFlags,
-  TThreadID & ThreadId);
+NB_CORE_EXPORT HANDLE StartThread(void *SecurityAttributes, DWORD StackSize,
+  /*TThreadFunc ThreadFunc,*/ void *Parameter, DWORD CreationFlags,
+  TThreadID &ThreadId);
 
 NB_CORE_EXPORT void WinInitialize();
 NB_CORE_EXPORT void WinFinalize();
@@ -108,7 +108,7 @@ struct NB_CORE_EXPORT TQueryButtonAlias : public TObject
 };
 
 #if 0
-typedef void (__closure *TQueryParamsTimerEvent)(uintptr_t & Result);
+typedef void (__closure *TQueryParamsTimerEvent)(uintptr_t &Result);
 #endif // #if 0
 typedef nb::FastDelegate1<void, intptr_t & /*Result*/> TQueryParamsTimerEvent;
 
@@ -126,11 +126,11 @@ enum TQueryType
 struct NB_CORE_EXPORT TQueryParams : public TObject
 {
   explicit TQueryParams(uintptr_t AParams = 0, UnicodeString AHelpKeyword = HELP_NONE);
-  explicit TQueryParams(const TQueryParams & Source);
+  explicit TQueryParams(const TQueryParams &Source);
 
-  void Assign(const TQueryParams & Source);
+  void Assign(const TQueryParams &Source);
 
-  const TQueryButtonAlias * Aliases;
+  const TQueryButtonAlias *Aliases;
   uintptr_t AliasesCount;
   uintptr_t Params;
   uintptr_t Timer;
@@ -144,7 +144,7 @@ struct NB_CORE_EXPORT TQueryParams : public TObject
   UnicodeString HelpKeyword;
 
 public:
-  TQueryParams & operator=(const TQueryParams & other);
+  TQueryParams &operator=(const TQueryParams &other);
 
 private:
   // NB_DISABLE_COPY(TQueryParams)
@@ -170,8 +170,8 @@ enum TPromptUserParam
 };
 
 NB_CORE_EXPORT bool IsAuthenticationPrompt(TPromptKind Kind);
-NB_CORE_EXPORT bool IsPasswordOrPassphrasePrompt(TPromptKind Kind, TStrings * Prompts);
-NB_CORE_EXPORT bool IsPasswordPrompt(TPromptKind Kind, TStrings * Prompts);
+NB_CORE_EXPORT bool IsPasswordOrPassphrasePrompt(TPromptKind Kind, TStrings *Prompts);
+NB_CORE_EXPORT bool IsPasswordPrompt(TPromptKind Kind, TStrings *Prompts);
 
 class TTerminal;
 class TRemoteFile;
@@ -194,14 +194,14 @@ typedef nb::FastDelegate3<void,
 
 class NB_CORE_EXPORT TOperationVisualizer
 {
-NB_DISABLE_COPY(TOperationVisualizer)
+  NB_DISABLE_COPY(TOperationVisualizer)
 public:
   explicit TOperationVisualizer(bool UseBusyCursor = true);
   ~TOperationVisualizer();
 
 private:
   bool FUseBusyCursor;
-  void * FToken;
+  void *FToken;
 };
 
 class NB_CORE_EXPORT TInstantOperationVisualizer : public TOperationVisualizer
@@ -216,7 +216,7 @@ private:
 
 struct TClipboardHandler
 {
-NB_DISABLE_COPY(TClipboardHandler)
+  NB_DISABLE_COPY(TClipboardHandler)
 public:
   TClipboardHandler() {}
 
