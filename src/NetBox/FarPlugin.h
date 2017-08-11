@@ -80,16 +80,16 @@ public:
 
 enum NetBoxSystemSettings
 {
-    NBSS_DELETETORECYCLEBIN             = 0x00000002,
-    // NBSS_USESYSTEMCOPYROUTINE           = 0x00000004,
-    // NBSS_COPYFILESOPENEDFORWRITING      = 0x00000008,
-    // NBSS_CREATEFOLDERSINUPPERCASE       = 0x00000010,
-    // NBSS_SAVECOMMANDSHISTORY            = 0x00000020,
-    // NBSS_SAVEFOLDERSHISTORY             = 0x00000040,
-    // NBSS_SAVEVIEWANDEDITHISTORY         = 0x00000080,
-    // NBSS_USEWINDOWSREGISTEREDTYPES      = 0x00000100,
-    // NBSS_AUTOSAVESETUP                  = 0x00000200,
-    // NBSS_SCANSYMLINK                    = 0x00000400,
+  NBSS_DELETETORECYCLEBIN             = 0x00000002,
+  // NBSS_USESYSTEMCOPYROUTINE           = 0x00000004,
+  // NBSS_COPYFILESOPENEDFORWRITING      = 0x00000008,
+  // NBSS_CREATEFOLDERSINUPPERCASE       = 0x00000010,
+  // NBSS_SAVECOMMANDSHISTORY            = 0x00000020,
+  // NBSS_SAVEFOLDERSHISTORY             = 0x00000040,
+  // NBSS_SAVEVIEWANDEDITHISTORY         = 0x00000080,
+  // NBSS_USEWINDOWSREGISTEREDTYPES      = 0x00000100,
+  // NBSS_AUTOSAVESETUP                  = 0x00000200,
+  // NBSS_SCANSYMLINK                    = 0x00000400,
 };
 
 class TGlobalFunctions;
@@ -118,7 +118,7 @@ public:
   virtual void *OpenPlugin(const struct OpenInfo *Info);
   virtual void ClosePanel(void *Plugin);
   virtual void GetOpenPanelInfo(struct OpenPanelInfo *Info);
-  virtual intptr_t GetFindData(struct GetFindDataInfo * Info);
+  virtual intptr_t GetFindData(struct GetFindDataInfo *Info);
   virtual void FreeFindData(const struct FreeFindDataInfo *Info);
   virtual intptr_t ProcessHostFile(const struct ProcessHostFileInfo *Info);
   virtual intptr_t ProcessPanelInput(const struct ProcessPanelInputInfo *Info);
@@ -130,7 +130,7 @@ public:
   virtual intptr_t PutFiles(const struct PutFilesInfo *Info);
   virtual intptr_t ProcessEditorEvent(const struct ProcessEditorEventInfo *Info);
   virtual intptr_t ProcessEditorInput(const struct ProcessEditorInputInfo *Info);
-  virtual void HandleException(Exception * E, OPERATION_MODES OpMode = 0);
+  virtual void HandleException(Exception *E, OPERATION_MODES OpMode = 0);
 
   static wchar_t *DuplicateStr(UnicodeString Str, bool AllowEmpty = false);
   intptr_t Message(uintptr_t Flags, UnicodeString Title,
@@ -147,7 +147,7 @@ public:
     UnicodeString Bottom, const FarMenuItem *Items, intptr_t Count,
     const FarKey *BreakKeys, intptr_t &BreakCode);
   bool InputBox(UnicodeString Title, UnicodeString Prompt,
-    UnicodeString & Text, PLUGINPANELITEMFLAGS Flags, UnicodeString HistoryName = L"",
+    UnicodeString &Text, PLUGINPANELITEMFLAGS Flags, UnicodeString HistoryName = L"",
     intptr_t MaxLen = 255, TFarInputBoxValidateEvent OnValidate = nullptr);
   UnicodeString GetMsg(intptr_t MsgId) const;
   void SaveScreen(HANDLE &Screen);
@@ -155,7 +155,7 @@ public:
   bool CheckForEsc() const;
   bool Viewer(UnicodeString AFileName, UnicodeString Title, VIEWER_FLAGS Flags);
   bool Editor(UnicodeString AFileName, UnicodeString Title, EDITOR_FLAGS Flags);
-  intptr_t FarControl(FILE_CONTROL_COMMANDS Command, intptr_t Param1, void * Param2, HANDLE Plugin = INVALID_HANDLE_VALUE);
+  intptr_t FarControl(FILE_CONTROL_COMMANDS Command, intptr_t Param1, void *Param2, HANDLE Plugin = INVALID_HANDLE_VALUE);
   intptr_t FarAdvControl(ADVANCED_CONTROL_COMMANDS Command, intptr_t Param1, void *Param2 = nullptr) const;
   intptr_t FarEditorControl(EDITOR_CONTROL_COMMANDS Command, intptr_t Param1, void *Param2) const;
   intptr_t GetFarSystemSettings() const;
@@ -189,7 +189,7 @@ public:
   HINSTANCE GetHandle() const { return FHandle; }
   uintptr_t GetFarThreadId() const { return FFarThreadId; }
   FarStandardFunctions &GetFarStandardFunctions() { return FFarStandardFunctions; }
-  const struct PluginStartupInfo * GetStartupInfo() const { return &FStartupInfo; }
+  const struct PluginStartupInfo *GetStartupInfo() const { return &FStartupInfo; }
 
 protected:
   TGlobalsIntfInitializer<TGlobalFunctions> FGlobalsIntfInitializer;
@@ -236,7 +236,7 @@ public:
 #endif
 private:
   void UpdateProgress(intptr_t State, intptr_t Progress) const;
-  __int64 GetSystemSetting(HANDLE & Settings, const wchar_t * Name) const;
+  __int64 GetSystemSetting(HANDLE &Settings, const wchar_t *Name) const;
 
 private:
   PluginInfo FPluginInfo;
@@ -282,8 +282,8 @@ public:
   intptr_t SetDirectory(const struct SetDirectoryInfo *Info);
   intptr_t MakeDirectory(struct MakeDirectoryInfo *Info);
   intptr_t DeleteFiles(const struct DeleteFilesInfo *Info);
-  intptr_t GetFiles(struct GetFilesInfo * Info);
-  intptr_t PutFiles(const struct PutFilesInfo * Info);
+  intptr_t GetFiles(struct GetFilesInfo *Info);
+  intptr_t PutFiles(const struct PutFilesInfo *Info);
   virtual void Close();
 
 protected:
@@ -306,12 +306,12 @@ protected:
   virtual intptr_t MakeDirectoryEx(UnicodeString &Name, OPERATION_MODES OpMode);
   virtual bool DeleteFilesEx(TObjectList *PanelItems, OPERATION_MODES OpMode);
   virtual intptr_t GetFilesEx(TObjectList *PanelItems, bool Move,
-    UnicodeString & DestPath, OPERATION_MODES OpMode);
+    UnicodeString &DestPath, OPERATION_MODES OpMode);
   virtual intptr_t PutFilesEx(TObjectList *PanelItems, bool Move, OPERATION_MODES OpMode);
 
   void ResetCachedInfo();
-  intptr_t FarControl(FILE_CONTROL_COMMANDS Command, intptr_t Param1, void * Param2);
-  intptr_t FarControl(FILE_CONTROL_COMMANDS Command, intptr_t Param1, void * Param2, HANDLE Plugin);
+  intptr_t FarControl(FILE_CONTROL_COMMANDS Command, intptr_t Param1, void *Param2);
+  intptr_t FarControl(FILE_CONTROL_COMMANDS Command, intptr_t Param1, void *Param2, HANDLE Plugin);
   bool UpdatePanel(bool ClearSelection = false, bool Another = false);
   void RedrawPanel(bool Another = false);
   void ClosePanel();
@@ -371,7 +371,7 @@ private:
   bool FReferenced;
 
   void FillOpenPanelInfo(struct OpenPanelInfo *Info);
-  void SetFlag(PANELMODE_FLAGS & Flags, bool Value, PANELMODE_FLAGS Flag);
+  void SetFlag(PANELMODE_FLAGS &Flags, bool Value, PANELMODE_FLAGS Flag);
   static void ClearPanelMode(PanelMode &Mode);
   static intptr_t CommaCount(UnicodeString ColumnTypes);
 };
@@ -409,7 +409,7 @@ protected:
   {
   }
   virtual void GetData(
-    PLUGINPANELITEMFLAGS &Flags, UnicodeString &AFileName, int64_t & Size,
+    PLUGINPANELITEMFLAGS &Flags, UnicodeString &AFileName, int64_t &Size,
     uintptr_t &FileAttributes,
     TDateTime &LastWriteTime, TDateTime &LastAccess,
     uintptr_t &NumberOfLinks, UnicodeString &Description,
@@ -462,8 +462,8 @@ protected:
     PLUGINPANELITEMFLAGS &Flags, UnicodeString &AFileName, int64_t &Size,
     uintptr_t &FileAttributes,
     TDateTime &LastWriteTime, TDateTime &LastAccess,
-    uintptr_t & NumberOfLinks, UnicodeString & Description,
-    UnicodeString & Owner, void *& UserData, size_t & CustomColumnNumber) override;
+    uintptr_t &NumberOfLinks, UnicodeString &Description,
+    UnicodeString &Owner, void *&UserData, size_t &CustomColumnNumber) override;
 
 private:
   UnicodeString FHint;

@@ -11,17 +11,17 @@
 
 enum NetBoxConfirmationsSettings
 {
-	NBCS_COPYOVERWRITE                  = 0x00000001,
-	NBCS_MOVEOVERWRITE                  = 0x00000002,
-	NBCS_DRAGANDDROP                    = 0x00000004,
-	NBCS_DELETE                         = 0x00000008,
-	NBCS_DELETENONEMPTYFOLDERS          = 0x00000010,
-	NBCS_INTERRUPTOPERATION             = 0x00000020,
-	// NBCS_DISCONNECTNETWORKDRIVE         = 0x00000040,
-	NBCS_RELOADEDITEDFILE               = 0x00000080,
-	NBCS_CLEARHISTORYLIST               = 0x00000100,
-	NBCS_EXIT                           = 0x00000200,
-	// NBCS_OVERWRITEDELETEROFILES         = 0x00000400,
+  NBCS_COPYOVERWRITE                  = 0x00000001,
+  NBCS_MOVEOVERWRITE                  = 0x00000002,
+  NBCS_DRAGANDDROP                    = 0x00000004,
+  NBCS_DELETE                         = 0x00000008,
+  NBCS_DELETENONEMPTYFOLDERS          = 0x00000010,
+  NBCS_INTERRUPTOPERATION             = 0x00000020,
+  // NBCS_DISCONNECTNETWORKDRIVE         = 0x00000040,
+  NBCS_RELOADEDITEDFILE               = 0x00000080,
+  NBCS_CLEARHISTORYLIST               = 0x00000100,
+  NBCS_EXIT                           = 0x00000200,
+  // NBCS_OVERWRITEDELETEROFILES         = 0x00000400,
 };
 
 TFarConfiguration::TFarConfiguration(TCustomFarPlugin *APlugin) :
@@ -186,7 +186,7 @@ void TFarConfiguration::SetPlugin(TCustomFarPlugin *Value)
   }
 }
 
-intptr_t TFarConfiguration::GetSetting(FARSETTINGS_SUBFOLDERS Root, const wchar_t * Name) const
+intptr_t TFarConfiguration::GetSetting(FARSETTINGS_SUBFOLDERS Root, const wchar_t *Name) const
 {
   intptr_t Result = 0;
   FarSettingsCreate settings = {sizeof(FarSettingsCreate), FarGuid, INVALID_HANDLE_VALUE};
@@ -196,14 +196,14 @@ intptr_t TFarConfiguration::GetSetting(FARSETTINGS_SUBFOLDERS Root, const wchar_
     FarSettingsItem item = {sizeof(FarSettingsItem), (size_t)Root, Name, FST_UNKNOWN, {0} };
     if (FFarPlugin->GetStartupInfo()->SettingsControl(Settings, SCTL_GET, 0, &item) && FST_QWORD == item.Type)
     {
-        Result = (intptr_t)item.Number;
+      Result = (intptr_t)item.Number;
     }
     FFarPlugin->GetStartupInfo()->SettingsControl(Settings, SCTL_FREE, 0, 0);
   }
   return Result;
 }
 
-intptr_t TFarConfiguration::GetConfirmationsSetting(HANDLE & Settings, const wchar_t * Name) const
+intptr_t TFarConfiguration::GetConfirmationsSetting(HANDLE &Settings, const wchar_t *Name) const
 {
   FarSettingsItem item = {sizeof(FarSettingsItem), FSSF_CONFIRMATIONS, Name, FST_UNKNOWN, {0} };
   if (FFarPlugin->GetStartupInfo()->SettingsControl(Settings, SCTL_GET, 0, &item) && FST_QWORD == item.Type)
@@ -226,7 +226,7 @@ intptr_t TFarConfiguration::GetConfirmationsSettings() const
     if (GetConfirmationsSetting(Settings, L"Move"))
       Result |= NBCS_MOVEOVERWRITE;
     // if (GetConfirmationsSetting(Settings, L"RO"))
-        // result |= NBCS_MOVEOVERWRITE;
+    // result |= NBCS_MOVEOVERWRITE;
     if (GetConfirmationsSetting(Settings, L"Drag"))
       Result |= NBCS_DRAGANDDROP;
     if (GetConfirmationsSetting(Settings, L"Delete"))

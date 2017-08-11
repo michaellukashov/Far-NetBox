@@ -109,10 +109,10 @@ protected:
   TObjectList *GetItems() { return FItems; }
   void Add(TFarDialogItem *DialogItem);
   void Add(TFarDialogContainer *Container);
-  intptr_t SendDlgMessage(intptr_t Msg, intptr_t Param1, void * Param2);
-  virtual intptr_t DialogProc(intptr_t Msg, intptr_t Param1, void * Param2);
-  virtual intptr_t FailDialogProc(intptr_t Msg, intptr_t Param1, void * Param2);
-  intptr_t DefaultDialogProc(intptr_t Msg, intptr_t Param1, void * Param2);
+  intptr_t SendDlgMessage(intptr_t Msg, intptr_t Param1, void *Param2);
+  virtual intptr_t DialogProc(intptr_t Msg, intptr_t Param1, void *Param2);
+  virtual intptr_t FailDialogProc(intptr_t Msg, intptr_t Param1, void *Param2);
+  intptr_t DefaultDialogProc(intptr_t Msg, intptr_t Param1, void *Param2);
   virtual bool MouseEvent(MOUSE_EVENT_RECORD *Event);
   virtual bool Key(TFarDialogItem *Item, LONG_PTR KeyCode);
   virtual void Change();
@@ -131,7 +131,7 @@ protected:
   bool ChangesLocked() const;
   TFarDialogItem *ItemAt(intptr_t X, intptr_t Y);
 
-  static intptr_t WINAPI DialogProcGeneral(HANDLE Handle, intptr_t Msg, intptr_t Param1, void * Param2);
+  static intptr_t WINAPI DialogProcGeneral(HANDLE Handle, intptr_t Msg, intptr_t Param1, void *Param2);
 
   virtual void SetBounds(const TRect &Value);
 
@@ -315,12 +315,12 @@ protected:
 
   virtual void Detach();
   void DialogResized();
-  intptr_t SendDialogMessage(intptr_t Msg, void * Param);
-  intptr_t SendDialogMessage(intptr_t Msg, intptr_t Param1, void * Param2);
-  virtual intptr_t ItemProc(intptr_t Msg, void * Param);
-  intptr_t DefaultItemProc(intptr_t Msg, void * Param);
-  intptr_t DefaultDialogProc(intptr_t Msg, intptr_t Param1, void * Param2);
-  virtual intptr_t FailItemProc(intptr_t Msg, void * Param);
+  intptr_t SendDialogMessage(intptr_t Msg, void *Param);
+  intptr_t SendDialogMessage(intptr_t Msg, intptr_t Param1, void *Param2);
+  virtual intptr_t ItemProc(intptr_t Msg, void *Param);
+  intptr_t DefaultItemProc(intptr_t Msg, void *Param);
+  intptr_t DefaultDialogProc(intptr_t Msg, intptr_t Param1, void *Param2);
+  virtual intptr_t FailItemProc(intptr_t Msg, void *Param);
   virtual void Change();
   void DialogChange();
   bool GetAlterType(FARDIALOGITEMTYPES Index) const;
@@ -405,7 +405,7 @@ public:
 
 protected:
   virtual void SetDataInternal(UnicodeString AValue) override;
-  virtual intptr_t ItemProc(intptr_t Msg, void * Param) override;
+  virtual intptr_t ItemProc(intptr_t Msg, void *Param) override;
   virtual bool HotKey(char HotKey) override;
 
 private:
@@ -415,7 +415,7 @@ private:
 };
 
 typedef nb::FastDelegate3<void,
-  TFarDialogItem * /*Sender*/, void * /*NewState*/, bool & /*AllowChange*/> TFarAllowChangeEvent;
+        TFarDialogItem * /*Sender*/, void * /*NewState*/, bool & /*AllowChange*/> TFarAllowChangeEvent;
 
 class TFarCheckBox : public TFarDialogItem
 {
@@ -458,7 +458,7 @@ public:
 
 protected:
   TFarAllowChangeEvent FOnAllowChange;
-  virtual intptr_t ItemProc(intptr_t Msg, void * Param);
+  virtual intptr_t ItemProc(intptr_t Msg, void *Param);
   virtual bool GetIsEmpty() const;
   virtual void SetData(UnicodeString Value);
 };
@@ -491,7 +491,7 @@ public:
   void SetReadOnly(bool Value) { SetFlag(DIF_READONLY, Value); }
 
 protected:
-  virtual intptr_t ItemProc(intptr_t Msg, void * Param) override;
+  virtual intptr_t ItemProc(intptr_t Msg, void *Param) override;
   virtual void Detach() override;
 
 private:
@@ -571,7 +571,7 @@ public:
 
 protected:
   virtual void Changed() override;
-  virtual intptr_t ItemProc(intptr_t Msg, void * Param);
+  virtual intptr_t ItemProc(intptr_t Msg, void *Param);
   virtual void Init();
   void UpdatePosition(intptr_t Position);
   intptr_t GetPosition() const;
@@ -624,7 +624,7 @@ public:
   void SetAutoSelect(TFarListBoxAutoSelect Value);
 
 protected:
-  virtual intptr_t ItemProc(intptr_t Msg, void * Param) override;
+  virtual intptr_t ItemProc(intptr_t Msg, void *Param) override;
   virtual void Init() override;
   virtual bool CloseQuery() override;
 
@@ -663,7 +663,7 @@ public:
   void SetItemIndex(intptr_t Index) { FList->SetSelected(Index); }
 
 protected:
-  virtual intptr_t ItemProc(intptr_t Msg, void * Param) override;
+  virtual intptr_t ItemProc(intptr_t Msg, void *Param) override;
   virtual void Init() override;
 
 private:
@@ -684,7 +684,7 @@ public:
   bool GetScrollBar() const;
 
 protected:
-  virtual intptr_t ItemProc(intptr_t Msg, void * Param);
+  virtual intptr_t ItemProc(intptr_t Msg, void *Param);
   virtual void DoFocus();
 
 private:

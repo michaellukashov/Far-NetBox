@@ -148,7 +148,7 @@ void TCustomFarPlugin::GetPluginInfo(struct PluginInfo *Info)
     ClearPluginInfo(FPluginInfo);
 
     GetPluginInfoEx(FPluginInfo.Flags, &DiskMenu, &PluginMenu,
-                    &PluginConfig, &CommandPrefixes);
+      &PluginConfig, &CommandPrefixes);
 
 #define COMPOSESTRINGARRAY(NAME) \
         if (NAME.GetCount()) \
@@ -282,7 +282,7 @@ void TCustomFarPlugin::InvalidateOpenPanelInfo()
   }
 }
 
-intptr_t TCustomFarPlugin::Configure(const struct ConfigureInfo * Info)
+intptr_t TCustomFarPlugin::Configure(const struct ConfigureInfo *Info)
 {
   try
   {
@@ -493,9 +493,9 @@ intptr_t TCustomFarPlugin::ProcessHostFile(const struct ProcessHostFileInfo *Inf
   }
 }
 
-intptr_t TCustomFarPlugin::ProcessPanelInput(const struct ProcessPanelInputInfo * Info)
+intptr_t TCustomFarPlugin::ProcessPanelInput(const struct ProcessPanelInputInfo *Info)
 {
-  TCustomFarFileSystem * FarFileSystem = reinterpret_cast<TCustomFarFileSystem *>(Info->hPanel);
+  TCustomFarFileSystem *FarFileSystem = reinterpret_cast<TCustomFarFileSystem *>(Info->hPanel);
   if (!FarFileSystem || !FOpenedPlugins || (FOpenedPlugins->IndexOf(FarFileSystem) == NPOS))
     return 0;
   try
@@ -758,7 +758,7 @@ public:
   explicit TFarMessageDialog(TCustomFarPlugin *Plugin,
     TFarMessageParams *Params);
   void Init(uintptr_t AFlags, UnicodeString Title, UnicodeString Message,
-            TStrings *Buttons) override;
+    TStrings *Buttons) override;
 
   intptr_t Execute(bool &ACheckBox);
 
@@ -1146,15 +1146,15 @@ intptr_t TCustomFarPlugin::Menu(FARMENUFLAGS Flags, UnicodeString Title,
 
   TFarEnvGuard Guard;
   return FStartupInfo.Menu(&MainGuid, &MainGuid,
-    -1, -1, 0,
-    Flags,
-    Title.c_str(),
-    Bottom.c_str(),
-    nullptr,
-    BreakKeys,
-    &BreakCode,
-    Items,
-    Count);
+      -1, -1, 0,
+      Flags,
+      Title.c_str(),
+      Bottom.c_str(),
+      nullptr,
+      BreakKeys,
+      &BreakCode,
+      Items,
+      Count);
 }
 
 intptr_t TCustomFarPlugin::Menu(FARMENUFLAGS Flags, UnicodeString Title,
@@ -1163,7 +1163,7 @@ intptr_t TCustomFarPlugin::Menu(FARMENUFLAGS Flags, UnicodeString Title,
 {
   DebugAssert(Items && Items->GetCount());
   intptr_t Result = 0;
-  FarMenuItem * MenuItems = nb::calloc<FarMenuItem*>(1 + Items->GetCount(), sizeof(FarMenuItem));
+  FarMenuItem *MenuItems = nb::calloc<FarMenuItem *>(1 + Items->GetCount(), sizeof(FarMenuItem));
   SCOPE_EXIT
   {
     nb_free(MenuItems);
@@ -1215,7 +1215,7 @@ intptr_t TCustomFarPlugin::Menu(FARMENUFLAGS Flags, UnicodeString Title,
 }
 
 bool TCustomFarPlugin::InputBox(UnicodeString Title,
-  UnicodeString Prompt, UnicodeString & Text, PLUGINPANELITEMFLAGS Flags,
+  UnicodeString Prompt, UnicodeString &Text, PLUGINPANELITEMFLAGS Flags,
   UnicodeString HistoryName, intptr_t MaxLen, TFarInputBoxValidateEvent OnValidate)
 {
   bool Repeat;
@@ -1229,8 +1229,8 @@ bool TCustomFarPlugin::InputBox(UnicodeString Title,
     {
       TFarEnvGuard Guard;
       Result = FStartupInfo.InputBox(
-        &MainGuid,
-        &MainGuid,
+          &MainGuid,
+          &MainGuid,
           Title.c_str(),
           Prompt.c_str(),
           HistoryName.c_str(),
@@ -1645,7 +1645,7 @@ void TCustomFarPlugin::ResetCachedInfo()
   FValidFarSystemSettings = false;
 }
 
-__int64 TCustomFarPlugin::GetSystemSetting(HANDLE & Settings, const wchar_t * Name) const
+__int64 TCustomFarPlugin::GetSystemSetting(HANDLE &Settings, const wchar_t *Name) const
 {
   FarSettingsItem item = {sizeof(FarSettingsItem), FSSF_SYSTEM, Name, FST_UNKNOWN, {0} };
   if (FStartupInfo.SettingsControl(Settings, SCTL_GET, 0, &item) && FST_QWORD == item.Type)
@@ -1667,14 +1667,14 @@ intptr_t TCustomFarPlugin::GetFarSystemSettings() const
       if (GetSystemSetting(Settings, L"DeleteToRecycleBin"))
         FFarSystemSettings |= NBSS_DELETETORECYCLEBIN;
 
-       FStartupInfo.SettingsControl(Settings, SCTL_FREE, 0, 0);
-       FValidFarSystemSettings = true;
+      FStartupInfo.SettingsControl(Settings, SCTL_FREE, 0, 0);
+      FValidFarSystemSettings = true;
     }
   }
   return FFarSystemSettings;
 }
 
-intptr_t TCustomFarPlugin::FarControl(FILE_CONTROL_COMMANDS Command, intptr_t Param1, void * Param2, HANDLE Plugin)
+intptr_t TCustomFarPlugin::FarControl(FILE_CONTROL_COMMANDS Command, intptr_t Param1, void *Param2, HANDLE Plugin)
 {
   switch (Command)
   {
@@ -1685,7 +1685,7 @@ intptr_t TCustomFarPlugin::FarControl(FILE_CONTROL_COMMANDS Command, intptr_t Pa
     break;
 
   case FCTL_GETCMDLINE:
-  // case FCTL_GETCMDLINESELECTEDTEXT:
+    // case FCTL_GETCMDLINESELECTEDTEXT:
     // ANSI/OEM translation not implemented yet
     DebugAssert(false);
     break;
@@ -1975,7 +1975,7 @@ void TCustomFarFileSystem::FreeFindData(const struct FreeFindDataInfo *Info)
   }
 }
 
-intptr_t TCustomFarFileSystem::ProcessHostFile(const struct ProcessHostFileInfo * Info)
+intptr_t TCustomFarFileSystem::ProcessHostFile(const struct ProcessHostFileInfo *Info)
 {
   ResetCachedInfo();
   std::unique_ptr<TObjectList> PanelItems(CreatePanelItemList(Info->PanelItem, Info->ItemsNumber));
@@ -1983,14 +1983,14 @@ intptr_t TCustomFarFileSystem::ProcessHostFile(const struct ProcessHostFileInfo 
   return Result;
 }
 
-intptr_t TCustomFarFileSystem::ProcessPanelInput(const struct ProcessPanelInputInfo * Info)
+intptr_t TCustomFarFileSystem::ProcessPanelInput(const struct ProcessPanelInputInfo *Info)
 {
   ResetCachedInfo();
   if (Info->Rec.EventType == KEY_EVENT)
   {
-     const KEY_EVENT_RECORD &Event = Info->Rec.Event.KeyEvent;
-     return ProcessKeyEx(Event.wVirtualKeyCode,
-       Event.dwControlKeyState);
+    const KEY_EVENT_RECORD &Event = Info->Rec.Event.KeyEvent;
+    return ProcessKeyEx(Event.wVirtualKeyCode,
+        Event.dwControlKeyState);
   }
   return FALSE;
 }
@@ -2097,12 +2097,12 @@ TFarPanelInfo **TCustomFarFileSystem::GetPanelInfo(int Another)
   return &FPanelInfo[bAnother];
 }
 
-intptr_t TCustomFarFileSystem::FarControl(FILE_CONTROL_COMMANDS Command, intptr_t Param1, void * Param2)
+intptr_t TCustomFarFileSystem::FarControl(FILE_CONTROL_COMMANDS Command, intptr_t Param1, void *Param2)
 {
   return FPlugin->FarControl(Command, Param1, Param2, this);
 }
 
-intptr_t TCustomFarFileSystem::FarControl(FILE_CONTROL_COMMANDS Command, intptr_t Param1, void * Param2, HANDLE Plugin)
+intptr_t TCustomFarFileSystem::FarControl(FILE_CONTROL_COMMANDS Command, intptr_t Param1, void *Param2, HANDLE Plugin)
 {
   return FPlugin->FarControl(Command, Param1, Param2, Plugin);
 }
@@ -2258,7 +2258,7 @@ void TFarPanelModes::SetPanelMode(size_t Mode, UnicodeString ColumnTypes,
   FPanelModes[Mode].StatusColumnWidths = TCustomFarPlugin::DuplicateStr(StatusColumnWidths);
 }
 
-void TFarPanelModes::SetFlag(PANELMODE_FLAGS & Flags, bool Value, PANELMODE_FLAGS Flag)
+void TFarPanelModes::SetFlag(PANELMODE_FLAGS &Flags, bool Value, PANELMODE_FLAGS Flag)
 {
   if (Value)
   {
@@ -2322,7 +2322,7 @@ TFarKeyBarTitles::TFarKeyBarTitles() :
   ClearStruct(FKeyBarTitles);
   FKeyBarTitles.CountLabels = 7 * 12;
   FKeyBarTitles.Labels = static_cast<KeyBarLabel *>(
-    nb_malloc(sizeof(KeyBarLabel) * 7 * 12));
+      nb_malloc(sizeof(KeyBarLabel) * 7 * 12));
   memset(FKeyBarTitles.Labels, 0, sizeof(KeyBarLabel) * 7 * 12);
 }
 
@@ -2341,8 +2341,8 @@ void TFarKeyBarTitles::ClearFileKeyBarTitles()
   ClearKeyBarTitle(fsAlt, 3, 7);
   ClearKeyBarTitle(fsShift, 1, 8);
   ClearKeyBarTitle(fsCtrlShift, 3, 4);
-    // ClearKeyBarTitle(fsAltShift, 3, 4);
-    // ClearKeyBarTitle(fsCtrlAlt, 3, 4);
+  // ClearKeyBarTitle(fsAltShift, 3, 4);
+  // ClearKeyBarTitle(fsCtrlAlt, 3, 4);
 }
 
 void TFarKeyBarTitles::ClearKeyBarTitle(TFarShiftStatus ShiftStatus,
@@ -2365,7 +2365,6 @@ void TFarKeyBarTitles::SetKeyBarTitle(TFarShiftStatus ShiftStatus,
   int shift = ToInt(ShiftStatus);
   DebugAssert(shift >= 0 && shift < 7);
   KeyBarLabel *Labels = &FKeyBarTitles.Labels[shift * 12];
-  if (Labels[FunctionKey-1].Key.VirtualKeyCode)
   if (Labels[FunctionKey - 1].Key.VirtualKeyCode)
   {
     nb_free(Labels[FunctionKey - 1].Text);
@@ -2391,8 +2390,8 @@ void TFarKeyBarTitles::ClearKeyBarTitles(KeyBarTitles &Titles)
 {
   for (size_t Index = 0; Index < Titles.CountLabels; ++Index)
   {
-    nb_free((void*)Titles.Labels[Index].Text);
-    nb_free((void*)Titles.Labels[Index].LongText);
+    nb_free(Titles.Labels[Index].Text);
+    nb_free(Titles.Labels[Index].LongText);
   }
   nb_free(Titles.Labels);
   Titles.Labels = nullptr;

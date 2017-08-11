@@ -4178,7 +4178,7 @@ void TSessionDialog::KexButtonClick(TFarButton *Sender, bool &Close)
 }
 
 void TSessionDialog::AuthGSSAPICheckAllowChange(TFarDialogItem * /*Sender*/,
-    void *NewState, bool &Allow)
+  void *NewState, bool &Allow)
 {
   if ((reinterpret_cast<size_t>(NewState) == BSTATE_CHECKED) && !HasGSSAPI(L""))
   {
@@ -7021,7 +7021,7 @@ bool TFullSynchronizeDialog::CloseQuery()
   return CanClose;
 }
 
-intptr_t TFullSynchronizeDialog::DialogProc(intptr_t Msg, intptr_t Param1, void * Param2)
+intptr_t TFullSynchronizeDialog::DialogProc(intptr_t Msg, intptr_t Param1, void *Param2)
 {
   if (Msg == DN_RESIZECONSOLE)
   {
@@ -7117,7 +7117,7 @@ public:
   virtual bool Execute(TSynchronizeChecklist *Checklist);
 
 protected:
-  virtual intptr_t DialogProc(intptr_t Msg, intptr_t Param1, void * Param2) override;
+  virtual intptr_t DialogProc(intptr_t Msg, intptr_t Param1, void *Param2) override;
   virtual bool Key(TFarDialogItem *Item, LONG_PTR KeyCode) override;
   void CheckAllButtonClick(TFarButton *Sender, bool &Close);
   void VideoModeButtonClick(TFarButton *Sender, bool &Close);
@@ -7537,7 +7537,7 @@ void TSynchronizeChecklistDialog::UpdateControls()
   UncheckAllButton->SetEnabled(FChecked > 0);
 }
 
-intptr_t TSynchronizeChecklistDialog::DialogProc(intptr_t Msg, intptr_t Param1, void * Param2)
+intptr_t TSynchronizeChecklistDialog::DialogProc(intptr_t Msg, intptr_t Param1, void *Param2)
 {
   if (Msg == DN_RESIZECONSOLE)
   {
@@ -7614,13 +7614,13 @@ bool TSynchronizeChecklistDialog::Key(TFarDialogItem *Item, LONG_PTR KeyCode)
   if (ListBox->Focused())
   {
     if (((Key == VK_ADD) && (ControlState & SHIFTMASK) != 0) ||
-        ((Key == VK_SUBTRACT) && (ControlState & SHIFTMASK) != 0))
+      ((Key == VK_SUBTRACT) && (ControlState & SHIFTMASK) != 0))
     {
       CheckAll((Key == VK_ADD) && (ControlState & SHIFTMASK) != 0);
       Result = true;
     }
     else if ((Key == VK_SPACE) || (Key == VK_INSERT) ||
-           (Key == VK_ADD) || (Key == VK_SUBTRACT))
+      (Key == VK_ADD) || (Key == VK_SUBTRACT))
     {
       intptr_t Index = ListBox->GetItems()->GetSelected();
       if (Index >= 0)
@@ -7736,7 +7736,7 @@ protected:
   void DoLog(TSynchronizeController *Controller,
     TSynchronizeLogEntry Entry, UnicodeString Message);
   void DoSynchronizeThreads(TObject *Sender, TThreadMethod Slot);
-  virtual intptr_t DialogProc(intptr_t Msg, intptr_t Param1, void * Param2) override;
+  virtual intptr_t DialogProc(intptr_t Msg, intptr_t Param1, void *Param2) override;
   virtual bool CloseQuery() override;
   virtual bool Key(TFarDialogItem *Item, LONG_PTR KeyCode) override;
   TCopyParamType GetCopyParams() const;
@@ -7988,7 +7988,7 @@ void TSynchronizeDialog::DoSynchronizeThreads(TObject * /*Sender*/,
   }
 }
 
-intptr_t TSynchronizeDialog::DialogProc(intptr_t Msg, intptr_t Param1, void * Param2)
+intptr_t TSynchronizeDialog::DialogProc(intptr_t Msg, intptr_t Param1, void *Param2)
 {
   if (FAbort)
   {

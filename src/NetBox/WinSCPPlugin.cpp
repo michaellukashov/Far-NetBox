@@ -70,7 +70,7 @@ void TWinSCPPlugin::GetPluginInfoEx(PLUGIN_FLAGS &Flags,
   if (FarConfiguration->GetPluginsMenu())
   {
     PluginMenuStrings->AddObject(GetMsg(NB_PLUGIN_NAME),
-          reinterpret_cast<TObject *>(const_cast<GUID *>(&MenuGuid)));
+      reinterpret_cast<TObject *>(const_cast<GUID *>(&MenuGuid)));
   }
   if (FarConfiguration->GetPluginsMenuCommands())
   {
@@ -78,7 +78,7 @@ void TWinSCPPlugin::GetPluginInfoEx(PLUGIN_FLAGS &Flags,
       reinterpret_cast<TObject *>(const_cast<GUID *>(&MenuCommandsGuid)));
   }
   PluginConfigStrings->AddObject(GetMsg(NB_PLUGIN_NAME),
-      reinterpret_cast<TObject *>(const_cast<GUID *>(&PluginConfigGuid)));
+    reinterpret_cast<TObject *>(const_cast<GUID *>(&PluginConfigGuid)));
   CommandPrefixes->SetCommaText(FarConfiguration->GetCommandPrefixes());
 }
 
@@ -208,9 +208,9 @@ intptr_t TWinSCPPlugin::ProcessEditorInputEx(const INPUT_RECORD *Rec)
   intptr_t Result = 0;
   if ((Rec->EventType == KEY_EVENT) &&
     Rec->Event.KeyEvent.bKeyDown &&
-   (Rec->Event.KeyEvent.uChar.AsciiChar == 'W') &&
-   (FLAGSET(Rec->Event.KeyEvent.dwControlKeyState, ALTMASK)) &&
-   (FLAGSET(Rec->Event.KeyEvent.dwControlKeyState, SHIFTMASK)))
+    (Rec->Event.KeyEvent.uChar.AsciiChar == 'W') &&
+    (FLAGSET(Rec->Event.KeyEvent.dwControlKeyState, ALTMASK)) &&
+    (FLAGSET(Rec->Event.KeyEvent.dwControlKeyState, SHIFTMASK)))
   {
     CommandsMenu(false);
     Result = 1;
@@ -235,7 +235,7 @@ TCustomFarFileSystem *TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom, intptr_t It
     FileSystem->Init(nullptr);
 
     if (OpenFrom == OPEN_LEFTDISKMENU || OpenFrom == OPEN_RIGHTDISKMENU ||
-        OpenFrom == OPEN_PLUGINSMENU ||
+      OpenFrom == OPEN_PLUGINSMENU ||
       OpenFrom == OPEN_FINDLIST)
     {
       // nothing
@@ -247,13 +247,13 @@ TCustomFarFileSystem *TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom, intptr_t It
       FAROPENSHORTCUTFLAGS Flags = FOSF_NONE;
       if (OpenFrom == OPEN_SHORTCUT)
       {
-        OpenShortcutInfo * Info = reinterpret_cast<OpenShortcutInfo *>(Item);
+        OpenShortcutInfo *Info = reinterpret_cast<OpenShortcutInfo *>(Item);
         CommandLine = Info->ShortcutData;
         Flags = Info->Flags;
       }
       else
       {
-        OpenCommandLineInfo * Info = reinterpret_cast<OpenCommandLineInfo *>(Item);
+        OpenCommandLineInfo *Info = reinterpret_cast<OpenCommandLineInfo *>(Item);
         CommandLine = Info->CommandLine;
       }
       if (OpenFrom == OPEN_SHORTCUT)
@@ -793,7 +793,7 @@ HANDLE TWinSCPPlugin::CreateLocalFile(UnicodeString LocalFileName,
   DWORD DesiredAccess, DWORD ShareMode, DWORD CreationDisposition, DWORD FlagsAndAttributes)
 {
   return GetSystemFunctions()->CreateFile(LocalFileName.c_str(), DesiredAccess,
-    ShareMode, nullptr, CreationDisposition, FlagsAndAttributes, 0);
+      ShareMode, nullptr, CreationDisposition, FlagsAndAttributes, 0);
 }
 
 DWORD TWinSCPPlugin::GetLocalFileAttributes(UnicodeString LocalFileName) const

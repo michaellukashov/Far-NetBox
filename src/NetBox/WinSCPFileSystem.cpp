@@ -55,7 +55,7 @@ void TSessionPanelItem::GetData(
   uintptr_t & /*FileAttributes*/,
   TDateTime & /*LastWriteTime*/, TDateTime & /*LastAccess*/,
   uintptr_t & /*NumberOfLinks*/, UnicodeString & /*Description*/,
-  UnicodeString & /*Owner*/, void *& UserData, size_t & /*CustomColumnNumber*/)
+  UnicodeString & /*Owner*/, void *&UserData, size_t & /*CustomColumnNumber*/)
 {
   AFileName = base::UnixExtractFileName(FSessionData->GetName());
   UserData = ToPtr(const_cast<TSessionData *>(FSessionData));
@@ -68,8 +68,8 @@ TSessionFolderPanelItem::TSessionFolderPanelItem(UnicodeString Folder) :
 }
 
 void TSessionFolderPanelItem::GetData(
-  PLUGINPANELITEMFLAGS & /*Flags*/, UnicodeString & AFileName, int64_t & /*Size*/,
-  uintptr_t & FileAttributes,
+  PLUGINPANELITEMFLAGS & /*Flags*/, UnicodeString &AFileName, int64_t & /*Size*/,
+  uintptr_t &FileAttributes,
   TDateTime & /*LastWriteTime*/, TDateTime & /*LastAccess*/,
   uintptr_t & /*NumberOfLinks*/, UnicodeString & /*Description*/,
   UnicodeString & /*Owner*/, void *& /*UserData*/, size_t & /*CustomColumnNumber*/)
@@ -86,8 +86,8 @@ TRemoteFilePanelItem::TRemoteFilePanelItem(TRemoteFile *ARemoteFile) :
 }
 
 void TRemoteFilePanelItem::GetData(
-  PLUGINPANELITEMFLAGS & /*Flags*/, UnicodeString & AFileName, int64_t & Size,
-  uintptr_t & FileAttributes,
+  PLUGINPANELITEMFLAGS & /*Flags*/, UnicodeString &AFileName, int64_t &Size,
+  uintptr_t &FileAttributes,
   TDateTime &LastWriteTime, TDateTime &LastAccess,
   uintptr_t & /*NumberOfLinks*/, UnicodeString & /*Description*/,
   UnicodeString &Owner, void *&UserData, size_t &CustomColumnNumber)
@@ -337,7 +337,7 @@ TWinSCPFileSystem::~TWinSCPFileSystem()
   SAFE_DESTROY(FPathHistory);
 }
 
-void TWinSCPFileSystem::HandleException(Exception * E, OPERATION_MODES OpMode)
+void TWinSCPFileSystem::HandleException(Exception *E, OPERATION_MODES OpMode)
 {
   if ((GetTerminal() != nullptr) && isa<EFatal>(E))
   {
@@ -383,7 +383,7 @@ bool TWinSCPFileSystem::Connected() const
   return !IsSessionList() && FTerminal->GetActive();
 }
 
-const TWinSCPPlugin * TWinSCPFileSystem::GetWinSCPPlugin() const
+const TWinSCPPlugin *TWinSCPFileSystem::GetWinSCPPlugin() const
 {
   return dyn_cast<const TWinSCPPlugin>(FPlugin);
 }
@@ -1030,7 +1030,7 @@ bool TWinSCPFileSystem::ProcessKeyEx(intptr_t Key, uintptr_t ControlState)
     }
 
     if ((Key == VK_INSERT) && (((ControlState & ALTMASK) && (ControlState & SHIFTMASK)) ||
-      (((ControlState & CTRLMASK) && (ControlState & ALTMASK)))))
+        (((ControlState & CTRLMASK) && (ControlState & ALTMASK)))))
     {
       CopyFullFileNamesToClipboard();
       Handled = true;
@@ -2205,7 +2205,7 @@ bool TWinSCPFileSystem::SetDirectoryEx(UnicodeString Dir, OPERATION_MODES OpMode
     bool Result = false;
     SCOPE_EXIT
     {
-        // Result = SetDirectoryEx(Dir, OpMode);
+      // Result = SetDirectoryEx(Dir, OpMode);
       FSavedFindFolder.Clear();
     };
     Result = SetDirectoryEx(FSavedFindFolder, OpMode);
@@ -3230,7 +3230,7 @@ HANDLE TWinSCPFileSystem::TerminalCreateLocalFile(UnicodeString LocalFileName,
   else
   {
     return GetWinSCPPlugin()->CreateLocalFile(LocalFileName, DesiredAccess,
-      ShareMode, CreationDisposition, FlagsAndAttributes);
+        ShareMode, CreationDisposition, FlagsAndAttributes);
   }
 }
 
@@ -3993,7 +3993,7 @@ void TWinSCPFileSystem::ProcessEditorEvent(intptr_t Event, void * /*Param*/)
             it->second.FileTitle;
           // note that we need to reset the title periodically (see EE_REDRAW)
           GetWinSCPPlugin()->FarEditorControl(ECTL_SETTITLE,
-              FullFileName.Length(),
+            FullFileName.Length(),
             ToPtr(ToWChar(FullFileName)));
         }
 
