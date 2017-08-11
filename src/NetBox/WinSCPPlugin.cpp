@@ -479,7 +479,7 @@ void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
     }
     else if (Result == MConfigure)
     {
-      ConfigureEx(0);
+      ConfigureEx(nullptr);
     }
     else if (Result == MAbout)
     {

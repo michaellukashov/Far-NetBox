@@ -6264,7 +6264,7 @@ void TFileSystemInfoDialog::Execute(
 
 bool TFileSystemInfoDialog::Key(TFarDialogItem *Item, LONG_PTR KeyCode)
 {
-  bool Result = false;
+  bool Result;
   WORD Key = KeyCode & 0xFFFF;
   // LONG_PTR ControlState = KeyCode >> 16;
   if ((Item == SpaceAvailablePathEdit) && (Key == VK_RETURN))
@@ -6354,8 +6354,8 @@ void TWinSCPFileSystem::FileSystemInfoDialog(
 bool TWinSCPFileSystem::OpenDirectoryDialog(
   bool Add, UnicodeString &Directory, TBookmarkList *BookmarkList)
 {
-  bool Result = false;
-  bool Repeat = false;
+  bool Result;
+  bool Repeat;
 
   intptr_t ItemFocused = -1;
 
@@ -6364,7 +6364,7 @@ bool TWinSCPFileSystem::OpenDirectoryDialog(
     std::unique_ptr<TStrings> BookmarkPaths(new TStringList());
     std::unique_ptr<TFarMenuItems> BookmarkItems(new TFarMenuItems());
     std::unique_ptr<TList> Bookmarks(new TList());
-    intptr_t BookmarksOffset = -1;
+    intptr_t BookmarksOffset;
 
     intptr_t MaxLength = FPlugin->MaxMenuItemLength();
     intptr_t MaxHistory = 40;
@@ -6968,7 +6968,7 @@ void TFullSynchronizeDialog::Change()
 
 intptr_t TFullSynchronizeDialog::ActualCopyParamAttrs() const
 {
-  intptr_t Result = -1;
+  intptr_t Result;
   if (SynchronizeTimestampsButton->GetChecked())
   {
     Result = cpaIncludeMaskOnly;
@@ -8251,19 +8251,16 @@ TQueueDialog::TQueueDialog(TCustomFarPlugin *AFarPlugin,
   MoveDownButton(nullptr),
   CloseButton(nullptr)
 {
-  TFarSeparator *Separator = nullptr;
-  TFarText *Text = nullptr;
-
   SetSize(TPoint(80, 23));
   // TRect CRect = GetClientRect();
   intptr_t ListHeight = GetClientSize().y - 4;
 
   SetCaption(GetMsg(NB_QUEUE_TITLE));
 
-  Text = new TFarText(this);
+  TFarText *Text = new TFarText(this);
   Text->SetCaption(GetMsg(NB_QUEUE_HEADER));
 
-  Separator = new TFarSeparator(this);
+  TFarSeparator *Separator = new TFarSeparator(this);
   intptr_t ListTop = Separator->GetBottom();
 
   Separator = new TFarSeparator(this);
@@ -8505,7 +8502,7 @@ void TQueueDialog::RefreshQueue()
     }
 
     TQueueItemProxy *PrevQueueItem = nullptr;
-    TQueueItemProxy *QueueItem = nullptr;
+    TQueueItemProxy *QueueItem;
     UnicodeString Line;
     while ((Index < GetQueueItems()->GetCount()) &&
       (Index < TopIndex + QueueListBox->GetHeight()))

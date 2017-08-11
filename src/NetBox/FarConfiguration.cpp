@@ -8,6 +8,7 @@
 #include "Far3Storage.h"
 #include "FarPlugin.h"
 #include "CoreMain.h"
+#include <plugin.hpp>
 
 enum NetBoxConfirmationsSettings
 {
@@ -193,12 +194,12 @@ intptr_t TFarConfiguration::GetSetting(FARSETTINGS_SUBFOLDERS Root, const wchar_
   HANDLE Settings = FFarPlugin->GetStartupInfo()->SettingsControl(INVALID_HANDLE_VALUE, SCTL_CREATE, 0, &settings) ? settings.Handle : 0;
   if (Settings)
   {
-    FarSettingsItem item = {sizeof(FarSettingsItem), (size_t)Root, Name, FST_UNKNOWN, {0} };
+    FarSettingsItem item = {sizeof(FarSettingsItem), static_cast<size_t>(Root), Name, FST_UNKNOWN, {0} };
     if (FFarPlugin->GetStartupInfo()->SettingsControl(Settings, SCTL_GET, 0, &item) && FST_QWORD == item.Type)
     {
-      Result = (intptr_t)item.Number;
+      Result = static_cast<intptr_t>(item.Number);
     }
-    FFarPlugin->GetStartupInfo()->SettingsControl(Settings, SCTL_FREE, 0, 0);
+    FFarPlugin->GetStartupInfo()->SettingsControl(Settings, SCTL_FREE, 0, nullptr);
   }
   return Result;
 }
@@ -208,7 +209,7 @@ intptr_t TFarConfiguration::GetConfirmationsSetting(HANDLE &Settings, const wcha
   FarSettingsItem item = {sizeof(FarSettingsItem), FSSF_CONFIRMATIONS, Name, FST_UNKNOWN, {0} };
   if (FFarPlugin->GetStartupInfo()->SettingsControl(Settings, SCTL_GET, 0, &item) && FST_QWORD == item.Type)
   {
-    return (intptr_t)(item.Number);
+    return static_cast<intptr_t>(item.Number);
   }
   return 0;
 }
@@ -241,7 +242,7 @@ intptr_t TFarConfiguration::GetConfirmationsSettings() const
       Result |= NBCS_CLEARHISTORYLIST;
     if (GetConfirmationsSetting(Settings, L"Exit"))
       Result |= NBCS_EXIT;
-    FFarPlugin->GetStartupInfo()->SettingsControl(Settings, SCTL_FREE, 0, 0);
+    FFarPlugin->GetStartupInfo()->SettingsControl(Settings, SCTL_FREE, 0, nullptr);
   }
   return Result;
 }

@@ -18,6 +18,7 @@
 
 #include "PuttyIntf.h"
 #include "XmlStorage.h"
+#include <plugin.hpp>
 
 TSessionPanelItem::TSessionPanelItem(const TSessionData *ASessionData) :
   TCustomFarPanelItem(OBJECT_CLASS_TSessionPanelItem)
@@ -464,7 +465,7 @@ void TWinSCPFileSystem::GetOpenPanelInfoEx(OPENPANELINFO_FLAGS &Flags,
 
 bool TWinSCPFileSystem::GetFindDataEx(TObjectList *PanelItems, OPERATION_MODES OpMode)
 {
-  bool Result = false;
+  bool Result;
   if (Connected())
   {
     DebugAssert(!FNoProgress);
@@ -2169,7 +2170,6 @@ bool TWinSCPFileSystem::SynchronizeBrowsing(UnicodeString NewPath)
       // If FCTL_SETPANELDIR above fails, Far default current
       // directory to initial (?) one. So move this back to
       // previous directory.
-      FarPanelDirectory fpd;
       ClearStruct(fpd);
       fpd.StructSize = sizeof(fpd);
       fpd.Name = OldPath.c_str();
@@ -2202,7 +2202,7 @@ bool TWinSCPFileSystem::SetDirectoryEx(UnicodeString Dir, OPERATION_MODES OpMode
     {
       return true;
     }
-    bool Result = false;
+    bool Result;
     SCOPE_EXIT
     {
       // Result = SetDirectoryEx(Dir, OpMode);
@@ -2902,7 +2902,7 @@ TStrings *TWinSCPFileSystem::CreateFileList(TObjectList *PanelItems,
   std::unique_ptr<TStrings> FileList(AFileList == nullptr ? new TStringList() : AFileList);
   FileList->SetDuplicates(dupAccept);
 
-  TFarPanelItem *PanelItem = nullptr;
+  TFarPanelItem *PanelItem;
   TObject *Data = nullptr;
   for (intptr_t Index = 0; Index < PanelItems->GetCount(); ++Index)
   {
@@ -3745,7 +3745,7 @@ void TWinSCPFileSystem::CancelConfiguration(TFileOperationProgressType &Progress
       ProgressData.Resume();
     };
     TCancelStatus ACancel;
-    uintptr_t Result = 0;
+    uintptr_t Result;
     if (ProgressData.GetTransferringFile() &&
       (ProgressData.TimeExpected() > GetGUIConfiguration()->GetIgnoreCancelBeforeFinish()))
     {
@@ -4117,7 +4117,7 @@ void TWinSCPFileSystem::MultipleEdit(UnicodeString Directory,
       WindowInfo Window;
       ClearStruct(Window);
       Window.StructSize = sizeof(WindowInfo);
-      Window.Pos = (int)Pos;
+      Window.Pos = Pos;
       UnicodeString EditedFileName(1024, 0);
       Window.Name = ToWChar(EditedFileName);
       Window.NameSize = ToInt(EditedFileName.GetLength());
