@@ -663,8 +663,8 @@ public:
   void SetItemIndex(intptr_t Index) { FList->SetSelected(Index); }
 
 protected:
-  virtual intptr_t ItemProc(intptr_t Msg, void * Param);
-  virtual void Init();
+  virtual intptr_t ItemProc(intptr_t Msg, void * Param) override;
+  virtual void Init() override;
 
 private:
   TFarList *FList;

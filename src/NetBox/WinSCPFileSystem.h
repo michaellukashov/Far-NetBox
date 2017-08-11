@@ -104,16 +104,16 @@ protected:
     UnicodeString &HostFile, UnicodeString &CurDir, UnicodeString &AFormat,
     UnicodeString &PanelTitle, TFarPanelModes *PanelModes, intptr_t &StartPanelMode,
     OPENPANELINFO_SORTMODES &StartSortMode, bool &StartSortOrder, TFarKeyBarTitles *KeyBarTitles,
-    UnicodeString &ShortcutData);
-  virtual bool GetFindDataEx(TObjectList *PanelItems, OPERATION_MODES OpMode);
-  virtual bool ProcessKeyEx(intptr_t Key, uintptr_t ControlState);
-  virtual bool SetDirectoryEx(UnicodeString Dir, OPERATION_MODES OpMode);
-  virtual intptr_t MakeDirectoryEx(UnicodeString &Name, OPERATION_MODES OpMode);
-  virtual bool DeleteFilesEx(TObjectList *PanelItems, OPERATION_MODES OpMode);
+    UnicodeString &ShortcutData) override;
+  virtual bool GetFindDataEx(TObjectList *PanelItems, OPERATION_MODES OpMode) override;
+  virtual bool ProcessKeyEx(intptr_t Key, uintptr_t ControlState) override;
+  virtual bool SetDirectoryEx(UnicodeString Dir, OPERATION_MODES OpMode) override;
+  virtual intptr_t MakeDirectoryEx(UnicodeString &Name, OPERATION_MODES OpMode) override;
+  virtual bool DeleteFilesEx(TObjectList *PanelItems, OPERATION_MODES OpMode) override;
   virtual intptr_t GetFilesEx(TObjectList *PanelItems, bool Move,
-    UnicodeString &DestPath, OPERATION_MODES OpMode);
-  virtual intptr_t PutFilesEx(TObjectList *PanelItems, bool Move, OPERATION_MODES OpMode);
-  virtual bool ProcessPanelEventEx(intptr_t Event, void *Param);
+    UnicodeString &DestPath, OPERATION_MODES OpMode) override;
+  virtual intptr_t PutFilesEx(TObjectList *PanelItems, bool Move, OPERATION_MODES OpMode) override;
+  virtual bool ProcessPanelEventEx(intptr_t Event, void *Param) override;
 
   void ProcessEditorEvent(intptr_t Event, void *Param);
 
@@ -374,7 +374,7 @@ protected:
     uintptr_t &FileAttributes,
     TDateTime &LastWriteTime, TDateTime &LastAccess,
     uintptr_t &NumberOfLinks, UnicodeString &Description,
-    UnicodeString &Owner, void *&UserData, size_t &CustomColumnNumber);
+    UnicodeString &Owner, void *&UserData, size_t &CustomColumnNumber) override;
 };
 
 class TSessionFolderPanelItem : public TCustomFarPanelItem
@@ -390,7 +390,7 @@ protected:
     uintptr_t &FileAttributes,
     TDateTime &LastWriteTime, TDateTime &LastAccess,
     uintptr_t &NumberOfLinks, UnicodeString &Description,
-    UnicodeString &Owner, void *&UserData, size_t &CustomColumnNumber);
+    UnicodeString &Owner, void *&UserData, size_t &CustomColumnNumber) override;
 };
 
 class TRemoteFilePanelItem : public TCustomFarPanelItem
@@ -409,8 +409,8 @@ protected:
     uintptr_t &FileAttributes,
     TDateTime &LastWriteTime, TDateTime &LastAccess,
     uintptr_t &NumberOfLinks, UnicodeString &Description,
-    UnicodeString &Owner, void *&UserData, size_t &CustomColumnNumber);
-  virtual UnicodeString GetCustomColumnData(size_t Column);
+    UnicodeString &Owner, void *&UserData, size_t &CustomColumnNumber) override;
+  virtual UnicodeString GetCustomColumnData(size_t Column) override;
   static void TranslateColumnTypes(UnicodeString &AColumnTypes,
     TStrings *ColumnTitles);
 };
