@@ -93,7 +93,7 @@ public:
   void Init(TSecureShell *SecureShell);
   virtual ~TWinSCPFileSystem();
 
-  virtual void Close();
+  virtual void Close() override;
 
 protected:
   bool Connect(TSessionData *Data);
@@ -117,7 +117,7 @@ protected:
 
   void ProcessEditorEvent(intptr_t Event, void *Param);
 
-  virtual void HandleException(Exception *E, OPERATION_MODES OpMode = 0);
+  virtual void HandleException(Exception *E, OPERATION_MODES OpMode = 0) override;
   void KeepaliveThreadCallback();
 
   bool IsSessionList() const;

@@ -458,9 +458,9 @@ public:
 
 protected:
   TFarAllowChangeEvent FOnAllowChange;
-  virtual intptr_t ItemProc(intptr_t Msg, void *Param);
-  virtual bool GetIsEmpty() const;
-  virtual void SetData(UnicodeString Value);
+  virtual intptr_t ItemProc(intptr_t Msg, void *Param) override;
+  virtual bool GetIsEmpty() const override;
+  virtual void SetData(UnicodeString Value) override;
 };
 
 class TFarEdit : public TFarDialogItem
@@ -512,7 +512,7 @@ public:
   intptr_t GetPosition() const;
 
 protected:
-  virtual void ResetBounds();
+  virtual void ResetBounds() override;
 };
 
 class TFarText : public TFarDialogItem
@@ -684,8 +684,8 @@ public:
   bool GetScrollBar() const;
 
 protected:
-  virtual intptr_t ItemProc(intptr_t Msg, void *Param);
-  virtual void DoFocus();
+  virtual intptr_t ItemProc(intptr_t Msg, void *Param) override;
+  virtual void DoFocus() override;
 
 private:
   void ItemsChange(TObject *Sender);
