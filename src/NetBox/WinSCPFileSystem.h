@@ -104,20 +104,20 @@ protected:
     UnicodeString &HostFile, UnicodeString &CurDir, UnicodeString &AFormat,
     UnicodeString &PanelTitle, TFarPanelModes *PanelModes, int &StartPanelMode,
     int &StartSortMode, bool &StartSortOrder, TFarKeyBarTitles *KeyBarTitles,
-    UnicodeString &ShortcutData);
-  virtual bool GetFindDataEx(TObjectList *PanelItems, int OpMode);
-  virtual bool ProcessKeyEx(intptr_t Key, uintptr_t ControlState);
-  virtual bool SetDirectoryEx(UnicodeString Dir, int OpMode);
-  virtual intptr_t MakeDirectoryEx(UnicodeString &Name, int OpMode);
-  virtual bool DeleteFilesEx(TObjectList *PanelItems, int OpMode);
+    UnicodeString &ShortcutData) override;
+  virtual bool GetFindDataEx(TObjectList *PanelItems, int OpMode) override;
+  virtual bool ProcessKeyEx(intptr_t Key, uintptr_t ControlState) override;
+  virtual bool SetDirectoryEx(UnicodeString Dir, int OpMode) override;
+  virtual intptr_t MakeDirectoryEx(UnicodeString &Name, int OpMode) override;
+  virtual bool DeleteFilesEx(TObjectList *PanelItems, int OpMode) override;
   virtual intptr_t GetFilesEx(TObjectList *PanelItems, bool Move,
-    UnicodeString &DestPath, int OpMode);
-  virtual intptr_t PutFilesEx(TObjectList *PanelItems, bool Move, int OpMode);
-  virtual bool ProcessEventEx(intptr_t Event, void *Param);
+    UnicodeString &DestPath, int OpMode) override;
+  virtual intptr_t PutFilesEx(TObjectList *PanelItems, bool Move, int OpMode) override;
+  virtual bool ProcessEventEx(intptr_t Event, void *Param) override;
 
   void ProcessEditorEvent(intptr_t Event, void *Param);
 
-  virtual void HandleException(Exception *E, int OpMode = 0);
+  virtual void HandleException(Exception *E, int OpMode = 0) override;
   void KeepaliveThreadCallback();
 
   bool IsSessionList() const;
@@ -373,7 +373,7 @@ protected:
     DWORD &FileAttributes,
     TDateTime &LastWriteTime, TDateTime &LastAccess,
     DWORD &NumberOfLinks, UnicodeString &Description,
-    UnicodeString &Owner, void *&UserData, int &CustomColumnNumber);
+    UnicodeString &Owner, void *&UserData, int &CustomColumnNumber) override;
 };
 
 class TSessionFolderPanelItem : public TCustomFarPanelItem
