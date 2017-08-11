@@ -2966,12 +2966,9 @@ UnicodeString TGlobalFunctions::GetCurrDirectory() const
 
 UnicodeString TGlobalFunctions::GetStrVersionNumber() const
 {
-  return FORMAT(L"%d.%d.%d", NETBOX_VERSION_MAJOR, NETBOX_VERSION_MINOR, NETBOX_VERSION_PATCH);
+  return FORMAT("%d.%d.%d", NETBOX_VERSION_MAJOR, NETBOX_VERSION_MINOR, NETBOX_VERSION_PATCH);
 }
 
-//bool InputBox(UnicodeString Title, UnicodeString Prompt,
-//  UnicodeString & Text, DWORD Flags, UnicodeString HistoryName = UnicodeString(),
-//  intptr_t MaxLen = 255, TFarInputBoxValidateEvent OnValidate = nullptr);
 bool TGlobalFunctions::InputDialog(UnicodeString ACaption, UnicodeString APrompt,
   UnicodeString &Value, UnicodeString HelpKeyword,
   TStrings *History, bool PathInput,

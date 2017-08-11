@@ -26,8 +26,10 @@ TFarDialog *CreateMoreMessageDialog(UnicodeString Msg,
 TFarDialog *CreateMoreMessageDialogEx(UnicodeString Message, TStrings *MoreMessages,
   TQueryType Type, uintptr_t Answers, UnicodeString HelpKeyword, const TMessageParams *Params);
 uintptr_t ExecuteMessageDialog(TFarDialog *Dialog, uintptr_t Answers, const TMessageParams *Params);
-/*void InsertPanelToMessageDialog(TFarDialog * Form, TPanel * Panel);
+#if 0
+void InsertPanelToMessageDialog(TFarDialog * Form, TPanel * Panel);
 void NavigateMessageDialogToUrl(TFarDialog * Form, UnicodeString Url);*/
+#endif //#if 0
 
 //from windows/GUITools.h
 void ValidateMaskEdit(TFarComboBox *Edit);

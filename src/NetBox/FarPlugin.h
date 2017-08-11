@@ -45,8 +45,7 @@ enum THandlesFunction
 };
 
 #if 0
-typedef void __fastcall (__closure *TFarInputBoxValidateEvent)
-(AnsiString &Text);
+typedef void __fastcall (__closure *TFarInputBoxValidateEvent)(AnsiString &Text);
 #endif // #if 0
 typedef nb::FastDelegate1<void, UnicodeString & /*Text*/> TFarInputBoxValidateEvent;
 #if 0
