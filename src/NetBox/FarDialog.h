@@ -334,7 +334,7 @@ protected:
   virtual bool MouseMove(intptr_t X, intptr_t Y, MOUSE_EVENT_RECORD *Event);
   virtual bool MouseClick(MOUSE_EVENT_RECORD *Event);
   TPoint MouseClientPosition(MOUSE_EVENT_RECORD *Event);
-  void Text(intptr_t X, intptr_t Y, const FarColor &Color, const UnicodeString &Str);
+  void Text(intptr_t X, intptr_t Y, const FarColor &Color, UnicodeString Str);
   void Redraw();
   virtual bool HotKey(char HotKey);
 
