@@ -6,6 +6,10 @@
 #include <Common.h>
 
 #include "FarDialog.h"
+#include <plugin.hpp>
+#pragma warning(push, 1)
+#include <farcolor.hpp>
+#pragma warning(pop)
 
 inline TRect Rect(int Left, int Top, int Right, int Bottom)
 {
@@ -116,8 +120,8 @@ TPoint TFarDialog::GetClientSize() const
   if (FBorderBox)
   {
     TRect R = FBorderBox->GetActualBounds();
-    S.x = (int)R.Width() + 1;
-    S.y = (int)R.Height() + 1;
+    S.x = static_cast<int>(R.Width()) + 1;
+    S.y = static_cast<int>(R.Height()) + 1;
     S.x -= S.x > 4 ? 4 : S.x;
     S.y -= S.y > 2 ? 2 : S.y;
   }
@@ -175,7 +179,7 @@ TPoint TFarDialog::GetSize() const
 {
   if (GetCentered())
   {
-    return TPoint((int)GetBounds().Right, (int)GetBounds().Bottom);
+    return TPoint(static_cast<int>(GetBounds().Right), static_cast<int>(GetBounds().Bottom));
   }
   return TPoint(ToInt(GetBounds().Width() + 1), ToInt(GetBounds().Height() + 1));
 }
@@ -881,7 +885,7 @@ void TFarDialog::LockChanges()
     assert(!FChangesPending);
     if (GetHandle())
     {
-      SendDlgMessage(DM_ENABLEREDRAW, 0, 0);
+      SendDlgMessage(DM_ENABLEREDRAW, 0, nullptr);
     }
   }
 }
@@ -896,7 +900,7 @@ void TFarDialog::UnlockChanges()
     {
       if (GetHandle())
       {
-        this->SendDlgMessage(DM_ENABLEREDRAW, TRUE, 0);
+        this->SendDlgMessage(DM_ENABLEREDRAW, TRUE, nullptr);
       }
     };
     if (FChangesPending)
@@ -2289,7 +2293,7 @@ intptr_t TFarList::GetPosition() const
 {
   TFarDialogItem *DialogItem = GetDialogItem();
   assert(DialogItem != nullptr);
-  return DialogItem->SendDialogMessage(DM_LISTGETCURPOS, 0);
+  return DialogItem->SendDialogMessage(DM_LISTGETCURPOS, nullptr);
 }
 
 intptr_t TFarList::GetTopIndex() const
@@ -2404,7 +2408,7 @@ intptr_t TFarList::ItemProc(intptr_t Msg, void *Param)
   assert(DialogItem != nullptr);
   if (Msg == DN_LISTCHANGE)
   {
-    if ((Param == 0) && (GetCount() == 0))
+    if ((Param == nullptr) && (GetCount() == 0))
     {
       DialogItem->UpdateData(L"");
     }
@@ -2434,7 +2438,7 @@ TFarListBox::~TFarListBox()
 
 intptr_t TFarListBox::ItemProc(intptr_t Msg, void *Param)
 {
-  intptr_t Result;
+  intptr_t Result = 0;
   if (Msg == DN_CONTROLINPUT)
   {
     const INPUT_RECORD *Rec = static_cast<const INPUT_RECORD *>(Param);

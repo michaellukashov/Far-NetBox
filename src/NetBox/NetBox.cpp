@@ -1,6 +1,7 @@
 #include "afxdll.h"
 #include <vcl.h>
 
+#include <plugin.hpp>
 #include <Sysutils.hpp>
 #include <nbutils.h>
 

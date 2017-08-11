@@ -1,6 +1,7 @@
 #include <vcl.h>
 #pragma hdrstop
 
+#include <plugin.hpp>
 #include <Common.h>
 #include "FarPlugin.h"
 #include "FarUtils.h"
@@ -1115,7 +1116,7 @@ intptr_t TCustomFarPlugin::Message(uintptr_t Flags,
   // make the output actually background of FAR screen
   if (FTerminalScreenShowing)
   {
-    FarControl(FCTL_SETUSERSCREEN, 0, 0);
+    FarControl(FCTL_SETUSERSCREEN, 0, nullptr);
   }
 
   intptr_t Result;
@@ -1162,7 +1163,7 @@ intptr_t TCustomFarPlugin::Menu(FARMENUFLAGS Flags, UnicodeString Title,
   const FarKey *BreakKeys, intptr_t &BreakCode)
 {
   DebugAssert(Items && Items->GetCount());
-  intptr_t Result = 0;
+  intptr_t Result;
   FarMenuItem *MenuItems = nb::calloc<FarMenuItem *>(1 + Items->GetCount(), sizeof(FarMenuItem));
   SCOPE_EXIT
   {
@@ -1278,7 +1279,7 @@ void TCustomFarPlugin::Text(int X, int Y, int Color, UnicodeString Str)
 void TCustomFarPlugin::FlushText()
 {
   TFarEnvGuard Guard;
-  FStartupInfo.Text(0, 0, 0, nullptr);
+  FStartupInfo.Text(0, 0, nullptr, nullptr);
 }
 
 void TCustomFarPlugin::FarWriteConsole(UnicodeString Str)
@@ -1448,7 +1449,7 @@ void TCustomFarPlugin::ShowTerminalScreen()
 void TCustomFarPlugin::SaveTerminalScreen()
 {
   FTerminalScreenShowing = false;
-  FarControl(FCTL_SETUSERSCREEN, 0, 0);
+  FarControl(FCTL_SETUSERSCREEN, 0, nullptr);
 }
 
 class TConsoleTitleParam : public TObject
@@ -1667,7 +1668,7 @@ intptr_t TCustomFarPlugin::GetFarSystemSettings() const
       if (GetSystemSetting(Settings, L"DeleteToRecycleBin"))
         FFarSystemSettings |= NBSS_DELETETORECYCLEBIN;
 
-      FStartupInfo.SettingsControl(Settings, SCTL_FREE, 0, 0);
+      FStartupInfo.SettingsControl(Settings, SCTL_FREE, 0, nullptr);
       FValidFarSystemSettings = true;
     }
   }
@@ -1808,8 +1809,8 @@ TCustomFarFileSystem::TCustomFarFileSystem(TObjectClassId Kind, TCustomFarPlugin
   TObject(Kind),
   FPlugin(APlugin),
   FClosed(false),
-  FOwnerFileSystem(nullptr),
-  FOpenPanelInfoValid(false)
+  FOpenPanelInfoValid(false),
+  FOwnerFileSystem(nullptr)
 {
   ClearArray(FPanelInfo);
   ClearStruct(FOpenPanelInfo);
@@ -2111,7 +2112,7 @@ bool TCustomFarFileSystem::UpdatePanel(bool ClearSelection, bool Another)
 {
   uintptr_t PrevInstances = FInstances;
   InvalidateOpenPanelInfo();
-  FPlugin->FarControl(FCTL_UPDATEPANEL, !ClearSelection, 0, Another ? PANEL_PASSIVE : PANEL_ACTIVE);
+  FPlugin->FarControl(FCTL_UPDATEPANEL, !ClearSelection, nullptr, Another ? PANEL_PASSIVE : PANEL_ACTIVE);
   return (FInstances >= PrevInstances);
 }
 
@@ -2123,7 +2124,7 @@ void TCustomFarFileSystem::RedrawPanel(bool Another)
 void TCustomFarFileSystem::ClosePanel()
 {
   FClosed = true;
-  FarControl(FCTL_CLOSEPANEL, 0, 0);
+  FarControl(FCTL_CLOSEPANEL, 0, nullptr);
 }
 
 UnicodeString TCustomFarFileSystem::GetMsg(intptr_t MsgId) const
@@ -2380,7 +2381,7 @@ void TFarKeyBarTitles::SetKeyBarTitle(TFarShiftStatus ShiftStatus,
     LEFT_ALT_PRESSED | SHIFT_PRESSED, // fsAltShift,
     LEFT_CTRL_PRESSED | LEFT_ALT_PRESSED, // fsCtrlAlt
   };
-  Labels[FunctionKey - 1].Key.VirtualKeyCode = VK_F1 + (WORD)FunctionKey - 1;
+  Labels[FunctionKey - 1].Key.VirtualKeyCode = VK_F1 + static_cast<WORD>(FunctionKey) - 1;
   Labels[FunctionKey - 1].Key.ControlKeyState = FKeys[shift];
   Labels[FunctionKey - 1].Text = TCustomFarPlugin::DuplicateStr(Title, /*AllowEmpty=*/true);
   Labels[FunctionKey - 1].LongText = nullptr;
@@ -2578,7 +2579,7 @@ intptr_t TFarPanelInfo::GetSelectedCount(bool CountCurrentItem) const
 
   if ((Count == 1) && FOwner && !CountCurrentItem)
   {
-    intptr_t size = FOwner->FarControl(FCTL_GETSELECTEDPANELITEM, 0, 0);
+    intptr_t size = FOwner->FarControl(FCTL_GETSELECTEDPANELITEM, 0, nullptr);
     PluginPanelItem *ppi = nb::calloc<PluginPanelItem *>(1, size);
     FOwner->FarControl(FCTL_GETSELECTEDPANELITEM, 0, reinterpret_cast<void *>(ppi));
     if ((ppi->Flags & PPIF_SELECTED) == 0)
@@ -2605,7 +2606,7 @@ TObjectList *TFarPanelInfo::GetItems()
     for (size_t Index = 0; Index < FPanelInfo->ItemsNumber; ++Index)
     {
       TODO("move to common function");
-      intptr_t Size = FOwner->FarControl(FCTL_GETPANELITEM, Index, 0);
+      intptr_t Size = FOwner->FarControl(FCTL_GETPANELITEM, Index, nullptr);
       PluginPanelItem *ppi = nb::calloc<PluginPanelItem *>(1, Size);
       FarGetPluginPanelItem gppi;
       ClearStruct(gppi);
@@ -2731,7 +2732,7 @@ TFarPanelType TFarPanelInfo::GetType() const
 
 bool TFarPanelInfo::GetIsPlugin() const
 {
-  return ((FPanelInfo->PluginHandle != INVALID_HANDLE_VALUE) && (FPanelInfo->PluginHandle != 0));
+  return ((FPanelInfo->PluginHandle != INVALID_HANDLE_VALUE) && (FPanelInfo->PluginHandle != nullptr));
 }
 
 UnicodeString TFarPanelInfo::GetCurrDirectory() const
@@ -2739,7 +2740,7 @@ UnicodeString TFarPanelInfo::GetCurrDirectory() const
   UnicodeString Result;
   intptr_t Size = FarPlugin->FarControl(FCTL_GETPANELDIRECTORY,
       0,
-      0,
+      nullptr,
       FOwner != nullptr ? PANEL_ACTIVE : PANEL_PASSIVE);
   if (Size)
   {
@@ -2869,7 +2870,7 @@ intptr_t TFarEditorInfo::GetEditorID() const
 UnicodeString TFarEditorInfo::GetFileName()
 {
   UnicodeString Result;
-  intptr_t BuffLen = FarPlugin->FarEditorControl(ECTL_GETFILENAME, 0, 0);
+  intptr_t BuffLen = FarPlugin->FarEditorControl(ECTL_GETFILENAME, 0, nullptr);
   if (BuffLen)
   {
     wchar_t *Buffer = Result.SetLength(BuffLen + 1);
