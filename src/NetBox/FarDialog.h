@@ -25,17 +25,17 @@ enum TItemPosition
 typedef void __fastcall (__closure *TFarKeyEvent)(TFarDialog *Sender, TFarDialogItem *Item, long KeyCode, bool &Handled);
 #endif // #if 0
 typedef nb::FastDelegate4<void,
-        TFarDialog * /*Sender*/, TFarDialogItem * /*Item*/, long /*KeyCode*/, bool & /*Handled*/> TFarKeyEvent;
+  TFarDialog * /*Sender*/, TFarDialogItem * /*Item*/, long /*KeyCode*/, bool & /*Handled*/> TFarKeyEvent;
 #if 0
 typedef void __fastcall (__closure *TFarMouseClickEvent)(TFarDialogItem *Item, MOUSE_EVENT_RECORD *Event);
 #endif // #if 0
 typedef nb::FastDelegate2<void,
-        TFarDialogItem * /*Item*/, MOUSE_EVENT_RECORD * /*Event*/> TFarMouseClickEvent;
+  TFarDialogItem * /*Item*/, MOUSE_EVENT_RECORD * /*Event*/> TFarMouseClickEvent;
 #if 0
 typedef void __fastcall (__closure *TFarProcessGroupEvent)(TFarDialogItem *Item, void *Arg);
 #endif // #if 0
 typedef nb::FastDelegate2<void,
-        TFarDialogItem * /*Item*/, void * /*Arg*/> TFarProcessGroupEvent;
+  TFarDialogItem * /*Item*/, void * /*Arg*/> TFarProcessGroupEvent;
 
 class TFarDialog : public TObject
 {
@@ -368,7 +368,8 @@ public:
 };
 
 typedef nb::FastDelegate2<void,
-        TFarButton * /*Sender*/, bool & /*Close*/> TFarButtonClickEvent;
+  TFarButton * /*Sender*/, bool & /*Close*/> TFarButtonClickEvent;
+
 enum TFarButtonBrackets
 {
   brNone,
@@ -415,7 +416,7 @@ private:
 };
 
 typedef nb::FastDelegate3<void,
-        TFarDialogItem * /*Sender*/, void * /*NewState*/, bool & /*AllowChange*/> TFarAllowChangeEvent;
+  TFarDialogItem * /*Sender*/, void * /*NewState*/, bool & /*AllowChange*/> TFarAllowChangeEvent;
 
 class TFarCheckBox : public TFarDialogItem
 {

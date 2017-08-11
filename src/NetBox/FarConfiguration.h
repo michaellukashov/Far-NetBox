@@ -90,8 +90,8 @@ protected:
   virtual void Saved() override;
 
 private:
-  intptr_t GetSetting(FARSETTINGS_SUBFOLDERS Root, const wchar_t * Name) const;
-  intptr_t GetConfirmationsSetting(HANDLE & Settings, const wchar_t * Name) const;
+  intptr_t GetSetting(FARSETTINGS_SUBFOLDERS Root, const wchar_t *Name) const;
+  intptr_t GetConfirmationsSetting(HANDLE &Settings, const wchar_t *Name) const;
   intptr_t GetConfirmationsSettings() const;
 
 private:

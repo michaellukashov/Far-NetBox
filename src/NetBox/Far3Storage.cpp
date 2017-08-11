@@ -7,7 +7,7 @@
 
 
 TFar3Storage::TFar3Storage(UnicodeString AStorage,
-  const GUID & Guid, FARAPISETTINGSCONTROL SettingsControl) :
+  const GUID &Guid, FARAPISETTINGSCONTROL SettingsControl) :
   THierarchicalStorage(IncludeTrailingBackslash(AStorage)),
   FPluginSettings(Guid, SettingsControl)
 {
@@ -113,9 +113,9 @@ bool TFar3Storage::DeleteSubKey(UnicodeString SubKey)
   return false;
 }
 
-void TFar3Storage::GetSubKeyNames(TStrings * Strings)
+void TFar3Storage::GetSubKeyNames(TStrings *Strings)
 {
-  FarSettingsEnum Settings = {sizeof(FarSettingsEnum),0,0,0};
+  FarSettingsEnum Settings = {sizeof(FarSettingsEnum), 0, 0, 0};
   Settings.Root = FRoot;
   if (FPluginSettings.GetSubKeyNames(Settings))
   {
@@ -129,16 +129,16 @@ void TFar3Storage::GetSubKeyNames(TStrings * Strings)
   }
 }
 
-void TFar3Storage::GetValueNames(TStrings * Strings) const
+void TFar3Storage::GetValueNames(TStrings *Strings) const
 {
   Strings->Clear();
-  FarSettingsEnum Settings = {sizeof(FarSettingsEnum),0,0,0};
+  FarSettingsEnum Settings = {sizeof(FarSettingsEnum), 0, 0, 0};
   Settings.Root = FRoot;
   if (FPluginSettings.GetSubKeyNames(Settings))
   {
     for (size_t Index = 0; Index < Settings.Count; ++Index)
     {
-      const struct FarSettingsName * Item = &Settings.Items[Index];
+      const struct FarSettingsName *Item = &Settings.Items[Index];
       Strings->Add(Item->Name);
     }
   }
@@ -175,11 +175,11 @@ bool TFar3Storage::ReadBool(UnicodeString Name, bool Default) const
   return FPluginSettings.Get(FRoot, Name.c_str(), Default);
 }
 
-TDateTime TFar3Storage::ReadDateTime(UnicodeString Name, const TDateTime & Default) const
+TDateTime TFar3Storage::ReadDateTime(UnicodeString Name, const TDateTime &Default) const
 {
   TDateTime Result;
   double Val = 0.0;
-  void * Value = reinterpret_cast<void *>(&Val);
+  void *Value = reinterpret_cast<void *>(&Val);
   size_t Sz = sizeof(Val);
   if (FPluginSettings.Get(FRoot, Name.c_str(), Value, Sz) == Sz)
   {
@@ -187,7 +187,7 @@ TDateTime TFar3Storage::ReadDateTime(UnicodeString Name, const TDateTime & Defau
   }
   else
   {
-	  Result = Default;
+    Result = Default;
   }
   return Result;
 }
@@ -196,7 +196,7 @@ double TFar3Storage::ReadFloat(UnicodeString Name, double Default) const
 {
   double Result = 0.0;
   double Val = 0.0;
-  void * Value = reinterpret_cast<void *>(&Val);
+  void *Value = reinterpret_cast<void *>(&Val);
   size_t Sz = sizeof(Val);
   if (FPluginSettings.Get(FRoot, Name.c_str(), Value, Sz) == Sz)
   {
@@ -204,7 +204,7 @@ double TFar3Storage::ReadFloat(UnicodeString Name, double Default) const
   }
   else
   {
-	Result = Default;
+    Result = Default;
   }
   return Result;
 }
@@ -226,7 +226,7 @@ UnicodeString TFar3Storage::ReadStringRaw(UnicodeString Name, UnicodeString Defa
 }
 
 size_t TFar3Storage::ReadBinaryData(UnicodeString Name,
-  void * Buffer, size_t Size) const
+  void *Buffer, size_t Size) const
 {
   return FPluginSettings.Get(FRoot, Name.c_str(), Buffer, Size);
 }
@@ -236,10 +236,10 @@ void TFar3Storage::WriteBool(UnicodeString Name, bool Value)
   FPluginSettings.Set(FRoot, Name.c_str(), Value);
 }
 
-void TFar3Storage::WriteDateTime(UnicodeString Name, const TDateTime & AValue)
+void TFar3Storage::WriteDateTime(UnicodeString Name, const TDateTime &AValue)
 {
   double Val = AValue.operator double();
-  void * Value = reinterpret_cast<void *>(&Val);
+  void *Value = reinterpret_cast<void *>(&Val);
   size_t Sz = sizeof(Val);
   if (!FPluginSettings.Set(FRoot, Name.c_str(), Value, Sz))
   {
@@ -250,7 +250,7 @@ void TFar3Storage::WriteDateTime(UnicodeString Name, const TDateTime & AValue)
 void TFar3Storage::WriteFloat(UnicodeString Name, double AValue)
 {
   double Val = AValue;
-  void * Value = reinterpret_cast<void *>(&Val);
+  void *Value = reinterpret_cast<void *>(&Val);
   size_t sz = sizeof(Val);
   if (!FPluginSettings.Set(FRoot, Name.c_str(), Value, sz))
   {
@@ -274,7 +274,7 @@ void TFar3Storage::WriteInt64(UnicodeString Name, __int64 Value)
 }
 
 void TFar3Storage::WriteBinaryData(UnicodeString Name,
-  const void * Buffer, size_t Size)
+  const void *Buffer, size_t Size)
 {
   FPluginSettings.Set(FRoot, Name.c_str(), Buffer, Size);
 }

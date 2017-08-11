@@ -122,7 +122,7 @@ protected:
 
   bool IsSessionList() const;
   bool Connected() const;
-  const TWinSCPPlugin * GetWinSCPPlugin() const;
+  const TWinSCPPlugin *GetWinSCPPlugin() const;
   TWinSCPPlugin *GetWinSCPPlugin();
   void ShowOperationProgress(TFileOperationProgressType &ProgressData,
     bool Force);

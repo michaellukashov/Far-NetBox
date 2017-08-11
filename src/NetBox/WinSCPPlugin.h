@@ -53,8 +53,8 @@ protected:
   void AboutDialog();
 
 protected:
-  const NetBoxPrivateInfo * GetSystemFunctions() const { return static_cast<const NetBoxPrivateInfo *>(FStartupInfo.Private); }
-  NetBoxPrivateInfo * GetSystemFunctions() { return static_cast<NetBoxPrivateInfo *>(FStartupInfo.Private); }
+  const NetBoxPrivateInfo *GetSystemFunctions() const { return static_cast<const NetBoxPrivateInfo *>(FStartupInfo.Private); }
+  NetBoxPrivateInfo *GetSystemFunctions() { return static_cast<NetBoxPrivateInfo *>(FStartupInfo.Private); }
   void DeleteLocalFile(UnicodeString LocalFileName);
   HANDLE CreateLocalFile(UnicodeString LocalFileName,
     DWORD DesiredAccess, DWORD ShareMode, DWORD CreationDisposition, DWORD FlagsAndAttributes);
