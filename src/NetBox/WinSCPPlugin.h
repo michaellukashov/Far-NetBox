@@ -58,11 +58,11 @@ protected:
   void DeleteLocalFile(UnicodeString LocalFileName);
   HANDLE CreateLocalFile(UnicodeString LocalFileName,
     DWORD DesiredAccess, DWORD ShareMode, DWORD CreationDisposition, DWORD FlagsAndAttributes);
-  DWORD GetLocalFileAttributes(const UnicodeString & LocalFileName) const;
-  BOOL SetLocalFileAttributes(const UnicodeString & LocalFileName, DWORD FileAttributes);
-  BOOL MoveLocalFile(const UnicodeString & LocalFileName, const UnicodeString & NewLocalFileName, DWORD Flags);
-  BOOL RemoveLocalDirectory(const UnicodeString & LocalDirName);
-  BOOL CreateLocalDirectory(const UnicodeString & LocalDirName, LPSECURITY_ATTRIBUTES SecurityAttributes);
+  DWORD GetLocalFileAttributes(UnicodeString LocalFileName) const;
+  bool SetLocalFileAttributes(UnicodeString LocalFileName, DWORD FileAttributes);
+  bool MoveLocalFile(UnicodeString LocalFileName, UnicodeString NewLocalFileName, DWORD Flags);
+  bool RemoveLocalDirectory(UnicodeString LocalDirName);
+  bool CreateLocalDirectory(UnicodeString LocalDirName, LPSECURITY_ATTRIBUTES SecurityAttributes);
 
 private:
   void CleanupConfiguration();

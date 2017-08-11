@@ -801,24 +801,24 @@ DWORD TWinSCPPlugin::GetLocalFileAttributes(UnicodeString LocalFileName) const
   return GetSystemFunctions()->GetFileAttributes(LocalFileName.c_str());
 }
 
-BOOL TWinSCPPlugin::SetLocalFileAttributes(const UnicodeString & LocalFileName, DWORD FileAttributes)
+bool TWinSCPPlugin::SetLocalFileAttributes(UnicodeString LocalFileName, DWORD FileAttributes)
 {
-  return GetSystemFunctions()->SetFileAttributes(LocalFileName.c_str(), FileAttributes);
+  return GetSystemFunctions()->SetFileAttributes(LocalFileName.c_str(), FileAttributes) != FALSE;
 }
 
-BOOL TWinSCPPlugin::MoveLocalFile(const UnicodeString & LocalFileName, const UnicodeString & NewLocalFileName, DWORD Flags)
+bool TWinSCPPlugin::MoveLocalFile(UnicodeString LocalFileName, UnicodeString NewLocalFileName, DWORD Flags)
 {
-  return GetSystemFunctions()->MoveFileEx(LocalFileName.c_str(), NewLocalFileName.c_str(), Flags);
+  return GetSystemFunctions()->MoveFileEx(LocalFileName.c_str(), NewLocalFileName.c_str(), Flags) != FALSE;
 }
 
-BOOL TWinSCPPlugin::RemoveLocalDirectory(const UnicodeString & LocalDirName)
+bool TWinSCPPlugin::RemoveLocalDirectory(UnicodeString LocalDirName)
 {
-  return GetSystemFunctions()->RemoveDirectory(LocalDirName.c_str());
+  return GetSystemFunctions()->RemoveDirectory(LocalDirName.c_str()) != FALSE;
 }
 
-BOOL TWinSCPPlugin::CreateLocalDirectory(const UnicodeString & LocalDirName, LPSECURITY_ATTRIBUTES SecurityAttributes)
+bool TWinSCPPlugin::CreateLocalDirectory(UnicodeString LocalDirName, LPSECURITY_ATTRIBUTES SecurityAttributes)
 {
-  return GetSystemFunctions()->CreateDirectory(LocalDirName.c_str(), SecurityAttributes);
+  return GetSystemFunctions()->CreateDirectory(LocalDirName.c_str(), SecurityAttributes) != FALSE;
 }
 
 void TWinSCPPlugin::CleanupConfiguration()
