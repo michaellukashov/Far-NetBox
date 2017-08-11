@@ -784,19 +784,19 @@ uintptr_t TWinSCPPlugin::MoreMessageDialog(UnicodeString Str,
   return Result;
 }
 
-void TWinSCPPlugin::DeleteLocalFile(const UnicodeString & LocalFileName)
+void TWinSCPPlugin::DeleteLocalFile(UnicodeString LocalFileName)
 {
   GetSystemFunctions()->DeleteFile(LocalFileName.c_str());
 }
 
-HANDLE TWinSCPPlugin::CreateLocalFile(const UnicodeString & LocalFileName,
+HANDLE TWinSCPPlugin::CreateLocalFile(UnicodeString LocalFileName,
   DWORD DesiredAccess, DWORD ShareMode, DWORD CreationDisposition, DWORD FlagsAndAttributes)
 {
   return GetSystemFunctions()->CreateFile(LocalFileName.c_str(), DesiredAccess,
     ShareMode, nullptr, CreationDisposition, FlagsAndAttributes, 0);
 }
 
-DWORD TWinSCPPlugin::GetLocalFileAttributes(const UnicodeString & LocalFileName) const
+DWORD TWinSCPPlugin::GetLocalFileAttributes(UnicodeString LocalFileName) const
 {
   return GetSystemFunctions()->GetFileAttributes(LocalFileName.c_str());
 }
