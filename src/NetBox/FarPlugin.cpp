@@ -757,8 +757,8 @@ class TFarMessageDialog : public TFarDialog
 public:
   explicit TFarMessageDialog(TCustomFarPlugin *Plugin,
     TFarMessageParams *Params);
-  void Init(uintptr_t AFlags,
-    UnicodeString Title, UnicodeString Message, TStrings *Buttons);
+  void Init(uintptr_t AFlags, UnicodeString Title, UnicodeString Message,
+            TStrings *Buttons) override;
 
   intptr_t Execute(bool &ACheckBox);
 
