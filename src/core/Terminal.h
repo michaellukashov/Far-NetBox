@@ -807,6 +807,8 @@ private:
   void InternalTryOpen();
   void InternalDoTryOpen();
   void InitFileSystem();
+
+  void AfterMoveFiles(void * Params);
 };
 
 class NB_CORE_EXPORT TSecondaryTerminal : public TTerminal
