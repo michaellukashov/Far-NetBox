@@ -1993,7 +1993,7 @@ void TRegistry::WriteFloat(UnicodeString Name, double Value)
 
 void TRegistry::WriteString(UnicodeString Name, UnicodeString Value)
 {
-  PutData(Name, Value.c_str(), Value.Length() * sizeof(wchar_t), rdString);
+  WriteStringRaw(Name, Value);
 }
 
 void TRegistry::WriteStringRaw(UnicodeString Name, UnicodeString Value)

@@ -562,10 +562,6 @@ intptr_t TCustomFarPlugin::SetDirectory(const struct SetDirectoryInfo *Info)
   if (!FarFileSystem || !FOpenedPlugins || (FOpenedPlugins->IndexOf(FarFileSystem) == NPOS))
     return 0;
   DebugAssert(FarFileSystem);
-  if (!FarFileSystem)
-  {
-    return 0;
-  }
   UnicodeString PrevCurrentDirectory = FarFileSystem->GetCurrDirectory();
   try
   {
@@ -1134,7 +1130,7 @@ intptr_t TCustomFarPlugin::Message(uintptr_t Flags,
     Result = static_cast<intptr_t>(FStartupInfo.Message(&MainGuid, &MainGuid,
           Flags | FMSG_ALLINONE | FMSG_LEFTALIGN,
           nullptr,
-          static_cast<const wchar_t *const *>(static_cast<const void *>(Items.c_str())), 0, 0));
+          static_cast<const wchar_t * const *>(static_cast<const void *>(Items.c_str())), 0, 0));
   }
   return Result;
 }
