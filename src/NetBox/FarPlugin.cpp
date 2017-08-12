@@ -1131,7 +1131,7 @@ intptr_t TCustomFarPlugin::Message(DWORD Flags,
     Result = static_cast<intptr_t>(FStartupInfo.Message(FStartupInfo.ModuleNumber,
           Flags | FMSG_ALLINONE | FMSG_LEFTALIGN,
           nullptr,
-          static_cast<const wchar_t *const *>(static_cast<const void *>(Items.c_str())), 0, 0));
+          static_cast<const wchar_t * const *>(static_cast<const void *>(Items.c_str())), 0, 0));
   }
   return Result;
 }
