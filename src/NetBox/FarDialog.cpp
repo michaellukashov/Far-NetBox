@@ -2305,7 +2305,6 @@ intptr_t TFarList::GetTopIndex() const
     ClearStruct(ListPos);
     ListPos.StructSize = sizeof(FarListPos);
     TFarDialogItem *DialogItem = GetDialogItem();
-    ListPos.StructSize = sizeof(FarListPos);
     assert(DialogItem != nullptr);
     DialogItem->SendDialogMessage(DM_LISTGETCURPOS, reinterpret_cast<void *>(&ListPos));
     Result = static_cast<intptr_t>(ListPos.TopPos);
