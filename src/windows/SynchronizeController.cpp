@@ -33,8 +33,8 @@ TSynchronizeController::~TSynchronizeController()
 }
 
 void TSynchronizeController::StartStop(TObject * /*Sender*/,
-  bool Start, const TSynchronizeParamType & Params, const TCopyParamType & CopyParam,
-  TSynchronizeOptions * Options,
+  bool Start, const TSynchronizeParamType &Params, const TCopyParamType &CopyParam,
+  TSynchronizeOptions *Options,
   TSynchronizeAbortEvent OnAbort, TSynchronizeThreadsEvent /*OnSynchronizeThreads*/,
   TSynchronizeLogEvent OnSynchronizeLog)
 {
@@ -110,7 +110,7 @@ void TSynchronizeController::StartStop(TObject * /*Sender*/,
 }
 
 void TSynchronizeController::SynchronizeChange(
-  TObject * /*Sender*/, UnicodeString Directory, bool & SubdirsChanged)
+  TObject * /*Sender*/, UnicodeString Directory, bool &SubdirsChanged)
 {
   try
   {
@@ -123,18 +123,18 @@ void TSynchronizeController::SynchronizeChange(
       RootLocalDirectory);
     RemoteDirectory = RemoteDirectory +
       base::ToUnixPath(LocalDirectory.SubString(RootLocalDirectory.Length() + 1,
-        LocalDirectory.Length() - RootLocalDirectory.Length()));
+          LocalDirectory.Length() - RootLocalDirectory.Length()));
 
     SynchronizeLog(slChange, FMTLOAD(SYNCHRONIZE_CHANGE,
-      ::ExcludeTrailingBackslash(LocalDirectory)));
+        ::ExcludeTrailingBackslash(LocalDirectory)));
 
     if (FOnSynchronize != nullptr)
     {
       // this is completely wrong as the options structure
       // can contain non-root specific options in future
-      TSynchronizeOptions * Options =
+      TSynchronizeOptions *Options =
         ((LocalDirectory == RootLocalDirectory) ? FOptions : nullptr);
-      TSynchronizeChecklist * Checklist = nullptr;
+      TSynchronizeChecklist *Checklist = nullptr;
       FOnSynchronize(this, LocalDirectory, RemoteDirectory, FCopyParam,
         FSynchronizeParams, &Checklist, Options, false);
       if (Checklist != nullptr)
@@ -147,7 +147,7 @@ void TSynchronizeController::SynchronizeChange(
           DebugAssert(Checklist != nullptr);
           for (intptr_t Index = 0; Index < Checklist->GetCount(); ++Index)
           {
-            const TChecklistItem * Item = Checklist->GetItem(Index);
+            const TChecklistItem *Item = Checklist->GetItem(Index);
             // note that there may be action saDeleteRemote even if nothing has changed
             // so this is sub-optimal
             if (Item->IsDirectory)
@@ -169,7 +169,7 @@ void TSynchronizeController::SynchronizeChange(
       }
     }
   }
-  catch (Exception & E)
+  catch (Exception &E)
   {
     SynchronizeAbort(isa<EFatal>(&E));
   }
@@ -200,7 +200,7 @@ void TSynchronizeController::LogOperation(TSynchronizeOperation Operation,
 
   default:
     DebugAssert(false);
-    // fallthru
+  // fallthru
 
   case soUpload:
     Entry = slUpload;
@@ -220,12 +220,12 @@ void TSynchronizeController::SynchronizeLog(TSynchronizeLogEntry Entry,
 }
 
 void TSynchronizeController::SynchronizeFilter(TObject * /*Sender*/,
-  UnicodeString DirectoryName, bool & Add)
+  UnicodeString DirectoryName, bool &Add)
 {
   if ((FOptions != nullptr) && (FOptions->Filter != nullptr))
   {
     if (::IncludeTrailingBackslash(::ExtractFilePath(DirectoryName)) ==
-        ::IncludeTrailingBackslash(FSynchronizeParams.LocalDirectory))
+      ::IncludeTrailingBackslash(FSynchronizeParams.LocalDirectory))
     {
       intptr_t FoundIndex;
       Add = FOptions->Filter->Find(base::ExtractFileName(DirectoryName, /*Unix=*/true), FoundIndex);
@@ -247,7 +247,7 @@ void TSynchronizeController::SynchronizeInvalid(
 }
 
 void TSynchronizeController::SynchronizeTooManyDirectories(
-  TObject * /*Sender*/, intptr_t & MaxDirectories)
+  TObject * /*Sender*/, intptr_t &MaxDirectories)
 {
   if (FOnTooManyDirectories != nullptr)
   {

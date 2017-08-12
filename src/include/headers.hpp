@@ -99,13 +99,13 @@ template <class T>
 inline typename std::is_convertible<T, void *>::value
 ToPtr(T a) { return const_cast<void *>(a); }
 template <class T>
-inline void * ToPtr(T a) { return reinterpret_cast<void *>((intptr_t)(a)); }
+inline void *ToPtr(T a) { return reinterpret_cast<void *>((intptr_t)(a)); }
 
 template<typename T>
-inline void ClearStruct(T & s) { ::ZeroMemory(&s, sizeof(s)); }
+inline void ClearStruct(T &s) { ::ZeroMemory(&s, sizeof(s)); }
 
 template<typename T>
-inline void ClearStruct(T * s) { T dont_instantiate_this_template_with_pointers = s; }
+inline void ClearStruct(T *s) { T dont_instantiate_this_template_with_pointers = s; }
 
 template<typename T, size_t N>
 inline void ClearArray(T (&a)[N]) { ::ZeroMemory(a, sizeof(a[0]) * N); }

@@ -23,7 +23,7 @@ extern "C"
 #undef min
 #undef max
 
-extern CRITICAL_SECTION noise_section;
+  extern CRITICAL_SECTION noise_section;
 }
 
 #endif

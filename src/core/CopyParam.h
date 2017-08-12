@@ -61,7 +61,7 @@ struct TUsableCopyParamAttrs
 class NB_CORE_EXPORT TCopyParamType : public TObject
 {
 public:
-  static inline bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TCopyParamType); }
+  static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TCopyParamType); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TCopyParamType) || TObject::is(Kind); }
 private:
   TFileMasks FAsciiFileMask;
@@ -104,43 +104,43 @@ public:
   void SetReplaceInvalidChars(bool Value);
   UnicodeString RestoreChars(UnicodeString AFileName) const;
   void DoGetInfoStr(UnicodeString Separator, intptr_t Attrs,
-    UnicodeString & Result, bool & SomeAttrIncluded,
-    UnicodeString Link, UnicodeString & ScriptArgs, bool & NoScriptArgs,
-    /*TAssemblyLanguage Language, UnicodeString & AssemblyCode, */bool & NoCodeProperties) const;
-  TStrings * GetTransferSkipList() const;
-  void SetTransferSkipList(TStrings * Value);
+    UnicodeString &Result, bool &SomeAttrIncluded,
+    UnicodeString Link, UnicodeString &ScriptArgs, bool &NoScriptArgs,
+    /*TAssemblyLanguage Language, UnicodeString & AssemblyCode, */bool &NoCodeProperties) const;
+  TStrings *GetTransferSkipList() const;
+  void SetTransferSkipList(TStrings *Value);
 
 public:
   explicit TCopyParamType(TObjectClassId Kind = OBJECT_CLASS_TCopyParamType);
-  TCopyParamType(const TCopyParamType & Source);
+  TCopyParamType(const TCopyParamType &Source);
   virtual ~TCopyParamType();
-  TCopyParamType & operator=(const TCopyParamType & rhs);
-  virtual void Assign(const TCopyParamType * Source);
+  TCopyParamType &operator=(const TCopyParamType &rhs);
+  virtual void Assign(const TCopyParamType *Source);
   virtual void Default();
   UnicodeString ChangeFileName(UnicodeString AFileName,
     TOperationSide Side, bool FirstLevel) const;
-  DWORD LocalFileAttrs(const TRights & Rights) const;
+  DWORD LocalFileAttrs(const TRights &Rights) const;
   TRights RemoteFileRights(uintptr_t Attrs) const;
   bool UseAsciiTransfer(UnicodeString AFileName, TOperationSide Side,
-    const TFileMasks::TParams & Params) const;
+    const TFileMasks::TParams &Params) const;
   bool AllowResume(int64_t Size) const;
   bool ResumeTransfer(UnicodeString AFileName) const;
   UnicodeString ValidLocalFileName(UnicodeString AFileName) const;
   UnicodeString ValidLocalPath(UnicodeString APath) const;
   bool AllowAnyTransfer() const;
   bool AllowTransfer(UnicodeString AFileName, TOperationSide Side,
-    bool Directory, const TFileMasks::TParams & Params) const;
+    bool Directory, const TFileMasks::TParams &Params) const;
   bool SkipTransfer(UnicodeString AFileName, bool Directory) const;
 
-  void Load(THierarchicalStorage * Storage);
-  void Save(THierarchicalStorage * Storage) const;
+  void Load(THierarchicalStorage *Storage);
+  void Save(THierarchicalStorage *Storage) const;
   UnicodeString GetInfoStr(UnicodeString Separator, intptr_t Attrs) const;
   bool AnyUsableCopyParam(intptr_t Attrs) const;
   UnicodeString GenerateTransferCommandArgs(
-    intptr_t Attrs, UnicodeString Link, bool & NoScriptArgs) const;
-  UnicodeString GenerateAssemblyCode(TAssemblyLanguage Language, int Attrs, bool & NoCodeProperties) const;
+    intptr_t Attrs, UnicodeString Link, bool &NoScriptArgs) const;
+  UnicodeString GenerateAssemblyCode(TAssemblyLanguage Language, int Attrs, bool &NoCodeProperties) const;
 
-  bool operator==(const TCopyParamType & rhp) const;
+  bool operator==(const TCopyParamType &rhp) const;
 
 #if 0
   __property TFileMasks AsciiFileMask = { read = FAsciiFileMask, write = FAsciiFileMask };
@@ -171,10 +171,10 @@ public:
   __property bool NewerOnly = { read = FNewerOnly, write = FNewerOnly };
 #endif // #if 0
 
-  const TFileMasks & GetAsciiFileMask() const { return FAsciiFileMask; }
-  TFileMasks & GetAsciiFileMask() { return FAsciiFileMask; }
-  void SetAsciiFileMask(const TFileMasks & Value) { FAsciiFileMask = Value; }
-  const TFileNameCase & GetFileNameCase() const { return FFileNameCase; }
+  const TFileMasks &GetAsciiFileMask() const { return FAsciiFileMask; }
+  TFileMasks &GetAsciiFileMask() { return FAsciiFileMask; }
+  void SetAsciiFileMask(const TFileMasks &Value) { FAsciiFileMask = Value; }
+  const TFileNameCase &GetFileNameCase() const { return FFileNameCase; }
   void SetFileNameCase(TFileNameCase Value) { FFileNameCase = Value; }
   bool GetPreserveReadOnly() const { return FPreserveReadOnly; }
   void SetPreserveReadOnly(bool Value) { FPreserveReadOnly = Value; }
@@ -182,9 +182,9 @@ public:
   void SetPreserveTime(bool Value) { FPreserveTime = Value; }
   bool GetPreserveTimeDirs() const { return FPreserveTimeDirs; }
   void SetPreserveTimeDirs(bool Value) { FPreserveTimeDirs = Value; }
-  const TRights & GetRights() const { return FRights; }
-  TRights & GetRights() { return FRights; }
-  void SetRights(const TRights & Value) { FRights.Assign(&Value); }
+  const TRights &GetRights() const { return FRights; }
+  TRights &GetRights() { return FRights; }
+  void SetRights(const TRights &Value) { FRights.Assign(&Value); }
   TTransferMode GetTransferMode() const { return FTransferMode; }
   void SetTransferMode(TTransferMode Value) { FTransferMode = Value; }
   UnicodeString GetLogStr() const;
@@ -205,9 +205,9 @@ public:
   void SetCalculateSize(bool Value) { FCalculateSize = Value; }
   UnicodeString GetFileMask() const { return FFileMask; }
   void SetFileMask(UnicodeString Value) { FFileMask = Value; }
-  const TFileMasks & GetIncludeFileMask() const { return FIncludeFileMask; }
-  TFileMasks & GetIncludeFileMask() { return FIncludeFileMask; }
-  void SetIncludeFileMask(const TFileMasks & Value) { FIncludeFileMask = Value; }
+  const TFileMasks &GetIncludeFileMask() const { return FIncludeFileMask; }
+  TFileMasks &GetIncludeFileMask() { return FIncludeFileMask; }
+  void SetIncludeFileMask(const TFileMasks &Value) { FIncludeFileMask = Value; }
   bool GetClearArchive() const { return FClearArchive; }
   void SetClearArchive(bool Value) { FClearArchive = Value; }
   UnicodeString GetTransferResumeFile() const { return FTransferResumeFile; }
@@ -225,4 +225,4 @@ public:
 
 NB_CORE_EXPORT uintptr_t GetSpeedLimit(UnicodeString Text);
 NB_CORE_EXPORT UnicodeString SetSpeedLimit(uintptr_t Limit);
-NB_CORE_EXPORT void CopySpeedLimits(TStrings * Source, TStrings * Dest);
+NB_CORE_EXPORT void CopySpeedLimits(TStrings *Source, TStrings *Dest);

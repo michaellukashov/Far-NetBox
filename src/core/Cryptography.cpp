@@ -77,7 +77,8 @@ static void hmac_sha1_key(const uint8_t key[], uint32_t key_len, hmac_ctx cx[1])
   if (cx->klen + key_len > IN_BLOCK_LENGTH) /* if the key has to be hashed  */
   {
     if (cx->klen <= IN_BLOCK_LENGTH) /* if the hash has not yet been */
-    { /* started, initialise it and   */
+    {
+      /* started, initialise it and   */
       sha1_begin(cx->ctx); /* hash stored key characters   */
       sha1_hash(cx->key, cx->klen, cx->ctx);
     }
@@ -97,7 +98,8 @@ static void hmac_sha1_data(const uint8_t data[], uint32_t data_len, hmac_ctx cx[
   if (cx->klen != HMAC_IN_DATA) /* if not yet in data phase */
   {
     if (cx->klen > IN_BLOCK_LENGTH) /* if key is being hashed   */
-    { /* complete the hash and    */
+    {
+      /* complete the hash and    */
       sha1_end(cx->key, cx->ctx); /* store the result as the  */
       cx->klen = OUT_BLOCK_LENGTH; /* key and set new length   */
     }
@@ -110,7 +112,7 @@ static void hmac_sha1_data(const uint8_t data[], uint32_t data_len, hmac_ctx cx[
 
     /* xor ipad into key value  */
     for (uint32 i = 0; i < (IN_BLOCK_LENGTH >> 2); ++i)
-      reinterpret_cast<uint32_t*>(cx->key)[i] ^= 0x36363636;
+      reinterpret_cast<uint32_t *>(cx->key)[i] ^= 0x36363636;
 
     /* and start hash operation */
     sha1_begin(cx->ctx);
@@ -122,7 +124,7 @@ static void hmac_sha1_data(const uint8_t data[], uint32_t data_len, hmac_ctx cx[
 
   /* hash the data (if any)       */
   if (data_len)
-  sha1_hash(const_cast<uint8_t *>(data), data_len, cx->ctx);
+    sha1_hash(const_cast<uint8_t *>(data), data_len, cx->ctx);
 }
 
 /* compute and output the MAC value */
@@ -139,7 +141,7 @@ static void hmac_sha1_end(uint8_t mac[], uint32_t mac_len, hmac_ctx cx[1])
 
   /* set outer key value using opad and removing ipad */
   for (i = 0; i < (IN_BLOCK_LENGTH >> 2); ++i)
-    reinterpret_cast<uint32_t*>(cx->key)[i] ^= 0x36363636 ^ 0x5c5c5c5c;
+    reinterpret_cast<uint32_t *>(cx->key)[i] ^= 0x36363636 ^ 0x5c5c5c5c;
 
   /* perform the outer hash operation */
   sha1_begin(cx->ctx);
@@ -154,12 +156,12 @@ static void hmac_sha1_end(uint8_t mac[], uint32_t mac_len, hmac_ctx cx[1])
 
 #define BLOCK_SIZE  16
 
-static void aes_set_encrypt_key(const uint8_t in_key[], uint32_t klen, void * cx)
+static void aes_set_encrypt_key(const uint8_t in_key[], uint32_t klen, void *cx)
 {
   call_aes_setup(cx, BLOCK_SIZE, const_cast<uint8_t *>(in_key), klen);
 }
 
-void aes_encrypt_block(const uint8_t in_blk[], uint8_t out_blk[], void * cx)
+void aes_encrypt_block(const uint8_t in_blk[], uint8_t out_blk[], void *cx)
 {
   intptr_t Index;
   memmove(out_blk, in_blk, BLOCK_SIZE);
@@ -188,7 +190,7 @@ typedef struct
 {
   uint8_t nonce[BLOCK_SIZE]; /* the CTR nonce          */
   uint8_t encr_bfr[BLOCK_SIZE]; /* encrypt buffer         */
-  void * encr_ctx; /* encryption context     */
+  void *encr_ctx;  /* encryption context     */
   hmac_ctx auth_ctx; /* authentication context */
   uint32_t encr_pos; /* block position (enc)   */
   uint32_t pwd_len; /* password length        */
@@ -366,7 +368,7 @@ static int fcrypt_end(uint8_t mac[], fcrypt_ctx cx[1])
 
 #define PASSWORD_MANAGER_AES_MODE 3
 
-static void FillBufferWithRandomData(char * Buf, intptr_t Len)
+static void FillBufferWithRandomData(char *Buf, intptr_t Len)
 {
   while (Len > 0)
   {
@@ -379,13 +381,13 @@ static void FillBufferWithRandomData(char * Buf, intptr_t Len)
 static RawByteString AES256Salt()
 {
   RawByteString Result;
-  char * Buf = Result.SetLength(SALT_LENGTH(PASSWORD_MANAGER_AES_MODE));
+  char *Buf = Result.SetLength(SALT_LENGTH(PASSWORD_MANAGER_AES_MODE));
   FillBufferWithRandomData(Buf, Result.Length());
   return Result;
 }
 
 void AES256EncryptWithMAC(RawByteString Input, UnicodeString Password,
-  RawByteString & Salt, RawByteString & Output, RawByteString & Mac)
+  RawByteString &Salt, RawByteString &Output, RawByteString &Mac)
 {
   fcrypt_ctx aes;
   if (Salt.IsEmpty())
@@ -405,7 +407,7 @@ void AES256EncryptWithMAC(RawByteString Input, UnicodeString Password,
 }
 
 void AES256EncryptWithMAC(RawByteString Input, UnicodeString Password,
-  RawByteString & Output)
+  RawByteString &Output)
 {
   RawByteString Salt;
   RawByteString Encrypted;
@@ -415,7 +417,7 @@ void AES256EncryptWithMAC(RawByteString Input, UnicodeString Password,
 }
 
 bool AES256DecryptWithMAC(RawByteString Input, UnicodeString Password,
-  RawByteString Salt, RawByteString & Output, RawByteString Mac)
+  RawByteString Salt, RawByteString &Output, RawByteString Mac)
 {
   fcrypt_ctx aes;
   DebugAssert(Salt.Length() == SALT_LENGTH(PASSWORD_MANAGER_AES_MODE));
@@ -434,7 +436,7 @@ bool AES256DecryptWithMAC(RawByteString Input, UnicodeString Password,
 }
 
 bool AES256DecryptWithMAC(RawByteString Input, UnicodeString Password,
-  RawByteString & Output)
+  RawByteString &Output)
 {
   bool Result =
     Input.Length() > SALT_LENGTH(PASSWORD_MANAGER_AES_MODE) + MAC_LENGTH(PASSWORD_MANAGER_AES_MODE);
@@ -452,7 +454,7 @@ bool AES256DecryptWithMAC(RawByteString Input, UnicodeString Password,
   return Result;
 }
 
-void AES256CreateVerifier(UnicodeString Input, RawByteString & Verifier)
+void AES256CreateVerifier(UnicodeString Input, RawByteString &Verifier)
 {
   RawByteString Salt = AES256Salt();
   RawByteString Dummy = AES256Salt();
@@ -500,15 +502,15 @@ static uint8_t SScrambleTable[256] =
   206, 222, 188, 152, 210, 243, 96, 41, 86, 180, 101, 177, 166, 141, 212, 116
 };
 
-uint8_t * ScrambleTable;
-uint8_t * UnscrambleTable;
+uint8_t *ScrambleTable;
+uint8_t *UnscrambleTable;
 
 RawByteString ScramblePassword(UnicodeString Password)
 {
 #define SCRAMBLE_LENGTH_EXTENSION 50
   UTF8String UtfPassword = UTF8String(Password);
   intptr_t Len = UtfPassword.Length();
-  char * Buf = nb::chcalloc(Len + SCRAMBLE_LENGTH_EXTENSION);
+  char *Buf = nb::chcalloc(Len + SCRAMBLE_LENGTH_EXTENSION);
   intptr_t Padding = (((Len + 3) / 17) * 17 + 17) - 3 - Len;
   for (intptr_t Index = 0; Index < Padding; ++Index)
   {
@@ -523,7 +525,7 @@ RawByteString ScramblePassword(UnicodeString Password)
   Buf[Padding + 1] = static_cast<char>('0' + ((Len / 10) % 10));
   Buf[Padding + 2] = static_cast<char>('0' + ((Len / 100) % 10));
   strcpy_s(Buf + Padding + 3, UtfPassword.Length(), ToChar(UtfPassword));
-  char * S = Buf;
+  char *S = Buf;
   int Last = 31;
   while (*S != '\0')
   {
@@ -537,10 +539,10 @@ RawByteString ScramblePassword(UnicodeString Password)
   return Result;
 }
 
-bool UnscramblePassword(RawByteString Scrambled, UnicodeString & Password)
+bool UnscramblePassword(RawByteString Scrambled, UnicodeString &Password)
 {
   RawByteString LocalScrambled = Scrambled;
-  char * S = ToChar(LocalScrambled);
+  char *S = ToChar(LocalScrambled);
   int Last = 31;
   while (*S != '\0')
   {

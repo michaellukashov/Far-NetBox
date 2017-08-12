@@ -12,7 +12,7 @@
 #include <nbutils.h>
 
 #if 0
-intptr_t __cdecl debug_printf(const wchar_t * format, ...)
+intptr_t __cdecl debug_printf(const wchar_t *format, ...)
 {
   (void)format;
 #ifndef NDEBUG
@@ -27,7 +27,7 @@ intptr_t __cdecl debug_printf(const wchar_t * format, ...)
   return Len;
 }
 
-intptr_t __cdecl debug_printf2(const char * format, ...)
+intptr_t __cdecl debug_printf2(const char *format, ...)
 {
   (void)format;
 #ifndef NDEBUG
@@ -43,13 +43,13 @@ intptr_t __cdecl debug_printf2(const char * format, ...)
 }
 #endif // #if 0
 
-UnicodeString MB2W(const char * src, const UINT cp)
+UnicodeString MB2W(const char *src, const UINT cp)
 {
   UnicodeString Result(src, NBChTraitsCRT<char>::SafeStringLen(src), cp);
   return Result;
 }
 
-AnsiString W2MB(const wchar_t * src, const UINT cp)
+AnsiString W2MB(const wchar_t *src, const UINT cp)
 {
   AnsiString Result(src, NBChTraitsCRT<wchar_t>::SafeStringLen(src), cp);
   return Result;
@@ -61,7 +61,7 @@ const TDayTable MonthDays[] =
   {31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31}
 };
 
-Exception::Exception(TObjectClassId Kind, Exception * E) :
+Exception::Exception(TObjectClassId Kind, Exception *E) :
   std::runtime_error(E ? E->what() : ""),
   FKind(Kind),
   Message(E ? E->Message : L"")
@@ -75,14 +75,14 @@ Exception::Exception(UnicodeString Msg) :
 {
 }
 
-Exception::Exception(TObjectClassId Kind, const wchar_t * Msg) :
+Exception::Exception(TObjectClassId Kind, const wchar_t *Msg) :
   std::runtime_error(""),
   FKind(Kind),
   Message(Msg)
 {
 }
 
-Exception::Exception(const wchar_t * Msg) :
+Exception::Exception(const wchar_t *Msg) :
   std::runtime_error(""),
   FKind(OBJECT_CLASS_Exception),
   Message(Msg)
@@ -96,7 +96,7 @@ Exception::Exception(TObjectClassId Kind, UnicodeString Msg) :
 {
 }
 
-Exception::Exception(TObjectClassId Kind, std::exception * E) :
+Exception::Exception(TObjectClassId Kind, std::exception *E) :
   std::runtime_error(E ? E->what() : ""),
   FKind(Kind)
 {
@@ -111,7 +111,7 @@ Exception::Exception(TObjectClassId Kind, UnicodeString Msg, intptr_t AHelpConte
   (void)AHelpContext;
 }
 
-Exception::Exception(TObjectClassId Kind, Exception * E, intptr_t Ident) :
+Exception::Exception(TObjectClassId Kind, Exception *E, intptr_t Ident) :
   std::runtime_error(E ? E->what() : ""),
   FKind(Kind)
 {
@@ -213,7 +213,7 @@ int64_t StrToInt64Def(UnicodeString Value, int64_t DefVal)
   return DefVal;
 }
 
-bool TryStrToInt64(UnicodeString StrValue, int64_t & Value)
+bool TryStrToInt64(UnicodeString StrValue, int64_t &Value)
 {
   bool Result = !StrValue.IsEmpty(); // && (StrValue.FindFirstNotOf(L"+-0123456789") == -1);
   if (Result)
@@ -355,12 +355,12 @@ intptr_t LastDelimiter(UnicodeString Delimiters, UnicodeString Str)
   return 0;
 }
 
-int StringCmp(const wchar_t * S1, const wchar_t * S2)
+int StringCmp(const wchar_t *S1, const wchar_t *S2)
 {
   return ::CompareString(0, SORT_STRINGSORT, S1, -1, S2, -1) - 2;
 }
 
-int StringCmpI(const wchar_t * S1, const wchar_t * S2)
+int StringCmpI(const wchar_t *S1, const wchar_t *S2)
 {
   return ::CompareString(0, NORM_IGNORECASE | SORT_STRINGSORT, S1, -1, S2, -1) - 2;
 }
@@ -436,10 +436,10 @@ intptr_t PosEx(UnicodeString SubStr, UnicodeString Str, intptr_t Offset)
 
 UnicodeString UTF8ToString(RawByteString Str)
 {
-  return UnicodeString (Str.c_str(), Str.GetLength(), CP_UTF8);
+  return UnicodeString(Str.c_str(), Str.GetLength(), CP_UTF8);
 }
 
-UnicodeString UTF8ToString(const char * Str, intptr_t Len)
+UnicodeString UTF8ToString(const char *Str, intptr_t Len)
 {
   if (!Str || !*Str || !Len)
   {
@@ -489,7 +489,7 @@ bool IsZero(double Value)
   return fabs(Value) < std::numeric_limits<double>::epsilon();
 }
 
-TTimeStamp DateTimeToTimeStamp(const TDateTime & DateTime)
+TTimeStamp DateTimeToTimeStamp(const TDateTime &DateTime)
 {
   TTimeStamp Result;
   double intpart;
@@ -499,7 +499,7 @@ TTimeStamp DateTimeToTimeStamp(const TDateTime & DateTime)
   return Result;
 }
 
-int64_t FileRead(HANDLE AHandle, void * Buffer, int64_t Count)
+int64_t FileRead(HANDLE AHandle, void *Buffer, int64_t Count)
 {
   int64_t Result;
   DWORD Res = 0;
@@ -514,7 +514,7 @@ int64_t FileRead(HANDLE AHandle, void * Buffer, int64_t Count)
   return Result;
 }
 
-int64_t FileWrite(HANDLE AHandle, const void * Buffer, int64_t Count)
+int64_t FileWrite(HANDLE AHandle, const void *Buffer, int64_t Count)
 {
   int64_t Result;
   DWORD Res = 0;
@@ -599,7 +599,7 @@ UnicodeString FileSearch(UnicodeString AFileName, UnicodeString DirectoryList)
   return Result;
 }
 
-void FileAge(UnicodeString AFileName, TDateTime & ATimestamp)
+void FileAge(UnicodeString AFileName, TDateTime &ATimestamp)
 {
   WIN32_FIND_DATA FindData;
   HANDLE LocalFileHandle = ::FindFirstFileW(ApiPath(AFileName).c_str(), &FindData);
@@ -663,7 +663,7 @@ bool RemoveFile(UnicodeString AFileName)
 }
 
 #if 0
-UnicodeString Format(const wchar_t * Format, ...)
+UnicodeString Format(const wchar_t *Format, ...)
 {
   va_list Args;
   va_start(Args, Format);
@@ -673,20 +673,20 @@ UnicodeString Format(const wchar_t * Format, ...)
   return Result;
 }
 
-UnicodeString FormatV(const wchar_t * Format, va_list Args)
+UnicodeString FormatV(const wchar_t *Format, va_list Args)
 {
   UnicodeString Result;
   if (Format && *Format)
   {
     intptr_t Len = _vscwprintf(Format, Args);
-    wchar_t * Buffer = Result.SetLength(Len + 1);
+    wchar_t *Buffer = Result.SetLength(Len + 1);
     vswprintf(Buffer, Len + 1, Format, Args);
   }
   PackStr(Result);
   return Result;
 }
 
-AnsiString FormatA(const char * Format, ...)
+AnsiString FormatA(const char *Format, ...)
 {
   va_list Args;
   va_start(Args, Format);
@@ -695,7 +695,7 @@ AnsiString FormatA(const char * Format, ...)
   return Result;
 }
 
-AnsiString FormatA(const char * Format, va_list Args)
+AnsiString FormatA(const char *Format, va_list Args)
 {
   if (Format && *Format)
   {
@@ -728,13 +728,13 @@ UnicodeString FmtLoadStr(intptr_t Id, ...)
 
 // Returns the next available word, ignoring whitespace
 static const wchar_t *
-NextWord(const wchar_t * Input)
+NextWord(const wchar_t *Input)
 {
   static UnicodeString Buffer;
-  wchar_t * pBuffer = Buffer.SetLength(NBChTraitsCRT<wchar_t>::SafeStringLen(Input));
-  static const wchar_t * text = nullptr;
+  wchar_t *pBuffer = Buffer.SetLength(1024);
+  static const wchar_t *text = nullptr;
 
-  wchar_t * endOfBuffer = ToWChar(Buffer) + Buffer.GetLength() - 1;
+  wchar_t *endOfBuffer = ToWChar(Buffer) + Buffer.GetLength() - 1;
 
   if (Input)
   {
@@ -782,7 +782,7 @@ UnicodeString WrapText(UnicodeString Line, intptr_t MaxWidth)
   while (Result.Length() == 0)
   {
     intptr_t LineCount = 0;
-    wchar_t * w = nullptr;
+    wchar_t *w = nullptr;
 
     if (LenBuffer)
     {
@@ -801,13 +801,13 @@ UnicodeString WrapText(UnicodeString Line, intptr_t MaxWidth)
          else
            SpaceLeft := SpaceLeft - Width(Word) + SpaceWidth
     */
-    const wchar_t * s = NextWord(Line.c_str());
-    while (*s)
+    const wchar_t *s = NextWord(Line.c_str());
+    while (s && *s)
     {
       intptr_t SpaceLeft = MaxWidth;
 
       /* force the first word to always be completely copied */
-      while (*s)
+      while (s && *s)
       {
         if (Result.Length() == 0)
         {
@@ -890,7 +890,7 @@ UnicodeString WrapText(UnicodeString Line, intptr_t MaxWidth)
   return Result;
 }
 
-UnicodeString TranslateExceptionMessage(Exception * E)
+UnicodeString TranslateExceptionMessage(Exception *E)
 {
   if (E)
   {
@@ -903,7 +903,7 @@ UnicodeString TranslateExceptionMessage(Exception * E)
   return UnicodeString();
 }
 
-void AppendWChar(UnicodeString & Str, const wchar_t Ch)
+void AppendWChar(UnicodeString &Str, const wchar_t Ch)
 {
   if (!Str.IsEmpty() && Str[Str.Length()] != Ch)
   {
@@ -911,7 +911,7 @@ void AppendWChar(UnicodeString & Str, const wchar_t Ch)
   }
 }
 
-void AppendPathDelimiterW(UnicodeString & Str)
+void AppendPathDelimiterW(UnicodeString &Str)
 {
   if (!Str.IsEmpty() && Str[Str.Length()] != L'/' && Str[Str.Length()] != L'\\')
   {
@@ -957,12 +957,12 @@ static UnicodeString ExpandFileName(UnicodeString AFileName)
 {
   UnicodeString Buf(NB_MAX_PATH + 1, 0);
   intptr_t Size = ::GetFullPathNameW(ApiPath(AFileName).c_str(), ToDWord(Buf.Length() - 1),
-    reinterpret_cast<LPWSTR>(ToWChar(Buf)), nullptr);
+      reinterpret_cast<LPWSTR>(ToWChar(Buf)), nullptr);
   if (Size > Buf.Length())
   {
     Buf.SetLength(Size);
     Size = ::GetFullPathNameW(ApiPath(AFileName).c_str(), ToDWord(Buf.Length() - 1),
-      reinterpret_cast<LPWSTR>(ToWChar(Buf)), nullptr);
+        reinterpret_cast<LPWSTR>(ToWChar(Buf)), nullptr);
   }
   UnicodeString Result = UnicodeString(Buf.c_str(), Size);
   return Result;
@@ -985,7 +985,7 @@ UnicodeString ExpandUNCFileName(UnicodeString AFileName)
   return Result;
 }
 
-static DWORD FindMatchingFile(TSearchRec & Rec)
+static DWORD FindMatchingFile(TSearchRec &Rec)
 {
   TFileTime LocalFileTime = {0};
   DWORD Result;
@@ -1022,11 +1022,11 @@ UnicodeString SysErrorMessage(intptr_t ErrorCode)
 {
   wchar_t Buffer[255];
   intptr_t Len = ::FormatMessageW(FORMAT_MESSAGE_FROM_SYSTEM |
-    FORMAT_MESSAGE_ARGUMENT_ARRAY, nullptr, ToInt(ErrorCode), 0,
-    static_cast<LPTSTR>(Buffer),
-    _countof(Buffer), nullptr);
+      FORMAT_MESSAGE_ARGUMENT_ARRAY, nullptr, ToInt(ErrorCode), 0,
+      static_cast<LPTSTR>(Buffer),
+      _countof(Buffer), nullptr);
   while ((Len > 0) && ((Buffer[Len - 1] != 0) &&
-    ((Buffer[Len - 1] <= 32) || (Buffer[Len - 1] == L'.'))))
+      ((Buffer[Len - 1] <= 32) || (Buffer[Len - 1] == L'.'))))
   {
     Len--;
   }
@@ -1115,7 +1115,7 @@ UnicodeString ExcludeTrailingBackslash(UnicodeString Str)
 {
   UnicodeString Result = Str;
   if ((Result.Length() > 0) && ((Result[Result.Length()] == L'/') ||
-    (Result[Result.Length()] == L'\\')))
+      (Result[Result.Length()] == L'\\')))
   {
     Result.SetLength(Result.Length() - 1);
   }
@@ -1252,15 +1252,15 @@ static void ConvertError(intptr_t ErrorID)
 }
 
 static void DivMod(const uintptr_t Dividend, uintptr_t Divisor,
-  uintptr_t & Result, uintptr_t & Remainder)
+  uintptr_t &Result, uintptr_t &Remainder)
 {
   Result = Dividend / Divisor;
   Remainder = Dividend % Divisor;
 }
 
-static bool DecodeDateFully(const TDateTime & DateTime,
-  uint16_t & Year, uint16_t & Month, uint16_t & Day,
-  uint16_t & DOW)
+static bool DecodeDateFully(const TDateTime &DateTime,
+  uint16_t &Year, uint16_t &Month, uint16_t &Day,
+  uint16_t &DOW)
 {
   static const int D1 = 365;
   static const int D4 = D1 * 4 + 1;
@@ -1302,7 +1302,7 @@ static bool DecodeDateFully(const TDateTime & DateTime,
   }
   Y += I;
   bool Result = IsLeapYear(ToWord(Y));
-  const TDayTable * DayTable = &MonthDays[Result];
+  const TDayTable *DayTable = &MonthDays[Result];
   uintptr_t M = 1;
   while (true)
   {
@@ -1320,15 +1320,15 @@ static bool DecodeDateFully(const TDateTime & DateTime,
   return Result;
 }
 
-void DecodeDate(const TDateTime & DateTime, uint16_t & Year,
-  uint16_t & Month, uint16_t & Day)
+void DecodeDate(const TDateTime &DateTime, uint16_t &Year,
+  uint16_t &Month, uint16_t &Day)
 {
   uint16_t Dummy = 0;
   DecodeDateFully(DateTime, Year, Month, Day, Dummy);
 }
 
-void DecodeTime(const TDateTime & DateTime, uint16_t & Hour,
-  uint16_t & Min, uint16_t & Sec, uint16_t & MSec)
+void DecodeTime(const TDateTime &DateTime, uint16_t &Hour,
+  uint16_t &Min, uint16_t &Sec, uint16_t &MSec)
 {
   uintptr_t MinCount, MSecCount;
   DivMod(DateTimeToTimeStamp(DateTime).Time, 60000, MinCount, MSecCount);
@@ -1341,11 +1341,11 @@ void DecodeTime(const TDateTime & DateTime, uint16_t & Hour,
   MSec = static_cast<uint16_t>(MS);
 }
 
-static bool TryEncodeDate(int Year, int Month, int Day, TDateTime & Date)
+static bool TryEncodeDate(int Year, int Month, int Day, TDateTime &Date)
 {
-  const TDayTable * DayTable = &MonthDays[IsLeapYear(ToWord(Year))];
+  const TDayTable *DayTable = &MonthDays[IsLeapYear(ToWord(Year))];
   if ((Year >= 1) && (Year <= 9999) && (Month >= 1) && (Month <= 12) &&
-      (Day >= 1) && (Day <= (*DayTable)[Month - 1]))
+    (Day >= 1) && (Day <= (*DayTable)[Month - 1]))
   {
     for (int Index = 1; Index <= Month - 1; Index++)
     {
@@ -1369,7 +1369,7 @@ TDateTime EncodeDate(int Year, int Month, int Day)
 }
 
 static bool TryEncodeTime(uint32_t Hour, uint32_t Min, uint32_t Sec, uint32_t MSec,
-  TDateTime & Time)
+  TDateTime &Time)
 {
   bool Result = false;
   if ((Hour < 24) && (Min < 60) && (Sec < 60) && (MSec < 1000))
@@ -1397,8 +1397,8 @@ TDateTime StrToDateTime(UnicodeString Value)
   return TDateTime();
 }
 
-bool TryStrToDateTime(UnicodeString StrValue, TDateTime & Value,
-  TFormatSettings & FormatSettings)
+bool TryStrToDateTime(UnicodeString StrValue, TDateTime &Value,
+  TFormatSettings &FormatSettings)
 {
   (void)StrValue;
   (void)Value;
@@ -1407,15 +1407,15 @@ bool TryStrToDateTime(UnicodeString StrValue, TDateTime & Value,
   return false;
 }
 
-UnicodeString DateTimeToStr(UnicodeString & Result, UnicodeString Format,
-  const TDateTime & DateTime)
+UnicodeString DateTimeToStr(UnicodeString &Result, UnicodeString Format,
+  const TDateTime &DateTime)
 {
   (void)Result;
   (void)Format;
   return DateTime.FormatString(const_cast<wchar_t *>(L""));
 }
 
-UnicodeString DateTimeToString(const TDateTime & DateTime)
+UnicodeString DateTimeToString(const TDateTime &DateTime)
 {
   return DateTime.FormatString(const_cast<wchar_t *>(L""));
 }
@@ -1423,7 +1423,7 @@ UnicodeString DateTimeToString(const TDateTime & DateTime)
 // DayOfWeek returns the day of the week of the given date. The Result is an
 // integer between 1 and 7, corresponding to Sunday through Saturday.
 // This function is not ISO 8601 compliant, for that see the DateUtils unit.
-uint32_t DayOfWeek(const TDateTime & DateTime)
+uint32_t DayOfWeek(const TDateTime &DateTime)
 {
   return ::DateTimeToTimeStamp(DateTime).Date % 7 + 1;
 }
@@ -1436,7 +1436,7 @@ TDateTime Date()
   return Result;
 }
 
-UnicodeString FormatDateTime(UnicodeString Fmt, const TDateTime & ADateTime)
+UnicodeString FormatDateTime(UnicodeString Fmt, const TDateTime &ADateTime)
 {
   (void)Fmt;
   UnicodeString Result;
@@ -1489,17 +1489,17 @@ UnicodeString FormatDateTime(UnicodeString Fmt, const TDateTime & ADateTime)
   return Result;
 }
 
-static TDateTime ComposeDateTime(const TDateTime & Date, const TDateTime & Time)
+static TDateTime ComposeDateTime(const TDateTime &Date, const TDateTime &Time)
 {
   TDateTime Result = TDateTime(Date);
   Result += Time;
   return Result;
 }
 
-TDateTime SystemTimeToDateTime(const SYSTEMTIME & SystemTime)
+TDateTime SystemTimeToDateTime(const SYSTEMTIME &SystemTime)
 {
   TDateTime Result = ComposeDateTime(EncodeDate(SystemTime.wYear, SystemTime.wMonth, SystemTime.wDay),
-    EncodeTime(SystemTime.wHour, SystemTime.wMinute, SystemTime.wSecond, SystemTime.wMilliseconds));
+      EncodeTime(SystemTime.wHour, SystemTime.wMinute, SystemTime.wSecond, SystemTime.wMilliseconds));
   return Result;
 }
 
@@ -1513,7 +1513,7 @@ UnicodeString UnixExcludeLeadingBackslash(UnicodeString APath)
   return Result;
 }
 
-static void IncAMonth(Word & Year, Word & Month, Word & Day, Int64 NumberOfMonths = 1)
+static void IncAMonth(Word &Year, Word &Month, Word &Day, Int64 NumberOfMonths = 1)
 {
   Integer Sign;
   if (NumberOfMonths >= 0)
@@ -1528,12 +1528,12 @@ static void IncAMonth(Word & Year, Word & Month, Word & Day, Int64 NumberOfMonth
     Year += ToWord(Sign);
     Month += -12 * ToWord(Sign);
   }
-  const TDayTable * DayTable = &MonthDays[IsLeapYear(Year)];
+  const TDayTable *DayTable = &MonthDays[IsLeapYear(Year)];
   if (Day > (*DayTable)[Month])
     Day = ToWord(*DayTable[Month]);
 }
 
-static void ReplaceTime(TDateTime & DateTime, const TDateTime & NewTime)
+static void ReplaceTime(TDateTime &DateTime, const TDateTime &NewTime)
 {
   DateTime = Trunc(DateTime);
   if (DateTime >= 0)
@@ -1542,13 +1542,13 @@ static void ReplaceTime(TDateTime & DateTime, const TDateTime & NewTime)
     DateTime = DateTime - Abs(Frac(NewTime));
 }
 
-TDateTime IncYear(const TDateTime & AValue, const Int64 ANumberOfYears)
+TDateTime IncYear(const TDateTime &AValue, const Int64 ANumberOfYears)
 {
   TDateTime Result = IncMonth(AValue, ANumberOfYears * MonthsPerYear);
   return Result;
 }
 
-TDateTime IncMonth(const TDateTime & AValue, const Int64 NumberOfMonths)
+TDateTime IncMonth(const TDateTime &AValue, const Int64 NumberOfMonths)
 {
   Word Year, Month, Day;
   DecodeDate(AValue, Year, Month, Day);
@@ -1558,19 +1558,19 @@ TDateTime IncMonth(const TDateTime & AValue, const Int64 NumberOfMonths)
   return Result;
 }
 
-TDateTime IncWeek(const TDateTime & AValue, const Int64 ANumberOfWeeks)
+TDateTime IncWeek(const TDateTime &AValue, const Int64 ANumberOfWeeks)
 {
   TDateTime Result(AValue + ANumberOfWeeks * DaysPerWeek);
   return Result;
 }
 
-TDateTime IncDay(const TDateTime & AValue, const Int64 ANumberOfDays)
+TDateTime IncDay(const TDateTime &AValue, const Int64 ANumberOfDays)
 {
   TDateTime Result(AValue + ANumberOfDays);
   return Result;
 }
 
-TDateTime IncHour(const TDateTime & AValue, const Int64 ANumberOfHours)
+TDateTime IncHour(const TDateTime &AValue, const Int64 ANumberOfHours)
 {
   TDateTime Result;
   if (AValue > 0)
@@ -1580,7 +1580,7 @@ TDateTime IncHour(const TDateTime & AValue, const Int64 ANumberOfHours)
   return Result;
 }
 
-TDateTime IncMinute(const TDateTime & AValue, const Int64 ANumberOfMinutes)
+TDateTime IncMinute(const TDateTime &AValue, const Int64 ANumberOfMinutes)
 {
   TDateTime Result;
   if (AValue > 0)
@@ -1590,7 +1590,7 @@ TDateTime IncMinute(const TDateTime & AValue, const Int64 ANumberOfMinutes)
   return Result;
 }
 
-TDateTime IncSecond(const TDateTime & AValue, const Int64 ANumberOfSeconds)
+TDateTime IncSecond(const TDateTime &AValue, const Int64 ANumberOfSeconds)
 {
   TDateTime Result;
   if (AValue > 0)
@@ -1600,7 +1600,7 @@ TDateTime IncSecond(const TDateTime & AValue, const Int64 ANumberOfSeconds)
   return Result;
 }
 
-TDateTime IncMilliSecond(const TDateTime & AValue, const Int64 ANumberOfMilliSeconds)
+TDateTime IncMilliSecond(const TDateTime &AValue, const Int64 ANumberOfMilliSeconds)
 {
   TDateTime Result;
   if (AValue > 0)
@@ -1687,7 +1687,7 @@ UnicodeString TPath::Combine(UnicodeString APath, UnicodeString FileName)
 
 namespace base {
 
-DWORD FindFirst(UnicodeString AFileName, DWORD LocalFileAttrs, TSearchRec & Rec)
+DWORD FindFirst(UnicodeString AFileName, DWORD LocalFileAttrs, TSearchRec &Rec)
 {
   const DWORD faSpecial = faHidden | faSysFile | faDirectory;
   Rec.ExcludeAttr = (~LocalFileAttrs) & faSpecial;
@@ -1708,7 +1708,7 @@ DWORD FindFirst(UnicodeString AFileName, DWORD LocalFileAttrs, TSearchRec & Rec)
   return Result;
 }
 
-DWORD FindNext(TSearchRec & Rec)
+DWORD FindNext(TSearchRec &Rec)
 {
   DWORD Result;
   if (::FindNextFileW(Rec.FindHandle, &Rec.FindData))
@@ -1718,7 +1718,7 @@ DWORD FindNext(TSearchRec & Rec)
   return Result;
 }
 
-DWORD FindClose(TSearchRec & Rec)
+DWORD FindClose(TSearchRec &Rec)
 {
   DWORD Result = 0;
   if (Rec.FindHandle != INVALID_HANDLE_VALUE)
