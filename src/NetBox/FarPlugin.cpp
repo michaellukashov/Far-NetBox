@@ -561,10 +561,6 @@ intptr_t TCustomFarPlugin::SetDirectory(HANDLE Plugin, const wchar_t *Dir, int O
   if (!FarFileSystem || !FOpenedPlugins || (FOpenedPlugins->IndexOf(FarFileSystem) == NPOS))
     return 0;
   DebugAssert(FarFileSystem);
-  if (!FarFileSystem)
-  {
-    return 0;
-  }
   UnicodeString PrevCurrentDirectory = FarFileSystem->GetCurrDirectory();
   try
   {
