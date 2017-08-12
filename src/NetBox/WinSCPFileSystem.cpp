@@ -1990,7 +1990,7 @@ void TWinSCPFileSystem::CopyFullFileNamesToClipboard()
     TFarPanelInfo *const *PanelInfo = GetPanelInfo();
     const TFarPanelItem *Focused = PanelInfo && *PanelInfo ? (*PanelInfo)->GetFocusedItem() : nullptr;
     if (PanelInfo && *PanelInfo && ((*PanelInfo)->GetSelectedCount() == 0) &&
-      Focused->GetIsParentDirectory())
+      Focused && Focused->GetIsParentDirectory())
     {
       FileNames->Add(base::UnixIncludeTrailingBackslash(FTerminal->RemoteGetCurrentDirectory()));
     }

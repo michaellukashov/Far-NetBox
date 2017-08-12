@@ -1246,8 +1246,7 @@ void TRemoteFile::SetListingStr(UnicodeString Value)
           Day = ToWord(D);
           GetCol();
           int H, Mn, S, MS;
-          Filled =
-            swscanf(Col.c_str(), L"%02d:%02d:%02d.%d", &H, &Mn, &S, &MS);
+          Filled = swscanf(Col.c_str(), L"%02d:%02d:%02d.%d", &H, &Mn, &S, &MS);
           if (Filled == 4)
           {
             Hour = ToWord(H);
@@ -1257,6 +1256,21 @@ void TRemoteFile::SetListingStr(UnicodeString Value)
             // skip TZ (TODO)
             // do not trim leading space of filename
             GetNCol();
+          }
+          else
+          {
+            // format yyyy-mm-dd hh:mm:ss ? // example: 2017-07-27 10:44:52 +0300 TZ
+            Filled = swscanf(Col.c_str(), L"%02d:%02d:%02d", &H, &Mn, &S);
+            if (Filled == 3)
+            {
+              Hour = ToWord(H);
+              Min = ToWord(Mn);
+              Sec = ToWord(S);
+              FModificationFmt = mfFull;
+              // skip TZ (TODO)
+              // do not trim leading space of filename
+              GetNCol();
+            }
           }
         } else {
         // format dd mmm or mmm dd ?
