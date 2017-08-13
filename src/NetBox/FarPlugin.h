@@ -137,7 +137,7 @@ public:
   bool InputBox(UnicodeString Title, UnicodeString Prompt,
     UnicodeString &Text, DWORD Flags, UnicodeString HistoryName = UnicodeString(),
     intptr_t MaxLen = 255, TFarInputBoxValidateEvent OnValidate = nullptr);
-  UnicodeString GetMsg(intptr_t MsgId) const;
+  virtual UnicodeString GetMsg(intptr_t MsgId) const;
   void SaveScreen(HANDLE &Screen);
   void RestoreScreen(HANDLE &Screen);
   bool CheckForEsc() const;
@@ -173,7 +173,7 @@ public:
   TCustomFarFileSystem *GetPanelFileSystem(bool Another = false,
     HANDLE Plugin = INVALID_HANDLE_VALUE);
 
-  UnicodeString GetModuleName() const;
+  virtual UnicodeString GetModuleName() const;
   TFarDialog *GetTopDialog() const { return FTopDialog; }
   HINSTANCE GetHandle() const { return FHandle; }
   uintptr_t GetFarThreadId() const { return FFarThreadId; }
