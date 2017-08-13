@@ -14,11 +14,8 @@ TFarConfiguration::TFarConfiguration(TCustomFarPlugin *APlugin) :
   FBookmarks(new TBookmarks()),
   FFarConfirmations(-1)
 {
-  DEBUG_PRINTF(L"TFarConfiguration::TFarConfiguration 1.1");
   TFarConfiguration::Default();
-  DEBUG_PRINTF(L"TFarConfiguration::TFarConfiguration 1.2");
   CacheFarSettings();
-  DEBUG_PRINTF(L"TFarConfiguration::TFarConfiguration 1.3");
 }
 
 TFarConfiguration::~TFarConfiguration()
@@ -28,10 +25,7 @@ TFarConfiguration::~TFarConfiguration()
 
 void TFarConfiguration::Default()
 {
-  DEBUG_PRINTF(L"TFarConfiguration::Default 1.1");
-
   TGUIConfiguration::Default();
-  DEBUG_PRINTF(L"TFarConfiguration::Default 1.2");
 
   FForceInheritance = false;
   FConfirmOverwritingOverride = false;
@@ -39,19 +33,16 @@ void TFarConfiguration::Default()
 
   SetDisksMenu(true);
   SetDisksMenuHotKey(0);
-  DEBUG_PRINTF(L"TFarConfiguration::Default 1.2.1");
   SetPluginsMenu(true);
   SetPluginsMenuCommands(true);
   SetCommandPrefixes("netbox,ftp,scp,sftp,ftps,http,https,webdav");
   SetSessionNameInTitle(true);
   SetEditorDownloadDefaultMode(true);
-  DEBUG_PRINTF(L"TFarConfiguration::Default 1.2.2");
   SetEditorUploadSameOptions(true);
   FEditorUploadOnSave = true;
   FEditorMultiple = false;
   FQueueBeep = true;
 
-  DEBUG_PRINTF(L"TFarConfiguration::Default 1.3");
   SetCustomPanelModeDetailed(true);
   SetFullScreenDetailed(true);
   SetColumnTypesDetailed("N,S,DM,O,G,R");
@@ -65,7 +56,6 @@ void TFarConfiguration::Default()
   SetPuttygenPath(FormatCommand(::ExtractFilePath(ModuleFileName()) + "putty\\puttygen.exe", L""));
   SetPageantPath(FormatCommand(::ExtractFilePath(ModuleFileName()) + "putty\\pageant.exe", L""));
 
-  DEBUG_PRINTF(L"TFarConfiguration::Default 1.4");
   FBookmarks->Clear();
 }
 

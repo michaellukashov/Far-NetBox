@@ -12,7 +12,6 @@
 
 TConfiguration *CreateConfiguration()
 {
-  DEBUG_PRINTF(L"CreateConfiguration: FarPlugin: %p", (void*)FarPlugin);
   return new TFarConfiguration(FarPlugin);
 }
 

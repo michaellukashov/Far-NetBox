@@ -1427,10 +1427,8 @@ void TRemoteFile::SetListingStr(UnicodeString Value)
         // adjusting default "midnight" time makes no sense
         if (((FModificationFmt == mfMDHM) || (FModificationFmt == mfFull)) && GetTerminal())
         {
-          DEBUG_PRINTF(L"before set FModification: GetTerminal()->GetSessionData() = %p", (void*)GetTerminal()->GetSessionData());
           FModification = ::AdjustDateTimeFromUnix(FModification,
               GetTerminal()->GetSessionData()->GetDSTMode());
-          DEBUG_PRINTF(L"after set FModification: %s", FModification.GetDateString());
         }
 
         if (::IsZero(FLastAccess.GetValue()))
@@ -1457,9 +1455,7 @@ void TRemoteFile::SetListingStr(UnicodeString Value)
             Abort();
           }
         }
-        DEBUG_PRINTF(L"Line: %s", Line);
         FFileName = base::UnixExtractFileName(::Trim(Line));
-        DEBUG_PRINTF(L"FFileName: %s", FFileName);
       }
     }
   }

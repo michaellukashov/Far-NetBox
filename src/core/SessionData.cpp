@@ -116,17 +116,11 @@ TSessionData *TSessionData::Clone() const
 
 void TSessionData::Default()
 {
-  DEBUG_PRINTF(L"TSessionData::Default 1");
   SetHostName(L"");
-  DEBUG_PRINTF(L"TSessionData::Default 1.1");
   SetPortNumber(SshPortNumber);
-  DEBUG_PRINTF(L"TSessionData::Default 1.1");
   SetUserName(L"");
-  DEBUG_PRINTF(L"TSessionData::Default 1.1");
   SetPassword(L"");
-  DEBUG_PRINTF(L"TSessionData::Default 1.1");
   SetNewPassword(L"");
-  DEBUG_PRINTF(L"TSessionData::Default 1.1");
   SetChangePassword(false);
   SetPingInterval(30);
   SetPingType(ptOff);
@@ -135,7 +129,6 @@ void TSessionData::Default()
   SetAgentFwd(false);
   SetAuthTIS(false);
   SetAuthKI(true);
-  DEBUG_PRINTF(L"TSessionData::Default 1.2");
   SetAuthKIPassword(true);
   SetAuthGSSAPI(false);
   SetGSSAPIFwdTGT(false);
@@ -145,7 +138,6 @@ void TSessionData::Default()
   SetSshProt(ssh2only);
   SetSsh2DES(false);
   SetSshNoUserAuth(false);
-  DEBUG_PRINTF(L"TSessionData::Default 2");
   for (intptr_t Index = 0; Index < CIPHER_COUNT; ++Index)
   {
     SetCipher(Index, DefaultCipherList[Index]);
@@ -177,7 +169,6 @@ void TSessionData::Default()
   FOrigProxyMethod = pmNone;
   FTunnelConfigured = false;
 
-  DEBUG_PRINTF(L"TSessionData::Default 3");
   SetProxyMethod(::pmNone);
   SetProxyHost(L"proxy");
   SetProxyPort(ProxyPortNumber);
@@ -282,7 +273,6 @@ void TSessionData::Default()
   SetCustomParam1(L"");
   SetCustomParam2(L"");
 
-  DEBUG_PRINTF(L"TSessionData::Default 4");
 #if 0
   IsWorkspace = false;
   Link = L"";

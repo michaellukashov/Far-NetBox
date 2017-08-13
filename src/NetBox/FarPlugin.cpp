@@ -1571,7 +1571,6 @@ void TCustomFarPlugin::HandleException(Exception *E, int /*OpMode*/)
 
 UnicodeString TCustomFarPlugin::GetMsg(intptr_t MsgId) const
 {
-  DEBUG_PRINTF(L"TCustomFarPlugin::GetMsg 1.1: MsgId: %d", MsgId);
   TFarEnvGuard Guard;
   UnicodeString Result;
   if (FStartupInfo.GetMsg)
@@ -2861,7 +2860,6 @@ HINSTANCE TGlobalFunctions::GetInstanceHandle() const
 
 UnicodeString TGlobalFunctions::GetMsg(intptr_t Id) const
 {
-  DEBUG_PRINTF(L"TGlobalFunctions::GetMsg 1.1");
 #if 0
   HINSTANCE hInstance = GetGlobalFunctions()->GetInstanceHandle();
   intptr_t Length = ::LoadString(hInstance, static_cast<UINT>(Id),
@@ -2874,7 +2872,6 @@ UnicodeString TGlobalFunctions::GetMsg(intptr_t Id) const
   // map Id to PluginString value
   intptr_t PluginStringId = Id;
   const TFarPluginStrings *CurFarPluginStrings = &FarPluginStrings[0];
-  DEBUG_PRINTF(L"TGlobalFunctions::GetMsg 1.2");
   while (CurFarPluginStrings && CurFarPluginStrings->Id)
   {
     if (CurFarPluginStrings->Id == Id)
@@ -2884,9 +2881,7 @@ UnicodeString TGlobalFunctions::GetMsg(intptr_t Id) const
     }
     ++CurFarPluginStrings;
   }
-  DEBUG_PRINTF(L"TGlobalFunctions::GetMsg 1.3");
   DebugAssert(FarPlugin != nullptr);
-  DEBUG_PRINTF(L"TGlobalFunctions::GetMsg 1.4");
   return FarPlugin ? FarPlugin->GetMsg(PluginStringId) : UnicodeString();
 }
 

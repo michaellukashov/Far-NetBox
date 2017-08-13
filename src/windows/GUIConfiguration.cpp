@@ -579,18 +579,14 @@ TGUIConfiguration::~TGUIConfiguration()
 
 void TGUIConfiguration::Default()
 {
-  DEBUG_PRINTF(L"TGUIConfiguration::Default 1.1");
   TConfiguration::Default();
 
-  DEBUG_PRINTF(L"TGUIConfiguration::Default 1.2");
   // reset before call to DefaultLocalized()
   FDefaultCopyParam.Default();
 
   FCopyParamListDefaults = true;
-  DEBUG_PRINTF(L"TGUIConfiguration::Default 1.2.1");
   DefaultLocalized();
 
-  DEBUG_PRINTF(L"TGUIConfiguration::Default 1.3");
   FIgnoreCancelBeforeFinish = TDateTime(0, 0, 3, 0);
   FContinueOnError = false;
   FConfirmCommandSession = true;
@@ -628,7 +624,6 @@ void TGUIConfiguration::Default()
 
 void TGUIConfiguration::DefaultLocalized()
 {
-  DEBUG_PRINTF(L"TGUIConfiguration::DefaultLocalized 1.1");
   if (FCopyParamListDefaults)
   {
     FCopyParamList->Clear();
@@ -636,15 +631,12 @@ void TGUIConfiguration::DefaultLocalized()
     // guard against "empty resource string" from obsolete translations
     // (DefaultLocalized is called for the first time before detection of
     // obsolete translations)
-    DEBUG_PRINTF(L"TGUIConfiguration::DefaultLocalized 1.2");
     if (!LoadStr(COPY_PARAM_PRESET_ASCII).IsEmpty())
     {
-      DEBUG_PRINTF(L"TGUIConfiguration::DefaultLocalized 1.2.1");
       TCopyParamType *CopyParam = new TCopyParamType(FDefaultCopyParam);
       CopyParam->SetTransferMode(tmAscii);
       FCopyParamList->Add(LoadStr(COPY_PARAM_PRESET_ASCII), CopyParam, nullptr);
 
-      DEBUG_PRINTF(L"TGUIConfiguration::DefaultLocalized 1.2.2");
       CopyParam = new TCopyParamType(FDefaultCopyParam);
       CopyParam->SetTransferMode(tmBinary);
       FCopyParamList->Add(LoadStr(COPY_PARAM_PRESET_BINARY), CopyParam, nullptr);
@@ -657,7 +649,6 @@ void TGUIConfiguration::DefaultLocalized()
 
     FCopyParamList->Reset();
   }
-  DEBUG_PRINTF(L"TGUIConfiguration::DefaultLocalized 1.3");
 }
 
 void TGUIConfiguration::UpdateStaticUsage()
