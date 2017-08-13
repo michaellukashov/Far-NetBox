@@ -1787,13 +1787,11 @@ add_executable(testnetbox_04
 )
 
 target_include_directories(testnetbox_04 PRIVATE
-  ${GOOGLETEST_INCLUDES}
   ${TEST_INCLUDES}
 )
 
 target_compile_options(testnetbox_04 PRIVATE
   ${NETBOX_UNICODE_FLAGS}
-  ${GOOGLETEST_DEFINES}
 )
 
 #add_dependencies(testnetbox_04 ${NETBOX_LIBRARIES}
@@ -1801,6 +1799,34 @@ target_compile_options(testnetbox_04 PRIVATE
 #)
 
 target_link_libraries(testnetbox_04 PRIVATE
+  ${NETBOX_LIBRARIES}
+)
+
+#-------------------------------------------------------
+# target testnetbox_05
+
+set(TESTNETBOX_05_SOURCES
+  UnityBuildCore.cpp
+  UnityBuildMain.cpp
+  ../../tests/testnetbox_05.cpp
+)
+
+add_executable(testnetbox_05
+  ${TESTNETBOX_05_SOURCES}
+)
+
+target_include_directories(testnetbox_05 PRIVATE
+  ${GOOGLETEST_INCLUDES}
+  ${TEST_INCLUDES}
+)
+
+target_compile_options(testnetbox_05 PRIVATE
+  ${GOOGLETEST_DEFINES}
+  -DNO_FILEZILLA
+  ${NETBOX_UNICODE_FLAGS}
+)
+
+target_link_libraries(testnetbox_05 PRIVATE
   googletest
   googlemock
   ${NETBOX_LIBRARIES}
