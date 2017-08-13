@@ -305,10 +305,17 @@ TEST_CASE_METHOD(base_fixture_t, "testRemoteFileSetListingStr", "netbox")
   UnicodeString Str1("lrwxrwxrwx    1 root     root             7 2017-08-03 06:05:01 +0300 TZ -> /tmp/TZ");
   RemoteFile.SetListingStr(Str1);
   INFO("FileName 1: " << RemoteFile.GetFileName());
-  REQUIRE(RemoteFile.GetFileName() == "TZ");
+  CHECK(RemoteFile.GetFileName() == "TZ");
 
   UnicodeString Str2("lrwxrwxrwx    1 root     root             7 2017-07-27 10:44:52.404136754 +0300 TZ2 -> /tmp/TZ2");
   RemoteFile.SetListingStr(Str2);
   INFO("FileName 2: " << RemoteFile.GetFileName());
-  REQUIRE(RemoteFile.GetFileName() == "TZ2");
+  CHECK(RemoteFile.GetFileName() == "TZ2");
+}
+
+TEST_CASE_METHOD(base_fixture_t, "testFormatString", "netbox")
+{
+  UnicodeString Line = FORMAT("%1s %1s %-49s %s", "Operation", "Direction", "Values[0]", "Values[1]");
+  INFO("Line: " << Line);
+  CHECK(Line.Length() > 0);
 }
