@@ -1573,7 +1573,9 @@ UnicodeString TCustomFarPlugin::GetMsg(intptr_t MsgId) const
 {
   DEBUG_PRINTF(L"TCustomFarPlugin::GetMsg 1.1: MsgId: %d", MsgId);
   TFarEnvGuard Guard;
-  UnicodeString Result = FStartupInfo.GetMsg(FStartupInfo.ModuleNumber, ToInt(MsgId));
+  UnicodeString Result;
+  if (FStartupInfo.GetMsg)
+    Result = FStartupInfo.GetMsg(FStartupInfo.ModuleNumber, ToInt(MsgId));
   return Result;
 }
 
@@ -1662,7 +1664,8 @@ intptr_t TCustomFarPlugin::FarControl(uintptr_t Command, intptr_t Param1, intptr
 intptr_t TCustomFarPlugin::FarAdvControl(uintptr_t Command, void *Param) const
 {
   TFarEnvGuard Guard;
-  return FStartupInfo.AdvControl(FStartupInfo.ModuleNumber, ToInt(Command), Param);
+  return FStartupInfo.AdvControl ?
+        FStartupInfo.AdvControl(FStartupInfo.ModuleNumber, ToInt(Command), Param) : 0;
 }
 
 intptr_t TCustomFarPlugin::FarEditorControl(uintptr_t Command, void *Param)
