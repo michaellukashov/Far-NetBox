@@ -1455,7 +1455,9 @@ void TRemoteFile::SetListingStr(UnicodeString Value)
             Abort();
           }
         }
+        DEBUG_PRINTF(L"Line: %s", Line);
         FFileName = base::UnixExtractFileName(::Trim(Line));
+        DEBUG_PRINTF(L"FFileName: %s", FFileName);
       }
     }
   }
