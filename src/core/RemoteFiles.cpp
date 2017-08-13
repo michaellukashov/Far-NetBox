@@ -1427,7 +1427,7 @@ void TRemoteFile::SetListingStr(UnicodeString Value)
         // adjusting default "midnight" time makes no sense
         if (((FModificationFmt == mfMDHM) || (FModificationFmt == mfFull)) && GetTerminal())
         {
-          DEBUG_PRINTF(L"before set FModification");
+          DEBUG_PRINTF(L"before set FModification: GetTerminal()->GetSessionData() = %p", (void*)GetTerminal()->GetSessionData());
           FModification = ::AdjustDateTimeFromUnix(FModification,
               GetTerminal()->GetSessionData()->GetDSTMode());
           DEBUG_PRINTF(L"after set FModification: %s", FModification.GetDateString());
