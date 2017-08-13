@@ -11,16 +11,16 @@
 
 static TGlobals *GlobalFunctions = nullptr;
 
-void SetGlobals(TGlobals *Value)
-{
-  DebugAssert((GlobalFunctions == nullptr) || (Value == nullptr));
-  GlobalFunctions = Value;
-}
-
 TGlobals *GetGlobals()
 {
   DebugAssert(GlobalFunctions != nullptr);
   return GlobalFunctions;
+}
+
+void SetGlobals(TGlobals *Value)
+{
+  DebugAssert((GlobalFunctions == nullptr) || (Value == nullptr));
+  GlobalFunctions = Value;
 }
 
 #if (_MSC_VER >= 1900)
