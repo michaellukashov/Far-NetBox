@@ -8668,7 +8668,7 @@ bool TQueueDialog::FillQueueItemLine(UnicodeString &Line,
     }
   }
 
-  Line = FORMAT("%1s %1s  %-49s %s",
+  Line = FORMAT("%1s %1s %-49s %s",
       Operation, Direction, Values[0], Values[1]);
 
   return true;
