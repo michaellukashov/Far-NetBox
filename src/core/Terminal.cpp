@@ -1109,7 +1109,7 @@ intptr_t TParallelOperation::GetNext(TTerminal *Terminal, UnicodeString &FileNam
 
 TTerminal::TTerminal(TObjectClassId Kind) :
   TSessionUI(Kind),
-  FSessionData(nullptr),
+  FSessionData(new TSessionData(L"")),
   FLog(nullptr),
   FActionLog(nullptr),
   FConfiguration(nullptr),
@@ -1168,7 +1168,6 @@ void TTerminal::Init(TSessionData *SessionData,
   TConfiguration *Configuration)
 {
   FConfiguration = Configuration;
-  FSessionData = new TSessionData(L"");
   FSessionData->Assign(SessionData);
   TDateTime Started = Now(); // use the same time for session and XML log
   FLog = new TSessionLog(this, Started, FSessionData, FConfiguration);
