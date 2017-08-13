@@ -300,7 +300,7 @@ TEST_CASE_METHOD(base_fixture_t, "testStringList", "netbox")
 
 TEST_CASE_METHOD(base_fixture_t, "testFormatString", "netbox")
 {
-  UnicodeString Line = FORMAT("%1s %1s %-49s %s", "Operation", "Direction", "Values[0]", "Values[1]");
+  UnicodeString Line = FORMAT("%1s %1s %-49s %s", "Operation", "Direction", "Values0", "Values1");
   INFO("Line: " << Line);
   CHECK(Line.Length() > 0);
 }
