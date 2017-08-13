@@ -1625,14 +1625,14 @@ set(TEST_INCLUDES
   ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-set(GOOLETEST_INCLUDES
+set(GOOGLETEST_INCLUDES
   ../../libs/googlemock
   ../../libs/googlemock/include
   ../../libs/googletest
   ../../libs/googletest/include
 )
 
-set(GOOLETEST_DEFINES
+set(GOOGLETEST_DEFINES
   -DGTEST_DONT_DEFINE_FAIL -DGTEST_DONT_DEFINE_SUCCEED
 )
 
@@ -1644,12 +1644,12 @@ add_library(googletest STATIC
 )
 
 target_include_directories(googletest PRIVATE
-  ${GOOLETEST_INCLUDES}
+  ${GOOGLETEST_INCLUDES}
 )
 
 target_compile_options(googletest PRIVATE
   -DGOOGLETEST_EXPORT
-  ${GOOLETEST_DEFINES}
+  ${GOOGLETEST_DEFINES}
   ${NETBOX_UNICODE_FLAGS}
 )
 
@@ -1661,12 +1661,12 @@ add_library(googlemock STATIC
 )
 
 target_include_directories(googlemock PRIVATE
-  ${GOOLETEST_INCLUDES}
+  ${GOOGLETEST_INCLUDES}
 )
 
 target_compile_options(googlemock PRIVATE
   -DGOOGLEMOCK_EXPORT
-  ${GOOLETEST_DEFINES}
+  ${GOOGLETEST_DEFINES}
   ${NETBOX_UNICODE_FLAGS}
 )
 
@@ -1787,13 +1787,13 @@ add_executable(testnetbox_04
 )
 
 target_include_directories(testnetbox_04 PRIVATE
-  ${GOOLETEST_INCLUDES}
+  ${GOOGLETEST_INCLUDES}
   ${TEST_INCLUDES}
 )
 
 target_compile_options(testnetbox_04 PRIVATE
   ${NETBOX_UNICODE_FLAGS}
-  ${GOOLETEST_DEFINES}
+  ${GOOGLETEST_DEFINES}
 )
 
 #add_dependencies(testnetbox_04 ${NETBOX_LIBRARIES}
