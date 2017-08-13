@@ -316,7 +316,9 @@ TEST_CASE_METHOD(base_fixture_t, "testRemoteFileSetListingStr", "netbox")
   //StrictMockTerminal.Init(&SessionData, &Configuration);
   {
     TRemoteFile RemoteFile1(nullptr);
+    INFO("testRemoteFileSetListingStr 1");
     RemoteFile1.SetTerminal(&StrictMockTerminal);
+    INFO("testRemoteFileSetListingStr 2");
     UnicodeString Str1("lrwxrwxrwx    1 root     root             7 2017-08-03 06:05:01 +0300 TZ -> /tmp/TZ");
     RemoteFile1.SetListingStr(Str1);
     INFO("FileName1: " << RemoteFile1.GetFileName());
