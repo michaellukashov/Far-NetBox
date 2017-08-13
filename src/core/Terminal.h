@@ -735,7 +735,7 @@ public:
   bool RemoveLocalDirectory(UnicodeString LocalDirName);
   bool CreateLocalDirectory(UnicodeString LocalDirName, LPSECURITY_ATTRIBUTES SecurityAttributes);
 
-  TSessionData *GetSessionData() const { return FSessionData; }
+  virtual TSessionData *GetSessionData() const { return FSessionData; }
   TSessionLog *GetLog() const { return FLog; }
   TSessionLog *GetLog() { return FLog; }
   TActionLog *GetActionLog() const { return FActionLog; }
