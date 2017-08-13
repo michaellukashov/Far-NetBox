@@ -214,8 +214,7 @@ public:
 #endif // #if 0
 
 public:
-  // TConfiguration() : TObject(OBJECT_CLASS_TConfiguration) {}
-  explicit TConfiguration(TObjectClassId Kind);
+  explicit TConfiguration(TObjectClassId Kind = OBJECT_CLASS_TConfiguration);
   virtual ~TConfiguration();
   virtual void Default();
   virtual void UpdateStaticUsage();
