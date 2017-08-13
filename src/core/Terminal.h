@@ -534,7 +534,7 @@ protected:
     const UnicodeString TargetDir, const TCopyParamType *CopyParam,
     TFileOperationProgressType *OperationProgress, bool Parallel, TStrings *Files);
   void LogTotalTransferDone(TFileOperationProgressType *OperationProgress);
-  virtual TTerminal *GetPasswordSource();
+  virtual TTerminal *GetPasswordSource() { return this; }
   virtual const TTerminal *GetPasswordSource() const { return this; }
   void DoEndTransaction(bool Inform);
   bool VerifyCertificate(
