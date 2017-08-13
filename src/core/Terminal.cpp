@@ -1951,11 +1951,6 @@ bool TTerminal::PromptUser(TSessionData *Data, TPromptKind Kind,
   return DoPromptUser(Data, Kind, AName, Instructions, Prompts, Results);
 }
 
-TTerminal *TTerminal::GetPasswordSource()
-{
-  return this;
-}
-
 bool TTerminal::DoPromptUser(TSessionData * /*Data*/, TPromptKind Kind,
   UnicodeString Name, UnicodeString Instructions, TStrings *Prompts, TStrings *Response)
 {
