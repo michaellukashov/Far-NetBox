@@ -1573,9 +1573,9 @@ void TTerminal::InitFileSystem()
   }
   else if ((FSProtocol == fsFTP) && (GetSessionData()->GetFtps() != ftpsNone))
   {
-#if defined(NO_FILEZILLA) && defined(MPEXT_NO_SSLDLL)
-    LogEvent("FTPS protocol is not supported by this build.");
-    FatalError(nullptr, LoadStr(FTPS_UNSUPPORTED));
+#if defined(NO_FILEZILLA)
+    LogEvent("FTP protocol is not supported by this build.");
+    FatalError(nullptr, "FTP is not supported");
 #else
     FFSProtocol = cfsFTPS;
     FFileSystem = new TFTPFileSystem(this);
