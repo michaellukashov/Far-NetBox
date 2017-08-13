@@ -1604,7 +1604,7 @@ add_dependencies(NetBox copy_to_plugin_dir)
 if(OPT_COMPILE_TESTS)
 
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
-set(test_includes
+set(TEST_INCLUDES
   ../../libs/openssl/${OPENSSL_INC_DIR}/include
   ../../libs/putty
   ../../libs/putty/windows
@@ -1623,6 +1623,51 @@ set(test_includes
   ../windows
   ../PluginSDK/${FAR_VERSION}
   ${CMAKE_CURRENT_SOURCE_DIR}
+)
+
+set(GOOLETEST_INCLUDES
+  ../../libs/googlemock
+  ../../libs/googlemock/include
+  ../../libs/googletest
+  ../../libs/googletest/include
+)
+
+set(GOOLETEST_DEFINES
+  -DGTEST_DONT_DEFINE_FAIL -DGTEST_DONT_DEFINE_SUCCEED
+)
+
+#-------------------------------------------------------
+# target googletest
+
+add_library(googletest STATIC
+  ../../libs/googletest/src/gtest-all.cc
+)
+
+target_include_directories(googletest PRIVATE
+  ${GOOLETEST_INCLUDES}
+)
+
+target_compile_options(googletest PRIVATE
+  -DGOOGLETEST_EXPORT
+  ${GOOLETEST_DEFINES}
+  ${NETBOX_UNICODE_FLAGS}
+)
+
+#-------------------------------------------------------
+# target googlemock
+
+add_library(googlemock STATIC
+  ../../libs/googlemock/src/gmock-all.cc
+)
+
+target_include_directories(googlemock PRIVATE
+  ${GOOLETEST_INCLUDES}
+)
+
+target_compile_options(googlemock PRIVATE
+  -DGOOGLEMOCK_EXPORT
+  ${GOOLETEST_DEFINES}
+  ${NETBOX_UNICODE_FLAGS}
 )
 
 #-------------------------------------------------------
@@ -1646,14 +1691,15 @@ set(TESTNETBOX_01_SOURCES
   ../../tests/testnetbox_01.cpp
 )
 
-add_executable(testnetbox_01 ${TESTNETBOX_01_SOURCES})
+add_executable(testnetbox_01
+  ${TESTNETBOX_01_SOURCES}
+)
 
 target_include_directories(testnetbox_01 PRIVATE
-  ${test_includes}
+  ${TEST_INCLUDES}
 )
 
 target_compile_options(testnetbox_01 PRIVATE
-  -D_CRT_SECURE_NO_WARNINGS -D_CRT_NON_CONFORMING_SWPRINTFS
   ${NETBOX_UNICODE_FLAGS}
 )
 
@@ -1671,14 +1717,15 @@ set(TESTNETBOX_02_SOURCES
   ../../tests/testnetbox_02.cpp
 )
 
-add_executable(testnetbox_02 ${TESTNETBOX_02_SOURCES})
+add_executable(testnetbox_02
+  ${TESTNETBOX_02_SOURCES}
+)
 
 target_include_directories(testnetbox_02 PRIVATE
-  ${test_includes}
+  ${TEST_INCLUDES}
 )
 
 target_compile_options(testnetbox_02 PRIVATE
-  -D_CRT_SECURE_NO_WARNINGS -D_CRT_NON_CONFORMING_SWPRINTFS
   ${NETBOX_UNICODE_FLAGS}
 )
 
@@ -1702,10 +1749,12 @@ set(TESTNETBOX_03_SOURCES
   ../../tests/testnetbox_03.cpp
 )
 
-add_executable(testnetbox_03 ${TESTNETBOX_03_SOURCES})
+add_executable(testnetbox_03
+  ${TESTNETBOX_03_SOURCES}
+)
 
 target_include_directories(testnetbox_03 PRIVATE
-  ${test_includes}
+  ${TEST_INCLUDES}
 )
 
 set_target_properties(testnetbox_03
@@ -1715,7 +1764,6 @@ set_target_properties(testnetbox_03
 )
 
 target_compile_options(testnetbox_03 PRIVATE
-  -D_CRT_SECURE_NO_WARNINGS -D_CRT_NON_CONFORMING_SWPRINTFS
   ${NETBOX_UNICODE_FLAGS}
 )
 
@@ -1734,21 +1782,18 @@ set(TESTNETBOX_04_SOURCES
   ../../tests/testnetbox_04.rc
 )
 
-add_executable(testnetbox_04 ${TESTNETBOX_04_SOURCES})
-
-target_include_directories(testnetbox_04 PRIVATE
-  ${test_includes}
+add_executable(testnetbox_04
+  ${TESTNETBOX_04_SOURCES}
 )
 
-set_target_properties(testnetbox_04
-  PROPERTIES
-  COMPILE_FLAGS "${NETBOX_CXX_FLAGS}"
-  LINK_FLAGS "${CMAKE_LINK_FLAGS} /ignore:4099 /verbose:lib"
+target_include_directories(testnetbox_04 PRIVATE
+  ${GOOLETEST_INCLUDES}
+  ${TEST_INCLUDES}
 )
 
 target_compile_options(testnetbox_04 PRIVATE
-  -D_CRT_SECURE_NO_WARNINGS -D_CRT_NON_CONFORMING_SWPRINTFS
   ${NETBOX_UNICODE_FLAGS}
+  ${GOOLETEST_DEFINES}
 )
 
 #add_dependencies(testnetbox_04 ${NETBOX_LIBRARIES}
@@ -1756,6 +1801,8 @@ target_compile_options(testnetbox_04 PRIVATE
 #)
 
 target_link_libraries(testnetbox_04 PRIVATE
+  googletest
+  googlemock
   ${NETBOX_LIBRARIES}
 )
 
