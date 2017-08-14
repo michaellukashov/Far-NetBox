@@ -177,7 +177,7 @@ public:
   TFarDialog *GetTopDialog() const { return FTopDialog; }
   HINSTANCE GetHandle() const { return FHandle; }
   uintptr_t GetFarThreadId() const { return FFarThreadId; }
-  FarStandardFunctions &GetFarStandardFunctions() { return FFarStandardFunctions; }
+  const FarStandardFunctions &GetFarStandardFunctions() const { return FFarStandardFunctions; }
 
 protected:
   TGlobalsIntfInitializer<TGlobalFunctions> FGlobalsIntfInitializer;
