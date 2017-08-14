@@ -534,7 +534,7 @@ protected:
     const UnicodeString TargetDir, const TCopyParamType *CopyParam,
     TFileOperationProgressType *OperationProgress, bool Parallel, TStrings *Files);
   void LogTotalTransferDone(TFileOperationProgressType *OperationProgress);
-  virtual TTerminal *GetPasswordSource();
+  virtual TTerminal *GetPasswordSource() { return this; }
   virtual const TTerminal *GetPasswordSource() const { return this; }
   void DoEndTransaction(bool Inform);
   bool VerifyCertificate(
@@ -735,8 +735,7 @@ public:
   bool RemoveLocalDirectory(UnicodeString LocalDirName);
   bool CreateLocalDirectory(UnicodeString LocalDirName, LPSECURITY_ATTRIBUTES SecurityAttributes);
 
-  TSessionData *GetSessionData() const { return FSessionData; }
-  TSessionData *GetSessionData() { return FSessionData; }
+  virtual TSessionData *GetSessionData() const { return FSessionData; }
   TSessionLog *GetLog() const { return FLog; }
   TSessionLog *GetLog() { return FLog; }
   TActionLog *GetActionLog() const { return FActionLog; }

@@ -1608,7 +1608,7 @@ void TWinSCPFileSystem::TerminalSynchronizeDirectory(
     Message += ::StringOfChar(L' ', ProgressWidth - Message.Length()) + L"\n";
     Message += RemoteLabel + base::MinimizeName(RemoteDirectory,
         ProgressWidth - RemoteLabel.Length(), true) + L"\n";
-    Message += StartTimeLabel + FSynchronizationStart.TimeString(false) + L"\n";
+    Message += StartTimeLabel + FSynchronizationStart.GetTimeString(false) + L"\n";
     Message += TimeElapsedLabel +
       FormatDateTimeSpan(GetConfiguration()->TimeFormat(), TDateTime(Now() - FSynchronizationStart)) + L"\n";
 
@@ -3539,7 +3539,7 @@ void TWinSCPFileSystem::ShowOperationProgress(
       }
       else
       {
-        Value = ProgressData.GetStartTime().TimeString(true);
+        Value = ProgressData.GetStartTime().GetTimeString(true);
         LabelText = StartTimeLabel;
       }
       StatusLine = StatusLine + LabelText +

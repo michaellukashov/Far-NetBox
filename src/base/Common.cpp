@@ -2173,8 +2173,8 @@ UnicodeString GetTimeZoneLogString()
         CurrentParams->StandardName,
         FormatTimeZone(CurrentParams->BaseDifferenceSec + CurrentParams->DaylightDifferenceSec),
         CurrentParams->DaylightName,
-        CurrentParams->DaylightDate.DateString(),
-        CurrentParams->StandardDate.DateString());
+        CurrentParams->DaylightDate.GetDateString(),
+        CurrentParams->StandardDate.GetDateString());
   }
 
   return Result;

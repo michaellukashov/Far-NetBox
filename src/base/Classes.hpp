@@ -433,8 +433,8 @@ public:
   {
     return !(operator==(rhs));
   }
-  UnicodeString DateString() const;
-  UnicodeString TimeString(bool Short) const;
+  UnicodeString GetDateString() const;
+  UnicodeString GetTimeString(bool Short) const;
   UnicodeString FormatString(wchar_t *fmt) const;
   void DecodeDate(uint16_t &Y, uint16_t &M, uint16_t &D) const;
   void DecodeTime(uint16_t &H, uint16_t &N, uint16_t &S, uint16_t &MS) const;

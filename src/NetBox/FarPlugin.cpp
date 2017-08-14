@@ -1587,7 +1587,9 @@ void TCustomFarPlugin::HandleException(Exception *E, OPERATION_MODES /*OpMode*/)
 UnicodeString TCustomFarPlugin::GetMsg(intptr_t MsgId) const
 {
   TFarEnvGuard Guard;
-  UnicodeString Result = FStartupInfo.GetMsg(&MainGuid, ToInt(MsgId));
+  UnicodeString Result;
+  if (FStartupInfo.GetMsg)
+    Result = FStartupInfo.GetMsg(&MainGuid, ToInt(MsgId));
   return Result;
 }
 
@@ -1695,7 +1697,8 @@ intptr_t TCustomFarPlugin::FarControl(FILE_CONTROL_COMMANDS Command, intptr_t Pa
 intptr_t TCustomFarPlugin::FarAdvControl(ADVANCED_CONTROL_COMMANDS Command, intptr_t Param1, void *Param2) const
 {
   TFarEnvGuard Guard;
-  return FStartupInfo.AdvControl(&MainGuid, Command, Param1, Param2);
+  return FStartupInfo.AdvControl ?
+    FStartupInfo.AdvControl(&MainGuid, Command, Param1, Param2) : 0;
 }
 
 intptr_t TCustomFarPlugin::FarEditorControl(EDITOR_CONTROL_COMMANDS Command, intptr_t Param1, void *Param2) const

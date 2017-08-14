@@ -11,16 +11,16 @@
 
 static TGlobals *GlobalFunctions = nullptr;
 
-void SetGlobals(TGlobals *Value)
-{
-  DebugAssert((GlobalFunctions == nullptr) || (Value == nullptr));
-  GlobalFunctions = Value;
-}
-
 TGlobals *GetGlobals()
 {
   DebugAssert(GlobalFunctions != nullptr);
   return GlobalFunctions;
+}
+
+void SetGlobals(TGlobals *Value)
+{
+  DebugAssert((GlobalFunctions == nullptr) || (Value == nullptr));
+  GlobalFunctions = Value;
 }
 
 #if (_MSC_VER >= 1900)
@@ -1127,7 +1127,7 @@ bool TDateTime::operator==(const TDateTime &rhs) const
   return ::IsZero(FValue - rhs.FValue);
 }
 
-UnicodeString TDateTime::DateString() const
+UnicodeString TDateTime::GetDateString() const
 {
   uint16_t Y, M, D;
   DecodeDate(Y, M, D);
@@ -1135,7 +1135,7 @@ UnicodeString TDateTime::DateString() const
   return Result;
 }
 
-UnicodeString TDateTime::TimeString(bool Short) const
+UnicodeString TDateTime::GetTimeString(bool Short) const
 {
   uint16_t H, N, S, MS;
   DecodeTime(H, N, S, MS);

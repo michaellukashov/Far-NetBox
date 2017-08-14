@@ -239,7 +239,9 @@ BOOL DllProcessAttach(HINSTANCE HInstance)
 
   DebugAssert(!Processes);
   Processes++;
+#if !defined(NO_FILEZILLA)
   InitExtensionModule(HInstance);
+#endif //if !defined(NO_FILEZILLA)
   return TRUE;
 }
 
@@ -251,7 +253,9 @@ BOOL DllProcessDetach()
   {
     DebugAssert(FarPlugin);
     SAFE_DESTROY(FarPlugin);
+#if !defined(NO_FILEZILLA)
     TermExtensionModule();
+#endif //if !defined(NO_FILEZILLA)
   }
   return TRUE;
 }

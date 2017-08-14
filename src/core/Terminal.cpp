@@ -1109,7 +1109,7 @@ intptr_t TParallelOperation::GetNext(TTerminal *Terminal, UnicodeString &FileNam
 
 TTerminal::TTerminal(TObjectClassId Kind) :
   TSessionUI(Kind),
-  FSessionData(nullptr),
+  FSessionData(new TSessionData(L"")),
   FLog(nullptr),
   FActionLog(nullptr),
   FConfiguration(nullptr),
@@ -1168,7 +1168,6 @@ void TTerminal::Init(TSessionData *SessionData,
   TConfiguration *Configuration)
 {
   FConfiguration = Configuration;
-  FSessionData = new TSessionData(L"");
   FSessionData->Assign(SessionData);
   TDateTime Started = Now(); // use the same time for session and XML log
   FLog = new TSessionLog(this, Started, FSessionData, FConfiguration);
@@ -1573,9 +1572,9 @@ void TTerminal::InitFileSystem()
   }
   else if ((FSProtocol == fsFTP) && (GetSessionData()->GetFtps() != ftpsNone))
   {
-#if defined(NO_FILEZILLA) && defined(MPEXT_NO_SSLDLL)
-    LogEvent("FTPS protocol is not supported by this build.");
-    FatalError(nullptr, LoadStr(FTPS_UNSUPPORTED));
+#if defined(NO_FILEZILLA)
+    LogEvent("FTP protocol is not supported by this build.");
+    FatalError(nullptr, "FTP is not supported");
 #else
     FFSProtocol = cfsFTPS;
     FFileSystem = new TFTPFileSystem(this);
@@ -1949,11 +1948,6 @@ bool TTerminal::PromptUser(TSessionData *Data, TPromptKind Kind,
   // Actually no longer needed as we do not override DoPromptUser
   // anymore in TSecondaryTerminal.
   return DoPromptUser(Data, Kind, AName, Instructions, Prompts, Results);
-}
-
-TTerminal *TTerminal::GetPasswordSource()
-{
-  return this;
 }
 
 bool TTerminal::DoPromptUser(TSessionData * /*Data*/, TPromptKind Kind,

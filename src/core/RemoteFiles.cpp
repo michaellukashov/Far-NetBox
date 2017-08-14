@@ -1425,9 +1425,8 @@ void TRemoteFile::SetListingStr(UnicodeString Value)
         FModification = EncodeDateVerbose(Year, Month, Day) + EncodeTimeVerbose(Hour, Min, Sec, 0);
         // adjust only when time is known,
         // adjusting default "midnight" time makes no sense
-        if ((FModificationFmt == mfMDHM) || (FModificationFmt == mfFull))
+        if (((FModificationFmt == mfMDHM) || (FModificationFmt == mfFull)) && GetTerminal())
         {
-          DebugAssert(GetTerminal() != nullptr);
           FModification = ::AdjustDateTimeFromUnix(FModification,
               GetTerminal()->GetSessionData()->GetDSTMode());
         }
