@@ -1423,9 +1423,10 @@ protected:
       // as we may receive response asynchronously before SendPacket finishes
       FFileSystem->ReserveResponse(Request.get(), Response);
       SendPacket(Request.release());
+      return true;
     }
 
-    return (Request.get() != nullptr);
+    return false;
   }
 };
 
