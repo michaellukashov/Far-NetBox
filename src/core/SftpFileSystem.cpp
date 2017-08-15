@@ -5158,7 +5158,7 @@ void TSFTPFileSystem::SFTPSource(UnicodeString AFileName,
           SCOPE_EXIT
           {
             // Either queue is empty now (noop call then),
-            // or some error occured (in that case, process remaining responses, ignoring other errors)
+            // or some error occurred (in that case, process remaining responses, ignoring other errors)
             Queue.DisposeSafe();
           };
           intptr_t ConvertParams =
