@@ -43,7 +43,6 @@ public:
     onStringListChangeTriggered(false)
   {
     INFO("base_fixture_t ctor");
-//    FarPlugin = CreateStub();
     INFO("base_fixture_t ctor2");
     // CoreInitialize();
   }
@@ -52,7 +51,6 @@ public:
   {
     INFO("base_fixture_t dtor");
 //    delete FarPlugin;
-//    FarPlugin = NULL;
     // CoreFinalize();
   }
 
@@ -217,7 +215,6 @@ TEST_CASE_METHOD(base_fixture_t, "test2", "netbox")
 
 TEST_CASE_METHOD(base_fixture_t, "test3", "netbox")
 {
-//  FarPlugin = CreateStub();
   if (1)
   {
     TClass1 cl1;
@@ -230,7 +227,6 @@ TEST_CASE_METHOD(base_fixture_t, "test3", "netbox")
 
 TEST_CASE_METHOD(base_fixture_t, "test4", "netbox")
 {
-  // FarPlugin = CreateStub();
   if (1)
   {
     TStringList strings;
@@ -243,7 +239,6 @@ TEST_CASE_METHOD(base_fixture_t, "test4", "netbox")
 
 TEST_CASE_METHOD(base_fixture_t, "test5", "netbox")
 {
-  // FarPlugin = CreateStub();
   if (1)
   {
     TFileOperationProgressType OperationProgress;
@@ -443,12 +438,6 @@ TEST_CASE_METHOD(base_fixture_t, "testFarPlugin1", "netbox")
   if (1)
   {
     HINSTANCE HInst = GetModuleHandle(0);
-//    TCustomFarPlugin * FarPlugin = CreateFarPlugin(HInst);
-//    //DEBUG_PRINTF(L"FarPlugin = %x", FarPlugin);
-//    REQUIRE(FarPlugin != NULL);
-//    // SAFE_DESTROY(FarPlugin);
-//    delete FarPlugin;
-    // REQUIRE(FarPlugin == NULL);
   }
 }
 

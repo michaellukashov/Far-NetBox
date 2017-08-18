@@ -262,12 +262,6 @@ TEST_CASE_METHOD(base_fixture_t, "testWinSCPPlugin", "netbox")
   if (1)
   {
     HINSTANCE HInst = ::GetModuleHandle(0);
-    // TWinSCPPlugin * FarPlugin = new TWinSCPPlugin(HInst);
-    //DEBUG_PRINTF(L"FarPlugin = %x", FarPlugin);
-    // REQUIRE(FarPlugin != NULL);
-    // SAFE_DESTROY(FarPlugin);
-    // delete FarPlugin;
-    // REQUIRE(FarPlugin == NULL);
   }
 }
 
