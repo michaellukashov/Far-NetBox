@@ -7,7 +7,7 @@
 // unique_ptr-like class
 class TProgramParamsOwner : public TObject
 {
-NB_DISABLE_COPY(TProgramParamsOwner)
+  NB_DISABLE_COPY(TProgramParamsOwner)
 public:
   TProgramParamsOwner() :
     FProgramParams(nullptr)
@@ -19,7 +19,7 @@ public:
     SAFE_DESTROY(FProgramParams);
   }
 
-  TProgramParams * Get()
+  TProgramParams *Get()
   {
     if (FProgramParams == nullptr)
     {
@@ -29,14 +29,14 @@ public:
   }
 
 private:
-  TProgramParams * FProgramParams;
+  TProgramParams *FProgramParams;
 };
 
 // TProgramParamsOwner ProgramParamsOwner;
 
 // TProgramParams * TProgramParams::Instance()
 // {
-  // return ProgramParamsOwner.Get();
+// return ProgramParamsOwner.Get();
 // }
 
 TProgramParams::TProgramParams()
@@ -44,12 +44,12 @@ TProgramParams::TProgramParams()
   Init(L"");
 }
 
-TProgramParams::TProgramParams(const UnicodeString & CmdLine)
+TProgramParams::TProgramParams(UnicodeString CmdLine)
 {
   Init(CmdLine);
 }
 
-void TProgramParams::Init(const UnicodeString & CmdLine)
+void TProgramParams::Init(UnicodeString CmdLine)
 {
   UnicodeString CommandLine = CmdLine;
 

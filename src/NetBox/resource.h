@@ -1,8 +1,8 @@
 #pragma once
 
-#define PLUGIN_VERSION_NUM 2,4,4,522
-#define PLUGIN_VERSION_TXT "2.4.4"
-#define PLUGIN_VERSION_WTXT L"2.4.4"
+#define PLUGIN_VERSION_NUM 2,4,5,527
+#define PLUGIN_VERSION_TXT "2.4.5"
+#define PLUGIN_VERSION_WTXT L"2.4.5"
 
 #define PLUGIN_AUTHOR       L"Michael Lukashov"
 #define PLUGIN_DESCR        L"SFTP/FTP(S)/SCP/WebDAV client for FAR 2.0 x86/x64"
@@ -13,4 +13,4 @@
 #define FILEZILLA_VERSION_WTXT      L"2.2.32"
 #define ZLIB_VERSION_WTXT           L"1.2.11"
 #define OPENSSL_VERSION_WTXT        L"1.1.0f"
-#define WINSCP_VERSION_WTXT         L"5.9.5"
+#define WINSCP_VERSION_WTXT         L"5.10.3"

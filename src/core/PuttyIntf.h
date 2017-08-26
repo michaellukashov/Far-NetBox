@@ -7,7 +7,7 @@
 NB_CORE_EXPORT void PuttyInitialize();
 NB_CORE_EXPORT void PuttyFinalize();
 
-void DontSaveRandomSeed();
+NB_CORE_EXPORT void DontSaveRandomSeed();
 
 #ifndef MPEXT
 #define MPEXT
@@ -23,7 +23,7 @@ extern "C"
 #undef min
 #undef max
 
-extern CRITICAL_SECTION noise_section;
+  extern CRITICAL_SECTION noise_section;
 }
 
 #endif

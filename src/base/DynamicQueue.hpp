@@ -83,8 +83,8 @@ private:
    int NumEntries;                               // Number of objects stored
    void ReAllocate(int num);                     // Increase size of memory buffer
    void Error(int e, int n);                     // Make fatal error message
-   DynamicQueue(DynamicQueue const&){};          // Make private copy constructor to prevent copying
-   void operator = (DynamicQueue const&){};      // Make private assignment operator to prevent copying
+   DynamicQueue(DynamicQueue const&){}          // Make private copy constructor to prevent copying
+   void operator=(DynamicQueue const&){}      // Make private assignment operator to prevent copying
 };
 
 

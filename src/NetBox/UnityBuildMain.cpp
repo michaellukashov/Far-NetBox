@@ -18,6 +18,5 @@
 #include "FarInterface.cpp"
 #include "XmlStorage.cpp"
 #include "FarPluginStrings.cpp"
-#include "../windows/WinInterface.cpp"
 
 #include <disable_warnings_in_std_end.hpp>

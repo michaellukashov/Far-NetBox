@@ -6,7 +6,7 @@
 // Each property has three sets of redundant accessors:
 // 1. function call syntax
 // 2. get() and set() functions
-// 3. overloaded operator =
+// 3. overloaded operator=
 // a read-write property with data store and
 // automatically generated get/set functions.
 // this is what C++/CLI calls a trivial scalar property
@@ -44,7 +44,7 @@ public:
   {
     return data;
   }
-  void operator = (T Value)
+  void operator=(T Value)
   {
     data = Value;
   }
@@ -117,7 +117,7 @@ public:
     void (my_object->*real_setter)(Value);
   }
   // access with '=' sign
-  void operator = (T Value)
+  void operator=(T Value)
   {
     (my_object->*real_setter)(Value);
   }
@@ -165,7 +165,7 @@ public:
   {
     return (my_object->*real_getter)();
   }
-  void operator = (T Value)
+  void operator=(T Value)
   {
     (my_object->*real_setter)(Value);
   }
@@ -180,7 +180,7 @@ public:
 // an example of the first is that operator[] on a map will insert a
 // key/Value pair if it isn't already there. A consequence of this is that
 // it can't be a const member function (and therefore you cannot access
-// a const map using operator [].)
+// a const map using operator[].)
 // an example of the second is that indexed properties do not appear
 // to have any facility for erasing key/value pairs from the container.
 // C++/CLI properties can have multi-dimensional indexes: prop[2,3]. This is
@@ -222,7 +222,7 @@ public:
   {
     (my_object->*real_setter)(AKey, AValue);
   }
-  // operator [] syntax
+  // operator[] syntax
   T operator[](Key AKey)
   {
     return (my_object->*real_getter)(AKey);
@@ -265,7 +265,7 @@ public:
   {
     (my_object->*real_setter)(AKey, AValue);
   }
-  // operator [] syntax
+  // operator[] syntax
   T & operator[](Key AKey)
   {
     return (my_object->*real_getter)(AKey);
@@ -307,7 +307,7 @@ public:
   {
     (my_object->*real_setter)(AKey, AValue);
   }
-  // operator [] syntax
+  // operator[] syntax
   void *& operator[](Key AKey)
   {
     return (my_object->*real_getter)(AKey);

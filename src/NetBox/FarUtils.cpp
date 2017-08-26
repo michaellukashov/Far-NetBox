@@ -5,7 +5,7 @@
 
 #include "FarUtils.h"
 
-bool CNBFile::OpenWrite(const wchar_t * fileName)
+bool CNBFile::OpenWrite(const wchar_t *fileName)
 {
   DebugAssert(m_File == INVALID_HANDLE_VALUE);
   DebugAssert(fileName);
@@ -19,7 +19,7 @@ bool CNBFile::OpenWrite(const wchar_t * fileName)
   return (m_LastError == ERROR_SUCCESS);
 }
 
-bool CNBFile::OpenRead(const wchar_t * fileName)
+bool CNBFile::OpenRead(const wchar_t *fileName)
 {
   DebugAssert(m_File == INVALID_HANDLE_VALUE);
   DebugAssert(fileName);
@@ -33,12 +33,12 @@ bool CNBFile::OpenRead(const wchar_t * fileName)
   return (m_LastError == ERROR_SUCCESS);
 }
 
-bool CNBFile::Read(void * buff, size_t & buffSize)
+bool CNBFile::Read(void *buff, size_t &buffSize)
 {
   DebugAssert(m_File != INVALID_HANDLE_VALUE);
   m_LastError = ERROR_SUCCESS;
 
-  DWORD bytesRead = static_cast<DWORD>(buffSize);
+  DWORD bytesRead = ToDWord(buffSize);
   if (!::ReadFile(m_File, buff, bytesRead, &bytesRead, nullptr))
   {
     m_LastError = ::GetLastError();
@@ -51,13 +51,13 @@ bool CNBFile::Read(void * buff, size_t & buffSize)
   return (m_LastError == ERROR_SUCCESS);
 }
 
-bool CNBFile::Write(const void * buff, const size_t buffSize)
+bool CNBFile::Write(const void *buff, const size_t buffSize)
 {
   DebugAssert(m_File != INVALID_HANDLE_VALUE);
   m_LastError = ERROR_SUCCESS;
 
   DWORD bytesWritten;
-  if (!::WriteFile(m_File, buff, static_cast<DWORD>(buffSize), &bytesWritten, nullptr))
+  if (!::WriteFile(m_File, buff, ToDWord(buffSize), &bytesWritten, nullptr))
   {
     m_LastError = ::GetLastError();
   }
@@ -92,7 +92,7 @@ DWORD CNBFile::LastError() const
   return m_LastError;
 }
 
-DWORD CNBFile::SaveFile(const wchar_t * fileName, const rde::vector<char> & fileContent)
+DWORD CNBFile::SaveFile(const wchar_t *fileName, const rde::vector<char> &fileContent)
 {
   CNBFile f;
   if (f.OpenWrite(fileName) && !fileContent.empty())
@@ -102,18 +102,18 @@ DWORD CNBFile::SaveFile(const wchar_t * fileName, const rde::vector<char> & file
   return f.LastError();
 }
 
-DWORD CNBFile::SaveFile(const wchar_t * fileName, const char * fileContent)
+DWORD CNBFile::SaveFile(const wchar_t *fileName, const char *fileContent)
 {
   DebugAssert(fileContent);
   CNBFile f;
-  if (f.OpenWrite(fileName) && *fileContent)
+  if (f.OpenWrite(fileName) && fileContent && *fileContent)
   {
-    f.Write(fileContent, strlen(fileContent));
+    f.Write(fileContent, NBChTraitsCRT<char>::SafeStringLen(fileContent));
   }
   return f.LastError();
 }
 
-DWORD CNBFile::LoadFile(const wchar_t * fileName, rde::vector<char> & fileContent)
+DWORD CNBFile::LoadFile(const wchar_t *fileName, rde::vector<char> &fileContent)
 {
   fileContent.clear();
 
@@ -136,7 +136,7 @@ DWORD CNBFile::LoadFile(const wchar_t * fileName, rde::vector<char> & fileConten
   return f.LastError();
 }
 
-void FarWrapText(const UnicodeString & Text, TStrings * Result, intptr_t MaxWidth)
+void FarWrapText(UnicodeString Text, TStrings *Result, intptr_t MaxWidth)
 {
   size_t TabSize = 8;
   TStringList Lines;
@@ -164,7 +164,7 @@ void FarWrapText(const UnicodeString & Text, TStrings * Result, intptr_t MaxWidt
           UnicodeString Line = FullLine.SubString(1, MaxWidth);
           FullLine.Delete(1, MaxWidth);
 
-          intptr_t P = 0;
+          intptr_t P;
           while ((P = Line.Pos(L'\t')) > 0)
           {
             Line.Delete(P, 1);

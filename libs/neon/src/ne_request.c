@@ -444,9 +444,7 @@ static int send_request_body(ne_request *req, int retry)
 		 "Body block (%" NE_FMT_SSIZE_T " bytes):\n[%.*s]\n",
 		 bytes, (int)bytes, buffer);
 #endif
-	NE_DEBUG(NE_DBG_HTTPBODY, 
-		 "Body block (%" NE_FMT_SSIZE_T " bytes)\n",
-		 (int)bytes);
+
         /* invoke progress callback */
         notify_status(sess, ne_status_sending);
     }
@@ -962,9 +960,9 @@ static void dump_request(ne_request *req, const char *request)
 
 static void dump_request(const char *request)
 #endif
-{ 
+{
     NE_DEBUG_WINSCP_CONTEXT(req->session);
-    if (ne_debug_mask & NE_DBG_HTTPPLAIN) { 
+    if (ne_debug_mask & NE_DBG_HTTPPLAIN) {
 	/* Display everything mode */
 	NE_DEBUG(NE_DBG_HTTP, "Sending request headers:\n%s", request);
     } else if (ne_debug_mask & NE_DBG_HTTP) {
@@ -1040,7 +1038,7 @@ static int discard_headers(ne_request *req)
     NE_DEBUG_WINSCP_CONTEXT(req->session);
     do {
 	SOCK_ERR(req, ne_sock_readline(req->session->socket, req->respbuf, 
-							 sizeof(req->respbuf) - 1),
+				       sizeof(req->respbuf) - 1),
 		 _("Could not read interim response headers"));
 	NE_DEBUG(NE_DBG_HTTP, "[discard] < %s", req->respbuf);
     } while (strcmp(req->respbuf, EOL) != 0);

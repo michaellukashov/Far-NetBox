@@ -28,8 +28,8 @@ public:
   EVP_PKEY * PrivateKey;
 };
 
-const bool operator == (const t_server &a,const t_server &b);
-const bool operator != (const t_server &a,const t_server &b);
+const bool operator==(const t_server &a,const t_server &b);
+const bool operator!=(const t_server &a,const t_server &b);
 
 #include "ServerPath.h"
 
@@ -41,7 +41,7 @@ CUSTOM_MEM_ALLOCATION_IMPL
   CString remotefile;
   CServerPath remotepath;
   BOOL get;
-  __int64 size;
+  int64_t size;
   t_server server;
   int nType;
   void * nUserData;

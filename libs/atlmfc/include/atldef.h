@@ -141,7 +141,7 @@ char (*__countof_helper(UNALIGNED _CountofType (&_Array)[_SizeOfArray]))[_SizeOf
 #endif
 #endif
 
-#if defined(__MINGW32__)
+#if defined(__MINGW32__) || defined(__clang__)
 #ifndef ATLASSERT
 #define ATLASSERT(expr) _ASSERTE(expr)
 #endif // ATLASSERT
