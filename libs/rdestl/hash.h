@@ -10,7 +10,7 @@ typedef unsigned long	hash_value_t;
 template<typename T>
 hash_value_t extract_int_key_value(const T& t)
 {
-	return (hash_value_t)t;
+	return static_cast<hash_value_t>(t);
 }
  
 // Default implementation of hasher.

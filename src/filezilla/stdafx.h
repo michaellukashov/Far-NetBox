@@ -1,6 +1,6 @@
 #pragma once
 
-#define _int64 __int64
+#define _int64 int64_t
 
 #define MPEXT_NO_ZLIB
 #define MPEXT_NO_GSS
@@ -69,8 +69,8 @@ public:
 struct t_ffam_transferstatus
 {
 CUSTOM_MEM_ALLOCATION_IMPL
-  __int64 bytes;
-  __int64 transfersize;
+  int64_t bytes;
+  int64_t transfersize;
   BOOL bFileTransfer;
 };
 
@@ -110,7 +110,7 @@ public:
   // MFC allocates CObject (ancestor of CFile) with new, but deallocates with free,
   // what codeguard dislikes, this is fix, not sure if it is necessary for
   // release version, but probably causes no harm
-  /*void operator delete(void* p)
+  /*void operator delete(void * p)
   {
     delete p;
   }*/
@@ -125,9 +125,9 @@ struct CStringDataA
   int nAllocLength;       // length of allocation
   // char data[nAllocLength];
 
-  CHAR * data()           // CHAR* to managed data
+  CHAR *data()           // CHAR * to managed data
   {
-    return (CHAR *)(this+1);
+    return (CHAR *)(this + 1);
   }
 };
 

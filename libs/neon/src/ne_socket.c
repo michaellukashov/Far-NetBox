@@ -218,8 +218,7 @@ struct ne_socket_s {
      * and is hence always <= RDBUFSIZ. */
     char *bufpos;
     size_t bufavail;
-// #define RDBUFSIZ 4096
-#define RDBUFSIZ 64*1024
+#define RDBUFSIZ 4096
     char buffer[RDBUFSIZ];
     /* Error string. */
     char error[192];
@@ -499,7 +498,7 @@ ssize_t ne_sock_peek(ne_socket *sock, char *buffer, size_t buflen)
 
     memcpy(buffer, sock->bufpos, buflen);
 
-    return (int)buflen;
+    return (ssize_t)buflen;
 }
 
 /* Await data on raw fd in socket. */
@@ -522,7 +521,7 @@ static ssize_t read_raw(ne_socket *sock, char *buffer, size_t len)
     if (ret) return ret;
 
     do {
-  ret = recv(sock->fd, buffer, (int)len, 0);
+	ret = recv(sock->fd, buffer, (int)len, 0);
     } while (ret == -1 && NE_ISINTR(ne_errno));
 
     if (ret == 0) {
@@ -551,7 +550,7 @@ static ssize_t write_raw(ne_socket *sock, const char *data, size_t length)
 #endif
 
     do {
-  ret = send(sock->fd, data, (int)length, 0);
+	ret = send(sock->fd, data, (int)length, 0);
     } while (ret == -1 && NE_ISINTR(ne_errno));
 
     if (ret < 0) {
@@ -1072,7 +1071,7 @@ char *ne_iaddr_print(const ne_inet_addr *ia, char *buf, socklen_t bufsiz)
 	ne_strnzcpy(buf, "[IP address]", bufsiz);
 #elif defined(USE_GETADDRINFO) && defined(NI_NUMERICHOST)
     /* use getnameinfo instead for Win32, which lacks inet_ntop: */
-    if (getnameinfo(ia->ai_addr, ia->ai_addrlen, buf, bufsiz, NULL, 0,
+    if (getnameinfo(ia->ai_addr, (socklen_t)ia->ai_addrlen, buf, bufsiz, NULL, 0,
                     NI_NUMERICHOST))
         ne_strnzcpy(buf, "[IP address]", bufsiz);
 #else /* USE_GETADDRINFO */
@@ -1161,7 +1160,7 @@ ne_inet_addr *ne_iaddr_parse(const char *addr, ne_iaddr_type type)
 int ne_iaddr_reverse(const ne_inet_addr *ia, char *buf, socklen_t bufsiz)
 {
 #ifdef USE_GETADDRINFO
-    return getnameinfo(ia->ai_addr, ia->ai_addrlen, buf, bufsiz,
+    return getnameinfo(ia->ai_addr, (socklen_t)ia->ai_addrlen, buf, bufsiz,
                        NULL, 0, 0);
 #else
     struct hostent *hp;

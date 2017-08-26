@@ -224,6 +224,7 @@
     <ClCompile Include="xmlrole.c" />
     <ClCompile Include="xmltok.c" />
     <ClCompile Include="xmltok_impl.c" />
+    <ClCompile Include="loadlibrary.c" />
     <ClCompile Include="xmltok_ns.c" />
   </ItemGroup>
   <ItemGroup>

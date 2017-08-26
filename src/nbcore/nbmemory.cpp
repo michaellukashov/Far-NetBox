@@ -3,19 +3,18 @@
 #define BLOCK_ALLOCATED 0xABBABABA
 #define BLOCK_FREED   0xDEADBEEF
 
-static int CheckBlock(void* blk)
+static int CheckBlock(void *blk)
 {
   int result = FALSE;
-  char* p = (char*)blk - sizeof(uint32_t) * 2;
-  uint32_t size, *b, *e;
+  char *p = static_cast<char *>(blk) - sizeof(uint32_t) * 2;
 
 #if !defined(__MINGW32__)
   __try
 #endif // defined(__MINGW32__)
   {
-    size = *(uint32_t*)p;
-    b = (uint32_t*)&p[sizeof(uint32_t)];
-    e = (uint32_t*)&p[sizeof(uint32_t) * 2 + size];
+    uint32_t size = *reinterpret_cast<uint32_t *>(p);
+    uint32_t *b = reinterpret_cast<uint32_t *>(&p[sizeof(uint32_t)]);
+    uint32_t *e = reinterpret_cast<uint32_t *>(&p[sizeof(uint32_t) * 2 + size]);
 
     if (*b != BLOCK_ALLOCATED || *e != BLOCK_ALLOCATED)
     {
@@ -24,7 +23,7 @@ static int CheckBlock(void* blk)
       else
         OutputDebugStringA("memory block is corrupted\n");
 #if defined(_DEBUG)
-        DebugBreak();
+      DebugBreak();
 #endif
     }
     else result = TRUE;
@@ -34,7 +33,7 @@ static int CheckBlock(void* blk)
   {
     OutputDebugStringA("access violation during checking memory block\n");
 #if defined(_DEBUG)
-      DebugBreak();
+    DebugBreak();
 #endif
   }
 #endif // defined(__MINGW32__)
@@ -44,32 +43,32 @@ static int CheckBlock(void* blk)
 
 /******************************************************************************/
 
-NB_C_CORE_DLL(void*) nbcore_alloc(size_t size)
+NB_C_CORE_DLL(void *) nbcore_alloc(size_t size)
 {
   if (size == 0)
     return nullptr;
 
-  char* p = (char*)nb_malloc(size + sizeof(uint32_t)* 3);
+  char *p = static_cast<char *>(nb_malloc(size + sizeof(uint32_t) * 3));
   if (p == nullptr)
   {
     OutputDebugStringA("memory overflow\n");
 #if defined(_DEBUG)
-      DebugBreak();
+    DebugBreak();
 #endif
     return nullptr;
   }
 
-  *(uint32_t*)p = (uint32_t)size;
-  *(uint32_t*)&p[sizeof(uint32_t)] = BLOCK_ALLOCATED;
-  *(uint32_t*)&p[size + sizeof(uint32_t) * 2] = BLOCK_ALLOCATED;
+  *reinterpret_cast<uint32_t *>(p) = static_cast<uint32_t>(size);
+  *reinterpret_cast<uint32_t *>(&p[sizeof(uint32_t)]) = BLOCK_ALLOCATED;
+  *reinterpret_cast<uint32_t *>(&p[size + sizeof(uint32_t) * 2]) = BLOCK_ALLOCATED;
   return p + sizeof(uint32_t) * 2;
 }
 
 /******************************************************************************/
 
-NB_C_CORE_DLL(void*) nbcore_calloc(size_t size)
+NB_C_CORE_DLL(void *) nbcore_calloc(size_t size)
 {
-  void* p = nbcore_alloc(size);
+  void *p = nbcore_alloc(size);
   if (p != nullptr)
     memset(p, 0, size);
   return p;
@@ -77,70 +76,70 @@ NB_C_CORE_DLL(void*) nbcore_calloc(size_t size)
 
 /******************************************************************************/
 
-NB_C_CORE_DLL(void*) nbcore_realloc(void* ptr, size_t size)
+NB_C_CORE_DLL(void *) nbcore_realloc(void *ptr, size_t size)
 {
-  char* p;
+  char *p;
 
   if (ptr != nullptr)
   {
     if (!CheckBlock(ptr))
       return nullptr;
-    p = (char*)ptr - sizeof(uint32_t) * 2;
+    p = static_cast<char *>(ptr) - sizeof(uint32_t) * 2;
   }
   else p = nullptr;
 
-  p = (char*)nb_realloc(p, size + sizeof(uint32_t)*3);
+  p = static_cast<char *>(nb_realloc(p, size + sizeof(uint32_t) * 3));
   if (p == nullptr)
   {
     OutputDebugStringA("memory overflow\n");
 #if defined(_DEBUG)
-      DebugBreak();
+    DebugBreak();
 #endif
     return nullptr;
   }
 
-  *(uint32_t*)p = (uint32_t)size;
-  *(uint32_t*)&p[sizeof(uint32_t)] = BLOCK_ALLOCATED;
-  *(uint32_t*)&p[size + sizeof(uint32_t) * 2] = BLOCK_ALLOCATED;
+  *reinterpret_cast<uint32_t *>(p) = static_cast<uint32_t>(size);
+  *reinterpret_cast<uint32_t *>(&p[sizeof(uint32_t)]) = BLOCK_ALLOCATED;
+  *reinterpret_cast<uint32_t *>(&p[size + sizeof(uint32_t) * 2]) = BLOCK_ALLOCATED;
   return p + sizeof(uint32_t) * 2;
 }
 
 /******************************************************************************/
 
-NB_C_CORE_DLL(void) nbcore_free(void* ptr)
+NB_C_CORE_DLL(void) nbcore_free(void *ptr)
 {
   if (ptr == nullptr)
     return;
   if (!CheckBlock(ptr))
     return;
 
-  char* p = (char*)ptr - sizeof(uint32_t) * 2;
-  uint32_t size = *(uint32_t*)p;
+  char *p = static_cast<char *>(ptr) - sizeof(uint32_t) * 2;
+  uint32_t size = *reinterpret_cast<uint32_t *>(p);
 
-  *(uint32_t*)&p[sizeof(uint32_t)] = BLOCK_FREED;
-  *(uint32_t*)&p[size + sizeof(uint32_t) * 2] = BLOCK_FREED;
+  *reinterpret_cast<uint32_t *>(&p[sizeof(uint32_t)]) = BLOCK_FREED;
+  *reinterpret_cast<uint32_t *>(&p[size + sizeof(uint32_t) * 2]) = BLOCK_FREED;
   nb_free(p);
 }
 
 /******************************************************************************/
 
-NB_CORE_DLL(char*) nbcore_strdup(const char* str)
+NB_CORE_DLL(char *) nbcore_strdup(const char *str)
 {
   if (str == nullptr)
     return nullptr;
 
-  char* p = (char*)nbcore_alloc(strlen(str) + 1);
+  char *p = static_cast<char *>(nbcore_alloc(strlen(str) + 1));
   if (p)
     strcpy(p, str);
   return p;
 }
 
-NB_CORE_DLL(wchar_t*) nbcore_wstrdup(const wchar_t* str)
+NB_CORE_DLL(wchar_t *) nbcore_wstrdup(const wchar_t *str)
 {
   if (str == nullptr)
     return nullptr;
 
-  wchar_t* p = (wchar_t*)nbcore_alloc(sizeof(wchar_t) * (wcslen(str) + 1));
+  wchar_t *p = static_cast<wchar_t *>(nbcore_alloc(sizeof(wchar_t) * (wcslen(str) + 1)));
   if (p)
     wcscpy(p, str);
   return p;
@@ -148,12 +147,12 @@ NB_CORE_DLL(wchar_t*) nbcore_wstrdup(const wchar_t* str)
 
 /******************************************************************************/
 
-NB_CORE_DLL(char*) nbcore_strndup(const char* str, size_t len)
+NB_CORE_DLL(char *) nbcore_strndup(const char *str, size_t len)
 {
   if (str == nullptr || len == 0)
     return nullptr;
 
-  char* p = (char*)nbcore_alloc(len + 1);
+  char *p = static_cast<char *>(nbcore_alloc(len + 1));
   if (p)
   {
     memcpy(p, str, len);
@@ -162,12 +161,12 @@ NB_CORE_DLL(char*) nbcore_strndup(const char* str, size_t len)
   return p;
 }
 
-NB_CORE_DLL(wchar_t*) nbcore_wstrndup(const wchar_t* str, size_t len)
+NB_CORE_DLL(wchar_t *) nbcore_wstrndup(const wchar_t *str, size_t len)
 {
   if (str == nullptr || len == 0)
     return nullptr;
 
-  wchar_t* p = (wchar_t*)nbcore_alloc(sizeof(wchar_t) * (len + 1));
+  wchar_t *p = static_cast<wchar_t *>(nbcore_alloc(sizeof(wchar_t) * (len + 1)));
   if (p)
   {
     memcpy(p, str, sizeof(wchar_t) * len);
@@ -178,7 +177,7 @@ NB_CORE_DLL(wchar_t*) nbcore_wstrndup(const wchar_t* str, size_t len)
 
 /******************************************************************************/
 
-NB_CORE_DLL(int) nbcore_snprintf(char* buffer, size_t count, const char* fmt, ...)
+NB_CORE_DLL(int) nbcore_snprintf(char *buffer, size_t count, const char *fmt, ...)
 {
   va_list va;
   va_start(va, fmt);
@@ -190,7 +189,7 @@ NB_CORE_DLL(int) nbcore_snprintf(char* buffer, size_t count, const char* fmt, ..
 
 /******************************************************************************/
 
-NB_CORE_DLL(int) nbcore_snwprintf(wchar_t* buffer, size_t count, const wchar_t* fmt, ...)
+NB_CORE_DLL(int) nbcore_snwprintf(wchar_t *buffer, size_t count, const wchar_t *fmt, ...)
 {
   va_list va;
   va_start(va, fmt);
@@ -202,7 +201,7 @@ NB_CORE_DLL(int) nbcore_snwprintf(wchar_t* buffer, size_t count, const wchar_t* 
 
 /******************************************************************************/
 
-NB_CORE_DLL(int) nbcore_vsnprintf(char* buffer, size_t count, const char* fmt, va_list va)
+NB_CORE_DLL(int) nbcore_vsnprintf(char *buffer, size_t count, const char *fmt, va_list va)
 {
   int len = _vsnprintf(buffer, count - 1, fmt, va);
   buffer[count - 1] = 0;
@@ -211,7 +210,7 @@ NB_CORE_DLL(int) nbcore_vsnprintf(char* buffer, size_t count, const char* fmt, v
 
 /******************************************************************************/
 
-NB_CORE_DLL(int) nbcore_vsnwprintf(wchar_t* buffer, size_t count, const wchar_t* fmt, va_list va)
+NB_CORE_DLL(int) nbcore_vsnwprintf(wchar_t *buffer, size_t count, const wchar_t *fmt, va_list va)
 {
   int len = _vsntprintf(buffer, count - 1, fmt, va);
   buffer[count - 1] = 0;
@@ -220,13 +219,13 @@ NB_CORE_DLL(int) nbcore_vsnwprintf(wchar_t* buffer, size_t count, const wchar_t*
 
 /******************************************************************************/
 
-NB_CORE_DLL(wchar_t*) nbcore_a2u_cp(const char* src, int codepage)
+NB_CORE_DLL(wchar_t *) nbcore_a2u_cp(const char *src, int codepage)
 {
   if (src == nullptr)
     return nullptr;
 
   int cbLen = ::MultiByteToWideChar(codepage, 0, src, -1, nullptr, 0);
-  wchar_t* result = (wchar_t*)nbcore_alloc(sizeof(wchar_t) * (cbLen + 1));
+  wchar_t *result = static_cast<wchar_t *>(nbcore_alloc(sizeof(wchar_t) * (cbLen + 1)));
   if (result == nullptr)
     return nullptr;
 
@@ -237,20 +236,20 @@ NB_CORE_DLL(wchar_t*) nbcore_a2u_cp(const char* src, int codepage)
 
 /******************************************************************************/
 
-NB_CORE_DLL(wchar_t*) nbcore_a2u(const char* src)
+NB_CORE_DLL(wchar_t *) nbcore_a2u(const char *src)
 {
   return nbcore_a2u_cp(src, Langpack_GetDefaultCodePage());
 }
 
 /******************************************************************************/
 
-NB_CORE_DLL(char*) nbcore_u2a_cp(const wchar_t* src, int codepage)
+NB_CORE_DLL(char *) nbcore_u2a_cp(const wchar_t *src, int codepage)
 {
   if (src == nullptr)
     return nullptr;
 
   int cbLen = WideCharToMultiByte(codepage, 0, src, -1, nullptr, 0, nullptr, nullptr);
-  char* result = (char*)nbcore_alloc(cbLen + 1);
+  char *result = static_cast<char *>(nbcore_alloc(cbLen + 1));
   if (result == nullptr)
     return nullptr;
 
@@ -261,7 +260,7 @@ NB_CORE_DLL(char*) nbcore_u2a_cp(const wchar_t* src, int codepage)
 
 /******************************************************************************/
 
-NB_CORE_DLL(char*) nbcore_u2a(const wchar_t* src)
+NB_CORE_DLL(char *) nbcore_u2a(const wchar_t *src)
 {
   return nbcore_u2a_cp(src, Langpack_GetDefaultCodePage());
 }

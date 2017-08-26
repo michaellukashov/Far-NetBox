@@ -3,7 +3,7 @@
 
 #include "FileZillaIntern.h"
 
-class CApiLog //: public TObject
+class CApiLog
 {
 CUSTOM_MEM_ALLOCATION_IMPL
 public:

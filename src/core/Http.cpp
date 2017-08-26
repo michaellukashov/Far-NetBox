@@ -22,11 +22,11 @@ THttp::THttp() :
 
 THttp::~THttp()
 {
-  delete FResponseHeaders;
-  delete FRequestHeaders;
+  SAFE_DESTROY(FResponseHeaders);
+  SAFE_DESTROY(FRequestHeaders);
 }
 
-void THttp::SendRequest(const char * Method, const UnicodeString & Request)
+void THttp::SendRequest(const char *Method, UnicodeString Request)
 {
   std::unique_ptr<TStringList> AttemptedUrls(CreateSortedStringList());
   AttemptedUrls->Add(GetURL());
@@ -65,12 +65,7 @@ void THttp::SendRequest(const char * Method, const UnicodeString & Request)
     FCertificateError.SetLength(0);
     FException.reset(nullptr);
 
-    TProxyMethod ProxyMethod = GetProxyHost().IsEmpty() ? ::pmNone : pmHTTP;
-
-    ne_session_s * NeonSession =
-      CreateNeonSession(
-        uri, ProxyMethod, GetProxyHost(), GetProxyPort(), UnicodeString(), UnicodeString());
-
+    ne_session_s *NeonSession = CreateNeonSession(uri);
     try__finally
     {
       SCOPE_EXIT
@@ -78,6 +73,9 @@ void THttp::SendRequest(const char * Method, const UnicodeString & Request)
         DestroyNeonSession(NeonSession);
         ne_uri_free(&uri);
       };
+
+      TProxyMethod ProxyMethod = GetProxyHost().IsEmpty() ? ::pmNone : pmHTTP;
+      InitNeonSession(NeonSession, ProxyMethod, GetProxyHost(), GetProxyPort(), UnicodeString(), UnicodeString());
 
       if (IsTls)
       {
@@ -88,7 +86,7 @@ void THttp::SendRequest(const char * Method, const UnicodeString & Request)
         ne_ssl_trust_default_ca(NeonSession);
       }
 
-      ne_request_s * NeonRequest = ne_request_create(NeonSession, Method, StrToNeon(Uri));
+      ne_request_s *NeonRequest = ne_request_create(NeonSession, Method, StrToNeon(Uri));
       try__finally
       {
         SCOPE_EXIT
@@ -105,10 +103,9 @@ void THttp::SendRequest(const char * Method, const UnicodeString & Request)
           }
         }
 
-        UTF8String RequestUtf;
         if (!Request.IsEmpty())
         {
-          RequestUtf = UTF8String(Request);
+          UTF8String RequestUtf = UTF8String(Request);
           ne_set_request_body_buffer(NeonRequest, RequestUtf.c_str(), RequestUtf.Length());
         }
 
@@ -134,7 +131,7 @@ void THttp::SendRequest(const char * Method, const UnicodeString & Request)
           Retry = false;
           CheckNeonStatus(NeonSession, Status, FHostName, FCertificateError);
 
-          const ne_status * NeonStatus = ne_get_status(NeonRequest);
+          const ne_status *NeonStatus = ne_get_status(NeonRequest);
           if (NeonStatus->klass != 2)
           {
             int StatusCode = NeonStatus->code;
@@ -143,12 +140,12 @@ void THttp::SendRequest(const char * Method, const UnicodeString & Request)
             {
               GetOnError()(this, StatusCode, Message);
             }
-            throw Exception(FMTLOAD(HTTP_ERROR2, StatusCode, Message.c_str(), FHostName.c_str()));
+            throw Exception(FMTLOAD(HTTP_ERROR2, StatusCode, Message, FHostName));
           }
 
-          void * Cursor = nullptr;
-          const char * HeaderName;
-          const char * HeaderValue;
+          void *Cursor = nullptr;
+          const char *HeaderName;
+          const char *HeaderValue;
           while ((Cursor = ne_response_header_iterate(NeonRequest, Cursor, &HeaderName, &HeaderValue)) != nullptr)
           {
             FResponseHeaders->SetValue(StrFromNeon(HeaderName), StrFromNeon(HeaderValue));
@@ -157,17 +154,17 @@ void THttp::SendRequest(const char * Method, const UnicodeString & Request)
       }
       __finally
       {
-/*
+#if 0
         ne_request_destroy(NeonRequest);
-*/
+#endif // #if 0
       };
     }
     __finally
     {
-/*
+#if 0
       DestroyNeonSession(NeonSession);
       ne_uri_free(&uri);
-*/
+#endif // #if 0
     };
   }
   while (Retry);
@@ -178,18 +175,18 @@ void THttp::Get()
   SendRequest("GET", UnicodeString());
 }
 
-void THttp::Post(const UnicodeString & Request)
+void THttp::Post(UnicodeString Request)
 {
   SendRequest("POST", Request);
 }
 
 UnicodeString THttp::GetResponse() const
 {
-  UTF8String UtfResponse(FResponse.c_str());
+  UTF8String UtfResponse(FResponse.c_str(), FResponse.GetLength());
   return UnicodeString(UtfResponse);
 }
 
-int THttp::NeonBodyReaderImpl(const char * Buf, size_t Len)
+int THttp::NeonBodyReaderImpl(const char *Buf, size_t Len)
 {
   bool Result = true;
   if ((FResponseLimit < 0) ||
@@ -205,7 +202,7 @@ int THttp::NeonBodyReaderImpl(const char * Buf, size_t Len)
       {
         FOnDownload(this, GetResponseLength(), Cancel);
       }
-      catch (Exception & E)
+      catch (Exception &E)
       {
         FException.reset(CloneException(&E));
         Result = false;
@@ -223,9 +220,9 @@ int THttp::NeonBodyReaderImpl(const char * Buf, size_t Len)
   return Result ? 0 : 1;
 }
 
-int THttp::NeonBodyReader(void * UserData, const char * Buf, size_t Len)
+int THttp::NeonBodyReader(void *UserData, const char *Buf, size_t Len)
 {
-  THttp * Http = static_cast<THttp *>(UserData);
+  THttp *Http = static_cast<THttp *>(UserData);
   return Http->NeonBodyReaderImpl(Buf, Len);
 }
 
@@ -234,19 +231,19 @@ int64_t THttp::GetResponseLength() const
   return FResponse.Length();
 }
 
-void THttp::InitSslSession(ssl_st * Ssl, ne_session * /*Session*/)
+void THttp::InitSslSession(ssl_st *Ssl, ne_session * /*Session*/)
 {
   int Options = SSL_OP_NO_SSLv2 | SSL_OP_NO_SSLv3 | SSL_OP_NO_TLSv1 | SSL_OP_NO_TLSv1_1;
   SSL_ctrl(Ssl, SSL_CTRL_OPTIONS, Options, nullptr);
 }
 
-int THttp::NeonServerSSLCallback(void * UserData, int Failures, const ne_ssl_certificate * Certificate)
+int THttp::NeonServerSSLCallback(void *UserData, int Failures, const ne_ssl_certificate *Certificate)
 {
-  THttp * Http = static_cast<THttp *>(UserData);
+  THttp *Http = static_cast<THttp *>(UserData);
   return Http->NeonServerSSLCallbackImpl(Failures, Certificate);
 }
 
-int THttp::NeonServerSSLCallbackImpl(int Failures, const ne_ssl_certificate * Certificate)
+int THttp::NeonServerSSLCallbackImpl(int Failures, const ne_ssl_certificate *Certificate)
 {
   AnsiString AsciiCert = NeonExportCertificate(Certificate);
 

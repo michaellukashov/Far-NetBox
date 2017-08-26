@@ -6,7 +6,7 @@
 
 #include <time.h>
 #include <FileZillaOpt.h>
-#include <FileZillaTools.h>
+#include <FilezillaTools.h>
 
 class CFileZillaApi;
 class TFileZillaIntern;
@@ -30,12 +30,14 @@ struct TListDataEntry
 {
 CUSTOM_MEM_ALLOCATION_IMPL
   TRemoteFileTime Time;
-  __int64 Size;
+  int64_t Size;
   const wchar_t * LinkTarget;
   const wchar_t * Name;
   const wchar_t * Permissions;
   const wchar_t * HumanPerm;
-  const wchar_t * OwnerGroup;
+  const wchar_t * OwnerGroup; // deprecated, to be replaced with Owner/Group
+  const wchar_t * Owner;
+  const wchar_t * Group;
   bool Dir;
   bool Link;
 };
@@ -193,13 +195,13 @@ public:
 
   bool MakeDir(const wchar_t* APath);
   bool Chmod(int Value, const wchar_t* FileName, const wchar_t* APath);
-  bool Delete(const wchar_t* FileName, const wchar_t* APath);
+  bool Delete(const wchar_t* FileName, const wchar_t* APath, bool FileNameOnly);
   bool RemoveDir(const wchar_t* FileName, const wchar_t* APath);
   bool Rename(const wchar_t* OldName, const wchar_t* NewName,
     const wchar_t* APath, const wchar_t* ANewPath);
 
   bool FileTransfer(const wchar_t * LocalFile, const wchar_t * RemoteFile,
-    const wchar_t * RemotePath, bool Get, __int64 Size, int Type, void * UserData);
+    const wchar_t * RemotePath, bool Get, int64_t Size, int Type, void * UserData);
 
   virtual const wchar_t * Option(intptr_t OptionID) const = 0;
   virtual intptr_t OptionVal(intptr_t OptionID) const = 0;
@@ -215,7 +217,7 @@ protected:
   virtual bool HandleAsynchRequestOverwrite(
     wchar_t * FileName1, size_t FileName1Len, const wchar_t * FileName2,
     const wchar_t * Path1, const wchar_t * Path2,
-    __int64 Size1, __int64 Size2, time_t LocalTime,
+    int64_t Size1, int64_t Size2, time_t LocalTime,
     bool HasLocalTime1, const TRemoteFileTime & RemoteTime, void * UserData,
     HANDLE & LocalFileHandle,
     int & RequestResult) = 0;
@@ -225,8 +227,8 @@ protected:
     struct TNeedPassRequestData & Data, int & RequestResult) = 0;
   virtual bool HandleListData(const wchar_t * Path, const TListDataEntry * Entries,
     uintptr_t Count) = 0;
-  virtual bool HandleTransferStatus(bool Valid, __int64 TransferSize,
-    __int64 Bytes, bool FileTransfer) = 0;
+  virtual bool HandleTransferStatus(bool Valid, int64_t TransferSize,
+    int64_t Bytes, bool FileTransfer) = 0;
   virtual bool HandleReply(intptr_t Command, uintptr_t Reply) = 0;
   virtual bool HandleCapabilities(TFTPServerCapabilities * ServerCapabilities) = 0;
   virtual bool CheckError(intptr_t ReturnCode, const wchar_t * Context);

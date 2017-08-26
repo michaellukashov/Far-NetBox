@@ -15,10 +15,10 @@
 int openssh_pem_encrypted(const Filename *filename);
 int openssh_new_encrypted(const Filename *filename);
 struct ssh2_userkey *openssh_pem_read(const Filename *filename,
-                                      char *passphrase,
+                                      const char *passphrase,
                                       const char **errmsg_p);
 struct ssh2_userkey *openssh_new_read(const Filename *filename,
-                                      char *passphrase,
+                                      const char *passphrase,
                                       const char **errmsg_p);
 int openssh_auto_write(const Filename *filename, struct ssh2_userkey *key,
                        char *passphrase);
@@ -28,8 +28,8 @@ int openssh_new_write(const Filename *filename, struct ssh2_userkey *key,
                       char *passphrase);
 
 int sshcom_encrypted(const Filename *filename, char **comment);
-struct ssh2_userkey *sshcom_read(const Filename *filename, char *passphrase,
-				 const char **errmsg_p);
+struct ssh2_userkey *sshcom_read(const Filename *filename, const char *passphrase,
+const char **errmsg_p);
 int sshcom_write(const Filename *filename, struct ssh2_userkey *key,
 		 char *passphrase);
 
@@ -93,7 +93,7 @@ int import_ssh1(const Filename *filename, int type,
  * Import an SSH-2 key.
  */
 struct ssh2_userkey *import_ssh2(const Filename *filename, int type,
-				 char *passphrase, const char **errmsg_p)
+                const char *passphrase, const char **errmsg_p)
 {
     if (type == SSH_KEYTYPE_OPENSSH_PEM)
 	return openssh_pem_read(filename, passphrase, errmsg_p);
@@ -565,7 +565,7 @@ int openssh_pem_encrypted(const Filename *filename)
 }
 
 struct ssh2_userkey *openssh_pem_read(const Filename *filename,
-                                      char *passphrase,
+                                      const char *passphrase,
                                       const char **errmsg_p)
 {
     struct openssh_pem_key *key = load_openssh_pem_key(filename, errmsg_p);
@@ -1540,7 +1540,7 @@ int openssh_new_encrypted(const Filename *filename)
 }
 
 struct ssh2_userkey *openssh_new_read(const Filename *filename,
-                                      char *passphrase,
+                                      const char *passphrase,
                                       const char **errmsg_p)
 {
     struct openssh_new_key *key = load_openssh_new_key(filename, errmsg_p);
@@ -2245,7 +2245,7 @@ static int sshcom_put_mpint(void *target, void *data, int len)
     return len+4;
 }
 
-struct ssh2_userkey *sshcom_read(const Filename *filename, char *passphrase,
+struct ssh2_userkey *sshcom_read(const Filename *filename, const char *passphrase,
 				 const char **errmsg_p)
 {
     struct sshcom_key *key = load_sshcom_key(filename, errmsg_p);
