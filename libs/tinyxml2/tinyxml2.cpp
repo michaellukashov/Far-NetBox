@@ -2054,7 +2054,7 @@ void XMLDocument::Clear()
 }
 
 
-void XMLDocument::DeepCopy(XMLDocument* target)
+void XMLDocument::DeepCopy(XMLDocument* target) const
 {
 	TIXMLASSERT(target);
     if (target == this) {
@@ -2380,8 +2380,9 @@ XMLPrinter::XMLPrinter( FILE* file, bool compact, int depth ) :
     }
     for( int i=0; i<NUM_ENTITIES; ++i ) {
         const char entityValue = entities[i].value;
-        TIXMLASSERT( ((unsigned char)entityValue) < ENTITY_RANGE );
-        _entityFlag[ (unsigned char)entityValue ] = true;
+        const unsigned char flagIndex = (unsigned char)entityValue;
+        TIXMLASSERT( flagIndex < ENTITY_RANGE );
+        _entityFlag[flagIndex] = true;
     }
     _restrictedEntityFlag[(unsigned char)'&'] = true;
     _restrictedEntityFlag[(unsigned char)'<'] = true;

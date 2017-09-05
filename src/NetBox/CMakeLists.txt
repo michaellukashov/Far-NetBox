@@ -1098,6 +1098,7 @@ add_library(expat STATIC
   ../../libs/expat/lib/xmltok_impl.c
   ../../libs/expat/lib/loadlibrary.c
 #  ../../libs/expat/lib/xmltok_ns.c
+  ../../libs/expat/lib/loadlibrary.c
 )
 
 target_compile_options(expat PRIVATE
