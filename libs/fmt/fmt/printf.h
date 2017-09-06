@@ -16,6 +16,14 @@
 #include "ostream.h"
 #include "format.h"
 
+#ifdef max
+#undef max
+#endif
+
+#ifdef min
+#undef min
+#endif
+
 #ifdef _MSC_VER
 #pragma warning(push)
 #pragma warning(disable: 4244) // 'argument' : conversion from 'const int' to 'char', possible loss of data
@@ -117,7 +125,7 @@ class ArgConverter : public ArgVisitor<ArgConverter<T>, void> {
       visit_any_int(value);
   }
 
-  void visit_char(char value) {
+  void visit_char(int value) {
     if (type_ != 's')
       visit_any_int(value);
   }
