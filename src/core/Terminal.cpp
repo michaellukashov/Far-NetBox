@@ -1714,8 +1714,13 @@ void TTerminal::OpenTunnel()
     FTunnelData->SetUserName(FSessionData->GetTunnelUserName());
     FTunnelData->SetPassword(FSessionData->GetTunnelPassword());
     FTunnelData->SetPublicKeyFile(FSessionData->GetTunnelPublicKeyFile());
+    UnicodeString HostName = FSessionData->GetHostNameExpanded();
+    if (IsIPv6Literal(HostName))
+    {
+      HostName = EscapeIPv6Literal(HostName);
+    }
     FTunnelData->SetTunnelPortFwd(FORMAT("L%d\t%s:%d",
-        FTunnelLocalPortNumber, FSessionData->GetHostNameExpanded(), FSessionData->GetPortNumber()));
+        FTunnelLocalPortNumber, HostName, FSessionData->GetPortNumber()));
     FTunnelData->SetHostKey(FSessionData->GetTunnelHostKey());
 
     // inherit proxy options on the main session
