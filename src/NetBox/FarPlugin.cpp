@@ -85,9 +85,12 @@ TCustomFarPlugin::~TCustomFarPlugin()
     SAFE_DESTROY(Object);
   }
   SAFE_DESTROY(FSavedTitles);
-//  TGlobalsIntf * Intf = GetGlobals();
-//  SAFE_DESTROY_EX(TGlobalsIntf, Intf);
-//  ::SetGlobals(nullptr);
+  GlobalsFinalize();
+}
+
+void TCustomFarPlugin::Initialize()
+{
+  GlobalsInitialize();
 }
 
 bool TCustomFarPlugin::HandlesFunction(THandlesFunction /*Function*/) const
@@ -274,6 +277,18 @@ void TCustomFarPlugin::InvalidateOpenPluginInfo()
     DebugAssert(FarFileSystem);
     FarFileSystem->InvalidateOpenPluginInfo();
   }
+}
+
+void TCustomFarPlugin::GlobalsInitialize()
+{
+  ::SetGlobals(new TGlobalFunctions());
+}
+
+void TCustomFarPlugin::GlobalsFinalize()
+{
+  TGlobalsIntf *Intf = GetGlobals();
+  delete Intf;
+  ::SetGlobals(nullptr);
 }
 
 intptr_t TCustomFarPlugin::Configure(intptr_t Item)
