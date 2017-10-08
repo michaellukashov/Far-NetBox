@@ -48,6 +48,19 @@
 // The fmt library version in the form major * 10000 + minor * 100 + patch.
 #define FMT_VERSION 40001
 
+#if defined(__has_include)
+# define FMT_HAS_INCLUDE(x) __has_include(x)
+#else
+# define FMT_HAS_INCLUDE(x) 0
+#endif
+
+#if FMT_HAS_INCLUDE(<string_view>) && __cplusplus > 201402L
+# include <string_view>
+# define FMT_HAS_STRING_VIEW 1
+#else
+# define FMT_HAS_STRING_VIEW 0
+#endif
+
 #if defined _SECURE_SCL && _SECURE_SCL
 # define FMT_SECURE_SCL _SECURE_SCL
 #else
@@ -530,6 +543,26 @@ class BasicStringRef {
   BasicStringRef(
       const std::basic_string<Char, std::char_traits<Char>, Allocator> &s)
   : data_(s.c_str()), size_(s.size()) {}
+
+#if FMT_HAS_STRING_VIEW
+  /**
+    \rst
+    Constructs a string reference from a ``std::basic_string_view`` object.
+    \endrst
+   */
+  BasicStringRef(
+      const std::basic_string_view<Char, std::char_traits<Char>> &s)
+  : data_(s.data()), size_(s.size()) {}
+
+  /**
+   \rst
+   Converts a string reference to an ``std::string_view`` object.
+   \endrst
+  */
+  explicit operator std::basic_string_view<Char>() const FMT_NOEXCEPT {
+    return std::basic_string_view<Char>(data_, size_);
+  }
+#endif
 
   /**
     \rst
@@ -1310,7 +1343,10 @@ class MakeValue : public Arg {
   explicit MakeValue(typename WCharHelper<wchar_t *, Char>::Unsupported);
   explicit MakeValue(typename WCharHelper<const wchar_t *, Char>::Unsupported);
   explicit MakeValue(typename WCharHelper<const std::wstring &, Char>::Unsupported);
-  explicit MakeValue(typename WCharHelper<WStringRef, Char>::Unsupported);
+#if FMT_HAS_STRING_VIEW
+  MakeValue(typename WCharHelper<const std::wstring_view &, Char>::Unsupported);
+#endif
+  MakeValue(typename WCharHelper<WStringRef, Char>::Unsupported);
 
   void set_string(StringRef str) {
     string.value = str.data();
@@ -1397,6 +1433,9 @@ class MakeValue : public Arg {
   FMT_MAKE_VALUE(unsigned char *, ustring.value, CSTRING)
   FMT_MAKE_VALUE(const unsigned char *, ustring.value, CSTRING)
   FMT_MAKE_STR_VALUE(const std::string &, STRING)
+#if FMT_HAS_STRING_VIEW
+  FMT_MAKE_STR_VALUE(const std::string_view &, STRING)
+#endif
   FMT_MAKE_STR_VALUE(StringRef, STRING)
   FMT_MAKE_VALUE_(CStringRef, string.value, CSTRING, value.c_str())
 
@@ -1409,6 +1448,9 @@ class MakeValue : public Arg {
   FMT_MAKE_WSTR_VALUE(wchar_t *, WSTRING)
   FMT_MAKE_WSTR_VALUE(const wchar_t *, WSTRING)
   FMT_MAKE_WSTR_VALUE(const std::wstring &, WSTRING)
+#if FMT_HAS_STRING_VIEW
+  FMT_MAKE_WSTR_VALUE(const std::wstring_view &, WSTRING)
+#endif
   FMT_MAKE_WSTR_VALUE(WStringRef, WSTRING)
 
   FMT_MAKE_VALUE(void *, pointer, POINTER)
@@ -2292,7 +2334,8 @@ struct ArgArray;
 
 template <std::size_t N>
 struct ArgArray<N, true/*IsPacked*/> {
-  typedef Value Type[N > 0 ? N : 1];
+  // '+' is used to silence GCC -Wduplicated-branches warning.
+  typedef Value Type[N > 0 ? N : +1];
 
   template <typename Formatter, typename T>
   static Value make(const T &value) {

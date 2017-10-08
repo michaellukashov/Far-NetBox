@@ -16,14 +16,6 @@
 #include "ostream.h"
 #include "format.h"
 
-#ifdef max
-#undef max
-#endif
-
-#ifdef min
-#undef min
-#endif
-
 #ifdef _MSC_VER
 #pragma warning(push)
 #pragma warning(disable: 4244) // 'argument' : conversion from 'const int' to 'char', possible loss of data
