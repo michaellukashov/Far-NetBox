@@ -104,15 +104,16 @@ typedef struct terminal_tag Terminal;
  */
 #define UCSWIDE	     0xDFFF
 
-#define ATTR_NARROW  0x800000U
-#define ATTR_WIDE    0x400000U
-#define ATTR_BOLD    0x040000U
-#define ATTR_UNDER   0x080000U
-#define ATTR_REVERSE 0x100000U
-#define ATTR_BLINK   0x200000U
-#define ATTR_FGMASK  0x0001FFU
-#define ATTR_BGMASK  0x03FE00U
-#define ATTR_COLOURS 0x03FFFFU
+#define ATTR_NARROW  0x0800000U
+#define ATTR_WIDE    0x0400000U
+#define ATTR_BOLD    0x0040000U
+#define ATTR_UNDER   0x0080000U
+#define ATTR_REVERSE 0x0100000U
+#define ATTR_BLINK   0x0200000U
+#define ATTR_FGMASK  0x00001FFU
+#define ATTR_BGMASK  0x003FE00U
+#define ATTR_COLOURS 0x003FFFFU
+#define ATTR_DIM     0x1000000U
 #define ATTR_FGSHIFT 0
 #define ATTR_BGSHIFT 9
 
@@ -593,11 +594,35 @@ void prompt_ensure_result_size(prompt_t *pr, int len);
 void free_prompts(prompts_t *p);
 
 /*
+ * Data type definitions for true-colour terminal display.
+ * 'optionalrgb' describes a single RGB colour, which overrides the
+ * other colour settings if 'enabled' is nonzero, and is ignored
+ * otherwise. 'truecolour' contains a pair of those for foreground and
+ * background.
+ */
+typedef struct optionalrgb {
+    unsigned char enabled;
+    unsigned char r, g, b;
+} optionalrgb;
+extern const optionalrgb optionalrgb_none;
+typedef struct truecolour {
+    optionalrgb fg, bg;
+} truecolour;
+#define optionalrgb_equal(r1,r2) (                              \
+        (r1).enabled==(r2).enabled &&                           \
+        (r1).r==(r2).r && (r1).g==(r2).g && (r1).b==(r2).b)
+#define truecolour_equal(c1,c2) (               \
+        optionalrgb_equal((c1).fg, (c2).fg) &&  \
+        optionalrgb_equal((c1).bg, (c2).bg))
+
+/*
  * Exports from the front end.
  */
 void request_resize(void *frontend, int, int);
-void do_text(Context, int, int, wchar_t *, int, unsigned long, int);
-void do_cursor(Context, int, int, wchar_t *, int, unsigned long, int);
+void do_text(Context, int, int, wchar_t *, int, unsigned long, int,
+             truecolour);
+void do_cursor(Context, int, int, wchar_t *, int, unsigned long, int,
+               truecolour);
 int char_width(Context ctx, int uc);
 #ifdef OPTIMISE_SCROLL
 void do_scroll(Context, int, int, int);
@@ -609,8 +634,9 @@ Context get_ctx(void *frontend);
 void free_ctx(Context);
 void palette_set(void *frontend, int, int, int, int);
 void palette_reset(void *frontend);
+int palette_get(void *frontend, int n, int *r, int *g, int *b);
 void write_aclip(void *frontend, char *, int, int);
-void write_clip(void *frontend, wchar_t *, int *, int, int);
+void write_clip(void *frontend, wchar_t *, int *, truecolour *, int, int);
 void get_clip(void *frontend, wchar_t **, int *);
 void optimised_move(void *frontend, int, int, int);
 void set_raw_mouse_mode(void *frontend, int);
@@ -835,6 +861,7 @@ void cleanup_exit(int);
     /* Colour options */ \
     X(INT, NONE, ansi_colour) \
     X(INT, NONE, xterm_256_colour) \
+    X(INT, NONE, true_colour) \
     X(INT, NONE, system_colour) \
     X(INT, NONE, try_palette) \
     X(INT, NONE, bold_style) \
