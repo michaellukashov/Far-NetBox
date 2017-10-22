@@ -822,6 +822,16 @@ static void aes_setup(AESContext * ctx, unsigned char *key, int keylen)
 #define DECLASTROUND { DECLASTWORD(0); DECLASTWORD(1); DECLASTWORD(2); DECLASTWORD(3); \
         MOVEWORD(0); MOVEWORD(1); MOVEWORD(2); MOVEWORD(3); ADD_ROUND_KEY; }
 
+static void aes_encrypt(AESContext * ctx, word32 * block)
+{
+    ctx->encrypt_cbc((unsigned char*)block, 16, ctx);
+}
+
+static void aes_decrypt(AESContext * ctx, word32 * block)
+{
+    ctx->decrypt_cbc((unsigned char*)block, 16, ctx);
+}
+
 /*
  * Software AES encrypt/decrypt core
  */
@@ -1732,7 +1742,8 @@ void call_aes_free_context(void * handle)
 
 void call_aes_setup(void * ctx, int blocklen, unsigned char * key, int keylen)
 {
-  aes_setup((AESContext *)ctx, blocklen, key, keylen);
+  (void)blocklen;
+  aes_setup((AESContext *)ctx, key, keylen);
 }
 
 void call_aes_encrypt(void * ctx, unsigned int * block)
