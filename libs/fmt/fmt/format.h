@@ -51,7 +51,8 @@
 # define FMT_HAS_INCLUDE(x) 0
 #endif
 
-#if FMT_HAS_INCLUDE(<string_view>) && __cplusplus > 201402L
+#if (FMT_HAS_INCLUDE(<string_view>) && __cplusplus > 201402L) || \
+    (defined(_MSVC_LANG) && _MSVC_LANG > 201402L && _MSC_VER >= 1910)
 # include <string_view>
 # define FMT_HAS_STRING_VIEW 1
 #else
@@ -152,6 +153,23 @@ typedef __int64          intmax_t;
 # define FMT_HAS_CPP_ATTRIBUTE(x) 0
 #endif
 
+#if FMT_HAS_CPP_ATTRIBUTE(maybe_unused)
+# define FMT_HAS_CXX17_ATTRIBUTE_MAYBE_UNUSED
+// VC++ 1910 support /std: option and that will set _MSVC_LANG macro
+// Clang with Microsoft CodeGen doesn't define _MSVC_LANG macro
+#elif defined(_MSVC_LANG) && _MSVC_LANG > 201402
+# define FMT_HAS_CXX17_ATTRIBUTE_MAYBE_UNUSED
+#endif
+
+#ifdef FMT_HAS_CXX17_ATTRIBUTE_MAYBE_UNUSED
+# define FMT_MAYBE_UNUSED [[maybe_unused]]
+// g++/clang++ also support [[gnu::unused]]. However, we don't use it.
+#elif defined(__GNUC__)
+# define FMT_MAYBE_UNUSED __attribute__((unused))
+#else
+# define FMT_MAYBE_UNUSED
+#endif
+
 // Use the compiler's attribute noreturn
 #if defined(__MINGW32__) || defined(__MINGW64__)
 # define FMT_NORETURN __attribute__((noreturn))
@@ -180,6 +198,12 @@ typedef __int64          intmax_t;
     (FMT_HAS_FEATURE(cxx_rvalue_references) || \
         (FMT_GCC_VERSION >= 403 && FMT_HAS_GXX_CXX11) || FMT_MSC_VER >= 1600)
 # endif
+#endif
+
+#if __cplusplus >= 201103L || FMT_MSC_VER >= 1700
+# define FMT_USE_ALLOCATOR_TRAITS 1
+#else
+# define FMT_USE_ALLOCATOR_TRAITS 0
 #endif
 
 // Check if exceptions are disabled.
@@ -334,7 +358,10 @@ typedef __int64          intmax_t;
 
 namespace fmt {
 namespace internal {
-# pragma intrinsic(_BitScanReverse)
+// avoid Clang with Microsoft CodeGen's -Wunknown-pragmas warning
+# ifndef __clang__
+#  pragma intrinsic(_BitScanReverse)
+# endif
 inline uint32_t clz(uint32_t x) {
   unsigned long r = 0;
   _BitScanReverse(&r, x);
@@ -348,7 +375,8 @@ inline uint32_t clz(uint32_t x) {
 }
 # define FMT_BUILTIN_CLZ(n) fmt::internal::clz(n)
 
-# ifdef _WIN64
+// avoid Clang with Microsoft CodeGen's -Wunknown-pragmas warning
+# if defined(_WIN64) && !defined(__clang__)
 #  pragma intrinsic(_BitScanReverse64)
 # endif
 
@@ -658,7 +686,7 @@ class FormatError : public std::runtime_error {
   explicit FormatError(CStringRef message)
   : std::runtime_error(message.c_str()) {}
   FormatError(const FormatError &ferr) : std::runtime_error(ferr) {}
-  FMT_API ~FormatError() FMT_DTOR_NOEXCEPT;
+  FMT_API ~FormatError() FMT_DTOR_NOEXCEPT FMT_OVERRIDE;
 };
 
 namespace internal {
@@ -803,7 +831,7 @@ class MemoryBuffer : private Allocator, public Buffer<T> {
  public:
   explicit MemoryBuffer(const Allocator &alloc = Allocator())
       : Allocator(alloc), Buffer<T>(data_, SIZE) {}
-  ~MemoryBuffer() { deallocate(); }
+  ~MemoryBuffer() FMT_OVERRIDE { deallocate(); }
 
 #if FMT_USE_RVALUE_REFERENCES
  private:
@@ -847,7 +875,12 @@ void MemoryBuffer<T, SIZE, Allocator>::grow(std::size_t size) {
   std::size_t new_capacity = this->capacity_ + this->capacity_ / 2;
   if (size > new_capacity)
       new_capacity = size;
+#if FMT_USE_ALLOCATOR_TRAITS
+  T *new_ptr =
+      std::allocator_traits<Allocator>::allocate(*this, new_capacity, FMT_NULL);
+#else
   T *new_ptr = this->allocate(new_capacity, FMT_NULL);
+#endif
   // The following code doesn't throw, so the raw pointer above doesn't leak.
   std::uninitialized_copy(this->ptr_, this->ptr_ + this->size_,
                           make_ptr(new_ptr, new_capacity));
@@ -1404,6 +1437,20 @@ class MakeValue : public Arg {
   FMT_MAKE_VALUE(unsigned char, uint_value, UINT)
   FMT_MAKE_VALUE(char, int_value, CHAR)
 
+#if __cplusplus >= 201103L
+  template <
+    typename T,
+    typename = typename std::enable_if<
+      std::is_enum<T>::value && ConvertToInt<T>::value>::type>
+   MakeValue(T value) { int_value = value; }
+
+  template <
+    typename T,
+    typename = typename std::enable_if<
+      std::is_enum<T>::value && ConvertToInt<T>::value>::type>
+  static uint64_t type(T) { return Arg::INT; }
+#endif
+
 #if !defined(_MSC_VER) || defined(_NATIVE_WCHAR_T_DEFINED)
   MakeValue(typename WCharHelper<wchar_t, Char>::Supported value) {
     int_value = value;
@@ -1505,7 +1552,7 @@ class RuntimeError : public std::runtime_error {
  protected:
   RuntimeError() : std::runtime_error("") {}
   RuntimeError(const RuntimeError &rerr) : std::runtime_error(rerr) {}
-  FMT_API ~RuntimeError() FMT_DTOR_NOEXCEPT;
+  FMT_API ~RuntimeError() FMT_DTOR_NOEXCEPT FMT_OVERRIDE;
 };
 
 template <typename Char>
@@ -2514,7 +2561,7 @@ class SystemError : public internal::RuntimeError {
   FMT_DEFAULTED_COPY_CTOR(SystemError)
   FMT_VARIADIC_CTOR(SystemError, init, int, CStringRef)
 
-  FMT_API ~SystemError() FMT_DTOR_NOEXCEPT;
+  FMT_API ~SystemError() FMT_DTOR_NOEXCEPT FMT_OVERRIDE;
 
   int error_code() const { return error_code_; }
 };
