@@ -741,6 +741,7 @@ bool XMLDocument::Accept( XMLVisitor* visitor ) const
 XMLNode::XMLNode( XMLDocument* doc ) :
     _document( doc ),
     _parent( 0 ),
+    _value(),
     _parseLineNum( 0 ),
     _firstChild( 0 ), _lastChild( 0 ),
     _prev( 0 ), _next( 0 ),
@@ -910,6 +911,13 @@ XMLNode* XMLNode::InsertAfterChild( XMLNode* afterThis, XMLNode* addThis )
     if ( afterThis->_parent != this ) {
         TIXMLASSERT( false );
         return 0;
+    }
+    if ( afterThis == addThis ) {
+        // Current state: BeforeThis -> AddThis -> OneAfterAddThis
+        // Now AddThis must disappear from it's location and then
+        // reappear between BeforeThis and OneAfterAddThis.
+        // So just leave it where it is.
+        return addThis;
     }
 
     if ( afterThis->_next == 0 ) {
@@ -1993,9 +2001,16 @@ XMLDocument::XMLDocument( bool processEntities, Whitespace whitespaceMode ) :
     _processEntities( processEntities ),
     _errorID(XML_SUCCESS),
     _whitespaceMode( whitespaceMode ),
+    _errorStr1(),
+    _errorStr2(),
     _errorLineNum( 0 ),
     _charBuffer( 0 ),
-    _parseCurLineNum( 0 )
+    _parseCurLineNum( 0 ),
+    _unlinked(),
+    _elementPool(),
+    _attributePool(),
+    _textPool(),
+    _commentPool()
 {
     // avoid VC++ C4355 warning about 'this' in initializer list (C4355 is off by default in VS2012+)
     _document = this;
@@ -2367,12 +2382,14 @@ void XMLDocument::Parse()
 
 XMLPrinter::XMLPrinter( FILE* file, bool compact, int depth ) :
     _elementJustOpened( false ),
+    _stack(),
     _firstElement( true ),
     _fp( file ),
     _depth( depth ),
     _textDepth( -1 ),
     _processEntities( true ),
-    _compactMode( compact )
+    _compactMode( compact ),
+    _buffer()
 {
     for( int i=0; i<ENTITY_RANGE; ++i ) {
         _entityFlag[i] = false;
@@ -2380,8 +2397,9 @@ XMLPrinter::XMLPrinter( FILE* file, bool compact, int depth ) :
     }
     for( int i=0; i<NUM_ENTITIES; ++i ) {
         const char entityValue = entities[i].value;
-        TIXMLASSERT( ((unsigned char)entityValue) < ENTITY_RANGE );
-        _entityFlag[ (unsigned char)entityValue ] = true;
+        const unsigned char flagIndex = (unsigned char)entityValue;
+        TIXMLASSERT( flagIndex < ENTITY_RANGE );
+        _entityFlag[flagIndex] = true;
     }
     _restrictedEntityFlag[(unsigned char)'&'] = true;
     _restrictedEntityFlag[(unsigned char)'<'] = true;
