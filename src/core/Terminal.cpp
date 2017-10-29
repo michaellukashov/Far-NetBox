@@ -1720,7 +1720,7 @@ void TTerminal::OpenTunnel()
       HostName = EscapeIPv6Literal(HostName);
     }
     FTunnelData->SetTunnelPortFwd(FORMAT("L%d\t%s:%d",
-        FTunnelLocalPortNumber, HostName, FSessionData->GetPortNumber()));
+      FTunnelLocalPortNumber, HostName, FSessionData->GetPortNumber()));
     FTunnelData->SetHostKey(FSessionData->GetTunnelHostKey());
 
     // inherit proxy options on the main session
