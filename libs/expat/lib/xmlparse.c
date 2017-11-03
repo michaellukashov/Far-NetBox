@@ -6686,8 +6686,8 @@ hash(XML_Parser parser, KEY s)
 {
   struct siphash state;
   struct sipkey key;
-  (void)sip_tobin;
-  (void)sip24_valid;
+  //(void)sip_tobin;
+  //(void)sip24_valid;
   copy_salt_to_sipkey(parser, &key);
   sip24_init(&state, &key);
   sip24_update(&state, s, keylen(s) * sizeof(XML_Char));
@@ -7229,7 +7229,7 @@ copyString(const XML_Char *s,
     charsRequired++;
 
     /* Now allocate space for the copy */
-    result = memsuite->malloc_fcn(charsRequired * sizeof(XML_Char));
+    result = (XML_Char *)memsuite->malloc_fcn(charsRequired * sizeof(XML_Char));
     if (result == NULL)
         return NULL;
     /* Copy the original into place */
