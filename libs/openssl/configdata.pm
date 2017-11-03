@@ -10,138 +10,114 @@ our @EXPORT = qw(%config %target %disabled %withargs %unified_info @disablables)
 
 our %config = (
   afalgeng => "",
-  b32 => "0",
-  b64 => "1",
+  b32 => "1",
+  b64 => "0",
   b64l => "0",
   baseaddr => "0xFB00000",
   bn_ll => "0",
-  build_file => "makefile",
-  build_file_templates => [ "Configurations/windows-makefile.tmpl", "Configurations/common.tmpl" ],
-  build_infos => [ "./build.info", "crypto/build.info", "ssl/build.info", "engines/build.info", "apps/build.info", "test/build.info", "util/build.info", "tools/build.info", "fuzz/build.info", "crypto/objects/build.info", "crypto/md4/build.info", "crypto/md5/build.info", "crypto/sha/build.info", "crypto/mdc2/build.info", "crypto/hmac/build.info", "crypto/ripemd/build.info", "crypto/poly1305/build.info", "crypto/blake2/build.info", "crypto/des/build.info", "crypto/aes/build.info", "crypto/rc2/build.info", "crypto/chacha/build.info", "crypto/modes/build.info", "crypto/bn/build.info", "crypto/ec/build.info", "crypto/rsa/build.info", "crypto/dsa/build.info", "crypto/dh/build.info", "crypto/dso/build.info", "crypto/engine/build.info", "crypto/buffer/build.info", "crypto/bio/build.info", "crypto/stack/build.info", "crypto/lhash/build.info", "crypto/rand/build.info", "crypto/err/build.info", "crypto/evp/build.info", "crypto/asn1/build.info", "crypto/pem/build.info", "crypto/x509/build.info", "crypto/x509v3/build.info", "crypto/conf/build.info", "crypto/txt_db/build.info", "crypto/pkcs7/build.info", "crypto/pkcs12/build.info", "crypto/comp/build.info", "crypto/ocsp/build.info", "crypto/ui/build.info", "crypto/cms/build.info", "crypto/ts/build.info", "crypto/cmac/build.info", "crypto/ct/build.info", "crypto/async/build.info", "crypto/kdf/build.info" ],
+  build_file => "Makefile",
+  build_file_templates => [ "Configurations/unix-Makefile.tmpl", "Configurations/common.tmpl" ],
+  build_infos => [ "./build.info", "crypto/build.info", "ssl/build.info", "engines/build.info", "apps/build.info", "test/build.info", "util/build.info", "tools/build.info", "fuzz/build.info", "crypto/objects/build.info", "crypto/md4/build.info", "crypto/md5/build.info", "crypto/sha/build.info", "crypto/mdc2/build.info", "crypto/hmac/build.info", "crypto/ripemd/build.info", "crypto/whrlpool/build.info", "crypto/poly1305/build.info", "crypto/blake2/build.info", "crypto/des/build.info", "crypto/aes/build.info", "crypto/rc2/build.info", "crypto/rc4/build.info", "crypto/idea/build.info", "crypto/bf/build.info", "crypto/cast/build.info", "crypto/camellia/build.info", "crypto/seed/build.info", "crypto/chacha/build.info", "crypto/modes/build.info", "crypto/bn/build.info", "crypto/ec/build.info", "crypto/rsa/build.info", "crypto/dsa/build.info", "crypto/dh/build.info", "crypto/dso/build.info", "crypto/engine/build.info", "crypto/buffer/build.info", "crypto/bio/build.info", "crypto/stack/build.info", "crypto/lhash/build.info", "crypto/rand/build.info", "crypto/err/build.info", "crypto/evp/build.info", "crypto/asn1/build.info", "crypto/pem/build.info", "crypto/x509/build.info", "crypto/x509v3/build.info", "crypto/conf/build.info", "crypto/txt_db/build.info", "crypto/pkcs7/build.info", "crypto/pkcs12/build.info", "crypto/comp/build.info", "crypto/ocsp/build.info", "crypto/ui/build.info", "crypto/cms/build.info", "crypto/ts/build.info", "crypto/srp/build.info", "crypto/cmac/build.info", "crypto/ct/build.info", "crypto/async/build.info", "crypto/kdf/build.info" ],
   build_type => "release",
   builddir => ".",
-  cc => "cl",
-  cflags => " -Ox -Ob1 -Oi -Os -Oy -GF -GS- -Gy",
-  conf_files => [ "Configurations/00-base-templates.conf", "Configurations/10-main.conf" ],
+  cc => "cc",
+  cflags => "",
+  conf_files => [ "Configurations/90-team.conf" ],
   cross_compile_prefix => "",
-  defines => [ "DSO_WIN32", "NDEBUG", "OPENSSL_THREADS", "OPENSSL_NO_DYNAMIC_ENGINE", "OPENSSL_PIC", "NDEBUG;OPENSSL_NO_CAPIENG;NO_CHMOD;OPENSSL_NO_DGRAM;OPENSSL_NO_RIJNDAEL;DSO_WIN32;OPENSSL_NO_CT;OPENSSL_NO_LOCKING;WINSCP", "OPENSSL_NO_ERR" ],
+  defines => [ "NDEBUG", "OPENSSL_NO_DYNAMIC_ENGINE" ],
   dirs => [ "crypto", "ssl", "engines", "apps", "test", "util", "tools", "fuzz" ],
   dynamic_engines => "0",
   engdirs => [  ],
   ex_libs => "",
-  export_var_as_fn => "1",
+  export_var_as_fn => "0",
   fips => "0",
   fipslibdir => "/usr/local/ssl/fips-2.0/lib/",
   hashbangperl => "/usr/bin/env perl",
   libdir => "",
   major => "1",
-  makedepprog => "",
+  makedepprog => "cc",
   minor => "1.0",
-  openssl_algorithm_defines => [ "OPENSSL_NO_BF", "OPENSSL_NO_CAMELLIA", "OPENSSL_NO_CAST", "OPENSSL_NO_IDEA", "OPENSSL_NO_MD2", "OPENSSL_NO_RC4", "OPENSSL_NO_RC5", "OPENSSL_NO_SEED", "OPENSSL_NO_SRP", "OPENSSL_NO_WHIRLPOOL" ],
+  openssl_algorithm_defines => [ "OPENSSL_NO_MD2", "OPENSSL_NO_RC5" ],
   openssl_api_defines => [  ],
-  openssl_other_defines => [ "OPENSSL_NO_ASAN", "OPENSSL_NO_ASM", "OPENSSL_NO_CRYPTO_MDEBUG", "OPENSSL_NO_CRYPTO_MDEBUG_BACKTRACE", "OPENSSL_NO_EC_NISTP_64_GCC_128", "OPENSSL_NO_EGD", "OPENSSL_NO_ERR", "OPENSSL_NO_FUZZ_AFL", "OPENSSL_NO_FUZZ_LIBFUZZER", "OPENSSL_NO_GOST", "OPENSSL_NO_HEARTBEATS", "OPENSSL_NO_HW", "OPENSSL_NO_MSAN", "OPENSSL_NO_SCTP", "OPENSSL_NO_SSL_TRACE", "OPENSSL_NO_SSL3", "OPENSSL_NO_SSL3_METHOD", "OPENSSL_NO_UBSAN", "OPENSSL_NO_UNIT_TEST", "OPENSSL_NO_WEAK_SSL_CIPHERS", "OPENSSL_NO_AFALGENG" ],
-  openssl_sys_defines => [ "OPENSSL_SYS_WIN64A" ],
-  openssl_thread_defines => [ "OPENSSL_THREADS" ],
+  openssl_other_defines => [ "OPENSSL_NO_ASAN", "OPENSSL_NO_CRYPTO_MDEBUG", "OPENSSL_NO_CRYPTO_MDEBUG_BACKTRACE", "OPENSSL_NO_EC_NISTP_64_GCC_128", "OPENSSL_NO_EGD", "OPENSSL_NO_FUZZ_AFL", "OPENSSL_NO_FUZZ_LIBFUZZER", "OPENSSL_NO_HEARTBEATS", "OPENSSL_NO_MSAN", "OPENSSL_NO_SCTP", "OPENSSL_NO_SSL_TRACE", "OPENSSL_NO_SSL3", "OPENSSL_NO_SSL3_METHOD", "OPENSSL_NO_UBSAN", "OPENSSL_NO_UNIT_TEST", "OPENSSL_NO_WEAK_SSL_CIPHERS", "OPENSSL_NO_AFALGENG" ],
+  openssl_sys_defines => [  ],
+  openssl_thread_defines => [  ],
   openssldir => "",
-  options => "enable-static-engine -Ox -Ob1 -Oi -Os -Oy -GF -GS- -Gy -DNDEBUG;OPENSSL_NO_CAPIENG;NO_CHMOD;OPENSSL_NO_DGRAM;OPENSSL_NO_RIJNDAEL;DSO_WIN32;OPENSSL_NO_CT;OPENSSL_NO_LOCKING;WINSCP no-asan no-asm no-bf no-camellia no-cast no-crypto-mdebug no-crypto-mdebug-backtrace no-dynamic-engine no-ec_nistp_64_gcc_128 no-egd no-err no-fuzz-afl no-fuzz-libfuzzer no-gost no-heartbeats no-hw no-idea no-md2 no-msan no-rc4 no-rc5 no-sctp no-seed no-shared no-srp no-ssl-trace no-ssl3 no-ssl3-method no-ubsan no-unit-test no-weak-ssl-ciphers no-whirlpool no-zlib no-zlib-dynamic",
-  perl => "perl",
-  perlargv => [ "VC-WIN64A", "no-unit-test", "no-cast", "no-err", "no-bf", "no-sctp", "no-asm", "enable-static-engine", "no-shared", "no-hw", "no-camellia", "no-seed", "no-rc4", "no-rc5", "no-whirlpool", "no-srp", "no-gost", "no-idea", "-Ox", "-Ob1", "-Oi", "-Os", "-Oy", "-GF", "-GS-", "-Gy", "-DNDEBUG;OPENSSL_NO_CAPIENG;NO_CHMOD;OPENSSL_NO_DGRAM;OPENSSL_NO_RIJNDAEL;DSO_WIN32;OPENSSL_NO_CT;OPENSSL_NO_LOCKING;WINSCP" ],
+  options => " no-asan no-crypto-mdebug no-crypto-mdebug-backtrace no-ec_nistp_64_gcc_128 no-egd no-fuzz-afl no-fuzz-libfuzzer no-heartbeats no-md2 no-msan no-rc5 no-sctp no-ssl-trace no-ssl3 no-ssl3-method no-ubsan no-unit-test no-weak-ssl-ciphers no-zlib no-zlib-dynamic",
+  perl => "/usr/bin/perl",
+  perlargv => [ "dist" ],
   prefix => "",
   processor => "",
   rc4_int => "unsigned int",
-  sdirs => [ "objects", "md4", "md5", "sha", "mdc2", "hmac", "ripemd", "poly1305", "blake2", "des", "aes", "rc2", "chacha", "modes", "bn", "ec", "rsa", "dsa", "dh", "dso", "engine", "buffer", "bio", "stack", "lhash", "rand", "err", "evp", "asn1", "pem", "x509", "x509v3", "conf", "txt_db", "pkcs7", "pkcs12", "comp", "ocsp", "ui", "cms", "ts", "cmac", "ct", "async", "kdf" ],
+  sdirs => [ "objects", "md4", "md5", "sha", "mdc2", "hmac", "ripemd", "whrlpool", "poly1305", "blake2", "des", "aes", "rc2", "rc4", "idea", "bf", "cast", "camellia", "seed", "chacha", "modes", "bn", "ec", "rsa", "dsa", "dh", "dso", "engine", "buffer", "bio", "stack", "lhash", "rand", "err", "evp", "asn1", "pem", "x509", "x509v3", "conf", "txt_db", "pkcs7", "pkcs12", "comp", "ocsp", "ui", "cms", "ts", "srp", "cmac", "ct", "async", "kdf" ],
   shared_ldflag => "",
   shlib_major => "1",
   shlib_minor => "1",
   shlib_version_history => "",
   shlib_version_number => "1.1",
   sourcedir => ".",
-  target => "VC-WIN64A",
-  version => "1.1.0d",
-  version_num => "0x1010004fL",
+  target => "dist",
+  version => "1.1.0g",
+  version_num => "0x1010007fL",
 );
 
 our %target = (
-  _conf_fname_int => [ "Configurations/00-base-templates.conf", "Configurations/00-base-templates.conf", "Configurations/10-main.conf", "Configurations/10-main.conf", "Configurations/10-main.conf", "Configurations/10-main.conf" ],
+  _conf_fname_int => [ "Configurations/90-team.conf" ],
   aes_asm_src => "aes_core.c aes_cbc.c",
   aes_obj => "aes_core.o aes_cbc.o",
-  apps_aux_src => "win32_init.c",
-  apps_obj => "win32_init.o",
-  ar => "lib",
-  arflags => "/nologo",
-  aroutflag => "/out:",
-  as => "ml64",
-  asflags => "/c /Cp /Cx /Zi",
-  asoutflag => "/Fo",
+  apps_aux_src => "",
+  apps_obj => "",
+  ar => "ar",
   bf_asm_src => "bf_enc.c",
   bf_obj => "bf_enc.o",
-  bin_cflags => "/Zi /Fdapp /MT",
-  bin_lflags => "/subsystem:console /opt:ref",
   bn_asm_src => "bn_asm.c",
   bn_obj => "bn_asm.o",
-  bn_ops => "SIXTY_FOUR_BIT EXPORT_VAR_AS_FN",
-  build_file => "makefile",
-  build_scheme => [ "unified", "windows", "VC-W64" ],
+  build_file => "Makefile",
+  build_scheme => [ "unified", "unix" ],
   cast_asm_src => "c_enc.c",
   cast_obj => "c_enc.o",
-  cc => "cl",
-  cflags => "-W3 -wd4090 -Gs0 -GF -Gy -nologo -DOPENSSL_SYS_WIN32 -DWIN32_LEAN_AND_MEAN -DL_ENDIAN -D_CRT_SECURE_NO_DEPRECATE -DUNICODE -D_UNICODE  /O2",
+  cc => "cc",
+  cflags => "-O",
   chacha_asm_src => "chacha_enc.c",
   chacha_obj => "chacha_enc.o",
   cmll_asm_src => "camellia.c cmll_misc.c cmll_cbc.c",
   cmll_obj => "camellia.o cmll_misc.o cmll_cbc.o",
-  coutflag => "/Fo",
   cpuid_asm_src => "mem_clr.c",
   cpuid_obj => "mem_clr.o",
   defines => [  ],
   des_asm_src => "des_enc.c fcrypt_b.c",
   des_obj => "des_enc.o fcrypt_b.o",
-  dso_cflags => "/Zi /Fddso",
   dso_extension => "",
-  dso_scheme => "WIN32",
   ec_asm_src => "",
   ec_obj => "",
-  ex_libs => "ws2_32.lib gdi32.lib advapi32.lib crypt32.lib user32.lib",
   exe_extension => "",
-  ld => "link",
-  lflags => "/nologo /debug",
-  lib_cflags => "/Zi /Fdossl_static /MT /Zl",
-  loutflag => "/out:",
   md5_asm_src => "",
   md5_obj => "",
   modes_asm_src => "",
   modes_obj => "",
-  mt => "mt",
-  mtflags => "-nologo",
-  mtinflag => "-manifest ",
-  mtoutflag => "-outputresource:",
-  multilib => "-x64",
   nm => "nm",
   padlock_asm_src => "",
   padlock_obj => "",
-  perlasm_scheme => "auto",
   poly1305_asm_src => "",
   poly1305_obj => "",
-  ranlib => "true",
-  rc => "rc",
+  ranlib => "\$(CROSS_COMPILE)ranlib",
+  rc => "windres",
   rc4_asm_src => "rc4_enc.c rc4_skey.c",
   rc4_obj => "rc4_enc.o rc4_skey.o",
   rc5_asm_src => "rc5_enc.c",
   rc5_obj => "rc5_enc.o",
-  rcoutflag => "/fo",
   rmd160_asm_src => "",
   rmd160_obj => "",
   shared_cflag => "",
   shared_defines => [  ],
   shared_extension => "",
   shared_extension_simple => "",
-  shared_ldflag => "/dll",
+  shared_ldflag => "",
   shared_rcflag => "",
-  shared_target => "win-shared",
-  sys_id => "WIN64A",
+  shared_target => "",
   template => "1",
   thread_defines => [  ],
-  thread_scheme => "winthreads",
+  thread_scheme => "(unknown)",
   unistd => "<unistd.h>",
   uplink_aux_src => "",
   uplink_obj => "",
@@ -254,38 +230,27 @@ our @disablables = (
 our %disabled = (
   "afalgeng" => "not-linux",
   "asan" => "default",
-  "asm" => "option",
-  "bf" => "option",
-  "camellia" => "option",
-  "cast" => "option",
   "crypto-mdebug" => "default",
   "crypto-mdebug-backtrace" => "default",
-  "dynamic-engine" => "option",
+  "dynamic-engine" => "no-shared-target",
   "ec_nistp_64_gcc_128" => "default",
   "egd" => "default",
-  "err" => "option",
   "fuzz-afl" => "default",
   "fuzz-libfuzzer" => "default",
-  "gost" => "option",
   "heartbeats" => "default",
-  "hw" => "option",
-  "idea" => "option",
-  "makedepend" => "unavailable",
   "md2" => "default",
   "msan" => "default",
-  "rc4" => "option",
-  "rc5" => "option",
-  "sctp" => "option",
-  "seed" => "option",
-  "shared" => "option",
-  "srp" => "option",
+  "pic" => "no-shared-target",
+  "rc5" => "default",
+  "sctp" => "default",
+  "shared" => "no-shared-target",
   "ssl-trace" => "default",
   "ssl3" => "default",
   "ssl3-method" => "default",
+  "threads" => "unavailable",
   "ubsan" => "default",
-  "unit-test" => "option",
+  "unit-test" => "default",
   "weak-ssl-ciphers" => "default",
-  "whirlpool" => "option",
   "zlib" => "default",
   "zlib-dynamic" => "default",
 );
@@ -302,9 +267,217 @@ our %unified_info = (
                     "crypto/include/internal/dso_conf.h",
                     "include/openssl/opensslconf.h",
                 ],
+            "apps/app_rand.o" =>
+                [
+                    "apps/progs.h",
+                ],
+            "apps/apps.o" =>
+                [
+                    "apps/progs.h",
+                ],
+            "apps/asn1pars.o" =>
+                [
+                    "apps/progs.h",
+                ],
+            "apps/ca.o" =>
+                [
+                    "apps/progs.h",
+                ],
+            "apps/ciphers.o" =>
+                [
+                    "apps/progs.h",
+                ],
+            "apps/cms.o" =>
+                [
+                    "apps/progs.h",
+                ],
+            "apps/crl.o" =>
+                [
+                    "apps/progs.h",
+                ],
+            "apps/crl2p7.o" =>
+                [
+                    "apps/progs.h",
+                ],
+            "apps/dgst.o" =>
+                [
+                    "apps/progs.h",
+                ],
+            "apps/dhparam.o" =>
+                [
+                    "apps/progs.h",
+                ],
+            "apps/dsa.o" =>
+                [
+                    "apps/progs.h",
+                ],
+            "apps/dsaparam.o" =>
+                [
+                    "apps/progs.h",
+                ],
+            "apps/ec.o" =>
+                [
+                    "apps/progs.h",
+                ],
+            "apps/ecparam.o" =>
+                [
+                    "apps/progs.h",
+                ],
+            "apps/enc.o" =>
+                [
+                    "apps/progs.h",
+                ],
+            "apps/engine.o" =>
+                [
+                    "apps/progs.h",
+                ],
+            "apps/errstr.o" =>
+                [
+                    "apps/progs.h",
+                ],
+            "apps/gendsa.o" =>
+                [
+                    "apps/progs.h",
+                ],
+            "apps/genpkey.o" =>
+                [
+                    "apps/progs.h",
+                ],
+            "apps/genrsa.o" =>
+                [
+                    "apps/progs.h",
+                ],
+            "apps/nseq.o" =>
+                [
+                    "apps/progs.h",
+                ],
+            "apps/ocsp.o" =>
+                [
+                    "apps/progs.h",
+                ],
             "apps/openssl" =>
                 [
                     "libssl",
+                ],
+            "apps/openssl.o" =>
+                [
+                    "apps/progs.h",
+                ],
+            "apps/opt.o" =>
+                [
+                    "apps/progs.h",
+                ],
+            "apps/passwd.o" =>
+                [
+                    "apps/progs.h",
+                ],
+            "apps/pkcs12.o" =>
+                [
+                    "apps/progs.h",
+                ],
+            "apps/pkcs7.o" =>
+                [
+                    "apps/progs.h",
+                ],
+            "apps/pkcs8.o" =>
+                [
+                    "apps/progs.h",
+                ],
+            "apps/pkey.o" =>
+                [
+                    "apps/progs.h",
+                ],
+            "apps/pkeyparam.o" =>
+                [
+                    "apps/progs.h",
+                ],
+            "apps/pkeyutl.o" =>
+                [
+                    "apps/progs.h",
+                ],
+            "apps/prime.o" =>
+                [
+                    "apps/progs.h",
+                ],
+            "apps/progs.h" =>
+                [
+                    "configdata.pm",
+                ],
+            "apps/rand.o" =>
+                [
+                    "apps/progs.h",
+                ],
+            "apps/rehash.o" =>
+                [
+                    "apps/progs.h",
+                ],
+            "apps/req.o" =>
+                [
+                    "apps/progs.h",
+                ],
+            "apps/rsa.o" =>
+                [
+                    "apps/progs.h",
+                ],
+            "apps/rsautl.o" =>
+                [
+                    "apps/progs.h",
+                ],
+            "apps/s_cb.o" =>
+                [
+                    "apps/progs.h",
+                ],
+            "apps/s_client.o" =>
+                [
+                    "apps/progs.h",
+                ],
+            "apps/s_server.o" =>
+                [
+                    "apps/progs.h",
+                ],
+            "apps/s_socket.o" =>
+                [
+                    "apps/progs.h",
+                ],
+            "apps/s_time.o" =>
+                [
+                    "apps/progs.h",
+                ],
+            "apps/sess_id.o" =>
+                [
+                    "apps/progs.h",
+                ],
+            "apps/smime.o" =>
+                [
+                    "apps/progs.h",
+                ],
+            "apps/speed.o" =>
+                [
+                    "apps/progs.h",
+                ],
+            "apps/spkac.o" =>
+                [
+                    "apps/progs.h",
+                ],
+            "apps/srp.o" =>
+                [
+                    "apps/progs.h",
+                ],
+            "apps/ts.o" =>
+                [
+                    "apps/progs.h",
+                ],
+            "apps/verify.o" =>
+                [
+                    "apps/progs.h",
+                ],
+            "apps/version.o" =>
+                [
+                    "apps/progs.h",
+                ],
+            "apps/x509.o" =>
+                [
+                    "apps/progs.h",
                 ],
             "crypto/aes/aes-586.s" =>
                 [
@@ -320,6 +493,11 @@ our %unified_info = (
                 ],
             "crypto/aes/vpaes-586.s" =>
                 [
+                    "crypto/perlasm/x86asm.pl",
+                ],
+            "crypto/bf/bf-586.s" =>
+                [
+                    "crypto/perlasm/cbc.pl",
                     "crypto/perlasm/x86asm.pl",
                 ],
             "crypto/bn/bn-586.s" =>
@@ -341,6 +519,19 @@ our %unified_info = (
             "crypto/buildinf.h" =>
                 [
                     "configdata.pm",
+                ],
+            "crypto/camellia/cmll-x86.s" =>
+                [
+                    "crypto/perlasm/x86asm.pl",
+                ],
+            "crypto/camellia/cmllt4-sparcv9.S" =>
+                [
+                    "crypto/perlasm/sparcv9_modes.pl",
+                ],
+            "crypto/cast/cast-586.s" =>
+                [
+                    "crypto/perlasm/cbc.pl",
+                    "crypto/perlasm/x86asm.pl",
                 ],
             "crypto/cversion.o" =>
                 [
@@ -364,6 +555,10 @@ our %unified_info = (
                 [
                     "configdata.pm",
                 ],
+            "crypto/rc4/rc4-586.s" =>
+                [
+                    "crypto/perlasm/x86asm.pl",
+                ],
             "crypto/ripemd/rmd-586.s" =>
                 [
                     "crypto/perlasm/x86asm.pl",
@@ -377,6 +572,10 @@ our %unified_info = (
                     "crypto/perlasm/x86asm.pl",
                 ],
             "crypto/sha/sha512-586.s" =>
+                [
+                    "crypto/perlasm/x86asm.pl",
+                ],
+            "crypto/whrlpool/wp-mmx.s" =>
                 [
                     "crypto/perlasm/x86asm.pl",
                 ],
@@ -511,6 +710,16 @@ our %unified_info = (
                     "libcrypto",
                     "libssl",
                 ],
+            "test/buildtest_camellia" =>
+                [
+                    "libcrypto",
+                    "libssl",
+                ],
+            "test/buildtest_cast" =>
+                [
+                    "libcrypto",
+                    "libssl",
+                ],
             "test/buildtest_cmac" =>
                 [
                     "libcrypto",
@@ -596,12 +805,22 @@ our %unified_info = (
                     "libcrypto",
                     "libssl",
                 ],
+            "test/buildtest_err" =>
+                [
+                    "libcrypto",
+                    "libssl",
+                ],
             "test/buildtest_evp" =>
                 [
                     "libcrypto",
                     "libssl",
                 ],
             "test/buildtest_hmac" =>
+                [
+                    "libcrypto",
+                    "libssl",
+                ],
+            "test/buildtest_idea" =>
                 [
                     "libcrypto",
                     "libssl",
@@ -651,11 +870,6 @@ our %unified_info = (
                     "libcrypto",
                     "libssl",
                 ],
-            "test/buildtest_opensslconf" =>
-                [
-                    "libcrypto",
-                    "libssl",
-                ],
             "test/buildtest_opensslv" =>
                 [
                     "libcrypto",
@@ -696,6 +910,11 @@ our %unified_info = (
                     "libcrypto",
                     "libssl",
                 ],
+            "test/buildtest_rc4" =>
+                [
+                    "libcrypto",
+                    "libssl",
+                ],
             "test/buildtest_ripemd" =>
                 [
                     "libcrypto",
@@ -711,7 +930,17 @@ our %unified_info = (
                     "libcrypto",
                     "libssl",
                 ],
+            "test/buildtest_seed" =>
+                [
+                    "libcrypto",
+                    "libssl",
+                ],
             "test/buildtest_sha" =>
+                [
+                    "libcrypto",
+                    "libssl",
+                ],
+            "test/buildtest_srp" =>
                 [
                     "libcrypto",
                     "libssl",
@@ -837,10 +1066,6 @@ our %unified_info = (
                 [
                     "libssl",
                 ],
-            "test/ecdhtest" =>
-                [
-                    "libcrypto",
-                ],
             "test/ecdsatest" =>
                 [
                     "libcrypto",
@@ -858,6 +1083,10 @@ our %unified_info = (
                     "libcrypto",
                 ],
             "test/evp_test" =>
+                [
+                    "libcrypto",
+                ],
+            "test/exdatatest" =>
                 [
                     "libcrypto",
                 ],
@@ -1034,6 +1263,11 @@ our %unified_info = (
         ],
     "generate" =>
         {
+            "apps/progs.h" =>
+                [
+                    "apps/progs.pl",
+                    "\$(APPS_OPENSSL)",
+                ],
             "crypto/aes/aes-586.s" =>
                 [
                     "crypto/aes/asm/aes-586.pl",
@@ -1170,6 +1404,14 @@ our %unified_info = (
                 [
                     "crypto/armv4cpuid.pl",
                     "\$(PERLASM_SCHEME)",
+                ],
+            "crypto/bf/bf-586.s" =>
+                [
+                    "crypto/bf/asm/bf-586.pl",
+                    "\$(PERLASM_SCHEME)",
+                    "\$(CFLAGS)",
+                    "\$(LIB_CFLAGS)",
+                    "\$(PROCESSOR)",
                 ],
             "crypto/bn/alpha-mont.S" =>
                 [
@@ -1329,6 +1571,32 @@ our %unified_info = (
                     "\"\$(CC)",
                     "\$(CFLAGS_Q)\"",
                     "\"\$(PLATFORM)\"",
+                ],
+            "crypto/camellia/cmll-x86.s" =>
+                [
+                    "crypto/camellia/asm/cmll-x86.pl",
+                    "\$(PERLASM_SCHEME)",
+                    "\$(CFLAGS)",
+                    "\$(LIB_CFLAGS)",
+                    "\$(PROCESSOR)",
+                ],
+            "crypto/camellia/cmll-x86_64.s" =>
+                [
+                    "crypto/camellia/asm/cmll-x86_64.pl",
+                    "\$(PERLASM_SCHEME)",
+                ],
+            "crypto/camellia/cmllt4-sparcv9.S" =>
+                [
+                    "crypto/camellia/asm/cmllt4-sparcv9.pl",
+                    "\$(PERLASM_SCHEME)",
+                ],
+            "crypto/cast/cast-586.s" =>
+                [
+                    "crypto/cast/asm/cast-586.pl",
+                    "\$(PERLASM_SCHEME)",
+                    "\$(CFLAGS)",
+                    "\$(LIB_CFLAGS)",
+                    "\$(PROCESSOR)",
                 ],
             "crypto/chacha/chacha-armv4.S" =>
                 [
@@ -1550,6 +1818,29 @@ our %unified_info = (
                     "crypto/ppccpuid.pl",
                     "\$(PERLASM_SCHEME)",
                 ],
+            "crypto/rc4/rc4-586.s" =>
+                [
+                    "crypto/rc4/asm/rc4-586.pl",
+                    "\$(PERLASM_SCHEME)",
+                    "\$(CFLAGS)",
+                    "\$(LIB_CFLAGS)",
+                    "\$(PROCESSOR)",
+                ],
+            "crypto/rc4/rc4-md5-x86_64.s" =>
+                [
+                    "crypto/rc4/asm/rc4-md5-x86_64.pl",
+                    "\$(PERLASM_SCHEME)",
+                ],
+            "crypto/rc4/rc4-parisc.s" =>
+                [
+                    "crypto/rc4/asm/rc4-parisc.pl",
+                    "\$(PERLASM_SCHEME)",
+                ],
+            "crypto/rc4/rc4-x86_64.s" =>
+                [
+                    "crypto/rc4/asm/rc4-x86_64.pl",
+                    "\$(PERLASM_SCHEME)",
+                ],
             "crypto/ripemd/rmd-586.s" =>
                 [
                     "crypto/ripemd/asm/rmd-586.pl",
@@ -1744,6 +2035,19 @@ our %unified_info = (
                     "ms/uplink-x86_64.pl",
                     "\$(PERLASM_SCHEME)",
                 ],
+            "crypto/whrlpool/wp-mmx.s" =>
+                [
+                    "crypto/whrlpool/asm/wp-mmx.pl",
+                    "\$(PERLASM_SCHEME)",
+                    "\$(CFLAGS)",
+                    "\$(LIB_CFLAGS)",
+                    "\$(PROCESSOR)",
+                ],
+            "crypto/whrlpool/wp-x86_64.s" =>
+                [
+                    "crypto/whrlpool/asm/wp-x86_64.pl",
+                    "\$(PERLASM_SCHEME)",
+                ],
             "crypto/x86_64cpuid.s" =>
                 [
                     "crypto/x86_64cpuid.pl",
@@ -1813,6 +2117,16 @@ our %unified_info = (
                 [
                     "test/generate_buildtest.pl",
                     "buffer",
+                ],
+            "test/buildtest_camellia.c" =>
+                [
+                    "test/generate_buildtest.pl",
+                    "camellia",
+                ],
+            "test/buildtest_cast.c" =>
+                [
+                    "test/generate_buildtest.pl",
+                    "cast",
                 ],
             "test/buildtest_cmac.c" =>
                 [
@@ -1899,6 +2213,11 @@ our %unified_info = (
                     "test/generate_buildtest.pl",
                     "engine",
                 ],
+            "test/buildtest_err.c" =>
+                [
+                    "test/generate_buildtest.pl",
+                    "err",
+                ],
             "test/buildtest_evp.c" =>
                 [
                     "test/generate_buildtest.pl",
@@ -1908,6 +2227,11 @@ our %unified_info = (
                 [
                     "test/generate_buildtest.pl",
                     "hmac",
+                ],
+            "test/buildtest_idea.c" =>
+                [
+                    "test/generate_buildtest.pl",
+                    "idea",
                 ],
             "test/buildtest_kdf.c" =>
                 [
@@ -1954,11 +2278,6 @@ our %unified_info = (
                     "test/generate_buildtest.pl",
                     "ocsp",
                 ],
-            "test/buildtest_opensslconf.c" =>
-                [
-                    "test/generate_buildtest.pl",
-                    "opensslconf",
-                ],
             "test/buildtest_opensslv.c" =>
                 [
                     "test/generate_buildtest.pl",
@@ -1999,6 +2318,11 @@ our %unified_info = (
                     "test/generate_buildtest.pl",
                     "rc2",
                 ],
+            "test/buildtest_rc4.c" =>
+                [
+                    "test/generate_buildtest.pl",
+                    "rc4",
+                ],
             "test/buildtest_ripemd.c" =>
                 [
                     "test/generate_buildtest.pl",
@@ -2014,10 +2338,20 @@ our %unified_info = (
                     "test/generate_buildtest.pl",
                     "safestack",
                 ],
+            "test/buildtest_seed.c" =>
+                [
+                    "test/generate_buildtest.pl",
+                    "seed",
+                ],
             "test/buildtest_sha.c" =>
                 [
                     "test/generate_buildtest.pl",
                     "sha",
+                ],
+            "test/buildtest_srp.c" =>
+                [
+                    "test/generate_buildtest.pl",
+                    "srp",
                 ],
             "test/buildtest_srtp.c" =>
                 [
@@ -2087,10 +2421,218 @@ our %unified_info = (
         },
     "includes" =>
         {
+            "apps/app_rand.o" =>
+                [
+                    "apps",
+                ],
+            "apps/apps.o" =>
+                [
+                    "apps",
+                ],
+            "apps/asn1pars.o" =>
+                [
+                    "apps",
+                ],
+            "apps/ca.o" =>
+                [
+                    "apps",
+                ],
+            "apps/ciphers.o" =>
+                [
+                    "apps",
+                ],
+            "apps/cms.o" =>
+                [
+                    "apps",
+                ],
+            "apps/crl.o" =>
+                [
+                    "apps",
+                ],
+            "apps/crl2p7.o" =>
+                [
+                    "apps",
+                ],
+            "apps/dgst.o" =>
+                [
+                    "apps",
+                ],
+            "apps/dhparam.o" =>
+                [
+                    "apps",
+                ],
+            "apps/dsa.o" =>
+                [
+                    "apps",
+                ],
+            "apps/dsaparam.o" =>
+                [
+                    "apps",
+                ],
+            "apps/ec.o" =>
+                [
+                    "apps",
+                ],
+            "apps/ecparam.o" =>
+                [
+                    "apps",
+                ],
+            "apps/enc.o" =>
+                [
+                    "apps",
+                ],
+            "apps/engine.o" =>
+                [
+                    "apps",
+                ],
+            "apps/errstr.o" =>
+                [
+                    "apps",
+                ],
+            "apps/gendsa.o" =>
+                [
+                    "apps",
+                ],
+            "apps/genpkey.o" =>
+                [
+                    "apps",
+                ],
+            "apps/genrsa.o" =>
+                [
+                    "apps",
+                ],
+            "apps/nseq.o" =>
+                [
+                    "apps",
+                ],
+            "apps/ocsp.o" =>
+                [
+                    "apps",
+                ],
             "apps/openssl" =>
                 [
                     ".",
                     "include",
+                ],
+            "apps/openssl.o" =>
+                [
+                    "apps",
+                ],
+            "apps/opt.o" =>
+                [
+                    "apps",
+                ],
+            "apps/passwd.o" =>
+                [
+                    "apps",
+                ],
+            "apps/pkcs12.o" =>
+                [
+                    "apps",
+                ],
+            "apps/pkcs7.o" =>
+                [
+                    "apps",
+                ],
+            "apps/pkcs8.o" =>
+                [
+                    "apps",
+                ],
+            "apps/pkey.o" =>
+                [
+                    "apps",
+                ],
+            "apps/pkeyparam.o" =>
+                [
+                    "apps",
+                ],
+            "apps/pkeyutl.o" =>
+                [
+                    "apps",
+                ],
+            "apps/prime.o" =>
+                [
+                    "apps",
+                ],
+            "apps/progs.h" =>
+                [
+                    ".",
+                ],
+            "apps/rand.o" =>
+                [
+                    "apps",
+                ],
+            "apps/rehash.o" =>
+                [
+                    "apps",
+                ],
+            "apps/req.o" =>
+                [
+                    "apps",
+                ],
+            "apps/rsa.o" =>
+                [
+                    "apps",
+                ],
+            "apps/rsautl.o" =>
+                [
+                    "apps",
+                ],
+            "apps/s_cb.o" =>
+                [
+                    "apps",
+                ],
+            "apps/s_client.o" =>
+                [
+                    "apps",
+                ],
+            "apps/s_server.o" =>
+                [
+                    "apps",
+                ],
+            "apps/s_socket.o" =>
+                [
+                    "apps",
+                ],
+            "apps/s_time.o" =>
+                [
+                    "apps",
+                ],
+            "apps/sess_id.o" =>
+                [
+                    "apps",
+                ],
+            "apps/smime.o" =>
+                [
+                    "apps",
+                ],
+            "apps/speed.o" =>
+                [
+                    "apps",
+                ],
+            "apps/spkac.o" =>
+                [
+                    "apps",
+                ],
+            "apps/srp.o" =>
+                [
+                    "apps",
+                ],
+            "apps/ts.o" =>
+                [
+                    "apps",
+                ],
+            "apps/verify.o" =>
+                [
+                    "apps",
+                ],
+            "apps/version.o" =>
+                [
+                    "apps",
+                ],
+            "apps/x509.o" =>
+                [
+                    "apps",
                 ],
             "crypto/aes/aes-armv4.o" =>
                 [
@@ -2159,6 +2701,10 @@ our %unified_info = (
             "crypto/buildinf.h" =>
                 [
                     ".",
+                ],
+            "crypto/camellia/cmllt4-sparcv9.o" =>
+                [
+                    "crypto",
                 ],
             "crypto/chacha/chacha-armv4.o" =>
                 [
@@ -2417,6 +2963,14 @@ our %unified_info = (
                 [
                     "include",
                 ],
+            "test/buildtest_camellia" =>
+                [
+                    "include",
+                ],
+            "test/buildtest_cast" =>
+                [
+                    "include",
+                ],
             "test/buildtest_cmac" =>
                 [
                     "include",
@@ -2485,11 +3039,19 @@ our %unified_info = (
                 [
                     "include",
                 ],
+            "test/buildtest_err" =>
+                [
+                    "include",
+                ],
             "test/buildtest_evp" =>
                 [
                     "include",
                 ],
             "test/buildtest_hmac" =>
+                [
+                    "include",
+                ],
+            "test/buildtest_idea" =>
                 [
                     "include",
                 ],
@@ -2529,10 +3091,6 @@ our %unified_info = (
                 [
                     "include",
                 ],
-            "test/buildtest_opensslconf" =>
-                [
-                    "include",
-                ],
             "test/buildtest_opensslv" =>
                 [
                     "include",
@@ -2565,6 +3123,10 @@ our %unified_info = (
                 [
                     "include",
                 ],
+            "test/buildtest_rc4" =>
+                [
+                    "include",
+                ],
             "test/buildtest_ripemd" =>
                 [
                     "include",
@@ -2577,7 +3139,15 @@ our %unified_info = (
                 [
                     "include",
                 ],
+            "test/buildtest_seed" =>
+                [
+                    "include",
+                ],
             "test/buildtest_sha" =>
+                [
+                    "include",
+                ],
+            "test/buildtest_srp" =>
                 [
                     "include",
                 ],
@@ -2691,10 +3261,6 @@ our %unified_info = (
                     ".",
                     "include",
                 ],
-            "test/ecdhtest" =>
-                [
-                    "include",
-                ],
             "test/ecdsatest" =>
                 [
                     "include",
@@ -2712,6 +3278,10 @@ our %unified_info = (
                     "include",
                 ],
             "test/evp_test" =>
+                [
+                    "include",
+                ],
+            "test/exdatatest" =>
                 [
                     "include",
                 ],
@@ -2857,6 +3427,7 @@ our %unified_info = (
                 ],
             "test/ssltestlib.o" =>
                 [
+                    ".",
                     "include",
                 ],
             "test/testutil.o" =>
@@ -2903,8 +3474,8 @@ our %unified_info = (
             "scripts" =>
                 [
                     "apps/CA.pl",
-                    "apps/tsget.pl",
-                    "tools/c_rehash.pl",
+                    "apps/tsget",
+                    "tools/c_rehash",
                 ],
         },
     "ldadd" =>
@@ -2964,6 +3535,8 @@ our %unified_info = (
             "test/buildtest_blowfish",
             "test/buildtest_bn",
             "test/buildtest_buffer",
+            "test/buildtest_camellia",
+            "test/buildtest_cast",
             "test/buildtest_cmac",
             "test/buildtest_cms",
             "test/buildtest_comp",
@@ -2981,8 +3554,10 @@ our %unified_info = (
             "test/buildtest_ecdh",
             "test/buildtest_ecdsa",
             "test/buildtest_engine",
+            "test/buildtest_err",
             "test/buildtest_evp",
             "test/buildtest_hmac",
+            "test/buildtest_idea",
             "test/buildtest_kdf",
             "test/buildtest_lhash",
             "test/buildtest_md4",
@@ -2992,7 +3567,6 @@ our %unified_info = (
             "test/buildtest_obj_mac",
             "test/buildtest_objects",
             "test/buildtest_ocsp",
-            "test/buildtest_opensslconf",
             "test/buildtest_opensslv",
             "test/buildtest_ossl_typ",
             "test/buildtest_pem",
@@ -3001,10 +3575,13 @@ our %unified_info = (
             "test/buildtest_pkcs7",
             "test/buildtest_rand",
             "test/buildtest_rc2",
+            "test/buildtest_rc4",
             "test/buildtest_ripemd",
             "test/buildtest_rsa",
             "test/buildtest_safestack",
+            "test/buildtest_seed",
             "test/buildtest_sha",
+            "test/buildtest_srp",
             "test/buildtest_srtp",
             "test/buildtest_ssl",
             "test/buildtest_ssl2",
@@ -3031,12 +3608,12 @@ our %unified_info = (
             "test/dsatest",
             "test/dtlstest",
             "test/dtlsv1listentest",
-            "test/ecdhtest",
             "test/ecdsatest",
             "test/ectest",
             "test/enginetest",
             "test/evp_extra_test",
             "test/evp_test",
+            "test/exdatatest",
             "test/exptest",
             "test/gmdifftest",
             "test/heartbeat_test",
@@ -3077,8 +3654,55 @@ our %unified_info = (
         ],
     "rawlines" =>
         [
-            "crypto/md5\\md5-ia64.asm: crypto/md5\\asm\\md5-ia64.S",
-            "	\$(CC) \$(CFLAGS) -EP crypto/md5\\asm\\md5-ia64.S > \$\@.i && move /Y \$\@.i \$\@",
+            "crypto/md5/md5-ia64.s: crypto/md5/asm/md5-ia64.S",
+            "	\$(CC) \$(CFLAGS) -E crypto/md5/asm/md5-ia64.S | 	\$(PERL) -ne 's/;\\s+/;\\n/g; print;' > \$\@",
+            "",
+            "##### SHA assembler implementations",
+            "",
+            "# GNU make \"catch all\"",
+            "crypto/sha/sha1-%.S:	crypto/sha/asm/sha1-%.pl",
+            "	CC=\"\$(CC)\" \$(PERL) \$< \$(PERLASM_SCHEME) \$\@",
+            "crypto/sha/sha256-%.S:	crypto/sha/asm/sha512-%.pl",
+            "	CC=\"\$(CC)\" \$(PERL) \$< \$(PERLASM_SCHEME) \$\@",
+            "crypto/sha/sha512-%.S:	crypto/sha/asm/sha512-%.pl",
+            "	CC=\"\$(CC)\" \$(PERL) \$< \$(PERLASM_SCHEME) \$\@",
+            "crypto/poly1305/poly1305-%.S:	crypto/poly1305/asm/poly1305-%.pl",
+            "	CC=\"\$(CC)\" \$(PERL) \$< \$(PERLASM_SCHEME) \$\@",
+            "##### AES assembler implementations",
+            "",
+            "# GNU make \"catch all\"",
+            "crypto/aes/aes-%.S:	crypto/aes/asm/aes-%.pl",
+            "	CC=\"\$(CC)\" \$(PERL) \$< \$(PERLASM_SCHEME) \$\@",
+            "crypto/aes/bsaes-%.S:	crypto/aes/asm/bsaes-%.pl",
+            "	CC=\"\$(CC)\" \$(PERL) \$< \$(PERLASM_SCHEME) \$\@",
+            "",
+            "crypto/rc4/rc4-ia64.s: crypto/rc4/asm/rc4-ia64.pl",
+            "	\@(trap \"rm \$\@.*\" INT 0; 	  \$(PERL) \$< \$(CFLAGS) \$(LIB_CFLAGS) \$\@.S; 	  case `awk '/^#define RC4_INT/{print\$\$NF}' \$(BLDDIR)/include/openssl/opensslconf.h` in 	  int)	set -x; \$(CC) \$(CFLAGS) \$(LIB_CFLAGS) -DSZ=4 -E \$\@.S > \$\@.i && mv -f \$\@.i \$\@;; 	  char)	set -x; \$(CC) \$(CFLAGS) \$(LIB_CFLAGS) -DSZ=1 -E \$\@.S > \$\@.i && mv -f \$\@.i \$\@;; 	  *)	exit 1 ;; 	  esac )",
+            "",
+            "# GNU make \"catch all\"",
+            "crypto/rc4/rc4-%.s:	crypto/rc4/asm/rc4-%.pl",
+            "	CC=\"\$(CC)\" \$(PERL) \$< \$(PERLASM_SCHEME) \$\@",
+            "##### CHACHA assembler implementations",
+            "",
+            "crypto/chacha/chacha-%.S:	crypto/chacha/asm/chacha-%.pl",
+            "	CC=\"\$(CC)\" \$(PERL) \$< \$(PERLASM_SCHEME) \$\@",
+            "# GNU make \"catch all\"",
+            "crypto/modes/ghash-%.S:	crypto/modes/asm/ghash-%.pl",
+            "	CC=\"\$(CC)\" \$(PERL) \$< \$(PERLASM_SCHEME) \$\@",
+            "##### BN assembler implementations",
+            "",
+            "crypto/bn/bn-mips3.o:	crypto/bn/asm/mips3.s",
+            "	\@if [ \"\$(CC)\" = \"gcc\" ]; then 		ABI=`expr \"\$(CFLAGS)\" : \".*-mabi=\\([n3264]*\\)\"` && 		as -\$\$ABI -O -o \$\@ crypto/bn/asm/mips3.s; 	else	\$(CC) -c \$(CFLAGS) \$(LIB_CFLAGS) -o \$\@ crypto/bn/asm/mips3.s; fi",
+            "",
+            "# GNU assembler fails to compile PA-RISC2 modules, insist on calling",
+            "# vendor assembler...",
+            "crypto/bn/pa-risc2W.o: crypto/bn/asm/pa-risc2W.s",
+            "	CC=\"\$(CC)\" \$(PERL) \$(SRCDIR)/util/fipsas.pl \$(SRCDIR) \$< /usr/ccs/bin/as -o pa-risc2W.o crypto/bn/asm/pa-risc2W.s",
+            "crypto/bn/pa-risc2.o: crypto/bn/asm/pa-risc2.s",
+            "	CC=\"\$(CC)\" \$(PERL) \$(SRCDIR)/util/fipsas.pl \$(SRCDIR) \$< /usr/ccs/bin/as -o pa-risc2.o crypto/bn/asm/pa-risc2.s",
+            "",
+            "crypto/ec/ecp_nistz256-%.S:	crypto/ec/asm/ecp_nistz256-%.pl",
+            "	CC=\"\$(CC)\" \$(PERL) \$< \$(PERLASM_SCHEME) \$\@",
         ],
     "rename" =>
         {
@@ -3086,15 +3710,12 @@ our %unified_info = (
     "scripts" =>
         [
             "apps/CA.pl",
-            "apps/tsget.pl",
-            "tools/c_rehash.pl",
+            "apps/tsget",
+            "tools/c_rehash",
+            "util/shlib_wrap.sh",
         ],
     "shared_sources" =>
         {
-            "libcrypto" =>
-                [
-                    "crypto/dllmain.o",
-                ],
         },
     "sources" =>
         {
@@ -3242,7 +3863,6 @@ our %unified_info = (
                     "apps/ts.o",
                     "apps/verify.o",
                     "apps/version.o",
-                    "apps/win32_init.o",
                     "apps/x509.o",
                 ],
             "apps/openssl.o" =>
@@ -3349,7 +3969,7 @@ our %unified_info = (
                 [
                     "apps/ts.c",
                 ],
-            "apps/tsget.pl" =>
+            "apps/tsget" =>
                 [
                     "apps/tsget.in",
                 ],
@@ -3360,10 +3980,6 @@ our %unified_info = (
             "apps/version.o" =>
                 [
                     "apps/version.c",
-                ],
-            "apps/win32_init.o" =>
-                [
-                    "apps/win32_init.c",
                 ],
             "apps/x509.o" =>
                 [
@@ -3629,6 +4245,10 @@ our %unified_info = (
                 [
                     "crypto/asn1/x_info.c",
                 ],
+            "crypto/asn1/x_int64.o" =>
+                [
+                    "crypto/asn1/x_int64.c",
+                ],
             "crypto/asn1/x_long.o" =>
                 [
                     "crypto/asn1/x_long.c",
@@ -3672,6 +4292,26 @@ our %unified_info = (
             "crypto/async/async_wait.o" =>
                 [
                     "crypto/async/async_wait.c",
+                ],
+            "crypto/bf/bf_cfb64.o" =>
+                [
+                    "crypto/bf/bf_cfb64.c",
+                ],
+            "crypto/bf/bf_ecb.o" =>
+                [
+                    "crypto/bf/bf_ecb.c",
+                ],
+            "crypto/bf/bf_enc.o" =>
+                [
+                    "crypto/bf/bf_enc.c",
+                ],
+            "crypto/bf/bf_ofb64.o" =>
+                [
+                    "crypto/bf/bf_ofb64.c",
+                ],
+            "crypto/bf/bf_skey.o" =>
+                [
+                    "crypto/bf/bf_skey.c",
                 ],
             "crypto/bio/b_addr.o" =>
                 [
@@ -3912,6 +4552,54 @@ our %unified_info = (
             "crypto/buffer/buffer.o" =>
                 [
                     "crypto/buffer/buffer.c",
+                ],
+            "crypto/camellia/camellia.o" =>
+                [
+                    "crypto/camellia/camellia.c",
+                ],
+            "crypto/camellia/cmll_cbc.o" =>
+                [
+                    "crypto/camellia/cmll_cbc.c",
+                ],
+            "crypto/camellia/cmll_cfb.o" =>
+                [
+                    "crypto/camellia/cmll_cfb.c",
+                ],
+            "crypto/camellia/cmll_ctr.o" =>
+                [
+                    "crypto/camellia/cmll_ctr.c",
+                ],
+            "crypto/camellia/cmll_ecb.o" =>
+                [
+                    "crypto/camellia/cmll_ecb.c",
+                ],
+            "crypto/camellia/cmll_misc.o" =>
+                [
+                    "crypto/camellia/cmll_misc.c",
+                ],
+            "crypto/camellia/cmll_ofb.o" =>
+                [
+                    "crypto/camellia/cmll_ofb.c",
+                ],
+            "crypto/cast/c_cfb64.o" =>
+                [
+                    "crypto/cast/c_cfb64.c",
+                ],
+            "crypto/cast/c_ecb.o" =>
+                [
+                    "crypto/cast/c_ecb.c",
+                ],
+            "crypto/cast/c_enc.o" =>
+                [
+                    "crypto/cast/c_enc.c",
+                ],
+            "crypto/cast/c_ofb64.o" =>
+                [
+                    "crypto/cast/c_ofb64.c",
+                ],
+            "crypto/cast/c_skey.o" =>
+                [
+                    "crypto/cast/c_skey.c",
                 ],
             "crypto/chacha/chacha_enc.o" =>
                 [
@@ -4208,10 +4896,6 @@ our %unified_info = (
             "crypto/dh/dh_rfc5114.o" =>
                 [
                     "crypto/dh/dh_rfc5114.c",
-                ],
-            "crypto/dllmain.o" =>
-                [
-                    "crypto/dllmain.c",
                 ],
             "crypto/dsa/dsa_ameth.o" =>
                 [
@@ -4777,6 +5461,26 @@ our %unified_info = (
                 [
                     "crypto/hmac/hmac.c",
                 ],
+            "crypto/idea/i_cbc.o" =>
+                [
+                    "crypto/idea/i_cbc.c",
+                ],
+            "crypto/idea/i_cfb64.o" =>
+                [
+                    "crypto/idea/i_cfb64.c",
+                ],
+            "crypto/idea/i_ecb.o" =>
+                [
+                    "crypto/idea/i_ecb.c",
+                ],
+            "crypto/idea/i_ofb64.o" =>
+                [
+                    "crypto/idea/i_ofb64.c",
+                ],
+            "crypto/idea/i_skey.o" =>
+                [
+                    "crypto/idea/i_skey.c",
+                ],
             "crypto/init.o" =>
                 [
                     "crypto/init.c",
@@ -5161,6 +5865,14 @@ our %unified_info = (
                 [
                     "crypto/rc2/rc2ofb64.c",
                 ],
+            "crypto/rc4/rc4_enc.o" =>
+                [
+                    "crypto/rc4/rc4_enc.c",
+                ],
+            "crypto/rc4/rc4_skey.o" =>
+                [
+                    "crypto/rc4/rc4_skey.c",
+                ],
             "crypto/ripemd/rmd_dgst.o" =>
                 [
                     "crypto/ripemd/rmd_dgst.c",
@@ -5257,6 +5969,26 @@ our %unified_info = (
                 [
                     "crypto/rsa/rsa_x931g.c",
                 ],
+            "crypto/seed/seed.o" =>
+                [
+                    "crypto/seed/seed.c",
+                ],
+            "crypto/seed/seed_cbc.o" =>
+                [
+                    "crypto/seed/seed_cbc.c",
+                ],
+            "crypto/seed/seed_cfb.o" =>
+                [
+                    "crypto/seed/seed_cfb.c",
+                ],
+            "crypto/seed/seed_ecb.o" =>
+                [
+                    "crypto/seed/seed_ecb.c",
+                ],
+            "crypto/seed/seed_ofb.o" =>
+                [
+                    "crypto/seed/seed_ofb.c",
+                ],
             "crypto/sha/sha1_one.o" =>
                 [
                     "crypto/sha/sha1_one.c",
@@ -5272,6 +6004,14 @@ our %unified_info = (
             "crypto/sha/sha512.o" =>
                 [
                     "crypto/sha/sha512.c",
+                ],
+            "crypto/srp/srp_lib.o" =>
+                [
+                    "crypto/srp/srp_lib.c",
+                ],
+            "crypto/srp/srp_vfy.o" =>
+                [
+                    "crypto/srp/srp_vfy.c",
                 ],
             "crypto/stack/stack.o" =>
                 [
@@ -5356,6 +6096,14 @@ our %unified_info = (
             "crypto/uid.o" =>
                 [
                     "crypto/uid.c",
+                ],
+            "crypto/whrlpool/wp_block.o" =>
+                [
+                    "crypto/whrlpool/wp_block.c",
+                ],
+            "crypto/whrlpool/wp_dgst.o" =>
+                [
+                    "crypto/whrlpool/wp_dgst.c",
                 ],
             "crypto/x509/by_dir.o" =>
                 [
@@ -5810,6 +6558,7 @@ our %unified_info = (
                     "crypto/asn1/x_algor.o",
                     "crypto/asn1/x_bignum.o",
                     "crypto/asn1/x_info.o",
+                    "crypto/asn1/x_int64.o",
                     "crypto/asn1/x_long.o",
                     "crypto/asn1/x_pkey.o",
                     "crypto/asn1/x_sig.o",
@@ -5821,6 +6570,11 @@ our %unified_info = (
                     "crypto/async/async.o",
                     "crypto/async/async_err.o",
                     "crypto/async/async_wait.o",
+                    "crypto/bf/bf_cfb64.o",
+                    "crypto/bf/bf_ecb.o",
+                    "crypto/bf/bf_enc.o",
+                    "crypto/bf/bf_ofb64.o",
+                    "crypto/bf/bf_skey.o",
                     "crypto/bio/b_addr.o",
                     "crypto/bio/b_dump.o",
                     "crypto/bio/b_print.o",
@@ -5881,6 +6635,18 @@ our %unified_info = (
                     "crypto/bn/bn_x931p.o",
                     "crypto/buffer/buf_err.o",
                     "crypto/buffer/buffer.o",
+                    "crypto/camellia/camellia.o",
+                    "crypto/camellia/cmll_cbc.o",
+                    "crypto/camellia/cmll_cfb.o",
+                    "crypto/camellia/cmll_ctr.o",
+                    "crypto/camellia/cmll_ecb.o",
+                    "crypto/camellia/cmll_misc.o",
+                    "crypto/camellia/cmll_ofb.o",
+                    "crypto/cast/c_cfb64.o",
+                    "crypto/cast/c_ecb.o",
+                    "crypto/cast/c_enc.o",
+                    "crypto/cast/c_ofb64.o",
+                    "crypto/cast/c_skey.o",
                     "crypto/chacha/chacha_enc.o",
                     "crypto/cmac/cm_ameth.o",
                     "crypto/cmac/cm_pmeth.o",
@@ -6096,6 +6862,11 @@ our %unified_info = (
                     "crypto/hmac/hm_ameth.o",
                     "crypto/hmac/hm_pmeth.o",
                     "crypto/hmac/hmac.o",
+                    "crypto/idea/i_cbc.o",
+                    "crypto/idea/i_cfb64.o",
+                    "crypto/idea/i_ecb.o",
+                    "crypto/idea/i_ofb64.o",
+                    "crypto/idea/i_skey.o",
                     "crypto/init.o",
                     "crypto/kdf/hkdf.o",
                     "crypto/kdf/kdf_err.o",
@@ -6192,6 +6963,8 @@ our %unified_info = (
                     "crypto/rc2/rc2_skey.o",
                     "crypto/rc2/rc2cfb64.o",
                     "crypto/rc2/rc2ofb64.o",
+                    "crypto/rc4/rc4_enc.o",
+                    "crypto/rc4/rc4_skey.o",
                     "crypto/ripemd/rmd_dgst.o",
                     "crypto/ripemd/rmd_one.o",
                     "crypto/rsa/rsa_ameth.o",
@@ -6216,10 +6989,17 @@ our %unified_info = (
                     "crypto/rsa/rsa_ssl.o",
                     "crypto/rsa/rsa_x931.o",
                     "crypto/rsa/rsa_x931g.o",
+                    "crypto/seed/seed.o",
+                    "crypto/seed/seed_cbc.o",
+                    "crypto/seed/seed_cfb.o",
+                    "crypto/seed/seed_ecb.o",
+                    "crypto/seed/seed_ofb.o",
                     "crypto/sha/sha1_one.o",
                     "crypto/sha/sha1dgst.o",
                     "crypto/sha/sha256.o",
                     "crypto/sha/sha512.o",
+                    "crypto/srp/srp_lib.o",
+                    "crypto/srp/srp_vfy.o",
                     "crypto/stack/stack.o",
                     "crypto/threads_none.o",
                     "crypto/threads_pthread.o",
@@ -6241,6 +7021,8 @@ our %unified_info = (
                     "crypto/ui/ui_openssl.o",
                     "crypto/ui/ui_util.o",
                     "crypto/uid.o",
+                    "crypto/whrlpool/wp_block.o",
+                    "crypto/whrlpool/wp_dgst.o",
                     "crypto/x509/by_dir.o",
                     "crypto/x509/by_file.o",
                     "crypto/x509/t_crl.o",
@@ -6650,6 +7432,22 @@ our %unified_info = (
                 [
                     "test/buildtest_buffer.c",
                 ],
+            "test/buildtest_camellia" =>
+                [
+                    "test/buildtest_camellia.o",
+                ],
+            "test/buildtest_camellia.o" =>
+                [
+                    "test/buildtest_camellia.c",
+                ],
+            "test/buildtest_cast" =>
+                [
+                    "test/buildtest_cast.o",
+                ],
+            "test/buildtest_cast.o" =>
+                [
+                    "test/buildtest_cast.c",
+                ],
             "test/buildtest_cmac" =>
                 [
                     "test/buildtest_cmac.o",
@@ -6786,6 +7584,14 @@ our %unified_info = (
                 [
                     "test/buildtest_engine.c",
                 ],
+            "test/buildtest_err" =>
+                [
+                    "test/buildtest_err.o",
+                ],
+            "test/buildtest_err.o" =>
+                [
+                    "test/buildtest_err.c",
+                ],
             "test/buildtest_evp" =>
                 [
                     "test/buildtest_evp.o",
@@ -6801,6 +7607,14 @@ our %unified_info = (
             "test/buildtest_hmac.o" =>
                 [
                     "test/buildtest_hmac.c",
+                ],
+            "test/buildtest_idea" =>
+                [
+                    "test/buildtest_idea.o",
+                ],
+            "test/buildtest_idea.o" =>
+                [
+                    "test/buildtest_idea.c",
                 ],
             "test/buildtest_kdf" =>
                 [
@@ -6874,14 +7688,6 @@ our %unified_info = (
                 [
                     "test/buildtest_ocsp.c",
                 ],
-            "test/buildtest_opensslconf" =>
-                [
-                    "test/buildtest_opensslconf.o",
-                ],
-            "test/buildtest_opensslconf.o" =>
-                [
-                    "test/buildtest_opensslconf.c",
-                ],
             "test/buildtest_opensslv" =>
                 [
                     "test/buildtest_opensslv.o",
@@ -6946,6 +7752,14 @@ our %unified_info = (
                 [
                     "test/buildtest_rc2.c",
                 ],
+            "test/buildtest_rc4" =>
+                [
+                    "test/buildtest_rc4.o",
+                ],
+            "test/buildtest_rc4.o" =>
+                [
+                    "test/buildtest_rc4.c",
+                ],
             "test/buildtest_ripemd" =>
                 [
                     "test/buildtest_ripemd.o",
@@ -6970,6 +7784,14 @@ our %unified_info = (
                 [
                     "test/buildtest_safestack.c",
                 ],
+            "test/buildtest_seed" =>
+                [
+                    "test/buildtest_seed.o",
+                ],
+            "test/buildtest_seed.o" =>
+                [
+                    "test/buildtest_seed.c",
+                ],
             "test/buildtest_sha" =>
                 [
                     "test/buildtest_sha.o",
@@ -6977,6 +7799,14 @@ our %unified_info = (
             "test/buildtest_sha.o" =>
                 [
                     "test/buildtest_sha.c",
+                ],
+            "test/buildtest_srp" =>
+                [
+                    "test/buildtest_srp.o",
+                ],
+            "test/buildtest_srp.o" =>
+                [
+                    "test/buildtest_srp.c",
                 ],
             "test/buildtest_srtp" =>
                 [
@@ -7192,14 +8022,6 @@ our %unified_info = (
                 [
                     "test/dtlsv1listentest.c",
                 ],
-            "test/ecdhtest" =>
-                [
-                    "test/ecdhtest.o",
-                ],
-            "test/ecdhtest.o" =>
-                [
-                    "test/ecdhtest.c",
-                ],
             "test/ecdsatest" =>
                 [
                     "test/ecdsatest.o",
@@ -7239,6 +8061,14 @@ our %unified_info = (
             "test/evp_test.o" =>
                 [
                     "test/evp_test.c",
+                ],
+            "test/exdatatest" =>
+                [
+                    "test/exdatatest.o",
+                ],
+            "test/exdatatest.o" =>
+                [
+                    "test/exdatatest.c",
                 ],
             "test/exptest" =>
                 [
@@ -7562,9 +8392,13 @@ our %unified_info = (
                 [
                     "test/x509aux.c",
                 ],
-            "tools/c_rehash.pl" =>
+            "tools/c_rehash" =>
                 [
                     "tools/c_rehash.in",
+                ],
+            "util/shlib_wrap.sh" =>
+                [
+                    "util/shlib_wrap.sh.in",
                 ],
         },
 );
