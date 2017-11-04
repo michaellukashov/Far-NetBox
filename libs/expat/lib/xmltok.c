@@ -402,6 +402,8 @@ utf8_toUtf8(const ENCODING *UNUSED_P(enc),
 {
   bool input_incomplete = false;
   bool output_exhausted = false;
+  const char * fromLimBefore;
+  ptrdiff_t bytesToCopy;
 
   /* Avoid copying partial characters (due to limited space). */
   const ptrdiff_t bytesAvailable = fromLim - *fromP;
@@ -412,14 +414,14 @@ utf8_toUtf8(const ENCODING *UNUSED_P(enc),
   }
 
   /* Avoid copying partial characters (from incomplete input). */
-  const char * const fromLimBefore = fromLim;
+  fromLimBefore = fromLim;
   if (fromLim < fromLimBefore) {
     input_incomplete = true;
   }
 
   /* Avoid copying partial characters (from incomplete input). */
   {
-    const char * const fromLimBefore = fromLim;
+    fromLimBefore = fromLim;
     _INTERNAL_trim_to_complete_utf8_characters(*fromP, &fromLim);
     if (fromLim < fromLimBefore) {
       input_incomplete = true;
@@ -427,7 +429,7 @@ utf8_toUtf8(const ENCODING *UNUSED_P(enc),
   }
 
   {
-    const ptrdiff_t bytesToCopy = fromLim - *fromP;
+    bytesToCopy = fromLim - *fromP;
     memcpy(*toP, *fromP, bytesToCopy);
     *fromP += bytesToCopy;
     *toP += bytesToCopy;
