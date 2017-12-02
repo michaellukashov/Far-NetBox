@@ -84,7 +84,7 @@ HMODULE _Expat_LoadLibrary(LPCTSTR filename)
   /* Get a handle to kernel32 so we can access it's functions at runtime */
   HMODULE hKernel32 = GetModuleHandle(TEXT("kernel32"));
   if(!hKernel32)
-    return NULL;
+    return NULL;  /* LCOV_EXCL_LINE */
 
   /* Attempt to find LoadLibraryEx() which is only available on Windows 2000
      and above */
@@ -114,7 +114,7 @@ HMODULE _Expat_LoadLibrary(LPCTSTR filename)
       /* Allocate space for the full DLL path (Room for the null terminator
          is included in systemdirlen) */
       size_t filenamelen = _tcslen(filename);
-      TCHAR *path = malloc(sizeof(TCHAR) * (systemdirlen + 1 + filenamelen));
+      TCHAR *path = (TCHAR *)malloc(sizeof(TCHAR) * (systemdirlen + 1 + filenamelen));
       if(path && GetSystemDirectory(path, systemdirlen)) {
         /* Calculate the full DLL path */
         _tcscpy(path + _tcslen(path), TEXT("\\"));

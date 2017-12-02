@@ -45,17 +45,13 @@ extern "C" {
 
 typedef struct {
     int count;                          /* # of chars, < 0 if not set */
-    XML_Char data[1024];
+    XML_Char data[2048];
 } CharData;
 
 
 void CharData_Init(CharData *storage);
 
-void CharData_AppendString(CharData *storage, const char *s);
-
 void CharData_AppendXMLChars(CharData *storage, const XML_Char *s, int len);
-
-int CharData_CheckString(CharData *storage, const char *s);
 
 int CharData_CheckXMLChars(CharData *storage, const XML_Char *s);
 
