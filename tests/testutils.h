@@ -37,6 +37,12 @@ std::ostringstream& operator<<(std::ostringstream& os, const UnicodeString& valu
   return os;
 }
 
+std::ostream& operator<<(std::ostream& os, const UnicodeString& value)
+{
+  os << std::string(W2MB(value.c_str()).c_str());
+  return os;
+}
+
 //------------------------------------------------------------------------------
 class TStubFarPlugin : public TCustomFarPlugin
 {

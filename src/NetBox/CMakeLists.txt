@@ -1689,6 +1689,7 @@ set(TESTNETBOX_01_SOURCES
   ../base/Exceptions.cpp
   ../base/FileBuffer.cpp
   ../base/FormatUtils.cpp
+  ../../tests/testutils.h
   ../../tests/testnetbox_01.cpp
 )
 
