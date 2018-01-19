@@ -3005,7 +3005,7 @@ UnicodeString TSessionData::GetProtocolUrl() const
   return Url;
 }
 
-static bool IsIPv6Literal(UnicodeString HostName)
+bool IsIPv6Literal(UnicodeString HostName)
 {
   bool Result = (HostName.Pos(L":") > 0);
   if (Result)
@@ -3017,6 +3017,11 @@ static bool IsIPv6Literal(UnicodeString HostName)
     }
   }
   return Result;
+}
+
+UnicodeString EscapeIPv6Literal(UnicodeString IP)
+{
+  return L"[" + IP + L"]";
 }
 
 UnicodeString TSessionData::GenerateSessionUrl(uintptr_t Flags) const
@@ -3050,13 +3055,14 @@ UnicodeString TSessionData::GenerateSessionUrl(uintptr_t Flags) const
   }
 
   DebugAssert(!GetHostNameExpanded().IsEmpty());
-  if (IsIPv6Literal(GetHostNameExpanded()))
+  UnicodeString HostNameExpanded = GetHostNameExpanded();
+  if (IsIPv6Literal(HostNameExpanded))
   {
-    Url += L"[" + GetHostNameExpanded() + L"]";
+    Url += EscapeIPv6Literal(HostNameExpanded);
   }
   else
   {
-    Url += EncodeUrlString(GetHostNameExpanded());
+    Url += EncodeUrlString(HostNameExpanded);
   }
 
   if (GetPortNumber() != GetDefaultPort(GetFSProtocol(), GetFtps()))

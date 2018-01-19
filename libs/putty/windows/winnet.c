@@ -1648,27 +1648,21 @@ void try_send(Actual_Socket s)
 		 */
 		s->writable = FALSE;
 		return;
-	    } else if (nsent == 0 ||
-		       err == WSAECONNABORTED || err == WSAECONNRESET) {
+	    } else {
 		/*
-		 * If send() returns CONNABORTED or CONNRESET, we
-		 * unfortunately can't just call plug_closing(),
-		 * because it's quite likely that we're currently
-		 * _in_ a call from the code we'd be calling back
-		 * to, so we'd have to make half the SSH code
-		 * reentrant. Instead we flag a pending error on
-		 * the socket, to be dealt with (by calling
-		 * plug_closing()) at some suitable future moment.
+		 * If send() returns a socket error, we unfortunately
+		 * can't just call plug_closing(), because it's quite
+		 * likely that we're currently _in_ a call from the
+		 * code we'd be calling back to, so we'd have to make
+		 * half the SSH code reentrant. Instead we flag a
+		 * pending error on the socket, to be dealt with (by
+		 * calling plug_closing()) at some suitable future
+		 * moment.
 		 */
 		s->pending_error = err;
                 queue_toplevel_callback(socket_error_callback, s);
 		return;
-	    } else {
-		/* We're inside the Windows frontend here, so we know
-		 * that the frontend handle is unnecessary. */
-		logevent(NULL, winsock_error_string(err));
-		fatalbox("%s", winsock_error_string(err));
-	    }
+    }
 	} else {
 	    if (s->sending_oob) {
 		if (nsent < len) {
@@ -1863,12 +1857,8 @@ void select_result(WPARAM wParam, LPARAM lParam)
 	ret = p_recv(s->s, buf, sizeof(buf), MSG_OOB);
 	noise_ultralight(ret);
 	if (ret <= 0) {
-	    const char *str = (ret == 0 ? "Internal networking trouble" :
-			 winsock_error_string(p_WSAGetLastError()));
-	    /* We're inside the Windows frontend here, so we know
-	     * that the frontend handle is unnecessary. */
-	    logevent(NULL, str);
-	    fatalbox("%s", str);
+            int err = p_WSAGetLastError();
+	    plug_closing(s->plug, winsock_error_string(err), err, 0);
 	} else {
 	    plug_receive(s->plug, 2, buf, ret);
 	}
