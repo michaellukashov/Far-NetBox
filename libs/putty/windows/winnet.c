@@ -209,8 +209,8 @@ PUTTY_DECL_WINDOWS_FUNCTION(static, int, getaddrinfo,
 PUTTY_DECL_WINDOWS_FUNCTION(static, void, freeaddrinfo, (struct addrinfo *res));
 PUTTY_DECL_WINDOWS_FUNCTION(static, int, getnameinfo,
 		      (const struct sockaddr FAR * sa, socklen_t salen,
-		       char FAR * host, size_t hostlen, char FAR * serv,
-		       size_t servlen, int flags));
+		       char FAR * host, DWORD hostlen, char FAR * serv,
+		       DWORD servlen, int flags));
 PUTTY_DECL_WINDOWS_FUNCTION(static, char *, gai_strerror, (int ecode));
 PUTTY_DECL_WINDOWS_FUNCTION(static, int, WSAAddressToStringA,
 		      (LPSOCKADDR, DWORD, LPWSAPROTOCOL_INFO,
