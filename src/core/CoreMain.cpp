@@ -1,123 +1,124 @@
+//---------------------------------------------------------------------------
 #include <vcl.h>
 #pragma hdrstop
 
-#include <Common.h>
-
 #include "CoreMain.h"
+
+#include "Common.h"
 #include "Interface.h"
 #include "Configuration.h"
 #include "PuttyIntf.h"
 #include "Cryptography.h"
-#ifndef NO_FILEZILLA
+#include <DateUtils.hpp>
 #include "FileZillaIntf.h"
-#endif
-#include "WebDAVFileSystem.h"
-
-TStoredSessionList *StoredSessions = nullptr;
-
-TQueryButtonAlias::TQueryButtonAlias() :
-  Button(0),
-  OnClick(nullptr),
-  GroupWith(-1),
-  Default(false),
-  GrouppedShiftState(ssShift),
-  ElevationRequired(false)
+#include "NeonIntf.h"
+#include "TextsCore.h"
+//---------------------------------------------------------------------------
+#pragma package(smart_init)
+//---------------------------------------------------------------------------
+TConfiguration * Configuration = NULL;
+TStoredSessionList * StoredSessions = NULL;
+//---------------------------------------------------------------------------
+TQueryButtonAlias::TQueryButtonAlias()
 {
+  OnSubmit = NULL;
+  GroupWith = -1;
+  ElevationRequired = false;
   MenuButton = false;
 }
-
-TQueryParams::TQueryParams(uintptr_t AParams, UnicodeString AHelpKeyword) :
-  Aliases(nullptr),
-  AliasesCount(0),
-  Params(AParams),
-  Timer(0),
-  TimerEvent(nullptr),
-  TimerMessage(L""),
-  TimerAnswers(0),
-  TimerQueryType(static_cast<TQueryType>(-1)),
-  Timeout(0),
-  TimeoutAnswer(0),
-  NoBatchAnswers(0),
-  HelpKeyword(AHelpKeyword)
+//---------------------------------------------------------------------------
+TQueryButtonAlias TQueryButtonAlias::CreateYesToAllGrouppedWithYes()
 {
+  TQueryButtonAlias Result;
+  Result.Button = qaYesToAll;
+  Result.GroupWith = qaYes;
+  Result.GrouppedShiftState = TShiftState() << ssShift;
+  return Result;
 }
-
-TQueryParams::TQueryParams(const TQueryParams &Source)
+//---------------------------------------------------------------------------
+TQueryButtonAlias TQueryButtonAlias::CreateNoToAllGrouppedWithNo()
+{
+  TQueryButtonAlias Result;
+  Result.Button = qaNoToAll;
+  Result.GroupWith = qaNo;
+  Result.GrouppedShiftState = TShiftState() << ssShift;
+  return Result;
+}
+//---------------------------------------------------------------------------
+TQueryButtonAlias TQueryButtonAlias::CreateAllAsYesToNewerGrouppedWithYes()
+{
+  TQueryButtonAlias Result;
+  Result.Button = qaAll;
+  Result.Alias = LoadStr(YES_TO_NEWER_BUTTON);
+  Result.GroupWith = qaYes;
+  Result.GrouppedShiftState = TShiftState() << ssCtrl;
+  return Result;
+}
+//---------------------------------------------------------------------------
+TQueryButtonAlias TQueryButtonAlias::CreateIgnoreAsRenameGrouppedWithNo()
+{
+  TQueryButtonAlias Result;
+  Result.Button = qaIgnore;
+  Result.Alias = LoadStr(RENAME_BUTTON);
+  Result.GroupWith = qaNo;
+  Result.GrouppedShiftState = TShiftState() << ssCtrl;
+  return Result;
+}
+//---------------------------------------------------------------------------
+TQueryParams::TQueryParams(unsigned int AParams, UnicodeString AHelpKeyword)
+{
+  Params = AParams;
+  Aliases = NULL;
+  AliasesCount = 0;
+  Timer = 0;
+  TimerEvent = NULL;
+  TimerMessage = L"";
+  TimerAnswers = 0;
+  TimerQueryType = static_cast<TQueryType>(-1);
+  Timeout = 0;
+  TimeoutAnswer = 0;
+  NoBatchAnswers = 0;
+  HelpKeyword = AHelpKeyword;
+}
+//---------------------------------------------------------------------------
+TQueryParams::TQueryParams(const TQueryParams & Source)
 {
   Assign(Source);
 }
-
-void TQueryParams::Assign(const TQueryParams &Source)
+//---------------------------------------------------------------------------
+void TQueryParams::Assign(const TQueryParams & Source)
 {
   *this = Source;
 }
-
-TQueryParams &TQueryParams::operator=(const TQueryParams &other)
-{
-  Params = other.Params;
-  Aliases = other.Aliases;
-  AliasesCount = other.AliasesCount;
-  Timer = other.Timer;
-  TimerEvent = other.TimerEvent;
-  TimerMessage = other.TimerMessage;
-  TimerAnswers = other.TimerAnswers;
-  TimerQueryType = other.TimerQueryType;
-  Timeout = other.Timeout;
-  TimeoutAnswer = other.TimeoutAnswer;
-  NoBatchAnswers = other.NoBatchAnswers;
-  HelpKeyword = other.HelpKeyword;
-  return *this;
-}
-
-bool IsAuthenticationPrompt(TPromptKind Kind)
+//---------------------------------------------------------------------------
+bool __fastcall IsAuthenticationPrompt(TPromptKind Kind)
 {
   return
     (Kind == pkUserName) || (Kind == pkPassphrase) || (Kind == pkTIS) ||
     (Kind == pkCryptoCard) || (Kind == pkKeybInteractive) ||
     (Kind == pkPassword) || (Kind == pkNewPassword);
 }
-
-bool IsPasswordOrPassphrasePrompt(TPromptKind Kind, TStrings *Prompts)
+//---------------------------------------------------------------------------
+bool __fastcall IsPasswordOrPassphrasePrompt(TPromptKind Kind, TStrings * Prompts)
 {
   return
-    (Prompts->GetCount() == 1) && FLAGCLEAR(ToIntPtr(Prompts->GetObj(0)), pupEcho) &&
+    (Prompts->Count == 1) && FLAGCLEAR(int(Prompts->Objects[0]), pupEcho) &&
     ((Kind == pkPassword) || (Kind == pkPassphrase) || (Kind == pkKeybInteractive) ||
-      (Kind == pkTIS) || (Kind == pkCryptoCard));
+     (Kind == pkTIS) || (Kind == pkCryptoCard));
 }
-
-bool IsPasswordPrompt(TPromptKind Kind, TStrings *Prompts)
+//---------------------------------------------------------------------------
+bool __fastcall IsPasswordPrompt(TPromptKind Kind, TStrings * Prompts)
 {
   return
     IsPasswordOrPassphrasePrompt(Kind, Prompts) &&
     (Kind != pkPassphrase);
 }
-
-TConfiguration *GetConfiguration()
-{
-  static TConfiguration *Configuration = nullptr;
-  if (Configuration == nullptr)
-  {
-    Configuration = CreateConfiguration();
-  }
-  return Configuration;
-}
-
-void DeleteConfiguration()
-{
-  static bool ConfigurationDeleted = false;
-  if (!ConfigurationDeleted)
-  {
-    TConfiguration *Conf = GetConfiguration();
-    SAFE_DESTROY(Conf);
-    ConfigurationDeleted = true;
-  }
-}
-
+//---------------------------------------------------------------------------
 void CoreLoad()
 {
-  bool SessionList = false;
-  std::unique_ptr<THierarchicalStorage> SessionsStorage(GetConfiguration()->CreateStorage(SessionList));
-  THierarchicalStorage *ConfigStorage;
+  bool SessionList = true;
+  std::unique_ptr<THierarchicalStorage> SessionsStorage(Configuration->CreateScpStorage(SessionList));
+  THierarchicalStorage * ConfigStorage;
   std::unique_ptr<THierarchicalStorage> ConfigStorageAuto;
   if (!SessionList)
   {
@@ -126,17 +127,15 @@ void CoreLoad()
   }
   else
   {
-    ConfigStorageAuto.reset(GetConfiguration()->CreateConfigStorage());
+    ConfigStorageAuto.reset(Configuration->CreateConfigStorage());
     ConfigStorage = ConfigStorageAuto.get();
   }
 
-  DebugAssert(GetConfiguration() != nullptr);
-
   try
   {
-    GetConfiguration()->Load(ConfigStorage);
+    Configuration->Load(ConfigStorage);
   }
-  catch (Exception &E)
+  catch (Exception & E)
   {
     ShowExtendedException(&E);
   }
@@ -148,109 +147,100 @@ void CoreLoad()
 
   try
   {
-    if (SessionsStorage->OpenSubKey(GetConfiguration()->GetStoredSessionsSubKey(), false))
+    if (SessionsStorage->OpenSubKey(Configuration->StoredSessionsSubKey, false))
     {
       StoredSessions->Load(SessionsStorage.get());
     }
   }
-  catch (Exception &E)
+  catch (Exception & E)
   {
     ShowExtendedException(&E);
   }
 }
-
+//---------------------------------------------------------------------------
 void CoreInitialize()
 {
-  WinInitialize();
   Randomize();
   CryptographyInitialize();
 
   // we do not expect configuration re-creation
-  DebugAssert(GetConfiguration() != nullptr);
+  DebugAssert(Configuration == NULL);
   // configuration needs to be created and loaded before putty is initialized,
   // so that random seed path is known
-//  Configuration = CreateConfiguration();
+  Configuration = CreateConfiguration();
 
   PuttyInitialize();
-#ifndef NO_FILEZILLA
   TFileZillaIntf::Initialize();
-#endif
   NeonInitialize();
 
   CoreLoad();
 }
-
+//---------------------------------------------------------------------------
 void CoreFinalize()
 {
   try
   {
-    GetConfiguration()->Save();
+    Configuration->Save();
   }
-  catch (Exception &E)
+  catch(Exception & E)
   {
     ShowExtendedException(&E);
   }
 
   NeonFinalize();
-#ifndef NO_FILEZILLA
   TFileZillaIntf::Finalize();
-#endif
   PuttyFinalize();
 
-  SAFE_DESTROY(StoredSessions);
-  DeleteConfiguration();
+  delete StoredSessions;
+  StoredSessions = NULL;
+  delete Configuration;
+  Configuration = NULL;
 
   CryptographyFinalize();
-  WinFinalize();
 }
-
-void CoreSetResourceModule(void *ResourceHandle)
+//---------------------------------------------------------------------------
+void CoreSetResourceModule(void * ResourceHandle)
 {
-#ifndef NO_FILEZILLA
   TFileZillaIntf::SetResourceModule(ResourceHandle);
-#else
-  DebugUsedParam(ResourceHandle);
-#endif
 }
-
+//---------------------------------------------------------------------------
 void CoreMaintenanceTask()
 {
   DontSaveRandomSeed();
 }
-
-
-TOperationVisualizer::TOperationVisualizer(bool UseBusyCursor) :
-  FUseBusyCursor(UseBusyCursor),
-  FToken(nullptr)
+//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
+__fastcall TOperationVisualizer::TOperationVisualizer(bool UseBusyCursor) :
+  FUseBusyCursor(UseBusyCursor)
 {
   if (FUseBusyCursor)
   {
     FToken = BusyStart();
   }
 }
-
-TOperationVisualizer::~TOperationVisualizer()
+//---------------------------------------------------------------------------
+__fastcall TOperationVisualizer::~TOperationVisualizer()
 {
   if (FUseBusyCursor)
   {
     BusyEnd(FToken);
   }
 }
-
-
-TInstantOperationVisualizer::TInstantOperationVisualizer() :
-  TOperationVisualizer(true),
+//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
+__fastcall TInstantOperationVisualizer::TInstantOperationVisualizer() :
   FStart(Now())
 {
 }
-
-TInstantOperationVisualizer::~TInstantOperationVisualizer()
+//---------------------------------------------------------------------------
+__fastcall TInstantOperationVisualizer::~TInstantOperationVisualizer()
 {
   TDateTime Time = Now();
-  int64_t Duration = MilliSecondsBetween(Time, FStart);
-  const int64_t MinDuration = 250;
+  __int64 Duration = MilliSecondsBetween(Time, FStart);
+  const __int64 MinDuration = 250;
   if (Duration < MinDuration)
   {
-    ::Sleep(static_cast<uint32_t>(MinDuration - Duration));
+    Sleep(static_cast<unsigned int>(MinDuration - Duration));
   }
 }
+//---------------------------------------------------------------------------

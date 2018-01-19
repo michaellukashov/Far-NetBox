@@ -209,7 +209,7 @@ public:
   {
     if (OnDisplayBanner != nullptr)
     {
-      OnDisplayBanner(Terminal, SessionName, Banner, NeverShowAgain, Options);
+      OnDisplayBanner(Terminal, SessionName, Banner, NeverShowAgain, Options, Params);
     }
   }
 
@@ -219,6 +219,7 @@ public:
   UnicodeString Banner;
   bool NeverShowAgain;
   intptr_t Options;
+  unsigned int Params;
 };
 
 class TReadDirectoryAction : public TUserAction
@@ -303,7 +304,7 @@ protected:
   bool FPause;
 
   virtual void ProcessEvent() override;
-  virtual void Finished() override;
+  virtual bool __fastcall Finished() override;
   bool WaitForUserAction(TQueueItem::TStatus ItemStatus, TUserAction *UserAction);
   bool OverrideItemStatus(TQueueItem::TStatus &ItemStatus) const;
 
@@ -339,7 +340,10 @@ int TSimpleThread::ThreadProc(void *Thread)
     DebugFail();
   }
   SimpleThread->FFinished = true;
-  SimpleThread->Finished();
+  if (SimpleThread->Finished())
+  {
+    delete SimpleThread;
+  }
   return 0;
 }
 
@@ -379,8 +383,9 @@ void TSimpleThread::Start()
   }
 }
 
-void TSimpleThread::Finished()
+bool __fastcall TSimpleThread::Finished()
 {
+  return false;
 }
 
 void TSimpleThread::Close()
@@ -1566,11 +1571,13 @@ bool TTerminalItem::WaitForUserAction(
   return Result;
 }
 
-void TTerminalItem::Finished()
+bool __fastcall TTerminalItem::Finished()
 {
-  TSignalThread::Finished();
+  bool Result = TSignalThread::Finished();
 
   FQueue->TerminalFinished(this);
+
+  return Result;
 }
 
 void TTerminalItem::TerminalQueryUser(TObject *Sender,
@@ -2532,6 +2539,8 @@ TTerminalThread::TTerminalThread(TTerminal *Terminal) :
   FCancel = false;
   FCancelled = false;
   FPendingIdle = false;
+  FAbandoned = false;
+  FAllowAbandon = false;
   FMainThread = GetCurrentThreadId();
 }
 
@@ -2591,11 +2600,16 @@ TTerminalThread::~TTerminalThread()
   FTerminal->SetOnStartReadDirectory(FOnStartReadDirectory);
   FTerminal->SetOnReadDirectoryProgress(FOnReadDirectoryProgress);
   FTerminal->SetOnInitializeLog(FOnInitializeLog);
+  if (FAbandoned)
+  {
+    delete FTerminal;
+  }
 }
 
 void TTerminalThread::Cancel()
 {
   FCancel = true;
+  FCancelAfter = IncMilliSecond(Now(), 1000);
 }
 
 void TTerminalThread::Idle()
@@ -2685,11 +2699,25 @@ void TTerminalThread::RunAction(TNotifyEvent Action)
         default:
           throw Exception(L"Error waiting for background session task to complete");
         }
+
+        if (AllowAbandon && !Done && FCancel && (Now() >= FCancelAfter))
+        {
+          TGuard Guard(FSection);
+          if (WaitForSingleObject(FActionEvent, 0) != WAIT_OBJECT_0)
+          {
+            FAbandoned = true;
+            FCancelled = true;
+            FatalAbort();
+          }
+        }
       }
       while (!Done);
 
 
-      Rethrow(FException);
+      if (Done)
+      {
+        Rethrow(FException);
+      }
     }
     __finally
     {
@@ -2739,10 +2767,16 @@ void TTerminalThread::ProcessEvent()
     SaveException(E, FException);
   }
 
-  ::SetEvent(FActionEvent);
+  {
+    TGuard Guard(FSection);
+    if (!FAbandoned)
+    {
+      ::SetEvent(FActionEvent);
+    }
+  }
 }
-
-void TTerminalThread::Rethrow(Exception *&AException)
+//---------------------------------------------------------------------------
+void __fastcall TTerminalThread::Rethrow(Exception *&AException)
 {
   if (AException != nullptr)
   {
@@ -2772,7 +2806,16 @@ void TTerminalThread::SaveException(Exception &E, Exception *&Exception)
 
 void TTerminalThread::FatalAbort()
 {
-  FTerminal->FatalAbort();
+  if (FAbandoned)
+  {
+    // We cannot use TTerminal::FatalError as the terminal still runs on a backgroud thread,
+    // may have its TCallbackGuard armed right now.
+    throw ESshFatal(NULL, L"");
+  }
+  else
+  {
+    FTerminal->FatalAbort();
+  }
 }
 
 void TTerminalThread::CheckCancel()
@@ -2803,7 +2846,7 @@ void TTerminalThread::WaitForUserAction(TUserAction *UserAction)
     DebugAssert(Thread == FThreadId);
 
     bool DoCheckCancel =
-      DebugAlwaysFalse(UserAction == nullptr) || !UserAction->Force();
+      DebugAlwaysFalse(UserAction == nullptr) || !UserAction->Force() || FAbandoned;
     if (DoCheckCancel)
     {
       CheckCancel();
@@ -2978,7 +3021,7 @@ void TTerminalThread::TerminalShowExtendedException(
 
 void TTerminalThread::TerminalDisplayBanner(TTerminal *Terminal,
   UnicodeString SessionName, UnicodeString Banner,
-  bool &NeverShowAgain, intptr_t Options)
+  bool &NeverShowAgain, intptr_t Options, unsigned int & Params)
 {
   TDisplayBannerAction Action(FOnDisplayBanner);
   Action.Terminal = Terminal;
@@ -2986,10 +3029,12 @@ void TTerminalThread::TerminalDisplayBanner(TTerminal *Terminal,
   Action.Banner = Banner;
   Action.NeverShowAgain = NeverShowAgain;
   Action.Options = Options;
+  Action.Params = Params;
 
   WaitForUserAction(&Action);
 
   NeverShowAgain = Action.NeverShowAgain;
+  Params = Action.Params;
 }
 
 void TTerminalThread::TerminalChangeDirectory(TObject *Sender)
@@ -3031,3 +3076,22 @@ void TTerminalThread::TerminalReadDirectoryProgress(
   Cancel = Action.Cancel;
 }
 
+bool __fastcall TTerminalThread::Release()
+{
+  bool Result = !FAbandoned;
+  if (Result)
+  {
+    delete this;
+  }
+  else
+  {
+    // only now has the owner released ownership of the thread, so we are safe to kill outselves.
+    Terminate();
+  }
+  return Result;
+}
+//---------------------------------------------------------------------------
+bool __fastcall TTerminalThread::Finished()
+{
+  return TSimpleThread::Finished() || FAbandoned;
+}

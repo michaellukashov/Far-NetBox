@@ -144,9 +144,10 @@ const TSessionInfo &TSecureShell::GetSessionInfo() const
   return FSessionInfo;
 }
 
-UnicodeString TSecureShell::GetHostKeyFingerprint() const
+void __fastcall TSecureShell::GetHostKeyFingerprint(UnicodeString & SHA256, UnicodeString & MD5)
 {
-  return FSessionInfo.HostKeyFingerprint;
+  SHA256 = FSessionInfo.HostKeyFingerprintSHA256;
+  MD5 = FSessionInfo.HostKeyFingerprintMD5;
 }
 
 Conf *TSecureShell::StoreToConfig(TSessionData *Data, bool Simple)
@@ -160,7 +161,7 @@ Conf *TSecureShell::StoreToConfig(TSessionData *Data, bool Simple)
 #define CONF_DEF_STR_NONE(KEY) conf_set_str(conf, KEY, "");
   // noop, used only for these and we set the first four explicitly below and latter two are not used in our code
 #define CONF_DEF_INT_INT(KEY) DebugAssert((KEY == CONF_ssh_cipherlist) || (KEY == CONF_ssh_kexlist) || (KEY == CONF_ssh_gsslist) || (KEY == CONF_ssh_hklist) || (KEY == CONF_colours) || (KEY == CONF_wordness));
-  // noop, used only for these three and they all can handle undef value
+  // noop, used only for these four and they all can handle undef value
 #define CONF_DEF_STR_STR(KEY) DebugAssert((KEY == CONF_ttymodes) || (KEY == CONF_portfwd) || (KEY == CONF_environmt) || (KEY == CONF_ssh_manual_hostkeys));
   // noop, not used in our code
 #define CONF_DEF_FONT_NONE(KEY) DebugAssert((KEY == CONF_font) || (KEY == CONF_boldfont) || (KEY == CONF_widefont) || (KEY == CONF_wideboldfont));
@@ -258,6 +259,21 @@ Conf *TSecureShell::StoreToConfig(TSessionData *Data, bool Simple)
       break;
     }
     conf_set_int_int(conf, CONF_ssh_kexlist, k, pkex);
+  }
+
+  DebugAssert(HK_MAX == HOSTKEY_COUNT);
+  for (int h = 0; h < HOSTKEY_COUNT; h++)
+  {
+    int phk;
+    switch (Data->HostKeys[h]) {
+      case hkWarn: phk = HK_WARN; break;
+      case hkRSA: phk = HK_RSA; break;
+      case hkDSA: phk = hkDSA; break;
+      case hkECDSA: phk = HK_ECDSA; break;
+      case hkED25519: phk = HK_ED25519; break;
+      default: DebugFail();
+    }
+    conf_set_int_int(conf, CONF_ssh_hklist, h, phk);
   }
 
   DebugAssert(ngsslibs == GSSLIB_COUNT);
@@ -420,13 +436,6 @@ Conf *TSecureShell::StoreToConfig(TSessionData *Data, bool Simple)
   conf_set_int(conf, CONF_tcp_keepalives, 1);
   conf_set_int(conf, CONF_ssh_show_banner, TRUE);
   conf_set_int(conf, CONF_proxy_log_to_term, FORCE_OFF);
-
-  conf_set_int_int(conf, CONF_ssh_hklist, 0, HK_ED25519);
-  conf_set_int_int(conf, CONF_ssh_hklist, 1, HK_ECDSA);
-  conf_set_int_int(conf, CONF_ssh_hklist, 2, HK_RSA);
-  conf_set_int_int(conf, CONF_ssh_hklist, 3, HK_DSA);
-  conf_set_int_int(conf, CONF_ssh_hklist, 4, HK_WARN);
-  DebugAssert(HK_MAX == 5);
 
   conf_set_str(conf, CONF_loghost, AnsiString(Data->GetLogicalHostName()).c_str());
 
@@ -2320,32 +2329,92 @@ UnicodeString TSecureShell::RetrieveHostKey(UnicodeString Host, intptr_t Port, c
   return Result;
 }
 
-void TSecureShell::VerifyHostKey(UnicodeString AHost, intptr_t Port,
-  UnicodeString AKeyType, UnicodeString AKeyStr, UnicodeString AFingerprint)
+struct TPasteKeyHandler
 {
-  UnicodeString Host = AHost;
-  UnicodeString KeyStr = AKeyStr;
-  LogEvent(FORMAT("Verifying host key %s %s with fingerprint %s", AKeyType, FormatKeyStr(KeyStr), AFingerprint));
+  UnicodeString KeyStr;
+  UnicodeString NormalizedFingerprintMD5;
+  UnicodeString NormalizedFingerprintSHA256;
+  TSessionUI * UI;
+
+  void __fastcall Paste(TObject * Sender, unsigned int & Answer);
+};
+//---------------------------------------------------------------------------
+void __fastcall TPasteKeyHandler::Paste(TObject * /*Sender*/, unsigned int & Answer)
+{
+  UnicodeString ClipboardText;
+  if (TextFromClipboard(ClipboardText, true))
+  {
+    UnicodeString NormalizedClipboardFingerprint = NormalizeFingerprint(ClipboardText);
+    // case insensitive comparison, contrary to VerifyHostKey (we should change to insesitive there too)
+    if (SameText(NormalizedClipboardFingerprint, NormalizedFingerprintMD5) ||
+        SameText(NormalizedClipboardFingerprint, NormalizedFingerprintSHA256) ||
+        SameText(ClipboardText, KeyStr))
+    {
+      Answer = qaYes;
+    }
+    else
+    {
+      const struct ssh_signkey * Algorithm;
+      try
+      {
+        UnicodeString Key = ParseOpenSshPubLine(ClipboardText, Algorithm);
+        if (Key == KeyStr)
+        {
+          Answer = qaYes;
+        }
+      }
+      catch (...)
+      {
+        // swallow
+      }
+    }
+  }
+
+  if (Answer == 0)
+  {
+    UI->QueryUser(LoadStr(HOSTKEY_NOT_MATCH_CLIPBOARD), NULL, qaOK, NULL, qtError);
+  }
+}
+//---------------------------------------------------------------------------
+void __fastcall TSecureShell::VerifyHostKey(
+  const UnicodeString & AHost, int Port, const UnicodeString & KeyType, const UnicodeString & KeyStr,
+  const UnicodeString & Fingerprint)
+{
+  if (Configuration->ActualLogProtocol >= 1)
+  {
+    LogEvent(FORMAT(L"Verifying host key %s %s with fingerprints %s", (KeyType, FormatKeyStr(KeyStr), Fingerprint)));
+  }
 
   GotHostKey();
 
   DebugAssert(AKeyStr.Pos(HostKeyDelimiter) == 0);
 
+  UnicodeString Host = AHost;
   GetRealHost(Host, Port);
 
-  FSessionInfo.HostKeyFingerprint = AFingerprint;
+  UnicodeString Buf = Fingerprint;
+  UnicodeString SignKeyAlg = CutToChar(Buf, L' ', false);
+  UnicodeString SignKeySize = CutToChar(Buf, L' ', false);
+  UnicodeString SignKeyType = SignKeyAlg + L' ' + SignKeySize;
+  UnicodeString MD5 = CutToChar(Buf, L' ', false);
+  UnicodeString FingerprintMD5 = SignKeyType + L' ' + MD5;
+  UnicodeString SHA256 = Buf;
+  UnicodeString FingerprintSHA256 = SignKeyType + L' ' + SHA256;
+  UnicodeString NormalizedFingerprintMD5 = NormalizeFingerprint(FingerprintMD5);
+  UnicodeString NormalizedFingerprintSHA256 = NormalizeFingerprint(FingerprintSHA256);
+
+  FSessionInfo.HostKeyFingerprintSHA256 = FingerprintSHA256;
+  FSessionInfo.HostKeyFingerprintMD5 = FingerprintMD5;
 
   if (FSessionData->GetFingerprintScan())
   {
     Abort();
   }
 
-  UnicodeString NormalizedFingerprint = NormalizeFingerprint(AFingerprint);
-
   bool Result = false;
 
   UnicodeString StoredKeys = RetrieveHostKey(AHost, Port, AKeyType);
-  UnicodeString Buf = StoredKeys;
+  Buf = StoredKeys;
   while (!Result && !Buf.IsEmpty())
   {
     UnicodeString StoredKey = CutToChar(Buf, HostKeyDelimiter, false);
@@ -2360,15 +2429,22 @@ void TSecureShell::VerifyHostKey(UnicodeString AHost, intptr_t Port,
       NormalizedExpectedKey = NormalizeFingerprint(StoredKey);
     }
     if ((!Fingerprint && (StoredKey == AKeyStr)) ||
-      (Fingerprint && (NormalizedExpectedKey == NormalizedFingerprint)))
+        (Fingerprint && ((NormalizedExpectedKey == NormalizedFingerprintMD5) || (NormalizedExpectedKey == NormalizedFingerprintSHA256))))
     {
       LogEvent(L"Host key matches cached key");
       Result = true;
     }
     else
     {
-      UnicodeString FormattedKey = Fingerprint ? StoredKey : FormatKeyStr(StoredKey);
-      LogEvent(FORMAT("Host key does not match cached key %s", FormattedKey));
+      if (Configuration->ActualLogProtocol >= 1)
+      {
+        UnicodeString FormattedKey = Fingerprint ? StoredKey : FormatKeyStr(StoredKey);
+        LogEvent(FORMAT(L"Host key does not match cached key %s", (FormattedKey)));
+      }
+      else
+      {
+        LogEvent(L"Host key does not match cached key");
+      }
     }
   }
 
@@ -2389,7 +2465,7 @@ void TSecureShell::VerifyHostKey(UnicodeString AHost, intptr_t Port,
         FLog->Add(llException, Message);
         Result = true;
       }
-      else if (NormalizedExpectedKey == NormalizedFingerprint)
+      else if ((NormalizedExpectedKey == NormalizedFingerprintMD5) || (NormalizedExpectedKey == NormalizedFingerprintSHA256))
       {
         LogEvent("Host key matches configured key");
         Result = true;
@@ -2424,22 +2500,32 @@ void TSecureShell::VerifyHostKey(UnicodeString AHost, intptr_t Port,
       // but as scripting mode is handled earlier and in GUI it hardly happens,
       // it's a small issue.
       TClipboardHandler ClipboardHandler;
-      ClipboardHandler.Text = AFingerprint;
+      ClipboardHandler.Text = FingerprintSHA256 + L"\n" + FingerprintMD5;
+      TPasteKeyHandler PasteKeyHandler;
+      PasteKeyHandler.KeyStr = KeyStr;
+      PasteKeyHandler.NormalizedFingerprintMD5 = NormalizedFingerprintMD5;
+      PasteKeyHandler.NormalizedFingerprintSHA256 = NormalizedFingerprintSHA256;
+      PasteKeyHandler.UI = FUI;
 
       bool Unknown = StoredKeys.IsEmpty();
 
-      TQueryButtonAlias Aliases[3];
+      TQueryButtonAlias Aliases[4];
       Aliases[0].Button = qaRetry;
       Aliases[0].Alias = LoadStr(COPY_KEY_BUTTON);
-      Aliases[0].OnClick = nb::bind(&TClipboardHandler::Copy, &ClipboardHandler);
-      uintptr_t Answers = qaYes | qaCancel | qaRetry;
-      uintptr_t AliasesCount = 1;
+      Aliases[0].ActionAlias = LoadStr(COPY_KEY_ACTION);
+      Aliases[0].OnSubmit = &ClipboardHandler.Copy;
+      Aliases[1].Button = qaIgnore;
+      Aliases[1].Alias = LoadStr(PASTE_KEY_BUTTON);
+      Aliases[1].OnSubmit = &PasteKeyHandler.Paste;
+      Aliases[1].GroupWith = qaYes;
+      Answers = qaYes | qaCancel | qaRetry | qaIgnore;
+      AliasesCount = 2;
       if (!Unknown)
       {
-        Aliases[1].Button = qaYes;
-        Aliases[1].Alias = LoadStr(UPDATE_KEY_BUTTON);
-        Aliases[2].Button = qaOK;
-        Aliases[2].Alias = LoadStr(ADD_KEY_BUTTON);
+        Aliases[2].Button = qaYes;
+        Aliases[2].Alias = LoadStr(UPDATE_KEY_BUTTON);
+        Aliases[3].Button = qaOK;
+        Aliases[3].Alias = LoadStr(ADD_KEY_BUTTON);
         AliasesCount += 2;
         Answers |= qaSkip | qaOK;
       }
@@ -2454,23 +2540,25 @@ void TSecureShell::VerifyHostKey(UnicodeString AHost, intptr_t Port,
       Params.Aliases = Aliases;
       Params.AliasesCount = AliasesCount;
 
-      UnicodeString Message = FMTLOAD((Unknown ? UNKNOWN_KEY3 : DIFFERENT_KEY4), AKeyType, AFingerprint);
-      if (GetConfiguration()->GetScripting())
+      UnicodeString KeyTypeHuman = GetKeyTypeHuman(KeyType);
+      UnicodeString KeyDetails = FMTLOAD(KEY_DETAILS, (SignKeyType, SHA256, MD5));
+      UnicodeString Message = FMTLOAD((Unknown ? UNKNOWN_KEY4 : DIFFERENT_KEY5), (KeyTypeHuman, KeyDetails));
       {
         AddToList(Message, LoadStr(SCRIPTING_USE_HOSTKEY), L"\n");
       }
 
       uintptr_t R =
         FUI->QueryUser(Message, nullptr, Answers, &Params, qtWarning);
+      UnicodeString StoreKeyStr = KeyStr;
 
       switch (R)
       {
       case qaOK:
         DebugAssert(!Unknown);
-        KeyStr = (StoredKeys + HostKeyDelimiter + KeyStr);
+          StoreKeyStr = (StoredKeys + HostKeyDelimiter + StoreKeyStr);
       // fall thru
       case qaYes:
-        store_host_key(AnsiString(Host).c_str(), ToInt(Port), AnsiString(AKeyType).c_str(), AnsiString(KeyStr).c_str());
+          store_host_key(AnsiString(Host).c_str(), Port, AnsiString(KeyType).c_str(), AnsiString(StoreKeyStr).c_str());
         Verified = true;
         break;
 
@@ -2505,7 +2593,7 @@ void TSecureShell::VerifyHostKey(UnicodeString AHost, intptr_t Port,
       std::unique_ptr<Exception> E(new Exception(MainInstructions(Message)));
       try__finally
       {
-        FUI->FatalError(E.get(), FMTLOAD(HOSTKEY, AFingerprint));
+        FUI->FatalError(E, FMTLOAD(HOSTKEY, (FingerprintSHA256)));
       }
       __finally
       {
@@ -2516,7 +2604,7 @@ void TSecureShell::VerifyHostKey(UnicodeString AHost, intptr_t Port,
     }
   }
 
-  GetConfiguration()->RememberLastFingerprint(FSessionData->GetSiteKey(), SshFingerprintType, AFingerprint);
+  Configuration->RememberLastFingerprint(FSessionData->SiteKey, SshFingerprintType, FingerprintSHA256);
 }
 
 bool TSecureShell::HaveHostKey(UnicodeString AHost, intptr_t Port, UnicodeString KeyType)
@@ -2547,55 +2635,25 @@ bool TSecureShell::HaveHostKey(UnicodeString AHost, intptr_t Port, UnicodeString
   return Result;
 }
 
-void TSecureShell::AskAlg(const UnicodeString AlgType,
-  const UnicodeString AlgName)
+void __fastcall TSecureShell::AskAlg(UnicodeString AlgType, UnicodeString AlgName)
 {
-  UnicodeString Msg;
-  UnicodeString Error;
-  if (AlgType == L"key-exchange algorithm")
-  {
-    Msg = FMTLOAD(KEX_BELOW_TRESHOLD, AlgName);
-    Error = FMTLOAD(KEX_NOT_VERIFIED, AlgName);
-  }
-  else if (AlgType == L"hostkey type")
-  {
-    // noop as we do not allow host key algorithm configuration,
-    // so no algorithm can get below WARN level
-  }
-  else
-  {
-    int CipherType;
-    if (AlgType == L"cipher")
-    {
-      CipherType = CIPHER_TYPE_BOTH;
-    }
-    else if (AlgType == L"client-to-server cipher")
-    {
-      CipherType = CIPHER_TYPE_CS;
-    }
-    else if (AlgType == L"server-to-client cipher")
-    {
-      CipherType = CIPHER_TYPE_SC;
-    }
-    else
-    {
-      DebugFail();
-      CipherType = 0;
-    }
+  // beware of changing order
+  static const TPuttyTranslation AlgTranslation[] = {
+    { L"cipher", CIPHER_TYPE_BOTH2 },
+    { L"client-to-server cipher", CIPHER_TYPE_CS2 },
+    { L"server-to-client cipher", CIPHER_TYPE_SC2 },
+    { L"key-exchange algorithm", KEY_EXCHANGE_ALG },
+    { L"hostkey type", KEYKEY_TYPE },
+  };
 
-    if (CipherType != 0)
-    {
-      Msg = FMTLOAD(CIPHER_BELOW_TRESHOLD, LoadStr(CipherType), AlgName);
-      Error = FMTLOAD(CIPHER_NOT_VERIFIED, AlgName);
-    }
-  }
+  TranslatePuttyMessage(AlgTranslation, LENOF(AlgTranslation), AlgType);
 
-  if (!Msg.IsEmpty())
+  UnicodeString Msg = FMTLOAD(ALG_BELOW_TRESHOLD, (AlgType, AlgName));
+
+  if (FUI->QueryUser(Msg, NULL, qaYes | qaNo, NULL, qtWarning) == qaNo)
   {
-    if (FUI->QueryUser(Msg, nullptr, qaYes | qaNo, nullptr, qtWarning) == qaNo)
-    {
-      FUI->FatalError(nullptr, Error);
-    }
+    UnicodeString Error = FMTLOAD(ALG_NOT_VERIFIED, (AlgType, AlgName));
+    FUI->FatalError(NULL, Error);
   }
 }
 

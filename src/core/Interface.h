@@ -58,6 +58,7 @@ NB_CORE_EXPORT void CopyToClipboard(UnicodeString Text);
 NB_CORE_EXPORT HANDLE StartThread(void *SecurityAttributes, DWORD StackSize,
   /*TThreadFunc ThreadFunc,*/ void *Parameter, DWORD CreationFlags,
   TThreadID &ThreadId);
+bool __fastcall TextFromClipboard(UnicodeString & Text, bool Trim);
 
 NB_CORE_EXPORT void WinInitialize();
 NB_CORE_EXPORT void WinFinalize();
@@ -93,18 +94,26 @@ const int qpIgnoreAbort =          0x08;
 const int qpWaitInBatch =          0x10;
 #endif // #if 0
 
+typedef void __fastcall (__closure *TButtonSubmitEvent)(TObject * Sender, unsigned int & Answer);
+
 struct NB_CORE_EXPORT TQueryButtonAlias : public TObject
 {
   TQueryButtonAlias();
 
   uintptr_t Button;
   UnicodeString Alias;
-  TNotifyEvent OnClick;
+  TButtonSubmitEvent OnSubmit;
   int GroupWith;
   bool Default;
   TShiftStateFlag GrouppedShiftState;
   bool ElevationRequired;
   bool MenuButton;
+  UnicodeString ActionAlias;
+
+  static TQueryButtonAlias CreateYesToAllGrouppedWithYes();
+  static TQueryButtonAlias CreateNoToAllGrouppedWithNo();
+  static TQueryButtonAlias CreateAllAsYesToNewerGrouppedWithYes();
+  static TQueryButtonAlias CreateIgnoreAsRenameGrouppedWithNo();
 };
 
 #if 0
@@ -222,7 +231,7 @@ public:
 
   UnicodeString Text;
 
-  void Copy(TObject * /*Sender*/)
+  void __fastcall Copy(TObject * /*Sender*/, unsigned int & /*Answer*/)
   {
     TInstantOperationVisualizer Visualizer;
     CopyToClipboard(Text);

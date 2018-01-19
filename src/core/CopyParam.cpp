@@ -996,3 +996,25 @@ void CopySpeedLimits(TStrings *Source, TStrings *Dest)
 
   Dest->Assign(Temp.get());
 }
+//---------------------------------------------------------------------------
+TOperationSide ReverseOperationSide(TOperationSide Side)
+{
+  TOperationSide Result;
+  switch (Side)
+  {
+    case osLocal:
+      Result = osRemote;
+      break;
+
+    case osRemote:
+      Result = osLocal;
+      break;
+
+    default:
+    case osCurrent:
+      DebugFail();
+      Result = Side;
+      break;
+  }
+  return Result;
+}

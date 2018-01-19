@@ -37,42 +37,14 @@
 #include "HelpCore.h"
 #include "CoreMain.h"
 #include "Security.h"
-#include <openssl/ssl.h>
 
 #if 0
 #pragma package(smart_init)
 
 #define FILE_OPERATION_LOOP_TERMINAL FTerminal
 
-const int tfFirstLevel = 0x01;
-
-struct TSinkFileParams
-{
-  UnicodeString TargetDir;
-  const TCopyParamType *CopyParam;
-  int Params;
-  TFileOperationProgressType *OperationProgress;
-  bool Skipped;
-  unsigned int Flags;
-};
-#endif // #if 0
-
-struct TWebDAVCertificateData
-{
-  UnicodeString Subject;
-  UnicodeString Issuer;
-
-  TDateTime ValidFrom;
-  TDateTime ValidUntil;
-
-  UnicodeString Fingerprint;
-  AnsiString AsciiCert;
-
-  int Failures;
-};
 
 #define SESSION_FS_KEY "filesystem"
-static const char HttpsCertificateStorageKey[] = "HttpsCertificates";
 static const UnicodeString CONST_WEBDAV_PROTOCOL_BASE_NAME = L"WebDAV";
 static const int HttpUnauthorized = 401;
 
@@ -89,88 +61,10 @@ static const int HttpUnauthorized = 401;
 #define PROP_OWNER "owner"
 #define PROP_DISPLAY_NAME "displayname"
 
-static std::unique_ptr<TCriticalSection> DebugSection(TraceInitPtr(new TCriticalSection));
-
-#if 0
-static rde::set<TWebDAVFileSystem *> FileSystems;
-#endif // #if 0
-
 extern "C" {
-
-void ne_debug(void * Context, int Channel, const char * Format, ...)
-{
-  bool DoLog;
-
-  if (FLAGSET(Channel, NE_DBG_SOCKET) ||
-    FLAGSET(Channel, NE_DBG_HTTP) ||
-    FLAGSET(Channel, NE_DBG_HTTPAUTH) ||
-    FLAGSET(Channel, NE_DBG_SSL))
-  {
-    DoLog = true;
-  }
-  else if (FLAGSET(Channel, NE_DBG_XML) ||
-    FLAGSET(Channel, NE_DBG_WINSCP_HTTP_DETAIL))
-  {
-    DoLog = (GetConfiguration()->GetActualLogProtocol() >= 1);
-  }
-  else if (FLAGSET(Channel, NE_DBG_LOCKS) ||
-    FLAGSET(Channel, NE_DBG_XMLPARSE) ||
-    FLAGSET(Channel, NE_DBG_HTTPBODY))
-  {
-    DoLog = (GetConfiguration()->GetActualLogProtocol() >= 2);
-  }
-  else
-  {
-    DoLog = false;
-    DebugFail();
-  }
-
-#ifndef _DEBUG
-  if (DoLog)
-#endif
-  {
-    va_list Args;
-    va_start(Args, Format);
-    UTF8String UTFMessage;
-    UTFMessage.vprintf(Format, Args);
-    va_end(Args);
-
-    UnicodeString Message(TrimRight(UnicodeString(UTFMessage)));
-
-    if (DoLog)
-    {
-      // Note that this gets called for THttp sessions too.
-      // It does no harm atm.
-      TWebDAVFileSystem * FileSystem = nullptr;
-      if (Context != nullptr)
-      {
-        ne_session * Session = static_cast<ne_session *>(Context);
-
-        FileSystem =
-          static_cast<TWebDAVFileSystem *>(ne_get_session_private(Session, SESSION_FS_KEY));
-      }
-      else
-      {
-        TGuard Guard(*DebugSection.get());
-
         TODO("implement");
 #if 0
-      if (FileSystems.size() == 1)
-      {
-        FileSystem = *FileSystems.begin();
-      }
 #endif // #if 0
-      }
-
-      if (FileSystem != nullptr)
-      {
-        FileSystem->NeonDebug(Message);
-      }
-    }
-  }
-}
-
-} // extern "C"
 
 
 // ne_path_escape returns 7-bit string, so it does not really matter if we use
@@ -233,7 +127,19 @@ void NeonFinalize()
   }
 }
 
-UnicodeString NeonVersion()
+void __fastcall RequireNeon(TTerminal * Terminal)
+{
+  if (!NeonInitialized)
+  {
+    throw Exception(LoadStr(NEON_INIT_FAILED2));
+  }
+
+  if (!NeonSspiInitialized)
+  {
+    Terminal->LogEvent(L"Warning: SSPI initialization failed.");
+  }
+}
+//---------------------------------------------------------------------------
 {
   UnicodeString Str = StrFromNeon(ne_version_string());
   CutToChar(Str, L' ', true); // "neon"
@@ -281,7 +187,7 @@ void TWebDAVFileSystem::FileTransferProgress(int64_t /*TransferSize*/, int64_t /
 
 TWebDAVFileSystem::~TWebDAVFileSystem()
 {
-  UnregisterFromDebug();
+  UnregisterFromNeonDebug(FTerminal);
 
   {
     TGuard Guard(FNeonLockStoreSection);
@@ -297,19 +203,10 @@ TWebDAVFileSystem::~TWebDAVFileSystem()
 #endif // #if 0
 }
 
-void TWebDAVFileSystem::Open()
+  RequireNeon(FTerminal);
 {
-  if (!NeonInitialized)
-  {
-    throw Exception(LoadStr(NEON_INIT_FAILED));
-  }
 
-  if (!NeonSspiInitialized)
-  {
-    FTerminal->LogEvent(L"Warning: SSPI initialization failed.");
-  }
-
-  RegisterForDebug();
+  RegisterForNeonDebug(FTerminal);
 
   FCurrentDirectory.Clear();
   FHasTrailingSlash = false;
@@ -415,11 +312,11 @@ void TWebDAVFileSystem::InitSession(ne_session_s *Session)
 
   InitNeonSession(
     Session, Data->GetProxyMethod(), Data->GetProxyHost(), Data->GetProxyPort(),
-    Data->GetProxyUsername(), Data->GetProxyPassword());
+    Data->ProxyUsername, Data->ProxyPassword, FTerminal);
 
-  ne_set_read_timeout(FNeonSession, ToInt(Data->GetTimeout()));
+  ne_set_read_timeout(Session, Data->Timeout);
 
-  ne_set_connect_timeout(FNeonSession, ToInt(Data->GetTimeout()));
+  ne_set_connect_timeout(Session, Data->Timeout);
 
   ne_set_session_private(Session, SESSION_FS_KEY, this);
 }
@@ -450,20 +347,7 @@ void TWebDAVFileSystem::NeonOpen(UnicodeString &CorrectedUrl, UnicodeString Url)
   ne_uri_free(&uri);
   ne_set_aux_request_init(FNeonSession, NeonAuxRequestInit, this);
 
-  // Other flags:
-  // NE_DBG_FLUSH - used only in native implementation of ne_debug
-  // NE_DBG_HTTPPLAIN - log credentials in HTTP authentication
-
-  ne_debug_mask =
-    NE_DBG_SOCKET |
-    NE_DBG_HTTP |
-    NE_DBG_XML | // detail
-    NE_DBG_HTTPAUTH |
-    NE_DBG_LOCKS | // very details
-    NE_DBG_XMLPARSE | // very details
-    NE_DBG_HTTPBODY | // very details
-    NE_DBG_SSL |
-    FLAGMASK(GetConfiguration()->GetLogSensitive(), NE_DBG_HTTPPLAIN);
+  UpdateNeonDebugMask();
 
   NeonAddAuthentication(Ssl);
 
@@ -578,19 +462,7 @@ void TWebDAVFileSystem::Close()
   CloseNeonSession();
   FTerminal->Closed();
   FActive = false;
-  UnregisterFromDebug();
-}
-
-void TWebDAVFileSystem::RegisterForDebug()
-{
-  TGuard Guard(*DebugSection.get());
-//  FileSystems.insert(this);
-}
-
-void TWebDAVFileSystem::UnregisterFromDebug()
-{
-  TGuard Guard(*DebugSection.get());
-//  FileSystems.erase(this);
+  UnregisterFromNeonDebug(FTerminal);
 }
 
 bool TWebDAVFileSystem::GetActive() const
@@ -792,7 +664,7 @@ void TWebDAVFileSystem::CheckStatus(intptr_t NeonStatus)
     {
       DebugAssert(FSkipped);
       FSkipped = false;
-      ThrowSkipFileNull();
+      throw ESkipFile();
     }
   }
   else
@@ -1191,7 +1063,7 @@ int TWebDAVFileSystem::RenameFileInternal(UnicodeString AFileName,
   return ne_move(FNeonSession, 0, PathToNeon(AFileName), PathToNeon(ANewName));
 }
 
-void TWebDAVFileSystem::RemoteRenameFile(UnicodeString AFileName,
+void __fastcall TWebDAVFileSystem::RenameFile(const UnicodeString FileName, const TRemoteFile * /*File*/,
   UnicodeString ANewName)
 {
   ClearNeonError();
@@ -1215,8 +1087,8 @@ int TWebDAVFileSystem::CopyFileInternal(UnicodeString AFileName,
   return ne_copy(FNeonSession, 0, NE_DEPTH_INFINITE, PathToNeon(AFileName), PathToNeon(ANewName));
 }
 
-void TWebDAVFileSystem::RemoteCopyFile(UnicodeString AFileName,
-  UnicodeString ANewName)
+void __fastcall TWebDAVFileSystem::CopyFile(const UnicodeString FileName, const TRemoteFile * /*File*/,
+  const UnicodeString NewName)
 {
   ClearNeonError();
   TOperationVisualizer Visualizer(FTerminal->GetUseBusyCursor());
@@ -1276,16 +1148,9 @@ void TWebDAVFileSystem::ConfirmOverwrite(
   // all = "yes to newer"
   int Answers = qaYes | qaNo | qaCancel | qaYesToAll | qaNoToAll | qaAll;
   TQueryButtonAlias Aliases[3];
-  Aliases[0].Button = qaAll;
-  Aliases[0].Alias = LoadStr(YES_TO_NEWER_BUTTON);
-  Aliases[0].GroupWith = qaYes;
-  Aliases[0].GrouppedShiftState = ssCtrl;
-  Aliases[1].Button = qaYesToAll;
-  Aliases[1].GroupWith = qaYes;
-  Aliases[1].GrouppedShiftState = ssShift;
-  Aliases[2].Button = qaNoToAll;
-  Aliases[2].GroupWith = qaNo;
-  Aliases[2].GrouppedShiftState = ssShift;
+  Aliases[0] = TQueryButtonAlias::CreateAllAsYesToNewerGrouppedWithYes();
+  Aliases[1] = TQueryButtonAlias::CreateYesToAllGrouppedWithYes();
+  Aliases[2] = TQueryButtonAlias::CreateNoToAllGrouppedWithNo();
   TQueryParams QueryParams(qpNeverAskAgainCheck);
   QueryParams.Aliases = Aliases;
   QueryParams.AliasesCount = _countof(Aliases);
@@ -1295,7 +1160,7 @@ void TWebDAVFileSystem::ConfirmOverwrite(
     Answer =
       FTerminal->ConfirmFileOverwrite(
         ASourceFullFileName, ATargetFileName, FileParams, Answers, &QueryParams,
-        (OperationProgress->GetSide() == osLocal) ? osRemote : osLocal,
+        ReverseOperationSide(OperationProgress->Side),
         CopyParam, Params, OperationProgress);
   }
 
@@ -1306,7 +1171,7 @@ void TWebDAVFileSystem::ConfirmOverwrite(
     break;
 
   case qaNo:
-    ThrowSkipFileNull();
+      throw ESkipFile();
 
   case qaCancel:
     OperationProgress->SetCancelAtLeast(csCancel);
@@ -1398,134 +1263,33 @@ void TWebDAVFileSystem::SpaceAvailable(UnicodeString APath,
 }
 
 void TWebDAVFileSystem::CopyToRemote(const TStrings *AFilesToCopy,
-  UnicodeString ATargetDir, const TCopyParamType *CopyParam,
+  const UnicodeString TargetDir, const TCopyParamType * CopyParam,
   intptr_t Params, TFileOperationProgressType *OperationProgress,
   TOnceDoneOperation &OnceDoneOperation)
 {
-  DebugAssert((AFilesToCopy != nullptr) && (OperationProgress != nullptr));
   if (!AFilesToCopy)
     return;
-
   Params &= ~cpAppend;
-  UnicodeString TargetDir = GetAbsolutePath(ATargetDir, false);
-  UnicodeString FullTargetDir = base::UnixIncludeTrailingBackslash(TargetDir);
-  intptr_t Index = 0;
-  while ((Index < AFilesToCopy->GetCount()) && OperationProgress && !OperationProgress->GetCancel())
-  {
     TRemoteFile *File = AFilesToCopy->GetAs<TRemoteFile>(Index);
-    bool Success = false;
-    UnicodeString FileName = AFilesToCopy->GetString(Index);
-    UnicodeString RealFileName = File ? File->GetFileName() : FileName;
     UnicodeString FileNameOnly = base::ExtractFileName(RealFileName, false);
-
-    try__finally
-    {
       SCOPE_EXIT
       {
         OperationProgress->Finish(RealFileName, Success, OnceDoneOperation);
       };
-      try
-      {
-        if (FTerminal->GetSessionData()->GetCacheDirectories())
-        {
-          FTerminal->DirectoryModified(TargetDir, false);
-
-          if (::DirectoryExists(ApiPath(::ExtractFilePath(FileName))))
-          {
-            FTerminal->DirectoryModified(FullTargetDir + FileNameOnly, true);
-          }
-        }
-        SourceRobust(FileName, File, FullTargetDir, CopyParam, Params, OperationProgress,
-          tfFirstLevel);
-        Success = true;
-      }
-      catch (ESkipFile &E)
-      {
-        TSuspendFileOperationProgress Suspend(OperationProgress);
-        if (!FTerminal->HandleException(&E))
-        {
-          throw;
-        }
-      }
-    }
-    __finally
-    {
 #if 0
-      OperationProgress->Finish(FileName, Success, OnceDoneOperation);
-#endif // #if 0
-    };
     ++Index;
-  }
-}
-
-void TWebDAVFileSystem::SourceRobust(UnicodeString AFileName,
-  const TRemoteFile *AFile,
-  UnicodeString TargetDir, const TCopyParamType *CopyParam, intptr_t Params,
   TFileOperationProgressType *OperationProgress, uintptr_t Flags)
-{
-  // the same in TSFTPFileSystem
 
-  TUploadSessionAction Action(FTerminal->GetActionLog());
-  TRobustOperationLoop RobustLoop(FTerminal, OperationProgress);
-
-  do
-  {
-    bool ChildError = false;
-    try
-    {
-      Source(AFileName, AFile, TargetDir, CopyParam, Params, OperationProgress,
-        Flags, Action, ChildError);
-    }
-    catch (Exception &E)
-    {
-      if (!RobustLoop.TryReopen(E))
-      {
-        if (!ChildError)
-        {
-          FTerminal->RollbackAction(Action, OperationProgress, &E);
-        }
-        throw;
-      }
-    }
-
-    if (RobustLoop.ShouldRetry())
-    {
-      OperationProgress->RollbackTransfer();
-      Action.Restart();
-      // prevent overwrite confirmations
-      // (should not be set for directories!)
-      Params |= cpNoConfirmation;
-    }
-  }
-  while (RobustLoop.Retry());
+  FTerminal->DoCopyToRemote(FilesToCopy, TargetDir, CopyParam, Params, OperationProgress, tfPreCreateDir, OnceDoneOperation);
 }
 
-void TWebDAVFileSystem::Source(UnicodeString AFileName,
-  const TRemoteFile *AFile,
-  UnicodeString TargetDir, const TCopyParamType *CopyParam, intptr_t Params,
-  TFileOperationProgressType *OperationProgress, uintptr_t Flags,
+void __fastcall TWebDAVFileSystem::Source(
+  TLocalFileHandle & Handle, const UnicodeString & TargetDir, UnicodeString & DestFileName,
+  const TCopyParamType * CopyParam, int Params,
+  TFileOperationProgressType * OperationProgress, unsigned int /*Flags*/,
   TUploadSessionAction &Action, bool &ChildError)
 {
-  UnicodeString RealFileName = AFile ? AFile->GetFileName() : AFileName;
   Action.SetFileName(::ExpandUNCFileName(RealFileName));
-
-  OperationProgress->SetFile(RealFileName, false);
-
-  if (!FTerminal->AllowLocalFileTransfer(RealFileName, CopyParam, OperationProgress))
-  {
-    ThrowSkipFileNull();
-  }
-
-  HANDLE LocalFileHandle;
-  int64_t MTime;
-  int64_t Size;
-  uintptr_t LocalFileAttrs = 0;
-
-  FTerminal->TerminalOpenLocalFile(RealFileName, GENERIC_READ,
-    &LocalFileAttrs, &LocalFileHandle, nullptr, nullptr, &MTime, &Size);
-
-  bool Dir = FLAGSET(LocalFileAttrs, faDirectory);
-
   int FD = -1;
   try__finally
   {
@@ -1542,117 +1306,93 @@ void TWebDAVFileSystem::Source(UnicodeString AFileName,
         SAFE_CLOSE_HANDLE(LocalFileHandle);
       }
     };
-    OperationProgress->SetFileInProgress();
+    UnicodeString DestFullName = TargetDir + DestFileName;
 
-    if (Dir)
+    TRemoteFile * RemoteFile = NULL;
+    try
     {
-      Action.Cancel();
-      DirectorySource(::IncludeTrailingBackslash(RealFileName), TargetDir,
-        LocalFileAttrs, CopyParam, Params, OperationProgress, Flags);
-    }
-    else
-    {
-      UnicodeString DestFileName =
-        FTerminal->ChangeFileName(
-          CopyParam, base::ExtractFileName(RealFileName, false), osLocal,
-          FLAGSET(Flags, tfFirstLevel));
+      TValueRestorer<TIgnoreAuthenticationFailure> IgnoreAuthenticationFailureRestorer(FIgnoreAuthenticationFailure);
+      FIgnoreAuthenticationFailure = iafWaiting;
 
-      FTerminal->LogEvent(FORMAT("Copying \"%s\" to remote directory started.", RealFileName));
-
-      OperationProgress->SetLocalSize(Size);
-
-      // Suppose same data size to transfer as to read
-      // (not true with ASCII transfer)
-      OperationProgress->SetTransferSize(OperationProgress->GetLocalSize());
-
-      UnicodeString DestFullName = TargetDir + DestFileName;
-
-      std::unique_ptr<TRemoteFile> RemoteFile;
-      try
-      {
-        TValueRestorer<TIgnoreAuthenticationFailure> IgnoreAuthenticationFailureRestorer(FIgnoreAuthenticationFailure);
-        FIgnoreAuthenticationFailure = iafWaiting;
-
-        // this should not throw
-        TRemoteFile *RemoteFilePtr = nullptr;
+      // this should not throw
+      CustomReadFileInternal(DestFullName, RemoteFile, NULL);
         CustomReadFileInternal(DestFullName, RemoteFilePtr, nullptr);
         RemoteFile.reset(RemoteFilePtr);
-      }
-      catch (...)
+    }
+    catch (...)
+    {
+      if (!FTerminal->Active)
       {
-        if (!FTerminal->GetActive())
-        {
-          throw;
-        }
+        throw;
       }
+    }
 
-      TDateTime Modification = ::UnixToDateTime(MTime, FTerminal->GetSessionData()->GetDSTMode());
+    if (RemoteFile != NULL)
+    {
+      TOverwriteFileParams FileParams;
 
-      if (RemoteFile.get() != nullptr)
-      {
-        TOverwriteFileParams FileParams;
+      FileParams.SourceSize = Handle.Size;
+      FileParams.SourceTimestamp = Handle.Modification;
+      FileParams.DestSize = RemoteFile->Size;
+      FileParams.DestTimestamp = RemoteFile->Modification;
+      delete RemoteFile;
 
-        FileParams.SourceSize = Size;
-        FileParams.SourceTimestamp = Modification;
-        FileParams.DestSize = RemoteFile->GetSize();
-        FileParams.DestTimestamp = RemoteFile->GetModification();
-        RemoteFile.reset();
-
-        TOverwriteMode OverwriteMode = omOverwrite;
-        uintptr_t Answer = 0;
+      ConfirmOverwrite(Handle.FileName, DestFileName, OperationProgress,
+        &FileParams, CopyParam, Params);
         ConfirmOverwrite(AFileName, DestFileName, OperationProgress,
           &FileParams, CopyParam, Params,
           OverwriteMode, Answer);
-      }
+    }
 
-      DestFullName = TargetDir + DestFileName;
-      // only now, we know the final destination
-      // (not really true as we do not support changing file name on overwrite dialog)
-      Action.Destination(DestFullName);
+    DestFullName = TargetDir + DestFileName;
+    // only now, we know the final destination
+    // (not really true as we do not support changing file name on overwrite dialog)
+    Action.Destination(DestFullName);
 
-#if 0
-      wchar_t *MimeOut = nullptr;
+    wchar_t * MimeOut = NULL;
+    if (FindMimeFromData(NULL, DestFileName.c_str(), NULL, 0, NULL, FMFD_URLASFILENAME, &MimeOut, 0) == S_OK)
       if (FindMimeFromData(nullptr, DestFileName.c_str(), nullptr, 0, nullptr, FMFD_URLASFILENAME, &MimeOut, 0) == S_OK)
-      {
-        FUploadMimeType = MimeOut;
-        CoTaskMemFree(MimeOut);
-      }
-      else
+    {
+      FUploadMimeType = MimeOut;
+      CoTaskMemFree(MimeOut);
+    }
+    else
 #endif // #if 0
+    {
+      FUploadMimeType = L"";
+    }
+
+    FILE_OPERATION_LOOP_BEGIN
+      [&]()
+    {
+      SetFilePointer(Handle.Handle, 0, NULL, FILE_BEGIN);
+
+      FD = _open_osfhandle((intptr_t)Handle.Handle, O_BINARY);
+      if (FD < 0)
       {
-        FUploadMimeType = L"";
+        throw ESkipFile();
       }
 
-      FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(TRANSFER_ERROR, RealFileName), "",
-      [&]()
+      TAutoFlag UploadingFlag(FUploading);
+
+      ClearNeonError();
+      CheckStatus(ne_put(FNeonSession, PathToNeon(DestFullName), FD));
+    }
+    FILE_OPERATION_LOOP_END(FMTLOAD(TRANSFER_ERROR, (Handle.FileName)));
+
+    if (CopyParam->PreserveTime)
+    {
+      FTerminal->LogEvent(FORMAT(L"Preserving timestamp [%s]",
+        (StandardTimestamp(Handle.Modification))));
+
+      TTouchSessionAction TouchAction(FTerminal->ActionLog, DestFullName, Handle.Modification);
+      try
       {
-        SetFilePointer(LocalFileHandle, 0, nullptr, FILE_BEGIN);
-
-        FD = _open_osfhandle(reinterpret_cast<intptr_t>(LocalFileHandle), O_BINARY);
-        if (FD < 0)
-        {
-          ThrowSkipFileNull();
-        }
-
-        TAutoFlag UploadingFlag(FUploading);
-
-        ClearNeonError();
-        CheckStatus(ne_put(FNeonSession, PathToNeon(DestFullName), FD));
-      });
-
-      if (CopyParam->GetPreserveTime())
-      {
-        FTerminal->LogEvent(FORMAT("Preserving timestamp [%s]",
-            StandardTimestamp(Modification)));
-
-        TTouchSessionAction TouchAction(FTerminal->GetActionLog(), DestFullName, Modification);
-        try
-        {
-          TDateTime ModificationUTC = ::ConvertTimestampToUTC(Modification);
+        TDateTime ModificationUTC = ConvertTimestampToUTC(Handle.Modification);
 #if 0
-          TFormatSettings FormatSettings = GetEngFormatSettings();
-          UnicodeString LastModified =
-            FormatDateTime(L"ddd, d mmm yyyy hh:nn:ss 'GMT'", ModificationUTC, FormatSettings);
+        TFormatSettings FormatSettings = GetEngFormatSettings();
+        UnicodeString LastModified =
+          FormatDateTime(L"ddd, d mmm yyyy hh:nn:ss 'GMT'", ModificationUTC, FormatSettings);
 #endif
           uint16_t Y, M, D, H, NN, S, MS;
           TDateTime DateTime = ModificationUTC;
@@ -1660,45 +1400,42 @@ void TWebDAVFileSystem::Source(UnicodeString AFileName,
           DateTime.DecodeTime(H, NN, S, MS);
           UnicodeString LastModified = FORMAT("%04d, %d %02d %04d %02d:%02d%02d 'GMT'", D, D, M, Y, H, NN, D);
 
-          UTF8String NeonLastModified(LastModified);
-          // second element is "NULL-terminating"
-          ne_proppatch_operation Operations[2];
-          ClearArray(Operations);
-          ne_propname LastModifiedProp;
-          LastModifiedProp.nspace = DAV_PROP_NAMESPACE;
-          LastModifiedProp.name = PROP_LAST_MODIFIED;
-          Operations[0].name = &LastModifiedProp;
-          Operations[0].type = ne_propset;
-          Operations[0].value = NeonLastModified.c_str();
-          int Status = ne_proppatch(FNeonSession, PathToNeon(DestFullName), Operations);
-          if (Status == NE_ERROR)
-          {
-            FTerminal->LogEvent(FORMAT("Preserving timestamp failed, ignoring: %s",
-                GetNeonError()));
-            // Ignore errors as major WebDAV servers (like IIS), do not support
-            // changing getlastmodified.
-            // The only server we found that supports this is TradeMicro SafeSync.
-            // But it announces itself as "Server: Apache",
-            // so it's not reliable to autodetect the support.
-            // Microsoft Office alegedly uses <Win32LastModifiedTime>
-            // http://sabre.io/dav/clients/msoffice/
-            // Carot DAV does that too. But we do not know what server does support this.
-            TouchAction.Cancel();
-          }
-          else
-          {
-            CheckStatus(Status);
-          }
-        }
-        catch (Exception &E)
+        UTF8String NeonLastModified(LastModified);
+        // second element is "NULL-terminating"
+        ne_proppatch_operation Operations[2];
+        memset(Operations, 0, sizeof(Operations));
+        ne_propname LastModifiedProp;
+        LastModifiedProp.nspace = DAV_PROP_NAMESPACE;
+        LastModifiedProp.name = PROP_LAST_MODIFIED;
+        Operations[0].name = &LastModifiedProp;
+        Operations[0].type = ne_propset;
+        Operations[0].value = NeonLastModified.c_str();
+        int Status = ne_proppatch(FNeonSession, PathToNeon(DestFullName), Operations);
+        if (Status == NE_ERROR)
         {
-          TouchAction.Rollback(&E);
-          ChildError = true;
-          throw;
+          FTerminal->LogEvent(FORMAT(L"Preserving timestamp failed, ignoring: %s",
+            (GetNeonError())));
+          // Ignore errors as major WebDAV servers (like IIS), do not support
+          // changing getlastmodified.
+          // The only server we found that supports this is TradeMicro SafeSync.
+          // But it announces itself as "Server: Apache",
+          // so it's not reliable to autodetect the support.
+          // Microsoft Office alegedly uses <Win32LastModifiedTime>
+          // http://sabre.io/dav/clients/msoffice/
+          // Carot DAV does that too. But we do not know what server does support this.
+          TouchAction.Cancel();
+        }
+        else
+        {
+          CheckStatus(Status);
         }
       }
-
-      FTerminal->LogFileDone(OperationProgress, DestFullName);
+      catch (Exception & E)
+      {
+        TouchAction.Rollback(&E);
+        ChildError = true;
+        throw;
+      }
     }
   }
   __finally
@@ -1709,133 +1446,20 @@ void TWebDAVFileSystem::Source(UnicodeString AFileName,
       // _close calls CloseHandle internally (even doc states, we should not call CloseHandle),
       // but it crashes code guard
       _close(FD);
-    }
-    else if (File != nullptr)
-    {
-      CloseHandle(File);
-    }
-#endif // #if 0
+      Handle.Dismiss();
   };
-
-  // TODO : Delete also read-only files.
-  if (FLAGSET(Params, cpDelete))
-  {
-    if (!Dir)
-    {
-      FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(CORE_DELETE_LOCAL_FILE_ERROR, RealFileName), "",
       [&]()
-      {
-        THROWOSIFFALSE(Sysutils::RemoveFile(ApiPath(RealFileName)));
-      });
-    }
-  }
-  else if (CopyParam->GetClearArchive() && FLAGSET(LocalFileAttrs, faArchive))
-  {
-    FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(CANT_SET_ATTRS, RealFileName), "",
     [&]()
-    {
-      THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(ApiPath(RealFileName), LocalFileAttrs & ~faArchive));
-    });
-  }
-}
-
-void TWebDAVFileSystem::DirectorySource(UnicodeString DirectoryName,
-  UnicodeString TargetDir, uintptr_t Attrs, const TCopyParamType *CopyParam,
-  intptr_t Params, TFileOperationProgressType *OperationProgress, uintptr_t Flags)
-{
-  UnicodeString DestDirectoryName =
-    FTerminal->ChangeFileName(
-      CopyParam, base::ExtractFileName(::ExcludeTrailingBackslash(DirectoryName), false),
-      osLocal, FLAGSET(Flags, tfFirstLevel));
-  UnicodeString DestFullName = base::UnixIncludeTrailingBackslash(TargetDir + DestDirectoryName);
-  // create DestFullName if it does not exist
-  if (!FTerminal->FileExists(DestFullName))
-  {
-    TRemoteProperties Properties;
-    if (CopyParam->GetPreserveRights())
-    {
-      Properties.Valid = TValidProperties() << vpRights;
-      Properties.Rights = CopyParam->RemoteFileRights(Attrs);
-    }
-    FTerminal->RemoteCreateDirectory(DestFullName, &Properties);
-  }
-
-  OperationProgress->SetFile(DirectoryName);
-
-  if (FLAGCLEAR(Params, cpNoRecurse))
-  {
-    DWORD FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
-    TSearchRecChecked SearchRec;
-    bool FindOK = false;
-
-    UnicodeString FindPath = ApiPath(DirectoryName) + L"*.*";
 
     FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(LIST_DIR_ERROR, DirectoryName), "",
     [&]()
-    {
-      FindOK =
-        (FindFirstChecked(FindPath, FindAttrs, SearchRec) == 0);
-    });
-
-    try__finally
-    {
-      SCOPE_EXIT
       {
         base::FindClose(SearchRec);
       };
       while (FindOK && !OperationProgress->GetCancel())
-      {
-        UnicodeString FileName = DirectoryName + SearchRec.Name;
-        try
-        {
-          if ((SearchRec.Name != THISDIRECTORY) && (SearchRec.Name != PARENTDIRECTORY))
-          {
-            SourceRobust(FileName, nullptr, DestFullName, CopyParam, Params, OperationProgress,
-              Flags & ~(tfFirstLevel));
-          }
-        }
-        catch (ESkipFile &E)
-        {
-          // If ESkipFile occurs, just log it and continue with next file
-          TSuspendFileOperationProgress Suspend(OperationProgress);
-          // here a message to user was displayed, which was not appropriate
-          // when user refused to overwrite the file in subdirectory.
-          // hopefully it won't be missing in other situations.
-          if (!FTerminal->HandleException(&E))
-          {
-            throw;
-          }
-        }
-
-        FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(LIST_DIR_ERROR, DirectoryName), "",
         [&]()
-        {
-          FindOK = FindNextChecked(SearchRec) == 0;
-        });
-      }
-    }
-    __finally
-    {
-#if 0
-      ::FindClose(SearchRec);
-#endif // #if 0
     };
-    // TODO : Delete also read-only directories.
-    // TODO : Show error message on failure.
-    if (!OperationProgress->GetCancel())
-    {
-      if (FLAGSET(Params, cpDelete))
-      {
-        FTerminal->RemoveLocalDirectory(ApiPath(DirectoryName));
-      }
-      else if (CopyParam->GetClearArchive() && FLAGSET(Attrs, faArchive))
-      {
-        FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(CANT_SET_ATTRS, DirectoryName), "",
         [&]()
-        {
-          THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(ApiPath(DirectoryName), Attrs & ~faArchive));
-        });
-      }
     }
   }
 }
@@ -1846,90 +1470,16 @@ void TWebDAVFileSystem::CopyToLocal(const TStrings *AFilesToCopy,
   TOnceDoneOperation &OnceDoneOperation)
 {
   Params &= ~cpAppend;
-  UnicodeString FullTargetDir = ::IncludeTrailingBackslash(TargetDir);
-
-  intptr_t Index = 0;
-  while (Index < AFilesToCopy->GetCount() && !OperationProgress->GetCancel())
-  {
-    UnicodeString FileName = AFilesToCopy->GetString(Index);
-    const TRemoteFile *File = AFilesToCopy->GetAs<TRemoteFile>(Index);
-    bool Success = false;
-    try__finally
-    {
       SCOPE_EXIT
       {
         OperationProgress->Finish(FileName, Success, OnceDoneOperation);
       };
       UnicodeString AbsoluteFilePath = GetAbsolutePath(FileName, false);
       UnicodeString TargetDirectory = CreateTargetDirectory(File->GetFileName(), FullTargetDir, CopyParam);
-      try
-      {
-        SinkRobust(AbsoluteFilePath, File, TargetDirectory, CopyParam, Params,
-          OperationProgress, tfFirstLevel);
-        Success = true;
-      }
-      catch (ESkipFile &E)
-      {
-        TSuspendFileOperationProgress Suspend(OperationProgress);
-        if (!FTerminal->HandleException(&E))
-        {
-          throw;
-        }
-      }
-    }
-    __finally
-    {
 #if 0
-      OperationProgress->Finish(FileName, Success, OnceDoneOperation);
-#endif // #if 0
-    };
     ++Index;
-  }
-}
 
-void TWebDAVFileSystem::SinkRobust(UnicodeString AFileName,
-  const TRemoteFile *AFile, UnicodeString TargetDir,
-  const TCopyParamType *CopyParam, intptr_t Params,
-  TFileOperationProgressType *OperationProgress, uintptr_t Flags)
-{
-  // the same in TSFTPFileSystem
-
-  TDownloadSessionAction Action(FTerminal->GetActionLog());
-  TRobustOperationLoop RobustLoop(FTerminal, OperationProgress);
-
-  do
-  {
-    bool ChildError = false;
-    try
-    {
-      Sink(AFileName, AFile, TargetDir, CopyParam, Params, OperationProgress,
-        Flags, Action, ChildError);
-    }
-    catch (Exception &E)
-    {
-      if (!RobustLoop.TryReopen(E))
-      {
-        if (!ChildError)
-        {
-          FTerminal->RollbackAction(Action, OperationProgress, &E);
-        }
-        throw;
-      }
-    }
-
-    if (RobustLoop.ShouldRetry())
-    {
-      OperationProgress->RollbackTransfer();
-      Action.Restart();
-      DebugAssert(AFile != nullptr);
-      if (AFile && !AFile->GetIsDirectory())
-      {
-        // prevent overwrite confirmations
-        Params |= cpNoConfirmation;
-      }
-    }
-  }
-  while (RobustLoop.Retry());
+  FTerminal->DoCopyToLocal(FilesToCopy, TargetDir, CopyParam, Params, OperationProgress, tfNone, OnceDoneOperation);
 }
 
 void TWebDAVFileSystem::NeonCreateRequest(
@@ -2206,155 +1756,56 @@ int TWebDAVFileSystem::NeonBodyReader(void *UserData, const char *Buf, size_t Le
   return Result;
 }
 
-void TWebDAVFileSystem::Sink(UnicodeString AFileName,
-  const TRemoteFile *AFile, UnicodeString TargetDir,
-  const TCopyParamType *CopyParam, intptr_t AParams,
-  TFileOperationProgressType *OperationProgress, uintptr_t Flags,
-  TDownloadSessionAction &Action, bool &ChildError)
+void __fastcall TWebDAVFileSystem::Sink(
+  const UnicodeString & FileName, const TRemoteFile * File,
+  const UnicodeString & TargetDir, UnicodeString & DestFileName, int Attrs,
+  const TCopyParamType * CopyParam, int Params, TFileOperationProgressType * OperationProgress,
+  unsigned int /*Flags*/, TDownloadSessionAction & Action)
 {
-  UnicodeString FileNameOnly = base::UnixExtractFileName(AFileName);
-
-  Action.SetFileName(AFileName);
-
-  DebugAssert(AFile);
-  TFileMasks::TParams MaskParams;
-  MaskParams.Size = AFile->GetSize();
-  MaskParams.Modification = AFile->GetModification();
-
-  UnicodeString BaseFileName = FTerminal->GetBaseFileName(AFileName);
-  if (!CopyParam->AllowTransfer(BaseFileName, osRemote, AFile->GetIsDirectory(), MaskParams))
-  {
-    FTerminal->LogEvent(FORMAT("File \"%s\" excluded from transfer", AFileName));
-    ThrowSkipFileNull();
-  }
-
-  if (CopyParam->SkipTransfer(AFileName, AFile->GetIsDirectory()))
-  {
-    OperationProgress->AddSkippedFileSize(AFile->GetSize());
-    ThrowSkipFileNull();
-  }
-
-  FTerminal->LogFileDetails(AFileName, TDateTime(), AFile->GetSize());
-
-  OperationProgress->SetFile(FileNameOnly);
-
-  UnicodeString DestFileName =
-    CopyParam->ChangeFileName(
-      base::UnixExtractFileName(AFile->GetFileName()), osRemote, FLAGSET(Flags, tfFirstLevel));
   UnicodeString DestFullName = TargetDir + DestFileName;
-
-  if (AFile->GetIsDirectory())
-  {
-    Action.Cancel();
-    if (DebugAlwaysTrue(FTerminal->CanRecurseToDirectory(AFile)))
-    {
-      FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(NOT_DIRECTORY_ERROR, DestFullName), "",
       [&]()
-      {
-        DWORD LocalFileAttrs = FTerminal->GetLocalFileAttributes(ApiPath(DestFullName));
-        if (FLAGCLEAR(LocalFileAttrs, faDirectory))
         {
           ThrowExtException();
-        }
-      });
-
-      FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(CREATE_DIR_ERROR, DestFullName), "",
       [&]()
-      {
-        THROWOSIFFALSE(::ForceDirectories(ApiPath(DestFullName)));
-      });
-
-      if (FLAGCLEAR(AParams, cpNoRecurse))
-      {
-        TSinkFileParams SinkFileParams;
-        SinkFileParams.TargetDir = ::IncludeTrailingBackslash(DestFullName);
-        SinkFileParams.CopyParam = CopyParam;
-        SinkFileParams.Params = AParams;
-        SinkFileParams.OperationProgress = OperationProgress;
-        SinkFileParams.Skipped = false;
-        SinkFileParams.Flags = Flags & ~tfFirstLevel;
-
-        FTerminal->ProcessDirectory(AFileName, nb::bind(&TWebDAVFileSystem::SinkFile, this), &SinkFileParams);
-
-        // Do not delete directory if some of its files were skip.
-        // Throw "skip file" for the directory to avoid attempt to deletion
-        // of any parent directory
-        if (FLAGSET(AParams, cpDelete) && SinkFileParams.Skipped)
-        {
-          ThrowSkipFileNull();
-        }
-      }
-    }
-    else
-    {
-      // file is symlink to directory, currently do nothing, but it should be
-      // reported to user
-    }
-  }
-  else
+  if (FileExists(ApiPath(DestFullName)))
   {
-    FTerminal->LogEvent(FORMAT("Copying \"%s\" to local directory started.", AFileName));
-    if (::FileExists(ApiPath(DestFullName)))
-    {
-      int64_t Size = 0;
-      int64_t MTime = 0;
-      FTerminal->TerminalOpenLocalFile(DestFullName, GENERIC_READ, nullptr,
-        nullptr, nullptr, &MTime, nullptr, &Size);
-      TOverwriteFileParams FileParams;
+    __int64 Size;
+    __int64 MTime;
+    FTerminal->OpenLocalFile(DestFullName, GENERIC_READ, NULL, NULL, NULL, &MTime, NULL, &Size);
+    TOverwriteFileParams FileParams;
 
-      FileParams.SourceSize = AFile->GetSize();
-      FileParams.SourceTimestamp = AFile->GetModification();
-      FileParams.DestSize = Size;
-      FileParams.DestTimestamp = ::UnixToDateTime(MTime,
-          FTerminal->GetSessionData()->GetDSTMode());
-
-      TOverwriteMode OverwriteMode = omOverwrite;
-      uintptr_t Answer = 0;
+    FileParams.SourceSize = File->Size;
+    FileParams.SourceTimestamp = File->Modification;
+    FileParams.DestSize = Size;
+    FileParams.DestTimestamp = UnixToDateTime(MTime, FTerminal->SessionData->DSTMode);
       ConfirmOverwrite(AFileName, DestFileName, OperationProgress,
         &FileParams, CopyParam, AParams,
         OverwriteMode, Answer);
-    }
-
-    // Suppose same data size to transfer as to write
-    OperationProgress->SetTransferSize(AFile->GetSize());
-    OperationProgress->SetLocalSize(OperationProgress->GetTransferSize());
-
-    DWORD LocalFileAttrs = INVALID_FILE_ATTRIBUTES;
-    FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(NOT_FILE_ERROR, DestFullName), "",
     [&]()
-    {
-      LocalFileAttrs = FTerminal->GetLocalFileAttributes(ApiPath(DestFullName));
-      if ((LocalFileAttrs != INVALID_FILE_ATTRIBUTES) && FLAGSET(LocalFileAttrs, faDirectory))
       {
         ThrowExtException();
-      }
-    });
 
-    UnicodeString FilePath = base::UnixExtractFilePath(AFileName);
-    if (FilePath.IsEmpty())
+    ConfirmOverwrite(FileName, DestFileName, OperationProgress, &FileParams, CopyParam, Params);
+  }
+
+  UnicodeString ExpandedDestFullName = ExpandUNCFileName(DestFullName);
+  Action.Destination(ExpandedDestFullName);
+
+  FILE_OPERATION_LOOP_BEGIN
+    [&]()
+  {
+    HANDLE LocalHandle;
+    if (!FTerminal->CreateLocalFile(DestFullName, OperationProgress, &LocalHandle, FLAGSET(Params, cpNoConfirmation)))
     {
-      FilePath = L"/";
+      throw ESkipFile();
     }
 
-    UnicodeString ExpandedDestFullName(::ExpandUNCFileName(DestFullName));
-    Action.Destination(ExpandedDestFullName);
+    bool DeleteLocalFile = true;
 
-    FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(TRANSFER_ERROR, AFileName), "",
-    [&]()
+    int FD = -1;
+    try
     {
-      HANDLE LocalFileHandle = FTerminal->TerminalCreateLocalFile(DestFullName,
-          GENERIC_WRITE, 0, FLAGSET(AParams, cpNoConfirmation) ? CREATE_ALWAYS : CREATE_NEW, 0);
-      if (LocalFileHandle == INVALID_HANDLE_VALUE)
-      {
-        ThrowSkipFileNull();
-      }
-
-      bool DeleteLocalFile = true;
-
-      int FD = -1;
-      try__finally
-      {
-        SCOPE_EXIT
+      FD = _open_osfhandle((intptr_t)LocalHandle, O_BINARY);
         {
           if (FD >= 0)
           {
@@ -2378,114 +1829,57 @@ void TWebDAVFileSystem::Sink(UnicodeString AFileName,
         };
 
         FD = _open_osfhandle(reinterpret_cast<intptr_t>(LocalFileHandle), O_BINARY);
-        if (FD < 0)
-        {
-          ThrowSkipFileNull();
-        }
-
-        TAutoFlag DownloadingFlag(FDownloading);
-
-        ClearNeonError();
-        CheckStatus(ne_get(FNeonSession, PathToNeon(AFileName), FD));
-        DeleteLocalFile = false;
-
-        if (CopyParam->GetPreserveTime())
-        {
-          TDateTime Modification = AFile->GetModification();
-          FILETIME WrTime = DateTimeToFileTime(Modification, FTerminal->GetSessionData()->GetDSTMode());
-          FTerminal->LogEvent(FORMAT("Preserving timestamp [%s]",
-              StandardTimestamp(Modification)));
-          SetFileTime(LocalFileHandle, nullptr, nullptr, &WrTime);
-        }
-      }
-      __finally
+      if (FD < 0)
       {
-#if 0
-        if (FD >= 0)
-        {
-          // _close calls CloseHandle internally (even doc states, we should not call CloseHandle),
-          // but it crashes code guard
-          _close(FD);
-        }
-        else
-        {
-          CloseHandle(LocalFileHandle);
-        }
+        throw ESkipFile();
+      }
 
-        if (DeleteLocalFile)
-        {
-          FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(CORE_DELETE_LOCAL_FILE_ERROR, DestFullName), "",
+      TAutoFlag DownloadingFlag(FDownloading);
+
+      ClearNeonError();
+      CheckStatus(ne_get(FNeonSession, PathToNeon(FileName), FD));
+      DeleteLocalFile = false;
+
+      if (CopyParam->PreserveTime)
+      {
+        FTerminal->UpdateTargetTime(LocalHandle, File->Modification, FTerminal->SessionData->DSTMode);
+      }
+    }
+    __finally
+    {
+#if 0
+      if (FD >= 0)
+      {
+        // _close calls CloseHandle internally (even doc states, we should not call CloseHandle),
+        // but it crashes code guard
+        _close(FD);
+      }
+      else
+      {
+        CloseHandle(LocalHandle);
+      }
+
+      if (DeleteLocalFile)
+      {
+        FILE_OPERATION_LOOP_BEGIN
           [&]()
-          {
-            THROWOSIFFALSE(Sysutils::RemoveFile(ApiPath(DestFullName)));
-          });
+        {
+          THROWOSIFFALSE(Sysutils::DeleteFile(ApiPath(DestFullName)));
         }
-#endif // #if 0
+        FILE_OPERATION_LOOP_END(FMTLOAD(DELETE_LOCAL_FILE_ERROR, (DestFullName)));
+      }
+    }
+  }
+  FILE_OPERATION_LOOP_END(FMTLOAD(TRANSFER_ERROR, (FileName)));
       };
     });
 
-    if (LocalFileAttrs == INVALID_FILE_ATTRIBUTES)
-    {
-      LocalFileAttrs = faArchive;
-    }
-    DWORD NewAttrs = CopyParam->LocalFileAttrs(*AFile->GetRights());
-    if ((NewAttrs & LocalFileAttrs) != NewAttrs)
-    {
-      FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(CANT_SET_ATTRS, DestFullName), "",
+  FTerminal->UpdateTargetAttrs(DestFullName, File, CopyParam, Attrs);
       [&]()
-      {
-        THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(ApiPath(DestFullName), LocalFileAttrs | NewAttrs));
-      });
-    }
-
-    FTerminal->LogFileDone(OperationProgress, ExpandedDestFullName);
-  }
-
-  if (FLAGSET(AParams, cpDelete))
-  {
-    DebugAssert(FLAGCLEAR(AParams, cpNoRecurse));
-    ChildError = true;
-    // If file is directory, do not delete it recursively, because it should be
-    // empty already. If not, it should not be deleted (some files were
-    // skipped or some new files were copied to it, while we were downloading)
-    intptr_t Params = dfNoRecursive;
-    FTerminal->RemoteDeleteFile(AFileName, AFile, &Params);
-    ChildError = false;
-  }
 }
 
-void TWebDAVFileSystem::SinkFile(UnicodeString AFileName,
-  const TRemoteFile *AFile, void *Param)
-{
-  TSinkFileParams *Params = get_as<TSinkFileParams>(Param);
-  DebugAssert(Params->OperationProgress);
-  try
-  {
-    SinkRobust(AFileName, AFile, Params->TargetDir, Params->CopyParam,
-      Params->Params, Params->OperationProgress, Params->Flags);
-  }
-  catch (ESkipFile &E)
-  {
-    TFileOperationProgressType *OperationProgress = Params->OperationProgress;
-
-    Params->Skipped = true;
-
-    {
-      TSuspendFileOperationProgress Suspend(OperationProgress);
-      if (!FTerminal->HandleException(&E))
-      {
-        throw;
-      }
-    }
-
-    if (OperationProgress->GetCancel())
-    {
-      Abort();
-    }
-  }
-}
-
-bool TWebDAVFileSystem::VerifyCertificate(const TWebDAVCertificateData &Data, bool Aux)
+// Similar to TS3FileSystem::VerifyCertificate
+bool TWebDAVFileSystem::VerifyCertificate(TNeonCertificateData Data, bool Aux)
 {
   FSessionInfo.CertificateFingerprint = Data.Fingerprint;
 
@@ -2496,97 +1890,27 @@ bool TWebDAVFileSystem::VerifyCertificate(const TWebDAVCertificateData &Data, bo
   }
   else
   {
-    FTerminal->LogEvent(
-      FORMAT("Verifying certificate for \"%s\" with fingerprint %s and %2.2X failures",
-        Data.Subject, Data.Fingerprint, Data.Failures));
-
-    int Failures = Data.Failures;
+    FTerminal->LogEvent(CertificateVerificationMessage(Data));
 
     UnicodeString SiteKey = TSessionData::FormatSiteKey(FHostName, FPortNumber);
     Result =
-      FTerminal->VerifyCertificate(HttpsCertificateStorageKey, SiteKey, Data.Fingerprint, Data.Subject, Failures);
+      FTerminal->VerifyCertificate(HttpsCertificateStorageKey, SiteKey, Data.Fingerprint, Data.Subject, Data.Failures);
 
     if (!Result)
     {
-      UnicodeString WindowsCertificateError;
-      if (NeonWindowsValidateCertificate(Failures, Data.AsciiCert, WindowsCertificateError))
-      {
-        FTerminal->LogEvent(L"Certificate verified against Windows certificate store");
-        // There can be also other flags, not just the NE_SSL_UNTRUSTED.
-        Result = (Failures == 0);
-      }
-      else
-      {
-        FTerminal->LogEvent(
-          FORMAT("Certificate failed to verify against Windows certificate store: %s", DefaultStr(WindowsCertificateError, L"no details")));
-      }
+      UnicodeString Message;
+      Result = NeonWindowsValidateCertificateWithMessage(Data, Message);
+      FTerminal->LogEvent(Message);
     }
 
-    UnicodeString Summary;
-    if (Failures == 0)
-    {
-      Summary = LoadStr(CERT_OK);
-    }
-    else
-    {
-      Summary = NeonCertificateFailuresErrorStr(Failures, FHostName);
-    }
-
-    UnicodeString ValidityTimeFormat = L"ddddd tt";
-    FSessionInfo.Certificate =
-      FMTLOAD(CERT_TEXT,
-        UnicodeString(Data.Issuer + L"\n"),
-        UnicodeString(Data.Subject + L"\n"),
-        FormatDateTime(ValidityTimeFormat, Data.ValidFrom),
-        FormatDateTime(ValidityTimeFormat, Data.ValidUntil),
-        Data.Fingerprint,
-        Summary);
+    FSessionInfo.Certificate = CertificateSummary(Data, FHostName);
 
     if (!Result)
     {
-      TClipboardHandler ClipboardHandler;
-      ClipboardHandler.Text = Data.Fingerprint;
-
-      TQueryButtonAlias Aliases[1];
-      Aliases[0].Button = qaRetry;
-      Aliases[0].Alias = LoadStr(COPY_KEY_BUTTON);
-      Aliases[0].OnClick = nb::bind(&TClipboardHandler::Copy, &ClipboardHandler);
-
-      TQueryParams Params;
-      Params.HelpKeyword = HELP_VERIFY_CERTIFICATE;
-      Params.NoBatchAnswers = qaYes | qaRetry;
-      Params.Aliases = Aliases;
-      Params.AliasesCount = _countof(Aliases);
-      uintptr_t Answer = FTerminal->QueryUser(
-          FMTLOAD(VERIFY_CERT_PROMPT3, FSessionInfo.Certificate),
-          nullptr, qaYes | qaNo | qaCancel | qaRetry, &Params, qtWarning);
-      switch (Answer)
-      {
-      case qaYes:
-        FTerminal->CacheCertificate(HttpsCertificateStorageKey, SiteKey, Data.Fingerprint, Failures);
-        Result = true;
-        break;
-
-      case qaNo:
-        Result = true;
-        break;
-
-      default:
-        DebugFail();
+      Result = FTerminal->ConfirmCertificate(FSessionInfo, Data.Failures, HttpsCertificateStorageKey, !Aux);
         Result = false;
         break;
 
-      case qaCancel:
-        // FTerminal->GetConfiguration()->GetUsage()->Inc(L"HostNotVerified");
-        Result = false;
-        break;
-      }
-
-      if (Result && !Aux)
-      {
-        FTerminal->GetConfiguration()->RememberLastFingerprint(
-          FTerminal->GetSessionData()->GetSiteKey(), TlsFingerprintType, FSessionInfo.CertificateFingerprint);
-      }
     }
 
     if (Result && !Aux)
@@ -2602,18 +1926,9 @@ void TWebDAVFileSystem::CollectTLSSessionInfo()
 {
   // See also TFTPFileSystem::Open().
   // Have to cache the value as the connection (the neon HTTP session, not "our" session)
-  // can be closed as the time we need it in CollectUsage().
-  FTlsVersionStr = StrFromNeon(ne_ssl_get_version(FNeonSession));
-  AddToList(FSessionInfo.SecurityProtocolName, FTlsVersionStr, L", ");
-
-  char *cipher = ne_ssl_get_cipher(FNeonSession);
-  UnicodeString Cipher = StrFromNeon(cipher);
-  ne_free(cipher);
-  FSessionInfo.CSCipher = Cipher;
-  FSessionInfo.SCCipher = Cipher;
-
-  // see CAsyncSslSocketLayer::PrintSessionInfo()
-  FTerminal->LogEvent(FORMAT("Using %s, cipher %s", FTlsVersionStr, Cipher));
+  // can be closed at the time we need it in CollectUsage().
+  UnicodeString Message = NeonTlsSessionInfo(FNeonSession, FSessionInfo, FTlsVersionStr);
+  FTerminal->LogEvent(Message);
 }
 
 // A neon-session callback to validate the SSL certificate when the CA
@@ -2621,33 +1936,9 @@ void TWebDAVFileSystem::CollectTLSSessionInfo()
 // certificate problems.
 int TWebDAVFileSystem::DoNeonServerSSLCallback(void *UserData, int Failures, const ne_ssl_certificate *Certificate, bool Aux)
 {
-  TWebDAVCertificateData Data;
-
-  char Fingerprint[NE_SSL_DIGESTLEN] = {0};
-  if (ne_ssl_cert_digest(Certificate, Fingerprint) != 0)
-  {
-    strcpy(Fingerprint, "<unknown>");
-  }
-  Data.Fingerprint = StrFromNeon(Fingerprint);
-  Data.AsciiCert = NeonExportCertificate(Certificate);
-
-  char *Subject = ne_ssl_readable_dname(ne_ssl_cert_subject(Certificate));
-  Data.Subject = StrFromNeon(Subject);
-  ne_free(Subject);
-  char *Issuer = ne_ssl_readable_dname(ne_ssl_cert_issuer(Certificate));
-  Data.Issuer = StrFromNeon(Issuer);
-  ne_free(Issuer);
-
-  Data.Failures = Failures;
-
-  time_t ValidFrom;
-  time_t ValidUntil;
-  ne_ssl_cert_validity_time(Certificate, &ValidFrom, &ValidUntil);
-  Data.ValidFrom = UnixToDateTime(ValidFrom, dstmWin);
-  Data.ValidUntil = UnixToDateTime(ValidUntil, dstmWin);
-
+  TNeonCertificateData Data;
+  RetrieveNeonCertificateData(Failures, Certificate, Data);
   TWebDAVFileSystem *FileSystem = static_cast<TWebDAVFileSystem *>(UserData);
-
   return FileSystem->VerifyCertificate(Data, Aux) ? NE_OK : NE_ERROR;
 }
 
@@ -2815,31 +2106,10 @@ void TWebDAVFileSystem::NeonNotifier(void *UserData, ne_session_status Status, c
   }
 }
 
-void TWebDAVFileSystem::NeonDebug(UnicodeString Message)
-{
-  FTerminal->LogEvent(Message);
-}
-
-void TWebDAVFileSystem::InitSslSession(ssl_st *Ssl, ne_session *Session)
-{
-  TWebDAVFileSystem *FileSystem =
-    static_cast<TWebDAVFileSystem *>(ne_get_session_private(Session, SESSION_FS_KEY));
-  FileSystem->InitSslSessionImpl(Ssl);
-}
-
-void TWebDAVFileSystem::InitSslSessionImpl(ssl_st *Ssl) const
+void TWebDAVFileSystem::InitSslSession(ssl_st * Ssl, ne_session * /*Session*/)
 {
   // See also CAsyncSslSocketLayer::InitSSLConnection
-  TSessionData *Data = FTerminal->GetSessionData();
-#define MASK_TLS_VERSION(VERSION, FLAG) ((Data->GetMinTlsVersion() > VERSION) || (Data->GetMaxTlsVersion() < VERSION) ? FLAG : 0)
-  int Options =
-    MASK_TLS_VERSION(ssl2, SSL_OP_NO_SSLv2) |
-    MASK_TLS_VERSION(ssl3, SSL_OP_NO_SSLv3) |
-    MASK_TLS_VERSION(tls10, SSL_OP_NO_TLSv1) |
-    MASK_TLS_VERSION(tls11, SSL_OP_NO_TLSv1_1) |
-    MASK_TLS_VERSION(tls12, SSL_OP_NO_TLSv1_2);
-  // SSL_ctrl() with SSL_CTRL_OPTIONS adds flags (not sets)
-  SSL_ctrl(Ssl, SSL_CTRL_OPTIONS, Options, nullptr);
+  SetupSsl(Ssl, FTerminal->SessionData->MinTlsVersion, FTerminal->SessionData->MaxTlsVersion);
 }
 
 void TWebDAVFileSystem::GetSupportedChecksumAlgs(TStrings * /*Algs*/)
@@ -3026,7 +2296,8 @@ void TWebDAVFileSystem::UpdateFromMain(TCustomFileSystem *AMainFileSystem)
   }
 }
 
-TFtps TWebDAVFileSystem::GetFtps() const
+void __fastcall TWebDAVFileSystem::ClearCaches()
 {
-  return FTerminal->GetSessionData()->GetFtps();
+  // noop
 }
+//---------------------------------------------------------------------------

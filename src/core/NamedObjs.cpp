@@ -38,7 +38,7 @@ intptr_t TNamedObject::Compare(const TNamedObject *Other) const
   }
   else
   {
-    Result = CompareLogicalText(GetName(), Other->GetName());
+    Result = CompareLogicalText(GetName(), Other->GetName(), true);
   }
   return Result;
 }

@@ -29,7 +29,7 @@ protected:
   bool FFinished;
 
   virtual void Execute() = 0;
-  virtual void Finished();
+  virtual bool __fastcall Finished();
 
 public:
   static int ThreadProc(void *Thread);
@@ -497,11 +497,13 @@ public:
   void TerminalReopen();
 
   void Cancel();
-  void Idle();
+  bool __fastcall Release();
+  void __fastcall Idle();
 
 #if 0
   __property TNotifyEvent OnIdle = { read = FOnIdle, write = FOnIdle };
   __property bool Cancelling = { read = FCancel };
+  __property bool AllowAbandon = { read = FAllowAbandon, write = FAllowAbandon };
 #endif // #if 0
 
   TNotifyEvent GetOnIdle() const { return FOnIdle; }
@@ -510,6 +512,7 @@ public:
 
 protected:
   virtual void ProcessEvent();
+  virtual bool __fastcall Finished();
 
 private:
   TTerminal *FTerminal;
@@ -534,8 +537,11 @@ private:
   Exception *FException;
   Exception *FIdleException;
   bool FCancel;
+  TDateTime FCancelAfter;
+  bool FAbandoned;
   bool FCancelled;
   bool FPendingIdle;
+  bool FAllowAbandon;
 
   DWORD FMainThread;
   TCriticalSection FSection;
@@ -563,7 +569,7 @@ private:
     Exception *E, void *Arg);
   void TerminalDisplayBanner(TTerminal *Terminal,
     UnicodeString SessionName, UnicodeString Banner,
-    bool &NeverShowAgain, intptr_t Options);
+    bool &NeverShowAgain, intptr_t Options, unsigned int & Params);
   void TerminalChangeDirectory(TObject *Sender);
   void TerminalReadDirectory(TObject *Sender, Boolean ReloadOnly);
   void TerminalStartReadDirectory(TObject *Sender);

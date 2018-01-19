@@ -36,3 +36,7 @@ NB_CORE_EXPORT UnicodeString GetPuTTYVersion();
 NB_CORE_EXPORT UnicodeString Sha256(const char *Data, size_t Size);
 
 NB_CORE_EXPORT void DllHijackingProtection();
+UnicodeString __fastcall ParseOpenSshPubLine(const UnicodeString & Line, const struct ssh_signkey *& Algorithm);
+//---------------------------------------------------------------------------
+UnicodeString __fastcall GetKeyTypeHuman(const UnicodeString & KeyType);
+//---------------------------------------------------------------------------

@@ -1,7 +1,6 @@
 
 #pragma once
 
-#ifndef NO_FILEZILLA
 
 #include <time.h>
 #include <rdestl/map.h>
@@ -53,6 +52,8 @@ public:
   virtual void CopyToLocal(const TStrings *AFilesToCopy,
     UnicodeString TargetDir, const TCopyParamType *CopyParam,
     intptr_t Params, TFileOperationProgressType *OperationProgress,
+  virtual void __fastcall TransferOnDirectory(
+    const UnicodeString & Directory, const TCopyParamType * CopyParam, int Params);
     TOnceDoneOperation &OnceDoneOperation) override;
   virtual void CopyToRemote(const TStrings *AFilesToCopy,
     UnicodeString ATargetDir, const TCopyParamType *CopyParam,
@@ -67,6 +68,16 @@ public:
   virtual void DoStartup() override;
   virtual void HomeDirectory() override;
   virtual bool IsCapable(intptr_t Capability) const override;
+  virtual void __fastcall Source(
+    TLocalFileHandle & Handle, const UnicodeString & TargetDir, UnicodeString & DestFileName,
+    const TCopyParamType * CopyParam, int Params,
+    TFileOperationProgressType * OperationProgress, unsigned int Flags,
+    TUploadSessionAction & Action, bool & ChildError);
+  virtual void __fastcall Sink(
+    const UnicodeString & FileName, const TRemoteFile * File,
+    const UnicodeString & TargetDir, UnicodeString & DestFileName, int Attrs,
+    const TCopyParamType * CopyParam, int Params, TFileOperationProgressType * OperationProgress,
+    unsigned int Flags, TDownloadSessionAction & Action);
   virtual void LookupUsersGroups() override;
   virtual void ReadCurrentDirectory() override;
   virtual void ReadDirectory(TRemoteFileList *FileList) override;
@@ -84,12 +95,15 @@ public:
   virtual const TSessionInfo &GetSessionInfo() const override;
   virtual const TFileSystemInfo &GetFileSystemInfo(bool Retrieve) override;
   virtual bool TemporaryTransferFile(UnicodeString AFileName) override;
+  virtual void __fastcall RenameFile(const UnicodeString FileName, const TRemoteFile * File,
   virtual bool GetStoredCredentialsTried() const override;
   virtual UnicodeString RemoteGetUserName() const override;
+  virtual void __fastcall CopyFile(const UnicodeString FileName, const TRemoteFile * File,
   virtual void GetSupportedChecksumAlgs(TStrings *Algs) override;
   virtual void LockFile(UnicodeString AFileName, const TRemoteFile *AFile) override;
   virtual void UnlockFile(UnicodeString AFileName, const TRemoteFile *AFile) override;
   virtual void UpdateFromMain(TCustomFileSystem *MainFileSystem) override;
+  virtual void __fastcall ClearCaches();
 
 protected:
 #if 0
@@ -319,6 +333,4 @@ private:
 };
 
 UnicodeString GetOpenSSLVersionText();
-
-#endif // NO_FILEZILLA
 

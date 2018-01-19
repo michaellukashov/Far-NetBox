@@ -1,24 +1,26 @@
-
+//---------------------------------------------------------------------------
 #include <vcl.h>
 #pragma hdrstop
 
 #include <FileInfo.h>
 
-#include <Common.h>
-#include <Exceptions.h>
+#include "Common.h"
+#include "Exceptions.h"
 #include "Configuration.h"
 #include "PuttyIntf.h"
 #include "TextsCore.h"
 #include "Interface.h"
 #include "CoreMain.h"
-#include "WinSCPSecurity.h"
-#include <System.ShlObj.hpp>
+#include "Security.h"
+#include <shlobj.h>
 #include <System.IOUtils.hpp>
 #include <System.StrUtils.hpp>
-
-const wchar_t *AutoSwitchNames = L"On;Off;Auto";
-const wchar_t *NotAutoSwitchNames = L"Off;On;Auto";
-
+//---------------------------------------------------------------------------
+#pragma package(smart_init)
+//---------------------------------------------------------------------------
+const wchar_t * AutoSwitchNames = L"On;Off;Auto";
+const wchar_t * NotAutoSwitchNames = L"Off;On;Auto";
+//---------------------------------------------------------------------------
 // See https://www.iana.org/assignments/hash-function-text-names/hash-function-text-names.xhtml
 const UnicodeString Sha1ChecksumAlg(L"sha-1");
 const UnicodeString Sha224ChecksumAlg(L"sha-224");
@@ -28,83 +30,41 @@ const UnicodeString Sha512ChecksumAlg(L"sha-512");
 const UnicodeString Md5ChecksumAlg(L"md5");
 // Not defined by IANA
 const UnicodeString Crc32ChecksumAlg(L"crc32");
-
+//---------------------------------------------------------------------------
 const UnicodeString SshFingerprintType(L"ssh");
 const UnicodeString TlsFingerprintType(L"tls");
-
-TConfiguration::TConfiguration(TObjectClassId Kind) :
-  TObject(Kind),
-  FDontSave(false),
-  FChanged(false),
-  FUpdating(0),
-  FApplicationInfo(nullptr),
-  FLogging(false),
-  FPermanentLogging(false),
-  FLogWindowLines(0),
-  FLogFileAppend(false),
-  FLogSensitive(false),
-  FPermanentLogSensitive(false),
-  FLogMaxSize(0),
-  FPermanentLogMaxSize(0),
-  FLogMaxCount(0),
-  FPermanentLogMaxCount(0),
-  FLogProtocol(0),
-  FPermanentLogProtocol(0),
-  FActualLogProtocol(0),
-  FLogActions(false),
-  FPermanentLogActions(false),
-  FLogActionsRequired(false),
-  FConfirmOverwriting(false),
-  FConfirmResume(false),
-  FAutoReadDirectoryAfterOp(false),
-  FSessionReopenAuto(0),
-  FSessionReopenBackground(0),
-  FSessionReopenTimeout(0),
-  FSessionReopenAutoStall(0),
-  FProgramIniPathWritable(0),
-  FTunnelLocalPortNumberLow(0),
-  FTunnelLocalPortNumberHigh(0),
-  FCacheDirectoryChangesMaxSize(0),
-  FShowFtpWelcomeMessage(false),
-  FTryFtpWhenSshFails(false),
-  FParallelDurationThreshold(0),
-  FScripting(false),
-  FSessionReopenAutoMaximumNumberOfRetries(0),
-  FDisablePasswordStoring(false),
-  FForceBanners(false),
-  FDisableAcceptingHostKeys(false),
-  FDefaultCollectUsage(false)
+//---------------------------------------------------------------------------
+const UnicodeString HttpsCertificateStorageKey(L"HttpsCertificates");
+//---------------------------------------------------------------------------
+__fastcall TConfiguration::TConfiguration()
 {
+  FCriticalSection = new TCriticalSection();
   FUpdating = 0;
   FStorage = stDetect;
   FDontSave = false;
-  FApplicationInfo = nullptr;
-#if 0
+  FApplicationInfo = NULL;
   FUsage = new TUsage(this);
-#endif // #if 0
   FDefaultCollectUsage = false;
   FScripting = false;
 
   UnicodeString RandomSeedPath;
-  if (!base::GetEnvVariable("APPDATA").IsEmpty())
+  if (!GetEnvironmentVariable(L"APPDATA").IsEmpty())
   {
-    RandomSeedPath = "%APPDATA%";
+    RandomSeedPath = L"%APPDATA%";
   }
   else
   {
-#if defined(_MSC_VER) && !defined(__clang__)
-    RandomSeedPath = ::GetShellFolderPath(CSIDL_LOCAL_APPDATA);
+    RandomSeedPath = GetShellFolderPath(CSIDL_LOCAL_APPDATA);
     if (RandomSeedPath.IsEmpty())
     {
-      RandomSeedPath = ::GetShellFolderPath(CSIDL_APPDATA);
+      RandomSeedPath = GetShellFolderPath(CSIDL_APPDATA);
     }
-#endif // if defined(_MSC_VER) && !defined(__clang__)
   }
 
-  FDefaultRandomSeedFile = ::IncludeTrailingBackslash(RandomSeedPath) + "winscp.rnd";
+  FDefaultRandomSeedFile = IncludeTrailingBackslash(RandomSeedPath) + L"winscp.rnd";
 }
-
-void TConfiguration::Default()
+//---------------------------------------------------------------------------
+void __fastcall TConfiguration::Default()
 {
   TGuard Guard(FCriticalSection);
 
@@ -112,24 +72,23 @@ void TConfiguration::Default()
   FForceBanners = false;
   FDisableAcceptingHostKeys = false;
 
-  std::unique_ptr<TRegistryStorage> AdminStorage(new TRegistryStorage(GetRegistryStorageKey(), HKEY_LOCAL_MACHINE));
-  try__finally
+  TRegistryStorage * AdminStorage;
+  AdminStorage = new TRegistryStorage(RegistryStorageKey, HKEY_LOCAL_MACHINE);
+  try
   {
     if (AdminStorage->OpenRootKey(false))
     {
-      LoadAdmin(AdminStorage.get());
+      LoadAdmin(AdminStorage);
       AdminStorage->CloseSubKey();
     }
   }
   __finally
   {
-#if 0
     delete AdminStorage;
-#endif // #if 0
-  };
+  }
 
-  SetRandomSeedFile(FDefaultRandomSeedFile);
-  SetPuttyRegistryStorageKey(OriginalPuttyRegistryStorageKey);
+  RandomSeedFile = FDefaultRandomSeedFile;
+  PuttyRegistryStorageKey = OriginalPuttyRegistryStorageKey;
   FConfirmOverwriting = true;
   FConfirmResume = true;
   FAutoReadDirectoryAfterOp = true;
@@ -141,15 +100,14 @@ void TConfiguration::Default()
   FTunnelLocalPortNumberHigh = 50099;
   FCacheDirectoryChangesMaxSize = 100;
   FShowFtpWelcomeMessage = false;
-  FExternalIpAddress.Clear();
+  FExternalIpAddress = L"";
   FTryFtpWhenSshFails = true;
   FParallelDurationThreshold = 10;
-  SetCollectUsage(FDefaultCollectUsage);
-  FSessionReopenAutoMaximumNumberOfRetries = CONST_DEFAULT_NUMBER_OF_RETRIES;
+  CollectUsage = FDefaultCollectUsage;
 
   FLogging = false;
   FPermanentLogging = false;
-  FLogFileName = GetDefaultLogFileName();
+  FLogFileName = DefaultLogFileName;
   FPermanentLogFileName = FLogFileName;
   FLogFileAppend = true;
   FLogSensitive = false;
@@ -164,77 +122,62 @@ void TConfiguration::Default()
   FLogActions = false;
   FPermanentLogActions = false;
   FLogActionsRequired = false;
-  FActionsLogFileName = "%TEMP%\\&S.xml";
+  FActionsLogFileName = L"%TEMP%\\!S.xml";
   FPermanentActionsLogFileName = FActionsLogFileName;
-  FProgramIniPathWritable = -1;
+  FProgramIniPathWrittable = -1;
   FCustomIniFileStorageName = LoadCustomIniFileStorageName();
 
   Changed();
 }
-
-TConfiguration::~TConfiguration()
+//---------------------------------------------------------------------------
+__fastcall TConfiguration::~TConfiguration()
 {
   DebugAssert(!FUpdating);
-  if (FApplicationInfo)
-  {
-    FreeFileInfo(FApplicationInfo);
-  }
-#if 0
+  if (FApplicationInfo) FreeFileInfo(FApplicationInfo);
   delete FCriticalSection;
   delete FUsage;
-#endif // #if 0
 }
-
-void TConfiguration::UpdateStaticUsage()
+//---------------------------------------------------------------------------
+void __fastcall TConfiguration::UpdateStaticUsage()
 {
-#if 0
   Usage->Set(L"ConfigurationIniFile", (Storage == stIniFile));
   Usage->Set(L"ConfigurationIniFileCustom", !CustomIniFileStorageName.IsEmpty());
   Usage->Set("Unofficial", IsUnofficial);
-#endif // #if 0
 
   // this is called from here, because we are guarded from calling into
   // master password handler here, see TWinConfiguration::UpdateStaticUsage
   StoredSessions->UpdateStaticUsage();
 }
-
-THierarchicalStorage *TConfiguration::CreateConfigStorage()
+//---------------------------------------------------------------------------
+THierarchicalStorage * TConfiguration::CreateConfigStorage()
 {
   bool SessionList = false;
-  return CreateStorage(SessionList);
+  return CreateScpStorage(SessionList);
 }
-
-THierarchicalStorage *TConfiguration::CreateStorage(bool &SessionList)
+//---------------------------------------------------------------------------
+THierarchicalStorage * TConfiguration::CreateScpStorage(bool & SessionList)
 {
   TGuard Guard(FCriticalSection);
-  THierarchicalStorage *Result = nullptr;
-  if (GetStorage() == stRegistry)
+  THierarchicalStorage * Result;
+  if (Storage == stRegistry)
   {
-    Result = new TRegistryStorage(GetRegistryStorageKey());
+    Result = new TRegistryStorage(RegistryStorageKey);
   }
-  else if (GetStorage() == stNul)
+  else if (Storage == stNul)
   {
-#if 0
     Result = TIniFileStorage::CreateFromPath(INI_NUL);
-#endif // #if 0
-    ThrowNotImplemented(3005);
-    DebugAssert(false);
   }
   else
   {
-#if 0
     UnicodeString StorageName = IniFileStorageName;
     Result = TIniFileStorage::CreateFromPath(StorageName);
-#endif // #if 0
-    ThrowNotImplemented(3005);
-    DebugAssert(false);
   }
 
-  if ((FOptionsStorage.get() != nullptr) && (FOptionsStorage->GetCount() > 0))
+  if ((FOptionsStorage.get() != NULL) && (FOptionsStorage->Count > 0))
   {
     if (!SessionList)
     {
-//      Result = new TOptionsStorage(FOptionsStorage.get(), ConfigurationSubKey, Result);
+      Result = new TOptionsStorage(FOptionsStorage.get(), ConfigurationSubKey, Result);
     }
     else
     {
@@ -251,22 +194,17 @@ THierarchicalStorage *TConfiguration::CreateStorage(bool &SessionList)
 
   return Result;
 }
-
-UnicodeString TConfiguration::PropertyToKey(UnicodeString Property)
+//---------------------------------------------------------------------------
+UnicodeString __fastcall TConfiguration::PropertyToKey(const UnicodeString & Property)
 {
   // no longer useful
-  intptr_t P = Property.LastDelimiter(L".>");
+  int P = Property.LastDelimiter(L".>");
   return Property.SubString(P + 1, Property.Length() - P);
 }
-
-#define LASTELEM(ELEM) \
-  ELEM.SubString(ELEM.LastDelimiter(L".>") + 1, ELEM.Length() - ELEM.LastDelimiter(L".>"))
-
+//---------------------------------------------------------------------------
 #define BLOCK(KEY, CANCREATE, BLOCK) \
-  if (Storage->OpenSubKey(KEY, CANCREATE, true)) \
-    { SCOPE_EXIT { Storage->CloseSubKey(); }; { BLOCK } }
-#define KEY(TYPE, VAR) KEYEX(TYPE, VAR, VAR)
-#undef REGCONFIG
+  if (Storage->OpenSubKey(KEY, CANCREATE, true)) try { BLOCK } __finally { Storage->CloseSubKey(); }
+#define KEY(TYPE, VAR) KEYEX(TYPE, VAR, PropertyToKey(TEXT(#VAR)))
 #define REGCONFIG(CANCREATE) \
   BLOCK(L"Interface", CANCREATE, \
     KEY(String,   RandomSeedFile); \
@@ -286,71 +224,65 @@ UnicodeString TConfiguration::PropertyToKey(UnicodeString Property)
     KEY(Bool,     TryFtpWhenSshFails); \
     KEY(Integer,  ParallelDurationThreshold); \
     KEY(Bool,     CollectUsage); \
-    KEY(Integer,  SessionReopenAutoMaximumNumberOfRetries); \
   ); \
   BLOCK(L"Logging", CANCREATE, \
-    KEYEX(Bool,  PermanentLogging, Logging); \
-    KEYEX(String,PermanentLogFileName, LogFileName); \
+    KEYEX(Bool,  PermanentLogging, L"Logging"); \
+    KEYEX(String,PermanentLogFileName, L"LogFileName"); \
     KEY(Bool,    LogFileAppend); \
-    KEYEX(Bool,  PermanentLogSensitive, LogSensitive); \
-    KEYEX(Int64, PermanentLogMaxSize, LogMaxSize); \
-    KEYEX(Integer, PermanentLogMaxCount, LogMaxCount); \
-    KEYEX(Integer,PermanentLogProtocol, LogProtocol); \
-    KEYEX(Bool,  PermanentLogActions, LogActions); \
-    KEYEX(String,PermanentActionsLogFileName, ActionsLogFileName); \
-  )
-
-void TConfiguration::SaveData(THierarchicalStorage *Storage, bool /*All*/)
+    KEYEX(Bool,  PermanentLogSensitive, L"LogSensitive"); \
+    KEYEX(Int64, PermanentLogMaxSize, L"LogMaxSize"); \
+    KEYEX(Integer, PermanentLogMaxCount, L"LogMaxCount"); \
+    KEYEX(Integer,PermanentLogProtocol, L"LogProtocol"); \
+    KEYEX(Bool,  PermanentLogActions, L"LogActions"); \
+    KEYEX(String,PermanentActionsLogFileName, L"ActionsLogFileName"); \
+  );
+//---------------------------------------------------------------------------
+void __fastcall TConfiguration::SaveData(THierarchicalStorage * Storage, bool /*All*/)
 {
-#define KEYEX(TYPE, NAME, VAR) Storage->Write ## TYPE(LASTELEM(UnicodeString(#NAME)), Get ## VAR())
+  #define KEYEX(TYPE, VAR, NAME) Storage->Write ## TYPE(NAME, VAR)
   REGCONFIG(true);
-#undef KEYEX
+  #undef KEYEX
 
-  if (Storage->OpenSubKey("Usage", true))
+  if (Storage->OpenSubKey(L"Usage", true))
   {
-    // FUsage->Save(Storage);
+    FUsage->Save(Storage);
     Storage->CloseSubKey();
   }
 }
-
-void TConfiguration::Save()
+//---------------------------------------------------------------------------
+void __fastcall TConfiguration::Save()
 {
   // only modified, implicit
   DoSave(false, false);
 }
-
-void TConfiguration::SaveExplicit()
+//---------------------------------------------------------------------------
+void __fastcall TConfiguration::SaveExplicit()
 {
   // only modified, explicit
   DoSave(false, true);
 }
-
-void TConfiguration::DoSave(bool All, bool Explicit)
+//---------------------------------------------------------------------------
+void __fastcall TConfiguration::DoSave(bool All, bool Explicit)
 {
-  if (FDontSave)
-  {
-    return;
-  }
+  if (FDontSave) return;
 
-  std::unique_ptr<THierarchicalStorage> Storage(CreateConfigStorage());
-  try__finally
+  THierarchicalStorage * AStorage = CreateConfigStorage();
+  try
   {
-    Storage->SetAccessMode(smReadWrite);
-    Storage->SetExplicit(Explicit);
-    if (Storage->OpenSubKey(GetConfigurationSubKey(), true))
+    AStorage->AccessMode = smReadWrite;
+    AStorage->Explicit = Explicit;
+    if (AStorage->OpenSubKey(ConfigurationSubKey, true))
     {
       // if saving to TOptionsStorage, make sure we save everything so that
       // all configuration is properly transferred to the master storage
-      bool ConfigAll = All || Storage->GetTemporary();
-      SaveData(Storage.get(), ConfigAll);
+      bool ConfigAll = All || AStorage->Temporary;
+      SaveData(AStorage, ConfigAll);
     }
   }
   __finally
   {
-#if 0
     delete AStorage;
-#endif // #if 0
-  };
+  }
 
   Saved();
 
@@ -360,17 +292,17 @@ void TConfiguration::DoSave(bool All, bool Explicit)
   }
 
   // clean up as last, so that if it fails (read only INI), the saving can proceed
-  if (GetStorage() == stRegistry)
+  if (Storage == stRegistry)
   {
     CleanupIniFile();
   }
 
   SaveCustomIniFileStorageName();
-}
 
-void TConfiguration::SaveCustomIniFileStorageName()
+}
+//---------------------------------------------------------------------------
+void __fastcall TConfiguration::SaveCustomIniFileStorageName()
 {
-#if 0
   // Particularly, not to create an empty "Override" key, unless the custom INI file is ever set
   if (CustomIniFileStorageName != LoadCustomIniFileStorageName())
   {
@@ -383,21 +315,18 @@ void TConfiguration::SaveCustomIniFileStorageName()
       RegistryStorage->CloseSubKey();
     }
   }
-#endif // #if 0
 }
-
-void TConfiguration::Export(UnicodeString /*AFileName*/)
+//---------------------------------------------------------------------------
+void __fastcall TConfiguration::Export(const UnicodeString & FileName)
 {
-  ThrowNotImplemented(3004);
-#if 0
   // not to "append" the export to an existing file
   if (FileExists(FileName))
   {
     DeleteFileChecked(FileName);
   }
 
-  THierarchicalStorage *Storage = nullptr;
-  THierarchicalStorage *ExportStorage = nullptr;
+  THierarchicalStorage * Storage = NULL;
+  THierarchicalStorage * ExportStorage = NULL;
   try
   {
     ExportStorage = TIniFileStorage::CreateFromPath(FileName);
@@ -421,15 +350,12 @@ void TConfiguration::Export(UnicodeString /*AFileName*/)
   }
 
   StoredSessions->Export(FileName);
-#endif // #if 0
 }
-
-void TConfiguration::Import(UnicodeString /*AFileName*/)
+//---------------------------------------------------------------------------
+void __fastcall TConfiguration::Import(const UnicodeString & FileName)
 {
-  ThrowNotImplemented(3005);
-#if 0
-  THierarchicalStorage *Storage = NULL;
-  THierarchicalStorage *ImportStorage = NULL;
+  THierarchicalStorage * Storage = NULL;
+  THierarchicalStorage * ImportStorage = NULL;
   try
   {
     ImportStorage = TIniFileStorage::CreateFromPath(FileName);
@@ -459,53 +385,54 @@ void TConfiguration::Import(UnicodeString /*AFileName*/)
 
   // save all and explicit
   DoSave(true, true);
-#endif // #if 0
 }
-
-void TConfiguration::LoadData(THierarchicalStorage *Storage)
+//---------------------------------------------------------------------------
+void __fastcall TConfiguration::LoadData(THierarchicalStorage * Storage)
 {
-#define KEYEX(TYPE, NAME, VAR) Set ## VAR(Storage->Read ## TYPE(LASTELEM(UnicodeString(#NAME)), Get ## VAR()))
+  #define KEYEX(TYPE, VAR, NAME) VAR = Storage->Read ## TYPE(NAME, VAR)
+  #pragma warn -eas
   REGCONFIG(false);
-#undef KEYEX
+  #pragma warn +eas
+  #undef KEYEX
 
-  if (Storage->OpenSubKey("Usage", false))
+  if (Storage->OpenSubKey(L"Usage", false))
   {
-    // FUsage->Load(Storage);
+    FUsage->Load(Storage);
     Storage->CloseSubKey();
   }
 
   if (FPermanentLogActions && FPermanentActionsLogFileName.IsEmpty() &&
-    FPermanentLogging && !FPermanentLogFileName.IsEmpty())
+      FPermanentLogging && !FPermanentLogFileName.IsEmpty())
   {
-    FPermanentActionsLogFileName = FPermanentLogFileName;
-    FPermanentLogging = false;
-    FPermanentLogFileName.Clear();
+     FPermanentActionsLogFileName = FPermanentLogFileName;
+     FPermanentLogging = false;
+     FPermanentLogFileName = L"";
   }
 }
-
-void TConfiguration::LoadAdmin(THierarchicalStorage *Storage)
+//---------------------------------------------------------------------------
+void __fastcall TConfiguration::LoadAdmin(THierarchicalStorage * Storage)
 {
-  FDisablePasswordStoring = Storage->ReadBool("DisablePasswordStoring", FDisablePasswordStoring);
-  FForceBanners = Storage->ReadBool("ForceBanners", FForceBanners);
-  FDisableAcceptingHostKeys = Storage->ReadBool("DisableAcceptingHostKeys", FDisableAcceptingHostKeys);
-  FDefaultCollectUsage = Storage->ReadBool("DefaultCollectUsage", FDefaultCollectUsage);
+  FDisablePasswordStoring = Storage->ReadBool(L"DisablePasswordStoring", FDisablePasswordStoring);
+  FForceBanners = Storage->ReadBool(L"ForceBanners", FForceBanners);
+  FDisableAcceptingHostKeys = Storage->ReadBool(L"DisableAcceptingHostKeys", FDisableAcceptingHostKeys);
+  FDefaultCollectUsage = Storage->ReadBool(L"DefaultCollectUsage", FDefaultCollectUsage);
 }
-
-void TConfiguration::LoadFrom(THierarchicalStorage *Storage)
+//---------------------------------------------------------------------------
+void __fastcall TConfiguration::LoadFrom(THierarchicalStorage * Storage)
 {
-  if (Storage->OpenSubKey(GetConfigurationSubKey(), false))
+  if (Storage->OpenSubKey(ConfigurationSubKey, false))
   {
     LoadData(Storage);
     Storage->CloseSubKey();
   }
 }
-
-UnicodeString TConfiguration::GetRegistryStorageOverrideKey() const
+//---------------------------------------------------------------------------
+UnicodeString __fastcall TConfiguration::GetRegistryStorageOverrideKey()
 {
   return GetRegistryStorageKey() + L" Override";
 }
-
-UnicodeString TConfiguration::LoadCustomIniFileStorageName()
+//---------------------------------------------------------------------------
+UnicodeString __fastcall TConfiguration::LoadCustomIniFileStorageName()
 {
   UnicodeString Result;
   std::unique_ptr<TRegistryStorage> RegistryStorage(new TRegistryStorage(GetRegistryStorageOverrideKey()));
@@ -514,52 +441,46 @@ UnicodeString TConfiguration::LoadCustomIniFileStorageName()
     Result = RegistryStorage->ReadString(L"IniFile", L"");
     RegistryStorage->CloseSubKey();
   }
-  RegistryStorage.reset(nullptr);
+  RegistryStorage.reset(NULL);
   return Result;
 }
-
-void TConfiguration::Load(THierarchicalStorage *Storage)
+//---------------------------------------------------------------------------
+void __fastcall TConfiguration::Load(THierarchicalStorage * Storage)
 {
   TGuard Guard(FCriticalSection);
-  TStorageAccessMode StorageAccessMode = Storage->GetAccessMode();
-  try__finally
+  TStorageAccessMode StorageAccessMode = Storage->AccessMode;
+  try
   {
-    SCOPE_EXIT
-    {
-      Storage->SetAccessMode(StorageAccessMode);
-    };
-    Storage->SetAccessMode(smRead);
+    Storage->AccessMode = smRead;
     LoadFrom(Storage);
   }
   __finally
   {
-#if 0
     Storage->AccessMode = StorageAccessMode;
-#endif // #if 0
-  };
+  }
 }
-
-void TConfiguration::CopyData(THierarchicalStorage *Source,
-  THierarchicalStorage *Target)
+//---------------------------------------------------------------------------
+void __fastcall TConfiguration::CopyData(THierarchicalStorage * Source,
+  THierarchicalStorage * Target)
 {
-  std::unique_ptr<TStrings> Names(new TStringList());
-  try__finally
+  TStrings * Names = new TStringList();
+  try
   {
-    if (Source->OpenSubKey(GetConfigurationSubKey(), false))
+    if (Source->OpenSubKey(ConfigurationSubKey, false))
     {
-      if (Target->OpenSubKey(GetConfigurationSubKey(), true))
+      if (Target->OpenSubKey(ConfigurationSubKey, true))
       {
-        if (Source->OpenSubKey("CDCache", false))
+        if (Source->OpenSubKey(L"CDCache", false))
         {
-          if (Target->OpenSubKey("CDCache", true))
+          if (Target->OpenSubKey(L"CDCache", true))
           {
             Names->Clear();
-            Source->GetValueNames(Names.get());
+            Source->GetValueNames(Names);
 
-            for (intptr_t Index = 0; Index < Names->GetCount(); ++Index)
+            for (int Index = 0; Index < Names->Count; Index++)
             {
-              Target->WriteBinaryData(Names->GetString(Index),
-                Source->ReadBinaryData(Names->GetString(Index)));
+              Target->WriteBinaryData(Names->Strings[Index],
+                Source->ReadBinaryData(Names->Strings[Index]));
             }
 
             Target->CloseSubKey();
@@ -567,17 +488,17 @@ void TConfiguration::CopyData(THierarchicalStorage *Source,
           Source->CloseSubKey();
         }
 
-        if (Source->OpenSubKey("Banners", false))
+        if (Source->OpenSubKey(L"Banners", false))
         {
-          if (Target->OpenSubKey("Banners", true))
+          if (Target->OpenSubKey(L"Banners", true))
           {
             Names->Clear();
-            Source->GetValueNames(Names.get());
+            Source->GetValueNames(Names);
 
-            for (intptr_t Index = 0; Index < Names->GetCount(); ++Index)
+            for (int Index = 0; Index < Names->Count; Index++)
             {
-              Target->WriteString(Names->GetString(Index),
-                Source->ReadString(Names->GetString(Index), L""));
+              Target->WriteString(Names->Strings[Index],
+                Source->ReadString(Names->Strings[Index], L""));
             }
 
             Target->CloseSubKey();
@@ -590,17 +511,17 @@ void TConfiguration::CopyData(THierarchicalStorage *Source,
       Source->CloseSubKey();
     }
 
-    if (Source->OpenSubKey(GetSshHostKeysSubKey(), false))
+    if (Source->OpenSubKey(SshHostKeysSubKey, false))
     {
-      if (Target->OpenSubKey(GetSshHostKeysSubKey(), true))
+      if (Target->OpenSubKey(SshHostKeysSubKey, true))
       {
         Names->Clear();
-        Source->GetValueNames(Names.get());
+        Source->GetValueNames(Names);
 
-        for (intptr_t Index = 0; Index < Names->GetCount(); ++Index)
+        for (int Index = 0; Index < Names->Count; Index++)
         {
-          Target->WriteStringRaw(Names->GetString(Index),
-            Source->ReadStringRaw(Names->GetString(Index), L""));
+          Target->WriteStringRaw(Names->Strings[Index],
+            Source->ReadStringRaw(Names->Strings[Index], L""));
         }
 
         Target->CloseSubKey();
@@ -610,43 +531,39 @@ void TConfiguration::CopyData(THierarchicalStorage *Source,
   }
   __finally
   {
-#if 0
     delete Names;
-#endif // #if 0
-  };
+  }
 }
-
-void TConfiguration::LoadDirectoryChangesCache(const UnicodeString SessionKey,
-  TRemoteDirectoryChangesCache *DirectoryChangesCache)
+//---------------------------------------------------------------------------
+void __fastcall TConfiguration::LoadDirectoryChangesCache(const UnicodeString SessionKey,
+  TRemoteDirectoryChangesCache * DirectoryChangesCache)
 {
-  std::unique_ptr<THierarchicalStorage> Storage(CreateConfigStorage());
-  try__finally
+  THierarchicalStorage * Storage = CreateConfigStorage();
+  try
   {
-    Storage->SetAccessMode(smRead);
-    if (Storage->OpenSubKey(GetConfigurationSubKey(), false) &&
-      Storage->OpenSubKey("CDCache", false) &&
-      Storage->ValueExists(SessionKey))
+    Storage->AccessMode = smRead;
+    if (Storage->OpenSubKey(ConfigurationSubKey, false) &&
+        Storage->OpenSubKey(L"CDCache", false) &&
+        Storage->ValueExists(SessionKey))
     {
       DirectoryChangesCache->Deserialize(Storage->ReadBinaryData(SessionKey));
     }
   }
   __finally
   {
-#if 0
     delete Storage;
-#endif // #if 0
-  };
+  }
 }
-
-void TConfiguration::SaveDirectoryChangesCache(const UnicodeString SessionKey,
-  TRemoteDirectoryChangesCache *DirectoryChangesCache)
+//---------------------------------------------------------------------------
+void __fastcall TConfiguration::SaveDirectoryChangesCache(const UnicodeString SessionKey,
+  TRemoteDirectoryChangesCache * DirectoryChangesCache)
 {
-  std::unique_ptr<THierarchicalStorage> Storage(CreateConfigStorage());
-  try__finally
+  THierarchicalStorage * Storage = CreateConfigStorage();
+  try
   {
-    Storage->SetAccessMode(smReadWrite);
-    if (Storage->OpenSubKey(GetConfigurationSubKey(), true) &&
-      Storage->OpenSubKey("CDCache", true))
+    Storage->AccessMode = smReadWrite;
+    if (Storage->OpenSubKey(ConfigurationSubKey, true) &&
+        Storage->OpenSubKey(L"CDCache", true))
     {
       UnicodeString Data;
       DirectoryChangesCache->Serialize(Data);
@@ -655,111 +572,118 @@ void TConfiguration::SaveDirectoryChangesCache(const UnicodeString SessionKey,
   }
   __finally
   {
-#if 0
     delete Storage;
-#endif // #if 0
-  };
+  }
 }
-
-UnicodeString TConfiguration::BannerHash(UnicodeString Banner) const
+//---------------------------------------------------------------------------
+UnicodeString __fastcall TConfiguration::BannerHash(const UnicodeString & Banner)
 {
   RawByteString Result;
-  char *Buf = Result.SetLength(16);
+  Result.SetLength(16);
   md5checksum(
-    reinterpret_cast<const char *>(Banner.c_str()), ToInt(Banner.Length() * sizeof(wchar_t)),
-    reinterpret_cast<uint8_t *>(Buf));
+    reinterpret_cast<const char*>(Banner.c_str()), Banner.Length() * sizeof(wchar_t),
+    (unsigned char*)Result.c_str());
   return BytesToHex(Result);
 }
-
-bool TConfiguration::ShowBanner(const UnicodeString SessionKey,
-  UnicodeString Banner)
+//---------------------------------------------------------------------------
+void __fastcall TConfiguration::GetBannerData(
+  const UnicodeString & SessionKey, UnicodeString & BannerHash, unsigned int & Params)
 {
-  bool Result;
-  std::unique_ptr<THierarchicalStorage> Storage(CreateConfigStorage());
-  try__finally
-  {
-    Storage->SetAccessMode(smRead);
-    Result =
-      !Storage->OpenSubKey(GetConfigurationSubKey(), false) ||
-      !Storage->OpenSubKey("Banners", false) ||
-      !Storage->ValueExists(SessionKey) ||
-      (Storage->ReadString(SessionKey, L"") != BannerHash(Banner));
-  }
-  __finally
-  {
-#if 0
-    delete Storage;
-#endif // #if 0
-  };
+  BannerHash = UnicodeString();
+  Params = 0;
 
+  std::unique_ptr<THierarchicalStorage> Storage(CreateConfigStorage());
+  Storage->AccessMode = smRead;
+  if (Storage->OpenSubKey(ConfigurationSubKey, false) &&
+      Storage->OpenSubKey(L"Banners", false))
+  {
+    UnicodeString S = Storage->ReadString(SessionKey, L"");
+    BannerHash = CutToChar(S, L',', true);
+    Params = StrToIntDef(L"$" + CutToChar(S, L',', true), 0);
+  }
+}
+//---------------------------------------------------------------------------
+bool __fastcall TConfiguration::ShowBanner(
+  const UnicodeString & SessionKey, const UnicodeString & Banner, unsigned int & Params)
+{
+  UnicodeString StoredBannerHash;
+  GetBannerData(SessionKey, StoredBannerHash, Params);
+  bool Result = (StoredBannerHash != BannerHash(Banner));
   return Result;
 }
-
-void TConfiguration::NeverShowBanner(const UnicodeString SessionKey,
-  UnicodeString Banner)
+//---------------------------------------------------------------------------
+void __fastcall TConfiguration::SetBannerData(
+  const UnicodeString & SessionKey, const UnicodeString & BannerHash, unsigned int Params)
 {
   std::unique_ptr<THierarchicalStorage> Storage(CreateConfigStorage());
-  try__finally
-  {
-    Storage->SetAccessMode(smReadWrite);
+  Storage->AccessMode = smReadWrite;
 
-    if (Storage->OpenSubKey(GetConfigurationSubKey(), true) &&
-      Storage->OpenSubKey("Banners", true))
-    {
-      Storage->WriteString(SessionKey, BannerHash(Banner));
-    }
+  if (Storage->OpenSubKey(ConfigurationSubKey, true) &&
+      Storage->OpenSubKey(L"Banners", true))
+  {
+    Storage->WriteString(SessionKey, BannerHash + L"," + UIntToStr(Params));
   }
-  __finally
-  {
-#if 0
-    delete Storage;
-#endif // #if 0
-  };
 }
-
-UnicodeString TConfiguration::FormatFingerprintKey(UnicodeString SiteKey, UnicodeString FingerprintType) const
+//---------------------------------------------------------------------------
+void __fastcall TConfiguration::NeverShowBanner(const UnicodeString & SessionKey, const UnicodeString & Banner)
 {
-  return FORMAT("%s:%s", SiteKey, FingerprintType);
+  UnicodeString DummyBannerHash;
+  unsigned int Params;
+  GetBannerData(SessionKey, DummyBannerHash, Params);
+  SetBannerData(SessionKey, BannerHash(Banner), Params);
 }
-
-void TConfiguration::RememberLastFingerprint(UnicodeString SiteKey, UnicodeString FingerprintType, UnicodeString Fingerprint)
+//---------------------------------------------------------------------------
+void __fastcall TConfiguration::SetBannerParams(const UnicodeString & SessionKey, unsigned int Params)
+{
+  UnicodeString BannerHash;
+  unsigned int DummyParams;
+  GetBannerData(SessionKey, BannerHash, DummyParams);
+  SetBannerData(SessionKey, BannerHash, Params);
+}
+//---------------------------------------------------------------------------
+UnicodeString __fastcall TConfiguration::FormatFingerprintKey(const UnicodeString & SiteKey, const UnicodeString & FingerprintType)
+{
+  return FORMAT(L"%s:%s", (SiteKey, FingerprintType));
+}
+//---------------------------------------------------------------------------
+void __fastcall TConfiguration::RememberLastFingerprint(const UnicodeString & SiteKey, const UnicodeString & FingerprintType, const UnicodeString & Fingerprint)
 {
   std::unique_ptr<THierarchicalStorage> Storage(CreateConfigStorage());
-  Storage->SetAccessMode(smReadWrite);
+  Storage->AccessMode = smReadWrite;
 
-  if (Storage->OpenSubKey(GetConfigurationSubKey(), true) &&
-    Storage->OpenSubKey("LastFingerprints", true))
+  if (Storage->OpenSubKey(ConfigurationSubKey, true) &&
+      Storage->OpenSubKey(L"LastFingerprints", true))
   {
     UnicodeString FingerprintKey = FormatFingerprintKey(SiteKey, FingerprintType);
     Storage->WriteString(FingerprintKey, Fingerprint);
   }
 }
-
-UnicodeString TConfiguration::GetLastFingerprint(UnicodeString SiteKey, UnicodeString FingerprintType)
+//---------------------------------------------------------------------------
+UnicodeString __fastcall TConfiguration::LastFingerprint(const UnicodeString & SiteKey, const UnicodeString & FingerprintType)
 {
   UnicodeString Result;
 
   std::unique_ptr<THierarchicalStorage> Storage(CreateConfigStorage());
-  Storage->SetAccessMode(smRead);
+  Storage->AccessMode = smRead;
 
-  if (Storage->OpenSubKey(GetConfigurationSubKey(), false) &&
-    Storage->OpenSubKey("LastFingerprints", false))
+  if (Storage->OpenSubKey(ConfigurationSubKey, false) &&
+      Storage->OpenSubKey(L"LastFingerprints", false))
   {
     UnicodeString FingerprintKey = FormatFingerprintKey(SiteKey, FingerprintType);
     Result = Storage->ReadString(FingerprintKey, L"");
   }
   return Result;
 }
-
-void TConfiguration::Changed()
+//---------------------------------------------------------------------------
+void __fastcall TConfiguration::Changed()
 {
-  TNotifyEvent AOnChange = nullptr;
+  TNotifyEvent AOnChange = NULL;
 
   {
     TGuard Guard(FCriticalSection);
     if (FUpdating == 0)
     {
-      AOnChange = GetOnChange();
+      AOnChange = OnChange;
     }
     else
     {
@@ -768,15 +692,15 @@ void TConfiguration::Changed()
   }
 
   // No specific reason to call this outside of a guard, just that it is less of a change to a previous unguarded code
-  if (AOnChange != nullptr)
+  if (AOnChange != NULL)
   {
     AOnChange(this);
   }
 }
-
-void TConfiguration::BeginUpdate()
+//---------------------------------------------------------------------------
+void __fastcall TConfiguration::BeginUpdate()
 {
-  FCriticalSection.Enter();
+  FCriticalSection->Enter();
   if (FUpdating == 0)
   {
     FChanged = false;
@@ -785,25 +709,25 @@ void TConfiguration::BeginUpdate()
   // Greater value would probably indicate some nesting problem in code
   DebugAssert(FUpdating < 6);
 }
-
-void TConfiguration::EndUpdate()
+//---------------------------------------------------------------------------
+void __fastcall TConfiguration::EndUpdate()
 {
   DebugAssert(FUpdating > 0);
-  --FUpdating;
+  FUpdating--;
   if ((FUpdating == 0) && FChanged)
   {
     FChanged = false;
     Changed();
   }
-  FCriticalSection.Leave();
+  FCriticalSection->Leave();
 }
-
-void TConfiguration::CleanupConfiguration()
+//---------------------------------------------------------------------------
+void __fastcall TConfiguration::CleanupConfiguration()
 {
   try
   {
-    CleanupRegistry(GetConfigurationSubKey());
-    if (GetStorage() == stRegistry)
+    CleanupRegistry(ConfigurationSubKey);
+    if (Storage == stRegistry)
     {
       FDontSave = true;
     }
@@ -813,42 +737,40 @@ void TConfiguration::CleanupConfiguration()
     throw ExtException(&E, LoadStr(CLEANUP_CONFIG_ERROR));
   }
 }
-
-void TConfiguration::CleanupRegistry(UnicodeString CleanupSubKey)
+//---------------------------------------------------------------------------
+void __fastcall TConfiguration::CleanupRegistry(UnicodeString CleanupSubKey)
 {
-  std::unique_ptr<TRegistryStorage> Registry(new TRegistryStorage(GetRegistryStorageKey()));
-  try__finally
+  TRegistryStorage *Registry = new TRegistryStorage(RegistryStorageKey);
+  try
   {
     Registry->RecursiveDeleteSubKey(CleanupSubKey);
   }
   __finally
   {
-#if 0
     delete Registry;
-#endif // #if 0
-  };
+  }
 }
-
-void TConfiguration::CleanupHostKeys()
+//---------------------------------------------------------------------------
+void __fastcall TConfiguration::CleanupHostKeys()
 {
   try
   {
-    CleanupRegistry(GetSshHostKeysSubKey());
+    CleanupRegistry(SshHostKeysSubKey);
   }
   catch (Exception &E)
   {
     throw ExtException(&E, LoadStr(CLEANUP_HOSTKEYS_ERROR));
   }
 }
-
-void TConfiguration::CleanupRandomSeedFile()
+//---------------------------------------------------------------------------
+void __fastcall TConfiguration::CleanupRandomSeedFile()
 {
   try
   {
     DontSaveRandomSeed();
-    if (::FileExists(ApiPath(GetRandomSeedFileName())))
+    if (FileExists(ApiPath(RandomSeedFileName)))
     {
-      DeleteFileChecked(GetRandomSeedFileName());
+      DeleteFileChecked(RandomSeedFileName);
     }
   }
   catch (Exception &E)
@@ -856,17 +778,16 @@ void TConfiguration::CleanupRandomSeedFile()
     throw ExtException(&E, LoadStr(CLEANUP_SEEDFILE_ERROR));
   }
 }
-
-void TConfiguration::CleanupIniFile()
+//---------------------------------------------------------------------------
+void __fastcall TConfiguration::CleanupIniFile()
 {
-#if 0
   try
   {
-    if (::FileExists(ApiPath(GetIniFileStorageNameForReading())))
+    if (FileExists(ApiPath(IniFileStorageNameForReading)))
     {
-      DeleteFileChecked(GetIniFileStorageNameForReading());
+      DeleteFileChecked(IniFileStorageNameForReading);
     }
-    if (GetStorage() == stIniFile)
+    if (Storage == stIniFile)
     {
       FDontSave = true;
     }
@@ -875,64 +796,64 @@ void TConfiguration::CleanupIniFile()
   {
     throw ExtException(&E, LoadStr(CLEANUP_INIFILE_ERROR));
   }
-#endif // #if 0
 }
-
-void TConfiguration::DontSave()
+//---------------------------------------------------------------------------
+void __fastcall TConfiguration::DontSave()
 {
   FDontSave = true;
 }
-
-RawByteString TConfiguration::EncryptPassword(UnicodeString Password, UnicodeString Key)
+//---------------------------------------------------------------------------
+RawByteString __fastcall TConfiguration::EncryptPassword(UnicodeString Password, UnicodeString Key)
 {
   if (Password.IsEmpty())
   {
     return RawByteString();
   }
-  return ::EncryptPassword(Password, Key);
+  else
+  {
+    return ::EncryptPassword(Password, Key);
+  }
 }
-
-UnicodeString TConfiguration::DecryptPassword(RawByteString Password, UnicodeString Key)
+//---------------------------------------------------------------------------
+UnicodeString __fastcall TConfiguration::DecryptPassword(RawByteString Password, UnicodeString Key)
 {
   if (Password.IsEmpty())
   {
     return UnicodeString();
   }
-  return ::DecryptPassword(Password, Key);
+  else
+  {
+    return ::DecryptPassword(Password, Key);
+  }
 }
-
-RawByteString TConfiguration::StronglyRecryptPassword(RawByteString Password, UnicodeString /*Key*/)
+//---------------------------------------------------------------------------
+RawByteString __fastcall TConfiguration::StronglyRecryptPassword(RawByteString Password, UnicodeString /*Key*/)
 {
   return Password;
 }
-
-TVSFixedFileInfo *TConfiguration::GetFixedApplicationInfo() const
+//---------------------------------------------------------------------------
+TVSFixedFileInfo *__fastcall TConfiguration::GetFixedApplicationInfo()
 {
-  return GetFixedFileInfo(GetApplicationInfo());
+  return GetFixedFileInfo(ApplicationInfo);
 }
-
-intptr_t TConfiguration::GetCompoundVersion() const
+//---------------------------------------------------------------------------
+int __fastcall TConfiguration::GetCompoundVersion()
 {
-  TVSFixedFileInfo *FileInfo = GetFixedApplicationInfo();
-  if (FileInfo)
-  {
-    return CalculateCompoundVersion(
-        HIWORD(FileInfo->dwFileVersionMS), LOWORD(FileInfo->dwFileVersionMS),
-        HIWORD(FileInfo->dwFileVersionLS), LOWORD(FileInfo->dwFileVersionLS));
-  }
-  return 0;
+  TVSFixedFileInfo * FileInfo = FixedApplicationInfo;
+  return CalculateCompoundVersion(
+    HIWORD(FileInfo->dwFileVersionMS), LOWORD(FileInfo->dwFileVersionMS),
+    HIWORD(FileInfo->dwFileVersionLS), LOWORD(FileInfo->dwFileVersionLS));
 }
-
-UnicodeString TConfiguration::ModuleFileName() const
+//---------------------------------------------------------------------------
+UnicodeString __fastcall TConfiguration::ModuleFileName()
 {
-  ThrowNotImplemented(204);
-  return L"";
+  return ParamStr(0);
 }
-
-void *TConfiguration::GetFileApplicationInfo(const UnicodeString AFileName) const
+//---------------------------------------------------------------------------
+void * __fastcall TConfiguration::GetFileApplicationInfo(const UnicodeString FileName)
 {
-  void *Result;
-  if (AFileName.IsEmpty())
+  void * Result;
+  if (FileName.IsEmpty())
   {
     if (!FApplicationInfo)
     {
@@ -942,159 +863,141 @@ void *TConfiguration::GetFileApplicationInfo(const UnicodeString AFileName) cons
   }
   else
   {
-    Result = CreateFileInfo(AFileName);
+    Result = CreateFileInfo(FileName);
   }
   return Result;
 }
-
-void *TConfiguration::GetApplicationInfo() const
+//---------------------------------------------------------------------------
+void * __fastcall TConfiguration::GetApplicationInfo()
 {
   return GetFileApplicationInfo("");
 }
-
-UnicodeString TConfiguration::GetFileProductName(const UnicodeString AFileName) const
+//---------------------------------------------------------------------------
+UnicodeString __fastcall TConfiguration::GetFileProductName(const UnicodeString FileName)
 {
-  return GetFileFileInfoString(L"ProductName", AFileName);
+  return GetFileFileInfoString(L"ProductName", FileName);
 }
-
-UnicodeString TConfiguration::GetFileCompanyName(const UnicodeString AFileName) const
+//---------------------------------------------------------------------------
+UnicodeString __fastcall TConfiguration::GetFileCompanyName(const UnicodeString FileName)
 {
   // particularly in IDE build, company name is empty
-  return GetFileFileInfoString(L"CompanyName", AFileName, true);
+  return GetFileFileInfoString(L"CompanyName", FileName, true);
 }
-
-UnicodeString TConfiguration::GetProductName() const
+//---------------------------------------------------------------------------
+UnicodeString __fastcall TConfiguration::GetProductName()
 {
   return GetFileProductName(L"");
 }
-
-UnicodeString TConfiguration::GetCompanyName() const
+//---------------------------------------------------------------------------
+UnicodeString __fastcall TConfiguration::GetCompanyName()
 {
   return GetFileCompanyName(L"");
 }
-
-UnicodeString TConfiguration::GetFileProductVersion(const UnicodeString AFileName) const
+//---------------------------------------------------------------------------
+UnicodeString __fastcall TConfiguration::GetFileProductVersion(const UnicodeString FileName)
 {
-  return TrimVersion(GetFileFileInfoString(L"ProductVersion", AFileName));
+  return TrimVersion(GetFileFileInfoString(L"ProductVersion", FileName));
 }
-
-UnicodeString TConfiguration::GetFileDescription(UnicodeString AFileName) const
+//---------------------------------------------------------------------------
+UnicodeString __fastcall TConfiguration::GetFileDescription(const UnicodeString & FileName)
 {
-  return GetFileFileInfoString(L"FileDescription", AFileName);
+  return GetFileFileInfoString(L"FileDescription", FileName);
 }
-
-UnicodeString TConfiguration::GetFileProductVersion() const
+//---------------------------------------------------------------------------
+UnicodeString __fastcall TConfiguration::GetProductVersion()
 {
   return GetFileProductVersion(L"");
 }
-
-UnicodeString TConfiguration::GetReleaseType() const
+//---------------------------------------------------------------------------
+UnicodeString __fastcall TConfiguration::GetReleaseType()
 {
-  return GetFileInfoString("ReleaseType");
+  return GetFileInfoString(L"ReleaseType");
 }
-
-bool TConfiguration::GetIsUnofficial() const
+//---------------------------------------------------------------------------
+bool __fastcall TConfiguration::GetIsUnofficial()
 {
-#ifdef BUILD_OFFICIAL
+  #ifdef BUILD_OFFICIAL
   return false;
-#else
+  #else
   return true;
-#endif
+  #endif
 }
-
-UnicodeString TConfiguration::GetProductVersionStr() const
+//---------------------------------------------------------------------------
+UnicodeString __fastcall TConfiguration::GetVersionStr()
 {
-  UnicodeString Result;
   TGuard Guard(FCriticalSection);
   try
   {
-    TVSFixedFileInfo *FixedApplicationInfo = GetFixedApplicationInfo();
-#if 0
-    return FMTLOAD(VERSION,
-      HIWORD(Info->dwFileVersionMS),
-      LOWORD(Info->dwFileVersionMS),
-      HIWORD(Info->dwFileVersionLS),
-      LOWORD(Info->dwFileVersionLS));
-#endif // #if 0
     UnicodeString BuildStr;
-    if (!GetIsUnofficial())
+    if (!IsUnofficial)
     {
       BuildStr = LoadStr(VERSION_BUILD);
     }
     else
     {
-#ifdef _DEBUG
+      #ifdef _DEBUG
       BuildStr = LoadStr(VERSION_DEBUG_BUILD);
-#else
+      #else
       BuildStr = LoadStr(VERSION_DEV_BUILD);
-#endif
+      #endif
     }
 
     int Build = LOWORD(FixedApplicationInfo->dwFileVersionLS);
     if (Build > 0)
     {
-      BuildStr += L" " + ::IntToStr(Build);
+      BuildStr += L" " + IntToStr(Build);
     }
 
-#if 0
-#ifndef BUILD_OFFICIAL
+    #ifndef BUILD_OFFICIAL
     UnicodeString BuildDate = __DATE__;
     UnicodeString MonthStr = CutToChar(BuildDate, L' ', true);
     int Month = ParseShortEngMonthName(MonthStr);
-    int Day = StrToInt64(CutToChar(BuildDate, L' ', true));
-    int Year = StrToInt64(Trim(BuildDate));
-    UnicodeString DateStr = FORMAT("%d-%2.2d-%2.2d", Year, Month, Day);
+    int Day = StrToInt(CutToChar(BuildDate, L' ', true));
+    int Year = StrToInt(Trim(BuildDate));
+    UnicodeString DateStr = FORMAT(L"%d-%2.2d-%2.2d", (Year, Month, Day));
     AddToList(BuildStr, DateStr, L" ");
-#endif
-#endif
+    #endif
 
-    UnicodeString FullVersion = GetProductVersion();
+    UnicodeString FullVersion = Version;
 
     UnicodeString AReleaseType = GetReleaseType();
     if (DebugAlwaysTrue(!AReleaseType.IsEmpty()) &&
-      !SameText(AReleaseType, L"stable") &&
-      !SameText(AReleaseType, L"development"))
+        !SameText(AReleaseType, L"stable") &&
+        !SameText(AReleaseType, L"development"))
     {
       FullVersion += L" " + AReleaseType;
     }
 
-    Result = FMTLOAD(VERSION2, GetProductVersion(), Build);
+    UnicodeString Result = FMTLOAD(VERSION2, (FullVersion, BuildStr));
 
-#if 0
-#ifndef BUILD_OFFICIAL
+    #ifndef BUILD_OFFICIAL
     Result += L" " + LoadStr(VERSION_DONT_DISTRIBUTE);
-#endif
-#endif
+    #endif
+
+    return Result;
   }
   catch (Exception &E)
   {
-    throw ExtException(&E, "Can't get application version");
+    throw ExtException(&E, L"Can't get application version");
   }
-  return Result;
 }
-
-UnicodeString TConfiguration::GetFileVersion(UnicodeString AFileName)
+//---------------------------------------------------------------------------
+UnicodeString __fastcall TConfiguration::GetFileVersion(const UnicodeString & FileName)
 {
   UnicodeString Result;
-  void *FileInfo = CreateFileInfo(AFileName);
-  try__finally
+  void * FileInfo = CreateFileInfo(FileName);
+  try
   {
-    SCOPE_EXIT
-    {
-      FreeFileInfo(FileInfo);
-    };
     Result = GetFileVersion(GetFixedFileInfo(FileInfo));
   }
   __finally
   {
-#if 0
     FreeFileInfo(FileInfo);
-#endif // #if 0
-  };
+  }
   return Result;
 }
-
-UnicodeString TConfiguration::GetFileVersion(TVSFixedFileInfo *Info)
+//---------------------------------------------------------------------------
+UnicodeString __fastcall TConfiguration::GetFileVersion(TVSFixedFileInfo * Info)
 {
   TGuard Guard(FCriticalSection);
   try
@@ -1111,134 +1014,94 @@ UnicodeString TConfiguration::GetFileVersion(TVSFixedFileInfo *Info)
     throw ExtException(&E, L"Can't get file version");
   }
 }
-
-UnicodeString TConfiguration::GetProductVersion() const
+//---------------------------------------------------------------------------
+UnicodeString __fastcall TConfiguration::GetVersion()
+{
+  return GetFileVersion(FixedApplicationInfo);
+}
+//---------------------------------------------------------------------------
+UnicodeString __fastcall TConfiguration::GetFileFileInfoString(const UnicodeString Key,
+  const UnicodeString FileName, bool AllowEmpty)
 {
   TGuard Guard(FCriticalSection);
+
   UnicodeString Result;
+  void * Info = GetFileApplicationInfo(FileName);
   try
   {
-    TVSFixedFileInfo *FixedApplicationInfo = GetFixedApplicationInfo();
-    if (FixedApplicationInfo)
+    if ((Info != NULL) && (GetTranslationCount(Info) > 0))
     {
-      Result = FormatVersion(
-        HIWORD(FixedApplicationInfo->dwFileVersionMS),
-        LOWORD(FixedApplicationInfo->dwFileVersionMS),
-        HIWORD(FixedApplicationInfo->dwFileVersionLS));
-    }
-  }
-  catch (Exception &E)
-  {
-    throw ExtException(&E, "Can't get application version");
-  }
-  return Result;
-}
-
-UnicodeString TConfiguration::GetVersion()
-{
-  return GetFileVersion(GetFixedApplicationInfo());
-}
-
-UnicodeString TConfiguration::GetFileFileInfoString(const UnicodeString AKey,
-  const UnicodeString AFileName, bool AllowEmpty) const
-{
-  TGuard Guard(FCriticalSection);
-
-  UnicodeString Result;
-  void *Info = GetFileApplicationInfo(AFileName);
-  try__finally
-  {
-    SCOPE_EXIT
-    {
-      if (!AFileName.IsEmpty() && Info)
-      {
-        FreeFileInfo(Info);
-      }
-    };
-    if ((Info != nullptr) && (GetTranslationCount(Info) > 0))
-    {
-      TTranslation Translation = GetTranslation(Info, 0);
-      try
-      {
-        Result = ::GetFileInfoString(Info, Translation, AKey, AllowEmpty);
-      }
-      catch (const std::exception &e)
-      {
-        (void)e;
-        DEBUG_PRINTF("Error: %s", ::MB2W(e.what()));
-        Result.Clear();
-      }
+      TTranslation Translation;
+      Translation = GetTranslation(Info, 0);
+      Result = ::GetFileInfoString(Info, Translation, Key, AllowEmpty);
     }
     else
     {
-      DebugAssert(!AFileName.IsEmpty());
+      DebugAssert(!FileName.IsEmpty());
     }
   }
   __finally
   {
-#if 0
-    if (!AFileName.IsEmpty())
+    if (!FileName.IsEmpty())
     {
       FreeFileInfo(Info);
     }
-#endif // #if 0
-  };
+  }
   return Result;
 }
-
-UnicodeString TConfiguration::GetFileInfoString(UnicodeString Key) const
+//---------------------------------------------------------------------------
+UnicodeString __fastcall TConfiguration::GetFileInfoString(const UnicodeString Key)
 {
   return GetFileFileInfoString(Key, L"");
 }
-
-UnicodeString TConfiguration::GetRegistryStorageKey() const
+//---------------------------------------------------------------------------
+UnicodeString __fastcall TConfiguration::GetRegistryStorageKey()
 {
   return GetRegistryKey();
 }
-
-void TConfiguration::SetNulStorage()
+//---------------------------------------------------------------------------
+void __fastcall TConfiguration::SetNulStorage()
 {
   FStorage = stNul;
 }
-
-void TConfiguration::SetDefaultStorage()
+//---------------------------------------------------------------------------
+void __fastcall TConfiguration::SetDefaultStorage()
 {
   FStorage = stDetect;
 }
-
-#if 0
-void TConfiguration::SetIniFileStorageName(UnicodeString Value)
+//---------------------------------------------------------------------------
+void __fastcall TConfiguration::SetIniFileStorageName(UnicodeString value)
 {
-  FIniFileStorageName = Value;
+  FIniFileStorageName = value;
   FStorage = stIniFile;
 }
-
-UnicodeString TConfiguration::GetDefaultIniFileExportPath()
+//---------------------------------------------------------------------------
+UnicodeString __fastcall TConfiguration::GetDefaultIniFileExportPath()
 {
   UnicodeString PersonalDirectory = GetPersonalFolder();
-  UnicodeString FileName = ::IncludeTrailingBackslash(PersonalDirectory) +
+  UnicodeString FileName = IncludeTrailingBackslash(PersonalDirectory) +
     ExtractFileName(ExpandEnvironmentVariables(IniFileStorageName));
   return FileName;
 }
-
-UnicodeString TConfiguration::GetIniFileStorageNameForReading()
+//---------------------------------------------------------------------------
+UnicodeString __fastcall TConfiguration::GetIniFileStorageNameForReading()
 {
   return GetIniFileStorageName(true);
 }
-
-UnicodeString TConfiguration::GetIniFileStorageNameForReadingWriting()
+//---------------------------------------------------------------------------
+UnicodeString __fastcall TConfiguration::GetIniFileStorageNameForReadingWriting()
 {
   return GetIniFileStorageName(false);
 }
-
-UnicodeString TConfiguration::GetAutomaticIniFileStorageName(bool ReadingOnly)
+//---------------------------------------------------------------------------
+UnicodeString __fastcall TConfiguration::GetAutomaticIniFileStorageName(bool ReadingOnly)
 {
   UnicodeString ProgramPath = ParamStr(0);
 
   UnicodeString ProgramIniPath = ChangeFileExt(ProgramPath, L".ini");
 
   UnicodeString IniPath;
-  if (::FileExists(ApiPath(ProgramIniPath)))
+  if (FileExists(ApiPath(ProgramIniPath)))
   {
     IniPath = ProgramIniPath;
   }
@@ -1246,34 +1109,34 @@ UnicodeString TConfiguration::GetAutomaticIniFileStorageName(bool ReadingOnly)
   {
     UnicodeString AppDataIniPath =
       IncludeTrailingBackslash(GetShellFolderPath(CSIDL_APPDATA)) +
-      ::ExtractFileName(ProgramIniPath);
-    if (::FileExists(ApiPath(AppDataIniPath)))
+      ExtractFileName(ProgramIniPath);
+    if (FileExists(ApiPath(AppDataIniPath)))
     {
       IniPath = AppDataIniPath;
     }
     else
     {
       // avoid expensive test if we are interested in existing files only
-      if (!ReadingOnly && (FProgramIniPathWritable < 0))
+      if (!ReadingOnly && (FProgramIniPathWrittable < 0))
       {
-        UnicodeString ProgramDir = ::ExtractFilePath(ProgramPath);
-        FProgramIniPathWritable = IsDirectoryWriteable(ProgramDir) ? 1 : 0;
+        UnicodeString ProgramDir = ExtractFilePath(ProgramPath);
+        FProgramIniPathWrittable = IsDirectoryWriteable(ProgramDir) ? 1 : 0;
       }
 
       // does not really matter what we return when < 0
-      IniPath = (FProgramIniPathWritable == 0) ? AppDataIniPath : ProgramIniPath;
+      IniPath = (FProgramIniPathWrittable == 0) ? AppDataIniPath : ProgramIniPath;
     }
   }
 
   // BACKWARD COMPATIBILITY with 4.x
   if (FVirtualIniFileStorageName.IsEmpty() &&
-    TPath::IsDriveRooted(IniPath))
+      TPath::IsDriveRooted(IniPath))
   {
     UnicodeString LocalAppDataPath = GetShellFolderPath(CSIDL_LOCAL_APPDATA);
     // virtual store for non-system drives have a different virtual store,
     // do not bother about them
     if (TPath::IsDriveRooted(LocalAppDataPath) &&
-      SameText(ExtractFileDrive(IniPath), ExtractFileDrive(LocalAppDataPath)))
+        SameText(ExtractFileDrive(IniPath), ExtractFileDrive(LocalAppDataPath)))
     {
       FVirtualIniFileStorageName =
         IncludeTrailingBackslash(LocalAppDataPath) +
@@ -1283,7 +1146,7 @@ UnicodeString TConfiguration::GetAutomaticIniFileStorageName(bool ReadingOnly)
   }
 
   if (!FVirtualIniFileStorageName.IsEmpty() &&
-    ::FileExists(ApiPath(FVirtualIniFileStorageName)))
+      FileExists(ApiPath(FVirtualIniFileStorageName)))
   {
     return FVirtualIniFileStorageName;
   }
@@ -1292,8 +1155,8 @@ UnicodeString TConfiguration::GetAutomaticIniFileStorageName(bool ReadingOnly)
     return IniPath;
   }
 }
-
-UnicodeString TConfiguration::GetIniFileStorageName(bool ReadingOnly)
+//---------------------------------------------------------------------------
+UnicodeString __fastcall TConfiguration::GetIniFileStorageName(bool ReadingOnly)
 {
   UnicodeString Result;
   if (!FIniFileStorageName.IsEmpty())
@@ -1310,79 +1173,81 @@ UnicodeString TConfiguration::GetIniFileStorageName(bool ReadingOnly)
   }
   return Result;
 }
-#endif // #if 0
-
-void TConfiguration::SetOptionsStorage(TStrings *Value)
+//---------------------------------------------------------------------------
+void __fastcall TConfiguration::SetOptionsStorage(TStrings * value)
 {
-  if (FOptionsStorage.get() == nullptr)
+  TGuard Guard(FCriticalSection);
+  if (FOptionsStorage.get() == NULL)
   {
     FOptionsStorage.reset(new TStringList());
   }
-  FOptionsStorage->AddStrings(Value);
+  FOptionsStorage->AddStrings(value);
 }
-
-TStrings *TConfiguration::GetOptionsStorage()
+//---------------------------------------------------------------------------
+TStrings * __fastcall TConfiguration::GetOptionsStorage()
 {
   return FOptionsStorage.get();
 }
-
-UnicodeString TConfiguration::GetPuttySessionsKey() const
+//---------------------------------------------------------------------------
+UnicodeString __fastcall TConfiguration::GetPuttySessionsKey()
 {
-  return GetPuttyRegistryStorageKey() + "\\Sessions";
+  return PuttyRegistryStorageKey + L"\\Sessions";
 }
-
-UnicodeString TConfiguration::GetStoredSessionsSubKey() const
+//---------------------------------------------------------------------------
+UnicodeString __fastcall TConfiguration::GetStoredSessionsSubKey()
 {
-  return "Sessions";
+  return L"Sessions";
 }
-
-UnicodeString TConfiguration::GetSshHostKeysSubKey() const
+//---------------------------------------------------------------------------
+UnicodeString __fastcall TConfiguration::GetSshHostKeysSubKey()
 {
-  return "SshHostKeys";
+  return L"SshHostKeys";
 }
-
-UnicodeString TConfiguration::GetConfigurationSubKey() const
+//---------------------------------------------------------------------------
+UnicodeString __fastcall TConfiguration::GetConfigurationSubKey()
 {
-  return "Configuration";
+  return L"Configuration";
 }
-
-UnicodeString TConfiguration::GetRootKeyStr() const
+//---------------------------------------------------------------------------
+UnicodeString __fastcall TConfiguration::GetRootKeyStr()
 {
   return RootKeyToStr(HKEY_CURRENT_USER);
 }
-
-void TConfiguration::MoveStorage(TStorage AStorage, UnicodeString ACustomIniFileStorageName)
+//---------------------------------------------------------------------------
+void __fastcall TConfiguration::MoveStorage(TStorage AStorage, const UnicodeString & ACustomIniFileStorageName)
 {
   if ((FStorage != AStorage) ||
-    !IsPathToSameFile(FCustomIniFileStorageName, ACustomIniFileStorageName))
+      !IsPathToSameFile(FCustomIniFileStorageName, ACustomIniFileStorageName))
   {
     TStorage StorageBak = FStorage;
     UnicodeString CustomIniFileStorageNameBak = FCustomIniFileStorageName;
     try
     {
-      std::unique_ptr<THierarchicalStorage> SourceStorage(CreateConfigStorage());
-      std::unique_ptr<THierarchicalStorage> TargetStorage(CreateConfigStorage());
-      try__finally
+      THierarchicalStorage * SourceStorage = NULL;
+      THierarchicalStorage * TargetStorage = NULL;
+
+      try
       {
-        SourceStorage->SetAccessMode(smRead);
+        SourceStorage = CreateConfigStorage();
+        SourceStorage->AccessMode = smRead;
 
         FStorage = AStorage;
         FCustomIniFileStorageName = ACustomIniFileStorageName;
 
-        TargetStorage->SetAccessMode(smReadWrite);
-        TargetStorage->SetExplicit(true);
+        TargetStorage = CreateConfigStorage();
+        TargetStorage->AccessMode = smReadWrite;
+        TargetStorage->Explicit = true;
 
         // copy before save as it removes the ini file,
         // when switching from ini to registry
-        CopyData(SourceStorage.get(), TargetStorage.get());
+        CopyData(SourceStorage, TargetStorage);
       }
       __finally
       {
-#if 0
         delete SourceStorage;
         delete TargetStorage;
-#endif // #if 0
-      };
+      }
+
       // save all and explicit,
       // this also removes an INI file, when switching to registry storage
       DoSave(true, true);
@@ -1400,98 +1265,90 @@ void TConfiguration::MoveStorage(TStorage AStorage, UnicodeString ACustomIniFile
     }
   }
 }
-
-void TConfiguration::ScheduleCustomIniFileStorageUse(UnicodeString ACustomIniFileStorageName)
+//---------------------------------------------------------------------------
+void __fastcall TConfiguration::ScheduleCustomIniFileStorageUse(const UnicodeString & ACustomIniFileStorageName)
 {
   FStorage = stIniFile;
   FCustomIniFileStorageName = ACustomIniFileStorageName;
   SaveCustomIniFileStorageName();
 }
-
-void TConfiguration::Saved()
+//---------------------------------------------------------------------------
+void __fastcall TConfiguration::Saved()
 {
   // nothing
 }
-
-TStorage TConfiguration::GetStorage() const
+//---------------------------------------------------------------------------
+TStorage __fastcall TConfiguration::GetStorage()
 {
   TGuard Guard(FCriticalSection);
   if (FStorage == stDetect)
   {
-#if 0
-    if (::FileExists(ApiPath(IniFileStorageNameForReading)))
+    if (FileExists(ApiPath(IniFileStorageNameForReading)))
     {
       FStorage = stIniFile;
     }
     else
-#endif // #if 0
     {
       FStorage = stRegistry;
     }
   }
   return FStorage;
 }
-
-TStoredSessionList *TConfiguration::SelectFilezillaSessionsForImport(
-  TStoredSessionList *Sessions, UnicodeString &Error)
+//---------------------------------------------------------------------
+TStoredSessionList * __fastcall TConfiguration::SelectFilezillaSessionsForImport(
+  TStoredSessionList * Sessions, UnicodeString & Error)
 {
   std::unique_ptr<TStoredSessionList> ImportSessionList(new TStoredSessionList(true));
-  ImportSessionList->SetDefaultSettings(Sessions->GetDefaultSettings());
+  ImportSessionList->DefaultSettings = Sessions->DefaultSettings;
 
-  UnicodeString AppDataPath;
-#if defined(_MSC_VER) && !defined(__clang__)
-  AppDataPath = GetShellFolderPath(CSIDL_APPDATA);
-#endif // if defined(_MSC_VER) && !defined(__clang__)
+  UnicodeString AppDataPath = GetShellFolderPath(CSIDL_APPDATA);
   UnicodeString FilezillaSiteManagerFile =
-    ::IncludeTrailingBackslash(AppDataPath) + L"FileZilla\\sitemanager.xml";
+    IncludeTrailingBackslash(AppDataPath) + L"FileZilla\\sitemanager.xml";
   UnicodeString FilezillaConfigurationFile =
-    ::IncludeTrailingBackslash(AppDataPath) + L"FileZilla\\filezilla.xml";
+    IncludeTrailingBackslash(AppDataPath) + L"FileZilla\\filezilla.xml";
 
   if (FileExists(ApiPath(FilezillaSiteManagerFile)))
   {
     ImportSessionList->ImportFromFilezilla(FilezillaSiteManagerFile, FilezillaConfigurationFile);
 
-    if (ImportSessionList->GetCount() > 0)
+    if (ImportSessionList->Count > 0)
     {
       ImportSessionList->SelectSessionsToImport(Sessions, true);
     }
     else
     {
-      Error = FMTLOAD(FILEZILLA_NO_SITES, FilezillaSiteManagerFile);
+      Error = FMTLOAD(FILEZILLA_NO_SITES, (FilezillaSiteManagerFile));
     }
   }
   else
   {
-    Error = FMTLOAD(FILEZILLA_SITE_MANAGER_NOT_FOUND, FilezillaSiteManagerFile);
+    Error = FMTLOAD(FILEZILLA_SITE_MANAGER_NOT_FOUND, (FilezillaSiteManagerFile));
   }
 
   return ImportSessionList.release();
 }
-
-bool TConfiguration::AnyFilezillaSessionForImport(TStoredSessionList *Sessions)
+//---------------------------------------------------------------------
+bool __fastcall TConfiguration::AnyFilezillaSessionForImport(TStoredSessionList * Sessions)
 {
   try
   {
     UnicodeString Error;
-    std::unique_ptr<TStoredSessionList> SessionsList(SelectFilezillaSessionsForImport(Sessions, Error));
-    return (SessionsList->GetCount() > 0);
+    std::unique_ptr<TStoredSessionList> Sesssions(SelectFilezillaSessionsForImport(Sessions, Error));
+    return (Sesssions->Count > 0);
   }
   catch (...)
   {
     return false;
   }
 }
-
-TStoredSessionList *TConfiguration::SelectKnownHostsSessionsForImport(
-  TStoredSessionList *Sessions, UnicodeString &Error)
+//---------------------------------------------------------------------
+TStoredSessionList * __fastcall TConfiguration::SelectKnownHostsSessionsForImport(
+  TStoredSessionList * Sessions, UnicodeString & Error)
 {
   std::unique_ptr<TStoredSessionList> ImportSessionList(new TStoredSessionList(true));
-  ImportSessionList->SetDefaultSettings(Sessions->GetDefaultSettings());
+  ImportSessionList->DefaultSettings = Sessions->DefaultSettings;
 
-  UnicodeString ProfilePath;
-#if defined(_MSC_VER) && !defined(__clang__)
-  ProfilePath = GetShellFolderPath(CSIDL_PROFILE);
-#endif // if defined(_MSC_VER) && !defined(__clang__)
+  UnicodeString ProfilePath = GetShellFolderPath(CSIDL_PROFILE);
   UnicodeString KnownHostsFile = IncludeTrailingBackslash(ProfilePath) + L".ssh\\known_hosts";
 
   try
@@ -1499,9 +1356,7 @@ TStoredSessionList *TConfiguration::SelectKnownHostsSessionsForImport(
     if (FileExists(ApiPath(KnownHostsFile)))
     {
       std::unique_ptr<TStrings> Lines(new TStringList());
-#if 0
       LoadScriptFromFile(KnownHostsFile, Lines.get());
-#endif // if 0
       ImportSessionList->ImportFromKnownHosts(Lines.get());
     }
     else
@@ -1509,98 +1364,98 @@ TStoredSessionList *TConfiguration::SelectKnownHostsSessionsForImport(
       throw Exception(LoadStr(KNOWN_HOSTS_NOT_FOUND));
     }
   }
-  catch (Exception &E)
+  catch (Exception & E)
   {
-    Error = FORMAT(L"%s\n(%s)", E.Message, KnownHostsFile);
+    Error = FORMAT(L"%s\n(%s)", (E.Message, KnownHostsFile));
   }
 
   return ImportSessionList.release();
 }
-
-TStoredSessionList *TConfiguration::SelectKnownHostsSessionsForImport(
-  TStrings *Lines, TStoredSessionList *Sessions, UnicodeString &Error)
+//---------------------------------------------------------------------
+TStoredSessionList * __fastcall TConfiguration::SelectKnownHostsSessionsForImport(
+  TStrings * Lines, TStoredSessionList * Sessions, UnicodeString & Error)
 {
   std::unique_ptr<TStoredSessionList> ImportSessionList(new TStoredSessionList(true));
-  ImportSessionList->SetDefaultSettings(Sessions->GetDefaultSettings());
+  ImportSessionList->DefaultSettings = Sessions->DefaultSettings;
 
   try
   {
     ImportSessionList->ImportFromKnownHosts(Lines);
   }
-  catch (Exception &E)
+  catch (Exception & E)
   {
     Error = E.Message;
   }
 
   return ImportSessionList.release();
 }
-
-void TConfiguration::SetRandomSeedFile(UnicodeString Value)
+//---------------------------------------------------------------------------
+void __fastcall TConfiguration::SetRandomSeedFile(UnicodeString value)
 {
-  if (GetRandomSeedFile() != Value)
+  if (RandomSeedFile != value)
   {
-    UnicodeString PrevRandomSeedFileName = GetRandomSeedFileName();
+    UnicodeString PrevRandomSeedFileName = RandomSeedFileName;
 
-    FRandomSeedFile = Value;
+    FRandomSeedFile = value;
 
     // never allow empty seed file to avoid Putty trying to reinitialize the path
-    if (GetRandomSeedFileName().IsEmpty())
+    if (RandomSeedFileName.IsEmpty())
     {
       FRandomSeedFile = FDefaultRandomSeedFile;
     }
 
     if (!PrevRandomSeedFileName.IsEmpty() &&
-      (PrevRandomSeedFileName != GetRandomSeedFileName()) &&
-      ::FileExists(ApiPath(PrevRandomSeedFileName)))
+        (PrevRandomSeedFileName != RandomSeedFileName) &&
+        FileExists(ApiPath(PrevRandomSeedFileName)))
     {
       // ignore any error
-      ::RemoveFile(ApiPath(PrevRandomSeedFileName));
+      DeleteFile(ApiPath(PrevRandomSeedFileName));
     }
   }
 }
-
-UnicodeString TConfiguration::GetRandomSeedFileName() const
+//---------------------------------------------------------------------
+UnicodeString __fastcall TConfiguration::GetRandomSeedFileName()
 {
   // StripPathQuotes should not be needed as we do not feed quotes anymore
-  return StripPathQuotes(::ExpandEnvironmentVariables(FRandomSeedFile)).Trim();
+  return StripPathQuotes(ExpandEnvironmentVariables(FRandomSeedFile)).Trim();
 }
-
-void TConfiguration::SetExternalIpAddress(UnicodeString Value)
+//---------------------------------------------------------------------
+void __fastcall TConfiguration::SetExternalIpAddress(UnicodeString value)
 {
   SET_CONFIG_PROPERTY(ExternalIpAddress);
 }
-
-void TConfiguration::SetTryFtpWhenSshFails(bool Value)
+//---------------------------------------------------------------------
+void __fastcall TConfiguration::SetTryFtpWhenSshFails(bool value)
 {
   SET_CONFIG_PROPERTY(TryFtpWhenSshFails);
 }
-
-void TConfiguration::SetParallelDurationThreshold(intptr_t Value)
+//---------------------------------------------------------------------
+void __fastcall TConfiguration::SetParallelDurationThreshold(int value)
 {
   SET_CONFIG_PROPERTY(ParallelDurationThreshold);
 }
-
-void TConfiguration::SetPuttyRegistryStorageKey(UnicodeString Value)
+//---------------------------------------------------------------------
+void __fastcall TConfiguration::SetPuttyRegistryStorageKey(UnicodeString value)
 {
   SET_CONFIG_PROPERTY(PuttyRegistryStorageKey);
 }
-
-TEOLType TConfiguration::GetLocalEOLType() const
+//---------------------------------------------------------------------------
+TEOLType __fastcall TConfiguration::GetLocalEOLType()
 {
   return eolCRLF;
 }
-
-bool TConfiguration::GetCollectUsage() const
+//---------------------------------------------------------------------
+bool __fastcall TConfiguration::GetCollectUsage()
 {
-  return false; // FUsage->Collect;
+  return FUsage->Collect;
 }
-
-void TConfiguration::SetCollectUsage(bool /*Value*/)
+//---------------------------------------------------------------------
+void __fastcall TConfiguration::SetCollectUsage(bool value)
 {
-  // FUsage->Collect = Value;
+  FUsage->Collect = value;
 }
-
-void TConfiguration::TemporaryLogging(const UnicodeString ALogFileName)
+//---------------------------------------------------------------------
+void __fastcall TConfiguration::TemporaryLogging(const UnicodeString ALogFileName)
 {
   if (SameText(ExtractFileExt(ALogFileName), L".xml"))
   {
@@ -1613,300 +1468,293 @@ void TConfiguration::TemporaryLogging(const UnicodeString ALogFileName)
     UpdateActualLogProtocol();
   }
 }
-
-void TConfiguration::TemporaryActionsLogging(const UnicodeString ALogFileName)
+//---------------------------------------------------------------------
+void __fastcall TConfiguration::TemporaryActionsLogging(const UnicodeString ALogFileName)
 {
   FLogActions = true;
   FActionsLogFileName = ALogFileName;
 }
-
-void TConfiguration::TemporaryLogProtocol(intptr_t ALogProtocol)
+//---------------------------------------------------------------------
+void __fastcall TConfiguration::TemporaryLogProtocol(int ALogProtocol)
 {
   FLogProtocol = ALogProtocol;
   UpdateActualLogProtocol();
 }
-
-void TConfiguration::TemporaryLogSensitive(bool ALogSensitive)
+//---------------------------------------------------------------------
+void __fastcall TConfiguration::TemporaryLogSensitive(bool ALogSensitive)
 {
   FLogSensitive = ALogSensitive;
 }
-
-void TConfiguration::TemporaryLogMaxSize(int64_t ALogMaxSize)
+//---------------------------------------------------------------------
+void __fastcall TConfiguration::TemporaryLogMaxSize(__int64 ALogMaxSize)
 {
   FLogMaxSize = ALogMaxSize;
 }
-
-void TConfiguration::TemporaryLogMaxCount(intptr_t ALogMaxCount)
+//---------------------------------------------------------------------
+void __fastcall TConfiguration::TemporaryLogMaxCount(int ALogMaxCount)
 {
   FLogMaxCount = ALogMaxCount;
 }
-
-void TConfiguration::SetLogging(bool Value)
+//---------------------------------------------------------------------
+void __fastcall TConfiguration::SetLogging(bool value)
 {
   TGuard Guard(FCriticalSection);
-  if (GetLogging() != Value)
+  if (Logging != value)
   {
-    FPermanentLogging = Value;
-    FLogging = Value;
+    FPermanentLogging = value;
+    FLogging = value;
     UpdateActualLogProtocol();
     Changed();
   }
 }
-
-bool TConfiguration::GetLogging() const
+//---------------------------------------------------------------------
+bool __fastcall TConfiguration::GetLogging()
 {
   TGuard Guard(FCriticalSection);
   return FPermanentLogging;
 }
-
-void TConfiguration::SetLogFileName(UnicodeString Value)
+//---------------------------------------------------------------------
+void __fastcall TConfiguration::SetLogFileName(UnicodeString value)
 {
   TGuard Guard(FCriticalSection);
-  if (GetLogFileName() != Value)
+  if (LogFileName != value)
   {
-    FPermanentLogFileName = Value;
-    FLogFileName = Value;
+    FPermanentLogFileName = value;
+    FLogFileName = value;
     Changed();
   }
 }
-
-UnicodeString TConfiguration::GetLogFileName() const
+//---------------------------------------------------------------------
+UnicodeString  __fastcall TConfiguration::GetLogFileName()
 {
   TGuard Guard(FCriticalSection);
   return FPermanentLogFileName;
 }
-
-void TConfiguration::SetActionsLogFileName(UnicodeString Value)
+//---------------------------------------------------------------------
+void __fastcall TConfiguration::SetActionsLogFileName(UnicodeString value)
 {
   TGuard Guard(FCriticalSection);
-  if (GetActionsLogFileName() != Value)
+  if (ActionsLogFileName != value)
   {
-    FPermanentActionsLogFileName = Value;
-    FActionsLogFileName = Value;
+    FPermanentActionsLogFileName = value;
+    FActionsLogFileName = value;
     Changed();
   }
 }
-
-UnicodeString TConfiguration::GetPermanentActionsLogFileName() const
+//---------------------------------------------------------------------
+UnicodeString __fastcall TConfiguration::GetPermanentActionsLogFileName()
 {
   TGuard Guard(FCriticalSection);
   return FPermanentActionsLogFileName;
 }
-
-UnicodeString TConfiguration::GetActionsLogFileName() const
+//---------------------------------------------------------------------
+UnicodeString __fastcall TConfiguration::GetActionsLogFileName()
 {
   TGuard Guard(FCriticalSection);
   return FActionsLogFileName;
 }
-
-bool TConfiguration::GetLogToFile() const
+//---------------------------------------------------------------------
+bool __fastcall TConfiguration::GetLogToFile()
 {
   // guarded within GetLogFileName
-  return !GetLogFileName().IsEmpty();
+  return !LogFileName.IsEmpty();
 }
-
-void TConfiguration::UpdateActualLogProtocol()
+//---------------------------------------------------------------------
+void __fastcall TConfiguration::UpdateActualLogProtocol()
 {
   FActualLogProtocol = FLogging ? FLogProtocol : 0;
 }
-
-void TConfiguration::SetLogProtocol(intptr_t Value)
+//---------------------------------------------------------------------
+void __fastcall TConfiguration::SetLogProtocol(int value)
 {
   TGuard Guard(FCriticalSection);
-  if (GetLogProtocol() != Value)
+  if (LogProtocol != value)
   {
-    FPermanentLogProtocol = Value;
-    FLogProtocol = Value;
+    FPermanentLogProtocol = value;
+    FLogProtocol = value;
     Changed();
     UpdateActualLogProtocol();
   }
 }
-
-void TConfiguration::SetLogActions(bool Value)
+//---------------------------------------------------------------------
+void __fastcall TConfiguration::SetLogActions(bool value)
 {
   TGuard Guard(FCriticalSection);
-  if (GetLogActions() != Value)
+  if (LogActions != value)
   {
-    FPermanentLogActions = Value;
-    FLogActions = Value;
+    FPermanentLogActions = value;
+    FLogActions = value;
     Changed();
   }
 }
-
-bool TConfiguration::GetLogActions() const
+//---------------------------------------------------------------------
+bool __fastcall TConfiguration::GetLogActions()
 {
   TGuard Guard(FCriticalSection);
   return FPermanentLogActions;
 }
-
-void TConfiguration::SetLogFileAppend(bool Value)
+//---------------------------------------------------------------------
+void __fastcall TConfiguration::SetLogFileAppend(bool value)
 {
   SET_CONFIG_PROPERTY(LogFileAppend);
 }
-
-void TConfiguration::SetLogSensitive(bool Value)
+//---------------------------------------------------------------------
+void __fastcall TConfiguration::SetLogSensitive(bool value)
 {
-  if (GetLogSensitive() != Value)
+  if (LogSensitive != value)
   {
-    FPermanentLogSensitive = Value;
-    FLogSensitive = Value;
+    FPermanentLogSensitive = value;
+    FLogSensitive = value;
     Changed();
   }
 }
-
-void TConfiguration::SetLogMaxSize(int64_t Value)
+//---------------------------------------------------------------------
+void __fastcall TConfiguration::SetLogMaxSize(__int64 value)
 {
   TGuard Guard(FCriticalSection);
-  if (GetLogMaxSize() != Value)
+  if (LogMaxSize != value)
   {
-    FPermanentLogMaxSize = Value;
-    FLogMaxSize = Value;
+    FPermanentLogMaxSize = value;
+    FLogMaxSize = value;
     Changed();
   }
 }
-
-int64_t TConfiguration::GetLogMaxSize() const
+//---------------------------------------------------------------------
+__int64 __fastcall TConfiguration::GetLogMaxSize()
 {
   TGuard Guard(FCriticalSection);
   return FPermanentLogMaxSize;
 }
-
-void TConfiguration::SetLogMaxCount(intptr_t Value)
+//---------------------------------------------------------------------
+void __fastcall TConfiguration::SetLogMaxCount(int value)
 {
-  if (GetLogMaxCount() != Value)
+  if (LogMaxCount != value)
   {
-    FPermanentLogMaxCount = Value;
-    FLogMaxCount = Value;
+    FPermanentLogMaxCount = value;
+    FLogMaxCount = value;
     Changed();
   }
 }
-
-intptr_t TConfiguration::GetLogMaxCount() const
+//---------------------------------------------------------------------
+int __fastcall TConfiguration::GetLogMaxCount()
 {
   TGuard Guard(FCriticalSection);
   return FPermanentLogMaxCount;
 }
-
-UnicodeString TConfiguration::GetDefaultLogFileName() const
+//---------------------------------------------------------------------
+UnicodeString __fastcall TConfiguration::GetDefaultLogFileName()
 {
-  return "%TEMP%\\&S.log";
+  return L"%TEMP%\\!S.log";
 }
-
-void TConfiguration::SetConfirmOverwriting(bool Value)
+//---------------------------------------------------------------------------
+void __fastcall TConfiguration::SetConfirmOverwriting(bool value)
 {
   TGuard Guard(FCriticalSection);
   SET_CONFIG_PROPERTY(ConfirmOverwriting);
 }
-
-bool TConfiguration::GetConfirmOverwriting() const
+//---------------------------------------------------------------------------
+bool __fastcall TConfiguration::GetConfirmOverwriting()
 {
   TGuard Guard(FCriticalSection);
   return FConfirmOverwriting;
 }
-
-void TConfiguration::SetConfirmResume(bool Value)
+//---------------------------------------------------------------------------
+void __fastcall TConfiguration::SetConfirmResume(bool value)
 {
   TGuard Guard(FCriticalSection);
   SET_CONFIG_PROPERTY(ConfirmResume);
 }
-
-bool TConfiguration::GetConfirmResume() const
+//---------------------------------------------------------------------------
+bool __fastcall TConfiguration::GetConfirmResume()
 {
   TGuard Guard(FCriticalSection);
   return FConfirmResume;
 }
-
-void TConfiguration::SetAutoReadDirectoryAfterOp(bool Value)
+//---------------------------------------------------------------------------
+void __fastcall TConfiguration::SetAutoReadDirectoryAfterOp(bool value)
 {
   TGuard Guard(FCriticalSection);
   SET_CONFIG_PROPERTY(AutoReadDirectoryAfterOp);
 }
-
-bool TConfiguration::GetAutoReadDirectoryAfterOp() const
+//---------------------------------------------------------------------------
+bool __fastcall TConfiguration::GetAutoReadDirectoryAfterOp()
 {
   TGuard Guard(FCriticalSection);
   return FAutoReadDirectoryAfterOp;
 }
-
-UnicodeString TConfiguration::TimeFormat() const
+//---------------------------------------------------------------------------
+UnicodeString __fastcall TConfiguration::GetTimeFormat()
 {
-  return "h:nn:ss";
+  return L"h:nn:ss";
 }
-
-UnicodeString TConfiguration::GetPartialExt() const
+//---------------------------------------------------------------------------
+UnicodeString __fastcall TConfiguration::GetPartialExt() const
 {
   return PARTIAL_EXT;
 }
-
-UnicodeString TConfiguration::GetDefaultKeyFile() const
+//---------------------------------------------------------------------------
+UnicodeString __fastcall TConfiguration::GetDefaultKeyFile()
 {
   return L"";
 }
-
-bool TConfiguration::GetRememberPassword() const
+//---------------------------------------------------------------------------
+bool __fastcall TConfiguration::GetRememberPassword()
 {
   return false;
 }
-
-void TConfiguration::SetSessionReopenAuto(intptr_t Value)
+//---------------------------------------------------------------------------
+void __fastcall TConfiguration::SetSessionReopenAuto(int value)
 {
   SET_CONFIG_PROPERTY(SessionReopenAuto);
 }
-
-void TConfiguration::SetSessionReopenBackground(intptr_t Value)
+//---------------------------------------------------------------------------
+void __fastcall TConfiguration::SetSessionReopenBackground(int value)
 {
   SET_CONFIG_PROPERTY(SessionReopenBackground);
 }
-
-void TConfiguration::SetSessionReopenTimeout(intptr_t Value)
+//---------------------------------------------------------------------------
+void __fastcall TConfiguration::SetSessionReopenTimeout(int value)
 {
   SET_CONFIG_PROPERTY(SessionReopenTimeout);
 }
-
-void TConfiguration::SetSessionReopenAutoStall(intptr_t Value)
+//---------------------------------------------------------------------------
+void __fastcall TConfiguration::SetSessionReopenAutoStall(int value)
 {
   SET_CONFIG_PROPERTY(SessionReopenAutoStall);
 }
-
-void TConfiguration::SetTunnelLocalPortNumberLow(intptr_t Value)
+//---------------------------------------------------------------------------
+void __fastcall TConfiguration::SetTunnelLocalPortNumberLow(int value)
 {
   SET_CONFIG_PROPERTY(TunnelLocalPortNumberLow);
 }
-
-void TConfiguration::SetTunnelLocalPortNumberHigh(intptr_t Value)
+//---------------------------------------------------------------------------
+void __fastcall TConfiguration::SetTunnelLocalPortNumberHigh(int value)
 {
   SET_CONFIG_PROPERTY(TunnelLocalPortNumberHigh);
 }
-
-void TConfiguration::SetCacheDirectoryChangesMaxSize(intptr_t Value)
+//---------------------------------------------------------------------------
+void __fastcall TConfiguration::SetCacheDirectoryChangesMaxSize(int value)
 {
   SET_CONFIG_PROPERTY(CacheDirectoryChangesMaxSize);
 }
-
-void TConfiguration::SetShowFtpWelcomeMessage(bool Value)
+//---------------------------------------------------------------------------
+void __fastcall TConfiguration::SetShowFtpWelcomeMessage(bool value)
 {
   SET_CONFIG_PROPERTY(ShowFtpWelcomeMessage);
 }
-
-bool TConfiguration::GetPersistent() const
+//---------------------------------------------------------------------------
+bool __fastcall TConfiguration::GetPersistent()
 {
-  return (GetStorage() != stNul);
+  return (Storage != stNul);
 }
-
-void TConfiguration::SetSessionReopenAutoMaximumNumberOfRetries(intptr_t Value)
+//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
+void __fastcall TShortCuts::Add(TShortCut ShortCut)
 {
-  SET_CONFIG_PROPERTY(SessionReopenAutoMaximumNumberOfRetries);
+  FShortCuts.insert(ShortCut);
 }
-
-
-void TShortCuts::Add(const TShortCut &ShortCut)
+//---------------------------------------------------------------------------
+bool __fastcall TShortCuts::Has(TShortCut ShortCut) const
 {
-  FShortCuts.push_back(ShortCut);
+  return (FShortCuts.count(ShortCut) != 0);
 }
-
-bool TShortCuts::Has(const TShortCut &ShortCut) const
-{
-  rde::vector<TShortCut>::iterator it = const_cast<TShortCuts *>(this)->FShortCuts.find(ShortCut);
-  return (it != FShortCuts.end());
-}
-

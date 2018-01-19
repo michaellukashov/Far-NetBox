@@ -647,19 +647,26 @@ void TFileOperationProgressType::AddTransferredToTotals(int64_t ASize)
   TGuard Guard(*FSection);
 
   FTotalTransferred += ASize;
-  intptr_t Ticks = static_cast<intptr_t>(::GetTickCount());
-  if (FTicks.empty() ||
-    (FTicks.back() > Ticks) || // ticks wrap after 49.7 days
-    ((Ticks - FTicks.back()) >= MSecsPerSec))
+  if (ASize >= 0)
   {
-    FTicks.push_back(Ticks);
-    FTotalTransferredThen.push_back(FTotalTransferred);
-  }
+    intptr_t Ticks = static_cast<intptr_t>(::GetTickCount());
+    if (FTicks.empty() ||
+        (FTicks.back() > Ticks) || // ticks wrap after 49.7 days
+        ((Ticks - FTicks.back()) >= MSecsPerSec))
+    {
+      FTicks.push_back(Ticks);
+      FTotalTransferredThen.push_back(FTotalTransferred);
+    }
 
-  if (FTicks.size() > 10)
+    if (FTicks.size() > 10)
+    {
+      FTicks.erase(FTicks.begin());
+      FTotalTransferredThen.erase(FTotalTransferredThen.begin());
+    }
+  }
+  else
   {
-    FTicks.erase(FTicks.begin());
-    FTotalTransferredThen.erase(FTotalTransferredThen.begin());
+    FTicks.clear();
   }
 
   if (FParent != nullptr)

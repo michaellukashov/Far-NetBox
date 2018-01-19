@@ -707,7 +707,7 @@ bool HasGSSAPI(UnicodeString CustomPath)
       Filename *filename = filename_from_str(UTF8String(CustomPath).c_str());
       conf_set_filename(conf, CONF_ssh_gss_custom, filename);
       filename_free(filename);
-      List = ssh_gss_setup(conf);
+      List = ssh_gss_setup(conf, NULL);
       for (intptr_t Index = 0; (has <= 0) && (Index < List->nlibraries); ++Index)
       {
         ssh_gss_library *library = &List->libraries[Index];
@@ -753,13 +753,19 @@ static void DoNormalizeFingerprint(UnicodeString &Fingerprint, UnicodeString &Ke
       intptr_t LenStart = Name.Length() + 1;
       Fingerprint[LenStart] = NormalizedSeparator;
       intptr_t Space = Fingerprint.Pos(L" ");
-      DebugAssert(IsNumber(Fingerprint.SubString(LenStart + 1, Space - LenStart - 1)));
-      Fingerprint.Delete(LenStart + 1, Space - LenStart);
-      Fingerprint = ReplaceChar(Fingerprint, L':', NormalizedSeparator);
-      KeyType = UnicodeString(SignKey->keytype);
-      return;
+      // If not a number, it's an invalid input,
+      // either something completelly wrong, or it can be OpenSSH base64 public key,
+      // that got here from TPasteKeyHandler::Paste
+      if (IsNumber(Fingerprint.SubString(LenStart + 1, Space - LenStart - 1)))
+      {
+        Fingerprint.Delete(LenStart + 1, Space - LenStart);
+        // noop for SHA256 fingerprints
+        Fingerprint = ReplaceChar(Fingerprint, L':', NormalizedSeparator);
+        KeyType = UnicodeString(SignKey->keytype);
+        return;
+      }
     }
-    if (StartsStr(Name + NormalizedSeparator, Fingerprint))
+    else if (StartsStr(Name + NormalizedSeparator, Fingerprint))
     {
       KeyType = UnicodeString(SignKey->keytype);
       return;
@@ -806,5 +812,83 @@ UnicodeString Sha256(const char *Data, size_t Size)
 void DllHijackingProtection()
 {
   dll_hijacking_protection();
+}
+//---------------------------------------------------------------------------
+UnicodeString __fastcall ParseOpenSshPubLine(const UnicodeString & Line, const struct ssh_signkey *& Algorithm)
+{
+  UTF8String UtfLine = UTF8String(Line);
+  char * AlgorithmName = NULL;
+  int PubBlobLen = 0;
+  char * CommentPtr = NULL;
+  const char * ErrorStr = NULL;
+  unsigned char * PubBlob = openssh_loadpub_line(UtfLine.c_str(), &AlgorithmName, &PubBlobLen, &CommentPtr, &ErrorStr);
+  UnicodeString Result;
+  if (PubBlob == NULL)
+  {
+    throw Exception(UnicodeString(ErrorStr));
+  }
+  else
+  {
+    try
+    {
+      Algorithm = find_pubkey_alg(AlgorithmName);
+      if (Algorithm == NULL)
+      {
+        throw Exception(FORMAT(L"Unknown public key algorithm \"%s\".", (AlgorithmName)));
+      }
+
+      void * Key = Algorithm->newkey(Algorithm, reinterpret_cast<const char*>(PubBlob), PubBlobLen);
+      if (Key == NULL)
+      {
+        throw Exception(L"Invalid public key.");
+      }
+      char * FmtKey = Algorithm->fmtkey(Key);
+      Result = UnicodeString(FmtKey);
+      sfree(FmtKey);
+      Algorithm->freekey(Key);
+    }
+    __finally
+    {
+      sfree(PubBlob);
+      sfree(AlgorithmName);
+      sfree(CommentPtr);
+    }
+  }
+  return Result;
+}
+//---------------------------------------------------------------------------
+UnicodeString __fastcall GetKeyTypeHuman(const UnicodeString & KeyType)
+{
+  UnicodeString Result;
+  if (KeyType == ssh_dss.keytype)
+  {
+    Result = L"DSA";
+  }
+  else if (KeyType == ssh_rsa.keytype)
+  {
+    Result = L"RSA";
+  }
+  else if (KeyType == ssh_ecdsa_ed25519.keytype)
+  {
+    Result = L"Ed25519";
+  }
+  else if (KeyType == ssh_ecdsa_nistp256.keytype)
+  {
+    Result = L"ECDSA/nistp256";
+  }
+  else if (KeyType == ssh_ecdsa_nistp384.keytype)
+  {
+    Result = L"ECDSA/nistp384";
+  }
+  else if (KeyType == ssh_ecdsa_nistp521.keytype)
+  {
+    Result = L"ECDSA/nistp521";
+  }
+  else
+  {
+    DebugFail();
+    Result = KeyType;
+  }
+  return Result;
 }
 

@@ -1119,7 +1119,7 @@ TCustomCommandData::TCustomCommandData(const TCustomCommandData &Data)
 TCustomCommandData::TCustomCommandData(TTerminal *Terminal)
 {
   Init(Terminal->GetSessionData(), Terminal->TerminalGetUserName(), Terminal->GetPassword(),
-    Terminal->GetSessionInfo().HostKeyFingerprint);
+  Terminal->GetSessionInfo().HostKeyFingerprintSHA256);
 }
 
 TCustomCommandData::TCustomCommandData(

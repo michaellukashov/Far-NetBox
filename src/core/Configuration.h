@@ -178,6 +178,8 @@ public:
   void CleanupRegistry(UnicodeString CleanupSubKey);
   UnicodeString BannerHash(UnicodeString Banner) const;
   static UnicodeString PropertyToKey(UnicodeString Property);
+  void __fastcall SetBannerData(const UnicodeString & SessionKey, const UnicodeString & BannerHash, unsigned int Params);
+  void __fastcall GetBannerData(const UnicodeString & SessionKey, UnicodeString & BannerHash, unsigned int & Params);
   virtual void DoSave(bool All, bool Explicit);
   UnicodeString FormatFingerprintKey(UnicodeString SiteKey, UnicodeString FingerprintType) const;
 
@@ -240,9 +242,9 @@ public:
     TRemoteDirectoryChangesCache *DirectoryChangesCache);
   void SaveDirectoryChangesCache(const UnicodeString SessionKey,
     TRemoteDirectoryChangesCache *DirectoryChangesCache);
-  bool ShowBanner(const UnicodeString SessionKey, UnicodeString Banner);
-  void NeverShowBanner(const UnicodeString SessionKey, UnicodeString Banner);
-  void RememberLastFingerprint(UnicodeString SiteKey, UnicodeString FingerprintType, UnicodeString Fingerprint);
+  bool __fastcall ShowBanner(const UnicodeString & SessionKey, const UnicodeString & Banner, unsigned int & Params);
+  void __fastcall NeverShowBanner(const UnicodeString & SessionKey, const UnicodeString & Banner);
+  void __fastcall SetBannerParams(const UnicodeString & SessionKey, unsigned int Params);
   UnicodeString GetLastFingerprint(UnicodeString SiteKey, UnicodeString FingerprintType);
   virtual THierarchicalStorage *CreateConfigStorage();
   virtual THierarchicalStorage *CreateStorage(bool &SessionList);
@@ -389,3 +391,5 @@ NB_CORE_EXPORT extern const UnicodeString Crc32ChecksumAlg;
 
 NB_CORE_EXPORT extern const UnicodeString SshFingerprintType;
 NB_CORE_EXPORT extern const UnicodeString TlsFingerprintType;
+//---------------------------------------------------------------------------
+extern const UnicodeString HttpsCertificateStorageKey;

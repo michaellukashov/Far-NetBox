@@ -270,6 +270,7 @@ class NB_CORE_EXPORT TRemoteFileList : public TObjectList
   friend class TSFTPFileSystem;
   friend class TFTPFileSystem;
   friend class TWebDAVFileSystem;
+  friend class TS3FileSystem;
 public:
   static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TRemoteFileList); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TRemoteFileList) || TObjectList::is(Kind); }

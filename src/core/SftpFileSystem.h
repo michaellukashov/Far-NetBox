@@ -63,18 +63,18 @@ public:
     UnicodeString TargetDir, const TCopyParamType *CopyParam,
     intptr_t Params, TFileOperationProgressType *OperationProgress,
     TOnceDoneOperation &OnceDoneOperation) override;
-  virtual void CopyToRemote(const TStrings *AFilesToCopy,
-    UnicodeString TargetDir, const TCopyParamType *CopyParam,
-    intptr_t Params, TFileOperationProgressType *OperationProgress,
-    TOnceDoneOperation &OnceDoneOperation) override;
-  virtual void RemoteCreateDirectory(UnicodeString ADirName) override;
-  virtual void CreateLink(UnicodeString AFileName, UnicodeString PointTo, bool Symbolic) override;
-  virtual void RemoteDeleteFile(UnicodeString AFileName,
-    const TRemoteFile *AFile, intptr_t Params, TRmSessionAction &Action) override;
-  virtual void CustomCommandOnFile(UnicodeString AFileName,
-    const TRemoteFile *AFile, UnicodeString Command, intptr_t Params, TCaptureOutputEvent OutputEvent) override;
-  virtual void DoStartup() override;
-  virtual void HomeDirectory() override;
+  virtual void __fastcall Source(
+    TLocalFileHandle & Handle, const UnicodeString & TargetDir, UnicodeString & DestFileName,
+    const TCopyParamType * CopyParam, int Params,
+    TFileOperationProgressType * OperationProgress, unsigned int Flags,
+    TUploadSessionAction & Action, bool & ChildError);
+  virtual void __fastcall DirectorySunk(
+    const UnicodeString & DestFullName, const TRemoteFile * File, const TCopyParamType * CopyParam);
+  virtual void __fastcall Sink(
+    const UnicodeString & FileName, const TRemoteFile * File,
+    const UnicodeString & TargetDir, UnicodeString & DestFileName, int Attrs,
+    const TCopyParamType * CopyParam, int Params, TFileOperationProgressType * OperationProgress,
+    unsigned int Flags, TDownloadSessionAction & Action);
   virtual bool IsCapable(intptr_t Capability) const override;
   virtual void LookupUsersGroups() override;
   virtual void ReadCurrentDirectory() override;
@@ -91,14 +91,15 @@ public:
   virtual void SpaceAvailable(UnicodeString APath,
     TSpaceAvailable &ASpaceAvailable) override;
   virtual const TSessionInfo &GetSessionInfo() const override;
-  virtual const TFileSystemInfo &GetFileSystemInfo(bool Retrieve) override;
+  virtual void __fastcall RenameFile(const UnicodeString FileName, const TRemoteFile * File,
   virtual bool TemporaryTransferFile(UnicodeString AFileName) override;
-  virtual bool GetStoredCredentialsTried() const override;
+  virtual void __fastcall CopyFile(const UnicodeString FileName, const TRemoteFile * File,
   virtual UnicodeString RemoteGetUserName() const override;
   virtual void GetSupportedChecksumAlgs(TStrings *Algs) override;
   virtual void LockFile(UnicodeString AFileName, const TRemoteFile *AFile) override;
   virtual void UnlockFile(UnicodeString AFileName, const TRemoteFile *AFile) override;
   virtual void UpdateFromMain(TCustomFileSystem *MainFileSystem) override;
+  virtual void __fastcall ClearCaches();
 
 protected:
   TSecureShell *FSecureShell;
@@ -170,9 +171,6 @@ protected:
   void RegisterChecksumAlg(UnicodeString Alg, UnicodeString SftpAlg);
   void DoDeleteFile(UnicodeString AFileName, SSH_FXP_TYPES Type);
 
-  void SFTPSourceRobust(UnicodeString AFileName,
-    const TRemoteFile *AFile,
-    UnicodeString TargetDir, const TCopyParamType *CopyParam, intptr_t Params,
     TFileOperationProgressType *OperationProgress, uintptr_t Flags);
   void SFTPSource(UnicodeString AFileName,
     const TRemoteFile *AFile,
@@ -187,26 +185,12 @@ protected:
   void SFTPCloseRemote(RawByteString Handle,
     UnicodeString AFileName, TFileOperationProgressType *OperationProgress,
     bool TransferFinished, bool Request, TSFTPPacket *Packet);
-  void SFTPDirectorySource(UnicodeString DirectoryName,
-    UnicodeString TargetDir, uintptr_t LocalFileAttrs, const TCopyParamType *CopyParam,
-    intptr_t Params, TFileOperationProgressType *OperationProgress, uintptr_t Flags);
   void SFTPConfirmOverwrite(UnicodeString ASourceFullFileName, UnicodeString &ATargetFileName,
     const TCopyParamType *CopyParam, intptr_t AParams, TFileOperationProgressType *OperationProgress,
     const TOverwriteFileParams *FileParams,
     TOverwriteMode &OverwriteMode);
   bool SFTPConfirmResume(UnicodeString DestFileName, bool PartialBiggerThanSource,
     TFileOperationProgressType *OperationProgress);
-  void SFTPSinkRobust(UnicodeString AFileName,
-    const TRemoteFile *AFile, UnicodeString TargetDir,
-    const TCopyParamType *CopyParam, intptr_t Params,
-    TFileOperationProgressType *OperationProgress, uintptr_t Flags);
-  void SFTPSink(UnicodeString AFileName,
-    const TRemoteFile *AFile, UnicodeString TargetDir,
-    const TCopyParamType *CopyParam, intptr_t Params,
-    TFileOperationProgressType *OperationProgress, uintptr_t Flags,
-    TDownloadSessionAction &Action, bool &ChildError);
-  void SFTPSinkFile(UnicodeString AFileName,
-    const TRemoteFile *AFile, void *Param);
   char *GetEOL() const;
   inline void BusyStart();
   inline void BusyEnd();

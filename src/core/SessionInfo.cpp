@@ -21,8 +21,43 @@ static UnicodeString DoXmlEscape(UnicodeString AStr, bool NewLine)
   for (intptr_t Index = 1; Index <= Str.Length(); ++Index)
   {
     const wchar_t *Repl = nullptr;
+    UnicodeString Repl;
     switch (Str[Index])
     {
+      case L'\x00': // \0 Is not valid in XML anyway
+      case L'\x01':
+      case L'\x02':
+      case L'\x03':
+      case L'\x04':
+      case L'\x05':
+      case L'\x06':
+      case L'\x07':
+      case L'\x08':
+      // \n is handled below
+      case L'\x0B':
+      case L'\x0C':
+      // \r is handled below
+      case L'\x0E':
+      case L'\x0F':
+      case L'\x10':
+      case L'\x11':
+      case L'\x12':
+      case L'\x13':
+      case L'\x14':
+      case L'\x15':
+      case L'\x16':
+      case L'\x17':
+      case L'\x18':
+      case L'\x19':
+      case L'\x1A':
+      case L'\x1B':
+      case L'\x1C':
+      case L'\x1D':
+      case L'\x1E':
+      case L'\x1F':
+        Repl = L"#x" + ByteToHex((unsigned char)Str[i]) + L";";
+        break;
+
     case L'&':
       Repl = L"amp;";
       break;
@@ -52,11 +87,11 @@ static UnicodeString DoXmlEscape(UnicodeString AStr, bool NewLine)
       break;
     }
 
-    if (Repl != nullptr)
+    if (!Repl.IsEmpty())
     {
       Str[Index] = L'&';
       Str.Insert(Repl, Index + 1);
-      Index += nb::StrLength(Repl);
+      Index += Repl.Length();
     }
   }
   return Str;
@@ -151,29 +186,13 @@ public:
           for (intptr_t Index = 0; Index < FFileList->GetCount(); ++Index)
           {
             TRemoteFile *File = FFileList->GetFile(Index);
-
-            FLog->AddIndented(L"    <file>");
-            FLog->AddIndented(FORMAT("      <filename value=\"%s\" />", XmlAttributeEscape(File->GetFileName())));
-            FLog->AddIndented(FORMAT("      <type value=\"%s\" />", XmlAttributeEscape(File->GetType())));
-            if (!File->GetIsDirectory())
-            {
-              FLog->AddIndented(FORMAT("      <size value=\"%s\" />", ::Int64ToStr(File->GetSize())));
-            }
-            FLog->AddIndented(L"    </file>");
+            RecordFile(L"    ", File, true);
           }
           FLog->AddIndented(L"  </files>");
         }
         if (FFile != nullptr)
         {
-          FLog->AddIndented(L"  <file>");
-          FLog->AddIndented(FORMAT("    <type value=\"%s\" />", XmlAttributeEscape(FFile->GetType())));
-          if (!FFile->GetIsDirectory())
-          {
-            FLog->AddIndented(FORMAT("    <size value=\"%s\" />", ::Int64ToStr(FFile->GetSize())));
-          }
-          FLog->AddIndented(FORMAT("    <modification value=\"%s\" />", StandardTimestamp(FFile->GetModification())));
-          FLog->AddIndented(FORMAT("    <permissions value=\"%s\" />", XmlAttributeEscape(FFile->GetRights()->GetText())));
-          FLog->AddIndented(L"  </file>");
+          RecordFile(L"  ", FFile, false);
         }
         if (FState == RolledBack)
         {
@@ -322,6 +341,7 @@ protected:
     case laMkdir: return L"mkdir";
     case laRm: return L"rm";
     case laMv: return L"mv";
+      case laCp: return L"cp";
     case laCall: return L"call";
     case laLs: return L"ls";
     case laStat: return L"stat";
@@ -337,6 +357,34 @@ protected:
   {
     FNames->Add(Name);
     FValues->Add(Value);
+  }
+
+  void __fastcall RecordFile(const UnicodeString & Indent, TRemoteFile * File, bool IncludeFileName)
+  {
+    FLog->AddIndented(Indent + L"<file>");
+    FLog->AddIndented(Indent + FORMAT(L"  <filename value=\"%s\" />", (XmlAttributeEscape(File->FileName))));
+    FLog->AddIndented(Indent + FORMAT(L"  <type value=\"%s\" />", (XmlAttributeEscape(File->Type))));
+    if (!File->IsDirectory)
+    {
+      FLog->AddIndented(Indent + FORMAT(L"  <size value=\"%s\" />", (IntToStr(File->Size))));
+    }
+    if (File->ModificationFmt != mfNone)
+    {
+      FLog->AddIndented(Indent + FORMAT(L"  <modification value=\"%s\" />", (StandardTimestamp(File->Modification))));
+    }
+    if (!File->Rights->Unknown)
+    {
+      FLog->AddIndented(Indent + FORMAT(L"  <permissions value=\"%s\" />", (XmlAttributeEscape(File->Rights->Text))));
+    }
+    if (File->Owner.IsSet)
+    {
+      FLog->AddIndented(Indent + FORMAT(L"  <owner value=\"%s\" />", (XmlAttributeEscape(File->Owner.DisplayText))));
+    }
+    if (File->Group.IsSet)
+    {
+      FLog->AddIndented(Indent + FORMAT(L"  <group value=\"%s\" />", (XmlAttributeEscape(File->Group.DisplayText))));
+    }
+    FLog->AddIndented(Indent + L"</file>");
   }
 
 private:
@@ -534,6 +582,13 @@ TMvSessionAction::TMvSessionAction(TActionLog *Log,
   Destination(ADestination);
 }
 
+__fastcall TCpSessionAction::TCpSessionAction(TActionLog * Log,
+    const UnicodeString & FileName, const UnicodeString & ADestination) :
+  TFileLocationSessionAction(Log, laCp, FileName)
+{
+  Destination(ADestination);
+}
+//---------------------------------------------------------------------------
 TCallSessionAction::TCallSessionAction(TActionLog *Log,
   UnicodeString Command, UnicodeString Destination) :
   TSessionAction(Log, laCall)
@@ -1157,8 +1212,8 @@ void TSessionLog::DoAddStartupInfo(TSessionData *Data)
         BooleanToEngStr(Data->GetAuthKI()), BooleanToEngStr(Data->GetAuthGSSAPI()));
       if (Data->GetAuthGSSAPI())
       {
-        ADF("GSSAPI: Forwarding: %s",
-          BooleanToEngStr(Data->GetGSSAPIFwdTGT()));
+        ADF("GSSAPI: Forwarding: %s; Libs: %s; Custom: %s",
+          BooleanToEngStr(Data->GSSAPIFwdTGT), Data->GssLibList, Data->GssLibCustom);
       }
       ADF("Ciphers: %s; Ssh2DES: %s",
         Data->GetCipherList(), BooleanToEngStr(Data->GetSsh2DES()));
@@ -1239,6 +1294,15 @@ void TSessionLog::DoAddStartupInfo(TSessionData *Data)
       FtpsOn = (Data->GetFtps() != ftpsNone);
       ADF("HTTPS: %s [Client certificate: %s]",
         BooleanToEngStr(FtpsOn), LogSensitive(Data->GetTlsCertificateFile()));
+    }
+    if (Data->FSProtocol == fsS3)
+    {
+      FtpsOn = (Data->Ftps != ftpsNone);
+      ADF(L"HTTPS: %s", (BooleanToEngStr(FtpsOn)));
+      if (!Data->S3DefaultRegion.IsEmpty())
+      {
+        ADF(L"S3: Default region: %s", (Data->S3DefaultRegion));
+      }
     }
     if (FtpsOn)
     {

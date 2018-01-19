@@ -148,7 +148,7 @@ public:
   void SendNull();
 
   const TSessionInfo &GetSessionInfo() const;
-  UnicodeString GetHostKeyFingerprint() const;
+  void __fastcall GetHostKeyFingerprint(UnicodeString & SHA256, UnicodeString & MD5) const;
   bool SshFallbackCmd() const;
   uint32_t MinPacketSize() const;
   uint32_t MaxPacketSize() const;
@@ -175,8 +175,12 @@ public:
   void VerifyHostKey(UnicodeString AHost, intptr_t Port,
     UnicodeString AKeyType, UnicodeString AKeyStr, UnicodeString AFingerprint);
   bool HaveHostKey(UnicodeString AHost, intptr_t Port, UnicodeString KeyType);
+  void __fastcall VerifyHostKey(
+    const UnicodeString & Host, int Port, const UnicodeString & KeyType, const UnicodeString & KeyStr,
+    const UnicodeString & Fingerprint);
   void AskAlg(const UnicodeString AlgType, const UnicodeString AlgName);
   void DisplayBanner(UnicodeString Banner);
+  void __fastcall AskAlg(UnicodeString AlgType, UnicodeString AlgName);
   void OldKeyfileWarning();
   void PuttyLogEvent(const char *AStr);
   UnicodeString ConvertFromPutty(const char *Str, intptr_t Length) const;

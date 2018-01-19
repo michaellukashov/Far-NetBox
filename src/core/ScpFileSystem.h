@@ -43,16 +43,16 @@ public:
     UnicodeString TargetDir, const TCopyParamType *CopyParam,
     intptr_t Params, TFileOperationProgressType *OperationProgress,
     TOnceDoneOperation &OnceDoneOperation) override;
-  virtual void CopyToRemote(const TStrings *AFilesToCopy,
-    UnicodeString TargetDir, const TCopyParamType *CopyParam,
-    intptr_t Params, TFileOperationProgressType *OperationProgress,
-    TOnceDoneOperation &OnceDoneOperation) override;
-  virtual void RemoteCreateDirectory(UnicodeString ADirName) override;
-  virtual void CreateLink(UnicodeString AFileName, UnicodeString PointTo, bool Symbolic) override;
-  virtual void RemoteDeleteFile(UnicodeString AFileName,
-    const TRemoteFile *AFile, intptr_t Params, TRmSessionAction &Action) override;
-  virtual void CustomCommandOnFile(UnicodeString AFileName,
-    const TRemoteFile *AFile, UnicodeString Command, intptr_t Params, TCaptureOutputEvent OutputEvent) override;
+  virtual void __fastcall Source(
+    TLocalFileHandle & Handle, const UnicodeString & TargetDir, UnicodeString & DestFileName,
+    const TCopyParamType * CopyParam, int Params,
+    TFileOperationProgressType * OperationProgress, unsigned int Flags,
+    TUploadSessionAction & Action, bool & ChildError);
+  virtual void __fastcall Sink(
+    const UnicodeString & FileName, const TRemoteFile * File,
+    const UnicodeString & TargetDir, UnicodeString & DestFileName, int Attrs,
+    const TCopyParamType * CopyParam, int Params, TFileOperationProgressType * OperationProgress,
+    unsigned int Flags, TDownloadSessionAction & Action);
   virtual void DoStartup() override;
   virtual void HomeDirectory() override;
   virtual bool IsCapable(intptr_t Capability) const override;
@@ -69,9 +69,9 @@ public:
     UnicodeString ANewName) override;
   virtual TStrings *GetFixedPaths() const override;
   virtual void SpaceAvailable(UnicodeString APath,
-    TSpaceAvailable &ASpaceAvailable) override;
+  virtual void __fastcall RenameFile(const UnicodeString FileName, const TRemoteFile * File,
   virtual const TSessionInfo &GetSessionInfo() const override;
-  virtual const TFileSystemInfo &GetFileSystemInfo(bool Retrieve) override;
+  virtual void __fastcall CopyFile(const UnicodeString FileName, const TRemoteFile * File,
   virtual bool TemporaryTransferFile(UnicodeString AFileName) override;
   virtual bool GetStoredCredentialsTried() const override;
   virtual UnicodeString RemoteGetUserName() const override;
@@ -79,6 +79,7 @@ public:
   virtual void LockFile(UnicodeString AFileName, const TRemoteFile *AFile) override;
   virtual void UnlockFile(UnicodeString AFileName, const TRemoteFile *AFile) override;
   virtual void UpdateFromMain(TCustomFileSystem *MainFileSystem) override;
+  virtual void __fastcall ClearCaches();
 
 protected:
 #if 0

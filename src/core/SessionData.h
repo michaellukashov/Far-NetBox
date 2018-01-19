@@ -40,7 +40,6 @@ enum TFSProtocol
   fsFTP = 5,
   fsWebDAV = 6,
 };
-#define FSPROTOCOL_COUNT (fsWebDAV+1)
 
 enum TLoginType
 {
@@ -120,11 +119,13 @@ enum TSessionUrlFlags
 NB_CORE_EXPORT extern const UnicodeString CipherNames[CIPHER_COUNT];
 NB_CORE_EXPORT extern const UnicodeString KexNames[KEX_COUNT];
 NB_CORE_EXPORT extern const UnicodeString GssLibNames[GSSLIB_COUNT];
+extern const UnicodeString HostKeyNames[HOSTKEY_COUNT];
 NB_CORE_EXPORT extern const wchar_t SshProtList[][10];
 NB_CORE_EXPORT extern const TCipher DefaultCipherList[CIPHER_COUNT];
 NB_CORE_EXPORT extern const TKex DefaultKexList[KEX_COUNT];
 NB_CORE_EXPORT extern const TGssLib DefaultGssLibList[GSSLIB_COUNT];
 NB_CORE_EXPORT extern const wchar_t FSProtocolNames[FSPROTOCOL_COUNT][16];
+extern const THostKey DefaultHostKeyList[HOSTKEY_COUNT];
 NB_CORE_EXPORT extern const intptr_t DefaultSendBuf;
 NB_CORE_EXPORT extern const UnicodeString AnonymousUserName;
 NB_CORE_EXPORT extern const UnicodeString AnonymousPassword;
@@ -147,6 +148,7 @@ NB_CORE_EXPORT extern const UnicodeString WebDAVSProtocol;
 NB_CORE_EXPORT extern const UnicodeString SshProtocol;
 NB_CORE_EXPORT extern const UnicodeString WinSCPProtocolPrefix;
 NB_CORE_EXPORT extern const wchar_t UrlParamSeparator;
+extern const UnicodeString S3Protocol;
 NB_CORE_EXPORT extern const wchar_t UrlParamValueSeparator;
 NB_CORE_EXPORT extern const UnicodeString UrlHostKeyParamName;
 NB_CORE_EXPORT extern const UnicodeString UrlSaveParamName;
@@ -155,6 +157,7 @@ NB_CORE_EXPORT extern const UnicodeString PassphraseOption;
 
 NB_CORE_EXPORT extern const intptr_t SFTPMinVersion;
 NB_CORE_EXPORT extern const intptr_t SFTPMaxVersion;
+extern const UnicodeString S3HostName;
 
 struct NB_CORE_EXPORT TIEProxyConfig : public TObject
 {
@@ -206,6 +209,7 @@ private:
   bool FSshNoUserAuth;
   TCipher FCiphers[CIPHER_COUNT];
   TKex FKex[KEX_COUNT];
+  THostKey FHostKeys[HOSTKEY_COUNT];
   TGssLib FGssLib[GSSLIB_COUNT];
   UnicodeString FGssLibCustom;
   bool FClearAliases;
@@ -295,6 +299,8 @@ private:
   TTlsVersion FMinTlsVersion;
   TTlsVersion FMaxTlsVersion;
   TAutoSwitch FNotUtf;
+  int FInternalEditorEncoding;
+  UnicodeString FS3DefaultRegion;
   bool FIsWorkspace;
   UnicodeString FLink;
   UnicodeString FHostKey;
@@ -338,6 +344,8 @@ public:
   void SetPublicKeyFile(UnicodeString Value);
   UnicodeString GetPassphrase() const;
   void SetPassphrase(UnicodeString AValue);
+  void __fastcall SetHostKeys(int Index, THostKey value);
+  THostKey __fastcall GetHostKeys(int Index) const;
 
   void SetPuttyProtocol(UnicodeString Value);
   bool GetCanLogin() const;
@@ -390,6 +398,8 @@ public:
   UnicodeString GetKexList() const;
   void SetGssLibList(UnicodeString Value);
   UnicodeString GetGssLibList() const;
+  void __fastcall SetHostKeyList(UnicodeString value);
+  UnicodeString __fastcall GetHostKeyList() const;
   void SetProxyMethod(TProxyMethod Value);
   void SetProxyHost(UnicodeString Value);
   void SetProxyPort(intptr_t Value);
@@ -459,6 +469,8 @@ public:
   void SetIsWorkspace(bool Value);
   void SetLink(UnicodeString Value);
   void SetHostKey(UnicodeString Value);
+  void __fastcall SetInternalEditorEncoding(int value);
+  void __fastcall SetS3DefaultRegion(UnicodeString value);
   void SetNote(UnicodeString Value);
   void SetWinTitle(UnicodeString Value);
   TDateTime GetTimeoutDT() const;
@@ -545,6 +557,7 @@ public:
 
 public:
   explicit TSessionData(UnicodeString AName);
+  void __fastcall MaskPasswords();
   virtual ~TSessionData();
   TSessionData *Clone() const;
   void Default();
@@ -576,6 +589,8 @@ public:
   void RollbackTunnel();
   void ExpandEnvironmentVariables();
   void DisableAuthentationsExceptPassword();
+  static bool __fastcall IsOptionWithParameters(const UnicodeString & Option);
+  static bool __fastcall MaskPasswordInOptionParameter(const UnicodeString & Option, UnicodeString & Param);
   bool IsSame(const TSessionData *Default, bool AdvancedOnly) const;
   bool IsSameSite(const TSessionData *Default) const;
   bool IsInFolderOrWorkspace(UnicodeString AFolder) const;
@@ -620,6 +635,7 @@ public:
   __property TCipher Cipher[intptr_t Index] = { read=GetCipher, write=SetCipher };
   __property TKex Kex[intptr_t Index] = { read=GetKex, write=SetKex };
   __property TGssLib GssLib[intptr_t Index] = { read=GetGssLib, write=SetGssLib };
+  __property THostKey HostKeys[int Index] = { read=GetHostKeys, write=SetHostKeys };
   __property UnicodeString GssLibCustom = { read=FGssLibCustom, write=SetGssLibCustom };
   __property UnicodeString PublicKeyFile  = { read=FPublicKeyFile, write=SetPublicKeyFile };
   __property UnicodeString Passphrase  = { read=GetPassphrase, write=SetPassphrase };
@@ -665,6 +681,7 @@ public:
   __property UnicodeString SshProtStr  = { read=GetSshProtStr };
   __property UnicodeString CipherList  = { read=GetCipherList, write=SetCipherList };
   __property UnicodeString KexList  = { read=GetKexList, write=SetKexList };
+  __property UnicodeString HostKeyList  = { read=GetHostKeyList, write=SetHostKeyList };
   __property UnicodeString GssLibList  = { read=GetGssLibList, write=SetGssLibList };
   __property TProxyMethod ProxyMethod  = { read=FProxyMethod, write=SetProxyMethod };
   __property UnicodeString ProxyHost  = { read=FProxyHost, write=SetProxyHost };
@@ -726,6 +743,8 @@ public:
   __property TTlsVersion MaxTlsVersion = { read = FMaxTlsVersion, write = SetMaxTlsVersion };
   __property UnicodeString LogicalHostName = { read = FLogicalHostName, write = SetLogicalHostName };
   __property TAutoSwitch NotUtf = { read = FNotUtf, write = SetNotUtf };
+  __property int InternalEditorEncoding = { read = FInternalEditorEncoding, write = SetInternalEditorEncoding };
+  __property UnicodeString S3DefaultRegion = { read = FS3DefaultRegion, write = SetS3DefaultRegion };
   __property bool IsWorkspace = { read = FIsWorkspace, write = SetIsWorkspace };
   __property UnicodeString Link = { read = FLink, write = SetLink };
   __property UnicodeString HostKey = { read = FHostKey, write = SetHostKey };

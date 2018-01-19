@@ -30,7 +30,8 @@ struct NB_CORE_EXPORT TSessionInfo
 
   UnicodeString SshVersionString;
   UnicodeString SshImplementation;
-  UnicodeString HostKeyFingerprint;
+  UnicodeString HostKeyFingerprintSHA256;
+  UnicodeString HostKeyFingerprintMD5;
 
   UnicodeString CertificateFingerprint;
   UnicodeString Certificate;
@@ -92,7 +93,6 @@ public:
   virtual void ProcessGUI() = 0;
 };
 
-// Duplicated in LogMemo.h for design-time-only purposes
 enum TLogLineType
 {
   llOutput,
@@ -104,7 +104,7 @@ enum TLogLineType
 
 enum TLogAction
 {
-  laUpload, laDownload, laTouch, laChmod, laMkdir, laRm, laMv, laCall, laLs,
+  laUpload, laDownload, laTouch, laChmod, laMkdir, laRm, laMv, laCp, laCall, laLs,
   laStat, laChecksum, laCwd
 };
 
@@ -212,6 +212,12 @@ class NB_CORE_EXPORT TMvSessionAction : public TFileLocationSessionAction
 public:
   explicit TMvSessionAction(TActionLog *Log, UnicodeString AFileName,
     UnicodeString ADestination);
+};
+//---------------------------------------------------------------------------
+class TCpSessionAction : public TFileLocationSessionAction
+{
+public:
+  __fastcall TCpSessionAction(TActionLog * Log, const UnicodeString & FileName,
 };
 
 class NB_CORE_EXPORT TCallSessionAction : public TSessionAction

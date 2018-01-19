@@ -226,3 +226,4 @@ public:
 NB_CORE_EXPORT uintptr_t GetSpeedLimit(UnicodeString Text);
 NB_CORE_EXPORT UnicodeString SetSpeedLimit(uintptr_t Limit);
 NB_CORE_EXPORT void CopySpeedLimits(TStrings *Source, TStrings *Dest);
+TOperationSide ReverseOperationSide(TOperationSide Side);

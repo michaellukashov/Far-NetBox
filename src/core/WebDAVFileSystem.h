@@ -7,7 +7,7 @@
 #include <ne_request.h>
 #include <FileSystems.h>
 
-struct TWebDAVCertificateData;
+struct TNeonCertificateData;
 struct ne_ssl_certificate_s;
 struct ne_session_s;
 struct ne_prop_result_set_s;
@@ -28,8 +28,14 @@ public:
 
   virtual void Init(void *) override;
   virtual void FileTransferProgress(int64_t TransferSize, int64_t Bytes) override;
-
-  virtual void Open() override;
+  virtual void __fastcall Source(
+    TLocalFileHandle & Handle, const UnicodeString & TargetDir, UnicodeString & DestFileName,
+    const TCopyParamType * CopyParam, int Params,
+    TFileOperationProgressType * OperationProgress, unsigned int Flags,
+    TUploadSessionAction & Action, bool & ChildError);
+  virtual void __fastcall RenameFile(const UnicodeString FileName, const TRemoteFile * File,
+  virtual void __fastcall CopyFile(const UnicodeString FileName, const TRemoteFile * File,
+  virtual void __fastcall ClearCaches();
   virtual void Close() override;
   virtual bool GetActive() const override;
   virtual void CollectUsage() override;
@@ -94,28 +100,13 @@ public:
 protected:
   virtual UnicodeString RemoteGetCurrentDirectory() const override;
 
-  void Sink(UnicodeString AFileName,
-    const TRemoteFile *AFile, UnicodeString TargetDir,
-    const TCopyParamType *CopyParam, intptr_t AParams,
-    TFileOperationProgressType *OperationProgress, uintptr_t Flags,
-    TDownloadSessionAction &Action, bool &ChildError);
-  void SinkRobust(UnicodeString AFileName,
-    const TRemoteFile *AFile, UnicodeString TargetDir,
-    const TCopyParamType *CopyParam, intptr_t Params,
-    TFileOperationProgressType *OperationProgress, uintptr_t Flags);
-  void SinkFile(UnicodeString AFileName, const TRemoteFile *AFile, void *Param);
-  void SourceRobust(UnicodeString AFileName,
-    const TRemoteFile *AFile,
-    UnicodeString TargetDir, const TCopyParamType *CopyParam, intptr_t Params,
-    TFileOperationProgressType *OperationProgress, uintptr_t Flags);
-  void Source(UnicodeString AFileName,
-    const TRemoteFile *AFile,
+  virtual void __fastcall Sink(
+    const UnicodeString & FileName, const TRemoteFile * File,
+    const UnicodeString & TargetDir, UnicodeString & DestFileName, int Attrs,
+    const TCopyParamType * CopyParam, int Params, TFileOperationProgressType * OperationProgress,
+    unsigned int Flags, TDownloadSessionAction & Action);
     UnicodeString TargetDir, const TCopyParamType *CopyParam, intptr_t Params,
     TFileOperationProgressType *OperationProgress, uintptr_t Flags,
-    TUploadSessionAction &Action, bool &ChildError);
-  void DirectorySource(UnicodeString DirectoryName,
-    UnicodeString TargetDir, uintptr_t Attrs, const TCopyParamType *CopyParam,
-    intptr_t Params, TFileOperationProgressType *OperationProgress, uintptr_t Flags);
   void ConfirmOverwrite(
     UnicodeString ASourceFullFileName, UnicodeString &ATargetFileName,
     TFileOperationProgressType *OperationProgress,
@@ -155,8 +146,7 @@ protected:
   static void LockResult(void *UserData, const struct ne_lock *Lock,
     const ne_uri *Uri, const ne_status *Status);
   void RequireLockStore();
-  static void InitSslSession(ssl_st *Ssl, ne_session *Session);
-  void InitSslSessionImpl(ssl_st *Ssl) const;
+  void InitSslSession(ssl_st * Ssl, ne_session * Session);
   void NeonAddAuthentication(bool UseNegotiate);
   void HttpAuthenticationFailed();
 
@@ -195,9 +185,7 @@ private:
     TRemoteFile *&AFile, TRemoteFile *ALinkedByFile);
   intptr_t CustomReadFileInternal(UnicodeString AFileName,
     TRemoteFile *&AFile, TRemoteFile *ALinkedByFile);
-  void RegisterForDebug();
-  void UnregisterFromDebug();
-  bool VerifyCertificate(const TWebDAVCertificateData &Data, bool Aux);
+  bool VerifyCertificate(TNeonCertificateData Data, bool Aux);
   void OpenUrl(UnicodeString Url);
   void CollectTLSSessionInfo();
   UnicodeString GetRedirectUrl() const;
@@ -216,7 +204,4 @@ private:
   void InitSession(ne_session_s *Session);
   TFtps GetFtps() const;
 };
-
-void NeonInitialize();
-void NeonFinalize();
 

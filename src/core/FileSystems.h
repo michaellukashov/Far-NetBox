@@ -195,6 +195,20 @@ public:
   virtual void CreateLink(UnicodeString AFileName, UnicodeString PointTo, bool Symbolic) = 0;
   virtual void RemoteDeleteFile(UnicodeString AFileName,
     const TRemoteFile *AFile, intptr_t Params,
+  virtual void __fastcall TransferOnDirectory(
+    const UnicodeString & Directory, const TCopyParamType * CopyParam, int Params) {};
+  virtual void __fastcall Source(
+    TLocalFileHandle & Handle, const UnicodeString & TargetDir, UnicodeString & DestFileName,
+    const TCopyParamType * CopyParam, int Params,
+    TFileOperationProgressType * OperationProgress, unsigned int Flags,
+    TUploadSessionAction & Action, bool & ChildError) = 0;
+  virtual void __fastcall DirectorySunk(
+    const UnicodeString & DestFullName, const TRemoteFile * File, const TCopyParamType * CopyParam) {};
+  virtual void __fastcall Sink(
+    const UnicodeString & FileName, const TRemoteFile * File,
+    const UnicodeString & TargetDir, UnicodeString & DestFileName, int Attrs,
+    const TCopyParamType * CopyParam, int Params, TFileOperationProgressType * OperationProgress,
+    unsigned int Flags, TDownloadSessionAction & Action) = 0;
     TRmSessionAction &Action) = 0;
   virtual void CustomCommandOnFile(UnicodeString AFileName,
     const TRemoteFile *AFile, UnicodeString Command, intptr_t Params, TCaptureOutputEvent OutputEvent) = 0;
@@ -209,8 +223,10 @@ public:
   virtual void ReadSymlink(TRemoteFile *SymLinkFile,
     TRemoteFile *&File) = 0;
   virtual void RemoteRenameFile(UnicodeString AFileName,
+  virtual void __fastcall RenameFile(const UnicodeString FileName, const TRemoteFile * File,
     UnicodeString ANewName) = 0;
   virtual void RemoteCopyFile(UnicodeString AFileName,
+  virtual void __fastcall CopyFile(const UnicodeString FileName, const TRemoteFile * File,
     UnicodeString ANewName) = 0;
   virtual TStrings *GetFixedPaths() const = 0;
   virtual void SpaceAvailable(UnicodeString APath,
@@ -224,6 +240,7 @@ public:
   virtual void LockFile(UnicodeString AFileName, const TRemoteFile *AFile) = 0;
   virtual void UnlockFile(UnicodeString AFileName, const TRemoteFile *AFile) = 0;
   virtual void UpdateFromMain(TCustomFileSystem *MainFileSystem) = 0;
+  virtual void __fastcall ClearCaches() = 0;
 
 #if 0
   __property UnicodeString CurrentDirectory = { read = GetCurrentDirectory };
