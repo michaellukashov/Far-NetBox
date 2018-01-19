@@ -8,6 +8,8 @@
 #include <tchar.h>
 #include <assert.h>
 
+#include <Property.hpp>
+
 #define FORMAT(S, ...) nb::Sprintf(S, __VA_ARGS__)
 #define FMTLOAD(Id, ...) nb::FmtLoadStr(Id, __VA_ARGS__)
 #ifndef LENOF

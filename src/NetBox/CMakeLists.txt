@@ -1382,6 +1382,7 @@ set(NETBOX_SOURCES
   ../include/nbstring.inl
   ../include/nbutils.h
 
+  ../base/Property.hpp
   ../base/Global.h
   ../base/Common.h
   ../base/UnicodeString.hpp
