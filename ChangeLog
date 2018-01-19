@@ -1,6 +1,8 @@
-NetBox 2.4.5.529 08.09.2017
+NetBox 2.4.5.531 04.11.2017
 --------------------
-  * Update WinSCP sources to 5.11.1
+  * Update expat sources to 2.2.5
+  * Update openssl sources to 1.1.0g
+  * Update WinSCP sources to 5.11.2
   * Bugfix: SFTP: fix send files to remote server
   * Bugfix: Mantis-3468: SCP: wrong listing
     (http://bugs.farmanager.com/view.php?id=3468)

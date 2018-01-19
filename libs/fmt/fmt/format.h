@@ -25,6 +25,11 @@
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+// transition helper
+#ifdef FMT_FORMAT_PROVIDE_PRINTF
+#include "printf.h"
+#endif
+
 #ifndef FMT_FORMAT_H_
 #define FMT_FORMAT_H_
 
@@ -46,7 +51,7 @@
 #include <nbglobals.h>
 
 // The fmt library version in the form major * 10000 + minor * 100 + patch.
-#define FMT_VERSION 40001
+#define FMT_VERSION 40101
 
 #if defined(__has_include)
 # define FMT_HAS_INCLUDE(x) __has_include(x)
@@ -58,8 +63,15 @@
     (defined(_MSVC_LANG) && _MSVC_LANG > 201402L && _MSC_VER >= 1910)
 # include <string_view>
 # define FMT_HAS_STRING_VIEW 1
+# define FMT_HAS_EXPERIMENTAL_STRING_VIEW 0
 #else
 # define FMT_HAS_STRING_VIEW 0
+# if (FMT_HAS_INCLUDE(<experimental/string_view>) && __cplusplus >= 201402L)
+#  include <experimental/string_view>
+#  define FMT_HAS_EXPERIMENTAL_STRING_VIEW 1
+# else
+#  define FMT_HAS_EXPERIMENTAL_STRING_VIEW 0
+# endif
 #endif
 
 #if defined _SECURE_SCL && _SECURE_SCL
@@ -160,7 +172,7 @@ typedef __int64          intmax_t;
 # define FMT_HAS_CXX17_ATTRIBUTE_MAYBE_UNUSED
 // VC++ 1910 support /std: option and that will set _MSVC_LANG macro
 // Clang with Microsoft CodeGen doesn't define _MSVC_LANG macro
-#elif defined(_MSVC_LANG) && _MSVC_LANG > 201402
+#elif defined(_MSVC_LANG) && _MSVC_LANG > 201402 && _MSC_VER >= 1910
 # define FMT_HAS_CXX17_ATTRIBUTE_MAYBE_UNUSED
 #endif
 
@@ -589,6 +601,26 @@ class BasicStringRef {
   */
   explicit operator std::basic_string_view<Char>() const FMT_NOEXCEPT {
     return std::basic_string_view<Char>(data_, size_);
+  }
+#endif
+
+#if FMT_HAS_EXPERIMENTAL_STRING_VIEW
+  /**
+  \rst
+  Constructs a string reference from a ``std::experimental::basic_string_view`` object.
+  \endrst
+  */
+  BasicStringRef(
+	  const std::experimental::basic_string_view<Char, std::char_traits<Char>> &s)
+	  : data_(s.data()), size_(s.size()) {}
+
+  /**
+  \rst
+  Converts a string reference to an ``std::string_view`` object.
+  \endrst
+  */
+  explicit operator std::experimental::basic_string_view<Char>() const FMT_NOEXCEPT {
+	  return std::experimental::basic_string_view<Char>(data_, size_);
   }
 #endif
 
@@ -1379,6 +1411,9 @@ class MakeValue : public Arg {
 #if FMT_HAS_STRING_VIEW
   MakeValue(typename WCharHelper<const std::wstring_view &, Char>::Unsupported);
 #endif
+#if FMT_HAS_EXPERIMENTAL_STRING_VIEW
+  MakeValue(typename WCharHelper<const std::experimental::wstring_view &, Char>::Unsupported);
+#endif
   MakeValue(typename WCharHelper<WStringRef, Char>::Unsupported);
 
   void set_string(StringRef str) {
@@ -1483,6 +1518,9 @@ class MakeValue : public Arg {
 #if FMT_HAS_STRING_VIEW
   FMT_MAKE_STR_VALUE(const std::string_view &, STRING)
 #endif
+#if FMT_HAS_EXPERIMENTAL_STRING_VIEW
+  FMT_MAKE_STR_VALUE(const std::experimental::string_view &, STRING)
+#endif
   FMT_MAKE_STR_VALUE(StringRef, STRING)
   FMT_MAKE_VALUE_(CStringRef, string.value, CSTRING, value.c_str())
 
@@ -1497,6 +1535,9 @@ class MakeValue : public Arg {
   FMT_MAKE_WSTR_VALUE(const std::wstring &, WSTRING)
 #if FMT_HAS_STRING_VIEW
   FMT_MAKE_WSTR_VALUE(const std::wstring_view &, WSTRING)
+#endif
+#if FMT_HAS_EXPERIMENTAL_STRING_VIEW
+  FMT_MAKE_WSTR_VALUE(const std::experimental::wstring_view &, WSTRING)
 #endif
   FMT_MAKE_WSTR_VALUE(WStringRef, WSTRING)
 
@@ -3769,17 +3810,19 @@ template <typename Char>
 unsigned parse_nonnegative_int(const Char *&s) {
   assert('0' <= *s && *s <= '9');
   unsigned value = 0;
-  do {
-    unsigned new_value = value * 10 + (*s++ - '0');
-    // Check if value wrapped around.
-    if (new_value < value) {
-      value = (std::numeric_limits<unsigned>::max)();
-      break;
-    }
-    value = new_value;
-  } while ('0' <= *s && *s <= '9');
   // Convert to unsigned to prevent a warning.
   unsigned max_int = (std::numeric_limits<int>::max)();
+  unsigned big = max_int / 10;
+  do {
+    // Check for overflow.
+    if (value > big) {
+      value = max_int + 1;
+      break;
+    }
+    value = value * 10 + (*s - '0');
+    ++s;
+  } while ('0' <= *s && *s <= '9');
+  // Convert to unsigned to prevent a warning.
   if (value > max_int)
     FMT_THROW(FormatError("number is too big"));
   return value;
@@ -3951,7 +3994,8 @@ const Char *BasicFormatter<Char, ArgFormatter>::format(
       default:
         FMT_THROW(FormatError("width is not integer"));
       }
-      if (value > (std::numeric_limits<int>::max)())
+      unsigned max_int = (std::numeric_limits<int>::max)();
+      if (value > max_int)
         FMT_THROW(FormatError("number is too big"));
       spec.width_ = static_cast<int>(value);
     }
@@ -3989,7 +4033,8 @@ const Char *BasicFormatter<Char, ArgFormatter>::format(
           default:
             FMT_THROW(FormatError("precision is not integer"));
         }
-        if (value > (std::numeric_limits<int>::max)())
+        unsigned max_int = (std::numeric_limits<int>::max)();
+        if (value > max_int)
           FMT_THROW(FormatError("number is too big"));
         spec.precision_ = static_cast<int>(value);
       } else {

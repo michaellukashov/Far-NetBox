@@ -1103,7 +1103,7 @@ add_library(expat STATIC
 )
 
 target_compile_options(expat PRIVATE
-  ${NETBOX_UNICODE_FLAGS} /TP
+  ${NETBOX_UNICODE_FLAGS}
 )
 
 #-------------------------------------------------------------------------------
