@@ -18,7 +18,7 @@ template<typename T, class TAllocator, int TCapacity, bool TGrowOnOverflow>
 struct fixed_vector_storage 
 {
 	explicit fixed_vector_storage(const TAllocator& allocator)
-	:	m_begin((T*)&m_data[0]),
+	:	m_begin(static_cast<T*>(&m_data[0])),
 		m_end(m_begin),
 		m_capacityEnd(m_begin + TCapacity),
 		m_allocator(allocator)
@@ -65,7 +65,7 @@ struct fixed_vector_storage
 				RDE_ASSERT(!"fixed_vector cannot grow");
 			}
 			T* newBegin = static_cast<T*>(m_allocator.allocate(newCapacity * sizeof(T)));
-			const base_vector::size_type currSize((size_t)(m_end - m_begin));
+			const base_vector::size_type currSize(static_cast<size_t>(m_end - m_begin));
 			if (m_begin)
 				destroy(m_begin, currSize);
 			m_begin = newBegin;
@@ -78,7 +78,7 @@ struct fixed_vector_storage
 	RDE_FORCEINLINE void destroy(T* ptr, base_vector::size_type n)
 	{
 		rde::destruct_n(ptr, n);
-		if ((etype_t*)ptr != &m_data[0])
+		if (static_cast<etype_t*>(ptr) != &m_data[0])
 			m_allocator.deallocate(ptr, n * sizeof(T));
 	}
 	bool invariant() const

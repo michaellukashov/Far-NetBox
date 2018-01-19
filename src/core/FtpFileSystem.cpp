@@ -12,6 +12,7 @@
 #include "FileZillaIntf.h"
 
 #include <Common.h>
+#include <nbutils.h>
 #include <Exceptions.h>
 #include "Terminal.h"
 #include "TextsCore.h"
@@ -29,53 +30,53 @@ const int DummyDisconnectCode = 803;
 class TFileZillaImpl : public TFileZillaIntf
 {
 public:
-  explicit TFileZillaImpl(TFTPFileSystem * FileSystem);
+  explicit TFileZillaImpl(TFTPFileSystem *FileSystem);
 
   virtual ~TFileZillaImpl()
   {
   }
 
-  virtual const wchar_t * Option(intptr_t OptionID) const;
-  virtual intptr_t OptionVal(intptr_t OptionID) const;
+  virtual const wchar_t *Option(intptr_t OptionID) const override;
+  virtual intptr_t OptionVal(intptr_t OptionID) const override;
 
 protected:
-  virtual bool DoPostMessage(TMessageType Type, WPARAM wParam, LPARAM lParam);
+  virtual bool DoPostMessage(TMessageType Type, WPARAM wParam, LPARAM lParam) override;
 
-  virtual bool HandleStatus(const wchar_t * Status, int Type);
+  virtual bool HandleStatus(const wchar_t *Status, int Type) override;
   virtual bool HandleAsynchRequestOverwrite(
-    wchar_t * FileName1, size_t FileName1Len, const wchar_t * FileName2,
-    const wchar_t * Path1, const wchar_t * Path2,
+    wchar_t *FileName1, size_t FileName1Len, const wchar_t *FileName2,
+    const wchar_t *Path1, const wchar_t *Path2,
     int64_t Size1, int64_t Size2, time_t LocalTime,
-    bool HasLocalTime, const TRemoteFileTime & RemoteTime, void * UserData,
-    HANDLE & LocalFileHandle, int & RequestResult);
+    bool HasLocalTime, const TRemoteFileTime &RemoteTime, void *UserData,
+    HANDLE &LocalFileHandle, int &RequestResult) override;
   virtual bool HandleAsynchRequestVerifyCertificate(
-    const TFtpsCertificateData & Data, int & RequestResult);
+    const TFtpsCertificateData &Data, int &RequestResult) override;
   virtual bool HandleAsynchRequestNeedPass(
-    struct TNeedPassRequestData & Data, int & RequestResult);
-  virtual bool HandleListData(const wchar_t * Path, const TListDataEntry * Entries,
-    uintptr_t Count);
+    struct TNeedPassRequestData &Data, int &RequestResult) override;
+  virtual bool HandleListData(const wchar_t *Path, const TListDataEntry *Entries,
+    uintptr_t Count) override;
   virtual bool HandleTransferStatus(bool Valid, int64_t TransferSize,
-    int64_t Bytes, bool FileTransfer);
-  virtual bool HandleReply(intptr_t Command, uintptr_t Reply);
-  virtual bool HandleCapabilities(TFTPServerCapabilities * ServerCapabilities);
-  virtual bool CheckError(intptr_t ReturnCode, const wchar_t * Context);
+    int64_t Bytes, bool FileTransfer) override;
+  virtual bool HandleReply(intptr_t Command, uintptr_t Reply) override;
+  virtual bool HandleCapabilities(TFTPServerCapabilities *ServerCapabilities) override;
+  virtual bool CheckError(intptr_t ReturnCode, const wchar_t *Context) override;
 
-  virtual void PreserveDownloadFileTime(HANDLE AHandle, void * UserData);
-  virtual bool GetFileModificationTimeInUtc(const wchar_t * FileName, struct tm & Time);
-  virtual wchar_t * LastSysErrorMessage() const;
-  virtual std::wstring GetClientString() const;
+  virtual void PreserveDownloadFileTime(HANDLE AHandle, void *UserData) override;
+  virtual bool GetFileModificationTimeInUtc(const wchar_t *FileName, struct tm &Time) override;
+  virtual wchar_t *LastSysErrorMessage() const override;
+  virtual std::wstring GetClientString() const override;
 
 private:
-  TFTPFileSystem * FFileSystem;
+  TFTPFileSystem *FFileSystem;
 };
 
-TFileZillaImpl::TFileZillaImpl(TFTPFileSystem * FileSystem) :
+TFileZillaImpl::TFileZillaImpl(TFTPFileSystem *FileSystem) :
   TFileZillaIntf(),
   FFileSystem(FileSystem)
 {
 }
 
-const wchar_t * TFileZillaImpl::Option(intptr_t OptionID) const
+const wchar_t *TFileZillaImpl::Option(intptr_t OptionID) const
 {
   return FFileSystem->GetOption(OptionID);
 }
@@ -90,38 +91,38 @@ bool TFileZillaImpl::DoPostMessage(TMessageType Type, WPARAM wParam, LPARAM lPar
   return FFileSystem->FTPPostMessage(Type, wParam, lParam);
 }
 
-bool TFileZillaImpl::HandleStatus(const wchar_t * Status, int Type)
+bool TFileZillaImpl::HandleStatus(const wchar_t *Status, int Type)
 {
   return FFileSystem->HandleStatus(Status, Type);
 }
 
 bool TFileZillaImpl::HandleAsynchRequestOverwrite(
-  wchar_t * FileName1, size_t FileName1Len, const wchar_t * FileName2,
-  const wchar_t * Path1, const wchar_t * Path2,
+  wchar_t *FileName1, size_t FileName1Len, const wchar_t *FileName2,
+  const wchar_t *Path1, const wchar_t *Path2,
   int64_t Size1, int64_t Size2, time_t LocalTime,
-  bool HasLocalTime, const TRemoteFileTime & RemoteTime, void * UserData,
-  HANDLE & LocalFileHandle,
-  int & RequestResult)
+  bool HasLocalTime, const TRemoteFileTime &RemoteTime, void *UserData,
+  HANDLE &LocalFileHandle,
+  int &RequestResult)
 {
   return FFileSystem->HandleAsynchRequestOverwrite(
-    FileName1, FileName1Len, FileName2, Path1, Path2, Size1, Size2, LocalTime,
-    HasLocalTime, RemoteTime, UserData, LocalFileHandle, RequestResult);
+      FileName1, FileName1Len, FileName2, Path1, Path2, Size1, Size2, LocalTime,
+      HasLocalTime, RemoteTime, UserData, LocalFileHandle, RequestResult);
 }
 
 bool TFileZillaImpl::HandleAsynchRequestVerifyCertificate(
-  const TFtpsCertificateData & Data, int & RequestResult)
+  const TFtpsCertificateData &Data, int &RequestResult)
 {
   return FFileSystem->HandleAsynchRequestVerifyCertificate(Data, RequestResult);
 }
 
 bool TFileZillaImpl::HandleAsynchRequestNeedPass(
-  struct TNeedPassRequestData & Data, int & RequestResult)
+  struct TNeedPassRequestData &Data, int &RequestResult)
 {
   return FFileSystem->HandleAsynchRequestNeedPass(Data, RequestResult);
 }
 
-bool TFileZillaImpl::HandleListData(const wchar_t * Path,
-  const TListDataEntry * Entries, uintptr_t Count)
+bool TFileZillaImpl::HandleListData(const wchar_t *Path,
+  const TListDataEntry *Entries, uintptr_t Count)
 {
   return FFileSystem->HandleListData(Path, Entries, Count);
 }
@@ -137,27 +138,27 @@ bool TFileZillaImpl::HandleReply(intptr_t Command, uintptr_t Reply)
   return FFileSystem->HandleReply(Command, Reply);
 }
 
-bool TFileZillaImpl::HandleCapabilities(TFTPServerCapabilities * ServerCapabilities)
+bool TFileZillaImpl::HandleCapabilities(TFTPServerCapabilities *ServerCapabilities)
 {
   return FFileSystem->HandleCapabilities(ServerCapabilities);
 }
 
-bool TFileZillaImpl::CheckError(intptr_t ReturnCode, const wchar_t * Context)
+bool TFileZillaImpl::CheckError(intptr_t ReturnCode, const wchar_t *Context)
 {
   return FFileSystem->CheckError(ReturnCode, Context);
 }
 
-void TFileZillaImpl::PreserveDownloadFileTime(HANDLE AHandle, void * UserData)
+void TFileZillaImpl::PreserveDownloadFileTime(HANDLE AHandle, void *UserData)
 {
   return FFileSystem->PreserveDownloadFileTime(AHandle, UserData);
 }
 
-bool TFileZillaImpl::GetFileModificationTimeInUtc(const wchar_t * FileName, struct tm & Time)
+bool TFileZillaImpl::GetFileModificationTimeInUtc(const wchar_t *FileName, struct tm &Time)
 {
   return FFileSystem->GetFileModificationTimeInUtc(FileName, Time);
 }
 
-wchar_t * TFileZillaImpl::LastSysErrorMessage() const
+wchar_t *TFileZillaImpl::LastSysErrorMessage() const
 {
   return _wcsdup(::LastSysErrorMessage().c_str());
 }
@@ -166,6 +167,54 @@ std::wstring TFileZillaImpl::GetClientString() const
 {
   return std::wstring(GetSshVersionString().c_str());
 }
+
+struct message_t
+{
+  CUSTOM_MEM_ALLOCATION_IMPL
+
+  message_t() : wparam(0),
+    lparam(0)
+  {
+  }
+
+  message_t(WPARAM w, LPARAM l) : wparam(w),
+    lparam(l)
+  {
+  }
+
+  WPARAM wparam;
+  LPARAM lparam;
+};
+
+class TMessageQueue : public TObject, public rde::list<message_t>
+{
+public:
+  typedef message_t value_type;
+};
+
+#if 0
+// moved to FileSystems.h
+struct TFileTransferData
+{
+  TFileTransferData()
+  {
+    Params = 0;
+    AutoResume = false;
+    OverwriteResult = -1;
+    CopyParam = nullptr;
+  }
+
+  UnicodeString FileName;
+  int Params;
+  bool AutoResume;
+  int OverwriteResult;
+  const TCopyParamType *CopyParam;
+  TDateTime Modification;
+};
+
+const int tfFirstLevel = 0x01;
+const int tfAutoResume = 0x02;
+#endif // #if 0
 
 static const wchar_t FtpsCertificateStorageKey[] = L"FtpsCertificates";
 const UnicodeString SiteCommand(L"SITE");
@@ -176,12 +225,25 @@ const UnicodeString AvblCommand(L"AVBL");
 const UnicodeString XQuotaCommand(L"XQUOTA");
 const UnicodeString DirectoryHasBytesPrefix(L"226-Directory has");
 
+#if 0
+// moved to FileSystems.h
+struct TSinkFileParams
+{
+  UnicodeString TargetDir;
+  const TCopyParamType *CopyParam;
+  int Params;
+  TFileOperationProgressType *OperationProgress;
+  bool Skipped;
+  unsigned int Flags;
+};
+#endif // #if 0
+
 class TFTPFileListHelper : public TObject
 {
-NB_DISABLE_COPY(TFTPFileListHelper)
+  NB_DISABLE_COPY(TFTPFileListHelper)
 public:
-  explicit TFTPFileListHelper(TFTPFileSystem * FileSystem, TRemoteFileList * FileList,
-      bool IgnoreFileList) :
+  explicit TFTPFileListHelper(TFTPFileSystem *FileSystem, TRemoteFileList *FileList,
+    bool IgnoreFileList) :
     FFileSystem(FileSystem),
     FFileList(FFileSystem->FFileList),
     FIgnoreFileList(FFileSystem->FIgnoreFileList)
@@ -197,14 +259,15 @@ public:
   }
 
 private:
-  TFTPFileSystem * FFileSystem;
-  TRemoteFileList * FFileList;
+  TFTPFileSystem *FFileSystem;
+  TRemoteFileList *FFileList;
   bool FIgnoreFileList;
 };
 
-TFTPFileSystem::TFTPFileSystem(TTerminal * ATerminal) :
+TFTPFileSystem::TFTPFileSystem(TTerminal *ATerminal) :
   TCustomFileSystem(OBJECT_CLASS_TFTPFileSystem, ATerminal),
   FFileZillaIntf(nullptr),
+  FQueue(new TMessageQueue),
   FQueueEvent(::CreateEvent(nullptr, true, false, nullptr)),
   FFileSystemInfoValid(false),
   FReply(0),
@@ -248,7 +311,9 @@ TFTPFileSystem::TFTPFileSystem(TTerminal * ATerminal) :
   FWindowsServer(false),
   FBytesAvailable(0),
   FBytesAvailableSupported(false),
-  FMVS(false)
+  FMVS(false),
+  FVMS(false),
+  FFileTransferAny(false)
 {
 }
 
@@ -294,6 +359,7 @@ TFTPFileSystem::~TFTPFileSystem()
 
   SAFE_DESTROY_EX(CFileZillaTools, FFileZillaIntf);
 
+  SAFE_DESTROY(FQueue);
   SAFE_CLOSE_HANDLE(FQueueEvent);
 
   SAFE_DESTROY(FLastResponse);
@@ -317,7 +383,7 @@ void TFTPFileSystem::Open()
   FCurrentDirectory.Clear();
   FHomeDirectory.Clear();
 
-  TSessionData * Data = FTerminal->GetSessionData();
+  TSessionData *Data = FTerminal->GetSessionData();
 
   FSessionInfo.LoginTime = Now();
   FSessionInfo.ProtocolBaseName = L"FTP";
@@ -368,21 +434,23 @@ void TFTPFileSystem::Open()
         break;
       }
       FileZillaImpl->SetDebugLevel(LogLevel);
+
       FileZillaImpl->Init();
       FFileZillaIntf = FileZillaImpl.release();
     }
-/*
+#if 0
     catch (...)
     {
       delete FFileZillaIntf;
       FFileZillaIntf = nullptr;
       throw;
     }
-*/
+#endif // #if 0
   }
 
   FWindowsServer = false;
   FMVS = false;
+  FVMS = false;
   FTransferActiveImmediately = (Data->GetFtpTransferActiveImmediately() == asOn);
 
   FSessionInfo.LoginTime = Now();
@@ -423,7 +491,7 @@ void TFTPFileSystem::Open()
 
   intptr_t TimeZoneOffset = Data->GetTimeDifferenceAuto() ? 0 : TimeToMinutes(Data->GetTimeDifference());
 
-  int UTF8 = 0;
+  int UTF8;
   uintptr_t CodePage = Data->GetCodePageAsNumber();
 
   switch (CodePage)
@@ -469,7 +537,7 @@ void TFTPFileSystem::Open()
       }
 
       if (!FTerminal->PromptUser(Data, pkUserName, LoadStr(USERNAME_TITLE), L"",
-            LoadStr(USERNAME_PROMPT2), true, 0, UserName))
+          LoadStr(USERNAME_PROMPT2), true, 0, UserName))
       {
         FTerminal->FatalError(nullptr, LoadStr(AUTHENTICATION_FAILED));
       }
@@ -488,7 +556,7 @@ void TFTPFileSystem::Open()
 
       Password.Clear();
       if (!FTerminal->PromptUser(Data, pkPassword, LoadStr(PASSWORD_TITLE), L"",
-            LoadStr(PASSWORD_PROMPT), false, 0, Password))
+          LoadStr(PASSWORD_PROMPT), false, 0, Password))
       {
         FTerminal->FatalError(nullptr, LoadStr(AUTHENTICATION_FAILED));
       }
@@ -503,15 +571,15 @@ void TFTPFileSystem::Open()
     TAutoFlag OpeningFlag(FOpening);
 
     FActive = FFileZillaIntf->Connect(
-      HostName.c_str(), static_cast<int>(Data->GetPortNumber()), UserName.c_str(),
-      Password.c_str(), Account.c_str(), Path.c_str(),
-      ServerType, static_cast<int>(Pasv), static_cast<int>(TimeZoneOffset), UTF8,
-      static_cast<int>(CodePage),
-      static_cast<int>(Data->GetFtpForcePasvIp()),
-      static_cast<int>(Data->GetFtpUseMlsd()),
-      static_cast<int>(Data->GetFtpDupFF()),
-      static_cast<int>(Data->GetFtpUndupFF()),
-      FCertificate, FPrivateKey);
+        HostName.c_str(), ToInt(Data->GetPortNumber()), UserName.c_str(),
+        Password.c_str(), Account.c_str(), Path.c_str(),
+        ServerType, ToInt(Pasv), ToInt(TimeZoneOffset), UTF8,
+        ToInt(CodePage),
+        ToInt(Data->GetFtpForcePasvIp()),
+        ToInt(Data->GetFtpUseMlsd()),
+        ToInt(Data->GetFtpDupFF()),
+        ToInt(Data->GetFtpUndupFF()),
+        FCertificate, FPrivateKey);
 
     DebugAssert(FActive);
 
@@ -583,27 +651,28 @@ bool TFTPFileSystem::GetActive() const
 
 void TFTPFileSystem::CollectUsage()
 {
-  /*switch (FTerminal->SessionData->Ftps)
+#if 0
+  switch (FTerminal->SessionData->Ftps)
   {
-    case ftpsNone:
-      // noop
-      break;
+  case ftpsNone:
+    // noop
+    break;
 
-    case ftpsImplicit:
-      FTerminal->Configuration->Usage->Inc(L"OpenedSessionsFTPSImplicit");
-      break;
+  case ftpsImplicit:
+    FTerminal->Configuration->Usage->Inc(L"OpenedSessionsFTPSImplicit");
+    break;
 
-    case ftpsExplicitSsl:
-      FTerminal->Configuration->Usage->Inc(L"OpenedSessionsFTPSExplicitSSL");
-      break;
+  case ftpsExplicitSsl:
+    FTerminal->Configuration->Usage->Inc(L"OpenedSessionsFTPSExplicitSSL");
+    break;
 
-    case ftpsExplicitTls:
-      FTerminal->Configuration->Usage->Inc(L"OpenedSessionsFTPSExplicitTLS");
-      break;
+  case ftpsExplicitTls:
+    FTerminal->Configuration->Usage->Inc(L"OpenedSessionsFTPSExplicitTLS");
+    break;
 
-    default:
-      DebugFail();
-      break;
+  default:
+    DebugFail();
+    break;
   }
 
   if (!FTerminal->SessionData->TlsCertificateFile.IsEmpty())
@@ -671,7 +740,7 @@ void TFTPFileSystem::CollectUsage()
   // SYST
   // 215 Windows_NT
   else if (ContainsText(FWelcomeMessage, L"Microsoft FTP Service") ||
-           ContainsText(FSystem, L"Windows_NT"))
+    ContainsText(FSystem, L"Windows_NT"))
   {
     FTerminal->Configuration->Usage->Inc(L"OpenedSessionsFTPIIS");
   }
@@ -792,18 +861,27 @@ void TFTPFileSystem::CollectUsage()
   {
     FTerminal->Configuration->Usage->Inc(L"OpenedSessionsFTPMVS");
   }
+  // 220 xxx.xxx.xxx (xxx.xxx.xxx) FTP-OpenVMS FTPD V5.3-3 (c) 1998 Process Software Corporation
+  // ...
+  // SYST
+  // 215 VMS system type. VMS V5.5-2.
+  else if (FVMS)
+  {
+    FTerminal->Configuration->Usage->Inc(L"OpenedSessionsFTPVMS");
+  }
   else
   {
     FTerminal->Configuration->Usage->Inc(L"OpenedSessionsFTPOther");
-  }*/
+  }
+#endif // #if 0
 }
 
-void TFTPFileSystem::DummyReadDirectory(const UnicodeString & /*Directory*/)
+void TFTPFileSystem::DummyReadDirectory(UnicodeString Directory)
 {
   std::unique_ptr<TRemoteDirectory> Files(new TRemoteDirectory(FTerminal));
   try
   {
-    Files->SetDirectory(GetCurrDirectory());
+    Files->SetDirectory(Directory);
     DoReadDirectory(Files.get());
   }
   catch (...)
@@ -830,7 +908,7 @@ void TFTPFileSystem::Idle()
       FTerminal->LogEvent("Dummy directory read to keep session alive.");
       FLastDataSent = Now(); // probably redundant to the same statement in DoReadDirectory
 
-      DummyReadDirectory(GetCurrDirectory());
+      DummyReadDirectory(RemoteGetCurrentDirectory());
     }
   }
 }
@@ -857,38 +935,48 @@ void TFTPFileSystem::Discard()
   }
 }
 
-UnicodeString TFTPFileSystem::GetAbsolutePath(const UnicodeString & APath, bool Local)
+UnicodeString TFTPFileSystem::GetAbsolutePath(UnicodeString APath, bool Local)
 {
   return static_cast<const TFTPFileSystem *>(this)->GetAbsolutePath(APath, Local);
 }
 
-UnicodeString TFTPFileSystem::GetAbsolutePath(const UnicodeString & APath, bool /*Local*/) const
+UnicodeString TFTPFileSystem::GetAbsolutePath(UnicodeString APath, bool /*Local*/) const
 {
   TODO("improve (handle .. etc.)");
-  if (core::UnixIsAbsolutePath(APath))
+  if (base::UnixIsAbsolutePath(APath))
   {
     return APath;
   }
-  else
-  {
-    return core::AbsolutePath(FCurrentDirectory, APath);
-  }
+  return base::AbsolutePath(FCurrentDirectory, APath);
 }
 
 UnicodeString TFTPFileSystem::GetActualCurrentDirectory() const
 {
   UnicodeString CurrentPath(NB_MAX_PATH, 0);
   UnicodeString Result;
-  if (FFileZillaIntf->GetCurrentPath(const_cast<wchar_t *>(CurrentPath.c_str()), CurrentPath.Length()))
+  if (FFileZillaIntf->GetCurrentPath(ToWChar(CurrentPath), CurrentPath.Length()))
   {
-    Result = core::UnixExcludeTrailingBackslash(CurrentPath);
-  }
-  if (Result.IsEmpty())
-  {
-    Result = ROOTDIRECTORY;
+    Result = base::UnixExcludeTrailingBackslash(CurrentPath);
   }
   PackStr(Result);
   return Result;
+}
+
+void TFTPFileSystem::EnsureLocation(UnicodeString ADirectory, bool Log)
+{
+  UnicodeString Directory = base::UnixExcludeTrailingBackslash(ADirectory);
+  if (!base::UnixSamePath(GetActualCurrentDirectory(), Directory))
+  {
+    if (Log)
+    {
+      FTerminal->LogEvent(FORMAT(L"Synchronizing current directory \"%s\".",
+          Directory));
+    }
+
+    DoChangeDirectory(Directory);
+    // make sure FZAPI is aware that we changed current working directory
+    FFileZillaIntf->SetCurrentPath(Directory.c_str());
+  }
 }
 
 void TFTPFileSystem::EnsureLocation()
@@ -902,18 +990,11 @@ void TFTPFileSystem::EnsureLocation()
     // 1) We did cached directory change
     // 2) Listing was requested for non-current directory, which
     // makes FZAPI change its current directory (and not restoring it back afterwards)
-    if (!core::UnixSamePath(GetActualCurrentDirectory(), FCurrentDirectory))
-    {
-      FTerminal->LogEvent(FORMAT(L"Synchronizing current directory \"%s\".",
-        FCurrentDirectory.c_str()));
-      DoChangeDirectory(FCurrentDirectory);
-      // make sure FZAPI is aware that we changed current working directory
-      FFileZillaIntf->SetCurrentPath(FCurrentDirectory.c_str());
-    }
+    EnsureLocation(FCurrentDirectory, true);
   }
 }
 
-void TFTPFileSystem::AnyCommand(const UnicodeString & Command,
+void TFTPFileSystem::AnyCommand(UnicodeString Command,
   TCaptureOutputEvent OutputEvent)
 {
   // end-user has right to expect that client current directory is really
@@ -934,9 +1015,9 @@ void TFTPFileSystem::AnyCommand(const UnicodeString & Command,
   }
   __finally
   {
-/*
+#if 0
     FOnCaptureOutput = nullptr;
-*/
+#endif // #if 0
   };
 }
 
@@ -957,20 +1038,20 @@ bool TFTPFileSystem::DoQuit()
 
   uintptr_t Reply = WaitForCommandReply(true);
   bool Result =
-      FLAGSET(Reply, TFileZillaIntf::REPLY_OK) ||
-      FLAGSET(Reply, TFileZillaIntf::REPLY_DISCONNECTED);
+    FLAGSET(Reply, TFileZillaIntf::REPLY_OK) ||
+    FLAGSET(Reply, TFileZillaIntf::REPLY_DISCONNECTED);
   return Result;
 }
 
-void TFTPFileSystem::DoChangeDirectory(const UnicodeString & Directory)
+void TFTPFileSystem::DoChangeDirectory(UnicodeString Directory)
 {
-  UnicodeString Command = FORMAT(L"CWD %s", Directory.c_str());
+  UnicodeString Command = FORMAT("CWD %s", Directory);
   SendCommand(Command);
 
   GotReply(WaitForCommandReply(), REPLY_2XX_CODE);
 }
 
-void TFTPFileSystem::ChangeDirectory(const UnicodeString & ADirectory)
+void TFTPFileSystem::ChangeDirectory(UnicodeString ADirectory)
 {
   UnicodeString Directory = ADirectory;
   try
@@ -1002,19 +1083,15 @@ void TFTPFileSystem::ChangeDirectory(const UnicodeString & ADirectory)
   FReadCurrentDirectory = true;
 }
 
-void TFTPFileSystem::CachedChangeDirectory(const UnicodeString & ADirectory)
+void TFTPFileSystem::CachedChangeDirectory(UnicodeString ADirectory)
 {
-  FCurrentDirectory = core::UnixExcludeTrailingBackslash(ADirectory);
-  if (FCurrentDirectory.IsEmpty())
-  {
-    FCurrentDirectory = ROOTDIRECTORY;
-  }
+  FCurrentDirectory = base::UnixExcludeTrailingBackslash(ADirectory);
   FReadCurrentDirectory = false;
 }
 
-void TFTPFileSystem::ChangeFileProperties(const UnicodeString & AFileName,
-  const TRemoteFile * AFile, const TRemoteProperties * Properties,
-  TChmodSessionAction & Action)
+void TFTPFileSystem::ChangeFileProperties(UnicodeString AFileName,
+  const TRemoteFile *AFile, const TRemoteProperties *Properties,
+  TChmodSessionAction &Action)
 {
   DebugAssert(Properties);
   DebugAssert(Properties && !Properties->Valid.Contains(vpGroup)); //-V595
@@ -1032,7 +1109,7 @@ void TFTPFileSystem::ChangeFileProperties(const UnicodeString & AFileName,
 
       if (AFile == nullptr)
       {
-        TRemoteFile * File = nullptr;
+        TRemoteFile *File = nullptr;
         ReadFile(FileName, File);
         OwnedFile.reset(File);
         AFile = File;
@@ -1043,7 +1120,7 @@ void TFTPFileSystem::ChangeFileProperties(const UnicodeString & AFileName,
         try
         {
           FTerminal->ProcessDirectory(AFileName, nb::bind(&TTerminal::ChangeFileProperties, FTerminal),
-            static_cast<void *>(const_cast<TRemoteProperties *>(Properties)));
+            ToPtr(const_cast<TRemoteProperties *>(Properties)));
         }
         catch (...)
         {
@@ -1067,7 +1144,7 @@ void TFTPFileSystem::ChangeFileProperties(const UnicodeString & AFileName,
       Action.Rights(Rights);
 
       UnicodeString FileNameOnly = base::UnixExtractFileName(FileName);
-      UnicodeString FilePath = core::UnixExtractFilePath(FileName);
+      UnicodeString FilePath = base::UnixExtractFilePath(FileName);
       // FZAPI wants octal number represented as decadic
       FFileZillaIntf->Chmod(Rights.GetNumberDecadic(), FileNameOnly.c_str(), FilePath.c_str());
 
@@ -1075,9 +1152,9 @@ void TFTPFileSystem::ChangeFileProperties(const UnicodeString & AFileName,
     }
     __finally
     {
-/*
+#if 0
       delete OwnedFile;
-*/
+#endif // #if 0
     };
   }
   else
@@ -1093,7 +1170,7 @@ bool TFTPFileSystem::LoadFilesProperties(TStrings * /*FileList*/)
 }
 
 UnicodeString TFTPFileSystem::DoCalculateFileChecksum(
-  bool UsingHashCommand, const UnicodeString & Alg, TRemoteFile * File)
+  bool UsingHashCommand, UnicodeString Alg, TRemoteFile *File)
 {
   // Overview of server supporting various hash commands is at:
   // https://tools.ietf.org/html/draft-bryan-ftpext-hash-02#appendix-B
@@ -1139,10 +1216,10 @@ UnicodeString TFTPFileSystem::DoCalculateFileChecksum(
   // XSHA512 filename;start;end
   if (FileName.Pos(L" ") > 0)
   {
-    FileName = FORMAT(L"\"%s\"", FileName.c_str());
+    FileName = FORMAT("\"%s\"", FileName);
   }
 
-  UnicodeString Command = FORMAT(L"%s %s", CommandName.c_str(), FileName.c_str());
+  UnicodeString Command = FORMAT("%s %s", CommandName, FileName);
   SendCommand(Command);
   UnicodeString ResponseText = GotReply(WaitForCommandReply(), REPLY_2XX_CODE | REPLY_SINGLE_LINE);
 
@@ -1193,31 +1270,31 @@ UnicodeString TFTPFileSystem::DoCalculateFileChecksum(
 
   if (Hash.IsEmpty())
   {
-    throw Exception(FMTLOAD(FTP_RESPONSE_ERROR, CommandName.c_str(), ResponseText.c_str()));
+    throw Exception(FMTLOAD(FTP_RESPONSE_ERROR, CommandName, ResponseText));
   }
 
   return LowerCase(Hash);
 }
 
 void TFTPFileSystem::DoCalculateFilesChecksum(bool UsingHashCommand,
-  const UnicodeString & Alg, TStrings * FileList, TStrings * Checksums,
+  UnicodeString Alg, TStrings *FileList, TStrings *Checksums,
   TCalculatedChecksumEvent OnCalculatedChecksum,
-  TFileOperationProgressType * OperationProgress, bool FirstLevel)
+  TFileOperationProgressType *OperationProgress, bool FirstLevel)
 {
   TOnceDoneOperation OnceDoneOperation; // not used
 
   intptr_t Index1 = 0;
-  while ((Index1 < FileList->GetCount()) && !OperationProgress->Cancel)
+  while ((Index1 < FileList->GetCount()) && !OperationProgress->GetCancel())
   {
-    TRemoteFile * File = static_cast<TRemoteFile *>(FileList->GetObj(Index1));
+    TRemoteFile *File = static_cast<TRemoteFile *>(FileList->GetObj(Index1));
     DebugAssert(File != nullptr);
 
-    if (File->GetIsDirectory())
+    if (File && File->GetIsDirectory())
     {
       if (FTerminal->CanRecurseToDirectory(File) &&
-          !File->GetIsParentDirectory() && !File->GetIsThisDirectory() &&
-          // recurse into subdirectories only if we have callback function
-          (OnCalculatedChecksum != nullptr))
+        !File->GetIsParentDirectory() && !File->GetIsThisDirectory() &&
+        // recurse into subdirectories only if we have callback function
+        (OnCalculatedChecksum != nullptr))
       {
         OperationProgress->SetFile(File->GetFileName());
         std::unique_ptr<TRemoteFileList> SubFiles(
@@ -1231,9 +1308,6 @@ void TFTPFileSystem::DoCalculateFilesChecksum(bool UsingHashCommand,
           {
             SCOPE_EXIT
             {
-//              delete SubFiles;
-//              delete SubFileList;
-
               if (FirstLevel)
               {
                 OperationProgress->Finish(File->GetFileName(), Success, OnceDoneOperation);
@@ -1244,7 +1318,7 @@ void TFTPFileSystem::DoCalculateFilesChecksum(bool UsingHashCommand,
 
             for (intptr_t Index2 = 0; Index2 < SubFiles->GetCount(); Index2++)
             {
-              TRemoteFile * SubFile = SubFiles->GetFile(Index2);
+              TRemoteFile *SubFile = SubFiles->GetFile(Index2);
               SubFileList->AddObject(SubFile->GetFullFileName(), SubFile);
             }
 
@@ -1257,7 +1331,7 @@ void TFTPFileSystem::DoCalculateFilesChecksum(bool UsingHashCommand,
           }
           __finally
           {
-/*
+#if 0
             delete SubFiles;
             delete SubFileList;
 
@@ -1265,12 +1339,12 @@ void TFTPFileSystem::DoCalculateFilesChecksum(bool UsingHashCommand,
             {
               OperationProgress->Finish(File->FileName, Success, OnceDoneOperation);
             }
-*/
+#endif // #if 0
           };
         }
       }
     }
-    else
+    else if (File)
     {
       TChecksumSessionAction Action(FTerminal->GetActionLog());
       try
@@ -1290,14 +1364,13 @@ void TFTPFileSystem::DoCalculateFilesChecksum(bool UsingHashCommand,
           Checksums->Add(Checksum);
         }
       }
-      catch (Exception & E)
+      catch (Exception &E)
       {
         FTerminal->RollbackAction(Action, OperationProgress, &E);
 
         // Error formatting expanded from inline to avoid strange exceptions
-        UnicodeString Error =
-          FMTLOAD(CHECKSUM_ERROR,
-            (File != nullptr ? File->GetFullFileName().c_str() : L""));
+        UnicodeString Error = FMTLOAD(CHECKSUM_ERROR,
+            (File != nullptr ? File->GetFullFileName() : L""));
         FTerminal->CommandError(&E, Error);
         // Abort loop.
         TODO("retries? resume?");
@@ -1308,8 +1381,8 @@ void TFTPFileSystem::DoCalculateFilesChecksum(bool UsingHashCommand,
   }
 }
 
-void TFTPFileSystem::CalculateFilesChecksum(const UnicodeString & Alg,
-  TStrings * AFileList, TStrings * Checksums,
+void TFTPFileSystem::CalculateFilesChecksum(UnicodeString Alg,
+  TStrings *AFileList, TStrings *Checksums,
   TCalculatedChecksumEvent OnCalculatedChecksum)
 {
   TFileOperationProgressType Progress(nb::bind(&TTerminal::DoProgress, FTerminal), nb::bind(&TTerminal::DoFinished, FTerminal));
@@ -1331,7 +1404,7 @@ void TFTPFileSystem::CalculateFilesChecksum(const UnicodeString & Alg,
     {
       // The server should understand lowercase alg name by spec,
       // but we should use uppercase anyway
-      SendCommand(FORMAT(L"OPTS %s %s", HashCommand.c_str(), UpperCase(NormalizedAlg).c_str()));
+      SendCommand(FORMAT("OPTS %s %s", HashCommand, UpperCase(NormalizedAlg)));
       GotReply(WaitForCommandReply(), REPLY_2XX_CODE);
     }
     else if (FChecksumAlgs->IndexOf(NormalizedAlg) >= 0)
@@ -1340,7 +1413,7 @@ void TFTPFileSystem::CalculateFilesChecksum(const UnicodeString & Alg,
     }
     else
     {
-      throw Exception(FMTLOAD(UNKNOWN_CHECKSUM, Alg.c_str()));
+      throw Exception(FMTLOAD(UNKNOWN_CHECKSUM, Alg));
     }
 
     DoCalculateFilesChecksum(UsingHashCommand, NormalizedAlg, AFileList, Checksums, OnCalculatedChecksum,
@@ -1348,27 +1421,27 @@ void TFTPFileSystem::CalculateFilesChecksum(const UnicodeString & Alg,
   }
   __finally
   {
-/*
+#if 0
     FTerminal->SetOperationProgress(nullptr);
     Progress.Stop();
-*/
+#endif // #if 0
   };
 }
 
 bool TFTPFileSystem::ConfirmOverwrite(
-  const UnicodeString & ASourceFullFileName,
-  UnicodeString & ATargetFileName,
-  intptr_t Params, TFileOperationProgressType * OperationProgress,
+  UnicodeString ASourceFullFileName,
+  UnicodeString &ATargetFileName,
+  intptr_t Params, TFileOperationProgressType *OperationProgress,
   bool AutoResume,
-  const TOverwriteFileParams * FileParams,
-  const TCopyParamType * CopyParam,
-  OUT TOverwriteMode & OverwriteMode)
+  const TOverwriteFileParams *FileParams,
+  const TCopyParamType *CopyParam,
+  TOverwriteMode &OverwriteMode)
 {
   bool CanAutoResume = FLAGSET(Params, cpNoConfirmation) && AutoResume;
   bool DestIsSmaller = (FileParams != nullptr) && (FileParams->DestSize < FileParams->SourceSize);
   bool DestIsSame = (FileParams != nullptr) && (FileParams->DestSize == FileParams->SourceSize);
   bool CanResume =
-    !OperationProgress->AsciiTransfer &&
+    !OperationProgress->GetAsciiTransfer() &&
     // when resuming transfer after interrupted connection,
     // do nothing (dummy resume) when the files has the same size.
     // this is workaround for servers that strangely fails just after successful
@@ -1424,9 +1497,9 @@ bool TFTPFileSystem::ConfirmOverwrite(
     {
       TSuspendFileOperationProgress Suspend(OperationProgress);
       Answer = FTerminal->ConfirmFileOverwrite(
-        ASourceFullFileName, ATargetFileName, FileParams, Answers, &QueryParams,
-        OperationProgress->Side == osLocal ? osRemote : osLocal,
-        CopyParam, Params, OperationProgress);
+          ASourceFullFileName, ATargetFileName, FileParams, Answers, &QueryParams,
+          OperationProgress->GetSide() == osLocal ? osRemote : osLocal,
+          CopyParam, Params, OperationProgress);
     }
   }
 
@@ -1434,7 +1507,7 @@ bool TFTPFileSystem::ConfirmOverwrite(
 
   switch (Answer)
   {
-    // resume
+  // resume
   case qaRetry:
     OverwriteMode = omResume;
     DebugAssert(FileParams != nullptr);
@@ -1442,33 +1515,29 @@ bool TFTPFileSystem::ConfirmOverwrite(
     FFileTransferResumed = FileParams ? FileParams->DestSize : 0;
     break;
 
-    // rename
+  // rename
   case qaIgnore:
+  {
     if (FTerminal->PromptUser(FTerminal->GetSessionData(), pkFileName,
-                              LoadStr(RENAME_TITLE), L"", LoadStr(RENAME_PROMPT2), true, 0, ATargetFileName))
+        LoadStr(RENAME_TITLE), L"", LoadStr(RENAME_PROMPT2), true, 0, ATargetFileName))
     {
       OverwriteMode = omOverwrite;
     }
     else
     {
-      if (!OperationProgress->Cancel)
-      {
-        OperationProgress->Cancel = csCancel;
-      }
+      OperationProgress->SetCancelAtLeast(csCancel);
       FFileTransferAbort = ftaCancel;
       Result = false;
     }
-    break;
+  }
+  break;
 
   case qaYes:
     OverwriteMode = omOverwrite;
     break;
 
   case qaCancel:
-    if (!OperationProgress->Cancel)
-    {
-      OperationProgress->Cancel = csCancel;
-    }
+    OperationProgress->SetCancelAtLeast(csCancel);
     FFileTransferAbort = ftaCancel;
     Result = false;
     break;
@@ -1502,7 +1571,7 @@ void TFTPFileSystem::ReadDirectoryProgress(int64_t Bytes)
   // with FTP we do not know exactly how many entries we have received,
   // instead we know number of bytes received only.
   // so we report approximation based on average size of entry.
-  int Progress = static_cast<int>(Bytes / 80);
+  int Progress = ToInt(Bytes / 80);
   if (Progress - FLastReadDirectoryProgress >= 10)
   {
     bool Cancel = false;
@@ -1519,7 +1588,7 @@ void TFTPFileSystem::ReadDirectoryProgress(int64_t Bytes)
 void TFTPFileSystem::DoFileTransferProgress(int64_t TransferSize,
   int64_t Bytes)
 {
-  TFileOperationProgressType * OperationProgress = FTerminal->GetOperationProgress();
+  TFileOperationProgressType *OperationProgress = FTerminal->GetOperationProgress();
 
   OperationProgress->SetTransferSize(TransferSize);
 
@@ -1529,30 +1598,38 @@ void TFTPFileSystem::DoFileTransferProgress(int64_t TransferSize,
     FFileTransferResumed = 0;
   }
 
-  int64_t Diff = Bytes - OperationProgress->TransferedSize;
+  int64_t Diff = Bytes - OperationProgress->GetTransferredSize();
   if (DebugAlwaysTrue(Diff >= 0))
   {
-    OperationProgress->AddTransfered(Diff);
+    OperationProgress->AddTransferred(Diff);
+    FFileTransferAny = true;
   }
 
-  if (OperationProgress->Cancel == csCancel)
+  if (OperationProgress->GetCancel() != csContinue)
   {
+    if (OperationProgress->ClearCancelFile())
+    {
+      FFileTransferAbort = ftaSkip;
+    }
+    else
+    {
+      FFileTransferAbort = ftaCancel;
+    }
     FFileTransferCancelled = true;
-    FFileTransferAbort = ftaCancel;
     FFileZillaIntf->Cancel();
   }
 
-  if (FFileTransferCPSLimit != OperationProgress->CPSLimit)
+  if (static_cast<intptr_t>(FFileTransferCPSLimit) != OperationProgress->GetCPSLimit())
   {
     SetCPSLimit(OperationProgress);
   }
 }
 
-void TFTPFileSystem::SetCPSLimit(TFileOperationProgressType * OperationProgress)
+void TFTPFileSystem::SetCPSLimit(TFileOperationProgressType *OperationProgress)
 {
   // Any reason we use separate field instead of directly using OperationProgress->CPSLimit?
   // Maybe thread-safety?
-  FFileTransferCPSLimit = OperationProgress->CPSLimit;
+  FFileTransferCPSLimit = OperationProgress->GetCPSLimit();
   OperationProgress->SetSpeedCounters();
 }
 
@@ -1564,16 +1641,16 @@ void TFTPFileSystem::FileTransferProgress(int64_t TransferSize,
   DoFileTransferProgress(TransferSize, Bytes);
 }
 
-void TFTPFileSystem::FileTransfer(const UnicodeString & AFileName,
-  const UnicodeString & LocalFile, const UnicodeString & RemoteFile,
-  const UnicodeString & RemotePath, bool Get, int64_t Size, intptr_t Type,
-  TFileTransferData & UserData, TFileOperationProgressType * OperationProgress)
+void TFTPFileSystem::FileTransfer(UnicodeString AFileName,
+  UnicodeString LocalFile, UnicodeString RemoteFile,
+  UnicodeString RemotePath, bool Get, int64_t Size, intptr_t Type,
+  TFileTransferData &UserData, TFileOperationProgressType *OperationProgress)
 {
-  FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(TRANSFER_ERROR, AFileName.c_str()), "",
+  FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(TRANSFER_ERROR, AFileName), "",
   [&]()
   {
     FFileZillaIntf->FileTransfer(ApiPath(LocalFile).c_str(), RemoteFile.c_str(),
-      RemotePath.c_str(), Get, Size, static_cast<int>(Type), &UserData);
+      RemotePath.c_str(), Get, Size, ToInt(Type), &UserData);
     // we may actually catch response code of the listing
     // command (when checking for existence of the remote file)
     uintptr_t Reply = WaitForCommandReply();
@@ -1595,23 +1672,23 @@ void TFTPFileSystem::FileTransfer(const UnicodeString & AFileName,
     // show completion of transfer
     // call non-guarded variant to avoid deadlock with keepalives
     // (we are not waiting for reply anymore so keepalives are free to proceed)
-    DoFileTransferProgress(OperationProgress->TransferSize, OperationProgress->TransferSize);
+    DoFileTransferProgress(OperationProgress->GetTransferSize(), OperationProgress->GetTransferSize());
   }
 }
 
-void TFTPFileSystem::CopyToLocal(const TStrings * AFilesToCopy,
-  const UnicodeString & TargetDir, const TCopyParamType * CopyParam,
-  intptr_t Params, TFileOperationProgressType * OperationProgress,
-  TOnceDoneOperation & OnceDoneOperation)
+void TFTPFileSystem::CopyToLocal(const TStrings *AFilesToCopy,
+  UnicodeString TargetDir, const TCopyParamType *CopyParam,
+  intptr_t Params, TFileOperationProgressType *OperationProgress,
+  TOnceDoneOperation &OnceDoneOperation)
 {
   Params &= ~cpAppend;
   UnicodeString FullTargetDir = ::IncludeTrailingBackslash(TargetDir);
 
   intptr_t Index = 0;
-  while (Index < AFilesToCopy->GetCount() && !OperationProgress->Cancel)
+  while (Index < AFilesToCopy->GetCount() && !OperationProgress->GetCancel())
   {
     UnicodeString FileName = AFilesToCopy->GetString(Index);
-    const TRemoteFile * File = AFilesToCopy->GetAs<TRemoteFile>(Index);
+    const TRemoteFile *File = AFilesToCopy->GetAs<TRemoteFile>(Index);
 
     bool Success = false;
     try__finally
@@ -1629,7 +1706,7 @@ void TFTPFileSystem::CopyToLocal(const TStrings * AFilesToCopy,
         Success = true;
         FLastDataSent = Now();
       }
-      catch (ESkipFile & E)
+      catch (ESkipFile &E)
       {
         TSuspendFileOperationProgress Suspend(OperationProgress);
         if (!FTerminal->HandleException(&E))
@@ -1640,23 +1717,23 @@ void TFTPFileSystem::CopyToLocal(const TStrings * AFilesToCopy,
     }
     __finally
     {
-/*
+#if 0
       OperationProgress->Finish(FileName, Success, OnceDoneOperation);
-*/
+#endif // #if 0
     };
     ++Index;
   }
 }
 
-void TFTPFileSystem::SinkRobust(const UnicodeString & AFileName,
-  const TRemoteFile * AFile, const UnicodeString & TargetDir,
-  const TCopyParamType * CopyParam, intptr_t Params,
-  TFileOperationProgressType * OperationProgress, uintptr_t Flags)
+void TFTPFileSystem::SinkRobust(UnicodeString AFileName,
+  const TRemoteFile *AFile, UnicodeString TargetDir,
+  const TCopyParamType *CopyParam, intptr_t Params,
+  TFileOperationProgressType *OperationProgress, uintptr_t Flags)
 {
   // the same in TSFTPFileSystem
 
   TDownloadSessionAction Action(FTerminal->GetActionLog());
-  TRobustOperationLoop RobustLoop(FTerminal, OperationProgress);
+  TRobustOperationLoop RobustLoop(FTerminal, OperationProgress, &FFileTransferAny);
 
   do
   {
@@ -1665,7 +1742,7 @@ void TFTPFileSystem::SinkRobust(const UnicodeString & AFileName,
       Sink(AFileName, AFile, TargetDir, CopyParam, Params, OperationProgress,
         Flags, Action);
     }
-    catch (Exception & E)
+    catch (Exception &E)
     {
       if (!RobustLoop.TryReopen(E))
       {
@@ -1679,7 +1756,7 @@ void TFTPFileSystem::SinkRobust(const UnicodeString & AFileName,
       OperationProgress->RollbackTransfer();
       Action.Restart();
       DebugAssert(AFile != nullptr);
-      if (!AFile->GetIsDirectory())
+      if (AFile && !AFile->GetIsDirectory())
       {
         // prevent overwrite confirmations
         Params |= cpNoConfirmation;
@@ -1690,11 +1767,11 @@ void TFTPFileSystem::SinkRobust(const UnicodeString & AFileName,
   while (RobustLoop.Retry());
 }
 
-void TFTPFileSystem::Sink(const UnicodeString & AFileName,
-  const TRemoteFile * AFile, const UnicodeString & TargetDir,
-  const TCopyParamType * CopyParam, intptr_t AParams,
-  TFileOperationProgressType * OperationProgress, uintptr_t Flags,
-  TDownloadSessionAction & Action)
+void TFTPFileSystem::Sink(UnicodeString AFileName,
+  const TRemoteFile *AFile, UnicodeString TargetDir,
+  const TCopyParamType *CopyParam, intptr_t AParams,
+  TFileOperationProgressType *OperationProgress, uintptr_t Flags,
+  TDownloadSessionAction &Action)
 {
   DebugAssert(AFile);
   UnicodeString OnlyFileName = base::UnixExtractFileName(AFileName);
@@ -1708,7 +1785,7 @@ void TFTPFileSystem::Sink(const UnicodeString & AFileName,
   UnicodeString BaseFileName = FTerminal->GetBaseFileName(AFileName);
   if (!CopyParam->AllowTransfer(BaseFileName, osRemote, AFile->GetIsDirectory(), MaskParams))
   {
-    FTerminal->LogEvent(FORMAT(L"File \"%s\" excluded from transfer", AFileName.c_str()));
+    FTerminal->LogEvent(FORMAT("File \"%s\" excluded from transfer", AFileName));
     ThrowSkipFileNull();
   }
 
@@ -1732,7 +1809,7 @@ void TFTPFileSystem::Sink(const UnicodeString & AFileName,
     Action.Cancel();
     if (FTerminal->CanRecurseToDirectory(AFile))
     {
-      FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(NOT_DIRECTORY_ERROR, DestFullName.c_str()), "",
+      FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(NOT_DIRECTORY_ERROR, DestFullName), "",
       [&]()
       {
         DWORD LocalFileAttrs = FTerminal->GetLocalFileAttributes(ApiPath(DestFullName));
@@ -1742,53 +1819,56 @@ void TFTPFileSystem::Sink(const UnicodeString & AFileName,
         }
       });
 
-      FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(CREATE_DIR_ERROR, DestFullName.c_str()), "",
+      FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(CREATE_DIR_ERROR, DestFullName), "",
       [&]()
       {
         THROWOSIFFALSE(::ForceDirectories(ApiPath(DestFullName)));
       });
 
-      TSinkFileParams SinkFileParams;
-      SinkFileParams.TargetDir = ::IncludeTrailingBackslash(DestFullName);
-      SinkFileParams.CopyParam = CopyParam;
-      SinkFileParams.Params = AParams;
-      SinkFileParams.OperationProgress = OperationProgress;
-      SinkFileParams.Skipped = false;
-      SinkFileParams.Flags = Flags & ~(tfFirstLevel | tfAutoResume);
-
-      FTerminal->ProcessDirectory(AFileName, nb::bind(&TFTPFileSystem::SinkFile, this), &SinkFileParams);
-
-      // Do not delete directory if some of its files were skipped.
-      // Throw "skip file" for the directory to avoid attempt to deletion
-      // of any parent directory
-      if (FLAGSET(AParams, cpDelete) && SinkFileParams.Skipped)
+      if (FLAGCLEAR(AParams, cpNoRecurse))
       {
-        ThrowSkipFileNull();
+        TSinkFileParams SinkFileParams;
+        SinkFileParams.TargetDir = ::IncludeTrailingBackslash(DestFullName);
+        SinkFileParams.CopyParam = CopyParam;
+        SinkFileParams.Params = AParams;
+        SinkFileParams.OperationProgress = OperationProgress;
+        SinkFileParams.Skipped = false;
+        SinkFileParams.Flags = Flags & ~(tfFirstLevel | tfAutoResume);
+
+        FTerminal->ProcessDirectory(AFileName, nb::bind(&TFTPFileSystem::SinkFile, this), &SinkFileParams);
+
+        // Do not delete directory if some of its files were skipped.
+        // Throw "skip file" for the directory to avoid attempt to deletion
+        // of any parent directory
+        if (FLAGSET(AParams, cpDelete) && SinkFileParams.Skipped)
+        {
+          ThrowSkipFileNull();
+        }
       }
     }
     else
     {
-      FTerminal->LogEvent(FORMAT(L"Skipping symlink to directory \"%s\".", AFileName.c_str()));
+      FTerminal->LogEvent(FORMAT("Skipping symlink to directory \"%s\".", AFileName));
     }
   }
   else
   {
-    AutoDetectTimeDifference(core::UnixExtractFileDir(AFileName), CopyParam, AParams);
+    AutoDetectTimeDifference(base::UnixExtractFileDir(AFileName), CopyParam, AParams);
 
-    FTerminal->LogEvent(FORMAT(L"Copying \"%s\" to local directory started.", AFileName.c_str()));
+    FTerminal->LogEvent(FORMAT("Copying \"%s\" to local directory started.", AFileName));
 
     // Will we use ASCII of BINARY file transfer?
     OperationProgress->SetAsciiTransfer(
       CopyParam->UseAsciiTransfer(BaseFileName, osRemote, MaskParams));
-    FTerminal->LogEvent(UnicodeString(OperationProgress->AsciiTransfer ? L"Ascii" : L"Binary") +
+    FTerminal->LogEvent(UnicodeString(OperationProgress->GetAsciiTransfer() ? L"Ascii" : L"Binary") +
       L" transfer mode selected.");
 
     // Suppose same data size to transfer as to write
     OperationProgress->SetTransferSize(AFile->GetSize());
-    OperationProgress->SetLocalSize(OperationProgress->TransferSize);
+    OperationProgress->SetLocalSize(OperationProgress->GetTransferSize());
 
     DWORD LocalFileAttrs = INVALID_FILE_ATTRIBUTES;
-    FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(NOT_FILE_ERROR, DestFullName.c_str()), "",
+    FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(NOT_FILE_ERROR, DestFullName), "",
     [&]()
     {
       LocalFileAttrs = FTerminal->GetLocalFileAttributes(ApiPath(DestFullName));
@@ -1798,18 +1878,12 @@ void TFTPFileSystem::Sink(const UnicodeString & AFileName,
       }
     });
 
-    OperationProgress->TransferingFile = false; // not set with FTP protocol
-
     ResetFileTransfer();
 
     TFileTransferData UserData;
 
-    UnicodeString FilePath = core::UnixExtractFilePath(AFileName);
-    if (FilePath.IsEmpty())
-    {
-      FilePath = ROOTDIRECTORY;
-    }
-    uintptr_t TransferType = (OperationProgress->AsciiTransfer ? 1 : 2);
+    UnicodeString FilePath = base::UnixExtractFilePath(AFileName);
+    uintptr_t TransferType = (OperationProgress->GetAsciiTransfer() ? 1 : 2);
 
     {
       // ignore file list
@@ -1836,7 +1910,8 @@ void TFTPFileSystem::Sink(const UnicodeString & AFileName,
       LocalFileAttrs = FTerminal->GetLocalFileAttributes(ApiPath(DestFullName));
     }
 
-    Action.Destination(::ExpandUNCFileName(DestFullName));
+    UnicodeString ExpandedDestFullName = ::ExpandUNCFileName(DestFullName);
+    Action.Destination(ExpandedDestFullName);
 
     if (LocalFileAttrs == INVALID_FILE_ATTRIBUTES)
     {
@@ -1845,18 +1920,19 @@ void TFTPFileSystem::Sink(const UnicodeString & AFileName,
     DWORD NewAttrs = CopyParam->LocalFileAttrs(*AFile->GetRights());
     if ((NewAttrs & LocalFileAttrs) != NewAttrs)
     {
-      FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(CANT_SET_ATTRS, DestFullName.c_str()), "",
+      FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(CANT_SET_ATTRS, DestFullName), "",
       [&]()
       {
-        THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(ApiPath(DestFullName), (LocalFileAttrs | NewAttrs)) == 0);
+        THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(ApiPath(DestFullName), (LocalFileAttrs | NewAttrs)));
       });
     }
 
-    FTerminal->LogFileDone(OperationProgress);
+    FTerminal->LogFileDone(OperationProgress, ExpandedDestFullName);
   }
 
   if (FLAGSET(AParams, cpDelete))
   {
+    DebugAssert(FLAGCLEAR(AParams, cpNoRecurse));
     // If file is directory, do not delete it recursively, because it should be
     // empty already. If not, it should not be deleted (some files were
     // skipped or some new files were copied to it, while we were downloading)
@@ -1865,19 +1941,19 @@ void TFTPFileSystem::Sink(const UnicodeString & AFileName,
   }
 }
 
-void TFTPFileSystem::SinkFile(const UnicodeString & AFileName,
-  const TRemoteFile * AFile, void * Param)
+void TFTPFileSystem::SinkFile(UnicodeString AFileName,
+  const TRemoteFile *AFile, void *Param)
 {
-  TSinkFileParams * Params = get_as<TSinkFileParams>(Param);
+  TSinkFileParams *Params = get_as<TSinkFileParams>(Param);
   DebugAssert(Params->OperationProgress);
   try
   {
     SinkRobust(AFileName, AFile, Params->TargetDir, Params->CopyParam,
       Params->Params, Params->OperationProgress, Params->Flags);
   }
-  catch (ESkipFile & E)
+  catch (ESkipFile &E)
   {
-    TFileOperationProgressType * OperationProgress = Params->OperationProgress;
+    TFileOperationProgressType *OperationProgress = Params->OperationProgress;
 
     Params->Skipped = true;
 
@@ -1889,17 +1965,17 @@ void TFTPFileSystem::SinkFile(const UnicodeString & AFileName,
       }
     }
 
-    if (OperationProgress->Cancel)
+    if (OperationProgress->GetCancel())
     {
       Abort();
     }
   }
 }
 
-void TFTPFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
-  const UnicodeString & ATargetDir, const TCopyParamType * CopyParam,
-  intptr_t Params, TFileOperationProgressType * OperationProgress,
-  TOnceDoneOperation & OnceDoneOperation)
+void TFTPFileSystem::CopyToRemote(const TStrings *AFilesToCopy,
+  UnicodeString ATargetDir, const TCopyParamType *CopyParam,
+  intptr_t Params, TFileOperationProgressType *OperationProgress,
+  TOnceDoneOperation &OnceDoneOperation)
 {
   DebugAssert((AFilesToCopy != nullptr) && (OperationProgress != nullptr));
 
@@ -1907,13 +1983,13 @@ void TFTPFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
 
   Params &= ~cpAppend;
   UnicodeString TargetDir = GetAbsolutePath(ATargetDir, false);
-  UnicodeString FullTargetDir = core::UnixIncludeTrailingBackslash(TargetDir);
+  UnicodeString FullTargetDir = base::UnixIncludeTrailingBackslash(TargetDir);
   intptr_t Index = 0;
-  while ((Index < AFilesToCopy->GetCount()) && !OperationProgress->Cancel)
+  while ((Index < AFilesToCopy->GetCount()) && OperationProgress && !OperationProgress->GetCancel())
   {
     bool Success = false;
     UnicodeString FileName = AFilesToCopy->GetString(Index);
-    TRemoteFile * File = AFilesToCopy->GetAs<TRemoteFile>(Index);
+    TRemoteFile *File = AFilesToCopy->GetAs<TRemoteFile>(Index);
     UnicodeString RealFileName = File ? File->GetFileName() : FileName;
     UnicodeString FileNameOnly = base::ExtractFileName(RealFileName, false);
 
@@ -1939,7 +2015,7 @@ void TFTPFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
         Success = true;
         FLastDataSent = Now();
       }
-      catch (ESkipFile & E)
+      catch (ESkipFile &E)
       {
         TSuspendFileOperationProgress Suspend(OperationProgress);
         if (!FTerminal->HandleException(&E))
@@ -1950,23 +2026,23 @@ void TFTPFileSystem::CopyToRemote(const TStrings * AFilesToCopy,
     }
     __finally
     {
-/*
+#if 0
       OperationProgress->Finish(FileName, Success, OnceDoneOperation);
-*/
+#endif // #if 0
     };
     ++Index;
   }
 }
 
-void TFTPFileSystem::SourceRobust(const UnicodeString & AFileName,
-  const TRemoteFile * AFile,
-  const UnicodeString & TargetDir, const TCopyParamType * CopyParam, intptr_t Params,
-  TFileOperationProgressType * OperationProgress, uintptr_t Flags)
+void TFTPFileSystem::SourceRobust(UnicodeString AFileName,
+  const TRemoteFile *AFile,
+  UnicodeString TargetDir, const TCopyParamType *CopyParam, intptr_t Params,
+  TFileOperationProgressType *OperationProgress, uintptr_t Flags)
 {
   // the same in TSFTPFileSystem
 
   TUploadSessionAction Action(FTerminal->GetActionLog());
-  TRobustOperationLoop RobustLoop(FTerminal, OperationProgress);
+  TRobustOperationLoop RobustLoop(FTerminal, OperationProgress, &FFileTransferAny);
   TOpenRemoteFileParams OpenParams;
   OpenParams.OverwriteMode = omOverwrite;
   TOverwriteFileParams FileParams;
@@ -1978,7 +2054,7 @@ void TFTPFileSystem::SourceRobust(const UnicodeString & AFileName,
       Source(AFileName, AFile, TargetDir, CopyParam, Params, &OpenParams, &FileParams, OperationProgress,
         Flags, Action);
     }
-    catch (Exception & E)
+    catch (Exception &E)
     {
       if (!RobustLoop.TryReopen(E))
       {
@@ -2000,7 +2076,7 @@ void TFTPFileSystem::SourceRobust(const UnicodeString & AFileName,
   while (RobustLoop.Retry());
 }
 
-bool TFTPFileSystem::CanTransferSkipList(intptr_t Params, uintptr_t Flags, const TCopyParamType * CopyParam) const
+bool TFTPFileSystem::CanTransferSkipList(intptr_t Params, uintptr_t Flags, const TCopyParamType *CopyParam) const
 {
   bool Result =
     FLAGSET(Params, cpNoConfirmation) &&
@@ -2013,13 +2089,13 @@ bool TFTPFileSystem::CanTransferSkipList(intptr_t Params, uintptr_t Flags, const
 }
 
 // Copy file to remote host
-void TFTPFileSystem::Source(const UnicodeString & AFileName,
-  const TRemoteFile * AFile,
-  const UnicodeString & TargetDir, const TCopyParamType * CopyParam, intptr_t Params,
-  TOpenRemoteFileParams * OpenParams,
+void TFTPFileSystem::Source(UnicodeString AFileName,
+  const TRemoteFile *AFile,
+  UnicodeString TargetDir, const TCopyParamType *CopyParam, intptr_t Params,
+  TOpenRemoteFileParams *OpenParams,
   TOverwriteFileParams * /*FileParams*/,
-  TFileOperationProgressType * OperationProgress, uintptr_t Flags,
-  TUploadSessionAction & Action)
+  TFileOperationProgressType *OperationProgress, uintptr_t Flags,
+  TUploadSessionAction &Action)
 {
   UnicodeString RealFileName = AFile ? AFile->GetFileName() : AFileName;
   Action.SetFileName(::ExpandUNCFileName(AFileName));
@@ -2028,15 +2104,16 @@ void TFTPFileSystem::Source(const UnicodeString & AFileName,
 
   if (!FTerminal->AllowLocalFileTransfer(AFileName, CopyParam, OperationProgress))
   {
-    // FTerminal->LogEvent(FORMAT("File \"%s\" excluded from transfer", RealFileName.c_str()));
     ThrowSkipFileNull();
   }
 
-  int64_t MTime = 0, ATime = 0;
   int64_t Size = 0;
+#if 0
+  uintptr_t Attrs = 0;
+#endif // #if 0
 
-  FTerminal->TerminalOpenLocalFile(AFileName, GENERIC_READ,
-    nullptr, &OpenParams->LocalFileAttrs, nullptr, &MTime, &ATime, &Size);
+  FTerminal->TerminalOpenLocalFile(AFileName, GENERIC_READ, &OpenParams->LocalFileAttrs,
+    nullptr, nullptr, nullptr, nullptr, &Size);
 
   OperationProgress->SetFileInProgress();
 
@@ -2054,19 +2131,18 @@ void TFTPFileSystem::Source(const UnicodeString & AFileName,
         CopyParam, base::ExtractFileName(RealFileName, false), osLocal,
         FLAGSET(Flags, tfFirstLevel));
 
-    FTerminal->LogEvent(FORMAT(L"Copying \"%s\" to remote directory started.", RealFileName.c_str()));
+    FTerminal->LogEvent(FORMAT("Copying \"%s\" to remote directory started.", RealFileName));
 
     OperationProgress->SetLocalSize(Size);
 
     // Suppose same data size to transfer as to read
     // (not true with ASCII transfer)
-    OperationProgress->SetTransferSize(OperationProgress->LocalSize);
-    OperationProgress->TransferingFile = false;
+    OperationProgress->SetTransferSize(OperationProgress->GetLocalSize());
 
     TDateTime Modification;
     // Inspired by Sysutils::FileAge
     WIN32_FIND_DATA FindData;
-    HANDLE LocalFileHandle = ::FindFirstFile(ApiPath(AFileName).c_str(), &FindData);
+    HANDLE LocalFileHandle = ::FindFirstFileW(ApiPath(AFileName).c_str(), &FindData);
     if (LocalFileHandle != INVALID_HANDLE_VALUE)
     {
       Modification =
@@ -2084,26 +2160,27 @@ void TFTPFileSystem::Source(const UnicodeString & AFileName,
     OperationProgress->SetAsciiTransfer(
       CopyParam->UseAsciiTransfer(BaseFileName, osLocal, MaskParams));
     FTerminal->LogEvent(
-      UnicodeString(OperationProgress->AsciiTransfer ? L"Ascii" : L"Binary") +
-        L" transfer mode selected.");
+      UnicodeString(OperationProgress->GetAsciiTransfer() ? L"Ascii" : L"Binary") +
+      L" transfer mode selected.");
 
     ResetFileTransfer();
 
     TFileTransferData UserData;
 
-    uintptr_t TransferType = (OperationProgress->AsciiTransfer ? 1 : 2);
-/*
+#if 0
     // should we check for interrupted transfer?
-    bool ResumeAllowed = !OperationProgress->AsciiTransfer &&
-                         CopyParam->AllowResume(OperationProgress->LocalSize) &&
-                         IsCapable(fcRename);
+    bool ResumeAllowed = !OperationProgress->GetAsciiTransfer() &&
+      CopyParam->AllowResume(OperationProgress->LocalSize) &&
+      IsCapable(fcRename);
 //    OperationProgress->SetResumeStatus(ResumeAllowed ? rsEnabled : rsDisabled);
 
     FileParams->SourceSize = OperationProgress->LocalSize;
     FileParams->SourceTimestamp = ::UnixToDateTime(MTime,
-                                  FTerminal->GetSessionData()->GetDSTMode());
+        FTerminal->GetSessionData()->GetDSTMode());
     bool DoResume = (ResumeAllowed && (OpenParams->OverwriteMode == omOverwrite));
-*/
+#endif // #if 0
+
+    uintptr_t TransferType = (OperationProgress->GetAsciiTransfer() ? 1 : 2);
 
     {
       // ignore file list
@@ -2117,7 +2194,7 @@ void TFTPFileSystem::Source(const UnicodeString & AFileName,
       // not used for uploads, but we get new name (if any) back in this field
       UserData.FileName = DestFileName;
       UserData.Params = Params;
-      UserData.AutoResume = FLAGSET(Flags, tfAutoResume); // || DoResume;
+      UserData.AutoResume = FLAGSET(Flags, tfAutoResume);
       UserData.CopyParam = CopyParam;
       UserData.Modification = Modification;
       FileTransfer(RealFileName, AFileName, DestFileName,
@@ -2146,13 +2223,13 @@ void TFTPFileSystem::Source(const UnicodeString & AFileName,
         if ((FTerminal->GetConfiguration()->GetActualLogProtocol() >= 2))
         {
           FTerminal->LogEvent(
-            FORMAT(L"Remembering modification time of \"%s\" as [%s]",
-                   DestFullName.c_str(), StandardTimestamp(FUploadedTimes[DestFullName]).c_str()));
+            FORMAT("Remembering modification time of \"%s\" as [%s]",
+              DestFullName, StandardTimestamp(FUploadedTimes[DestFullName])));
         }
       }
     }
 
-    FTerminal->LogFileDone(OperationProgress);
+    FTerminal->LogFileDone(OperationProgress, DestFullName);
   }
 
   /* TODO : Delete also read-only files. */
@@ -2160,100 +2237,101 @@ void TFTPFileSystem::Source(const UnicodeString & AFileName,
   {
     if (!Dir)
     {
-      FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(CORE_DELETE_LOCAL_FILE_ERROR, AFileName.c_str()), "",
+      FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(CORE_DELETE_LOCAL_FILE_ERROR, AFileName), "",
       [&]()
       {
-        THROWOSIFFALSE(::RemoveFile(AFileName));
+        THROWOSIFFALSE(Sysutils::RemoveFile(ApiPath(AFileName)));
       });
     }
   }
   else if (CopyParam->GetClearArchive() && FLAGSET(OpenParams->LocalFileAttrs, faArchive))
   {
-    FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(CANT_SET_ATTRS, AFileName.c_str()), "",
+    FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(CANT_SET_ATTRS, AFileName), "",
     [&]()
     {
-      THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(AFileName, OpenParams->LocalFileAttrs & ~faArchive) == 0);
+      THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(ApiPath(AFileName), OpenParams->LocalFileAttrs & ~faArchive));
     });
   }
 }
 
-void TFTPFileSystem::DirectorySource(const UnicodeString & DirectoryName,
-  const UnicodeString & TargetDir, intptr_t Attrs, const TCopyParamType * CopyParam,
-  intptr_t Params, TFileOperationProgressType * OperationProgress, uintptr_t Flags)
+void TFTPFileSystem::DirectorySource(UnicodeString DirectoryName,
+  UnicodeString TargetDir, intptr_t Attrs, const TCopyParamType *CopyParam,
+  intptr_t Params, TFileOperationProgressType *OperationProgress, uintptr_t Flags)
 {
   UnicodeString DestDirectoryName =
     FTerminal->ChangeFileName(
       CopyParam,
       base::ExtractFileName(::ExcludeTrailingBackslash(DirectoryName), false),
       osLocal, FLAGSET(Flags, tfFirstLevel));
-  UnicodeString DestFullName = core::UnixIncludeTrailingBackslash(TargetDir + DestDirectoryName);
+  UnicodeString DestFullName = base::UnixIncludeTrailingBackslash(TargetDir + DestDirectoryName);
 
   AutoDetectTimeDifference(TargetDir, CopyParam, Params);
 
   OperationProgress->SetFile(DirectoryName);
 
-  DWORD FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
-  TSearchRecChecked SearchRec;
-  bool FindOK = false;
-
-  FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()), "",
-  [&]()
-  {
-    FindOK =
-      ::FindFirstChecked((DirectoryName + L"*.*").c_str(),
-        FindAttrs, SearchRec) == 0;
-  });
-
   bool CreateDir = true;
-
-  try__finally
+  if (FLAGCLEAR(Params, cpNoRecurse))
   {
-    SCOPE_EXIT
-    {
-      base::FindClose(SearchRec);
-    };
-    while (FindOK && !OperationProgress->Cancel)
-    {
-      UnicodeString FileName = DirectoryName + SearchRec.Name;
-      try
-      {
-        if ((SearchRec.Name != THISDIRECTORY) && (SearchRec.Name != PARENTDIRECTORY))
-        {
-          SourceRobust(FileName, nullptr, DestFullName, CopyParam, Params, OperationProgress,
-            Flags & ~(tfFirstLevel | tfAutoResume));
-          // if any file got uploaded (i.e. there were any file in the
-          // directory and at least one was not skipped),
-          // do not try to create the directory,
-          // as it should be already created by FZAPI during upload
-          CreateDir = false;
-        }
-      }
-      catch (ESkipFile & E)
-      {
-        // If ESkipFile occurs, just log it and continue with next file
-        TSuspendFileOperationProgress Suspend(OperationProgress);
-        // here a message to user was displayed, which was not appropriate
-        // when user refused to overwrite the file in subdirectory.
-        // hopefully it won't be missing in other situations.
-        if (!FTerminal->HandleException(&E))
-        {
-          throw;
-        }
-      }
+    DWORD FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
+    TSearchRecChecked SearchRec;
+    bool FindOK = false;
 
-      FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(LIST_DIR_ERROR, DirectoryName.c_str()), "",
-      [&]()
+    FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(LIST_DIR_ERROR, DirectoryName), "",
+    [&]()
+    {
+      FindOK =
+        ::FindFirstChecked((DirectoryName + L"*.*").c_str(), FindAttrs, SearchRec) == 0;
+    });
+
+    try__finally
+    {
+      SCOPE_EXIT
       {
-        FindOK = (::FindNextChecked(SearchRec) == 0);
-      });
+        base::FindClose(SearchRec);
+      };
+      while (FindOK && !OperationProgress->GetCancel())
+      {
+        UnicodeString FileName = DirectoryName + SearchRec.Name;
+        try
+        {
+          if ((SearchRec.Name != THISDIRECTORY) && (SearchRec.Name != PARENTDIRECTORY))
+          {
+            SourceRobust(FileName, nullptr, DestFullName, CopyParam, Params, OperationProgress,
+              Flags & ~(tfFirstLevel | tfAutoResume));
+            // if any file got uploaded (i.e. there were any file in the
+            // directory and at least one was not skipped),
+            // do not try to create the directory,
+            // as it should be already created by FZAPI during upload
+            CreateDir = false;
+          }
+        }
+        catch (ESkipFile &E)
+        {
+          // If ESkipFile occurs, just log it and continue with next file
+          TSuspendFileOperationProgress Suspend(OperationProgress);
+          // here a message to user was displayed, which was not appropriate
+          // when user refused to overwrite the file in subdirectory.
+          // hopefully it won't be missing in other situations.
+          if (!FTerminal->HandleException(&E))
+          {
+            throw;
+          }
+        }
+
+        FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(LIST_DIR_ERROR, DirectoryName), "",
+        [&]()
+        {
+          FindOK = (::FindNextChecked(SearchRec) == 0);
+        });
+      }
     }
+    __finally
+    {
+#if 0
+      FindClose(SearchRec);
+#endif // #if 0
+    };
   }
-  __finally
-  {
-/*
-    FindClose(SearchRec);
-*/
-  };
 
   if (CreateDir)
   {
@@ -2277,20 +2355,16 @@ void TFTPFileSystem::DirectorySource(const UnicodeString & DirectoryName,
       }
       __finally
       {
-/*
-          FTerminal->SetExceptionOnFail(false);
-*/
+#if 0
+        FTerminal->SetExceptionOnFail(false);
+#endif // #if 0
       };
     }
     catch (...)
     {
-      TRemoteFile * File = nullptr;
+      TRemoteFile *File = nullptr;
       // ignore non-fatal error when the directory already exists
-      UnicodeString Fn = core::UnixExcludeTrailingBackslash(DestFullName);
-      if (Fn.IsEmpty())
-      {
-        Fn = ROOTDIRECTORY;
-      }
+      UnicodeString Fn = base::UnixExcludeTrailingBackslash(DestFullName);
       bool Rethrow =
         !FTerminal->GetActive() ||
         !FTerminal->FileExists(Fn, &File) ||
@@ -2305,24 +2379,25 @@ void TFTPFileSystem::DirectorySource(const UnicodeString & DirectoryName,
 
   /* TODO : Delete also read-only directories. */
   /* TODO : Show error message on failure. */
-  if (!OperationProgress->Cancel)
+  if (!OperationProgress->GetCancel())
   {
     if (FLAGSET(Params, cpDelete))
     {
+      DebugAssert(FLAGCLEAR(Params, cpNoRecurse));
       FTerminal->RemoveLocalDirectory(ApiPath(DirectoryName));
     }
     else if (CopyParam->GetClearArchive() && FLAGSET(Attrs, faArchive))
     {
-      FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(CANT_SET_ATTRS, DirectoryName.c_str()), "",
+      FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(CANT_SET_ATTRS, DirectoryName), "",
       [&]()
       {
-        THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(DirectoryName, Attrs & ~faArchive) == 0);
+        THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(ApiPath(DirectoryName), Attrs & ~faArchive));
       });
     }
   }
 }
 
-void TFTPFileSystem::RemoteCreateDirectory(const UnicodeString & ADirName)
+void TFTPFileSystem::RemoteCreateDirectory(UnicodeString ADirName)
 {
   UnicodeString DirName = GetAbsolutePath(ADirName, false);
 
@@ -2336,26 +2411,26 @@ void TFTPFileSystem::RemoteCreateDirectory(const UnicodeString & ADirName)
   }
 }
 
-void TFTPFileSystem::CreateLink(const UnicodeString & AFileName,
-  const UnicodeString & PointTo, bool Symbolic)
+void TFTPFileSystem::CreateLink(UnicodeString AFileName,
+  UnicodeString PointTo, bool Symbolic)
 {
   DebugAssert(SupportsSiteCommand(SymlinkSiteCommand));
   if (DebugAlwaysTrue(Symbolic))
   {
     EnsureLocation();
 
-    UnicodeString Command = FORMAT(L"%s %s %s %s", SiteCommand.c_str(), SymlinkSiteCommand.c_str(), PointTo.c_str(), AFileName.c_str());
+    UnicodeString Command = FORMAT("%s %s %s %s", SiteCommand, SymlinkSiteCommand, PointTo, AFileName);
     SendCommand(Command);
     GotReply(WaitForCommandReply(), REPLY_2XX_CODE);
   }
 }
 
-void TFTPFileSystem::RemoteDeleteFile(const UnicodeString & AFileName,
-  const TRemoteFile * AFile, intptr_t Params, TRmSessionAction & Action)
+void TFTPFileSystem::RemoteDeleteFile(UnicodeString AFileName,
+  const TRemoteFile *AFile, intptr_t Params, TRmSessionAction &Action)
 {
   UnicodeString FileName = GetAbsolutePath(AFileName, false);
   UnicodeString FileNameOnly = base::UnixExtractFileName(FileName);
-  UnicodeString FilePath = core::UnixExtractFilePath(FileName);
+  UnicodeString FilePath = base::UnixExtractFilePath(FileName);
 
   bool Dir = (AFile != nullptr) && AFile->GetIsDirectory() && FTerminal->CanRecurseToDirectory(AFile);
 
@@ -2385,7 +2460,7 @@ void TFTPFileSystem::RemoteDeleteFile(const UnicodeString & AFileName,
       // EnsureLocation should reset actual current directory to user's working directory.
       // If user's working directory is still below deleted directory, it is
       // perfectly correct to report an error.
-      if (core::UnixIsChildPath(GetActualCurrentDirectory(), FileName))
+      if (base::UnixIsChildPath(GetActualCurrentDirectory(), FileName))
       {
         EnsureLocation();
       }
@@ -2393,14 +2468,23 @@ void TFTPFileSystem::RemoteDeleteFile(const UnicodeString & AFileName,
     }
     else
     {
-      FFileZillaIntf->Delete(FileNameOnly.c_str(), FilePath.c_str());
+      if ((FTerminal->GetSessionData()->GetFtpDeleteFromCwd() == asOn) ||
+        ((FTerminal->GetSessionData()->GetFtpDeleteFromCwd() == asAuto) && FVMS))
+      {
+        EnsureLocation(FilePath, false);
+        FFileZillaIntf->Delete(FileNameOnly.c_str(), L"", true);
+      }
+      else
+      {
+        FFileZillaIntf->Delete(FileNameOnly.c_str(), FilePath.c_str(), false);
+      }
     }
     GotReply(WaitForCommandReply(), REPLY_2XX_CODE);
   }
 }
 
-void TFTPFileSystem::CustomCommandOnFile(const UnicodeString & /*FileName*/,
-  const TRemoteFile * /*File*/, const UnicodeString & /*Command*/, intptr_t /*Params*/,
+void TFTPFileSystem::CustomCommandOnFile(UnicodeString /*FileName*/,
+  const TRemoteFile * /*File*/, UnicodeString /*Command*/, intptr_t /*Params*/,
   TCaptureOutputEvent /*OutputEvent*/)
 {
   // if ever implemented, do not forget to add EnsureLocation,
@@ -2427,9 +2511,9 @@ void TFTPFileSystem::DoStartup()
   }
   __finally
   {
-/*
+#if 0
     delete PostLoginCommands;
-*/
+#endif // #if 0
   };
 
   // retrieve initialize working directory to save it as home directory
@@ -2462,6 +2546,8 @@ bool TFTPFileSystem::IsCapable(intptr_t Capability) const
   case fcRemoteMove:
   case fcRemoveBOMUpload:
   case fcMoveToQueue:
+  case fsSkipTransfer:
+  case fsParallelTransfers:
     return true;
 
   case fcPreservingTimestampUpload:
@@ -2495,6 +2581,7 @@ bool TFTPFileSystem::IsCapable(intptr_t Capability) const
   case fcLocking:
   case fcPreservingTimestampDirs:
   case fcResumeSupport:
+  case fcChangePassword:
     return false;
 
   default:
@@ -2520,11 +2607,10 @@ void TFTPFileSystem::ReadCurrentDirectory()
     SendCommand(Command);
 
     uintptr_t Code = 0;
-    TStrings * Response = nullptr;
+    TStrings *Response = nullptr;
     GotReply(WaitForCommandReply(), REPLY_2XX_CODE, L"", &Code, &Response);
 
     std::unique_ptr<TStrings> ResponsePtr(Response);
-
     try__finally
     {
       DebugAssert(ResponsePtr.get() != nullptr);
@@ -2532,8 +2618,8 @@ void TFTPFileSystem::ReadCurrentDirectory()
 
       // the only allowed 2XX codes to "PWD"
       if (((Code == 257) &&
-           (ResponsePtr->GetCount() == 1)) ||
-          (Code == 250)) // RTEMS FTP server sends 250 "/" is the current directory. http://bugs.farmanager.com/view.php?id=3090
+          (ResponsePtr->GetCount() == 1)) ||
+        (Code == 250)) // RTEMS FTP server sends 250 "/" is the current directory. http://bugs.farmanager.com/view.php?id=3090
       {
         UnicodeString Path = ResponsePtr->GetText();
 
@@ -2561,15 +2647,11 @@ void TFTPFileSystem::ReadCurrentDirectory()
 
         if (Result)
         {
-          if ((Path.Length() > 0) && (Path[1] != L'/'))
+          if ((Path.Length() > 0) && !base::UnixIsAbsolutePath(Path))
           {
             Path = L"/" + Path;
           }
-          FCurrentDirectory = core::AbsolutePath(ROOTDIRECTORY, core::UnixExcludeTrailingBackslash(Path));
-          if (FCurrentDirectory.IsEmpty())
-          {
-            FCurrentDirectory = ROOTDIRECTORY;
-          }
+          FCurrentDirectory = base::UnixExcludeTrailingBackslash(Path);
           FReadCurrentDirectory = false;
         }
       }
@@ -2580,19 +2662,19 @@ void TFTPFileSystem::ReadCurrentDirectory()
       }
       else
       {
-        throw Exception(FMTLOAD(FTP_RESPONSE_ERROR, Command.c_str(), Response->GetText().c_str()));
+        throw Exception(FMTLOAD(FTP_RESPONSE_ERROR, Command, Response->GetText()));
       }
     }
     __finally
     {
-/*
+#if 0
       delete Response;
-*/
+#endif // #if 0
     };
   }
 }
 
-void TFTPFileSystem::DoReadDirectory(TRemoteFileList * FileList)
+void TFTPFileSystem::DoReadDirectory(TRemoteFileList *FileList)
 {
   FBytesAvailable = -1;
   FileList->Reset();
@@ -2637,7 +2719,7 @@ void TFTPFileSystem::CheckTimeDifference()
   }
 }
 
-void TFTPFileSystem::ApplyTimeDifference(TRemoteFile * File)
+void TFTPFileSystem::ApplyTimeDifference(TRemoteFile *File)
 {
   DebugAssert(File->GetModification() == File->GetLastAccess());
   File->ShiftTimeInSeconds(FTimeDifference);
@@ -2651,7 +2733,7 @@ void TFTPFileSystem::ApplyTimeDifference(TRemoteFile * File)
 }
 
 void TFTPFileSystem::ApplyTimeDifference(
-  const UnicodeString & FileName, TDateTime & Modification, TModificationFmt & ModificationFmt)
+  UnicodeString FileName, TDateTime &Modification, TModificationFmt &ModificationFmt)
 {
   CheckTimeDifference();
   TRemoteFile::ShiftTimeInSeconds(Modification, ModificationFmt, FTimeDifference);
@@ -2663,23 +2745,24 @@ void TFTPFileSystem::ApplyTimeDifference(
 }
 
 bool TFTPFileSystem::LookupUploadModificationTime(
-  const UnicodeString & FileName, TDateTime & Modification, TModificationFmt ModificationFmt)
+  UnicodeString FileName, TDateTime &Modification, TModificationFmt ModificationFmt)
 {
   bool Result = false;
   if (ModificationFmt != mfFull)
   {
-    TUploadedTimes::iterator Iterator = FUploadedTimes.find(GetAbsolutePath(FileName, false));
+    UnicodeString AbsPath = GetAbsolutePath(FileName, false);
+    TUploadedTimes::iterator Iterator = FUploadedTimes.find(AbsPath);
     if (Iterator != FUploadedTimes.end())
     {
       TDateTime UploadModification = Iterator->second;
-      TDateTime UploadModificationReduced = core::ReduceDateTimePrecision(UploadModification, ModificationFmt);
+      TDateTime UploadModificationReduced = base::ReduceDateTimePrecision(UploadModification, ModificationFmt);
       if (UploadModificationReduced == Modification)
       {
         if ((FTerminal->GetConfiguration()->GetActualLogProtocol() >= 2))
         {
           FTerminal->LogEvent(
-            FORMAT(L"Enriching modification time of \"%s\" from [%s] to [%s]",
-                   FileName.c_str(), StandardTimestamp(Modification).c_str(), StandardTimestamp(UploadModification).c_str()));
+            FORMAT("Enriching modification time of \"%s\" from [%s] to [%s]",
+              FileName, StandardTimestamp(Modification), StandardTimestamp(UploadModification)));
         }
         Modification = UploadModification;
         Result = true;
@@ -2689,10 +2772,10 @@ bool TFTPFileSystem::LookupUploadModificationTime(
         if ((FTerminal->GetConfiguration()->GetActualLogProtocol() >= 2))
         {
           FTerminal->LogEvent(
-            FORMAT(L"Remembered modification time [%s]/[%s] of \"%s\" is obsolete, keeping [%s]",
-                   StandardTimestamp(UploadModification).c_str(), StandardTimestamp(UploadModificationReduced).c_str(), FileName.c_str(), StandardTimestamp(Modification).c_str()));
+            FORMAT("Remembered modification time [%s]/[%s] of \"%s\" is obsolete, keeping [%s]",
+              StandardTimestamp(UploadModification), StandardTimestamp(UploadModificationReduced), FileName, StandardTimestamp(Modification)));
         }
-        FUploadedTimes.erase(FileName);
+        FUploadedTimes.erase(AbsPath);
       }
     }
   }
@@ -2708,7 +2791,7 @@ bool TFTPFileSystem::NeedAutoDetectTimeDifference() const
     !FFileZillaIntf->UsingMlsd() && SupportsReadingFile();
 }
 
-bool TFTPFileSystem::IsEmptyFileList(TRemoteFileList * FileList) const
+bool TFTPFileSystem::IsEmptyFileList(TRemoteFileList *FileList) const
 {
   return
     // (note that it's actually never empty here, there's always at least parent directory,
@@ -2717,7 +2800,7 @@ bool TFTPFileSystem::IsEmptyFileList(TRemoteFileList * FileList) const
     ((FileList->GetCount() == 1) && FileList->GetFile(0)->GetIsParentDirectory());
 }
 
-void TFTPFileSystem::AutoDetectTimeDifference(TRemoteFileList * FileList)
+void TFTPFileSystem::AutoDetectTimeDifference(TRemoteFileList *FileList)
 {
   if (NeedAutoDetectTimeDifference())
   {
@@ -2725,55 +2808,67 @@ void TFTPFileSystem::AutoDetectTimeDifference(TRemoteFileList * FileList)
 
     for (intptr_t Index = 0; Index < FileList->GetCount(); ++Index)
     {
-      TRemoteFile * File = FileList->GetFile(Index);
+      TRemoteFile *File = FileList->GetFile(Index);
       // For directories, we do not do MDTM in ReadFile
       // (it should not be problem to use them otherwise).
       // We are also not interested in files with day precision only.
       if (!File->GetIsDirectory() && !File->GetIsSymLink() &&
-          File->GetIsTimeShiftingApplicable())
+        File->GetIsTimeShiftingApplicable())
       {
-        FDetectTimeDifference = false;
-
         std::unique_ptr<TRemoteFile> UtcFilePtr;
         try
         {
-          TRemoteFile * UtcFile = nullptr;
+          TRemoteFile *UtcFile = nullptr;
           ReadFile(File->GetFullFileName(), UtcFile);
           UtcFilePtr.reset(UtcFile);
         }
         catch (Exception & /*E*/)
         {
+          FDetectTimeDifference = false;
           if (!FTerminal->GetActive())
           {
             throw;
           }
-          FTerminal->LogEvent(FORMAT(L"Failed to retrieve file %s attributes to detect timezone difference", File->GetFullFileName().c_str()));
+          FTerminal->LogEvent(FORMAT("Failed to retrieve file %s attributes to detect timezone difference", File->GetFullFileName()));
           break;
         }
 
         TDateTime UtcModification = UtcFilePtr->GetModification();
         UtcFilePtr.reset();
 
-        // MDTM returns seconds, trim those
-        UtcModification = core::ReduceDateTimePrecision(UtcModification, File->GetModificationFmt());
-
-        // Time difference between timestamp retrieved using MDTM (UTC converted to local timezone)
-        // and using LIST (no conversion, expecting the server uses the same timezone as the client).
-        // Note that FormatTimeZone reverses the value.
-        FTimeDifference = static_cast<int64_t>(SecsPerDay * (UtcModification - File->GetModification()));
-
-        UnicodeString LogMessage;
-        if (FTimeDifference == 0)
+        if (UtcModification > Now())
         {
-          LogMessage = FORMAT(L"No timezone difference detected using file %s", File->GetFullFileName().c_str());
+          FTerminal->LogEvent(
+            FORMAT(L"Not using file %s to detect timezone difference as it has the timestamp in the future [%s]",
+              File->GetFullFileName(), StandardTimestamp(UtcModification)));
         }
         else
         {
-          LogMessage = FORMAT(L"Timezone difference of %s detected using file %s", FormatTimeZone(static_cast<intptr_t>(FTimeDifference)).c_str(), File->GetFullFileName().c_str());
-        }
-        FTerminal->LogEvent(LogMessage);
+          FDetectTimeDifference = false;
 
-        break;
+          // MDTM returns seconds, trim those
+          UtcModification = base::ReduceDateTimePrecision(UtcModification, File->GetModificationFmt());
+
+          // Time difference between timestamp retrieved using MDTM (UTC converted to local timezone)
+          // and using LIST (no conversion, expecting the server uses the same timezone as the client).
+          // Note that FormatTimeZone reverses the value.
+          FTimeDifference = static_cast<int64_t>(SecsPerDay * (UtcModification - File->GetModification()));
+
+          UnicodeString FileLog =
+            FORMAT(L"%s (Listing: %s, UTF: %s)", File->GetFullFileName(), StandardTimestamp(File->GetModification()), StandardTimestamp(UtcModification));
+          UnicodeString LogMessage;
+          if (FTimeDifference == 0)
+          {
+            LogMessage = FORMAT("No timezone difference detected using file %s", FileLog);
+          }
+          else
+          {
+            LogMessage = FORMAT("Timezone difference of %s detected using file %s", FormatTimeZone(static_cast<intptr_t>(FTimeDifference)), FileLog);
+          }
+          FTerminal->LogEvent(LogMessage);
+
+          break;
+        }
       }
     }
 
@@ -2785,7 +2880,7 @@ void TFTPFileSystem::AutoDetectTimeDifference(TRemoteFileList * FileList)
 }
 
 void TFTPFileSystem::AutoDetectTimeDifference(
-  const UnicodeString & Directory, const TCopyParamType * CopyParam, intptr_t Params)
+  UnicodeString Directory, const TCopyParamType *CopyParam, intptr_t Params)
 {
   if (NeedAutoDetectTimeDifference() &&
     // do we need FTimeDifference for the operation?
@@ -2798,18 +2893,18 @@ void TFTPFileSystem::AutoDetectTimeDifference(
   }
 }
 
-void TFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
+void TFTPFileSystem::ReadDirectory(TRemoteFileList *FileList)
 {
   // whole below "-a" logic is for LIST,
   // if we know we are going to use MLSD, skip it
-  if (FTerminal->GetSessionData()->GetFtpUseMlsd() == asOn)
+  if (FFileZillaIntf->UsingMlsd())
   {
     DoReadDirectory(FileList);
   }
   else
   {
     bool GotNoFilesForAll = false;
-    bool Repeat = false;
+    bool Repeat;
 
     do
     {
@@ -2873,13 +2968,13 @@ void TFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
   }
 }
 
-void TFTPFileSystem::DoReadFile(const UnicodeString & AFileName,
-  TRemoteFile *& AFile)
+void TFTPFileSystem::DoReadFile(UnicodeString AFileName,
+  TRemoteFile *&AFile)
 {
   UnicodeString FileName = GetAbsolutePath(AFileName, false);
   UnicodeString FileNameOnly;
   UnicodeString FilePath;
-  if (core::IsUnixRootPath(FileName))
+  if (base::IsUnixRootPath(FileName))
   {
     FileNameOnly = FileName;
     FilePath = FileName;
@@ -2887,7 +2982,7 @@ void TFTPFileSystem::DoReadFile(const UnicodeString & AFileName,
   else
   {
     FileNameOnly = base::UnixExtractFileName(FileName);
-    FilePath = core::UnixExtractFilePath(FileName);
+    FilePath = base::UnixExtractFilePath(FileName);
   }
 
   std::unique_ptr<TRemoteFileList> FileList(new TRemoteFileList());
@@ -2899,20 +2994,19 @@ void TFTPFileSystem::DoReadFile(const UnicodeString & AFileName,
     FFileZillaIntf->ListFile(FileNameOnly.c_str(), FilePath.c_str());
 
     GotReply(WaitForCommandReply(), REPLY_2XX_CODE | REPLY_ALLOW_CANCEL);
-    TRemoteFile * File = FileList->FindFile(FileNameOnly.c_str());
+    TRemoteFile *File = FileList->FindFile(FileNameOnly.c_str());
     if (File != nullptr)
     {
       AFile = File->Duplicate();
-      ApplyTimeDifference(AFile);
     }
 
     FLastDataSent = Now();
   }
   __finally
   {
-/*
+#if 0
     delete FileList;
-*/
+#endif // #if 0
   };
 }
 
@@ -2921,15 +3015,15 @@ bool TFTPFileSystem::SupportsReadingFile() const
   return
     FFileZillaIntf->UsingMlsd() ||
     ((FServerCapabilities->GetCapability(mdtm_command) == yes) &&
-     (FServerCapabilities->GetCapability(size_command) == yes));
+      (FServerCapabilities->GetCapability(size_command) == yes));
 }
 
-void TFTPFileSystem::ReadFile(const UnicodeString & AFileName,
-  TRemoteFile *& AFile)
+void TFTPFileSystem::ReadFile(UnicodeString AFileName,
+  TRemoteFile *&AFile)
 {
-  UnicodeString Path = core::UnixExtractFilePath(AFileName);
+  UnicodeString Path = base::UnixExtractFilePath(AFileName);
   UnicodeString NameOnly = base::UnixExtractFileName(AFileName);
-  TRemoteFile * File = nullptr;
+  TRemoteFile *File = nullptr;
   bool Own = false;
   if (SupportsReadingFile())
   {
@@ -2938,9 +3032,9 @@ void TFTPFileSystem::ReadFile(const UnicodeString & AFileName,
   }
   else
   {
-    if (core::IsUnixRootPath(AFileName))
+    if (base::IsUnixRootPath(AFileName))
     {
-      FTerminal->LogEvent(FORMAT(L"%s is a root path", AFileName.c_str()));
+      FTerminal->LogEvent(FORMAT("%s is a root path", AFileName));
       File = new TRemoteDirectoryFile();
       File->SetFullFileName(AFileName);
       File->SetFileName(L"");
@@ -2951,9 +3045,9 @@ void TFTPFileSystem::ReadFile(const UnicodeString & AFileName,
       // In case we need properties of set of files from the same directory,
       // cache the file list for future
       if ((FFileListCache != nullptr) &&
-          core::UnixSamePath(Path, FFileListCache->GetDirectory()) &&
-          (core::UnixIsAbsolutePath(FFileListCache->GetDirectory()) ||
-          (FFileListCachePath == GetCurrDirectory())))
+        base::UnixSamePath(Path, FFileListCache->GetDirectory()) &&
+        (base::UnixIsAbsolutePath(FFileListCache->GetDirectory()) ||
+          (FFileListCachePath == RemoteGetCurrentDirectory())))
       {
         File = FFileListCache->FindFile(NameOnly);
       }
@@ -2966,17 +3060,19 @@ void TFTPFileSystem::ReadFile(const UnicodeString & AFileName,
         {
           ReadDirectory(FileListCache.get());
         }
-        /*catch (...)
+#if 0
+        catch (...)
         {
           delete FileListCache;
           throw;
-        }*/
+        }
+#endif // #if 0
         // set only after we successfully read the directory,
         // otherwise, when we reconnect from ReadDirectory,
         // the FFileListCache is reset from ResetCache.
         SAFE_DESTROY(FFileListCache);
         FFileListCache = FileListCache.release();
-        FFileListCachePath = GetCurrDirectory();
+        FFileListCachePath = RemoteGetCurrentDirectory();
 
         File = FFileListCache->FindFile(NameOnly);
       }
@@ -2988,15 +3084,15 @@ void TFTPFileSystem::ReadFile(const UnicodeString & AFileName,
   if (File == nullptr)
   {
     AFile = nullptr;
-    throw Exception(FMTLOAD(FILE_NOT_EXISTS, AFileName.c_str()));
+    throw Exception(FMTLOAD(FILE_NOT_EXISTS, AFileName));
   }
 
   DebugAssert(File != nullptr);
   AFile = Own ? File : File->Duplicate();
 }
 
-void TFTPFileSystem::ReadSymlink(TRemoteFile * SymlinkFile,
-  TRemoteFile *& AFile)
+void TFTPFileSystem::ReadSymlink(TRemoteFile *SymlinkFile,
+  TRemoteFile *&AFile)
 {
   // Resolving symlinks over FTP is big overhead
   // (involves opening TCPIP connection for retrieving "directory listing").
@@ -3011,26 +3107,26 @@ void TFTPFileSystem::ReadSymlink(TRemoteFile * SymlinkFile,
     File->SetType(FILETYPE_SYMLINK);
     AFile = File.release();
   }
-/*
+#if 0
   catch (...)
   {
     delete File;
     File = nullptr;
     throw;
   }
-*/
+#endif // #if 0
 }
 
-void TFTPFileSystem::RemoteRenameFile(const UnicodeString & AFileName,
-  const UnicodeString & ANewName)
+void TFTPFileSystem::RemoteRenameFile(UnicodeString AFileName,
+  UnicodeString ANewName)
 {
   UnicodeString FileName = GetAbsolutePath(AFileName, false);
   UnicodeString NewName = GetAbsolutePath(ANewName, false);
 
   UnicodeString FileNameOnly = base::UnixExtractFileName(FileName);
-  UnicodeString FilePathOnly = core::UnixExtractFilePath(FileName);
+  UnicodeString FilePathOnly = base::UnixExtractFilePath(FileName);
   UnicodeString NewNameOnly = base::UnixExtractFileName(NewName);
-  UnicodeString NewPathOnly = core::UnixExtractFilePath(NewName);
+  UnicodeString NewPathOnly = base::UnixExtractFilePath(NewName);
 
   {
     // ignore file list
@@ -3043,28 +3139,28 @@ void TFTPFileSystem::RemoteRenameFile(const UnicodeString & AFileName,
   }
 }
 
-void TFTPFileSystem::RemoteCopyFile(const UnicodeString & AFileName,
-  const UnicodeString & ANewName)
+void TFTPFileSystem::RemoteCopyFile(UnicodeString AFileName,
+  UnicodeString ANewName)
 {
   DebugAssert(SupportsSiteCommand(CopySiteCommand));
   EnsureLocation();
 
-  UnicodeString Command = FORMAT(L"%s CPFR %s", SiteCommand.c_str(), AFileName.c_str());
+  UnicodeString Command = FORMAT("%s CPFR %s", SiteCommand, AFileName);
   SendCommand(Command);
   GotReply(WaitForCommandReply(), REPLY_3XX_CODE);
 
-  Command = FORMAT(L"%s CPTO %s", SiteCommand.c_str(), ANewName.c_str());
+  Command = FORMAT("%s CPTO %s", SiteCommand, ANewName);
   SendCommand(Command);
   GotReply(WaitForCommandReply(), REPLY_2XX_CODE);
 }
 
-TStrings * TFTPFileSystem::GetFixedPaths() const
+TStrings *TFTPFileSystem::GetFixedPaths() const
 {
   return nullptr;
 }
 
-void TFTPFileSystem::SpaceAvailable(const UnicodeString & APath,
-  TSpaceAvailable & ASpaceAvailable)
+void TFTPFileSystem::SpaceAvailable(UnicodeString APath,
+  TSpaceAvailable &ASpaceAvailable)
 {
   if (FBytesAvailableSupported)
   {
@@ -3087,7 +3183,7 @@ void TFTPFileSystem::SpaceAvailable(const UnicodeString & APath,
     // XQUOTA is global not path-specific
     UnicodeString Command = XQuotaCommand;
     SendCommand(Command);
-    TStrings * Response = nullptr;
+    TStrings *Response = nullptr;
     GotReply(WaitForCommandReply(), REPLY_2XX_CODE, L"", nullptr, &Response);
     std::unique_ptr<TStrings> ResponseOwner(Response);
 
@@ -3116,19 +3212,19 @@ void TFTPFileSystem::SpaceAvailable(const UnicodeString & APath,
   {
     // draft-peterson-streamlined-ftp-command-extensions-10
     // Implemented by Serv-U.
-    UnicodeString Command = FORMAT(L"%s %s", AvblCommand.c_str(), APath.c_str());
+    UnicodeString Command = FORMAT("%s %s", AvblCommand, APath);
     SendCommand(Command);
     UnicodeString Response = GotReply(WaitForCommandReply(), REPLY_2XX_CODE | REPLY_SINGLE_LINE);
     ASpaceAvailable.UnusedBytesAvailableToUser = StrToInt64(Response);
   }
 }
 
-const TSessionInfo & TFTPFileSystem::GetSessionInfo() const
+const TSessionInfo &TFTPFileSystem::GetSessionInfo() const
 {
   return FSessionInfo;
 }
 
-const TFileSystemInfo & TFTPFileSystem::GetFileSystemInfo(bool /*Retrieve*/)
+const TFileSystemInfo &TFTPFileSystem::GetFileSystemInfo(bool /*Retrieve*/)
 {
   if (!FFileSystemInfoValid)
   {
@@ -3142,11 +3238,11 @@ const TFileSystemInfo & TFTPFileSystem::GetFileSystemInfo(bool /*Retrieve*/)
     else
     {
       FFileSystemInfo.AdditionalInfo =
-        FORMAT(L"%s\r\n", LoadStr(FTP_FEATURE_INFO).c_str());
+        FORMAT("%s\r\n", LoadStr(FTP_FEATURE_INFO));
       for (intptr_t Index = 0; Index < FFeatures->GetCount(); ++Index)
       {
         // For TrimLeft, refer to HandleFeatReply
-        FFileSystemInfo.AdditionalInfo += FORMAT(L"  %s\r\n", TrimLeft(FFeatures->GetString(Index)).c_str());
+        FFileSystemInfo.AdditionalInfo += FORMAT("  %s\r\n", TrimLeft(FFeatures->GetString(Index)));
       }
     }
 
@@ -3157,7 +3253,7 @@ const TFileSystemInfo & TFTPFileSystem::GetFileSystemInfo(bool /*Retrieve*/)
   return FFileSystemInfo;
 }
 
-bool TFTPFileSystem::TemporaryTransferFile(const UnicodeString & /*FileName*/)
+bool TFTPFileSystem::TemporaryTransferFile(UnicodeString /*FileName*/)
 {
   return false;
 }
@@ -3167,19 +3263,19 @@ bool TFTPFileSystem::GetStoredCredentialsTried() const
   return FStoredPasswordTried;
 }
 
-UnicodeString TFTPFileSystem::FSGetUserName() const
+UnicodeString TFTPFileSystem::RemoteGetUserName() const
 {
   return FUserName;
 }
 
-UnicodeString TFTPFileSystem::GetCurrDirectory() const
+UnicodeString TFTPFileSystem::RemoteGetCurrentDirectory() const
 {
   return FCurrentDirectory;
 }
 
-const wchar_t * TFTPFileSystem::GetOption(intptr_t OptionID) const
+const wchar_t *TFTPFileSystem::GetOption(intptr_t OptionID) const
 {
-  TSessionData * Data = FTerminal->GetSessionData();
+  TSessionData *Data = FTerminal->GetSessionData();
 
   switch (OptionID)
   {
@@ -3217,7 +3313,7 @@ const wchar_t * TFTPFileSystem::GetOption(intptr_t OptionID) const
 
 intptr_t TFTPFileSystem::GetOptionVal(intptr_t OptionID) const
 {
-  TSessionData * Data = FTerminal->GetSessionData();
+  TSessionData *Data = FTerminal->GetSessionData();
   intptr_t Result;
 
   switch (OptionID)
@@ -3386,7 +3482,7 @@ bool TFTPFileSystem::FTPPostMessage(uintptr_t Type, WPARAM wParam, LPARAM lParam
 
   TGuard Guard(FQueueCriticalSection);
 
-  FQueue.push_back(TMessageQueue::value_type(wParam, lParam));
+  FQueue->push_back(TMessageQueue::value_type(wParam, lParam));
   ::SetEvent(FQueueEvent);
 
   return true;
@@ -3400,11 +3496,11 @@ bool TFTPFileSystem::ProcessMessage()
   {
     TGuard Guard(FQueueCriticalSection);
 
-    Result = !FQueue.empty();
+    Result = !FQueue->empty();
     if (Result)
     {
-      Message = FQueue.front();
-      FQueue.erase(FQueue.begin());
+      Message = FQueue->front();
+      FQueue->erase(FQueue->begin());
     }
     else
     {
@@ -3429,10 +3525,7 @@ void TFTPFileSystem::DiscardMessages()
 
 void TFTPFileSystem::WaitForMessages()
 {
-  //if (FQueue.empty())
-  //  return;
-//  DWORD Result = ::WaitForSingleObject(FQueueEvent, INFINITE);
-  DWORD Result = 0;
+  DWORD Result;
   do
   {
     Result = ::WaitForSingleObject(FQueueEvent, GUIUpdateInterval);
@@ -3442,7 +3535,7 @@ void TFTPFileSystem::WaitForMessages()
 
   if (Result != WAIT_OBJECT_0)
   {
-    FTerminal->FatalError(nullptr, FMTLOAD(INTERNAL_ERROR, L"ftp#1", ::IntToStr(Result).c_str()));
+    FTerminal->FatalError(nullptr, FMTLOAD(INTERNAL_ERROR, L"ftp#1", ::IntToStr(Result)));
   }
 }
 
@@ -3454,7 +3547,7 @@ void TFTPFileSystem::PoolForFatalNonCommandReply()
 
   FWaitingForReply = true;
 
-  uintptr_t Reply = 0;
+  uintptr_t Reply;
 
   try__finally
   {
@@ -3475,13 +3568,13 @@ void TFTPFileSystem::PoolForFatalNonCommandReply()
   }
   __finally
   {
-/*
+#if 0
     FReply = 0;
     DebugAssert(FCommandReply == 0);
     FCommandReply = 0;
     DebugAssert(FWaitingForReply);
     FWaitingForReply = false;
-*/
+#endif // #if 0
   };
 
   if (Reply != 0)
@@ -3496,19 +3589,19 @@ bool TFTPFileSystem::NoFinalLastCode() const
   return (FLastCodeClass == 0) || (FLastCodeClass == 1);
 }
 
-bool TFTPFileSystem::KeepWaitingForReply(uintptr_t & ReplyToAwait, bool WantLastCode) const
+bool TFTPFileSystem::KeepWaitingForReply(uintptr_t &ReplyToAwait, bool WantLastCode) const
 {
   // to keep waiting,
   // non-command reply must be unset,
   // the reply we wait for must be unset or
   // last code must be unset (if we wait for it)
   return
-     (FReply == 0) &&
-     ((ReplyToAwait == 0) ||
+    (FReply == 0) &&
+    ((ReplyToAwait == 0) ||
       (WantLastCode && NoFinalLastCode()));
 }
 
-void TFTPFileSystem::DoWaitForReply(uintptr_t & ReplyToAwait, bool WantLastCode)
+void TFTPFileSystem::DoWaitForReply(uintptr_t &ReplyToAwait, bool WantLastCode)
 {
   try
   {
@@ -3548,12 +3641,11 @@ uintptr_t TFTPFileSystem::WaitForReply(bool Command, bool WantLastCode)
   DebugAssert(FReply == 0);
   DebugAssert(FCommandReply == 0);
   DebugAssert(!FWaitingForReply);
-  DebugAssert(!FTransferStatusCriticalSection.GetAcquired());
 
   ResetReply();
   FWaitingForReply = true;
 
-  uintptr_t Reply = 0;
+  uintptr_t Reply;
 
   try__finally
   {
@@ -3564,19 +3656,19 @@ uintptr_t TFTPFileSystem::WaitForReply(bool Command, bool WantLastCode)
       DebugAssert(FWaitingForReply);
       FWaitingForReply = false;
     };
-    uintptr_t & ReplyToAwait = (Command ? FCommandReply : FReply);
+    uintptr_t &ReplyToAwait = (Command ? FCommandReply : FReply);
     DoWaitForReply(ReplyToAwait, WantLastCode);
 
     Reply = ReplyToAwait;
   }
   __finally
   {
-/*
+#if 0
     FReply = 0;
     FCommandReply = 0;
     DebugAssert(FWaitingForReply);
     FWaitingForReply = false;
-*/
+#endif // #if 0
   };
 
   return Reply;
@@ -3614,7 +3706,7 @@ void TFTPFileSystem::GotNonCommandReply(uintptr_t Reply)
 }
 
 UnicodeString TFTPFileSystem::GotReply(uintptr_t Reply, uintptr_t Flags,
-  const UnicodeString & Error, uintptr_t * Code, TStrings ** Response)
+  UnicodeString Error, uintptr_t *Code, TStrings **Response)
 {
   UnicodeString Result;
   try__finally
@@ -3630,13 +3722,13 @@ UnicodeString TFTPFileSystem::GotReply(uintptr_t Reply, uintptr_t Flags,
       // With REPLY_2XX_CODE treat "OK" non-2xx code like an error.
       // REPLY_3XX_CODE has to be always used along with REPLY_2XX_CODE.
       if ((FLAGSET(Flags, REPLY_2XX_CODE) && (FLastCodeClass != 2)) &&
-          ((FLAGCLEAR(Flags, REPLY_3XX_CODE) || (FLastCodeClass != 3))))
+        ((FLAGCLEAR(Flags, REPLY_3XX_CODE) || (FLastCodeClass != 3))))
       {
         GotReply(TFileZillaIntf::REPLY_ERROR, Flags, Error);
       }
     }
     else if (FLAGSET(Reply, TFileZillaIntf::REPLY_CANCEL) &&
-        FLAGSET(Flags, REPLY_ALLOW_CANCEL))
+      FLAGSET(Flags, REPLY_ALLOW_CANCEL))
     {
       DebugAssert(
         (Reply == (TFileZillaIntf::REPLY_CANCEL | TFileZillaIntf::REPLY_ERROR)) ||
@@ -3645,12 +3737,12 @@ UnicodeString TFTPFileSystem::GotReply(uintptr_t Reply, uintptr_t Flags,
     }
     // we do not expect these with our usage of FZ
     else if (Reply &
-          (TFileZillaIntf::REPLY_WOULDBLOCK | TFileZillaIntf::REPLY_OWNERNOTSET |
-           TFileZillaIntf::REPLY_INVALIDPARAM | TFileZillaIntf::REPLY_ALREADYCONNECTED |
-           TFileZillaIntf::REPLY_IDLE | TFileZillaIntf::REPLY_NOTINITIALIZED |
-           TFileZillaIntf::REPLY_ALREADYINIZIALIZED))
+      (TFileZillaIntf::REPLY_WOULDBLOCK | TFileZillaIntf::REPLY_OWNERNOTSET |
+        TFileZillaIntf::REPLY_INVALIDPARAM | TFileZillaIntf::REPLY_ALREADYCONNECTED |
+        TFileZillaIntf::REPLY_IDLE | TFileZillaIntf::REPLY_NOTINITIALIZED |
+        TFileZillaIntf::REPLY_ALREADYINIZIALIZED))
     {
-      FTerminal->FatalError(nullptr, FMTLOAD(INTERNAL_ERROR, L"ftp#2", FORMAT(L"0x%x", static_cast<int>(Reply)).c_str()));
+      FTerminal->FatalError(nullptr, FMTLOAD(INTERNAL_ERROR, "ftp#2", FORMAT("0x%x", ToInt(Reply))));
     }
     else
     {
@@ -3756,34 +3848,33 @@ UnicodeString TFTPFileSystem::GotReply(uintptr_t Reply, uintptr_t Flags,
       }
 #endif // #if 0
 
-      UnicodeString ErrorStr = Error;
-      if (ErrorStr.IsEmpty() && (MoreMessages.get() != nullptr))
+      if (Error.IsEmpty() && (MoreMessages.get() != nullptr))
       {
         DebugAssert(MoreMessages->GetCount() > 0);
         // bit too generic assigning of main instructions, let's see how it works
-        ErrorStr = MainInstructions(MoreMessages->GetString(0));
+        Error = MainInstructions(MoreMessages->GetString(0));
         MoreMessages->Delete(0);
       }
 
       if (Disconnected)
       {
         // for fatal error, it is essential that there is some message
-        DebugAssert(!ErrorStr.IsEmpty());
-        std::unique_ptr<ExtException> E(new ExtException(ErrorStr, MoreMessages.release(), true));
+        DebugAssert(!Error.IsEmpty());
+        std::unique_ptr<ExtException> E(new ExtException(Error, MoreMessages.release(), true));
         try__finally
         {
           FTerminal->FatalError(E.get(), L"");
         }
         __finally
         {
-/*
+#if 0
           delete E;
-*/
+#endif // #if 0
         };
       }
       else
       {
-        throw ExtException(ErrorStr, MoreMessages.release(), true, UnicodeString(HelpKeyword));
+        throw ExtException(Error, MoreMessages.release(), true, UnicodeString(HelpKeyword));
       }
     }
 
@@ -3796,7 +3887,7 @@ UnicodeString TFTPFileSystem::GotReply(uintptr_t Reply, uintptr_t Flags,
     {
       if (FLastResponse->GetCount() != 1)
       {
-        throw Exception(FMTLOAD(FTP_RESPONSE_ERROR, FLastCommandSent.c_str(), FLastResponse->GetText().c_str()));
+        throw Exception(FMTLOAD(FTP_RESPONSE_ERROR, FLastCommandSent, FLastResponse->GetText()));
       }
       Result = FLastResponse->GetString(0);
     }
@@ -3812,14 +3903,14 @@ UnicodeString TFTPFileSystem::GotReply(uintptr_t Reply, uintptr_t Flags,
   }
   __finally
   {
-/*
+#if 0
     ResetReply();
-*/
+#endif // #if 0
   };
   return Result;
 }
 
-void TFTPFileSystem::SendCommand(const UnicodeString & Command)
+void TFTPFileSystem::SendCommand(UnicodeString Command)
 {
   FFileZillaIntf->CustomCommand(Command.c_str());
   FLastCommandSent = CopyToChar(Command, L' ', false);
@@ -3831,7 +3922,7 @@ void TFTPFileSystem::SetLastCode(intptr_t Code)
   FLastCodeClass = (Code / 100);
 }
 
-void TFTPFileSystem::StoreLastResponse(const UnicodeString & Text)
+void TFTPFileSystem::StoreLastResponse(UnicodeString Text)
 {
   FLastResponse->Add(Text);
   if (FLastCodeClass >= 4)
@@ -3840,7 +3931,7 @@ void TFTPFileSystem::StoreLastResponse(const UnicodeString & Text)
   }
 }
 
-void TFTPFileSystem::HandleReplyStatus(const UnicodeString & Response)
+void TFTPFileSystem::HandleReplyStatus(UnicodeString Response)
 {
   int64_t Code = 0;
 
@@ -3849,7 +3940,7 @@ void TFTPFileSystem::HandleReplyStatus(const UnicodeString & Response)
     FOnCaptureOutput(Response, cotOutput);
   }
 
-  if (FWelcomeMessage.IsEmpty() && StartsStr(L"SSH", Response))
+  if (FWelcomeMessage.IsEmpty() && ::StartsStr(L"SSH", Response))
   {
     FLastErrorResponse->Add(LoadStr(SFTP_AS_FTP_ERROR));
   }
@@ -3887,7 +3978,7 @@ void TFTPFileSystem::HandleReplyStatus(const UnicodeString & Response)
 
   bool HasCodePrefix =
     (Response.Length() >= 3) &&
-    ::TryStrToInt(Response.SubString(1, 3), Code) &&
+    ::TryStrToInt64(Response.SubString(1, 3), Code) &&
     (Code >= 100) && (Code <= 599) &&
     ((Response.Length() == 3) || (Response[4] == L' ') || (Response[4] == L'-'));
 
@@ -3904,7 +3995,7 @@ void TFTPFileSystem::HandleReplyStatus(const UnicodeString & Response)
   }
   else
   {
-    intptr_t Start = 0;
+    intptr_t Start;
     // response with code prefix
     if (HasCodePrefix && (FLastCode == Code))
     {
@@ -3928,7 +4019,7 @@ void TFTPFileSystem::HandleReplyStatus(const UnicodeString & Response)
   }
 
 
-  if (StartsStr(DirectoryHasBytesPrefix, Response))
+  if (::StartsStr(DirectoryHasBytesPrefix, Response))
   {
     UnicodeString Buf = Response;
     Buf.Delete(1, DirectoryHasBytesPrefix.Length());
@@ -3962,7 +4053,7 @@ void TFTPFileSystem::HandleReplyStatus(const UnicodeString & Response)
         }
         // Idea FTP Server v0.80
         if ((FTerminal->GetSessionData()->GetFtpTransferActiveImmediately() == asAuto) &&
-            FWelcomeMessage.Pos(L"Idea FTP Server") > 0)
+          FWelcomeMessage.Pos(L"Idea FTP Server") > 0)
         {
           FTerminal->LogEvent(L"The server requires TLS/SSL handshake on transfer connection before responding 1yz to STOR/APPE");
           FTransferActiveImmediately = true;
@@ -3990,9 +4081,9 @@ void TFTPFileSystem::HandleReplyStatus(const UnicodeString & Response)
         // https://www.ibm.com/support/knowledgecenter/SSLTBW_2.1.0/com.ibm.zos.v2r1.cs3cod0/ftp215-02.htm
         FMVS = (FSystem.SubString(1, 3) == L"MVS");
         if ((FListAll == asAuto) &&
-            // full name is "Personal FTP Server PRO K6.0"
-            ((FSystem.Pos(L"Personal FTP Server") > 0) ||
-             FMVS))
+          // full name is "Personal FTP Server PRO K6.0"
+          ((FSystem.Pos(L"Personal FTP Server") > 0) ||
+            FMVS))
         {
           FTerminal->LogEvent("Server is known not to support LIST -a");
           FListAll = asOff;
@@ -4003,6 +4094,8 @@ void TFTPFileSystem::HandleReplyStatus(const UnicodeString & Response)
           FTerminal->LogEvent(L"The server is probably running Windows, assuming that directory listing timestamps are affected by DST.");
           FWindowsServer = true;
         }
+        // VMS system type. VMS V5.5-2.
+        FVMS = (FSystem.SubString(1, 3) == L"VMS");
       }
       else
       {
@@ -4088,7 +4181,7 @@ void TFTPFileSystem::HandleFeatReply()
   }
 }
 
-bool TFTPFileSystem::HandleStatus(const wchar_t * AStatus, int Type)
+bool TFTPFileSystem::HandleStatus(const wchar_t *AStatus, int Type)
 {
   TLogLineType LogType = static_cast<TLogLineType>(-1);
   UnicodeString Status(AStatus);
@@ -4096,11 +4189,14 @@ bool TFTPFileSystem::HandleStatus(const wchar_t * AStatus, int Type)
   switch (Type)
   {
   case TFileZillaIntf::LOG_STATUS:
+  {
     FTerminal->Information(Status, true);
     LogType = llMessage;
-    break;
+  }
+  break;
 
   case TFileZillaIntf::LOG_COMMAND:
+  {
     if (Status == L"SYST")
     {
       // not to trigger the assert in HandleReplyStatus,
@@ -4121,16 +4217,18 @@ bool TFTPFileSystem::HandleStatus(const wchar_t * AStatus, int Type)
       FLastCommand = CMD_UNKNOWN;
     }
     LogType = llInput;
-    break;
+  }
+  break;
 
   case TFileZillaIntf::LOG_ERROR:
   case TFileZillaIntf::LOG_APIERROR:
   case TFileZillaIntf::LOG_WARNING:
+  {
     // when timeout message occurs, break loop waiting for response code
     // by setting dummy one
     if (Type == TFileZillaIntf::LOG_ERROR)
     {
-      if (StartsStr(FTimeoutStatus, Status))
+      if (::StartsStr(FTimeoutStatus, Status))
       {
         if (NoFinalLastCode())
         {
@@ -4149,7 +4247,8 @@ bool TFTPFileSystem::HandleStatus(const wchar_t * AStatus, int Type)
     // (such as "cannot open local file..." followed by "download failed")
     FLastError->Add(Status);
     LogType = llMessage;
-    break;
+  }
+  break;
 
   case TFileZillaIntf::LOG_PROGRESS:
     LogType = llMessage;
@@ -4186,7 +4285,7 @@ TDateTime TFTPFileSystem::ConvertLocalTimestamp(time_t Time)
   // This reverses how FZAPI converts FILETIME to time_t,
   // before passing it to FZ_ASYNCREQUEST_OVERWRITE.
   int64_t Timestamp;
-  tm * Tm = gmtime(&Time); // localtime(&Time);
+  tm *Tm = gmtime(&Time);  // localtime(&Time);
   if (Tm != nullptr)
   {
     SYSTEMTIME SystemTime;
@@ -4215,12 +4314,12 @@ TDateTime TFTPFileSystem::ConvertLocalTimestamp(time_t Time)
 }
 
 bool TFTPFileSystem::HandleAsynchRequestOverwrite(
-  wchar_t * FileName1, size_t FileName1Len, const wchar_t * FileName2,
-  const wchar_t * Path1, const wchar_t * Path2,
+  wchar_t *FileName1, size_t FileName1Len, const wchar_t *FileName2,
+  const wchar_t *Path1, const wchar_t *Path2,
   int64_t Size1, int64_t Size2, time_t LocalTime,
-  bool /*HasLocalTime*/, const TRemoteFileTime & RemoteTime, void * AUserData,
-  HANDLE & ALocalFileHandle,
-  int & RequestResult)
+  bool /*HasLocalTime*/, const TRemoteFileTime &RemoteTime, void *AUserData,
+  HANDLE &ALocalFileHandle,
+  int &RequestResult)
 {
   if (!FActive)
   {
@@ -4228,10 +4327,7 @@ bool TFTPFileSystem::HandleAsynchRequestOverwrite(
   }
   else
   {
-    UnicodeString DestFullName = Path1;
-    ::AppendPathDelimiterW(DestFullName);
-    DestFullName += FileName1;
-    TFileTransferData & UserData = *get_as<TFileTransferData>(AUserData);
+    TFileTransferData &UserData = *get_as<TFileTransferData>(AUserData);
     if (UserData.OverwriteResult >= 0)
     {
       // on retry, use the same answer as on the first attempt
@@ -4239,9 +4335,25 @@ bool TFTPFileSystem::HandleAsynchRequestOverwrite(
     }
     else
     {
-      TFileOperationProgressType * OperationProgress = FTerminal->GetOperationProgress();
+      TFileOperationProgressType *OperationProgress = FTerminal->GetOperationProgress();
       UnicodeString TargetFileName = FileName1;
       DebugAssert(UserData.FileName == TargetFileName);
+
+      UnicodeString SourceFullFileName = Path2;
+      UnicodeString TargetFullFileName = Path1;
+      if (OperationProgress->GetSide() == osLocal)
+      {
+        SourceFullFileName = ::IncludeTrailingBackslash(SourceFullFileName);
+        TargetFullFileName = base::UnixIncludeTrailingBackslash(TargetFullFileName);
+      }
+      else
+      {
+        SourceFullFileName = base::UnixIncludeTrailingBackslash(SourceFullFileName);
+        TargetFullFileName = ::IncludeTrailingBackslash(TargetFullFileName);
+      }
+      SourceFullFileName += FileName2;
+      TargetFullFileName += FileName1;
+
       TOverwriteMode OverwriteMode = omOverwrite;
       TOverwriteFileParams FileParams;
       bool NoFileParams =
@@ -4252,77 +4364,81 @@ bool TFTPFileSystem::HandleAsynchRequestOverwrite(
         FileParams.SourceSize = Size2;
         FileParams.DestSize = Size1;
 
-        if (OperationProgress->Side == osLocal)
+        // Time is coming from LIST (not from MLSD or MDTM)
+        bool NeedApplyTimeDifference = !RemoteTime.Utc && DebugAlwaysTrue(!FFileZillaIntf->UsingMlsd());
+
+        if (OperationProgress->GetSide() == osLocal)
         {
           FileParams.SourceTimestamp = ConvertLocalTimestamp(LocalTime);
           RemoteFileTimeToDateTimeAndPrecision(RemoteTime, FileParams.DestTimestamp, FileParams.DestPrecision);
+          if (NeedApplyTimeDifference)
+          {
+            ApplyTimeDifference(TargetFullFileName, FileParams.DestTimestamp, FileParams.DestPrecision);
+          }
         }
         else
         {
           FileParams.DestTimestamp = ConvertLocalTimestamp(LocalTime);
           RemoteFileTimeToDateTimeAndPrecision(RemoteTime, FileParams.SourceTimestamp, FileParams.SourcePrecision);
+          if (NeedApplyTimeDifference)
+          {
+            ApplyTimeDifference(SourceFullFileName, FileParams.SourceTimestamp, FileParams.SourcePrecision);
+          }
         }
       }
 
-      UnicodeString SourceFullFileName = Path2;
-      if (OperationProgress->Side == osLocal)
-      {
-        SourceFullFileName = ::IncludeTrailingBackslash(SourceFullFileName);
-      }
-      else
-      {
-        SourceFullFileName = core::UnixIncludeTrailingBackslash(SourceFullFileName);
-      }
-      SourceFullFileName += FileName2;
-
       if (ConfirmOverwrite(SourceFullFileName, TargetFileName, UserData.Params, OperationProgress,
-            UserData.AutoResume && UserData.CopyParam->AllowResume(FileParams.SourceSize),
-            NoFileParams ? nullptr : &FileParams, UserData.CopyParam, OverwriteMode))
+          UserData.AutoResume && UserData.CopyParam->AllowResume(FileParams.SourceSize),
+          NoFileParams ? nullptr : &FileParams, UserData.CopyParam, OverwriteMode))
       {
         switch (OverwriteMode)
         {
-          case omOverwrite:
-            if ((OperationProgress->Side == osRemote) && !FTerminal->TerminalCreateLocalFile(DestFullName, OperationProgress,
+        case omOverwrite:
+#if 0
+          if ((OperationProgress->GetSide() == osRemote) && !FTerminal->TerminalCreateLocalFile(DestFullName, OperationProgress,
               false, true,
               &ALocalFileHandle))
-            {
-              RequestResult = TFileZillaIntf::FILEEXISTS_SKIP;
-              break;
-            }
-            if (TargetFileName != FileName1)
-            {
-              wcsncpy_s(FileName1, FileName1Len, TargetFileName.c_str(), FileName1Len);
-              FileName1[FileName1Len - 1] = L'\0';
-              UserData.FileName = FileName1;
-              RequestResult = TFileZillaIntf::FILEEXISTS_RENAME;
-            }
-            else
-            {
-              RequestResult = TFileZillaIntf::FILEEXISTS_OVERWRITE;
-            }
+          {
+            RequestResult = TFileZillaIntf::FILEEXISTS_SKIP;
             break;
+          }
+#endif // #if 0
+          if (TargetFileName != FileName1)
+          {
+            wcsncpy_s(FileName1, FileName1Len, TargetFileName.c_str(), FileName1Len);
+            FileName1[FileName1Len - 1] = L'\0';
+            UserData.FileName = FileName1;
+            RequestResult = TFileZillaIntf::FILEEXISTS_RENAME;
+          }
+          else
+          {
+            RequestResult = TFileZillaIntf::FILEEXISTS_OVERWRITE;
+          }
+          break;
 
-          case omResume:
-            if ((OperationProgress->Side == osRemote) && !FTerminal->TerminalCreateLocalFile(DestFullName, OperationProgress,
+        case omResume:
+#if 0
+          if ((OperationProgress->GetSide() == osRemote) && !FTerminal->TerminalCreateLocalFile(DestFullName, OperationProgress,
               true, true,
               &ALocalFileHandle))
-            {
-  //            ThrowSkipFileNull();
-              RequestResult = TFileZillaIntf::FILEEXISTS_SKIP;
-            }
-            else
-              RequestResult = TFileZillaIntf::FILEEXISTS_RESUME;
-            break;
+          {
+            //            ThrowSkipFileNull();
+            RequestResult = TFileZillaIntf::FILEEXISTS_SKIP;
+          }
+          else
+#endif // #if 0
+            RequestResult = TFileZillaIntf::FILEEXISTS_RESUME;
+          break;
 
-          case omComplete:
-            FTerminal->LogEvent("File transfer was completed before disconnect");
-            RequestResult = TFileZillaIntf::FILEEXISTS_COMPLETE;
-            break;
+        case omComplete:
+          FTerminal->LogEvent("File transfer was completed before disconnect");
+          RequestResult = TFileZillaIntf::FILEEXISTS_COMPLETE;
+          break;
 
-          default:
-            DebugFail();
-            RequestResult = TFileZillaIntf::FILEEXISTS_OVERWRITE;
-            break;
+        default:
+          DebugFail();
+          RequestResult = TFileZillaIntf::FILEEXISTS_OVERWRITE;
+          break;
         }
       }
       else
@@ -4345,56 +4461,51 @@ bool TFTPFileSystem::HandleAsynchRequestOverwrite(
   }
 }
 
-static UnicodeString FormatContactList(const UnicodeString & Entry1, const UnicodeString & Entry2)
+static UnicodeString FormatContactList(UnicodeString Entry1, UnicodeString Entry2)
 {
   if (!Entry1.IsEmpty() && !Entry2.IsEmpty())
   {
-    return FORMAT(L"%s, %s", Entry1.c_str(), Entry2.c_str());
+    return FORMAT("%s, %s", Entry1, Entry2);
   }
-  else
-  {
-    return Entry1 + Entry2;
-  }
+  return Entry1 + Entry2;
 }
 
-UnicodeString FormatContact(const TFtpsCertificateData::TContact & Contact)
+UnicodeString FormatContact(const TFtpsCertificateData::TContact &Contact)
 {
   UnicodeString Result =
-    FORMAT(LoadStrPart(VERIFY_CERT_CONTACT, 1).c_str(),
+    FORMAT(LoadStrPart(VERIFY_CERT_CONTACT, 1),
       FormatContactList(FormatContactList(FormatContactList(
-        Contact.Organization, Contact.Unit).c_str(), Contact.CommonName).c_str(), Contact.Mail).c_str())
-  ;
+            Contact.Organization, Contact.Unit), Contact.CommonName), Contact.Mail));
 
-  if ((wcslen(Contact.Country) > 0) ||
-    (wcslen(Contact.StateProvince) > 0) ||
-    (wcslen(Contact.Town) > 0))
+  if ((nb::StrLength(Contact.Country) > 0) ||
+    (nb::StrLength(Contact.StateProvince) > 0) ||
+    (nb::StrLength(Contact.Town) > 0))
   {
     Result +=
-      FORMAT(LoadStrPart(VERIFY_CERT_CONTACT, 2).c_str(),
+      FORMAT(LoadStrPart(VERIFY_CERT_CONTACT, 2),
         FormatContactList(FormatContactList(
-          Contact.Country, Contact.StateProvince).c_str(), Contact.Town).c_str())
-      ;
+            Contact.Country, Contact.StateProvince), Contact.Town));
   }
 
-  if (wcslen(Contact.Other) > 0)
+  if (nb::StrLength(Contact.Other) > 0)
   {
-    Result += FORMAT(LoadStrPart(VERIFY_CERT_CONTACT, 3).c_str(), Contact.Other);
+    Result += FORMAT(LoadStrPart(VERIFY_CERT_CONTACT, 3), Contact.Other);
   }
 
   return Result;
 }
 
-UnicodeString FormatValidityTime(const TFtpsCertificateData::TValidityTime & ValidityTime)
+UnicodeString FormatValidityTime(const TFtpsCertificateData::TValidityTime &ValidityTime)
 {
-  /*
+#if 0
   return FormatDateTime(L"ddddd tt",
-    EncodeDateVerbose(
-      static_cast<uint16_t>(ValidityTime.Year), static_cast<uint16_t>(ValidityTime.Month),
-      static_cast<uint16_t>(ValidityTime.Day)) +
-    EncodeTimeVerbose(
-      static_cast<uint16_t>(ValidityTime.Hour), static_cast<uint16_t>(ValidityTime.Min),
-      static_cast<uint16_t>(ValidityTime.Sec), 0));
-  */
+      EncodeDateVerbose(
+        static_cast<uint16_t>(ValidityTime.Year), static_cast<uint16_t>(ValidityTime.Month),
+        static_cast<uint16_t>(ValidityTime.Day)) +
+      EncodeTimeVerbose(
+        static_cast<uint16_t>(ValidityTime.Hour), static_cast<uint16_t>(ValidityTime.Min),
+        static_cast<uint16_t>(ValidityTime.Sec), 0));
+#endif // #if 0
   TODO("use Sysutils::FormatDateTime");
   uint16_t Y, M, D, H, Mm, S, MS;
   TDateTime DateTime =
@@ -4406,16 +4517,14 @@ UnicodeString FormatValidityTime(const TFtpsCertificateData::TValidityTime & Val
       static_cast<uint16_t>(ValidityTime.Sec), 0);
   DateTime.DecodeDate(Y, M, D);
   DateTime.DecodeTime(H, Mm, S, MS);
-  UnicodeString dt = FORMAT(L"%02d.%02d.%04d %02d:%02d:%02d ", D, M, Y, H, Mm, S);
+  UnicodeString dt = FORMAT("%02d.%02d.%04d %02d:%02d:%02d ", D, M, Y, H, Mm, S);
   return dt;
 }
 
-static bool VerifyNameMask(const UnicodeString & AName, const UnicodeString & AMask)
+static bool VerifyNameMask(UnicodeString Name, UnicodeString Mask)
 {
   bool Result = true;
-  UnicodeString Name = AName;
-  UnicodeString Mask = AMask;
-  intptr_t Pos = 0;
+  intptr_t Pos;
   while (Result && (Pos = Mask.Pos(L"*")) > 0)
   {
     // Pos will typically be 1 here, so not actual comparison is done
@@ -4442,7 +4551,7 @@ static bool VerifyNameMask(const UnicodeString & AName, const UnicodeString & AM
   return Result;
 }
 
-bool TFTPFileSystem::VerifyCertificateHostName(const TFtpsCertificateData & Data)
+bool TFTPFileSystem::VerifyCertificateHostName(const TFtpsCertificateData &Data)
 {
   UnicodeString HostName = FTerminal->GetSessionData()->GetHostNameExpanded();
 
@@ -4451,13 +4560,13 @@ bool TFTPFileSystem::VerifyCertificateHostName(const TFtpsCertificateData & Data
   bool Result = !NoMask && VerifyNameMask(HostName, CommonName);
   if (Result)
   {
-    FTerminal->LogEvent(FORMAT(L"Certificate common name \"%s\" matches hostname", CommonName.c_str()));
+    FTerminal->LogEvent(FORMAT("Certificate common name \"%s\" matches hostname", CommonName));
   }
   else
   {
     if (!NoMask && (FTerminal->GetConfiguration()->GetActualLogProtocol() >= 1))
     {
-      FTerminal->LogEvent(FORMAT(L"Certificate common name \"%s\" does not match hostname", CommonName.c_str()));
+      FTerminal->LogEvent(FORMAT("Certificate common name \"%s\" does not match hostname", CommonName));
     }
     UnicodeString SubjectAltName = Data.SubjectAltName;
     while (!Result && !SubjectAltName.IsEmpty())
@@ -4470,13 +4579,13 @@ bool TFTPFileSystem::VerifyCertificateHostName(const TFtpsCertificateData & Data
         Result = VerifyNameMask(HostName, Entry);
         if (Result)
         {
-          FTerminal->LogEvent(FORMAT(L"Certificate subject alternative name \"%s\" matches hostname", Entry.c_str()));
+          FTerminal->LogEvent(FORMAT("Certificate subject alternative name \"%s\" matches hostname", Entry));
         }
         else
         {
           if (FTerminal->GetConfiguration()->GetActualLogProtocol() >= 1)
           {
-            FTerminal->LogEvent(FORMAT(L"Certificate subject alternative name \"%s\" does not match hostname", Entry.c_str()));
+            FTerminal->LogEvent(FORMAT("Certificate subject alternative name \"%s\" does not match hostname", Entry));
           }
         }
       }
@@ -4490,7 +4599,7 @@ bool TFTPFileSystem::VerifyCertificateHostName(const TFtpsCertificateData & Data
   return Result;
 }
 
-static bool IsIPAddress(const UnicodeString & HostName)
+static bool IsIPAddress(UnicodeString HostName)
 {
   bool IPv4 = true;
   bool IPv6 = true;
@@ -4517,7 +4626,7 @@ static bool IsIPAddress(const UnicodeString & HostName)
 }
 
 bool TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
-  const TFtpsCertificateData & Data, int & RequestResult)
+  const TFtpsCertificateData &Data, int &RequestResult)
 {
   if (!FActive)
   {
@@ -4535,7 +4644,8 @@ bool TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
     else
     {
       UnicodeString CertificateSubject = Data.Subject.Organization;
-      FTerminal->LogEvent(FORMAT(L"Verifying certificate for \"%s\" with fingerprint %s and %d failures", CertificateSubject.c_str(), FSessionInfo.CertificateFingerprint.c_str(), Data.VerificationResult));
+      FTerminal->LogEvent(FORMAT("Verifying certificate for \"%s\" with fingerprint %s and %d failures",
+          CertificateSubject, FSessionInfo.CertificateFingerprint, Data.VerificationResult));
 
       bool Trusted = false;
       bool TryWindowsSystemCertificateStore = false;
@@ -4610,8 +4720,8 @@ bool TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
         break;
       default:
         VerificationResultStr =
-          FORMAT(L"%s (%s)",
-            LoadStr(CERT_ERR_UNKNOWN).c_str(), UnicodeString(X509_verify_cert_error_string(Data.VerificationResult)).c_str());
+          FORMAT("%s (%s)",
+            LoadStr(CERT_ERR_UNKNOWN), UnicodeString(X509_verify_cert_error_string(Data.VerificationResult)));
         break;
       }
 
@@ -4631,7 +4741,7 @@ bool TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
       if (!VerificationResult)
       {
         if (FTerminal->VerifyCertificate(FtpsCertificateStorageKey, SiteKey,
-              FSessionInfo.CertificateFingerprint, CertificateSubject, Data.VerificationResult))
+            FSessionInfo.CertificateFingerprint, CertificateSubject, Data.VerificationResult))
         {
           // certificate is trusted, but for not purposes of info dialog
           VerificationResult = true;
@@ -4655,7 +4765,7 @@ bool TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
         else
         {
           FTerminal->LogEvent(
-            FORMAT(L"Certificate failed to verify against Windows certificate store: %s", DefaultStr(WindowsCertificateError, L"no details").c_str()));
+            FORMAT("Certificate failed to verify against Windows certificate store: %s", DefaultStr(WindowsCertificateError, L"no details")));
         }
       }
 
@@ -4669,11 +4779,11 @@ bool TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
 
       if (IsHostNameIPAddress)
       {
-        AddToList(Summary, FMTLOAD(CERT_IP_CANNOT_VERIFY, FTerminal->GetSessionData()->GetHostNameExpanded().c_str()), SummarySeparator);
+        AddToList(Summary, FMTLOAD(CERT_IP_CANNOT_VERIFY, FTerminal->GetSessionData()->GetHostNameExpanded()), SummarySeparator);
       }
       else if (!CertificateHostNameVerified)
       {
-        AddToList(Summary, FMTLOAD(CERT_NAME_MISMATCH, FTerminal->GetSessionData()->GetHostNameExpanded().c_str()), SummarySeparator);
+        AddToList(Summary, FMTLOAD(CERT_NAME_MISMATCH, FTerminal->GetSessionData()->GetHostNameExpanded()), SummarySeparator);
       }
 
       if (Summary.IsEmpty())
@@ -4683,12 +4793,12 @@ bool TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
 
       FSessionInfo.Certificate =
         FMTLOAD(CERT_TEXT,
-          FormatContact(Data.Issuer).c_str(),
-          FormatContact(Data.Subject).c_str(),
-          FormatValidityTime(Data.ValidFrom).c_str(),
-          FormatValidityTime(Data.ValidUntil).c_str(),
-          FSessionInfo.CertificateFingerprint.c_str(),
-          Summary.c_str());
+          FormatContact(Data.Issuer),
+          FormatContact(Data.Subject),
+          FormatValidityTime(Data.ValidFrom),
+          FormatValidityTime(Data.ValidUntil),
+          FSessionInfo.CertificateFingerprint,
+          Summary);
 
       RequestResult = VerificationResult ? 1 : 0;
 
@@ -4708,30 +4818,30 @@ bool TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
         Params.Aliases = Aliases;
         Params.AliasesCount = _countof(Aliases);
         uintptr_t Answer = FTerminal->QueryUser(
-          FMTLOAD(VERIFY_CERT_PROMPT3, FSessionInfo.Certificate.c_str()),
-          nullptr, qaYes | qaNo | qaCancel | qaRetry, &Params, qtWarning);
+            FMTLOAD(VERIFY_CERT_PROMPT3, FSessionInfo.Certificate),
+            nullptr, qaYes | qaNo | qaCancel | qaRetry, &Params, qtWarning);
 
         switch (Answer)
         {
-          case qaYes:
-            // 2 = always, as used by FZ's VerifyCertDlg.cpp,
-            // however FZAPI takes all non-zero values equally
-            RequestResult = 2;
-            break;
+        case qaYes:
+          // 2 = always, as used by FZ's VerifyCertDlg.cpp,
+          // however FZAPI takes all non-zero values equally
+          RequestResult = 2;
+          break;
 
-          case qaNo:
-            RequestResult = 1;
-            break;
+        case qaNo:
+          RequestResult = 1;
+          break;
 
-          case qaCancel:
-            // FTerminal->Configuration->Usage->Inc(L"HostNotVerified");
-            RequestResult = 0;
-            break;
+        case qaCancel:
+          // FTerminal->Configuration->Usage->Inc(L"HostNotVerified");
+          RequestResult = 0;
+          break;
 
-          default:
-            DebugFail();
-            RequestResult = 0;
-            break;
+        default:
+          DebugFail();
+          RequestResult = 0;
+          break;
         }
 
         if (RequestResult == 2)
@@ -4755,7 +4865,7 @@ bool TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
 }
 
 bool TFTPFileSystem::HandleAsynchRequestNeedPass(
-  struct TNeedPassRequestData & Data, int & RequestResult) const
+  struct TNeedPassRequestData &Data, int &RequestResult) const
 {
   if (!FActive)
   {
@@ -4777,7 +4887,7 @@ bool TFTPFileSystem::HandleAsynchRequestNeedPass(
         RequestResult = TFileZillaIntf::REPLY_OK;
       }
       else if (FTerminal->PromptUser(FTerminal->GetSessionData(), pkPassword, LoadStr(PASSWORD_TITLE), L"",
-        LoadStr(PASSWORD_PROMPT), false, 0, Password))
+          LoadStr(PASSWORD_PROMPT), false, 0, Password))
       {
         RequestResult = TFileZillaIntf::REPLY_OK;
       }
@@ -4799,13 +4909,14 @@ bool TFTPFileSystem::HandleAsynchRequestNeedPass(
   }
 }
 
-void TFTPFileSystem::RemoteFileTimeToDateTimeAndPrecision(const TRemoteFileTime & Source, TDateTime & DateTime, TModificationFmt & ModificationFmt) const
+void TFTPFileSystem::RemoteFileTimeToDateTimeAndPrecision(const TRemoteFileTime &Source, TDateTime &DateTime, TModificationFmt &ModificationFmt) const
 {
   // ModificationFmt must be set after Modification
   if (Source.HasDate)
   {
     DateTime =
-      EncodeDateVerbose(Source.Year, Source.Month, Source.Day);
+      EncodeDateVerbose(Source.Year, Source.Month,
+        Source.Day);
     if (Source.HasTime)
     {
       DateTime = DateTime +
@@ -4829,7 +4940,6 @@ void TFTPFileSystem::RemoteFileTimeToDateTimeAndPrecision(const TRemoteFileTime 
     {
       DateTime = ::ConvertTimestampFromUTC(DateTime);
     }
-
   }
   else
   {
@@ -4840,8 +4950,8 @@ void TFTPFileSystem::RemoteFileTimeToDateTimeAndPrecision(const TRemoteFileTime 
   }
 }
 
-bool TFTPFileSystem::HandleListData(const wchar_t * Path,
-  const TListDataEntry * Entries, uintptr_t Count)
+bool TFTPFileSystem::HandleListData(const wchar_t *Path,
+  const TListDataEntry *Entries, uintptr_t Count)
 {
   if (!FActive)
   {
@@ -4853,19 +4963,19 @@ bool TFTPFileSystem::HandleListData(const wchar_t * Path,
     DebugAssert(FFileList == nullptr);
     return false;
   }
-  else
+  else if (FFileList)
   {
     DebugAssert(FFileList != nullptr);
     // This can actually fail in real life,
     // when connected to server with case insensitive paths
     // Is empty when called from DoReadFile
     UnicodeString AbsPath = GetAbsolutePath(FFileList->GetDirectory(), false);
-    DebugAssert(FFileList->GetDirectory().IsEmpty() || core::UnixSamePath(AbsPath, Path));
+    DebugAssert(FFileList->GetDirectory().IsEmpty() || base::UnixSamePath(AbsPath, Path));
     DebugUsedParam(Path);
 
     for (uintptr_t Index = 0; Index < Count; ++Index)
     {
-      const TListDataEntry * Entry = &Entries[Index];
+      const TListDataEntry *Entry = &Entries[Index];
       std::unique_ptr<TRemoteFile> File(new TRemoteFile());
       try
       {
@@ -4874,7 +4984,7 @@ bool TFTPFileSystem::HandleListData(const wchar_t * Path,
         File->SetFileName(Entry->Name);
         try
         {
-          intptr_t PermissionsLen = wcslen(Entry->Permissions);
+          intptr_t PermissionsLen = nb::StrLength(Entry->Permissions);
           if (PermissionsLen >= 10)
           {
             File->GetRights()->SetText(Entry->Permissions + 1);
@@ -4891,15 +5001,24 @@ bool TFTPFileSystem::HandleListData(const wchar_t * Path,
 
         File->SetHumanRights(Entry->HumanPerm);
 
-        const wchar_t * Space = wcschr(Entry->OwnerGroup, L' ');
-        if (Space != nullptr)
+        // deprecated, to be replaced with Owner/Group
+        if (nb::StrLength(Entry->OwnerGroup) > 0)
         {
-          File->GetFileOwner().SetName(UnicodeString(Entry->OwnerGroup, Space - Entry->OwnerGroup));
-          File->GetFileGroup().SetName(Space + 1);
+          const wchar_t *Space = wcschr(Entry->OwnerGroup, L' ');
+          if (Space != nullptr)
+          {
+            File->GetFileOwner().SetName(UnicodeString(Entry->OwnerGroup, Space - Entry->OwnerGroup));
+            File->GetFileGroup().SetName(Space + 1);
+          }
+          else
+          {
+            File->GetFileOwner().SetName(Entry->OwnerGroup);
+          }
         }
         else
         {
-          File->GetFileOwner().SetName(Entry->OwnerGroup);
+          File->GetFileOwner().SetName(Entry->Owner);
+          File->GetFileGroup().SetName(Entry->Group);
         }
 
         File->SetSize(Entry->Size);
@@ -4928,22 +5047,26 @@ bool TFTPFileSystem::HandleListData(const wchar_t * Path,
 
         File->Complete();
       }
-      catch (Exception & E)
+      catch (Exception &E)
       {
-//        delete File;
+#if 0
+        delete File;
+#endif // #if 0
+        UnicodeString TmStr = FORMAT(L"%d/%d/%d", int(Entry->Time.HasTime),
+            int(Entry->Time.HasSeconds), int(Entry->Time.HasDate));
         UnicodeString EntryData =
-          FORMAT(L"%s/%s/%s/%s/%s/%d/%d/%d/%d/%d/%d/%d/%d/%d/%d",
-             Entry->Name, Entry->Permissions, Entry->HumanPerm, Entry->OwnerGroup, ::Int64ToStr(Entry->Size).c_str(),
-             int(Entry->Dir), int(Entry->Link), Entry->Time.Year, Entry->Time.Month, Entry->Time.Day,
-             Entry->Time.Hour, Entry->Time.Minute, int(Entry->Time.HasTime),
-             int(Entry->Time.HasSeconds), int(Entry->Time.HasDate));
-        throw ETerminal(&E, FMTLOAD(LIST_LINE_ERROR, EntryData.c_str()), HELP_LIST_LINE_ERROR);
+          FORMAT(L"%s/%s/%s/%s/%s/%s/%s/%d/%d/%d/%d/%d/%d/%d/%s",
+            Entry->Name, Entry->Permissions, Entry->HumanPerm, Entry->Owner, Entry->Group, Entry->OwnerGroup, ::Int64ToStr(Entry->Size),
+            int(Entry->Dir), int(Entry->Link), Entry->Time.Year, Entry->Time.Month, Entry->Time.Day,
+            Entry->Time.Hour, Entry->Time.Minute, TmStr);
+        throw ETerminal(&E, FMTLOAD(LIST_LINE_ERROR, EntryData), HELP_LIST_LINE_ERROR);
       }
 
       FFileList->AddFile(File.release());
     }
     return true;
   }
+  return false;
 }
 
 bool TFTPFileSystem::HandleTransferStatus(bool Valid, int64_t TransferSize,
@@ -4953,7 +5076,7 @@ bool TFTPFileSystem::HandleTransferStatus(bool Valid, int64_t TransferSize,
   {
     return false;
   }
-  else if (!Valid)
+  if (!Valid)
   {
   }
   else if (FileTransfer)
@@ -4973,39 +5096,36 @@ bool TFTPFileSystem::HandleReply(intptr_t Command, uintptr_t Reply)
   {
     return false;
   }
+  if (FTerminal->GetConfiguration()->GetActualLogProtocol() >= 1)
+  {
+    FTerminal->LogEvent(FORMAT("Got reply %x to the command %d", ToInt(Reply), Command));
+  }
+
+  // reply with Command 0 is not associated with current operation
+  // so do not treat is as a reply
+  // (it is typically used asynchronously to notify about disconnects)
+  if (Command != 0)
+  {
+    DebugAssert(FCommandReply == 0);
+    FCommandReply = Reply;
+  }
   else
   {
-    if (FTerminal->GetConfiguration()->GetActualLogProtocol() >= 1)
-    {
-      FTerminal->LogEvent(FORMAT(L"Got reply %x to the command %d", static_cast<int>(Reply), Command));
-    }
-
-    // reply with Command 0 is not associated with current operation
-    // so do not treat is as a reply
-    // (it is typically used asynchronously to notify about disconnects)
-    if (Command != 0)
-    {
-      DebugAssert(FCommandReply == 0);
-      FCommandReply = Reply;
-    }
-    else
-    {
-      DebugAssert(FReply == 0);
-      FReply = Reply;
-    }
-    return true;
+    DebugAssert(FReply == 0);
+    FReply = Reply;
   }
+  return true;
 }
 
 bool TFTPFileSystem::HandleCapabilities(
-  TFTPServerCapabilities * ServerCapabilities)
+  TFTPServerCapabilities *ServerCapabilities)
 {
   FServerCapabilities->Assign(ServerCapabilities);
   FFileSystemInfoValid = false;
   return true;
 }
 
-bool TFTPFileSystem::CheckError(intptr_t ReturnCode, const wchar_t * Context)
+bool TFTPFileSystem::CheckError(intptr_t ReturnCode, const wchar_t *Context)
 {
   // we do not expect any FZAPI call to fail as it generally can fail only due to:
   // - invalid parameters
@@ -5029,14 +5149,14 @@ bool TFTPFileSystem::CheckError(intptr_t ReturnCode, const wchar_t * Context)
   else
   {
     FTerminal->FatalError(nullptr,
-      FMTLOAD(INTERNAL_ERROR, FORMAT(L"fz#%s", Context).c_str(), ::IntToHex(ReturnCode, 4).c_str()));
+      FMTLOAD(INTERNAL_ERROR, FORMAT("fz#%s", Context), ::IntToHex(ReturnCode, 4)));
     DebugFail();
   }
 
   return false;
 }
 
-bool TFTPFileSystem::Unquote(UnicodeString & Str)
+bool TFTPFileSystem::Unquote(UnicodeString &Str)
 {
   enum
   {
@@ -5098,21 +5218,21 @@ bool TFTPFileSystem::Unquote(UnicodeString & Str)
   return (State == STATE_DONE);
 }
 
-void TFTPFileSystem::PreserveDownloadFileTime(HANDLE AHandle, void * UserData) const
+void TFTPFileSystem::PreserveDownloadFileTime(HANDLE AHandle, void *UserData) const
 {
-  TFileTransferData * Data = get_as<TFileTransferData>(UserData);
+  TFileTransferData *Data = get_as<TFileTransferData>(UserData);
   FILETIME WrTime = ::DateTimeToFileTime(Data->Modification, dstmUnix);
   SetFileTime(AHandle, nullptr, nullptr, &WrTime);
 }
 
-bool TFTPFileSystem::GetFileModificationTimeInUtc(const wchar_t * FileName, struct tm & Time)
+bool TFTPFileSystem::GetFileModificationTimeInUtc(const wchar_t *FileName, struct tm &Time)
 {
   bool Result;
   try
   {
     // error-handling-free and DST-mode-unaware copy of TTerminal::OpenLocalFile
     HANDLE LocalFileHandle = ::CreateFile(ApiPath(FileName).c_str(), GENERIC_READ,
-      FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr, OPEN_EXISTING, 0, nullptr);
+        FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr, OPEN_EXISTING, 0, nullptr);
     if (LocalFileHandle == INVALID_HANDLE_VALUE)
     {
       Result = false;
@@ -5158,13 +5278,13 @@ bool TFTPFileSystem::GetFileModificationTimeInUtc(const wchar_t * FileName, stru
   return Result;
 }
 
-void TFTPFileSystem::RegisterChecksumAlgCommand(const UnicodeString & Alg, const UnicodeString & Command)
+void TFTPFileSystem::RegisterChecksumAlgCommand(UnicodeString Alg, UnicodeString Command)
 {
   FChecksumAlgs->Add(Alg);
   FChecksumCommands->Add(Command);
 }
 
-void TFTPFileSystem::GetSupportedChecksumAlgs(TStrings * Algs)
+void TFTPFileSystem::GetSupportedChecksumAlgs(TStrings *Algs)
 {
   for (intptr_t Index = 0; Index < FHashAlgs->GetCount(); Index++)
   {
@@ -5183,22 +5303,22 @@ void TFTPFileSystem::GetSupportedChecksumAlgs(TStrings * Algs)
   }
 }
 
-bool TFTPFileSystem::SupportsSiteCommand(const UnicodeString & Command) const
+bool TFTPFileSystem::SupportsSiteCommand(UnicodeString Command) const
 {
   return (FSupportedSiteCommands->IndexOf(Command) >= 0);
 }
 
-bool TFTPFileSystem::SupportsCommand(const UnicodeString & Command) const
+bool TFTPFileSystem::SupportsCommand(UnicodeString Command) const
 {
   return (FSupportedCommands->IndexOf(Command) >= 0);
 }
 
-void TFTPFileSystem::LockFile(const UnicodeString & /*FileName*/, const TRemoteFile * /*File*/)
+void TFTPFileSystem::LockFile(UnicodeString /*FileName*/, const TRemoteFile * /*File*/)
 {
   DebugFail();
 }
 
-void TFTPFileSystem::UnlockFile(const UnicodeString & /*FileName*/, const TRemoteFile * /*File*/)
+void TFTPFileSystem::UnlockFile(UnicodeString /*FileName*/, const TRemoteFile * /*File*/)
 {
   DebugFail();
 }

@@ -1,3 +1,4 @@
+
 #include <vcl.h>
 #pragma hdrstop
 
@@ -13,7 +14,7 @@ TOptions::TOptions() :
 {
 }
 
-void TOptions::Add(const UnicodeString & Value)
+void TOptions::Add(UnicodeString Value)
 {
   if (!FNoMoreSwitches &&
     (Value.Length() == 2) &&
@@ -41,7 +42,7 @@ void TOptions::Add(const UnicodeString & Value)
           break;
         }
         // this is to treat /home/martin as parameter, not as switch
-        else if ((Value[Index] != L'?') && !IsLetter(Value[Index]))
+        if ((Value[Index] != L'?') && !IsLetter(Value[Index]))
         {
           Switch = false;
           break;
@@ -104,8 +105,8 @@ bool TOptions::GetEmpty() const
   return FOptions.empty();
 }
 
-bool TOptions::FindSwitch(const UnicodeString & Switch,
-  UnicodeString & Value, intptr_t & ParamsStart, intptr_t & ParamsCount, bool CaseSensitive, bool & ValueSet)
+bool TOptions::FindSwitch(UnicodeString Switch,
+  UnicodeString &Value, intptr_t &ParamsStart, intptr_t &ParamsCount, bool CaseSensitive, bool &ValueSet)
 {
   ParamsStart = 0;
   ValueSet = false;
@@ -149,20 +150,20 @@ bool TOptions::FindSwitch(const UnicodeString & Switch,
   return Found;
 }
 
-bool TOptions::FindSwitch(const UnicodeString & Switch, UnicodeString & Value)
+bool TOptions::FindSwitch(UnicodeString Switch, UnicodeString &Value)
 {
   bool ValueSet;
   return FindSwitch(Switch, Value, ValueSet);
 }
 
-bool TOptions::FindSwitch(const UnicodeString & Switch, UnicodeString & Value, bool & ValueSet)
+bool TOptions::FindSwitch(UnicodeString Switch, UnicodeString &Value, bool &ValueSet)
 {
   intptr_t ParamsStart;
   intptr_t ParamsCount;
   return FindSwitch(Switch, Value, ParamsStart, ParamsCount, false, ValueSet);
 }
 
-bool TOptions::FindSwitch(const UnicodeString & Switch)
+bool TOptions::FindSwitch(UnicodeString Switch)
 {
   UnicodeString Value;
   intptr_t ParamsStart;
@@ -171,7 +172,7 @@ bool TOptions::FindSwitch(const UnicodeString & Switch)
   return FindSwitch(Switch, Value, ParamsStart, ParamsCount, false, ValueSet);
 }
 
-bool TOptions::FindSwitchCaseSensitive(const UnicodeString & Switch)
+bool TOptions::FindSwitchCaseSensitive(UnicodeString Switch)
 {
   UnicodeString Value;
   intptr_t ParamsStart;
@@ -180,20 +181,20 @@ bool TOptions::FindSwitchCaseSensitive(const UnicodeString & Switch)
   return FindSwitch(Switch, Value, ParamsStart, ParamsCount, true, ValueSet);
 }
 
-bool TOptions::FindSwitch(const UnicodeString & Switch,
-  TStrings * Params, intptr_t ParamsMax)
+bool TOptions::FindSwitch(UnicodeString Switch,
+  TStrings *Params, intptr_t ParamsMax)
 {
   return DoFindSwitch(Switch, Params, ParamsMax, false);
 }
 
-bool TOptions::FindSwitchCaseSensitive(const UnicodeString & Switch,
-  TStrings * Params, int ParamsMax)
+bool TOptions::FindSwitchCaseSensitive(UnicodeString Switch,
+  TStrings *Params, int ParamsMax)
 {
   return DoFindSwitch(Switch, Params, ParamsMax, true);
 }
 
-bool TOptions::DoFindSwitch(const UnicodeString & Switch,
-  TStrings * Params, intptr_t ParamsMax, bool CaseSensitive)
+bool TOptions::DoFindSwitch(UnicodeString Switch,
+  TStrings *Params, intptr_t ParamsMax, bool CaseSensitive)
 {
   UnicodeString Value;
   intptr_t ParamsStart;
@@ -218,21 +219,21 @@ bool TOptions::DoFindSwitch(const UnicodeString & Switch,
   return Result;
 }
 
-UnicodeString TOptions::SwitchValue(const UnicodeString & Switch,
-  const UnicodeString & Default)
+UnicodeString TOptions::SwitchValue(UnicodeString Switch,
+  UnicodeString Default)
 {
   UnicodeString Value;
-  FindSwitch(Switch, Value);
-  if (Value.IsEmpty())
+
+  if (!FindSwitch(Switch, Value) || Value.IsEmpty())
   {
     Value = Default;
   }
   return Value;
 }
 
-bool TOptions::SwitchValue(const UnicodeString & Switch, bool Default, bool DefaultOnNonExistence)
+bool TOptions::SwitchValue(UnicodeString Switch, bool Default, bool DefaultOnNonExistence)
 {
-  bool Result = false;
+  bool Result;
   int64_t IntValue = 0;
   UnicodeString Value;
   if (!FindSwitch(Switch, Value))
@@ -251,23 +252,23 @@ bool TOptions::SwitchValue(const UnicodeString & Switch, bool Default, bool Defa
   {
     Result = false;
   }
-  else if (::TryStrToInt(Value, IntValue))
+  else if (::TryStrToInt64(Value, IntValue))
   {
     Result = (IntValue != 0);
   }
   else
   {
-    throw Exception(FMTLOAD(URL_OPTION_BOOL_VALUE_ERROR, Value.c_str()));
+    throw Exception(FMTLOAD(URL_OPTION_BOOL_VALUE_ERROR, Value));
   }
   return Result;
 }
 
-bool TOptions::SwitchValue(const UnicodeString & Switch, bool Default)
+bool TOptions::SwitchValue(UnicodeString Switch, bool Default)
 {
   return SwitchValue(Switch, Default, Default);
 }
 
-bool TOptions::UnusedSwitch(UnicodeString & Switch) const
+bool TOptions::UnusedSwitch(UnicodeString &Switch) const
 {
   bool Result = false;
   size_t Index = 0;
@@ -285,14 +286,14 @@ bool TOptions::UnusedSwitch(UnicodeString & Switch) const
   return Result;
 }
 
-bool TOptions::WasSwitchAdded(UnicodeString & Switch, wchar_t & SwitchMark) const
+bool TOptions::WasSwitchAdded(UnicodeString &Switch, wchar_t &SwitchMark) const
 {
   bool Result =
     DebugAlwaysTrue(FOptions.size() > 0) &&
     (FOptions.back().Type == otSwitch);
   if (Result)
   {
-    const TOption & Option = FOptions.back();
+    const TOption &Option = FOptions.back();
     Switch = Option.Name;
     SwitchMark = Option.SwitchMark;
   }
@@ -333,19 +334,19 @@ void TOptions::LogOptions(TLogOptionEvent OnLogOption)
 {
   for (size_t Index = 0; Index < FOriginalOptions.size(); ++Index)
   {
-    const TOption & Option = FOriginalOptions[Index];
+    const TOption &Option = FOriginalOptions[Index];
     UnicodeString LogStr;
     switch (Option.Type)
     {
     case otParam:
-      LogStr = FORMAT(L"Parameter: %s", Option.Value.c_str());
+      LogStr = FORMAT("Parameter: %s", Option.Value);
       DebugAssert(Option.Name.IsEmpty());
       break;
 
     case otSwitch:
       LogStr =
-        FORMAT(L"Switch:    %c%s%s%s",
-          FSwitchMarks[1], Option.Name.c_str(), (Option.Value.IsEmpty() ? UnicodeString() : FSwitchValueDelimiters.SubString(1, 1)).c_str(), Option.Value.c_str());
+        FORMAT("Switch:    %s%s%s%s",
+          FSwitchMarks[1], Option.Name, (Option.Value.IsEmpty() ? UnicodeString() : FSwitchValueDelimiters.SubString(1, 1)), Option.Value);
       break;
 
     default:

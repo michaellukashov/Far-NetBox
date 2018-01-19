@@ -33,7 +33,7 @@ public:
   CAsyncSocketExHelperWindow(CAsyncSocketEx::t_AsyncSocketExThreadData* pThreadData)
   {
     //Initialize data
-    m_pAsyncSocketExWindowData = nb::calloc<t_AsyncSocketExWindowData*>(512 * sizeof(t_AsyncSocketExWindowData)); //Reserve space for 512 active sockets
+    m_pAsyncSocketExWindowData = nb::calloc<t_AsyncSocketExWindowData*>(512, sizeof(t_AsyncSocketExWindowData)); //Reserve space for 512 active sockets
     memset(m_pAsyncSocketExWindowData, 0, 512*sizeof(t_AsyncSocketExWindowData));
     m_nWindowDataSize=512;
     m_nSocketCount=0;
@@ -89,7 +89,7 @@ public:
     {
       DebugAssert(!m_nSocketCount);
       m_nWindowDataSize=512;
-      m_pAsyncSocketExWindowData=nb::calloc<t_AsyncSocketExWindowData*>(512 * sizeof(t_AsyncSocketExWindowData)); //Reserve space for 512 active sockets
+      m_pAsyncSocketExWindowData=nb::calloc<t_AsyncSocketExWindowData*>(512, sizeof(t_AsyncSocketExWindowData)); //Reserve space for 512 active sockets
       memset(m_pAsyncSocketExWindowData, 0, 512*sizeof(t_AsyncSocketExWindowData));
     }
 
@@ -111,7 +111,7 @@ public:
       if (m_nWindowDataSize>MAX_SOCKETS)
         m_nWindowDataSize=MAX_SOCKETS;
       t_AsyncSocketExWindowData *tmp=m_pAsyncSocketExWindowData;
-      m_pAsyncSocketExWindowData = nb::calloc<t_AsyncSocketExWindowData*>(m_nWindowDataSize * sizeof(t_AsyncSocketExWindowData));
+      m_pAsyncSocketExWindowData = nb::calloc<t_AsyncSocketExWindowData*>(m_nWindowDataSize, sizeof(t_AsyncSocketExWindowData));
       memcpy(m_pAsyncSocketExWindowData, tmp, nOldWindowDataSize * sizeof(t_AsyncSocketExWindowData));
       memset(m_pAsyncSocketExWindowData+nOldWindowDataSize, 0, (m_nWindowDataSize-nOldWindowDataSize)*sizeof(t_AsyncSocketExWindowData));
       nb_free(tmp);
@@ -1008,7 +1008,7 @@ void CAsyncSocketEx::FreeAsyncSocketExInstance()
   m_sGlobalCriticalSection.Unlock();
 }
 
-int CAsyncSocketEx::Receive(void* lpBuf, int nBufLen, int nFlags /*=0*/)
+int CAsyncSocketEx::Receive(void * lpBuf, int nBufLen, int nFlags /*=0*/)
 {
   if (m_pFirstLayer)
     return m_pFirstLayer->Receive(lpBuf, nBufLen, nFlags);
@@ -1017,9 +1017,9 @@ int CAsyncSocketEx::Receive(void* lpBuf, int nBufLen, int nFlags /*=0*/)
 }
 
 
-int CAsyncSocketEx::Send(const void* lpBuf, int nBufLen, int nFlags /*=0*/, int nDupFF /*=0*/)
+int CAsyncSocketEx::Send(const void * lpBuf, int nBufLen, int nFlags /*=0*/, int nDupFF /*=0*/)
 {
-  const void* vBuf = lpBuf;
+  const void * vBuf = lpBuf;
   int vBufLen = nBufLen;
   CStringA Buf;
   if (nDupFF)
@@ -1552,12 +1552,12 @@ BOOL CAsyncSocketEx::IsLayerAttached() const
   return m_pFirstLayer ? TRUE : FALSE;
 }
 
-BOOL CAsyncSocketEx::GetSockOpt(int nOptionName, void* lpOptionValue, int* lpOptionLen, int nLevel /*=SOL_SOCKET*/)
+BOOL CAsyncSocketEx::GetSockOpt(int nOptionName, void * lpOptionValue, int* lpOptionLen, int nLevel /*=SOL_SOCKET*/)
 {
   return (SOCKET_ERROR != getsockopt(m_SocketData.hSocket, nLevel, nOptionName, (LPSTR)lpOptionValue, lpOptionLen));
 }
 
-BOOL CAsyncSocketEx::SetSockOpt(int nOptionName, const void* lpOptionValue, int nOptionLen, int nLevel /*=SOL_SOCKET*/)
+BOOL CAsyncSocketEx::SetSockOpt(int nOptionName, const void * lpOptionValue, int nOptionLen, int nLevel /*=SOL_SOCKET*/)
 {
   return (SOCKET_ERROR != setsockopt(m_SocketData.hSocket, nLevel, nOptionName, (LPSTR)lpOptionValue, nOptionLen));
 }

@@ -8,22 +8,23 @@ class TBookmarkList;
 
 class TFarConfiguration : public TGUIConfiguration
 {
-NB_DISABLE_COPY(TFarConfiguration)
+  NB_DISABLE_COPY(TFarConfiguration)
 public:
-  static inline bool classof(const TObject * Obj) { return Obj->GetKind() == OBJECT_CLASS_TFarConfiguration; }
+  static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TFarConfiguration); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TFarConfiguration) || TGUIConfiguration::is(Kind); }
 public:
-  explicit TFarConfiguration(TCustomFarPlugin * APlugin);
+  explicit TFarConfiguration(TCustomFarPlugin *APlugin);
   virtual ~TFarConfiguration();
 
   virtual void Load();
   virtual void Save(bool All, bool Explicit);
-  virtual void Default();
-  virtual THierarchicalStorage * CreateStorage(bool & SessionList);
+  virtual void Default() override;
+  virtual THierarchicalStorage *CreateStorage(bool &SessionList) override;
   void CacheFarSettings();
 
-  const TCustomFarPlugin * GetPlugin() const { return FFarPlugin; }
-  TCustomFarPlugin * GetPlugin() { return FFarPlugin; }
-  void SetPlugin(TCustomFarPlugin * Value);
+  const TCustomFarPlugin *GetPlugin() const { return FFarPlugin; }
+  TCustomFarPlugin *GetPlugin() { return FFarPlugin; }
+  void SetPlugin(TCustomFarPlugin *Value);
   bool GetConfirmOverwritingOverride() const { return FConfirmOverwritingOverride; }
   void SetConfirmOverwritingOverride(bool Value) { FConfirmOverwritingOverride = Value; }
   bool GetConfirmDeleting() const;
@@ -38,7 +39,7 @@ public:
   bool GetPluginsMenuCommands() const { return FPluginsMenuCommands; }
   void SetPluginsMenuCommands(bool Value) { FPluginsMenuCommands = Value; }
   UnicodeString GetCommandPrefixes() const { return FCommandPrefixes; }
-  void SetCommandPrefixes(const UnicodeString & Value) { FCommandPrefixes = Value; }
+  void SetCommandPrefixes(UnicodeString Value) { FCommandPrefixes = Value; }
   bool GetSessionNameInTitle() const { return FSessionNameInTitle; }
   void SetSessionNameInTitle(bool Value) { FSessionNameInTitle = Value; }
 
@@ -47,13 +48,13 @@ public:
   bool GetFullScreenDetailed() const { return FFullScreenDetailed; }
   void SetFullScreenDetailed(bool Value) { FFullScreenDetailed = Value; }
   UnicodeString GetColumnTypesDetailed() const { return FColumnTypesDetailed; }
-  void SetColumnTypesDetailed(const UnicodeString & Value) { FColumnTypesDetailed = Value; }
+  void SetColumnTypesDetailed(UnicodeString Value) { FColumnTypesDetailed = Value; }
   UnicodeString GetColumnWidthsDetailed() const { return FColumnWidthsDetailed; }
-  void SetColumnWidthsDetailed(const UnicodeString & Value) { FColumnWidthsDetailed = Value; }
+  void SetColumnWidthsDetailed(UnicodeString Value) { FColumnWidthsDetailed = Value; }
   UnicodeString GetStatusColumnTypesDetailed() const { return FStatusColumnTypesDetailed; }
-  void SetStatusColumnTypesDetailed(const UnicodeString & Value) { FStatusColumnTypesDetailed = Value; }
+  void SetStatusColumnTypesDetailed(UnicodeString Value) { FStatusColumnTypesDetailed = Value; }
   UnicodeString GetStatusColumnWidthsDetailed() const { return FStatusColumnWidthsDetailed; }
-  void SetStatusColumnWidthsDetailed(const UnicodeString & Value) { FStatusColumnWidthsDetailed = Value; }
+  void SetStatusColumnWidthsDetailed(UnicodeString Value) { FStatusColumnWidthsDetailed = Value; }
   bool GetEditorDownloadDefaultMode() const { return FEditorDownloadDefaultMode; }
   void SetEditorDownloadDefaultMode(bool Value) { FEditorDownloadDefaultMode = Value; }
   bool GetEditorUploadSameOptions() const { return FEditorUploadSameOptions; }
@@ -66,30 +67,30 @@ public:
   void SetQueueBeep(bool Value) { FQueueBeep = Value; }
 
   UnicodeString GetApplyCommandCommand() const { return FApplyCommandCommand; }
-  void SetApplyCommandCommand(const UnicodeString & Value) { FApplyCommandCommand = Value; }
+  void SetApplyCommandCommand(UnicodeString Value) { FApplyCommandCommand = Value; }
   intptr_t GetApplyCommandParams() const { return FApplyCommandParams; }
   void SetApplyCommandParams(intptr_t Value) { FApplyCommandParams = Value; }
 
   UnicodeString GetPageantPath() const { return FPageantPath; }
-  void SetPageantPath(const UnicodeString & Value) { FPageantPath = Value; }
+  void SetPageantPath(UnicodeString Value) { FPageantPath = Value; }
   UnicodeString GetPuttygenPath() const { return FPuttygenPath; }
-  void SetPuttygenPath(const UnicodeString & Value) { FPuttygenPath = Value; }
-  TBookmarkList * GetBookmarks(const UnicodeString & Key);
-  void SetBookmarks(const UnicodeString & Key, TBookmarkList * Value);
+  void SetPuttygenPath(UnicodeString Value) { FPuttygenPath = Value; }
+  TBookmarkList *GetBookmarks(UnicodeString Key);
+  void SetBookmarks(UnicodeString Key, TBookmarkList *Value);
 
 protected:
-  virtual bool GetConfirmOverwriting() const;
-  virtual void SetConfirmOverwriting(bool Value);
+  virtual bool GetConfirmOverwriting() const override;
+  virtual void SetConfirmOverwriting(bool Value) override;
 
-  virtual void SaveData(THierarchicalStorage * Storage, bool All);
-  virtual void LoadData(THierarchicalStorage * Storage);
+  virtual void SaveData(THierarchicalStorage *Storage, bool All) override;
+  virtual void LoadData(THierarchicalStorage *Storage) override;
 
-  virtual UnicodeString ModuleFileName() const;
-  virtual void Saved();
+  virtual UnicodeString ModuleFileName() const override;
+  virtual void Saved() override;
 
 private:
-  TCustomFarPlugin * FFarPlugin;
-  TBookmarks * FBookmarks;
+  TCustomFarPlugin *FFarPlugin;
+  TBookmarks *FBookmarks;
   intptr_t FFarConfirmations;
   bool FConfirmOverwritingOverride;
   bool FConfirmSynchronizedBrowsing;
@@ -121,5 +122,5 @@ private:
   intptr_t FarConfirmations() const;
 };
 
-TFarConfiguration * GetFarConfiguration();
+TFarConfiguration *GetFarConfiguration();
 

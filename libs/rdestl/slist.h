@@ -8,7 +8,7 @@ namespace rde
 {
 namespace internal
 {
-	struct slist_base_node
+	struct RDESTL_LIB slist_base_node
 	{
 		slist_base_node()
 		{

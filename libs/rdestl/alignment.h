@@ -36,7 +36,7 @@ namespace internal
 	template<> struct type_with_alignment<16> { aligned16 member; };
 }
 template<typename T>
-struct alignof
+struct rde_alignof
 {
 	enum 
 	{
@@ -46,7 +46,7 @@ struct alignof
 template<typename T>
 struct aligned_as
 {
-	typedef typename internal::type_with_alignment<alignof<T>::res> res;
+	typedef internal::type_with_alignment<rde_alignof<T>::res> res;
 };
 
 }
