@@ -166,7 +166,23 @@ private:
   TControl *GetHintControl(void *Data);
 };
 
+// Newer version rich edit that supports "Friendly name hyperlinks" and
+// allows wider range of Unicode characters: https://stackoverflow.com/q/47433656/850848
+class TNewRichEdit : public TRichEdit
+{
+public:
+  virtual __fastcall TNewRichEdit(TComponent * AOwner);
+
+protected:
+  virtual void __fastcall CreateParams(TCreateParams & Params);
+  virtual void __fastcall DestroyWnd();
+
+private:
+  HINSTANCE FLibrary;
+};
+//---------------------------------------------------------------------------
 #endif // #if 0
 
 NB_CORE_EXPORT extern const UnicodeString PageantTool;
 NB_CORE_EXPORT extern const UnicodeString PuttygenTool;
+

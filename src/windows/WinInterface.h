@@ -453,7 +453,7 @@ typedef nb::FastDelegate2<void,
 TForm * ShowEditorForm(const UnicodeString FileName, TForm * ParentForm,
   TNotifyEvent OnFileChanged, TNotifyEvent OnFileReload, TFileClosedEvent OnClose,
   TNotifyEvent OnSaveAll, TAnyModifiedEvent OnAnyModified,
-  const UnicodeString Caption, bool StandaloneEditor, TColor Color);
+  const UnicodeString Caption, bool StandaloneEditor, TColor Color, int InternalEditorEncodingOverride);
 void ReconfigureEditorForm(TForm *Form);
 void EditorFormFileUploadComplete(TForm *Form);
 void EditorFormFileSave(TForm *Form);
@@ -618,6 +618,7 @@ void InitializeShortCutCombo(TComboBox *ComboBox,
 void SetShortCutCombo(TComboBox *ComboBox, TShortCut Value);
 TShortCut GetShortCutCombo(TComboBox *ComboBox);
 bool IsCustomShortCut(TShortCut ShortCut);
+TShortCut __fastcall NormalizeCustomShortCut(TShortCut ShortCut);
 #endif // #if 0
 
 #ifdef _DEBUG

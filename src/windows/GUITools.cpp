@@ -229,7 +229,14 @@ static bool DoExecuteShell(const UnicodeString APath, const UnicodeString Params
 {
   bool Result = CopyCommandToClipboard(FormatCommand(APath, Params));
 
-  if (!Result)
+  if (Result)
+  {
+    if (Handle != NULL)
+    {
+      *Handle = NULL;
+    }
+  }
+  else
   {
     UnicodeString Directory = ::ExtractFilePath(APath);
 
@@ -291,26 +298,32 @@ void ExecuteShellCheckedAndWait(HINSTANCE Handle, const UnicodeString Command,
   }
   if (ProcessMessages != nullptr)
   {
-    unsigned long WaitResult;
-    do
+    if (ProcessHandle != NULL) // only if command was copied to clipboard only
     {
-      // Same as in ExecuteProcessAndReadOutput
-      WaitResult = WaitForSingleObject(ProcessHandle, 200);
-      if (WaitResult == WAIT_FAILED)
+      if (ProcessMessages != NULL)
       {
-        throw Exception(LoadStr(DOCUMENT_WAIT_ERROR));
+        unsigned long WaitResult;
+        do
+        {
+          // Same as in ExecuteProcessAndReadOutput
+          WaitResult = WaitForSingleObject(ProcessHandle, 200);
+          if (WaitResult == WAIT_FAILED)
+          {
+            throw Exception(LoadStr(DOCUMENT_WAIT_ERROR));
+          }
+          ProcessMessages();
+        }
+        while (WaitResult == WAIT_TIMEOUT);
       }
-      ProcessMessages();
+      else
+      {
+        WaitForSingleObject(ProcessHandle, INFINITE);
+      }
     }
-    while (WaitResult == WAIT_TIMEOUT);
-  }
-  else
-  {
-    WaitForSingleObject(ProcessHandle, INFINITE);
   }
 }
-
-bool SpecialFolderLocation(intptr_t PathID, UnicodeString &APath)
+//---------------------------------------------------------------------------
+bool __fastcall SpecialFolderLocation(intptr_t PathID, UnicodeString &APath)
 {
 #if defined(_MSC_VER) && !defined(__clang__)
   LPITEMIDLIST Pidl;
@@ -565,6 +578,7 @@ void ApplyTabs(
       if (IsEligibleForApplyingTabs(Line, TabPos, Start, Remaining))
       {
         intptr_t Width;
+        int Iterations = 0;
         while ((Width = CalculateWidth(Start, CalculateWidthArg)) < MaxWidth)
         {
           intptr_t Wider = CalculateWidth(Start + Padding, CalculateWidthArg);
@@ -575,6 +589,12 @@ void ApplyTabs(
             break;
           }
           Start += Padding;
+          Iterations++;
+          // In rare case a tab is zero-width with some strange font (like HYLE)
+          if (Iterations > 100)
+          {
+            break;
+          }
         }
         Lines->Strings[Index] = Start + Remaining;
       }
@@ -1565,6 +1585,48 @@ void TScreenTipHintWindow::Paint()
     Rect.Left += FMargin * 3 / 2;
     Rect.Top += ShortRect.Height() + (FMargin / 3 * 5);
     DrawText(Canvas->Handle, FLongHint.c_str(), -1, &Rect, Flags);
+  }
+}
+//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
+__fastcall TNewRichEdit::TNewRichEdit(TComponent * AOwner) :
+  TRichEdit(AOwner),
+  FLibrary(0)
+{
+}
+//---------------------------------------------------------------------------
+void __fastcall TNewRichEdit::CreateParams(TCreateParams & Params)
+{
+  UnicodeString RichEditModuleName(L"MSFTEDIT.DLL");
+  long int OldError;
+
+  OldError = SetErrorMode(SEM_NOOPENFILEERRORBOX);
+  FLibrary = LoadLibrary(RichEditModuleName.c_str());
+  SetErrorMode(OldError);
+
+  // No fallback, MSFTEDIT.DLL is available since Windows XP
+  // https://blogs.msdn.microsoft.com/murrays/2006/10/13/richedit-versions/
+  if (FLibrary == 0)
+  {
+    throw Exception(FORMAT(L"Cannot load %s", (RichEditModuleName)));
+  }
+
+  TCustomMemo::CreateParams(Params);
+  // MSDN says that we should use MSFTEDIT_CLASS to load Rich Edit 4.1:
+  // https://msdn.microsoft.com/en-us/library/windows/desktop/bb787873.aspx
+  // But MSFTEDIT_CLASS is defined as "RICHEDIT50W",
+  // so not sure what version we are loading.
+  // Seem to work on Windows XP SP3.
+  CreateSubClass(Params, MSFTEDIT_CLASS);
+}
+//---------------------------------------------------------------------------
+void __fastcall TNewRichEdit::DestroyWnd()
+{
+  TRichEdit::DestroyWnd();
+
+  if (FLibrary != 0)
+  {
+    FreeLibrary(FLibrary);
   }
 }
 
