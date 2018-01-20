@@ -814,9 +814,9 @@ void DllHijackingProtection()
   dll_hijacking_protection();
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall ParseOpenSshPubLine(const UnicodeString & Line, const struct ssh_signkey *& Algorithm)
+UnicodeString __fastcall ParseOpenSshPubLine(const UnicodeString ALine, const struct ssh_signkey *& Algorithm)
 {
-  UTF8String UtfLine = UTF8String(Line);
+  UTF8String UtfLine = UTF8String(ALine);
   char * AlgorithmName = NULL;
   int PubBlobLen = 0;
   char * CommentPtr = NULL;
@@ -857,37 +857,37 @@ UnicodeString __fastcall ParseOpenSshPubLine(const UnicodeString & Line, const s
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall GetKeyTypeHuman(const UnicodeString & KeyType)
+UnicodeString __fastcall GetKeyTypeHuman(const UnicodeString AKeyType)
 {
   UnicodeString Result;
-  if (KeyType == ssh_dss.keytype)
+  if (AKeyType == ssh_dss.keytype)
   {
     Result = L"DSA";
   }
-  else if (KeyType == ssh_rsa.keytype)
+  else if (AKeyType == ssh_rsa.keytype)
   {
     Result = L"RSA";
   }
-  else if (KeyType == ssh_ecdsa_ed25519.keytype)
+  else if (AKeyType == ssh_ecdsa_ed25519.keytype)
   {
     Result = L"Ed25519";
   }
-  else if (KeyType == ssh_ecdsa_nistp256.keytype)
+  else if (AKeyType == ssh_ecdsa_nistp256.keytype)
   {
     Result = L"ECDSA/nistp256";
   }
-  else if (KeyType == ssh_ecdsa_nistp384.keytype)
+  else if (AKeyType == ssh_ecdsa_nistp384.keytype)
   {
     Result = L"ECDSA/nistp384";
   }
-  else if (KeyType == ssh_ecdsa_nistp521.keytype)
+  else if (AKeyType == ssh_ecdsa_nistp521.keytype)
   {
     Result = L"ECDSA/nistp521";
   }
   else
   {
     DebugFail();
-    Result = KeyType;
+    Result = AKeyType;
   }
   return Result;
 }

@@ -71,6 +71,7 @@ enum TObjectClassId
   OBJECT_CLASS_TSCPFileSystem,
   OBJECT_CLASS_TSFTPFileSystem,
   OBJECT_CLASS_TWebDAVFileSystem,
+  OBJECT_CLASS_TS3FileSystem,
   OBJECT_CLASS_TMessageQueue,
   OBJECT_CLASS_TFTPFileListHelper,
   OBJECT_CLASS_THierarchicalStorage,

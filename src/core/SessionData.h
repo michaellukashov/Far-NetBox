@@ -576,8 +576,8 @@ public:
   void RollbackTunnel();
   void ExpandEnvironmentVariables();
   void DisableAuthentationsExceptPassword();
-  static bool __fastcall IsOptionWithParameters(const UnicodeString & Option);
-  static bool __fastcall MaskPasswordInOptionParameter(const UnicodeString & Option, UnicodeString & Param);
+  static bool __fastcall IsOptionWithParameters(const UnicodeString AOption);
+  static bool __fastcall MaskPasswordInOptionParameter(const UnicodeString AOption, UnicodeString & Param);
   bool IsSame(const TSessionData *Default, bool AdvancedOnly) const;
   bool IsSameSite(const TSessionData *Default) const;
   bool IsInFolderOrWorkspace(UnicodeString AFolder) const;

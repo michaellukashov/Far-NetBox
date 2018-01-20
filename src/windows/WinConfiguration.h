@@ -748,7 +748,7 @@ public:
     __fastcall TOption() {}
 
     UnicodeString Id;
-    unsigned int Flags;
+    uintptr_t AFlags;
     TOptionKind Kind;
     UnicodeString Caption;
     UnicodeString Default;

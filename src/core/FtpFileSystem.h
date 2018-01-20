@@ -54,7 +54,7 @@ public:
     intptr_t Params, TFileOperationProgressType *OperationProgress,
     TOnceDoneOperation &OnceDoneOperation) override;
   virtual void __fastcall TransferOnDirectory(
-    const UnicodeString & Directory, const TCopyParamType * CopyParam, intptr_t AParams);
+    const UnicodeString ADirectory, const TCopyParamType *CopyParam, intptr_t AParams);
   virtual void __fastcall CopyToRemote(const TStrings *AFilesToCopy,
     const UnicodeString ATargetDir, const TCopyParamType *CopyParam,
     intptr_t AParams, TFileOperationProgressType *OperationProgress,
@@ -65,8 +65,8 @@ public:
     TFileOperationProgressType *OperationProgress, uintptr_t AFlags,
     TUploadSessionAction &Action, bool &ChildError);
   virtual void __fastcall Sink(
-    const UnicodeString &AFileName, const TRemoteFile *AFile,
-    const UnicodeString &ATargetDir, UnicodeString &ADestFileName, intptr_t Attrs,
+    const UnicodeString AFileName, const TRemoteFile *AFile,
+    const UnicodeString ATargetDir, UnicodeString &ADestFileName, intptr_t Attrs,
     const TCopyParamType *CopyParam, intptr_t AParams, TFileOperationProgressType *OperationProgress,
     uintptr_t AFlags, TDownloadSessionAction &Action);
   virtual void __fastcall RemoteCreateDirectory(const UnicodeString ADirName) override;
@@ -165,11 +165,15 @@ protected:
   void Discard();
   void DoChangeDirectory(const UnicodeString ADirectory);
 
-  virtual void Sink(const UnicodeString AFileName,
+  void __fastcall Sink(const UnicodeString AFileName,
     const TRemoteFile *AFile, const UnicodeString ATargetDir,
-    UnicodeString &ADestFileName, intptr_t Attrs,
-    const TCopyParamType *CopyParam, intptr_t AParams, TFileOperationProgressType *OperationProgress,
-    uintptr_t AFlags, TDownloadSessionAction &Action) override;
+    const TCopyParamType *CopyParam, intptr_t AParams,
+    TFileOperationProgressType *OperationProgress, uintptr_t AFlags,
+    TDownloadSessionAction &Action);
+  bool __fastcall ConfirmOverwrite(const UnicodeString ASourceFullFileName, UnicodeString &ATargetFileName,
+    TOverwriteMode &OverwriteMode, TFileOperationProgressType *OperationProgress,
+    const TOverwriteFileParams *FileParams, const TCopyParamType *CopyParam,
+    intptr_t AParams, bool AutoResume);
   void SinkRobust(const UnicodeString AFileName,
     const TRemoteFile *AFile, const UnicodeString ATargetDir,
     const TCopyParamType *CopyParam, intptr_t AParams,
@@ -200,7 +204,7 @@ protected:
   virtual void DoFileTransferProgress(int64_t TransferSize, int64_t Bytes);
   virtual void FileTransferProgress(int64_t TransferSize, int64_t Bytes) override;
   void ResetCaches();
-  void CaptureOutput(const UnicodeString Str);
+  void CaptureOutput(const UnicodeString AStr);
   void DoReadDirectory(TRemoteFileList *FileList);
   void DoReadFile(const UnicodeString AFileName, TRemoteFile *&AFile);
   void FileTransfer(const UnicodeString AFileName, const UnicodeString LocalFile,

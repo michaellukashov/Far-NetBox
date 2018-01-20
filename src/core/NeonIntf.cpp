@@ -465,7 +465,7 @@ UnicodeString __fastcall CertificateVerificationMessage(const TNeonCertificateDa
            (Data.Subject, Data.Fingerprint, Data.Failures));
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall CertificateSummary(const TNeonCertificateData & Data, const UnicodeString & HostName)
+UnicodeString __fastcall CertificateSummary(const TNeonCertificateData & Data, const UnicodeString AHostName)
 {
   UnicodeString Summary;
   if (Data.Failures == 0)
@@ -474,7 +474,7 @@ UnicodeString __fastcall CertificateSummary(const TNeonCertificateData & Data, c
   }
   else
   {
-    Summary = NeonCertificateFailuresErrorStr(Data.Failures, HostName);
+    Summary = NeonCertificateFailuresErrorStr(Data.Failures, AHostName);
   }
 
   UnicodeString ValidityTimeFormat = L"ddddd tt";

@@ -2377,12 +2377,12 @@ void __fastcall TPasteKeyHandler::Paste(TObject * /*Sender*/, unsigned int & Ans
 }
 //---------------------------------------------------------------------------
 void __fastcall TSecureShell::VerifyHostKey(
-  const UnicodeString & AHost, int Port, const UnicodeString & KeyType, const UnicodeString & KeyStr,
-  const UnicodeString & Fingerprint)
+  const UnicodeString AHost, intptr_t Port, const UnicodeString AKeyType, const UnicodeString AKeyStr,
+  const UnicodeString AFingerprint)
 {
   if (Configuration->ActualLogProtocol >= 1)
   {
-    LogEvent(FORMAT(L"Verifying host key %s %s with fingerprints %s", (KeyType, FormatKeyStr(KeyStr), Fingerprint)));
+    LogEvent(FORMAT(L"Verifying host key %s %s with fingerprints %s", AKeyType, FormatKeyStr(AKeyStr), AFingerprint));
   }
 
   GotHostKey();

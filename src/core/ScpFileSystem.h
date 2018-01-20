@@ -27,12 +27,12 @@ public:
   virtual void Idle() override;
   virtual UnicodeString GetAbsolutePath(UnicodeString APath, bool Local) override;
   virtual UnicodeString GetAbsolutePath(UnicodeString APath, bool Local) const override;
-  virtual void AnyCommand(UnicodeString Command,
+  virtual void AnyCommand(const UnicodeString ACommand,
     TCaptureOutputEvent OutputEvent) override;
-  virtual void ChangeDirectory(UnicodeString Directory) override;
-  virtual void CachedChangeDirectory(UnicodeString Directory) override;
+  virtual void ChangeDirectory(const UnicodeString ADirectory) override;
+  virtual void CachedChangeDirectory(const UnicodeString ADirectory) override;
   virtual void AnnounceFileListOperation() override;
-  virtual void ChangeFileProperties(UnicodeString AFileName,
+  virtual void ChangeFileProperties(const UnicodeString AFileName,
     const TRemoteFile *AFile, const TRemoteProperties *Properties,
     TChmodSessionAction &Action) override;
   virtual bool LoadFilesProperties(TStrings *AFileList) override;
@@ -40,8 +40,12 @@ public:
     TStrings *AFileList, TStrings *Checksums,
     TCalculatedChecksumEvent OnCalculatedChecksum) override;
   virtual void CopyToLocal(const TStrings *AFilesToCopy,
-    UnicodeString TargetDir, const TCopyParamType *CopyParam,
-    intptr_t Params, TFileOperationProgressType *OperationProgress,
+    const UnicodeString ATargetDir, const TCopyParamType *CopyParam,
+    intptr_t AParams, TFileOperationProgressType *OperationProgress,
+    TOnceDoneOperation &OnceDoneOperation) override;
+  virtual void __fastcall CopyToRemote(const TStrings *AFilesToCopy,
+    const UnicodeString ATargetDir, const TCopyParamType *CopyParam,
+    intptr_t AParams, TFileOperationProgressType *OperationProgress,
     TOnceDoneOperation &OnceDoneOperation) override;
   virtual void __fastcall Source(
     TLocalFileHandle &AHandle, const UnicodeString ATargetDir, UnicodeString &ADestFileName,
@@ -49,17 +53,23 @@ public:
     TFileOperationProgressType *OperationProgress, uintptr_t AFlags,
     TUploadSessionAction &Action, bool &ChildError);
   virtual void __fastcall Sink(
-    const UnicodeString &AFileName, const TRemoteFile *AFile,
-    const UnicodeString &ATargetDir, UnicodeString &ADestFileName, intptr_t Attrs,
+    const UnicodeString AFileName, const TRemoteFile *AFile,
+    const UnicodeString ATargetDir, UnicodeString &ADestFileName, intptr_t Attrs,
     const TCopyParamType * CopyParam, intptr_t AParams, TFileOperationProgressType *OperationProgress,
     uintptr_t AFlags, TDownloadSessionAction &Action);
+  virtual void __fastcall RemoteCreateDirectory(const UnicodeString ADirName);
+  virtual void __fastcall RemoteCreateLink(const UnicodeString AFileName, const UnicodeString PointTo, bool Symbolic);
+  virtual void __fastcall RemoteDeleteFile(const UnicodeString AFileName,
+    const TRemoteFile *AFile, intptr_t AParams, TRmSessionAction & Action);
+  virtual void __fastcall CustomCommandOnFile(const UnicodeString FileName,
+    const TRemoteFile *AFile, const UnicodeString ACommand, intptr_t AParams, TCaptureOutputEvent OutputEvent);
   virtual void DoStartup() override;
   virtual void HomeDirectory() override;
   virtual bool IsCapable(intptr_t Capability) const override;
   virtual void LookupUsersGroups() override;
   virtual void ReadCurrentDirectory() override;
   virtual void ReadDirectory(TRemoteFileList *FileList) override;
-  virtual void ReadFile(UnicodeString AFileName,
+  virtual void ReadFile(const UnicodeString AFileName,
     TRemoteFile *&File) override;
   virtual void __fastcall ReadSymlink(TRemoteFile *ASymlinkFile,
     TRemoteFile *&AFile) override;
@@ -110,18 +120,18 @@ private:
   static UnicodeString DelimitStr(UnicodeString AStr);
   void DetectReturnVar();
   bool IsLastLine(UnicodeString &Line);
-  static bool IsTotalListingLine(const UnicodeString Line);
+  static bool IsTotalListingLine(const UnicodeString ALine);
   void EnsureLocation();
-  void ExecCommand(const UnicodeString Cmd, intptr_t Params,
+  void ExecCommand(const UnicodeString ACmd, intptr_t AParams,
     const UnicodeString CmdString);
   void ExecCommand(TFSCommand Cmd, intptr_t Params, fmt::ArgList args);
   FMT_VARIADIC_W(void, ExecCommand, TFSCommand, intptr_t)
 
-//  void ExecCommand(TFSCommand Cmd, const TVarRec *args = nullptr,
-//    int size = 0, int Params = -1);
+  __removed void ExecCommand(TFSCommand Cmd, const TVarRec *args = nullptr, \
+    int size = 0, int Params = -1);
   void ReadCommandOutput(intptr_t Params, const UnicodeString *Cmd = nullptr);
   void SCPResponse(bool *GotLastLine = nullptr);
-  void SCPDirectorySource(UnicodeString DirectoryName,
+  void SCPDirectorySource(const UnicodeString ADirectoryName,
     UnicodeString TargetDir, const TCopyParamType *CopyParam, intptr_t Params,
     TFileOperationProgressType *OperationProgress, intptr_t Level);
   void SCPError(const UnicodeString Message, bool Fatal);

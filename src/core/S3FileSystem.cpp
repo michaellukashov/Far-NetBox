@@ -67,6 +67,15 @@ __fastcall TS3FileSystem::~TS3FileSystem()
   FRequestContext = NULL;
   UnregisterFromNeonDebug(FTerminal);
 }
+void TS3FileSystem::Init(void *)
+{
+
+}
+
+void TS3FileSystem::FileTransferProgress(int64_t TransferSize, int64_t Bytes)
+{
+
+}
 //---------------------------------------------------------------------------
 void __fastcall TS3FileSystem::Open()
 {
@@ -405,9 +414,9 @@ void TS3FileSystem::LibS3Deinitialize()
   S3_deinitialize();
 }
 //---------------------------------------------------------------------------
-UnicodeString TS3FileSystem::GetFolderKey(const UnicodeString & Key)
+UnicodeString TS3FileSystem::GetFolderKey(const UnicodeString AKey)
 {
-  return Key + L"/";
+  return AKey + L"/";
 }
 //---------------------------------------------------------------------------
 void TS3FileSystem::ParsePath(UnicodeString Path, UnicodeString & BucketName, UnicodeString & Key)
@@ -446,7 +455,7 @@ struct TLibS3ListBucketCallbackData : TLibS3CallbackData
   bool IsTruncated;
 };
 //---------------------------------------------------------------------------
-TLibS3BucketContext TS3FileSystem::GetBucketContext(const UnicodeString & BucketName)
+TLibS3BucketContext TS3FileSystem::GetBucketContext(const UnicodeString ABucketName)
 {
   TLibS3BucketContext Result;
 
@@ -455,7 +464,7 @@ TLibS3BucketContext TS3FileSystem::GetBucketContext(const UnicodeString & Bucket
   do
   {
     TRegions::const_iterator I;
-    I = FRegions.find(BucketName);
+    I = FRegions.find(ABucketName);
     UnicodeString Region;
     if (I != FRegions.end())
     {
@@ -466,13 +475,13 @@ TLibS3BucketContext TS3FileSystem::GetBucketContext(const UnicodeString & Bucket
       Region = FTerminal->SessionData->S3DefaultRegion;
       if (First)
       {
-        FTerminal->LogEvent(FORMAT(L"Unknown bucket \"%s\", will detect its region (and service endpoint)", (BucketName)));
+        FTerminal->LogEvent(FORMAT(L"Unknown bucket \"%s\", will detect its region (and service endpoint)", ABucketName));
         First = false;
       }
       Retry = true;
     }
 
-    I = FHostNames.find(BucketName);
+    I = FHostNames.find(ABucketName);
     UnicodeString HostName;
     if (I != FHostNames.end())
     {
@@ -566,7 +575,7 @@ const TFileSystemInfo & __fastcall TS3FileSystem::GetFileSystemInfo(bool /*Retri
   return FFileSystemInfo;
 }
 //---------------------------------------------------------------------------
-bool __fastcall TS3FileSystem::TemporaryTransferFile(const UnicodeString & /*FileName*/)
+bool __fastcall TS3FileSystem::TemporaryTransferFile(const UnicodeString /*AFileName*/)
 {
   return false;
 }
@@ -690,11 +699,11 @@ void __fastcall TS3FileSystem::AnnounceFileListOperation()
   // noop
 }
 //---------------------------------------------------------------------------
-void TS3FileSystem::TryOpenDirectory(const UnicodeString & Directory)
+void TS3FileSystem::TryOpenDirectory(const UnicodeString ADirectory)
 {
-  FTerminal->LogEvent(FORMAT(L"Trying to open directory \"%s\".", (Directory)));
+  FTerminal->LogEvent(FORMAT(L"Trying to open directory \"%s\".", ADirectory));
   std::unique_ptr<TRemoteFileList> FileList(new TRemoteFileList());
-  ReadDirectoryInternal(Directory, FileList.get(), 1, UnicodeString());
+  ReadDirectoryInternal(ADirectory, FileList.get(), 1, UnicodeString());
 }
 //---------------------------------------------------------------------------
 void __fastcall TS3FileSystem::ChangeDirectory(const UnicodeString ADirectory)
@@ -798,7 +807,7 @@ S3Status TS3FileSystem::LibS3ListBucketCallback(
 }
 //---------------------------------------------------------------------------
 void TS3FileSystem::DoListBucket(
-  const UnicodeString & Prefix, TRemoteFileList * FileList, int MaxKeys, const TLibS3BucketContext & BucketContext,
+  const UnicodeString APrefix, TRemoteFileList * FileList, int MaxKeys, const TLibS3BucketContext & BucketContext,
   TLibS3ListBucketCallbackData & Data)
 {
   S3ListBucketHandler ListBucketHandler = { CreateResponseHandler(), &LibS3ListBucketCallback };
@@ -813,7 +822,7 @@ void TS3FileSystem::DoListBucket(
 }
 //---------------------------------------------------------------------------
 void TS3FileSystem::ReadDirectoryInternal(
-  const UnicodeString & APath, TRemoteFileList * FileList, int MaxKeys, const UnicodeString & FileName)
+  const UnicodeString APath, TRemoteFileList * FileList, int MaxKeys, const UnicodeString AFileName)
 {
   UnicodeString Path = AbsolutePath(APath, false);
   if (IsUnixRootPath(Path))
@@ -898,7 +907,7 @@ void __fastcall TS3FileSystem::ReadSymlink(TRemoteFile * /*SymlinkFile*/,
   DebugFail();
 }
 //---------------------------------------------------------------------------
-void TS3FileSystem::DoReadFile(const UnicodeString & FileName, TRemoteFile *& File)
+void TS3FileSystem::DoReadFile(const UnicodeString AFileName, TRemoteFile *& File)
 {
   UnicodeString FileNameOnly = UnixExtractFileName(FileName);
   std::unique_ptr<TRemoteFileList> FileList(new TRemoteFileList());
@@ -1111,11 +1120,11 @@ void __fastcall TS3FileSystem::CopyToRemote(
 }
 //---------------------------------------------------------------------------
 void TS3FileSystem::ConfirmOverwrite(
-  const UnicodeString & SourceFullFileName, UnicodeString & TargetFileName,
-  TFileOperationProgressType * OperationProgress, const TOverwriteFileParams * FileParams,
-  const TCopyParamType * CopyParam, int Params)
+  const UnicodeString ASourceFullFileName, UnicodeString &ATargetFileName,
+  TFileOperationProgressType *OperationProgress, const TOverwriteFileParams *FileParams,
+  const TCopyParamType *CopyParam, intptr_t AParams)
 {
-  int Answers = qaYes | qaNo | qaCancel | qaYesToAll | qaNoToAll;
+  intptr_t Answers = qaYes | qaNo | qaCancel | qaYesToAll | qaNoToAll;
   std::vector<TQueryButtonAlias> Aliases;
   Aliases.push_back(TQueryButtonAlias::CreateYesToAllGrouppedWithYes());
   Aliases.push_back(TQueryButtonAlias::CreateNoToAllGrouppedWithNo());
@@ -1520,10 +1529,10 @@ S3Status TS3FileSystem::GetObjectData(int BufferSize, const char * Buffer, TLibS
 }
 //---------------------------------------------------------------------------
 void __fastcall TS3FileSystem::Sink(
-  const UnicodeString & FileName, const TRemoteFile * File,
-  const UnicodeString & TargetDir, UnicodeString & DestFileName, int Attrs,
-  const TCopyParamType * CopyParam, int Params, TFileOperationProgressType * OperationProgress,
-  unsigned int /*Flags*/, TDownloadSessionAction & Action)
+  const UnicodeString AFileName, const TRemoteFile * File,
+  const UnicodeString ATargetDir, UnicodeString ADestFileName, intptr_t Attrs,
+  const TCopyParamType *CopyParam, intptr_t Params, TFileOperationProgressType *OperationProgress,
+  uintptr_t /*AFlags*/, TDownloadSessionAction &Action)
 {
   UnicodeString DestFullName = TargetDir + DestFileName;
   if (FileExists(ApiPath(DestFullName)))
@@ -1622,12 +1631,12 @@ void __fastcall TS3FileSystem::GetSupportedChecksumAlgs(TStrings * /*Algs*/)
   // NOOP
 }
 //---------------------------------------------------------------------------
-void __fastcall TS3FileSystem::LockFile(const UnicodeString & /*FileName*/, const TRemoteFile * /*File*/)
+void __fastcall TS3FileSystem::LockFile(const UnicodeString /*AFileName*/, const TRemoteFile * /*AFile*/)
 {
   DebugFail();
 }
 //---------------------------------------------------------------------------
-void __fastcall TS3FileSystem::UnlockFile(const UnicodeString & /*FileName*/, const TRemoteFile * /*File*/)
+void __fastcall TS3FileSystem::UnlockFile(const UnicodeString /*AFileName*/, const TRemoteFile * /*AFile*/)
 {
   DebugFail();
 }

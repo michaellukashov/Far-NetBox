@@ -195,11 +195,11 @@ THierarchicalStorage * TConfiguration::CreateScpStorage(bool & SessionList)
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall TConfiguration::PropertyToKey(const UnicodeString & Property)
+UnicodeString __fastcall TConfiguration::PropertyToKey(const UnicodeString AProperty)
 {
   // no longer useful
-  int P = Property.LastDelimiter(L".>");
-  return Property.SubString(P + 1, Property.Length() - P);
+  int P = AProperty.LastDelimiter(L".>");
+  return AProperty.SubString(P + 1, AProperty.Length() - P);
 }
 //---------------------------------------------------------------------------
 #define BLOCK(KEY, CANCREATE, BLOCK) \
@@ -317,19 +317,19 @@ void __fastcall TConfiguration::SaveCustomIniFileStorageName()
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TConfiguration::Export(const UnicodeString & FileName)
+void __fastcall TConfiguration::Export(const UnicodeString AFileName)
 {
   // not to "append" the export to an existing file
-  if (FileExists(FileName))
+  if (FileExists(AFileName))
   {
-    DeleteFileChecked(FileName);
+    DeleteFileChecked(AFileName);
   }
 
   THierarchicalStorage * Storage = NULL;
   THierarchicalStorage * ExportStorage = NULL;
   try
   {
-    ExportStorage = TIniFileStorage::CreateFromPath(FileName);
+    ExportStorage = TIniFileStorage::CreateFromPath(AFileName);
     ExportStorage->AccessMode = smReadWrite;
     ExportStorage->Explicit = true;
 
@@ -349,16 +349,16 @@ void __fastcall TConfiguration::Export(const UnicodeString & FileName)
     delete Storage;
   }
 
-  StoredSessions->Export(FileName);
+  StoredSessions->Export(AFileName);
 }
 //---------------------------------------------------------------------------
-void __fastcall TConfiguration::Import(const UnicodeString & FileName)
+void __fastcall TConfiguration::Import(const UnicodeString AFileName)
 {
   THierarchicalStorage * Storage = NULL;
   THierarchicalStorage * ImportStorage = NULL;
   try
   {
-    ImportStorage = TIniFileStorage::CreateFromPath(FileName);
+    ImportStorage = TIniFileStorage::CreateFromPath(AFileName);
     ImportStorage->AccessMode = smRead;
 
     Storage = CreateConfigStorage();
@@ -576,44 +576,44 @@ void __fastcall TConfiguration::SaveDirectoryChangesCache(const UnicodeString Se
   }
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall TConfiguration::BannerHash(const UnicodeString & Banner)
+UnicodeString __fastcall TConfiguration::BannerHash(const UnicodeString ABanner)
 {
   RawByteString Result;
   Result.SetLength(16);
   md5checksum(
-    reinterpret_cast<const char*>(Banner.c_str()), Banner.Length() * sizeof(wchar_t),
+    reinterpret_cast<const char*>(ABanner.c_str()), ABanner.Length() * sizeof(wchar_t),
     (unsigned char*)Result.c_str());
   return BytesToHex(Result);
 }
 //---------------------------------------------------------------------------
 void __fastcall TConfiguration::GetBannerData(
-  const UnicodeString & SessionKey, UnicodeString & BannerHash, unsigned int & Params)
+  const UnicodeString ASessionKey, UnicodeString &ABannerHash, uintptr_t &AParams)
 {
-  BannerHash = UnicodeString();
-  Params = 0;
+  ABannerHash = UnicodeString();
+  AParams = 0;
 
   std::unique_ptr<THierarchicalStorage> Storage(CreateConfigStorage());
   Storage->AccessMode = smRead;
   if (Storage->OpenSubKey(ConfigurationSubKey, false) &&
       Storage->OpenSubKey(L"Banners", false))
   {
-    UnicodeString S = Storage->ReadString(SessionKey, L"");
-    BannerHash = CutToChar(S, L',', true);
-    Params = StrToIntDef(L"$" + CutToChar(S, L',', true), 0);
+    UnicodeString S = Storage->ReadString(ASessionKey, L"");
+    ABannerHash = CutToChar(S, L',', true);
+    AParams = StrToIntDef(L"$" + CutToChar(S, L',', true), 0);
   }
 }
 //---------------------------------------------------------------------------
 bool __fastcall TConfiguration::ShowBanner(
-  const UnicodeString & SessionKey, const UnicodeString & Banner, unsigned int & Params)
+  const UnicodeString ASessionKey, const UnicodeString ABanner, uintptr_t &AParams)
 {
   UnicodeString StoredBannerHash;
-  GetBannerData(SessionKey, StoredBannerHash, Params);
-  bool Result = (StoredBannerHash != BannerHash(Banner));
+  GetBannerData(ASessionKey, StoredBannerHash, AParams);
+  bool Result = (StoredBannerHash != BannerHash(ABanner));
   return Result;
 }
 //---------------------------------------------------------------------------
 void __fastcall TConfiguration::SetBannerData(
-  const UnicodeString & SessionKey, const UnicodeString & BannerHash, unsigned int Params)
+  const UnicodeString ASessionKey, const UnicodeString ABannerHash, uintptr_t Params)
 {
   std::unique_ptr<THierarchicalStorage> Storage(CreateConfigStorage());
   Storage->AccessMode = smReadWrite;
@@ -621,32 +621,32 @@ void __fastcall TConfiguration::SetBannerData(
   if (Storage->OpenSubKey(ConfigurationSubKey, true) &&
       Storage->OpenSubKey(L"Banners", true))
   {
-    Storage->WriteString(SessionKey, BannerHash + L"," + UIntToStr(Params));
+    Storage->WriteString(ASessionKey, ABannerHash + L"," + UIntToStr(Params));
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TConfiguration::NeverShowBanner(const UnicodeString & SessionKey, const UnicodeString & Banner)
+void __fastcall TConfiguration::NeverShowBanner(const UnicodeString ASessionKey, const UnicodeString ABanner)
 {
   UnicodeString DummyBannerHash;
-  unsigned int Params;
-  GetBannerData(SessionKey, DummyBannerHash, Params);
-  SetBannerData(SessionKey, BannerHash(Banner), Params);
+  uintptr_t Params;
+  GetBannerData(ASessionKey, DummyBannerHash, Params);
+  SetBannerData(ASessionKey, BannerHash(ABanner), Params);
 }
 //---------------------------------------------------------------------------
-void __fastcall TConfiguration::SetBannerParams(const UnicodeString & SessionKey, unsigned int Params)
+void __fastcall TConfiguration::SetBannerParams(const UnicodeString ASessionKey, uintptr_t AParams)
 {
   UnicodeString BannerHash;
-  unsigned int DummyParams;
-  GetBannerData(SessionKey, BannerHash, DummyParams);
-  SetBannerData(SessionKey, BannerHash, Params);
+  uintptr_t DummyParams;
+  GetBannerData(ASessionKey, BannerHash, DummyParams);
+  SetBannerData(ASessionKey, BannerHash, AParams);
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall TConfiguration::FormatFingerprintKey(const UnicodeString & SiteKey, const UnicodeString & FingerprintType)
+UnicodeString __fastcall TConfiguration::FormatFingerprintKey(const UnicodeString ASiteKey, const UnicodeString AFingerprintType)
 {
-  return FORMAT(L"%s:%s", (SiteKey, FingerprintType));
+  return FORMAT("%s:%s", ASiteKey, AFingerprintType);
 }
 //---------------------------------------------------------------------------
-void __fastcall TConfiguration::RememberLastFingerprint(const UnicodeString & SiteKey, const UnicodeString & FingerprintType, const UnicodeString & Fingerprint)
+void __fastcall TConfiguration::RememberLastFingerprint(const UnicodeString ASiteKey, const UnicodeString AFingerprintType, const UnicodeString AFingerprint)
 {
   std::unique_ptr<THierarchicalStorage> Storage(CreateConfigStorage());
   Storage->AccessMode = smReadWrite;
@@ -654,12 +654,12 @@ void __fastcall TConfiguration::RememberLastFingerprint(const UnicodeString & Si
   if (Storage->OpenSubKey(ConfigurationSubKey, true) &&
       Storage->OpenSubKey(L"LastFingerprints", true))
   {
-    UnicodeString FingerprintKey = FormatFingerprintKey(SiteKey, FingerprintType);
-    Storage->WriteString(FingerprintKey, Fingerprint);
+    UnicodeString FingerprintKey = FormatFingerprintKey(ASiteKey, AFingerprintType);
+    Storage->WriteString(FingerprintKey, AFingerprint);
   }
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall TConfiguration::LastFingerprint(const UnicodeString & SiteKey, const UnicodeString & FingerprintType)
+UnicodeString __fastcall TConfiguration::LastFingerprint(const UnicodeString ASiteKey, const UnicodeString AFingerprintType)
 {
   UnicodeString Result;
 
@@ -669,7 +669,7 @@ UnicodeString __fastcall TConfiguration::LastFingerprint(const UnicodeString & S
   if (Storage->OpenSubKey(ConfigurationSubKey, false) &&
       Storage->OpenSubKey(L"LastFingerprints", false))
   {
-    UnicodeString FingerprintKey = FormatFingerprintKey(SiteKey, FingerprintType);
+    UnicodeString FingerprintKey = FormatFingerprintKey(ASiteKey, AFingerprintType);
     Result = Storage->ReadString(FingerprintKey, L"");
   }
   return Result;
@@ -738,7 +738,7 @@ void __fastcall TConfiguration::CleanupConfiguration()
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TConfiguration::CleanupRegistry(UnicodeString CleanupSubKey)
+void __fastcall TConfiguration::CleanupRegistry(const UnicodeString CleanupSubKey)
 {
   TRegistryStorage *Registry = new TRegistryStorage(RegistryStorageKey);
   try
@@ -899,9 +899,9 @@ UnicodeString __fastcall TConfiguration::GetFileProductVersion(const UnicodeStri
   return TrimVersion(GetFileFileInfoString(L"ProductVersion", FileName));
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall TConfiguration::GetFileDescription(const UnicodeString & FileName)
+UnicodeString __fastcall TConfiguration::GetFileDescription(const UnicodeString AFileName)
 {
-  return GetFileFileInfoString(L"FileDescription", FileName);
+  return GetFileFileInfoString(L"FileDescription", AFileName);
 }
 //---------------------------------------------------------------------------
 UnicodeString __fastcall TConfiguration::GetProductVersion()
@@ -982,10 +982,10 @@ UnicodeString __fastcall TConfiguration::GetVersionStr()
   }
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall TConfiguration::GetFileVersion(const UnicodeString & FileName)
+UnicodeString __fastcall TConfiguration::GetFileVersion(const UnicodeString AFileName)
 {
   UnicodeString Result;
-  void * FileInfo = CreateFileInfo(FileName);
+  void * FileInfo = CreateFileInfo(AFileName);
   try
   {
     Result = GetFileVersion(GetFixedFileInfo(FileInfo));
@@ -1214,7 +1214,7 @@ UnicodeString __fastcall TConfiguration::GetRootKeyStr()
   return RootKeyToStr(HKEY_CURRENT_USER);
 }
 //---------------------------------------------------------------------------
-void __fastcall TConfiguration::MoveStorage(TStorage AStorage, const UnicodeString & ACustomIniFileStorageName)
+void __fastcall TConfiguration::MoveStorage(TStorage AStorage, const UnicodeString ACustomIniFileStorageName)
 {
   if ((FStorage != AStorage) ||
       !IsPathToSameFile(FCustomIniFileStorageName, ACustomIniFileStorageName))
@@ -1266,7 +1266,7 @@ void __fastcall TConfiguration::MoveStorage(TStorage AStorage, const UnicodeStri
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TConfiguration::ScheduleCustomIniFileStorageUse(const UnicodeString & ACustomIniFileStorageName)
+void __fastcall TConfiguration::ScheduleCustomIniFileStorageUse(const UnicodeString ACustomIniFileStorageName)
 {
   FStorage = stIniFile;
   FCustomIniFileStorageName = ACustomIniFileStorageName;

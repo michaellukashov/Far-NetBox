@@ -1674,13 +1674,12 @@ void TFTPFileSystem::CopyToLocal(const TStrings *AFilesToCopy,
 }
 
 void __fastcall TFTPFileSystem::Sink(
-  const UnicodeString & FileName, const TRemoteFile * File,
-  const UnicodeString & TargetDir, UnicodeString & DestFileName, int Attrs,
+  const UnicodeString FileName, const TRemoteFile *File,
+  const UnicodeString TargetDir, UnicodeString & DestFileName, intptr_t Attrs,
   const TCopyParamType * CopyParam, int Params, TFileOperationProgressType * OperationProgress,
-  unsigned int Flags, TDownloadSessionAction & Action)
+  uintptr_t AFlags, TDownloadSessionAction & Action)
 {
   UnicodeString OnlyFileName = base::UnixExtractFileName(AFileName);
-      [&]()
       [&]()
   AutoDetectTimeDifference(UnixExtractFileDir(FileName), CopyParam, Params);
 
@@ -1769,7 +1768,7 @@ bool TFTPFileSystem::CanTransferSkipList(intptr_t Params, uintptr_t Flags, const
 }
 
 void __fastcall TFTPFileSystem::Source(
-  TLocalFileHandle & Handle, const UnicodeString & TargetDir, UnicodeString & DestFileName,
+  TLocalFileHandle &Handle, const UnicodeString TargetDir, UnicodeString &ADestFileName,
   const TCopyParamType * CopyParam, int Params,
   UnicodeString TargetDir, const TCopyParamType *CopyParam, intptr_t Params,
   TUploadSessionAction & Action, bool & /*ChildError*/)

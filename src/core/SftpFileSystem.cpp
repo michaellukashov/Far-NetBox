@@ -4713,7 +4713,7 @@ bool TSFTPFileSystem::SFTPConfirmResume(UnicodeString DestFileName,
 }
 
 void __fastcall TSFTPFileSystem::Source(
-  TLocalFileHandle & Handle, const UnicodeString & TargetDir, UnicodeString & DestFileName,
+  TLocalFileHandle & Handle, const UnicodeString TargetDir, UnicodeString & DestFileName,
   const TCopyParamType * CopyParam, int Params,
   TFileOperationProgressType *OperationProgress, uintptr_t Flags)
   TOpenRemoteFileParams OpenParams;
@@ -5477,7 +5477,7 @@ void TSFTPFileSystem::CopyToLocal(const TStrings *AFilesToCopy,
 }
 
 void __fastcall TSFTPFileSystem::DirectorySunk(
-  const UnicodeString & DestFullName, const TRemoteFile * File, const TCopyParamType * CopyParam)
+  const UnicodeString ADestFullName, const TRemoteFile * File, const TCopyParamType * CopyParam)
   Action.SetFileName(AFileName);
       [&]()
         {
@@ -5507,10 +5507,10 @@ void __fastcall TSFTPFileSystem::DirectorySunk(
 }
 //---------------------------------------------------------------------------
 void __fastcall TSFTPFileSystem::Sink(
-  const UnicodeString & FileName, const TRemoteFile * File,
-  const UnicodeString & TargetDir, UnicodeString & DestFileName, int Attrs,
-  const TCopyParamType * CopyParam, int Params, TFileOperationProgressType * OperationProgress,
-  unsigned int /*Flags*/, TDownloadSessionAction & Action)
+  const UnicodeString FileName, const TRemoteFile * File,
+  const UnicodeString TargetDir, UnicodeString &DestFileName, intptr_t Attrs,
+  const TCopyParamType * CopyParam, intptr_t Params, TFileOperationProgressType *OperationProgress,
+  uintptr_t /*AFlags*/, TDownloadSessionAction &Action)
 {
 #if 0
     int64_t ResumeOffset = 0;

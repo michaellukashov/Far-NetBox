@@ -1591,7 +1591,7 @@ void TTerminal::InitFileSystem()
     FFileSystem = new TS3FileSystem(this);
     FFileSystem->Open();
     Log->AddSeparator();
-    LogEvent(L"Using S3 protocol.");
+    LogEvent("Using S3 protocol.");
   }
   else
   {
@@ -2431,7 +2431,7 @@ bool TTerminal::QueryReopen(Exception *E, intptr_t Params,
 
 bool TTerminal::FileOperationLoopQuery(Exception &E,
   TFileOperationProgressType *OperationProgress, UnicodeString Message,
-  unsigned int Flags, UnicodeString SpecialRetry, UnicodeString HelpKeyword)
+  uintptr_t AFlags, UnicodeString SpecialRetry, UnicodeString HelpKeyword)
 {
   bool Result = false;
   GetLog()->AddException(&E);
@@ -2511,9 +2511,9 @@ bool TTerminal::FileOperationLoopQuery(Exception &E,
   return Result;
 }
 
-void __fastcall TTerminal::FileOperationLoopEnd(Exception & E,
-  TFileOperationProgressType * OperationProgress, const UnicodeString & Message,
-  unsigned int Flags, const UnicodeString & SpecialRetry, const UnicodeString & HelpKeyword)
+void __fastcall TTerminal::FileOperationLoopEnd(Exception &E,
+  TFileOperationProgressType *OperationProgress, const UnicodeString AMessage,
+  uintptr_t AFlags, const UnicodeString ASpecialRetry, const UnicodeString AHelpKeyword)
 {
   if ((dynamic_cast<EAbort *>(&E) != NULL) ||
       (dynamic_cast<ESkipFile *>(&E) != NULL) ||
@@ -2523,14 +2523,14 @@ void __fastcall TTerminal::FileOperationLoopEnd(Exception & E,
   }
   else if (dynamic_cast<EFatal *>(&E) != NULL)
   {
-    if (FLAGCLEAR(Flags, folRetryOnFatal))
+    if (FLAGCLEAR(AFlags, folRetryOnFatal))
     {
       RethrowException(&E);
     }
     else
     {
-      DebugAssert(SpecialRetry.IsEmpty());
-      std::unique_ptr<Exception> E2(new EFatal(&E, Message, HelpKeyword));
+      DebugAssert(ASpecialRetry.IsEmpty());
+      std::unique_ptr<Exception> E2(new EFatal(&E, AMessage, AHelpKeyword));
       if (!DoQueryReopen(E2.get()))
       {
         RethrowException(E2.get());
@@ -2539,12 +2539,12 @@ void __fastcall TTerminal::FileOperationLoopEnd(Exception & E,
   }
   else
   {
-    FileOperationLoopQuery(E, OperationProgress, Message, Flags, SpecialRetry, HelpKeyword);
+    FileOperationLoopQuery(E, OperationProgress, AMessage, AFlags, ASpecialRetry, AHelpKeyword);
   }
 }
 //---------------------------------------------------------------------------
 intptr_t TTerminal::FileOperationLoop(TFileOperationEvent CallBackFunc,
-  TFileOperationProgressType * OperationProgress, unsigned int Flags,
+  TFileOperationProgressType * OperationProgress, uintptr_t AFlags,
   UnicodeString Message, void *Param1, void *Param2)
 {
   DebugAssert(CallBackFunc);
@@ -3901,15 +3901,15 @@ TRemoteFileList *TTerminal::DoReadDirectoryListing(UnicodeString ADirectory, boo
 }
 
 bool __fastcall TTerminal::DeleteContentsIfDirectory(
-  const UnicodeString & FileName, const TRemoteFile * File, int Params, TRmSessionAction & Action)
+  const UnicodeString AFileName, const TRemoteFile *AFile, intptr_t AParams, TRmSessionAction &Action)
 {
-  bool Dir = (File != NULL) && File->IsDirectory && CanRecurseToDirectory(File);
+  bool Dir = (AFile != NULL) && AFile->IsDirectory && CanRecurseToDirectory(AFile);
 
-  if (Dir && FLAGCLEAR(Params, dfNoRecursive))
+  if (Dir && FLAGCLEAR(AParams, dfNoRecursive))
   {
     try
     {
-      ProcessDirectory(FileName, DeleteFile, &Params);
+      ProcessDirectory(AFileName, DeleteFile, &AParams);
     }
     catch(...)
     {
@@ -5644,11 +5644,11 @@ void TTerminal::TerminalOpenLocalFile(UnicodeString ATargetFileName,
   }
   if (AHandle)
 void __fastcall TTerminal::OpenLocalFile(
-  const UnicodeString & FileName, unsigned int Access, TLocalFileHandle & Handle, bool TryWriteReadOnly)
+  const UnicodeString FileName, uintptr_t Access, TLocalFileHandle &AHandle, bool TryWriteReadOnly)
 {
-  Handle.FileName = FileName;
+  Handle.FileName = AFileName;
   OpenLocalFile(
-    FileName, Access, &Handle.Attrs, &Handle.Handle, NULL, &Handle.MTime, &Handle.ATime, &Handle.Size,
+    AFileName, Access, &Handle.Attrs, &Handle.Handle, NULL, &Handle.MTime, &Handle.ATime, &Handle.Size,
     TryWriteReadOnly);
   Handle.Modification = UnixToDateTime(Handle.MTime, SessionData->DSTMode);
   Handle.Directory = FLAGSET(Handle.Attrs, faDirectory);
@@ -7101,7 +7101,7 @@ void TTerminal::LogParallelTransfer(TParallelOperation *ParallelOperation)
 }
 
 void TTerminal::LogTotalTransferDetails(
-  const UnicodeString TargetDir, const TCopyParamType *CopyParam,
+  const UnicodeString ATargetDir, const TCopyParamType *CopyParam,
   TFileOperationProgressType *OperationProgress, bool Parallel, TStrings *Files)
 {
   if (FLog->GetLogging())
@@ -7279,8 +7279,8 @@ bool TTerminal::CopyToRemote(const TStrings *AFilesToCopy,
 }
 
 void __fastcall TTerminal::DoCopyToRemote(
-  TStrings * FilesToCopy, const UnicodeString & ATargetDir, const TCopyParamType * CopyParam, int Params,
-  TFileOperationProgressType * OperationProgress, unsigned int Flags, TOnceDoneOperation & OnceDoneOperation)
+  TStrings * FilesToCopy, const UnicodeString ATargetDir, const TCopyParamType * CopyParam, int Params,
+  TFileOperationProgressType * OperationProgress, uintptr_t AFlags, TOnceDoneOperation & OnceDoneOperation)
 {
   DebugAssert((FilesToCopy != NULL) && (OperationProgress != NULL));
 
@@ -7329,8 +7329,8 @@ void __fastcall TTerminal::DoCopyToRemote(
 }
 //---------------------------------------------------------------------------
 void __fastcall TTerminal::SourceRobust(
-  const UnicodeString & FileName, const UnicodeString & TargetDir, const TCopyParamType * CopyParam, int Params,
-  TFileOperationProgressType * OperationProgress, unsigned int Flags)
+  const UnicodeString AFileName, const UnicodeString ATargetDir, const TCopyParamType * CopyParam, int Params,
+  TFileOperationProgressType * OperationProgress, uintptr_t AFlags)
 {
   TUploadSessionAction Action(ActionLog);
   bool * AFileTransferAny = FLAGSET(Flags, tfUseFileTransferAny) ? &FFileTransferAny : NULL;
@@ -7341,7 +7341,7 @@ void __fastcall TTerminal::SourceRobust(
     bool ChildError = false;
     try
     {
-      Source(FileName, TargetDir, CopyParam, Params, OperationProgress, Flags, Action, ChildError);
+      Source(AFileName, TargetDir, CopyParam, Params, OperationProgress, Flags, Action, ChildError);
     }
     catch (Exception & E)
     {
@@ -7370,7 +7370,7 @@ void __fastcall TTerminal::SourceRobust(
 }
 //---------------------------------------------------------------------------
 void __fastcall TTerminal::CreateTargetDirectory(
-  const UnicodeString & DirectoryPath, int Attrs, const TCopyParamType * CopyParam)
+  const UnicodeString ADirectoryPath, intptr_t Attrs, const TCopyParamType *CopyParam)
 {
   TRemoteProperties Properties;
   if (CopyParam->PreserveRights)
@@ -7382,9 +7382,9 @@ void __fastcall TTerminal::CreateTargetDirectory(
 }
 //---------------------------------------------------------------------------
 void __fastcall TTerminal::DirectorySource(
-  const UnicodeString & DirectoryName, const UnicodeString & TargetDir, const UnicodeString & DestDirectoryName,
+  const UnicodeString ADirectoryName, const UnicodeString TargetDir, const UnicodeString DestDirectoryName,
   int Attrs, const TCopyParamType * CopyParam, int Params,
-  TFileOperationProgressType * OperationProgress, unsigned int Flags)
+  TFileOperationProgressType * OperationProgress, uintptr_t AFlags)
 {
   FFileSystem->TransferOnDirectory(TargetDir, CopyParam, Params);
 
@@ -7508,7 +7508,7 @@ void __fastcall TTerminal::DirectorySource(
 }
 //---------------------------------------------------------------------------
 void __fastcall TTerminal::SelectTransferMode(
-  const UnicodeString & BaseFileName, TOperationSide Side, const TCopyParamType * CopyParam,
+  const UnicodeString BaseFileName, TOperationSide Side, const TCopyParamType * CopyParam,
   const TFileMasks::TParams & MaskParams)
 {
   OperationProgress->SetAsciiTransfer(CopyParam->UseAsciiTransfer(BaseFileName, Side, MaskParams));
@@ -7551,8 +7551,8 @@ void __fastcall TTerminal::UpdateSource(const TLocalFileHandle & Handle, const T
 }
 //---------------------------------------------------------------------------
 void __fastcall TTerminal::Source(
-  const UnicodeString & FileName, const UnicodeString & TargetDir, const TCopyParamType * CopyParam, int Params,
-  TFileOperationProgressType * OperationProgress, unsigned int Flags, TUploadSessionAction & Action, bool & ChildError)
+  const UnicodeString FileName, const UnicodeString TargetDir, const TCopyParamType * CopyParam, int Params,
+  TFileOperationProgressType * OperationProgress, uintptr_t AFlags, TUploadSessionAction & Action, bool & ChildError)
 {
   Action.FileName(ExpandUNCFileName(FileName));
 
@@ -7788,7 +7788,7 @@ void __fastcall TTerminal::Source(
 
 void __fastcall TTerminal::DoCopyToLocal(
   TStrings * FilesToCopy, const UnicodeString & TargetDir, const TCopyParamType * CopyParam, int Params,
-  TFileOperationProgressType * OperationProgress, unsigned int Flags, TOnceDoneOperation & OnceDoneOperation)
+  TFileOperationProgressType * OperationProgress, uintptr_t AFlags, TOnceDoneOperation & OnceDoneOperation)
 {
   DebugAssert((FilesToCopy != NULL) && (OperationProgress != NULL));
 
@@ -7826,8 +7826,8 @@ void __fastcall TTerminal::DoCopyToLocal(
 }
 //---------------------------------------------------------------------------
 void __fastcall TTerminal::SinkRobust(
-  const UnicodeString & FileName, const TRemoteFile * File, const UnicodeString & TargetDir,
-  const TCopyParamType * CopyParam, int Params, TFileOperationProgressType * OperationProgress, unsigned int Flags)
+  const UnicodeString FileName, const TRemoteFile *File, const UnicodeString TargetDir,
+  const TCopyParamType * CopyParam, int Params, TFileOperationProgressType * OperationProgress, uintptr_t AFlags)
 {
   TDownloadSessionAction Action(ActionLog);
   bool * AFileTransferAny = FLAGSET(Flags, tfUseFileTransferAny) ? &FFileTransferAny : NULL;
@@ -7891,12 +7891,12 @@ struct TSinkFileParams
   int Params;
   TFileOperationProgressType * OperationProgress;
   bool Skipped;
-  unsigned int Flags;
+  uintptr_t AFlags;
 };
 //---------------------------------------------------------------------------
 void __fastcall TTerminal::Sink(
-  const UnicodeString & FileName, const TRemoteFile * File, const UnicodeString & TargetDir,
-  const TCopyParamType * CopyParam, int Params, TFileOperationProgressType * OperationProgress, unsigned int Flags,
+  const UnicodeString FileName, const TRemoteFile *File, const UnicodeString TargetDir,
+  const TCopyParamType * CopyParam, int Params, TFileOperationProgressType * OperationProgress, uintptr_t AFlags,
   TDownloadSessionAction & Action)
 {
   Action.FileName(FileName);
@@ -8007,7 +8007,7 @@ void __fastcall TTerminal::Sink(
 }
 //---------------------------------------------------------------------------
 void __fastcall TTerminal::UpdateTargetAttrs(
-  const UnicodeString & DestFullName, const TRemoteFile * File, const TCopyParamType * CopyParam, int Attrs)
+  const UnicodeString DestFullName, const TRemoteFile * File, const TCopyParamType * CopyParam, int Attrs)
 {
   if (Attrs == -1)
   {
@@ -8286,7 +8286,7 @@ bool TTerminal::VerifyCertificate(
 }
 
 bool __fastcall TTerminal::ConfirmCertificate(
-  TSessionInfo & SessionInfo, int Failures, const UnicodeString & CertificateStorageKey, bool CanRemember)
+  TSessionInfo & SessionInfo, int Failures, const UnicodeString CertificateStorageKey, bool CanRemember)
 {
   TClipboardHandler ClipboardHandler;
   ClipboardHandler.Text = SessionInfo.CertificateFingerprint;

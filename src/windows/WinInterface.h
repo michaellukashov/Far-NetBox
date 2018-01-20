@@ -143,7 +143,7 @@ bool DoShortCutDialog(TShortCut &ShortCut,
   const TShortCuts &ShortCuts, UnicodeString HelpKeyword);
 #if 0
 bool DoCustomCommandOptionsDialog(
-  const TCustomCommandType *Command, TStrings *CustomCommandOptions, unsigned int Flags,
+  const TCustomCommandType *Command, TStrings *CustomCommandOptions, uintptr_t AFlags,
   TCustomCommand *CustomCommandForOptions, UnicodeString Site);
 #endif // #if 0
 

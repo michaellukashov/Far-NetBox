@@ -369,7 +369,7 @@ public:
   bool GetStoredCredentialsTried() const;
   bool InTransaction() const;
   void SaveCapabilities(TFileSystemInfo &FileSystemInfo);
-  void __fastcall CreateTargetDirectory(const UnicodeString & DirectoryPath, int Attrs, const TCopyParamType * CopyParam);
+  void __fastcall CreateTargetDirectory(const UnicodeString DirectoryPath, intptr_t Attrs, const TCopyParamType * CopyParam);
   static UnicodeString SynchronizeModeStr(TSynchronizeMode Mode);
   static UnicodeString SynchronizeParamsStr(intptr_t Params);
 
@@ -403,7 +403,7 @@ protected:
   void FileModified(const TRemoteFile *AFile,
     UnicodeString AFileName, bool ClearDirectoryChange = false);
   intptr_t FileOperationLoop(TFileOperationEvent CallBackFunc,
-    TFileOperationProgressType * OperationProgress, unsigned int Flags,
+    TFileOperationProgressType * OperationProgress, uintptr_t AFlags,
     UnicodeString Message, void *Param1 = nullptr, void *Param2 = nullptr);
   bool GetIsCapableProtected(TFSCapability Capability) const;
   bool ProcessFiles(const TStrings *AFileList, TFileOperation Operation,
@@ -415,7 +415,7 @@ protected:
     TProcessFileEvent CallBackFunc, void *Param = nullptr, bool UseCache = false,
     bool IgnoreErrors = false);
   bool __fastcall DeleteContentsIfDirectory(
-    const UnicodeString & FileName, const TRemoteFile * File, int Params, TRmSessionAction & Action);
+    const UnicodeString AFileName, const TRemoteFile *AFile, intptr_t AParams, TRmSessionAction &Action);
   void __fastcall AnnounceFileListOperation();
   UnicodeString __fastcall TranslateLockedPath(UnicodeString APath, bool Lock);
   void __fastcall ReadDirectory(TRemoteFileList *AFileList);
@@ -543,9 +543,9 @@ protected:
     const UnicodeString Fingerprint,
     const UnicodeString CertificateSubject, int Failures);
   void __fastcall CacheCertificate(const UnicodeString CertificateStorageKey,
-    const UnicodeString SiteKey, const UnicodeString Fingerprint, int Failures);
+    const UnicodeString SiteKey, const UnicodeString Fingerprint, intptr_t Failures);
   bool __fastcall ConfirmCertificate(
-    TSessionInfo & SessionInfo, int Failures, const UnicodeString & CertificateStorageKey, bool CanRemember);
+    TSessionInfo & SessionInfo, intptr_t AFailures, const UnicodeString ACertificateStorageKey, bool CanRemember);
   void __fastcall CollectTlsUsage(const UnicodeString TlsVersionStr);
   bool LoadTlsCertificate(X509 *&Certificate, EVP_PKEY *&PrivateKey);
   bool TryStartOperationWithFile(
@@ -557,36 +557,36 @@ protected:
   bool CanParallel(const TCopyParamType *CopyParam, intptr_t Params, TParallelOperation *ParallelOperation) const;
   void CopyParallel(TParallelOperation *ParallelOperation, TFileOperationProgressType *OperationProgress);
   void __fastcall DoCopyToRemote(
-    TStrings * FilesToCopy, const UnicodeString & TargetDir, const TCopyParamType * CopyParam, int Params,
-    TFileOperationProgressType * OperationProgress, unsigned int Flags, TOnceDoneOperation & OnceDoneOperation);
+    TStrings * FilesToCopy, const UnicodeString ATargetDir, const TCopyParamType * CopyParam, int Params,
+    TFileOperationProgressType * OperationProgress, uintptr_t AFlags, TOnceDoneOperation & OnceDoneOperation);
   void __fastcall SourceRobust(
-    const UnicodeString & FileName, const UnicodeString & TargetDir, const TCopyParamType * CopyParam, int Params,
-    TFileOperationProgressType * OperationProgress, unsigned int Flags);
+    const UnicodeString AFileName, const UnicodeString ATargetDir, const TCopyParamType * CopyParam, int Params,
+    TFileOperationProgressType * OperationProgress, uintptr_t AFlags);
   void __fastcall Source(
-    const UnicodeString & FileName, const UnicodeString & TargetDir, const TCopyParamType * CopyParam, int Params,
-    TFileOperationProgressType * OperationProgress, unsigned int Flags, TUploadSessionAction & Action, bool & ChildError);
+    const UnicodeString AFileName, const UnicodeString ATargetDir, const TCopyParamType * CopyParam, int Params,
+    TFileOperationProgressType * OperationProgress, uintptr_t AFlags, TUploadSessionAction & Action, bool & ChildError);
   void __fastcall DirectorySource(
-    const UnicodeString & DirectoryName, const UnicodeString & TargetDir, const UnicodeString & DestDirectoryName,
+    const UnicodeString ADirectoryName, const UnicodeString ATargetDir, const UnicodeString ADestDirectoryName,
     int Attrs, const TCopyParamType * CopyParam, int Params,
-    TFileOperationProgressType * OperationProgress, unsigned int Flags);
+    TFileOperationProgressType * OperationProgress, uintptr_t AFlags);
   void __fastcall SelectTransferMode(
-    const UnicodeString & BaseFileName, TOperationSide Side, const TCopyParamType * CopyParam,
+    const UnicodeString ABaseFileName, TOperationSide Side, const TCopyParamType * CopyParam,
     const TFileMasks::TParams & MaskParams);
   void __fastcall SelectSourceTransferMode(const TLocalFileHandle & Handle, const TCopyParamType * CopyParam);
   void __fastcall UpdateSource(const TLocalFileHandle & Handle, const TCopyParamType * CopyParam, int Params);
   void __fastcall DoCopyToLocal(
-    TStrings * FilesToCopy, const UnicodeString & TargetDir, const TCopyParamType * CopyParam, int Params,
-    TFileOperationProgressType * OperationProgress, unsigned int Flags, TOnceDoneOperation & OnceDoneOperation);
+    TStrings * FilesToCopy, const UnicodeString ATargetDir, const TCopyParamType *CopyParam, int Params,
+    TFileOperationProgressType * OperationProgress, uintptr_t AFlags, TOnceDoneOperation & OnceDoneOperation);
   void __fastcall SinkRobust(
-    const UnicodeString & FileName, const TRemoteFile * File, const UnicodeString & TargetDir,
-    const TCopyParamType * CopyParam, int Params, TFileOperationProgressType * OperationProgress, unsigned int Flags);
+    const UnicodeString AFileName, const TRemoteFile *AFile, const UnicodeString &ATargetDir,
+    const TCopyParamType * CopyParam, int Params, TFileOperationProgressType * OperationProgress, uintptr_t AFlags);
   void __fastcall Sink(
-    const UnicodeString & FileName, const TRemoteFile * File, const UnicodeString & TargetDir,
-    const TCopyParamType * CopyParam, int Params, TFileOperationProgressType * OperationProgress, unsigned int Flags,
+    const UnicodeString FileName, const TRemoteFile * File, const UnicodeString TargetDir,
+    const TCopyParamType * CopyParam, int Params, TFileOperationProgressType * OperationProgress, uintptr_t AFlags,
     TDownloadSessionAction & Action);
   void __fastcall SinkFile(UnicodeString FileName, const TRemoteFile * File, void * Param);
   void __fastcall UpdateTargetAttrs(
-    const UnicodeString & DestFullName, const TRemoteFile * File, const TCopyParamType * CopyParam, int Attrs);
+    const UnicodeString DestFullName, const TRemoteFile * File, const TCopyParamType * CopyParam, int Attrs);
   void __fastcall UpdateTargetTime(HANDLE Handle, TDateTime Modification, TDSTMode DSTMode);
 
   __property TFileOperationProgressType *OperationProgress = { read = FOperationProgress };
@@ -685,10 +685,10 @@ public:
     const TSearchRec &Rec, void *Param);
   bool FileOperationLoopQuery(Exception &E,
     TFileOperationProgressType *OperationProgress, const UnicodeString Message,
-    unsigned int Flags, UnicodeString SpecialRetry = L"", UnicodeString HelpKeyword = L"");
+    uintptr_t AFlags, UnicodeString SpecialRetry = L"", UnicodeString HelpKeyword = L"");
   void __fastcall FileOperationLoopEnd(Exception & E,
-    TFileOperationProgressType * OperationProgress, const UnicodeString & Message,
-    unsigned int Flags, const UnicodeString & SpecialRetry, const UnicodeString & HelpKeyword);
+    TFileOperationProgressType * OperationProgress, const UnicodeString Message,
+    uintptr_t AFlags, const UnicodeString SpecialRetry, const UnicodeString HelpKeyword);
   TUsableCopyParamAttrs __fastcall UsableCopyParamAttrs(intptr_t Params);
   bool __fastcall ContinueReopen(TDateTime Start);
   bool __fastcall QueryReopen(Exception * E, intptr_t Params,
@@ -715,6 +715,7 @@ public:
   __property TSessionData * SessionData = { read = FSessionData };
   ROProperty<TSessionData *, TTerminal> SessionData{this, &TTerminal::GetSessionData};
   __property TSessionLog * Log = { read = FLog };
+  ROProperty<TSessionLog *, TTerminal> Log{this, &TTerminal::GetLog};
   __property TActionLog * ActionLog = { read = FActionLog };
   __property TConfiguration * Configuration = { read = FConfiguration };
   __property bool Active = { read = GetActive };

@@ -72,12 +72,12 @@ public:
     TFileOperationProgressType *OperationProgress, uintptr_t AFlags,
     TUploadSessionAction &Action, bool &ChildError);
   virtual void __fastcall DirectorySunk(
-    const UnicodeString & DestFullName, const TRemoteFile * File, const TCopyParamType * CopyParam);
+    const UnicodeString ADestFullName, const TRemoteFile *AFile, const TCopyParamType * CopyParam);
   virtual void __fastcall Sink(
-    const UnicodeString & FileName, const TRemoteFile * File,
-    const UnicodeString & TargetDir, UnicodeString & DestFileName, int Attrs,
-    const TCopyParamType * CopyParam, int Params, TFileOperationProgressType * OperationProgress,
-    unsigned int Flags, TDownloadSessionAction & Action);
+    const UnicodeString AFileName, const TRemoteFile *File,
+    const UnicodeString ATargetDir, UnicodeString &ADestFileName, intptr_t Attrs,
+    const TCopyParamType * CopyParam, intptr_t Params, TFileOperationProgressType *OperationProgress,
+    uintptr_t AFlags, TDownloadSessionAction &Action);
   virtual void __fastcall CreateDirectory(const UnicodeString ADirName);
   virtual void __fastcall CreateLink(const UnicodeString AFileName, const UnicodeString APointTo, bool Symbolic);
   virtual void __fastcall DeleteFile(const UnicodeString AFileName,

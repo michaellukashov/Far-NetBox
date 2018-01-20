@@ -2439,7 +2439,7 @@ void TSCPFileSystem::CopyToLocal(const TStrings *AFilesToCopy,
 }
 
 void TSCPFileSystem::SCPError(const UnicodeString Message, bool Fatal)
-void __fastcall TSCPFileSystem::Sink(const UnicodeString & /*FileName*/, const TRemoteFile * /*File*/,
+void __fastcall TSCPFileSystem::Sink(const UnicodeString /*AFileName*/, const TRemoteFile * /*File*/,
   const UnicodeString & /*TargetDir*/, UnicodeString & /*DestFileName*/, intptr_t /*Attrs*/,
   const TCopyParamType * /*CopyParam*/, intptr_t /*Params*/, TFileOperationProgressType * /*OperationProgress*/,
   uintptr_t /*Flags*/, TDownloadSessionAction & /*Action*/)

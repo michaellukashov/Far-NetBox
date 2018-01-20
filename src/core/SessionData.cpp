@@ -1736,28 +1736,28 @@ bool TSessionData::IsSensitiveOption(UnicodeString Option)
     ::SameText(Option, NEWPASSWORD_SWITCH);
 }
 
-bool __fastcall TSessionData::IsOptionWithParameters(const UnicodeString & Option)
+bool __fastcall TSessionData::IsOptionWithParameters(const UnicodeString AOption)
 {
-  return SameText(Option, RawSettingsOption);
+  return SameText(AOption, RawSettingsOption);
 }
 //---------------------------------------------------------------------
-bool __fastcall TSessionData::MaskPasswordInOptionParameter(const UnicodeString & Option, UnicodeString & Param)
+bool __fastcall TSessionData::MaskPasswordInOptionParameter(const UnicodeString AOption, UnicodeString AParam)
 {
   bool Result = false;
-  if (SameText(Option, RawSettingsOption))
+  if (SameText(AOption, RawSettingsOption))
   {
-    int P = Param.Pos(L"=");
+    int P = AParam.Pos(L"=");
     if (P > 0)
     {
       // TStrings.IndexOfName does not trim
-      UnicodeString Key = Param.SubString(1, P - 1);
+      UnicodeString Key = AParam.SubString(1, P - 1);
 
       if (SameText(Key, L"ProxyPassword") ||
           SameText(Key, L"ProxyPasswordEnc") ||
           SameText(Key, L"TunnelPassword") ||
           SameText(Key, L"TunnelPasswordPlain"))
       {
-        Param = Key + L"=" + PasswordMask;
+        AParam = Key + L"=" + PasswordMask;
         Result = true;
       }
     }

@@ -1284,7 +1284,7 @@ void TWebDAVFileSystem::CopyToRemote(const TStrings *AFilesToCopy,
 }
 
 void __fastcall TWebDAVFileSystem::Source(
-  TLocalFileHandle & Handle, const UnicodeString & TargetDir, UnicodeString & DestFileName,
+  TLocalFileHandle & Handle, const UnicodeString TargetDir, UnicodeString & DestFileName,
   const TCopyParamType * CopyParam, int Params,
   TFileOperationProgressType * OperationProgress, unsigned int /*Flags*/,
   TUploadSessionAction &Action, bool &ChildError)
@@ -1757,8 +1757,8 @@ int TWebDAVFileSystem::NeonBodyReader(void *UserData, const char *Buf, size_t Le
 }
 
 void __fastcall TWebDAVFileSystem::Sink(
-  const UnicodeString & FileName, const TRemoteFile * File,
-  const UnicodeString & TargetDir, UnicodeString & DestFileName, int Attrs,
+  const UnicodeString FileName, const TRemoteFile * File,
+  const UnicodeString TargetDir, UnicodeString &DestFileName, int Attrs,
   const TCopyParamType * CopyParam, int Params, TFileOperationProgressType * OperationProgress,
   unsigned int /*Flags*/, TDownloadSessionAction & Action)
 {

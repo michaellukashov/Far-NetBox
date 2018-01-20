@@ -175,13 +175,13 @@ public:
   virtual void LoadAdmin(THierarchicalStorage *Storage);
   virtual UnicodeString GetDefaultKeyFile() const;
   virtual void Saved();
-  void CleanupRegistry(UnicodeString CleanupSubKey);
-  UnicodeString BannerHash(UnicodeString Banner) const;
-  static UnicodeString PropertyToKey(UnicodeString Property);
-  void __fastcall SetBannerData(const UnicodeString & SessionKey, const UnicodeString & BannerHash, unsigned int Params);
-  void __fastcall GetBannerData(const UnicodeString & SessionKey, UnicodeString & BannerHash, unsigned int & Params);
+  void CleanupRegistry(const UnicodeString CleanupSubKey);
+  UnicodeString BannerHash(const UnicodeString Banner) const;
+  static UnicodeString PropertyToKey(const UnicodeString Property);
+  void __fastcall SetBannerData(const UnicodeString ASessionKey, const UnicodeString ABannerHash, uintptr_t AParams);
+  void __fastcall GetBannerData(const UnicodeString ASessionKey, UnicodeString &ABannerHash, uintptr_t &AParams);
   virtual void DoSave(bool All, bool Explicit);
-  UnicodeString FormatFingerprintKey(UnicodeString SiteKey, UnicodeString FingerprintType) const;
+  UnicodeString FormatFingerprintKey(const UnicodeString ASiteKey, const UnicodeString AFingerprintType) const;
 
   virtual bool GetConfirmOverwriting() const;
   virtual void SetConfirmOverwriting(bool Value);
@@ -229,8 +229,8 @@ public:
   void SetDefaultStorage();
   UnicodeString GetAutomaticIniFileStorageName(bool ReadingOnly);
   UnicodeString GetDefaultIniFileExportPath();
-  void Export(UnicodeString AFileName);
-  void Import(UnicodeString AFileName);
+  void Export(const UnicodeString AFileName);
+  void Import(const UnicodeString AFileName);
   void CleanupConfiguration();
   void CleanupIniFile();
   void CleanupHostKeys();
@@ -242,9 +242,9 @@ public:
     TRemoteDirectoryChangesCache *DirectoryChangesCache);
   void SaveDirectoryChangesCache(const UnicodeString SessionKey,
     TRemoteDirectoryChangesCache *DirectoryChangesCache);
-  bool __fastcall ShowBanner(const UnicodeString & SessionKey, const UnicodeString & Banner, unsigned int & Params);
-  void __fastcall NeverShowBanner(const UnicodeString & SessionKey, const UnicodeString & Banner);
-  void __fastcall SetBannerParams(const UnicodeString & SessionKey, unsigned int Params);
+  bool __fastcall ShowBanner(const UnicodeString ASessionKey, const UnicodeString ABanner, uintptr_t &AParams);
+  void __fastcall NeverShowBanner(const UnicodeString ASessionKey, const UnicodeString ABanner);
+  void __fastcall SetBannerParams(const UnicodeString ASessionKey, uintptr_t AParams);
   UnicodeString GetLastFingerprint(UnicodeString SiteKey, UnicodeString FingerprintType);
   virtual THierarchicalStorage *CreateConfigStorage();
   virtual THierarchicalStorage *CreateStorage(bool &SessionList);

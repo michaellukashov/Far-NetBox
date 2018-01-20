@@ -359,32 +359,32 @@ protected:
     FValues->Add(Value);
   }
 
-  void __fastcall RecordFile(const UnicodeString & Indent, TRemoteFile * File, bool IncludeFileName)
+  void __fastcall RecordFile(const UnicodeString AIndent, TRemoteFile *AFile, bool IncludeFileName)
   {
-    FLog->AddIndented(Indent + L"<file>");
-    FLog->AddIndented(Indent + FORMAT(L"  <filename value=\"%s\" />", (XmlAttributeEscape(File->FileName))));
-    FLog->AddIndented(Indent + FORMAT(L"  <type value=\"%s\" />", (XmlAttributeEscape(File->Type))));
-    if (!File->IsDirectory)
+    FLog->AddIndented(AIndent + L"<file>");
+    FLog->AddIndented(AIndent + FORMAT(L"  <filename value=\"%s\" />", (XmlAttributeEscape(AFile->FileName))));
+    FLog->AddIndented(AIndent + FORMAT(L"  <type value=\"%s\" />", (XmlAttributeEscape(AFile->Type))));
+    if (!AFile->IsDirectory)
     {
-      FLog->AddIndented(Indent + FORMAT(L"  <size value=\"%s\" />", (IntToStr(File->Size))));
+      FLog->AddIndented(AIndent + FORMAT(L"  <size value=\"%s\" />", (IntToStr(AFile->Size))));
     }
-    if (File->ModificationFmt != mfNone)
+    if (AFile->ModificationFmt != mfNone)
     {
-      FLog->AddIndented(Indent + FORMAT(L"  <modification value=\"%s\" />", (StandardTimestamp(File->Modification))));
+      FLog->AddIndented(AIndent + FORMAT(L"  <modification value=\"%s\" />", (StandardTimestamp(AFile->Modification))));
     }
-    if (!File->Rights->Unknown)
+    if (!AFile->Rights->Unknown)
     {
-      FLog->AddIndented(Indent + FORMAT(L"  <permissions value=\"%s\" />", (XmlAttributeEscape(File->Rights->Text))));
+      FLog->AddIndented(AIndent + FORMAT(L"  <permissions value=\"%s\" />", (XmlAttributeEscape(AFile->Rights->Text))));
     }
-    if (File->Owner.IsSet)
+    if (AFile->Owner.IsSet)
     {
-      FLog->AddIndented(Indent + FORMAT(L"  <owner value=\"%s\" />", (XmlAttributeEscape(File->Owner.DisplayText))));
+      FLog->AddIndented(AIndent + FORMAT(L"  <owner value=\"%s\" />", (XmlAttributeEscape(AFile->Owner.DisplayText))));
     }
-    if (File->Group.IsSet)
+    if (AFile->Group.IsSet)
     {
-      FLog->AddIndented(Indent + FORMAT(L"  <group value=\"%s\" />", (XmlAttributeEscape(File->Group.DisplayText))));
+      FLog->AddIndented(AIndent + FORMAT(L"  <group value=\"%s\" />", (XmlAttributeEscape(AFile->Group.DisplayText))));
     }
-    FLog->AddIndented(Indent + L"</file>");
+    FLog->AddIndented(AIndent + L"</file>");
   }
 
 private:
@@ -583,20 +583,20 @@ TMvSessionAction::TMvSessionAction(TActionLog *Log,
 }
 
 __fastcall TCpSessionAction::TCpSessionAction(TActionLog * Log,
-    const UnicodeString & FileName, const UnicodeString & ADestination) :
-  TFileLocationSessionAction(Log, laCp, FileName)
+    const UnicodeString AFileName, const UnicodeString ADestination) :
+  TFileLocationSessionAction(Log, laCp, AFileName)
 {
   Destination(ADestination);
 }
 //---------------------------------------------------------------------------
 TCallSessionAction::TCallSessionAction(TActionLog *Log,
-  UnicodeString Command, UnicodeString Destination) :
+  UnicodeString ACommand, UnicodeString ADestination) :
   TSessionAction(Log, laCall)
 {
   if (FRecord != nullptr)
   {
-    FRecord->Command(Command);
-    FRecord->Destination(Destination);
+    FRecord->Command(ACommand);
+    FRecord->Destination(ADestination);
   }
 }
 
