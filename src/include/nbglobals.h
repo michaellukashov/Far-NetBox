@@ -65,7 +65,7 @@ inline wchar_t *wchcalloc(size_t size) { return calloc<wchar_t *>(1, size * size
 
 inline void *operator_new(size_t size)
 {
-  void *p = calloc<void *>(1, size);
+  void *p = nb::calloc<void *>(1, size);
   /*if (!p)
   {
     static std::bad_alloc badalloc;
