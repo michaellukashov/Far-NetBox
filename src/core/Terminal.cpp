@@ -1770,12 +1770,10 @@ void TTerminal::OpenTunnel()
       };
       FTunnel->Open();
     }
-    __finally
-    {
-#if 0
+    __finally__removed
+    ({
       FTunnelOpening = false;
-#endif
-    };
+    })
 
     FTunnelThread = new TTunnelThread(FTunnel);
     FTunnelThread->InitTunnelThread();
@@ -1908,9 +1906,8 @@ void TTerminal::Reopen(intptr_t Params)
 
     Open();
   }
-  __finally
-  {
-#if 0
+  __finally__removed
+  ({
     SessionData->RemoteDirectory = PrevRemoteDirectory;
     SessionData->FSProtocol = OrigFSProtocol;
     FAutoReadDirectory = PrevAutoReadDirectory;
@@ -1918,8 +1915,7 @@ void TTerminal::Reopen(intptr_t Params)
     FReadDirectoryPending = PrevReadDirectoryPending;
     FSuspendTransaction = false;
     FExceptionOnFail = PrevExceptionOnFail;
-#endif // if 0
-  };
+  })
 }
 
 bool TTerminal::PromptUser(TSessionData *Data, TPromptKind Kind,
@@ -1935,13 +1931,11 @@ bool TTerminal::PromptUser(TSessionData *Data, TPromptKind Kind,
     Result = PromptUser(Data, Kind, AName, Instructions, Prompts.get(), Results.get());
     AResult = Results->GetString(0);
   }
-  __finally
-  {
-#if 0
+  __finally__removed
+  ({
     delete Prompts;
     delete Results;
-#endif
-  };
+  })
   return Result;
 }
 
@@ -2098,12 +2092,10 @@ uintptr_t TTerminal::QueryUserException(UnicodeString Query,
         MoreMessages->GetCount() ? MoreMessages.get() : nullptr,
         Answers, &HelpKeywordOverrideParams, QueryType);
     }
-    __finally
-    {
-#if 0
+    __finally__removed
+    ({
       delete MoreMessages;
-#endif
-    };
+    })
   }
   return Result;
 }
