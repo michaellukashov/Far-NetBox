@@ -71,20 +71,19 @@ void FileOperationLoopCustom(TTerminal *Terminal,
   }
   while (DoRepeat);
 }
-
 #if 0
+//---------------------------------------------------------------------------
 #pragma package(smart_init)
-
+//---------------------------------------------------------------------------
 #define FILE_OPERATION_LOOP_TERMINAL this
 #endif // #if 0
-
-
+//---------------------------------------------------------------------------
 class TLoopDetector : public TObject
 {
 public:
   TLoopDetector();
-  void RecordVisitedDirectory(UnicodeString Directory);
-  bool IsUnvisitedDirectory(UnicodeString Directory);
+  void RecordVisitedDirectory(const UnicodeString Directory);
+  bool IsUnvisitedDirectory(const UnicodeString Directory);
 
 private:
   std::unique_ptr<TStringList> FVisitedDirectories;
@@ -95,13 +94,13 @@ TLoopDetector::TLoopDetector()
   FVisitedDirectories.reset(CreateSortedStringList());
 }
 
-void TLoopDetector::RecordVisitedDirectory(UnicodeString Directory)
+void TLoopDetector::RecordVisitedDirectory(const UnicodeString Directory)
 {
   UnicodeString VisitedDirectory = ::ExcludeTrailingBackslash(Directory);
   FVisitedDirectories->Add(VisitedDirectory);
 }
 
-bool TLoopDetector::IsUnvisitedDirectory(UnicodeString Directory)
+bool TLoopDetector::IsUnvisitedDirectory(const UnicodeString Directory)
 {
   bool Result = (FVisitedDirectories->IndexOf(Directory) < 0);
 
@@ -112,8 +111,8 @@ bool TLoopDetector::IsUnvisitedDirectory(UnicodeString Directory)
 
   return Result;
 }
-
-
+//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
 struct TMoveFileParams : public TObject
 {
 public:
@@ -123,11 +122,10 @@ public:
   TMoveFileParams() : TObject(OBJECT_CLASS_TMoveFileParams)
   {
   }
-
   UnicodeString Target;
   UnicodeString FileMask;
 };
-
+//---------------------------------------------------------------------------
 struct TFilesFindParams : public TObject
 {
 public:
@@ -156,13 +154,13 @@ TCalculateSizeStats::TCalculateSizeStats() :
   SymLinks(0),
   FoundFiles(nullptr)
 {
-//  memset(this, 0, sizeof(*this));
+__removed memset(this, 0, sizeof(*this));
 }
 
 TSynchronizeOptions::TSynchronizeOptions() :
   Filter(nullptr)
 {
-//  memset(this, 0, sizeof(*this));
+__removed memset(this, 0, sizeof(*this));
 }
 
 TSynchronizeOptions::~TSynchronizeOptions()
@@ -188,7 +186,7 @@ TSpaceAvailable::TSpaceAvailable() :
   UnusedBytesAvailableToUser(0),
   BytesPerAllocationUnit(0)
 {
-//  memset(this, 0, sizeof(*this));
+__removed memset(this, 0, sizeof(*this));
 }
 
 TChecklistItem::TChecklistItem() :
@@ -1407,7 +1405,7 @@ void __fastcall TTerminal::FingerprintScan(UnicodeString & SHA256, UnicodeString
     }
   }
 }
-
+//---------------------------------------------------------------------------
 void TTerminal::Open()
 {
   TAutoNestingCounter OpeningCounter(FOpening);
@@ -1502,7 +1500,8 @@ void TTerminal::InternalTryOpen()
     if (GetSessionData()->GetFingerprintScan() && (FFileSystem != nullptr) &&
       DebugAlwaysTrue(GetSessionData()->GetFtps() != ftpsNone))
     {
-      FFingerprintScanned = FFileSystem->GetSessionInfo().CertificateFingerprint;
+      FFingerprintScannedSHA256 = UnicodeString();
+      FFingerprintScannedMD5 = FFileSystem->GetSessionInfo().CertificateFingerprint;
     }
     // Particularly to prevent reusing a wrong client certificate passphrase
     // in the next login attempt
@@ -1586,14 +1585,14 @@ void TTerminal::InitFileSystem()
     GetLog()->AddSeparator();
     LogEvent("Using WebDAV protocol.");
   }
-            else if (SessionData->FSProtocol == fsS3)
-            {
-              FFSProtocol = cfsS3;
-              FFileSystem = new TS3FileSystem(this);
-              FFileSystem->Open();
-              Log->AddSeparator();
-              LogEvent(L"Using S3 protocol.");
-            }
+  else if (SessionData->FSProtocol == fsS3)
+  {
+    FFSProtocol = cfsS3;
+    FFileSystem = new TS3FileSystem(this);
+    FFileSystem->Open();
+    Log->AddSeparator();
+    LogEvent(L"Using S3 protocol.");
+  }
   else
   {
     DebugAssert(FSecureShell == nullptr);
@@ -1615,7 +1614,7 @@ void TTerminal::InitFileSystem()
         DebugAssert(!FSecureShell->GetActive());
         if (FSessionData->GetFingerprintScan())
         {
-                    FSecureShell->GetHostKeyFingerprint(FFingerprintScannedSHA256, FFingerprintScannedMD5);
+           FSecureShell->GetHostKeyFingerprint(FFingerprintScannedSHA256, FFingerprintScannedMD5);
         }
         if (!FSecureShell->GetActive() && !FTunnelError.IsEmpty())
         {
@@ -1657,10 +1656,8 @@ void TTerminal::InitFileSystem()
     })
   }
 }
-
+//---------------------------------------------------------------------------
 bool TTerminal::IsListenerFree(uintptr_t PortNumber) const
-          FFingerprintScannedSHA256 = UnicodeString();
-          FFingerprintScannedMD5 = FFileSystem->GetSessionInfo().CertificateFingerprint;
 {
   SOCKET Socket = socket(AF_INET, SOCK_STREAM, 0);
   bool Result = (Socket != INVALID_SOCKET);
@@ -2104,9 +2101,7 @@ void TTerminal::DisplayBanner(UnicodeString Banner)
 {
   if (GetOnDisplayBanner() != nullptr)
   {
-    unsigned int OrigParams, Params;
-      FConfiguration->ShowBanner(GetSessionData()->GetSessionKey(), Banner))
-        Configuration->ShowBanner(SessionData->SessionKey, Banner, Params))
+    uintptr_t OrigParams, Params;
     {
       bool NeverShowAgain = false;
       intptr_t Options =
@@ -2336,15 +2331,15 @@ void TTerminal::ReactOnCommand(intptr_t Cmd)
   }
 }
 
-void TTerminal::TerminalError(UnicodeString Msg)
+void TTerminal::TerminalError(const UnicodeString Msg)
 {
   TerminalError(nullptr, Msg);
 }
 
 void TTerminal::TerminalError(
-  Exception *E, UnicodeString Msg, UnicodeString HelpKeyword)
+  Exception *E, const UnicodeString AMsg, const UnicodeString AHelpKeyword)
 {
-  throw ETerminal(E, Msg, HelpKeyword);
+  throw ETerminal(E, AMsg, AHelpKeyword);
 }
 
 bool TTerminal::DoQueryReopen(Exception *E)
@@ -4266,7 +4261,7 @@ TUsableCopyParamAttrs TTerminal::UsableCopyParamAttrs(intptr_t Params) const
   return Result;
 }
 
-bool TTerminal::IsRecycledFile(UnicodeString AFileName)
+bool TTerminal::IsRecycledFile(const UnicodeString AFileName)
 {
   bool Result = !GetSessionData()->GetRecycleBinPath().IsEmpty();
   if (Result)
@@ -4425,7 +4420,7 @@ bool TTerminal::DeleteLocalFiles(TStrings *AFileList, intptr_t Params)
   return ProcessFiles(AFileList, foDelete, nb::bind(&TTerminal::DeleteLocalFile, this), &Params, osLocal);
 }
 
-void TTerminal::CustomCommandOnFile(UnicodeString AFileName,
+void TTerminal::CustomCommandOnFile(const UnicodeString AFileName,
   const TRemoteFile *AFile, void *AParams)
 {
   TCustomCommandParams *Params = get_as<TCustomCommandParams>(AParams);
@@ -4491,14 +4486,14 @@ void TTerminal::DoCustomCommandOnFile(UnicodeString AFileName,
   while (RetryLoop.Retry());
 }
 
-void TTerminal::CustomCommandOnFiles(UnicodeString Command,
-  intptr_t Params, TStrings *AFiles, TCaptureOutputEvent OutputEvent)
+void TTerminal::CustomCommandOnFiles(const UnicodeString ACommand,
+  intptr_t AParams, TStrings *AFiles, TCaptureOutputEvent OutputEvent)
 {
-  if (!TRemoteCustomCommand().IsFileListCommand(Command))
+  if (!TRemoteCustomCommand().IsFileListCommand(ACommand))
   {
     TCustomCommandParams AParams;
-    AParams.Command = Command;
-    AParams.Params = Params;
+    AParams.Command = ACommand;
+    AParams.Params = AParams;
     AParams.OutputEvent = OutputEvent;
     ProcessFiles(AFiles, foCustomCommand, nb::bind(&TTerminal::CustomCommandOnFile, this), &AParams);
   }
@@ -4510,7 +4505,7 @@ void TTerminal::CustomCommandOnFiles(UnicodeString Command,
       TRemoteFile *File = AFiles->GetAs<TRemoteFile>(Index);
       bool Dir = File->GetIsDirectory() && CanRecurseToDirectory(File);
 
-      if (!Dir || FLAGSET(Params, ccApplyToDirectories))
+      if (!Dir || FLAGSET(AParams, ccApplyToDirectories))
       {
         if (!FileList.IsEmpty())
         {
@@ -4524,7 +4519,7 @@ void TTerminal::CustomCommandOnFiles(UnicodeString Command,
     TCustomCommandData Data(this);
     UnicodeString Cmd =
       TRemoteCustomCommand(Data, RemoteGetCurrentDirectory(), L"", FileList).
-      Complete(Command, true);
+      Complete(ACommand, true);
     if (!DoOnCustomCommand(Cmd))
     {
       DoAnyCommand(Cmd, OutputEvent, nullptr);
@@ -4542,7 +4537,7 @@ bool TTerminal::DoOnCustomCommand(UnicodeString Command)
   return Result;
 }
 
-void TTerminal::ChangeFileProperties(UnicodeString AFileName,
+void TTerminal::ChangeFileProperties(const UnicodeString AFileName,
   const TRemoteFile *AFile, /*const TRemoteProperties*/ void *Properties)
 {
   TRemoteProperties *RProperties = get_as<TRemoteProperties>(Properties);
@@ -4807,7 +4802,7 @@ void TTerminal::CalculateFilesChecksum(UnicodeString Alg,
 }
 
 void TTerminal::TerminalRenameFile(const TRemoteFile *AFile,
-  UnicodeString ANewName, bool CheckExistence)
+  const UnicodeString ANewName, bool CheckExistence)
 {
   DebugAssert(AFile && AFile->GetDirectory() == FFiles);
   bool Proceed = true;
@@ -4874,7 +4869,7 @@ void __fastcall TTerminal::DoRenameFile(const UnicodeString FileName, const TRem
   while (RetryLoop.Retry());
 }
 
-void TTerminal::TerminalMoveFile(UnicodeString AFileName,
+void TTerminal::TerminalMoveFile(const UnicodeString AFileName,
   const TRemoteFile *AFile, /*const TMoveFileParams*/ void *Param)
 {
   StartOperationWithFile(AFileName, foRemoteMove, foDelete);
@@ -5018,7 +5013,7 @@ void __fastcall TTerminal::DoCopyFile(const UnicodeString FileName, const TRemot
   while (RetryLoop.Retry());
 }
 
-void TTerminal::TerminalCopyFile(UnicodeString AFileName,
+void TTerminal::TerminalCopyFile(const UnicodeString AFileName,
   const TRemoteFile * File, /*const TMoveFileParams*/ void * Param)
 {
   StartOperationWithFile(AFileName, foRemoteCopy);
@@ -5031,17 +5026,17 @@ void TTerminal::TerminalCopyFile(UnicodeString AFileName,
   ReactOnCommand(fsCopyFile);
 }
 
-bool TTerminal::CopyFiles(const TStrings *AFileList, UnicodeString Target,
-  UnicodeString FileMask)
+bool TTerminal::CopyFiles(const TStrings *AFileList, const UnicodeString ATarget,
+  const UnicodeString AFileMask)
 {
   TMoveFileParams Params;
-  Params.Target = Target;
-  Params.FileMask = FileMask;
-  DirectoryModified(Target, true);
+  Params.Target = ATarget;
+  Params.FileMask = AFileMask;
+  DirectoryModified(ATarget, true);
   return ProcessFiles(AFileList, foRemoteCopy, nb::bind(&TTerminal::TerminalCopyFile, this), &Params);
 }
 
-void TTerminal::RemoteCreateDirectory(UnicodeString ADirName,
+void TTerminal::RemoteCreateDirectory(const UnicodeString ADirName,
   const TRemoteProperties *Properties)
 {
   DebugAssert(FFileSystem);
@@ -5078,8 +5073,8 @@ void TTerminal::DoCreateDirectory(UnicodeString ADirName)
   while (RetryLoop.Retry());
 }
 
-void TTerminal::CreateLink(UnicodeString AFileName,
-  UnicodeString PointTo, bool Symbolic, bool IsDirectory)
+void TTerminal::RemoteCreateLink(const UnicodeString AFileName,
+  const UnicodeString APointTo, bool Symbolic, bool IsDirectory)
 {
   DebugAssert(FFileSystem);
   EnsureNonExistence(AFileName);
@@ -5089,8 +5084,8 @@ void TTerminal::CreateLink(UnicodeString AFileName,
   }
 
   LogEvent(FORMAT("Creating link \"%s\" to \"%s\" (symbolic: %s).",
-      AFileName, PointTo, BooleanToEngStr(Symbolic)));
-  DoCreateLink(AFileName, PointTo, Symbolic);
+      AFileName, APointTo, BooleanToEngStr(Symbolic)));
+  DoCreateLink(AFileName, APointTo, Symbolic);
   ReactOnCommand(fsCreateDirectory);
 }
 
@@ -5128,9 +5123,9 @@ void TTerminal::HomeDirectory()
   }
 }
 
-void TTerminal::RemoteChangeDirectory(UnicodeString Directory)
+void TTerminal::RemoteChangeDirectory(const UnicodeString ADirectory)
 {
-  UnicodeString DirectoryNormalized = base::ToUnixPath(Directory);
+  UnicodeString DirectoryNormalized = base::ToUnixPath(ADirectory);
   DebugAssert(FFileSystem);
   try
   {

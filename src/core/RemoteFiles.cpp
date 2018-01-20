@@ -1910,7 +1910,7 @@ void TRemoteDirectoryCache::Clear()
     TStringList::Clear();
   })
 }
-
+//---------------------------------------------------------------------------
 bool TRemoteDirectoryCache::GetIsEmptyPrivate() const
 {
   TGuard Guard(FSection);

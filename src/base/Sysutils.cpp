@@ -1677,9 +1677,9 @@ TFormatSettings::TFormatSettings(int) :
 {
 }
 
-UnicodeString TPath::Combine(UnicodeString APath, UnicodeString FileName)
+UnicodeString TPath::Combine(const UnicodeString APath, const UnicodeString AFileName)
 {
-  UnicodeString Result = ::IncludeTrailingBackslash(APath) + FileName;
+  UnicodeString Result = ::IncludeTrailingBackslash(APath) + AFileName;
   return Result;
 }
 

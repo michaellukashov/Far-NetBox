@@ -546,7 +546,7 @@ void __fastcall TS3FileSystem::Close()
   UnregisterFromNeonDebug(FTerminal);
 }
 //---------------------------------------------------------------------------
-bool __fastcall TS3FileSystem::GetActive()
+bool __fastcall TS3FileSystem::GetActive() const
 {
   return FActive;
 }
@@ -1071,7 +1071,7 @@ bool __fastcall TS3FileSystem::LoadFilesProperties(TStrings * /*FileList*/)
   return false;
 }
 //---------------------------------------------------------------------------
-void __fastcall TS3FileSystem::CalculateFilesChecksum(const UnicodeString & /*Alg*/,
+void __fastcall TS3FileSystem::CalculateFilesChecksum(const UnicodeString /*Alg*/,
     TStrings * /*FileList*/, TStrings * /*Checksums*/,
     TCalculatedChecksumEvent /*OnCalculatedChecksum*/)
 {
@@ -1268,10 +1268,10 @@ int TS3FileSystem::LibS3MultipartCommitPutObjectDataCallback(int BufferSize, cha
 }
 //---------------------------------------------------------------------------
 void __fastcall TS3FileSystem::Source(
-  TLocalFileHandle & Handle, const UnicodeString & TargetDir, UnicodeString & DestFileName,
-  const TCopyParamType * CopyParam, int Params,
-  TFileOperationProgressType * OperationProgress, unsigned int /*Flags*/,
-  TUploadSessionAction & Action, bool & /*ChildError*/)
+  TLocalFileHandle &AHandle, const UnicodeString TargetDir, UnicodeString &ADestFileName,
+  const TCopyParamType *CopyParam, intptr_t Params,
+  TFileOperationProgressType *OperationProgress, uintptr_t /*Flags*/,
+  TUploadSessionAction &Action, bool & /*ChildError*/)
 {
   UnicodeString DestFullName = TargetDir + DestFileName;
 

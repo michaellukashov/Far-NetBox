@@ -14,7 +14,7 @@ class TCopyParamType;
 struct TSpaceAvailable;
 class TFileOperationProgressType;
 class TRemoteProperties;
-
+//---------------------------------------------------------------------------
 enum TFSCommand
 {
   fsNull = 0, fsVarValue, fsLastLine, fsFirstLine,
@@ -25,7 +25,7 @@ enum TFSCommand
   fsAnyCommand, fsLang, fsReadSymlink, fsChangeProperties, fsMoveFile,
   fsLock,
 };
-
+//---------------------------------------------------------------------------
 const int dfNoRecursive = 0x01;
 const int dfAlternative = 0x02;
 const int dfForceDelete = 0x04;
@@ -38,11 +38,7 @@ enum TOverwriteMode
   omResume,
   omComplete
 };
-
-const int tfFirstLevel   = 0x01;
-const int tfAutoResume   = 0x02;
-const int tfNewDirectory = 0x04;
-
+//---------------------------------------------------------------------------
 struct NB_CORE_EXPORT TSinkFileParams : public TObject
 {
 public:
@@ -154,7 +150,7 @@ public:
   virtual void Init(void *) = 0;
   virtual void FileTransferProgress(int64_t TransferSize, int64_t Bytes) = 0;
 };
-
+//---------------------------------------------------------------------------
 class NB_CORE_EXPORT TCustomFileSystem : public TObject, public TFileSystemIntf
 {
   NB_DISABLE_COPY(TCustomFileSystem)
@@ -164,99 +160,96 @@ public:
 public:
   virtual ~TCustomFileSystem();
 
-  virtual void Open() = 0;
-  virtual void Close() = 0;
-  virtual bool GetActive() const = 0;
-  virtual void CollectUsage() = 0;
-  virtual void Idle() = 0;
-  virtual UnicodeString GetAbsolutePath(UnicodeString APath, bool Local) = 0;
-  virtual UnicodeString GetAbsolutePath(UnicodeString APath, bool Local) const = 0;
-  virtual void AnyCommand(UnicodeString Command,
+  virtual void __fastcall Open() = 0;
+  virtual void __fastcall Close() = 0;
+  virtual bool __fastcall GetActive() const = 0;
+  virtual void __fastcall CollectUsage() = 0;
+  virtual void __fastcall Idle() = 0;
+  virtual UnicodeString __fastcall GetAbsolutePath(const UnicodeString APath, bool Local) = 0;
+  virtual UnicodeString __fastcall GetAbsolutePath(const UnicodeString APath, bool Local) const = 0;
+  virtual void __fastcall AnyCommand(const UnicodeString ACommand,
     TCaptureOutputEvent OutputEvent) = 0;
-  virtual void ChangeDirectory(UnicodeString Directory) = 0;
-  virtual void CachedChangeDirectory(UnicodeString Directory) = 0;
-  virtual void AnnounceFileListOperation() = 0;
-  virtual void ChangeFileProperties(UnicodeString AFileName,
+  virtual void __fastcall ChangeDirectory(const UnicodeString ADirectory) = 0;
+  virtual void __fastcall CachedChangeDirectory(const UnicodeString ADirectory) = 0;
+  virtual void __fastcall AnnounceFileListOperation() = 0;
+  virtual void __fastcall ChangeFileProperties(const UnicodeString AFileName,
     const TRemoteFile *AFile, const TRemoteProperties *Properties,
     TChmodSessionAction &Action) = 0;
-  virtual bool LoadFilesProperties(TStrings *AFileList) = 0;
-  virtual void CalculateFilesChecksum(UnicodeString Alg,
+  virtual bool __fastcall LoadFilesProperties(TStrings *AFileList) = 0;
+  virtual void __fastcall CalculateFilesChecksum(const UnicodeString Alg,
     TStrings *AFileList, TStrings *Checksums,
     TCalculatedChecksumEvent OnCalculatedChecksum) = 0;
-  virtual void CopyToLocal(const TStrings *AFilesToCopy,
-    UnicodeString TargetDir, const TCopyParamType *CopyParam,
+  virtual void __fastcall CopyToLocal(const TStrings *AFilesToCopy,
+    const UnicodeString ATargetDir, const TCopyParamType *CopyParam,
     intptr_t Params, TFileOperationProgressType *OperationProgress,
     TOnceDoneOperation &OnceDoneOperation) = 0;
-  virtual void CopyToRemote(const TStrings *AFilesToCopy,
-    UnicodeString TargetDir, const TCopyParamType *CopyParam,
+  virtual void __fastcall CopyToRemote(const TStrings *AFilesToCopy,
+    const UnicodeString ATargetDir, const TCopyParamType *CopyParam,
     intptr_t Params, TFileOperationProgressType *OperationProgress,
     TOnceDoneOperation &OnceDoneOperation) = 0;
-  virtual void RemoteCreateDirectory(UnicodeString ADirName) = 0;
-  virtual void CreateLink(UnicodeString AFileName, UnicodeString PointTo, bool Symbolic) = 0;
-  virtual void RemoteDeleteFile(UnicodeString AFileName,
-    const TRemoteFile *AFile, intptr_t Params,
   virtual void __fastcall TransferOnDirectory(
-    const UnicodeString & Directory, const TCopyParamType * CopyParam, int Params) {};
+    const UnicodeString & /*ADirectory*/, const TCopyParamType * /*CopyParam*/, intptr_t /*AParams*/) {}
   virtual void __fastcall Source(
-    TLocalFileHandle & Handle, const UnicodeString & TargetDir, UnicodeString & DestFileName,
-    const TCopyParamType * CopyParam, int Params,
-    TFileOperationProgressType * OperationProgress, unsigned int Flags,
-    TUploadSessionAction & Action, bool & ChildError) = 0;
+    TLocalFileHandle &AHandle, const UnicodeString ATargetDir, UnicodeString &ADestFileName,
+    const TCopyParamType *CopyParam, intptr_t AParams,
+    TFileOperationProgressType *OperationProgress, uintptr_t AFlags,
+    TUploadSessionAction &Action, bool &ChildError) = 0;
   virtual void __fastcall DirectorySunk(
-    const UnicodeString & DestFullName, const TRemoteFile * File, const TCopyParamType * CopyParam) {};
+    const UnicodeString & /*ADestFullName*/, const TRemoteFile * /*AFile*/, const TCopyParamType * /*ACopyParam*/) {}
   virtual void __fastcall Sink(
-    const UnicodeString & FileName, const TRemoteFile * File,
-    const UnicodeString & TargetDir, UnicodeString & DestFileName, int Attrs,
-    const TCopyParamType * CopyParam, int Params, TFileOperationProgressType * OperationProgress,
-    unsigned int Flags, TDownloadSessionAction & Action) = 0;
+    const UnicodeString AFileName, const TRemoteFile *AFile,
+    const UnicodeString ATargetDir, UnicodeString &ADestFileName, intptr_t Attrs,
+    const TCopyParamType *CopyParam, intptr_t AParams, TFileOperationProgressType *OperationProgress,
+    uintptr_t AFlags, TDownloadSessionAction &Action) = 0;
+  virtual void __fastcall RemoteCreateDirectory(const UnicodeString ADirName) = 0;
+  virtual void __fastcall RemoteCreateLink(const UnicodeString AFileName, const UnicodeString APointTo, bool Symbolic) = 0;
+  virtual void __fastcall RemoteDeleteFile(const UnicodeString AFileName,
+    const TRemoteFile *AFile, intptr_t AParams,
     TRmSessionAction &Action) = 0;
-  virtual void CustomCommandOnFile(UnicodeString AFileName,
-    const TRemoteFile *AFile, UnicodeString Command, intptr_t Params, TCaptureOutputEvent OutputEvent) = 0;
-  virtual void DoStartup() = 0;
-  virtual void HomeDirectory() = 0;
-  virtual bool IsCapable(intptr_t Capability) const = 0;
-  virtual void LookupUsersGroups() = 0;
-  virtual void ReadCurrentDirectory() = 0;
-  virtual void ReadDirectory(TRemoteFileList *FileList) = 0;
-  virtual void ReadFile(UnicodeString AFileName,
+  virtual void __fastcall CustomCommandOnFile(const UnicodeString AFileName,
+    const TRemoteFile *AFile, const UnicodeString ACommand, intptr_t AParams, TCaptureOutputEvent OutputEvent) = 0;
+  virtual void __fastcall DoStartup() = 0;
+  virtual void __fastcall HomeDirectory() = 0;
+  virtual bool __fastcall IsCapable(intptr_t Capability) const = 0;
+  virtual void __fastcall LookupUsersGroups() = 0;
+  virtual void __fastcall ReadCurrentDirectory() = 0;
+  virtual void __fastcall ReadDirectory(TRemoteFileList *FileList) = 0;
+  virtual void __fastcall ReadFile(const UnicodeString AFileName,
     TRemoteFile *&File) = 0;
-  virtual void ReadSymlink(TRemoteFile *SymLinkFile,
+  virtual void __fastcall ReadSymlink(TRemoteFile *SymLinkFile,
     TRemoteFile *&File) = 0;
-  virtual void RemoteRenameFile(UnicodeString AFileName,
-  virtual void __fastcall RenameFile(const UnicodeString FileName, const TRemoteFile * File,
-    UnicodeString ANewName) = 0;
-  virtual void RemoteCopyFile(UnicodeString AFileName,
-  virtual void __fastcall CopyFile(const UnicodeString FileName, const TRemoteFile * File,
-    UnicodeString ANewName) = 0;
-  virtual TStrings *GetFixedPaths() const = 0;
-  virtual void SpaceAvailable(UnicodeString APath,
+  virtual void __fastcall RemoteRenameFile(const UnicodeString AFileName, const TRemoteFile *AFile,
+    const UnicodeString ANewName) = 0;
+  virtual void __fastcall RemoteCopyFile(const UnicodeString AFileName, const TRemoteFile *AFile,
+    const UnicodeString ANewName) = 0;
+  virtual TStrings * __fastcall GetFixedPaths() const = 0;
+  virtual void __fastcall SpaceAvailable(const UnicodeString APath,
     TSpaceAvailable &ASpaceAvailable) = 0;
-  virtual const TSessionInfo &GetSessionInfo() const = 0;
-  virtual const TFileSystemInfo &GetFileSystemInfo(bool Retrieve) = 0;
-  virtual bool TemporaryTransferFile(UnicodeString AFileName) = 0;
-  virtual bool GetStoredCredentialsTried() const = 0;
-  virtual UnicodeString RemoteGetUserName() const = 0;
-  virtual void GetSupportedChecksumAlgs(TStrings *Algs) = 0;
-  virtual void LockFile(UnicodeString AFileName, const TRemoteFile *AFile) = 0;
-  virtual void UnlockFile(UnicodeString AFileName, const TRemoteFile *AFile) = 0;
-  virtual void UpdateFromMain(TCustomFileSystem *MainFileSystem) = 0;
+  virtual const TSessionInfo & __fastcall GetSessionInfo() const = 0;
+  virtual const TFileSystemInfo & __fastcall GetFileSystemInfo(bool Retrieve) = 0;
+  virtual bool __fastcall TemporaryTransferFile(const UnicodeString AFileName) = 0;
+  virtual bool __fastcall GetStoredCredentialsTried() const = 0;
+  virtual UnicodeString __fastcall RemoteGetUserName() const = 0;
+  virtual void __fastcall GetSupportedChecksumAlgs(TStrings *Algs) = 0;
+  virtual void __fastcall LockFile(const UnicodeString AFileName, const TRemoteFile *AFile) = 0;
+  virtual void __fastcall UnlockFile(const UnicodeString AFileName, const TRemoteFile *AFile) = 0;
+  virtual void __fastcall UpdateFromMain(TCustomFileSystem *MainFileSystem) = 0;
   virtual void __fastcall ClearCaches() = 0;
 
-#if 0
   __property UnicodeString CurrentDirectory = { read = GetCurrentDirectory };
-#endif // #if 0
-  UnicodeString RemoteCurrentDirectory() const { return RemoteGetCurrentDirectory(); }
+  // UnicodeString RemoteCurrentDirectory() const { return RemoteGetCurrentDirectory(); }
+  ROProperty<UnicodeString, TCustomFileSystem> RemoteCurrentDirectory{&TCustomFileSystem::RemoteGetCurrentDirectory};
 
 protected:
   TTerminal *FTerminal;
 
-  explicit TCustomFileSystem(TObjectClassId Kind) : TObject(Kind), FTerminal(nullptr) {}
-  explicit TCustomFileSystem(TObjectClassId Kind, TTerminal *ATerminal);
-  virtual UnicodeString RemoteGetCurrentDirectory() const = 0;
+  explicit __fastcall TCustomFileSystem(TObjectClassId Kind) : TObject(Kind), FTerminal(nullptr) {}
+  explicit __fastcall TCustomFileSystem(TObjectClassId Kind, TTerminal *ATerminal);
+  virtual UnicodeString __fastcall RemoteGetCurrentDirectory() const = 0;
 
   UnicodeString CreateTargetDirectory(
     IN UnicodeString AFileName,
     IN UnicodeString ADirectory,
     IN const TCopyParamType *CopyParam);
 };
-
+//---------------------------------------------------------------------------

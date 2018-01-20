@@ -1,8 +1,7 @@
-//------------------------------------------------------------------------------
-#ifndef S3FileSystemH
-#define S3FileSystemH
+#pragma once
 //------------------------------------------------------------------------------
 #include <FileSystems.h>
+#include <rdestl/map.h>
 //------------------------------------------------------------------------------
 struct TNeonCertificateData;
 struct TOverwriteFileParams;
@@ -38,47 +37,48 @@ public:
 
   virtual void __fastcall Open();
   virtual void __fastcall Close();
-  virtual bool __fastcall GetActive();
+  virtual bool __fastcall GetActive() const;
   virtual void __fastcall CollectUsage();
   virtual void __fastcall Idle();
-  virtual UnicodeString __fastcall AbsolutePath(UnicodeString Path, bool Local);
-  virtual void __fastcall AnyCommand(const UnicodeString Command,
+  virtual UnicodeString __fastcall GetAbsolutePath(const UnicodeString APath, bool Local) override;
+  virtual UnicodeString __fastcall GetAbsolutePath(const UnicodeString APath, bool Local) const override;
+  virtual void __fastcall AnyCommand(const UnicodeString ACommand,
     TCaptureOutputEvent OutputEvent);
-  virtual void __fastcall ChangeDirectory(const UnicodeString Directory);
-  virtual void __fastcall CachedChangeDirectory(const UnicodeString Directory);
+  virtual void __fastcall ChangeDirectory(const UnicodeString ADirectory);
+  virtual void __fastcall CachedChangeDirectory(const UnicodeString ADirectory);
   virtual void __fastcall AnnounceFileListOperation();
-  virtual void __fastcall ChangeFileProperties(const UnicodeString FileName,
-    const TRemoteFile * File, const TRemoteProperties * Properties,
-    TChmodSessionAction & Action);
+  virtual void __fastcall ChangeFileProperties(const UnicodeString AFileName,
+    const TRemoteFile *AFile, const TRemoteProperties *Properties,
+    TChmodSessionAction &Action);
   virtual bool __fastcall LoadFilesProperties(TStrings * FileList);
-  virtual void __fastcall CalculateFilesChecksum(const UnicodeString & Alg,
-    TStrings * FileList, TStrings * Checksums,
-    TCalculatedChecksumEvent OnCalculatedChecksum);
+  virtual void __fastcall CalculateFilesChecksum(const UnicodeString Alg,
+    TStrings *AFileList, TStrings *Checksums,
+    TCalculatedChecksumEvent OnCalculatedChecksum) override;
   virtual void __fastcall CopyToLocal(TStrings * FilesToCopy,
-    const UnicodeString TargetDir, const TCopyParamType * CopyParam,
-    int Params, TFileOperationProgressType * OperationProgress,
-    TOnceDoneOperation & OnceDoneOperation);
+    const UnicodeString ATargetDir, const TCopyParamType * CopyParam,
+    intptr_t AParams, TFileOperationProgressType * OperationProgress,
+    TOnceDoneOperation &OnceDoneOperation) override;
   virtual void __fastcall CopyToRemote(TStrings * FilesToCopy,
-    const UnicodeString TargetDir, const TCopyParamType * CopyParam,
-    int Params, TFileOperationProgressType * OperationProgress,
-    TOnceDoneOperation & OnceDoneOperation);
+    const UnicodeString ATargetDir, const TCopyParamType *CopyParam,
+    intptr_t AParams, TFileOperationProgressType *OperationProgress,
+    TOnceDoneOperation & OnceDoneOperation) override;
   virtual void __fastcall Source(
-    TLocalFileHandle & Handle, const UnicodeString & TargetDir, UnicodeString & DestFileName,
-    const TCopyParamType * CopyParam, int Params,
-    TFileOperationProgressType * OperationProgress, unsigned int Flags,
-    TUploadSessionAction & Action, bool & ChildError);
+    TLocalFileHandle & Handle, const UnicodeString ATargetDir, UnicodeString &ADestFileName,
+    const TCopyParamType *CopyParam, intptr_t AParams,
+    TFileOperationProgressType *OperationProgress, uintptr_t AFlags,
+    TUploadSessionAction &Action, bool &ChildError);
   virtual void __fastcall Sink(
-    const UnicodeString & FileName, const TRemoteFile * File,
-    const UnicodeString & TargetDir, UnicodeString & DestFileName, int Attrs,
-    const TCopyParamType * CopyParam, int Params, TFileOperationProgressType * OperationProgress,
-    unsigned int Flags, TDownloadSessionAction & Action);
-  virtual void __fastcall CreateDirectory(const UnicodeString DirName);
-  virtual void __fastcall CreateLink(const UnicodeString FileName, const UnicodeString PointTo, bool Symbolic);
-  virtual void __fastcall DeleteFile(const UnicodeString FileName,
-    const TRemoteFile * File, int Params,
-    TRmSessionAction & Action);
-  virtual void __fastcall CustomCommandOnFile(const UnicodeString FileName,
-    const TRemoteFile * File, UnicodeString Command, int Params, TCaptureOutputEvent OutputEvent);
+    const UnicodeString &AFileName, const TRemoteFile *AFile,
+    const UnicodeString &ATargetDir, UnicodeString & DestFileName, intptr_t Attrs,
+    const TCopyParamType *CopyParam, intptr_t AParams, TFileOperationProgressType *OperationProgress,
+    uintptr_t AFlags, TDownloadSessionAction &Action);
+  virtual void __fastcall RemoteCreateDirectory(const UnicodeString ADirName);
+  virtual void __fastcall RemoteCreateLink(const UnicodeString AFileName, const UnicodeString APointTo, bool Symbolic);
+  virtual void __fastcall RemoteDeleteFile(const UnicodeString AFileName,
+    const TRemoteFile *File, intptr_t AParams,
+    TRmSessionAction &Action);
+  virtual void __fastcall CustomCommandOnFile(const UnicodeString AFileName,
+    const TRemoteFile *File, const UnicodeString ACommand, intptr_t AParams, TCaptureOutputEvent OutputEvent);
   virtual void __fastcall DoStartup();
   virtual void __fastcall HomeDirectory();
   virtual bool __fastcall IsCapable(int Capability) const;
@@ -89,22 +89,22 @@ public:
     TRemoteFile *& File);
   virtual void __fastcall ReadSymlink(TRemoteFile * SymLinkFile,
     TRemoteFile *& File);
-  virtual void __fastcall RenameFile(const UnicodeString FileName, const TRemoteFile * File,
-    const UnicodeString NewName);
-  virtual void __fastcall CopyFile(const UnicodeString FileName, const TRemoteFile * File,
-    const UnicodeString NewName);
+  virtual void __fastcall RenameFile(const UnicodeString AFileName, const TRemoteFile *AFile,
+    const UnicodeString ANewName);
+  virtual void __fastcall CopyFile(const UnicodeString AFileName, const TRemoteFile *AFile,
+    const UnicodeString ANewName);
   virtual TStrings * __fastcall GetFixedPaths();
-  virtual void __fastcall SpaceAvailable(const UnicodeString Path,
-    TSpaceAvailable & ASpaceAvailable);
+  virtual void __fastcall SpaceAvailable(const UnicodeString APath,
+    TSpaceAvailable &ASpaceAvailable);
   virtual const TSessionInfo & __fastcall GetSessionInfo();
   virtual const TFileSystemInfo & __fastcall GetFileSystemInfo(bool Retrieve);
-  virtual bool __fastcall TemporaryTransferFile(const UnicodeString & FileName);
+  virtual bool __fastcall TemporaryTransferFile(const UnicodeString &AFileName);
   virtual bool __fastcall GetStoredCredentialsTried();
-  virtual UnicodeString __fastcall GetUserName();
+  virtual UnicodeString __fastcall RemoteGetUserName();
   virtual void __fastcall GetSupportedChecksumAlgs(TStrings * Algs);
-  virtual void __fastcall LockFile(const UnicodeString & FileName, const TRemoteFile * File);
-  virtual void __fastcall UnlockFile(const UnicodeString & FileName, const TRemoteFile * File);
-  virtual void __fastcall UpdateFromMain(TCustomFileSystem * MainFileSystem);
+  virtual void __fastcall LockFile(const UnicodeString &AFileName, const TRemoteFile *AFile);
+  virtual void __fastcall UnlockFile(const UnicodeString &AFileName, const TRemoteFile *AFile);
+  virtual void __fastcall UpdateFromMain(TCustomFileSystem *MainFileSystem);
   virtual void __fastcall ClearCaches();
 
 protected:
@@ -123,11 +123,11 @@ protected:
   UnicodeString FTlsVersionStr;
   UnicodeString FResponse;
   bool FResponseIgnore;
-  typedef std::map<UnicodeString, UnicodeString> TRegions;
+  typedef rde::map<UnicodeString, UnicodeString> TRegions;
   TRegions FRegions;
   TRegions FHostNames;
 
-  virtual UnicodeString __fastcall GetCurrentDirectory();
+  virtual UnicodeString __fastcall RemoteGetCurrentDirectory() const;
 
   void LibS3Deinitialize();
   bool VerifyCertificate(TNeonCertificateData Data);
@@ -141,19 +141,19 @@ protected:
   TRemoteToken MakeRemoteToken(const char * OwnerId, const char * OwnerDisplayName);
   TLibS3BucketContext GetBucketContext(const UnicodeString & BucketName);
   void DoListBucket(
-    const UnicodeString & Prefix, TRemoteFileList * FileList, int MaxKeys, const TLibS3BucketContext & BucketContext,
+    const UnicodeString & Prefix, TRemoteFileList * FileList, intptr_t MaxKeys, const TLibS3BucketContext &BucketContext,
     TLibS3ListBucketCallbackData & Data);
   UnicodeString GetFolderKey(const UnicodeString & Key);
-  void DoReadFile(const UnicodeString & FileName, TRemoteFile *& File);
+  void DoReadFile(const UnicodeString & FileName, TRemoteFile *&AFile);
   void ConfirmOverwrite(
-    const UnicodeString & SourceFullFileName, UnicodeString & TargetFileName,
-    TFileOperationProgressType * OperationProgress, const TOverwriteFileParams * FileParams,
-    const TCopyParamType * CopyParam, int Params);
+    const UnicodeString &ASourceFullFileName, UnicodeString &ATargetFileName,
+    TFileOperationProgressType *OperationProgress, const TOverwriteFileParams *FileParams,
+    const TCopyParamType *CopyParam, intptr_t AParams);
   int PutObjectData(int BufferSize, char * Buffer, TLibS3PutObjectDataCallbackData & Data);
   S3Status GetObjectData(int BufferSize, const char * Buffer, TLibS3GetObjectDataCallbackData & Data);
   bool ShouldCancelTransfer(TLibS3TransferObjectDataCallbackData & Data);
 
-  static TS3FileSystem * GetFileSystem(void * CallbackData);
+  static TS3FileSystem * GetFileSystem(void *CallbackData);
   static void LibS3SessionCallback(ne_session_s * Session, void * CallbackData);
   static S3Status LibS3ResponsePropertiesCallback(const S3ResponseProperties * Properties, void * CallbackData);
   static void LibS3ResponseCompleteCallback(S3Status Status, const S3ErrorDetails * Error, void * CallbackData);
@@ -178,4 +178,3 @@ UnicodeString __fastcall S3LibVersion();
 UnicodeString __fastcall S3LibDefaultHostName();
 UnicodeString __fastcall S3LibDefaultRegion();
 //------------------------------------------------------------------------------
-#endif

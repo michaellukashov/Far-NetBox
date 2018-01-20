@@ -553,9 +553,7 @@ public:
   void NonPersistant();
   void Load(THierarchicalStorage *Storage, bool PuttyImport);
   void ApplyRawSettings(THierarchicalStorage *Storage);
-#if 0
-  void ImportFromFilezilla(_di_IXMLNode Node, UnicodeString APath);
-#endif // #if 0
+  __removed void ImportFromFilezilla(_di_IXMLNode Node, UnicodeString APath);
   void Save(THierarchicalStorage *Storage, bool PuttyExport,
     const TSessionData *Default = nullptr);
   void SaveRecryptedPasswords(THierarchicalStorage *Storage);
@@ -597,7 +595,6 @@ public:
   static bool IsSensitiveOption(UnicodeString Option);
   static UnicodeString FormatSiteKey(UnicodeString HostName, intptr_t PortNumber);
 
-#if 0
   __property UnicodeString HostName  = { read=FHostName, write=SetHostName };
   __property UnicodeString HostNameExpanded  = { read=GetHostNameExpanded };
   __property intptr_t PortNumber  = { read=FPortNumber, write=SetPortNumber };
@@ -630,6 +627,7 @@ public:
   __property UnicodeString Passphrase  = { read=GetPassphrase, write=SetPassphrase };
   __property UnicodeString PuttyProtocol  = { read=FPuttyProtocol, write=SetPuttyProtocol };
   __property TFSProtocol FSProtocol  = { read=FFSProtocol, write=SetFSProtocol  };
+  ROProperty<TFSProtocol, TSessionData> FSProtocol{this, &TSessionData::GetFSProtocol};
   __property UnicodeString FSProtocolStr  = { read=GetFSProtocolStr };
   __property bool Modified  = { read=FModified, write=FModified };
   __property bool CanLogin  = { read=GetCanLogin };
@@ -749,7 +747,6 @@ public:
   __property UnicodeString FolderName = { read = GetFolderName };
   __property UnicodeString Source = { read = GetSource };
   __property bool SaveOnly = { read = FSaveOnly };
-#endif // #if 0
 
 public:
   void SetSFTPMinPacketSize(intptr_t Value);

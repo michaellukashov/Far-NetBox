@@ -3270,8 +3270,7 @@ void ParseCertificate(const UnicodeString Path,
     })
   }
 }
-
-
+//---------------------------------------------------------------------------
 void CheckCertificate(UnicodeString Path)
 {
   X509 *Certificate;

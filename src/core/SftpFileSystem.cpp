@@ -4332,7 +4332,7 @@ void TSFTPFileSystem::DoCalculateFilesChecksum(
   // queue is discarded here
 }
 
-void TSFTPFileSystem::CalculateFilesChecksum(UnicodeString Alg,
+void TSFTPFileSystem::CalculateFilesChecksum(const UnicodeString Alg,
   TStrings *AFileList, TStrings *Checksums,
   TCalculatedChecksumEvent OnCalculatedChecksum)
 {
@@ -4373,8 +4373,8 @@ void TSFTPFileSystem::CalculateFilesChecksum(UnicodeString Alg,
   };
 }
 
-void TSFTPFileSystem::CustomCommandOnFile(UnicodeString /*AFileName*/,
-  const TRemoteFile * /*AFile*/, UnicodeString /*Command*/, intptr_t /*Params*/,
+void TSFTPFileSystem::CustomCommandOnFile(const UnicodeString /*AFileName*/,
+  const TRemoteFile * /*AFile*/, const UnicodeString /*Command*/, intptr_t /*AParams*/,
   TCaptureOutputEvent /*OutputEvent*/)
 {
   DebugFail();

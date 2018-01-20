@@ -1,13 +1,12 @@
 
 #pragma once
 
-#include "FormatUtils.h"
-
 #include <nbcore.h>
 
 #include <tchar.h>
 #include <assert.h>
 
+#include <FormatUtils.h>
 #include <Property.hpp>
 
 #define FORMAT(S, ...) nb::Sprintf(S, __VA_ARGS__)

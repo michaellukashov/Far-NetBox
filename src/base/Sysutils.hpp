@@ -529,12 +529,12 @@ public:
 #if (defined _MSC_VER && _MSC_VER > 1900)
 
 #define NONCOPYABLE(Type) \
-Type(const Type&) = delete; \
-Type& operator=(const Type&) = delete;
+  Type(const Type&) = delete; \
+  Type& operator=(const Type&) = delete;
 
 #define MOVABLE(Type) \
-Type(Type&&) = default; \
-Type& operator=(Type&&) = default;
+  Type(Type&&) = default; \
+  Type& operator=(Type&&) = default;
 
 template < typename T, T Default = T{} >
 class movable
@@ -622,7 +622,7 @@ const auto ANONYMOUS_VARIABLE(scope_##type##_guard) = scope_exit::make_scope_gua
 class NB_CORE_EXPORT TPath : public TObject
 {
 public:
-  static UnicodeString Combine(UnicodeString APath, UnicodeString FileName);
+  static UnicodeString Combine(const UnicodeString APath, const UnicodeString AFileName);
 };
 
 } // namespace Sysutils

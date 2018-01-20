@@ -1396,35 +1396,35 @@ bool TSCPFileSystem::LoadFilesProperties(TStrings * /*FileList*/)
   return false;
 }
 
-void TSCPFileSystem::CalculateFilesChecksum(UnicodeString /*Alg*/,
+void TSCPFileSystem::CalculateFilesChecksum(const UnicodeString /*Alg*/,
   TStrings * /*FileList*/, TStrings * /*Checksums*/,
   TCalculatedChecksumEvent /*OnCalculatedChecksum*/)
 {
   DebugFail();
 }
 
-void TSCPFileSystem::CustomCommandOnFile(UnicodeString AFileName,
-  const TRemoteFile *AFile, UnicodeString Command, intptr_t Params,
+void TSCPFileSystem::CustomCommandOnFile(const UnicodeString AFileName,
+  const TRemoteFile *AFile, const UnicodeString ACommand, intptr_t AParams,
   TCaptureOutputEvent OutputEvent)
 {
   DebugAssert(AFile);
   bool Dir = AFile->GetIsDirectory() && FTerminal->CanRecurseToDirectory(AFile);
-  if (Dir && (Params & ccRecursive))
+  if (Dir && (AParams & ccRecursive))
   {
     TCustomCommandParams AParams;
-    AParams.Command = Command;
-    AParams.Params = Params;
+    AParams.Command = ACommand;
+    AParams.Params = AParams;
     AParams.OutputEvent = OutputEvent;
     FTerminal->ProcessDirectory(AFileName, nb::bind(&TTerminal::CustomCommandOnFile, FTerminal),
       &AParams);
   }
 
-  if (!Dir || (Params & ccApplyToDirectories))
+  if (!Dir || (AParams & ccApplyToDirectories))
   {
     TCustomCommandData Data(FTerminal);
     UnicodeString Cmd = TRemoteCustomCommand(
         Data, FTerminal->RemoteGetCurrentDirectory(), AFileName, L"").
-      Complete(Command, true);
+      Complete(ACommand, true);
 
     if (!FTerminal->DoOnCustomCommand(Cmd))
     {
@@ -1843,9 +1843,8 @@ void TSCPFileSystem::CopyToRemote(const TStrings *AFilesToCopy,
   };
 }
 
-void TSCPFileSystem::SCPSource(UnicodeString AFileName,
 void __fastcall TSCPFileSystem::Source(
-  TLocalFileHandle & /*Handle*/, const UnicodeString & /*TargetDir*/, UnicodeString & /*DestFileName*/,
+  TLocalFileHandle & /*AHandle*/, const UnicodeString /*ATargetDir*/, UnicodeString & /*ADestFileName*/,
   const TCopyParamType * /*CopyParam*/, int /*Params*/,
   TFileOperationProgressType * /*OperationProgress*/, unsigned int /*Flags*/,
   TUploadSessionAction & /*Action*/, bool & /*ChildError*/)
@@ -1853,6 +1852,7 @@ void __fastcall TSCPFileSystem::Source(
   DebugFail();
 }
 //---------------------------------------------------------------------------
+void TSCPFileSystem::SCPSource(const UnicodeString AFileName,
 {
   UnicodeString RealFileName = AFile ? AFile->GetFileName() : AFileName;
   UnicodeString DestFileName =
@@ -2439,11 +2439,10 @@ void TSCPFileSystem::CopyToLocal(const TStrings *AFilesToCopy,
 }
 
 void TSCPFileSystem::SCPError(const UnicodeString Message, bool Fatal)
-void __fastcall TSCPFileSystem::Sink(
-  const UnicodeString & /*FileName*/, const TRemoteFile * /*File*/,
-  const UnicodeString & /*TargetDir*/, UnicodeString & /*DestFileName*/, int /*Attrs*/,
-  const TCopyParamType * /*CopyParam*/, int /*Params*/, TFileOperationProgressType * /*OperationProgress*/,
-  unsigned int /*Flags*/, TDownloadSessionAction & /*Action*/)
+void __fastcall TSCPFileSystem::Sink(const UnicodeString & /*FileName*/, const TRemoteFile * /*File*/,
+  const UnicodeString & /*TargetDir*/, UnicodeString & /*DestFileName*/, intptr_t /*Attrs*/,
+  const TCopyParamType * /*CopyParam*/, intptr_t /*Params*/, TFileOperationProgressType * /*OperationProgress*/,
+  uintptr_t /*Flags*/, TDownloadSessionAction & /*Action*/)
 {
   DebugFail();
 }
