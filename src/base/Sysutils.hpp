@@ -502,6 +502,8 @@ public:
 #define SCOPE_EXIT \
   const auto ANONYMOUS_VARIABLE(scope_exit_guard) = detail::make_scope_guard() << [&]() /* lambda body here */
 
+#if 0
+
 #define SCOPE_EXIT2(FUNC, PARAM) \
   const auto ANONYMOUS_VARIABLE(scope_exit_guard) = \
     detail::scope_guard2<nb::FastDelegate1<void, void *>, void *>(nb::bind(&FUNC, this), PARAM)
@@ -513,12 +515,16 @@ public:
   ~NullFunc() {}
 };
 
-#define try__catch
-#define try__finally
-
 #define __finally \
   std::function<void()> CONCATENATE(null_func_, __LINE__); \
   NullFunc ANONYMOUS_VARIABLE(null_) = CONCATENATE(null_func_, __LINE__) = []() /* lambda body here */
+
+#endif // #if 0
+
+#define try__catch
+#define try__finally
+#define catch__removed(BLOCK) // skip code in catch { } block
+#define __finally__removed(BLOCK) // skip code in __finally { } block
 
 #if (defined _MSC_VER && _MSC_VER > 1900)
 

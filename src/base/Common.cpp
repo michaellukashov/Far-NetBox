@@ -3251,25 +3251,23 @@ void ParseCertificate(const UnicodeString Path,
         }
       }
     }
-    __finally
-    {
-      /*
-            // We loaded private key, but failed to load certificate, discard the certificate
-            // (either exception was thrown or WrongPassphrase)
-            if ((PrivateKey != nullptr) && (Certificate == nullptr))
-            {
-              EVP_PKEY_free(PrivateKey);
-              PrivateKey = nullptr;
-            }
-            // Certificate was verified, but passphrase was wrong when loading private key,
-            // so discard the certificate
-            else if ((Certificate != nullptr) && (PrivateKey == nullptr))
-            {
-              X509_free(Certificate);
-              Certificate = nullptr;
-            }
-      */
-    };
+    __finally__removed
+    ({
+        // We loaded private key, but failed to load certificate, discard the certificate
+        // (either exception was thrown or WrongPassphrase)
+        if ((PrivateKey != nullptr) && (Certificate == nullptr))
+        {
+          EVP_PKEY_free(PrivateKey);
+          PrivateKey = nullptr;
+        }
+        // Certificate was verified, but passphrase was wrong when loading private key,
+        // so discard the certificate
+        else if ((Certificate != nullptr) && (PrivateKey == nullptr))
+        {
+          X509_free(Certificate);
+          Certificate = nullptr;
+        }
+    })
   }
 }
 

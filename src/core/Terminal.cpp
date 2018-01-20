@@ -1425,12 +1425,10 @@ void TTerminal::Open()
         InternalTryOpen();
       }
     }
-    __finally
-    {
-#if 0
+    __finally__removed
+    ({
       DoInformation(L"", true, 0);
-#endif // #if 0
-    };
+    })
   }
   catch (EFatal &)
   {
@@ -1463,15 +1461,13 @@ void TTerminal::InternalTryOpen()
       };
       InternalDoTryOpen();
     }
-    __finally
-    {
-#if 0
+    __finally__removed
+    ({
       if (FSessionData->Tunnel)
       {
         FSessionData->RollbackTunnel();
       }
-#endif // #if 0
-    };
+    })
 
     if (GetSessionData()->GetCacheDirectoryChanges())
     {
@@ -1654,13 +1650,11 @@ void TTerminal::InitFileSystem()
         LogEvent("Using SFTP protocol.");
       }
     }
-    __finally
-    {
-#if 0
+    __finally__removed
+    ({
       delete FSecureShell;
       FSecureShell = nullptr;
-#endif // #if 0
-    };
+    })
   }
 }
 

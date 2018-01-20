@@ -1526,12 +1526,10 @@ void TRemoteFile::FindLinkedFile()
         };
         GetTerminal()->ReadSymlink(this, FLinkedFile);
       }
-      __finally
-      {
-#if 0
+      __finally__removed
+      ({
         GetTerminal()->SetExceptionOnFail(false);
-#endif // #if 0
-      };
+      })
     }
     catch (Exception &E)
     {
@@ -1907,12 +1905,10 @@ void TRemoteDirectoryCache::Clear()
       SetObj(Index, nullptr);
     }
   }
-  __finally
-  {
-#if 0
+  __finally__removed
+  ({
     TStringList::Clear();
-#endif // #if 0
-  };
+  })
 }
 
 bool TRemoteDirectoryCache::GetIsEmptyPrivate() const
@@ -2146,12 +2142,10 @@ void TRemoteDirectoryChangesCache::Serialize(UnicodeString &Data) const
       }
       Data += Limited->GetText();
     }
-    __finally
-    {
-#if 0
+    __finally__removed
+    ({
       delete Limited;
-#endif // #if 0
-    };
+    })
   }
   else
   {
