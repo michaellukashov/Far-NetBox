@@ -295,3 +295,6 @@ private: \
 #if defined(_MSC_VER) && _MSC_VER<1600
 #define nullptr NULL
 #endif
+
+#undef __fastcall
+#define __fastcall
