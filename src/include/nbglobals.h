@@ -298,3 +298,14 @@ private: \
 
 #undef __fastcall
 #define __fastcall
+
+#ifndef NB_CONCATENATE
+#define NB_CONCATENATE_IMPL(s1, s2) s1 ## s2
+#define NB_CONCATENATE(s1, s2) NB_CONCATENATE_IMPL(s1, s2)
+#endif
+// #define __removed / ## /
+#define __removed NB_CONCATENATE(/, /)
+
+#undef __property
+// #define __property / ## /
+#define __property NB_CONCATENATE(/, /)

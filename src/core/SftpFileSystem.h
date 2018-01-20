@@ -14,11 +14,10 @@ class TSFTPPacket;
 struct TOverwriteFileParams;
 struct TSFTPSupport;
 class TSecureShell;
-
-#if 0
-enum TSFTPOverwriteMode { omOverwrite, omAppend, omResume };
-#endif // #if 0
-
+//---------------------------------------------------------------------------
+__removed enum TSFTPOverwriteMode { omOverwrite, omAppend, omResume };
+__removed extern const int SFTPMaxVersion;
+//---------------------------------------------------------------------------
 class TSFTPFileSystem : public TCustomFileSystem
 {
   NB_DISABLE_COPY(TSFTPFileSystem)

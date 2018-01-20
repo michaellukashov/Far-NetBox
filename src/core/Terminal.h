@@ -233,9 +233,7 @@ public:
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TTerminal) || TSessionUI::is(Kind); }
 public:
   // TScript::SynchronizeProc relies on the order
-#if 0
-  enum TSynchronizeMode { smRemote, smLocal, smBoth };
-#endif // #if 0
+  __removed enum TSynchronizeMode { smRemote, smLocal, smBoth };
   enum TSynchronizeMode
   {
     smRemote,
