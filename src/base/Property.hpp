@@ -127,14 +127,13 @@ template <typename T,
           >
 class ROProperty
 {
-//  Object *_obj;
-  typedef T (Object::*Getter)();
-  Getter *_getter;
+  Object *_obj;
+  typedef T (Object::*GetterFunc)();
+  GetterFunc *_getterFunc;
 public:
-//  explicit ROProperty(Object *obj, Getter *getter):
-//    _obj(obj),
-  explicit ROProperty(Getter *getter):
-    _getter(getter)
+  explicit ROProperty(Object *Obj, GetterFunc *Getter) :
+    _obj(Obj),
+    _getterFunc(Getter)
   {}
   /*T operator()() const
   {
@@ -144,8 +143,18 @@ public:
   }*/
   operator T() const
   {
-    // assert(_getter);
-    return (*_getter)();
+    // assert(_getterFunc);
+    return (_obj->*_getterFunc)();
+  }
+  const T operator->() const
+  {
+    // assert(_getterFunc);
+    return (_obj->*_getterFunc)();
+  }
+  T operator->()
+  {
+    // assert(_getterFunc);
+    return (_obj->*_getterFunc)();
   }
 };
 
