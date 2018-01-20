@@ -1107,7 +1107,7 @@ void TWinSCPFileSystem::CreateLink()
       }
     }
     if (File)
-      GetTerminal()->CreateLink(FileName, PointTo, SymbolicLink, File->GetIsDirectory());
+      GetTerminal()->RemoteCreateLink(FileName, PointTo, SymbolicLink, File->GetIsDirectory());
     if (UpdatePanel())
     {
       RedrawPanel();
