@@ -94,7 +94,11 @@ const int qpIgnoreAbort =          0x08;
 const int qpWaitInBatch =          0x10;
 #endif // #if 0
 
+#if 0
 typedef void __fastcall (__closure *TButtonSubmitEvent)(TObject * Sender, unsigned int & Answer);
+#endif // #if 0
+typedef nb::FastDelegate2<void,
+  TObject * /*Sender*/, uintptr_t & /*Answer*/> TButtonSubmitEvent;
 
 struct NB_CORE_EXPORT TQueryButtonAlias : public TObject
 {

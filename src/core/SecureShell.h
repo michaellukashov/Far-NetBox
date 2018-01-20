@@ -165,25 +165,22 @@ public:
   void UpdatePortFwdSocket(SOCKET Value, bool Startup);
   void PuttyFatalError(UnicodeString Error);
   TPromptKind IdentifyPromptKind(UnicodeString &AName) const;
-  bool PromptUser(bool ToServer,
+  bool __fastcall PromptUser(bool ToServer,
     UnicodeString AName, bool NameRequired,
     UnicodeString AInstructions, bool InstructionsRequired,
     TStrings *Prompts, TStrings *Results);
-  void FromBackend(bool IsStdErr, const uint8_t *Data, intptr_t Length);
-  void CWrite(const char *Data, intptr_t Length);
-  UnicodeString GetStdError() const;
-  void VerifyHostKey(UnicodeString AHost, intptr_t Port,
-    UnicodeString AKeyType, UnicodeString AKeyStr, UnicodeString AFingerprint);
-  bool HaveHostKey(UnicodeString AHost, intptr_t Port, UnicodeString KeyType);
+  void __fastcall FromBackend(bool IsStdErr, const uint8_t *Data, intptr_t Length);
+  void __fastcall CWrite(const char *Data, intptr_t Length);
+  UnicodeString __fastcall GetStdError() const;
   void __fastcall VerifyHostKey(
-    const UnicodeString & Host, int Port, const UnicodeString & KeyType, const UnicodeString & KeyStr,
-    const UnicodeString & Fingerprint);
-  void AskAlg(const UnicodeString AlgType, const UnicodeString AlgName);
-  void DisplayBanner(UnicodeString Banner);
+    const UnicodeString AHost, intptr_t Port, const UnicodeString AKeyType, const UnicodeString AKeyStr,
+    const UnicodeString AFingerprint);
+  bool __fastcall HaveHostKey(UnicodeString AHost, intptr_t Port, UnicodeString KeyType);
   void __fastcall AskAlg(UnicodeString AlgType, UnicodeString AlgName);
-  void OldKeyfileWarning();
-  void PuttyLogEvent(const char *AStr);
-  UnicodeString ConvertFromPutty(const char *Str, intptr_t Length) const;
+  void __fastcall DisplayBanner(const UnicodeString Banner);
+  void __fastcall OldKeyfileWarning();
+  void __fastcall PuttyLogEvent(const char *AStr);
+  UnicodeString __fastcall ConvertFromPutty(const char *Str, intptr_t Length) const;
 
 #if 0
   __property bool Active = { read = FActive, write = SetActive };

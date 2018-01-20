@@ -214,10 +214,11 @@ public:
     UnicodeString ADestination);
 };
 //---------------------------------------------------------------------------
-class TCpSessionAction : public TFileLocationSessionAction
+class NB_CORE_EXPORT TCpSessionAction : public TFileLocationSessionAction
 {
 public:
-  __fastcall TCpSessionAction(TActionLog * Log, const UnicodeString & FileName,
+  explicit __fastcall TCpSessionAction(TActionLog * Log, UnicodeString AFileName,
+    UnicodeString ADestination);
 };
 
 class NB_CORE_EXPORT TCallSessionAction : public TSessionAction

@@ -2562,6 +2562,7 @@ void __fastcall TTerminal::FileOperationLoopEnd(Exception & E,
   }
 }
 //---------------------------------------------------------------------------
+intptr_t TTerminal::FileOperationLoop(TFileOperationEvent CallBackFunc,
   TFileOperationProgressType * OperationProgress, unsigned int Flags,
   UnicodeString Message, void *Param1, void *Param2)
 {
