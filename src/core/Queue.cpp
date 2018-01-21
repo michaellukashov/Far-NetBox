@@ -219,7 +219,7 @@ public:
   UnicodeString Banner;
   bool NeverShowAgain;
   intptr_t Options;
-  unsigned int Params;
+  uintptr_t Params;
 };
 
 class TReadDirectoryAction : public TUserAction
@@ -312,7 +312,7 @@ protected:
     UnicodeString AQuery, TStrings *MoreMessages, uintptr_t Answers,
     const TQueryParams *Params, uintptr_t &Answer, TQueryType Type, void *Arg);
   void TerminalPromptUser(TTerminal *Terminal, TPromptKind Kind,
-    UnicodeString Name, UnicodeString Instructions,
+    const UnicodeString Name, UnicodeString Instructions,
     TStrings *Prompts, TStrings *Results, bool &Result, void *Arg);
   void TerminalShowExtendedException(TTerminal *Terminal,
     Exception *E, void *Arg);
@@ -2700,9 +2700,9 @@ void TTerminalThread::RunAction(TNotifyEvent Action)
           throw Exception(L"Error waiting for background session task to complete");
         }
 
-        if (AllowAbandon && !Done && FCancel && (Now() >= FCancelAfter))
+        if (FAllowAbandon && !Done && FCancel && (Now() >= FCancelAfter))
         {
-          TGuard Guard(FSection);
+          volatile TGuard Guard(FSection);
           if (WaitForSingleObject(FActionEvent, 0) != WAIT_OBJECT_0)
           {
             FAbandoned = true;
@@ -3021,7 +3021,7 @@ void TTerminalThread::TerminalShowExtendedException(
 
 void TTerminalThread::TerminalDisplayBanner(TTerminal *Terminal,
   UnicodeString SessionName, UnicodeString Banner,
-  bool &NeverShowAgain, intptr_t Options, unsigned int & Params)
+  bool &NeverShowAgain, intptr_t Options, uintptr_t &Params)
 {
   TDisplayBannerAction Action(FOnDisplayBanner);
   Action.Terminal = Terminal;

@@ -76,18 +76,18 @@ public:
 public:
   explicit TSessionUI(TObjectClassId Kind) : TObject(Kind) {}
   virtual ~TSessionUI() {}
-  virtual void Information(UnicodeString Str, bool Status) = 0;
-  virtual uintptr_t QueryUser(UnicodeString Query,
+  virtual void Information(const UnicodeString AStr, bool Status) = 0;
+  virtual uintptr_t QueryUser(const UnicodeString AQuery,
     TStrings *MoreMessages, uintptr_t Answers, const TQueryParams *Params,
     TQueryType QueryType = qtConfirmation) = 0;
-  virtual uintptr_t QueryUserException(UnicodeString Query,
+  virtual uintptr_t QueryUserException(const UnicodeString AQuery,
     Exception *E, uintptr_t Answers, const TQueryParams *Params,
     TQueryType QueryType = qtConfirmation) = 0;
   virtual bool PromptUser(TSessionData *Data, TPromptKind Kind,
-    UnicodeString Name, UnicodeString Instructions, TStrings *Prompts,
+    const UnicodeString AName, UnicodeString Instructions, TStrings *Prompts,
     TStrings *Results) = 0;
-  virtual void DisplayBanner(UnicodeString Banner) = 0;
-  virtual void FatalError(Exception *E, UnicodeString Msg, UnicodeString HelpKeyword = L"") = 0;
+  virtual void DisplayBanner(const UnicodeString ABanner) = 0;
+  virtual void FatalError(Exception *E, const UnicodeString AMsg, const UnicodeString AHelpKeyword = L"") = 0;
   virtual void HandleExtendedException(Exception *E) = 0;
   virtual void Closed() = 0;
   virtual void ProcessGUI() = 0;
@@ -147,9 +147,9 @@ class NB_CORE_EXPORT TFileSessionAction : public TSessionAction
 {
 public:
   explicit TFileSessionAction(TActionLog *Log, TLogAction Action);
-  explicit TFileSessionAction(TActionLog *Log, TLogAction Action, UnicodeString AFileName);
+  explicit TFileSessionAction(TActionLog *Log, TLogAction Action, const UnicodeString AFileName);
 
-  void SetFileName(UnicodeString AFileName);
+  void SetFileName(const UnicodeString AFileName);
 };
 
 class NB_CORE_EXPORT TFileLocationSessionAction : public TFileSessionAction
@@ -210,8 +210,8 @@ public:
 class NB_CORE_EXPORT TMvSessionAction : public TFileLocationSessionAction
 {
 public:
-  explicit TMvSessionAction(TActionLog *Log, UnicodeString AFileName,
-    UnicodeString ADestination);
+  explicit TMvSessionAction(TActionLog *Log, const UnicodeString AFileName,
+    const UnicodeString ADestination);
 };
 //---------------------------------------------------------------------------
 class NB_CORE_EXPORT TCpSessionAction : public TFileLocationSessionAction

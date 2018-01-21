@@ -232,7 +232,7 @@ public:
   void SetTotalSize(int64_t ASize);
   void Start(TFileOperation AOperation, TOperationSide ASide, intptr_t ACount);
   void Start(TFileOperation AOperation,
-    TOperationSide ASide, intptr_t ACount, bool ATemp, UnicodeString ADirectory,
+    TOperationSide ASide, intptr_t ACount, bool ATemp, const UnicodeString ADirectory,
     uintptr_t ACPSLimit);
   void Stop();
   void SetDone();

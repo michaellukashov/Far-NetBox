@@ -569,7 +569,7 @@ private:
     Exception *E, void *Arg);
   void TerminalDisplayBanner(TTerminal *Terminal,
     UnicodeString SessionName, UnicodeString Banner,
-    bool &NeverShowAgain, intptr_t Options, unsigned int & Params);
+    bool &NeverShowAgain, intptr_t Options, uintptr_t &Params);
   void TerminalChangeDirectory(TObject *Sender);
   void TerminalReadDirectory(TObject *Sender, Boolean ReloadOnly);
   void TerminalStartReadDirectory(TObject *Sender);

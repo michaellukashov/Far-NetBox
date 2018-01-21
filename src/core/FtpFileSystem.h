@@ -85,9 +85,9 @@ public:
     TRemoteFile *&AFile) override;
   virtual void __fastcall ReadSymlink(TRemoteFile *SymlinkFile,
     TRemoteFile *&AFile) override;
-  virtual void __fastcall RemoteRenameFile(const UnicodeString AFileName, const TRemoteFile *AFile,
+  virtual void __fastcall RemoteRenameFile(const UnicodeString AFileName,
     const UnicodeString ANewName) override;
-  virtual void __fastcall RemoteCopyFile(const UnicodeString AFileName, const TRemoteFile *AFile,
+  virtual void __fastcall RemoteCopyFile(const UnicodeString AFileName,
     const UnicodeString ANewName) override;
   virtual TStrings * __fastcall GetFixedPaths() const override;
   virtual void __fastcall SpaceAvailable(const UnicodeString APath,

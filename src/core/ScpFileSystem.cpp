@@ -2142,7 +2142,7 @@ void TSCPFileSystem::SCPDirectorySource(UnicodeString DirectoryName,
       CopyParam, base::ExtractFileName(DirectoryName, false), osLocal, Level == 0);
 
   // Get directory attributes
-  FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(CANT_GET_ATTRS, DirectoryName), "",
+  FileOperationLoopCustom(FTerminal, OperationProgress, folAllowSkip, FMTLOAD(CANT_GET_ATTRS, DirectoryName), "",
   [&]()
   {
     LocalFileAttrs = FTerminal->GetLocalFileAttributes(ApiPath(DirectoryName));
@@ -2178,7 +2178,7 @@ void TSCPFileSystem::SCPDirectorySource(UnicodeString DirectoryName,
     DWORD FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
     TSearchRecChecked SearchRec;
     bool FindOK = false;
-    FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(LIST_DIR_ERROR, DirectoryName), "",
+    FileOperationLoopCustom(FTerminal, OperationProgress, folAllowSkip, FMTLOAD(LIST_DIR_ERROR, DirectoryName), "",
     [&]()
     {
       UnicodeString Path = ::IncludeTrailingBackslash(DirectoryName) + L"*.*";
@@ -2229,7 +2229,7 @@ void TSCPFileSystem::SCPDirectorySource(UnicodeString DirectoryName,
             throw;
           }
         }
-        FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(LIST_DIR_ERROR, DirectoryName), "",
+        FileOperationLoopCustom(FTerminal, OperationProgress, folAllowSkip, FMTLOAD(LIST_DIR_ERROR, DirectoryName), "",
         [&]()
         {
           FindOK = (::FindNextChecked(SearchRec) == 0);
@@ -2253,7 +2253,7 @@ void TSCPFileSystem::SCPDirectorySource(UnicodeString DirectoryName,
       }
       else if (CopyParam->GetClearArchive() && FLAGSET(LocalFileAttrs, faArchive))
       {
-        FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(CANT_SET_ATTRS, DirectoryName), "",
+        FileOperationLoopCustom(FTerminal, OperationProgress, folAllowSkip, FMTLOAD(CANT_SET_ATTRS, DirectoryName), "",
         [&]()
         {
           THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(ApiPath(DirectoryName), LocalFileAttrs & ~faArchive));
@@ -2360,7 +2360,7 @@ void TSCPFileSystem::CopyToLocal(const TStrings *AFilesToCopy,
               {
                 FTerminal->SetExceptionOnFail(false);
               };
-              FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(DELETE_FILE_ERROR, FileName), "",
+              FileOperationLoopCustom(FTerminal, OperationProgress, folAllowSkip, FMTLOAD(DELETE_FILE_ERROR, FileName), "",
               [&]()
               {
                 // pass full file name in FileName, in case we are not moving
@@ -2665,7 +2665,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString TargetDir,
 
           if (!FileData.Exists)
           {
-            FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(CREATE_DIR_ERROR, DestFileName), "",
+            FileOperationLoopCustom(FTerminal, OperationProgress, folAllowSkip, FMTLOAD(CREATE_DIR_ERROR, DestFileName), "",
             [&]()
             {
               THROWOSIFFALSE(::ForceDirectories(ApiPath(DestFileName)));
@@ -2783,7 +2783,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString TargetDir,
                   }
 
                   // This is crucial, if it fails during file transfer, it's fatal error
-                  FileOperationLoopCustom(FTerminal, OperationProgress, false,
+                  FileOperationLoopCustom(FTerminal, OperationProgress, 0,
                     FMTLOAD(WRITE_ERROR, DestFileName), "",
                   [&]()
                   {
@@ -2862,7 +2862,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString TargetDir,
           DWORD NewAttrs = CopyParam->LocalFileAttrs(FileData.RemoteRights);
           if ((NewAttrs & FileData.LocalFileAttrs) != NewAttrs)
           {
-            FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(CANT_SET_ATTRS, DestFileName), "",
+            FileOperationLoopCustom(FTerminal, OperationProgress, folAllowSkip, FMTLOAD(CANT_SET_ATTRS, DestFileName), "",
             [&]()
             {
               THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(ApiPath(DestFileName), FileData.LocalFileAttrs | NewAttrs));

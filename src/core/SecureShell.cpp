@@ -144,7 +144,7 @@ const TSessionInfo &TSecureShell::GetSessionInfo() const
   return FSessionInfo;
 }
 
-void __fastcall TSecureShell::GetHostKeyFingerprint(UnicodeString & SHA256, UnicodeString & MD5)
+void __fastcall TSecureShell::GetHostKeyFingerprint(UnicodeString &SHA256, UnicodeString &MD5) const
 {
   SHA256 = FSessionInfo.HostKeyFingerprintSHA256;
   MD5 = FSessionInfo.HostKeyFingerprintMD5;
@@ -265,7 +265,8 @@ Conf *TSecureShell::StoreToConfig(TSessionData *Data, bool Simple)
   for (int h = 0; h < HOSTKEY_COUNT; h++)
   {
     int phk;
-    switch (Data->HostKeys[h]) {
+    switch (Data->GetHostKey(h))
+    {
       case hkWarn: phk = HK_WARN; break;
       case hkRSA: phk = HK_RSA; break;
       case hkDSA: phk = hkDSA; break;
@@ -480,12 +481,10 @@ void TSecureShell::Open()
           FSessionData->GetTcpNoDelay() ? 1 : 0,
           conf_get_int(conf, CONF_tcp_keepalives));
     }
-    __finally
-    {
-#if 0
+    __finally__removed
+    ({
       conf_free(conf);
-#endif // #if 0
-    };
+    })
 
     sfree(RealHost);
     if (InitError)
@@ -1133,12 +1132,10 @@ void TSecureShell::FromBackend(bool IsStdErr, const uint8_t *Data, intptr_t Leng
           }
           while (FDataWhileFrozen);
         }
-        __finally
-        {
-#if 0
+        __finally__removed
+        ({
           FFrozen = false;
-#endif // #if 0
-        };
+        })
       }
       else
       {
@@ -1218,12 +1215,10 @@ intptr_t TSecureShell::Receive(uint8_t *Buf, intptr_t Length)
       }
 #endif // #if 0
     }
-    __finally
-    {
-#if 0
+    __finally__removed
+    ({
       OutPtr = nullptr;
-#endif // #if 0
-    };
+    })
   }
   if (GetConfiguration()->GetActualLogProtocol() >= 1)
   {
@@ -1331,12 +1326,10 @@ uintptr_t TSecureShell::TimeoutPrompt(TQueryParamsTimerEvent PoolEvent)
     Answer = FUI->QueryUser(MainInstructions(FMTLOAD(CONFIRM_PROLONG_TIMEOUT3, FSessionData->GetTimeout(), FSessionData->GetTimeout())),
         nullptr, qaRetry | qaAbort, &Params);
   }
-  __finally
-  {
-#if 0
+  __finally__removed
+  ({
     FWaiting--;
-#endif // #if 0
-  };
+  })
   return Answer;
 }
 
@@ -2110,12 +2103,10 @@ bool TSecureShell::EventSelectLoop(uintptr_t MSec, bool ReadEventRequired,
         MSec = 0;
       }
     }
-    __finally
-    {
-#if 0
+    __finally__removed
+    ({
       sfree(Handles);
-#endif // #if 0
-    };
+    })
 
     run_toplevel_callbacks();
 
@@ -2380,7 +2371,7 @@ void __fastcall TSecureShell::VerifyHostKey(
   const UnicodeString AHost, intptr_t Port, const UnicodeString AKeyType, const UnicodeString AKeyStr,
   const UnicodeString AFingerprint)
 {
-  if (Configuration->ActualLogProtocol >= 1)
+  if (GetConfiguration()->GetActualLogProtocol() >= 1)
   {
     LogEvent(FORMAT(L"Verifying host key %s %s with fingerprints %s", AKeyType, FormatKeyStr(AKeyStr), AFingerprint));
   }
@@ -2392,7 +2383,7 @@ void __fastcall TSecureShell::VerifyHostKey(
   UnicodeString Host = AHost;
   GetRealHost(Host, Port);
 
-  UnicodeString Buf = Fingerprint;
+  UnicodeString Buf = AFingerprint;
   UnicodeString SignKeyAlg = CutToChar(Buf, L' ', false);
   UnicodeString SignKeySize = CutToChar(Buf, L' ', false);
   UnicodeString SignKeyType = SignKeyAlg + L' ' + SignKeySize;
@@ -2436,7 +2427,7 @@ void __fastcall TSecureShell::VerifyHostKey(
     }
     else
     {
-      if (Configuration->ActualLogProtocol >= 1)
+      if (GetConfiguration()->GetActualLogProtocol() >= 1)
       {
         UnicodeString FormattedKey = Fingerprint ? StoredKey : FormatKeyStr(StoredKey);
         LogEvent(FORMAT(L"Host key does not match cached key %s", (FormattedKey)));
@@ -2502,7 +2493,7 @@ void __fastcall TSecureShell::VerifyHostKey(
       TClipboardHandler ClipboardHandler;
       ClipboardHandler.Text = FingerprintSHA256 + L"\n" + FingerprintMD5;
       TPasteKeyHandler PasteKeyHandler;
-      PasteKeyHandler.KeyStr = KeyStr;
+      PasteKeyHandler.KeyStr = AKeyStr;
       PasteKeyHandler.NormalizedFingerprintMD5 = NormalizedFingerprintMD5;
       PasteKeyHandler.NormalizedFingerprintSHA256 = NormalizedFingerprintSHA256;
       PasteKeyHandler.UI = FUI;

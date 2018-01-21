@@ -47,19 +47,19 @@ void TFileOperationProgressType::Init()
 
 void TFileOperationProgressType::Assign(const TFileOperationProgressType &Other)
 {
-  TValueRestorer<TCriticalSection *> SectionRestorer(FSection);
-  TValueRestorer<TCriticalSection *> UserSelectionsSectionRestorer(FUserSelectionsSection);
-  TGuard Guard(*FSection);
-  TGuard OtherGuard(*Other.FSection);
+  volatile TValueRestorer<TCriticalSection *> SectionRestorer(FSection);
+  volatile TValueRestorer<TCriticalSection *> UserSelectionsSectionRestorer(FUserSelectionsSection);
+  volatile TGuard Guard(*FSection);
+  volatile TGuard OtherGuard(*Other.FSection);
 
   *this = Other;
 }
 
 void TFileOperationProgressType::AssignButKeepSuspendState(const TFileOperationProgressType &Other)
 {
-  TGuard Guard(*FSection);
-  TValueRestorer<uintptr_t> SuspendTimeRestorer(FSuspendTime);
-  TValueRestorer<bool> SuspendedRestorer(FSuspended);
+  volatile TGuard Guard(*FSection);
+  volatile TValueRestorer<uintptr_t> SuspendTimeRestorer(FSuspendTime);
+  volatile TValueRestorer<bool> SuspendedRestorer(FSuspended);
 
   Assign(Other);
 }
@@ -145,7 +145,7 @@ void TFileOperationProgressType::Start(TFileOperation AOperation,
 
 void TFileOperationProgressType::Start(TFileOperation AOperation,
   TOperationSide ASide, intptr_t ACount, bool ATemp,
-  UnicodeString ADirectory, uintptr_t ACPSLimit)
+  const UnicodeString ADirectory, uintptr_t ACPSLimit)
 {
   {
     TGuard Guard(*FSection); // not really needed, just for consistency

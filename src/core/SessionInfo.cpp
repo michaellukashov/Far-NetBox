@@ -468,13 +468,13 @@ TFileSessionAction::TFileSessionAction(TActionLog *Log, TLogAction Action) :
 }
 
 TFileSessionAction::TFileSessionAction(
-  TActionLog *Log, TLogAction Action, UnicodeString AFileName) :
+  TActionLog *Log, TLogAction Action, const UnicodeString AFileName) :
   TSessionAction(Log, Action)
 {
   SetFileName(AFileName);
 }
 
-void TFileSessionAction::SetFileName(UnicodeString AFileName)
+void TFileSessionAction::SetFileName(const UnicodeString AFileName)
 {
   if (FRecord != nullptr)
   {
@@ -576,7 +576,7 @@ void TRmSessionAction::Recursive()
 }
 
 TMvSessionAction::TMvSessionAction(TActionLog *Log,
-  UnicodeString AFileName, UnicodeString ADestination) :
+  const UnicodeString AFileName, const UnicodeString ADestination) :
   TFileLocationSessionAction(Log, laMv, AFileName)
 {
   Destination(ADestination);

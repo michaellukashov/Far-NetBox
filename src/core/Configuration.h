@@ -245,6 +245,7 @@ public:
   bool __fastcall ShowBanner(const UnicodeString ASessionKey, const UnicodeString ABanner, uintptr_t &AParams);
   void __fastcall NeverShowBanner(const UnicodeString ASessionKey, const UnicodeString ABanner);
   void __fastcall SetBannerParams(const UnicodeString ASessionKey, uintptr_t AParams);
+  void __fastcall RememberLastFingerprint(const UnicodeString ASiteKey, const UnicodeString AFingerprintType, const UnicodeString AFingerprint);
   UnicodeString GetLastFingerprint(UnicodeString SiteKey, UnicodeString FingerprintType);
   virtual THierarchicalStorage *CreateConfigStorage();
   virtual THierarchicalStorage *CreateStorage(bool &SessionList);

@@ -235,9 +235,9 @@ public:
 
   UnicodeString Text;
 
-  void __fastcall Copy(TObject * /*Sender*/, unsigned int & /*Answer*/)
+  void __fastcall Copy(TObject * /*Sender*/, uintptr_t & /*Answer*/)
   {
-    TInstantOperationVisualizer Visualizer;
+    volatile TInstantOperationVisualizer Visualizer;
     CopyToClipboard(Text);
   }
 };

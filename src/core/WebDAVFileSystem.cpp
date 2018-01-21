@@ -1311,7 +1311,7 @@ void __fastcall TWebDAVFileSystem::Source(
     TRemoteFile * RemoteFile = NULL;
     try
     {
-      TValueRestorer<TIgnoreAuthenticationFailure> IgnoreAuthenticationFailureRestorer(FIgnoreAuthenticationFailure);
+      volatile TValueRestorer<TIgnoreAuthenticationFailure> IgnoreAuthenticationFailureRestorer(FIgnoreAuthenticationFailure);
       FIgnoreAuthenticationFailure = iafWaiting;
 
       // this should not throw

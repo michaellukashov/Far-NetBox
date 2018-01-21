@@ -175,7 +175,6 @@ public:
   static bool GetIsTimeShiftingApplicable(TModificationFmt ModificationFmt);
   static void ShiftTimeInSeconds(TDateTime &DateTime, TModificationFmt ModificationFmt, int64_t Seconds);
 
-#if 0
   __property int Attr = { read = GetAttr };
   __property bool BrokenLink = { read = GetBrokenLink };
   __property TRemoteFileList * Directory = { read = FDirectory, write = FDirectory };
@@ -209,7 +208,6 @@ public:
   __property bool IsThisDirectory = { read = GetIsThisDirectory };
   __property bool IsInaccesibleDirectory  = { read=GetIsInaccesibleDirectory };
   __property UnicodeString Extension  = { read=GetExtension };
-#endif // #if 0
 
   TRemoteFileList *GetDirectory() const { return FDirectory; }
   void SetDirectory(TRemoteFileList *Value) { FDirectory = Value; }

@@ -1656,7 +1656,7 @@ protected:
 
     if (Result)
     {
-      FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(READ_ERROR, FFileName), "",
+      FileOperationLoopCustom(FTerminal, OperationProgress, folAllowSkip, FMTLOAD(READ_ERROR, FFileName), "",
       [&]()
       {
         BlockBuf.LoadStream(FStream, BlockSize, false);
