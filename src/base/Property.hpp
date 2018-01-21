@@ -1,8 +1,11 @@
 #pragma once
 
+#include <nbglobals.h>
+
 template <typename T>
 class propertyBase
 {
+CUSTOM_MEM_ALLOCATION_IMPL
 public:
   T dummy = T();
   T &obj  = dummy;
@@ -16,6 +19,7 @@ public:
 template <typename T, bool canWrite = true, bool isPod = true>
 class Property : private propertyBase<T>
 {
+CUSTOM_MEM_ALLOCATION_IMPL
 public:
   Property() = default;
 
@@ -61,6 +65,7 @@ public:
 template <typename T>
 class Property<T, false, true> : private propertyBase<T>
 {
+CUSTOM_MEM_ALLOCATION_IMPL
 public:
   Property() = default;
 
@@ -89,6 +94,7 @@ public:
 template <typename T>
 class Property<T, true, false> : public T
 {
+CUSTOM_MEM_ALLOCATION_IMPL
 public:
   using T::T;
 
@@ -123,10 +129,11 @@ using rwProperty = Property<T, true, std::is_pod<T>::value>;
 
 template <typename T,
           typename Object
-          // T (Object::*Getter)()
           >
 class ROProperty
 {
+CUSTOM_MEM_ALLOCATION_IMPL
+private:
   Object *_obj;
   typedef T (Object::*GetterFunc)();
   GetterFunc *_getterFunc;
@@ -163,16 +170,16 @@ template <typename T,
           >
 class RWProperty
 {
-  typedef T (Object::*Getter)();
-  typedef void (Object::*Setter)(const T &);
-  Getter *_getter;
-  Setter *_setter;
+CUSTOM_MEM_ALLOCATION_IMPL
+private:
+  typedef T (Object::*GetterFunc)();
+  typedef void (Object::*SetterFunc)(const T &);
+  GetterFunc *_getter;
+  SetterFunc *_setter;
 public:
-//  explicit ROProperty(Object *obj, Getter *getter):
-//    _obj(obj),
-  explicit RWProperty(Getter *getter, Setter *setter):
-    _getter(getter),
-    _setter(setter)
+  explicit RWProperty(GetterFunc *Getter, SetterFunc *Setter):
+    _getter(Getter),
+    _setter(Setter)
   {}
   /*T operator()() const
   {
@@ -189,9 +196,9 @@ public:
     // assert(_setter);
     (*_setter)(value);
   }*/
-  void operator=(const T &value)
+  void operator=(const T &Value)
   {
     // assert(_setter);
-    (*_setter)(value);
+    (*_setter)(Value);
   }
 };
