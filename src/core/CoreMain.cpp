@@ -1,10 +1,9 @@
-//---------------------------------------------------------------------------
 #include <vcl.h>
 #pragma hdrstop
 
-#include "CoreMain.h"
+#include <Common.h>
 
-#include "Common.h"
+#include "CoreMain.h"
 #include "Interface.h"
 #include "Configuration.h"
 #include "PuttyIntf.h"
@@ -13,17 +12,20 @@
 #include "FileZillaIntf.h"
 #include "NeonIntf.h"
 #include "TextsCore.h"
+// #include "WebDAVFileSystem.h"
 //---------------------------------------------------------------------------
-#pragma package(smart_init)
+__removed #pragma package(smart_init)
 //---------------------------------------------------------------------------
-TConfiguration * Configuration = NULL;
-TStoredSessionList * StoredSessions = NULL;
+TStoredSessionList *StoredSessions = nullptr;
 //---------------------------------------------------------------------------
-TQueryButtonAlias::TQueryButtonAlias()
+TQueryButtonAlias::TQueryButtonAlias() :
+  Button(0),
+  OnSubmit(nullptr),
+  GroupWith(-1),
+  Default(false),
+  GrouppedShiftState(ssShift),
+  ElevationRequired(false)
 {
-  OnSubmit = NULL;
-  GroupWith = -1;
-  ElevationRequired = false;
   MenuButton = false;
 }
 //---------------------------------------------------------------------------
@@ -32,7 +34,7 @@ TQueryButtonAlias TQueryButtonAlias::CreateYesToAllGrouppedWithYes()
   TQueryButtonAlias Result;
   Result.Button = qaYesToAll;
   Result.GroupWith = qaYes;
-  Result.GrouppedShiftState = TShiftState() << ssShift;
+  Result.GrouppedShiftState = ssShift;
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -41,7 +43,7 @@ TQueryButtonAlias TQueryButtonAlias::CreateNoToAllGrouppedWithNo()
   TQueryButtonAlias Result;
   Result.Button = qaNoToAll;
   Result.GroupWith = qaNo;
-  Result.GrouppedShiftState = TShiftState() << ssShift;
+  Result.GrouppedShiftState = ssShift;
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -51,7 +53,7 @@ TQueryButtonAlias TQueryButtonAlias::CreateAllAsYesToNewerGrouppedWithYes()
   Result.Button = qaAll;
   Result.Alias = LoadStr(YES_TO_NEWER_BUTTON);
   Result.GroupWith = qaYes;
-  Result.GrouppedShiftState = TShiftState() << ssCtrl;
+  Result.GrouppedShiftState = ssCtrl;
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -61,24 +63,24 @@ TQueryButtonAlias TQueryButtonAlias::CreateIgnoreAsRenameGrouppedWithNo()
   Result.Button = qaIgnore;
   Result.Alias = LoadStr(RENAME_BUTTON);
   Result.GroupWith = qaNo;
-  Result.GrouppedShiftState = TShiftState() << ssCtrl;
+  Result.GrouppedShiftState = ssCtrl;
   return Result;
 }
 //---------------------------------------------------------------------------
-TQueryParams::TQueryParams(unsigned int AParams, UnicodeString AHelpKeyword)
+TQueryParams::TQueryParams(uintptr_t AParams, UnicodeString AHelpKeyword) :
+  Aliases(nullptr),
+  AliasesCount(0),
+  Params(AParams),
+  Timer(0),
+  TimerEvent(nullptr),
+  TimerMessage(L""),
+  TimerAnswers(0),
+  TimerQueryType(static_cast<TQueryType>(-1)),
+  Timeout(0),
+  TimeoutAnswer(0),
+  NoBatchAnswers(0),
+  HelpKeyword(AHelpKeyword)
 {
-  Params = AParams;
-  Aliases = NULL;
-  AliasesCount = 0;
-  Timer = 0;
-  TimerEvent = NULL;
-  TimerMessage = L"";
-  TimerAnswers = 0;
-  TimerQueryType = static_cast<TQueryType>(-1);
-  Timeout = 0;
-  TimeoutAnswer = 0;
-  NoBatchAnswers = 0;
-  HelpKeyword = AHelpKeyword;
 }
 //---------------------------------------------------------------------------
 TQueryParams::TQueryParams(const TQueryParams & Source)
@@ -89,6 +91,23 @@ TQueryParams::TQueryParams(const TQueryParams & Source)
 void TQueryParams::Assign(const TQueryParams & Source)
 {
   *this = Source;
+}
+
+TQueryParams &TQueryParams::operator=(const TQueryParams &other)
+{
+  Params = other.Params;
+  Aliases = other.Aliases;
+  AliasesCount = other.AliasesCount;
+  Timer = other.Timer;
+  TimerEvent = other.TimerEvent;
+  TimerMessage = other.TimerMessage;
+  TimerAnswers = other.TimerAnswers;
+  TimerQueryType = other.TimerQueryType;
+  Timeout = other.Timeout;
+  TimeoutAnswer = other.TimeoutAnswer;
+  NoBatchAnswers = other.NoBatchAnswers;
+  HelpKeyword = other.HelpKeyword;
+  return *this;
 }
 //---------------------------------------------------------------------------
 bool __fastcall IsAuthenticationPrompt(TPromptKind Kind)
@@ -102,7 +121,7 @@ bool __fastcall IsAuthenticationPrompt(TPromptKind Kind)
 bool __fastcall IsPasswordOrPassphrasePrompt(TPromptKind Kind, TStrings * Prompts)
 {
   return
-    (Prompts->Count == 1) && FLAGCLEAR(int(Prompts->Objects[0]), pupEcho) &&
+    (Prompts->GetCount() == 1) && FLAGCLEAR(ToIntPtr(Prompts->GetObj(0)), pupEcho) &&
     ((Kind == pkPassword) || (Kind == pkPassphrase) || (Kind == pkKeybInteractive) ||
      (Kind == pkTIS) || (Kind == pkCryptoCard));
 }
@@ -114,10 +133,31 @@ bool __fastcall IsPasswordPrompt(TPromptKind Kind, TStrings * Prompts)
     (Kind != pkPassphrase);
 }
 //---------------------------------------------------------------------------
+TConfiguration *GetConfiguration()
+{
+  static TConfiguration *Configuration = nullptr;
+  if (Configuration == nullptr)
+  {
+    Configuration = CreateConfiguration();
+  }
+  return Configuration;
+}
+
+void DeleteConfiguration()
+{
+  static bool ConfigurationDeleted = false;
+  if (!ConfigurationDeleted)
+  {
+    TConfiguration *Conf = GetConfiguration();
+    SAFE_DESTROY(Conf);
+    ConfigurationDeleted = true;
+  }
+}
+//---------------------------------------------------------------------------
 void CoreLoad()
 {
-  bool SessionList = true;
-  std::unique_ptr<THierarchicalStorage> SessionsStorage(Configuration->CreateScpStorage(SessionList));
+  bool SessionList = false;
+  std::unique_ptr<THierarchicalStorage> SessionsStorage(GetConfiguration()->CreateStorage(SessionList));
   THierarchicalStorage * ConfigStorage;
   std::unique_ptr<THierarchicalStorage> ConfigStorageAuto;
   if (!SessionList)
@@ -127,13 +167,15 @@ void CoreLoad()
   }
   else
   {
-    ConfigStorageAuto.reset(Configuration->CreateConfigStorage());
+    ConfigStorageAuto.reset(GetConfiguration()->CreateConfigStorage());
     ConfigStorage = ConfigStorageAuto.get();
   }
 
+  DebugAssert(GetConfiguration() != nullptr);
+
   try
   {
-    Configuration->Load(ConfigStorage);
+    GetConfiguration()->Load(ConfigStorage);
   }
   catch (Exception & E)
   {
@@ -147,7 +189,7 @@ void CoreLoad()
 
   try
   {
-    if (SessionsStorage->OpenSubKey(Configuration->StoredSessionsSubKey, false))
+    if (SessionsStorage->OpenSubKey(GetConfiguration()->GetStoredSessionsSubKey(), false))
     {
       StoredSessions->Load(SessionsStorage.get());
     }
@@ -160,14 +202,15 @@ void CoreLoad()
 //---------------------------------------------------------------------------
 void CoreInitialize()
 {
+  WinInitialize();
   Randomize();
   CryptographyInitialize();
 
   // we do not expect configuration re-creation
-  DebugAssert(Configuration == NULL);
+  DebugAssert(GetConfiguration() != nullptr);
   // configuration needs to be created and loaded before putty is initialized,
   // so that random seed path is known
-  Configuration = CreateConfiguration();
+//  Configuration = CreateConfiguration();
 
   PuttyInitialize();
   TFileZillaIntf::Initialize();
@@ -180,7 +223,7 @@ void CoreFinalize()
 {
   try
   {
-    Configuration->Save();
+    GetConfiguration()->Save();
   }
   catch(Exception & E)
   {
@@ -191,12 +234,11 @@ void CoreFinalize()
   TFileZillaIntf::Finalize();
   PuttyFinalize();
 
-  delete StoredSessions;
-  StoredSessions = NULL;
-  delete Configuration;
-  Configuration = NULL;
+  SAFE_DESTROY(StoredSessions);
+  DeleteConfiguration();
 
   CryptographyFinalize();
+  WinFinalize();
 }
 //---------------------------------------------------------------------------
 void CoreSetResourceModule(void * ResourceHandle)
@@ -211,7 +253,8 @@ void CoreMaintenanceTask()
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 __fastcall TOperationVisualizer::TOperationVisualizer(bool UseBusyCursor) :
-  FUseBusyCursor(UseBusyCursor)
+  FUseBusyCursor(UseBusyCursor),
+  FToken(nullptr)
 {
   if (FUseBusyCursor)
   {
@@ -229,6 +272,7 @@ __fastcall TOperationVisualizer::~TOperationVisualizer()
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 __fastcall TInstantOperationVisualizer::TInstantOperationVisualizer() :
+  TOperationVisualizer(true),
   FStart(Now())
 {
 }

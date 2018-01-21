@@ -20,7 +20,6 @@ static UnicodeString DoXmlEscape(UnicodeString AStr, bool NewLine)
   UnicodeString Str = AStr;
   for (intptr_t Index = 1; Index <= Str.Length(); ++Index)
   {
-    const wchar_t *Repl = nullptr;
     UnicodeString Repl;
     switch (Str[Index])
     {
@@ -55,7 +54,7 @@ static UnicodeString DoXmlEscape(UnicodeString AStr, bool NewLine)
       case L'\x1D':
       case L'\x1E':
       case L'\x1F':
-        Repl = L"#x" + ByteToHex((unsigned char)Str[i]) + L";";
+        Repl = L"#x" + ByteToHex((uint8_t)Str[Index]) + L";";
         break;
 
     case L'&':
@@ -359,6 +358,7 @@ protected:
     FValues->Add(Value);
   }
 
+#if 0
   void __fastcall RecordFile(const UnicodeString AIndent, TRemoteFile *AFile, bool IncludeFileName)
   {
     FLog->AddIndented(AIndent + L"<file>");
@@ -386,6 +386,7 @@ protected:
     }
     FLog->AddIndented(AIndent + L"</file>");
   }
+#endif // #if 0
 
 private:
   TActionLog *FLog;
@@ -1213,7 +1214,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData *Data)
       if (Data->GetAuthGSSAPI())
       {
         ADF("GSSAPI: Forwarding: %s; Libs: %s; Custom: %s",
-          BooleanToEngStr(Data->GSSAPIFwdTGT), Data->GssLibList, Data->GssLibCustom);
+          BooleanToEngStr(Data->GetGSSAPIFwdTGT()), Data->GetGssLibList(), Data->GetGssLibCustom());
       }
       ADF("Ciphers: %s; Ssh2DES: %s",
         Data->GetCipherList(), BooleanToEngStr(Data->GetSsh2DES()));
@@ -1297,11 +1298,11 @@ void TSessionLog::DoAddStartupInfo(TSessionData *Data)
     }
     if (Data->FSProtocol == fsS3)
     {
-      FtpsOn = (Data->Ftps != ftpsNone);
-      ADF(L"HTTPS: %s", (BooleanToEngStr(FtpsOn)));
-      if (!Data->S3DefaultRegion.IsEmpty())
+      FtpsOn = (Data->GetFtps() != ftpsNone);
+      ADF(L"HTTPS: %s", BooleanToEngStr(FtpsOn));
+      if (!Data->GetS3DefaultRegion().IsEmpty())
       {
-        ADF(L"S3: Default region: %s", (Data->S3DefaultRegion));
+        ADF(L"S3: Default region: %s", Data->GetS3DefaultRegion());
       }
     }
     if (FtpsOn)
@@ -1508,12 +1509,10 @@ void TActionLog::AddFailure(Exception *E)
     {
       AddFailure(Messages.get());
     }
-    __finally
-    {
-#if 0
+    __finally__removed
+    ({
       delete Messages;
-#endif // #if 0
-    };
+    })
   }
 }
 

@@ -354,7 +354,7 @@ public:
   TCipher __fastcall GetCipher(intptr_t Index) const;
   void __fastcall SetKex(intptr_t Index, TKex Value);
   TKex __fastcall GetKex(intptr_t Index) const;
-  void __fastcall SetHostKey(intptr_t Index, THostKey Value);
+  void __fastcall SetHostKeys(intptr_t Index, THostKey Value);
   THostKey __fastcall GetHostKey(intptr_t Index) const;
   void __fastcall SetGssLib(intptr_t Index, TGssLib Value);
   TGssLib __fastcall GetGssLib(intptr_t Index) const;
@@ -485,6 +485,7 @@ public:
   void __fastcall SetS3DefaultRegion(UnicodeString Value);
   void SetLogicalHostName(UnicodeString Value);
   void SetIsWorkspace(bool Value);
+
   void SetLink(UnicodeString Value);
   void SetHostKey(UnicodeString Value);
   void SetNote(UnicodeString Value);
@@ -577,7 +578,7 @@ public:
   void ExpandEnvironmentVariables();
   void DisableAuthentationsExceptPassword();
   static bool __fastcall IsOptionWithParameters(const UnicodeString AOption);
-  static bool __fastcall MaskPasswordInOptionParameter(const UnicodeString AOption, UnicodeString & Param);
+  static bool __fastcall MaskPasswordInOptionParameter(const UnicodeString AOption, UnicodeString &Param);
   bool IsSame(const TSessionData *Default, bool AdvancedOnly) const;
   bool IsSameSite(const TSessionData *Default) const;
   bool IsInFolderOrWorkspace(UnicodeString AFolder) const;
@@ -881,6 +882,8 @@ public:
   TTlsVersion GetMinTlsVersion() const { return FMinTlsVersion; }
   TTlsVersion GetMaxTlsVersion() const { return FMaxTlsVersion; }
   TAutoSwitch GetNotUtf() const { return FNotUtf; }
+  intptr_t GetInternalEditorEncoding() const { return FInternalEditorEncoding; }
+  UnicodeString GetS3DefaultRegion() const { return FS3DefaultRegion; }
   bool GetIsWorkspace() const { return FIsWorkspace; }
   UnicodeString GetLink() const { return FLink; }
   UnicodeString GetHostKey() const { return FHostKey; }
