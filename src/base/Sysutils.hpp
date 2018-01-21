@@ -523,8 +523,8 @@ public:
 
 #define try__catch
 #define try__finally
-#define catch__removed(BLOCK) // skip code in catch { } block
-#define __finally__removed(BLOCK) // skip code in __finally { } block
+#define catch__removed(BLOCK)
+#define __finally__removed(BLOCK)
 
 #if (defined _MSC_VER && _MSC_VER > 1900)
 

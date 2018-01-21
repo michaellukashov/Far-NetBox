@@ -3815,12 +3815,12 @@ UnicodeString UserModificationStr(const TDateTime &DateTime,
   case mfNone:
     return L"";
   case mfMDY:
-    return FORMAT(L"%3s %2d %2d", EngShortMonthNames[Month - 1], Day, Year);
+    return FORMAT("%3s %2d %2d", EngShortMonthNames[Month - 1], Day, Year);
   case mfMDHM:
-    return FORMAT(L"%3s %2d %2d:%2.2d",
+    return FORMAT("%3s %2d %2d:%2.2d",
         EngShortMonthNames[Month - 1], Day, Hour, Min);
   case mfFull:
-    return FORMAT(L"%3s %2d %2d:%2.2d:%2.2d %4d",
+    return FORMAT("%3s %2d %2d:%2.2d:%2.2d %4d",
         EngShortMonthNames[Month - 1], Day, Hour, Min, Sec, Year);
   default:
     DebugAssert(false);
@@ -3840,10 +3840,10 @@ UnicodeString ModificationStr(const TDateTime &DateTime,
     return L"";
 
   case mfMDY:
-    return FORMAT(L"%3s %2d %2d", EngShortMonthNames[Month - 1], Day, Year);
+    return FORMAT("%3s %2d %2d", EngShortMonthNames[Month - 1], Day, Year);
 
   case mfMDHM:
-    return FORMAT(L"%3s %2d %2d:%2.2d",
+    return FORMAT("%3s %2d %2d:%2.2d",
         EngShortMonthNames[Month - 1], Day, Hour, Min);
 
   default:
@@ -3851,7 +3851,7 @@ UnicodeString ModificationStr(const TDateTime &DateTime,
   // fall thru
 
   case mfFull:
-    return FORMAT(L"%3s %2d %2d:%2.2d:%2.2d %4d",
+    return FORMAT("%3s %2d %2d:%2.2d:%2.2d %4d",
         EngShortMonthNames[Month - 1], Day, Hour, Min, Sec, Year);
   }
 }

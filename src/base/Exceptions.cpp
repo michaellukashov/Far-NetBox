@@ -10,7 +10,9 @@
 #include "HelpCore.h"
 #endif // FARPLUGIN
 #include "rtlconsts.h"
-
+//---------------------------------------------------------------------------
+__removed #pragma package(smart_init)
+//---------------------------------------------------------------------------
 #if 0
 static std::unique_ptr<TCriticalSection> IgnoredExceptionsCriticalSection(new TCriticalSection());
 typedef rde::set<UnicodeString> TIgnoredExceptions;
@@ -251,7 +253,7 @@ UnicodeString GetExceptionHelpKeyword(const Exception *E)
   return HelpKeyword;
 }
 
-UnicodeString MergeHelpKeyword(UnicodeString PrimaryHelpKeyword, UnicodeString SecondaryHelpKeyword)
+UnicodeString MergeHelpKeyword(const UnicodeString PrimaryHelpKeyword, const UnicodeString SecondaryHelpKeyword)
 {
   if (!PrimaryHelpKeyword.IsEmpty() &&
     !IsInternalErrorHelpKeyword(SecondaryHelpKeyword))
@@ -263,7 +265,7 @@ UnicodeString MergeHelpKeyword(UnicodeString PrimaryHelpKeyword, UnicodeString S
   return SecondaryHelpKeyword;
 }
 
-bool IsInternalErrorHelpKeyword(UnicodeString HelpKeyword)
+bool IsInternalErrorHelpKeyword(const UnicodeString HelpKeyword)
 {
 #if defined(FARPLUGIN)
   return
@@ -289,7 +291,7 @@ ExtException::ExtException(TObjectClassId Kind, Exception *E) :
   FHelpKeyword = GetExceptionHelpKeyword(E);
 }
 
-ExtException::ExtException(const Exception *E, UnicodeString Msg, UnicodeString HelpKeyword) :
+ExtException::ExtException(const Exception *E, const UnicodeString Msg, const UnicodeString HelpKeyword) :
   Exception(OBJECT_CLASS_ExtException, Msg),
   FMoreMessages(nullptr)
 {
@@ -297,7 +299,7 @@ ExtException::ExtException(const Exception *E, UnicodeString Msg, UnicodeString 
   FHelpKeyword = MergeHelpKeyword(HelpKeyword, GetExceptionHelpKeyword(E));
 }
 
-ExtException::ExtException(TObjectClassId Kind, const Exception *E, UnicodeString Msg, UnicodeString HelpKeyword) :
+ExtException::ExtException(TObjectClassId Kind, const Exception *E, const UnicodeString Msg, const UnicodeString HelpKeyword) :
   Exception(Kind, Msg),
   FMoreMessages(nullptr)
 {
@@ -306,7 +308,7 @@ ExtException::ExtException(TObjectClassId Kind, const Exception *E, UnicodeStrin
 }
 
 #if 0
-ExtException::ExtException(TObjectClassId Kind, ExtException *E, UnicodeString Msg, UnicodeString HelpKeyword) :
+ExtException::ExtException(TObjectClassId Kind, ExtException *E, const UnicodeString Msg, const UnicodeString HelpKeyword) :
   Exception(Kind, Msg),
   FMoreMessages(nullptr),
   FHelpKeyword()
@@ -322,7 +324,7 @@ ExtException::ExtException(TObjectClassId Kind, Exception *E, intptr_t Ident) :
 {
 }
 
-ExtException::ExtException(TObjectClassId Kind, UnicodeString Msg, const Exception *E, UnicodeString HelpKeyword) :
+ExtException::ExtException(TObjectClassId Kind, const UnicodeString Msg, const Exception *E, const UnicodeString HelpKeyword) :
   Exception(Kind, L""),
   FMoreMessages(nullptr)
 {
@@ -347,7 +349,7 @@ ExtException::ExtException(TObjectClassId Kind, UnicodeString Msg, const Excepti
   FHelpKeyword = MergeHelpKeyword(GetExceptionHelpKeyword(E), HelpKeyword);
 }
 
-ExtException::ExtException(UnicodeString Msg, UnicodeString MoreMessages,
+ExtException::ExtException(UnicodeString Msg, const UnicodeString MoreMessages,
   UnicodeString HelpKeyword) :
   Exception(OBJECT_CLASS_ExtException, Msg),
   FMoreMessages(nullptr),
@@ -359,7 +361,7 @@ ExtException::ExtException(UnicodeString Msg, UnicodeString MoreMessages,
   }
 }
 
-ExtException::ExtException(TObjectClassId Kind, UnicodeString Msg, UnicodeString MoreMessages,
+ExtException::ExtException(TObjectClassId Kind, const UnicodeString Msg, const UnicodeString MoreMessages,
   UnicodeString HelpKeyword) :
   Exception(Kind, Msg),
   FMoreMessages(nullptr),
@@ -371,8 +373,8 @@ ExtException::ExtException(TObjectClassId Kind, UnicodeString Msg, UnicodeString
   }
 }
 
-ExtException::ExtException(UnicodeString Msg, TStrings *MoreMessages,
-  bool Own, UnicodeString HelpKeyword) :
+ExtException::ExtException(const UnicodeString Msg, TStrings *MoreMessages,
+  bool Own, const UnicodeString HelpKeyword) :
   Exception(OBJECT_CLASS_ExtException, Msg),
   FMoreMessages(nullptr),
   FHelpKeyword(HelpKeyword)
@@ -483,19 +485,19 @@ EOSExtException::EOSExtException(UnicodeString Msg, intptr_t LastError) :
 {
 }
 
-EOSExtException::EOSExtException(TObjectClassId Kind, UnicodeString Msg, intptr_t LastError) :
+EOSExtException::EOSExtException(TObjectClassId Kind, const UnicodeString Msg, intptr_t LastError) :
   ExtException(Kind, Msg, SysErrorMessageForError(LastError))
 {
 }
 
-EFatal::EFatal(const Exception *E, UnicodeString Msg, UnicodeString HelpKeyword) :
+EFatal::EFatal(const Exception *E, const UnicodeString Msg, const UnicodeString HelpKeyword) :
   ExtException(OBJECT_CLASS_EFatal, Msg, E, HelpKeyword),
   FReopenQueried(false)
 {
   Init(E);
 }
 
-EFatal::EFatal(TObjectClassId Kind, const Exception *E, UnicodeString Msg, UnicodeString HelpKeyword) :
+EFatal::EFatal(TObjectClassId Kind, const Exception *E, const UnicodeString Msg, const UnicodeString HelpKeyword) :
   ExtException(Kind, Msg, E, HelpKeyword),
   FReopenQueried(false)
 {
