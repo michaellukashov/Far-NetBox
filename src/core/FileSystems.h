@@ -185,7 +185,7 @@ public:
     TOnceDoneOperation &OnceDoneOperation) = 0;
   virtual void __fastcall CopyToRemote(const TStrings *AFilesToCopy,
     const UnicodeString ATargetDir, const TCopyParamType *CopyParam,
-    intptr_t Params, TFileOperationProgressType *OperationProgress,
+    intptr_t AParams, TFileOperationProgressType *OperationProgress,
     TOnceDoneOperation &OnceDoneOperation) = 0;
   virtual void __fastcall TransferOnDirectory(
     const UnicodeString /*ADirectory*/, const TCopyParamType * /*CopyParam*/, intptr_t /*AParams*/) {}

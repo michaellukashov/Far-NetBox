@@ -40,7 +40,7 @@ public:
     TStrings *AFileList, TStrings *Checksums,
     TCalculatedChecksumEvent OnCalculatedChecksum) override;
   virtual void CopyToLocal(const TStrings *AFilesToCopy,
-    const UnicodeString ATargetDir, const TCopyParamType *CopyParam,
+    const UnicodeString ATargetDir, const TCopyParamType *ACopyParam,
     intptr_t AParams, TFileOperationProgressType *OperationProgress,
     TOnceDoneOperation &OnceDoneOperation) override;
   virtual void __fastcall CopyToRemote(const TStrings *AFilesToCopy,
@@ -89,7 +89,7 @@ public:
   virtual void __fastcall LockFile(const UnicodeString AFileName, const TRemoteFile *AFile) override;
   virtual void __fastcall UnlockFile(const UnicodeString AFileName, const TRemoteFile *AFile) override;
   virtual void __fastcall UpdateFromMain(TCustomFileSystem *MainFileSystem) override;
-  virtual void __fastcall ClearCaches();
+  virtual void __fastcall ClearCaches() override;
 
 protected:
   __property TStrings * Output = { read = FOutput };

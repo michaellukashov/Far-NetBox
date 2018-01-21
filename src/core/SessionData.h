@@ -637,6 +637,7 @@ public:
   __property bool TimeDifferenceAuto = { read = FTimeDifferenceAuto, write = SetTimeDifferenceAuto };
   __property TPingType PingType = { read = FPingType, write = SetPingType };
   __property UnicodeString SessionName  = { read=GetSessionName };
+  ROProperty<UnicodeString, TSessionData> SessionName{this, &TSessionData::GetSessionName};
   __property UnicodeString DefaultSessionName  = { read=GetDefaultSessionName };
   __property UnicodeString LocalDirectory  = { read=FLocalDirectory, write=SetLocalDirectory };
   __property UnicodeString RemoteDirectory  = { read=FRemoteDirectory, write=SetRemoteDirectory };

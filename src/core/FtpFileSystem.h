@@ -101,7 +101,7 @@ public:
   virtual void __fastcall LockFile(const UnicodeString AFileName, const TRemoteFile *AFile) override;
   virtual void __fastcall UnlockFile(const UnicodeString AFileName, const TRemoteFile *AFile) override;
   virtual void __fastcall UpdateFromMain(TCustomFileSystem *MainFileSystem) override;
-  virtual void __fastcall ClearCaches();
+  virtual void __fastcall ClearCaches() override;
 
 protected:
   __removed enum TOverwriteMode { omOverwrite, omResume, omComplete };

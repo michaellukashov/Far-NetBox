@@ -2111,7 +2111,7 @@ void TTerminal::DisplayBanner(UnicodeString Banner)
       TCallbackGuard Guard(this);
       try
       {
-        OnDisplayBanner(this, SessionData->SessionName, Banner, NeverShowAgain, Options, Params);
+        GetOnDisplayBanner()(this, SessionData->SessionName, Banner, NeverShowAgain, Options, Params);
         Guard.Verify();
       }
       catch (Exception &E)

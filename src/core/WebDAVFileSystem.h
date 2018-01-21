@@ -91,7 +91,7 @@ public:
   virtual void LockFile(const UnicodeString AFileName, const TRemoteFile *AFile) override;
   virtual void UnlockFile(const UnicodeString AFileName, const TRemoteFile *AFile) override;
   virtual void UpdateFromMain(TCustomFileSystem *AMainFileSystem) override;
-  virtual void __fastcall ClearCaches();
+  virtual void __fastcall ClearCaches() override;
 
   virtual void FileTransferProgress(int64_t TransferSize, int64_t Bytes) override;
   void NeonDebug(const UnicodeString AMessage);

@@ -62,30 +62,30 @@ public:
     const UnicodeString ATargetDir, const TCopyParamType *CopyParam,
     intptr_t AParams, TFileOperationProgressType *OperationProgress,
     TOnceDoneOperation &OnceDoneOperation) override;
-  virtual void __fastcall CopyToRemote(TStrings *AFilesToCopy,
+  virtual void __fastcall CopyToRemote(const TStrings *AFilesToCopy,
     const UnicodeString ATargetDir, const TCopyParamType *ACopyParam,
-    intptr_t AParams, TFileOperationProgressType * OperationProgress,
-    TOnceDoneOperation &OnceDoneOperation);
+    intptr_t AParams, TFileOperationProgressType *OperationProgress,
+    TOnceDoneOperation &OnceDoneOperation) override;
   virtual void __fastcall Source(
     TLocalFileHandle &AHandle, const UnicodeString ATargetDir, UnicodeString &ADestFileName,
     const TCopyParamType *CopyParam, intptr_t AParams,
     TFileOperationProgressType *OperationProgress, uintptr_t AFlags,
-    TUploadSessionAction &Action, bool &ChildError);
+    TUploadSessionAction &Action, bool &ChildError) override;
   virtual void __fastcall DirectorySunk(
-    const UnicodeString ADestFullName, const TRemoteFile *AFile, const TCopyParamType * CopyParam);
+    const UnicodeString ADestFullName, const TRemoteFile *AFile, const TCopyParamType * CopyParam) override;
   virtual void __fastcall Sink(
     const UnicodeString AFileName, const TRemoteFile *File,
     const UnicodeString ATargetDir, UnicodeString &ADestFileName, intptr_t Attrs,
     const TCopyParamType * CopyParam, intptr_t Params, TFileOperationProgressType *OperationProgress,
-    uintptr_t AFlags, TDownloadSessionAction &Action);
-  virtual void __fastcall CreateDirectory(const UnicodeString ADirName);
-  virtual void __fastcall CreateLink(const UnicodeString AFileName, const UnicodeString APointTo, bool Symbolic);
-  virtual void __fastcall DeleteFile(const UnicodeString AFileName,
-    const TRemoteFile *AFile, intptr_t Params, TRmSessionAction &Action);
+    uintptr_t AFlags, TDownloadSessionAction &Action) override;
+  virtual void __fastcall RemoteCreateDirectory(const UnicodeString ADirName) override;
+  virtual void __fastcall RemoteCreateLink(const UnicodeString AFileName, const UnicodeString APointTo, bool Symbolic) override;
+  virtual void __fastcall RemoteDeleteFile(const UnicodeString AFileName,
+    const TRemoteFile *AFile, intptr_t Params, TRmSessionAction &Action) override;
   virtual void __fastcall CustomCommandOnFile(const UnicodeString AFileName,
-    const TRemoteFile *AFile, const UnicodeString ACommand, intptr_t AParams, TCaptureOutputEvent OutputEvent);
-  virtual void __fastcall DoStartup();
-  virtual void __fastcall HomeDirectory();
+    const TRemoteFile *AFile, const UnicodeString ACommand, intptr_t AParams, TCaptureOutputEvent OutputEvent) override;
+  virtual void __fastcall DoStartup() override;
+  virtual void __fastcall HomeDirectory() override;
   virtual bool __fastcall IsCapable(intptr_t Capability) const override;
   virtual void __fastcall LookupUsersGroups() override;
   virtual void __fastcall ReadCurrentDirectory() override;
@@ -110,7 +110,7 @@ public:
   virtual void __fastcall LockFile(const UnicodeString AFileName, const TRemoteFile *AFile) override;
   virtual void __fastcall UnlockFile(const UnicodeString AFileName, const TRemoteFile *AFile) override;
   virtual void __fastcall UpdateFromMain(TCustomFileSystem *MainFileSystem) override;
-  virtual void __fastcall ClearCaches();
+  virtual void __fastcall ClearCaches() override;
 
 protected:
   TSecureShell *FSecureShell;
