@@ -1099,6 +1099,12 @@
 "Client certificate passphrase"
 "**Do you want to convert this %s private key to PuTTY format?**\n\n%s"
 "**Are you sure you want to transfer multiple files to a single file '%s' in a directory '%s'?**\n\nThe files will overwrite one another.\n\nIf you actually want to transfer all files to a directory '%s', keeping their name, make sure you terminate the path with a slash."
+"key-exchange algorithm"
+"host key type"
+"Access key ID"
+"A&ccess key ID:"
+"Secret access key"
+"Secret access &key:"
 
 "CORE_INFORMATION"
 "Yes"
