@@ -3124,7 +3124,7 @@ UnicodeString TSessionData::GetProtocolUrl() const
   return Url;
 }
 
-static bool IsIPv6Literal(UnicodeString HostName)
+bool IsIPv6Literal(UnicodeString HostName)
 {
   bool Result = (HostName.Pos(L":") > 0);
   if (Result)
