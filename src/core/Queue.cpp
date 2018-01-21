@@ -793,23 +793,19 @@ TTerminalQueueStatus *TTerminalQueue::CreateStatus(TTerminalQueueStatus *Current
       Status->SetDoneCount(Status->GetCount());
       UpdateStatusForList(Status.get(), FItems, Current);
     }
-    __finally
-    {
-#if 0
+    __finally__removed
+    ({
       if (Current != nullptr)
       {
         delete Current;
       }
-#endif // #if 0
-    };
+    })
   }
-#if 0
-  catch (...)
-  {
+  catch__removed
+  ({
     delete Status;
     throw;
-  }
-#endif // #if 0
+  })
   return Status.release();
 }
 
@@ -1342,7 +1338,7 @@ void TTerminalItem::InitTerminalItem(intptr_t Index)
   TSignalThread::InitSignalThread(true);
 
   std::unique_ptr<TBackgroundTerminal> Terminal(new TBackgroundTerminal(FQueue->FTerminal));
-  try
+  try__catch
   {
     Terminal->Init(FQueue->FSessionData, FQueue->FConfiguration, this, FORMAT("Background %d", Index));
     Terminal->SetUseBusyCursor(false);
@@ -1355,13 +1351,11 @@ void TTerminalItem::InitTerminalItem(intptr_t Index)
 
     FTerminal = Terminal.release();
   }
-  catch (...)
-  {
-#if 0
+  catch__removed
+  ({
     delete FTerminal;
-#endif
     throw;
-  }
+  })
 
   Start();
 }
@@ -1560,13 +1554,11 @@ bool TTerminalItem::WaitForUserAction(
 
     Result = !FTerminated && WaitForEvent() && !FCancel;
   }
-  __finally
-  {
-#if 0
+  __finally__removed
+  ({
     FUserAction = nullptr;
     FItem->SetStatus(PrevStatus);
-#endif // #if 0
-  };
+  })
 
   return Result;
 }
@@ -1693,13 +1685,11 @@ void TTerminalItem::OperationProgress(
 
       WaitForEvent();
     }
-    __finally
-    {
-#if 0
+    __finally__removed
+    ({
       FItem->SetStatus(PrevStatus);
       ProgressData.Resume();
-#endif // #if 0
-    };
+    })
   }
 
   if (FTerminated || FCancel)
@@ -2004,12 +1994,10 @@ bool TQueueItemProxy::ProcessUserAction()
     };
     Result = FQueue->ItemProcessUserAction(FQueueItem, nullptr);
   }
-  __finally
-  {
-#if 0
+  __finally__removed
+  ({
     FProcessingUserAction = false;
-#endif // #if 0
-  };
+  })
   return Result;
 }
 
@@ -2281,12 +2269,10 @@ void TTransferQueueItem::DoExecute(TTerminal *Terminal)
     };
     DoTransferExecute(Terminal, FParallelOperation);
   }
-  __finally
-  {
-#if 0
+  __finally__removed
+  ({
     FParallelOperation = nullptr;
-#endif // #if 0
-  };
+  })
 }
 
 void TTransferQueueItem::ProgressUpdated()
@@ -2450,13 +2436,11 @@ void TParallelTransferQueueItem::DoExecute(TTerminal *Terminal)
     }
     while (Continue);
   }
-  __finally
-  {
-#if 0
+  __finally__removed
+  ({
     OperationProgress.Stop();
     FParallelOperation->RemoveClient();
-#endif // #if 0
-  };
+  })
 }
 
 // TDownloadQueueItem
@@ -2719,13 +2703,11 @@ void TTerminalThread::RunAction(TNotifyEvent Action)
         Rethrow(FException);
       }
     }
-    __finally
-    {
-#if 0
+    __finally__removed
+    ({
       FAction = nullptr;
       SAFE_DESTROY_EX(Exception, FException);
-#endif // #if 0
-    };
+    })
   }
   catch (...)
   {
@@ -2788,12 +2770,10 @@ void __fastcall TTerminalThread::Rethrow(Exception *&AException)
       };
       RethrowException(AException);
     }
-    __finally
-    {
-#if 0
+    __finally__removed
+    ({
       SAFE_DESTROY_EX(Exception, AException);
-#endif // #if 0
-    };
+    })
   }
 }
 
@@ -2911,13 +2891,11 @@ void TTerminalThread::WaitForUserAction(TUserAction *UserAction)
         Rethrow(FIdleException);
       }
     }
-    __finally
-    {
-#if 0
+    __finally__removed
+    ({
       FUserAction = PrevUserAction;
       SAFE_DESTROY_EX(Exception, FException);
-#endif // #if 0
-    };
+    })
 
     // Contrary to a call before, this is unconditional,
     // otherwise cancelling authentication won't work,
