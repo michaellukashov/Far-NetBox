@@ -354,10 +354,10 @@ public:
   TCipher __fastcall GetCipher(intptr_t Index) const;
   void __fastcall SetKex(intptr_t Index, TKex Value);
   TKex __fastcall GetKex(intptr_t Index) const;
-  void __fastcall SetHostKeys(int Index, THostKey Value);
-  THostKey __fastcall GetHostKeys(int Index) const;
-  void __fastcall SetGssLib(int Index, TGssLib Value);
-  TGssLib __fastcall GetGssLib(int Index) const;
+  void __fastcall SetHostKey(intptr_t Index, THostKey Value);
+  THostKey __fastcall GetHostKey(intptr_t Index) const;
+  void __fastcall SetGssLib(intptr_t Index, TGssLib Value);
+  TGssLib __fastcall GetGssLib(intptr_t Index) const;
   void __fastcall SetGssLibCustom(UnicodeString Value);
   void __fastcall SetPublicKeyFile(UnicodeString Value);
   UnicodeString __fastcall GetPassphrase() const;
@@ -481,8 +481,8 @@ public:
   void SetMinTlsVersion(TTlsVersion Value);
   void SetMaxTlsVersion(TTlsVersion Value);
   void SetNotUtf(TAutoSwitch Value);
-  void __fastcall SetInternalEditorEncoding(int value);
-  void __fastcall SetS3DefaultRegion(UnicodeString value);
+  void __fastcall SetInternalEditorEncoding(intptr_t Value);
+  void __fastcall SetS3DefaultRegion(UnicodeString Value);
   void SetLogicalHostName(UnicodeString Value);
   void SetIsWorkspace(bool Value);
   void SetLink(UnicodeString Value);
@@ -757,8 +757,8 @@ public:
   UnicodeString GetNewPassword() const;
   bool GetChangePassword() const { return FChangePassword; }
   void SetChangePassword(bool Value);
-  void SetGssLib(intptr_t Index, TGssLib Value);
-  TGssLib GetGssLib(intptr_t Index) const;
+  void SetGssLibs(intptr_t Index, TGssLib Value);
+  TGssLib GetGssLibs(intptr_t Index) const;
   UnicodeString GetGssLibCustom() const { return FGssLibCustom; }
   void SetFtpDupFF(bool Value);
   void SetFtpUndupFF(bool Value);

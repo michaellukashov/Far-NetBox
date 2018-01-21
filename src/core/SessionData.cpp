@@ -2788,19 +2788,19 @@ UnicodeString TSessionData::GetKexList() const
   return Result;
 }
 
-void __fastcall TSessionData::SetHostKeys(int Index, THostKey value)
+void __fastcall TSessionData::SetHostKeys(intptr_t Index, THostKey Value)
 {
   DebugAssert(Index >= 0 && Index < HOSTKEY_COUNT);
   SET_SESSION_PROPERTY(HostKeys[Index]);
 }
 //---------------------------------------------------------------------
-THostKey __fastcall TSessionData::GetHostKeys(int Index) const
+THostKey __fastcall TSessionData::GetHostKey(intptr_t Index) const
 {
   DebugAssert(Index >= 0 && Index < HOSTKEY_COUNT);
   return FHostKeys[Index];
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetHostKeyList(UnicodeString value)
+void __fastcall TSessionData::SetHostKeyList(UnicodeString Value)
 {
   SetAlgoList(FHostKeys, DefaultHostKeyList, HostKeyNames, HOSTKEY_COUNT, hkWarn, value);
 }
@@ -2815,12 +2815,13 @@ UnicodeString __fastcall TSessionData::GetHostKeyList() const
   return Result;
 }
 //---------------------------------------------------------------------
+void __fastcall TSessionData::SetGssLibs(intptr_t Index, TGssLib value)
 {
   DebugAssert(Index >= 0 && Index < GSSLIB_COUNT);
   SET_SESSION_PROPERTY(GssLib[Index]);
 }
 
-TGssLib TSessionData::GetGssLib(intptr_t Index) const
+TGssLib TSessionData::GetGssLibs(intptr_t Index) const
 {
   DebugAssert(Index >= 0 && Index < GSSLIB_COUNT);
   return FGssLib[Index];
@@ -4322,16 +4323,17 @@ void TSessionData::SetNotUtf(TAutoSwitch Value)
   SET_SESSION_PROPERTY(NotUtf);
 }
 
-void __fastcall TSessionData::SetInternalEditorEncoding(int value)
+void __fastcall TSessionData::SetInternalEditorEncoding(intptr_t Value)
 {
   SET_SESSION_PROPERTY(InternalEditorEncoding);
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetS3DefaultRegion(UnicodeString value)
+void __fastcall TSessionData::SetS3DefaultRegion(UnicodeString Value)
 {
   SET_SESSION_PROPERTY(S3DefaultRegion);
 }
 //---------------------------------------------------------------------
+void __fastcall TSessionData::SetIsWorkspace(bool Value)
 {
   SET_SESSION_PROPERTY(IsWorkspace);
 }

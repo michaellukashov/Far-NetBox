@@ -176,7 +176,7 @@ public:
     const UnicodeString AHost, intptr_t Port, const UnicodeString AKeyType, const UnicodeString AKeyStr,
     const UnicodeString AFingerprint);
   bool __fastcall HaveHostKey(UnicodeString AHost, intptr_t Port, UnicodeString KeyType);
-  void __fastcall AskAlg(UnicodeString AlgType, UnicodeString AlgName);
+  void __fastcall AskAlg(UnicodeString AlgType, const UnicodeString AlgName);
   void __fastcall DisplayBanner(const UnicodeString Banner);
   void __fastcall OldKeyfileWarning();
   void __fastcall PuttyLogEvent(const char *AStr);

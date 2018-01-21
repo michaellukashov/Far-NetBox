@@ -2327,10 +2327,10 @@ struct TPasteKeyHandler
   UnicodeString NormalizedFingerprintSHA256;
   TSessionUI * UI;
 
-  void __fastcall Paste(TObject * Sender, unsigned int & Answer);
+  void __fastcall Paste(TObject * Sender, uintptr_t &Answer);
 };
 //---------------------------------------------------------------------------
-void __fastcall TPasteKeyHandler::Paste(TObject * /*Sender*/, unsigned int & Answer)
+void __fastcall TPasteKeyHandler::Paste(TObject * /*Sender*/, uintptr_t &Answer)
 {
   UnicodeString ClipboardText;
   if (TextFromClipboard(ClipboardText, true))
@@ -2500,14 +2500,16 @@ void __fastcall TSecureShell::VerifyHostKey(
 
       bool Unknown = StoredKeys.IsEmpty();
 
+      intptr_t Answers;
+      intptr_t AliasesCount;
       TQueryButtonAlias Aliases[4];
       Aliases[0].Button = qaRetry;
       Aliases[0].Alias = LoadStr(COPY_KEY_BUTTON);
       Aliases[0].ActionAlias = LoadStr(COPY_KEY_ACTION);
-      Aliases[0].OnSubmit = &ClipboardHandler.Copy;
+      Aliases[0].OnSubmit = nb::bind(&TClipboardHandler::Copy, &ClipboardHandler);
       Aliases[1].Button = qaIgnore;
       Aliases[1].Alias = LoadStr(PASTE_KEY_BUTTON);
-      Aliases[1].OnSubmit = &PasteKeyHandler.Paste;
+      Aliases[1].OnSubmit = nb::bind(&TPasteKeyHandler::Paste, &PasteKeyHandler);
       Aliases[1].GroupWith = qaYes;
       Answers = qaYes | qaCancel | qaRetry | qaIgnore;
       AliasesCount = 2;
@@ -2531,25 +2533,25 @@ void __fastcall TSecureShell::VerifyHostKey(
       Params.Aliases = Aliases;
       Params.AliasesCount = AliasesCount;
 
-      UnicodeString KeyTypeHuman = GetKeyTypeHuman(KeyType);
+      UnicodeString KeyTypeHuman = GetKeyTypeHuman(AKeyType);
       UnicodeString KeyDetails = FMTLOAD(KEY_DETAILS, (SignKeyType, SHA256, MD5));
-      UnicodeString Message = FMTLOAD((Unknown ? UNKNOWN_KEY4 : DIFFERENT_KEY5), (KeyTypeHuman, KeyDetails));
+      UnicodeString Message = FMTLOAD((Unknown ? UNKNOWN_KEY4 : DIFFERENT_KEY5), KeyTypeHuman, KeyDetails);
       {
         AddToList(Message, LoadStr(SCRIPTING_USE_HOSTKEY), L"\n");
       }
 
       uintptr_t R =
         FUI->QueryUser(Message, nullptr, Answers, &Params, qtWarning);
-      UnicodeString StoreKeyStr = KeyStr;
+      UnicodeString StoreKeyStr = AKeyStr;
 
       switch (R)
       {
       case qaOK:
         DebugAssert(!Unknown);
-          StoreKeyStr = (StoredKeys + HostKeyDelimiter + StoreKeyStr);
+        StoreKeyStr = (StoredKeys + HostKeyDelimiter + StoreKeyStr);
       // fall thru
       case qaYes:
-          store_host_key(AnsiString(Host).c_str(), Port, AnsiString(KeyType).c_str(), AnsiString(StoreKeyStr).c_str());
+        store_host_key(AnsiString(Host).c_str(), Port, AnsiString(AKeyType).c_str(), AnsiString(StoreKeyStr).c_str());
         Verified = true;
         break;
 
@@ -2584,18 +2586,16 @@ void __fastcall TSecureShell::VerifyHostKey(
       std::unique_ptr<Exception> E(new Exception(MainInstructions(Message)));
       try__finally
       {
-        FUI->FatalError(E, FMTLOAD(HOSTKEY, (FingerprintSHA256)));
+        FUI->FatalError(E.get(), FMTLOAD(HOSTKEY, (FingerprintSHA256)));
       }
-      __finally
-      {
-#if 0
+      __finally__removed
+      ({
         delete E;
-#endif // #if 0
-      };
+      })
     }
   }
 
-  Configuration->RememberLastFingerprint(FSessionData->SiteKey, SshFingerprintType, FingerprintSHA256);
+  GetConfiguration()->RememberLastFingerprint(FSessionData->GetSiteKey(), SshFingerprintType, FingerprintSHA256);
 }
 
 bool TSecureShell::HaveHostKey(UnicodeString AHost, intptr_t Port, UnicodeString KeyType)
@@ -2626,7 +2626,7 @@ bool TSecureShell::HaveHostKey(UnicodeString AHost, intptr_t Port, UnicodeString
   return Result;
 }
 
-void __fastcall TSecureShell::AskAlg(UnicodeString AlgType, UnicodeString AlgName)
+void __fastcall TSecureShell::AskAlg(UnicodeString AlgType, const UnicodeString AlgName)
 {
   // beware of changing order
   static const TPuttyTranslation AlgTranslation[] = {
@@ -2637,14 +2637,14 @@ void __fastcall TSecureShell::AskAlg(UnicodeString AlgType, UnicodeString AlgNam
     { L"hostkey type", KEYKEY_TYPE },
   };
 
-  TranslatePuttyMessage(AlgTranslation, LENOF(AlgTranslation), AlgType);
+  TranslatePuttyMessage(AlgTranslation, _countof(AlgTranslation), AlgType);
 
-  UnicodeString Msg = FMTLOAD(ALG_BELOW_TRESHOLD, (AlgType, AlgName));
+  UnicodeString Msg = FMTLOAD(ALG_BELOW_TRESHOLD, AlgType, AlgName);
 
-  if (FUI->QueryUser(Msg, NULL, qaYes | qaNo, NULL, qtWarning) == qaNo)
+  if (FUI->QueryUser(Msg, nullptr, qaYes | qaNo, NULL, qtWarning) == qaNo)
   {
-    UnicodeString Error = FMTLOAD(ALG_NOT_VERIFIED, (AlgType, AlgName));
-    FUI->FatalError(NULL, Error);
+    UnicodeString Error = FMTLOAD(ALG_NOT_VERIFIED, AlgType, AlgName);
+    FUI->FatalError(nullptr, Error);
   }
 }
 
