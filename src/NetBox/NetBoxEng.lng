@@ -1020,7 +1020,7 @@
 "The requested operation could not be completed because the specified byte range lock has not been granted."
 "Private key file '%s' does not exist or cannot be opened."
 "Checksum algorithm '%s' is not supported."
-"Cipher %s was not verified!"
+"The %s %s was not verified!"
 "Key-exchange algorithm %s was not verified!"
 "Common reasons for the Error code 4 are:\n- Renaming a file to a name of already existing file.\n- Creating a directory that already exists.\n- Moving a remote file to a different filesystem (HDD).\n- Uploading a file to a full filesystem (HDD).\n- Exceeding a user disk quota."
 "Cannot open certificate '%s'."
