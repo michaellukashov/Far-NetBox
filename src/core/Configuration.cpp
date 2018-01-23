@@ -4,19 +4,19 @@
 
 #include <FileInfo.h>
 
-#include "Common.h"
-#include "Exceptions.h"
+#include <Common.h>
+#include <Exceptions.h>
 #include "Configuration.h"
 #include "PuttyIntf.h"
 #include "TextsCore.h"
 #include "Interface.h"
 #include "CoreMain.h"
-#include "Security.h"
-#include <shlobj.h>
+#include "WinSCPSecurity.h"
+#include <System.ShlObj.hpp>
 #include <System.IOUtils.hpp>
 #include <System.StrUtils.hpp>
 //---------------------------------------------------------------------------
-#pragma package(smart_init)
+__removed #pragma package(smart_init)
 //---------------------------------------------------------------------------
 const wchar_t * AutoSwitchNames = L"On;Off;Auto";
 const wchar_t * NotAutoSwitchNames = L"Off;On;Auto";
@@ -36,32 +36,75 @@ const UnicodeString TlsFingerprintType(L"tls");
 //---------------------------------------------------------------------------
 const UnicodeString HttpsCertificateStorageKey(L"HttpsCertificates");
 //---------------------------------------------------------------------------
-__fastcall TConfiguration::TConfiguration()
+TConfiguration::TConfiguration(TObjectClassId Kind) :
+  TObject(Kind),
+  FDontSave(false),
+  FChanged(false),
+  FUpdating(0),
+  FApplicationInfo(nullptr),
+  FLogging(false),
+  FPermanentLogging(false),
+  FLogWindowLines(0),
+  FLogFileAppend(false),
+  FLogSensitive(false),
+  FPermanentLogSensitive(false),
+  FLogMaxSize(0),
+  FPermanentLogMaxSize(0),
+  FLogMaxCount(0),
+  FPermanentLogMaxCount(0),
+  FLogProtocol(0),
+  FPermanentLogProtocol(0),
+  FActualLogProtocol(0),
+  FLogActions(false),
+  FPermanentLogActions(false),
+  FLogActionsRequired(false),
+  FConfirmOverwriting(false),
+  FConfirmResume(false),
+  FAutoReadDirectoryAfterOp(false),
+  FSessionReopenAuto(0),
+  FSessionReopenBackground(0),
+  FSessionReopenTimeout(0),
+  FSessionReopenAutoStall(0),
+  FProgramIniPathWritable(0),
+  FTunnelLocalPortNumberLow(0),
+  FTunnelLocalPortNumberHigh(0),
+  FCacheDirectoryChangesMaxSize(0),
+  FShowFtpWelcomeMessage(false),
+  FTryFtpWhenSshFails(false),
+  FParallelDurationThreshold(0),
+  FScripting(false),
+  FSessionReopenAutoMaximumNumberOfRetries(0),
+  FDisablePasswordStoring(false),
+  FForceBanners(false),
+  FDisableAcceptingHostKeys(false),
+  FDefaultCollectUsage(false)
 {
-  FCriticalSection = new TCriticalSection();
+  __removed FCriticalSection = new TCriticalSection();
   FUpdating = 0;
   FStorage = stDetect;
   FDontSave = false;
-  FApplicationInfo = NULL;
-  FUsage = new TUsage(this);
+  FApplicationInfo = nullptr;
+  __removed FUsage = new TUsage(this);
   FDefaultCollectUsage = false;
   FScripting = false;
 
   UnicodeString RandomSeedPath;
-  if (!GetEnvironmentVariable(L"APPDATA").IsEmpty())
+  if (!base::GetEnvVariable("APPDATA").IsEmpty())
   {
-    RandomSeedPath = L"%APPDATA%";
+    RandomSeedPath = "%APPDATA%";
   }
   else
   {
-    RandomSeedPath = GetShellFolderPath(CSIDL_LOCAL_APPDATA);
+#if defined(_MSC_VER) && !defined(__clang__)
+    RandomSeedPath = ::GetShellFolderPath(CSIDL_LOCAL_APPDATA);
     if (RandomSeedPath.IsEmpty())
     {
-      RandomSeedPath = GetShellFolderPath(CSIDL_APPDATA);
+      RandomSeedPath = ::GetShellFolderPath(CSIDL_APPDATA);
     }
+#endif // if defined(_MSC_VER) && !defined(__clang__)
   }
 
-  FDefaultRandomSeedFile = IncludeTrailingBackslash(RandomSeedPath) + L"winscp.rnd";
+  FDefaultRandomSeedFile = ::IncludeTrailingBackslash(RandomSeedPath) + L"winscp.rnd";
 }
 //---------------------------------------------------------------------------
 void __fastcall TConfiguration::Default()
@@ -72,20 +115,19 @@ void __fastcall TConfiguration::Default()
   FForceBanners = false;
   FDisableAcceptingHostKeys = false;
 
-  TRegistryStorage * AdminStorage;
-  AdminStorage = new TRegistryStorage(RegistryStorageKey, HKEY_LOCAL_MACHINE);
-  try
+  std::unique_ptr<TRegistryStorage> AdminStorage(new TRegistryStorage(GetRegistryStorageKey(), HKEY_LOCAL_MACHINE));
+  try__finally
   {
     if (AdminStorage->OpenRootKey(false))
     {
-      LoadAdmin(AdminStorage);
+      LoadAdmin(AdminStorage.get());
       AdminStorage->CloseSubKey();
     }
   }
-  __finally
-  {
+  __finally__removed
+  ({
     delete AdminStorage;
-  }
+  })
 
   RandomSeedFile = FDefaultRandomSeedFile;
   PuttyRegistryStorageKey = OriginalPuttyRegistryStorageKey;

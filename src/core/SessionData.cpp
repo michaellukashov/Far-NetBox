@@ -1790,7 +1790,7 @@ void __fastcall TSessionData::MaskPasswords()
   }
 }
 //---------------------------------------------------------------------
-bool __fastcall TSessionData::ParseUrl(UnicodeString Url, TOptions * Options,
+bool __fastcall TSessionData::ParseUrl(UnicodeString AUrl, TOptions * Options,
   TStoredSessionList * AStoredSessions, bool & DefaultsOnly, UnicodeString * AFileName,
   bool *AProtocolDefined, UnicodeString *MaskedUrl)
 {
@@ -1800,102 +1800,102 @@ bool __fastcall TSessionData::ParseUrl(UnicodeString Url, TOptions * Options,
   intptr_t APortNumber = 0;
   TFtps AFtps = ftpsNone;
   intptr_t ProtocolLen = 0;
-  if (Url.SubString(1, 7).LowerCase() == L"netbox:")
+  if (AUrl.SubString(1, 7).LowerCase() == L"netbox:")
   {
     // Remove "netbox:" prefix
-    Url.Delete(1, 7);
-    if (Url.SubString(1, 2) == L"//")
+    AUrl.Delete(1, 7);
+    if (AUrl.SubString(1, 2) == L"//")
     {
       // Remove "//"
-      Url.Delete(1, 2);
+      AUrl.Delete(1, 2);
     }
   }
-  if (Url.SubString(1, 7).LowerCase() == L"webdav:")
+  if (AUrl.SubString(1, 7).LowerCase() == L"webdav:")
   {
     AFSProtocol = fsWebDAV;
     AFtps = ftpsNone;
     APortNumber = HTTPPortNumber;
-    Url.Delete(1, 7);
+    AUrl.Delete(1, 7);
     ProtocolDefined = true;
   }
-  if (IsProtocolUrl(Url, ScpProtocol, ProtocolLen))
+  if (IsProtocolUrl(AUrl, ScpProtocol, ProtocolLen))
   {
     AFSProtocol = fsSCPonly;
     APortNumber = SshPortNumber;
-    MoveStr(Url, MaskedUrl, ProtocolLen);
+    MoveStr(AUrl, MaskedUrl, ProtocolLen);
     ProtocolDefined = true;
   }
-  else if (IsProtocolUrl(Url, SftpProtocol, ProtocolLen))
+  else if (IsProtocolUrl(AUrl, SftpProtocol, ProtocolLen))
   {
     AFSProtocol = fsSFTPonly;
     APortNumber = SshPortNumber;
-    MoveStr(Url, MaskedUrl, ProtocolLen);
+    MoveStr(AUrl, MaskedUrl, ProtocolLen);
     ProtocolDefined = true;
   }
-  else if (IsProtocolUrl(Url, FtpProtocol, ProtocolLen))
+  else if (IsProtocolUrl(AUrl, FtpProtocol, ProtocolLen))
   {
     AFSProtocol = fsFTP;
     SetFtps(ftpsNone);
     APortNumber = FtpPortNumber;
-    MoveStr(Url, MaskedUrl, ProtocolLen);
+    MoveStr(AUrl, MaskedUrl, ProtocolLen);
     ProtocolDefined = true;
   }
-  else if (IsProtocolUrl(Url, FtpsProtocol, ProtocolLen))
+  else if (IsProtocolUrl(AUrl, FtpsProtocol, ProtocolLen))
   {
     AFSProtocol = fsFTP;
     AFtps = ftpsImplicit;
     APortNumber = FtpsImplicitPortNumber;
-    MoveStr(Url, MaskedUrl, ProtocolLen);
+    MoveStr(AUrl, MaskedUrl, ProtocolLen);
     ProtocolDefined = true;
   }
-  else if (IsProtocolUrl(Url, FtpesProtocol, ProtocolLen))
+  else if (IsProtocolUrl(AUrl, FtpesProtocol, ProtocolLen))
   {
     AFSProtocol = fsFTP;
     AFtps = ftpsExplicitTls;
     APortNumber = FtpPortNumber;
-    MoveStr(Url, MaskedUrl, ProtocolLen);
+    MoveStr(AUrl, MaskedUrl, ProtocolLen);
     ProtocolDefined = true;
   }
-  else if (IsProtocolUrl(Url, WebDAVProtocol, ProtocolLen) ||
-    IsProtocolUrl(Url, HttpProtocol, ProtocolLen))
+  else if (IsProtocolUrl(AUrl, WebDAVProtocol, ProtocolLen) ||
+    IsProtocolUrl(AUrl, HttpProtocol, ProtocolLen))
   {
     AFSProtocol = fsWebDAV;
     AFtps = ftpsNone;
     APortNumber = HTTPPortNumber;
-    MoveStr(Url, MaskedUrl, ProtocolLen);
+    MoveStr(AUrl, MaskedUrl, ProtocolLen);
     ProtocolDefined = true;
   }
-  else if (IsProtocolUrl(Url, WebDAVSProtocol, ProtocolLen) ||
-    IsProtocolUrl(Url, HttpsProtocol, ProtocolLen))
+  else if (IsProtocolUrl(AUrl, WebDAVSProtocol, ProtocolLen) ||
+    IsProtocolUrl(AUrl, HttpsProtocol, ProtocolLen))
   {
     AFSProtocol = fsWebDAV;
     AFtps = ftpsImplicit;
     APortNumber = HTTPSPortNumber;
-    MoveStr(Url, MaskedUrl, ProtocolLen);
+    MoveStr(AUrl, MaskedUrl, ProtocolLen);
     ProtocolDefined = true;
   }
-  else if (IsProtocolUrl(Url, S3Protocol, ProtocolLen))
+  else if (IsProtocolUrl(AUrl, S3Protocol, ProtocolLen))
   {
     AFSProtocol = fsS3;
     AFtps = ftpsImplicit;
     APortNumber = HTTPSPortNumber;
-    MoveStr(Url, MaskedUrl, ProtocolLen);
+    MoveStr(AUrl, MaskedUrl, ProtocolLen);
     ProtocolDefined = true;
   }
-  else if (IsProtocolUrl(Url, SshProtocol, ProtocolLen))
+  else if (IsProtocolUrl(AUrl, SshProtocol, ProtocolLen))
   {
     // For most uses, handling ssh:// the same way as sftp://
     // The only place where a difference is made is GetLoginData() in WinMain.cpp
     AFSProtocol = fsSFTPonly;
     SetPuttyProtocol(PuttySshProtocol);
     APortNumber = SshPortNumber;
-    MoveStr(Url, MaskedUrl, ProtocolLen);
+    MoveStr(AUrl, MaskedUrl, ProtocolLen);
     ProtocolDefined = true;
   }
 
-  if (ProtocolDefined && (Url.SubString(1, 2) == L"//"))
+  if (ProtocolDefined && (AUrl.SubString(1, 2) == L"//"))
   {
-    MoveStr(Url, MaskedUrl, 2);
+    MoveStr(AUrl, MaskedUrl, 2);
   }
 
   if (AProtocolDefined != nullptr)
@@ -1903,9 +1903,9 @@ bool __fastcall TSessionData::ParseUrl(UnicodeString Url, TOptions * Options,
     *AProtocolDefined = ProtocolDefined;
   }
 
-  if (!Url.IsEmpty())
+  if (!AUrl.IsEmpty())
   {
-    UnicodeString DecodedUrl = DecodeUrlChars(Url);
+    UnicodeString DecodedUrl = DecodeUrlChars(AUrl);
     // lookup stored session even if protocol was defined
     // (this allows setting for example default username for host
     // by creating stored session named by host)
@@ -1950,7 +1950,7 @@ bool __fastcall TSessionData::ParseUrl(UnicodeString Url, TOptions * Options,
     if (Data != nullptr)
     {
       Assign(Data);
-      RemoteDirectory = Url.SubString(Data->GetName().Length() + 1);
+      RemoteDirectory = AUrl.SubString(Data->GetName().Length() + 1);
       if (RemoteDirectory.Length() > 0 && RemoteDirectory[1] == ':')
         RemoteDirectory.Delete(1, 1);
 
@@ -1980,13 +1980,13 @@ bool __fastcall TSessionData::ParseUrl(UnicodeString Url, TOptions * Options,
       }
       SetName(L"");
 
-      intptr_t PSlash = Url.Pos(L"/");
+      intptr_t PSlash = AUrl.Pos(L"/");
       if (PSlash == 0)
       {
-        PSlash = Url.Length() + 1;
+        PSlash = AUrl.Length() + 1;
       }
 
-      UnicodeString ConnectInfo = Url.SubString(1, PSlash - 1);
+      UnicodeString ConnectInfo = AUrl.SubString(1, PSlash - 1);
 
       intptr_t P = ConnectInfo.LastDelimiter(L"@");
 
@@ -2055,7 +2055,7 @@ bool __fastcall TSessionData::ParseUrl(UnicodeString Url, TOptions * Options,
 
       SetPassword(DecodeUrlChars(UserInfo));
 
-      UnicodeString RemoteDirectoryWithSessionParams = Url.SubString(PSlash, Url.Length() - PSlash + 1);
+      UnicodeString RemoteDirectoryWithSessionParams = AUrl.SubString(PSlash, AUrl.Length() - PSlash + 1);
       RemoteDirectory = CutToChar(RemoteDirectoryWithSessionParams, UrlParamSeparator, false);
       UnicodeString SessionParams = RemoteDirectoryWithSessionParams;
 
@@ -2086,9 +2086,9 @@ bool __fastcall TSessionData::ParseUrl(UnicodeString Url, TOptions * Options,
         (*MaskedUrl) += OrigHostInfo + RemoteDirectory;
       }
 
-      if (PSlash <= Url.Length())
+      if (PSlash <= AUrl.Length())
       {
-        RemoteDirectory = Url.SubString(PSlash, Url.Length() - PSlash + 1);
+        RemoteDirectory = AUrl.SubString(PSlash, AUrl.Length() - PSlash + 1);
       }
     }
 
@@ -2801,23 +2801,28 @@ THostKey __fastcall TSessionData::GetHostKey(intptr_t Index) const
 //---------------------------------------------------------------------
 void __fastcall TSessionData::SetHostKeyList(UnicodeString Value)
 {
-  SetAlgoList(FHostKeys, DefaultHostKeyList, HostKeyNames, HOSTKEY_COUNT, hkWarn, value);
+  SetAlgoList(FHostKeys, DefaultHostKeyList, HostKeyNames, HOSTKEY_COUNT, hkWarn, Value);
 }
 //---------------------------------------------------------------------
 UnicodeString __fastcall TSessionData::GetHostKeyList() const
 {
   UnicodeString Result;
-  for (int Index = 0; Index < HOSTKEY_COUNT; Index++)
+  for (intptr_t Index = 0; Index < HOSTKEY_COUNT; Index++)
   {
-    Result += UnicodeString(Index ? L"," : L"") + HostKeyNames[HostKeys[Index]];
+    Result += UnicodeString(Index ? L"," : L"") + HostKeyNames[FHostKeys[Index]];
   }
   return Result;
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetGssLibs(intptr_t Index, TGssLib value)
+void __fastcall TSessionData::SetGssLibs(intptr_t Index, TGssLib Value)
 {
   DebugAssert(Index >= 0 && Index < GSSLIB_COUNT);
-  SET_SESSION_PROPERTY(GssLib[Index]);
+  // SET_SESSION_PROPERTY(FGssLib[Index]);
+  if (FGssLib[Index] != Value)
+  {
+    FGssLib[Index] = Value;
+  }
+  Modify();
 }
 
 TGssLib TSessionData::GetGssLibs(intptr_t Index) const
@@ -3293,10 +3298,10 @@ UnicodeString TSessionData::GenerateOpenCommandArgs() const
 
   if (RawSettings->GetCount() > 0)
   {
-    AddSwitch(Result, RawSettingsOption, Rtf);
-
     TODO("implement");
 #if 0
+    AddSwitch(Result, RawSettingsOption, FRtf);
+
     for (int Index = 0; Index < RawSettings->GetCount(); Index++)
     {
       UnicodeString Name = RawSettings->GetName(Index);
@@ -4939,11 +4944,11 @@ void TStoredSessionList::ImportFromKnownHosts(TStrings *Lines)
                 HostNameStr.SetLength(P - 1);
               }
               P = Pos(L':', HostNameStr);
-              int PortNumber = -1;
+              intptr_t PortNumber = -1;
               if (P > 0)
               {
                 UnicodeString PortNumberStr = HostNameStr.SubString(P + 1, HostNameStr.Length() - P);
-                PortNumber = StrToInt(PortNumberStr);
+                PortNumber = ::StrToInt64(PortNumberStr);
                 HostNameStr.SetLength(P - 1);
               }
               if ((HostNameStr.Length() >= 2) &&
