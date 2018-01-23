@@ -129,8 +129,8 @@ void __fastcall TConfiguration::Default()
     delete AdminStorage;
   })
 
-  RandomSeedFile = FDefaultRandomSeedFile;
-  PuttyRegistryStorageKey = OriginalPuttyRegistryStorageKey;
+  SetRandomSeedFile(FDefaultRandomSeedFile);
+  SetPuttyRegistryStorageKey(OriginalPuttyRegistryStorageKey);
   FConfirmOverwriting = true;
   FConfirmResume = true;
   FAutoReadDirectoryAfterOp = true;
@@ -142,14 +142,15 @@ void __fastcall TConfiguration::Default()
   FTunnelLocalPortNumberHigh = 50099;
   FCacheDirectoryChangesMaxSize = 100;
   FShowFtpWelcomeMessage = false;
-  FExternalIpAddress = L"";
+  FExternalIpAddress.Clear();
   FTryFtpWhenSshFails = true;
   FParallelDurationThreshold = 10;
-  CollectUsage = FDefaultCollectUsage;
+  SetCollectUsage(FDefaultCollectUsage);
+  FSessionReopenAutoMaximumNumberOfRetries = CONST_DEFAULT_NUMBER_OF_RETRIES;
 
   FLogging = false;
   FPermanentLogging = false;
-  FLogFileName = DefaultLogFileName;
+  FLogFileName = GetDefaultLogFileName();
   FPermanentLogFileName = FLogFileName;
   FLogFileAppend = true;
   FLogSensitive = false;
@@ -164,7 +165,7 @@ void __fastcall TConfiguration::Default()
   FLogActions = false;
   FPermanentLogActions = false;
   FLogActionsRequired = false;
-  FActionsLogFileName = L"%TEMP%\\!S.xml";
+  FActionsLogFileName = "%TEMP%\\&S.xml";
   FPermanentActionsLogFileName = FActionsLogFileName;
   FProgramIniPathWrittable = -1;
   FCustomIniFileStorageName = LoadCustomIniFileStorageName();
@@ -175,16 +176,21 @@ void __fastcall TConfiguration::Default()
 __fastcall TConfiguration::~TConfiguration()
 {
   DebugAssert(!FUpdating);
-  if (FApplicationInfo) FreeFileInfo(FApplicationInfo);
-  delete FCriticalSection;
-  delete FUsage;
+  if (FApplicationInfo)
+  {
+    FreeFileInfo(FApplicationInfo);
+  }
+  __removed delete FCriticalSection;
+  __removed delete FUsage;
 }
 //---------------------------------------------------------------------------
 void __fastcall TConfiguration::UpdateStaticUsage()
 {
+#if 0
   Usage->Set(L"ConfigurationIniFile", (Storage == stIniFile));
   Usage->Set(L"ConfigurationIniFileCustom", !CustomIniFileStorageName.IsEmpty());
   Usage->Set("Unofficial", IsUnofficial);
+#endif // #if 0
 
   // this is called from here, because we are guarded from calling into
   // master password handler here, see TWinConfiguration::UpdateStaticUsage
@@ -194,32 +200,40 @@ void __fastcall TConfiguration::UpdateStaticUsage()
 THierarchicalStorage * TConfiguration::CreateConfigStorage()
 {
   bool SessionList = false;
-  return CreateScpStorage(SessionList);
+  return CreateStorage(SessionList);
 }
 //---------------------------------------------------------------------------
-THierarchicalStorage * TConfiguration::CreateScpStorage(bool & SessionList)
+THierarchicalStorage * TConfiguration::CreateStorage(bool & SessionList)
 {
   TGuard Guard(FCriticalSection);
-  THierarchicalStorage * Result;
-  if (Storage == stRegistry)
+  THierarchicalStorage *Result = nullptr;
+  if (GetStorage() == stRegistry)
   {
-    Result = new TRegistryStorage(RegistryStorageKey);
+    Result = new TRegistryStorage(GetRegistryStorageKey());
   }
-  else if (Storage == stNul)
+  else if (GetStorage() == stNul)
   {
+#if 0
     Result = TIniFileStorage::CreateFromPath(INI_NUL);
+#endif // #if 0
+    ThrowNotImplemented(3005);
+    DebugAssert(false);
   }
   else
   {
+#if 0
     UnicodeString StorageName = IniFileStorageName;
     Result = TIniFileStorage::CreateFromPath(StorageName);
+#endif // #if 0
+    ThrowNotImplemented(3005);
+    DebugAssert(false);
   }
 
-  if ((FOptionsStorage.get() != NULL) && (FOptionsStorage->Count > 0))
+  if ((FOptionsStorage.get() != nullptr) && (FOptionsStorage->GetCount() > 0))
   {
     if (!SessionList)
     {
-      Result = new TOptionsStorage(FOptionsStorage.get(), ConfigurationSubKey, Result);
+      __removed Result = new TOptionsStorage(FOptionsStorage.get(), ConfigurationSubKey, Result);
     }
     else
     {
@@ -240,13 +254,17 @@ THierarchicalStorage * TConfiguration::CreateScpStorage(bool & SessionList)
 UnicodeString __fastcall TConfiguration::PropertyToKey(const UnicodeString AProperty)
 {
   // no longer useful
-  int P = AProperty.LastDelimiter(L".>");
+  intptr_t P = AProperty.LastDelimiter(L".>");
   return AProperty.SubString(P + 1, AProperty.Length() - P);
 }
-//---------------------------------------------------------------------------
+#define LASTELEM(ELEM) \
+  ELEM.SubString(ELEM.LastDelimiter(L".>") + 1, ELEM.Length() - ELEM.LastDelimiter(L".>"))
+
 #define BLOCK(KEY, CANCREATE, BLOCK) \
-  if (Storage->OpenSubKey(KEY, CANCREATE, true)) try { BLOCK } __finally { Storage->CloseSubKey(); }
-#define KEY(TYPE, VAR) KEYEX(TYPE, VAR, PropertyToKey(TEXT(#VAR)))
+  if (Storage->OpenSubKey(KEY, CANCREATE, true)) \
+    { SCOPE_EXIT { Storage->CloseSubKey(); }; { BLOCK } }
+#define KEY(TYPE, VAR) KEYEX(TYPE, VAR, VAR)
+#undef REGCONFIG
 #define REGCONFIG(CANCREATE) \
   BLOCK(L"Interface", CANCREATE, \
     KEY(String,   RandomSeedFile); \
@@ -266,28 +284,29 @@ UnicodeString __fastcall TConfiguration::PropertyToKey(const UnicodeString AProp
     KEY(Bool,     TryFtpWhenSshFails); \
     KEY(Integer,  ParallelDurationThreshold); \
     KEY(Bool,     CollectUsage); \
+    KEY(Integer,  SessionReopenAutoMaximumNumberOfRetries); \
   ); \
   BLOCK(L"Logging", CANCREATE, \
-    KEYEX(Bool,  PermanentLogging, L"Logging"); \
-    KEYEX(String,PermanentLogFileName, L"LogFileName"); \
+    KEYEX(Bool,  PermanentLogging, Logging); \
+    KEYEX(String,PermanentLogFileName, LogFileName); \
     KEY(Bool,    LogFileAppend); \
-    KEYEX(Bool,  PermanentLogSensitive, L"LogSensitive"); \
-    KEYEX(Int64, PermanentLogMaxSize, L"LogMaxSize"); \
-    KEYEX(Integer, PermanentLogMaxCount, L"LogMaxCount"); \
-    KEYEX(Integer,PermanentLogProtocol, L"LogProtocol"); \
-    KEYEX(Bool,  PermanentLogActions, L"LogActions"); \
-    KEYEX(String,PermanentActionsLogFileName, L"ActionsLogFileName"); \
-  );
+    KEYEX(Bool,  PermanentLogSensitive, LogSensitive); \
+    KEYEX(Int64, PermanentLogMaxSize, LogMaxSize); \
+    KEYEX(Integer, PermanentLogMaxCount, LogMaxCount); \
+    KEYEX(Integer,PermanentLogProtocol, LogProtocol); \
+    KEYEX(Bool,  PermanentLogActions, LogActions); \
+    KEYEX(String,PermanentActionsLogFileName, ActionsLogFileName); \
+  )
 //---------------------------------------------------------------------------
-void __fastcall TConfiguration::SaveData(THierarchicalStorage * Storage, bool /*All*/)
+void TConfiguration::SaveData(THierarchicalStorage *Storage, bool /*All*/)
 {
-  #define KEYEX(TYPE, VAR, NAME) Storage->Write ## TYPE(NAME, VAR)
+#define KEYEX(TYPE, NAME, VAR) Storage->Write ## TYPE(LASTELEM(UnicodeString(#NAME)), Get ## VAR())
   REGCONFIG(true);
   #undef KEYEX
 
-  if (Storage->OpenSubKey(L"Usage", true))
+  if (Storage->OpenSubKey("Usage", true))
   {
-    FUsage->Save(Storage);
+    __removed FUsage->Save(Storage);
     Storage->CloseSubKey();
   }
 }
@@ -306,25 +325,28 @@ void __fastcall TConfiguration::SaveExplicit()
 //---------------------------------------------------------------------------
 void __fastcall TConfiguration::DoSave(bool All, bool Explicit)
 {
-  if (FDontSave) return;
-
-  THierarchicalStorage * AStorage = CreateConfigStorage();
-  try
+  if (FDontSave)
   {
-    AStorage->AccessMode = smReadWrite;
-    AStorage->Explicit = Explicit;
-    if (AStorage->OpenSubKey(ConfigurationSubKey, true))
+    return;
+  }
+
+  std::unique_ptr<THierarchicalStorage> Storage(CreateConfigStorage());
+  try__finally
+  {
+    Storage->SetAccessMode(smReadWrite);
+    Storage->SetExplicit(Explicit);
+    if (Storage->OpenSubKey(GetConfigurationSubKey(), true))
     {
       // if saving to TOptionsStorage, make sure we save everything so that
       // all configuration is properly transferred to the master storage
-      bool ConfigAll = All || AStorage->Temporary;
-      SaveData(AStorage, ConfigAll);
+      bool ConfigAll = All || Storage->GetTemporary();
+      SaveData(Storage.get(), ConfigAll);
     }
   }
-  __finally
-  {
+  __finally__removed
+  ({
     delete AStorage;
-  }
+  })
 
   Saved();
 
@@ -334,7 +356,7 @@ void __fastcall TConfiguration::DoSave(bool All, bool Explicit)
   }
 
   // clean up as last, so that if it fails (read only INI), the saving can proceed
-  if (Storage == stRegistry)
+  if (GetStorage() == stRegistry)
   {
     CleanupIniFile();
   }
@@ -361,14 +383,16 @@ void __fastcall TConfiguration::SaveCustomIniFileStorageName()
 //---------------------------------------------------------------------------
 void __fastcall TConfiguration::Export(const UnicodeString AFileName)
 {
+  ThrowNotImplemented(3004);
+#if 0
   // not to "append" the export to an existing file
   if (FileExists(AFileName))
   {
     DeleteFileChecked(AFileName);
   }
 
-  THierarchicalStorage * Storage = NULL;
-  THierarchicalStorage * ExportStorage = NULL;
+  THierarchicalStorage * Storage = nullptr;
+  THierarchicalStorage * ExportStorage = nullptr;
   try
   {
     ExportStorage = TIniFileStorage::CreateFromPath(AFileName);
@@ -392,10 +416,13 @@ void __fastcall TConfiguration::Export(const UnicodeString AFileName)
   }
 
   StoredSessions->Export(AFileName);
+#endif // #if 0
 }
 //---------------------------------------------------------------------------
 void __fastcall TConfiguration::Import(const UnicodeString AFileName)
 {
+  ThrowNotImplemented(3005);
+#if 0
   THierarchicalStorage * Storage = NULL;
   THierarchicalStorage * ImportStorage = NULL;
   try
@@ -427,19 +454,18 @@ void __fastcall TConfiguration::Import(const UnicodeString AFileName)
 
   // save all and explicit
   DoSave(true, true);
+#endif // #if 0
 }
 //---------------------------------------------------------------------------
 void __fastcall TConfiguration::LoadData(THierarchicalStorage * Storage)
 {
-  #define KEYEX(TYPE, VAR, NAME) VAR = Storage->Read ## TYPE(NAME, VAR)
-  #pragma warn -eas
+#define KEYEX(TYPE, NAME, VAR) Set ## VAR(Storage->Read ## TYPE(LASTELEM(UnicodeString(#NAME)), Get ## VAR()))
   REGCONFIG(false);
-  #pragma warn +eas
   #undef KEYEX
 
-  if (Storage->OpenSubKey(L"Usage", false))
+  if (Storage->OpenSubKey("Usage", false))
   {
-    FUsage->Load(Storage);
+    __removed FUsage->Load(Storage);
     Storage->CloseSubKey();
   }
 
@@ -448,21 +474,21 @@ void __fastcall TConfiguration::LoadData(THierarchicalStorage * Storage)
   {
      FPermanentActionsLogFileName = FPermanentLogFileName;
      FPermanentLogging = false;
-     FPermanentLogFileName = L"";
+    FPermanentLogFileName.Clear();
   }
 }
 //---------------------------------------------------------------------------
 void __fastcall TConfiguration::LoadAdmin(THierarchicalStorage * Storage)
 {
-  FDisablePasswordStoring = Storage->ReadBool(L"DisablePasswordStoring", FDisablePasswordStoring);
-  FForceBanners = Storage->ReadBool(L"ForceBanners", FForceBanners);
-  FDisableAcceptingHostKeys = Storage->ReadBool(L"DisableAcceptingHostKeys", FDisableAcceptingHostKeys);
-  FDefaultCollectUsage = Storage->ReadBool(L"DefaultCollectUsage", FDefaultCollectUsage);
+  FDisablePasswordStoring = Storage->ReadBool("DisablePasswordStoring", FDisablePasswordStoring);
+  FForceBanners = Storage->ReadBool("ForceBanners", FForceBanners);
+  FDisableAcceptingHostKeys = Storage->ReadBool("DisableAcceptingHostKeys", FDisableAcceptingHostKeys);
+  FDefaultCollectUsage = Storage->ReadBool("DefaultCollectUsage", FDefaultCollectUsage);
 }
 //---------------------------------------------------------------------------
 void __fastcall TConfiguration::LoadFrom(THierarchicalStorage * Storage)
 {
-  if (Storage->OpenSubKey(ConfigurationSubKey, false))
+  if (Storage->OpenSubKey(GetConfigurationSubKey(), false))
   {
     LoadData(Storage);
     Storage->CloseSubKey();
@@ -483,46 +509,50 @@ UnicodeString __fastcall TConfiguration::LoadCustomIniFileStorageName()
     Result = RegistryStorage->ReadString(L"IniFile", L"");
     RegistryStorage->CloseSubKey();
   }
-  RegistryStorage.reset(NULL);
+  RegistryStorage.reset(nullptr);
   return Result;
 }
 //---------------------------------------------------------------------------
 void __fastcall TConfiguration::Load(THierarchicalStorage * Storage)
 {
   TGuard Guard(FCriticalSection);
-  TStorageAccessMode StorageAccessMode = Storage->AccessMode;
-  try
+  TStorageAccessMode StorageAccessMode = Storage->GetAccessMode();
+  try__finally
   {
-    Storage->AccessMode = smRead;
+    SCOPE_EXIT
+    {
+      Storage->SetAccessMode(StorageAccessMode);
+    };
+    Storage->SetAccessMode(smRead);
     LoadFrom(Storage);
   }
-  __finally
-  {
+  __finally__removed
+  ({
     Storage->AccessMode = StorageAccessMode;
-  }
+  })
 }
 //---------------------------------------------------------------------------
 void __fastcall TConfiguration::CopyData(THierarchicalStorage * Source,
   THierarchicalStorage * Target)
 {
-  TStrings * Names = new TStringList();
-  try
+  std::unique_ptr<TStrings> Names(new TStringList());
+  try__finally
   {
-    if (Source->OpenSubKey(ConfigurationSubKey, false))
+    if (Source->OpenSubKey(GetConfigurationSubKey(), false))
     {
-      if (Target->OpenSubKey(ConfigurationSubKey, true))
+      if (Target->OpenSubKey(GetConfigurationSubKey(), true))
       {
-        if (Source->OpenSubKey(L"CDCache", false))
+        if (Source->OpenSubKey("CDCache", false))
         {
-          if (Target->OpenSubKey(L"CDCache", true))
+          if (Target->OpenSubKey("CDCache", true))
           {
             Names->Clear();
-            Source->GetValueNames(Names);
+            Source->GetValueNames(Names.get());
 
-            for (int Index = 0; Index < Names->Count; Index++)
+            for (intptr_t Index = 0; Index < Names->GetCount(); ++Index)
             {
-              Target->WriteBinaryData(Names->Strings[Index],
-                Source->ReadBinaryData(Names->Strings[Index]));
+              Target->WriteBinaryData(Names->GetString(Index),
+                Source->ReadBinaryData(Names->GetString(Index)));
             }
 
             Target->CloseSubKey();
@@ -530,17 +560,17 @@ void __fastcall TConfiguration::CopyData(THierarchicalStorage * Source,
           Source->CloseSubKey();
         }
 
-        if (Source->OpenSubKey(L"Banners", false))
+        if (Source->OpenSubKey("Banners", false))
         {
-          if (Target->OpenSubKey(L"Banners", true))
+          if (Target->OpenSubKey("Banners", true))
           {
             Names->Clear();
-            Source->GetValueNames(Names);
+            Source->GetValueNames(Names.get());
 
-            for (int Index = 0; Index < Names->Count; Index++)
+            for (intptr_t Index = 0; Index < Names->GetCount(); ++Index)
             {
-              Target->WriteString(Names->Strings[Index],
-                Source->ReadString(Names->Strings[Index], L""));
+              Target->WriteString(Names->GetString(Index),
+                Source->ReadString(Names->GetString(Index), L""));
             }
 
             Target->CloseSubKey();
@@ -553,17 +583,17 @@ void __fastcall TConfiguration::CopyData(THierarchicalStorage * Source,
       Source->CloseSubKey();
     }
 
-    if (Source->OpenSubKey(SshHostKeysSubKey, false))
+    if (Source->OpenSubKey(GetSshHostKeysSubKey(), false))
     {
-      if (Target->OpenSubKey(SshHostKeysSubKey, true))
+      if (Target->OpenSubKey(GetSshHostKeysSubKey(), true))
       {
         Names->Clear();
-        Source->GetValueNames(Names);
+        Source->GetValueNames(Names.get());
 
-        for (int Index = 0; Index < Names->Count; Index++)
+        for (intptr_t Index = 0; Index < Names->GetCount(); ++Index)
         {
-          Target->WriteStringRaw(Names->Strings[Index],
-            Source->ReadStringRaw(Names->Strings[Index], L""));
+          Target->WriteStringRaw(Names->GetString(Index),
+            Source->ReadStringRaw(Names->GetString(Index), L""));
         }
 
         Target->CloseSubKey();
@@ -571,60 +601,60 @@ void __fastcall TConfiguration::CopyData(THierarchicalStorage * Source,
       Source->CloseSubKey();
     }
   }
-  __finally
-  {
+  __finally__removed
+  ({
     delete Names;
-  }
+  })
 }
 //---------------------------------------------------------------------------
 void __fastcall TConfiguration::LoadDirectoryChangesCache(const UnicodeString SessionKey,
   TRemoteDirectoryChangesCache * DirectoryChangesCache)
 {
-  THierarchicalStorage * Storage = CreateConfigStorage();
-  try
+  std::unique_ptr<THierarchicalStorage> Storage(CreateConfigStorage());
+  try__finally
   {
-    Storage->AccessMode = smRead;
-    if (Storage->OpenSubKey(ConfigurationSubKey, false) &&
-        Storage->OpenSubKey(L"CDCache", false) &&
+    Storage->SetAccessMode(smRead);
+    if (Storage->OpenSubKey(GetConfigurationSubKey(), false) &&
+      Storage->OpenSubKey("CDCache", false) &&
         Storage->ValueExists(SessionKey))
     {
       DirectoryChangesCache->Deserialize(Storage->ReadBinaryData(SessionKey));
     }
   }
-  __finally
-  {
+  __finally__removed
+  ({
     delete Storage;
-  }
+  })
 }
 //---------------------------------------------------------------------------
 void __fastcall TConfiguration::SaveDirectoryChangesCache(const UnicodeString SessionKey,
   TRemoteDirectoryChangesCache * DirectoryChangesCache)
 {
-  THierarchicalStorage * Storage = CreateConfigStorage();
-  try
+  std::unique_ptr<THierarchicalStorage> Storage(CreateConfigStorage());
+  try__finally
   {
-    Storage->AccessMode = smReadWrite;
-    if (Storage->OpenSubKey(ConfigurationSubKey, true) &&
-        Storage->OpenSubKey(L"CDCache", true))
+    Storage->SetAccessMode(smReadWrite);
+    if (Storage->OpenSubKey(GetConfigurationSubKey(), true) &&
+      Storage->OpenSubKey("CDCache", true))
     {
       UnicodeString Data;
       DirectoryChangesCache->Serialize(Data);
       Storage->WriteBinaryData(SessionKey, Data);
     }
   }
-  __finally
-  {
+  __finally__removed
+  ({
     delete Storage;
-  }
+  })
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall TConfiguration::BannerHash(const UnicodeString ABanner)
+UnicodeString __fastcall TConfiguration::BannerHash(const UnicodeString ABanner) const
 {
   RawByteString Result;
-  Result.SetLength(16);
+  char *Buf = Result.SetLength(16);
   md5checksum(
-    reinterpret_cast<const char*>(ABanner.c_str()), ABanner.Length() * sizeof(wchar_t),
-    (unsigned char*)Result.c_str());
+    reinterpret_cast<const char *>(Banner.c_str()), ToInt(Banner.Length() * sizeof(wchar_t)),
+    reinterpret_cast<uint8_t *>(Buf));
   return BytesToHex(Result);
 }
 //---------------------------------------------------------------------------
