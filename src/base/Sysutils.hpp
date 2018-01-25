@@ -285,6 +285,7 @@ NB_CORE_EXPORT int StringCmp(const wchar_t *S1, const wchar_t *S2);
 NB_CORE_EXPORT int StringCmpI(const wchar_t *S1, const wchar_t *S2);
 
 NB_CORE_EXPORT UnicodeString IntToStr(intptr_t Value);
+NB_CORE_EXPORT UnicodeString UIntToStr(uintptr_t Value);
 NB_CORE_EXPORT UnicodeString Int64ToStr(int64_t Value);
 NB_CORE_EXPORT intptr_t StrToIntPtr(UnicodeString Value);
 NB_CORE_EXPORT int64_t ToInt64(UnicodeString Value);

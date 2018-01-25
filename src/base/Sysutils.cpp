@@ -162,6 +162,12 @@ UnicodeString IntToStr(intptr_t Value)
   return Result;
 }
 
+UnicodeString UIntToStr(uintptr_t Value)
+{
+  UnicodeString Result = FORMAT("%u", Value);
+  return Result;
+}
+
 UnicodeString Int64ToStr(int64_t Value)
 {
   UnicodeString Result = FORMAT(L"%lld", Value);
