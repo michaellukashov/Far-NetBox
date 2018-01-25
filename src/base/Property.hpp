@@ -174,22 +174,24 @@ CUSTOM_MEM_ALLOCATION_IMPL
 private:
   typedef T (Object::*GetterFunc)();
   typedef void (Object::*SetterFunc)(const T &);
+  Object *_obj;
   GetterFunc *_getter;
   SetterFunc *_setter;
 public:
-  explicit RWProperty(GetterFunc *Getter, SetterFunc *Setter):
+  explicit RWProperty(Object *Obj, GetterFunc *Getter, SetterFunc *Setter):
+    _obj(Obj),
     _getter(Getter),
     _setter(Setter)
   {}
-  /*T operator()() const
+  T operator()() const
   {
     // assert(_getter);
-    return (*_getter)();
-  }*/
+    return (_obj->*_getter)();
+  }
   operator T() const
   {
     // assert(_getter);
-    return (*_getter)();
+    return (_obj->*_getter)();
   }
   /*void operator()(const T &value)
   {
@@ -199,6 +201,11 @@ public:
   void operator=(const T &Value)
   {
     // assert(_setter);
-    (*_setter)(Value);
+    (_obj->*_setter)(Value);
+  }
+  T operator->() const
+  {
+    // assert(_getter);
+    return (_obj->*_getter)();
   }
 };

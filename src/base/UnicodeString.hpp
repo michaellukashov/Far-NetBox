@@ -8,7 +8,7 @@ class AnsiString;
 
 class NB_CORE_EXPORT UTF8String
 {
-  CUSTOM_MEM_ALLOCATION_IMPL
+CUSTOM_MEM_ALLOCATION_IMPL
 public:
   UTF8String() {}
   UTF8String(const UTF8String &rhs);
@@ -67,7 +67,7 @@ private:
 
 class NB_CORE_EXPORT UnicodeString
 {
-  CUSTOM_MEM_ALLOCATION_IMPL
+CUSTOM_MEM_ALLOCATION_IMPL
 public:
   UnicodeString() {}
   UnicodeString(const wchar_t *Str);
@@ -201,7 +201,7 @@ class RawByteString;
 
 class NB_CORE_EXPORT AnsiString
 {
-  CUSTOM_MEM_ALLOCATION_IMPL
+CUSTOM_MEM_ALLOCATION_IMPL
 public:
   AnsiString() {}
   AnsiString(const AnsiString &rhs);
@@ -284,7 +284,7 @@ private:
 
 class NB_CORE_EXPORT RawByteString
 {
-  CUSTOM_MEM_ALLOCATION_IMPL
+CUSTOM_MEM_ALLOCATION_IMPL
 public:
   RawByteString() {}
   explicit RawByteString(const wchar_t *Str);

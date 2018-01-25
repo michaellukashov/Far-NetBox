@@ -15,6 +15,7 @@ enum TObjectClassId
   OBJECT_CLASS_EScp,
   OBJECT_CLASS_ESkipFile,
   OBJECT_CLASS_EFileSkipped,
+  OBJECT_CLASS_EScpFileSkipped,
   OBJECT_CLASS_EOSExtException,
   OBJECT_CLASS_ECRTExtException,
   OBJECT_CLASS_EFatal,

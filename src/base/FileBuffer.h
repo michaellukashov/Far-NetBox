@@ -29,12 +29,11 @@ public:
   int64_t LoadStream(TStream * Stream, const int64_t Len, bool ForceLen);
   int64_t ReadStream(TStream * Stream, const int64_t Len, bool ForceLen);
   void WriteToStream(TStream * Stream, const int64_t Len);
-#if 0
   __property TMemoryStream * Memory  = { read=FMemory, write=SetMemory };
+  RWProperty<TMemoryStream *, TFileBuffer> Memory{this, &TFileBuffer::GetMemory, &TFileBuffer::SetMemory};
   __property char * Data = { read=GetData };
   __property int Size = { read=FSize, write=SetSize };
   __property int Position = { read=GetPosition, write=SetPosition };
-#endif // #if 0
 
 public:
   TMemoryStream * GetMemory() const { return FMemory; }
