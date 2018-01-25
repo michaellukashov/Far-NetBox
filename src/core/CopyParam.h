@@ -142,7 +142,6 @@ public:
 
   bool operator==(const TCopyParamType &rhp) const;
 
-#if 0
   __property TFileMasks AsciiFileMask = { read = FAsciiFileMask, write = FAsciiFileMask };
   __property TFileNameCase FileNameCase = { read = FFileNameCase, write = FFileNameCase };
   __property bool PreserveReadOnly = { read = FPreserveReadOnly, write = FPreserveReadOnly };
@@ -169,7 +168,6 @@ public:
   __property bool RemoveBOM = { read = FRemoveBOM, write = FRemoveBOM };
   __property unsigned long CPSLimit = { read = FCPSLimit, write = FCPSLimit };
   __property bool NewerOnly = { read = FNewerOnly, write = FNewerOnly };
-#endif // #if 0
 
   const TFileMasks &GetAsciiFileMask() const { return FAsciiFileMask; }
   TFileMasks &GetAsciiFileMask() { return FAsciiFileMask; }

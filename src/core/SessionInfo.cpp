@@ -235,12 +235,12 @@ public:
     Close(Cancelled);
   }
 
-  void SetFileName(UnicodeString AFileName)
+  void SetFileName(const UnicodeString AFileName)
   {
     Parameter(L"filename", AFileName);
   }
 
-  void Destination(UnicodeString Destination)
+  void Destination(const UnicodeString Destination)
   {
     Parameter(L"destination", Destination);
   }
@@ -496,7 +496,7 @@ TFileLocationSessionAction::TFileLocationSessionAction(
 {
 }
 
-void TFileLocationSessionAction::Destination(UnicodeString Destination)
+void TFileLocationSessionAction::Destination(const UnicodeString Destination)
 {
   if (FRecord != nullptr)
   {

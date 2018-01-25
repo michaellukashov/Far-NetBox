@@ -158,7 +158,7 @@ public:
   explicit TFileLocationSessionAction(TActionLog *Log, TLogAction Action);
   explicit TFileLocationSessionAction(TActionLog *Log, TLogAction Action, UnicodeString AFileName);
 
-  void Destination(UnicodeString Destination);
+  void Destination(const UnicodeString Destination);
 };
 
 class NB_CORE_EXPORT TUploadSessionAction : public TFileLocationSessionAction

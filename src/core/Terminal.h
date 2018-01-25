@@ -727,6 +727,7 @@ public:
   ROProperty<TSessionLog *, TTerminal> Log{this, &TTerminal::GetLog};
   __property TActionLog * ActionLog = { read = FActionLog };
   __property TConfiguration * Configuration = { read = FConfiguration };
+  ROProperty<TConfiguration *, TTerminal> Configuration{this, &TTerminal::GetConfiguration};
   __property bool Active = { read = GetActive };
   __property TSessionStatus Status = { read = FStatus };
   __property UnicodeString CurrentDirectory = { read = GetCurrentDirectory, write = SetCurrentDirectory };

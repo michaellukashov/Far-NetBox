@@ -6,7 +6,7 @@
 
 class TCommandSet;
 class TSecureShell;
-
+//---------------------------------------------------------------------------
 class TSCPFileSystem : public TCustomFileSystem
 {
   NB_DISABLE_COPY(TSCPFileSystem)
@@ -51,18 +51,18 @@ public:
     TLocalFileHandle &AHandle, const UnicodeString ATargetDir, UnicodeString &ADestFileName,
     const TCopyParamType *CopyParam, intptr_t AParams,
     TFileOperationProgressType *OperationProgress, uintptr_t AFlags,
-    TUploadSessionAction &Action, bool &ChildError);
+    TUploadSessionAction &Action, bool &ChildError) override;
   virtual void __fastcall Sink(
     const UnicodeString AFileName, const TRemoteFile *AFile,
     const UnicodeString ATargetDir, UnicodeString &ADestFileName, intptr_t Attrs,
     const TCopyParamType * CopyParam, intptr_t AParams, TFileOperationProgressType *OperationProgress,
-    uintptr_t AFlags, TDownloadSessionAction &Action);
-  virtual void __fastcall RemoteCreateDirectory(const UnicodeString ADirName);
-  virtual void __fastcall RemoteCreateLink(const UnicodeString AFileName, const UnicodeString PointTo, bool Symbolic);
+    uintptr_t AFlags, TDownloadSessionAction &Action) override;
+  virtual void __fastcall RemoteCreateDirectory(const UnicodeString ADirName) override;
+  virtual void __fastcall RemoteCreateLink(const UnicodeString AFileName, const UnicodeString PointTo, bool Symbolic) override;
   virtual void __fastcall RemoteDeleteFile(const UnicodeString AFileName,
-    const TRemoteFile *AFile, intptr_t AParams, TRmSessionAction & Action);
+    const TRemoteFile *AFile, intptr_t AParams, TRmSessionAction & Action) override;
   virtual void __fastcall CustomCommandOnFile(const UnicodeString FileName,
-    const TRemoteFile *AFile, const UnicodeString ACommand, intptr_t AParams, TCaptureOutputEvent OutputEvent);
+    const TRemoteFile *AFile, const UnicodeString ACommand, intptr_t AParams, TCaptureOutputEvent OutputEvent) override;
   virtual void DoStartup() override;
   virtual void HomeDirectory() override;
   virtual bool IsCapable(intptr_t Capability) const override;
@@ -94,6 +94,7 @@ public:
 protected:
   __property TStrings * Output = { read = FOutput };
   __property int ReturnCode = { read = FReturnCode };
+
   TStrings *GetOutput() const { return FOutput; }
   intptr_t GetReturnCode() const { return FReturnCode; }
 
@@ -127,8 +128,7 @@ private:
   void ExecCommand(TFSCommand Cmd, intptr_t Params, fmt::ArgList args);
   FMT_VARIADIC_W(void, ExecCommand, TFSCommand, intptr_t)
 
-  __removed void ExecCommand(TFSCommand Cmd, const TVarRec *args = nullptr, \
-    int size = 0, int Params = -1);
+  __removed void ExecCommand(TFSCommand Cmd, const TVarRec *args = nullptr, int size = 0, int Params = -1);
   void ReadCommandOutput(intptr_t Params, const UnicodeString *Cmd = nullptr);
   void SCPResponse(bool *GotLastLine = nullptr);
   void SCPDirectorySource(const UnicodeString ADirectoryName,
@@ -138,12 +138,10 @@ private:
   void SCPSendError(const UnicodeString Message, bool Fatal);
   void SCPSink(const UnicodeString ATargetDir,
     const UnicodeString AFileName, const UnicodeString ASourceDir,
-    const TRemoteFile *AFile,
     const TCopyParamType *CopyParam, bool &Success,
-    TFileOperationProgressType *OperationProgress, intptr_t Params, intptr_t Level);
+    TFileOperationProgressType *OperationProgress, intptr_t AParams, intptr_t Level);
   void SCPSource(const UnicodeString AFileName,
-    const TRemoteFile *AFile,
-    const UnicodeString TargetDir, const TCopyParamType *CopyParam, intptr_t Params,
+    const UnicodeString TargetDir, const TCopyParamType *CopyParam, intptr_t AParams,
     TFileOperationProgressType *OperationProgress, intptr_t Level);
   void SendCommand(const UnicodeString Cmd);
   void SkipFirstLine();
@@ -160,8 +158,9 @@ private:
     const TOverwriteFileParams *FileParams, const TCopyParamType *CopyParam,
     intptr_t Params, TFileOperationProgressType *OperationProgress);
 
-  static bool RemoveLastLine(UnicodeString &Line,
+  static bool __fastcall RemoveLastLine(UnicodeString &Line,
     intptr_t &ReturnCode, UnicodeString ALastLine = L"");
+
   UnicodeString InitOptionsStr(const TCopyParamType *CopyParam) const;
 };
 //---------------------------------------------------------------------------

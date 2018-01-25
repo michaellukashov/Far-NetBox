@@ -129,7 +129,6 @@ protected:
 
 public:
   // common data
-#if 0
   __property TFileOperation Operation = { read = FOperation };
   // on what side if operation being processed (local/remote), source of copy
   __property TOperationSide Side = { read = FSide };
@@ -166,7 +165,6 @@ public:
   __property bool TotalSizeSet = { read = FTotalSizeSet };
 
   __property bool Suspended = { read = FSuspended };
-#endif // #if 0
 
   TFileOperation GetOperation() const { return FOperation; }
   // on what side if operation being processed (local/remote), source of copy
