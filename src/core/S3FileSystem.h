@@ -58,11 +58,11 @@ public:
   virtual void __fastcall CalculateFilesChecksum(const UnicodeString Alg,
     TStrings *AFileList, TStrings *Checksums,
     TCalculatedChecksumEvent OnCalculatedChecksum) override;
-  virtual void __fastcall CopyToLocal(const TStrings *AFilesToCopy,
+  virtual void __fastcall CopyToLocal(TStrings *AFilesToCopy,
     const UnicodeString ATargetDir, const TCopyParamType *CopyParam,
     intptr_t AParams, TFileOperationProgressType *OperationProgress,
     TOnceDoneOperation &OnceDoneOperation) override;
-  virtual void __fastcall CopyToRemote(const TStrings *AFilesToCopy,
+  virtual void __fastcall CopyToRemote(TStrings *AFilesToCopy,
     const UnicodeString ATargetDir, const TCopyParamType *CopyParam,
     intptr_t AParams, TFileOperationProgressType *OperationProgress,
     TOnceDoneOperation &OnceDoneOperation) override;
@@ -142,8 +142,8 @@ protected:
   void InitSslSession(ssl_st * Ssl, ne_session_s * Session);
   void RequestInit(TLibS3CallbackData &Data);
   void TryOpenDirectory(const UnicodeString ADirectory);
-  void ReadDirectoryInternal(const UnicodeString & Path, TRemoteFileList * FileList, intptr_t MaxKeys, const UnicodeString AFileName);
-  void ParsePath(UnicodeString Path, UnicodeString & BucketName, UnicodeString & Key);
+  void ReadDirectoryInternal(const UnicodeString APath, TRemoteFileList * FileList, intptr_t MaxKeys, const UnicodeString AFileName);
+  void ParsePath(UnicodeString Path, UnicodeString &BucketName, UnicodeString &Key);
   TRemoteToken MakeRemoteToken(const char * OwnerId, const char * OwnerDisplayName);
   TLibS3BucketContext GetBucketContext(const UnicodeString ABucketName);
   void DoListBucket(
@@ -152,7 +152,7 @@ protected:
   UnicodeString GetFolderKey(const UnicodeString AKey);
   void DoReadFile(const UnicodeString AFileName, TRemoteFile *& AFile);
   void ConfirmOverwrite(
-    const UnicodeString &ASourceFullFileName, UnicodeString &ATargetFileName,
+    const UnicodeString ASourceFullFileName, UnicodeString &ATargetFileName,
     TFileOperationProgressType *OperationProgress, const TOverwriteFileParams *FileParams,
     const TCopyParamType *CopyParam, intptr_t AParams);
   int PutObjectData(int BufferSize, char * Buffer, TLibS3PutObjectDataCallbackData & Data);

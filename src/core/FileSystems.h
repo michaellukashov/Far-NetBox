@@ -179,11 +179,11 @@ public:
   virtual void __fastcall CalculateFilesChecksum(const UnicodeString Alg,
     TStrings *AFileList, TStrings *Checksums,
     TCalculatedChecksumEvent OnCalculatedChecksum) = 0;
-  virtual void __fastcall CopyToLocal(const TStrings *AFilesToCopy,
+  virtual void __fastcall CopyToLocal(TStrings *AFilesToCopy,
     const UnicodeString ATargetDir, const TCopyParamType *CopyParam,
     intptr_t AParams, TFileOperationProgressType *OperationProgress,
     TOnceDoneOperation &OnceDoneOperation) = 0;
-  virtual void __fastcall CopyToRemote(const TStrings *AFilesToCopy,
+  virtual void __fastcall CopyToRemote(TStrings *AFilesToCopy,
     const UnicodeString ATargetDir, const TCopyParamType *CopyParam,
     intptr_t AParams, TFileOperationProgressType *OperationProgress,
     TOnceDoneOperation &OnceDoneOperation) = 0;

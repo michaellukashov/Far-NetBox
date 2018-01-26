@@ -419,7 +419,7 @@ UnicodeString TS3FileSystem::GetFolderKey(const UnicodeString AKey)
   return AKey + L"/";
 }
 //---------------------------------------------------------------------------
-void TS3FileSystem::ParsePath(UnicodeString Path, UnicodeString & BucketName, UnicodeString & Key)
+void TS3FileSystem::ParsePath(UnicodeString Path, UnicodeString &BucketName, UnicodeString &Key)
 {
   if (DebugAlwaysTrue(Path.SubString(1, 1) == L"/"))
   {

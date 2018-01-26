@@ -30,11 +30,11 @@ public:
   virtual __fastcall ~TFTPFileSystem();
   virtual void Init(void *) override;
 
-  virtual void Open() override;
-  virtual void Close() override;
-  virtual bool GetActive() const override;
-  virtual void CollectUsage() override;
-  virtual void Idle() override;
+  virtual void __fastcall Open() override;
+  virtual void __fastcall Close() override;
+  virtual bool __fastcall GetActive() const override;
+  virtual void __fastcall CollectUsage() override;
+  virtual void __fastcall Idle() override;
   virtual UnicodeString GetAbsolutePath(const UnicodeString APath, bool Local) override;
   virtual UnicodeString GetAbsolutePath(const UnicodeString APath, bool Local) const override;
   virtual void AnyCommand(const UnicodeString Command,
@@ -49,13 +49,13 @@ public:
   virtual void CalculateFilesChecksum(const UnicodeString Alg,
     TStrings *AFileList, TStrings *Checksums,
     TCalculatedChecksumEvent OnCalculatedChecksum) override;
-  virtual void __fastcall CopyToLocal(const TStrings *AFilesToCopy,
+  virtual void __fastcall CopyToLocal(TStrings *AFilesToCopy,
     UnicodeString TargetDir, const TCopyParamType *CopyParam,
     intptr_t Params, TFileOperationProgressType *OperationProgress,
     TOnceDoneOperation &OnceDoneOperation) override;
   virtual void __fastcall TransferOnDirectory(
     const UnicodeString ADirectory, const TCopyParamType *CopyParam, intptr_t AParams);
-  virtual void __fastcall CopyToRemote(const TStrings *AFilesToCopy,
+  virtual void __fastcall CopyToRemote(TStrings *AFilesToCopy,
     const UnicodeString ATargetDir, const TCopyParamType *CopyParam,
     intptr_t AParams, TFileOperationProgressType *OperationProgress,
     TOnceDoneOperation &OnceDoneOperation) override;
@@ -205,8 +205,8 @@ protected:
   virtual void FileTransferProgress(int64_t TransferSize, int64_t Bytes) override;
   void ResetCaches();
   void CaptureOutput(const UnicodeString AStr);
-  void DoReadDirectory(TRemoteFileList *FileList);
-  void DoReadFile(const UnicodeString AFileName, TRemoteFile *&AFile);
+  void DoReadDirectory(TRemoteFileList *AFileList);
+  void DoReadFile(const UnicodeString AFileName, TRemoteFile *& AFile);
   void FileTransfer(const UnicodeString AFileName, const UnicodeString LocalFile,
     UnicodeString RemoteFile, const UnicodeString RemotePath, bool Get,
     int64_t Size, intptr_t Type, TFileTransferData &UserData,

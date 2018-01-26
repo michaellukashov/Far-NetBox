@@ -773,13 +773,11 @@ int TWebDAVFileSystem::ReadDirectoryInternal(
     };
     Result = ne_propfind_allprop(PropFindHandler, NeonPropsResult, &Data);
   }
-  __finally
-  {
-#if 0
+  __finally__removed
+  ({
     ne_lock_discovery_free(DiscoveryContext);
     ne_propfind_destroy(PropFindHandler);
-#endif // #if 0
-  };
+  })
   return Result;
 }
 
@@ -1262,7 +1260,7 @@ void TWebDAVFileSystem::SpaceAvailable(UnicodeString APath,
       NeonQuotaResult, &ASpaceAvailable));
 }
 
-void TWebDAVFileSystem::CopyToRemote(const TStrings *AFilesToCopy,
+void TWebDAVFileSystem::CopyToRemote(TStrings *AFilesToCopy,
   const UnicodeString TargetDir, const TCopyParamType * CopyParam,
   intptr_t Params, TFileOperationProgressType *OperationProgress,
   TOnceDoneOperation &OnceDoneOperation)
@@ -1438,33 +1436,19 @@ void __fastcall TWebDAVFileSystem::Source(
       }
     }
   }
-  __finally
-  {
-#if 0
+  __finally__removed
+  ({
     if (FD >= 0)
     {
       // _close calls CloseHandle internally (even doc states, we should not call CloseHandle),
       // but it crashes code guard
       _close(FD);
       Handle.Dismiss();
-  };
-      [&]()
-    [&]()
-
-    FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(LIST_DIR_ERROR, DirectoryName), "",
-    [&]()
-      {
-        base::FindClose(SearchRec);
-      };
-      while (FindOK && !OperationProgress->GetCancel())
-        [&]()
-    };
-        [&]()
-    }
-  }
+     }
+  })
 }
 
-void TWebDAVFileSystem::CopyToLocal(const TStrings *AFilesToCopy,
+void TWebDAVFileSystem::CopyToLocal(TStrings *AFilesToCopy,
   UnicodeString TargetDir, const TCopyParamType *CopyParam,
   intptr_t Params, TFileOperationProgressType *OperationProgress,
   TOnceDoneOperation &OnceDoneOperation)
@@ -1845,9 +1829,8 @@ void __fastcall TWebDAVFileSystem::Sink(
         FTerminal->UpdateTargetTime(LocalHandle, File->Modification, FTerminal->SessionData->DSTMode);
       }
     }
-    __finally
-    {
-#if 0
+    __finally__removed
+    ({
       if (FD >= 0)
       {
         // _close calls CloseHandle internally (even doc states, we should not call CloseHandle),
@@ -1868,11 +1851,8 @@ void __fastcall TWebDAVFileSystem::Sink(
         }
         FILE_OPERATION_LOOP_END(FMTLOAD(DELETE_LOCAL_FILE_ERROR, (DestFullName)));
       }
-    }
+    })
   }
-  FILE_OPERATION_LOOP_END(FMTLOAD(TRANSFER_ERROR, (FileName)));
-      };
-    });
 
   FTerminal->UpdateTargetAttrs(DestFullName, File, CopyParam, Attrs);
       [&]()
@@ -2146,15 +2126,13 @@ void TWebDAVFileSystem::LockFile(UnicodeString /*AFileName*/, const TRemoteFile 
     // ownership passed
     Lock = nullptr;
   }
-  __finally
-  {
-#if 0
+  __finally__removed
+  ({
     if (Lock != nullptr)
     {
       ne_lock_destroy(Lock);
     }
-#endif // #if 0
-  };
+  })
 }
 
 void TWebDAVFileSystem::RequireLockStore()
@@ -2258,12 +2236,10 @@ void TWebDAVFileSystem::UnlockFile(UnicodeString AFileName, const TRemoteFile *A
       DiscardLock(Path);
     }
   }
-  __finally
-  {
-#if 0
+  __finally__removed
+  ({
     ne_lock_destroy(Lock);
-#endif // #if 0
-  };
+  })
 }
 
 void TWebDAVFileSystem::UpdateFromMain(TCustomFileSystem *AMainFileSystem)

@@ -1145,7 +1145,7 @@ void TSecureShell::FromBackend(bool IsStdErr, const uint8_t *Data, intptr_t Leng
   }
 }
 
-bool TSecureShell::Peek(uint8_t *&Buf, intptr_t Length) const
+bool TSecureShell::Peek(uint8_t *& Buf, intptr_t Length) const
 {
   bool Result = (PendLen >= Length);
 
@@ -1519,7 +1519,7 @@ int TSecureShell::TranslateAuthenticationMessage(
   return Result;
 }
 
-void TSecureShell::AddStdError(UnicodeString AStr)
+void TSecureShell::AddStdError(const UnicodeString AStr)
 {
   FStdError += AStr;
 
@@ -1537,7 +1537,7 @@ void TSecureShell::AddStdError(UnicodeString AStr)
   }
 }
 
-void TSecureShell::AddStdErrorLine(UnicodeString AStr)
+void TSecureShell::AddStdErrorLine(const UnicodeString AStr)
 {
   UnicodeString Str = AStr.Trim();
   if (FAuthenticating)
@@ -1621,7 +1621,7 @@ void TSecureShell::FatalError(UnicodeString Error, UnicodeString HelpKeyword)
   FUI->FatalError(nullptr, Error, HelpKeyword);
 }
 
-void TSecureShell::LogEvent(UnicodeString AStr)
+void TSecureShell::LogEvent(const UnicodeString AStr)
 {
   if (FLog->GetLogging())
   {
@@ -2271,18 +2271,18 @@ TCipher TSecureShell::FuncToSsh2Cipher(const void *Cipher)
   return Result;
 }
 
-UnicodeString TSecureShell::FormatKeyStr(UnicodeString KeyStr) const
+UnicodeString TSecureShell::FormatKeyStr(UnicodeString AKeyStr) const
 {
   intptr_t Index = 1;
   intptr_t Digits = 0;
-  while (Index <= KeyStr.Length())
+  while (Index <= AKeyStr.Length())
   {
-    if (IsHex(KeyStr[Index]))
+    if (IsHex(AKeyStr[Index]))
     {
       Digits++;
       if (Digits >= 16)
       {
-        KeyStr.Insert(L" ", Index + 1);
+        AKeyStr.Insert(L" ", Index + 1);
         ++Index;
         Digits = 0;
       }
@@ -2293,7 +2293,7 @@ UnicodeString TSecureShell::FormatKeyStr(UnicodeString KeyStr) const
     }
     ++Index;
   }
-  return KeyStr;
+  return AKeyStr;
 }
 
 void TSecureShell::GetRealHost(UnicodeString &Host, intptr_t &Port) const

@@ -27,7 +27,7 @@ public:
   virtual __fastcall ~TWebDAVFileSystem();
   virtual void Init(void *) override;
 
-  virtual void __fastcall Open();
+  virtual void __fastcall Open() override;
   virtual void Close() override;
   virtual bool GetActive() const override;
   virtual void CollectUsage() override;
@@ -46,11 +46,11 @@ public:
   virtual void CalculateFilesChecksum(const UnicodeString Alg,
     TStrings *AFileList, TStrings *Checksums,
     TCalculatedChecksumEvent OnCalculatedChecksum) override;
-  virtual void CopyToLocal(const TStrings *AFilesToCopy,
+  virtual void CopyToLocal(TStrings *AFilesToCopy,
     UnicodeString TargetDir, const TCopyParamType *CopyParam,
     intptr_t AParams, TFileOperationProgressType *OperationProgress,
     TOnceDoneOperation &OnceDoneOperation) override;
-  virtual void CopyToRemote(const TStrings *AFilesToCopy,
+  virtual void CopyToRemote(TStrings *AFilesToCopy,
     const UnicodeString ATargetDir, const TCopyParamType *CopyParam,
     intptr_t AParams, TFileOperationProgressType *OperationProgress,
     TOnceDoneOperation &OnceDoneOperation) override;

@@ -3136,7 +3136,7 @@ bool TTerminal::CheckRemoteFile(
 }
 
 uintptr_t TTerminal::ConfirmFileOverwrite(
-  UnicodeString ASourceFullFileName, UnicodeString ATargetFileName,
+  const UnicodeString ASourceFullFileName, const UnicodeString ATargetFileName,
   const TOverwriteFileParams *FileParams, uintptr_t Answers, TQueryParams *QueryParams,
   TOperationSide Side, const TCopyParamType *CopyParam, intptr_t Params, TFileOperationProgressType *OperationProgress,
   UnicodeString AMessage)
@@ -7053,7 +7053,7 @@ void TTerminal::LogTotalTransferDone(TFileOperationProgressType *OperationProgre
   LogEvent(L"Copying finished: " + OperationProgress->GetLogStr(true));
 }
 
-bool TTerminal::CopyToRemote(const TStrings *AFilesToCopy,
+bool TTerminal::CopyToRemote(TStrings *AFilesToCopy,
   UnicodeString TargetDir, const TCopyParamType *CopyParam, intptr_t Params, TParallelOperation *ParallelOperation)
 {
   DebugAssert(FFileSystem);
@@ -7975,7 +7975,7 @@ bool TTerminal::IsThisOrChild(TTerminal *Terminal) const
     ((FCommandSession != nullptr) && (FCommandSession == Terminal));
 }
 //---------------------------------------------------------------------------
-void TTerminal::SetLocalFileTime(UnicodeString LocalFileName,
+void TTerminal::SetLocalFileTime(const UnicodeString LocalFileName,
   FILETIME *AcTime, FILETIME *WrTime)
 {
   TFileOperationProgressType *OperationProgress = GetOperationProgress();
@@ -8003,7 +8003,7 @@ HANDLE TTerminal::TerminalCreateLocalFile(const UnicodeString LocalFileName, DWO
   return ::CreateFile(ApiPath(LocalFileName).c_str(), DesiredAccess, ShareMode, nullptr, CreationDisposition, FlagsAndAttributes, nullptr);
 }
 
-DWORD TTerminal::GetLocalFileAttributes(UnicodeString LocalFileName) const
+DWORD TTerminal::GetLocalFileAttributes(const UnicodeString LocalFileName) const
 {
   if (GetOnGetLocalFileAttributes())
   {
@@ -8012,7 +8012,7 @@ DWORD TTerminal::GetLocalFileAttributes(UnicodeString LocalFileName) const
   return ::FileGetAttrFix(LocalFileName);
 }
 
-bool TTerminal::SetLocalFileAttributes(UnicodeString LocalFileName, DWORD FileAttributes)
+bool TTerminal::SetLocalFileAttributes(const UnicodeString LocalFileName, DWORD FileAttributes)
 {
   if (GetOnSetLocalFileAttributes())
   {
@@ -8021,7 +8021,7 @@ bool TTerminal::SetLocalFileAttributes(UnicodeString LocalFileName, DWORD FileAt
   return ::FileSetAttr(LocalFileName, FileAttributes);
 }
 
-bool TTerminal::MoveLocalFile(UnicodeString LocalFileName, UnicodeString NewLocalFileName, DWORD Flags)
+bool TTerminal::MoveLocalFile(const UnicodeString LocalFileName, const UnicodeString NewLocalFileName, DWORD Flags)
 {
   if (GetOnMoveLocalFile())
   {
@@ -8030,7 +8030,7 @@ bool TTerminal::MoveLocalFile(UnicodeString LocalFileName, UnicodeString NewLoca
   return ::MoveFileEx(ApiPath(LocalFileName).c_str(), ApiPath(NewLocalFileName).c_str(), Flags) != FALSE;
 }
 
-bool TTerminal::RemoveLocalDirectory(UnicodeString LocalDirName)
+bool TTerminal::RemoveLocalDirectory(const UnicodeString LocalDirName)
 {
   if (GetOnRemoveLocalDirectory())
   {
@@ -8039,7 +8039,7 @@ bool TTerminal::RemoveLocalDirectory(UnicodeString LocalDirName)
   return RemoveDir(LocalDirName);
 }
 
-bool TTerminal::CreateLocalDirectory(UnicodeString LocalDirName, LPSECURITY_ATTRIBUTES SecurityAttributes)
+bool TTerminal::CreateLocalDirectory(const UnicodeString LocalDirName, LPSECURITY_ATTRIBUTES SecurityAttributes)
 {
   if (GetOnCreateLocalDirectory())
   {

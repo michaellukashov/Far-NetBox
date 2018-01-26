@@ -123,11 +123,11 @@ protected:
     intptr_t Count, UnicodeString &Message, UnicodeString *HelpKeyword = nullptr) const;
   int TranslateAuthenticationMessage(UnicodeString &Message, UnicodeString *HelpKeyword = nullptr);
   int TranslateErrorMessage(UnicodeString &Message, UnicodeString *HelpKeyword = nullptr);
-  void AddStdError(UnicodeString AStr);
-  void AddStdErrorLine(UnicodeString AStr);
-  void LogEvent(UnicodeString AStr);
+  void AddStdError(const UnicodeString AStr);
+  void AddStdErrorLine(const UnicodeString AStr);
+  void LogEvent(const UnicodeString AStr);
   void FatalError(UnicodeString Error, UnicodeString HelpKeyword = L"");
-  UnicodeString FormatKeyStr(UnicodeString KeyStr) const;
+  UnicodeString FormatKeyStr(UnicodeString AKeyStr) const;
   static Conf *StoreToConfig(TSessionData *Data, bool Simple);
 
 public:
@@ -138,7 +138,7 @@ public:
   void Close();
   void KeepAlive();
   intptr_t Receive(uint8_t *Buf, intptr_t Length);
-  bool Peek(uint8_t *&Buf, intptr_t Length) const;
+  bool Peek(uint8_t *& Buf, intptr_t Length) const;
   UnicodeString ReceiveLine();
   void Send(const uint8_t *Buf, intptr_t Length);
   void SendSpecial(intptr_t Code);

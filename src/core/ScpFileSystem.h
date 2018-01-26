@@ -20,11 +20,11 @@ public:
   virtual void Init(void * /*TSecureShell * */) override;
   virtual void FileTransferProgress(int64_t /*TransferSize*/, int64_t /*Bytes*/) override {}
 
-  virtual void Open() override;
-  virtual void Close() override;
-  virtual bool GetActive() const override;
-  virtual void CollectUsage() override;
-  virtual void Idle() override;
+  virtual void __fastcall Open() override;
+  virtual void __fastcall Close() override;
+  virtual bool __fastcall GetActive() const override;
+  virtual void __fastcall CollectUsage() override;
+  virtual void __fastcall Idle() override;
   virtual UnicodeString GetAbsolutePath(UnicodeString APath, bool Local) override;
   virtual UnicodeString GetAbsolutePath(UnicodeString APath, bool Local) const override;
   virtual void AnyCommand(const UnicodeString ACommand,
@@ -39,11 +39,11 @@ public:
   virtual void CalculateFilesChecksum(const UnicodeString Alg,
     TStrings *AFileList, TStrings *Checksums,
     TCalculatedChecksumEvent OnCalculatedChecksum) override;
-  virtual void CopyToLocal(const TStrings *AFilesToCopy,
+  virtual void CopyToLocal(TStrings *AFilesToCopy,
     const UnicodeString ATargetDir, const TCopyParamType *ACopyParam,
     intptr_t AParams, TFileOperationProgressType *OperationProgress,
     TOnceDoneOperation &OnceDoneOperation) override;
-  virtual void __fastcall CopyToRemote(const TStrings *AFilesToCopy,
+  virtual void __fastcall CopyToRemote(TStrings *AFilesToCopy,
     const UnicodeString ATargetDir, const TCopyParamType *CopyParam,
     intptr_t AParams, TFileOperationProgressType *OperationProgress,
     TOnceDoneOperation &OnceDoneOperation) override;
@@ -117,7 +117,7 @@ private:
   void ClearAliases();
   void ClearAlias(UnicodeString Alias);
   void CustomReadFile(const UnicodeString AFileName,
-    TRemoteFile *&AFile, TRemoteFile *ALinkedByFile);
+    TRemoteFile *& AFile, TRemoteFile *ALinkedByFile);
   static UnicodeString DelimitStr(UnicodeString AStr);
   void DetectReturnVar();
   bool IsLastLine(UnicodeString &Line);
@@ -132,7 +132,7 @@ private:
   void ReadCommandOutput(intptr_t Params, const UnicodeString *Cmd = nullptr);
   void SCPResponse(bool *GotLastLine = nullptr);
   void SCPDirectorySource(const UnicodeString ADirectoryName,
-    UnicodeString TargetDir, const TCopyParamType *CopyParam, intptr_t Params,
+    const UnicodeString ATargetDir, const TCopyParamType *CopyParam, intptr_t Params,
     TFileOperationProgressType *OperationProgress, intptr_t Level);
   void SCPError(const UnicodeString Message, bool Fatal);
   void SCPSendError(const UnicodeString Message, bool Fatal);

@@ -577,16 +577,16 @@ protected:
     int Attrs, const TCopyParamType * CopyParam, int Params,
     TFileOperationProgressType * OperationProgress, uintptr_t AFlags);
   void __fastcall SelectTransferMode(
-    const UnicodeString ABaseFileName, TOperationSide Side, const TCopyParamType * CopyParam,
-    const TFileMasks::TParams & MaskParams);
-  void __fastcall SelectSourceTransferMode(const TLocalFileHandle & Handle, const TCopyParamType * CopyParam);
-  void __fastcall UpdateSource(const TLocalFileHandle & Handle, const TCopyParamType * CopyParam, intptr_t AParams);
+    const UnicodeString ABaseFileName, TOperationSide Side, const TCopyParamType *CopyParam,
+    const TFileMasks::TParams &MaskParams);
+  void __fastcall SelectSourceTransferMode(const TLocalFileHandle &Handle, const TCopyParamType *CopyParam);
+  void __fastcall UpdateSource(const TLocalFileHandle &Handle, const TCopyParamType * CopyParam, intptr_t AParams);
   void __fastcall DoCopyToLocal(
     TStrings * FilesToCopy, const UnicodeString ATargetDir, const TCopyParamType *CopyParam, intptr_t AParams,
-    TFileOperationProgressType * OperationProgress, uintptr_t AFlags, TOnceDoneOperation & OnceDoneOperation);
+    TFileOperationProgressType *OperationProgress, uintptr_t AFlags, TOnceDoneOperation &OnceDoneOperation);
   void __fastcall SinkRobust(
     const UnicodeString AFileName, const TRemoteFile *AFile, const UnicodeString ATargetDir,
-    const TCopyParamType * CopyParam, intptr_t AParams, TFileOperationProgressType * OperationProgress, uintptr_t AFlags);
+    const TCopyParamType *CopyParam, intptr_t AParams, TFileOperationProgressType * OperationProgress, uintptr_t AFlags);
   void __fastcall Sink(
     const UnicodeString FileName, const TRemoteFile * File, const UnicodeString ATargetDir,
     const TCopyParamType * CopyParam, intptr_t AParams, TFileOperationProgressType * OperationProgress, uintptr_t AFlags,
@@ -632,7 +632,7 @@ public:
   void ReadSymlink(TRemoteFile *SymlinkFile, TRemoteFile *&File);
   bool CopyToLocal(TStrings *AFilesToCopy,
     const UnicodeString ATargetDir, const TCopyParamType *CopyParam, intptr_t AParams, TParallelOperation *ParallelOperation);
-  bool CopyToRemote(const TStrings *AFilesToCopy,
+  bool CopyToRemote(TStrings *AFilesToCopy,
     UnicodeString ATargetDir, const TCopyParamType *CopyParam, intptr_t Params, TParallelOperation *ParallelOperation);
   intptr_t CopyToParallel(TParallelOperation *ParallelOperation, TFileOperationProgressType *OperationProgress);
   void LogParallelTransfer(TParallelOperation *ParallelOperation);
@@ -770,15 +770,15 @@ public:
   bool GetIsCapable(TFSCapability Capability) const { return GetIsCapableProtected(Capability); }
   void SetMasks(UnicodeString Value);
 
-  void SetLocalFileTime(UnicodeString LocalFileName,
+  void SetLocalFileTime(const UnicodeString LocalFileName,
     const TDateTime &Modification);
-  void SetLocalFileTime(UnicodeString LocalFileName,
+  void SetLocalFileTime(const UnicodeString LocalFileName,
     FILETIME *AcTime, FILETIME *WrTime);
-  DWORD GetLocalFileAttributes(UnicodeString LocalFileName) const;
-  bool SetLocalFileAttributes(UnicodeString LocalFileName, DWORD FileAttributes);
-  bool MoveLocalFile(UnicodeString LocalFileName, UnicodeString NewLocalFileName, DWORD Flags);
-  bool RemoveLocalDirectory(UnicodeString LocalDirName);
-  bool CreateLocalDirectory(UnicodeString LocalDirName, LPSECURITY_ATTRIBUTES SecurityAttributes);
+  DWORD GetLocalFileAttributes(const UnicodeString LocalFileName) const;
+  bool SetLocalFileAttributes(const UnicodeString LocalFileName, DWORD FileAttributes);
+  bool MoveLocalFile(const UnicodeString LocalFileName, const UnicodeString NewLocalFileName, DWORD Flags);
+  bool RemoveLocalDirectory(const UnicodeString LocalDirName);
+  bool CreateLocalDirectory(const UnicodeString LocalDirName, LPSECURITY_ATTRIBUTES SecurityAttributes);
 
   TSessionData *GetSessionData() const { return FSessionData; }
   TSessionLog *GetLog() const { return FLog; }
@@ -1042,8 +1042,7 @@ class NB_CORE_EXPORT TSynchronizeChecklist : public TObject
   friend class TTerminal;
 
 public:
-  __removed enum TAction { saNone, saUploadNew, saDownloadNew, saUploadUpdate, \
-    saDownloadUpdate, saDeleteRemote, saDeleteLocal };
+  __removed enum TAction { saNone, saUploadNew, saDownloadNew, saUploadUpdate, saDownloadUpdate, saDeleteRemote, saDeleteLocal };
   static const intptr_t ActionCount = saDeleteLocal;
 
 #if 0
