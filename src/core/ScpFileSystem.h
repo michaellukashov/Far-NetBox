@@ -7,7 +7,7 @@
 class TCommandSet;
 class TSecureShell;
 //---------------------------------------------------------------------------
-class TSCPFileSystem : public TCustomFileSystem
+class NB_CORE_EXPORT TSCPFileSystem : public TCustomFileSystem
 {
   NB_DISABLE_COPY(TSCPFileSystem)
 public:
@@ -70,12 +70,12 @@ public:
   virtual void ReadCurrentDirectory() override;
   virtual void ReadDirectory(TRemoteFileList *FileList) override;
   virtual void ReadFile(const UnicodeString AFileName,
-    TRemoteFile *&File) override;
+    TRemoteFile *& AFile) override;
   virtual void __fastcall ReadSymlink(TRemoteFile *ASymlinkFile,
-    TRemoteFile *&AFile) override;
-  virtual void __fastcall RemoteRenameFile(const UnicodeString AFileName,
+    TRemoteFile *& AFile) override;
+  virtual void __fastcall RemoteRenameFile(const UnicodeString AFileName, const TRemoteFile *AFile,
     const UnicodeString ANewName) override;
-  virtual void __fastcall RemoteCopyFile(const UnicodeString AFileName,
+  virtual void __fastcall RemoteCopyFile(const UnicodeString AFileName, const TRemoteFile *AFile,
     const UnicodeString ANewName) override;
   virtual TStrings * __fastcall GetFixedPaths() const override;
   virtual void __fastcall SpaceAvailable(const UnicodeString APath,

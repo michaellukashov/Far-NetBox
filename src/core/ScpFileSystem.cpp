@@ -1202,15 +1202,15 @@ void __fastcall TSCPFileSystem::ReadDirectory(TRemoteFileList *FileList)
 }
 //---------------------------------------------------------------------------
 void __fastcall TSCPFileSystem::ReadSymlink(TRemoteFile *SymlinkFile,
-  TRemoteFile *&File)
+  TRemoteFile *& AFile)
 {
-  CustomReadFile(SymlinkFile->GetLinkTo(), File, SymlinkFile);
+  CustomReadFile(SymlinkFile->GetLinkTo(), AFile, SymlinkFile);
 }
 //---------------------------------------------------------------------------
 void __fastcall TSCPFileSystem::ReadFile(const UnicodeString AFileName,
-  TRemoteFile *&File)
+  TRemoteFile *& AFile)
 {
-  CustomReadFile(AFileName, File, nullptr);
+  CustomReadFile(AFileName, AFile, nullptr);
 }
 //---------------------------------------------------------------------------
 TRemoteFile * __fastcall TSCPFileSystem::CreateRemoteFile(
@@ -1266,13 +1266,13 @@ void __fastcall TSCPFileSystem::RemoteDeleteFile(UnicodeString AFileName,
   ExecCommand(fsDeleteFile, Params, DelimitStr(AFileName));
 }
 //---------------------------------------------------------------------------
-void __fastcall TSCPFileSystem::RemoteRenameFile(const UnicodeString AFileName,
+void __fastcall TSCPFileSystem::RemoteRenameFile(const UnicodeString AFileName, const TRemoteFile * /*AFile*/,
   const UnicodeString ANewName)
 {
   ExecCommand(fsRenameFile, 0, DelimitStr(AFileName), DelimitStr(ANewName));
 }
 //---------------------------------------------------------------------------
-void __fastcall TSCPFileSystem::RemoteCopyFile(const UnicodeString AFileName,
+void __fastcall TSCPFileSystem::RemoteCopyFile(const UnicodeString AFileName, const TRemoteFile * /*AFile*/,
   const UnicodeString ANewName)
 {
   UnicodeString DelimitedFileName = DelimitStr(AFileName);
@@ -1311,7 +1311,7 @@ void __fastcall TSCPFileSystem::RemoteCreateLink(const UnicodeString AFileName,
 }
 //---------------------------------------------------------------------------
 void __fastcall TSCPFileSystem::ChangeFileToken(const UnicodeString DelimitedName,
-  const TRemoteToken &Token, const TFSCommand Cmd, const UnicodeString RecursiveStr)
+  const TRemoteToken &Token, TFSCommand Cmd, const UnicodeString RecursiveStr)
 {
   UnicodeString Str;
   if (Token.GetIDValid())

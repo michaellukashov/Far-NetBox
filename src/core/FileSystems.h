@@ -218,9 +218,9 @@ public:
     TRemoteFile *&File) = 0;
   virtual void __fastcall ReadSymlink(TRemoteFile *SymLinkFile,
     TRemoteFile *&File) = 0;
-  virtual void __fastcall RemoteRenameFile(const UnicodeString AFileName,
+  virtual void __fastcall RemoteRenameFile(const UnicodeString AFileName, const TRemoteFile *AFile,
     const UnicodeString ANewName) = 0;
-  virtual void __fastcall RemoteCopyFile(const UnicodeString AFileName,
+  virtual void __fastcall RemoteCopyFile(const UnicodeString AFileName, const TRemoteFile *AFile,
     const UnicodeString ANewName) = 0;
   virtual TStrings * __fastcall GetFixedPaths() const = 0;
   virtual void __fastcall SpaceAvailable(const UnicodeString APath,

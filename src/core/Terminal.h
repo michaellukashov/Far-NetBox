@@ -393,10 +393,10 @@ protected:
     intptr_t Params);
   void DoCustomCommandOnFile(UnicodeString AFileName,
     const TRemoteFile *AFile, UnicodeString ACommand, intptr_t AParams, TCaptureOutputEvent OutputEvent);
-  void __fastcall DoRenameFile(const UnicodeString AFileName,
+  void __fastcall DoRenameFile(const UnicodeString AFileName, const TRemoteFile *AFile,
     UnicodeString ANewName, bool Move);
-  void __fastcall DoCopyFile(const UnicodeString AFileName, const UnicodeString ANewName);
-  void DoChangeFileProperties(const UnicodeString AFileName,
+  void __fastcall DoCopyFile(const UnicodeString AFileName, const TRemoteFile *AFile, const UnicodeString ANewName);
+  void __fastcall DoChangeFileProperties(const UnicodeString AFileName,
     const TRemoteFile *AFile, const TRemoteProperties *Properties);
   void DoChangeDirectory();
   void DoInitializeLog();
@@ -480,9 +480,9 @@ protected:
   void SynchronizeLocalTimestamp(const UnicodeString AFileName,
     const TRemoteFile *AFile, void *Param);
   void DoSynchronizeProgress(const TSynchronizeData &Data, bool Collect);
-  void DeleteLocalFile(UnicodeString AFileName,
+  void DeleteLocalFile(const UnicodeString AFileName,
     const TRemoteFile *AFile, void *Params);
-  void RecycleFile(const UnicodeString AFileName, const TRemoteFile *AFile);
+  void RecycleFile(UnicodeString AFileName, const TRemoteFile *AFile);
   TStrings *GetFixedPaths() const;
   void DoStartup();
   virtual bool DoQueryReopen(Exception *E);
@@ -638,7 +638,7 @@ public:
   void LogParallelTransfer(TParallelOperation *ParallelOperation);
   void RemoteCreateDirectory(const UnicodeString ADirName,
     const TRemoteProperties *Properties = nullptr);
-  void RemoteCreateLink(const UnicodeString AFileName, const UnicodeString APointTo, bool Symbolic, bool IsDirectory);
+  void RemoteCreateLink(const UnicodeString AFileName, const UnicodeString APointTo, bool Symbolic);
   void RemoteDeleteFile(UnicodeString AFileName,
     const TRemoteFile *AFile = nullptr, void *AParams = nullptr);
   bool RemoteDeleteFiles(TStrings *AFilesToDelete, intptr_t Params = 0);
@@ -660,7 +660,6 @@ public:
   void TerminalError(Exception *E, const UnicodeString AMsg, const UnicodeString AHelpKeyword = L"");
   void ReloadDirectory();
   void RefreshDirectory();
-  void TerminalRenameFile(const UnicodeString AFileName, const UnicodeString ANewName);
   void TerminalRenameFile(const TRemoteFile *AFile, const UnicodeString ANewName, bool CheckExistence);
   void TerminalMoveFile(const UnicodeString AFileName, const TRemoteFile *AFile,
     /*const TMoveFileParams*/ void *Param);

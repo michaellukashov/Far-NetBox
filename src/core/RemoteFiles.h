@@ -183,6 +183,7 @@ public:
   __property TRemoteToken Owner = { read = FOwner, write = FOwner };
   __property TRemoteToken Group = { read = FGroup, write = FGroup };
   __property UnicodeString FileName = { read = FFileName, write = FFileName };
+  RWProperty<UnicodeString, TRemoteFile> FileName{this, &TRemoteFile::GetFileName, &TRemoteFile::SetFileName};
   __property UnicodeString DisplayName = { read = FDisplayName, write = FDisplayName };
   __property int INodeBlocks = { read = FINodeBlocks };
   __property TDateTime Modification = { read = FModification, write = SetModification };
@@ -200,6 +201,7 @@ public:
   __property TTerminal * Terminal = { read = FTerminal, write = SetTerminal };
   __property wchar_t Type = { read = GetType, write = SetType };
   __property UnicodeString FullFileName  = { read = GetFullFileName, write = FFullFileName };
+  RWProperty<UnicodeString, TRemoteFile> FullFileName{this, &TRemoteFile::GetFullFileName, &TRemoteFile::SetFullFileName};
   __property bool HaveFullFileName  = { read = GetHaveFullFileName };
   __property int IconIndex = { read = GetIconIndex };
   __property UnicodeString TypeName = { read = GetTypeName };
@@ -219,9 +221,9 @@ public:
   TRemoteToken &GetFileGroup() { return FGroup; }
   void SetFileGroup(const TRemoteToken &Value) { FGroup = Value; }
   UnicodeString GetFileName() const { return FFileName; }
-  void SetFileName(UnicodeString Value) { FFileName = Value; }
+  void SetFileName(const UnicodeString Value) { FFileName = Value; }
   UnicodeString GetDisplayName() const { return FDisplayName; }
-  void SetDisplayName(UnicodeString Value) { FDisplayName = Value; }
+  void SetDisplayName(const UnicodeString Value) { FDisplayName = Value; }
   TDateTime GetModification() const { return FModification; }
   TModificationFmt GetModificationFmt() const { return FModificationFmt; }
   void SetModificationFmt(TModificationFmt Value) { FModificationFmt = Value; }
@@ -232,9 +234,9 @@ public:
   void SetLinkTo(UnicodeString Value) { FLinkTo = Value; }
   TRights *GetRights() const { return FRights; }
   UnicodeString GetHumanRights() const { return FHumanRights; }
-  void SetHumanRights(UnicodeString Value) { FHumanRights = Value; }
+  void SetHumanRights(const UnicodeString Value) { FHumanRights = Value; }
   TTerminal *GetTerminal() const { return FTerminal; }
-  void SetFullFileName(UnicodeString Value) { FFullFileName = Value; }
+  void SetFullFileName(const UnicodeString Value) { FFullFileName = Value; }
 
 private:
   void Init();

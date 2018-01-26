@@ -2411,12 +2411,12 @@ void __fastcall TFTPFileSystem::ReadFile(const UnicodeString AFileName,
     {
       FTerminal->LogEvent(FORMAT("%s is a root path", AFileName));
       AFile = new TRemoteDirectoryFile();
-      AFile->SetFullFileName(AFileName);
-      AFile->SetFileName(L"");
+      AFile->FullFileName = AFileName;
+      AFile->FileName = L"";
     }
     else
     {
-      UnicodeString Path = UnixExtractFilePath(AFileName);
+      UnicodeString Path = base::UnixExtractFilePath(AFileName);
       UnicodeString NameOnly;
       int P;
       bool MVSPath =
@@ -2425,7 +2425,7 @@ void __fastcall TFTPFileSystem::ReadFile(const UnicodeString AFileName,
         ((P = AFileName.Pos(L".")) > 0);
       if (!MVSPath)
       {
-        NameOnly = UnixExtractFileName(AFileName);
+        NameOnly = base::UnixExtractFileName(AFileName);
       }
       else
       {
@@ -2478,7 +2478,7 @@ void __fastcall TFTPFileSystem::ReadFile(const UnicodeString AFileName,
     }
   }
 
-  if (File == NULL)
+  if (AFile == NULL)
   {
     throw Exception(FMTLOAD(FILE_NOT_EXISTS, AFileName));
   }
@@ -2508,7 +2508,7 @@ void __fastcall TFTPFileSystem::ReadSymlink(TRemoteFile *SymlinkFile,
   })
 }
 //---------------------------------------------------------------------------
-void __fastcall TFTPFileSystem::RenameFile(const UnicodeString AFileName, const TRemoteFile * /*File*/,
+void __fastcall TFTPFileSystem::RemoteRenameFile(const UnicodeString AFileName, const TRemoteFile * /*AFile*/,
   const UnicodeString ANewName)
 {
   UnicodeString FileName = GetAbsolutePath(AFileName, false);
@@ -2530,7 +2530,7 @@ void __fastcall TFTPFileSystem::RenameFile(const UnicodeString AFileName, const 
   }
 }
 
-void __fastcall TFTPFileSystem::CopyFile(const UnicodeString FileName, const TRemoteFile * /*File*/,
+void __fastcall TFTPFileSystem::RemoteCopyFile(const UnicodeString AFileName, const TRemoteFile * /*AFile*/,
   UnicodeString ANewName)
 {
   DebugAssert(SupportsSiteCommand(CopySiteCommand));
@@ -4100,7 +4100,7 @@ bool __fastcall TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
 
       if (!VerificationResult)
       {
-        if (FTerminal->VerifyCertificate(CertificateStorageKey, FTerminal->SessionData->SiteKey,
+        if (FTerminal->VerifyCertificate(CertificateStorageKey, FTerminal->SessionData->GetSiteKey(),
             FSessionInfo.CertificateFingerprint, CertificateSubject, Data.VerificationResult))
         {
           // certificate is trusted, but for not purposes of info dialog
@@ -4530,16 +4530,16 @@ bool __fastcall TFTPFileSystem::Unquote(UnicodeString &Str)
 void __fastcall TFTPFileSystem::PreserveDownloadFileTime(HANDLE AHandle, void *UserData) const
 {
   TFileTransferData *Data = get_as<TFileTransferData>(UserData);
-  FTerminal->UpdateTargetTime(Handle, Data->Modification, dstmUnix);
+  FTerminal->UpdateTargetTime(AHandle, Data->Modification, dstmUnix);
 }
 //---------------------------------------------------------------------------
-bool __fastcall TFTPFileSystem::GetFileModificationTimeInUtc(const wchar_t *FileName, struct tm &Time)
+bool __fastcall TFTPFileSystem::GetFileModificationTimeInUtc(const wchar_t *AFileName, struct tm &Time)
 {
   bool Result;
   try
   {
     // error-handling-free and DST-mode-unaware copy of TTerminal::OpenLocalFile
-    HANDLE LocalFileHandle = ::CreateFile(ApiPath(FileName).c_str(), GENERIC_READ,
+    HANDLE LocalFileHandle = ::CreateFile(ApiPath(AFileName).c_str(), GENERIC_READ,
         FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr, OPEN_EXISTING, 0, nullptr);
     if (LocalFileHandle == INVALID_HANDLE_VALUE)
     {
@@ -4621,12 +4621,12 @@ bool TFTPFileSystem::SupportsCommand(const UnicodeString Command) const
   return (FSupportedCommands->IndexOf(Command) >= 0);
 }
 //---------------------------------------------------------------------------
-void __fastcall TFTPFileSystem::LockFile(const UnicodeString /*FileName*/, const TRemoteFile * /*File*/)
+void __fastcall TFTPFileSystem::LockFile(const UnicodeString /*AFileName*/, const TRemoteFile * /*File*/)
 {
   DebugFail();
 }
 //---------------------------------------------------------------------------
-void __fastcall TFTPFileSystem::UnlockFile(const UnicodeString /*FileName*/, const TRemoteFile * /*File*/)
+void __fastcall TFTPFileSystem::UnlockFile(const UnicodeString /*AFileName*/, const TRemoteFile * /*File*/)
 {
   DebugFail();
 }

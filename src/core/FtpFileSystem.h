@@ -17,7 +17,7 @@ struct TFileTransferData;
 struct TFtpsCertificateData;
 struct TRemoteFileTime;
 //---------------------------------------------------------------------------
-class TFTPFileSystem : public TCustomFileSystem
+class NB_CORE_EXPORT TFTPFileSystem : public TCustomFileSystem
 {
   friend class TFileZillaImpl;
   friend class TFTPFileListHelper;
@@ -85,9 +85,9 @@ public:
     TRemoteFile *&AFile) override;
   virtual void __fastcall ReadSymlink(TRemoteFile *SymlinkFile,
     TRemoteFile *&AFile) override;
-  virtual void __fastcall RemoteRenameFile(const UnicodeString AFileName,
+  virtual void __fastcall RemoteRenameFile(const UnicodeString AFileName, const TRemoteFile *AFile,
     const UnicodeString ANewName) override;
-  virtual void __fastcall RemoteCopyFile(const UnicodeString AFileName,
+  virtual void __fastcall RemoteCopyFile(const UnicodeString AFileName, const TRemoteFile *AFile,
     const UnicodeString ANewName) override;
   virtual TStrings * __fastcall GetFixedPaths() const override;
   virtual void __fastcall SpaceAvailable(const UnicodeString APath,
@@ -158,7 +158,7 @@ protected:
   bool HandleCapabilities(TFTPServerCapabilities *ServerCapabilities);
   bool CheckError(intptr_t ReturnCode, const wchar_t *Context);
   void PreserveDownloadFileTime(HANDLE AHandle, void *UserData) const;
-  bool GetFileModificationTimeInUtc(const wchar_t *FileName, struct tm &Time);
+  bool GetFileModificationTimeInUtc(const wchar_t *AFileName, struct tm &Time);
   void EnsureLocation(const UnicodeString ADirectory, bool Log);
   void EnsureLocation();
   UnicodeString __fastcall GetActualCurrentDirectory() const;
