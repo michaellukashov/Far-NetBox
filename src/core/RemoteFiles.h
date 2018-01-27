@@ -47,7 +47,6 @@ public:
 
   intptr_t Compare(const TRemoteToken &rhs) const;
 
-#if 0
   __property UnicodeString Name = { read = FName, write = FName };
   __property bool NameValid = { read = GetNameValid };
   __property unsigned int ID = { read = FID, write = SetID };
@@ -55,7 +54,6 @@ public:
   __property bool IsSet  = { read = GetIsSet };
   __property UnicodeString LogText = { read = GetLogText };
   __property UnicodeString DisplayText = { read = GetDisplayText };
-#endif // #if 0
 
   UnicodeString GetName() const { return FName; }
   void SetName(UnicodeString Value) { FName = Value; }
@@ -180,6 +178,7 @@ public:
   __property TRemoteFileList * Directory = { read = FDirectory, write = FDirectory };
   __property UnicodeString RightsStr = { read = GetRightsStr };
   __property __int64 Size = { read = GetSize, write = FSize };
+  RWProperty<int64_t, TRemoteFile> Size{this, &TRemoteFile::GetSize, &TRemoteFile::SetSize};
   __property TRemoteToken Owner = { read = FOwner, write = FOwner };
   __property TRemoteToken Group = { read = FGroup, write = FGroup };
   __property UnicodeString FileName = { read = FFileName, write = FFileName };
@@ -187,16 +186,19 @@ public:
   __property UnicodeString DisplayName = { read = FDisplayName, write = FDisplayName };
   __property int INodeBlocks = { read = FINodeBlocks };
   __property TDateTime Modification = { read = FModification, write = SetModification };
+  RWProperty<TDateTime, TRemoteFile> Modification{this, &TRemoteFile::GetModification, &TRemoteFile::SetModification};
   __property UnicodeString ModificationStr = { read = GetModificationStr };
   __property UnicodeString UserModificationStr = { read = GetUserModificationStr };
   __property TModificationFmt ModificationFmt = { read = FModificationFmt, write = FModificationFmt };
   __property TDateTime LastAccess = { read = FLastAccess, write = FLastAccess };
   __property bool IsSymLink = { read = FIsSymLink };
+  ROProperty<bool, TRemoteFile> IsSymLink{this, &TRemoteFile::GetIsSymLink};
   __property bool IsDirectory = { read = GetIsDirectory };
   __property TRemoteFile * LinkedFile = { read = GetLinkedFile, write = SetLinkedFile };
   __property UnicodeString LinkTo = { read = FLinkTo, write = FLinkTo };
   __property UnicodeString ListingStr = { read = GetListingStr, write = SetListingStr };
   __property TRights * Rights = { read = FRights, write = SetRights };
+  // RWProperty<TRights *, TRemoteFile> Rights{this, &TRemoteFile::GetRights, &TRemoteFile::SetRights};
   __property UnicodeString HumanRights = { read = FHumanRights, write = FHumanRights };
   __property TTerminal * Terminal = { read = FTerminal, write = SetTerminal };
   __property wchar_t Type = { read = GetType, write = SetType };
@@ -475,14 +477,18 @@ public:
 
   bool operator==(const TRights &rhr) const;
   bool operator==(uint16_t rhr) const;
+  bool operator==(TFlag rhr) const;
   bool operator!=(const TRights &rhr) const;
+  bool operator!=(const TFlag rhr) const;
   TRights &operator=(const TRights &rhr);
   TRights &operator=(uint16_t rhr);
   TRights operator~() const;
   TRights operator&(uint16_t rhr) const;
   TRights operator&(const TRights &rhr) const;
+  TRights operator&(TFlag rhr) const;
   TRights &operator&=(uint16_t rhr);
   TRights &operator&=(const TRights &rhr);
+  TRights &operator&=(TFlag rhr);
   TRights operator|(uint16_t rhr) const;
   TRights operator|(const TRights &rhr) const;
   TRights &operator|=(uint16_t rhr);
@@ -490,7 +496,6 @@ public:
   operator uint16_t() const;
   operator uint32_t() const;
 
-#if 0
   __property bool AllowUndef = { read = FAllowUndef, write = SetAllowUndef };
   __property bool IsUndef = { read = GetIsUndef };
   __property UnicodeString ModeStr = { read = GetModeStr };
@@ -505,7 +510,6 @@ public:
   __property TState RightUndef[TRight Right] = { read = GetRightUndef, write = SetRightUndef };
   __property UnicodeString Text = { read = GetText, write = SetText };
   __property bool Unknown = { read = FUnknown };
-#endif // #if 0
 
 private:
   UnicodeString FText;

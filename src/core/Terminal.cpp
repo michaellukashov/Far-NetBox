@@ -78,29 +78,30 @@ void FileOperationLoopCustom(TTerminal *Terminal,
 #define FILE_OPERATION_LOOP_TERMINAL this
 #endif // #if 0
 //---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
 class TLoopDetector : public TObject
 {
 public:
-  TLoopDetector();
-  void RecordVisitedDirectory(const UnicodeString Directory);
-  bool IsUnvisitedDirectory(const UnicodeString Directory);
+  __fastcall TLoopDetector();
+  void __fastcall RecordVisitedDirectory(const UnicodeString Directory);
+  bool __fastcall IsUnvisitedDirectory(const UnicodeString Directory);
 
 private:
   std::unique_ptr<TStringList> FVisitedDirectories;
 };
-
-TLoopDetector::TLoopDetector()
+//---------------------------------------------------------------------------
+__fastcall TLoopDetector::TLoopDetector()
 {
   FVisitedDirectories.reset(CreateSortedStringList());
 }
-
-void TLoopDetector::RecordVisitedDirectory(const UnicodeString Directory)
+//---------------------------------------------------------------------------
+void __fastcall TLoopDetector::RecordVisitedDirectory(const UnicodeString Directory)
 {
   UnicodeString VisitedDirectory = ::ExcludeTrailingBackslash(Directory);
   FVisitedDirectories->Add(VisitedDirectory);
 }
-
-bool TLoopDetector::IsUnvisitedDirectory(const UnicodeString Directory)
+//---------------------------------------------------------------------------
+bool __fastcall TLoopDetector::IsUnvisitedDirectory(const UnicodeString Directory)
 {
   bool Result = (FVisitedDirectories->IndexOf(Directory) < 0);
 
@@ -147,7 +148,7 @@ public:
   TLoopDetector LoopDetector;
   UnicodeString RealDirectory;
 };
-
+//---------------------------------------------------------------------------
 TCalculateSizeStats::TCalculateSizeStats() :
   Files(0),
   Directories(0),
@@ -156,19 +157,19 @@ TCalculateSizeStats::TCalculateSizeStats() :
 {
 __removed memset(this, 0, sizeof(*this));
 }
-
+//---------------------------------------------------------------------------
 TSynchronizeOptions::TSynchronizeOptions() :
   Filter(nullptr)
 {
 __removed memset(this, 0, sizeof(*this));
 }
-
+//---------------------------------------------------------------------------
 TSynchronizeOptions::~TSynchronizeOptions()
 {
   SAFE_DESTROY(Filter);
 }
-
-bool TSynchronizeOptions::MatchesFilter(UnicodeString AFileName) const
+//---------------------------------------------------------------------------
+bool __fastcall TSynchronizeOptions::MatchesFilter(UnicodeString AFileName) const
 {
   bool Result = true;
   if (Filter)
@@ -178,7 +179,7 @@ bool TSynchronizeOptions::MatchesFilter(UnicodeString AFileName) const
   }
   return Result;
 }
-
+//---------------------------------------------------------------------------
 TSpaceAvailable::TSpaceAvailable() :
   BytesOnDevice(0),
   UnusedBytesOnDevice(0),
@@ -188,7 +189,18 @@ TSpaceAvailable::TSpaceAvailable() :
 {
 __removed memset(this, 0, sizeof(*this));
 }
-
+//---------------------------------------------------------------------------
+#if 0
+TOverwriteFileParams::TOverwriteFileParams() :
+  SourceSize(0),
+  DestSize(0),
+  SourcePrecision(mfFull),
+  DestPrecision(mfFull)
+{
+}
+#endif // if 0
+//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
 TChecklistItem::TChecklistItem() :
   TObject(OBJECT_CLASS_TChecklistItem),
   Action(saNone),
@@ -1916,7 +1928,8 @@ void TTerminal::Reopen(intptr_t Params)
 }
 
 bool TTerminal::PromptUser(TSessionData *Data, TPromptKind Kind,
-  UnicodeString AName, UnicodeString Instructions, UnicodeString Prompt, bool Echo, intptr_t MaxLen, UnicodeString &AResult)
+  const UnicodeString AName, UnicodeString Instructions, const UnicodeString Prompt,
+  bool Echo, intptr_t MaxLen, UnicodeString &AResult)
 {
   bool Result;
   std::unique_ptr<TStrings> Prompts(new TStringList());
@@ -1937,7 +1950,7 @@ bool TTerminal::PromptUser(TSessionData *Data, TPromptKind Kind,
 }
 
 bool TTerminal::PromptUser(TSessionData *Data, TPromptKind Kind,
-  const UnicodeString AName, UnicodeString Instructions, TStrings *Prompts, TStrings *Results)
+  const UnicodeString AName, const UnicodeString Instructions, TStrings *Prompts, TStrings *Results)
 {
   // If PromptUser is overridden in descendant class, the overridden version
   // is not called when accessed via TSessionIU interface.
@@ -1948,7 +1961,7 @@ bool TTerminal::PromptUser(TSessionData *Data, TPromptKind Kind,
 }
 
 bool TTerminal::DoPromptUser(TSessionData * /*Data*/, TPromptKind Kind,
-  const UnicodeString AName, UnicodeString Instructions, TStrings *Prompts, TStrings *Response)
+  const UnicodeString AName, const UnicodeString Instructions, TStrings *Prompts, TStrings *Response)
 {
   bool Result = false;
 
@@ -2545,12 +2558,12 @@ void __fastcall TTerminal::FileOperationLoopEnd(Exception &E,
 }
 //---------------------------------------------------------------------------
 intptr_t TTerminal::FileOperationLoop(TFileOperationEvent CallBackFunc,
-  TFileOperationProgressType * OperationProgress, uintptr_t AFlags,
-  const UnicodeString Message, void *Param1, void *Param2)
+  TFileOperationProgressType *OperationProgress, uintptr_t AFlags,
+  const UnicodeString AMessage, void *Param1, void *Param2)
 {
   DebugAssert(CallBackFunc);
   intptr_t Result = 0;
-  FileOperationLoopCustom(this, OperationProgress, AFlags, Message, "",
+  FileOperationLoopCustom(this, OperationProgress, AFlags, AMessage, "",
   [&]()
   {
     Result = CallBackFunc(Param1, Param2);
@@ -3424,7 +3437,7 @@ void TTerminal::EnsureNonExistence(UnicodeString AFileName)
   }
 }
 
-void TTerminal::LogEvent(UnicodeString Str)
+void TTerminal::LogEvent(const UnicodeString Str)
 {
   if (GetLog()->GetLogging())
   {
@@ -7928,7 +7941,7 @@ bool TTerminal::LoadTlsCertificate(X509 *&Certificate, EVP_PKEY *&PrivateKey)
   return Result;
 }
 
-UnicodeString TTerminal::GetBaseFileName(UnicodeString AFileName) const
+UnicodeString TTerminal::GetBaseFileName(const UnicodeString AFileName) const
 {
   UnicodeString FileName = AFileName;
 
@@ -7944,7 +7957,7 @@ UnicodeString TTerminal::GetBaseFileName(UnicodeString AFileName) const
 }
 
 UnicodeString TTerminal::ChangeFileName(const TCopyParamType *CopyParam,
-  UnicodeString AFileName, TOperationSide Side, bool FirstLevel) const
+  const UnicodeString AFileName, TOperationSide Side, bool FirstLevel) const
 {
   UnicodeString FileName = GetBaseFileName(AFileName);
   if (CopyParam)

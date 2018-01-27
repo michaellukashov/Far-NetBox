@@ -39,7 +39,7 @@ private:
   TNotifyEvent FOnChange;
 
   mutable void *FApplicationInfo;
-  // TUsage * FUsage;
+  __removed TUsage * FUsage;
   bool FLogging;
   bool FPermanentLogging;
   UnicodeString FLogFileName;
@@ -269,7 +269,6 @@ public:
   TStoredSessionList *SelectKnownHostsSessionsForImport(
     TStrings *Lines, TStoredSessionList *Sessions, UnicodeString &Error);
 
-#if 0
   __property TVSFixedFileInfo *FixedApplicationInfo  = { read=GetFixedApplicationInfo };
   __property void * ApplicationInfo  = { read=GetApplicationInfo };
   __property TUsage * Usage = { read = FUsage };
@@ -336,9 +335,8 @@ public:
   __property bool DisablePasswordStoring = { read = FDisablePasswordStoring };
   __property bool ForceBanners = { read = FForceBanners };
   __property bool DisableAcceptingHostKeys = { read = FDisableAcceptingHostKeys };
-#endif // #if 0
 
-  // TUsage * GetUsage() { return FUsage; }
+  __removed TUsage * GetUsage() { return FUsage; }
   UnicodeString GetPuttyRegistryStorageKey() const { return FPuttyRegistryStorageKey; }
   UnicodeString GetRandomSeedFile() const { return FRandomSeedFile; }
   bool GetLogFileAppend() const { return FLogFileAppend; }

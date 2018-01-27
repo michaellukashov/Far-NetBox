@@ -151,6 +151,7 @@ public:
   __property bool Done = { read = FDone };
   __property bool FileInProgress = { read = FFileInProgress };
   __property TCancelStatus Cancel = { read = GetCancel };
+  ROProperty<TCancelStatus, TFileOperationProgressType> Cancel{this, &TFileOperationProgressType::GetCancel};
   // when operation started
   __property TDateTime StartTime = { read = FStartTime };
   // bytes transferred

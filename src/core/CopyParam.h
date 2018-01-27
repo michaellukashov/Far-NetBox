@@ -76,9 +76,7 @@ private:
   bool FIgnorePermErrors;
   TResumeSupport FResumeSupport;
   int64_t FResumeThreshold;
-#if 0
-  UnicodeString GetLogStr() const;
-#endif // #if 0
+  __removed UnicodeString GetLogStr() const;
   wchar_t FInvalidCharsReplacement;
   UnicodeString FLocalInvalidChars;
   UnicodeString FTokenizibleChars;
@@ -202,7 +200,7 @@ public:
   bool GetCalculateSize() const { return FCalculateSize; }
   void SetCalculateSize(bool Value) { FCalculateSize = Value; }
   UnicodeString GetFileMask() const { return FFileMask; }
-  void SetFileMask(UnicodeString Value) { FFileMask = Value; }
+  void SetFileMask(const UnicodeString Value) { FFileMask = Value; }
   const TFileMasks &GetIncludeFileMask() const { return FIncludeFileMask; }
   TFileMasks &GetIncludeFileMask() { return FIncludeFileMask; }
   void SetIncludeFileMask(const TFileMasks &Value) { FIncludeFileMask = Value; }
@@ -224,4 +222,4 @@ public:
 NB_CORE_EXPORT uintptr_t GetSpeedLimit(UnicodeString Text);
 NB_CORE_EXPORT UnicodeString SetSpeedLimit(uintptr_t Limit);
 NB_CORE_EXPORT void CopySpeedLimits(TStrings *Source, TStrings *Dest);
-TOperationSide ReverseOperationSide(TOperationSide Side);
+NB_CORE_EXPORT TOperationSide ReverseOperationSide(TOperationSide Side);

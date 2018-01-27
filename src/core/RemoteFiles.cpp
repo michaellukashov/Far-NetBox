@@ -2253,7 +2253,17 @@ bool TRights::operator==(uint16_t rhr) const
   return (GetNumber() == rhr);
 }
 
+bool TRights::operator==(TFlag rhr) const
+{
+  return (GetNumber() == static_cast<uint16_t>(rhr));
+}
+
 bool TRights::operator!=(const TRights &rhr) const
+{
+  return !(*this == rhr);
+}
+
+bool TRights::operator!=(TFlag rhr) const
 {
   return !(*this == rhr);
 }
@@ -2276,6 +2286,13 @@ TRights TRights::operator~() const
   return Result;
 }
 
+TRights TRights::operator&(uint16_t rhr) const
+{
+  TRights Result(*this);
+  Result &= rhr;
+  return Result;
+}
+
 TRights TRights::operator&(const TRights &rhr) const
 {
   TRights Result(*this);
@@ -2283,10 +2300,10 @@ TRights TRights::operator&(const TRights &rhr) const
   return Result;
 }
 
-TRights TRights::operator&(uint16_t rhr) const
+TRights TRights::operator&(TFlag rhr) const
 {
   TRights Result(*this);
-  Result &= rhr;
+  Result &= static_cast<uint16_t>(rhr);
   return Result;
 }
 
@@ -2313,6 +2330,12 @@ TRights &TRights::operator&=(const TRights &rhr)
 TRights &TRights::operator&=(uint16_t rhr)
 {
   SetNumber(GetNumber() & rhr);
+  return *this;
+}
+
+TRights &TRights::operator&=(TFlag rhr)
+{
+  SetNumber(GetNumber() & static_cast<uint16_t>(rhr));
   return *this;
 }
 
