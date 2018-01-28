@@ -736,13 +736,13 @@ UnicodeString ExpandFileNameCommand(UnicodeString Command,
       AddPathQuotes(AFileName));
 }
 
-UnicodeString EscapeParam(UnicodeString AParam)
+UnicodeString EscapeParam(const UnicodeString AParam)
 {
   // Make sure this won't break RTF syntax
   return ReplaceStr(AParam, L"\"", L"\"\"");
 }
 
-UnicodeString EscapePuttyCommandParam(UnicodeString AParam)
+UnicodeString EscapePuttyCommandParam(const UnicodeString AParam)
 {
   UnicodeString Result = AParam;
 
@@ -788,7 +788,7 @@ UnicodeString EscapePuttyCommandParam(UnicodeString AParam)
   return Result;
 }
 
-UnicodeString ExpandEnvironmentVariables(UnicodeString Str)
+UnicodeString ExpandEnvironmentVariables(const UnicodeString Str)
 {
   UnicodeString Buf;
   intptr_t Size = 1024;
@@ -807,7 +807,7 @@ UnicodeString ExpandEnvironmentVariables(UnicodeString Str)
   return Buf;
 }
 
-bool IsPathToSameFile(UnicodeString APath1, UnicodeString APath2)
+bool IsPathToSameFile(const UnicodeString APath1, const UnicodeString APath2)
 {
   UnicodeString ShortPath1 = ExtractShortPathName(APath1);
   UnicodeString ShortPath2 = ExtractShortPathName(APath2);
@@ -836,14 +836,14 @@ bool ComparePaths(UnicodeString APath1, UnicodeString APath2)
   return AnsiSameText(::IncludeTrailingBackslash(APath1), ::IncludeTrailingBackslash(APath2));
 }
 
-bool SamePaths(UnicodeString APath1, UnicodeString APath2)
+bool SamePaths(const UnicodeString APath1, const UnicodeString APath2)
 {
   TODO("ExpandUNCFileName");
   // TODO: ExpandUNCFileName
   return AnsiSameText(::IncludeTrailingBackslash(APath1), ::IncludeTrailingBackslash(APath2));
 }
 
-intptr_t CompareLogicalText(UnicodeString S1, UnicodeString S2)
+intptr_t CompareLogicalText(const UnicodeString S1, const UnicodeString S2)
 {
   if (S1.Length() > S2.Length())
   {
@@ -860,7 +860,7 @@ intptr_t CompareLogicalText(UnicodeString S1, UnicodeString S2)
 #endif
 }
 
-bool IsReservedName(UnicodeString AFileName)
+bool IsReservedName(const UnicodeString AFileName)
 {
   UnicodeString FileName = AFileName;
 
@@ -1150,7 +1150,7 @@ static UnicodeString MakeUnicodeLargePath(UnicodeString APath)
   return Result;
 }
 
-UnicodeString ApiPath(UnicodeString APath)
+UnicodeString ApiPath(const UnicodeString APath)
 {
   UnicodeString Result = APath;
 
@@ -1165,7 +1165,7 @@ UnicodeString ApiPath(UnicodeString APath)
   return Result;
 }
 
-UnicodeString DisplayableStr(RawByteString Str)
+UnicodeString DisplayableStr(const RawByteString Str)
 {
   bool Displayable = true;
   intptr_t Index1 = 1;
@@ -1252,7 +1252,7 @@ UnicodeString BytesToHex(const uint8_t *B, uintptr_t Length, bool UpperCase, wch
   return Result;
 }
 
-UnicodeString BytesToHex(RawByteString Str, bool UpperCase, wchar_t Separator)
+UnicodeString BytesToHex(const RawByteString Str, bool UpperCase, wchar_t Separator)
 {
   return BytesToHex(reinterpret_cast<const uint8_t *>(Str.c_str()), Str.Length(), UpperCase, Separator);
 }
@@ -1262,7 +1262,7 @@ UnicodeString CharToHex(wchar_t Ch, bool UpperCase)
   return BytesToHex(reinterpret_cast<const uint8_t *>(&Ch), sizeof(Ch), UpperCase);
 }
 
-RawByteString HexToBytes(UnicodeString Hex)
+RawByteString HexToBytes(const UnicodeString Hex)
 {
   UnicodeString Digits = "0123456789ABCDEF";
   RawByteString Result;
@@ -1284,7 +1284,7 @@ RawByteString HexToBytes(UnicodeString Hex)
   return Result;
 }
 
-uint8_t HexToByte(UnicodeString Hex)
+uint8_t HexToByte(const UnicodeString Hex)
 {
   UnicodeString Digits = "0123456789ABCDEF";
   DebugAssert(Hex.Length() == 2);
@@ -2391,7 +2391,7 @@ static bool DoRecursiveDeleteFile(UnicodeString AFileName, bool ToRecycleBin, Un
   return Result;
 }
 
-bool RecursiveDeleteFile(UnicodeString AFileName, bool ToRecycleBin)
+bool RecursiveDeleteFile(const UnicodeString AFileName, bool ToRecycleBin)
 {
   UnicodeString ErrorPath; // unused
   bool Result = DoRecursiveDeleteFile(AFileName, ToRecycleBin, ErrorPath);
@@ -2505,7 +2505,7 @@ UnicodeString LoadStrPart(intptr_t Ident, intptr_t Part)
   return Result;
 }
 
-UnicodeString DecodeUrlChars(UnicodeString S)
+UnicodeString DecodeUrlChars(const UnicodeString S)
 {
   UnicodeString Result = S;
 
@@ -2583,17 +2583,17 @@ UnicodeString DoEncodeUrl(UnicodeString S, bool EncodeSlash)
   return Result;
 }
 
-UnicodeString EncodeUrlString(UnicodeString S)
+UnicodeString EncodeUrlString(const UnicodeString S)
 {
   return DoEncodeUrl(S, true);
 }
 
-UnicodeString EncodeUrlPath(UnicodeString S)
+UnicodeString EncodeUrlPath(const UnicodeString S)
 {
   return DoEncodeUrl(S, false);
 }
 
-UnicodeString AppendUrlParams(UnicodeString AURL, UnicodeString Params)
+UnicodeString AppendUrlParams(const UnicodeString AURL, const UnicodeString Params)
 {
   UnicodeString URL = AURL;
   // see also TWebHelpSystem::ShowHelp
@@ -2616,7 +2616,7 @@ UnicodeString AppendUrlParams(UnicodeString AURL, UnicodeString Params)
   return Result;
 }
 
-UnicodeString ExtractFileNameFromUrl(UnicodeString Url)
+UnicodeString ExtractFileNameFromUrl(const UnicodeString Url)
 {
   UnicodeString Result = Url;
   intptr_t P = Result.Pos(L"?");
