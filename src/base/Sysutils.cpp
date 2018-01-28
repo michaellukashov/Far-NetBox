@@ -233,13 +233,13 @@ bool TryStrToInt64(UnicodeString StrValue, int64_t &Value)
   return Result;
 }
 
-UnicodeString Trim(UnicodeString Str)
+UnicodeString Trim(const UnicodeString Str)
 {
   UnicodeString Result = TrimRight(TrimLeft(Str));
   return Result;
 }
 
-UnicodeString TrimLeft(UnicodeString Str)
+UnicodeString TrimLeft(const UnicodeString Str)
 {
   UnicodeString Result = Str;
   intptr_t Len = Result.Length();
@@ -251,7 +251,7 @@ UnicodeString TrimLeft(UnicodeString Str)
   return Result;
 }
 
-UnicodeString TrimRight(UnicodeString Str)
+UnicodeString TrimRight(const UnicodeString Str)
 {
   UnicodeString Result = Str;
   intptr_t Len = Result.Length();
@@ -264,13 +264,13 @@ UnicodeString TrimRight(UnicodeString Str)
   return Result;
 }
 
-UnicodeString UpperCase(UnicodeString Str)
+UnicodeString UpperCase(const UnicodeString Str)
 {
   UnicodeString Result(Str);
   return Result.MakeUpper();
 }
 
-UnicodeString LowerCase(UnicodeString Str)
+UnicodeString LowerCase(const UnicodeString Str)
 {
   UnicodeString Result(Str);
   return Result.MakeLower();
@@ -286,8 +286,8 @@ wchar_t LowCase(const wchar_t Ch)
   return static_cast<wchar_t>(::towlower(Ch));
 }
 
-UnicodeString AnsiReplaceStr(UnicodeString Str, UnicodeString From,
-  UnicodeString To)
+UnicodeString AnsiReplaceStr(const UnicodeString Str, const UnicodeString From,
+  const UnicodeString To)
 {
   UnicodeString Result = Str;
   intptr_t Pos;
@@ -298,13 +298,13 @@ UnicodeString AnsiReplaceStr(UnicodeString Str, UnicodeString From,
   return Result;
 }
 
-intptr_t AnsiPos(UnicodeString Str, wchar_t Ch)
+intptr_t AnsiPos(const UnicodeString Str, wchar_t Ch)
 {
   intptr_t Result = Str.Pos(Ch);
   return Result;
 }
 
-intptr_t Pos(UnicodeString Str, UnicodeString Substr)
+intptr_t Pos(const UnicodeString Str, const UnicodeString Substr)
 {
   intptr_t Result = Str.Pos(Substr.c_str());
   return Result;
@@ -463,12 +463,12 @@ UnicodeString UTF8ToString(const char *Str, intptr_t Len)
   return Result;
 }
 
-double StrToFloat(UnicodeString Value)
+double StrToFloat(const UnicodeString Value)
 {
   return StrToFloatDef(Value, 0.0);
 }
 
-double StrToFloatDef(UnicodeString Value, double DefVal)
+double StrToFloatDef(const UnicodeString Value, double DefVal)
 {
   double Result;
   try
@@ -482,7 +482,7 @@ double StrToFloatDef(UnicodeString Value, double DefVal)
   return Result;
 }
 
-UnicodeString FormatFloat(UnicodeString /*Format*/, double Value)
+UnicodeString FormatFloat(const UnicodeString /*Format*/, double Value)
 {
   UnicodeString Result(20, L'\0');
   swprintf_s(&Result[1], Result.Length(), L"%.2f", Value);
@@ -543,18 +543,18 @@ int64_t FileSeek(HANDLE AHandle, int64_t Offset, DWORD Origin)
   return (static_cast<int64_t>(high) << 32) + low;
 }
 
-bool FileExists(UnicodeString AFileName)
+bool FileExists(const UnicodeString AFileName)
 {
   return FileGetAttr(AFileName) != INVALID_FILE_ATTRIBUTES;
 }
 
-bool RenameFile(UnicodeString From, UnicodeString To)
+bool RenameFile(const UnicodeString From, const UnicodeString To)
 {
   bool Result = ::MoveFile(ApiPath(From).c_str(), ApiPath(To).c_str()) != FALSE;
   return Result;
 }
 
-bool DirectoryExists(UnicodeString ADir)
+bool DirectoryExists(const UnicodeString ADir)
 {
   if ((ADir == THISDIRECTORY) || (ADir == PARENTDIRECTORY))
   {
@@ -570,7 +570,7 @@ bool DirectoryExists(UnicodeString ADir)
   return false;
 }
 
-UnicodeString FileSearch(UnicodeString AFileName, UnicodeString DirectoryList)
+UnicodeString FileSearch(const UnicodeString AFileName, const UnicodeString DirectoryList)
 {
   UnicodeString Result;
   UnicodeString Temp = DirectoryList;
@@ -605,7 +605,7 @@ UnicodeString FileSearch(UnicodeString AFileName, UnicodeString DirectoryList)
   return Result;
 }
 
-void FileAge(UnicodeString AFileName, TDateTime &ATimestamp)
+void FileAge(const UnicodeString AFileName, TDateTime &ATimestamp)
 {
   WIN32_FIND_DATA FindData;
   HANDLE LocalFileHandle = ::FindFirstFileW(ApiPath(AFileName).c_str(), &FindData);
@@ -626,23 +626,23 @@ DWORD FileGetAttr(UnicodeString AFileName, bool /*FollowLink*/)
   return LocalFileAttrs;
 }
 
-bool FileSetAttr(UnicodeString AFileName, DWORD LocalFileAttrs)
+bool FileSetAttr(const UnicodeString AFileName, DWORD LocalFileAttrs)
 {
   bool Result = ::SetFileAttributesW(ApiPath(AFileName).c_str(), LocalFileAttrs) != FALSE;
   return Result;
 }
 
-bool CreateDir(UnicodeString ADir, LPSECURITY_ATTRIBUTES SecurityAttributes)
+bool CreateDir(const UnicodeString ADir, LPSECURITY_ATTRIBUTES SecurityAttributes)
 {
   return ::CreateDirectoryW(ApiPath(ADir).c_str(), SecurityAttributes) != FALSE;
 }
 
-bool RemoveDir(UnicodeString ADir)
+bool RemoveDir(const UnicodeString ADir)
 {
   return ::RemoveDirectoryW(ApiPath(ADir).c_str()) != FALSE;
 }
 
-bool ForceDirectories(UnicodeString ADir)
+bool ForceDirectories(const UnicodeString ADir)
 {
   bool Result = true;
   if (ADir.IsEmpty())
@@ -662,7 +662,7 @@ bool ForceDirectories(UnicodeString ADir)
   return Result;
 }
 
-bool RemoveFile(UnicodeString AFileName)
+bool RemoveFile(const UnicodeString AFileName)
 {
   ::DeleteFile(ApiPath(AFileName).c_str());
   return !::FileExists(AFileName);

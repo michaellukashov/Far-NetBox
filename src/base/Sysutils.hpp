@@ -249,16 +249,16 @@ NB_CORE_EXPORT TDateTime SystemTimeToDateTime(const SYSTEMTIME &SystemTime);
 NB_CORE_EXPORT TDateTime EncodeDate(int Year, int Month, int Day);
 NB_CORE_EXPORT TDateTime EncodeTime(uint32_t Hour, uint32_t Min, uint32_t Sec, uint32_t MSec);
 
-NB_CORE_EXPORT UnicodeString Trim(UnicodeString Str);
-NB_CORE_EXPORT UnicodeString TrimLeft(UnicodeString Str);
-NB_CORE_EXPORT UnicodeString TrimRight(UnicodeString Str);
-NB_CORE_EXPORT UnicodeString UpperCase(UnicodeString Str);
-NB_CORE_EXPORT UnicodeString LowerCase(UnicodeString Str);
+NB_CORE_EXPORT UnicodeString Trim(const UnicodeString Str);
+NB_CORE_EXPORT UnicodeString TrimLeft(const UnicodeString Str);
+NB_CORE_EXPORT UnicodeString TrimRight(const UnicodeString Str);
+NB_CORE_EXPORT UnicodeString UpperCase(const UnicodeString Str);
+NB_CORE_EXPORT UnicodeString LowerCase(const UnicodeString Str);
 NB_CORE_EXPORT wchar_t UpCase(const wchar_t Ch);
 NB_CORE_EXPORT wchar_t LowCase(const wchar_t Ch);
-NB_CORE_EXPORT UnicodeString AnsiReplaceStr(UnicodeString Str, UnicodeString From, UnicodeString To);
-NB_CORE_EXPORT intptr_t AnsiPos(UnicodeString Str, wchar_t Ch);
-NB_CORE_EXPORT intptr_t Pos(UnicodeString Str, UnicodeString Substr);
+NB_CORE_EXPORT UnicodeString AnsiReplaceStr(const UnicodeString Str, const UnicodeString From, const UnicodeString To);
+NB_CORE_EXPORT intptr_t AnsiPos(const UnicodeString Str, wchar_t Ch);
+NB_CORE_EXPORT intptr_t Pos(const UnicodeString Str, const UnicodeString Substr);
 NB_CORE_EXPORT UnicodeString StringReplaceAll(UnicodeString Str, UnicodeString From, UnicodeString To);
 NB_CORE_EXPORT bool IsDelimiter(UnicodeString Delimiters, UnicodeString Str, intptr_t AIndex);
 NB_CORE_EXPORT intptr_t FirstDelimiter(UnicodeString Delimiters, UnicodeString Str);
@@ -294,9 +294,9 @@ NB_CORE_EXPORT int64_t StrToInt64(UnicodeString Value);
 NB_CORE_EXPORT int64_t StrToInt64Def(UnicodeString Value, int64_t DefVal);
 NB_CORE_EXPORT bool TryStrToInt64(UnicodeString StrValue, int64_t &Value);
 
-NB_CORE_EXPORT double StrToFloat(UnicodeString Value);
-NB_CORE_EXPORT double StrToFloatDef(UnicodeString Value, double DefVal);
-NB_CORE_EXPORT UnicodeString FormatFloat(UnicodeString Format, double Value);
+NB_CORE_EXPORT double StrToFloat(const UnicodeString Value);
+NB_CORE_EXPORT double StrToFloatDef(const UnicodeString Value, double DefVal);
+NB_CORE_EXPORT UnicodeString FormatFloat(const UnicodeString Format, double Value);
 NB_CORE_EXPORT bool IsZero(double Value);
 
 NB_CORE_EXPORT TTimeStamp DateTimeToTimeStamp(const TDateTime &DateTime);
@@ -305,19 +305,19 @@ NB_CORE_EXPORT int64_t FileRead(HANDLE AHandle, void *Buffer, int64_t Count);
 NB_CORE_EXPORT int64_t FileWrite(HANDLE AHandle, const void *Buffer, int64_t Count);
 NB_CORE_EXPORT int64_t FileSeek(HANDLE AHandle, int64_t Offset, DWORD Origin);
 
-NB_CORE_EXPORT bool FileExists(UnicodeString AFileName);
-NB_CORE_EXPORT bool RenameFile(UnicodeString From, UnicodeString To);
-NB_CORE_EXPORT bool DirectoryExists(UnicodeString ADir);
-NB_CORE_EXPORT UnicodeString FileSearch(UnicodeString AFileName, UnicodeString DirectoryList);
-NB_CORE_EXPORT void FileAge(UnicodeString AFileName, TDateTime &ATimestamp);
+NB_CORE_EXPORT bool FileExists(const UnicodeString AFileName);
+NB_CORE_EXPORT bool RenameFile(const UnicodeString From, const UnicodeString To);
+NB_CORE_EXPORT bool DirectoryExists(const UnicodeString ADir);
+NB_CORE_EXPORT UnicodeString FileSearch(const UnicodeString AFileName, const UnicodeString DirectoryList);
+NB_CORE_EXPORT void FileAge(const UnicodeString AFileName, TDateTime &ATimestamp);
 
-NB_CORE_EXPORT DWORD FileGetAttr(UnicodeString AFileName, bool FollowLink = true);
-NB_CORE_EXPORT bool FileSetAttr(UnicodeString AFileName, DWORD LocalFileAttrs);
+NB_CORE_EXPORT DWORD FileGetAttr(const UnicodeString AFileName, bool FollowLink = true);
+NB_CORE_EXPORT bool FileSetAttr(const UnicodeString AFileName, DWORD LocalFileAttrs);
 
-NB_CORE_EXPORT bool ForceDirectories(UnicodeString ADir);
-NB_CORE_EXPORT bool RemoveFile(UnicodeString AFileName);
-NB_CORE_EXPORT bool CreateDir(UnicodeString ADir, LPSECURITY_ATTRIBUTES SecurityAttributes = nullptr);
-NB_CORE_EXPORT bool RemoveDir(UnicodeString ADir);
+NB_CORE_EXPORT bool ForceDirectories(const UnicodeString ADir);
+NB_CORE_EXPORT bool RemoveFile(const UnicodeString AFileName);
+NB_CORE_EXPORT bool CreateDir(const UnicodeString ADir, LPSECURITY_ATTRIBUTES SecurityAttributes = nullptr);
+NB_CORE_EXPORT bool RemoveDir(const UnicodeString ADir);
 
 // not used
 #if 0

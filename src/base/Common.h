@@ -389,28 +389,28 @@ enum TModificationFmt
 
 namespace base {
 
-NB_CORE_EXPORT bool IsUnixStyleWindowsPath(UnicodeString APath);
-NB_CORE_EXPORT bool UnixIsAbsolutePath(UnicodeString APath);
-NB_CORE_EXPORT UnicodeString UnixIncludeTrailingBackslash(UnicodeString APath);
-NB_CORE_EXPORT UnicodeString UnixExcludeTrailingBackslash(UnicodeString APath, bool Simple = false);
-NB_CORE_EXPORT UnicodeString SimpleUnixExcludeTrailingBackslash(UnicodeString APath);
-NB_CORE_EXPORT UnicodeString UnixCombinePaths(UnicodeString APath1, UnicodeString APath2);
-NB_CORE_EXPORT UnicodeString UnixExtractFileDir(UnicodeString APath);
-NB_CORE_EXPORT UnicodeString UnixExtractFilePath(UnicodeString APath);
-NB_CORE_EXPORT UnicodeString UnixExtractFileName(UnicodeString APath);
-NB_CORE_EXPORT UnicodeString UnixExtractFileExt(UnicodeString APath);
-NB_CORE_EXPORT Boolean UnixSamePath(UnicodeString APath1, UnicodeString APath2);
-NB_CORE_EXPORT bool UnixIsChildPath(UnicodeString AParent, UnicodeString AChild);
+NB_CORE_EXPORT bool IsUnixStyleWindowsPath(const UnicodeString APath);
+NB_CORE_EXPORT bool UnixIsAbsolutePath(const UnicodeString APath);
+NB_CORE_EXPORT UnicodeString UnixIncludeTrailingBackslash(const UnicodeString APath);
+NB_CORE_EXPORT UnicodeString UnixExcludeTrailingBackslash(const UnicodeString APath, bool Simple = false);
+NB_CORE_EXPORT UnicodeString SimpleUnixExcludeTrailingBackslash(const UnicodeString APath);
+NB_CORE_EXPORT UnicodeString UnixCombinePaths(const UnicodeString APath1, const UnicodeString APath2);
+NB_CORE_EXPORT UnicodeString UnixExtractFileDir(const UnicodeString APath);
+NB_CORE_EXPORT UnicodeString UnixExtractFilePath(const UnicodeString APath);
+NB_CORE_EXPORT UnicodeString UnixExtractFileName(const UnicodeString APath);
+NB_CORE_EXPORT UnicodeString UnixExtractFileExt(const UnicodeString APath);
+NB_CORE_EXPORT Boolean UnixSamePath(const UnicodeString APath1, const UnicodeString APath2);
+NB_CORE_EXPORT bool UnixIsChildPath(const UnicodeString AParent, const UnicodeString AChild);
 NB_CORE_EXPORT bool ExtractCommonPath(const TStrings *AFiles, UnicodeString &APath);
 NB_CORE_EXPORT bool UnixExtractCommonPath(const TStrings *AFiles, UnicodeString &APath);
-NB_CORE_EXPORT UnicodeString ExtractFileName(UnicodeString APath, bool Unix);
-NB_CORE_EXPORT bool IsUnixRootPath(UnicodeString APath);
-NB_CORE_EXPORT UnicodeString GetEnvVariable(UnicodeString AEnvVarName);
-NB_CORE_EXPORT bool IsUnixHiddenFile(UnicodeString APath);
-NB_CORE_EXPORT UnicodeString AbsolutePath(UnicodeString Base, UnicodeString APath);
-NB_CORE_EXPORT UnicodeString FromUnixPath(UnicodeString APath);
-NB_CORE_EXPORT UnicodeString ToUnixPath(UnicodeString APath);
-NB_CORE_EXPORT UnicodeString MinimizeName(UnicodeString AFileName, intptr_t MaxLen, bool Unix);
+NB_CORE_EXPORT UnicodeString ExtractFileName(const UnicodeString APath, bool Unix);
+NB_CORE_EXPORT bool IsUnixRootPath(const UnicodeString APath);
+NB_CORE_EXPORT UnicodeString GetEnvVariable(const UnicodeString AEnvVarName);
+NB_CORE_EXPORT bool IsUnixHiddenFile(const UnicodeString APath);
+NB_CORE_EXPORT UnicodeString AbsolutePath(const UnicodeString Base, const UnicodeString APath);
+NB_CORE_EXPORT UnicodeString FromUnixPath(const UnicodeString APath);
+NB_CORE_EXPORT UnicodeString ToUnixPath(const UnicodeString APath);
+NB_CORE_EXPORT UnicodeString MinimizeName(const UnicodeString AFileName, intptr_t MaxLen, bool Unix);
 NB_CORE_EXPORT UnicodeString MakeFileList(const TStrings *AFileList);
 NB_CORE_EXPORT TDateTime ReduceDateTimePrecision(const TDateTime &ADateTime,
   TModificationFmt Precision);
@@ -420,9 +420,9 @@ NB_CORE_EXPORT UnicodeString UserModificationStr(const TDateTime &DateTime,
   TModificationFmt Precision);
 NB_CORE_EXPORT UnicodeString ModificationStr(const TDateTime &DateTime,
   TModificationFmt Precision);
-NB_CORE_EXPORT int FakeFileImageIndex(UnicodeString AFileName, uint32_t Attrs = INVALID_FILE_ATTRIBUTES,
+NB_CORE_EXPORT int FakeFileImageIndex(const UnicodeString AFileName, uint32_t Attrs = INVALID_FILE_ATTRIBUTES,
   UnicodeString *TypeName = nullptr);
-NB_CORE_EXPORT bool SameUserName(UnicodeString UserName1, UnicodeString UserName2);
-NB_CORE_EXPORT UnicodeString FormatMultiFilesToOneConfirmation(UnicodeString ATarget, bool Unix);
+NB_CORE_EXPORT bool SameUserName(const UnicodeString UserName1, const UnicodeString UserName2);
+NB_CORE_EXPORT UnicodeString FormatMultiFilesToOneConfirmation(const UnicodeString ATarget, bool Unix);
 
 } // namespace base

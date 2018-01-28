@@ -715,7 +715,7 @@ intptr_t UnicodeString::Pos(wchar_t Ch) const
   return Data.Find(Ch) + 1;
 }
 
-intptr_t UnicodeString::Pos(UnicodeString Str) const
+intptr_t UnicodeString::Pos(const UnicodeString Str) const
 {
   return Data.Find(Str.Data.c_str()) + 1;
 }

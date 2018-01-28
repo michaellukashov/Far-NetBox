@@ -130,7 +130,7 @@ public:
   UnicodeString &Insert(UnicodeString Str, intptr_t Pos) { return Insert(Pos, Str); }
 
   intptr_t Pos(wchar_t Ch) const;
-  intptr_t Pos(UnicodeString Str) const;
+  intptr_t Pos(const UnicodeString Str) const;
 
   intptr_t RPos(wchar_t Ch) const { return (intptr_t)Data.ReverseFind(Ch) + 1; }
   bool RPos(intptr_t &nPos, wchar_t Ch, intptr_t nStartPos = 0) const;

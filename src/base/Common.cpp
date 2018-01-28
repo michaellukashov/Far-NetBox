@@ -3405,12 +3405,12 @@ UnicodeString GetEnvVariable(UnicodeString AEnvVarName)
 
 namespace base {
 
-bool IsUnixStyleWindowsPath(UnicodeString APath)
+bool IsUnixStyleWindowsPath(const UnicodeString APath)
 {
   return (APath.Length() >= 3) && IsLetter(APath[1]) && (APath[2] == L':') && (APath[3] == L'/');
 }
 
-bool UnixIsAbsolutePath(UnicodeString APath)
+bool UnixIsAbsolutePath(const UnicodeString APath)
 {
   return
     ((APath.Length() >= 1) && (APath[1] == L'/')) ||
@@ -3418,7 +3418,7 @@ bool UnixIsAbsolutePath(UnicodeString APath)
     base::IsUnixStyleWindowsPath(APath);
 }
 
-UnicodeString UnixIncludeTrailingBackslash(UnicodeString APath)
+UnicodeString UnixIncludeTrailingBackslash(const UnicodeString APath)
 {
   // it used to return "/" when input path was empty
   if (!APath.IsEmpty() && !APath.IsDelimiter(SLASH, APath.Length()))
@@ -3429,7 +3429,7 @@ UnicodeString UnixIncludeTrailingBackslash(UnicodeString APath)
 }
 
 // Keeps "/" for root path
-UnicodeString UnixExcludeTrailingBackslash(UnicodeString APath, bool Simple)
+UnicodeString UnixExcludeTrailingBackslash(const UnicodeString APath, bool Simple)
 {
   UnicodeString Result;
   if (APath.IsEmpty() ||
@@ -3450,29 +3450,29 @@ UnicodeString UnixExcludeTrailingBackslash(UnicodeString APath, bool Simple)
   return Result;
 }
 
-UnicodeString SimpleUnixExcludeTrailingBackslash(UnicodeString APath)
+UnicodeString SimpleUnixExcludeTrailingBackslash(const UnicodeString APath)
 {
   return base::UnixExcludeTrailingBackslash(APath, true);
 }
 
-UnicodeString UnixCombinePaths(UnicodeString APath1, UnicodeString APath2)
+UnicodeString UnixCombinePaths(const UnicodeString APath1, const UnicodeString APath2)
 {
   return UnixIncludeTrailingBackslash(APath1) + APath2;
 }
 
-Boolean UnixSamePath(UnicodeString APath1, UnicodeString APath2)
+Boolean UnixSamePath(const UnicodeString APath1, const UnicodeString APath2)
 {
   return (base::UnixIncludeTrailingBackslash(APath1) == base::UnixIncludeTrailingBackslash(APath2));
 }
 
-bool UnixIsChildPath(UnicodeString AParent, UnicodeString AChild)
+bool UnixIsChildPath(const UnicodeString AParent, const UnicodeString AChild)
 {
   UnicodeString Parent = base::UnixIncludeTrailingBackslash(AParent);
   UnicodeString Child = base::UnixIncludeTrailingBackslash(AChild);
   return (Child.SubString(1, Parent.Length()) == Parent);
 }
 
-UnicodeString UnixExtractFileDir(UnicodeString APath)
+UnicodeString UnixExtractFileDir(const UnicodeString APath)
 {
   intptr_t Pos = APath.LastDelimiter(L'/');
   // it used to return Path when no slash was found
@@ -3484,7 +3484,7 @@ UnicodeString UnixExtractFileDir(UnicodeString APath)
 }
 
 // must return trailing backslash
-UnicodeString UnixExtractFilePath(UnicodeString APath)
+UnicodeString UnixExtractFilePath(const UnicodeString APath)
 {
   intptr_t Pos = APath.LastDelimiter(L'/');
   // it used to return Path when no slash was found
@@ -3590,18 +3590,18 @@ bool UnixExtractCommonPath(const TStrings *const AFiles, UnicodeString &APath)
   return Result;
 }
 
-bool IsUnixRootPath(UnicodeString APath)
+bool IsUnixRootPath(const UnicodeString APath)
 {
   return APath.IsEmpty() || (APath == ROOTDIRECTORY);
 }
 
-bool IsUnixHiddenFile(UnicodeString APath)
+bool IsUnixHiddenFile(const UnicodeString APath)
 {
   return (APath != THISDIRECTORY) && (APath != PARENTDIRECTORY) &&
     !APath.IsEmpty() && (APath[1] == L'.');
 }
 
-UnicodeString AbsolutePath(UnicodeString Base, UnicodeString APath)
+UnicodeString AbsolutePath(const UnicodeString Base, const UnicodeString APath)
 {
   // There's a duplicate implementation in TTerminal::ExpandFileName()
   UnicodeString Result;
@@ -3641,12 +3641,12 @@ UnicodeString AbsolutePath(UnicodeString Base, UnicodeString APath)
   return Result;
 }
 
-UnicodeString FromUnixPath(UnicodeString APath)
+UnicodeString FromUnixPath(const UnicodeString APath)
 {
   return ReplaceStr(APath, SLASH, BACKSLASH);
 }
 
-UnicodeString ToUnixPath(UnicodeString APath)
+UnicodeString ToUnixPath(const UnicodeString APath)
 {
   return ReplaceStr(APath, BACKSLASH, SLASH);
 }
@@ -3856,7 +3856,7 @@ UnicodeString ModificationStr(const TDateTime &DateTime,
   }
 }
 
-int FakeFileImageIndex(UnicodeString /*AFileName*/, uint32_t /*Attrs*/,
+int FakeFileImageIndex(const UnicodeString /*AFileName*/, uint32_t /*Attrs*/,
   UnicodeString * /*TypeName*/)
 {
 #if 0
@@ -3904,7 +3904,7 @@ int FakeFileImageIndex(UnicodeString /*AFileName*/, uint32_t /*Attrs*/,
   return -1;
 }
 
-bool SameUserName(UnicodeString UserName1, UnicodeString UserName2)
+bool SameUserName(const UnicodeString UserName1, const UnicodeString UserName2)
 {
   // Bitvise reports file owner as "user@host", but we login with "user" only.
   UnicodeString AUserName1 = CopyToChar(UserName1, L'@', true);
@@ -3912,7 +3912,7 @@ bool SameUserName(UnicodeString UserName1, UnicodeString UserName2)
   return ::SameText(AUserName1, AUserName2);
 }
 
-UnicodeString FormatMultiFilesToOneConfirmation(UnicodeString ATarget, bool Unix)
+UnicodeString FormatMultiFilesToOneConfirmation(const UnicodeString ATarget, bool Unix)
 {
   UnicodeString Dir;
   UnicodeString Name;
