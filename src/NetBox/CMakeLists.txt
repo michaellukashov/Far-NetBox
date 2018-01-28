@@ -1300,6 +1300,7 @@ set(NETBOX_SOURCES
   ../core/FtpFileSystem.cpp
   ../core/SftpFileSystem.cpp
   ../core/WebDAVFileSystem.cpp
+  ../core/S3FileSystem.cpp
   ../core/PuttyIntf.cpp
   ../core/Cryptography.cpp
   ../core/NamedObjs.cpp
@@ -1382,7 +1383,7 @@ set(NETBOX_SOURCES
   ../include/nbstring.inl
   ../include/nbutils.h
 
-  ../base/Property.hpp
+  // ../base/Property.hpp
   ../base/Global.h
   ../base/Common.h
   ../base/UnicodeString.hpp
@@ -1395,6 +1396,7 @@ set(NETBOX_SOURCES
   ../base/ObjIDs.h
 
   ../core/WebDAVFileSystem.h
+  ../core/S3FileSystem.h
   ../core/Queue.h
   ../core/Terminal.h
   ../core/FileSystems.h
@@ -1534,6 +1536,7 @@ target_include_directories(NetBox PRIVATE
   ../../libs/atlmfc/include
   ../../libs/fmt
   ../../libs/tinylog
+  ../../libs/libs3/inc
   ../filezilla
   ../base
   ../core

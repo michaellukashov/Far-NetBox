@@ -43,6 +43,7 @@
 #include "../core/FtpFileSystem.cpp"
 #include "../core/SftpFileSystem.cpp"
 #include "../core/WebDAVFileSystem.cpp"
+#include "../core/S3FileSystem.cpp"
 #include "../core/PuttyIntf.cpp"
 #include "../core/Cryptography.cpp"
 #include "../core/NamedObjs.cpp"
