@@ -775,7 +775,7 @@ UnicodeString TSessionLog::LogPartFileName(UnicodeString BaseName, intptr_t Inde
   UnicodeString Result;
   if (Index >= 1)
   {
-    Result = FORMAT(L"%s.%d", BaseName, Index);
+    Result = FORMAT("%s.%d", BaseName, Index);
   }
   else
   {
@@ -1105,10 +1105,10 @@ void TSessionLog::DoAddStartupInfo(TSessionData *Data)
 #endif // #if 0
     if (FConfiguration->GetLogMaxSize() > 0)
     {
-      LogStr += FORMAT(L", Rotating after: %s", SizeToStr(FConfiguration->GetLogMaxSize()));
+      LogStr += FORMAT(", Rotating after: %s", SizeToStr(FConfiguration->GetLogMaxSize()));
       if (FConfiguration->GetLogMaxCount() > 0)
       {
-        LogStr += FORMAT(L", Keeping at most %d logs", FConfiguration->GetLogMaxCount());
+        LogStr += FORMAT(", Keeping at most %d logs", FConfiguration->GetLogMaxCount());
       }
     }
 #if 0
@@ -1180,7 +1180,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData *Data)
     }
     TProxyMethod ProxyMethod = Data->GetActualProxyMethod();
     {
-      UnicodeString fp = FORMAT(L"FTP proxy %d", Data->GetFtpProxyLogonType());
+      UnicodeString fp = FORMAT("FTP proxy %d", Data->GetFtpProxyLogonType());
       ADF("Proxy: %s",
         (Data->GetFtpProxyLogonType() != 0) ? fp : EnumName(ProxyMethod, ProxyMethodNames));
     }
@@ -1296,7 +1296,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData *Data)
       ADF("HTTPS: %s [Client certificate: %s]",
         BooleanToEngStr(FtpsOn), LogSensitive(Data->GetTlsCertificateFile()));
     }
-    if (Data->FSProtocol == fsS3)
+    if (Data->GetFSProtocol() == fsS3)
     {
       FtpsOn = (Data->GetFtps() != ftpsNone);
       ADF(L"HTTPS: %s", BooleanToEngStr(FtpsOn));
@@ -1333,12 +1333,12 @@ void TSessionLog::DoAddStartupInfo(TSessionData *Data)
     UnicodeString TimeInfo;
     if ((Data->GetFSProtocol() == fsSFTP) || (Data->GetFSProtocol() == fsSFTPonly) || (Data->GetFSProtocol() == fsSCPonly) || (Data->GetFSProtocol() == fsWebDAV))
     {
-      AddToList(TimeInfo, FORMAT(L"DST mode: %s", EnumName(ToInt(Data->GetDSTMode()), DSTModeNames)), L";");
+      AddToList(TimeInfo, FORMAT("DST mode: %s", EnumName(ToInt(Data->GetDSTMode()), DSTModeNames)), L";");
     }
     if ((Data->GetFSProtocol() == fsSCPonly) || (Data->GetFSProtocol() == fsFTP))
     {
       intptr_t TimeDifferenceMin = TimeToMinutes(Data->GetTimeDifference());
-      AddToList(TimeInfo, FORMAT(L"Timezone offset: %dh %dm", TimeDifferenceMin / MinsPerHour, TimeDifferenceMin % MinsPerHour), L";");
+      AddToList(TimeInfo, FORMAT("Timezone offset: %dh %dm", TimeDifferenceMin / MinsPerHour, TimeDifferenceMin % MinsPerHour), L";");
     }
     ADSTR(TimeInfo);
 

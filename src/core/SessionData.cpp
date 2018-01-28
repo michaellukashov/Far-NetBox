@@ -4960,7 +4960,7 @@ void TStoredSessionList::ImportFromKnownHosts(TStrings *Lines)
               UnicodeString NameStr = HostNameStr;
               if (PortNumber >= 0)
               {
-                    NameStr = FORMAT(L"%s:%d", NameStr, ToInt(PortNumber));
+                    NameStr = FORMAT("%s:%d", NameStr, ToInt(PortNumber));
               }
 
               std::unique_ptr<TSessionData> SessionDataOwner;
@@ -4981,7 +4981,7 @@ void TStoredSessionList::ImportFromKnownHosts(TStrings *Lines)
               const struct ssh_signkey *Algorithm = find_pubkey_alg(AlgorithmName);
               if (Algorithm == nullptr)
               {
-                throw Exception(FORMAT(L"Unknown public key algorithm \"%s\".", AlgorithmName));
+                throw Exception(FORMAT("Unknown public key algorithm \"%s\".", AlgorithmName));
               }
 
               void *Key = Algorithm->newkey(Algorithm, reinterpret_cast<const char *>(PubBlob), PubBlobLen);
@@ -4997,9 +4997,9 @@ void TStoredSessionList::ImportFromKnownHosts(TStrings *Lines)
                 }
                 char *Fingerprint = Algorithm->fmtkey(Key);
                 UnicodeString KeyKey =
-                  FORMAT(L"%s@%d:%s", Algorithm->keytype, SessionData->GetPortNumber(), HostNameStr);
+                  FORMAT("%s@%d:%s", Algorithm->keytype, SessionData->GetPortNumber(), HostNameStr);
                 UnicodeString HostKey =
-                  FORMAT(L"%s:%s=%s", Algorithm->name, KeyKey, Fingerprint);
+                  FORMAT("%s:%s=%s", Algorithm->name, KeyKey, Fingerprint);
                 sfree(Fingerprint);
                 UnicodeString HostKeyList = SessionData->GetHostKey();
                 AddToList(HostKeyList, HostKey, L";");
@@ -5044,7 +5044,7 @@ void TStoredSessionList::ImportFromKnownHosts(TStrings *Lines)
     UnicodeString Message = LoadStr(KNOWN_HOSTS_NO_SITES);
     if (!FirstError.IsEmpty())
     {
-      Message = FORMAT(L"%s\n(%s)", Message, FirstError);
+      Message = FORMAT("%s\n(%s)", Message, FirstError);
     }
 
     throw Exception(Message);

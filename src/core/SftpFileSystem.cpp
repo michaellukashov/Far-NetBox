@@ -4688,29 +4688,30 @@ void __fastcall TSFTPFileSystem::Source(
 
   if (ResumeAllowed)
   {
-    DestPartialFullName = DestFullName + FTerminal->Configuration->GetPartialExt();
+    DestPartialFullName = DestFullName + FTerminal->GetConfiguration()->GetPartialExt();
 
     if (FLAGCLEAR(Flags, tfNewDirectory))
     {
-      FTerminal->LogEvent(L"Checking existence of file.");
+      FTerminal->LogEvent("Checking existence of file.");
       TRemoteFile * File = nullptr;
       DestFileExists = RemoteFileExists(DestFullName, &File);
+      std::unique_ptr<TRemoteFile> FilePtr(File);
 
       OperationProgress->Progress();
 
       if (DestFileExists)
       {
-        FTerminal->LogEvent(FORMAT(L"File exists: %s", (FTerminal->GetRemoteFileInfo(File))));
-        OpenParams.DestFileSize = File->Size;
+        FTerminal->LogEvent(FORMAT("File exists: %s", FTerminal->GetRemoteFileInfo(FilePtr.get())));
+        OpenParams.DestFileSize = FilePtr->GetSize();
         FileParams.DestSize = OpenParams.DestFileSize;
-        FileParams.DestTimestamp = File->Modification;
-        DestRights = *File->GetRights();
+        FileParams.DestTimestamp = FilePtr->GetModification();
+        DestRights = *FilePtr->GetRights();
         // If destination file is symlink, never do resumable transfer,
         // as it would delete the symlink.
-        if (File->IsSymLink)
+        if (FilePtr->GetIsSymLink())
         {
           ResumeAllowed = false;
-          FTerminal->LogEvent(L"Existing file is symbolic link, not doing resumable transfer.");
+          FTerminal->LogEvent("Existing file is symbolic link, not doing resumable transfer.");
         }
         // Also bit of heuristics to detect symlink on SFTP-3 and older
         // (which does not indicate symlink in SSH_FXP_ATTRS).
@@ -4718,35 +4719,37 @@ void __fastcall TSFTPFileSystem::Source(
         // also it is not likely that such a small file (if it is not symlink)
         // gets overwritten by large file (that would trigger resumable transfer).
         else if ((FVersion < 4) &&
-                 ((*File->GetRights() & TRights::rfAll) == TRights::rfAll) &&
-                 (File->Size < 100))
+                 ((*FilePtr->GetRights() & TRights::rfAll) == TRights::rfAll) &&
+                 (FilePtr->GetSize() < 100))
         {
           ResumeAllowed = false;
-          FTerminal->LogEvent(L"Existing file looks like a symbolic link, not doing resumable transfer.");
+          FTerminal->LogEvent("Existing file looks like a symbolic link, not doing resumable transfer.");
         }
         // Also never do resumable transfer for file owned by other user
         // as deleting and recreating the file would change ownership.
         // This won't for work for SFTP-3 (OpenSSH) as it does not provide
         // owner name (only UID) and we know only logged in user name (not UID)
-        else if (!File->GetFileOwner().GetName().IsEmpty() && !base::SameUserName(File->GetFileOwner().GetName(), FTerminal->TerminalGetUserName()))
+        else if (!FilePtr->GetFileOwner().GetName().IsEmpty() && !base::SameUserName(FilePtr->GetFileOwner().GetName(), FTerminal->TerminalGetUserName()))
         {
           ResumeAllowed = false;
           FTerminal->LogEvent(
-            FORMAT(L"Existing file is owned by another user [%s], not doing resumable transfer.", (File->GetFileOwner().GetName())));
+            FORMAT("Existing file is owned by another user [%s], not doing resumable transfer.", File->GetFileOwner().GetName()));
         }
 
-        delete File;
-        File = NULL;
+        FilePtr.reset();
+        __removed delete File;
+        __removed File = NULL;
       }
 
       if (ResumeAllowed)
       {
-        FTerminal->LogEvent(L"Checking existence of partially transferred file.");
+        FTerminal->LogEvent("Checking existence of partially transferred file.");
         if (RemoteFileExists(DestPartialFullName, &File))
         {
-          ResumeOffset = File->Size;
-          delete File;
-          File = NULL;
+          ResumeOffset = FilePtr->GetSize();
+          FilePtr.reset();
+          __removed delete File;
+          __removed File = NULL;
 
           bool PartialBiggerThanSource = (ResumeOffset > OperationProgress->GetLocalSize());
           if (FLAGCLEAR(Params, cpNoConfirmation) &&
@@ -4768,7 +4771,7 @@ void __fastcall TSFTPFileSystem::Source(
           }
           else
           {
-            FTerminal->LogEvent(L"Resuming file transfer.");
+            FTerminal->LogEvent("Resuming file transfer.");
           }
         }
         else
@@ -4783,8 +4786,8 @@ void __fastcall TSFTPFileSystem::Source(
             {
               // update paths in case user changes the file name
               DestFullName = LocalCanonify(ATargetDir + ADestFileName);
-              DestPartialFullName = DestFullName + FTerminal->Configuration->GetPartialExt();
-              FTerminal->LogEvent(L"Checking existence of new file.");
+              DestPartialFullName = DestFullName + FTerminal->GetConfiguration()->GetPartialExt();
+              FTerminal->LogEvent("Checking existence of new file.");
               DestFileExists = RemoteFileExists(DestFullName, nullptr);
             }
           }
@@ -4885,14 +4888,14 @@ void __fastcall TSFTPFileSystem::Source(
     int64_t DestWriteOffset = 0;
     if (OpenParams.OverwriteMode == omAppend)
     {
-      FTerminal->LogEvent(L"Appending file.");
+      FTerminal->LogEvent("Appending file.");
       DestWriteOffset = OpenParams.DestFileSize;
     }
     else if (ResumeTransfer || (OpenParams.OverwriteMode == omResume))
     {
       if (OpenParams.OverwriteMode == omResume)
       {
-        FTerminal->LogEvent(L"Resuming file transfer (append style).");
+        FTerminal->LogEvent("Resuming file transfer (append style).");
         ResumeOffset = OpenParams.DestFileSize;
       }
       FileSeek((THandle)AHandle.Handle, ResumeOffset, 0);
@@ -4918,7 +4921,7 @@ void __fastcall TSFTPFileSystem::Source(
 
       while (Queue.Continue())
       {
-        if (OperationProgress->Cancel)
+        if (OperationProgress->GetCancel())
         {
           if (OperationProgress->ClearCancelFile())
           {
@@ -5021,7 +5024,7 @@ void __fastcall TSFTPFileSystem::Source(
     if (CopyParam->GetPreserveTime())
     {
       TDateTime MDateTime = ::UnixToDateTime(AHandle.MTime, GetSessionData()->GetDSTMode());
-      FTerminal->LogEvent(FORMAT(L"Preserving timestamp [%s]",
+      FTerminal->LogEvent(FORMAT("Preserving timestamp [%s]",
         StandardTimestamp(MDateTime)));
       TouchAction.reset(new TTouchSessionAction(FTerminal->GetActionLog(), DestFullName,
         MDateTime));
@@ -5065,7 +5068,7 @@ void __fastcall TSFTPFileSystem::Source(
         }
         catch (...)
         {
-          if (FTerminal->Active &&
+          if (FTerminal->GetActive() &&
               (!CopyParam->GetPreserveRights() && !CopyParam->GetPreserveTime()))
           {
             DebugAssert(DoResume);
@@ -5380,18 +5383,18 @@ void __fastcall TSFTPFileSystem::DirectorySunk(
     {
       int SetFileTimeError = GetLastError();
       FTerminal->LogEvent(
-        FORMAT(L"Preserving directory timestamp failed, ignoring: %s", (SysErrorMessageForError(SetFileTimeError))));
+        FORMAT("Preserving directory timestamp failed, ignoring: %s", ::SysErrorMessageForError(SetFileTimeError)));
     }
     else
     {
-      FTerminal->UpdateTargetTime(LocalHandle, AFile->GetModification(), FTerminal->SessionData->GetDSTMode());
+      FTerminal->UpdateTargetTime(LocalHandle, AFile->GetModification(), FTerminal->GetSessionData()->GetDSTMode());
       CloseHandle(LocalHandle);
     }
   }
 }
 //---------------------------------------------------------------------------
 void __fastcall TSFTPFileSystem::Sink(
-  const UnicodeString AFileName, const TRemoteFile * File,
+  const UnicodeString AFileName, const TRemoteFile *AFile,
   const UnicodeString ATargetDir, UnicodeString &ADestFileName, intptr_t Attrs,
   const TCopyParamType * CopyParam, intptr_t AParams, TFileOperationProgressType *OperationProgress,
   uintptr_t /*AFlags*/, TDownloadSessionAction &Action)
@@ -5443,13 +5446,13 @@ void __fastcall TSFTPFileSystem::Sink(
 
     if (ResumeAllowed)
     {
-      DestPartialFullName = DestFullName + FTerminal->Configuration->GetPartialExt();
+      DestPartialFullName = DestFullName + FTerminal->GetConfiguration()->GetPartialExt();
       LocalFileName = DestPartialFullName;
 
-      FTerminal->LogEvent(L"Checking existence of partially transferred file.");
+      FTerminal->LogEvent("Checking existence of partially transferred file.");
       if (FileExists(ApiPath(DestPartialFullName)))
       {
-        FTerminal->LogEvent(L"Partially transferred file exists.");
+        FTerminal->LogEvent("Partially transferred file exists.");
         int64_t ResumeOffset;
         FTerminal->TerminalOpenLocalFile(DestPartialFullName, GENERIC_WRITE,
           nullptr, &LocalFileHandle, nullptr, nullptr, nullptr, &ResumeOffset);
@@ -5464,7 +5467,7 @@ void __fastcall TSFTPFileSystem::Sink(
           ResumeTransfer = !PartialBiggerThanSource;
           if (!ResumeTransfer)
           {
-            FTerminal->LogEvent(L"Partially transferred file is bigger that original file.");
+            FTerminal->LogEvent("Partially transferred file is bigger that original file.");
           }
         }
 
@@ -5482,7 +5485,7 @@ void __fastcall TSFTPFileSystem::Sink(
         }
         else
         {
-          FTerminal->LogEvent(L"Resuming file transfer.");
+          FTerminal->LogEvent("Resuming file transfer.");
           FileSeek((THandle)LocalFileHandle, ResumeOffset, 0);
           OperationProgress->AddResumed(ResumeOffset);
         }
@@ -5493,7 +5496,7 @@ void __fastcall TSFTPFileSystem::Sink(
 
     // first open source file, not to loose the destination file,
     // if we cannot open the source one in the first place
-    FTerminal->LogEvent(L"Opening remote file.");
+    FTerminal->LogEvent("Opening remote file.");
     FileOperationLoopCustom(FTerminal, OperationProgress, folAllowSkip,
       FMTLOAD(SFTP_OPEN_FILE_ERROR, AFileName), "",
     [&]()
@@ -5518,7 +5521,7 @@ void __fastcall TSFTPFileSystem::Sink(
     ReceiveResponse(&RemoteFilePacket, &RemoteFilePacket);
     OperationProgress->Progress();
 
-    TDateTime Modification = File->GetModification(); // fallback
+    TDateTime Modification = AFile->GetModification(); // fallback
     // ignore errors
     if (RemoteFilePacket.GetType() == SSH_FXP_ATTRS)
     {
@@ -5543,14 +5546,14 @@ void __fastcall TSFTPFileSystem::Sink(
       FileParams.SourceSize = OperationProgress->GetTransferSize();
       FileParams.SourceTimestamp = Modification;
       FileParams.DestTimestamp = ::UnixToDateTime(MTime,
-        FTerminal->SessionData->GetDSTMode());
+        FTerminal->GetSessionData()->GetDSTMode());
       FileParams.DestSize = DestFileSize;
       UnicodeString PrevDestFileName = ADestFileName;
       SFTPConfirmOverwrite(AFileName, ADestFileName, CopyParam, AParams, OperationProgress, &FileParams, OverwriteMode);
       if (PrevDestFileName != ADestFileName)
       {
         DestFullName = ATargetDir + ADestFileName;
-        DestPartialFullName = DestFullName + FTerminal->Configuration->GetPartialExt();
+        DestPartialFullName = DestFullName + FTerminal->GetConfiguration()->GetPartialExt();
         if (ResumeAllowed)
         {
           if (FileExists(ApiPath(DestPartialFullName)))
@@ -5592,11 +5595,11 @@ void __fastcall TSFTPFileSystem::Sink(
         FileSeek((THandle)LocalFileHandle, DestFileSize, 0);
         if (OverwriteMode == omAppend)
         {
-          FTerminal->LogEvent(L"Appending to file.");
+          FTerminal->LogEvent("Appending to file.");
         }
         else
         {
-          FTerminal->LogEvent(L"Resuming file transfer (append style).");
+          FTerminal->LogEvent("Resuming file transfer (append style).");
           DebugAssert(OverwriteMode == omResume);
           OperationProgress->AddResumed(DestFileSize);
         }
@@ -5633,11 +5636,11 @@ void __fastcall TSFTPFileSystem::Sink(
         };
         TSFTPPacket DataPacket(FCodePage);
 
-        intptr_t QueueLen = intptr_t(File->Size / DownloadBlockSize(OperationProgress)) + 1;
+        intptr_t QueueLen = intptr_t(AFile->GetSize() / DownloadBlockSize(OperationProgress)) + 1;
         if ((QueueLen > GetSessionData()->GetSFTPDownloadQueue()) ||
             (QueueLen < 0))
         {
-          QueueLen = FTerminal->SessionData->GetSFTPDownloadQueue();
+          QueueLen = FTerminal->GetSessionData()->GetSFTPDownloadQueue();
         }
         if (QueueLen < 1)
         {
@@ -5737,7 +5740,7 @@ void __fastcall TSFTPFileSystem::Sink(
               DebugAssert(!ResumeTransfer && !ResumeAllowed);
 
               uintptr_t PrevBlockSize = BlockBuf.GetSize();
-              BlockBuf.Convert(GetEOL(), FTerminal->Configuration->GetLocalEOLType(), 0, ConvertToken);
+              BlockBuf.Convert(GetEOL(), FTerminal->GetConfiguration()->GetLocalEOLType(), 0, ConvertToken);
               OperationProgress->SetLocalSize(OperationProgress->GetLocalSize() - PrevBlockSize + BlockBuf.GetSize());
             }
 
@@ -5767,7 +5770,7 @@ void __fastcall TSFTPFileSystem::Sink(
 
         if (GapCount > 0)
         {
-          FTerminal->LogEvent(FORMAT(L"%d requests to fill %d data gaps were issued.", (GapFillCount, GapCount)));
+          FTerminal->LogEvent(FORMAT("%d requests to fill %d data gaps were issued.", GapFillCount, GapCount));
         }
       }
       __finally__removed 
@@ -5779,7 +5782,7 @@ void __fastcall TSFTPFileSystem::Sink(
 
     if (CopyParam->GetPreserveTime())
     {
-      FTerminal->UpdateTargetTime(LocalFileHandle, Modification, FTerminal->SessionData->GetDSTMode());
+      FTerminal->UpdateTargetTime(LocalFileHandle, Modification, FTerminal->GetSessionData()->GetDSTMode());
     }
 
     CloseHandle(LocalFileHandle);
@@ -5803,14 +5806,14 @@ void __fastcall TSFTPFileSystem::Sink(
 
     DeleteLocalFile = false;
 
-    FTerminal->UpdateTargetAttrs(DestFullName, File, CopyParam, Attrs);
+    FTerminal->UpdateTargetAttrs(DestFullName, AFile, CopyParam, Attrs);
 
   }
   __finally__removed
   ({
     if (LocalHandle)
     {
-      CloseHandle(LocalHandle);
+      CloseHandle(LocalFileHandle);
     }
 
     if (FileStream != NULL)

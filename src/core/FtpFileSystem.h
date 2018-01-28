@@ -193,7 +193,7 @@ protected:
   void DirectorySource(UnicodeString DirectoryName,
     UnicodeString TargetDir, intptr_t Attrs, const TCopyParamType *CopyParam,
     intptr_t Params, TFileOperationProgressType *OperationProgress, uintptr_t Flags);
-  bool ConfirmOverwrite(const UnicodeString ASourceFullFileName, UnicodeString &ATargetFileName,
+  bool __fastcall ConfirmOverwrite(const UnicodeString ASourceFullFileName, UnicodeString &ATargetFileName,
     intptr_t AParams, TFileOperationProgressType *OperationProgress,
     bool AutoResume,
     const TOverwriteFileParams *FileParams,

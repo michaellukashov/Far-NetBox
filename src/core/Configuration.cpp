@@ -1505,7 +1505,7 @@ TStoredSessionList * __fastcall TConfiguration::SelectKnownHostsSessionsForImpor
   }
   catch (Exception & E)
   {
-    Error = FORMAT(L"%s\n(%s)", (E.Message, KnownHostsFile));
+    Error = FORMAT("%s\n(%s)", E.Message, KnownHostsFile);
   }
 
   return ImportSessionList.release();

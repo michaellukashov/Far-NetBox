@@ -831,7 +831,7 @@ UnicodeString __fastcall ParseOpenSshPubLine(const UnicodeString ALine, const st
       Algorithm = find_pubkey_alg(AlgorithmName);
       if (Algorithm == NULL)
       {
-        throw Exception(FORMAT(L"Unknown public key algorithm \"%s\".", (AlgorithmName)));
+        throw Exception(FORMAT("Unknown public key algorithm \"%s\".", AlgorithmName));
       }
 
       void * Key = Algorithm->newkey(Algorithm, reinterpret_cast<const char*>(PubBlob), PubBlobLen);

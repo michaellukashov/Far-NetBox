@@ -953,7 +953,7 @@ void __fastcall TFTPFileSystem::EnsureLocation(const UnicodeString ADirectory, b
   {
     if (Log)
     {
-      FTerminal->LogEvent(FORMAT(L"Synchronizing current directory \"%s\".",
+      FTerminal->LogEvent(FORMAT("Synchronizing current directory \"%s\".",
           Directory));
     }
 
@@ -1783,11 +1783,11 @@ void __fastcall TFTPFileSystem::Source(
     if (!FFileZillaIntf->UsingMlsd())
     {
       FUploadedTimes[DestFullName] = Handle.Modification;
-      if ((FTerminal->Configuration->GetActualLogProtocol() >= 2))
+      if ((FTerminal->GetConfiguration()->GetActualLogProtocol() >= 2))
       {
         FTerminal->LogEvent(
-          FORMAT(L"Remembering modification time of \"%s\" as [%s]",
-                 DestFullName, StandardTimestamp(FUploadedTimes[DestFullName])));
+          FORMAT("Remembering modification time of \"%s\" as [%s]",
+            DestFullName, StandardTimestamp(FUploadedTimes[DestFullName])));
       }
     }
   }
@@ -2185,7 +2185,7 @@ void __fastcall TFTPFileSystem::AutoDetectTimeDifference(TRemoteFileList *FileLi
 {
   if (NeedAutoDetectTimeDifference())
   {
-    FTerminal->LogEvent(L"Detecting timezone difference...");
+    FTerminal->LogEvent("Detecting timezone difference...");
 
     for (intptr_t Index = 0; Index < FileList->GetCount(); ++Index)
     {
@@ -2220,7 +2220,7 @@ void __fastcall TFTPFileSystem::AutoDetectTimeDifference(TRemoteFileList *FileLi
         if (UtcModification > Now())
         {
           FTerminal->LogEvent(
-            FORMAT(L"Not using file %s to detect timezone difference as it has the timestamp in the future [%s]",
+            FORMAT("Not using file %s to detect timezone difference as it has the timestamp in the future [%s]",
               File->GetFullFileName(), StandardTimestamp(UtcModification)));
         }
         else
@@ -2236,7 +2236,7 @@ void __fastcall TFTPFileSystem::AutoDetectTimeDifference(TRemoteFileList *FileLi
           FTimeDifference = static_cast<int64_t>(SecsPerDay * (UtcModification - File->GetModification()));
 
           UnicodeString FileLog =
-            FORMAT(L"%s (Listing: %s, UTF: %s)", File->GetFullFileName(), StandardTimestamp(File->GetModification()), StandardTimestamp(UtcModification));
+            FORMAT("%s (Listing: %s, UTF: %s)", File->GetFullFileName(), StandardTimestamp(File->GetModification()), StandardTimestamp(UtcModification));
           UnicodeString LogMessage;
           if (FTimeDifference == 0)
           {
@@ -2255,7 +2255,7 @@ void __fastcall TFTPFileSystem::AutoDetectTimeDifference(TRemoteFileList *FileLi
 
     if (FDetectTimeDifference)
     {
-      FTerminal->LogEvent(L"Found no file to use for detecting timezone difference");
+      FTerminal->LogEvent("Found no file to use for detecting timezone difference");
     }
   }
 }
@@ -2269,7 +2269,7 @@ void __fastcall TFTPFileSystem::AutoDetectTimeDifference(
     (!FLAGSET(Params, cpNoConfirmation) ||
       CopyParam->GetNewerOnly() || (!(CopyParam->GetTransferMode() == tmAutomatic)) || !CopyParam->GetIncludeFileMask().GetMasks().IsEmpty()))
   {
-    FTerminal->LogEvent(L"Retrieving listing to detect timezone difference");
+    FTerminal->LogEvent("Retrieving listing to detect timezone difference");
     DummyReadDirectory(Directory);
   }
 }
@@ -2411,8 +2411,8 @@ void __fastcall TFTPFileSystem::ReadFile(const UnicodeString AFileName,
     {
       FTerminal->LogEvent(FORMAT("%s is a root path", AFileName));
       AFile = new TRemoteDirectoryFile();
-      AFile->FullFileName = AFileName;
-      AFile->FileName = L"";
+      AFile->SetFullFileName(AFileName);
+      AFile->SetFileName(L"");
     }
     else
     {
@@ -2471,14 +2471,14 @@ void __fastcall TFTPFileSystem::ReadFile(const UnicodeString AFileName,
         AFile = AFile->Duplicate();
         if (MVSPath)
         {
-          AFile->FileName = AFileName;
-          AFile->FullFileName = AFileName;
+          AFile->SetFileName(AFileName);
+          AFile->SetFullFileName(AFileName);
         }
       }
     }
   }
 
-  if (AFile == NULL)
+  if (AFile == nullptr)
   {
     throw Exception(FMTLOAD(FILE_NOT_EXISTS, AFileName));
   }
@@ -3434,9 +3434,9 @@ void __fastcall TFTPFileSystem::HandleReplyStatus(UnicodeString Response)
         }
         // Idea FTP Server v0.80
         if ((FTerminal->GetSessionData()->GetFtpTransferActiveImmediately() == asAuto) &&
-          FWelcomeMessage.Pos(L"Idea FTP Server") > 0)
+          FWelcomeMessage.Pos("Idea FTP Server") > 0)
         {
-          FTerminal->LogEvent(L"The server requires TLS/SSL handshake on transfer connection before responding 1yz to STOR/APPE");
+          FTerminal->LogEvent("The server requires TLS/SSL handshake on transfer connection before responding 1yz to STOR/APPE");
           FTransferActiveImmediately = true;
         }
       }
@@ -3472,7 +3472,7 @@ void __fastcall TFTPFileSystem::HandleReplyStatus(UnicodeString Response)
         // The FWelcomeMessage usually contains "Microsoft FTP Service" but can be empty
         if (ContainsText(FSystem, L"Windows_NT"))
         {
-          FTerminal->LogEvent(L"The server is probably running Windows, assuming that directory listing timestamps are affected by DST.");
+          FTerminal->LogEvent("The server is probably running Windows, assuming that directory listing timestamps are affected by DST.");
           FWindowsServer = true;
         }
         // VMS system type. VMS V5.5-2.
@@ -4100,7 +4100,7 @@ bool __fastcall TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
 
       if (!VerificationResult)
       {
-        if (FTerminal->VerifyCertificate(CertificateStorageKey, FTerminal->SessionData->GetSiteKey(),
+        if (FTerminal->VerifyCertificate(CertificateStorageKey, FTerminal->GetSessionData()->GetSiteKey(),
             FSessionInfo.CertificateFingerprint, CertificateSubject, Data.VerificationResult))
         {
           // certificate is trusted, but for not purposes of info dialog
@@ -4187,7 +4187,7 @@ bool __fastcall TFTPFileSystem::HandleAsynchRequestNeedPass(
     UnicodeString Password;
     if (FCertificate != nullptr)
     {
-      FTerminal->LogEvent(L"Server asked for password, but we are using certificate, and no password was specified upfront, using fake password");
+      FTerminal->LogEvent("Server asked for password, but we are using certificate, and no password was specified upfront, using fake password");
       Password = L"USINGCERT";
       RequestResult = TFileZillaIntf::REPLY_OK;
     }
@@ -4361,10 +4361,10 @@ bool __fastcall TFTPFileSystem::HandleListData(const wchar_t *Path,
       catch (Exception &E)
       {
         __removed delete File;
-        UnicodeString TmStr = FORMAT(L"%d/%d/%d", int(Entry->Time.HasTime),
+        UnicodeString TmStr = FORMAT("%d/%d/%d", int(Entry->Time.HasTime),
             int(Entry->Time.HasSeconds), int(Entry->Time.HasDate));
         UnicodeString EntryData =
-          FORMAT(L"%s/%s/%s/%s/%s/%s/%s/%d/%d/%d/%d/%d/%d/%d/%s",
+          FORMAT("%s/%s/%s/%s/%s/%s/%s/%d/%d/%d/%d/%d/%d/%d/%s",
             Entry->Name, Entry->Permissions, Entry->HumanPerm, Entry->Owner, Entry->Group, Entry->OwnerGroup, ::Int64ToStr(Entry->Size),
             int(Entry->Dir), int(Entry->Link), Entry->Time.Year, Entry->Time.Month, Entry->Time.Day,
             Entry->Time.Hour, Entry->Time.Minute, TmStr);

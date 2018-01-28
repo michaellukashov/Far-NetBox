@@ -425,7 +425,7 @@ protected:
     __int64 * ATime, __int64 * Size, bool TryWriteReadOnly = true);
 #endif // #if 0
   void __fastcall TerminalOpenLocalFile(const UnicodeString ATargetFileName, DWORD Access,
-    uintptr_t *AAttrs, HANDLE *AHandle, int64_t *ACTime,
+    DWORD *AAttrs, HANDLE *AHandle, int64_t *ACTime,
     int64_t *AMTime, int64_t *AATime, int64_t *ASize,
     bool TryWriteReadOnly = true);
   void __fastcall TerminalOpenLocalFile(
@@ -553,8 +553,8 @@ protected:
   bool __fastcall CanParallel(const TCopyParamType *CopyParam, intptr_t AParams, TParallelOperation *ParallelOperation) const;
   void __fastcall CopyParallel(TParallelOperation *ParallelOperation, TFileOperationProgressType *OperationProgress);
   void __fastcall DoCopyToRemote(
-    TStrings *FilesToCopy, const UnicodeString ATargetDir, const TCopyParamType *CopyParam, intptr_t AParams,
-    TFileOperationProgressType * OperationProgress, uintptr_t AFlags, TOnceDoneOperation & OnceDoneOperation);
+    TStrings *AFilesToCopy, const UnicodeString ATargetDir, const TCopyParamType *CopyParam, intptr_t AParams,
+    TFileOperationProgressType *OperationProgress, uintptr_t AFlags, TOnceDoneOperation &OnceDoneOperation);
   void __fastcall SourceRobust(
     const UnicodeString AFileName, const UnicodeString ATargetDir, const TCopyParamType *CopyParam, intptr_t AParams,
     TFileOperationProgressType * OperationProgress, uintptr_t AFlags);
@@ -706,18 +706,18 @@ public:
     const UnicodeString AFileName, TOperationSide Side, bool FirstLevel) const;
   UnicodeString __fastcall GetBaseFileName(const UnicodeString AFileName) const;
 
-  static UnicodeString __fastcall ExpandFileName(UnicodeString APath,
+  static UnicodeString __fastcall ExpandFileName(const UnicodeString APath,
     const UnicodeString BasePath);
 
   __property TSessionData * SessionData = { read = FSessionData };
-  ROProperty<TSessionData *, TTerminal> SessionData{this, &TTerminal::GetSessionData};
+  // ROProperty<TSessionData *, TTerminal> SessionData{this, &TTerminal::GetSessionData};
   __property TSessionLog * Log = { read = FLog };
-  ROProperty<TSessionLog *, TTerminal> Log{this, &TTerminal::GetLog};
+  // ROProperty<TSessionLog *, TTerminal> Log{this, &TTerminal::GetLog};
   __property TActionLog * ActionLog = { read = FActionLog };
   __property TConfiguration * Configuration = { read = FConfiguration };
-  ROProperty<TConfiguration *, TTerminal> Configuration{this, &TTerminal::GetConfiguration};
+  // ROProperty<TConfiguration *, TTerminal> Configuration{this, &TTerminal::GetConfiguration};
   __property bool Active = { read = GetActive };
-  ROProperty<bool, TTerminal> Active{this, &TTerminal::GetActive};
+  // ROProperty<bool, TTerminal> Active{this, &TTerminal::GetActive};
   __property TSessionStatus Status = { read = FStatus };
   __property UnicodeString CurrentDirectory = { read = GetCurrentDirectory, write = SetCurrentDirectory };
   __property bool ExceptionOnFail = { read = GetExceptionOnFail, write = SetExceptionOnFail };
@@ -1226,7 +1226,7 @@ struct TLocalFileHandle
 
   UnicodeString FileName;
   HANDLE Handle;
-  uintptr_t Attrs;
+  DWORD Attrs;
   bool Directory;
   TDateTime Modification;
   int64_t MTime;

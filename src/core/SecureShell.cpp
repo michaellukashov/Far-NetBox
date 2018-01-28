@@ -970,7 +970,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
 
       if (!FSessionData->GetPassword().IsEmpty() && !FSessionData->GetNewPassword().IsEmpty() && !FStoredPasswordTried)
       {
-        LogEvent(L"Using stored password and new password.");
+        LogEvent("Using stored password and new password.");
         Result = true;
         DebugAssert(Results->GetCount() == 3);
         Results->SetString(0, FSessionData->GetPassword());
@@ -2373,7 +2373,7 @@ void __fastcall TSecureShell::VerifyHostKey(
 {
   if (GetConfiguration()->GetActualLogProtocol() >= 1)
   {
-    LogEvent(FORMAT(L"Verifying host key %s %s with fingerprints %s", AKeyType, FormatKeyStr(AKeyStr), AFingerprint));
+    LogEvent(FORMAT("Verifying host key %s %s with fingerprints %s", AKeyType, FormatKeyStr(AKeyStr), AFingerprint));
   }
 
   GotHostKey();
@@ -2422,7 +2422,7 @@ void __fastcall TSecureShell::VerifyHostKey(
     if ((!Fingerprint && (StoredKey == AKeyStr)) ||
         (Fingerprint && ((NormalizedExpectedKey == NormalizedFingerprintMD5) || (NormalizedExpectedKey == NormalizedFingerprintSHA256))))
     {
-      LogEvent(L"Host key matches cached key");
+      LogEvent("Host key matches cached key");
       Result = true;
     }
     else
@@ -2430,11 +2430,11 @@ void __fastcall TSecureShell::VerifyHostKey(
       if (GetConfiguration()->GetActualLogProtocol() >= 1)
       {
         UnicodeString FormattedKey = Fingerprint ? StoredKey : FormatKeyStr(StoredKey);
-        LogEvent(FORMAT(L"Host key does not match cached key %s", (FormattedKey)));
+        LogEvent(FORMAT("Host key does not match cached key %s", FormattedKey));
       }
       else
       {
-        LogEvent(L"Host key does not match cached key");
+        LogEvent("Host key does not match cached key");
       }
     }
   }

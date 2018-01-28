@@ -1594,12 +1594,13 @@ void TTerminal::InitFileSystem()
     GetLog()->AddSeparator();
     LogEvent("Using WebDAV protocol.");
   }
-  else if (SessionData->FSProtocol == fsS3)
+  else if (GetSessionData()->GetFSProtocol() == fsS3)
   {
     FFSProtocol = cfsS3;
     FFileSystem = new TS3FileSystem(this);
+    FFileSystem->Init(nullptr);
     FFileSystem->Open();
-    Log->AddSeparator();
+    GetLog()->AddSeparator();
     LogEvent("Using S3 protocol.");
   }
   else
@@ -2117,8 +2118,8 @@ void __fastcall TTerminal::DisplayBanner(const UnicodeString ABanner)
   if (GetOnDisplayBanner() != nullptr)
   {
     uintptr_t OrigParams, Params;
-    if (Configuration->GetForceBanners() ||
-        Configuration->ShowBanner(SessionData->GetSessionKey(), ABanner, Params))
+    if (GetConfiguration()->GetForceBanners() ||
+        GetConfiguration()->ShowBanner(GetSessionData()->GetSessionKey(), ABanner, Params))
     {
       bool NeverShowAgain = false;
       intptr_t Options =
@@ -2128,7 +2129,7 @@ void __fastcall TTerminal::DisplayBanner(const UnicodeString ABanner)
       TCallbackGuard Guard(this);
       try
       {
-        GetOnDisplayBanner()(this, SessionData->SessionName, ABanner, NeverShowAgain, Options, Params);
+        GetOnDisplayBanner()(this, GetSessionData()->GetSessionName(), ABanner, NeverShowAgain, Options, Params);
         Guard.Verify();
       }
       catch (Exception &E)
@@ -2145,7 +2146,7 @@ void __fastcall TTerminal::DisplayBanner(const UnicodeString ABanner)
       }
       if (OrigParams != Params)
       {
-        FConfiguration->SetBannerParams(SessionData->GetSessionKey(), Params);
+        FConfiguration->SetBannerParams(GetSessionData()->GetSessionKey(), Params);
       }
     }
   }
@@ -2672,7 +2673,7 @@ void __fastcall TTerminal::TerminalSetCurrentDirectory(UnicodeString AValue)
 {
   DebugAssert(FFileSystem);
   UnicodeString Value = TranslateLockedPath(AValue, false);
-  if (AValue != FFileSystem->RemoteCurrentDirectory)
+  if (AValue != FFileSystem->RemoteCurrentDirectory())
   {
     RemoteChangeDirectory(Value);
   }
@@ -2685,7 +2686,7 @@ UnicodeString __fastcall TTerminal::RemoteGetCurrentDirectory()
     // there's occasional crash when assigning FFileSystem->CurrentDirectory
     // to FCurrentDirectory, splitting the assignment to two statements
     // to locate the crash more closely
-    UnicodeString CurrentDirectory = FFileSystem->RemoteCurrentDirectory;
+    UnicodeString CurrentDirectory = FFileSystem->RemoteCurrentDirectory();
     if (FCurrentDirectory != CurrentDirectory)
     {
       FCurrentDirectory = CurrentDirectory;
@@ -2704,7 +2705,7 @@ UnicodeString __fastcall TTerminal::PeekCurrentDirectory()
 {
   if (FFileSystem)
   {
-    FCurrentDirectory = FFileSystem->RemoteCurrentDirectory;
+    FCurrentDirectory = FFileSystem->RemoteCurrentDirectory();
   }
 
   UnicodeString Result = TranslateLockedPath(FCurrentDirectory, true);
@@ -3294,7 +3295,7 @@ uintptr_t __fastcall TTerminal::ConfirmFileOverwrite(
             CompareFileTime(ReducedSourceTimestamp, ReducedDestTimestamp) > 0 ?
               qaYes : qaNo;
 
-          LogEvent(FORMAT(L"Source file timestamp is [%s], destination timestamp is [%s], will%s overwrite",
+          LogEvent(FORMAT("Source file timestamp is [%s], destination timestamp is [%s], will%s overwrite",
             StandardTimestamp(ReducedSourceTimestamp),
             StandardTimestamp(ReducedDestTimestamp),
             UnicodeString(Result == qaYes ? L"" : L" not")));
@@ -3444,11 +3445,11 @@ void __fastcall TTerminal::EnsureNonExistence(const UnicodeString AFileName)
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TTerminal::LogEvent(const UnicodeString Str)
+void __fastcall TTerminal::LogEvent(const UnicodeString AStr)
 {
   if (GetLog()->GetLogging())
   {
-    GetLog()->Add(llMessage, Str);
+    GetLog()->Add(llMessage, AStr);
   }
 }
 //---------------------------------------------------------------------------
@@ -3512,7 +3513,7 @@ void __fastcall TTerminal::ReadCurrentDirectory()
     FReadCurrentDirectoryPending = false;
 
     LogEvent("Getting current directory name.");
-    UnicodeString OldDirectory = FFileSystem->RemoteCurrentDirectory;
+    UnicodeString OldDirectory = FFileSystem->RemoteCurrentDirectory();
 
     FFileSystem->ReadCurrentDirectory();
     ReactOnCommand(fsCurrentDirectory);
@@ -3535,7 +3536,7 @@ void __fastcall TTerminal::ReadCurrentDirectory()
     if (OldDirectory.IsEmpty())
     {
       FLockDirectory = (GetSessionData()->GetLockInHome() ?
-        FFileSystem->RemoteCurrentDirectory : UnicodeString(""));
+        FFileSystem->RemoteCurrentDirectory() : UnicodeString(""));
     }
     // if (OldDirectory != FFileSystem->GetCurrDirectory())
     {
@@ -3664,7 +3665,7 @@ void __fastcall TTerminal::ReadDirectory(bool ReloadOnly, bool ForceCache)
 UnicodeString __fastcall TTerminal::GetRemoteFileInfo(TRemoteFile *AFile) const
 {
   return
-    FORMAT(L"%s;%s;%lld;%s;%d;%s;%s;%s;%d",
+    FORMAT("%s;%s;%lld;%s;%d;%s;%s;%s;%d",
       AFile->GetFileName(), AFile->GetType(), AFile->GetSize(), StandardTimestamp(AFile->GetModification()), int(AFile->GetModificationFmt()),
       AFile->GetFileOwner().GetLogText(), AFile->GetFileGroup().GetLogText(), AFile->GetRights()->GetText(),
       AFile->GetAttr());
@@ -3713,7 +3714,7 @@ void __fastcall TTerminal::LogFileDone(TFileOperationProgressType *OperationProg
   // optimization
   if (GetLog()->GetLogging())
   {
-    LogEvent(FORMAT(L"Transfer done: '%s' => '%s' [%s]", OperationProgress->GetFullFileName(), DestFileName, Int64ToStr(OperationProgress->GetTransferredSize())));
+    LogEvent(FORMAT("Transfer done: '%s' => '%s' [%s]", OperationProgress->GetFullFileName(), DestFileName, Int64ToStr(OperationProgress->GetTransferredSize())));
   }
 }
 //---------------------------------------------------------------------------
@@ -4280,9 +4281,9 @@ void __fastcall TTerminal::RecycleFile(UnicodeString AFileName,
       TDateTime DateTime = Now();
       DateTime.DecodeDate(Y, M, D);
       DateTime.DecodeTime(H, N, S, MS);
-      UnicodeString dt = FORMAT(L"%04d%02d%02d-%02d%02d%02d", Y, M, D, H, N, S);
-      // Params.FileMask = FORMAT(L"*-%s.*", FormatDateTime(L"yyyymmdd-hhnnss", Now()));
-      Params.FileMask = FORMAT(L"*-%s.*", dt);
+      UnicodeString dt = FORMAT("%04d%02d%02d-%02d%02d%02d", Y, M, D, H, N, S);
+      // Params.FileMask = FORMAT("*-%s.*", FormatDateTime(L"yyyymmdd-hhnnss", Now()));
+      Params.FileMask = FORMAT("*-%s.*", dt);
     }
 #endif
     TerminalMoveFile(AFileName, AFile, &Params);
@@ -4822,7 +4823,7 @@ void __fastcall TTerminal::TerminalRenameFile(const TRemoteFile *AFile,
   if (Proceed && AFile)
   {
     FileModified(AFile, AFile->GetFileName());
-    LogEvent(FORMAT(L"Renaming file \"%s\" to \"%s\".", AFile->GetFileName(), ANewName));
+    LogEvent(FORMAT("Renaming file \"%s\" to \"%s\".", AFile->GetFileName(), ANewName));
     DoRenameFile(AFile->GetFileName(), AFile, ANewName, false);
     ReactOnCommand(fsRenameFile);
   }
@@ -5516,7 +5517,7 @@ bool __fastcall TTerminal::TerminalCreateLocalFile(const UnicodeString ATargetFi
 }
 //---------------------------------------------------------------------------
 void __fastcall TTerminal::TerminalOpenLocalFile(const UnicodeString ATargetFileName,
-  DWORD Access, uintptr_t *AAttrs, HANDLE *AHandle, int64_t *ACTime,
+  DWORD Access, DWORD *AAttrs, HANDLE *AHandle, int64_t *ACTime,
   int64_t *AMTime, int64_t *AATime, int64_t *ASize,
   bool TryWriteReadOnly)
 {
@@ -5638,7 +5639,7 @@ void __fastcall TTerminal::TerminalOpenLocalFile(
   TerminalOpenLocalFile(
     AFileName, Access, &AHandle.Attrs, &AHandle.Handle, nullptr, &AHandle.MTime, &AHandle.ATime, &AHandle.Size,
     TryWriteReadOnly);
-  AHandle.Modification = ::UnixToDateTime(AHandle.MTime, SessionData->GetDSTMode());
+  AHandle.Modification = ::UnixToDateTime(AHandle.MTime, GetSessionData()->GetDSTMode());
   AHandle.Directory = FLAGSET(AHandle.Attrs, faDirectory);
 }
 //---------------------------------------------------------------------------
@@ -7062,7 +7063,7 @@ void __fastcall TTerminal::CopyParallel(TParallelOperation *ParallelOperation, T
 void __fastcall TTerminal::LogParallelTransfer(TParallelOperation *ParallelOperation)
 {
   LogEvent(
-    FORMAT(L"Adding a parallel transfer to the transfer started on the connection \"%s\"",
+    FORMAT("Adding a parallel transfer to the transfer started on the connection \"%s\"",
       ParallelOperation->GetMainName()));
 }
 //---------------------------------------------------------------------------
@@ -7075,7 +7076,7 @@ void __fastcall TTerminal::LogTotalTransferDetails(
     UnicodeString TargetSide = ((OperationProgress->GetSide() == osLocal) ? L"remote" : L"local");
     UnicodeString S =
       FORMAT(
-        L"Copying %d files/directories to %s directory \"%s\"",
+        "Copying %d files/directories to %s directory \"%s\"",
         OperationProgress->GetCount(), TargetSide, ATargetDir);
     if (Parallel && DebugAlwaysTrue(AFiles != nullptr))
     {
@@ -7085,11 +7086,11 @@ void __fastcall TTerminal::LogTotalTransferDetails(
         TCollectedFileList *FileList = dyn_cast<TCollectedFileList>(AFiles->GetObj(Index));
         Count += FileList->GetCount();
       }
-      S += FORMAT(L" - in parallel, with %d total files", Count);
+      S += FORMAT(" - in parallel, with %d total files", Count);
     }
     if (OperationProgress->GetTotalSizeSet())
     {
-      S += FORMAT(L" - total size: %s", FormatSize(OperationProgress->GetTotalSize()));
+      S += FORMAT(" - total size: %s", FormatSize(OperationProgress->GetTotalSize()));
     }
     LogEvent(S);
     LogEvent(CopyParam->GetLogStr());
@@ -7102,7 +7103,7 @@ void __fastcall TTerminal::LogTotalTransferDone(TFileOperationProgressType *Oper
 }
 //---------------------------------------------------------------------------
 bool __fastcall TTerminal::CopyToRemote(TStrings *AFilesToCopy,
-  const UnicodeString ATargetDir, const TCopyParamType *CopyParam, intptr_t Params, TParallelOperation *ParallelOperation)
+  const UnicodeString ATargetDir, const TCopyParamType *CopyParam, intptr_t AParams, TParallelOperation *ParallelOperation)
 {
   DebugAssert(FFileSystem);
   DebugAssert(AFilesToCopy);
@@ -7115,7 +7116,7 @@ bool __fastcall TTerminal::CopyToRemote(TStrings *AFilesToCopy,
   {
     int64_t Size = 0;
     std::unique_ptr<TStringList> Files;
-    if (CanParallel(CopyParam, Params, ParallelOperation) &&
+    if (CanParallel(CopyParam, AParams, ParallelOperation) &&
       !CopyParam->GetClearArchive())
     {
       Files.reset(new TStringList());
@@ -7125,12 +7126,12 @@ bool __fastcall TTerminal::CopyToRemote(TStrings *AFilesToCopy,
     bool CalculatedSize =
       CalculateLocalFilesSize(
         AFilesToCopy,
-        (FLAGCLEAR(Params, cpDelete) ? CopyParam : nullptr),
+        (FLAGCLEAR(AParams, cpDelete) ? CopyParam : nullptr),
         CopyParam->GetCalculateSize(), Files.get(), Size);
 
     FLastProgressLogged = GetTickCount();
-    OperationProgress.Start((Params & cpDelete) ? foMove : foCopy, osLocal,
-      AFilesToCopy->GetCount(), (Params & cpTemporary) > 0, ATargetDir, CopyParam->GetCPSLimit());
+    OperationProgress.Start((AParams & cpDelete) ? foMove : foCopy, osLocal,
+      AFilesToCopy->GetCount(), (AParams & cpTemporary) > 0, ATargetDir, CopyParam->GetCPSLimit());
 
     FOperationProgress = &OperationProgress; //-V506
     __removed bool CollectingUsage = false;
@@ -7175,13 +7176,13 @@ bool __fastcall TTerminal::CopyToRemote(TStrings *AFilesToCopy,
         if (Parallel)
         {
           // OnceDoneOperation is not supported
-          ParallelOperation->Init(Files.release(), UnlockedTargetDir, CopyParam, Params, &OperationProgress, GetLog()->GetName());
+          ParallelOperation->Init(Files.release(), UnlockedTargetDir, CopyParam, AParams, &OperationProgress, GetLog()->GetName());
           CopyParallel(ParallelOperation, &OperationProgress);
         }
         else
         {
           FFileSystem->CopyToRemote(AFilesToCopy, UnlockedTargetDir,
-            CopyParam, Params, &OperationProgress, OnceDoneOperation);
+            CopyParam, AParams, &OperationProgress, OnceDoneOperation);
         }
 
         LogTotalTransferDone(&OperationProgress);
@@ -7240,7 +7241,7 @@ void __fastcall TTerminal::DoCopyToRemote(
   UnicodeString TargetDir = GetAbsolutePath(ATargetDir, false);
   UnicodeString FullTargetDir = base::UnixIncludeTrailingBackslash(ATargetDir);
   intptr_t Index = 0;
-  while ((Index < AFilesToCopy->GetCount()) && !OperationProgress->Cancel)
+  while ((Index < AFilesToCopy->GetCount()) && !OperationProgress->GetCancel())
   {
     bool Success = false;
     UnicodeString FileName = AFilesToCopy->GetString(Index);
@@ -7249,7 +7250,7 @@ void __fastcall TTerminal::DoCopyToRemote(
     {
       try
       {
-        if (SessionData->GetCacheDirectories())
+        if (GetSessionData()->GetCacheDirectories())
         {
           DirectoryModified(TargetDir, false);
 
@@ -7377,7 +7378,7 @@ void __fastcall TTerminal::DirectorySource(
       {
         base::FindClose(SearchRec);
       };
-      while (FindOK && !OperationProgress->Cancel)
+      while (FindOK && !OperationProgress->GetCancel())
       {
         UnicodeString FileName = ADirectoryName + SearchRec.Name;
         try
@@ -7434,7 +7435,7 @@ void __fastcall TTerminal::DirectorySource(
 
     // TODO : Delete also read-only directories.
     // TODO : Show error message on failure.
-    if (!OperationProgress->Cancel)
+    if (!OperationProgress->GetCancel())
     {
       if (GetIsCapable(fcPreservingTimestampDirs) && CopyParam->GetPreserveTime() && CopyParam->GetPreserveTimeDirs())
       {
@@ -7474,7 +7475,7 @@ void __fastcall TTerminal::SelectTransferMode(
   TFileOperationProgressType *OperationProgress = GetOperationProgress();
   OperationProgress->SetAsciiTransfer(CopyParam->UseAsciiTransfer(ABaseFileName, Side, MaskParams));
   UnicodeString ModeName = (OperationProgress->GetAsciiTransfer() ? L"Ascii" : L"Binary");
-  LogEvent(FORMAT(L"%s transfer mode selected.", ModeName));
+  LogEvent(FORMAT("%s transfer mode selected.", ModeName));
 }
 //---------------------------------------------------------------------------
 void __fastcall TTerminal::SelectSourceTransferMode(const TLocalFileHandle &Handle, const TCopyParamType *CopyParam)
@@ -7546,7 +7547,7 @@ void __fastcall TTerminal::Source(
   }
   else
   {
-    LogEvent(FORMAT(L"Copying \"%s\" to remote directory started.", (AFileName)));
+    LogEvent(FORMAT("Copying \"%s\" to remote directory started.", AFileName));
 
     OperationProgress->SetLocalSize(Handle.Size);
 
@@ -7871,7 +7872,7 @@ void __fastcall TTerminal::Sink(
   UnicodeString BaseFileName = GetBaseFileName(FileName);
   if (!CopyParam->AllowTransfer(BaseFileName, osRemote, File->GetIsDirectory(), MaskParams))
   {
-    LogEvent(FORMAT(L"File \"%s\" excluded from transfer", FileName));
+    LogEvent(FORMAT("File \"%s\" excluded from transfer", FileName));
     throw ESkipFile();
   }
 
@@ -7937,12 +7938,12 @@ void __fastcall TTerminal::Sink(
     }
     else
     {
-      LogEvent(FORMAT(L"Skipping symlink to directory \"%s\".", (FileName)));
+      LogEvent(FORMAT("Skipping symlink to directory \"%s\".", FileName));
     }
   }
   else
   {
-    LogEvent(FORMAT(L"Copying \"%s\" to local directory started.", (FileName)));
+    LogEvent(FORMAT("Copying \"%s\" to local directory started.", FileName));
 
     // Will we use ASCII of BINARY file transfer?
     SelectTransferMode(BaseFileName, osRemote, CopyParam, MaskParams);
@@ -7993,12 +7994,12 @@ void __fastcall TTerminal::UpdateTargetAttrs(
 //---------------------------------------------------------------------------
 void __fastcall TTerminal::UpdateTargetTime(HANDLE Handle, TDateTime Modification, TDSTMode DSTMode)
 {
-  LogEvent(FORMAT(L"Preserving timestamp [%s]", (StandardTimestamp(Modification))));
+  LogEvent(FORMAT("Preserving timestamp [%s]", StandardTimestamp(Modification)));
   FILETIME WrTime = DateTimeToFileTime(Modification, DSTMode);
-  if (!SetFileTime(Handle, NULL, NULL, &WrTime))
+  if (!SetFileTime(Handle, nullptr, nullptr, &WrTime))
   {
     int Error = GetLastError();
-    LogEvent(FORMAT(L"Preserving timestamp failed, ignoring: %s", (SysErrorMessageForError(Error))));
+    LogEvent(FORMAT("Preserving timestamp failed, ignoring: %s", ::SysErrorMessageForError(Error)));
   }
 }
 //---------------------------------------------------------------------------
@@ -8200,7 +8201,7 @@ bool __fastcall TTerminal::ConfirmCertificate(
   {
     case qaYes:
       CacheCertificate(
-        CertificateStorageKey, SessionData->GetSiteKey(), SessionInfo.CertificateFingerprint, Failures);
+        CertificateStorageKey, GetSessionData()->GetSiteKey(), SessionInfo.CertificateFingerprint, Failures);
       Result = true;
       break;
 
@@ -8223,7 +8224,7 @@ bool __fastcall TTerminal::ConfirmCertificate(
   if (Result && CanRemember)
   {
     GetConfiguration()->RememberLastFingerprint(
-      SessionData->GetSiteKey(), TlsFingerprintType, SessionInfo.CertificateFingerprint);
+      GetSessionData()->GetSiteKey(), TlsFingerprintType, SessionInfo.CertificateFingerprint);
   }
   return Result;
 }
@@ -8293,7 +8294,7 @@ bool __fastcall TTerminal::LoadTlsCertificate(X509 *&Certificate, EVP_PKEY *&Pri
       {
         if (Passphrase.IsEmpty())
         {
-          LogEvent(L"Certificate is encrypted, need passphrase");
+          LogEvent("Certificate is encrypted, need passphrase");
           Information(LoadStr(CLIENT_CERTIFICATE_LOADING), false);
         }
         else

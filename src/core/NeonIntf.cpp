@@ -22,6 +22,7 @@ extern "C"
 }
 #include <StrUtils.hpp>
 #include <openssl/ssl.h>
+#include <rdestl/set.h>
 //---------------------------------------------------------------------------
 #define SESSION_PROXY_AUTH_KEY "proxyauth"
 #define SESSION_TLS_INIT_KEY "tlsinit"
@@ -241,9 +242,14 @@ extern "C"
 
 void ne_init_ssl_session(struct ssl_st * Ssl, ne_session * Session)
 {
+#if 0
   void * Code = ne_get_session_private(Session, SESSION_TLS_INIT_KEY);
   void * Data = ne_get_session_private(Session, SESSION_TLS_INIT_DATA_KEY);
-  // TNeonTlsInit OnNeonTlsInit = MakeMethod<TNeonTlsInit>(Data, Code);
+  TNeonTlsInit OnNeonTlsInit = MakeMethod<TNeonTlsInit>(Data, Code);
+#endif // if 0
+
+  TNeonTlsInit OnNeonTlsInit =
+    reinterpret_cast<TNeonTlsInit>(ne_get_session_private(Session, SESSION_TLS_INIT_KEY));
   if (DebugAlwaysTrue(OnNeonTlsInit != nullptr))
   {
     OnNeonTlsInit(Ssl, Session);
@@ -255,8 +261,11 @@ void ne_init_ssl_session(struct ssl_st * Ssl, ne_session * Session)
 void SetNeonTlsInit(ne_session *Session, TNeonTlsInit OnNeonTlsInit)
 {
   ne_set_session_private(Session, SESSION_TLS_INIT_KEY, ToPtr(OnNeonTlsInit));
+#if 0
+  TMethod & Method = *(TMethod*)&OnNeonTlsInit;
   ne_set_session_private(Session, SESSION_TLS_INIT_KEY, Method.Code);
   ne_set_session_private(Session, SESSION_TLS_INIT_DATA_KEY, Method.Data);
+#endif // if 0
 }
 //---------------------------------------------------------------------------
 AnsiString NeonExportCertificate(const ne_ssl_certificate *Certificate)
@@ -283,28 +292,30 @@ bool NeonWindowsValidateCertificate(int &Failures, const AnsiString AsciiCert, U
         Failures &= ~NE_SSL_UNTRUSTED;
         Result = true;
       }
+      if (Certificate)
+      {
+        ne_free(Certificate);
+      }
     }
-    if (Certificate)
-      ne_free(Certificate);
   }
   return Result;
 }
 //---------------------------------------------------------------------------
-bool NeonWindowsValidateCertificateWithMessage(TNeonCertificateData &Data, UnicodeString & Message)
+bool NeonWindowsValidateCertificateWithMessage(TNeonCertificateData &Data, UnicodeString &AMessage)
 {
   bool Result;
   UnicodeString WindowsCertificateError;
   if (NeonWindowsValidateCertificate(Data.Failures, Data.AsciiCert, WindowsCertificateError))
   {
-    Message = L"Certificate verified against Windows certificate store";
+    AMessage = L"Certificate verified against Windows certificate store";
     // There can be also other flags, not just the NE_SSL_UNTRUSTED.
     Result = (Data.Failures == 0);
   }
   else
   {
-    Message =
-      FORMAT(L"Certificate failed to verify against Windows certificate store: %s",
-        (DefaultStr(WindowsCertificateError, L"no details")));
+    AMessage =
+      FORMAT("Certificate failed to verify against Windows certificate store: %s",
+        DefaultStr(WindowsCertificateError, "no details"));
     Result = false;
   }
   return Result;
@@ -469,8 +480,8 @@ void __fastcall RetrieveNeonCertificateData(
 UnicodeString __fastcall CertificateVerificationMessage(const TNeonCertificateData &Data)
 {
   return
-    FORMAT(L"Verifying certificate for \"%s\" with fingerprint %s and %2.2X failures",
-           (Data.Subject, Data.Fingerprint, Data.Failures));
+    FORMAT("Verifying certificate for \"%s\" with fingerprint %s and %2.2X failures",
+           Data.Subject, Data.Fingerprint, Data.Failures);
 }
 //---------------------------------------------------------------------------
 UnicodeString __fastcall CertificateSummary(const TNeonCertificateData &Data, const UnicodeString AHostName)
@@ -509,7 +520,7 @@ UnicodeString __fastcall NeonTlsSessionInfo(
   SessionInfo.SCCipher = Cipher;
 
   // see CAsyncSslSocketLayer::PrintSessionInfo()
-  return FORMAT(L"Using %s, cipher %s", TlsVersionStr, Cipher);
+  return FORMAT("Using %s, cipher %s", TlsVersionStr, Cipher);
 }
 //---------------------------------------------------------------------------
 void SetupSsl(ssl_st *Ssl, TTlsVersion MinTlsVersion, TTlsVersion MaxTlsVersion)

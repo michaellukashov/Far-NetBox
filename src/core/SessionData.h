@@ -628,7 +628,7 @@ public:
   __property UnicodeString Passphrase  = { read=GetPassphrase, write=SetPassphrase };
   __property UnicodeString PuttyProtocol  = { read=FPuttyProtocol, write=SetPuttyProtocol };
   __property TFSProtocol FSProtocol  = { read=FFSProtocol, write=SetFSProtocol  };
-  ROProperty<TFSProtocol, TSessionData> FSProtocol{this, &TSessionData::GetFSProtocol};
+  // ROProperty<TFSProtocol, TSessionData> FSProtocol{this, &TSessionData::GetFSProtocol};
   __property UnicodeString FSProtocolStr  = { read=GetFSProtocolStr };
   __property bool Modified  = { read=FModified, write=FModified };
   __property bool CanLogin  = { read=GetCanLogin };
@@ -638,7 +638,7 @@ public:
   __property bool TimeDifferenceAuto = { read = FTimeDifferenceAuto, write = SetTimeDifferenceAuto };
   __property TPingType PingType = { read = FPingType, write = SetPingType };
   __property UnicodeString SessionName  = { read=GetSessionName };
-  ROProperty<UnicodeString, TSessionData> SessionName{this, &TSessionData::GetSessionName};
+  // ROProperty<UnicodeString, TSessionData> SessionName{this, &TSessionData::GetSessionName};
   __property UnicodeString DefaultSessionName  = { read=GetDefaultSessionName };
   __property UnicodeString LocalDirectory  = { read=FLocalDirectory, write=SetLocalDirectory };
   __property UnicodeString RemoteDirectory  = { read=FRemoteDirectory, write=SetRemoteDirectory };

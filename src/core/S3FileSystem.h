@@ -12,10 +12,11 @@ struct TLibS3TransferObjectDataCallbackData;
 struct TLibS3PutObjectDataCallbackData;
 struct TLibS3GetObjectDataCallbackData;
 struct ssl_st;
+#define NEED_LIBS3
 #ifdef NEED_LIBS3
 // resolve clash
 #define S3Protocol _S3Protocol
-#include "libs3.h"
+#include <libs3.h>
 #undef S3Protocol
 #else
 struct ne_session_s;
@@ -138,8 +139,9 @@ protected:
   void LibS3Deinitialize();
   bool VerifyCertificate(TNeonCertificateData Data);
   void CollectTLSSessionInfo();
-  void CheckLibS3Error(const TLibS3CallbackData & Data, bool FatalOnConnectError = false);
-  void InitSslSession(ssl_st * Ssl, ne_session_s * Session);
+  void CheckLibS3Error(const TLibS3CallbackData &Data, bool FatalOnConnectError = false);
+  static void InitSslSession(ssl_st *Ssl, ne_session_s *Session);
+  void InitSslSessionImpl(ssl_st *Ssl) const;
   void RequestInit(TLibS3CallbackData &Data);
   void TryOpenDirectory(const UnicodeString ADirectory);
   void ReadDirectoryInternal(const UnicodeString APath, TRemoteFileList * FileList, intptr_t MaxKeys, const UnicodeString AFileName);
@@ -151,7 +153,7 @@ protected:
     TLibS3ListBucketCallbackData & Data);
   UnicodeString GetFolderKey(const UnicodeString AKey);
   void DoReadFile(const UnicodeString AFileName, TRemoteFile *& AFile);
-  void ConfirmOverwrite(
+  void __fastcall ConfirmOverwrite(
     const UnicodeString ASourceFullFileName, UnicodeString &ATargetFileName,
     TFileOperationProgressType *OperationProgress, const TOverwriteFileParams *FileParams,
     const TCopyParamType *CopyParam, intptr_t AParams);

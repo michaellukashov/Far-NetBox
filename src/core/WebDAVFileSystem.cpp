@@ -131,7 +131,7 @@ void __fastcall RequireNeon(TTerminal * Terminal)
 
   if (!NeonSspiInitialized)
   {
-    Terminal->LogEvent(L"Warning: SSPI initialization failed.");
+    Terminal->LogEvent("Warning: SSPI initialization failed.");
   }
 }
 //---------------------------------------------------------------------------
@@ -1305,7 +1305,7 @@ void __fastcall TWebDAVFileSystem::Source(
     }
     catch (...)
     {
-      if (!FTerminal->Active)
+      if (!FTerminal->GetActive())
       {
         throw;
       }
@@ -1317,8 +1317,8 @@ void __fastcall TWebDAVFileSystem::Source(
 
       FileParams.SourceSize = AHandle.Size;
       FileParams.SourceTimestamp = AHandle.Modification;
-      FileParams.DestSize = RemoteFile->Size;
-      FileParams.DestTimestamp = RemoteFile->Modification;
+      FileParams.DestSize = RemoteFile->GetSize();
+      FileParams.DestTimestamp = RemoteFile->GetModification();
       RemoteFile.reset();
 
       ConfirmOverwrite(AHandle.FileName, ADestFileName, OperationProgress,
@@ -1362,7 +1362,7 @@ void __fastcall TWebDAVFileSystem::Source(
 
     if (CopyParam->GetPreserveTime())
     {
-      FTerminal->LogEvent(FORMAT(L"Preserving timestamp [%s]",
+      FTerminal->LogEvent(FORMAT("Preserving timestamp [%s]",
         StandardTimestamp(AHandle.Modification)));
 
       TTouchSessionAction TouchAction(FTerminal->GetActionLog(), DestFullName, AHandle.Modification);
@@ -1393,8 +1393,8 @@ void __fastcall TWebDAVFileSystem::Source(
         int Status = ne_proppatch(FNeonSession, PathToNeon(DestFullName), Operations);
         if (Status == NE_ERROR)
         {
-          FTerminal->LogEvent(FORMAT(L"Preserving timestamp failed, ignoring: %s",
-            (GetNeonError())));
+          FTerminal->LogEvent(FORMAT("Preserving timestamp failed, ignoring: %s",
+            GetNeonError()));
           // Ignore errors as major WebDAV servers (like IIS), do not support
           // changing getlastmodified.
           // The only server we found that supports this is TradeMicro SafeSync.
@@ -1728,10 +1728,10 @@ void __fastcall TWebDAVFileSystem::Sink(
     FTerminal->TerminalOpenLocalFile(DestFullName, GENERIC_READ, nullptr, nullptr, nullptr, &MTime, nullptr, &Size);
     TOverwriteFileParams FileParams;
 
-    FileParams.SourceSize = AFile->Size;
-    FileParams.SourceTimestamp = AFile->Modification;
+    FileParams.SourceSize = AFile->GetSize();
+    FileParams.SourceTimestamp = AFile->GetModification();
     FileParams.DestSize = Size;
-    FileParams.DestTimestamp = ::UnixToDateTime(MTime, FTerminal->SessionData->GetDSTMode());
+    FileParams.DestTimestamp = ::UnixToDateTime(MTime, FTerminal->GetSessionData()->GetDSTMode());
 
     ConfirmOverwrite(AFileName, ADestFileName, OperationProgress, &FileParams, CopyParam, AParams);
   }
@@ -1780,7 +1780,7 @@ void __fastcall TWebDAVFileSystem::Sink(
         }
       };
 
-      FD = _open_osfhandle((intptr_t)LocalHandle, O_BINARY);
+      FD = _open_osfhandle((intptr_t)LocalFileHandle, O_BINARY);
       if (FD < 0)
       {
         throw ESkipFile();
@@ -1794,7 +1794,7 @@ void __fastcall TWebDAVFileSystem::Sink(
 
       if (CopyParam->GetPreserveTime())
       {
-        FTerminal->UpdateTargetTime(LocalFileHandle, AFile->GetModification(), FTerminal->SessionData->GetDSTMode());
+        FTerminal->UpdateTargetTime(LocalFileHandle, AFile->GetModification(), FTerminal->GetSessionData()->GetDSTMode());
       }
     }
     __finally__removed
@@ -1807,7 +1807,7 @@ void __fastcall TWebDAVFileSystem::Sink(
       }
       else
       {
-        CloseHandle(LocalHandle);
+        CloseHandle(LocalFileHandle);
       }
 
       if (DeleteLocalFile)
@@ -2060,7 +2060,7 @@ void TWebDAVFileSystem::InitSslSession(ssl_st *Ssl, ne_session * Session)
 void TWebDAVFileSystem::InitSslSessionImpl(ssl_st *Ssl) const
 {
   // See also CAsyncSslSocketLayer::InitSSLConnection
-  SetupSsl(Ssl, FTerminal->SessionData->GetMinTlsVersion(), FTerminal->SessionData->GetMaxTlsVersion());
+  SetupSsl(Ssl, FTerminal->GetSessionData()->GetMinTlsVersion(), FTerminal->GetSessionData()->GetMaxTlsVersion());
 }
 //---------------------------------------------------------------------------
 void __fastcall TWebDAVFileSystem::GetSupportedChecksumAlgs(TStrings * /*Algs*/)

@@ -1560,18 +1560,18 @@ void TSCPFileSystem::SCPResponse(bool *GotLastLine)
         StartsText(L"scp: error: unexpected filename: ", Msg) ||
         StartsText(L"scp: protocol error: ", Msg))
       {
-        FTerminal->LogEvent(L"SCP remote side error (1), fatal error detected from error message");
+        FTerminal->LogEvent("SCP remote side error (1), fatal error detected from error message");
         Resp = 2;
         FScpFatalError = true;
       }
       else
       {
-        FTerminal->LogEvent(L"SCP remote side error (1)");
+        FTerminal->LogEvent("SCP remote side error (1)");
       }
     }
     else
     {
-      FTerminal->LogEvent(L"SCP remote side fatal error (2)");
+      FTerminal->LogEvent("SCP remote side fatal error (2)");
       FScpFatalError = true;
     }
 
@@ -1879,7 +1879,7 @@ void __fastcall TSCPFileSystem::SCPSource(const UnicodeString AFileName,
     std::unique_ptr<TStream> Stream(new TSafeHandleStream((THandle)LocalFileHandle.Handle));
 
     // File is regular file (not directory)
-    FTerminal->LogEvent(FORMAT(L"Copying \"%s\" to remote directory started.", AFileName));
+    FTerminal->LogEvent(FORMAT("Copying \"%s\" to remote directory started.", AFileName));
 
     OperationProgress->SetLocalSize(LocalFileHandle.Size);
 
@@ -1928,13 +1928,13 @@ void __fastcall TSCPFileSystem::SCPSource(const UnicodeString AFileName,
           intptr_t ConvertParams =
             FLAGMASK(CopyParam->GetRemoveCtrlZ(), cpRemoveCtrlZ) |
             FLAGMASK(CopyParam->GetRemoveBOM(), cpRemoveBOM);
-          BlockBuf.Convert(FTerminal->Configuration->GetLocalEOLType(),
-            FTerminal->SessionData->GetEOLType(),
+          BlockBuf.Convert(FTerminal->GetConfiguration()->GetLocalEOLType(),
+            FTerminal->GetSessionData()->GetEOLType(),
             ConvertParams, ConvertToken);
-          BlockBuf.Memory->Seek(0, soFromBeginning);
-          AsciiBuf.ReadStream(BlockBuf.Memory, BlockBuf.GetSize(), true);
+          BlockBuf.GetMemory()->Seek(0, soFromBeginning);
+          AsciiBuf.ReadStream(BlockBuf.GetMemory(), BlockBuf.GetSize(), true);
           // We don't need it any more
-          BlockBuf.Memory->Clear();
+          BlockBuf.GetMemory()->Clear();
           // Calculate total size to sent (assume that ratio between
           // size of source and size of EOL-transformed data would remain same)
           // First check if file contains anything (div by zero!)
@@ -2265,7 +2265,7 @@ void __fastcall TSCPFileSystem::CopyToLocal(TStrings *AFilesToCopy,
   UnicodeString Options = InitOptionsStr(CopyParam);
   if (CopyParam->GetPreserveRights() || CopyParam->GetPreserveTime())
     Options = L"-p";
-  if (FTerminal->SessionData->GetScp1Compatibility())
+  if (FTerminal->GetSessionData()->GetScp1Compatibility())
     Options += L" -1";
 
   FTerminal->LogEvent(FORMAT("Copying %d files/directories to local directory "
@@ -2550,7 +2550,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString TargetDir,
             MTime = ATime = 0;
             if (swscanf(Line.c_str(), L"%I64d %*d %I64d %*d", &MTime, &ATime) == 2)
             {
-              FileData.Modification = ::UnixToDateTime(MTime, FTerminal->SessionData->GetDSTMode());
+              FileData.Modification = ::UnixToDateTime(MTime, FTerminal->GetSessionData()->GetDSTMode());
               FSecureShell->SendNull();
               // File time is only valid until next pass
               FileData.SetTime = 2;
@@ -2810,7 +2810,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString TargetDir,
 
               if (FileData.SetTime && CopyParam->GetPreserveTime())
               {
-                FTerminal->UpdateTargetTime(LocalFileHandle, FileData.Modification, FTerminal->SessionData->GetDSTMode());
+                FTerminal->UpdateTargetTime(LocalFileHandle, FileData.Modification, FTerminal->GetSessionData()->GetDSTMode());
               }
             }
             __finally__removed
