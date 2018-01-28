@@ -146,7 +146,7 @@ protected:
   void TryOpenDirectory(const UnicodeString ADirectory);
   void ReadDirectoryInternal(const UnicodeString APath, TRemoteFileList * FileList, intptr_t MaxKeys, const UnicodeString AFileName);
   void ParsePath(UnicodeString Path, UnicodeString &BucketName, UnicodeString &Key);
-  TRemoteToken MakeRemoteToken(const char * OwnerId, const char * OwnerDisplayName);
+  TRemoteToken MakeRemoteToken(const char *OwnerId, const char *OwnerDisplayName);
   TLibS3BucketContext GetBucketContext(const UnicodeString ABucketName);
   void DoListBucket(
     const UnicodeString APrefix, TRemoteFileList * FileList, intptr_t MaxKeys, const TLibS3BucketContext &BucketContext,
@@ -157,8 +157,8 @@ protected:
     const UnicodeString ASourceFullFileName, UnicodeString &ATargetFileName,
     TFileOperationProgressType *OperationProgress, const TOverwriteFileParams *FileParams,
     const TCopyParamType *CopyParam, intptr_t AParams);
-  int PutObjectData(int BufferSize, char * Buffer, TLibS3PutObjectDataCallbackData & Data);
-  S3Status GetObjectData(int BufferSize, const char * Buffer, TLibS3GetObjectDataCallbackData & Data);
+  int64_t PutObjectData(int64_t BufferSize, char * Buffer, TLibS3PutObjectDataCallbackData & Data);
+  S3Status GetObjectData(int64_t BufferSize, const char * Buffer, TLibS3GetObjectDataCallbackData & Data);
   bool ShouldCancelTransfer(TLibS3TransferObjectDataCallbackData & Data);
 
   static TS3FileSystem * GetFileSystem(void *CallbackData);

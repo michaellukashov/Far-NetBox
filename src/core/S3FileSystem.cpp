@@ -158,6 +158,7 @@ void __fastcall TS3FileSystem::Open()
 //---------------------------------------------------------------------------
 struct TLibS3CallbackData
 {
+CUSTOM_MEM_ALLOCATION_IMPL
 
   TLibS3CallbackData()
   {
@@ -472,8 +473,7 @@ TLibS3BucketContext TS3FileSystem::GetBucketContext(const UnicodeString ABucketN
   bool Retry = false;
   do
   {
-    TRegions::const_iterator I;
-    I = FRegions.find(ABucketName);
+    TRegions::const_iterator I = FRegions.find(ABucketName);
     UnicodeString Region;
     if (I != FRegions.end())
     {
@@ -524,7 +524,7 @@ TLibS3BucketContext TS3FileSystem::GetBucketContext(const UnicodeString ABucketN
       if ((Data.Status == S3StatusErrorAuthorizationHeaderMalformed) &&
           (Region != Data.RegionDetail))
       {
-        FTerminal->LogEvent(FORMAT("Will use region \"%s\" for bucket \"%s\" from now on.", (Data.RegionDetail, ABucketName)));
+        FTerminal->LogEvent(FORMAT("Will use region \"%s\" for bucket \"%s\" from now on.", Data.RegionDetail, ABucketName));
         FRegions.insert(std::make_pair(ABucketName, Data.RegionDetail));
 
         Result.AuthRegionBuf = UTF8String(Data.RegionDetail);
@@ -540,7 +540,7 @@ TLibS3BucketContext TS3FileSystem::GetBucketContext(const UnicodeString ABucketN
         }
         if (HostName != Endpoint)
         {
-          FTerminal->LogEvent(FORMAT("Will use endpoint \"%s\" for bucket \"%s\" from now on.", (Endpoint, ABucketName)));
+          FTerminal->LogEvent(FORMAT("Will use endpoint \"%s\" for bucket \"%s\" from now on.", Endpoint, ABucketName));
           FHostNames.insert(std::make_pair(ABucketName, Endpoint));
           Retry = true;
         }
@@ -574,7 +574,7 @@ void __fastcall TS3FileSystem::CollectUsage()
   // noop
 }
 //---------------------------------------------------------------------------
-const TSessionInfo & __fastcall TS3FileSystem::GetSessionInfo()
+const TSessionInfo & __fastcall TS3FileSystem::GetSessionInfo() const
 {
   return FSessionInfo;
 }
@@ -589,13 +589,13 @@ bool __fastcall TS3FileSystem::TemporaryTransferFile(const UnicodeString /*AFile
   return false;
 }
 //---------------------------------------------------------------------------
-bool __fastcall TS3FileSystem::GetStoredCredentialsTried()
+bool __fastcall TS3FileSystem::GetStoredCredentialsTried() const
 {
   // if we have one, we always try it
   return !FTerminal->GetSessionData()->GetPassword().IsEmpty();
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall TS3FileSystem::GetUserName()
+UnicodeString __fastcall TS3FileSystem::RemoteGetUserName() const
 {
   return UnicodeString(FAccessKeyId);
 }
@@ -605,7 +605,7 @@ void __fastcall TS3FileSystem::Idle()
   // noop
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall TS3FileSystem::AbsolutePath(const UnicodeString Path, bool /*Local*/)
+UnicodeString __fastcall TS3FileSystem::GetAbsolutePath(const UnicodeString Path, bool /*Local*/)
 {
   if (base::UnixIsAbsolutePath(Path))
   {
@@ -613,7 +613,7 @@ UnicodeString __fastcall TS3FileSystem::AbsolutePath(const UnicodeString Path, b
   }
   else
   {
-    return GetAbsolutePath(FCurrentDirectory, Path);
+    return base::AbsolutePath(FCurrentDirectory, Path);
   }
 }
 //---------------------------------------------------------------------------
@@ -717,7 +717,7 @@ void TS3FileSystem::TryOpenDirectory(const UnicodeString ADirectory)
 //---------------------------------------------------------------------------
 void __fastcall TS3FileSystem::ChangeDirectory(const UnicodeString ADirectory)
 {
-  UnicodeString Path = AbsolutePath(ADirectory, false);
+  UnicodeString Path = GetAbsolutePath(ADirectory, false);
 
   // to verify existence of directory try to open it
   TryOpenDirectory(Path);
@@ -734,16 +734,18 @@ void __fastcall TS3FileSystem::CachedChangeDirectory(const UnicodeString Directo
 TRemoteToken TS3FileSystem::MakeRemoteToken(const char * OwnerId, const char * OwnerDisplayName)
 {
   TRemoteToken Result;
-  Result.Name = StrFromS3(OwnerDisplayName);
-  if (Result.Name.IsEmpty())
+  Result.SetName(StrFromS3(OwnerDisplayName));
+  if (Result.GetName().IsEmpty())
   {
-    Result.Name = StrFromS3(OwnerId);
+    Result.SetName(StrFromS3(OwnerId));
   }
   return Result;
 }
 //---------------------------------------------------------------------------
 struct TLibS3ListServiceCallbackData : TLibS3CallbackData
 {
+CUSTOM_MEM_ALLOCATION_IMPL
+
   TRemoteFileList * FileList;
   UnicodeString FileName; // filter for buckets
 };
@@ -758,11 +760,11 @@ S3Status TS3FileSystem::LibS3ListServiceCallback(
   if (Data.FileName.IsEmpty() || (Data.FileName == FileName))
   {
     std::unique_ptr<TRemoteFile> File(new TRemoteFile(nullptr));
-    File->Terminal = Data.FileSystem->FTerminal;
-    File->FileName = StrFromS3(BucketName);
-    File->Type = FILETYPE_DIRECTORY;
-    File->Owner = Data.FileSystem->MakeRemoteToken(OwnerId, OwnerDisplayName);
-    File->ModificationFmt = mfNone;
+    File->SetTerminal(Data.FileSystem->FTerminal);
+    File->SetFileName(StrFromS3(BucketName));
+    File->SetType(FILETYPE_DIRECTORY);
+    File->SetFileOwner(Data.FileSystem->MakeRemoteToken(OwnerId, OwnerDisplayName));
+    File->SetModificationFmt(mfNone);
     Data.FileList->AddFile(File.release());
   }
 
@@ -787,12 +789,12 @@ S3Status TS3FileSystem::LibS3ListBucketCallback(
     if (!FileName.IsEmpty())
     {
       std::unique_ptr<TRemoteFile> File(new TRemoteFile(nullptr));
-      File->Terminal = Data.FileSystem->FTerminal;
-      File->FileName = FileName;
-      File->Type = FILETYPE_DEFAULT;
-      File->Modification = UnixToDateTime(Content->lastModified, dstmWin);
-      File->Size = Content->size;
-      File->Owner = Data.FileSystem->MakeRemoteToken(Content->ownerId, Content->ownerDisplayName);
+      File->SetTerminal(Data.FileSystem->FTerminal);
+      File->SetFileName(FileName);
+      File->SetType(FILETYPE_DEFAULT);
+      File->SetModification(UnixToDateTime(Content->lastModified, dstmWin));
+      File->SetSize(Content->size);
+      File->SetFileOwner(Data.FileSystem->MakeRemoteToken(Content->ownerId, Content->ownerDisplayName));
       Data.FileList->AddFile(File.release());
     }
     else
@@ -805,10 +807,10 @@ S3Status TS3FileSystem::LibS3ListBucketCallback(
   for (int Index = 0; Index < CommonPrefixesCount; Index++)
   {
     std::unique_ptr<TRemoteFile> File(new TRemoteFile(nullptr));
-    File->Terminal = Data.FileSystem->FTerminal;
-    File->FileName = UnixExtractFileName(UnixExcludeTrailingBackslash(StrFromS3(CommonPrefixes[Index])));
-    File->Type = FILETYPE_DIRECTORY;
-    File->ModificationFmt = mfNone;
+    File->SetTerminal(Data.FileSystem->FTerminal);
+    File->SetFileName(base::UnixExtractFileName(base::UnixExcludeTrailingBackslash(StrFromS3(CommonPrefixes[Index]))));
+    File->SetType(FILETYPE_DIRECTORY);
+    File->SetModificationFmt(mfNone);
     Data.FileList->AddFile(File.release());
   }
 
@@ -816,8 +818,8 @@ S3Status TS3FileSystem::LibS3ListBucketCallback(
 }
 //---------------------------------------------------------------------------
 void TS3FileSystem::DoListBucket(
-  const UnicodeString APrefix, TRemoteFileList * FileList, int MaxKeys, const TLibS3BucketContext & BucketContext,
-  TLibS3ListBucketCallbackData & Data)
+  const UnicodeString APrefix, TRemoteFileList *FileList, intptr_t MaxKeys, const TLibS3BucketContext &BucketContext,
+  TLibS3ListBucketCallbackData &Data)
 {
   S3ListBucketHandler ListBucketHandler = { CreateResponseHandler(), &LibS3ListBucketCallback };
   RequestInit(Data);
@@ -826,15 +828,15 @@ void TS3FileSystem::DoListBucket(
   Data.IsTruncated = false;
 
   S3_list_bucket(
-    &BucketContext, StrToS3(Prefix), StrToS3(Data.NextMarker),
-    LibS3Delimiter.c_str(), MaxKeys, FRequestContext, FTimeout, &ListBucketHandler, &Data);
+    &BucketContext, StrToS3(APrefix), StrToS3(Data.NextMarker),
+    LibS3Delimiter.c_str(), (int)MaxKeys, FRequestContext, FTimeout, &ListBucketHandler, &Data);
 }
 //---------------------------------------------------------------------------
 void TS3FileSystem::ReadDirectoryInternal(
-  const UnicodeString APath, TRemoteFileList * FileList, int MaxKeys, const UnicodeString AFileName)
+  const UnicodeString APath, TRemoteFileList * FileList, intptr_t MaxKeys, const UnicodeString AFileName)
 {
-  UnicodeString Path = AbsolutePath(APath, false);
-  if (IsUnixRootPath(Path))
+  UnicodeString Path = GetAbsolutePath(APath, false);
+  if (base::IsUnixRootPath(Path))
   {
     DebugAssert(FileList != nullptr);
 
@@ -844,7 +846,7 @@ void TS3FileSystem::ReadDirectoryInternal(
     RequestInit(Data);
     Data.FileSystem = this;
     Data.FileList = FileList;
-    Data.FileName = FileName;
+    Data.FileName = AFileName;
 
     S3_list_service(
       FLibS3Protocol, FAccessKeyId.c_str(), FSecretAccessKey.c_str(), 0, FHostName.c_str(),
@@ -860,7 +862,7 @@ void TS3FileSystem::ReadDirectoryInternal(
     {
       Prefix = GetFolderKey(Prefix);
     }
-    Prefix += FileName;
+    Prefix += AFileName;
     TLibS3BucketContext BucketContext = GetBucketContext(BucketName);
 
     TLibS3ListBucketCallbackData Data;
@@ -876,7 +878,7 @@ void TS3FileSystem::ReadDirectoryInternal(
       if (Data.IsTruncated && ((MaxKeys == 0) || (Data.KeyCount < MaxKeys)))
       {
         bool Cancel = false;
-        FTerminal->DoReadDirectoryProgress(FileList->Count, false, Cancel);
+        FTerminal->DoReadDirectoryProgress(FileList->GetCount(), false, Cancel);
         if (!Cancel)
         {
           Continue = true;
@@ -895,9 +897,9 @@ void TS3FileSystem::ReadDirectoryInternal(
       // We do not get any error, when the "prefix" does not exist. But when prefix does exist, there's at least
       // prefix/ entry (translated to ..). If there's none, it means that the path does not exist.
       // When called from DoReadFile (FileName is set), leaving error handling to the caller.
-      if ((FileList->Count == 0) && FileName.IsEmpty())
+      if ((FileList->GetCount() == 0) && AFileName.IsEmpty())
       {
-        throw Exception(FMTLOAD(FILE_NOT_EXISTS, (APath)));
+        throw Exception(FMTLOAD(FILE_NOT_EXISTS, APath));
       }
     }
   }
@@ -905,8 +907,8 @@ void TS3FileSystem::ReadDirectoryInternal(
 //---------------------------------------------------------------------------
 void __fastcall TS3FileSystem::ReadDirectory(TRemoteFileList * FileList)
 {
-  TOperationVisualizer Visualizer(FTerminal->UseBusyCursor);
-  ReadDirectoryInternal(FileList->Directory, FileList, 0, UnicodeString());
+  volatile TOperationVisualizer Visualizer(FTerminal->GetUseBusyCursor());
+  ReadDirectoryInternal(FileList->GetDirectory(), FileList, 0, UnicodeString());
 }
 //---------------------------------------------------------------------------
 void __fastcall TS3FileSystem::ReadSymlink(TRemoteFile * /*SymlinkFile*/,
@@ -916,39 +918,39 @@ void __fastcall TS3FileSystem::ReadSymlink(TRemoteFile * /*SymlinkFile*/,
   DebugFail();
 }
 //---------------------------------------------------------------------------
-void TS3FileSystem::DoReadFile(const UnicodeString AFileName, TRemoteFile *& File)
+void TS3FileSystem::DoReadFile(const UnicodeString AFileName, TRemoteFile *& AFile)
 {
-  UnicodeString FileNameOnly = UnixExtractFileName(FileName);
+  UnicodeString FileNameOnly = base::UnixExtractFileName(AFileName);
   std::unique_ptr<TRemoteFileList> FileList(new TRemoteFileList());
-  ReadDirectoryInternal(UnixExtractFileDir(FileName), FileList.get(), 1, FileNameOnly);
-  TRemoteFile * AFile = FileList->FindFile(FileNameOnly);
-  if (AFile != nullptr)
+  ReadDirectoryInternal(base::UnixExtractFileDir(AFileName), FileList.get(), 1, FileNameOnly);
+  TRemoteFile *File = FileList->FindFile(FileNameOnly);
+  if (File != nullptr)
   {
-    File = AFile->Duplicate();
+    AFile = File->Duplicate();
   }
   else
   {
-    File = nullptr;
+    AFile = nullptr;
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TS3FileSystem::ReadFile(const UnicodeString FileName,
+void __fastcall TS3FileSystem::ReadFile(const UnicodeString AFileName,
   TRemoteFile *& File)
 {
-  TOperationVisualizer Visualizer(FTerminal->UseBusyCursor);
-  DoReadFile(FileName, File);
+  volatile TOperationVisualizer Visualizer(FTerminal->GetUseBusyCursor());
+  DoReadFile(AFileName, File);
   if (File == nullptr)
   {
-    throw Exception(FMTLOAD(FILE_NOT_EXISTS, (FileName)));
+    throw Exception(FMTLOAD(FILE_NOT_EXISTS, AFileName));
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TS3FileSystem::DeleteFile(const UnicodeString AFileName,
-  const TRemoteFile * File, int Params, TRmSessionAction & Action)
+void __fastcall TS3FileSystem::RemoteDeleteFile(const UnicodeString AFileName,
+  const TRemoteFile *AFile, intptr_t AParams, TRmSessionAction & Action)
 {
-  UnicodeString FileName = AbsolutePath(AFileName, false);
+  UnicodeString FileName = GetAbsolutePath(AFileName, false);
 
-  bool Dir = FTerminal->DeleteContentsIfDirectory(FileName, File, Params, Action);
+  bool Dir = FTerminal->DeleteContentsIfDirectory(FileName, AFile, AParams, Action);
 
   UnicodeString BucketName, Key;
   ParsePath(FileName, BucketName, Key);
@@ -979,25 +981,25 @@ void __fastcall TS3FileSystem::DeleteFile(const UnicodeString AFileName,
   CheckLibS3Error(Data);
 }
 //---------------------------------------------------------------------------
-void __fastcall TS3FileSystem::RenameFile(const UnicodeString FileName, const TRemoteFile * File,
-  const UnicodeString NewName)
+void __fastcall TS3FileSystem::RemoteRenameFile(const UnicodeString AFileName, const TRemoteFile *AFile,
+  const UnicodeString ANewName)
 {
-  CopyFile(FileName, File, NewName);
-  TRmSessionAction DummyAction(FTerminal->ActionLog, FileName);
-  DeleteFile(FileName, File, dfForceDelete, DummyAction);
+  RemoteCopyFile(AFileName, AFile, ANewName);
+  TRmSessionAction DummyAction(FTerminal->GetActionLog(), AFileName);
+  RemoteDeleteFile(AFileName, AFile, dfForceDelete, DummyAction);
   DummyAction.Cancel();
 }
 //---------------------------------------------------------------------------
-void __fastcall TS3FileSystem::CopyFile(const UnicodeString AFileName, const TRemoteFile * File,
+void __fastcall TS3FileSystem::RemoteCopyFile(const UnicodeString AFileName, const TRemoteFile *AFile,
   const UnicodeString ANewName)
 {
-  if (DebugAlwaysTrue(File != nullptr) && File->IsDirectory)
+  if (DebugAlwaysTrue(AFile != nullptr) && AFile->GetIsDirectory())
   {
     throw Exception(LoadStr(DUPLICATE_FOLDER_NOT_SUPPORTED));
   }
 
-  UnicodeString FileName = AbsolutePath(AFileName, false);
-  UnicodeString NewName = AbsolutePath(ANewName, false);
+  UnicodeString FileName = GetAbsolutePath(AFileName, false);
+  UnicodeString NewName = GetAbsolutePath(ANewName, false);
 
   UnicodeString SourceBucketName, SourceKey;
   ParsePath(FileName, SourceBucketName, SourceKey);
@@ -1027,10 +1029,10 @@ void __fastcall TS3FileSystem::CopyFile(const UnicodeString AFileName, const TRe
   CheckLibS3Error(Data);
 }
 //---------------------------------------------------------------------------
-void __fastcall TS3FileSystem::CreateDirectory(const UnicodeString ADirName)
+void __fastcall TS3FileSystem::RemoteCreateDirectory(const UnicodeString ADirName)
 {
-  TOperationVisualizer Visualizer(FTerminal->UseBusyCursor);
-  UnicodeString DirName = UnixExcludeTrailingBackslash(AbsolutePath(ADirName, false));
+  volatile TOperationVisualizer Visualizer(FTerminal->GetUseBusyCursor());
+  UnicodeString DirName = base::UnixExcludeTrailingBackslash(GetAbsolutePath(ADirName, false));
 
   UnicodeString BucketName, Key;
   ParsePath(DirName, BucketName, Key);
@@ -1045,7 +1047,7 @@ void __fastcall TS3FileSystem::CreateDirectory(const UnicodeString ADirName)
     // Not using GetBucketContext here, as the bucket does not exist
 
     UTF8String RegionBuf;
-    char * Region = nullptr;
+    const char * Region = nullptr;
     if (FTerminal->GetSessionData()->GetS3DefaultRegion() != S3LibDefaultRegion())
     {
       RegionBuf = UTF8String(FTerminal->GetSessionData()->GetS3DefaultRegion());
@@ -1070,8 +1072,8 @@ void __fastcall TS3FileSystem::CreateDirectory(const UnicodeString ADirName)
   CheckLibS3Error(Data);
 }
 //---------------------------------------------------------------------------
-void __fastcall TS3FileSystem::CreateLink(const UnicodeString FileName,
-  const UnicodeString PointTo, bool /*Symbolic*/)
+void __fastcall TS3FileSystem::RemoteCreateLink(const UnicodeString /*AFileName*/,
+  const UnicodeString /*PointTo*/, bool /*Symbolic*/)
 {
   DebugFail();
 }
@@ -1096,36 +1098,36 @@ void __fastcall TS3FileSystem::CalculateFilesChecksum(const UnicodeString /*Alg*
   DebugFail();
 }
 //---------------------------------------------------------------------------
-void __fastcall TS3FileSystem::CustomCommandOnFile(const UnicodeString FileName,
-  const TRemoteFile * /*File*/, UnicodeString Command, int /*Params*/, TCaptureOutputEvent /*OutputEvent*/)
+void __fastcall TS3FileSystem::CustomCommandOnFile(const UnicodeString /*AFileName*/,
+  const TRemoteFile * /*AFile*/, const UnicodeString /*ACommand*/, intptr_t /*AParams*/, TCaptureOutputEvent /*OutputEvent*/)
 {
   DebugFail();
 }
 //---------------------------------------------------------------------------
-void __fastcall TS3FileSystem::AnyCommand(const UnicodeString Command,
+void __fastcall TS3FileSystem::AnyCommand(const UnicodeString /*ACommand*/,
   TCaptureOutputEvent /*OutputEvent*/)
 {
   DebugFail();
 }
 //---------------------------------------------------------------------------
-TStrings * __fastcall TS3FileSystem::GetFixedPaths()
+TStrings * __fastcall TS3FileSystem::GetFixedPaths() const
 {
   return nullptr;
 }
 //---------------------------------------------------------------------------
-void __fastcall TS3FileSystem::SpaceAvailable(const UnicodeString Path,
+void __fastcall TS3FileSystem::SpaceAvailable(const UnicodeString /*APath*/,
   TSpaceAvailable & /*ASpaceAvailable*/)
 {
   DebugFail();
 }
 //---------------------------------------------------------------------------
 void __fastcall TS3FileSystem::CopyToRemote(
-  TStrings * FilesToCopy, const UnicodeString TargetDir, const TCopyParamType * CopyParam,
-  int Params, TFileOperationProgressType * OperationProgress, TOnceDoneOperation & OnceDoneOperation)
+  TStrings *AFilesToCopy, const UnicodeString ATargetDir, const TCopyParamType *CopyParam,
+  intptr_t AParams, TFileOperationProgressType *OperationProgress, TOnceDoneOperation &OnceDoneOperation)
 {
-  Params &= ~cpAppend;
+  AParams &= ~cpAppend;
 
-  FTerminal->DoCopyToRemote(FilesToCopy, TargetDir, CopyParam, Params, OperationProgress, tfPreCreateDir, OnceDoneOperation);
+  FTerminal->DoCopyToRemote(AFilesToCopy, ATargetDir, CopyParam, AParams, OperationProgress, tfPreCreateDir, OnceDoneOperation);
 }
 //---------------------------------------------------------------------------
 void TS3FileSystem::ConfirmOverwrite(
@@ -1145,12 +1147,12 @@ void TS3FileSystem::ConfirmOverwrite(
   unsigned int Answer;
 
   {
-    TSuspendFileOperationProgress Suspend(OperationProgress);
+    volatile TSuspendFileOperationProgress Suspend(OperationProgress);
     Answer =
       FTerminal->ConfirmFileOverwrite(
-        SourceFullFileName, TargetFileName, FileParams, Answers, &QueryParams,
-        ReverseOperationSide(OperationProgress->Side),
-        CopyParam, Params, OperationProgress);
+        ASourceFullFileName, ATargetFileName, FileParams, Answers, &QueryParams,
+        ReverseOperationSide(OperationProgress->GetSide()),
+        CopyParam, AParams, OperationProgress);
   }
 
   switch (Answer)
@@ -1173,6 +1175,8 @@ void TS3FileSystem::ConfirmOverwrite(
 //---------------------------------------------------------------------------
 struct TLibS3TransferObjectDataCallbackData : TLibS3CallbackData
 {
+CUSTOM_MEM_ALLOCATION_IMPL
+
   UnicodeString FileName;
   TStream * Stream;
   TFileOperationProgressType * OperationProgress;
@@ -1181,19 +1185,21 @@ struct TLibS3TransferObjectDataCallbackData : TLibS3CallbackData
 //---------------------------------------------------------------------------
 struct TLibS3PutObjectDataCallbackData : TLibS3TransferObjectDataCallbackData
 {
+CUSTOM_MEM_ALLOCATION_IMPL
+
   RawByteString ETag;
 };
 //---------------------------------------------------------------------------
 int TS3FileSystem::LibS3PutObjectDataCallback(int BufferSize, char * Buffer, void * CallbackData)
 {
-  TLibS3PutObjectDataCallbackData & Data = *static_cast<TLibS3PutObjectDataCallbackData *>(CallbackData);
+  TLibS3PutObjectDataCallbackData &Data = *static_cast<TLibS3PutObjectDataCallbackData *>(CallbackData);
 
   return Data.FileSystem->PutObjectData(BufferSize, Buffer, Data);
 }
 //---------------------------------------------------------------------------
-bool TS3FileSystem::ShouldCancelTransfer(TLibS3TransferObjectDataCallbackData & Data)
+bool TS3FileSystem::ShouldCancelTransfer(TLibS3TransferObjectDataCallbackData &Data)
 {
-  bool Result = (Data.OperationProgress->Cancel != csContinue);
+  bool Result = (Data.OperationProgress->GetCancel() != csContinue);
   if (Result)
   {
     if (Data.OperationProgress->ClearCancelFile())
@@ -1208,9 +1214,9 @@ bool TS3FileSystem::ShouldCancelTransfer(TLibS3TransferObjectDataCallbackData & 
   return Result;
 }
 //---------------------------------------------------------------------------
-int TS3FileSystem::PutObjectData(int BufferSize, char * Buffer, TLibS3PutObjectDataCallbackData & Data)
+int64_t TS3FileSystem::PutObjectData(int64_t BufferSize, char * Buffer, TLibS3PutObjectDataCallbackData & Data)
 {
-  int Result;
+  int64_t Result;
 
   if (ShouldCancelTransfer(Data))
   {
@@ -1221,8 +1227,9 @@ int TS3FileSystem::PutObjectData(int BufferSize, char * Buffer, TLibS3PutObjectD
     TFileOperationProgressType * OperationProgress = Data.OperationProgress;
     try
     {
-      FileOperationLoopCustom(this, OperationProgress, folAllowSkip,
+      FileOperationLoopCustom(FTerminal, OperationProgress, folAllowSkip,
         FMTLOAD(READ_ERROR, Data.FileName), "",
+      [&]()
       {
         Result = Data.Stream->Read(Buffer, BufferSize);
       });
@@ -1230,7 +1237,7 @@ int TS3FileSystem::PutObjectData(int BufferSize, char * Buffer, TLibS3PutObjectD
 
       OperationProgress->AddTransferred(Result);
     }
-    catch (Exception & E)
+    catch (Exception &E)
     {
       Data.Exception.reset(CloneException(&E));
       Result = -1;
@@ -1343,7 +1350,7 @@ void __fastcall TS3FileSystem::Source(
   {
     FTerminal->LogEvent(FORMAT("Initiating multipart upload (%d parts)", Parts));
 
-    FileOperationLoopCustom(this, OperationProgress, folAllowSkip,
+    FileOperationLoopCustom(FTerminal, OperationProgress, folAllowSkip,
       FMTLOAD(TRANSFER_ERROR, Handle.FileName), "",
     [&]()
     {
@@ -1373,9 +1380,9 @@ void __fastcall TS3FileSystem::Source(
 
     std::unique_ptr<TStream> Stream(new TSafeHandleStream(reinterpret_cast<THandle>(Handle.Handle)));
 
-    for (int Part = 1; Part <= Parts; Part++)
+    for (intptr_t Part = 1; Part <= Parts; Part++)
     {
-      FileOperationLoopCustom(this, OperationProgress, folAllowSkip,
+      FileOperationLoopCustom(FTerminal, OperationProgress, folAllowSkip,
         FMTLOAD(TRANSFER_ERROR, Handle.FileName), "",
       [&]()
       {
@@ -1421,7 +1428,7 @@ void __fastcall TS3FileSystem::Source(
         if (Multipart)
         {
           RawByteString PartCommitTag =
-            RawByteString::Format("  <Part><PartNumber>%d</PartNumber><ETag>%s</ETag></Part>\n", ARRAYOFCONST((Part, Data.ETag)));
+            RawByteString::Format("  <Part><PartNumber>%d</PartNumber><ETag>%s</ETag></Part>\n", Part, Data.ETag);
           MultipartCommitPutObjectDataCallbackData.Message += PartCommitTag;
         }
       });
@@ -1442,7 +1449,7 @@ void __fastcall TS3FileSystem::Source(
       FTerminal->LogEvent(FORMAT("Committing multipart upload (%s - %d parts)", UnicodeString(MultipartUploadId), Parts));
       FTerminal->LogEvent(UnicodeString(MultipartCommitPutObjectDataCallbackData.Message));
 
-      FileOperationLoopCustom(this, OperationProgress, folAllowSkip,
+      FileOperationLoopCustom(FTerminal, OperationProgress, folAllowSkip,
         FMTLOAD(TRANSFER_ERROR, Handle.FileName), "",
       [&]()
       {
@@ -1506,14 +1513,14 @@ struct TLibS3GetObjectDataCallbackData : TLibS3TransferObjectDataCallbackData
 {
 };
 //---------------------------------------------------------------------------
-S3Status TS3FileSystem::LibS3GetObjectDataCallback(int BufferSize, const char * Buffer, void * CallbackData)
+S3Status TS3FileSystem::LibS3GetObjectDataCallback(int64_t BufferSize, const char * Buffer, void * CallbackData)
 {
-  TLibS3GetObjectDataCallbackData & Data = *static_cast<TLibS3GetObjectDataCallbackData *>(CallbackData);
+  TLibS3GetObjectDataCallbackData &Data = *static_cast<TLibS3GetObjectDataCallbackData *>(CallbackData);
 
   return Data.FileSystem->GetObjectData(BufferSize, Buffer, Data);
 }
 //---------------------------------------------------------------------------
-S3Status TS3FileSystem::GetObjectData(int BufferSize, const char * Buffer, TLibS3GetObjectDataCallbackData & Data)
+S3Status TS3FileSystem::GetObjectData(int64_t BufferSize, const char * Buffer, TLibS3GetObjectDataCallbackData & Data)
 {
   S3Status Result = S3StatusOK;
 
@@ -1526,8 +1533,9 @@ S3Status TS3FileSystem::GetObjectData(int BufferSize, const char * Buffer, TLibS
     TFileOperationProgressType * OperationProgress = Data.OperationProgress;
     try
     {
-      FileOperationLoopCustom(this, OperationProgress, folAllowSkip,
+      FileOperationLoopCustom(FTerminal, OperationProgress, folAllowSkip,
         FMTLOAD(WRITE_ERROR, Data.FileName), "",
+      [&]()
       {
         Data.Stream->Write(Buffer, BufferSize);
       });
@@ -1575,8 +1583,9 @@ void __fastcall TS3FileSystem::Sink(
   UnicodeString ExpandedDestFullName = ExpandUNCFileName(DestFullName);
   Action.Destination(ExpandedDestFullName);
 
-  FileOperationLoopCustom(this, OperationProgress, folAllowSkip,
+  FileOperationLoopCustom(FTerminal, OperationProgress, folAllowSkip,
     FMTLOAD(TRANSFER_ERROR, FileName), "",
+  [&]()
   {
     HANDLE LocalFileHandle;
     if (!FTerminal->CreateLocalFile(DestFullName, OperationProgress, &LocalFileHandle, FLAGSET(Params, cpNoConfirmation)))
@@ -1596,8 +1605,9 @@ void __fastcall TS3FileSystem::Sink(
 
         if (DeleteLocalFile)
         {
-          FileOperationLoopCustom(this, OperationProgress, folAllowSkip,
+          FileOperationLoopCustom(FTerminal, OperationProgress, folAllowSkip,
             FMTLOAD(CORE_DELETE_LOCAL_FILE_ERROR, DestFullName), "",
+          [&]()
           {
             THROWOSIFFALSE(Sysutils::RemoveFile(ApiPath(DestFullName)));
           });
@@ -1606,8 +1616,9 @@ void __fastcall TS3FileSystem::Sink(
       };
       TLibS3GetObjectDataCallbackData Data;
 
-      FileOperationLoopCustom(this, OperationProgress, folAllowSkip,
+      FileOperationLoopCustom(FTerminal, OperationProgress, folAllowSkip,
         FMTLOAD(TRANSFER_ERROR, FileName), "",
+      [&]()
       {
         RequestInit(Data);
         Data.FileName = FileName;
