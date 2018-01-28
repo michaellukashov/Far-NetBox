@@ -771,19 +771,19 @@ static bool GetResource(
     Size = SizeofResource(HInstance, Resource);
     if (!Size)
     {
-      throw Exception(FORMAT(L"Cannot get size of resource %s", ResName));
+      throw Exception(FORMAT("Cannot get size of resource %s", ResName));
     }
 
     Content = LoadResource(HInstance, Resource);
     if (!Content)
     {
-      throw Exception(FORMAT(L"Cannot read resource %s", ResName));
+      throw Exception(FORMAT("Cannot read resource %s", ResName));
     }
 
     Content = LockResource(Content);
     if (!Content)
     {
-      throw Exception(FORMAT(L"Cannot lock resource %s", ResName));
+      throw Exception(FORMAT("Cannot lock resource %s", ResName));
     }
   }
 
