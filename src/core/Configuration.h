@@ -204,7 +204,6 @@ public:
   UnicodeString GetFileProductName(const UnicodeString AFileName) const;
   UnicodeString GetFileCompanyName(const UnicodeString AFileName) const;
 
-#if 0
   __property bool PermanentLogging  = { read=GetLogging, write=SetLogging };
   __property UnicodeString PermanentLogFileName  = { read=GetLogFileName, write=SetLogFileName };
   __property bool PermanentLogActions  = { read=GetLogActions, write=SetLogActions };
@@ -213,7 +212,6 @@ public:
   __property bool PermanentLogSensitive  = { read=FPermanentLogSensitive, write=SetLogSensitive };
   __property int64_t PermanentLogMaxSize  = { read=GetLogMaxSize, write=SetLogMaxSize };
   __property intptr_t PermanentLogMaxCount  = { read=GetLogMaxCount, write=SetLogMaxCount };
-#endif // #if 0
 
 public:
   explicit TConfiguration(TObjectClassId Kind = OBJECT_CLASS_TConfiguration);
@@ -391,4 +389,4 @@ NB_CORE_EXPORT extern const UnicodeString Crc32ChecksumAlg;
 NB_CORE_EXPORT extern const UnicodeString SshFingerprintType;
 NB_CORE_EXPORT extern const UnicodeString TlsFingerprintType;
 //---------------------------------------------------------------------------
-extern const UnicodeString HttpsCertificateStorageKey;
+NB_CORE_EXPORT extern const UnicodeString HttpsCertificateStorageKey;
