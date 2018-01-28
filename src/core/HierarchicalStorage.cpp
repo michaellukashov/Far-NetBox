@@ -222,12 +222,10 @@ void THierarchicalStorage::ClearSubKeys()
       RecursiveDeleteSubKey(SubKeys->GetString(Index));
     }
   }
-  __finally
-  {
-#if 0
+  __finally__removed
+  ({
     delete SubKeys;
-#endif // #if 0
-  };
+  })
 }
 
 void THierarchicalStorage::RecursiveDeleteSubKey(UnicodeString Key)
@@ -249,12 +247,10 @@ bool THierarchicalStorage::HasSubKeys()
     GetSubKeyNames(SubKeys.get());
     Result = SubKeys->GetCount() > 0;
   }
-  __finally
-  {
-#if 0
+  __finally__removed
+  ({
     delete SubKeys;
-#endif // #if 0
-  };
+  })
   return Result;
 }
 
@@ -293,12 +289,10 @@ void THierarchicalStorage::ReadValues(TStrings *Strings,
       }
     }
   }
-  __finally
-  {
-#if 0
+  __finally__removed
+  ({
     delete Names;
-#endif // #if 0
-  };
+  })
 }
 
 void THierarchicalStorage::ClearValues()
@@ -312,12 +306,10 @@ void THierarchicalStorage::ClearValues()
       DeleteValue(Names->GetString(Index));
     }
   }
-  __finally
-  {
-#if 0
+  __finally__removed
+  ({
     delete Names;
-#endif // #if 0
-  };
+  })
 }
 
 void THierarchicalStorage::WriteValues(TStrings *Strings,
@@ -493,12 +485,10 @@ bool TRegistryStorage::Copy(TRegistryStorage *Storage)
       ++Index;
     }
   }
-  __finally
-  {
-#if 0
+  __finally__removed
+  ({
     delete Names;
-#endif // #if 0
-  };
+  })
   return Result;
 }
 

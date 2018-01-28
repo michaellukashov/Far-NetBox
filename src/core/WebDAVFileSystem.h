@@ -183,7 +183,7 @@ private:
     TRemoteFile *&AFile, TRemoteFile *ALinkedByFile);
   intptr_t __fastcall CustomReadFileInternal(const UnicodeString AFileName,
     TRemoteFile *&AFile, TRemoteFile *ALinkedByFile);
-  bool VerifyCertificate(TNeonCertificateData Data, bool Aux);
+  bool VerifyCertificate(TNeonCertificateData &Data, bool Aux);
   void OpenUrl(const UnicodeString Url);
   void __fastcall CollectTLSSessionInfo();
   UnicodeString __fastcall GetRedirectUrl() const;
@@ -192,7 +192,7 @@ private:
   int __fastcall RenameFileInternal(const UnicodeString AFileName, const UnicodeString ANewName);
   int __fastcall CopyFileInternal(const UnicodeString AFileName, const UnicodeString ANewName);
   bool __fastcall IsValidRedirect(intptr_t NeonStatus, UnicodeString &APath) const;
-  UnicodeString __fastcall DirectoryPath(UnicodeString APath) const;
+  UnicodeString __fastcall DirectoryPath(const UnicodeString APath) const;
   UnicodeString __fastcall FilePath(const TRemoteFile *AFile) const;
   struct ne_lock * __fastcall FindLock(const RawByteString APath) const;
   void __fastcall DiscardLock(const RawByteString APath);

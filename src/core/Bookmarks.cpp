@@ -64,12 +64,10 @@ void TBookmarks::Load(THierarchicalStorage *Storage)
           }
         }
       }
-      __finally
-      {
-#if 0
+      __finally__removed
+      ({
         delete BookmarkKeys;
-#endif // if 0
-      };
+      })
       Storage->CloseSubKey();
     }
   }
@@ -147,12 +145,10 @@ void TBookmarks::LoadLevel(THierarchicalStorage *Storage, UnicodeString Key,
       }
     }
   }
-  __finally
-  {
-#if 0
+  __finally__removed
+  ({
     delete Names;
-#endif // if 0
-  };
+  })
 }
 
 void TBookmarks::Save(THierarchicalStorage *Storage, bool All)

@@ -88,24 +88,20 @@ static uintptr_t VERSION_GetFileVersionInfo_PE(const wchar_t *FileName, uintptr_
               }
             }
           }
-          __finally
-          {
-#if 0
+          __finally__removed
+          ({
             FreeResource(Mem);
-#endif // #if 0
-          };
+          })
         }
       }
     }
-    __finally
-    {
-#if 0
+    __finally__removed
+    ({
       if (NeedFree)
       {
         FreeLibrary(Module);
       }
-#endif // #if 0
-    };
+    })
   }
 
   return Len;

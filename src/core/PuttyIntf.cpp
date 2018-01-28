@@ -159,6 +159,7 @@ int GetUserpassInput(prompts_t *p, const uint8_t * /*in*/, int /*inlen*/)
   int Result;
   std::unique_ptr<TStrings> Prompts(new TStringList());
   std::unique_ptr<TStrings> Results(new TStringList());
+  try__finally
   {
     UnicodeString Name = UTF8ToString(p->name);
     UnicodeString AName = Name;
@@ -209,13 +210,11 @@ int GetUserpassInput(prompts_t *p, const uint8_t * /*in*/, int /*inlen*/)
       Result = 0;
     }
   }
-  __finally
-  {
-#if 0
+  __finally__removed
+  ({
     delete Prompts;
     delete Results;
-#endif // #if 0
-  };
+  })
 
   return Result;
 }
@@ -718,13 +717,11 @@ bool HasGSSAPI(UnicodeString CustomPath)
             (library->release_cred(library, &ctx) == SSH_GSS_OK)) ? 1 : 0;
       }
     }
-    __finally
-    {
-#if 0
+    __finally__removed
+    ({
       ssh_gss_cleanup(List);
       conf_free(conf);
-#endif // #if 0
-    };
+    })
 
     if (has < 0)
     {

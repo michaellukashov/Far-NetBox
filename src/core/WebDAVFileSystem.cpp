@@ -361,7 +361,7 @@ void TWebDAVFileSystem::NeonOpen(UnicodeString &CorrectedUrl, const UnicodeStrin
   ne_hook_post_send(FNeonSession, NeonPostSend, this);
   ne_hook_post_headers(FNeonSession, NeonPostHeaders, this);
 
-  TAutoFlag Flag(FInitialHandshake);
+  volatile TAutoFlag Flag(FInitialHandshake);
   ExchangeCapabilities(Path.c_str(), CorrectedUrl);
 }
 //---------------------------------------------------------------------------
@@ -693,7 +693,7 @@ void __fastcall TWebDAVFileSystem::HomeDirectory()
   ChangeDirectory(L"/");
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall TWebDAVFileSystem::DirectoryPath(UnicodeString APath) const
+UnicodeString __fastcall TWebDAVFileSystem::DirectoryPath(const UnicodeString APath) const
 {
   if (FHasTrailingSlash)
   {
@@ -1731,22 +1731,23 @@ void __fastcall TWebDAVFileSystem::Sink(
     FileParams.SourceSize = AFile->Size;
     FileParams.SourceTimestamp = AFile->Modification;
     FileParams.DestSize = Size;
-    FileParams.DestTimestamp = UnixToDateTime(MTime, FTerminal->SessionData->GetDSTMode());
+    FileParams.DestTimestamp = ::UnixToDateTime(MTime, FTerminal->SessionData->GetDSTMode());
 
     ConfirmOverwrite(AFileName, ADestFileName, OperationProgress, &FileParams, CopyParam, AParams);
   }
 
-  UnicodeString ExpandedDestFullName = ExpandUNCFileName(DestFullName);
+  UnicodeString ExpandedDestFullName = ::ExpandUNCFileName(DestFullName);
   Action.Destination(ExpandedDestFullName);
 
-  FileOperationLoopCustom(this, OperationProgress, folAllowSkip,
+  FileOperationLoopCustom(FTerminal, OperationProgress, folAllowSkip,
     FMTLOAD(TRANSFER_ERROR, AFileName), "",
   [&]()
   {
-    HANDLE LocalHandle;
-    if (!FTerminal->CreateLocalFile(DestFullName, OperationProgress, &LocalHandle, FLAGSET(AParams, cpNoConfirmation)))
+    HANDLE LocalFileHandle = FTerminal->TerminalCreateLocalFile(DestFullName,
+        GENERIC_WRITE, 0, FLAGSET(AParams, cpNoConfirmation) ? CREATE_ALWAYS : CREATE_NEW, 0);
+    if (LocalFileHandle == INVALID_HANDLE_VALUE)
     {
-      throw ESkipFile();
+      ThrowSkipFileNull();
     }
 
     bool DeleteLocalFile = true;
@@ -1764,16 +1765,16 @@ void __fastcall TWebDAVFileSystem::Sink(
         }
         else
         {
-          CloseHandle(LocalHandle);
+          CloseHandle(LocalFileHandle);
         }
 
         if (DeleteLocalFile)
         {
-          FileOperationLoopCustom(this, OperationProgress, folAllowSkip,
-            FMTLOAD(DELETE_LOCAL_FILE_ERROR, DestFullName), "",
+          FileOperationLoopCustom(FTerminal, OperationProgress, folAllowSkip,
+            FMTLOAD(CORE_DELETE_LOCAL_FILE_ERROR, DestFullName), "",
           [&]()
           {
-            THROWOSIFFALSE(Sysutils::DeleteFile(ApiPath(DestFullName)));
+            THROWOSIFFALSE(Sysutils::RemoveFile(ApiPath(DestFullName)));
           });
           __removed FILE_OPERATION_LOOP_END(FMTLOAD(DELETE_LOCAL_FILE_ERROR, (DestFullName)));
         }
@@ -1785,15 +1786,15 @@ void __fastcall TWebDAVFileSystem::Sink(
         throw ESkipFile();
       }
 
-      TAutoFlag DownloadingFlag(FDownloading);
+      volatile TAutoFlag DownloadingFlag(FDownloading);
 
       ClearNeonError();
       CheckStatus(ne_get(FNeonSession, PathToNeon(AFileName), FD));
       DeleteLocalFile = false;
 
-      if (CopyParam->PreserveTime)
+      if (CopyParam->GetPreserveTime())
       {
-        FTerminal->UpdateTargetTime(LocalHandle, AFile->Modification, FTerminal->SessionData->DSTMode);
+        FTerminal->UpdateTargetTime(LocalFileHandle, AFile->GetModification(), FTerminal->SessionData->GetDSTMode());
       }
     }
     __finally__removed
@@ -1821,11 +1822,11 @@ void __fastcall TWebDAVFileSystem::Sink(
   });
   __removed FILE_OPERATION_LOOP_END(FMTLOAD(TRANSFER_ERROR, (FileName)));
 
-  FTerminal->UpdateTargetAttrs(DestFullName, File, CopyParam, Attrs);
+  FTerminal->UpdateTargetAttrs(DestFullName, AFile, CopyParam, Attrs);
 }
 //---------------------------------------------------------------------------
 // Similar to TS3FileSystem::VerifyCertificate
-bool TWebDAVFileSystem::VerifyCertificate(TNeonCertificateData Data, bool Aux)
+bool TWebDAVFileSystem::VerifyCertificate(TNeonCertificateData &Data, bool Aux)
 {
   FSessionInfo.CertificateFingerprint = Data.Fingerprint;
 
@@ -2049,10 +2050,17 @@ void TWebDAVFileSystem::NeonNotifier(void *UserData, ne_session_status Status, c
   }
 }
 //------------------------------------------------------------------------------
-void TWebDAVFileSystem::InitSslSession(ssl_st * Ssl, ne_session * /*Session*/)
+void TWebDAVFileSystem::InitSslSession(ssl_st *Ssl, ne_session * Session)
+{
+  TWebDAVFileSystem *FileSystem =
+    static_cast<TWebDAVFileSystem *>(ne_get_session_private(Session, SESSION_FS_KEY));
+  FileSystem->InitSslSessionImpl(Ssl);
+}
+
+void TWebDAVFileSystem::InitSslSessionImpl(ssl_st *Ssl) const
 {
   // See also CAsyncSslSocketLayer::InitSSLConnection
-  SetupSsl(Ssl, FTerminal->SessionData->MinTlsVersion, FTerminal->SessionData->MaxTlsVersion);
+  SetupSsl(Ssl, FTerminal->SessionData->GetMinTlsVersion(), FTerminal->SessionData->GetMaxTlsVersion());
 }
 //---------------------------------------------------------------------------
 void __fastcall TWebDAVFileSystem::GetSupportedChecksumAlgs(TStrings * /*Algs*/)

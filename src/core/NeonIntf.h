@@ -26,8 +26,8 @@ struct TNeonCertificateData
 void NeonParseUrl(UnicodeString Url, ne_uri &uri);
 bool IsTlsUri(const ne_uri &uri);
 ne_session *CreateNeonSession(const ne_uri &uri);
-void InitNeonSession(ne_session *Session, TProxyMethod ProxyMethod, UnicodeString ProxyHost,
-  intptr_t ProxyPort, UnicodeString ProxyUsername, UnicodeString ProxyPassword, TTerminal * Terminal);
+void InitNeonSession(ne_session *Session, TProxyMethod ProxyMethod, const UnicodeString AProxyHost,
+  intptr_t ProxyPort, const UnicodeString AProxyUsername, const UnicodeString AProxyPassword, TTerminal * Terminal);
 void DestroyNeonSession(ne_session *Session);
 UnicodeString GetNeonError(ne_session *Session);
 void CheckNeonStatus(ne_session *Session, intptr_t NeonStatus,

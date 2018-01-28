@@ -105,7 +105,7 @@ public:
   virtual bool __fastcall TemporaryTransferFile(const UnicodeString AFileName) override;
   virtual bool __fastcall GetStoredCredentialsTried() const override;
   virtual UnicodeString __fastcall RemoteGetUserName() const override;
-  virtual void __fastcall GetSupportedChecksumAlgs(TStrings * Algs) override;
+  virtual void __fastcall GetSupportedChecksumAlgs(TStrings *Algs) override;
   virtual void __fastcall LockFile(const UnicodeString AFileName, const TRemoteFile *AFile) override;
   virtual void __fastcall UnlockFile(const UnicodeString AFileName, const TRemoteFile *AFile) override;
   virtual void __fastcall UpdateFromMain(TCustomFileSystem *MainFileSystem) override;
