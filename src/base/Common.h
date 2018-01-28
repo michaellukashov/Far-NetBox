@@ -65,45 +65,45 @@ NB_CORE_EXPORT void Shred(UTF8String &Str);
 NB_CORE_EXPORT void Shred(AnsiString &Str);
 NB_CORE_EXPORT UnicodeString AnsiToString(RawByteString S);
 NB_CORE_EXPORT UnicodeString AnsiToString(const char *S, size_t Len);
-NB_CORE_EXPORT UnicodeString MakeValidFileName(UnicodeString AFileName);
+NB_CORE_EXPORT UnicodeString MakeValidFileName(const UnicodeString AFileName);
 NB_CORE_EXPORT UnicodeString RootKeyToStr(HKEY RootKey);
 NB_CORE_EXPORT UnicodeString BooleanToStr(bool B);
 NB_CORE_EXPORT UnicodeString BooleanToEngStr(bool B);
-NB_CORE_EXPORT UnicodeString DefaultStr(UnicodeString Str, UnicodeString Default);
+NB_CORE_EXPORT UnicodeString DefaultStr(const UnicodeString Str, const UnicodeString Default);
 NB_CORE_EXPORT UnicodeString CutToChar(UnicodeString &Str, wchar_t Ch, bool Trim);
-NB_CORE_EXPORT UnicodeString CopyToChars(UnicodeString Str, intptr_t &From, UnicodeString Chs, bool Trim,
+NB_CORE_EXPORT UnicodeString CopyToChars(const UnicodeString Str, intptr_t &From, const UnicodeString Chs, bool Trim,
   wchar_t *Delimiter = nullptr, bool DoubleDelimiterEscapes = false);
-NB_CORE_EXPORT UnicodeString CopyToChar(UnicodeString Str, wchar_t Ch, bool Trim);
-NB_CORE_EXPORT UnicodeString DelimitStr(UnicodeString Str, UnicodeString Chars);
-NB_CORE_EXPORT UnicodeString ShellDelimitStr(UnicodeString Str, wchar_t Quote);
+NB_CORE_EXPORT UnicodeString CopyToChar(const UnicodeString Str, wchar_t Ch, bool Trim);
+NB_CORE_EXPORT UnicodeString DelimitStr(const UnicodeString Str, const UnicodeString Chars);
+NB_CORE_EXPORT UnicodeString ShellDelimitStr(const UnicodeString Str, wchar_t Quote);
 NB_CORE_EXPORT UnicodeString ExceptionLogString(Exception *E);
-NB_CORE_EXPORT UnicodeString MainInstructions(UnicodeString S);
-NB_CORE_EXPORT bool HasParagraphs(UnicodeString S);
-NB_CORE_EXPORT UnicodeString MainInstructionsFirstParagraph(UnicodeString S);
+NB_CORE_EXPORT UnicodeString MainInstructions(const UnicodeString S);
+NB_CORE_EXPORT bool HasParagraphs(const UnicodeString S);
+NB_CORE_EXPORT UnicodeString MainInstructionsFirstParagraph(const UnicodeString S);
 NB_CORE_EXPORT bool ExtractMainInstructions(UnicodeString &S, UnicodeString &MainInstructions);
-NB_CORE_EXPORT UnicodeString RemoveMainInstructionsTag(UnicodeString S);
-NB_CORE_EXPORT UnicodeString UnformatMessage(UnicodeString S);
-NB_CORE_EXPORT UnicodeString RemoveInteractiveMsgTag(UnicodeString S);
-NB_CORE_EXPORT UnicodeString RemoveEmptyLines(UnicodeString S);
-NB_CORE_EXPORT bool IsNumber(UnicodeString Str);
+NB_CORE_EXPORT UnicodeString RemoveMainInstructionsTag(const UnicodeString S);
+NB_CORE_EXPORT UnicodeString UnformatMessage(const UnicodeString S);
+NB_CORE_EXPORT UnicodeString RemoveInteractiveMsgTag(const UnicodeString S);
+NB_CORE_EXPORT UnicodeString RemoveEmptyLines(const UnicodeString S);
+NB_CORE_EXPORT bool IsNumber(const UnicodeString Str);
 NB_CORE_EXPORT UnicodeString GetSystemTemporaryDirectory();
 NB_CORE_EXPORT UnicodeString GetShellFolderPath(intptr_t CSIdl);
 NB_CORE_EXPORT UnicodeString GetPersonalFolder();
 NB_CORE_EXPORT UnicodeString GetDesktopFolder();
-NB_CORE_EXPORT UnicodeString StripPathQuotes(UnicodeString APath);
-NB_CORE_EXPORT UnicodeString AddQuotes(UnicodeString AStr);
-NB_CORE_EXPORT UnicodeString AddPathQuotes(UnicodeString APath);
-NB_CORE_EXPORT void SplitCommand(UnicodeString Command, UnicodeString &Program,
+NB_CORE_EXPORT UnicodeString StripPathQuotes(const UnicodeString APath);
+NB_CORE_EXPORT UnicodeString AddQuotes(const UnicodeString AStr);
+NB_CORE_EXPORT UnicodeString AddPathQuotes(const UnicodeString APath);
+NB_CORE_EXPORT void SplitCommand(const UnicodeString ACommand, UnicodeString &Program,
   UnicodeString &Params, UnicodeString &Dir);
-NB_CORE_EXPORT UnicodeString ValidLocalFileName(UnicodeString AFileName);
+NB_CORE_EXPORT UnicodeString ValidLocalFileName(const UnicodeString AFileName);
 NB_CORE_EXPORT UnicodeString ValidLocalFileName(
-  UnicodeString AFileName, wchar_t AInvalidCharsReplacement,
-  UnicodeString ATokenizibleChars, UnicodeString ALocalInvalidChars);
-NB_CORE_EXPORT UnicodeString ExtractProgram(UnicodeString Command);
-NB_CORE_EXPORT UnicodeString ExtractProgramName(UnicodeString Command);
-NB_CORE_EXPORT UnicodeString FormatCommand(UnicodeString Program, UnicodeString AParams);
-NB_CORE_EXPORT UnicodeString ExpandFileNameCommand(UnicodeString Command,
-  UnicodeString AFileName);
+  const UnicodeString AFileName, wchar_t AInvalidCharsReplacement,
+  const UnicodeString ATokenizibleChars, const UnicodeString ALocalInvalidChars);
+NB_CORE_EXPORT UnicodeString ExtractProgram(const UnicodeString ACommand);
+NB_CORE_EXPORT UnicodeString ExtractProgramName(const UnicodeString ACommand);
+NB_CORE_EXPORT UnicodeString FormatCommand(const UnicodeString Program, const UnicodeString AParams);
+NB_CORE_EXPORT UnicodeString ExpandFileNameCommand(const UnicodeString ACommand,
+  const UnicodeString AFileName);
 NB_CORE_EXPORT bool CompareFileName(UnicodeString Path1, UnicodeString Path2);
 NB_CORE_EXPORT bool ComparePaths(UnicodeString APath1, UnicodeString APath2);
 NB_CORE_EXPORT void ReformatFileNameCommand(UnicodeString &Command);

@@ -119,7 +119,7 @@ UnicodeString AnsiToString(const char *S, size_t Len)
   return UnicodeString(AnsiString(S, Len));
 }
 
-UnicodeString MakeValidFileName(UnicodeString AFileName)
+UnicodeString MakeValidFileName(const UnicodeString AFileName)
 {
   UnicodeString Result = AFileName;
   UnicodeString IllegalChars(L":;,=+<>|\"[] \\/?*");
@@ -166,7 +166,7 @@ UnicodeString BooleanToStr(bool B)
   return LoadStr(NO_STR);
 }
 
-UnicodeString DefaultStr(UnicodeString Str, UnicodeString Default)
+UnicodeString DefaultStr(const UnicodeString Str, const UnicodeString Default)
 {
   if (!Str.IsEmpty())
   {
@@ -197,7 +197,7 @@ UnicodeString CutToChar(UnicodeString &Str, wchar_t Ch, bool Trim)
   return Result;
 }
 
-UnicodeString CopyToChars(UnicodeString Str, intptr_t &From, UnicodeString Chs, bool Trim,
+UnicodeString CopyToChars(const UnicodeString Str, intptr_t &From, const UnicodeString Chs, bool Trim,
   wchar_t *Delimiter, bool DoubleDelimiterEscapes)
 {
   UnicodeString Result;
@@ -254,13 +254,13 @@ UnicodeString CopyToChars(UnicodeString Str, intptr_t &From, UnicodeString Chs, 
   return Result;
 }
 
-UnicodeString CopyToChar(UnicodeString Str, wchar_t Ch, bool Trim)
+UnicodeString CopyToChar(const UnicodeString Str, wchar_t Ch, bool Trim)
 {
   intptr_t From = 1;
   return CopyToChars(Str, From, UnicodeString(Ch), Trim);
 }
 
-UnicodeString DelimitStr(UnicodeString Str, UnicodeString Chars)
+UnicodeString DelimitStr(const UnicodeString Str, const UnicodeString Chars)
 {
   UnicodeString Result = Str;
 
@@ -275,7 +275,7 @@ UnicodeString DelimitStr(UnicodeString Str, UnicodeString Chars)
   return Result;
 }
 
-UnicodeString ShellDelimitStr(UnicodeString Str, wchar_t Quote)
+UnicodeString ShellDelimitStr(const UnicodeString Str, wchar_t Quote)
 {
   UnicodeString Chars(L"$\\");
   if (Quote == L'"')
@@ -311,18 +311,18 @@ UnicodeString ExceptionLogString(Exception *E)
 #endif
 }
 
-UnicodeString MainInstructions(UnicodeString S)
+UnicodeString MainInstructions(const UnicodeString S)
 {
   UnicodeString MainMsgTag = LoadStr(MAIN_MSG_TAG);
   return MainMsgTag + S + MainMsgTag;
 }
 
-bool HasParagraphs(UnicodeString S)
+bool HasParagraphs(const UnicodeString S)
 {
   return (S.Pos(L"\n\n") > 0);
 }
 
-UnicodeString MainInstructionsFirstParagraph(UnicodeString S)
+UnicodeString MainInstructionsFirstParagraph(const UnicodeString S)
 {
   // WORKAROUND, we consider it bad practice, the highlighting should better
   // be localized (but maybe we change our mind later)
@@ -392,7 +392,7 @@ UnicodeString RemoveMainInstructionsTag(UnicodeString S)
   return Result;
 }
 
-UnicodeString UnformatMessage(UnicodeString S)
+UnicodeString UnformatMessage(const UnicodeString S)
 {
   UnicodeString Result = RemoveMainInstructionsTag(S);
 
@@ -404,7 +404,7 @@ UnicodeString UnformatMessage(UnicodeString S)
   return Result;
 }
 
-UnicodeString RemoveInteractiveMsgTag(UnicodeString S)
+UnicodeString RemoveInteractiveMsgTag(const UnicodeString S)
 {
   UnicodeString Result = S;
 
@@ -418,7 +418,7 @@ UnicodeString RemoveInteractiveMsgTag(UnicodeString S)
   return Result;
 }
 
-UnicodeString RemoveEmptyLines(UnicodeString S)
+UnicodeString RemoveEmptyLines(const UnicodeString S)
 {
   return
     ReplaceStr(
@@ -426,7 +426,7 @@ UnicodeString RemoveEmptyLines(UnicodeString S)
       L"\n \n", L"\n");
 }
 
-bool IsNumber(UnicodeString Str)
+bool IsNumber(const UnicodeString Str)
 {
   int64_t Value = 0;
   if (Str == L"0")
@@ -535,7 +535,7 @@ UnicodeString GetDesktopFolder()
 
 // Particularly needed when using file name selected by TFilenameEdit,
 // as it wraps a path to double-quotes, when there is a space in the path.
-UnicodeString StripPathQuotes(UnicodeString APath)
+UnicodeString StripPathQuotes(const UnicodeString APath)
 {
   if ((APath.Length() >= 2) &&
     (APath[1] == L'\"') && (APath[APath.Length()] == L'\"'))
@@ -545,7 +545,7 @@ UnicodeString StripPathQuotes(UnicodeString APath)
   return APath;
 }
 
-UnicodeString AddQuotes(UnicodeString AStr)
+UnicodeString AddQuotes(const UnicodeString AStr)
 {
   UnicodeString Result = AStr;
   if (Result.Pos(L" ") > 0)
@@ -555,7 +555,7 @@ UnicodeString AddQuotes(UnicodeString AStr)
   return Result;
 }
 
-UnicodeString AddPathQuotes(UnicodeString APath)
+UnicodeString AddPathQuotes(const UnicodeString APath)
 {
   UnicodeString Result = StripPathQuotes(APath);
   return AddQuotes(Result);
@@ -585,14 +585,14 @@ static wchar_t *ReplaceChar(
   return InvalidChar;
 }
 
-UnicodeString ValidLocalFileName(UnicodeString AFileName)
+UnicodeString ValidLocalFileName(const UnicodeString AFileName)
 {
   return ValidLocalFileName(AFileName, L'_', L"", LOCAL_INVALID_CHARS);
 }
 
 UnicodeString ValidLocalFileName(
-  UnicodeString AFileName, wchar_t AInvalidCharsReplacement,
-  UnicodeString ATokenizibleChars, UnicodeString ALocalInvalidChars)
+  const UnicodeString AFileName, wchar_t AInvalidCharsReplacement,
+  const UnicodeString ATokenizibleChars, const UnicodeString ALocalInvalidChars)
 {
   UnicodeString Result = AFileName;
 
@@ -641,10 +641,10 @@ UnicodeString ValidLocalFileName(
   return Result;
 }
 
-void SplitCommand(UnicodeString Command, UnicodeString &Program,
+void SplitCommand(const UnicodeString ACommand, UnicodeString &Program,
   UnicodeString &Params, UnicodeString &Dir)
 {
-  UnicodeString Cmd = Command.Trim();
+  UnicodeString Cmd = ACommand.Trim();
   Params.Clear();
   Dir.Clear();
   if (!Cmd.IsEmpty() && (Cmd[1] == L'\"'))
@@ -681,18 +681,18 @@ void SplitCommand(UnicodeString Command, UnicodeString &Program,
   }
 }
 
-UnicodeString ExtractProgram(UnicodeString Command)
+UnicodeString ExtractProgram(const UnicodeString ACommand)
 {
   UnicodeString Program;
   UnicodeString Params;
   UnicodeString Dir;
 
-  SplitCommand(Command, Program, Params, Dir);
+  SplitCommand(ACommand, Program, Params, Dir);
 
   return Program;
 }
 
-UnicodeString ExtractProgramName(UnicodeString Command)
+UnicodeString ExtractProgramName(const UnicodeString Command)
 {
   UnicodeString Name = base::ExtractFileName(ExtractProgram(Command), false);
   intptr_t Dot = Name.LastDelimiter(L".");
@@ -703,7 +703,7 @@ UnicodeString ExtractProgramName(UnicodeString Command)
   return Name;
 }
 
-UnicodeString FormatCommand(UnicodeString Program, UnicodeString AParams)
+UnicodeString FormatCommand(const UnicodeString Program, const UnicodeString AParams)
 {
   UnicodeString Result = Program.Trim();
   UnicodeString Params = AParams.Trim();
@@ -729,10 +729,10 @@ void ReformatFileNameCommand(UnicodeString &Command)
   }
 }
 
-UnicodeString ExpandFileNameCommand(UnicodeString Command,
-  UnicodeString AFileName)
+UnicodeString ExpandFileNameCommand(const UnicodeString ACommand,
+  const UnicodeString AFileName)
 {
-  return AnsiReplaceStr(Command, ShellCommandFileNamePattern,
+  return AnsiReplaceStr(ACommand, ShellCommandFileNamePattern,
       AddPathQuotes(AFileName));
 }
 
@@ -3356,7 +3356,7 @@ UnicodeString FormatBytes(int64_t Bytes, bool UseOrders)
   return Result;
 }
 
-UnicodeString UnixExtractFileName(UnicodeString APath)
+UnicodeString UnixExtractFileName(const UnicodeString APath)
 {
   intptr_t Pos = APath.LastDelimiter(L'/');
   UnicodeString Result;
@@ -3371,14 +3371,14 @@ UnicodeString UnixExtractFileName(UnicodeString APath)
   return Result;
 }
 
-UnicodeString UnixExtractFileExt(UnicodeString APath)
+UnicodeString UnixExtractFileExt(const UnicodeString APath)
 {
   UnicodeString FileName = base::UnixExtractFileName(APath);
   intptr_t Pos = FileName.LastDelimiter(L".");
   return (Pos > 0) ? APath.SubString(Pos, APath.Length() - Pos + 1) : UnicodeString();
 }
 
-UnicodeString ExtractFileName(UnicodeString APath, bool Unix)
+UnicodeString ExtractFileName(const UnicodeString APath, bool Unix)
 {
   if (Unix)
   {
@@ -3692,7 +3692,7 @@ static void CutFirstDirectory(UnicodeString &S, bool Unix)
   }
 }
 
-UnicodeString MinimizeName(UnicodeString AFileName, intptr_t MaxLen, bool Unix)
+UnicodeString MinimizeName(const UnicodeString AFileName, intptr_t MaxLen, bool Unix)
 {
   UnicodeString Drive, Dir, Name;
   UnicodeString Sep = Unix ? SLASH : BACKSLASH;

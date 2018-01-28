@@ -74,7 +74,7 @@ inline static UTF8String TraceFormat(TDateTime Time, DWORD Thread, const wchar_t
     SourceFile = Slash + 1;
   }
   UTF8String Buffer =
-    UTF8String(FORMAT(L"[%s] [%.4X] [%s:%d:%s] %s\n",
+    UTF8String(FORMAT("[%s] [%.4X] [%s:%d:%s] %s\n",
         TimeString, int(Thread), SourceFile, Line, Func, Message));
   return Buffer;
 }

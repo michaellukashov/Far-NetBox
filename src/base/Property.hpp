@@ -134,11 +134,11 @@ class ROProperty
 {
 CUSTOM_MEM_ALLOCATION_IMPL
 private:
-  Object *_obj;
-  typedef T (Object::*GetterFunc)();
-  GetterFunc *_getterFunc;
+  const Object *_obj;
+  typedef T (Object::*GetterFunc)() const;
+  const GetterFunc *_getterFunc;
 public:
-  explicit ROProperty(Object *Obj, GetterFunc *Getter) :
+  explicit ROProperty(const Object *Obj, const GetterFunc *Getter) :
     _obj(Obj),
     _getterFunc(Getter)
   {}

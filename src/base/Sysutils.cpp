@@ -170,7 +170,7 @@ UnicodeString UIntToStr(uintptr_t Value)
 
 UnicodeString Int64ToStr(int64_t Value)
 {
-  UnicodeString Result = FORMAT(L"%lld", Value);
+  UnicodeString Result = FORMAT("%lld", Value);
   return Result;
 }
 
@@ -1478,15 +1478,15 @@ UnicodeString FormatDateTime(UnicodeString Fmt, const TDateTime &ADateTime)
   }
   else if (Fmt == L"nnzzz")
   {
-    Result = FORMAT(L"%02d%03d ", Seconds, Milliseconds);
+    Result = FORMAT("%02d%03d ", Seconds, Milliseconds);
   }
   else if (Fmt == L" yyyy-mm-dd hh:nn:ss.zzz ")
   {
-    Result = FORMAT(L" %04d-%02d-%02d %02d:%02d:%02d.%03d ", Year, Month, Day, Hour, Minutes, Seconds, Milliseconds);
+    Result = FORMAT(" %04d-%02d-%02d %02d:%02d:%02d.%03d ", Year, Month, Day, Hour, Minutes, Seconds, Milliseconds);
   }
   else if (Fmt == L"h:nn:ss")
   {
-    Result = FORMAT(L"%02d:%02d:%02d", Hour, Minutes, Seconds);
+    Result = FORMAT("%02d:%02d:%02d", Hour, Minutes, Seconds);
   }
   else
   {
