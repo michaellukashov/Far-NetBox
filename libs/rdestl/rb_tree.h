@@ -42,7 +42,7 @@ public:
 	typedef typename TTreeTraits::value_type	value_type;
 	typedef TAllocator							allocator_type;
 
-    struct RDESTL_LIB node
+	struct RDESTL_LIB node
 	{
 		node() {}
 		node(color_e color_, node* left_, node* right_, node* parent_)
