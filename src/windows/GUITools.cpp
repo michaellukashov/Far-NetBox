@@ -159,14 +159,12 @@ void OpenSessionInPutty(UnicodeString PuttyPath,
           }
         }
       }
-      __finally
-      {
-#if 0
+      __finally__removed
+      ({
         delete Storage;
         delete ExportData;
         delete SourceStorage;
-#endif // #if 0
-      };
+      })
 
       UnicodeString LoadSwitch = L"-load";
       intptr_t P = Params2.LowerCase().Pos(LoadSwitch + L" ");

@@ -1170,12 +1170,10 @@ static void ConvertKey(UnicodeString &FileName, TKeyType Type)
 
     MessageDialog(MainInstructions(FMTLOAD(CONVERTKEY_SAVED, FileName)), qtInformation, qaOK);
   }
-  __finally
-  {
-#if 0
+  __finally__removed
+  ({
     FreeKey(PrivateKey);
-#endif // #if 0
-  };
+  })
 }
 
 static void DoVerifyKey(
