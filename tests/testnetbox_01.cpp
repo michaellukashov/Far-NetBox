@@ -24,6 +24,7 @@
 #include <CppProperties.h>
 
 #include "testutils.h"
+#include "xproperty/xproperty.hpp"
 
 //------------------------------------------------------------------------------
 // stub
@@ -840,4 +841,35 @@ TEST_CASE_METHOD(base_fixture_t, "test_scope_exit2", "netbox")
     test_lambda2;
   test_lambda1();
 //  TAnonFunction func(test_lambda2, this);
+}
+
+namespace {
+
+class TBase
+{
+public:
+  MAKE_OBSERVED()
+  XPROPERTY(int, TBase, Data, 42);
+public:
+  virtual int GetData() const = 0;
+};
+
+class TDerived : public TBase
+{
+public:
+  virtual int GetData() const
+  {
+    return 42;
+  }
+};
+
+} // namespace
+
+TEST_CASE_METHOD(base_fixture_t, "testXProperty01", "netbox")
+{
+  TDerived d;
+  int data = d.Data;
+  CHECK(data == 42);
+  d.Data = 43;
+  CHECK(d.Data == 43);
 }
