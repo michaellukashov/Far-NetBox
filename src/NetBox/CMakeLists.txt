@@ -1535,6 +1535,7 @@ target_include_directories(NetBox PRIVATE
   ../../libs/atlmfc/include
   ../../libs/fmt
   ../../libs/tinylog
+  ../../libs/xproperty/include
   ../filezilla
   ../base
   ../core
@@ -1616,6 +1617,7 @@ set(TEST_INCLUDES
   ../../libs/expat/lib
   ../../libs/fmt
   ../../libs/tinylog
+  ../../libs/xproperty/include
   ../filezilla
   ../filezilla/misc
   ../base
