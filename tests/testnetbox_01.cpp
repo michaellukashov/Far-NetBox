@@ -21,7 +21,8 @@
 #include <Common.h>
 #include <FarPlugin.h>
 #include <FastDelegate.h>
-#include <CppProperties.h>
+// #include <CppProperties.h>
+#include <Property.hpp>
 
 #include "testutils.h"
 #include "xproperty/xproperty.hpp"
@@ -843,6 +844,7 @@ TEST_CASE_METHOD(base_fixture_t, "test_scope_exit2", "netbox")
 //  TAnonFunction func(test_lambda2, this);
 }
 
+#if 0
 namespace {
 
 class TBase
@@ -865,11 +867,137 @@ public:
 
 } // namespace
 
-TEST_CASE_METHOD(base_fixture_t, "testXProperty01", "netbox")
+TEST_CASE_METHOD(base_fixture_t, "testProperty01", "netbox")
 {
   TDerived d;
   int data = d.Data;
   CHECK(data == 42);
   d.Data = 43;
   CHECK(d.Data == 43);
+}
+
+#endif // if 0
+
+namespace {
+
+class TBase
+{
+public:
+  ROProperty<int, TBase> Data{this, &TBase::GetData};
+  ROProperty<int, TBase> Data2{this, &TBase::GetData2};
+  ROProperty<int, TBase> Data3{this, &TBase::GetData3};
+
+  RWProperty<int, TBase> RWData1{this, &TBase::GetRWData1, &TBase::SetRWData1};
+  RWProperty<UnicodeString, TBase> RWData2{this, &TBase::GetRWData2, &TBase::SetRWData2};
+public:
+  virtual int GetData() const = 0;
+  virtual int GetData2() const { return 41; }
+  virtual int GetData3() const { return 41; }
+
+  virtual int GetRWData1() const { return FRWData1; }
+  virtual void SetRWData1(int Value) { FRWData1 = Value; }
+  virtual UnicodeString GetRWData2() const { return FRWData2; }
+  virtual void SetRWData2(UnicodeString Value) { FRWData2 = Value; }
+private:
+  int GetDataInternal() const { return GetData(); }
+
+  int FRWData1 = 41;
+  UnicodeString FRWData2 = "41";
+};
+
+class TDerived : public TBase
+{
+public:
+  virtual int GetData() const override { return 42; }
+  virtual int GetData2() const override { return 42; }
+  virtual int GetData3() const override { return 42; }
+
+  virtual int GetRWData1() const { return FRWData1; }
+  virtual void SetRWData1(int Value) { FRWData1 = Value; }
+
+  virtual UnicodeString GetRWData2() const override { return FRWData2; }
+  virtual void SetRWData2(const UnicodeString Value) override { FRWData2 = Value; }
+private:
+  int FRWData1 = 42;
+  UnicodeString FRWData2 = "42";
+};
+
+class TBase2
+{
+public:
+  // ROProperty<int, TBase> Data{this, &TBase::GetData};
+  ROProperty<int, TBase2> Data2{this, &TBase2::GetData2};
+  ROProperty<int, TBase2> Data3{this, &TBase2::GetData3};
+
+  RWProperty<int, TBase2> RWData1{this, &TBase2::GetRWData1, &TBase2::SetRWData1};
+  RWProperty<UnicodeString, TBase2> RWData2{this, &TBase2::GetRWData2, &TBase2::SetRWData2};
+private:
+  int GetData2() const { return 41; }
+  int GetData3() const { return 41; }
+
+  int GetRWData1() const { return FRWData1; }
+  void SetRWData1(int Value) { FRWData1 = Value; }
+  UnicodeString GetRWData2() const { return FRWData2; }
+  void SetRWData2(const UnicodeString Value) { FRWData2 = Value; }
+private:
+  int FRWData1 = 41;
+  UnicodeString FRWData2 = "41";
+};
+
+} // namespace
+
+TEST_CASE_METHOD(base_fixture_t, "testProperty02", "netbox")
+{
+  printf("1\n");
+  printf("2\n");
+  {
+    TDerived d;
+    int data = d.Data;
+    printf("3\n");
+    CHECK(data == 42);
+  }
+  printf("4\n");
+  if (1)
+  {
+    TDerived d;
+    int data2 = d.Data2;
+    printf("5\n");
+    CHECK(data2 == 42);
+  }
+  printf("6\n");
+  {
+    TDerived d;
+    int data3 = d.Data3;
+    printf("7\n");
+    CHECK(data3 == 42);
+  }
+  printf("8\n");
+//  d.Data = 43;
+//  CHECK(d.Data == 43);
+  {
+    TDerived d;
+    CHECK(d.RWData1 == 42);
+    d.RWData1 = 43;
+    CHECK(d.RWData1 == 43);
+  }
+  printf("9\n");
+  {
+    TDerived d;
+    CHECK(d.RWData2() == "42");
+    d.RWData2 = "43";
+    CHECK(d.RWData2() == "43");
+  }
+  printf("10\n");
+  {
+    TBase2 b2;
+    printf("11\n");
+    CHECK(b2.Data2 == 41);
+    printf("12\n");
+    CHECK(b2.RWData2() == "41");
+    printf("13\n");
+    b2.RWData2 = "42";
+    CHECK(b2.RWData2() == "42");
+    TBase2 b3 = b2;
+    CHECK(b3.RWData2() == "42");
+  }
 }
