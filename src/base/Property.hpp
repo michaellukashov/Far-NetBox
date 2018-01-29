@@ -134,11 +134,11 @@ class ROProperty
 {
 CUSTOM_MEM_ALLOCATION_IMPL
 private:
-  const Object *_obj;
+  Object *_obj;
   typedef T (Object::*GetterFunc)() const;
-  const GetterFunc *_getterFunc;
+  const GetterFunc _getterFunc;
 public:
-  explicit ROProperty(const Object *Obj, const GetterFunc *Getter) :
+  explicit ROProperty(Object *Obj, GetterFunc Getter) :
     _obj(Obj),
     _getterFunc(Getter)
   {}
@@ -172,13 +172,13 @@ class RWProperty
 {
 CUSTOM_MEM_ALLOCATION_IMPL
 private:
-  typedef T (Object::*GetterFunc)();
-  typedef void (Object::*SetterFunc)(const T &);
+  typedef T (Object::*GetterFunc)() const;
+  typedef void (Object::*SetterFunc)(T);
   Object *_obj;
-  GetterFunc *_getter;
-  SetterFunc *_setter;
+  GetterFunc _getter;
+  SetterFunc _setter;
 public:
-  explicit RWProperty(Object *Obj, GetterFunc *Getter, SetterFunc *Setter):
+  explicit RWProperty(Object *Obj, GetterFunc Getter, SetterFunc Setter):
     _obj(Obj),
     _getter(Getter),
     _setter(Setter)
@@ -198,7 +198,7 @@ public:
     // assert(_setter);
     (*_setter)(value);
   }*/
-  void operator=(const T &Value)
+  void operator=(T Value)
   {
     // assert(_setter);
     (_obj->*_setter)(Value);
@@ -207,5 +207,10 @@ public:
   {
     // assert(_getter);
     return (_obj->*_getter)();
+  }
+  bool operator==(T Value)
+  {
+    // assert(_setter);
+    return (_obj->*_getter)() == Value;
   }
 };
