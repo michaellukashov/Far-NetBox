@@ -2670,11 +2670,11 @@ TRemoteFileList * __fastcall TTerminal::DirectoryFileList(const UnicodeString AP
   return Result;
 }
 //---------------------------------------------------------------------------
-void __fastcall TTerminal::TerminalSetCurrentDirectory(UnicodeString AValue)
+void __fastcall TTerminal::TerminalSetCurrentDirectory(const UnicodeString AValue)
 {
   DebugAssert(FFileSystem);
   UnicodeString Value = TranslateLockedPath(AValue, false);
-  if (AValue != FFileSystem->RemoteCurrentDirectory())
+  if (AValue != FFileSystem->RemoteCurrentDirectory)
   {
     RemoteChangeDirectory(Value);
   }

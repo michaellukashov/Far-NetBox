@@ -137,7 +137,7 @@ protected:
   virtual UnicodeString __fastcall RemoteGetCurrentDirectory() const;
 
   void LibS3Deinitialize();
-  bool VerifyCertificate(TNeonCertificateData Data);
+  bool VerifyCertificate(TNeonCertificateData &Data);
   void CollectTLSSessionInfo();
   void CheckLibS3Error(const TLibS3CallbackData &Data, bool FatalOnConnectError = false);
   static void InitSslSession(ssl_st *Ssl, ne_session_s *Session);

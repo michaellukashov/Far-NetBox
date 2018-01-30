@@ -826,8 +826,14 @@ UnicodeString __fastcall ParseOpenSshPubLine(const UnicodeString ALine, const st
   }
   else
   {
-    try
+    try__finally
     {
+      SCOPE_EXIT
+      {
+        sfree(PubBlob);
+        sfree(AlgorithmName);
+        sfree(CommentPtr);
+      };
       Algorithm = find_pubkey_alg(AlgorithmName);
       if (Algorithm == NULL)
       {
@@ -844,12 +850,12 @@ UnicodeString __fastcall ParseOpenSshPubLine(const UnicodeString ALine, const st
       sfree(FmtKey);
       Algorithm->freekey(Key);
     }
-    __finally
-    {
+    __finally__removed
+    ({
       sfree(PubBlob);
       sfree(AlgorithmName);
       sfree(CommentPtr);
-    }
+    })
   }
   return Result;
 }

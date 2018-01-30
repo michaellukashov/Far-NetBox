@@ -14,6 +14,8 @@
 //---------------------------------------------------------------------------
 struct TNeonCertificateData
 {
+  CUSTOM_MEM_ALLOCATION_IMPL
+
   UnicodeString Subject;
   UnicodeString Issuer;
 
@@ -23,7 +25,7 @@ struct TNeonCertificateData
   UnicodeString Fingerprint;
   AnsiString AsciiCert;
 
-  int Failures;
+  int Failures = 0;
 };
 //---------------------------------------------------------------------------
 void NeonParseUrl(const UnicodeString Url, ne_uri &uri);
@@ -42,8 +44,8 @@ typedef void (*TNeonTlsInit)(struct ssl_st *Ssl, ne_session *Session);
 void SetNeonTlsInit(ne_session *Session, TNeonTlsInit OnNeonTlsInit);
 AnsiString NeonExportCertificate(const ne_ssl_certificate *Certificate);
 bool NeonWindowsValidateCertificate(int &Failures, const AnsiString AsciiCert, UnicodeString &Error);
-bool NeonWindowsValidateCertificateWithMessage(TNeonCertificateData & Data, UnicodeString & Message);
-UnicodeString NeonCertificateFailuresErrorStr(int Failures, const UnicodeString & HostName);
+bool NeonWindowsValidateCertificateWithMessage(TNeonCertificateData &Data, UnicodeString &Message);
+UnicodeString NeonCertificateFailuresErrorStr(int Failures, const UnicodeString HostName);
 void UpdateNeonDebugMask();
 void __fastcall RegisterForNeonDebug(TTerminal * Terminal);
 void __fastcall UnregisterFromNeonDebug(TTerminal * Terminal);
@@ -51,9 +53,9 @@ void __fastcall NeonInitialize();
 void __fastcall NeonFinalize();
 void __fastcall RequireNeon(TTerminal * Terminal);
 void __fastcall RetrieveNeonCertificateData(
-  int Failures, const ne_ssl_certificate * Certificate, TNeonCertificateData & Data);
-UnicodeString __fastcall CertificateVerificationMessage(const TNeonCertificateData & Data);
-UnicodeString __fastcall CertificateSummary(const TNeonCertificateData & Data, const UnicodeString AHostName);
+  int Failures, const ne_ssl_certificate * Certificate, TNeonCertificateData &Data);
+UnicodeString __fastcall CertificateVerificationMessage(const TNeonCertificateData &Data);
+UnicodeString __fastcall CertificateSummary(const TNeonCertificateData &Data, const UnicodeString AHostName);
 struct TSessionInfo;
 UnicodeString __fastcall NeonTlsSessionInfo(
   ne_session * Session, TSessionInfo & FSessionInfo, UnicodeString & TlsVersionStr);

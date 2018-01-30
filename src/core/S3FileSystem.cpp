@@ -194,7 +194,7 @@ void TS3FileSystem::LibS3SessionCallback(ne_session_s * Session, void * Callback
     Session, Data->GetProxyMethod(), Data->GetProxyHost(), Data->GetProxyPort(),
     Data->GetProxyUsername(), Data->GetProxyPassword(), FileSystem->FTerminal);
 
-  ne_set_session_private(Session, SESSION_FS_KEY, this);
+  ne_set_session_private(Session, SESSION_FS_KEY, FileSystem);
 
   SetNeonTlsInit(Session, FileSystem->InitSslSession);
 
@@ -225,7 +225,7 @@ int TS3FileSystem::LibS3SslCallback(int Failures, const ne_ssl_certificate_s * C
 }
 //---------------------------------------------------------------------------
 // Similar to TWebDAVFileSystem::VerifyCertificate
-bool TS3FileSystem::VerifyCertificate(TNeonCertificateData Data)
+bool TS3FileSystem::VerifyCertificate(TNeonCertificateData &Data)
 {
   FSessionInfo.CertificateFingerprint = Data.Fingerprint;
 

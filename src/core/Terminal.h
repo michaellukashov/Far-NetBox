@@ -343,7 +343,7 @@ public:
   const TRemoteTokenList * __fastcall GetGroups() const { return const_cast<TTerminal *>(this)->GetGroups(); }
   const TRemoteTokenList * __fastcall GetUsers() const { return const_cast<TTerminal *>(this)->GetUsers(); }
   const TRemoteTokenList * __fastcall GetMembership() const { return const_cast<TTerminal *>(this)->GetMembership(); }
-  void __fastcall TerminalSetCurrentDirectory(UnicodeString AValue);
+  void __fastcall TerminalSetCurrentDirectory(const UnicodeString AValue);
   void __fastcall SetExceptionOnFail(bool Value);
   void __fastcall ReactOnCommand(intptr_t /*TFSCommand*/ ACmd);
   UnicodeString __fastcall TerminalGetUserName() const;

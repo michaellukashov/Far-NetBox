@@ -238,8 +238,8 @@ public:
   virtual void __fastcall ClearCaches() = 0;
 
   __property UnicodeString CurrentDirectory = { read = GetCurrentDirectory };
-  UnicodeString RemoteCurrentDirectory() const { return RemoteGetCurrentDirectory(); }
-  // ROProperty<UnicodeString, TCustomFileSystem> RemoteCurrentDirectory{this, &TCustomFileSystem::RemoteGetCurrentDirectory};
+  ROProperty<UnicodeString, TCustomFileSystem> RemoteCurrentDirectory{this, &TCustomFileSystem::RemoteGetCurrentDirectory};
+  // UnicodeString RemoteCurrentDirectory() const { return RemoteGetCurrentDirectory(); }
 
 protected:
   TTerminal *FTerminal;
