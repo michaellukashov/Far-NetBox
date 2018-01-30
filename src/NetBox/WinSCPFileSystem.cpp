@@ -837,7 +837,7 @@ bool TWinSCPFileSystem::EnsureCommandSessionFallback(TFSCapability Capability)
     {
       TMessageParams Params(0);
       Params.Params = qpNeverAskAgainCheck;
-      uintptr_t Answer = MoreMessageDialog(
+      uint32_t Answer = MoreMessageDialog(
           FORMAT(GetMsg(NB_PERFORM_ON_COMMAND_SESSION),
             FTerminal->GetFileSystemInfo().ProtocolName,
             FTerminal->GetFileSystemInfo().ProtocolName),
@@ -3222,13 +3222,13 @@ bool TWinSCPFileSystem::TerminalRemoveLocalDirectory(UnicodeString LocalDirName)
   return ::RemoveDir(LocalDirName);
 }
 
-bool TWinSCPFileSystem::TerminalCreateLocalDirectory(UnicodeString LocalDirName, LPSECURITY_ATTRIBUTES SecurityAttributes)
+bool TWinSCPFileSystem::TerminalCreateLocalDirectory(const UnicodeString LocalDirName, LPSECURITY_ATTRIBUTES SecurityAttributes)
 {
   return ::CreateDirectory(ApiPath(LocalDirName).c_str(), SecurityAttributes) != FALSE;
 }
 
-uintptr_t TWinSCPFileSystem::MoreMessageDialog(UnicodeString Str,
-  TStrings *MoreMessages, TQueryType Type, uintptr_t Answers, const TMessageParams *AParams)
+uintptr_t TWinSCPFileSystem::MoreMessageDialog(const UnicodeString Str,
+  TStrings *MoreMessages, TQueryType Type, uint32_t Answers, const TMessageParams *AParams)
 {
   TMessageParams Params(0);
 
@@ -3248,8 +3248,8 @@ uintptr_t TWinSCPFileSystem::MoreMessageDialog(UnicodeString Str,
 }
 
 void TWinSCPFileSystem::TerminalQueryUser(TObject * /*Sender*/,
-  UnicodeString AQuery, TStrings *MoreMessages, uintptr_t Answers,
-  const TQueryParams *AParams, uintptr_t &Answer, TQueryType Type, void * /*Arg*/)
+  const UnicodeString AQuery, TStrings *MoreMessages, uint32_t Answers,
+  const TQueryParams *AParams, uint32_t &Answer, TQueryType Type, void * /*Arg*/)
 {
   TMessageParams Params(0);
   UnicodeString Query = AQuery;
@@ -3538,7 +3538,7 @@ TTerminalQueueStatus *TWinSCPFileSystem::ProcessQueue(bool Hidden)
   {
     if (FQueueStatusInvalidated)
     {
-      TGuard Guard(FQueueStatusSection);
+      volatile TGuard Guard(FQueueStatusSection);
 
       FQueueStatusInvalidated = false;
 
@@ -3595,7 +3595,7 @@ TTerminalQueueStatus *TWinSCPFileSystem::ProcessQueue(bool Hidden)
     TQueueEvent Event;
 
     {
-      TGuard Guard(FQueueStatusSection);
+      volatile TGuard Guard(FQueueStatusSection);
       Event = FQueueEvent;
       FQueueEventPending = false;
     }
@@ -3636,7 +3636,7 @@ void TWinSCPFileSystem::QueueItemUpdate(TTerminalQueue *Queue,
 {
   if (GetQueue() == Queue)
   {
-    TGuard Guard(FQueueStatusSection);
+    volatile TGuard Guard(FQueueStatusSection);
 
     TTerminalQueueStatus *QueueStatus = GetQueueStatus();
     DebugAssert(QueueStatus != nullptr);

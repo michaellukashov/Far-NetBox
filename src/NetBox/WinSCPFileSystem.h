@@ -179,16 +179,16 @@ protected:
     const TUsableCopyParamAttrs &CopyParamAttrs) const;
   bool SynchronizeChecklistDialog(TSynchronizeChecklist *Checklist,
     TTerminal::TSynchronizeMode Mode, intptr_t Params,
-    UnicodeString LocalDirectory, UnicodeString RemoteDirectory);
+    const UnicodeString LocalDirectory, const UnicodeString RemoteDirectory);
   bool RemoteTransferDialog(TStrings *AFileList, UnicodeString &Target,
     UnicodeString &FileMask, bool Move);
   bool RenameFileDialog(TRemoteFile *AFile, UnicodeString &NewName);
   uintptr_t MoreMessageDialog(UnicodeString Str, TStrings *MoreMessages,
-    TQueryType Type, uintptr_t Answers, const TMessageParams *AParams = nullptr);
+    TQueryType Type, uint32_t Answers, const TMessageParams *AParams = nullptr);
   bool PasswordDialog(TSessionData *SessionData,
-    TPromptKind Kind, UnicodeString Name, UnicodeString Instructions, TStrings *Prompts,
+    TPromptKind Kind, const UnicodeString Name, const UnicodeString Instructions, TStrings *Prompts,
     TStrings *Results, bool StoredCredentialsTried);
-  bool BannerDialog(UnicodeString SessionName, UnicodeString Banner,
+  bool BannerDialog(const UnicodeString SessionName, const UnicodeString Banner,
     bool &NeverShowAgain, intptr_t Options);
   bool CreateDirectoryDialog(UnicodeString &Directory,
     TRemoteProperties *Properties, bool &SaveSettings);
@@ -256,8 +256,8 @@ private:
   void TerminalInformation(TTerminal *Terminal,
     UnicodeString Str, bool Status, intptr_t Phase);
   void TerminalQueryUser(TObject *Sender,
-    UnicodeString AQuery, TStrings *MoreMessages, uintptr_t Answers,
-    const TQueryParams *AParams, uintptr_t &Answer, TQueryType Type, void *Arg);
+    UnicodeString AQuery, TStrings *MoreMessages, uint32_t Answers,
+    const TQueryParams *AParams, uint32_t &Answer, TQueryType Type, void *Arg);
   void TerminalPromptUser(TTerminal *Terminal,
     TPromptKind Kind, UnicodeString Name, UnicodeString Instructions,
     TStrings *Prompts, TStrings *Results, bool &AResult,

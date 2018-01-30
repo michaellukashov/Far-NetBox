@@ -363,7 +363,7 @@ void TCustomFarPlugin::CloseFileSystem(TCustomFarFileSystem *FileSystem)
     {
       FOpenedPlugins->Remove(FileSystem);
     };
-    TGuard Guard(FileSystem->GetCriticalSection());
+    volatile TGuard Guard(FileSystem->GetCriticalSection());
     FileSystem->Close();
   }
   CloseFileSystem(FileSystem->GetOwnerFileSystem());
@@ -405,7 +405,7 @@ void TCustomFarPlugin::GetOpenPluginInfo(HANDLE Plugin,
   {
     ResetCachedInfo();
     DebugAssert(FOpenedPlugins->IndexOf(FarFileSystem) != NPOS);
-    TGuard Guard(FarFileSystem->GetCriticalSection());
+    volatile TGuard Guard(FarFileSystem->GetCriticalSection());
     FarFileSystem->GetOpenPluginInfo(Info);
   }
   catch (Exception &E)
@@ -427,7 +427,7 @@ intptr_t TCustomFarPlugin::GetFindData(HANDLE Plugin,
     DebugAssert(FOpenedPlugins->IndexOf(FarFileSystem) != NPOS);
 
     {
-      TGuard Guard(FarFileSystem->GetCriticalSection());
+      volatile TGuard Guard(FarFileSystem->GetCriticalSection());
       return FarFileSystem->GetFindData(PanelItem, ItemsNumber, OpMode);
     }
   }
@@ -451,7 +451,7 @@ void TCustomFarPlugin::FreeFindData(HANDLE Plugin,
     DebugAssert(FOpenedPlugins->IndexOf(FarFileSystem) != NPOS);
 
     {
-      TGuard Guard(FarFileSystem->GetCriticalSection());
+      volatile TGuard Guard(FarFileSystem->GetCriticalSection());
       FarFileSystem->FreeFindData(PanelItem, ItemsNumber);
     }
   }
@@ -476,7 +476,7 @@ intptr_t TCustomFarPlugin::ProcessHostFile(HANDLE Plugin,
       DebugAssert(FOpenedPlugins->IndexOf(FarFileSystem) != NPOS);
 
       {
-        TGuard Guard(FarFileSystem->GetCriticalSection());
+        volatile TGuard Guard(FarFileSystem->GetCriticalSection());
         return FarFileSystem->ProcessHostFile(PanelItem, ItemsNumber, OpMode);
       }
     }
@@ -504,7 +504,7 @@ intptr_t TCustomFarPlugin::ProcessKey(HANDLE Plugin, int Key,
       DebugAssert(FOpenedPlugins->IndexOf(FarFileSystem) != NPOS);
 
       {
-        TGuard Guard(FarFileSystem->GetCriticalSection());
+        volatile TGuard Guard(FarFileSystem->GetCriticalSection());
         return FarFileSystem->ProcessKey(Key, ControlState);
       }
     }
@@ -542,7 +542,7 @@ intptr_t TCustomFarPlugin::ProcessEvent(HANDLE Plugin, int Event, void *Param)
       {
       }
 
-      TGuard Guard(FarFileSystem->GetCriticalSection());
+      volatile TGuard Guard(FarFileSystem->GetCriticalSection());
       return FarFileSystem->ProcessEvent(Event, Param);
     }
     return 0;
@@ -567,7 +567,7 @@ intptr_t TCustomFarPlugin::SetDirectory(HANDLE Plugin, const wchar_t *Dir, int O
     ResetCachedInfo();
     DebugAssert(FOpenedPlugins->IndexOf(FarFileSystem) != NPOS);
     {
-      TGuard Guard(FarFileSystem->GetCriticalSection());
+      volatile TGuard Guard(FarFileSystem->GetCriticalSection());
       return FarFileSystem->SetDirectory(Dir, OpMode);
     }
   }
@@ -579,7 +579,7 @@ intptr_t TCustomFarPlugin::SetDirectory(HANDLE Plugin, const wchar_t *Dir, int O
     {
       try
       {
-        TGuard Guard(FarFileSystem->GetCriticalSection());
+        volatile TGuard Guard(FarFileSystem->GetCriticalSection());
         return FarFileSystem->SetDirectory(PrevCurrentDirectory.c_str(), OpMode);
       }
       catch (Exception &)
@@ -602,7 +602,7 @@ intptr_t TCustomFarPlugin::MakeDirectory(HANDLE Plugin, const wchar_t **Name, in
     DebugAssert(FOpenedPlugins->IndexOf(FarFileSystem) != NPOS);
 
     {
-      TGuard Guard(FarFileSystem->GetCriticalSection());
+      volatile TGuard Guard(FarFileSystem->GetCriticalSection());
       return FarFileSystem->MakeDirectory(Name, OpMode);
     }
   }
@@ -626,7 +626,7 @@ intptr_t TCustomFarPlugin::DeleteFiles(HANDLE Plugin,
     DebugAssert(FOpenedPlugins->IndexOf(FarFileSystem) != NPOS);
 
     {
-      TGuard Guard(FarFileSystem->GetCriticalSection());
+      volatile TGuard Guard(FarFileSystem->GetCriticalSection());
       return FarFileSystem->DeleteFiles(PanelItem, ItemsNumber, OpMode);
     }
   }
@@ -651,7 +651,7 @@ intptr_t TCustomFarPlugin::GetFiles(HANDLE Plugin,
     DebugAssert(FOpenedPlugins->IndexOf(FarFileSystem) != NPOS);
 
     {
-      TGuard Guard(FarFileSystem->GetCriticalSection());
+      volatile TGuard Guard(FarFileSystem->GetCriticalSection());
       return FarFileSystem->GetFiles(PanelItem, ItemsNumber, Move, DestPath, OpMode);
     }
   }
@@ -676,7 +676,7 @@ intptr_t TCustomFarPlugin::PutFiles(HANDLE Plugin,
     DebugAssert(FOpenedPlugins->IndexOf(FarFileSystem) != NPOS);
 
     {
-      TGuard Guard(FarFileSystem->GetCriticalSection());
+      volatile TGuard Guard(FarFileSystem->GetCriticalSection());
       return FarFileSystem->PutFiles(PanelItem, ItemsNumber, Move, srcPath, OpMode);
     }
   }
@@ -2924,9 +2924,9 @@ bool TGlobalFunctions::InputDialog(UnicodeString ACaption, UnicodeString APrompt
   return WinSCPPlugin->InputBox(ACaption, APrompt, Value, 0);
 }
 
-uintptr_t TGlobalFunctions::MoreMessageDialog(UnicodeString Message, TStrings *MoreMessages, TQueryType Type, uintptr_t Answers, const TMessageParams *Params)
+uintptr_t TGlobalFunctions::MoreMessageDialog(const UnicodeString AMessage, TStrings *MoreMessages, TQueryType Type, uint32_t Answers, const TMessageParams *Params)
 {
   TWinSCPPlugin *WinSCPPlugin = dyn_cast<TWinSCPPlugin>(FarPlugin);
-  return WinSCPPlugin->MoreMessageDialog(Message, MoreMessages, Type, Answers, Params);
+  return WinSCPPlugin->MoreMessageDialog(AMessage, MoreMessages, Type, Answers, Params);
 }
 
