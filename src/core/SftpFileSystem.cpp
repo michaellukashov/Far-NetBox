@@ -1653,6 +1653,7 @@ protected:
       {
         BlockBuf.LoadStream(FStream, BlockSize, false);
       });
+      __removed FILE_OPERATION_LOOP_END(FMTLOAD(READ_ERROR, (FFileName)));
 
       FEnd = (BlockBuf.GetSize() == 0);
       Result = !FEnd;
@@ -5004,6 +5005,9 @@ void __fastcall TSFTPFileSystem::Source(
           DoDeleteFile(DestFullName, SSH_FXP_REMOVE);
         }
       });
+      __removed FILE_OPERATION_LOOP_END(
+      __removed   FMTLOAD(DELETE_ON_RESUME_ERROR,
+      __removed     (UnixExtractFileName(DestFullName), DestFullName)));
     }
 
     // originally this was before CLOSE (last __finally statement),
@@ -5016,6 +5020,10 @@ void __fastcall TSFTPFileSystem::Source(
     {
       this->RemoteRenameFile(OpenParams.RemoteFileName, nullptr, ADestFileName);
     });
+    __removed FILE_OPERATION_LOOP_END_CUSTOM(
+    __removed   FMTLOAD(RENAME_AFTER_RESUME_ERROR,
+    __removed     (UnixExtractFileName(OpenParams.RemoteFileName), DestFileName)),
+    __removed   folAllowSkip, HELP_RENAME_AFTER_RESUME_ERROR);
   }
 
   if (SetProperties)
@@ -5080,6 +5088,9 @@ void __fastcall TSFTPFileSystem::Source(
           }
         }
       });
+      __removed FILE_OPERATION_LOOP_END_CUSTOM(
+      __removed   FMTLOAD(PRESERVE_TIME_PERM_ERROR3, (DestFileName)),
+      __removed   folAllowSkip, HELP_PRESERVE_TIME_PERM_ERROR);
     }
     catch(Exception & E)
     {
@@ -5357,6 +5368,7 @@ void __fastcall TSFTPFileSystem::SFTPCloseRemote(const RawByteString Handle,
       }
     }
   });
+  __removed FILE_OPERATION_LOOP_END(FMTLOAD(SFTP_CLOSE_FILE_ERROR, (FileName)));
 }
 //---------------------------------------------------------------------------
 void __fastcall TSFTPFileSystem::CopyToLocal(TStrings *AFilesToCopy,
@@ -5426,11 +5438,13 @@ void __fastcall TSFTPFileSystem::Sink(
       if (DeleteLocalFile && (!ResumeAllowed || OperationProgress->GetLocallyUsed() == 0) &&
         (OverwriteMode == omOverwrite))
       {
-        FileOperationLoopCustom(FTerminal, OperationProgress, True, FMTLOAD(CORE_DELETE_LOCAL_FILE_ERROR, LocalFileName), "",
+        FileOperationLoopCustom(FTerminal, OperationProgress, folAllowSkip,
+          FMTLOAD(CORE_DELETE_LOCAL_FILE_ERROR, LocalFileName), "",
         [&]()
         {
           THROWOSIFFALSE(Sysutils::RemoveFile(ApiPath(LocalFileName)));
         });
+        __removed FILE_OPERATION_LOOP_END(FMTLOAD(DELETE_LOCAL_FILE_ERROR, (LocalFileName)));
       }
 
       // if the transfer was finished, the file is closed already
@@ -5824,13 +5838,11 @@ void __fastcall TSFTPFileSystem::Sink(
     if (DeleteLocalFile && (!ResumeAllowed || OperationProgress->LocallyUsed == 0) &&
         (OverwriteMode == omOverwrite))
     {
-      FileOperationLoopCustom(this, OperationProgress, folAllowSkip,
-        FMTLOAD(CORE_DELETE_LOCAL_FILE_ERROR, LocalFileName), "",
-      [&]()
+      FILE_OPERATION_LOOP_BEGIN
       {
         THROWOSIFFALSE(Sysutils::DeleteFile(ApiPath(LocalFileName)));
-      });
-      __removed FILE_OPERATION_LOOP_END(FMTLOAD(DELETE_LOCAL_FILE_ERROR, (LocalFileName)));
+      }
+      FILE_OPERATION_LOOP_END(FMTLOAD(DELETE_LOCAL_FILE_ERROR, (LocalFileName)));
     }
 
     // if the transfer was finished, the file is closed already
