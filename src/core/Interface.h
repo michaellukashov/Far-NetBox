@@ -106,7 +106,7 @@ struct NB_CORE_EXPORT TQueryButtonAlias : public TObject
 
   uintptr_t Button;
   UnicodeString Alias;
-  TButtonSubmitEvent OnSubmit;
+  TButtonSubmitEvent OnClick;
   int GroupWith;
   bool Default;
   TShiftStateFlag GrouppedShiftState;

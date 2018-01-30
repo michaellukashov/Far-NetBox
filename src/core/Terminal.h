@@ -108,13 +108,13 @@ typedef void __fastcall (__closure *TDeleteLocalFileEvent)(
   const UnicodeString FileName, bool Alternative);
 #endif // #if 0
 typedef nb::FastDelegate2<void,
-  UnicodeString /*FileName*/, bool /*Alternative*/> TDeleteLocalFileEvent;
+  const UnicodeString & /*FileName*/, bool /*Alternative*/> TDeleteLocalFileEvent;
 #if 0
 typedef int __fastcall (__closure *TDirectoryModifiedEvent)
   (TTerminal * Terminal, const UnicodeString Directory, bool SubDirs);
 #endif // #if 0
 typedef nb::FastDelegate3<int,
-  TTerminal * /*Terminal*/, const UnicodeString /*Directory*/, bool /*SubDirs*/> TDirectoryModifiedEvent;
+  TTerminal * /*Terminal*/, const UnicodeString & /*Directory*/, bool /*SubDirs*/> TDirectoryModifiedEvent;
 #if 0
 typedef void __fastcall (__closure *TInformationEvent)
   (TTerminal * Terminal, const UnicodeString Str, bool Status, int Phase);
@@ -129,18 +129,18 @@ typedef nb::FastDelegate3<void,
   TTerminal * /*Terminal*/, const UnicodeString & /*Command*/, bool & /*Handled*/> TCustomCommandEvent;
 
 typedef nb::FastDelegate5<HANDLE,
-  UnicodeString /*FileName*/, DWORD /*DesiredAccess*/,
+  const UnicodeString & /*FileName*/, DWORD /*DesiredAccess*/,
   DWORD /*ShareMode*/, DWORD /*CreationDisposition*/,
   DWORD /*FlagsAndAttributes*/> TCreateLocalFileEvent;
 typedef nb::FastDelegate1<DWORD,
-  UnicodeString /*FileName*/> TGetLocalFileAttributesEvent;
+  const UnicodeString & /*FileName*/> TGetLocalFileAttributesEvent;
 typedef nb::FastDelegate2<bool,
-  UnicodeString /*FileName*/, DWORD /*FileAttributes*/> TSetLocalFileAttributesEvent;
+  const UnicodeString & /*FileName*/, DWORD /*FileAttributes*/> TSetLocalFileAttributesEvent;
 typedef nb::FastDelegate3<bool,
-  UnicodeString /*FileName*/, UnicodeString /*NewFileName*/,
+  const UnicodeString & /*FileName*/, const UnicodeString & /*NewFileName*/,
   DWORD /*Flags*/> TMoveLocalFileEvent;
 typedef nb::FastDelegate1<bool,
-  UnicodeString /*LocalDirName*/> TRemoveLocalDirectoryEvent;
+  const UnicodeString & /*LocalDirName*/> TRemoveLocalDirectoryEvent;
 typedef nb::FastDelegate2<bool,
   const UnicodeString & /*LocalDirName*/,
   LPSECURITY_ATTRIBUTES /*SecurityAttributes*/> TCreateLocalDirectoryEvent;
@@ -656,7 +656,7 @@ public:
     const UnicodeString AFileMask);
   void __fastcall TerminalCopyFile(const UnicodeString &AFileName, const TRemoteFile *AFile,
     /*const TMoveFileParams*/ void *Param);
-  bool __fastcall CopyFiles(TStrings *AFileList, const UnicodeString ATarget,
+  bool __fastcall TerminalCopyFiles(TStrings *AFileList, const UnicodeString ATarget,
     const UnicodeString AFileMask);
   bool __fastcall CalculateFilesSize(TStrings *AFileList, int64_t &Size,
     intptr_t Params, const TCopyParamType *CopyParam, bool AllowDirs,

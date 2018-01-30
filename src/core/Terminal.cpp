@@ -5006,7 +5006,7 @@ void __fastcall TTerminal::TerminalCopyFile(const UnicodeString &AFileName,
   ReactOnCommand(fsCopyFile);
 }
 //---------------------------------------------------------------------------
-bool __fastcall TTerminal::CopyFiles(TStrings *AFileList, const UnicodeString ATarget,
+bool __fastcall TTerminal::TerminalCopyFiles(TStrings *AFileList, const UnicodeString ATarget,
   const UnicodeString AFileMask)
 {
   TMoveFileParams Params;
@@ -8208,7 +8208,7 @@ bool __fastcall TTerminal::ConfirmCertificate(
   Aliases[0].Button = qaRetry;
   Aliases[0].Alias = LoadStr(COPY_KEY_BUTTON);
   Aliases[0].ActionAlias = LoadStr(COPY_CERTIFICATE_ACTION);
-  Aliases[0].OnSubmit = nb::bind(&TClipboardHandler::Copy, &ClipboardHandler);
+  Aliases[0].OnClick = nb::bind(&TClipboardHandler::Copy, &ClipboardHandler);
 
   TQueryParams Params(qpWaitInBatch);
   Params.HelpKeyword = HELP_VERIFY_CERTIFICATE;

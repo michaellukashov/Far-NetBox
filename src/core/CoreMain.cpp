@@ -20,7 +20,7 @@ TStoredSessionList *StoredSessions = nullptr;
 //---------------------------------------------------------------------------
 TQueryButtonAlias::TQueryButtonAlias() :
   Button(0),
-  OnSubmit(nullptr),
+  OnClick(nullptr),
   GroupWith(-1),
   Default(false),
   GrouppedShiftState(ssShift),
