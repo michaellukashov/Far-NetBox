@@ -142,12 +142,12 @@ public:
     _obj(Obj),
     _getterFunc(Getter)
   {}
-  /*T operator()() const
+  T operator()() const
   {
     // return (_obj->*Getter)();
     // assert(_getter);
-    return _getter();
-  }*/
+    return (_obj->*_getterFunc)();
+  }
   operator T() const
   {
     // assert(_getterFunc);
