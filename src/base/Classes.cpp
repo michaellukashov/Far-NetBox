@@ -1322,6 +1322,24 @@ void TStream::WriteBuffer(const void *Buffer, int64_t Count)
   }
 }
 
+int64_t TStream::GetPosition() const
+{
+  return Seek(0, soFromCurrent);
+}
+
+int64_t TStream::GetSize() const
+{
+  int64_t Pos = Seek(0, soFromCurrent);
+  int64_t Result = Seek(0, soFromEnd);
+  Seek(Pos, soFromBeginning);
+  return Result;
+}
+
+void TStream::SetPosition(const int64_t Pos)
+{
+  Seek(Pos, soFromBeginning);
+}
+
 void ReadError(UnicodeString Name)
 {
   throw Exception(FORMAT("InvalidRegType: %s", Name)); // FIXME ERegistryException.CreateResFmt(@SInvalidRegType, [Name]);
@@ -1358,13 +1376,13 @@ int64_t THandleStream::Write(const void *Buffer, int64_t Count)
   return Result;
 }
 
-int64_t THandleStream::Seek(int64_t Offset, int Origin)
+int64_t THandleStream::Seek(int64_t Offset, int Origin) const
 {
   int64_t Result = ::FileSeek(FHandle, Offset, ToDWord(Origin));
   return Result;
 }
 
-int64_t THandleStream::Seek(const int64_t Offset, TSeekOrigin Origin)
+int64_t THandleStream::Seek(const int64_t Offset, TSeekOrigin Origin) const
 {
   int origin = FILE_BEGIN;
   switch (Origin)
@@ -1451,12 +1469,12 @@ int64_t TMemoryStream::Read(void *Buffer, int64_t Count)
   return Result;
 }
 
-int64_t TMemoryStream::Seek(int64_t Offset, int Origin)
+int64_t TMemoryStream::Seek(int64_t Offset, int Origin) const
 {
   return Seek(Offset, static_cast<TSeekOrigin>(Origin));
 }
 
-int64_t TMemoryStream::Seek(const int64_t Offset, TSeekOrigin Origin)
+int64_t TMemoryStream::Seek(const int64_t Offset, TSeekOrigin Origin) const
 {
   switch (Origin)
   {

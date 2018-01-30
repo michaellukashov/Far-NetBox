@@ -34,12 +34,12 @@ public:
   explicit ExtException(const Exception * E, const UnicodeString Msg, const UnicodeString HelpKeyword = L"");
   explicit ExtException(TObjectClassId Kind, const Exception * E, const UnicodeString Msg, const UnicodeString HelpKeyword = L"");
   // explicit ExtException(const ExtException * E, const UnicodeString Msg, const UnicodeString HelpKeyword = L"");
-  explicit ExtException(TObjectClassId Kind, Exception * E, intptr_t Ident);
+  explicit ExtException(TObjectClassId Kind, Exception *E, intptr_t Ident);
   // "copy the exception", just append message to the end
   explicit ExtException(TObjectClassId Kind, const UnicodeString Msg, const Exception * E, const UnicodeString HelpKeyword = L"");
   explicit ExtException(UnicodeString Msg, const UnicodeString MoreMessages, const UnicodeString HelpKeyword = L"");
   explicit ExtException(TObjectClassId Kind, const UnicodeString Msg, const UnicodeString MoreMessages, const UnicodeString HelpKeyword = L"");
-  explicit ExtException(UnicodeString Msg, TStrings * MoreMessages, bool Own, const UnicodeString HelpKeyword = L"");
+  explicit ExtException(UnicodeString Msg, TStrings *MoreMessages, bool Own, const UnicodeString HelpKeyword = L"");
   virtual ~ExtException() noexcept;
 #if 0
   __property TStrings* MoreMessages = {read=FMoreMessages};
@@ -81,21 +81,21 @@ private:
 //---------------------------------------------------------------------------
 #define EXT_EXCEPTION_METHODS(NAME, BASE) \
   public: \
-    static inline bool classof(const Exception * Obj) { return Obj->is(OBJECT_CLASS_##NAME); } \
+    static inline bool classof(const Exception *Obj) { return Obj->is(OBJECT_CLASS_##NAME); } \
     virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_##NAME) || BASE::is(Kind); } \
   public: \
-    inline __fastcall NAME(Exception* E, const UnicodeString Msg, const UnicodeString HelpKeyword = L"") : \
+    inline __fastcall NAME(Exception *E, const UnicodeString Msg, const UnicodeString HelpKeyword = L"") : \
       BASE(OBJECT_CLASS_##NAME, E, Msg, HelpKeyword) \
     { \
     } \
-    inline __fastcall NAME(Exception* E, intptr_t Ident) : \
+    inline __fastcall NAME(Exception *E, intptr_t Ident) : \
       BASE(OBJECT_CLASS_##NAME, E, Ident) \
     { \
     } \
     inline __fastcall virtual ~NAME(void) \
     { \
     } \
-    explicit inline NAME(TObjectClassId Kind, const Exception * E, const UnicodeString Msg, const UnicodeString HelpKeyword = L"") : \
+    explicit inline NAME(TObjectClassId Kind, const Exception *E, const UnicodeString Msg, const UnicodeString HelpKeyword = L"") : \
       BASE(Kind, E, Msg, HelpKeyword) \
     { \
     } \
@@ -103,7 +103,7 @@ private:
       BASE(Kind, Msg, AHelpContext) \
     { \
     } \
-    inline __fastcall NAME(const UnicodeString Msg, int AHelpContext) : \
+    inline __fastcall NAME(const UnicodeString Msg, intptr_t AHelpContext) : \
       BASE(OBJECT_CLASS_##NAME, Msg, AHelpContext) \
     { \
     } \
@@ -113,11 +113,11 @@ private:
     } \
     virtual ExtException * __fastcall Clone() \
     { \
-      return new NAME(this, L""); \
+      return new NAME(OBJECT_CLASS_##NAME, this, L""); \
     } \
     virtual void __fastcall Rethrow() \
     { \
-      throw NAME(this, L""); \
+      throw NAME(OBJECT_CLASS_##NAME, this, L""); \
     }
 
 #define DERIVE_EXT_EXCEPTION(NAME, BASE) \

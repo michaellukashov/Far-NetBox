@@ -18,6 +18,7 @@
 #include <ObjIDs.h>
 #include <UnicodeString.hpp>
 #include <rtti.hpp>
+#include <Property.hpp>
 
 #pragma warning(pop)
 
@@ -378,7 +379,7 @@ public:
   {
   }
   explicit TDateTime(uint16_t Hour,
-    uint16_t Min, uint16_t Sec, uint16_t MSec);
+    uint16_t Min, uint16_t Sec, uint16_t MSec = 0);
   TDateTime(const TDateTime &rhs) :
     FValue(rhs.FValue)
   {
@@ -491,31 +492,20 @@ public:
   virtual ~TStream();
   virtual int64_t Read(void *Buffer, int64_t Count) = 0;
   virtual int64_t Write(const void *Buffer, int64_t Count) = 0;
-  virtual int64_t Seek(int64_t Offset, int Origin) = 0;
-  virtual int64_t Seek(const int64_t Offset, TSeekOrigin Origin) = 0;
+  virtual int64_t Seek(int64_t Offset, int Origin) const = 0;
+  virtual int64_t Seek(const int64_t Offset, TSeekOrigin Origin) const = 0;
   void ReadBuffer(void *Buffer, int64_t Count);
   void WriteBuffer(const void *Buffer, int64_t Count);
   int64_t CopyFrom(TStream *Source, int64_t Count);
 
 public:
-  int64_t GetPosition()
-  {
-    return Seek(0, soFromCurrent);
-  }
-  int64_t GetSize()
-  {
-    int64_t Pos = Seek(0, soFromCurrent);
-    int64_t Result = Seek(0, soFromEnd);
-    Seek(Pos, soFromBeginning);
-    return Result;
-  }
-
-public:
+  int64_t GetPosition() const;
+  int64_t GetSize() const;
   virtual void SetSize(const int64_t NewSize) = 0;
-  void SetPosition(const int64_t Pos)
-  {
-    Seek(Pos, soFromBeginning);
-  }
+  void SetPosition(const int64_t Pos);
+
+  RWProperty<int64_t, TStream> Position{this, &TStream::GetPosition, &TStream::SetPosition};
+  RWProperty<int64_t, TStream> Size{this, &TStream::GetSize, &TStream::SetSize};
 };
 
 class NB_CORE_EXPORT THandleStream : public TStream
@@ -526,8 +516,8 @@ public:
   virtual ~THandleStream();
   virtual int64_t Read(void *Buffer, int64_t Count) override;
   virtual int64_t Write(const void *Buffer, int64_t Count) override;
-  virtual int64_t Seek(int64_t Offset, int Origin) override;
-  virtual int64_t Seek(const int64_t Offset, TSeekOrigin Origin) override;
+  virtual int64_t Seek(int64_t Offset, int Origin) const override;
+  virtual int64_t Seek(const int64_t Offset, TSeekOrigin Origin) const override;
 
   HANDLE GetHandle() { return FHandle; }
 
@@ -570,14 +560,14 @@ public:
   TMemoryStream();
   virtual ~TMemoryStream();
   virtual int64_t Read(void *Buffer, int64_t Count) override;
-  virtual int64_t Seek(int64_t Offset, int Origin) override;
-  virtual int64_t Seek(const int64_t Offset, TSeekOrigin Origin) override;
+  virtual int64_t Seek(int64_t Offset, int Origin) const override;
+  virtual int64_t Seek(const int64_t Offset, TSeekOrigin Origin) const override;
   void SaveToStream(TStream *Stream);
   void SaveToFile(UnicodeString AFileName);
 
   void Clear();
   void LoadFromStream(TStream *Stream);
-  //void LoadFromFile(UnicodeString AFileName);
+  __removed void LoadFromFile(const UnicodeString AFileName);
   int64_t GetSize() const { return FSize; }
   virtual void SetSize(const int64_t NewSize) override;
   virtual int64_t Write(const void *Buffer, int64_t Count) override;
@@ -595,7 +585,7 @@ private:
 private:
   void *FMemory;
   int64_t FSize;
-  int64_t FPosition;
+  mutable int64_t FPosition;
   int64_t FCapacity;
 };
 
@@ -752,12 +742,12 @@ public:
   virtual UnicodeString GetMsg(intptr_t Id) const = 0;
   virtual UnicodeString GetCurrDirectory() const = 0;
   virtual UnicodeString GetStrVersionNumber() const = 0;
-  virtual bool InputDialog(UnicodeString ACaption,
-    UnicodeString APrompt, UnicodeString &Value, UnicodeString HelpKeyword,
+  virtual bool InputDialog(const UnicodeString ACaption,
+    const UnicodeString APrompt, UnicodeString &Value, const UnicodeString HelpKeyword,
     TStrings *History, bool PathInput,
     TInputDialogInitializeEvent OnInitialize, bool Echo) = 0;
-  virtual uintptr_t MoreMessageDialog(UnicodeString Message,
-    TStrings *MoreMessages, TQueryType Type, uintptr_t Answers,
+  virtual uintptr_t MoreMessageDialog(const UnicodeString Message,
+    TStrings *MoreMessages, TQueryType Type, uint32_t Answers,
     const TMessageParams *Params) = 0;
 };
 

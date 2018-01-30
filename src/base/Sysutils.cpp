@@ -1670,7 +1670,7 @@ UnicodeString VersionNumberToStr(uintptr_t VersionNumber)
   return Result;
 }
 
-TFormatSettings::TFormatSettings(int) :
+TFormatSettings::TFormatSettings(int /*LCID*/) :
   CurrencyFormat(0),
   NegCurrFormat(0),
   ThousandSeparator(0),
@@ -1693,7 +1693,7 @@ UnicodeString TPath::Combine(const UnicodeString APath, const UnicodeString AFil
 
 namespace base {
 
-DWORD FindFirst(UnicodeString AFileName, DWORD LocalFileAttrs, TSearchRec &Rec)
+DWORD FindFirst(const UnicodeString AFileName, DWORD LocalFileAttrs, TSearchRec &Rec)
 {
   const DWORD faSpecial = faHidden | faSysFile | faDirectory;
   Rec.ExcludeAttr = (~LocalFileAttrs) & faSpecial;

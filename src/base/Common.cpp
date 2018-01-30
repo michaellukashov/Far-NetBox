@@ -1748,7 +1748,7 @@ int64_t Round(double Number)
   return static_cast<int64_t>(((Number - Floor) > (Ceil - Number)) ? Ceil : Floor);
 }
 //---------------------------------------------------------------------------
-bool TryRelativeStrToDateTime(UnicodeString AStr, TDateTime &DateTime, bool Add)
+bool TryRelativeStrToDateTime(const UnicodeString AStr, TDateTime &DateTime, bool Add)
 {
   UnicodeString S = AStr.Trim();
   intptr_t Index = 1;
@@ -1802,8 +1802,9 @@ const wchar_t MegaSize = L'M';
 const wchar_t GigaSize = L'G';
 //---------------------------------------------------------------------------
 // Keep consistent with parse_blocksize
-bool TryStrToSize(UnicodeString SizeStr, int64_t &Size)
+bool TryStrToSize(const UnicodeString ASizeStr, int64_t &Size)
 {
+  UnicodeString SizeStr = ASizeStr;
   intptr_t Index = 0;
   while ((Index + 1 <= SizeStr.Length()) && IsDigit(SizeStr[Index + 1]))
   {
@@ -2435,7 +2436,7 @@ void RecursiveDeleteFileChecked(const UnicodeString AFileName, bool ToRecycleBin
   }
 }
 //---------------------------------------------------------------------------
-void DeleteFileChecked(UnicodeString AFileName)
+void DeleteFileChecked(const UnicodeString AFileName)
 {
   if (!::RemoveFile(ApiPath(AFileName)))
   {
@@ -2443,9 +2444,9 @@ void DeleteFileChecked(UnicodeString AFileName)
   }
 }
 //---------------------------------------------------------------------------
-uintptr_t CancelAnswer(uintptr_t Answers)
+uint32_t CancelAnswer(uint32_t Answers)
 {
-  uintptr_t Result;
+  uint32_t Result;
   if ((Answers & qaCancel) != 0)
   {
     Result = qaCancel;
@@ -2470,9 +2471,9 @@ uintptr_t CancelAnswer(uintptr_t Answers)
   return Result;
 }
 //---------------------------------------------------------------------------
-uintptr_t AbortAnswer(uintptr_t Answers)
+uint32_t AbortAnswer(uint32_t Answers)
 {
-  uintptr_t Result;
+  uint32_t Result;
   if (FLAGSET(Answers, qaAbort))
   {
     Result = qaAbort;
@@ -2484,9 +2485,9 @@ uintptr_t AbortAnswer(uintptr_t Answers)
   return Result;
 }
 //---------------------------------------------------------------------------
-uintptr_t ContinueAnswer(uintptr_t Answers)
+uint32_t ContinueAnswer(uint32_t Answers)
 {
-  uintptr_t Result;
+  uint32_t Result;
   if (FLAGSET(Answers, qaSkip))
   {
     Result = qaSkip;
@@ -2539,7 +2540,7 @@ static UnicodeString __fastcall DoLoadStrFrom(HINSTANCE Module, intptr_t Ident, 
 {
   UnicodeString Result;
   Result.SetLength(MaxLength);
-  int Length = ::LoadStringW(Module, (UINT)Ident, (LPWSTR)Result.c_str(), (int)MaxLength);
+  int Length = ::LoadStringW(Module, (UINT)Ident, (LPWSTR)Result.c_str(), ToInt(MaxLength));
   Result.SetLength(Length);
 
   return Result;

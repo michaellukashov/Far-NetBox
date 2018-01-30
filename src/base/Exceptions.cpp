@@ -46,7 +46,7 @@ static bool WellKnownException(
 #if 0
   if (!IgnoredExceptions.empty())
   {
-    TGuard Guard(*IgnoredExceptionsCriticalSection.get());
+    volatile TGuard Guard(*IgnoredExceptionsCriticalSection.get());
     UnicodeString ClassName = ""; // NormalizeClassName(E->QualifiedClassName());
     IgnoreException = (IgnoredExceptions.find(ClassName) != IgnoredExceptions.end());
   }

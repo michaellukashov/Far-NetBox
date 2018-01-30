@@ -632,7 +632,7 @@ using namespace Sysutils;
 
 namespace base {
 
-DWORD FindFirst(UnicodeString AFileName, DWORD LocalFileAttrs, TSearchRec &Rec);
+DWORD FindFirst(const UnicodeString AFileName, DWORD LocalFileAttrs, TSearchRec &Rec);
 DWORD FindNext(TSearchRec &Rec);
 DWORD FindClose(TSearchRec &Rec);
 

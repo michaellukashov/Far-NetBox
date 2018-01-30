@@ -7,7 +7,6 @@
 #include <assert.h>
 
 #include <FormatUtils.h>
-//#include <Property.hpp>
 
 #define FORMAT(S, ...) nb::Sprintf(S, __VA_ARGS__)
 #define FMTLOAD(Id, ...) nb::FmtLoadStr(Id, __VA_ARGS__)

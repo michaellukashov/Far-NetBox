@@ -136,7 +136,7 @@ CUSTOM_MEM_ALLOCATION_IMPL
 private:
   Object *_obj;
   typedef T (Object::*GetterFunc)() const;
-  const GetterFunc _getterFunc;
+  GetterFunc _getterFunc;
 public:
   explicit ROProperty(Object *Obj, GetterFunc Getter) :
     _obj(Obj),
