@@ -931,6 +931,8 @@ public:
 
   RWProperty<int, TBase2> RWData1{this, &TBase2::GetRWData1, &TBase2::SetRWData1};
   RWProperty<UnicodeString, TBase2> RWData2{this, &TBase2::GetRWData2, &TBase2::SetRWData2};
+  RWProperty<UnicodeString, TBase2> RWData3{this, &TBase2::GetRWData3, &TBase2::SetRWData3};
+  RWProperty<TDateTime, TBase2> Modification{this, &TBase2::GetModification, &TBase2::SetModification};
 private:
   int GetData2() const { return 41; }
   int GetData3() const { return 41; }
@@ -939,9 +941,15 @@ private:
   void SetRWData1(int Value) { FRWData1 = Value; }
   UnicodeString GetRWData2() const { return FRWData2; }
   void SetRWData2(const UnicodeString Value) { FRWData2 = Value; }
+  UnicodeString GetRWData3() const { return FRWData3; }
+  void SetRWData3(UnicodeString Value) { FRWData3 = Value; }
+  TDateTime GetModification() const { return FModification; }
+  void SetModification(const TDateTime Value) { FModification = Value; }
 private:
   int FRWData1 = 41;
   UnicodeString FRWData2 = "41";
+  UnicodeString FRWData3 = "FRWData3";
+  TDateTime FModification = TDateTime(10, 10, 10, 10);
 };
 
 } // namespace
@@ -996,8 +1004,22 @@ TEST_CASE_METHOD(base_fixture_t, "testProperty02", "netbox")
     CHECK(b2.RWData2() == "41");
     printf("13\n");
     b2.RWData2 = "42";
+    printf("13.1\n");
     CHECK(b2.RWData2() == "42");
+    printf("13.2\n");
+//    CHECK(b2.RWData3() == "FRWData3");
+    printf("14\n");
+    CHECK(b2.Modification() == TDateTime(10, 10, 10, 10));
     TBase2 b3 = b2;
     CHECK(b3.RWData2() == "42");
+    CHECK(b3.RWData3() == "FRWData3");
+    printf("15\n");
+    b3.RWData3 = "FRWData3-mod";
+    CHECK(b3.RWData3() == "FRWData3-mod");
+    CHECK(b3.Modification() == TDateTime(10, 10, 10, 10));
+    TDateTime dt(10, 20, 59, 10);
+    printf("16\n");
+    b3.Modification = dt;
+    CHECK(b3.Modification() == TDateTime(10, 20, 59, 10));
   }
 }
