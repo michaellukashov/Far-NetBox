@@ -149,7 +149,7 @@ struct NB_CORE_EXPORT TQueryParams : public TObject
   uintptr_t Timer;
   TQueryParamsTimerEvent TimerEvent;
   UnicodeString TimerMessage;
-  uintptr_t TimerAnswers;
+  uint32_t TimerAnswers;
   TQueryType TimerQueryType;
   uintptr_t Timeout;
   uintptr_t TimeoutAnswer;
