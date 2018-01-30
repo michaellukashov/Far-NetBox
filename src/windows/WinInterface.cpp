@@ -1075,10 +1075,10 @@ void TWinInteractiveCustomCommand::Execute(
           Value = TrimRight(Value);
         }
         __finally
-        ({
+        {
           CloseHandle(ProcessInformation.hProcess);
           CloseHandle(ProcessInformation.hThread);
-        })
+        }
       }
     }
   }
