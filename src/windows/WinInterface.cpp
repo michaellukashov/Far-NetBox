@@ -3,7 +3,7 @@
 
 const uint32_t GUIUpdateInterval = 100;
 
-static bool IsPositiveAnswer(uintptr_t Answer)
+static bool IsPositiveAnswer(uint32_t Answer)
 {
   return (Answer == qaYes) || (Answer == qaOK) || (Answer == qaYesToAll);
 }
@@ -129,7 +129,7 @@ static TFarCheckBox *FindNeverAskAgainCheck(TFarDialog *Dialog)
 }
 
 TFarDialog *CreateMessageDialogEx(UnicodeString Msg,
-  TStrings *MoreMessages, TQueryType Type, uintptr_t Answers, UnicodeString HelpKeyword,
+  TStrings *MoreMessages, TQueryType Type, uint32_t Answers, const UnicodeString AHelpKeyword,
   const TMessageParams *Params, TFarButton *&TimeoutButton)
 {
   TMsgDlgType DlgType;
@@ -222,10 +222,10 @@ TFarDialog *CreateMessageDialogEx(UnicodeString Msg,
   return Dialog;
 }
 
-uintptr_t ExecuteMessageDialog(TForm *Dialog, uintptr_t Answers, const TMessageParams *Params)
+uintptr_t ExecuteMessageDialog(TForm *Dialog, uint32_t Answers, const TMessageParams *Params)
 {
   FlashOnBackground();
-  uintptr_t Answer = Dialog->ShowModal();
+  uint32_t Answer = Dialog->ShowModal();
   // mrCancel is returned always when X button is pressed, despite
   // no Cancel button was on the dialog. Find valid "cancel" answer.
   // mrNone is returned when Windows session is closing (log off)
@@ -428,7 +428,7 @@ void SetTimeoutEvents(TControl *Control, TMessageTimeout *Timeout)
 
 // Merge with CreateMessageDialogEx
 TForm *CreateMoreMessageDialogEx(const UnicodeString Message, TStrings *MoreMessages,
-  TQueryType Type, uintptr_t Answers, UnicodeString HelpKeyword, const TMessageParams *Params)
+  TQueryType Type, uint32_t Answers, UnicodeString HelpKeyword, const TMessageParams *Params)
 {
   std::unique_ptr<TForm> Dialog;
   UnicodeString AMessage = Message;
@@ -480,7 +480,7 @@ TForm *CreateMoreMessageDialogEx(const UnicodeString Message, TStrings *MoreMess
 }
 
 uintptr_t MoreMessageDialog(UnicodeString Message, TStrings *MoreMessages,
-  TQueryType Type, uintptr_t Answers, UnicodeString HelpKeyword, const TMessageParams *Params)
+  TQueryType Type, uint32_t Answers, UnicodeString HelpKeyword, const TMessageParams *Params)
 {
   std::unique_ptr<TForm> Dialog(CreateMoreMessageDialogEx(Message, MoreMessages, Type, Answers, HelpKeyword, Params));
   uintptr_t Result = ExecuteMessageDialog(Dialog.get(), Answers, Params);
@@ -488,7 +488,7 @@ uintptr_t MoreMessageDialog(UnicodeString Message, TStrings *MoreMessages,
 }
 
 uintptr_t MessageDialog(UnicodeString Msg, TQueryType Type,
-  uintptr_t Answers, UnicodeString HelpKeyword, const TMessageParams *Params)
+  uint32_t Answers, UnicodeString HelpKeyword, const TMessageParams *Params)
 {
   return MoreMessageDialog(Msg, nullptr, Type, Answers, HelpKeyword, Params);
 }
@@ -662,8 +662,7 @@ static void DoExceptNotify(TObject * /*ExceptObj*/, void * /*ExceptAddr*/,
         std::unique_ptr<TStrings> StackTrace(StackInfoListToStrings(StackInfoList));
 
         DWORD ThreadID = GetCurrentThreadId();
-
-        TGuard Guard(StackTraceCriticalSection.get());
+ volatile TGuard Guard(StackTraceCriticalSection.get());
 
         TStackTraceMap::iterator Iterator = StackTraceMap.find(ThreadID);
         if (Iterator != StackTraceMap.end())
@@ -988,19 +987,19 @@ void TWinInteractiveCustomCommand::Execute(
     {
       if (StdOutOutput != INVALID_HANDLE_VALUE)
       {
-        CloseHandle(StdOutOutput);
+        SAFE_CLOSE_HANDLE(StdOutOutput);
       }
       if (StdOutInput != INVALID_HANDLE_VALUE)
       {
-        CloseHandle(StdOutInput);
+        SAFE_CLOSE_HANDLE(StdOutInput);
       }
       if (StdInOutput != INVALID_HANDLE_VALUE)
       {
-        CloseHandle(StdInOutput);
+        SAFE_CLOSE_HANDLE(StdInOutput);
       }
       if (StdInInput != INVALID_HANDLE_VALUE)
       {
-        CloseHandle(StdInInput);
+        SAFE_CLOSE_HANDLE(StdInInput);
       }
     };
     if (!::CreatePipe(&StdOutOutput, &StdOutInput, &SecurityAttributes, 0))
@@ -1034,8 +1033,8 @@ void TWinInteractiveCustomCommand::Execute(
         {
           SCOPE_EXIT
           {
-            CloseHandle(ProcessInformation.hProcess);
-            CloseHandle(ProcessInformation.hThread);
+            SAFE_CLOSE_HANDLE(ProcessInformation.hProcess);
+            SAFE_CLOSE_HANDLE(ProcessInformation.hThread);
           };
           // wait until the console program terminated
           bool Running = true;
@@ -1076,18 +1075,15 @@ void TWinInteractiveCustomCommand::Execute(
           Value = TrimRight(Value);
         }
         __finally
-        {
-#if 0
+        ({
           CloseHandle(ProcessInformation.hProcess);
           CloseHandle(ProcessInformation.hThread);
-#endif // #if 0
-        };
+        })
       }
     }
   }
   __finally
-  {
-#if 0
+  ({
     if (StdOutOutput != INVALID_HANDLE_VALUE)
     {
       CloseHandle(StdOutOutput);
@@ -1104,8 +1100,7 @@ void TWinInteractiveCustomCommand::Execute(
     {
       CloseHandle(StdInInput);
     }
-#endif // #if 0
-  };
+  })
 #endif // #if 0
 }
 
@@ -1384,26 +1379,26 @@ void WinFinalize()
 //  JclRemoveExceptNotifier(DoExceptNotify);
 }
 
-bool InputDialog(UnicodeString ACaption,
-  UnicodeString APrompt, UnicodeString &Value, UnicodeString HelpKeyword,
+bool InputDialog(const UnicodeString ACaption,
+  const UnicodeString APrompt, UnicodeString &Value, const UnicodeString AHelpKeyword,
   TStrings *History, bool PathInput,
   TInputDialogInitializeEvent OnInitialize, bool Echo)
 {
-  bool Result = GetGlobals()->InputDialog(ACaption, APrompt, Value, HelpKeyword,
+  bool Result = GetGlobals()->InputDialog(ACaption, APrompt, Value, AHelpKeyword,
       History, PathInput, OnInitialize, Echo);
   return Result;
 }
 
-uintptr_t MessageDialog(UnicodeString Msg, TQueryType Type,
-  uintptr_t Answers, UnicodeString HelpKeyword, const TMessageParams *Params)
+uintptr_t MessageDialog(const UnicodeString AMsg, TQueryType Type,
+  uint32_t Answers, const UnicodeString AHelpKeyword, const TMessageParams *Params)
 {
-  DebugUsedParam(HelpKeyword);
-  uintptr_t Result = GetGlobals()->MoreMessageDialog(Msg, nullptr, Type, Answers, Params);
+  DebugUsedParam(AHelpKeyword);
+  uintptr_t Result = GetGlobals()->MoreMessageDialog(AMsg, nullptr, Type, Answers, Params);
   return Result;
 }
 
 uintptr_t MessageDialog(intptr_t Ident, TQueryType Type,
-  uintptr_t Answers, UnicodeString HelpKeyword, const TMessageParams *Params)
+  uint32_t Answers, const UnicodeString HelpKeyword, const TMessageParams *Params)
 {
   DebugUsedParam(HelpKeyword);
   UnicodeString Msg = LoadStr(Ident);
@@ -1411,19 +1406,19 @@ uintptr_t MessageDialog(intptr_t Ident, TQueryType Type,
   return Result;
 }
 
-uintptr_t SimpleErrorDialog(UnicodeString Msg, UnicodeString /*MoreMessages*/)
+uintptr_t SimpleErrorDialog(const UnicodeString AMsg, UnicodeString /*MoreMessages*/)
 {
-  uintptr_t Answers = qaOK;
-  uintptr_t Result = GetGlobals()->MoreMessageDialog(Msg, nullptr, qtError, Answers, nullptr);
+  uint32_t Answers = qaOK;
+  uintptr_t Result = GetGlobals()->MoreMessageDialog(AMsg, nullptr, qtError, Answers, nullptr);
   return Result;
 }
 
-uintptr_t MoreMessageDialog(UnicodeString Message,
-  TStrings *MoreMessages, TQueryType Type, uintptr_t Answers,
-  UnicodeString HelpKeyword, const TMessageParams *Params)
+uintptr_t MoreMessageDialog(const UnicodeString AMessage,
+  TStrings *MoreMessages, TQueryType Type, uint32_t Answers,
+  const UnicodeString HelpKeyword, const TMessageParams *Params)
 {
   DebugUsedParam(HelpKeyword);
-  uintptr_t Result = GetGlobals()->MoreMessageDialog(Message, MoreMessages, Type, Answers, Params);
+  uintptr_t Result = GetGlobals()->MoreMessageDialog(AMessage, MoreMessages, Type, Answers, Params);
   return Result;
 }
 
