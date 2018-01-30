@@ -29,14 +29,14 @@ public:
   static inline bool classof(const Exception * Obj) { return Obj->is(OBJECT_CLASS_ExtException); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_ExtException) || Exception::is(Kind); }
 public:
-  explicit ExtException(Exception * E);
-  explicit ExtException(TObjectClassId Kind, Exception * E);
-  explicit ExtException(const Exception * E, const UnicodeString Msg, const UnicodeString HelpKeyword = L"");
-  explicit ExtException(TObjectClassId Kind, const Exception * E, const UnicodeString Msg, const UnicodeString HelpKeyword = L"");
+  explicit ExtException(const Exception *E);
+  explicit ExtException(TObjectClassId Kind, const Exception *E);
+  explicit ExtException(const Exception *E, const UnicodeString Msg, const UnicodeString HelpKeyword = L"");
+  explicit ExtException(TObjectClassId Kind, const Exception *E, const UnicodeString Msg, const UnicodeString HelpKeyword = L"");
   // explicit ExtException(const ExtException * E, const UnicodeString Msg, const UnicodeString HelpKeyword = L"");
   explicit ExtException(TObjectClassId Kind, Exception *E, intptr_t Ident);
   // "copy the exception", just append message to the end
-  explicit ExtException(TObjectClassId Kind, const UnicodeString Msg, const Exception * E, const UnicodeString HelpKeyword = L"");
+  explicit ExtException(TObjectClassId Kind, const UnicodeString Msg, const Exception *E, const UnicodeString HelpKeyword = L"");
   explicit ExtException(UnicodeString Msg, const UnicodeString MoreMessages, const UnicodeString HelpKeyword = L"");
   explicit ExtException(TObjectClassId Kind, const UnicodeString Msg, const UnicodeString MoreMessages, const UnicodeString HelpKeyword = L"");
   explicit ExtException(UnicodeString Msg, TStrings *MoreMessages, bool Own, const UnicodeString HelpKeyword = L"");

@@ -275,7 +275,7 @@ bool IsInternalErrorHelpKeyword(const UnicodeString HelpKeyword)
 #endif // FARPLUGIN
 }
 
-ExtException::ExtException(Exception *E) :
+ExtException::ExtException(const Exception *E) :
   Exception(OBJECT_CLASS_ExtException, L""),
   FMoreMessages(nullptr)
 {
@@ -283,7 +283,7 @@ ExtException::ExtException(Exception *E) :
   FHelpKeyword = GetExceptionHelpKeyword(E);
 }
 
-ExtException::ExtException(TObjectClassId Kind, Exception *E) :
+ExtException::ExtException(TObjectClassId Kind, const Exception *E) :
   Exception(Kind, L""),
   FMoreMessages(nullptr)
 {
