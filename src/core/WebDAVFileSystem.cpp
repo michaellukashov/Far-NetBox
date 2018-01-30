@@ -43,7 +43,7 @@ __removed #pragma package(smart_init)
 //---------------------------------------------------------------------------
 __removed #define FILE_OPERATION_LOOP_TERMINAL FTerminal
 //---------------------------------------------------------------------------
-#define SESSION_FS_KEY "filesystem"
+__removed #define SESSION_FS_KEY "filesystem"
 static const UnicodeString CONST_WEBDAV_PROTOCOL_BASE_NAME = L"WebDAV";
 static const int HttpUnauthorized = 401;
 //---------------------------------------------------------------------------
@@ -1410,7 +1410,7 @@ void __fastcall TWebDAVFileSystem::Source(
           CheckStatus(Status);
         }
       }
-      catch (Exception & E)
+      catch (Exception &E)
       {
         TouchAction.Rollback(&E);
         ChildError = true;

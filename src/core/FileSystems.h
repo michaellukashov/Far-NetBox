@@ -5,7 +5,7 @@
 #include <Exceptions.h>
 
 #include "SessionInfo.h"
-
+//---------------------------------------------------------------------------
 class TTerminal;
 class TRights;
 class TRemoteFile;
@@ -14,22 +14,8 @@ class TCopyParamType;
 struct TSpaceAvailable;
 class TFileOperationProgressType;
 class TRemoteProperties;
+struct TLocalFileHandle;
 //---------------------------------------------------------------------------
-enum TFSCommand
-{
-  fsNull = 0, fsVarValue, fsLastLine, fsFirstLine,
-  fsCurrentDirectory, fsChangeDirectory, fsListDirectory, fsListCurrentDirectory,
-  fsListFile, fsLookupUsersGroups, fsCopyToRemote, fsCopyToLocal, fsDeleteFile,
-  fsRenameFile, fsCreateDirectory, fsChangeMode, fsChangeGroup, fsChangeOwner,
-  fsHomeDirectory, fsUnset, fsUnalias, fsCreateLink, fsCopyFile,
-  fsAnyCommand, fsLang, fsReadSymlink, fsChangeProperties, fsMoveFile,
-  fsLock,
-};
-//---------------------------------------------------------------------------
-const int dfNoRecursive = 0x01;
-const int dfAlternative = 0x02;
-const int dfForceDelete = 0x04;
-
 // from FtpFileSystem.h
 enum TOverwriteMode
 {
@@ -151,6 +137,21 @@ public:
   virtual void FileTransferProgress(int64_t TransferSize, int64_t Bytes) = 0;
 };
 //---------------------------------------------------------------------------
+enum TFSCommand
+{
+  fsNull = 0, fsVarValue, fsLastLine, fsFirstLine,
+  fsCurrentDirectory, fsChangeDirectory, fsListDirectory, fsListCurrentDirectory,
+  fsListFile, fsLookupUsersGroups, fsCopyToRemote, fsCopyToLocal, fsDeleteFile,
+  fsRenameFile, fsCreateDirectory, fsChangeMode, fsChangeGroup, fsChangeOwner,
+  fsHomeDirectory, fsUnset, fsUnalias, fsCreateLink, fsCopyFile,
+  fsAnyCommand, fsLang, fsReadSymlink, fsChangeProperties, fsMoveFile,
+  fsLock,
+};
+//---------------------------------------------------------------------------
+const int dfNoRecursive = 0x01;
+const int dfAlternative = 0x02;
+const int dfForceDelete = 0x04;
+//---------------------------------------------------------------------------
 class NB_CORE_EXPORT TCustomFileSystem : public TObject, public TFileSystemIntf
 {
   NB_DISABLE_COPY(TCustomFileSystem)
@@ -158,7 +159,7 @@ public:
   static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TCustomFileSystem); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TCustomFileSystem) || TObject::is(Kind); }
 public:
-  virtual ~TCustomFileSystem();
+  virtual __fastcall ~TCustomFileSystem();
 
   virtual void __fastcall Open() = 0;
   virtual void __fastcall Close() = 0;

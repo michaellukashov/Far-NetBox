@@ -6237,7 +6237,7 @@ void __fastcall TTerminal::SynchronizeCollectFile(const UnicodeString &AFileName
   {
     DoSynchronizeCollectFile(AFileName, AFile, Param);
   }
-  catch(ESkipFile &E)
+  catch (ESkipFile &E)
   {
     volatile TSuspendFileOperationProgress Suspend(OperationProgress);
     if (!HandleException(&E))

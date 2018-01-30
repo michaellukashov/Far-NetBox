@@ -12,18 +12,19 @@
 #define NEED_LIBS3
 #endif
 
+#include <StrUtils.hpp>
+#include <NeonIntf.h>
+#include <SessionData.h>
+#include <Interface.h>
+#include <Common.h>
+#include <Exceptions.h>
+#include <Terminal.h>
+
 #include "S3FileSystem.h"
 
-#include "SessionData.h"
-#include "Interface.h"
-#include "Common.h"
-#include "Exceptions.h"
-#include "Terminal.h"
 #include "TextsCore.h"
 #include "HelpCore.h"
-#include "NeonIntf.h"
 #include <ne_request.h>
-#include <StrUtils.hpp>
 //---------------------------------------------------------------------------
 __removed #pragma package(smart_init)
 //---------------------------------------------------------------------------
@@ -192,6 +193,8 @@ void TS3FileSystem::LibS3SessionCallback(ne_session_s * Session, void * Callback
   InitNeonSession(
     Session, Data->GetProxyMethod(), Data->GetProxyHost(), Data->GetProxyPort(),
     Data->GetProxyUsername(), Data->GetProxyPassword(), FileSystem->FTerminal);
+
+  ne_set_session_private(Session, SESSION_FS_KEY, this);
 
   SetNeonTlsInit(Session, FileSystem->InitSslSession);
 

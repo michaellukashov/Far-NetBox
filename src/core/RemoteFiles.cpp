@@ -688,13 +688,11 @@ TRemoteTokenList *TRemoteTokenList::Duplicate() const
       ++it;
     }
   }
-#if 0
-  catch (...)
-  {
+  catch__removed
+  ({
     delete Result;
     throw;
-  }
-#endif // #if 0
+  })
   return Result.release();
 }
 //---------------------------------------------------------------------------
@@ -877,13 +875,11 @@ TRemoteFile *TRemoteFile::Duplicate(bool Standalone) const
       Result->FFullFileName = GetFullFileName();
     }
   }
-#if 0
-  catch (...)
-  {
+  catch__removed
+  ({
     delete Result;
     throw;
-  }
-#endif // #if 0
+  })
   return Result.release();
 }
 //---------------------------------------------------------------------------

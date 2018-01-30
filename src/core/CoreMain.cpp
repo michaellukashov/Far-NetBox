@@ -177,7 +177,7 @@ void CoreLoad()
   {
     GetConfiguration()->Load(ConfigStorage);
   }
-  catch (Exception & E)
+  catch (Exception &E)
   {
     ShowExtendedException(&E);
   }
@@ -194,7 +194,7 @@ void CoreLoad()
       StoredSessions->Load(SessionsStorage.get());
     }
   }
-  catch (Exception & E)
+  catch (Exception &E)
   {
     ShowExtendedException(&E);
   }
@@ -225,7 +225,7 @@ void CoreFinalize()
   {
     GetConfiguration()->Save();
   }
-  catch(Exception & E)
+  catch(Exception &E)
   {
     ShowExtendedException(&E);
   }

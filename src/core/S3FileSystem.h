@@ -153,7 +153,7 @@ protected:
     TLibS3ListBucketCallbackData & Data);
   UnicodeString GetFolderKey(const UnicodeString AKey);
   void DoReadFile(const UnicodeString AFileName, TRemoteFile *& AFile);
-  void __fastcall ConfirmOverwrite(
+  void ConfirmOverwrite(
     const UnicodeString ASourceFullFileName, UnicodeString &ATargetFileName,
     TFileOperationProgressType *OperationProgress, const TOverwriteFileParams *FileParams,
     const TCopyParamType *CopyParam, intptr_t AParams);

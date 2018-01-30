@@ -5609,13 +5609,11 @@ TSessionData *TStoredSessionList::ParseUrl(UnicodeString Url,
   {
     Data->ParseUrl(Url, Options, this, DefaultsOnly, AFileName, AProtocolDefined, MaskedUrl);
   }
-#if 0
-  catch (...)
-  {
+  catch__removed
+  ({
     delete Data;
     throw;
-  }
-#endif // #if 0
+  })
   return Data.release();
 }
 

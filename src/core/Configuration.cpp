@@ -1521,7 +1521,7 @@ TStoredSessionList * __fastcall TConfiguration::SelectKnownHostsSessionsForImpor
   {
     ImportSessionList->ImportFromKnownHosts(Lines);
   }
-  catch (Exception & E)
+  catch (Exception &E)
   {
     Error = E.Message;
   }
