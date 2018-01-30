@@ -1300,11 +1300,11 @@ void TSecureShell::SendEOF()
   SendSpecial(TS_EOF);
 }
 
-uintptr_t TSecureShell::TimeoutPrompt(TQueryParamsTimerEvent PoolEvent)
+uint32_t TSecureShell::TimeoutPrompt(TQueryParamsTimerEvent PoolEvent)
 {
   ++FWaiting;
 
-  uintptr_t Answer;
+  uint32_t Answer;
   try__finally
   {
     SCOPE_EXIT
@@ -1333,7 +1333,7 @@ uintptr_t TSecureShell::TimeoutPrompt(TQueryParamsTimerEvent PoolEvent)
   return Answer;
 }
 
-void TSecureShell::SendBuffer(intptr_t &Result)
+void TSecureShell::SendBuffer(uint32_t &Result)
 {
   // for comments see PoolForData
   if (!GetActive())
@@ -1378,7 +1378,7 @@ void TSecureShell::DispatchSendBuffer(intptr_t BufSize)
     if (Now() - Start > FSessionData->GetTimeoutDT())
     {
       LogEvent("Waiting for dispatching send buffer timed out, asking user what to do.");
-      uintptr_t Answer = TimeoutPrompt(nb::bind(&TSecureShell::SendBuffer, this));
+      uint32_t Answer = TimeoutPrompt(nb::bind(&TSecureShell::SendBuffer, this));
       switch (Answer)
       {
       case qaRetry:
@@ -1799,7 +1799,7 @@ void inline TSecureShell::CheckConnection(int Message)
   }
 }
 
-void TSecureShell::PoolForData(WSANETWORKEVENTS &Events, intptr_t &Result)
+void TSecureShell::PoolForData(WSANETWORKEVENTS &Events, uint32_t &Result)
 {
   if (!GetActive())
   {
@@ -1847,7 +1847,7 @@ public:
   {
   }
 
-  void PoolForData(intptr_t &Result)
+  void PoolForData(uint32_t &Result)
   {
     FSecureShell->PoolForData(FEvents, Result);
   }
@@ -1880,7 +1880,7 @@ void TSecureShell::WaitForData()
       TPoolForDataEvent Event(this, Events);
 
       LogEvent("Waiting for data timed out, asking user what to do.");
-      uintptr_t Answer = TimeoutPrompt(nb::bind(&TPoolForDataEvent::PoolForData, &Event));
+      uint32_t Answer = TimeoutPrompt(nb::bind(&TPoolForDataEvent::PoolForData, &Event));
       switch (Answer)
       {
       case qaRetry:
@@ -2327,10 +2327,10 @@ struct TPasteKeyHandler
   UnicodeString NormalizedFingerprintSHA256;
   TSessionUI * UI;
 
-  void __fastcall Paste(TObject * Sender, uintptr_t &Answer);
+  void __fastcall Paste(TObject * Sender, uint32_t &Answer);
 };
 //---------------------------------------------------------------------------
-void __fastcall TPasteKeyHandler::Paste(TObject * /*Sender*/, uintptr_t &Answer)
+void __fastcall TPasteKeyHandler::Paste(TObject * /*Sender*/, uint32_t &Answer)
 {
   UnicodeString ClipboardText;
   if (TextFromClipboard(ClipboardText, true))
@@ -2500,7 +2500,7 @@ void __fastcall TSecureShell::VerifyHostKey(
 
       bool Unknown = StoredKeys.IsEmpty();
 
-      intptr_t Answers;
+      uint32_t Answers;
       intptr_t AliasesCount;
       TQueryButtonAlias Aliases[4];
       Aliases[0].Button = qaRetry;
@@ -2551,7 +2551,7 @@ void __fastcall TSecureShell::VerifyHostKey(
         StoreKeyStr = (StoredKeys + HostKeyDelimiter + StoreKeyStr);
       // fall thru
       case qaYes:
-        store_host_key(AnsiString(Host).c_str(), Port, AnsiString(AKeyType).c_str(), AnsiString(StoreKeyStr).c_str());
+        store_host_key(AnsiString(Host).c_str(), ToInt(Port), AnsiString(AKeyType).c_str(), AnsiString(StoreKeyStr).c_str());
         Verified = true;
         break;
 

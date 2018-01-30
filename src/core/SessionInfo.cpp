@@ -851,7 +851,7 @@ void TSessionLog::Add(TLogLineType Type, UnicodeString ALine)
       }
       else
       {
-        TGuard Guard(FCriticalSection);
+        volatile TGuard Guard(FCriticalSection);
 
         DoAdd(Type, ALine, nb::bind(&TSessionLog::DoAddToSelf, this));
       }
@@ -1430,7 +1430,7 @@ void TActionLog::Add(UnicodeString Line)
   DebugAssert(FConfiguration);
   if (FLogging)
   {
-    TGuard Guard(FCriticalSection);
+    volatile TGuard Guard(FCriticalSection);
     if (FLogger == nullptr)
     {
       OpenLogFile();

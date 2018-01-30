@@ -1,3 +1,4 @@
+
 #include <vcl.h>
 #pragma hdrstop
 
@@ -39,7 +40,7 @@ intptr_t __fastcall TNamedObject::Compare(const TNamedObject *Other) const
   }
   else
   {
-    Result = CompareLogicalText(GetName(), Other->GetName());
+    Result = CompareLogicalText(GetName(), Other->GetName(), true);
   }
   return Result;
 }
@@ -68,9 +69,8 @@ void __fastcall TNamedObject::MakeUniqueIn(TNamedObjectList *List)
           Name.Delete(P, Name.Length() - P + 1);
           SetName(Name.TrimRight());
         }
-        catch (Exception &E)
+        catch (Exception &/*E*/)
         {
-          (void)E;
           N = 0;
         }
       }

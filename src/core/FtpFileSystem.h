@@ -66,7 +66,7 @@ public:
     TUploadSessionAction &Action, bool &ChildError);
   virtual void __fastcall Sink(
     const UnicodeString AFileName, const TRemoteFile *AFile,
-    const UnicodeString ATargetDir, UnicodeString &ADestFileName, intptr_t Attrs,
+    const UnicodeString ATargetDir, UnicodeString &ADestFileName, uintptr_t Attrs,
     const TCopyParamType *CopyParam, intptr_t AParams, TFileOperationProgressType *OperationProgress,
     uintptr_t AFlags, TDownloadSessionAction &Action);
   virtual void __fastcall RemoteCreateDirectory(const UnicodeString ADirName) override;

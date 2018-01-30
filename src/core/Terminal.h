@@ -41,15 +41,15 @@ typedef void __fastcall (__closure *TQueryUserEvent)
    const TQueryParams * Params, unsigned int & Answer, TQueryType QueryType, void * Arg);
 #endif // #if 0
 typedef nb::FastDelegate8<void,
-  TObject * /*Sender*/, UnicodeString /*Query*/, TStrings * /*MoreMessages*/, uintptr_t /*Answers*/,
-   const TQueryParams * /*Params*/, uintptr_t & /*Answer*/, TQueryType /*QueryType*/, void * /*Arg*/> TQueryUserEvent;
+  TObject * /*Sender*/, const UnicodeString & /*AQuery*/, TStrings * /*MoreMessages*/, uint32_t /*Answers*/,
+   const TQueryParams * /*Params*/, uint32_t & /*Answer*/, TQueryType /*QueryType*/, void * /*Arg*/> TQueryUserEvent;
 #if 0
 typedef void __fastcall (__closure *TPromptUserEvent)
   (TTerminal * Terminal, TPromptKind Kind, UnicodeString Name, UnicodeString Instructions,
    TStrings * Prompts, TStrings * Results, bool & Result, void * Arg);
 #endif // #if 0
 typedef nb::FastDelegate8<void,
-  TTerminal * /*Terminal*/, TPromptKind /*Kind*/, UnicodeString /*Name*/, UnicodeString /*Instructions*/,
+  TTerminal * /*Terminal*/, TPromptKind /*Kind*/, const UnicodeString & /*AName*/, const UnicodeString & /*AInstructions*/,
   TStrings * /*Prompts*/, TStrings * /*Results*/, bool & /*Result*/, void * /*Arg*/> TPromptUserEvent;
 #if 0
 typedef void __fastcall (__closure *TDisplayBannerEvent)
@@ -57,7 +57,7 @@ typedef void __fastcall (__closure *TDisplayBannerEvent)
    bool & NeverShowAgain, int Options, unsigned int & Params);
 #endif // #if 0
 typedef nb::FastDelegate6<void,
-  TTerminal * /*Terminal*/, UnicodeString /*SessionName*/, UnicodeString /*Banner*/,
+  TTerminal * /*Terminal*/, const UnicodeString & /*ASessionName*/, const UnicodeString & /*ABanner*/,
   bool & /*NeverShowAgain*/, intptr_t /*Options*/, uintptr_t & /*Params*/> TDisplayBannerEvent;
 #if 0
 typedef void __fastcall (__closure *TExtendedExceptionEvent)
@@ -120,13 +120,13 @@ typedef void __fastcall (__closure *TInformationEvent)
   (TTerminal * Terminal, const UnicodeString Str, bool Status, int Phase);
 #endif // #if 0
 typedef nb::FastDelegate4<void,
-  TTerminal * /*Terminal*/, UnicodeString /*Str*/, bool /*Status*/, intptr_t /*Phase*/> TInformationEvent;
+  TTerminal * /*Terminal*/, const UnicodeString & /*Str*/, bool /*Status*/, intptr_t /*Phase*/> TInformationEvent;
 #if 0
 typedef void __fastcall (__closure *TCustomCommandEvent)
   (TTerminal * Terminal, const UnicodeString Command, bool & Handled);
 #endif // #if 0
 typedef nb::FastDelegate3<void,
-  TTerminal * /*Terminal*/, const UnicodeString /*Command*/, bool & /*Handled*/> TCustomCommandEvent;
+  TTerminal * /*Terminal*/, const UnicodeString & /*Command*/, bool & /*Handled*/> TCustomCommandEvent;
 
 typedef nb::FastDelegate5<HANDLE,
   UnicodeString /*FileName*/, DWORD /*DesiredAccess*/,
@@ -142,7 +142,7 @@ typedef nb::FastDelegate3<bool,
 typedef nb::FastDelegate1<bool,
   UnicodeString /*LocalDirName*/> TRemoveLocalDirectoryEvent;
 typedef nb::FastDelegate2<bool,
-  UnicodeString /*LocalDirName*/,
+  const UnicodeString & /*LocalDirName*/,
   LPSECURITY_ATTRIBUTES /*SecurityAttributes*/> TCreateLocalDirectoryEvent;
 typedef nb::FastDelegate0<bool> TCheckForEscEvent;
 //---------------------------------------------------------------------------
@@ -337,7 +337,7 @@ private:
 public:
   void __fastcall CommandError(Exception *E, const UnicodeString AMsg);
   uintptr_t __fastcall CommandError(Exception *E, const UnicodeString AMsg,
-    uintptr_t Answers, const UnicodeString HelpKeyword = L"");
+    uint32_t Answers, const UnicodeString HelpKeyword = L"");
   UnicodeString __fastcall RemoteGetCurrentDirectory();
   bool __fastcall GetExceptionOnFail() const;
   const TRemoteTokenList * __fastcall GetGroups() const { return const_cast<TTerminal *>(this)->GetGroups(); }
@@ -450,9 +450,9 @@ protected:
   bool __fastcall CheckRemoteFile(
     const UnicodeString AFileName, const TCopyParamType *CopyParam,
     intptr_t Params, TFileOperationProgressType *OperationProgress) const;
-  uintptr_t __fastcall ConfirmFileOverwrite(
+  uint32_t __fastcall ConfirmFileOverwrite(
     const UnicodeString ASourceFullFileName, const UnicodeString ATargetFileName,
-    const TOverwriteFileParams *FileParams, uintptr_t Answers, TQueryParams *QueryParams,
+    const TOverwriteFileParams *FileParams, uint32_t Answers, TQueryParams *QueryParams,
     TOperationSide Side, const TCopyParamType *CopyParam, intptr_t Params,
     TFileOperationProgressType *OperationProgress, UnicodeString AMessage = L"");
   void __fastcall DoSynchronizeCollectDirectory(const UnicodeString ALocalDirectory,
@@ -499,11 +499,11 @@ protected:
   void __fastcall DoUnlockFile(const UnicodeString &AFileName, const TRemoteFile *AFile);
 
   virtual void __fastcall Information(const UnicodeString AStr, bool Status) override;
-  virtual uintptr_t __fastcall QueryUser(const UnicodeString AQuery,
-    TStrings *MoreMessages, uintptr_t Answers, const TQueryParams *Params,
+  virtual uint32_t __fastcall QueryUser(const UnicodeString AQuery,
+    TStrings *MoreMessages, uint32_t Answers, const TQueryParams *Params,
     TQueryType QueryType = qtConfirmation) override;
-  virtual uintptr_t __fastcall QueryUserException(const UnicodeString AQuery,
-    Exception *E, uintptr_t Answers, const TQueryParams *Params,
+  virtual uint32_t __fastcall QueryUserException(const UnicodeString AQuery,
+    Exception *E, uint32_t Answers, const TQueryParams *Params,
     TQueryType QueryType = qtConfirmation) override;
   virtual bool __fastcall PromptUser(TSessionData *Data, TPromptKind Kind,
     UnicodeString AName, const UnicodeString Instructions, TStrings *Prompts, TStrings *Results) override;
@@ -515,7 +515,7 @@ protected:
   bool __fastcall IsListenerFree(uintptr_t PortNumber) const;
   void __fastcall DoProgress(TFileOperationProgressType &ProgressData);
   void __fastcall DoFinished(TFileOperation Operation, TOperationSide Side, bool Temp,
-    const UnicodeString AFileName, bool Success, TOnceDoneOperation &OnceDoneOperation);
+    const UnicodeString &AFileName, bool Success, TOnceDoneOperation &OnceDoneOperation);
   void __fastcall RollbackAction(TSessionAction &Action,
     TFileOperationProgressType *OperationProgress, Exception *E = nullptr);
   void __fastcall DoAnyCommand(const UnicodeString ACommand, TCaptureOutputEvent OutputEvent,
@@ -578,7 +578,7 @@ protected:
     const TCopyParamType *CopyParam, intptr_t AParams, TFileOperationProgressType * OperationProgress, uintptr_t AFlags);
   void __fastcall Sink(
     const UnicodeString AFileName, const TRemoteFile *AFile, const UnicodeString ATargetDir,
-    const TCopyParamType * CopyParam, intptr_t AParams, TFileOperationProgressType *OperationProgress, uintptr_t AFlags,
+    const TCopyParamType *CopyParam, intptr_t AParams, TFileOperationProgressType *OperationProgress, uintptr_t AFlags,
     TDownloadSessionAction &Action);
   void __fastcall SinkFile(const UnicodeString &AFileName, const TRemoteFile *AFile, void *Param);
   void __fastcall UpdateTargetAttrs(
@@ -710,14 +710,14 @@ public:
     const UnicodeString BasePath);
 
   __property TSessionData * SessionData = { read = FSessionData };
-  // ROProperty<TSessionData *, TTerminal> SessionData{this, &TTerminal::GetSessionData};
+  ROProperty<TSessionData *, TTerminal> SessionData{this, &TTerminal::GetSessionData};
   __property TSessionLog * Log = { read = FLog };
-  // ROProperty<TSessionLog *, TTerminal> Log{this, &TTerminal::GetLog};
+  ROProperty<TSessionLog *, TTerminal> Log{this, &TTerminal::GetLog};
   __property TActionLog * ActionLog = { read = FActionLog };
   __property TConfiguration * Configuration = { read = FConfiguration };
-  // ROProperty<TConfiguration *, TTerminal> Configuration{this, &TTerminal::GetConfiguration};
+  ROProperty<TConfiguration *, TTerminal> Configuration{this, &TTerminal::GetConfiguration};
   __property bool Active = { read = GetActive };
-  // ROProperty<bool, TTerminal> Active{this, &TTerminal::GetActive};
+  ROProperty<bool, TTerminal> Active{this, &TTerminal::GetActive};
   __property TSessionStatus Status = { read = FStatus };
   __property UnicodeString CurrentDirectory = { read = GetCurrentDirectory, write = SetCurrentDirectory };
   __property bool ExceptionOnFail = { read = GetExceptionOnFail, write = SetExceptionOnFail };

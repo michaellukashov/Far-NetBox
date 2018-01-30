@@ -126,9 +126,9 @@ public:
   TObject *Sender;
   UnicodeString Query;
   TStrings *MoreMessages;
-  uintptr_t Answers;
+  uint32_t Answers;
   const TQueryParams *Params;
-  uintptr_t Answer;
+  uint32_t Answer;
   TQueryType Type;
 };
 
@@ -309,15 +309,15 @@ protected:
   bool OverrideItemStatus(TQueueItem::TStatus &ItemStatus) const;
 
   void TerminalQueryUser(TObject *Sender,
-    UnicodeString AQuery, TStrings *MoreMessages, uintptr_t Answers,
-    const TQueryParams *Params, uintptr_t &Answer, TQueryType Type, void *Arg);
+    const UnicodeString &AQuery, TStrings *MoreMessages, uint32_t Answers,
+    const TQueryParams *Params, uint32_t &Answer, TQueryType Type, void *Arg);
   void TerminalPromptUser(TTerminal *Terminal, TPromptKind Kind,
-    const UnicodeString Name, UnicodeString Instructions,
+    const UnicodeString &Name, const UnicodeString &Instructions,
     TStrings *Prompts, TStrings *Results, bool &Result, void *Arg);
   void TerminalShowExtendedException(TTerminal *Terminal,
     Exception *E, void *Arg);
   void OperationFinished(TFileOperation Operation, TOperationSide Side,
-    bool Temp, UnicodeString AFileName, bool Success,
+    bool Temp, const UnicodeString &AFileName, bool Success,
     TOnceDoneOperation &OnceDoneOperation);
   void OperationProgress(TFileOperationProgressType &ProgressData);
 };
@@ -552,7 +552,7 @@ TTerminalQueue::~TTerminalQueue()
   Close();
 
   {
-    TGuard Guard(FItemsSection);
+    volatile TGuard Guard(FItemsSection);
 
     while (FTerminals->GetCount() > 0)
     {
@@ -587,7 +587,7 @@ void TTerminalQueue::TerminalFinished(TTerminalItem *TerminalItem)
   if (!FTerminated)
   {
     {
-      TGuard Guard(FItemsSection);
+      volatile TGuard Guard(FItemsSection);
 
       intptr_t Index = FTerminals->IndexOf(TerminalItem);
       DebugAssert(Index >= 0);
@@ -621,7 +621,7 @@ bool TTerminalQueue::TerminalFree(TTerminalItem *TerminalItem)
   if (!FTerminated)
   {
     {
-      TGuard Guard(FItemsSection);
+      volatile TGuard Guard(FItemsSection);
 
       intptr_t Index = FTerminals->IndexOf(TerminalItem);
       DebugAssert(Index >= 0);
@@ -653,7 +653,7 @@ void TTerminalQueue::AddItem(TQueueItem *Item)
   Item->SetStatus(TQueueItem::qsPending);
 
   {
-    TGuard Guard(FItemsSection);
+    volatile TGuard Guard(FItemsSection);
 
     FItems->Add(Item);
     Item->FQueue = this;
@@ -669,7 +669,7 @@ void TTerminalQueue::RetryItem(TQueueItem *Item)
   if (!FTerminated)
   {
     {
-      TGuard Guard(FItemsSection);
+      volatile TGuard Guard(FItemsSection);
 
       intptr_t Index = FItems->Remove(Item);
       DebugAssert(Index < FItemsInProcess);
@@ -692,7 +692,7 @@ void TTerminalQueue::DeleteItem(TQueueItem *Item, bool CanKeep)
     bool EmptyButMonitored;
     bool Monitored;
     {
-      TGuard Guard(FItemsSection);
+      volatile TGuard Guard(FItemsSection);
 
       // does this need to be within guard?
       Monitored = (Item->GetCompleteEvent() != INVALID_HANDLE_VALUE);
@@ -787,7 +787,7 @@ TTerminalQueueStatus *TTerminalQueue::CreateStatus(TTerminalQueueStatus *Current
         }
       };
 
-      TGuard Guard(FItemsSection);
+      volatile TGuard Guard(FItemsSection);
 
       UpdateStatusForList(Status.get(), FDoneItems, Current);
       Status->SetDoneCount(Status->GetCount());
@@ -816,7 +816,7 @@ bool TTerminalQueue::ItemGetData(TQueueItem *Item,
   bool Result = !FFinished;
   if (Result)
   {
-    TGuard Guard(FItemsSection);
+    volatile TGuard Guard(FItemsSection);
 
     Result = (FDoneItems->IndexOf(Item) >= 0) || (FItems->IndexOf(Item) >= 0);
     if (Result)
@@ -837,7 +837,7 @@ bool TTerminalQueue::ItemProcessUserAction(TQueueItem *Item, void *Arg)
     TTerminalItem *TerminalItem = nullptr;
 
     {
-      TGuard Guard(FItemsSection);
+      volatile TGuard Guard(FItemsSection);
 
       Result = (FItems->IndexOf(Item) >= 0) &&
         TQueueItem::IsUserActionStatus(Item->GetStatus());
@@ -863,7 +863,7 @@ bool TTerminalQueue::ItemMove(TQueueItem *Item, TQueueItem *BeforeItem)
   if (Result)
   {
     {
-      TGuard Guard(FItemsSection);
+      volatile TGuard Guard(FItemsSection);
 
       intptr_t Index = FItems->IndexOf(Item);
       intptr_t IndexDest = FItems->IndexOf(BeforeItem);
@@ -893,7 +893,7 @@ bool TTerminalQueue::ItemExecuteNow(TQueueItem *Item)
   if (Result)
   {
     {
-      TGuard Guard(FItemsSection);
+      volatile TGuard Guard(FItemsSection);
 
       intptr_t Index = FItems->IndexOf(Item);
       Result = (Index >= 0) && (Item->GetStatus() == TQueueItem::qsPending) &&
@@ -937,7 +937,7 @@ bool TTerminalQueue::ItemDelete(TQueueItem *Item)
     bool UpdateList = false;
 
     {
-      TGuard Guard(FItemsSection);
+      volatile TGuard Guard(FItemsSection);
 
       intptr_t Index = FItems->IndexOf(Item);
       Result = (Index >= 0);
@@ -986,7 +986,7 @@ bool TTerminalQueue::ItemPause(TQueueItem *Item, bool Pause)
     TTerminalItem *TerminalItem = nullptr;
 
     {
-      TGuard Guard(FItemsSection);
+      volatile TGuard Guard(FItemsSection);
 
       Result = (FItems->IndexOf(Item) >= 0) &&
         ((Pause && (Item->GetStatus() == TQueueItem::qsProcessing)) ||
@@ -1019,7 +1019,7 @@ bool TTerminalQueue::ItemSetCPSLimit(TQueueItem *Item, intptr_t CPSLimit)
   bool Result = !FFinished;
   if (Result)
   {
-    TGuard Guard(FItemsSection);
+    volatile TGuard Guard(FItemsSection);
 
     Result = (FItems->IndexOf(Item) >= 0);
     if (Result)
@@ -1038,7 +1038,7 @@ bool TTerminalQueue::ItemGetCPSLimit(TQueueItem *Item, intptr_t &CPSLimit) const
   bool Result = !FFinished;
   if (Result)
   {
-    TGuard Guard(FItemsSection);
+    volatile TGuard Guard(FItemsSection);
 
     Result = (FItems->IndexOf(Item) >= 0);
     if (Result)
@@ -1060,7 +1060,7 @@ void TTerminalQueue::Idle()
 
     if (FFreeTerminals > 0)
     {
-      TGuard Guard(FItemsSection);
+      volatile TGuard Guard(FItemsSection);
 
       if (FFreeTerminals > 0)
       {
@@ -1095,7 +1095,7 @@ void TTerminalQueue::ProcessEvent()
     TQueueItem *Item1 = nullptr;
 
     {
-      TGuard Guard(FItemsSection);
+      volatile TGuard Guard(FItemsSection);
 
       // =0  do not keep
       // <0  infinity
@@ -1191,7 +1191,7 @@ void TTerminalQueue::SetTransfersLimit(intptr_t Value)
   if (FTransfersLimit != Value)
   {
     {
-      TGuard Guard(FItemsSection);
+      volatile TGuard Guard(FItemsSection);
 
       if ((Value >= 0) && (Value < FItemsInProcess))
       {
@@ -1213,7 +1213,7 @@ void TTerminalQueue::SetKeepDoneItemsFor(intptr_t Value)
   if (FKeepDoneItemsFor != Value)
   {
     {
-      TGuard Guard(FItemsSection);
+      volatile TGuard Guard(FItemsSection);
 
       FKeepDoneItemsFor = Value;
     }
@@ -1225,7 +1225,7 @@ void TTerminalQueue::SetEnabled(bool Value)
   if (FEnabled != Value)
   {
     {
-      TGuard Guard(FItemsSection);
+      volatile TGuard Guard(FItemsSection);
 
       FEnabled = Value;
     }
@@ -1371,7 +1371,7 @@ TTerminalItem::~TTerminalItem()
 void TTerminalItem::Process(TQueueItem *Item)
 {
   {
-    TGuard Guard(FCriticalSection);
+    volatile TGuard Guard(FCriticalSection);
 
     DebugAssert(FItem == nullptr);
     FItem = Item;
@@ -1573,8 +1573,8 @@ bool __fastcall TTerminalItem::Finished()
 }
 
 void TTerminalItem::TerminalQueryUser(TObject *Sender,
-  UnicodeString AQuery, TStrings *MoreMessages, uintptr_t Answers,
-  const TQueryParams *Params, uintptr_t &Answer, TQueryType Type, void *Arg)
+  const UnicodeString &AQuery, TStrings *MoreMessages, uint32_t Answers,
+  const TQueryParams *Params, uint32_t &Answer, TQueryType Type, void *Arg)
 {
   // so far query without queue item can occur only for key confirmation
   // on re-key with non-cached host key. make it fail.
@@ -1606,7 +1606,7 @@ void TTerminalItem::TerminalQueryUser(TObject *Sender,
 }
 
 void TTerminalItem::TerminalPromptUser(TTerminal *Terminal,
-  TPromptKind Kind, UnicodeString Name, UnicodeString Instructions, TStrings *Prompts,
+  TPromptKind Kind, const UnicodeString &Name, const UnicodeString &Instructions, TStrings *Prompts,
   TStrings *Results, bool &Result, void *Arg)
 {
   if (FItem == nullptr)
@@ -1655,7 +1655,7 @@ void TTerminalItem::TerminalShowExtendedException(
 }
 
 void TTerminalItem::OperationFinished(TFileOperation /*Operation*/,
-  TOperationSide /*Side*/, bool /*Temp*/, UnicodeString /*AFileName*/,
+  TOperationSide /*Side*/, bool /*Temp*/, const UnicodeString & /*AFileName*/,
   bool /*Success*/, TOnceDoneOperation & /*OnceDoneOperation*/)
 {
   // nothing
@@ -1774,7 +1774,7 @@ TQueueItem::TStatus TQueueItem::GetStatus() const
 void TQueueItem::SetStatus(TStatus Status)
 {
   {
-    TGuard Guard(FSection);
+    volatile TGuard Guard(FSection);
 
     FStatus = Status;
     if (FStatus == qsDone)
@@ -1799,7 +1799,7 @@ void TQueueItem::SetProgress(
   TFileOperationProgressType &ProgressData)
 {
   {
-    TGuard Guard(FSection);
+    volatile TGuard Guard(FSection);
 
     // do not lose CPS limit override on "calculate size" operation,
     // wait until the real transfer operation starts
@@ -1842,7 +1842,7 @@ void TQueueItem::Execute(TTerminalItem *TerminalItem)
 {
   {
     DebugAssert(FProgressData == nullptr);
-    TGuard Guard(FSection);
+    volatile TGuard Guard(FSection);
     FProgressData = new TFileOperationProgressType();
   }
   DoExecute(TerminalItem->FTerminal);
@@ -2286,7 +2286,7 @@ void TTransferQueueItem::ProgressUpdated()
     DWORD LastParallelOperationAddedPrev = 0;
 
     {
-      TGuard Guard(FSection);
+      volatile TGuard Guard(FSection);
       DebugAssert(FParallelOperation != nullptr);
       // Won't be initialized, if the operation is not eligible for parallel transfers (like cpDelete).
       // We can probably move the check outside of the guard.
@@ -2315,7 +2315,7 @@ void TTransferQueueItem::ProgressUpdated()
     {
       if (!FQueue->TryAddParallelOperation(this, Force))
       {
-        TGuard Guard(FSection);
+        volatile TGuard Guard(FSection);
         FLastParallelOperationAdded = LastParallelOperationAddedPrev;
       }
     }
@@ -2750,7 +2750,7 @@ void TTerminalThread::ProcessEvent()
   }
 
   {
-    TGuard Guard(FSection);
+    volatile TGuard Guard(FSection);
     if (!FAbandoned)
     {
       ::SetEvent(FActionEvent);
@@ -2847,7 +2847,7 @@ void TTerminalThread::WaitForUserAction(TUserAction *UserAction)
       while (true)
       {
         {
-          TGuard Guard(FSection);
+          volatile TGuard Guard(FSection);
           // If idle exception is already set, we are only waiting
           // for the main thread to pick it up
           // (or at least to finish handling the user action, so
@@ -2908,7 +2908,7 @@ void TTerminalThread::WaitForUserAction(TUserAction *UserAction)
 }
 
 void TTerminalThread::TerminalInformation(
-  TTerminal *Terminal, UnicodeString Str, bool Status, intptr_t Phase)
+  TTerminal *Terminal, const UnicodeString &Str, bool Status, intptr_t Phase)
 {
   TInformationUserAction Action(FOnInformation);
   Action.Terminal = Terminal;
@@ -2920,8 +2920,8 @@ void TTerminalThread::TerminalInformation(
 }
 
 void TTerminalThread::TerminalQueryUser(TObject *Sender,
-  UnicodeString AQuery, TStrings *MoreMessages, uintptr_t Answers,
-  const TQueryParams *Params, uintptr_t &Answer, TQueryType Type, void *Arg)
+  const UnicodeString &AQuery, TStrings *MoreMessages, uint32_t Answers,
+  const TQueryParams *Params, uint32_t &Answer, TQueryType Type, void *Arg)
 {
   DebugUsedParam(Arg);
   DebugAssert(Arg == nullptr);
@@ -2963,7 +2963,7 @@ void TTerminalThread::TerminalInitializeLog(TObject *Sender)
 }
 
 void TTerminalThread::TerminalPromptUser(TTerminal *Terminal,
-  TPromptKind Kind, UnicodeString Name, UnicodeString Instructions, TStrings *Prompts,
+  TPromptKind Kind, const UnicodeString &Name, const UnicodeString &Instructions, TStrings *Prompts,
   TStrings *Results, bool &Result, void *Arg)
 {
   DebugUsedParam(Arg);
@@ -2998,7 +2998,7 @@ void TTerminalThread::TerminalShowExtendedException(
 }
 
 void TTerminalThread::TerminalDisplayBanner(TTerminal *Terminal,
-  UnicodeString SessionName, UnicodeString Banner,
+  const UnicodeString &SessionName, const UnicodeString &Banner,
   bool &NeverShowAgain, intptr_t Options, uintptr_t &Params)
 {
   TDisplayBannerAction Action(FOnDisplayBanner);

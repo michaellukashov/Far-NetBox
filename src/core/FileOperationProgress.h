@@ -52,7 +52,7 @@ typedef void __fastcall (__closure *TFileOperationFinished)
 #endif
 typedef nb::FastDelegate6<void,
   TFileOperation /*Operation*/, TOperationSide /*Side*/, bool /*Temp*/,
-  UnicodeString /*FileName*/, bool /*Success*/,
+  const UnicodeString & /*FileName*/, bool /*Success*/,
   TOnceDoneOperation & /*OnceDoneOperation*/> TFileOperationFinishedEvent;
 //---------------------------------------------------------------------------
 class NB_CORE_EXPORT TFileOperationProgressType : public TObject
@@ -126,9 +126,11 @@ protected:
 public:
   // common data
   __property TFileOperation Operation = { read = FOperation };
+  ROProperty<TFileOperation, TFileOperationProgressType> Operation{this, &TFileOperationProgressType::GetOperation};
   // on what side if operation being processed (local/remote), source of copy
   __property TOperationSide Side = { read = FSide };
   __property int Count =  { read = FCount };
+  ROProperty<intptr_t, TFileOperationProgressType> Count{this, &TFileOperationProgressType::GetCount};
   __property UnicodeString FileName =  { read = FFileName };
   __property UnicodeString FullFileName = { read = FFullFileName };
   __property UnicodeString Directory = { read = FDirectory };
@@ -142,12 +144,13 @@ public:
   __property int64_t LocallyUsed = { read = FLocallyUsed };
   __property int64_t TransferSize = { read = FTransferSize };
   __property int64_t TransferredSize = { read = FTransferredSize };
+  ROProperty<int64_t, TFileOperationProgressType> TransferredSize{this, &TFileOperationProgressType::GetTransferredSize};
   __property int64_t SkippedSize = { read = FSkippedSize };
   __property bool InProgress = { read = FInProgress };
   __property bool Done = { read = FDone };
   __property bool FileInProgress = { read = FFileInProgress };
   __property TCancelStatus Cancel = { read = GetCancel };
-  // ROProperty<TCancelStatus, TFileOperationProgressType> Cancel{this, &TFileOperationProgressType::GetCancel};
+  ROProperty<TCancelStatus, TFileOperationProgressType> Cancel{this, &TFileOperationProgressType::GetCancel};
   // when operation started
   __property TDateTime StartTime = { read = FStartTime };
   // bytes transferred
@@ -163,7 +166,7 @@ public:
 
   __property bool Suspended = { read = FSuspended };
 
-  explicit __fastcall TFileOperationProgressType();
+  __fastcall TFileOperationProgressType();
   explicit __fastcall TFileOperationProgressType(
     TFileOperationProgressEvent AOnProgress, TFileOperationFinishedEvent AOnFinished,
     TFileOperationProgressType *Parent = nullptr);

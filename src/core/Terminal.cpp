@@ -408,18 +408,18 @@ public:
   {
   }
 
-  virtual void __fastcall Information(const UnicodeString Str, bool Status) override;
-  virtual uintptr_t __fastcall QueryUser(const UnicodeString Query,
-    TStrings *MoreMessages, uintptr_t Answers, const TQueryParams *Params,
+  virtual void __fastcall Information(const UnicodeString AStr, bool Status) override;
+  virtual uint32_t __fastcall QueryUser(const UnicodeString AQuery,
+    TStrings *MoreMessages, uint32_t Answers, const TQueryParams *Params,
     TQueryType QueryType) override;
-  virtual uintptr_t __fastcall QueryUserException(const UnicodeString Query,
-    Exception *E, uintptr_t Answers, const TQueryParams *Params,
+  virtual uint32_t __fastcall QueryUserException(const UnicodeString AQuery,
+    Exception *E, uint32_t Answers, const TQueryParams *Params,
     TQueryType QueryType) override;
   virtual bool __fastcall PromptUser(TSessionData *Data, TPromptKind Kind,
-    UnicodeString AName, UnicodeString AInstructions, TStrings *Prompts,
+    const UnicodeString AName, const UnicodeString AInstructions, TStrings *Prompts,
     TStrings *Results) override;
   virtual void __fastcall DisplayBanner(const UnicodeString Banner) override;
-  virtual void __fastcall FatalError(Exception *E, UnicodeString Msg, UnicodeString HelpContext) override;
+  virtual void __fastcall FatalError(Exception *E, const UnicodeString Msg, const UnicodeString HelpContext) override;
   virtual void __fastcall HandleExtendedException(Exception *E) override;
   virtual void __fastcall Closed() override;
   virtual void __fastcall ProcessGUI() override;
@@ -436,22 +436,22 @@ __fastcall TTunnelUI::TTunnelUI(TTerminal *Terminal) :
   FTerminalThreadID = GetCurrentThreadId();
 }
 //---------------------------------------------------------------------------
-void __fastcall TTunnelUI::Information(UnicodeString Str, bool Status)
+void __fastcall TTunnelUI::Information(const UnicodeString AStr, bool Status)
 {
   if (GetCurrentThreadId() == FTerminalThreadID)
   {
-    FTerminal->Information(Str, Status);
+    FTerminal->Information(AStr, Status);
   }
 }
 //---------------------------------------------------------------------------
-uintptr_t __fastcall TTunnelUI::QueryUser(const UnicodeString Query,
-  TStrings *MoreMessages, uintptr_t Answers, const TQueryParams *Params,
+uint32_t __fastcall TTunnelUI::QueryUser(const UnicodeString AQuery,
+  TStrings *MoreMessages, uint32_t Answers, const TQueryParams *Params,
   TQueryType QueryType)
 {
-  uintptr_t Result;
+  uint32_t Result;
   if (GetCurrentThreadId() == FTerminalThreadID)
   {
-    Result = FTerminal->QueryUser(Query, MoreMessages, Answers, Params, QueryType);
+    Result = FTerminal->QueryUser(AQuery, MoreMessages, Answers, Params, QueryType);
   }
   else
   {
@@ -460,18 +460,18 @@ uintptr_t __fastcall TTunnelUI::QueryUser(const UnicodeString Query,
   return Result;
 }
 //---------------------------------------------------------------------------
-uintptr_t __fastcall TTunnelUI::QueryUserException(const UnicodeString Query,
-  Exception *E, uintptr_t Answers, const TQueryParams *Params,
+uint32_t __fastcall TTunnelUI::QueryUserException(const UnicodeString AQuery,
+  Exception *E, uint32_t Answers, const TQueryParams *Params,
   TQueryType QueryType)
 {
-  uintptr_t Result;
+  uint32_t Result;
   if (GetCurrentThreadId() == FTerminalThreadID)
   {
-    Result = FTerminal->QueryUserException(Query, E, Answers, Params, QueryType);
+    Result = FTerminal->QueryUserException(AQuery, E, Answers, Params, QueryType);
   }
   else
   {
-    Result = AbortAnswer(static_cast<intptr_t>(Answers));
+    Result = AbortAnswer(Answers);
   }
   return Result;
 }
@@ -888,7 +888,7 @@ bool TParallelOperation::ShouldAddClient() const
   }
   else
   {
-    TGuard Guard(*FSection.get());
+    volatile TGuard Guard(*FSection.get());
     Result = !FProbablyEmpty && (FMainOperationProgress->GetCancel() < csCancel);
   }
   return Result;
@@ -917,7 +917,7 @@ void TParallelOperation::WaitFor()
     do
     {
       {
-        TGuard Guard(*FSection.get());
+        volatile TGuard Guard(*FSection.get());
         Done = (FClients == 0);
       }
 
@@ -942,7 +942,7 @@ void TParallelOperation::Done(const UnicodeString FileName, bool Dir, bool Succe
 {
   if (Dir)
   {
-    TGuard Guard(*FSection.get());
+    volatile TGuard Guard(*FSection.get());
 
     TDirectories::iterator DirectoryIterator = FDirectories.find(FileName);
     if (DebugAlwaysTrue(DirectoryIterator != FDirectories.end()))
@@ -2039,12 +2039,12 @@ bool __fastcall TTerminal::DoPromptUser(TSessionData * /*Data*/, TPromptKind Kin
   return Result;
 }
 //---------------------------------------------------------------------------
-uintptr_t __fastcall TTerminal::QueryUser(const UnicodeString AQuery,
-  TStrings *MoreMessages, uintptr_t Answers, const TQueryParams *Params,
+uint32_t __fastcall TTerminal::QueryUser(const UnicodeString AQuery,
+  TStrings *MoreMessages, uint32_t Answers, const TQueryParams *Params,
   TQueryType QueryType)
 {
   LogEvent(FORMAT("Asking user:\n%s (%s)", AQuery, UnicodeString(MoreMessages ? MoreMessages->GetCommaText() : L"")));
-  uintptr_t Answer = AbortAnswer(Answers);
+  uint32_t Answer = AbortAnswer(Answers);
   if (FOnQueryUser)
   {
     TCallbackGuard Guard(this);
@@ -2064,11 +2064,11 @@ uintptr_t __fastcall TTerminal::QueryUser(const UnicodeString AQuery,
   return Answer;
 }
 //---------------------------------------------------------------------------
-uintptr_t __fastcall TTerminal::QueryUserException(const UnicodeString AQuery,
-  Exception *E, uintptr_t Answers, const TQueryParams *Params,
+uint32_t __fastcall TTerminal::QueryUserException(const UnicodeString AQuery,
+  Exception *E, uint32_t Answers, const TQueryParams *Params,
   TQueryType QueryType)
 {
-  uintptr_t Result = 0;
+  uint32_t Result = 0;
   UnicodeString ExMessage;
   if (DebugAlwaysTrue(ExceptionMessage(E, ExMessage) || !AQuery.IsEmpty()))
   {
@@ -2247,7 +2247,7 @@ void __fastcall TTerminal::DoProgress(TFileOperationProgressType &ProgressData)
 }
 //---------------------------------------------------------------------------
 void __fastcall TTerminal::DoFinished(TFileOperation Operation, TOperationSide Side, bool Temp,
-  const UnicodeString AFileName, bool Success, TOnceDoneOperation &OnceDoneOperation)
+  const UnicodeString &AFileName, bool Success, TOnceDoneOperation &OnceDoneOperation)
 {
   if (GetOnFinished() != nullptr)
   {
@@ -2286,12 +2286,12 @@ UnicodeString __fastcall TTerminal::GetAbsolutePath(const UnicodeString APath, b
   return FFileSystem->GetAbsolutePath(APath, Local);
 }
 //---------------------------------------------------------------------------
-void __fastcall TTerminal::ReactOnCommand(intptr_t Cmd)
+void __fastcall TTerminal::ReactOnCommand(intptr_t ACmd)
 {
   bool ChangesDirectory = false;
   bool ModifiesFiles = false;
 
-  switch (static_cast<TFSCommand>(Cmd))
+  switch (static_cast<TFSCommand>(ACmd))
   {
   case fsChangeDirectory:
   case fsHomeDirectory:
@@ -2454,9 +2454,9 @@ bool TTerminal::FileOperationLoopQuery(Exception &E,
 {
   bool Result = false;
   GetLog()->AddException(&E);
-  uintptr_t Answer;
+  uint32_t Answer;
   bool AllowSkip = FLAGSET(AFlags, folAllowSkip);
-  bool SkipToAllPossible = AllowSkip && (OperationProgress != NULL);
+  bool SkipToAllPossible = AllowSkip && (OperationProgress != nullptr);
 
   if (SkipToAllPossible && OperationProgress->GetSkipToAll())
   {
@@ -2464,7 +2464,7 @@ bool TTerminal::FileOperationLoopQuery(Exception &E,
   }
   else
   {
-    uintptr_t Answers = qaRetry | qaAbort |
+    uint32_t Answers = qaRetry | qaAbort |
       FLAGMASK(AllowSkip, qaSkip) |
       FLAGMASK(SkipToAllPossible, qaAll) |
       FLAGMASK(!SpecialRetry.IsEmpty(), qaYes);
@@ -2493,7 +2493,7 @@ bool TTerminal::FileOperationLoopQuery(Exception &E,
     }
 
     {
-      TSuspendFileOperationProgress Suspend(OperationProgress);
+      volatile TSuspendFileOperationProgress Suspend(OperationProgress);
       Answer = QueryUserException(Message, &E, Answers, &Params, qtError);
     }
 
@@ -2535,13 +2535,13 @@ void __fastcall TTerminal::FileOperationLoopEnd(Exception &E,
   TFileOperationProgressType *OperationProgress, const UnicodeString AMessage,
   uintptr_t AFlags, const UnicodeString ASpecialRetry, const UnicodeString AHelpKeyword)
 {
-  if ((dynamic_cast<EAbort *>(&E) != NULL) ||
-      (dynamic_cast<ESkipFile *>(&E) != NULL) ||
-      (dynamic_cast<ESkipFile *>(&E) != NULL))
+  if (isa<EAbort>(&E) ||
+      isa<ESkipFile>(&E) ||
+      isa<ESkipFile>(&E))
   {
     RethrowException(&E);
   }
-  else if (dynamic_cast<EFatal *>(&E) != NULL)
+  else if (isa<EFatal>(&E))
   {
     if (FLAGCLEAR(AFlags, folRetryOnFatal))
     {
@@ -3010,7 +3010,7 @@ void __fastcall TTerminal::CommandError(Exception *E, const UnicodeString AMsg)
 }
 //---------------------------------------------------------------------------
 uintptr_t __fastcall TTerminal::CommandError(Exception *E, const UnicodeString AMsg,
-  uintptr_t Answers, const UnicodeString AHelpKeyword)
+  uint32_t Answers, const UnicodeString AHelpKeyword)
 {
   // may not be, particularly when TTerminal::Reopen is being called
   // from within OnShowExtendedException handler
@@ -3156,13 +3156,13 @@ bool __fastcall TTerminal::CheckRemoteFile(
   return Result;
 }
 //---------------------------------------------------------------------------
-uintptr_t __fastcall TTerminal::ConfirmFileOverwrite(
+uint32_t __fastcall TTerminal::ConfirmFileOverwrite(
   const UnicodeString ASourceFullFileName, const UnicodeString ATargetFileName,
-  const TOverwriteFileParams *FileParams, uintptr_t Answers, TQueryParams *QueryParams,
+  const TOverwriteFileParams *FileParams, uint32_t Answers, TQueryParams *QueryParams,
   TOperationSide Side, const TCopyParamType *CopyParam, intptr_t Params, TFileOperationProgressType *OperationProgress,
   UnicodeString AMessage)
 {
-  uintptr_t Result = 0;
+  uint32_t Result = 0;
   TBatchOverwrite BatchOverwrite;
   bool CanAlternateResume =
     (FileParams != nullptr) &&
@@ -3460,9 +3460,9 @@ void __fastcall TTerminal::RollbackAction(TSessionAction &Action,
   // and we do not want to record skipped actions.
   // But ESkipFile with "cancel" is abort and we want to record that.
   // Note that TSCPFileSystem modifies the logic of RollbackAction little bit.
-  if ((dynamic_cast<ESkipFile *>(E) != NULL) &&
-    ((OperationProgress == nullptr) ||
-      (OperationProgress->GetCancel() == csContinue)))
+  if (isa<ESkipFile>(E) &&
+      ((OperationProgress == nullptr) ||
+       (OperationProgress->GetCancel() == csContinue)))
   {
     Action.Cancel();
   }
@@ -4146,7 +4146,7 @@ bool __fastcall TTerminal::ProcessFiles(TStrings *AFileList,
           catch (ESkipFile &E)
           {
             DEBUG_PRINTF("before HandleException");
-            TSuspendFileOperationProgress Suspend(OperationProgress);
+            volatile TSuspendFileOperationProgress Suspend(OperationProgress);
             if (!HandleException(&E))
             {
               throw;
@@ -5423,9 +5423,9 @@ bool __fastcall TTerminal::DoCreateLocalFile(const UnicodeString AFileName,
             }
             else if ((OperationProgress->GetBatchOverwrite() != boAll) && !NoConfirmation)
             {
-              uintptr_t Answer;
+              uint32_t Answer;
               {
-                TSuspendFileOperationProgress Suspend(OperationProgress);
+                volatile TSuspendFileOperationProgress Suspend(OperationProgress);
                 Answer = QueryUser(
                   MainInstructions(FMTLOAD(READ_ONLY_OVERWRITE, AFileName)), nullptr,
                   qaYes | qaNo | qaCancel | qaYesToAll | qaNoToAll, nullptr);
@@ -5552,8 +5552,8 @@ void __fastcall TTerminal::TerminalOpenLocalFile(const UnicodeString ATargetFile
     {
       DWORD Flags = FLAGMASK(FLAGSET(LocalFileAttrs, faDirectory), FILE_FLAG_BACKUP_SEMANTICS);
       LocalFileHandle = this->TerminalCreateLocalFile(ApiPath(ATargetFileName), Access,
-          Access == GENERIC_READ ? FILE_SHARE_READ | FILE_SHARE_WRITE : FILE_SHARE_READ,
-          OPEN_EXISTING, Flags);
+        Access == GENERIC_READ ? FILE_SHARE_READ | FILE_SHARE_WRITE : FILE_SHARE_READ,
+        OPEN_EXISTING, Flags);
       if (LocalFileHandle == INVALID_HANDLE_VALUE)
       {
         ::RaiseLastOSError();
@@ -5636,8 +5636,8 @@ void __fastcall TTerminal::TerminalOpenLocalFile(
   const UnicodeString AFileName, uintptr_t Access, TLocalFileHandle &AHandle, bool TryWriteReadOnly)
 {
   AHandle.FileName = AFileName;
-  TerminalOpenLocalFile(
-    AFileName, Access, &AHandle.Attrs, &AHandle.Handle, nullptr, &AHandle.MTime, &AHandle.ATime, &AHandle.Size,
+  this->TerminalOpenLocalFile(
+    AFileName, ToDWord(Access), &AHandle.Attrs, &AHandle.Handle, nullptr, &AHandle.MTime, &AHandle.ATime, &AHandle.Size,
     TryWriteReadOnly);
   AHandle.Modification = ::UnixToDateTime(AHandle.MTime, GetSessionData()->GetDSTMode());
   AHandle.Directory = FLAGSET(AHandle.Attrs, faDirectory);
@@ -6226,9 +6226,9 @@ void __fastcall TTerminal::SynchronizeCollectFile(const UnicodeString &AFileName
   {
     DoSynchronizeCollectFile(AFileName, AFile, Param);
   }
-  catch(ESkipFile & E)
+  catch(ESkipFile &E)
   {
-    TSuspendFileOperationProgress Suspend(OperationProgress);
+    volatile TSuspendFileOperationProgress Suspend(OperationProgress);
     if (!HandleException(&E))
     {
       throw;
@@ -7263,9 +7263,9 @@ void __fastcall TTerminal::DoCopyToRemote(
         SourceRobust(FileName, FullTargetDir, CopyParam, AParams, OperationProgress, AFlags | tfFirstLevel);
         Success = true;
       }
-      catch (ESkipFile & E)
+      catch (ESkipFile &E)
       {
-        TSuspendFileOperationProgress Suspend(OperationProgress);
+        volatile TSuspendFileOperationProgress Suspend(OperationProgress);
         if (!HandleException(&E))
         {
           throw;
@@ -7442,7 +7442,7 @@ void __fastcall TTerminal::DirectorySource(
         TRemoteProperties Properties;
         Properties.Valid << vpModification;
 
-        TerminalOpenLocalFile(
+        this->TerminalOpenLocalFile(
           ::ExcludeTrailingBackslash(ADirectoryName), GENERIC_READ, nullptr, nullptr, nullptr,
           &Properties.Modification, &Properties.LastAccess, nullptr);
 
@@ -7748,30 +7748,30 @@ bool __fastcall TTerminal::CopyToLocal(TStrings *AFilesToCopy,
 }
 //---------------------------------------------------------------------------
 void __fastcall TTerminal::DoCopyToLocal(
-  TStrings * FilesToCopy, const UnicodeString TargetDir, const TCopyParamType * CopyParam, intptr_t Params,
-  TFileOperationProgressType * OperationProgress, uintptr_t Flags, TOnceDoneOperation & OnceDoneOperation)
+  TStrings *AFilesToCopy, const UnicodeString ATargetDir, const TCopyParamType *CopyParam, intptr_t Params,
+  TFileOperationProgressType *OperationProgress, uintptr_t AFlags, TOnceDoneOperation &OnceDoneOperation)
 {
-  DebugAssert((FilesToCopy != NULL) && (OperationProgress != NULL));
+  DebugAssert((AFilesToCopy != nullptr) && (OperationProgress != nullptr));
 
-  UnicodeString FullTargetDir = IncludeTrailingBackslash(TargetDir);
-  int Index = 0;
-  while ((Index < FilesToCopy->GetCount()) && !OperationProgress->GetCancel())
+  UnicodeString FullTargetDir = IncludeTrailingBackslash(ATargetDir);
+  intptr_t Index = 0;
+  while ((Index < AFilesToCopy->GetCount()) && !OperationProgress->GetCancel())
   {
     bool Success = false;
-    UnicodeString FileName = FilesToCopy->GetString(Index);
+    UnicodeString FileName = AFilesToCopy->GetString(Index);
 
     try
     {
       try
       {
         UnicodeString AbsoluteFileName = GetAbsolutePath(FileName, true);
-        const TRemoteFile * File = FilesToCopy->GetAs<const TRemoteFile>(Index);
-        SinkRobust(AbsoluteFileName, File, FullTargetDir, CopyParam, Params, OperationProgress, Flags | tfFirstLevel);
+        const TRemoteFile * File = AFilesToCopy->GetAs<const TRemoteFile>(Index);
+        SinkRobust(AbsoluteFileName, File, FullTargetDir, CopyParam, Params, OperationProgress, AFlags | tfFirstLevel);
         Success = true;
       }
-      catch (ESkipFile & E)
+      catch (ESkipFile &E)
       {
-        TSuspendFileOperationProgress Suspend(OperationProgress);
+        volatile TSuspendFileOperationProgress Suspend(OperationProgress);
         if (!HandleException(&E))
         {
           throw;
@@ -7787,11 +7787,11 @@ void __fastcall TTerminal::DoCopyToLocal(
 }
 //---------------------------------------------------------------------------
 void __fastcall TTerminal::SinkRobust(
-  const UnicodeString FileName, const TRemoteFile * File, const UnicodeString TargetDir,
-  const TCopyParamType * CopyParam, intptr_t Params, TFileOperationProgressType * OperationProgress, uintptr_t Flags)
+  const UnicodeString AFileName, const TRemoteFile *AFile, const UnicodeString ATargetDir,
+  const TCopyParamType *CopyParam, intptr_t AParams, TFileOperationProgressType *OperationProgress, uintptr_t AFlags)
 {
   TDownloadSessionAction Action(GetActionLog());
-  bool * AFileTransferAny = FLAGSET(Flags, tfUseFileTransferAny) ? &FFileTransferAny : NULL;
+  bool * AFileTransferAny = FLAGSET(AFlags, tfUseFileTransferAny) ? &FFileTransferAny : nullptr;
   TRobustOperationLoop RobustLoop(this, OperationProgress, AFileTransferAny);
   bool Sunk = false;
 
@@ -7803,18 +7803,18 @@ void __fastcall TTerminal::SinkRobust(
       // The file may not exist anymore and the download attempt might overwrite the (only) local copy.
       if (!Sunk)
       {
-        Sink(FileName, File, TargetDir, CopyParam, Params, OperationProgress, Flags, Action);
+        Sink(AFileName, AFile, ATargetDir, CopyParam, AParams, OperationProgress, AFlags, Action);
         Sunk = true;
       }
 
-      if (FLAGSET(Params, cpDelete))
+      if (FLAGSET(AParams, cpDelete))
       {
-        DebugAssert(FLAGCLEAR(Params, cpNoRecurse));
+        DebugAssert(FLAGCLEAR(AParams, cpNoRecurse));
         // If file is directory, do not delete it recursively, because it should be
         // empty already. If not, it should not be deleted (some files were
         // skipped or some new files were copied to it, while we were downloading)
         int Params = dfNoRecursive;
-        RemoteDeleteFile(FileName, File, &Params);
+        RemoteDeleteFile(AFileName, AFile, &Params);
       }
     }
     catch (Exception & E)
@@ -7833,12 +7833,12 @@ void __fastcall TTerminal::SinkRobust(
     {
       OperationProgress->RollbackTransfer();
       Action.Restart();
-      DebugAssert(File != NULL);
-      if (!File->GetIsDirectory())
+      DebugAssert(AFile != nullptr);
+      if (!AFile->GetIsDirectory())
       {
         // prevent overwrite and resume confirmations
-        Params |= cpNoConfirmation;
-        Flags |= tfAutoResume;
+        AParams |= cpNoConfirmation;
+        AFlags |= tfAutoResume;
       }
     }
   }
@@ -7994,7 +7994,7 @@ void __fastcall TTerminal::UpdateTargetAttrs(
 //---------------------------------------------------------------------------
 void __fastcall TTerminal::UpdateTargetTime(HANDLE Handle, TDateTime Modification, TDSTMode DSTMode)
 {
-  LogEvent(FORMAT("Preserving timestamp [%s]", StandardTimestamp(Modification)));
+  LogEvent(FORMAT("Preserving timestamp [%s]", ::StandardTimestamp(Modification)));
   FILETIME WrTime = DateTimeToFileTime(Modification, DSTMode);
   if (!SetFileTime(Handle, nullptr, nullptr, &WrTime))
   {
@@ -8003,21 +8003,21 @@ void __fastcall TTerminal::UpdateTargetTime(HANDLE Handle, TDateTime Modificatio
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TTerminal::SinkFile(const UnicodeString &AFileName, const TRemoteFile *File, void *Param)
+void __fastcall TTerminal::SinkFile(const UnicodeString &AFileName, const TRemoteFile *AFile, void *AParam)
 {
-  TSinkFileParams * Params = static_cast<TSinkFileParams *>(Param);
-  DebugAssert(Params->OperationProgress != NULL);
+  TSinkFileParams * Params = get_as<TSinkFileParams>(AParam);
+  DebugAssert(Params->OperationProgress != nullptr);
   try
   {
-    SinkRobust(AFileName, File, Params->TargetDir, Params->CopyParam,
+    SinkRobust(AFileName, AFile, Params->TargetDir, Params->CopyParam,
       Params->Params, Params->OperationProgress, Params->Flags);
   }
-  catch (ESkipFile & E)
+  catch (ESkipFile &E)
   {
     Params->Skipped = true;
 
     {
-      TSuspendFileOperationProgress Suspend(Params->OperationProgress);
+      volatile TSuspendFileOperationProgress Suspend(Params->OperationProgress);
       if (!HandleException(&E))
       {
         throw;
@@ -8111,11 +8111,13 @@ void __fastcall TTerminal::CollectUsage()
 bool TTerminal::CheckForEsc() const
 {
   if (FOnCheckForEsc)
+  {
     return FOnCheckForEsc();
+  }
   return (FOperationProgress && FOperationProgress->GetCancel() == csCancel);
 }
 //---------------------------------------------------------------------------
-static UnicodeString __fastcall FormatCertificateData(const UnicodeString Fingerprint, int Failures)
+static UnicodeString __fastcall FormatCertificateData(const UnicodeString Fingerprint, intptr_t Failures)
 {
   return FORMAT("%s;%2.2X", Fingerprint, Failures);
 }
@@ -8191,10 +8193,10 @@ bool __fastcall TTerminal::ConfirmCertificate(
   Params.NoBatchAnswers = qaYes | qaRetry;
   Params.Aliases = Aliases;
   Params.AliasesCount = _countof(Aliases);
-  unsigned int Answer =
+  uint32_t Answer =
     QueryUser(
-      FMTLOAD(VERIFY_CERT_PROMPT3, (SessionInfo.Certificate)),
-      NULL, qaYes | qaNo | qaCancel | qaRetry, &Params, qtWarning);
+      FMTLOAD(VERIFY_CERT_PROMPT3, SessionInfo.Certificate),
+      nullptr, qaYes | qaNo | qaCancel | qaRetry, &Params, qtWarning);
 
   bool Result;
   switch (Answer)
@@ -8571,9 +8573,9 @@ void TLocalFileHandle::Dismiss()
 //---------------------------------------------------------------------------
 void TLocalFileHandle::Close()
 {
-  if (DebugAlwaysTrue(Handle != 0))
+  __removed if (DebugAlwaysTrue(Handle != 0))
   {
-    CloseHandle(Handle);
+    SAFE_CLOSE_HANDLE(Handle);
     Dismiss();
   }
 }

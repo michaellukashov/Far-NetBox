@@ -1077,7 +1077,7 @@ void TRemoteFile::ShiftTimeInSeconds(TDateTime &DateTime, TModificationFmt Modif
   }
 }
 //---------------------------------------------------------------------------
-void TRemoteFile::SetModification(const TDateTime &Value)
+void TRemoteFile::SetModification(const TDateTime Value)
 {
   if (FModification != Value)
   {
@@ -1962,7 +1962,7 @@ void TRemoteDirectoryCache::AddFileList(TRemoteFileList *FileList)
     TRemoteFileList *Copy = new TRemoteFileList();
     FileList->DuplicateTo(Copy);
 
-    TGuard Guard(FSection);
+    volatile TGuard Guard(FSection);
 
     // file list cannot be cached already with only one thread, but it can be
     // when directory is loaded by secondary terminal

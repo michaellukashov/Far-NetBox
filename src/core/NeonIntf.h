@@ -1,7 +1,9 @@
 
 #pragma once
 
+#ifndef WINSCP
 #define WINSCP
+#endif
 #include <ne_uri.h>
 #include <ne_session.h>
 #include <SessionData.h>

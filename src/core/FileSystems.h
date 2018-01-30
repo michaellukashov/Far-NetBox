@@ -198,7 +198,7 @@ public:
     const UnicodeString /*ADestFullName*/, const TRemoteFile * /*AFile*/, const TCopyParamType * /*ACopyParam*/) {}
   virtual void __fastcall Sink(
     const UnicodeString AFileName, const TRemoteFile *AFile,
-    const UnicodeString ATargetDir, UnicodeString &ADestFileName, intptr_t Attrs,
+    const UnicodeString ATargetDir, UnicodeString &ADestFileName, uintptr_t Attrs,
     const TCopyParamType *CopyParam, intptr_t AParams, TFileOperationProgressType *OperationProgress,
     uintptr_t AFlags, TDownloadSessionAction &Action) = 0;
   virtual void __fastcall RemoteCreateDirectory(const UnicodeString ADirName) = 0;

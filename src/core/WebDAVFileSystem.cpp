@@ -186,7 +186,7 @@ __fastcall TWebDAVFileSystem::~TWebDAVFileSystem()
   UnregisterFromNeonDebug(FTerminal);
 
   {
-    TGuard Guard(FNeonLockStoreSection);
+    volatile TGuard Guard(FNeonLockStoreSection);
     if (FNeonLockStore != nullptr)
     {
       ne_lockstore_destroy(FNeonLockStore);
@@ -311,9 +311,9 @@ void __fastcall TWebDAVFileSystem::InitSession(ne_session_s *Session)
     Session, Data->GetProxyMethod(), Data->GetProxyHost(), Data->GetProxyPort(),
     Data->GetProxyUsername(), Data->GetProxyPassword(), FTerminal);
 
-  ne_set_read_timeout(Session, Data->GetTimeout());
+  ne_set_read_timeout(Session, ToInt(Data->GetTimeout()));
 
-  ne_set_connect_timeout(Session, Data->GetTimeout());
+  ne_set_connect_timeout(Session, ToInt(Data->GetTimeout()));
 
   ne_set_session_private(Session, SESSION_FS_KEY, this);
 }
@@ -1138,10 +1138,10 @@ void __fastcall TWebDAVFileSystem::ConfirmOverwrite(
   const TOverwriteFileParams *FileParams, const TCopyParamType *CopyParam,
   intptr_t Params)
 //  TOverwriteMode &OverwriteMode,
-//  uintptr_t &Answer)
+//  uint32_t &Answer)
 {
   // all = "yes to newer"
-  intptr_t Answers = qaYes | qaNo | qaCancel | qaYesToAll | qaNoToAll | qaAll;
+  uint32_t Answers = qaYes | qaNo | qaCancel | qaYesToAll | qaNoToAll | qaAll;
   TQueryButtonAlias Aliases[3];
   Aliases[0] = TQueryButtonAlias::CreateAllAsYesToNewerGrouppedWithYes();
   Aliases[1] = TQueryButtonAlias::CreateYesToAllGrouppedWithYes();
@@ -1150,7 +1150,7 @@ void __fastcall TWebDAVFileSystem::ConfirmOverwrite(
   QueryParams.Aliases = Aliases;
   QueryParams.AliasesCount = _countof(Aliases);
 
-  uintptr_t Answer;
+  uint32_t Answer;
 
   {
     volatile TSuspendFileOperationProgress Suspend(OperationProgress);
@@ -1716,7 +1716,7 @@ int TWebDAVFileSystem::NeonBodyReader(void *UserData, const char *Buf, size_t Le
 //---------------------------------------------------------------------------
 void __fastcall TWebDAVFileSystem::Sink(
   const UnicodeString AFileName, const TRemoteFile *AFile,
-  const UnicodeString ATargetDir, UnicodeString &ADestFileName, intptr_t Attrs,
+  const UnicodeString ATargetDir, UnicodeString &ADestFileName, uintptr_t Attrs,
   const TCopyParamType *CopyParam, intptr_t AParams, TFileOperationProgressType *OperationProgress,
   uintptr_t /*AFlags*/, TDownloadSessionAction & Action)
 {
@@ -1765,7 +1765,7 @@ void __fastcall TWebDAVFileSystem::Sink(
         }
         else
         {
-          CloseHandle(LocalFileHandle);
+          SAFE_CLOSE_HANDLE(LocalFileHandle);
         }
 
         if (DeleteLocalFile)
@@ -2088,7 +2088,7 @@ void __fastcall TWebDAVFileSystem::LockFile(const UnicodeString /*AFileName*/, c
     CheckStatus(ne_lock(FNeonSession, Lock));
 
     {
-      TGuard Guard(FNeonLockStoreSection);
+      volatile TGuard Guard(FNeonLockStoreSection);
 
       RequireLockStore();
 
@@ -2164,7 +2164,7 @@ void __fastcall TWebDAVFileSystem::UnlockFile(const UnicodeString AFileName, con
     struct ne_lock *Lock2 = nullptr;
 
     {
-      TGuard Guard(FNeonLockStoreSection);
+      volatile TGuard Guard(FNeonLockStoreSection);
       if (FNeonLockStore != nullptr)
       {
         Lock2 = FindLock(Path);
@@ -2218,8 +2218,8 @@ void __fastcall TWebDAVFileSystem::UpdateFromMain(TCustomFileSystem *AMainFileSy
   TWebDAVFileSystem *MainFileSystem = dyn_cast<TWebDAVFileSystem>(AMainFileSystem);
   if (DebugAlwaysTrue(MainFileSystem != nullptr))
   {
-    TGuard Guard(FNeonLockStoreSection);
-    TGuard MainGuard(MainFileSystem->FNeonLockStoreSection);
+    volatile TGuard Guard(FNeonLockStoreSection);
+    volatile TGuard MainGuard(MainFileSystem->FNeonLockStoreSection);
 
     if (FNeonLockStore != nullptr)
     {

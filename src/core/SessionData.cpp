@@ -580,7 +580,7 @@ bool TSessionData::IsSameSite(const TSessionData *Other) const
     (SessionGetUserName() == Other->SessionGetUserName());
 }
 
-bool TSessionData::IsInFolderOrWorkspace(UnicodeString AFolder) const
+bool TSessionData::IsInFolderOrWorkspace(const UnicodeString AFolder) const
 {
   return ::StartsText(base::UnixIncludeTrailingBackslash(AFolder), GetName());
 }
@@ -1730,7 +1730,7 @@ bool TSessionData::IsProtocolUrl(
     DoIsProtocolUrl(Url, WinSCPProtocolPrefix + Protocol, ProtocolLen);
 }
 
-bool TSessionData::IsSensitiveOption(UnicodeString Option)
+bool TSessionData::IsSensitiveOption(const UnicodeString Option)
 {
   return
     ::SameText(Option, PassphraseOption) ||
@@ -1747,7 +1747,7 @@ bool __fastcall TSessionData::MaskPasswordInOptionParameter(const UnicodeString 
   bool Result = false;
   if (SameText(AOption, RawSettingsOption))
   {
-    int P = AParam.Pos(L"=");
+    intptr_t P = AParam.Pos(L"=");
     if (P > 0)
     {
       // TStrings.IndexOfName does not trim
@@ -2285,12 +2285,12 @@ void TSessionData::ExpandEnvironmentVariables()
   SetPublicKeyFile(::ExpandEnvironmentVariables(GetPublicKeyFile()));
 }
 
-void TSessionData::ValidatePath(UnicodeString /*APath*/)
+void TSessionData::ValidatePath(const UnicodeString /*APath*/)
 {
   // noop
 }
 
-void TSessionData::ValidateName(UnicodeString Name)
+void TSessionData::ValidateName(const UnicodeString Name)
 {
   // keep consistent with MakeValidName
   if (Name.LastDelimiter(L"/") > 0)
@@ -2299,7 +2299,7 @@ void TSessionData::ValidateName(UnicodeString Name)
   }
 }
 
-UnicodeString TSessionData::MakeValidName(UnicodeString Name)
+UnicodeString TSessionData::MakeValidName(const UnicodeString Name)
 {
   // keep consistent with ValidateName
   return ReplaceStr(Name, L"/", L"\\");
@@ -2360,7 +2360,7 @@ UnicodeString TSessionData::GetStorageKey() const
   return GetSessionName();
 }
 
-UnicodeString TSessionData::FormatSiteKey(UnicodeString HostName, intptr_t PortNumber)
+UnicodeString TSessionData::FormatSiteKey(const UnicodeString HostName, intptr_t PortNumber)
 {
   return FORMAT("%s:%d", HostName, ToInt(PortNumber));
 }
@@ -2370,7 +2370,7 @@ UnicodeString TSessionData::GetSiteKey() const
   return FormatSiteKey(GetHostNameExpanded(), GetPortNumber());
 }
 
-void TSessionData::SetHostName(UnicodeString AValue)
+void TSessionData::SetHostName(const UnicodeString AValue)
 {
   if (FHostName != AValue)
   {
@@ -4399,7 +4399,7 @@ UnicodeString TSessionData::GetInfoTip() const
   }
 }
 
-UnicodeString TSessionData::ExtractLocalName(UnicodeString Name)
+UnicodeString TSessionData::ExtractLocalName(const UnicodeString Name)
 {
   UnicodeString Result = Name;
   intptr_t P = Result.LastDelimiter(L"/");
@@ -4424,7 +4424,7 @@ UnicodeString TSessionData::GetLocalName() const
   return Result;
 }
 
-UnicodeString TSessionData::ExtractFolderName(UnicodeString Name)
+UnicodeString TSessionData::ExtractFolderName(const UnicodeString Name)
 {
   UnicodeString Result;
   intptr_t P = Name.LastDelimiter(L"/");
@@ -4446,7 +4446,7 @@ UnicodeString TSessionData::GetFolderName() const
 }
 
 UnicodeString TSessionData::ComposePath(
-  UnicodeString APath, UnicodeString Name)
+  const UnicodeString APath, const UnicodeString Name)
 {
   return base::UnixIncludeTrailingBackslash(APath) + Name;
 }
@@ -4964,7 +4964,7 @@ void TStoredSessionList::ImportFromKnownHosts(TStrings *Lines)
               }
 
               std::unique_ptr<TSessionData> SessionDataOwner;
-              TSessionData * SessionData = dynamic_cast<TSessionData *>(FindByName(NameStr));
+              TSessionData * SessionData = dyn_cast<TSessionData>(FindByName(NameStr));
               if (SessionData == nullptr)
               {
                 SessionData = new TSessionData(L"");

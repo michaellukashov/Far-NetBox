@@ -4467,11 +4467,11 @@ void __fastcall TSFTPFileSystem::SFTPConfirmOverwrite(
   bool CanResume =
     (FileParams != nullptr) &&
     (FileParams->DestSize < FileParams->SourceSize);
-  uintptr_t Answer;
+  uint32_t Answer;
 
   {
-    TSuspendFileOperationProgress Suspend(OperationProgress);
-    uintptr_t Answers = qaYes | qaNo | qaCancel | qaYesToAll | qaNoToAll | qaAll | qaIgnore;
+    volatile TSuspendFileOperationProgress Suspend(OperationProgress);
+    uint32_t Answers = qaYes | qaNo | qaCancel | qaYesToAll | qaNoToAll | qaAll | qaIgnore;
 
     // possibly we can allow alternate resume at least in some cases
     if (CanAppend)
@@ -4533,7 +4533,7 @@ void __fastcall TSFTPFileSystem::SFTPConfirmOverwrite(
         TQueryParams Params(0, HELP_APPEND_OR_RESUME);
 
         {
-          TSuspendFileOperationProgress Suspend(OperationProgress);
+          volatile TSuspendFileOperationProgress Suspend(OperationProgress);
           Answer = FTerminal->QueryUser(FORMAT(LoadStr(APPEND_OR_RESUME2), ASourceFullFileName),
               nullptr, qaYes | qaNo | qaNoToAll | qaCancel, &Params);
         }
@@ -4603,9 +4603,9 @@ bool TSFTPFileSystem::SFTPConfirmResume(const UnicodeString DestFileName,
   DebugAssert(OperationProgress);
   if (PartialBiggerThanSource)
   {
-    uintptr_t Answer;
+    uint32_t Answer;
     {
-      TSuspendFileOperationProgress Suspend(OperationProgress);
+      volatile TSuspendFileOperationProgress Suspend(OperationProgress);
       TQueryParams Params(qpAllowContinueOnError, HELP_PARTIAL_BIGGER_THAN_SOURCE);
       Answer = FTerminal->QueryUser(
         FMTLOAD(PARTIAL_BIGGER_THAN_SOURCE, DestFileName), nullptr,
@@ -4621,10 +4621,10 @@ bool TSFTPFileSystem::SFTPConfirmResume(const UnicodeString DestFileName,
   }
   else if (FTerminal->GetConfiguration()->GetConfirmResume())
   {
-    uintptr_t Answer;
+    uint32_t Answer;
 
     {
-      TSuspendFileOperationProgress Suspend(OperationProgress);
+      volatile TSuspendFileOperationProgress Suspend(OperationProgress);
       TQueryParams Params(qpAllowContinueOnError | qpNeverAskAgainCheck,
         HELP_RESUME_TRANSFER);
       // "abort" replaced with "cancel" to unify with "append/resume" query
@@ -5388,14 +5388,14 @@ void __fastcall TSFTPFileSystem::DirectorySunk(
     else
     {
       FTerminal->UpdateTargetTime(LocalHandle, AFile->GetModification(), FTerminal->GetSessionData()->GetDSTMode());
-      CloseHandle(LocalHandle);
+      SAFE_CLOSE_HANDLE(LocalHandle);
     }
   }
 }
 //---------------------------------------------------------------------------
 void __fastcall TSFTPFileSystem::Sink(
   const UnicodeString AFileName, const TRemoteFile *AFile,
-  const UnicodeString ATargetDir, UnicodeString &ADestFileName, intptr_t Attrs,
+  const UnicodeString ATargetDir, UnicodeString &ADestFileName, uintptr_t Attrs,
   const TCopyParamType * CopyParam, intptr_t AParams, TFileOperationProgressType *OperationProgress,
   uintptr_t /*AFlags*/, TDownloadSessionAction &Action)
 {
@@ -5473,7 +5473,7 @@ void __fastcall TSFTPFileSystem::Sink(
 
         if (!ResumeTransfer)
         {
-          CloseHandle(LocalFileHandle);
+          SAFE_CLOSE_HANDLE(LocalFileHandle);
           LocalFileHandle = INVALID_HANDLE_VALUE;
           FileOperationLoopCustom(FTerminal, OperationProgress, folAllowSkip,
             FMTLOAD(CORE_DELETE_LOCAL_FILE_ERROR, DestPartialFullName), "",
@@ -5579,7 +5579,7 @@ void __fastcall TSFTPFileSystem::Sink(
         // is NULL when overwriting read-only file
         if (LocalFileHandle)
         {
-          CloseHandle(LocalFileHandle);
+          SAFE_CLOSE_HANDLE(LocalFileHandle);
           LocalFileHandle = NULL;
         }
       }
@@ -5716,7 +5716,7 @@ void __fastcall TSFTPFileSystem::Sink(
                 if ((FVersion < 4) || !OperationProgress->GetAsciiTransfer())
                 {
                   GapCount++;
-                  Missing = BlockSize - DataLen;
+                  Missing = static_cast<uint32_t>(BlockSize - DataLen);
                 }
               }
               else
@@ -5785,8 +5785,8 @@ void __fastcall TSFTPFileSystem::Sink(
       FTerminal->UpdateTargetTime(LocalFileHandle, Modification, FTerminal->GetSessionData()->GetDSTMode());
     }
 
-    CloseHandle(LocalFileHandle);
-    LocalFileHandle = NULL;
+    SAFE_CLOSE_HANDLE(LocalFileHandle);
+    LocalFileHandle = nullptr;
 
     if (ResumeAllowed)
     {

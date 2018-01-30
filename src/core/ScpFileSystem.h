@@ -54,8 +54,8 @@ public:
     TUploadSessionAction &Action, bool &ChildError) override;
   virtual void __fastcall Sink(
     const UnicodeString AFileName, const TRemoteFile *AFile,
-    const UnicodeString ATargetDir, UnicodeString &ADestFileName, intptr_t Attrs,
-    const TCopyParamType * CopyParam, intptr_t AParams, TFileOperationProgressType *OperationProgress,
+    const UnicodeString ATargetDir, UnicodeString &ADestFileName, uintptr_t Attrs,
+    const TCopyParamType *CopyParam, intptr_t AParams, TFileOperationProgressType *OperationProgress,
     uintptr_t AFlags, TDownloadSessionAction &Action) override;
   virtual void __fastcall RemoteCreateDirectory(const UnicodeString ADirName) override;
   virtual void __fastcall RemoteCreateLink(const UnicodeString AFileName, const UnicodeString PointTo, bool Symbolic) override;
@@ -152,7 +152,7 @@ private:
   void CaptureOutput(const UnicodeString AddedLine, TCaptureOutputType OutputType);
   void ChangeFileToken(const UnicodeString DelimitedName,
     const TRemoteToken &Token, TFSCommand Cmd, const UnicodeString RecursiveStr);
-  uintptr_t __fastcall ConfirmOverwrite(
+  uint32_t __fastcall ConfirmOverwrite(
     const UnicodeString ASourceFullFileName, const UnicodeString ATargetFileName,
     TOperationSide Side,
     const TOverwriteFileParams *FileParams, const TCopyParamType *CopyParam,

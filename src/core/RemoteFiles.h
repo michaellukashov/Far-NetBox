@@ -7,8 +7,8 @@
 #include <Sysutils.hpp>
 #include <Common.h>
 
-//moved to base/Common.h
 //---------------------------------------------------------------------------
+//moved to base/Common.h
 __removed enum TModificationFmt { mfNone, mfMDHM, mfMDY, mfFull };
 //---------------------------------------------------------------------------
 #define SYMLINKSTR L" -> "
@@ -29,8 +29,8 @@ class NB_CORE_EXPORT TRemoteToken : public TObject
 {
 public:
   TRemoteToken();
+  TRemoteToken(const TRemoteToken &rhs);
   explicit TRemoteToken(const UnicodeString Name);
-  explicit TRemoteToken(const TRemoteToken &rhs);
 
   void Clear();
 
@@ -49,7 +49,7 @@ public:
   __property UnicodeString DisplayText = { read = GetDisplayText };
 
   UnicodeString GetName() const { return FName; }
-  void SetName(UnicodeString Value) { FName = Value; }
+  void SetName(const UnicodeString Value) { FName = Value; }
   intptr_t GetID() const { return FID; }
   bool GetIDValid() const { return FIDValid; }
 
@@ -128,7 +128,7 @@ public:
   TRemoteFile *GetLinkedFile() const;
   void SetLinkedFile(TRemoteFile *Value);
   UnicodeString GetModificationStr() const;
-  void SetModification(const TDateTime &Value);
+  void SetModification(const TDateTime Value);
   void SetListingStr(UnicodeString Value);
   UnicodeString GetListingStr() const;
   UnicodeString GetRightsStr() const;
@@ -171,7 +171,7 @@ public:
   __property TRemoteFileList * Directory = { read = FDirectory, write = FDirectory };
   __property UnicodeString RightsStr = { read = GetRightsStr };
   __property __int64 Size = { read = GetSize, write = FSize };
-  // RWProperty<int64_t, TRemoteFile> Size{this, &TRemoteFile::GetSize, &TRemoteFile::SetSize};
+  RWProperty<int64_t, TRemoteFile> Size{this, &TRemoteFile::GetSize, &TRemoteFile::SetSize};
   __property TRemoteToken Owner = { read = FOwner, write = FOwner };
   __property TRemoteToken Group = { read = FGroup, write = FGroup };
   __property UnicodeString FileName = { read = FFileName, write = FFileName };
@@ -179,24 +179,24 @@ public:
   __property UnicodeString DisplayName = { read = FDisplayName, write = FDisplayName };
   __property int INodeBlocks = { read = FINodeBlocks };
   __property TDateTime Modification = { read = FModification, write = SetModification };
-  // RWProperty<TDateTime, TRemoteFile> Modification{this, &TRemoteFile::GetModification, &TRemoteFile::SetModification};
+  RWProperty<TDateTime, TRemoteFile> Modification{this, &TRemoteFile::GetModification, &TRemoteFile::SetModification};
   __property UnicodeString ModificationStr = { read = GetModificationStr };
   __property UnicodeString UserModificationStr = { read = GetUserModificationStr };
   __property TModificationFmt ModificationFmt = { read = FModificationFmt, write = FModificationFmt };
   __property TDateTime LastAccess = { read = FLastAccess, write = FLastAccess };
   __property bool IsSymLink = { read = FIsSymLink };
-  // ROProperty<bool, TRemoteFile> IsSymLink{this, &TRemoteFile::GetIsSymLink};
+  ROProperty<bool, TRemoteFile> IsSymLink{this, &TRemoteFile::GetIsSymLink};
   __property bool IsDirectory = { read = GetIsDirectory };
   __property TRemoteFile * LinkedFile = { read = GetLinkedFile, write = SetLinkedFile };
   __property UnicodeString LinkTo = { read = FLinkTo, write = FLinkTo };
   __property UnicodeString ListingStr = { read = GetListingStr, write = SetListingStr };
   __property TRights * Rights = { read = FRights, write = SetRights };
-  // RWProperty<TRights *, TRemoteFile> Rights{this, &TRemoteFile::GetRights, &TRemoteFile::SetRights};
+  RWProperty<TRights *, TRemoteFile> Rights{this, &TRemoteFile::GetRights, &TRemoteFile::SetRights};
   __property UnicodeString HumanRights = { read = FHumanRights, write = FHumanRights };
   __property TTerminal * Terminal = { read = FTerminal, write = SetTerminal };
   __property wchar_t Type = { read = GetType, write = SetType };
   __property UnicodeString FullFileName  = { read = GetFullFileName, write = FFullFileName };
-  // RWProperty<UnicodeString, TRemoteFile> FullFileName{this, &TRemoteFile::GetFullFileName, &TRemoteFile::SetFullFileName};
+  RWProperty<UnicodeString, TRemoteFile> FullFileName{this, &TRemoteFile::GetFullFileName, &TRemoteFile::SetFullFileName};
   __property bool HaveFullFileName  = { read = GetHaveFullFileName };
   __property int IconIndex = { read = GetIconIndex };
   __property UnicodeString TypeName = { read = GetTypeName };

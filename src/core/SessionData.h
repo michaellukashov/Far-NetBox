@@ -312,7 +312,7 @@ private:
   TTlsVersion FMinTlsVersion;
   TTlsVersion FMaxTlsVersion;
   TAutoSwitch FNotUtf;
-  int FInternalEditorEncoding;
+  intptr_t FInternalEditorEncoding;
   UnicodeString FS3DefaultRegion;
   bool FIsWorkspace;
   UnicodeString FLink;
@@ -330,7 +330,7 @@ private:
   UnicodeString FLogicalHostName;
 
 public:
-  void __fastcall SetHostName(UnicodeString AValue);
+  void __fastcall SetHostName(const UnicodeString AValue);
   UnicodeString __fastcall GetHostNameExpanded() const;
   void SetPortNumber(intptr_t Value);
   void SetUserName(UnicodeString Value);
@@ -581,20 +581,20 @@ public:
   static bool __fastcall MaskPasswordInOptionParameter(const UnicodeString AOption, UnicodeString &Param);
   bool IsSame(const TSessionData *Default, bool AdvancedOnly) const;
   bool IsSameSite(const TSessionData *Default) const;
-  bool IsInFolderOrWorkspace(UnicodeString AFolder) const;
+  bool IsInFolderOrWorkspace(const UnicodeString AFolder) const;
   UnicodeString GenerateSessionUrl(uintptr_t Flags) const;
   UnicodeString GenerateOpenCommandArgs() const;
   void GenerateAssemblyCode(TAssemblyLanguage Language, UnicodeString &Head, UnicodeString &Tail, int &Indent);
   void LookupLastFingerprint();
   bool GetIsSecure() const;
-  static void ValidatePath(UnicodeString APath);
-  static void ValidateName(UnicodeString AName);
-  static UnicodeString MakeValidName(UnicodeString Name);
-  static UnicodeString ExtractLocalName(UnicodeString Name);
-  static UnicodeString ExtractFolderName(UnicodeString Name);
-  static UnicodeString ComposePath(UnicodeString APath, UnicodeString Name);
-  static bool IsSensitiveOption(UnicodeString Option);
-  static UnicodeString FormatSiteKey(UnicodeString HostName, intptr_t PortNumber);
+  static void ValidatePath(const UnicodeString APath);
+  static void ValidateName(const UnicodeString AName);
+  static UnicodeString MakeValidName(const UnicodeString Name);
+  static UnicodeString ExtractLocalName(const UnicodeString Name);
+  static UnicodeString ExtractFolderName(const UnicodeString Name);
+  static UnicodeString ComposePath(const UnicodeString APath, const UnicodeString Name);
+  static bool IsSensitiveOption(const UnicodeString Option);
+  static UnicodeString FormatSiteKey(const UnicodeString HostName, intptr_t PortNumber);
 
   __property UnicodeString HostName  = { read=FHostName, write=SetHostName };
   __property UnicodeString HostNameExpanded  = { read=GetHostNameExpanded };
@@ -628,7 +628,7 @@ public:
   __property UnicodeString Passphrase  = { read=GetPassphrase, write=SetPassphrase };
   __property UnicodeString PuttyProtocol  = { read=FPuttyProtocol, write=SetPuttyProtocol };
   __property TFSProtocol FSProtocol  = { read=FFSProtocol, write=SetFSProtocol  };
-  // ROProperty<TFSProtocol, TSessionData> FSProtocol{this, &TSessionData::GetFSProtocol};
+  ROProperty<TFSProtocol, TSessionData> FSProtocol{this, &TSessionData::GetFSProtocol};
   __property UnicodeString FSProtocolStr  = { read=GetFSProtocolStr };
   __property bool Modified  = { read=FModified, write=FModified };
   __property bool CanLogin  = { read=GetCanLogin };
@@ -638,7 +638,7 @@ public:
   __property bool TimeDifferenceAuto = { read = FTimeDifferenceAuto, write = SetTimeDifferenceAuto };
   __property TPingType PingType = { read = FPingType, write = SetPingType };
   __property UnicodeString SessionName  = { read=GetSessionName };
-  // ROProperty<UnicodeString, TSessionData> SessionName{this, &TSessionData::GetSessionName};
+  ROProperty<UnicodeString, TSessionData> SessionName{this, &TSessionData::GetSessionName};
   __property UnicodeString DefaultSessionName  = { read=GetDefaultSessionName };
   __property UnicodeString LocalDirectory  = { read=FLocalDirectory, write=SetLocalDirectory };
   __property UnicodeString RemoteDirectory  = { read=FRemoteDirectory, write=SetRemoteDirectory };

@@ -75,7 +75,7 @@ public:
     const UnicodeString ADestFullName, const TRemoteFile *AFile, const TCopyParamType * CopyParam) override;
   virtual void __fastcall Sink(
     const UnicodeString AFileName, const TRemoteFile *AFile,
-    const UnicodeString ATargetDir, UnicodeString &ADestFileName, intptr_t Attrs,
+    const UnicodeString ATargetDir, UnicodeString &ADestFileName, uintptr_t Attrs,
     const TCopyParamType * CopyParam, intptr_t Params, TFileOperationProgressType *OperationProgress,
     uintptr_t AFlags, TDownloadSessionAction &Action) override;
   virtual void __fastcall RemoteCreateDirectory(const UnicodeString ADirName) override;

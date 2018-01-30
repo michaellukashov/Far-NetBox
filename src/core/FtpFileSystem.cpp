@@ -1424,7 +1424,7 @@ bool __fastcall TFTPFileSystem::ConfirmOverwrite(
     // upload.
     (DestIsSmaller || (DestIsSame && CanAutoResume));
 
-  uintptr_t Answer;
+  uint32_t Answer;
   if (CanAutoResume && CanResume)
   {
     if (DestIsSame)
@@ -1442,7 +1442,7 @@ bool __fastcall TFTPFileSystem::ConfirmOverwrite(
     // retry = "resume"
     // all = "yes to newer"
     // ignore = "rename"
-    uintptr_t Answers = qaYes | qaNo | qaCancel | qaYesToAll | qaNoToAll | qaAll | qaIgnore;
+    uint32_t Answers = qaYes | qaNo | qaCancel | qaYesToAll | qaNoToAll | qaAll | qaIgnore;
     if (CanResume)
     {
       Answers |= qaRetry;
@@ -1655,7 +1655,7 @@ void __fastcall TFTPFileSystem::CopyToLocal(TStrings *AFilesToCopy,
 //---------------------------------------------------------------------------
 void __fastcall TFTPFileSystem::Sink(
   const UnicodeString AFileName, const TRemoteFile *File,
-  const UnicodeString TargetDir, UnicodeString & DestFileName, intptr_t Attrs,
+  const UnicodeString TargetDir, UnicodeString & DestFileName, uintptr_t Attrs,
   const TCopyParamType * CopyParam, intptr_t Params, TFileOperationProgressType *OperationProgress,
   uintptr_t AFlags, TDownloadSessionAction &Action)
 {
@@ -2418,7 +2418,7 @@ void __fastcall TFTPFileSystem::ReadFile(const UnicodeString AFileName,
     {
       UnicodeString Path = base::UnixExtractFilePath(AFileName);
       UnicodeString NameOnly;
-      int P;
+      intptr_t P;
       bool MVSPath =
         FMVS && Path.IsEmpty() &&
         (AFileName.SubString(1, 1) == L"'") && (AFileName.SubString(AFileName.Length(), 1) == L"'") &&
@@ -2868,7 +2868,7 @@ bool __fastcall TFTPFileSystem::FTPPostMessage(uintptr_t Type, WPARAM wParam, LP
     // it makes "pause" in queue work.
     // Paused queue item stops in some of the TFileOperationProgressType
     // methods called from FileTransferProgress
-    TGuard Guard(FTransferStatusCriticalSection);
+    volatile TGuard Guard(FTransferStatusCriticalSection);
   }
 
   TGuard Guard(FQueueCriticalSection);
@@ -2885,7 +2885,7 @@ bool __fastcall TFTPFileSystem::ProcessMessage()
   TMessageQueue::value_type Message;
 
   {
-    TGuard Guard(FQueueCriticalSection);
+    volatile TGuard Guard(FQueueCriticalSection);
 
     Result = !FQueue->empty();
     if (Result)

@@ -94,7 +94,7 @@ public:
   void WaitForData();
   void Discard();
   void FreeBackend();
-  void PoolForData(WSANETWORKEVENTS &Events, intptr_t &Result);
+  void PoolForData(WSANETWORKEVENTS &Events, uint32_t &Result);
   inline void CaptureOutput(TLogLineType Type,
     UnicodeString Line);
   void ResetConnection();
@@ -108,8 +108,8 @@ public:
   void UpdateSessionInfo() const;
   bool GetReady() const;
   void DispatchSendBuffer(intptr_t BufSize);
-  void SendBuffer(intptr_t &Result);
-  uintptr_t TimeoutPrompt(TQueryParamsTimerEvent PoolEvent);
+  void SendBuffer(uint32_t &Result);
+  uint32_t TimeoutPrompt(TQueryParamsTimerEvent PoolEvent);
   bool TryFtp();
   UnicodeString ConvertInput(RawByteString Input, uintptr_t CodePage = CP_ACP) const;
   void GetRealHost(UnicodeString &Host, intptr_t &Port) const;

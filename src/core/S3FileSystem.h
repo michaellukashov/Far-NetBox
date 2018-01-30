@@ -74,7 +74,7 @@ public:
     TUploadSessionAction &Action, bool &ChildError) override;
   virtual void __fastcall Sink(
     const UnicodeString AFileName, const TRemoteFile *AFile,
-    const UnicodeString ATargetDir, UnicodeString &ADestFileName, intptr_t Attrs,
+    const UnicodeString ATargetDir, UnicodeString &ADestFileName, uintptr_t Attrs,
     const TCopyParamType *CopyParam, intptr_t AParams, TFileOperationProgressType *OperationProgress,
     uintptr_t AFlags, TDownloadSessionAction &Action) override;
   virtual void __fastcall RemoteCreateDirectory(const UnicodeString ADirName) override;
@@ -123,7 +123,7 @@ protected:
   UTF8String FAccessKeyId;
   UTF8String FSecretAccessKey;
   UTF8String FHostName;
-  intptr_t FTimeout;
+  int FTimeout;
   S3RequestContext * FRequestContext;
   _S3Protocol FLibS3Protocol;
   ne_session_s * FNeonSession;
@@ -157,8 +157,8 @@ protected:
     const UnicodeString ASourceFullFileName, UnicodeString &ATargetFileName,
     TFileOperationProgressType *OperationProgress, const TOverwriteFileParams *FileParams,
     const TCopyParamType *CopyParam, intptr_t AParams);
-  int64_t PutObjectData(int64_t BufferSize, char * Buffer, TLibS3PutObjectDataCallbackData & Data);
-  S3Status GetObjectData(int64_t BufferSize, const char * Buffer, TLibS3GetObjectDataCallbackData & Data);
+  int PutObjectData(int BufferSize, char * Buffer, TLibS3PutObjectDataCallbackData &Data);
+  S3Status GetObjectData(int BufferSize, const char * Buffer, TLibS3GetObjectDataCallbackData &Data);
   bool ShouldCancelTransfer(TLibS3TransferObjectDataCallbackData & Data);
 
   static TS3FileSystem * GetFileSystem(void *CallbackData);

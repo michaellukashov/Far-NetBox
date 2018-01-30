@@ -2,9 +2,15 @@
 #include <vcl.h>
 #pragma hdrstop
 
+#ifndef NE_LFS
 #define NE_LFS
+#endif
+#ifndef WINSCP
 #define WINSCP
+#endif
+#ifndef NEED_LIBS3
 #define NEED_LIBS3
+#endif
 
 #include "S3FileSystem.h"
 
@@ -19,7 +25,7 @@
 #include <ne_request.h>
 #include <StrUtils.hpp>
 //---------------------------------------------------------------------------
-#pragma package(smart_init)
+__removed #pragma package(smart_init)
 //---------------------------------------------------------------------------
 #define StrFromS3(S) StrFromNeon(S)
 #define StrToS3(S) StrToNeon(S)
@@ -120,7 +126,7 @@ void __fastcall TS3FileSystem::Open()
   FSecretAccessKey = UTF8String(SecretAccessKey);
 
   FHostName = UTF8String(Data->GetHostNameExpanded());
-  FTimeout = Data->GetTimeout();
+  FTimeout = ToInt(Data->GetTimeout());
 
   RegisterForNeonDebug(FTerminal);
   UpdateNeonDebugMask();
@@ -435,8 +441,7 @@ void TS3FileSystem::ParsePath(UnicodeString Path, UnicodeString &BucketName, Uni
   {
     Path.Delete(1, 1);
   }
-  int P = Path.Pos(L"/");
-  UnicodeString Result;
+  intptr_t P = Path.Pos(L"/");
   if (P == 0)
   {
     BucketName = Path;
@@ -525,7 +530,7 @@ TLibS3BucketContext TS3FileSystem::GetBucketContext(const UnicodeString ABucketN
           (Region != Data.RegionDetail))
       {
         FTerminal->LogEvent(FORMAT("Will use region \"%s\" for bucket \"%s\" from now on.", Data.RegionDetail, ABucketName));
-        FRegions.insert(std::make_pair(ABucketName, Data.RegionDetail));
+        FRegions.insert(TRegions::value_type(ABucketName, Data.RegionDetail));
 
         Result.AuthRegionBuf = UTF8String(Data.RegionDetail);
         Result.authRegion = Result.AuthRegionBuf.c_str();
@@ -541,7 +546,7 @@ TLibS3BucketContext TS3FileSystem::GetBucketContext(const UnicodeString ABucketN
         if (HostName != Endpoint)
         {
           FTerminal->LogEvent(FORMAT("Will use endpoint \"%s\" for bucket \"%s\" from now on.", Endpoint, ABucketName));
-          FHostNames.insert(std::make_pair(ABucketName, Endpoint));
+          FHostNames.insert(TRegions::value_type(ABucketName, Endpoint));
           Retry = true;
         }
       }
@@ -731,7 +736,7 @@ void __fastcall TS3FileSystem::CachedChangeDirectory(const UnicodeString Directo
   FCachedDirectoryChange = base::UnixExcludeTrailingBackslash(Directory);
 }
 //---------------------------------------------------------------------------
-TRemoteToken TS3FileSystem::MakeRemoteToken(const char * OwnerId, const char * OwnerDisplayName)
+TRemoteToken TS3FileSystem::MakeRemoteToken(const char *OwnerId, const char *OwnerDisplayName)
 {
   TRemoteToken Result;
   Result.SetName(StrFromS3(OwnerDisplayName));
@@ -829,7 +834,7 @@ void TS3FileSystem::DoListBucket(
 
   S3_list_bucket(
     &BucketContext, StrToS3(APrefix), StrToS3(Data.NextMarker),
-    LibS3Delimiter.c_str(), (int)MaxKeys, FRequestContext, FTimeout, &ListBucketHandler, &Data);
+    LibS3Delimiter.c_str(), ToInt(MaxKeys), FRequestContext, FTimeout, &ListBucketHandler, &Data);
 }
 //---------------------------------------------------------------------------
 void TS3FileSystem::ReadDirectoryInternal(
@@ -850,7 +855,7 @@ void TS3FileSystem::ReadDirectoryInternal(
 
     S3_list_service(
       FLibS3Protocol, FAccessKeyId.c_str(), FSecretAccessKey.c_str(), 0, FHostName.c_str(),
-      nullptr, MaxKeys, FRequestContext, FTimeout, &ListServiceHandler, &Data);
+      nullptr, ToInt(MaxKeys), FRequestContext, FTimeout, &ListServiceHandler, &Data);
 
     CheckLibS3Error(Data);
   }
@@ -1135,7 +1140,7 @@ void TS3FileSystem::ConfirmOverwrite(
   TFileOperationProgressType *OperationProgress, const TOverwriteFileParams *FileParams,
   const TCopyParamType *CopyParam, intptr_t AParams)
 {
-  intptr_t Answers = qaYes | qaNo | qaCancel | qaYesToAll | qaNoToAll;
+  uint32_t Answers = qaYes | qaNo | qaCancel | qaYesToAll | qaNoToAll;
   std::vector<TQueryButtonAlias> Aliases;
   Aliases.push_back(TQueryButtonAlias::CreateYesToAllGrouppedWithYes());
   Aliases.push_back(TQueryButtonAlias::CreateNoToAllGrouppedWithNo());
@@ -1144,7 +1149,7 @@ void TS3FileSystem::ConfirmOverwrite(
   QueryParams.Aliases = &Aliases[0];
   QueryParams.AliasesCount = Aliases.size();
 
-  unsigned int Answer;
+  uint32_t Answer;
 
   {
     volatile TSuspendFileOperationProgress Suspend(OperationProgress);
@@ -1178,8 +1183,8 @@ struct TLibS3TransferObjectDataCallbackData : TLibS3CallbackData
 CUSTOM_MEM_ALLOCATION_IMPL
 
   UnicodeString FileName;
-  TStream * Stream;
-  TFileOperationProgressType * OperationProgress;
+  TStream *Stream;
+  TFileOperationProgressType *OperationProgress;
   std::auto_ptr<Exception> Exception;
 };
 //---------------------------------------------------------------------------
@@ -1214,9 +1219,9 @@ bool TS3FileSystem::ShouldCancelTransfer(TLibS3TransferObjectDataCallbackData &D
   return Result;
 }
 //---------------------------------------------------------------------------
-int64_t TS3FileSystem::PutObjectData(int64_t BufferSize, char * Buffer, TLibS3PutObjectDataCallbackData & Data)
+int TS3FileSystem::PutObjectData(int BufferSize, char * Buffer, TLibS3PutObjectDataCallbackData & Data)
 {
-  int64_t Result;
+  int Result;
 
   if (ShouldCancelTransfer(Data))
   {
@@ -1231,7 +1236,7 @@ int64_t TS3FileSystem::PutObjectData(int64_t BufferSize, char * Buffer, TLibS3Pu
         FMTLOAD(READ_ERROR, Data.FileName), "",
       [&]()
       {
-        Result = Data.Stream->Read(Buffer, BufferSize);
+        Result = ToInt(Data.Stream->Read(Buffer, BufferSize));
       });
       __removed FILE_OPERATION_LOOP_END(FMTLOAD(READ_ERROR, (Data.FileName)));
 
@@ -1299,7 +1304,7 @@ void __fastcall TS3FileSystem::Source(
   TFileOperationProgressType *OperationProgress, uintptr_t /*Flags*/,
   TUploadSessionAction &Action, bool & /*ChildError*/)
 {
-  UnicodeString DestFullName = TargetDir + DestFileName;
+  UnicodeString DestFullName = TargetDir + ADestFileName;
 
   TRemoteFile * RemoteFile = nullptr;
   try
@@ -1320,17 +1325,17 @@ void __fastcall TS3FileSystem::Source(
   {
     TOverwriteFileParams FileParams;
 
-    FileParams.SourceSize = Handle.Size;
-    FileParams.SourceTimestamp = Handle.Modification;
+    FileParams.SourceSize = AHandle.Size;
+    FileParams.SourceTimestamp = AHandle.Modification;
     FileParams.DestSize = RemoteFile->Size;
     FileParams.DestTimestamp = TDateTime();
     FileParams.DestPrecision = mfNone;
     delete RemoteFile;
 
-    ConfirmOverwrite(Handle.FileName, DestFileName, OperationProgress, &FileParams, CopyParam, Params);
+    ConfirmOverwrite(AHandle.FileName, ADestFileName, OperationProgress, &FileParams, CopyParam, Params);
   }
 
-  DestFullName = TargetDir + DestFileName;
+  DestFullName = TargetDir + ADestFileName;
   // only now, we know the final destination
   // (not really true as we do not support changing file name on overwrite dialog)
   Action.Destination(DestFullName);
@@ -1340,7 +1345,7 @@ void __fastcall TS3FileSystem::Source(
 
   TLibS3BucketContext BucketContext = GetBucketContext(BucketName);
 
-  int Parts = std::max(1, static_cast<int>((Handle.Size + S3MultiPartChunkSize - 1) / S3MultiPartChunkSize));
+  int Parts = std::max(1, static_cast<int>((AHandle.Size + S3MultiPartChunkSize - 1) / S3MultiPartChunkSize));
   bool Multipart = (Parts > 1);
 
   RawByteString MultipartUploadId;
@@ -1351,7 +1356,7 @@ void __fastcall TS3FileSystem::Source(
     FTerminal->LogEvent(FORMAT("Initiating multipart upload (%d parts)", Parts));
 
     FileOperationLoopCustom(FTerminal, OperationProgress, folAllowSkip,
-      FMTLOAD(TRANSFER_ERROR, Handle.FileName), "",
+      FMTLOAD(TRANSFER_ERROR, AHandle.FileName), "",
     [&]()
     {
       TLibS3MultipartInitialCallbackData Data;
@@ -1365,7 +1370,7 @@ void __fastcall TS3FileSystem::Source(
 
       MultipartUploadId = Data.UploadId;
     });
-    __removed FILE_OPERATION_LOOP_END_EX(FMTLOAD(TRANSFER_ERROR, (Handle.FileName)), (folAllowSkip | folRetryOnFatal));
+    __removed FILE_OPERATION_LOOP_END_EX(FMTLOAD(TRANSFER_ERROR, (AHandle.FileName)), (folAllowSkip | folRetryOnFatal));
 
     FTerminal->LogEvent(FORMAT("Initiated multipart upload (%s - %d parts)", UnicodeString(MultipartUploadId), Parts));
 
@@ -1376,14 +1381,14 @@ void __fastcall TS3FileSystem::Source(
   {
     TLibS3PutObjectDataCallbackData Data;
 
-    __int64 Position = 0;
+    int64_t Position = 0;
 
-    std::unique_ptr<TStream> Stream(new TSafeHandleStream(reinterpret_cast<THandle>(Handle.Handle)));
+    std::unique_ptr<TStream> Stream(new TSafeHandleStream(reinterpret_cast<THandle>(AHandle.Handle)));
 
     for (intptr_t Part = 1; Part <= Parts; Part++)
     {
       FileOperationLoopCustom(FTerminal, OperationProgress, folAllowSkip,
-        FMTLOAD(TRANSFER_ERROR, Handle.FileName), "",
+        FMTLOAD(TRANSFER_ERROR, AHandle.FileName), "",
       [&]()
       {
         DebugAssert(Stream->Position == OperationProgress->TransferredSize);
@@ -1396,7 +1401,7 @@ void __fastcall TS3FileSystem::Source(
         }
 
         RequestInit(Data);
-        Data.FileName = Handle.FileName;
+        Data.FileName = AHandle.FileName;
         Data.Stream = Stream.get();
         Data.OperationProgress = OperationProgress;
         Data.Exception.reset(nullptr);
@@ -1408,13 +1413,13 @@ void __fastcall TS3FileSystem::Source(
           int PartLength = std::min(S3MultiPartChunkSize, static_cast<int>(Stream->Size - Stream->Position));
           FTerminal->LogEvent(FORMAT("Uploading part %d [%s]", Part, IntToStr(PartLength)));
           S3_upload_part(
-            &BucketContext, StrToS3(Key), nullptr, &UploadPartHandler, Part, MultipartUploadId.c_str(),
+            &BucketContext, StrToS3(Key), nullptr, &UploadPartHandler, ToInt(Part), MultipartUploadId.c_str(),
             PartLength, FRequestContext, FTimeout, &Data);
         }
         else
         {
           S3PutObjectHandler PutObjectHandler = { CreateResponseHandler(), LibS3PutObjectDataCallback };
-          S3_put_object(&BucketContext, StrToS3(Key), Handle.Size, nullptr, FRequestContext, FTimeout, &PutObjectHandler, &Data);
+          S3_put_object(&BucketContext, StrToS3(Key), AHandle.Size, nullptr, FRequestContext, FTimeout, &PutObjectHandler, &Data);
         }
 
         // The "exception" was already seen by the user, its presence mean an accepted abort of the operation.
@@ -1428,11 +1433,11 @@ void __fastcall TS3FileSystem::Source(
         if (Multipart)
         {
           RawByteString PartCommitTag =
-            RawByteString::Format("  <Part><PartNumber>%d</PartNumber><ETag>%s</ETag></Part>\n", Part, Data.ETag);
+            FORMAT("  <Part><PartNumber>%d</PartNumber><ETag>%s</ETag></Part>\n", Part, Data.ETag);
           MultipartCommitPutObjectDataCallbackData.Message += PartCommitTag;
         }
       });
-      __removed FILE_OPERATION_LOOP_END_EX(FMTLOAD(TRANSFER_ERROR, (Handle.FileName)), (folAllowSkip | folRetryOnFatal));
+      __removed FILE_OPERATION_LOOP_END_EX(FMTLOAD(TRANSFER_ERROR, (AHandle.FileName)), (folAllowSkip | folRetryOnFatal));
 
       if (Data.Exception.get() != nullptr)
       {
@@ -1450,12 +1455,12 @@ void __fastcall TS3FileSystem::Source(
       FTerminal->LogEvent(UnicodeString(MultipartCommitPutObjectDataCallbackData.Message));
 
       FileOperationLoopCustom(FTerminal, OperationProgress, folAllowSkip,
-        FMTLOAD(TRANSFER_ERROR, Handle.FileName), "",
+        FMTLOAD(TRANSFER_ERROR, AHandle.FileName), "",
       [&]()
       {
         RequestInit(MultipartCommitPutObjectDataCallbackData);
 
-        MultipartCommitPutObjectDataCallbackData.Remaining = MultipartCommitPutObjectDataCallbackData.Message.Length();
+        MultipartCommitPutObjectDataCallbackData.Remaining = ToInt(MultipartCommitPutObjectDataCallbackData.Message.Length());
 
         S3MultipartCommitHandler MultipartCommitHandler =
           { CreateResponseHandler(), &LibS3MultipartCommitPutObjectDataCallback, nullptr };
@@ -1467,13 +1472,13 @@ void __fastcall TS3FileSystem::Source(
 
         CheckLibS3Error(MultipartCommitPutObjectDataCallbackData, true);
       });
-      __removed FILE_OPERATION_LOOP_END_EX(FMTLOAD(TRANSFER_ERROR, (Handle.FileName)), (folAllowSkip | folRetryOnFatal));
+      __removed FILE_OPERATION_LOOP_END_EX(FMTLOAD(TRANSFER_ERROR, (AHandle.FileName)), (folAllowSkip | folRetryOnFatal));
 
       // to skip abort, in case we ever add any code before the catch, that can throw
       MultipartUploadId = RawByteString();
     }
   }
-  catch (Exception & E)
+  catch (Exception &/*E*/)
   {
     if (!MultipartUploadId.IsEmpty())
     {
@@ -1501,26 +1506,26 @@ void __fastcall TS3FileSystem::Source(
 }
 //---------------------------------------------------------------------------
 void __fastcall TS3FileSystem::CopyToLocal(
-  TStrings * FilesToCopy, const UnicodeString TargetDir, const TCopyParamType * CopyParam,
-  int Params, TFileOperationProgressType * OperationProgress, TOnceDoneOperation & OnceDoneOperation)
+  TStrings *FilesToCopy, const UnicodeString ATargetDir, const TCopyParamType *CopyParam,
+  intptr_t AParams, TFileOperationProgressType *OperationProgress, TOnceDoneOperation &OnceDoneOperation)
 {
-  Params &= ~cpAppend;
+  AParams &= ~cpAppend;
 
-  FTerminal->DoCopyToLocal(FilesToCopy, TargetDir, CopyParam, Params, OperationProgress, tfNone, OnceDoneOperation);
+  FTerminal->DoCopyToLocal(FilesToCopy, ATargetDir, CopyParam, AParams, OperationProgress, tfNone, OnceDoneOperation);
 }
 //---------------------------------------------------------------------------
 struct TLibS3GetObjectDataCallbackData : TLibS3TransferObjectDataCallbackData
 {
 };
 //---------------------------------------------------------------------------
-S3Status TS3FileSystem::LibS3GetObjectDataCallback(int64_t BufferSize, const char * Buffer, void * CallbackData)
+S3Status TS3FileSystem::LibS3GetObjectDataCallback(int BufferSize, const char * Buffer, void * CallbackData)
 {
   TLibS3GetObjectDataCallbackData &Data = *static_cast<TLibS3GetObjectDataCallbackData *>(CallbackData);
 
   return Data.FileSystem->GetObjectData(BufferSize, Buffer, Data);
 }
 //---------------------------------------------------------------------------
-S3Status TS3FileSystem::GetObjectData(int64_t BufferSize, const char * Buffer, TLibS3GetObjectDataCallbackData & Data)
+S3Status TS3FileSystem::GetObjectData(int BufferSize, const char * Buffer, TLibS3GetObjectDataCallbackData & Data)
 {
   S3Status Result = S3StatusOK;
 
@@ -1554,29 +1559,29 @@ S3Status TS3FileSystem::GetObjectData(int64_t BufferSize, const char * Buffer, T
 }
 //---------------------------------------------------------------------------
 void __fastcall TS3FileSystem::Sink(
-  const UnicodeString AFileName, const TRemoteFile * File,
-  const UnicodeString ATargetDir, UnicodeString ADestFileName, intptr_t Attrs,
+  const UnicodeString AFileName, const TRemoteFile *AFile,
+  const UnicodeString ATargetDir, UnicodeString &ADestFileName, uintptr_t Attrs,
   const TCopyParamType *CopyParam, intptr_t Params, TFileOperationProgressType *OperationProgress,
   uintptr_t /*AFlags*/, TDownloadSessionAction &Action)
 {
-  UnicodeString DestFullName = TargetDir + DestFileName;
-  if (FileExists(ApiPath(DestFullName)))
+  UnicodeString DestFullName = ATargetDir + ADestFileName;
+  if (::FileExists(ApiPath(DestFullName)))
   {
-    __int64 Size;
-    __int64 MTime;
-    FTerminal->OpenLocalFile(DestFullName, GENERIC_READ, nullptr, nullptr, nullptr, &MTime, nullptr, &Size);
+    int64_t Size;
+    int64_t MTime;
+    FTerminal->TerminalOpenLocalFile(DestFullName, GENERIC_READ, nullptr, nullptr, nullptr, &MTime, nullptr, &Size);
     TOverwriteFileParams FileParams;
 
-    FileParams.SourceSize = File->Size;
-    FileParams.SourceTimestamp = File->Modification; // noop
+    FileParams.SourceSize = AFile->Size;
+    FileParams.SourceTimestamp = AFile->Modification; // noop
     FileParams.DestSize = Size;
     FileParams.DestTimestamp = UnixToDateTime(MTime, FTerminal->GetSessionData()->GetDSTMode());
 
-    ConfirmOverwrite(FileName, DestFileName, OperationProgress, &FileParams, CopyParam, Params);
+    ConfirmOverwrite(AFileName, ADestFileName, OperationProgress, &FileParams, CopyParam, Params);
   }
 
   UnicodeString BucketName, Key;
-  ParsePath(FileName, BucketName, Key);
+  ParsePath(AFileName, BucketName, Key);
 
   TLibS3BucketContext BucketContext = GetBucketContext(BucketName);
 
@@ -1584,11 +1589,11 @@ void __fastcall TS3FileSystem::Sink(
   Action.Destination(ExpandedDestFullName);
 
   FileOperationLoopCustom(FTerminal, OperationProgress, folAllowSkip,
-    FMTLOAD(TRANSFER_ERROR, FileName), "",
+    FMTLOAD(TRANSFER_ERROR, AFileName), "",
   [&]()
   {
     HANDLE LocalFileHandle;
-    if (!FTerminal->CreateLocalFile(DestFullName, OperationProgress, &LocalFileHandle, FLAGSET(Params, cpNoConfirmation)))
+    if (!FTerminal->TerminalCreateLocalFile(DestFullName, OperationProgress, FLAGSET(Params, cpResume), FLAGSET(Params, cpNoConfirmation), &LocalFileHandle))
     {
       throw ESkipFile();
     }
@@ -1601,7 +1606,7 @@ void __fastcall TS3FileSystem::Sink(
     {
       SCOPE_EXIT
       {
-        CloseHandle(LocalFileHandle);
+        SAFE_CLOSE_HANDLE(LocalFileHandle);
 
         if (DeleteLocalFile)
         {
@@ -1617,11 +1622,11 @@ void __fastcall TS3FileSystem::Sink(
       TLibS3GetObjectDataCallbackData Data;
 
       FileOperationLoopCustom(FTerminal, OperationProgress, folAllowSkip,
-        FMTLOAD(TRANSFER_ERROR, FileName), "",
+        FMTLOAD(TRANSFER_ERROR, AFileName), "",
       [&]()
       {
         RequestInit(Data);
-        Data.FileName = FileName;
+        Data.FileName = AFileName;
         Data.Stream = Stream.get();
         Data.OperationProgress = OperationProgress;
         Data.Exception.reset(nullptr);
@@ -1637,7 +1642,7 @@ void __fastcall TS3FileSystem::Sink(
           CheckLibS3Error(Data, true);
         }
       });
-      __removed FILE_OPERATION_LOOP_END_EX(FMTLOAD(TRANSFER_ERROR, (FileName)), (folAllowSkip | folRetryOnFatal));
+      __removed FILE_OPERATION_LOOP_END_EX(FMTLOAD(TRANSFER_ERROR, (AFileName)), (folAllowSkip | folRetryOnFatal));
 
       if (Data.Exception.get() != nullptr)
       {
@@ -1648,7 +1653,7 @@ void __fastcall TS3FileSystem::Sink(
 
       if (CopyParam->PreserveTime)
       {
-        FTerminal->UpdateTargetTime(LocalFileHandle, File->Modification, FTerminal->GetSessionData()->GetDSTMode());
+        FTerminal->UpdateTargetTime(LocalFileHandle, AFile->Modification, FTerminal->SessionData->GetDSTMode());
       }
     }
     __finally__removed
@@ -1667,7 +1672,7 @@ void __fastcall TS3FileSystem::Sink(
   });
   __removed FILE_OPERATION_LOOP_END(FMTLOAD(TRANSFER_ERROR, (FileName)));
 
-  FTerminal->UpdateTargetAttrs(DestFullName, File, CopyParam, Attrs);
+  FTerminal->UpdateTargetAttrs(DestFullName, AFile, CopyParam, Attrs);
 }
 //---------------------------------------------------------------------------
 void __fastcall TS3FileSystem::GetSupportedChecksumAlgs(TStrings * /*Algs*/)

@@ -98,7 +98,7 @@ const int qpWaitInBatch =          0x10;
 typedef void __fastcall (__closure *TButtonSubmitEvent)(TObject * Sender, unsigned int & Answer);
 #endif // #if 0
 typedef nb::FastDelegate2<void,
-  TObject * /*Sender*/, uintptr_t & /*Answer*/> TButtonSubmitEvent;
+  TObject * /*Sender*/, uint32_t & /*Answer*/> TButtonSubmitEvent;
 
 struct NB_CORE_EXPORT TQueryButtonAlias : public TObject
 {
@@ -123,7 +123,7 @@ struct NB_CORE_EXPORT TQueryButtonAlias : public TObject
 #if 0
 typedef void (__closure *TQueryParamsTimerEvent)(uintptr_t &Result);
 #endif // #if 0
-typedef nb::FastDelegate1<void, intptr_t & /*Result*/> TQueryParamsTimerEvent;
+typedef nb::FastDelegate1<void, uint32_t & /*Result*/> TQueryParamsTimerEvent;
 
 #if 0
 // moved to Classes.h
@@ -235,7 +235,7 @@ public:
 
   UnicodeString Text;
 
-  void __fastcall Copy(TObject * /*Sender*/, uintptr_t & /*Answer*/)
+  void __fastcall Copy(TObject * /*Sender*/, uint32_t & /*Answer*/)
   {
     volatile TInstantOperationVisualizer Visualizer;
     CopyToClipboard(Text);

@@ -754,7 +754,7 @@ void __fastcall TConfiguration::Changed()
   TNotifyEvent AOnChange = nullptr;
 
   {
-    TGuard Guard(FCriticalSection);
+    volatile TGuard Guard(FCriticalSection);
     if (FUpdating == 0)
     {
       AOnChange = GetOnChange();

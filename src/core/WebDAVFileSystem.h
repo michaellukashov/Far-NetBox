@@ -101,7 +101,7 @@ protected:
 
   virtual void __fastcall Sink(
     const UnicodeString AFileName, const TRemoteFile *AFile,
-    const UnicodeString ATargetDir, UnicodeString &ADestFileName, intptr_t Attrs,
+    const UnicodeString ATargetDir, UnicodeString &ADestFileName, uintptr_t Attrs,
     const TCopyParamType *CopyParam, intptr_t AParams, TFileOperationProgressType *OperationProgress,
     uintptr_t AFlags, TDownloadSessionAction &Action) override;
   void __fastcall ConfirmOverwrite(
@@ -110,7 +110,7 @@ protected:
     const TOverwriteFileParams *FileParams, const TCopyParamType *CopyParam,
     intptr_t Params);
 //    TOverwriteMode &OverwriteMode,
-//    uintptr_t &Answer);
+//    uint32_t &Answer);
   void __fastcall CheckStatus(intptr_t NeonStatus);
   void __fastcall ClearNeonError();
   static void NeonPropsResult(
