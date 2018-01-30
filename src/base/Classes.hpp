@@ -378,7 +378,7 @@ public:
   {
   }
   explicit TDateTime(uint16_t Hour,
-    uint16_t Min, uint16_t Sec, uint16_t MSec);
+    uint16_t Min, uint16_t Sec, uint16_t MSec = 0);
   TDateTime(const TDateTime &rhs) :
     FValue(rhs.FValue)
   {
