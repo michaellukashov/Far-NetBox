@@ -213,7 +213,7 @@ void TCustomFarPlugin::ClearPluginInfo(PluginInfo &Info) const
   Info.StructSize = sizeof(Info);
 }
 
-wchar_t *TCustomFarPlugin::DuplicateStr(UnicodeString Str, bool AllowEmpty)
+wchar_t *TCustomFarPlugin::DuplicateStr(const UnicodeString Str, bool AllowEmpty)
 {
   if (Str.IsEmpty() && !AllowEmpty)
   {
@@ -1033,8 +1033,8 @@ void TFarMessageDialog::ButtonClick(TFarButton *Sender, bool &Close)
   }
 }
 
-intptr_t TCustomFarPlugin::DialogMessage(DWORD Flags,
-  UnicodeString Title, UnicodeString Message, TStrings *Buttons,
+uint32_t TCustomFarPlugin::DialogMessage(DWORD Flags,
+  const UnicodeString Title, const UnicodeString Message, TStrings *Buttons,
   TFarMessageParams *Params)
 {
   std::unique_ptr<TFarMessageDialog> Dialog(new TFarMessageDialog(this, Params));
@@ -1043,8 +1043,8 @@ intptr_t TCustomFarPlugin::DialogMessage(DWORD Flags,
   return Result;
 }
 
-intptr_t TCustomFarPlugin::FarMessage(DWORD Flags,
-  UnicodeString Title, UnicodeString Message, TStrings *Buttons,
+uint32_t TCustomFarPlugin::FarMessage(DWORD Flags,
+  const UnicodeString Title, const UnicodeString Message, TStrings *Buttons,
   TFarMessageParams *Params)
 {
   DebugAssert(Params != nullptr);
@@ -1093,16 +1093,16 @@ intptr_t TCustomFarPlugin::FarMessage(DWORD Flags,
     Items[Index] = ToWChar(MessageLines->GetStringRef(Index));
   }
 
-  TFarEnvGuard Guard;
-  intptr_t Result = static_cast<intptr_t>(FStartupInfo.Message(FStartupInfo.ModuleNumber,
+  volatile TFarEnvGuard Guard;
+  uint32_t Result = static_cast<uint32_t>(FStartupInfo.Message(FStartupInfo.ModuleNumber,
         Flags | FMSG_LEFTALIGN, nullptr, Items, ToInt(MessageLines->GetCount()),
         ToInt(Buttons->GetCount())));
 
   return Result;
 }
 
-intptr_t TCustomFarPlugin::Message(DWORD Flags,
-  UnicodeString Title, UnicodeString Message, TStrings *Buttons,
+uint32_t TCustomFarPlugin::Message(DWORD Flags,
+  const UnicodeString Title, const UnicodeString Message, TStrings *Buttons,
   TFarMessageParams *Params)
 {
   // when message is shown while some "custom" output is on screen,
@@ -1112,7 +1112,7 @@ intptr_t TCustomFarPlugin::Message(DWORD Flags,
     FarControl(FCTL_SETUSERSCREEN, 0, 0);
   }
 
-  intptr_t Result;
+  uint32_t Result;
   if (Buttons != nullptr)
   {
     TFarMessageParams DefaultParams;
@@ -1123,8 +1123,8 @@ intptr_t TCustomFarPlugin::Message(DWORD Flags,
   {
     DebugAssert(Params == nullptr);
     UnicodeString Items = Title + L"\n" + Message;
-    TFarEnvGuard Guard;
-    Result = static_cast<intptr_t>(FStartupInfo.Message(FStartupInfo.ModuleNumber,
+    volatile TFarEnvGuard Guard;
+    Result = static_cast<uint32_t>(FStartupInfo.Message(FStartupInfo.ModuleNumber,
           Flags | FMSG_ALLINONE | FMSG_LEFTALIGN,
           nullptr,
           static_cast<const wchar_t * const *>(static_cast<const void *>(Items.c_str())), 0, 0));
@@ -1138,7 +1138,7 @@ intptr_t TCustomFarPlugin::Menu(DWORD Flags, UnicodeString Title,
 {
   DebugAssert(Items);
 
-  TFarEnvGuard Guard;
+  volatile TFarEnvGuard Guard;
   return static_cast<intptr_t>(FStartupInfo.Menu(FStartupInfo.ModuleNumber, -1, -1, 0,
         Flags, Title.c_str(), Bottom.c_str(), nullptr, BreakKeys,
         &BreakCode, Items, ToInt(Count)));
@@ -1216,7 +1216,7 @@ bool TCustomFarPlugin::InputBox(UnicodeString Title,
     HANDLE ScreenHandle = nullptr;
     SaveScreen(ScreenHandle);
     {
-      TFarEnvGuard Guard;
+      volatile TFarEnvGuard Guard;
       Result = FStartupInfo.InputBox(
           Title.c_str(),
           Prompt.c_str(),
@@ -1254,13 +1254,13 @@ bool TCustomFarPlugin::InputBox(UnicodeString Title,
 
 void TCustomFarPlugin::Text(int X, int Y, int Color, UnicodeString Str)
 {
-  TFarEnvGuard Guard;
+  volatile TFarEnvGuard Guard;
   FStartupInfo.Text(X, Y, Color, Str.c_str());
 }
 
 void TCustomFarPlugin::FlushText()
 {
-  TFarEnvGuard Guard;
+  volatile TFarEnvGuard Guard;
   FStartupInfo.Text(0, 0, 0, nullptr);
 }
 
@@ -1272,7 +1272,7 @@ void TCustomFarPlugin::FarWriteConsole(UnicodeString Str)
 
 void TCustomFarPlugin::FarCopyToClipboard(UnicodeString Str)
 {
-  TFarEnvGuard Guard;
+  volatile TFarEnvGuard Guard;
   FFarStandardFunctions.CopyToClipboard(Str.c_str());
 }
 
@@ -1550,7 +1550,7 @@ void TCustomFarPlugin::UpdateCurrentConsoleTitle()
 void TCustomFarPlugin::SaveScreen(HANDLE &Screen)
 {
   DebugAssert(!Screen);
-  TFarEnvGuard Guard;
+  volatile TFarEnvGuard Guard;
   Screen = static_cast<HANDLE>(FStartupInfo.SaveScreen(0, 0, -1, -1));
   DebugAssert(Screen);
 }
@@ -1558,7 +1558,7 @@ void TCustomFarPlugin::SaveScreen(HANDLE &Screen)
 void TCustomFarPlugin::RestoreScreen(HANDLE &Screen)
 {
   DebugAssert(Screen);
-  TFarEnvGuard Guard;
+  volatile TFarEnvGuard Guard;
   FStartupInfo.RestoreScreen(Screen);
   Screen = nullptr;
 }
@@ -1571,7 +1571,7 @@ void TCustomFarPlugin::HandleException(Exception *E, int /*OpMode*/)
 
 UnicodeString TCustomFarPlugin::GetMsg(intptr_t MsgId) const
 {
-  TFarEnvGuard Guard;
+  volatile TFarEnvGuard Guard;
   UnicodeString Result;
   if (FStartupInfo.GetMsg)
     Result = FStartupInfo.GetMsg(FStartupInfo.ModuleNumber, ToInt(MsgId));
@@ -1605,7 +1605,7 @@ bool TCustomFarPlugin::CheckForEsc() const
 bool TCustomFarPlugin::Viewer(UnicodeString AFileName,
   UnicodeString Title, DWORD Flags)
 {
-  TFarEnvGuard Guard;
+  volatile TFarEnvGuard Guard;
   int Result = FStartupInfo.Viewer(
       AFileName.c_str(),
       Title.c_str(), 0, 0, -1, -1, Flags,
@@ -1616,7 +1616,7 @@ bool TCustomFarPlugin::Viewer(UnicodeString AFileName,
 bool TCustomFarPlugin::Editor(UnicodeString AFileName,
   UnicodeString Title, DWORD Flags)
 {
-  TFarEnvGuard Guard;
+  volatile TFarEnvGuard Guard;
   int Result = FStartupInfo.Editor(
       AFileName.c_str(),
       Title.c_str(), 0, 0, -1, -1, Flags, -1, -1,
@@ -1656,13 +1656,13 @@ intptr_t TCustomFarPlugin::FarControl(uintptr_t Command, intptr_t Param1, intptr
     break;
   }
 
-  TFarEnvGuard Guard;
+  volatile TFarEnvGuard Guard;
   return FStartupInfo.Control(Plugin, ToInt(Command), ToInt(Param1), Param2);
 }
 
 intptr_t TCustomFarPlugin::FarAdvControl(uintptr_t Command, void *Param) const
 {
-  TFarEnvGuard Guard;
+  volatile TFarEnvGuard Guard;
   return FStartupInfo.AdvControl ?
         FStartupInfo.AdvControl(FStartupInfo.ModuleNumber, ToInt(Command), Param) : 0;
 }
@@ -1686,7 +1686,7 @@ intptr_t TCustomFarPlugin::FarEditorControl(uintptr_t Command, void *Param)
     break;
   }
 
-  TFarEnvGuard Guard;
+  volatile TFarEnvGuard Guard;
   return static_cast<intptr_t>(FStartupInfo.EditorControl(ToInt(Command), Param));
 }
 
@@ -1730,7 +1730,7 @@ UnicodeString TCustomFarPlugin::FormatFarVersion(intptr_t Version) const
 UnicodeString TCustomFarPlugin::GetTemporaryDir() const
 {
   UnicodeString Result(NB_MAX_PATH, 0);
-  TFarEnvGuard Guard;
+  volatile TFarEnvGuard Guard;
   FFarStandardFunctions.MkTemp(ToWChar(Result), ToDWord(Result.Length()), nullptr);
   PackStr(Result);
   return Result;
@@ -1741,7 +1741,7 @@ intptr_t TCustomFarPlugin::InputRecordToKey(const INPUT_RECORD *Rec) const
   int Result;
   if (FFarStandardFunctions.FarInputRecordToKey != nullptr)
   {
-    TFarEnvGuard Guard;
+    volatile TFarEnvGuard Guard;
     Result = FFarStandardFunctions.FarInputRecordToKey(Rec);
   }
   else

@@ -1107,7 +1107,7 @@ void TWinSCPFileSystem::CreateLink()
       }
     }
     if (File)
-      GetTerminal()->RemoteCreateLink(FileName, PointTo, SymbolicLink, File->GetIsDirectory());
+      GetTerminal()->RemoteCreateLink(FileName, PointTo, SymbolicLink);
     if (UpdatePanel())
     {
       RedrawPanel();
@@ -1782,11 +1782,11 @@ void TWinSCPFileSystem::TransferFiles(bool Move)
         };
         if (Move)
         {
-          GetTerminal()->MoveFiles(FileList.get(), Target, FileMask);
+          GetTerminal()->TerminalMoveFiles(FileList.get(), Target, FileMask);
         }
         else
         {
-          GetTerminal()->CopyFiles(FileList.get(), Target, FileMask);
+          GetTerminal()->TerminalCopyFiles(FileList.get(), Target, FileMask);
         }
       }
     }
@@ -3094,7 +3094,7 @@ void TWinSCPFileSystem::LogAuthentication(
 }
 
 void TWinSCPFileSystem::TerminalInformation(
-  TTerminal *Terminal, UnicodeString Str, bool /*Status*/, intptr_t Phase)
+  TTerminal *Terminal, const UnicodeString &AStr, bool /*Status*/, intptr_t Phase)
 {
   if (Phase != 0)
   {
@@ -3107,8 +3107,8 @@ void TWinSCPFileSystem::TerminalInformation(
         GetWinSCPPlugin()->ShowConsoleTitle(GetTerminal()->GetSessionData()->GetSessionName());
       }
 
-      LogAuthentication(Terminal, Str);
-      GetWinSCPPlugin()->UpdateConsoleTitle(Str);
+      LogAuthentication(Terminal, AStr);
+      GetWinSCPPlugin()->UpdateConsoleTitle(AStr);
     }
   }
   else
@@ -3186,7 +3186,7 @@ void TWinSCPFileSystem::TerminalReadDirectory(TObject * /*Sender*/,
   }
 }
 
-void TWinSCPFileSystem::TerminalDeleteLocalFile(UnicodeString AFileName, bool Alternative)
+void TWinSCPFileSystem::TerminalDeleteLocalFile(const UnicodeString &AFileName, bool Alternative)
 {
   if (!RecursiveDeleteFile(AFileName,
       (FLAGSET(GetWinSCPPlugin()->GetFarSystemSettings(), FSS_DELETETORECYCLEBIN)) != Alternative))
@@ -3195,39 +3195,39 @@ void TWinSCPFileSystem::TerminalDeleteLocalFile(UnicodeString AFileName, bool Al
   }
 }
 
-HANDLE TWinSCPFileSystem::TerminalCreateLocalFile(UnicodeString LocalFileName,
+HANDLE TWinSCPFileSystem::TerminalCreateLocalFile(const UnicodeString &LocalFileName,
   DWORD DesiredAccess, DWORD ShareMode, DWORD CreationDisposition, DWORD FlagsAndAttributes)
 {
   return ::CreateFile(ApiPath(LocalFileName).c_str(), DesiredAccess, ShareMode, nullptr,
       CreationDisposition, FlagsAndAttributes, nullptr);
 }
 
-DWORD TWinSCPFileSystem::TerminalGetLocalFileAttributes(UnicodeString LocalFileName) const
+DWORD TWinSCPFileSystem::TerminalGetLocalFileAttributes(const UnicodeString &LocalFileName) const
 {
   return ::FileGetAttrFix(LocalFileName);
 }
 
-bool TWinSCPFileSystem::TerminalSetLocalFileAttributes(UnicodeString LocalFileName, DWORD FileAttributes)
+bool TWinSCPFileSystem::TerminalSetLocalFileAttributes(const UnicodeString &LocalFileName, DWORD FileAttributes)
 {
   return ::FileSetAttr(LocalFileName, FileAttributes);
 }
 
-bool TWinSCPFileSystem::TerminalMoveLocalFile(UnicodeString LocalFileName, UnicodeString NewLocalFileName, DWORD Flags)
+bool TWinSCPFileSystem::TerminalMoveLocalFile(const UnicodeString &LocalFileName, const UnicodeString &NewLocalFileName, DWORD Flags)
 {
   return ::MoveFileExW(ApiPath(LocalFileName).c_str(), NewLocalFileName.c_str(), Flags) != FALSE;
 }
 
-bool TWinSCPFileSystem::TerminalRemoveLocalDirectory(UnicodeString LocalDirName)
+bool TWinSCPFileSystem::TerminalRemoveLocalDirectory(const UnicodeString &LocalDirName)
 {
   return ::RemoveDir(LocalDirName);
 }
 
-bool TWinSCPFileSystem::TerminalCreateLocalDirectory(const UnicodeString LocalDirName, LPSECURITY_ATTRIBUTES SecurityAttributes)
+bool TWinSCPFileSystem::TerminalCreateLocalDirectory(const UnicodeString &LocalDirName, LPSECURITY_ATTRIBUTES SecurityAttributes)
 {
   return ::CreateDirectory(ApiPath(LocalDirName).c_str(), SecurityAttributes) != FALSE;
 }
 
-uintptr_t TWinSCPFileSystem::MoreMessageDialog(const UnicodeString Str,
+uint32_t TWinSCPFileSystem::MoreMessageDialog(const UnicodeString Str,
   TStrings *MoreMessages, TQueryType Type, uint32_t Answers, const TMessageParams *AParams)
 {
   TMessageParams Params(0);
@@ -3248,7 +3248,7 @@ uintptr_t TWinSCPFileSystem::MoreMessageDialog(const UnicodeString Str,
 }
 
 void TWinSCPFileSystem::TerminalQueryUser(TObject * /*Sender*/,
-  const UnicodeString AQuery, TStrings *MoreMessages, uint32_t Answers,
+  const UnicodeString &AQuery, TStrings *MoreMessages, uint32_t Answers,
   const TQueryParams *AParams, uint32_t &Answer, TQueryType Type, void * /*Arg*/)
 {
   TMessageParams Params(0);
@@ -3276,18 +3276,18 @@ void TWinSCPFileSystem::TerminalQueryUser(TObject * /*Sender*/,
 }
 
 void TWinSCPFileSystem::TerminalPromptUser(TTerminal *Terminal,
-  TPromptKind Kind, UnicodeString Name, UnicodeString Instructions,
+  TPromptKind Kind, const UnicodeString &AName, const UnicodeString &AInstructions,
   TStrings *Prompts, TStrings *Results, bool &AResult,
   void * /*Arg*/)
 {
   if (Kind == pkPrompt)
   {
-    DebugAssert(Instructions.IsEmpty());
+    DebugAssert(AInstructions.IsEmpty());
     DebugAssert(Prompts->GetCount() == 1);
     DebugAssert(Prompts->GetObj(0) != nullptr);
     UnicodeString Result = Results->GetString(0);
 
-    AResult = GetWinSCPPlugin()->InputBox(Name, ::StripHotkey(Prompts->GetString(0)), Result, FIB_NOUSELASTHISTORY);
+    AResult = GetWinSCPPlugin()->InputBox(AName, ::StripHotkey(Prompts->GetString(0)), Result, FIB_NOUSELASTHISTORY);
     if (AResult)
     {
       Results->SetString(0, Result);
@@ -3295,16 +3295,16 @@ void TWinSCPFileSystem::TerminalPromptUser(TTerminal *Terminal,
   }
   else
   {
-    AResult = PasswordDialog(Terminal->GetSessionData(), Kind, Name, Instructions,
+    AResult = PasswordDialog(Terminal->GetSessionData(), Kind, AName, AInstructions,
         Prompts, Results, GetTerminal()->GetStoredCredentialsTried());
   }
 }
 
 void TWinSCPFileSystem::TerminalDisplayBanner(
-  TTerminal * /*Terminal*/, UnicodeString SessionName,
-  UnicodeString Banner, bool &NeverShowAgain, intptr_t Options)
+  TTerminal * /*Terminal*/, const UnicodeString &ASessionName,
+  const UnicodeString &ABanner, bool &NeverShowAgain, intptr_t Options, uintptr_t & /*Params*/)
 {
-  BannerDialog(SessionName, Banner, NeverShowAgain, Options);
+  BannerDialog(ASessionName, ABanner, NeverShowAgain, Options);
 }
 
 void TWinSCPFileSystem::TerminalShowExtendedException(
@@ -3341,7 +3341,7 @@ void TWinSCPFileSystem::OperationProgress(
 }
 
 void TWinSCPFileSystem::OperationFinished(TFileOperation Operation,
-  TOperationSide Side, bool /*Temp*/, UnicodeString AFileName, bool Success,
+  TOperationSide Side, bool /*Temp*/, const UnicodeString &AFileName, bool Success,
   TOnceDoneOperation & /*DisconnectWhenComplete*/)
 {
   DebugUsedParam(Side);

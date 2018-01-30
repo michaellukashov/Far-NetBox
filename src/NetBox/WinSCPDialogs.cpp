@@ -6071,7 +6071,7 @@ void TFileSystemInfoDialog::Feed(TFeedFileSystemDataEvent AddItem)
     AddItem(ServerLabels, NB_SERVER_FS_PROTOCOL, FFileSystemInfo.ProtocolName);
   }
 
-  AddItem(HostKeyFingerprintEdit, 0, FSessionInfo.HostKeyFingerprint);
+  AddItem(HostKeyFingerprintEdit, 0, FSessionInfo.HostKeyFingerprintSHA256);
 
   AddItem(ProtocolLabels, NB_PROTOCOL_MODE_CHANGING, CapabilityStr(fcModeChanging));
   AddItem(ProtocolLabels, NB_PROTOCOL_OWNER_GROUP_CHANGING, CapabilityStr(fcGroupChanging));

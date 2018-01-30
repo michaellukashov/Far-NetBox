@@ -46,7 +46,7 @@ typedef nb::FastDelegate1<void, UnicodeString & /*Text*/> TFarInputBoxValidateEv
 #if 0
 typedef void __fastcall (__closure *TFarMessageTimerEvent)(unsigned int &Result);
 #endif // #if 0
-typedef nb::FastDelegate1<void, intptr_t & /*Result*/> TFarMessageTimerEvent;
+typedef nb::FastDelegate1<void, uint32_t & /*Result*/> TFarMessageTimerEvent;
 #if 0
 typedef void __fastcall (__closure *TFarMessageClickEvent)(void *Token, int Result, bool &Close);
 #endif // #if 0
@@ -63,7 +63,7 @@ public:
   UnicodeString CheckBoxLabel;
   bool CheckBox;
   uintptr_t Timer;
-  intptr_t TimerAnswer;
+  uint32_t TimerAnswer;
   TFarMessageTimerEvent TimerEvent;
   uintptr_t Timeout;
   uintptr_t TimeoutButton;
@@ -120,9 +120,9 @@ public:
 
   virtual void HandleException(Exception *E, int OpMode = 0);
 
-  static wchar_t *DuplicateStr(UnicodeString Str, bool AllowEmpty = false);
-  intptr_t Message(DWORD Flags, UnicodeString Title,
-    UnicodeString Message, TStrings *Buttons = nullptr,
+  static wchar_t *DuplicateStr(const UnicodeString Str, bool AllowEmpty = false);
+  uint32_t Message(DWORD Flags, const UnicodeString Title,
+    const UnicodeString Message, TStrings *Buttons = nullptr,
     TFarMessageParams *Params = nullptr);
   intptr_t MaxMessageLines() const;
   intptr_t MaxMenuItemLength() const;
@@ -208,11 +208,11 @@ protected:
     Exception *E, int OpMode = 0);
   void ResetCachedInfo();
   intptr_t MaxLength(TStrings *Strings) const;
-  intptr_t FarMessage(DWORD Flags,
-    UnicodeString Title, UnicodeString Message, TStrings *Buttons,
+  uint32_t FarMessage(DWORD Flags,
+    const UnicodeString Title, const UnicodeString Message, TStrings *Buttons,
     TFarMessageParams *Params);
-  intptr_t DialogMessage(DWORD Flags,
-    UnicodeString Title, UnicodeString Message, TStrings *Buttons,
+  uint32_t DialogMessage(DWORD Flags,
+    const UnicodeString Title, const UnicodeString Message, TStrings *Buttons,
     TFarMessageParams *Params);
   void InvalidateOpenPluginInfo();
 

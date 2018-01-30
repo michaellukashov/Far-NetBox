@@ -545,7 +545,7 @@ LONG_PTR TFarDialog::DefaultDialogProc(int Msg, intptr_t Param1, LONG_PTR Param2
 {
   if (GetHandle())
   {
-    TFarEnvGuard Guard;
+    volatile TFarEnvGuard Guard;
     return GetFarPlugin()->GetPluginStartupInfo()->DefDlgProc(GetHandle(), Msg, ToInt(Param1), Param2);
   }
   return 0;
@@ -708,7 +708,7 @@ intptr_t TFarDialog::ShowModal()
     intptr_t BResult;
 
     {
-      TFarEnvGuard Guard;
+      volatile TFarEnvGuard Guard;
       TRect Bounds = GetBounds();
       const PluginStartupInfo &Info = *GetFarPlugin()->GetPluginStartupInfo();
       Handle = Info.DialogInit(
@@ -794,7 +794,7 @@ LONG_PTR TFarDialog::SendDlgMessage(int Msg, intptr_t Param1, LONG_PTR Param2)
 {
   if (GetHandle())
   {
-    TFarEnvGuard Guard;
+    volatile TFarEnvGuard Guard;
     return GetFarPlugin()->GetPluginStartupInfo()->SendDlgMessage(GetHandle(),
         Msg, ToInt(Param1), Param2);
   }
@@ -1363,7 +1363,7 @@ LONG_PTR TFarDialogItem::DefaultItemProc(int Msg, LONG_PTR Param)
 {
   if (GetDialog() && GetDialog()->GetHandle())
   {
-    TFarEnvGuard Guard;
+    volatile TFarEnvGuard Guard;
     return GetPluginStartupInfo()->DefDlgProc(GetDialog()->GetHandle(),
         Msg, ToInt(GetItem()), Param);
   }
@@ -1374,7 +1374,7 @@ LONG_PTR TFarDialogItem::DefaultDialogProc(int Msg, intptr_t Param1, LONG_PTR Pa
 {
   if (GetDialog() && GetDialog()->GetHandle())
   {
-    TFarEnvGuard Guard;
+    volatile TFarEnvGuard Guard;
     return GetPluginStartupInfo()->DefDlgProc(GetDialog()->GetHandle(),
         Msg, ToInt(Param1), Param2);
   }
@@ -1657,7 +1657,7 @@ bool TFarDialogItem::MouseMove(intptr_t /*X*/, intptr_t /*Y*/,
 
 void TFarDialogItem::Text(intptr_t X, intptr_t Y, uintptr_t Color, UnicodeString Str)
 {
-  TFarEnvGuard Guard;
+  volatile TFarEnvGuard Guard;
   GetPluginStartupInfo()->Text(
     ToInt(GetDialog()->GetBounds().Left + GetLeft() + X),
     ToInt(GetDialog()->GetBounds().Top + GetTop() + Y),

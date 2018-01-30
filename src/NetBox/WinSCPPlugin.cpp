@@ -549,7 +549,7 @@ public:
   }
 
   const TMessageParams *Params;
-  uintptr_t Buttons[15 + 1];
+  uint32_t Buttons[15 + 1];
   uintptr_t ButtonCount;
 };
 
@@ -568,7 +568,8 @@ void TWinSCPPlugin::MessageClick(void *Token, uintptr_t Result, bool &Close)
       if ((Alias.Button == Data.Buttons[Result]) &&
         (Alias.OnClick))
       {
-        Alias.OnClick(nullptr);
+        uint32_t Answer = 0;
+        Alias.OnClick(nullptr, Answer);
         Close = false;
         break;
       }
@@ -576,11 +577,11 @@ void TWinSCPPlugin::MessageClick(void *Token, uintptr_t Result, bool &Close)
   }
 }
 
-uintptr_t TWinSCPPlugin::MoreMessageDialog(const UnicodeString Str,
+uint32_t TWinSCPPlugin::MoreMessageDialog(const UnicodeString Str,
   TStrings *MoreMessages, TQueryType Type, uint32_t Answers,
   const TMessageParams *Params)
 {
-  uintptr_t Result;
+  uint32_t Result;
   UnicodeString DialogStr = Str;
   std::unique_ptr<TStrings> ButtonLabels(new TStringList());
   uintptr_t Flags = 0;
