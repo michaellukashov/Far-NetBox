@@ -34,12 +34,12 @@ public:
   explicit ExtException(const Exception *E, const UnicodeString Msg, const UnicodeString HelpKeyword = L"");
   explicit ExtException(TObjectClassId Kind, const Exception *E, const UnicodeString Msg, const UnicodeString HelpKeyword = L"");
   // explicit ExtException(const ExtException * E, const UnicodeString Msg, const UnicodeString HelpKeyword = L"");
-  explicit ExtException(TObjectClassId Kind, Exception *E, intptr_t Ident);
+  explicit ExtException(TObjectClassId Kind, Exception *E, intptr_t Ident, const UnicodeString HelpKeyword = L"");
   // "copy the exception", just append message to the end
   explicit ExtException(TObjectClassId Kind, const UnicodeString Msg, const Exception *E, const UnicodeString HelpKeyword = L"");
-  explicit ExtException(UnicodeString Msg, const UnicodeString MoreMessages, const UnicodeString HelpKeyword = L"");
+  explicit ExtException(const UnicodeString Msg, const UnicodeString MoreMessages, const UnicodeString HelpKeyword = L"");
   explicit ExtException(TObjectClassId Kind, const UnicodeString Msg, const UnicodeString MoreMessages, const UnicodeString HelpKeyword = L"");
-  explicit ExtException(UnicodeString Msg, TStrings *MoreMessages, bool Own, const UnicodeString HelpKeyword = L"");
+  explicit ExtException(const UnicodeString Msg, TStrings *MoreMessages, bool Own, const UnicodeString HelpKeyword = L"");
   virtual ~ExtException() noexcept;
   __property TStrings* MoreMessages = {read=FMoreMessages};
   __property UnicodeString HelpKeyword = {read=FHelpKeyword};
@@ -82,12 +82,12 @@ private:
     static inline bool classof(const Exception *Obj) { return Obj->is(OBJECT_CLASS_##NAME); } \
     virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_##NAME) || BASE::is(Kind); } \
   public: \
-    inline __fastcall NAME(const Exception *E, const UnicodeString Msg, const UnicodeString HelpKeyword = L"") : \
+    explicit inline __fastcall NAME(const Exception *E, const UnicodeString Msg, const UnicodeString HelpKeyword = L"") : \
       BASE(OBJECT_CLASS_##NAME, E, Msg, HelpKeyword) \
     { \
     } \
-    inline __fastcall NAME(const Exception *E, intptr_t Ident) : \
-      BASE(OBJECT_CLASS_##NAME, E, Ident) \
+    explicit inline __fastcall NAME(const Exception *E, intptr_t Ident) : \
+      BASE(OBJECT_CLASS_##NAME, E, Ident, L"") \
     { \
     } \
     inline __fastcall virtual ~NAME(void) \
@@ -101,12 +101,12 @@ private:
       BASE(Kind, Msg, AHelpContext) \
     { \
     } \
-    inline __fastcall NAME(const UnicodeString Msg, intptr_t AHelpContext) : \
-      BASE(OBJECT_CLASS_##NAME, Msg, AHelpContext) \
+    explicit inline __fastcall NAME(const UnicodeString Msg, intptr_t AHelpContext) : \
+      BASE(OBJECT_CLASS_##NAME, nullptr, Msg, AHelpContext) \
     { \
     } \
-    inline __fastcall NAME(intptr_t Ident, intptr_t AHelpContext) : \
-      BASE(OBJECT_CLASS_##NAME, Ident, AHelpContext) \
+    explicit inline __fastcall NAME(intptr_t Ident, intptr_t AHelpContext) : \
+      BASE(OBJECT_CLASS_##NAME, nullptr, Ident, AHelpContext) \
     { \
     } \
     virtual ExtException * __fastcall Clone() \

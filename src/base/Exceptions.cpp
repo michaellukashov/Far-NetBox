@@ -317,10 +317,10 @@ ExtException::ExtException(TObjectClassId Kind, ExtException *E, const UnicodeSt
 }
 #endif // #if 0
 
-ExtException::ExtException(TObjectClassId Kind, Exception *E, intptr_t Ident) :
+ExtException::ExtException(TObjectClassId Kind, Exception *E, intptr_t Ident, const UnicodeString HelpKeyword) :
   Exception(Kind, E, Ident),
   FMoreMessages(nullptr),
-  FHelpKeyword()
+  FHelpKeyword(HelpKeyword)
 {
 }
 
@@ -349,7 +349,7 @@ ExtException::ExtException(TObjectClassId Kind, const UnicodeString Msg, const E
   FHelpKeyword = MergeHelpKeyword(GetExceptionHelpKeyword(E), HelpKeyword);
 }
 
-ExtException::ExtException(UnicodeString Msg, const UnicodeString MoreMessages,
+ExtException::ExtException(const UnicodeString Msg, const UnicodeString MoreMessages,
   UnicodeString HelpKeyword) :
   Exception(OBJECT_CLASS_ExtException, Msg),
   FMoreMessages(nullptr),
