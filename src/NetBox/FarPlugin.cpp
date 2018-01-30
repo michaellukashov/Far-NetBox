@@ -1039,7 +1039,7 @@ uint32_t TCustomFarPlugin::DialogMessage(DWORD Flags,
 {
   std::unique_ptr<TFarMessageDialog> Dialog(new TFarMessageDialog(this, Params));
   Dialog->Init(Flags, Title, Message, Buttons);
-  intptr_t Result = Dialog->Execute(Params->CheckBox);
+  uint32_t Result = static_cast<uint32_t>(Dialog->Execute(Params->CheckBox));
   return Result;
 }
 
