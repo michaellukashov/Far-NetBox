@@ -238,7 +238,7 @@ public:
   virtual void __fastcall ClearCaches() = 0;
 
   __property UnicodeString CurrentDirectory = { read = GetCurrentDirectory };
-  ROProperty<UnicodeString, TCustomFileSystem> RemoteCurrentDirectory{this, &TCustomFileSystem::RemoteGetCurrentDirectory};
+  ROProperty<UnicodeString> RemoteCurrentDirectory{nb::bind(&TCustomFileSystem::RemoteGetCurrentDirectory, this)};
   // UnicodeString RemoteCurrentDirectory() const { return RemoteGetCurrentDirectory(); }
 
 protected:

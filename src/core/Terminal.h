@@ -710,14 +710,14 @@ public:
     const UnicodeString BasePath);
 
   __property TSessionData * SessionData = { read = FSessionData };
-  ROProperty<TSessionData *, TTerminal> SessionData{this, &TTerminal::GetSessionData};
+  ROProperty<TSessionData *> SessionData{nb::bind(&TTerminal::GetSessionData, this)};
   __property TSessionLog * Log = { read = FLog };
-  ROProperty<TSessionLog *, TTerminal> Log{this, &TTerminal::GetLog};
+  ROProperty<TSessionLog *> Log{nb::bind(&TTerminal::GetLogConst, this)};
   __property TActionLog * ActionLog = { read = FActionLog };
   __property TConfiguration * Configuration = { read = FConfiguration };
-  ROProperty<TConfiguration *, TTerminal> Configuration{this, &TTerminal::GetConfiguration};
+  ROProperty<TConfiguration *> Configuration{nb::bind(&TTerminal::GetConfigurationConst, this)};
   __property bool Active = { read = GetActive };
-  ROProperty<bool, TTerminal> Active{this, &TTerminal::GetActive};
+  ROProperty<bool> Active{nb::bind(&TTerminal::GetActive, this)};
   __property TSessionStatus Status = { read = FStatus };
   __property UnicodeString CurrentDirectory = { read = GetCurrentDirectory, write = SetCurrentDirectory };
   __property bool ExceptionOnFail = { read = GetExceptionOnFail, write = SetExceptionOnFail };
@@ -770,10 +770,10 @@ public:
   bool CreateLocalDirectory(const UnicodeString LocalDirName, LPSECURITY_ATTRIBUTES SecurityAttributes);
 
   TSessionData *GetSessionData() const { return FSessionData; }
-  TSessionLog *GetLog() const { return FLog; }
+  TSessionLog *GetLogConst() const { return FLog; }
   TSessionLog *GetLog() { return FLog; }
   TActionLog *GetActionLog() const { return FActionLog; }
-  const TConfiguration *GetConfiguration() const { return FConfiguration; }
+  const TConfiguration *GetConfigurationConst() const { return FConfiguration; }
   TConfiguration *GetConfiguration() { return FConfiguration; }
   TSessionStatus GetStatus() const { return FStatus; }
   TRemoteDirectory *GetFiles() const { return FFiles; }

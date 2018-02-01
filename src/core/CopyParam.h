@@ -144,7 +144,7 @@ public:
   __property TFileNameCase FileNameCase = { read = FFileNameCase, write = FFileNameCase };
   __property bool PreserveReadOnly = { read = FPreserveReadOnly, write = FPreserveReadOnly };
   __property bool PreserveTime = { read = FPreserveTime, write = FPreserveTime };
-  RWProperty<bool, TCopyParamType> PreserveTime{this, &TCopyParamType::GetPreserveTime, &TCopyParamType::SetPreserveTime};
+  RWProperty<bool> PreserveTime{nb::bind(&TCopyParamType::GetPreserveTime, this), nb::bind(&TCopyParamType::SetPreserveTime, this)};
   __property bool PreserveTimeDirs = { read = FPreserveTimeDirs, write = FPreserveTimeDirs };
   __property TRights Rights = { read = FRights, write = FRights };
   __property TTransferMode TransferMode = { read = FTransferMode, write = FTransferMode };

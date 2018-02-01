@@ -30,7 +30,7 @@ public:
   int64_t ReadStream(TStream * Stream, const int64_t Len, bool ForceLen);
   void WriteToStream(TStream * Stream, const int64_t Len);
   __property TMemoryStream * Memory  = { read=FMemory, write=SetMemory };
-  // RWProperty<TMemoryStream *, TFileBuffer> Memory{this, &TFileBuffer::GetMemory, &TFileBuffer::SetMemory};
+  RWProperty<TMemoryStream *> Memory{nb::bind(&TFileBuffer::GetMemory, this), nb::bind(&TFileBuffer::SetMemory, this)};
   __property char * Data = { read=GetData };
   __property int Size = { read=FSize, write=SetSize };
   __property int Position = { read=GetPosition, write=SetPosition };

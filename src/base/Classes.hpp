@@ -504,8 +504,8 @@ public:
   virtual void SetSize(const int64_t NewSize) = 0;
   void SetPosition(const int64_t Pos);
 
-  RWProperty<int64_t, TStream> Position{this, &TStream::GetPosition, &TStream::SetPosition};
-  RWProperty<int64_t, TStream> Size{this, &TStream::GetSize, &TStream::SetSize};
+  RWProperty<int64_t> Position{nb::bind(&TStream::GetPosition, this), nb::bind(&TStream::SetPosition, this)};
+  RWProperty<int64_t> Size{nb::bind(&TStream::GetSize, this), nb::bind(&TStream::SetSize, this)};
 };
 
 class NB_CORE_EXPORT THandleStream : public TStream

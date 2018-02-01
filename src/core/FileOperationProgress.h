@@ -126,11 +126,11 @@ protected:
 public:
   // common data
   __property TFileOperation Operation = { read = FOperation };
-  ROProperty<TFileOperation, TFileOperationProgressType> Operation{this, &TFileOperationProgressType::GetOperation};
+  ROProperty<TFileOperation> Operation{nb::bind(&TFileOperationProgressType::GetOperation, this)};
   // on what side if operation being processed (local/remote), source of copy
   __property TOperationSide Side = { read = FSide };
   __property int Count =  { read = FCount };
-  ROProperty<intptr_t, TFileOperationProgressType> Count{this, &TFileOperationProgressType::GetCount};
+  ROProperty<intptr_t> Count{nb::bind(&TFileOperationProgressType::GetCount, this)};
   __property UnicodeString FileName =  { read = FFileName };
   __property UnicodeString FullFileName = { read = FFullFileName };
   __property UnicodeString Directory = { read = FDirectory };
@@ -144,13 +144,13 @@ public:
   __property int64_t LocallyUsed = { read = FLocallyUsed };
   __property int64_t TransferSize = { read = FTransferSize };
   __property int64_t TransferredSize = { read = FTransferredSize };
-  ROProperty<int64_t, TFileOperationProgressType> TransferredSize{this, &TFileOperationProgressType::GetTransferredSize};
+  ROProperty<int64_t> TransferredSize{nb::bind(&TFileOperationProgressType::GetTransferredSize, this)};
   __property int64_t SkippedSize = { read = FSkippedSize };
   __property bool InProgress = { read = FInProgress };
   __property bool Done = { read = FDone };
   __property bool FileInProgress = { read = FFileInProgress };
   __property TCancelStatus Cancel = { read = GetCancel };
-  ROProperty<TCancelStatus, TFileOperationProgressType> Cancel{this, &TFileOperationProgressType::GetCancel};
+  ROProperty<TCancelStatus> Cancel{nb::bind(&TFileOperationProgressType::GetCancel, this)};
   // when operation started
   __property TDateTime StartTime = { read = FStartTime };
   // bytes transferred
