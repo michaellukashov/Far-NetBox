@@ -124,7 +124,7 @@ uintptr_t ExceptionMessageDialog(Exception *E, TQueryType Type,
   const UnicodeString MessageFormat = L"", uint32_t Answers = qaOK,
   const UnicodeString HelpKeyword = HELP_NONE, const TMessageParams *Params = nullptr);
 uintptr_t FatalExceptionMessageDialog(Exception *E, TQueryType Type,
-  intptr_t SessionReopenTimeout, UnicodeString MessageFormat = L"", uint32_t Answers = qaOK,
+  intptr_t SessionReopenTimeout, const UnicodeString MessageFormat = L"", uint32_t Answers = qaOK,
   const UnicodeString HelpKeyword = HELP_NONE, const TMessageParams *Params = nullptr);
 
 #if defined(FARPLUGIN)

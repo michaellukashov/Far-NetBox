@@ -578,7 +578,7 @@ bool AppendExceptionStackTraceAndForget(TStrings *&MoreMessages)
 }
 
 uintptr_t ExceptionMessageDialog(Exception * /*E*/, TQueryType /*Type*/,
-  UnicodeString /*MessageFormat*/, uintptr_t /*Answers*/, UnicodeString /*HelpKeyword*/,
+  const UnicodeString /*MessageFormat*/, uint32_t /*Answers*/, const UnicodeString /*HelpKeyword*/,
   const TMessageParams * /*Params*/)
 {
 #if 0
@@ -611,8 +611,8 @@ uintptr_t ExceptionMessageDialog(Exception * /*E*/, TQueryType /*Type*/,
 }
 
 uintptr_t FatalExceptionMessageDialog(Exception * /*E*/, TQueryType /*Type*/,
-  int /*SessionReopenTimeout*/, UnicodeString /*MessageFormat*/, uintptr_t /*Answers*/,
-  UnicodeString /*HelpKeyword*/, const TMessageParams * /*Params*/)
+  intptr_t /*SessionReopenTimeout*/, const UnicodeString /*MessageFormat*/, uint32_t /*Answers*/,
+  const UnicodeString /*HelpKeyword*/, const TMessageParams * /*Params*/)
 {
 #if 0
   DebugAssert(FLAGCLEAR(Answers, qaRetry));
