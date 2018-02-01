@@ -1051,6 +1051,8 @@
 "Further details: %s"
 "Extra Details: "
 "Access denied."
+"Direct duplication of folders is not supported. Use a duplication via a local temporary copy."
+"Specify target bucket."
 
 "CORE_CONFIRMATION"
 "Host is not communicating for %d seconds.\n\nWait for another %d seconds?"
