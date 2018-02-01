@@ -1252,6 +1252,48 @@ target_compile_options(fmt PRIVATE
 )
 
 #-------------------------------------------------------------------------------
+#libs3
+
+add_library(s3 STATIC
+  ../../libs/libs3/src/bucket.c
+  ../../libs/libs3/src/bucket_metadata.c
+  ../../libs/libs3/src/error_parser.c
+  ../../libs/libs3/src/general.c
+  ../../libs/libs3/src/mingw_functions.c
+  ../../libs/libs3/src/multipart.c
+  ../../libs/libs3/src/object.c
+  ../../libs/libs3/src/request.c
+  ../../libs/libs3/src/request_context.c
+  ../../libs/libs3/src/response_headers_handler.c
+  ../../libs/libs3/src/service.c
+  ../../libs/libs3/src/service_access_logging.c
+  ../../libs/libs3/src/simplexml.c
+  ../../libs/libs3/src/util.c
+  ../../libs/libs3/inc/string_buffer.h
+  ../../libs/libs3/inc/util.h
+  ../../libs/libs3/inc/simplexml.h
+  ../../libs/libs3/inc/response_headers_handler.h
+  ../../libs/libs3/inc/request.h
+  ../../libs/libs3/inc/request_context.h
+  ../../libs/libs3/inc/libs3.h
+  ../../libs/libs3/inc/error_parser.h
+
+)
+
+target_include_directories(s3 PRIVATE
+  ../../libs/libs3/inc
+  ../../libs/libs3/inc/mingw
+  ../../libs/openssl/include
+  ../../libs/expat/lib
+  ../../libs/neon/src
+)
+
+target_compile_options(s3 PRIVATE
+  -DS3_EXPORT -DWIN32 -DWINSCP -DNE_LFS
+  ${NETBOX_UNICODE_FLAGS}
+)
+
+#-------------------------------------------------------------------------------
 #NetBox
 
 if(OPT_USE_UNITY_BUILD)
@@ -1490,6 +1532,7 @@ set(NETBOX_LIBRARIES
   dlmalloc
   rdestl
   fmt
+  s3
   tinylog
 
   Ws2_32.lib
