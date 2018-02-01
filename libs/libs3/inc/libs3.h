@@ -28,7 +28,24 @@
 #define LIBS3_H
 
 #include <stdint.h>
-#ifndef WINSCP
+#ifdef WINSCP
+#ifndef INCL_WINSOCK_API_TYPEDEFS
+#define INCL_WINSOCK_API_TYPEDEFS 1
+#endif
+#ifndef _WINSOCKAPI_
+#define _WINSOCKAPI_
+#endif
+#include <winsock2.h>
+#include <ws2tcpip.h>
+
+#define WIN32_LEAN_AND_MEAN
+#define VC_EXTRALEAN
+#define SECURITY_WIN32
+#include <windows.h>
+
+#include <nbglobals.h>
+//#include <ne_session.h>
+#else
 #include <sys/select.h>
 #endif
 
@@ -1604,13 +1621,13 @@ void S3_destroy_request_context(S3RequestContext *requestContext);
 
 #ifdef WINSCP
 struct ne_session_s;
-typedef void (S3SessionCallback)(ne_session_s *session, void *callbackData);
+typedef void (*S3SessionCallback)(struct ne_session_s *session, void *callbackData);
 void S3_set_request_context_session_callback(S3RequestContext *requestContext,
                                              S3SessionCallback sessionCallback,
                                              void * sessionCallbackData);
 
 struct ne_ssl_certificate_s;
-typedef int (S3SslCallback)(int failures, const ne_ssl_certificate_s *certificate, void *callbackData);
+typedef int (*S3SslCallback)(int failures, const struct ne_ssl_certificate_s *certificate, void *callbackData);
 void S3_set_request_context_ssl_callback(S3RequestContext *requestContext,
                                          S3SslCallback sslCallback,
                                          void * sslCallbackData);

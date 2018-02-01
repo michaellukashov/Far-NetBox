@@ -28,6 +28,12 @@
 #define PTHREAD_H
 
 #ifdef WINSCP
+#ifndef _WINSOCKAPI_
+#define _WINSOCKAPI_
+#endif
+#define WIN32_LEAN_AND_MEAN
+#define VC_EXTRALEAN
+#define SECURITY_WIN32
 #include <windows.h>
 #include <tchar.h>
 #include <stdio.h>

@@ -796,9 +796,11 @@ static void sort_query_string(const char *queryString, char *result)
         tmp++;
     }
 
-    const char** params = new const char*[numParams]; // WINSCP (heap allocation)
+    //const char** params = new const char*[numParams]; // WINSCP (heap allocation)
+    const char** params = (const char **)nb_calloc(numParams, sizeof(char*));
 
-    char * tokenized = new char[strlen(queryString) + 1]; // WINSCP (heap allocation)
+    //char * tokenized = new char[strlen(queryString) + 1]; // WINSCP (heap allocation)
+    char * tokenized = (char *)nb_calloc(strlen(queryString) + 1, sizeof(char));
     strncpy(tokenized, queryString, strlen(queryString) + 1);
 
     char *tok = tokenized;
@@ -825,8 +827,10 @@ static void sort_query_string(const char *queryString, char *result)
     }
     result[strlen(result) - 1] = '\0';
 
-    delete[] params; // WINSCP (heap allocation)
-    delete[] tokenized;
+//    delete[] params; // WINSCP (heap allocation)
+//    delete[] tokenized;
+    nb_free(tokenized);
+    nb_free(params);
 }
 
 
@@ -841,11 +845,13 @@ static void canonicalize_query_string(const char *queryParams,
 #define append(str) len += sprintf(&(buffer[len]), "%s", str)
 
     if (queryParams && queryParams[0]) {
-        char * sorted = new char[strlen(queryParams) * 2]; // WINSCP (heap allocation)
+        // char * sorted = new char[strlen(queryParams) * 2]; // WINSCP (heap allocation)
+        char * sorted = (char *)nb_calloc(strlen(queryParams) * 2, sizeof(char));
         sorted[0] = '\0';
         sort_query_string(queryParams, sorted);
         append(sorted);
-        delete[] sorted; // WINSCP (heap allocation)
+        //delete[] sorted; // WINSCP (heap allocation)
+        nb_free(sorted);
     }
 
     if (subResource && subResource[0]) {
@@ -922,7 +928,8 @@ static S3Status compose_auth_header(const RequestParams *params,
 
     int len = 0;
 
-    char * canonicalRequest = new char[canonicalRequestLen]; // WINSCP (heap allocation)
+    //char * canonicalRequest = new char[canonicalRequestLen]; // WINSCP (heap allocation)
+    char * canonicalRequest = (char *)nb_calloc(canonicalRequestLen, sizeof(char));
 
 // WINSCP (heap allocation)
 #define buf_append(buf, format, ...)                    \
@@ -949,7 +956,8 @@ static S3Status compose_auth_header(const RequestParams *params,
     const unsigned char *rqstData = (const unsigned char*) canonicalRequest;
     SHA256(rqstData, strlen(canonicalRequest), canonicalRequestHash);
 #endif
-    delete[] canonicalRequest; // WINSCP
+    //delete[] canonicalRequest; // WINSCP
+    nb_free(canonicalRequest);
     char canonicalRequestHashHex[2 * S3_SHA256_DIGEST_LENGTH + 1];
     size = sizeof(canonicalRequestHashHex); // WINSCP
     canonicalRequestHashHex[0] = '\0';
@@ -968,7 +976,8 @@ static S3Status compose_auth_header(const RequestParams *params,
 
     const int stringToSignLen = 17 + 17 + SIGNATURE_SCOPE_SIZE + 1
         + strlen(canonicalRequestHashHex); // WINSCP (heap allocation)
-    char * stringToSign = new char[stringToSignLen];
+    //char * stringToSign = new char[stringToSignLen];
+    char * stringToSign = (char *)nb_calloc(stringToSignLen, sizeof(char));
     snprintf(stringToSign, stringToSignLen, "AWS4-HMAC-SHA256\n%s\n%s\n%s",
              values->requestDateISO8601, scope, canonicalRequestHashHex);
 
@@ -976,7 +985,8 @@ static S3Status compose_auth_header(const RequestParams *params,
 
     const char *secretAccessKey = params->bucketContext.secretAccessKey;
     const int accessKeyLen = strlen(secretAccessKey) + 5; // WINSCP (heap allocation)
-    char * accessKey = new char[accessKeyLen];
+    //char * accessKey = new char[accessKeyLen];
+    char * accessKey = (char *)nb_calloc(accessKeyLen, sizeof(char));
     snprintf(accessKey, accessKeyLen, "AWS4%s", secretAccessKey);
 
 #ifdef __APPLE__
@@ -1020,8 +1030,10 @@ static S3Status compose_auth_header(const RequestParams *params,
          (const unsigned char*) stringToSign, strlen(stringToSign),
          finalSignature, NULL);
 #endif
-    delete[] accessKey; // WINSCP
-    delete[] stringToSign; // WINSCP
+//    delete[] accessKey; // WINSCP
+//    delete[] stringToSign; // WINSCP
+    nb_free(stringToSign);
+    nb_free(accessKey);
 
     len = 0;
     size = sizeof(values->requestSignatureHex); // WINSCP
@@ -1224,7 +1236,7 @@ static S3Status setup_neon(Request *request,
 
 #define do_add_header(header) \
     { \
-        char * buf = new char[strlen(header) + 1]; \
+        char * buf = (char *)nb_calloc(strlen(header) + 1, sizeof(char)); \
         strcpy(buf, header); \
         char * p = strchr(buf, ':'); \
         if (p != NULL) \
@@ -1234,7 +1246,7 @@ static S3Status setup_neon(Request *request,
             while (is_blank(p[0])) p++; \
             ne_add_request_header(request->NeonRequest, buf, p); \
         } \
-        delete[] buf; \
+        nb_free(buf); \
     }
 
 

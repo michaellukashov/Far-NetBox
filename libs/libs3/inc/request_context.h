@@ -32,9 +32,9 @@
 struct S3RequestContext
 {
 #ifdef WINSCP
-    S3SessionCallback *sessionCallback;
+    S3SessionCallback sessionCallback;
     void *sessionCallbackData;
-    S3SslCallback *sslCallback;
+    S3SslCallback sslCallback;
     void *sslCallbackData;
     S3ResponseDataCallback *responseDataCallback;
     void *responseDataCallbackData;
