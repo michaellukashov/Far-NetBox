@@ -552,7 +552,7 @@ void __fastcall TFTPFileSystem::Open()
     }
 
     FPasswordFailed = false;
-    TAutoFlag OpeningFlag(FOpening);
+    volatile TAutoFlag OpeningFlag(FOpening);
 
     FActive = FFileZillaIntf->Connect(
         HostName.c_str(), ToInt(Data->GetPortNumber()), UserName.c_str(),

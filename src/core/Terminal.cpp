@@ -1274,7 +1274,7 @@ void __fastcall TTerminal::Idle()
   // as we may recurse for good, timeouting eventually.
   if (GetActive() && (FNesting == 0))
   {
-    TAutoNestingCounter NestingCounter(FNesting);
+    volatile TAutoNestingCounter NestingCounter(FNesting);
 
     if (FConfiguration->GetActualLogProtocol() >= 1)
     {
@@ -1838,7 +1838,7 @@ void __fastcall TTerminal::ProcessGUI()
   // Alternatively we may check for (FOperationProgress == nullptr)
   if (FNesting == 0)
   {
-    TAutoNestingCounter NestingCounter(FNesting);
+    volatile TAutoNestingCounter NestingCounter(FNesting);
     ::ProcessGUI();
   }
 }
@@ -1847,7 +1847,7 @@ void __fastcall TTerminal::Progress(TFileOperationProgressType *OperationProgres
 {
   if (FNesting == 0)
   {
-    TAutoNestingCounter NestingCounter(FNesting);
+    volatile TAutoNestingCounter NestingCounter(FNesting);
     OperationProgress->Progress();
   }
 }

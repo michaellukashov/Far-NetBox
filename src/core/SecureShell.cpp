@@ -1873,7 +1873,7 @@ void TSecureShell::WaitForData()
     if (!IncomingData)
     {
       DebugAssert(FWaitingForData == 0);
-      TAutoNestingCounter NestingCounter(FWaitingForData);
+      volatile TAutoNestingCounter NestingCounter(FWaitingForData);
 
       WSANETWORKEVENTS Events;
       ClearStruct(Events);

@@ -1556,7 +1556,7 @@ void TScreenTipHintWindow::Paint()
 {
   // paint frame/background
   {
-    TAutoFlag ParentPaintingFlag(FParentPainting);
+    volatile TAutoFlag ParentPaintingFlag(FParentPainting);
     THintWindow::Paint();
   }
 

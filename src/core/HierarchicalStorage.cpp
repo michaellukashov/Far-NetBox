@@ -797,7 +797,7 @@ bool __fastcall TCustomIniFileStorage::OpenSubKey(UnicodeString Key, bool CanCre
   bool Result;
 
   {
-    TAutoFlag Flag(FOpeningSubKey);
+    volatile TAutoFlag Flag(FOpeningSubKey);
     Result = THierarchicalStorage::OpenSubKey(Key, CanCreate, Path);
   }
 
