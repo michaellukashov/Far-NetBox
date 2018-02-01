@@ -265,7 +265,7 @@ Conf *TSecureShell::StoreToConfig(TSessionData *Data, bool Simple)
   for (int h = 0; h < HOSTKEY_COUNT; h++)
   {
     int phk;
-    switch (Data->GetHostKey(h))
+    switch (Data->GetHostKeys(h))
     {
       case hkWarn: phk = HK_WARN; break;
       case hkRSA: phk = HK_RSA; break;
@@ -281,7 +281,7 @@ Conf *TSecureShell::StoreToConfig(TSessionData *Data, bool Simple)
   for (int g = 0; g < GSSLIB_COUNT; g++)
   {
     int pgsslib = 0;
-    switch (Data->GetGssLib(g))
+    switch (Data->GetGssLibs(g))
     {
     case gssGssApi32:
       pgsslib = 0;
@@ -775,8 +775,8 @@ TPromptKind TSecureShell::IdentifyPromptKind(UnicodeString &AName) const
 
 
 bool TSecureShell::PromptUser(bool /*ToServer*/,
-  UnicodeString AName, bool /*NameRequired*/,
-  UnicodeString AInstructions, bool InstructionsRequired,
+  const UnicodeString AName, bool /*NameRequired*/,
+  const UnicodeString AInstructions, bool InstructionsRequired,
   TStrings *Prompts, TStrings *Results)
 {
   // there can be zero prompts!
@@ -2598,7 +2598,7 @@ void __fastcall TSecureShell::VerifyHostKey(
   GetConfiguration()->RememberLastFingerprint(FSessionData->GetSiteKey(), SshFingerprintType, FingerprintSHA256);
 }
 
-bool TSecureShell::HaveHostKey(UnicodeString AHost, intptr_t Port, UnicodeString KeyType)
+bool TSecureShell::HaveHostKey(UnicodeString AHost, intptr_t Port, const UnicodeString KeyType)
 {
   // Return true, if we have any host key fingerprint of a particular type
 

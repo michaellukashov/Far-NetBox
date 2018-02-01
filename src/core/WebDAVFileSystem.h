@@ -180,9 +180,9 @@ private:
   bool FNtlmAuthenticationFailed;
 
   void __fastcall CustomReadFile(UnicodeString AFileName,
-    TRemoteFile *&AFile, TRemoteFile *ALinkedByFile);
+    TRemoteFile *& AFile, TRemoteFile *ALinkedByFile);
   intptr_t __fastcall CustomReadFileInternal(const UnicodeString AFileName,
-    TRemoteFile *&AFile, TRemoteFile *ALinkedByFile);
+    TRemoteFile *& AFile, TRemoteFile *ALinkedByFile);
   bool VerifyCertificate(TNeonCertificateData &Data, bool Aux);
   void OpenUrl(const UnicodeString Url);
   void __fastcall CollectTLSSessionInfo();

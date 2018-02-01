@@ -355,7 +355,7 @@ public:
   void __fastcall SetKex(intptr_t Index, TKex Value);
   TKex __fastcall GetKex(intptr_t Index) const;
   void __fastcall SetHostKeys(intptr_t Index, THostKey Value);
-  THostKey __fastcall GetHostKey(intptr_t Index) const;
+  THostKey __fastcall GetHostKeys(intptr_t Index) const;
   void __fastcall SetGssLib(intptr_t Index, TGssLib Value);
   TGssLib __fastcall GetGssLib(intptr_t Index) const;
   void __fastcall SetGssLibCustom(UnicodeString Value);

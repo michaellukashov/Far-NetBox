@@ -2793,7 +2793,7 @@ void __fastcall TSessionData::SetHostKeys(intptr_t Index, THostKey Value)
   SET_SESSION_PROPERTY(HostKeys[Index]);
 }
 //---------------------------------------------------------------------
-THostKey __fastcall TSessionData::GetHostKey(intptr_t Index) const
+THostKey __fastcall TSessionData::GetHostKeys(intptr_t Index) const
 {
   DebugAssert(Index >= 0 && Index < HOSTKEY_COUNT);
   return FHostKeys[Index];

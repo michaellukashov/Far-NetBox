@@ -1001,7 +1001,7 @@ void __fastcall TWebDAVFileSystem::ParsePropResultSet(TRemoteFile *AFile,
 }
 //---------------------------------------------------------------------------
 intptr_t __fastcall TWebDAVFileSystem::CustomReadFileInternal(const UnicodeString AFileName,
-  TRemoteFile *&AFile, TRemoteFile *ALinkedByFile)
+  TRemoteFile *& AFile, TRemoteFile *ALinkedByFile)
 {
   std::unique_ptr<TRemoteFile> File(new TRemoteFile(ALinkedByFile));
   TReadFileData Data;
@@ -1330,8 +1330,8 @@ void __fastcall TWebDAVFileSystem::Source(
     // (not really true as we do not support changing file name on overwrite dialog)
     Action.Destination(DestFullName);
 
-    wchar_t * MimeOut = NULL;
-    if (FindMimeFromData(NULL, ADestFileName.c_str(), NULL, 0, NULL, FMFD_URLASFILENAME, &MimeOut, 0) == S_OK)
+    wchar_t * MimeOut = nullptr;
+    if (FindMimeFromData(nullptr, ADestFileName.c_str(), nullptr, 0, nullptr, FMFD_URLASFILENAME, &MimeOut, 0) == S_OK)
     {
       FUploadMimeType = MimeOut;
       CoTaskMemFree(MimeOut);
@@ -1345,7 +1345,7 @@ void __fastcall TWebDAVFileSystem::Source(
       FMTLOAD(TRANSFER_ERROR, AHandle.FileName), "",
     [&]()
     {
-      SetFilePointer(AHandle.Handle, 0, NULL, FILE_BEGIN);
+      ::SetFilePointer(AHandle.Handle, 0, nullptr, FILE_BEGIN);
 
       FD = _open_osfhandle((intptr_t)AHandle.Handle, O_BINARY);
       if (FD < 0)

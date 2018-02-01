@@ -166,8 +166,8 @@ public:
   void PuttyFatalError(UnicodeString Error);
   TPromptKind IdentifyPromptKind(UnicodeString &AName) const;
   bool __fastcall PromptUser(bool ToServer,
-    UnicodeString AName, bool NameRequired,
-    UnicodeString AInstructions, bool InstructionsRequired,
+    const UnicodeString AName, bool NameRequired,
+    const UnicodeString AInstructions, bool InstructionsRequired,
     TStrings *Prompts, TStrings *Results);
   void __fastcall FromBackend(bool IsStdErr, const uint8_t *Data, intptr_t Length);
   void __fastcall CWrite(const char *Data, intptr_t Length);
@@ -175,14 +175,13 @@ public:
   void __fastcall VerifyHostKey(
     const UnicodeString AHost, intptr_t Port, const UnicodeString AKeyType, const UnicodeString AKeyStr,
     const UnicodeString AFingerprint);
-  bool __fastcall HaveHostKey(UnicodeString AHost, intptr_t Port, UnicodeString KeyType);
+  bool __fastcall HaveHostKey(UnicodeString AHost, intptr_t Port, const UnicodeString KeyType);
   void __fastcall AskAlg(UnicodeString AlgType, const UnicodeString AlgName);
   void __fastcall DisplayBanner(const UnicodeString Banner);
   void __fastcall OldKeyfileWarning();
   void __fastcall PuttyLogEvent(const char *AStr);
   UnicodeString __fastcall ConvertFromPutty(const char *Str, intptr_t Length) const;
 
-#if 0
   __property bool Active = { read = FActive, write = SetActive };
   __property bool Ready = { read = GetReady };
   __property TCaptureOutputEvent OnCaptureOutput = { read = FOnCaptureOutput, write = FOnCaptureOutput };
@@ -192,7 +191,6 @@ public:
   __property bool Simple = { read = FSimple, write = FSimple };
   __property TSshImplementation SshImplementation = { read = FSshImplementation };
   __property bool UtfStrings = { read = FUtfStrings, write = FUtfStrings };
-#endif // #if 0
 
   bool GetActive() const { return FActive; }
   const TCaptureOutputEvent GetOnCaptureOutput() const { return FOnCaptureOutput; }
