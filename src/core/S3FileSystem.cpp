@@ -613,7 +613,12 @@ void __fastcall TS3FileSystem::Idle()
   // noop
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall TS3FileSystem::GetAbsolutePath(const UnicodeString Path, bool /*Local*/)
+UnicodeString __fastcall TS3FileSystem::GetAbsolutePath(const UnicodeString APath, bool Local)
+{
+  return static_cast<const TS3FileSystem*>(this)->GetAbsolutePath(APath, Local);
+}
+
+UnicodeString __fastcall TS3FileSystem::GetAbsolutePath(const UnicodeString Path, bool /*Local*/) const
 {
   if (base::UnixIsAbsolutePath(Path))
   {
