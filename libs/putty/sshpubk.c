@@ -1631,7 +1631,7 @@ char *ssh2_fingerprint_blob(const void *blob, int bloblen)
     for (i = 0; i < 16; i++)
         sprintf(fingerprint_str_md5 + i*3, "%02x%s", digest[i], i==15 ? "" : ":");
 
-    SHA256_Simple(blob, bloblen, digest);
+    putty_SHA256_Simple(blob, bloblen, digest);
     base64_encode_buf(digest, 32, fingerprint_str_sha256);
 
     /*
