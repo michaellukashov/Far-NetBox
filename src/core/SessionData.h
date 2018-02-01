@@ -356,8 +356,8 @@ public:
   TKex __fastcall GetKex(intptr_t Index) const;
   void __fastcall SetHostKeys(intptr_t Index, THostKey Value);
   THostKey __fastcall GetHostKeys(intptr_t Index) const;
-  void __fastcall SetGssLib(intptr_t Index, TGssLib Value);
-  TGssLib __fastcall GetGssLib(intptr_t Index) const;
+  void __fastcall SetGssLibs(intptr_t Index, TGssLib Value);
+  TGssLib __fastcall GetGssLibs(intptr_t Index) const;
   void __fastcall SetGssLibCustom(UnicodeString Value);
   void __fastcall SetPublicKeyFile(UnicodeString Value);
   UnicodeString __fastcall GetPassphrase() const;
@@ -758,8 +758,6 @@ public:
   UnicodeString GetNewPassword() const;
   bool GetChangePassword() const { return FChangePassword; }
   void SetChangePassword(bool Value);
-  void SetGssLibs(intptr_t Index, TGssLib Value);
-  TGssLib GetGssLibs(intptr_t Index) const;
   UnicodeString GetGssLibCustom() const { return FGssLibCustom; }
   void SetFtpDupFF(bool Value);
   void SetFtpUndupFF(bool Value);

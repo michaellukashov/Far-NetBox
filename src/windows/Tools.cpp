@@ -707,6 +707,7 @@ bool IsFormatInClipboard(unsigned int Format)
   }
   return Result;
 }
+#endif // #if 0
 
 HANDLE OpenTextFromClipboard(const wchar_t *&Text)
 {
@@ -763,18 +764,18 @@ bool NonEmptyTextFromClipboard(UnicodeString &Text)
 static bool GetResource(
   const UnicodeString ResName, void *&Content, unsigned long &Size)
 {
-  HRSRC Resource = FindResourceEx(HInstance, RT_RCDATA, ResName.c_str(),
+  HRSRC Resource = FindResourceEx(GetGlobals()->GetInstanceHandle(), RT_RCDATA, ResName.c_str(),
       MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL));
   bool Result = (Resource != NULL);
   if (Result)
   {
-    Size = SizeofResource(HInstance, Resource);
+    Size = SizeofResource(GetGlobals()->GetInstanceHandle(), Resource);
     if (!Size)
     {
       throw Exception(FORMAT("Cannot get size of resource %s", ResName));
     }
 
-    Content = LoadResource(HInstance, Resource);
+    Content = LoadResource(GetGlobals()->GetInstanceHandle(), Resource);
     if (!Content)
     {
       throw Exception(FORMAT("Cannot read resource %s", ResName));
@@ -828,6 +829,7 @@ UnicodeString ReadResource(const UnicodeString ResName)
   return Result;
 }
 
+#if 0
 template <class T>
 void BrowseForExecutableT(T *Control, UnicodeString Title,
   UnicodeString Filter, bool FileNameCommand, bool Escape)

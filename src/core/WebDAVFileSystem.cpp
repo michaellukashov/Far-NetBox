@@ -2250,3 +2250,8 @@ void __fastcall TWebDAVFileSystem::ClearCaches()
   // noop
 }
 //---------------------------------------------------------------------------
+TFtps TWebDAVFileSystem::GetFtps() const
+{
+  return FTerminal->GetSessionData()->GetFtps();
+}
+//---------------------------------------------------------------------------

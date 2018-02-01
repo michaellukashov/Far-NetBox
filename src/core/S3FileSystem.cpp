@@ -150,11 +150,11 @@ void __fastcall TS3FileSystem::Open()
       UnicodeString BucketName;
       UnicodeString UnusedKey;
       ParsePath(Data->GetRemoteDirectory(), BucketName, UnusedKey);
-      Path = LibS3Delimiter + BucketName;
+      Path = UnicodeString(LibS3Delimiter) + BucketName;
     }
     TryOpenDirectory(Path);
   }
-  catch (Exception & E)
+  catch (Exception &E)
   {
     LibS3Deinitialize();
     FTerminal->Closed();
@@ -438,22 +438,22 @@ UnicodeString TS3FileSystem::GetFolderKey(const UnicodeString AKey)
   return AKey + L"/";
 }
 //---------------------------------------------------------------------------
-void TS3FileSystem::ParsePath(UnicodeString Path, UnicodeString &BucketName, UnicodeString &Key)
+void TS3FileSystem::ParsePath(UnicodeString APath, UnicodeString &BucketName, UnicodeString &AKey)
 {
-  if (DebugAlwaysTrue(Path.SubString(1, 1) == L"/"))
+  if (DebugAlwaysTrue(APath.SubString(1, 1) == L"/"))
   {
-    Path.Delete(1, 1);
+    APath.Delete(1, 1);
   }
-  intptr_t P = Path.Pos(L"/");
+  intptr_t P = APath.Pos(L"/");
   if (P == 0)
   {
-    BucketName = Path;
-    Key = L"";
+    BucketName = APath;
+    AKey = L"";
   }
   else
   {
-    BucketName = Path.SubString(0, P - 1);
-    Key = Path.SubString(P + 1, Path.Length() - P);
+    BucketName = APath.SubString(0, P - 1);
+    AKey = APath.SubString(P + 1, APath.Length() - P);
   }
 }
 //---------------------------------------------------------------------------
@@ -1551,7 +1551,7 @@ S3Status TS3FileSystem::GetObjectData(int BufferSize, const char * Buffer, TLibS
 
       OperationProgress->AddTransferred(BufferSize);
     }
-    catch (Exception & E)
+    catch (Exception &E)
     {
       Data.Exception.reset(CloneException(&E));
       Result = S3StatusAbortedByCallback;

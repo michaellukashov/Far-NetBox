@@ -157,7 +157,7 @@ void TSessionData::Default()
   }
   for (intptr_t Index = 0; Index < GSSLIB_COUNT; ++Index)
   {
-    SetGssLib(Index, DefaultGssLibList[Index]);
+    SetGssLibs(Index, DefaultGssLibList[Index]);
   }
   SetGssLibCustom(L"");
   SetPublicKeyFile(L"");
@@ -2841,7 +2841,7 @@ UnicodeString TSessionData::GetGssLibList() const
   UnicodeString Result;
   for (intptr_t Index = 0; Index < GSSLIB_COUNT; Index++)
   {
-    Result += UnicodeString(Index ? L"," : L"") + GssLibNames[GetGssLib(Index)];
+    Result += UnicodeString(Index ? L"," : L"") + GssLibNames[GetGssLibs(Index)];
   }
   return Result;
 }
