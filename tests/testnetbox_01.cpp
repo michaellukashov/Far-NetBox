@@ -883,12 +883,12 @@ namespace {
 class TBase
 {
 public:
-  ROProperty<int, TBase> Data{this, &TBase::GetData};
-  ROProperty<int, TBase> Data2{this, &TBase::GetData2};
-  ROProperty<int, TBase> Data3{this, &TBase::GetData3};
+  ROProperty<int> Data{nb::bind(&TBase::GetData, this)};
+  ROProperty<int> Data2{nb::bind(&TBase::GetData2, this)};
+  ROProperty<int> Data3{nb::bind(&TBase::GetData3, this)};
 
-  RWProperty<int, TBase> RWData1{this, &TBase::GetRWData1, &TBase::SetRWData1};
-  RWProperty<UnicodeString, TBase> RWData2{this, &TBase::GetRWData2, &TBase::SetRWData2};
+  RWProperty<int> RWData1{nb::bind(&TBase::GetRWData1, this), nb::bind(&TBase::SetRWData1, this)};
+  RWProperty<UnicodeString> RWData2{nb::bind(&TBase::GetRWData2, this), nb::bind(&TBase::SetRWData2, this)};
 public:
   virtual int GetData() const = 0;
   virtual int GetData2() const { return 41; }
@@ -925,14 +925,14 @@ private:
 class TBase2
 {
 public:
-  // ROProperty<int, TBase> Data{this, &TBase::GetData};
-  ROProperty<int, TBase2> Data2{this, &TBase2::GetData2};
-  ROProperty<int, TBase2> Data3{this, &TBase2::GetData3};
+  // ROProperty<int> Data{nb::bind(&TBase::GetData, this)};
+  ROProperty<int> Data2{nb::bind(&TBase2::GetData2, this)};
+  ROProperty<int> Data3{nb::bind(&TBase2::GetData3, this)};
 
-  RWProperty<int, TBase2> RWData1{this, &TBase2::GetRWData1, &TBase2::SetRWData1};
-  RWProperty<UnicodeString, TBase2> RWData2{this, &TBase2::GetRWData2, &TBase2::SetRWData2};
-  RWProperty<UnicodeString, TBase2> RWData3{this, &TBase2::GetRWData3, &TBase2::SetRWData3};
-  RWProperty<TDateTime, TBase2> Modification{this, &TBase2::GetModification, &TBase2::SetModification};
+  RWProperty<int> RWData1{nb::bind(&TBase2::GetRWData1, this), nb::bind(&TBase2::SetRWData1, this)};
+  RWProperty<UnicodeString> RWData2{nb::bind(&TBase2::GetRWData2, this), nb::bind(&TBase2::SetRWData2, this)};
+  RWProperty<UnicodeString> RWData3{nb::bind(&TBase2::GetRWData3, this), nb::bind(&TBase2::SetRWData3, this)};
+  RWProperty<TDateTime> Modification{nb::bind(&TBase2::GetModification, this), nb::bind(&TBase2::SetModification, this)};
 private:
   int GetData2() const { return 41; }
   int GetData3() const { return 41; }
@@ -950,6 +950,24 @@ private:
   UnicodeString FRWData2 = "41";
   UnicodeString FRWData3 = "FRWData3";
   TDateTime FModification = TDateTime(10, 10, 10, 10);
+};
+
+class TDerived2 : public TBase2
+{
+public:
+  ROProperty<UnicodeString> ROProp1{nb::bind(&TDerived2::GetROProp1, this)};
+  RWProperty<UnicodeString> RWProp1{nb::bind(&TDerived2::GetRWProp1, this), nb::bind(&TDerived2::SetRWProp1, this)};
+  RWProperty<UnicodeString> RWProp2{nb::bind(&TDerived2::GetRWProp2Const, this), nb::bind(&TDerived2::SetRWProp1, this)};
+private:
+  UnicodeString GetROProp1() { return FROProp1; }
+  UnicodeString GetROProp1Const() const { return FROProp1; }
+
+  UnicodeString GetRWProp1() { return FRWProp1; }
+  UnicodeString GetRWProp2Const() const { return FRWProp1; }
+  void SetRWProp1(const UnicodeString Value) { FRWProp1 = Value; }
+
+  UnicodeString FROProp1 = "42";
+  UnicodeString FRWProp1 = "RW";
 };
 
 } // namespace
@@ -1021,5 +1039,24 @@ TEST_CASE_METHOD(base_fixture_t, "testProperty02", "netbox")
     printf("16\n");
     b3.Modification = dt;
     CHECK(b3.Modification() == TDateTime(10, 20, 59, 10));
+  }
+}
+
+TEST_CASE_METHOD(base_fixture_t, "testProperty03", "netbox")
+{
+  {
+    TDerived2 d2;
+    printf("1\n");
+    CHECK(d2.ROProp1 == "42");
+    printf("2\n");
+  }
+  {
+    TDerived2 d2;
+    printf("3\n");
+    CHECK(d2.RWProp1 == "RW");
+    printf("4\n");
+    d2.RWProp1 = "RW2";
+    CHECK(d2.RWProp1 == "RW2");
+    CHECK(d2.RWProp2 == "RW2");
   }
 }
