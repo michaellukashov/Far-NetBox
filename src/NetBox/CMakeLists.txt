@@ -148,6 +148,7 @@ nb_replace_compiler_option(CMAKE_CXX_FLAGS "/EH[-cs]+" "")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHsc")
 #string(REPLACE "/MD" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 add_definitions(-DWINSCP -DUSE_DLMALLOC)
+add_definitions(-DHIDE_TODO)
 
 set(NETBOX_DLL_LINK_FLAGS
   "
