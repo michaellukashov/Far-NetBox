@@ -24,7 +24,6 @@
 #define STRING2(x) #x
 #define STRING(x) STRING2(x)
 #define FILE_LINE __FILE__ "(" STRING(__LINE__) "): "
-#define HIDE_TODO
 #ifdef HIDE_TODO
 #define TODO(s)
 #define WARNING(s)
