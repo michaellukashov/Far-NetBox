@@ -558,7 +558,7 @@ void TWinSCPPlugin::MessageClick(void *Token, uintptr_t Result, bool &Close)
   DebugAssert(Token);
   TFarMessageData &Data = *get_as<TFarMessageData>(Token);
 
-  DebugAssert(Result != static_cast<uintptr_t>(-1) && Result < Data.ButtonCount);
+  DebugAssert(Result != ToUIntPtr(-1) && Result < Data.ButtonCount);
 
   if ((Data.Params != nullptr) && (Data.Params->Aliases != nullptr))
   {
@@ -753,7 +753,7 @@ uint32_t TWinSCPPlugin::MoreMessageDialog(const UnicodeString Str,
   }
   else
   {
-    DebugAssert(Result != static_cast<uintptr_t>(-1) && Result < Data.ButtonCount);
+    DebugAssert(Result != ToUIntPtr(-1) && Result < Data.ButtonCount);
     Result = Data.Buttons[Result];
   }
 

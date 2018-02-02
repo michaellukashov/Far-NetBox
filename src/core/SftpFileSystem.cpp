@@ -291,7 +291,7 @@ public:
     TObject(OBJECT_CLASS_TSFTPPacket)
   {
     Init(CodePage);
-    FLength = static_cast<uintptr_t>(Source.Length());
+    FLength = ToUIntPtr(Source.Length());
     SetCapacity(FLength);
     memmove(GetData(), Source.c_str(), Source.Length());
   }
@@ -1006,7 +1006,7 @@ public:
   uint8_t *GetData() const { return FData; }
   uintptr_t GetCapacity() const { return FCapacity; }
   SSH_FXP_TYPES GetType() const { return FType; }
-  uintptr_t GetMessageNumber() const { return static_cast<uintptr_t>(FMessageNumber); }
+  uintptr_t GetMessageNumber() const { return ToUIntPtr(FMessageNumber); }
   void SetMessageNumber(uint32_t Value) { FMessageNumber = Value; }
   TSFTPFileSystem *GetReservedBy() const { return FReservedBy; }
   void SetReservedBy(TSFTPFileSystem *Value) { FReservedBy = Value; }
@@ -4429,7 +4429,7 @@ void __fastcall TSFTPFileSystem::SpaceAvailable(const UnicodeString APath,
     }
     if (Flags != 0)
     {
-      AddToList(FlagStr, UnicodeString(L"0x") + ::IntToHex(static_cast<uintptr_t>(Flags), 2), L",");
+      AddToList(FlagStr, UnicodeString(L"0x") + ::IntToHex(ToUIntPtr(Flags), 2), L",");
     }
     if (FlagStr.IsEmpty())
     {

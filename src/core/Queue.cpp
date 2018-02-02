@@ -468,7 +468,7 @@ uintptr_t TSignalThread::WaitForEvent(uint32_t Timeout) const
   uintptr_t Result;
   if ((Res == WAIT_TIMEOUT) && !FTerminated)
   {
-    Result = static_cast<uintptr_t>(-1);
+    Result = ToUIntPtr(-1);
   }
   else
   {
@@ -1741,7 +1741,7 @@ TQueueItem::TQueueItem(TObjectClassId Kind) :
   FInfo(new TInfo()),
   FQueue(nullptr),
   FCompleteEvent(INVALID_HANDLE_VALUE),
-  FCPSLimit(static_cast<uintptr_t>(-1))
+  FCPSLimit(ToUIntPtr(-1))
 {
   FInfo->SingleFile = false;
   FInfo->Primary = true;

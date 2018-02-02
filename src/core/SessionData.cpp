@@ -5819,7 +5819,7 @@ bool GetCodePageInfo(UINT CodePage, CPINFOEX &CodePageInfoEx)
 uintptr_t GetCodePageAsNumber(UnicodeString CodePage)
 {
   uintptr_t codePage = _wtoi(CodePage.c_str());
-  return static_cast<uintptr_t>(codePage == 0 ? CONST_DEFAULT_CODEPAGE : codePage);
+  return ToUIntPtr(codePage == 0 ? CONST_DEFAULT_CODEPAGE : codePage);
 }
 
 UnicodeString GetCodePageAsString(uintptr_t CodePage)

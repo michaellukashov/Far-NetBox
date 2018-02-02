@@ -3265,7 +3265,7 @@ UnicodeString __fastcall TFTPFileSystem::GotReply(uintptr_t Reply, uintptr_t Fla
 
     if ((Code != nullptr) && (FLastCodeClass != DummyCodeClass))
     {
-      *Code = static_cast<uintptr_t>(FLastCode);
+      *Code = ToUIntPtr(FLastCode);
     }
 
     if (FLAGSET(Flags, REPLY_SINGLE_LINE))

@@ -803,7 +803,7 @@ LONG_PTR TFarDialog::SendDlgMessage(int Msg, intptr_t Param1, LONG_PTR Param2)
 
 uintptr_t TFarDialog::GetSystemColor(intptr_t Index)
 {
-  return static_cast<uintptr_t>(GetFarPlugin()->FarAdvControl(ACTL_GETCOLOR, ToPtr(Index)));
+  return ToUIntPtr(GetFarPlugin()->FarAdvControl(ACTL_GETCOLOR, ToPtr(Index)));
 }
 
 void TFarDialog::Redraw()

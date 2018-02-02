@@ -1654,7 +1654,7 @@ uintptr_t StrToVersionNumber(UnicodeString VersionMumberStr)
   while (!Version.IsEmpty())
   {
     UnicodeString Num = CutToChar(Version, L'.', true);
-    Result += static_cast<uintptr_t>(Num.ToIntPtr()) << Shift;
+    Result += ToUIntPtr(Num.ToIntPtr()) << Shift;
     if (Shift >= 8)
       Shift -= 8;
   }

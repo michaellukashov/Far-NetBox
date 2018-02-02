@@ -844,7 +844,7 @@ void TFarMessageDialog::Init(uintptr_t AFlags,
   int ButtonLines = 1;
   TFarButton *Button = nullptr;
   FTimeoutButton = nullptr;
-  for (uintptr_t Index = 0; Index < static_cast<uintptr_t>(Buttons->GetCount()); ++Index)
+  for (uintptr_t Index = 0; Index < ToUIntPtr(Buttons->GetCount()); ++Index)
   {
     TFarButton *PrevButton = Button;
     Button = new TFarButton(this);
@@ -942,7 +942,7 @@ void TFarMessageDialog::Idle()
 
   if (FParams->Timer > 0)
   {
-    uintptr_t SinceLastTimer = static_cast<uintptr_t>((Now() - FLastTimerTime).GetValue() * MSecsPerDay);
+    uintptr_t SinceLastTimer = ToUIntPtr((Now() - FLastTimerTime).GetValue() * MSecsPerDay);
     if (SinceLastTimer >= FParams->Timeout)
     {
       DebugAssert(FParams->TimerEvent);
@@ -2432,7 +2432,7 @@ UnicodeString TFarPanelItem::GetCustomColumnData(size_t /*Column*/)
 
 uintptr_t TFarPanelItem::GetFlags() const
 {
-  return static_cast<uintptr_t>(FPanelItem->Flags);
+  return ToUIntPtr(FPanelItem->Flags);
 }
 
 UnicodeString TFarPanelItem::GetFileName() const
@@ -2465,7 +2465,7 @@ void TFarPanelItem::SetSelected(bool Value)
 
 uintptr_t TFarPanelItem::GetFileAttrs() const
 {
-  return static_cast<uintptr_t>(FPanelItem->FindData.dwFileAttributes);
+  return ToUIntPtr(FPanelItem->FindData.dwFileAttributes);
 }
 
 bool TFarPanelItem::GetIsParentDirectory() const

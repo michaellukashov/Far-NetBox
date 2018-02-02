@@ -416,7 +416,7 @@ uintptr_t __fastcall TFileOperationProgressType::LocalBlockSize()
   uintptr_t Result = TRANSFER_BUF_SIZE;
   if (FLocallyUsed + static_cast<int64_t>(Result) > FLocalSize)
   {
-    Result = static_cast<uintptr_t>(FLocalSize - FLocallyUsed);
+    Result = ToUIntPtr(FLocalSize - FLocallyUsed);
   }
   Result = AdjustToCPSLimit(Result);
   return Result;
@@ -746,7 +746,7 @@ uintptr_t __fastcall TFileOperationProgressType::TransferBlockSize()
   uintptr_t Result = TRANSFER_BUF_SIZE;
   if (FTransferredSize + static_cast<int64_t>(Result) > FTransferSize)
   {
-    Result = static_cast<uintptr_t>(FTransferSize - FTransferredSize);
+    Result = ToUIntPtr(FTransferSize - FTransferredSize);
   }
   Result = AdjustToCPSLimit(Result);
   return Result;
@@ -809,7 +809,7 @@ uintptr_t __fastcall TFileOperationProgressType::GetCPS() const
     else
     {
       int64_t Transferred = (GetTotalTransferred() - FTotalTransferredThen.front());
-      Result = static_cast<uintptr_t>(Transferred * MSecsPerSec / TimeSpan);
+      Result = ToUIntPtr(Transferred * MSecsPerSec / TimeSpan);
     }
   }
   return Result;

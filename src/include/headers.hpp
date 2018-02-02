@@ -91,8 +91,31 @@ template <class T>
 inline typename std::enable_if<std::is_pointer<T>::value, intptr_t>::type
 ToIntPtr(T a) { return (intptr_t)(a); }
 
+template <class T>
+inline typename std::enable_if<std::is_floating_point<T>::value, intptr_t>::type
+ToIntPtr(T a) { return static_cast<intptr_t>(a); }
+
 inline intptr_t
 ToIntPtr(size_t a) { return static_cast<intptr_t>(a); }
+
+template <class T>
+inline typename std::is_convertible<T, uintptr_t>::value
+ToUIntPtr(T a) { return static_cast<uintptr_t>(a); }
+
+template <class T>
+inline typename std::enable_if<std::is_enum<T>::value, uintptr_t>::type
+ToUIntPtr(T a) { return static_cast<uintptr_t>(a); }
+
+template <class T>
+inline typename std::enable_if<std::is_pointer<T>::value, uintptr_t>::type
+ToUIntPtr(T a) { return (uintptr_t)(a); }
+
+template <class T>
+inline typename std::enable_if<std::is_floating_point<T>::value, uintptr_t>::type
+ToUIntPtr(T a) { return static_cast<uintptr_t>(a); }
+
+inline uintptr_t
+ToUIntPtr(size_t a) { return static_cast<uintptr_t>(a); }
 
 template <class T>
 inline typename std::is_convertible<T, int>::value
