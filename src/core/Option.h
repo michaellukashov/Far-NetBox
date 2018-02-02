@@ -32,7 +32,7 @@ public:
     intptr_t ParamsMax = -1);
   bool FindSwitchCaseSensitive(UnicodeString Switch);
   bool FindSwitchCaseSensitive(UnicodeString Switch, TStrings *Params,
-    int ParamsMax = -1);
+    intptr_t ParamsMax = -1);
   void ParamsProcessed(intptr_t ParamsStart, intptr_t ParamsCount);
   UnicodeString SwitchValue(UnicodeString Switch, UnicodeString Default = L"");
   bool SwitchValue(UnicodeString Switch, bool Default);
@@ -55,9 +55,9 @@ protected:
   UnicodeString FSwitchMarks;
   UnicodeString FSwitchValueDelimiters;
 
-  bool FindSwitch(UnicodeString Switch,
+  bool FindSwitch(const UnicodeString Switch,
     UnicodeString &Value, intptr_t &ParamsStart, intptr_t &ParamsCount, bool CaseSensitive, bool &ValueSet);
-  bool DoFindSwitch(UnicodeString Switch, TStrings *Params,
+  bool DoFindSwitch(const UnicodeString Switch, TStrings *Params,
     intptr_t ParamsMax, bool CaseSensitive);
 
 private:

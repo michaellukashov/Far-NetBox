@@ -7832,7 +7832,7 @@ void __fastcall TTerminal::SinkRobust(
         // If file is directory, do not delete it recursively, because it should be
         // empty already. If not, it should not be deleted (some files were
         // skipped or some new files were copied to it, while we were downloading)
-        int Params = dfNoRecursive;
+        intptr_t Params = dfNoRecursive;
         RemoteDeleteFile(AFileName, AFile, &Params);
       }
     }

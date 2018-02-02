@@ -105,7 +105,7 @@ bool TOptions::GetEmpty() const
   return FOptions.empty();
 }
 
-bool TOptions::FindSwitch(UnicodeString Switch,
+bool TOptions::FindSwitch(const UnicodeString Switch,
   UnicodeString &Value, intptr_t &ParamsStart, intptr_t &ParamsCount, bool CaseSensitive, bool &ValueSet)
 {
   ParamsStart = 0;
@@ -188,12 +188,12 @@ bool TOptions::FindSwitch(UnicodeString Switch,
 }
 
 bool TOptions::FindSwitchCaseSensitive(UnicodeString Switch,
-  TStrings *Params, int ParamsMax)
+  TStrings *Params, intptr_t ParamsMax)
 {
   return DoFindSwitch(Switch, Params, ParamsMax, true);
 }
 
-bool TOptions::DoFindSwitch(UnicodeString Switch,
+bool TOptions::DoFindSwitch(const UnicodeString Switch,
   TStrings *Params, intptr_t ParamsMax, bool CaseSensitive)
 {
   UnicodeString Value;
