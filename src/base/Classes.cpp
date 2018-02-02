@@ -1196,7 +1196,7 @@ double MilliSecondSpan(const TDateTime &ANow, const TDateTime &AThen)
 int64_t MilliSecondsBetween(const TDateTime &ANow, const TDateTime &AThen)
 {
   double Result = floor(MilliSecondSpan(ANow, AThen));
-  return static_cast<int64_t>(Result);
+  return ToInt64(Result);
 }
 
 int64_t SecondsBetween(const TDateTime &ANow, const TDateTime &AThen)
@@ -1418,7 +1418,7 @@ TSafeHandleStream::TSafeHandleStream(THandle AHandle) :
 int64_t TSafeHandleStream::Read(void *Buffer, int64_t Count)
 {
   int64_t Result = ::FileRead(FHandle, Buffer, Count);
-  if (Result == static_cast<int64_t>(-1))
+  if (Result == ToInt64(-1))
   {
     ::RaiseLastOSError();
   }

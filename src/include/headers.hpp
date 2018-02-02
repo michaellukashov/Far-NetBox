@@ -126,6 +126,14 @@ inline int
 ToInt(T a) { return static_cast<int>(a); }
 
 template <class T>
+inline typename std::is_convertible<T, int64_t>::value
+ToInt64(T a) { return static_cast<int64_t>(a); }
+
+template <class T>
+inline int64_t
+ToInt64(T a) { return static_cast<int64_t>(a); }
+
+template <class T>
 inline typename std::is_convertible<T, void *>::value
 ToPtr(T a) { return const_cast<void *>(a); }
 template <class T>

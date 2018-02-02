@@ -2235,7 +2235,7 @@ void __fastcall TFTPFileSystem::AutoDetectTimeDifference(TRemoteFileList *FileLi
           // Time difference between timestamp retrieved using MDTM (UTC converted to local timezone)
           // and using LIST (no conversion, expecting the server uses the same timezone as the client).
           // Note that FormatTimeZone reverses the value.
-          FTimeDifference = static_cast<int64_t>(SecsPerDay * (UtcModification - File->GetModification()));
+          FTimeDifference = ToInt64(SecsPerDay * (UtcModification - File->GetModification()));
 
           UnicodeString FileLog =
             FORMAT("%s (Listing: %s, UTF: %s)", File->GetFullFileName(), StandardTimestamp(File->GetModification()), StandardTimestamp(UtcModification));

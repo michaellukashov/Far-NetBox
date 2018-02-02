@@ -758,13 +758,13 @@ public:
       {
         AFile->SetLastAccess(::UnixToDateTime(
           SignedTS ?
-            static_cast<int64_t>(static_cast<int32_t>(GetCardinal())) :
-            static_cast<int64_t>(GetCardinal()),
+            ToInt64(static_cast<int32_t>(GetCardinal())) :
+            ToInt64(GetCardinal()),
           DSTMode));
         AFile->SetModification(::UnixToDateTime(
           SignedTS ?
-            static_cast<int64_t>(static_cast<int32_t>(GetCardinal())) :
-            static_cast<int64_t>(GetCardinal()),
+            ToInt64(static_cast<int32_t>(GetCardinal())) :
+            ToInt64(GetCardinal()),
           DSTMode));
       }
     }

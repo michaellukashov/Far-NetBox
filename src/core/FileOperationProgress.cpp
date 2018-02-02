@@ -414,7 +414,7 @@ intptr_t __fastcall TFileOperationProgressType::AdjustToCPSLimit(
 uintptr_t __fastcall TFileOperationProgressType::LocalBlockSize()
 {
   uintptr_t Result = TRANSFER_BUF_SIZE;
-  if (FLocallyUsed + static_cast<int64_t>(Result) > FLocalSize)
+  if (FLocallyUsed + ToInt64(Result) > FLocalSize)
   {
     Result = ToUIntPtr(FLocalSize - FLocallyUsed);
   }
@@ -744,7 +744,7 @@ void __fastcall TFileOperationProgressType::AddSkippedFileSize(int64_t ASize)
 uintptr_t __fastcall TFileOperationProgressType::TransferBlockSize()
 {
   uintptr_t Result = TRANSFER_BUF_SIZE;
-  if (FTransferredSize + static_cast<int64_t>(Result) > FTransferSize)
+  if (FTransferredSize + ToInt64(Result) > FTransferSize)
   {
     Result = ToUIntPtr(FTransferSize - FTransferredSize);
   }

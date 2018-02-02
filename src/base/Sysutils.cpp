@@ -540,7 +540,7 @@ int64_t FileSeek(HANDLE AHandle, int64_t Offset, DWORD Origin)
   LONG low = Offset & 0xFFFFFFFF;
   LONG high = Offset >> 32;
   low = ::SetFilePointer(AHandle, low, &high, Origin);
-  return (static_cast<int64_t>(high) << 32) + low;
+  return (ToInt64(high) << 32) + low;
 }
 
 bool FileExists(const UnicodeString AFileName)
@@ -1007,8 +1007,8 @@ static DWORD FindMatchingFile(TSearchRec &Rec)
   WORD Hi = (Rec.Time & 0xFFFF0000) >> 16;
   WORD Lo = Rec.Time & 0xFFFF;
   FileTimeToDosDateTime(reinterpret_cast<LPFILETIME>(&LocalFileTime), &Hi, &Lo);
-  Rec.Time = (static_cast<Integer>(Hi) << 16) + Lo;
-  Rec.Size = Rec.FindData.nFileSizeLow || static_cast<Int64>(Rec.FindData.nFileSizeHigh) << 32;
+  Rec.Time = (ToInt64(Hi) << 16) + Lo;
+  Rec.Size = Rec.FindData.nFileSizeLow || ToInt64(Rec.FindData.nFileSizeHigh) << 32;
   Rec.Attr = Rec.FindData.dwFileAttributes;
   Rec.Name = Rec.FindData.cFileName;
   Result = ERROR_SUCCESS;

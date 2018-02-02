@@ -1745,7 +1745,7 @@ int64_t Round(double Number)
 {
   double Floor = floor(Number);
   double Ceil = ceil(Number);
-  return static_cast<int64_t>(((Number - Floor) > (Ceil - Number)) ? Ceil : Floor);
+  return ToInt64(((Number - Floor) > (Ceil - Number)) ? Ceil : Floor);
 }
 //---------------------------------------------------------------------------
 bool TryRelativeStrToDateTime(const UnicodeString AStr, TDateTime &DateTime, bool Add)
@@ -1908,7 +1908,7 @@ FILETIME DateTimeToFileTime(const TDateTime &DateTime,
   }
 
   FILETIME Result;
-  (*reinterpret_cast<int64_t *>(&(Result)) = (static_cast<int64_t>(UnixTimeStamp) + 11644473600LL) * 10000000LL);
+  (*reinterpret_cast<int64_t *>(&(Result)) = (ToInt64(UnixTimeStamp) + 11644473600LL) * 10000000LL);
 
   return Result;
 }
@@ -2966,13 +2966,13 @@ UnicodeString FormatDateTimeSpan(const UnicodeString TimeFormat, TDateTime DateT
   UnicodeString Result;
   try
   {
-    if (static_cast<int64_t>(DateTime) > 0)
+    if (ToInt64(DateTime) > 0)
     {
-      Result = Int64ToStr(static_cast<int64_t>(DateTime)) + L", ";
+      Result = Int64ToStr(ToInt64(DateTime)) + L", ";
     }
     // days are decremented, because when there are to many of them,
     // "integer overflow" error occurs
-    Result += FormatDateTime(TimeFormat, DateTime - TDateTime(ToDouble(static_cast<int64_t>(DateTime))));
+    Result += FormatDateTime(TimeFormat, DateTime - TDateTime(ToDouble(ToInt64(DateTime))));
   }
   catch (...)
   {
@@ -3910,12 +3910,12 @@ UnicodeString FormatBytes(int64_t Bytes, bool UseOrders)
 {
   UnicodeString Result;
 
-  if (!UseOrders || (Bytes < static_cast<int64_t>(100 * 1024)))
+  if (!UseOrders || (Bytes < ToInt64(100 * 1024)))
   {
     // Result = FormatFloat(L"#,##0 \"B\"", Bytes);
     Result = FORMAT("%.0f B", ToDouble(Bytes));
   }
-  else if (Bytes < static_cast<int64_t>(100 * 1024 * 1024))
+  else if (Bytes < ToInt64(100 * 1024 * 1024))
   {
     // Result = FormatFloat(L"#,##0 \"KB\"", Bytes / 1024);
     Result = FORMAT("%.0f KB", ToDouble(Bytes / 1024.0));

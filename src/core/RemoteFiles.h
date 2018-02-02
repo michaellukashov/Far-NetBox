@@ -569,7 +569,7 @@ public:
   }
   TValidProperties &operator>>(const TValidProperty Value)
   {
-    FValue &= ~(static_cast<int64_t>(Value));
+    FValue &= ~(ToInt64(Value));
     return *this;
   }
   bool Empty() const

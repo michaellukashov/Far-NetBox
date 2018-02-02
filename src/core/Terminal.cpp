@@ -5611,7 +5611,7 @@ void __fastcall TTerminal::TerminalOpenLocalFile(const UnicodeString ATargetFile
           {
             ::RaiseLastOSError();
           }
-          *ASize = (static_cast<int64_t>(HSize) << 32) + LSize;
+          *ASize = (ToInt64(HSize) << 32) + LSize;
         });
         __removed FILE_OPERATION_LOOP_END(FMTLOAD(CANT_GET_ATTRS, (FileName)));
       }
@@ -5676,7 +5676,7 @@ bool __fastcall TTerminal::AllowLocalFileTransfer(const UnicodeString AFileName,
     // SearchRec.Size in C++B2010 is int64_t,
     // so we should be able to use it instead of FindData.nFileSize*
     Params.Size =
-      (static_cast<int64_t>(FindData.nFileSizeHigh) << 32) +
+      (ToInt64(FindData.nFileSizeHigh) << 32) +
       FindData.nFileSizeLow;
     Params.Modification = ::FileTimeToDateTime(FindData.ftLastWriteTime);
     UnicodeString BaseFileName = GetBaseFileName(AFileName);
@@ -5740,7 +5740,7 @@ void __fastcall TTerminal::CalculateLocalFileSize(const UnicodeString AFileName,
       // SearchRec.Size in C++B2010 is int64_t,
       // so we should be able to use it instead of FindData.nFileSize*
       int64_t Size =
-        (static_cast<int64_t>(Rec.FindData.nFileSizeHigh) << 32) +
+        (ToInt64(Rec.FindData.nFileSizeHigh) << 32) +
         Rec.FindData.nFileSizeLow;
       if (!AllowTransfer)
       {
@@ -6067,7 +6067,7 @@ void __fastcall TTerminal::DoSynchronizeCollectDirectory(const UnicodeString ALo
           // SearchRec.Size in C++B2010 is int64_t,
           // so we should be able to use it instead of FindData.nFileSize*
           int64_t Size =
-            (static_cast<int64_t>(SearchRec.FindData.nFileSizeHigh) << 32) +
+            (ToInt64(SearchRec.FindData.nFileSizeHigh) << 32) +
             SearchRec.FindData.nFileSizeLow;
           TDateTime Modification = ::FileTimeToDateTime(SearchRec.FindData.ftLastWriteTime);
           TFileMasks::TParams MaskParams;
