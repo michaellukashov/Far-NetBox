@@ -55,11 +55,9 @@ public:
   TGUICopyParamType &operator=(const TGUICopyParamType &rhp);
   TGUICopyParamType &operator=(const TCopyParamType &rhp);
 
-#if 0
   __property bool Queue = { read = FQueue, write = FQueue };
   __property bool QueueNoConfirmation = { read = FQueueNoConfirmation, write = FQueueNoConfirmation };
   __property bool QueueParallel = { read = FQueueParallel, write = FQueueParallel };
-#endif // #if 0
 
   bool GetQueue() const { return FQueue; }
   void SetQueue(bool Value) { FQueue = Value; }
@@ -106,10 +104,8 @@ public:
 
   bool operator==(const TCopyParamRule &rhp) const;
 
-#if 0
   __property TCopyParamRuleData Data = { read = FData, write = FData };
   __property bool IsEmpty = { read = GetEmpty };
-#endif // #if 0
 
   TCopyParamRuleData GetData() const { return FData; }
   void SetData(const TCopyParamRuleData &Value) { FData = Value; }
@@ -164,7 +160,6 @@ public:
   void Delete(intptr_t Index);
   intptr_t IndexOfName(UnicodeString Name) const;
 
-#if 0
   __property int Count = { read = GetCount };
   __property UnicodeString Names[int Index] = { read = GetName };
   __property const TCopyParamRule * Rules[int Index] = { read = GetRule };
@@ -172,7 +167,6 @@ public:
   __property bool Modified = { read = FModified };
   __property TStrings * NameList = { read = GetNameList };
   __property bool AnyRule = { read = GetAnyRule };
-#endif // #if 0
 
 private:
   static UnicodeString FInvalidChars;
@@ -300,7 +294,6 @@ public:
   TStoredSessionList *SelectPuttySessionsForImport(TStoredSessionList *Sessions, UnicodeString &Error);
   bool AnyPuttySessionForImport(TStoredSessionList *Sessions);
 
-#if 0
   __property bool ContinueOnError = { read = FContinueOnError, write = FContinueOnError };
   __property bool ConfirmCommandSession = { read = FConfirmCommandSession, write = FConfirmCommandSession };
   __property intptr_t SynchronizeParams = { read = FSynchronizeParams, write = FSynchronizeParams };
@@ -339,7 +332,6 @@ public:
   __property int SessionReopenAutoIdle = { read = FSessionReopenAutoIdle, write = FSessionReopenAutoIdle };
   __property bool CanApplyLocaleImmediately = { read = GetCanApplyLocaleImmediately };
   __property LCID AppliedLocale = { read = FAppliedLocale };
-#endif // #if 0
 
 public:
 

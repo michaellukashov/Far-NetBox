@@ -1312,7 +1312,7 @@ void TBackgroundTerminal::Init(
   TSessionData *ASessionData, TConfiguration *AConfiguration, TTerminalItem *Item,
   const UnicodeString Name)
 {
-  TSecondaryTerminal::Init(SessionData, Configuration, Name);
+  TSecondaryTerminal::Init(ASessionData, AConfiguration, Name);
   FItem = Item;
 }
 

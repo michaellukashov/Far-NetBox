@@ -541,9 +541,7 @@ public:
   void SetAlgoList(AlgoT *List, const AlgoT *DefaultList, const UnicodeString *Names,
     intptr_t Count, AlgoT WarnAlgo, UnicodeString AValue);
 
-#if 0
   __property UnicodeString InternalStorageKey = { read = GetInternalStorageKey };
-#endif // #if 0
 
 public:
   explicit TSessionData(UnicodeString AName);
@@ -967,10 +965,10 @@ public:
   bool HasAnyWorkspace();
   TSessionData *SaveWorkspaceData(TSessionData *Data);
   virtual ~TStoredSessionList();
-#if 0
+
   __property TSessionData * Sessions[int Index]  = { read=AtSession };
   __property TSessionData * DefaultSettings  = { read=FDefaultSettings, write=SetDefaultSettings };
-#endif // #if 0
+
   const TSessionData *GetSession(intptr_t Index) const { return dyn_cast<TSessionData>(AtObject(Index)); }
   TSessionData *GetSession(intptr_t Index) { return dyn_cast<TSessionData>(AtObject(Index)); }
   const TSessionData *GetDefaultSettings() const { return FDefaultSettings; }
@@ -998,9 +996,7 @@ private:
   bool IsFolderOrWorkspace(UnicodeString Name, bool Workspace) const;
   TSessionData *CheckIsInFolderOrWorkspaceAndResolve(
     TSessionData *Data, UnicodeString Name);
-#if 0
-  void ImportLevelFromFilezilla(_di_IXMLNode Node, UnicodeString Path);
-#endif // #if 0
+  __removed void ImportLevelFromFilezilla(_di_IXMLNode Node, UnicodeString Path);
   static THierarchicalStorage *CreateHostKeysStorageForWritting();
   static bool OpenHostKeysSubKey(THierarchicalStorage *Storage, bool CanCreate);
 };

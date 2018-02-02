@@ -2420,7 +2420,7 @@ void __fastcall TFTPFileSystem::ReadFile(const UnicodeString AFileName,
     {
       UnicodeString Path = base::UnixExtractFilePath(AFileName);
       UnicodeString NameOnly;
-      intptr_t P;
+      intptr_t P = 0;
       bool MVSPath =
         FMVS && Path.IsEmpty() &&
         (AFileName.SubString(1, 1) == L"'") && (AFileName.SubString(AFileName.Length(), 1) == L"'") &&
@@ -2433,7 +2433,7 @@ void __fastcall TFTPFileSystem::ReadFile(const UnicodeString AFileName,
       {
         NameOnly = AFileName.SubString(P + 1, AFileName.Length() - P - 1);
       }
-      TRemoteFile * AFile = NULL;
+      TRemoteFile *File = nullptr;
       // FZAPI does not have efficient way to read properties of one file.
       // In case we need properties of set of files from the same directory,
       // cache the file list for future
@@ -2442,10 +2442,10 @@ void __fastcall TFTPFileSystem::ReadFile(const UnicodeString AFileName,
         (base::UnixIsAbsolutePath(FFileListCache->GetDirectory()) ||
           (FFileListCachePath == RemoteGetCurrentDirectory())))
       {
-        AFile = FFileListCache->FindFile(NameOnly);
+        File = FFileListCache->FindFile(NameOnly);
       }
       // if cache is invalid or file is not in cache, (re)read the directory
-      if (AFile == nullptr)
+      if (File == nullptr)
       {
         std::unique_ptr<TRemoteFileList> FileListCache(new TRemoteFileList());
         FileListCache->SetDirectory(Path);
@@ -2465,12 +2465,12 @@ void __fastcall TFTPFileSystem::ReadFile(const UnicodeString AFileName,
         FFileListCache = FileListCache.release();
         FFileListCachePath = RemoteGetCurrentDirectory();
 
-        AFile = FFileListCache->FindFile(NameOnly);
+        File = FFileListCache->FindFile(NameOnly);
       }
 
-      if (AFile != NULL)
+      if (File != nullptr)
       {
-        AFile = AFile->Duplicate();
+        AFile = File->Duplicate();
         if (MVSPath)
         {
           AFile->SetFileName(AFileName);

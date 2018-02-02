@@ -58,14 +58,12 @@ public:
   bool Matches(const UnicodeString AFileName, bool Local, bool Directory,
     const TParams *Params, bool RecurseInclude, bool &ImplicitMatch) const;
 
-#if 0
   __property UnicodeString Masks = { read = FStr, write = SetMasks };
 
   __property TStrings * IncludeFileMasksStr = { read = GetMasksStr, index = MASK_INDEX(false, true) };
   __property TStrings * ExcludeFileMasksStr = { read = GetMasksStr, index = MASK_INDEX(false, false) };
   __property TStrings * IncludeDirectoryMasksStr = { read = GetMasksStr, index = MASK_INDEX(true, true) };
   __property TStrings * ExcludeDirectoryMasksStr = { read = GetMasksStr, index = MASK_INDEX(true, false) };*/
-#endif // #if 0
 
   UnicodeString GetMasks() const { return FStr; }
   void SetMasks(const UnicodeString Value) { SetMasksPrivate(Value); }
@@ -237,9 +235,7 @@ public:
     TSessionData *SessionData, UnicodeString AUserName,
     UnicodeString APassword);
 
-#if 0
   __property TSessionData *SessionData = { read = GetSessionData };
-#endif // #if 0
   TSessionData *GetSessionData() const { return GetSessionDataPrivate(); }
 
   TCustomCommandData &operator=(const TCustomCommandData &Data);

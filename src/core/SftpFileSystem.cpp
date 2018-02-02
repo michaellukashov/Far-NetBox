@@ -4090,7 +4090,7 @@ bool __fastcall TSFTPFileSystem::LoadFilesProperties(TStrings *AFileList)
 
     FTerminal->SetOperationProgress(&Progress); //-V506
 
-    static int LoadFilesPropertiesQueueLen = 5;
+    __removed static int LoadFilesPropertiesQueueLen = 5;
     TSFTPLoadFilesPropertiesQueue Queue(this, FCodePage);
     try__finally
     {
@@ -4673,7 +4673,7 @@ void __fastcall TSFTPFileSystem::Source(
   bool DestFileExists = false;
   TRights DestRights;
 
-  int64_t ResumeOffset;
+  int64_t ResumeOffset = 0;
 
   // should we check for interrupted transfer?
   bool ResumeAllowed = !OperationProgress->GetAsciiTransfer() &&
@@ -5668,7 +5668,7 @@ void __fastcall TSFTPFileSystem::Sink(
         intptr_t GapCount = 0;
         uint32_t Missing = 0;
         uint32_t DataLen = 0;
-        uintptr_t BlockSize;
+        uintptr_t BlockSize = 0;
         bool ConvertToken = false;
 
         while (!Eof)

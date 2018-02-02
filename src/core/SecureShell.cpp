@@ -264,7 +264,7 @@ Conf *TSecureShell::StoreToConfig(TSessionData *Data, bool Simple)
   DebugAssert(HK_MAX == HOSTKEY_COUNT);
   for (int h = 0; h < HOSTKEY_COUNT; h++)
   {
-    int phk;
+    int phk = 0;
     switch (Data->GetHostKeys(h))
     {
       case hkWarn: phk = HK_WARN; break;

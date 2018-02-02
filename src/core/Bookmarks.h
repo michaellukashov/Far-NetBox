@@ -18,10 +18,8 @@ public:
   void ModifyAll(bool Modify);
   void Clear();
 
-#if 0
   __property TBookmarkList * Bookmarks[UnicodeString Index] = { read = GetBookmarks, write = SetBookmarks };
   __property TBookmarkList * SharedBookmarks = { read = GetSharedBookmarks, write = SetSharedBookmarks };
-#endif // if 0
 
 private:
   TStringList *FBookmarkLists;
@@ -65,19 +63,15 @@ public:
   void SaveOptions(THierarchicalStorage *Storage) const;
   void ShortCuts(TShortCuts &ShortCuts);
 
-#if 0
   __property int Count = { read = GetCount };
   __property TBookmark * Bookmarks[int Index] = { read = GetBookmarks };
   __property bool NodeOpened[UnicodeString Index] = { read = GetNodeOpened, write = SetNodeOpened };
-#endif // if 0
 
 protected:
   intptr_t IndexOf(TBookmark *Bookmark) const;
   void KeyChanged(intptr_t Index);
 
-#if 0
   __property bool Modified = { read = FModified, write = FModified };
-#endif // if 0
   bool GetModified() const { return FModified; }
   void SetModified(bool Value) { FModified = Value; }
 
@@ -105,13 +99,11 @@ public:
 
   virtual void Assign(const TPersistent *Source) override;
 
-#if 0
   __property UnicodeString Name = { read = FName, write = SetName };
   __property UnicodeString Local = { read = FLocal, write = SetLocal };
   __property UnicodeString Remote = { read = FRemote, write = SetRemote };
   __property UnicodeString Node = { read = FNode, write = SetNode };
   __property TShortCut ShortCut = { read = FShortCut, write = SetShortCut };
-#endif // if 0
 
 protected:
   TBookmarkList *FOwner;

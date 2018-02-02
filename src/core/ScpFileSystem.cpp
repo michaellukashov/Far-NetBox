@@ -2663,7 +2663,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString TargetDir,
             __removed FILE_OPERATION_LOOP_END(FMTLOAD(CREATE_DIR_ERROR, (DestFileName)));
             /* SCP: can we set the timestamp for directories ? */
           }
-          UnicodeString FullFileName = SourceDir + OperationProgress->GetFileName();
+          FullFileName = SourceDir + OperationProgress->GetFileName();
           SCPSink(DestFileName, FullFileName, base::UnixIncludeTrailingBackslash(FullFileName),
             CopyParam, Success, OperationProgress, Params, Level + 1);
           continue;

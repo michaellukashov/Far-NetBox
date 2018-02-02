@@ -704,7 +704,7 @@ void TGUIConfiguration::SaveData(THierarchicalStorage *Storage, bool All)
 #undef KEYEX
 #define KEYEX(TYPE, NAME, VAR) Storage->Write ## TYPE(LASTELEM(UnicodeString(#NAME)), Get ## VAR())
 #undef KEY
-#define KEY(TYPE, NAME) Storage->Write ## TYPE(PropertyToKey(#NAME), Get ## NAME())
+#define KEY(TYPE, NAME) Storage->Write ## TYPE(::PropertyToKey(#NAME), Get ## NAME())
   REGCONFIG(true);
 #undef KEY
 #undef KEYEX
@@ -1069,13 +1069,13 @@ UnicodeString TGUIConfiguration::AppliedLocaleVersion()
   return Result;
 }
 
-void TGUIConfiguration::SetAppliedLocale(LCID AppliedLocale, UnicodeString LocaleModuleName)
+void TGUIConfiguration::SetAppliedLocale(LCID AppliedLocale, const UnicodeString LocaleModuleName)
 {
   FAppliedLocale = AppliedLocale;
   FLocaleModuleName = LocaleModuleName;
 }
 
-void TGUIConfiguration::FreeResourceModule(HANDLE Instance)
+void TGUIConfiguration::FreeResourceModule(HANDLE /*Instance*/)
 {
 #if 0
   TLibModule *MainModule = FindModule(HInstance);
