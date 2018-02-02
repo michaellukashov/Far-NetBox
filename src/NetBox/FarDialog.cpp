@@ -355,7 +355,7 @@ LONG_PTR WINAPI TFarDialog::DialogProcGeneral(HANDLE Handle, int Msg, int Param1
 
   if (Dialog != nullptr)
   {
-    Result = Dialog->DialogProc(Msg, static_cast<intptr_t>(Param1), Param2);
+    Result = Dialog->DialogProc(Msg, ToIntPtr(Param1), Param2);
   }
 
   if ((Msg == DN_CLOSE) && Result)
@@ -492,7 +492,7 @@ LONG_PTR TFarDialog::DialogProc(int Msg, intptr_t Param1, LONG_PTR Param2)
           if (Button == nullptr)
           {
             DebugAssert(isa<TFarListBox>(GetItem(Param1)));
-            Result = static_cast<intptr_t>(false);
+            Result = ToIntPtr(false);
           }
           else
           {
@@ -874,7 +874,7 @@ void TFarDialog::LockChanges()
     DebugAssert(!FChangesPending);
     if (GetHandle())
     {
-      SendDlgMessage(DM_ENABLEREDRAW, static_cast<intptr_t>(false), 0);
+      SendDlgMessage(DM_ENABLEREDRAW, ToIntPtr(false), 0);
     }
   }
 }
@@ -1178,7 +1178,7 @@ void TFarDialogItem::SetType(intptr_t Value)
 
 intptr_t TFarDialogItem::GetType() const
 {
-  return static_cast<intptr_t>(GetDialogItem()->Type);
+  return ToIntPtr(GetDialogItem()->Type);
 }
 
 void TFarDialogItem::SetAlterType(intptr_t Index, bool Value)
@@ -1299,7 +1299,7 @@ LONG_PTR TFarDialogItem::FailItemProc(int Msg, LONG_PTR Param)
   switch (Msg)
   {
   case DN_KILLFOCUS:
-    Result = static_cast<intptr_t>(GetItem());
+    Result = ToIntPtr(GetItem());
     break;
 
   default:
@@ -1456,7 +1456,7 @@ void TFarDialogItem::UpdateSelected(intptr_t Value)
 
 intptr_t TFarDialogItem::GetSelected() const
 {
-  return static_cast<intptr_t>(GetDialogItem()->Selected);
+  return ToIntPtr(GetDialogItem()->Selected);
 }
 
 bool TFarDialogItem::GetFocused() const
@@ -1512,7 +1512,7 @@ intptr_t TFarDialogItem::GetCoordinate(intptr_t Index) const
   TRect R = GetBounds();
   int *D = reinterpret_cast<int *>(&R);
   D += Index;
-  return static_cast<intptr_t>(*D);
+  return ToIntPtr(*D);
 }
 
 void TFarDialogItem::SetWidth(intptr_t Value)
@@ -1532,7 +1532,7 @@ void TFarDialogItem::SetWidth(intptr_t Value)
 
 intptr_t TFarDialogItem::GetWidth() const
 {
-  return static_cast<intptr_t>(GetActualBounds().Width() + 1);
+  return ToIntPtr(GetActualBounds().Width() + 1);
 }
 
 void TFarDialogItem::SetHeight(intptr_t Value)
@@ -1552,7 +1552,7 @@ void TFarDialogItem::SetHeight(intptr_t Value)
 
 intptr_t TFarDialogItem::GetHeight() const
 {
-  return static_cast<intptr_t>(GetActualBounds().Height() + 1);
+  return ToIntPtr(GetActualBounds().Height() + 1);
 }
 
 bool TFarDialogItem::CanFocus() const
@@ -1876,7 +1876,7 @@ LONG_PTR TFarCheckBox::ItemProc(int Msg, LONG_PTR Param)
     {
       UpdateSelected(Param);
     }
-    return static_cast<intptr_t>(Allow);
+    return ToIntPtr(Allow);
   }
   return TFarDialogItem::ItemProc(Msg, Param);
 }
@@ -1917,7 +1917,7 @@ LONG_PTR TFarRadioButton::ItemProc(int Msg, LONG_PTR Param)
       // Manual says that Param should contain ID of previously selected dialog item
       UpdateSelected(Param);
     }
-    return static_cast<intptr_t>(Allow);
+    return ToIntPtr(Allow);
   }
   return TFarDialogItem::ItemProc(Msg, Param);
 }
@@ -2279,7 +2279,7 @@ intptr_t TFarList::GetTopIndex() const
     TFarDialogItem *DialogItem = GetDialogItem();
     DebugAssert(DialogItem != nullptr);
     DialogItem->SendDialogMessage(DM_LISTGETCURPOS, reinterpret_cast<LONG_PTR>(&ListPos));
-    Result = static_cast<intptr_t>(ListPos.TopPos);
+    Result = ToIntPtr(ListPos.TopPos);
   }
   return Result;
 }
@@ -2571,7 +2571,7 @@ LONG_PTR TFarLister::ItemProc(int Msg, LONG_PTR Param)
     intptr_t ScrollBarPos = 0;
     if (GetItems()->GetCount() > GetHeight())
     {
-      ScrollBarPos = static_cast<intptr_t>((static_cast<float>(GetHeight() - 3) * (static_cast<float>(FTopIndex) / (GetItems()->GetCount() - GetHeight())))) + 1;
+      ScrollBarPos = ToIntPtr((static_cast<float>(GetHeight() - 3) * (static_cast<float>(FTopIndex) / (GetItems()->GetCount() - GetHeight())))) + 1;
     }
     intptr_t DisplayWidth = GetWidth() - (AScrollBar ? 1 : 0);
     uintptr_t Color = GetDialog()->GetSystemColor(
@@ -2715,7 +2715,7 @@ LONG_PTR TFarLister::ItemProc(int Msg, LONG_PTR Param)
       {
         DebugAssert(P.x == GetWidth() - 1);
         DebugAssert((P.y > 0) && (P.y < ToInt(GetHeight() - 1)));
-        NewTopIndex = static_cast<intptr_t>(ceil(static_cast<float>(P.y - 1) / (GetHeight() - 2) * (GetItems()->GetCount() - GetHeight() + 1)));
+        NewTopIndex = ToIntPtr(ceil(static_cast<float>(P.y - 1) / (GetHeight() - 2) * (GetItems()->GetCount() - GetHeight() + 1)));
       }
 
       Result = 1;

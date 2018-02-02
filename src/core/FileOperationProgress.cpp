@@ -217,7 +217,7 @@ void __fastcall TFileOperationProgressType::Resume()
 
     // shift timestamps for CPS calculation in advance
     // by the time the progress was suspended
-    intptr_t Stopped = static_cast<intptr_t>(::GetTickCount() - FSuspendTime);
+    intptr_t Stopped = ToIntPtr(::GetTickCount() - FSuspendTime);
     size_t Index = 0;
     while (Index < FTicks.size())
     {
@@ -248,7 +248,7 @@ intptr_t __fastcall TFileOperationProgressType::TransferProgress() const
   intptr_t Result;
   if (FTransferSize)
   {
-    Result = static_cast<intptr_t>((FTransferredSize * 100) / FTransferSize);
+    Result = ToIntPtr((FTransferredSize * 100) / FTransferSize);
   }
   else
   {
@@ -261,7 +261,7 @@ intptr_t __fastcall TFileOperationProgressType::TotalTransferProgress() const
 {
   volatile TGuard Guard(*FSection);
   DebugAssert(FTotalSizeSet);
-  intptr_t Result = FTotalSize > 0 ? static_cast<intptr_t>(((GetTotalTransferred() + FTotalSkipped) * 100) / FTotalSize) : 0;
+  intptr_t Result = FTotalSize > 0 ? ToIntPtr(((GetTotalTransferred() + FTotalSkipped) * 100) / FTotalSize) : 0;
   return Result < 100 ? Result : 100;
 }
 //---------------------------------------------------------------------------
@@ -652,7 +652,7 @@ void __fastcall TFileOperationProgressType::AddTransferredToTotals(int64_t ASize
   FTotalTransferred += ASize;
   if (ASize >= 0)
   {
-    intptr_t Ticks = static_cast<intptr_t>(::GetTickCount());
+    intptr_t Ticks = ToIntPtr(::GetTickCount());
     if (FTicks.empty() ||
         (FTicks.back() > Ticks) || // ticks wrap after 49.7 days
         ((Ticks - FTicks.back()) >= MSecsPerSec))

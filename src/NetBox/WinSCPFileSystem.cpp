@@ -1296,7 +1296,7 @@ void TWinSCPFileSystem::ApplyCommand()
 
             TFileOperationProgressType Progress(nb::bind(&TWinSCPFileSystem::OperationProgress, this), nb::bind(&TWinSCPFileSystem::OperationFinished, this));
 
-            Progress.Start(foCustomCommand, osRemote, static_cast<intptr_t>(FileListCommand ? 1 : FileList->GetCount()));
+            Progress.Start(foCustomCommand, osRemote, ToIntPtr(FileListCommand ? 1 : FileList->GetCount()));
             {
               SCOPE_EXIT
               {
@@ -4128,7 +4128,7 @@ void TWinSCPFileSystem::EditHistory()
   intptr_t Result = GetWinSCPPlugin()->Menu(FMENU_REVERSEAUTOHIGHLIGHT | FMENU_SHOWAMPERSAND | FMENU_WRAPMODE,
       GetMsg(NB_MENU_EDIT_HISTORY), L"", MenuItems.get(), BreakKeys, BreakCode);
 
-  if ((Result >= 0) && (Result < static_cast<intptr_t>(FEditHistories.size())))
+  if ((Result >= 0) && (Result < ToIntPtr(FEditHistories.size())))
   {
     TRemoteFile *File = nullptr;
     const TEditHistory &EditHistory = FEditHistories[Result];

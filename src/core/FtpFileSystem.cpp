@@ -1585,7 +1585,7 @@ void __fastcall TFTPFileSystem::DoFileTransferProgress(int64_t TransferSize,
     FFileZillaIntf->Cancel();
   }
 
-  if (static_cast<intptr_t>(FFileTransferCPSLimit) != OperationProgress->GetCPSLimit())
+  if (ToIntPtr(FFileTransferCPSLimit) != OperationProgress->GetCPSLimit())
   {
     SetCPSLimit(OperationProgress);
   }
@@ -2246,7 +2246,7 @@ void __fastcall TFTPFileSystem::AutoDetectTimeDifference(TRemoteFileList *FileLi
           }
           else
           {
-            LogMessage = FORMAT("Timezone difference of %s detected using file %s", FormatTimeZone(static_cast<intptr_t>(FTimeDifference)), FileLog);
+            LogMessage = FORMAT("Timezone difference of %s detected using file %s", FormatTimeZone(ToIntPtr(FTimeDifference)), FileLog);
           }
           FTerminal->LogEvent(LogMessage);
 
@@ -2806,7 +2806,7 @@ intptr_t __fastcall TFTPFileSystem::GetOptionVal(intptr_t OptionID) const
 
   case OPTION_SPEEDLIMIT_DOWNLOAD_VALUE:
   case OPTION_SPEEDLIMIT_UPLOAD_VALUE:
-    Result = static_cast<intptr_t>((FFileTransferCPSLimit / 1024)); // FZAPI expects KB/s
+    Result = ToIntPtr((FFileTransferCPSLimit / 1024)); // FZAPI expects KB/s
     break;
 
   case OPTION_MPEXT_SHOWHIDDEN:
@@ -3370,7 +3370,7 @@ void __fastcall TFTPFileSystem::HandleReplyStatus(UnicodeString Response)
     FMultineResponse = (Response.Length() >= 4) && (Response[4] == L'-');
     FLastResponse->Clear();
     FLastErrorResponse->Clear();
-    SetLastCode(static_cast<intptr_t>(Code));
+    SetLastCode(ToIntPtr(Code));
     if (Response.Length() >= 5)
     {
       StoreLastResponse(Response.SubString(5, Response.Length() - 4));

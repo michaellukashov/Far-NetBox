@@ -189,7 +189,7 @@ void TSessionData::Default()
   SetProxyDNS(asAuto);
   SetProxyLocalhost(false);
 
-  for (intptr_t Index = 0; Index < static_cast<intptr_t>(_countof(FBugs)); ++Index)
+  for (intptr_t Index = 0; Index < ToIntPtr(_countof(FBugs)); ++Index)
   {
     SetBug(static_cast<TSshBug>(Index), asAuto);
   }
@@ -246,7 +246,7 @@ void TSessionData::Default()
   SetSFTPMaxPacketSize(0);
   SetSFTPMinPacketSize(0);
 
-  for (intptr_t Index = 0; Index < static_cast<intptr_t>(_countof(FSFTPBugs)); ++Index)
+  for (intptr_t Index = 0; Index < ToIntPtr(_countof(FSFTPBugs)); ++Index)
   {
     SetSFTPBug(static_cast<TSftpBug>(Index), asAuto);
   }
@@ -474,13 +474,13 @@ void TSessionData::CopyData(TSessionData *SourceData)
 
 
   SetUserName(SourceData->SessionGetUserName());
-  for (intptr_t Index = 0; Index < static_cast<intptr_t>(_countof(FBugs)); ++Index)
+  for (intptr_t Index = 0; Index < ToIntPtr(_countof(FBugs)); ++Index)
   {
     // PROPERTY(Bug[(TSshBug)Index]);
     SetBug(static_cast<TSshBug>(Index),
       SourceData->GetBug(static_cast<TSshBug>(Index)));
   }
-  for (intptr_t Index = 0; Index < static_cast<intptr_t>(_countof(FSFTPBugs)); ++Index)
+  for (intptr_t Index = 0; Index < ToIntPtr(_countof(FSFTPBugs)); ++Index)
   {
     // PROPERTY(SFTPBug[(TSftpBug)Index]);
     SetSFTPBug(static_cast<TSftpBug>(Index),
@@ -550,13 +550,13 @@ bool TSessionData::IsSame(const TSessionData *Default, bool AdvancedOnly, TStrin
   ADVANCED_PROPERTIES;
 #undef PROPERTY
 
-  for (intptr_t Index = 0; Index < static_cast<intptr_t>(_countof(FBugs)); ++Index)
+  for (intptr_t Index = 0; Index < ToIntPtr(_countof(FBugs)); ++Index)
   {
     // PROPERTY(Bug[(TSshBug)Index]);
     if (GetBug(static_cast<TSshBug>(Index)) != Default->GetBug(static_cast<TSshBug>(Index)))
       return false;
   }
-  for (intptr_t Index = 0; Index < static_cast<intptr_t>(_countof(FSFTPBugs)); ++Index)
+  for (intptr_t Index = 0; Index < ToIntPtr(_countof(FSFTPBugs)); ++Index)
   {
     // PROPERTY(SFTPBug[(TSftpBug)Index]);
     if (GetSFTPBug(static_cast<TSftpBug>(Index)) != Default->GetSFTPBug(static_cast<TSftpBug>(Index)))
@@ -2150,7 +2150,7 @@ bool __fastcall TSessionData::ParseUrl(UnicodeString AUrl, TOptions * Options,
     }
     if (Options->FindSwitch("timeout", Value))
     {
-      SetTimeout(static_cast<intptr_t>(::StrToInt64(Value)));
+      SetTimeout(ToIntPtr(::StrToInt64(Value)));
     }
     if (Options->FindSwitch("hostkey", Value) ||
       Options->FindSwitch("certificate", Value))

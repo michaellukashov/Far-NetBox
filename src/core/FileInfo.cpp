@@ -283,7 +283,7 @@ intptr_t StrToCompoundVersion(UnicodeString AStr)
   int64_t MinorVer = StrToInt64(CutToChar(S, L'.', false));
   int64_t Release = S.IsEmpty() ? 0 : StrToInt64(CutToChar(S, L'.', false));
   int64_t Build = S.IsEmpty() ? 0 : StrToInt64(CutToChar(S, L'.', false));
-  return CalculateCompoundVersion(static_cast<intptr_t>(MajorVer), static_cast<intptr_t>(MinorVer), static_cast<intptr_t>(Release), static_cast<intptr_t>(Build));
+  return CalculateCompoundVersion(ToIntPtr(MajorVer), ToIntPtr(MinorVer), ToIntPtr(Release), ToIntPtr(Build));
 }
 
 intptr_t CompareVersion(UnicodeString V1, UnicodeString V2)

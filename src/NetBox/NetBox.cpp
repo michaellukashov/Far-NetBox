@@ -53,7 +53,7 @@ int WINAPI ConfigureW(int item)
 {
   DebugAssert(FarPlugin);
   TFarPluginGuard Guard;
-  return ToInt(FarPlugin->Configure(static_cast<intptr_t>(item)));
+  return ToInt(FarPlugin->Configure(ToIntPtr(item)));
 }
 
 HANDLE WINAPI OpenPluginW(int openFrom, intptr_t item)

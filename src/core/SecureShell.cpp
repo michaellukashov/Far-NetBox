@@ -687,7 +687,7 @@ UnicodeString TSecureShell::ConvertFromPutty(const char *Str, intptr_t Length) c
 
 void TSecureShell::PuttyLogEvent(const char *AStr)
 {
-  UnicodeString Str = ConvertFromPutty(AStr, static_cast<intptr_t>(NBChTraitsCRT<char>::SafeStringLen(AStr)));
+  UnicodeString Str = ConvertFromPutty(AStr, ToIntPtr(NBChTraitsCRT<char>::SafeStringLen(AStr)));
 #define SERVER_VERSION_MSG L"Server version: "
   // Gross hack
   if (Str.Pos(SERVER_VERSION_MSG) == 1)
@@ -2028,7 +2028,7 @@ bool TSecureShell::EventSelectLoop(uintptr_t MSec, bool ReadEventRequired,
       size_t n = static_cast<size_t>(HandleCount + 1);
       Handles = sresize(Handles, n, HANDLE);
       Handles[HandleCount] = FSocketEvent;
-      intptr_t Timeout = static_cast<intptr_t>(MSec);
+      intptr_t Timeout = ToIntPtr(MSec);
       if (toplevel_callback_pending())
       {
         Timeout = 0;
@@ -2132,7 +2132,7 @@ bool TSecureShell::EventSelectLoop(uintptr_t MSec, bool ReadEventRequired,
       if (::WSAIoctl(FSocket, SIO_IDEAL_SEND_BACKLOG_QUERY, nullptr, 0, &BufferLen, sizeof(BufferLen), &OutBuffLen, nullptr, nullptr) == 0)
       {
         DebugAssert(OutBuffLen == sizeof(BufferLen));
-        if (FSendBuf < static_cast<intptr_t>(BufferLen))
+        if (FSendBuf < ToIntPtr(BufferLen))
         {
           LogEvent(FORMAT("Increasing send buffer from %d to %d", FSendBuf, ToInt(BufferLen)));
           FSendBuf = BufferLen;
@@ -2236,7 +2236,7 @@ TCipher TSecureShell::FuncToSsh1Cipher(const void *Cipher)
   DebugAssert(_countof(CipherFuncs) == _countof(TCiphers));
   TCipher Result = cipWarn;
 
-  for (intptr_t Index = 0; Index < static_cast<intptr_t>(_countof(TCiphers)); ++Index)
+  for (intptr_t Index = 0; Index < ToIntPtr(_countof(TCiphers)); ++Index)
   {
     if (static_cast<ssh_cipher *>(const_cast<void *>(Cipher)) == CipherFuncs[Index])
     {

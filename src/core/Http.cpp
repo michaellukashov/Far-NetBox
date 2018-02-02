@@ -186,7 +186,7 @@ int THttp::NeonBodyReaderImpl(const char *Buf, size_t Len)
 {
   bool Result = true;
   if ((FResponseLimit < 0) ||
-    (FResponse.Length() + static_cast<intptr_t>(Len) <= FResponseLimit))
+    (FResponse.Length() + ToIntPtr(Len) <= FResponseLimit))
   {
     FResponse += RawByteString(Buf, Len);
 

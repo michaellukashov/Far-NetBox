@@ -179,7 +179,7 @@ intptr_t StrToIntPtr(UnicodeString Value)
   int64_t Result = 0;
   if (TryStrToInt64(Value, Result))
   {
-    return static_cast<intptr_t>(Result);
+    return ToIntPtr(Result);
   }
   return 0;
 }
@@ -199,7 +199,7 @@ intptr_t StrToIntDef(UnicodeString Value, intptr_t DefVal)
   int64_t Result = DefVal;
   if (TryStrToInt64(Value, Result))
   {
-    return static_cast<intptr_t>(Result);
+    return ToIntPtr(Result);
   }
   return DefVal;
 }
@@ -371,76 +371,76 @@ int StringCmpI(const wchar_t *S1, const wchar_t *S2)
   return ::CompareString(0, NORM_IGNORECASE | SORT_STRINGSORT, S1, -1, S2, -1) - 2;
 }
 
-intptr_t CompareText(UnicodeString Str1, UnicodeString Str2)
+intptr_t CompareText(const UnicodeString Str1, const UnicodeString Str2)
 {
   return StringCmp(Str1.c_str(), Str2.c_str());
 }
 
-intptr_t AnsiCompare(UnicodeString Str1, UnicodeString Str2)
+intptr_t AnsiCompare(const UnicodeString Str1, const UnicodeString Str2)
 {
   return StringCmp(Str1.c_str(), Str2.c_str());
 }
 
 // Case-sensitive compare
-intptr_t AnsiCompareStr(UnicodeString Str1, UnicodeString Str2)
+intptr_t AnsiCompareStr(const UnicodeString Str1, const UnicodeString Str2)
 {
   return StringCmp(Str1.c_str(), Str2.c_str());
 }
 
-bool AnsiSameText(UnicodeString Str1, UnicodeString Str2)
+bool AnsiSameText(const UnicodeString Str1, const UnicodeString Str2)
 {
   return StringCmpI(Str1.c_str(), Str2.c_str()) == 0;
 }
 
-bool SameText(UnicodeString Str1, UnicodeString Str2)
+bool SameText(const UnicodeString Str1, const UnicodeString Str2)
 {
   return AnsiSameText(Str1, Str2);
 }
 
-intptr_t AnsiCompareText(UnicodeString Str1, UnicodeString Str2)
+intptr_t AnsiCompareText(const UnicodeString Str1, const UnicodeString Str2)
 {
   return StringCmpI(Str1.c_str(), Str2.c_str());
 }
 
-intptr_t AnsiCompareIC(UnicodeString Str1, UnicodeString Str2)
+intptr_t AnsiCompareIC(const UnicodeString Str1, const UnicodeString Str2)
 {
   return AnsiCompareText(Str1, Str2);
 }
 
-bool AnsiSameStr(UnicodeString Str1, UnicodeString Str2)
+bool AnsiSameStr(const UnicodeString Str1, const UnicodeString Str2)
 {
   return AnsiCompareIC(Str1, Str2) == 0;
 }
 
-bool AnsiContainsText(UnicodeString Str1, UnicodeString Str2)
+bool AnsiContainsText(const UnicodeString Str1, const UnicodeString Str2)
 {
   return ::Pos(Str1, Str2) > 0;
 }
 
-bool ContainsStr(AnsiString Str1, AnsiString Str2)
+bool ContainsStr(const AnsiString Str1, const AnsiString Str2)
 {
   return Str1.Pos(Str2) > 0;
 }
 
-bool ContainsText(UnicodeString Str1, UnicodeString Str2)
+bool ContainsText(const UnicodeString Str1, const UnicodeString Str2)
 {
   return AnsiContainsText(Str1, Str2);
 }
 
-UnicodeString RightStr(UnicodeString Str, intptr_t ACount)
+UnicodeString RightStr(const UnicodeString Str, intptr_t ACount)
 {
   UnicodeString Result = Str.SubString(Str.Length() - ACount, ACount);
   return Result;
 }
 
-intptr_t PosEx(UnicodeString SubStr, UnicodeString Str, intptr_t Offset)
+intptr_t PosEx(const UnicodeString SubStr, const UnicodeString Str, intptr_t Offset)
 {
   UnicodeString S = Str.SubString(Offset);
   intptr_t Result = S.Pos(SubStr) + Offset;
   return Result;
 }
 
-UnicodeString UTF8ToString(RawByteString Str)
+UnicodeString UTF8ToString(const RawByteString Str)
 {
   return UnicodeString(Str.c_str(), Str.GetLength(), CP_UTF8);
 }
@@ -1218,7 +1218,7 @@ uintptr_t HexToIntPtr(UnicodeString Hex, uintptr_t MinChars)
     intptr_t A = Digits.FindFirstOf(UpCase(Hex[Index]));
     if (A == NPOS)
     {
-      if ((static_cast<intptr_t>(MinChars) == NPOS) || (Index <= static_cast<intptr_t>(MinChars)))
+      if ((ToIntPtr(MinChars) == NPOS) || (Index <= ToIntPtr(MinChars)))
       {
         Result = 0;
       }

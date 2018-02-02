@@ -619,7 +619,7 @@ bool __fastcall TSCPFileSystem::RemoveLastLine(UnicodeString &Line,
       IsLastLine = true;
       Line.SetLength(Pos - 1);
     }
-    ReturnCode = static_cast<intptr_t>(Code);
+    ReturnCode = ToIntPtr(Code);
   }
   return IsLastLine;
 }
@@ -2002,7 +2002,7 @@ void __fastcall TSCPFileSystem::SCPSource(const UnicodeString AFileName,
             {
               uintptr_t BlockSize = OperationProgress->TransferBlockSize();
               FSecureShell->Send(
-                  reinterpret_cast<uint8_t *>(AsciiBuf.GetData() + static_cast<intptr_t>(OperationProgress->GetTransferredSize())),
+                  reinterpret_cast<uint8_t *>(AsciiBuf.GetData() + ToIntPtr(OperationProgress->GetTransferredSize())),
                 BlockSize);
               OperationProgress->AddTransferred(BlockSize);
               if (OperationProgress->GetCancel() == csCancelTransfer)
@@ -2761,7 +2761,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString TargetDir,
                   BlockBuf.SetSize(OperationProgress->TransferBlockSize());
                   BlockBuf.SetPosition(0);
 
-                  FSecureShell->Receive(reinterpret_cast<uint8_t *>(BlockBuf.GetData()), static_cast<intptr_t>(BlockBuf.GetSize()));
+                  FSecureShell->Receive(reinterpret_cast<uint8_t *>(BlockBuf.GetData()), ToIntPtr(BlockBuf.GetSize()));
                   OperationProgress->AddTransferred(BlockBuf.GetSize());
 
                   if (OperationProgress->GetAsciiTransfer())

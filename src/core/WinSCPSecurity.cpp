@@ -76,7 +76,7 @@ UnicodeString DecryptPassword(RawByteString Password, UnicodeString UnicodeKey, 
   }
   else
     Length = Flag;
-  Password.Delete(1, (static_cast<Integer>(SimpleDecryptNextChar(Password)) * 2));
+  Password.Delete(1, (ToIntPtr(SimpleDecryptNextChar(Password)) * 2));
   for (uint8_t Index = 0; Index < Length; ++Index)
     Result += static_cast<char>(SimpleDecryptNextChar(Password));
   if (Flag == PWALG_SIMPLE_FLAG)

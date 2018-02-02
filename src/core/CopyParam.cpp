@@ -444,7 +444,7 @@ void TCopyParamType::DoGetInfoStr(
   {
     UnicodeString Value;
     UnicodeString CodeState;
-    intptr_t ResumeThresholdKB = static_cast<intptr_t>(GetResumeThreshold() / 1024);
+    intptr_t ResumeThresholdKB = ToIntPtr(GetResumeThreshold() / 1024);
     switch (GetResumeSupport())
     {
     case rsOff:
@@ -827,7 +827,7 @@ void TCopyParamType::Load(THierarchicalStorage *Storage)
   SetResumeSupport(static_cast<TResumeSupport>(Storage->ReadInteger("ResumeSupport", GetResumeSupport())));
   SetResumeThreshold(Storage->ReadInt64("ResumeThreshold", GetResumeThreshold()));
   SetInvalidCharsReplacement(static_cast<wchar_t>(Storage->ReadInteger("ReplaceInvalidChars",
-        static_cast<intptr_t>(GetInvalidCharsReplacement()))));
+        ToIntPtr(GetInvalidCharsReplacement()))));
   SetLocalInvalidChars(Storage->ReadString("LocalInvalidChars", GetLocalInvalidChars()));
   SetCalculateSize(Storage->ReadBool("CalculateSize", GetCalculateSize()));
   if (Storage->ValueExists("IncludeFileMask"))

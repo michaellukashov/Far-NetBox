@@ -1016,7 +1016,7 @@ intptr_t __fastcall TWebDAVFileSystem::CustomReadFileInternal(const UnicodeStrin
   {
     AFile = File.release();
   }
-  return static_cast<intptr_t>(Result);
+  return ToIntPtr(Result);
 }
 //---------------------------------------------------------------------------
 void __fastcall TWebDAVFileSystem::CustomReadFile(UnicodeString AFileName,

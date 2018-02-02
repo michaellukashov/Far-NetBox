@@ -890,7 +890,7 @@ bool IsReservedName(const UnicodeString AFileName)
       "COM1", "COM2", "COM3", "COM4", "COM5", "COM6", "COM7", "COM8", "COM9",
       "LPT1", "LPT2", "LPT3", "LPT4", "LPT5", "LPT6", "LPT7", "LPT8", "LPT9"
     };
-    for (intptr_t Index = 0; Index < static_cast<intptr_t>(_countof(Reserved)); ++Index)
+    for (intptr_t Index = 0; Index < ToIntPtr(_countof(Reserved)); ++Index)
     {
       if (SameText(FileName, Reserved[Index]))
       {

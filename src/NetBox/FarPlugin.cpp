@@ -107,7 +107,7 @@ void TCustomFarPlugin::SetStartupInfo(const struct PluginStartupInfo *Info)
     ResetCachedInfo();
     ClearStruct(FStartupInfo);
     memmove(&FStartupInfo, Info,
-      Info->StructSize >= static_cast<intptr_t>(sizeof(FStartupInfo)) ?
+      Info->StructSize >= ToIntPtr(sizeof(FStartupInfo)) ?
       sizeof(FStartupInfo) : static_cast<size_t>(Info->StructSize));
     // the minimum we really need
     DebugAssert(FStartupInfo.GetMsg != nullptr);
@@ -724,13 +724,13 @@ intptr_t TCustomFarPlugin::ProcessEditorInput(const INPUT_RECORD *Rec)
 
 intptr_t TCustomFarPlugin::MaxMessageLines() const
 {
-  return static_cast<intptr_t>(TerminalInfo().y - 5);
+  return ToIntPtr(TerminalInfo().y - 5);
 }
 
 intptr_t TCustomFarPlugin::MaxMenuItemLength() const
 {
   // got from maximal length of path in FAR's folders history
-  return static_cast<intptr_t>(TerminalInfo().x - 13);
+  return ToIntPtr(TerminalInfo().x - 13);
 }
 
 intptr_t TCustomFarPlugin::MaxLength(TStrings *Strings) const
@@ -886,7 +886,7 @@ void TFarMessageDialog::Init(uintptr_t AFlags,
 
     if (MaxLen < Button->GetRight() - GetBorderBox()->GetLeft())
     {
-      MaxLen = static_cast<intptr_t>(Button->GetRight() - GetBorderBox()->GetLeft() + 2);
+      MaxLen = ToIntPtr(Button->GetRight() - GetBorderBox()->GetLeft() + 2);
     }
 
     SetNextItemPosition(ipRight);
@@ -900,7 +900,7 @@ void TFarMessageDialog::Init(uintptr_t AFlags,
 
     if (MaxLen < FCheckBox->GetRight() - GetBorderBox()->GetLeft())
     {
-      MaxLen = static_cast<intptr_t>(FCheckBox->GetRight() - GetBorderBox()->GetLeft());
+      MaxLen = ToIntPtr(FCheckBox->GetRight() - GetBorderBox()->GetLeft());
     }
   }
   else
@@ -918,7 +918,7 @@ void TFarMessageDialog::Init(uintptr_t AFlags,
 
   if (FParams->MoreMessages != nullptr)
   {
-    intptr_t MoreMessageHeight = static_cast<intptr_t>(GetFarPlugin()->TerminalInfo().y - S.y - 1);
+    intptr_t MoreMessageHeight = ToIntPtr(GetFarPlugin()->TerminalInfo().y - S.y - 1);
     DebugAssert(MoreMessagesLister != nullptr);
     if (MoreMessageHeight > MoreMessagesLister->GetItems()->GetCount())
     {
@@ -1139,7 +1139,7 @@ intptr_t TCustomFarPlugin::Menu(DWORD Flags, UnicodeString Title,
   DebugAssert(Items);
 
   volatile TFarEnvGuard Guard;
-  return static_cast<intptr_t>(FStartupInfo.Menu(FStartupInfo.ModuleNumber, -1, -1, 0,
+  return ToIntPtr(FStartupInfo.Menu(FStartupInfo.ModuleNumber, -1, -1, 0,
         Flags, Title.c_str(), Bottom.c_str(), nullptr, BreakKeys,
         &BreakCode, Items, ToInt(Count)));
 }
@@ -1413,7 +1413,7 @@ void TCustomFarPlugin::ShowTerminalScreen()
   if (Size.y >= 2)
   {
     // clean menu keybar area before command output
-    UnicodeString Blank = ::StringOfChar(L' ', static_cast<intptr_t>(Size.x));
+    UnicodeString Blank = ::StringOfChar(L' ', ToIntPtr(Size.x));
     for (int Y = Size.y - 2; Y < Size.y; Y++)
     {
       Text(0, Y, 7 /*LIGHTGRAY*/, Blank);
@@ -1687,7 +1687,7 @@ intptr_t TCustomFarPlugin::FarEditorControl(uintptr_t Command, void *Param)
   }
 
   volatile TFarEnvGuard Guard;
-  return static_cast<intptr_t>(FStartupInfo.EditorControl(ToInt(Command), Param));
+  return ToIntPtr(FStartupInfo.EditorControl(ToInt(Command), Param));
 }
 
 TFarEditorInfo *TCustomFarPlugin::EditorInfo()
@@ -1748,7 +1748,7 @@ intptr_t TCustomFarPlugin::InputRecordToKey(const INPUT_RECORD *Rec) const
   {
     Result = 0;
   }
-  return static_cast<intptr_t>(Result);
+  return ToIntPtr(Result);
 }
 
 #ifdef NETBOX_DEBUG
@@ -2170,7 +2170,7 @@ TFarPanelModes::~TFarPanelModes()
 {
   if (!FReferenced)
   {
-    for (intptr_t Index = 0; Index < static_cast<intptr_t>(_countof(FPanelModes)); ++Index)
+    for (intptr_t Index = 0; Index < ToIntPtr(_countof(FPanelModes)); ++Index)
     {
       ClearPanelMode(FPanelModes[Index]);
     }
@@ -2297,7 +2297,7 @@ void TFarKeyBarTitles::ClearKeyBarTitle(TFarShiftStatus ShiftStatus,
 void TFarKeyBarTitles::SetKeyBarTitle(TFarShiftStatus ShiftStatus,
   intptr_t FunctionKey, UnicodeString Title)
 {
-  DebugAssert(FunctionKey >= 1 && FunctionKey <= static_cast<intptr_t>(_countof(FKeyBarTitles.Titles)));
+  DebugAssert(FunctionKey >= 1 && FunctionKey <= ToIntPtr(_countof(FKeyBarTitles.Titles)));
   wchar_t **Titles = nullptr;
   switch (ShiftStatus)
   {
@@ -2337,7 +2337,7 @@ void TFarKeyBarTitles::SetKeyBarTitle(TFarShiftStatus ShiftStatus,
 
 void TFarKeyBarTitles::ClearKeyBarTitles(KeyBarTitles &Titles)
 {
-  for (intptr_t Index = 0; Index < static_cast<intptr_t>(_countof(Titles.Titles)); ++Index)
+  for (intptr_t Index = 0; Index < ToIntPtr(_countof(Titles.Titles)); ++Index)
   {
     nb_free(Titles.Titles[Index]);
     nb_free(Titles.CtrlTitles[Index]);
@@ -2511,7 +2511,7 @@ TFarPanelInfo::~TFarPanelInfo()
 
 intptr_t TFarPanelInfo::GetItemCount() const
 {
-  return static_cast<intptr_t>(FPanelInfo->ItemsNumber);
+  return ToIntPtr(FPanelInfo->ItemsNumber);
 }
 
 TRect TFarPanelInfo::GetBounds() const
@@ -2522,7 +2522,7 @@ TRect TFarPanelInfo::GetBounds() const
 
 intptr_t TFarPanelInfo::GetSelectedCount(bool CountCurrentItem) const
 {
-  intptr_t Count = static_cast<intptr_t>(FPanelInfo->SelectedItemsNumber);
+  intptr_t Count = ToIntPtr(FPanelInfo->SelectedItemsNumber);
 
   if ((Count == 1) && FOwner && !CountCurrentItem)
   {
@@ -2630,7 +2630,7 @@ void TFarPanelInfo::SetFocusedItem(const TFarPanelItem *Value)
 
 intptr_t TFarPanelInfo::GetFocusedIndex() const
 {
-  return static_cast<intptr_t>(FPanelInfo->CurrentItem);
+  return ToIntPtr(FPanelInfo->CurrentItem);
 }
 
 void TFarPanelInfo::SetFocusedIndex(intptr_t Value)
@@ -2639,7 +2639,7 @@ void TFarPanelInfo::SetFocusedIndex(intptr_t Value)
   DebugAssert(FOwner != nullptr);
   if (GetFocusedIndex() != Value)
   {
-    DebugAssert(Value != NPOS && Value < static_cast<intptr_t>(FPanelInfo->ItemsNumber));
+    DebugAssert(Value != NPOS && Value < ToIntPtr(FPanelInfo->ItemsNumber));
     FPanelInfo->CurrentItem = ToInt(Value);
     PanelRedrawInfo PanelInfo;
     ClearStruct(PanelInfo);
@@ -2801,7 +2801,7 @@ TFarEditorInfo::~TFarEditorInfo()
 
 intptr_t TFarEditorInfo::GetEditorID() const
 {
-  return static_cast<intptr_t>(FEditorInfo->EditorID);
+  return ToIntPtr(FEditorInfo->EditorID);
 }
 
 UnicodeString TFarEditorInfo::GetFileName()

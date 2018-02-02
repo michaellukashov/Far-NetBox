@@ -2880,7 +2880,7 @@ void TTerminalThread::WaitForUserAction(TUserAction *UserAction)
           }
         }
 
-        intptr_t WaitResult = static_cast<intptr_t>(WaitForEvent(1000));
+        intptr_t WaitResult = ToIntPtr(WaitForEvent(1000));
         if (WaitResult == 0)
         {
           SAFE_DESTROY_EX(Exception, FIdleException);

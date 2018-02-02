@@ -105,9 +105,9 @@ static void NeverAskAgainCheckClick(void * /*Data*/, TObject *Sender)
     TFarButton *Button = dyn_cast<TFarButton>(Dialog->GetControl(ii));
     if (Button != nullptr)
     {
-      if ((Button->GetModalResult() != 0) && (Button->GetModalResult() != static_cast<intptr_t>(qaCancel)))
+      if ((Button->GetModalResult() != 0) && (Button->GetModalResult() != ToIntPtr(qaCancel)))
       {
-        Button->SetEnabled(!CheckBox->GetChecked() || (Button->GetModalResult() == static_cast<intptr_t>(PositiveAnswer)));
+        Button->SetEnabled(!CheckBox->GetChecked() || (Button->GetModalResult() == ToIntPtr(PositiveAnswer)));
       }
 
 #if 0

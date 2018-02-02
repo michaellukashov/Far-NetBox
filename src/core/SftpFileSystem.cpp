@@ -3422,7 +3422,7 @@ void __fastcall TSFTPFileSystem::LookupUsersGroups()
   TRemoteTokenList *Lists[] = { FTerminal->GetUsers(), FTerminal->GetGroups() };
   wchar_t ListTypes[] = { OGQ_LIST_OWNERS, OGQ_LIST_GROUPS };
 
-  for (intptr_t Index = 0; Index < static_cast<intptr_t>(_countof(Packets)); ++Index)
+  for (intptr_t Index = 0; Index < ToIntPtr(_countof(Packets)); ++Index)
   {
     TSFTPPacket *Packet = Packets[Index];
     Packet->AddString(RawByteString(SFTP_EXT_OWNER_GROUP));
@@ -3431,7 +3431,7 @@ void __fastcall TSFTPFileSystem::LookupUsersGroups()
     ReserveResponse(Packet, Packet);
   }
 
-  for (intptr_t Index = 0; Index < static_cast<intptr_t>(_countof(Packets)); ++Index)
+  for (intptr_t Index = 0; Index < ToIntPtr(_countof(Packets)); ++Index)
   {
     TSFTPPacket *Packet = Packets[Index];
 
