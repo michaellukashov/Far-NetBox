@@ -6,17 +6,17 @@
 #include <StrUtils.hpp>
 #include <Sysutils.hpp>
 
-UnicodeString ReplaceStr(UnicodeString Str, UnicodeString What, UnicodeString ByWhat)
+UnicodeString ReplaceStr(const UnicodeString Str, const UnicodeString What, const UnicodeString ByWhat)
 {
   return ::StringReplaceAll(Str, What, ByWhat);
 }
 
-bool StartsStr(UnicodeString SubStr, UnicodeString Str)
+bool StartsStr(const UnicodeString SubStr, const UnicodeString Str)
 {
   return Str.Pos(SubStr) == 1;
 }
 
-bool EndsStr(UnicodeString SubStr, UnicodeString Str)
+bool EndsStr(const UnicodeString SubStr, const UnicodeString Str)
 {
   if (SubStr.Length() > Str.Length())
     return false;
