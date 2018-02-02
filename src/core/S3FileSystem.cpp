@@ -1368,7 +1368,7 @@ void __fastcall TS3FileSystem::Source(
       0
     };
 
-  int Parts = std::max(1, static_cast<int>((AHandle.Size + S3MultiPartChunkSize - 1) / S3MultiPartChunkSize));
+  int Parts = std::max(1, ToInt((AHandle.Size + S3MultiPartChunkSize - 1) / S3MultiPartChunkSize));
   bool Multipart = (Parts > 1);
 
   RawByteString MultipartUploadId;
@@ -1433,7 +1433,7 @@ void __fastcall TS3FileSystem::Source(
         {
           S3PutObjectHandler UploadPartHandler =
             { CreateResponseHandlerCustom(LibS3MultipartResponsePropertiesCallback), LibS3PutObjectDataCallback };
-          int PartLength = std::min(S3MultiPartChunkSize, static_cast<int>(Stream->Size - Stream->Position));
+          int PartLength = std::min(S3MultiPartChunkSize, ToInt(Stream->Size - Stream->Position));
           FTerminal->LogEvent(FORMAT("Uploading part %d [%s]", Part, IntToStr(PartLength)));
           S3_upload_part(
             &BucketContext, StrToS3(Key), &PutProperties, &UploadPartHandler, ToInt(Part), MultipartUploadId.c_str(),
