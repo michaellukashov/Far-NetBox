@@ -540,12 +540,12 @@ UnicodeString TStrings::GetTextStr() const
   return Result;
 }
 
-void TStrings::SetText(UnicodeString Text)
+void TStrings::SetText(const UnicodeString Text)
 {
   SetTextStr(Text);
 }
 
-void TStrings::SetCommaText(UnicodeString Value)
+void TStrings::SetCommaText(const UnicodeString Value)
 {
   SetDelimiter(L',');
   SetQuoteChar(L'"');
@@ -602,7 +602,7 @@ bool TStrings::Equals(const TStrings *Value) const
   return true;
 }
 
-void TStrings::SetString(intptr_t Index, UnicodeString S)
+void TStrings::SetString(intptr_t Index, const UnicodeString S)
 {
   TObject *TempObject = GetObj(Index);
   Delete(Index);
@@ -630,7 +630,7 @@ void TStrings::Move(intptr_t CurIndex, intptr_t NewIndex)
   }
 }
 
-intptr_t TStrings::IndexOf(UnicodeString S) const
+intptr_t TStrings::IndexOf(const UnicodeString S) const
 {
   for (intptr_t Result = 0; Result < GetCount(); Result++)
   {
@@ -642,7 +642,7 @@ intptr_t TStrings::IndexOf(UnicodeString S) const
   return NPOS;
 }
 
-intptr_t TStrings::IndexOfName(UnicodeString Name) const
+intptr_t TStrings::IndexOfName(const UnicodeString Name) const
 {
   for (intptr_t Index = 0; Index < GetCount(); ++Index)
   {
@@ -661,12 +661,12 @@ UnicodeString TStrings::GetName(intptr_t Index) const
   return ExtractName(GetString(Index));
 }
 
-void TStrings::SetName(intptr_t /*Index*/, UnicodeString /*Value*/)
+void TStrings::SetName(intptr_t /*Index*/, const UnicodeString /*Value*/)
 {
   ThrowNotImplemented(2012);
 }
 
-UnicodeString TStrings::ExtractName(UnicodeString S) const
+UnicodeString TStrings::ExtractName(const UnicodeString S) const
 {
   UnicodeString Result = S;
   intptr_t P = ::AnsiPos(Result, L'=');
@@ -681,7 +681,7 @@ UnicodeString TStrings::ExtractName(UnicodeString S) const
   return Result;
 }
 
-UnicodeString TStrings::GetValue(UnicodeString Name) const
+UnicodeString TStrings::GetValue(const UnicodeString Name) const
 {
   UnicodeString Result;
   intptr_t Index = IndexOfName(Name);
@@ -692,7 +692,7 @@ UnicodeString TStrings::GetValue(UnicodeString Name) const
   return Result;
 }
 
-void TStrings::SetValue(UnicodeString Name, UnicodeString Value)
+void TStrings::SetValue(const UnicodeString Name, const UnicodeString Value)
 {
   intptr_t Index = IndexOfName(Name);
   if (!Value.IsEmpty())
@@ -809,7 +809,7 @@ intptr_t TStringList::AddObject(UnicodeString S, TObject *AObject)
   return Result;
 }
 
-bool TStringList::Find(UnicodeString S, intptr_t &Index) const
+bool TStringList::Find(const UnicodeString S, intptr_t &Index) const
 {
   bool Result = false;
   intptr_t L = 0;
@@ -839,7 +839,7 @@ bool TStringList::Find(UnicodeString S, intptr_t &Index) const
   return Result;
 }
 
-intptr_t TStringList::IndexOf(UnicodeString S) const
+intptr_t TStringList::IndexOf(const UnicodeString S) const
 {
   intptr_t Result = NPOS;
   if (!GetSorted())
@@ -1026,7 +1026,7 @@ void TStringList::Changed()
   }
 }
 
-void TStringList::Insert(intptr_t Index, UnicodeString S, TObject *AObject)
+void TStringList::Insert(intptr_t Index, const UnicodeString S, TObject *AObject)
 {
   InsertItem(Index, S, AObject);
 }
@@ -1107,7 +1107,7 @@ void TStringList::ExchangeItems(intptr_t Index1, intptr_t Index2)
   }
 }
 
-intptr_t TStringList::CompareStrings(UnicodeString S1, UnicodeString S2) const
+intptr_t TStringList::CompareStrings(const UnicodeString S1, const UnicodeString S2) const
 {
   if (GetCaseSensitive())
   {
@@ -1565,10 +1565,10 @@ void *TMemoryStream::Realloc(int64_t &NewCapacity)
   return Result;
 }
 
-void TMemoryStream::SetPointer(void *Ptr, int64_t Size)
+void TMemoryStream::SetPointer(void *Ptr, int64_t ASize)
 {
   FMemory = Ptr;
-  FSize = Size;
+  FSize = ASize;
 }
 
 int64_t TMemoryStream::Write(const void *Buffer, int64_t Count)

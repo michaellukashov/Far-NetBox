@@ -257,12 +257,12 @@ public:
   virtual void InsertObject(intptr_t Index, UnicodeString Key, TObject *AObject);
   bool Equals(const TStrings *Value) const;
   virtual void Move(intptr_t CurIndex, intptr_t NewIndex) override;
-  virtual intptr_t IndexOf(UnicodeString S) const;
-  virtual intptr_t IndexOfName(UnicodeString Name) const;
-  UnicodeString ExtractName(UnicodeString S) const;
+  virtual intptr_t IndexOf(const UnicodeString S) const;
+  virtual intptr_t IndexOfName(const UnicodeString Name) const;
+  UnicodeString ExtractName(const UnicodeString S) const;
   void AddStrings(const TStrings *Strings);
   void Append(UnicodeString Value);
-  virtual void Insert(intptr_t Index, UnicodeString AString, TObject *AObject = nullptr) = 0;
+  virtual void Insert(intptr_t Index, const UnicodeString AString, TObject *AObject = nullptr) = 0;
   void SaveToStream(TStream *Stream) const;
   wchar_t GetDelimiter() const { return FDelimiter; }
   void SetDelimiter(wchar_t Value) { FDelimiter = Value; }
@@ -283,17 +283,17 @@ public:
   virtual void SetCaseSensitive(bool Value) = 0;
   void SetDuplicates(TDuplicatesEnum Value);
   UnicodeString GetCommaText() const;
-  void SetCommaText(UnicodeString Value);
+  void SetCommaText(const UnicodeString Value);
   virtual UnicodeString GetText() const;
-  virtual void SetText(UnicodeString Text);
+  virtual void SetText(const UnicodeString Text);
   virtual const UnicodeString &GetStringRef(intptr_t Index) const = 0;
   virtual const UnicodeString &GetString(intptr_t Index) const = 0;
   virtual UnicodeString GetString(intptr_t Index) = 0;
-  virtual void SetString(intptr_t Index, UnicodeString S) = 0;
+  virtual void SetString(intptr_t Index, const UnicodeString S) = 0;
   UnicodeString GetName(intptr_t Index) const;
-  void SetName(intptr_t Index, UnicodeString Value);
-  UnicodeString GetValue(UnicodeString Name) const;
-  void SetValue(UnicodeString Name, UnicodeString Value);
+  void SetName(intptr_t Index, const UnicodeString Value);
+  UnicodeString GetValue(const UnicodeString Name) const;
+  void SetValue(const UnicodeString Name, const UnicodeString Value);
   UnicodeString GetValueFromIndex(intptr_t Index) const;
 
 protected:
@@ -327,8 +327,8 @@ public:
   void QuickSort(intptr_t L, intptr_t R, TStringListSortCompare SCompare);
 
   virtual void Assign(const TPersistent *Source) override;
-  virtual bool Find(UnicodeString S, intptr_t &Index) const;
-  virtual intptr_t IndexOf(UnicodeString S) const override;
+  virtual bool Find(const UnicodeString S, intptr_t &Index) const;
+  virtual intptr_t IndexOf(const UnicodeString S) const override;
   virtual void Delete(intptr_t Index) override;
   virtual void InsertObject(intptr_t Index, UnicodeString Key, TObject *AObject) override;
   virtual void Sort() override;
@@ -337,8 +337,8 @@ public:
   virtual void SetUpdateState(bool Updating) override;
   virtual void Changing();
   virtual void Changed() override;
-  virtual void Insert(intptr_t Index, UnicodeString S, TObject *AObject = nullptr) override;
-  virtual intptr_t CompareStrings(UnicodeString S1, UnicodeString S2) const override;
+  virtual void Insert(intptr_t Index, const UnicodeString S, TObject *AObject = nullptr) override;
+  virtual intptr_t CompareStrings(const UnicodeString S1, const UnicodeString S2) const override;
   virtual intptr_t GetCount() const override;
 
 public:
@@ -575,7 +575,7 @@ public:
   void *GetMemory() const { return FMemory; }
 
 protected:
-  void SetPointer(void *Ptr, int64_t Size);
+  void SetPointer(void *Ptr, int64_t ASize);
   virtual void *Realloc(int64_t &NewCapacity);
   int64_t GetCapacity() const { return FCapacity; }
 
