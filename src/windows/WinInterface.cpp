@@ -1359,12 +1359,12 @@ bool HandleMinimizeSysCommand(TMessage &Message)
 }
 #endif
 
-void WinInitialize()
 //---------------------------------------------------------------------------
 class TCallstackThread : public TSignalThread
 {
 public:
-  __fastcall TCallstackThread();
+  explicit __fastcall TCallstackThread();
+  void InitCallstackThread(bool LowPriority);
 
 protected:
   virtual void __fastcall ProcessEvent();
@@ -1375,16 +1375,22 @@ private:
 };
 //---------------------------------------------------------------------------
 __fastcall TCallstackThread::TCallstackThread() :
-  TSignalThread(true, DoCreateEvent())
+  TSignalThread(OBJECT_CLASS_TCallstackThread, true)
 {
+}
+
+void TCallstackThread::InitCallstackThread(bool LowPriority)
+{
+  TSignalThread::InitSignalThread(LowPriority, DoCreateEvent());
 }
 //---------------------------------------------------------------------------
 void __fastcall TCallstackThread::ProcessEvent()
 {
+#if 0
   try
   {
-    UnicodeString FileName = FORMAT(L"%s.txt", (DoGetName()));
-    UnicodeString Path = TPath::Combine(SystemTemporaryDirectory(), FileName);
+    UnicodeString FileName = FORMAT(L"%s.txt", DoGetName());
+    UnicodeString Path = TPath::Combine(::GetSystemTemporaryDirectory(), FileName);
     std::unique_ptr<TStrings> StackStrings;
     HANDLE MainThreadHandle = reinterpret_cast<HANDLE>(MainThreadID);
     if (SuspendThread(MainThreadHandle) < 0)
@@ -1412,22 +1418,24 @@ void __fastcall TCallstackThread::ProcessEvent()
   catch (...)
   {
   }
+#endif // if 0
 }
 //---------------------------------------------------------------------------
 UnicodeString TCallstackThread::DoGetName()
 {
-  return FORMAT("WinSCPCallstack%d", (GetCurrentProcessId()));
+  return FORMAT("WinSCPCallstack%d", GetCurrentProcessId());
 }
 //---------------------------------------------------------------------------
 HANDLE TCallstackThread::DoCreateEvent()
 {
   UnicodeString Name = DoGetName();
-  return CreateEvent(NULL, false, false, Name.c_str());
+  return ::CreateEventW(nullptr, false, false, Name.c_str());
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 std::unique_ptr<TCallstackThread> CallstackThread;
 //---------------------------------------------------------------------------
+void WinInitialize()
 {
 #if 0
   if (JclHookExceptions())

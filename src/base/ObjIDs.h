@@ -86,6 +86,7 @@ enum TObjectClassId
   OBJECT_CLASS_TKeepAliveThread,
   OBJECT_CLASS_TTunnelThread,
   OBJECT_CLASS_TSignalThread,
+  OBJECT_CLASS_TCallstackThread,
   OBJECT_CLASS_TTerminalThread,
   OBJECT_CLASS_TTerminalQueue,
   OBJECT_CLASS_TTerminalItem,

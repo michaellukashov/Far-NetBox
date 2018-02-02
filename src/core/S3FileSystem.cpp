@@ -1353,18 +1353,18 @@ void __fastcall TS3FileSystem::Source(
 
   TLibS3BucketContext BucketContext = GetBucketContext(BucketName);
 
-  UTF8String ContentType = UTF8String(FTerminal->Configuration->GetFileMimeType(Handle.FileName));
+  UTF8String ContentType = UTF8String(FTerminal->Configuration->GetFileMimeType(AHandle.FileName));
   S3PutProperties PutProperties =
     {
-      (ContentType.IsEmpty() ? NULL : ContentType.c_str()),
-      NULL,
-      NULL,
-      NULL,
-      NULL,
+      (ContentType.IsEmpty() ? nullptr : ContentType.c_str()),
+      nullptr,
+      nullptr,
+      nullptr,
+      nullptr,
       -1,
       S3CannedAclPrivate,
       0,
-      NULL,
+      nullptr,
       0
     };
 

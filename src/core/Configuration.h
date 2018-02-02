@@ -260,7 +260,7 @@ public:
   virtual RawByteString StronglyRecryptPassword(RawByteString Password, UnicodeString Key);
   UnicodeString GetFileDescription(UnicodeString AFileName) const;
   UnicodeString GetFileVersion(UnicodeString AFileName);
-  UnicodeString __fastcall GetFileMimeType(const UnicodeString & FileName);
+  UnicodeString __fastcall GetFileMimeType(const UnicodeString AFileName) const;
 
   TStoredSessionList *SelectFilezillaSessionsForImport(
     TStoredSessionList *Sessions, UnicodeString &Error);
@@ -360,6 +360,7 @@ public:
   UnicodeString GetExternalIpAddress() const { return FExternalIpAddress; }
   bool GetTryFtpWhenSshFails() const { return FTryFtpWhenSshFails; }
   intptr_t GetParallelDurationThreshold() const { return FParallelDurationThreshold; }
+  UnicodeString GetMimeTypes() const { return FMimeTypes; }
   bool GetDisablePasswordStoring() const { return FDisablePasswordStoring; }
   bool GetForceBanners() const { return FForceBanners; }
   bool GetDisableAcceptingHostKeys() const { return FDisableAcceptingHostKeys; }

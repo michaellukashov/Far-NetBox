@@ -1190,15 +1190,15 @@ UnicodeString __fastcall TConfiguration::GetFileInfoString(const UnicodeString K
   return GetFileFileInfoString(Key, L"");
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall TConfiguration::GetFileMimeType(const UnicodeString FileName)
+UnicodeString __fastcall TConfiguration::GetFileMimeType(const UnicodeString AFileName) const
 {
   UnicodeString Result;
   bool Found = false;
 
-  if (!MimeTypes.IsEmpty())
+  if (!GetMimeTypes().IsEmpty())
   {
-    UnicodeString FileNameOnly = ExtractFileName(FileName);
-    UnicodeString AMimeTypes = MimeTypes;
+    UnicodeString FileNameOnly = base::ExtractFileName(AFileName, false);
+    UnicodeString AMimeTypes = GetMimeTypes();
     while (!Found && !AMimeTypes.IsEmpty())
     {
       UnicodeString Token = CutToChar(AMimeTypes, L',', true);
@@ -1214,7 +1214,7 @@ UnicodeString __fastcall TConfiguration::GetFileMimeType(const UnicodeString Fil
 
   if (!Found) // allow an override to "no" Content-Type
   {
-    Result = ::GetFileMimeType(FileName);
+    Result = ::GetFileMimeType(AFileName);
   }
 
   return Result;
@@ -1597,7 +1597,7 @@ void __fastcall TConfiguration::SetExternalIpAddress(UnicodeString Value)
   SET_CONFIG_PROPERTY(ExternalIpAddress);
 }
 //---------------------------------------------------------------------
-void __fastcall TConfiguration::SetMimeTypes(UnicodeString value)
+void __fastcall TConfiguration::SetMimeTypes(UnicodeString Value)
 {
   SET_CONFIG_PROPERTY(MimeTypes);
 }
