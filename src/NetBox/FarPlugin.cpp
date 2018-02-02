@@ -1039,7 +1039,7 @@ uint32_t TCustomFarPlugin::DialogMessage(DWORD Flags,
 {
   std::unique_ptr<TFarMessageDialog> Dialog(new TFarMessageDialog(this, Params));
   Dialog->Init(Flags, Title, Message, Buttons);
-  uint32_t Result = static_cast<uint32_t>(Dialog->Execute(Params->CheckBox));
+  uint32_t Result = ToUInt32(Dialog->Execute(Params->CheckBox));
   return Result;
 }
 
@@ -1094,7 +1094,7 @@ uint32_t TCustomFarPlugin::FarMessage(DWORD Flags,
   }
 
   volatile TFarEnvGuard Guard;
-  uint32_t Result = static_cast<uint32_t>(FStartupInfo.Message(FStartupInfo.ModuleNumber,
+  uint32_t Result = ToUInt32(FStartupInfo.Message(FStartupInfo.ModuleNumber,
         Flags | FMSG_LEFTALIGN, nullptr, Items, ToInt(MessageLines->GetCount()),
         ToInt(Buttons->GetCount())));
 
@@ -1124,7 +1124,7 @@ uint32_t TCustomFarPlugin::Message(DWORD Flags,
     DebugAssert(Params == nullptr);
     UnicodeString Items = Title + L"\n" + Message;
     volatile TFarEnvGuard Guard;
-    Result = static_cast<uint32_t>(FStartupInfo.Message(FStartupInfo.ModuleNumber,
+    Result = ToUInt32(FStartupInfo.Message(FStartupInfo.ModuleNumber,
           Flags | FMSG_ALLINONE | FMSG_LEFTALIGN,
           nullptr,
           static_cast<const wchar_t * const *>(static_cast<const void *>(Items.c_str())), 0, 0));

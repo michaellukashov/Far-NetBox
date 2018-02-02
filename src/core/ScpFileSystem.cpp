@@ -1969,8 +1969,8 @@ void __fastcall TSCPFileSystem::SCPSource(const UnicodeString AFileName,
           {
             // Send last file access and modification time
             // TVarRec don't understand 'unsigned int' -> we use sprintf()
-            Buf = FORMAT("T%lu 0 %lu 0", static_cast<uint32_t>(LocalFileHandle.MTime),
-              static_cast<uint32_t>(LocalFileHandle.ATime));
+            Buf = FORMAT("T%lu 0 %lu 0", ToUInt32(LocalFileHandle.MTime),
+              ToUInt32(LocalFileHandle.ATime));
             FSecureShell->SendLine(Buf);
             SCPResponse();
           }
@@ -2778,7 +2778,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString TargetDir,
                     FMTLOAD(WRITE_ERROR, DestFileName), "",
                   [&]()
                   {
-                    BlockBuf.WriteToStream(FileStream.get(), static_cast<uint32_t>(BlockBuf.GetSize()));
+                    BlockBuf.WriteToStream(FileStream.get(), ToUInt32(BlockBuf.GetSize()));
                   });
                   __removed FILE_OPERATION_LOOP_END_EX(FMTLOAD(WRITE_ERROR, (DestFileName)), folNone);
 

@@ -455,7 +455,7 @@ public:
     {
       return;
     }
-    uint32_t dwSize = static_cast<uint32_t>(size);
+    uint32_t dwSize = ToUInt32(size);
     ::CharToOemBuffA(pstrString, pstrString, dwSize);
   }
 
@@ -466,7 +466,7 @@ public:
       return;
     }
 
-    uint32_t dwSize = static_cast<uint32_t>(size);
+    uint32_t dwSize = ToUInt32(size);
     ::OemToCharBuffA(pstrString, pstrString, dwSize);
   }
 

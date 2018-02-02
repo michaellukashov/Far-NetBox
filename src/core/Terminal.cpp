@@ -5607,7 +5607,7 @@ void __fastcall TTerminal::TerminalOpenLocalFile(const UnicodeString ATargetFile
           uint32_t LSize;
           DWORD HSize;
           LSize = ::GetFileSize(LocalFileHandle, &HSize);
-          if ((LSize == static_cast<uint32_t>(-1)) && (::GetLastError() != NO_ERROR))
+          if ((LSize == ToUInt32(-1)) && (::GetLastError() != NO_ERROR))
           {
             ::RaiseLastOSError();
           }

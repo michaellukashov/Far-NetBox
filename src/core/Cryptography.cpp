@@ -397,11 +397,11 @@ void AES256EncryptWithMAC(RawByteString Input, UnicodeString Password,
   DebugAssert(Salt.Length() == SALT_LENGTH(PASSWORD_MANAGER_AES_MODE));
   UTF8String UtfPassword = UTF8String(Password);
   fcrypt_init(PASSWORD_MANAGER_AES_MODE,
-    reinterpret_cast<const uint8_t *>(UtfPassword.c_str()), static_cast<uint32_t>(UtfPassword.Length()),
+    reinterpret_cast<const uint8_t *>(UtfPassword.c_str()), ToUInt32(UtfPassword.Length()),
     reinterpret_cast<const uint8_t *>(Salt.c_str()), nullptr, &aes);
   Output = Input;
   Output.Unique();
-  fcrypt_encrypt(reinterpret_cast<uint8_t *>(ToChar(Output)), static_cast<uint32_t>(Output.Length()), &aes);
+  fcrypt_encrypt(reinterpret_cast<uint8_t *>(ToChar(Output)), ToUInt32(Output.Length()), &aes);
   Mac.SetLength(MAC_LENGTH(PASSWORD_MANAGER_AES_MODE));
   fcrypt_end(reinterpret_cast<uint8_t *>(ToChar(Mac)), &aes);
 }
@@ -423,11 +423,11 @@ bool AES256DecryptWithMAC(RawByteString Input, UnicodeString Password,
   DebugAssert(Salt.Length() == SALT_LENGTH(PASSWORD_MANAGER_AES_MODE));
   UTF8String UtfPassword = UTF8String(Password);
   fcrypt_init(PASSWORD_MANAGER_AES_MODE,
-    reinterpret_cast<const uint8_t *>(UtfPassword.c_str()), static_cast<uint32_t>(UtfPassword.Length()),
+    reinterpret_cast<const uint8_t *>(UtfPassword.c_str()), ToUInt32(UtfPassword.Length()),
     reinterpret_cast<const uint8_t *>(Salt.c_str()), nullptr, &aes);
   Output = Input;
   Output.Unique();
-  fcrypt_decrypt(reinterpret_cast<uint8_t *>(ToChar(Output)), static_cast<uint32_t>(Output.Length()), &aes);
+  fcrypt_decrypt(reinterpret_cast<uint8_t *>(ToChar(Output)), ToUInt32(Output.Length()), &aes);
   RawByteString Mac2;
   Mac2.SetLength(MAC_LENGTH(PASSWORD_MANAGER_AES_MODE));
   DebugAssert(Mac.Length() == Mac2.Length());
@@ -591,7 +591,7 @@ void CryptographyInitialize()
   {
     UnscrambleTable[SScrambleTable[Index]] = static_cast<uint8_t>(Index);
   }
-  srand(static_cast<uint32_t>(time(nullptr)) ^ static_cast<uint32_t>(_getpid()));
+  srand(ToUInt32(time(nullptr)) ^ ToUInt32(_getpid()));
 }
 
 void CryptographyFinalize()

@@ -875,7 +875,7 @@ void TCopyParamType::Save(THierarchicalStorage *Storage) const
   Storage->WriteInteger("ResumeSupport", GetResumeSupport());
 
   Storage->WriteInt64("ResumeThreshold", GetResumeThreshold());
-  Storage->WriteInteger("ReplaceInvalidChars", static_cast<uint32_t>(GetInvalidCharsReplacement()));
+  Storage->WriteInteger("ReplaceInvalidChars", ToUInt32(GetInvalidCharsReplacement()));
   Storage->WriteString("LocalInvalidChars", GetLocalInvalidChars());
   Storage->WriteBool("CalculateSize", GetCalculateSize());
   Storage->WriteString("IncludeFileMask", GetIncludeFileMask().GetMasks());

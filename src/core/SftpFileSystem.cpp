@@ -161,7 +161,7 @@ static const intptr_t SFTP_MAX_PACKET_LEN = 1000 * 1024;
 static const wchar_t OGQ_LIST_OWNERS = 0x01;
 static const wchar_t OGQ_LIST_GROUPS = 0x02;
 //---------------------------------------------------------------------------
-static const uint32_t SFTPNoMessageNumber = static_cast<uint32_t>(-1);
+static const uint32_t SFTPNoMessageNumber = ToUInt32(-1);
 
 static const SSH_FX_TYPES asNo =            0;
 static const SSH_FX_TYPES asOK =            1 << SSH_FX_OK;
@@ -355,8 +355,8 @@ public:
 
   void AddInt64(int64_t Value)
   {
-    AddCardinal(static_cast<uint32_t>(Value >> 32));
-    AddCardinal(static_cast<uint32_t>(Value & 0xFFFFFFFF));
+    AddCardinal(ToUInt32(Value >> 32));
+    AddCardinal(ToUInt32(Value & 0xFFFFFFFF));
   }
 
   void AddData(const void *Data, int32_t ALength)
@@ -372,7 +372,7 @@ public:
 
   void AddString(const RawByteString Value)
   {
-    AddCardinal(static_cast<uint32_t>(Value.Length()));
+    AddCardinal(ToUInt32(Value.Length()));
     Add(Value.c_str(), Value.Length());
   }
 
@@ -473,8 +473,8 @@ public:
       if (Version < 4)
       {
         DebugAssert(Owner->GetIDValid() && Group->GetIDValid());
-        AddCardinal(static_cast<uint32_t>(Owner->GetID()));
-        AddCardinal(static_cast<uint32_t>(Group->GetID()));
+        AddCardinal(ToUInt32(Owner->GetID()));
+        AddCardinal(ToUInt32(Group->GetID()));
       }
       else
       {
@@ -494,8 +494,8 @@ public:
       // any way to reflect sbSignedTS here?
       // (note that casting int64_t > 2^31 < 2^32 to uint32_t is wrapped,
       // thus we never can set time after 2038, even if the server supports it)
-      AddCardinal(static_cast<uint32_t>(ATime != nullptr ? *ATime : MTime != nullptr ? *MTime : 0));
-      AddCardinal(static_cast<uint32_t>(MTime != nullptr ? *MTime : ATime != nullptr ? *ATime : 0));
+      AddCardinal(ToUInt32(ATime != nullptr ? *ATime : MTime != nullptr ? *MTime : 0));
+      AddCardinal(ToUInt32(MTime != nullptr ? *MTime : ATime != nullptr ? *ATime : 0));
     }
     if ((Version >= 4) && (ATime != nullptr))
     {
@@ -1681,8 +1681,8 @@ protected:
         Request->ChangeType(SSH_FXP_WRITE);
         Request->AddString(FHandle);
         Request->AddInt64(FTransferred);
-        Request->AddData(BlockBuf.GetData(), static_cast<uint32_t>(BlockBuf.GetSize()));
-        FLastBlockSize = static_cast<uint32_t>(BlockBuf.GetSize());
+        Request->AddData(BlockBuf.GetData(), ToUInt32(BlockBuf.GetSize()));
+        FLastBlockSize = ToUInt32(BlockBuf.GetSize());
 
         FTransferred += BlockBuf.GetSize();
       }
@@ -2350,7 +2350,7 @@ uint32_t __fastcall TSFTPFileSystem::TransferBlockSize(uint32_t Overhead,
   (void)AMinPacketSize;
   uint32_t AMaxPacketSize = FSecureShell->MaxPacketSize();
   bool MaxPacketSizeValid = (AMaxPacketSize > 0);
-  uint32_t Result = static_cast<uint32_t>(OperationProgress->CPS());
+  uint32_t Result = ToUInt32(OperationProgress->CPS());
 
   if ((MaxPacketSize > 0) &&
     ((MaxPacketSize < AMaxPacketSize) || !MaxPacketSizeValid))
@@ -2368,7 +2368,7 @@ uint32_t __fastcall TSFTPFileSystem::TransferBlockSize(uint32_t Overhead,
 
   if (Result == 0)
   {
-    Result = static_cast<uint32_t>(OperationProgress->StaticBlockSize());
+    Result = ToUInt32(OperationProgress->StaticBlockSize());
   }
 
   if (Result < minPacketSize)
@@ -2395,7 +2395,7 @@ uint32_t __fastcall TSFTPFileSystem::TransferBlockSize(uint32_t Overhead,
     }
   }
 
-  Result = static_cast<uint32_t>(OperationProgress->AdjustToCPSLimit(Result));
+  Result = ToUInt32(OperationProgress->AdjustToCPSLimit(Result));
 
   return Result;
 }
@@ -2406,17 +2406,17 @@ uint32_t __fastcall TSFTPFileSystem::UploadBlockSize(RawByteString Handle,
   // handle length + offset + data size
   const uintptr_t UploadPacketOverhead =
     sizeof(uint32_t) + sizeof(int64_t) + sizeof(uint32_t);
-  return TransferBlockSize(static_cast<uint32_t>(UploadPacketOverhead + Handle.Length()), OperationProgress,
-      static_cast<uint32_t>(GetSessionData()->GetSFTPMinPacketSize()),
-      static_cast<uint32_t>(GetSessionData()->GetSFTPMaxPacketSize()));
+  return TransferBlockSize(ToUInt32(UploadPacketOverhead + Handle.Length()), OperationProgress,
+      ToUInt32(GetSessionData()->GetSFTPMinPacketSize()),
+      ToUInt32(GetSessionData()->GetSFTPMaxPacketSize()));
 }
 //---------------------------------------------------------------------------
 uint32_t __fastcall TSFTPFileSystem::DownloadBlockSize(
   TFileOperationProgressType *OperationProgress) const
 {
   uint32_t Result = TransferBlockSize(sizeof(uint32_t), OperationProgress,
-      static_cast<uint32_t>(GetSessionData()->GetSFTPMinPacketSize()),
-      static_cast<uint32_t>(GetSessionData()->GetSFTPMaxPacketSize()));
+      ToUInt32(GetSessionData()->GetSFTPMinPacketSize()),
+      ToUInt32(GetSessionData()->GetSFTPMaxPacketSize()));
   if (FSupport->Loaded && (FSupport->MaxReadSize > 0) &&
     (Result > FSupport->MaxReadSize))
   {
@@ -2524,7 +2524,7 @@ SSH_FX_TYPES __fastcall TSFTPFileSystem::GotStatusPacket(TSFTPPacket *Packet,
   if ((AllowStatus & (0x01LL << Code)) == 0)
   {
     intptr_t Message;
-    if (static_cast<uint32_t>(Code) >= _countof(Messages))
+    if (ToUInt32(Code) >= _countof(Messages))
     {
       Message = SFTP_STATUS_UNKNOWN;
     }
@@ -2721,7 +2721,7 @@ SSH_FX_TYPES __fastcall TSFTPFileSystem::ReceivePacket(TSFTPPacket *Packet,
         {
           for (intptr_t Index = 0; Index < FPacketReservations->GetCount(); ++Index)
           {
-            uint32_t MessageNumber = static_cast<uint32_t>(FPacketNumbers[Index]);
+            uint32_t MessageNumber = ToUInt32(FPacketNumbers[Index]);
             if (MessageNumber == Packet->GetMessageNumber())
             {
               TSFTPPacket *ReservedPacket = FPacketReservations->GetAs<TSFTPPacket>(Index);
@@ -3105,7 +3105,7 @@ void __fastcall TSFTPFileSystem::DoStartup()
   {
     MaxVersion = SFTPMaxVersion;
   }
-  Packet1.AddCardinal(static_cast<uint32_t>(MaxVersion));
+  Packet1.AddCardinal(ToUInt32(MaxVersion));
 
   try
   {
@@ -3381,7 +3381,7 @@ void __fastcall TSFTPFileSystem::DoStartup()
       break;
   }
 
-  FMaxPacketSize = static_cast<uint32_t>(GetSessionData()->GetSFTPMaxPacketSize());
+  FMaxPacketSize = ToUInt32(GetSessionData()->GetSFTPMaxPacketSize());
   if (FMaxPacketSize == 0)
   {
     if ((FSecureShell->GetSshImplementation() == sshiOpenSSH) && (FVersion == 3) && !FSupport->Loaded)
@@ -4443,7 +4443,7 @@ void __fastcall TSFTPFileSystem::SpaceAvailable(const UnicodeString APath,
     ASpaceAvailable.BytesAvailableToUser = 0;
     ASpaceAvailable.UnusedBytesAvailableToUser = BlockSize * AvailableBlocks;
     ASpaceAvailable.BytesPerAllocationUnit =
-      (BlockSize > UINT_MAX /*std::numeric_limits<uint32_t>::max()*/) ? 0 : static_cast<uint32_t>(BlockSize);
+      (BlockSize > UINT_MAX /*std::numeric_limits<uint32_t>::max()*/) ? 0 : ToUInt32(BlockSize);
   }
 }
 //---------------------------------------------------------------------------
@@ -5730,7 +5730,7 @@ void __fastcall TSFTPFileSystem::Sink(
                 if ((FVersion < 4) || !OperationProgress->GetAsciiTransfer())
                 {
                   GapCount++;
-                  Missing = static_cast<uint32_t>(BlockSize - DataLen);
+                  Missing = ToUInt32(BlockSize - DataLen);
                 }
               }
               else

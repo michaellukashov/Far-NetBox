@@ -150,7 +150,7 @@ int random(int range)
 
 void Randomize()
 {
-  srand(static_cast<uint32_t>(time(nullptr)));
+  srand(ToUInt32(time(nullptr)));
 }
 
 

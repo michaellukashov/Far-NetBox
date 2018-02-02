@@ -519,7 +519,7 @@ long reg_query_winscp_value_ex(HKEY Key, const char *ValueName, unsigned long * 
       strncpy(DataStr, Value.c_str(), sz);
       DataStr[sz - 1] = '\0';
     }
-    *DataSize = static_cast<uint32_t>(NBChTraitsCRT<char>::SafeStringLen(DataStr));
+    *DataSize = ToUInt32(NBChTraitsCRT<char>::SafeStringLen(DataStr));
   }
 
   return R;

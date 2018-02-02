@@ -126,6 +126,14 @@ inline int
 ToInt(T a) { return static_cast<int>(a); }
 
 template <class T>
+inline typename std::is_convertible<T, uint32_t>::value
+ToUInt32(T a) { return static_cast<uint32_t>(a); }
+
+template <class T>
+inline uint32_t
+ToUInt32(T a) { return static_cast<uint32_t>(a); }
+
+template <class T>
 inline typename std::is_convertible<T, int64_t>::value
 ToInt64(T a) { return static_cast<int64_t>(a); }
 

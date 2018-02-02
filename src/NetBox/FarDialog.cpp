@@ -715,7 +715,7 @@ intptr_t TFarDialog::ShowModal()
           Info.ModuleNumber,
           Bounds.Left, Bounds.Top, Bounds.Right, Bounds.Bottom,
           HelpTopic.c_str(), FDialogItems,
-          static_cast<uint32_t>(GetItemCount()),
+          ToUInt32(GetItemCount()),
           0, GetFlags(),
           DialogProcGeneral, reinterpret_cast<LONG_PTR>(this));
       BResult = Info.DialogRun(Handle);
