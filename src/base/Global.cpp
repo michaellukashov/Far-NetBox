@@ -10,11 +10,11 @@
 #endif // ifdef _DEBUG
 
 #include <Global.h>
-
-
+//---------------------------------------------------------------------------
+__removed #pragma package(smart_init)
+//---------------------------------------------------------------------------
 // TGuard
-
-TGuard::TGuard(const TCriticalSection &ACriticalSection) :
+__fastcall TGuard::TGuard(const TCriticalSection &ACriticalSection) :
   FCriticalSection(ACriticalSection)
 {
   FCriticalSection.Enter();
@@ -24,20 +24,20 @@ TGuard::~TGuard()
 {
   FCriticalSection.Leave();
 }
-
+//---------------------------------------------------------------------------
 // TUnguard
-
-TUnguard::TUnguard(TCriticalSection &ACriticalSection) :
+//---------------------------------------------------------------------------
+__fastcall TUnguard::TUnguard(TCriticalSection &ACriticalSection) :
   FCriticalSection(ACriticalSection)
 {
   FCriticalSection.Leave();
 }
-
-TUnguard::~TUnguard()
+//---------------------------------------------------------------------------
+__fastcall TUnguard::~TUnguard()
 {
   FCriticalSection.Enter();
 }
-
+//---------------------------------------------------------------------------
 #ifdef _DEBUG
 
 static HANDLE TraceFile = nullptr;

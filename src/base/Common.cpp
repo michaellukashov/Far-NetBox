@@ -1548,7 +1548,7 @@ static uint16_t DecodeYear(const TDateTime &DateTime)
 //---------------------------------------------------------------------------
 static const TDateTimeParams *GetDateTimeParams(uint16_t Year)
 {
-  TGuard Guard(DateTimeParamsSection);
+  volatile TGuard Guard(DateTimeParamsSection);
 
   TDateTimeParams *Result;
 
@@ -3876,7 +3876,6 @@ void __fastcall LoadScriptFromFile(UnicodeString FileName, TStrings * Lines)
     throw ExtException(LoadStr(TEXT_FILE_ENCODING), &E);
   }
 }
-
 #endif // #if 0
 //---------------------------------------------------------------------------
 UnicodeString StripEllipsis(const UnicodeString S)
