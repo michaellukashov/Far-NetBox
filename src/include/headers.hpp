@@ -115,7 +115,19 @@ inline typename std::enable_if<std::is_floating_point<T>::value, uintptr_t>::typ
 ToUIntPtr(T a) { return static_cast<uintptr_t>(a); }
 
 inline uintptr_t
+ToUIntPtr(uint32_t a) { return static_cast<uintptr_t>(a); }
+
+inline uintptr_t
+ToUIntPtr(intptr_t a) { return static_cast<uintptr_t>(a); }
+
+inline uintptr_t
+ToUIntPtr(DWORD a) { return static_cast<uintptr_t>(a); }
+
+inline uintptr_t
 ToUIntPtr(size_t a) { return static_cast<uintptr_t>(a); }
+
+inline uintptr_t
+ToUIntPtr(int a) { return static_cast<uintptr_t>(a); }
 
 template <class T>
 inline typename std::is_convertible<T, int>::value
