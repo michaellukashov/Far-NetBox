@@ -1243,13 +1243,13 @@ void TTerminalQueue::SetEnabled(bool Value)
 
 bool TTerminalQueue::GetIsEmpty() const
 {
-  TGuard Guard(FItemsSection);
+  volatile TGuard Guard(FItemsSection);
   return (FItems->GetCount() == 0);
 }
 
 bool TTerminalQueue::TryAddParallelOperation(TQueueItem *Item, bool Force)
 {
-  TGuard Guard(FItemsSection);
+  volatile TGuard Guard(FItemsSection);
 
   bool Result =
     (FFreeTerminals > 0) ||
@@ -1270,7 +1270,7 @@ bool TTerminalQueue::TryAddParallelOperation(TQueueItem *Item, bool Force)
 
 bool TTerminalQueue::ContinueParallelOperation() const
 {
-  TGuard Guard(FItemsSection);
+  volatile TGuard Guard(FItemsSection);
 
   return (FItems->GetCount() <= FItemsInProcess);
 }
@@ -1396,7 +1396,7 @@ void TTerminalItem::ProcessEvent()
 {
   if (!FItem)
     return;
-  TGuard Guard(FCriticalSection);
+  volatile TGuard Guard(FCriticalSection);
 
   bool Retry = true;
 
@@ -1468,7 +1468,7 @@ void TTerminalItem::ProcessEvent()
 
 void TTerminalItem::Idle()
 {
-  TGuard Guard(FCriticalSection);
+  volatile TGuard Guard(FCriticalSection);
 
   DebugAssert(FTerminal->GetActive());
 
@@ -1760,7 +1760,7 @@ TQueueItem::~TQueueItem()
 
 bool TQueueItem::Complete()
 {
-  TGuard Guard(FSection);
+  volatile TGuard Guard(FSection);
 
   if (FCompleteEvent != INVALID_HANDLE_VALUE)
   {
@@ -1778,7 +1778,7 @@ bool TQueueItem::IsUserActionStatus(TStatus Status)
 
 TQueueItem::TStatus TQueueItem::GetStatus() const
 {
-  TGuard Guard(FSection);
+  volatile TGuard Guard(FSection);
 
   return FStatus;
 }
@@ -1831,7 +1831,7 @@ void TQueueItem::SetProgress(
 
 void TQueueItem::GetData(TQueueItemProxy *Proxy) const
 {
-  TGuard Guard(FSection);
+  volatile TGuard Guard(FSection);
 
   DebugAssert(Proxy->FProgressData != nullptr);
   if (FProgressData != nullptr)
@@ -2610,7 +2610,7 @@ void TTerminalThread::Cancel()
 
 void TTerminalThread::Idle()
 {
-  TGuard Guard(FSection);
+  volatile TGuard Guard(FSection);
   // only when running user action already,
   // so that the exception is caught, saved and actually
   // passed back into the terminal thread, saved again

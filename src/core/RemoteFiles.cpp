@@ -1882,7 +1882,7 @@ TRemoteDirectoryCache::~TRemoteDirectoryCache()
 //---------------------------------------------------------------------------
 void TRemoteDirectoryCache::Clear()
 {
-  TGuard Guard(FSection);
+  volatile TGuard Guard(FSection);
 
   try__finally
   {
@@ -1905,14 +1905,14 @@ void TRemoteDirectoryCache::Clear()
 //---------------------------------------------------------------------------
 bool TRemoteDirectoryCache::GetIsEmptyPrivate() const
 {
-  TGuard Guard(FSection);
+  volatile TGuard Guard(FSection);
 
   return (const_cast<TRemoteDirectoryCache *>(this)->GetCount() == 0);
 }
 //---------------------------------------------------------------------------
 bool TRemoteDirectoryCache::HasFileList(const UnicodeString Directory) const
 {
-  TGuard Guard(FSection);
+  volatile TGuard Guard(FSection);
 
   intptr_t Index = IndexOf(base::UnixExcludeTrailingBackslash(Directory));
   return (Index >= 0);
@@ -1921,7 +1921,7 @@ bool TRemoteDirectoryCache::HasFileList(const UnicodeString Directory) const
 bool TRemoteDirectoryCache::HasNewerFileList(const UnicodeString Directory,
   const TDateTime &Timestamp) const
 {
-  TGuard Guard(FSection);
+  volatile TGuard Guard(FSection);
 
   intptr_t Index = IndexOf(base::UnixExcludeTrailingBackslash(Directory));
   if (Index >= 0)
@@ -1938,7 +1938,7 @@ bool TRemoteDirectoryCache::HasNewerFileList(const UnicodeString Directory,
 bool TRemoteDirectoryCache::GetFileList(const UnicodeString Directory,
   TRemoteFileList *FileList) const
 {
-  TGuard Guard(FSection);
+  volatile TGuard Guard(FSection);
 
   intptr_t Index = IndexOf(base::UnixExcludeTrailingBackslash(Directory));
   bool Result = (Index >= 0);
@@ -1969,7 +1969,7 @@ void TRemoteDirectoryCache::AddFileList(TRemoteFileList *FileList)
 //---------------------------------------------------------------------------
 void TRemoteDirectoryCache::ClearFileList(const UnicodeString Directory, bool SubDirs)
 {
-  TGuard Guard(FSection);
+  volatile TGuard Guard(FSection);
   DoClearFileList(Directory, SubDirs);
 }
 //---------------------------------------------------------------------------

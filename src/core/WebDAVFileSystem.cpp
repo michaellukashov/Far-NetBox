@@ -2128,7 +2128,7 @@ struct ne_lock * __fastcall TWebDAVFileSystem::FindLock(RawByteString APath) con
 //---------------------------------------------------------------------------
 void __fastcall TWebDAVFileSystem::DiscardLock(const RawByteString APath)
 {
-  TGuard Guard(FNeonLockStoreSection);
+  volatile TGuard Guard(FNeonLockStoreSection);
   if (FNeonLockStore != nullptr)
   {
     struct ne_lock *Lock = FindLock(APath);

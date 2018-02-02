@@ -552,7 +552,7 @@ bool AppendExceptionStackTraceAndForget(TStrings *&MoreMessages)
 {
   bool Result = false;
 
-  TGuard Guard(StackTraceCriticalSection);
+  volatile TGuard Guard(StackTraceCriticalSection);
 
   DWORD Id = ::GetCurrentThreadId();
   TStackTraceMap::iterator Iterator = StackTraceMap.find(Id);

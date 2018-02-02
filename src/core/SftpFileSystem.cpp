@@ -4454,7 +4454,7 @@ void __fastcall TSFTPFileSystem::CopyToRemote(TStrings *AFilesToCopy,
   intptr_t Params, TFileOperationProgressType *OperationProgress,
   TOnceDoneOperation &OnceDoneOperation)
 {
-  TAutoFlag AvoidBusyFlag(FAvoidBusy);
+  volatile TAutoFlag AvoidBusyFlag(FAvoidBusy);
   FTerminal->DoCopyToRemote(AFilesToCopy, ATargetDir, CopyParam, Params, OperationProgress, tfPreCreateDir, OnceDoneOperation);
 }
 //---------------------------------------------------------------------------

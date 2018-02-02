@@ -896,13 +896,13 @@ bool TParallelOperation::ShouldAddClient() const
 //---------------------------------------------------------------------------
 void TParallelOperation::AddClient()
 {
-  TGuard Guard(*FSection.get());
+  volatile TGuard Guard(*FSection.get());
   FClients++;
 }
 //---------------------------------------------------------------------------
 void TParallelOperation::RemoveClient()
 {
-  TGuard Guard(*FSection.get());
+  volatile TGuard Guard(*FSection.get());
   FClients--;
 }
 //---------------------------------------------------------------------------
@@ -1009,7 +1009,7 @@ bool TParallelOperation::CheckEnd(TCollectedFileList *Files)
 //---------------------------------------------------------------------------
 intptr_t TParallelOperation::GetNext(TTerminal *Terminal, UnicodeString &FileName, TObject *&Object, UnicodeString &TargetDir, bool &Dir, bool &Recursed)
 {
-  TGuard Guard(*FSection.get());
+  volatile TGuard Guard(*FSection.get());
   intptr_t Result = 1;
   TCollectedFileList *Files;
   do

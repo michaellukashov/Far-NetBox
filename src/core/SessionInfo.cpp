@@ -883,7 +883,7 @@ void TSessionLog::AddException(Exception *E)
 
 void TSessionLog::ReflectSettings()
 {
-  TGuard Guard(FCriticalSection);
+  volatile TGuard Guard(FCriticalSection);
 
   FLogging =
     !FClosed &&
@@ -953,7 +953,7 @@ void TSessionLog::OpenLogFile()
     {
       AddException(&E2);
       // not to deadlock with TSessionLog::ReflectSettings invoked by FConfiguration->LogFileName setter above
-      TUnguard Unguard(FCriticalSection);
+      volatile TUnguard Unguard(FCriticalSection);
       FUI->HandleExtendedException(&E2);
     }
   }
@@ -1527,7 +1527,7 @@ void TActionLog::AddMessages(UnicodeString Indent, TStrings *Messages)
 
 void TActionLog::ReflectSettings()
 {
-  TGuard Guard(FCriticalSection);
+  volatile TGuard Guard(FCriticalSection);
 
   bool ALogging =
     !FClosed && FConfiguration->GetLogActions() && GetEnabled();
@@ -1605,7 +1605,7 @@ void TActionLog::OpenLogFile()
         if (FUI != nullptr)
         {
           // not to deadlock with TSessionLog::ReflectSettings invoked by FConfiguration->LogFileName setter above
-          TUnguard Unguard(FCriticalSection);
+          volatile TUnguard Unguard(FCriticalSection);
           FUI->HandleExtendedException(&E2);
         }
       }

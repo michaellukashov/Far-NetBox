@@ -361,7 +361,7 @@ void TWinSCPFileSystem::HandleException(Exception *E, int OpMode)
 
 void TWinSCPFileSystem::KeepaliveThreadCallback()
 {
-  TGuard Guard(FCriticalSection);
+  volatile TGuard Guard(FCriticalSection);
 
   if (Connected())
   {
@@ -3662,7 +3662,7 @@ void TWinSCPFileSystem::QueueItemUpdate(TTerminalQueue *Queue,
 void TWinSCPFileSystem::QueueEvent(TTerminalQueue *Queue,
   TQueueEvent Event)
 {
-  TGuard Guard(FQueueStatusSection);
+  volatile TGuard Guard(FQueueStatusSection);
   if (Queue == GetQueue())
   {
     FQueueEventPending = true;

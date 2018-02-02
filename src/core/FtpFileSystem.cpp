@@ -1602,7 +1602,7 @@ void __fastcall TFTPFileSystem::SetCPSLimit(TFileOperationProgressType *Operatio
 void __fastcall TFTPFileSystem::FileTransferProgress(int64_t TransferSize,
   int64_t Bytes)
 {
-  TGuard Guard(FTransferStatusCriticalSection);
+  volatile TGuard Guard(FTransferStatusCriticalSection);
 
   DoFileTransferProgress(TransferSize, Bytes);
 }
@@ -2873,7 +2873,7 @@ bool __fastcall TFTPFileSystem::FTPPostMessage(uintptr_t Type, WPARAM wParam, LP
     volatile TGuard Guard(FTransferStatusCriticalSection);
   }
 
-  TGuard Guard(FQueueCriticalSection);
+  volatile TGuard Guard(FQueueCriticalSection);
 
   FQueue->push_back(TMessageQueue::value_type(wParam, lParam));
   ::SetEvent(FQueueEvent);

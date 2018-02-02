@@ -110,7 +110,7 @@ TConfiguration::TConfiguration(TObjectClassId Kind) :
 //---------------------------------------------------------------------------
 void __fastcall TConfiguration::Default()
 {
-  TGuard Guard(FCriticalSection);
+  volatile TGuard Guard(FCriticalSection);
 
   FDisablePasswordStoring = false;
   FForceBanners = false;
@@ -207,7 +207,7 @@ THierarchicalStorage * TConfiguration::CreateConfigStorage()
 //---------------------------------------------------------------------------
 THierarchicalStorage * TConfiguration::CreateStorage(bool & SessionList)
 {
-  TGuard Guard(FCriticalSection);
+  volatile TGuard Guard(FCriticalSection);
   THierarchicalStorage *Result = nullptr;
   if (GetStorage() == stRegistry)
   {
@@ -520,7 +520,7 @@ UnicodeString __fastcall TConfiguration::LoadCustomIniFileStorageName()
 //---------------------------------------------------------------------------
 void __fastcall TConfiguration::Load(THierarchicalStorage * Storage)
 {
-  TGuard Guard(FCriticalSection);
+  volatile TGuard Guard(FCriticalSection);
   TStorageAccessMode StorageAccessMode = Storage->GetAccessMode();
   try__finally
   {
@@ -1007,7 +1007,7 @@ bool __fastcall TConfiguration::GetIsUnofficial() const
 UnicodeString __fastcall TConfiguration::GetProductVersionStr() const
 {
   UnicodeString Result;
-  TGuard Guard(FCriticalSection);
+  volatile TGuard Guard(FCriticalSection);
   try
   {
     TVSFixedFileInfo *FixedApplicationInfo = GetFixedApplicationInfo();
@@ -1096,7 +1096,7 @@ UnicodeString __fastcall TConfiguration::GetFileVersion(const UnicodeString AFil
 //---------------------------------------------------------------------------
 UnicodeString __fastcall TConfiguration::GetFileVersion(TVSFixedFileInfo * Info)
 {
-  TGuard Guard(FCriticalSection);
+  volatile TGuard Guard(FCriticalSection);
   try
   {
     UnicodeString Result =
@@ -1114,7 +1114,7 @@ UnicodeString __fastcall TConfiguration::GetFileVersion(TVSFixedFileInfo * Info)
 //---------------------------------------------------------------------------
 UnicodeString __fastcall TConfiguration::GetProductVersion() const
 {
-  TGuard Guard(FCriticalSection);
+  volatile TGuard Guard(FCriticalSection);
   UnicodeString Result;
   try
   {
@@ -1343,7 +1343,7 @@ UnicodeString __fastcall TConfiguration::GetIniFileStorageName(bool ReadingOnly)
 //---------------------------------------------------------------------------
 void __fastcall TConfiguration::SetOptionsStorage(TStrings * Value)
 {
-  TGuard Guard(FCriticalSection);
+  volatile TGuard Guard(FCriticalSection);
   if (FOptionsStorage.get() == nullptr)
   {
     FOptionsStorage.reset(new TStringList());
@@ -1444,7 +1444,7 @@ void __fastcall TConfiguration::Saved()
 //---------------------------------------------------------------------------
 TStorage __fastcall TConfiguration::GetStorage() const
 {
-  TGuard Guard(FCriticalSection);
+  volatile TGuard Guard(FCriticalSection);
   if (FStorage == stDetect)
   {
 #if 0
@@ -1675,7 +1675,7 @@ void __fastcall TConfiguration::TemporaryLogMaxCount(intptr_t ALogMaxCount)
 //---------------------------------------------------------------------
 void __fastcall TConfiguration::SetLogging(bool Value)
 {
-  TGuard Guard(FCriticalSection);
+  volatile TGuard Guard(FCriticalSection);
   if (GetLogging() != Value)
   {
     FPermanentLogging = Value;
@@ -1687,7 +1687,7 @@ void __fastcall TConfiguration::SetLogging(bool Value)
 //---------------------------------------------------------------------
 bool __fastcall TConfiguration::GetLogging() const
 {
-  TGuard Guard(FCriticalSection);
+  volatile TGuard Guard(FCriticalSection);
   return FPermanentLogging;
 }
 //---------------------------------------------------------------------
@@ -1799,7 +1799,7 @@ void __fastcall TConfiguration::SetLogMaxSize(int64_t Value)
 //---------------------------------------------------------------------
 int64_t __fastcall TConfiguration::GetLogMaxSize() const
 {
-  TGuard Guard(FCriticalSection);
+  volatile TGuard Guard(FCriticalSection);
   return FPermanentLogMaxSize;
 }
 //---------------------------------------------------------------------

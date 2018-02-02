@@ -41,11 +41,10 @@ public:
   bool WasSwitchAdded(UnicodeString &Switch, wchar_t &SwitchMark) const;
 
   void LogOptions(TLogOptionEvent OnLogOption);
-#if 0
- __property int ParamCount = { read = FParamCount };
+
+  __property int ParamCount = { read = FParamCount };
   __property UnicodeString Param[int Index] = { read = GetParam };
   __property bool Empty = { read = GetEmpty };
-#endif // #if 0
 
   intptr_t GetParamCount() const { return FParamCount; }
   void Clear() { FOptions.resize(0); FNoMoreSwitches = false; FParamCount = 0; }
