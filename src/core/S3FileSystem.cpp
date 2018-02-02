@@ -1353,6 +1353,21 @@ void __fastcall TS3FileSystem::Source(
 
   TLibS3BucketContext BucketContext = GetBucketContext(BucketName);
 
+  UTF8String ContentType = UTF8String(FTerminal->Configuration->GetFileMimeType(Handle.FileName));
+  S3PutProperties PutProperties =
+    {
+      (ContentType.IsEmpty() ? NULL : ContentType.c_str()),
+      NULL,
+      NULL,
+      NULL,
+      NULL,
+      -1,
+      S3CannedAclPrivate,
+      0,
+      NULL,
+      0
+    };
+
   int Parts = std::max(1, static_cast<int>((AHandle.Size + S3MultiPartChunkSize - 1) / S3MultiPartChunkSize));
   bool Multipart = (Parts > 1);
 
@@ -1372,7 +1387,7 @@ void __fastcall TS3FileSystem::Source(
 
       S3MultipartInitialHandler Handler = { CreateResponseHandler(), &LibS3MultipartInitialCallback };
 
-      S3_initiate_multipart(&BucketContext, StrToS3(Key), 0, &Handler, FRequestContext, FTimeout, &Data);
+      S3_initiate_multipart(&BucketContext, StrToS3(Key), &PutProperties, &Handler, FRequestContext, FTimeout, &Data);
 
       CheckLibS3Error(Data, true);
 
@@ -1421,13 +1436,13 @@ void __fastcall TS3FileSystem::Source(
           int PartLength = std::min(S3MultiPartChunkSize, static_cast<int>(Stream->Size - Stream->Position));
           FTerminal->LogEvent(FORMAT("Uploading part %d [%s]", Part, IntToStr(PartLength)));
           S3_upload_part(
-            &BucketContext, StrToS3(Key), nullptr, &UploadPartHandler, ToInt(Part), MultipartUploadId.c_str(),
+            &BucketContext, StrToS3(Key), &PutProperties, &UploadPartHandler, ToInt(Part), MultipartUploadId.c_str(),
             PartLength, FRequestContext, FTimeout, &Data);
         }
         else
         {
           S3PutObjectHandler PutObjectHandler = { CreateResponseHandler(), LibS3PutObjectDataCallback };
-          S3_put_object(&BucketContext, StrToS3(Key), AHandle.Size, nullptr, FRequestContext, FTimeout, &PutObjectHandler, &Data);
+          S3_put_object(&BucketContext, StrToS3(Key), AHandle.Size, &PutProperties, FRequestContext, FTimeout, &PutObjectHandler, &Data);
         }
 
         // The "exception" was already seen by the user, its presence mean an accepted abort of the operation.

@@ -187,6 +187,7 @@ NB_CORE_EXPORT bool IsHttpOrHttpsUrl(const UnicodeString S);
 NB_CORE_EXPORT UnicodeString ChangeUrlProtocol(const UnicodeString S, const UnicodeString Protocol);
 NB_CORE_EXPORT void LoadScriptFromFile(const UnicodeString FileName, TStrings *Lines);
 NB_CORE_EXPORT UnicodeString StripEllipsis(const UnicodeString S);
+NB_CORE_EXPORT UnicodeString __fastcall GetFileMimeType(const UnicodeString FileName);
 //---------------------------------------------------------------------------
 NB_CORE_EXPORT bool CompareFileName(const UnicodeString APath1, const UnicodeString APath2);
 NB_CORE_EXPORT bool ComparePaths(UnicodeString APath1, UnicodeString APath2);

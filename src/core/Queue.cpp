@@ -411,10 +411,17 @@ TSignalThread::TSignalThread(TObjectClassId Kind, bool /*LowPriority*/) :
 {
 }
 
-void TSignalThread::InitSignalThread(bool LowPriority)
+void TSignalThread::InitSignalThread(bool LowPriority, HANDLE Event)
 {
   TSimpleThread::InitSimpleThread();
-  FEvent = ::CreateEvent(nullptr, false, false, nullptr);
+  if (Event == nullptr)
+  {
+    FEvent = ::CreateEvent(nullptr, false, false, nullptr);
+  }
+  else
+  {
+    FEvent = Event;
+  }
   DebugAssert(FEvent != nullptr);
 
   if (LowPriority)
@@ -1250,7 +1257,12 @@ bool TTerminalQueue::TryAddParallelOperation(TQueueItem *Item, bool Force)
 
   if (Result)
   {
-    AddItem(DebugNotNull(Item->CreateParallelOperation()));
+    TQueueItem * ParallelItem = DebugNotNull(Item->CreateParallelOperation());
+    if (!FEnabled)
+    {
+      FForcedItems->Add(ParallelItem);
+    }
+    AddItem(ParallelItem);
   }
 
   return Result;

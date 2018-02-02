@@ -42,7 +42,7 @@ public:
   static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TSignalThread); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TSignalThread) || TSimpleThread::is(Kind); }
 public:
-  void InitSignalThread(bool LowPriority);
+  void InitSignalThread(bool LowPriority, HANDLE Event = nullptr);
   virtual void Start() override;
   virtual void Terminate() override;
   void TriggerEvent() const;
@@ -51,8 +51,8 @@ protected:
   HANDLE FEvent;
   bool FTerminated;
 
-  explicit TSignalThread(TObjectClassId Kind, bool LowPriority);
-  virtual ~TSignalThread();
+  explicit __fastcall TSignalThread(TObjectClassId Kind, bool LowPriority);
+  virtual __fastcall ~TSignalThread();
 
   virtual bool WaitForEvent();
   uintptr_t WaitForEvent(uint32_t Timeout) const;

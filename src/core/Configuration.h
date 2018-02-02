@@ -83,6 +83,7 @@ private:
   bool FTryFtpWhenSshFails;
   intptr_t FParallelDurationThreshold;
   bool FScripting;
+  UnicodeString FMimeTypes;
   intptr_t FSessionReopenAutoMaximumNumberOfRetries;
 
   bool FDisablePasswordStoring;
@@ -148,6 +149,7 @@ public:
   void SetShowFtpWelcomeMessage(bool Value);
   intptr_t GetCompoundVersion() const;
   void UpdateActualLogProtocol();
+  void __fastcall SetMimeTypes(UnicodeString Value);
   void SetExternalIpAddress(UnicodeString Value);
   void SetTryFtpWhenSshFails(bool Value);
   void SetParallelDurationThreshold(intptr_t Value);
@@ -258,6 +260,7 @@ public:
   virtual RawByteString StronglyRecryptPassword(RawByteString Password, UnicodeString Key);
   UnicodeString GetFileDescription(UnicodeString AFileName) const;
   UnicodeString GetFileVersion(UnicodeString AFileName);
+  UnicodeString __fastcall GetFileMimeType(const UnicodeString & FileName);
 
   TStoredSessionList *SelectFilezillaSessionsForImport(
     TStoredSessionList *Sessions, UnicodeString &Error);
@@ -317,6 +320,7 @@ public:
   __property UnicodeString ExternalIpAddress = { read = FExternalIpAddress, write = SetExternalIpAddress };
   __property bool TryFtpWhenSshFails = { read = FTryFtpWhenSshFails, write = SetTryFtpWhenSshFails };
   __property intptr_t ParallelDurationThreshold = { read = FParallelDurationThreshold, write = SetParallelDurationThreshold };
+  __property UnicodeString MimeTypes = { read = FMimeTypes, write = SetMimeTypes };
 
   __property UnicodeString TimeFormat = { read = GetTimeFormat };
   __property TStorage Storage  = { read=GetStorage };

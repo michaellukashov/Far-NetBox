@@ -12,6 +12,7 @@
 #include "Interface.h"
 #include "CoreMain.h"
 #include "WinSCPSecurity.h"
+#include "FileMasks.h"
 #include <System.ShlObj.hpp>
 #include <System.IOUtils.hpp>
 #include <System.StrUtils.hpp>
@@ -146,6 +147,7 @@ void __fastcall TConfiguration::Default()
   FTryFtpWhenSshFails = true;
   FParallelDurationThreshold = 10;
   SetCollectUsage(FDefaultCollectUsage);
+  SetMimeTypes(UnicodeString());
   FSessionReopenAutoMaximumNumberOfRetries = CONST_DEFAULT_NUMBER_OF_RETRIES;
 
   FLogging = false;
@@ -283,6 +285,7 @@ UnicodeString __fastcall TConfiguration::PropertyToKey(const UnicodeString AProp
     KEY(String,   ExternalIpAddress); \
     KEY(Bool,     TryFtpWhenSshFails); \
     KEY(Integer,  ParallelDurationThreshold); \
+    KEY(String,   MimeTypes); \
     KEY(Bool,     CollectUsage); \
     KEY(Integer,  SessionReopenAutoMaximumNumberOfRetries); \
   ); \
@@ -1187,6 +1190,36 @@ UnicodeString __fastcall TConfiguration::GetFileInfoString(const UnicodeString K
   return GetFileFileInfoString(Key, L"");
 }
 //---------------------------------------------------------------------------
+UnicodeString __fastcall TConfiguration::GetFileMimeType(const UnicodeString FileName)
+{
+  UnicodeString Result;
+  bool Found = false;
+
+  if (!MimeTypes.IsEmpty())
+  {
+    UnicodeString FileNameOnly = ExtractFileName(FileName);
+    UnicodeString AMimeTypes = MimeTypes;
+    while (!Found && !AMimeTypes.IsEmpty())
+    {
+      UnicodeString Token = CutToChar(AMimeTypes, L',', true);
+      UnicodeString MaskStr = CutToChar(Token, L'=', true);
+      TFileMasks Mask(MaskStr);
+      if (Mask.Matches(FileNameOnly))
+      {
+        Result = Token.Trim();
+        Found = true;
+      }
+    }
+  }
+
+  if (!Found) // allow an override to "no" Content-Type
+  {
+    Result = ::GetFileMimeType(FileName);
+  }
+
+  return Result;
+}
+//---------------------------------------------------------------------------
 UnicodeString __fastcall TConfiguration::GetRegistryStorageKey() const
 {
   return GetRegistryKey();
@@ -1562,6 +1595,11 @@ UnicodeString __fastcall TConfiguration::GetRandomSeedFileName() const
 void __fastcall TConfiguration::SetExternalIpAddress(UnicodeString Value)
 {
   SET_CONFIG_PROPERTY(ExternalIpAddress);
+}
+//---------------------------------------------------------------------
+void __fastcall TConfiguration::SetMimeTypes(UnicodeString value)
+{
+  SET_CONFIG_PROPERTY(MimeTypes);
 }
 //---------------------------------------------------------------------
 void __fastcall TConfiguration::SetTryFtpWhenSshFails(bool Value)
