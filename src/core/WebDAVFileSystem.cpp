@@ -1205,13 +1205,13 @@ void TWebDAVFileSystem::NeonQuotaResult(
   const char *Value = GetNeonProp(Results, PROP_QUOTA_AVAILABLE);
   if (Value != nullptr)
   {
-    SpaceAvailable.UnusedBytesAvailableToUser = StrToInt64(StrFromNeon(Value));
+    SpaceAvailable.UnusedBytesAvailableToUser = ::StrToInt64(StrFromNeon(Value));
 
     const char *Value2 = GetNeonProp(Results, PROP_QUOTA_USED);
     if (Value2 != nullptr)
     {
       SpaceAvailable.BytesAvailableToUser =
-        StrToInt64(StrFromNeon(Value2)) + SpaceAvailable.UnusedBytesAvailableToUser;
+        ::StrToInt64(StrFromNeon(Value2)) + SpaceAvailable.UnusedBytesAvailableToUser;
     }
   }
 }

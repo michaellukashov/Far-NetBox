@@ -2588,11 +2588,11 @@ void __fastcall TFTPFileSystem::SpaceAvailable(const UnicodeString APath,
       UnicodeString Label = CutToChar(Line, L':', true);
       if (SameText(Label, L"Disk usage"))
       {
-        UsedBytes = StrToInt64(Line);
+        UsedBytes = ::StrToInt64(Line);
       }
       else if (SameText(Label, L"Disk limit") && !SameText(Line, L"unlimited"))
       {
-        ASpaceAvailable.BytesAvailableToUser = StrToInt64(Line);
+        ASpaceAvailable.BytesAvailableToUser = ::StrToInt64(Line);
       }
     }
 
@@ -2608,7 +2608,7 @@ void __fastcall TFTPFileSystem::SpaceAvailable(const UnicodeString APath,
     UnicodeString Command = FORMAT("%s %s", AvblCommand, APath);
     SendCommand(Command);
     UnicodeString Response = GotReply(WaitForCommandReply(), REPLY_2XX_CODE | REPLY_SINGLE_LINE);
-    ASpaceAvailable.UnusedBytesAvailableToUser = StrToInt64(Response);
+    ASpaceAvailable.UnusedBytesAvailableToUser = ::StrToInt64(Response);
   }
 }
 //---------------------------------------------------------------------------

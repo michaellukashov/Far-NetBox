@@ -184,7 +184,7 @@ intptr_t StrToIntPtr(const UnicodeString Value)
   return 0;
 }
 
-int64_t ToInt64(UnicodeString Value)
+int64_t StrToInt64(const UnicodeString Value)
 {
   int64_t Result = 0;
   if (TryStrToInt64(Value, Result))

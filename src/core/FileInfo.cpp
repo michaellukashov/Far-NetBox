@@ -279,8 +279,8 @@ intptr_t CalculateCompoundVersion(intptr_t MajorVer,
 intptr_t StrToCompoundVersion(const UnicodeString AStr)
 {
   UnicodeString S(AStr);
-  int64_t MajorVer = StrToInt64(CutToChar(S, L'.', false));
-  int64_t MinorVer = StrToInt64(CutToChar(S, L'.', false));
+  int64_t MajorVer = ::StrToInt64(CutToChar(S, L'.', false));
+  int64_t MinorVer = ::StrToInt64(CutToChar(S, L'.', false));
   int64_t Release = S.IsEmpty() ? 0 : StrToInt64(CutToChar(S, L'.', false));
   int64_t Build = S.IsEmpty() ? 0 : StrToInt64(CutToChar(S, L'.', false));
   return CalculateCompoundVersion(ToIntPtr(MajorVer), ToIntPtr(MinorVer), ToIntPtr(Release), ToIntPtr(Build));
