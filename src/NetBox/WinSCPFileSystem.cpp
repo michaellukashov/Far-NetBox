@@ -1316,7 +1316,7 @@ void TWinSCPFileSystem::ApplyCommand()
                 TCustomCommandData Data2(FTerminal);
                 TLocalCustomCommand CustomCommand(Data2,
                   GetTerminal()->RemoteGetCurrentDirectory(), L"", L"", LocalFile, FileList2);
-                ExecuteShellCheckedAndWait(GetWinSCPPlugin()->GetHandle(), CustomCommand.Complete(Command, true),
+                ExecuteShellCheckedAndWait(CustomCommand.Complete(Command, true),
                   TProcessMessagesEvent());
               }
               else if (LocalFileCommand)
@@ -1331,7 +1331,7 @@ void TWinSCPFileSystem::ApplyCommand()
                     TCustomCommandData Data3(FTerminal);
                     TLocalCustomCommand CustomCommand(Data3,
                       GetTerminal()->RemoteGetCurrentDirectory(), FileName, L"", LocalFile, L"");
-                    ExecuteShellCheckedAndWait(GetWinSCPPlugin()->GetHandle(),
+                    ExecuteShellCheckedAndWait(
                       CustomCommand.Complete(Command, true), TProcessMessagesEvent());
                   }
                 }
@@ -1345,7 +1345,7 @@ void TWinSCPFileSystem::ApplyCommand()
                     TLocalCustomCommand CustomCommand(
                       Data4, GetTerminal()->RemoteGetCurrentDirectory(),
                       L"", FileName, LocalFileList->GetString(Index), L"");
-                    ExecuteShellCheckedAndWait(GetWinSCPPlugin()->GetHandle(),
+                    ExecuteShellCheckedAndWait(
                       CustomCommand.Complete(Command, true), TProcessMessagesEvent());
                   }
                 }
@@ -1363,7 +1363,7 @@ void TWinSCPFileSystem::ApplyCommand()
                     TLocalCustomCommand CustomCommand(
                       Data5, GetTerminal()->RemoteGetCurrentDirectory(),
                       L"", FileName, LocalFileList->GetString(Index), L"");
-                    ExecuteShellCheckedAndWait(GetWinSCPPlugin()->GetHandle(),
+                    ExecuteShellCheckedAndWait(
                       CustomCommand.Complete(Command, true), TProcessMessagesEvent());
                   }
                 }
@@ -1375,7 +1375,7 @@ void TWinSCPFileSystem::ApplyCommand()
                   TCustomCommandData Data6(FTerminal);
                   TLocalCustomCommand CustomCommand(Data6,
                     GetTerminal()->RemoteGetCurrentDirectory(), L"", RemoteFileList->GetString(Index), L"", L"");
-                  ExecuteShellCheckedAndWait(GetWinSCPPlugin()->GetHandle(),
+                  ExecuteShellCheckedAndWait(
                     CustomCommand.Complete(Command, true), TProcessMessagesEvent());
                 }
               }
