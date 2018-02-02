@@ -3130,7 +3130,7 @@ UnicodeString TSessionData::GetProtocolUrl() const
   return Url;
 }
 
-bool IsIPv6Literal(UnicodeString HostName)
+bool IsIPv6Literal(const UnicodeString HostName)
 {
   bool Result = (HostName.Pos(L":") > 0);
   if (Result)
@@ -3144,7 +3144,7 @@ bool IsIPv6Literal(UnicodeString HostName)
   return Result;
 }
 
-UnicodeString EscapeIPv6Literal(UnicodeString IP)
+UnicodeString EscapeIPv6Literal(const UnicodeString IP)
 {
   return L"[" + IP + L"]";
 }
@@ -5665,7 +5665,7 @@ bool TStoredSessionList::CanLogin(TSessionData *Data)
   return (Data != nullptr) && Data->GetCanLogin();
 }
 
-UnicodeString GetExpandedLogFileName(UnicodeString LogFileName, TDateTime Started, TSessionData *SessionData)
+UnicodeString GetExpandedLogFileName(const UnicodeString LogFileName, TDateTime Started, TSessionData *SessionData)
 {
   // StripPathQuotes should not be needed as we do not feed quotes anymore
   UnicodeString Result = StripPathQuotes(::ExpandEnvironmentVariables(LogFileName));
@@ -5816,7 +5816,7 @@ bool GetCodePageInfo(UINT CodePage, CPINFOEX &CodePageInfoEx)
   return true;
 }
 
-uintptr_t GetCodePageAsNumber(UnicodeString CodePage)
+uintptr_t GetCodePageAsNumber(const UnicodeString CodePage)
 {
   uintptr_t codePage = _wtoi(CodePage.c_str());
   return ToUIntPtr(codePage == 0 ? CONST_DEFAULT_CODEPAGE : codePage);

@@ -244,7 +244,7 @@ UnicodeString GetLanguage(Word Language)
 // Return the value of the specified file version info string using the
 // specified translation
 UnicodeString GetFileInfoString(void *FileInfo,
-  TTranslation Translation, UnicodeString StringName, bool AllowEmpty)
+  TTranslation Translation, const UnicodeString StringName, bool AllowEmpty)
 {
   UnicodeString Result;
   wchar_t *P;
@@ -276,7 +276,7 @@ intptr_t CalculateCompoundVersion(intptr_t MajorVer,
   return CompoundVer;
 }
 
-intptr_t StrToCompoundVersion(UnicodeString AStr)
+intptr_t StrToCompoundVersion(const UnicodeString AStr)
 {
   UnicodeString S(AStr);
   int64_t MajorVer = StrToInt64(CutToChar(S, L'.', false));
@@ -286,13 +286,14 @@ intptr_t StrToCompoundVersion(UnicodeString AStr)
   return CalculateCompoundVersion(ToIntPtr(MajorVer), ToIntPtr(MinorVer), ToIntPtr(Release), ToIntPtr(Build));
 }
 
-intptr_t CompareVersion(UnicodeString V1, UnicodeString V2)
+intptr_t CompareVersion(const UnicodeString V1, const UnicodeString V2)
 {
   intptr_t Result = 0;
-  while ((Result == 0) && (!V1.IsEmpty() || !V2.IsEmpty()))
+  UnicodeString _V1(V1), _V2(V2);
+  while ((Result == 0) && (!_V1.IsEmpty() || !_V2.IsEmpty()))
   {
-    intptr_t C1 = StrToIntDef(CutToChar(V1, L'.', false), 0);
-    intptr_t C2 = StrToIntDef(CutToChar(V2, L'.', false), 0);
+    intptr_t C1 = StrToIntDef(CutToChar(_V1, L'.', false), 0);
+    intptr_t C2 = StrToIntDef(CutToChar(_V2, L'.', false), 0);
     // Result = CompareValue(C1, C2);
     if (C1 < C2)
     {

@@ -264,21 +264,21 @@ NB_CORE_EXPORT bool IsDelimiter(UnicodeString Delimiters, UnicodeString Str, int
 NB_CORE_EXPORT intptr_t FirstDelimiter(UnicodeString Delimiters, UnicodeString Str);
 NB_CORE_EXPORT intptr_t LastDelimiter(UnicodeString Delimiters, UnicodeString Str);
 
-NB_CORE_EXPORT intptr_t CompareText(UnicodeString Str1, UnicodeString Str2);
-NB_CORE_EXPORT intptr_t AnsiCompare(UnicodeString Str1, UnicodeString Str2);
-NB_CORE_EXPORT intptr_t AnsiCompareStr(UnicodeString Str1, UnicodeString Str2);
-NB_CORE_EXPORT bool AnsiSameText(UnicodeString Str1, UnicodeString Str2);
-NB_CORE_EXPORT bool SameText(UnicodeString Str1, UnicodeString Str2);
-NB_CORE_EXPORT intptr_t AnsiCompareText(UnicodeString Str1, UnicodeString Str2);
-NB_CORE_EXPORT intptr_t AnsiCompareIC(UnicodeString Str1, UnicodeString Str2);
-NB_CORE_EXPORT bool AnsiSameStr(UnicodeString Str1, UnicodeString Str2);
-NB_CORE_EXPORT bool AnsiContainsText(UnicodeString Str1, UnicodeString Str2);
-NB_CORE_EXPORT bool ContainsStr(AnsiString Str1, AnsiString Str2);
-NB_CORE_EXPORT bool ContainsText(UnicodeString Str1, UnicodeString Str2);
-NB_CORE_EXPORT UnicodeString RightStr(UnicodeString Str, intptr_t ACount);
-NB_CORE_EXPORT intptr_t PosEx(UnicodeString SubStr, UnicodeString Str, intptr_t Offset = 1);
+NB_CORE_EXPORT intptr_t CompareText(const UnicodeString Str1, const UnicodeString Str2);
+NB_CORE_EXPORT intptr_t AnsiCompare(const UnicodeString Str1, const UnicodeString Str2);
+NB_CORE_EXPORT intptr_t AnsiCompareStr(const UnicodeString Str1, const UnicodeString Str2);
+NB_CORE_EXPORT bool AnsiSameText(const UnicodeString Str1, const UnicodeString Str2);
+NB_CORE_EXPORT bool SameText(const UnicodeString Str1, const UnicodeString Str2);
+NB_CORE_EXPORT intptr_t AnsiCompareText(const UnicodeString Str1, const UnicodeString Str2);
+NB_CORE_EXPORT intptr_t AnsiCompareIC(const UnicodeString Str1, const UnicodeString Str2);
+NB_CORE_EXPORT bool AnsiSameStr(const UnicodeString Str1, const UnicodeString Str2);
+NB_CORE_EXPORT bool AnsiContainsText(const UnicodeString Str1, const UnicodeString Str2);
+NB_CORE_EXPORT bool ContainsStr(const AnsiString Str1, const AnsiString Str2);
+NB_CORE_EXPORT bool ContainsText(const UnicodeString Str1, const UnicodeString Str2);
+NB_CORE_EXPORT UnicodeString RightStr(const UnicodeString Str, intptr_t ACount);
+NB_CORE_EXPORT intptr_t PosEx(const UnicodeString SubStr, const UnicodeString Str, intptr_t Offset = 1);
 
-NB_CORE_EXPORT UnicodeString UTF8ToString(RawByteString Str);
+NB_CORE_EXPORT UnicodeString UTF8ToString(const RawByteString Str);
 NB_CORE_EXPORT UnicodeString UTF8ToString(const char *Str, intptr_t Len);
 
 NB_CORE_EXPORT int StringCmp(const wchar_t *S1, const wchar_t *S2);
@@ -287,12 +287,12 @@ NB_CORE_EXPORT int StringCmpI(const wchar_t *S1, const wchar_t *S2);
 NB_CORE_EXPORT UnicodeString IntToStr(intptr_t Value);
 NB_CORE_EXPORT UnicodeString UIntToStr(uintptr_t Value);
 NB_CORE_EXPORT UnicodeString Int64ToStr(int64_t Value);
-NB_CORE_EXPORT intptr_t StrToIntPtr(UnicodeString Value);
-NB_CORE_EXPORT int64_t ToInt64(UnicodeString Value);
-NB_CORE_EXPORT intptr_t StrToIntDef(UnicodeString Value, intptr_t DefVal);
-NB_CORE_EXPORT int64_t StrToInt64(UnicodeString Value);
-NB_CORE_EXPORT int64_t StrToInt64Def(UnicodeString Value, int64_t DefVal);
-NB_CORE_EXPORT bool TryStrToInt64(UnicodeString StrValue, int64_t &Value);
+NB_CORE_EXPORT intptr_t StrToIntPtr(const UnicodeString Value);
+NB_CORE_EXPORT int64_t StrToInt64(const UnicodeString Value);
+NB_CORE_EXPORT intptr_t StrToIntDef(const UnicodeString Value, intptr_t DefVal);
+NB_CORE_EXPORT int64_t StrToInt64(const UnicodeString Value);
+NB_CORE_EXPORT int64_t StrToInt64Def(const UnicodeString Value, int64_t DefVal);
+NB_CORE_EXPORT bool TryStrToInt64(const UnicodeString StrValue, int64_t &Value);
 
 NB_CORE_EXPORT double StrToFloat(const UnicodeString Value);
 NB_CORE_EXPORT double StrToFloatDef(const UnicodeString Value, double DefVal);

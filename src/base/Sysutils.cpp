@@ -174,7 +174,7 @@ UnicodeString Int64ToStr(int64_t Value)
   return Result;
 }
 
-intptr_t StrToIntPtr(UnicodeString Value)
+intptr_t StrToIntPtr(const UnicodeString Value)
 {
   int64_t Result = 0;
   if (TryStrToInt64(Value, Result))
@@ -194,7 +194,7 @@ int64_t ToInt64(UnicodeString Value)
   return 0;
 }
 
-intptr_t StrToIntDef(UnicodeString Value, intptr_t DefVal)
+intptr_t StrToIntDef(const UnicodeString Value, intptr_t DefVal)
 {
   int64_t Result = DefVal;
   if (TryStrToInt64(Value, Result))
@@ -204,12 +204,7 @@ intptr_t StrToIntDef(UnicodeString Value, intptr_t DefVal)
   return DefVal;
 }
 
-int64_t StrToInt64(UnicodeString Value)
-{
-  return ToInt64(Value);
-}
-
-int64_t StrToInt64Def(UnicodeString Value, int64_t DefVal)
+int64_t StrToInt64Def(const UnicodeString Value, int64_t DefVal)
 {
   int64_t Result = DefVal;
   if (TryStrToInt64(Value, Result))
@@ -219,7 +214,7 @@ int64_t StrToInt64Def(UnicodeString Value, int64_t DefVal)
   return DefVal;
 }
 
-bool TryStrToInt64(UnicodeString StrValue, int64_t &Value)
+bool TryStrToInt64(const UnicodeString StrValue, int64_t &Value)
 {
   bool Result = !StrValue.IsEmpty(); // && (StrValue.FindFirstNotOf(L"+-0123456789") == -1);
   if (Result)

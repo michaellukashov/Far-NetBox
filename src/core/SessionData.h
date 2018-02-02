@@ -1006,12 +1006,12 @@ private:
 };
 
 NB_CORE_EXPORT bool GetCodePageInfo(UINT CodePage, CPINFOEX &CodePageInfoEx);
-NB_CORE_EXPORT uintptr_t GetCodePageAsNumber(UnicodeString CodePage);
+NB_CORE_EXPORT uintptr_t GetCodePageAsNumber(const UnicodeString CodePage);
 NB_CORE_EXPORT UnicodeString GetCodePageAsString(uintptr_t CodePage);
 
-NB_CORE_EXPORT UnicodeString GetExpandedLogFileName(UnicodeString LogFileName, TDateTime Started, TSessionData *SessionData);
-NB_CORE_EXPORT bool IsIPv6Literal(UnicodeString HostName);
-NB_CORE_EXPORT UnicodeString EscapeIPv6Literal(UnicodeString IP);
+NB_CORE_EXPORT UnicodeString GetExpandedLogFileName(const UnicodeString LogFileName, TDateTime Started, TSessionData *SessionData);
+NB_CORE_EXPORT bool IsIPv6Literal(const UnicodeString HostName);
+NB_CORE_EXPORT UnicodeString EscapeIPv6Literal(const UnicodeString IP);
 NB_CORE_EXPORT bool GetIsSshProtocol(TFSProtocol FSProtocol);
 NB_CORE_EXPORT intptr_t GetDefaultPort(TFSProtocol FSProtocol, TFtps Ftps);
 

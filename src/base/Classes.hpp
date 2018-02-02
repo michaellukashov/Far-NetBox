@@ -270,7 +270,7 @@ public:
   void SetQuoteChar(wchar_t Value) { FQuoteChar = Value; }
   UnicodeString GetDelimitedText() const;
   void SetDelimitedText(UnicodeString Value);
-  virtual intptr_t CompareStrings(UnicodeString S1, UnicodeString S2) const;
+  virtual intptr_t CompareStrings(const UnicodeString S1, const UnicodeString S2) const;
   intptr_t GetUpdateCount() const { return FUpdateCount; }
   virtual void Assign(const TPersistent *Source) override;
   virtual intptr_t GetCount() const = 0;
@@ -350,7 +350,7 @@ public:
   virtual const UnicodeString &GetStringRef(intptr_t Index) const override;
   virtual const UnicodeString &GetString(intptr_t Index) const override;
   virtual UnicodeString GetString(intptr_t Index) override;
-  virtual void SetString(intptr_t Index, UnicodeString S) override;
+  virtual void SetString(intptr_t Index, const UnicodeString S) override;
 
 private:
   TNotifyEvent FOnChange;
