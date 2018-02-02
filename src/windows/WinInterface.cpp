@@ -1,4 +1,7 @@
+#include <Queue.h>
 #include <Interface.h>
+#include <System.IOUtils.hpp>
+
 #include "WinInterface.h"
 
 const uint32_t GUIUpdateInterval = 100;
@@ -1357,12 +1360,82 @@ bool HandleMinimizeSysCommand(TMessage &Message)
 #endif
 
 void WinInitialize()
+//---------------------------------------------------------------------------
+class TCallstackThread : public TSignalThread
+{
+public:
+  __fastcall TCallstackThread();
+
+protected:
+  virtual void __fastcall ProcessEvent();
+
+private:
+  static UnicodeString DoGetName();
+  static HANDLE DoCreateEvent();
+};
+//---------------------------------------------------------------------------
+__fastcall TCallstackThread::TCallstackThread() :
+  TSignalThread(true, DoCreateEvent())
+{
+}
+//---------------------------------------------------------------------------
+void __fastcall TCallstackThread::ProcessEvent()
+{
+  try
+  {
+    UnicodeString FileName = FORMAT(L"%s.txt", (DoGetName()));
+    UnicodeString Path = TPath::Combine(SystemTemporaryDirectory(), FileName);
+    std::unique_ptr<TStrings> StackStrings;
+    HANDLE MainThreadHandle = reinterpret_cast<HANDLE>(MainThreadID);
+    if (SuspendThread(MainThreadHandle) < 0)
+    {
+      RaiseLastOSError();
+    }
+    try
+    {
+      TJclStackInfoList * StackInfoList = JclCreateThreadStackTraceFromID(true, MainThreadID);
+      if (StackInfoList == NULL)
+      {
+        RaiseLastOSError();
+      }
+      StackStrings.reset(StackInfoListToStrings(StackInfoList));
+    }
+    __finally
+    {
+      if (ResumeThread(MainThreadHandle) < 0)
+      {
+        RaiseLastOSError();
+      }
+    }
+    TFile::WriteAllText(Path, StackStrings->Text);
+  }
+  catch (...)
+  {
+  }
+}
+//---------------------------------------------------------------------------
+UnicodeString TCallstackThread::DoGetName()
+{
+  return FORMAT("WinSCPCallstack%d", (GetCurrentProcessId()));
+}
+//---------------------------------------------------------------------------
+HANDLE TCallstackThread::DoCreateEvent()
+{
+  UnicodeString Name = DoGetName();
+  return CreateEvent(NULL, false, false, Name.c_str());
+}
+//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
+std::unique_ptr<TCallstackThread> CallstackThread;
+//---------------------------------------------------------------------------
 {
 #if 0
   if (JclHookExceptions())
   {
     JclStackTrackingOptions << stAllModules;
     JclAddExceptNotifier(DoExceptNotify, npFirstChain);
+    CallstackThread.reset(new TCallstackThread());
+    CallstackThread->Start();
   }
 #endif // #if 0
 
@@ -1371,6 +1444,7 @@ void WinInitialize()
   OnApiPath = ::ApiPath;
 #endif // #if 0
   MainThread = ::GetCurrentThreadId();
+  CallstackThread.reset(NULL);
 }
 
 
