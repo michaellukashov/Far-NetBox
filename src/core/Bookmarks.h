@@ -116,10 +116,8 @@ public:
 protected:
   TBookmarkList *FOwner;
 
-  static UnicodeString BookmarkKey(UnicodeString Node, UnicodeString Name);
-#if 0
+  static UnicodeString BookmarkKey(const UnicodeString Node, const UnicodeString Name);
   __property UnicodeString Key = { read = GetKey };
-#endif // if 0
 
 private:
   UnicodeString FName;

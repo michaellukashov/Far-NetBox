@@ -1293,7 +1293,7 @@ public:
 
   void Init(
     TSessionData *SessionData, TConfiguration *Configuration,
-    TTerminalItem *Item, UnicodeString Name);
+    TTerminalItem *Item, const UnicodeString Name);
 
 protected:
   virtual bool DoQueryReopen(Exception *E) override;
@@ -1309,8 +1309,8 @@ TBackgroundTerminal::TBackgroundTerminal(TTerminal *MainTerminal) :
 }
 
 void TBackgroundTerminal::Init(
-  TSessionData *SessionData, TConfiguration *Configuration, TTerminalItem *Item,
-  UnicodeString Name)
+  TSessionData *ASessionData, TConfiguration *AConfiguration, TTerminalItem *Item,
+  const UnicodeString Name)
 {
   TSecondaryTerminal::Init(SessionData, Configuration, Name);
   FItem = Item;

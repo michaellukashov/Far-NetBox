@@ -1645,14 +1645,14 @@ void __fastcall TFTPFileSystem::FileTransfer(const UnicodeString AFileName,
 }
 //---------------------------------------------------------------------------
 void __fastcall TFTPFileSystem::CopyToLocal(TStrings *AFilesToCopy,
-  UnicodeString TargetDir, const TCopyParamType *CopyParam,
+  const UnicodeString ATargetDir, const TCopyParamType *CopyParam,
   intptr_t Params, TFileOperationProgressType *OperationProgress,
   TOnceDoneOperation &OnceDoneOperation)
 {
   Params &= ~cpAppend;
 
   FTerminal->DoCopyToLocal(
-    AFilesToCopy, TargetDir, CopyParam, Params, OperationProgress, tfUseFileTransferAny, OnceDoneOperation);
+    AFilesToCopy, ATargetDir, CopyParam, Params, OperationProgress, tfUseFileTransferAny, OnceDoneOperation);
 }
 //---------------------------------------------------------------------------
 void __fastcall TFTPFileSystem::Sink(

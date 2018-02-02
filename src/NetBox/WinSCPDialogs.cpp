@@ -1491,7 +1491,7 @@ private:
   TFtps IndexToFtps(intptr_t Index) const;
   TFtps GetFtps() const;
   TLoginType IndexToLoginType(intptr_t Index) const;
-  bool VerifyKey(UnicodeString AFileName, bool TypeOnly);
+  bool VerifyKey(const UnicodeString AFileName, bool TypeOnly);
   void PrevTabClick(TFarButton * /*Sender*/, bool &Close);
   void NextTabClick(TFarButton * /*Sender*/, bool &Close);
   void CipherButtonClick(TFarButton *Sender, bool &Close);
@@ -3955,7 +3955,7 @@ TLoginType TSessionDialog::IndexToLoginType(intptr_t Index) const
   return Result;
 }
 
-bool TSessionDialog::VerifyKey(UnicodeString AFileName, bool TypeOnly)
+bool TSessionDialog::VerifyKey(const UnicodeString AFileName, bool TypeOnly)
 {
   bool Result = true;
 

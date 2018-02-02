@@ -484,7 +484,7 @@ protected:
   void __fastcall CloseTunnel();
   void __fastcall DoInformation(const UnicodeString AStr, bool Status, intptr_t Phase = -1);
   bool __fastcall PromptUser(TSessionData *Data, TPromptKind Kind,
-    const UnicodeString AName, const UnicodeString Instructions, const UnicodeString Prompt, bool Echo,
+    const UnicodeString AName, const UnicodeString AInstructions, const UnicodeString Prompt, bool Echo,
     intptr_t MaxLen, UnicodeString &AResult);
   void __fastcall FileFind(const UnicodeString &AFileName, const TRemoteFile *AFile, void *Param);
   void __fastcall DoFilesFind(const UnicodeString ADirectory, TFilesFindParams &Params, const UnicodeString ARealDirectory);
@@ -506,7 +506,7 @@ protected:
     Exception *E, uint32_t Answers, const TQueryParams *Params,
     TQueryType QueryType = qtConfirmation) override;
   virtual bool __fastcall PromptUser(TSessionData *Data, TPromptKind Kind,
-    UnicodeString AName, const UnicodeString Instructions, TStrings *Prompts, TStrings *Results) override;
+    const UnicodeString AName, const UnicodeString AInstructions, TStrings *Prompts, TStrings *Results) override;
   virtual void __fastcall DisplayBanner(const UnicodeString ABanner) override;
   virtual void __fastcall Closed() override;
   virtual void __fastcall ProcessGUI() override;
@@ -715,7 +715,7 @@ public:
   ROProperty<TSessionLog *> Log{nb::bind(&TTerminal::GetLogConst, this)};
   __property TActionLog * ActionLog = { read = FActionLog };
   __property TConfiguration * Configuration = { read = FConfiguration };
-  ROProperty<TConfiguration *> Configuration{nb::bind(&TTerminal::GetConfigurationConst, this)};
+  ROProperty<const TConfiguration *> Configuration{nb::bind(&TTerminal::GetConfigurationConst, this)};
   __property bool Active = { read = GetActive };
   ROProperty<bool> Active{nb::bind(&TTerminal::GetActive, this)};
   __property TSessionStatus Status = { read = FStatus };

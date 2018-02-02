@@ -277,7 +277,7 @@ public:
   void SetQueueKeepDoneItemsFor(intptr_t Value);
   void SetLocaleInternal(LCID Value, bool Safe, bool CompleteOnly);
   void SetInitialLocale(LCID Value);
-  void SetAppliedLocale(LCID AppliedLocale, UnicodeString LocaleModuleName);
+  void SetAppliedLocale(LCID AppliedLocale, const UnicodeString LocaleModuleName);
   bool GetCanApplyLocaleImmediately() const;
   UnicodeString GetTranslationModule(UnicodeString Path) const;
   UnicodeString AddTranslationsSubFolder(UnicodeString Path) const;

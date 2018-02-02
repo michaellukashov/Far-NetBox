@@ -25,8 +25,8 @@ public:
   virtual bool __fastcall GetActive() const override;
   virtual void __fastcall CollectUsage() override;
   virtual void __fastcall Idle() override;
-  virtual UnicodeString GetAbsolutePath(UnicodeString APath, bool Local) override;
-  virtual UnicodeString GetAbsolutePath(UnicodeString APath, bool Local) const override;
+  virtual UnicodeString GetAbsolutePath(const UnicodeString APath, bool Local) override;
+  virtual UnicodeString GetAbsolutePath(const UnicodeString APath, bool Local) const override;
   virtual void AnyCommand(const UnicodeString ACommand,
     TCaptureOutputEvent OutputEvent) override;
   virtual void ChangeDirectory(const UnicodeString ADirectory) override;

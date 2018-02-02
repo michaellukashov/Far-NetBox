@@ -652,7 +652,7 @@ void TGUIConfiguration::UpdateStaticUsage()
   // Usage->Set(L"CopyParamsCount", (FCopyParamListDefaults ? 0 : FCopyParamList->GetCount()));
 }
 
-static UnicodeString PropertyToKey(UnicodeString Property)
+static UnicodeString PropertyToKey(const UnicodeString Property)
 {
   // no longer useful
   intptr_t P = Property.LastDelimiter(L".>");

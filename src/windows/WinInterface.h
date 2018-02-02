@@ -166,8 +166,8 @@ void GetLoginData(UnicodeString SessionName, TOptions *Options,
 typedef void (__closure *TInputDialogInitialize)
   (TObject * Sender, TInputDialogData * Data);
 #endif // #if 0
-bool InputDialog(UnicodeString ACaption,
-  UnicodeString APrompt, UnicodeString &Value, UnicodeString HelpKeyword = HELP_NONE,
+bool InputDialog(const UnicodeString ACaption,
+  const UnicodeString APrompt, UnicodeString &Value, const UnicodeString HelpKeyword = HELP_NONE,
   TStrings *History = nullptr, bool PathInput = false,
   TInputDialogInitializeEvent OnInitialize = nullptr, bool Echo = true);
 
@@ -660,11 +660,11 @@ public:
     TCustomCommand *ChildCustomCommand, const UnicodeString CustomCommandName, const UnicodeString HelpKeyword);
 
 protected:
-  virtual void Prompt(intptr_t Index, UnicodeString Prompt,
+  virtual void Prompt(intptr_t Index, const UnicodeString Prompt,
     UnicodeString &Value) const override;
-  virtual void Execute(UnicodeString Command,
+  virtual void Execute(const UnicodeString Command,
     UnicodeString &Value) const override;
-  virtual void PatternHint(intptr_t Index, UnicodeString Pattern) override;
+  virtual void PatternHint(intptr_t Index, const UnicodeString Pattern) override;
 
 private:
   UnicodeString FCustomCommandName;

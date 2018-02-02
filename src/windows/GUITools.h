@@ -76,12 +76,12 @@ public:
     UnicodeString FileList);
   virtual ~TLocalCustomCommand() {}
 
-  virtual bool IsFileCommand(UnicodeString Command) const;
-  bool HasLocalFileName(UnicodeString Command) const;
+  virtual bool IsFileCommand(const UnicodeString Command) const;
+  bool HasLocalFileName(const UnicodeString Command) const;
 
 protected:
-  virtual intptr_t PatternLen(UnicodeString Command, intptr_t Index) const;
-  virtual bool PatternReplacement(intptr_t Index, UnicodeString Pattern,
+  virtual intptr_t PatternLen(const UnicodeString Command, intptr_t Index) const;
+  virtual bool PatternReplacement(intptr_t Index, const UnicodeString Pattern,
     UnicodeString &Replacement, bool &Delimit) const;
   virtual void DelimitReplacement(UnicodeString &Replacement, wchar_t Quote);
 

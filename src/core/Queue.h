@@ -275,7 +275,7 @@ protected:
   virtual ~TQueueItem();
 
 public:
-  void SetMasks(UnicodeString Value);
+  void SetMasks(const UnicodeString Value);
   void SetStatus(TStatus Status);
   TStatus GetStatus() const;
   void Execute(TTerminalItem *TerminalItem);
@@ -425,7 +425,7 @@ public:
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TTransferQueueItem) || TLocatedQueueItem::is(Kind); }
 public:
   explicit TTransferQueueItem(TObjectClassId Kind, TTerminal *Terminal,
-    const TStrings *AFilesToCopy, UnicodeString TargetDir,
+    const TStrings *AFilesToCopy, const UnicodeString TargetDir,
     const TCopyParamType *CopyParam, intptr_t Params, TOperationSide Side,
     bool SingleFile, bool Parallel);
   virtual ~TTransferQueueItem();
@@ -457,7 +457,7 @@ public:
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TUploadQueueItem) || TTransferQueueItem::is(Kind); }
 public:
   explicit TUploadQueueItem(TTerminal *Terminal,
-    const TStrings *AFilesToCopy, UnicodeString TargetDir,
+    const TStrings *AFilesToCopy, const UnicodeString ATargetDir,
     const TCopyParamType *CopyParam, intptr_t Params, bool SingleFile, bool Parallel);
   virtual ~TUploadQueueItem()
   {
@@ -474,7 +474,7 @@ public:
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TDownloadQueueItem) || TTransferQueueItem::is(Kind); }
 public:
   explicit TDownloadQueueItem(TTerminal *Terminal,
-    const TStrings *AFilesToCopy, UnicodeString TargetDir,
+    const TStrings *AFilesToCopy, const UnicodeString ATargetDir,
     const TCopyParamType *CopyParam, intptr_t Params, bool SingleFile, bool Parallel);
   virtual ~TDownloadQueueItem()
   {

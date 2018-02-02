@@ -50,7 +50,7 @@ public:
     TStrings *AFileList, TStrings *Checksums,
     TCalculatedChecksumEvent OnCalculatedChecksum) override;
   virtual void __fastcall CopyToLocal(TStrings *AFilesToCopy,
-    UnicodeString TargetDir, const TCopyParamType *CopyParam,
+    const UnicodeString ATargetDir, const TCopyParamType *CopyParam,
     intptr_t Params, TFileOperationProgressType *OperationProgress,
     TOnceDoneOperation &OnceDoneOperation) override;
   virtual void __fastcall TransferOnDirectory(

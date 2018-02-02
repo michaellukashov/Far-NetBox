@@ -559,7 +559,7 @@ void TBookmark::Modify(intptr_t OldIndex)
   }
 }
 
-UnicodeString TBookmark::BookmarkKey(UnicodeString Node, UnicodeString Name)
+UnicodeString TBookmark::BookmarkKey(const UnicodeString Node, const UnicodeString Name)
 {
   return FORMAT("%s\1%s", Node, Name);
 }

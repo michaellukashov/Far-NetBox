@@ -932,7 +932,7 @@ TWinInteractiveCustomCommand::TWinInteractiveCustomCommand(
   FHelpKeyword = HelpKeyword;
 }
 
-void TWinInteractiveCustomCommand::PatternHint(intptr_t Index, UnicodeString Pattern)
+void TWinInteractiveCustomCommand::PatternHint(intptr_t /*AIndex*/, UnicodeString Pattern)
 {
   if (IsPromptPattern(Pattern))
   {

@@ -973,7 +973,7 @@ TLocalCustomCommand::TLocalCustomCommand(const TCustomCommandData &Data,
   FLocalFileName = LocalFileName;
 }
 
-intptr_t TLocalCustomCommand::PatternLen(UnicodeString Command, intptr_t Index) const
+intptr_t TLocalCustomCommand::PatternLen(const UnicodeString Command, intptr_t Index) const
 {
   intptr_t Len;
   if ((Index < Command.Length()) && (Command[Index + 1] == L'\\'))
@@ -992,7 +992,7 @@ intptr_t TLocalCustomCommand::PatternLen(UnicodeString Command, intptr_t Index) 
 }
 
 bool TLocalCustomCommand::PatternReplacement(
-  intptr_t Index, UnicodeString Pattern, UnicodeString &Replacement, bool &Delimit) const
+  intptr_t Index, const UnicodeString Pattern, UnicodeString &Replacement, bool &Delimit) const
 {
   bool Result;
   if (Pattern == L"!\\")
@@ -1020,12 +1020,12 @@ void TLocalCustomCommand::DelimitReplacement(
   // never delimit local commands
 }
 
-bool TLocalCustomCommand::HasLocalFileName(UnicodeString Command) const
+bool TLocalCustomCommand::HasLocalFileName(const UnicodeString Command) const
 {
   return FindPattern(Command, L'^');
 }
 
-bool TLocalCustomCommand::IsFileCommand(UnicodeString Command) const
+bool TLocalCustomCommand::IsFileCommand(const UnicodeString Command) const
 {
   return TFileCustomCommand::IsFileCommand(Command) || HasLocalFileName(Command);
 }

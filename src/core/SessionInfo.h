@@ -84,7 +84,7 @@ public:
     Exception *E, uint32_t Answers, const TQueryParams *Params,
     TQueryType QueryType = qtConfirmation) = 0;
   virtual bool PromptUser(TSessionData *Data, TPromptKind Kind,
-    const UnicodeString AName, UnicodeString Instructions, TStrings *Prompts,
+    const UnicodeString AName, const UnicodeString AInstructions, TStrings *Prompts,
     TStrings *Results) = 0;
   virtual void DisplayBanner(const UnicodeString ABanner) = 0;
   virtual void FatalError(Exception *E, const UnicodeString AMsg, const UnicodeString AHelpKeyword = L"") = 0;
