@@ -354,11 +354,11 @@ void TWinSCPPlugin::ParseCommandLine(UnicodeString &CommandLine,
 void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
 {
   std::unique_ptr<TFarMenuItems> MenuItems(new TFarMenuItems());
-  TWinSCPFileSystem *FileSystem;
+  TWinSCPFileSystem *WinSCPFileSystem;
   TWinSCPFileSystem *AnotherFileSystem;
-  FileSystem = dyn_cast<TWinSCPFileSystem>(GetPanelFileSystem());
+  WinSCPFileSystem = dyn_cast<TWinSCPFileSystem>(GetPanelFileSystem());
   AnotherFileSystem = dyn_cast<TWinSCPFileSystem>(GetPanelFileSystem(true));
-  bool FSConnected = (FileSystem != nullptr) && FileSystem->Connected();
+  bool FSConnected = (WinSCPFileSystem != nullptr) && WinSCPFileSystem->Connected();
   bool AnotherFSConnected = (AnotherFileSystem != nullptr) && AnotherFileSystem->Connected();
   bool FSVisible = FSConnected && FromFileSystem;
   bool AnyFSVisible = (FSConnected || AnotherFSConnected) && FromFileSystem;
@@ -386,11 +386,11 @@ void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
   intptr_t MConfigure = MenuItems->Add(GetMsg(NB_MENU_COMMANDS_CONFIGURE));
   intptr_t MAbout = MenuItems->Add(GetMsg(NB_CONFIG_ABOUT));
 
-  MenuItems->SetDisabled(MLog, !FSVisible || (FileSystem && !FileSystem->IsLogging()));
-  MenuItems->SetDisabled(MClearCaches, !FSVisible || (FileSystem && FileSystem->AreCachesEmpty()));
+  MenuItems->SetDisabled(MLog, !FSVisible || (WinSCPFileSystem && !WinSCPFileSystem->IsLogging()));
+  MenuItems->SetDisabled(MClearCaches, !FSVisible || (WinSCPFileSystem && WinSCPFileSystem->AreCachesEmpty()));
   MenuItems->SetDisabled(MPutty, !FSVisible || !::FileExists(::ExpandEnvVars(ExtractProgram(GetFarConfiguration()->GetPuttyPath()))));
-  MenuItems->SetDisabled(MEditHistory, !FSConnected || (FileSystem && FileSystem->IsEditHistoryEmpty()));
-  MenuItems->SetChecked(MSynchronizeBrowsing, FSVisible && (FileSystem && FileSystem->IsSynchronizedBrowsing()));
+  MenuItems->SetDisabled(MEditHistory, !FSConnected || (WinSCPFileSystem && WinSCPFileSystem->IsEditHistoryEmpty()));
+  MenuItems->SetChecked(MSynchronizeBrowsing, FSVisible && (WinSCPFileSystem && WinSCPFileSystem->IsSynchronizedBrowsing()));
   MenuItems->SetDisabled(MPageant, !::FileExists(::ExpandEnvVars(ExtractProgram(GetFarConfiguration()->GetPageantPath()))));
   MenuItems->SetDisabled(MPuttygen, !::FileExists(::ExpandEnvVars(ExtractProgram(GetFarConfiguration()->GetPuttygenPath()))));
 
@@ -398,31 +398,31 @@ void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
 
   if (Result >= 0)
   {
-    if ((Result == MLog) && FileSystem)
+    if ((Result == MLog) && WinSCPFileSystem)
     {
-      DebugAssert(FileSystem);
-      FileSystem->ShowLog();
+      DebugAssert(WinSCPFileSystem);
+      WinSCPFileSystem->ShowLog();
     }
-    else if ((Result == MAttributes) && FileSystem)
+    else if ((Result == MAttributes) && WinSCPFileSystem)
     {
-      DebugAssert(FileSystem);
-      FileSystem->FileProperties();
+      DebugAssert(WinSCPFileSystem);
+      WinSCPFileSystem->FileProperties();
     }
-    else if ((Result == MLink) && FileSystem)
+    else if ((Result == MLink) && WinSCPFileSystem)
     {
-      DebugAssert(FileSystem);
-      FileSystem->CreateLink();
+      DebugAssert(WinSCPFileSystem);
+      WinSCPFileSystem->RemoteCreateLink();
     }
-    else if ((Result == MApplyCommand) && FileSystem)
+    else if ((Result == MApplyCommand) && WinSCPFileSystem)
     {
-      DebugAssert(FileSystem);
-      FileSystem->ApplyCommand();
+      DebugAssert(WinSCPFileSystem);
+      WinSCPFileSystem->ApplyCommand();
     }
     else if (Result == MFullSynchronize)
     {
-      if (FileSystem != nullptr)
+      if (WinSCPFileSystem != nullptr)
       {
-        FileSystem->FullSynchronize(true);
+        WinSCPFileSystem->FullSynchronize(true);
       }
       else
       {
@@ -433,9 +433,9 @@ void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
     }
     else if (Result == MSynchronize)
     {
-      if (FileSystem != nullptr)
+      if (WinSCPFileSystem != nullptr)
       {
-        FileSystem->Synchronize();
+        WinSCPFileSystem->Synchronize();
       }
       else
       {
@@ -444,19 +444,19 @@ void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
           AnotherFileSystem->Synchronize();
       }
     }
-    else if ((Result == MQueue) && FileSystem)
+    else if ((Result == MQueue) && WinSCPFileSystem)
     {
-      DebugAssert(FileSystem);
-      FileSystem->QueueShow(false);
+      DebugAssert(WinSCPFileSystem);
+      WinSCPFileSystem->QueueShow(false);
     }
-    else if ((Result == MAddBookmark || Result == MOpenDirectory) && FileSystem)
+    else if ((Result == MAddBookmark || Result == MOpenDirectory) && WinSCPFileSystem)
     {
-      DebugAssert(FileSystem);
-      FileSystem->OpenDirectory(Result == MAddBookmark);
+      DebugAssert(WinSCPFileSystem);
+      WinSCPFileSystem->OpenDirectory(Result == MAddBookmark);
     }
-    else if (Result == MHomeDirectory && FileSystem)
+    else if (Result == MHomeDirectory && WinSCPFileSystem)
     {
-      FileSystem->HomeDirectory();
+      WinSCPFileSystem->HomeDirectory();
     }
     else if (Result == MConfigure)
     {
@@ -466,15 +466,15 @@ void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
     {
       AboutDialog();
     }
-    else if ((Result == MPutty) && FileSystem)
+    else if ((Result == MPutty) && WinSCPFileSystem)
     {
-      DebugAssert(FileSystem);
-      FileSystem->OpenSessionInPutty();
+      DebugAssert(WinSCPFileSystem);
+      WinSCPFileSystem->OpenSessionInPutty();
     }
-    else if ((Result == MEditHistory) && FileSystem)
+    else if ((Result == MEditHistory) && WinSCPFileSystem)
     {
-      DebugAssert(FileSystem);
-      FileSystem->EditHistory();
+      DebugAssert(WinSCPFileSystem);
+      WinSCPFileSystem->EditHistory();
     }
     else if (Result == MPageant || Result == MPuttygen)
     {
@@ -484,20 +484,20 @@ void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
       SplitCommand(::ExpandEnvVars(Path), Program, Params, Dir);
       ::ExecuteShellChecked(Program, Params);
     }
-    else if ((Result == MClearCaches) && FileSystem)
+    else if ((Result == MClearCaches) && WinSCPFileSystem)
     {
-      DebugAssert(FileSystem);
-      FileSystem->ClearCaches();
+      DebugAssert(WinSCPFileSystem);
+      WinSCPFileSystem->ClearCaches();
     }
-    else if ((Result == MSynchronizeBrowsing) && FileSystem)
+    else if ((Result == MSynchronizeBrowsing) && WinSCPFileSystem)
     {
-      DebugAssert(FileSystem != nullptr);
-      FileSystem->ToggleSynchronizeBrowsing();
+      DebugAssert(WinSCPFileSystem != nullptr);
+      WinSCPFileSystem->ToggleSynchronizeBrowsing();
     }
-    else if (Result == MInformation && FileSystem)
+    else if (Result == MInformation && WinSCPFileSystem)
     {
-      DebugAssert(FileSystem);
-      FileSystem->ShowInformation();
+      DebugAssert(WinSCPFileSystem);
+      WinSCPFileSystem->ShowInformation();
     }
     else
     {

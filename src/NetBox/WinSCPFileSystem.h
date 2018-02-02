@@ -137,7 +137,7 @@ protected:
   void ExportSession(TSessionData *Data, void *AParam);
   bool ImportSessions(TObjectList *PanelItems, bool Move, int OpMode);
   void FileProperties();
-  void CreateLink();
+  void RemoteCreateLink();
   void TransferFiles(bool Move);
   void RenameFile();
   void ApplyCommand();

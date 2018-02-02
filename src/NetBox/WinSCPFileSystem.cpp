@@ -1023,7 +1023,7 @@ bool TWinSCPFileSystem::ProcessKeyEx(intptr_t Key, uintptr_t ControlState)
 
     if ((Key == VK_F6) && ((ControlState & (PKF_ALT | PKF_SHIFT)) == PKF_ALT))
     {
-      CreateLink();
+      RemoteCreateLink();
       Handled = true;
     }
 
@@ -1058,7 +1058,7 @@ bool TWinSCPFileSystem::ProcessKeyEx(intptr_t Key, uintptr_t ControlState)
   return Handled;
 }
 
-void TWinSCPFileSystem::CreateLink()
+void TWinSCPFileSystem::RemoteCreateLink()
 {
   RequireCapability(fcResolveSymlink);
   RequireCapability(fcSymbolicLink);
