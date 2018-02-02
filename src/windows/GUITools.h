@@ -13,27 +13,27 @@ typedef void (__closure *TProcessMessagesEvent)();
 typedef nb::FastDelegate0<void> TProcessMessagesEvent;
 
 NB_CORE_EXPORT bool FindFile(UnicodeString &APath);
-NB_CORE_EXPORT bool FindTool(UnicodeString Name, UnicodeString &APath);
+NB_CORE_EXPORT bool FindTool(const UnicodeString Name, UnicodeString &APath);
 NB_CORE_EXPORT void ExecuteShellChecked(const UnicodeString APath, const UnicodeString Params,
   bool ChangeWorkingDirectory = false);
 NB_CORE_EXPORT void ExecuteShellChecked(const UnicodeString Command);
 NB_CORE_EXPORT bool ExecuteShell(const UnicodeString Path, const UnicodeString Params,
   HANDLE &Handle);
-NB_CORE_EXPORT void ExecuteShellCheckedAndWait(HINSTANCE Handle, const UnicodeString Command, TProcessMessagesEvent ProcessMessages);
-NB_CORE_EXPORT bool CopyCommandToClipboard(UnicodeString Command);
-NB_CORE_EXPORT void OpenSessionInPutty(UnicodeString PuttyPath,
+NB_CORE_EXPORT void ExecuteShellCheckedAndWait(const UnicodeString Command, TProcessMessagesEvent ProcessMessages);
+NB_CORE_EXPORT bool CopyCommandToClipboard(const UnicodeString Command);
+NB_CORE_EXPORT void OpenSessionInPutty(const UnicodeString PuttyPath,
   TSessionData *SessionData);
 NB_CORE_EXPORT bool SpecialFolderLocation(intptr_t PathID, UnicodeString &APath);
 NB_CORE_EXPORT UnicodeString UniqTempDir(const UnicodeString BaseDir,
   const UnicodeString Identity, bool Mask = false);
 NB_CORE_EXPORT bool DeleteDirectory(const UnicodeString ADirName);
-NB_CORE_EXPORT UnicodeString ItemsFormatString(UnicodeString SingleItemFormat,
-  UnicodeString MultiItemsFormat, intptr_t Count, UnicodeString FirstItem);
+NB_CORE_EXPORT UnicodeString ItemsFormatString(const UnicodeString SingleItemFormat,
+  const UnicodeString MultiItemsFormat, intptr_t Count, const UnicodeString FirstItem);
 NB_CORE_EXPORT UnicodeString GetPersonalFolder();
-NB_CORE_EXPORT UnicodeString ItemsFormatString(UnicodeString SingleItemFormat,
-  UnicodeString MultiItemsFormat, const TStrings *Items);
-NB_CORE_EXPORT UnicodeString FileNameFormatString(UnicodeString SingleFileFormat,
-  UnicodeString MultiFilesFormat, const TStrings *AFiles, bool Remote);
+NB_CORE_EXPORT UnicodeString ItemsFormatString(const UnicodeString SingleItemFormat,
+  const UnicodeString MultiItemsFormat, const TStrings *Items);
+NB_CORE_EXPORT UnicodeString FileNameFormatString(const UnicodeString SingleFileFormat,
+  const UnicodeString MultiFilesFormat, const TStrings *AFiles, bool Remote);
 //NB_CORE_EXPORT UnicodeString FormatDateTimeSpan(UnicodeString TimeFormat, const TDateTime & DateTime);
 
 #if 0

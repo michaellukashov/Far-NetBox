@@ -74,7 +74,7 @@ bool FindFile(UnicodeString &APath)
   return Result;
 }
 
-void OpenSessionInPutty(UnicodeString PuttyPath,
+void OpenSessionInPutty(const UnicodeString PuttyPath,
   TSessionData *SessionData)
 {
   UnicodeString Program, Params, Dir;
@@ -191,7 +191,7 @@ void OpenSessionInPutty(UnicodeString PuttyPath,
   }
 }
 
-bool FindTool(UnicodeString Name, UnicodeString &APath)
+bool FindTool(const UnicodeString Name, UnicodeString &APath)
 {
   UnicodeString AppPath = ::IncludeTrailingBackslash(::ExtractFilePath(GetConfiguration()->ModuleFileName()));
   APath = AppPath + Name;
@@ -211,7 +211,7 @@ bool FindTool(UnicodeString Name, UnicodeString &APath)
   return Result;
 }
 
-bool CopyCommandToClipboard(UnicodeString Command)
+bool CopyCommandToClipboard(const UnicodeString Command)
 {
   bool Result = false; // UseAlternativeFunction() && IsKeyPressed(VK_CONTROL);
   if (Result)
@@ -283,7 +283,7 @@ bool ExecuteShell(const UnicodeString Path, const UnicodeString Params,
   return DoExecuteShell(Path, Params, false, &Handle);
 }
 
-void ExecuteShellCheckedAndWait(HINSTANCE Handle, const UnicodeString Command,
+void ExecuteShellCheckedAndWait(const UnicodeString Command,
   TProcessMessagesEvent ProcessMessages)
 {
   UnicodeString Program, Params, Dir;
@@ -294,11 +294,11 @@ void ExecuteShellCheckedAndWait(HINSTANCE Handle, const UnicodeString Command,
   {
     throw EOSExtException(FMTLOAD(EXECUTE_APP_ERROR, Program));
   }
-  if (ProcessMessages != nullptr)
+  else
   {
-    if (ProcessHandle != NULL) // only if command was copied to clipboard only
+    if (ProcessHandle != nullptr) // only if command was copied to clipboard only
     {
-      if (ProcessMessages != NULL)
+      if (ProcessMessages != nullptr)
       {
         unsigned long WaitResult;
         do
@@ -336,8 +336,8 @@ bool __fastcall SpecialFolderLocation(intptr_t PathID, UnicodeString &APath)
   return false;
 }
 
-UnicodeString ItemsFormatString(UnicodeString SingleItemFormat,
-  UnicodeString MultiItemsFormat, intptr_t Count, UnicodeString FirstItem)
+UnicodeString ItemsFormatString(const UnicodeString SingleItemFormat,
+  const UnicodeString MultiItemsFormat, intptr_t Count, const UnicodeString FirstItem)
 {
   UnicodeString Result;
   if (Count == 1)
@@ -351,15 +351,15 @@ UnicodeString ItemsFormatString(UnicodeString SingleItemFormat,
   return Result;
 }
 
-UnicodeString ItemsFormatString(UnicodeString SingleItemFormat,
-  UnicodeString MultiItemsFormat, const TStrings *Items)
+UnicodeString ItemsFormatString(const UnicodeString SingleItemFormat,
+  const UnicodeString MultiItemsFormat, const TStrings *Items)
 {
   return ItemsFormatString(SingleItemFormat, MultiItemsFormat,
-      Items->GetCount(), (Items->GetCount() > 0 ? Items->GetString(0) : UnicodeString()));
+    Items->GetCount(), (Items->GetCount() > 0 ? Items->GetString(0) : UnicodeString()));
 }
 
-UnicodeString FileNameFormatString(UnicodeString SingleFileFormat,
-  UnicodeString MultiFilesFormat, const TStrings *AFiles, bool Remote)
+UnicodeString FileNameFormatString(const UnicodeString SingleFileFormat,
+  const UnicodeString MultiFilesFormat, const TStrings *AFiles, bool Remote)
 {
   DebugAssert(AFiles != nullptr);
   UnicodeString Item;
