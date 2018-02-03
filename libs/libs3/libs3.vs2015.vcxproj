@@ -106,7 +106,7 @@
       <AdditionalOptions>/MP %(AdditionalOptions)</AdditionalOptions>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)..\..\src\include;..\..\libs;..\..\libs\libs3\inc;..\..\libs\libs3\inc\mingw;..\..\libs\libs3\inc;..\..\libs\openssl\include;..\..\libs\expat\lib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;USE_DLMALLOC;USE_DL_PREFIX;S3_EXPORT;WIN32;WINSCP;NE_LFS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;USE_DLMALLOC;USE_DL_PREFIX;NEED_LIBS3;S3_EXPORT;WIN32;WINSCP;NE_LFS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <BufferSecurityCheck>true</BufferSecurityCheck>
@@ -118,7 +118,7 @@
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
     </ClCompile>
     <ResourceCompile>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;USE_DLMALLOC;USE_DL_PREFIX;S3_EXPORT;WIN32;WINSCP;NE_LFS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;USE_DLMALLOC;USE_DL_PREFIX;NEED_LIBS3;S3_EXPORT;WIN32;WINSCP;NE_LFS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <Culture>0x0407</Culture>
     </ResourceCompile>
   </ItemDefinitionGroup>
@@ -127,7 +127,7 @@
       <AdditionalOptions>/MP %(AdditionalOptions)</AdditionalOptions>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)..\..\src\include;..\..\libs;..\..\libs\libs3\inc;..\..\libs\libs3\inc\mingw;..\..\libs\libs3\inc;..\..\libs\openssl\include;..\..\libs\expat\lib;..\..\libs\neon\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_WIN64;_DEBUG;_WINDOWS;USE_DLMALLOC;USE_DL_PREFIX;S3_EXPORT;WIN32;WINSCP;NE_LFS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_WIN64;_DEBUG;_WINDOWS;USE_DLMALLOC;USE_DL_PREFIX;NEED_LIBS3;S3_EXPORT;WIN32;WINSCP;NE_LFS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <BufferSecurityCheck>true</BufferSecurityCheck>
@@ -139,7 +139,7 @@
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
     </ClCompile>
     <ResourceCompile>
-      <PreprocessorDefinitions>WIN32;WIN64;_DEBUG;_WINDOWS;USE_DLMALLOC;USE_DL_PREFIX;S3_EXPORT;WIN32;WINSCP;NE_LFS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;WIN64;_DEBUG;_WINDOWS;USE_DLMALLOC;USE_DL_PREFIX;NEED_LIBS3;S3_EXPORT;WIN32;WINSCP;NE_LFS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <Culture>0x0407</Culture>
     </ResourceCompile>
   </ItemDefinitionGroup>
@@ -151,7 +151,7 @@
       <IntrinsicFunctions>false</IntrinsicFunctions>
       <OmitFramePointers>true</OmitFramePointers>
       <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)..\..\src\include;..\..\libs;..\..\libs\libs3\inc;..\..\libs\libs3\inc\mingw;..\..\libs\libs3\inc;..\..\libs\openssl\include;..\..\libs\expat\lib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;USE_DLMALLOC;USE_DL_PREFIX;S3_EXPORT;WIN32;WINSCP;NE_LFS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;USE_DLMALLOC;USE_DL_PREFIX;NEED_LIBS3;S3_EXPORT;WIN32;WINSCP;NE_LFS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -167,7 +167,7 @@
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
     </ClCompile>
     <ResourceCompile>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;USE_DLMALLOC;USE_DL_PREFIX;S3_EXPORT;WIN32;WINSCP;NE_LFS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;USE_DLMALLOC;USE_DL_PREFIX;NEED_LIBS3;S3_EXPORT;WIN32;WINSCP;NE_LFS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <Culture>0x0407</Culture>
     </ResourceCompile>
   </ItemDefinitionGroup>
@@ -179,7 +179,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <OmitFramePointers>true</OmitFramePointers>
       <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)..\..\src\include;..\..\libs;..\..\libs\libs3\inc;..\..\libs\libs3\inc\mingw;..\..\libs\libs3\inc;..\..\libs\openssl\include;..\..\libs\expat\lib;..\..\libs\neon\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_WIN64;NDEBUG;_WINDOWS;USE_DLMALLOC;USE_DL_PREFIX;S3_EXPORT;WIN32;WINSCP;NE_LFS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_WIN64;NDEBUG;_WINDOWS;USE_DLMALLOC;USE_DL_PREFIX;NEED_LIBS3;S3_EXPORT;WIN32;WINSCP;NE_LFS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -195,7 +195,7 @@
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
     </ClCompile>
     <ResourceCompile>
-      <PreprocessorDefinitions>NDEBUG;USE_DLMALLOC;USE_DL_PREFIX;S3_EXPORT;WIN32;WINSCP;NE_LFS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;USE_DLMALLOC;USE_DL_PREFIX;NEED_LIBS3;S3_EXPORT;WIN32;WINSCP;NE_LFS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <Culture>0x0407</Culture>
     </ResourceCompile>
   </ItemDefinitionGroup>

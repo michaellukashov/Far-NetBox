@@ -149,6 +149,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHsc")
 #string(REPLACE "/MD" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 add_definitions(-DWINSCP -DUSE_DLMALLOC)
 add_definitions(-DHIDE_TODO)
+add_definitions(-DNEED_LIBS3)
 
 set(NETBOX_DLL_LINK_FLAGS
   "
@@ -1291,7 +1292,7 @@ target_include_directories(s3 PRIVATE
 )
 
 target_compile_options(s3 PRIVATE
-  -DS3_EXPORT -DWIN32 -DWINSCP -DNE_LFS
+  -DS3_EXPORT -DWIN32 -DWINSCP -DNE_LFS -DNEED_LIBS3
   ${NETBOX_UNICODE_FLAGS}
 )
 
