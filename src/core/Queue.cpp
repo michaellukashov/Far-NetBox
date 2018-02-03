@@ -6,7 +6,6 @@
 #include <Exceptions.h>
 #include <System.DateUtils.hpp>
 
-#include "Terminal.h"
 #include "Queue.h"
 
 class TBackgroundTerminal;
