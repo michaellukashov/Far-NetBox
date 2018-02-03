@@ -1172,11 +1172,11 @@ __fastcall TTerminal::TTerminal(TObjectClassId Kind) :
   FOldFiles = new TRemoteDirectory(this);
 }
 
-void TTerminal::Init(TSessionData *SessionData,
-  TConfiguration *Configuration)
+void TTerminal::Init(TSessionData *ASessionData,
+  TConfiguration *AConfiguration)
 {
-  FConfiguration = Configuration;
-  FSessionData->Assign(SessionData);
+  FConfiguration = AConfiguration;
+  FSessionData->Assign(ASessionData);
   TDateTime Started = Now(); // use the same time for session and XML log
   FLog = new TSessionLog(this, Started, FSessionData, FConfiguration);
   FActionLog = new TActionLog(this, Started, FSessionData, FConfiguration);
@@ -5180,10 +5180,10 @@ bool __fastcall TTerminal::GetCommandSessionOpened() const
     (FCommandSession->GetStatus() == ssOpened);
 }
 //---------------------------------------------------------------------------
-TTerminal * __fastcall TTerminal::CreateSecondarySession(const UnicodeString Name, TSessionData *SessionData)
+TTerminal * __fastcall TTerminal::CreateSecondarySession(const UnicodeString Name, TSessionData *ASessionData)
 {
   std::unique_ptr<TSecondaryTerminal> Result(new TSecondaryTerminal(this));
-  Result->Init(SessionData, FConfiguration, Name);
+  Result->Init(ASessionData, FConfiguration, Name);
 
   Result->SetAutoReadDirectory(false);
 
@@ -6672,7 +6672,7 @@ void __fastcall TTerminal::SynchronizeLocalTimestamp(const UnicodeString & /*AFi
       nullptr, nullptr, nullptr, nullptr);
     FILETIME WrTime = ::DateTimeToFileTime(ChecklistItem->Remote.Modification,
       SessionData->GetDSTMode());
-    bool Result = ::SetFileTime(Handle, nullptr, nullptr, &WrTime);
+    bool Result = ::SetFileTime(Handle, nullptr, nullptr, &WrTime) != FALSE;
     int Error = ::GetLastError();
     ::CloseHandle(Handle);
     if (!Result)
@@ -8001,7 +8001,7 @@ void __fastcall TTerminal::UpdateTargetAttrs(
   {
     Attrs = faArchive;
   }
-  intptr_t NewAttrs = CopyParam->LocalFileAttrs(*AFile->GetRights());
+	uintptr_t NewAttrs = CopyParam->LocalFileAttrs(*AFile->GetRights());
   if ((NewAttrs & Attrs) != NewAttrs)
   {
     FileOperationLoopCustom(this, FOperationProgress, folAllowSkip,

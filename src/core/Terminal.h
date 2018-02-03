@@ -593,7 +593,7 @@ protected:
 
 public:
   explicit __fastcall TTerminal(TObjectClassId Kind = OBJECT_CLASS_TTerminal);
-  void Init(TSessionData *SessionData, TConfiguration *Configuration);
+  void Init(TSessionData *ASessionData, TConfiguration *AConfiguration);
   virtual __fastcall ~TTerminal();
   void __fastcall Open();
   void __fastcall Close();

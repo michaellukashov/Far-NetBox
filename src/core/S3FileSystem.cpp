@@ -80,7 +80,7 @@ void TS3FileSystem::Init(void *)
 
 }
 
-void TS3FileSystem::FileTransferProgress(int64_t TransferSize, int64_t Bytes)
+void TS3FileSystem::FileTransferProgress(int64_t /*TransferSize*/, int64_t /*Bytes*/)
 {
 
 }
@@ -790,7 +790,7 @@ S3Status TS3FileSystem::LibS3ListBucketCallback(
 {
   TLibS3ListBucketCallbackData & Data = *static_cast<TLibS3ListBucketCallbackData *>(CallbackData);
 
-  Data.IsTruncated = IsTruncated;
+  Data.IsTruncated = IsTruncated != 0;
   // This is being called in chunks, not once for all data in a response.
   Data.KeyCount += ContentsCount;
   Data.NextMarker = StrFromS3(NextMarker);
