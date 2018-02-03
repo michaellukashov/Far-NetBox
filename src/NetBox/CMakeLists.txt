@@ -1666,7 +1666,7 @@ set(TEST_INCLUDES
   ../../libs/expat/lib
   ../../libs/fmt
   ../../libs/tinylog
-  ../../libs/xproperty/include
+  ../../libs/libs3/inc
   ../filezilla
   ../filezilla/misc
   ../base
@@ -1861,6 +1861,7 @@ target_link_libraries(testnetbox_04 PRIVATE
 set(TESTNETBOX_05_SOURCES
   UnityBuildCore.cpp
   UnityBuildMain.cpp
+  UnityBuildFilezilla.cpp
   ../../tests/testnetbox_05.cpp
 )
 
@@ -1875,7 +1876,6 @@ target_include_directories(testnetbox_05 PRIVATE
 
 target_compile_options(testnetbox_05 PRIVATE
   ${GOOGLETEST_DEFINES}
-  -DNO_FILEZILLA
   ${NETBOX_UNICODE_FLAGS}
 )
 
