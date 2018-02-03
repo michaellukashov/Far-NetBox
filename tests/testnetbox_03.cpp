@@ -7,7 +7,7 @@
 #pragma hdrstop
 
 #include <Classes.hpp>
-#include <CppProperties.h>
+//#include <CppProperties.h>
 #include <map>
 #include <time.h>
 #include <stdio.h>
@@ -579,6 +579,7 @@ TEST_CASE_METHOD(base_fixture_t, "testBookmarks1", "netbox")
 }
 
 //------------------------------------------------------------------------------
+#if 0
 class TestPropsClass
 {
 private:
@@ -637,5 +638,6 @@ TEST_CASE_METHOD(base_fixture_t, "testTestPropsClass1", "netbox")
   INFO("Hours = " << obj.Assignments["Hours"]);
   INFO("Minutes = " << obj.Assignments["Minutes"]);
 }
+#endif // if 0
 
 //------------------------------------------------------------------------------
