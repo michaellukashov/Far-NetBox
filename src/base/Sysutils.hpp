@@ -447,15 +447,17 @@ typedef struct _TIME_DYNAMIC_ZONE_INFORMATION
 } DYNAMIC_TIME_ZONE_INFORMATION, *PDYNAMIC_TIME_ZONE_INFORMATION;
 #endif
 
+#if 0
 class NB_CORE_EXPORT ScopeExit
 {
 public:
-  explicit ScopeExit(const std::function<void()> &f) : m_f(f) {}
+  explicit ScopeExit(std::function<void()> &&f) : m_f(f) {}
   ~ScopeExit() { m_f(); }
 
 private:
   std::function<void()> m_f;
 };
+#endif // if 0
 
 #define DETAIL_CONCATENATE_IMPL(s1, s2) s1 ## s2
 #define CONCATENATE(s1, s2) DETAIL_CONCATENATE_IMPL(s1, s2)
@@ -466,6 +468,7 @@ private:
 const RAII_type ANONYMOUS_VARIABLE(scoped_object_)
 
 namespace detail {
+
 template<typename F>
 class scope_guard
 {
@@ -512,7 +515,7 @@ public:
 class NullFunc
 {
 public:
-  NullFunc(const std::function<void()> &) {}
+  NullFunc(std::function<void()> &) {}
   ~NullFunc() {}
 };
 
@@ -565,6 +568,7 @@ template<class T>
 using movable_ptr = std::unique_ptr<T, detail::nop_deleter>;
 
 namespace scope_exit {
+
 class uncaught_exceptions_counter
 {
 public:
@@ -608,7 +612,8 @@ public:
   template<typename F>
   auto operator<<(F &&f) { return scope_guard<F, Type>(std::forward<F>(f)); }
 };
-}
+
+} // namespace scope_exit
 
 #define DETAIL_SCOPE_IMPL(type) \
 const auto ANONYMOUS_VARIABLE(scope_##type##_guard) = scope_exit::make_scope_guard<scope_exit::scope_type::type>() << [&]() /* lambda body here */
