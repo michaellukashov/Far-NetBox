@@ -1,8 +1,6 @@
 //------------------------------------------------------------------------------
 // testnetbox_05.cpp
 //------------------------------------------------------------------------------
-
-
 #include <vcl.h>
 #pragma hdrstop
 
@@ -25,11 +23,12 @@
 #include "CoreMain.h"
 
 #include "testutils.h"
-#include <gmock/gmock.h>
+//#include <gmock/gmock.h>
 
 /*******************************************************************************
             test suite
 *******************************************************************************/
+#if 0
 
 class TMockTerminal : public TTerminal
 {
@@ -101,3 +100,4 @@ TEST_CASE("testRemoteFileSetListingStr", "netbox")
   }
 }
 
+#endif // if 0
