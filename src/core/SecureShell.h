@@ -94,7 +94,7 @@ public:
   void WaitForData();
   void Discard();
   void FreeBackend();
-  void PoolForData(WSANETWORKEVENTS &Events, intptr_t &Result);
+  void PoolForData(WSANETWORKEVENTS &Events, uint32_t &Result);
   inline void CaptureOutput(TLogLineType Type,
     UnicodeString Line);
   void ResetConnection();
@@ -108,8 +108,8 @@ public:
   void UpdateSessionInfo() const;
   bool GetReady() const;
   void DispatchSendBuffer(intptr_t BufSize);
-  void SendBuffer(intptr_t &Result);
-  uintptr_t TimeoutPrompt(TQueryParamsTimerEvent PoolEvent);
+  void SendBuffer(uint32_t &Result);
+  uint32_t TimeoutPrompt(TQueryParamsTimerEvent PoolEvent);
   bool TryFtp();
   UnicodeString ConvertInput(RawByteString Input, uintptr_t CodePage = CP_ACP) const;
   void GetRealHost(UnicodeString &Host, intptr_t &Port) const;
@@ -123,11 +123,11 @@ protected:
     intptr_t Count, UnicodeString &Message, UnicodeString *HelpKeyword = nullptr) const;
   int TranslateAuthenticationMessage(UnicodeString &Message, UnicodeString *HelpKeyword = nullptr);
   int TranslateErrorMessage(UnicodeString &Message, UnicodeString *HelpKeyword = nullptr);
-  void AddStdError(UnicodeString AStr);
-  void AddStdErrorLine(UnicodeString AStr);
-  void LogEvent(UnicodeString AStr);
+  void AddStdError(const UnicodeString AStr);
+  void AddStdErrorLine(const UnicodeString AStr);
+  void LogEvent(const UnicodeString AStr);
   void FatalError(UnicodeString Error, UnicodeString HelpKeyword = L"");
-  UnicodeString FormatKeyStr(UnicodeString KeyStr) const;
+  UnicodeString FormatKeyStr(UnicodeString AKeyStr) const;
   static Conf *StoreToConfig(TSessionData *Data, bool Simple);
 
 public:
@@ -138,7 +138,7 @@ public:
   void Close();
   void KeepAlive();
   intptr_t Receive(uint8_t *Buf, intptr_t Length);
-  bool Peek(uint8_t *&Buf, intptr_t Length) const;
+  bool Peek(uint8_t *& Buf, intptr_t Length) const;
   UnicodeString ReceiveLine();
   void Send(const uint8_t *Buf, intptr_t Length);
   void SendSpecial(intptr_t Code);
@@ -148,7 +148,7 @@ public:
   void SendNull();
 
   const TSessionInfo &GetSessionInfo() const;
-  UnicodeString GetHostKeyFingerprint() const;
+  void __fastcall GetHostKeyFingerprint(UnicodeString & SHA256, UnicodeString & MD5) const;
   bool SshFallbackCmd() const;
   uint32_t MinPacketSize() const;
   uint32_t MaxPacketSize() const;
@@ -165,23 +165,23 @@ public:
   void UpdatePortFwdSocket(SOCKET Value, bool Startup);
   void PuttyFatalError(UnicodeString Error);
   TPromptKind IdentifyPromptKind(UnicodeString &AName) const;
-  bool PromptUser(bool ToServer,
-    UnicodeString AName, bool NameRequired,
-    UnicodeString AInstructions, bool InstructionsRequired,
+  bool __fastcall PromptUser(bool ToServer,
+    const UnicodeString AName, bool NameRequired,
+    const UnicodeString AInstructions, bool InstructionsRequired,
     TStrings *Prompts, TStrings *Results);
-  void FromBackend(bool IsStdErr, const uint8_t *Data, intptr_t Length);
-  void CWrite(const char *Data, intptr_t Length);
-  UnicodeString GetStdError() const;
-  void VerifyHostKey(UnicodeString AHost, intptr_t Port,
-    UnicodeString AKeyType, UnicodeString AKeyStr, UnicodeString AFingerprint);
-  bool HaveHostKey(UnicodeString AHost, intptr_t Port, UnicodeString KeyType);
-  void AskAlg(const UnicodeString AlgType, const UnicodeString AlgName);
-  void DisplayBanner(UnicodeString Banner);
-  void OldKeyfileWarning();
-  void PuttyLogEvent(const char *AStr);
-  UnicodeString ConvertFromPutty(const char *Str, intptr_t Length) const;
+  void __fastcall FromBackend(bool IsStdErr, const uint8_t *Data, intptr_t Length);
+  void __fastcall CWrite(const char *Data, intptr_t Length);
+  UnicodeString __fastcall GetStdError() const;
+  void __fastcall VerifyHostKey(
+    const UnicodeString AHost, intptr_t Port, const UnicodeString AKeyType, const UnicodeString AKeyStr,
+    const UnicodeString AFingerprint);
+  bool __fastcall HaveHostKey(UnicodeString AHost, intptr_t Port, const UnicodeString KeyType);
+  void __fastcall AskAlg(UnicodeString AlgType, const UnicodeString AlgName);
+  void __fastcall DisplayBanner(const UnicodeString Banner);
+  void __fastcall OldKeyfileWarning();
+  void __fastcall PuttyLogEvent(const char *AStr);
+  UnicodeString __fastcall ConvertFromPutty(const char *Str, intptr_t Length) const;
 
-#if 0
   __property bool Active = { read = FActive, write = SetActive };
   __property bool Ready = { read = GetReady };
   __property TCaptureOutputEvent OnCaptureOutput = { read = FOnCaptureOutput, write = FOnCaptureOutput };
@@ -191,7 +191,6 @@ public:
   __property bool Simple = { read = FSimple, write = FSimple };
   __property TSshImplementation SshImplementation = { read = FSshImplementation };
   __property bool UtfStrings = { read = FUtfStrings, write = FUtfStrings };
-#endif // #if 0
 
   bool GetActive() const { return FActive; }
   const TCaptureOutputEvent GetOnCaptureOutput() const { return FOnCaptureOutput; }

@@ -10,11 +10,11 @@
 #endif // ifdef _DEBUG
 
 #include <Global.h>
-
-
+//---------------------------------------------------------------------------
+__removed #pragma package(smart_init)
+//---------------------------------------------------------------------------
 // TGuard
-
-TGuard::TGuard(const TCriticalSection &ACriticalSection) :
+__fastcall TGuard::TGuard(const TCriticalSection &ACriticalSection) :
   FCriticalSection(ACriticalSection)
 {
   FCriticalSection.Enter();
@@ -24,20 +24,20 @@ TGuard::~TGuard()
 {
   FCriticalSection.Leave();
 }
-
+//---------------------------------------------------------------------------
 // TUnguard
-
-TUnguard::TUnguard(TCriticalSection &ACriticalSection) :
+//---------------------------------------------------------------------------
+__fastcall TUnguard::TUnguard(TCriticalSection &ACriticalSection) :
   FCriticalSection(ACriticalSection)
 {
   FCriticalSection.Leave();
 }
-
-TUnguard::~TUnguard()
+//---------------------------------------------------------------------------
+__fastcall TUnguard::~TUnguard()
 {
   FCriticalSection.Enter();
 }
-
+//---------------------------------------------------------------------------
 #ifdef _DEBUG
 
 static HANDLE TraceFile = nullptr;
@@ -74,7 +74,7 @@ inline static UTF8String TraceFormat(TDateTime Time, DWORD Thread, const wchar_t
     SourceFile = Slash + 1;
   }
   UTF8String Buffer =
-    UTF8String(FORMAT(L"[%s] [%.4X] [%s:%d:%s] %s\n",
+    UTF8String(FORMAT("[%s] [%.4X] [%s:%d:%s] %s\n",
         TimeString, int(Thread), SourceFile, Line, Func, Message));
   return Buffer;
 }
@@ -172,7 +172,7 @@ void DoTrace(const wchar_t *SourceFile, const wchar_t *Func,
     TraceInMemory.Line = Line;
     TraceInMemory.Message = Message;
 
-    TGuard Guard(TracingCriticalSection);
+    volatile TGuard Guard(TracingCriticalSection);
 
     if (TracesInMemory.capacity() == 0)
     {
@@ -199,7 +199,7 @@ void TraceDumpToFile()
 {
   if (TraceFile != nullptr)
   {
-    TGuard Guard(TracingCriticalSection);
+    volatile TGuard Guard(TracingCriticalSection);
 
     DWORD Written;
 
@@ -282,7 +282,7 @@ void DoTrace(const wchar_t *SourceFile, const wchar_t *Func,
     TTraceInMemory TraceInMemory;
     TraceInMemory.Message = Buffer;
 
-    TGuard Guard(TracingCriticalSection);
+    volatile TGuard Guard(TracingCriticalSection);
 
     if (TracesInMemory.capacity() == 0)
     {

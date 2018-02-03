@@ -100,7 +100,7 @@ TList::~TList()
 
 intptr_t TList::GetCount() const
 {
-  return static_cast<intptr_t>(FList.size());
+  return ToIntPtr(FList.size());
 }
 
 void TList::SetCount(intptr_t NewCount)
@@ -109,7 +109,7 @@ void TList::SetCount(intptr_t NewCount)
   {
     Error(SListCountError, NewCount);
   }
-  if (NewCount <= static_cast<intptr_t>(FList.size()))
+  if (NewCount <= ToIntPtr(FList.size()))
   {
     intptr_t sz = FList.size();
     for (intptr_t Index = sz - 1; (Index != NPOS) && (Index >= NewCount); Index--)
@@ -127,7 +127,7 @@ void *TList::operator[](intptr_t Index) const
 
 void TList::SetItem(intptr_t Index, void *Item)
 {
-  if ((Index == NPOS) || (Index >= static_cast<intptr_t>(FList.size())))
+  if ((Index == NPOS) || (Index >= ToIntPtr(FList.size())))
   {
     Error(SListIndexError, Index);
   }
@@ -136,7 +136,7 @@ void TList::SetItem(intptr_t Index, void *Item)
 
 intptr_t TList::Add(void *Value)
 {
-  intptr_t Result = static_cast<intptr_t>(FList.size());
+  intptr_t Result = ToIntPtr(FList.size());
   FList.push_back(Value);
   return Result;
 }
@@ -164,7 +164,7 @@ void TList::Move(intptr_t CurIndex, intptr_t NewIndex)
 {
   if (CurIndex != NewIndex)
   {
-    if ((NewIndex == NPOS) || (NewIndex >= static_cast<intptr_t>(FList.size())))
+    if ((NewIndex == NPOS) || (NewIndex >= ToIntPtr(FList.size())))
     {
       Error(SListIndexError, NewIndex);
     }
@@ -178,7 +178,7 @@ void TList::Move(intptr_t CurIndex, intptr_t NewIndex)
 
 void TList::Delete(intptr_t Index)
 {
-  if ((Index == NPOS) || (Index >= static_cast<intptr_t>(FList.size())))
+  if ((Index == NPOS) || (Index >= ToIntPtr(FList.size())))
   {
     Error(SListIndexError, Index);
   }
@@ -192,11 +192,11 @@ void TList::Delete(intptr_t Index)
 
 void TList::Insert(intptr_t Index, void *Item)
 {
-  if ((Index == NPOS) || (Index > static_cast<intptr_t>(FList.size())))
+  if ((Index == NPOS) || (Index > ToIntPtr(FList.size())))
   {
     Error(SListIndexError, Index);
   }
-  if (Index <= static_cast<intptr_t>(FList.size()))
+  if (Index <= ToIntPtr(FList.size()))
   {
     FList.insert(Index, 1, Item);
   }
@@ -209,11 +209,11 @@ void TList::Insert(intptr_t Index, void *Item)
 intptr_t TList::IndexOf(const void *Value) const
 {
   intptr_t Result = 0;
-  while ((Result < static_cast<intptr_t>(FList.size())) && (FList[Result] != Value))
+  while ((Result < ToIntPtr(FList.size())) && (FList[Result] != Value))
   {
     Result++;
   }
-  if (Result == static_cast<intptr_t>(FList.size()))
+  if (Result == ToIntPtr(FList.size()))
   {
     Result = NPOS;
   }
@@ -470,9 +470,9 @@ void TStrings::SetDelimitedText(UnicodeString Value)
   }
 }
 
-intptr_t TStrings::CompareStrings(UnicodeString S1, UnicodeString S2) const
+intptr_t TStrings::CompareStrings(const UnicodeString S1, const UnicodeString S2) const
 {
-  return static_cast<intptr_t>(::AnsiCompareText(S1, S2));
+  return ::AnsiCompareText(S1, S2);
 }
 
 void TStrings::Assign(const TPersistent *Source)
@@ -540,12 +540,12 @@ UnicodeString TStrings::GetTextStr() const
   return Result;
 }
 
-void TStrings::SetText(UnicodeString Text)
+void TStrings::SetText(const UnicodeString Text)
 {
   SetTextStr(Text);
 }
 
-void TStrings::SetCommaText(UnicodeString Value)
+void TStrings::SetCommaText(const UnicodeString Value)
 {
   SetDelimiter(L',');
   SetQuoteChar(L'"');
@@ -602,7 +602,7 @@ bool TStrings::Equals(const TStrings *Value) const
   return true;
 }
 
-void TStrings::SetString(intptr_t Index, UnicodeString S)
+void TStrings::SetString(intptr_t Index, const UnicodeString S)
 {
   TObject *TempObject = GetObj(Index);
   Delete(Index);
@@ -630,7 +630,7 @@ void TStrings::Move(intptr_t CurIndex, intptr_t NewIndex)
   }
 }
 
-intptr_t TStrings::IndexOf(UnicodeString S) const
+intptr_t TStrings::IndexOf(const UnicodeString S) const
 {
   for (intptr_t Result = 0; Result < GetCount(); Result++)
   {
@@ -642,7 +642,7 @@ intptr_t TStrings::IndexOf(UnicodeString S) const
   return NPOS;
 }
 
-intptr_t TStrings::IndexOfName(UnicodeString Name) const
+intptr_t TStrings::IndexOfName(const UnicodeString Name) const
 {
   for (intptr_t Index = 0; Index < GetCount(); ++Index)
   {
@@ -661,12 +661,12 @@ UnicodeString TStrings::GetName(intptr_t Index) const
   return ExtractName(GetString(Index));
 }
 
-void TStrings::SetName(intptr_t /*Index*/, UnicodeString /*Value*/)
+void TStrings::SetName(intptr_t /*Index*/, const UnicodeString /*Value*/)
 {
   ThrowNotImplemented(2012);
 }
 
-UnicodeString TStrings::ExtractName(UnicodeString S) const
+UnicodeString TStrings::ExtractName(const UnicodeString S) const
 {
   UnicodeString Result = S;
   intptr_t P = ::AnsiPos(Result, L'=');
@@ -681,7 +681,7 @@ UnicodeString TStrings::ExtractName(UnicodeString S) const
   return Result;
 }
 
-UnicodeString TStrings::GetValue(UnicodeString Name) const
+UnicodeString TStrings::GetValue(const UnicodeString Name) const
 {
   UnicodeString Result;
   intptr_t Index = IndexOfName(Name);
@@ -692,7 +692,7 @@ UnicodeString TStrings::GetValue(UnicodeString Name) const
   return Result;
 }
 
-void TStrings::SetValue(UnicodeString Name, UnicodeString Value)
+void TStrings::SetValue(const UnicodeString Name, const UnicodeString Value)
 {
   intptr_t Index = IndexOfName(Name);
   if (!Value.IsEmpty())
@@ -768,8 +768,8 @@ void TStringList::Assign(const TPersistent *Source)
 
 intptr_t TStringList::GetCount() const
 {
-  DebugAssert(static_cast<intptr_t>(FStrings.size()) == TObjectList::GetCount());
-  return static_cast<intptr_t>(FStrings.size());
+  DebugAssert(ToIntPtr(FStrings.size()) == TObjectList::GetCount());
+  return ToIntPtr(FStrings.size());
 }
 
 intptr_t TStringList::Add(UnicodeString S)
@@ -809,7 +809,7 @@ intptr_t TStringList::AddObject(UnicodeString S, TObject *AObject)
   return Result;
 }
 
-bool TStringList::Find(UnicodeString S, intptr_t &Index) const
+bool TStringList::Find(const UnicodeString S, intptr_t &Index) const
 {
   bool Result = false;
   intptr_t L = 0;
@@ -839,7 +839,7 @@ bool TStringList::Find(UnicodeString S, intptr_t &Index) const
   return Result;
 }
 
-intptr_t TStringList::IndexOf(UnicodeString S) const
+intptr_t TStringList::IndexOf(const UnicodeString S) const
 {
   intptr_t Result = NPOS;
   if (!GetSorted())
@@ -856,18 +856,18 @@ intptr_t TStringList::IndexOf(UnicodeString S) const
   return Result;
 }
 
-void TStringList::SetString(intptr_t Index, UnicodeString S)
+void TStringList::SetString(intptr_t Index, const UnicodeString S)
 {
   if (GetSorted())
   {
     Error(SSortedListError, 0);
   }
-  if ((Index == NPOS) || (Index > static_cast<intptr_t>(FStrings.size())))
+  if ((Index == NPOS) || (Index > ToIntPtr(FStrings.size())))
   {
     Error(SListIndexError, Index);
   }
   Changing();
-  if (Index < static_cast<intptr_t>(FStrings.size()))
+  if (Index < ToIntPtr(FStrings.size()))
   {
     FStrings[Index] = S;
   }
@@ -880,7 +880,7 @@ void TStringList::SetString(intptr_t Index, UnicodeString S)
 
 void TStringList::Delete(intptr_t Index)
 {
-  if ((Index == NPOS) || (Index >= static_cast<intptr_t>(FStrings.size())))
+  if ((Index == NPOS) || (Index >= ToIntPtr(FStrings.size())))
   {
     Error(SListIndexError, Index);
   }
@@ -925,11 +925,11 @@ void TStringList::InsertItem(intptr_t Index, UnicodeString S, TObject *AObject)
 
 const UnicodeString &TStringList::GetStringRef(intptr_t Index) const
 {
-  if ((Index == NPOS) || (Index > static_cast<intptr_t>(FStrings.size())))
+  if ((Index == NPOS) || (Index > ToIntPtr(FStrings.size())))
   {
     Error(SListIndexError, Index);
   }
-  if (Index == static_cast<intptr_t>(FStrings.size()))
+  if (Index == ToIntPtr(FStrings.size()))
   {
     const_cast<TStringList *>(this)->InsertItem(Index, UnicodeString(), nullptr);
   }
@@ -982,7 +982,7 @@ void TStringList::LoadFromFile(UnicodeString AFileName)
     bool ConvertToken = false;
     FileBuffer.Convert(eolCRLF, eolCRLF, cpRemoveCtrlZ | cpRemoveBOM, ConvertToken);
     SAFE_CLOSE_HANDLE(FileHandle);
-    UnicodeString Str(FileBuffer.GetData(), static_cast<intptr_t>(FileBuffer.GetSize()));
+    UnicodeString Str(FileBuffer.GetData(), ToIntPtr(FileBuffer.GetSize()));
     SetTextStr(Str);
   }
 }
@@ -1026,7 +1026,7 @@ void TStringList::Changed()
   }
 }
 
-void TStringList::Insert(intptr_t Index, UnicodeString S, TObject *AObject)
+void TStringList::Insert(intptr_t Index, const UnicodeString S, TObject *AObject)
 {
   InsertItem(Index, S, AObject);
 }
@@ -1107,7 +1107,7 @@ void TStringList::ExchangeItems(intptr_t Index1, intptr_t Index2)
   }
 }
 
-intptr_t TStringList::CompareStrings(UnicodeString S1, UnicodeString S2) const
+intptr_t TStringList::CompareStrings(const UnicodeString S1, const UnicodeString S2) const
 {
   if (GetCaseSensitive())
   {
@@ -1196,7 +1196,7 @@ double MilliSecondSpan(const TDateTime &ANow, const TDateTime &AThen)
 int64_t MilliSecondsBetween(const TDateTime &ANow, const TDateTime &AThen)
 {
   double Result = floor(MilliSecondSpan(ANow, AThen));
-  return static_cast<int64_t>(Result);
+  return ToInt64(Result);
 }
 
 int64_t SecondsBetween(const TDateTime &ANow, const TDateTime &AThen)
@@ -1322,7 +1322,25 @@ void TStream::WriteBuffer(const void *Buffer, int64_t Count)
   }
 }
 
-void ReadError(UnicodeString Name)
+int64_t TStream::GetPosition() const
+{
+  return Seek(0, soFromCurrent);
+}
+
+int64_t TStream::GetSize() const
+{
+  int64_t Pos = Seek(0, soFromCurrent);
+  int64_t Result = Seek(0, soFromEnd);
+  Seek(Pos, soFromBeginning);
+  return Result;
+}
+
+void TStream::SetPosition(const int64_t Pos)
+{
+  Seek(Pos, soFromBeginning);
+}
+
+static void ReadError(const UnicodeString Name)
 {
   throw Exception(FORMAT("InvalidRegType: %s", Name)); // FIXME ERegistryException.CreateResFmt(@SInvalidRegType, [Name]);
 }
@@ -1358,13 +1376,13 @@ int64_t THandleStream::Write(const void *Buffer, int64_t Count)
   return Result;
 }
 
-int64_t THandleStream::Seek(int64_t Offset, int Origin)
+int64_t THandleStream::Seek(int64_t Offset, int Origin) const
 {
   int64_t Result = ::FileSeek(FHandle, Offset, ToDWord(Origin));
   return Result;
 }
 
-int64_t THandleStream::Seek(const int64_t Offset, TSeekOrigin Origin)
+int64_t THandleStream::Seek(const int64_t Offset, TSeekOrigin Origin) const
 {
   int origin = FILE_BEGIN;
   switch (Origin)
@@ -1400,7 +1418,7 @@ TSafeHandleStream::TSafeHandleStream(THandle AHandle) :
 int64_t TSafeHandleStream::Read(void *Buffer, int64_t Count)
 {
   int64_t Result = ::FileRead(FHandle, Buffer, Count);
-  if (Result == static_cast<int64_t>(-1))
+  if (Result == ToInt64(-1))
   {
     ::RaiseLastOSError();
   }
@@ -1451,12 +1469,12 @@ int64_t TMemoryStream::Read(void *Buffer, int64_t Count)
   return Result;
 }
 
-int64_t TMemoryStream::Seek(int64_t Offset, int Origin)
+int64_t TMemoryStream::Seek(int64_t Offset, int Origin) const
 {
   return Seek(Offset, static_cast<TSeekOrigin>(Origin));
 }
 
-int64_t TMemoryStream::Seek(const int64_t Offset, TSeekOrigin Origin)
+int64_t TMemoryStream::Seek(const int64_t Offset, TSeekOrigin Origin) const
 {
   switch (Origin)
   {
@@ -1547,10 +1565,10 @@ void *TMemoryStream::Realloc(int64_t &NewCapacity)
   return Result;
 }
 
-void TMemoryStream::SetPointer(void *Ptr, int64_t Size)
+void TMemoryStream::SetPointer(void *Ptr, int64_t ASize)
 {
   FMemory = Ptr;
-  FSize = Size;
+  FSize = ASize;
 }
 
 int64_t TMemoryStream::Write(const void *Buffer, int64_t Count)
@@ -1695,7 +1713,7 @@ void TRegistry::GetKeyNames(TStrings *Names) const
   UnicodeString S;
   if (GetKeyInfo(Info))
   {
-    S.SetLength(static_cast<intptr_t>(Info.MaxSubKeyLen) + 1);
+    S.SetLength(ToIntPtr(Info.MaxSubKeyLen) + 1);
     for (DWORD Index = 0; Index < Info.NumSubKeys; Index++)
     {
       DWORD Len = Info.MaxSubKeyLen + 1;
@@ -1765,7 +1783,7 @@ bool TRegistry::DeleteKey(UnicodeString Key)
     {
       UnicodeString KeyName;
       KeyName.SetLength(Info.MaxSubKeyLen + 1);
-      for (intptr_t Index = static_cast<intptr_t>(Info.NumSubKeys) - 1; Index >= 0; Index--)
+      for (intptr_t Index = ToIntPtr(Info.NumSubKeys) - 1; Index >= 0; Index--)
       {
         DWORD Len = Info.MaxSubKeyLen + 1;
         if (RegEnumKeyEx(DeleteKey, ToDWord(Index), &KeyName[1], &Len,

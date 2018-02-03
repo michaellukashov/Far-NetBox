@@ -1491,7 +1491,7 @@ private:
   TFtps IndexToFtps(intptr_t Index) const;
   TFtps GetFtps() const;
   TLoginType IndexToLoginType(intptr_t Index) const;
-  bool VerifyKey(UnicodeString AFileName, bool TypeOnly);
+  bool VerifyKey(const UnicodeString AFileName, bool TypeOnly);
   void PrevTabClick(TFarButton * /*Sender*/, bool &Close);
   void NextTabClick(TFarButton * /*Sender*/, bool &Close);
   void CipherButtonClick(TFarButton *Sender, bool &Close);
@@ -2214,7 +2214,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin *AFarPlugin, TSessionActionEnum 
   Text = new TFarText(this);
   Text->SetCaption(GetMsg(NB_LOGIN_FTP_POST_LOGIN_COMMANDS));
 
-  for (intptr_t Index3 = 0; Index3 < static_cast<intptr_t>(_countof(PostLoginCommandsEdits)); ++Index3)
+  for (intptr_t Index3 = 0; Index3 < ToIntPtr(_countof(PostLoginCommandsEdits)); ++Index3)
   {
     TFarEdit *Edit = new TFarEdit(this);
     PostLoginCommandsEdits[Index3] = Edit;
@@ -3122,7 +3122,7 @@ bool TSessionDialog::Execute(TSessionData *SessionData, TSessionActionEnum &Acti
 
   bool AllowScpFallback;
   TransferProtocolCombo->SetItemIndex(
-    static_cast<intptr_t>(FSProtocolToIndex(SessionData->GetFSProtocol(), AllowScpFallback)));
+    ToIntPtr(FSProtocolToIndex(SessionData->GetFSProtocol(), AllowScpFallback)));
   AllowScpFallbackCheck->SetChecked(AllowScpFallback);
 
   // Directories tab
@@ -3198,7 +3198,7 @@ bool TSessionDialog::Execute(TSessionData *SessionData, TSessionActionEnum &Acti
   // SFTP tab
 
 #define TRISTATE(COMBO, PROP, MSG) \
-    COMBO->SetItemIndex(static_cast<intptr_t>(2 - SessionData->Get ## PROP))
+    COMBO->SetItemIndex(ToIntPtr(2 - SessionData->Get ## PROP))
   SFTP_BUGS();
 
   if (SessionData->GetSftpServer().IsEmpty())
@@ -3209,17 +3209,17 @@ bool TSessionDialog::Execute(TSessionData *SessionData, TSessionActionEnum &Acti
   {
     SftpServerEdit->SetText(SessionData->GetSftpServer());
   }
-  SFTPMaxVersionCombo->SetItemIndex(static_cast<intptr_t>(SessionData->GetSFTPMaxVersion()));
+  SFTPMaxVersionCombo->SetItemIndex(ToIntPtr(SessionData->GetSFTPMaxVersion()));
   SFTPMinPacketSizeEdit->SetAsInteger(SessionData->GetSFTPMinPacketSize());
   SFTPMaxPacketSizeEdit->SetAsInteger(SessionData->GetSFTPMaxPacketSize());
 
   // FTP tab
-  FtpUseMlsdCombo->SetItemIndex(static_cast<intptr_t>(2 - SessionData->GetFtpUseMlsd()));
+  FtpUseMlsdCombo->SetItemIndex(ToIntPtr(2 - SessionData->GetFtpUseMlsd()));
   FtpAllowEmptyPasswordCheck->SetChecked(SessionData->GetFtpAllowEmptyPassword());
   std::unique_ptr<TStrings> PostLoginCommands(new TStringList());
   PostLoginCommands->SetText(SessionData->GetPostLoginCommands());
   for (intptr_t Index = 0; (Index < PostLoginCommands->GetCount()) &&
-    (Index < static_cast<intptr_t>(_countof(PostLoginCommandsEdits))); ++Index)
+    (Index < ToIntPtr(_countof(PostLoginCommandsEdits))); ++Index)
   {
     PostLoginCommandsEdits[Index]->SetText(PostLoginCommands->GetString(Index));
   }
@@ -3361,7 +3361,7 @@ bool TSessionDialog::Execute(TSessionData *SessionData, TSessionActionEnum &Acti
     {
       TObject *Obj = as_object(ToPtr(SessionData->GetCipher(Index2)));
       CipherListBox->GetItems()->AddObject(
-        GetMsg(NB_CIPHER_NAME_WARN + static_cast<intptr_t>(SessionData->GetCipher(Index2))),
+        GetMsg(NB_CIPHER_NAME_WARN + ToIntPtr(SessionData->GetCipher(Index2))),
         Obj);
     }
   }
@@ -3382,7 +3382,7 @@ bool TSessionDialog::Execute(TSessionData *SessionData, TSessionActionEnum &Acti
     for (intptr_t Index3 = 0; Index3 < KEX_COUNT; ++Index3)
     {
       KexListBox->GetItems()->AddObject(
-        GetMsg(NB_KEX_NAME_WARN + static_cast<intptr_t>(SessionData->GetKex(Index3))),
+        GetMsg(NB_KEX_NAME_WARN + ToIntPtr(SessionData->GetKex(Index3))),
         as_object(ToPtr(SessionData->GetKex(Index3))));
     }
   }
@@ -3532,7 +3532,7 @@ bool TSessionDialog::Execute(TSessionData *SessionData, TSessionActionEnum &Acti
     TODO("TlsCertificateFileEdit->GetText()");
     SessionData->SetTlsCertificateFile(PrivateKeyEdit->GetText());
     std::unique_ptr<TStrings> PostLoginCommands2(new TStringList());
-    for (intptr_t Index4 = 0; Index4 < static_cast<intptr_t>(_countof(PostLoginCommandsEdits)); ++Index4)
+    for (intptr_t Index4 = 0; Index4 < ToIntPtr(_countof(PostLoginCommandsEdits)); ++Index4)
     {
       UnicodeString Text = PostLoginCommandsEdits[Index4]->GetText();
       if (!Text.IsEmpty())
@@ -3929,7 +3929,7 @@ TFtps TSessionDialog::GetFtps() const
 
 TFSProtocol TSessionDialog::IndexToFSProtocol(intptr_t Index, bool AllowScpFallback) const
 {
-  bool InBounds = (Index >= 0) && (Index < static_cast<intptr_t>(_countof(FSOrder)));
+  bool InBounds = (Index >= 0) && (Index < ToIntPtr(_countof(FSOrder)));
   DebugAssert(InBounds || (Index == -1));
   TFSProtocol Result = fsSFTP;
   if (InBounds)
@@ -3955,7 +3955,7 @@ TLoginType TSessionDialog::IndexToLoginType(intptr_t Index) const
   return Result;
 }
 
-bool TSessionDialog::VerifyKey(UnicodeString AFileName, bool TypeOnly)
+bool TSessionDialog::VerifyKey(const UnicodeString AFileName, bool TypeOnly)
 {
   bool Result = true;
 
@@ -4211,7 +4211,7 @@ void TSessionDialog::FillCodePageEdit()
 {
   // CodePageEditAdd(CP_UTF8);
   CodePageEdit->GetItems()->AddObject(L"65001 (UTF-8)",
-    as_object(ToPtr(static_cast<intptr_t>(65001))));
+    as_object(ToPtr(ToIntPtr(65001))));
   CodePageEditAdd(CP_ACP);
   CodePageEditAdd(CP_OEMCP);
   CodePageEditAdd(20866); // KOI8-r
@@ -4224,7 +4224,7 @@ void TSessionDialog::CodePageEditAdd(uint32_t Cp)
   if (::GetCodePageInfo(Cp, cpInfoEx))
   {
     CodePageEdit->GetItems()->AddObject(cpInfoEx.CodePageName,
-      as_object(ToPtr(static_cast<intptr_t>(cpInfoEx.CodePage))));
+      as_object(ToPtr(ToIntPtr(cpInfoEx.CodePage))));
   }
 }
 
@@ -4682,7 +4682,7 @@ TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin *AFarPlugin,
     }
     else
     {
-      Text->SetCaption(base::MinimizeName(AFileList->GetString(0), static_cast<intptr_t>(GetClientSize().x), true));
+      Text->SetCaption(base::MinimizeName(AFileList->GetString(0), ToIntPtr(GetClientSize().x), true));
     }
     TRemoteFile *File = AFileList->GetAs<TRemoteFile>(0);
     if (!File->GetLinkTo().IsEmpty())
@@ -6071,7 +6071,7 @@ void TFileSystemInfoDialog::Feed(TFeedFileSystemDataEvent AddItem)
     AddItem(ServerLabels, NB_SERVER_FS_PROTOCOL, FFileSystemInfo.ProtocolName);
   }
 
-  AddItem(HostKeyFingerprintEdit, 0, FSessionInfo.HostKeyFingerprint);
+  AddItem(HostKeyFingerprintEdit, 0, FSessionInfo.HostKeyFingerprintSHA256);
 
   AddItem(ProtocolLabels, NB_PROTOCOL_MODE_CHANGING, CapabilityStr(fcModeChanging));
   AddItem(ProtocolLabels, NB_PROTOCOL_OWNER_GROUP_CHANGING, CapabilityStr(fcGroupChanging));
@@ -7347,7 +7347,7 @@ void TSynchronizeChecklistDialog::AdaptSize()
 UnicodeString TSynchronizeChecklistDialog::FormatSize(
   int64_t Size, int Column)
 {
-  intptr_t Width = static_cast<intptr_t>(FWidths[Column]);
+  intptr_t Width = ToIntPtr(FWidths[Column]);
   UnicodeString Result = FORMAT("%lu", Size);
 
   if (Result.Length() > Width)
@@ -7421,9 +7421,9 @@ UnicodeString TSynchronizeChecklistDialog::ItemLine(const TChecklistItem *Checkl
     }
   }
 
-  intptr_t Action = static_cast<intptr_t>(ChecklistItem->Action - 1);
-  DebugAssert((Action != NPOS) && (Action < static_cast<intptr_t>(_countof(FActions))));
-  if ((Action != NPOS) && (Action < static_cast<intptr_t>(_countof(FActions))))
+  intptr_t Action = ToIntPtr(ChecklistItem->Action - 1);
+  DebugAssert((Action != NPOS) && (Action < ToIntPtr(_countof(FActions))));
+  if ((Action != NPOS) && (Action < ToIntPtr(_countof(FActions))))
     AddColumn(Line, FActions[Action], 4);
 
   if (ChecklistItem->Action == saDeleteLocal)

@@ -28,11 +28,11 @@ NB_CORE_EXPORT UnicodeString GetLanguage(Word Language);
 // Return the value of the specified file version info string using the
 // specified translation
 NB_CORE_EXPORT UnicodeString GetFileInfoString(void *FileInfo,
-  TTranslation Translation, UnicodeString StringName, bool AllowEmpty);
+  TTranslation Translation, const UnicodeString StringName, bool AllowEmpty);
 
 NB_CORE_EXPORT intptr_t CalculateCompoundVersion(intptr_t MajorVer,
   intptr_t MinorVer, intptr_t Release, intptr_t Build);
 
-NB_CORE_EXPORT intptr_t StrToCompoundVersion(UnicodeString AStr);
+NB_CORE_EXPORT intptr_t StrToCompoundVersion(const UnicodeString AStr);
 
-NB_CORE_EXPORT intptr_t CompareVersion(UnicodeString V1, UnicodeString V2);
+NB_CORE_EXPORT intptr_t CompareVersion(const UnicodeString V1, const UnicodeString V2);

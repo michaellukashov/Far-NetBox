@@ -1099,6 +1099,9 @@ BOOL AFXAPI AfxIsValidString(LPCSTR lpsz, int nLength = -1);
 BOOL AfxIsValidAtom(ATOM nAtom);
 BOOL AfxIsValidAtom(LPCTSTR psz);
 
+#pragma warning(push)
+#pragma warning(disable: 4290) // C++ exception specification ignored except to indicate a function is not __declspec(nothrow)
+
 #if defined(_DEBUG) && !defined(_AFX_NO_DEBUG_CRT)
 
 // Memory tracking allocation
@@ -1117,6 +1120,8 @@ void operator delete(void*) _GLIBCXX_USE_NOEXCEPT
 #else
 void __cdecl operator delete[](void * p) throw();
 #endif
+
+#pragma warning(pop)
 
 void* AFXAPI AfxAllocMemoryDebug(size_t nSize, BOOL bIsObject,
 	LPCSTR lpszFileName, int nLine);

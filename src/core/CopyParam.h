@@ -76,9 +76,7 @@ private:
   bool FIgnorePermErrors;
   TResumeSupport FResumeSupport;
   int64_t FResumeThreshold;
-#if 0
-  UnicodeString GetLogStr() const;
-#endif // #if 0
+  __removed UnicodeString GetLogStr() const;
   wchar_t FInvalidCharsReplacement;
   UnicodeString FLocalInvalidChars;
   UnicodeString FTokenizibleChars;
@@ -142,11 +140,11 @@ public:
 
   bool operator==(const TCopyParamType &rhp) const;
 
-#if 0
   __property TFileMasks AsciiFileMask = { read = FAsciiFileMask, write = FAsciiFileMask };
   __property TFileNameCase FileNameCase = { read = FFileNameCase, write = FFileNameCase };
   __property bool PreserveReadOnly = { read = FPreserveReadOnly, write = FPreserveReadOnly };
   __property bool PreserveTime = { read = FPreserveTime, write = FPreserveTime };
+  RWProperty<bool> PreserveTime{nb::bind(&TCopyParamType::GetPreserveTime, this), nb::bind(&TCopyParamType::SetPreserveTime, this)};
   __property bool PreserveTimeDirs = { read = FPreserveTimeDirs, write = FPreserveTimeDirs };
   __property TRights Rights = { read = FRights, write = FRights };
   __property TTransferMode TransferMode = { read = FTransferMode, write = FTransferMode };
@@ -169,7 +167,6 @@ public:
   __property bool RemoveBOM = { read = FRemoveBOM, write = FRemoveBOM };
   __property unsigned long CPSLimit = { read = FCPSLimit, write = FCPSLimit };
   __property bool NewerOnly = { read = FNewerOnly, write = FNewerOnly };
-#endif // #if 0
 
   const TFileMasks &GetAsciiFileMask() const { return FAsciiFileMask; }
   TFileMasks &GetAsciiFileMask() { return FAsciiFileMask; }
@@ -204,7 +201,7 @@ public:
   bool GetCalculateSize() const { return FCalculateSize; }
   void SetCalculateSize(bool Value) { FCalculateSize = Value; }
   UnicodeString GetFileMask() const { return FFileMask; }
-  void SetFileMask(UnicodeString Value) { FFileMask = Value; }
+  void SetFileMask(const UnicodeString Value) { FFileMask = Value; }
   const TFileMasks &GetIncludeFileMask() const { return FIncludeFileMask; }
   TFileMasks &GetIncludeFileMask() { return FIncludeFileMask; }
   void SetIncludeFileMask(const TFileMasks &Value) { FIncludeFileMask = Value; }
@@ -226,3 +223,4 @@ public:
 NB_CORE_EXPORT uintptr_t GetSpeedLimit(UnicodeString Text);
 NB_CORE_EXPORT UnicodeString SetSpeedLimit(uintptr_t Limit);
 NB_CORE_EXPORT void CopySpeedLimits(TStrings *Source, TStrings *Dest);
+NB_CORE_EXPORT TOperationSide ReverseOperationSide(TOperationSide Side);

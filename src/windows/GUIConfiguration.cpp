@@ -437,22 +437,18 @@ void TCopyParamList::Load(THierarchicalStorage *Storage, intptr_t ACount)
             Rule->Load(Storage);
           }
         }
-        __finally
-        {
-#if 0
+        __finally__removed
+        ({
           Storage->CloseSubKey();
-#endif // #if 0
-        };
+        })
       }
     }
-#if 0
-    catch(...)
-    {
+    catch__removed
+    ({
       delete CopyParam;
       delete Rule;
       throw;
-    }
-#endif // #if 0
+    })
 
     FCopyParams->Add(CopyParam.release());
     FRules->Add(Rule.release());
@@ -485,12 +481,10 @@ void TCopyParamList::Save(THierarchicalStorage *Storage) const
           Rule->Save(Storage);
         }
       }
-      __finally
-      {
-#if 0
+      __finally__removed
+      ({
         Storage->CloseSubKey();
-#endif // #if 0
-      };
+      })
     }
   }
 }
@@ -658,7 +652,7 @@ void TGUIConfiguration::UpdateStaticUsage()
   // Usage->Set(L"CopyParamsCount", (FCopyParamListDefaults ? 0 : FCopyParamList->GetCount()));
 }
 
-static UnicodeString PropertyToKey(UnicodeString Property)
+static UnicodeString PropertyToKey(const UnicodeString Property)
 {
   // no longer useful
   intptr_t P = Property.LastDelimiter(L".>");
@@ -710,7 +704,7 @@ void TGUIConfiguration::SaveData(THierarchicalStorage *Storage, bool All)
 #undef KEYEX
 #define KEYEX(TYPE, NAME, VAR) Storage->Write ## TYPE(LASTELEM(UnicodeString(#NAME)), Get ## VAR())
 #undef KEY
-#define KEY(TYPE, NAME) Storage->Write ## TYPE(PropertyToKey(#NAME), Get ## NAME())
+#define KEY(TYPE, NAME) Storage->Write ## TYPE(::PropertyToKey(#NAME), Get ## NAME())
   REGCONFIG(true);
 #undef KEY
 #undef KEYEX
@@ -736,12 +730,10 @@ void TGUIConfiguration::SaveData(THierarchicalStorage *Storage, bool All)
         FCopyParamList->Save(Storage);
       }
     }
-    __finally
-    {
-#if 0
+    __finally__removed
+    ({
       Storage->CloseSubKey();
-#endif // #if 0
-    };
+    })
   }
 
   if (Storage->OpenSubKey(L"Interface\\NewDirectory", /*CanCreate*/ true, /*Path*/ true))
@@ -754,12 +746,10 @@ void TGUIConfiguration::SaveData(THierarchicalStorage *Storage, bool All)
       };
       FNewDirectoryProperties.Save(Storage);
     }
-    __finally
-    {
-#if 0
+    __finally__removed
+    ({
       Storage->CloseSubKey();
-#endif // #if 0
-    };
+    })
   }
 }
 
@@ -801,12 +791,10 @@ void TGUIConfiguration::LoadData(THierarchicalStorage *Storage)
       }
       FCopyParamList->Reset();
     }
-    __finally
-    {
-#if 0
+    __finally__removed
+    ({
       Storage->CloseSubKey();
-#endif // #if 0
-    };
+    })
   }
 
   // Make it compatible with versions prior to 3.7.1 that have not saved PuttyPath
@@ -833,12 +821,10 @@ void TGUIConfiguration::LoadData(THierarchicalStorage *Storage)
       };
       FNewDirectoryProperties.Load(Storage);
     }
-    __finally
-    {
-#if 0
+    __finally__removed
+    ({
       Storage->CloseSubKey();
-#endif // #if 0
-    };
+    })
   }
 }
 
@@ -1083,13 +1069,13 @@ UnicodeString TGUIConfiguration::AppliedLocaleVersion()
   return Result;
 }
 
-void TGUIConfiguration::SetAppliedLocale(LCID AppliedLocale, UnicodeString LocaleModuleName)
+void TGUIConfiguration::SetAppliedLocale(LCID AppliedLocale, const UnicodeString LocaleModuleName)
 {
   FAppliedLocale = AppliedLocale;
   FLocaleModuleName = LocaleModuleName;
 }
 
-void TGUIConfiguration::FreeResourceModule(HANDLE Instance)
+void TGUIConfiguration::FreeResourceModule(HANDLE /*Instance*/)
 {
 #if 0
   TLibModule *MainModule = FindModule(HInstance);
@@ -1163,12 +1149,10 @@ void TGUIConfiguration::FindLocales(UnicodeString LocalesMask, TStrings *Exts, U
       Found = (FindNextChecked(SearchRec) == 0);
     }
   }
-  __finally
-  {
-#if 0
+  __finally__removed
+  ({
     FindClose(SearchRec);
-#endif // #if 0
-  };
+  })
 }
 
 void TGUIConfiguration::AddLocale(LCID Locale, UnicodeString Name)
@@ -1189,12 +1173,10 @@ void TGUIConfiguration::AddLocale(LCID Locale, UnicodeString Name)
       };
       LocaleInfo->Completeness = GetResourceModuleCompleteness(Module);
     }
-    __finally
-    {
-#if 0
+    __finally__removed
+    ({
       FreeResourceModule(Module);
-#endif // #if 0
-    };
+    })
   }
   catch (...)
   {

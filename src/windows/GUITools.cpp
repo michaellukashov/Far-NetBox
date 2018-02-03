@@ -74,7 +74,7 @@ bool FindFile(UnicodeString &APath)
   return Result;
 }
 
-void OpenSessionInPutty(UnicodeString PuttyPath,
+void OpenSessionInPutty(const UnicodeString PuttyPath,
   TSessionData *SessionData)
 {
   UnicodeString Program, Params, Dir;
@@ -159,14 +159,12 @@ void OpenSessionInPutty(UnicodeString PuttyPath,
           }
         }
       }
-      __finally
-      {
-#if 0
+      __finally__removed
+      ({
         delete Storage;
         delete ExportData;
         delete SourceStorage;
-#endif // #if 0
-      };
+      })
 
       UnicodeString LoadSwitch = L"-load";
       intptr_t P = Params2.LowerCase().Pos(LoadSwitch + L" ");
@@ -193,7 +191,7 @@ void OpenSessionInPutty(UnicodeString PuttyPath,
   }
 }
 
-bool FindTool(UnicodeString Name, UnicodeString &APath)
+bool FindTool(const UnicodeString Name, UnicodeString &APath)
 {
   UnicodeString AppPath = ::IncludeTrailingBackslash(::ExtractFilePath(GetConfiguration()->ModuleFileName()));
   APath = AppPath + Name;
@@ -213,7 +211,7 @@ bool FindTool(UnicodeString Name, UnicodeString &APath)
   return Result;
 }
 
-bool CopyCommandToClipboard(UnicodeString Command)
+bool CopyCommandToClipboard(const UnicodeString Command)
 {
   bool Result = false; // UseAlternativeFunction() && IsKeyPressed(VK_CONTROL);
   if (Result)
@@ -229,7 +227,14 @@ static bool DoExecuteShell(const UnicodeString APath, const UnicodeString Params
 {
   bool Result = CopyCommandToClipboard(FormatCommand(APath, Params));
 
-  if (!Result)
+  if (Result)
+  {
+    if (Handle != NULL)
+    {
+      *Handle = NULL;
+    }
+  }
+  else
   {
     UnicodeString Directory = ::ExtractFilePath(APath);
 
@@ -278,7 +283,7 @@ bool ExecuteShell(const UnicodeString Path, const UnicodeString Params,
   return DoExecuteShell(Path, Params, false, &Handle);
 }
 
-void ExecuteShellCheckedAndWait(HINSTANCE Handle, const UnicodeString Command,
+void ExecuteShellCheckedAndWait(const UnicodeString Command,
   TProcessMessagesEvent ProcessMessages)
 {
   UnicodeString Program, Params, Dir;
@@ -289,28 +294,34 @@ void ExecuteShellCheckedAndWait(HINSTANCE Handle, const UnicodeString Command,
   {
     throw EOSExtException(FMTLOAD(EXECUTE_APP_ERROR, Program));
   }
-  if (ProcessMessages != nullptr)
-  {
-    unsigned long WaitResult;
-    do
-    {
-      // Same as in ExecuteProcessAndReadOutput
-      WaitResult = WaitForSingleObject(ProcessHandle, 200);
-      if (WaitResult == WAIT_FAILED)
-      {
-        throw Exception(LoadStr(DOCUMENT_WAIT_ERROR));
-      }
-      ProcessMessages();
-    }
-    while (WaitResult == WAIT_TIMEOUT);
-  }
   else
   {
-    WaitForSingleObject(ProcessHandle, INFINITE);
+    if (ProcessHandle != nullptr) // only if command was copied to clipboard only
+    {
+      if (ProcessMessages != nullptr)
+      {
+        unsigned long WaitResult;
+        do
+        {
+          // Same as in ExecuteProcessAndReadOutput
+          WaitResult = WaitForSingleObject(ProcessHandle, 200);
+          if (WaitResult == WAIT_FAILED)
+          {
+            throw Exception(LoadStr(DOCUMENT_WAIT_ERROR));
+          }
+          ProcessMessages();
+        }
+        while (WaitResult == WAIT_TIMEOUT);
+      }
+      else
+      {
+        WaitForSingleObject(ProcessHandle, INFINITE);
+      }
+    }
   }
 }
-
-bool SpecialFolderLocation(intptr_t PathID, UnicodeString &APath)
+//---------------------------------------------------------------------------
+bool __fastcall SpecialFolderLocation(intptr_t PathID, UnicodeString &APath)
 {
 #if defined(_MSC_VER) && !defined(__clang__)
   LPITEMIDLIST Pidl;
@@ -325,8 +336,8 @@ bool SpecialFolderLocation(intptr_t PathID, UnicodeString &APath)
   return false;
 }
 
-UnicodeString ItemsFormatString(UnicodeString SingleItemFormat,
-  UnicodeString MultiItemsFormat, intptr_t Count, UnicodeString FirstItem)
+UnicodeString ItemsFormatString(const UnicodeString SingleItemFormat,
+  const UnicodeString MultiItemsFormat, intptr_t Count, const UnicodeString FirstItem)
 {
   UnicodeString Result;
   if (Count == 1)
@@ -340,15 +351,15 @@ UnicodeString ItemsFormatString(UnicodeString SingleItemFormat,
   return Result;
 }
 
-UnicodeString ItemsFormatString(UnicodeString SingleItemFormat,
-  UnicodeString MultiItemsFormat, const TStrings *Items)
+UnicodeString ItemsFormatString(const UnicodeString SingleItemFormat,
+  const UnicodeString MultiItemsFormat, const TStrings *Items)
 {
   return ItemsFormatString(SingleItemFormat, MultiItemsFormat,
-      Items->GetCount(), (Items->GetCount() > 0 ? Items->GetString(0) : UnicodeString()));
+    Items->GetCount(), (Items->GetCount() > 0 ? Items->GetString(0) : UnicodeString()));
 }
 
-UnicodeString FileNameFormatString(UnicodeString SingleFileFormat,
-  UnicodeString MultiFilesFormat, const TStrings *AFiles, bool Remote)
+UnicodeString FileNameFormatString(const UnicodeString SingleFileFormat,
+  const UnicodeString MultiFilesFormat, const TStrings *AFiles, bool Remote)
 {
   DebugAssert(AFiles != nullptr);
   UnicodeString Item;
@@ -565,6 +576,7 @@ void ApplyTabs(
       if (IsEligibleForApplyingTabs(Line, TabPos, Start, Remaining))
       {
         intptr_t Width;
+        int Iterations = 0;
         while ((Width = CalculateWidth(Start, CalculateWidthArg)) < MaxWidth)
         {
           intptr_t Wider = CalculateWidth(Start + Padding, CalculateWidthArg);
@@ -575,6 +587,12 @@ void ApplyTabs(
             break;
           }
           Start += Padding;
+          Iterations++;
+          // In rare case a tab is zero-width with some strange font (like HYLE)
+          if (Iterations > 100)
+          {
+            break;
+          }
         }
         Lines->Strings[Index] = Start + Remaining;
       }
@@ -955,7 +973,7 @@ TLocalCustomCommand::TLocalCustomCommand(const TCustomCommandData &Data,
   FLocalFileName = LocalFileName;
 }
 
-intptr_t TLocalCustomCommand::PatternLen(UnicodeString Command, intptr_t Index) const
+intptr_t TLocalCustomCommand::PatternLen(const UnicodeString Command, intptr_t Index) const
 {
   intptr_t Len;
   if ((Index < Command.Length()) && (Command[Index + 1] == L'\\'))
@@ -974,7 +992,7 @@ intptr_t TLocalCustomCommand::PatternLen(UnicodeString Command, intptr_t Index) 
 }
 
 bool TLocalCustomCommand::PatternReplacement(
-  intptr_t Index, UnicodeString Pattern, UnicodeString &Replacement, bool &Delimit) const
+  intptr_t Index, const UnicodeString Pattern, UnicodeString &Replacement, bool &Delimit) const
 {
   bool Result;
   if (Pattern == L"!\\")
@@ -1002,12 +1020,12 @@ void TLocalCustomCommand::DelimitReplacement(
   // never delimit local commands
 }
 
-bool TLocalCustomCommand::HasLocalFileName(UnicodeString Command) const
+bool TLocalCustomCommand::HasLocalFileName(const UnicodeString Command) const
 {
   return FindPattern(Command, L'^');
 }
 
-bool TLocalCustomCommand::IsFileCommand(UnicodeString Command) const
+bool TLocalCustomCommand::IsFileCommand(const UnicodeString Command) const
 {
   return TFileCustomCommand::IsFileCommand(Command) || HasLocalFileName(Command);
 }
@@ -1538,7 +1556,7 @@ void TScreenTipHintWindow::Paint()
 {
   // paint frame/background
   {
-    TAutoFlag ParentPaintingFlag(FParentPainting);
+    volatile TAutoFlag ParentPaintingFlag(FParentPainting);
     THintWindow::Paint();
   }
 
@@ -1565,6 +1583,48 @@ void TScreenTipHintWindow::Paint()
     Rect.Left += FMargin * 3 / 2;
     Rect.Top += ShortRect.Height() + (FMargin / 3 * 5);
     DrawText(Canvas->Handle, FLongHint.c_str(), -1, &Rect, Flags);
+  }
+}
+//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
+__fastcall TNewRichEdit::TNewRichEdit(TComponent * AOwner) :
+  TRichEdit(AOwner),
+  FLibrary(0)
+{
+}
+//---------------------------------------------------------------------------
+void __fastcall TNewRichEdit::CreateParams(TCreateParams & Params)
+{
+  UnicodeString RichEditModuleName(L"MSFTEDIT.DLL");
+  long int OldError;
+
+  OldError = SetErrorMode(SEM_NOOPENFILEERRORBOX);
+  FLibrary = LoadLibrary(RichEditModuleName.c_str());
+  SetErrorMode(OldError);
+
+  // No fallback, MSFTEDIT.DLL is available since Windows XP
+  // https://blogs.msdn.microsoft.com/murrays/2006/10/13/richedit-versions/
+  if (FLibrary == 0)
+  {
+    throw Exception(FORMAT(L"Cannot load %s", (RichEditModuleName)));
+  }
+
+  TCustomMemo::CreateParams(Params);
+  // MSDN says that we should use MSFTEDIT_CLASS to load Rich Edit 4.1:
+  // https://msdn.microsoft.com/en-us/library/windows/desktop/bb787873.aspx
+  // But MSFTEDIT_CLASS is defined as "RICHEDIT50W",
+  // so not sure what version we are loading.
+  // Seem to work on Windows XP SP3.
+  CreateSubClass(Params, MSFTEDIT_CLASS);
+}
+//---------------------------------------------------------------------------
+void __fastcall TNewRichEdit::DestroyWnd()
+{
+  TRichEdit::DestroyWnd();
+
+  if (FLibrary != 0)
+  {
+    FreeLibrary(FLibrary);
   }
 }
 

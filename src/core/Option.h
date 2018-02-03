@@ -32,7 +32,7 @@ public:
     intptr_t ParamsMax = -1);
   bool FindSwitchCaseSensitive(UnicodeString Switch);
   bool FindSwitchCaseSensitive(UnicodeString Switch, TStrings *Params,
-    int ParamsMax = -1);
+    intptr_t ParamsMax = -1);
   void ParamsProcessed(intptr_t ParamsStart, intptr_t ParamsCount);
   UnicodeString SwitchValue(UnicodeString Switch, UnicodeString Default = L"");
   bool SwitchValue(UnicodeString Switch, bool Default);
@@ -41,11 +41,10 @@ public:
   bool WasSwitchAdded(UnicodeString &Switch, wchar_t &SwitchMark) const;
 
   void LogOptions(TLogOptionEvent OnLogOption);
-#if 0
- __property int ParamCount = { read = FParamCount };
+
+  __property int ParamCount = { read = FParamCount };
   __property UnicodeString Param[int Index] = { read = GetParam };
   __property bool Empty = { read = GetEmpty };
-#endif // #if 0
 
   intptr_t GetParamCount() const { return FParamCount; }
   void Clear() { FOptions.resize(0); FNoMoreSwitches = false; FParamCount = 0; }
@@ -55,9 +54,9 @@ protected:
   UnicodeString FSwitchMarks;
   UnicodeString FSwitchValueDelimiters;
 
-  bool FindSwitch(UnicodeString Switch,
+  bool FindSwitch(const UnicodeString Switch,
     UnicodeString &Value, intptr_t &ParamsStart, intptr_t &ParamsCount, bool CaseSensitive, bool &ValueSet);
-  bool DoFindSwitch(UnicodeString Switch, TStrings *Params,
+  bool DoFindSwitch(const UnicodeString Switch, TStrings *Params,
     intptr_t ParamsMax, bool CaseSensitive);
 
 private:

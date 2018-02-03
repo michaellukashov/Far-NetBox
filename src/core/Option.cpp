@@ -105,14 +105,14 @@ bool TOptions::GetEmpty() const
   return FOptions.empty();
 }
 
-bool TOptions::FindSwitch(UnicodeString Switch,
+bool TOptions::FindSwitch(const UnicodeString Switch,
   UnicodeString &Value, intptr_t &ParamsStart, intptr_t &ParamsCount, bool CaseSensitive, bool &ValueSet)
 {
   ParamsStart = 0;
   ValueSet = false;
   intptr_t Index = 0;
   bool Found = false;
-  while ((Index < static_cast<intptr_t>(FOptions.size())) && !Found)
+  while ((Index < ToIntPtr(FOptions.size())) && !Found)
   {
     if (FOptions[Index].Type == otParam)
     {
@@ -136,7 +136,7 @@ bool TOptions::FindSwitch(UnicodeString Switch,
   if (Found)
   {
     ParamsStart++;
-    while ((Index + ParamsCount < static_cast<intptr_t>(FOptions.size())) &&
+    while ((Index + ParamsCount < ToIntPtr(FOptions.size())) &&
       (FOptions[Index + ParamsCount].Type == otParam))
     {
       ParamsCount++;
@@ -188,12 +188,12 @@ bool TOptions::FindSwitch(UnicodeString Switch,
 }
 
 bool TOptions::FindSwitchCaseSensitive(UnicodeString Switch,
-  TStrings *Params, int ParamsMax)
+  TStrings *Params, intptr_t ParamsMax)
 {
   return DoFindSwitch(Switch, Params, ParamsMax, true);
 }
 
-bool TOptions::DoFindSwitch(UnicodeString Switch,
+bool TOptions::DoFindSwitch(const UnicodeString Switch,
   TStrings *Params, intptr_t ParamsMax, bool CaseSensitive)
 {
   UnicodeString Value;

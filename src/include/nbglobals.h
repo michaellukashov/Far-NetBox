@@ -65,7 +65,7 @@ inline wchar_t *wchcalloc(size_t size) { return calloc<wchar_t *>(1, size * size
 
 inline void *operator_new(size_t size)
 {
-  void *p = calloc<void *>(1, size);
+  void *p = nb::calloc<void *>(1, size);
   /*if (!p)
   {
     static std::bad_alloc badalloc;
@@ -295,3 +295,17 @@ private: \
 #if defined(_MSC_VER) && _MSC_VER<1600
 #define nullptr NULL
 #endif
+
+#undef __fastcall
+#define __fastcall
+
+#ifndef NB_CONCATENATE
+#define NB_CONCATENATE_IMPL(s1, s2) s1 ## s2
+#define NB_CONCATENATE(s1, s2) NB_CONCATENATE_IMPL(s1, s2)
+#endif
+// #define __removed / ## /
+#define __removed NB_CONCATENATE(/, /)
+
+#undef __property
+// #define __property / ## /
+#define __property NB_CONCATENATE(/, /)

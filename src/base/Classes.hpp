@@ -18,6 +18,7 @@
 #include <ObjIDs.h>
 #include <UnicodeString.hpp>
 #include <rtti.hpp>
+#include <Property.hpp>
 
 #pragma warning(pop)
 
@@ -256,12 +257,12 @@ public:
   virtual void InsertObject(intptr_t Index, UnicodeString Key, TObject *AObject);
   bool Equals(const TStrings *Value) const;
   virtual void Move(intptr_t CurIndex, intptr_t NewIndex) override;
-  virtual intptr_t IndexOf(UnicodeString S) const;
-  virtual intptr_t IndexOfName(UnicodeString Name) const;
-  UnicodeString ExtractName(UnicodeString S) const;
+  virtual intptr_t IndexOf(const UnicodeString S) const;
+  virtual intptr_t IndexOfName(const UnicodeString Name) const;
+  UnicodeString ExtractName(const UnicodeString S) const;
   void AddStrings(const TStrings *Strings);
   void Append(UnicodeString Value);
-  virtual void Insert(intptr_t Index, UnicodeString AString, TObject *AObject = nullptr) = 0;
+  virtual void Insert(intptr_t Index, const UnicodeString AString, TObject *AObject = nullptr) = 0;
   void SaveToStream(TStream *Stream) const;
   wchar_t GetDelimiter() const { return FDelimiter; }
   void SetDelimiter(wchar_t Value) { FDelimiter = Value; }
@@ -269,7 +270,7 @@ public:
   void SetQuoteChar(wchar_t Value) { FQuoteChar = Value; }
   UnicodeString GetDelimitedText() const;
   void SetDelimitedText(UnicodeString Value);
-  virtual intptr_t CompareStrings(UnicodeString S1, UnicodeString S2) const;
+  virtual intptr_t CompareStrings(const UnicodeString S1, const UnicodeString S2) const;
   intptr_t GetUpdateCount() const { return FUpdateCount; }
   virtual void Assign(const TPersistent *Source) override;
   virtual intptr_t GetCount() const = 0;
@@ -282,17 +283,17 @@ public:
   virtual void SetCaseSensitive(bool Value) = 0;
   void SetDuplicates(TDuplicatesEnum Value);
   UnicodeString GetCommaText() const;
-  void SetCommaText(UnicodeString Value);
+  void SetCommaText(const UnicodeString Value);
   virtual UnicodeString GetText() const;
-  virtual void SetText(UnicodeString Text);
+  virtual void SetText(const UnicodeString Text);
   virtual const UnicodeString &GetStringRef(intptr_t Index) const = 0;
   virtual const UnicodeString &GetString(intptr_t Index) const = 0;
   virtual UnicodeString GetString(intptr_t Index) = 0;
-  virtual void SetString(intptr_t Index, UnicodeString S) = 0;
+  virtual void SetString(intptr_t Index, const UnicodeString S) = 0;
   UnicodeString GetName(intptr_t Index) const;
-  void SetName(intptr_t Index, UnicodeString Value);
-  UnicodeString GetValue(UnicodeString Name) const;
-  void SetValue(UnicodeString Name, UnicodeString Value);
+  void SetName(intptr_t Index, const UnicodeString Value);
+  UnicodeString GetValue(const UnicodeString Name) const;
+  void SetValue(const UnicodeString Name, const UnicodeString Value);
   UnicodeString GetValueFromIndex(intptr_t Index) const;
 
 protected:
@@ -326,8 +327,8 @@ public:
   void QuickSort(intptr_t L, intptr_t R, TStringListSortCompare SCompare);
 
   virtual void Assign(const TPersistent *Source) override;
-  virtual bool Find(UnicodeString S, intptr_t &Index) const;
-  virtual intptr_t IndexOf(UnicodeString S) const override;
+  virtual bool Find(const UnicodeString S, intptr_t &Index) const;
+  virtual intptr_t IndexOf(const UnicodeString S) const override;
   virtual void Delete(intptr_t Index) override;
   virtual void InsertObject(intptr_t Index, UnicodeString Key, TObject *AObject) override;
   virtual void Sort() override;
@@ -336,8 +337,8 @@ public:
   virtual void SetUpdateState(bool Updating) override;
   virtual void Changing();
   virtual void Changed() override;
-  virtual void Insert(intptr_t Index, UnicodeString S, TObject *AObject = nullptr) override;
-  virtual intptr_t CompareStrings(UnicodeString S1, UnicodeString S2) const override;
+  virtual void Insert(intptr_t Index, const UnicodeString S, TObject *AObject = nullptr) override;
+  virtual intptr_t CompareStrings(const UnicodeString S1, const UnicodeString S2) const override;
   virtual intptr_t GetCount() const override;
 
 public:
@@ -349,7 +350,7 @@ public:
   virtual const UnicodeString &GetStringRef(intptr_t Index) const override;
   virtual const UnicodeString &GetString(intptr_t Index) const override;
   virtual UnicodeString GetString(intptr_t Index) override;
-  virtual void SetString(intptr_t Index, UnicodeString S) override;
+  virtual void SetString(intptr_t Index, const UnicodeString S) override;
 
 private:
   TNotifyEvent FOnChange;
@@ -491,31 +492,20 @@ public:
   virtual ~TStream();
   virtual int64_t Read(void *Buffer, int64_t Count) = 0;
   virtual int64_t Write(const void *Buffer, int64_t Count) = 0;
-  virtual int64_t Seek(int64_t Offset, int Origin) = 0;
-  virtual int64_t Seek(const int64_t Offset, TSeekOrigin Origin) = 0;
+  virtual int64_t Seek(int64_t Offset, int Origin) const = 0;
+  virtual int64_t Seek(const int64_t Offset, TSeekOrigin Origin) const = 0;
   void ReadBuffer(void *Buffer, int64_t Count);
   void WriteBuffer(const void *Buffer, int64_t Count);
   int64_t CopyFrom(TStream *Source, int64_t Count);
 
 public:
-  int64_t GetPosition()
-  {
-    return Seek(0, soFromCurrent);
-  }
-  int64_t GetSize()
-  {
-    int64_t Pos = Seek(0, soFromCurrent);
-    int64_t Result = Seek(0, soFromEnd);
-    Seek(Pos, soFromBeginning);
-    return Result;
-  }
-
-public:
+  int64_t GetPosition() const;
+  int64_t GetSize() const;
   virtual void SetSize(const int64_t NewSize) = 0;
-  void SetPosition(const int64_t Pos)
-  {
-    Seek(Pos, soFromBeginning);
-  }
+  void SetPosition(const int64_t Pos);
+
+  RWProperty<int64_t> Position{nb::bind(&TStream::GetPosition, this), nb::bind(&TStream::SetPosition, this)};
+  RWProperty<int64_t> Size{nb::bind(&TStream::GetSize, this), nb::bind(&TStream::SetSize, this)};
 };
 
 class NB_CORE_EXPORT THandleStream : public TStream
@@ -526,8 +516,8 @@ public:
   virtual ~THandleStream();
   virtual int64_t Read(void *Buffer, int64_t Count) override;
   virtual int64_t Write(const void *Buffer, int64_t Count) override;
-  virtual int64_t Seek(int64_t Offset, int Origin) override;
-  virtual int64_t Seek(const int64_t Offset, TSeekOrigin Origin) override;
+  virtual int64_t Seek(int64_t Offset, int Origin) const override;
+  virtual int64_t Seek(const int64_t Offset, TSeekOrigin Origin) const override;
 
   HANDLE GetHandle() { return FHandle; }
 
@@ -570,14 +560,14 @@ public:
   TMemoryStream();
   virtual ~TMemoryStream();
   virtual int64_t Read(void *Buffer, int64_t Count) override;
-  virtual int64_t Seek(int64_t Offset, int Origin) override;
-  virtual int64_t Seek(const int64_t Offset, TSeekOrigin Origin) override;
+  virtual int64_t Seek(int64_t Offset, int Origin) const override;
+  virtual int64_t Seek(const int64_t Offset, TSeekOrigin Origin) const override;
   void SaveToStream(TStream *Stream);
   void SaveToFile(UnicodeString AFileName);
 
   void Clear();
   void LoadFromStream(TStream *Stream);
-  //void LoadFromFile(UnicodeString AFileName);
+  __removed void LoadFromFile(const UnicodeString AFileName);
   int64_t GetSize() const { return FSize; }
   virtual void SetSize(const int64_t NewSize) override;
   virtual int64_t Write(const void *Buffer, int64_t Count) override;
@@ -585,7 +575,7 @@ public:
   void *GetMemory() const { return FMemory; }
 
 protected:
-  void SetPointer(void *Ptr, int64_t Size);
+  void SetPointer(void *Ptr, int64_t ASize);
   virtual void *Realloc(int64_t &NewCapacity);
   int64_t GetCapacity() const { return FCapacity; }
 
@@ -595,7 +585,7 @@ private:
 private:
   void *FMemory;
   int64_t FSize;
-  int64_t FPosition;
+  mutable int64_t FPosition;
   int64_t FCapacity;
 };
 
@@ -752,12 +742,12 @@ public:
   virtual UnicodeString GetMsg(intptr_t Id) const = 0;
   virtual UnicodeString GetCurrDirectory() const = 0;
   virtual UnicodeString GetStrVersionNumber() const = 0;
-  virtual bool InputDialog(UnicodeString ACaption,
-    UnicodeString APrompt, UnicodeString &Value, UnicodeString HelpKeyword,
+  virtual bool InputDialog(const UnicodeString ACaption,
+    const UnicodeString APrompt, UnicodeString &Value, const UnicodeString HelpKeyword,
     TStrings *History, bool PathInput,
     TInputDialogInitializeEvent OnInitialize, bool Echo) = 0;
-  virtual uintptr_t MoreMessageDialog(UnicodeString Message,
-    TStrings *MoreMessages, TQueryType Type, uintptr_t Answers,
+  virtual uintptr_t MoreMessageDialog(const UnicodeString Message,
+    TStrings *MoreMessages, TQueryType Type, uint32_t Answers,
     const TMessageParams *Params) = 0;
 };
 

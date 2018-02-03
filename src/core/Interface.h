@@ -58,6 +58,7 @@ NB_CORE_EXPORT void CopyToClipboard(UnicodeString Text);
 NB_CORE_EXPORT HANDLE StartThread(void *SecurityAttributes, DWORD StackSize,
   /*TThreadFunc ThreadFunc,*/ void *Parameter, DWORD CreationFlags,
   TThreadID &ThreadId);
+bool __fastcall TextFromClipboard(UnicodeString &Text, bool Trim);
 
 NB_CORE_EXPORT void WinInitialize();
 NB_CORE_EXPORT void WinFinalize();
@@ -93,24 +94,36 @@ const int qpIgnoreAbort =          0x08;
 const int qpWaitInBatch =          0x10;
 #endif // #if 0
 
+#if 0
+typedef void __fastcall (__closure *TButtonSubmitEvent)(TObject * Sender, unsigned int & Answer);
+#endif // #if 0
+typedef nb::FastDelegate2<void,
+  TObject * /*Sender*/, uint32_t & /*Answer*/> TButtonSubmitEvent;
+
 struct NB_CORE_EXPORT TQueryButtonAlias : public TObject
 {
   TQueryButtonAlias();
 
   uintptr_t Button;
   UnicodeString Alias;
-  TNotifyEvent OnClick;
+  TButtonSubmitEvent OnClick;
   int GroupWith;
   bool Default;
   TShiftStateFlag GrouppedShiftState;
   bool ElevationRequired;
   bool MenuButton;
+  UnicodeString ActionAlias;
+
+  static TQueryButtonAlias CreateYesToAllGrouppedWithYes();
+  static TQueryButtonAlias CreateNoToAllGrouppedWithNo();
+  static TQueryButtonAlias CreateAllAsYesToNewerGrouppedWithYes();
+  static TQueryButtonAlias CreateIgnoreAsRenameGrouppedWithNo();
 };
 
 #if 0
 typedef void (__closure *TQueryParamsTimerEvent)(uintptr_t &Result);
 #endif // #if 0
-typedef nb::FastDelegate1<void, intptr_t & /*Result*/> TQueryParamsTimerEvent;
+typedef nb::FastDelegate1<void, uint32_t & /*Result*/> TQueryParamsTimerEvent;
 
 #if 0
 // moved to Classes.h
@@ -125,7 +138,7 @@ enum TQueryType
 
 struct NB_CORE_EXPORT TQueryParams : public TObject
 {
-  explicit TQueryParams(uintptr_t AParams = 0, UnicodeString AHelpKeyword = HELP_NONE);
+  explicit TQueryParams(uintptr_t AParams = 0, const UnicodeString AHelpKeyword = HELP_NONE);
   explicit TQueryParams(const TQueryParams &Source);
 
   void Assign(const TQueryParams &Source);
@@ -136,7 +149,7 @@ struct NB_CORE_EXPORT TQueryParams : public TObject
   uintptr_t Timer;
   TQueryParamsTimerEvent TimerEvent;
   UnicodeString TimerMessage;
-  uintptr_t TimerAnswers;
+  uint32_t TimerAnswers;
   TQueryType TimerQueryType;
   uintptr_t Timeout;
   uintptr_t TimeoutAnswer;
@@ -190,7 +203,7 @@ typedef void (__closure *TFindingFileEvent)
   (TTerminal * Terminal, const UnicodeString Directory, bool & Cancel);
 #endif // #if 0
 typedef nb::FastDelegate3<void,
-  TTerminal * /*Terminal*/, UnicodeString /*Directory*/, bool & /*Cancel*/> TFindingFileEvent;
+  TTerminal * /*Terminal*/, const UnicodeString & /*ADirectory*/, bool & /*Cancel*/> TFindingFileEvent;
 
 class NB_CORE_EXPORT TOperationVisualizer
 {
@@ -222,9 +235,9 @@ public:
 
   UnicodeString Text;
 
-  void Copy(TObject * /*Sender*/)
+  void __fastcall Copy(TObject * /*Sender*/, uint32_t & /*Answer*/)
   {
-    TInstantOperationVisualizer Visualizer;
+    volatile TInstantOperationVisualizer Visualizer;
     CopyToClipboard(Text);
   }
 };

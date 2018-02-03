@@ -44,6 +44,13 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tinylog.vs2015", "..\..\lib
 		{5423DD5F-C5F6-40A0-BA13-4B0DEB51D38E} = {5423DD5F-C5F6-40A0-BA13-4B0DEB51D38E}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libs3.vs2015", "..\..\libs\libs3\libs3.vs2015.vcxproj", "{DCE830B6-232F-4F4D-BAC5-3CA027FE266C}"
+	ProjectSection(ProjectDependencies) = postProject
+		{5423DD5F-C5F6-40A0-BA13-4B0DEB51D38E} = {5423DD5F-C5F6-40A0-BA13-4B0DEB51D38E}
+		{27250AA6-FED6-F96F-E32B-E8E9719F8FEB} = {27250AA6-FED6-F96F-E32B-E8E9719F8FEB}
+		{90DE9ADC-75C4-2AC0-72B1-5F2903110E0A} = {90DE9ADC-75C4-2AC0-72B1-5F2903110E0A}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -140,6 +147,14 @@ Global
 		{78D9EE83-A3AE-4276-8976-5ADB083843ED}.Release|Win32.Build.0 = Release|Win32
 		{78D9EE83-A3AE-4276-8976-5ADB083843ED}.Release|x64.ActiveCfg = Release|x64
 		{78D9EE83-A3AE-4276-8976-5ADB083843ED}.Release|x64.Build.0 = Release|x64
+		{DCE830B6-232F-4F4D-BAC5-3CA027FE266C}.Debug|Win32.ActiveCfg = Debug|Win32
+		{DCE830B6-232F-4F4D-BAC5-3CA027FE266C}.Debug|Win32.Build.0 = Debug|Win32
+		{DCE830B6-232F-4F4D-BAC5-3CA027FE266C}.Debug|x64.ActiveCfg = Debug|x64
+		{DCE830B6-232F-4F4D-BAC5-3CA027FE266C}.Debug|x64.Build.0 = Debug|x64
+		{DCE830B6-232F-4F4D-BAC5-3CA027FE266C}.Release|Win32.ActiveCfg = Release|Win32
+		{DCE830B6-232F-4F4D-BAC5-3CA027FE266C}.Release|Win32.Build.0 = Release|Win32
+		{DCE830B6-232F-4F4D-BAC5-3CA027FE266C}.Release|x64.ActiveCfg = Release|x64
+		{DCE830B6-232F-4F4D-BAC5-3CA027FE266C}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

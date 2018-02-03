@@ -56,7 +56,7 @@ public:
   uintptr_t Timer;
   TQueryParamsTimerEvent TimerEvent;
   UnicodeString TimerMessage;
-  uintptr_t TimerAnswers;
+  uint32_t TimerAnswers;
   TQueryType TimerQueryType;
   uintptr_t Timeout;
   uintptr_t TimeoutAnswer;
@@ -110,22 +110,22 @@ void InitializeWinHelp();
 void FinalizeWinHelp();
 
 // windows\WinInterface.cpp
-uintptr_t MessageDialog(UnicodeString Msg, TQueryType Type,
-  uintptr_t Answers, UnicodeString HelpKeyword = HELP_NONE, const TMessageParams *Params = nullptr);
+uintptr_t MessageDialog(const UnicodeString Msg, TQueryType Type,
+  uint32_t Answers, const UnicodeString HelpKeyword = HELP_NONE, const TMessageParams *Params = nullptr);
 uintptr_t MessageDialog(intptr_t Ident, TQueryType Type,
-  uintptr_t Answers, UnicodeString HelpKeyword = HELP_NONE, const TMessageParams *Params = nullptr);
+  uint32_t Answers, const UnicodeString HelpKeyword = HELP_NONE, const TMessageParams *Params = nullptr);
 uintptr_t SimpleErrorDialog(UnicodeString Msg, UnicodeString MoreMessages = L"");
 
 uintptr_t MoreMessageDialog(UnicodeString Message,
-  TStrings *MoreMessages, TQueryType Type, uintptr_t Answers,
-  UnicodeString HelpKeyword, const TMessageParams *Params = nullptr);
+  TStrings *MoreMessages, TQueryType Type, uint32_t Answers,
+  const UnicodeString HelpKeyword, const TMessageParams *Params = nullptr);
 
 uintptr_t ExceptionMessageDialog(Exception *E, TQueryType Type,
-  UnicodeString MessageFormat = L"", uintptr_t Answers = qaOK,
-  UnicodeString HelpKeyword = HELP_NONE, const TMessageParams *Params = nullptr);
+  const UnicodeString MessageFormat = L"", uint32_t Answers = qaOK,
+  const UnicodeString HelpKeyword = HELP_NONE, const TMessageParams *Params = nullptr);
 uintptr_t FatalExceptionMessageDialog(Exception *E, TQueryType Type,
-  intptr_t SessionReopenTimeout, UnicodeString MessageFormat = L"", uintptr_t Answers = qaOK,
-  UnicodeString HelpKeyword = HELP_NONE, const TMessageParams *Params = nullptr);
+  intptr_t SessionReopenTimeout, const UnicodeString MessageFormat = L"", uint32_t Answers = qaOK,
+  const UnicodeString HelpKeyword = HELP_NONE, const TMessageParams *Params = nullptr);
 
 #if defined(FARPLUGIN)
 
@@ -143,7 +143,7 @@ bool DoShortCutDialog(TShortCut &ShortCut,
   const TShortCuts &ShortCuts, UnicodeString HelpKeyword);
 #if 0
 bool DoCustomCommandOptionsDialog(
-  const TCustomCommandType *Command, TStrings *CustomCommandOptions, unsigned int Flags,
+  const TCustomCommandType *Command, TStrings *CustomCommandOptions, uintptr_t AFlags,
   TCustomCommand *CustomCommandForOptions, UnicodeString Site);
 #endif // #if 0
 
@@ -166,8 +166,8 @@ void GetLoginData(UnicodeString SessionName, TOptions *Options,
 typedef void (__closure *TInputDialogInitialize)
   (TObject * Sender, TInputDialogData * Data);
 #endif // #if 0
-bool InputDialog(UnicodeString ACaption,
-  UnicodeString APrompt, UnicodeString &Value, UnicodeString HelpKeyword = HELP_NONE,
+bool InputDialog(const UnicodeString ACaption,
+  const UnicodeString APrompt, UnicodeString &Value, const UnicodeString HelpKeyword = HELP_NONE,
   TStrings *History = nullptr, bool PathInput = false,
   TInputDialogInitializeEvent OnInitialize = nullptr, bool Echo = true);
 
@@ -453,7 +453,7 @@ typedef nb::FastDelegate2<void,
 TForm * ShowEditorForm(const UnicodeString FileName, TForm * ParentForm,
   TNotifyEvent OnFileChanged, TNotifyEvent OnFileReload, TFileClosedEvent OnClose,
   TNotifyEvent OnSaveAll, TAnyModifiedEvent OnAnyModified,
-  const UnicodeString Caption, bool StandaloneEditor, TColor Color);
+  const UnicodeString Caption, bool StandaloneEditor, TColor Color, int InternalEditorEncodingOverride);
 void ReconfigureEditorForm(TForm *Form);
 void EditorFormFileUploadComplete(TForm *Form);
 void EditorFormFileSave(TForm *Form);
@@ -485,17 +485,17 @@ void DoFileSystemInfoDialog(
 #if 0
 // forms\MessageDlg.cpp
 void AnswerNameAndCaption(
-  uintptr_t Answer, UnicodeString &Name, UnicodeString &Caption);
+  uint32_t Answer, UnicodeString &Name, UnicodeString &Caption);
 TFarDialog *CreateMoreMessageDialog(UnicodeString Msg,
-  TStrings *MoreMessages, TMsgDlgType DlgType, uintptr_t Answers,
+  TStrings *MoreMessages, TMsgDlgType DlgType, uint32_t Answers,
   const TQueryButtonAlias *Aliases, uintptr_t AliasesCount,
   uintptr_t TimeoutAnswer, TFarButton **TimeoutButton,
   UnicodeString ImageName, UnicodeString NeverAskAgainCaption,
   UnicodeString MoreMessagesUrl, TSize MoreMessagesSize,
   UnicodeString CustomCaption);
 TFarDialog *CreateMoreMessageDialogEx(UnicodeString Message, TStrings *MoreMessages,
-  TQueryType Type, uintptr_t Answers, UnicodeString HelpKeyword, const TMessageParams *Params);
-uintptr_t ExecuteMessageDialog(TFarDialog *Dialog, uintptr_t Answers, const TMessageParams *Params);
+  TQueryType Type, uint32_t Answers, UnicodeString HelpKeyword, const TMessageParams *Params);
+uintptr_t ExecuteMessageDialog(TFarDialog *Dialog, uint32_t Answers, const TMessageParams *Params);
 void InsertPanelToMessageDialog(TFarDialog *Form, TPanel *Panel);
 void NavigateMessageDialogToUrl(TFarDialog *Form, UnicodeString Url);
 
@@ -618,6 +618,7 @@ void InitializeShortCutCombo(TComboBox *ComboBox,
 void SetShortCutCombo(TComboBox *ComboBox, TShortCut Value);
 TShortCut GetShortCutCombo(TComboBox *ComboBox);
 bool IsCustomShortCut(TShortCut ShortCut);
+TShortCut __fastcall NormalizeCustomShortCut(TShortCut ShortCut);
 #endif // #if 0
 
 #ifdef _DEBUG
@@ -659,11 +660,11 @@ public:
     TCustomCommand *ChildCustomCommand, const UnicodeString CustomCommandName, const UnicodeString HelpKeyword);
 
 protected:
-  virtual void Prompt(intptr_t Index, UnicodeString Prompt,
+  virtual void Prompt(intptr_t Index, const UnicodeString Prompt,
     UnicodeString &Value) const override;
-  virtual void Execute(UnicodeString Command,
+  virtual void Execute(const UnicodeString Command,
     UnicodeString &Value) const override;
-  virtual void PatternHint(intptr_t Index, UnicodeString Pattern) override;
+  virtual void PatternHint(intptr_t Index, const UnicodeString Pattern) override;
 
 private:
   UnicodeString FCustomCommandName;

@@ -159,6 +159,7 @@ int GetUserpassInput(prompts_t *p, const uint8_t * /*in*/, int /*inlen*/)
   int Result;
   std::unique_ptr<TStrings> Prompts(new TStringList());
   std::unique_ptr<TStrings> Results(new TStringList());
+  try__finally
   {
     UnicodeString Name = UTF8ToString(p->name);
     UnicodeString AName = Name;
@@ -209,13 +210,11 @@ int GetUserpassInput(prompts_t *p, const uint8_t * /*in*/, int /*inlen*/)
       Result = 0;
     }
   }
-  __finally
-  {
-#if 0
+  __finally__removed
+  ({
     delete Prompts;
     delete Results;
-#endif // #if 0
-  };
+  })
 
   return Result;
 }
@@ -520,7 +519,7 @@ long reg_query_winscp_value_ex(HKEY Key, const char *ValueName, unsigned long * 
       strncpy(DataStr, Value.c_str(), sz);
       DataStr[sz - 1] = '\0';
     }
-    *DataSize = static_cast<uint32_t>(NBChTraitsCRT<char>::SafeStringLen(DataStr));
+    *DataSize = ToUInt32(NBChTraitsCRT<char>::SafeStringLen(DataStr));
   }
 
   return R;
@@ -707,7 +706,7 @@ bool HasGSSAPI(UnicodeString CustomPath)
       Filename *filename = filename_from_str(UTF8String(CustomPath).c_str());
       conf_set_filename(conf, CONF_ssh_gss_custom, filename);
       filename_free(filename);
-      List = ssh_gss_setup(conf);
+      List = ssh_gss_setup(conf, NULL);
       for (intptr_t Index = 0; (has <= 0) && (Index < List->nlibraries); ++Index)
       {
         ssh_gss_library *library = &List->libraries[Index];
@@ -718,13 +717,11 @@ bool HasGSSAPI(UnicodeString CustomPath)
             (library->release_cred(library, &ctx) == SSH_GSS_OK)) ? 1 : 0;
       }
     }
-    __finally
-    {
-#if 0
+    __finally__removed
+    ({
       ssh_gss_cleanup(List);
       conf_free(conf);
-#endif // #if 0
-    };
+    })
 
     if (has < 0)
     {
@@ -753,13 +750,19 @@ static void DoNormalizeFingerprint(UnicodeString &Fingerprint, UnicodeString &Ke
       intptr_t LenStart = Name.Length() + 1;
       Fingerprint[LenStart] = NormalizedSeparator;
       intptr_t Space = Fingerprint.Pos(L" ");
-      DebugAssert(IsNumber(Fingerprint.SubString(LenStart + 1, Space - LenStart - 1)));
-      Fingerprint.Delete(LenStart + 1, Space - LenStart);
-      Fingerprint = ReplaceChar(Fingerprint, L':', NormalizedSeparator);
-      KeyType = UnicodeString(SignKey->keytype);
-      return;
+      // If not a number, it's an invalid input,
+      // either something completelly wrong, or it can be OpenSSH base64 public key,
+      // that got here from TPasteKeyHandler::Paste
+      if (IsNumber(Fingerprint.SubString(LenStart + 1, Space - LenStart - 1)))
+      {
+        Fingerprint.Delete(LenStart + 1, Space - LenStart);
+        // noop for SHA256 fingerprints
+        Fingerprint = ReplaceChar(Fingerprint, L':', NormalizedSeparator);
+        KeyType = UnicodeString(SignKey->keytype);
+        return;
+      }
     }
-    if (StartsStr(Name + NormalizedSeparator, Fingerprint))
+    else if (StartsStr(Name + NormalizedSeparator, Fingerprint))
     {
       KeyType = UnicodeString(SignKey->keytype);
       return;
@@ -806,5 +809,89 @@ UnicodeString Sha256(const char *Data, size_t Size)
 void DllHijackingProtection()
 {
   dll_hijacking_protection();
+}
+//---------------------------------------------------------------------------
+UnicodeString __fastcall ParseOpenSshPubLine(const UnicodeString ALine, const struct ssh_signkey *& Algorithm)
+{
+  UTF8String UtfLine = UTF8String(ALine);
+  char * AlgorithmName = NULL;
+  int PubBlobLen = 0;
+  char * CommentPtr = NULL;
+  const char * ErrorStr = NULL;
+  unsigned char * PubBlob = openssh_loadpub_line(UtfLine.c_str(), &AlgorithmName, &PubBlobLen, &CommentPtr, &ErrorStr);
+  UnicodeString Result;
+  if (PubBlob == NULL)
+  {
+    throw Exception(UnicodeString(ErrorStr));
+  }
+  else
+  {
+    try__finally
+    {
+      SCOPE_EXIT
+      {
+        sfree(PubBlob);
+        sfree(AlgorithmName);
+        sfree(CommentPtr);
+      };
+      Algorithm = find_pubkey_alg(AlgorithmName);
+      if (Algorithm == NULL)
+      {
+        throw Exception(FORMAT("Unknown public key algorithm \"%s\".", AlgorithmName));
+      }
+
+      void * Key = Algorithm->newkey(Algorithm, reinterpret_cast<const char*>(PubBlob), PubBlobLen);
+      if (Key == NULL)
+      {
+        throw Exception(L"Invalid public key.");
+      }
+      char * FmtKey = Algorithm->fmtkey(Key);
+      Result = UnicodeString(FmtKey);
+      sfree(FmtKey);
+      Algorithm->freekey(Key);
+    }
+    __finally__removed
+    ({
+      sfree(PubBlob);
+      sfree(AlgorithmName);
+      sfree(CommentPtr);
+    })
+  }
+  return Result;
+}
+//---------------------------------------------------------------------------
+UnicodeString __fastcall GetKeyTypeHuman(const UnicodeString AKeyType)
+{
+  UnicodeString Result;
+  if (AKeyType == ssh_dss.keytype)
+  {
+    Result = L"DSA";
+  }
+  else if (AKeyType == ssh_rsa.keytype)
+  {
+    Result = L"RSA";
+  }
+  else if (AKeyType == ssh_ecdsa_ed25519.keytype)
+  {
+    Result = L"Ed25519";
+  }
+  else if (AKeyType == ssh_ecdsa_nistp256.keytype)
+  {
+    Result = L"ECDSA/nistp256";
+  }
+  else if (AKeyType == ssh_ecdsa_nistp384.keytype)
+  {
+    Result = L"ECDSA/nistp384";
+  }
+  else if (AKeyType == ssh_ecdsa_nistp521.keytype)
+  {
+    Result = L"ECDSA/nistp521";
+  }
+  else
+  {
+    DebugFail();
+    Result = AKeyType;
+  }
+  return Result;
 }
 

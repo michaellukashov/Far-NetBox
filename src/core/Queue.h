@@ -3,7 +3,7 @@
 
 #include "Terminal.h"
 #include "FileOperationProgress.h"
-
+//---------------------------------------------------------------------------
 class NB_CORE_EXPORT TSimpleThread : public TObject
 {
   NB_DISABLE_COPY(TSimpleThread)
@@ -29,12 +29,12 @@ protected:
   bool FFinished;
 
   virtual void Execute() = 0;
-  virtual void Finished();
+  virtual bool __fastcall Finished();
 
 public:
   static int ThreadProc(void *Thread);
 };
-
+//---------------------------------------------------------------------------
 class NB_CORE_EXPORT TSignalThread : public TSimpleThread
 {
   NB_DISABLE_COPY(TSignalThread)
@@ -42,7 +42,7 @@ public:
   static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TSignalThread); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TSignalThread) || TSimpleThread::is(Kind); }
 public:
-  void InitSignalThread(bool LowPriority);
+  void InitSignalThread(bool LowPriority, HANDLE Event = nullptr);
   virtual void Start() override;
   virtual void Terminate() override;
   void TriggerEvent() const;
@@ -51,21 +51,21 @@ protected:
   HANDLE FEvent;
   bool FTerminated;
 
-  explicit TSignalThread(TObjectClassId Kind, bool LowPriority);
-  virtual ~TSignalThread();
+  explicit __fastcall TSignalThread(TObjectClassId Kind, bool LowPriority);
+  virtual __fastcall ~TSignalThread();
 
   virtual bool WaitForEvent();
   uintptr_t WaitForEvent(uint32_t Timeout) const;
   virtual void Execute() override;
   virtual void ProcessEvent() = 0;
 };
-
+//---------------------------------------------------------------------------
 class TTerminal;
 class TQueueItem;
 class TTerminalQueue;
 class TQueueItemProxy;
 class TTerminalQueueStatus;
-
+//---------------------------------------------------------------------------
 #if 0
 typedef void (__closure * TQueueListUpdate)
   (TTerminalQueue * Queue);
@@ -95,7 +95,7 @@ typedef nb::FastDelegate2<void,
   TTerminalQueue * /*Queue*/, TQueueEvent /*Event*/> TQueueEventEvent;
 
 class TTerminalItem;
-
+//---------------------------------------------------------------------------
 class NB_CORE_EXPORT TTerminalQueue : public TSignalThread
 {
   friend class TQueueItem;
@@ -112,7 +112,6 @@ public:
   TTerminalQueueStatus *CreateStatus(TTerminalQueueStatus *Current);
   void Idle();
 
-#if 0
   __property bool IsEmpty = { read = GetIsEmpty };
   __property intptr_t TransfersLimit = { read = FTransfersLimit, write = SetTransfersLimit };
   __property intptr_t KeepDoneItemsFor = { read = FKeepDoneItemsFor, write = SetKeepDoneItemsFor };
@@ -124,7 +123,6 @@ public:
   __property TQueueListUpdate OnListUpdate = { read = FOnListUpdate, write = FOnListUpdate };
   __property TQueueItemUpdateEvent OnQueueItemUpdate = { read = FOnQueueItemUpdate, write = FOnQueueItemUpdate };
   __property TQueueEventEvent OnEvent = { read = FOnEvent, write = FOnEvent };
-#endif // #if 0
 
 protected:
   friend class TTerminalItem;
@@ -210,8 +208,7 @@ public:
   bool TryAddParallelOperation(TQueueItem *Item, bool Force);
   bool ContinueParallelOperation() const;
 };
-
-
+//---------------------------------------------------------------------------
 class NB_CORE_EXPORT TQueueItem : public TObject
 {
   friend class TTerminalQueue;
@@ -252,10 +249,8 @@ public:
 
   static bool IsUserActionStatus(TQueueItem::TStatus Status);
 
-#if 0
   __property TStatus Status = { read = GetStatus };
   __property HANDLE CompleteEvent = { read = FCompleteEvent, write = FCompleteEvent };
-#endif // #if 0
 
   HANDLE GetCompleteEvent() const { return FCompleteEvent; }
   void SetCompleteEvent(HANDLE Value) { FCompleteEvent = Value; }
@@ -275,7 +270,7 @@ protected:
   virtual ~TQueueItem();
 
 public:
-  void SetMasks(UnicodeString Value);
+  void SetMasks(const UnicodeString Value);
   void SetStatus(TStatus Status);
   TStatus GetStatus() const;
   void Execute(TTerminalItem *TerminalItem);
@@ -290,7 +285,7 @@ public:
   virtual TQueueItem *CreateParallelOperation();
   bool Complete();
 };
-
+//---------------------------------------------------------------------------
 class NB_CORE_EXPORT TQueueItemProxy : public TObject
 {
   friend class TQueueItem;
@@ -312,7 +307,6 @@ public:
   bool SetCPSLimit(intptr_t CPSLimit);
   bool GetCPSLimit(intptr_t &CPSLimit) const;
 
-#if 0
   __property TFileOperationProgressType * ProgressData = { read = GetProgressData };
   __property int64_t TotalTransferred = { read = GetTotalTransferred };
   __property TQueueItem::TInfo * Info = { read = FInfo };
@@ -320,7 +314,6 @@ public:
   __property bool ProcessingUserAction = { read = FProcessingUserAction };
   __property int Index = { read = GetIndex };
   __property void * UserData = { read = FUserData, write = FUserData };
-#endif // #if 0
 
   TQueueItem::TInfo *GetInfo() const { return FInfo; }
   TQueueItem::TStatus GetStatus() const { return FStatus; }
@@ -348,7 +341,7 @@ public:
   TFileOperationProgressType *GetProgressData() const;
   int64_t GetTotalTransferred() const;
 };
-
+//---------------------------------------------------------------------------
 class NB_CORE_EXPORT TTerminalQueueStatus : public TObject
 {
   friend class TTerminalQueue;
@@ -359,7 +352,6 @@ public:
 
   TQueueItemProxy *FindByQueueItem(TQueueItem *QueueItem);
 
-#if 0
   __property int Count = { read = GetCount };
   __property int DoneCount = { read = FDoneCount };
   __property int ActiveCount = { read = GetActiveCount };
@@ -367,7 +359,6 @@ public:
   __property int ActivePrimaryCount = { read = GetActivePrimaryCount };
   __property int ActiveAndPendingPrimaryCount = { read = GetActiveAndPendingPrimaryCount };
   __property TQueueItemProxy * Items[int Index] = { read = GetItem };
-#endif // #if 0
 
   bool IsOnlyOneActiveAndNoPending() const;
 
@@ -397,7 +388,7 @@ public:
   TQueueItemProxy *GetItem(intptr_t Index) const;
   TQueueItemProxy *GetItem(intptr_t Index);
 };
-
+//---------------------------------------------------------------------------
 class NB_CORE_EXPORT TLocatedQueueItem : public TQueueItem
 {
 public:
@@ -416,7 +407,7 @@ protected:
 private:
   UnicodeString FCurrentDir;
 };
-
+//---------------------------------------------------------------------------
 class NB_CORE_EXPORT TTransferQueueItem : public TLocatedQueueItem
 {
   NB_DISABLE_COPY(TTransferQueueItem)
@@ -425,7 +416,7 @@ public:
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TTransferQueueItem) || TLocatedQueueItem::is(Kind); }
 public:
   explicit TTransferQueueItem(TObjectClassId Kind, TTerminal *Terminal,
-    const TStrings *AFilesToCopy, UnicodeString TargetDir,
+    const TStrings *AFilesToCopy, const UnicodeString TargetDir,
     const TCopyParamType *CopyParam, intptr_t Params, TOperationSide Side,
     bool SingleFile, bool Parallel);
   virtual ~TTransferQueueItem();
@@ -449,7 +440,7 @@ public:
   TParallelOperation *GetParallelOperation() const { return FParallelOperation; }
   TParallelOperation *GetParallelOperation() { return FParallelOperation; }
 };
-
+//---------------------------------------------------------------------------
 class NB_CORE_EXPORT TUploadQueueItem : public TTransferQueueItem
 {
 public:
@@ -457,7 +448,7 @@ public:
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TUploadQueueItem) || TTransferQueueItem::is(Kind); }
 public:
   explicit TUploadQueueItem(TTerminal *Terminal,
-    const TStrings *AFilesToCopy, UnicodeString TargetDir,
+    const TStrings *AFilesToCopy, const UnicodeString ATargetDir,
     const TCopyParamType *CopyParam, intptr_t Params, bool SingleFile, bool Parallel);
   virtual ~TUploadQueueItem()
   {
@@ -466,7 +457,7 @@ public:
 protected:
   virtual void DoTransferExecute(TTerminal *Terminal, TParallelOperation *ParallelOperation) override;
 };
-
+//---------------------------------------------------------------------------
 class NB_CORE_EXPORT TDownloadQueueItem : public TTransferQueueItem
 {
 public:
@@ -474,7 +465,7 @@ public:
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TDownloadQueueItem) || TTransferQueueItem::is(Kind); }
 public:
   explicit TDownloadQueueItem(TTerminal *Terminal,
-    const TStrings *AFilesToCopy, UnicodeString TargetDir,
+    const TStrings *AFilesToCopy, const UnicodeString ATargetDir,
     const TCopyParamType *CopyParam, intptr_t Params, bool SingleFile, bool Parallel);
   virtual ~TDownloadQueueItem()
   {
@@ -483,7 +474,7 @@ public:
 protected:
   virtual void DoTransferExecute(TTerminal *Terminal, TParallelOperation *ParallelOperation) override;
 };
-
+//---------------------------------------------------------------------------
 class TUserAction;
 class NB_CORE_EXPORT TTerminalThread : public TSignalThread
 {
@@ -497,12 +488,12 @@ public:
   void TerminalReopen();
 
   void Cancel();
-  void Idle();
+  bool __fastcall Release();
+  void __fastcall Idle();
 
-#if 0
   __property TNotifyEvent OnIdle = { read = FOnIdle, write = FOnIdle };
   __property bool Cancelling = { read = FCancel };
-#endif // #if 0
+  __property bool AllowAbandon = { read = FAllowAbandon, write = FAllowAbandon };
 
   TNotifyEvent GetOnIdle() const { return FOnIdle; }
   void SetOnIdle(TNotifyEvent Value) { FOnIdle = Value; }
@@ -510,6 +501,7 @@ public:
 
 protected:
   virtual void ProcessEvent();
+  virtual bool __fastcall Finished();
 
 private:
   TTerminal *FTerminal;
@@ -534,8 +526,11 @@ private:
   Exception *FException;
   Exception *FIdleException;
   bool FCancel;
+  TDateTime FCancelAfter;
+  bool FAbandoned;
   bool FCancelled;
   bool FPendingIdle;
+  bool FAllowAbandon;
 
   DWORD FMainThread;
   TCriticalSection FSection;
@@ -552,22 +547,22 @@ private:
   void TerminalReopenEvent(TObject *Sender);
 
   void TerminalInformation(
-    TTerminal *Terminal, UnicodeString Str, bool Status, intptr_t Phase);
+    TTerminal *Terminal, const UnicodeString &Str, bool Status, intptr_t Phase);
   void TerminalQueryUser(TObject *Sender,
-    UnicodeString AQuery, TStrings *MoreMessages, uintptr_t Answers,
-    const TQueryParams *Params, uintptr_t &Answer, TQueryType Type, void *Arg);
+    const UnicodeString &AQuery, TStrings *MoreMessages, uint32_t Answers,
+    const TQueryParams *Params, uint32_t &Answer, TQueryType Type, void *Arg);
   void TerminalPromptUser(TTerminal *Terminal, TPromptKind Kind,
-    UnicodeString Name, UnicodeString Instructions,
+    const UnicodeString &Name, const UnicodeString &Instructions,
     TStrings *Prompts, TStrings *Results, bool &Result, void *Arg);
   void TerminalShowExtendedException(TTerminal *Terminal,
     Exception *E, void *Arg);
   void TerminalDisplayBanner(TTerminal *Terminal,
-    UnicodeString SessionName, UnicodeString Banner,
-    bool &NeverShowAgain, intptr_t Options);
+    const UnicodeString &SessionName, const UnicodeString &Banner,
+    bool &NeverShowAgain, intptr_t Options, uintptr_t &Params);
   void TerminalChangeDirectory(TObject *Sender);
   void TerminalReadDirectory(TObject *Sender, Boolean ReloadOnly);
   void TerminalStartReadDirectory(TObject *Sender);
   void TerminalReadDirectoryProgress(TObject *Sender, intptr_t Progress, intptr_t ResolvedLinks, bool &Cancel);
   void TerminalInitializeLog(TObject *Sender);
 };
-
+//---------------------------------------------------------------------------

@@ -1,9 +1,12 @@
+#include <Queue.h>
 #include <Interface.h>
+#include <System.IOUtils.hpp>
+
 #include "WinInterface.h"
 
 const uint32_t GUIUpdateInterval = 100;
 
-static bool IsPositiveAnswer(uintptr_t Answer)
+static bool IsPositiveAnswer(uint32_t Answer)
 {
   return (Answer == qaYes) || (Answer == qaOK) || (Answer == qaYesToAll);
 }
@@ -102,9 +105,9 @@ static void NeverAskAgainCheckClick(void * /*Data*/, TObject *Sender)
     TFarButton *Button = dyn_cast<TFarButton>(Dialog->GetControl(ii));
     if (Button != nullptr)
     {
-      if ((Button->GetModalResult() != 0) && (Button->GetModalResult() != static_cast<intptr_t>(qaCancel)))
+      if ((Button->GetModalResult() != 0) && (Button->GetModalResult() != ToIntPtr(qaCancel)))
       {
-        Button->SetEnabled(!CheckBox->GetChecked() || (Button->GetModalResult() == static_cast<intptr_t>(PositiveAnswer)));
+        Button->SetEnabled(!CheckBox->GetChecked() || (Button->GetModalResult() == ToIntPtr(PositiveAnswer)));
       }
 
 #if 0
@@ -129,7 +132,7 @@ static TFarCheckBox *FindNeverAskAgainCheck(TFarDialog *Dialog)
 }
 
 TFarDialog *CreateMessageDialogEx(UnicodeString Msg,
-  TStrings *MoreMessages, TQueryType Type, uintptr_t Answers, UnicodeString HelpKeyword,
+  TStrings *MoreMessages, TQueryType Type, uint32_t Answers, const UnicodeString AHelpKeyword,
   const TMessageParams *Params, TFarButton *&TimeoutButton)
 {
   TMsgDlgType DlgType;
@@ -222,10 +225,10 @@ TFarDialog *CreateMessageDialogEx(UnicodeString Msg,
   return Dialog;
 }
 
-uintptr_t ExecuteMessageDialog(TForm *Dialog, uintptr_t Answers, const TMessageParams *Params)
+uintptr_t ExecuteMessageDialog(TForm *Dialog, uint32_t Answers, const TMessageParams *Params)
 {
   FlashOnBackground();
-  uintptr_t Answer = Dialog->ShowModal();
+  uint32_t Answer = Dialog->ShowModal();
   // mrCancel is returned always when X button is pressed, despite
   // no Cancel button was on the dialog. Find valid "cancel" answer.
   // mrNone is returned when Windows session is closing (log off)
@@ -428,7 +431,7 @@ void SetTimeoutEvents(TControl *Control, TMessageTimeout *Timeout)
 
 // Merge with CreateMessageDialogEx
 TForm *CreateMoreMessageDialogEx(const UnicodeString Message, TStrings *MoreMessages,
-  TQueryType Type, uintptr_t Answers, UnicodeString HelpKeyword, const TMessageParams *Params)
+  TQueryType Type, uint32_t Answers, UnicodeString HelpKeyword, const TMessageParams *Params)
 {
   std::unique_ptr<TForm> Dialog;
   UnicodeString AMessage = Message;
@@ -480,7 +483,7 @@ TForm *CreateMoreMessageDialogEx(const UnicodeString Message, TStrings *MoreMess
 }
 
 uintptr_t MoreMessageDialog(UnicodeString Message, TStrings *MoreMessages,
-  TQueryType Type, uintptr_t Answers, UnicodeString HelpKeyword, const TMessageParams *Params)
+  TQueryType Type, uint32_t Answers, UnicodeString HelpKeyword, const TMessageParams *Params)
 {
   std::unique_ptr<TForm> Dialog(CreateMoreMessageDialogEx(Message, MoreMessages, Type, Answers, HelpKeyword, Params));
   uintptr_t Result = ExecuteMessageDialog(Dialog.get(), Answers, Params);
@@ -488,7 +491,7 @@ uintptr_t MoreMessageDialog(UnicodeString Message, TStrings *MoreMessages,
 }
 
 uintptr_t MessageDialog(UnicodeString Msg, TQueryType Type,
-  uintptr_t Answers, UnicodeString HelpKeyword, const TMessageParams *Params)
+  uint32_t Answers, UnicodeString HelpKeyword, const TMessageParams *Params)
 {
   return MoreMessageDialog(Msg, nullptr, Type, Answers, HelpKeyword, Params);
 }
@@ -549,7 +552,7 @@ bool AppendExceptionStackTraceAndForget(TStrings *&MoreMessages)
 {
   bool Result = false;
 
-  TGuard Guard(StackTraceCriticalSection);
+  volatile TGuard Guard(StackTraceCriticalSection);
 
   DWORD Id = ::GetCurrentThreadId();
   TStackTraceMap::iterator Iterator = StackTraceMap.find(Id);
@@ -578,7 +581,7 @@ bool AppendExceptionStackTraceAndForget(TStrings *&MoreMessages)
 }
 
 uintptr_t ExceptionMessageDialog(Exception * /*E*/, TQueryType /*Type*/,
-  UnicodeString /*MessageFormat*/, uintptr_t /*Answers*/, UnicodeString /*HelpKeyword*/,
+  const UnicodeString /*MessageFormat*/, uint32_t /*Answers*/, const UnicodeString /*HelpKeyword*/,
   const TMessageParams * /*Params*/)
 {
 #if 0
@@ -611,8 +614,8 @@ uintptr_t ExceptionMessageDialog(Exception * /*E*/, TQueryType /*Type*/,
 }
 
 uintptr_t FatalExceptionMessageDialog(Exception * /*E*/, TQueryType /*Type*/,
-  int /*SessionReopenTimeout*/, UnicodeString /*MessageFormat*/, uintptr_t /*Answers*/,
-  UnicodeString /*HelpKeyword*/, const TMessageParams * /*Params*/)
+  intptr_t /*SessionReopenTimeout*/, const UnicodeString /*MessageFormat*/, uint32_t /*Answers*/,
+  const UnicodeString /*HelpKeyword*/, const TMessageParams * /*Params*/)
 {
 #if 0
   DebugAssert(FLAGCLEAR(Answers, qaRetry));
@@ -662,8 +665,7 @@ static void DoExceptNotify(TObject * /*ExceptObj*/, void * /*ExceptAddr*/,
         std::unique_ptr<TStrings> StackTrace(StackInfoListToStrings(StackInfoList));
 
         DWORD ThreadID = GetCurrentThreadId();
-
-        TGuard Guard(StackTraceCriticalSection.get());
+ volatile TGuard Guard(StackTraceCriticalSection.get());
 
         TStackTraceMap::iterator Iterator = StackTraceMap.find(ThreadID);
         if (Iterator != StackTraceMap.end())
@@ -930,7 +932,7 @@ TWinInteractiveCustomCommand::TWinInteractiveCustomCommand(
   FHelpKeyword = HelpKeyword;
 }
 
-void TWinInteractiveCustomCommand::PatternHint(intptr_t Index, UnicodeString Pattern)
+void TWinInteractiveCustomCommand::PatternHint(intptr_t /*AIndex*/, UnicodeString Pattern)
 {
   if (IsPromptPattern(Pattern))
   {
@@ -988,19 +990,19 @@ void TWinInteractiveCustomCommand::Execute(
     {
       if (StdOutOutput != INVALID_HANDLE_VALUE)
       {
-        CloseHandle(StdOutOutput);
+        SAFE_CLOSE_HANDLE(StdOutOutput);
       }
       if (StdOutInput != INVALID_HANDLE_VALUE)
       {
-        CloseHandle(StdOutInput);
+        SAFE_CLOSE_HANDLE(StdOutInput);
       }
       if (StdInOutput != INVALID_HANDLE_VALUE)
       {
-        CloseHandle(StdInOutput);
+        SAFE_CLOSE_HANDLE(StdInOutput);
       }
       if (StdInInput != INVALID_HANDLE_VALUE)
       {
-        CloseHandle(StdInInput);
+        SAFE_CLOSE_HANDLE(StdInInput);
       }
     };
     if (!::CreatePipe(&StdOutOutput, &StdOutInput, &SecurityAttributes, 0))
@@ -1034,8 +1036,8 @@ void TWinInteractiveCustomCommand::Execute(
         {
           SCOPE_EXIT
           {
-            CloseHandle(ProcessInformation.hProcess);
-            CloseHandle(ProcessInformation.hThread);
+            SAFE_CLOSE_HANDLE(ProcessInformation.hProcess);
+            SAFE_CLOSE_HANDLE(ProcessInformation.hThread);
           };
           // wait until the console program terminated
           bool Running = true;
@@ -1077,17 +1079,14 @@ void TWinInteractiveCustomCommand::Execute(
         }
         __finally
         {
-#if 0
           CloseHandle(ProcessInformation.hProcess);
           CloseHandle(ProcessInformation.hThread);
-#endif // #if 0
-        };
+        }
       }
     }
   }
   __finally
-  {
-#if 0
+  ({
     if (StdOutOutput != INVALID_HANDLE_VALUE)
     {
       CloseHandle(StdOutOutput);
@@ -1104,8 +1103,7 @@ void TWinInteractiveCustomCommand::Execute(
     {
       CloseHandle(StdInInput);
     }
-#endif // #if 0
-  };
+  })
 #endif // #if 0
 }
 
@@ -1361,6 +1359,82 @@ bool HandleMinimizeSysCommand(TMessage &Message)
 }
 #endif
 
+//---------------------------------------------------------------------------
+class TCallstackThread : public TSignalThread
+{
+public:
+  explicit __fastcall TCallstackThread();
+  void InitCallstackThread(bool LowPriority);
+
+protected:
+  virtual void __fastcall ProcessEvent();
+
+private:
+  static UnicodeString DoGetName();
+  static HANDLE DoCreateEvent();
+};
+//---------------------------------------------------------------------------
+__fastcall TCallstackThread::TCallstackThread() :
+  TSignalThread(OBJECT_CLASS_TCallstackThread, true)
+{
+}
+
+void TCallstackThread::InitCallstackThread(bool LowPriority)
+{
+  TSignalThread::InitSignalThread(LowPriority, DoCreateEvent());
+}
+//---------------------------------------------------------------------------
+void __fastcall TCallstackThread::ProcessEvent()
+{
+#if 0
+  try
+  {
+    UnicodeString FileName = FORMAT(L"%s.txt", DoGetName());
+    UnicodeString Path = TPath::Combine(::GetSystemTemporaryDirectory(), FileName);
+    std::unique_ptr<TStrings> StackStrings;
+    HANDLE MainThreadHandle = reinterpret_cast<HANDLE>(MainThreadID);
+    if (SuspendThread(MainThreadHandle) < 0)
+    {
+      RaiseLastOSError();
+    }
+    try
+    {
+      TJclStackInfoList * StackInfoList = JclCreateThreadStackTraceFromID(true, MainThreadID);
+      if (StackInfoList == NULL)
+      {
+        RaiseLastOSError();
+      }
+      StackStrings.reset(StackInfoListToStrings(StackInfoList));
+    }
+    __finally
+    {
+      if (ResumeThread(MainThreadHandle) < 0)
+      {
+        RaiseLastOSError();
+      }
+    }
+    TFile::WriteAllText(Path, StackStrings->Text);
+  }
+  catch (...)
+  {
+  }
+#endif // if 0
+}
+//---------------------------------------------------------------------------
+UnicodeString TCallstackThread::DoGetName()
+{
+  return FORMAT("WinSCPCallstack%d", GetCurrentProcessId());
+}
+//---------------------------------------------------------------------------
+HANDLE TCallstackThread::DoCreateEvent()
+{
+  UnicodeString Name = DoGetName();
+  return ::CreateEventW(nullptr, false, false, Name.c_str());
+}
+//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
+std::unique_ptr<TCallstackThread> CallstackThread;
+//---------------------------------------------------------------------------
 void WinInitialize()
 {
 #if 0
@@ -1368,6 +1442,8 @@ void WinInitialize()
   {
     JclStackTrackingOptions << stAllModules;
     JclAddExceptNotifier(DoExceptNotify, npFirstChain);
+    CallstackThread.reset(new TCallstackThread());
+    CallstackThread->Start();
   }
 #endif // #if 0
 
@@ -1376,6 +1452,7 @@ void WinInitialize()
   OnApiPath = ::ApiPath;
 #endif // #if 0
   MainThread = ::GetCurrentThreadId();
+  CallstackThread.reset(NULL);
 }
 
 
@@ -1384,26 +1461,26 @@ void WinFinalize()
 //  JclRemoveExceptNotifier(DoExceptNotify);
 }
 
-bool InputDialog(UnicodeString ACaption,
-  UnicodeString APrompt, UnicodeString &Value, UnicodeString HelpKeyword,
+bool InputDialog(const UnicodeString ACaption,
+  const UnicodeString APrompt, UnicodeString &Value, const UnicodeString AHelpKeyword,
   TStrings *History, bool PathInput,
   TInputDialogInitializeEvent OnInitialize, bool Echo)
 {
-  bool Result = GetGlobals()->InputDialog(ACaption, APrompt, Value, HelpKeyword,
+  bool Result = GetGlobals()->InputDialog(ACaption, APrompt, Value, AHelpKeyword,
       History, PathInput, OnInitialize, Echo);
   return Result;
 }
 
-uintptr_t MessageDialog(UnicodeString Msg, TQueryType Type,
-  uintptr_t Answers, UnicodeString HelpKeyword, const TMessageParams *Params)
+uintptr_t MessageDialog(const UnicodeString AMsg, TQueryType Type,
+  uint32_t Answers, const UnicodeString AHelpKeyword, const TMessageParams *Params)
 {
-  DebugUsedParam(HelpKeyword);
-  uintptr_t Result = GetGlobals()->MoreMessageDialog(Msg, nullptr, Type, Answers, Params);
+  DebugUsedParam(AHelpKeyword);
+  uintptr_t Result = GetGlobals()->MoreMessageDialog(AMsg, nullptr, Type, Answers, Params);
   return Result;
 }
 
 uintptr_t MessageDialog(intptr_t Ident, TQueryType Type,
-  uintptr_t Answers, UnicodeString HelpKeyword, const TMessageParams *Params)
+  uint32_t Answers, const UnicodeString HelpKeyword, const TMessageParams *Params)
 {
   DebugUsedParam(HelpKeyword);
   UnicodeString Msg = LoadStr(Ident);
@@ -1411,19 +1488,19 @@ uintptr_t MessageDialog(intptr_t Ident, TQueryType Type,
   return Result;
 }
 
-uintptr_t SimpleErrorDialog(UnicodeString Msg, UnicodeString /*MoreMessages*/)
+uintptr_t SimpleErrorDialog(const UnicodeString AMsg, UnicodeString /*MoreMessages*/)
 {
-  uintptr_t Answers = qaOK;
-  uintptr_t Result = GetGlobals()->MoreMessageDialog(Msg, nullptr, qtError, Answers, nullptr);
+  uint32_t Answers = qaOK;
+  uintptr_t Result = GetGlobals()->MoreMessageDialog(AMsg, nullptr, qtError, Answers, nullptr);
   return Result;
 }
 
-uintptr_t MoreMessageDialog(UnicodeString Message,
-  TStrings *MoreMessages, TQueryType Type, uintptr_t Answers,
-  UnicodeString HelpKeyword, const TMessageParams *Params)
+uintptr_t MoreMessageDialog(const UnicodeString AMessage,
+  TStrings *MoreMessages, TQueryType Type, uint32_t Answers,
+  const UnicodeString HelpKeyword, const TMessageParams *Params)
 {
   DebugUsedParam(HelpKeyword);
-  uintptr_t Result = GetGlobals()->MoreMessageDialog(Message, MoreMessages, Type, Answers, Params);
+  uintptr_t Result = GetGlobals()->MoreMessageDialog(AMessage, MoreMessages, Type, Answers, Params);
   return Result;
 }
 

@@ -20,8 +20,8 @@ public:
   virtual intptr_t GetMinFarVersion() const override;
 
   virtual void HandleException(Exception *E, int OpMode = 0) override;
-  uintptr_t MoreMessageDialog(UnicodeString Str, TStrings *MoreMessages,
-    TQueryType Type, uintptr_t Answers, const TMessageParams *Params = nullptr);
+  uint32_t MoreMessageDialog(const UnicodeString Str, TStrings *MoreMessages,
+    TQueryType Type, uint32_t Answers, const TMessageParams *Params = nullptr);
   void ShowExtendedException(Exception *E);
   bool CopyParamCustomDialog(TCopyParamType &CopyParam,
     intptr_t CopyParamAttrs);

@@ -17,7 +17,7 @@
 #define WRITE_REGISTRY(Method) \
   try { FRegistry->Method(Name, Value); } catch (...) { FFailed++; }
 
-UnicodeString MungeStr(UnicodeString Str, bool ForceAnsi)
+UnicodeString __fastcall MungeStr(UnicodeString Str, bool ForceAnsi, bool Value)
 {
   RawByteString Source;
   if (ForceAnsi)
@@ -37,6 +37,11 @@ UnicodeString MungeStr(UnicodeString Str, bool ForceAnsi)
   char *Buffer = Dest.SetLength(Source.Length() * 3 + 1);
   putty_mungestr(Source.c_str(), Buffer);
   PackStr(Dest);
+  if (Value)
+  {
+    // We do not want to munge * in PasswordMask
+    Dest = ReplaceStr(Dest, L"%2A", L"*");
+  }
   return UnicodeString(Dest.c_str(), Dest.Length());
 }
 
@@ -65,7 +70,7 @@ UnicodeString UnMungeStr(UnicodeString Str)
 
 UnicodeString PuttyMungeStr(const UnicodeString Str)
 {
-  return MungeStr(Str, false);
+  return MungeStr(Str, false, false);
 }
 
 UnicodeString PuttyUnMungeStr(const UnicodeString Str)
@@ -143,11 +148,11 @@ bool THierarchicalStorage::OpenRootKey(bool CanCreate)
 
 UnicodeString THierarchicalStorage::MungeKeyName(UnicodeString Key)
 {
-  UnicodeString Result = MungeStr(Key, GetForceAnsi());
+  UnicodeString Result = MungeStr(Key, GetForceAnsi(), false);
   // if there's already ANSI-munged subkey, keep ANSI munging
   if ((Result != Key) && !GetForceAnsi() && DoKeyExists(Key, true))
   {
-    Result = MungeStr(Key, true);
+    Result = MungeStr(Key, true, false);
   }
   return Result;
 }
@@ -217,12 +222,10 @@ void THierarchicalStorage::ClearSubKeys()
       RecursiveDeleteSubKey(SubKeys->GetString(Index));
     }
   }
-  __finally
-  {
-#if 0
+  __finally__removed
+  ({
     delete SubKeys;
-#endif // #if 0
-  };
+  })
 }
 
 void THierarchicalStorage::RecursiveDeleteSubKey(UnicodeString Key)
@@ -244,12 +247,10 @@ bool THierarchicalStorage::HasSubKeys()
     GetSubKeyNames(SubKeys.get());
     Result = SubKeys->GetCount() > 0;
   }
-  __finally
-  {
-#if 0
+  __finally__removed
+  ({
     delete SubKeys;
-#endif // #if 0
-  };
+  })
   return Result;
 }
 
@@ -288,12 +289,10 @@ void THierarchicalStorage::ReadValues(TStrings *Strings,
       }
     }
   }
-  __finally
-  {
-#if 0
+  __finally__removed
+  ({
     delete Names;
-#endif // #if 0
-  };
+  })
 }
 
 void THierarchicalStorage::ClearValues()
@@ -307,12 +306,10 @@ void THierarchicalStorage::ClearValues()
       DeleteValue(Names->GetString(Index));
     }
   }
-  __finally
-  {
-#if 0
+  __finally__removed
+  ({
     delete Names;
-#endif // #if 0
-  };
+  })
 }
 
 void THierarchicalStorage::WriteValues(TStrings *Strings,
@@ -342,7 +339,7 @@ UnicodeString THierarchicalStorage::ReadString(UnicodeString Name, UnicodeString
   UnicodeString Result;
   if (GetMungeStringValues())
   {
-    Result = UnMungeStr(ReadStringRaw(Name, MungeStr(Default, GetForceAnsi())));
+    Result = UnMungeStr(ReadStringRaw(Name, MungeStr(Default, GetForceAnsi(), true)));
   }
   else
   {
@@ -376,7 +373,7 @@ void THierarchicalStorage::WriteString(UnicodeString Name, UnicodeString Value)
 {
   if (GetMungeStringValues())
   {
-    WriteStringRaw(Name, MungeStr(Value, GetForceAnsi()));
+    WriteStringRaw(Name, MungeStr(Value, GetForceAnsi(), true));
   }
   else
   {
@@ -462,7 +459,7 @@ bool TRegistryStorage::Copy(TRegistryStorage *Storage)
     intptr_t Index = 0;
     while ((Index < Names->GetCount()) && Result)
     {
-      UnicodeString Name = MungeStr(Names->GetString(Index), GetForceAnsi());
+      UnicodeString Name = MungeStr(Names->GetString(Index), GetForceAnsi(), false);
       DWORD Size = ToDWord(Buffer.size());
       DWORD Type;
       int RegResult;
@@ -488,12 +485,10 @@ bool TRegistryStorage::Copy(TRegistryStorage *Storage)
       ++Index;
     }
   }
-  __finally
-  {
-#if 0
+  __finally__removed
+  ({
     delete Names;
-#endif // #if 0
-  };
+  })
   return Result;
 }
 
@@ -578,7 +573,7 @@ bool TRegistryStorage::DeleteValue(UnicodeString Name)
 
 bool TRegistryStorage::DoKeyExists(UnicodeString SubKey, bool AForceAnsi)
 {
-  UnicodeString Key = MungeStr(SubKey, AForceAnsi);
+  UnicodeString Key = MungeStr(SubKey, AForceAnsi, false);
   bool Result = FRegistry->KeyExists(Key);
   return Result;
 }
@@ -802,7 +797,7 @@ bool __fastcall TCustomIniFileStorage::OpenSubKey(UnicodeString Key, bool CanCre
   bool Result;
 
   {
-    TAutoFlag Flag(FOpeningSubKey);
+    volatile TAutoFlag Flag(FOpeningSubKey);
     Result = THierarchicalStorage::OpenSubKey(Key, CanCreate, Path);
   }
 
@@ -915,7 +910,7 @@ bool __fastcall TCustomIniFileStorage::DoKeyExists(const UnicodeString SubKey, b
 {
   return
     (HandleByMasterStorage() && FMasterStorage->DoKeyExists(SubKey, AForceAnsi)) ||
-    FIniFile->SectionExists(CurrentSubKey + MungeStr(SubKey, AForceAnsi));
+    FIniFile->SectionExists(CurrentSubKey + MungeStr(SubKey, AForceAnsi, false));
 }
 //---------------------------------------------------------------------------
 bool __fastcall TCustomIniFileStorage::DoValueExists(UnicodeString Value)

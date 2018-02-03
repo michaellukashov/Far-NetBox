@@ -3,24 +3,24 @@
 
 #include <Classes.hpp>
 #include <memory>
-
+//---------------------------------------------------------------------------
 struct ne_session_s;
 struct ne_request_s;
 struct ne_ssl_certificate_s;
 struct ssl_st;
-
+//---------------------------------------------------------------------------
 class THttp;
 #if 0
-typedef void (__closure * THttpDownloadEvent)(THttp * Sender, int64_t Size, bool & Cancel);
+typedef void __fastcall (__closure * THttpDownloadEvent)(THttp * Sender, __int64 Size, bool & Cancel);
 #endif // #if 0
 typedef nb::FastDelegate3<void,
   THttp * /*Sender*/, int64_t /*Size*/, bool & /*Cancel*/> THttpDownloadEvent;
 #if 0
-typedef void (__closure * THttpErrorEvent)(THttp * Sender, int Status, UnicodeString Message);
+typedef void __fastcall (__closure * THttpErrorEvent)(THttp * Sender, int Status, const UnicodeString & Message);
 #endif // #if 0
 typedef nb::FastDelegate3<void,
-  THttp * /*Sender*/, int /*Status*/, UnicodeString /*Message*/> THttpErrorEvent;
-
+  THttp * /*Sender*/, int /*Status*/, const UnicodeString & /*Message*/> THttpErrorEvent;
+//---------------------------------------------------------------------------
 class THttp : public TObject
 {
 public:
@@ -28,10 +28,9 @@ public:
   ~THttp();
 
   void Get();
-  void Post(UnicodeString Request);
+  void Post(const UnicodeString Request);
   bool IsCertificateError() const;
 
-#if 0
   __property UnicodeString URL = { read = FURL, write = FURL };
   __property UnicodeString ProxyHost = { read = FProxyHost, write = FProxyHost };
   __property int ProxyPort = { read = FProxyPort, write = FProxyPort };
@@ -43,7 +42,6 @@ public:
   __property __int64 ResponseLimit = { read = FResponseLimit, write = FResponseLimit };
   __property THttpDownloadEvent OnDownload = { read = FOnDownload, write = FOnDownload };
   __property THttpErrorEvent OnError = { read = FOnError, write = FOnError };
-#endif // #if 0
 
   UnicodeString GetURL() const { return FURL; }
   void SetURL(UnicodeString Value) { FURL = Value; }
@@ -78,11 +76,11 @@ private:
 
   static int NeonBodyReader(void *UserData, const char *Buf, size_t Len);
   int NeonBodyReaderImpl(const char *Buf, size_t Len);
-  void SendRequest(const char *Method, UnicodeString Request);
+  void SendRequest(const char *Method, const UnicodeString Request);
   UnicodeString GetResponse() const;
   int64_t GetResponseLength() const;
   static void InitSslSession(ssl_st *Ssl, ne_session_s *Session);
   static int NeonServerSSLCallback(void *UserData, int Failures, const ne_ssl_certificate_s *Certificate);
   int NeonServerSSLCallbackImpl(int Failures, const ne_ssl_certificate_s *Certificate);
 };
-
+//---------------------------------------------------------------------------

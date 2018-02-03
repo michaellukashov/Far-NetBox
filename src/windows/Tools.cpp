@@ -215,20 +215,32 @@ void __fastcall RestoreForm(UnicodeString Data, TForm *Form, bool PositionOnly)
           (Bounds.Top < Monitor->Top) ||
           (Bounds.Top > Monitor->Top + Monitor->WorkareaRect.Height() - 20)))
       {
-        if (Monitor->Primary)
+        bool ExplicitPlacing = !Monitor->Primary;
+        if (!ExplicitPlacing)
         {
+          TPosition Position;
           if ((Application->MainForm == NULL) || (Application->MainForm == Form))
           {
-            Form->Position = poDefaultPosOnly;
+            Position = poDefaultPosOnly;
           }
           else
           {
-            Form->Position = poOwnerFormCenter;
+            Position = poOwnerFormCenter;
           }
-          Form->Width = Bounds.Width();
-          Form->Height = Bounds.Height();
+
+          // If handle is allocated already, changing Position reallocates it, what brings lot of nasty side effects.
+          if (Form->HandleAllocated() && (Form->Position != Position))
+          {
+            ExplicitPlacing = true;
+          }
+          else
+          {
+            Form->Width = Bounds.Width();
+            Form->Height = Bounds.Height();
+          }
         }
-        else
+
+        if (ExplicitPlacing)
         {
           // when positioning on non-primary monitor, we need
           // to handle that ourselves, so place window to center
@@ -273,13 +285,15 @@ UnicodeString StoreForm(TCustomForm *Form)
   DebugAssert(Form);
   TRect Bounds = Form->BoundsRect;
   OffsetRect(Bounds, -Form->Monitor->Left, -Form->Monitor->Top);
-  return FORMAT(L"%d;%d;%d;%d;%d;%s", (SaveDimension(Bounds.Left), SaveDimension(Bounds.Top),
-        SaveDimension(Bounds.Right), SaveDimension(Bounds.Bottom),
-        // we do not want WinSCP to start minimized next time (we cannot handle that anyway).
-        // note that WindowState is wsNormal when window in minimized for some reason.
-        // actually it is wsMinimized only when minimized by MSVDM
-        (int)(Form->WindowState == wsMinimized ? wsNormal : Form->WindowState),
-        SavePixelsPerInch(Form)));
+  UnicodeString Result =
+    FORMAT(L"%d;%d;%d;%d;%d;%s", (SaveDimension(Bounds.Left), SaveDimension(Bounds.Top),
+      SaveDimension(Bounds.Right), SaveDimension(Bounds.Bottom),
+      // we do not want WinSCP to start minimized next time (we cannot handle that anyway).
+      // note that WindowState is wsNormal when window in minimized for some reason.
+      // actually it is wsMinimized only when minimized by MSVDM
+      (int)(Form->WindowState == wsMinimized ? wsNormal : Form->WindowState),
+      SavePixelsPerInch(Form)));
+  return Result;
 }
 
 void RestoreFormSize(UnicodeString Data, TForm *Form)
@@ -693,6 +707,7 @@ bool IsFormatInClipboard(unsigned int Format)
   }
   return Result;
 }
+#endif // #if 0
 
 HANDLE OpenTextFromClipboard(const wchar_t *&Text)
 {
@@ -749,27 +764,27 @@ bool NonEmptyTextFromClipboard(UnicodeString &Text)
 static bool GetResource(
   const UnicodeString ResName, void *&Content, unsigned long &Size)
 {
-  HRSRC Resource = FindResourceEx(HInstance, RT_RCDATA, ResName.c_str(),
+  HRSRC Resource = FindResourceEx(GetGlobals()->GetInstanceHandle(), RT_RCDATA, ResName.c_str(),
       MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL));
   bool Result = (Resource != NULL);
   if (Result)
   {
-    Size = SizeofResource(HInstance, Resource);
+    Size = SizeofResource(GetGlobals()->GetInstanceHandle(), Resource);
     if (!Size)
     {
-      throw Exception(FORMAT(L"Cannot get size of resource %s", ResName));
+      throw Exception(FORMAT("Cannot get size of resource %s", ResName));
     }
 
-    Content = LoadResource(HInstance, Resource);
+    Content = LoadResource(GetGlobals()->GetInstanceHandle(), Resource);
     if (!Content)
     {
-      throw Exception(FORMAT(L"Cannot read resource %s", ResName));
+      throw Exception(FORMAT("Cannot read resource %s", ResName));
     }
 
     Content = LockResource(Content);
     if (!Content)
     {
-      throw Exception(FORMAT(L"Cannot lock resource %s", ResName));
+      throw Exception(FORMAT("Cannot lock resource %s", ResName));
     }
   }
 
@@ -814,6 +829,7 @@ UnicodeString ReadResource(const UnicodeString ResName)
   return Result;
 }
 
+#if 0
 template <class T>
 void BrowseForExecutableT(T *Control, UnicodeString Title,
   UnicodeString Filter, bool FileNameCommand, bool Escape)
@@ -1156,12 +1172,10 @@ static void ConvertKey(UnicodeString &FileName, TKeyType Type)
 
     MessageDialog(MainInstructions(FMTLOAD(CONVERTKEY_SAVED, FileName)), qtInformation, qaOK);
   }
-  __finally
-  {
-#if 0
+  __finally__removed
+  ({
     FreeKey(PrivateKey);
-#endif // #if 0
-  };
+  })
 }
 
 static void DoVerifyKey(

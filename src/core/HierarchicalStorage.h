@@ -72,7 +72,6 @@ public:
 
   virtual void Flush();
 
-#if 0
   __property UnicodeString Storage  = { read=FStorage };
   __property UnicodeString CurrentSubKey  = { read=GetCurrentSubKey };
   __property TStorageAccessMode AccessMode  = { read=FAccessMode, write=SetAccessMode };
@@ -81,7 +80,6 @@ public:
   __property bool MungeStringValues = { read = FMungeStringValues, write = FMungeStringValues };
   __property UnicodeString Source = { read = GetSource };
   __property bool Temporary = { read = GetTemporary };
-#endif // #if 0
 
   UnicodeString GetStorage() const { return FStorage; }
   TStorageAccessMode GetAccessMode() const { return FAccessMode; }
@@ -158,9 +156,7 @@ protected:
   virtual UnicodeString GetSource() const;
   virtual UnicodeString GetSource();
 
-#if 0
   __property int Failed  = { read=GetFailed, write=FFailed };
-#endif // #if 0
 public:
   intptr_t GetFailed() const;
   void SetFailed(intptr_t Value) { FFailed = Value; }

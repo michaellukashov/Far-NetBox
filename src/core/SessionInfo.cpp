@@ -20,9 +20,43 @@ static UnicodeString DoXmlEscape(UnicodeString AStr, bool NewLine)
   UnicodeString Str = AStr;
   for (intptr_t Index = 1; Index <= Str.Length(); ++Index)
   {
-    const wchar_t *Repl = nullptr;
+    UnicodeString Repl;
     switch (Str[Index])
     {
+      case L'\x00': // \0 Is not valid in XML anyway
+      case L'\x01':
+      case L'\x02':
+      case L'\x03':
+      case L'\x04':
+      case L'\x05':
+      case L'\x06':
+      case L'\x07':
+      case L'\x08':
+      // \n is handled below
+      case L'\x0B':
+      case L'\x0C':
+      // \r is handled below
+      case L'\x0E':
+      case L'\x0F':
+      case L'\x10':
+      case L'\x11':
+      case L'\x12':
+      case L'\x13':
+      case L'\x14':
+      case L'\x15':
+      case L'\x16':
+      case L'\x17':
+      case L'\x18':
+      case L'\x19':
+      case L'\x1A':
+      case L'\x1B':
+      case L'\x1C':
+      case L'\x1D':
+      case L'\x1E':
+      case L'\x1F':
+        Repl = L"#x" + ByteToHex((uint8_t)Str[Index]) + L";";
+        break;
+
     case L'&':
       Repl = L"amp;";
       break;
@@ -52,11 +86,11 @@ static UnicodeString DoXmlEscape(UnicodeString AStr, bool NewLine)
       break;
     }
 
-    if (Repl != nullptr)
+    if (!Repl.IsEmpty())
     {
       Str[Index] = L'&';
       Str.Insert(Repl, Index + 1);
-      Index += nb::StrLength(Repl);
+      Index += Repl.Length();
     }
   }
   return Str;
@@ -151,29 +185,13 @@ public:
           for (intptr_t Index = 0; Index < FFileList->GetCount(); ++Index)
           {
             TRemoteFile *File = FFileList->GetFile(Index);
-
-            FLog->AddIndented(L"    <file>");
-            FLog->AddIndented(FORMAT("      <filename value=\"%s\" />", XmlAttributeEscape(File->GetFileName())));
-            FLog->AddIndented(FORMAT("      <type value=\"%s\" />", XmlAttributeEscape(File->GetType())));
-            if (!File->GetIsDirectory())
-            {
-              FLog->AddIndented(FORMAT("      <size value=\"%s\" />", ::Int64ToStr(File->GetSize())));
-            }
-            FLog->AddIndented(L"    </file>");
+            RecordFile(L"    ", File, true);
           }
           FLog->AddIndented(L"  </files>");
         }
         if (FFile != nullptr)
         {
-          FLog->AddIndented(L"  <file>");
-          FLog->AddIndented(FORMAT("    <type value=\"%s\" />", XmlAttributeEscape(FFile->GetType())));
-          if (!FFile->GetIsDirectory())
-          {
-            FLog->AddIndented(FORMAT("    <size value=\"%s\" />", ::Int64ToStr(FFile->GetSize())));
-          }
-          FLog->AddIndented(FORMAT("    <modification value=\"%s\" />", StandardTimestamp(FFile->GetModification())));
-          FLog->AddIndented(FORMAT("    <permissions value=\"%s\" />", XmlAttributeEscape(FFile->GetRights()->GetText())));
-          FLog->AddIndented(L"  </file>");
+          RecordFile(L"  ", FFile, false);
         }
         if (FState == RolledBack)
         {
@@ -217,12 +235,12 @@ public:
     Close(Cancelled);
   }
 
-  void SetFileName(UnicodeString AFileName)
+  void SetFileName(const UnicodeString AFileName)
   {
     Parameter(L"filename", AFileName);
   }
 
-  void Destination(UnicodeString Destination)
+  void Destination(const UnicodeString Destination)
   {
     Parameter(L"destination", Destination);
   }
@@ -322,6 +340,7 @@ protected:
     case laMkdir: return L"mkdir";
     case laRm: return L"rm";
     case laMv: return L"mv";
+      case laCp: return L"cp";
     case laCall: return L"call";
     case laLs: return L"ls";
     case laStat: return L"stat";
@@ -338,6 +357,36 @@ protected:
     FNames->Add(Name);
     FValues->Add(Value);
   }
+
+#if 0
+  void __fastcall RecordFile(const UnicodeString AIndent, TRemoteFile *AFile, bool IncludeFileName)
+  {
+    FLog->AddIndented(AIndent + L"<file>");
+    FLog->AddIndented(AIndent + FORMAT(L"  <filename value=\"%s\" />", (XmlAttributeEscape(AFile->FileName))));
+    FLog->AddIndented(AIndent + FORMAT(L"  <type value=\"%s\" />", (XmlAttributeEscape(AFile->Type))));
+    if (!AFile->IsDirectory)
+    {
+      FLog->AddIndented(AIndent + FORMAT(L"  <size value=\"%s\" />", (IntToStr(AFile->Size))));
+    }
+    if (AFile->ModificationFmt != mfNone)
+    {
+      FLog->AddIndented(AIndent + FORMAT(L"  <modification value=\"%s\" />", (StandardTimestamp(AFile->Modification))));
+    }
+    if (!AFile->Rights->Unknown)
+    {
+      FLog->AddIndented(AIndent + FORMAT(L"  <permissions value=\"%s\" />", (XmlAttributeEscape(AFile->Rights->Text))));
+    }
+    if (AFile->Owner.IsSet)
+    {
+      FLog->AddIndented(AIndent + FORMAT(L"  <owner value=\"%s\" />", (XmlAttributeEscape(AFile->Owner.DisplayText))));
+    }
+    if (AFile->Group.IsSet)
+    {
+      FLog->AddIndented(AIndent + FORMAT(L"  <group value=\"%s\" />", (XmlAttributeEscape(AFile->Group.DisplayText))));
+    }
+    FLog->AddIndented(AIndent + L"</file>");
+  }
+#endif // #if 0
 
 private:
   TActionLog *FLog;
@@ -420,13 +469,13 @@ TFileSessionAction::TFileSessionAction(TActionLog *Log, TLogAction Action) :
 }
 
 TFileSessionAction::TFileSessionAction(
-  TActionLog *Log, TLogAction Action, UnicodeString AFileName) :
+  TActionLog *Log, TLogAction Action, const UnicodeString AFileName) :
   TSessionAction(Log, Action)
 {
   SetFileName(AFileName);
 }
 
-void TFileSessionAction::SetFileName(UnicodeString AFileName)
+void TFileSessionAction::SetFileName(const UnicodeString AFileName)
 {
   if (FRecord != nullptr)
   {
@@ -447,7 +496,7 @@ TFileLocationSessionAction::TFileLocationSessionAction(
 {
 }
 
-void TFileLocationSessionAction::Destination(UnicodeString Destination)
+void TFileLocationSessionAction::Destination(const UnicodeString Destination)
 {
   if (FRecord != nullptr)
   {
@@ -528,20 +577,27 @@ void TRmSessionAction::Recursive()
 }
 
 TMvSessionAction::TMvSessionAction(TActionLog *Log,
-  UnicodeString AFileName, UnicodeString ADestination) :
+  const UnicodeString AFileName, const UnicodeString ADestination) :
   TFileLocationSessionAction(Log, laMv, AFileName)
 {
   Destination(ADestination);
 }
 
+__fastcall TCpSessionAction::TCpSessionAction(TActionLog * Log,
+    const UnicodeString AFileName, const UnicodeString ADestination) :
+  TFileLocationSessionAction(Log, laCp, AFileName)
+{
+  Destination(ADestination);
+}
+//---------------------------------------------------------------------------
 TCallSessionAction::TCallSessionAction(TActionLog *Log,
-  UnicodeString Command, UnicodeString Destination) :
+  UnicodeString ACommand, UnicodeString ADestination) :
   TSessionAction(Log, laCall)
 {
   if (FRecord != nullptr)
   {
-    FRecord->Command(Command);
-    FRecord->Destination(Destination);
+    FRecord->Command(ACommand);
+    FRecord->Destination(ADestination);
   }
 }
 
@@ -719,7 +775,7 @@ UnicodeString TSessionLog::LogPartFileName(UnicodeString BaseName, intptr_t Inde
   UnicodeString Result;
   if (Index >= 1)
   {
-    Result = FORMAT(L"%s.%d", BaseName, Index);
+    Result = FORMAT("%s.%d", BaseName, Index);
   }
   else
   {
@@ -795,7 +851,7 @@ void TSessionLog::Add(TLogLineType Type, UnicodeString ALine)
       }
       else
       {
-        TGuard Guard(FCriticalSection);
+        volatile TGuard Guard(FCriticalSection);
 
         DoAdd(Type, ALine, nb::bind(&TSessionLog::DoAddToSelf, this));
       }
@@ -827,7 +883,7 @@ void TSessionLog::AddException(Exception *E)
 
 void TSessionLog::ReflectSettings()
 {
-  TGuard Guard(FCriticalSection);
+  volatile TGuard Guard(FCriticalSection);
 
   FLogging =
     !FClosed &&
@@ -897,7 +953,7 @@ void TSessionLog::OpenLogFile()
     {
       AddException(&E2);
       // not to deadlock with TSessionLog::ReflectSettings invoked by FConfiguration->LogFileName setter above
-      TUnguard Unguard(FCriticalSection);
+      volatile TUnguard Unguard(FCriticalSection);
       FUI->HandleExtendedException(&E2);
     }
   }
@@ -1049,10 +1105,10 @@ void TSessionLog::DoAddStartupInfo(TSessionData *Data)
 #endif // #if 0
     if (FConfiguration->GetLogMaxSize() > 0)
     {
-      LogStr += FORMAT(L", Rotating after: %s", SizeToStr(FConfiguration->GetLogMaxSize()));
+      LogStr += FORMAT(", Rotating after: %s", SizeToStr(FConfiguration->GetLogMaxSize()));
       if (FConfiguration->GetLogMaxCount() > 0)
       {
-        LogStr += FORMAT(L", Keeping at most %d logs", FConfiguration->GetLogMaxCount());
+        LogStr += FORMAT(", Keeping at most %d logs", FConfiguration->GetLogMaxCount());
       }
     }
 #if 0
@@ -1124,7 +1180,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData *Data)
     }
     TProxyMethod ProxyMethod = Data->GetActualProxyMethod();
     {
-      UnicodeString fp = FORMAT(L"FTP proxy %d", Data->GetFtpProxyLogonType());
+      UnicodeString fp = FORMAT("FTP proxy %d", Data->GetFtpProxyLogonType());
       ADF("Proxy: %s",
         (Data->GetFtpProxyLogonType() != 0) ? fp : EnumName(ProxyMethod, ProxyMethodNames));
     }
@@ -1157,8 +1213,8 @@ void TSessionLog::DoAddStartupInfo(TSessionData *Data)
         BooleanToEngStr(Data->GetAuthKI()), BooleanToEngStr(Data->GetAuthGSSAPI()));
       if (Data->GetAuthGSSAPI())
       {
-        ADF("GSSAPI: Forwarding: %s",
-          BooleanToEngStr(Data->GetGSSAPIFwdTGT()));
+        ADF("GSSAPI: Forwarding: %s; Libs: %s; Custom: %s",
+          BooleanToEngStr(Data->GetGSSAPIFwdTGT()), Data->GetGssLibList(), Data->GetGssLibCustom());
       }
       ADF("Ciphers: %s; Ssh2DES: %s",
         Data->GetCipherList(), BooleanToEngStr(Data->GetSsh2DES()));
@@ -1240,6 +1296,15 @@ void TSessionLog::DoAddStartupInfo(TSessionData *Data)
       ADF("HTTPS: %s [Client certificate: %s]",
         BooleanToEngStr(FtpsOn), LogSensitive(Data->GetTlsCertificateFile()));
     }
+    if (Data->GetFSProtocol() == fsS3)
+    {
+      FtpsOn = (Data->GetFtps() != ftpsNone);
+      ADF(L"HTTPS: %s", BooleanToEngStr(FtpsOn));
+      if (!Data->GetS3DefaultRegion().IsEmpty())
+      {
+        ADF(L"S3: Default region: %s", Data->GetS3DefaultRegion());
+      }
+    }
     if (FtpsOn)
     {
       if (Data->GetFSProtocol() == fsFTP)
@@ -1268,12 +1333,12 @@ void TSessionLog::DoAddStartupInfo(TSessionData *Data)
     UnicodeString TimeInfo;
     if ((Data->GetFSProtocol() == fsSFTP) || (Data->GetFSProtocol() == fsSFTPonly) || (Data->GetFSProtocol() == fsSCPonly) || (Data->GetFSProtocol() == fsWebDAV))
     {
-      AddToList(TimeInfo, FORMAT(L"DST mode: %s", EnumName(ToInt(Data->GetDSTMode()), DSTModeNames)), L";");
+      AddToList(TimeInfo, FORMAT("DST mode: %s", EnumName(ToInt(Data->GetDSTMode()), DSTModeNames)), L";");
     }
     if ((Data->GetFSProtocol() == fsSCPonly) || (Data->GetFSProtocol() == fsFTP))
     {
       intptr_t TimeDifferenceMin = TimeToMinutes(Data->GetTimeDifference());
-      AddToList(TimeInfo, FORMAT(L"Timezone offset: %dh %dm", TimeDifferenceMin / MinsPerHour, TimeDifferenceMin % MinsPerHour), L";");
+      AddToList(TimeInfo, FORMAT("Timezone offset: %dh %dm", TimeDifferenceMin / MinsPerHour, TimeDifferenceMin % MinsPerHour), L";");
     }
     ADSTR(TimeInfo);
 
@@ -1365,7 +1430,7 @@ void TActionLog::Add(UnicodeString Line)
   DebugAssert(FConfiguration);
   if (FLogging)
   {
-    TGuard Guard(FCriticalSection);
+    volatile TGuard Guard(FCriticalSection);
     if (FLogger == nullptr)
     {
       OpenLogFile();
@@ -1444,12 +1509,10 @@ void TActionLog::AddFailure(Exception *E)
     {
       AddFailure(Messages.get());
     }
-    __finally
-    {
-#if 0
+    __finally__removed
+    ({
       delete Messages;
-#endif // #if 0
-    };
+    })
   }
 }
 
@@ -1464,7 +1527,7 @@ void TActionLog::AddMessages(UnicodeString Indent, TStrings *Messages)
 
 void TActionLog::ReflectSettings()
 {
-  TGuard Guard(FCriticalSection);
+  volatile TGuard Guard(FCriticalSection);
 
   bool ALogging =
     !FClosed && FConfiguration->GetLogActions() && GetEnabled();
@@ -1542,7 +1605,7 @@ void TActionLog::OpenLogFile()
         if (FUI != nullptr)
         {
           // not to deadlock with TSessionLog::ReflectSettings invoked by FConfiguration->LogFileName setter above
-          TUnguard Unguard(FCriticalSection);
+          volatile TUnguard Unguard(FCriticalSection);
           FUI->HandleExtendedException(&E2);
         }
       }

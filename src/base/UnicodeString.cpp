@@ -95,12 +95,12 @@ void AnsiString::Init(const unsigned char *Str, intptr_t Length)
 
 intptr_t AnsiString::Pos(const AnsiString &Str) const
 {
-  return static_cast<intptr_t>(Data.Find(Str.c_str())) + 1;
+  return ToIntPtr(Data.Find(Str.c_str())) + 1;
 }
 
 intptr_t AnsiString::Pos(char Ch) const
 {
-  return static_cast<intptr_t>(Data.Find(Ch)) + 1;
+  return ToIntPtr(Data.Find(Ch)) + 1;
 }
 
 char AnsiString::operator[](intptr_t Idx) const
@@ -642,12 +642,12 @@ UnicodeString &UnicodeString::Upper(intptr_t nStartPos, intptr_t nLength)
   return *this;
 }
 
-intptr_t UnicodeString::Compare(UnicodeString Str) const
+intptr_t UnicodeString::Compare(const UnicodeString Str) const
 {
   return ::AnsiCompare(*this, Str);
 }
 
-intptr_t UnicodeString::CompareIC(UnicodeString Str) const
+intptr_t UnicodeString::CompareIC(const UnicodeString Str) const
 {
   return ::AnsiCompareIC(*this, Str);
 }
@@ -659,13 +659,15 @@ intptr_t UnicodeString::ToIntPtr() const
 
 intptr_t UnicodeString::FindFirstOf(const wchar_t Ch) const
 {
-  return static_cast<intptr_t>(Data.Find(Ch, 0)) + 1;
+  return ::ToIntPtr(Data.Find(Ch, 0)) + 1;
 }
 
 intptr_t UnicodeString::FindFirstOf(const wchar_t *Str, size_t Offset) const
 {
   if (!Str || !*Str)
+  {
     return NPOS;
+  }
   // int Length = wstring_t::StringLength(Str);
   wstring_t str = Data.Mid(ToInt(Offset));
   int Res = str.FindOneOf(Str);
@@ -715,7 +717,7 @@ intptr_t UnicodeString::Pos(wchar_t Ch) const
   return Data.Find(Ch) + 1;
 }
 
-intptr_t UnicodeString::Pos(UnicodeString Str) const
+intptr_t UnicodeString::Pos(const UnicodeString Str) const
 {
   return Data.Find(Str.Data.c_str()) + 1;
 }

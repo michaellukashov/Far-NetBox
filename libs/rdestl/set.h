@@ -34,11 +34,11 @@ class set : private rb_tree<T, TAllocator>
 		TRef operator*() const
 		{
 			RDE_ASSERT(m_node != 0);
-			return m_node->key;
+			return m_node->value.key;
 		}
 		TPtr operator->() const
 		{
-			return &m_node->key;
+			return &m_node->value.key;
 		}
 		TNodePtr node() const
 		{

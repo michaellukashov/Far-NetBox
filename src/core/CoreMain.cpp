@@ -8,13 +8,16 @@
 #include "Configuration.h"
 #include "PuttyIntf.h"
 #include "Cryptography.h"
-#ifndef NO_FILEZILLA
+#include <DateUtils.hpp>
 #include "FileZillaIntf.h"
-#endif
-#include "WebDAVFileSystem.h"
-
+#include "NeonIntf.h"
+#include "TextsCore.h"
+// #include "WebDAVFileSystem.h"
+//---------------------------------------------------------------------------
+__removed #pragma package(smart_init)
+//---------------------------------------------------------------------------
 TStoredSessionList *StoredSessions = nullptr;
-
+//---------------------------------------------------------------------------
 TQueryButtonAlias::TQueryButtonAlias() :
   Button(0),
   OnClick(nullptr),
@@ -25,7 +28,45 @@ TQueryButtonAlias::TQueryButtonAlias() :
 {
   MenuButton = false;
 }
-
+//---------------------------------------------------------------------------
+TQueryButtonAlias TQueryButtonAlias::CreateYesToAllGrouppedWithYes()
+{
+  TQueryButtonAlias Result;
+  Result.Button = qaYesToAll;
+  Result.GroupWith = qaYes;
+  Result.GrouppedShiftState = ssShift;
+  return Result;
+}
+//---------------------------------------------------------------------------
+TQueryButtonAlias TQueryButtonAlias::CreateNoToAllGrouppedWithNo()
+{
+  TQueryButtonAlias Result;
+  Result.Button = qaNoToAll;
+  Result.GroupWith = qaNo;
+  Result.GrouppedShiftState = ssShift;
+  return Result;
+}
+//---------------------------------------------------------------------------
+TQueryButtonAlias TQueryButtonAlias::CreateAllAsYesToNewerGrouppedWithYes()
+{
+  TQueryButtonAlias Result;
+  Result.Button = qaAll;
+  Result.Alias = LoadStr(YES_TO_NEWER_BUTTON);
+  Result.GroupWith = qaYes;
+  Result.GrouppedShiftState = ssCtrl;
+  return Result;
+}
+//---------------------------------------------------------------------------
+TQueryButtonAlias TQueryButtonAlias::CreateIgnoreAsRenameGrouppedWithNo()
+{
+  TQueryButtonAlias Result;
+  Result.Button = qaIgnore;
+  Result.Alias = LoadStr(RENAME_BUTTON);
+  Result.GroupWith = qaNo;
+  Result.GrouppedShiftState = ssCtrl;
+  return Result;
+}
+//---------------------------------------------------------------------------
 TQueryParams::TQueryParams(uintptr_t AParams, UnicodeString AHelpKeyword) :
   Aliases(nullptr),
   AliasesCount(0),
@@ -41,13 +82,13 @@ TQueryParams::TQueryParams(uintptr_t AParams, UnicodeString AHelpKeyword) :
   HelpKeyword(AHelpKeyword)
 {
 }
-
-TQueryParams::TQueryParams(const TQueryParams &Source)
+//---------------------------------------------------------------------------
+TQueryParams::TQueryParams(const TQueryParams & Source)
 {
   Assign(Source);
 }
-
-void TQueryParams::Assign(const TQueryParams &Source)
+//---------------------------------------------------------------------------
+void TQueryParams::Assign(const TQueryParams & Source)
 {
   *this = Source;
 }
@@ -68,30 +109,30 @@ TQueryParams &TQueryParams::operator=(const TQueryParams &other)
   HelpKeyword = other.HelpKeyword;
   return *this;
 }
-
-bool IsAuthenticationPrompt(TPromptKind Kind)
+//---------------------------------------------------------------------------
+bool __fastcall IsAuthenticationPrompt(TPromptKind Kind)
 {
   return
     (Kind == pkUserName) || (Kind == pkPassphrase) || (Kind == pkTIS) ||
     (Kind == pkCryptoCard) || (Kind == pkKeybInteractive) ||
     (Kind == pkPassword) || (Kind == pkNewPassword);
 }
-
-bool IsPasswordOrPassphrasePrompt(TPromptKind Kind, TStrings *Prompts)
+//---------------------------------------------------------------------------
+bool __fastcall IsPasswordOrPassphrasePrompt(TPromptKind Kind, TStrings * Prompts)
 {
   return
     (Prompts->GetCount() == 1) && FLAGCLEAR(ToIntPtr(Prompts->GetObj(0)), pupEcho) &&
     ((Kind == pkPassword) || (Kind == pkPassphrase) || (Kind == pkKeybInteractive) ||
-      (Kind == pkTIS) || (Kind == pkCryptoCard));
+     (Kind == pkTIS) || (Kind == pkCryptoCard));
 }
-
-bool IsPasswordPrompt(TPromptKind Kind, TStrings *Prompts)
+//---------------------------------------------------------------------------
+bool __fastcall IsPasswordPrompt(TPromptKind Kind, TStrings * Prompts)
 {
   return
     IsPasswordOrPassphrasePrompt(Kind, Prompts) &&
     (Kind != pkPassphrase);
 }
-
+//---------------------------------------------------------------------------
 TConfiguration *GetConfiguration()
 {
   static TConfiguration *Configuration = nullptr;
@@ -112,12 +153,12 @@ void DeleteConfiguration()
     ConfigurationDeleted = true;
   }
 }
-
+//---------------------------------------------------------------------------
 void CoreLoad()
 {
   bool SessionList = false;
   std::unique_ptr<THierarchicalStorage> SessionsStorage(GetConfiguration()->CreateStorage(SessionList));
-  THierarchicalStorage *ConfigStorage;
+  THierarchicalStorage * ConfigStorage;
   std::unique_ptr<THierarchicalStorage> ConfigStorageAuto;
   if (!SessionList)
   {
@@ -158,7 +199,7 @@ void CoreLoad()
     ShowExtendedException(&E);
   }
 }
-
+//---------------------------------------------------------------------------
 void CoreInitialize()
 {
   WinInitialize();
@@ -172,29 +213,25 @@ void CoreInitialize()
 //  Configuration = CreateConfiguration();
 
   PuttyInitialize();
-#ifndef NO_FILEZILLA
   TFileZillaIntf::Initialize();
-#endif
   NeonInitialize();
 
   CoreLoad();
 }
-
+//---------------------------------------------------------------------------
 void CoreFinalize()
 {
   try
   {
     GetConfiguration()->Save();
   }
-  catch (Exception &E)
+  catch(Exception &E)
   {
     ShowExtendedException(&E);
   }
 
   NeonFinalize();
-#ifndef NO_FILEZILLA
   TFileZillaIntf::Finalize();
-#endif
   PuttyFinalize();
 
   SAFE_DESTROY(StoredSessions);
@@ -203,23 +240,19 @@ void CoreFinalize()
   CryptographyFinalize();
   WinFinalize();
 }
-
-void CoreSetResourceModule(void *ResourceHandle)
+//---------------------------------------------------------------------------
+void CoreSetResourceModule(void * ResourceHandle)
 {
-#ifndef NO_FILEZILLA
   TFileZillaIntf::SetResourceModule(ResourceHandle);
-#else
-  DebugUsedParam(ResourceHandle);
-#endif
 }
-
+//---------------------------------------------------------------------------
 void CoreMaintenanceTask()
 {
   DontSaveRandomSeed();
 }
-
-
-TOperationVisualizer::TOperationVisualizer(bool UseBusyCursor) :
+//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
+__fastcall TOperationVisualizer::TOperationVisualizer(bool UseBusyCursor) :
   FUseBusyCursor(UseBusyCursor),
   FToken(nullptr)
 {
@@ -228,29 +261,30 @@ TOperationVisualizer::TOperationVisualizer(bool UseBusyCursor) :
     FToken = BusyStart();
   }
 }
-
-TOperationVisualizer::~TOperationVisualizer()
+//---------------------------------------------------------------------------
+__fastcall TOperationVisualizer::~TOperationVisualizer()
 {
   if (FUseBusyCursor)
   {
     BusyEnd(FToken);
   }
 }
-
-
-TInstantOperationVisualizer::TInstantOperationVisualizer() :
+//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
+__fastcall TInstantOperationVisualizer::TInstantOperationVisualizer() :
   TOperationVisualizer(true),
   FStart(Now())
 {
 }
-
-TInstantOperationVisualizer::~TInstantOperationVisualizer()
+//---------------------------------------------------------------------------
+__fastcall TInstantOperationVisualizer::~TInstantOperationVisualizer()
 {
   TDateTime Time = Now();
-  int64_t Duration = MilliSecondsBetween(Time, FStart);
-  const int64_t MinDuration = 250;
+  __int64 Duration = MilliSecondsBetween(Time, FStart);
+  const __int64 MinDuration = 250;
   if (Duration < MinDuration)
   {
-    ::Sleep(static_cast<uint32_t>(MinDuration - Duration));
+    Sleep(static_cast<unsigned int>(MinDuration - Duration));
   }
 }
+//---------------------------------------------------------------------------

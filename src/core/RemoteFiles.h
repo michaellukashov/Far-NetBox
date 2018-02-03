@@ -7,17 +7,10 @@
 #include <Sysutils.hpp>
 #include <Common.h>
 
-#if 0
+//---------------------------------------------------------------------------
 //moved to base/Common.h
-enum TModificationFmt
-{
-  mfNone,
-  mfMDHM,
-  mfMDY,
-  mfFull,
-};
-#endif // #if 0
-
+__removed enum TModificationFmt { mfNone, mfMDHM, mfMDY, mfFull };
+//---------------------------------------------------------------------------
 #define SYMLINKSTR L" -> "
 #define PARENTDIRECTORY L".."
 #define THISDIRECTORY L"."
@@ -26,18 +19,18 @@ enum TModificationFmt
 #define FILETYPE_SYMLINK L'L'
 #define FILETYPE_DIRECTORY L'D'
 #define PARTIAL_EXT L".filepart"
-
+//---------------------------------------------------------------------------
 class TTerminal;
 class TRights;
 class TRemoteFileList;
 class THierarchicalStorage;
-
+//---------------------------------------------------------------------------
 class NB_CORE_EXPORT TRemoteToken : public TObject
 {
 public:
   TRemoteToken();
-  explicit TRemoteToken(UnicodeString Name);
-  explicit TRemoteToken(const TRemoteToken &rhs);
+  TRemoteToken(const TRemoteToken &rhs);
+  explicit TRemoteToken(const UnicodeString Name);
 
   void Clear();
 
@@ -47,7 +40,6 @@ public:
 
   intptr_t Compare(const TRemoteToken &rhs) const;
 
-#if 0
   __property UnicodeString Name = { read = FName, write = FName };
   __property bool NameValid = { read = GetNameValid };
   __property unsigned int ID = { read = FID, write = SetID };
@@ -55,10 +47,9 @@ public:
   __property bool IsSet  = { read = GetIsSet };
   __property UnicodeString LogText = { read = GetLogText };
   __property UnicodeString DisplayText = { read = GetDisplayText };
-#endif // #if 0
 
   UnicodeString GetName() const { return FName; }
-  void SetName(UnicodeString Value) { FName = Value; }
+  void SetName(const UnicodeString Value) { FName = Value; }
   intptr_t GetID() const { return FID; }
   bool GetIDValid() const { return FIDValid; }
 
@@ -74,7 +65,7 @@ public:
   UnicodeString GetDisplayText() const;
   UnicodeString GetLogText() const;
 };
-
+//---------------------------------------------------------------------------
 class NB_CORE_EXPORT TRemoteTokenList : public TObject
 {
 public:
@@ -98,7 +89,7 @@ private:
   mutable TNameMap FNameMap;
   mutable TIDMap FIDMap;
 };
-
+//---------------------------------------------------------------------------
 class NB_CORE_EXPORT TRemoteFile : public TPersistent
 {
   NB_DISABLE_COPY(TRemoteFile)
@@ -137,7 +128,7 @@ public:
   TRemoteFile *GetLinkedFile() const;
   void SetLinkedFile(TRemoteFile *Value);
   UnicodeString GetModificationStr() const;
-  void SetModification(const TDateTime &Value);
+  void SetModification(const TDateTime Value);
   void SetListingStr(UnicodeString Value);
   UnicodeString GetListingStr() const;
   UnicodeString GetRightsStr() const;
@@ -175,32 +166,37 @@ public:
   static bool GetIsTimeShiftingApplicable(TModificationFmt ModificationFmt);
   static void ShiftTimeInSeconds(TDateTime &DateTime, TModificationFmt ModificationFmt, int64_t Seconds);
 
-#if 0
   __property int Attr = { read = GetAttr };
   __property bool BrokenLink = { read = GetBrokenLink };
   __property TRemoteFileList * Directory = { read = FDirectory, write = FDirectory };
   __property UnicodeString RightsStr = { read = GetRightsStr };
   __property __int64 Size = { read = GetSize, write = FSize };
+  RWProperty<int64_t> Size{nb::bind(&TRemoteFile::GetSize, this), nb::bind(&TRemoteFile::SetSize, this)};
   __property TRemoteToken Owner = { read = FOwner, write = FOwner };
   __property TRemoteToken Group = { read = FGroup, write = FGroup };
   __property UnicodeString FileName = { read = FFileName, write = FFileName };
+  RWProperty<UnicodeString> FileName{nb::bind(&TRemoteFile::GetFileName, this), nb::bind(&TRemoteFile::SetFileName, this)};
   __property UnicodeString DisplayName = { read = FDisplayName, write = FDisplayName };
   __property int INodeBlocks = { read = FINodeBlocks };
   __property TDateTime Modification = { read = FModification, write = SetModification };
+  RWProperty<TDateTime> Modification{nb::bind(&TRemoteFile::GetModification, this), nb::bind(&TRemoteFile::SetModification, this)};
   __property UnicodeString ModificationStr = { read = GetModificationStr };
   __property UnicodeString UserModificationStr = { read = GetUserModificationStr };
   __property TModificationFmt ModificationFmt = { read = FModificationFmt, write = FModificationFmt };
   __property TDateTime LastAccess = { read = FLastAccess, write = FLastAccess };
   __property bool IsSymLink = { read = FIsSymLink };
+  ROProperty<bool> IsSymLink{nb::bind(&TRemoteFile::GetIsSymLink, this)};
   __property bool IsDirectory = { read = GetIsDirectory };
   __property TRemoteFile * LinkedFile = { read = GetLinkedFile, write = SetLinkedFile };
   __property UnicodeString LinkTo = { read = FLinkTo, write = FLinkTo };
   __property UnicodeString ListingStr = { read = GetListingStr, write = SetListingStr };
   __property TRights * Rights = { read = FRights, write = SetRights };
+  RWProperty<TRights *> Rights{nb::bind(&TRemoteFile::GetRights, this), nb::bind(&TRemoteFile::SetRights, this)};
   __property UnicodeString HumanRights = { read = FHumanRights, write = FHumanRights };
   __property TTerminal * Terminal = { read = FTerminal, write = SetTerminal };
   __property wchar_t Type = { read = GetType, write = SetType };
   __property UnicodeString FullFileName  = { read = GetFullFileName, write = FFullFileName };
+  RWProperty<UnicodeString> FullFileName{nb::bind(&TRemoteFile::GetFullFileName, this), nb::bind(&TRemoteFile::SetFullFileName, this)};
   __property bool HaveFullFileName  = { read = GetHaveFullFileName };
   __property int IconIndex = { read = GetIconIndex };
   __property UnicodeString TypeName = { read = GetTypeName };
@@ -209,7 +205,6 @@ public:
   __property bool IsThisDirectory = { read = GetIsThisDirectory };
   __property bool IsInaccesibleDirectory  = { read=GetIsInaccesibleDirectory };
   __property UnicodeString Extension  = { read=GetExtension };
-#endif // #if 0
 
   TRemoteFileList *GetDirectory() const { return FDirectory; }
   void SetDirectory(TRemoteFileList *Value) { FDirectory = Value; }
@@ -221,9 +216,9 @@ public:
   TRemoteToken &GetFileGroup() { return FGroup; }
   void SetFileGroup(const TRemoteToken &Value) { FGroup = Value; }
   UnicodeString GetFileName() const { return FFileName; }
-  void SetFileName(UnicodeString Value) { FFileName = Value; }
+  void SetFileName(const UnicodeString Value) { FFileName = Value; }
   UnicodeString GetDisplayName() const { return FDisplayName; }
-  void SetDisplayName(UnicodeString Value) { FDisplayName = Value; }
+  void SetDisplayName(const UnicodeString Value) { FDisplayName = Value; }
   TDateTime GetModification() const { return FModification; }
   TModificationFmt GetModificationFmt() const { return FModificationFmt; }
   void SetModificationFmt(TModificationFmt Value) { FModificationFmt = Value; }
@@ -234,14 +229,14 @@ public:
   void SetLinkTo(UnicodeString Value) { FLinkTo = Value; }
   TRights *GetRights() const { return FRights; }
   UnicodeString GetHumanRights() const { return FHumanRights; }
-  void SetHumanRights(UnicodeString Value) { FHumanRights = Value; }
+  void SetHumanRights(const UnicodeString Value) { FHumanRights = Value; }
   TTerminal *GetTerminal() const { return FTerminal; }
-  void SetFullFileName(UnicodeString Value) { FFullFileName = Value; }
+  void SetFullFileName(const UnicodeString Value) { FFullFileName = Value; }
 
 private:
   void Init();
 };
-
+//---------------------------------------------------------------------------
 class NB_CORE_EXPORT TRemoteDirectoryFile : public TRemoteFile
 {
 public:
@@ -253,7 +248,7 @@ public:
   void Init();
   virtual ~TRemoteDirectoryFile() {}
 };
-
+//---------------------------------------------------------------------------
 class NB_CORE_EXPORT TRemoteParentDirectory : public TRemoteDirectoryFile
 {
 public:
@@ -263,13 +258,14 @@ public:
   explicit TRemoteParentDirectory(TTerminal *ATerminal);
   virtual ~TRemoteParentDirectory() {}
 };
-
+//---------------------------------------------------------------------------
 class NB_CORE_EXPORT TRemoteFileList : public TObjectList
 {
   friend class TSCPFileSystem;
   friend class TSFTPFileSystem;
   friend class TFTPFileSystem;
   friend class TWebDAVFileSystem;
+  friend class TS3FileSystem;
 public:
   static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TRemoteFileList); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TRemoteFileList) || TObjectList::is(Kind); }
@@ -277,27 +273,26 @@ protected:
   UnicodeString FDirectory;
   TDateTime FTimestamp;
 public:
-  TRemoteFile *GetFile(Integer Index) const;
-  virtual void SetDirectory(UnicodeString Value);
-  UnicodeString GetFullDirectory() const;
-  Boolean GetIsRoot() const;
-  TRemoteFile *GetParentDirectory();
-  UnicodeString GetParentPath() const;
-  int64_t GetTotalSize() const;
-  virtual void AddFiles(const TRemoteFileList *AFileList);
+  TRemoteFile * __fastcall GetFile(Integer Index) const;
+  virtual void __fastcall SetDirectory(const UnicodeString Value);
+  UnicodeString __fastcall GetFullDirectory() const;
+  Boolean __fastcall GetIsRoot() const;
+  TRemoteFile * __fastcall GetParentDirectory();
+  UnicodeString __fastcall GetParentPath() const;
+  int64_t __fastcall GetTotalSize() const;
+  virtual void __fastcall AddFiles(const TRemoteFileList *AFileList);
 
 public:
   TRemoteFileList();
   explicit TRemoteFileList(TObjectClassId Kind);
   virtual ~TRemoteFileList() { Reset(); }
   virtual void Reset();
-  TRemoteFile *FindFile(UnicodeString AFileName) const;
-  virtual void DuplicateTo(TRemoteFileList *Copy) const;
-  virtual void AddFile(TRemoteFile *AFile);
+  TRemoteFile * __fastcall FindFile(const UnicodeString AFileName) const;
+  virtual void __fastcall DuplicateTo(TRemoteFileList *Copy) const;
+  virtual void __fastcall AddFile(TRemoteFile *AFile);
 
-  static TStrings *CloneStrings(TStrings *List);
+  static TStrings * __fastcall CloneStrings(TStrings *List);
 
-#if 0
   __property UnicodeString Directory = { read = FDirectory, write = SetDirectory };
   __property TRemoteFile * Files[Integer Index] = { read = GetFiles };
   __property UnicodeString FullDirectory  = { read=GetFullDirectory };
@@ -305,12 +300,11 @@ public:
   __property UnicodeString ParentPath = { read = GetParentPath };
   __property __int64 TotalSize = { read = GetTotalSize };
   __property TDateTime Timestamp = { read = FTimestamp };
-#endif // #if 0
 
   UnicodeString GetDirectory() const { return FDirectory; }
   TDateTime GetTimestamp() const { return FTimestamp; }
 };
-
+//---------------------------------------------------------------------------
 class NB_CORE_EXPORT TRemoteDirectory : public TRemoteFileList
 {
   friend class TSCPFileSystem;
@@ -327,25 +321,24 @@ private:
   Boolean FIncludeParentDirectory;
   Boolean FIncludeThisDirectory;
 public:
-  virtual void SetDirectory(UnicodeString Value) override;
-  Boolean GetLoaded() const;
-  void SetIncludeParentDirectory(Boolean Value);
-  void SetIncludeThisDirectory(Boolean Value);
-  void ReleaseRelativeDirectories();
+  virtual void __fastcall SetDirectory(const UnicodeString Value) override;
+  Boolean __fastcall GetLoaded() const;
+  void __fastcall SetIncludeParentDirectory(Boolean Value);
+  void __fastcall SetIncludeThisDirectory(Boolean Value);
+  void __fastcall ReleaseRelativeDirectories();
 public:
-  explicit TRemoteDirectory(TTerminal *ATerminal, TRemoteDirectory *Template = nullptr);
-  virtual ~TRemoteDirectory();
-  virtual void AddFile(TRemoteFile *AFile) override;
-  virtual void DuplicateTo(TRemoteFileList *Copy) const override;
-  virtual void Reset() override;
-#if 0
+  explicit __fastcall TRemoteDirectory(TTerminal *ATerminal, TRemoteDirectory *Template = nullptr);
+  virtual __fastcall ~TRemoteDirectory();
+  virtual void __fastcall AddFile(TRemoteFile *AFile) override;
+  virtual void __fastcall DuplicateTo(TRemoteFileList *Copy) const override;
+  virtual void __fastcall Reset() override;
+
   __property TTerminal * Terminal = { read = FTerminal, write = FTerminal };
   __property Boolean IncludeParentDirectory = { read = FIncludeParentDirectory, write = SetIncludeParentDirectory };
   __property Boolean IncludeThisDirectory = { read = FIncludeThisDirectory, write = SetIncludeThisDirectory };
   __property Boolean Loaded = { read = GetLoaded };
   __property TRemoteFile * ParentDirectory = { read = FParentDirectory };
   __property TRemoteFile * ThisDirectory = { read = FThisDirectory };
-#endif // #if 0
 
   TTerminal *GetTerminal() const { return FTerminal; }
   void SetTerminal(TTerminal *Value) { FTerminal = Value; }
@@ -355,7 +348,7 @@ public:
   TRemoteFile *GetThisDirectory() const { return FThisDirectory; }
   TStrings *GetSelectedFiles() const;
 };
-
+//---------------------------------------------------------------------------
 class TRemoteDirectoryCache : private TStringList
 {
   CUSTOM_MEM_ALLOCATION_IMPL
@@ -363,17 +356,15 @@ class TRemoteDirectoryCache : private TStringList
 public:
   TRemoteDirectoryCache();
   virtual ~TRemoteDirectoryCache();
-  bool HasFileList(UnicodeString Directory) const;
-  bool HasNewerFileList(UnicodeString Directory, const TDateTime &Timestamp) const;
-  bool GetFileList(UnicodeString Directory,
+  bool HasFileList(const UnicodeString Directory) const;
+  bool HasNewerFileList(const UnicodeString Directory, const TDateTime &Timestamp) const;
+  bool GetFileList(const UnicodeString Directory,
     TRemoteFileList *FileList) const;
   void AddFileList(TRemoteFileList *FileList);
   void ClearFileList(UnicodeString Directory, bool SubDirs);
   void Clear();
 
-#if 0
   __property bool IsEmpty = { read = GetIsEmpty };
-#endif // #if 0
   bool GetIsEmpty() const { return GetIsEmptyPrivate(); }
 
 protected:
@@ -384,7 +375,7 @@ private:
   bool GetIsEmptyPrivate() const;
   void DoClearFileList(UnicodeString Directory, bool SubDirs);
 };
-
+//---------------------------------------------------------------------------
 class TRemoteDirectoryChangesCache : private TStringList
 {
   CUSTOM_MEM_ALLOCATION_IMPL
@@ -392,33 +383,31 @@ public:
   explicit TRemoteDirectoryChangesCache(intptr_t MaxSize);
   virtual ~TRemoteDirectoryChangesCache() {}
 
-  void AddDirectoryChange(UnicodeString SourceDir,
-    UnicodeString Change, UnicodeString TargetDir);
-  void ClearDirectoryChange(UnicodeString SourceDir);
-  void ClearDirectoryChangeTarget(UnicodeString TargetDir);
-  bool GetDirectoryChange(UnicodeString SourceDir,
-    UnicodeString Change, UnicodeString &TargetDir) const;
-  void Clear();
+  void __fastcall AddDirectoryChange(const UnicodeString SourceDir,
+    const UnicodeString Change, const UnicodeString TargetDir);
+  void __fastcall ClearDirectoryChange(const UnicodeString SourceDir);
+  void __fastcall ClearDirectoryChangeTarget(const UnicodeString TargetDir);
+  bool __fastcall GetDirectoryChange(const UnicodeString SourceDir,
+    const UnicodeString Change, UnicodeString &TargetDir) const;
+  void __fastcall Clear();
 
-  void Serialize(UnicodeString &Data) const;
-  void Deserialize(UnicodeString Data);
+  void __fastcall Serialize(UnicodeString &Data) const;
+  void __fastcall Deserialize(UnicodeString Data);
 
-#if 0
   __property bool IsEmpty = { read = GetIsEmpty };
-#endif // #if 0
   bool GetIsEmpty() const { return GetIsEmptyPrivate(); }
 
 private:
-  static bool DirectoryChangeKey(UnicodeString SourceDir,
-    UnicodeString Change, UnicodeString &Key);
-  bool GetIsEmptyPrivate() const;
-  void SetValue(UnicodeString Name, UnicodeString Value);
-  UnicodeString GetValue(UnicodeString Name) const { return TStringList::GetValue(Name); }
-  UnicodeString GetValue(UnicodeString Name);
+  static bool __fastcall DirectoryChangeKey(const UnicodeString SourceDir,
+    const UnicodeString Change, UnicodeString &Key);
+  bool __fastcall GetIsEmptyPrivate() const;
+  void __fastcall SetValue(const UnicodeString Name, const UnicodeString Value);
+  UnicodeString __fastcall GetValue(const UnicodeString Name) const { return TStringList::GetValue(Name); }
+  UnicodeString __fastcall GetValue(const UnicodeString Name);
 
   intptr_t FMaxSize;
 };
-
+//---------------------------------------------------------------------------
 class NB_CORE_EXPORT TRights : public TObject
 {
 public:
@@ -474,14 +463,18 @@ public:
 
   bool operator==(const TRights &rhr) const;
   bool operator==(uint16_t rhr) const;
+  bool operator==(TFlag rhr) const;
   bool operator!=(const TRights &rhr) const;
+  bool operator!=(const TFlag rhr) const;
   TRights &operator=(const TRights &rhr);
   TRights &operator=(uint16_t rhr);
   TRights operator~() const;
   TRights operator&(uint16_t rhr) const;
   TRights operator&(const TRights &rhr) const;
+  TRights operator&(TFlag rhr) const;
   TRights &operator&=(uint16_t rhr);
   TRights &operator&=(const TRights &rhr);
+  TRights &operator&=(TFlag rhr);
   TRights operator|(uint16_t rhr) const;
   TRights operator|(const TRights &rhr) const;
   TRights &operator|=(uint16_t rhr);
@@ -489,7 +482,6 @@ public:
   operator uint16_t() const;
   operator uint32_t() const;
 
-#if 0
   __property bool AllowUndef = { read = FAllowUndef, write = SetAllowUndef };
   __property bool IsUndef = { read = GetIsUndef };
   __property UnicodeString ModeStr = { read = GetModeStr };
@@ -504,7 +496,6 @@ public:
   __property TState RightUndef[TRight Right] = { read = GetRightUndef, write = SetRightUndef };
   __property UnicodeString Text = { read = GetText, write = SetText };
   __property bool Unknown = { read = FUnknown };
-#endif // #if 0
 
 private:
   UnicodeString FText;
@@ -536,7 +527,7 @@ public:
   bool GetAllowUndef() const { return FAllowUndef; }
   bool GetUnknown() const { return FUnknown; }
 };
-
+//---------------------------------------------------------------------------
 enum TValidProperty
 {
   vpRights = 0x1,
@@ -578,7 +569,7 @@ public:
   }
   TValidProperties &operator>>(const TValidProperty Value)
   {
-    FValue &= ~(static_cast<int64_t>(Value));
+    FValue &= ~(ToInt64(Value));
     return *this;
   }
   bool Empty() const
@@ -589,7 +580,7 @@ public:
 private:
   int64_t FValue;
 };
-
+//---------------------------------------------------------------------------
 #if 0
 enum TValidProperty { vpRights, vpGroup, vpOwner, vpModification, vpLastAccess };
 typedef Set<TValidProperty, vpRights, vpLastAccess> TValidProperties;
@@ -624,42 +615,42 @@ public:
 public:
   TRemoteProperties &operator=(const TRemoteProperties &other);
 };
-
+//---------------------------------------------------------------------------
 #if 0
 // moved to base/Common.h
-NB_CORE_EXPORT bool IsUnixStyleWindowsPath(UnicodeString APath);
-NB_CORE_EXPORT bool UnixIsAbsolutePath(UnicodeString APath);
-NB_CORE_EXPORT UnicodeString UnixIncludeTrailingBackslash(UnicodeString APath);
-NB_CORE_EXPORT UnicodeString UnixExcludeTrailingBackslash(UnicodeString APath, bool Simple = false);
-NB_CORE_EXPORT UnicodeString SimpleUnixExcludeTrailingBackslash(UnicodeString APath);
-NB_CORE_EXPORT UnicodeString UnixCombinePaths(UnicodeString APath1, UnicodeString APath2);
-NB_CORE_EXPORT UnicodeString UnixExtractFileDir(UnicodeString APath);
-NB_CORE_EXPORT UnicodeString UnixExtractFilePath(UnicodeString APath);
-NB_CORE_EXPORT UnicodeString UnixExtractFileName(UnicodeString APath);
-NB_CORE_EXPORT UnicodeString UnixExtractFileExt(UnicodeString APath);
-NB_CORE_EXPORT Boolean UnixSamePath(UnicodeString APath1, UnicodeString APath2);
-NB_CORE_EXPORT bool UnixIsChildPath(UnicodeString AParent, UnicodeString AChild);
-NB_CORE_EXPORT bool ExtractCommonPath(const TStrings *AFiles, UnicodeString &APath);
-NB_CORE_EXPORT bool UnixExtractCommonPath(const TStrings *AFiles, UnicodeString &APath);
-NB_CORE_EXPORT UnicodeString ExtractFileName(UnicodeString APath, bool Unix);
-NB_CORE_EXPORT bool IsUnixRootPath(UnicodeString APath);
-NB_CORE_EXPORT bool IsUnixHiddenFile(UnicodeString APath);
-NB_CORE_EXPORT UnicodeString AbsolutePath(UnicodeString Base, UnicodeString APath);
-NB_CORE_EXPORT UnicodeString FromUnixPath(UnicodeString APath);
-NB_CORE_EXPORT UnicodeString ToUnixPath(UnicodeString APath);
-NB_CORE_EXPORT UnicodeString MinimizeName(UnicodeString AFileName, intptr_t MaxLen, bool Unix);
-NB_CORE_EXPORT UnicodeString MakeFileList(const TStrings *AFileList);
-NB_CORE_EXPORT TDateTime ReduceDateTimePrecision(const TDateTime &ADateTime,
+bool __fastcall IsUnixStyleWindowsPath(const UnicodeString & Path);
+bool __fastcall UnixIsAbsolutePath(const UnicodeString & Path);
+UnicodeString __fastcall UnixIncludeTrailingBackslash(const UnicodeString Path);
+UnicodeString __fastcall UnixExcludeTrailingBackslash(const UnicodeString Path, bool Simple = false);
+UnicodeString __fastcall SimpleUnixExcludeTrailingBackslash(const UnicodeString Path);
+UnicodeString __fastcall UnixCombinePaths(const UnicodeString & Path1, const UnicodeString & Path2);
+UnicodeString __fastcall UnixExtractFileDir(const UnicodeString Path);
+UnicodeString __fastcall UnixExtractFilePath(const UnicodeString Path);
+UnicodeString __fastcall UnixExtractFileName(const UnicodeString Path);
+UnicodeString __fastcall UnixExtractFileExt(const UnicodeString Path);
+Boolean __fastcall UnixSamePath(const UnicodeString Path1, const UnicodeString Path2);
+bool __fastcall UnixIsChildPath(UnicodeString Parent, UnicodeString Child);
+bool __fastcall ExtractCommonPath(TStrings * Files, UnicodeString & Path);
+bool __fastcall UnixExtractCommonPath(TStrings * Files, UnicodeString & Path);
+UnicodeString __fastcall ExtractFileName(const UnicodeString & Path, bool Unix);
+bool __fastcall IsUnixRootPath(const UnicodeString Path);
+bool __fastcall IsUnixHiddenFile(const UnicodeString Path);
+UnicodeString __fastcall AbsolutePath(const UnicodeString & Base, const UnicodeString & Path);
+UnicodeString __fastcall FromUnixPath(const UnicodeString Path);
+UnicodeString __fastcall ToUnixPath(const UnicodeString Path);
+UnicodeString __fastcall MinimizeName(const UnicodeString FileName, int MaxLen, bool Unix);
+UnicodeString __fastcall MakeFileList(TStrings * FileList);
+TDateTime __fastcall ReduceDateTimePrecision(TDateTime DateTime,
   TModificationFmt Precision);
-NB_CORE_EXPORT TModificationFmt LessDateTimePrecision(
+TModificationFmt __fastcall LessDateTimePrecision(
   TModificationFmt Precision1, TModificationFmt Precision2);
-NB_CORE_EXPORT UnicodeString UserModificationStr(const TDateTime &DateTime,
+UnicodeString __fastcall UserModificationStr(TDateTime DateTime,
   TModificationFmt Precision);
-NB_CORE_EXPORT UnicodeString ModificationStr(const TDateTime &DateTime,
+UnicodeString __fastcall ModificationStr(TDateTime DateTime,
   TModificationFmt Precision);
-NB_CORE_EXPORT int FakeFileImageIndex(UnicodeString AFileName, uint32_t Attrs = INVALID_FILE_ATTRIBUTES,
-  UnicodeString *TypeName = nullptr);
-NB_CORE_EXPORT bool SameUserName(UnicodeString UserName1, UnicodeString UserName2);
-NB_CORE_EXPORT UnicodeString FormatMultiFilesToOneConfirmation(UnicodeString ATarget, bool Unix);
-
+int __fastcall FakeFileImageIndex(UnicodeString FileName, unsigned long Attrs = 0,
+  UnicodeString * TypeName = NULL);
+bool __fastcall SameUserName(const UnicodeString & UserName1, const UnicodeString & UserName2);
+UnicodeString __fastcall FormatMultiFilesToOneConfirmation(const UnicodeString & Target, bool Unix);
+//---------------------------------------------------------------------------
 #endif // #if 0

@@ -149,6 +149,9 @@ endif()
 nb_replace_compiler_option(CMAKE_CXX_FLAGS "/EH[-cs]+" "")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHsc")
 #string(REPLACE "/MD" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+add_definitions(-DWINSCP -DUSE_DLMALLOC)
+add_definitions(-DHIDE_TODO)
+add_definitions(-DNEED_LIBS3)
 
 set(NETBOX_DLL_LINK_FLAGS
   "
@@ -1254,6 +1257,48 @@ target_compile_options(fmt PRIVATE
 )
 
 #-------------------------------------------------------------------------------
+#libs3
+
+add_library(s3 STATIC
+  ../../libs/libs3/src/bucket.c
+  ../../libs/libs3/src/bucket_metadata.c
+  ../../libs/libs3/src/error_parser.c
+  ../../libs/libs3/src/general.c
+  ../../libs/libs3/src/mingw_functions.c
+  ../../libs/libs3/src/multipart.c
+  ../../libs/libs3/src/object.c
+  ../../libs/libs3/src/request.c
+  ../../libs/libs3/src/request_context.c
+  ../../libs/libs3/src/response_headers_handler.c
+  ../../libs/libs3/src/service.c
+  ../../libs/libs3/src/service_access_logging.c
+  ../../libs/libs3/src/simplexml.c
+  ../../libs/libs3/src/util.c
+  ../../libs/libs3/inc/string_buffer.h
+  ../../libs/libs3/inc/util.h
+  ../../libs/libs3/inc/simplexml.h
+  ../../libs/libs3/inc/response_headers_handler.h
+  ../../libs/libs3/inc/request.h
+  ../../libs/libs3/inc/request_context.h
+  ../../libs/libs3/inc/libs3.h
+  ../../libs/libs3/inc/error_parser.h
+
+)
+
+target_include_directories(s3 PRIVATE
+  ../../libs/libs3/inc
+  ../../libs/libs3/inc/mingw
+  ../../libs/openssl/include
+  ../../libs/expat/lib
+  ../../libs/neon/src
+)
+
+target_compile_options(s3 PRIVATE
+  -DS3_EXPORT -DWIN32 -DWINSCP -DNE_LFS -DNEED_LIBS3
+  ${NETBOX_UNICODE_FLAGS}
+)
+
+#-------------------------------------------------------------------------------
 #NetBox
 
 if(OPT_USE_UNITY_BUILD)
@@ -1302,6 +1347,7 @@ set(NETBOX_SOURCES
   ../core/FtpFileSystem.cpp
   ../core/SftpFileSystem.cpp
   ../core/WebDAVFileSystem.cpp
+  ../core/S3FileSystem.cpp
   ../core/PuttyIntf.cpp
   ../core/Cryptography.cpp
   ../core/NamedObjs.cpp
@@ -1384,6 +1430,7 @@ set(NETBOX_SOURCES
   ../include/nbstring.inl
   ../include/nbutils.h
 
+  ../base/Property.hpp
   ../base/Global.h
   ../base/Common.h
   ../base/UnicodeString.hpp
@@ -1397,6 +1444,7 @@ set(NETBOX_SOURCES
   ../base/ObjIDs.h
 
   ../core/WebDAVFileSystem.h
+  ../core/S3FileSystem.h
   ../core/Queue.h
   ../core/Terminal.h
   ../core/FileSystems.h
@@ -1489,6 +1537,7 @@ set(NETBOX_LIBRARIES
   dlmalloc
   rdestl
   fmt
+  s3
   tinylog
 
   Ws2_32.lib
@@ -1535,7 +1584,7 @@ target_include_directories(NetBox PRIVATE
   ../../libs/atlmfc/include
   ../../libs/fmt
   ../../libs/tinylog
-  ../../libs/xproperty/include
+  ../../libs/libs3/inc
   ../filezilla
   ../base
   ../core

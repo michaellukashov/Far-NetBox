@@ -1,3 +1,4 @@
+
 #include <vcl.h>
 #pragma hdrstop
 
@@ -5,27 +6,28 @@
 #include <Sysutils.hpp>
 
 #include "NamedObjs.h"
-
-static intptr_t NamedObjectSortProc(const void *Item1, const void *Item2)
+//---------------------------------------------------------------------------
+__removed #pragma package(smart_init)
+//---------------------------------------------------------------------------
+static intptr_t __fastcall NamedObjectSortProc(const void *Item1, const void *Item2)
 {
   return get_as<TNamedObject>(Item1)->Compare(get_as<TNamedObject>(Item2));
 }
-
 //--- TNamedObject ----------------------------------------------------------
-TNamedObject::TNamedObject(TObjectClassId Kind, UnicodeString AName) :
+TNamedObject::TNamedObject(TObjectClassId Kind, const UnicodeString AName) :
   TPersistent(Kind),
   FHidden(false)
 {
   SetName(AName);
 }
-
-void TNamedObject::SetName(UnicodeString Value)
+//---------------------------------------------------------------------------
+void __fastcall TNamedObject::SetName(UnicodeString Value)
 {
   FHidden = (Value.SubString(1, TNamedObjectList::HiddenPrefix.Length()) == TNamedObjectList::HiddenPrefix);
   FName = Value;
 }
-
-intptr_t TNamedObject::Compare(const TNamedObject *Other) const
+//---------------------------------------------------------------------------
+intptr_t __fastcall TNamedObject::Compare(const TNamedObject *Other) const
 {
   intptr_t Result;
   if (GetHidden() && !Other->GetHidden())
@@ -38,17 +40,17 @@ intptr_t TNamedObject::Compare(const TNamedObject *Other) const
   }
   else
   {
-    Result = CompareLogicalText(GetName(), Other->GetName());
+    Result = CompareLogicalText(GetName(), Other->GetName(), true);
   }
   return Result;
 }
-
-bool TNamedObject::IsSameName(UnicodeString AName) const
+//---------------------------------------------------------------------------
+bool __fastcall TNamedObject::IsSameName(const UnicodeString AName) const
 {
   return (GetName().CompareIC(AName) == 0);
 }
-
-void TNamedObject::MakeUniqueIn(TNamedObjectList *List)
+//---------------------------------------------------------------------------
+void __fastcall TNamedObject::MakeUniqueIn(TNamedObjectList *List)
 {
   // This object can't be item of list, it would create infinite loop
   if (List && (List->IndexOf(this) == -1))
@@ -67,9 +69,8 @@ void TNamedObject::MakeUniqueIn(TNamedObjectList *List)
           Name.Delete(P, Name.Length() - P + 1);
           SetName(Name.TrimRight());
         }
-        catch (Exception &E)
+        catch (Exception &/*E*/)
         {
-          (void)E;
           N = 0;
         }
       }
@@ -77,28 +78,28 @@ void TNamedObject::MakeUniqueIn(TNamedObjectList *List)
     }
   }
 }
-
+//--- TNamedObjectList ------------------------------------------------------
 const UnicodeString TNamedObjectList::HiddenPrefix = "_!_";
-
-TNamedObjectList::TNamedObjectList(TObjectClassId Kind) :
+//---------------------------------------------------------------------------
+__fastcall TNamedObjectList::TNamedObjectList(TObjectClassId Kind) :
   TObjectList(Kind),
   FHiddenCount(0),
   FAutoSort(true),
   FControlledAdd(false)
 {
 }
-
-const TNamedObject *TNamedObjectList::AtObject(intptr_t Index) const
+//---------------------------------------------------------------------------
+const TNamedObject * __fastcall TNamedObjectList::AtObject(intptr_t Index) const
 {
   return const_cast<TNamedObjectList *>(this)->AtObject(Index);
 }
-
-TNamedObject *TNamedObjectList::AtObject(intptr_t Index)
+//---------------------------------------------------------------------------
+TNamedObject * __fastcall TNamedObjectList::AtObject(intptr_t Index)
 {
   return GetAs<TNamedObject>(Index + FHiddenCount);
 }
-
-void TNamedObjectList::Recount()
+//---------------------------------------------------------------------------
+void __fastcall TNamedObjectList::Recount()
 {
   intptr_t Index = 0;
   while ((Index < TObjectList::GetCount()) && GetAs<TNamedObject>(Index)->GetHidden())
@@ -107,17 +108,17 @@ void TNamedObjectList::Recount()
   }
   FHiddenCount = Index;
 }
-
-void TNamedObjectList::AlphaSort()
+//---------------------------------------------------------------------------
+void __fastcall TNamedObjectList::AlphaSort()
 {
   Sort(NamedObjectSortProc);
   Recount();
 }
-
-intptr_t TNamedObjectList::Add(TObject *AObject)
+//---------------------------------------------------------------------------
+intptr_t __fastcall TNamedObjectList::Add(TObject *AObject)
 {
   intptr_t Result;
-  TAutoFlag ControlledAddFlag(FControlledAdd);
+  volatile TAutoFlag ControlledAddFlag(FControlledAdd);
   TNamedObject *NamedObject = static_cast<TNamedObject *>(AObject);
   // If temporarily not auto-sorting (when loading session list),
   // keep the hidden objects in front, so that HiddenCount is correct
@@ -133,8 +134,8 @@ intptr_t TNamedObjectList::Add(TObject *AObject)
   }
   return Result;
 }
-
-void TNamedObjectList::Notify(void *Ptr, TListNotification Action)
+//---------------------------------------------------------------------------
+void __fastcall TNamedObjectList::Notify(void *Ptr, TListNotification Action)
 {
   if (Action == lnDeleted)
   {
@@ -157,40 +158,39 @@ void TNamedObjectList::Notify(void *Ptr, TListNotification Action)
     }
   }
 }
-
-const TNamedObject *TNamedObjectList::FindByName(UnicodeString Name) const
+//---------------------------------------------------------------------------
+const TNamedObject * __fastcall TNamedObjectList::FindByName(const UnicodeString AName) const
 {
-  return const_cast<TNamedObjectList *>(this)->FindByName(Name);
+  return const_cast<TNamedObjectList *>(this)->FindByName(AName);
 }
-
-TNamedObject *TNamedObjectList::FindByName(UnicodeString Name)
+//---------------------------------------------------------------------------
+TNamedObject * __fastcall TNamedObjectList::FindByName(const UnicodeString AName)
 {
   // This should/can be optimized when list is sorted
   for (Integer Index = 0; Index < GetCountIncludingHidden(); ++Index)
   {
     // Not using AtObject as we iterate even hidden objects here
     TNamedObject *NamedObject = static_cast<TNamedObject *>(GetObj(Index));
-    if (NamedObject->IsSameName(Name))
+    if (NamedObject->IsSameName(AName))
     {
       return NamedObject;
     }
   }
   return nullptr;
 }
-
-
-void TNamedObjectList::SetCount(intptr_t Value)
+//---------------------------------------------------------------------------
+void __fastcall TNamedObjectList::SetCount(intptr_t Value)
 {
   TObjectList::SetCount(Value/*+HiddenCount*/);
 }
-
-intptr_t TNamedObjectList::GetCount() const
+//---------------------------------------------------------------------------
+intptr_t __fastcall TNamedObjectList::GetCount() const
 {
   DebugAssert(FHiddenCount >= 0);
   return TObjectList::GetCount() - FHiddenCount;
 }
-
-intptr_t TNamedObjectList::GetCountIncludingHidden() const
+//---------------------------------------------------------------------------
+intptr_t __fastcall TNamedObjectList::GetCountIncludingHidden() const
 {
   DebugAssert(FHiddenCount >= 0);
   return TObjectList::GetCount();

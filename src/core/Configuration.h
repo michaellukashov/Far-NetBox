@@ -39,7 +39,7 @@ private:
   TNotifyEvent FOnChange;
 
   mutable void *FApplicationInfo;
-  // TUsage * FUsage;
+  __removed TUsage * FUsage;
   bool FLogging;
   bool FPermanentLogging;
   UnicodeString FLogFileName;
@@ -83,6 +83,7 @@ private:
   bool FTryFtpWhenSshFails;
   intptr_t FParallelDurationThreshold;
   bool FScripting;
+  UnicodeString FMimeTypes;
   intptr_t FSessionReopenAutoMaximumNumberOfRetries;
 
   bool FDisablePasswordStoring;
@@ -148,6 +149,7 @@ public:
   void SetShowFtpWelcomeMessage(bool Value);
   intptr_t GetCompoundVersion() const;
   void UpdateActualLogProtocol();
+  void __fastcall SetMimeTypes(UnicodeString Value);
   void SetExternalIpAddress(UnicodeString Value);
   void SetTryFtpWhenSshFails(bool Value);
   void SetParallelDurationThreshold(intptr_t Value);
@@ -175,11 +177,13 @@ public:
   virtual void LoadAdmin(THierarchicalStorage *Storage);
   virtual UnicodeString GetDefaultKeyFile() const;
   virtual void Saved();
-  void CleanupRegistry(UnicodeString CleanupSubKey);
-  UnicodeString BannerHash(UnicodeString Banner) const;
-  static UnicodeString PropertyToKey(UnicodeString Property);
+  void CleanupRegistry(const UnicodeString CleanupSubKey);
+  UnicodeString BannerHash(const UnicodeString Banner) const;
+  static UnicodeString PropertyToKey(const UnicodeString Property);
+  void __fastcall SetBannerData(const UnicodeString ASessionKey, const UnicodeString ABannerHash, uintptr_t AParams);
+  void __fastcall GetBannerData(const UnicodeString ASessionKey, UnicodeString &ABannerHash, uintptr_t &AParams);
   virtual void DoSave(bool All, bool Explicit);
-  UnicodeString FormatFingerprintKey(UnicodeString SiteKey, UnicodeString FingerprintType) const;
+  UnicodeString FormatFingerprintKey(const UnicodeString ASiteKey, const UnicodeString AFingerprintType) const;
 
   virtual bool GetConfirmOverwriting() const;
   virtual void SetConfirmOverwriting(bool Value);
@@ -202,7 +206,6 @@ public:
   UnicodeString GetFileProductName(const UnicodeString AFileName) const;
   UnicodeString GetFileCompanyName(const UnicodeString AFileName) const;
 
-#if 0
   __property bool PermanentLogging  = { read=GetLogging, write=SetLogging };
   __property UnicodeString PermanentLogFileName  = { read=GetLogFileName, write=SetLogFileName };
   __property bool PermanentLogActions  = { read=GetLogActions, write=SetLogActions };
@@ -211,7 +214,6 @@ public:
   __property bool PermanentLogSensitive  = { read=FPermanentLogSensitive, write=SetLogSensitive };
   __property int64_t PermanentLogMaxSize  = { read=GetLogMaxSize, write=SetLogMaxSize };
   __property intptr_t PermanentLogMaxCount  = { read=GetLogMaxCount, write=SetLogMaxCount };
-#endif // #if 0
 
 public:
   explicit TConfiguration(TObjectClassId Kind = OBJECT_CLASS_TConfiguration);
@@ -227,8 +229,8 @@ public:
   void SetDefaultStorage();
   UnicodeString GetAutomaticIniFileStorageName(bool ReadingOnly);
   UnicodeString GetDefaultIniFileExportPath();
-  void Export(UnicodeString AFileName);
-  void Import(UnicodeString AFileName);
+  void Export(const UnicodeString AFileName);
+  void Import(const UnicodeString AFileName);
   void CleanupConfiguration();
   void CleanupIniFile();
   void CleanupHostKeys();
@@ -240,9 +242,10 @@ public:
     TRemoteDirectoryChangesCache *DirectoryChangesCache);
   void SaveDirectoryChangesCache(const UnicodeString SessionKey,
     TRemoteDirectoryChangesCache *DirectoryChangesCache);
-  bool ShowBanner(const UnicodeString SessionKey, UnicodeString Banner);
-  void NeverShowBanner(const UnicodeString SessionKey, UnicodeString Banner);
-  void RememberLastFingerprint(UnicodeString SiteKey, UnicodeString FingerprintType, UnicodeString Fingerprint);
+  bool __fastcall ShowBanner(const UnicodeString ASessionKey, const UnicodeString ABanner, uintptr_t &AParams);
+  void __fastcall NeverShowBanner(const UnicodeString ASessionKey, const UnicodeString ABanner);
+  void __fastcall SetBannerParams(const UnicodeString ASessionKey, uintptr_t AParams);
+  void __fastcall RememberLastFingerprint(const UnicodeString ASiteKey, const UnicodeString AFingerprintType, const UnicodeString AFingerprint);
   UnicodeString GetLastFingerprint(UnicodeString SiteKey, UnicodeString FingerprintType);
   virtual THierarchicalStorage *CreateConfigStorage();
   virtual THierarchicalStorage *CreateStorage(bool &SessionList);
@@ -257,6 +260,7 @@ public:
   virtual RawByteString StronglyRecryptPassword(RawByteString Password, UnicodeString Key);
   UnicodeString GetFileDescription(UnicodeString AFileName) const;
   UnicodeString GetFileVersion(UnicodeString AFileName);
+  UnicodeString __fastcall GetFileMimeType(const UnicodeString AFileName) const;
 
   TStoredSessionList *SelectFilezillaSessionsForImport(
     TStoredSessionList *Sessions, UnicodeString &Error);
@@ -266,7 +270,6 @@ public:
   TStoredSessionList *SelectKnownHostsSessionsForImport(
     TStrings *Lines, TStoredSessionList *Sessions, UnicodeString &Error);
 
-#if 0
   __property TVSFixedFileInfo *FixedApplicationInfo  = { read=GetFixedApplicationInfo };
   __property void * ApplicationInfo  = { read=GetApplicationInfo };
   __property TUsage * Usage = { read = FUsage };
@@ -317,6 +320,7 @@ public:
   __property UnicodeString ExternalIpAddress = { read = FExternalIpAddress, write = SetExternalIpAddress };
   __property bool TryFtpWhenSshFails = { read = FTryFtpWhenSshFails, write = SetTryFtpWhenSshFails };
   __property intptr_t ParallelDurationThreshold = { read = FParallelDurationThreshold, write = SetParallelDurationThreshold };
+  __property UnicodeString MimeTypes = { read = FMimeTypes, write = SetMimeTypes };
 
   __property UnicodeString TimeFormat = { read = GetTimeFormat };
   __property TStorage Storage  = { read=GetStorage };
@@ -333,9 +337,8 @@ public:
   __property bool DisablePasswordStoring = { read = FDisablePasswordStoring };
   __property bool ForceBanners = { read = FForceBanners };
   __property bool DisableAcceptingHostKeys = { read = FDisableAcceptingHostKeys };
-#endif // #if 0
 
-  // TUsage * GetUsage() { return FUsage; }
+  __removed TUsage * GetUsage() { return FUsage; }
   UnicodeString GetPuttyRegistryStorageKey() const { return FPuttyRegistryStorageKey; }
   UnicodeString GetRandomSeedFile() const { return FRandomSeedFile; }
   bool GetLogFileAppend() const { return FLogFileAppend; }
@@ -357,6 +360,7 @@ public:
   UnicodeString GetExternalIpAddress() const { return FExternalIpAddress; }
   bool GetTryFtpWhenSshFails() const { return FTryFtpWhenSshFails; }
   intptr_t GetParallelDurationThreshold() const { return FParallelDurationThreshold; }
+  UnicodeString GetMimeTypes() const { return FMimeTypes; }
   bool GetDisablePasswordStoring() const { return FDisablePasswordStoring; }
   bool GetForceBanners() const { return FForceBanners; }
   bool GetDisableAcceptingHostKeys() const { return FDisableAcceptingHostKeys; }
@@ -389,3 +393,5 @@ NB_CORE_EXPORT extern const UnicodeString Crc32ChecksumAlg;
 
 NB_CORE_EXPORT extern const UnicodeString SshFingerprintType;
 NB_CORE_EXPORT extern const UnicodeString TlsFingerprintType;
+//---------------------------------------------------------------------------
+NB_CORE_EXPORT extern const UnicodeString HttpsCertificateStorageKey;

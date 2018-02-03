@@ -8,10 +8,11 @@
 #include "NamedObjs.h"
 #include "HierarchicalStorage.h"
 #include "Configuration.h"
-
+#include <Xml.XMLIntf.hpp>
+//---------------------------------------------------------------------------
 #define SET_SESSION_PROPERTY(Property) \
   if (F##Property != Value) { F##Property = Value; Modify(); }
-
+//---------------------------------------------------------------------------
 enum TCipher
 {
   cipWarn,
@@ -23,7 +24,6 @@ enum TCipher
   cipChaCha20,
 };
 #define CIPHER_COUNT (cipChaCha20 + 1)
-
 // explicit values to skip obsoleted fsExternalSSH, fsExternalSFTP
 enum TFSProtocol_219
 {
@@ -39,8 +39,9 @@ enum TFSProtocol
   fsSFTPonly = 2,
   fsFTP = 5,
   fsWebDAV = 6,
+  fsS3 = 7,
 };
-#define FSPROTOCOL_COUNT (fsWebDAV+1)
+#define FSPROTOCOL_COUNT (fsS3+1)
 
 enum TLoginType
 {
@@ -65,6 +66,17 @@ enum TKex
   kexWarn, kexDHGroup1, kexDHGroup14, kexDHGEx, kexRSA, kexECDH,
 };
 #define KEX_COUNT (kexECDH + 1)
+
+enum THostKey
+{
+  hkWarn,
+  hkRSA,
+  hkDSA,
+  hkECDSA,
+  hkED25519,
+  hkMax
+};
+#define HOSTKEY_COUNT (hkMax)
 
 enum TGssLib
 {
@@ -116,13 +128,15 @@ enum TSessionUrlFlags
   sufComplete = sufUserName | sufPassword | sufHostKey,
   sufOpen = sufUserName | sufPassword,
 };
-
+//---------------------------------------------------------------------------
 NB_CORE_EXPORT extern const UnicodeString CipherNames[CIPHER_COUNT];
 NB_CORE_EXPORT extern const UnicodeString KexNames[KEX_COUNT];
 NB_CORE_EXPORT extern const UnicodeString GssLibNames[GSSLIB_COUNT];
+NB_CORE_EXPORT extern const UnicodeString HostKeyNames[HOSTKEY_COUNT];
 NB_CORE_EXPORT extern const wchar_t SshProtList[][10];
 NB_CORE_EXPORT extern const TCipher DefaultCipherList[CIPHER_COUNT];
 NB_CORE_EXPORT extern const TKex DefaultKexList[KEX_COUNT];
+NB_CORE_EXPORT extern const THostKey DefaultHostKeyList[HOSTKEY_COUNT];
 NB_CORE_EXPORT extern const TGssLib DefaultGssLibList[GSSLIB_COUNT];
 NB_CORE_EXPORT extern const wchar_t FSProtocolNames[FSPROTOCOL_COUNT][16];
 NB_CORE_EXPORT extern const intptr_t DefaultSendBuf;
@@ -144,6 +158,7 @@ NB_CORE_EXPORT extern const UnicodeString FtpsProtocol;
 NB_CORE_EXPORT extern const UnicodeString FtpesProtocol;
 NB_CORE_EXPORT extern const UnicodeString WebDAVProtocol;
 NB_CORE_EXPORT extern const UnicodeString WebDAVSProtocol;
+NB_CORE_EXPORT extern const UnicodeString S3Protocol;
 NB_CORE_EXPORT extern const UnicodeString SshProtocol;
 NB_CORE_EXPORT extern const UnicodeString WinSCPProtocolPrefix;
 NB_CORE_EXPORT extern const wchar_t UrlParamSeparator;
@@ -155,7 +170,8 @@ NB_CORE_EXPORT extern const UnicodeString PassphraseOption;
 
 NB_CORE_EXPORT extern const intptr_t SFTPMinVersion;
 NB_CORE_EXPORT extern const intptr_t SFTPMaxVersion;
-
+extern const UnicodeString S3HostName;
+//---------------------------------------------------------------------------
 struct NB_CORE_EXPORT TIEProxyConfig : public TObject
 {
   TIEProxyConfig() :
@@ -172,9 +188,9 @@ struct NB_CORE_EXPORT TIEProxyConfig : public TObject
   intptr_t ProxyPort;
   TProxyMethod ProxyMethod;
 };
-
+//---------------------------------------------------------------------------
 class TStoredSessionList;
-
+//---------------------------------------------------------------------------
 class NB_CORE_EXPORT TSessionData : public TNamedObject
 {
   friend class TStoredSessionList;
@@ -206,6 +222,7 @@ private:
   bool FSshNoUserAuth;
   TCipher FCiphers[CIPHER_COUNT];
   TKex FKex[KEX_COUNT];
+  THostKey FHostKeys[HOSTKEY_COUNT];
   TGssLib FGssLib[GSSLIB_COUNT];
   UnicodeString FGssLibCustom;
   bool FClearAliases;
@@ -295,6 +312,8 @@ private:
   TTlsVersion FMinTlsVersion;
   TTlsVersion FMaxTlsVersion;
   TAutoSwitch FNotUtf;
+  intptr_t FInternalEditorEncoding;
+  UnicodeString FS3DefaultRegion;
   bool FIsWorkspace;
   UnicodeString FLink;
   UnicodeString FHostKey;
@@ -311,8 +330,8 @@ private:
   UnicodeString FLogicalHostName;
 
 public:
-  void SetHostName(UnicodeString AValue);
-  UnicodeString GetHostNameExpanded() const;
+  void __fastcall SetHostName(const UnicodeString AValue);
+  UnicodeString __fastcall GetHostNameExpanded() const;
   void SetPortNumber(intptr_t Value);
   void SetUserName(UnicodeString Value);
   UnicodeString GetUserNameExpanded() const;
@@ -331,13 +350,18 @@ public:
   void SetSshProt(TSshProt Value);
   void SetSsh2DES(bool Value);
   void SetSshNoUserAuth(bool Value);
-  void SetCipher(intptr_t Index, TCipher Value);
-  TCipher GetCipher(intptr_t Index) const;
-  void SetKex(intptr_t Index, TKex Value);
-  TKex GetKex(intptr_t Index) const;
-  void SetPublicKeyFile(UnicodeString Value);
-  UnicodeString GetPassphrase() const;
-  void SetPassphrase(UnicodeString AValue);
+  void __fastcall SetCipher(intptr_t Index, TCipher Value);
+  TCipher __fastcall GetCipher(intptr_t Index) const;
+  void __fastcall SetKex(intptr_t Index, TKex Value);
+  TKex __fastcall GetKex(intptr_t Index) const;
+  void __fastcall SetHostKeys(intptr_t Index, THostKey Value);
+  THostKey __fastcall GetHostKeys(intptr_t Index) const;
+  void __fastcall SetGssLibs(intptr_t Index, TGssLib Value);
+  TGssLib __fastcall GetGssLibs(intptr_t Index) const;
+  void __fastcall SetGssLibCustom(UnicodeString Value);
+  void __fastcall SetPublicKeyFile(UnicodeString Value);
+  UnicodeString __fastcall GetPassphrase() const;
+  void __fastcall SetPassphrase(UnicodeString AValue);
 
   void SetPuttyProtocol(UnicodeString Value);
   bool GetCanLogin() const;
@@ -362,7 +386,7 @@ public:
   void SetPreserveDirectoryChanges(bool Value);
   void SetLockInHome(bool Value);
   void SetSpecial(bool Value);
-  UnicodeString GetInfoTip() const;
+  UnicodeString __fastcall GetInfoTip() const;
   bool GetDefaultShell() const;
   void SetDetectReturnVar(bool Value);
   bool GetDetectReturnVar() const;
@@ -382,14 +406,16 @@ public:
   void SetTcpNoDelay(bool Value);
   void SetSendBuf(intptr_t Value);
   void SetSshSimple(bool Value);
-  UnicodeString GetSshProtStr() const;
-  bool GetUsesSsh() const;
-  void SetCipherList(UnicodeString Value);
-  UnicodeString GetCipherList() const;
-  void SetKexList(UnicodeString Value);
-  UnicodeString GetKexList() const;
-  void SetGssLibList(UnicodeString Value);
-  UnicodeString GetGssLibList() const;
+  UnicodeString __fastcall GetSshProtStr() const;
+  bool __fastcall GetUsesSsh() const;
+  void __fastcall SetCipherList(UnicodeString Value);
+  UnicodeString __fastcall GetCipherList() const;
+  void __fastcall SetKexList(UnicodeString Value);
+  UnicodeString __fastcall GetKexList() const;
+  void __fastcall SetHostKeyList(UnicodeString value);
+  UnicodeString __fastcall GetHostKeyList() const;
+  void __fastcall SetGssLibList(UnicodeString Value);
+  UnicodeString __fastcall GetGssLibList() const;
   void SetProxyMethod(TProxyMethod Value);
   void SetProxyHost(UnicodeString Value);
   void SetProxyPort(intptr_t Value);
@@ -455,8 +481,11 @@ public:
   void SetMinTlsVersion(TTlsVersion Value);
   void SetMaxTlsVersion(TTlsVersion Value);
   void SetNotUtf(TAutoSwitch Value);
+  void __fastcall SetInternalEditorEncoding(intptr_t Value);
+  void __fastcall SetS3DefaultRegion(UnicodeString Value);
   void SetLogicalHostName(UnicodeString Value);
   void SetIsWorkspace(bool Value);
+
   void SetLink(UnicodeString Value);
   void SetHostKey(UnicodeString Value);
   void SetNote(UnicodeString Value);
@@ -472,7 +501,10 @@ public:
     bool PuttyExport, const TSessionData *Default, bool DoNotEncryptPasswords);
 #if 0
   UnicodeString ReadXmlNode(_di_IXMLNode Node, UnicodeString Name, UnicodeString Default);
-  int ReadXmlNode(_di_IXMLNode Node, UnicodeString Name, int Default);
+  int __fastcall ReadXmlNode(_di_IXMLNode Node, const UnicodeString & Name, int Default);
+  _di_IXMLNode __fastcall FindSettingsNode(_di_IXMLNode Node, const UnicodeString & Name);
+  UnicodeString __fastcall ReadSettingsNode(_di_IXMLNode Node, const UnicodeString & Name, const UnicodeString & Default);
+  int __fastcall ReadSettingsNode(_di_IXMLNode Node, const UnicodeString & Name, int Default);
 #endif // #if 0
   bool IsSame(const TSessionData *Default, bool AdvancedOnly, TStrings *DifferentProperties) const;
   UnicodeString GetNameWithoutHiddenPrefix() const;
@@ -509,51 +541,18 @@ public:
   void SetAlgoList(AlgoT *List, const AlgoT *DefaultList, const UnicodeString *Names,
     intptr_t Count, AlgoT WarnAlgo, UnicodeString AValue);
 
-#if 0
   __property UnicodeString InternalStorageKey = { read = GetInternalStorageKey };
-#endif // #if 0
-
-private:
-  intptr_t FSFTPMinPacketSize;
-  bool FFtpDupFF;
-  bool FFtpUndupFF;
-  bool FTunnelConfigured;
-  UnicodeString FCodePage;
-  mutable uintptr_t FCodePageAsNumber;
-  bool FFtpAllowEmptyPassword;
-  TLoginType FLoginType;
-  intptr_t FNumberOfRetries;
-  uintptr_t FSessionVersion;
-
-  mutable TIEProxyConfig *FIEProxyConfig;
-
-public:
-  void SetSFTPMinPacketSize(intptr_t Value);
-  void SetFingerprintScan(bool Value) { FFingerprintScan = Value; }
-  bool GetSaveOnly() const { return FSaveOnly; }
-  void SetNewPassword(UnicodeString Value);
-  UnicodeString GetNewPassword() const;
-  bool GetChangePassword() const { return FChangePassword; }
-  void SetChangePassword(bool Value);
-  void SetGssLib(intptr_t Index, TGssLib Value);
-  TGssLib GetGssLib(intptr_t Index) const;
-  UnicodeString GetGssLibCustom() const { return FGssLibCustom; }
-  void SetGssLibCustom(UnicodeString Value);
-  void SetFtpDupFF(bool Value);
-  void SetFtpUndupFF(bool Value);
-  UnicodeString GetWinTitle() const { return FWinTitle; }
 
 public:
   explicit TSessionData(UnicodeString AName);
+  void __fastcall MaskPasswords();
   virtual ~TSessionData();
   TSessionData *Clone() const;
   void Default();
   void NonPersistant();
   void Load(THierarchicalStorage *Storage, bool PuttyImport);
   void ApplyRawSettings(THierarchicalStorage *Storage);
-#if 0
-  void ImportFromFilezilla(_di_IXMLNode Node, UnicodeString APath);
-#endif // #if 0
+  __removed void ImportFromFilezilla(_di_IXMLNode Node, UnicodeString APath);
   void Save(THierarchicalStorage *Storage, bool PuttyExport,
     const TSessionData *Default = nullptr);
   void SaveRecryptedPasswords(THierarchicalStorage *Storage);
@@ -576,24 +575,25 @@ public:
   void RollbackTunnel();
   void ExpandEnvironmentVariables();
   void DisableAuthentationsExceptPassword();
+  static bool __fastcall IsOptionWithParameters(const UnicodeString AOption);
+  static bool __fastcall MaskPasswordInOptionParameter(const UnicodeString AOption, UnicodeString &Param);
   bool IsSame(const TSessionData *Default, bool AdvancedOnly) const;
   bool IsSameSite(const TSessionData *Default) const;
-  bool IsInFolderOrWorkspace(UnicodeString AFolder) const;
+  bool IsInFolderOrWorkspace(const UnicodeString AFolder) const;
   UnicodeString GenerateSessionUrl(uintptr_t Flags) const;
   UnicodeString GenerateOpenCommandArgs() const;
   void GenerateAssemblyCode(TAssemblyLanguage Language, UnicodeString &Head, UnicodeString &Tail, int &Indent);
   void LookupLastFingerprint();
   bool GetIsSecure() const;
-  static void ValidatePath(UnicodeString APath);
-  static void ValidateName(UnicodeString AName);
-  static UnicodeString MakeValidName(UnicodeString Name);
-  static UnicodeString ExtractLocalName(UnicodeString Name);
-  static UnicodeString ExtractFolderName(UnicodeString Name);
-  static UnicodeString ComposePath(UnicodeString APath, UnicodeString Name);
-  static bool IsSensitiveOption(UnicodeString Option);
-  static UnicodeString FormatSiteKey(UnicodeString HostName, intptr_t PortNumber);
+  static void ValidatePath(const UnicodeString APath);
+  static void ValidateName(const UnicodeString AName);
+  static UnicodeString MakeValidName(const UnicodeString Name);
+  static UnicodeString ExtractLocalName(const UnicodeString Name);
+  static UnicodeString ExtractFolderName(const UnicodeString Name);
+  static UnicodeString ComposePath(const UnicodeString APath, const UnicodeString Name);
+  static bool IsSensitiveOption(const UnicodeString Option);
+  static UnicodeString FormatSiteKey(const UnicodeString HostName, intptr_t PortNumber);
 
-#if 0
   __property UnicodeString HostName  = { read=FHostName, write=SetHostName };
   __property UnicodeString HostNameExpanded  = { read=GetHostNameExpanded };
   __property intptr_t PortNumber  = { read=FPortNumber, write=SetPortNumber };
@@ -617,14 +617,16 @@ public:
   __property bool UsesSsh = { read = GetUsesSsh };
   __property bool Ssh2DES  = { read=FSsh2DES, write=SetSsh2DES };
   __property bool SshNoUserAuth  = { read=FSshNoUserAuth, write=SetSshNoUserAuth };
-  __property TCipher Cipher[intptr_t Index] = { read=GetCipher, write=SetCipher };
-  __property TKex Kex[intptr_t Index] = { read=GetKex, write=SetKex };
-  __property TGssLib GssLib[intptr_t Index] = { read=GetGssLib, write=SetGssLib };
+  __property TCipher Cipher[int Index] = { read=GetCipher, write=SetCipher };
+  __property TKex Kex[int Index] = { read=GetKex, write=SetKex };
+  __property THostKey HostKeys[int Index] = { read=GetHostKeys, write=SetHostKeys };
+  __property TGssLib GssLib[int Index] = { read=GetGssLib, write=SetGssLib };
   __property UnicodeString GssLibCustom = { read=FGssLibCustom, write=SetGssLibCustom };
   __property UnicodeString PublicKeyFile  = { read=FPublicKeyFile, write=SetPublicKeyFile };
   __property UnicodeString Passphrase  = { read=GetPassphrase, write=SetPassphrase };
   __property UnicodeString PuttyProtocol  = { read=FPuttyProtocol, write=SetPuttyProtocol };
   __property TFSProtocol FSProtocol  = { read=FFSProtocol, write=SetFSProtocol  };
+  ROProperty<TFSProtocol> FSProtocol{nb::bind(&TSessionData::GetFSProtocol, this)};
   __property UnicodeString FSProtocolStr  = { read=GetFSProtocolStr };
   __property bool Modified  = { read=FModified, write=FModified };
   __property bool CanLogin  = { read=GetCanLogin };
@@ -634,6 +636,7 @@ public:
   __property bool TimeDifferenceAuto = { read = FTimeDifferenceAuto, write = SetTimeDifferenceAuto };
   __property TPingType PingType = { read = FPingType, write = SetPingType };
   __property UnicodeString SessionName  = { read=GetSessionName };
+  ROProperty<UnicodeString> SessionName{nb::bind(&TSessionData::GetSessionName, this)};
   __property UnicodeString DefaultSessionName  = { read=GetDefaultSessionName };
   __property UnicodeString LocalDirectory  = { read=FLocalDirectory, write=SetLocalDirectory };
   __property UnicodeString RemoteDirectory  = { read=FRemoteDirectory, write=SetRemoteDirectory };
@@ -665,6 +668,7 @@ public:
   __property UnicodeString SshProtStr  = { read=GetSshProtStr };
   __property UnicodeString CipherList  = { read=GetCipherList, write=SetCipherList };
   __property UnicodeString KexList  = { read=GetKexList, write=SetKexList };
+  __property UnicodeString HostKeyList  = { read=GetHostKeyList, write=SetHostKeyList };
   __property UnicodeString GssLibList  = { read=GetGssLibList, write=SetGssLibList };
   __property TProxyMethod ProxyMethod  = { read=FProxyMethod, write=SetProxyMethod };
   __property UnicodeString ProxyHost  = { read=FProxyHost, write=SetProxyHost };
@@ -726,6 +730,8 @@ public:
   __property TTlsVersion MaxTlsVersion = { read = FMaxTlsVersion, write = SetMaxTlsVersion };
   __property UnicodeString LogicalHostName = { read = FLogicalHostName, write = SetLogicalHostName };
   __property TAutoSwitch NotUtf = { read = FNotUtf, write = SetNotUtf };
+  __property int InternalEditorEncoding = { read = FInternalEditorEncoding, write = SetInternalEditorEncoding };
+  __property UnicodeString S3DefaultRegion = { read = FS3DefaultRegion, write = SetS3DefaultRegion };
   __property bool IsWorkspace = { read = FIsWorkspace, write = SetIsWorkspace };
   __property UnicodeString Link = { read = FLink, write = SetLink };
   __property UnicodeString HostKey = { read = FHostKey, write = SetHostKey };
@@ -741,7 +747,19 @@ public:
   __property UnicodeString FolderName = { read = GetFolderName };
   __property UnicodeString Source = { read = GetSource };
   __property bool SaveOnly = { read = FSaveOnly };
-#endif // #if 0
+
+public:
+  void SetSFTPMinPacketSize(intptr_t Value);
+  void SetFingerprintScan(bool Value) { FFingerprintScan = Value; }
+  bool GetSaveOnly() const { return FSaveOnly; }
+  void SetNewPassword(UnicodeString Value);
+  UnicodeString GetNewPassword() const;
+  bool GetChangePassword() const { return FChangePassword; }
+  void SetChangePassword(bool Value);
+  UnicodeString GetGssLibCustom() const { return FGssLibCustom; }
+  void SetFtpDupFF(bool Value);
+  void SetFtpUndupFF(bool Value);
+  UnicodeString GetWinTitle() const { return FWinTitle; }
 
   bool GetTimeDifferenceAuto() const { return FTimeDifferenceAuto; }
   UnicodeString GetNote() const { return FNote; }
@@ -860,6 +878,8 @@ public:
   TTlsVersion GetMinTlsVersion() const { return FMinTlsVersion; }
   TTlsVersion GetMaxTlsVersion() const { return FMaxTlsVersion; }
   TAutoSwitch GetNotUtf() const { return FNotUtf; }
+  intptr_t GetInternalEditorEncoding() const { return FInternalEditorEncoding; }
+  UnicodeString GetS3DefaultRegion() const { return FS3DefaultRegion; }
   bool GetIsWorkspace() const { return FIsWorkspace; }
   UnicodeString GetLink() const { return FLink; }
   UnicodeString GetHostKey() const { return FHostKey; }
@@ -888,8 +908,23 @@ private:
   void FromURI(UnicodeString ProxyURI,
     UnicodeString &ProxyUrl, intptr_t &ProxyPort, TProxyMethod &ProxyMethod) const;
   void AdjustHostName(UnicodeString &HostName, UnicodeString Prefix) const;
-};
 
+private:
+  intptr_t FSFTPMinPacketSize;
+  bool FFtpDupFF;
+  bool FFtpUndupFF;
+  bool FTunnelConfigured;
+  UnicodeString FCodePage;
+  mutable uintptr_t FCodePageAsNumber;
+  bool FFtpAllowEmptyPassword;
+  TLoginType FLoginType;
+  intptr_t FNumberOfRetries;
+  uintptr_t FSessionVersion;
+
+  mutable TIEProxyConfig *FIEProxyConfig;
+
+};
+//---------------------------------------------------------------------------
 class NB_CORE_EXPORT TStoredSessionList : public TNamedObjectList
 {
   NB_DISABLE_COPY(TStoredSessionList)
@@ -930,10 +965,10 @@ public:
   bool HasAnyWorkspace();
   TSessionData *SaveWorkspaceData(TSessionData *Data);
   virtual ~TStoredSessionList();
-#if 0
+
   __property TSessionData * Sessions[int Index]  = { read=AtSession };
   __property TSessionData * DefaultSettings  = { read=FDefaultSettings, write=SetDefaultSettings };
-#endif // #if 0
+
   const TSessionData *GetSession(intptr_t Index) const { return dyn_cast<TSessionData>(AtObject(Index)); }
   TSessionData *GetSession(intptr_t Index) { return dyn_cast<TSessionData>(AtObject(Index)); }
   const TSessionData *GetDefaultSettings() const { return FDefaultSettings; }
@@ -961,20 +996,18 @@ private:
   bool IsFolderOrWorkspace(UnicodeString Name, bool Workspace) const;
   TSessionData *CheckIsInFolderOrWorkspaceAndResolve(
     TSessionData *Data, UnicodeString Name);
-#if 0
-  void ImportLevelFromFilezilla(_di_IXMLNode Node, UnicodeString Path);
-#endif // #if 0
+  __removed void ImportLevelFromFilezilla(_di_IXMLNode Node, UnicodeString Path);
   static THierarchicalStorage *CreateHostKeysStorageForWritting();
   static bool OpenHostKeysSubKey(THierarchicalStorage *Storage, bool CanCreate);
 };
 
 NB_CORE_EXPORT bool GetCodePageInfo(UINT CodePage, CPINFOEX &CodePageInfoEx);
-NB_CORE_EXPORT uintptr_t GetCodePageAsNumber(UnicodeString CodePage);
+NB_CORE_EXPORT uintptr_t GetCodePageAsNumber(const UnicodeString CodePage);
 NB_CORE_EXPORT UnicodeString GetCodePageAsString(uintptr_t CodePage);
 
-NB_CORE_EXPORT UnicodeString GetExpandedLogFileName(UnicodeString LogFileName, TDateTime Started, TSessionData *SessionData);
-NB_CORE_EXPORT bool IsIPv6Literal(UnicodeString HostName);
-NB_CORE_EXPORT UnicodeString EscapeIPv6Literal(UnicodeString IP);
+NB_CORE_EXPORT UnicodeString GetExpandedLogFileName(const UnicodeString LogFileName, TDateTime Started, TSessionData *SessionData);
+NB_CORE_EXPORT bool IsIPv6Literal(const UnicodeString HostName);
+NB_CORE_EXPORT UnicodeString EscapeIPv6Literal(const UnicodeString IP);
 NB_CORE_EXPORT bool GetIsSshProtocol(TFSProtocol FSProtocol);
 NB_CORE_EXPORT intptr_t GetDefaultPort(TFSProtocol FSProtocol, TFtps Ftps);
 

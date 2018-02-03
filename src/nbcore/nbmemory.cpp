@@ -58,7 +58,7 @@ NB_C_CORE_DLL(void *) nbcore_alloc(size_t size)
     return nullptr;
   }
 
-  *reinterpret_cast<uint32_t *>(p) = static_cast<uint32_t>(size);
+  *reinterpret_cast<uint32_t *>(p) = ToUInt32(size);
   *reinterpret_cast<uint32_t *>(&p[sizeof(uint32_t)]) = BLOCK_ALLOCATED;
   *reinterpret_cast<uint32_t *>(&p[size + sizeof(uint32_t) * 2]) = BLOCK_ALLOCATED;
   return p + sizeof(uint32_t) * 2;
@@ -98,7 +98,7 @@ NB_C_CORE_DLL(void *) nbcore_realloc(void *ptr, size_t size)
     return nullptr;
   }
 
-  *reinterpret_cast<uint32_t *>(p) = static_cast<uint32_t>(size);
+  *reinterpret_cast<uint32_t *>(p) = ToUInt32(size);
   *reinterpret_cast<uint32_t *>(&p[sizeof(uint32_t)]) = BLOCK_ALLOCATED;
   *reinterpret_cast<uint32_t *>(&p[size + sizeof(uint32_t) * 2]) = BLOCK_ALLOCATED;
   return p + sizeof(uint32_t) * 2;

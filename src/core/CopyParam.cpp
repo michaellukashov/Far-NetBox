@@ -444,7 +444,7 @@ void TCopyParamType::DoGetInfoStr(
   {
     UnicodeString Value;
     UnicodeString CodeState;
-    intptr_t ResumeThresholdKB = static_cast<intptr_t>(GetResumeThreshold() / 1024);
+    intptr_t ResumeThresholdKB = ToIntPtr(GetResumeThreshold() / 1024);
     switch (GetResumeSupport())
     {
     case rsOff:
@@ -827,7 +827,7 @@ void TCopyParamType::Load(THierarchicalStorage *Storage)
   SetResumeSupport(static_cast<TResumeSupport>(Storage->ReadInteger("ResumeSupport", GetResumeSupport())));
   SetResumeThreshold(Storage->ReadInt64("ResumeThreshold", GetResumeThreshold()));
   SetInvalidCharsReplacement(static_cast<wchar_t>(Storage->ReadInteger("ReplaceInvalidChars",
-        static_cast<intptr_t>(GetInvalidCharsReplacement()))));
+        ToIntPtr(GetInvalidCharsReplacement()))));
   SetLocalInvalidChars(Storage->ReadString("LocalInvalidChars", GetLocalInvalidChars()));
   SetCalculateSize(Storage->ReadBool("CalculateSize", GetCalculateSize()));
   if (Storage->ValueExists("IncludeFileMask"))
@@ -875,7 +875,7 @@ void TCopyParamType::Save(THierarchicalStorage *Storage) const
   Storage->WriteInteger("ResumeSupport", GetResumeSupport());
 
   Storage->WriteInt64("ResumeThreshold", GetResumeThreshold());
-  Storage->WriteInteger("ReplaceInvalidChars", static_cast<uint32_t>(GetInvalidCharsReplacement()));
+  Storage->WriteInteger("ReplaceInvalidChars", ToUInt32(GetInvalidCharsReplacement()));
   Storage->WriteString("LocalInvalidChars", GetLocalInvalidChars());
   Storage->WriteBool("CalculateSize", GetCalculateSize());
   Storage->WriteString("IncludeFileMask", GetIncludeFileMask().GetMasks());
@@ -938,7 +938,7 @@ static bool TryGetSpeedLimit(UnicodeString Text, uintptr_t &Speed)
     Result = TryStrToInt64(Text, SSpeed) && (SSpeed >= 0);
     if (Result)
     {
-      Speed = static_cast<uintptr_t>(SSpeed) * 1024;
+      Speed = ToUIntPtr(SSpeed) * 1024;
     }
   }
   return Result;
@@ -995,4 +995,26 @@ void CopySpeedLimits(TStrings *Source, TStrings *Dest)
   }
 
   Dest->Assign(Temp.get());
+}
+//---------------------------------------------------------------------------
+TOperationSide ReverseOperationSide(TOperationSide Side)
+{
+  TOperationSide Result;
+  switch (Side)
+  {
+    case osLocal:
+      Result = osRemote;
+      break;
+
+    case osRemote:
+      Result = osLocal;
+      break;
+
+    default:
+    case osCurrent:
+      DebugFail();
+      Result = Side;
+      break;
+  }
+  return Result;
 }
