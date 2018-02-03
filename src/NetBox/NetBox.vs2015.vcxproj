@@ -109,8 +109,8 @@
       <WarningLevel>Level2</WarningLevel>
       <Optimization>Disabled</Optimization>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <PreprocessorDefinitions>NB_CORE_EXPORTS;WINSCP;FARPLUGIN;_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;_CRT_NON_CONFORMING_SWPRINTFS;_WINSOCK_DEPRECATED_NO_WARNINGS;NOGDI;WIN32;_DEBUG;_WINDOWS;_WINDLL;_USRDLL;NETBOX_DEBUG;MPEXT;STRICT;NE_LFS;NE_HAVE_SSL;HAVE_OPENSSL;OPENSSL_NO_LOCKING;HAVE_EXPAT;HAVE_EXPAT_H;NE_HAVE_DAV;NE_HAVE_ZLIB;XML_STATIC;USE_DLMALLOC;USE_DL_PREFIX;_ATL_NO_COMMODULE;_ATL_NO_PERF_SUPPORT;_ATL_NO_DATETIME_RESOURCES_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\include;..\..\libs\atlmfc\include;..\core;..\base;..\resource;..\windows;..\..\libs\Putty;..\..\libs\Putty\windows;..\..\libs\Putty\charset;..\PluginSDK\Far2;..\..\libs;..\..\libs\openssl\include;..\filezilla;..\filezilla\misc;..\..\libs\tinyxml2;..\..\libs\neon\src;..\..\libs\expat\lib;..\..\libs\dlmalloc;..\..\libs\rdestl;..\..\libs\fmt;..\..\libs\tinylog;</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NB_CORE_EXPORTS;WINSCP;FARPLUGIN;_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;_CRT_NON_CONFORMING_SWPRINTFS;_WINSOCK_DEPRECATED_NO_WARNINGS;NOGDI;WIN32;_DEBUG;_WINDOWS;_WINDLL;_USRDLL;NETBOX_DEBUG;MPEXT;STRICT;NE_LFS;NE_HAVE_SSL;HAVE_OPENSSL;OPENSSL_NO_LOCKING;HAVE_EXPAT;HAVE_EXPAT_H;NE_HAVE_DAV;NE_HAVE_ZLIB;XML_STATIC;USE_DLMALLOC;USE_DL_PREFIX;_ATL_NO_COMMODULE;_ATL_NO_PERF_SUPPORT;_ATL_NO_DATETIME_RESOURCES_;S3_EXPORT;WIN32;WINSCP;NE_LFS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.;..\include;..\..\libs\atlmfc\include;..\core;..\base;..\resource;..\windows;..\..\libs\Putty;..\..\libs\Putty\windows;..\..\libs\Putty\charset;..\PluginSDK\Far2;..\..\libs;..\..\libs\openssl\include;..\filezilla;..\filezilla\misc;..\..\libs\tinyxml2;..\..\libs\neon\src;..\..\libs\expat\lib;..\..\libs\dlmalloc;..\..\libs\rdestl;..\..\libs\fmt;..\..\libs\tinylog;..\..\libs\libs3\inc;..\..\libs\libs3\inc\mingw;..\..\libs\libs3\inc;..\..\libs\openssl\include;..\..\libs\expat\lib;</AdditionalIncludeDirectories>
       <MinimalRebuild>false</MinimalRebuild>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <BufferSecurityCheck>false</BufferSecurityCheck>
@@ -138,8 +138,8 @@
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <PreprocessorDefinitions>NB_CORE_EXPORTS;WINSCP;FARPLUGIN;_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;_CRT_NON_CONFORMING_SWPRINTFS;_WINSOCK_DEPRECATED_NO_WARNINGS;NOGDI;WIN32;WIN64;_DEBUG;_WINDOWS;_WINDLL;_USRDLL;NETBOX_DEBUG;MPEXT;STRICT;NE_LFS;NE_HAVE_SSL;HAVE_OPENSSL;OPENSSL_NO_LOCKING;HAVE_EXPAT;HAVE_EXPAT_H;NE_HAVE_DAV;NE_HAVE_ZLIB;XML_STATIC;USE_DLMALLOC;USE_DL_PREFIX;_ATL_NO_COMMODULE;_ATL_NO_PERF_SUPPORT;_ATL_NO_DATETIME_RESOURCES_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\include;..\..\libs\atlmfc\include;..\core;..\base;..\resource;..\windows;..\..\libs\Putty;..\..\libs\Putty\windows;..\..\libs\Putty\charset;..\PluginSDK\Far2;..\..\libs;..\..\libs\openssl\include;..\filezilla;..\filezilla\misc;..\..\libs\tinyxml2;..\..\libs\neon\src;..\..\libs\expat\lib;..\..\libs\dlmalloc;..\..\libs\rdestl;..\..\libs\fmt;..\..\libs\tinylog;</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NB_CORE_EXPORTS;WINSCP;FARPLUGIN;_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;_CRT_NON_CONFORMING_SWPRINTFS;_WINSOCK_DEPRECATED_NO_WARNINGS;NOGDI;WIN32;WIN64;_DEBUG;_WINDOWS;_WINDLL;_USRDLL;NETBOX_DEBUG;MPEXT;STRICT;NE_LFS;NE_HAVE_SSL;HAVE_OPENSSL;OPENSSL_NO_LOCKING;HAVE_EXPAT;HAVE_EXPAT_H;NE_HAVE_DAV;NE_HAVE_ZLIB;XML_STATIC;USE_DLMALLOC;USE_DL_PREFIX;_ATL_NO_COMMODULE;_ATL_NO_PERF_SUPPORT;_ATL_NO_DATETIME_RESOURCES_;S3_EXPORT;WIN32;WINSCP;NE_LFS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.;..\include;..\..\libs\atlmfc\include;..\core;..\base;..\resource;..\windows;..\..\libs\Putty;..\..\libs\Putty\windows;..\..\libs\Putty\charset;..\PluginSDK\Far2;..\..\libs;..\..\libs\openssl\include;..\filezilla;..\filezilla\misc;..\..\libs\tinyxml2;..\..\libs\neon\src;..\..\libs\expat\lib;..\..\libs\dlmalloc;..\..\libs\rdestl;..\..\libs\fmt;..\..\libs\tinylog;..\..\libs\libs3\inc;..\..\libs\libs3\inc\mingw;..\..\libs\libs3\inc;..\..\libs\openssl\include;..\..\libs\expat\lib;</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <MinimalRebuild>false</MinimalRebuild>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
@@ -168,8 +168,8 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>false</IntrinsicFunctions>
-      <PreprocessorDefinitions>NB_CORE_EXPORTS;WINSCP;FARPLUGIN;_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;_CRT_NON_CONFORMING_SWPRINTFS;_WINSOCK_DEPRECATED_NO_WARNINGS;NOGDI;WIN32;NDEBUG;_WINDOWS;_WINDLL;_USRDLL;MPEXT;STRICT;NE_LFS;NE_HAVE_SSL;HAVE_OPENSSL;OPENSSL_NO_LOCKING;HAVE_EXPAT;HAVE_EXPAT_H;NE_HAVE_DAV;NE_HAVE_ZLIB;XML_STATIC;USE_DLMALLOC;USE_DL_PREFIX;_ATL_NO_COMMODULE;_ATL_NO_PERF_SUPPORT;_ATL_NO_DATETIME_RESOURCES_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\include;..\..\libs\atlmfc\include;..\core;..\base;..\resource;..\windows;..\..\libs\Putty;..\..\libs\Putty\windows;..\..\libs\Putty\charset;..\PluginSDK\Far2;..\..\libs;..\..\libs\openssl\include;..\filezilla;..\filezilla\misc;..\..\libs\tinyxml2;..\..\libs\neon\src;..\..\libs\expat\lib;..\..\libs\dlmalloc;..\..\libs\rdestl;..\..\libs\fmt;..\..\libs\tinylog;</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NB_CORE_EXPORTS;WINSCP;FARPLUGIN;_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;_CRT_NON_CONFORMING_SWPRINTFS;_WINSOCK_DEPRECATED_NO_WARNINGS;NOGDI;WIN32;NDEBUG;_WINDOWS;_WINDLL;_USRDLL;MPEXT;STRICT;NE_LFS;NE_HAVE_SSL;HAVE_OPENSSL;OPENSSL_NO_LOCKING;HAVE_EXPAT;HAVE_EXPAT_H;NE_HAVE_DAV;NE_HAVE_ZLIB;XML_STATIC;USE_DLMALLOC;USE_DL_PREFIX;_ATL_NO_COMMODULE;_ATL_NO_PERF_SUPPORT;_ATL_NO_DATETIME_RESOURCES_;S3_EXPORT;WIN32;WINSCP;NE_LFS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.;..\include;..\..\libs\atlmfc\include;..\core;..\base;..\resource;..\windows;..\..\libs\Putty;..\..\libs\Putty\windows;..\..\libs\Putty\charset;..\PluginSDK\Far2;..\..\libs;..\..\libs\openssl\include;..\filezilla;..\filezilla\misc;..\..\libs\tinyxml2;..\..\libs\neon\src;..\..\libs\expat\lib;..\..\libs\dlmalloc;..\..\libs\rdestl;..\..\libs\fmt;..\..\libs\tinylog;..\..\libs\libs3\inc;..\..\libs\libs3\inc\mingw;..\..\libs\libs3\inc;..\..\libs\openssl\include;..\..\libs\expat\lib;</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <MinimalRebuild>false</MinimalRebuild>
       <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
@@ -210,8 +210,8 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>false</IntrinsicFunctions>
-      <PreprocessorDefinitions>NB_CORE_EXPORTS;WINSCP;FARPLUGIN;_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;_CRT_NON_CONFORMING_SWPRINTFS;_WINSOCK_DEPRECATED_NO_WARNINGS;NOGDI;WIN32;WIN64;NDEBUG;_WINDOWS;_WINDLL;_USRDLL;MPEXT;STRICT;NE_LFS;NE_HAVE_SSL;HAVE_OPENSSL;OPENSSL_NO_LOCKING;HAVE_EXPAT;HAVE_EXPAT_H;NE_HAVE_DAV;NE_HAVE_ZLIB;XML_STATIC;USE_DLMALLOC;USE_DL_PREFIX;_ATL_NO_COMMODULE;_ATL_NO_PERF_SUPPORT;_ATL_NO_DATETIME_RESOURCES_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\include;..\..\libs\atlmfc\include;..\core;..\base;..\resource;..\windows;..\..\libs\Putty;..\..\libs\Putty\windows;..\..\libs\Putty\charset;..\PluginSDK\Far2;..\..\libs;..\..\libs\openssl\include;..\filezilla;..\filezilla\misc;..\..\libs\tinyxml2;..\..\libs\neon\src;..\..\libs\expat\lib;..\..\libs\dlmalloc;..\..\libs\rdestl;..\..\libs\fmt;..\..\libs\tinylog;</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NB_CORE_EXPORTS;WINSCP;FARPLUGIN;_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;_CRT_NON_CONFORMING_SWPRINTFS;_WINSOCK_DEPRECATED_NO_WARNINGS;NOGDI;WIN32;WIN64;NDEBUG;_WINDOWS;_WINDLL;_USRDLL;MPEXT;STRICT;NE_LFS;NE_HAVE_SSL;HAVE_OPENSSL;OPENSSL_NO_LOCKING;HAVE_EXPAT;HAVE_EXPAT_H;NE_HAVE_DAV;NE_HAVE_ZLIB;XML_STATIC;USE_DLMALLOC;USE_DL_PREFIX;_ATL_NO_COMMODULE;_ATL_NO_PERF_SUPPORT;_ATL_NO_DATETIME_RESOURCES_;S3_EXPORT;WIN32;WINSCP;NE_LFS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.;..\include;..\..\libs\atlmfc\include;..\core;..\base;..\resource;..\windows;..\..\libs\Putty;..\..\libs\Putty\windows;..\..\libs\Putty\charset;..\PluginSDK\Far2;..\..\libs;..\..\libs\openssl\include;..\filezilla;..\filezilla\misc;..\..\libs\tinyxml2;..\..\libs\neon\src;..\..\libs\expat\lib;..\..\libs\dlmalloc;..\..\libs\rdestl;..\..\libs\fmt;..\..\libs\tinylog;..\..\libs\libs3\inc;..\..\libs\libs3\inc\mingw;..\..\libs\libs3\inc;..\..\libs\openssl\include;..\..\libs\expat\lib;</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <MinimalRebuild>false</MinimalRebuild>
       <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
@@ -247,6 +247,7 @@
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\core\S3FileSystem.cpp" />
     <ClCompile Include="..\nbcore\nbstring.cpp" />
     <ClCompile Include="..\nbcore\nbmemory.cpp" />
     <ClCompile Include="..\nbcore\nbutils.cpp" />
@@ -336,8 +337,17 @@
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\libs\atlmfc\mfc.vs2015.vcxproj">
+      <Project>{ec262402-898f-49d4-8599-850b0c19c1c6}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\..\libs\dlmalloc\dlmalloc.vs2015.vcxproj">
       <Project>{5423dd5f-c5f6-40a0-ba13-4b0deb51d38e}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\libs\libs3\libs3.vs2015.vcxproj">
+      <Project>{dce830b6-232f-4f4d-bac5-3ca027fe266c}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\libs\rdestl\rdestl.vs2015.vcxproj">
+      <Project>{77ba777c-4766-4ca4-aa41-7c089679a948}</Project>
     </ProjectReference>
     <ProjectReference Include="..\..\libs\tinyxml2\libtinyxml2.vs2015.vcxproj">
       <Project>{593a4fb1-1787-4192-bf73-9c43bf8fc142}</Project>
