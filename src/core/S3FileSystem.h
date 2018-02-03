@@ -12,7 +12,6 @@ struct TLibS3TransferObjectDataCallbackData;
 struct TLibS3PutObjectDataCallbackData;
 struct TLibS3GetObjectDataCallbackData;
 struct ssl_st;
-#define NEED_LIBS3
 #ifdef NEED_LIBS3
 // resolve clash
 #define S3Protocol _S3Protocol
