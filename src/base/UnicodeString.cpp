@@ -642,12 +642,12 @@ UnicodeString &UnicodeString::Upper(intptr_t nStartPos, intptr_t nLength)
   return *this;
 }
 
-intptr_t UnicodeString::Compare(UnicodeString Str) const
+intptr_t UnicodeString::Compare(const UnicodeString Str) const
 {
   return ::AnsiCompare(*this, Str);
 }
 
-intptr_t UnicodeString::CompareIC(UnicodeString Str) const
+intptr_t UnicodeString::CompareIC(const UnicodeString Str) const
 {
   return ::AnsiCompareIC(*this, Str);
 }

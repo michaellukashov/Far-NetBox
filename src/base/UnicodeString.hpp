@@ -73,8 +73,8 @@ public:
   UnicodeString(const wchar_t *Str);
   UnicodeString(const wchar_t *Str, intptr_t Length);
   UnicodeString(const wchar_t Src);
-  UnicodeString(const char *Str, intptr_t Length);
-  UnicodeString(const char *Str, intptr_t Length, int CodePage);
+  explicit UnicodeString(const char *Str, intptr_t Length);
+  explicit UnicodeString(const char *Str, intptr_t Length, int CodePage);
   UnicodeString(const char *Str);
   UnicodeString(intptr_t Length, wchar_t Ch) : Data(Ch, ToInt(Length)) {}
 
@@ -104,8 +104,8 @@ public:
   UnicodeString &MakeUpper() { Data.MakeUpper(); return *this; }
   UnicodeString &MakeLower() { Data.MakeLower(); return *this; }
 
-  intptr_t Compare(UnicodeString Str) const;
-  intptr_t CompareIC(UnicodeString Str) const;
+  intptr_t Compare(const UnicodeString Str) const;
+  intptr_t CompareIC(const UnicodeString Str) const;
   intptr_t ToIntPtr() const;
   intptr_t FindFirstOf(const wchar_t Ch) const;
   intptr_t FindFirstOf(const wchar_t *Str, size_t Offset = 0) const;
