@@ -170,6 +170,7 @@ CUSTOM_MEM_ALLOCATION_IMPL
   TLibS3CallbackData()
   {
     Status = (S3Status)-1;
+    FileSystem = nullptr;
   }
 
   TS3FileSystem * FileSystem;
