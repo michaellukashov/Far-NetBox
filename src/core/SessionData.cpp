@@ -4944,7 +4944,7 @@ void TStoredSessionList::ImportFromKnownHosts(TStrings *Lines)
                 HostNameStr.SetLength(P - 1);
               }
               P = Pos(L':', HostNameStr);
-              intptr_t PortNumber = -1;
+              int64_t PortNumber = -1;
               if (P > 0)
               {
                 UnicodeString PortNumberStr = HostNameStr.SubString(P + 1, HostNameStr.Length() - P);

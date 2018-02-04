@@ -368,8 +368,8 @@ void TFileOperationProgressType::ThrottleToCPSLimit(
   }
 }
 //---------------------------------------------------------------------------
-intptr_t TFileOperationProgressType::AdjustToCPSLimit(
-  intptr_t Size)
+int64_t TFileOperationProgressType::AdjustToCPSLimit(
+  int64_t Size)
 {
   SetSpeedCounters();
 
@@ -411,12 +411,12 @@ intptr_t TFileOperationProgressType::AdjustToCPSLimit(
 }
 //---------------------------------------------------------------------------
 // Use in SCP protocol only
-uintptr_t TFileOperationProgressType::LocalBlockSize()
+int64_t TFileOperationProgressType::LocalBlockSize()
 {
-  uintptr_t Result = TRANSFER_BUF_SIZE;
-  if (FLocallyUsed + ToInt64(Result) > FLocalSize)
+  int64_t Result = TRANSFER_BUF_SIZE;
+  if (FLocallyUsed + Result > FLocalSize)
   {
-    Result = ToUIntPtr(FLocalSize - FLocallyUsed);
+    Result = FLocalSize - FLocallyUsed;
   }
   Result = AdjustToCPSLimit(Result);
   return Result;
@@ -741,12 +741,12 @@ void TFileOperationProgressType::AddSkippedFileSize(int64_t ASize)
 }
 //---------------------------------------------------------------------------
 // Use in SCP protocol only
-uintptr_t TFileOperationProgressType::TransferBlockSize()
+int64_t TFileOperationProgressType::TransferBlockSize()
 {
-  uintptr_t Result = TRANSFER_BUF_SIZE;
-  if (FTransferredSize + ToInt64(Result) > FTransferSize)
+  int64_t Result = TRANSFER_BUF_SIZE;
+  if (FTransferredSize + Result > FTransferSize)
   {
-    Result = ToUIntPtr(FTransferSize - FTransferredSize);
+    Result = FTransferSize - FTransferredSize;
   }
   Result = AdjustToCPSLimit(Result);
   return Result;
@@ -781,9 +781,9 @@ uintptr_t TFileOperationProgressType::CPS() const
 }
 //---------------------------------------------------------------------------
 // Has to be called from a guarded method
-uintptr_t TFileOperationProgressType::GetCPS() const
+int64_t TFileOperationProgressType::GetCPS() const
 {
-  uintptr_t Result;
+  int64_t Result;
   if (FTicks.empty())
   {
     Result = 0;
@@ -809,7 +809,7 @@ uintptr_t TFileOperationProgressType::GetCPS() const
     else
     {
       int64_t Transferred = (GetTotalTransferred() - FTotalTransferredThen.front());
-      Result = ToUIntPtr(Transferred * MSecsPerSec / TimeSpan);
+      Result = int64_t(Transferred * MSecsPerSec / TimeSpan);
     }
   }
   return Result;

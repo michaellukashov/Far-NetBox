@@ -119,7 +119,7 @@ protected:
   void AddSkipped(int64_t ASize);
   void AddTotalSize(int64_t ASize);
   void RollbackTransferFromTotals(int64_t ATransferredSize, int64_t ASkippedSize);
-  uintptr_t GetCPS() const;
+  int64_t GetCPS() const;
   void Init();
   static bool PassCancelToParent(TCancelStatus ACancel);
 
@@ -182,13 +182,13 @@ public:
   void Finish(UnicodeString AFileName, bool Success,
     TOnceDoneOperation &OnceDoneOperation);
   void Progress();
-  uintptr_t LocalBlockSize();
+  int64_t LocalBlockSize();
   bool IsLocallyDone() const;
   bool IsTransferDone() const;
   void SetFile(UnicodeString AFileName, bool AFileInProgress = true);
   void SetFileInProgress();
-  uintptr_t TransferBlockSize();
-  intptr_t AdjustToCPSLimit(intptr_t Size);
+  int64_t TransferBlockSize();
+  int64_t AdjustToCPSLimit(int64_t Size);
   void ThrottleToCPSLimit(intptr_t Size);
   static uintptr_t StaticBlockSize();
   void Reset();
