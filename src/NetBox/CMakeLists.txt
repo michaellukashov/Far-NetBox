@@ -152,6 +152,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHsc")
 add_definitions(-DWINSCP -DUSE_DLMALLOC -DFASTDELEGATE_ALLOW_FUNCTION_TYPE_SYNTAX)
 add_definitions(-DHIDE_TODO)
 add_definitions(-DNEED_LIBS3)
+add_definitions(-DFARPLUGIN)
 
 set(NETBOX_DLL_LINK_FLAGS
   "
