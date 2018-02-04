@@ -3,6 +3,7 @@
 
 #include "FileZillaIntern.h"
 #include "FileZillaIntf.h"
+#include "FileZillaApi.h"
 
 TFileZillaIntern::TFileZillaIntern(TFileZillaIntf * AOwner) :
   // TObject(OBJECT_CLASS_TFileZillaIntern),

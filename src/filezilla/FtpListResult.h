@@ -26,6 +26,7 @@ CRLF pairs and other variants.
 
 #include "ApiLog.h"
 #include "FzApiStructures.h"
+#include "FileZillaApi.h"
 
 class CFtpListResult : public CApiLog
 {

@@ -10,6 +10,7 @@
 #include "AsyncProxySocketLayer.h"
 #include "atlconv.h" //Unicode<->Ascii conversion macros declared here
 #include "misc/CBase64Coding.hpp"
+#include "FileZillaApi.h"
 
 //////////////////////////////////////////////////////////////////////
 // Konstruktion/Destruktion

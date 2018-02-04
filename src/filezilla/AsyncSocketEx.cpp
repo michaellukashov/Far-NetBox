@@ -10,6 +10,7 @@
 #include "AsyncSocketEx.h"
 
 #include "AsyncSocketExLayer.h"
+#include "FileZillaApi.h"
 
 #ifndef GWL_USERDATA
 #define GWL_USERDATA        (-21)
