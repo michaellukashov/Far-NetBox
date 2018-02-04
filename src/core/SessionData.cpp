@@ -313,7 +313,6 @@ void TSessionData::NonPersistant()
 #define BASE_PROPERTIES \
   PROPERTY(HostName); \
   PROPERTY(PortNumber); \
-  PROPERTY(UserName); \
   PROPERTY(Password); \
   PROPERTY(PublicKeyFile); \
   PROPERTY(Passphrase); \
@@ -1795,108 +1794,109 @@ bool TSessionData::ParseUrl(const UnicodeString AUrl, TOptions * Options,
   TStoredSessionList * AStoredSessions, bool & DefaultsOnly, UnicodeString * AFileName,
   bool *AProtocolDefined, UnicodeString *MaskedUrl)
 {
+  UnicodeString Url = AUrl;
   bool ProtocolDefined = false;
   bool PortNumberDefined = false;
   TFSProtocol AFSProtocol = fsSCPonly;
   intptr_t APortNumber = 0;
   TFtps AFtps = ftpsNone;
   intptr_t ProtocolLen = 0;
-  if (AUrl.SubString(1, 7).LowerCase() == L"netbox:")
+  if (Url.SubString(1, 7).LowerCase() == L"netbox:")
   {
     // Remove "netbox:" prefix
-    AUrl.Delete(1, 7);
-    if (AUrl.SubString(1, 2) == L"//")
+    Url.Delete(1, 7);
+    if (Url.SubString(1, 2) == L"//")
     {
       // Remove "//"
-      AUrl.Delete(1, 2);
+      Url.Delete(1, 2);
     }
   }
-  if (AUrl.SubString(1, 7).LowerCase() == L"webdav:")
+  if (Url.SubString(1, 7).LowerCase() == L"webdav:")
   {
     AFSProtocol = fsWebDAV;
     AFtps = ftpsNone;
     APortNumber = HTTPPortNumber;
-    AUrl.Delete(1, 7);
+    Url.Delete(1, 7);
     ProtocolDefined = true;
   }
-  if (IsProtocolUrl(AUrl, ScpProtocol, ProtocolLen))
+  if (IsProtocolUrl(Url, ScpProtocol, ProtocolLen))
   {
     AFSProtocol = fsSCPonly;
     APortNumber = SshPortNumber;
-    MoveStr(AUrl, MaskedUrl, ProtocolLen);
+    MoveStr(Url, MaskedUrl, ProtocolLen);
     ProtocolDefined = true;
   }
-  else if (IsProtocolUrl(AUrl, SftpProtocol, ProtocolLen))
+  else if (IsProtocolUrl(Url, SftpProtocol, ProtocolLen))
   {
     AFSProtocol = fsSFTPonly;
     APortNumber = SshPortNumber;
-    MoveStr(AUrl, MaskedUrl, ProtocolLen);
+    MoveStr(Url, MaskedUrl, ProtocolLen);
     ProtocolDefined = true;
   }
-  else if (IsProtocolUrl(AUrl, FtpProtocol, ProtocolLen))
+  else if (IsProtocolUrl(Url, FtpProtocol, ProtocolLen))
   {
     AFSProtocol = fsFTP;
     SetFtps(ftpsNone);
     APortNumber = FtpPortNumber;
-    MoveStr(AUrl, MaskedUrl, ProtocolLen);
+    MoveStr(Url, MaskedUrl, ProtocolLen);
     ProtocolDefined = true;
   }
-  else if (IsProtocolUrl(AUrl, FtpsProtocol, ProtocolLen))
+  else if (IsProtocolUrl(Url, FtpsProtocol, ProtocolLen))
   {
     AFSProtocol = fsFTP;
     AFtps = ftpsImplicit;
     APortNumber = FtpsImplicitPortNumber;
-    MoveStr(AUrl, MaskedUrl, ProtocolLen);
+    MoveStr(Url, MaskedUrl, ProtocolLen);
     ProtocolDefined = true;
   }
-  else if (IsProtocolUrl(AUrl, FtpesProtocol, ProtocolLen))
+  else if (IsProtocolUrl(Url, FtpesProtocol, ProtocolLen))
   {
     AFSProtocol = fsFTP;
     AFtps = ftpsExplicitTls;
     APortNumber = FtpPortNumber;
-    MoveStr(AUrl, MaskedUrl, ProtocolLen);
+    MoveStr(Url, MaskedUrl, ProtocolLen);
     ProtocolDefined = true;
   }
-  else if (IsProtocolUrl(AUrl, WebDAVProtocol, ProtocolLen) ||
-           IsProtocolUrl(AUrl, HttpProtocol, ProtocolLen))
+  else if (IsProtocolUrl(Url, WebDAVProtocol, ProtocolLen) ||
+           IsProtocolUrl(Url, HttpProtocol, ProtocolLen))
   {
     AFSProtocol = fsWebDAV;
     AFtps = ftpsNone;
     APortNumber = HTTPPortNumber;
-    MoveStr(AUrl, MaskedUrl, ProtocolLen);
+    MoveStr(Url, MaskedUrl, ProtocolLen);
     ProtocolDefined = true;
   }
-  else if (IsProtocolUrl(AUrl, WebDAVSProtocol, ProtocolLen) ||
-           IsProtocolUrl(AUrl, HttpsProtocol, ProtocolLen))
+  else if (IsProtocolUrl(Url, WebDAVSProtocol, ProtocolLen) ||
+           IsProtocolUrl(Url, HttpsProtocol, ProtocolLen))
   {
     AFSProtocol = fsWebDAV;
     AFtps = ftpsImplicit;
     APortNumber = HTTPSPortNumber;
-    MoveStr(AUrl, MaskedUrl, ProtocolLen);
+    MoveStr(Url, MaskedUrl, ProtocolLen);
     ProtocolDefined = true;
   }
-  else if (IsProtocolUrl(AUrl, S3Protocol, ProtocolLen))
+  else if (IsProtocolUrl(Url, S3Protocol, ProtocolLen))
   {
     AFSProtocol = fsS3;
     AFtps = ftpsImplicit;
     APortNumber = HTTPSPortNumber;
-    MoveStr(AUrl, MaskedUrl, ProtocolLen);
+    MoveStr(Url, MaskedUrl, ProtocolLen);
     ProtocolDefined = true;
   }
-  else if (IsProtocolUrl(AUrl, SshProtocol, ProtocolLen))
+  else if (IsProtocolUrl(Url, SshProtocol, ProtocolLen))
   {
     // For most uses, handling ssh:// the same way as sftp://
     // The only place where a difference is made is GetLoginData() in WinMain.cpp
     AFSProtocol = fsSFTPonly;
     SetPuttyProtocol(PuttySshProtocol);
     APortNumber = SshPortNumber;
-    MoveStr(AUrl, MaskedUrl, ProtocolLen);
+    MoveStr(Url, MaskedUrl, ProtocolLen);
     ProtocolDefined = true;
   }
 
-  if (ProtocolDefined && (AUrl.SubString(1, 2) == L"//"))
+  if (ProtocolDefined && (Url.SubString(1, 2) == L"//"))
   {
-    MoveStr(AUrl, MaskedUrl, 2);
+    MoveStr(Url, MaskedUrl, 2);
   }
 
   if (AProtocolDefined != nullptr)
@@ -1904,9 +1904,9 @@ bool TSessionData::ParseUrl(const UnicodeString AUrl, TOptions * Options,
     *AProtocolDefined = ProtocolDefined;
   }
 
-  if (!AUrl.IsEmpty())
+  if (!Url.IsEmpty())
   {
-    UnicodeString DecodedUrl = DecodeUrlChars(AUrl);
+    UnicodeString DecodedUrl = DecodeUrlChars(Url);
     // lookup stored session even if protocol was defined
     // (this allows setting for example default username for host
     // by creating stored session named by host)
@@ -1951,7 +1951,7 @@ bool TSessionData::ParseUrl(const UnicodeString AUrl, TOptions * Options,
     if (Data != nullptr)
     {
       Assign(Data);
-      RemoteDirectory = AUrl.SubString(Data->GetName().Length() + 1);
+      RemoteDirectory = Url.SubString(Data->GetName().Length() + 1);
       if (RemoteDirectory.Length() > 0 && RemoteDirectory[1] == ':')
         RemoteDirectory.Delete(1, 1);
 
@@ -1965,7 +1965,7 @@ bool TSessionData::ParseUrl(const UnicodeString AUrl, TOptions * Options,
 
       if (MaskedUrl != nullptr)
       {
-        (*MaskedUrl) += AUrl;
+        (*MaskedUrl) += Url;
       }
     }
     else
@@ -1981,13 +1981,13 @@ bool TSessionData::ParseUrl(const UnicodeString AUrl, TOptions * Options,
       }
       SetName(L"");
 
-      intptr_t PSlash = AUrl.Pos(L"/");
+      intptr_t PSlash = Url.Pos(L"/");
       if (PSlash == 0)
       {
-        PSlash = AUrl.Length() + 1;
+        PSlash = Url.Length() + 1;
       }
 
-      UnicodeString ConnectInfo = AUrl.SubString(1, PSlash - 1);
+      UnicodeString ConnectInfo = Url.SubString(1, PSlash - 1);
 
       intptr_t P = ConnectInfo.LastDelimiter(L"@");
 
@@ -2056,7 +2056,7 @@ bool TSessionData::ParseUrl(const UnicodeString AUrl, TOptions * Options,
 
       SetPassword(DecodeUrlChars(UserInfo));
 
-      UnicodeString RemoteDirectoryWithSessionParams = AUrl.SubString(PSlash, AUrl.Length() - PSlash + 1);
+      UnicodeString RemoteDirectoryWithSessionParams = Url.SubString(PSlash, Url.Length() - PSlash + 1);
       RemoteDirectory = CutToChar(RemoteDirectoryWithSessionParams, UrlParamSeparator, false);
       UnicodeString SessionParams = RemoteDirectoryWithSessionParams;
 
@@ -2087,9 +2087,9 @@ bool TSessionData::ParseUrl(const UnicodeString AUrl, TOptions * Options,
         (*MaskedUrl) += OrigHostInfo + RemoteDirectory;
       }
 
-      if (PSlash <= AUrl.Length())
+      if (PSlash <= Url.Length())
       {
-        RemoteDirectory = AUrl.SubString(PSlash, AUrl.Length() - PSlash + 1);
+        RemoteDirectory = Url.SubString(PSlash, Url.Length() - PSlash + 1);
       }
     }
 
@@ -5532,7 +5532,7 @@ void TStoredSessionList::GetFolderOrWorkspace(const UnicodeString Name, TList *L
 }
 //---------------------------------------------------------------------------
 TStrings *TStoredSessionList::GetFolderOrWorkspaceList(
-  UnicodeString Name)
+  const UnicodeString Name)
 {
   std::unique_ptr<TStringList> Result(new TStringList());
 
@@ -5556,7 +5556,7 @@ TStrings *TStoredSessionList::GetWorkspaces() const
 
   for (intptr_t Index = 0; Index < GetCount(); ++Index)
   {
-    TSessionData *Data = GetSession(Index);
+    const TSessionData *Data = GetSession(Index);
     if (Data->GetIsWorkspace())
     {
       Result->Add(Data->GetFolderName());
@@ -5598,7 +5598,7 @@ bool TStoredSessionList::HasAnyWorkspace() const
   bool Result = false;
   for (intptr_t Index = 0; !Result && (Index < GetCount()); ++Index)
   {
-    TSessionData *Data = GetSession(Index);
+    const TSessionData *Data = GetSession(Index);
     Result = Data->GetIsWorkspace();
   }
   return Result;

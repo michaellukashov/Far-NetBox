@@ -959,10 +959,10 @@ public:
     UnicodeString *AFileName = nullptr, bool *AProtocolDefined = nullptr, UnicodeString *MaskedUrl = nullptr);
   bool IsUrl(UnicodeString Url);
   bool CanLogin(TSessionData *Data);
-  void GetFolderOrWorkspace(UnicodeString Name, TList *List);
-  TStrings *GetFolderOrWorkspaceList(UnicodeString Name);
-  TStrings *GetWorkspaces();
-  bool HasAnyWorkspace();
+  void GetFolderOrWorkspace(const UnicodeString Name, TList *List);
+  TStrings *GetFolderOrWorkspaceList(const UnicodeString Name);
+  TStrings *GetWorkspaces() const;
+  bool HasAnyWorkspace() const;
   TSessionData *SaveWorkspaceData(TSessionData *Data);
   virtual ~TStoredSessionList();
 
@@ -974,10 +974,10 @@ public:
   const TSessionData *GetDefaultSettings() const { return FDefaultSettings; }
   TSessionData *GetDefaultSettings() { return FDefaultSettings; }
   void SetDefaultSettings(const TSessionData *Value);
-  const TSessionData *GetSessionByName(UnicodeString SessionName) const;
+  const TSessionData *GetSessionByName(const UnicodeString SessionName) const;
 
   static void ImportHostKeys(
-    UnicodeString SourceKey, TStoredSessionList *Sessions,
+    const UnicodeString SourceKey, TStoredSessionList *Sessions,
     bool OnlySelected);
   static void ImportSelectedKnownHosts(TStoredSessionList *Sessions);
 
