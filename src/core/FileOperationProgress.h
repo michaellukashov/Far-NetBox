@@ -97,7 +97,7 @@ private:
   TFileOperationFinishedEvent FOnFinished;
   bool FReset;
   uintptr_t FLastSecond;
-  intptr_t FRemainingCPS;
+  int64_t FRemainingCPS;
   bool FCounterSet;
   rde::vector<intptr_t> FTicks;
   rde::vector<int64_t> FTotalTransferredThen;
@@ -119,7 +119,7 @@ protected:
   void AddSkipped(int64_t ASize);
   void AddTotalSize(int64_t ASize);
   void RollbackTransferFromTotals(int64_t ATransferredSize, int64_t ASkippedSize);
-  int64_t GetCPS() const;
+  uintptr_t GetCPS() const;
   void Init();
   static bool PassCancelToParent(TCancelStatus ACancel);
 
@@ -187,9 +187,9 @@ public:
   bool IsTransferDone() const;
   void SetFile(UnicodeString AFileName, bool AFileInProgress = true);
   void SetFileInProgress();
-  int64_t TransferBlockSize();
+  uintptr_t TransferBlockSize();
   int64_t AdjustToCPSLimit(int64_t Size);
-  void ThrottleToCPSLimit(intptr_t Size);
+  void ThrottleToCPSLimit(int64_t Size);
   static uintptr_t StaticBlockSize();
   void Reset();
   void Resume();

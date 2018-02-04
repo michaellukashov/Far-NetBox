@@ -359,9 +359,9 @@ void TFileOperationProgressType::SetSpeedCounters()
 //---------------------------------------------------------------------------
 // Used in WebDAV protocol
 void TFileOperationProgressType::ThrottleToCPSLimit(
-  intptr_t Size)
+  int64_t Size)
 {
-  intptr_t Remaining = Size;
+  int64_t  Remaining = Size;
   while (Remaining > 0)
   {
     Remaining -= AdjustToCPSLimit(Remaining);
@@ -741,7 +741,7 @@ void TFileOperationProgressType::AddSkippedFileSize(int64_t ASize)
 }
 //---------------------------------------------------------------------------
 // Use in SCP protocol only
-int64_t TFileOperationProgressType::TransferBlockSize()
+uintptr_t TFileOperationProgressType::TransferBlockSize()
 {
   int64_t Result = TRANSFER_BUF_SIZE;
   if (FTransferredSize + Result > FTransferSize)
@@ -749,7 +749,7 @@ int64_t TFileOperationProgressType::TransferBlockSize()
     Result = FTransferSize - FTransferredSize;
   }
   Result = AdjustToCPSLimit(Result);
-  return Result;
+  return ToUIntPtr(Result);
 }
 //---------------------------------------------------------------------------
 uintptr_t TFileOperationProgressType::StaticBlockSize()
@@ -777,11 +777,11 @@ TDateTime TFileOperationProgressType::TimeElapsed() const
 uintptr_t TFileOperationProgressType::CPS() const
 {
   volatile TGuard Guard(*FSection);
-  return GetCPS();
+  return ToUIntPtr(GetCPS());
 }
 //---------------------------------------------------------------------------
 // Has to be called from a guarded method
-int64_t TFileOperationProgressType::GetCPS() const
+uintptr_t TFileOperationProgressType::GetCPS() const
 {
   int64_t Result;
   if (FTicks.empty())
@@ -812,7 +812,7 @@ int64_t TFileOperationProgressType::GetCPS() const
       Result = int64_t(Transferred * MSecsPerSec / TimeSpan);
     }
   }
-  return Result;
+  return ToUIntPtr(Result);
 }
 //---------------------------------------------------------------------------
 TDateTime TFileOperationProgressType::TimeExpected() const

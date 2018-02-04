@@ -5705,7 +5705,7 @@ void TSFTPFileSystem::Sink(
               // file has some special file size.
               FTerminal->LogEvent(FORMAT(
                 L"Received incomplete data packet before end of file, offset: %s, size: %d, requested: %d",
-                (::IntToStr(OperationProgress->GetTransferredSize()), int(DataLen), int(BlockSize))));
+                (::Int64ToStr(OperationProgress->GetTransferredSize()), int(DataLen), int(BlockSize))));
               FTerminal->TerminalError(nullptr, LoadStr(SFTP_INCOMPLETE_BEFORE_EOF));
             }
 
@@ -5753,7 +5753,7 @@ void TSFTPFileSystem::Sink(
             {
               DebugAssert(!ResumeTransfer && !ResumeAllowed);
 
-              uintptr_t PrevBlockSize = BlockBuf.GetSize();
+              int64_t PrevBlockSize = BlockBuf.GetSize();
               BlockBuf.Convert(GetEOL(), FTerminal->GetConfiguration()->GetLocalEOLType(), 0, ConvertToken);
               OperationProgress->SetLocalSize(OperationProgress->GetLocalSize() - PrevBlockSize + BlockBuf.GetSize());
             }
