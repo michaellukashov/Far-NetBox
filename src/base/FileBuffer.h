@@ -2,7 +2,7 @@
 #pragma once
 
 #include <Classes.hpp>
-
+//---------------------------------------------------------------------------
 extern const wchar_t * EOLTypeNames;
 enum TEOLType
 {
@@ -13,7 +13,7 @@ enum TEOLType
 
 const intptr_t cpRemoveCtrlZ = 0x01;
 const intptr_t cpRemoveBOM   = 0x02;
-
+//---------------------------------------------------------------------------
 class NB_CORE_EXPORT TFileBuffer : public TObject
 {
 NB_DISABLE_COPY(TFileBuffer)
@@ -47,7 +47,7 @@ public:
 private:
   TMemoryStream * FMemory;
 };
-
+//---------------------------------------------------------------------------
 #if 0
 //moved to Classes.hpp
 
@@ -61,6 +61,6 @@ public:
   virtual int Write(const System::DynamicArray<System::Byte> Buffer, int Offset, int Count);
 };
 #endif // #if 0
-
+//---------------------------------------------------------------------------
 char * EOLToStr(TEOLType EOLType);
-
+//---------------------------------------------------------------------------

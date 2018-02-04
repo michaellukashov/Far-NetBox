@@ -14,12 +14,13 @@
 __removed #pragma package(smart_init)
 //---------------------------------------------------------------------------
 // TGuard
+//---------------------------------------------------------------------------
 TGuard::TGuard(const TCriticalSection &ACriticalSection) :
   FCriticalSection(ACriticalSection)
 {
   FCriticalSection.Enter();
 }
-
+//---------------------------------------------------------------------------
 TGuard::~TGuard()
 {
   FCriticalSection.Leave();
