@@ -5,8 +5,20 @@
 
 #include <Global.h>
 #include <Exceptions.h>
+
+#if 0
+#define ASCOPY(dest, source) \
+  { \
+    AnsiString CopyBuf = source; \
+    strncpy(dest, CopyBuf.c_str(), LENOF(dest)); \
+    dest[LENOF(dest)-1] = '\0'; \
+  }
+#define SWAP(TYPE, FIRST, SECOND) \
+  { TYPE __Backup = FIRST; FIRST = SECOND; SECOND = __Backup; }
+#endif // if 0
 //---------------------------------------------------------------------------
 extern const wchar_t EngShortMonthNames[12][4];
+__removed extern const char Bom[3];
 #define CONST_BOM "\xEF\xBB\xBF"
 extern const wchar_t TokenPrefix;
 extern const wchar_t NoReplacement;
@@ -14,12 +26,15 @@ extern const wchar_t TokenReplacement;
 extern const UnicodeString LocalInvalidChars;
 extern const UnicodeString PasswordMask;
 extern const UnicodeString Ellipsis;
-
+//---------------------------------------------------------------------------
+extern const UnicodeString HttpProtocol;
+extern const UnicodeString HttpsProtocol;
+extern const UnicodeString ProtocolSeparator;
+//---------------------------------------------------------------------------
 #define LOCAL_INVALID_CHARS "/\\:*?\"<>|"
 #define PASSWORD_MASK "***"
 #define sLineBreak L"\n"
 
-#if 1
 // Order of the values also define order of the buttons/answers on the prompts
 // MessageDlg relies on these to be <= 0x0000FFFF
 const uint32_t qaYes      = 0x00000001;
@@ -47,13 +62,8 @@ const intptr_t qpNeverAskAgainCheck   = 0x02;
 const intptr_t qpAllowContinueOnError = 0x04;
 const intptr_t qpIgnoreAbort          = 0x08;
 const intptr_t qpWaitInBatch          = 0x10;
-#endif // #if 1
 
 inline void ThrowExtException() { throw ExtException(static_cast<Exception *>(nullptr), UnicodeString(L"")); }
-//---------------------------------------------------------------------------
-extern const UnicodeString HttpProtocol;
-extern const UnicodeString HttpsProtocol;
-extern const UnicodeString ProtocolSeparator;
 //---------------------------------------------------------------------------
 NB_CORE_EXPORT UnicodeString ReplaceChar(const UnicodeString Str, wchar_t A, wchar_t B);
 NB_CORE_EXPORT UnicodeString DeleteChar(const UnicodeString Str, wchar_t C);

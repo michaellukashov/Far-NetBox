@@ -6,10 +6,6 @@
 
 #include <Sysutils.hpp>
 #include <Common.h>
-
-//---------------------------------------------------------------------------
-//moved to base/Common.h
-__removed enum TModificationFmt { mfNone, mfMDHM, mfMDY, mfFull };
 //---------------------------------------------------------------------------
 #define SYMLINKSTR L" -> "
 #define PARENTDIRECTORY L".."
@@ -616,41 +612,4 @@ public:
   TRemoteProperties &operator=(const TRemoteProperties &other);
 };
 //---------------------------------------------------------------------------
-#if 0
-// moved to base/Common.h
-bool IsUnixStyleWindowsPath(const UnicodeString & Path);
-bool UnixIsAbsolutePath(const UnicodeString & Path);
-UnicodeString UnixIncludeTrailingBackslash(const UnicodeString Path);
-UnicodeString UnixExcludeTrailingBackslash(const UnicodeString Path, bool Simple = false);
-UnicodeString SimpleUnixExcludeTrailingBackslash(const UnicodeString Path);
-UnicodeString UnixCombinePaths(const UnicodeString & Path1, const UnicodeString & Path2);
-UnicodeString UnixExtractFileDir(const UnicodeString Path);
-UnicodeString UnixExtractFilePath(const UnicodeString Path);
-UnicodeString UnixExtractFileName(const UnicodeString Path);
-UnicodeString UnixExtractFileExt(const UnicodeString Path);
-Boolean UnixSamePath(const UnicodeString Path1, const UnicodeString Path2);
-bool UnixIsChildPath(UnicodeString Parent, UnicodeString Child);
-bool ExtractCommonPath(TStrings * Files, UnicodeString & Path);
-bool UnixExtractCommonPath(TStrings * Files, UnicodeString & Path);
-UnicodeString ExtractFileName(const UnicodeString & Path, bool Unix);
-bool IsUnixRootPath(const UnicodeString Path);
-bool IsUnixHiddenFile(const UnicodeString Path);
-UnicodeString AbsolutePath(const UnicodeString & Base, const UnicodeString & Path);
-UnicodeString FromUnixPath(const UnicodeString Path);
-UnicodeString ToUnixPath(const UnicodeString Path);
-UnicodeString MinimizeName(const UnicodeString FileName, int MaxLen, bool Unix);
-UnicodeString MakeFileList(TStrings * FileList);
-TDateTime ReduceDateTimePrecision(TDateTime DateTime,
-  TModificationFmt Precision);
-TModificationFmt LessDateTimePrecision(
-  TModificationFmt Precision1, TModificationFmt Precision2);
-UnicodeString UserModificationStr(TDateTime DateTime,
-  TModificationFmt Precision);
-UnicodeString ModificationStr(TDateTime DateTime,
-  TModificationFmt Precision);
-int FakeFileImageIndex(UnicodeString FileName, unsigned long Attrs = 0,
-  UnicodeString * TypeName = NULL);
-bool SameUserName(const UnicodeString & UserName1, const UnicodeString & UserName2);
-UnicodeString FormatMultiFilesToOneConfirmation(const UnicodeString & Target, bool Unix);
-//---------------------------------------------------------------------------
-#endif // #if 0
+

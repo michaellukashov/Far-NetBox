@@ -1957,25 +1957,6 @@ private:
   TSFTPFileSystem *FFileSystem;
 };
 //===========================================================================
-#if 0
-// moved to FileSystems.h
-struct TOpenRemoteFileParams
-{
-  UnicodeString FileName;
-  UnicodeString RemoteFileName;
-  TFileOperationProgressType *OperationProgress;
-  const TCopyParamType *CopyParam;
-  int Params;
-  bool Resume;
-  bool Resuming;
-  TSFTPOverwriteMode OverwriteMode;
-  __int64 DestFileSize; // output
-  RawByteString RemoteFileHandle; // output
-  TOverwriteFileParams *FileParams;
-  bool Confirmed;
-};
-#endif // #if 0
-//===========================================================================
 TSFTPFileSystem::TSFTPFileSystem(TTerminal *ATerminal) :
   TCustomFileSystem(OBJECT_CLASS_TSFTPFileSystem, ATerminal),
   FSecureShell(nullptr),

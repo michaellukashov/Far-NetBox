@@ -16,6 +16,17 @@ class TFileOperationProgressType;
 class TRemoteProperties;
 struct TLocalFileHandle;
 //---------------------------------------------------------------------------
+enum TFSCommand
+{
+  fsNull = 0, fsVarValue, fsLastLine, fsFirstLine,
+  fsCurrentDirectory, fsChangeDirectory, fsListDirectory, fsListCurrentDirectory,
+  fsListFile, fsLookupUsersGroups, fsCopyToRemote, fsCopyToLocal, fsDeleteFile,
+  fsRenameFile, fsCreateDirectory, fsChangeMode, fsChangeGroup, fsChangeOwner,
+  fsHomeDirectory, fsUnset, fsUnalias, fsCreateLink, fsCopyFile,
+  fsAnyCommand, fsLang, fsReadSymlink, fsChangeProperties, fsMoveFile,
+  fsLock,
+};
+//---------------------------------------------------------------------------
 // from FtpFileSystem.h
 enum TOverwriteMode
 {
@@ -39,7 +50,7 @@ public:
   uintptr_t Flags;
   bool Skipped;
 };
-
+//---------------------------------------------------------------------------
 struct NB_CORE_EXPORT TFileTransferData : public TObject
 {
   NB_DISABLE_COPY(TFileTransferData)
@@ -65,7 +76,7 @@ public:
   int OverwriteResult;
   bool AutoResume;
 };
-
+//---------------------------------------------------------------------------
 struct NB_CORE_EXPORT TOverwriteFileParams : public TObject
 {
 public:
@@ -88,7 +99,7 @@ public:
   TModificationFmt SourcePrecision;
   TModificationFmt DestPrecision;
 };
-
+//---------------------------------------------------------------------------
 struct NB_CORE_EXPORT TOpenRemoteFileParams : public TObject
 {
   NB_DISABLE_COPY(TOpenRemoteFileParams)
@@ -135,17 +146,6 @@ public:
 
   virtual void Init(void *) = 0;
   virtual void FileTransferProgress(int64_t TransferSize, int64_t Bytes) = 0;
-};
-//---------------------------------------------------------------------------
-enum TFSCommand
-{
-  fsNull = 0, fsVarValue, fsLastLine, fsFirstLine,
-  fsCurrentDirectory, fsChangeDirectory, fsListDirectory, fsListCurrentDirectory,
-  fsListFile, fsLookupUsersGroups, fsCopyToRemote, fsCopyToLocal, fsDeleteFile,
-  fsRenameFile, fsCreateDirectory, fsChangeMode, fsChangeGroup, fsChangeOwner,
-  fsHomeDirectory, fsUnset, fsUnalias, fsCreateLink, fsCopyFile,
-  fsAnyCommand, fsLang, fsReadSymlink, fsChangeProperties, fsMoveFile,
-  fsLock,
 };
 //---------------------------------------------------------------------------
 const int dfNoRecursive = 0x01;

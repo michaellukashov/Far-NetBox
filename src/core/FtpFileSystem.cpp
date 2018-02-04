@@ -192,28 +192,6 @@ public:
   typedef message_t value_type;
 };
 //---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
-#if 0
-// moved to FileSystems.h
-struct TFileTransferData
-{
-  TFileTransferData()
-  {
-    Params = 0;
-    AutoResume = false;
-    OverwriteResult = -1;
-    CopyParam = nullptr;
-  }
-
-  UnicodeString FileName;
-  int Params;
-  bool AutoResume;
-  int OverwriteResult;
-  const TCopyParamType *CopyParam;
-  TDateTime Modification;
-};
-#endif // if 0
-//---------------------------------------------------------------------------
 const UnicodeString CertificateStorageKey(L"FtpsCertificates");
 static const wchar_t FtpsCertificateStorageKey[] = L"FtpsCertificates";
 const UnicodeString SiteCommand(L"SITE");

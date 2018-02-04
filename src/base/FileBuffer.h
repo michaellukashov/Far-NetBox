@@ -48,19 +48,5 @@ private:
   TMemoryStream * FMemory;
 };
 //---------------------------------------------------------------------------
-#if 0
-//moved to Classes.hpp
-
-class TSafeHandleStream : public THandleStream
-{
-public:
-  TSafeHandleStream(int AHandle);
-  virtual int Read(void * Buffer, int Count);
-  virtual int Write(const void * Buffer, int Count);
-  virtual int Read(System::DynamicArray<System::Byte> Buffer, int Offset, int Count);
-  virtual int Write(const System::DynamicArray<System::Byte> Buffer, int Offset, int Count);
-};
-#endif // #if 0
-//---------------------------------------------------------------------------
 char * EOLToStr(TEOLType EOLType);
 //---------------------------------------------------------------------------
