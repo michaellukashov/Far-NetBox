@@ -167,7 +167,7 @@ TSynchronizeOptions::~TSynchronizeOptions()
   SAFE_DESTROY(Filter);
 }
 //---------------------------------------------------------------------------
-bool TSynchronizeOptions::MatchesFilter(UnicodeString AFileName) const
+bool TSynchronizeOptions::MatchesFilter(const UnicodeString AFileName) const
 {
   bool Result = true;
   if (Filter)
@@ -3760,7 +3760,7 @@ void TTerminal::CustomReadDirectory(TRemoteFileList *AFileList)
   ReactOnCommand(fsListDirectory);
 }
 //---------------------------------------------------------------------------
-TRemoteFileList * TTerminal::ReadDirectoryListing(UnicodeString Directory, const TFileMasks &Mask)
+TRemoteFileList * TTerminal::ReadDirectoryListing(const UnicodeString Directory, const TFileMasks &Mask)
 {
   TRemoteFileList *FileList;
   TRetryOperationLoop RetryLoop(this);
@@ -3805,7 +3805,7 @@ TRemoteFileList * TTerminal::ReadDirectoryListing(UnicodeString Directory, const
   return FileList;
 }
 //---------------------------------------------------------------------------
-TRemoteFile * TTerminal::ReadFileListing(UnicodeString APath)
+TRemoteFile * TTerminal::ReadFileListing(const UnicodeString APath)
 {
   TRemoteFile *File = nullptr;
   TRetryOperationLoop RetryLoop(this);
@@ -3829,7 +3829,7 @@ TRemoteFile * TTerminal::ReadFileListing(UnicodeString APath)
   return File;
 }
 //---------------------------------------------------------------------------
-TRemoteFileList * TTerminal::CustomReadDirectoryListing(UnicodeString Directory, bool UseCache)
+TRemoteFileList * TTerminal::CustomReadDirectoryListing(const UnicodeString Directory, bool UseCache)
 {
   TRemoteFileList *FileList = nullptr;
   TRetryOperationLoop RetryLoop(this);
@@ -3848,7 +3848,7 @@ TRemoteFileList * TTerminal::CustomReadDirectoryListing(UnicodeString Directory,
   return FileList;
 }
 //---------------------------------------------------------------------------
-TRemoteFileList * TTerminal::DoReadDirectoryListing(UnicodeString ADirectory, bool UseCache)
+TRemoteFileList * TTerminal::DoReadDirectoryListing(const UnicodeString ADirectory, bool UseCache)
 {
   std::unique_ptr<TRemoteFileList> FileList(new TRemoteFileList());
   try__catch
@@ -4002,7 +4002,7 @@ void TTerminal::ReadSymlink(TRemoteFile *SymlinkFile,
   }
 }
 //---------------------------------------------------------------------------
-void TTerminal::ReadFile(UnicodeString AFileName,
+void TTerminal::ReadFile(const UnicodeString AFileName,
   TRemoteFile *&AFile)
 {
   DebugAssert(FFileSystem);
@@ -4417,7 +4417,7 @@ void TTerminal::CustomCommandOnFile(const UnicodeString &AFileName,
   ReactOnCommand(fsAnyCommand);
 }
 //---------------------------------------------------------------------------
-void TTerminal::DoCustomCommandOnFile(UnicodeString AFileName,
+void TTerminal::DoCustomCommandOnFile(const UnicodeString AFileName,
   const TRemoteFile *AFile, UnicodeString ACommand, intptr_t AParams,
   TCaptureOutputEvent OutputEvent)
 {
@@ -4777,7 +4777,7 @@ bool TTerminal::CalculateFilesSize(TStrings *AFileList,
   return Param.Result;
 }
 //---------------------------------------------------------------------------
-void TTerminal::CalculateFilesChecksum(UnicodeString Alg,
+void TTerminal::CalculateFilesChecksum(const UnicodeString Alg,
   TStrings *AFileList, TStrings *Checksums,
   TCalculatedChecksumEvent OnCalculatedChecksum)
 {
@@ -5312,7 +5312,7 @@ public:
   {
   }
 
-  void Output(UnicodeString Str, TCaptureOutputType OutputType)
+  void Output(const UnicodeString Str, TCaptureOutputType OutputType)
   {
     switch (OutputType)
     {

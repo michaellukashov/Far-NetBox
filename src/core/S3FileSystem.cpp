@@ -439,22 +439,23 @@ UnicodeString TS3FileSystem::GetFolderKey(const UnicodeString AKey)
   return AKey + L"/";
 }
 //---------------------------------------------------------------------------
-void TS3FileSystem::ParsePath(UnicodeString APath, UnicodeString &BucketName, UnicodeString &AKey)
+void TS3FileSystem::ParsePath(const UnicodeString APath, UnicodeString &BucketName, UnicodeString &AKey)
 {
-  if (DebugAlwaysTrue(APath.SubString(1, 1) == L"/"))
+  UnicodeString Path = APath;
+  if (DebugAlwaysTrue(Path.SubString(1, 1) == L"/"))
   {
-    APath.Delete(1, 1);
+    Path.Delete(1, 1);
   }
-  intptr_t P = APath.Pos(L"/");
+  intptr_t P = Path.Pos(L"/");
   if (P == 0)
   {
-    BucketName = APath;
+    BucketName = Path;
     AKey = L"";
   }
   else
   {
-    BucketName = APath.SubString(0, P - 1);
-    AKey = APath.SubString(P + 1, APath.Length() - P);
+    BucketName = Path.SubString(0, P - 1);
+    AKey = Path.SubString(P + 1, Path.Length() - P);
   }
 }
 //---------------------------------------------------------------------------

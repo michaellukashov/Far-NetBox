@@ -15,7 +15,7 @@
 #include "TextsCore.h"
 #include "Script.h"
 
-static UnicodeString DoXmlEscape(UnicodeString AStr, bool NewLine)
+static UnicodeString DoXmlEscape(const UnicodeString AStr, bool NewLine)
 {
   UnicodeString Str = AStr;
   for (intptr_t Index = 1; Index <= Str.Length(); ++Index)
@@ -96,12 +96,12 @@ static UnicodeString DoXmlEscape(UnicodeString AStr, bool NewLine)
   return Str;
 }
 
-static UnicodeString XmlEscape(UnicodeString Str)
+static UnicodeString XmlEscape(const UnicodeString Str)
 {
   return DoXmlEscape(Str, false);
 }
 
-static UnicodeString XmlAttributeEscape(UnicodeString Str)
+static UnicodeString XmlAttributeEscape(const UnicodeString Str)
 {
   return DoXmlEscape(Str, true);
 }
@@ -260,12 +260,12 @@ public:
     FRecursive = true;
   }
 
-  void Command(UnicodeString Command)
+  void Command(const UnicodeString Command)
   {
     Parameter(L"command", Command);
   }
 
-  void AddOutput(UnicodeString Output, bool StdError)
+  void AddOutput(const UnicodeString Output, bool StdError)
   {
     const wchar_t *Name = (StdError ? L"erroroutput" : L"output");
     intptr_t Index = FNames->IndexOf(Name);
@@ -284,13 +284,13 @@ public:
     Parameter(L"exitcode", ::IntToStr(ExitCode));
   }
 
-  void Checksum(UnicodeString Alg, UnicodeString Checksum)
+  void Checksum(const UnicodeString Alg, UnicodeString Checksum)
   {
     Parameter(L"algorithm", Alg);
     Parameter(L"checksum", Checksum);
   }
 
-  void Cwd(UnicodeString Path)
+  void Cwd(const UnicodeString Path)
   {
     Parameter(L"cwd", Path);
   }
@@ -352,7 +352,7 @@ protected:
     }
   }
 
-  void Parameter(UnicodeString Name, UnicodeString Value = L"")
+  void Parameter(const UnicodeString Name, UnicodeString Value = L"")
   {
     FNames->Add(Name);
     FValues->Add(Value);
@@ -601,7 +601,7 @@ TCallSessionAction::TCallSessionAction(TActionLog *Log,
   }
 }
 
-void TCallSessionAction::AddOutput(UnicodeString Output, bool StdError)
+void TCallSessionAction::AddOutput(const UnicodeString Output, bool StdError)
 {
   if (FRecord != nullptr)
   {
@@ -655,7 +655,7 @@ TChecksumSessionAction::TChecksumSessionAction(TActionLog *Log) :
 {
 }
 
-void TChecksumSessionAction::Checksum(UnicodeString Alg, UnicodeString Checksum)
+void TChecksumSessionAction::Checksum(const UnicodeString Alg, UnicodeString Checksum)
 {
   if (FRecord != nullptr)
   {
@@ -683,7 +683,7 @@ TFileSystemInfo::TFileSystemInfo()
   ClearArray(IsCapable);
 }
 
-static FILE *LocalOpenLogFile(UnicodeString LogFileName, TDateTime Started, TSessionData *SessionData, bool Append, UnicodeString &ANewFileName)
+static FILE *LocalOpenLogFile(const UnicodeString LogFileName, TDateTime Started, TSessionData *SessionData, bool Append, UnicodeString &ANewFileName)
 {
   UnicodeString NewFileName = StripPathQuotes(GetExpandedLogFileName(LogFileName, Started, SessionData));
   FILE *Result = _wfsopen(ApiPath(NewFileName).c_str(),
@@ -770,7 +770,7 @@ void TSessionLog::DoAddToSelf(TLogLineType Type, UnicodeString ALine)
   }
 }
 
-UnicodeString TSessionLog::LogPartFileName(UnicodeString BaseName, intptr_t Index)
+UnicodeString TSessionLog::LogPartFileName(const UnicodeString BaseName, intptr_t Index)
 {
   UnicodeString Result;
   if (Index >= 1)
@@ -1011,7 +1011,7 @@ UnicodeString TSessionLog::GetTlsVersionName(TTlsVersion TlsVersion) const
   }
 }
 
-UnicodeString TSessionLog::LogSensitive(UnicodeString Str)
+UnicodeString TSessionLog::LogSensitive(const UnicodeString Str)
 {
   if (FConfiguration->GetLogSensitive() && !Str.IsEmpty())
   {
@@ -1352,7 +1352,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData *Data)
   }
 }
 
-void TSessionLog::AddOption(UnicodeString LogStr)
+void TSessionLog::AddOption(const UnicodeString LogStr)
 {
   ADSTR(LogStr);
 }
@@ -1425,7 +1425,7 @@ TActionLog::~TActionLog()
   DebugAssert(FLogger == nullptr);
 }
 
-void TActionLog::Add(UnicodeString Line)
+void TActionLog::Add(const UnicodeString Line)
 {
   DebugAssert(FConfiguration);
   if (FLogging)
@@ -1488,7 +1488,7 @@ void TActionLog::Add(UnicodeString Line)
   }
 }
 
-void TActionLog::AddIndented(UnicodeString Line)
+void TActionLog::AddIndented(const UnicodeString Line)
 {
   Add(FIndent + Line);
 }
@@ -1516,7 +1516,7 @@ void TActionLog::AddFailure(Exception *E)
   }
 }
 
-void TActionLog::AddMessages(UnicodeString Indent, TStrings *Messages)
+void TActionLog::AddMessages(const UnicodeString Indent, TStrings *Messages)
 {
   for (intptr_t Index = 0; Index < Messages->GetCount(); ++Index)
   {
@@ -1627,7 +1627,7 @@ void TActionLog::RecordPendingActions()
   }
 }
 
-void TActionLog::BeginGroup(UnicodeString Name)
+void TActionLog::BeginGroup(const UnicodeString Name)
 {
   DebugAssert(!FInGroup);
   FInGroup = true;

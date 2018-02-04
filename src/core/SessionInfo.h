@@ -353,7 +353,7 @@ public:
   void ReflectSettings();
   void AddFailure(Exception *E);
   void AddFailure(TStrings *Messages);
-  void BeginGroup(UnicodeString Name);
+  void BeginGroup(const UnicodeString Name);
   void EndGroup();
 
   __property UnicodeString CurrentFileName = { read = FCurrentFileName };

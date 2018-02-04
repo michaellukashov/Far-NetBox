@@ -68,7 +68,7 @@ Exception::Exception(TObjectClassId Kind, Exception *E) :
 {
 }
 
-Exception::Exception(UnicodeString Msg) :
+Exception::Exception(const UnicodeString Msg) :
   std::runtime_error(""),
   FKind(OBJECT_CLASS_Exception),
   Message(Msg)
@@ -614,7 +614,7 @@ void FileAge(const UnicodeString AFileName, TDateTime &ATimestamp)
   }
 }
 
-DWORD FileGetAttr(UnicodeString AFileName, bool /*FollowLink*/)
+DWORD FileGetAttr(const UnicodeString AFileName, bool /*FollowLink*/)
 {
   TODO("FollowLink");
   DWORD LocalFileAttrs = ::GetFileAttributesW(ApiPath(AFileName).c_str());
@@ -762,7 +762,7 @@ NextWord(const wchar_t *Input)
   return Buffer.c_str();
 }
 
-UnicodeString WrapText(UnicodeString Line, intptr_t MaxWidth)
+UnicodeString WrapText(const UnicodeString Line, intptr_t MaxWidth)
 {
   UnicodeString Result;
 
@@ -920,7 +920,7 @@ void AppendPathDelimiterW(UnicodeString &Str)
   }
 }
 
-UnicodeString ExpandEnvVars(UnicodeString Str)
+UnicodeString ExpandEnvVars(const UnicodeString Str)
 {
   UnicodeString Buf(NB_MAX_PATH, 0);
   intptr_t Size = ::ExpandEnvironmentStringsW(Str.c_str(), ToWChar(Buf), ToDWord(NB_MAX_PATH - 1));
@@ -941,20 +941,20 @@ UnicodeString StringOfChar(const wchar_t Ch, intptr_t Len)
   return Result;
 }
 
-UnicodeString ChangeFileExt(UnicodeString AFileName, UnicodeString AExt,
+UnicodeString ChangeFileExt(const UnicodeString AFileName, UnicodeString AExt,
   wchar_t Delimiter)
 {
   UnicodeString Result = ::ChangeFileExtension(AFileName, AExt, Delimiter);
   return Result;
 }
 
-UnicodeString ExtractFileExt(UnicodeString AFileName)
+UnicodeString ExtractFileExt(const UnicodeString AFileName)
 {
   UnicodeString Result = ::ExtractFileExtension(AFileName, L'.');
   return Result;
 }
 
-static UnicodeString ExpandFileName(UnicodeString AFileName)
+static UnicodeString ExpandFileName(const UnicodeString AFileName)
 {
   UnicodeString Buf(NB_MAX_PATH + 1, 0);
   intptr_t Size = ::GetFullPathNameW(ApiPath(AFileName).c_str(), ToDWord(Buf.Length() - 1),
@@ -969,13 +969,13 @@ static UnicodeString ExpandFileName(UnicodeString AFileName)
   return Result;
 }
 
-static UnicodeString GetUniversalName(UnicodeString AFileName)
+static UnicodeString GetUniversalName(const UnicodeString AFileName)
 {
   UnicodeString Result = AFileName;
   return Result;
 }
 
-UnicodeString ExpandUNCFileName(UnicodeString AFileName)
+UnicodeString ExpandUNCFileName(const UnicodeString AFileName)
 {
   UnicodeString Result = ExpandFileName(AFileName);
   if ((Result.Length() >= 3) && (Result[1] == L':') && (::UpCase(Result[1]) >= L'A') &&
@@ -1134,7 +1134,7 @@ UnicodeString IncludeTrailingBackslash(const UnicodeString Str)
   return Result;
 }
 
-UnicodeString IncludeTrailingPathDelimiter(UnicodeString Str)
+UnicodeString IncludeTrailingPathDelimiter(const UnicodeString Str)
 {
   return ::IncludeTrailingBackslash(Str);
 }
@@ -1241,7 +1241,7 @@ UnicodeString IntToHex(uintptr_t Int, uintptr_t MinChars)
   return Result;
 }
 
-char HexToChar(UnicodeString Hex, uintptr_t MinChars)
+char HexToChar(const UnicodeString Hex, uintptr_t MinChars)
 {
   return static_cast<char>(HexToIntPtr(Hex, MinChars));
 }
@@ -1391,7 +1391,7 @@ TDateTime EncodeTime(uint32_t Hour, uint32_t Min, uint32_t Sec, uint32_t MSec)
   return Result;
 }
 
-TDateTime StrToDateTime(UnicodeString Value)
+TDateTime StrToDateTime(const UnicodeString Value)
 {
   (void)Value;
   ThrowNotImplemented(145);
@@ -1408,7 +1408,7 @@ bool TryStrToDateTime(const UnicodeString StrValue, TDateTime &Value,
   return false;
 }
 
-UnicodeString DateTimeToStr(UnicodeString &Result, UnicodeString Format,
+UnicodeString DateTimeToStr(UnicodeString &Result, const UnicodeString Format,
   const TDateTime &DateTime)
 {
   (void)Result;
@@ -1504,7 +1504,7 @@ TDateTime SystemTimeToDateTime(const SYSTEMTIME &SystemTime)
   return Result;
 }
 
-UnicodeString UnixExcludeLeadingBackslash(UnicodeString APath)
+UnicodeString UnixExcludeLeadingBackslash(const UnicodeString APath)
 {
   UnicodeString Result = APath;
   while (!Result.IsEmpty() && Result[1] == L'/')
@@ -1616,7 +1616,7 @@ Boolean IsLeapYear(Word Year)
   return (Year % 4 == 0) && ((Year % 100 != 0) || (Year % 400 == 0));
 }
 
-UnicodeString StripHotkey(UnicodeString AText)
+UnicodeString StripHotkey(const UnicodeString AText)
 {
   UnicodeString Result = AText;
   intptr_t Len = Result.Length();
@@ -1636,12 +1636,12 @@ UnicodeString StripHotkey(UnicodeString AText)
   return Result;
 }
 
-bool StartsText(UnicodeString ASubText, UnicodeString AText)
+bool StartsText(const UnicodeString ASubText, const UnicodeString AText)
 {
   return AText.Pos(ASubText) == 1;
 }
 
-uintptr_t StrToVersionNumber(UnicodeString VersionMumberStr)
+uintptr_t StrToVersionNumber(const UnicodeString VersionMumberStr)
 {
   uintptr_t Result = 0;
   UnicodeString Version = VersionMumberStr;

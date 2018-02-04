@@ -32,7 +32,7 @@ private:
   UnicodeString FName;
   bool FHidden;
 
-  __removed void SetName(UnicodeString value);
+  __removed void SetName(const UnicodeString value);
 };
 //---------------------------------------------------------------------------
 class NB_CORE_EXPORT TNamedObjectList : public TObjectList
@@ -62,7 +62,7 @@ public:
   virtual const TNamedObject * AtObject(intptr_t Index) const;
   virtual TNamedObject * AtObject(intptr_t Index);
   const TNamedObject * FindByName(const UnicodeString AName) const;
-  TNamedObject * FindByName(UnicodeString Name);
+  TNamedObject * FindByName(const UnicodeString Name);
   __property int Count = { read = GetCount, write = SetCount };
   __property int CountIncludingHidden = { read = GetCountIncludingHidden };
 };

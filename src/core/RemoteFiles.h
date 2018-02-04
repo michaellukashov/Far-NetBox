@@ -69,9 +69,9 @@ public:
   void Clear();
   void Add(const TRemoteToken &Token);
   void AddUnique(const TRemoteToken &Token);
-  bool Exists(UnicodeString Name) const;
+  bool Exists(const UnicodeString Name) const;
   const TRemoteToken *Find(uintptr_t ID) const;
-  const TRemoteToken *Find(UnicodeString Name) const;
+  const TRemoteToken *Find(const UnicodeString Name) const;
   void Log(TTerminal *Terminal, const wchar_t *Title);
 
   intptr_t GetCount() const;
@@ -357,7 +357,7 @@ public:
   bool GetFileList(const UnicodeString Directory,
     TRemoteFileList *FileList) const;
   void AddFileList(TRemoteFileList *FileList);
-  void ClearFileList(UnicodeString Directory, bool SubDirs);
+  void ClearFileList(const UnicodeString Directory, bool SubDirs);
   void Clear();
 
   __property bool IsEmpty = { read = GetIsEmpty };
@@ -369,7 +369,7 @@ protected:
 private:
   TCriticalSection FSection;
   bool GetIsEmptyPrivate() const;
-  void DoClearFileList(UnicodeString Directory, bool SubDirs);
+  void DoClearFileList(const UnicodeString Directory, bool SubDirs);
 };
 //---------------------------------------------------------------------------
 class TRemoteDirectoryChangesCache : private TStringList
@@ -388,7 +388,7 @@ public:
   void Clear();
 
   void Serialize(UnicodeString &Data) const;
-  void Deserialize(UnicodeString Data);
+  void Deserialize(const UnicodeString Data);
 
   __property bool IsEmpty = { read = GetIsEmpty };
   bool GetIsEmpty() const { return GetIsEmptyPrivate(); }
@@ -506,8 +506,8 @@ public:
   UnicodeString GetSimplestStr() const;
   void SetNumber(uint16_t Value);
   UnicodeString GetText() const;
-  void SetText(UnicodeString Value);
-  void SetOctal(UnicodeString AValue);
+  void SetText(const UnicodeString Value);
+  void SetOctal(const UnicodeString AValue);
   uint16_t GetNumber() const;
   uint16_t GetNumberSet() const { return FSet; }
   uint16_t GetNumberUnset() const { return FUnset; }

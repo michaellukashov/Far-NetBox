@@ -15,10 +15,10 @@
 
 namespace nb {
 
-NB_CORE_EXPORT UnicodeString Format(UnicodeString format_str, fmt::ArgList args);
+NB_CORE_EXPORT UnicodeString Format(const UnicodeString format_str, fmt::ArgList args);
 FMT_VARIADIC_W(UnicodeString, Format, UnicodeString)
 
-NB_CORE_EXPORT UnicodeString Sprintf(UnicodeString format, fmt::ArgList args);
+NB_CORE_EXPORT UnicodeString Sprintf(const UnicodeString format, fmt::ArgList args);
 FMT_VARIADIC_W(UnicodeString, Sprintf, UnicodeString)
 
 NB_CORE_EXPORT UnicodeString FmtLoadStr(intptr_t Id, fmt::ArgList args);

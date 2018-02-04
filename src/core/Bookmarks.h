@@ -27,8 +27,8 @@ private:
   static UnicodeString Keys[];
 
 public:
-  TBookmarkList *GetBookmarks(UnicodeString AIndex);
-  void SetBookmarks(UnicodeString AIndex, TBookmarkList *Value);
+  TBookmarkList *GetBookmarks(const UnicodeString AIndex);
+  void SetBookmarks(const UnicodeString AIndex, TBookmarkList *Value);
   TBookmarkList *GetSharedBookmarks();
   void SetSharedBookmarks(TBookmarkList *Value);
 
@@ -56,7 +56,7 @@ public:
   void InsertBefore(TBookmark *BeforeBookmark, TBookmark *Bookmark);
   void MoveTo(TBookmark *ToBookmark, TBookmark *Bookmark, bool Before);
   void Delete(TBookmark *&Bookmark);
-  TBookmark *FindByName(UnicodeString Node, UnicodeString Name) const;
+  TBookmark *FindByName(const UnicodeString Node, UnicodeString Name) const;
   TBookmark *FindByShortCut(const TShortCut &ShortCut);
   virtual void Assign(const TPersistent *Source) override;
   void LoadOptions(THierarchicalStorage *Storage);
@@ -83,8 +83,8 @@ private:
 public:
   intptr_t GetCount() const;
   TBookmark *GetBookmarks(intptr_t AIndex);
-  bool GetNodeOpened(UnicodeString AIndex) const;
-  void SetNodeOpened(UnicodeString AIndex, bool Value);
+  bool GetNodeOpened(const UnicodeString AIndex) const;
+  void SetNodeOpened(const UnicodeString AIndex, bool Value);
 };
 
 class NB_CORE_EXPORT TBookmark : public TPersistent
@@ -125,10 +125,10 @@ public:
   UnicodeString GetNode() const { return FNode; }
   TShortCut GetShortCut() const { return FShortCut; }
 
-  void SetName(UnicodeString Value);
-  void SetLocal(UnicodeString Value);
-  void SetRemote(UnicodeString Value);
-  void SetNode(UnicodeString Value);
+  void SetName(const UnicodeString Value);
+  void SetLocal(const UnicodeString Value);
+  void SetRemote(const UnicodeString Value);
+  void SetNode(const UnicodeString Value);
   void SetShortCut(const TShortCut &Value);
   UnicodeString GetKey() const;
 

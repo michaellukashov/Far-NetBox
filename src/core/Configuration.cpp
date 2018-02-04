@@ -882,7 +882,7 @@ void TConfiguration::DontSave()
   FDontSave = true;
 }
 //---------------------------------------------------------------------------
-RawByteString TConfiguration::EncryptPassword(UnicodeString Password, UnicodeString Key)
+RawByteString TConfiguration::EncryptPassword(const UnicodeString Password, const UnicodeString Key)
 {
   if (Password.IsEmpty())
   {
@@ -1236,7 +1236,7 @@ void TConfiguration::SetDefaultStorage()
 }
 #if 0
 //---------------------------------------------------------------------------
-void TConfiguration::SetIniFileStorageName(UnicodeString Value)
+void TConfiguration::SetIniFileStorageName(const UnicodeString Value)
 {
   FIniFileStorageName = Value;
   FStorage = stIniFile;
@@ -1562,7 +1562,7 @@ TStoredSessionList * TConfiguration::SelectKnownHostsSessionsForImport(
   return ImportSessionList.release();
 }
 //---------------------------------------------------------------------------
-void TConfiguration::SetRandomSeedFile(UnicodeString Value)
+void TConfiguration::SetRandomSeedFile(const UnicodeString Value)
 {
   if (GetRandomSeedFile() != Value)
   {

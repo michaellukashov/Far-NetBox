@@ -556,7 +556,7 @@ long reg_close_winscp_key(HKEY Key)
   return ERROR_SUCCESS;
 }
 
-TKeyType GetKeyType(UnicodeString AFileName)
+TKeyType GetKeyType(const UnicodeString AFileName)
 {
   DebugAssert(ktUnopenable == SSH_KEYTYPE_UNOPENABLE);
   DebugAssert(ktSSH2PublicOpenSSH == SSH_KEYTYPE_SSH2_PUBLIC_OPENSSH);
@@ -689,7 +689,7 @@ void FreeKey(TPrivateKey *PrivateKey)
   sfree(Ssh2Key);
 }
 
-bool HasGSSAPI(UnicodeString CustomPath)
+bool HasGSSAPI(const UnicodeString CustomPath)
 {
   static int has = -1;
   if (has < 0)
@@ -770,7 +770,7 @@ static void DoNormalizeFingerprint(UnicodeString &Fingerprint, UnicodeString &Ke
   }
 }
 
-UnicodeString NormalizeFingerprint(UnicodeString AFingerprint)
+UnicodeString NormalizeFingerprint(const UnicodeString AFingerprint)
 {
   UnicodeString Fingerprint = AFingerprint;
   UnicodeString KeyType; // unused
@@ -778,7 +778,7 @@ UnicodeString NormalizeFingerprint(UnicodeString AFingerprint)
   return Fingerprint;
 }
 
-UnicodeString GetKeyTypeFromFingerprint(UnicodeString AFingerprint)
+UnicodeString GetKeyTypeFromFingerprint(const UnicodeString AFingerprint)
 {
   UnicodeString Fingerprint = AFingerprint;
   UnicodeString KeyType;

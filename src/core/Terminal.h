@@ -380,7 +380,7 @@ protected:
   void DoCreateDirectory(const UnicodeString ADirName);
   void DoDeleteFile(const UnicodeString AFileName, const TRemoteFile *AFile,
     intptr_t Params);
-  void DoCustomCommandOnFile(UnicodeString AFileName,
+  void DoCustomCommandOnFile(const UnicodeString AFileName,
     const TRemoteFile *AFile, UnicodeString ACommand, intptr_t AParams, TCaptureOutputEvent OutputEvent);
   void DoRenameFile(const UnicodeString AFileName, const TRemoteFile *AFile,
     const UnicodeString ANewName, bool Move);
@@ -408,7 +408,7 @@ protected:
   bool DeleteContentsIfDirectory(
     const UnicodeString AFileName, const TRemoteFile *AFile, intptr_t AParams, TRmSessionAction &Action);
   void AnnounceFileListOperation();
-  UnicodeString TranslateLockedPath(UnicodeString APath, bool Lock);
+  UnicodeString TranslateLockedPath(const UnicodeString APath, bool Lock);
   void ReadDirectory(TRemoteFileList *AFileList);
   void CustomReadDirectory(TRemoteFileList *AFileList);
   void DoCreateLink(const UnicodeString AFileName, const UnicodeString APointTo, bool Symbolic);
@@ -613,9 +613,9 @@ public:
   void BeginTransaction();
   void ReadCurrentDirectory();
   void ReadDirectory(bool ReloadOnly, bool ForceCache = false);
-  TRemoteFileList * ReadDirectoryListing(UnicodeString Directory, const TFileMasks &Mask);
-  TRemoteFileList * CustomReadDirectoryListing(UnicodeString Directory, bool UseCache);
-  TRemoteFile * ReadFileListing(UnicodeString APath);
+  TRemoteFileList * ReadDirectoryListing(const UnicodeString Directory, const TFileMasks &Mask);
+  TRemoteFileList * CustomReadDirectoryListing(const UnicodeString Directory, bool UseCache);
+  TRemoteFile * ReadFileListing(const UnicodeString APath);
   void ReadFile(const UnicodeString AFileName, TRemoteFile *&AFile);
   bool FileExists(const UnicodeString AFileName, TRemoteFile **AFile = nullptr);
   void ReadSymlink(TRemoteFile *SymlinkFile, TRemoteFile *&File);
@@ -672,7 +672,7 @@ public:
     const UnicodeString ALocalDirectory, const UnicodeString ARemoteDirectory,
     const TCopyParamType *CopyParam, intptr_t Params,
     TSynchronizeDirectoryEvent OnSynchronizeDirectory);
-  void FilesFind(UnicodeString Directory, const TFileMasks &FileMask,
+  void FilesFind(const UnicodeString Directory, const TFileMasks &FileMask,
     TFileFoundEvent OnFileFound, TFindingFileEvent OnFindingFile);
   void SpaceAvailable(const UnicodeString APath, TSpaceAvailable &ASpaceAvailable);
   void LockFiles(TStrings *AFileList);
@@ -757,7 +757,7 @@ public:
   __property int TunnelLocalPortNumber = { read = FTunnelLocalPortNumber };
 
   bool GetIsCapable(TFSCapability Capability) const { return GetIsCapableProtected(Capability); }
-  void SetMasks(UnicodeString Value);
+  void SetMasks(const UnicodeString Value);
 
   void SetLocalFileTime(const UnicodeString LocalFileName,
     const TDateTime &Modification);
@@ -1086,7 +1086,7 @@ protected:
   void Add(TChecklistItem *Item);
 
 public:
-  void SetMasks(UnicodeString Value);
+  void SetMasks(const UnicodeString Value);
 
   intptr_t GetCount() const;
   const TChecklistItem *GetItem(intptr_t Index) const;

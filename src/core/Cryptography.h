@@ -5,14 +5,14 @@
 
 void CryptographyInitialize();
 void CryptographyFinalize();
-RawByteString ScramblePassword(UnicodeString Password);
-bool UnscramblePassword(RawByteString Scrambled, UnicodeString &Password);
-void AES256EncyptWithMAC(RawByteString Input, UnicodeString Password,
+RawByteString ScramblePassword(const UnicodeString Password);
+bool UnscramblePassword(const RawByteString Scrambled, const UnicodeString &Password);
+void AES256EncyptWithMAC(const RawByteString Input, const UnicodeString Password,
   RawByteString &Output);
-bool AES256DecryptWithMAC(RawByteString Input, UnicodeString Password,
+bool AES256DecryptWithMAC(const RawByteString Input, const UnicodeString Password,
   RawByteString &Output);
-void AES256CreateVerifier(UnicodeString Input, RawByteString &Verifier);
-bool AES256Verify(UnicodeString Input, RawByteString Verifier);
-int IsValidPassword(UnicodeString Password);
+void AES256CreateVerifier(const UnicodeString Input, RawByteString &Verifier);
+bool AES256Verify(const UnicodeString Input, const RawByteString Verifier);
+int IsValidPassword(const UnicodeString Password);
 int PasswordMaxLength();
 

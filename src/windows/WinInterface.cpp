@@ -131,7 +131,7 @@ static TFarCheckBox *FindNeverAskAgainCheck(TFarDialog *Dialog)
   return nullptr; // DebugNotNull(dyn_cast<TFarCheckBox>(Dialog->FindComponent(L"NeverAskAgainCheck")));
 }
 
-TFarDialog *CreateMessageDialogEx(UnicodeString Msg,
+TFarDialog *CreateMessageDialogEx(const UnicodeString Msg,
   TStrings *MoreMessages, TQueryType Type, uint32_t Answers, const UnicodeString AHelpKeyword,
   const TMessageParams *Params, TFarButton *&TimeoutButton)
 {
@@ -482,7 +482,7 @@ TForm *CreateMoreMessageDialogEx(const UnicodeString Message, TStrings *MoreMess
   return Dialog.release();
 }
 
-uintptr_t MoreMessageDialog(UnicodeString Message, TStrings *MoreMessages,
+uintptr_t MoreMessageDialog(const UnicodeString Message, TStrings *MoreMessages,
   TQueryType Type, uint32_t Answers, UnicodeString HelpKeyword, const TMessageParams *Params)
 {
   std::unique_ptr<TForm> Dialog(CreateMoreMessageDialogEx(Message, MoreMessages, Type, Answers, HelpKeyword, Params));
@@ -490,13 +490,13 @@ uintptr_t MoreMessageDialog(UnicodeString Message, TStrings *MoreMessages,
   return Result;
 }
 
-uintptr_t MessageDialog(UnicodeString Msg, TQueryType Type,
+uintptr_t MessageDialog(const UnicodeString Msg, TQueryType Type,
   uint32_t Answers, UnicodeString HelpKeyword, const TMessageParams *Params)
 {
   return MoreMessageDialog(Msg, nullptr, Type, Answers, HelpKeyword, Params);
 }
 
-uintptr_t SimpleErrorDialog(UnicodeString Msg, UnicodeString MoreMessages)
+uintptr_t SimpleErrorDialog(const UnicodeString Msg, UnicodeString MoreMessages)
 {
   uintptr_t Result;
   TStrings *More = nullptr;
@@ -1236,7 +1236,7 @@ void CenterButtonImage(TButton *Button)
   }
 }
 
-int AdjustLocaleFlag(UnicodeString S, TLocaleFlagOverride LocaleFlagOverride, bool Recommended, int On, int Off)
+int AdjustLocaleFlag(const UnicodeString S, TLocaleFlagOverride LocaleFlagOverride, bool Recommended, int On, int Off)
 {
   int Result = !S.IsEmpty() && StrToInt64(S);
   switch (LocaleFlagOverride)

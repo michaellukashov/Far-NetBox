@@ -454,7 +454,7 @@ bool AES256DecryptWithMAC(RawByteString Input, UnicodeString Password,
   return Result;
 }
 
-void AES256CreateVerifier(UnicodeString Input, RawByteString &Verifier)
+void AES256CreateVerifier(const UnicodeString Input, RawByteString &Verifier)
 {
   RawByteString Salt = AES256Salt();
   RawByteString Dummy = AES256Salt();
@@ -466,7 +466,7 @@ void AES256CreateVerifier(UnicodeString Input, RawByteString &Verifier)
   Verifier = Salt + Dummy + Mac;
 }
 
-bool AES256Verify(UnicodeString Input, RawByteString Verifier)
+bool AES256Verify(const UnicodeString Input, RawByteString Verifier)
 {
   int SaltLength = SALT_LENGTH(PASSWORD_MANAGER_AES_MODE);
   RawByteString Salt = Verifier.SubString(1, SaltLength);
@@ -505,7 +505,7 @@ static uint8_t SScrambleTable[256] =
 uint8_t *ScrambleTable;
 uint8_t *UnscrambleTable;
 
-RawByteString ScramblePassword(UnicodeString Password)
+RawByteString ScramblePassword(const UnicodeString Password)
 {
 #define SCRAMBLE_LENGTH_EXTENSION 50
   UTF8String UtfPassword = UTF8String(Password);
@@ -539,7 +539,7 @@ RawByteString ScramblePassword(UnicodeString Password)
   return Result;
 }
 
-bool UnscramblePassword(RawByteString Scrambled, UnicodeString &Password)
+bool UnscramblePassword(const RawByteString Scrambled, UnicodeString &Password)
 {
   RawByteString LocalScrambled = Scrambled;
   char *S = ToChar(LocalScrambled);
@@ -606,7 +606,7 @@ int PasswordMaxLength()
   return 128;
 }
 
-int IsValidPassword(UnicodeString Password)
+int IsValidPassword(const UnicodeString Password)
 {
   if (Password.IsEmpty() || (Password.Length() > PasswordMaxLength()))
   {

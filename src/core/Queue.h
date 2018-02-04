@@ -321,7 +321,7 @@ public:
   void *GetUserData() const { return FUserData; }
   void *GetUserData() { return FUserData; }
   void SetUserData(void *Value) { FUserData = Value; }
-  void SetMasks(UnicodeString Value);
+  void SetMasks(const UnicodeString Value);
 
 private:
   TFileOperationProgressType *FProgressData;

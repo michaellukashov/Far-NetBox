@@ -78,7 +78,7 @@ static TDateTime SecToDateTime(intptr_t Sec)
   return TDateTime(double(Sec) / SecsPerDay);
 }
 //--- TSessionData ----------------------------------------------------
-TSessionData::TSessionData(UnicodeString AName) :
+TSessionData::TSessionData(const UnicodeString AName) :
   TNamedObject(OBJECT_CLASS_TSessionData, AName),
   FIEProxyConfig(nullptr)
 {
@@ -4018,7 +4018,7 @@ void TSessionData::ParseIEProxyConfig() const
   FIEProxyConfig->ProxyMethod = ProxyMethod;
 }
 
-void TSessionData::FromURI(UnicodeString ProxyURI,
+void TSessionData::FromURI(const UnicodeString ProxyURI,
   UnicodeString &ProxyUrl, intptr_t &ProxyPort, TProxyMethod &ProxyMethod) const
 {
   ProxyUrl.Clear();
@@ -4551,7 +4551,7 @@ TFSProtocol TSessionData::TranslateFSProtocolNumber(intptr_t FSProtocol)
   return Result;
 }
 
-TFSProtocol TSessionData::TranslateFSProtocol(UnicodeString ProtocolID) const
+TFSProtocol TSessionData::TranslateFSProtocol(const UnicodeString ProtocolID) const
 {
   // Find protocol by string id
   TFSProtocol Result = static_cast<TFSProtocol>(-1);
@@ -5604,7 +5604,7 @@ bool TStoredSessionList::HasAnyWorkspace() const
   return Result;
 }
 //---------------------------------------------------------------------------
-TSessionData *TStoredSessionList::ParseUrl(UnicodeString Url,
+TSessionData *TStoredSessionList::ParseUrl(const UnicodeString Url,
   TOptions *Options, bool &DefaultsOnly, UnicodeString *AFileName,
   bool *AProtocolDefined, UnicodeString *MaskedUrl)
 {

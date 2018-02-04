@@ -97,13 +97,13 @@ public:
   static const wchar_t TokenReplacement = wchar_t(1);
 
 public:
-  void SetLocalInvalidChars(UnicodeString Value);
+  void SetLocalInvalidChars(const UnicodeString Value);
   bool GetReplaceInvalidChars() const;
   void SetReplaceInvalidChars(bool Value);
-  UnicodeString RestoreChars(UnicodeString AFileName) const;
-  void DoGetInfoStr(UnicodeString Separator, intptr_t Attrs,
+  UnicodeString RestoreChars(const UnicodeString AFileName) const;
+  void DoGetInfoStr(const UnicodeString Separator, intptr_t Attrs,
     UnicodeString &Result, bool &SomeAttrIncluded,
-    UnicodeString Link, UnicodeString &ScriptArgs, bool &NoScriptArgs,
+    const UnicodeString Link, UnicodeString &ScriptArgs, bool &NoScriptArgs,
     /*TAssemblyLanguage Language, UnicodeString & AssemblyCode, */bool &NoCodeProperties) const;
   TStrings *GetTransferSkipList() const;
   void SetTransferSkipList(TStrings *Value);
@@ -115,27 +115,27 @@ public:
   TCopyParamType &operator=(const TCopyParamType &rhs);
   virtual void Assign(const TCopyParamType *Source);
   virtual void Default();
-  UnicodeString ChangeFileName(UnicodeString AFileName,
+  UnicodeString ChangeFileName(const UnicodeString AFileName,
     TOperationSide Side, bool FirstLevel) const;
   DWORD LocalFileAttrs(const TRights &Rights) const;
   TRights RemoteFileRights(uintptr_t Attrs) const;
-  bool UseAsciiTransfer(UnicodeString AFileName, TOperationSide Side,
+  bool UseAsciiTransfer(const UnicodeString AFileName, TOperationSide Side,
     const TFileMasks::TParams &Params) const;
   bool AllowResume(int64_t Size) const;
-  bool ResumeTransfer(UnicodeString AFileName) const;
-  UnicodeString ValidLocalFileName(UnicodeString AFileName) const;
-  UnicodeString ValidLocalPath(UnicodeString APath) const;
+  bool ResumeTransfer(const UnicodeString AFileName) const;
+  UnicodeString ValidLocalFileName(const UnicodeString AFileName) const;
+  UnicodeString ValidLocalPath(const UnicodeString APath) const;
   bool AllowAnyTransfer() const;
-  bool AllowTransfer(UnicodeString AFileName, TOperationSide Side,
+  bool AllowTransfer(const UnicodeString AFileName, TOperationSide Side,
     bool Directory, const TFileMasks::TParams &Params) const;
-  bool SkipTransfer(UnicodeString AFileName, bool Directory) const;
+  bool SkipTransfer(const UnicodeString AFileName, bool Directory) const;
 
   void Load(THierarchicalStorage *Storage);
   void Save(THierarchicalStorage *Storage) const;
-  UnicodeString GetInfoStr(UnicodeString Separator, intptr_t Attrs) const;
+  UnicodeString GetInfoStr(const UnicodeString Separator, intptr_t Attrs) const;
   bool AnyUsableCopyParam(intptr_t Attrs) const;
   UnicodeString GenerateTransferCommandArgs(
-    intptr_t Attrs, UnicodeString Link, bool &NoScriptArgs) const;
+    intptr_t Attrs, const UnicodeString Link, bool &NoScriptArgs) const;
   UnicodeString GenerateAssemblyCode(TAssemblyLanguage Language, int Attrs, bool &NoCodeProperties) const;
 
   bool operator==(const TCopyParamType &rhp) const;
@@ -220,7 +220,7 @@ public:
 
 };
 
-NB_CORE_EXPORT uintptr_t GetSpeedLimit(UnicodeString Text);
+NB_CORE_EXPORT uintptr_t GetSpeedLimit(const UnicodeString Text);
 NB_CORE_EXPORT UnicodeString SetSpeedLimit(uintptr_t Limit);
 NB_CORE_EXPORT void CopySpeedLimits(TStrings *Source, TStrings *Dest);
 NB_CORE_EXPORT TOperationSide ReverseOperationSide(TOperationSide Side);

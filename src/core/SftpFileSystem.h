@@ -143,7 +143,7 @@ protected:
 
   void SendCustomReadFile(TSFTPPacket *Packet, TSFTPPacket *Response,
     uint32_t Flags);
-  void CustomReadFile(UnicodeString AFileName,
+  void CustomReadFile(const UnicodeString AFileName,
     TRemoteFile *&AFile, SSH_FXP_TYPES Type, TRemoteFile *ALinkedByFile = nullptr,
     SSH_FX_TYPES AllowStatus = -1);
   virtual UnicodeString RemoteGetCurrentDirectory() const override;
@@ -156,7 +156,7 @@ protected:
   void LoadFile(TRemoteFile *AFile, TSFTPPacket *Packet,
     bool Complete = true);
   UnicodeString LocalCanonify(const UnicodeString APath) const;
-  UnicodeString Canonify(UnicodeString APath);
+  UnicodeString Canonify(const UnicodeString APath);
   UnicodeString GetRealPath(const UnicodeString APath);
   UnicodeString GetRealPath(const UnicodeString APath, const UnicodeString ABaseDir);
   void ReserveResponse(const TSFTPPacket *Packet,

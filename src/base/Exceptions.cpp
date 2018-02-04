@@ -18,7 +18,7 @@ static std::unique_ptr<TCriticalSection> IgnoredExceptionsCriticalSection(new TC
 typedef rde::set<UnicodeString> TIgnoredExceptions;
 static TIgnoredExceptions IgnoredExceptions;
 //---------------------------------------------------------------------------
-static UnicodeString NormalizeClassName(UnicodeString ClassName)
+static UnicodeString NormalizeClassName(const UnicodeString ClassName)
 {
   return ReplaceStr(ClassName, L".", L"::").LowerCase();
 }

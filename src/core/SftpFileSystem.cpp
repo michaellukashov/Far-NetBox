@@ -2917,8 +2917,8 @@ UnicodeString TSFTPFileSystem::GetRealPath(const UnicodeString APath)
   return UnicodeString();
 }
 //---------------------------------------------------------------------------
-UnicodeString TSFTPFileSystem::GetRealPath(UnicodeString APath,
-  UnicodeString ABaseDir)
+UnicodeString TSFTPFileSystem::GetRealPath(const UnicodeString APath,
+  const UnicodeString ABaseDir)
 {
   UnicodeString Path;
 
@@ -2946,7 +2946,7 @@ UnicodeString TSFTPFileSystem::GetRealPath(UnicodeString APath,
   return GetRealPath(Path);
 }
 //---------------------------------------------------------------------------
-UnicodeString TSFTPFileSystem::LocalCanonify(UnicodeString APath) const
+UnicodeString TSFTPFileSystem::LocalCanonify(const UnicodeString APath) const
 {
   TODO("improve (handle .. etc.)");
   if (base::UnixIsAbsolutePath(APath) ||
@@ -2957,7 +2957,7 @@ UnicodeString TSFTPFileSystem::LocalCanonify(UnicodeString APath) const
   return base::AbsolutePath(FCurrentDirectory, APath);
 }
 //---------------------------------------------------------------------------
-UnicodeString TSFTPFileSystem::Canonify(UnicodeString APath)
+UnicodeString TSFTPFileSystem::Canonify(const UnicodeString APath)
 {
   // inspired by canonify() from PSFTP.C
   UnicodeString Result;
@@ -3015,12 +3015,12 @@ UnicodeString TSFTPFileSystem::Canonify(UnicodeString APath)
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString TSFTPFileSystem::GetAbsolutePath(UnicodeString APath, bool Local) const
+UnicodeString TSFTPFileSystem::GetAbsolutePath(const UnicodeString APath, bool Local) const
 {
   return const_cast<TSFTPFileSystem *>(this)->GetAbsolutePath(APath, Local);
 }
 
-UnicodeString TSFTPFileSystem::GetAbsolutePath(UnicodeString APath, bool Local)
+UnicodeString TSFTPFileSystem::GetAbsolutePath(const UnicodeString APath, bool Local)
 {
   if (Local)
   {
@@ -3490,7 +3490,7 @@ void TSFTPFileSystem::AnnounceFileListOperation()
 {
 }
 //---------------------------------------------------------------------------
-void TSFTPFileSystem::ChangeDirectory(UnicodeString Directory)
+void TSFTPFileSystem::ChangeDirectory(const UnicodeString Directory)
 {
   UnicodeString Current = !FDirectoryToChangeTo.IsEmpty() ? FDirectoryToChangeTo : FCurrentDirectory;
   UnicodeString Path = GetRealPath(Directory, Current);
@@ -3804,7 +3804,7 @@ void TSFTPFileSystem::SendCustomReadFile(TSFTPPacket *Packet,
   ReserveResponse(Packet, Response);
 }
 //---------------------------------------------------------------------------
-void TSFTPFileSystem::CustomReadFile(UnicodeString AFileName,
+void TSFTPFileSystem::CustomReadFile(const UnicodeString AFileName,
   TRemoteFile *&AFile, SSH_FXP_TYPES Type, TRemoteFile *ALinkedByFile,
   SSH_FX_TYPES AllowStatus)
 {

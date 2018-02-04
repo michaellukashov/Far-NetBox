@@ -564,7 +564,7 @@ UnicodeString TWebDAVFileSystem::GetAbsolutePath(const UnicodeString APath, bool
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString TWebDAVFileSystem::GetAbsolutePath(UnicodeString APath, bool Local)
+UnicodeString TWebDAVFileSystem::GetAbsolutePath(const UnicodeString APath, bool Local)
 {
   return static_cast<const TWebDAVFileSystem *>(this)->GetAbsolutePath(APath, Local);
 }
@@ -1019,7 +1019,7 @@ intptr_t TWebDAVFileSystem::CustomReadFileInternal(const UnicodeString AFileName
   return ToIntPtr(Result);
 }
 //---------------------------------------------------------------------------
-void TWebDAVFileSystem::CustomReadFile(UnicodeString AFileName,
+void TWebDAVFileSystem::CustomReadFile(const UnicodeString AFileName,
   TRemoteFile *&AFile, TRemoteFile *ALinkedByFile)
 {
   UnicodeString FileName = AFileName;

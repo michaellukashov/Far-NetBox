@@ -536,7 +536,7 @@ TCopyParamType &TCopyParamType::operator=(const TCopyParamType &rhs)
   return *this;
 }
 
-void TCopyParamType::SetLocalInvalidChars(UnicodeString Value)
+void TCopyParamType::SetLocalInvalidChars(const UnicodeString Value)
 {
   if (Value != GetLocalInvalidChars())
   {
@@ -558,12 +558,12 @@ void TCopyParamType::SetReplaceInvalidChars(bool Value)
   }
 }
 
-UnicodeString TCopyParamType::ValidLocalFileName(UnicodeString AFileName) const
+UnicodeString TCopyParamType::ValidLocalFileName(const UnicodeString AFileName) const
 {
   return ::ValidLocalFileName(AFileName, GetInvalidCharsReplacement(), FTokenizibleChars, LOCAL_INVALID_CHARS);
 }
 
-UnicodeString TCopyParamType::RestoreChars(UnicodeString AFileName) const
+UnicodeString TCopyParamType::RestoreChars(const UnicodeString AFileName) const
 {
   UnicodeString FileName = AFileName;
   if (GetInvalidCharsReplacement() == TokenReplacement)
@@ -605,7 +605,7 @@ UnicodeString TCopyParamType::RestoreChars(UnicodeString AFileName) const
   return FileName;
 }
 
-UnicodeString TCopyParamType::ValidLocalPath(UnicodeString APath) const
+UnicodeString TCopyParamType::ValidLocalPath(const UnicodeString APath) const
 {
   UnicodeString Result;
   UnicodeString Path = APath;
@@ -620,7 +620,7 @@ UnicodeString TCopyParamType::ValidLocalPath(UnicodeString APath) const
   return Result;
 }
 
-UnicodeString TCopyParamType::ChangeFileName(UnicodeString AFileName,
+UnicodeString TCopyParamType::ChangeFileName(const UnicodeString AFileName,
   TOperationSide Side, bool FirstLevel) const
 {
   UnicodeString FileName = AFileName;
@@ -663,7 +663,7 @@ UnicodeString TCopyParamType::ChangeFileName(UnicodeString AFileName,
   return FileName;
 }
 
-bool TCopyParamType::UseAsciiTransfer(UnicodeString AFileName,
+bool TCopyParamType::UseAsciiTransfer(const UnicodeString AFileName,
   TOperationSide Side, const TFileMasks::TParams &Params) const
 {
   switch (GetTransferMode())
@@ -759,7 +759,7 @@ bool TCopyParamType::AllowAnyTransfer() const
     FTransferResumeFile.IsEmpty();
 }
 
-bool TCopyParamType::AllowTransfer(UnicodeString AFileName,
+bool TCopyParamType::AllowTransfer(const UnicodeString AFileName,
   TOperationSide Side, bool Directory, const TFileMasks::TParams &Params) const
 {
   bool Result = true;
@@ -785,7 +785,7 @@ bool TCopyParamType::SkipTransfer(
   return Result;
 }
 
-bool TCopyParamType::ResumeTransfer(UnicodeString AFileName) const
+bool TCopyParamType::ResumeTransfer(const UnicodeString AFileName) const
 {
   // Returning true has the same effect as cpResume
   return
@@ -944,7 +944,7 @@ static bool TryGetSpeedLimit(const UnicodeString Text, uintptr_t &Speed)
   return Result;
 }
 
-uintptr_t GetSpeedLimit(UnicodeString Text)
+uintptr_t GetSpeedLimit(const UnicodeString Text)
 {
   uintptr_t Speed = 0;
   if (!TryGetSpeedLimit(Text, Speed))

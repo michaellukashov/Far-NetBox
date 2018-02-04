@@ -914,7 +914,7 @@ enum PATH_PREFIX_TYPE
   PPT_LONG_UNICODE_UNC,   //Found \\?\UNC\ prefix
 };
 //---------------------------------------------------------------------------
-static intptr_t PathRootLength(UnicodeString APath)
+static intptr_t PathRootLength(const UnicodeString APath)
 {
   // Correction for PathSkipRoot API
 
@@ -931,7 +931,7 @@ static intptr_t PathRootLength(UnicodeString APath)
 #endif // if defined(_MSC_VER) && !defined(__clang__)
 }
 //---------------------------------------------------------------------------
-static bool PathIsRelative_CorrectedForMicrosoftStupidity(UnicodeString APath)
+static bool PathIsRelative_CorrectedForMicrosoftStupidity(const UnicodeString APath)
 {
   // Correction for PathIsRelative API
 
@@ -946,7 +946,7 @@ static bool PathIsRelative_CorrectedForMicrosoftStupidity(UnicodeString APath)
 #endif // if defined(_MSC_VER) && !defined(__clang__)
 }
 //---------------------------------------------------------------------------
-static intptr_t GetOffsetAfterPathRoot(UnicodeString APath, PATH_PREFIX_TYPE &PrefixType)
+static intptr_t GetOffsetAfterPathRoot(const UnicodeString APath, PATH_PREFIX_TYPE &PrefixType)
 {
   // Checks if 'pPath' begins with the drive, share, prefix, etc
   // EXAMPLES:
@@ -1095,7 +1095,7 @@ static intptr_t GetOffsetAfterPathRoot(UnicodeString APath, PATH_PREFIX_TYPE &Pr
   return Result;
 }
 //---------------------------------------------------------------------------
-static UnicodeString MakeUnicodeLargePath(UnicodeString APath)
+static UnicodeString MakeUnicodeLargePath(const UnicodeString APath)
 {
   // Convert path from 'into a larger Unicode path, that allows up to 32,767 character length
   UnicodeString Result;
@@ -2987,7 +2987,7 @@ UnicodeString ExtractFileBaseName(const UnicodeString APath)
   return ChangeFileExt(base::ExtractFileName(APath, false), L"");
 }
 //---------------------------------------------------------------------------
-TStringList *TextToStringList(UnicodeString Text)
+TStringList *TextToStringList(const UnicodeString Text)
 {
   std::unique_ptr<TStringList> List(new TStringList());
   List->SetText(Text);
@@ -3494,7 +3494,7 @@ UnicodeString RtfSwitch(
   return RtfSwitchValue(Name, Link, RtfText(IntToStr(Value), Rtf), Rtf);
 }
 //---------------------------------------------------------------------
-UnicodeString RtfRemoveHyperlinks(UnicodeString Text)
+UnicodeString RtfRemoveHyperlinks(const UnicodeString Text)
 {
   // Remove all tags HYPERLINK "https://www.example.com".
   // See also RtfEscapeParam
@@ -3516,7 +3516,7 @@ UnicodeString RtfRemoveHyperlinks(UnicodeString Text)
   return Text;
 }
 //---------------------------------------------------------------------
-UnicodeString RtfEscapeParam(UnicodeString Param)
+UnicodeString RtfEscapeParam(const UnicodeString Param)
 {
   const UnicodeString Quote(L"\"");
   // Equivalent of EscapeParam, except that it does not double quotes in HYPERLINK.
@@ -3959,7 +3959,7 @@ UnicodeString ExtractFileName(const UnicodeString APath, bool Unix)
   return ExtractFilename(APath, L'\\');
 }
 
-UnicodeString GetEnvVariable(UnicodeString AEnvVarName)
+UnicodeString GetEnvVariable(const UnicodeString AEnvVarName)
 {
   UnicodeString Result;
   intptr_t Len = ::GetEnvironmentVariableW(AEnvVarName.c_str(), nullptr, 0);

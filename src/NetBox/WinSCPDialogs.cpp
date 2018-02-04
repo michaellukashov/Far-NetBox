@@ -137,7 +137,7 @@ public:
   intptr_t GetTab() const { return FTab; }
   void SetTab(intptr_t Value) { FTab = Value; }
   UnicodeString GetTabName() const { return FTabName; }
-  void SetTabName(UnicodeString Value);
+  void SetTabName(const UnicodeString Value);
 
 private:
   UnicodeString FTabName;
@@ -278,7 +278,7 @@ TTabButton::TTabButton(TTabbedDialog *Dialog) :
   SetOnClick(nb::bind(&TTabbedDialog::TabButtonClick, Dialog));
 }
 
-void TTabButton::SetTabName(UnicodeString Value)
+void TTabButton::SetTabName(const UnicodeString Value)
 {
   UnicodeString Val = Value;
   if (FTabName != Val)
@@ -1002,7 +1002,7 @@ private:
   void UrlTextClick(TFarDialogItem *Item, MOUSE_EVENT_RECORD *Event);
 };
 
-UnicodeString ReplaceCopyright(UnicodeString S)
+UnicodeString ReplaceCopyright(const UnicodeString S)
 {
   return ::StringReplaceAll(S, L"©", L"(c)");
 }
@@ -1189,7 +1189,7 @@ public:
 
 private:
   void ShowPromptClick(TFarButton *Sender, bool &Close);
-  void GenerateLabel(UnicodeString ACaption, bool &Truncated);
+  void GenerateLabel(const UnicodeString ACaption, bool &Truncated);
   TFarEdit *GenerateEdit(bool Echo);
   void GeneratePrompt(bool ShowSavePassword,
     UnicodeString Instructions, const TStrings *Prompts, bool &Truncated);
@@ -1265,7 +1265,7 @@ TPasswordDialog::~TPasswordDialog()
   SAFE_DESTROY(FEdits);
 }
 
-void TPasswordDialog::GenerateLabel(UnicodeString ACaption,
+void TPasswordDialog::GenerateLabel(const UnicodeString ACaption,
   bool &Truncated)
 {
   UnicodeString Caption = ACaption;
@@ -1388,7 +1388,7 @@ bool TWinSCPFileSystem::PasswordDialog(TSessionData *SessionData,
   return Result;
 }
 
-bool TWinSCPFileSystem::BannerDialog(UnicodeString SessionName,
+bool TWinSCPFileSystem::BannerDialog(const UnicodeString SessionName,
   UnicodeString Banner, bool &NeverShowAgain, intptr_t Options)
 {
   std::unique_ptr<TWinSCPDialog> DialogPtr(new TWinSCPDialog(FPlugin));
@@ -5666,7 +5666,7 @@ bool TWinSCPFileSystem::CopyDialog(bool ToRemote,
   return Result;
 }
 
-bool TWinSCPPlugin::CopyParamDialog(UnicodeString Caption,
+bool TWinSCPPlugin::CopyParamDialog(const UnicodeString Caption,
   TCopyParamType &CopyParam, intptr_t CopyParamAttrs)
 {
   std::unique_ptr<TWinSCPDialog> DialogPtr(new TWinSCPDialog(this));

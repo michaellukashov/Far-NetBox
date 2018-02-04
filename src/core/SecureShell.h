@@ -113,7 +113,7 @@ public:
   bool TryFtp();
   UnicodeString ConvertInput(RawByteString Input, uintptr_t CodePage = CP_ACP) const;
   void GetRealHost(UnicodeString &Host, intptr_t &Port) const;
-  UnicodeString RetrieveHostKey(UnicodeString Host, intptr_t Port, const UnicodeString KeyType) const;
+  UnicodeString RetrieveHostKey(const UnicodeString Host, intptr_t Port, const UnicodeString KeyType) const;
 
 protected:
   TCaptureOutputEvent FOnCaptureOutput;
@@ -126,8 +126,8 @@ protected:
   void AddStdError(const UnicodeString AStr);
   void AddStdErrorLine(const UnicodeString AStr);
   void LogEvent(const UnicodeString AStr);
-  void FatalError(UnicodeString Error, UnicodeString HelpKeyword = L"");
-  UnicodeString FormatKeyStr(UnicodeString AKeyStr) const;
+  void FatalError(const UnicodeString Error, UnicodeString HelpKeyword = L"");
+  UnicodeString FormatKeyStr(const UnicodeString AKeyStr) const;
   static Conf *StoreToConfig(TSessionData *Data, bool Simple);
 
 public:
@@ -144,11 +144,11 @@ public:
   void SendSpecial(intptr_t Code);
   void Idle(uintptr_t MSec = 0);
   void SendEOF();
-  void SendLine(UnicodeString Line);
+  void SendLine(const UnicodeString Line);
   void SendNull();
 
   const TSessionInfo &GetSessionInfo() const;
-  void GetHostKeyFingerprint(UnicodeString & SHA256, UnicodeString & MD5) const;
+  void GetHostKeyFingerprint(UnicodeString &SHA256, UnicodeString &MD5) const;
   bool SshFallbackCmd() const;
   uint32_t MinPacketSize() const;
   uint32_t MaxPacketSize() const;
@@ -163,7 +163,7 @@ public:
   // interface to PuTTY core
   void UpdateSocket(SOCKET Value, bool Startup);
   void UpdatePortFwdSocket(SOCKET Value, bool Startup);
-  void PuttyFatalError(UnicodeString Error);
+  void PuttyFatalError(const UnicodeString AError);
   TPromptKind IdentifyPromptKind(UnicodeString &AName) const;
   bool PromptUser(bool ToServer,
     const UnicodeString AName, bool NameRequired,
@@ -175,8 +175,8 @@ public:
   void VerifyHostKey(
     const UnicodeString AHost, intptr_t Port, const UnicodeString AKeyType, const UnicodeString AKeyStr,
     const UnicodeString AFingerprint);
-  bool HaveHostKey(UnicodeString AHost, intptr_t Port, const UnicodeString KeyType);
-  void AskAlg(UnicodeString AlgType, const UnicodeString AlgName);
+  bool HaveHostKey(const UnicodeString AHost, intptr_t Port, const UnicodeString KeyType);
+  void AskAlg(const UnicodeString AAlgType, const UnicodeString AlgName);
   void DisplayBanner(const UnicodeString Banner);
   void OldKeyfileWarning();
   void PuttyLogEvent(const char *AStr);

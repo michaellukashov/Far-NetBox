@@ -114,7 +114,7 @@ uintptr_t MessageDialog(const UnicodeString Msg, TQueryType Type,
   uint32_t Answers, const UnicodeString HelpKeyword = HELP_NONE, const TMessageParams *Params = nullptr);
 uintptr_t MessageDialog(intptr_t Ident, TQueryType Type,
   uint32_t Answers, const UnicodeString HelpKeyword = HELP_NONE, const TMessageParams *Params = nullptr);
-uintptr_t SimpleErrorDialog(UnicodeString Msg, const UnicodeString MoreMessages = L"");
+uintptr_t SimpleErrorDialog(const UnicodeString Msg, const UnicodeString MoreMessages = L"");
 
 uintptr_t MoreMessageDialog(const UnicodeString Message,
   TStrings *MoreMessages, TQueryType Type, uint32_t Answers,
@@ -133,7 +133,7 @@ uintptr_t FatalExceptionMessageDialog(Exception *E, TQueryType Type,
 TSessionData *DoSaveSession(TSessionData *SessionData,
   TSessionData *OriginalSession, bool ForceDialog,
   TStrings *AdditionalFolders);
-void SessionNameValidate(UnicodeString Text,
+void SessionNameValidate(const UnicodeString Text,
   UnicodeString OriginalName);
 bool DoSaveWorkspaceDialog(UnicodeString &WorkspaceName,
   bool *SavePasswords, bool NotRecommendedSavingPasswords,
@@ -158,7 +158,7 @@ bool DoChangeMasterPasswordDialog(UnicodeString &NewPassword);
 // windows\WinMain.cpp
 int Execute();
 #if defined(FARPLUGIN)
-void GetLoginData(UnicodeString SessionName, TOptions *Options,
+void GetLoginData(const UnicodeString SessionName, TOptions *Options,
   TObjectList *DataList, UnicodeString &DownloadFile, bool NeedSession);
 #endif // FARPLUGIN
 
@@ -333,7 +333,7 @@ typedef nb::FastDelegate3<void,
   UnicodeString /*Hash*/> TCalculatedChecksumCallbackEvent;
 #if 0
 typedef void (__closure *TCalculateChecksumEvent)
-  (UnicodeString Alg, TStrings * FileList,
+  (const UnicodeString Alg, TStrings * FileList,
    TCalculatedChecksumCallbackEvent OnCalculatedChecksum, bool & Close);
 #endif // #if 0
 typedef nb::FastDelegate4<void,
@@ -388,13 +388,13 @@ typedef nb::FastDelegate2<void,
   TSynchronizeOptions & /*Options*/> TGetSynchronizeOptionsEvent;
 #if 0
 typedef void (__closure *TSynchronizeSessionLog)
-  (UnicodeString Message);
+  (const UnicodeString Message);
 #endif // #if 0
 typedef nb::FastDelegate1<void,
   UnicodeString /*Message*/> TSynchronizeSessionLogEvent;
 #if 0
 typedef void (__closure *TFeedSynchronizeError)
-  (UnicodeString Message, TStrings * MoreMessages, TQueryType Type,
+  (const UnicodeString Message, TStrings * MoreMessages, TQueryType Type,
    UnicodeString HelpKeyword);
 #endif // #if 0
 typedef nb::FastDelegate4<void,
@@ -509,7 +509,7 @@ typedef nb::FastDelegate2<void,
   TTerminal * /*Terminal*/, UnicodeString /*Path*/> TFocusFileEvent;
 #if 0
 typedef void (__closure *TFileOperationFinished2Event)
-  (UnicodeString FileName, bool Success);
+  (const UnicodeString FileName, bool Success);
 #endif // #if 0
 typedef nb::FastDelegate2<void,
   UnicodeString /*FileName*/, bool /*Success*/> TFileOperationFinished2Event;
@@ -570,7 +570,7 @@ void CenterButtonImage(TButton *Button);
 
 void UpgradeSpeedButton(TSpeedButton *Button);
 
-int AdjustLocaleFlag(UnicodeString S, TLocaleFlagOverride LocaleFlagOverride, bool Recommended, int On, int Off);
+int AdjustLocaleFlag(const UnicodeString S, TLocaleFlagOverride LocaleFlagOverride, bool Recommended, int On, int Off);
 
 void SetGlobalMinimizeHandler(TCustomForm *Form, TNotifyEvent OnMinimize);
 void ClearGlobalMinimizeHandler(TNotifyEvent OnMinimize);
@@ -657,7 +657,7 @@ public:
   TTrayIcon(unsigned int Id);
   ~TTrayIcon();
 
-  void PopupBalloon(UnicodeString Title, UnicodeString Str,
+  void PopupBalloon(const UnicodeString Title, UnicodeString Str,
     TQueryType QueryType, unsigned int Timeout, TNotifyEvent OnBalloonClick,
     TObject *BalloonUserData);
   void CancelBalloon();
@@ -681,7 +681,7 @@ private:
   void WndProc(TMessage &Message);
   void SetVisible(bool value);
   UnicodeString GetHint();
-  void SetHint(UnicodeString value);
+  void SetHint(UnicodeString Value);
   void BalloonCancelled();
 };
 

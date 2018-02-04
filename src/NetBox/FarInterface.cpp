@@ -74,7 +74,7 @@ HANDLE StartThread(void *SecurityAttributes, DWORD StackSize,
       CreationFlags, ThreadId);
 }
 
-void CopyToClipboard(UnicodeString AText)
+void CopyToClipboard(const UnicodeString AText)
 {
   DebugAssert(FarPlugin != nullptr);
   FarPlugin->FarCopyToClipboard(AText);
@@ -82,7 +82,7 @@ void CopyToClipboard(UnicodeString AText)
 
 //from windows/GUITools.cpp
 template <class TEditControl>
-void ValidateMaskEditT(UnicodeString Mask, TEditControl *Edit, int ForceDirectoryMasks)
+void ValidateMaskEditT(const UnicodeString Mask, TEditControl *Edit, int ForceDirectoryMasks)
 {
   DebugAssert(Edit != nullptr);
   TFileMasks Masks(ForceDirectoryMasks);

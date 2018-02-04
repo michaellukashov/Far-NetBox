@@ -138,7 +138,7 @@ public:
   void SetOptionsStorage(TStrings *Value);
   TStrings *GetOptionsStorage();
   UnicodeString GetPartialExt() const;
-  UnicodeString GetFileInfoString(UnicodeString Key) const;
+  UnicodeString GetFileInfoString(const UnicodeString Key) const;
   void SetSessionReopenAuto(intptr_t Value);
   void SetSessionReopenBackground(intptr_t Value);
   void SetSessionReopenTimeout(intptr_t Value);
@@ -223,8 +223,8 @@ public:
   void Load(THierarchicalStorage *Storage);
   void Save();
   void SaveExplicit();
-  void MoveStorage(TStorage AStorage, UnicodeString ACustomIniFileStorageName);
-  void ScheduleCustomIniFileStorageUse(UnicodeString ACustomIniFileStorageName);
+  void MoveStorage(TStorage AStorage, const UnicodeString ACustomIniFileStorageName);
+  void ScheduleCustomIniFileStorageUse(const UnicodeString ACustomIniFileStorageName);
   void SetNulStorage();
   void SetDefaultStorage();
   UnicodeString GetAutomaticIniFileStorageName(bool ReadingOnly);
@@ -246,7 +246,7 @@ public:
   void NeverShowBanner(const UnicodeString ASessionKey, const UnicodeString ABanner);
   void SetBannerParams(const UnicodeString ASessionKey, uintptr_t AParams);
   void RememberLastFingerprint(const UnicodeString ASiteKey, const UnicodeString AFingerprintType, const UnicodeString AFingerprint);
-  UnicodeString GetLastFingerprint(UnicodeString SiteKey, UnicodeString FingerprintType);
+  UnicodeString GetLastFingerprint(const UnicodeString SiteKey, const UnicodeString FingerprintType);
   virtual THierarchicalStorage *CreateConfigStorage();
   virtual THierarchicalStorage *CreateStorage(bool &SessionList);
   void TemporaryLogging(const UnicodeString ALogFileName);
@@ -255,11 +255,11 @@ public:
   void TemporaryLogSensitive(bool ALogSensitive);
   void TemporaryLogMaxSize(int64_t ALogMaxSize);
   void TemporaryLogMaxCount(intptr_t ALogMaxCount);
-  virtual RawByteString EncryptPassword(UnicodeString Password, UnicodeString Key);
-  virtual UnicodeString DecryptPassword(RawByteString Password, UnicodeString Key);
-  virtual RawByteString StronglyRecryptPassword(RawByteString Password, UnicodeString Key);
-  UnicodeString GetFileDescription(UnicodeString AFileName) const;
-  UnicodeString GetFileVersion(UnicodeString AFileName);
+  virtual RawByteString EncryptPassword(const UnicodeString Password, const UnicodeString Key);
+  virtual UnicodeString DecryptPassword(const RawByteString Password, const UnicodeString Key);
+  virtual RawByteString StronglyRecryptPassword(const RawByteString Password, const UnicodeString Key);
+  UnicodeString GetFileDescription(const UnicodeString AFileName) const;
+  UnicodeString GetFileVersion(const UnicodeString AFileName);
   UnicodeString GetFileMimeType(const UnicodeString AFileName) const;
 
   TStoredSessionList *SelectFilezillaSessionsForImport(

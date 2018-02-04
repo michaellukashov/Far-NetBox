@@ -21,7 +21,7 @@ TNamedObject::TNamedObject(TObjectClassId Kind, const UnicodeString AName) :
   SetName(AName);
 }
 //---------------------------------------------------------------------------
-void TNamedObject::SetName(UnicodeString Value)
+void TNamedObject::SetName(const UnicodeString Value)
 {
   FHidden = (Value.SubString(1, TNamedObjectList::HiddenPrefix.Length()) == TNamedObjectList::HiddenPrefix);
   FName = Value;

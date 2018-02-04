@@ -17,7 +17,7 @@
 #define WRITE_REGISTRY(Method) \
   try { FRegistry->Method(Name, Value); } catch (...) { FFailed++; }
 
-UnicodeString MungeStr(UnicodeString Str, bool ForceAnsi, bool Value)
+UnicodeString MungeStr(const UnicodeString Str, bool ForceAnsi, bool Value)
 {
   RawByteString Source;
   if (ForceAnsi)
@@ -45,7 +45,7 @@ UnicodeString MungeStr(UnicodeString Str, bool ForceAnsi, bool Value)
   return UnicodeString(Dest.c_str(), Dest.Length());
 }
 
-UnicodeString UnMungeStr(UnicodeString Str)
+UnicodeString UnMungeStr(const UnicodeString Str)
 {
   // Str should contain ASCII characters only
   RawByteString Source = Str;
@@ -78,7 +78,7 @@ UnicodeString PuttyUnMungeStr(const UnicodeString Str)
   return UnMungeStr(Str);
 }
 
-UnicodeString MungeIniName(UnicodeString Str)
+UnicodeString MungeIniName(const UnicodeString Str)
 {
   intptr_t P = Str.Pos(L"=");
   // make this fast for now
@@ -89,7 +89,7 @@ UnicodeString MungeIniName(UnicodeString Str)
   return Str;
 }
 
-UnicodeString UnMungeIniName(UnicodeString Str)
+UnicodeString UnMungeIniName(const UnicodeString Str)
 {
   intptr_t P = Str.Pos(L"%3D");
   // make this fast for now
@@ -100,7 +100,7 @@ UnicodeString UnMungeIniName(UnicodeString Str)
   return Str;
 }
 
-THierarchicalStorage::THierarchicalStorage(UnicodeString AStorage) :
+THierarchicalStorage::THierarchicalStorage(const UnicodeString AStorage) :
   FStorage(AStorage),
   FKeyHistory(new TStringList())
 {
@@ -146,7 +146,7 @@ bool THierarchicalStorage::OpenRootKey(bool CanCreate)
   return OpenSubKey(L"", CanCreate);
 }
 
-UnicodeString THierarchicalStorage::MungeKeyName(UnicodeString Key)
+UnicodeString THierarchicalStorage::MungeKeyName(const UnicodeString Key)
 {
   UnicodeString Result = MungeStr(Key, GetForceAnsi(), false);
   // if there's already ANSI-munged subkey, keep ANSI munging
@@ -157,7 +157,7 @@ UnicodeString THierarchicalStorage::MungeKeyName(UnicodeString Key)
   return Result;
 }
 
-bool THierarchicalStorage::OpenSubKey(UnicodeString ASubKey, bool CanCreate, bool Path)
+bool THierarchicalStorage::OpenSubKey(const UnicodeString ASubKey, bool CanCreate, bool Path)
 {
   bool Result;
   UnicodeString MungedKey;
@@ -228,7 +228,7 @@ void THierarchicalStorage::ClearSubKeys()
   })
 }
 
-void THierarchicalStorage::RecursiveDeleteSubKey(UnicodeString Key)
+void THierarchicalStorage::RecursiveDeleteSubKey(const UnicodeString Key)
 {
   if (OpenSubKey(Key, false))
   {
@@ -254,7 +254,7 @@ bool THierarchicalStorage::HasSubKeys()
   return Result;
 }
 
-bool THierarchicalStorage::HasSubKey(UnicodeString SubKey)
+bool THierarchicalStorage::HasSubKey(const UnicodeString SubKey)
 {
   bool Result = OpenSubKey(SubKey, false);
   if (Result)
@@ -264,7 +264,7 @@ bool THierarchicalStorage::HasSubKey(UnicodeString SubKey)
   return Result;
 }
 
-bool THierarchicalStorage::KeyExists(UnicodeString SubKey)
+bool THierarchicalStorage::KeyExists(const UnicodeString SubKey)
 {
   return DoKeyExists(SubKey, GetForceAnsi());
 }
@@ -334,7 +334,7 @@ void THierarchicalStorage::WriteValues(TStrings *Strings,
   }
 }
 
-UnicodeString THierarchicalStorage::ReadString(UnicodeString Name, UnicodeString Default) const
+UnicodeString THierarchicalStorage::ReadString(const UnicodeString Name, const UnicodeString Default) const
 {
   UnicodeString Result;
   if (GetMungeStringValues())
@@ -348,7 +348,7 @@ UnicodeString THierarchicalStorage::ReadString(UnicodeString Name, UnicodeString
   return Result;
 }
 
-RawByteString THierarchicalStorage::ReadBinaryData(UnicodeString Name) const
+RawByteString THierarchicalStorage::ReadBinaryData(const UnicodeString Name) const
 {
   size_t Size = BinaryDataSize(Name);
   RawByteString Value;
@@ -357,7 +357,7 @@ RawByteString THierarchicalStorage::ReadBinaryData(UnicodeString Name) const
   return Value;
 }
 
-RawByteString THierarchicalStorage::ReadStringAsBinaryData(UnicodeString Name, RawByteString Default) const
+RawByteString THierarchicalStorage::ReadStringAsBinaryData(const UnicodeString Name, RawByteString Default) const
 {
   UnicodeString UnicodeDefault = AnsiToString(Default);
   // This should be exactly the same operation as calling ReadString in
@@ -369,7 +369,7 @@ RawByteString THierarchicalStorage::ReadStringAsBinaryData(UnicodeString Name, R
   return Result;
 }
 
-void THierarchicalStorage::WriteString(UnicodeString Name, UnicodeString Value)
+void THierarchicalStorage::WriteString(const UnicodeString Name, const UnicodeString Value)
 {
   if (GetMungeStringValues())
   {
@@ -381,12 +381,12 @@ void THierarchicalStorage::WriteString(UnicodeString Name, UnicodeString Value)
   }
 }
 
-void THierarchicalStorage::WriteBinaryData(UnicodeString Name, RawByteString Value)
+void THierarchicalStorage::WriteBinaryData(const UnicodeString Name, const RawByteString Value)
 {
   WriteBinaryData(Name, Value.c_str(), Value.Length());
 }
 
-void THierarchicalStorage::WriteBinaryDataAsString(UnicodeString Name, RawByteString Value)
+void THierarchicalStorage::WriteBinaryDataAsString(const UnicodeString Name, const RawByteString Value)
 {
   // This should be exactly the same operation as calling WriteString in
   // C++Builder 6 (non-Unicode) on Unicode-based OS
@@ -394,7 +394,7 @@ void THierarchicalStorage::WriteBinaryDataAsString(UnicodeString Name, RawByteSt
   WriteString(Name, AnsiToString(Value));
 }
 
-UnicodeString THierarchicalStorage::IncludeTrailingBackslash(UnicodeString S)
+UnicodeString THierarchicalStorage::IncludeTrailingBackslash(const UnicodeString S)
 {
   // expanded from ?: as it caused memory leaks
   if (S.IsEmpty())
@@ -404,7 +404,7 @@ UnicodeString THierarchicalStorage::IncludeTrailingBackslash(UnicodeString S)
   return ::IncludeTrailingBackslash(S);
 }
 
-UnicodeString THierarchicalStorage::ExcludeTrailingBackslash(UnicodeString S)
+UnicodeString THierarchicalStorage::ExcludeTrailingBackslash(const UnicodeString S)
 {
   // expanded from ?: as it caused memory leaks
   if (S.IsEmpty())
@@ -419,14 +419,14 @@ bool THierarchicalStorage::GetTemporary() const
   return false;
 }
 
-TRegistryStorage::TRegistryStorage(UnicodeString AStorage) :
+TRegistryStorage::TRegistryStorage(const UnicodeString AStorage) :
   THierarchicalStorage(IncludeTrailingBackslash(AStorage)),
   FRegistry(nullptr)
 {
   TRegistryStorage::Init();
 }
 
-TRegistryStorage::TRegistryStorage(UnicodeString AStorage, HKEY ARootKey) :
+TRegistryStorage::TRegistryStorage(const UnicodeString AStorage, HKEY ARootKey) :
   THierarchicalStorage(IncludeTrailingBackslash(AStorage)),
   FRegistry(nullptr),
   FFailed(0)
@@ -521,7 +521,7 @@ void TRegistryStorage::SetAccessMode(TStorageAccessMode Value)
   }
 }
 
-bool TRegistryStorage::DoOpenSubKey(UnicodeString SubKey, bool CanCreate)
+bool TRegistryStorage::DoOpenSubKey(const UnicodeString SubKey, bool CanCreate)
 {
   if (FKeyHistory->GetCount() > 0)
   {
@@ -541,7 +541,7 @@ void TRegistryStorage::CloseSubKey()
   }
 }
 
-bool TRegistryStorage::DeleteSubKey(UnicodeString SubKey)
+bool TRegistryStorage::DeleteSubKey(const UnicodeString SubKey)
 {
   UnicodeString Key;
   if (FKeyHistory->GetCount() == 0)
@@ -566,51 +566,51 @@ void TRegistryStorage::GetValueNames(TStrings *Strings) const
   FRegistry->GetValueNames(Strings);
 }
 
-bool TRegistryStorage::DeleteValue(UnicodeString Name)
+bool TRegistryStorage::DeleteValue(const UnicodeString Name)
 {
   return FRegistry->DeleteValue(Name);
 }
 
-bool TRegistryStorage::DoKeyExists(UnicodeString SubKey, bool AForceAnsi)
+bool TRegistryStorage::DoKeyExists(const UnicodeString SubKey, bool AForceAnsi)
 {
   UnicodeString Key = MungeStr(SubKey, AForceAnsi, false);
   bool Result = FRegistry->KeyExists(Key);
   return Result;
 }
 
-bool TRegistryStorage::ValueExists(UnicodeString Value) const
+bool TRegistryStorage::ValueExists(const UnicodeString Value) const
 {
   bool Result = FRegistry->ValueExists(Value);
   return Result;
 }
 
-size_t TRegistryStorage::BinaryDataSize(UnicodeString Name) const
+size_t TRegistryStorage::BinaryDataSize(const UnicodeString Name) const
 {
   size_t Result = FRegistry->GetDataSize(Name);
   return Result;
 }
 
-bool TRegistryStorage::ReadBool(UnicodeString Name, bool Default) const
+bool TRegistryStorage::ReadBool(const UnicodeString Name, bool Default) const
 {
   READ_REGISTRY(ReadBool);
 }
 
-TDateTime TRegistryStorage::ReadDateTime(UnicodeString Name, const TDateTime &Default) const
+TDateTime TRegistryStorage::ReadDateTime(const UnicodeString Name, const TDateTime &Default) const
 {
   READ_REGISTRY(ReadDateTime);
 }
 
-double TRegistryStorage::ReadFloat(UnicodeString Name, double Default) const
+double TRegistryStorage::ReadFloat(const UnicodeString Name, double Default) const
 {
   READ_REGISTRY(ReadFloat);
 }
 
-intptr_t TRegistryStorage::ReadInteger(UnicodeString Name, intptr_t Default) const
+intptr_t TRegistryStorage::ReadInteger(const UnicodeString Name, intptr_t Default) const
 {
   READ_REGISTRY(ReadInteger);
 }
 
-int64_t TRegistryStorage::ReadInt64(UnicodeString Name, int64_t Default) const
+int64_t TRegistryStorage::ReadInt64(const UnicodeString Name, int64_t Default) const
 {
   int64_t Result = Default;
   if (FRegistry->ValueExists(Name))
@@ -627,12 +627,12 @@ int64_t TRegistryStorage::ReadInt64(UnicodeString Name, int64_t Default) const
   return Result;
 }
 
-UnicodeString TRegistryStorage::ReadStringRaw(UnicodeString Name, UnicodeString Default) const
+UnicodeString TRegistryStorage::ReadStringRaw(const UnicodeString Name, const UnicodeString Default) const
 {
   READ_REGISTRY(ReadString);
 }
 
-size_t TRegistryStorage::ReadBinaryData(UnicodeString Name,
+size_t TRegistryStorage::ReadBinaryData(const UnicodeString Name,
   void *Buffer, size_t Size) const
 {
   size_t Result;
@@ -655,32 +655,32 @@ size_t TRegistryStorage::ReadBinaryData(UnicodeString Name,
   return Result;
 }
 
-void TRegistryStorage::WriteBool(UnicodeString Name, bool Value)
+void TRegistryStorage::WriteBool(const UnicodeString Name, bool Value)
 {
   WRITE_REGISTRY(WriteBool);
 }
 
-void TRegistryStorage::WriteDateTime(UnicodeString Name, const TDateTime &Value)
+void TRegistryStorage::WriteDateTime(const UnicodeString Name, const TDateTime &Value)
 {
   WRITE_REGISTRY(WriteDateTime);
 }
 
-void TRegistryStorage::WriteFloat(UnicodeString Name, double Value)
+void TRegistryStorage::WriteFloat(const UnicodeString Name, double Value)
 {
   WRITE_REGISTRY(WriteFloat);
 }
 
-void TRegistryStorage::WriteStringRaw(UnicodeString Name, UnicodeString Value)
+void TRegistryStorage::WriteStringRaw(const UnicodeString Name, const UnicodeString Value)
 {
   WRITE_REGISTRY(WriteString);
 }
 
-void TRegistryStorage::WriteInteger(UnicodeString Name, intptr_t Value)
+void TRegistryStorage::WriteInteger(const UnicodeString Name, intptr_t Value)
 {
   WRITE_REGISTRY(WriteInteger);
 }
 
-void TRegistryStorage::WriteInt64(UnicodeString Name, int64_t Value)
+void TRegistryStorage::WriteInt64(const UnicodeString Name, int64_t Value)
 {
   try
   {
@@ -692,7 +692,7 @@ void TRegistryStorage::WriteInt64(UnicodeString Name, int64_t Value)
   }
 }
 
-void TRegistryStorage::WriteBinaryData(UnicodeString Name,
+void TRegistryStorage::WriteBinaryData(const UnicodeString Name,
   const void *Buffer, size_t Size)
 {
   try
@@ -792,7 +792,7 @@ bool TCustomIniFileStorage::OpenRootKey(bool CanCreate)
   return THierarchicalStorage::OpenRootKey(CanCreate);
 }
 //---------------------------------------------------------------------------
-bool TCustomIniFileStorage::OpenSubKey(UnicodeString Key, bool CanCreate, bool Path)
+bool TCustomIniFileStorage::OpenSubKey(const UnicodeString Key, bool CanCreate, bool Path)
 {
   bool Result;
 
@@ -913,7 +913,7 @@ bool TCustomIniFileStorage::DoKeyExists(const UnicodeString SubKey, bool AForceA
     FIniFile->SectionExists(CurrentSubKey + MungeStr(SubKey, AForceAnsi, false));
 }
 //---------------------------------------------------------------------------
-bool TCustomIniFileStorage::DoValueExists(UnicodeString Value)
+bool TCustomIniFileStorage::DoValueExists(const UnicodeString Value)
 {
   return FIniFile->ValueExists(CurrentSection, MungeIniName(Value));
 }
@@ -944,7 +944,7 @@ bool TCustomIniFileStorage::HandleByMasterStorage()
     (FMasterStorageOpenFailures == 0);
 }
 //---------------------------------------------------------------------------
-bool TCustomIniFileStorage::HandleReadByMasterStorage(UnicodeString Name)
+bool TCustomIniFileStorage::HandleReadByMasterStorage(const UnicodeString Name)
 {
   return HandleByMasterStorage() && !DoValueExists(Name);
 }
@@ -1083,7 +1083,7 @@ double TCustomIniFileStorage::ReadFloat(const UnicodeString Name, double Default
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString TCustomIniFileStorage::ReadStringRaw(const UnicodeString Name, UnicodeString Default)
+UnicodeString TCustomIniFileStorage::ReadStringRaw(const UnicodeString Name, const UnicodeString Default)
 {
   UnicodeString Result;
   if (HandleReadByMasterStorage(Name))
@@ -1166,7 +1166,7 @@ void TCustomIniFileStorage::WriteFloat(const UnicodeString Name, double Value)
   DoWriteBinaryData(Name, &Value, sizeof(Value));
 }
 //---------------------------------------------------------------------------
-void TCustomIniFileStorage::DoWriteStringRaw(UnicodeString Name, UnicodeString Value)
+void TCustomIniFileStorage::DoWriteStringRaw(const UnicodeString Name, const UnicodeString Value)
 {
   ResetCache();
   FIniFile->WriteString(CurrentSection, MungeIniName(Name), Value);
@@ -1181,7 +1181,7 @@ void TCustomIniFileStorage::WriteStringRaw(const UnicodeString Name, const Unico
   DoWriteStringRaw(Name, Value);
 }
 //---------------------------------------------------------------------------
-void TCustomIniFileStorage::DoWriteBinaryData(UnicodeString Name,
+void TCustomIniFileStorage::DoWriteBinaryData(const UnicodeString Name,
   const void *Buffer, int Size)
 {
   DoWriteStringRaw(Name, BytesToHex(RawByteString(static_cast<const char *>(Buffer), Size)));
@@ -1324,7 +1324,7 @@ enum TWriteMode { wmAllow, wmFail, wmIgnore };
 class TOptionsIniFile : public TCustomIniFile
 {
 public:
-  TOptionsIniFile(TStrings *Options, TWriteMode WriteMode, UnicodeString RootKey);
+  TOptionsIniFile(TStrings *Options, TWriteMode WriteMode, const UnicodeString RootKey);
 
   virtual UnicodeString ReadString(const UnicodeString Section, const UnicodeString Ident, const UnicodeString Default);
   virtual void WriteString(const UnicodeString Section, const UnicodeString Ident, const UnicodeString Value);
@@ -1347,7 +1347,7 @@ private:
   void NotImplemented();
 };
 //---------------------------------------------------------------------------
-TOptionsIniFile::TOptionsIniFile(TStrings *Options, TWriteMode WriteMode, UnicodeString RootKey) :
+TOptionsIniFile::TOptionsIniFile(TStrings *Options, TWriteMode WriteMode, const UnicodeString RootKey) :
   TCustomIniFile(UnicodeString())
 {
   FOptions = Options;
@@ -1528,7 +1528,7 @@ TOptionsStorage::TOptionsStorage(TStrings *Options, bool AllowWrite):
 {
 }
 //---------------------------------------------------------------------------
-TOptionsStorage::TOptionsStorage(TStrings *Options, UnicodeString RootKey, THierarchicalStorage *MasterStorage) :
+TOptionsStorage::TOptionsStorage(TStrings *Options, const UnicodeString RootKey, THierarchicalStorage *MasterStorage) :
   TCustomIniFileStorage(
     UnicodeString(L"Command-line options overriding " + MasterStorage->Source),
     new TOptionsIniFile(Options, wmIgnore, RootKey))

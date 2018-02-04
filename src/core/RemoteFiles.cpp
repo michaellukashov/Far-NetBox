@@ -1171,7 +1171,7 @@ void TRemoteFileList::Reset()
   TObjectList::Clear();
 }
 //---------------------------------------------------------------------------
-void TRemoteFileList::SetDirectory(UnicodeString Value)
+void TRemoteFileList::SetDirectory(const UnicodeString Value)
 {
   FDirectory = base::UnixExcludeTrailingBackslash(Value);
 }
@@ -1261,7 +1261,7 @@ void TRemoteDirectory::Reset()
   TRemoteFileList::Reset();
 }
 //---------------------------------------------------------------------------
-void TRemoteDirectory::SetDirectory(UnicodeString Value)
+void TRemoteDirectory::SetDirectory(const UnicodeString Value)
 {
   TRemoteFileList::SetDirectory(Value);
 }

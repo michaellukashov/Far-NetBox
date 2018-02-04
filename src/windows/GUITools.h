@@ -34,13 +34,13 @@ NB_CORE_EXPORT UnicodeString ItemsFormatString(const UnicodeString SingleItemFor
   const UnicodeString MultiItemsFormat, const TStrings *Items);
 NB_CORE_EXPORT UnicodeString FileNameFormatString(const UnicodeString SingleFileFormat,
   const UnicodeString MultiFilesFormat, const TStrings *AFiles, bool Remote);
-//NB_CORE_EXPORT UnicodeString FormatDateTimeSpan(UnicodeString TimeFormat, const TDateTime & DateTime);
+//NB_CORE_EXPORT UnicodeString FormatDateTimeSpan(const UnicodeString TimeFormat, const TDateTime & DateTime);
 
 #if 0
 
 void AddSessionColorImage(TCustomImageList *ImageList, TColor Color, intptr_t MaskIndex);
 void SetSubmenu(TTBXCustomItem *Item);
-typedef intptr_t (*TCalculateWidth)(UnicodeString Text, void *Arg);
+typedef intptr_t (*TCalculateWidth)(const UnicodeString Text, void *Arg);
 void ApplyTabs(
   UnicodeString &Text, wchar_t Padding,
   TCalculateWidth CalculateWidth, void *CalculateWidthArg);
@@ -156,7 +156,7 @@ private:
   bool FHintPopup;
   std::unique_ptr<TFont> FScaledHintFont;
 
-  UnicodeString GetLongHintIfAny(UnicodeString AHint);
+  UnicodeString GetLongHintIfAny(const UnicodeString AHint);
   static intptr_t GetTextFlags(TControl *Control);
   bool IsHintPopup(TControl *HintControl, UnicodeString Hint);
   bool IsPathLabel(TControl *HintControl);

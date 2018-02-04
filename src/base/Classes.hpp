@@ -247,13 +247,13 @@ public:
   TStrings();
   explicit TStrings(TObjectClassId Kind);
   virtual ~TStrings();
-  intptr_t Add(UnicodeString S, TObject *AObject = nullptr);
+  intptr_t Add(const UnicodeString S, TObject *AObject = nullptr);
   virtual UnicodeString GetTextStr() const;
-  virtual void SetTextStr(UnicodeString Text);
+  virtual void SetTextStr(const UnicodeString Text);
   virtual void BeginUpdate();
   virtual void EndUpdate();
   virtual void SetUpdateState(bool Updating);
-  virtual intptr_t AddObject(UnicodeString S, TObject *AObject);
+  virtual intptr_t AddObject(const UnicodeString S, TObject *AObject);
   virtual void InsertObject(intptr_t Index, UnicodeString Key, TObject *AObject);
   bool Equals(const TStrings *Value) const;
   virtual void Move(intptr_t CurIndex, intptr_t NewIndex) override;
@@ -261,7 +261,7 @@ public:
   virtual intptr_t IndexOfName(const UnicodeString Name) const;
   UnicodeString ExtractName(const UnicodeString S) const;
   void AddStrings(const TStrings *Strings);
-  void Append(UnicodeString Value);
+  void Append(const UnicodeString Value);
   virtual void Insert(intptr_t Index, const UnicodeString AString, TObject *AObject = nullptr) = 0;
   void SaveToStream(TStream *Stream) const;
   wchar_t GetDelimiter() const { return FDelimiter; }
@@ -269,7 +269,7 @@ public:
   wchar_t GetQuoteChar() const { return FQuoteChar; }
   void SetQuoteChar(wchar_t Value) { FQuoteChar = Value; }
   UnicodeString GetDelimitedText() const;
-  void SetDelimitedText(UnicodeString Value);
+  void SetDelimitedText(const UnicodeString Value);
   virtual intptr_t CompareStrings(const UnicodeString S1, const UnicodeString S2) const;
   intptr_t GetUpdateCount() const { return FUpdateCount; }
   virtual void Assign(const TPersistent *Source) override;
@@ -316,9 +316,9 @@ public:
   explicit TStringList(TObjectClassId Kind = OBJECT_CLASS_TStringList);
   virtual ~TStringList();
 
-  intptr_t Add(UnicodeString S);
-  virtual intptr_t AddObject(UnicodeString S, TObject *AObject) override;
-  void LoadFromFile(UnicodeString AFileName);
+  intptr_t Add(const UnicodeString S);
+  virtual intptr_t AddObject(const UnicodeString S, TObject *AObject) override;
+  void LoadFromFile(const UnicodeString AFileName);
   TNotifyEvent GetOnChange() const { return FOnChange; }
   void SetOnChange(TNotifyEvent OnChange) { FOnChange = OnChange; }
   TNotifyEvent GetOnChanging() const { return FOnChanging; }
@@ -466,11 +466,11 @@ public:
   virtual ~TSHFileInfo();
 
   //get the image's index in the system's image list
-  int GetFileIconIndex(UnicodeString StrFileName, BOOL bSmallIcon) const;
+  int GetFileIconIndex(const UnicodeString StrFileName, BOOL bSmallIcon) const;
   int GetDirIconIndex(BOOL bSmallIcon);
 
   //get file type
-  UnicodeString GetFileType(UnicodeString StrFileName);
+  UnicodeString GetFileType(const UnicodeString StrFileName);
 
 private:
   TGetFileInfo FGetFileInfo;
@@ -563,7 +563,7 @@ public:
   virtual int64_t Seek(int64_t Offset, int Origin) const override;
   virtual int64_t Seek(const int64_t Offset, TSeekOrigin Origin) const override;
   void SaveToStream(TStream *Stream);
-  void SaveToFile(UnicodeString AFileName);
+  void SaveToFile(const UnicodeString AFileName);
 
   void Clear();
   void LoadFromStream(TStream *Stream);
@@ -619,42 +619,42 @@ public:
   void GetValueNames(TStrings *Names) const;
   void GetKeyNames(TStrings *Names) const;
   void CloseKey();
-  bool OpenKey(UnicodeString Key, bool CanCreate);
-  bool DeleteKey(UnicodeString Key);
-  bool DeleteValue(UnicodeString Value) const;
-  bool KeyExists(UnicodeString SubKey) const;
-  bool ValueExists(UnicodeString Value) const;
-  bool GetDataInfo(UnicodeString ValueName, TRegDataInfo &Value) const;
-  TRegDataType GetDataType(UnicodeString ValueName) const;
-  DWORD GetDataSize(UnicodeString ValueName) const;
-  bool ReadBool(UnicodeString Name) const;
-  TDateTime ReadDateTime(UnicodeString Name) const;
-  double ReadFloat(UnicodeString Name) const;
-  intptr_t ReadInteger(UnicodeString Name) const;
-  int64_t ReadInt64(UnicodeString Name) const;
-  UnicodeString ReadString(UnicodeString Name) const;
-  UnicodeString ReadStringRaw(UnicodeString Name) const;
-  size_t ReadBinaryData(UnicodeString Name,
+  bool OpenKey(const UnicodeString Key, bool CanCreate);
+  bool DeleteKey(const UnicodeString Key);
+  bool DeleteValue(const UnicodeString Value) const;
+  bool KeyExists(const UnicodeString SubKey) const;
+  bool ValueExists(const UnicodeString Value) const;
+  bool GetDataInfo(const UnicodeString ValueName, TRegDataInfo &Value) const;
+  TRegDataType GetDataType(const UnicodeString ValueName) const;
+  DWORD GetDataSize(const UnicodeString ValueName) const;
+  bool ReadBool(const UnicodeString Name) const;
+  TDateTime ReadDateTime(const UnicodeString Name) const;
+  double ReadFloat(const UnicodeString Name) const;
+  intptr_t ReadInteger(const UnicodeString Name) const;
+  int64_t ReadInt64(const UnicodeString Name) const;
+  UnicodeString ReadString(const UnicodeString Name) const;
+  UnicodeString ReadStringRaw(const UnicodeString Name) const;
+  size_t ReadBinaryData(const UnicodeString Name,
     void *Buffer, size_t BufSize) const;
 
-  void WriteBool(UnicodeString Name, bool Value);
-  void WriteDateTime(UnicodeString Name, const TDateTime &Value);
-  void WriteFloat(UnicodeString Name, double Value);
-  void WriteString(UnicodeString Name, UnicodeString Value);
-  void WriteStringRaw(UnicodeString Name, UnicodeString Value);
-  void WriteInteger(UnicodeString Name, intptr_t Value);
-  void WriteInt64(UnicodeString Name, int64_t Value);
-  void WriteBinaryData(UnicodeString Name,
+  void WriteBool(const UnicodeString Name, bool Value);
+  void WriteDateTime(const UnicodeString Name, const TDateTime &Value);
+  void WriteFloat(const UnicodeString Name, double Value);
+  void WriteString(const UnicodeString Name, UnicodeString Value);
+  void WriteStringRaw(const UnicodeString Name, UnicodeString Value);
+  void WriteInteger(const UnicodeString Name, intptr_t Value);
+  void WriteInt64(const UnicodeString Name, int64_t Value);
+  void WriteBinaryData(const UnicodeString Name,
     const void *Buffer, size_t BufSize);
 private:
   void ChangeKey(HKEY Value, UnicodeString APath);
   HKEY GetBaseKey(bool Relative) const;
-  HKEY GetKey(UnicodeString Key) const;
+  HKEY GetKey(const UnicodeString Key) const;
   void SetCurrentKey(HKEY Value) { FCurrentKey = Value; }
   bool GetKeyInfo(TRegKeyInfo &Value) const;
-  int GetData(UnicodeString Name, void *Buffer,
+  int GetData(const UnicodeString Name, void *Buffer,
     intptr_t ABufSize, TRegDataType &RegData) const;
-  void PutData(UnicodeString Name, const void *Buffer,
+  void PutData(const UnicodeString Name, const void *Buffer,
     intptr_t ABufSize, TRegDataType RegData);
 
 public:

@@ -423,7 +423,7 @@ int GetToolbarLayoutPixelsPerInch(TStrings *Storage, TControl *Control)
   return Result;
 }
 //---------------------------------------------------------------------
-static inline void GetToolbarKey(UnicodeString ToolbarName,
+static inline void GetToolbarKey(const UnicodeString ToolbarName,
   UnicodeString Value, UnicodeString &ToolbarKey)
 {
   int ToolbarNameLen;
@@ -755,7 +755,7 @@ static void SessionColorSetGetColorInfo(
   GetStandardSessionColorInfo(Col, Row, Color, Name);
 }
 
-static TColor RestoreColor(UnicodeString CStr)
+static TColor RestoreColor(const UnicodeString CStr)
 {
   return TColor(StrToInt64(UnicodeString(L"$") + CStr));
 }
@@ -1350,7 +1350,7 @@ bool DoChangeMasterPasswordDialog(UnicodeString &NewPassword)
   return Result;
 }
 
-void MessageWithNoHelp(UnicodeString Message)
+void MessageWithNoHelp(const UnicodeString Message)
 {
   TMessageParams Params;
   Params.AllowHelp = false; // to avoid recursion

@@ -36,7 +36,7 @@ void FixComboBoxResizeBug(TCustomComboBox * ComboBox);
 void ShowAsModal(TForm * Form, void *& Storage, bool BringToFront = true);
 void HideAsModal(TForm * Form, void *& Storage);
 bool ReleaseAsModal(TForm * Form, void *& Storage);
-bool SelectDirectory(UnicodeString & Path, const UnicodeString Prompt,
+bool SelectDirectory(UnicodeString &Path, const UnicodeString Prompt,
   bool PreserveFileName);
 enum TListViewCheckAll { caCheck, caUncheck, caToggle };
 bool ListViewAnyChecked(TListView * ListView, bool Checked = true);
@@ -75,7 +75,7 @@ void MemoKeyDown(TObject * Sender, WORD & Key, TShiftState Shift);
 void UseDesktopFont(TControl * Control);
 void UpdateDesktopFont();
 UnicodeString FormatFormCaption(TCustomForm * Form, UnicodeString Caption);
-UnicodeString FormatMainFormCaption(UnicodeString Caption);
+UnicodeString FormatMainFormCaption(const UnicodeString Caption);
 TShiftState AllKeyShiftStates();
 void RealignControl(TControl * Control);
 void HookFormActivation(TCustomForm * Form);

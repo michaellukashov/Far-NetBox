@@ -1218,7 +1218,7 @@ intptr_t TCustomFarPlugin::Menu(DWORD Flags, UnicodeString Title,
   return Menu(Flags, Title, Bottom, Items, nullptr, BreakCode);
 }
 
-bool TCustomFarPlugin::InputBox(UnicodeString Title,
+bool TCustomFarPlugin::InputBox(const UnicodeString Title,
   UnicodeString Prompt, UnicodeString &Text, DWORD Flags,
   UnicodeString HistoryName, intptr_t MaxLen, TFarInputBoxValidateEvent OnValidate)
 {
@@ -1279,13 +1279,13 @@ void TCustomFarPlugin::FlushText()
   FStartupInfo.Text(0, 0, 0, nullptr);
 }
 
-void TCustomFarPlugin::FarWriteConsole(UnicodeString Str)
+void TCustomFarPlugin::FarWriteConsole(const UnicodeString Str)
 {
   DWORD Written;
   ::WriteConsole(FConsoleOutput, Str.c_str(), ToDWord(Str.Length()), &Written, nullptr);
 }
 
-void TCustomFarPlugin::FarCopyToClipboard(UnicodeString Str)
+void TCustomFarPlugin::FarCopyToClipboard(const UnicodeString Str)
 {
   volatile TFarEnvGuard Guard;
   FFarStandardFunctions.CopyToClipboard(Str.c_str());
@@ -1466,7 +1466,7 @@ public:
   short Own;
 };
 
-void TCustomFarPlugin::ShowConsoleTitle(UnicodeString Title)
+void TCustomFarPlugin::ShowConsoleTitle(const UnicodeString Title)
 {
   wchar_t SaveTitle[1024];
   ::GetConsoleTitle(SaveTitle, _countof(SaveTitle));
@@ -1515,7 +1515,7 @@ void TCustomFarPlugin::ClearConsoleTitle()
   }
 }
 
-void TCustomFarPlugin::UpdateConsoleTitle(UnicodeString Title)
+void TCustomFarPlugin::UpdateConsoleTitle(const UnicodeString Title)
 {
   FCurrentTitle = Title;
   UpdateCurrentConsoleTitle();
@@ -1617,7 +1617,7 @@ bool TCustomFarPlugin::CheckForEsc() const
   return false;
 }
 
-bool TCustomFarPlugin::Viewer(UnicodeString AFileName,
+bool TCustomFarPlugin::Viewer(const UnicodeString AFileName,
   UnicodeString Title, DWORD Flags)
 {
   volatile TFarEnvGuard Guard;
@@ -1628,7 +1628,7 @@ bool TCustomFarPlugin::Viewer(UnicodeString AFileName,
   return Result > 0;
 }
 
-bool TCustomFarPlugin::Editor(UnicodeString AFileName,
+bool TCustomFarPlugin::Editor(const UnicodeString AFileName,
   UnicodeString Title, DWORD Flags)
 {
   volatile TFarEnvGuard Guard;
@@ -2136,7 +2136,7 @@ bool TCustomFarFileSystem::ProcessEventEx(intptr_t /*Event*/, void * /*Param*/)
   return false;
 }
 
-bool TCustomFarFileSystem::SetDirectoryEx(UnicodeString /*Dir*/, int /*OpMode*/)
+bool TCustomFarFileSystem::SetDirectoryEx(const UnicodeString /*Dir*/, int /*OpMode*/)
 {
   return false;
 }
@@ -2260,7 +2260,7 @@ void TFarPanelModes::FillOpenPluginInfo(struct OpenPluginInfo *Info)
   FReferenced = true;
 }
 
-intptr_t TFarPanelModes::CommaCount(UnicodeString ColumnTypes)
+intptr_t TFarPanelModes::CommaCount(const UnicodeString ColumnTypes)
 {
   intptr_t Count = 0;
   for (intptr_t Index = 1; Index <= ColumnTypes.Length(); ++Index)
@@ -2493,7 +2493,7 @@ bool TFarPanelItem::GetIsFile() const
   return (GetFileAttrs() & FILE_ATTRIBUTE_DIRECTORY) == 0;
 }
 
-THintPanelItem::THintPanelItem(UnicodeString AHint) :
+THintPanelItem::THintPanelItem(const UnicodeString AHint) :
   TCustomFarPanelItem(OBJECT_CLASS_THintPanelItem),
   FHint(AHint)
 {
@@ -2577,7 +2577,7 @@ TObjectList *TFarPanelInfo::GetItems()
   return FItems;
 }
 
-TFarPanelItem *TFarPanelInfo::FindFileName(UnicodeString AFileName) const
+TFarPanelItem *TFarPanelInfo::FindFileName(const UnicodeString AFileName) const
 {
   const TObjectList *Items = FItems;
   if (!Items)
@@ -2749,7 +2749,7 @@ void TFarMenuItems::SetObj(intptr_t Index, TObject *AObject)
   }
 }
 
-intptr_t TFarMenuItems::Add(UnicodeString Text, bool Visible)
+intptr_t TFarMenuItems::Add(const UnicodeString Text, bool Visible)
 {
   intptr_t Result = TStringList::Add(Text);
   if (!Visible)
@@ -2921,10 +2921,10 @@ UnicodeString TGlobalFunctions::GetStrVersionNumber() const
   return FORMAT("%d.%d.%d", NETBOX_VERSION_MAJOR, NETBOX_VERSION_MINOR, NETBOX_VERSION_PATCH);
 }
 
-//bool InputBox(UnicodeString Title, UnicodeString Prompt,
+//bool InputBox(const UnicodeString Title, UnicodeString Prompt,
 //  UnicodeString & Text, DWORD Flags, UnicodeString HistoryName = UnicodeString(),
 //  intptr_t MaxLen = 255, TFarInputBoxValidateEvent OnValidate = nullptr);
-bool TGlobalFunctions::InputDialog(UnicodeString ACaption, UnicodeString APrompt,
+bool TGlobalFunctions::InputDialog(const UnicodeString ACaption, UnicodeString APrompt,
   UnicodeString &Value, UnicodeString HelpKeyword,
   TStrings *History, bool PathInput,
   TInputDialogInitializeEvent OnInitialize, bool Echo)

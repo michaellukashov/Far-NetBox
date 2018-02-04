@@ -220,7 +220,7 @@ NB_CORE_EXPORT DWORD FindCheck(DWORD Result, const UnicodeString APath);
 NB_CORE_EXPORT DWORD FindFirstUnchecked(const UnicodeString APath, DWORD LocalFileAttrs, TSearchRecChecked &F);
 NB_CORE_EXPORT DWORD FindFirstChecked(const UnicodeString APath, DWORD LocalFileAttrs, TSearchRecChecked &F);
 NB_CORE_EXPORT DWORD FindNextChecked(TSearchRecChecked &F);
-NB_CORE_EXPORT void ProcessLocalDirectory(UnicodeString ADirName,
+NB_CORE_EXPORT void ProcessLocalDirectory(const UnicodeString ADirName,
   TProcessLocalFileEvent CallBackFunc, void *Param = nullptr, DWORD FindAttrs = INVALID_FILE_ATTRIBUTES);
 NB_CORE_EXPORT DWORD FileGetAttrFix(const UnicodeString AFileName);
 //---------------------------------------------------------------------------
@@ -399,7 +399,7 @@ typedef rde::vector<UnicodeString> TUnicodeStringVector;
 namespace base {
 //TODO: move to Sysutils.hpp
 NB_CORE_EXPORT UnicodeString FormatBytes(int64_t Bytes, bool UseOrders = true);
-NB_CORE_EXPORT UnicodeString GetEnvVariable(UnicodeString AEnvVarName);
+NB_CORE_EXPORT UnicodeString GetEnvVariable(const UnicodeString AEnvVarName);
 
 } // namespace base
 

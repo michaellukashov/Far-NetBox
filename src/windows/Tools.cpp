@@ -162,7 +162,7 @@ void LoadListViewStr(TListView *ListView, UnicodeString ALayoutStr)
   }
 }
 
-void RestoreForm(UnicodeString Data, TForm *Form, bool PositionOnly)
+void RestoreForm(const UnicodeString Data, TForm *Form, bool PositionOnly)
 {
   DebugAssert(Form);
   if (!Data.IsEmpty())
@@ -296,7 +296,7 @@ UnicodeString StoreForm(TCustomForm *Form)
   return Result;
 }
 
-void RestoreFormSize(UnicodeString Data, TForm *Form)
+void RestoreFormSize(const UnicodeString Data, TForm *Form)
 {
   // This has to be called only after DoFormWindowProc(CM_SHOWINGCHANGED).
   // See comment in ResizeForm.
@@ -436,7 +436,7 @@ bool OpenInNewWindow()
   return UseAlternativeFunction();
 }
 
-void ExecuteNewInstance(UnicodeString Param)
+void ExecuteNewInstance(const UnicodeString Param)
 {
   UnicodeString Arg = Param;
   if (!Arg.IsEmpty())
@@ -447,7 +447,7 @@ void ExecuteNewInstance(UnicodeString Param)
   ExecuteShellChecked(Application->ExeName, Arg);
 }
 
-IShellLink *CreateDesktopShortCut(UnicodeString Name,
+IShellLink *CreateDesktopShortCut(const UnicodeString Name,
   UnicodeString File, UnicodeString Params, UnicodeString Description,
   int SpecialFolder, int IconIndex, bool Return)
 {
@@ -586,7 +586,7 @@ IShellLink *CreateDesktopSessionShortCut(
 }
 
 template<class TEditControl>
-void ValidateMaskEditT(UnicodeString Mask, TEditControl *Edit, int ForceDirectoryMasks)
+void ValidateMaskEditT(const UnicodeString Mask, TEditControl *Edit, int ForceDirectoryMasks)
 {
   DebugAssert(Edit != nullptr);
   TFileMasks Masks(ForceDirectoryMasks);
@@ -641,7 +641,7 @@ void ExitActiveControl(TForm *Form)
   }
 }
 
-bool IsWinSCPUrl(UnicodeString Url)
+bool IsWinSCPUrl(const UnicodeString Url)
 {
   UnicodeString HomePageUrl = LoadStr(HOMEPAGE_URL);
   UnicodeString HttpHomePageUrl = ChangeUrlProtocol(HomePageUrl, HttpProtocol);
@@ -651,7 +651,7 @@ bool IsWinSCPUrl(UnicodeString Url)
     StartsText(HttpHomePageUrl, Url);
 }
 
-UnicodeString SecureUrl(UnicodeString Url)
+UnicodeString SecureUrl(const UnicodeString Url)
 {
   UnicodeString Result = Url;
   if (IsWinSCPUrl(Url) && IsHttpUrl(Url))
@@ -661,7 +661,7 @@ UnicodeString SecureUrl(UnicodeString Url)
   return Result;
 }
 
-void OpenBrowser(UnicodeString URL)
+void OpenBrowser(const UnicodeString URL)
 {
   if (IsWinSCPUrl(URL))
   {
@@ -671,7 +671,7 @@ void OpenBrowser(UnicodeString URL)
   ShellExecute(Application->Handle, L"open", URL.c_str(), nullptr, nullptr, SW_SHOWNORMAL);
 }
 
-void OpenFolderInExplorer(UnicodeString Path)
+void OpenFolderInExplorer(const UnicodeString Path)
 {
   if ((int)ShellExecute(Application->Handle, L"explore",
       (wchar_t *)Path.data(), nullptr, nullptr, SW_SHOWNORMAL) <= 32)
@@ -680,13 +680,13 @@ void OpenFolderInExplorer(UnicodeString Path)
   }
 }
 
-void OpenFileInExplorer(UnicodeString Path)
+void OpenFileInExplorer(const UnicodeString Path)
 {
   PCIDLIST_ABSOLUTE Folder = ILCreateFromPathW(ApiPath(Path).c_str());
   SHOpenFolderAndSelectItems(Folder, 0, nullptr, 0);
 }
 
-void ShowHelp(UnicodeString AHelpKeyword)
+void ShowHelp(const UnicodeString AHelpKeyword)
 {
   // see also AppendUrlParams
   UnicodeString HelpKeyword = AHelpKeyword;
@@ -927,7 +927,7 @@ bool FontDialog(TFont *Font)
   return Result;
 }
 
-bool SaveDialog(UnicodeString Title, UnicodeString Filter,
+bool SaveDialog(const UnicodeString Title, UnicodeString Filter,
   UnicodeString DefaultExt, UnicodeString &FileName)
 {
   bool Result;
@@ -986,7 +986,7 @@ bool SaveDialog(UnicodeString Title, UnicodeString Filter,
 }
 #endif // #if 0
 
-bool SaveDialog(UnicodeString ATitle, UnicodeString Filter,
+bool SaveDialog(const UnicodeString ATitle, UnicodeString Filter,
   UnicodeString ADefaultExt, UnicodeString &AFileName)
 {
   bool Result = false;
@@ -999,7 +999,7 @@ bool SaveDialog(UnicodeString ATitle, UnicodeString Filter,
 
 #if 0
 // implemented in FarInterface.cpp
-void CopyToClipboard(UnicodeString Text)
+void CopyToClipboard(const UnicodeString Text)
 {
   HANDLE Data;
   void *DataPtr;
@@ -1267,17 +1267,17 @@ static void DoVerifyKey(
   }
 }
 
-void VerifyAndConvertKey(UnicodeString FileName, TSshProt SshProt)
+void VerifyAndConvertKey(const UnicodeString FileName, TSshProt SshProt)
 {
   DoVerifyKey(FileName, SshProt, true);
 }
 
-void VerifyKey(UnicodeString FileName, TSshProt SshProt)
+void VerifyKey(const UnicodeString FileName, TSshProt SshProt)
 {
   DoVerifyKey(FileName, SshProt, false);
 }
 
-void VerifyCertificate(UnicodeString FileName)
+void VerifyCertificate(const UnicodeString FileName)
 {
   if (!FileName.Trim().IsEmpty())
   {
@@ -1514,7 +1514,7 @@ public:
 class TCustomHelpSelector : public TInterfacedObject, public IHelpSelector
 {
 public:
-  TCustomHelpSelector(UnicodeString Name);
+  TCustomHelpSelector(const UnicodeString Name);
 
   virtual int SelectKeyword(TStrings *Keywords);
   virtual int TableOfContents(TStrings *Contents);
@@ -1591,7 +1591,7 @@ UnicodeString TWinHelpTester::GetDefaultHelpFile()
 }
 
 
-TCustomHelpSelector::TCustomHelpSelector(UnicodeString Name) :
+TCustomHelpSelector::TCustomHelpSelector(const UnicodeString Name) :
   FName(Name)
 {
 }

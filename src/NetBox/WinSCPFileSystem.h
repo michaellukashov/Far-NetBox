@@ -107,7 +107,7 @@ protected:
     UnicodeString &ShortcutData) override;
   virtual bool GetFindDataEx(TObjectList *PanelItems, int OpMode) override;
   virtual bool ProcessKeyEx(intptr_t Key, uintptr_t ControlState) override;
-  virtual bool SetDirectoryEx(UnicodeString Dir, int OpMode) override;
+  virtual bool SetDirectoryEx(const UnicodeString Dir, int OpMode) override;
   virtual intptr_t MakeDirectoryEx(UnicodeString &Name, int OpMode) override;
   virtual bool DeleteFilesEx(TObjectList *PanelItems, int OpMode) override;
   virtual intptr_t GetFilesEx(TObjectList *PanelItems, bool Move,
@@ -142,7 +142,7 @@ protected:
   void RenameFile();
   void ApplyCommand();
   void ShowInformation();
-  void InsertTokenOnCommandLine(UnicodeString Token, bool Separate);
+  void InsertTokenOnCommandLine(const UnicodeString Token, bool Separate);
   void InsertSessionNameOnCommandLine();
   void InsertFileNameOnCommandLine(bool Full);
   UnicodeString GetFullFilePath(const TRemoteFile *AFile) const;
@@ -158,8 +158,8 @@ protected:
     UnicodeString Directory,
     const TRemoteTokenList *GroupList, const TRemoteTokenList *UserList,
     TRemoteProperties *Properties, intptr_t AllowedChanges);
-  bool ExecuteCommand(UnicodeString Command);
-  void TerminalCaptureLog(UnicodeString AddedLine, TCaptureOutputType OutputEvent);
+  bool ExecuteCommand(const UnicodeString Command);
+  void TerminalCaptureLog(const UnicodeString AddedLine, TCaptureOutputType OutputEvent);
   bool CopyDialog(bool ToRemote, bool Move, const TStrings *AFileList,
     intptr_t Options,
     intptr_t CopyParamAttrs,
@@ -183,7 +183,7 @@ protected:
   bool RemoteTransferDialog(TStrings *AFileList, UnicodeString &Target,
     UnicodeString &FileMask, bool Move);
   bool RenameFileDialog(TRemoteFile *AFile, UnicodeString &NewName);
-  uint32_t MoreMessageDialog(UnicodeString Str, TStrings *MoreMessages,
+  uint32_t MoreMessageDialog(const UnicodeString Str, TStrings *MoreMessages,
     TQueryType Type, uint32_t Answers, const TMessageParams *AParams = nullptr);
   bool PasswordDialog(TSessionData *SessionData,
     TPromptKind Kind, const UnicodeString Name, const UnicodeString Instructions, TStrings *Prompts,
@@ -205,7 +205,7 @@ protected:
     UnicodeString Directory, UnicodeString ErrorStr);
   void DoSynchronizeTooManyDirectories(TSynchronizeController *Sender,
     intptr_t &MaxDirectories);
-  void Synchronize(UnicodeString LocalDirectory,
+  void Synchronize(const UnicodeString LocalDirectory,
     UnicodeString RemoteDirectory, TTerminal::TSynchronizeMode Mode,
     const TCopyParamType &CopyParam, intptr_t Params, TSynchronizeChecklist **AChecklist,
     TSynchronizeOptions *Options);
@@ -228,9 +228,9 @@ protected:
     UnicodeString RealFileName, UnicodeString &DestPath);
   void LogAuthentication(TTerminal *Terminal, UnicodeString Msg);
   void MultipleEdit();
-  void MultipleEdit(UnicodeString Directory, UnicodeString AFileName, TRemoteFile *AFile);
+  void MultipleEdit(const UnicodeString Directory, UnicodeString AFileName, TRemoteFile *AFile);
   void EditViewCopyParam(TCopyParamType &CopyParam);
-  bool SynchronizeBrowsing(UnicodeString NewPath);
+  bool SynchronizeBrowsing(const UnicodeString NewPath);
   bool IsEditHistoryEmpty() const;
   void EditHistory();
   UnicodeString ProgressBar(intptr_t Percentage, intptr_t Width);
@@ -290,15 +290,15 @@ private:
     TFarPanelInfo **APanelInfo = nullptr);
   void CustomCommandGetParamValue(
     UnicodeString AName, UnicodeString &Value);
-  void TerminalSynchronizeDirectory(UnicodeString LocalDirectory,
+  void TerminalSynchronizeDirectory(const UnicodeString LocalDirectory,
     UnicodeString RemoteDirectory, bool &Continue, bool Collect);
   void QueueListUpdate(TTerminalQueue *Queue);
   void QueueItemUpdate(TTerminalQueue *Queue, TQueueItem *Item);
   void QueueEvent(TTerminalQueue *Queue, TQueueEvent Event);
-  void GetSpaceAvailable(UnicodeString APath,
+  void GetSpaceAvailable(const UnicodeString APath,
     TSpaceAvailable &ASpaceAvailable, bool &Close);
   void QueueAddItem(TQueueItem *Item);
-  UnicodeString GetFileNameHash(UnicodeString AFileName) const;
+  UnicodeString GetFileNameHash(const UnicodeString AFileName) const;
   intptr_t GetFilesRemote(TObjectList *PanelItems, bool Move,
     UnicodeString &DestPath, int OpMode);
 
@@ -379,7 +379,7 @@ protected:
 class TSessionFolderPanelItem : public TCustomFarPanelItem
 {
 public:
-  explicit TSessionFolderPanelItem(UnicodeString Folder);
+  explicit TSessionFolderPanelItem(const UnicodeString Folder);
 
 protected:
   UnicodeString FFolder;

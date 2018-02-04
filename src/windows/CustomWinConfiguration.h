@@ -91,7 +91,7 @@ public:
   virtual void Default();
   virtual void AskForMasterPasswordIfNotSet() = 0;
   void AskForMasterPasswordIfNotSetAndNeededToPersistSessionData(TSessionData * SessionData);
-  static UnicodeString GetValidHistoryKey(UnicodeString Key);
+  static UnicodeString GetValidHistoryKey(const UnicodeString Key);
 
   __property TInterface Interface = { read = FInterface, write = SetInterface };
   __property TInterface AppliedInterface = { read = FAppliedInterface, write = FAppliedInterface };

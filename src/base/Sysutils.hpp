@@ -95,7 +95,7 @@ public:
   explicit Exception(TObjectClassId Kind, const wchar_t *Msg);
   explicit Exception(const wchar_t *Msg);
   explicit Exception(TObjectClassId Kind, UnicodeString Msg);
-  explicit Exception(UnicodeString Msg);
+  explicit Exception(const UnicodeString Msg);
   explicit Exception(TObjectClassId Kind, Exception *E);
   explicit Exception(TObjectClassId Kind, std::exception *E);
   explicit Exception(TObjectClassId Kind, UnicodeString Msg, intptr_t AHelpContext);
@@ -117,10 +117,10 @@ public:
   static inline bool classof(const Exception *Obj) { return Obj->is(OBJECT_CLASS_EAbort); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_EAbort) || Exception::is(Kind); }
 public:
-  explicit EAbort(UnicodeString what) : Exception(OBJECT_CLASS_EAbort, what)
+  explicit EAbort(const UnicodeString What) : Exception(OBJECT_CLASS_EAbort, What)
   {
   }
-  explicit EAbort(TObjectClassId Kind, UnicodeString what) : Exception(Kind, what)
+  explicit EAbort(TObjectClassId Kind, const UnicodeString What) : Exception(Kind, What)
   {
   }
 };
@@ -131,7 +131,7 @@ public:
   static inline bool classof(const Exception *Obj) { return Obj->is(OBJECT_CLASS_EAccessViolation); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_EAccessViolation) || Exception::is(Kind); }
 public:
-  explicit EAccessViolation(UnicodeString what) : Exception(OBJECT_CLASS_EAccessViolation, what)
+  explicit EAccessViolation(const UnicodeString What) : Exception(OBJECT_CLASS_EAccessViolation, What)
   {
   }
 };
@@ -153,9 +153,9 @@ public:
   static inline bool classof(const Exception *Obj) { return Obj->is(OBJECT_CLASS_EOSError); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_EOSError) || Exception::is(Kind); }
 public:
-  explicit EOSError(UnicodeString Msg, DWORD code) :
+  explicit EOSError(const UnicodeString Msg, DWORD Code) :
     Exception(OBJECT_CLASS_EOSError, Msg),
-    ErrorCode(code)
+    ErrorCode(Code)
   {
   }
   DWORD ErrorCode;
@@ -167,7 +167,7 @@ public:
   static inline bool classof(const Exception *Obj) { return Obj->is(OBJECT_CLASS_EInvalidOperation); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_EInvalidOperation) || Exception::is(Kind); }
 public:
-  explicit EInvalidOperation(UnicodeString Msg) :
+  explicit EInvalidOperation(const UnicodeString Msg) :
     Exception(OBJECT_CLASS_EInvalidOperation, Msg)
   {
   }
@@ -220,7 +220,7 @@ NB_CORE_EXPORT UnicodeString ExtractFileDir(const UnicodeString Str);
 NB_CORE_EXPORT UnicodeString ExtractFilePath(const UnicodeString Str);
 NB_CORE_EXPORT UnicodeString GetCurrentDir();
 
-NB_CORE_EXPORT UnicodeString IncludeTrailingPathDelimiter(UnicodeString Str);
+NB_CORE_EXPORT UnicodeString IncludeTrailingPathDelimiter(const UnicodeString Str);
 
 NB_CORE_EXPORT UnicodeString StrToHex(const UnicodeString Str, bool UpperCase = true, wchar_t Separator = L'\0');
 NB_CORE_EXPORT UnicodeString HexToStr(const UnicodeString Hex);
@@ -328,7 +328,7 @@ NB_CORE_EXPORT AnsiString FormatA(const char *Format, va_list Args);
 NB_CORE_EXPORT UnicodeString FmtLoadStr(intptr_t Id, ...);
 #endif // #if 0
 
-NB_CORE_EXPORT UnicodeString WrapText(UnicodeString Line, intptr_t MaxWidth = 40);
+NB_CORE_EXPORT UnicodeString WrapText(const UnicodeString Line, intptr_t MaxWidth = 40);
 
 NB_CORE_EXPORT UnicodeString TranslateExceptionMessage(Exception *E);
 
@@ -336,14 +336,14 @@ NB_CORE_EXPORT void AppendWChar(UnicodeString &Str, const wchar_t Ch);
 
 NB_CORE_EXPORT void AppendPathDelimiterW(UnicodeString &Str);
 
-NB_CORE_EXPORT UnicodeString ExpandEnvVars(UnicodeString Str);
+NB_CORE_EXPORT UnicodeString ExpandEnvVars(const UnicodeString Str);
 
 NB_CORE_EXPORT UnicodeString StringOfChar(const wchar_t Ch, intptr_t Len);
 
-NB_CORE_EXPORT UnicodeString ChangeFileExt(UnicodeString AFileName, UnicodeString AExt,
+NB_CORE_EXPORT UnicodeString ChangeFileExt(const UnicodeString AFileName, const UnicodeString AExt,
   wchar_t Delimiter = L'/');
-NB_CORE_EXPORT UnicodeString ExtractFileExt(UnicodeString AFileName);
-NB_CORE_EXPORT UnicodeString ExpandUNCFileName(UnicodeString AFileName);
+NB_CORE_EXPORT UnicodeString ExtractFileExt(const UnicodeString AFileName);
+NB_CORE_EXPORT UnicodeString ExpandUNCFileName(const UnicodeString AFileName);
 
 typedef WIN32_FIND_DATA TWin32FindData;
 typedef UnicodeString TFileName;
@@ -394,13 +394,13 @@ NB_CORE_EXPORT bool Win32Check(bool RetVal);
 class NB_CORE_EXPORT EConvertError : public Exception
 {
 public:
-  explicit EConvertError(UnicodeString Msg) :
+  explicit EConvertError(const UnicodeString Msg) :
     Exception(OBJECT_CLASS_EConvertError, Msg)
   {
   }
 };
 
-NB_CORE_EXPORT UnicodeString UnixExcludeLeadingBackslash(UnicodeString APath);
+NB_CORE_EXPORT UnicodeString UnixExcludeLeadingBackslash(const UnicodeString APath);
 
 NB_CORE_EXPORT TDateTime IncYear(const TDateTime &AValue, const Int64 ANumberOfYears = 1);
 NB_CORE_EXPORT TDateTime IncMonth(const TDateTime &AValue, const Int64 NumberOfMonths = 1);
@@ -413,8 +413,8 @@ NB_CORE_EXPORT TDateTime IncMilliSecond(const TDateTime &AValue, const Int64 ANu
 
 NB_CORE_EXPORT Boolean IsLeapYear(Word Year);
 
-NB_CORE_EXPORT UnicodeString StripHotkey(UnicodeString AText);
-NB_CORE_EXPORT bool StartsText(UnicodeString ASubText, UnicodeString AText);
+NB_CORE_EXPORT UnicodeString StripHotkey(const UnicodeString AText);
+NB_CORE_EXPORT bool StartsText(const UnicodeString ASubText, const UnicodeString AText);
 
 struct NB_CORE_EXPORT TVersionInfo
 {
@@ -425,7 +425,7 @@ struct NB_CORE_EXPORT TVersionInfo
 };
 
 #define MAKEVERSIONNUMBER(major, minor, revision) ( ((major)<<16) | ((minor)<<8) | (revision))
-NB_CORE_EXPORT uintptr_t StrToVersionNumber(UnicodeString VersionMumberStr);
+NB_CORE_EXPORT uintptr_t StrToVersionNumber(const UnicodeString VersionMumberStr);
 NB_CORE_EXPORT UnicodeString VersionNumberToStr(uintptr_t VersionNumber);
 NB_CORE_EXPORT uintptr_t inline GetVersionNumber219() { return MAKEVERSIONNUMBER(2, 1, 9); }
 NB_CORE_EXPORT uintptr_t inline GetVersionNumber2110() { return MAKEVERSIONNUMBER(2, 1, 10); }

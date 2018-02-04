@@ -533,7 +533,7 @@ bool IsEligibleForApplyingTabs(
   return Result;
 }
 
-static intptr_t CalculateWidthByLength(UnicodeString Text, void * /*Arg*/)
+static intptr_t CalculateWidthByLength(const UnicodeString Text, void * /*Arg*/)
 {
   return Text.Length();
 }
@@ -797,7 +797,7 @@ public:
 
   void AddLinkHandler(
     UnicodeString Url, TNotifyEvent Handler);
-  void NavigateToUrl(UnicodeString Url);
+  void NavigateToUrl(const UnicodeString Url);
 
   TControl *LoadingPanel;
 
@@ -875,7 +875,7 @@ void TBrowserViewer::BeforeNavigate2(
   }
 }
 
-void TBrowserViewer::NavigateToUrl(UnicodeString Url)
+void TBrowserViewer::NavigateToUrl(const UnicodeString Url)
 {
   FComplete = false;
   Navigate(Url.c_str());
@@ -1518,7 +1518,7 @@ TControl *TScreenTipHintWindow::GetHintControl(void *Data)
   return reinterpret_cast<TControl *>(DebugNotNull(Data));
 }
 
-UnicodeString TScreenTipHintWindow::GetLongHintIfAny(UnicodeString AHint)
+UnicodeString TScreenTipHintWindow::GetLongHintIfAny(const UnicodeString AHint)
 {
   UnicodeString Result;
   intptr_t P = Pos(L"|", AHint);
