@@ -1579,11 +1579,11 @@ void TSCPFileSystem::SCPResponse(bool *GotLastLine)
 
     if (Resp == 1)
     {
-        throw EScpFileSkipped(NULL, Msg);
+      throw EScpFileSkipped(nullptr, Msg);
     }
     else
     {
-        throw EScp(NULL, Msg);
+      throw EScp(nullptr, Msg);
     }
   }
 }
@@ -2144,6 +2144,8 @@ void TSCPFileSystem::SCPDirectorySource(const UnicodeString DirectoryName,
 
   UnicodeString TargetDirFull = base::UnixIncludeTrailingBackslash(TargetDir + DestFileName);
 
+  __removed UnicodeString Buf;
+
   /* TODO 1: maybe send filetime */
 
   // Send directory modes (rights), filesize and file name
@@ -2173,8 +2175,9 @@ void TSCPFileSystem::SCPDirectorySource(const UnicodeString DirectoryName,
     [&]()
     {
       UnicodeString Path = ::IncludeTrailingBackslash(DirectoryName) + L"*.*";
-      FindOK = ::FindFirstChecked(Path,
-          FindAttrs, SearchRec) == 0;
+      FindOK =
+       ::FindFirstChecked(Path,
+           FindAttrs, SearchRec) == 0;
     });
     __removed FILE_OPERATION_LOOP_END(FMTLOAD(LIST_DIR_ERROR, (DirectoryName)));
 
@@ -2444,7 +2447,7 @@ void TSCPFileSystem::Sink(
 void TSCPFileSystem::SCPError(const UnicodeString Message, bool Fatal)
 {
   SCPSendError(Message, Fatal);
-  throw EScpFileSkipped(NULL, Message);
+  throw EScpFileSkipped(nullptr, Message);
 }
 //---------------------------------------------------------------------------
 void TSCPFileSystem::SCPSendError(const UnicodeString Message, bool Fatal)
@@ -2548,7 +2551,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString TargetDir,
         {
           case 1:
             // Error (already logged by ReceiveLine())
-            throw EScpFileSkipped(NULL, FMTLOAD(REMOTE_ERROR, (Line)));
+            throw EScpFileSkipped(nullptr, FMTLOAD(REMOTE_ERROR, (Line)));
 
           case 2:
             // Fatal error, terminate copying
@@ -2617,7 +2620,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString TargetDir,
         // last possibility to cancel transfer before it starts
         if (OperationProgress->GetCancel())
         {
-          throw ESkipFile(NULL, MainInstructions(LoadStr(USER_TERMINATED)));
+          throw ESkipFile(nullptr, MainInstructions(LoadStr(USER_TERMINATED)));
         }
 
         bool Dir = (Ctrl == L'D');

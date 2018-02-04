@@ -1400,7 +1400,7 @@ void TCallstackThread::ProcessEvent()
     try
     {
       TJclStackInfoList * StackInfoList = JclCreateThreadStackTraceFromID(true, MainThreadID);
-      if (StackInfoList == NULL)
+      if (StackInfoList == nullptr)
       {
         RaiseLastOSError();
       }
@@ -1452,7 +1452,7 @@ void WinInitialize()
   OnApiPath = ::ApiPath;
 #endif // #if 0
   MainThread = ::GetCurrentThreadId();
-  CallstackThread.reset(NULL);
+  CallstackThread.reset(nullptr);
 }
 
 

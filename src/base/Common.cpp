@@ -2558,7 +2558,7 @@ UnicodeString LoadStr(intptr_t Ident, uintptr_t /*MaxLength*/)
   return Result;
 #if 0
   TLibModule * MainModule = FindModule(HInstance);
-  DebugAssert(MainModule != NULL);
+  DebugAssert(MainModule != nullptr);
   return DoLoadStrFrom((HINSTANCE)MainModule->ResInstance, Ident, MaxLength);
 #endif // if 0
 }

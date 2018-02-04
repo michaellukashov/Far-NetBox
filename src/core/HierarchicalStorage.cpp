@@ -787,7 +787,7 @@ bool TCustomIniFileStorage::OpenRootKey(bool CanCreate)
 {
   // Not supported with master storage.
   // Actually currently, we use OpenRootKey with TRegistryStorage only.
-  DebugAssert(FMasterStorage.get() == NULL);
+  DebugAssert(FMasterStorage.get() == nullptr);
 
   return THierarchicalStorage::OpenRootKey(CanCreate);
 }

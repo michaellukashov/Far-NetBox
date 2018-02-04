@@ -229,9 +229,9 @@ static bool DoExecuteShell(const UnicodeString APath, const UnicodeString Params
 
   if (Result)
   {
-    if (Handle != NULL)
+    if (Handle != nullptr)
     {
-      *Handle = NULL;
+      *Handle = nullptr;
     }
   }
   else

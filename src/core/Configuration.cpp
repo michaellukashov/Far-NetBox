@@ -428,8 +428,8 @@ void TConfiguration::Import(const UnicodeString /*AFileName*/)
 {
   ThrowNotImplemented(3005);
 #if 0
-  THierarchicalStorage * Storage = NULL;
-  THierarchicalStorage * ImportStorage = NULL;
+  THierarchicalStorage * Storage = nullptr;
+  THierarchicalStorage * ImportStorage = nullptr;
   try
   {
     ImportStorage = TIniFileStorage::CreateFromPath(AFileName);

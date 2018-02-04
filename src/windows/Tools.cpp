@@ -219,7 +219,7 @@ void RestoreForm(UnicodeString Data, TForm *Form, bool PositionOnly)
         if (!ExplicitPlacing)
         {
           TPosition Position;
-          if ((Application->MainForm == NULL) || (Application->MainForm == Form))
+          if ((Application->MainForm == nullptr) || (Application->MainForm == Form))
           {
             Position = poDefaultPosOnly;
           }
@@ -323,7 +323,7 @@ static void ExecuteProcessAndReadOutput(const
     ZeroMemory(&SecurityAttributes, sizeof(SecurityAttributes));
     SecurityAttributes.nLength = sizeof(SECURITY_ATTRIBUTES);
     SecurityAttributes.bInheritHandle = TRUE;
-    SecurityAttributes.lpSecurityDescriptor = NULL;
+    SecurityAttributes.lpSecurityDescriptor = nullptr;
 
     HANDLE PipeRead = INVALID_HANDLE_VALUE;
     HANDLE PipeWrite = INVALID_HANDLE_VALUE;
@@ -349,7 +349,7 @@ static void ExecuteProcessAndReadOutput(const
         StartupInfo.wShowWindow = SW_HIDE;
         StartupInfo.dwFlags = STARTF_USESTDHANDLES | STARTF_USESHOWWINDOW;
 
-        if (!CreateProcess(NULL, Command.c_str(), NULL, NULL, TRUE, 0, NULL, NULL, &StartupInfo, &ProcessInformation))
+        if (!CreateProcess(nullptr, Command.c_str(), nullptr, nullptr, TRUE, 0, nullptr, nullptr, &StartupInfo, &ProcessInformation))
         {
           throw EOSExtException(FMTLOAD(EXECUTE_APP_ERROR, Command));
         }
@@ -363,7 +363,7 @@ static void ExecuteProcessAndReadOutput(const
 
       char Buffer[4096];
       DWORD BytesRead;
-      while (ReadFile(PipeRead, Buffer, sizeof(Buffer), &BytesRead, NULL))
+      while (ReadFile(PipeRead, Buffer, sizeof(Buffer), &BytesRead, nullptr))
       {
         Output += UnicodeString(UTF8String(Buffer, BytesRead));
         // Same as in ExecuteShellCheckedAndWait
@@ -398,7 +398,7 @@ static void ExecuteProcessAndReadOutput(const
 void ExecuteProcessChecked(
   UnicodeString Command, UnicodeString HelpKeyword, UnicodeString *Output)
 {
-  if (Output == NULL)
+  if (Output == nullptr)
   {
     ExecuteShellChecked(Command);
   }
@@ -411,7 +411,7 @@ void ExecuteProcessChecked(
 void ExecuteProcessCheckedAndWait(
   UnicodeString Command, UnicodeString HelpKeyword, UnicodeString *Output)
 {
-  if (Output == NULL)
+  if (Output == nullptr)
   {
     ExecuteShellCheckedAndWait(Command, &Application->ProcessMessages);
   }
@@ -451,7 +451,7 @@ IShellLink *CreateDesktopShortCut(UnicodeString Name,
   UnicodeString File, UnicodeString Params, UnicodeString Description,
   int SpecialFolder, int IconIndex, bool Return)
 {
-  IShellLink *pLink = NULL;
+  IShellLink *pLink = nullptr;
 
   if (SpecialFolder < 0)
   {
@@ -460,7 +460,7 @@ IShellLink *CreateDesktopShortCut(UnicodeString Name,
 
   try
   {
-    if (SUCCEEDED(CoCreateInstance(CLSID_ShellLink, NULL, CLSCTX_INPROC_SERVER,
+    if (SUCCEEDED(CoCreateInstance(CLSID_ShellLink, nullptr, CLSCTX_INPROC_SERVER,
           IID_IShellLink, (void **) &pLink)))
     {
       try
@@ -487,7 +487,7 @@ IShellLink *CreateDesktopShortCut(UnicodeString Name,
 
             try
             {
-              OleCheck(SHGetSpecialFolderLocation(NULL, SpecialFolder, &DesktopPidl));
+              OleCheck(SHGetSpecialFolderLocation(nullptr, SpecialFolder, &DesktopPidl));
 
               OleCheck(SHGetPathFromIDList(DesktopPidl, DesktopDir));
             }
@@ -529,7 +529,7 @@ IShellLink *CreateDesktopShortCut(UnicodeString Name,
       if (!Return)
       {
         pLink->Release();
-        pLink = NULL;
+        pLink = nullptr;
       }
     }
   }
@@ -568,7 +568,7 @@ IShellLink *CreateDesktopSessionShortCut(
   {
     // this should not be done for workspaces and folders
     TSessionData *SessionData =
-      StoredSessions->ParseUrl(EncodeUrlString(SessionName), NULL, DefaultsOnly);
+      StoredSessions->ParseUrl(EncodeUrlString(SessionName), nullptr, DefaultsOnly);
     InfoTip =
       FMTLOAD(SHORTCUT_INFO_TIP, SessionName, SessionData->InfoTip);
     if (Name.IsEmpty())
@@ -588,7 +588,7 @@ IShellLink *CreateDesktopSessionShortCut(
 template<class TEditControl>
 void ValidateMaskEditT(UnicodeString Mask, TEditControl *Edit, int ForceDirectoryMasks)
 {
-  DebugAssert(Edit != NULL);
+  DebugAssert(Edit != nullptr);
   TFileMasks Masks(ForceDirectoryMasks);
   try
   {
@@ -631,10 +631,10 @@ TStrings *GetUnwrappedMemoLines(TMemo *Memo)
 
 void ExitActiveControl(TForm *Form)
 {
-  if (Form->ActiveControl != NULL)
+  if (Form->ActiveControl != nullptr)
   {
     TNotifyEvent OnExit = ((TEdit *)Form->ActiveControl)->OnExit;
-    if (OnExit != NULL)
+    if (OnExit != nullptr)
     {
       OnExit(Form->ActiveControl);
     }
@@ -668,13 +668,13 @@ void OpenBrowser(UnicodeString URL)
     DebugAssert(!IsHttpUrl(URL));
     URL = CampaignUrl(URL);
   }
-  ShellExecute(Application->Handle, L"open", URL.c_str(), NULL, NULL, SW_SHOWNORMAL);
+  ShellExecute(Application->Handle, L"open", URL.c_str(), nullptr, nullptr, SW_SHOWNORMAL);
 }
 
 void OpenFolderInExplorer(UnicodeString Path)
 {
   if ((int)ShellExecute(Application->Handle, L"explore",
-      (wchar_t *)Path.data(), NULL, NULL, SW_SHOWNORMAL) <= 32)
+      (wchar_t *)Path.data(), nullptr, nullptr, SW_SHOWNORMAL) <= 32)
   {
     throw Exception(FMTLOAD(EXPLORE_LOCAL_DIR_ERROR, Path));
   }
@@ -683,7 +683,7 @@ void OpenFolderInExplorer(UnicodeString Path)
 void OpenFileInExplorer(UnicodeString Path)
 {
   PCIDLIST_ABSOLUTE Folder = ILCreateFromPathW(ApiPath(Path).c_str());
-  SHOpenFolderAndSelectItems(Folder, 0, NULL, 0);
+  SHOpenFolderAndSelectItems(Folder, 0, nullptr, 0);
 }
 
 void ShowHelp(UnicodeString AHelpKeyword)
@@ -711,12 +711,12 @@ bool IsFormatInClipboard(unsigned int Format)
 
 HANDLE OpenTextFromClipboard(const wchar_t *&Text)
 {
-  HANDLE Result = NULL;
+  HANDLE Result = nullptr;
   if (OpenClipboard(0))
   {
     // Check also for CF_TEXT?
     Result = GetClipboardData(CF_UNICODETEXT);
-    if (Result != NULL)
+    if (Result != nullptr)
     {
       Text = static_cast<const wchar_t *>(GlobalLock(Result));
     }
@@ -730,7 +730,7 @@ HANDLE OpenTextFromClipboard(const wchar_t *&Text)
 
 void CloseTextFromClipboard(HANDLE Handle)
 {
-  if (Handle != NULL)
+  if (Handle != nullptr)
   {
     GlobalUnlock(Handle);
   }
@@ -739,9 +739,9 @@ void CloseTextFromClipboard(HANDLE Handle)
 
 bool TextFromClipboard(UnicodeString &Text, bool Trim)
 {
-  const wchar_t *AText = NULL;
+  const wchar_t *AText = nullptr;
   HANDLE Handle = OpenTextFromClipboard(AText);
-  bool Result = (Handle != NULL);
+  bool Result = (Handle != nullptr);
   if (Result)
   {
     Text = AText;
@@ -766,7 +766,7 @@ static bool GetResource(
 {
   HRSRC Resource = FindResourceEx(GetGlobals()->GetInstanceHandle(), RT_RCDATA, ResName.c_str(),
       MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL));
-  bool Result = (Resource != NULL);
+  bool Result = (Resource != nullptr);
   if (Result)
   {
     Size = SizeofResource(GetGlobals()->GetInstanceHandle(), Resource);
@@ -862,7 +862,7 @@ void BrowseForExecutableT(T *Control, UnicodeString Title,
     if (FileDialog->Execute())
     {
       TNotifyEvent PrevOnChange = Control->OnChange;
-      Control->OnChange = NULL;
+      Control->OnChange = nullptr;
       try
       {
         // preserve unexpanded file, if the destination has not changed actually
@@ -881,7 +881,7 @@ void BrowseForExecutableT(T *Control, UnicodeString Title,
         Control->OnChange = PrevOnChange;
       }
 
-      if (Control->OnExit != NULL)
+      if (Control->OnExit != nullptr)
       {
         Control->OnExit(Control);
       }
@@ -1323,7 +1323,7 @@ bool DetectSystemExternalEditor(
       try
       {
         wchar_t ExecutableBuf[MAX_PATH];
-        if (!SUCCEEDED(FindExecutable(TempName.c_str(), NULL, ExecutableBuf)))
+        if (!SUCCEEDED(FindExecutable(TempName.c_str(), nullptr, ExecutableBuf)))
         {
           UsageState = "N";
         }
@@ -1547,7 +1547,7 @@ void InitializeCustomHelp(ICustomHelpViewer *HelpViewer)
 
 void FinalizeCustomHelp()
 {
-  AssignHelpSelector(NULL);
+  AssignHelpSelector(nullptr);
 }
 
 

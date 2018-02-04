@@ -706,7 +706,7 @@ bool HasGSSAPI(UnicodeString CustomPath)
       Filename *filename = filename_from_str(UTF8String(CustomPath).c_str());
       conf_set_filename(conf, CONF_ssh_gss_custom, filename);
       filename_free(filename);
-      List = ssh_gss_setup(conf, NULL);
+      List = ssh_gss_setup(conf, nullptr);
       for (intptr_t Index = 0; (has <= 0) && (Index < List->nlibraries); ++Index)
       {
         ssh_gss_library *library = &List->libraries[Index];
@@ -814,13 +814,13 @@ void DllHijackingProtection()
 UnicodeString ParseOpenSshPubLine(const UnicodeString ALine, const struct ssh_signkey *& Algorithm)
 {
   UTF8String UtfLine = UTF8String(ALine);
-  char * AlgorithmName = NULL;
+  char * AlgorithmName = nullptr;
   int PubBlobLen = 0;
-  char * CommentPtr = NULL;
-  const char * ErrorStr = NULL;
+  char * CommentPtr = nullptr;
+  const char * ErrorStr = nullptr;
   unsigned char * PubBlob = openssh_loadpub_line(UtfLine.c_str(), &AlgorithmName, &PubBlobLen, &CommentPtr, &ErrorStr);
   UnicodeString Result;
-  if (PubBlob == NULL)
+  if (PubBlob == nullptr)
   {
     throw Exception(UnicodeString(ErrorStr));
   }
@@ -835,13 +835,13 @@ UnicodeString ParseOpenSshPubLine(const UnicodeString ALine, const struct ssh_si
         sfree(CommentPtr);
       };
       Algorithm = find_pubkey_alg(AlgorithmName);
-      if (Algorithm == NULL)
+      if (Algorithm == nullptr)
       {
         throw Exception(FORMAT("Unknown public key algorithm \"%s\".", AlgorithmName));
       }
 
       void * Key = Algorithm->newkey(Algorithm, reinterpret_cast<const char*>(PubBlob), PubBlobLen);
-      if (Key == NULL)
+      if (Key == nullptr)
       {
         throw Exception(L"Invalid public key.");
       }

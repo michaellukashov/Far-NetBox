@@ -2363,7 +2363,7 @@ void TPasteKeyHandler::Paste(TObject * /*Sender*/, uint32_t &Answer)
 
   if (Answer == 0)
   {
-    UI->QueryUser(LoadStr(HOSTKEY_NOT_MATCH_CLIPBOARD), NULL, qaOK, NULL, qtError);
+    UI->QueryUser(LoadStr(HOSTKEY_NOT_MATCH_CLIPBOARD), nullptr, qaOK, nullptr, qtError);
   }
 }
 //---------------------------------------------------------------------------
@@ -2641,7 +2641,7 @@ void TSecureShell::AskAlg(UnicodeString AlgType, const UnicodeString AlgName)
 
   UnicodeString Msg = FMTLOAD(ALG_BELOW_TRESHOLD, AlgType, AlgName);
 
-  if (FUI->QueryUser(Msg, nullptr, qaYes | qaNo, NULL, qtWarning) == qaNo)
+  if (FUI->QueryUser(Msg, nullptr, qaYes | qaNo, nullptr, qtWarning) == qaNo)
   {
     UnicodeString Error = FMTLOAD(ALG_NOT_VERIFIED, AlgType, AlgName);
     FUI->FatalError(nullptr, Error);

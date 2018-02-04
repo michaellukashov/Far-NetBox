@@ -4720,7 +4720,7 @@ void TSFTPFileSystem::Source(
 
         FilePtr.reset();
         __removed delete File;
-        __removed File = NULL;
+        __removed File = nullptr;
       }
 
       if (ResumeAllowed)
@@ -4731,7 +4731,7 @@ void TSFTPFileSystem::Source(
           ResumeOffset = FilePtr->GetSize();
           FilePtr.reset();
           __removed delete File;
-          __removed File = NULL;
+          __removed File = nullptr;
 
           bool PartialBiggerThanSource = (ResumeOffset > OperationProgress->GetLocalSize());
           if (FLAGCLEAR(Params, cpNoConfirmation) &&
@@ -5369,7 +5369,7 @@ void TSFTPFileSystem::DirectorySunk(
     // FILE_FLAG_BACKUP_SEMANTICS is needed to "open" directory
     HANDLE LocalHandle =
       CreateFile(
-        ApiPath(ADestFullName).c_str(), GENERIC_WRITE, FILE_SHARE_WRITE, NULL, OPEN_EXISTING,
+        ApiPath(ADestFullName).c_str(), GENERIC_WRITE, FILE_SHARE_WRITE, nullptr, OPEN_EXISTING,
         FILE_FLAG_BACKUP_SEMANTICS, 0);
 
     if (LocalHandle == INVALID_HANDLE_VALUE)
@@ -5575,16 +5575,16 @@ void TSFTPFileSystem::Sink(
         if (LocalFileHandle)
         {
           SAFE_CLOSE_HANDLE(LocalFileHandle);
-          LocalFileHandle = NULL;
+          LocalFileHandle = nullptr;
         }
       }
       else
       {
         // is NULL when overwriting read-only file, so following will
         // probably fail anyway
-        if (LocalFileHandle == NULL)
+        if (LocalFileHandle == nullptr)
         {
-          FTerminal->TerminalOpenLocalFile(DestFullName, GENERIC_WRITE, NULL, &LocalFileHandle, NULL, NULL, NULL, NULL);
+          FTerminal->TerminalOpenLocalFile(DestFullName, GENERIC_WRITE, nullptr, &LocalFileHandle, nullptr, nullptr, nullptr, nullptr);
         }
         ResumeAllowed = false;
         FileSeek((THandle)LocalFileHandle, DestFileSize, 0);
@@ -5670,7 +5670,7 @@ void TSFTPFileSystem::Sink(
             // must be SSH_FX_EOF, any other status packet would raise exception
             Eof = true;
             // close file right away, before waiting for pending responses
-            SFTPCloseRemote(RemoteHandle, ADestFileName, OperationProgress, true, true, NULL);
+            SFTPCloseRemote(RemoteHandle, ADestFileName, OperationProgress, true, true, nullptr);
             RemoteHandle = L""; // do not close file again in __finally block
           }
 
@@ -5811,7 +5811,7 @@ void TSFTPFileSystem::Sink(
       CloseHandle(LocalFileHandle);
     }
 
-    if (FileStream != NULL)
+    if (FileStream != nullptr)
     {
       delete FileStream;
     }
@@ -5830,7 +5830,7 @@ void TSFTPFileSystem::Sink(
     if (FTerminal->Active && !RemoteHandle.IsEmpty())
     {
       // do not wait for response
-      SFTPCloseRemote(RemoteHandle, DestFileName, OperationProgress, true, true, NULL);
+      SFTPCloseRemote(RemoteHandle, DestFileName, OperationProgress, true, true, nullptr);
     }
   })
 }

@@ -605,7 +605,7 @@ public:
   virtual THierarchicalStorage *CreateScpStorage(bool &SessionList);
   UnicodeString TemporaryDir(bool Mask = false);
   TStrings *FindTemporaryFolders();
-  void CleanupTemporaryFolders(TStrings *Folders = NULL);
+  void CleanupTemporaryFolders(TStrings *Folders = nullptr);
   UnicodeString ExpandedTemporaryDirectory();
   void CheckDefaultTranslation();
   const TEditorPreferences *DefaultEditorForFile(

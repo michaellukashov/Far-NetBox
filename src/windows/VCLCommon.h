@@ -25,7 +25,7 @@ void UseSystemSettingsPost(TCustomForm * Control);
 void UseSystemSettings(TCustomForm * Control);
 void ResetSystemSettings(TCustomForm * Control);
 void LinkLabel(TStaticText * StaticText, UnicodeString Url = L"",
-  TNotifyEvent OnEnter = NULL);
+  TNotifyEvent OnEnter = nullptr);
 void LinkActionLabel(TStaticText * StaticText);
 void LinkAppLabel(TStaticText * StaticText);
 void HintLabel(TStaticText * StaticText, UnicodeString Hint = L"");
@@ -64,12 +64,12 @@ int GetLastMonitor();
 void SetLastMonitor(int MonitorNum);
 TForm * _SafeFormCreate(TMetaClass * FormClass, TComponent * Owner);
 template<class FormType>
-FormType * SafeFormCreate(TComponent * Owner = NULL)
+FormType * SafeFormCreate(TComponent * Owner = nullptr)
 {
   return dynamic_cast<FormType *>(_SafeFormCreate(__classid(FormType), Owner));
 }
 bool SupportsSplitButton();
-TModalResult DefaultResult(TCustomForm * Form, TButton * DefaultButton = NULL);
+TModalResult DefaultResult(TCustomForm * Form, TButton * DefaultButton = nullptr);
 void DefaultButton(TButton * Button, bool Default);
 void MemoKeyDown(TObject * Sender, WORD & Key, TShiftState Shift);
 void UseDesktopFont(TControl * Control);
@@ -84,7 +84,7 @@ void ShowFormNoActivate(TForm * Form);
 TPanel * CreateBlankPanel(TComponent * Owner);
 typedef void (*TRescaleEvent)(TComponent * Sender, TObject * Token);
 void SetRescaleFunction(
-  TComponent * Component, TRescaleEvent OnRescale, TObject * Token = NULL, bool OwnsToken = false);
+  TComponent * Component, TRescaleEvent OnRescale, TObject * Token = nullptr, bool OwnsToken = false);
 void RecordFormImplicitRescale(TForm * Form);
 //---------------------------------------------------------------------------
 

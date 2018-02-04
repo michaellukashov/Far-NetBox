@@ -2805,7 +2805,7 @@ void TTerminalThread::FatalAbort()
   {
     // We cannot use TTerminal::FatalError as the terminal still runs on a backgroud thread,
     // may have its TCallbackGuard armed right now.
-    throw ESshFatal(NULL, L"");
+    throw ESshFatal(nullptr, L"");
   }
   else
   {
