@@ -149,7 +149,7 @@ public:
   void SetShowFtpWelcomeMessage(bool Value);
   intptr_t GetCompoundVersion() const;
   void UpdateActualLogProtocol();
-  void __fastcall SetMimeTypes(UnicodeString Value);
+  void SetMimeTypes(UnicodeString Value);
   void SetExternalIpAddress(UnicodeString Value);
   void SetTryFtpWhenSshFails(bool Value);
   void SetParallelDurationThreshold(intptr_t Value);
@@ -180,8 +180,8 @@ public:
   void CleanupRegistry(const UnicodeString CleanupSubKey);
   UnicodeString BannerHash(const UnicodeString Banner) const;
   static UnicodeString PropertyToKey(const UnicodeString Property);
-  void __fastcall SetBannerData(const UnicodeString ASessionKey, const UnicodeString ABannerHash, uintptr_t AParams);
-  void __fastcall GetBannerData(const UnicodeString ASessionKey, UnicodeString &ABannerHash, uintptr_t &AParams);
+  void SetBannerData(const UnicodeString ASessionKey, const UnicodeString ABannerHash, uintptr_t AParams);
+  void GetBannerData(const UnicodeString ASessionKey, UnicodeString &ABannerHash, uintptr_t &AParams);
   virtual void DoSave(bool All, bool Explicit);
   UnicodeString FormatFingerprintKey(const UnicodeString ASiteKey, const UnicodeString AFingerprintType) const;
 
@@ -242,10 +242,10 @@ public:
     TRemoteDirectoryChangesCache *DirectoryChangesCache);
   void SaveDirectoryChangesCache(const UnicodeString SessionKey,
     TRemoteDirectoryChangesCache *DirectoryChangesCache);
-  bool __fastcall ShowBanner(const UnicodeString ASessionKey, const UnicodeString ABanner, uintptr_t &AParams);
-  void __fastcall NeverShowBanner(const UnicodeString ASessionKey, const UnicodeString ABanner);
-  void __fastcall SetBannerParams(const UnicodeString ASessionKey, uintptr_t AParams);
-  void __fastcall RememberLastFingerprint(const UnicodeString ASiteKey, const UnicodeString AFingerprintType, const UnicodeString AFingerprint);
+  bool ShowBanner(const UnicodeString ASessionKey, const UnicodeString ABanner, uintptr_t &AParams);
+  void NeverShowBanner(const UnicodeString ASessionKey, const UnicodeString ABanner);
+  void SetBannerParams(const UnicodeString ASessionKey, uintptr_t AParams);
+  void RememberLastFingerprint(const UnicodeString ASiteKey, const UnicodeString AFingerprintType, const UnicodeString AFingerprint);
   UnicodeString GetLastFingerprint(UnicodeString SiteKey, UnicodeString FingerprintType);
   virtual THierarchicalStorage *CreateConfigStorage();
   virtual THierarchicalStorage *CreateStorage(bool &SessionList);
@@ -260,7 +260,7 @@ public:
   virtual RawByteString StronglyRecryptPassword(RawByteString Password, UnicodeString Key);
   UnicodeString GetFileDescription(UnicodeString AFileName) const;
   UnicodeString GetFileVersion(UnicodeString AFileName);
-  UnicodeString __fastcall GetFileMimeType(const UnicodeString AFileName) const;
+  UnicodeString GetFileMimeType(const UnicodeString AFileName) const;
 
   TStoredSessionList *SelectFilezillaSessionsForImport(
     TStoredSessionList *Sessions, UnicodeString &Error);

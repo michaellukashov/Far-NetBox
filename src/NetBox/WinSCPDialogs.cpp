@@ -5805,7 +5805,7 @@ bool TWinSCPFileSystem::LinkDialog(UnicodeString &AFileName,
 }
 
 #if 0
-typedef void __fastcall (__closure *TFeedFileSystemData)
+typedef void (__closure *TFeedFileSystemData)
 (TObject *Control, int Label, AnsiString Value);
 #endif // #if 0
 typedef nb::FastDelegate3<void,
@@ -8668,7 +8668,7 @@ bool TQueueDialog::FillQueueItemLine(UnicodeString &Line,
     }
   }
 
-  Line = FORMAT("%1s %1s  %-49s %s",
+  Line = FORMAT("%1s %1s %-49s %s",
       Operation, Direction, Values[0], Values[1]);
 
   return true;

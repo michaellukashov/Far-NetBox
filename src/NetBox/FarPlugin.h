@@ -39,16 +39,16 @@ enum THandlesFunction
 };
 
 #if 0
-typedef void __fastcall (__closure *TFarInputBoxValidateEvent)
+typedef void (__closure *TFarInputBoxValidateEvent)
 (AnsiString &Text);
 #endif // #if 0
 typedef nb::FastDelegate1<void, UnicodeString & /*Text*/> TFarInputBoxValidateEvent;
 #if 0
-typedef void __fastcall (__closure *TFarMessageTimerEvent)(unsigned int &Result);
+typedef void (__closure *TFarMessageTimerEvent)(unsigned int &Result);
 #endif // #if 0
 typedef nb::FastDelegate1<void, uint32_t & /*Result*/> TFarMessageTimerEvent;
 #if 0
-typedef void __fastcall (__closure *TFarMessageClickEvent)(void *Token, int Result, bool &Close);
+typedef void (__closure *TFarMessageClickEvent)(void *Token, int Result, bool &Close);
 #endif // #if 0
 typedef nb::FastDelegate3<void, void * /*Token*/,
         uintptr_t /*Result*/, bool & /*Close*/> TFarMessageClickEvent;
@@ -73,8 +73,6 @@ public:
   void *Token;
 };
 
-class TGlobalFunctions;
-
 class TCustomFarPlugin : public TObject
 {
   friend class TCustomFarFileSystem;
@@ -90,6 +88,7 @@ public:
 public:
   explicit TCustomFarPlugin(TObjectClassId Kind, HINSTANCE HInst);
   virtual ~TCustomFarPlugin();
+  virtual void Initialize();
   virtual intptr_t GetMinFarVersion() const;
   virtual void SetStartupInfo(const struct PluginStartupInfo *Info);
   virtual const struct PluginStartupInfo *GetPluginStartupInfo() const { return &FStartupInfo; }
@@ -177,10 +176,9 @@ public:
   TFarDialog *GetTopDialog() const { return FTopDialog; }
   HINSTANCE GetHandle() const { return FHandle; }
   uintptr_t GetFarThreadId() const { return FFarThreadId; }
-  FarStandardFunctions &GetFarStandardFunctions() { return FFarStandardFunctions; }
+  const FarStandardFunctions &GetFarStandardFunctions() const { return FFarStandardFunctions; }
 
 protected:
-  TGlobalsIntfInitializer<TGlobalFunctions> FGlobalsIntfInitializer;
   PluginStartupInfo FStartupInfo;
   FarStandardFunctions FFarStandardFunctions;
   HINSTANCE FHandle;
@@ -217,6 +215,9 @@ protected:
   void InvalidateOpenPluginInfo();
 
   const TCriticalSection &GetCriticalSection() const { return FCriticalSection; }
+
+  virtual void GlobalsInitialize();
+  virtual void GlobalsFinalize();
 
 #ifdef NETBOX_DEBUG
 public:

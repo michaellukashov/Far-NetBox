@@ -9,6 +9,7 @@
 #include "stdafx.h"
 #include "AsyncSslSocketLayer.h"
 #include <TextsCore.h>
+#include "FileZillaApi.h"
 
 #include <openssl/x509v3.h>
 #include <openssl/err.h>

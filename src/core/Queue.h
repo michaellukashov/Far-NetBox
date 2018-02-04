@@ -29,7 +29,7 @@ protected:
   bool FFinished;
 
   virtual void Execute() = 0;
-  virtual bool __fastcall Finished();
+  virtual bool Finished();
 
 public:
   static int ThreadProc(void *Thread);
@@ -51,8 +51,8 @@ protected:
   HANDLE FEvent;
   bool FTerminated;
 
-  explicit __fastcall TSignalThread(TObjectClassId Kind, bool LowPriority);
-  virtual __fastcall ~TSignalThread();
+  explicit TSignalThread(TObjectClassId Kind, bool LowPriority);
+  virtual ~TSignalThread();
 
   virtual bool WaitForEvent();
   uintptr_t WaitForEvent(uint32_t Timeout) const;
@@ -488,8 +488,8 @@ public:
   void TerminalReopen();
 
   void Cancel();
-  bool __fastcall Release();
-  void __fastcall Idle();
+  bool Release();
+  void Idle();
 
   __property TNotifyEvent OnIdle = { read = FOnIdle, write = FOnIdle };
   __property bool Cancelling = { read = FCancel };
@@ -501,7 +501,7 @@ public:
 
 protected:
   virtual void ProcessEvent();
-  virtual bool __fastcall Finished();
+  virtual bool Finished();
 
 private:
   TTerminal *FTerminal;

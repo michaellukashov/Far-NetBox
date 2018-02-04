@@ -881,21 +881,21 @@ int CopyParamListPopupClick(TObject *Sender,
 class TCustomCommandPromptsDialog : public TCustomDialog
 {
 public:
-  __fastcall TCustomCommandPromptsDialog(
+  TCustomCommandPromptsDialog(
     UnicodeString CustomCommandName, UnicodeString HelpKeyword,
     const TUnicodeStringVector &Prompts, const TUnicodeStringVector &Defaults);
 
-  bool __fastcall Execute(TUnicodeStringVector &Values);
+  bool Execute(TUnicodeStringVector &Values);
 
 private:
-  UnicodeString __fastcall HistoryKey(int Index);
+  UnicodeString HistoryKey(int Index);
 
   std::vector<THistoryComboBox *> FEdits;
   TUnicodeStringVector FPrompts;
   UnicodeString FCustomCommandName;
 };
 //---------------------------------------------------------------------------
-__fastcall TCustomCommandPromptsDialog::TCustomCommandPromptsDialog(
+TCustomCommandPromptsDialog::TCustomCommandPromptsDialog(
   UnicodeString CustomCommandName, UnicodeString HelpKeyword,
   const TUnicodeStringVector &Prompts, const TUnicodeStringVector &Defaults) :
   TCustomDialog(HelpKeyword)
@@ -1149,7 +1149,7 @@ void MenuButton(TButton *Button)
   Button->Images = GetButtonImages(Button);
 }
 //---------------------------------------------------------------------------
-static void __fastcall MenuButtonRescale(TComponent *Sender, TObject * /*Token*/)
+static void MenuButtonRescale(TComponent *Sender, TObject * /*Token*/)
 {
   TButton *Button = DebugNotNull(dynamic_cast<TButton *>(Sender));
   SetMenuButtonImages(Button);
@@ -1363,18 +1363,18 @@ bool HandleMinimizeSysCommand(TMessage &Message)
 class TCallstackThread : public TSignalThread
 {
 public:
-  explicit __fastcall TCallstackThread();
+  explicit TCallstackThread();
   void InitCallstackThread(bool LowPriority);
 
 protected:
-  virtual void __fastcall ProcessEvent();
+  virtual void ProcessEvent();
 
 private:
   static UnicodeString DoGetName();
   static HANDLE DoCreateEvent();
 };
 //---------------------------------------------------------------------------
-__fastcall TCallstackThread::TCallstackThread() :
+TCallstackThread::TCallstackThread() :
   TSignalThread(OBJECT_CLASS_TCallstackThread, true)
 {
 }
@@ -1384,7 +1384,7 @@ void TCallstackThread::InitCallstackThread(bool LowPriority)
   TSignalThread::InitSignalThread(LowPriority, DoCreateEvent());
 }
 //---------------------------------------------------------------------------
-void __fastcall TCallstackThread::ProcessEvent()
+void TCallstackThread::ProcessEvent()
 {
 #if 0
   try

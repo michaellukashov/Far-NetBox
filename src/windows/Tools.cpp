@@ -162,7 +162,7 @@ void LoadListViewStr(TListView *ListView, UnicodeString ALayoutStr)
   }
 }
 
-void __fastcall RestoreForm(UnicodeString Data, TForm *Form, bool PositionOnly)
+void RestoreForm(UnicodeString Data, TForm *Form, bool PositionOnly)
 {
   DebugAssert(Form);
   if (!Data.IsEmpty())

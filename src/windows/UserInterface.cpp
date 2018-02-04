@@ -143,7 +143,7 @@ struct TOpenLocalPathHandler
   UnicodeString LocalPath;
   UnicodeString LocalFileName;
 
-  void __fastcall Open(TObject * Sender, uintptr_t & /*Answer*/)
+  void Open(TObject * Sender, uintptr_t & /*Answer*/)
   {
     TButton *Button = DebugNotNull(dynamic_cast<TButton *>(Sender));
     // Reason for separate AMenu variable is given in TPreferencesDialog::EditorFontColorButtonClick
@@ -1182,7 +1182,7 @@ TShortCut GetShortCutCombo(TComboBox *ComboBox)
   return TShortCut(ComboBox->Items->Objects[ComboBox->ItemIndex]);
 }
 //---------------------------------------------------------------------------
-TShortCut __fastcall NormalizeCustomShortCut(TShortCut ShortCut)
+TShortCut NormalizeCustomShortCut(TShortCut ShortCut)
 {
   if ((FirstCtrlKeyPadShortCut <= ShortCut) && (ShortCut <= LastCtrlKeyPadShortCut))
   {

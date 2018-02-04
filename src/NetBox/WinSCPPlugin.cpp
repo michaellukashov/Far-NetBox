@@ -15,7 +15,9 @@
 
 TCustomFarPlugin *CreateFarPlugin(HINSTANCE HInst)
 {
-  return new TWinSCPPlugin(HInst);
+  TCustomFarPlugin *Result = new TWinSCPPlugin(HInst);
+  Result->Initialize();
+  return Result;
 }
 
 TWinSCPPlugin::TWinSCPPlugin(HINSTANCE HInst) :

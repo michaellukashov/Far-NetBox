@@ -9,14 +9,14 @@
 //---------------------------------------------------------------------------
 __removed #pragma package(smart_init)
 //---------------------------------------------------------------------------
-__fastcall TCustomFileSystem::TCustomFileSystem(TObjectClassId Kind, TTerminal *ATerminal) :
+TCustomFileSystem::TCustomFileSystem(TObjectClassId Kind, TTerminal *ATerminal) :
   TObject(Kind),
   FTerminal(ATerminal)
 {
   DebugAssert(FTerminal);
 }
 //---------------------------------------------------------------------------
-__fastcall TCustomFileSystem::~TCustomFileSystem()
+TCustomFileSystem::~TCustomFileSystem()
 {
 #ifdef USE_DLMALLOC
   dlmalloc_trim(0); // 64 * 1024);

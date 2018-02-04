@@ -305,7 +305,7 @@ protected:
   bool FPause;
 
   virtual void ProcessEvent() override;
-  virtual bool __fastcall Finished() override;
+  virtual bool Finished() override;
   bool WaitForUserAction(TQueueItem::TStatus ItemStatus, TUserAction *UserAction);
   bool OverrideItemStatus(TQueueItem::TStatus &ItemStatus) const;
 
@@ -384,7 +384,7 @@ void TSimpleThread::Start()
   }
 }
 //---------------------------------------------------------------------------
-bool __fastcall TSimpleThread::Finished()
+bool TSimpleThread::Finished()
 {
   return false;
 }
@@ -1576,7 +1576,7 @@ bool TTerminalItem::WaitForUserAction(
   return Result;
 }
 //---------------------------------------------------------------------------
-bool __fastcall TTerminalItem::Finished()
+bool TTerminalItem::Finished()
 {
   bool Result = TSignalThread::Finished();
 
@@ -2773,7 +2773,7 @@ void TTerminalThread::ProcessEvent()
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TTerminalThread::Rethrow(Exception *&AException)
+void TTerminalThread::Rethrow(Exception *&AException)
 {
   if (AException != nullptr)
   {
@@ -3070,7 +3070,7 @@ void TTerminalThread::TerminalReadDirectoryProgress(
   Cancel = Action.Cancel;
 }
 //---------------------------------------------------------------------------
-bool __fastcall TTerminalThread::Release()
+bool TTerminalThread::Release()
 {
   bool Result = !FAbandoned;
   if (Result)
@@ -3085,7 +3085,7 @@ bool __fastcall TTerminalThread::Release()
   return Result;
 }
 //---------------------------------------------------------------------------
-bool __fastcall TTerminalThread::Finished()
+bool TTerminalThread::Finished()
 {
   return TSimpleThread::Finished() || FAbandoned;
 }

@@ -110,7 +110,7 @@ TQueryParams &TQueryParams::operator=(const TQueryParams &other)
   return *this;
 }
 //---------------------------------------------------------------------------
-bool __fastcall IsAuthenticationPrompt(TPromptKind Kind)
+bool IsAuthenticationPrompt(TPromptKind Kind)
 {
   return
     (Kind == pkUserName) || (Kind == pkPassphrase) || (Kind == pkTIS) ||
@@ -118,7 +118,7 @@ bool __fastcall IsAuthenticationPrompt(TPromptKind Kind)
     (Kind == pkPassword) || (Kind == pkNewPassword);
 }
 //---------------------------------------------------------------------------
-bool __fastcall IsPasswordOrPassphrasePrompt(TPromptKind Kind, TStrings * Prompts)
+bool IsPasswordOrPassphrasePrompt(TPromptKind Kind, TStrings * Prompts)
 {
   return
     (Prompts->GetCount() == 1) && FLAGCLEAR(ToIntPtr(Prompts->GetObj(0)), pupEcho) &&
@@ -126,7 +126,7 @@ bool __fastcall IsPasswordOrPassphrasePrompt(TPromptKind Kind, TStrings * Prompt
      (Kind == pkTIS) || (Kind == pkCryptoCard));
 }
 //---------------------------------------------------------------------------
-bool __fastcall IsPasswordPrompt(TPromptKind Kind, TStrings * Prompts)
+bool IsPasswordPrompt(TPromptKind Kind, TStrings * Prompts)
 {
   return
     IsPasswordOrPassphrasePrompt(Kind, Prompts) &&
@@ -252,7 +252,7 @@ void CoreMaintenanceTask()
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-__fastcall TOperationVisualizer::TOperationVisualizer(bool UseBusyCursor) :
+TOperationVisualizer::TOperationVisualizer(bool UseBusyCursor) :
   FUseBusyCursor(UseBusyCursor),
   FToken(nullptr)
 {
@@ -262,7 +262,7 @@ __fastcall TOperationVisualizer::TOperationVisualizer(bool UseBusyCursor) :
   }
 }
 //---------------------------------------------------------------------------
-__fastcall TOperationVisualizer::~TOperationVisualizer()
+TOperationVisualizer::~TOperationVisualizer()
 {
   if (FUseBusyCursor)
   {
@@ -271,13 +271,13 @@ __fastcall TOperationVisualizer::~TOperationVisualizer()
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-__fastcall TInstantOperationVisualizer::TInstantOperationVisualizer() :
+TInstantOperationVisualizer::TInstantOperationVisualizer() :
   TOperationVisualizer(true),
   FStart(Now())
 {
 }
 //---------------------------------------------------------------------------
-__fastcall TInstantOperationVisualizer::~TInstantOperationVisualizer()
+TInstantOperationVisualizer::~TInstantOperationVisualizer()
 {
   TDateTime Time = Now();
   __int64 Duration = MilliSecondsBetween(Time, FStart);

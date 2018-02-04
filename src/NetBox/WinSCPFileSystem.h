@@ -74,7 +74,7 @@ struct TEditHistory : public TObject
 };
 
 #if 0
-typedef void __fastcall (__closure *TProcessSessionEvent)(TSessionData *Data, void *Param);
+typedef void (__closure *TProcessSessionEvent)(TSessionData *Data, void *Param);
 #endif // #if 0
 typedef nb::FastDelegate2<void, TSessionData * /*Data*/, void * /*Param*/> TProcessSessionEvent;
 

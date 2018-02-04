@@ -981,7 +981,7 @@ Bignum modpow_simple(Bignum base_in, Bignum exp, Bignum mod)
     a[2 * mlen - 1] = 1;
 
     /* Scratch space for multiplies */
-    scratchlen = mul_compute_scratch(mlen);
+    scratchlen = (int)mul_compute_scratch(mlen);
     scratch = snewn(scratchlen, BignumInt);
 
     /* Skip leading zero bits of exp. */

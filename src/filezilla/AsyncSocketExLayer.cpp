@@ -10,6 +10,7 @@
 #include "AsyncSocketExLayer.h"
 
 #include "AsyncSocketEx.h"
+#include "FileZillaApi.h"
 
 #define WM_SOCKETEX_NOTIFY (WM_USER+3)
 

@@ -826,12 +826,12 @@ bool IsPathToSameFile(const UnicodeString APath1, const UnicodeString APath2)
   return Result;
 }
 
-bool CompareFileName(UnicodeString APath1, UnicodeString APath2)
+bool CompareFileName(const UnicodeString APath1, const UnicodeString APath2)
 {
   return IsPathToSameFile(APath1, APath2);
 }
 
-bool ComparePaths(UnicodeString APath1, UnicodeString APath2)
+bool ComparePaths(const UnicodeString APath1, const UnicodeString APath2)
 {
   TODO("ExpandUNCFileName");
   return AnsiSameText(::IncludeTrailingBackslash(APath1), ::IncludeTrailingBackslash(APath2));
@@ -2516,7 +2516,7 @@ uint32_t ContinueAnswer(uint32_t Answers)
 }
 //---------------------------------------------------------------------------
 #if 0
-TLibModule * __fastcall FindModule(void * Instance)
+TLibModule * FindModule(void * Instance)
 {
   TLibModule * CurModule;
   CurModule = reinterpret_cast<TLibModule*>(LibModuleList);
@@ -2536,7 +2536,7 @@ TLibModule * __fastcall FindModule(void * Instance)
 }
 #endif // if 0
 //---------------------------------------------------------------------------
-static UnicodeString __fastcall DoLoadStrFrom(HINSTANCE Module, intptr_t Ident, uintptr_t MaxLength)
+static UnicodeString DoLoadStrFrom(HINSTANCE Module, intptr_t Ident, uintptr_t MaxLength)
 {
   UnicodeString Result;
   Result.SetLength(MaxLength);
@@ -2546,7 +2546,7 @@ static UnicodeString __fastcall DoLoadStrFrom(HINSTANCE Module, intptr_t Ident, 
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall LoadStrFrom(HINSTANCE Module, intptr_t Ident)
+UnicodeString LoadStrFrom(HINSTANCE Module, intptr_t Ident)
 {
   // 1024 = what VCL LoadStr limits the string to
   return DoLoadStrFrom(Module, Ident, 1024);
@@ -3142,11 +3142,11 @@ static bool IsTlsPassphraseError(int Error, bool HasPassphrase)
 
   bool Result =
     ((ErrorLib == ERR_LIB_PKCS12) &&
-      (ErrorReason == PKCS12_R_MAC_VERIFY_FAILURE)) ||
+     (ErrorReason == PKCS12_R_MAC_VERIFY_FAILURE)) ||
     ((ErrorLib == ERR_LIB_PEM) &&
-      (ErrorReason == PEM_R_BAD_PASSWORD_READ)) ||
+     (ErrorReason == PEM_R_BAD_PASSWORD_READ)) ||
     (HasPassphrase && (ErrorLib == ERR_LIB_EVP) &&
-      ((ErrorReason == PEM_R_BAD_DECRYPT) || (ErrorReason == PEM_R_BAD_BASE64_DECODE)));
+     ((ErrorReason == PEM_R_BAD_DECRYPT) || (ErrorReason == PEM_R_BAD_BASE64_DECODE)));
 
   return Result;
 }
@@ -3315,20 +3315,20 @@ void ParseCertificate(const UnicodeString Path,
     }
     __finally__removed
     ({
-        // We loaded private key, but failed to load certificate, discard the certificate
-        // (either exception was thrown or WrongPassphrase)
-        if ((PrivateKey != nullptr) && (Certificate == nullptr))
-        {
-          EVP_PKEY_free(PrivateKey);
-          PrivateKey = nullptr;
-        }
-        // Certificate was verified, but passphrase was wrong when loading private key,
-        // so discard the certificate
-        else if ((Certificate != nullptr) && (PrivateKey == nullptr))
-        {
-          X509_free(Certificate);
-          Certificate = nullptr;
-        }
+      // We loaded private key, but failed to load certificate, discard the certificate
+      // (either exception was thrown or WrongPassphrase)
+      if ((PrivateKey != nullptr) && (Certificate == nullptr))
+      {
+        EVP_PKEY_free(PrivateKey);
+        PrivateKey = nullptr;
+      }
+      // Certificate was verified, but passphrase was wrong when loading private key,
+      // so discard the certificate
+      else if ((Certificate != nullptr) && (PrivateKey == nullptr))
+      {
+        X509_free(Certificate);
+        Certificate = nullptr;
+      }
     })
   }
 }
@@ -3384,12 +3384,12 @@ const UnicodeString RtfHyperlinkField(TraceInitStr(L"HYPERLINK"));
 const UnicodeString RtfHyperlinkFieldPrefix(TraceInitStr(RtfHyperlinkField + L" \""));
 const UnicodeString RtfHyperlinkFieldSuffix(TraceInitStr(L"\" "));
 //---------------------------------------------------------------------
-UnicodeString __fastcall RtfColor(int Index)
+UnicodeString RtfColor(int Index)
 {
   return FORMAT(L"\\cf%d", (Index));
 }
 //---------------------------------------------------------------------
-UnicodeString __fastcall RtfText(const UnicodeString & Text, bool Rtf)
+UnicodeString RtfText(const UnicodeString & Text, bool Rtf)
 {
   UnicodeString Result = Text;
   if (Rtf)
@@ -3423,49 +3423,49 @@ UnicodeString __fastcall RtfText(const UnicodeString & Text, bool Rtf)
   return Result;
 }
 //---------------------------------------------------------------------
-UnicodeString __fastcall RtfColorText(int Color, const UnicodeString & Text)
+UnicodeString RtfColorText(int Color, const UnicodeString & Text)
 {
   return RtfColor(Color) + L" " + RtfText(Text) + RtfColor(0) + L" ";
 }
 //---------------------------------------------------------------------
-UnicodeString __fastcall RtfColorItalicText(int Color, const UnicodeString & Text)
+UnicodeString RtfColorItalicText(int Color, const UnicodeString & Text)
 {
   return RtfColor(Color) + L"\\i " + RtfText(Text) + L"\\i0" + RtfColor(0) + L" ";
 }
 //---------------------------------------------------------------------
-UnicodeString __fastcall RtfOverrideColorText(const UnicodeString & Text)
+UnicodeString RtfOverrideColorText(const UnicodeString & Text)
 {
   return RtfColorText(1, Text);
 }
 //---------------------------------------------------------------------
-UnicodeString __fastcall RtfKeyword(const UnicodeString & Text)
+UnicodeString RtfKeyword(const UnicodeString & Text)
 {
   return RtfColorText(5, Text);
 }
 //---------------------------------------------------------------------
-UnicodeString __fastcall RtfParameter(const UnicodeString & Text)
+UnicodeString RtfParameter(const UnicodeString & Text)
 {
   return RtfColorText(6, Text);
 }
 //---------------------------------------------------------------------
-UnicodeString __fastcall RtfString(const UnicodeString & Text)
+UnicodeString RtfString(const UnicodeString & Text)
 {
   return RtfColorText(4, Text);
 }
 //---------------------------------------------------------------------
-UnicodeString __fastcall RtfLink(const UnicodeString & Link, const UnicodeString & RtfText)
+UnicodeString RtfLink(const UnicodeString & Link, const UnicodeString & RtfText)
 {
   return
     L"{\\field{\\*\\fldinst{" + RtfHyperlinkFieldPrefix + Link + RtfHyperlinkFieldSuffix + L"}}{\\fldrslt{" +
     RtfText + L"}}}";
 }
 //---------------------------------------------------------------------
-UnicodeString __fastcall ScriptCommandLink(const UnicodeString & Command)
+UnicodeString ScriptCommandLink(const UnicodeString & Command)
 {
   return L"scriptcommand_" + Command;
 }
 //---------------------------------------------------------------------
-UnicodeString __fastcall RtfSwitch(
+UnicodeString RtfSwitch(
   const UnicodeString & Switch, const UnicodeString & Link, bool Rtf)
 {
   UnicodeString Result = FORMAT(L"-%s", (Switch));
@@ -3476,25 +3476,25 @@ UnicodeString __fastcall RtfSwitch(
   return L" " + Result;
 }
 //---------------------------------------------------------------------
-UnicodeString __fastcall RtfSwitchValue(
+UnicodeString RtfSwitchValue(
   const UnicodeString & Name, const UnicodeString & Link, const UnicodeString & Value, bool Rtf)
 {
   return RtfSwitch(Name, Link, Rtf) + L"=" + Value;
 }
 //---------------------------------------------------------------------
-UnicodeString __fastcall RtfSwitch(
+UnicodeString RtfSwitch(
   const UnicodeString & Name, const UnicodeString & Link, const UnicodeString & Value, bool Rtf)
 {
   return RtfSwitchValue(Name, Link, RtfText(FORMAT("\"%s\"", (EscapeParam(Value))), Rtf), Rtf);
 }
 //---------------------------------------------------------------------
-UnicodeString __fastcall RtfSwitch(
+UnicodeString RtfSwitch(
   const UnicodeString & Name, const UnicodeString & Link, int Value, bool Rtf)
 {
   return RtfSwitchValue(Name, Link, RtfText(IntToStr(Value), Rtf), Rtf);
 }
 //---------------------------------------------------------------------
-UnicodeString __fastcall RtfRemoveHyperlinks(UnicodeString Text)
+UnicodeString RtfRemoveHyperlinks(UnicodeString Text)
 {
   // Remove all tags HYPERLINK "https://www.example.com".
   // See also RtfEscapeParam
@@ -3516,7 +3516,7 @@ UnicodeString __fastcall RtfRemoveHyperlinks(UnicodeString Text)
   return Text;
 }
 //---------------------------------------------------------------------
-UnicodeString __fastcall RtfEscapeParam(UnicodeString Param)
+UnicodeString RtfEscapeParam(UnicodeString Param)
 {
   const UnicodeString Quote(L"\"");
   // Equivalent of EscapeParam, except that it does not double quotes in HYPERLINK.
@@ -3550,12 +3550,12 @@ UnicodeString __fastcall RtfEscapeParam(UnicodeString Param)
   return Param;
 }
 //---------------------------------------------------------------------
-static UnicodeString __fastcall RtfCodeComment(const UnicodeString & Text)
+static UnicodeString RtfCodeComment(const UnicodeString & Text)
 {
   return RtfColorItalicText(2, Text);
 }
 //---------------------------------------------------------------------
-UnicodeString __fastcall AssemblyCommentLine(TAssemblyLanguage Language, const UnicodeString & Text)
+UnicodeString AssemblyCommentLine(TAssemblyLanguage Language, const UnicodeString & Text)
 {
   UnicodeString Prefix;
   switch (Language)
@@ -3576,7 +3576,7 @@ UnicodeString __fastcall AssemblyCommentLine(TAssemblyLanguage Language, const U
   return RtfCodeComment(Prefix + L" " + Text) + RtfPara;
 }
 //---------------------------------------------------------------------
-UnicodeString __fastcall AssemblyString(TAssemblyLanguage Language, UnicodeString S)
+UnicodeString AssemblyString(TAssemblyLanguage Language, UnicodeString S)
 {
   switch (Language)
   {
@@ -3607,27 +3607,27 @@ UnicodeString __fastcall AssemblyString(TAssemblyLanguage Language, UnicodeStrin
   return RtfString(S);
 }
 //---------------------------------------------------------------------
-static UnicodeString __fastcall RtfClass(const UnicodeString & Text)
+static UnicodeString RtfClass(const UnicodeString & Text)
 {
   return RtfColorText(3, Text);
 }
 //---------------------------------------------------------------------
-UnicodeString __fastcall RtfLibraryClass(const UnicodeString & ClassName)
+UnicodeString RtfLibraryClass(const UnicodeString & ClassName)
 {
   return RtfLink(L"library_" + ClassName.LowerCase(), RtfClass(ClassName));
 }
 //---------------------------------------------------------------------
-UnicodeString __fastcall RtfLibraryMethod(const UnicodeString & ClassName, const UnicodeString & MethodName, bool InPage)
+UnicodeString RtfLibraryMethod(const UnicodeString & ClassName, const UnicodeString & MethodName, bool InPage)
 {
   return RtfLink(L"library_" + ClassName.LowerCase() + (InPage ? L"#" : L"_") + MethodName.LowerCase(), RtfOverrideColorText(MethodName));
 }
 //---------------------------------------------------------------------
-static UnicodeString __fastcall RtfLibraryProperty(const UnicodeString & ClassName, const UnicodeString & PropertyName)
+static UnicodeString RtfLibraryProperty(const UnicodeString & ClassName, const UnicodeString & PropertyName)
 {
   return RtfLink(L"library_" + ClassName.LowerCase() + L"#" + PropertyName.LowerCase(), RtfOverrideColorText(PropertyName));
 }
 //---------------------------------------------------------------------
-UnicodeString __fastcall AssemblyVariableName(TAssemblyLanguage Language, const UnicodeString & ClassName)
+UnicodeString AssemblyVariableName(TAssemblyLanguage Language, const UnicodeString & ClassName)
 {
   UnicodeString Result = ClassName.SubString(1, 1).LowerCase() + ClassName.SubString(2, ClassName.Length() - 1);
   if (Language == alPowerShell)
@@ -3637,7 +3637,7 @@ UnicodeString __fastcall AssemblyVariableName(TAssemblyLanguage Language, const 
   return Result;
 }
 //---------------------------------------------------------------------
-UnicodeString __fastcall AssemblyStatementSeparator(TAssemblyLanguage Language)
+UnicodeString AssemblyStatementSeparator(TAssemblyLanguage Language)
 {
   UnicodeString Result;
   switch (Language)
@@ -3654,7 +3654,7 @@ UnicodeString __fastcall AssemblyStatementSeparator(TAssemblyLanguage Language)
   return Result;
 }
 //---------------------------------------------------------------------
-UnicodeString __fastcall AssemblyPropertyRaw(
+UnicodeString AssemblyPropertyRaw(
   TAssemblyLanguage Language, const UnicodeString & ClassName, const UnicodeString & Name,
   const UnicodeString & Value, bool Inline)
 {
@@ -3679,7 +3679,7 @@ UnicodeString __fastcall AssemblyPropertyRaw(
   return Result;
 }
 //---------------------------------------------------------------------
-UnicodeString __fastcall AssemblyProperty(
+UnicodeString AssemblyProperty(
   TAssemblyLanguage Language, const UnicodeString & ClassName, const UnicodeString & Name,
   const UnicodeString & Type, const UnicodeString & Member, bool Inline)
 {
@@ -3700,21 +3700,21 @@ UnicodeString __fastcall AssemblyProperty(
   return AssemblyPropertyRaw(Language, ClassName, Name, PropertyValue, Inline);
 }
 //---------------------------------------------------------------------
-UnicodeString __fastcall AssemblyProperty(
+UnicodeString AssemblyProperty(
   TAssemblyLanguage Language, const UnicodeString & ClassName,
   const UnicodeString & Name, const UnicodeString & Value, bool Inline)
 {
   return AssemblyPropertyRaw(Language, ClassName, Name, AssemblyString(Language, Value), Inline);
 }
 //---------------------------------------------------------------------
-UnicodeString __fastcall AssemblyProperty(
+UnicodeString AssemblyProperty(
   TAssemblyLanguage Language, const UnicodeString & ClassName,
   const UnicodeString & Name, int Value, bool Inline)
 {
   return AssemblyPropertyRaw(Language, ClassName, Name, IntToStr(Value), Inline);
 }
 //---------------------------------------------------------------------
-UnicodeString __fastcall AssemblyBoolean(TAssemblyLanguage Language, bool Value)
+UnicodeString AssemblyBoolean(TAssemblyLanguage Language, bool Value)
 {
   UnicodeString Result;
 
@@ -3736,7 +3736,7 @@ UnicodeString __fastcall AssemblyBoolean(TAssemblyLanguage Language, bool Value)
   return Result;
 }
 //---------------------------------------------------------------------
-UnicodeString __fastcall AssemblyProperty(
+UnicodeString AssemblyProperty(
   TAssemblyLanguage Language, const UnicodeString & ClassName, const UnicodeString & Name, bool Value, bool Inline)
 {
   UnicodeString PropertyValue = AssemblyBoolean(Language, Value);
@@ -3744,7 +3744,7 @@ UnicodeString __fastcall AssemblyProperty(
   return AssemblyPropertyRaw(Language, ClassName, Name, PropertyValue, Inline);
 }
 //---------------------------------------------------------------------
-UnicodeString __fastcall AssemblyNewClassInstance(TAssemblyLanguage Language, const UnicodeString & ClassName, bool Inline)
+UnicodeString AssemblyNewClassInstance(TAssemblyLanguage Language, const UnicodeString & ClassName, bool Inline)
 {
   UnicodeString VariableName = AssemblyVariableName(Language, ClassName);
   UnicodeString RtfClass = RtfLibraryClass(ClassName);
@@ -3779,7 +3779,7 @@ UnicodeString __fastcall AssemblyNewClassInstance(TAssemblyLanguage Language, co
   return Result;
 }
 //---------------------------------------------------------------------
-UnicodeString __fastcall AssemblyNewClassInstanceStart(
+UnicodeString AssemblyNewClassInstanceStart(
   TAssemblyLanguage Language, const UnicodeString & ClassName, bool Inline)
 {
   UnicodeString NewClassInstance = AssemblyNewClassInstance(Language, ClassName, Inline);
@@ -3820,7 +3820,7 @@ UnicodeString __fastcall AssemblyNewClassInstanceStart(
   return Result;
 }
 //---------------------------------------------------------------------
-UnicodeString __fastcall AssemblyNewClassInstanceEnd(TAssemblyLanguage Language, bool Inline)
+UnicodeString AssemblyNewClassInstanceEnd(TAssemblyLanguage Language, bool Inline)
 {
   UnicodeString InlineEnd = RtfText(L"}");
 
@@ -3863,7 +3863,7 @@ UnicodeString __fastcall AssemblyNewClassInstanceEnd(TAssemblyLanguage Language,
   return Result;
 }
 //---------------------------------------------------------------------------
-void __fastcall LoadScriptFromFile(UnicodeString FileName, TStrings * Lines)
+void LoadScriptFromFile(const UnicodeString FileName, TStrings * Lines)
 {
   std::auto_ptr<TFileStream> Stream(new TFileStream(ApiPath(FileName), fmOpenRead | fmShareDenyWrite));
   Lines->DefaultEncoding = TEncoding::UTF8;
@@ -3889,7 +3889,7 @@ UnicodeString StripEllipsis(const UnicodeString S)
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall GetFileMimeType(const UnicodeString /*FileName*/)
+UnicodeString GetFileMimeType(const UnicodeString /*FileName*/)
 {
   UnicodeString Result;
 #if 0
@@ -3977,11 +3977,13 @@ UnicodeString GetEnvVariable(UnicodeString AEnvVarName)
 
 namespace base {
 
+/* TODO 1 : Path class instead of UnicodeString (handle relativity...) */
+//---------------------------------------------------------------------------
 bool IsUnixStyleWindowsPath(const UnicodeString APath)
 {
   return (APath.Length() >= 3) && IsLetter(APath[1]) && (APath[2] == L':') && (APath[3] == L'/');
 }
-
+//---------------------------------------------------------------------------
 bool UnixIsAbsolutePath(const UnicodeString APath)
 {
   return
@@ -3989,7 +3991,7 @@ bool UnixIsAbsolutePath(const UnicodeString APath)
     // we need this for FTP only, but this is unfortunately used in a static context
     base::IsUnixStyleWindowsPath(APath);
 }
-
+//---------------------------------------------------------------------------
 UnicodeString UnixIncludeTrailingBackslash(const UnicodeString APath)
 {
   // it used to return "/" when input path was empty
@@ -3999,7 +4001,7 @@ UnicodeString UnixIncludeTrailingBackslash(const UnicodeString APath)
   }
   return APath;
 }
-
+//---------------------------------------------------------------------------
 // Keeps "/" for root path
 UnicodeString UnixExcludeTrailingBackslash(const UnicodeString APath, bool Simple)
 {
@@ -4021,29 +4023,29 @@ UnicodeString UnixExcludeTrailingBackslash(const UnicodeString APath, bool Simpl
   }
   return Result;
 }
-
+//---------------------------------------------------------------------------
 UnicodeString SimpleUnixExcludeTrailingBackslash(const UnicodeString APath)
 {
   return base::UnixExcludeTrailingBackslash(APath, true);
 }
-
+//---------------------------------------------------------------------------
 UnicodeString UnixCombinePaths(const UnicodeString APath1, const UnicodeString APath2)
 {
   return UnixIncludeTrailingBackslash(APath1) + APath2;
 }
-
+//---------------------------------------------------------------------------
 Boolean UnixSamePath(const UnicodeString APath1, const UnicodeString APath2)
 {
   return (base::UnixIncludeTrailingBackslash(APath1) == base::UnixIncludeTrailingBackslash(APath2));
 }
-
+//---------------------------------------------------------------------------
 bool UnixIsChildPath(const UnicodeString AParent, const UnicodeString AChild)
 {
   UnicodeString Parent = base::UnixIncludeTrailingBackslash(AParent);
   UnicodeString Child = base::UnixIncludeTrailingBackslash(AChild);
   return (Child.SubString(1, Parent.Length()) == Parent);
 }
-
+//---------------------------------------------------------------------------
 UnicodeString UnixExtractFileDir(const UnicodeString APath)
 {
   intptr_t Pos = APath.LastDelimiter(L'/');
@@ -4054,7 +4056,7 @@ UnicodeString UnixExtractFileDir(const UnicodeString APath)
   }
   return (Pos == 1) ? UnicodeString(L"/") : UnicodeString();
 }
-
+//---------------------------------------------------------------------------
 // must return trailing backslash
 UnicodeString UnixExtractFilePath(const UnicodeString APath)
 {
@@ -4066,10 +4068,9 @@ UnicodeString UnixExtractFilePath(const UnicodeString APath)
   }
   return UnicodeString();
 }
-
 #if 0
-
-UnicodeString UnixExtractFileName(UnicodeString APath)
+//---------------------------------------------------------------------------
+UnicodeString UnixExtractFileName(const UnicodeString APath)
 {
   intptr_t Pos = APath.LastDelimiter(L'/');
   UnicodeString Result;
@@ -4083,8 +4084,8 @@ UnicodeString UnixExtractFileName(UnicodeString APath)
   }
   return Result;
 }
-
-UnicodeString UnixExtractFileExt(UnicodeString APath)
+//---------------------------------------------------------------------------
+UnicodeString UnixExtractFileExt(const UnicodeString APath)
 {
   UnicodeString FileName = UnixExtractFileName(APath);
   intptr_t Pos = FileName.LastDelimiter(L".");
@@ -4093,8 +4094,8 @@ UnicodeString UnixExtractFileExt(UnicodeString APath)
   else
     return UnicodeString();
 }
-
-UnicodeString ExtractFileName(UnicodeString APath, bool Unix)
+//---------------------------------------------------------------------------
+UnicodeString ExtractFileName(const UnicodeString APath, bool Unix)
 {
   if (Unix)
   {
@@ -4105,9 +4106,8 @@ UnicodeString ExtractFileName(UnicodeString APath, bool Unix)
     return base::ExtractFileName(APath, Unix);
   }
 }
-
 #endif // #if 0
-
+//---------------------------------------------------------------------------
 bool ExtractCommonPath(const TStrings *AFiles, UnicodeString &APath)
 {
   DebugAssert(AFiles->GetCount() > 0);
@@ -4134,7 +4134,7 @@ bool ExtractCommonPath(const TStrings *AFiles, UnicodeString &APath)
 
   return Result;
 }
-
+//---------------------------------------------------------------------------
 bool UnixExtractCommonPath(const TStrings *const AFiles, UnicodeString &APath)
 {
   DebugAssert(AFiles->GetCount() > 0);
@@ -4161,18 +4161,18 @@ bool UnixExtractCommonPath(const TStrings *const AFiles, UnicodeString &APath)
 
   return Result;
 }
-
+//---------------------------------------------------------------------------
 bool IsUnixRootPath(const UnicodeString APath)
 {
   return APath.IsEmpty() || (APath == ROOTDIRECTORY);
 }
-
+//---------------------------------------------------------------------------
 bool IsUnixHiddenFile(const UnicodeString APath)
 {
   return (APath != THISDIRECTORY) && (APath != PARENTDIRECTORY) &&
     !APath.IsEmpty() && (APath[1] == L'.');
 }
-
+//---------------------------------------------------------------------------
 UnicodeString AbsolutePath(const UnicodeString Base, const UnicodeString APath)
 {
   // There's a duplicate implementation in TTerminal::ExpandFileName()
@@ -4188,7 +4188,7 @@ UnicodeString AbsolutePath(const UnicodeString Base, const UnicodeString APath)
   else
   {
     Result = base::UnixIncludeTrailingBackslash(
-        base::UnixIncludeTrailingBackslash(Base) + APath);
+      base::UnixIncludeTrailingBackslash(Base) + APath);
     intptr_t P;
     while ((P = Result.Pos(L"/../")) > 0)
     {
@@ -4212,17 +4212,17 @@ UnicodeString AbsolutePath(const UnicodeString Base, const UnicodeString APath)
   }
   return Result;
 }
-
+//---------------------------------------------------------------------------
 UnicodeString FromUnixPath(const UnicodeString APath)
 {
   return ReplaceStr(APath, SLASH, BACKSLASH);
 }
-
+//---------------------------------------------------------------------------
 UnicodeString ToUnixPath(const UnicodeString APath)
 {
   return ReplaceStr(APath, BACKSLASH, SLASH);
 }
-
+//---------------------------------------------------------------------------
 static void CutFirstDirectory(UnicodeString &S, bool Unix)
 {
   UnicodeString Sep = Unix ? SLASH : BACKSLASH;
@@ -4263,7 +4263,7 @@ static void CutFirstDirectory(UnicodeString &S, bool Unix)
     }
   }
 }
-
+//---------------------------------------------------------------------------
 UnicodeString MinimizeName(const UnicodeString AFileName, intptr_t MaxLen, bool Unix)
 {
   UnicodeString Drive, Dir, Name;
@@ -4319,7 +4319,7 @@ UnicodeString MinimizeName(const UnicodeString AFileName, intptr_t MaxLen, bool 
   }
   return Result;
 }
-
+//---------------------------------------------------------------------------
 UnicodeString MakeFileList(const TStrings *AFileList)
 {
   UnicodeString Result;
@@ -4331,7 +4331,7 @@ UnicodeString MakeFileList(const TStrings *AFileList)
   }
   return Result;
 }
-
+//---------------------------------------------------------------------------
 // copy from BaseUtils.pas
 TDateTime ReduceDateTimePrecision(const TDateTime &ADateTime,
   TModificationFmt Precision)
@@ -4369,13 +4369,13 @@ TDateTime ReduceDateTimePrecision(const TDateTime &ADateTime,
   }
   return DateTime;
 }
-
+//---------------------------------------------------------------------------
 TModificationFmt LessDateTimePrecision(
   TModificationFmt Precision1, TModificationFmt Precision2)
 {
   return (Precision1 < Precision2) ? Precision1 : Precision2;
 }
-
+//---------------------------------------------------------------------------
 UnicodeString UserModificationStr(const TDateTime &DateTime,
   TModificationFmt Precision)
 {
@@ -4399,7 +4399,7 @@ UnicodeString UserModificationStr(const TDateTime &DateTime,
   }
   return UnicodeString();
 }
-
+//---------------------------------------------------------------------------
 UnicodeString ModificationStr(const TDateTime &DateTime,
   TModificationFmt Precision)
 {
@@ -4427,7 +4427,7 @@ UnicodeString ModificationStr(const TDateTime &DateTime,
         EngShortMonthNames[Month - 1], Day, Hour, Min, Sec, Year);
   }
 }
-
+//---------------------------------------------------------------------------
 int FakeFileImageIndex(const UnicodeString /*AFileName*/, uint32_t /*Attrs*/,
   UnicodeString * /*TypeName*/)
 {
@@ -4437,8 +4437,8 @@ int FakeFileImageIndex(const UnicodeString /*AFileName*/, uint32_t /*Attrs*/,
   TSHFileInfoW SHFileInfo = {0};
   // On Win2k we get icon of "ZIP drive" for ".." (parent directory)
   if ((FileName == L"..") ||
-    ((FileName.Length() == 2) && (FileName[2] == L':') && IsLetter(FileName[1])) ||
-    IsReservedName(FileName))
+      ((FileName.Length() == 2) && (FileName[2] == L':') && IsLetter(FileName[1])) ||
+      IsReservedName(FileName))
   {
     FileName = L"dumb";
   }
@@ -4475,7 +4475,7 @@ int FakeFileImageIndex(const UnicodeString /*AFileName*/, uint32_t /*Attrs*/,
 #endif // #if 0
   return -1;
 }
-
+//---------------------------------------------------------------------------
 bool SameUserName(const UnicodeString UserName1, const UnicodeString UserName2)
 {
   // Bitvise reports file owner as "user@host", but we login with "user" only.
@@ -4483,7 +4483,7 @@ bool SameUserName(const UnicodeString UserName1, const UnicodeString UserName2)
   UnicodeString AUserName2 = CopyToChar(UserName2, L'@', true);
   return ::SameText(AUserName1, AUserName2);
 }
-
+//---------------------------------------------------------------------------
 UnicodeString FormatMultiFilesToOneConfirmation(const UnicodeString ATarget, bool Unix)
 {
   UnicodeString Dir;

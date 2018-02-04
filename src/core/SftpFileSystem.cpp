@@ -1221,7 +1221,7 @@ public:
   static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TSFTPQueue); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TSFTPQueue) || TObject::is(Kind); }
 public:
-  explicit __fastcall TSFTPQueue(TSFTPFileSystem *AFileSystem, uintptr_t CodePage) :
+  explicit TSFTPQueue(TSFTPFileSystem *AFileSystem, uintptr_t CodePage) :
     TObject(OBJECT_CLASS_TSFTPQueue),
     FRequests(new TList()),
     FResponses(new TList()),
@@ -1231,7 +1231,7 @@ public:
     DebugAssert(FFileSystem);
   }
 
-  virtual __fastcall ~TSFTPQueue()
+  virtual ~TSFTPQueue()
   {
     DebugAssert(FResponses->GetCount() == FRequests->GetCount());
     for (intptr_t Index = 0; Index < FRequests->GetCount(); ++Index)
@@ -1248,12 +1248,12 @@ public:
     SAFE_DESTROY(FResponses);
   }
 
-  bool __fastcall Init()
+  bool Init()
   {
     return SendRequests();
   }
 
-  virtual void __fastcall Dispose(SSH_FXP_TYPES ExpectedType, SSH_FX_TYPES AllowStatus)
+  virtual void Dispose(SSH_FXP_TYPES ExpectedType, SSH_FX_TYPES AllowStatus)
   {
     DebugAssert(FFileSystem->FTerminal->GetActive());
 
@@ -1295,7 +1295,7 @@ public:
     }
   }
 
-  void __fastcall DisposeSafe(SSH_FXP_TYPES ExpectedType = -1, SSH_FX_TYPES AllowStatus = -1)
+  void DisposeSafe(SSH_FXP_TYPES ExpectedType = -1, SSH_FX_TYPES AllowStatus = -1)
   {
     if (FFileSystem->FTerminal->GetActive())
     {
@@ -1303,7 +1303,7 @@ public:
     }
   }
 
-  bool __fastcall ReceivePacket(TSFTPPacket *Packet,
+  bool ReceivePacket(TSFTPPacket *Packet,
     SSH_FXP_TYPES ExpectedType = -1, SSH_FX_TYPES AllowStatus = -1, void **Token = nullptr, bool TryOnly = false)
   {
     DebugAssert(FRequests->GetCount());
@@ -1355,7 +1355,7 @@ public:
     return Result;
   }
 
-  bool __fastcall Next(SSH_FXP_TYPES ExpectedType = -1, SSH_FX_TYPES AllowStatus = -1)
+  bool Next(SSH_FXP_TYPES ExpectedType = -1, SSH_FX_TYPES AllowStatus = -1)
   {
     return ReceivePacket(nullptr, ExpectedType, AllowStatus);
   }
@@ -1366,16 +1366,16 @@ protected:
   TSFTPFileSystem *FFileSystem;
   uintptr_t FCodePage;
 
-  virtual bool __fastcall InitRequest(TSFTPQueuePacket *Request) = 0;
+  virtual bool InitRequest(TSFTPQueuePacket *Request) = 0;
 
-  virtual bool __fastcall End(TSFTPPacket *Response) = 0;
+  virtual bool End(TSFTPPacket *Response) = 0;
 
-  virtual void __fastcall SendPacket(TSFTPQueuePacket *Packet)
+  virtual void SendPacket(TSFTPQueuePacket *Packet)
   {
     FFileSystem->SendPacket(Packet);
   }
 
-  virtual void __fastcall ReceiveResponse(
+  virtual void ReceiveResponse(
     const TSFTPPacket *Packet, TSFTPPacket *Response, SSH_FXP_TYPES ExpectedType = -1,
     SSH_FX_TYPES AllowStatus = -1, bool TryOnly = false)
   {
@@ -1385,7 +1385,7 @@ protected:
   // sends as many requests as allowed by implementation
   virtual bool SendRequests() = 0;
 
-  virtual bool __fastcall SendRequest()
+  virtual bool SendRequest()
   {
     std::unique_ptr<TSFTPQueuePacket> Request(new TSFTPQueuePacket(FCodePage));
     try__catch
@@ -1421,13 +1421,13 @@ protected:
 class TSFTPFixedLenQueue : public TSFTPQueue
 {
 public:
-  explicit __fastcall TSFTPFixedLenQueue(TSFTPFileSystem *AFileSystem, uintptr_t CodePage) :
+  explicit TSFTPFixedLenQueue(TSFTPFileSystem *AFileSystem, uintptr_t CodePage) :
     TSFTPQueue(AFileSystem, CodePage),
     FMissedRequests(0)
   {
   }
 
-  virtual __fastcall ~TSFTPFixedLenQueue()
+  virtual ~TSFTPFixedLenQueue()
   {
   }
 
@@ -1457,18 +1457,18 @@ protected:
 class TSFTPAsynchronousQueue : public TSFTPQueue
 {
 public:
-  explicit __fastcall TSFTPAsynchronousQueue(TSFTPFileSystem *AFileSystem, uintptr_t CodePage) : TSFTPQueue(AFileSystem, CodePage)
+  explicit TSFTPAsynchronousQueue(TSFTPFileSystem *AFileSystem, uintptr_t CodePage) : TSFTPQueue(AFileSystem, CodePage)
   {
     FFileSystem->FSecureShell->RegisterReceiveHandler(nb::bind(&TSFTPAsynchronousQueue::ReceiveHandler, this));
     FReceiveHandlerRegistered = true;
   }
 
-  virtual __fastcall ~TSFTPAsynchronousQueue()
+  virtual ~TSFTPAsynchronousQueue()
   {
     UnregisterReceiveHandler();
   }
 
-  virtual void __fastcall Dispose(SSH_FXP_TYPES ExpectedType = -1, SSH_FX_TYPES AllowStatus = -1) override
+  virtual void Dispose(SSH_FXP_TYPES ExpectedType = -1, SSH_FX_TYPES AllowStatus = -1) override
   {
     // we do not want to receive asynchronous notifications anymore,
     // while waiting synchronously for pending responses
@@ -1476,7 +1476,7 @@ public:
     TSFTPQueue::Dispose(ExpectedType, AllowStatus);
   }
 
-  bool __fastcall Continue()
+  bool Continue()
   {
     return SendRequest();
   }
@@ -1484,7 +1484,7 @@ public:
 protected:
 
   // event handler for incoming data
-  void __fastcall ReceiveHandler(TObject * /*Sender*/)
+  void ReceiveHandler(TObject * /*Sender*/)
   {
     try
     {
@@ -1502,16 +1502,16 @@ protected:
     }
   }
 
-  virtual bool __fastcall ReceivePacketAsynchronously() = 0;
+  virtual bool ReceivePacketAsynchronously() = 0;
 
   // sends as many requests as allowed by implementation
-  virtual bool __fastcall SendRequests() override
+  virtual bool SendRequests() override
   {
     // noop
     return true;
   }
 
-  void __fastcall UnregisterReceiveHandler()
+  void UnregisterReceiveHandler()
   {
     if (FReceiveHandlerRegistered)
     {
@@ -1535,11 +1535,11 @@ public:
   {
   }
 
-  virtual __fastcall ~TSFTPDownloadQueue()
+  virtual ~TSFTPDownloadQueue()
   {
   }
 
-  bool __fastcall Init(intptr_t QueueLen, RawByteString AHandle, int64_t ATransferred,
+  bool Init(intptr_t QueueLen, RawByteString AHandle, int64_t ATransferred,
     TFileOperationProgressType *AOperationProgress)
   {
     FHandle = AHandle;
@@ -1549,13 +1549,13 @@ public:
     return TSFTPFixedLenQueue::Init(QueueLen);
   }
 
-  void __fastcall InitFillGapRequest(int64_t Offset, uint32_t MissingLen,
+  void InitFillGapRequest(int64_t Offset, uint32_t MissingLen,
     TSFTPPacket *Packet)
   {
     InitRequest(Packet, Offset, MissingLen);
   }
 
-  bool __fastcall ReceivePacket(TSFTPPacket *Packet, uintptr_t &BlockSize)
+  bool ReceivePacket(TSFTPPacket *Packet, uintptr_t &BlockSize)
   {
     void *Token;
     bool Result = TSFTPFixedLenQueue::ReceivePacket(Packet, SSH_FXP_DATA, asEOF, &Token);
@@ -1564,7 +1564,7 @@ public:
   }
 
 protected:
-  virtual bool __fastcall InitRequest(TSFTPQueuePacket *Request) override
+  virtual bool InitRequest(TSFTPQueuePacket *Request) override
   {
     uint32_t BlockSize = FFileSystem->DownloadBlockSize(OperationProgress);
     InitRequest(Request, FTransferred, BlockSize);
@@ -1573,7 +1573,7 @@ protected:
     return true;
   }
 
-  void __fastcall InitRequest(TSFTPPacket *Request, int64_t Offset,
+  void InitRequest(TSFTPPacket *Request, int64_t Offset,
     uint32_t Size) const
   {
     Request->ChangeType(SSH_FXP_READ);
@@ -1582,7 +1582,7 @@ protected:
     Request->AddCardinal(Size);
   }
 
-  virtual bool __fastcall End(TSFTPPacket *Response) override
+  virtual bool End(TSFTPPacket *Response) override
   {
     return (Response->GetType() != SSH_FXP_DATA);
   }
@@ -1610,12 +1610,12 @@ public:
   {
   }
 
-  virtual __fastcall ~TSFTPUploadQueue()
+  virtual ~TSFTPUploadQueue()
   {
     SAFE_DESTROY(FStream);
   }
 
-  bool __fastcall Init(const UnicodeString AFileName,
+  bool Init(const UnicodeString AFileName,
     HANDLE AFile, TFileOperationProgressType *AOperationProgress,
     RawByteString AHandle, int64_t ATransferred,
     intptr_t ConvertParams)
@@ -1630,13 +1630,13 @@ public:
     return TSFTPAsynchronousQueue::Init();
   }
 
-  void __fastcall DisposeSafeWithErrorHandling()
+  void DisposeSafeWithErrorHandling()
   {
     DisposeSafe(SSH_FXP_STATUS);
   }
 
 protected:
-  virtual bool __fastcall InitRequest(TSFTPQueuePacket *Request) override
+  virtual bool InitRequest(TSFTPQueuePacket *Request) override
   {
     FTerminal = FFileSystem->FTerminal;
     // Buffer for one block of data
@@ -1692,13 +1692,13 @@ protected:
     return Result;
   }
 
-  virtual void __fastcall SendPacket(TSFTPQueuePacket *Packet) override
+  virtual void SendPacket(TSFTPQueuePacket *Packet) override
   {
     TSFTPAsynchronousQueue::SendPacket(Packet);
     OperationProgress->AddTransferred(FLastBlockSize);
   }
 
-  virtual void __fastcall ReceiveResponse(
+  virtual void ReceiveResponse(
     const TSFTPPacket *Packet, TSFTPPacket *Response, SSH_FXP_TYPES ExpectedType = -1,
     SSH_FX_TYPES AllowStatus = -1, bool TryOnly = false) override
   {
@@ -1718,7 +1718,7 @@ protected:
     }
   }
 
-  virtual bool __fastcall ReceivePacketAsynchronously() override
+  virtual bool ReceivePacketAsynchronously() override
   {
     // do not read response to close request
     bool Result = (FRequests->GetCount() > 0);
@@ -1732,12 +1732,12 @@ protected:
     return Result;
   }
 
-  inline intptr_t __fastcall GetBlockSize() const
+  inline intptr_t GetBlockSize() const
   {
     return FFileSystem->UploadBlockSize(FHandle, OperationProgress);
   }
 
-  virtual bool __fastcall End(TSFTPPacket * /*Response*/) override
+  virtual bool End(TSFTPPacket * /*Response*/) override
   {
     return FEnd;
   }
@@ -1766,18 +1766,18 @@ public:
   {
   }
 
-  virtual __fastcall ~TSFTPLoadFilesPropertiesQueue()
+  virtual ~TSFTPLoadFilesPropertiesQueue()
   {
   }
 
-  bool __fastcall Init(uintptr_t QueueLen, TStrings *AFileList)
+  bool Init(uintptr_t QueueLen, TStrings *AFileList)
   {
     FFileList = AFileList;
 
     return TSFTPFixedLenQueue::Init(QueueLen);
   }
 
-  bool __fastcall ReceivePacket(TSFTPPacket *Packet, TRemoteFile *&File)
+  bool ReceivePacket(TSFTPPacket *Packet, TRemoteFile *&File)
   {
     void *Token;
     bool Result = TSFTPFixedLenQueue::ReceivePacket(Packet, SSH_FXP_ATTRS, asAll, &Token);
@@ -1786,7 +1786,7 @@ public:
   }
 
 protected:
-  virtual bool __fastcall InitRequest(TSFTPQueuePacket *Request) override
+  virtual bool InitRequest(TSFTPQueuePacket *Request) override
   {
     bool Result = false;
     while (!Result && (FIndex < FFileList->GetCount()))
@@ -1823,7 +1823,7 @@ protected:
     return Result;
   }
 
-  virtual bool __fastcall SendRequest() override
+  virtual bool SendRequest() override
   {
     bool Result =
       (FIndex < FFileList->GetCount()) &&
@@ -1831,7 +1831,7 @@ protected:
     return Result;
   }
 
-  virtual bool __fastcall End(TSFTPPacket * /*Response*/) override
+  virtual bool End(TSFTPPacket * /*Response*/) override
   {
     return (FRequests->GetCount() == 0);
   }
@@ -1852,11 +1852,11 @@ public:
   {
   }
 
-  virtual __fastcall ~TSFTPCalculateFilesChecksumQueue()
+  virtual ~TSFTPCalculateFilesChecksumQueue()
   {
   }
 
-  bool __fastcall Init(intptr_t QueueLen, UnicodeString Alg, TStrings *AFileList)
+  bool Init(intptr_t QueueLen, UnicodeString Alg, TStrings *AFileList)
   {
     FAlg = Alg;
     FFileList = AFileList;
@@ -1864,7 +1864,7 @@ public:
     return TSFTPFixedLenQueue::Init(QueueLen);
   }
 
-  bool __fastcall ReceivePacket(TSFTPPacket *Packet, TRemoteFile *&File)
+  bool ReceivePacket(TSFTPPacket *Packet, TRemoteFile *&File)
   {
     void *Token = nullptr;
     bool Result;
@@ -1884,7 +1884,7 @@ public:
   }
 
 protected:
-  virtual bool __fastcall InitRequest(TSFTPQueuePacket *Request) override
+  virtual bool InitRequest(TSFTPQueuePacket *Request) override
   {
     bool Result = false;
     while (!Result && (FIndex < FFileList->GetCount()))
@@ -1916,7 +1916,7 @@ protected:
     return Result;
   }
 
-  virtual bool __fastcall SendRequest() override
+  virtual bool SendRequest() override
   {
     bool Result =
       (FIndex < FFileList->GetCount()) &&
@@ -1924,7 +1924,7 @@ protected:
     return Result;
   }
 
-  virtual bool __fastcall End(TSFTPPacket * /*Response*/) override
+  virtual bool End(TSFTPPacket * /*Response*/) override
   {
     return (FRequests->GetCount() == 0);
   }
@@ -1957,26 +1957,7 @@ private:
   TSFTPFileSystem *FFileSystem;
 };
 //===========================================================================
-#if 0
-// moved to FileSystems.h
-struct TOpenRemoteFileParams
-{
-  UnicodeString FileName;
-  UnicodeString RemoteFileName;
-  TFileOperationProgressType *OperationProgress;
-  const TCopyParamType *CopyParam;
-  int Params;
-  bool Resume;
-  bool Resuming;
-  TSFTPOverwriteMode OverwriteMode;
-  __int64 DestFileSize; // output
-  RawByteString RemoteFileHandle; // output
-  TOverwriteFileParams *FileParams;
-  bool Confirmed;
-};
-#endif // #if 0
-//===========================================================================
-__fastcall TSFTPFileSystem::TSFTPFileSystem(TTerminal *ATerminal) :
+TSFTPFileSystem::TSFTPFileSystem(TTerminal *ATerminal) :
   TCustomFileSystem(OBJECT_CLASS_TSFTPFileSystem, ATerminal),
   FSecureShell(nullptr),
   FFileSystemInfoValid(false),
@@ -2033,7 +2014,7 @@ void TSFTPFileSystem::Init(void *Data)
   RegisterChecksumAlg(Crc32ChecksumAlg, L"crc32");
 }
 //---------------------------------------------------------------------------
-__fastcall TSFTPFileSystem::~TSFTPFileSystem()
+TSFTPFileSystem::~TSFTPFileSystem()
 {
   SAFE_DESTROY(FSupport);
   ResetConnection();
@@ -2043,24 +2024,24 @@ __fastcall TSFTPFileSystem::~TSFTPFileSystem()
   SAFE_DESTROY(FSecureShell);
 }
 //---------------------------------------------------------------------------
-void __fastcall TSFTPFileSystem::Open()
+void TSFTPFileSystem::Open()
 {
   // this is used for reconnects only
   ResetConnection();
   FSecureShell->Open();
 }
 //---------------------------------------------------------------------------
-void __fastcall TSFTPFileSystem::Close()
+void TSFTPFileSystem::Close()
 {
   FSecureShell->Close();
 }
 //---------------------------------------------------------------------------
-bool __fastcall TSFTPFileSystem::GetActive() const
+bool TSFTPFileSystem::GetActive() const
 {
   return FSecureShell->GetActive();
 }
 //---------------------------------------------------------------------------
-void __fastcall TSFTPFileSystem::CollectUsage()
+void TSFTPFileSystem::CollectUsage()
 {
   FSecureShell->CollectUsage();
 
@@ -2094,12 +2075,12 @@ void __fastcall TSFTPFileSystem::CollectUsage()
   __removed FTerminal->Configuration->Usage->Inc(VersionCounter);
 }
 //---------------------------------------------------------------------------
-const TSessionInfo & __fastcall TSFTPFileSystem::GetSessionInfo() const
+const TSessionInfo & TSFTPFileSystem::GetSessionInfo() const
 {
   return FSecureShell->GetSessionInfo();
 }
 //---------------------------------------------------------------------------
-const TFileSystemInfo & __fastcall TSFTPFileSystem::GetFileSystemInfo(bool /*Retrieve*/)
+const TFileSystemInfo & TSFTPFileSystem::GetFileSystemInfo(bool /*Retrieve*/)
 {
   if (!FFileSystemInfoValid)
   {
@@ -2144,22 +2125,22 @@ const TFileSystemInfo & __fastcall TSFTPFileSystem::GetFileSystemInfo(bool /*Ret
   return FFileSystemInfo;
 }
 //---------------------------------------------------------------------------
-bool __fastcall TSFTPFileSystem::TemporaryTransferFile(const UnicodeString AFileName)
+bool TSFTPFileSystem::TemporaryTransferFile(const UnicodeString AFileName)
 {
   return ::SameText(base::UnixExtractFileExt(AFileName), PARTIAL_EXT);
 }
 //---------------------------------------------------------------------------
-bool __fastcall TSFTPFileSystem::GetStoredCredentialsTried() const
+bool TSFTPFileSystem::GetStoredCredentialsTried() const
 {
   return FSecureShell->GetStoredCredentialsTried();
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall TSFTPFileSystem::RemoteGetUserName() const
+UnicodeString TSFTPFileSystem::RemoteGetUserName() const
 {
   return FSecureShell->ShellGetUserName();
 }
 //---------------------------------------------------------------------------
-void __fastcall TSFTPFileSystem::Idle()
+void TSFTPFileSystem::Idle()
 {
   // Keep session alive
   if ((GetSessionData()->GetPingType() != ptOff) &&
@@ -2182,7 +2163,7 @@ void __fastcall TSFTPFileSystem::Idle()
   FSecureShell->Idle();
 }
 //---------------------------------------------------------------------------
-void __fastcall TSFTPFileSystem::ResetConnection()
+void TSFTPFileSystem::ResetConnection()
 {
   // there must be no valid packet reservation at the end
   for (intptr_t Index = 0; Index < FPacketReservations->GetCount(); ++Index)
@@ -2195,7 +2176,7 @@ void __fastcall TSFTPFileSystem::ResetConnection()
   FPacketNumbers.clear();
 }
 //---------------------------------------------------------------------------
-bool __fastcall TSFTPFileSystem::IsCapable(intptr_t Capability) const
+bool TSFTPFileSystem::IsCapable(intptr_t Capability) const
 {
   DebugAssert(FTerminal);
   switch (Capability)
@@ -2311,12 +2292,12 @@ bool __fastcall TSFTPFileSystem::IsCapable(intptr_t Capability) const
   }
 }
 //---------------------------------------------------------------------------
-bool __fastcall TSFTPFileSystem::SupportsExtension(const UnicodeString Extension) const
+bool TSFTPFileSystem::SupportsExtension(const UnicodeString Extension) const
 {
   return FSupport->Loaded && (FSupport->Extensions->IndexOf(Extension) >= 0);
 }
 //---------------------------------------------------------------------------
-inline void __fastcall TSFTPFileSystem::BusyStart()
+inline void TSFTPFileSystem::BusyStart()
 {
   if (FBusy == 0 && FTerminal->GetUseBusyCursor() && !FAvoidBusy)
   {
@@ -2326,7 +2307,7 @@ inline void __fastcall TSFTPFileSystem::BusyStart()
   DebugAssert(FBusy < 10);
 }
 //---------------------------------------------------------------------------
-inline void __fastcall TSFTPFileSystem::BusyEnd()
+inline void TSFTPFileSystem::BusyEnd()
 {
   DebugAssert(FBusy > 0);
   FBusy--;
@@ -2337,7 +2318,7 @@ inline void __fastcall TSFTPFileSystem::BusyEnd()
   }
 }
 //---------------------------------------------------------------------------
-uint32_t __fastcall TSFTPFileSystem::TransferBlockSize(uint32_t Overhead,
+uint32_t TSFTPFileSystem::TransferBlockSize(uint32_t Overhead,
   TFileOperationProgressType *OperationProgress,
   uint32_t MinPacketSize,
   uint32_t MaxPacketSize) const
@@ -2400,7 +2381,7 @@ uint32_t __fastcall TSFTPFileSystem::TransferBlockSize(uint32_t Overhead,
   return Result;
 }
 //---------------------------------------------------------------------------
-uint32_t __fastcall TSFTPFileSystem::UploadBlockSize(RawByteString Handle,
+uint32_t TSFTPFileSystem::UploadBlockSize(RawByteString Handle,
   TFileOperationProgressType *OperationProgress) const
 {
   // handle length + offset + data size
@@ -2411,7 +2392,7 @@ uint32_t __fastcall TSFTPFileSystem::UploadBlockSize(RawByteString Handle,
       ToUInt32(GetSessionData()->GetSFTPMaxPacketSize()));
 }
 //---------------------------------------------------------------------------
-uint32_t __fastcall TSFTPFileSystem::DownloadBlockSize(
+uint32_t TSFTPFileSystem::DownloadBlockSize(
   TFileOperationProgressType *OperationProgress) const
 {
   uint32_t Result = TransferBlockSize(sizeof(uint32_t), OperationProgress,
@@ -2425,12 +2406,12 @@ uint32_t __fastcall TSFTPFileSystem::DownloadBlockSize(
   return Result;
 }
 //---------------------------------------------------------------------------
-void __fastcall TSFTPFileSystem::Progress(TFileOperationProgressType *OperationProgress)
+void TSFTPFileSystem::Progress(TFileOperationProgressType *OperationProgress)
 {
   FTerminal->Progress(OperationProgress);
 }
 //---------------------------------------------------------------------------
-void __fastcall TSFTPFileSystem::SendPacket(const TSFTPPacket *Packet)
+void TSFTPFileSystem::SendPacket(const TSFTPPacket *Packet)
 {
   // putting here for a lack of better place
   if (!FUtfDisablingAnnounced && (FUtfStrings == asOff))
@@ -2480,7 +2461,7 @@ void __fastcall TSFTPFileSystem::SendPacket(const TSFTPPacket *Packet)
   })
 }
 //---------------------------------------------------------------------------
-SSH_FX_TYPES __fastcall TSFTPFileSystem::GotStatusPacket(TSFTPPacket *Packet,
+SSH_FX_TYPES TSFTPFileSystem::GotStatusPacket(TSFTPPacket *Packet,
   SSH_FX_TYPES AllowStatus)
 {
   SSH_FX_TYPES Code = Packet->GetCardinal();
@@ -2608,7 +2589,7 @@ SSH_FX_TYPES __fastcall TSFTPFileSystem::GotStatusPacket(TSFTPPacket *Packet,
   return Code;
 }
 //---------------------------------------------------------------------------
-void __fastcall TSFTPFileSystem::RemoveReservation(intptr_t Reservation)
+void TSFTPFileSystem::RemoveReservation(intptr_t Reservation)
 {
   for (intptr_t Index = Reservation + 1; Index < FPacketReservations->GetCount(); ++Index)
   {
@@ -2623,7 +2604,7 @@ void __fastcall TSFTPFileSystem::RemoveReservation(intptr_t Reservation)
   FPacketReservations->Delete(Reservation);
 }
 //---------------------------------------------------------------------------
-intptr_t __fastcall TSFTPFileSystem::PacketLength(uint8_t *LenBuf, SSH_FXP_TYPES ExpectedType) const
+intptr_t TSFTPFileSystem::PacketLength(uint8_t *LenBuf, SSH_FXP_TYPES ExpectedType) const
 {
   intptr_t Length = GET_32BIT(LenBuf);
   if (Length > SFTP_MAX_PACKET_LEN)
@@ -2646,7 +2627,7 @@ const TSessionData *TSFTPFileSystem::GetSessionData() const
   return FTerminal->GetSessionData();
 }
 //---------------------------------------------------------------------------
-bool __fastcall TSFTPFileSystem::PeekPacket()
+bool TSFTPFileSystem::PeekPacket()
 {
   uint8_t *Buf = nullptr;
   bool Result = FSecureShell->Peek(Buf, 4);
@@ -2658,7 +2639,7 @@ bool __fastcall TSFTPFileSystem::PeekPacket()
   return Result;
 }
 //---------------------------------------------------------------------------
-SSH_FX_TYPES __fastcall TSFTPFileSystem::ReceivePacket(TSFTPPacket *Packet,
+SSH_FX_TYPES TSFTPFileSystem::ReceivePacket(TSFTPPacket *Packet,
   SSH_FXP_TYPES ExpectedType, SSH_FX_TYPES AllowStatus, bool TryOnly)
 {
   TSFTPBusy Busy(this);
@@ -2786,7 +2767,7 @@ SSH_FX_TYPES __fastcall TSFTPFileSystem::ReceivePacket(TSFTPPacket *Packet,
   return Result;
 }
 //---------------------------------------------------------------------------
-void __fastcall TSFTPFileSystem::ReserveResponse(const TSFTPPacket *Packet,
+void TSFTPFileSystem::ReserveResponse(const TSFTPPacket *Packet,
   TSFTPPacket *Response)
 {
   if (Response != nullptr)
@@ -2804,7 +2785,7 @@ void __fastcall TSFTPFileSystem::ReserveResponse(const TSFTPPacket *Packet,
   FPacketNumbers[FPacketReservations->GetCount() - 1] = Packet->GetMessageNumber();
 }
 //---------------------------------------------------------------------------
-void __fastcall TSFTPFileSystem::UnreserveResponse(TSFTPPacket *Response)
+void TSFTPFileSystem::UnreserveResponse(TSFTPPacket *Response)
 {
   intptr_t Reservation = FPacketReservations->IndexOf(Response);
   if (Response->GetCapacity() != 0)
@@ -2827,7 +2808,7 @@ void __fastcall TSFTPFileSystem::UnreserveResponse(TSFTPPacket *Response)
   }
 }
 //---------------------------------------------------------------------------
-SSH_FX_TYPES __fastcall TSFTPFileSystem::ReceiveResponse(
+SSH_FX_TYPES TSFTPFileSystem::ReceiveResponse(
   const TSFTPPacket *Packet, TSFTPPacket *AResponse, SSH_FXP_TYPES ExpectedType,
   SSH_FX_TYPES AllowStatus, bool TryOnly)
 {
@@ -2861,7 +2842,7 @@ SSH_FX_TYPES __fastcall TSFTPFileSystem::ReceiveResponse(
   return Result;
 }
 //---------------------------------------------------------------------------
-SSH_FX_TYPES __fastcall TSFTPFileSystem::SendPacketAndReceiveResponse(const TSFTPPacket *Packet, TSFTPPacket *Response, SSH_FXP_TYPES ExpectedType,
+SSH_FX_TYPES TSFTPFileSystem::SendPacketAndReceiveResponse(const TSFTPPacket *Packet, TSFTPPacket *Response, SSH_FXP_TYPES ExpectedType,
   SSH_FX_TYPES AllowStatus)
 {
   TSFTPBusy Busy(this);
@@ -2870,7 +2851,7 @@ SSH_FX_TYPES __fastcall TSFTPFileSystem::SendPacketAndReceiveResponse(const TSFT
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall TSFTPFileSystem::GetRealPath(const UnicodeString APath)
+UnicodeString TSFTPFileSystem::GetRealPath(const UnicodeString APath)
 {
   try
   {
@@ -2936,7 +2917,7 @@ UnicodeString __fastcall TSFTPFileSystem::GetRealPath(const UnicodeString APath)
   return UnicodeString();
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall TSFTPFileSystem::GetRealPath(UnicodeString APath,
+UnicodeString TSFTPFileSystem::GetRealPath(UnicodeString APath,
   UnicodeString ABaseDir)
 {
   UnicodeString Path;
@@ -2965,7 +2946,7 @@ UnicodeString __fastcall TSFTPFileSystem::GetRealPath(UnicodeString APath,
   return GetRealPath(Path);
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall TSFTPFileSystem::LocalCanonify(UnicodeString APath) const
+UnicodeString TSFTPFileSystem::LocalCanonify(UnicodeString APath) const
 {
   TODO("improve (handle .. etc.)");
   if (base::UnixIsAbsolutePath(APath) ||
@@ -2976,7 +2957,7 @@ UnicodeString __fastcall TSFTPFileSystem::LocalCanonify(UnicodeString APath) con
   return base::AbsolutePath(FCurrentDirectory, APath);
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall TSFTPFileSystem::Canonify(UnicodeString APath)
+UnicodeString TSFTPFileSystem::Canonify(UnicodeString APath)
 {
   // inspired by canonify() from PSFTP.C
   UnicodeString Result;
@@ -3034,7 +3015,7 @@ UnicodeString __fastcall TSFTPFileSystem::Canonify(UnicodeString APath)
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall TSFTPFileSystem::GetAbsolutePath(UnicodeString APath, bool Local) const
+UnicodeString TSFTPFileSystem::GetAbsolutePath(UnicodeString APath, bool Local) const
 {
   return const_cast<TSFTPFileSystem *>(this)->GetAbsolutePath(APath, Local);
 }
@@ -3048,7 +3029,7 @@ UnicodeString TSFTPFileSystem::GetAbsolutePath(UnicodeString APath, bool Local)
   return GetRealPath(APath, RemoteGetCurrentDirectory());
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall TSFTPFileSystem::GetHomeDirectory()
+UnicodeString TSFTPFileSystem::GetHomeDirectory()
 {
   if (FHomeDirectory.IsEmpty())
   {
@@ -3057,14 +3038,14 @@ UnicodeString __fastcall TSFTPFileSystem::GetHomeDirectory()
   return FHomeDirectory;
 }
 //---------------------------------------------------------------------------
-void __fastcall TSFTPFileSystem::LoadFile(TRemoteFile *AFile, TSFTPPacket *Packet,
+void TSFTPFileSystem::LoadFile(TRemoteFile *AFile, TSFTPPacket *Packet,
   bool Complete)
 {
   Packet->GetFile(AFile, FVersion, GetSessionData()->GetDSTMode(),
     FUtfStrings, FSignedTS, Complete);
 }
 //---------------------------------------------------------------------------
-TRemoteFile * __fastcall TSFTPFileSystem::LoadFile(TSFTPPacket *Packet,
+TRemoteFile * TSFTPFileSystem::LoadFile(TSFTPPacket *Packet,
   TRemoteFile *ALinkedByFile, const UnicodeString AFileName,
   TRemoteFileList *TempFileList, bool Complete)
 {
@@ -3089,12 +3070,12 @@ TRemoteFile * __fastcall TSFTPFileSystem::LoadFile(TSFTPPacket *Packet,
   return File.release();
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall TSFTPFileSystem::RemoteGetCurrentDirectory() const
+UnicodeString TSFTPFileSystem::RemoteGetCurrentDirectory() const
 {
   return FCurrentDirectory;
 }
 //---------------------------------------------------------------------------
-void __fastcall TSFTPFileSystem::DoStartup()
+void TSFTPFileSystem::DoStartup()
 {
   // do not know yet
   FVersion = -1;
@@ -3401,7 +3382,7 @@ void __fastcall TSFTPFileSystem::DoStartup()
   }
 }
 //---------------------------------------------------------------------------
-char * __fastcall TSFTPFileSystem::GetEOL() const
+char * TSFTPFileSystem::GetEOL() const
 {
   if (FVersion >= 4)
   {
@@ -3411,7 +3392,7 @@ char * __fastcall TSFTPFileSystem::GetEOL() const
   return EOLToStr(GetSessionData()->GetEOLType());
 }
 //---------------------------------------------------------------------------
-void __fastcall TSFTPFileSystem::LookupUsersGroups()
+void TSFTPFileSystem::LookupUsersGroups()
 {
   DebugAssert(SupportsExtension(SFTP_EXT_OWNER_GROUP));
 
@@ -3461,7 +3442,7 @@ void __fastcall TSFTPFileSystem::LookupUsersGroups()
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TSFTPFileSystem::ReadCurrentDirectory()
+void TSFTPFileSystem::ReadCurrentDirectory()
 {
   if (!FDirectoryToChangeTo.IsEmpty())
   {
@@ -3475,12 +3456,12 @@ void __fastcall TSFTPFileSystem::ReadCurrentDirectory()
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TSFTPFileSystem::HomeDirectory()
+void TSFTPFileSystem::HomeDirectory()
 {
   ChangeDirectory(GetHomeDirectory());
 }
 //---------------------------------------------------------------------------
-void __fastcall TSFTPFileSystem::TryOpenDirectory(const UnicodeString Directory)
+void TSFTPFileSystem::TryOpenDirectory(const UnicodeString Directory)
 {
   FTerminal->LogEvent(FORMAT("Trying to open directory \"%s\".", Directory));
   TRemoteFile *File = nullptr;
@@ -3505,11 +3486,11 @@ void __fastcall TSFTPFileSystem::TryOpenDirectory(const UnicodeString Directory)
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TSFTPFileSystem::AnnounceFileListOperation()
+void TSFTPFileSystem::AnnounceFileListOperation()
 {
 }
 //---------------------------------------------------------------------------
-void __fastcall TSFTPFileSystem::ChangeDirectory(UnicodeString Directory)
+void TSFTPFileSystem::ChangeDirectory(UnicodeString Directory)
 {
   UnicodeString Current = !FDirectoryToChangeTo.IsEmpty() ? FDirectoryToChangeTo : FCurrentDirectory;
   UnicodeString Path = GetRealPath(Directory, Current);
@@ -3522,12 +3503,12 @@ void __fastcall TSFTPFileSystem::ChangeDirectory(UnicodeString Directory)
   FDirectoryToChangeTo = Path;
 }
 //---------------------------------------------------------------------------
-void __fastcall TSFTPFileSystem::CachedChangeDirectory(const UnicodeString Directory)
+void TSFTPFileSystem::CachedChangeDirectory(const UnicodeString Directory)
 {
   FDirectoryToChangeTo = base::UnixExcludeTrailingBackslash(Directory);
 }
 //---------------------------------------------------------------------------
-void __fastcall TSFTPFileSystem::ReadDirectory(TRemoteFileList *FileList)
+void TSFTPFileSystem::ReadDirectory(TRemoteFileList *FileList)
 {
   DebugAssert(FileList && !FileList->GetDirectory().IsEmpty());
 
@@ -3731,7 +3712,7 @@ void __fastcall TSFTPFileSystem::ReadDirectory(TRemoteFileList *FileList)
   })
 }
 //---------------------------------------------------------------------------
-void __fastcall TSFTPFileSystem::ReadSymlink(TRemoteFile *SymlinkFile,
+void TSFTPFileSystem::ReadSymlink(TRemoteFile *SymlinkFile,
   TRemoteFile *&AFile)
 {
   DebugAssert(SymlinkFile && SymlinkFile->GetIsSymLink());
@@ -3774,13 +3755,13 @@ void __fastcall TSFTPFileSystem::ReadSymlink(TRemoteFile *SymlinkFile,
     base::UnixExtractFileName(SymlinkFile->GetLinkTo()));
 }
 //---------------------------------------------------------------------------
-void __fastcall TSFTPFileSystem::ReadFile(const UnicodeString AFileName,
+void TSFTPFileSystem::ReadFile(const UnicodeString AFileName,
   TRemoteFile *&AFile)
 {
   CustomReadFile(AFileName, AFile, SSH_FXP_LSTAT);
 }
 //---------------------------------------------------------------------------
-bool __fastcall TSFTPFileSystem::RemoteFileExists(const UnicodeString FullPath,
+bool TSFTPFileSystem::RemoteFileExists(const UnicodeString FullPath,
   TRemoteFile ** AFile)
 {
   bool Result;
@@ -3846,7 +3827,7 @@ void TSFTPFileSystem::CustomReadFile(UnicodeString AFileName,
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TSFTPFileSystem::DoDeleteFile(const UnicodeString AFileName, SSH_FXP_TYPES Type)
+void TSFTPFileSystem::DoDeleteFile(const UnicodeString AFileName, SSH_FXP_TYPES Type)
 {
   TSFTPPacket Packet(Type, FCodePage);
   UnicodeString RealFileName = LocalCanonify(AFileName);
@@ -3854,7 +3835,7 @@ void __fastcall TSFTPFileSystem::DoDeleteFile(const UnicodeString AFileName, SSH
   SendPacketAndReceiveResponse(&Packet, &Packet, SSH_FXP_STATUS);
 }
 //---------------------------------------------------------------------------
-void __fastcall TSFTPFileSystem::RemoteDeleteFile(const UnicodeString AFileName,
+void TSFTPFileSystem::RemoteDeleteFile(const UnicodeString AFileName,
   const TRemoteFile *AFile, intptr_t AParams, TRmSessionAction &Action)
 {
   uint8_t Type;
@@ -3870,7 +3851,7 @@ void __fastcall TSFTPFileSystem::RemoteDeleteFile(const UnicodeString AFileName,
   DoDeleteFile(AFileName, Type);
 }
 //---------------------------------------------------------------------------
-void __fastcall TSFTPFileSystem::RemoteRenameFile(const UnicodeString AFileName, const TRemoteFile * /*File*/,
+void TSFTPFileSystem::RemoteRenameFile(const UnicodeString AFileName, const TRemoteFile * /*File*/,
   const UnicodeString ANewName)
 {
   TSFTPPacket Packet(SSH_FXP_RENAME, FCodePage);
@@ -3894,7 +3875,7 @@ void __fastcall TSFTPFileSystem::RemoteRenameFile(const UnicodeString AFileName,
   SendPacketAndReceiveResponse(&Packet, &Packet, SSH_FXP_STATUS);
 }
 //---------------------------------------------------------------------------
-void __fastcall TSFTPFileSystem::RemoteCopyFile(const UnicodeString AFileName, const TRemoteFile * /*AFile*/,
+void TSFTPFileSystem::RemoteCopyFile(const UnicodeString AFileName, const TRemoteFile * /*AFile*/,
   const UnicodeString ANewName)
 {
   // Implemented by ProFTPD/mod_sftp and Bitvise WinSSHD (without announcing it)
@@ -3907,7 +3888,7 @@ void __fastcall TSFTPFileSystem::RemoteCopyFile(const UnicodeString AFileName, c
   SendPacketAndReceiveResponse(&Packet, &Packet, SSH_FXP_STATUS);
 }
 //---------------------------------------------------------------------------
-void __fastcall TSFTPFileSystem::RemoteCreateDirectory(const UnicodeString ADirName)
+void TSFTPFileSystem::RemoteCreateDirectory(const UnicodeString ADirName)
 {
   TSFTPPacket Packet(SSH_FXP_MKDIR, FCodePage);
   UnicodeString CanonifiedName = Canonify(ADirName);
@@ -3916,7 +3897,7 @@ void __fastcall TSFTPFileSystem::RemoteCreateDirectory(const UnicodeString ADirN
   SendPacketAndReceiveResponse(&Packet, &Packet, SSH_FXP_STATUS);
 }
 //---------------------------------------------------------------------------
-void __fastcall TSFTPFileSystem::RemoteCreateLink(const UnicodeString AFileName,
+void TSFTPFileSystem::RemoteCreateLink(const UnicodeString AFileName,
   UnicodeString PointTo, bool Symbolic)
 {
   // Cerberus server does not even respond to LINK or SYMLINK,
@@ -4017,7 +3998,7 @@ void __fastcall TSFTPFileSystem::RemoteCreateLink(const UnicodeString AFileName,
   SendPacketAndReceiveResponse(&Packet, &Packet, SSH_FXP_STATUS);
 }
 //---------------------------------------------------------------------------
-void __fastcall TSFTPFileSystem::ChangeFileProperties(const UnicodeString AFileName,
+void TSFTPFileSystem::ChangeFileProperties(const UnicodeString AFileName,
   const TRemoteFile * /*AFile*/, const TRemoteProperties *AProperties,
   TChmodSessionAction &Action)
 {
@@ -4079,7 +4060,7 @@ void __fastcall TSFTPFileSystem::ChangeFileProperties(const UnicodeString AFileN
   })
 }
 //---------------------------------------------------------------------------
-bool __fastcall TSFTPFileSystem::LoadFilesProperties(TStrings *AFileList)
+bool TSFTPFileSystem::LoadFilesProperties(TStrings *AFileList)
 {
   bool Result = false;
   // without knowledge of server's capabilities, this all make no sense
@@ -4141,7 +4122,7 @@ bool __fastcall TSFTPFileSystem::LoadFilesProperties(TStrings *AFileList)
   return Result;
 }
 //---------------------------------------------------------------------------
-void __fastcall TSFTPFileSystem::DoCalculateFilesChecksum(
+void TSFTPFileSystem::DoCalculateFilesChecksum(
   const UnicodeString Alg, const UnicodeString SftpAlg,
   TStrings *AFileList, TStrings *Checksums,
   TCalculatedChecksumEvent OnCalculatedChecksum,
@@ -4294,7 +4275,7 @@ void __fastcall TSFTPFileSystem::DoCalculateFilesChecksum(
   // queue is discarded here
 }
 //---------------------------------------------------------------------------
-void __fastcall TSFTPFileSystem::CalculateFilesChecksum(const UnicodeString Alg,
+void TSFTPFileSystem::CalculateFilesChecksum(const UnicodeString Alg,
   TStrings *AFileList, TStrings *Checksums,
   TCalculatedChecksumEvent OnCalculatedChecksum)
 {
@@ -4333,25 +4314,25 @@ void __fastcall TSFTPFileSystem::CalculateFilesChecksum(const UnicodeString Alg,
   })
 }
 //---------------------------------------------------------------------------
-void __fastcall TSFTPFileSystem::CustomCommandOnFile(const UnicodeString /*AFileName*/,
+void TSFTPFileSystem::CustomCommandOnFile(const UnicodeString /*AFileName*/,
   const TRemoteFile * /*AFile*/, const UnicodeString /*Command*/, intptr_t /*AParams*/,
   TCaptureOutputEvent /*OutputEvent*/)
 {
   DebugFail();
 }
 //---------------------------------------------------------------------------
-void __fastcall TSFTPFileSystem::AnyCommand(const UnicodeString /*Command*/,
+void TSFTPFileSystem::AnyCommand(const UnicodeString /*Command*/,
   TCaptureOutputEvent /*OutputEvent*/)
 {
   DebugFail();
 }
 //---------------------------------------------------------------------------
-TStrings * __fastcall TSFTPFileSystem::GetFixedPaths() const
+TStrings * TSFTPFileSystem::GetFixedPaths() const
 {
   return FFixedPaths;
 }
 //---------------------------------------------------------------------------
-void __fastcall TSFTPFileSystem::SpaceAvailable(const UnicodeString APath,
+void TSFTPFileSystem::SpaceAvailable(const UnicodeString APath,
   TSpaceAvailable &ASpaceAvailable)
 {
   if (SupportsExtension(SFTP_EXT_SPACE_AVAILABLE) ||
@@ -4449,7 +4430,7 @@ void __fastcall TSFTPFileSystem::SpaceAvailable(const UnicodeString APath,
 //---------------------------------------------------------------------------
 // transfer protocol
 //---------------------------------------------------------------------------
-void __fastcall TSFTPFileSystem::CopyToRemote(TStrings *AFilesToCopy,
+void TSFTPFileSystem::CopyToRemote(TStrings *AFilesToCopy,
   const UnicodeString ATargetDir, const TCopyParamType *CopyParam,
   intptr_t Params, TFileOperationProgressType *OperationProgress,
   TOnceDoneOperation &OnceDoneOperation)
@@ -4458,7 +4439,7 @@ void __fastcall TSFTPFileSystem::CopyToRemote(TStrings *AFilesToCopy,
   FTerminal->DoCopyToRemote(AFilesToCopy, ATargetDir, CopyParam, Params, OperationProgress, tfPreCreateDir, OnceDoneOperation);
 }
 //---------------------------------------------------------------------------
-void __fastcall TSFTPFileSystem::SFTPConfirmOverwrite(
+void TSFTPFileSystem::SFTPConfirmOverwrite(
   const UnicodeString ASourceFullFileName, UnicodeString &ATargetFileName,
   const TCopyParamType *CopyParam, intptr_t AParams, TFileOperationProgressType *OperationProgress,
   const TOverwriteFileParams *FileParams,
@@ -4660,7 +4641,7 @@ bool TSFTPFileSystem::SFTPConfirmResume(const UnicodeString DestFileName,
   return ResumeTransfer;
 }
 //---------------------------------------------------------------------------
-void __fastcall TSFTPFileSystem::Source(
+void TSFTPFileSystem::Source(
   TLocalFileHandle &AHandle, const UnicodeString ATargetDir, UnicodeString &ADestFileName,
   const TCopyParamType *CopyParam, intptr_t Params,
   TFileOperationProgressType *OperationProgress, uintptr_t Flags,
@@ -5108,7 +5089,7 @@ void __fastcall TSFTPFileSystem::Source(
   }
 }
 //---------------------------------------------------------------------------
-RawByteString __fastcall TSFTPFileSystem::SFTPOpenRemoteFile(
+RawByteString TSFTPFileSystem::SFTPOpenRemoteFile(
   const UnicodeString AFileName, SSH_FXF_TYPES OpenType, int64_t Size)
 {
   TSFTPPacket Packet(SSH_FXP_OPEN, FCodePage);
@@ -5168,7 +5149,7 @@ RawByteString __fastcall TSFTPFileSystem::SFTPOpenRemoteFile(
   return Packet.GetFileHandle();
 }
 //---------------------------------------------------------------------------
-intptr_t __fastcall TSFTPFileSystem::SFTPOpenRemote(void *AOpenParams, void * /*Param2*/)
+intptr_t TSFTPFileSystem::SFTPOpenRemote(void *AOpenParams, void * /*Param2*/)
 {
   TOpenRemoteFileParams *OpenParams = get_as<TOpenRemoteFileParams>(AOpenParams);
   DebugAssert(OpenParams);
@@ -5333,7 +5314,7 @@ intptr_t __fastcall TSFTPFileSystem::SFTPOpenRemote(void *AOpenParams, void * /*
   return 0;
 }
 //---------------------------------------------------------------------------
-void __fastcall TSFTPFileSystem::SFTPCloseRemote(const RawByteString Handle,
+void TSFTPFileSystem::SFTPCloseRemote(const RawByteString Handle,
   const UnicodeString AFileName, TFileOperationProgressType *OperationProgress,
   bool TransferFinished, bool Request, TSFTPPacket *Packet)
 {
@@ -5371,7 +5352,7 @@ void __fastcall TSFTPFileSystem::SFTPCloseRemote(const RawByteString Handle,
   __removed FILE_OPERATION_LOOP_END(FMTLOAD(SFTP_CLOSE_FILE_ERROR, (FileName)));
 }
 //---------------------------------------------------------------------------
-void __fastcall TSFTPFileSystem::CopyToLocal(TStrings *AFilesToCopy,
+void TSFTPFileSystem::CopyToLocal(TStrings *AFilesToCopy,
   const UnicodeString TargetDir, const TCopyParamType *CopyParam,
   intptr_t Params, TFileOperationProgressType *OperationProgress,
   TOnceDoneOperation &OnceDoneOperation)
@@ -5380,7 +5361,7 @@ void __fastcall TSFTPFileSystem::CopyToLocal(TStrings *AFilesToCopy,
   FTerminal->DoCopyToLocal(AFilesToCopy, TargetDir, CopyParam, Params, OperationProgress, tfNone, OnceDoneOperation);
 }
 //---------------------------------------------------------------------------
-void __fastcall TSFTPFileSystem::DirectorySunk(
+void TSFTPFileSystem::DirectorySunk(
   const UnicodeString ADestFullName, const TRemoteFile *AFile, const TCopyParamType *CopyParam)
 {
   if (CopyParam->GetPreserveTime() && CopyParam->GetPreserveTimeDirs())
@@ -5405,7 +5386,7 @@ void __fastcall TSFTPFileSystem::DirectorySunk(
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TSFTPFileSystem::Sink(
+void TSFTPFileSystem::Sink(
   const UnicodeString AFileName, const TRemoteFile *AFile,
   const UnicodeString ATargetDir, UnicodeString &ADestFileName, uintptr_t Attrs,
   const TCopyParamType * CopyParam, intptr_t AParams, TFileOperationProgressType *OperationProgress,
@@ -5705,7 +5686,7 @@ void __fastcall TSFTPFileSystem::Sink(
               // file has some special file size.
               FTerminal->LogEvent(FORMAT(
                 L"Received incomplete data packet before end of file, offset: %s, size: %d, requested: %d",
-                (::IntToStr(OperationProgress->GetTransferredSize()), int(DataLen), int(BlockSize))));
+                (::Int64ToStr(OperationProgress->GetTransferredSize()), int(DataLen), int(BlockSize))));
               FTerminal->TerminalError(nullptr, LoadStr(SFTP_INCOMPLETE_BEFORE_EOF));
             }
 
@@ -5753,7 +5734,7 @@ void __fastcall TSFTPFileSystem::Sink(
             {
               DebugAssert(!ResumeTransfer && !ResumeAllowed);
 
-              uintptr_t PrevBlockSize = BlockBuf.GetSize();
+              int64_t PrevBlockSize = BlockBuf.GetSize();
               BlockBuf.Convert(GetEOL(), FTerminal->GetConfiguration()->GetLocalEOLType(), 0, ConvertToken);
               OperationProgress->SetLocalSize(OperationProgress->GetLocalSize() - PrevBlockSize + BlockBuf.GetSize());
             }
@@ -5854,33 +5835,33 @@ void __fastcall TSFTPFileSystem::Sink(
   })
 }
 //---------------------------------------------------------------------------
-void __fastcall TSFTPFileSystem::RegisterChecksumAlg(const UnicodeString Alg, const UnicodeString SftpAlg)
+void TSFTPFileSystem::RegisterChecksumAlg(const UnicodeString Alg, const UnicodeString SftpAlg)
 {
   FChecksumAlgs->Add(Alg);
   FChecksumSftpAlgs->Add(SftpAlg);
 }
 //---------------------------------------------------------------------------
-void __fastcall TSFTPFileSystem::GetSupportedChecksumAlgs(TStrings *Algs)
+void TSFTPFileSystem::GetSupportedChecksumAlgs(TStrings *Algs)
 {
   Algs->AddStrings(FChecksumAlgs.get());
 }
 //---------------------------------------------------------------------------
-void __fastcall TSFTPFileSystem::LockFile(const UnicodeString /*FileName*/, const TRemoteFile * /*File*/)
+void TSFTPFileSystem::LockFile(const UnicodeString /*FileName*/, const TRemoteFile * /*File*/)
 {
   DebugFail();
 }
 //---------------------------------------------------------------------------
-void __fastcall TSFTPFileSystem::UnlockFile(const UnicodeString /*FileName*/, const TRemoteFile * /*File*/)
+void TSFTPFileSystem::UnlockFile(const UnicodeString /*FileName*/, const TRemoteFile * /*File*/)
 {
   DebugFail();
 }
 //---------------------------------------------------------------------------
-void __fastcall TSFTPFileSystem::UpdateFromMain(TCustomFileSystem * /*MainFileSystem*/)
+void TSFTPFileSystem::UpdateFromMain(TCustomFileSystem * /*MainFileSystem*/)
 {
   // noop
 }
 //---------------------------------------------------------------------------
-void __fastcall TSFTPFileSystem::ClearCaches()
+void TSFTPFileSystem::ClearCaches()
 {
   // noop
 }

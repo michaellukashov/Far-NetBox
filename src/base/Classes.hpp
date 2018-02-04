@@ -770,20 +770,3 @@ private:
 
 NB_CORE_EXPORT TGlobals *GetGlobals();
 NB_CORE_EXPORT void SetGlobals(TGlobals *Value);
-
-template<typename T>
-class TGlobalsIntfInitializer
-{
-public:
-  TGlobalsIntfInitializer()
-  {
-    ::SetGlobals(new T());
-  }
-
-  ~TGlobalsIntfInitializer()
-  {
-    TGlobalsIntf *Intf = GetGlobals();
-    delete Intf;
-    ::SetGlobals(nullptr);
-  }
-};

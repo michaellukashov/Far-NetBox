@@ -47,17 +47,17 @@ bool NeonWindowsValidateCertificate(int &Failures, const AnsiString AsciiCert, U
 bool NeonWindowsValidateCertificateWithMessage(TNeonCertificateData &Data, UnicodeString &Message);
 UnicodeString NeonCertificateFailuresErrorStr(int Failures, const UnicodeString HostName);
 void UpdateNeonDebugMask();
-void __fastcall RegisterForNeonDebug(TTerminal * Terminal);
-void __fastcall UnregisterFromNeonDebug(TTerminal * Terminal);
-void __fastcall NeonInitialize();
-void __fastcall NeonFinalize();
-void __fastcall RequireNeon(TTerminal * Terminal);
-void __fastcall RetrieveNeonCertificateData(
+void RegisterForNeonDebug(TTerminal * Terminal);
+void UnregisterFromNeonDebug(TTerminal * Terminal);
+void NeonInitialize();
+void NeonFinalize();
+void RequireNeon(TTerminal * Terminal);
+void RetrieveNeonCertificateData(
   int Failures, const ne_ssl_certificate * Certificate, TNeonCertificateData &Data);
-UnicodeString __fastcall CertificateVerificationMessage(const TNeonCertificateData &Data);
-UnicodeString __fastcall CertificateSummary(const TNeonCertificateData &Data, const UnicodeString AHostName);
+UnicodeString CertificateVerificationMessage(const TNeonCertificateData &Data);
+UnicodeString CertificateSummary(const TNeonCertificateData &Data, const UnicodeString AHostName);
 struct TSessionInfo;
-UnicodeString __fastcall NeonTlsSessionInfo(
+UnicodeString NeonTlsSessionInfo(
   ne_session * Session, TSessionInfo & FSessionInfo, UnicodeString & TlsVersionStr);
 void SetupSsl(ssl_st * Ssl, TTlsVersion MinTlsVersion, TTlsVersion MaxTlsVersion);
 //---------------------------------------------------------------------------

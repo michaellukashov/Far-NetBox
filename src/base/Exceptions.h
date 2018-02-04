@@ -5,7 +5,7 @@
 #include <Sysutils.hpp>
 #include <SysInit.hpp>
 #include <System.hpp>
-
+//---------------------------------------------------------------------------
 NB_CORE_EXPORT bool ShouldDisplayException(Exception *E);
 NB_CORE_EXPORT bool ExceptionMessage(const Exception *E, UnicodeString &Message);
 NB_CORE_EXPORT bool ExceptionMessageFormatted(const Exception *E, UnicodeString &Message);
@@ -14,7 +14,7 @@ NB_CORE_EXPORT UnicodeString SysErrorMessageForError(intptr_t LastError);
 NB_CORE_EXPORT UnicodeString LastSysErrorMessage();
 NB_CORE_EXPORT TStrings * ExceptionToMoreMessages(Exception *E);
 NB_CORE_EXPORT bool IsInternalException(const Exception *E);
-
+//---------------------------------------------------------------------------
 enum TOnceDoneOperation
 {
   odoIdle,
@@ -22,7 +22,7 @@ enum TOnceDoneOperation
   odoSuspend,
   odoShutDown,
 };
-
+//---------------------------------------------------------------------------
 class NB_CORE_EXPORT ExtException : public Exception
 {
 public:
@@ -46,7 +46,7 @@ public:
   TStrings * GetMoreMessages() const { return FMoreMessages; }
   UnicodeString GetHelpKeyword() const { return FHelpKeyword; }
 
-  explicit inline ExtException(UnicodeString Msg) : Exception(OBJECT_CLASS_ExtException, Msg), FMoreMessages(nullptr) {}
+  explicit inline ExtException(const UnicodeString Msg) : Exception(OBJECT_CLASS_ExtException, Msg), FMoreMessages(nullptr) {}
   explicit inline ExtException(TObjectClassId Kind, const UnicodeString Msg) : Exception(Kind, Msg), FMoreMessages(nullptr) {}
   explicit inline ExtException(TObjectClassId Kind, intptr_t Ident) : Exception(Kind, Ident), FMoreMessages(nullptr) {}
   explicit inline ExtException(TObjectClassId Kind, const UnicodeString Msg, intptr_t AHelpContext) : Exception(Kind, Msg, AHelpContext), FMoreMessages(nullptr) {}
@@ -81,30 +81,30 @@ private:
     static inline bool classof(const Exception *Obj) { return Obj->is(OBJECT_CLASS_##NAME); } \
     virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_##NAME) || BASE::is(Kind); } \
   public: \
-    explicit inline __fastcall NAME(const Exception *E, const UnicodeString Msg, const UnicodeString HelpKeyword = L"") : \
+    explicit inline NAME(const Exception *E, const UnicodeString Msg, const UnicodeString HelpKeyword = L"") : \
       BASE(OBJECT_CLASS_##NAME, E, Msg, HelpKeyword) \
     { \
     } \
-    explicit inline __fastcall NAME(TObjectClassId Kind, const Exception *E, const UnicodeString Msg, const UnicodeString HelpKeyword = L"") : \
+    explicit inline NAME(TObjectClassId Kind, const Exception *E, const UnicodeString Msg, const UnicodeString HelpKeyword = L"") : \
       BASE(Kind, E, Msg, HelpKeyword) \
     { \
     } \
-    virtual inline __fastcall ~NAME(void) \
+    virtual inline ~NAME(void) \
     { \
     } \
-    explicit inline __fastcall NAME(TObjectClassId Kind, const UnicodeString Msg, intptr_t AHelpContext) : \
+    explicit inline NAME(TObjectClassId Kind, const UnicodeString Msg, intptr_t AHelpContext) : \
       BASE(Kind, Msg, AHelpContext) \
     { \
     } \
-    explicit inline __fastcall NAME(const UnicodeString Msg, intptr_t AHelpContext) : \
+    explicit inline NAME(const UnicodeString Msg, intptr_t AHelpContext) : \
       BASE(OBJECT_CLASS_##NAME, Msg, AHelpContext) \
     { \
     } \
-    virtual ExtException * __fastcall Clone() const override \
+    virtual ExtException * Clone() const override \
     { \
       return new NAME(OBJECT_CLASS_##NAME, this, L""); \
     } \
-    virtual void __fastcall Rethrow() \
+    virtual void Rethrow() \
     { \
       throw NAME(OBJECT_CLASS_##NAME, this, L""); \
     }
@@ -122,7 +122,7 @@ DERIVE_EXT_EXCEPTION(EScp, ExtException) // SCP protocol fatal error (non-fatal 
 class ESkipFile : public ExtException
 {
 public:
-  inline __fastcall ESkipFile() :
+  inline ESkipFile() :
     ExtException(OBJECT_CLASS_ESkipFile, nullptr, UnicodeString())
   {
   }
@@ -140,7 +140,7 @@ public:
   explicit EOSExtException(const UnicodeString Msg, intptr_t LastError);
   explicit EOSExtException(TObjectClassId Kind, const UnicodeString Msg, intptr_t LastError);
 };
-
+//---------------------------------------------------------------------------
 class NB_CORE_EXPORT ECRTExtException : public EOSExtException
 {
 public:
@@ -150,7 +150,7 @@ public:
   ECRTExtException();
   explicit ECRTExtException(const UnicodeString Msg);
 };
-
+//---------------------------------------------------------------------------
 class NB_CORE_EXPORT EFatal : public ExtException
 {
 public:
@@ -171,7 +171,7 @@ private:
   void Init(const Exception *E);
   bool FReopenQueried;
 };
-
+//---------------------------------------------------------------------------
 #define DERIVE_FATAL_EXCEPTION(NAME, BASE) \
   class NB_CORE_EXPORT NAME : public BASE \
   { \
@@ -182,9 +182,9 @@ private:
     explicit inline NAME(const Exception *E, const UnicodeString Msg, const UnicodeString HelpKeyword = L"") : BASE(OBJECT_CLASS_##NAME, E, Msg, HelpKeyword) {} \
     virtual ExtException *Clone() const override { return new NAME(this, L""); } \
   };
-
+//---------------------------------------------------------------------------
 DERIVE_FATAL_EXCEPTION(ESshFatal, EFatal)
-
+//---------------------------------------------------------------------------
 // exception that closes application, but displays info message (not error message)
 // = close on completion
 class NB_CORE_EXPORT ESshTerminate : public EFatal
@@ -195,7 +195,7 @@ public:
 public:
   explicit inline ESshTerminate(
     const Exception *E, const UnicodeString Msg, TOnceDoneOperation AOperation,
-    UnicodeString ATargetLocalPath, const UnicodeString ADestLocalFileName) :
+    const UnicodeString ATargetLocalPath, const UnicodeString ADestLocalFileName) :
     EFatal(OBJECT_CLASS_ESshTerminate, E, Msg),
     Operation(AOperation),
     TargetLocalPath(ATargetLocalPath),
@@ -210,7 +210,7 @@ public:
   UnicodeString TargetLocalPath;
   UnicodeString DestLocalFileName;
 };
-
+//---------------------------------------------------------------------------
 class NB_CORE_EXPORT ECallbackGuardAbort : public EAbort
 {
 public:
@@ -219,10 +219,10 @@ public:
 public:
   ECallbackGuardAbort();
 };
-
+//---------------------------------------------------------------------------
 NB_CORE_EXPORT Exception *CloneException(Exception *E);
 NB_CORE_EXPORT void RethrowException(Exception *E);
 NB_CORE_EXPORT UnicodeString GetExceptionHelpKeyword(const Exception* E);
 NB_CORE_EXPORT UnicodeString MergeHelpKeyword(const UnicodeString PrimaryHelpKeyword, const UnicodeString SecondaryHelpKeyword);
 NB_CORE_EXPORT bool IsInternalErrorHelpKeyword(const UnicodeString HelpKeyword);
-
+//---------------------------------------------------------------------------

@@ -37,17 +37,17 @@ static std::unique_ptr<TCriticalSection> LibS3Section(TraceInitPtr(new TCritical
 //---------------------------------------------------------------------------
 UTF8String LibS3Delimiter(L"/");
 //---------------------------------------------------------------------------
-UnicodeString __fastcall S3LibVersion()
+UnicodeString S3LibVersion()
 {
   return FORMAT("%s.%s", LIBS3_VER_MAJOR, LIBS3_VER_MINOR);
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall S3LibDefaultHostName()
+UnicodeString S3LibDefaultHostName()
 {
   return UnicodeString(S3_DEFAULT_HOSTNAME);
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall S3LibDefaultRegion()
+UnicodeString S3LibDefaultRegion()
 {
   return StrFromS3(S3_DEFAULT_REGION);
 }
@@ -68,7 +68,7 @@ TS3FileSystem::TS3FileSystem(TTerminal * ATerminal) :
   S3_set_request_context_response_data_callback(FRequestContext, LibS3ResponseDataCallback, this);
 }
 //---------------------------------------------------------------------------
-__fastcall TS3FileSystem::~TS3FileSystem()
+TS3FileSystem::~TS3FileSystem()
 {
   S3_destroy_request_context(FRequestContext);
   FRequestContext = nullptr;
@@ -85,7 +85,7 @@ void TS3FileSystem::FileTransferProgress(int64_t /*TransferSize*/, int64_t /*Byt
 
 }
 //---------------------------------------------------------------------------
-void __fastcall TS3FileSystem::Open()
+void TS3FileSystem::Open()
 {
 
   FTlsVersionStr = L"";
@@ -564,7 +564,7 @@ TLibS3BucketContext TS3FileSystem::GetBucketContext(const UnicodeString ABucketN
 #define CreateResponseHandlerCustom(PropertiesCallback) { &PropertiesCallback, &LibS3ResponseCompleteCallback }
 #define CreateResponseHandler() CreateResponseHandlerCustom(LibS3ResponsePropertiesCallback)
 //---------------------------------------------------------------------------
-void __fastcall TS3FileSystem::Close()
+void TS3FileSystem::Close()
 {
   DebugAssert(FActive);
   LibS3Deinitialize();
@@ -573,53 +573,53 @@ void __fastcall TS3FileSystem::Close()
   UnregisterFromNeonDebug(FTerminal);
 }
 //---------------------------------------------------------------------------
-bool __fastcall TS3FileSystem::GetActive() const
+bool TS3FileSystem::GetActive() const
 {
   return FActive;
 }
 //---------------------------------------------------------------------------
-void __fastcall TS3FileSystem::CollectUsage()
+void TS3FileSystem::CollectUsage()
 {
   // noop
 }
 //---------------------------------------------------------------------------
-const TSessionInfo & __fastcall TS3FileSystem::GetSessionInfo() const
+const TSessionInfo & TS3FileSystem::GetSessionInfo() const
 {
   return FSessionInfo;
 }
 //---------------------------------------------------------------------------
-const TFileSystemInfo & __fastcall TS3FileSystem::GetFileSystemInfo(bool /*Retrieve*/)
+const TFileSystemInfo & TS3FileSystem::GetFileSystemInfo(bool /*Retrieve*/)
 {
   return FFileSystemInfo;
 }
 //---------------------------------------------------------------------------
-bool __fastcall TS3FileSystem::TemporaryTransferFile(const UnicodeString /*AFileName*/)
+bool TS3FileSystem::TemporaryTransferFile(const UnicodeString /*AFileName*/)
 {
   return false;
 }
 //---------------------------------------------------------------------------
-bool __fastcall TS3FileSystem::GetStoredCredentialsTried() const
+bool TS3FileSystem::GetStoredCredentialsTried() const
 {
   // if we have one, we always try it
   return !FTerminal->GetSessionData()->GetPassword().IsEmpty();
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall TS3FileSystem::RemoteGetUserName() const
+UnicodeString TS3FileSystem::RemoteGetUserName() const
 {
   return UnicodeString(FAccessKeyId);
 }
 //---------------------------------------------------------------------------
-void __fastcall TS3FileSystem::Idle()
+void TS3FileSystem::Idle()
 {
   // noop
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall TS3FileSystem::GetAbsolutePath(const UnicodeString APath, bool Local)
+UnicodeString TS3FileSystem::GetAbsolutePath(const UnicodeString APath, bool Local)
 {
   return static_cast<const TS3FileSystem*>(this)->GetAbsolutePath(APath, Local);
 }
 
-UnicodeString __fastcall TS3FileSystem::GetAbsolutePath(const UnicodeString Path, bool /*Local*/) const
+UnicodeString TS3FileSystem::GetAbsolutePath(const UnicodeString Path, bool /*Local*/) const
 {
   if (base::UnixIsAbsolutePath(Path))
   {
@@ -631,7 +631,7 @@ UnicodeString __fastcall TS3FileSystem::GetAbsolutePath(const UnicodeString Path
   }
 }
 //---------------------------------------------------------------------------
-bool __fastcall TS3FileSystem::IsCapable(intptr_t Capability) const
+bool TS3FileSystem::IsCapable(intptr_t Capability) const
 {
   DebugAssert(FTerminal);
   switch (Capability)
@@ -681,12 +681,12 @@ bool __fastcall TS3FileSystem::IsCapable(intptr_t Capability) const
   }
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall TS3FileSystem::RemoteGetCurrentDirectory() const
+UnicodeString TS3FileSystem::RemoteGetCurrentDirectory() const
 {
   return FCurrentDirectory;
 }
 //---------------------------------------------------------------------------
-void __fastcall TS3FileSystem::DoStartup()
+void TS3FileSystem::DoStartup()
 {
   FTerminal->SetExceptionOnFail(true);
   // retrieve initialize working directory to save it as home directory
@@ -694,12 +694,12 @@ void __fastcall TS3FileSystem::DoStartup()
   FTerminal->SetExceptionOnFail(false);
 }
 //---------------------------------------------------------------------------
-void __fastcall TS3FileSystem::LookupUsersGroups()
+void TS3FileSystem::LookupUsersGroups()
 {
   DebugFail();
 }
 //---------------------------------------------------------------------------
-void __fastcall TS3FileSystem::ReadCurrentDirectory()
+void TS3FileSystem::ReadCurrentDirectory()
 {
   if (FCachedDirectoryChange.IsEmpty())
   {
@@ -712,12 +712,12 @@ void __fastcall TS3FileSystem::ReadCurrentDirectory()
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TS3FileSystem::HomeDirectory()
+void TS3FileSystem::HomeDirectory()
 {
   ChangeDirectory(L"/");
 }
 //---------------------------------------------------------------------------
-void __fastcall TS3FileSystem::AnnounceFileListOperation()
+void TS3FileSystem::AnnounceFileListOperation()
 {
   // noop
 }
@@ -729,7 +729,7 @@ void TS3FileSystem::TryOpenDirectory(const UnicodeString ADirectory)
   ReadDirectoryInternal(ADirectory, FileList.get(), 1, UnicodeString());
 }
 //---------------------------------------------------------------------------
-void __fastcall TS3FileSystem::ChangeDirectory(const UnicodeString ADirectory)
+void TS3FileSystem::ChangeDirectory(const UnicodeString ADirectory)
 {
   UnicodeString Path = GetAbsolutePath(ADirectory, false);
 
@@ -740,7 +740,7 @@ void __fastcall TS3FileSystem::ChangeDirectory(const UnicodeString ADirectory)
   FCachedDirectoryChange = Path;
 }
 //---------------------------------------------------------------------------
-void __fastcall TS3FileSystem::CachedChangeDirectory(const UnicodeString Directory)
+void TS3FileSystem::CachedChangeDirectory(const UnicodeString Directory)
 {
   FCachedDirectoryChange = base::UnixExcludeTrailingBackslash(Directory);
 }
@@ -919,13 +919,13 @@ void TS3FileSystem::ReadDirectoryInternal(
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TS3FileSystem::ReadDirectory(TRemoteFileList * FileList)
+void TS3FileSystem::ReadDirectory(TRemoteFileList * FileList)
 {
   volatile TOperationVisualizer Visualizer(FTerminal->GetUseBusyCursor());
   ReadDirectoryInternal(FileList->GetDirectory(), FileList, 0, UnicodeString());
 }
 //---------------------------------------------------------------------------
-void __fastcall TS3FileSystem::ReadSymlink(TRemoteFile * /*SymlinkFile*/,
+void TS3FileSystem::ReadSymlink(TRemoteFile * /*SymlinkFile*/,
   TRemoteFile *& /*File*/)
 {
   // we never set SymLink flag, so we should never get here
@@ -948,7 +948,7 @@ void TS3FileSystem::DoReadFile(const UnicodeString AFileName, TRemoteFile *& AFi
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TS3FileSystem::ReadFile(const UnicodeString AFileName,
+void TS3FileSystem::ReadFile(const UnicodeString AFileName,
   TRemoteFile *& File)
 {
   volatile TOperationVisualizer Visualizer(FTerminal->GetUseBusyCursor());
@@ -959,7 +959,7 @@ void __fastcall TS3FileSystem::ReadFile(const UnicodeString AFileName,
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TS3FileSystem::RemoteDeleteFile(const UnicodeString AFileName,
+void TS3FileSystem::RemoteDeleteFile(const UnicodeString AFileName,
   const TRemoteFile *AFile, intptr_t AParams, TRmSessionAction & Action)
 {
   UnicodeString FileName = GetAbsolutePath(AFileName, false);
@@ -995,7 +995,7 @@ void __fastcall TS3FileSystem::RemoteDeleteFile(const UnicodeString AFileName,
   CheckLibS3Error(Data);
 }
 //---------------------------------------------------------------------------
-void __fastcall TS3FileSystem::RemoteRenameFile(const UnicodeString AFileName, const TRemoteFile *AFile,
+void TS3FileSystem::RemoteRenameFile(const UnicodeString AFileName, const TRemoteFile *AFile,
   const UnicodeString ANewName)
 {
   RemoteCopyFile(AFileName, AFile, ANewName);
@@ -1004,7 +1004,7 @@ void __fastcall TS3FileSystem::RemoteRenameFile(const UnicodeString AFileName, c
   DummyAction.Cancel();
 }
 //---------------------------------------------------------------------------
-void __fastcall TS3FileSystem::RemoteCopyFile(const UnicodeString AFileName, const TRemoteFile *AFile,
+void TS3FileSystem::RemoteCopyFile(const UnicodeString AFileName, const TRemoteFile *AFile,
   const UnicodeString ANewName)
 {
   if (DebugAlwaysTrue(AFile != nullptr) && AFile->GetIsDirectory())
@@ -1043,7 +1043,7 @@ void __fastcall TS3FileSystem::RemoteCopyFile(const UnicodeString AFileName, con
   CheckLibS3Error(Data);
 }
 //---------------------------------------------------------------------------
-void __fastcall TS3FileSystem::RemoteCreateDirectory(const UnicodeString ADirName)
+void TS3FileSystem::RemoteCreateDirectory(const UnicodeString ADirName)
 {
   volatile TOperationVisualizer Visualizer(FTerminal->GetUseBusyCursor());
   UnicodeString DirName = base::UnixExcludeTrailingBackslash(GetAbsolutePath(ADirName, false));
@@ -1086,56 +1086,56 @@ void __fastcall TS3FileSystem::RemoteCreateDirectory(const UnicodeString ADirNam
   CheckLibS3Error(Data);
 }
 //---------------------------------------------------------------------------
-void __fastcall TS3FileSystem::RemoteCreateLink(const UnicodeString /*AFileName*/,
+void TS3FileSystem::RemoteCreateLink(const UnicodeString /*AFileName*/,
   const UnicodeString /*PointTo*/, bool /*Symbolic*/)
 {
   DebugFail();
 }
 //---------------------------------------------------------------------------
-void __fastcall TS3FileSystem::ChangeFileProperties(const UnicodeString FileName,
+void TS3FileSystem::ChangeFileProperties(const UnicodeString FileName,
   const TRemoteFile * /*File*/, const TRemoteProperties * /*Properties*/,
   TChmodSessionAction & /*Action*/)
 {
   DebugFail();
 }
 //---------------------------------------------------------------------------
-bool __fastcall TS3FileSystem::LoadFilesProperties(TStrings * /*FileList*/)
+bool TS3FileSystem::LoadFilesProperties(TStrings * /*FileList*/)
 {
   DebugFail();
   return false;
 }
 //---------------------------------------------------------------------------
-void __fastcall TS3FileSystem::CalculateFilesChecksum(const UnicodeString /*Alg*/,
+void TS3FileSystem::CalculateFilesChecksum(const UnicodeString /*Alg*/,
     TStrings * /*FileList*/, TStrings * /*Checksums*/,
     TCalculatedChecksumEvent /*OnCalculatedChecksum*/)
 {
   DebugFail();
 }
 //---------------------------------------------------------------------------
-void __fastcall TS3FileSystem::CustomCommandOnFile(const UnicodeString /*AFileName*/,
+void TS3FileSystem::CustomCommandOnFile(const UnicodeString /*AFileName*/,
   const TRemoteFile * /*AFile*/, const UnicodeString /*ACommand*/, intptr_t /*AParams*/, TCaptureOutputEvent /*OutputEvent*/)
 {
   DebugFail();
 }
 //---------------------------------------------------------------------------
-void __fastcall TS3FileSystem::AnyCommand(const UnicodeString /*ACommand*/,
+void TS3FileSystem::AnyCommand(const UnicodeString /*ACommand*/,
   TCaptureOutputEvent /*OutputEvent*/)
 {
   DebugFail();
 }
 //---------------------------------------------------------------------------
-TStrings * __fastcall TS3FileSystem::GetFixedPaths() const
+TStrings * TS3FileSystem::GetFixedPaths() const
 {
   return nullptr;
 }
 //---------------------------------------------------------------------------
-void __fastcall TS3FileSystem::SpaceAvailable(const UnicodeString /*APath*/,
+void TS3FileSystem::SpaceAvailable(const UnicodeString /*APath*/,
   TSpaceAvailable & /*ASpaceAvailable*/)
 {
   DebugFail();
 }
 //---------------------------------------------------------------------------
-void __fastcall TS3FileSystem::CopyToRemote(
+void TS3FileSystem::CopyToRemote(
   TStrings *AFilesToCopy, const UnicodeString ATargetDir, const TCopyParamType *CopyParam,
   intptr_t AParams, TFileOperationProgressType *OperationProgress, TOnceDoneOperation &OnceDoneOperation)
 {
@@ -1307,7 +1307,7 @@ int TS3FileSystem::LibS3MultipartCommitPutObjectDataCallback(int BufferSize, cha
   return Result;
 }
 //---------------------------------------------------------------------------
-void __fastcall TS3FileSystem::Source(
+void TS3FileSystem::Source(
   TLocalFileHandle &AHandle, const UnicodeString TargetDir, UnicodeString &ADestFileName,
   const TCopyParamType *CopyParam, intptr_t Params,
   TFileOperationProgressType *OperationProgress, uintptr_t /*Flags*/,
@@ -1529,7 +1529,7 @@ void __fastcall TS3FileSystem::Source(
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TS3FileSystem::CopyToLocal(
+void TS3FileSystem::CopyToLocal(
   TStrings *FilesToCopy, const UnicodeString ATargetDir, const TCopyParamType *CopyParam,
   intptr_t AParams, TFileOperationProgressType *OperationProgress, TOnceDoneOperation &OnceDoneOperation)
 {
@@ -1582,7 +1582,7 @@ S3Status TS3FileSystem::GetObjectData(int BufferSize, const char * Buffer, TLibS
   return Result;
 }
 //---------------------------------------------------------------------------
-void __fastcall TS3FileSystem::Sink(
+void TS3FileSystem::Sink(
   const UnicodeString AFileName, const TRemoteFile *AFile,
   const UnicodeString ATargetDir, UnicodeString &ADestFileName, uintptr_t Attrs,
   const TCopyParamType *CopyParam, intptr_t Params, TFileOperationProgressType *OperationProgress,
@@ -1699,27 +1699,27 @@ void __fastcall TS3FileSystem::Sink(
   FTerminal->UpdateTargetAttrs(DestFullName, AFile, CopyParam, Attrs);
 }
 //---------------------------------------------------------------------------
-void __fastcall TS3FileSystem::GetSupportedChecksumAlgs(TStrings * /*Algs*/)
+void TS3FileSystem::GetSupportedChecksumAlgs(TStrings * /*Algs*/)
 {
   // NOOP
 }
 //---------------------------------------------------------------------------
-void __fastcall TS3FileSystem::LockFile(const UnicodeString /*AFileName*/, const TRemoteFile * /*AFile*/)
+void TS3FileSystem::LockFile(const UnicodeString /*AFileName*/, const TRemoteFile * /*AFile*/)
 {
   DebugFail();
 }
 //---------------------------------------------------------------------------
-void __fastcall TS3FileSystem::UnlockFile(const UnicodeString /*AFileName*/, const TRemoteFile * /*AFile*/)
+void TS3FileSystem::UnlockFile(const UnicodeString /*AFileName*/, const TRemoteFile * /*AFile*/)
 {
   DebugFail();
 }
 //---------------------------------------------------------------------------
-void __fastcall TS3FileSystem::UpdateFromMain(TCustomFileSystem * /*AMainFileSystem*/)
+void TS3FileSystem::UpdateFromMain(TCustomFileSystem * /*AMainFileSystem*/)
 {
   // noop
 }
 //------------------------------------------------------------------------------
-void __fastcall TS3FileSystem::ClearCaches()
+void TS3FileSystem::ClearCaches()
 {
   FRegions.clear();
   FHostNames.clear();

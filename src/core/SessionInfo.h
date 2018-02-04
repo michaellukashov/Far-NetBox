@@ -77,10 +77,10 @@ public:
   explicit TSessionUI(TObjectClassId Kind) : TObject(Kind) {}
   virtual ~TSessionUI() {}
   virtual void Information(const UnicodeString AStr, bool Status) = 0;
-  virtual uint32_t __fastcall QueryUser(const UnicodeString AQuery,
+  virtual uint32_t QueryUser(const UnicodeString AQuery,
     TStrings *MoreMessages, uint32_t Answers, const TQueryParams *Params,
     TQueryType QueryType = qtConfirmation) = 0;
-  virtual uint32_t __fastcall QueryUserException(const UnicodeString AQuery,
+  virtual uint32_t QueryUserException(const UnicodeString AQuery,
     Exception *E, uint32_t Answers, const TQueryParams *Params,
     TQueryType QueryType = qtConfirmation) = 0;
   virtual bool PromptUser(TSessionData *Data, TPromptKind Kind,
@@ -110,13 +110,13 @@ enum TLogAction
 //---------------------------------------------------------------------------
 enum TCaptureOutputType { cotOutput, cotError, cotExitCode };
 #if 0
-typedef void __fastcall (__closure *TCaptureOutputEvent)(
+typedef void (__closure *TCaptureOutputEvent)(
   const UnicodeString Str, TCaptureOutputType OutputType);
 #endif // #if 0
 typedef nb::FastDelegate2<void,
   UnicodeString /*Str*/, TCaptureOutputType /*OutputType*/> TCaptureOutputEvent;
 #if 0
-typedef void __fastcall (__closure *TCalculatedChecksumEvent)(
+typedef void (__closure *TCalculatedChecksumEvent)(
   const UnicodeString FileName, const UnicodeString Alg, const UnicodeString Hash);
 #endif // #if 0
 typedef nb::FastDelegate3<void,
@@ -217,7 +217,7 @@ public:
 class NB_CORE_EXPORT TCpSessionAction : public TFileLocationSessionAction
 {
 public:
-  explicit __fastcall TCpSessionAction(TActionLog * Log, const UnicodeString AFileName,
+  explicit TCpSessionAction(TActionLog * Log, const UnicodeString AFileName,
     const UnicodeString ADestination);
 };
 //---------------------------------------------------------------------------
@@ -225,7 +225,7 @@ class NB_CORE_EXPORT TCallSessionAction : public TSessionAction
 {
 public:
   explicit TCallSessionAction(TActionLog *Log, const UnicodeString Command,
-    UnicodeString Destination);
+    const UnicodeString ADestination);
 
   void AddOutput(const UnicodeString Output, bool StdError);
   void ExitCode(int ExitCode);
@@ -316,7 +316,7 @@ private:
   bool FClosed;
 
   void OpenLogFile();
-  UnicodeString __fastcall GetLogFileName();
+  UnicodeString GetLogFileName();
   void DoAdd(TLogLineType AType, UnicodeString ALine,
     TDoAddLogEvent Event);
   void DoAddToParent(TLogLineType AType, const UnicodeString ALine);

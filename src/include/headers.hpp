@@ -132,10 +132,10 @@ template <class T>
 inline typename std::enable_if<std::is_floating_point<T>::value, uintptr_t>::type
 ToUIntPtr(T a) { return static_cast<uintptr_t>(a); }
 
+/*
 inline uintptr_t
 ToUIntPtr(intptr_t a) { return static_cast<uintptr_t>(a); }
 
-/*
 inline uintptr_t
 ToUIntPtr(int a) { return static_cast<uintptr_t>(a); }
 
@@ -148,11 +148,14 @@ ToUIntPtr(DWORD a) { return static_cast<uintptr_t>(a); }
 template <class T>
 inline typename std::enable_if<!std::is_same<T, intptr_t>::value>::type
 ToUIntPtr(T a) { return static_cast<uintptr_t>(a); }
+*/
 
 template <class T>
-inline typename std::enable_if<sizeof(uintptr_t) >= sizeof(T), uintptr_t>::value
+inline typename std::enable_if<sizeof(T) >= sizeof(uintptr_t), uintptr_t>::value
 ToUIntPtr(T a) { return static_cast<uintptr_t>(a); }
-*/
+
+inline uintptr_t
+ToUIntPtr(int64_t a) { return static_cast<uintptr_t>(a); }
 
 template <class T>
 inline typename std::is_convertible<T, int>::value

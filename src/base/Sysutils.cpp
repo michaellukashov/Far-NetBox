@@ -305,12 +305,12 @@ intptr_t Pos(const UnicodeString Str, const UnicodeString Substr)
   return Result;
 }
 
-UnicodeString StringReplaceAll(UnicodeString Str, UnicodeString From, UnicodeString To)
+UnicodeString StringReplaceAll(const UnicodeString Str, const UnicodeString From, const UnicodeString To)
 {
   return AnsiReplaceStr(Str, From, To);
 }
 
-bool IsDelimiter(UnicodeString Delimiters, UnicodeString Str, intptr_t AIndex)
+bool IsDelimiter(const UnicodeString Delimiters, const UnicodeString Str, intptr_t AIndex)
 {
   if (AIndex <= Str.Length())
   {
@@ -326,7 +326,7 @@ bool IsDelimiter(UnicodeString Delimiters, UnicodeString Str, intptr_t AIndex)
   return false;
 }
 
-intptr_t FirstDelimiter(UnicodeString Delimiters, UnicodeString Str)
+intptr_t FirstDelimiter(const UnicodeString Delimiters, const UnicodeString Str)
 {
   if (Str.Length())
   {
@@ -341,7 +341,7 @@ intptr_t FirstDelimiter(UnicodeString Delimiters, UnicodeString Str)
   return 0;
 }
 
-intptr_t LastDelimiter(UnicodeString Delimiters, UnicodeString Str)
+intptr_t LastDelimiter(const UnicodeString Delimiters, const UnicodeString Str)
 {
   if (Str.Length())
   {
@@ -1035,7 +1035,7 @@ UnicodeString SysErrorMessage(intptr_t ErrorCode)
   return Result;
 }
 
-UnicodeString ReplaceStrAll(UnicodeString Str, UnicodeString What, UnicodeString ByWhat)
+UnicodeString ReplaceStrAll(const UnicodeString Str, const UnicodeString What, const UnicodeString ByWhat)
 {
   UnicodeString Result = Str;
   intptr_t Pos = Result.Pos(What);
@@ -1047,7 +1047,7 @@ UnicodeString ReplaceStrAll(UnicodeString Str, UnicodeString What, UnicodeString
   return Result;
 }
 
-UnicodeString ExtractShortPathName(UnicodeString APath)
+UnicodeString ExtractShortPathName(const UnicodeString APath)
 {
   // FIXME
   return APath;
@@ -1058,7 +1058,7 @@ UnicodeString ExtractShortPathName(UnicodeString APath)
 // part of the Path.
 //
 // "/foo/bar/baz.txt" --> "/foo/bar/"
-UnicodeString ExtractDirectory(UnicodeString APath, wchar_t Delimiter)
+UnicodeString ExtractDirectory(const UnicodeString APath, wchar_t Delimiter)
 {
   UnicodeString Result = APath.SubString(1, APath.RPos(Delimiter));
   return Result;
@@ -1068,7 +1068,7 @@ UnicodeString ExtractDirectory(UnicodeString APath, wchar_t Delimiter)
 // Returns only the Filename part of the Path.
 //
 // "/foo/bar/baz.txt" --> "baz.txt"
-UnicodeString ExtractFilename(UnicodeString APath, wchar_t Delimiter)
+UnicodeString ExtractFilename(const UnicodeString APath, wchar_t Delimiter)
 {
   return APath.SubString(APath.RPos(Delimiter) + 1);
 }
@@ -1079,7 +1079,7 @@ UnicodeString ExtractFilename(UnicodeString APath, wchar_t Delimiter)
 //
 // "/foo/bar/baz.txt" --> ".txt"
 // "/foo/bar/baz" --> ""
-UnicodeString ExtractFileExtension(UnicodeString APath, wchar_t Delimiter)
+UnicodeString ExtractFileExtension(const UnicodeString APath, wchar_t Delimiter)
 {
   UnicodeString FileName = ::ExtractFilename(APath, Delimiter);
   intptr_t N = FileName.RPos(L'.');
@@ -1098,7 +1098,7 @@ UnicodeString ExtractFileExtension(UnicodeString APath, wchar_t Delimiter)
 // "/foo/bar/baz.txt", "" --> "/foo/bar/baz"
 // "/foo/bar/baz", ".txt" --> "/foo/bar/baz.txt"
 //
-UnicodeString ChangeFileExtension(UnicodeString APath, UnicodeString Ext, wchar_t Delimiter)
+UnicodeString ChangeFileExtension(const UnicodeString APath, const UnicodeString Ext, wchar_t Delimiter)
 {
   UnicodeString FileName = ::ExtractFilename(APath, Delimiter);
   if (FileName.RPos(L'.') > 1)
@@ -1112,7 +1112,7 @@ UnicodeString ChangeFileExtension(UnicodeString APath, UnicodeString Ext, wchar_
     Ext;
 }
 
-UnicodeString ExcludeTrailingBackslash(UnicodeString Str)
+UnicodeString ExcludeTrailingBackslash(const UnicodeString Str)
 {
   UnicodeString Result = Str;
   if ((Result.Length() > 0) && ((Result[Result.Length()] == L'/') ||
@@ -1123,7 +1123,7 @@ UnicodeString ExcludeTrailingBackslash(UnicodeString Str)
   return Result;
 }
 
-UnicodeString IncludeTrailingBackslash(UnicodeString Str)
+UnicodeString IncludeTrailingBackslash(const UnicodeString Str)
 {
   UnicodeString Result = Str;
   intptr_t L = Result.Length();
@@ -1139,7 +1139,7 @@ UnicodeString IncludeTrailingPathDelimiter(UnicodeString Str)
   return ::IncludeTrailingBackslash(Str);
 }
 
-UnicodeString ExtractFileDir(UnicodeString Str)
+UnicodeString ExtractFileDir(const UnicodeString Str)
 {
   UnicodeString Result;
   intptr_t Pos = Str.LastDelimiter(L"/\\");
@@ -1155,7 +1155,7 @@ UnicodeString ExtractFileDir(UnicodeString Str)
   return Result;
 }
 
-UnicodeString ExtractFilePath(UnicodeString Str)
+UnicodeString ExtractFilePath(const UnicodeString Str)
 {
   UnicodeString Result = ::ExtractFileDir(Str);
   return Result;
@@ -1167,7 +1167,7 @@ UnicodeString GetCurrentDir()
   return Result;
 }
 
-UnicodeString StrToHex(UnicodeString Str, bool UpperCase, wchar_t Separator)
+UnicodeString StrToHex(const UnicodeString Str, bool UpperCase, wchar_t Separator)
 {
   UnicodeString Result;
   for (intptr_t Index = 1; Index <= Str.Length(); ++Index)
@@ -1181,7 +1181,7 @@ UnicodeString StrToHex(UnicodeString Str, bool UpperCase, wchar_t Separator)
   return Result;
 }
 
-UnicodeString HexToStr(UnicodeString Hex)
+UnicodeString HexToStr(const UnicodeString Hex)
 {
   UnicodeString Digits = "0123456789ABCDEF";
   UnicodeString Result;
@@ -1203,7 +1203,7 @@ UnicodeString HexToStr(UnicodeString Hex)
   return Result;
 }
 
-uintptr_t HexToIntPtr(UnicodeString Hex, uintptr_t MinChars)
+uintptr_t HexToIntPtr(const UnicodeString Hex, uintptr_t MinChars)
 {
   UnicodeString Digits = "0123456789ABCDEF";
   uintptr_t Result = 0;
@@ -1398,7 +1398,7 @@ TDateTime StrToDateTime(UnicodeString Value)
   return TDateTime();
 }
 
-bool TryStrToDateTime(UnicodeString StrValue, TDateTime &Value,
+bool TryStrToDateTime(const UnicodeString StrValue, TDateTime &Value,
   TFormatSettings &FormatSettings)
 {
   (void)StrValue;
@@ -1437,7 +1437,7 @@ TDateTime Date()
   return Result;
 }
 
-UnicodeString FormatDateTime(UnicodeString Fmt, const TDateTime &ADateTime)
+UnicodeString FormatDateTime(const UnicodeString Fmt, const TDateTime &ADateTime)
 {
   (void)Fmt;
   UnicodeString Result;

@@ -5,8 +5,20 @@
 
 #include <Global.h>
 #include <Exceptions.h>
+
+#if 0
+#define ASCOPY(dest, source) \
+  { \
+    AnsiString CopyBuf = source; \
+    strncpy(dest, CopyBuf.c_str(), LENOF(dest)); \
+    dest[LENOF(dest)-1] = '\0'; \
+  }
+#define SWAP(TYPE, FIRST, SECOND) \
+  { TYPE __Backup = FIRST; FIRST = SECOND; SECOND = __Backup; }
+#endif // if 0
 //---------------------------------------------------------------------------
 extern const wchar_t EngShortMonthNames[12][4];
+__removed extern const char Bom[3];
 #define CONST_BOM "\xEF\xBB\xBF"
 extern const wchar_t TokenPrefix;
 extern const wchar_t NoReplacement;
@@ -14,12 +26,15 @@ extern const wchar_t TokenReplacement;
 extern const UnicodeString LocalInvalidChars;
 extern const UnicodeString PasswordMask;
 extern const UnicodeString Ellipsis;
-
+//---------------------------------------------------------------------------
+extern const UnicodeString HttpProtocol;
+extern const UnicodeString HttpsProtocol;
+extern const UnicodeString ProtocolSeparator;
+//---------------------------------------------------------------------------
 #define LOCAL_INVALID_CHARS "/\\:*?\"<>|"
 #define PASSWORD_MASK "***"
 #define sLineBreak L"\n"
 
-#if 1
 // Order of the values also define order of the buttons/answers on the prompts
 // MessageDlg relies on these to be <= 0x0000FFFF
 const uint32_t qaYes      = 0x00000001;
@@ -47,13 +62,8 @@ const intptr_t qpNeverAskAgainCheck   = 0x02;
 const intptr_t qpAllowContinueOnError = 0x04;
 const intptr_t qpIgnoreAbort          = 0x08;
 const intptr_t qpWaitInBatch          = 0x10;
-#endif // #if 1
 
 inline void ThrowExtException() { throw ExtException(static_cast<Exception *>(nullptr), UnicodeString(L"")); }
-//---------------------------------------------------------------------------
-extern const UnicodeString HttpProtocol;
-extern const UnicodeString HttpsProtocol;
-extern const UnicodeString ProtocolSeparator;
 //---------------------------------------------------------------------------
 NB_CORE_EXPORT UnicodeString ReplaceChar(const UnicodeString Str, wchar_t A, wchar_t B);
 NB_CORE_EXPORT UnicodeString DeleteChar(const UnicodeString Str, wchar_t C);
@@ -104,7 +114,7 @@ NB_CORE_EXPORT UnicodeString ExtractProgramName(const UnicodeString ACommand);
 NB_CORE_EXPORT UnicodeString FormatCommand(const UnicodeString AProgram, const UnicodeString AParams);
 NB_CORE_EXPORT UnicodeString ExpandFileNameCommand(const UnicodeString ACommand,
   const UnicodeString AFileName);
-NB_CORE_EXPORT void __fastcall ReformatFileNameCommand(UnicodeString &ACommand);
+NB_CORE_EXPORT void ReformatFileNameCommand(UnicodeString &ACommand);
 NB_CORE_EXPORT UnicodeString EscapeParam(const UnicodeString AParam);
 NB_CORE_EXPORT UnicodeString EscapePuttyCommandParam(const UnicodeString AParam);
 NB_CORE_EXPORT UnicodeString ExpandEnvironmentVariables(const UnicodeString Str);
@@ -151,7 +161,7 @@ NB_CORE_EXPORT bool IsWin7();
 NB_CORE_EXPORT bool IsWin8();
 NB_CORE_EXPORT bool IsWin10();
 NB_CORE_EXPORT bool IsWine();
-__removed TLibModule * __fastcall FindModule(void * Instance);
+__removed TLibModule * FindModule(void * Instance);
 NB_CORE_EXPORT int64_t Round(double Number);
 NB_CORE_EXPORT bool TryRelativeStrToDateTime(const UnicodeString AStr, TDateTime &DateTime, bool Add);
 NB_CORE_EXPORT bool TryStrToSize(const UnicodeString SizeStr, int64_t &Size);
@@ -187,13 +197,12 @@ NB_CORE_EXPORT bool IsHttpOrHttpsUrl(const UnicodeString S);
 NB_CORE_EXPORT UnicodeString ChangeUrlProtocol(const UnicodeString S, const UnicodeString Protocol);
 NB_CORE_EXPORT void LoadScriptFromFile(const UnicodeString FileName, TStrings *Lines);
 NB_CORE_EXPORT UnicodeString StripEllipsis(const UnicodeString S);
-NB_CORE_EXPORT UnicodeString __fastcall GetFileMimeType(const UnicodeString FileName);
+NB_CORE_EXPORT UnicodeString GetFileMimeType(const UnicodeString FileName);
 //---------------------------------------------------------------------------
 NB_CORE_EXPORT bool CompareFileName(const UnicodeString APath1, const UnicodeString APath2);
-NB_CORE_EXPORT bool ComparePaths(UnicodeString APath1, UnicodeString APath2);
-NB_CORE_EXPORT void ReformatFileNameCommand(UnicodeString &Command);
+NB_CORE_EXPORT bool ComparePaths(const UnicodeString APath1, const UnicodeString APath2);
 #if 0
-typedef void __fastcall (__closure* TProcessLocalFileEvent)
+typedef void (__closure* TProcessLocalFileEvent)
   (const UnicodeString FileName, const TSearchRec Rec, void * Param);
 #endif // #if 0
 typedef nb::FastDelegate3<void,
@@ -250,10 +259,10 @@ NB_CORE_EXPORT intptr_t CompareFileTime(const TDateTime &T1, const TDateTime &T2
 NB_CORE_EXPORT intptr_t TimeToMSec(const TDateTime &T);
 NB_CORE_EXPORT intptr_t TimeToSeconds(const TDateTime &T);
 NB_CORE_EXPORT intptr_t TimeToMinutes(const TDateTime &T);
-UnicodeString FormatDateTimeSpan(const UnicodeString TimeFormat, TDateTime DateTime);
+NB_CORE_EXPORT UnicodeString FormatDateTimeSpan(const UnicodeString TimeFormat, TDateTime DateTime);
 //---------------------------------------------------------------------------
 template<class MethodT>
-MethodT __fastcall MakeMethod(void * Data, void * Code)
+MethodT MakeMethod(void * Data, void * Code)
 {
   MethodT Method;
   ((TMethod*)&Method)->Data = Data;

@@ -88,8 +88,8 @@ void FlashOnBackground();
 void TerminateApplication();
 void ShowExtendedExceptionEx(TTerminal *Terminal, Exception *E);
 //void FormHelp(TCustomForm * Form);
-void SearchHelp(UnicodeString Message);
-void MessageWithNoHelp(UnicodeString Message);
+void SearchHelp(const UnicodeString Message);
+void MessageWithNoHelp(const UnicodeString Message);
 
 class TProgramParams;
 bool CheckSafe(TProgramParams *Params);
@@ -114,9 +114,9 @@ uintptr_t MessageDialog(const UnicodeString Msg, TQueryType Type,
   uint32_t Answers, const UnicodeString HelpKeyword = HELP_NONE, const TMessageParams *Params = nullptr);
 uintptr_t MessageDialog(intptr_t Ident, TQueryType Type,
   uint32_t Answers, const UnicodeString HelpKeyword = HELP_NONE, const TMessageParams *Params = nullptr);
-uintptr_t SimpleErrorDialog(UnicodeString Msg, UnicodeString MoreMessages = L"");
+uintptr_t SimpleErrorDialog(UnicodeString Msg, const UnicodeString MoreMessages = L"");
 
-uintptr_t MoreMessageDialog(UnicodeString Message,
+uintptr_t MoreMessageDialog(const UnicodeString Message,
   TStrings *MoreMessages, TQueryType Type, uint32_t Answers,
   const UnicodeString HelpKeyword, const TMessageParams *Params = nullptr);
 
@@ -481,32 +481,6 @@ void DoFileSystemInfoDialog(
   const TSessionInfo &SessionInfo, const TFileSystemInfo &FileSystemInfo,
   UnicodeString SpaceAvailablePath, TGetSpaceAvailableEvent OnGetSpaceAvailable);
 
-//moved to FarInterface.h
-#if 0
-// forms\MessageDlg.cpp
-void AnswerNameAndCaption(
-  uint32_t Answer, UnicodeString &Name, UnicodeString &Caption);
-TFarDialog *CreateMoreMessageDialog(UnicodeString Msg,
-  TStrings *MoreMessages, TMsgDlgType DlgType, uint32_t Answers,
-  const TQueryButtonAlias *Aliases, uintptr_t AliasesCount,
-  uintptr_t TimeoutAnswer, TFarButton **TimeoutButton,
-  UnicodeString ImageName, UnicodeString NeverAskAgainCaption,
-  UnicodeString MoreMessagesUrl, TSize MoreMessagesSize,
-  UnicodeString CustomCaption);
-TFarDialog *CreateMoreMessageDialogEx(UnicodeString Message, TStrings *MoreMessages,
-  TQueryType Type, uint32_t Answers, UnicodeString HelpKeyword, const TMessageParams *Params);
-uintptr_t ExecuteMessageDialog(TFarDialog *Dialog, uint32_t Answers, const TMessageParams *Params);
-void InsertPanelToMessageDialog(TFarDialog *Form, TPanel *Panel);
-void NavigateMessageDialogToUrl(TFarDialog *Form, UnicodeString Url);
-
-extern const UnicodeString MessagePanelName;
-extern const UnicodeString MainMessageLabelName;
-extern const UnicodeString MessageLabelName;
-extern const UnicodeString YesButtonName;
-extern const UnicodeString OKButtonName;
-
-#endif // #if 0
-
 // windows\Console.cpp
 enum TConsoleMode { cmNone, cmScripting, cmHelp, cmBatchSettings, cmKeyGen, cmFingerprintScan };
 int Console(TConsoleMode Mode);
@@ -618,7 +592,7 @@ void InitializeShortCutCombo(TComboBox *ComboBox,
 void SetShortCutCombo(TComboBox *ComboBox, TShortCut Value);
 TShortCut GetShortCutCombo(TComboBox *ComboBox);
 bool IsCustomShortCut(TShortCut ShortCut);
-TShortCut __fastcall NormalizeCustomShortCut(TShortCut ShortCut);
+TShortCut NormalizeCustomShortCut(TShortCut ShortCut);
 #endif // #if 0
 
 #ifdef _DEBUG

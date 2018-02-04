@@ -147,9 +147,10 @@ nb_replace_compiler_option(CMAKE_CXX_FLAGS "/GR-?" "/GR-")
 nb_replace_compiler_option(CMAKE_CXX_FLAGS "/EH[-cs]+" "")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHsc")
 #string(REPLACE "/MD" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
-add_definitions(-DWINSCP -DUSE_DLMALLOC)
+add_definitions(-DWINSCP -DUSE_DLMALLOC -DFASTDELEGATE_ALLOW_FUNCTION_TYPE_SYNTAX)
 add_definitions(-DHIDE_TODO)
 add_definitions(-DNEED_LIBS3)
+add_definitions(-DFARPLUGIN)
 
 set(NETBOX_DLL_LINK_FLAGS
   "
@@ -1438,6 +1439,7 @@ set(NETBOX_SOURCES
   ../base/MsgIDs.h
   ../base/vcl.h
   ../base/FileBuffer.h
+  ../base/FormatUtils.h
   ../base/ObjIDs.h
 
   ../core/WebDAVFileSystem.h
@@ -1481,7 +1483,6 @@ set(NETBOX_SOURCES
   ../resource/rtlconsts.h
   ../resource/HelpCore.h
   ../resource/TextsFileZilla.h
-
   ../PluginSDK/Far2/plugin.hpp
   ../PluginSDK/Far2/farcolor.hpp
   ../PluginSDK/Far2/farkeys.hpp

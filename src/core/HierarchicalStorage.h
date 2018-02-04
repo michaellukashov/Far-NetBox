@@ -171,44 +171,44 @@ private:
 class TCustomIniFileStorage : public THierarchicalStorage
 {
 public:
-  __fastcall TCustomIniFileStorage(const UnicodeString Storage, TCustomIniFile *IniFile);
-  virtual __fastcall ~TCustomIniFileStorage();
+  TCustomIniFileStorage(const UnicodeString Storage, TCustomIniFile *IniFile);
+  virtual ~TCustomIniFileStorage();
 
-  virtual bool __fastcall OpenRootKey(bool CanCreate);
-  virtual bool __fastcall OpenSubKey(UnicodeString SubKey, bool CanCreate, bool Path = false);
-  virtual void __fastcall CloseSubKey();
-  virtual bool __fastcall DeleteSubKey(const UnicodeString SubKey);
-  virtual bool __fastcall DeleteValue(const UnicodeString Name);
-  virtual void __fastcall GetSubKeyNames(Classes::TStrings *Strings);
-  virtual bool __fastcall ValueExists(const UnicodeString Value);
+  virtual bool OpenRootKey(bool CanCreate);
+  virtual bool OpenSubKey(UnicodeString SubKey, bool CanCreate, bool Path = false);
+  virtual void CloseSubKey();
+  virtual bool DeleteSubKey(const UnicodeString SubKey);
+  virtual bool DeleteValue(const UnicodeString Name);
+  virtual void GetSubKeyNames(Classes::TStrings *Strings);
+  virtual bool ValueExists(const UnicodeString Value);
 
-  virtual size_t __fastcall BinaryDataSize(const UnicodeString Name);
+  virtual size_t BinaryDataSize(const UnicodeString Name);
 
-  virtual bool __fastcall ReadBool(const UnicodeString Name, bool Default);
-  virtual int __fastcall ReadInteger(const UnicodeString Name, int Default);
-  virtual __int64 __fastcall ReadInt64(const UnicodeString Name, __int64 Default);
-  virtual TDateTime __fastcall ReadDateTime(const UnicodeString Name, TDateTime Default);
-  virtual double __fastcall ReadFloat(const UnicodeString Name, double Default);
-  virtual UnicodeString __fastcall ReadStringRaw(const UnicodeString Name, const UnicodeString Default);
-  virtual size_t __fastcall ReadBinaryData(const UnicodeString Name, void *Buffer, size_t Size);
+  virtual bool ReadBool(const UnicodeString Name, bool Default);
+  virtual int ReadInteger(const UnicodeString Name, int Default);
+  virtual __int64 ReadInt64(const UnicodeString Name, __int64 Default);
+  virtual TDateTime ReadDateTime(const UnicodeString Name, TDateTime Default);
+  virtual double ReadFloat(const UnicodeString Name, double Default);
+  virtual UnicodeString ReadStringRaw(const UnicodeString Name, const UnicodeString Default);
+  virtual size_t ReadBinaryData(const UnicodeString Name, void *Buffer, size_t Size);
 
-  virtual void __fastcall WriteBool(const UnicodeString Name, bool Value);
-  virtual void __fastcall WriteInteger(const UnicodeString Name, int Value);
-  virtual void __fastcall WriteInt64(const UnicodeString Name, __int64 Value);
-  virtual void __fastcall WriteDateTime(const UnicodeString Name, TDateTime Value);
-  virtual void __fastcall WriteFloat(const UnicodeString Name, double Value);
-  virtual void __fastcall WriteStringRaw(const UnicodeString Name, const UnicodeString Value);
-  virtual void __fastcall WriteBinaryData(const UnicodeString Name, const void *Buffer, int Size);
+  virtual void WriteBool(const UnicodeString Name, bool Value);
+  virtual void WriteInteger(const UnicodeString Name, int Value);
+  virtual void WriteInt64(const UnicodeString Name, __int64 Value);
+  virtual void WriteDateTime(const UnicodeString Name, TDateTime Value);
+  virtual void WriteFloat(const UnicodeString Name, double Value);
+  virtual void WriteStringRaw(const UnicodeString Name, const UnicodeString Value);
+  virtual void WriteBinaryData(const UnicodeString Name, const void *Buffer, int Size);
 
-  virtual void __fastcall GetValueNames(Classes::TStrings *Strings);
+  virtual void GetValueNames(Classes::TStrings *Strings);
 
 private:
-  UnicodeString __fastcall GetCurrentSection();
-  inline bool __fastcall HandleByMasterStorage();
-  inline bool __fastcall HandleReadByMasterStorage(UnicodeString Name);
-  inline bool __fastcall DoValueExists(UnicodeString Value);
-  void __fastcall DoWriteStringRaw(UnicodeString Name, UnicodeString Value);
-  void __fastcall DoWriteBinaryData(UnicodeString Name, const void *Buffer, int Size);
+  UnicodeString GetCurrentSection();
+  inline bool HandleByMasterStorage();
+  inline bool HandleReadByMasterStorage(UnicodeString Name);
+  inline bool DoValueExists(UnicodeString Value);
+  void DoWriteStringRaw(UnicodeString Name, UnicodeString Value);
+  void DoWriteBinaryData(UnicodeString Name, const void *Buffer, int Size);
 
 protected:
   TCustomIniFile *FIniFile;
@@ -218,36 +218,36 @@ protected:
   bool FOpeningSubKey;
 
   __property UnicodeString CurrentSection  = { read=GetCurrentSection };
-  virtual void __fastcall SetAccessMode(TStorageAccessMode value);
-  virtual bool __fastcall DoKeyExists(const UnicodeString SubKey, bool ForceAnsi);
-  virtual bool __fastcall DoOpenSubKey(const UnicodeString SubKey, bool CanCreate);
-  virtual UnicodeString __fastcall GetSource();
-  void __fastcall CacheSections();
-  void __fastcall ResetCache();
+  virtual void SetAccessMode(TStorageAccessMode value);
+  virtual bool DoKeyExists(const UnicodeString SubKey, bool ForceAnsi);
+  virtual bool DoOpenSubKey(const UnicodeString SubKey, bool CanCreate);
+  virtual UnicodeString GetSource();
+  void CacheSections();
+  void ResetCache();
 };
 //---------------------------------------------------------------------------
 class TIniFileStorage : public TCustomIniFileStorage
 {
 public:
-  static TIniFileStorage *__fastcall CreateFromPath(const UnicodeString AStorage);
-  virtual __fastcall ~TIniFileStorage();
+  static TIniFileStorage *CreateFromPath(const UnicodeString AStorage);
+  virtual ~TIniFileStorage();
 
-  virtual void __fastcall Flush();
+  virtual void Flush();
 
 private:
-  __fastcall TIniFileStorage(const UnicodeString FileName, TCustomIniFile *IniFile);
+  TIniFileStorage(const UnicodeString FileName, TCustomIniFile *IniFile);
   TStrings *FOriginal;
-  void __fastcall ApplyOverrides();
+  void ApplyOverrides();
 };
 //---------------------------------------------------------------------------
 class TOptionsStorage : public TCustomIniFileStorage
 {
 public:
-  __fastcall TOptionsStorage(TStrings *Options, bool AllowWrite);
-  __fastcall TOptionsStorage(TStrings *Options, UnicodeString RootKey, THierarchicalStorage *MasterStorage);
+  TOptionsStorage(TStrings *Options, bool AllowWrite);
+  TOptionsStorage(TStrings *Options, UnicodeString RootKey, THierarchicalStorage *MasterStorage);
 
 protected:
-  virtual bool __fastcall GetTemporary();
+  virtual bool GetTemporary();
 };
 #endif // #if 0
 
