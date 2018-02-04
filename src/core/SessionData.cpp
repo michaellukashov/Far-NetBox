@@ -4960,7 +4960,7 @@ void TStoredSessionList::ImportFromKnownHosts(TStrings *Lines)
               UnicodeString NameStr = HostNameStr;
               if (PortNumber >= 0)
               {
-                    NameStr = FORMAT("%s:%d", NameStr, ToInt(PortNumber));
+                NameStr = FORMAT("%s:%d", NameStr, ToInt(PortNumber));
               }
 
               std::unique_ptr<TSessionData> SessionDataOwner;
@@ -4969,12 +4969,12 @@ void TStoredSessionList::ImportFromKnownHosts(TStrings *Lines)
               {
                 SessionData = new TSessionData(L"");
                 SessionDataOwner.reset(SessionData);
-                    SessionData->CopyData(GetDefaultSettings());
-                    SessionData->SetName(NameStr);
-                    SessionData->SetHostName(HostNameStr);
+                SessionData->CopyData(GetDefaultSettings());
+                SessionData->SetName(NameStr);
+                SessionData->SetHostName(HostNameStr);
                 if (PortNumber >= 0)
                 {
-                      SessionData->SetPortNumber(PortNumber);
+                  SessionData->SetPortNumber(ToIntPtr(PortNumber));
                 }
               }
 
