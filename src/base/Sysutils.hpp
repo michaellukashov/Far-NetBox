@@ -208,30 +208,30 @@ public:
 
 NB_CORE_EXPORT void GetLocaleFormatSettings(int LCID, TFormatSettings &FormatSettings);
 
-NB_CORE_EXPORT UnicodeString ExtractShortPathName(UnicodeString APath);
-NB_CORE_EXPORT UnicodeString ExtractDirectory(UnicodeString APath, wchar_t Delimiter = L'/');
-NB_CORE_EXPORT UnicodeString ExtractFilename(UnicodeString APath, wchar_t Delimiter = L'/');
-NB_CORE_EXPORT UnicodeString ExtractFileExtension(UnicodeString APath, wchar_t Delimiter = L'/');
-NB_CORE_EXPORT UnicodeString ChangeFileExtension(UnicodeString APath, UnicodeString Ext, wchar_t Delimiter = L'/');
+NB_CORE_EXPORT UnicodeString ExtractShortPathName(const UnicodeString APath);
+NB_CORE_EXPORT UnicodeString ExtractDirectory(const UnicodeString APath, wchar_t Delimiter = L'/');
+NB_CORE_EXPORT UnicodeString ExtractFilename(const UnicodeString APath, wchar_t Delimiter = L'/');
+NB_CORE_EXPORT UnicodeString ExtractFileExtension(const UnicodeString APath, wchar_t Delimiter = L'/');
+NB_CORE_EXPORT UnicodeString ChangeFileExtension(const UnicodeString APath, const UnicodeString Ext, wchar_t Delimiter = L'/');
 
-NB_CORE_EXPORT UnicodeString IncludeTrailingBackslash(UnicodeString Str);
-NB_CORE_EXPORT UnicodeString ExcludeTrailingBackslash(UnicodeString Str);
-NB_CORE_EXPORT UnicodeString ExtractFileDir(UnicodeString Str);
-NB_CORE_EXPORT UnicodeString ExtractFilePath(UnicodeString Str);
+NB_CORE_EXPORT UnicodeString IncludeTrailingBackslash(const UnicodeString Str);
+NB_CORE_EXPORT UnicodeString ExcludeTrailingBackslash(const UnicodeString Str);
+NB_CORE_EXPORT UnicodeString ExtractFileDir(const UnicodeString Str);
+NB_CORE_EXPORT UnicodeString ExtractFilePath(const UnicodeString Str);
 NB_CORE_EXPORT UnicodeString GetCurrentDir();
 
 NB_CORE_EXPORT UnicodeString IncludeTrailingPathDelimiter(UnicodeString Str);
 
-NB_CORE_EXPORT UnicodeString StrToHex(UnicodeString Str, bool UpperCase = true, wchar_t Separator = L'\0');
-NB_CORE_EXPORT UnicodeString HexToStr(UnicodeString Hex);
-NB_CORE_EXPORT uintptr_t HexToIntPtr(UnicodeString Hex, uintptr_t MinChars = 0);
+NB_CORE_EXPORT UnicodeString StrToHex(const UnicodeString Str, bool UpperCase = true, wchar_t Separator = L'\0');
+NB_CORE_EXPORT UnicodeString HexToStr(const UnicodeString Hex);
+NB_CORE_EXPORT uintptr_t HexToIntPtr(const UnicodeString Hex, uintptr_t MinChars = 0);
 NB_CORE_EXPORT UnicodeString IntToHex(uintptr_t Int, uintptr_t MinChars = 0);
-NB_CORE_EXPORT char HexToChar(UnicodeString Hex, uintptr_t MinChars = 0);
+NB_CORE_EXPORT char HexToChar(const UnicodeString Hex, uintptr_t MinChars = 0);
 
-NB_CORE_EXPORT UnicodeString ReplaceStrAll(UnicodeString Str, UnicodeString What, UnicodeString ByWhat);
+NB_CORE_EXPORT UnicodeString ReplaceStrAll(const UnicodeString Str, const UnicodeString What, const UnicodeString ByWhat);
 NB_CORE_EXPORT UnicodeString SysErrorMessage(intptr_t ErrorCode);
 
-NB_CORE_EXPORT bool TryStrToDateTime(UnicodeString StrValue, TDateTime &Value, TFormatSettings &FormatSettings);
+NB_CORE_EXPORT bool TryStrToDateTime(const UnicodeString StrValue, TDateTime &Value, TFormatSettings &FormatSettings);
 NB_CORE_EXPORT UnicodeString DateTimeToStr(UnicodeString &Result, UnicodeString Format,
   const TDateTime &DateTime);
 NB_CORE_EXPORT UnicodeString DateTimeToString(const TDateTime &DateTime);
@@ -243,7 +243,7 @@ NB_CORE_EXPORT void DecodeDate(const TDateTime &DateTime, uint16_t &Year,
 NB_CORE_EXPORT void DecodeTime(const TDateTime &DateTime, uint16_t &Hour,
   uint16_t &Min, uint16_t &Sec, uint16_t &MSec);
 
-NB_CORE_EXPORT UnicodeString FormatDateTime(UnicodeString Fmt, const TDateTime &ADateTime);
+NB_CORE_EXPORT UnicodeString FormatDateTime(const UnicodeString Fmt, const TDateTime &ADateTime);
 NB_CORE_EXPORT TDateTime SystemTimeToDateTime(const SYSTEMTIME &SystemTime);
 
 NB_CORE_EXPORT TDateTime EncodeDate(int Year, int Month, int Day);
@@ -259,10 +259,10 @@ NB_CORE_EXPORT wchar_t LowCase(const wchar_t Ch);
 NB_CORE_EXPORT UnicodeString AnsiReplaceStr(const UnicodeString Str, const UnicodeString From, const UnicodeString To);
 NB_CORE_EXPORT intptr_t AnsiPos(const UnicodeString Str, wchar_t Ch);
 NB_CORE_EXPORT intptr_t Pos(const UnicodeString Str, const UnicodeString Substr);
-NB_CORE_EXPORT UnicodeString StringReplaceAll(UnicodeString Str, UnicodeString From, UnicodeString To);
-NB_CORE_EXPORT bool IsDelimiter(UnicodeString Delimiters, UnicodeString Str, intptr_t AIndex);
-NB_CORE_EXPORT intptr_t FirstDelimiter(UnicodeString Delimiters, UnicodeString Str);
-NB_CORE_EXPORT intptr_t LastDelimiter(UnicodeString Delimiters, UnicodeString Str);
+NB_CORE_EXPORT UnicodeString StringReplaceAll(const UnicodeString Str, const UnicodeString From, const UnicodeString To);
+NB_CORE_EXPORT bool IsDelimiter(const UnicodeString Delimiters, const UnicodeString Str, intptr_t AIndex);
+NB_CORE_EXPORT intptr_t FirstDelimiter(const UnicodeString Delimiters, const UnicodeString Str);
+NB_CORE_EXPORT intptr_t LastDelimiter(const UnicodeString Delimiters, const UnicodeString Str);
 
 NB_CORE_EXPORT intptr_t CompareText(const UnicodeString Str1, const UnicodeString Str2);
 NB_CORE_EXPORT intptr_t AnsiCompare(const UnicodeString Str1, const UnicodeString Str2);
