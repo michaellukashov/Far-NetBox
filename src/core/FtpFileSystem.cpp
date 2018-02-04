@@ -838,7 +838,7 @@ void TFTPFileSystem::CollectUsage()
 #endif // #if 0
 }
 //---------------------------------------------------------------------------
-void TFTPFileSystem::DummyReadDirectory(UnicodeString Directory)
+void TFTPFileSystem::DummyReadDirectory(const UnicodeString Directory)
 {
   std::unique_ptr<TRemoteDirectory> Files(new TRemoteDirectory(FTerminal));
   try
@@ -3073,9 +3073,10 @@ void TFTPFileSystem::GotNonCommandReply(uintptr_t Reply)
 }
 //---------------------------------------------------------------------------
 UnicodeString TFTPFileSystem::GotReply(uintptr_t Reply, uintptr_t Flags,
-  UnicodeString Error, uintptr_t *Code, TStrings **Response)
+  const UnicodeString AError, uintptr_t *Code, TStrings **Response)
 {
   UnicodeString Result;
+  UnicodeString Error = AError;
   try__finally
   {
     SCOPE_EXIT
@@ -3292,7 +3293,7 @@ void TFTPFileSystem::StoreLastResponse(const UnicodeString Text)
   }
 }
 //---------------------------------------------------------------------------
-void TFTPFileSystem::HandleReplyStatus(UnicodeString Response)
+void TFTPFileSystem::HandleReplyStatus(const UnicodeString Response)
 {
   int64_t Code = 0;
 
@@ -3755,6 +3756,15 @@ bool TFTPFileSystem::HandleAsynchRequestOverwrite(
         switch (OverwriteMode)
         {
         case omOverwrite:
+#if 0
+          if ((OperationProgress->GetSide() == osRemote) && !FTerminal->TerminalCreateLocalFile(DestFullName, OperationProgress,
+              false, true,
+              &ALocalFileHandle))
+          {
+            RequestResult = TFileZillaIntf::FILEEXISTS_SKIP;
+            break;
+          }
+#endif // #if 0
           if (TargetFileName != FileName1)
           {
             wcsncpy_s(FileName1, FileName1Len, TargetFileName.c_str(), FileName1Len);
@@ -3769,7 +3779,17 @@ bool TFTPFileSystem::HandleAsynchRequestOverwrite(
           break;
 
         case omResume:
-          RequestResult = TFileZillaIntf::FILEEXISTS_RESUME;
+#if 0
+          if ((OperationProgress->GetSide() == osRemote) && !FTerminal->TerminalCreateLocalFile(DestFullName, OperationProgress,
+              true, true,
+              &ALocalFileHandle))
+          {
+            // ThrowSkipFileNull();
+            RequestResult = TFileZillaIntf::FILEEXISTS_SKIP;
+          }
+          else
+#endif // #if 0
+            RequestResult = TFileZillaIntf::FILEEXISTS_RESUME;
           break;
 
         case omComplete:
@@ -3803,7 +3823,7 @@ bool TFTPFileSystem::HandleAsynchRequestOverwrite(
   }
 }
 //---------------------------------------------------------------------------
-static UnicodeString FormatContactList(UnicodeString Entry1, UnicodeString Entry2)
+static UnicodeString FormatContactList(const UnicodeString Entry1, const UnicodeString Entry2)
 {
   if (!Entry1.IsEmpty() && !Entry2.IsEmpty())
   {
@@ -3863,9 +3883,11 @@ UnicodeString FormatValidityTime(const TFtpsCertificateData::TValidityTime &Vali
   return dt;
 }
 //---------------------------------------------------------------------------
-static bool VerifyNameMask(UnicodeString Name, UnicodeString Mask)
+static bool VerifyNameMask(const UnicodeString AName, const UnicodeString AMask)
 {
   bool Result = true;
+  UnicodeString Name = AName;
+  UnicodeString Mask = AMask;
   intptr_t Pos;
   while (Result && (Pos = Mask.Pos(L"*")) > 0)
   {

@@ -130,10 +130,10 @@ protected:
   void PoolForFatalNonCommandReply();
   void GotNonCommandReply(uintptr_t Reply);
   UnicodeString GotReply(uintptr_t Reply, uintptr_t Flags = 0,
-    UnicodeString Error = L"", uintptr_t *Code = nullptr,
+    const UnicodeString Error = L"", uintptr_t *Code = nullptr,
     TStrings **Response = nullptr);
   void ResetReply();
-  void HandleReplyStatus(UnicodeString Response);
+  void HandleReplyStatus(const UnicodeString Response);
   void DoWaitForReply(uintptr_t &ReplyToAwait, bool WantLastCode);
   bool KeepWaitingForReply(uintptr_t &ReplyToAwait, bool WantLastCode) const;
   inline bool NoFinalLastCode() const;
@@ -179,10 +179,6 @@ protected:
     const TCopyParamType *CopyParam, intptr_t AParams,
     TFileOperationProgressType *OperationProgress, uintptr_t Flags);
   void SinkFile(const UnicodeString AFileName, const TRemoteFile *AFile, void *Param);
-  void SourceRobust(const UnicodeString AFileName,
-    const TRemoteFile *AFile,
-    UnicodeString TargetDir, const TCopyParamType *CopyParam, intptr_t AParams,
-    TFileOperationProgressType *OperationProgress, uintptr_t Flags);
   void Source(const UnicodeString AFileName,
     const TRemoteFile *AFile,
     const UnicodeString ATargetDir, const TCopyParamType *CopyParam, intptr_t AParams,
@@ -190,8 +186,8 @@ protected:
     TOverwriteFileParams *FileParams,
     TFileOperationProgressType *OperationProgress, uintptr_t AFlags,
     TUploadSessionAction &Action);
-  void DirectorySource(UnicodeString DirectoryName,
-    UnicodeString TargetDir, intptr_t Attrs, const TCopyParamType *CopyParam,
+  void DirectorySource(const UnicodeString DirectoryName,
+    const UnicodeString TargetDir, intptr_t Attrs, const TCopyParamType *CopyParam,
     intptr_t Params, TFileOperationProgressType *OperationProgress, uintptr_t Flags);
   bool ConfirmOverwrite(const UnicodeString ASourceFullFileName, UnicodeString &ATargetFileName,
     intptr_t AParams, TFileOperationProgressType *OperationProgress,
