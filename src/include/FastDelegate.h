@@ -110,7 +110,9 @@
 
 // Does it allow function declarator syntax? The following compilers are known to work:
 #if defined(FASTDLGT_ISMSVC) && (_MSC_VER >=1310) // VC 7.1
+#ifndef FASTDELEGATE_ALLOW_FUNCTION_TYPE_SYNTAX
 #define FASTDELEGATE_ALLOW_FUNCTION_TYPE_SYNTAX
+#endif
 #endif
 
 // Gcc(2.95+), and versions of Digital Mars, Intel and Comeau in common use.
