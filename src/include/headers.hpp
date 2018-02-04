@@ -27,7 +27,7 @@
 #include <cstdio>
 #include <cassert>
 #include <cwchar>
-//#include <functional>
+#include <functional>
 
 #undef _W32API_OLD
 
