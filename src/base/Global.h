@@ -85,7 +85,7 @@ NB_CORE_EXPORT void TraceInMemoryCallback(const wchar_t *Msg);
 
 #define ACCESS_VIOLATION_TEST { (*((int*)nullptr)) = 0; }
 
-NB_CORE_EXPORT void DoAssert(const wchar_t *Message, const wchar_t *Filename, uintptr_t LineNumber);
+// NB_CORE_EXPORT void __fastcall DoAssert(const wchar_t *Message, const wchar_t *Filename, uintptr_t LineNumber);
 inline bool DoAlwaysTrue(bool Value, const wchar_t *Message, const wchar_t *Filename, uintptr_t LineNumber)
 {
   if (!Value)

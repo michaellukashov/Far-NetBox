@@ -72,7 +72,7 @@ public:
     assert(_setter);
     _setter(Value);
   }
-  void operator=(const T Value)
+  void operator=(const T &Value)
   {
     assert(_setter);
     _setter(Value);
@@ -82,11 +82,9 @@ public:
     assert(_getter);
     return _getter();
   }
-  bool operator==(const T Value) const
+  bool operator==(const T &Value) const
   {
-    // assert(!"false");
     assert(_getter);
-    // assert(!"false2");
     return _getter() == Value;
   }
 };
