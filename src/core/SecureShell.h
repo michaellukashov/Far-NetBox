@@ -148,7 +148,7 @@ public:
   void SendNull();
 
   const TSessionInfo &GetSessionInfo() const;
-  void __fastcall GetHostKeyFingerprint(UnicodeString & SHA256, UnicodeString & MD5) const;
+  void GetHostKeyFingerprint(UnicodeString & SHA256, UnicodeString & MD5) const;
   bool SshFallbackCmd() const;
   uint32_t MinPacketSize() const;
   uint32_t MaxPacketSize() const;
@@ -165,22 +165,22 @@ public:
   void UpdatePortFwdSocket(SOCKET Value, bool Startup);
   void PuttyFatalError(UnicodeString Error);
   TPromptKind IdentifyPromptKind(UnicodeString &AName) const;
-  bool __fastcall PromptUser(bool ToServer,
+  bool PromptUser(bool ToServer,
     const UnicodeString AName, bool NameRequired,
     const UnicodeString AInstructions, bool InstructionsRequired,
     TStrings *Prompts, TStrings *Results);
-  void __fastcall FromBackend(bool IsStdErr, const uint8_t *Data, intptr_t Length);
-  void __fastcall CWrite(const char *Data, intptr_t Length);
-  UnicodeString __fastcall GetStdError() const;
-  void __fastcall VerifyHostKey(
+  void FromBackend(bool IsStdErr, const uint8_t *Data, intptr_t Length);
+  void CWrite(const char *Data, intptr_t Length);
+  UnicodeString GetStdError() const;
+  void VerifyHostKey(
     const UnicodeString AHost, intptr_t Port, const UnicodeString AKeyType, const UnicodeString AKeyStr,
     const UnicodeString AFingerprint);
-  bool __fastcall HaveHostKey(UnicodeString AHost, intptr_t Port, const UnicodeString KeyType);
-  void __fastcall AskAlg(UnicodeString AlgType, const UnicodeString AlgName);
-  void __fastcall DisplayBanner(const UnicodeString Banner);
-  void __fastcall OldKeyfileWarning();
-  void __fastcall PuttyLogEvent(const char *AStr);
-  UnicodeString __fastcall ConvertFromPutty(const char *Str, intptr_t Length) const;
+  bool HaveHostKey(UnicodeString AHost, intptr_t Port, const UnicodeString KeyType);
+  void AskAlg(UnicodeString AlgType, const UnicodeString AlgName);
+  void DisplayBanner(const UnicodeString Banner);
+  void OldKeyfileWarning();
+  void PuttyLogEvent(const char *AStr);
+  UnicodeString ConvertFromPutty(const char *Str, intptr_t Length) const;
 
   __property bool Active = { read = FActive, write = SetActive };
   __property bool Ready = { read = GetReady };

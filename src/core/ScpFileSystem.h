@@ -20,11 +20,11 @@ public:
   virtual void Init(void * /*TSecureShell * */) override;
   virtual void FileTransferProgress(int64_t /*TransferSize*/, int64_t /*Bytes*/) override {}
 
-  virtual void __fastcall Open() override;
-  virtual void __fastcall Close() override;
-  virtual bool __fastcall GetActive() const override;
-  virtual void __fastcall CollectUsage() override;
-  virtual void __fastcall Idle() override;
+  virtual void Open() override;
+  virtual void Close() override;
+  virtual bool GetActive() const override;
+  virtual void CollectUsage() override;
+  virtual void Idle() override;
   virtual UnicodeString GetAbsolutePath(const UnicodeString APath, bool Local) override;
   virtual UnicodeString GetAbsolutePath(const UnicodeString APath, bool Local) const override;
   virtual void AnyCommand(const UnicodeString ACommand,
@@ -43,25 +43,25 @@ public:
     const UnicodeString ATargetDir, const TCopyParamType *ACopyParam,
     intptr_t AParams, TFileOperationProgressType *OperationProgress,
     TOnceDoneOperation &OnceDoneOperation) override;
-  virtual void __fastcall CopyToRemote(TStrings *AFilesToCopy,
+  virtual void CopyToRemote(TStrings *AFilesToCopy,
     const UnicodeString ATargetDir, const TCopyParamType *CopyParam,
     intptr_t AParams, TFileOperationProgressType *OperationProgress,
     TOnceDoneOperation &OnceDoneOperation) override;
-  virtual void __fastcall Source(
+  virtual void Source(
     TLocalFileHandle &AHandle, const UnicodeString ATargetDir, UnicodeString &ADestFileName,
     const TCopyParamType *CopyParam, intptr_t AParams,
     TFileOperationProgressType *OperationProgress, uintptr_t AFlags,
     TUploadSessionAction &Action, bool &ChildError) override;
-  virtual void __fastcall Sink(
+  virtual void Sink(
     const UnicodeString AFileName, const TRemoteFile *AFile,
     const UnicodeString ATargetDir, UnicodeString &ADestFileName, uintptr_t Attrs,
     const TCopyParamType *CopyParam, intptr_t AParams, TFileOperationProgressType *OperationProgress,
     uintptr_t AFlags, TDownloadSessionAction &Action) override;
-  virtual void __fastcall RemoteCreateDirectory(const UnicodeString ADirName) override;
-  virtual void __fastcall RemoteCreateLink(const UnicodeString AFileName, const UnicodeString PointTo, bool Symbolic) override;
-  virtual void __fastcall RemoteDeleteFile(const UnicodeString AFileName,
+  virtual void RemoteCreateDirectory(const UnicodeString ADirName) override;
+  virtual void RemoteCreateLink(const UnicodeString AFileName, const UnicodeString PointTo, bool Symbolic) override;
+  virtual void RemoteDeleteFile(const UnicodeString AFileName,
     const TRemoteFile *AFile, intptr_t AParams, TRmSessionAction & Action) override;
-  virtual void __fastcall CustomCommandOnFile(const UnicodeString FileName,
+  virtual void CustomCommandOnFile(const UnicodeString FileName,
     const TRemoteFile *AFile, const UnicodeString ACommand, intptr_t AParams, TCaptureOutputEvent OutputEvent) override;
   virtual void DoStartup() override;
   virtual void HomeDirectory() override;
@@ -71,25 +71,25 @@ public:
   virtual void ReadDirectory(TRemoteFileList *FileList) override;
   virtual void ReadFile(const UnicodeString AFileName,
     TRemoteFile *& AFile) override;
-  virtual void __fastcall ReadSymlink(TRemoteFile *ASymlinkFile,
+  virtual void ReadSymlink(TRemoteFile *ASymlinkFile,
     TRemoteFile *& AFile) override;
-  virtual void __fastcall RemoteRenameFile(const UnicodeString AFileName, const TRemoteFile *AFile,
+  virtual void RemoteRenameFile(const UnicodeString AFileName, const TRemoteFile *AFile,
     const UnicodeString ANewName) override;
-  virtual void __fastcall RemoteCopyFile(const UnicodeString AFileName, const TRemoteFile *AFile,
+  virtual void RemoteCopyFile(const UnicodeString AFileName, const TRemoteFile *AFile,
     const UnicodeString ANewName) override;
-  virtual TStrings * __fastcall GetFixedPaths() const override;
-  virtual void __fastcall SpaceAvailable(const UnicodeString APath,
+  virtual TStrings * GetFixedPaths() const override;
+  virtual void SpaceAvailable(const UnicodeString APath,
     TSpaceAvailable &ASpaceAvailable) override;
-  virtual const TSessionInfo & __fastcall GetSessionInfo() const override;
-  virtual const TFileSystemInfo & __fastcall GetFileSystemInfo(bool Retrieve);
-  virtual bool __fastcall TemporaryTransferFile(const UnicodeString AFileName) override;
-  virtual bool __fastcall GetStoredCredentialsTried() const override;
-  virtual UnicodeString __fastcall RemoteGetUserName() const override;
-  virtual void __fastcall GetSupportedChecksumAlgs(TStrings *Algs) override;
-  virtual void __fastcall LockFile(const UnicodeString AFileName, const TRemoteFile *AFile) override;
-  virtual void __fastcall UnlockFile(const UnicodeString AFileName, const TRemoteFile *AFile) override;
-  virtual void __fastcall UpdateFromMain(TCustomFileSystem *MainFileSystem) override;
-  virtual void __fastcall ClearCaches() override;
+  virtual const TSessionInfo & GetSessionInfo() const override;
+  virtual const TFileSystemInfo & GetFileSystemInfo(bool Retrieve);
+  virtual bool TemporaryTransferFile(const UnicodeString AFileName) override;
+  virtual bool GetStoredCredentialsTried() const override;
+  virtual UnicodeString RemoteGetUserName() const override;
+  virtual void GetSupportedChecksumAlgs(TStrings *Algs) override;
+  virtual void LockFile(const UnicodeString AFileName, const TRemoteFile *AFile) override;
+  virtual void UnlockFile(const UnicodeString AFileName, const TRemoteFile *AFile) override;
+  virtual void UpdateFromMain(TCustomFileSystem *MainFileSystem) override;
+  virtual void ClearCaches() override;
 
 protected:
   __property TStrings * Output = { read = FOutput };
@@ -98,7 +98,7 @@ protected:
   TStrings *GetOutput() const { return FOutput; }
   intptr_t GetReturnCode() const { return FReturnCode; }
 
-  virtual UnicodeString __fastcall RemoteGetCurrentDirectory() const override;
+  virtual UnicodeString RemoteGetCurrentDirectory() const override;
 
 private:
   TSecureShell *FSecureShell;
@@ -152,13 +152,13 @@ private:
   void CaptureOutput(const UnicodeString AddedLine, TCaptureOutputType OutputType);
   void ChangeFileToken(const UnicodeString DelimitedName,
     const TRemoteToken &Token, TFSCommand Cmd, const UnicodeString RecursiveStr);
-  uint32_t __fastcall ConfirmOverwrite(
+  uint32_t ConfirmOverwrite(
     const UnicodeString ASourceFullFileName, const UnicodeString ATargetFileName,
     TOperationSide Side,
     const TOverwriteFileParams *FileParams, const TCopyParamType *CopyParam,
     intptr_t Params, TFileOperationProgressType *OperationProgress);
 
-  static bool __fastcall RemoveLastLine(UnicodeString &Line,
+  static bool RemoveLastLine(UnicodeString &Line,
     intptr_t &ReturnCode, UnicodeString ALastLine = L"");
 
   UnicodeString InitOptionsStr(const TCopyParamType *CopyParam) const;

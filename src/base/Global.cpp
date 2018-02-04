@@ -14,7 +14,7 @@
 __removed #pragma package(smart_init)
 //---------------------------------------------------------------------------
 // TGuard
-__fastcall TGuard::TGuard(const TCriticalSection &ACriticalSection) :
+TGuard::TGuard(const TCriticalSection &ACriticalSection) :
   FCriticalSection(ACriticalSection)
 {
   FCriticalSection.Enter();
@@ -27,13 +27,13 @@ TGuard::~TGuard()
 //---------------------------------------------------------------------------
 // TUnguard
 //---------------------------------------------------------------------------
-__fastcall TUnguard::TUnguard(TCriticalSection &ACriticalSection) :
+TUnguard::TUnguard(TCriticalSection &ACriticalSection) :
   FCriticalSection(ACriticalSection)
 {
   FCriticalSection.Leave();
 }
 //---------------------------------------------------------------------------
-__fastcall TUnguard::~TUnguard()
+TUnguard::~TUnguard()
 {
   FCriticalSection.Enter();
 }

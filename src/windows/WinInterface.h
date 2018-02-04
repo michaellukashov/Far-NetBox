@@ -618,7 +618,7 @@ void InitializeShortCutCombo(TComboBox *ComboBox,
 void SetShortCutCombo(TComboBox *ComboBox, TShortCut Value);
 TShortCut GetShortCutCombo(TComboBox *ComboBox);
 bool IsCustomShortCut(TShortCut ShortCut);
-TShortCut __fastcall NormalizeCustomShortCut(TShortCut ShortCut);
+TShortCut NormalizeCustomShortCut(TShortCut ShortCut);
 #endif // #if 0
 
 #ifdef _DEBUG

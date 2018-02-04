@@ -58,7 +58,7 @@ NB_CORE_EXPORT void CopyToClipboard(UnicodeString Text);
 NB_CORE_EXPORT HANDLE StartThread(void *SecurityAttributes, DWORD StackSize,
   /*TThreadFunc ThreadFunc,*/ void *Parameter, DWORD CreationFlags,
   TThreadID &ThreadId);
-bool __fastcall TextFromClipboard(UnicodeString &Text, bool Trim);
+bool TextFromClipboard(UnicodeString &Text, bool Trim);
 
 NB_CORE_EXPORT void WinInitialize();
 NB_CORE_EXPORT void WinFinalize();
@@ -95,7 +95,7 @@ const int qpWaitInBatch =          0x10;
 #endif // #if 0
 
 #if 0
-typedef void __fastcall (__closure *TButtonSubmitEvent)(TObject * Sender, unsigned int & Answer);
+typedef void (__closure *TButtonSubmitEvent)(TObject * Sender, unsigned int & Answer);
 #endif // #if 0
 typedef nb::FastDelegate2<void,
   TObject * /*Sender*/, uint32_t & /*Answer*/> TButtonSubmitEvent;
@@ -235,7 +235,7 @@ public:
 
   UnicodeString Text;
 
-  void __fastcall Copy(TObject * /*Sender*/, uint32_t & /*Answer*/)
+  void Copy(TObject * /*Sender*/, uint32_t & /*Answer*/)
   {
     volatile TInstantOperationVisualizer Visualizer;
     CopyToClipboard(Text);

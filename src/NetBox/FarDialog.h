@@ -19,19 +19,19 @@ enum TItemPosition
 };
 
 #if 0
-typedef void __fastcall (__closure *TFarKeyEvent)
+typedef void (__closure *TFarKeyEvent)
 (TFarDialog *Sender, TFarDialogItem *Item, long KeyCode, bool &Handled);
 #endif // #if 0
 typedef nb::FastDelegate4<void,
         TFarDialog * /*Sender*/, TFarDialogItem * /*Item*/, long /*KeyCode*/, bool & /*Handled*/> TFarKeyEvent;
 #if 0
-typedef void __fastcall (__closure *TFarMouseClickEvent)
+typedef void (__closure *TFarMouseClickEvent)
 (TFarDialogItem *Item, MOUSE_EVENT_RECORD *Event);
 #endif // #if 0
 typedef nb::FastDelegate2<void,
         TFarDialogItem * /*Item*/, MOUSE_EVENT_RECORD * /*Event*/> TFarMouseClickEvent;
 #if 0
-typedef void __fastcall (__closure *TFarProcessGroupEvent)
+typedef void (__closure *TFarProcessGroupEvent)
 (TFarDialogItem *Item, void *Arg);
 #endif // #if 0
 typedef nb::FastDelegate2<void,

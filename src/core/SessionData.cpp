@@ -1737,12 +1737,12 @@ bool TSessionData::IsSensitiveOption(const UnicodeString Option)
     ::SameText(Option, NEWPASSWORD_SWITCH);
 }
 
-bool __fastcall TSessionData::IsOptionWithParameters(const UnicodeString AOption)
+bool TSessionData::IsOptionWithParameters(const UnicodeString AOption)
 {
   return SameText(AOption, RawSettingsOption);
 }
 //---------------------------------------------------------------------
-bool __fastcall TSessionData::MaskPasswordInOptionParameter(const UnicodeString AOption, UnicodeString &AParam)
+bool TSessionData::MaskPasswordInOptionParameter(const UnicodeString AOption, UnicodeString &AParam)
 {
   bool Result = false;
   if (SameText(AOption, RawSettingsOption))
@@ -1766,7 +1766,7 @@ bool __fastcall TSessionData::MaskPasswordInOptionParameter(const UnicodeString 
   return Result;
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::MaskPasswords()
+void TSessionData::MaskPasswords()
 {
   if (!GetPassword().IsEmpty())
   {
@@ -1790,7 +1790,7 @@ void __fastcall TSessionData::MaskPasswords()
   }
 }
 //---------------------------------------------------------------------
-bool __fastcall TSessionData::ParseUrl(UnicodeString AUrl, TOptions * Options,
+bool TSessionData::ParseUrl(UnicodeString AUrl, TOptions * Options,
   TStoredSessionList * AStoredSessions, bool & DefaultsOnly, UnicodeString * AFileName,
   bool *AProtocolDefined, UnicodeString *MaskedUrl)
 {
@@ -2787,24 +2787,24 @@ UnicodeString TSessionData::GetKexList() const
   return Result;
 }
 
-void __fastcall TSessionData::SetHostKeys(intptr_t Index, THostKey Value)
+void TSessionData::SetHostKeys(intptr_t Index, THostKey Value)
 {
   DebugAssert(Index >= 0 && Index < HOSTKEY_COUNT);
   SET_SESSION_PROPERTY(HostKeys[Index]);
 }
 //---------------------------------------------------------------------
-THostKey __fastcall TSessionData::GetHostKeys(intptr_t Index) const
+THostKey TSessionData::GetHostKeys(intptr_t Index) const
 {
   DebugAssert(Index >= 0 && Index < HOSTKEY_COUNT);
   return FHostKeys[Index];
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetHostKeyList(UnicodeString Value)
+void TSessionData::SetHostKeyList(UnicodeString Value)
 {
   SetAlgoList(FHostKeys, DefaultHostKeyList, HostKeyNames, HOSTKEY_COUNT, hkWarn, Value);
 }
 //---------------------------------------------------------------------
-UnicodeString __fastcall TSessionData::GetHostKeyList() const
+UnicodeString TSessionData::GetHostKeyList() const
 {
   UnicodeString Result;
   for (intptr_t Index = 0; Index < HOSTKEY_COUNT; Index++)
@@ -2814,7 +2814,7 @@ UnicodeString __fastcall TSessionData::GetHostKeyList() const
   return Result;
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetGssLibs(intptr_t Index, TGssLib Value)
+void TSessionData::SetGssLibs(intptr_t Index, TGssLib Value)
 {
   DebugAssert(Index >= 0 && Index < GSSLIB_COUNT);
   // SET_SESSION_PROPERTY(FGssLib[Index]);
@@ -4328,17 +4328,17 @@ void TSessionData::SetNotUtf(TAutoSwitch Value)
   SET_SESSION_PROPERTY(NotUtf);
 }
 
-void __fastcall TSessionData::SetInternalEditorEncoding(intptr_t Value)
+void TSessionData::SetInternalEditorEncoding(intptr_t Value)
 {
   SET_SESSION_PROPERTY(InternalEditorEncoding);
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetS3DefaultRegion(UnicodeString Value)
+void TSessionData::SetS3DefaultRegion(UnicodeString Value)
 {
   SET_SESSION_PROPERTY(S3DefaultRegion);
 }
 //---------------------------------------------------------------------
-void __fastcall TSessionData::SetIsWorkspace(bool Value)
+void TSessionData::SetIsWorkspace(bool Value)
 {
   SET_SESSION_PROPERTY(IsWorkspace);
 }

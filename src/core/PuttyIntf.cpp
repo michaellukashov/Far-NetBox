@@ -811,7 +811,7 @@ void DllHijackingProtection()
   dll_hijacking_protection();
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall ParseOpenSshPubLine(const UnicodeString ALine, const struct ssh_signkey *& Algorithm)
+UnicodeString ParseOpenSshPubLine(const UnicodeString ALine, const struct ssh_signkey *& Algorithm)
 {
   UTF8String UtfLine = UTF8String(ALine);
   char * AlgorithmName = NULL;
@@ -860,7 +860,7 @@ UnicodeString __fastcall ParseOpenSshPubLine(const UnicodeString ALine, const st
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall GetKeyTypeHuman(const UnicodeString AKeyType)
+UnicodeString GetKeyTypeHuman(const UnicodeString AKeyType)
 {
   UnicodeString Result;
   if (AKeyType == ssh_dss.keytype)

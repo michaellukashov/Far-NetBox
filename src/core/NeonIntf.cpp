@@ -438,19 +438,19 @@ void ne_debug(void * Context, int Channel, const char * Format, ...)
 
 } // extern "C"
 //---------------------------------------------------------------------------
-void __fastcall RegisterForNeonDebug(TTerminal * Terminal)
+void RegisterForNeonDebug(TTerminal * Terminal)
 {
   volatile TGuard Guard(*DebugSection.get());
   NeonTerminals.insert(Terminal);
 }
 //---------------------------------------------------------------------------
-void __fastcall UnregisterFromNeonDebug(TTerminal * Terminal)
+void UnregisterFromNeonDebug(TTerminal * Terminal)
 {
   volatile TGuard Guard(*DebugSection.get());
   NeonTerminals.erase(Terminal);
 }
 //---------------------------------------------------------------------------
-void __fastcall RetrieveNeonCertificateData(
+void RetrieveNeonCertificateData(
   int Failures, const ne_ssl_certificate * Certificate, TNeonCertificateData &Data)
 {
   char Fingerprint[NE_SSL_DIGESTLEN] = {0};
@@ -477,14 +477,14 @@ void __fastcall RetrieveNeonCertificateData(
   Data.ValidUntil = UnixToDateTime(ValidUntil, dstmWin);
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall CertificateVerificationMessage(const TNeonCertificateData &Data)
+UnicodeString CertificateVerificationMessage(const TNeonCertificateData &Data)
 {
   return
     FORMAT("Verifying certificate for \"%s\" with fingerprint %s and %2.2X failures",
            Data.Subject, Data.Fingerprint, Data.Failures);
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall CertificateSummary(const TNeonCertificateData &Data, const UnicodeString AHostName)
+UnicodeString CertificateSummary(const TNeonCertificateData &Data, const UnicodeString AHostName)
 {
   UnicodeString Summary;
   if (Data.Failures == 0)
@@ -507,7 +507,7 @@ UnicodeString __fastcall CertificateSummary(const TNeonCertificateData &Data, co
       Summary);
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall NeonTlsSessionInfo(
+UnicodeString NeonTlsSessionInfo(
   ne_session *Session, TSessionInfo &SessionInfo, UnicodeString &TlsVersionStr)
 {
   TlsVersionStr = StrFromNeon(ne_ssl_get_version(Session));

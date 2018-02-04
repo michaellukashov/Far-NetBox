@@ -11,12 +11,12 @@ struct ssl_st;
 //---------------------------------------------------------------------------
 class THttp;
 #if 0
-typedef void __fastcall (__closure * THttpDownloadEvent)(THttp * Sender, __int64 Size, bool & Cancel);
+typedef void (__closure * THttpDownloadEvent)(THttp * Sender, __int64 Size, bool & Cancel);
 #endif // #if 0
 typedef nb::FastDelegate3<void,
   THttp * /*Sender*/, int64_t /*Size*/, bool & /*Cancel*/> THttpDownloadEvent;
 #if 0
-typedef void __fastcall (__closure * THttpErrorEvent)(THttp * Sender, int Status, const UnicodeString & Message);
+typedef void (__closure * THttpErrorEvent)(THttp * Sender, int Status, const UnicodeString & Message);
 #endif // #if 0
 typedef nb::FastDelegate3<void,
   THttp * /*Sender*/, int /*Status*/, const UnicodeString & /*Message*/> THttpErrorEvent;

@@ -321,7 +321,7 @@ void ExecuteShellCheckedAndWait(const UnicodeString Command,
   }
 }
 //---------------------------------------------------------------------------
-bool __fastcall SpecialFolderLocation(intptr_t PathID, UnicodeString &APath)
+bool SpecialFolderLocation(intptr_t PathID, UnicodeString &APath)
 {
 #if defined(_MSC_VER) && !defined(__clang__)
   LPITEMIDLIST Pidl;
@@ -1587,13 +1587,13 @@ void TScreenTipHintWindow::Paint()
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-__fastcall TNewRichEdit::TNewRichEdit(TComponent * AOwner) :
+TNewRichEdit::TNewRichEdit(TComponent * AOwner) :
   TRichEdit(AOwner),
   FLibrary(0)
 {
 }
 //---------------------------------------------------------------------------
-void __fastcall TNewRichEdit::CreateParams(TCreateParams & Params)
+void TNewRichEdit::CreateParams(TCreateParams & Params)
 {
   UnicodeString RichEditModuleName(L"MSFTEDIT.DLL");
   long int OldError;
@@ -1618,7 +1618,7 @@ void __fastcall TNewRichEdit::CreateParams(TCreateParams & Params)
   CreateSubClass(Params, MSFTEDIT_CLASS);
 }
 //---------------------------------------------------------------------------
-void __fastcall TNewRichEdit::DestroyWnd()
+void TNewRichEdit::DestroyWnd()
 {
   TRichEdit::DestroyWnd();
 

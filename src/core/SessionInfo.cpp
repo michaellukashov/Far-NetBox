@@ -359,7 +359,7 @@ protected:
   }
 
 #if 0
-  void __fastcall RecordFile(const UnicodeString AIndent, TRemoteFile *AFile, bool IncludeFileName)
+  void RecordFile(const UnicodeString AIndent, TRemoteFile *AFile, bool IncludeFileName)
   {
     FLog->AddIndented(AIndent + L"<file>");
     FLog->AddIndented(AIndent + FORMAT(L"  <filename value=\"%s\" />", (XmlAttributeEscape(AFile->FileName))));
@@ -583,7 +583,7 @@ TMvSessionAction::TMvSessionAction(TActionLog *Log,
   Destination(ADestination);
 }
 
-__fastcall TCpSessionAction::TCpSessionAction(TActionLog * Log,
+TCpSessionAction::TCpSessionAction(TActionLog * Log,
     const UnicodeString AFileName, const UnicodeString ADestination) :
   TFileLocationSessionAction(Log, laCp, AFileName)
 {
@@ -591,7 +591,7 @@ __fastcall TCpSessionAction::TCpSessionAction(TActionLog * Log,
 }
 //---------------------------------------------------------------------------
 TCallSessionAction::TCallSessionAction(TActionLog *Log,
-  UnicodeString ACommand, UnicodeString ADestination) :
+  UnicodeString ACommand, const UnicodeString ADestination) :
   TSessionAction(Log, laCall)
 {
   if (FRecord != nullptr)

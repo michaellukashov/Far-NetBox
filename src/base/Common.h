@@ -151,7 +151,7 @@ NB_CORE_EXPORT bool IsWin7();
 NB_CORE_EXPORT bool IsWin8();
 NB_CORE_EXPORT bool IsWin10();
 NB_CORE_EXPORT bool IsWine();
-__removed TLibModule * __fastcall FindModule(void * Instance);
+__removed TLibModule * FindModule(void * Instance);
 NB_CORE_EXPORT int64_t Round(double Number);
 NB_CORE_EXPORT bool TryRelativeStrToDateTime(const UnicodeString AStr, TDateTime &DateTime, bool Add);
 NB_CORE_EXPORT bool TryStrToSize(const UnicodeString SizeStr, int64_t &Size);
@@ -192,7 +192,7 @@ NB_CORE_EXPORT UnicodeString GetFileMimeType(const UnicodeString FileName);
 NB_CORE_EXPORT bool CompareFileName(const UnicodeString APath1, const UnicodeString APath2);
 NB_CORE_EXPORT bool ComparePaths(const UnicodeString APath1, const UnicodeString APath2);
 #if 0
-typedef void __fastcall (__closure* TProcessLocalFileEvent)
+typedef void (__closure* TProcessLocalFileEvent)
   (const UnicodeString FileName, const TSearchRec Rec, void * Param);
 #endif // #if 0
 typedef nb::FastDelegate3<void,
@@ -252,7 +252,7 @@ NB_CORE_EXPORT intptr_t TimeToMinutes(const TDateTime &T);
 UnicodeString FormatDateTimeSpan(const UnicodeString TimeFormat, TDateTime DateTime);
 //---------------------------------------------------------------------------
 template<class MethodT>
-MethodT __fastcall MakeMethod(void * Data, void * Code)
+MethodT MakeMethod(void * Data, void * Code)
 {
   MethodT Method;
   ((TMethod*)&Method)->Data = Data;

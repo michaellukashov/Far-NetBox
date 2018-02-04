@@ -144,7 +144,7 @@ const TSessionInfo &TSecureShell::GetSessionInfo() const
   return FSessionInfo;
 }
 
-void __fastcall TSecureShell::GetHostKeyFingerprint(UnicodeString &SHA256, UnicodeString &MD5) const
+void TSecureShell::GetHostKeyFingerprint(UnicodeString &SHA256, UnicodeString &MD5) const
 {
   SHA256 = FSessionInfo.HostKeyFingerprintSHA256;
   MD5 = FSessionInfo.HostKeyFingerprintMD5;
@@ -2327,10 +2327,10 @@ struct TPasteKeyHandler
   UnicodeString NormalizedFingerprintSHA256;
   TSessionUI * UI;
 
-  void __fastcall Paste(TObject * Sender, uint32_t &Answer);
+  void Paste(TObject * Sender, uint32_t &Answer);
 };
 //---------------------------------------------------------------------------
-void __fastcall TPasteKeyHandler::Paste(TObject * /*Sender*/, uint32_t &Answer)
+void TPasteKeyHandler::Paste(TObject * /*Sender*/, uint32_t &Answer)
 {
   UnicodeString ClipboardText;
   if (TextFromClipboard(ClipboardText, true))
@@ -2367,7 +2367,7 @@ void __fastcall TPasteKeyHandler::Paste(TObject * /*Sender*/, uint32_t &Answer)
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TSecureShell::VerifyHostKey(
+void TSecureShell::VerifyHostKey(
   const UnicodeString AHost, intptr_t Port, const UnicodeString AKeyType, const UnicodeString AKeyStr,
   const UnicodeString AFingerprint)
 {
@@ -2626,7 +2626,7 @@ bool TSecureShell::HaveHostKey(UnicodeString AHost, intptr_t Port, const Unicode
   return Result;
 }
 
-void __fastcall TSecureShell::AskAlg(UnicodeString AlgType, const UnicodeString AlgName)
+void TSecureShell::AskAlg(UnicodeString AlgType, const UnicodeString AlgName)
 {
   // beware of changing order
   static const TPuttyTranslation AlgTranslation[] = {

@@ -171,11 +171,11 @@ private:
 class TNewRichEdit : public TRichEdit
 {
 public:
-  virtual __fastcall TNewRichEdit(TComponent * AOwner);
+  virtual TNewRichEdit(TComponent * AOwner);
 
 protected:
-  virtual void __fastcall CreateParams(TCreateParams & Params);
-  virtual void __fastcall DestroyWnd();
+  virtual void CreateParams(TCreateParams & Params);
+  virtual void DestroyWnd();
 
 private:
   HINSTANCE FLibrary;
