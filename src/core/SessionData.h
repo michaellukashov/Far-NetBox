@@ -938,7 +938,7 @@ public:
   void Saved();
   void ImportFromFilezilla(const UnicodeString FileName, const UnicodeString ConfigurationFileName);
   void ImportFromKnownHosts(TStrings *Lines);
-  void Export(UnicodeString AFileName);
+  void Export(const UnicodeString AFileName);
   void Load(THierarchicalStorage *Storage, bool AsModified = false,
     bool UseDefaults = false, bool PuttyImport = false);
   void Save(THierarchicalStorage *Storage, bool All = false);

@@ -179,13 +179,13 @@ public:
   void AddSkippedFileSize(int64_t ASize);
   void Clear();
   uintptr_t CPS() const;
-  void Finish(UnicodeString AFileName, bool Success,
+  void Finish(const UnicodeString AFileName, bool Success,
     TOnceDoneOperation &OnceDoneOperation);
   void Progress();
   int64_t LocalBlockSize();
   bool IsLocallyDone() const;
   bool IsTransferDone() const;
-  void SetFile(UnicodeString AFileName, bool AFileInProgress = true);
+  void SetFile(const UnicodeString AFileName, bool AFileInProgress = true);
   void SetFileInProgress();
   uintptr_t TransferBlockSize();
   int64_t AdjustToCPSLimit(int64_t Size);

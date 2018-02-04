@@ -924,7 +924,7 @@ bool TCopyParamType::operator==(const TCopyParamType &rhp) const
 }
 #undef C
 
-static bool TryGetSpeedLimit(UnicodeString Text, uintptr_t &Speed)
+static bool TryGetSpeedLimit(const UnicodeString Text, uintptr_t &Speed)
 {
   bool Result;
   if (AnsiSameText(Text, LoadStr(SPEED_UNLIMITED)))

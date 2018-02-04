@@ -5051,7 +5051,7 @@ void TStoredSessionList::ImportFromKnownHosts(TStrings *Lines)
   }
 }
 
-void TStoredSessionList::Export(UnicodeString /*AFileName*/)
+void TStoredSessionList::Export(const UnicodeString /*AFileName*/)
 {
   ThrowNotImplemented(3003);
 #if 0
