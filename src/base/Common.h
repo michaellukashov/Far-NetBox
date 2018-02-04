@@ -249,7 +249,7 @@ NB_CORE_EXPORT intptr_t CompareFileTime(const TDateTime &T1, const TDateTime &T2
 NB_CORE_EXPORT intptr_t TimeToMSec(const TDateTime &T);
 NB_CORE_EXPORT intptr_t TimeToSeconds(const TDateTime &T);
 NB_CORE_EXPORT intptr_t TimeToMinutes(const TDateTime &T);
-UnicodeString FormatDateTimeSpan(const UnicodeString TimeFormat, TDateTime DateTime);
+NB_CORE_EXPORT UnicodeString FormatDateTimeSpan(const UnicodeString TimeFormat, TDateTime DateTime);
 //---------------------------------------------------------------------------
 template<class MethodT>
 MethodT MakeMethod(void * Data, void * Code)
