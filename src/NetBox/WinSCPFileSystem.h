@@ -168,7 +168,7 @@ protected:
   bool LinkDialog(UnicodeString &AFileName, UnicodeString &PointTo, bool &Symbolic,
     bool Edit, bool AllowSymbolic);
   void FileSystemInfoDialog(const TSessionInfo &SessionInfo,
-    const TFileSystemInfo &FileSystemInfo, UnicodeString SpaceAvailablePath,
+    const TFileSystemInfo &FileSystemInfo, const UnicodeString SpaceAvailablePath,
     TGetSpaceAvailableEvent OnGetSpaceAvailable);
   bool OpenDirectoryDialog(bool Add, UnicodeString &Directory,
     TBookmarkList *BookmarkList);
@@ -198,21 +198,21 @@ protected:
     bool &SaveSettings, intptr_t Options, intptr_t CopyParamAttrs,
     TGetSynchronizeOptionsEvent OnGetOptions);
   void DoSynchronize(TSynchronizeController *Sender,
-    UnicodeString LocalDirectory, UnicodeString RemoteDirectory,
+    const UnicodeString LocalDirectory, const UnicodeString RemoteDirectory,
     const TCopyParamType &CopyParam, const TSynchronizeParamType &Params,
     TSynchronizeChecklist **Checklist, TSynchronizeOptions *Options, bool Full);
   void DoSynchronizeInvalid(TSynchronizeController *Sender,
-    UnicodeString Directory, UnicodeString ErrorStr);
+    const UnicodeString Directory, const UnicodeString ErrorStr);
   void DoSynchronizeTooManyDirectories(TSynchronizeController *Sender,
     intptr_t &MaxDirectories);
   void Synchronize(const UnicodeString LocalDirectory,
-    UnicodeString RemoteDirectory, TTerminal::TSynchronizeMode Mode,
+    const UnicodeString RemoteDirectory, TTerminal::TSynchronizeMode Mode,
     const TCopyParamType &CopyParam, intptr_t Params, TSynchronizeChecklist **AChecklist,
     TSynchronizeOptions *Options);
   bool SynchronizeAllowSelectedOnly();
   void GetSynchronizeOptions(intptr_t Params, TSynchronizeOptions &Options);
   void RequireCapability(intptr_t Capability);
-  void RequireLocalPanel(TFarPanelInfo *Panel, UnicodeString Message);
+  void RequireLocalPanel(TFarPanelInfo *Panel, const UnicodeString Message);
   bool AreCachesEmpty() const;
   void ClearCaches();
   void OpenSessionInPutty();
@@ -224,11 +224,11 @@ protected:
     TCopyParamType &CopyParam, UnicodeString &TempDir);
   intptr_t UploadFiles(bool Move, int OpMode, bool Edit, UnicodeString &DestPath);
   void UploadOnSave(bool NoReload);
-  void UploadFromEditor(bool NoReload, UnicodeString AFileName,
+  void UploadFromEditor(bool NoReload, const UnicodeString AFileName,
     UnicodeString RealFileName, UnicodeString &DestPath);
-  void LogAuthentication(TTerminal *Terminal, UnicodeString Msg);
+  void LogAuthentication(TTerminal *Terminal, const UnicodeString Msg);
   void MultipleEdit();
-  void MultipleEdit(const UnicodeString Directory, UnicodeString AFileName, TRemoteFile *AFile);
+  void MultipleEdit(const UnicodeString Directory, const UnicodeString AFileName, TRemoteFile *AFile);
   void EditViewCopyParam(TCopyParamType &CopyParam);
   bool SynchronizeBrowsing(const UnicodeString NewPath);
   bool IsEditHistoryEmpty() const;
@@ -282,15 +282,15 @@ private:
     TOnceDoneOperation &DisconnectWhenComplete);
   void CancelConfiguration(TFileOperationProgressType &ProgressData);
   TStrings *CreateFileList(TObjectList *PanelItems,
-    TOperationSide Side, bool SelectedOnly = false, UnicodeString Directory = L"",
+    TOperationSide Side, bool SelectedOnly = false, const UnicodeString Directory = L"",
     bool FileNameOnly = false, TStrings *AFileList = nullptr);
   TStrings *CreateSelectedFileList(TOperationSide Side,
     TFarPanelInfo **APanelInfo = nullptr);
   TStrings *CreateFocusedFileList(TOperationSide Side,
     TFarPanelInfo **APanelInfo = nullptr);
   void CustomCommandGetParamValue(
-    UnicodeString AName, UnicodeString &Value);
-  void TerminalSynchronizeDirectory(const UnicodeString LocalDirectory,
+    const UnicodeString AName, UnicodeString &Value);
+  void TerminalSynchronizeDirectory(UnicodeString LocalDirectory,
     UnicodeString RemoteDirectory, bool &Continue, bool Collect);
   void QueueListUpdate(TTerminalQueue *Queue);
   void QueueItemUpdate(TTerminalQueue *Queue, TQueueItem *Item);

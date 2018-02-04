@@ -581,7 +581,7 @@ intptr_t TStrings::AddObject(const UnicodeString S, TObject *AObject)
   return Result;
 }
 
-void TStrings::InsertObject(intptr_t Index, UnicodeString Key, TObject *AObject)
+void TStrings::InsertObject(intptr_t Index, const UnicodeString Key, TObject *AObject)
 {
   Insert(Index, Key, AObject);
 }
@@ -890,7 +890,7 @@ void TStringList::Delete(intptr_t Index)
   Changed();
 }
 
-void TStringList::InsertObject(intptr_t Index, UnicodeString Key, TObject *AObject)
+void TStringList::InsertObject(intptr_t Index, const UnicodeString Key, TObject *AObject)
 {
   if (GetSorted())
   {
@@ -903,7 +903,7 @@ void TStringList::InsertObject(intptr_t Index, UnicodeString Key, TObject *AObje
   InsertItem(Index, Key, AObject);
 }
 
-void TStringList::InsertItem(intptr_t Index, UnicodeString S, TObject *AObject)
+void TStringList::InsertItem(intptr_t Index, const UnicodeString S, TObject *AObject)
 {
   if ((Index == NPOS) || (Index > GetCount()))
   {
@@ -2009,12 +2009,12 @@ void TRegistry::WriteFloat(const UnicodeString Name, double Value)
   PutData(Name, &Value, sizeof(double), rdBinary);
 }
 
-void TRegistry::WriteString(const UnicodeString Name, UnicodeString Value)
+void TRegistry::WriteString(const UnicodeString Name, const UnicodeString Value)
 {
   WriteStringRaw(Name, Value);
 }
 
-void TRegistry::WriteStringRaw(const UnicodeString Name, UnicodeString Value)
+void TRegistry::WriteStringRaw(const UnicodeString Name, const UnicodeString Value)
 {
   PutData(Name, Value.c_str(), Value.Length() * sizeof(wchar_t), rdString);
 }
@@ -2036,7 +2036,7 @@ void TRegistry::WriteBinaryData(const UnicodeString Name,
   PutData(Name, Buffer, BufSize, rdBinary);
 }
 
-void TRegistry::ChangeKey(HKEY Value, UnicodeString APath)
+void TRegistry::ChangeKey(HKEY Value, const UnicodeString APath)
 {
   CloseKey();
   FCurrentKey = Value;

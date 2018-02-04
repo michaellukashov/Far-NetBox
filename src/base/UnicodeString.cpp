@@ -879,7 +879,7 @@ void UnicodeString::ThrowIfOutOfRange(intptr_t Idx) const
     throw Exception("Index is out of range"); // ERangeError(Sysconst_SRangeError);
 }
 
-UnicodeString operator+(const wchar_t lhs, UnicodeString rhs)
+UnicodeString operator+(const wchar_t lhs, const UnicodeString rhs)
 {
   return UnicodeString(&lhs, 1) + rhs;
 }
@@ -889,7 +889,7 @@ UnicodeString operator+(const UnicodeString lhs, const wchar_t rhs)
   return lhs + UnicodeString(rhs);
 }
 
-UnicodeString operator+(const wchar_t *lhs, UnicodeString rhs)
+UnicodeString operator+(const wchar_t *lhs, const UnicodeString rhs)
 {
   return UnicodeString(lhs) + rhs;
 }
@@ -909,7 +909,7 @@ bool operator==(const UnicodeString lhs, const wchar_t *rhs)
   return wcscmp(lhs.Data.c_str(), NullToEmpty(rhs)) == 0;
 }
 
-bool operator==(const wchar_t *lhs, UnicodeString rhs)
+bool operator==(const wchar_t *lhs, const UnicodeString rhs)
 {
   return wcscmp(NullToEmpty(lhs), rhs.Data.c_str()) == 0;
 }
@@ -919,7 +919,7 @@ bool operator!=(const UnicodeString lhs, const wchar_t *rhs)
   return wcscmp(lhs.Data.c_str(), NullToEmpty(rhs)) != 0;
 }
 
-bool operator!=(const wchar_t *lhs, UnicodeString rhs)
+bool operator!=(const wchar_t *lhs, const UnicodeString rhs)
 {
   return wcscmp(NullToEmpty(lhs), rhs.Data.c_str()) != 0;
 }

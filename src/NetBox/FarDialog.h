@@ -333,7 +333,7 @@ protected:
   virtual bool MouseMove(intptr_t X, intptr_t Y, MOUSE_EVENT_RECORD *Event);
   virtual bool MouseClick(MOUSE_EVENT_RECORD *Event);
   TPoint MouseClientPosition(MOUSE_EVENT_RECORD *Event);
-  void Text(intptr_t X, intptr_t Y, uintptr_t Color, UnicodeString Str);
+  void Text(intptr_t X, intptr_t Y, uintptr_t Color, const UnicodeString Str);
   void Redraw();
   virtual bool HotKey(char HotKey);
 
@@ -494,7 +494,7 @@ protected:
 
 private:
   UnicodeString GetHistoryMask(size_t Index) const;
-  void SetHistoryMask(size_t Index, UnicodeString Value);
+  void SetHistoryMask(size_t Index, const UnicodeString Value);
 };
 
 class TFarSeparator : public TFarDialogItem
@@ -573,7 +573,7 @@ protected:
   virtual void Init();
   void UpdatePosition(intptr_t Position);
   intptr_t GetPosition() const;
-  virtual void Put(intptr_t Index, UnicodeString Str);
+  virtual void Put(intptr_t Index, const UnicodeString Str);
   void SetCurPos(intptr_t Position, intptr_t TopIndex);
   void UpdateItem(intptr_t Index);
 

@@ -1655,7 +1655,7 @@ bool TFarDialogItem::MouseMove(intptr_t /*X*/, intptr_t /*Y*/,
   return DefaultDialogProc(DN_MOUSEEVENT, 0, reinterpret_cast<LONG_PTR>(Event)) != 0;
 }
 
-void TFarDialogItem::Text(intptr_t X, intptr_t Y, uintptr_t Color, UnicodeString Str)
+void TFarDialogItem::Text(intptr_t X, intptr_t Y, uintptr_t Color, const UnicodeString Str)
 {
   volatile TFarEnvGuard Guard;
   GetPluginStartupInfo()->Text(
@@ -1968,7 +1968,7 @@ UnicodeString TFarEdit::GetHistoryMask(size_t Index) const
   return Result;
 }
 
-void TFarEdit::SetHistoryMask(size_t Index, UnicodeString Value)
+void TFarEdit::SetHistoryMask(size_t Index, const UnicodeString Value)
 {
   if (GetHistoryMask(Index) != Value)
   {
@@ -2122,7 +2122,7 @@ void TFarList::UpdateItem(intptr_t Index)
   GetDialogItem()->SendDialogMessage(DM_LISTUPDATE, reinterpret_cast<LONG_PTR>(&ListUpdate));
 }
 
-void TFarList::Put(intptr_t Index, UnicodeString Str)
+void TFarList::Put(intptr_t Index, const UnicodeString Str)
 {
   if ((GetDialogItem() != nullptr) && GetDialogItem()->GetDialog()->GetHandle())
   {

@@ -24,14 +24,14 @@ void UseSystemSettingsPre(TCustomForm * Control);
 void UseSystemSettingsPost(TCustomForm * Control);
 void UseSystemSettings(TCustomForm * Control);
 void ResetSystemSettings(TCustomForm * Control);
-void LinkLabel(TStaticText * StaticText, UnicodeString Url = L"",
+void LinkLabel(TStaticText * StaticText, const UnicodeString Url = L"",
   TNotifyEvent OnEnter = nullptr);
 void LinkActionLabel(TStaticText * StaticText);
 void LinkAppLabel(TStaticText * StaticText);
-void HintLabel(TStaticText * StaticText, UnicodeString Hint = L"");
+void HintLabel(TStaticText * StaticText, const UnicodeString Hint = L"");
 void HotTrackLabel(TLabel * Label);
-void SetLabelHintPopup(TLabel * Label, UnicodeString Hint);
-bool HasLabelHintPopup(TLabel * Label, UnicodeString HintStr);
+void SetLabelHintPopup(TLabel * Label, const UnicodeString Hint);
+bool HasLabelHintPopup(TLabel * Label, const UnicodeString HintStr);
 void FixComboBoxResizeBug(TCustomComboBox * ComboBox);
 void ShowAsModal(TForm * Form, void *& Storage, bool BringToFront = true);
 void HideAsModal(TForm * Form, void *& Storage);
@@ -74,7 +74,7 @@ void DefaultButton(TButton * Button, bool Default);
 void MemoKeyDown(TObject * Sender, WORD & Key, TShiftState Shift);
 void UseDesktopFont(TControl * Control);
 void UpdateDesktopFont();
-UnicodeString FormatFormCaption(TCustomForm * Form, UnicodeString Caption);
+UnicodeString FormatFormCaption(TCustomForm * Form, const UnicodeString Caption);
 UnicodeString FormatMainFormCaption(const UnicodeString Caption);
 TShiftState AllKeyShiftStates();
 void RealignControl(TControl * Control);

@@ -317,7 +317,7 @@ private:
 
   void OpenLogFile();
   UnicodeString GetLogFileName();
-  void DoAdd(TLogLineType AType, UnicodeString ALine,
+  void DoAdd(TLogLineType AType, const UnicodeString ALine,
     TDoAddLogEvent Event);
   void DoAddToParent(TLogLineType AType, const UnicodeString ALine);
   void DoAddToSelf(TLogLineType AType, const UnicodeString ALine);

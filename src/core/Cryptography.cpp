@@ -386,7 +386,7 @@ static RawByteString AES256Salt()
   return Result;
 }
 
-void AES256EncryptWithMAC(RawByteString Input, UnicodeString Password,
+void AES256EncryptWithMAC(const RawByteString Input, const UnicodeString Password,
   RawByteString &Salt, RawByteString &Output, RawByteString &Mac)
 {
   fcrypt_ctx aes;
@@ -406,7 +406,7 @@ void AES256EncryptWithMAC(RawByteString Input, UnicodeString Password,
   fcrypt_end(reinterpret_cast<uint8_t *>(ToChar(Mac)), &aes);
 }
 
-void AES256EncryptWithMAC(RawByteString Input, UnicodeString Password,
+void AES256EncryptWithMAC(const RawByteString Input, const UnicodeString Password,
   RawByteString &Output)
 {
   RawByteString Salt;
@@ -416,8 +416,8 @@ void AES256EncryptWithMAC(RawByteString Input, UnicodeString Password,
   Output = Salt + Encrypted + Mac;
 }
 
-bool AES256DecryptWithMAC(RawByteString Input, UnicodeString Password,
-  RawByteString Salt, RawByteString &Output, RawByteString Mac)
+bool AES256DecryptWithMAC(RawByteString Input, const UnicodeString Password,
+  const RawByteString Salt, RawByteString &Output, RawByteString Mac)
 {
   fcrypt_ctx aes;
   DebugAssert(Salt.Length() == SALT_LENGTH(PASSWORD_MANAGER_AES_MODE));
@@ -435,7 +435,7 @@ bool AES256DecryptWithMAC(RawByteString Input, UnicodeString Password,
   return (Mac2 == Mac);
 }
 
-bool AES256DecryptWithMAC(RawByteString Input, UnicodeString Password,
+bool AES256DecryptWithMAC(RawByteString Input, const UnicodeString Password,
   RawByteString &Output)
 {
   bool Result =

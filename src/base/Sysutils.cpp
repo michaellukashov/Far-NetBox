@@ -89,7 +89,7 @@ Exception::Exception(const wchar_t *Msg) :
 {
 }
 
-Exception::Exception(TObjectClassId Kind, UnicodeString Msg) :
+Exception::Exception(TObjectClassId Kind, const UnicodeString Msg) :
   std::runtime_error(""),
   FKind(Kind),
   Message(Msg)
@@ -102,7 +102,7 @@ Exception::Exception(TObjectClassId Kind, std::exception *E) :
 {
 }
 
-Exception::Exception(TObjectClassId Kind, UnicodeString Msg, intptr_t AHelpContext) :
+Exception::Exception(TObjectClassId Kind, const UnicodeString Msg, intptr_t AHelpContext) :
   std::runtime_error(""),
   FKind(Kind),
   Message(Msg)
@@ -941,7 +941,7 @@ UnicodeString StringOfChar(const wchar_t Ch, intptr_t Len)
   return Result;
 }
 
-UnicodeString ChangeFileExt(const UnicodeString AFileName, UnicodeString AExt,
+UnicodeString ChangeFileExt(const UnicodeString AFileName, const UnicodeString AExt,
   wchar_t Delimiter)
 {
   UnicodeString Result = ::ChangeFileExtension(AFileName, AExt, Delimiter);

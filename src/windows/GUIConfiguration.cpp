@@ -341,7 +341,7 @@ void TCopyParamList::Add(const UnicodeString Name,
   Insert(GetCount(), Name, CopyParam, Rule);
 }
 
-void TCopyParamList::Insert(intptr_t Index, UnicodeString Name,
+void TCopyParamList::Insert(intptr_t Index, const UnicodeString Name,
   TCopyParamType *CopyParam, TCopyParamRule *Rule)
 {
   DebugAssert(FNames->IndexOf(Name) < 0);
@@ -352,7 +352,7 @@ void TCopyParamList::Insert(intptr_t Index, UnicodeString Name,
   Modify();
 }
 
-void TCopyParamList::Change(intptr_t Index, UnicodeString Name,
+void TCopyParamList::Change(intptr_t Index, const UnicodeString Name,
   TCopyParamType *CopyParam, TCopyParamRule *Rule)
 {
   if ((Name != GetName(Index)) || !CompareItem(Index, CopyParam, Rule))
@@ -1155,7 +1155,7 @@ void TGUIConfiguration::FindLocales(const UnicodeString LocalesMask, TStrings *E
   })
 }
 
-void TGUIConfiguration::AddLocale(LCID Locale, UnicodeString Name)
+void TGUIConfiguration::AddLocale(LCID Locale, const UnicodeString Name)
 {
   std::unique_ptr<TLocaleInfo> LocaleInfo(new TLocaleInfo());
   LocaleInfo->Locale = Locale;

@@ -2,7 +2,7 @@
 
 #include <SessionData.h>
 
-NB_CORE_EXPORT bool SaveDialog(const UnicodeString ATitle, UnicodeString Filter,
+NB_CORE_EXPORT bool SaveDialog(const UnicodeString ATitle, const UnicodeString Filter,
   UnicodeString ADefaultExt, UnicodeString &AFileName);
 
 NB_CORE_EXPORT bool AutodetectProxy(UnicodeString &AHostName, intptr_t &APortNumber);

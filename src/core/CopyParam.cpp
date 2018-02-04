@@ -86,7 +86,7 @@ bool TCopyParamType::AnyUsableCopyParam(intptr_t Attrs) const
   return SomeAttrIncluded;
 }
 
-UnicodeString TCopyParamType::GenerateTransferCommandArgs(intptr_t Attrs, UnicodeString Link, bool &NoScriptArgs) const
+UnicodeString TCopyParamType::GenerateTransferCommandArgs(intptr_t Attrs, const UnicodeString Link, bool &NoScriptArgs) const
 {
   UnicodeString Result;
   bool SomeAttrIncluded;

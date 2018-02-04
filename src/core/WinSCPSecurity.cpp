@@ -61,7 +61,7 @@ RawByteString EncryptPassword(const UnicodeString UnicodePassword, const Unicode
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString DecryptPassword(RawByteString Password, UnicodeString UnicodeKey, Integer /*Algorithm*/)
+UnicodeString DecryptPassword(RawByteString Password, const UnicodeString UnicodeKey, Integer /*Algorithm*/)
 {
   UTF8String Key = UTF8String(UnicodeKey);
   UTF8String Result("");

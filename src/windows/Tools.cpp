@@ -146,7 +146,7 @@ UnicodeString GetListViewStr(TListView *ListView)
   return Result;
 }
 
-void LoadListViewStr(TListView *ListView, UnicodeString ALayoutStr)
+void LoadListViewStr(TListView *ListView, const UnicodeString ALayoutStr)
 {
   UnicodeString LayoutStr = CutToChar(ALayoutStr, L';', true);
   int PixelsPerInch = LoadPixelsPerInch(CutToChar(ALayoutStr, L';', true), ListView);
@@ -315,7 +315,7 @@ UnicodeString StoreFormSize(TForm *Form)
 }
 
 static void ExecuteProcessAndReadOutput(const
-  UnicodeString &Command, UnicodeString HelpKeyword, UnicodeString &Output)
+  UnicodeString &Command, const UnicodeString HelpKeyword, UnicodeString &Output)
 {
   if (!CopyCommandToClipboard(Command))
   {
@@ -396,7 +396,7 @@ static void ExecuteProcessAndReadOutput(const
 }
 
 void ExecuteProcessChecked(
-  UnicodeString Command, UnicodeString HelpKeyword, UnicodeString *Output)
+  UnicodeString Command, const UnicodeString HelpKeyword, UnicodeString *Output)
 {
   if (Output == nullptr)
   {
@@ -409,7 +409,7 @@ void ExecuteProcessChecked(
 }
 
 void ExecuteProcessCheckedAndWait(
-  UnicodeString Command, UnicodeString HelpKeyword, UnicodeString *Output)
+  UnicodeString Command, const UnicodeString HelpKeyword, UnicodeString *Output)
 {
   if (Output == nullptr)
   {
@@ -448,7 +448,7 @@ void ExecuteNewInstance(const UnicodeString Param)
 }
 
 IShellLink *CreateDesktopShortCut(const UnicodeString Name,
-  UnicodeString File, UnicodeString Params, UnicodeString Description,
+  UnicodeString File, const UnicodeString Params, const UnicodeString Description,
   int SpecialFolder, int IconIndex, bool Return)
 {
   IShellLink *pLink = nullptr;
@@ -542,7 +542,7 @@ IShellLink *CreateDesktopShortCut(const UnicodeString Name,
 }
 
 IShellLink *CreateDesktopSessionShortCut(
-  UnicodeString SessionName, UnicodeString Name,
+  UnicodeString SessionName, const UnicodeString Name,
   UnicodeString AdditionalParams, int SpecialFolder, int IconIndex,
   bool Return)
 {
@@ -831,7 +831,7 @@ UnicodeString ReadResource(const UnicodeString ResName)
 
 #if 0
 template <class T>
-void BrowseForExecutableT(T *Control, UnicodeString Title,
+void BrowseForExecutableT(T *Control, const UnicodeString Title,
   UnicodeString Filter, bool FileNameCommand, bool Escape)
 {
   UnicodeString Executable, Program, Params, Dir;
@@ -893,13 +893,13 @@ void BrowseForExecutableT(T *Control, UnicodeString Title,
   }
 }
 
-void BrowseForExecutable(TEdit *Control, UnicodeString Title,
+void BrowseForExecutable(TEdit *Control, const UnicodeString Title,
   UnicodeString Filter, bool FileNameCommand, bool Escape)
 {
   BrowseForExecutableT(Control, Title, Filter, FileNameCommand, Escape);
 }
 
-void BrowseForExecutable(TComboBox *Control, UnicodeString Title,
+void BrowseForExecutable(TComboBox *Control, const UnicodeString Title,
   UnicodeString Filter, bool FileNameCommand, bool Escape)
 {
   BrowseForExecutableT(Control, Title, Filter, FileNameCommand, Escape);
@@ -927,7 +927,7 @@ bool FontDialog(TFont *Font)
   return Result;
 }
 
-bool SaveDialog(const UnicodeString Title, UnicodeString Filter,
+bool SaveDialog(const UnicodeString Title, const UnicodeString Filter,
   UnicodeString DefaultExt, UnicodeString &FileName)
 {
   bool Result;
@@ -986,7 +986,7 @@ bool SaveDialog(const UnicodeString Title, UnicodeString Filter,
 }
 #endif // #if 0
 
-bool SaveDialog(const UnicodeString ATitle, UnicodeString Filter,
+bool SaveDialog(const UnicodeString ATitle, const UnicodeString Filter,
   UnicodeString ADefaultExt, UnicodeString &AFileName)
 {
   bool Result = false;

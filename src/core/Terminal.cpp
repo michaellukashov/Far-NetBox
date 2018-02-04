@@ -710,7 +710,7 @@ TRetryOperationLoop::TRetryOperationLoop(TTerminal *Terminal)
   FRetry = false;
 }
 //---------------------------------------------------------------------------
-void TRetryOperationLoop::DoError(Exception &E, TSessionAction *Action, UnicodeString Message)
+void TRetryOperationLoop::DoError(Exception &E, TSessionAction *Action, const UnicodeString Message)
 {
   // Note that the action may already be canceled when RollbackAction is called
   uintptr_t Result;
@@ -773,7 +773,7 @@ void TRetryOperationLoop::Error(Exception &E, const UnicodeString Message)
   DoError(E, nullptr, Message);
 }
 //---------------------------------------------------------------------------
-void TRetryOperationLoop::Error(Exception &E, TSessionAction &Action, UnicodeString Message)
+void TRetryOperationLoop::Error(Exception &E, TSessionAction &Action, const UnicodeString Message)
 {
   DoError(E, &Action, Message);
 }
@@ -4418,7 +4418,7 @@ void TTerminal::CustomCommandOnFile(const UnicodeString &AFileName,
 }
 //---------------------------------------------------------------------------
 void TTerminal::DoCustomCommandOnFile(const UnicodeString AFileName,
-  const TRemoteFile *AFile, UnicodeString ACommand, intptr_t AParams,
+  const TRemoteFile *AFile, const UnicodeString ACommand, intptr_t AParams,
   TCaptureOutputEvent OutputEvent)
 {
   TRetryOperationLoop RetryLoop(this);
@@ -5997,7 +5997,7 @@ TSynchronizeChecklist * TTerminal::SynchronizeCollect(const UnicodeString LocalD
   return Checklist.release();
 }
 //---------------------------------------------------------------------------
-static void AddFlagName(UnicodeString &ParamsStr, intptr_t &Params, intptr_t Param, UnicodeString Name)
+static void AddFlagName(UnicodeString &ParamsStr, intptr_t &Params, intptr_t Param, const UnicodeString Name)
 {
   if (FLAGSET(Params, Param))
   {

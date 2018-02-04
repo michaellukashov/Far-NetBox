@@ -254,7 +254,7 @@ public:
   virtual void EndUpdate();
   virtual void SetUpdateState(bool Updating);
   virtual intptr_t AddObject(const UnicodeString S, TObject *AObject);
-  virtual void InsertObject(intptr_t Index, UnicodeString Key, TObject *AObject);
+  virtual void InsertObject(intptr_t Index, const UnicodeString Key, TObject *AObject);
   bool Equals(const TStrings *Value) const;
   virtual void Move(intptr_t CurIndex, intptr_t NewIndex) override;
   virtual intptr_t IndexOf(const UnicodeString S) const;
@@ -323,14 +323,14 @@ public:
   void SetOnChange(TNotifyEvent OnChange) { FOnChange = OnChange; }
   TNotifyEvent GetOnChanging() const { return FOnChanging; }
   void SetOnChanging(TNotifyEvent OnChanging) { FOnChanging = OnChanging; }
-  void InsertItem(intptr_t Index, UnicodeString S, TObject *AObject);
+  void InsertItem(intptr_t Index, const UnicodeString S, TObject *AObject);
   void QuickSort(intptr_t L, intptr_t R, TStringListSortCompare SCompare);
 
   virtual void Assign(const TPersistent *Source) override;
   virtual bool Find(const UnicodeString S, intptr_t &Index) const;
   virtual intptr_t IndexOf(const UnicodeString S) const override;
   virtual void Delete(intptr_t Index) override;
-  virtual void InsertObject(intptr_t Index, UnicodeString Key, TObject *AObject) override;
+  virtual void InsertObject(intptr_t Index, const UnicodeString Key, TObject *AObject) override;
   virtual void Sort() override;
   virtual void CustomSort(TStringListSortCompare ACompareFunc);
 
@@ -640,14 +640,14 @@ public:
   void WriteBool(const UnicodeString Name, bool Value);
   void WriteDateTime(const UnicodeString Name, const TDateTime &Value);
   void WriteFloat(const UnicodeString Name, double Value);
-  void WriteString(const UnicodeString Name, UnicodeString Value);
-  void WriteStringRaw(const UnicodeString Name, UnicodeString Value);
+  void WriteString(const UnicodeString Name, const UnicodeString Value);
+  void WriteStringRaw(const UnicodeString Name, const UnicodeString Value);
   void WriteInteger(const UnicodeString Name, intptr_t Value);
   void WriteInt64(const UnicodeString Name, int64_t Value);
   void WriteBinaryData(const UnicodeString Name,
     const void *Buffer, size_t BufSize);
 private:
-  void ChangeKey(HKEY Value, UnicodeString APath);
+  void ChangeKey(HKEY Value, const UnicodeString APath);
   HKEY GetBaseKey(bool Relative) const;
   HKEY GetKey(const UnicodeString Key) const;
   void SetCurrentKey(HKEY Value) { FCurrentKey = Value; }

@@ -13,7 +13,7 @@ enum TKeyType
 
 NB_CORE_EXPORT TKeyType GetKeyType(const UnicodeString AFileName);
 NB_CORE_EXPORT UnicodeString GetKeyTypeName(TKeyType KeyType);
-NB_CORE_EXPORT bool IsKeyEncrypted(TKeyType KeyType, UnicodeString FileName, UnicodeString &Comment);
+NB_CORE_EXPORT bool IsKeyEncrypted(TKeyType KeyType, const UnicodeString FileName, UnicodeString &Comment);
 struct TPrivateKey;
 NB_CORE_EXPORT TPrivateKey *LoadKey(TKeyType KeyType, const UnicodeString FileName, const UnicodeString Passphrase);
 NB_CORE_EXPORT void ChangeKeyComment(TPrivateKey *PrivateKey, const UnicodeString Comment);

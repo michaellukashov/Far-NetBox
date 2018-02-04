@@ -44,10 +44,10 @@ typedef intptr_t (*TCalculateWidth)(const UnicodeString Text, void *Arg);
 void ApplyTabs(
   UnicodeString &Text, wchar_t Padding,
   TCalculateWidth CalculateWidth, void *CalculateWidthArg);
-TPanel *CreateLabelPanel(TPanel *Parent, UnicodeString Label);
+TPanel *CreateLabelPanel(TPanel *Parent, const UnicodeString Label);
 void SelectScaledImageList(TImageList *ImageList);
 void CopyImageList(TImageList *TargetList, TImageList *SourceList);
-void LoadDialogImage(TImage *Image, UnicodeString ImageName);
+void LoadDialogImage(TImage *Image, const UnicodeString ImageName);
 intptr_t DialogImageSize(TForm *Form);
 intptr_t NormalizePixelsPerInch(intptr_t PixelsPerInch);
 void HideComponentsPanel(TForm *Form);
@@ -55,12 +55,12 @@ namespace Webbrowserex {
 class TWebBrowserEx;
 }
 using namespace Webbrowserex;
-TWebBrowserEx *CreateBrowserViewer(TPanel *Parent, UnicodeString LoadingLabel);
+TWebBrowserEx *CreateBrowserViewer(TPanel *Parent, const UnicodeString LoadingLabel);
 void SetBrowserDesignModeOff(TWebBrowserEx *WebBrowser);
 void AddBrowserLinkHandler(TWebBrowserEx *WebBrowser,
   UnicodeString Url, TNotifyEvent Handler);
-void NavigateBrowserToUrl(TWebBrowserEx *WebBrowser, UnicodeString Url);
-TComponent *FindComponentRecursively(TComponent *Root, UnicodeString Name);
+void NavigateBrowserToUrl(TWebBrowserEx *WebBrowser, const UnicodeString Url);
+TComponent *FindComponentRecursively(TComponent *Root, const UnicodeString Name);
 
 #endif // #if 0
 
@@ -69,10 +69,10 @@ class NB_CORE_EXPORT TLocalCustomCommand : public TFileCustomCommand
 public:
   TLocalCustomCommand();
   explicit TLocalCustomCommand(
-    const TCustomCommandData &Data, UnicodeString RemotePath, UnicodeString LocalPath);
+    const TCustomCommandData &Data, const UnicodeString RemotePath, const UnicodeString LocalPath);
   explicit TLocalCustomCommand(
-    const TCustomCommandData &Data, UnicodeString RemotePath, UnicodeString LocalPath,
-    UnicodeString AFileName, UnicodeString LocalFileName,
+    const TCustomCommandData &Data, const UnicodeString RemotePath, const UnicodeString LocalPath,
+    UnicodeString AFileName, const UnicodeString LocalFileName,
     UnicodeString FileList);
   virtual ~TLocalCustomCommand() {}
 
@@ -107,7 +107,7 @@ class TFrameAnimation
 {
 public:
   TFrameAnimation();
-  void Init(TPaintBox *PaintBox, UnicodeString Name);
+  void Init(TPaintBox *PaintBox, const UnicodeString Name);
   void Start();
   void Stop();
 
@@ -141,7 +141,7 @@ public:
   virtual TRect CalcHintRect(intptr_t MaxWidth, const UnicodeString AHint, void *AData);
   virtual void ActivateHintData(const TRect &Rect, const UnicodeString AHint, void *AData);
 
-  static void CalcHintTextRect(TControl *Control, TCanvas *Canvas, TRect &Rect, UnicodeString Hint);
+  static void CalcHintTextRect(TControl *Control, TCanvas *Canvas, TRect &Rect, const UnicodeString Hint);
 
 protected:
   virtual void Paint();
@@ -158,11 +158,11 @@ private:
 
   UnicodeString GetLongHintIfAny(const UnicodeString AHint);
   static intptr_t GetTextFlags(TControl *Control);
-  bool IsHintPopup(TControl *HintControl, UnicodeString Hint);
+  bool IsHintPopup(TControl *HintControl, const UnicodeString Hint);
   bool IsPathLabel(TControl *HintControl);
   bool UseBoldShortHint(TControl *HintControl);
-  intptr_t GetMargin(TControl *HintControl, UnicodeString Hint);
-  TFont *GetFont(TControl *HintControl, UnicodeString Hint);
+  intptr_t GetMargin(TControl *HintControl, const UnicodeString Hint);
+  TFont *GetFont(TControl *HintControl, const UnicodeString Hint);
   TControl *GetHintControl(void *Data);
 };
 

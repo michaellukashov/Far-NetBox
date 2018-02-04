@@ -1220,7 +1220,7 @@ void TSessionData::Save(THierarchicalStorage *Storage,
 }
 //---------------------------------------------------------------------
 #if 0
-UnicodeString TSessionData::ReadXmlNode(_di_IXMLNode Node, UnicodeString Name, UnicodeString Default)
+UnicodeString TSessionData::ReadXmlNode(_di_IXMLNode Node, const UnicodeString Name, const UnicodeString Default)
 {
   _di_IXMLNode TheNode = Node->ChildNodes->FindNode(Name);
   UnicodeString Result;
@@ -1237,7 +1237,7 @@ UnicodeString TSessionData::ReadXmlNode(_di_IXMLNode Node, UnicodeString Name, U
   return Result;
 }
 //---------------------------------------------------------------------
-intptr_t TSessionData::ReadXmlNode(_di_IXMLNode Node, UnicodeString Name, int Default)
+intptr_t TSessionData::ReadXmlNode(_di_IXMLNode Node, const UnicodeString Name, int Default)
 {
   _di_IXMLNode TheNode = Node->ChildNodes->FindNode(Name);
   intptr_t Result;
@@ -1253,7 +1253,7 @@ intptr_t TSessionData::ReadXmlNode(_di_IXMLNode Node, UnicodeString Name, int De
   return Result;
 }
 //---------------------------------------------------------------------
-_di_IXMLNode TSessionData::FindSettingsNode(_di_IXMLNode Node, UnicodeString Name)
+_di_IXMLNode TSessionData::FindSettingsNode(_di_IXMLNode Node, const UnicodeString Name)
 {
   for (int Index = 0; Index < Node->ChildNodes->Count; Index++)
   {
@@ -1271,7 +1271,7 @@ _di_IXMLNode TSessionData::FindSettingsNode(_di_IXMLNode Node, UnicodeString Nam
   return nullptr;
 }
 //---------------------------------------------------------------------
-UnicodeString TSessionData::ReadSettingsNode(_di_IXMLNode Node, UnicodeString Name, UnicodeString Default)
+UnicodeString TSessionData::ReadSettingsNode(_di_IXMLNode Node, const UnicodeString Name, const UnicodeString Default)
 {
   _di_IXMLNode TheNode = FindSettingsNode(Node, Name);
   UnicodeString Result;
@@ -1288,7 +1288,7 @@ UnicodeString TSessionData::ReadSettingsNode(_di_IXMLNode Node, UnicodeString Na
   return Result;
 }
 //---------------------------------------------------------------------
-int TSessionData::ReadSettingsNode(_di_IXMLNode Node, UnicodeString Name, int Default)
+int TSessionData::ReadSettingsNode(_di_IXMLNode Node, const UnicodeString Name, int Default)
 {
   _di_IXMLNode TheNode = FindSettingsNode(Node, Name);
   intptr_t Result;
@@ -1305,7 +1305,7 @@ int TSessionData::ReadSettingsNode(_di_IXMLNode Node, UnicodeString Name, int De
 }
 //---------------------------------------------------------------------
 void TSessionData::ImportFromFilezilla(
-  _di_IXMLNode Node, UnicodeString Path, _di_IXMLNode SettingsNode)
+  _di_IXMLNode Node, const UnicodeString Path, _di_IXMLNode SettingsNode)
 {
   Name = UnixIncludeTrailingBackslash(Path) + MakeValidName(ReadXmlNode(Node, L"Name", Name));
   HostName = ReadXmlNode(Node, L"Host", HostName);
@@ -1791,7 +1791,7 @@ void TSessionData::MaskPasswords()
 }
 //---------------------------------------------------------------------
 bool TSessionData::ParseUrl(const UnicodeString AUrl, TOptions * Options,
-  TStoredSessionList * AStoredSessions, bool & DefaultsOnly, UnicodeString * AFileName,
+  TStoredSessionList *AStoredSessions, bool &DefaultsOnly, UnicodeString *AFileName,
   bool *AProtocolDefined, UnicodeString *MaskedUrl)
 {
   UnicodeString Url = AUrl;
@@ -2316,7 +2316,7 @@ RawByteString TSessionData::StronglyRecryptPassword(const RawByteString Password
   return GetConfiguration()->StronglyRecryptPassword(Password, Key);
 }
 //---------------------------------------------------------------------
-UnicodeString TSessionData::DecryptPassword(RawByteString Password, UnicodeString Key)
+UnicodeString TSessionData::DecryptPassword(const RawByteString Password, const UnicodeString Key)
 {
   UnicodeString Result;
   try
@@ -4497,7 +4497,7 @@ void TSessionData::SetCodePage(UnicodeString Value)
   FCodePageAsNumber = 0;
 }
 
-void TSessionData::AdjustHostName(UnicodeString &HostName, UnicodeString Prefix) const
+void TSessionData::AdjustHostName(UnicodeString &HostName, const UnicodeString Prefix) const
 {
   UnicodeString FullPrefix = Prefix + ProtocolSeparator;
   if (::LowerCase(HostName.SubString(1, FullPrefix.Length())) == FullPrefix)

@@ -894,7 +894,7 @@ RawByteString TConfiguration::EncryptPassword(const UnicodeString Password, cons
   }
 }
 //---------------------------------------------------------------------------
-UnicodeString TConfiguration::DecryptPassword(RawByteString Password, UnicodeString Key)
+UnicodeString TConfiguration::DecryptPassword(const RawByteString Password, const UnicodeString Key)
 {
   if (Password.IsEmpty())
   {
@@ -903,7 +903,7 @@ UnicodeString TConfiguration::DecryptPassword(RawByteString Password, UnicodeStr
   return ::DecryptPassword(Password, Key);
 }
 //---------------------------------------------------------------------------
-RawByteString TConfiguration::StronglyRecryptPassword(RawByteString Password, UnicodeString /*Key*/)
+RawByteString TConfiguration::StronglyRecryptPassword(const RawByteString Password, const UnicodeString /*Key*/)
 {
   return Password;
 }
@@ -1462,7 +1462,7 @@ TStorage TConfiguration::GetStorage() const
 }
 //---------------------------------------------------------------------
 TStoredSessionList * TConfiguration::SelectFilezillaSessionsForImport(
-  TStoredSessionList * Sessions, UnicodeString & Error)
+  TStoredSessionList *Sessions, UnicodeString &Error)
 {
   std::unique_ptr<TStoredSessionList> ImportSessionList(new TStoredSessionList(true));
   ImportSessionList->SetDefaultSettings(Sessions->GetDefaultSettings());
@@ -1512,7 +1512,7 @@ bool TConfiguration::AnyFilezillaSessionForImport(TStoredSessionList * Sessions)
 }
 //---------------------------------------------------------------------
 TStoredSessionList * TConfiguration::SelectKnownHostsSessionsForImport(
-  TStoredSessionList * Sessions, UnicodeString & Error)
+  TStoredSessionList *Sessions, UnicodeString &Error)
 {
   std::unique_ptr<TStoredSessionList> ImportSessionList(new TStoredSessionList(true));
   ImportSessionList->SetDefaultSettings(Sessions->GetDefaultSettings());
@@ -1545,7 +1545,7 @@ TStoredSessionList * TConfiguration::SelectKnownHostsSessionsForImport(
 }
 //---------------------------------------------------------------------
 TStoredSessionList * TConfiguration::SelectKnownHostsSessionsForImport(
-  TStrings * Lines, TStoredSessionList * Sessions, UnicodeString & Error)
+  TStrings *Lines, TStoredSessionList *Sessions, UnicodeString &Error)
 {
   std::unique_ptr<TStoredSessionList> ImportSessionList(new TStoredSessionList(true));
   ImportSessionList->SetDefaultSettings(Sessions->GetDefaultSettings());

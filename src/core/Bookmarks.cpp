@@ -75,7 +75,7 @@ void TBookmarks::Load(THierarchicalStorage *Storage)
   ModifyAll(false);
 }
 
-void TBookmarks::LoadLevel(THierarchicalStorage *Storage, UnicodeString Key,
+void TBookmarks::LoadLevel(THierarchicalStorage *Storage, const UnicodeString Key,
   intptr_t AIndex, TBookmarkList *BookmarkList)
 {
   std::unique_ptr<TStrings> Names(new TStringList());

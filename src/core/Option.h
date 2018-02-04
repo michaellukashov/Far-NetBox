@@ -34,7 +34,7 @@ public:
   bool FindSwitchCaseSensitive(const UnicodeString Switch, TStrings *Params,
     intptr_t ParamsMax = -1);
   void ParamsProcessed(intptr_t ParamsStart, intptr_t ParamsCount);
-  UnicodeString SwitchValue(const UnicodeString Switch, UnicodeString Default = L"");
+  UnicodeString SwitchValue(const UnicodeString Switch, const UnicodeString Default = L"");
   bool SwitchValue(const UnicodeString Switch, bool Default);
   bool SwitchValue(const UnicodeString Switch, bool Default, bool DefaultOnNonExistence);
   bool UnusedSwitch(UnicodeString &Switch) const;

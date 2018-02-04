@@ -124,7 +124,7 @@ protected:
   static void NeonCreateRequest(ne_request *Request, void *UserData, const char *Method, const char *Uri);
   static int NeonRequestAuth(void *UserData, const char *Realm, int Attempt, char *UserName, char *Password);
   void NeonOpen(UnicodeString &CorrectedUrl, const UnicodeString AUrl);
-  void NeonClientOpenSessionInternal(UnicodeString &CorrectedUrl, UnicodeString Url);
+  void NeonClientOpenSessionInternal(UnicodeString &CorrectedUrl, const UnicodeString Url);
   static void NeonNotifier(void *UserData, ne_session_status Status, const ne_session_status_info *StatusInfo);
   static ssize_t NeonUploadBodyProvider(void *UserData, char *Buffer, size_t BufLen);
   static int NeonPostSend(ne_request *Req, void *UserData, const ne_status *Status);

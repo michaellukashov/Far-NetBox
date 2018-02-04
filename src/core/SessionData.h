@@ -995,8 +995,8 @@ private:
   void Load(const UnicodeString AKey, bool UseDefaults);
   bool IsFolderOrWorkspace(const UnicodeString Name, bool Workspace) const;
   TSessionData *CheckIsInFolderOrWorkspaceAndResolve(
-    TSessionData *Data, UnicodeString Name);
-  __removed void ImportLevelFromFilezilla(_di_IXMLNode Node, UnicodeString Path);
+    TSessionData *Data, const UnicodeString Name);
+  __removed void ImportLevelFromFilezilla(_di_IXMLNode Node, const UnicodeString Path);
   static THierarchicalStorage *CreateHostKeysStorageForWritting();
   static bool OpenHostKeysSubKey(THierarchicalStorage *Storage, bool CanCreate);
 };

@@ -33,7 +33,7 @@ public:
   void SetSharedBookmarks(TBookmarkList *Value);
 
 private:
-  void LoadLevel(THierarchicalStorage *Storage, UnicodeString Key,
+  void LoadLevel(THierarchicalStorage *Storage, const UnicodeString Key,
     intptr_t AIndex, TBookmarkList *BookmarkList);
 };
 
@@ -56,7 +56,7 @@ public:
   void InsertBefore(TBookmark *BeforeBookmark, TBookmark *Bookmark);
   void MoveTo(TBookmark *ToBookmark, TBookmark *Bookmark, bool Before);
   void Delete(TBookmark *&Bookmark);
-  TBookmark *FindByName(const UnicodeString Node, UnicodeString Name) const;
+  TBookmark *FindByName(const UnicodeString Node, const UnicodeString Name) const;
   TBookmark *FindByShortCut(const TShortCut &ShortCut);
   virtual void Assign(const TPersistent *Source) override;
   void LoadOptions(THierarchicalStorage *Storage);

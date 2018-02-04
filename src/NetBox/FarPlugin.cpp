@@ -767,7 +767,7 @@ public:
   explicit TFarMessageDialog(TCustomFarPlugin *Plugin,
     TFarMessageParams *Params);
   void Init(uintptr_t AFlags,
-    UnicodeString Title, UnicodeString Message, TStrings *Buttons);
+    const UnicodeString Title, const UnicodeString Message, TStrings *Buttons);
 
   intptr_t Execute(bool &ACheckBox);
 
@@ -800,7 +800,7 @@ TFarMessageDialog::TFarMessageDialog(TCustomFarPlugin *Plugin,
 }
 
 void TFarMessageDialog::Init(uintptr_t AFlags,
-  UnicodeString Title, UnicodeString Message, TStrings *Buttons)
+  const UnicodeString Title, const UnicodeString Message, TStrings *Buttons)
 {
   DebugAssert(FLAGCLEAR(AFlags, FMSG_ERRORTYPE));
   DebugAssert(FLAGCLEAR(AFlags, FMSG_KEEPBACKGROUND));
@@ -1147,8 +1147,8 @@ uint32_t TCustomFarPlugin::Message(DWORD Flags,
   return Result;
 }
 
-intptr_t TCustomFarPlugin::Menu(DWORD Flags, UnicodeString Title,
-  UnicodeString Bottom, const FarMenuItem *Items, intptr_t Count,
+intptr_t TCustomFarPlugin::Menu(DWORD Flags, const UnicodeString Title,
+  const UnicodeString Bottom, const FarMenuItem *Items, intptr_t Count,
   const int *BreakKeys, int &BreakCode)
 {
   DebugAssert(Items);
@@ -1159,8 +1159,8 @@ intptr_t TCustomFarPlugin::Menu(DWORD Flags, UnicodeString Title,
         &BreakCode, Items, ToInt(Count)));
 }
 
-intptr_t TCustomFarPlugin::Menu(DWORD Flags, UnicodeString Title,
-  UnicodeString Bottom, TStrings *Items, const int *BreakKeys,
+intptr_t TCustomFarPlugin::Menu(DWORD Flags, const UnicodeString Title,
+  const UnicodeString Bottom, TStrings *Items, const int *BreakKeys,
   int &BreakCode)
 {
   DebugAssert(Items && Items->GetCount());
@@ -1211,16 +1211,16 @@ intptr_t TCustomFarPlugin::Menu(DWORD Flags, UnicodeString Title,
   return Result;
 }
 
-intptr_t TCustomFarPlugin::Menu(DWORD Flags, UnicodeString Title,
-  UnicodeString Bottom, TStrings *Items)
+intptr_t TCustomFarPlugin::Menu(DWORD Flags, const UnicodeString Title,
+  const UnicodeString Bottom, TStrings *Items)
 {
   int BreakCode;
   return Menu(Flags, Title, Bottom, Items, nullptr, BreakCode);
 }
 
 bool TCustomFarPlugin::InputBox(const UnicodeString Title,
-  UnicodeString Prompt, UnicodeString &Text, DWORD Flags,
-  UnicodeString HistoryName, intptr_t MaxLen, TFarInputBoxValidateEvent OnValidate)
+  const UnicodeString Prompt, UnicodeString &Text, DWORD Flags,
+  const UnicodeString HistoryName, intptr_t MaxLen, TFarInputBoxValidateEvent OnValidate)
 {
   bool Repeat;
   int Result;
@@ -1267,7 +1267,7 @@ bool TCustomFarPlugin::InputBox(const UnicodeString Title,
   return (Result != 0);
 }
 
-void TCustomFarPlugin::Text(int X, int Y, int Color, UnicodeString Str)
+void TCustomFarPlugin::Text(int X, int Y, int Color, const UnicodeString Str)
 {
   volatile TFarEnvGuard Guard;
   FStartupInfo.Text(X, Y, Color, Str.c_str());
@@ -2192,11 +2192,11 @@ TFarPanelModes::~TFarPanelModes()
   }
 }
 
-void TFarPanelModes::SetPanelMode(size_t Mode, UnicodeString ColumnTypes,
-  UnicodeString ColumnWidths, TStrings *ColumnTitles,
+void TFarPanelModes::SetPanelMode(size_t Mode, const UnicodeString ColumnTypes,
+  const UnicodeString ColumnWidths, TStrings *ColumnTitles,
   bool FullScreen, bool DetailedStatus, bool AlignExtensions,
-  bool CaseConversion, UnicodeString StatusColumnTypes,
-  UnicodeString StatusColumnWidths)
+  bool CaseConversion, const UnicodeString StatusColumnTypes,
+  const UnicodeString StatusColumnWidths)
 {
   intptr_t ColumnTypesCount = !ColumnTypes.IsEmpty() ? CommaCount(ColumnTypes) + 1 : 0;
   DebugAssert(Mode != NPOS && Mode < _countof(FPanelModes));
@@ -2310,7 +2310,7 @@ void TFarKeyBarTitles::ClearKeyBarTitle(TFarShiftStatus ShiftStatus,
 }
 
 void TFarKeyBarTitles::SetKeyBarTitle(TFarShiftStatus ShiftStatus,
-  intptr_t FunctionKey, UnicodeString Title)
+  intptr_t FunctionKey, const UnicodeString Title)
 {
   DebugAssert(FunctionKey >= 1 && FunctionKey <= ToIntPtr(_countof(FKeyBarTitles.Titles)));
   wchar_t **Titles = nullptr;
@@ -2924,8 +2924,8 @@ UnicodeString TGlobalFunctions::GetStrVersionNumber() const
 //bool InputBox(const UnicodeString Title, UnicodeString Prompt,
 //  UnicodeString & Text, DWORD Flags, UnicodeString HistoryName = UnicodeString(),
 //  intptr_t MaxLen = 255, TFarInputBoxValidateEvent OnValidate = nullptr);
-bool TGlobalFunctions::InputDialog(const UnicodeString ACaption, UnicodeString APrompt,
-  UnicodeString &Value, UnicodeString HelpKeyword,
+bool TGlobalFunctions::InputDialog(const UnicodeString ACaption, const UnicodeString APrompt,
+  UnicodeString &Value, const UnicodeString HelpKeyword,
   TStrings *History, bool PathInput,
   TInputDialogInitializeEvent OnInitialize, bool Echo)
 {

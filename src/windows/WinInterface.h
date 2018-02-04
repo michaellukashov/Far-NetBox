@@ -98,11 +98,11 @@ bool CheckXmlLogParam(TProgramParams *Params);
 
 #if 0
 UnicodeString GetToolbarsLayoutStr(TComponent *OwnerComponent);
-void LoadToolbarsLayoutStr(TComponent *OwnerComponent, UnicodeString LayoutStr);
+void LoadToolbarsLayoutStr(TComponent *OwnerComponent, const UnicodeString LayoutStr);
 
 namespace Tb2item { class TTBCustomItem; }
 void AddMenuSeparator(Tb2item::TTBCustomItem *Menu);
-void AddMenuLabel(Tb2item::TTBCustomItem *Menu, UnicodeString Label);
+void AddMenuLabel(Tb2item::TTBCustomItem *Menu, const UnicodeString Label);
 #endif // #if 0
 
 // windows\WinHelp.cpp
@@ -140,11 +140,11 @@ bool DoSaveWorkspaceDialog(UnicodeString &WorkspaceName,
   bool &CreateShortcut, bool &EnableAutoSave);
 class TShortCuts;
 bool DoShortCutDialog(TShortCut &ShortCut,
-  const TShortCuts &ShortCuts, UnicodeString HelpKeyword);
+  const TShortCuts &ShortCuts, const UnicodeString HelpKeyword);
 #if 0
 bool DoCustomCommandOptionsDialog(
   const TCustomCommandType *Command, TStrings *CustomCommandOptions, uintptr_t AFlags,
-  TCustomCommand *CustomCommandForOptions, UnicodeString Site);
+  TCustomCommand *CustomCommandForOptions, const UnicodeString Site);
 #endif // #if 0
 
 #endif // FARPLUGIN
@@ -326,7 +326,7 @@ typedef nb::FastDelegate4<void,
   bool & /*Close*/> TCalculateSizeEvent;
 #if 0
 typedef void (__closure *TCalculatedChecksumCallbackEvent)(
-  UnicodeString FileName, UnicodeString Alg, UnicodeString Hash);
+  UnicodeString FileName, const UnicodeString Alg, const UnicodeString Hash);
 #endif // #if 0
 typedef nb::FastDelegate3<void,
   UnicodeString /*FileName*/, UnicodeString /*Alg*/,
@@ -348,11 +348,11 @@ bool DoPropertiesDialog(TStrings * FileList,
     int AllowedChanges, bool UserGroupByID, TCalculateSizeEvent OnCalculateSize,
     TCalculateChecksumEvent OnCalculateChecksum);
 
-bool DoRemoteMoveDialog(bool Multi, UnicodeString & Target, UnicodeString & FileMask);
+bool DoRemoteMoveDialog(bool Multi, UnicodeString &Target, UnicodeString &FileMask);
 enum TDirectRemoteCopy { drcDisallow, drcAllow, drcConfirmCommandSession };
-bool DoRemoteCopyDialog(TStrings * Sessions, TStrings * Directories,
+bool DoRemoteCopyDialog(TStrings *Sessions, TStrings * Directories,
   TDirectRemoteCopy AllowDirectCopy, bool Multi, void *& Session,
-  UnicodeString & Target, UnicodeString & FileMask, bool & DirectCopy);
+  UnicodeString & Target, UnicodeString &FileMask, bool & DirectCopy);
 
 // forms\SelectMask.cpp
 #ifdef CustomdirviewHPP
@@ -433,7 +433,7 @@ typedef nb::FastDelegate3<void,
 
 bool DoSynchronizeChecklistDialog(TSynchronizeChecklist *Checklist,
   TSynchronizeMode Mode, intptr_t Params,
-  UnicodeString LocalDirectory, UnicodeString RemoteDirectory,
+  UnicodeString LocalDirectory, const UnicodeString RemoteDirectory,
   TCustomCommandMenuEvent OnCustomCommandMenu);
 
 #endif // FARPLUGIN
@@ -521,7 +521,7 @@ typedef nb::FastDelegate3<void,
   TTerminal * /*Terminal*/, TStrings * /*FileList*/, TFileOperationFinished2Event /*OnFileOperationFinished*/> TFileListOperationEvent;
 
 void ShowFileFindDialog(
-  TTerminal *Terminal, UnicodeString Directory, TFindEvent OnFind, TFocusFileEvent OnFocusFile,
+  TTerminal *Terminal, const UnicodeString Directory, TFindEvent OnFind, TFocusFileEvent OnFocusFile,
   TFileListOperationEvent OnDeleteFiles, TFileListOperationEvent OnDownloadFiles);
 void HideFileFindDialog();
 
@@ -530,7 +530,7 @@ void DoGenerateUrlDialog(TSessionData *Data, TStrings *Paths);
 enum TFilesSelected { fsList, fsAll };
 void DoGenerateTransferCodeDialog(
   bool ToRemote, bool Move, int CopyParamAttrs, TSessionData *Data, TFilesSelected FilesSelected,
-  TStrings *FileList, UnicodeString Path, const TCopyParamType &CopyParam);
+  TStrings *FileList, const UnicodeString Path, const TCopyParamType &CopyParam);
 
 #if 0
 void CopyParamListButton(TButton *Button);
@@ -540,7 +540,7 @@ const int cplCustomizeDefault = 0x02;
 const int cplSaveSettings =     0x04;
 const int cplGenerateCode =     0x08;
 void CopyParamListPopup(TRect R, TPopupMenu *Menu,
-  const TCopyParamType &Param, UnicodeString Preset, TNotifyEvent OnClick,
+  const TCopyParamType &Param, const UnicodeString Preset, TNotifyEvent OnClick,
   int Options, int CopyParamAttrs, bool SaveSettings = false);
 int CopyParamListPopupClick(TObject *Sender,
   TCopyParamType &Param, UnicodeString &Preset, int CopyParamAttrs,
@@ -584,7 +584,7 @@ void WinInitialize();
 void WinFinalize();
 #endif // #if 0
 
-void ShowNotification(TTerminal *Terminal, UnicodeString Str,
+void ShowNotification(TTerminal *Terminal, const UnicodeString Str,
   TQueryType Type);
 #if 0
 void InitializeShortCutCombo(TComboBox *ComboBox,
@@ -657,7 +657,7 @@ public:
   TTrayIcon(unsigned int Id);
   ~TTrayIcon();
 
-  void PopupBalloon(const UnicodeString Title, UnicodeString Str,
+  void PopupBalloon(const UnicodeString Title, const UnicodeString Str,
     TQueryType QueryType, unsigned int Timeout, TNotifyEvent OnBalloonClick,
     TObject *BalloonUserData);
   void CancelBalloon();

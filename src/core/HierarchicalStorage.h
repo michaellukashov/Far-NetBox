@@ -207,7 +207,7 @@ private:
   inline bool HandleByMasterStorage();
   inline bool HandleReadByMasterStorage(const UnicodeString Name);
   inline bool DoValueExists(const UnicodeString Value);
-  void DoWriteStringRaw(const UnicodeString Name, UnicodeString Value);
+  void DoWriteStringRaw(const UnicodeString Name, const UnicodeString Value);
   void DoWriteBinaryData(const UnicodeString Name, const void *Buffer, int Size);
 
 protected:
@@ -244,7 +244,7 @@ class TOptionsStorage : public TCustomIniFileStorage
 {
 public:
   TOptionsStorage(TStrings *Options, bool AllowWrite);
-  TOptionsStorage(TStrings *Options, UnicodeString RootKey, THierarchicalStorage *MasterStorage);
+  TOptionsStorage(TStrings *Options, const UnicodeString RootKey, THierarchicalStorage *MasterStorage);
 
 protected:
   virtual bool GetTemporary();

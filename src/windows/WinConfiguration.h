@@ -560,7 +560,7 @@ private:
   bool GetAnyBetaInVersionHistory();
   void PurgePassword(UnicodeString &Password);
   void UpdateEntryInJumpList(
-    bool Session, UnicodeString Name, bool Add);
+    bool Session, const UnicodeString Name, bool Add);
   TStringList *LoadJumpList(THierarchicalStorage *Storage,
     UnicodeString Name);
   void SaveJumpList(THierarchicalStorage *Storage,
@@ -589,7 +589,7 @@ protected:
   bool CanWriteToStorage();
   bool DoIsBeta(const UnicodeString ReleaseType);
   void AskForMasterPassword();
-  void DoLoadExtensionList(const UnicodeString Path, UnicodeString PathId, TStringList *DeletedExtensions);
+  void DoLoadExtensionList(const UnicodeString Path, const UnicodeString PathId, TStringList *DeletedExtensions);
   TStrings *GetExtensionsPaths();
   virtual int GetResourceModuleCompleteness(HINSTANCE Module);
   virtual bool IsTranslationComplete(HINSTANCE Module);
@@ -610,8 +610,8 @@ public:
   void CheckDefaultTranslation();
   const TEditorPreferences *DefaultEditorForFile(
     const UnicodeString FileName, bool Local, const TFileMasks::TParams &MaskParams);
-  virtual UnicodeString DecryptPassword(RawByteString Password, UnicodeString Key);
-  virtual RawByteString StronglyRecryptPassword(RawByteString Password, UnicodeString Key);
+  virtual UnicodeString DecryptPassword(RawByteString Password, const UnicodeString Key);
+  virtual RawByteString StronglyRecryptPassword(RawByteString Password, const UnicodeString Key);
   void SetMasterPassword(const UnicodeString value);
   void ChangeMasterPassword(const UnicodeString value, TStrings *RecryptPasswordErrors);
   bool ValidateMasterPassword(const UnicodeString value);
@@ -629,7 +629,7 @@ public:
   void CustomCommandShortCuts(TShortCuts &ShortCuts) const;
   UnicodeString GetUserExtensionsPath();
   UnicodeString GetExtensionId(const UnicodeString ExtensionPath);
-  UnicodeString ExtensionStringTranslation(const UnicodeString ExtensionId, UnicodeString S);
+  UnicodeString ExtensionStringTranslation(const UnicodeString ExtensionId, const UnicodeString S);
   UnicodeString UniqueExtensionName(const UnicodeString ExtensionName, int Counter);
   UnicodeString GetProvisionaryExtensionId(const UnicodeString FileName);
 
@@ -771,7 +771,7 @@ public:
   bool Equals(const TCustomCommandType *Other) const;
 
   void LoadExtension(const UnicodeString Path);
-  void LoadExtension(TStrings *Lines, UnicodeString PathForBaseName);
+  void LoadExtension(TStrings *Lines, const UnicodeString PathForBaseName);
   static UnicodeString GetExtensionId(const UnicodeString Name);
 
   __property UnicodeString Name = { read = FName, write = FName };
@@ -787,14 +787,14 @@ public:
   __property int OptionsCount = { read = GetOptionsCount };
   const TOption &GetOption(int Index) const;
   bool AnyOptionWithFlag(unsigned int Flag) const;
-  UnicodeString GetOptionKey(const TOption &Option, UnicodeString Site) const;
+  UnicodeString GetOptionKey(const TOption &Option, const UnicodeString Site) const;
   UnicodeString GetCommandWithExpandedOptions(
-    TStrings *CustomCommandOptions, UnicodeString Site) const;
+    TStrings *CustomCommandOptions, const UnicodeString Site) const;
 
 protected:
-  bool ParseOption(const UnicodeString Value, TOption &Option, UnicodeString ExtensionBaseName);
+  bool ParseOption(const UnicodeString Value, TOption &Option, const UnicodeString ExtensionBaseName);
   int GetOptionsCount() const;
-  UnicodeString GetOptionCommand(const TOption &Option, UnicodeString Value) const;
+  UnicodeString GetOptionCommand(const TOption &Option, const UnicodeString Value) const;
 
 private:
   UnicodeString FName;

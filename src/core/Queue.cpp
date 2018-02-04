@@ -2346,7 +2346,7 @@ TQueueItem *TTransferQueueItem::CreateParallelOperation()
 // TUploadQueueItem
 //---------------------------------------------------------------------------
 TUploadQueueItem::TUploadQueueItem(TTerminal *Terminal,
-  const TStrings *AFilesToCopy, UnicodeString TargetDir,
+  const TStrings *AFilesToCopy, const UnicodeString TargetDir,
   const TCopyParamType *CopyParam, intptr_t Params, bool SingleFile, bool Parallel) :
   TTransferQueueItem(OBJECT_CLASS_TUploadQueueItem, Terminal, AFilesToCopy, TargetDir, CopyParam, Params, osLocal, SingleFile, Parallel)
 {

@@ -567,7 +567,7 @@ TKeyType GetKeyType(const UnicodeString AFileName)
   return Result;
 }
 
-bool IsKeyEncrypted(TKeyType KeyType, UnicodeString FileName, UnicodeString &Comment)
+bool IsKeyEncrypted(TKeyType KeyType, const UnicodeString FileName, UnicodeString &Comment)
 {
   UTF8String UtfFileName = UTF8String(::ExpandEnvironmentVariables(FileName));
   Filename *KeyFile = filename_from_str(UtfFileName.c_str());
@@ -605,7 +605,7 @@ bool IsKeyEncrypted(TKeyType KeyType, UnicodeString FileName, UnicodeString &Com
   return Result;
 }
 
-TPrivateKey *LoadKey(TKeyType KeyType, UnicodeString FileName, UnicodeString Passphrase)
+TPrivateKey *LoadKey(TKeyType KeyType, const UnicodeString FileName, const UnicodeString Passphrase)
 {
   UTF8String UtfFileName = UTF8String(::ExpandEnvironmentVariables(FileName));
   Filename *KeyFile = filename_from_str(UtfFileName.c_str());
@@ -649,7 +649,7 @@ TPrivateKey *LoadKey(TKeyType KeyType, UnicodeString FileName, UnicodeString Pas
   return reinterpret_cast<TPrivateKey *>(Ssh2Key);
 }
 
-void ChangeKeyComment(TPrivateKey *PrivateKey, UnicodeString Comment)
+void ChangeKeyComment(TPrivateKey *PrivateKey, const UnicodeString Comment)
 {
   AnsiString AnsiComment(Comment);
   struct ssh2_userkey *Ssh2Key = reinterpret_cast<struct ssh2_userkey *>(PrivateKey);
@@ -657,8 +657,8 @@ void ChangeKeyComment(TPrivateKey *PrivateKey, UnicodeString Comment)
   Ssh2Key->comment = dupstr(AnsiComment.c_str());
 }
 
-void SaveKey(TKeyType KeyType, UnicodeString FileName,
-  UnicodeString Passphrase, TPrivateKey *PrivateKey)
+void SaveKey(TKeyType KeyType, const UnicodeString FileName,
+  const UnicodeString Passphrase, TPrivateKey *PrivateKey)
 {
   UTF8String UtfFileName = UTF8String(::ExpandEnvironmentVariables(FileName));
   Filename *KeyFile = filename_from_str(UtfFileName.c_str());

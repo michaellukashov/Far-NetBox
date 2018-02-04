@@ -284,7 +284,7 @@ public:
     Parameter(L"exitcode", ::IntToStr(ExitCode));
   }
 
-  void Checksum(const UnicodeString Alg, UnicodeString Checksum)
+  void Checksum(const UnicodeString Alg, const UnicodeString Checksum)
   {
     Parameter(L"algorithm", Alg);
     Parameter(L"checksum", Checksum);
@@ -352,7 +352,7 @@ protected:
     }
   }
 
-  void Parameter(const UnicodeString Name, UnicodeString Value = L"")
+  void Parameter(const UnicodeString Name, const UnicodeString Value = L"")
   {
     FNames->Add(Name);
     FValues->Add(Value);
@@ -491,7 +491,7 @@ TFileLocationSessionAction::TFileLocationSessionAction(
 }
 
 TFileLocationSessionAction::TFileLocationSessionAction(
-  TActionLog *Log, TLogAction Action, UnicodeString AFileName) :
+  TActionLog *Log, TLogAction Action, const UnicodeString AFileName) :
   TFileSessionAction(Log, Action, AFileName)
 {
 }
@@ -518,7 +518,7 @@ TDownloadSessionAction::TDownloadSessionAction(TActionLog *Log) :
 
 
 TChmodSessionAction::TChmodSessionAction(
-  TActionLog *Log, UnicodeString AFileName) :
+  TActionLog *Log, const UnicodeString AFileName) :
   TFileSessionAction(Log, laChmod, AFileName)
 {
 }
@@ -532,7 +532,7 @@ void TChmodSessionAction::Recursive()
 }
 
 TChmodSessionAction::TChmodSessionAction(
-  TActionLog *Log, UnicodeString AFileName, const TRights &ARights) :
+  TActionLog *Log, const UnicodeString AFileName, const TRights &ARights) :
   TFileSessionAction(Log, laChmod, AFileName)
 {
   Rights(ARights);
@@ -547,7 +547,7 @@ void TChmodSessionAction::Rights(const TRights &Rights)
 }
 
 TTouchSessionAction::TTouchSessionAction(
-  TActionLog *Log, UnicodeString AFileName, const TDateTime &Modification) :
+  TActionLog *Log, const UnicodeString AFileName, const TDateTime &Modification) :
   TFileSessionAction(Log, laTouch, AFileName)
 {
   if (FRecord != nullptr)
@@ -557,13 +557,13 @@ TTouchSessionAction::TTouchSessionAction(
 }
 
 TMkdirSessionAction::TMkdirSessionAction(
-  TActionLog *Log, UnicodeString AFileName) :
+  TActionLog *Log, const UnicodeString AFileName) :
   TFileSessionAction(Log, laMkdir, AFileName)
 {
 }
 
 TRmSessionAction::TRmSessionAction(
-  TActionLog *Log, UnicodeString AFileName) :
+  TActionLog *Log, const UnicodeString AFileName) :
   TFileSessionAction(Log, laRm, AFileName)
 {
 }
@@ -636,7 +636,7 @@ void TLsSessionAction::FileList(TRemoteFileList *FileList)
 }
 
 
-TStatSessionAction::TStatSessionAction(TActionLog *Log, UnicodeString AFileName) :
+TStatSessionAction::TStatSessionAction(TActionLog *Log, const UnicodeString AFileName) :
   TFileSessionAction(Log, laStat, AFileName)
 {
 }
@@ -655,7 +655,7 @@ TChecksumSessionAction::TChecksumSessionAction(TActionLog *Log) :
 {
 }
 
-void TChecksumSessionAction::Checksum(const UnicodeString Alg, UnicodeString Checksum)
+void TChecksumSessionAction::Checksum(const UnicodeString Alg, const UnicodeString Checksum)
 {
   if (FRecord != nullptr)
   {
@@ -664,7 +664,7 @@ void TChecksumSessionAction::Checksum(const UnicodeString Alg, UnicodeString Che
 }
 
 
-TCwdSessionAction::TCwdSessionAction(TActionLog *Log, UnicodeString Path) :
+TCwdSessionAction::TCwdSessionAction(TActionLog *Log, const UnicodeString Path) :
   TSessionAction(Log, laCwd)
 {
   if (FRecord != nullptr)
@@ -723,19 +723,19 @@ TSessionLog::~TSessionLog()
   DebugAssert(FLogger == nullptr);
 }
 
-void TSessionLog::SetParent(TSessionLog *AParent, UnicodeString AName)
+void TSessionLog::SetParent(TSessionLog *AParent, const UnicodeString AName)
 {
   FParent = AParent;
   FName = AName;
 }
 
-void TSessionLog::DoAddToParent(TLogLineType Type, UnicodeString ALine)
+void TSessionLog::DoAddToParent(TLogLineType Type, const UnicodeString ALine)
 {
   DebugAssert(FParent != nullptr);
   FParent->Add(Type, ALine);
 }
 
-void TSessionLog::DoAddToSelf(TLogLineType Type, UnicodeString ALine)
+void TSessionLog::DoAddToSelf(TLogLineType Type, const UnicodeString ALine)
 {
   if (LogToFile()) { try
   {
@@ -822,7 +822,7 @@ void TSessionLog::CheckSize(int64_t Addition)
   }
 }
 
-void TSessionLog::DoAdd(TLogLineType AType, UnicodeString Line,
+void TSessionLog::DoAdd(TLogLineType AType, const UnicodeString ALine,
   TDoAddLogEvent Event)
 {
   UnicodeString Prefix;
@@ -832,13 +832,14 @@ void TSessionLog::DoAdd(TLogLineType AType, UnicodeString Line,
     Prefix = L"[" + GetName() + L"] ";
   }
 
+  UnicodeString Line = ALine;
   while (!Line.IsEmpty())
   {
     Event(AType, Prefix + CutToChar(Line, L'\n', false));
   }
 }
 
-void TSessionLog::Add(TLogLineType Type, UnicodeString ALine)
+void TSessionLog::Add(TLogLineType Type, const UnicodeString ALine)
 {
   DebugAssert(FConfiguration);
   if (GetLogging())
@@ -1037,10 +1038,10 @@ UnicodeString TSessionLog::GetCmdLineLog() const
 }
 
 template <typename T>
-UnicodeString EnumName(T Value, UnicodeString Names)
+UnicodeString EnumName(T Value, const UnicodeString ANames)
 {
   intptr_t N = intptr_t(Value);
-
+  UnicodeString Names = ANames;
   do
   {
     UnicodeString Name = CutToChar(Names, L';', true);

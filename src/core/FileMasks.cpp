@@ -1008,7 +1008,7 @@ void TInteractiveCustomCommand::Prompt(
 }
 
 void TInteractiveCustomCommand::Execute(
-  UnicodeString /*Command*/, UnicodeString &Value) const
+  const UnicodeString /*Command*/, UnicodeString &Value) const
 {
   Value.Clear();
 }

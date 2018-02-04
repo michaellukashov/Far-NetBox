@@ -45,7 +45,7 @@ typedef nb::FastDelegate8<void,
    const TQueryParams * /*Params*/, uint32_t & /*Answer*/, TQueryType /*QueryType*/, void * /*Arg*/> TQueryUserEvent;
 #if 0
 typedef void (__closure *TPromptUserEvent)
-  (TTerminal * Terminal, TPromptKind Kind, UnicodeString Name, UnicodeString Instructions,
+  (TTerminal * Terminal, TPromptKind Kind, const UnicodeString Name, const UnicodeString Instructions,
    TStrings * Prompts, TStrings * Results, bool & Result, void * Arg);
 #endif // #if 0
 typedef nb::FastDelegate8<void,
@@ -53,7 +53,7 @@ typedef nb::FastDelegate8<void,
   TStrings * /*Prompts*/, TStrings * /*Results*/, bool & /*Result*/, void * /*Arg*/> TPromptUserEvent;
 #if 0
 typedef void (__closure *TDisplayBannerEvent)
-  (TTerminal * Terminal, UnicodeString SessionName, const UnicodeString & Banner,
+  (TTerminal * Terminal, const UnicodeString SessionName, const UnicodeString & Banner,
    bool & NeverShowAgain, int Options, unsigned int & Params);
 #endif // #if 0
 typedef nb::FastDelegate6<void,
@@ -176,7 +176,7 @@ const unsigned int folRetryOnFatal = 0x02;
   FILE_OPERATION_LOOP_END_EX(MESSAGE, folAllowSkip)
 #endif // #if 0
 //---------------------------------------------------------------------------
-inline void ThrowSkipFile(Exception *Exception, UnicodeString Message)
+inline void ThrowSkipFile(Exception *Exception, const UnicodeString Message)
 {
   throw ESkipFile(Exception, Message);
 }
@@ -381,7 +381,7 @@ protected:
   void DoDeleteFile(const UnicodeString AFileName, const TRemoteFile *AFile,
     intptr_t Params);
   void DoCustomCommandOnFile(const UnicodeString AFileName,
-    const TRemoteFile *AFile, UnicodeString ACommand, intptr_t AParams, TCaptureOutputEvent OutputEvent);
+    const TRemoteFile *AFile, const UnicodeString ACommand, intptr_t AParams, TCaptureOutputEvent OutputEvent);
   void DoRenameFile(const UnicodeString AFileName, const TRemoteFile *AFile,
     const UnicodeString ANewName, bool Move);
   void DoCopyFile(const UnicodeString AFileName, const TRemoteFile *AFile, const UnicodeString ANewName);
@@ -454,7 +454,7 @@ protected:
     const UnicodeString ASourceFullFileName, const UnicodeString ATargetFileName,
     const TOverwriteFileParams *FileParams, uint32_t Answers, TQueryParams *QueryParams,
     TOperationSide Side, const TCopyParamType *CopyParam, intptr_t Params,
-    TFileOperationProgressType *OperationProgress, UnicodeString AMessage = L"");
+    TFileOperationProgressType *OperationProgress, const UnicodeString AMessage = L"");
   void DoSynchronizeCollectDirectory(const UnicodeString ALocalDirectory,
     const UnicodeString ARemoteDirectory, TSynchronizeMode Mode,
     const TCopyParamType *CopyParam, intptr_t Params,
@@ -527,7 +527,7 @@ protected:
   void LogRemoteFile(TRemoteFile *AFile);
   UnicodeString FormatFileDetailsForLog(const UnicodeString AFileName, const TDateTime &AModification, int64_t Size);
   void LogFileDetails(const UnicodeString AFileName, const TDateTime &AModification, int64_t Size);
-  void LogFileDone(TFileOperationProgressType *OperationProgress, UnicodeString DestFileName);
+  void LogFileDone(TFileOperationProgressType *OperationProgress, const UnicodeString DestFileName);
   void LogTotalTransferDetails(
     const UnicodeString ATargetDir, const TCopyParamType *CopyParam,
     TFileOperationProgressType *OperationProgress, bool Parallel, TStrings *AFiles);
@@ -682,7 +682,7 @@ public:
     const TSearchRec &Rec, void *Param);
   bool FileOperationLoopQuery(Exception &E,
     TFileOperationProgressType *OperationProgress, const UnicodeString Message,
-    uintptr_t AFlags, UnicodeString SpecialRetry = L"", UnicodeString HelpKeyword = L"");
+    uintptr_t AFlags, const UnicodeString SpecialRetry = L"", const UnicodeString HelpKeyword = L"");
   void FileOperationLoopEnd(Exception & E,
     TFileOperationProgressType * OperationProgress, const UnicodeString Message,
     uintptr_t AFlags, const UnicodeString SpecialRetry, const UnicodeString HelpKeyword);

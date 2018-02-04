@@ -1181,8 +1181,8 @@ class TPasswordDialog : public TFarDialog
 {
 public:
   explicit TPasswordDialog(TCustomFarPlugin *AFarPlugin,
-    UnicodeString SessionName, TPromptKind Kind, UnicodeString Name,
-    UnicodeString Instructions, const TStrings *Prompts,
+    const UnicodeString SessionName, TPromptKind Kind, const UnicodeString Name,
+    const UnicodeString Instructions, const TStrings *Prompts,
     bool StoredCredentialsTried);
   virtual ~TPasswordDialog();
   bool Execute(TStrings *Results);
@@ -1202,8 +1202,8 @@ private:
 };
 
 TPasswordDialog::TPasswordDialog(TCustomFarPlugin *AFarPlugin,
-  UnicodeString SessionName, TPromptKind Kind, UnicodeString Name,
-  UnicodeString Instructions, const TStrings *Prompts,
+  const UnicodeString SessionName, TPromptKind Kind, const UnicodeString Name,
+  const UnicodeString Instructions, const TStrings *Prompts,
   bool /*StoredCredentialsTried*/) :
   TFarDialog(AFarPlugin),
   FSessionData(nullptr),
@@ -1378,7 +1378,7 @@ bool TPasswordDialog::Execute(TStrings *Results)
 }
 
 bool TWinSCPFileSystem::PasswordDialog(TSessionData *SessionData,
-  TPromptKind Kind, UnicodeString Name, UnicodeString Instructions,
+  TPromptKind Kind, const UnicodeString Name, const UnicodeString Instructions,
   TStrings *Prompts,
   TStrings *Results, bool StoredCredentialsTried)
 {
@@ -4608,7 +4608,7 @@ private:
 };
 
 TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin *AFarPlugin,
-  TStrings *AFileList, UnicodeString /*Directory*/,
+  TStrings *AFileList, const UnicodeString /*Directory*/,
   const TRemoteTokenList *GroupList, const TRemoteTokenList *UserList,
   intptr_t AAllowedChanges) :
   TFarDialog(AFarPlugin),
@@ -5828,7 +5828,7 @@ public:
     TGetSpaceAvailableEvent OnGetSpaceAvailable);
   virtual ~TFileSystemInfoDialog();
   void Execute(const TSessionInfo &SessionInfo,
-    const TFileSystemInfo &FileSystemInfo, UnicodeString SpaceAvailablePath);
+    const TFileSystemInfo &FileSystemInfo, const UnicodeString SpaceAvailablePath);
 
 protected:
   void Feed(TFeedFileSystemDataEvent AddItem);
@@ -5836,9 +5836,9 @@ protected:
   UnicodeString CapabilityStr(TFSCapability Capability1,
     TFSCapability Capability2);
   UnicodeString SpaceStr(int64_t Bytes) const;
-  void ControlsAddItem(TObject *AControl, intptr_t Label, UnicodeString Value);
-  void CalculateMaxLenAddItem(TObject *AControl, intptr_t Label, UnicodeString Value) const;
-  void ClipboardAddItem(TObject *AControl, intptr_t Label, UnicodeString Value);
+  void ControlsAddItem(TObject *AControl, intptr_t Label, const UnicodeString Value);
+  void CalculateMaxLenAddItem(TObject *AControl, intptr_t Label, const UnicodeString Value) const;
+  void ClipboardAddItem(TObject *AControl, intptr_t Label, const UnicodeString Value);
   void FeedControls();
   void UpdateControls();
   TLabelList *CreateLabelArray(intptr_t Count);
@@ -6103,7 +6103,7 @@ void TFileSystemInfoDialog::Feed(TFeedFileSystemDataEvent AddItem)
 }
 
 void TFileSystemInfoDialog::ControlsAddItem(TObject *AControl,
-  intptr_t Label, UnicodeString Value)
+  intptr_t Label, const UnicodeString Value)
 {
   if (FLastFeededControl != AControl)
   {
@@ -6164,7 +6164,7 @@ void TFileSystemInfoDialog::CalculateMaxLenAddItem(TObject *AControl,
 }
 
 void TFileSystemInfoDialog::ClipboardAddItem(TObject *AControl,
-  intptr_t Label, UnicodeString Value)
+  intptr_t Label, const UnicodeString Value)
 {
   TFarDialogItem *Control = dyn_cast<TFarDialogItem>(AControl);
   // check for Enabled instead of Visible, as Visible is false
@@ -7113,7 +7113,7 @@ class TSynchronizeChecklistDialog : public TWinSCPDialog
 public:
   explicit TSynchronizeChecklistDialog(
     TCustomFarPlugin *AFarPlugin, TTerminal::TSynchronizeMode Mode, intptr_t Params,
-    UnicodeString LocalDirectory, UnicodeString RemoteDirectory);
+    const UnicodeString LocalDirectory, const UnicodeString RemoteDirectory);
 
   virtual bool Execute(TSynchronizeChecklist *Checklist);
 
@@ -7148,14 +7148,14 @@ private:
   void UpdateControls();
   void CheckAll(bool Check);
   UnicodeString ItemLine(const TChecklistItem *ChecklistItem);
-  void AddColumn(UnicodeString &List, UnicodeString Value, size_t Column,
+  void AddColumn(UnicodeString &List, const UnicodeString Value, size_t Column,
     bool AHeader = false);
   UnicodeString FormatSize(int64_t Size, int Column);
 };
 
 TSynchronizeChecklistDialog::TSynchronizeChecklistDialog(
   TCustomFarPlugin *AFarPlugin, TTerminal::TSynchronizeMode /*Mode*/, intptr_t /*Params*/,
-  UnicodeString LocalDirectory, UnicodeString RemoteDirectory) :
+  UnicodeString LocalDirectory, const UnicodeString RemoteDirectory) :
   TWinSCPDialog(AFarPlugin),
   FChecklist(nullptr),
   FLocalDirectory(LocalDirectory),
@@ -7700,7 +7700,7 @@ bool TSynchronizeChecklistDialog::Execute(TSynchronizeChecklist *Checklist)
 
 bool TWinSCPFileSystem::SynchronizeChecklistDialog(
   TSynchronizeChecklist *Checklist, TTerminal::TSynchronizeMode Mode, intptr_t Params,
-  UnicodeString LocalDirectory, UnicodeString RemoteDirectory)
+  UnicodeString LocalDirectory, const UnicodeString RemoteDirectory)
 {
   std::unique_ptr<TSynchronizeChecklistDialog> Dialog(new TSynchronizeChecklistDialog(
       FPlugin, Mode, Params, LocalDirectory, RemoteDirectory));
@@ -7732,7 +7732,7 @@ protected:
   TSynchronizeParamType GetParams() const;
   void DoAbort(TObject *Sender, bool Close);
   void DoLog(TSynchronizeController *Controller,
-    TSynchronizeLogEntry Entry, UnicodeString Message);
+    TSynchronizeLogEntry Entry, const UnicodeString Message);
   void DoSynchronizeThreads(TObject *Sender, TThreadMethod Slot);
   virtual LONG_PTR DialogProc(int Msg, intptr_t Param1, LONG_PTR Param2) override;
   virtual bool CloseQuery() override;
@@ -8019,7 +8019,7 @@ void TSynchronizeDialog::DoAbort(TObject * /*Sender*/, bool Close)
 }
 
 void TSynchronizeDialog::DoLog(TSynchronizeController * /*Controller*/,
-  TSynchronizeLogEntry /*Entry*/, UnicodeString /*Message*/)
+  TSynchronizeLogEntry /*Entry*/, const UnicodeString /*Message*/)
 {
   // void
 }

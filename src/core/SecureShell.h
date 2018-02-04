@@ -126,7 +126,7 @@ protected:
   void AddStdError(const UnicodeString AStr);
   void AddStdErrorLine(const UnicodeString AStr);
   void LogEvent(const UnicodeString AStr);
-  void FatalError(const UnicodeString Error, UnicodeString HelpKeyword = L"");
+  void FatalError(const UnicodeString Error, const UnicodeString HelpKeyword = L"");
   UnicodeString FormatKeyStr(const UnicodeString AKeyStr) const;
   static Conf *StoreToConfig(TSessionData *Data, bool Simple);
 

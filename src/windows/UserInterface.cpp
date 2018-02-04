@@ -369,7 +369,7 @@ void ShowExtendedExceptionEx(TTerminal *Terminal,
   }
 }
 
-void ShowNotification(TTerminal *Terminal, UnicodeString Str,
+void ShowNotification(TTerminal *Terminal, const UnicodeString Str,
   TQueryType Type)
 {
   TTerminalManager *Manager = TTerminalManager::Instance(false);
@@ -545,7 +545,7 @@ UnicodeString GetToolbarsLayoutStr(TControl *OwnerControl)
   return Result;
 }
 
-void LoadToolbarsLayoutStr(TControl *OwnerControl, UnicodeString LayoutStr)
+void LoadToolbarsLayoutStr(TControl *OwnerControl, const UnicodeString LayoutStr)
 {
   TStrings *Storage = new TStringList();
   try
@@ -989,7 +989,7 @@ void CreateColorPalette(TTBCustomItem *Owner, TColor Color, int Rows,
 
 static void CreateColorMenu(TComponent *AOwner, TColor Color,
   TColorChangeEvent OnColorChange, bool SessionColors,
-  UnicodeString DefaultColorCaption, UnicodeString DefaultColorHint,
+  UnicodeString DefaultColorCaption, const UnicodeString DefaultColorHint,
   UnicodeString HelpKeyword,
   UnicodeString ColorPickHint)
 {

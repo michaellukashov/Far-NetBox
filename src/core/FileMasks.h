@@ -30,7 +30,7 @@ public:
   };
 
   static bool IsMask(const UnicodeString Mask);
-  static UnicodeString NormalizeMask(const UnicodeString Mask, UnicodeString AnyMask = L"");
+  static UnicodeString NormalizeMask(const UnicodeString Mask, const UnicodeString AnyMask = L"");
   static UnicodeString ComposeMaskStr(
     TStrings *IncludeFileMasksStr, TStrings *ExcludeFileMasksStr,
     TStrings *IncludeDirectoryMasksStr, TStrings *ExcludeDirectoryMasksStr);
@@ -149,7 +149,7 @@ private:
   static void TrimEx(UnicodeString &Str, intptr_t &Start, intptr_t &End);
   static bool MatchesMasks(const UnicodeString AFileName, bool Directory,
     const UnicodeString APath, const TParams *Params, const TMasks &Masks, bool Recurse);
-  static inline bool MatchesMaskMask(const TMaskMask &MaskMask, UnicodeString Str);
+  static inline bool MatchesMaskMask(const TMaskMask &MaskMask, const UnicodeString Str);
   void ThrowError(intptr_t Start, intptr_t End) const;
 };
 
@@ -232,8 +232,8 @@ public:
   explicit TCustomCommandData(const TCustomCommandData &Data);
   explicit TCustomCommandData(TTerminal *Terminal);
   explicit TCustomCommandData(
-    TSessionData *SessionData, UnicodeString AUserName,
-    UnicodeString APassword);
+    TSessionData *SessionData, const UnicodeString AUserName,
+    const UnicodeString APassword);
 
   __property TSessionData *SessionData = { read = GetSessionData };
   TSessionData *GetSessionData() const { return GetSessionDataPrivate(); }
@@ -243,8 +243,8 @@ public:
 private:
   std::unique_ptr<TSessionData> FSessionData;
   void Init(
-    TSessionData *ASessionData, UnicodeString AUserName,
-    UnicodeString APassword, UnicodeString AHostKey);
+    TSessionData *ASessionData, const UnicodeString AUserName,
+    const UnicodeString APassword, const UnicodeString AHostKey);
 
   TSessionData *GetSessionDataPrivate() const;
 };

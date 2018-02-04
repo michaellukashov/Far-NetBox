@@ -805,7 +805,7 @@ void TWinSCPFileSystem::TerminalCaptureLog(
   }
 }
 
-void TWinSCPFileSystem::RequireLocalPanel(TFarPanelInfo *Panel, UnicodeString Message)
+void TWinSCPFileSystem::RequireLocalPanel(TFarPanelInfo *Panel, const UnicodeString Message)
 {
   if (Panel->GetIsPlugin() || (Panel->GetType() != ptFile))
   {
@@ -1658,8 +1658,8 @@ void TWinSCPFileSystem::Synchronize()
 }
 
 void TWinSCPFileSystem::DoSynchronize(
-  TSynchronizeController * /*Sender*/, UnicodeString LocalDirectory,
-  UnicodeString RemoteDirectory, const TCopyParamType &CopyParam,
+  TSynchronizeController * /*Sender*/, const UnicodeString LocalDirectory,
+  const UnicodeString RemoteDirectory, const TCopyParamType &CopyParam,
   const TSynchronizeParamType &Params, TSynchronizeChecklist **Checklist,
   TSynchronizeOptions *Options, bool Full)
 {
@@ -1692,7 +1692,7 @@ void TWinSCPFileSystem::DoSynchronize(
 }
 
 void TWinSCPFileSystem::DoSynchronizeInvalid(
-  TSynchronizeController * /*Sender*/, UnicodeString Directory,
+  TSynchronizeController * /*Sender*/, const UnicodeString Directory,
   UnicodeString /*ErrorStr*/)
 {
   UnicodeString Message;
@@ -1739,7 +1739,7 @@ void TWinSCPFileSystem::DoSynchronizeTooManyDirectories(
 }
 
 void TWinSCPFileSystem::CustomCommandGetParamValue(
-  UnicodeString AName, UnicodeString &Value)
+  const UnicodeString AName, UnicodeString &Value)
 {
   UnicodeString Name = AName;
   if (Name.IsEmpty())
@@ -2878,7 +2878,7 @@ TStrings *TWinSCPFileSystem::CreateSelectedFileList(TOperationSide Side, TFarPan
 }
 
 TStrings *TWinSCPFileSystem::CreateFileList(TObjectList *PanelItems,
-  TOperationSide Side, bool SelectedOnly, UnicodeString Directory, bool FileNameOnly,
+  TOperationSide Side, bool SelectedOnly, const UnicodeString Directory, bool FileNameOnly,
   TStrings *AFileList)
 {
   std::unique_ptr<TStrings> FileList(AFileList == nullptr ? new TStringList() : AFileList);
@@ -3059,7 +3059,7 @@ void TWinSCPFileSystem::TerminalClose(TObject * /*Sender*/)
 }
 
 void TWinSCPFileSystem::LogAuthentication(
-  TTerminal *Terminal, UnicodeString Msg)
+  TTerminal *Terminal, const UnicodeString Msg)
 {
   DebugAssert(FAuthenticationLog != nullptr);
   if (!FAuthenticationLog)
@@ -3716,7 +3716,7 @@ void TWinSCPFileSystem::CancelConfiguration(TFileOperationProgressType &Progress
 }
 
 void TWinSCPFileSystem::UploadFromEditor(bool NoReload,
-  UnicodeString AFileName, UnicodeString RealFileName,
+  const UnicodeString AFileName, const UnicodeString RealFileName,
   UnicodeString &DestPath)
 {
   DebugAssert(FFileList == nullptr);

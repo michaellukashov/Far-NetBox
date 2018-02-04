@@ -94,11 +94,11 @@ public:
 public:
   explicit Exception(TObjectClassId Kind, const wchar_t *Msg);
   explicit Exception(const wchar_t *Msg);
-  explicit Exception(TObjectClassId Kind, UnicodeString Msg);
+  explicit Exception(TObjectClassId Kind, const UnicodeString Msg);
   explicit Exception(const UnicodeString Msg);
   explicit Exception(TObjectClassId Kind, Exception *E);
   explicit Exception(TObjectClassId Kind, std::exception *E);
-  explicit Exception(TObjectClassId Kind, UnicodeString Msg, intptr_t AHelpContext);
+  explicit Exception(TObjectClassId Kind, const UnicodeString Msg, intptr_t AHelpContext);
   explicit Exception(TObjectClassId Kind, Exception *E, intptr_t Ident);
   explicit Exception(TObjectClassId Kind, intptr_t Ident);
   ~Exception() {}
@@ -232,7 +232,7 @@ NB_CORE_EXPORT UnicodeString ReplaceStrAll(const UnicodeString Str, const Unicod
 NB_CORE_EXPORT UnicodeString SysErrorMessage(intptr_t ErrorCode);
 
 NB_CORE_EXPORT bool TryStrToDateTime(const UnicodeString StrValue, TDateTime &Value, TFormatSettings &FormatSettings);
-NB_CORE_EXPORT UnicodeString DateTimeToStr(UnicodeString &Result, UnicodeString Format,
+NB_CORE_EXPORT UnicodeString DateTimeToStr(UnicodeString &Result, const UnicodeString Format,
   const TDateTime &DateTime);
 NB_CORE_EXPORT UnicodeString DateTimeToString(const TDateTime &DateTime);
 NB_CORE_EXPORT uint32_t DayOfWeek(const TDateTime &DateTime);

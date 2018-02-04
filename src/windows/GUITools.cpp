@@ -693,7 +693,7 @@ void CopyImageList(TImageList *TargetList, TImageList *SourceList)
   }
 }
 
-static bool DoLoadDialogImage(TImage *Image, UnicodeString ImageName)
+static bool DoLoadDialogImage(TImage *Image, const UnicodeString ImageName)
 {
   bool Result = false;
   if (GlyphsModule != nullptr)
@@ -742,7 +742,7 @@ static void DialogImageRescale(TComponent *Sender, TObject *Token)
   DoLoadDialogImage(Image, DialogImageName->ImageName);
 }
 
-void LoadDialogImage(TImage *Image, UnicodeString ImageName)
+void LoadDialogImage(TImage *Image, const UnicodeString ImageName)
 {
   if (DoLoadDialogImage(Image, ImageName))
   {
@@ -881,7 +881,7 @@ void TBrowserViewer::NavigateToUrl(const UnicodeString Url)
   Navigate(Url.c_str());
 }
 
-TPanel *CreateLabelPanel(TPanel *Parent, UnicodeString Label)
+TPanel *CreateLabelPanel(TPanel *Parent, const UnicodeString Label)
 {
   TPanel *Result = CreateBlankPanel(Parent);
   Result->Parent = Parent;
@@ -890,7 +890,7 @@ TPanel *CreateLabelPanel(TPanel *Parent, UnicodeString Label)
   return Result;
 }
 
-TWebBrowserEx *CreateBrowserViewer(TPanel *Parent, UnicodeString LoadingLabel)
+TWebBrowserEx *CreateBrowserViewer(TPanel *Parent, const UnicodeString LoadingLabel)
 {
   TBrowserViewer *Result = new TBrowserViewer(Parent);
   // TWebBrowserEx has its own unrelated Name and Parent properties.
@@ -923,7 +923,7 @@ void AddBrowserLinkHandler(TWebBrowserEx *WebBrowser,
   }
 }
 
-void NavigateBrowserToUrl(TWebBrowserEx *WebBrowser, UnicodeString Url)
+void NavigateBrowserToUrl(TWebBrowserEx *WebBrowser, const UnicodeString Url)
 {
   TBrowserViewer *BrowserViewer = dynamic_cast<TBrowserViewer *>(WebBrowser);
   if (DebugAlwaysTrue(BrowserViewer != nullptr))
@@ -932,7 +932,7 @@ void NavigateBrowserToUrl(TWebBrowserEx *WebBrowser, UnicodeString Url)
   }
 }
 
-TComponent *FindComponentRecursively(TComponent *Root, UnicodeString Name)
+TComponent *FindComponentRecursively(TComponent *Root, const UnicodeString Name)
 {
   for (intptr_t Index = 0; Index < Root->ComponentCount; Index++)
   {
@@ -958,15 +958,15 @@ TLocalCustomCommand::TLocalCustomCommand()
 }
 
 TLocalCustomCommand::TLocalCustomCommand(
-  const TCustomCommandData &Data, UnicodeString RemotePath, UnicodeString LocalPath) :
+  const TCustomCommandData &Data, const UnicodeString RemotePath, const UnicodeString LocalPath) :
   TFileCustomCommand(Data, RemotePath)
 {
   FLocalPath = LocalPath;
 }
 
 TLocalCustomCommand::TLocalCustomCommand(const TCustomCommandData &Data,
-  UnicodeString RemotePath, UnicodeString LocalPath, UnicodeString FileName,
-  UnicodeString LocalFileName, UnicodeString FileList) :
+  UnicodeString RemotePath, const UnicodeString LocalPath, const UnicodeString FileName,
+  UnicodeString LocalFileName, const UnicodeString FileList) :
   TFileCustomCommand(Data, RemotePath, FileName, FileList)
 {
   FLocalPath = LocalPath;
@@ -1145,7 +1145,7 @@ TFrameAnimation::TFrameAnimation()
   FFirstFrame = -1;
 }
 
-void TFrameAnimation::Init(TPaintBox *PaintBox, UnicodeString Name)
+void TFrameAnimation::Init(TPaintBox *PaintBox, const UnicodeString Name)
 {
   FName = Name;
   FPaintBox = PaintBox;
@@ -1370,13 +1370,13 @@ bool TScreenTipHintWindow::IsPathLabel(TControl *HintControl)
   return (dynamic_cast<TPathLabel *>(HintControl) != nullptr);
 }
 
-bool TScreenTipHintWindow::IsHintPopup(TControl *HintControl, UnicodeString Hint)
+bool TScreenTipHintWindow::IsHintPopup(TControl *HintControl, const UnicodeString Hint)
 {
   TLabel *HintLabel = dynamic_cast<TLabel *>(HintControl);
   return (HintLabel != nullptr) && HasLabelHintPopup(HintLabel, Hint);
 }
 
-intptr_t TScreenTipHintWindow::GetMargin(TControl *HintControl, UnicodeString Hint)
+intptr_t TScreenTipHintWindow::GetMargin(TControl *HintControl, const UnicodeString Hint)
 {
   intptr_t Result;
 
@@ -1394,7 +1394,7 @@ intptr_t TScreenTipHintWindow::GetMargin(TControl *HintControl, UnicodeString Hi
   return Result;
 }
 
-TFont *TScreenTipHintWindow::GetFont(TControl *HintControl, UnicodeString Hint)
+TFont *TScreenTipHintWindow::GetFont(TControl *HintControl, const UnicodeString Hint)
 {
   TFont *Result;
   if (IsHintPopup(HintControl, Hint) || IsPathLabel(HintControl))
@@ -1411,7 +1411,7 @@ TFont *TScreenTipHintWindow::GetFont(TControl *HintControl, UnicodeString Hint)
   return Result;
 }
 
-void TScreenTipHintWindow::CalcHintTextRect(TControl *Control, TCanvas *Canvas, TRect &Rect, UnicodeString Hint)
+void TScreenTipHintWindow::CalcHintTextRect(TControl *Control, TCanvas *Canvas, TRect &Rect, const UnicodeString Hint)
 {
   const intptr_t Flags = DT_CALCRECT | GetTextFlags(Control);
   DrawText(Canvas->Handle, Hint.c_str(), -1, &Rect, Flags);

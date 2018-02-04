@@ -112,7 +112,7 @@ public:
 //  intptr_t FindFirstNotOf(const wchar_t * Str) const { return (intptr_t)Data.find_first_not_of(Str); }
 
   UnicodeString &Replace(intptr_t Pos, intptr_t Len, const wchar_t *Str, intptr_t DataLen);
-  UnicodeString &Replace(intptr_t Pos, intptr_t Len, UnicodeString Str) { return Replace(Pos, Len, Str.c_str(), Str.GetLength()); }
+  UnicodeString &Replace(intptr_t Pos, intptr_t Len, const UnicodeString Str) { return Replace(Pos, Len, Str.c_str(), Str.GetLength()); }
   UnicodeString &Replace(intptr_t Pos, intptr_t Len, const wchar_t *Str);
   UnicodeString &Replace(intptr_t Pos, intptr_t Len, wchar_t Ch) { return Replace(Pos, Len, &Ch, 1); }
   UnicodeString &Replace(intptr_t Pos, wchar_t Ch) { return Replace(Pos, 1, &Ch, 1); }
@@ -124,7 +124,7 @@ public:
   UnicodeString &Append(const char *lpszAdd, UINT CodePage = CP_OEMCP);
 
   UnicodeString &Insert(intptr_t Pos, const wchar_t *Str, intptr_t StrLen);
-  UnicodeString &Insert(intptr_t Pos, UnicodeString Str) { return Insert(Pos, Str.c_str(), Str.Length()); }
+  UnicodeString &Insert(intptr_t Pos, const UnicodeString Str) { return Insert(Pos, Str.c_str(), Str.Length()); }
   UnicodeString &Insert(const wchar_t *Str, intptr_t Pos);
   UnicodeString &Insert(const wchar_t Ch, intptr_t Pos) { return Insert(Pos, &Ch, 1); }
   UnicodeString &Insert(const UnicodeString Str, intptr_t Pos) { return Insert(Pos, Str); }
@@ -163,9 +163,9 @@ public:
   UnicodeString operator+(const AnsiString &rhs) const;
   UnicodeString operator+(const UTF8String &rhs) const;
 
-  NB_CORE_EXPORT friend UnicodeString operator+(const wchar_t lhs, UnicodeString rhs);
+  NB_CORE_EXPORT friend UnicodeString operator+(const wchar_t lhs, const UnicodeString rhs);
   NB_CORE_EXPORT friend UnicodeString operator+(const UnicodeString lhs, wchar_t rhs);
-  NB_CORE_EXPORT friend UnicodeString operator+(const wchar_t *lhs, UnicodeString rhs);
+  NB_CORE_EXPORT friend UnicodeString operator+(const wchar_t *lhs, const UnicodeString rhs);
   NB_CORE_EXPORT friend UnicodeString operator+(const UnicodeString lhs, const wchar_t *rhs);
   NB_CORE_EXPORT friend UnicodeString operator+(const UnicodeString lhs, const char *rhs);
 
@@ -181,9 +181,9 @@ public:
   bool operator!=(const UnicodeString Str) const { return Data != Str.Data; }
 
   NB_CORE_EXPORT friend bool operator==(const UnicodeString lhs, const wchar_t *rhs);
-  NB_CORE_EXPORT friend bool operator==(const wchar_t *lhs, UnicodeString rhs);
+  NB_CORE_EXPORT friend bool operator==(const wchar_t *lhs, const UnicodeString rhs);
   NB_CORE_EXPORT friend bool operator!=(const UnicodeString lhs, const wchar_t *rhs);
-  NB_CORE_EXPORT friend bool operator!=(const wchar_t *lhs, UnicodeString rhs);
+  NB_CORE_EXPORT friend bool operator!=(const wchar_t *lhs, const UnicodeString rhs);
 
   wchar_t operator[](intptr_t Idx) const;
   wchar_t &operator[](intptr_t Idx);

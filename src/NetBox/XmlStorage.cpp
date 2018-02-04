@@ -359,7 +359,7 @@ int64_t TXmlStorage::ReadInt64(const UnicodeString Name, int64_t Default) const
   return ::StrToInt64Def(GetSubKeyText(Name), Default);
 }
 
-UnicodeString TXmlStorage::ReadStringRaw(const UnicodeString Name, UnicodeString Default) const
+UnicodeString TXmlStorage::ReadStringRaw(const UnicodeString Name, const UnicodeString Default) const
 {
   UnicodeString Result = GetSubKeyText(Name);
   return Result.IsEmpty() ? Default : Result;
@@ -389,7 +389,7 @@ void TXmlStorage::WriteFloat(const UnicodeString Name, double Value)
   AddNewElement(Name, FORMAT("%.5f", Value));
 }
 
-void TXmlStorage::WriteStringRaw(const UnicodeString Name, UnicodeString Value)
+void TXmlStorage::WriteStringRaw(const UnicodeString Name, const UnicodeString Value)
 {
   RemoveIfExists(Name);
   AddNewElement(Name, Value);
