@@ -216,7 +216,7 @@ bool CopyCommandToClipboard(const UnicodeString Command)
   bool Result = false; // UseAlternativeFunction() && IsKeyPressed(VK_CONTROL);
   if (Result)
   {
-    TInstantOperationVisualizer Visualizer;
+    volatile TInstantOperationVisualizer Visualizer;
     CopyToClipboard(Command);
   }
   return Result;

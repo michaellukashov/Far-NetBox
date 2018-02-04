@@ -7573,7 +7573,7 @@ void TTerminal::UpdateSource(const TLocalFileHandle &AHandle, const TCopyParamTy
       FMTLOAD(CANT_SET_ATTRS, AHandle.FileName), "",
     [&]()
     {
-      THROWOSIFFALSE(::FileSetAttr(ApiPath(AHandle.FileName), (AHandle.Attrs & ~faArchive)) == 0);
+      THROWOSIFFALSE(::FileSetAttr(ApiPath(AHandle.FileName), (DWORD)(AHandle.Attrs & ~faArchive)) == 0);
     });
     __removed FILE_OPERATION_LOOP_END(FMTLOAD(CANT_SET_ATTRS, (Handle.FileName)));
   }
