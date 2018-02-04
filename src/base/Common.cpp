@@ -2516,7 +2516,7 @@ uint32_t ContinueAnswer(uint32_t Answers)
 }
 //---------------------------------------------------------------------------
 #if 0
-TLibModule * __fastcall FindModule(void * Instance)
+TLibModule * FindModule(void * Instance)
 {
   TLibModule * CurModule;
   CurModule = reinterpret_cast<TLibModule*>(LibModuleList);
@@ -2536,7 +2536,7 @@ TLibModule * __fastcall FindModule(void * Instance)
 }
 #endif // if 0
 //---------------------------------------------------------------------------
-static UnicodeString __fastcall DoLoadStrFrom(HINSTANCE Module, intptr_t Ident, uintptr_t MaxLength)
+static UnicodeString DoLoadStrFrom(HINSTANCE Module, intptr_t Ident, uintptr_t MaxLength)
 {
   UnicodeString Result;
   Result.SetLength(MaxLength);
@@ -2546,7 +2546,7 @@ static UnicodeString __fastcall DoLoadStrFrom(HINSTANCE Module, intptr_t Ident, 
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall LoadStrFrom(HINSTANCE Module, intptr_t Ident)
+UnicodeString LoadStrFrom(HINSTANCE Module, intptr_t Ident)
 {
   // 1024 = what VCL LoadStr limits the string to
   return DoLoadStrFrom(Module, Ident, 1024);
@@ -3384,12 +3384,12 @@ const UnicodeString RtfHyperlinkField(TraceInitStr(L"HYPERLINK"));
 const UnicodeString RtfHyperlinkFieldPrefix(TraceInitStr(RtfHyperlinkField + L" \""));
 const UnicodeString RtfHyperlinkFieldSuffix(TraceInitStr(L"\" "));
 //---------------------------------------------------------------------
-UnicodeString __fastcall RtfColor(int Index)
+UnicodeString RtfColor(int Index)
 {
   return FORMAT(L"\\cf%d", (Index));
 }
 //---------------------------------------------------------------------
-UnicodeString __fastcall RtfText(const UnicodeString & Text, bool Rtf)
+UnicodeString RtfText(const UnicodeString & Text, bool Rtf)
 {
   UnicodeString Result = Text;
   if (Rtf)
@@ -3423,49 +3423,49 @@ UnicodeString __fastcall RtfText(const UnicodeString & Text, bool Rtf)
   return Result;
 }
 //---------------------------------------------------------------------
-UnicodeString __fastcall RtfColorText(int Color, const UnicodeString & Text)
+UnicodeString RtfColorText(int Color, const UnicodeString & Text)
 {
   return RtfColor(Color) + L" " + RtfText(Text) + RtfColor(0) + L" ";
 }
 //---------------------------------------------------------------------
-UnicodeString __fastcall RtfColorItalicText(int Color, const UnicodeString & Text)
+UnicodeString RtfColorItalicText(int Color, const UnicodeString & Text)
 {
   return RtfColor(Color) + L"\\i " + RtfText(Text) + L"\\i0" + RtfColor(0) + L" ";
 }
 //---------------------------------------------------------------------
-UnicodeString __fastcall RtfOverrideColorText(const UnicodeString & Text)
+UnicodeString RtfOverrideColorText(const UnicodeString & Text)
 {
   return RtfColorText(1, Text);
 }
 //---------------------------------------------------------------------
-UnicodeString __fastcall RtfKeyword(const UnicodeString & Text)
+UnicodeString RtfKeyword(const UnicodeString & Text)
 {
   return RtfColorText(5, Text);
 }
 //---------------------------------------------------------------------
-UnicodeString __fastcall RtfParameter(const UnicodeString & Text)
+UnicodeString RtfParameter(const UnicodeString & Text)
 {
   return RtfColorText(6, Text);
 }
 //---------------------------------------------------------------------
-UnicodeString __fastcall RtfString(const UnicodeString & Text)
+UnicodeString RtfString(const UnicodeString & Text)
 {
   return RtfColorText(4, Text);
 }
 //---------------------------------------------------------------------
-UnicodeString __fastcall RtfLink(const UnicodeString & Link, const UnicodeString & RtfText)
+UnicodeString RtfLink(const UnicodeString & Link, const UnicodeString & RtfText)
 {
   return
     L"{\\field{\\*\\fldinst{" + RtfHyperlinkFieldPrefix + Link + RtfHyperlinkFieldSuffix + L"}}{\\fldrslt{" +
     RtfText + L"}}}";
 }
 //---------------------------------------------------------------------
-UnicodeString __fastcall ScriptCommandLink(const UnicodeString & Command)
+UnicodeString ScriptCommandLink(const UnicodeString & Command)
 {
   return L"scriptcommand_" + Command;
 }
 //---------------------------------------------------------------------
-UnicodeString __fastcall RtfSwitch(
+UnicodeString RtfSwitch(
   const UnicodeString & Switch, const UnicodeString & Link, bool Rtf)
 {
   UnicodeString Result = FORMAT(L"-%s", (Switch));
@@ -3476,25 +3476,25 @@ UnicodeString __fastcall RtfSwitch(
   return L" " + Result;
 }
 //---------------------------------------------------------------------
-UnicodeString __fastcall RtfSwitchValue(
+UnicodeString RtfSwitchValue(
   const UnicodeString & Name, const UnicodeString & Link, const UnicodeString & Value, bool Rtf)
 {
   return RtfSwitch(Name, Link, Rtf) + L"=" + Value;
 }
 //---------------------------------------------------------------------
-UnicodeString __fastcall RtfSwitch(
+UnicodeString RtfSwitch(
   const UnicodeString & Name, const UnicodeString & Link, const UnicodeString & Value, bool Rtf)
 {
   return RtfSwitchValue(Name, Link, RtfText(FORMAT("\"%s\"", (EscapeParam(Value))), Rtf), Rtf);
 }
 //---------------------------------------------------------------------
-UnicodeString __fastcall RtfSwitch(
+UnicodeString RtfSwitch(
   const UnicodeString & Name, const UnicodeString & Link, int Value, bool Rtf)
 {
   return RtfSwitchValue(Name, Link, RtfText(IntToStr(Value), Rtf), Rtf);
 }
 //---------------------------------------------------------------------
-UnicodeString __fastcall RtfRemoveHyperlinks(UnicodeString Text)
+UnicodeString RtfRemoveHyperlinks(UnicodeString Text)
 {
   // Remove all tags HYPERLINK "https://www.example.com".
   // See also RtfEscapeParam
@@ -3516,7 +3516,7 @@ UnicodeString __fastcall RtfRemoveHyperlinks(UnicodeString Text)
   return Text;
 }
 //---------------------------------------------------------------------
-UnicodeString __fastcall RtfEscapeParam(UnicodeString Param)
+UnicodeString RtfEscapeParam(UnicodeString Param)
 {
   const UnicodeString Quote(L"\"");
   // Equivalent of EscapeParam, except that it does not double quotes in HYPERLINK.
@@ -3550,12 +3550,12 @@ UnicodeString __fastcall RtfEscapeParam(UnicodeString Param)
   return Param;
 }
 //---------------------------------------------------------------------
-static UnicodeString __fastcall RtfCodeComment(const UnicodeString & Text)
+static UnicodeString RtfCodeComment(const UnicodeString & Text)
 {
   return RtfColorItalicText(2, Text);
 }
 //---------------------------------------------------------------------
-UnicodeString __fastcall AssemblyCommentLine(TAssemblyLanguage Language, const UnicodeString & Text)
+UnicodeString AssemblyCommentLine(TAssemblyLanguage Language, const UnicodeString & Text)
 {
   UnicodeString Prefix;
   switch (Language)
@@ -3576,7 +3576,7 @@ UnicodeString __fastcall AssemblyCommentLine(TAssemblyLanguage Language, const U
   return RtfCodeComment(Prefix + L" " + Text) + RtfPara;
 }
 //---------------------------------------------------------------------
-UnicodeString __fastcall AssemblyString(TAssemblyLanguage Language, UnicodeString S)
+UnicodeString AssemblyString(TAssemblyLanguage Language, UnicodeString S)
 {
   switch (Language)
   {
@@ -3607,27 +3607,27 @@ UnicodeString __fastcall AssemblyString(TAssemblyLanguage Language, UnicodeStrin
   return RtfString(S);
 }
 //---------------------------------------------------------------------
-static UnicodeString __fastcall RtfClass(const UnicodeString & Text)
+static UnicodeString RtfClass(const UnicodeString & Text)
 {
   return RtfColorText(3, Text);
 }
 //---------------------------------------------------------------------
-UnicodeString __fastcall RtfLibraryClass(const UnicodeString & ClassName)
+UnicodeString RtfLibraryClass(const UnicodeString & ClassName)
 {
   return RtfLink(L"library_" + ClassName.LowerCase(), RtfClass(ClassName));
 }
 //---------------------------------------------------------------------
-UnicodeString __fastcall RtfLibraryMethod(const UnicodeString & ClassName, const UnicodeString & MethodName, bool InPage)
+UnicodeString RtfLibraryMethod(const UnicodeString & ClassName, const UnicodeString & MethodName, bool InPage)
 {
   return RtfLink(L"library_" + ClassName.LowerCase() + (InPage ? L"#" : L"_") + MethodName.LowerCase(), RtfOverrideColorText(MethodName));
 }
 //---------------------------------------------------------------------
-static UnicodeString __fastcall RtfLibraryProperty(const UnicodeString & ClassName, const UnicodeString & PropertyName)
+static UnicodeString RtfLibraryProperty(const UnicodeString & ClassName, const UnicodeString & PropertyName)
 {
   return RtfLink(L"library_" + ClassName.LowerCase() + L"#" + PropertyName.LowerCase(), RtfOverrideColorText(PropertyName));
 }
 //---------------------------------------------------------------------
-UnicodeString __fastcall AssemblyVariableName(TAssemblyLanguage Language, const UnicodeString & ClassName)
+UnicodeString AssemblyVariableName(TAssemblyLanguage Language, const UnicodeString & ClassName)
 {
   UnicodeString Result = ClassName.SubString(1, 1).LowerCase() + ClassName.SubString(2, ClassName.Length() - 1);
   if (Language == alPowerShell)
@@ -3637,7 +3637,7 @@ UnicodeString __fastcall AssemblyVariableName(TAssemblyLanguage Language, const 
   return Result;
 }
 //---------------------------------------------------------------------
-UnicodeString __fastcall AssemblyStatementSeparator(TAssemblyLanguage Language)
+UnicodeString AssemblyStatementSeparator(TAssemblyLanguage Language)
 {
   UnicodeString Result;
   switch (Language)
@@ -3654,7 +3654,7 @@ UnicodeString __fastcall AssemblyStatementSeparator(TAssemblyLanguage Language)
   return Result;
 }
 //---------------------------------------------------------------------
-UnicodeString __fastcall AssemblyPropertyRaw(
+UnicodeString AssemblyPropertyRaw(
   TAssemblyLanguage Language, const UnicodeString & ClassName, const UnicodeString & Name,
   const UnicodeString & Value, bool Inline)
 {
@@ -3679,7 +3679,7 @@ UnicodeString __fastcall AssemblyPropertyRaw(
   return Result;
 }
 //---------------------------------------------------------------------
-UnicodeString __fastcall AssemblyProperty(
+UnicodeString AssemblyProperty(
   TAssemblyLanguage Language, const UnicodeString & ClassName, const UnicodeString & Name,
   const UnicodeString & Type, const UnicodeString & Member, bool Inline)
 {
@@ -3700,21 +3700,21 @@ UnicodeString __fastcall AssemblyProperty(
   return AssemblyPropertyRaw(Language, ClassName, Name, PropertyValue, Inline);
 }
 //---------------------------------------------------------------------
-UnicodeString __fastcall AssemblyProperty(
+UnicodeString AssemblyProperty(
   TAssemblyLanguage Language, const UnicodeString & ClassName,
   const UnicodeString & Name, const UnicodeString & Value, bool Inline)
 {
   return AssemblyPropertyRaw(Language, ClassName, Name, AssemblyString(Language, Value), Inline);
 }
 //---------------------------------------------------------------------
-UnicodeString __fastcall AssemblyProperty(
+UnicodeString AssemblyProperty(
   TAssemblyLanguage Language, const UnicodeString & ClassName,
   const UnicodeString & Name, int Value, bool Inline)
 {
   return AssemblyPropertyRaw(Language, ClassName, Name, IntToStr(Value), Inline);
 }
 //---------------------------------------------------------------------
-UnicodeString __fastcall AssemblyBoolean(TAssemblyLanguage Language, bool Value)
+UnicodeString AssemblyBoolean(TAssemblyLanguage Language, bool Value)
 {
   UnicodeString Result;
 
@@ -3736,7 +3736,7 @@ UnicodeString __fastcall AssemblyBoolean(TAssemblyLanguage Language, bool Value)
   return Result;
 }
 //---------------------------------------------------------------------
-UnicodeString __fastcall AssemblyProperty(
+UnicodeString AssemblyProperty(
   TAssemblyLanguage Language, const UnicodeString & ClassName, const UnicodeString & Name, bool Value, bool Inline)
 {
   UnicodeString PropertyValue = AssemblyBoolean(Language, Value);
@@ -3744,7 +3744,7 @@ UnicodeString __fastcall AssemblyProperty(
   return AssemblyPropertyRaw(Language, ClassName, Name, PropertyValue, Inline);
 }
 //---------------------------------------------------------------------
-UnicodeString __fastcall AssemblyNewClassInstance(TAssemblyLanguage Language, const UnicodeString & ClassName, bool Inline)
+UnicodeString AssemblyNewClassInstance(TAssemblyLanguage Language, const UnicodeString & ClassName, bool Inline)
 {
   UnicodeString VariableName = AssemblyVariableName(Language, ClassName);
   UnicodeString RtfClass = RtfLibraryClass(ClassName);
@@ -3779,7 +3779,7 @@ UnicodeString __fastcall AssemblyNewClassInstance(TAssemblyLanguage Language, co
   return Result;
 }
 //---------------------------------------------------------------------
-UnicodeString __fastcall AssemblyNewClassInstanceStart(
+UnicodeString AssemblyNewClassInstanceStart(
   TAssemblyLanguage Language, const UnicodeString & ClassName, bool Inline)
 {
   UnicodeString NewClassInstance = AssemblyNewClassInstance(Language, ClassName, Inline);
@@ -3820,7 +3820,7 @@ UnicodeString __fastcall AssemblyNewClassInstanceStart(
   return Result;
 }
 //---------------------------------------------------------------------
-UnicodeString __fastcall AssemblyNewClassInstanceEnd(TAssemblyLanguage Language, bool Inline)
+UnicodeString AssemblyNewClassInstanceEnd(TAssemblyLanguage Language, bool Inline)
 {
   UnicodeString InlineEnd = RtfText(L"}");
 
@@ -3863,7 +3863,7 @@ UnicodeString __fastcall AssemblyNewClassInstanceEnd(TAssemblyLanguage Language,
   return Result;
 }
 //---------------------------------------------------------------------------
-void __fastcall LoadScriptFromFile(UnicodeString FileName, TStrings * Lines)
+void LoadScriptFromFile(UnicodeString FileName, TStrings * Lines)
 {
   std::auto_ptr<TFileStream> Stream(new TFileStream(ApiPath(FileName), fmOpenRead | fmShareDenyWrite));
   Lines->DefaultEncoding = TEncoding::UTF8;
@@ -3889,7 +3889,7 @@ UnicodeString StripEllipsis(const UnicodeString S)
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall GetFileMimeType(const UnicodeString /*FileName*/)
+UnicodeString GetFileMimeType(const UnicodeString /*FileName*/)
 {
   UnicodeString Result;
 #if 0

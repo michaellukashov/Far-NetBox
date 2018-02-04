@@ -81,30 +81,30 @@ private:
     static inline bool classof(const Exception *Obj) { return Obj->is(OBJECT_CLASS_##NAME); } \
     virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_##NAME) || BASE::is(Kind); } \
   public: \
-    explicit inline __fastcall NAME(const Exception *E, const UnicodeString Msg, const UnicodeString HelpKeyword = L"") : \
+    explicit inline NAME(const Exception *E, const UnicodeString Msg, const UnicodeString HelpKeyword = L"") : \
       BASE(OBJECT_CLASS_##NAME, E, Msg, HelpKeyword) \
     { \
     } \
-    explicit inline __fastcall NAME(TObjectClassId Kind, const Exception *E, const UnicodeString Msg, const UnicodeString HelpKeyword = L"") : \
+    explicit inline NAME(TObjectClassId Kind, const Exception *E, const UnicodeString Msg, const UnicodeString HelpKeyword = L"") : \
       BASE(Kind, E, Msg, HelpKeyword) \
     { \
     } \
-    virtual inline __fastcall ~NAME(void) \
+    virtual inline ~NAME(void) \
     { \
     } \
-    explicit inline __fastcall NAME(TObjectClassId Kind, const UnicodeString Msg, intptr_t AHelpContext) : \
+    explicit inline NAME(TObjectClassId Kind, const UnicodeString Msg, intptr_t AHelpContext) : \
       BASE(Kind, Msg, AHelpContext) \
     { \
     } \
-    explicit inline __fastcall NAME(const UnicodeString Msg, intptr_t AHelpContext) : \
+    explicit inline NAME(const UnicodeString Msg, intptr_t AHelpContext) : \
       BASE(OBJECT_CLASS_##NAME, Msg, AHelpContext) \
     { \
     } \
-    virtual ExtException * __fastcall Clone() const override \
+    virtual ExtException * Clone() const override \
     { \
       return new NAME(OBJECT_CLASS_##NAME, this, L""); \
     } \
-    virtual void __fastcall Rethrow() \
+    virtual void Rethrow() \
     { \
       throw NAME(OBJECT_CLASS_##NAME, this, L""); \
     }
@@ -122,7 +122,7 @@ DERIVE_EXT_EXCEPTION(EScp, ExtException) // SCP protocol fatal error (non-fatal 
 class ESkipFile : public ExtException
 {
 public:
-  inline __fastcall ESkipFile() :
+  inline ESkipFile() :
     ExtException(OBJECT_CLASS_ESkipFile, nullptr, UnicodeString())
   {
   }

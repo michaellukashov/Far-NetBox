@@ -51,7 +51,7 @@ private:
 #define DebugCheck(p)    (p)
 #define DebugFail()      (void)0
 #else // if !defined(_DEBUG) || defined(DESIGN_ONLY)
-NB_CORE_EXPORT void __fastcall DoAssert(const wchar_t *Message, const wchar_t *Filename, uintptr_t LineNumber);
+NB_CORE_EXPORT void DoAssert(const wchar_t *Message, const wchar_t *Filename, uintptr_t LineNumber);
 #define DebugAssert(p) ((p) ? (void)0 : DoAssert(TEXT(#p), TEXT(__FILE__), __LINE__))
 #define DebugCheck(p) { bool __CHECK_RESULT__ = (p); DebugAssert(__CHECK_RESULT__); }
 #define DebugFail() DebugAssert(false)
@@ -85,7 +85,6 @@ NB_CORE_EXPORT void TraceInMemoryCallback(const wchar_t *Msg);
 
 #define ACCESS_VIOLATION_TEST { (*((int*)nullptr)) = 0; }
 
-// NB_CORE_EXPORT void __fastcall DoAssert(const wchar_t *Message, const wchar_t *Filename, uintptr_t LineNumber);
 inline bool DoAlwaysTrue(bool Value, const wchar_t *Message, const wchar_t *Filename, uintptr_t LineNumber)
 {
   if (!Value)
