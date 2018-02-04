@@ -826,12 +826,12 @@ bool IsPathToSameFile(const UnicodeString APath1, const UnicodeString APath2)
   return Result;
 }
 
-bool CompareFileName(UnicodeString APath1, UnicodeString APath2)
+bool CompareFileName(const UnicodeString APath1, const UnicodeString APath2)
 {
   return IsPathToSameFile(APath1, APath2);
 }
 
-bool ComparePaths(UnicodeString APath1, UnicodeString APath2)
+bool ComparePaths(const UnicodeString APath1, const UnicodeString APath2)
 {
   TODO("ExpandUNCFileName");
   return AnsiSameText(::IncludeTrailingBackslash(APath1), ::IncludeTrailingBackslash(APath2));

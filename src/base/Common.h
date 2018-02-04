@@ -190,8 +190,7 @@ NB_CORE_EXPORT UnicodeString StripEllipsis(const UnicodeString S);
 NB_CORE_EXPORT UnicodeString __fastcall GetFileMimeType(const UnicodeString FileName);
 //---------------------------------------------------------------------------
 NB_CORE_EXPORT bool CompareFileName(const UnicodeString APath1, const UnicodeString APath2);
-NB_CORE_EXPORT bool ComparePaths(UnicodeString APath1, UnicodeString APath2);
-NB_CORE_EXPORT void ReformatFileNameCommand(UnicodeString &Command);
+NB_CORE_EXPORT bool ComparePaths(const UnicodeString APath1, const UnicodeString APath2);
 #if 0
 typedef void __fastcall (__closure* TProcessLocalFileEvent)
   (const UnicodeString FileName, const TSearchRec Rec, void * Param);
