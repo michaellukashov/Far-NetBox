@@ -1964,7 +1964,7 @@ TTerminal * __fastcall TTerminal::GetPasswordSource()
 }
 //---------------------------------------------------------------------------
 bool __fastcall TTerminal::DoPromptUser(TSessionData * /*Data*/, TPromptKind Kind,
-  const UnicodeString AName, const UnicodeString Instructions, TStrings *Prompts, TStrings *Response)
+  const UnicodeString AName, const UnicodeString AInstructions, TStrings *Prompts, TStrings *Response)
 {
   bool Result = false;
 
@@ -2009,7 +2009,7 @@ bool __fastcall TTerminal::DoPromptUser(TSessionData * /*Data*/, TPromptKind Kin
       TCallbackGuard Guard(this);
       try
       {
-        GetOnPromptUser()(this, Kind, AName, Instructions, Prompts, Response, Result, nullptr);
+        GetOnPromptUser()(this, Kind, AName, AInstructions, Prompts, Response, Result, nullptr);
         Guard.Verify();
       }
       catch (Exception &E)
@@ -4255,22 +4255,23 @@ bool __fastcall TTerminal::IsRecycledFile(const UnicodeString AFileName)
   return Result;
 }
 //---------------------------------------------------------------------------
-void __fastcall TTerminal::RecycleFile(UnicodeString AFileName,
+void __fastcall TTerminal::RecycleFile(const UnicodeString AFileName,
   const TRemoteFile *AFile)
 {
-  if (AFileName.IsEmpty())
+  UnicodeString FileName = AFileName;
+  if (FileName.IsEmpty())
   {
     DebugAssert(AFile != nullptr);
     if (AFile)
     {
-      AFileName = AFile->GetFileName();
+      FileName = AFile->GetFileName();
     }
   }
 
-  if (!IsRecycledFile(AFileName))
+  if (!IsRecycledFile(FileName))
   {
     LogEvent(FORMAT("Moving file \"%s\" to remote recycle bin '%s'.",
-        AFileName, GetSessionData()->GetRecycleBinPath()));
+        FileName, GetSessionData()->GetRecycleBinPath()));
 
     TMoveFileParams Params;
     Params.Target = GetSessionData()->GetRecycleBinPath();
@@ -4287,7 +4288,7 @@ void __fastcall TTerminal::RecycleFile(UnicodeString AFileName,
       Params.FileMask = FORMAT("*-%s.*", dt);
     }
 #endif
-    TerminalMoveFile(AFileName, AFile, &Params);
+    TerminalMoveFile(FileName, AFile, &Params);
   }
 }
 //---------------------------------------------------------------------------

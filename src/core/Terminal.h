@@ -472,14 +472,14 @@ protected:
   void __fastcall DoSynchronizeProgress(const TSynchronizeData &Data, bool Collect);
   void __fastcall DeleteLocalFile(const UnicodeString &AFileName,
     const TRemoteFile *AFile, void *Params);
-  void __fastcall RecycleFile(UnicodeString AFileName, const TRemoteFile *AFile);
+  void __fastcall RecycleFile(const UnicodeString AFileName, const TRemoteFile *AFile);
   TStrings * __fastcall GetFixedPaths() const;
   void __fastcall DoStartup();
   virtual bool __fastcall DoQueryReopen(Exception *E);
   virtual void __fastcall FatalError(Exception *E, const UnicodeString AMsg, const UnicodeString AHelpKeyword = L"") override;
   void ResetConnection();
   virtual bool __fastcall DoPromptUser(TSessionData *Data, TPromptKind Kind,
-    const UnicodeString AName, UnicodeString Instructions, TStrings *Prompts,
+    const UnicodeString AName, const UnicodeString AInstructions, TStrings *Prompts,
     TStrings *Response);
   void __fastcall OpenTunnel();
   void __fastcall CloseTunnel();
