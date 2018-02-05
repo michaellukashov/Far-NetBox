@@ -1429,7 +1429,7 @@ void TSecureShell::SendNull()
   Send(&Null, 1);
 }
 
-void TSecureShell::SendLine(UnicodeString Line)
+void TSecureShell::SendLine(const UnicodeString Line)
 {
   CheckConnection();
   RawByteString Str;
@@ -1608,15 +1608,16 @@ int TSecureShell::TranslateErrorMessage(
   return Index;
 }
 
-void TSecureShell::PuttyFatalError(UnicodeString Error)
+void TSecureShell::PuttyFatalError(const UnicodeString AError)
 {
+  UnicodeString Error = AError;
   UnicodeString HelpKeyword;
   TranslateErrorMessage(Error, &HelpKeyword);
 
   FatalError(Error, HelpKeyword);
 }
 
-void TSecureShell::FatalError(UnicodeString Error, UnicodeString HelpKeyword)
+void TSecureShell::FatalError(const UnicodeString Error, const UnicodeString HelpKeyword)
 {
   FUI->FatalError(nullptr, Error, HelpKeyword);
 }
@@ -2271,18 +2272,19 @@ TCipher TSecureShell::FuncToSsh2Cipher(const void *Cipher)
   return Result;
 }
 
-UnicodeString TSecureShell::FormatKeyStr(UnicodeString AKeyStr) const
+UnicodeString TSecureShell::FormatKeyStr(const UnicodeString AKeyStr) const
 {
+  UnicodeString KeyStr = AKeyStr;
   intptr_t Index = 1;
   intptr_t Digits = 0;
-  while (Index <= AKeyStr.Length())
+  while (Index <= KeyStr.Length())
   {
-    if (IsHex(AKeyStr[Index]))
+    if (IsHex(KeyStr[Index]))
     {
       Digits++;
       if (Digits >= 16)
       {
-        AKeyStr.Insert(L" ", Index + 1);
+        KeyStr.Insert(L" ", Index + 1);
         ++Index;
         Digits = 0;
       }
@@ -2293,7 +2295,7 @@ UnicodeString TSecureShell::FormatKeyStr(UnicodeString AKeyStr) const
     }
     ++Index;
   }
-  return AKeyStr;
+  return KeyStr;
 }
 
 void TSecureShell::GetRealHost(UnicodeString &Host, intptr_t &Port) const
@@ -2306,7 +2308,7 @@ void TSecureShell::GetRealHost(UnicodeString &Host, intptr_t &Port) const
   }
 }
 
-UnicodeString TSecureShell::RetrieveHostKey(UnicodeString Host, intptr_t Port, const UnicodeString KeyType) const
+UnicodeString TSecureShell::RetrieveHostKey(const UnicodeString Host, intptr_t Port, const UnicodeString KeyType) const
 {
   AnsiString AnsiStoredKeys;
   char *Buf = AnsiStoredKeys.SetLength(10 * 1024);
@@ -2363,7 +2365,7 @@ void TPasteKeyHandler::Paste(TObject * /*Sender*/, uint32_t &Answer)
 
   if (Answer == 0)
   {
-    UI->QueryUser(LoadStr(HOSTKEY_NOT_MATCH_CLIPBOARD), NULL, qaOK, NULL, qtError);
+    UI->QueryUser(LoadStr(HOSTKEY_NOT_MATCH_CLIPBOARD), nullptr, qaOK, nullptr, qtError);
   }
 }
 //---------------------------------------------------------------------------
@@ -2598,13 +2600,14 @@ void TSecureShell::VerifyHostKey(
   GetConfiguration()->RememberLastFingerprint(FSessionData->GetSiteKey(), SshFingerprintType, FingerprintSHA256);
 }
 
-bool TSecureShell::HaveHostKey(UnicodeString AHost, intptr_t Port, const UnicodeString KeyType)
+bool TSecureShell::HaveHostKey(const UnicodeString AHost, intptr_t Port, const UnicodeString KeyType)
 {
   // Return true, if we have any host key fingerprint of a particular type
 
-  GetRealHost(AHost, Port);
+  UnicodeString Host = AHost;
+  GetRealHost(Host, Port);
 
-  UnicodeString StoredKeys = RetrieveHostKey(AHost, Port, KeyType);
+  UnicodeString StoredKeys = RetrieveHostKey(Host, Port, KeyType);
   bool Result = !StoredKeys.IsEmpty();
 
   if (!FSessionData->GetHostKey().IsEmpty())
@@ -2626,7 +2629,7 @@ bool TSecureShell::HaveHostKey(UnicodeString AHost, intptr_t Port, const Unicode
   return Result;
 }
 
-void TSecureShell::AskAlg(UnicodeString AlgType, const UnicodeString AlgName)
+void TSecureShell::AskAlg(const UnicodeString AAlgType, const UnicodeString AlgName)
 {
   // beware of changing order
   static const TPuttyTranslation AlgTranslation[] = {
@@ -2637,18 +2640,19 @@ void TSecureShell::AskAlg(UnicodeString AlgType, const UnicodeString AlgName)
     { L"hostkey type", KEYKEY_TYPE },
   };
 
+  UnicodeString AlgType = AAlgType;
   TranslatePuttyMessage(AlgTranslation, _countof(AlgTranslation), AlgType);
 
   UnicodeString Msg = FMTLOAD(ALG_BELOW_TRESHOLD, AlgType, AlgName);
 
-  if (FUI->QueryUser(Msg, nullptr, qaYes | qaNo, NULL, qtWarning) == qaNo)
+  if (FUI->QueryUser(Msg, nullptr, qaYes | qaNo, nullptr, qtWarning) == qaNo)
   {
     UnicodeString Error = FMTLOAD(ALG_NOT_VERIFIED, AlgType, AlgName);
     FUI->FatalError(nullptr, Error);
   }
 }
 
-void TSecureShell::DisplayBanner(UnicodeString Banner)
+void TSecureShell::DisplayBanner(const UnicodeString Banner)
 {
   FUI->DisplayBanner(Banner);
 }

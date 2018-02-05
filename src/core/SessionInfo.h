@@ -317,7 +317,7 @@ private:
 
   void OpenLogFile();
   UnicodeString GetLogFileName();
-  void DoAdd(TLogLineType AType, UnicodeString ALine,
+  void DoAdd(TLogLineType AType, const UnicodeString ALine,
     TDoAddLogEvent Event);
   void DoAddToParent(TLogLineType AType, const UnicodeString ALine);
   void DoAddToSelf(TLogLineType AType, const UnicodeString ALine);
@@ -353,7 +353,7 @@ public:
   void ReflectSettings();
   void AddFailure(Exception *E);
   void AddFailure(TStrings *Messages);
-  void BeginGroup(UnicodeString Name);
+  void BeginGroup(const UnicodeString Name);
   void EndGroup();
 
   __property UnicodeString CurrentFileName = { read = FCurrentFileName };

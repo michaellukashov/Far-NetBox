@@ -265,7 +265,7 @@ struct TEditorData
 
   bool operator==(const TEditorData &rhd) const;
   void DecideExternalEditorText();
-  static bool DecideExternalEditorText(UnicodeString ExternalEditor);
+  static bool DecideExternalEditorText(const UnicodeString ExternalEditor);
 };
 //---------------------------------------------------------------------------
 #undef C
@@ -481,17 +481,17 @@ private:
   void SetConfirmRecycling(bool value);
   void SetUseLocationProfiles(bool value);
   void SetUseSharedBookmarks(bool value);
-  void SetDDTemporaryDirectory(UnicodeString value);
+  void SetDDTemporaryDirectory(const UnicodeString value);
   void SetDDWarnLackOfTempSpace(bool value);
   void SetDDExtEnabled(bool value);
   void SetDDExtTimeout(int value);
   void SetConfirmClosingSession(bool value);
   void SetDDWarnLackOfTempSpaceRatio(double value);
-  void SetBookmarks(UnicodeString Key, TBookmarkList *value);
-  TBookmarkList *GetBookmarks(UnicodeString Key);
+  void SetBookmarks(const UnicodeString Key, TBookmarkList *value);
+  TBookmarkList *GetBookmarks(const UnicodeString Key);
   void SetSharedBookmarks(TBookmarkList *value);
   TBookmarkList *GetSharedBookmarks();
-  void SetAutoStartSession(UnicodeString value);
+  void SetAutoStartSession(const UnicodeString value);
   void SetExpertMode(bool value);
   void SetDefaultDirIsHome(bool value);
   void SetEditor(TEditorConfiguration value);
@@ -505,7 +505,7 @@ private:
   void SetTemporaryDirectoryCleanup(bool value);
   void SetConfirmTemporaryDirectoryCleanup(bool value);
   void SetPreservePanelState(bool value);
-  void SetLastStoredSession(UnicodeString value);
+  void SetLastStoredSession(const UnicodeString value);
   void SetAutoSaveWorkspace(bool value);
   void SetAutoSaveWorkspacePasswords(bool value);
   void SetAutoWorkspace(UnicodeString value);
@@ -560,7 +560,7 @@ private:
   bool GetAnyBetaInVersionHistory();
   void PurgePassword(UnicodeString &Password);
   void UpdateEntryInJumpList(
-    bool Session, UnicodeString Name, bool Add);
+    bool Session, const UnicodeString Name, bool Add);
   TStringList *LoadJumpList(THierarchicalStorage *Storage,
     UnicodeString Name);
   void SaveJumpList(THierarchicalStorage *Storage,
@@ -587,9 +587,9 @@ protected:
   virtual void DefaultLocalized();
   bool DetectRegistryStorage(HKEY RootKey);
   bool CanWriteToStorage();
-  bool DoIsBeta(UnicodeString ReleaseType);
+  bool DoIsBeta(const UnicodeString ReleaseType);
   void AskForMasterPassword();
-  void DoLoadExtensionList(UnicodeString Path, UnicodeString PathId, TStringList *DeletedExtensions);
+  void DoLoadExtensionList(const UnicodeString Path, const UnicodeString PathId, TStringList *DeletedExtensions);
   TStrings *GetExtensionsPaths();
   virtual int GetResourceModuleCompleteness(HINSTANCE Module);
   virtual bool IsTranslationComplete(HINSTANCE Module);
@@ -605,33 +605,33 @@ public:
   virtual THierarchicalStorage *CreateScpStorage(bool &SessionList);
   UnicodeString TemporaryDir(bool Mask = false);
   TStrings *FindTemporaryFolders();
-  void CleanupTemporaryFolders(TStrings *Folders = NULL);
+  void CleanupTemporaryFolders(TStrings *Folders = nullptr);
   UnicodeString ExpandedTemporaryDirectory();
   void CheckDefaultTranslation();
   const TEditorPreferences *DefaultEditorForFile(
     const UnicodeString FileName, bool Local, const TFileMasks::TParams &MaskParams);
-  virtual UnicodeString DecryptPassword(RawByteString Password, UnicodeString Key);
-  virtual RawByteString StronglyRecryptPassword(RawByteString Password, UnicodeString Key);
-  void SetMasterPassword(UnicodeString value);
-  void ChangeMasterPassword(UnicodeString value, TStrings *RecryptPasswordErrors);
-  bool ValidateMasterPassword(UnicodeString value);
+  virtual UnicodeString DecryptPassword(RawByteString Password, const UnicodeString Key);
+  virtual RawByteString StronglyRecryptPassword(RawByteString Password, const UnicodeString Key);
+  void SetMasterPassword(const UnicodeString value);
+  void ChangeMasterPassword(const UnicodeString value, TStrings *RecryptPasswordErrors);
+  bool ValidateMasterPassword(const UnicodeString value);
   void ClearMasterPassword(TStrings *RecryptPasswordErrors);
   void BeginMasterPasswordSession();
   void EndMasterPasswordSession();
   virtual void AskForMasterPasswordIfNotSet();
-  void AddSessionToJumpList(UnicodeString SessionName);
-  void DeleteSessionFromJumpList(UnicodeString SessionName);
-  void AddWorkspaceToJumpList(UnicodeString Workspace);
-  void DeleteWorkspaceFromJumpList(UnicodeString Workspace);
+  void AddSessionToJumpList(const UnicodeString SessionName);
+  void DeleteSessionFromJumpList(const UnicodeString SessionName);
+  void AddWorkspaceToJumpList(const UnicodeString Workspace);
+  void DeleteWorkspaceFromJumpList(const UnicodeString Workspace);
   void UpdateJumpList();
   virtual void UpdateStaticUsage();
   void MinimizeToTrayOnce();
   void CustomCommandShortCuts(TShortCuts &ShortCuts) const;
   UnicodeString GetUserExtensionsPath();
-  UnicodeString GetExtensionId(UnicodeString ExtensionPath);
-  UnicodeString ExtensionStringTranslation(UnicodeString ExtensionId, UnicodeString S);
-  UnicodeString UniqueExtensionName(UnicodeString ExtensionName, int Counter);
-  UnicodeString GetProvisionaryExtensionId(UnicodeString FileName);
+  UnicodeString GetExtensionId(const UnicodeString ExtensionPath);
+  UnicodeString ExtensionStringTranslation(const UnicodeString ExtensionId, const UnicodeString S);
+  UnicodeString UniqueExtensionName(const UnicodeString ExtensionName, int Counter);
+  UnicodeString GetProvisionaryExtensionId(const UnicodeString FileName);
 
   static void RestoreFont(const TFontConfiguration &Configuration, TFont *Font);
   static void StoreFont(TFont *Font, TFontConfiguration &Configuration);
@@ -770,9 +770,9 @@ public:
   TCustomCommandType &operator=(const TCustomCommandType &Other);
   bool Equals(const TCustomCommandType *Other) const;
 
-  void LoadExtension(UnicodeString Path);
-  void LoadExtension(TStrings *Lines, UnicodeString PathForBaseName);
-  static UnicodeString GetExtensionId(UnicodeString Name);
+  void LoadExtension(const UnicodeString Path);
+  void LoadExtension(TStrings *Lines, const UnicodeString PathForBaseName);
+  static UnicodeString GetExtensionId(const UnicodeString Name);
 
   __property UnicodeString Name = { read = FName, write = FName };
   __property UnicodeString Command = { read = FCommand, write = FCommand };
@@ -787,14 +787,14 @@ public:
   __property int OptionsCount = { read = GetOptionsCount };
   const TOption &GetOption(int Index) const;
   bool AnyOptionWithFlag(unsigned int Flag) const;
-  UnicodeString GetOptionKey(const TOption &Option, UnicodeString Site) const;
+  UnicodeString GetOptionKey(const TOption &Option, const UnicodeString Site) const;
   UnicodeString GetCommandWithExpandedOptions(
-    TStrings *CustomCommandOptions, UnicodeString Site) const;
+    TStrings *CustomCommandOptions, const UnicodeString Site) const;
 
 protected:
-  bool ParseOption(UnicodeString Value, TOption &Option, UnicodeString ExtensionBaseName);
+  bool ParseOption(const UnicodeString Value, TOption &Option, const UnicodeString ExtensionBaseName);
   int GetOptionsCount() const;
-  UnicodeString GetOptionCommand(const TOption &Option, UnicodeString Value) const;
+  UnicodeString GetOptionCommand(const TOption &Option, const UnicodeString Value) const;
 
 private:
   UnicodeString FName;
@@ -831,7 +831,7 @@ public:
 
   const TCustomCommandType *Find(const UnicodeString Name) const;
   const TCustomCommandType *Find(TShortCut ShortCut) const;
-  int FindIndexByFileName(UnicodeString FileName) const;
+  int FindIndexByFileName(const UnicodeString FileName) const;
 
   bool Equals(const TCustomCommandList *Other) const;
   void Assign(const TCustomCommandList *Other);

@@ -556,7 +556,7 @@ long reg_close_winscp_key(HKEY Key)
   return ERROR_SUCCESS;
 }
 
-TKeyType GetKeyType(UnicodeString AFileName)
+TKeyType GetKeyType(const UnicodeString AFileName)
 {
   DebugAssert(ktUnopenable == SSH_KEYTYPE_UNOPENABLE);
   DebugAssert(ktSSH2PublicOpenSSH == SSH_KEYTYPE_SSH2_PUBLIC_OPENSSH);
@@ -567,7 +567,7 @@ TKeyType GetKeyType(UnicodeString AFileName)
   return Result;
 }
 
-bool IsKeyEncrypted(TKeyType KeyType, UnicodeString FileName, UnicodeString &Comment)
+bool IsKeyEncrypted(TKeyType KeyType, const UnicodeString FileName, UnicodeString &Comment)
 {
   UTF8String UtfFileName = UTF8String(::ExpandEnvironmentVariables(FileName));
   Filename *KeyFile = filename_from_str(UtfFileName.c_str());
@@ -605,7 +605,7 @@ bool IsKeyEncrypted(TKeyType KeyType, UnicodeString FileName, UnicodeString &Com
   return Result;
 }
 
-TPrivateKey *LoadKey(TKeyType KeyType, UnicodeString FileName, UnicodeString Passphrase)
+TPrivateKey *LoadKey(TKeyType KeyType, const UnicodeString FileName, const UnicodeString Passphrase)
 {
   UTF8String UtfFileName = UTF8String(::ExpandEnvironmentVariables(FileName));
   Filename *KeyFile = filename_from_str(UtfFileName.c_str());
@@ -649,7 +649,7 @@ TPrivateKey *LoadKey(TKeyType KeyType, UnicodeString FileName, UnicodeString Pas
   return reinterpret_cast<TPrivateKey *>(Ssh2Key);
 }
 
-void ChangeKeyComment(TPrivateKey *PrivateKey, UnicodeString Comment)
+void ChangeKeyComment(TPrivateKey *PrivateKey, const UnicodeString Comment)
 {
   AnsiString AnsiComment(Comment);
   struct ssh2_userkey *Ssh2Key = reinterpret_cast<struct ssh2_userkey *>(PrivateKey);
@@ -657,8 +657,8 @@ void ChangeKeyComment(TPrivateKey *PrivateKey, UnicodeString Comment)
   Ssh2Key->comment = dupstr(AnsiComment.c_str());
 }
 
-void SaveKey(TKeyType KeyType, UnicodeString FileName,
-  UnicodeString Passphrase, TPrivateKey *PrivateKey)
+void SaveKey(TKeyType KeyType, const UnicodeString FileName,
+  const UnicodeString Passphrase, TPrivateKey *PrivateKey)
 {
   UTF8String UtfFileName = UTF8String(::ExpandEnvironmentVariables(FileName));
   Filename *KeyFile = filename_from_str(UtfFileName.c_str());
@@ -689,7 +689,7 @@ void FreeKey(TPrivateKey *PrivateKey)
   sfree(Ssh2Key);
 }
 
-bool HasGSSAPI(UnicodeString CustomPath)
+bool HasGSSAPI(const UnicodeString CustomPath)
 {
   static int has = -1;
   if (has < 0)
@@ -706,7 +706,7 @@ bool HasGSSAPI(UnicodeString CustomPath)
       Filename *filename = filename_from_str(UTF8String(CustomPath).c_str());
       conf_set_filename(conf, CONF_ssh_gss_custom, filename);
       filename_free(filename);
-      List = ssh_gss_setup(conf, NULL);
+      List = ssh_gss_setup(conf, nullptr);
       for (intptr_t Index = 0; (has <= 0) && (Index < List->nlibraries); ++Index)
       {
         ssh_gss_library *library = &List->libraries[Index];
@@ -770,7 +770,7 @@ static void DoNormalizeFingerprint(UnicodeString &Fingerprint, UnicodeString &Ke
   }
 }
 
-UnicodeString NormalizeFingerprint(UnicodeString AFingerprint)
+UnicodeString NormalizeFingerprint(const UnicodeString AFingerprint)
 {
   UnicodeString Fingerprint = AFingerprint;
   UnicodeString KeyType; // unused
@@ -778,7 +778,7 @@ UnicodeString NormalizeFingerprint(UnicodeString AFingerprint)
   return Fingerprint;
 }
 
-UnicodeString GetKeyTypeFromFingerprint(UnicodeString AFingerprint)
+UnicodeString GetKeyTypeFromFingerprint(const UnicodeString AFingerprint)
 {
   UnicodeString Fingerprint = AFingerprint;
   UnicodeString KeyType;
@@ -814,13 +814,13 @@ void DllHijackingProtection()
 UnicodeString ParseOpenSshPubLine(const UnicodeString ALine, const struct ssh_signkey *& Algorithm)
 {
   UTF8String UtfLine = UTF8String(ALine);
-  char * AlgorithmName = NULL;
+  char * AlgorithmName = nullptr;
   int PubBlobLen = 0;
-  char * CommentPtr = NULL;
-  const char * ErrorStr = NULL;
+  char * CommentPtr = nullptr;
+  const char * ErrorStr = nullptr;
   unsigned char * PubBlob = openssh_loadpub_line(UtfLine.c_str(), &AlgorithmName, &PubBlobLen, &CommentPtr, &ErrorStr);
   UnicodeString Result;
-  if (PubBlob == NULL)
+  if (PubBlob == nullptr)
   {
     throw Exception(UnicodeString(ErrorStr));
   }
@@ -835,13 +835,13 @@ UnicodeString ParseOpenSshPubLine(const UnicodeString ALine, const struct ssh_si
         sfree(CommentPtr);
       };
       Algorithm = find_pubkey_alg(AlgorithmName);
-      if (Algorithm == NULL)
+      if (Algorithm == nullptr)
       {
         throw Exception(FORMAT("Unknown public key algorithm \"%s\".", AlgorithmName));
       }
 
       void * Key = Algorithm->newkey(Algorithm, reinterpret_cast<const char*>(PubBlob), PubBlobLen);
-      if (Key == NULL)
+      if (Key == nullptr)
       {
         throw Exception(L"Invalid public key.");
       }

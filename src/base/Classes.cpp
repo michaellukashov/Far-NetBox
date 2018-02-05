@@ -355,7 +355,7 @@ TStrings::~TStrings()
 {
 }
 
-void TStrings::SetTextStr(UnicodeString Text)
+void TStrings::SetTextStr(const UnicodeString Text)
 {
   BeginUpdate();
   SCOPE_EXIT
@@ -425,7 +425,7 @@ UnicodeString TStrings::GetDelimitedText() const
   return Result;
 }
 
-static void tokenize(UnicodeString str, rde::vector<UnicodeString> &tokens,
+static void tokenize(const UnicodeString str, rde::vector<UnicodeString> &tokens,
   UnicodeString delimiters = L" ", const bool trimEmpty = false)
 {
   intptr_t lastPos = 0;
@@ -453,7 +453,7 @@ static void tokenize(UnicodeString str, rde::vector<UnicodeString> &tokens,
   }
 }
 
-void TStrings::SetDelimitedText(UnicodeString Value)
+void TStrings::SetDelimitedText(const UnicodeString Value)
 {
   BeginUpdate();
   SCOPE_EXIT
@@ -497,7 +497,7 @@ void TStrings::Assign(const TPersistent *Source)
   }
 }
 
-intptr_t TStrings::Add(UnicodeString S, TObject *AObject)
+intptr_t TStrings::Add(const UnicodeString S, TObject *AObject)
 {
   intptr_t Result = GetCount();
   Insert(Result, S, AObject);
@@ -575,13 +575,13 @@ void TStrings::SetUpdateState(bool Updating)
   (void)Updating;
 }
 
-intptr_t TStrings::AddObject(UnicodeString S, TObject *AObject)
+intptr_t TStrings::AddObject(const UnicodeString S, TObject *AObject)
 {
   intptr_t Result = Add(S, AObject);
   return Result;
 }
 
-void TStrings::InsertObject(intptr_t Index, UnicodeString Key, TObject *AObject)
+void TStrings::InsertObject(intptr_t Index, const UnicodeString Key, TObject *AObject)
 {
   Insert(Index, Key, AObject);
 }
@@ -732,7 +732,7 @@ void TStrings::AddStrings(const TStrings *Strings)
   }
 }
 
-void TStrings::Append(UnicodeString Value)
+void TStrings::Append(const UnicodeString Value)
 {
   Insert(GetCount(), Value);
 }
@@ -772,12 +772,12 @@ intptr_t TStringList::GetCount() const
   return ToIntPtr(FStrings.size());
 }
 
-intptr_t TStringList::Add(UnicodeString S)
+intptr_t TStringList::Add(const UnicodeString S)
 {
   return AddObject(S, nullptr);
 }
 
-intptr_t TStringList::AddObject(UnicodeString S, TObject *AObject)
+intptr_t TStringList::AddObject(const UnicodeString S, TObject *AObject)
 {
   intptr_t Result = 0;
   if (!GetSorted())
@@ -890,7 +890,7 @@ void TStringList::Delete(intptr_t Index)
   Changed();
 }
 
-void TStringList::InsertObject(intptr_t Index, UnicodeString Key, TObject *AObject)
+void TStringList::InsertObject(intptr_t Index, const UnicodeString Key, TObject *AObject)
 {
   if (GetSorted())
   {
@@ -903,7 +903,7 @@ void TStringList::InsertObject(intptr_t Index, UnicodeString Key, TObject *AObje
   InsertItem(Index, Key, AObject);
 }
 
-void TStringList::InsertItem(intptr_t Index, UnicodeString S, TObject *AObject)
+void TStringList::InsertItem(intptr_t Index, const UnicodeString S, TObject *AObject)
 {
   if ((Index == NPOS) || (Index > GetCount()))
   {
@@ -970,7 +970,7 @@ void TStringList::SetSorted(bool Value)
   }
 }
 
-void TStringList::LoadFromFile(UnicodeString AFileName)
+void TStringList::LoadFromFile(const UnicodeString AFileName)
 {
   HANDLE FileHandle = ::CreateFile(AFileName.c_str(), GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr, OPEN_EXISTING, 0, nullptr);
   if (FileHandle != INVALID_HANDLE_VALUE)
@@ -1220,7 +1220,7 @@ TSHFileInfo::~TSHFileInfo()
   FSHFileInfoLoader.Unload();
 }
 
-int TSHFileInfo::GetFileIconIndex(UnicodeString StrFileName, BOOL bSmallIcon) const
+int TSHFileInfo::GetFileIconIndex(const UnicodeString StrFileName, BOOL bSmallIcon) const
 {
   SHFILEINFO sfi = {};
 
@@ -1273,7 +1273,7 @@ int TSHFileInfo::GetDirIconIndex(BOOL bSmallIcon)
   return sfi.iIcon;
 }
 
-UnicodeString TSHFileInfo::GetFileType(UnicodeString StrFileName)
+UnicodeString TSHFileInfo::GetFileType(const UnicodeString StrFileName)
 {
   SHFILEINFO sfi;
 
@@ -1292,7 +1292,7 @@ UnicodeString TSHFileInfo::GetFileType(UnicodeString StrFileName)
 class EStreamError : public ExtException
 {
 public:
-  explicit EStreamError(UnicodeString Msg) :
+  explicit EStreamError(const UnicodeString Msg) :
     ExtException(OBJECT_CLASS_EStreamError, static_cast<Exception *>(nullptr), Msg)
   {
   }
@@ -1500,7 +1500,7 @@ void TMemoryStream::SaveToStream(TStream *Stream)
   }
 }
 
-void TMemoryStream::SaveToFile(UnicodeString /*AFileName*/)
+void TMemoryStream::SaveToFile(const UnicodeString /*AFileName*/)
 {
   // TFileStream Stream(FileName, fmCreate);
   // SaveToStream(Stream);
@@ -1596,7 +1596,7 @@ int64_t TMemoryStream::Write(const void *Buffer, int64_t Count)
   return Result;
 }
 
-bool IsRelative(UnicodeString Value)
+bool IsRelative(const UnicodeString Value)
 {
   return !(!Value.IsEmpty() && (Value[1] == L'\\'));
 }
@@ -1736,7 +1736,7 @@ void TRegistry::CloseKey()
   }
 }
 
-bool TRegistry::OpenKey(UnicodeString Key, bool CanCreate)
+bool TRegistry::OpenKey(const UnicodeString Key, bool CanCreate)
 {
   bool Result;
   UnicodeString S = Key;
@@ -1764,7 +1764,7 @@ bool TRegistry::OpenKey(UnicodeString Key, bool CanCreate)
   return Result;
 }
 
-bool TRegistry::DeleteKey(UnicodeString Key)
+bool TRegistry::DeleteKey(const UnicodeString Key)
 {
   UnicodeString S = Key;
   bool Relative = IsRelative(S);
@@ -1798,13 +1798,13 @@ bool TRegistry::DeleteKey(UnicodeString Key)
   return Result;
 }
 
-bool TRegistry::DeleteValue(UnicodeString Value) const
+bool TRegistry::DeleteValue(const UnicodeString Value) const
 {
   bool Result = RegDeleteValue(GetCurrentKey(), Value.c_str()) == ERROR_SUCCESS;
   return Result;
 }
 
-bool TRegistry::KeyExists(UnicodeString SubKey) const
+bool TRegistry::KeyExists(const UnicodeString SubKey) const
 {
   uint32_t OldAccess = FAccess;
   SCOPE_EXIT
@@ -1821,14 +1821,14 @@ bool TRegistry::KeyExists(UnicodeString SubKey) const
   return Result;
 }
 
-bool TRegistry::ValueExists(UnicodeString Value) const
+bool TRegistry::ValueExists(const UnicodeString Value) const
 {
   TRegDataInfo Info;
   bool Result = GetDataInfo(Value, Info);
   return Result;
 }
 
-bool TRegistry::GetDataInfo(UnicodeString ValueName, TRegDataInfo &Value) const
+bool TRegistry::GetDataInfo(const UnicodeString ValueName, TRegDataInfo &Value) const
 {
   DWORD DataType;
   ClearStruct(Value);
@@ -1838,7 +1838,7 @@ bool TRegistry::GetDataInfo(UnicodeString ValueName, TRegDataInfo &Value) const
   return Result;
 }
 
-TRegDataType TRegistry::GetDataType(UnicodeString ValueName) const
+TRegDataType TRegistry::GetDataType(const UnicodeString ValueName) const
 {
   TRegDataType Result;
   TRegDataInfo Info;
@@ -1853,7 +1853,7 @@ TRegDataType TRegistry::GetDataType(UnicodeString ValueName) const
   return Result;
 }
 
-DWORD TRegistry::GetDataSize(UnicodeString ValueName) const
+DWORD TRegistry::GetDataSize(const UnicodeString ValueName) const
 {
   DWORD Result;
   TRegDataInfo Info;
@@ -1868,19 +1868,19 @@ DWORD TRegistry::GetDataSize(UnicodeString ValueName) const
   return Result;
 }
 
-bool TRegistry::ReadBool(UnicodeString Name) const
+bool TRegistry::ReadBool(const UnicodeString Name) const
 {
   bool Result = ReadInteger(Name) != 0;
   return Result;
 }
 
-TDateTime TRegistry::ReadDateTime(UnicodeString Name) const
+TDateTime TRegistry::ReadDateTime(const UnicodeString Name) const
 {
   TDateTime Result = TDateTime(ReadFloat(Name));
   return Result;
 }
 
-double TRegistry::ReadFloat(UnicodeString Name) const
+double TRegistry::ReadFloat(const UnicodeString Name) const
 {
   double Result = 0.0;
   TRegDataType RegData = rdUnknown;
@@ -1892,7 +1892,7 @@ double TRegistry::ReadFloat(UnicodeString Name) const
   return Result;
 }
 
-intptr_t TRegistry::ReadInteger(UnicodeString Name) const
+intptr_t TRegistry::ReadInteger(const UnicodeString Name) const
 {
   DWORD Result = 0;
   TRegDataType RegData = rdUnknown;
@@ -1904,14 +1904,14 @@ intptr_t TRegistry::ReadInteger(UnicodeString Name) const
   return Result;
 }
 
-int64_t TRegistry::ReadInt64(UnicodeString Name) const
+int64_t TRegistry::ReadInt64(const UnicodeString Name) const
 {
   int64_t Result = 0;
   ReadBinaryData(Name, &Result, sizeof(Result));
   return Result;
 }
 
-UnicodeString TRegistry::ReadString(UnicodeString Name) const
+UnicodeString TRegistry::ReadString(const UnicodeString Name) const
 {
   UnicodeString Result;
   intptr_t Len = GetDataSize(Name);
@@ -1936,13 +1936,13 @@ UnicodeString TRegistry::ReadString(UnicodeString Name) const
   return Result;
 }
 
-UnicodeString TRegistry::ReadStringRaw(UnicodeString Name) const
+UnicodeString TRegistry::ReadStringRaw(const UnicodeString Name) const
 {
   UnicodeString Result = ReadString(Name);
   return Result;
 }
 
-::size_t TRegistry::ReadBinaryData(UnicodeString Name,
+::size_t TRegistry::ReadBinaryData(const UnicodeString Name,
   void *Buffer, ::size_t BufSize) const
 {
   ::size_t Result;
@@ -1967,7 +1967,7 @@ UnicodeString TRegistry::ReadStringRaw(UnicodeString Name) const
   return Result;
 }
 
-int TRegistry::GetData(UnicodeString Name, void *Buffer,
+int TRegistry::GetData(const UnicodeString Name, void *Buffer,
   intptr_t ABufSize, TRegDataType &RegData) const
 {
   DWORD DataType = REG_NONE;
@@ -1982,7 +1982,7 @@ int TRegistry::GetData(UnicodeString Name, void *Buffer,
   return Result;
 }
 
-void TRegistry::PutData(UnicodeString Name, const void *Buffer,
+void TRegistry::PutData(const UnicodeString Name, const void *Buffer,
   intptr_t ABufSize, TRegDataType RegData)
 {
   DWORD DataType = RegDataToDataType(RegData);
@@ -1993,50 +1993,50 @@ void TRegistry::PutData(UnicodeString Name, const void *Buffer,
   }
 }
 
-void TRegistry::WriteBool(UnicodeString Name, bool Value)
+void TRegistry::WriteBool(const UnicodeString Name, bool Value)
 {
   WriteInteger(Name, Value);
 }
 
-void TRegistry::WriteDateTime(UnicodeString Name, const TDateTime &Value)
+void TRegistry::WriteDateTime(const UnicodeString Name, const TDateTime &Value)
 {
   double Val = Value.GetValue();
   PutData(Name, &Val, sizeof(double), rdBinary);
 }
 
-void TRegistry::WriteFloat(UnicodeString Name, double Value)
+void TRegistry::WriteFloat(const UnicodeString Name, double Value)
 {
   PutData(Name, &Value, sizeof(double), rdBinary);
 }
 
-void TRegistry::WriteString(UnicodeString Name, UnicodeString Value)
+void TRegistry::WriteString(const UnicodeString Name, const UnicodeString Value)
 {
   WriteStringRaw(Name, Value);
 }
 
-void TRegistry::WriteStringRaw(UnicodeString Name, UnicodeString Value)
+void TRegistry::WriteStringRaw(const UnicodeString Name, const UnicodeString Value)
 {
   PutData(Name, Value.c_str(), Value.Length() * sizeof(wchar_t), rdString);
 }
 
-void TRegistry::WriteInteger(UnicodeString Name, intptr_t Value)
+void TRegistry::WriteInteger(const UnicodeString Name, intptr_t Value)
 {
   DWORD Val = ToDWord(Value);
   PutData(Name, &Val, sizeof(Val), rdInteger);
 }
 
-void TRegistry::WriteInt64(UnicodeString Name, int64_t Value)
+void TRegistry::WriteInt64(const UnicodeString Name, int64_t Value)
 {
   WriteBinaryData(Name, &Value, sizeof(Value));
 }
 
-void TRegistry::WriteBinaryData(UnicodeString Name,
+void TRegistry::WriteBinaryData(const UnicodeString Name,
   const void *Buffer, ::size_t BufSize)
 {
   PutData(Name, Buffer, BufSize, rdBinary);
 }
 
-void TRegistry::ChangeKey(HKEY Value, UnicodeString APath)
+void TRegistry::ChangeKey(HKEY Value, const UnicodeString APath)
 {
   CloseKey();
   FCurrentKey = Value;
@@ -2057,7 +2057,7 @@ HKEY TRegistry::GetBaseKey(bool Relative) const
   return Result;
 }
 
-HKEY TRegistry::GetKey(UnicodeString Key) const
+HKEY TRegistry::GetKey(const UnicodeString Key) const
 {
   UnicodeString S = Key;
   bool Relative = IsRelative(S);

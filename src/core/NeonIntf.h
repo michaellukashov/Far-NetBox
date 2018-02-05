@@ -58,6 +58,6 @@ UnicodeString CertificateVerificationMessage(const TNeonCertificateData &Data);
 UnicodeString CertificateSummary(const TNeonCertificateData &Data, const UnicodeString AHostName);
 struct TSessionInfo;
 UnicodeString NeonTlsSessionInfo(
-  ne_session * Session, TSessionInfo & FSessionInfo, UnicodeString & TlsVersionStr);
+  ne_session * Session, TSessionInfo & FSessionInfo, UnicodeString &TlsVersionStr);
 void SetupSsl(ssl_st * Ssl, TTlsVersion MinTlsVersion, TTlsVersion MaxTlsVersion);
 //---------------------------------------------------------------------------

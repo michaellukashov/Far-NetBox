@@ -131,7 +131,7 @@ static TFarCheckBox *FindNeverAskAgainCheck(TFarDialog *Dialog)
   return nullptr; // DebugNotNull(dyn_cast<TFarCheckBox>(Dialog->FindComponent(L"NeverAskAgainCheck")));
 }
 
-TFarDialog *CreateMessageDialogEx(UnicodeString Msg,
+TFarDialog *CreateMessageDialogEx(const UnicodeString Msg,
   TStrings *MoreMessages, TQueryType Type, uint32_t Answers, const UnicodeString AHelpKeyword,
   const TMessageParams *Params, TFarButton *&TimeoutButton)
 {
@@ -431,7 +431,7 @@ void SetTimeoutEvents(TControl *Control, TMessageTimeout *Timeout)
 
 // Merge with CreateMessageDialogEx
 TForm *CreateMoreMessageDialogEx(const UnicodeString Message, TStrings *MoreMessages,
-  TQueryType Type, uint32_t Answers, UnicodeString HelpKeyword, const TMessageParams *Params)
+  TQueryType Type, uint32_t Answers, const UnicodeString HelpKeyword, const TMessageParams *Params)
 {
   std::unique_ptr<TForm> Dialog;
   UnicodeString AMessage = Message;
@@ -482,21 +482,21 @@ TForm *CreateMoreMessageDialogEx(const UnicodeString Message, TStrings *MoreMess
   return Dialog.release();
 }
 
-uintptr_t MoreMessageDialog(UnicodeString Message, TStrings *MoreMessages,
-  TQueryType Type, uint32_t Answers, UnicodeString HelpKeyword, const TMessageParams *Params)
+uintptr_t MoreMessageDialog(const UnicodeString Message, TStrings *MoreMessages,
+  TQueryType Type, uint32_t Answers, const UnicodeString HelpKeyword, const TMessageParams *Params)
 {
   std::unique_ptr<TForm> Dialog(CreateMoreMessageDialogEx(Message, MoreMessages, Type, Answers, HelpKeyword, Params));
   uintptr_t Result = ExecuteMessageDialog(Dialog.get(), Answers, Params);
   return Result;
 }
 
-uintptr_t MessageDialog(UnicodeString Msg, TQueryType Type,
-  uint32_t Answers, UnicodeString HelpKeyword, const TMessageParams *Params)
+uintptr_t MessageDialog(const UnicodeString Msg, TQueryType Type,
+  uint32_t Answers, const UnicodeString HelpKeyword, const TMessageParams *Params)
 {
   return MoreMessageDialog(Msg, nullptr, Type, Answers, HelpKeyword, Params);
 }
 
-uintptr_t SimpleErrorDialog(UnicodeString Msg, UnicodeString MoreMessages)
+uintptr_t SimpleErrorDialog(const UnicodeString Msg, const UnicodeString MoreMessages)
 {
   uintptr_t Result;
   TStrings *More = nullptr;
@@ -745,7 +745,7 @@ const int cpiCustom = -3;
 const int cpiSaveSettings = -4;
 
 void CopyParamListPopup(TRect Rect, TPopupMenu *Menu,
-  const TCopyParamType &Param, UnicodeString Preset, TNotifyEvent OnClick,
+  const TCopyParamType &Param, const UnicodeString Preset, TNotifyEvent OnClick,
   int Options, int CopyParamAttrs, bool SaveSettings)
 {
   Menu->Items->Clear();
@@ -882,7 +882,7 @@ class TCustomCommandPromptsDialog : public TCustomDialog
 {
 public:
   TCustomCommandPromptsDialog(
-    UnicodeString CustomCommandName, UnicodeString HelpKeyword,
+    UnicodeString CustomCommandName, const UnicodeString HelpKeyword,
     const TUnicodeStringVector &Prompts, const TUnicodeStringVector &Defaults);
 
   bool Execute(TUnicodeStringVector &Values);
@@ -896,7 +896,7 @@ private:
 };
 //---------------------------------------------------------------------------
 TCustomCommandPromptsDialog::TCustomCommandPromptsDialog(
-  UnicodeString CustomCommandName, UnicodeString HelpKeyword,
+  UnicodeString CustomCommandName, const UnicodeString HelpKeyword,
   const TUnicodeStringVector &Prompts, const TUnicodeStringVector &Defaults) :
   TCustomDialog(HelpKeyword)
 {
@@ -932,7 +932,7 @@ TWinInteractiveCustomCommand::TWinInteractiveCustomCommand(
   FHelpKeyword = HelpKeyword;
 }
 
-void TWinInteractiveCustomCommand::PatternHint(intptr_t /*AIndex*/, UnicodeString Pattern)
+void TWinInteractiveCustomCommand::PatternHint(intptr_t /*AIndex*/, const UnicodeString Pattern)
 {
   if (IsPromptPattern(Pattern))
   {
@@ -949,7 +949,7 @@ void TWinInteractiveCustomCommand::PatternHint(intptr_t /*AIndex*/, UnicodeStrin
 }
 
 void TWinInteractiveCustomCommand::Prompt(
-  intptr_t /*Index*/, UnicodeString Prompt, UnicodeString & /*Value*/) const
+  intptr_t /*Index*/, const UnicodeString Prompt, UnicodeString & /*Value*/) const
 {
   UnicodeString APrompt = Prompt;
 #if 0
@@ -1236,7 +1236,7 @@ void CenterButtonImage(TButton *Button)
   }
 }
 
-int AdjustLocaleFlag(UnicodeString S, TLocaleFlagOverride LocaleFlagOverride, bool Recommended, int On, int Off)
+int AdjustLocaleFlag(const UnicodeString S, TLocaleFlagOverride LocaleFlagOverride, bool Recommended, int On, int Off)
 {
   int Result = !S.IsEmpty() && StrToInt64(S);
   switch (LocaleFlagOverride)
@@ -1400,7 +1400,7 @@ void TCallstackThread::ProcessEvent()
     try
     {
       TJclStackInfoList * StackInfoList = JclCreateThreadStackTraceFromID(true, MainThreadID);
-      if (StackInfoList == NULL)
+      if (StackInfoList == nullptr)
       {
         RaiseLastOSError();
       }
@@ -1452,7 +1452,7 @@ void WinInitialize()
   OnApiPath = ::ApiPath;
 #endif // #if 0
   MainThread = ::GetCurrentThreadId();
-  CallstackThread.reset(NULL);
+  CallstackThread.reset(nullptr);
 }
 
 
@@ -1488,7 +1488,7 @@ uintptr_t MessageDialog(intptr_t Ident, TQueryType Type,
   return Result;
 }
 
-uintptr_t SimpleErrorDialog(const UnicodeString AMsg, UnicodeString /*MoreMessages*/)
+uintptr_t SimpleErrorDialog(const UnicodeString AMsg, const UnicodeString /*MoreMessages*/)
 {
   uint32_t Answers = qaOK;
   uintptr_t Result = GetGlobals()->MoreMessageDialog(AMsg, nullptr, qtError, Answers, nullptr);

@@ -75,8 +75,8 @@ public:
   void SetPageantPath(UnicodeString Value) { FPageantPath = Value; }
   UnicodeString GetPuttygenPath() const { return FPuttygenPath; }
   void SetPuttygenPath(UnicodeString Value) { FPuttygenPath = Value; }
-  TBookmarkList *GetBookmarks(UnicodeString Key);
-  void SetBookmarks(UnicodeString Key, TBookmarkList *Value);
+  TBookmarkList *GetBookmarks(const UnicodeString Key);
+  void SetBookmarks(const UnicodeString Key, TBookmarkList *Value);
 
 protected:
   virtual bool GetConfirmOverwriting() const override;

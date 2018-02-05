@@ -24,19 +24,19 @@ void UseSystemSettingsPre(TCustomForm * Control);
 void UseSystemSettingsPost(TCustomForm * Control);
 void UseSystemSettings(TCustomForm * Control);
 void ResetSystemSettings(TCustomForm * Control);
-void LinkLabel(TStaticText * StaticText, UnicodeString Url = L"",
-  TNotifyEvent OnEnter = NULL);
+void LinkLabel(TStaticText * StaticText, const UnicodeString Url = L"",
+  TNotifyEvent OnEnter = nullptr);
 void LinkActionLabel(TStaticText * StaticText);
 void LinkAppLabel(TStaticText * StaticText);
-void HintLabel(TStaticText * StaticText, UnicodeString Hint = L"");
+void HintLabel(TStaticText * StaticText, const UnicodeString Hint = L"");
 void HotTrackLabel(TLabel * Label);
-void SetLabelHintPopup(TLabel * Label, UnicodeString Hint);
-bool HasLabelHintPopup(TLabel * Label, UnicodeString HintStr);
+void SetLabelHintPopup(TLabel * Label, const UnicodeString Hint);
+bool HasLabelHintPopup(TLabel * Label, const UnicodeString HintStr);
 void FixComboBoxResizeBug(TCustomComboBox * ComboBox);
 void ShowAsModal(TForm * Form, void *& Storage, bool BringToFront = true);
 void HideAsModal(TForm * Form, void *& Storage);
 bool ReleaseAsModal(TForm * Form, void *& Storage);
-bool SelectDirectory(UnicodeString & Path, const UnicodeString Prompt,
+bool SelectDirectory(UnicodeString &Path, const UnicodeString Prompt,
   bool PreserveFileName);
 enum TListViewCheckAll { caCheck, caUncheck, caToggle };
 bool ListViewAnyChecked(TListView * ListView, bool Checked = true);
@@ -64,18 +64,18 @@ int GetLastMonitor();
 void SetLastMonitor(int MonitorNum);
 TForm * _SafeFormCreate(TMetaClass * FormClass, TComponent * Owner);
 template<class FormType>
-FormType * SafeFormCreate(TComponent * Owner = NULL)
+FormType * SafeFormCreate(TComponent * Owner = nullptr)
 {
   return dynamic_cast<FormType *>(_SafeFormCreate(__classid(FormType), Owner));
 }
 bool SupportsSplitButton();
-TModalResult DefaultResult(TCustomForm * Form, TButton * DefaultButton = NULL);
+TModalResult DefaultResult(TCustomForm * Form, TButton * DefaultButton = nullptr);
 void DefaultButton(TButton * Button, bool Default);
 void MemoKeyDown(TObject * Sender, WORD & Key, TShiftState Shift);
 void UseDesktopFont(TControl * Control);
 void UpdateDesktopFont();
-UnicodeString FormatFormCaption(TCustomForm * Form, UnicodeString Caption);
-UnicodeString FormatMainFormCaption(UnicodeString Caption);
+UnicodeString FormatFormCaption(TCustomForm * Form, const UnicodeString Caption);
+UnicodeString FormatMainFormCaption(const UnicodeString Caption);
 TShiftState AllKeyShiftStates();
 void RealignControl(TControl * Control);
 void HookFormActivation(TCustomForm * Form);
@@ -84,7 +84,7 @@ void ShowFormNoActivate(TForm * Form);
 TPanel * CreateBlankPanel(TComponent * Owner);
 typedef void (*TRescaleEvent)(TComponent * Sender, TObject * Token);
 void SetRescaleFunction(
-  TComponent * Component, TRescaleEvent OnRescale, TObject * Token = NULL, bool OwnsToken = false);
+  TComponent * Component, TRescaleEvent OnRescale, TObject * Token = nullptr, bool OwnsToken = false);
 void RecordFormImplicitRescale(TForm * Form);
 //---------------------------------------------------------------------------
 

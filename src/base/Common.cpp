@@ -1,5 +1,7 @@
 
-//#define NO_WIN32_LEAN_AND_MEAN
+#ifndef NO_WIN32_LEAN_AND_MEAN
+#define NO_WIN32_LEAN_AND_MEAN
+#endif
 #include <vcl.h>
 #pragma hdrstop
 
@@ -734,7 +736,7 @@ UnicodeString ExpandFileNameCommand(const UnicodeString ACommand,
   const UnicodeString AFileName)
 {
   return AnsiReplaceStr(ACommand, ShellCommandFileNamePattern,
-      AddPathQuotes(AFileName));
+    AddPathQuotes(AFileName));
 }
 //---------------------------------------------------------------------------
 UnicodeString EscapeParam(const UnicodeString AParam)
@@ -914,7 +916,7 @@ enum PATH_PREFIX_TYPE
   PPT_LONG_UNICODE_UNC,   //Found \\?\UNC\ prefix
 };
 //---------------------------------------------------------------------------
-static intptr_t PathRootLength(UnicodeString APath)
+static intptr_t PathRootLength(const UnicodeString APath)
 {
   // Correction for PathSkipRoot API
 
@@ -931,7 +933,7 @@ static intptr_t PathRootLength(UnicodeString APath)
 #endif // if defined(_MSC_VER) && !defined(__clang__)
 }
 //---------------------------------------------------------------------------
-static bool PathIsRelative_CorrectedForMicrosoftStupidity(UnicodeString APath)
+static bool PathIsRelative_CorrectedForMicrosoftStupidity(const UnicodeString APath)
 {
   // Correction for PathIsRelative API
 
@@ -946,7 +948,7 @@ static bool PathIsRelative_CorrectedForMicrosoftStupidity(UnicodeString APath)
 #endif // if defined(_MSC_VER) && !defined(__clang__)
 }
 //---------------------------------------------------------------------------
-static intptr_t GetOffsetAfterPathRoot(UnicodeString APath, PATH_PREFIX_TYPE &PrefixType)
+static intptr_t GetOffsetAfterPathRoot(const UnicodeString APath, PATH_PREFIX_TYPE &PrefixType)
 {
   // Checks if 'pPath' begins with the drive, share, prefix, etc
   // EXAMPLES:
@@ -1095,7 +1097,7 @@ static intptr_t GetOffsetAfterPathRoot(UnicodeString APath, PATH_PREFIX_TYPE &Pr
   return Result;
 }
 //---------------------------------------------------------------------------
-static UnicodeString MakeUnicodeLargePath(UnicodeString APath)
+static UnicodeString MakeUnicodeLargePath(const UnicodeString APath)
 {
   // Convert path from 'into a larger Unicode path, that allows up to 32,767 character length
   UnicodeString Result;
@@ -2558,7 +2560,7 @@ UnicodeString LoadStr(intptr_t Ident, uintptr_t /*MaxLength*/)
   return Result;
 #if 0
   TLibModule * MainModule = FindModule(HInstance);
-  DebugAssert(MainModule != NULL);
+  DebugAssert(MainModule != nullptr);
   return DoLoadStrFrom((HINSTANCE)MainModule->ResInstance, Ident, MaxLength);
 #endif // if 0
 }
@@ -2987,7 +2989,7 @@ UnicodeString ExtractFileBaseName(const UnicodeString APath)
   return ChangeFileExt(base::ExtractFileName(APath, false), L"");
 }
 //---------------------------------------------------------------------------
-TStringList *TextToStringList(UnicodeString Text)
+TStringList *TextToStringList(const UnicodeString Text)
 {
   std::unique_ptr<TStringList> List(new TStringList());
   List->SetText(Text);
@@ -3389,7 +3391,7 @@ UnicodeString RtfColor(int Index)
   return FORMAT(L"\\cf%d", (Index));
 }
 //---------------------------------------------------------------------
-UnicodeString RtfText(const UnicodeString & Text, bool Rtf)
+UnicodeString RtfText(const UnicodeString Text, bool Rtf)
 {
   UnicodeString Result = Text;
   if (Rtf)
@@ -3423,50 +3425,50 @@ UnicodeString RtfText(const UnicodeString & Text, bool Rtf)
   return Result;
 }
 //---------------------------------------------------------------------
-UnicodeString RtfColorText(int Color, const UnicodeString & Text)
+UnicodeString RtfColorText(int Color, const UnicodeString Text)
 {
   return RtfColor(Color) + L" " + RtfText(Text) + RtfColor(0) + L" ";
 }
 //---------------------------------------------------------------------
-UnicodeString RtfColorItalicText(int Color, const UnicodeString & Text)
+UnicodeString RtfColorItalicText(int Color, const UnicodeString Text)
 {
   return RtfColor(Color) + L"\\i " + RtfText(Text) + L"\\i0" + RtfColor(0) + L" ";
 }
 //---------------------------------------------------------------------
-UnicodeString RtfOverrideColorText(const UnicodeString & Text)
+UnicodeString RtfOverrideColorText(const UnicodeString Text)
 {
   return RtfColorText(1, Text);
 }
 //---------------------------------------------------------------------
-UnicodeString RtfKeyword(const UnicodeString & Text)
+UnicodeString RtfKeyword(const UnicodeString Text)
 {
   return RtfColorText(5, Text);
 }
 //---------------------------------------------------------------------
-UnicodeString RtfParameter(const UnicodeString & Text)
+UnicodeString RtfParameter(const UnicodeString Text)
 {
   return RtfColorText(6, Text);
 }
 //---------------------------------------------------------------------
-UnicodeString RtfString(const UnicodeString & Text)
+UnicodeString RtfString(const UnicodeString Text)
 {
   return RtfColorText(4, Text);
 }
 //---------------------------------------------------------------------
-UnicodeString RtfLink(const UnicodeString & Link, const UnicodeString & RtfText)
+UnicodeString RtfLink(const UnicodeString Link, const UnicodeString RtfText)
 {
   return
     L"{\\field{\\*\\fldinst{" + RtfHyperlinkFieldPrefix + Link + RtfHyperlinkFieldSuffix + L"}}{\\fldrslt{" +
     RtfText + L"}}}";
 }
 //---------------------------------------------------------------------
-UnicodeString ScriptCommandLink(const UnicodeString & Command)
+UnicodeString ScriptCommandLink(const UnicodeString Command)
 {
   return L"scriptcommand_" + Command;
 }
 //---------------------------------------------------------------------
 UnicodeString RtfSwitch(
-  const UnicodeString & Switch, const UnicodeString & Link, bool Rtf)
+  const UnicodeString Switch, const UnicodeString Link, bool Rtf)
 {
   UnicodeString Result = FORMAT(L"-%s", (Switch));
   if (Rtf)
@@ -3477,24 +3479,24 @@ UnicodeString RtfSwitch(
 }
 //---------------------------------------------------------------------
 UnicodeString RtfSwitchValue(
-  const UnicodeString & Name, const UnicodeString & Link, const UnicodeString & Value, bool Rtf)
+  const UnicodeString Name, const UnicodeString Link, const UnicodeString Value, bool Rtf)
 {
   return RtfSwitch(Name, Link, Rtf) + L"=" + Value;
 }
 //---------------------------------------------------------------------
 UnicodeString RtfSwitch(
-  const UnicodeString & Name, const UnicodeString & Link, const UnicodeString & Value, bool Rtf)
+  const UnicodeString Name, const UnicodeString Link, const UnicodeString Value, bool Rtf)
 {
   return RtfSwitchValue(Name, Link, RtfText(FORMAT("\"%s\"", (EscapeParam(Value))), Rtf), Rtf);
 }
 //---------------------------------------------------------------------
 UnicodeString RtfSwitch(
-  const UnicodeString & Name, const UnicodeString & Link, int Value, bool Rtf)
+  const UnicodeString Name, const UnicodeString Link, int Value, bool Rtf)
 {
   return RtfSwitchValue(Name, Link, RtfText(IntToStr(Value), Rtf), Rtf);
 }
 //---------------------------------------------------------------------
-UnicodeString RtfRemoveHyperlinks(UnicodeString Text)
+UnicodeString RtfRemoveHyperlinks(const UnicodeString Text)
 {
   // Remove all tags HYPERLINK "https://www.example.com".
   // See also RtfEscapeParam
@@ -3516,7 +3518,7 @@ UnicodeString RtfRemoveHyperlinks(UnicodeString Text)
   return Text;
 }
 //---------------------------------------------------------------------
-UnicodeString RtfEscapeParam(UnicodeString Param)
+UnicodeString RtfEscapeParam(const UnicodeString Param)
 {
   const UnicodeString Quote(L"\"");
   // Equivalent of EscapeParam, except that it does not double quotes in HYPERLINK.
@@ -3550,12 +3552,12 @@ UnicodeString RtfEscapeParam(UnicodeString Param)
   return Param;
 }
 //---------------------------------------------------------------------
-static UnicodeString RtfCodeComment(const UnicodeString & Text)
+static UnicodeString RtfCodeComment(const UnicodeString Text)
 {
   return RtfColorItalicText(2, Text);
 }
 //---------------------------------------------------------------------
-UnicodeString AssemblyCommentLine(TAssemblyLanguage Language, const UnicodeString & Text)
+UnicodeString AssemblyCommentLine(TAssemblyLanguage Language, const UnicodeString Text)
 {
   UnicodeString Prefix;
   switch (Language)
@@ -3607,27 +3609,27 @@ UnicodeString AssemblyString(TAssemblyLanguage Language, UnicodeString S)
   return RtfString(S);
 }
 //---------------------------------------------------------------------
-static UnicodeString RtfClass(const UnicodeString & Text)
+static UnicodeString RtfClass(const UnicodeString Text)
 {
   return RtfColorText(3, Text);
 }
 //---------------------------------------------------------------------
-UnicodeString RtfLibraryClass(const UnicodeString & ClassName)
+UnicodeString RtfLibraryClass(const UnicodeString ClassName)
 {
   return RtfLink(L"library_" + ClassName.LowerCase(), RtfClass(ClassName));
 }
 //---------------------------------------------------------------------
-UnicodeString RtfLibraryMethod(const UnicodeString & ClassName, const UnicodeString & MethodName, bool InPage)
+UnicodeString RtfLibraryMethod(const UnicodeString ClassName, const UnicodeString MethodName, bool InPage)
 {
   return RtfLink(L"library_" + ClassName.LowerCase() + (InPage ? L"#" : L"_") + MethodName.LowerCase(), RtfOverrideColorText(MethodName));
 }
 //---------------------------------------------------------------------
-static UnicodeString RtfLibraryProperty(const UnicodeString & ClassName, const UnicodeString & PropertyName)
+static UnicodeString RtfLibraryProperty(const UnicodeString ClassName, const UnicodeString PropertyName)
 {
   return RtfLink(L"library_" + ClassName.LowerCase() + L"#" + PropertyName.LowerCase(), RtfOverrideColorText(PropertyName));
 }
 //---------------------------------------------------------------------
-UnicodeString AssemblyVariableName(TAssemblyLanguage Language, const UnicodeString & ClassName)
+UnicodeString AssemblyVariableName(TAssemblyLanguage Language, const UnicodeString ClassName)
 {
   UnicodeString Result = ClassName.SubString(1, 1).LowerCase() + ClassName.SubString(2, ClassName.Length() - 1);
   if (Language == alPowerShell)
@@ -3655,8 +3657,8 @@ UnicodeString AssemblyStatementSeparator(TAssemblyLanguage Language)
 }
 //---------------------------------------------------------------------
 UnicodeString AssemblyPropertyRaw(
-  TAssemblyLanguage Language, const UnicodeString & ClassName, const UnicodeString & Name,
-  const UnicodeString & Value, bool Inline)
+  TAssemblyLanguage Language, const UnicodeString ClassName, const UnicodeString Name,
+  const UnicodeString Value, bool Inline)
 {
   UnicodeString Result;
   UnicodeString RtfPropertyAndValue = RtfLibraryProperty(ClassName, Name) + L" = " + Value;
@@ -3680,8 +3682,8 @@ UnicodeString AssemblyPropertyRaw(
 }
 //---------------------------------------------------------------------
 UnicodeString AssemblyProperty(
-  TAssemblyLanguage Language, const UnicodeString & ClassName, const UnicodeString & Name,
-  const UnicodeString & Type, const UnicodeString & Member, bool Inline)
+  TAssemblyLanguage Language, const UnicodeString ClassName, const UnicodeString Name,
+  const UnicodeString Type, const UnicodeString Member, bool Inline)
 {
   UnicodeString PropertyValue;
 
@@ -3701,15 +3703,15 @@ UnicodeString AssemblyProperty(
 }
 //---------------------------------------------------------------------
 UnicodeString AssemblyProperty(
-  TAssemblyLanguage Language, const UnicodeString & ClassName,
-  const UnicodeString & Name, const UnicodeString & Value, bool Inline)
+  TAssemblyLanguage Language, const UnicodeString ClassName,
+  const UnicodeString Name, const UnicodeString Value, bool Inline)
 {
   return AssemblyPropertyRaw(Language, ClassName, Name, AssemblyString(Language, Value), Inline);
 }
 //---------------------------------------------------------------------
 UnicodeString AssemblyProperty(
-  TAssemblyLanguage Language, const UnicodeString & ClassName,
-  const UnicodeString & Name, int Value, bool Inline)
+  TAssemblyLanguage Language, const UnicodeString ClassName,
+  const UnicodeString Name, int Value, bool Inline)
 {
   return AssemblyPropertyRaw(Language, ClassName, Name, IntToStr(Value), Inline);
 }
@@ -3737,14 +3739,14 @@ UnicodeString AssemblyBoolean(TAssemblyLanguage Language, bool Value)
 }
 //---------------------------------------------------------------------
 UnicodeString AssemblyProperty(
-  TAssemblyLanguage Language, const UnicodeString & ClassName, const UnicodeString & Name, bool Value, bool Inline)
+  TAssemblyLanguage Language, const UnicodeString ClassName, const UnicodeString Name, bool Value, bool Inline)
 {
   UnicodeString PropertyValue = AssemblyBoolean(Language, Value);
 
   return AssemblyPropertyRaw(Language, ClassName, Name, PropertyValue, Inline);
 }
 //---------------------------------------------------------------------
-UnicodeString AssemblyNewClassInstance(TAssemblyLanguage Language, const UnicodeString & ClassName, bool Inline)
+UnicodeString AssemblyNewClassInstance(TAssemblyLanguage Language, const UnicodeString ClassName, bool Inline)
 {
   UnicodeString VariableName = AssemblyVariableName(Language, ClassName);
   UnicodeString RtfClass = RtfLibraryClass(ClassName);
@@ -3780,7 +3782,7 @@ UnicodeString AssemblyNewClassInstance(TAssemblyLanguage Language, const Unicode
 }
 //---------------------------------------------------------------------
 UnicodeString AssemblyNewClassInstanceStart(
-  TAssemblyLanguage Language, const UnicodeString & ClassName, bool Inline)
+  TAssemblyLanguage Language, const UnicodeString ClassName, bool Inline)
 {
   UnicodeString NewClassInstance = AssemblyNewClassInstance(Language, ClassName, Inline);
   UnicodeString SpaceOrPara = (Inline ? UnicodeString(L" ") : RtfPara);
@@ -3902,78 +3904,6 @@ UnicodeString GetFileMimeType(const UnicodeString /*FileName*/)
 #endif // if 0
   return Result;
 }
-//---------------------------------------------------------------------------
-
-namespace base {
-
-UnicodeString FormatBytes(int64_t Bytes, bool UseOrders)
-{
-  UnicodeString Result;
-
-  if (!UseOrders || (Bytes < ToInt64(100 * 1024)))
-  {
-    // Result = FormatFloat(L"#,##0 \"B\"", Bytes);
-    Result = FORMAT("%.0f B", ToDouble(Bytes));
-  }
-  else if (Bytes < ToInt64(100 * 1024 * 1024))
-  {
-    // Result = FormatFloat(L"#,##0 \"KB\"", Bytes / 1024);
-    Result = FORMAT("%.0f KB", ToDouble(Bytes / 1024.0));
-  }
-  else
-  {
-    // Result = FormatFloat(L"#,##0 \"MiB\"", Bytes / (1024*1024));
-    Result = FORMAT("%.0f MiB", ToDouble(Bytes / (1024 * 1024.0)));
-  }
-  return Result;
-}
-
-UnicodeString UnixExtractFileName(const UnicodeString APath)
-{
-  intptr_t Pos = APath.LastDelimiter(L'/');
-  UnicodeString Result;
-  if (Pos > 0)
-  {
-    Result = APath.SubString(Pos + 1, APath.Length() - Pos);
-  }
-  else
-  {
-    Result = APath;
-  }
-  return Result;
-}
-
-UnicodeString UnixExtractFileExt(const UnicodeString APath)
-{
-  UnicodeString FileName = base::UnixExtractFileName(APath);
-  intptr_t Pos = FileName.LastDelimiter(L".");
-  return (Pos > 0) ? APath.SubString(Pos, APath.Length() - Pos + 1) : UnicodeString();
-}
-
-UnicodeString ExtractFileName(const UnicodeString APath, bool Unix)
-{
-  if (Unix)
-  {
-    return UnixExtractFileName(APath);
-  }
-  return ExtractFilename(APath, L'\\');
-}
-
-UnicodeString GetEnvVariable(UnicodeString AEnvVarName)
-{
-  UnicodeString Result;
-  intptr_t Len = ::GetEnvironmentVariableW(AEnvVarName.c_str(), nullptr, 0);
-  if (Len > 0)
-  {
-    wchar_t *Buffer = Result.SetLength(Len - 1);
-    ::GetEnvironmentVariableW(AEnvVarName.c_str(), reinterpret_cast<LPWSTR>(Buffer), ToDWord(Len));
-  }
-  return Result;
-}
-
-} // namespace base
-
-// from RemoteFiles.cpp
 
 namespace base {
 
@@ -4452,10 +4382,9 @@ int FakeFileImageIndex(const UnicodeString /*AFileName*/, uint32_t /*Attrs*/,
 
   int Icon;
   if (SHGetFileInfo(FileName.c_str(),
-      Attrs, &SHFileInfo, sizeof(SHFileInfo),
-      SHGFI_SYSICONINDEX | SHGFI_USEFILEATTRIBUTES | SHGFI_TYPENAME) != 0)
+        Attrs, &SHFileInfo, sizeof(SHFileInfo),
+        SHGFI_SYSICONINDEX | SHGFI_USEFILEATTRIBUTES | SHGFI_TYPENAME) != 0)
   {
-
     if (TypeName != nullptr)
     {
       *TypeName = SHFileInfo.szTypeName;
@@ -4506,3 +4435,73 @@ UnicodeString FormatMultiFilesToOneConfirmation(const UnicodeString ATarget, boo
 
 } // namespace base
 
+//---------------------------------------------------------------------------
+
+namespace base {
+
+UnicodeString FormatBytes(int64_t Bytes, bool UseOrders)
+{
+  UnicodeString Result;
+
+  if (!UseOrders || (Bytes < ToInt64(100 * 1024)))
+  {
+    // Result = FormatFloat(L"#,##0 \"B\"", Bytes);
+    Result = FORMAT("%.0f B", ToDouble(Bytes));
+  }
+  else if (Bytes < ToInt64(100 * 1024 * 1024))
+  {
+    // Result = FormatFloat(L"#,##0 \"KB\"", Bytes / 1024);
+    Result = FORMAT("%.0f KB", ToDouble(Bytes / 1024.0));
+  }
+  else
+  {
+    // Result = FormatFloat(L"#,##0 \"MiB\"", Bytes / (1024*1024));
+    Result = FORMAT("%.0f MiB", ToDouble(Bytes / (1024 * 1024.0)));
+  }
+  return Result;
+}
+
+UnicodeString UnixExtractFileName(const UnicodeString APath)
+{
+  intptr_t Pos = APath.LastDelimiter(L'/');
+  UnicodeString Result;
+  if (Pos > 0)
+  {
+    Result = APath.SubString(Pos + 1, APath.Length() - Pos);
+  }
+  else
+  {
+    Result = APath;
+  }
+  return Result;
+}
+
+UnicodeString UnixExtractFileExt(const UnicodeString APath)
+{
+  UnicodeString FileName = base::UnixExtractFileName(APath);
+  intptr_t Pos = FileName.LastDelimiter(L".");
+  return (Pos > 0) ? APath.SubString(Pos, APath.Length() - Pos + 1) : UnicodeString();
+}
+
+UnicodeString ExtractFileName(const UnicodeString APath, bool Unix)
+{
+  if (Unix)
+  {
+    return UnixExtractFileName(APath);
+  }
+  return ExtractFilename(APath, L'\\');
+}
+
+UnicodeString GetEnvVariable(const UnicodeString AEnvVarName)
+{
+  UnicodeString Result;
+  intptr_t Len = ::GetEnvironmentVariableW(AEnvVarName.c_str(), nullptr, 0);
+  if (Len > 0)
+  {
+    wchar_t *Buffer = Result.SetLength(Len - 1);
+    ::GetEnvironmentVariableW(AEnvVarName.c_str(), reinterpret_cast<LPWSTR>(Buffer), ToDWord(Len));
+  }
+  return Result;
+}
+
+} // namespace base

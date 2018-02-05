@@ -144,7 +144,7 @@ protected:
   void RequestInit(TLibS3CallbackData &Data);
   void TryOpenDirectory(const UnicodeString ADirectory);
   void ReadDirectoryInternal(const UnicodeString APath, TRemoteFileList * FileList, intptr_t MaxKeys, const UnicodeString AFileName);
-  void ParsePath(UnicodeString APath, UnicodeString &BucketName, UnicodeString &AKey);
+  void ParsePath(const UnicodeString APath, UnicodeString &BucketName, UnicodeString &AKey);
   TRemoteToken MakeRemoteToken(const char *OwnerId, const char *OwnerDisplayName);
   TLibS3BucketContext GetBucketContext(const UnicodeString ABucketName);
   void DoListBucket(

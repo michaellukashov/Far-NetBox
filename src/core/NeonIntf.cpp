@@ -119,7 +119,7 @@ void InitNeonSession(ne_session *Session, TProxyMethod ProxyMethod, const Unicod
   ne_redirect_register(Session);
   ne_set_useragent(Session, StrToNeon(FORMAT("%s/%s", GetAppNameString(), GetConfiguration()->GetVersion())));
 
-  if (Terminal != NULL)
+  if (Terminal != nullptr)
   {
     ne_set_session_private(Session, SESSION_TERMINAL_KEY, Terminal);
   }
@@ -533,7 +533,7 @@ void SetupSsl(ssl_st *Ssl, TTlsVersion MinTlsVersion, TTlsVersion MaxTlsVersion)
     MASK_TLS_VERSION(tls11, SSL_OP_NO_TLSv1_1) |
     MASK_TLS_VERSION(tls12, SSL_OP_NO_TLSv1_2);
   // SSL_ctrl() with SSL_CTRL_OPTIONS adds flags (not sets)
-  SSL_ctrl(Ssl, SSL_CTRL_OPTIONS, Options, NULL);
+  SSL_ctrl(Ssl, SSL_CTRL_OPTIONS, Options, nullptr);
 }
 //---------------------------------------------------------------------------
 void UpdateNeonDebugMask()

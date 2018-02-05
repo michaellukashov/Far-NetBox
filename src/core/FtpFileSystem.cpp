@@ -1635,7 +1635,7 @@ void TFTPFileSystem::CopyToLocal(TStrings *AFilesToCopy,
 //---------------------------------------------------------------------------
 void TFTPFileSystem::Sink(
   const UnicodeString AFileName, const TRemoteFile *File,
-  const UnicodeString TargetDir, UnicodeString & DestFileName, uintptr_t Attrs,
+  const UnicodeString TargetDir, UnicodeString &DestFileName, uintptr_t Attrs,
   const TCopyParamType * CopyParam, intptr_t Params, TFileOperationProgressType *OperationProgress,
   uintptr_t AFlags, TDownloadSessionAction &Action)
 {

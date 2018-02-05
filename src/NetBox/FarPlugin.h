@@ -125,32 +125,32 @@ public:
     TFarMessageParams *Params = nullptr);
   intptr_t MaxMessageLines() const;
   intptr_t MaxMenuItemLength() const;
-  intptr_t Menu(DWORD Flags, UnicodeString Title,
+  intptr_t Menu(DWORD Flags, const UnicodeString Title,
     UnicodeString Bottom, TStrings *Items, const int *BreakKeys,
     int &BreakCode);
-  intptr_t Menu(DWORD Flags, UnicodeString Title,
+  intptr_t Menu(DWORD Flags, const UnicodeString Title,
     UnicodeString Bottom, TStrings *Items);
-  intptr_t Menu(DWORD Flags, UnicodeString Title,
+  intptr_t Menu(DWORD Flags, const UnicodeString Title,
     UnicodeString Bottom, const FarMenuItem *Items, intptr_t Count,
     const int *BreakKeys, int &BreakCode);
-  bool InputBox(UnicodeString Title, UnicodeString Prompt,
-    UnicodeString &Text, DWORD Flags, UnicodeString HistoryName = UnicodeString(),
+  bool InputBox(const UnicodeString Title, const UnicodeString Prompt,
+    UnicodeString &Text, DWORD Flags, const UnicodeString HistoryName = UnicodeString(),
     intptr_t MaxLen = 255, TFarInputBoxValidateEvent OnValidate = nullptr);
   virtual UnicodeString GetMsg(intptr_t MsgId) const;
   void SaveScreen(HANDLE &Screen);
   void RestoreScreen(HANDLE &Screen);
   bool CheckForEsc() const;
-  bool Viewer(UnicodeString AFileName, UnicodeString Title, DWORD Flags);
-  bool Editor(UnicodeString AFileName, UnicodeString Title, DWORD Flags);
+  bool Viewer(const UnicodeString AFileName, const UnicodeString Title, DWORD Flags);
+  bool Editor(const UnicodeString AFileName, const UnicodeString Title, DWORD Flags);
 
   intptr_t FarControl(uintptr_t Command, intptr_t Param1, intptr_t Param2, HANDLE Plugin = INVALID_HANDLE_VALUE);
   intptr_t FarAdvControl(uintptr_t Command, void *Param = nullptr) const;
   intptr_t FarEditorControl(uintptr_t Command, void *Param);
   intptr_t GetFarSystemSettings() const;
-  void Text(int X, int Y, int Color, UnicodeString Str);
+  void Text(int X, int Y, int Color, const UnicodeString Str);
   void FlushText();
-  void FarWriteConsole(UnicodeString Str);
-  void FarCopyToClipboard(UnicodeString Str);
+  void FarWriteConsole(const UnicodeString Str);
+  void FarCopyToClipboard(const UnicodeString Str);
   void FarCopyToClipboard(const TStrings *Strings);
   intptr_t GetFarVersion() const;
   UnicodeString FormatFarVersion(intptr_t Version) const;
@@ -158,9 +158,9 @@ public:
   intptr_t InputRecordToKey(const INPUT_RECORD *Rec) const;
   TFarEditorInfo *EditorInfo();
 
-  void ShowConsoleTitle(UnicodeString Title);
+  void ShowConsoleTitle(const UnicodeString Title);
   void ClearConsoleTitle();
-  void UpdateConsoleTitle(UnicodeString Title);
+  void UpdateConsoleTitle(const UnicodeString Title);
   void UpdateConsoleTitleProgress(short Progress);
   void ShowTerminalScreen();
   void SaveTerminalScreen();
@@ -295,7 +295,7 @@ protected:
   virtual bool ProcessHostFileEx(TObjectList *PanelItems, int OpMode);
   virtual bool ProcessKeyEx(intptr_t Key, uintptr_t ControlState);
   virtual bool ProcessEventEx(intptr_t Event, void *Param);
-  virtual bool SetDirectoryEx(UnicodeString Dir, int OpMode);
+  virtual bool SetDirectoryEx(const UnicodeString Dir, int OpMode);
   virtual intptr_t MakeDirectoryEx(UnicodeString &Name, int OpMode);
   virtual bool DeleteFilesEx(TObjectList *PanelItems, int OpMode);
   virtual intptr_t GetFilesEx(TObjectList *PanelItems, bool Move,
@@ -353,11 +353,11 @@ public:
   TFarPanelModes();
   virtual ~TFarPanelModes();
 
-  void SetPanelMode(size_t Mode, UnicodeString ColumnTypes = UnicodeString(),
-    UnicodeString ColumnWidths = UnicodeString(), TStrings *ColumnTitles = nullptr,
+  void SetPanelMode(size_t Mode, const UnicodeString ColumnTypes = UnicodeString(),
+    const UnicodeString ColumnWidths = UnicodeString(), TStrings *ColumnTitles = nullptr,
     bool FullScreen = false, bool DetailedStatus = true, bool AlignExtensions = true,
-    bool CaseConversion = true, UnicodeString StatusColumnTypes = UnicodeString(),
-    UnicodeString StatusColumnWidths = UnicodeString());
+    bool CaseConversion = true, const UnicodeString StatusColumnTypes = UnicodeString(),
+    const UnicodeString StatusColumnWidths = UnicodeString());
 
 private:
   PanelMode FPanelModes[PANEL_MODES_COUNT];
@@ -365,7 +365,7 @@ private:
 
   void FillOpenPluginInfo(struct OpenPluginInfo *Info);
   static void ClearPanelMode(PanelMode &Mode);
-  static intptr_t CommaCount(UnicodeString ColumnTypes);
+  static intptr_t CommaCount(const UnicodeString ColumnTypes);
 };
 
 class TFarKeyBarTitles : public TObject
@@ -446,7 +446,7 @@ protected:
 class THintPanelItem : public TCustomFarPanelItem
 {
 public:
-  explicit THintPanelItem(UnicodeString AHint);
+  explicit THintPanelItem(const UnicodeString AHint);
   virtual ~THintPanelItem() {}
 
 protected:
@@ -490,7 +490,7 @@ public:
   UnicodeString GetCurrDirectory() const;
 
   void ApplySelection();
-  TFarPanelItem *FindFileName(UnicodeString AFileName) const;
+  TFarPanelItem *FindFileName(const UnicodeString AFileName) const;
   const TFarPanelItem *FindUserData(const void *UserData) const;
   TFarPanelItem *FindUserData(const void *UserData);
 
@@ -509,7 +509,7 @@ public:
   explicit TFarMenuItems();
   virtual ~TFarMenuItems() {}
   void AddSeparator(bool Visible = true);
-  virtual intptr_t Add(UnicodeString Text, bool Visible = true);
+  virtual intptr_t Add(const UnicodeString Text, bool Visible = true);
 
   virtual void Clear() override;
   virtual void Delete(intptr_t Index) override;

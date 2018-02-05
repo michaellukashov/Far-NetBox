@@ -8,7 +8,7 @@ struct TTranslation
 };
 
 // Return pointer to file version info block
-NB_CORE_EXPORT void *CreateFileInfo(UnicodeString AFileName);
+NB_CORE_EXPORT void *CreateFileInfo(const UnicodeString AFileName);
 
 // Free file version info block memory
 NB_CORE_EXPORT void FreeFileInfo(void *FileInfo);

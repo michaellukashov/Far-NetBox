@@ -67,7 +67,7 @@ TQueryButtonAlias TQueryButtonAlias::CreateIgnoreAsRenameGrouppedWithNo()
   return Result;
 }
 //---------------------------------------------------------------------------
-TQueryParams::TQueryParams(uintptr_t AParams, UnicodeString AHelpKeyword) :
+TQueryParams::TQueryParams(uintptr_t AParams, const UnicodeString AHelpKeyword) :
   Aliases(nullptr),
   AliasesCount(0),
   Params(AParams),

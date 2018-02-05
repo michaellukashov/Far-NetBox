@@ -9,7 +9,7 @@
 class NB_CORE_EXPORT EFileMasksException : public Exception
 {
 public:
-  explicit EFileMasksException(UnicodeString AMessage, intptr_t AErrorStart, intptr_t AErrorLen);
+  explicit EFileMasksException(const UnicodeString AMessage, intptr_t AErrorStart, intptr_t AErrorLen);
   intptr_t ErrorStart;
   intptr_t ErrorLen;
 };
@@ -30,7 +30,7 @@ public:
   };
 
   static bool IsMask(const UnicodeString Mask);
-  static UnicodeString NormalizeMask(const UnicodeString Mask, UnicodeString AnyMask = L"");
+  static UnicodeString NormalizeMask(const UnicodeString Mask, const UnicodeString AnyMask = L"");
   static UnicodeString ComposeMaskStr(
     TStrings *IncludeFileMasksStr, TStrings *ExcludeFileMasksStr,
     TStrings *IncludeDirectoryMasksStr, TStrings *ExcludeDirectoryMasksStr);
@@ -39,14 +39,14 @@ public:
   TFileMasks();
   explicit TFileMasks(intptr_t ForceDirectoryMasks);
   TFileMasks(const TFileMasks &Source);
-  explicit TFileMasks(UnicodeString AMasks);
+  explicit TFileMasks(const UnicodeString AMasks);
   virtual ~TFileMasks();
   TFileMasks &operator=(const TFileMasks &rhm);
   TFileMasks &operator=(const UnicodeString rhs);
   bool operator==(const TFileMasks &rhm) const;
   bool operator==(const UnicodeString rhs) const;
 
-  void SetMask(UnicodeString Mask);
+  void SetMask(const UnicodeString Mask);
 
   bool Matches(const UnicodeString AFileName, bool Directory = false,
     const UnicodeString APath = L"", const TParams *Params = nullptr) const;
@@ -135,12 +135,12 @@ private:
 private:
   void SetStr(const UnicodeString Str, bool SingleMask);
   void SetMasksPrivate(const UnicodeString Value);
-  void CreateMaskMask(UnicodeString Mask, intptr_t Start, intptr_t End,
+  void CreateMaskMask(const UnicodeString Mask, intptr_t Start, intptr_t End,
     bool Ex, TMaskMask &MaskMask) const;
-  void CreateMask(UnicodeString MaskStr, intptr_t MaskStart,
+  void CreateMask(const UnicodeString MaskStr, intptr_t MaskStart,
     intptr_t MaskEnd, bool Include);
   TStrings *GetMasksStr(intptr_t Index) const;
-  static UnicodeString MakeDirectoryMask(UnicodeString AStr);
+  static UnicodeString MakeDirectoryMask(const UnicodeString AStr);
   static inline void ReleaseMaskMask(TMaskMask &MaskMask);
   inline void Init();
   void DoInit(bool Delete);
@@ -149,7 +149,7 @@ private:
   static void TrimEx(UnicodeString &Str, intptr_t &Start, intptr_t &End);
   static bool MatchesMasks(const UnicodeString AFileName, bool Directory,
     const UnicodeString APath, const TParams *Params, const TMasks &Masks, bool Recurse);
-  static inline bool MatchesMaskMask(const TMaskMask &MaskMask, UnicodeString Str);
+  static inline bool MatchesMaskMask(const TMaskMask &MaskMask, const UnicodeString Str);
   void ThrowError(intptr_t Start, intptr_t End) const;
 };
 
@@ -180,7 +180,7 @@ public:
   virtual void Validate(const UnicodeString Command);
   bool HasAnyPatterns(const UnicodeString Command) const;
 
-  static UnicodeString Escape(UnicodeString S);
+  static UnicodeString Escape(const UnicodeString S);
 
 protected:
   static const wchar_t NoQuote;
@@ -232,8 +232,8 @@ public:
   explicit TCustomCommandData(const TCustomCommandData &Data);
   explicit TCustomCommandData(TTerminal *Terminal);
   explicit TCustomCommandData(
-    TSessionData *SessionData, UnicodeString AUserName,
-    UnicodeString APassword);
+    TSessionData *SessionData, const UnicodeString AUserName,
+    const UnicodeString APassword);
 
   __property TSessionData *SessionData = { read = GetSessionData };
   TSessionData *GetSessionData() const { return GetSessionDataPrivate(); }
@@ -243,8 +243,8 @@ public:
 private:
   std::unique_ptr<TSessionData> FSessionData;
   void Init(
-    TSessionData *ASessionData, UnicodeString AUserName,
-    UnicodeString APassword, UnicodeString AHostKey);
+    TSessionData *ASessionData, const UnicodeString AUserName,
+    const UnicodeString APassword, const UnicodeString AHostKey);
 
   TSessionData *GetSessionDataPrivate() const;
 };

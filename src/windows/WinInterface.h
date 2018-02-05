@@ -98,11 +98,11 @@ bool CheckXmlLogParam(TProgramParams *Params);
 
 #if 0
 UnicodeString GetToolbarsLayoutStr(TComponent *OwnerComponent);
-void LoadToolbarsLayoutStr(TComponent *OwnerComponent, UnicodeString LayoutStr);
+void LoadToolbarsLayoutStr(TComponent *OwnerComponent, const UnicodeString LayoutStr);
 
 namespace Tb2item { class TTBCustomItem; }
 void AddMenuSeparator(Tb2item::TTBCustomItem *Menu);
-void AddMenuLabel(Tb2item::TTBCustomItem *Menu, UnicodeString Label);
+void AddMenuLabel(Tb2item::TTBCustomItem *Menu, const UnicodeString Label);
 #endif // #if 0
 
 // windows\WinHelp.cpp
@@ -114,7 +114,7 @@ uintptr_t MessageDialog(const UnicodeString Msg, TQueryType Type,
   uint32_t Answers, const UnicodeString HelpKeyword = HELP_NONE, const TMessageParams *Params = nullptr);
 uintptr_t MessageDialog(intptr_t Ident, TQueryType Type,
   uint32_t Answers, const UnicodeString HelpKeyword = HELP_NONE, const TMessageParams *Params = nullptr);
-uintptr_t SimpleErrorDialog(UnicodeString Msg, const UnicodeString MoreMessages = L"");
+uintptr_t SimpleErrorDialog(const UnicodeString Msg, const UnicodeString MoreMessages = L"");
 
 uintptr_t MoreMessageDialog(const UnicodeString Message,
   TStrings *MoreMessages, TQueryType Type, uint32_t Answers,
@@ -133,18 +133,18 @@ uintptr_t FatalExceptionMessageDialog(Exception *E, TQueryType Type,
 TSessionData *DoSaveSession(TSessionData *SessionData,
   TSessionData *OriginalSession, bool ForceDialog,
   TStrings *AdditionalFolders);
-void SessionNameValidate(UnicodeString Text,
+void SessionNameValidate(const UnicodeString Text,
   UnicodeString OriginalName);
 bool DoSaveWorkspaceDialog(UnicodeString &WorkspaceName,
   bool *SavePasswords, bool NotRecommendedSavingPasswords,
   bool &CreateShortcut, bool &EnableAutoSave);
 class TShortCuts;
 bool DoShortCutDialog(TShortCut &ShortCut,
-  const TShortCuts &ShortCuts, UnicodeString HelpKeyword);
+  const TShortCuts &ShortCuts, const UnicodeString HelpKeyword);
 #if 0
 bool DoCustomCommandOptionsDialog(
   const TCustomCommandType *Command, TStrings *CustomCommandOptions, uintptr_t AFlags,
-  TCustomCommand *CustomCommandForOptions, UnicodeString Site);
+  TCustomCommand *CustomCommandForOptions, const UnicodeString Site);
 #endif // #if 0
 
 #endif // FARPLUGIN
@@ -158,7 +158,7 @@ bool DoChangeMasterPasswordDialog(UnicodeString &NewPassword);
 // windows\WinMain.cpp
 int Execute();
 #if defined(FARPLUGIN)
-void GetLoginData(UnicodeString SessionName, TOptions *Options,
+void GetLoginData(const UnicodeString SessionName, TOptions *Options,
   TObjectList *DataList, UnicodeString &DownloadFile, bool NeedSession);
 #endif // FARPLUGIN
 
@@ -326,14 +326,14 @@ typedef nb::FastDelegate4<void,
   bool & /*Close*/> TCalculateSizeEvent;
 #if 0
 typedef void (__closure *TCalculatedChecksumCallbackEvent)(
-  UnicodeString FileName, UnicodeString Alg, UnicodeString Hash);
+  UnicodeString FileName, const UnicodeString Alg, const UnicodeString Hash);
 #endif // #if 0
 typedef nb::FastDelegate3<void,
   UnicodeString /*FileName*/, UnicodeString /*Alg*/,
   UnicodeString /*Hash*/> TCalculatedChecksumCallbackEvent;
 #if 0
 typedef void (__closure *TCalculateChecksumEvent)
-  (UnicodeString Alg, TStrings * FileList,
+  (const UnicodeString Alg, TStrings * FileList,
    TCalculatedChecksumCallbackEvent OnCalculatedChecksum, bool & Close);
 #endif // #if 0
 typedef nb::FastDelegate4<void,
@@ -348,11 +348,11 @@ bool DoPropertiesDialog(TStrings * FileList,
     int AllowedChanges, bool UserGroupByID, TCalculateSizeEvent OnCalculateSize,
     TCalculateChecksumEvent OnCalculateChecksum);
 
-bool DoRemoteMoveDialog(bool Multi, UnicodeString & Target, UnicodeString & FileMask);
+bool DoRemoteMoveDialog(bool Multi, UnicodeString &Target, UnicodeString &FileMask);
 enum TDirectRemoteCopy { drcDisallow, drcAllow, drcConfirmCommandSession };
-bool DoRemoteCopyDialog(TStrings * Sessions, TStrings * Directories,
+bool DoRemoteCopyDialog(TStrings *Sessions, TStrings * Directories,
   TDirectRemoteCopy AllowDirectCopy, bool Multi, void *& Session,
-  UnicodeString & Target, UnicodeString & FileMask, bool & DirectCopy);
+  UnicodeString & Target, UnicodeString &FileMask, bool & DirectCopy);
 
 // forms\SelectMask.cpp
 #ifdef CustomdirviewHPP
@@ -388,13 +388,13 @@ typedef nb::FastDelegate2<void,
   TSynchronizeOptions & /*Options*/> TGetSynchronizeOptionsEvent;
 #if 0
 typedef void (__closure *TSynchronizeSessionLog)
-  (UnicodeString Message);
+  (const UnicodeString Message);
 #endif // #if 0
 typedef nb::FastDelegate1<void,
   UnicodeString /*Message*/> TSynchronizeSessionLogEvent;
 #if 0
 typedef void (__closure *TFeedSynchronizeError)
-  (UnicodeString Message, TStrings * MoreMessages, TQueryType Type,
+  (const UnicodeString Message, TStrings * MoreMessages, TQueryType Type,
    UnicodeString HelpKeyword);
 #endif // #if 0
 typedef nb::FastDelegate4<void,
@@ -433,7 +433,7 @@ typedef nb::FastDelegate3<void,
 
 bool DoSynchronizeChecklistDialog(TSynchronizeChecklist *Checklist,
   TSynchronizeMode Mode, intptr_t Params,
-  UnicodeString LocalDirectory, UnicodeString RemoteDirectory,
+  UnicodeString LocalDirectory, const UnicodeString RemoteDirectory,
   TCustomCommandMenuEvent OnCustomCommandMenu);
 
 #endif // FARPLUGIN
@@ -509,7 +509,7 @@ typedef nb::FastDelegate2<void,
   TTerminal * /*Terminal*/, UnicodeString /*Path*/> TFocusFileEvent;
 #if 0
 typedef void (__closure *TFileOperationFinished2Event)
-  (UnicodeString FileName, bool Success);
+  (const UnicodeString FileName, bool Success);
 #endif // #if 0
 typedef nb::FastDelegate2<void,
   UnicodeString /*FileName*/, bool /*Success*/> TFileOperationFinished2Event;
@@ -521,7 +521,7 @@ typedef nb::FastDelegate3<void,
   TTerminal * /*Terminal*/, TStrings * /*FileList*/, TFileOperationFinished2Event /*OnFileOperationFinished*/> TFileListOperationEvent;
 
 void ShowFileFindDialog(
-  TTerminal *Terminal, UnicodeString Directory, TFindEvent OnFind, TFocusFileEvent OnFocusFile,
+  TTerminal *Terminal, const UnicodeString Directory, TFindEvent OnFind, TFocusFileEvent OnFocusFile,
   TFileListOperationEvent OnDeleteFiles, TFileListOperationEvent OnDownloadFiles);
 void HideFileFindDialog();
 
@@ -530,7 +530,7 @@ void DoGenerateUrlDialog(TSessionData *Data, TStrings *Paths);
 enum TFilesSelected { fsList, fsAll };
 void DoGenerateTransferCodeDialog(
   bool ToRemote, bool Move, int CopyParamAttrs, TSessionData *Data, TFilesSelected FilesSelected,
-  TStrings *FileList, UnicodeString Path, const TCopyParamType &CopyParam);
+  TStrings *FileList, const UnicodeString Path, const TCopyParamType &CopyParam);
 
 #if 0
 void CopyParamListButton(TButton *Button);
@@ -540,7 +540,7 @@ const int cplCustomizeDefault = 0x02;
 const int cplSaveSettings =     0x04;
 const int cplGenerateCode =     0x08;
 void CopyParamListPopup(TRect R, TPopupMenu *Menu,
-  const TCopyParamType &Param, UnicodeString Preset, TNotifyEvent OnClick,
+  const TCopyParamType &Param, const UnicodeString Preset, TNotifyEvent OnClick,
   int Options, int CopyParamAttrs, bool SaveSettings = false);
 int CopyParamListPopupClick(TObject *Sender,
   TCopyParamType &Param, UnicodeString &Preset, int CopyParamAttrs,
@@ -570,7 +570,7 @@ void CenterButtonImage(TButton *Button);
 
 void UpgradeSpeedButton(TSpeedButton *Button);
 
-int AdjustLocaleFlag(UnicodeString S, TLocaleFlagOverride LocaleFlagOverride, bool Recommended, int On, int Off);
+int AdjustLocaleFlag(const UnicodeString S, TLocaleFlagOverride LocaleFlagOverride, bool Recommended, int On, int Off);
 
 void SetGlobalMinimizeHandler(TCustomForm *Form, TNotifyEvent OnMinimize);
 void ClearGlobalMinimizeHandler(TNotifyEvent OnMinimize);
@@ -584,7 +584,7 @@ void WinInitialize();
 void WinFinalize();
 #endif // #if 0
 
-void ShowNotification(TTerminal *Terminal, UnicodeString Str,
+void ShowNotification(TTerminal *Terminal, const UnicodeString Str,
   TQueryType Type);
 #if 0
 void InitializeShortCutCombo(TComboBox *ComboBox,
@@ -657,7 +657,7 @@ public:
   TTrayIcon(unsigned int Id);
   ~TTrayIcon();
 
-  void PopupBalloon(UnicodeString Title, UnicodeString Str,
+  void PopupBalloon(const UnicodeString Title, const UnicodeString Str,
     TQueryType QueryType, unsigned int Timeout, TNotifyEvent OnBalloonClick,
     TObject *BalloonUserData);
   void CancelBalloon();
@@ -681,7 +681,7 @@ private:
   void WndProc(TMessage &Message);
   void SetVisible(bool value);
   UnicodeString GetHint();
-  void SetHint(UnicodeString value);
+  void SetHint(UnicodeString Value);
   void BalloonCancelled();
 };
 

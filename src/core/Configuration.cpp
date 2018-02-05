@@ -428,8 +428,8 @@ void TConfiguration::Import(const UnicodeString /*AFileName*/)
 {
   ThrowNotImplemented(3005);
 #if 0
-  THierarchicalStorage * Storage = NULL;
-  THierarchicalStorage * ImportStorage = NULL;
+  THierarchicalStorage * Storage = nullptr;
+  THierarchicalStorage * ImportStorage = nullptr;
   try
   {
     ImportStorage = TIniFileStorage::CreateFromPath(AFileName);
@@ -882,7 +882,7 @@ void TConfiguration::DontSave()
   FDontSave = true;
 }
 //---------------------------------------------------------------------------
-RawByteString TConfiguration::EncryptPassword(UnicodeString Password, UnicodeString Key)
+RawByteString TConfiguration::EncryptPassword(const UnicodeString Password, const UnicodeString Key)
 {
   if (Password.IsEmpty())
   {
@@ -894,7 +894,7 @@ RawByteString TConfiguration::EncryptPassword(UnicodeString Password, UnicodeStr
   }
 }
 //---------------------------------------------------------------------------
-UnicodeString TConfiguration::DecryptPassword(RawByteString Password, UnicodeString Key)
+UnicodeString TConfiguration::DecryptPassword(const RawByteString Password, const UnicodeString Key)
 {
   if (Password.IsEmpty())
   {
@@ -903,7 +903,7 @@ UnicodeString TConfiguration::DecryptPassword(RawByteString Password, UnicodeStr
   return ::DecryptPassword(Password, Key);
 }
 //---------------------------------------------------------------------------
-RawByteString TConfiguration::StronglyRecryptPassword(RawByteString Password, UnicodeString /*Key*/)
+RawByteString TConfiguration::StronglyRecryptPassword(const RawByteString Password, const UnicodeString /*Key*/)
 {
   return Password;
 }
@@ -1236,7 +1236,7 @@ void TConfiguration::SetDefaultStorage()
 }
 #if 0
 //---------------------------------------------------------------------------
-void TConfiguration::SetIniFileStorageName(UnicodeString Value)
+void TConfiguration::SetIniFileStorageName(const UnicodeString Value)
 {
   FIniFileStorageName = Value;
   FStorage = stIniFile;
@@ -1462,7 +1462,7 @@ TStorage TConfiguration::GetStorage() const
 }
 //---------------------------------------------------------------------
 TStoredSessionList * TConfiguration::SelectFilezillaSessionsForImport(
-  TStoredSessionList * Sessions, UnicodeString & Error)
+  TStoredSessionList *Sessions, UnicodeString &Error)
 {
   std::unique_ptr<TStoredSessionList> ImportSessionList(new TStoredSessionList(true));
   ImportSessionList->SetDefaultSettings(Sessions->GetDefaultSettings());
@@ -1512,7 +1512,7 @@ bool TConfiguration::AnyFilezillaSessionForImport(TStoredSessionList * Sessions)
 }
 //---------------------------------------------------------------------
 TStoredSessionList * TConfiguration::SelectKnownHostsSessionsForImport(
-  TStoredSessionList * Sessions, UnicodeString & Error)
+  TStoredSessionList *Sessions, UnicodeString &Error)
 {
   std::unique_ptr<TStoredSessionList> ImportSessionList(new TStoredSessionList(true));
   ImportSessionList->SetDefaultSettings(Sessions->GetDefaultSettings());
@@ -1545,7 +1545,7 @@ TStoredSessionList * TConfiguration::SelectKnownHostsSessionsForImport(
 }
 //---------------------------------------------------------------------
 TStoredSessionList * TConfiguration::SelectKnownHostsSessionsForImport(
-  TStrings * Lines, TStoredSessionList * Sessions, UnicodeString & Error)
+  TStrings *Lines, TStoredSessionList *Sessions, UnicodeString &Error)
 {
   std::unique_ptr<TStoredSessionList> ImportSessionList(new TStoredSessionList(true));
   ImportSessionList->SetDefaultSettings(Sessions->GetDefaultSettings());
@@ -1562,7 +1562,7 @@ TStoredSessionList * TConfiguration::SelectKnownHostsSessionsForImport(
   return ImportSessionList.release();
 }
 //---------------------------------------------------------------------------
-void TConfiguration::SetRandomSeedFile(UnicodeString Value)
+void TConfiguration::SetRandomSeedFile(const UnicodeString Value)
 {
   if (GetRandomSeedFile() != Value)
   {

@@ -44,12 +44,12 @@ TProgramParams::TProgramParams()
   Init(L"");
 }
 
-TProgramParams::TProgramParams(UnicodeString CmdLine)
+TProgramParams::TProgramParams(const UnicodeString CmdLine)
 {
   Init(CmdLine);
 }
 
-void TProgramParams::Init(UnicodeString CmdLine)
+void TProgramParams::Init(const UnicodeString CmdLine)
 {
   UnicodeString CommandLine = CmdLine;
 

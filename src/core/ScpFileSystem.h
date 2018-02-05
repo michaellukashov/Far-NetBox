@@ -115,10 +115,10 @@ private:
 
   void DetectUtf();
   void ClearAliases();
-  void ClearAlias(UnicodeString Alias);
+  void ClearAlias(const UnicodeString Alias);
   void CustomReadFile(const UnicodeString AFileName,
     TRemoteFile *& AFile, TRemoteFile *ALinkedByFile);
-  static UnicodeString DelimitStr(UnicodeString AStr);
+  static UnicodeString DelimitStr(const UnicodeString AStr);
   void DetectReturnVar();
   bool IsLastLine(UnicodeString &Line);
   static bool IsTotalListingLine(const UnicodeString ALine);
@@ -159,7 +159,7 @@ private:
     intptr_t Params, TFileOperationProgressType *OperationProgress);
 
   static bool RemoveLastLine(UnicodeString &Line,
-    intptr_t &ReturnCode, UnicodeString ALastLine = L"");
+    intptr_t &ReturnCode, const UnicodeString ALastLine = L"");
 
   UnicodeString InitOptionsStr(const TCopyParamType *CopyParam) const;
 };

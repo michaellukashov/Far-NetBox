@@ -2346,7 +2346,7 @@ TQueueItem *TTransferQueueItem::CreateParallelOperation()
 // TUploadQueueItem
 //---------------------------------------------------------------------------
 TUploadQueueItem::TUploadQueueItem(TTerminal *Terminal,
-  const TStrings *AFilesToCopy, UnicodeString TargetDir,
+  const TStrings *AFilesToCopy, const UnicodeString TargetDir,
   const TCopyParamType *CopyParam, intptr_t Params, bool SingleFile, bool Parallel) :
   TTransferQueueItem(OBJECT_CLASS_TUploadQueueItem, Terminal, AFilesToCopy, TargetDir, CopyParam, Params, osLocal, SingleFile, Parallel)
 {
@@ -2805,7 +2805,7 @@ void TTerminalThread::FatalAbort()
   {
     // We cannot use TTerminal::FatalError as the terminal still runs on a backgroud thread,
     // may have its TCallbackGuard armed right now.
-    throw ESshFatal(NULL, L"");
+    throw ESshFatal(nullptr, L"");
   }
   else
   {

@@ -7,7 +7,6 @@
 #include <Classes.hpp>
 #include <Common.h>
 #include <Exceptions.h>
-#include <function2.hpp>
 
 #include "SessionInfo.h"
 #include "Interface.h"
@@ -46,7 +45,7 @@ typedef nb::FastDelegate8<void,
    const TQueryParams * /*Params*/, uint32_t & /*Answer*/, TQueryType /*QueryType*/, void * /*Arg*/> TQueryUserEvent;
 #if 0
 typedef void (__closure *TPromptUserEvent)
-  (TTerminal * Terminal, TPromptKind Kind, UnicodeString Name, UnicodeString Instructions,
+  (TTerminal * Terminal, TPromptKind Kind, const UnicodeString Name, const UnicodeString Instructions,
    TStrings * Prompts, TStrings * Results, bool & Result, void * Arg);
 #endif // #if 0
 typedef nb::FastDelegate8<void,
@@ -54,7 +53,7 @@ typedef nb::FastDelegate8<void,
   TStrings * /*Prompts*/, TStrings * /*Results*/, bool & /*Result*/, void * /*Arg*/> TPromptUserEvent;
 #if 0
 typedef void (__closure *TDisplayBannerEvent)
-  (TTerminal * Terminal, UnicodeString SessionName, const UnicodeString & Banner,
+  (TTerminal * Terminal, const UnicodeString SessionName, const UnicodeString & Banner,
    bool & NeverShowAgain, int Options, unsigned int & Params);
 #endif // #if 0
 typedef nb::FastDelegate6<void,
@@ -177,7 +176,7 @@ const unsigned int folRetryOnFatal = 0x02;
   FILE_OPERATION_LOOP_END_EX(MESSAGE, folAllowSkip)
 #endif // #if 0
 //---------------------------------------------------------------------------
-inline void ThrowSkipFile(Exception *Exception, UnicodeString Message)
+inline void ThrowSkipFile(Exception *Exception, const UnicodeString Message)
 {
   throw ESkipFile(Exception, Message);
 }
@@ -187,7 +186,7 @@ NB_CORE_EXPORT void FileOperationLoopCustom(TTerminal *Terminal,
   TFileOperationProgressType *OperationProgress,
   uintptr_t Flags, const UnicodeString Message,
   const UnicodeString HelpKeyword,
-  fu2::function<void()> Operation);
+  const std::function<void()> &Operation);
 //---------------------------------------------------------------------------
 enum TCurrentFSProtocol { cfsUnknown, cfsSCP, cfsSFTP, cfsFTP, cfsFTPS, cfsWebDAV, cfsS3 };
 //---------------------------------------------------------------------------
@@ -381,8 +380,8 @@ protected:
   void DoCreateDirectory(const UnicodeString ADirName);
   void DoDeleteFile(const UnicodeString AFileName, const TRemoteFile *AFile,
     intptr_t Params);
-  void DoCustomCommandOnFile(UnicodeString AFileName,
-    const TRemoteFile *AFile, UnicodeString ACommand, intptr_t AParams, TCaptureOutputEvent OutputEvent);
+  void DoCustomCommandOnFile(const UnicodeString AFileName,
+    const TRemoteFile *AFile, const UnicodeString ACommand, intptr_t AParams, TCaptureOutputEvent OutputEvent);
   void DoRenameFile(const UnicodeString AFileName, const TRemoteFile *AFile,
     const UnicodeString ANewName, bool Move);
   void DoCopyFile(const UnicodeString AFileName, const TRemoteFile *AFile, const UnicodeString ANewName);
@@ -409,7 +408,7 @@ protected:
   bool DeleteContentsIfDirectory(
     const UnicodeString AFileName, const TRemoteFile *AFile, intptr_t AParams, TRmSessionAction &Action);
   void AnnounceFileListOperation();
-  UnicodeString TranslateLockedPath(UnicodeString APath, bool Lock);
+  UnicodeString TranslateLockedPath(const UnicodeString APath, bool Lock);
   void ReadDirectory(TRemoteFileList *AFileList);
   void CustomReadDirectory(TRemoteFileList *AFileList);
   void DoCreateLink(const UnicodeString AFileName, const UnicodeString APointTo, bool Symbolic);
@@ -455,7 +454,7 @@ protected:
     const UnicodeString ASourceFullFileName, const UnicodeString ATargetFileName,
     const TOverwriteFileParams *FileParams, uint32_t Answers, TQueryParams *QueryParams,
     TOperationSide Side, const TCopyParamType *CopyParam, intptr_t Params,
-    TFileOperationProgressType *OperationProgress, UnicodeString AMessage = L"");
+    TFileOperationProgressType *OperationProgress, const UnicodeString AMessage = L"");
   void DoSynchronizeCollectDirectory(const UnicodeString ALocalDirectory,
     const UnicodeString ARemoteDirectory, TSynchronizeMode Mode,
     const TCopyParamType *CopyParam, intptr_t Params,
@@ -528,7 +527,7 @@ protected:
   void LogRemoteFile(TRemoteFile *AFile);
   UnicodeString FormatFileDetailsForLog(const UnicodeString AFileName, const TDateTime &AModification, int64_t Size);
   void LogFileDetails(const UnicodeString AFileName, const TDateTime &AModification, int64_t Size);
-  void LogFileDone(TFileOperationProgressType *OperationProgress, UnicodeString DestFileName);
+  void LogFileDone(TFileOperationProgressType *OperationProgress, const UnicodeString DestFileName);
   void LogTotalTransferDetails(
     const UnicodeString ATargetDir, const TCopyParamType *CopyParam,
     TFileOperationProgressType *OperationProgress, bool Parallel, TStrings *AFiles);
@@ -614,9 +613,9 @@ public:
   void BeginTransaction();
   void ReadCurrentDirectory();
   void ReadDirectory(bool ReloadOnly, bool ForceCache = false);
-  TRemoteFileList * ReadDirectoryListing(UnicodeString Directory, const TFileMasks &Mask);
-  TRemoteFileList * CustomReadDirectoryListing(UnicodeString Directory, bool UseCache);
-  TRemoteFile * ReadFileListing(UnicodeString APath);
+  TRemoteFileList * ReadDirectoryListing(const UnicodeString Directory, const TFileMasks &Mask);
+  TRemoteFileList * CustomReadDirectoryListing(const UnicodeString Directory, bool UseCache);
+  TRemoteFile * ReadFileListing(const UnicodeString APath);
   void ReadFile(const UnicodeString AFileName, TRemoteFile *&AFile);
   bool FileExists(const UnicodeString AFileName, TRemoteFile **AFile = nullptr);
   void ReadSymlink(TRemoteFile *SymlinkFile, TRemoteFile *&File);
@@ -673,7 +672,7 @@ public:
     const UnicodeString ALocalDirectory, const UnicodeString ARemoteDirectory,
     const TCopyParamType *CopyParam, intptr_t Params,
     TSynchronizeDirectoryEvent OnSynchronizeDirectory);
-  void FilesFind(UnicodeString Directory, const TFileMasks &FileMask,
+  void FilesFind(const UnicodeString Directory, const TFileMasks &FileMask,
     TFileFoundEvent OnFileFound, TFindingFileEvent OnFindingFile);
   void SpaceAvailable(const UnicodeString APath, TSpaceAvailable &ASpaceAvailable);
   void LockFiles(TStrings *AFileList);
@@ -683,7 +682,7 @@ public:
     const TSearchRec &Rec, void *Param);
   bool FileOperationLoopQuery(Exception &E,
     TFileOperationProgressType *OperationProgress, const UnicodeString Message,
-    uintptr_t AFlags, UnicodeString SpecialRetry = L"", UnicodeString HelpKeyword = L"");
+    uintptr_t AFlags, const UnicodeString SpecialRetry = L"", const UnicodeString HelpKeyword = L"");
   void FileOperationLoopEnd(Exception & E,
     TFileOperationProgressType * OperationProgress, const UnicodeString Message,
     uintptr_t AFlags, const UnicodeString SpecialRetry, const UnicodeString HelpKeyword);
@@ -758,7 +757,7 @@ public:
   __property int TunnelLocalPortNumber = { read = FTunnelLocalPortNumber };
 
   bool GetIsCapable(TFSCapability Capability) const { return GetIsCapableProtected(Capability); }
-  void SetMasks(UnicodeString Value);
+  void SetMasks(const UnicodeString Value);
 
   void SetLocalFileTime(const UnicodeString LocalFileName,
     const TDateTime &Modification);
@@ -1087,7 +1086,7 @@ protected:
   void Add(TChecklistItem *Item);
 
 public:
-  void SetMasks(UnicodeString Value);
+  void SetMasks(const UnicodeString Value);
 
   intptr_t GetCount() const;
   const TChecklistItem *GetItem(intptr_t Index) const;

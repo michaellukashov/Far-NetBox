@@ -74,6 +74,10 @@ typedef const unsigned char ne_d2i_uchar;
 #define EVP_PKEY_get0_RSA(evp) (evp->pkey.rsa)
 #endif
 
+#ifdef WINSCP
+void ne_fill_real_server_uri(ne_session *sess, ne_uri *uri);
+#endif
+
 struct ne_ssl_dname_s {
     X509_NAME *dn;
 };

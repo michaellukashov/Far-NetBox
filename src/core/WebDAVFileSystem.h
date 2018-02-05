@@ -117,14 +117,14 @@ protected:
     void *UserData, const ne_uri *Uri, const ne_prop_result_set_s *Results);
   void ParsePropResultSet(TRemoteFile *AFile,
     const UnicodeString APath, const ne_prop_result_set_s *Results);
-  void TryOpenDirectory(UnicodeString ADirectory);
+  void TryOpenDirectory(const UnicodeString ADirectory);
   static int NeonBodyReader(void *UserData, const char *Buf, size_t Len);
   static void NeonPreSend(ne_request *Request, void *UserData, ne_buffer *Header);
   static int NeonBodyAccepter(void *UserData, ne_request *Request, const ne_status *Status);
   static void NeonCreateRequest(ne_request *Request, void *UserData, const char *Method, const char *Uri);
   static int NeonRequestAuth(void *UserData, const char *Realm, int Attempt, char *UserName, char *Password);
   void NeonOpen(UnicodeString &CorrectedUrl, const UnicodeString AUrl);
-  void NeonClientOpenSessionInternal(UnicodeString &CorrectedUrl, UnicodeString Url);
+  void NeonClientOpenSessionInternal(UnicodeString &CorrectedUrl, const UnicodeString Url);
   static void NeonNotifier(void *UserData, ne_session_status Status, const ne_session_status_info *StatusInfo);
   static ssize_t NeonUploadBodyProvider(void *UserData, char *Buffer, size_t BufLen);
   static int NeonPostSend(ne_request *Req, void *UserData, const ne_status *Status);
@@ -179,7 +179,7 @@ private:
   bool FAuthenticationRetry;
   bool FNtlmAuthenticationFailed;
 
-  void CustomReadFile(UnicodeString AFileName,
+  void CustomReadFile(const UnicodeString AFileName,
     TRemoteFile *& AFile, TRemoteFile *ALinkedByFile);
   intptr_t CustomReadFileInternal(const UnicodeString AFileName,
     TRemoteFile *& AFile, TRemoteFile *ALinkedByFile);

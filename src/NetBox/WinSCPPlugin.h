@@ -36,7 +36,7 @@ protected:
   virtual bool ConfigureEx(intptr_t Item) override;
   virtual intptr_t ProcessEditorEventEx(intptr_t Event, void *Param) override;
   virtual intptr_t ProcessEditorInputEx(const INPUT_RECORD *Rec) override;
-  bool CopyParamDialog(UnicodeString Caption, TCopyParamType &CopyParam,
+  bool CopyParamDialog(const UnicodeString Caption, TCopyParamType &CopyParam,
     intptr_t CopyParamAttrs);
   void MessageClick(void *Token, uintptr_t Result, bool &Close);
 

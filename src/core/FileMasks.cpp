@@ -241,7 +241,7 @@ TFileMasks::TFileMasks(const TFileMasks &Source)
   SetStr(Source.GetMasks(), false);
 }
 
-TFileMasks::TFileMasks(UnicodeString AMasks)
+TFileMasks::TFileMasks(const UnicodeString AMasks)
 {
   Init();
   SetStr(AMasks, false);
@@ -460,7 +460,7 @@ bool TFileMasks::operator==(const TFileMasks &rhm) const
   return (GetMasks() == rhm.GetMasks());
 }
 
-TFileMasks &TFileMasks::operator=(UnicodeString rhs)
+TFileMasks &TFileMasks::operator=(const UnicodeString rhs)
 {
   SetMasks(rhs);
   return *this;
@@ -485,7 +485,7 @@ void TFileMasks::ThrowError(intptr_t Start, intptr_t End) const
     Start, End - Start + 1);
 }
 
-void TFileMasks::CreateMaskMask(UnicodeString Mask, intptr_t Start, intptr_t End,
+void TFileMasks::CreateMaskMask(const UnicodeString Mask, intptr_t Start, intptr_t End,
   bool Ex, TMaskMask &MaskMask) const
 {
   try
@@ -784,7 +784,7 @@ void TFileMasks::SetStr(const UnicodeString Str, bool SingleMask)
 const wchar_t TCustomCommand::NoQuote = L'\0';
 const UnicodeString TCustomCommand::Quotes = L"\"'";
 
-UnicodeString TCustomCommand::Escape(UnicodeString S)
+UnicodeString TCustomCommand::Escape(const UnicodeString S)
 {
   return ReplaceStr(S, L"!", L"!!");
 }
@@ -1008,7 +1008,7 @@ void TInteractiveCustomCommand::Prompt(
 }
 
 void TInteractiveCustomCommand::Execute(
-  UnicodeString /*Command*/, UnicodeString &Value) const
+  const UnicodeString /*Command*/, UnicodeString &Value) const
 {
   Value.Clear();
 }

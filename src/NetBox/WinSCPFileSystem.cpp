@@ -59,7 +59,7 @@ void TSessionPanelItem::GetData(
   UserData = ToPtr(const_cast<TSessionData *>(FSessionData));
 }
 
-TSessionFolderPanelItem::TSessionFolderPanelItem(UnicodeString Folder) :
+TSessionFolderPanelItem::TSessionFolderPanelItem(const UnicodeString Folder) :
   TCustomFarPanelItem(OBJECT_CLASS_TSessionFolderPanelItem),
   FFolder(Folder)
 {
@@ -805,7 +805,7 @@ void TWinSCPFileSystem::TerminalCaptureLog(
   }
 }
 
-void TWinSCPFileSystem::RequireLocalPanel(TFarPanelInfo *Panel, UnicodeString Message)
+void TWinSCPFileSystem::RequireLocalPanel(TFarPanelInfo *Panel, const UnicodeString Message)
 {
   if (Panel->GetIsPlugin() || (Panel->GetType() != ptFile))
   {
@@ -864,7 +864,7 @@ bool TWinSCPFileSystem::EnsureCommandSessionFallback(TFSCapability Capability)
   return Result;
 }
 
-bool TWinSCPFileSystem::ExecuteCommand(UnicodeString Command)
+bool TWinSCPFileSystem::ExecuteCommand(const UnicodeString Command)
 {
   if (FTerminal->AllowedAnyCommand(Command) &&
     EnsureCommandSessionFallback(fcAnyCommand))
@@ -1387,7 +1387,7 @@ void TWinSCPFileSystem::ApplyCommand()
   }
 }
 
-void TWinSCPFileSystem::Synchronize(UnicodeString LocalDirectory,
+void TWinSCPFileSystem::Synchronize(const UnicodeString LocalDirectory,
   UnicodeString RemoteDirectory, TTerminal::TSynchronizeMode Mode,
   const TCopyParamType &CopyParam, intptr_t Params, TSynchronizeChecklist **AChecklist,
   TSynchronizeOptions *Options)
@@ -1658,8 +1658,8 @@ void TWinSCPFileSystem::Synchronize()
 }
 
 void TWinSCPFileSystem::DoSynchronize(
-  TSynchronizeController * /*Sender*/, UnicodeString LocalDirectory,
-  UnicodeString RemoteDirectory, const TCopyParamType &CopyParam,
+  TSynchronizeController * /*Sender*/, const UnicodeString LocalDirectory,
+  const UnicodeString RemoteDirectory, const TCopyParamType &CopyParam,
   const TSynchronizeParamType &Params, TSynchronizeChecklist **Checklist,
   TSynchronizeOptions *Options, bool Full)
 {
@@ -1692,7 +1692,7 @@ void TWinSCPFileSystem::DoSynchronize(
 }
 
 void TWinSCPFileSystem::DoSynchronizeInvalid(
-  TSynchronizeController * /*Sender*/, UnicodeString Directory,
+  TSynchronizeController * /*Sender*/, const UnicodeString Directory,
   UnicodeString /*ErrorStr*/)
 {
   UnicodeString Message;
@@ -1739,7 +1739,7 @@ void TWinSCPFileSystem::DoSynchronizeTooManyDirectories(
 }
 
 void TWinSCPFileSystem::CustomCommandGetParamValue(
-  UnicodeString AName, UnicodeString &Value)
+  const UnicodeString AName, UnicodeString &Value)
 {
   UnicodeString Name = AName;
   if (Name.IsEmpty())
@@ -1877,7 +1877,7 @@ void TWinSCPFileSystem::FileProperties()
   }
 }
 
-void TWinSCPFileSystem::InsertTokenOnCommandLine(UnicodeString Token, bool Separate)
+void TWinSCPFileSystem::InsertTokenOnCommandLine(const UnicodeString Token, bool Separate)
 {
   UnicodeString Token2 = Token;
   if (!Token2.IsEmpty())
@@ -1999,7 +1999,7 @@ void TWinSCPFileSystem::CopyFullFileNamesToClipboard()
   GetWinSCPPlugin()->FarCopyToClipboard(FileNames.get());
 }
 
-void TWinSCPFileSystem::GetSpaceAvailable(UnicodeString APath,
+void TWinSCPFileSystem::GetSpaceAvailable(const UnicodeString APath,
   TSpaceAvailable &ASpaceAvailable, bool &Close)
 {
   // terminal can be already closed (e.g. dropped connection)
@@ -2129,7 +2129,7 @@ void TWinSCPFileSystem::ToggleSynchronizeBrowsing()
   }
 }
 
-bool TWinSCPFileSystem::SynchronizeBrowsing(UnicodeString NewPath)
+bool TWinSCPFileSystem::SynchronizeBrowsing(const UnicodeString NewPath)
 {
   bool Result;
   TFarPanelInfo **AnotherPanel = GetAnotherPanelInfo();
@@ -2169,7 +2169,7 @@ bool TWinSCPFileSystem::SynchronizeBrowsing(UnicodeString NewPath)
   return Result;
 }
 
-bool TWinSCPFileSystem::SetDirectoryEx(UnicodeString Dir, int OpMode)
+bool TWinSCPFileSystem::SetDirectoryEx(const UnicodeString Dir, int OpMode)
 {
   if (!IsSessionList() && !Connected())
   {
@@ -2878,7 +2878,7 @@ TStrings *TWinSCPFileSystem::CreateSelectedFileList(TOperationSide Side, TFarPan
 }
 
 TStrings *TWinSCPFileSystem::CreateFileList(TObjectList *PanelItems,
-  TOperationSide Side, bool SelectedOnly, UnicodeString Directory, bool FileNameOnly,
+  TOperationSide Side, bool SelectedOnly, const UnicodeString Directory, bool FileNameOnly,
   TStrings *AFileList)
 {
   std::unique_ptr<TStrings> FileList(AFileList == nullptr ? new TStringList() : AFileList);
@@ -3059,7 +3059,7 @@ void TWinSCPFileSystem::TerminalClose(TObject * /*Sender*/)
 }
 
 void TWinSCPFileSystem::LogAuthentication(
-  TTerminal *Terminal, UnicodeString Msg)
+  TTerminal *Terminal, const UnicodeString Msg)
 {
   DebugAssert(FAuthenticationLog != nullptr);
   if (!FAuthenticationLog)
@@ -3716,7 +3716,7 @@ void TWinSCPFileSystem::CancelConfiguration(TFileOperationProgressType &Progress
 }
 
 void TWinSCPFileSystem::UploadFromEditor(bool NoReload,
-  UnicodeString AFileName, UnicodeString RealFileName,
+  const UnicodeString AFileName, const UnicodeString RealFileName,
   UnicodeString &DestPath)
 {
   DebugAssert(FFileList == nullptr);
@@ -3969,7 +3969,7 @@ void TWinSCPFileSystem::MultipleEdit()
   }
 }
 
-void TWinSCPFileSystem::MultipleEdit(UnicodeString Directory,
+void TWinSCPFileSystem::MultipleEdit(const UnicodeString Directory,
   UnicodeString AFileName, TRemoteFile *AFile)
 {
   DebugAssert(AFile);
@@ -4157,7 +4157,7 @@ void TWinSCPFileSystem::ShowLog()
   GetWinSCPPlugin()->Viewer(Log->GetLogFileName(), Log->GetLogFileName(), VF_NONMODAL);
 }
 
-UnicodeString TWinSCPFileSystem::GetFileNameHash(UnicodeString AFileName) const
+UnicodeString TWinSCPFileSystem::GetFileNameHash(const UnicodeString AFileName) const
 {
   RawByteString Result;
   char *Buf = Result.SetLength(16);
