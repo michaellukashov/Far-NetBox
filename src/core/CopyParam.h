@@ -136,7 +136,7 @@ public:
   bool AnyUsableCopyParam(intptr_t Attrs) const;
   UnicodeString GenerateTransferCommandArgs(
     intptr_t Attrs, const UnicodeString Link, bool &NoScriptArgs) const;
-  UnicodeString GenerateAssemblyCode(TAssemblyLanguage Language, int Attrs, bool &NoCodeProperties) const;
+  __removed UnicodeString GenerateAssemblyCode(TAssemblyLanguage Language, int Attrs, bool &NoCodeProperties) const;
 
   bool operator==(const TCopyParamType &rhp) const;
 

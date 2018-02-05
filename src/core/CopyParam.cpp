@@ -99,19 +99,19 @@ UnicodeString TCopyParamType::GenerateTransferCommandArgs(intptr_t Attrs, const 
   return ScriptArgs;
 }
 
+#if 0
 UnicodeString TCopyParamType::GenerateAssemblyCode(
   TAssemblyLanguage /*Language*/, int /*Attrs*/, bool & /*NoCodeProperties*/) const
 {
   UnicodeString Result;
-#if 0
   bool SomeAttrIncluded;
   UnicodeString ScriptArgs;
   bool NoScriptArgs;
   UnicodeString AssemblyCode;
   DoGetInfoStr(L";", Attrs, Result, SomeAttrIncluded, UnicodeString(), ScriptArgs, NoScriptArgs, Language, AssemblyCode, NoCodeProperties);
-#endif // #if 0
   return Result;
 }
+#endif // #if 0
 
 void TCopyParamType::DoGetInfoStr(
   UnicodeString Separator, intptr_t Attrs,
