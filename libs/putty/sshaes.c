@@ -832,6 +832,36 @@ static void aes_decrypt(AESContext * ctx, word32 * block)
     ctx->decrypt_cbc((unsigned char*)block, 16, ctx);
 }
 
+#define ENCWORD(i) ( newstate[i] = (E0[(block[i       ] >> 24) & 0xFF] ^ \
+                                    E1[(block[(i+1)%NB] >> 16) & 0xFF] ^ \
+                                    E2[(block[(i+2)%NB] >>  8) & 0xFF] ^ \
+                                    E3[ block[(i+3)%NB]        & 0xFF]) )
+#define ENCROUND { ENCWORD(0); ENCWORD(1); ENCWORD(2); ENCWORD(3);      \
+        MOVEWORD(0); MOVEWORD(1); MOVEWORD(2); MOVEWORD(3); ADD_ROUND_KEY; }
+
+#define ENCLASTWORD(i) ( newstate[i] =                                  \
+                         (Sbox[(block[i]        >> 24) & 0xFF] << 24) |  \
+                         (Sbox[(block[(i+1)%NB] >> 16) & 0xFF] << 16) |  \
+                         (Sbox[(block[(i+2)%NB] >>  8) & 0xFF] <<  8) |  \
+                         (Sbox[(block[(i+3)%NB]      ) & 0xFF]      ) )
+#define ENCLASTROUND { ENCLASTWORD(0); ENCLASTWORD(1); ENCLASTWORD(2); ENCLASTWORD(3); \
+        MOVEWORD(0); MOVEWORD(1); MOVEWORD(2); MOVEWORD(3); ADD_ROUND_KEY; }
+
+#define DECWORD(i) ( newstate[i] =  (D0[(block[i]        >> 24) & 0xFF] ^ \
+                                     D1[(block[(i+3)%NB] >> 16) & 0xFF] ^ \
+                                     D2[(block[(i+2)%NB] >> 8)  & 0xFF] ^ \
+                                     D3[ block[(i+1)%NB]        & 0xFF]) )
+#define DECROUND { DECWORD(0); DECWORD(1); DECWORD(2); DECWORD(3);      \
+        MOVEWORD(0); MOVEWORD(1); MOVEWORD(2); MOVEWORD(3); ADD_ROUND_KEY; }
+
+#define DECLASTWORD(i) (newstate[i] =                                   \
+                        (Sboxinv[(block[i]        >> 24) & 0xFF] << 24) | \
+                        (Sboxinv[(block[(i+3)%NB] >> 16) & 0xFF] << 16) | \
+                        (Sboxinv[(block[(i+2)%NB] >>  8) & 0xFF] <<  8) | \
+                        (Sboxinv[(block[(i+1)%NB]      ) & 0xFF]      ) )
+#define DECLASTROUND { DECLASTWORD(0); DECLASTWORD(1); DECLASTWORD(2); DECLASTWORD(3); \
+        MOVEWORD(0); MOVEWORD(1); MOVEWORD(2); MOVEWORD(3); ADD_ROUND_KEY; }
+
 /*
  * Software AES encrypt/decrypt core
  */
@@ -1159,6 +1189,14 @@ const struct ssh2_ciphers ssh2_aes = {
 
 #ifdef _FORCE_SOFTWARE_AES
 #   undef COMPILER_SUPPORTS_AES_NI
+#endif
+
+#if defined(__clang__)
+#   if !__has_attribute(target)
+/* If clang is old enough not to support __attribute__((target(...)))
+ * as used below, then we can't use this code after all. */
+#      undef COMPILER_SUPPORTS_AES_NI
+#   endif
 #endif
 
 #ifdef COMPILER_SUPPORTS_AES_NI

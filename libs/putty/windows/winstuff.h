@@ -66,6 +66,10 @@ struct FontSpec *fontspec_new(const char *name,
 #define PLATFORM_IS_UTF16 /* enable UTF-16 processing when exchanging
 			   * wchar_t strings with environment */
 
+#define PLATFORM_CLIPBOARDS(X)                      \
+    X(CLIP_SYSTEM, "system clipboard")              \
+    /* end of list */
+
 /*
  * Where we can, we use GetWindowLongPtr and friends because they're
  * more useful on 64-bit platforms, but they're a relatively recent
@@ -256,6 +260,13 @@ void quit_help(HWND hwnd);
  */
 GLOBAL Terminal *term;
 GLOBAL void *logctx;
+
+/*
+ * Windows-specific clipboard helper function shared with windlg.c,
+ * which takes the data string in the system code page instead of
+ * Unicode.
+ */
+void write_aclip(void *frontend, int clipboard, char *, int, int);
 
 #define WM_NETEVENT  (WM_APP + 5)
 
@@ -693,5 +704,12 @@ char *get_jumplist_registry_entries(void);
 #ifdef __cplusplus
 }
 #endif /* C++ */
+#define CLIPNAME_IMPLICIT "Last selected text"
+#define CLIPNAME_EXPLICIT "System clipboard"
+#define CLIPNAME_EXPLICIT_OBJECT "system clipboard"
+/* These defaults are the ones PuTTY has historically had */
+#define CLIPUI_DEFAULT_AUTOCOPY TRUE
+#define CLIPUI_DEFAULT_MOUSE CLIPUI_EXPLICIT
+#define CLIPUI_DEFAULT_INS CLIPUI_EXPLICIT
 
 #endif
