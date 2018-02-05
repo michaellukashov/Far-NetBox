@@ -162,14 +162,15 @@ struct MakeOtherType { typedef T Type; };
   struct MakeOtherType<T> { typedef U Type; }
 
 NB_SPECIALIZE_MAKE_T(DWORD, size_t);
-NB_SPECIALIZE_MAKE_T(intptr_t, size_t);
+// NB_SPECIALIZE_MAKE_T(intptr_t, size_t);
 NB_SPECIALIZE_MAKE_T(int, size_t);
+NB_SPECIALIZE_MAKE_T(int64_t, size_t);
 
 // Casts integer to other type
 template <typename Int>
-inline typename MakeOtherType<Int>::Type ToSizeT(Int value)
+inline typename MakeOtherType<Int>::Type ToSizeT(Int Value)
 {
-  return static_cast<typename MakeOtherType<Int>::Type>(value);
+  return static_cast<typename MakeOtherType<Int>::Type>(Value);
 }
 
 template<typename T>
