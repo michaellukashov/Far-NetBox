@@ -113,8 +113,8 @@ static bool WellKnownException(
   }
 
   if (Result)
-{
-  if (AMessage != nullptr)
+  {
+    if (AMessage != nullptr)
     {
       (*AMessage) = Message;
     }
@@ -244,7 +244,7 @@ UnicodeString GetExceptionHelpKeyword(const Exception *E)
     HelpKeyword = ExtE->GetHelpKeyword();
   }
   else if ((E != nullptr) && ExceptionMessage(E, false, false, Message, InternalError) &&
-    InternalError)
+           InternalError)
   {
 #if defined(FARPLUGIN)
     HelpKeyword = HELP_INTERNAL_ERROR;
@@ -256,7 +256,7 @@ UnicodeString GetExceptionHelpKeyword(const Exception *E)
 UnicodeString MergeHelpKeyword(const UnicodeString PrimaryHelpKeyword, const UnicodeString SecondaryHelpKeyword)
 {
   if (!PrimaryHelpKeyword.IsEmpty() &&
-    !IsInternalErrorHelpKeyword(SecondaryHelpKeyword))
+      !IsInternalErrorHelpKeyword(SecondaryHelpKeyword))
   {
     // we have to yet decide what we have both
     // PrimaryHelpKeyword and SecondaryHelpKeyword
@@ -290,7 +290,7 @@ ExtException::ExtException(TObjectClassId Kind, const Exception *E) :
   AddMoreMessages(E);
   FHelpKeyword = GetExceptionHelpKeyword(E);
 }
-
+//---------------------------------------------------------------------------
 ExtException::ExtException(const Exception *E, const UnicodeString Msg, const UnicodeString HelpKeyword) :
   Exception(OBJECT_CLASS_ExtException, Msg),
   FMoreMessages(nullptr)
@@ -306,17 +306,7 @@ ExtException::ExtException(TObjectClassId Kind, const Exception *E, const Unicod
   AddMoreMessages(E);
   FHelpKeyword = MergeHelpKeyword(HelpKeyword, GetExceptionHelpKeyword(E));
 }
-
-#if 0
-ExtException::ExtException(TObjectClassId Kind, ExtException *E, const UnicodeString Msg, const UnicodeString HelpKeyword) :
-  Exception(Kind, Msg),
-  FMoreMessages(nullptr),
-  FHelpKeyword()
-{
-  AddMoreMessages(E);
-}
-#endif // #if 0
-
+//---------------------------------------------------------------------------
 ExtException::ExtException(TObjectClassId Kind, Exception *E, intptr_t Ident, const UnicodeString HelpKeyword) :
   Exception(Kind, E, Ident),
   FMoreMessages(nullptr),
@@ -536,7 +526,7 @@ void ESshTerminate::Rethrow()
 ECallbackGuardAbort::ECallbackGuardAbort() : EAbort(OBJECT_CLASS_ECallbackGuardAbort, L"callback abort")
 {
 }
-
+//---------------------------------------------------------------------------
 Exception *CloneException(Exception *E)
 {
   Exception *Result;
@@ -573,7 +563,7 @@ Exception *CloneException(Exception *E)
   }
   return Result;
 }
-
+//---------------------------------------------------------------------------
 void RethrowException(Exception *E)
 {
   // this list has to be in sync with ExceptionMessage

@@ -1,5 +1,7 @@
 
-//#define NO_WIN32_LEAN_AND_MEAN
+#ifndef NO_WIN32_LEAN_AND_MEAN
+#define NO_WIN32_LEAN_AND_MEAN
+#endif
 #include <vcl.h>
 #pragma hdrstop
 
@@ -734,7 +736,7 @@ UnicodeString ExpandFileNameCommand(const UnicodeString ACommand,
   const UnicodeString AFileName)
 {
   return AnsiReplaceStr(ACommand, ShellCommandFileNamePattern,
-      AddPathQuotes(AFileName));
+    AddPathQuotes(AFileName));
 }
 //---------------------------------------------------------------------------
 UnicodeString EscapeParam(const UnicodeString AParam)
@@ -3902,78 +3904,6 @@ UnicodeString GetFileMimeType(const UnicodeString /*FileName*/)
 #endif // if 0
   return Result;
 }
-//---------------------------------------------------------------------------
-
-namespace base {
-
-UnicodeString FormatBytes(int64_t Bytes, bool UseOrders)
-{
-  UnicodeString Result;
-
-  if (!UseOrders || (Bytes < ToInt64(100 * 1024)))
-  {
-    // Result = FormatFloat(L"#,##0 \"B\"", Bytes);
-    Result = FORMAT("%.0f B", ToDouble(Bytes));
-  }
-  else if (Bytes < ToInt64(100 * 1024 * 1024))
-  {
-    // Result = FormatFloat(L"#,##0 \"KB\"", Bytes / 1024);
-    Result = FORMAT("%.0f KB", ToDouble(Bytes / 1024.0));
-  }
-  else
-  {
-    // Result = FormatFloat(L"#,##0 \"MiB\"", Bytes / (1024*1024));
-    Result = FORMAT("%.0f MiB", ToDouble(Bytes / (1024 * 1024.0)));
-  }
-  return Result;
-}
-
-UnicodeString UnixExtractFileName(const UnicodeString APath)
-{
-  intptr_t Pos = APath.LastDelimiter(L'/');
-  UnicodeString Result;
-  if (Pos > 0)
-  {
-    Result = APath.SubString(Pos + 1, APath.Length() - Pos);
-  }
-  else
-  {
-    Result = APath;
-  }
-  return Result;
-}
-
-UnicodeString UnixExtractFileExt(const UnicodeString APath)
-{
-  UnicodeString FileName = base::UnixExtractFileName(APath);
-  intptr_t Pos = FileName.LastDelimiter(L".");
-  return (Pos > 0) ? APath.SubString(Pos, APath.Length() - Pos + 1) : UnicodeString();
-}
-
-UnicodeString ExtractFileName(const UnicodeString APath, bool Unix)
-{
-  if (Unix)
-  {
-    return UnixExtractFileName(APath);
-  }
-  return ExtractFilename(APath, L'\\');
-}
-
-UnicodeString GetEnvVariable(const UnicodeString AEnvVarName)
-{
-  UnicodeString Result;
-  intptr_t Len = ::GetEnvironmentVariableW(AEnvVarName.c_str(), nullptr, 0);
-  if (Len > 0)
-  {
-    wchar_t *Buffer = Result.SetLength(Len - 1);
-    ::GetEnvironmentVariableW(AEnvVarName.c_str(), reinterpret_cast<LPWSTR>(Buffer), ToDWord(Len));
-  }
-  return Result;
-}
-
-} // namespace base
-
-// from RemoteFiles.cpp
 
 namespace base {
 
@@ -4452,10 +4382,9 @@ int FakeFileImageIndex(const UnicodeString /*AFileName*/, uint32_t /*Attrs*/,
 
   int Icon;
   if (SHGetFileInfo(FileName.c_str(),
-      Attrs, &SHFileInfo, sizeof(SHFileInfo),
-      SHGFI_SYSICONINDEX | SHGFI_USEFILEATTRIBUTES | SHGFI_TYPENAME) != 0)
+        Attrs, &SHFileInfo, sizeof(SHFileInfo),
+        SHGFI_SYSICONINDEX | SHGFI_USEFILEATTRIBUTES | SHGFI_TYPENAME) != 0)
   {
-
     if (TypeName != nullptr)
     {
       *TypeName = SHFileInfo.szTypeName;
@@ -4506,3 +4435,73 @@ UnicodeString FormatMultiFilesToOneConfirmation(const UnicodeString ATarget, boo
 
 } // namespace base
 
+//---------------------------------------------------------------------------
+
+namespace base {
+
+UnicodeString FormatBytes(int64_t Bytes, bool UseOrders)
+{
+  UnicodeString Result;
+
+  if (!UseOrders || (Bytes < ToInt64(100 * 1024)))
+  {
+    // Result = FormatFloat(L"#,##0 \"B\"", Bytes);
+    Result = FORMAT("%.0f B", ToDouble(Bytes));
+  }
+  else if (Bytes < ToInt64(100 * 1024 * 1024))
+  {
+    // Result = FormatFloat(L"#,##0 \"KB\"", Bytes / 1024);
+    Result = FORMAT("%.0f KB", ToDouble(Bytes / 1024.0));
+  }
+  else
+  {
+    // Result = FormatFloat(L"#,##0 \"MiB\"", Bytes / (1024*1024));
+    Result = FORMAT("%.0f MiB", ToDouble(Bytes / (1024 * 1024.0)));
+  }
+  return Result;
+}
+
+UnicodeString UnixExtractFileName(const UnicodeString APath)
+{
+  intptr_t Pos = APath.LastDelimiter(L'/');
+  UnicodeString Result;
+  if (Pos > 0)
+  {
+    Result = APath.SubString(Pos + 1, APath.Length() - Pos);
+  }
+  else
+  {
+    Result = APath;
+  }
+  return Result;
+}
+
+UnicodeString UnixExtractFileExt(const UnicodeString APath)
+{
+  UnicodeString FileName = base::UnixExtractFileName(APath);
+  intptr_t Pos = FileName.LastDelimiter(L".");
+  return (Pos > 0) ? APath.SubString(Pos, APath.Length() - Pos + 1) : UnicodeString();
+}
+
+UnicodeString ExtractFileName(const UnicodeString APath, bool Unix)
+{
+  if (Unix)
+  {
+    return UnixExtractFileName(APath);
+  }
+  return ExtractFilename(APath, L'\\');
+}
+
+UnicodeString GetEnvVariable(const UnicodeString AEnvVarName)
+{
+  UnicodeString Result;
+  intptr_t Len = ::GetEnvironmentVariableW(AEnvVarName.c_str(), nullptr, 0);
+  if (Len > 0)
+  {
+    wchar_t *Buffer = Result.SetLength(Len - 1);
+    ::GetEnvironmentVariableW(AEnvVarName.c_str(), reinterpret_cast<LPWSTR>(Buffer), ToDWord(Len));
+  }
+  return Result;
+}
+
+} // namespace base

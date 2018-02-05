@@ -6,7 +6,13 @@
 #include <Global.h>
 #include <Exceptions.h>
 
+//---------------------------------------------------------------------------
 #if 0
+#define EXCEPTION throw ExtException(nullptr, L"")
+#define THROWOSIFFALSE(C) { if (!(C)) RaiseLastOSError(); }
+#define SAFE_DESTROY_EX(CLASS, OBJ) { CLASS * PObj = OBJ; OBJ = nullptr; delete PObj; }
+#define SAFE_DESTROY(OBJ) SAFE_DESTROY_EX(TObject, OBJ)
+#define NULL_TERMINATE(S) S[LENOF(S) - 1] = L'\0'
 #define ASCOPY(dest, source) \
   { \
     AnsiString CopyBuf = source; \
@@ -206,16 +212,14 @@ typedef void (__closure* TProcessLocalFileEvent)
   (const UnicodeString FileName, const TSearchRec Rec, void * Param);
 #endif // #if 0
 typedef nb::FastDelegate3<void,
-        UnicodeString /*FileName*/, const TSearchRec & /*Rec*/,
-        void * /*Param*/> TProcessLocalFileEvent;
+  UnicodeString /*FileName*/, const TSearchRec & /*Rec*/,
+  void * /*Param*/> TProcessLocalFileEvent;
 
 NB_CORE_EXPORT bool FileSearchRec(const UnicodeString AFileName, TSearchRec &Rec);
-
 struct TSearchRecChecked : public TSearchRec
 {
   UnicodeString Path;
 };
-
 NB_CORE_EXPORT DWORD FindCheck(DWORD Result, const UnicodeString APath);
 NB_CORE_EXPORT DWORD FindFirstUnchecked(const UnicodeString APath, DWORD LocalFileAttrs, TSearchRecChecked &F);
 NB_CORE_EXPORT DWORD FindFirstChecked(const UnicodeString APath, DWORD LocalFileAttrs, TSearchRecChecked &F);
@@ -261,6 +265,7 @@ NB_CORE_EXPORT intptr_t TimeToSeconds(const TDateTime &T);
 NB_CORE_EXPORT intptr_t TimeToMinutes(const TDateTime &T);
 NB_CORE_EXPORT UnicodeString FormatDateTimeSpan(const UnicodeString TimeFormat, TDateTime DateTime);
 //---------------------------------------------------------------------------
+#if 0
 template<class MethodT>
 MethodT MakeMethod(void * Data, void * Code)
 {
@@ -271,6 +276,57 @@ MethodT MakeMethod(void * Data, void * Code)
 }
 //---------------------------------------------------------------------------
 enum TAssemblyLanguage { alCSharp, alVBNET, alPowerShell };
+extern const UnicodeString RtfPara;
+extern const UnicodeString AssemblyNamespace;
+extern const UnicodeString SessionClassName;
+extern const UnicodeString TransferOptionsClassName;
+//---------------------------------------------------------------------
+UnicodeString RtfText(const UnicodeString & Text, bool Rtf = true);
+UnicodeString RtfColor(int Index);
+UnicodeString RtfOverrideColorText(const UnicodeString & Text);
+UnicodeString RtfColorItalicText(int Color, const UnicodeString & Text);
+UnicodeString RtfColorText(int Color, const UnicodeString & Text);
+UnicodeString RtfKeyword(const UnicodeString & Text);
+UnicodeString RtfParameter(const UnicodeString & Text);
+UnicodeString RtfString(const UnicodeString & Text);
+UnicodeString RtfLink(const UnicodeString & Link, const UnicodeString & RtfText);
+UnicodeString RtfSwitch(
+  const UnicodeString & Name, const UnicodeString & Link, bool Rtf = true);
+UnicodeString RtfSwitchValue(
+  const UnicodeString & Name, const UnicodeString & Link, const UnicodeString & Value, bool Rtf = true);
+UnicodeString RtfSwitch(
+  const UnicodeString & Name, const UnicodeString & Link, const UnicodeString & Value, bool Rtf = true);
+UnicodeString RtfSwitch(
+  const UnicodeString & Name, const UnicodeString & Link, int Value, bool Rtf = true);
+UnicodeString RtfEscapeParam(UnicodeString Param);
+UnicodeString RtfRemoveHyperlinks(UnicodeString Text);
+UnicodeString ScriptCommandLink(const UnicodeString & Command);
+UnicodeString AssemblyBoolean(TAssemblyLanguage Language, bool Value);
+UnicodeString AssemblyString(TAssemblyLanguage Language, UnicodeString S);
+UnicodeString AssemblyCommentLine(TAssemblyLanguage Language, const UnicodeString & Text);
+UnicodeString AssemblyPropertyRaw(
+  TAssemblyLanguage Language, const UnicodeString & ClassName, const UnicodeString & Name,
+  const UnicodeString & Value, bool Inline);
+UnicodeString AssemblyProperty(
+  TAssemblyLanguage Language, const UnicodeString & ClassName, const UnicodeString & Name,
+  const UnicodeString & Type, const UnicodeString & Member, bool Inline);
+UnicodeString AssemblyProperty(
+  TAssemblyLanguage Language, const UnicodeString & ClassName, const UnicodeString & Name,
+  const UnicodeString & Value, bool Inline);
+UnicodeString AssemblyProperty(
+  TAssemblyLanguage Language, const UnicodeString & ClassName, const UnicodeString & Name, int Value, bool Inline);
+UnicodeString AssemblyProperty(
+  TAssemblyLanguage Language, const UnicodeString & ClassName, const UnicodeString & Name, bool Value, bool Inline);
+UnicodeString RtfLibraryMethod(const UnicodeString & ClassName, const UnicodeString & MethodName, bool Inpage);
+UnicodeString RtfLibraryClass(const UnicodeString & ClassName);
+UnicodeString AssemblyVariableName(TAssemblyLanguage Language, const UnicodeString & ClassName);
+UnicodeString AssemblyStatementSeparator(TAssemblyLanguage Language);
+UnicodeString AssemblyNewClassInstance(
+  TAssemblyLanguage Language, const UnicodeString & ClassName, bool Inline);
+UnicodeString AssemblyNewClassInstanceStart(
+  TAssemblyLanguage Language, const UnicodeString & ClassName, bool Inline);
+UnicodeString AssemblyNewClassInstanceEnd(TAssemblyLanguage Language, bool Inline);
+#endif // if 0
 
 #pragma warning(push)
 #pragma warning(disable: 4512) // assignment operator could not be generated
@@ -395,16 +451,6 @@ private:
 //---------------------------------------------------------------------------
 typedef rde::vector<UnicodeString> TUnicodeStringVector;
 //---------------------------------------------------------------------------
-
-namespace base {
-//TODO: move to Sysutils.hpp
-NB_CORE_EXPORT UnicodeString FormatBytes(int64_t Bytes, bool UseOrders = true);
-NB_CORE_EXPORT UnicodeString GetEnvVariable(const UnicodeString AEnvVarName);
-
-} // namespace base
-
-// from  RemoteFiles.h
-
 enum TModificationFmt
 {
   mfNone,
@@ -412,7 +458,7 @@ enum TModificationFmt
   mfMDY,
   mfFull,
 };
-
+//---------------------------------------------------------------------------
 namespace base {
 
 NB_CORE_EXPORT bool IsUnixStyleWindowsPath(const UnicodeString APath);
@@ -431,7 +477,6 @@ NB_CORE_EXPORT bool ExtractCommonPath(const TStrings *AFiles, UnicodeString &APa
 NB_CORE_EXPORT bool UnixExtractCommonPath(const TStrings *AFiles, UnicodeString &APath);
 NB_CORE_EXPORT UnicodeString ExtractFileName(const UnicodeString APath, bool Unix);
 NB_CORE_EXPORT bool IsUnixRootPath(const UnicodeString APath);
-NB_CORE_EXPORT UnicodeString GetEnvVariable(const UnicodeString AEnvVarName);
 NB_CORE_EXPORT bool IsUnixHiddenFile(const UnicodeString APath);
 NB_CORE_EXPORT UnicodeString AbsolutePath(const UnicodeString Base, const UnicodeString APath);
 NB_CORE_EXPORT UnicodeString FromUnixPath(const UnicodeString APath);
@@ -452,3 +497,12 @@ NB_CORE_EXPORT bool SameUserName(const UnicodeString UserName1, const UnicodeStr
 NB_CORE_EXPORT UnicodeString FormatMultiFilesToOneConfirmation(const UnicodeString ATarget, bool Unix);
 
 } // namespace base
+
+namespace base {
+//TODO: move to Sysutils.hpp
+NB_CORE_EXPORT UnicodeString GetEnvVariable(const UnicodeString AEnvVarName);
+NB_CORE_EXPORT UnicodeString FormatBytes(int64_t Bytes, bool UseOrders = true);
+NB_CORE_EXPORT UnicodeString GetEnvVariable(const UnicodeString AEnvVarName);
+
+} // namespace base
+//---------------------------------------------------------------------------
