@@ -215,9 +215,7 @@ THierarchicalStorage * TConfiguration::CreateStorage(bool & SessionList)
   }
   else if (GetStorage() == stNul)
   {
-#if 0
-    Result = TIniFileStorage::CreateFromPath(INI_NUL);
-#endif // #if 0
+    __removed Result = TIniFileStorage::CreateFromPath(INI_NUL);
     ThrowNotImplemented(3005);
     DebugAssert(false);
   }
@@ -261,7 +259,7 @@ UnicodeString TConfiguration::PropertyToKey(const UnicodeString AProperty)
 }
 #define LASTELEM(ELEM) \
   ELEM.SubString(ELEM.LastDelimiter(L".>") + 1, ELEM.Length() - ELEM.LastDelimiter(L".>"))
-
+//---------------------------------------------------------------------------
 #define BLOCK(KEY, CANCREATE, BLOCK) \
   if (Storage->OpenSubKey(KEY, CANCREATE, true)) \
     { SCOPE_EXIT { Storage->CloseSubKey(); }; { BLOCK } }
@@ -1138,7 +1136,6 @@ UnicodeString TConfiguration::GetVersion()
 {
   return GetFileVersion(GetFixedApplicationInfo());
 }
-
 //---------------------------------------------------------------------------
 UnicodeString TConfiguration::GetFileFileInfoString(const UnicodeString AKey,
   const UnicodeString AFileName, bool AllowEmpty) const
@@ -1626,7 +1623,7 @@ bool TConfiguration::GetCollectUsage() const
 {
   return false; // FUsage->Collect;
 }
-
+//---------------------------------------------------------------------------
 void TConfiguration::SetCollectUsage(bool /*Value*/)
 {
   // FUsage->Collect = Value;
@@ -1920,14 +1917,14 @@ void TConfiguration::SetShowFtpWelcomeMessage(bool Value)
   SET_CONFIG_PROPERTY(ShowFtpWelcomeMessage);
 }
 //---------------------------------------------------------------------------
-bool TConfiguration::GetPersistent() const
-{
-  return (GetStorage() != stNul);
-}
-//---------------------------------------------------------------------------
 void TConfiguration::SetSessionReopenAutoMaximumNumberOfRetries(intptr_t Value)
 {
   SET_CONFIG_PROPERTY(SessionReopenAutoMaximumNumberOfRetries);
+}
+//---------------------------------------------------------------------------
+bool TConfiguration::GetPersistent() const
+{
+  return (GetStorage() != stNul);
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
