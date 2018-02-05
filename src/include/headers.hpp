@@ -188,6 +188,25 @@ ToPtr(T a) { return const_cast<void *>(a); }
 template <class T>
 inline void *ToPtr(T a) { return reinterpret_cast<void *>((intptr_t)(a)); }
 
+// MakeOtherType<T>::Type gives an other type corresponding to integer type T.
+template <typename T>
+struct MakeOtherType { typedef T Type; };
+
+#define NB_SPECIALIZE_MAKE_T(T, U) \
+  template <> \
+  struct MakeOtherType<T> { typedef U Type; }
+
+NB_SPECIALIZE_MAKE_T(DWORD, size_t);
+NB_SPECIALIZE_MAKE_T(intptr_t, size_t);
+NB_SPECIALIZE_MAKE_T(int, size_t);
+
+// Casts integer to other type
+template <typename Int>
+inline typename MakeOtherType<Int>::Type ToSizeT(Int value)
+{
+  return static_cast<typename MakeOtherType<Int>::Type>(value);
+}
+
 template<typename T>
 inline void ClearStruct(T &s) { ::ZeroMemory(&s, sizeof(s)); }
 

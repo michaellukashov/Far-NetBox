@@ -2778,7 +2778,7 @@ void TSFTPFileSystem::ReserveResponse(const TSFTPPacket *Packet,
     Response->SetReservedBy(this);
   }
   FPacketReservations->Add(Response);
-  if (static_cast<size_t>(FPacketReservations->GetCount()) >= FPacketNumbers.size())
+  if (ToSizeT(FPacketReservations->GetCount()) >= FPacketNumbers.size())
   {
     FPacketNumbers.resize(FPacketReservations->GetCount() + 10);
   }
