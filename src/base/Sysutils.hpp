@@ -447,18 +447,6 @@ typedef struct _TIME_DYNAMIC_ZONE_INFORMATION
 } DYNAMIC_TIME_ZONE_INFORMATION, *PDYNAMIC_TIME_ZONE_INFORMATION;
 #endif
 
-#if 0
-class NB_CORE_EXPORT ScopeExit
-{
-public:
-  explicit ScopeExit(std::function<void()> &&f) : m_f(f) {}
-  ~ScopeExit() { m_f(); }
-
-private:
-  std::function<void()> m_f;
-};
-#endif // if 0
-
 #define DETAIL_CONCATENATE_IMPL(s1, s2) s1 ## s2
 #define CONCATENATE(s1, s2) DETAIL_CONCATENATE_IMPL(s1, s2)
 
@@ -504,26 +492,11 @@ public:
 } // namespace detail
 
 #define SCOPE_EXIT \
-  const auto ANONYMOUS_VARIABLE(scope_exit_guard) = detail::make_scope_guard() << [&]() /* lambda body here */
+  volatile const auto ANONYMOUS_VARIABLE(scope_exit_guard) = detail::make_scope_guard() << [&]() /* lambda body here */
 
-#if 0
-
-#define SCOPE_EXIT2(FUNC, PARAM) \
+#define ON_SCOPE_EXIT(FUNC, T, PARAM) \
   const auto ANONYMOUS_VARIABLE(scope_exit_guard) = \
-    detail::scope_guard2<nb::FastDelegate1<void, void *>, void *>(nb::bind(&FUNC, this), PARAM)
-
-class NullFunc
-{
-public:
-  NullFunc(std::function<void()> &) {}
-  ~NullFunc() {}
-};
-
-#define __finally \
-  std::function<void()> CONCATENATE(null_func_, __LINE__); \
-  NullFunc ANONYMOUS_VARIABLE(null_) = CONCATENATE(null_func_, __LINE__) = []() /* lambda body here */
-
-#endif // #if 0
+    detail::scope_guard2<nb::FastDelegate1<void, T>, T>(nb::bind(&FUNC, this), PARAM)
 
 #define try__catch
 #define try__finally
@@ -616,7 +589,7 @@ public:
 } // namespace scope_exit
 
 #define DETAIL_SCOPE_IMPL(type) \
-const auto ANONYMOUS_VARIABLE(scope_##type##_guard) = scope_exit::make_scope_guard<scope_exit::scope_type::type>() << [&]() /* lambda body here */
+  volatile const auto ANONYMOUS_VARIABLE(scope_##type##_guard) = scope_exit::make_scope_guard<scope_exit::scope_type::type>() << [&]() /* lambda body here */
 
 #undef SCOPE_EXIT
 #define SCOPE_EXIT DETAIL_SCOPE_IMPL(exit)

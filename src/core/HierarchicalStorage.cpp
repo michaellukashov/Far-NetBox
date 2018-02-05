@@ -1026,7 +1026,7 @@ TDateTime TCustomIniFileStorage::ReadDateTime(const UnicodeString Name, TDateTim
       try
       {
         RawByteString Raw = HexToBytes(Value);
-        if (static_cast<size_t>(Raw.Length()) == sizeof(Result))
+        if (ToSizeT(Raw.Length()) == sizeof(Result))
         {
           memcpy(&Result, Raw.c_str(), sizeof(Result));
         }
@@ -1064,7 +1064,7 @@ double TCustomIniFileStorage::ReadFloat(const UnicodeString Name, double Default
       try
       {
         RawByteString Raw = HexToBytes(Value);
-        if (static_cast<size_t>(Raw.Length()) == sizeof(Result))
+        if (ToSizeT(Raw.Length()) == sizeof(Result))
         {
           memcpy(&Result, Raw.c_str(), sizeof(Result));
         }

@@ -465,8 +465,7 @@ class numeric_limits<fmt::internal::DummyInt> :
     using namespace fmt::internal;
     // The resolution "priority" is:
     // isinf macro > std::isinf > ::isinf > fmt::internal::isinf
-    if (const_check(sizeof(isinf(x)) == sizeof(bool) ||
-                    sizeof(isinf(x)) == sizeof(int))) {
+    if (const_check(sizeof(isinf(x)) != sizeof(fmt::internal::DummyInt))) {
       return isinf(x) != 0;
     }
     return !_finite(static_cast<double>(x));
@@ -476,8 +475,7 @@ class numeric_limits<fmt::internal::DummyInt> :
   template <typename T>
   static bool isnotanumber(T x) {
     using namespace fmt::internal;
-    if (const_check(sizeof(isnan(x)) == sizeof(bool) ||
-                    sizeof(isnan(x)) == sizeof(int))) {
+    if (const_check(sizeof(isnan(x)) != sizeof(fmt::internal::DummyInt))) {
       return isnan(x) != 0;
     }
     return _isnan(static_cast<double>(x)) != 0;
@@ -486,8 +484,7 @@ class numeric_limits<fmt::internal::DummyInt> :
   // Portable version of signbit.
   static bool isnegative(double x) {
     using namespace fmt::internal;
-    if (const_check(sizeof(signbit(x)) == sizeof(bool) ||
-                    sizeof(signbit(x)) == sizeof(int))) {
+    if (const_check(sizeof(signbit(x)) != sizeof(fmt::internal::DummyInt))) {
       return signbit(x) != 0;
     }
     if (x < 0) return true;
@@ -3014,13 +3011,13 @@ typename BasicWriter<Char>::CharPtr
       CharPtr p = grow_buffer(fill_size);
       std::uninitialized_fill(p, p + fill_size, fill);
     }
-    CharPtr result = prepare_int_buffer(
-        num_digits, subspec, prefix, prefix_size);
+    std::ptrdiff_t offset = get(prepare_int_buffer(
+        num_digits, subspec, prefix, prefix_size)) - &buffer_[0];
     if (align == ALIGN_LEFT) {
       CharPtr p = grow_buffer(fill_size);
       std::uninitialized_fill(p, p + fill_size, fill);
     }
-    return result;
+    return internal::make_ptr(&buffer_[0], buffer_.size()) + offset;
   }
   unsigned size = prefix_size + num_digits;
   if (width <= size) {
@@ -4122,10 +4119,14 @@ template <typename ArgFormatter, typename Char, typename It>
 void format_arg(fmt::BasicFormatter<Char, ArgFormatter> &f,
     const Char *&format_str, const ArgJoin<Char, It>& e) {
   const Char* end = format_str;
-  if (*end == ':')
+  int brace_level = 1;
+  while (*end) {
+    if (*end == '}' && --brace_level == 0)
+      break;
+    if (*end == '{')
+      ++brace_level;
     ++end;
-  while (*end && *end != '}')
-    ++end;
+  }
   if (*end != '}')
     FMT_THROW(FormatError("missing '}' in format string"));
 

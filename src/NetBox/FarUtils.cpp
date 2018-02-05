@@ -46,7 +46,7 @@ bool CNBFile::Read(void *buff, size_t &buffSize)
   }
   else
   {
-    buffSize = static_cast<size_t>(bytesRead);
+    buffSize = ToSizeT(bytesRead);
   }
   return (m_LastError == ERROR_SUCCESS);
 }
@@ -129,7 +129,7 @@ DWORD CNBFile::LoadFile(const wchar_t *fileName, rde::vector<char> &fileContent)
     {
       return ERROR_SUCCESS;
     }
-    size_t s = static_cast<size_t>(fs);
+    size_t s = ToSizeT(fs);
     fileContent.resize(s);
     f.Read(&fileContent[0], s);
   }

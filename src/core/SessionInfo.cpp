@@ -1444,7 +1444,7 @@ void TActionLog::Add(const UnicodeString Line)
         UTF8String UtfLine = UTF8String(Line);
         size_t Written =
           FLogger->Write(UtfLine.c_str(), UtfLine.Length());
-        if (Written != static_cast<size_t>(UtfLine.Length()))
+        if (Written != ToSizeT(UtfLine.Length()))
         {
           throw ECRTExtException(L"");
         }

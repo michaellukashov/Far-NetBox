@@ -15,7 +15,7 @@ public:
 public:
   __property UnicodeString Name = { read = FName, write = SetName };
   __property bool Hidden = { read = FHidden };
-  
+
   UnicodeString GetName() const { return FName; }
   void SetName(const UnicodeString Value);
   bool GetHidden() const { return FHidden; }

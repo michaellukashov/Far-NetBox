@@ -841,7 +841,7 @@ private:
   void InternalDoTryOpen();
   void InitFileSystem();
 
-  void AfterMoveFiles(void * Params);
+  void AfterMoveFiles(TStrings *AFileList);
 };
 //---------------------------------------------------------------------------
 class NB_CORE_EXPORT TSecondaryTerminal : public TTerminal

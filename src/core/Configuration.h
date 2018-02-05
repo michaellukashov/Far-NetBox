@@ -4,12 +4,12 @@
 
 #include "RemoteFiles.h"
 #include "HierarchicalStorage.h"
-
+//---------------------------------------------------------------------------
 #define SET_CONFIG_PROPERTY_EX(PROPERTY, APPLY) \
   if (Get ## PROPERTY() != Value) { F ## PROPERTY = Value; Changed(); APPLY; }
 #define SET_CONFIG_PROPERTY(PROPERTY) \
   SET_CONFIG_PROPERTY_EX(PROPERTY, )
-
+//---------------------------------------------------------------------------
 #define CONST_DEFAULT_NUMBER_OF_RETRIES 2
 
 extern const wchar_t *AutoSwitchNames;
@@ -23,9 +23,9 @@ enum TFtpEncryptionSwitch_219
   fesImplicit,
   fesExplicitTLS,
 };
-
+//---------------------------------------------------------------------------
 class TStoredSessionList;
-
+//---------------------------------------------------------------------------
 class NB_CORE_EXPORT TConfiguration : public TObject
 {
   NB_DISABLE_COPY(TConfiguration)
@@ -149,10 +149,10 @@ public:
   void SetShowFtpWelcomeMessage(bool Value);
   intptr_t GetCompoundVersion() const;
   void UpdateActualLogProtocol();
-  void SetMimeTypes(UnicodeString Value);
   void SetExternalIpAddress(UnicodeString Value);
   void SetTryFtpWhenSshFails(bool Value);
   void SetParallelDurationThreshold(intptr_t Value);
+  void SetMimeTypes(UnicodeString Value);
   bool GetCollectUsage() const;
   void SetCollectUsage(bool Value);
   bool GetIsUnofficial() const;
@@ -179,9 +179,9 @@ public:
   virtual void Saved();
   void CleanupRegistry(const UnicodeString CleanupSubKey);
   UnicodeString BannerHash(const UnicodeString Banner) const;
-  static UnicodeString PropertyToKey(const UnicodeString Property);
   void SetBannerData(const UnicodeString ASessionKey, const UnicodeString ABannerHash, uintptr_t AParams);
   void GetBannerData(const UnicodeString ASessionKey, UnicodeString &ABannerHash, uintptr_t &AParams);
+  static UnicodeString PropertyToKey(const UnicodeString Property);
   virtual void DoSave(bool All, bool Explicit);
   UnicodeString FormatFingerprintKey(const UnicodeString ASiteKey, const UnicodeString AFingerprintType) const;
 
@@ -367,7 +367,7 @@ public:
   intptr_t GetSessionReopenAutoMaximumNumberOfRetries() const { return FSessionReopenAutoMaximumNumberOfRetries; }
   void SetSessionReopenAutoMaximumNumberOfRetries(intptr_t Value);
 };
-
+//---------------------------------------------------------------------------
 class NB_CORE_EXPORT TShortCuts : public TObject
 {
 public:
@@ -377,12 +377,12 @@ public:
 private:
   rde::vector<TShortCut> FShortCuts;
 };
-
+//---------------------------------------------------------------------------
 NB_CORE_EXPORT extern const UnicodeString OriginalPuttyRegistryStorageKey;
 NB_CORE_EXPORT extern const UnicodeString KittyRegistryStorageKey;
 NB_CORE_EXPORT extern const UnicodeString OriginalPuttyExecutable;
 NB_CORE_EXPORT extern const UnicodeString KittyExecutable;
-
+//---------------------------------------------------------------------------
 NB_CORE_EXPORT extern const UnicodeString Sha1ChecksumAlg;
 NB_CORE_EXPORT extern const UnicodeString Sha224ChecksumAlg;
 NB_CORE_EXPORT extern const UnicodeString Sha256ChecksumAlg;
@@ -390,8 +390,9 @@ NB_CORE_EXPORT extern const UnicodeString Sha384ChecksumAlg;
 NB_CORE_EXPORT extern const UnicodeString Sha512ChecksumAlg;
 NB_CORE_EXPORT extern const UnicodeString Md5ChecksumAlg;
 NB_CORE_EXPORT extern const UnicodeString Crc32ChecksumAlg;
-
+//---------------------------------------------------------------------------
 NB_CORE_EXPORT extern const UnicodeString SshFingerprintType;
 NB_CORE_EXPORT extern const UnicodeString TlsFingerprintType;
 //---------------------------------------------------------------------------
 NB_CORE_EXPORT extern const UnicodeString HttpsCertificateStorageKey;
+//---------------------------------------------------------------------------

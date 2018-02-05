@@ -4472,7 +4472,7 @@ void TRightsContainer::Change()
 
 TFarCheckBox *TRightsContainer::GetChecks(TRights::TRight Right)
 {
-  DebugAssert((Right >= 0) && (static_cast<size_t>(Right) < _countof(FCheckBoxes)));
+  DebugAssert((Right >= 0) && (ToSizeT(Right) < _countof(FCheckBoxes)));
   return FCheckBoxes[Right];
 }
 
@@ -7214,7 +7214,7 @@ void TSynchronizeChecklistDialog::AddColumn(UnicodeString &List,
 {
   wchar_t Separator = L'|'; // '\xB3';
   intptr_t Len = Value.Length();
-  intptr_t Width = static_cast<size_t>(FWidths[Column]);
+  intptr_t Width = ToIntPtr(FWidths[Column]);
   bool Right = (Column == 2) || (Column == 3) || (Column == 6) || (Column == 7);
   bool LastCol = (Column == FColumns - 1);
   if (Len <= Width)

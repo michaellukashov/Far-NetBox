@@ -1470,7 +1470,7 @@ int TSecureShell::TranslatePuttyMessage(
       size_t OriginalLen = nb::StrLength(Original);
       size_t PrefixLen = Div - Original;
       size_t SuffixLen = OriginalLen - PrefixLen - 1;
-      if ((static_cast<size_t>(Message.Length()) >= OriginalLen - 1) &&
+      if ((ToSizeT(Message.Length()) >= OriginalLen - 1) &&
         (wcsncmp(Message.c_str(), Original, PrefixLen) == 0) &&
         (wcsncmp(Message.c_str() + Message.Length() - SuffixLen, Div + 1, SuffixLen) == 0))
       {
@@ -2026,7 +2026,7 @@ bool TSecureShell::EventSelectLoop(uintptr_t MSec, bool ReadEventRequired,
       {
         sfree(Handles);
       };
-      size_t n = static_cast<size_t>(HandleCount + 1);
+      size_t n = ToSizeT(HandleCount + 1);
       Handles = sresize(Handles, n, HANDLE);
       Handles[HandleCount] = FSocketEvent;
       intptr_t Timeout = ToIntPtr(MSec);

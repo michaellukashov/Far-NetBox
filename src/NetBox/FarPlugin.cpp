@@ -111,7 +111,7 @@ void TCustomFarPlugin::SetStartupInfo(const struct PluginStartupInfo *Info)
     ClearStruct(FStartupInfo);
     memmove(&FStartupInfo, Info,
       Info->StructSize >= ToIntPtr(sizeof(FStartupInfo)) ?
-      sizeof(FStartupInfo) : static_cast<size_t>(Info->StructSize));
+      sizeof(FStartupInfo) : ToSizeT(Info->StructSize));
     // the minimum we really need
     DebugAssert(FStartupInfo.GetMsg != nullptr);
     DebugAssert(FStartupInfo.Message != nullptr);
@@ -119,10 +119,10 @@ void TCustomFarPlugin::SetStartupInfo(const struct PluginStartupInfo *Info)
     ClearStruct(FFarStandardFunctions);
     size_t FSFOffset = (static_cast<const char *>(reinterpret_cast<const void *>(&Info->FSF)) -
         static_cast<const char *>(reinterpret_cast<const void *>(Info)));
-    if (static_cast<size_t>(Info->StructSize) > FSFOffset)
+    if (ToSizeT(Info->StructSize) > FSFOffset)
     {
       memmove(&FFarStandardFunctions, Info->FSF,
-        static_cast<size_t>(Info->FSF->StructSize) >= sizeof(FFarStandardFunctions) ?
+        ToSizeT(Info->FSF->StructSize) >= sizeof(FFarStandardFunctions) ?
         sizeof(FFarStandardFunctions) : Info->FSF->StructSize);
     }
   }
@@ -868,7 +868,7 @@ void TFarMessageDialog::Init(uintptr_t AFlags,
     Button->SetOnClick(nb::bind(&TFarMessageDialog::ButtonClick, this));
     UnicodeString Caption = Buttons->GetString(Index);
     if ((FParams->Timeout > 0) &&
-      (FParams->TimeoutButton == static_cast<size_t>(Index)))
+      (FParams->TimeoutButton == ToUIntPtr(Index)))
     {
       FTimeoutButtonCaption = Caption;
       Caption = FORMAT(FParams->TimeoutStr, Caption, ToInt(FParams->Timeout / 1000));
@@ -976,7 +976,7 @@ void TFarMessageDialog::Idle()
 
   if (FParams->Timeout > 0)
   {
-    size_t Running = static_cast<size_t>((Now() - FStartTime).GetValue() * MSecsPerDay);
+    uintptr_t Running = ToUIntPtr((Now() - FStartTime).GetValue() * MSecsPerDay);
     if (Running >= FParams->Timeout)
     {
       DebugAssert(FTimeoutButton != nullptr);
