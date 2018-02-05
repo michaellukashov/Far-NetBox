@@ -3389,7 +3389,7 @@ UnicodeString RtfColor(int Index)
   return FORMAT(L"\\cf%d", (Index));
 }
 //---------------------------------------------------------------------
-UnicodeString RtfText(const UnicodeString & Text, bool Rtf)
+UnicodeString RtfText(const UnicodeString Text, bool Rtf)
 {
   UnicodeString Result = Text;
   if (Rtf)
@@ -3423,50 +3423,50 @@ UnicodeString RtfText(const UnicodeString & Text, bool Rtf)
   return Result;
 }
 //---------------------------------------------------------------------
-UnicodeString RtfColorText(int Color, const UnicodeString & Text)
+UnicodeString RtfColorText(int Color, const UnicodeString Text)
 {
   return RtfColor(Color) + L" " + RtfText(Text) + RtfColor(0) + L" ";
 }
 //---------------------------------------------------------------------
-UnicodeString RtfColorItalicText(int Color, const UnicodeString & Text)
+UnicodeString RtfColorItalicText(int Color, const UnicodeString Text)
 {
   return RtfColor(Color) + L"\\i " + RtfText(Text) + L"\\i0" + RtfColor(0) + L" ";
 }
 //---------------------------------------------------------------------
-UnicodeString RtfOverrideColorText(const UnicodeString & Text)
+UnicodeString RtfOverrideColorText(const UnicodeString Text)
 {
   return RtfColorText(1, Text);
 }
 //---------------------------------------------------------------------
-UnicodeString RtfKeyword(const UnicodeString & Text)
+UnicodeString RtfKeyword(const UnicodeString Text)
 {
   return RtfColorText(5, Text);
 }
 //---------------------------------------------------------------------
-UnicodeString RtfParameter(const UnicodeString & Text)
+UnicodeString RtfParameter(const UnicodeString Text)
 {
   return RtfColorText(6, Text);
 }
 //---------------------------------------------------------------------
-UnicodeString RtfString(const UnicodeString & Text)
+UnicodeString RtfString(const UnicodeString Text)
 {
   return RtfColorText(4, Text);
 }
 //---------------------------------------------------------------------
-UnicodeString RtfLink(const UnicodeString & Link, const UnicodeString & RtfText)
+UnicodeString RtfLink(const UnicodeString Link, const UnicodeString RtfText)
 {
   return
     L"{\\field{\\*\\fldinst{" + RtfHyperlinkFieldPrefix + Link + RtfHyperlinkFieldSuffix + L"}}{\\fldrslt{" +
     RtfText + L"}}}";
 }
 //---------------------------------------------------------------------
-UnicodeString ScriptCommandLink(const UnicodeString & Command)
+UnicodeString ScriptCommandLink(const UnicodeString Command)
 {
   return L"scriptcommand_" + Command;
 }
 //---------------------------------------------------------------------
 UnicodeString RtfSwitch(
-  const UnicodeString & Switch, const UnicodeString & Link, bool Rtf)
+  const UnicodeString Switch, const UnicodeString Link, bool Rtf)
 {
   UnicodeString Result = FORMAT(L"-%s", (Switch));
   if (Rtf)
@@ -3477,19 +3477,19 @@ UnicodeString RtfSwitch(
 }
 //---------------------------------------------------------------------
 UnicodeString RtfSwitchValue(
-  const UnicodeString & Name, const UnicodeString & Link, const UnicodeString & Value, bool Rtf)
+  const UnicodeString Name, const UnicodeString Link, const UnicodeString Value, bool Rtf)
 {
   return RtfSwitch(Name, Link, Rtf) + L"=" + Value;
 }
 //---------------------------------------------------------------------
 UnicodeString RtfSwitch(
-  const UnicodeString & Name, const UnicodeString & Link, const UnicodeString & Value, bool Rtf)
+  const UnicodeString Name, const UnicodeString Link, const UnicodeString Value, bool Rtf)
 {
   return RtfSwitchValue(Name, Link, RtfText(FORMAT("\"%s\"", (EscapeParam(Value))), Rtf), Rtf);
 }
 //---------------------------------------------------------------------
 UnicodeString RtfSwitch(
-  const UnicodeString & Name, const UnicodeString & Link, int Value, bool Rtf)
+  const UnicodeString Name, const UnicodeString Link, int Value, bool Rtf)
 {
   return RtfSwitchValue(Name, Link, RtfText(IntToStr(Value), Rtf), Rtf);
 }
@@ -3550,12 +3550,12 @@ UnicodeString RtfEscapeParam(const UnicodeString Param)
   return Param;
 }
 //---------------------------------------------------------------------
-static UnicodeString RtfCodeComment(const UnicodeString & Text)
+static UnicodeString RtfCodeComment(const UnicodeString Text)
 {
   return RtfColorItalicText(2, Text);
 }
 //---------------------------------------------------------------------
-UnicodeString AssemblyCommentLine(TAssemblyLanguage Language, const UnicodeString & Text)
+UnicodeString AssemblyCommentLine(TAssemblyLanguage Language, const UnicodeString Text)
 {
   UnicodeString Prefix;
   switch (Language)
@@ -3607,27 +3607,27 @@ UnicodeString AssemblyString(TAssemblyLanguage Language, UnicodeString S)
   return RtfString(S);
 }
 //---------------------------------------------------------------------
-static UnicodeString RtfClass(const UnicodeString & Text)
+static UnicodeString RtfClass(const UnicodeString Text)
 {
   return RtfColorText(3, Text);
 }
 //---------------------------------------------------------------------
-UnicodeString RtfLibraryClass(const UnicodeString & ClassName)
+UnicodeString RtfLibraryClass(const UnicodeString ClassName)
 {
   return RtfLink(L"library_" + ClassName.LowerCase(), RtfClass(ClassName));
 }
 //---------------------------------------------------------------------
-UnicodeString RtfLibraryMethod(const UnicodeString & ClassName, const UnicodeString & MethodName, bool InPage)
+UnicodeString RtfLibraryMethod(const UnicodeString ClassName, const UnicodeString MethodName, bool InPage)
 {
   return RtfLink(L"library_" + ClassName.LowerCase() + (InPage ? L"#" : L"_") + MethodName.LowerCase(), RtfOverrideColorText(MethodName));
 }
 //---------------------------------------------------------------------
-static UnicodeString RtfLibraryProperty(const UnicodeString & ClassName, const UnicodeString & PropertyName)
+static UnicodeString RtfLibraryProperty(const UnicodeString ClassName, const UnicodeString PropertyName)
 {
   return RtfLink(L"library_" + ClassName.LowerCase() + L"#" + PropertyName.LowerCase(), RtfOverrideColorText(PropertyName));
 }
 //---------------------------------------------------------------------
-UnicodeString AssemblyVariableName(TAssemblyLanguage Language, const UnicodeString & ClassName)
+UnicodeString AssemblyVariableName(TAssemblyLanguage Language, const UnicodeString ClassName)
 {
   UnicodeString Result = ClassName.SubString(1, 1).LowerCase() + ClassName.SubString(2, ClassName.Length() - 1);
   if (Language == alPowerShell)
@@ -3655,8 +3655,8 @@ UnicodeString AssemblyStatementSeparator(TAssemblyLanguage Language)
 }
 //---------------------------------------------------------------------
 UnicodeString AssemblyPropertyRaw(
-  TAssemblyLanguage Language, const UnicodeString & ClassName, const UnicodeString & Name,
-  const UnicodeString & Value, bool Inline)
+  TAssemblyLanguage Language, const UnicodeString ClassName, const UnicodeString Name,
+  const UnicodeString Value, bool Inline)
 {
   UnicodeString Result;
   UnicodeString RtfPropertyAndValue = RtfLibraryProperty(ClassName, Name) + L" = " + Value;
@@ -3680,8 +3680,8 @@ UnicodeString AssemblyPropertyRaw(
 }
 //---------------------------------------------------------------------
 UnicodeString AssemblyProperty(
-  TAssemblyLanguage Language, const UnicodeString & ClassName, const UnicodeString & Name,
-  const UnicodeString & Type, const UnicodeString & Member, bool Inline)
+  TAssemblyLanguage Language, const UnicodeString ClassName, const UnicodeString Name,
+  const UnicodeString Type, const UnicodeString Member, bool Inline)
 {
   UnicodeString PropertyValue;
 
@@ -3701,15 +3701,15 @@ UnicodeString AssemblyProperty(
 }
 //---------------------------------------------------------------------
 UnicodeString AssemblyProperty(
-  TAssemblyLanguage Language, const UnicodeString & ClassName,
-  const UnicodeString & Name, const UnicodeString & Value, bool Inline)
+  TAssemblyLanguage Language, const UnicodeString ClassName,
+  const UnicodeString Name, const UnicodeString Value, bool Inline)
 {
   return AssemblyPropertyRaw(Language, ClassName, Name, AssemblyString(Language, Value), Inline);
 }
 //---------------------------------------------------------------------
 UnicodeString AssemblyProperty(
-  TAssemblyLanguage Language, const UnicodeString & ClassName,
-  const UnicodeString & Name, int Value, bool Inline)
+  TAssemblyLanguage Language, const UnicodeString ClassName,
+  const UnicodeString Name, int Value, bool Inline)
 {
   return AssemblyPropertyRaw(Language, ClassName, Name, IntToStr(Value), Inline);
 }
@@ -3737,14 +3737,14 @@ UnicodeString AssemblyBoolean(TAssemblyLanguage Language, bool Value)
 }
 //---------------------------------------------------------------------
 UnicodeString AssemblyProperty(
-  TAssemblyLanguage Language, const UnicodeString & ClassName, const UnicodeString & Name, bool Value, bool Inline)
+  TAssemblyLanguage Language, const UnicodeString ClassName, const UnicodeString Name, bool Value, bool Inline)
 {
   UnicodeString PropertyValue = AssemblyBoolean(Language, Value);
 
   return AssemblyPropertyRaw(Language, ClassName, Name, PropertyValue, Inline);
 }
 //---------------------------------------------------------------------
-UnicodeString AssemblyNewClassInstance(TAssemblyLanguage Language, const UnicodeString & ClassName, bool Inline)
+UnicodeString AssemblyNewClassInstance(TAssemblyLanguage Language, const UnicodeString ClassName, bool Inline)
 {
   UnicodeString VariableName = AssemblyVariableName(Language, ClassName);
   UnicodeString RtfClass = RtfLibraryClass(ClassName);
@@ -3780,7 +3780,7 @@ UnicodeString AssemblyNewClassInstance(TAssemblyLanguage Language, const Unicode
 }
 //---------------------------------------------------------------------
 UnicodeString AssemblyNewClassInstanceStart(
-  TAssemblyLanguage Language, const UnicodeString & ClassName, bool Inline)
+  TAssemblyLanguage Language, const UnicodeString ClassName, bool Inline)
 {
   UnicodeString NewClassInstance = AssemblyNewClassInstance(Language, ClassName, Inline);
   UnicodeString SpaceOrPara = (Inline ? UnicodeString(L" ") : RtfPara);

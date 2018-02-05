@@ -501,10 +501,10 @@ public:
     bool PuttyExport, const TSessionData *Default, bool DoNotEncryptPasswords);
 #if 0
   UnicodeString ReadXmlNode(_di_IXMLNode Node, UnicodeString Name, UnicodeString Default);
-  int ReadXmlNode(_di_IXMLNode Node, const UnicodeString & Name, int Default);
-  _di_IXMLNode FindSettingsNode(_di_IXMLNode Node, const UnicodeString & Name);
-  UnicodeString ReadSettingsNode(_di_IXMLNode Node, const UnicodeString & Name, const UnicodeString & Default);
-  int ReadSettingsNode(_di_IXMLNode Node, const UnicodeString & Name, int Default);
+  int ReadXmlNode(_di_IXMLNode Node, const UnicodeString Name, int Default);
+  _di_IXMLNode FindSettingsNode(_di_IXMLNode Node, const UnicodeString Name);
+  UnicodeString ReadSettingsNode(_di_IXMLNode Node, const UnicodeString Name, const UnicodeString Default);
+  int ReadSettingsNode(_di_IXMLNode Node, const UnicodeString Name, int Default);
 #endif // #if 0
   bool IsSame(const TSessionData *Default, bool AdvancedOnly, TStrings *DifferentProperties) const;
   UnicodeString GetNameWithoutHiddenPrefix() const;
