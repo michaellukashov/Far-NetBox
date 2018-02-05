@@ -447,18 +447,6 @@ typedef struct _TIME_DYNAMIC_ZONE_INFORMATION
 } DYNAMIC_TIME_ZONE_INFORMATION, *PDYNAMIC_TIME_ZONE_INFORMATION;
 #endif
 
-#if 0
-class NB_CORE_EXPORT ScopeExit
-{
-public:
-  explicit ScopeExit(std::function<void()> &&f) : m_f(f) {}
-  ~ScopeExit() { m_f(); }
-
-private:
-  std::function<void()> m_f;
-};
-#endif // if 0
-
 #define DETAIL_CONCATENATE_IMPL(s1, s2) s1 ## s2
 #define CONCATENATE(s1, s2) DETAIL_CONCATENATE_IMPL(s1, s2)
 
