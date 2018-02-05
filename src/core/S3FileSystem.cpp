@@ -461,6 +461,7 @@ void TS3FileSystem::ParsePath(const UnicodeString APath, UnicodeString &BucketNa
 //---------------------------------------------------------------------------
 struct TLibS3BucketContext : S3BucketContext
 {
+CUSTOM_MEM_ALLOCATION_IMPL
   // These keep data that that we point the native S3BucketContext fields to
   UTF8String HostNameBuf;
   UTF8String BucketNameBuf;
