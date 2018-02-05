@@ -11,28 +11,44 @@
 
 #include <dlmalloc/dlmalloc-2.8.6.h>
 
+#if defined(__cplusplus)
+
+#define nb_malloc(size) ::dlcalloc(1, size)
+#define nb_calloc(count, size) ::dlcalloc(count, size)
+#define nb_realloc(ptr, size) ::dlrealloc(ptr, size)
+
+template<typename T>
+void nb_free(const T *ptr) { ::dlfree(reinterpret_cast<void *>(const_cast<T *>(ptr))); }
+
+#else // #if defined(__cplusplus)
+
 #define nb_malloc(size) dlcalloc(1, size)
 #define nb_calloc(count, size) dlcalloc(count, size)
 #define nb_realloc(ptr, size) dlrealloc(ptr, size)
 
-#if defined(__cplusplus)
-template<typename T>
-void nb_free(const T *ptr) { dlfree(reinterpret_cast<void *>(const_cast<T *>(ptr))); }
-#else
 #define nb_free(ptr) dlfree((void *)(ptr))
+
 #endif // if defined(__cplusplus)
 
-#else
+#else // #ifdef USE_DLMALLOC
+
+#if defined(__cplusplus)
 
 #define nb_malloc(size) ::malloc(size)
 #define nb_calloc(count, size) ::calloc(count, size)
 #define nb_realloc(ptr, size) ::realloc(ptr, size)
 
-#if defined(__cplusplus)
 template<typename T>
 void nb_free(const T *ptr) { ::free(reinterpret_cast<void *>(const_cast<T *>(ptr))); }
-#else
-#define nb_free(ptr) ::free((void *)(ptr))
+
+#else // #if defined(__cplusplus)
+
+#define nb_malloc(size) malloc(size)
+#define nb_calloc(count, size) calloc(count, size)
+#define nb_realloc(ptr, size) realloc(ptr, size)
+
+#define nb_free(ptr) free((void *)(ptr))
+
 #endif // if defined(__cplusplus)
 
 #endif // ifdef USE_DLMALLOC
