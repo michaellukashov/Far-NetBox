@@ -331,8 +331,6 @@ TFTPFileSystem::~TFTPFileSystem()
   SAFE_DESTROY(FLastError);
   SAFE_DESTROY(FFeatures);
   SAFE_DESTROY_EX(TFTPServerCapabilities, FServerCapabilities);
-  SAFE_DESTROY(FLastError);
-  SAFE_DESTROY(FFeatures);
 
   ResetCaches();
 }

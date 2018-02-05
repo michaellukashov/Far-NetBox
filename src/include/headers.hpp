@@ -162,7 +162,6 @@ struct MakeOtherType { typedef T Type; };
   struct MakeOtherType<T> { typedef U Type; }
 
 NB_SPECIALIZE_MAKE_T(DWORD, size_t);
-// NB_SPECIALIZE_MAKE_T(intptr_t, size_t);
 NB_SPECIALIZE_MAKE_T(int, size_t);
 NB_SPECIALIZE_MAKE_T(int64_t, size_t);
 
