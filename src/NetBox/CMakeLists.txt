@@ -1,7 +1,7 @@
 message(STATUS "CMake version: ${CMAKE_VERSION}")
 cmake_minimum_required(VERSION 2.8)
 
-set(OPT_COMPILE_OPENSSL ON CACHE STRING "Default build openSSL")
+set(OPT_BUILD_OPENSSL ON CACHE STRING "Default build openSSL")
 set(OPT_USE_UNITY_BUILD ON CACHE STRING "Default use unity build")
 
 project(NetBox)
@@ -213,7 +213,7 @@ include_directories(
 #-------------------------------------------------------------------------------
 #openssl
 
-if(OPT_COMPILE_OPENSSL)
+if(OPT_BUILD_OPENSSL)
 
 if(x64)
 set(OPENSSL_COMPILE_FLAGS ${OPENSSL_COMPILE_FLAGS}
@@ -890,7 +890,7 @@ target_include_directories(libssl SYSTEM BEFORE PRIVATE
   ../../libs/openssl/include
 )
 
-else(OPT_COMPILE_OPENSSL)
+else(OPT_BUILD_OPENSSL)
 
 add_library (libcrypto STATIC IMPORTED)
 set_property(TARGET libcrypto
@@ -899,7 +899,7 @@ add_library (libssl STATIC IMPORTED)
 set_property(TARGET libssl
     PROPERTY IMPORTED_LOCATION ${PROJECT_ROOT}/libs/openssl/${OPENSSL_LIB_DIR}/libssl.lib)
 
-endif(OPT_COMPILE_OPENSSL)
+endif(OPT_BUILD_OPENSSL)
 
 #-------------------------------------------------------------------------------
 #atlmfc
