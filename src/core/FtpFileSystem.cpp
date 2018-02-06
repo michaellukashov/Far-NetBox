@@ -3886,7 +3886,7 @@ static bool VerifyNameMask(const UnicodeString AName, const UnicodeString AMask)
   bool Result = true;
   UnicodeString Name = AName;
   UnicodeString Mask = AMask;
-  intptr_t Pos;
+  intptr_t Pos = 0;
   while (Result && (Pos = Mask.Pos(L"*")) > 0)
   {
     // Pos will typically be 1 here, so not actual comparison is done

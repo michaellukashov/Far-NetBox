@@ -2116,7 +2116,7 @@ void TTerminal::DisplayBanner(const UnicodeString ABanner)
 {
   if (GetOnDisplayBanner() != nullptr)
   {
-    uintptr_t OrigParams, Params;
+    uintptr_t OrigParams, Params = 0;
     if (GetConfiguration()->GetForceBanners() ||
         GetConfiguration()->ShowBanner(GetSessionData()->GetSessionKey(), ABanner, Params))
     {

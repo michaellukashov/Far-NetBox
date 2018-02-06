@@ -215,7 +215,7 @@ TFarInteractiveCustomCommand::TFarInteractiveCustomCommand(
   FPlugin = Plugin;
 }
 
-void TFarInteractiveCustomCommand::Prompt(intptr_t Index, const UnicodeString APrompt,
+void TFarInteractiveCustomCommand::Prompt(intptr_t /*Index*/, const UnicodeString APrompt,
   UnicodeString &Value) const
 {
   UnicodeString Prompt = APrompt;
