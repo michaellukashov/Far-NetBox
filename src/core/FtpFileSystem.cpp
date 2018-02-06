@@ -4548,7 +4548,7 @@ bool TFTPFileSystem::GetFileModificationTimeInUtc(const wchar_t *AFileName, stru
     else
     {
       FILETIME MTime;
-      if (!GetFileTime(LocalFileHandle, nullptr, nullptr, &MTime))
+      if (!::GetFileTime(LocalFileHandle, nullptr, nullptr, &MTime))
       {
         Result = false;
       }

@@ -545,7 +545,7 @@ bool SysUtulsFileExists(const UnicodeString AFileName)
 
 bool SysUtulsRenameFile(const UnicodeString From, const UnicodeString To)
 {
-  bool Result = ::MoveFile(ApiPath(From).c_str(), ApiPath(To).c_str()) != FALSE;
+  bool Result = ::MoveFileW(ApiPath(From).c_str(), ApiPath(To).c_str()) != FALSE;
   return Result;
 }
 
@@ -664,7 +664,7 @@ bool SysUtulsForceDirectories(const UnicodeString ADir)
 
 bool SysUtulsRemoveFile(const UnicodeString AFileName)
 {
-  ::DeleteFile(ApiPath(AFileName).c_str());
+  ::DeleteFileW(ApiPath(AFileName).c_str());
   return !::SysUtulsFileExists(AFileName);
 }
 
