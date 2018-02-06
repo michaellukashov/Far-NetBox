@@ -320,10 +320,10 @@ __forceinline size_t nbcore_base64_encode_bufsize(size_t inputLen)
 NB_CORE_DLL(char *)  rtrim(char *str);
 NB_CORE_DLL(wchar_t *) rtrimw(wchar_t *str);
 
-NB_CORE_DLL(char *)  ltrim(char *str);   // returns pointer to the beginning of string
+NB_CORE_DLL(char *)  ltrim(char *str);  // returns pointer to the beginning of string
 NB_CORE_DLL(wchar_t *) ltrimw(wchar_t *str);
 
-NB_CORE_DLL(char *)  ltrimp(char *str);  // returns pointer to the trimmed portion of string
+NB_CORE_DLL(char *)  ltrimp(char *str); // returns pointer to the trimmed portion of string
 NB_CORE_DLL(wchar_t *) ltrimpw(wchar_t *str);
 
 NB_CORE_DLL(char *) strdel(char *str, size_t len);
@@ -367,85 +367,10 @@ typedef union
   wchar_t **w; // array of strings of WCHARs
 } MAllStringArray;
 
-#define nbcore_t2a(s) nbcore_u2a(s)
-#define nbcore_a2t(s) nbcore_a2u(s)
-#define nbcore_t2u(s) nbcore_wstrdup(s)
-#define nbcore_u2t(s) nbcore_wstrdup(s)
-
-#define nbcore_t2a_cp(s,c) nbcore_u2a_cp(s,c)
-#define nbcore_a2t_cp(s,c) nbcore_a2u_cp(s,c)
-#define nbcore_t2u_cp(s,c) nbcore_wstrdup(s)
-#define nbcore_u2t_cp(s,c) nbcore_wstrdup(s)
-
-#define nbcore_tstrlen   nbcore_wstrlen
-#define nbcore_tstrcpy   nbcore_wstrcpy
-#define nbcore_tstrncpy  nbcore_wstrncpy
-#define nbcore_tstrcat   nbcore_wstrcat
-#define nbcore_tstrncat  nbcore_wstrncat
-#define nbcore_tstrcmp   nbcore_wstrcmp
-#define nbcore_tstrcmpi  nbcore_wstrcmpi
-#define nbcore_tstrncmp  nbcore_wstrncmp
-#define nbcore_tstrncmpi nbcore_wstrncmpi
-#define nbcore_tstrdup   nbcore_wstrdup
-#define nbcore_tstrndup  nbcore_wstrndup
-
-#define replaceStrT replaceStrW
-#define bin2hexT    bin2hexW
-
-#define rtrimt  rtrimw
-#define ltrimt  ltrimw
-#define ltrimpt ltrimpw
-
-#define strdelt strdelw
-
-#define wildcmpt  wildcmpw
-#define wildcmpit wildcmpiw
-
-#define nbcore_sntprintf  nbcore_snwprintf
-#define nbcore_vsntprintf nbcore_vsnwprintf
-
-#define nbcore_writeLogT  nbcore_writeLogW
-#define nbcore_writeLogVT nbcore_writeLogVW
-
 NB_CORE_DLL(wchar_t *) nbcore_a2u_cp(const char *src, int codepage);
 NB_CORE_DLL(wchar_t *) nbcore_a2u(const char *src);
 NB_CORE_DLL(char *)  nbcore_u2a_cp(const wchar_t *src, int codepage);
 NB_CORE_DLL(char *)  nbcore_u2a(const wchar_t *src);
-
-#if defined(__cplusplus)
-
-class _A2T
-{
-  wchar_t *buf;
-
-public:
-  __forceinline _A2T(const char *s) : buf(nbcore_a2t(s)) {}
-  __forceinline _A2T(const char *s, int cp) : buf(nbcore_a2t_cp(s, cp)) {}
-  ~_A2T() { nbcore_free(buf); }
-
-  __forceinline operator LPARAM() const { return (LPARAM)buf; }
-  __forceinline operator wchar_t *() const { return buf; }
-};
-
-class _T2A
-{
-  char *buf;
-
-public:
-  __forceinline _T2A(const wchar_t *s) : buf(nbcore_t2a(s)) {}
-  __forceinline _T2A(const wchar_t *s, int cp) : buf(nbcore_t2a_cp(s, cp)) {}
-  __forceinline ~_T2A() { nbcore_free(buf); }
-
-  __forceinline operator LPARAM() const { return (LPARAM)buf; }
-  __forceinline operator char *() const { return buf; }
-};
-
-#endif // #if defined(__cplusplus)
-
-NB_CORE_DLL(wchar_t*) nbcore_a2u_cp(const char* src, int codepage);
-NB_CORE_DLL(wchar_t*) nbcore_a2u(const char* src);
-NB_CORE_DLL(char*)  nbcore_u2a_cp(const wchar_t* src, int codepage);
-NB_CORE_DLL(char*)  nbcore_u2a(const wchar_t* src);
 
 ///////////////////////////////////////////////////////////////////////////////
 // threads
@@ -493,9 +418,6 @@ NB_CORE_DLL(int)   Ucs2toUtf8Len(const wchar_t *src);
 
 NB_CORE_DLL(BOOL)  Utf8CheckString(const char *str);
 
-#define Utf8DecodeT Utf8DecodeW
-#define Utf8EncodeT Utf8EncodeW
-
 #define nbcore_utf8decode(A, B)      Utf8Decode(A, B)
 #define nbcore_utf8decodecp(A, B, C) Utf8DecodeCP(A, B, C)
 #define nbcore_utf8decodeW(A)         Utf8DecodeW(A)
@@ -511,57 +433,21 @@ __forceinline char *nbcore_utf8decodeA(const char *src)
   return tmp;
 }
 
-#define nbcore_utf8decodeT nbcore_utf8decodeW
-#define nbcore_utf8encodeT nbcore_utf8encodeW
-
-#if defined(__cplusplus)
-
-class T2Utf
-{
-  char *m_str;
-
-public:
-  __forceinline T2Utf(const wchar_t *str) :
-    m_str(nbcore_utf8encodeT(str))
-  {
-  }
-
-  __forceinline ~T2Utf()
-  {
-    nbcore_free(m_str);
-  }
-
-  __forceinline char *detach()
-  {
-    char *res = m_str; m_str = nullptr;
-    return res;
-  }
-
-  __forceinline char &operator[](size_t idx) const { return m_str[idx]; }
-  __forceinline operator char *() const { return m_str; }
-  __forceinline operator unsigned char *() const { return (unsigned char *)m_str; }
-  __forceinline operator LPARAM() const { return (LPARAM)m_str; }
-#ifdef _XSTRING_
-  std::string str() const { return std::string(m_str); }
-#endif
-};
-
-#endif // #if defined(__cplusplus)
-
 ///////////////////////////////////////////////////////////////////////////////
 // Windows utilities
 
-NB_CORE_DLL(BOOL)    IsWinVerVistaPlus();
-NB_CORE_DLL(BOOL)    IsWinVer7Plus();
-NB_CORE_DLL(BOOL)    IsWinVer8Plus();
-NB_CORE_DLL(BOOL)    IsWinVer81Plus();
-NB_CORE_DLL(BOOL)    IsWinVer10Plus();
+NB_CORE_DLL(BOOL) IsWinVerVistaPlus();
+NB_CORE_DLL(BOOL) IsWinVer7Plus();
+NB_CORE_DLL(BOOL) IsWinVer8Plus();
+NB_CORE_DLL(BOOL) IsWinVer81Plus();
+NB_CORE_DLL(BOOL) IsWinVer10Plus();
 
-NB_CORE_DLL(BOOL)    IsFullScreen();
-NB_CORE_DLL(BOOL)    IsWorkstationLocked();
-NB_CORE_DLL(BOOL)    IsScreenSaverRunning();
+NB_CORE_DLL(BOOL) IsFullScreen();
+NB_CORE_DLL(BOOL) IsWorkstationLocked();
+NB_CORE_DLL(BOOL) IsScreenSaverRunning();
+NB_CORE_DLL(BOOL) IsTerminalDisconnected();
 
-NB_CORE_DLL(BOOL)    GetOSDisplayString(wchar_t *buf, size_t bufSize);
+NB_CORE_DLL(BOOL) GetOSDisplayString(wchar_t *buf, size_t bufSize);
 
 /////////////////////////////////////////////////////////////////////////////////////////
 // retrieves the hLangpack of a plugin by its HINSTANCE
