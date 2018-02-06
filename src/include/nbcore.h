@@ -496,8 +496,6 @@ inline int nbcore_vsnwprintf(wchar_t(&buffer)[_Size], const wchar_t *fmt, va_lis
 
 #endif // if defined(__cplusplus)
 
-#include <nbsystem_cpp.h>
-
 #if 0
 #ifndef NB_CORE_EXPORTS
 #if !defined(_WIN64)

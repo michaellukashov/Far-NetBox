@@ -27,7 +27,7 @@
 #include <nbglobals.h>
 #include <nbstring.h>
 
-#include <nbcore.h>
+#include <nbsystem.h>
 
 #include <nbstring.inl>
 #include <nbutils.h>
