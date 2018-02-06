@@ -3,7 +3,7 @@
 #include <mbstring.h>
 #include <wchar.h>
 
-#include <nbcore.h>
+#include <nbsystem.h>
 
 #ifdef __MINGW32__
 #include <limits.h>
