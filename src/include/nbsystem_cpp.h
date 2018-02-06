@@ -5,7 +5,7 @@
 #if defined(__cplusplus)
 
 ///////////////////////////////////////////////////////////////////////////////
-// nb_ptr - automatic pointer for buffers, allocated using nb_alloc/nb_calloc
+// nb_ptr - automatic pointer for buffers, allocated using nbcore_alloc/nbcore_calloc
 
 template<class T> class nb_ptr
 {
@@ -15,7 +15,7 @@ protected:
 public:
   __inline explicit nb_ptr() : data(nullptr) {}
   __inline explicit nb_ptr(T *_p) : data(_p) {}
-  __inline ~nb_ptr() { nb_free(data); }
+  __inline ~nb_ptr() { nbcore_free(data); }
   __inline T *get() const { return data; }
   __inline T *operator = (T *_p) { if (data) nbcore_free(data); data = _p; return data; }
   __inline T *operator->() const { return data; }
@@ -106,13 +106,13 @@ public:
 class MZeroedObject
 {
 public:
-  __inline void *operator new( size_t size )
+  __inline void *operator new(size_t size)
   {
-    return nb_calloc( 1, size );
+    return nbcore_calloc(size);
   }
-  __inline void operator delete( void *p )
+  __inline void operator delete(void *p)
   {
-    nb_free(p);
+    nbcore_free(p);
   }
 };
 
@@ -233,8 +233,8 @@ template<class T> struct OBJLIST : public LIST<T>
 
   __inline int remove(T *p)
   {
-    int i = getIndex( p );
-    if ( i != -1 )
+    int i = getIndex(p);
+    if (i != -1)
     {
       remove(i);
       return 1;
