@@ -465,8 +465,6 @@ public:
   ~scope_guard() { m_f(); }
 
 private:
-  scope_guard &operator=(const scope_guard &) = delete;
-  scope_guard(const scope_guard&) = delete;
   const F m_f;
 };
 
