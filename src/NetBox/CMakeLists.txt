@@ -1041,6 +1041,7 @@ add_library(tinyxml2 STATIC
 )
 
 target_compile_options(tinyxml2 PRIVATE
+  -DTINYXML2_EXPORT
 )
 
 #-------------------------------------------------------------------------------
