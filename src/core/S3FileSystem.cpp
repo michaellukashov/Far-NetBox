@@ -1182,7 +1182,8 @@ void TS3FileSystem::ConfirmOverwrite(
 
     default:
       DebugFail();
-    case qaCancel:
+	  break;
+	case qaCancel:
       OperationProgress->SetCancelAtLeast(csCancel);
       Abort();
       break;
