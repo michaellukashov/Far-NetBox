@@ -5402,7 +5402,7 @@ bool TTerminal::DoCreateLocalFile(const UnicodeString AFileName,
       // save the error, otherwise it gets overwritten by call to FileExists
       int LastError = ::GetLastError();
       DWORD LocalFileAttrs = INVALID_FILE_ATTRIBUTES;
-      if (::FileExists(ApiPath(AFileName)) &&
+      if (::SysUtulsFileExists(ApiPath(AFileName)) &&
         (((LocalFileAttrs = GetLocalFileAttributes(ApiPath(AFileName))) & (faReadOnly | faHidden)) != 0))
       {
         if (FLAGSET(LocalFileAttrs, faReadOnly))
@@ -7264,7 +7264,7 @@ void TTerminal::DoCopyToRemote(
         {
           DirectoryModified(TargetDir, false);
 
-          if (::DirectoryExists(ApiPath(FileName)))
+          if (::SysUtulsDirectoryExists(ApiPath(FileName)))
           {
             UnicodeString FileNameOnly = base::ExtractFileName(FileName, false);
             DirectoryModified(FullTargetDir + FileNameOnly, true);
@@ -7463,7 +7463,7 @@ void TTerminal::DirectorySource(
       if (FLAGSET(AParams, cpDelete))
       {
         DebugAssert(FLAGCLEAR(AParams, cpNoRecurse));
-        RemoveDir(ApiPath(ADirectoryName));
+        ::SysUtulsRemoveDir(ApiPath(ADirectoryName));
       }
       else if (CopyParam->GetClearArchive() && FLAGSET(Attrs, faArchive))
       {
@@ -7471,7 +7471,7 @@ void TTerminal::DirectorySource(
           FMTLOAD(CANT_SET_ATTRS, ADirectoryName), "",
         [&]()
         {
-          THROWOSIFFALSE(::FileSetAttr(ApiPath(ADirectoryName), (DWORD)(Attrs & ~faArchive)) == 0);
+          THROWOSIFFALSE(::SysUtulsFileSetAttr(ApiPath(ADirectoryName), (DWORD)(Attrs & ~faArchive)) == 0);
         });
         __removed FILE_OPERATION_LOOP_END(FMTLOAD(CANT_SET_ATTRS, (DirectoryName)));
       }
@@ -7511,7 +7511,7 @@ void TTerminal::UpdateSource(const TLocalFileHandle &AHandle, const TCopyParamTy
         FMTLOAD(CORE_DELETE_LOCAL_FILE_ERROR, AHandle.FileName), "",
       [&]()
       {
-        THROWOSIFFALSE(Sysutils::RemoveFile(ApiPath(AHandle.FileName)));
+        THROWOSIFFALSE(::SysUtulsRemoveFile(ApiPath(AHandle.FileName)));
       });
       __removed FILE_OPERATION_LOOP_END(FMTLOAD(DELETE_LOCAL_FILE_ERROR, (AHandle.FileName)));
     }
@@ -7522,7 +7522,7 @@ void TTerminal::UpdateSource(const TLocalFileHandle &AHandle, const TCopyParamTy
       FMTLOAD(CANT_SET_ATTRS, AHandle.FileName), "",
     [&]()
     {
-      THROWOSIFFALSE(::FileSetAttr(ApiPath(AHandle.FileName), (DWORD)(AHandle.Attrs & ~faArchive)) == 0);
+      THROWOSIFFALSE(::SysUtulsFileSetAttr(ApiPath(AHandle.FileName), (DWORD)(AHandle.Attrs & ~faArchive)) == 0);
     });
     __removed FILE_OPERATION_LOOP_END(FMTLOAD(CANT_SET_ATTRS, (Handle.FileName)));
   }
@@ -7914,7 +7914,7 @@ void TTerminal::Sink(
         FMTLOAD(CREATE_DIR_ERROR, DestFullName), "",
       [&]()
       {
-        THROWOSIFFALSE(::ForceDirectories(ApiPath(DestFullName)));
+        THROWOSIFFALSE(::SysUtulsForceDirectories(ApiPath(DestFullName)));
       });
       __removed FILE_OPERATION_LOOP_END(FMTLOAD(CREATE_DIR_ERROR, (DestFullName)));
 
@@ -7992,7 +7992,7 @@ void TTerminal::UpdateTargetAttrs(
       FMTLOAD(CANT_SET_ATTRS, ADestFullName), "",
     [&]()
     {
-      THROWOSIFFALSE(::FileSetAttr(ApiPath(ADestFullName), (DWORD)(Attrs | NewAttrs)) == 0);
+      THROWOSIFFALSE(::SysUtulsFileSetAttr(ApiPath(ADestFullName), (DWORD)(Attrs | NewAttrs)) == 0);
     });
     __removed FILE_OPERATION_LOOP_END(FMTLOAD(CANT_SET_ATTRS, (ADestFullName)));
   }
@@ -8412,7 +8412,7 @@ bool TTerminal::SetLocalFileAttributes(const UnicodeString LocalFileName, DWORD 
   {
     return GetOnSetLocalFileAttributes()(ApiPath(LocalFileName), FileAttributes);
   }
-  return ::FileSetAttr(LocalFileName, FileAttributes);
+  return ::SysUtulsFileSetAttr(LocalFileName, FileAttributes);
 }
 
 bool TTerminal::MoveLocalFile(const UnicodeString LocalFileName, const UnicodeString NewLocalFileName, DWORD Flags)
@@ -8421,7 +8421,7 @@ bool TTerminal::MoveLocalFile(const UnicodeString LocalFileName, const UnicodeSt
   {
     return GetOnMoveLocalFile()(LocalFileName, NewLocalFileName, Flags);
   }
-  return ::MoveFileEx(ApiPath(LocalFileName).c_str(), ApiPath(NewLocalFileName).c_str(), Flags) != FALSE;
+  return ::SysUtulsMoveFile(LocalFileName, NewLocalFileName, Flags) != FALSE;
 }
 
 bool TTerminal::RemoveLocalDirectory(const UnicodeString LocalDirName)
@@ -8430,7 +8430,7 @@ bool TTerminal::RemoveLocalDirectory(const UnicodeString LocalDirName)
   {
     return GetOnRemoveLocalDirectory()(LocalDirName);
   }
-  return RemoveDir(LocalDirName);
+  return ::SysUtulsRemoveDir(LocalDirName);
 }
 
 bool TTerminal::CreateLocalDirectory(const UnicodeString LocalDirName, LPSECURITY_ATTRIBUTES SecurityAttributes)
@@ -8439,7 +8439,7 @@ bool TTerminal::CreateLocalDirectory(const UnicodeString LocalDirName, LPSECURIT
   {
     return GetOnCreateLocalDirectory()(LocalDirName, SecurityAttributes);
   }
-  return ::CreateDir(LocalDirName, SecurityAttributes);
+  return ::SysUtulsCreateDir(LocalDirName, SecurityAttributes);
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------

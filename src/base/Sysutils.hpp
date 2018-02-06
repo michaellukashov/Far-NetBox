@@ -305,19 +305,20 @@ NB_CORE_EXPORT int64_t FileRead(HANDLE AHandle, void *Buffer, int64_t Count);
 NB_CORE_EXPORT int64_t FileWrite(HANDLE AHandle, const void *Buffer, int64_t Count);
 NB_CORE_EXPORT int64_t FileSeek(HANDLE AHandle, int64_t Offset, DWORD Origin);
 
-NB_CORE_EXPORT bool FileExists(const UnicodeString AFileName);
-NB_CORE_EXPORT bool RenameFile(const UnicodeString From, const UnicodeString To);
-NB_CORE_EXPORT bool DirectoryExists(const UnicodeString ADir);
-NB_CORE_EXPORT UnicodeString FileSearch(const UnicodeString AFileName, const UnicodeString DirectoryList);
-NB_CORE_EXPORT void FileAge(const UnicodeString AFileName, TDateTime &ATimestamp);
+NB_CORE_EXPORT bool SysUtulsFileExists(const UnicodeString AFileName);
+NB_CORE_EXPORT bool SysUtulsRenameFile(const UnicodeString From, const UnicodeString To);
+NB_CORE_EXPORT bool SysUtulsDirectoryExists(const UnicodeString ADir);
+NB_CORE_EXPORT UnicodeString SysUtulsFileSearch(const UnicodeString AFileName, const UnicodeString DirectoryList);
+NB_CORE_EXPORT void SysUtulsFileAge(const UnicodeString AFileName, TDateTime &ATimestamp);
 
-NB_CORE_EXPORT DWORD FileGetAttr(const UnicodeString AFileName, bool FollowLink = true);
-NB_CORE_EXPORT bool FileSetAttr(const UnicodeString AFileName, DWORD LocalFileAttrs);
+NB_CORE_EXPORT DWORD SysUtulsFileGetAttr(const UnicodeString AFileName, bool FollowLink = true);
+NB_CORE_EXPORT bool SysUtulsFileSetAttr(const UnicodeString AFileName, DWORD LocalFileAttrs);
 
-NB_CORE_EXPORT bool ForceDirectories(const UnicodeString ADir);
-NB_CORE_EXPORT bool RemoveFile(const UnicodeString AFileName);
-NB_CORE_EXPORT bool CreateDir(const UnicodeString ADir, LPSECURITY_ATTRIBUTES SecurityAttributes = nullptr);
-NB_CORE_EXPORT bool RemoveDir(const UnicodeString ADir);
+NB_CORE_EXPORT bool SysUtulsForceDirectories(const UnicodeString ADir);
+NB_CORE_EXPORT bool SysUtulsRemoveFile(const UnicodeString AFileName);
+NB_CORE_EXPORT bool SysUtulsCreateDir(const UnicodeString ADir, LPSECURITY_ATTRIBUTES SecurityAttributes = nullptr);
+NB_CORE_EXPORT bool SysUtulsMoveFile(const UnicodeString LocalFileName, const UnicodeString NewLocalFileName, DWORD AFlags);
+NB_CORE_EXPORT bool SysUtulsRemoveDir(const UnicodeString ADir);
 
 // not used
 #if 0

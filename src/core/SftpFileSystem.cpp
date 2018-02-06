@@ -5435,7 +5435,7 @@ void TSFTPFileSystem::Sink(
           FMTLOAD(CORE_DELETE_LOCAL_FILE_ERROR, LocalFileName), "",
         [&]()
         {
-          THROWOSIFFALSE(Sysutils::RemoveFile(ApiPath(LocalFileName)));
+          THROWOSIFFALSE(::SysUtulsRemoveFile(ApiPath(LocalFileName)));
         });
         __removed FILE_OPERATION_LOOP_END(FMTLOAD(DELETE_LOCAL_FILE_ERROR, (LocalFileName)));
       }
@@ -5457,7 +5457,7 @@ void TSFTPFileSystem::Sink(
       LocalFileName = DestPartialFullName;
 
       FTerminal->LogEvent("Checking existence of partially transferred file.");
-      if (FileExists(ApiPath(DestPartialFullName)))
+      if (::SysUtulsFileExists(ApiPath(DestPartialFullName)))
       {
         FTerminal->LogEvent("Partially transferred file exists.");
         int64_t ResumeOffset;
@@ -5486,7 +5486,7 @@ void TSFTPFileSystem::Sink(
             FMTLOAD(CORE_DELETE_LOCAL_FILE_ERROR, DestPartialFullName), "",
           [&]()
           {
-            THROWOSIFFALSE(Sysutils::RemoveFile(ApiPath(DestPartialFullName)));
+            THROWOSIFFALSE(::SysUtulsRemoveFile(ApiPath(DestPartialFullName)));
           });
           __removed FILE_OPERATION_LOOP_END(FMTLOAD(DELETE_LOCAL_FILE_ERROR, (DestPartialFullName)));
         }
@@ -5563,13 +5563,13 @@ void TSFTPFileSystem::Sink(
         DestPartialFullName = DestFullName + FTerminal->GetConfiguration()->GetPartialExt();
         if (ResumeAllowed)
         {
-          if (FileExists(ApiPath(DestPartialFullName)))
+          if (::SysUtulsFileExists(ApiPath(DestPartialFullName)))
           {
             FileOperationLoopCustom(FTerminal, OperationProgress, folAllowSkip,
               FMTLOAD(CORE_DELETE_LOCAL_FILE_ERROR, DestPartialFullName), "",
             [&]()
             {
-              THROWOSIFFALSE(Sysutils::RemoveFile(ApiPath(DestPartialFullName)));
+              THROWOSIFFALSE(::SysUtulsRemoveFile(ApiPath(DestPartialFullName)));
             });
             __removed FILE_OPERATION_LOOP_END(FMTLOAD(DELETE_LOCAL_FILE_ERROR, (DestPartialFullName)));
           }
@@ -5802,11 +5802,11 @@ void TSFTPFileSystem::Sink(
         "",
       [&]()
       {
-        if (FileExists(ApiPath(DestFullName)))
+        if (::SysUtulsFileExists(ApiPath(DestFullName)))
         {
           DeleteFileChecked(DestFullName);
         }
-        THROWOSIFFALSE(Sysutils::RenameFile(DestPartialFullName, DestFullName));
+        THROWOSIFFALSE(::SysUtulsRenameFile(DestPartialFullName, DestFullName));
       });
       __removed FILE_OPERATION_LOOP_END(FMTLOAD(RENAME_AFTER_RESUME_ERROR, (ExtractFileName(DestPartialFullName), ADestFileName)));
     }

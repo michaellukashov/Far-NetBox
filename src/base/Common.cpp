@@ -478,7 +478,7 @@ static UnicodeString GetWineHomeFolder()
     }
   }
 
-  if (!DirectoryExists(Result))
+  if (!SysUtulsDirectoryExists(Result))
   {
     Result = L"";
   }
@@ -503,7 +503,7 @@ UnicodeString GetPersonalFolder()
       // but try to go deeper to "Documents"
       UnicodeString WineDocuments =
         IncludeTrailingBackslash(WineHome) + L"Documents";
-      if (DirectoryExists(WineDocuments))
+      if (SysUtulsDirectoryExists(WineDocuments))
       {
         Result = WineDocuments;
       }
@@ -526,7 +526,7 @@ UnicodeString GetDesktopFolder()
     {
       UnicodeString WineDesktop =
         IncludeTrailingBackslash(WineHome) + L"Desktop";
-      if (DirectoryExists(WineHome))
+      if (SysUtulsDirectoryExists(WineHome))
       {
         Result = WineDesktop;
       }
@@ -1433,7 +1433,7 @@ DWORD FileGetAttrFix(const UnicodeString AFileName)
   {
     FollowLink = false;
   }
-  return ::FileGetAttr(AFileName, FollowLink);
+  return ::SysUtulsFileGetAttr(AFileName, FollowLink);
 }
 //---------------------------------------------------------------------------
 TDateTime EncodeDateVerbose(Word Year, Word Month, Word Day)
@@ -2329,7 +2329,7 @@ static bool DoRecursiveDeleteFile(const UnicodeString AFileName, bool ToRecycleB
     {
       if (FLAGCLEAR(SearchRec.Attr, faDirectory))
       {
-        Result = ::RemoveFile(ApiPath(AFileName));
+        Result = ::SysUtulsRemoveFile(ApiPath(AFileName));
       }
       else
       {
@@ -2355,7 +2355,7 @@ static bool DoRecursiveDeleteFile(const UnicodeString AFileName, bool ToRecycleB
               }
               else
               {
-                Result = ::RemoveFile(FileName2);
+                Result = ::SysUtulsRemoveFile(FileName2);
                 if (!Result)
                 {
                   ErrorPath = FileName2;
@@ -2371,7 +2371,7 @@ static bool DoRecursiveDeleteFile(const UnicodeString AFileName, bool ToRecycleB
 
           if (Result)
           {
-            Result = ::RemoveDir(ApiPath(AFileName));
+            Result = ::SysUtulsRemoveDir(ApiPath(AFileName));
           }
         }
       }
@@ -2440,7 +2440,7 @@ void RecursiveDeleteFileChecked(const UnicodeString AFileName, bool ToRecycleBin
 //---------------------------------------------------------------------------
 void DeleteFileChecked(const UnicodeString AFileName)
 {
-  if (!::RemoveFile(ApiPath(AFileName)))
+  if (!::SysUtulsRemoveFile(ApiPath(AFileName)))
   {
     throw EOSExtException(FMTLOAD(CORE_DELETE_LOCAL_FILE_ERROR, AFileName));
   }
@@ -3272,12 +3272,12 @@ void ParseCertificate(const UnicodeString Path,
         else
         {
           UnicodeString CertificatePath = ChangeFileExt(Path, L".cer");
-          if (!FileExists(CertificatePath))
+          if (!::SysUtulsFileExists(CertificatePath))
           {
             CertificatePath = ChangeFileExt(Path, L".crt");
           }
 
-          if (!FileExists(CertificatePath))
+          if (!::SysUtulsFileExists(CertificatePath))
           {
             throw Exception(MainInstructions(FMTLOAD(CERTIFICATE_PUBLIC_KEY_NOT_FOUND, Path)));
           }

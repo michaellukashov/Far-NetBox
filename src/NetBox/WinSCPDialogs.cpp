@@ -5590,14 +5590,14 @@ bool TCopyDialog::CloseQuery()
     if (!FToRemote && ((FOptions & coTempTransfer) == 0))
     {
       UnicodeString Directory = ::ExtractFilePath(DirectoryEdit->GetText());
-      if (!Directory.IsEmpty() && !::DirectoryExists(Directory))
+      if (!Directory.IsEmpty() && !::SysUtulsDirectoryExists(Directory))
       {
         TWinSCPPlugin *WinSCPPlugin = dyn_cast<TWinSCPPlugin>(FarPlugin);
 
         if (WinSCPPlugin->MoreMessageDialog(FORMAT(GetMsg(NB_CREATE_LOCAL_DIRECTORY), Directory),
             nullptr, qtConfirmation, qaOK | qaCancel) != qaCancel)
         {
-          if (!::ForceDirectories(ApiPath(Directory)))
+          if (!::SysUtulsForceDirectories(ApiPath(Directory)))
           {
             DirectoryEdit->SetFocus();
             throw ExtException(FORMAT(GetMsg(NB_CREATE_LOCAL_DIR_ERROR), Directory));

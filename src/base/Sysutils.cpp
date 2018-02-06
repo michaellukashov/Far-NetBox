@@ -538,25 +538,25 @@ int64_t FileSeek(HANDLE AHandle, int64_t Offset, DWORD Origin)
   return (ToInt64(high) << 32) + low;
 }
 
-bool FileExists(const UnicodeString AFileName)
+bool SysUtulsFileExists(const UnicodeString AFileName)
 {
-  return FileGetAttr(AFileName) != INVALID_FILE_ATTRIBUTES;
+  return SysUtulsFileGetAttr(AFileName) != INVALID_FILE_ATTRIBUTES;
 }
 
-bool RenameFile(const UnicodeString From, const UnicodeString To)
+bool SysUtulsRenameFile(const UnicodeString From, const UnicodeString To)
 {
   bool Result = ::MoveFile(ApiPath(From).c_str(), ApiPath(To).c_str()) != FALSE;
   return Result;
 }
 
-bool DirectoryExists(const UnicodeString ADir)
+bool SysUtulsDirectoryExists(const UnicodeString ADir)
 {
   if ((ADir == THISDIRECTORY) || (ADir == PARENTDIRECTORY))
   {
     return true;
   }
 
-  DWORD LocalFileAttrs = FileGetAttr(ADir);
+  DWORD LocalFileAttrs = SysUtulsFileGetAttr(ADir);
 
   if ((LocalFileAttrs != INVALID_FILE_ATTRIBUTES) && FLAGSET(LocalFileAttrs, FILE_ATTRIBUTE_DIRECTORY))
   {
@@ -565,7 +565,7 @@ bool DirectoryExists(const UnicodeString ADir)
   return false;
 }
 
-UnicodeString FileSearch(const UnicodeString AFileName, const UnicodeString DirectoryList)
+UnicodeString SysUtulsFileSearch(const UnicodeString AFileName, const UnicodeString DirectoryList)
 {
   UnicodeString Result;
   UnicodeString Temp = DirectoryList;
@@ -591,7 +591,7 @@ UnicodeString FileSearch(const UnicodeString AFileName, const UnicodeString Dire
     }
     Result = ::IncludeTrailingBackslash(Result);
     Result = Result + AFileName;
-    if (!::FileExists(Result))
+    if (!::SysUtulsFileExists(Result))
     {
       Result.Clear();
     }
@@ -600,7 +600,7 @@ UnicodeString FileSearch(const UnicodeString AFileName, const UnicodeString Dire
   return Result;
 }
 
-void FileAge(const UnicodeString AFileName, TDateTime &ATimestamp)
+void SysUtulsFileAge(const UnicodeString AFileName, TDateTime &ATimestamp)
 {
   WIN32_FIND_DATA FindData;
   HANDLE LocalFileHandle = ::FindFirstFileW(ApiPath(AFileName).c_str(), &FindData);
@@ -614,30 +614,35 @@ void FileAge(const UnicodeString AFileName, TDateTime &ATimestamp)
   }
 }
 
-DWORD FileGetAttr(const UnicodeString AFileName, bool /*FollowLink*/)
+DWORD SysUtulsFileGetAttr(const UnicodeString AFileName, bool /*FollowLink*/)
 {
   TODO("FollowLink");
   DWORD LocalFileAttrs = ::GetFileAttributesW(ApiPath(AFileName).c_str());
   return LocalFileAttrs;
 }
 
-bool FileSetAttr(const UnicodeString AFileName, DWORD LocalFileAttrs)
+bool SysUtulsFileSetAttr(const UnicodeString AFileName, DWORD LocalFileAttrs)
 {
   bool Result = ::SetFileAttributesW(ApiPath(AFileName).c_str(), LocalFileAttrs) != FALSE;
   return Result;
 }
 
-bool CreateDir(const UnicodeString ADir, LPSECURITY_ATTRIBUTES SecurityAttributes)
+bool SysUtulsCreateDir(const UnicodeString ADir, LPSECURITY_ATTRIBUTES SecurityAttributes)
 {
   return ::CreateDirectoryW(ApiPath(ADir).c_str(), SecurityAttributes) != FALSE;
 }
 
-bool RemoveDir(const UnicodeString ADir)
+bool SysUtulsRemoveDir(const UnicodeString ADir)
 {
   return ::RemoveDirectoryW(ApiPath(ADir).c_str()) != FALSE;
 }
 
-bool ForceDirectories(const UnicodeString ADir)
+bool SysUtulsMoveFile(const UnicodeString LocalFileName, const UnicodeString NewLocalFileName, DWORD AFlags)
+{
+  return ::MoveFileExW(ApiPath(LocalFileName).c_str(), ApiPath(NewLocalFileName).c_str(), AFlags) != FALSE;
+}
+
+bool SysUtulsForceDirectories(const UnicodeString ADir)
 {
   bool Result = true;
   if (ADir.IsEmpty())
@@ -645,22 +650,22 @@ bool ForceDirectories(const UnicodeString ADir)
     return false;
   }
   UnicodeString Dir = ::ExcludeTrailingBackslash(ADir);
-  if ((Dir.Length() < 3 + 4) || ::DirectoryExists(Dir)) // \\?\C:
+  if ((Dir.Length() < 3 + 4) || ::SysUtulsDirectoryExists(Dir)) // \\?\C:
   {
     return Result;
   }
   if (::ExtractFilePath(Dir).IsEmpty())
   {
-    return ::CreateDir(Dir);
+    return ::SysUtulsCreateDir(Dir);
   }
-  Result = ::ForceDirectories(::ExtractFilePath(Dir)) && ::CreateDir(Dir);
+  Result = ::SysUtulsForceDirectories(::ExtractFilePath(Dir)) && ::SysUtulsCreateDir(Dir);
   return Result;
 }
 
-bool RemoveFile(const UnicodeString AFileName)
+bool SysUtulsRemoveFile(const UnicodeString AFileName)
 {
   ::DeleteFile(ApiPath(AFileName).c_str());
-  return !::FileExists(AFileName);
+  return !::SysUtulsFileExists(AFileName);
 }
 
 #if 0

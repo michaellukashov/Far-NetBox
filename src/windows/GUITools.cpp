@@ -39,7 +39,7 @@ extern const UnicodeString PuttygenTool = L"puttygen.exe";
 
 bool FindFile(UnicodeString &APath)
 {
-  bool Result = ::FileExists(ApiPath(APath));
+  bool Result = ::SysUtulsFileExists(ApiPath(APath));
   if (!Result)
   {
     UnicodeString ProgramFiles32 = ::IncludeTrailingBackslash(base::GetEnvVariable(L"ProgramFiles"));
@@ -50,7 +50,7 @@ bool FindFile(UnicodeString &APath)
     {
       UnicodeString Path64 =
         ProgramFiles64 + APath.SubString(ProgramFiles32.Length() + 1, APath.Length() - ProgramFiles32.Length());
-      if (::FileExists(ApiPath(Path64)))
+      if (::SysUtulsFileExists(ApiPath(Path64)))
       {
         APath = Path64;
         Result = true;
@@ -63,7 +63,7 @@ bool FindFile(UnicodeString &APath)
     UnicodeString Paths = base::GetEnvVariable("PATH");
     if (Paths.Length() > 0)
     {
-      UnicodeString NewPath = ::FileSearch(base::ExtractFileName(APath, false), Paths);
+      UnicodeString NewPath = ::SysUtulsFileSearch(base::ExtractFileName(APath, false), Paths);
       Result = !NewPath.IsEmpty();
       if (Result)
       {
@@ -196,10 +196,10 @@ bool FindTool(const UnicodeString Name, UnicodeString &APath)
   UnicodeString AppPath = ::IncludeTrailingBackslash(::ExtractFilePath(GetConfiguration()->ModuleFileName()));
   APath = AppPath + Name;
   bool Result = true;
-  if (!::FileExists(ApiPath(APath)))
+  if (!::SysUtulsFileExists(ApiPath(APath)))
   {
     APath = AppPath + L"PuTTY\\" + Name;
-    if (!::FileExists(ApiPath(APath)))
+    if (!::SysUtulsFileExists(ApiPath(APath)))
     {
       APath = Name;
       if (!FindFile(APath))
@@ -389,7 +389,7 @@ UnicodeString UniqTempDir(const UnicodeString BaseDir, const UnicodeString Ident
       TempDir += ::IncludeTrailingBackslash(FormatDateTime(L"nnzzz", Now()));
     }
   }
-  while (!Mask && ::DirectoryExists(ApiPath(TempDir)));
+  while (!Mask && ::SysUtulsDirectoryExists(ApiPath(TempDir)));
 
   return TempDir;
 }
@@ -407,7 +407,7 @@ bool DeleteDirectory(const UnicodeString ADirName)
     }
     else
     {
-      retval = ::RemoveFile(ApiPath(ADirName + L"\\" + sr.Name));
+      retval = ::SysUtulsRemoveFile(ApiPath(ADirName + L"\\" + sr.Name));
     }
 
     if (retval)
@@ -422,7 +422,7 @@ bool DeleteDirectory(const UnicodeString ADirName)
         }
         else
         {
-          retval = ::RemoveFile(ApiPath(ADirName + L"\\" + sr.Name));
+          retval = ::SysUtulsRemoveFile(ApiPath(ADirName + L"\\" + sr.Name));
         }
 
         if (!retval) break;
@@ -430,7 +430,7 @@ bool DeleteDirectory(const UnicodeString ADirName)
     }
   }
   base::FindClose(sr);
-  if (retval) retval = RemoveDir(ApiPath(ADirName)); // VCL function
+  if (retval) retval = ::SysUtulsRemoveDir(ApiPath(ADirName)); // VCL function
   return retval;
 }
 

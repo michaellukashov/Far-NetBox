@@ -1712,7 +1712,7 @@ void TWebDAVFileSystem::Sink(
   uintptr_t /*AFlags*/, TDownloadSessionAction & Action)
 {
   UnicodeString DestFullName = ATargetDir + ADestFileName;
-  if (FileExists(ApiPath(DestFullName)))
+  if (::SysUtulsFileExists(ApiPath(DestFullName)))
   {
     int64_t Size;
     int64_t MTime;
@@ -1765,7 +1765,7 @@ void TWebDAVFileSystem::Sink(
             FMTLOAD(CORE_DELETE_LOCAL_FILE_ERROR, DestFullName), "",
           [&]()
           {
-            THROWOSIFFALSE(Sysutils::RemoveFile(ApiPath(DestFullName)));
+            THROWOSIFFALSE(::SysUtulsRemoveFile(ApiPath(DestFullName)));
           });
           __removed FILE_OPERATION_LOOP_END(FMTLOAD(DELETE_LOCAL_FILE_ERROR, (DestFullName)));
         }
