@@ -685,12 +685,12 @@ public:
 
   static void __stdcall ConvertToBaseType(LPWSTR pszDest, int nDestLength, LPCWSTR pszSrc, int nSrcLength = -1)
   {
-#if _MSC_VER >= 1400
     if (nSrcLength == -1)
     {
       nSrcLength = 1 + GetBaseTypeLength(pszSrc);
     }
     // nLen is in wchar_ts
+#if _MSC_VER >= 1400
     wmemcpy_s(pszDest, nDestLength, pszSrc, nSrcLength);
 #else
     wmemcpy(pszDest, pszSrc, nDestLength);
