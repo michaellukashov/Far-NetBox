@@ -24,7 +24,6 @@
 //#include <win2k.h>
 
 //#include <nbsystem.h>
-//#include <nbsystem_cpp.h>
 #include <nbglobals.h>
 #include <nbstring.h>
 
