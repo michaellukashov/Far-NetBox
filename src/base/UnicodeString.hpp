@@ -349,6 +349,8 @@ private:
   rawstring_t Data;
 };
 
+// rde support
+
 namespace rde {
 
 template<typename S>
@@ -377,7 +379,9 @@ inline bool operator>(const S &lhs, const S &rhs)
 
 }  // namespace rde
 
-template <class T>
-inline char *ToChar(T &a) { return const_cast<char *>(a.c_str()); }
-template <class T>
-inline wchar_t *ToWChar(T &a) { return const_cast<wchar_t *>(a.c_str()); }
+// utility functions
+
+template <class StringClass>
+inline char *ToChar(StringClass &a) { return const_cast<char *>(a.c_str()); }
+template <class StringClass>
+inline wchar_t *ToWChar(StringClass &a) { return const_cast<wchar_t *>(a.c_str()); }

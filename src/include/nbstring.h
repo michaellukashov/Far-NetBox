@@ -3,7 +3,7 @@
 #include <mbstring.h>
 #include <wchar.h>
 
-#include <nbcore.h>
+#include <nbsystem.h>
 
 #ifdef __MINGW32__
 #include <limits.h>
@@ -274,7 +274,6 @@ template< typename _CharType = char >
 class NBChTraitsCRT : public NBChTraitsBase < _CharType >
 {
 public:
-
   static char *__stdcall CharNext(const char *p)
   {
     return reinterpret_cast<char *>(_mbsinc(reinterpret_cast<const unsigned char *>(p)));
@@ -686,12 +685,12 @@ public:
 
   static void __stdcall ConvertToBaseType(LPWSTR pszDest, int nDestLength, LPCWSTR pszSrc, int nSrcLength = -1)
   {
-#if _MSC_VER >= 1400
     if (nSrcLength == -1)
     {
       nSrcLength = 1 + GetBaseTypeLength(pszSrc);
     }
     // nLen is in wchar_ts
+#if _MSC_VER >= 1400
     wmemcpy_s(pszDest, nDestLength, pszSrc, nSrcLength);
 #else
     wmemcpy(pszDest, pszSrc, nDestLength);

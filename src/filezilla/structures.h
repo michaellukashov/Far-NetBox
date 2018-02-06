@@ -1,6 +1,6 @@
 #pragma once
 
-#include <headers.hpp>
+#include <nbsystem.h>
 
 class CServerPath;
 

@@ -68,7 +68,7 @@ to tim.kosse@gmx.de
 
 #include <winsock2.h>
 #include <Ws2tcpip.h>
-#include <headers.hpp>
+#include <nbsystem.h>
 
 class CAsyncSocketExHelperWindow;
 class CAsyncSocketExLayer;

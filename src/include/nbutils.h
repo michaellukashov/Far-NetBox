@@ -1,7 +1,6 @@
 #pragma once
 
-#include <headers.hpp>
-#include <nbcore.h>
+#include <nbsystem.h>
 
 namespace nb {
 
