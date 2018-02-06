@@ -3955,7 +3955,7 @@ TLoginType TSessionDialog::IndexToLoginType(intptr_t Index) const
   return Result;
 }
 
-bool TSessionDialog::VerifyKey(const UnicodeString AFileName, bool TypeOnly)
+bool TSessionDialog::VerifyKey(const UnicodeString AFileName, bool /*TypeOnly*/)
 {
   bool Result = true;
 
@@ -4473,7 +4473,7 @@ void TRightsContainer::Change()
 TFarCheckBox *TRightsContainer::GetChecks(TRights::TRight Right)
 {
   DebugAssert((Right >= 0) && (ToSizeT(Right) < _countof(FCheckBoxes)));
-  return FCheckBoxes[Right];
+  return FCheckBoxes[ToSizeT(Right)];
 }
 
 TRights::TState TRightsContainer::GetStates(TRights::TRight Right)
