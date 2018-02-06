@@ -336,14 +336,8 @@ public:
 struct IUnknown;
 typedef IUnknown* LPUNKNOWN;
 
-struct IDispatch;
-typedef IDispatch* LPDISPATCH;
-
 struct IConnectionPoint;
 typedef IConnectionPoint* LPCONNECTIONPOINT;
-
-struct IEnumOLEVERB;
-typedef IEnumOLEVERB* LPENUMOLEVERB;
 
 typedef struct _GUID GUID;
 typedef GUID IID;
@@ -364,12 +358,6 @@ typedef tagDISPPARAMS DISPPARAMS;
 
 struct tagVARIANT;
 typedef tagVARIANT VARIANT;
-
-struct ITypeInfo;
-typedef ITypeInfo* LPTYPEINFO;
-
-struct ITypeLib;
-typedef ITypeLib* LPTYPELIB;
 
 struct IAccessible;
 struct IAccessibleServer;
