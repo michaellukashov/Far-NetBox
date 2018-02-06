@@ -269,7 +269,7 @@ void CMSimpleStringT<BaseType>::SetString(PCXSTR pszSrc, int nLength)
 }
 
 template<typename BaseType>
-CMSimpleStringT<BaseType> operator+(const CMSimpleStringT<BaseType> &str1, const CMSimpleStringT<BaseType> &str2)
+typename CMSimpleStringT<BaseType> operator+(const CMSimpleStringT<BaseType> &str1, const CMSimpleStringT<BaseType> &str2)
 {
   CMSimpleStringT<BaseType> s;
   Concatenate(s, str1, str1.GetLength(), str2, str2.GetLength());
@@ -277,7 +277,7 @@ CMSimpleStringT<BaseType> operator+(const CMSimpleStringT<BaseType> &str1, const
 }
 
 template<typename BaseType>
-CMSimpleStringT<BaseType> operator+(const CMSimpleStringT<BaseType> &str1, typename CMSimpleStringT<BaseType>::PCXSTR psz2)
+typename CMSimpleStringT<BaseType> operator+(const CMSimpleStringT<BaseType> &str1, typename CMSimpleStringT<BaseType>::PCXSTR psz2)
 {
   CMSimpleStringT<BaseType> s;
   Concatenate(s, str1, str1.GetLength(), psz2, StringLength(psz2));
@@ -285,7 +285,7 @@ CMSimpleStringT<BaseType> operator+(const CMSimpleStringT<BaseType> &str1, typen
 }
 
 template<typename BaseType>
-CMSimpleStringT<BaseType> operator+(typename CMSimpleStringT<BaseType>::PCXSTR psz1, const CMSimpleStringT<BaseType> &str2)
+typename CMSimpleStringT<BaseType> operator+(typename CMSimpleStringT<BaseType>::PCXSTR psz1, const CMSimpleStringT<BaseType> &str2)
 {
   CMSimpleStringT<BaseType> s;
   Concatenate(s, psz1, StringLength(psz1), str2, str2.GetLength());

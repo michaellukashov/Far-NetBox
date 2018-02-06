@@ -274,7 +274,6 @@ template< typename _CharType = char >
 class NBChTraitsCRT : public NBChTraitsBase < _CharType >
 {
 public:
-
   static char *__stdcall CharNext(const char *p)
   {
     return reinterpret_cast<char *>(_mbsinc(reinterpret_cast<const unsigned char *>(p)));

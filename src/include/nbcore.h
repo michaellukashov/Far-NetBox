@@ -15,7 +15,7 @@
 #define NB_CORE_DLL(T) NB_CORE_EXPORT T __stdcall
 #define NB_C_CORE_DLL(T) NB_CORE_EXPORT T __cdecl
 
-#pragma warning(disable: 4201 4127 4706)
+#pragma warning(disable: 4201 4127 4312 4706)
 
 #if defined(__cplusplus)
 extern "C" {
@@ -74,11 +74,12 @@ NB_CORE_DLL(HANDLE)  CreateServiceFunctionObj(const char *name, NETBOXSERVICEOBJ
 NB_CORE_DLL(HANDLE)  CreateServiceFunctionObjParam(const char *name, NETBOXSERVICEOBJPARAM serviceProc, void *object, LPARAM lParam);
 NB_CORE_DLL(HANDLE)  CreateProtoServiceFunction(const char *szModule, const char *szService, NETBOXSERVICE serviceProc);
 NB_CORE_DLL(int)     DestroyServiceFunction(HANDLE hService);
-NB_CORE_DLL(int)     ServiceExists(const char *name);
+NB_CORE_DLL(bool)    ServiceExists(const char *name);
 
 NB_CORE_DLL(intptr_t) CallService(const char *name, WPARAM wParam = 0, LPARAM lParam = 0);
 NB_CORE_DLL(intptr_t) CallServiceSync(const char *name, WPARAM wParam = 0, LPARAM lParam = 0);
 
+NB_CORE_DLL(intptr_t) CallFunctionSync(intptr_t(__stdcall *func)(void *), void *arg);
 NB_CORE_DLL(int)     CallFunctionAsync(void (__stdcall *func)(void *), void *arg);
 NB_CORE_DLL(void)    KillModuleServices(HINSTANCE hInst);
 NB_CORE_DLL(void)    KillObjectServices(void *pObject);
@@ -433,6 +434,11 @@ public:
 
 #endif // #if defined(__cplusplus)
 
+NB_CORE_DLL(wchar_t*) nbcore_a2u_cp(const char* src, int codepage);
+NB_CORE_DLL(wchar_t*) nbcore_a2u(const char* src);
+NB_CORE_DLL(char*)  nbcore_u2a_cp(const wchar_t* src, int codepage);
+NB_CORE_DLL(char*)  nbcore_u2a(const wchar_t* src);
+
 ///////////////////////////////////////////////////////////////////////////////
 // threads
 
@@ -475,6 +481,7 @@ NB_CORE_DLL(void) KillObjectThreads(void *pObject);
 
 NB_CORE_DLL(char *) Utf8Decode(char *str, wchar_t **ucs2);
 NB_CORE_DLL(char *) Utf8DecodeCP(char *str, int codepage, wchar_t **ucs2);
+NB_CORE_DLL(int)   Utf8toUcs2(const char * src, size_t srclen, wchar_t * dst, size_t dstlen); // returns 0 on error
 
 NB_CORE_DLL(wchar_t *) Utf8DecodeW(const char *str);
 
