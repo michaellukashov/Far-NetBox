@@ -1422,11 +1422,10 @@ set(NETBOX_SOURCES
   ../include/FastDelegate.h
   ../include/type_traits.h
   ../include/rtti.hpp
-  ../include/nbsystem.h
-  ../include/nbglobals.h
-  ../include/headers.hpp
-  ../include/nbcore.h
   ../include/nbtypes.h
+  ../include/nbglobals.h
+  ../include/nbsystem.h
+  ../include/nbcore.h
   ../include/nbstring.h
   ../include/nbstring.inl
   ../include/nbutils.h

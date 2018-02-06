@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-#include <headers.hpp>
+#include <nbtypes.h>
 
 #ifdef NB_CORE_EXPORTS
 #define NB_CORE_EXPORT // __declspec(dllexport)
