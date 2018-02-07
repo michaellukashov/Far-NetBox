@@ -458,22 +458,22 @@ const RAII_type ANONYMOUS_VARIABLE(scoped_object_)
 namespace detail {
 
 template<typename F>
-class scope_guard
+class scope_guard0
 {
 public:
-  explicit scope_guard(F &&f) : m_f(std::move(f)) {}
-  ~scope_guard() { m_f(); }
+  explicit scope_guard0(F &&f) : m_f(std::move(f)) {}
+  ~scope_guard0() { m_f(); }
 
 private:
   const F m_f;
 };
 
 template<typename F, typename P>
-class scope_guard2
+class scope_guard1
 {
 public:
-  explicit scope_guard2(F &&f, P p) : m_f(std::move(f)), m_p(p) {}
-  ~scope_guard2() { m_f(m_p); }
+  explicit scope_guard1(F &&f, P p) : m_f(std::move(f)), m_p(p) {}
+  ~scope_guard1() { m_f(m_p); }
 
 private:
   const F m_f;
@@ -484,7 +484,7 @@ class make_scope_guard
 {
 public:
   template<typename F>
-  scope_guard<F> operator<<(F &&f) { return scope_guard<F>(std::move(f)); }
+  scope_guard0<F> operator<<(F &&f) { return scope_guard0<F>(std::move(f)); }
 };
 
 } // namespace detail
@@ -494,7 +494,7 @@ public:
 
 #define ON_SCOPE_EXIT(FUNC, T, PARAM) \
   const auto ANONYMOUS_VARIABLE(scope_exit_guard) = \
-    detail::scope_guard2<nb::FastDelegate1<void, T>, T>(nb::bind(&FUNC, this), PARAM)
+    detail::scope_guard1<nb::FastDelegate1<void, T>, T>(nb::bind(&FUNC, this), PARAM)
 
 #define try__catch
 #define try__finally
@@ -556,15 +556,15 @@ enum class scope_type
 };
 
 template<typename F, scope_type Type>
-class scope_guard
+class scope_guard0
 {
 public:
-  NONCOPYABLE(scope_guard);
-  MOVABLE(scope_guard);
+  NONCOPYABLE(scope_guard0);
+  MOVABLE(scope_guard0);
 
-  explicit scope_guard(F &&f): m_f(std::forward<F>(f)) {}
+  explicit scope_guard0(F &&f): m_f(std::forward<F>(f)) {}
 
-  ~scope_guard() noexcept(Type == scope_type::fail)
+  ~scope_guard0() noexcept(Type == scope_type::fail)
   {
     if (*m_Active && (Type == scope_type::exit || (Type == scope_type::fail) == m_Ec.is_new()))
       m_f();
@@ -581,7 +581,7 @@ class make_scope_guard
 {
 public:
   template<typename F>
-  auto operator<<(F &&f) { return scope_guard<F, Type>(std::forward<F>(f)); }
+  auto operator<<(F &&f) { return scope_guard0<F, Type>(std::forward<F>(f)); }
 };
 
 } // namespace scope_exit
