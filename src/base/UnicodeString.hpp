@@ -10,11 +10,17 @@ public:
   BaseUnicodeString() {}
   ~BaseUnicodeString() {}
 
-  BaseUnicodeString(const BaseUnicodeString &rhs) :
+  explicit BaseUnicodeString(const BaseUnicodeString &rhs) :
     Data(rhs.c_str(), ToInt(rhs.Length()))
   {}
-  BaseUnicodeString(const wchar_t *Str, int Length, int cp)
-    Data(Str(), Length, cp)
+  explicit BaseUnicodeString(const wchar_t *Str, int Length, int cp) :
+    Data(Str, Length, cp)
+  {}
+  explicit BaseUnicodeString(const wchar_t *Str, int Length) :
+    Data(Str, Length)
+  {}
+  explicit BaseUnicodeString(const char *Str, int Length) :
+    Data(Str, Length)
   {}
   const CharT *c_str() const { return Data.c_str(); }
   const CharT *data() const { return Data.c_str(); }
@@ -218,6 +224,7 @@ private:
 
 //  typedef CMStringA string_t;
 //  string_t Data;
+  // typedef CMStringT< char, NBChTraitsCRT< char > > string_t;
 };
 
 class NB_CORE_EXPORT UnicodeString

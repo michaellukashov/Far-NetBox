@@ -404,25 +404,25 @@ UTF8String::UTF8String(const UnicodeString &Str) :
 //{
 //}
 
-//UTF8String::UTF8String(const char *Str, intptr_t Length) :
-//  Data(Str, ToInt(Length))
-//{
-//}
+UTF8String::UTF8String(const char *Str, intptr_t Length) :
+  Base(Str, ToInt(Length))
+{
+}
 
-//UTF8String::UTF8String(const char *Str) :
-//  Data(Str, string_t::StringLength(Str))
-//{
-//}
+UTF8String::UTF8String(const char *Str) :
+  Base(Str, Base::string_t::StringLength(Str))
+{
+}
 
-//void UTF8String::Init(const wchar_t *Str, intptr_t Length)
-//{
-//  Data = string_t(Str, ToInt(Length));
-//}
+void UTF8String::Init(const wchar_t *Str, intptr_t Length)
+{
+  Data = string_t(Str, ToInt(Length));
+}
 
-//void UTF8String::Init(const char *Str, intptr_t Length)
-//{
-//  Data = string_t(Str, ToInt(Length));
-//}
+void UTF8String::Init(const char *Str, intptr_t Length)
+{
+  Data = string_t(Str, ToInt(Length));
+}
 
 //char *UTF8String::SetLength(intptr_t nLength)
 //{
