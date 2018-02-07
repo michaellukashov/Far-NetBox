@@ -1514,6 +1514,7 @@ private:
   intptr_t GetVisibleTabsCount(intptr_t TabIndex, bool Forward) const;
   intptr_t AddTab(intptr_t TabID, const wchar_t *TabCaption);
 
+  TProxyMethod ToProxyMethod(intptr_t Value) const { return static_cast<TProxyMethod>(Value); }
 private:
   TSessionActionEnum FAction;
   TSessionData *FSessionData;
@@ -2321,15 +2322,15 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin *AFarPlugin, TSessionActionEnum 
   FtpProxyMethodComboAddNewItem(NB_LOGIN_PROXY_SOCKS5, pmSocks5);
   FtpProxyMethodComboAddNewItem(NB_LOGIN_PROXY_HTTP, pmHTTP);
   FtpProxyMethodComboAddNewItem(NB_LOGIN_PROXY_SYSTEM, pmSystem);
-  TProxyMethod FtpProxyMethod = static_cast<TProxyMethod>(GetLastSupportedFtpProxyMethod());
-  FtpProxyMethodComboAddNewItem(NB_LOGIN_PROXY_FTP_SITE, static_cast<TProxyMethod>(FtpProxyMethod + 1));
-  FtpProxyMethodComboAddNewItem(NB_LOGIN_PROXY_FTP_PROXYUSER_USERHOST, static_cast<TProxyMethod>(FtpProxyMethod + 2));
-  FtpProxyMethodComboAddNewItem(NB_LOGIN_PROXY_FTP_OPEN_HOST, static_cast<TProxyMethod>(FtpProxyMethod + 3));
-  FtpProxyMethodComboAddNewItem(NB_LOGIN_PROXY_FTP_PROXYUSER_USERUSER, static_cast<TProxyMethod>(FtpProxyMethod + 4));
-  FtpProxyMethodComboAddNewItem(NB_LOGIN_PROXY_FTP_USER_USERHOST, static_cast<TProxyMethod>(FtpProxyMethod + 5));
-  FtpProxyMethodComboAddNewItem(NB_LOGIN_PROXY_FTP_PROXYUSER_HOST, static_cast<TProxyMethod>(FtpProxyMethod + 6));
-  FtpProxyMethodComboAddNewItem(NB_LOGIN_PROXY_FTP_USERHOST_PROXYUSER, static_cast<TProxyMethod>(FtpProxyMethod + 7));
-  FtpProxyMethodComboAddNewItem(NB_LOGIN_PROXY_FTP_USER_USERPROXYUSERHOST, static_cast<TProxyMethod>(FtpProxyMethod + 8));
+  TProxyMethod FtpProxyMethod = ToProxyMethod(GetLastSupportedFtpProxyMethod());
+  FtpProxyMethodComboAddNewItem(NB_LOGIN_PROXY_FTP_SITE, ToProxyMethod(FtpProxyMethod + 1));
+  FtpProxyMethodComboAddNewItem(NB_LOGIN_PROXY_FTP_PROXYUSER_USERHOST, ToProxyMethod(FtpProxyMethod + 2));
+  FtpProxyMethodComboAddNewItem(NB_LOGIN_PROXY_FTP_OPEN_HOST, ToProxyMethod(FtpProxyMethod + 3));
+  FtpProxyMethodComboAddNewItem(NB_LOGIN_PROXY_FTP_PROXYUSER_USERUSER, ToProxyMethod(FtpProxyMethod + 4));
+  FtpProxyMethodComboAddNewItem(NB_LOGIN_PROXY_FTP_USER_USERHOST, ToProxyMethod(FtpProxyMethod + 5));
+  FtpProxyMethodComboAddNewItem(NB_LOGIN_PROXY_FTP_PROXYUSER_HOST, ToProxyMethod(FtpProxyMethod + 6));
+  FtpProxyMethodComboAddNewItem(NB_LOGIN_PROXY_FTP_USERHOST_PROXYUSER, ToProxyMethod(FtpProxyMethod + 7));
+  FtpProxyMethodComboAddNewItem(NB_LOGIN_PROXY_FTP_USER_USERPROXYUSERHOST, ToProxyMethod(FtpProxyMethod + 8));
   FtpProxyMethodCombo->SetWidth(40);
 
   SshProxyMethodCombo = new TFarComboBox(this);
@@ -3828,8 +3829,8 @@ intptr_t TSessionDialog::ProxyMethodToIndex(TProxyMethod ProxyMethod, TFarList *
 {
   for (intptr_t Index = 0; Index < Items->GetCount(); ++Index)
   {
-    TObject *Obj = as_object(Items->GetObj(Index));
-    TProxyMethod Method = static_cast<TProxyMethod>(ToIntPtr(Obj));
+    TObject *Obj = Items->GetObj(Index);
+    TProxyMethod Method = ToProxyMethod(ToIntPtr(Obj));
     if (Method == ProxyMethod)
       return Index;
   }
@@ -3841,8 +3842,8 @@ TProxyMethod TSessionDialog::IndexToProxyMethod(intptr_t Index, TFarList *Items)
   TProxyMethod Result = pmNone;
   if (Index >= 0 && Index < Items->GetCount())
   {
-    TObject *Obj = as_object(Items->GetObj(Index));
-    Result = static_cast<TProxyMethod>(ToIntPtr(Obj));
+    TObject *Obj = Items->GetObj(Index);
+    Result = ToProxyMethod(ToIntPtr(Obj));
   }
   return Result;
 }
