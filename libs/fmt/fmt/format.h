@@ -349,7 +349,7 @@ typedef __int64          intmax_t;
 #endif
 
 #ifndef FMT_ASSERT
-# define FMT_ASSERT(condition, message) assert((condition) && message)
+# define FMT_ASSERT(condition, message) assert((condition) && (message))
 #endif
 
 // __builtin_clz is broken in clang with Microsoft CodeGen:
@@ -2579,7 +2579,7 @@ class SystemError : public internal::RuntimeError {
   FMT_API virtual void init(int err_code, CStringRef format_str, ArgList args);
 
  protected:
-  int error_code_;
+  int error_code_ = 0;
 
   typedef char Char;  // For FMT_VARIADIC_CTOR.
 
@@ -2607,6 +2607,7 @@ class SystemError : public internal::RuntimeError {
   SystemError(int error_code, CStringRef message) {
     SystemError::init(error_code, message, ArgList());
   }
+  SystemError& operator=(const SystemError&) { return *this; }
   FMT_DEFAULTED_COPY_CTOR(SystemError)
   FMT_VARIADIC_CTOR(SystemError, init, int, CStringRef)
 
@@ -3531,8 +3532,8 @@ class FormatInt {
   // Buffer should be large enough to hold all digits (digits10 + 1),
   // a sign and a null character.
   enum {BUFFER_SIZE = std::numeric_limits<ULongLong>::digits10 + 3};
-  mutable char buffer_[BUFFER_SIZE];
-  char *str_;
+  mutable char buffer_[BUFFER_SIZE] = {};
+  char *str_ = nullptr;
 
   // Formats value in reverse and returns the number of digits.
   char *format_decimal(ULongLong value) {
