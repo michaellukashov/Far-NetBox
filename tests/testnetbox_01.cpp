@@ -373,7 +373,7 @@ TEST_CASE_METHOD(base_fixture_t, "test9", "netbox")
   INFO("3");
   CHECK(::GetCurrentDir().Length() > 0);
   INFO("4");
-  CHECK(::DirectoryExists(::GetCurrentDir()));
+  CHECK(::SysUtulsDirectoryExists(::GetCurrentDir()));
   INFO("5");
 }
 
@@ -555,7 +555,7 @@ TEST_CASE_METHOD(base_fixture_t, "test22", "netbox")
     delete BlockBuf; BlockBuf = nullptr;
     ::CloseHandle(FileHandle);
     INFO("FileName1 = " << FileName);
-    REQUIRE(::FileExists(FileName));
+    REQUIRE(::SysUtulsFileExists(FileName));
   }
   {
     INFO("FileName2 = " << FileName);
@@ -587,17 +587,17 @@ TEST_CASE_METHOD(base_fixture_t, "test23", "netbox")
 {
   UnicodeString Dir1 = L"subdir1";
   UnicodeString Dir2 = L"subdir1/subdir2";
-  ::RemoveDir(Dir2);
-  ::RemoveDir(Dir1);
-  INFO("DirectoryExists(Dir2) = " << DirectoryExists(Dir2));
-  REQUIRE(!::DirectoryExists(Dir2));
-  ::ForceDirectories(Dir2);
-  REQUIRE(::DirectoryExists(Dir2));
-  ::RemoveDir(Dir2);
-  ::ForceDirectories(Dir2);
-  REQUIRE(::DirectoryExists(Dir2));
+  ::SysUtulsRemoveDir(Dir2);
+  ::SysUtulsRemoveDir(Dir1);
+  INFO("DirectoryExists(Dir2) = " << ::SysUtulsDirectoryExists(Dir2));
+  REQUIRE(!::SysUtulsDirectoryExists(Dir2));
+  ::SysUtulsForceDirectories(Dir2);
+  REQUIRE(::SysUtulsDirectoryExists(Dir2));
+  ::SysUtulsRemoveDir(Dir2);
+  ::SysUtulsForceDirectories(Dir2);
+  REQUIRE(::SysUtulsDirectoryExists(Dir2));
   REQUIRE(::RecursiveDeleteFile(Dir1, false));
-  REQUIRE(!::DirectoryExists(Dir1));
+  REQUIRE(!::SysUtulsDirectoryExists(Dir1));
 }
 
 TEST_CASE_METHOD(base_fixture_t, "test24", "netbox")
@@ -1014,6 +1014,7 @@ TEST_CASE_METHOD(base_fixture_t, "testProperty02", "netbox")
     CHECK(d.RWData2() == "43");
   }
   printf("10\n");
+  SECTION("RWData2")
   {
     TBase2 b2;
     printf("11\n");
@@ -1044,12 +1045,14 @@ TEST_CASE_METHOD(base_fixture_t, "testProperty02", "netbox")
 
 TEST_CASE_METHOD(base_fixture_t, "testProperty03", "netbox")
 {
+  SECTION("ROProp1")
   {
     TDerived2 d2;
     printf("1\n");
     CHECK(d2.ROProp1 == "42");
     printf("2\n");
   }
+  SECTION("RWProp1")
   {
     TDerived2 d2;
     printf("3\n");
@@ -1060,3 +1063,4 @@ TEST_CASE_METHOD(base_fixture_t, "testProperty03", "netbox")
     CHECK(d2.RWProp2 == "RW2");
   }
 }
+
