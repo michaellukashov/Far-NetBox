@@ -67,7 +67,7 @@ set(NETBOX_DEFS "${NETBOX_DEFS} -DNO_GZIP -DSTRICT -DNOCRYPT -DOPENSSL_NO_LOCKIN
 set(NETBOX_DEFS "${NETBOX_DEFS} -D_CRTIMP= -D_LIB -D_WINDOWS -DWIN32 -D_WIN32_WINNT=0x0501")
 set(NETBOX_DEFS "${NETBOX_DEFS} -D_SCL_SECURE_NO_WARNINGS  -D_CRT_SECURE_NO_WARNINGS -D_WINSOCK_DEPRECATED_NO_WARNINGS")
 set(NETBOX_DEFS "${NETBOX_DEFS} -DCOM_NO_WINDOWS_H")
-set(NETBOX_DEFS "${NETBOX_DEFS} ${LIBEXPAT_DEFS} ${LIBNEON_DEFS}")
+set(NETBOX_DEFS "${NETBOX_DEFS} ${LIBEXPAT_DEFS}")
 #-D_WINDLL -D_USRDLL
 if (MSVC_VERSION GREATER 1899)
 set(NETBOX_DEFS "${NETBOX_DEFS} /Zc:threadSafeInit- /bigobj")
@@ -1078,7 +1078,7 @@ add_library(neon STATIC
   ../../libs/neon/src/ne_openssl.c
 )
 
-set(NEON_COMPILE_FLAGS )
+set(NEON_COMPILE_FLAGS ${LIBNEON_DEFS})
 if(MSVC)
 set(NEON_COMPILE_FLAGS ${NEON_COMPILE_FLAGS}
   -wd4996
@@ -1615,6 +1615,7 @@ target_link_libraries(NetBox PRIVATE
 target_compile_options(NetBox PRIVATE
   -DBUILD_OFFICIAL
   -wd4251 -wd4275 -wd4661
+  ${LIBNEON_DEFS}
   ${ATLMFC_COMPILE_FLAGS}
   ${NETBOX_UNICODE_FLAGS}
 )
@@ -1887,6 +1888,61 @@ target_link_libraries(testnetbox_05 PRIVATE
   googletest
   googlemock
   ${NETBOX_LIBRARIES}
+)
+
+#-------------------------------------------------------
+# target testnetbox_06
+
+set(TESTNETBOX_06_SOURCES
+#  UnityBuildCore.cpp
+../nbcore/nbutils.cpp
+../nbcore/nbstring.cpp
+../nbcore/nbmemory.cpp
+../base/UnicodeString.cpp
+../base/Classes.cpp
+../base/Global.cpp
+../base/Common.cpp
+../base/FormatUtils.cpp
+../base/Sysutils.cpp
+../base/StrUtils.cpp
+../base/Exceptions.cpp
+../base/System.SyncObjs.cpp
+../base/LibraryLoader.cpp
+../base/FileBuffer.cpp
+  ../../tests/testnetbox_06.cpp
+)
+
+add_executable(testnetbox_06
+  ${TESTNETBOX_06_SOURCES}
+)
+
+target_include_directories(testnetbox_06 PRIVATE
+  ${GOOGLETEST_INCLUDES}
+  ${TEST_INCLUDES}
+)
+
+set(testnetbox_06_FLAGS "${CMAKE_CXX_FLAGS_DEBUG}")
+message("testnetbox_06_FLAGS: ${testnetbox_06_FLAGS}")
+nb_replace_compiler_option(testnetbox_06_FLAGS "-DHAVE_OPENSSL" "")
+
+set_target_properties(testnetbox_06
+  PROPERTIES
+  COMPILE_FLAGS "${testnetbox_06_FLAGS}"
+  LINK_FLAGS "${CMAKE_LINK_FLAGS} /ignore:4099"
+)
+
+target_compile_options(testnetbox_06 PRIVATE
+  ${GOOGLETEST_DEFINES}
+  ${NETBOX_UNICODE_FLAGS}
+)
+
+target_link_libraries(testnetbox_06 PRIVATE
+  googletest
+  googlemock
+  dlmalloc
+  fmt
+  # ${NETBOX_LIBRARIES}
+  shlwapi.lib
 )
 
 endif(OPT_COMPILE_TESTS)
