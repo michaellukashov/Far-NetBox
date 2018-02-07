@@ -34,3 +34,4 @@ TEST_CASE_METHOD(base_fixture_t, "testUnicodeString01", "netbox")
     CHECK(a == "1");
   }
 }
+
