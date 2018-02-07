@@ -1903,21 +1903,7 @@ target_link_libraries(testnetbox_05 PRIVATE
 # target testnetbox_06
 
 set(TESTNETBOX_06_SOURCES
-#  UnityBuildCore.cpp
-../nbcore/nbutils.cpp
-../nbcore/nbstring.cpp
-../nbcore/nbmemory.cpp
-../base/UnicodeString.cpp
-../base/Classes.cpp
-../base/Global.cpp
-../base/Common.cpp
-../base/FormatUtils.cpp
-../base/Sysutils.cpp
-../base/StrUtils.cpp
-../base/Exceptions.cpp
-../base/System.SyncObjs.cpp
-../base/LibraryLoader.cpp
-../base/FileBuffer.cpp
+  ../../tests/UnityBuildMin.cpp
   ../../tests/testnetbox_06.cpp
 )
 
@@ -1932,6 +1918,8 @@ target_include_directories(testnetbox_06 PRIVATE
 
 target_compile_options(testnetbox_06 PRIVATE
   ${GOOGLETEST_DEFINES}
+#  ${LIBNEON_DEFS}
+#  ${LIBEXPAT_DEFS}
   ${NETBOX_UNICODE_FLAGS}
 )
 
@@ -1940,7 +1928,6 @@ target_link_libraries(testnetbox_06 PRIVATE
   googlemock
   dlmalloc
   fmt
-  # ${NETBOX_LIBRARIES}
   shlwapi.lib
 )
 
