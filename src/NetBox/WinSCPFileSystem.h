@@ -389,7 +389,7 @@ protected:
     DWORD &FileAttributes,
     TDateTime &LastWriteTime, TDateTime &LastAccess,
     DWORD &NumberOfLinks, UnicodeString &Description,
-    UnicodeString &Owner, void *&UserData, int &CustomColumnNumber);
+    UnicodeString &Owner, void *&UserData, int &CustomColumnNumber) override;
 };
 
 class TRemoteFilePanelItem : public TCustomFarPanelItem
@@ -408,8 +408,8 @@ protected:
     DWORD &FileAttributes,
     TDateTime &LastWriteTime, TDateTime &LastAccess,
     DWORD &NumberOfLinks, UnicodeString &Description,
-    UnicodeString &Owner, void *&UserData, int &CustomColumnNumber);
-  virtual UnicodeString GetCustomColumnData(size_t Column);
+    UnicodeString &Owner, void *&UserData, int &CustomColumnNumber) override;
+  virtual UnicodeString GetCustomColumnData(size_t Column) override;
   static void TranslateColumnTypes(UnicodeString &AColumnTypes,
     TStrings *ColumnTitles);
 };
