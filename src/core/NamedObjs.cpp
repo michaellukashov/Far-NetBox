@@ -93,7 +93,7 @@ const TNamedObject * TNamedObjectList::AtObject(intptr_t Index) const
 {
   return const_cast<TNamedObjectList *>(this)->AtObject(Index);
 }
-//---------------------------------------------------------------------------
+
 TNamedObject * TNamedObjectList::AtObject(intptr_t Index)
 {
   return GetAs<TNamedObject>(Index + FHiddenCount);
@@ -163,7 +163,7 @@ const TNamedObject * TNamedObjectList::FindByName(const UnicodeString AName) con
 {
   return const_cast<TNamedObjectList *>(this)->FindByName(AName);
 }
-//---------------------------------------------------------------------------
+
 TNamedObject * TNamedObjectList::FindByName(const UnicodeString AName)
 {
   // This should/can be optimized when list is sorted

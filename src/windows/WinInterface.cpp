@@ -1375,7 +1375,7 @@ private:
 };
 //---------------------------------------------------------------------------
 TCallstackThread::TCallstackThread() :
-  TSignalThread(OBJECT_CLASS_TCallstackThread, true)
+  TSignalThread(OBJECT_CLASS_TCallstackThread)
 {
 }
 

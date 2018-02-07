@@ -243,8 +243,8 @@ extern "C"
 void ne_init_ssl_session(struct ssl_st * Ssl, ne_session * Session)
 {
 #if 0
-  void * Code = ne_get_session_private(Session, SESSION_TLS_INIT_KEY);
-  void * Data = ne_get_session_private(Session, SESSION_TLS_INIT_DATA_KEY);
+  void *Code = ne_get_session_private(Session, SESSION_TLS_INIT_KEY);
+  void *Data = ne_get_session_private(Session, SESSION_TLS_INIT_DATA_KEY);
   TNeonTlsInit OnNeonTlsInit = MakeMethod<TNeonTlsInit>(Data, Code);
 #endif // if 0
 
@@ -262,7 +262,7 @@ void SetNeonTlsInit(ne_session *Session, TNeonTlsInit OnNeonTlsInit)
 {
   ne_set_session_private(Session, SESSION_TLS_INIT_KEY, ToPtr(OnNeonTlsInit));
 #if 0
-  TMethod & Method = *(TMethod*)&OnNeonTlsInit;
+  TMethod &Method = *(TMethod*)&OnNeonTlsInit;
   ne_set_session_private(Session, SESSION_TLS_INIT_KEY, Method.Code);
   ne_set_session_private(Session, SESSION_TLS_INIT_DATA_KEY, Method.Data);
 #endif // if 0
@@ -499,12 +499,12 @@ UnicodeString CertificateSummary(const TNeonCertificateData &Data, const Unicode
   UnicodeString ValidityTimeFormat = L"ddddd tt";
   return
     FMTLOAD(CERT_TEXT,
-      Data.Issuer + L"\n",
-      Data.Subject + L"\n",
-      FormatDateTime(ValidityTimeFormat, Data.ValidFrom),
-      FormatDateTime(ValidityTimeFormat, Data.ValidUntil),
-      Data.Fingerprint,
-      Summary);
+        Data.Issuer + L"\n",
+        Data.Subject + L"\n",
+        FormatDateTime(ValidityTimeFormat, Data.ValidFrom),
+        FormatDateTime(ValidityTimeFormat, Data.ValidUntil),
+        Data.Fingerprint,
+        Summary);
 }
 //---------------------------------------------------------------------------
 UnicodeString NeonTlsSessionInfo(
@@ -525,7 +525,7 @@ UnicodeString NeonTlsSessionInfo(
 //---------------------------------------------------------------------------
 void SetupSsl(ssl_st *Ssl, TTlsVersion MinTlsVersion, TTlsVersion MaxTlsVersion)
 {
-  #define MASK_TLS_VERSION(VERSION, FLAG) ((MinTlsVersion > VERSION) || (MaxTlsVersion < VERSION) ? FLAG : 0)
+#define MASK_TLS_VERSION(VERSION, FLAG) ((MinTlsVersion > VERSION) || (MaxTlsVersion < VERSION) ? FLAG : 0)
   int Options =
     MASK_TLS_VERSION(ssl2, SSL_OP_NO_SSLv2) |
     MASK_TLS_VERSION(ssl3, SSL_OP_NO_SSLv3) |

@@ -405,7 +405,7 @@ void TSimpleThread::WaitFor(uintptr_t Milliseconds) const
 //---------------------------------------------------------------------------
 // TSignalThread
 //---------------------------------------------------------------------------
-TSignalThread::TSignalThread(TObjectClassId Kind, bool /*LowPriority*/) :
+TSignalThread::TSignalThread(TObjectClassId Kind) :
   TSimpleThread(Kind),
   FEvent(nullptr),
   FTerminated(true)
@@ -499,7 +499,7 @@ void TSignalThread::Terminate()
 //---------------------------------------------------------------------------
 TTerminalQueue::TTerminalQueue(TTerminal *ATerminal,
   TConfiguration *AConfiguration) :
-  TSignalThread(OBJECT_CLASS_TTerminalQueue, true),
+  TSignalThread(OBJECT_CLASS_TTerminalQueue),
   FOnQueryUser(nullptr),
   FOnPromptUser(nullptr),
   FOnShowExtendedException(nullptr),
@@ -1280,7 +1280,7 @@ bool TTerminalQueue::ContinueParallelOperation() const
 //---------------------------------------------------------------------------
 class TBackgroundTerminal : public TSecondaryTerminal
 {
-friend class TTerminalItem;
+  friend class TTerminalItem;
 public:
   static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TBackgroundTerminal); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TBackgroundTerminal) || TSecondaryTerminal::is(Kind); }
@@ -1336,7 +1336,7 @@ bool TBackgroundTerminal::DoQueryReopen(Exception * /*E*/)
 // TTerminalItem
 //---------------------------------------------------------------------------
 TTerminalItem::TTerminalItem(TTerminalQueue *Queue) :
-  TSignalThread(OBJECT_CLASS_TTerminalItem, true),
+  TSignalThread(OBJECT_CLASS_TTerminalItem),
   FQueue(Queue),
   FTerminal(nullptr),
   FItem(nullptr),
@@ -2512,7 +2512,7 @@ void TDownloadQueueItem::DoTransferExecute(TTerminal *Terminal, TParallelOperati
 // TTerminalThread
 //---------------------------------------------------------------------------
 TTerminalThread::TTerminalThread(TTerminal *Terminal) :
-  TSignalThread(OBJECT_CLASS_TTerminalThread, false),
+  TSignalThread(OBJECT_CLASS_TTerminalThread),
   FTerminal(Terminal),
   FOnInformation(nullptr),
   FOnQueryUser(nullptr),
@@ -2601,7 +2601,7 @@ TTerminalThread::~TTerminalThread()
   __removed delete FSection;
   if (FAbandoned)
   {
-    delete FTerminal;
+    SAFE_DESTROY(FTerminal);
   }
 }
 //---------------------------------------------------------------------------
