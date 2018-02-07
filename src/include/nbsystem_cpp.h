@@ -90,7 +90,8 @@ class nb_cslockfull
 {
   CRITICAL_SECTION &cs;
   bool bIsLocked;
-  __inline nb_cslockfull &operator = (const nb_cslockfull &) { return *this; }
+  __inline nb_cslockfull &operator = (const nb_cslockfull &) = delete;
+  __inline nb_cslockfull(const nb_cslockfull &) = delete;
 
 public:
   __inline void lock() { bIsLocked = true; EnterCriticalSection(&cs); }
