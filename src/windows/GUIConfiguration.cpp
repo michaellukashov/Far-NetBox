@@ -806,7 +806,7 @@ void TGUIConfiguration::LoadData(THierarchicalStorage *Storage)
   // can take care of it.
   if ((FPuttyPath.SubString(1, 1) != L"\"") &&
     (CompareFileName(::ExpandEnvironmentVariables(FPuttyPath), FDefaultPuttyPathOnly) ||
-      ::FileExists(::ExpandEnvironmentVariables(FPuttyPath))))
+      ::SysUtulsFileExists(::ExpandEnvironmentVariables(FPuttyPath))))
   {
     FPuttyPath = FormatCommand(FPuttyPath, L"");
   }
@@ -841,7 +841,7 @@ UnicodeString TGUIConfiguration::GetTranslationModule(const UnicodeString Path) 
   UnicodeString SubPath = AddTranslationsSubFolder(Path);
   UnicodeString Result;
   // Prefer the SubPath. Default to SubPath.
-  if (FileExists(Path) && !FileExists(SubPath))
+  if (::SysUtulsFileExists(Path) && !::SysUtulsFileExists(SubPath))
   {
     Result = Path;
   }

@@ -4516,18 +4516,18 @@ void TSessionData::RemoveProtocolPrefix(UnicodeString &HostName) const
   AdjustHostName(HostName, WebDAVSProtocol);
 }
 
-TFSProtocol TSessionData::TranslateFSProtocolNumber(intptr_t FSProtocol)
+TFSProtocol TSessionData::TranslateFSProtocolNumber(intptr_t AFSProtocol)
 {
   TFSProtocol Result = static_cast<TFSProtocol>(-1);
   if (GetSessionVersion() >= ::GetVersionNumber2110())
   {
-    Result = static_cast<TFSProtocol>(FSProtocol);
+    Result = static_cast<TFSProtocol>(AFSProtocol);
   }
   else
   {
     if (FSProtocol < fsFTPS_219)
     {
-      Result = static_cast<TFSProtocol>(FSProtocol);
+      Result = static_cast<TFSProtocol>(AFSProtocol);
     }
     switch (FSProtocol)
     {

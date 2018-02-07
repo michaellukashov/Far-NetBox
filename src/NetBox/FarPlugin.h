@@ -455,7 +455,7 @@ protected:
     DWORD &FileAttributes,
     TDateTime &LastWriteTime, TDateTime &LastAccess,
     DWORD &NumberOfLinks, UnicodeString &Description,
-    UnicodeString &Owner, void *&UserData, int &CustomColumnNumber);
+    UnicodeString &Owner, void *&UserData, int &CustomColumnNumber) override;
 
 private:
   UnicodeString FHint;

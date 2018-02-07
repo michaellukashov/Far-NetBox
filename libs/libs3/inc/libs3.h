@@ -29,22 +29,13 @@
 
 #include <stdint.h>
 #ifdef WINSCP
-#ifndef INCL_WINSOCK_API_TYPEDEFS
-#define INCL_WINSOCK_API_TYPEDEFS 1
-#endif
 #ifndef _WINSOCKAPI_
 #define _WINSOCKAPI_
 #endif
 #include <winsock2.h>
 #include <ws2tcpip.h>
 
-#define WIN32_LEAN_AND_MEAN
-#define VC_EXTRALEAN
-#define SECURITY_WIN32
-#include <windows.h>
-
 #include <nbglobals.h>
-//#include <ne_session.h>
 #else
 #include <sys/select.h>
 #endif
@@ -1031,7 +1022,7 @@ typedef struct S3ErrorDetails
  *         S3StatusAbortedByCallback.
  **/
 typedef S3Status (S3ResponsePropertiesCallback)
-    (const S3ResponseProperties *properties, void *callbackData);
+    (const struct S3ResponseProperties *properties, void *callbackData);
 
 
 /**
@@ -1051,7 +1042,7 @@ typedef S3Status (S3ResponsePropertiesCallback)
  *        was issued.
  **/
 typedef void (S3ResponseCompleteCallback)(S3Status status,
-                                          const S3ErrorDetails *errorDetails,
+                                          const struct S3ErrorDetails *errorDetails,
                                           void *callbackData);
 
 
@@ -1133,7 +1124,7 @@ typedef S3Status (S3ListBucketCallback)(int isTruncated,
  * @param callbackData is the callback data as specified when the request
  *        was issued.
  * @return < 0 to abort the request with the S3StatusAbortedByCallback, which
- *        will be pased to the response complete callback for this request, or
+ *        will be passed to the response complete callback for this request, or
  *        0 to indicate the end of data, or > 0 to identify the number of
  *        bytes that were written into the buffer by this callback
  **/

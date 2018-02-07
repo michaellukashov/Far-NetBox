@@ -5,7 +5,9 @@
 #include <Common.h>
 #include "Option.h"
 #include "TextsCore.h"
-
+//---------------------------------------------------------------------------
+__removed #pragma package(smart_init)
+//---------------------------------------------------------------------------
 TOptions::TOptions() :
   FSwitchMarks(L"/-"),
   FSwitchValueDelimiters(L"=:"),
@@ -13,13 +15,13 @@ TOptions::TOptions() :
   FNoMoreSwitches(false)
 {
 }
-
+//---------------------------------------------------------------------------
 void TOptions::Add(const UnicodeString Value)
 {
   if (!FNoMoreSwitches &&
-    (Value.Length() == 2) &&
-    (Value[1] == Value[2]) &&
-    (FSwitchMarks.Pos(Value[1]) > 0))
+      (Value.Length() == 2) &&
+      (Value[1] == Value[2]) &&
+      (FSwitchMarks.Pos(Value[1]) > 0))
   {
     FNoMoreSwitches = true;
   }
@@ -29,8 +31,8 @@ void TOptions::Add(const UnicodeString Value)
     intptr_t Index = 0; // shut up
     wchar_t SwitchMark = L'\0';
     if (!FNoMoreSwitches &&
-      (Value.Length() >= 2) &&
-      (FSwitchMarks.Pos(Value[1]) > 0))
+        (Value.Length() >= 2) &&
+        (FSwitchMarks.Pos(Value[1]) > 0))
     {
       Index = 2;
       Switch = true;
@@ -76,7 +78,7 @@ void TOptions::Add(const UnicodeString Value)
 
   FOriginalOptions = FOptions;
 }
-
+//---------------------------------------------------------------------------
 UnicodeString TOptions::GetParam(intptr_t AIndex)
 {
   DebugAssert((AIndex >= 1) && (AIndex <= FParamCount));
@@ -99,12 +101,12 @@ UnicodeString TOptions::GetParam(intptr_t AIndex)
 
   return Result;
 }
-
+//---------------------------------------------------------------------------
 bool TOptions::GetEmpty() const
 {
   return FOptions.empty();
 }
-
+//---------------------------------------------------------------------------
 bool TOptions::FindSwitch(const UnicodeString Switch,
   UnicodeString &Value, intptr_t &ParamsStart, intptr_t &ParamsCount, bool CaseSensitive, bool &ValueSet)
 {
@@ -121,7 +123,7 @@ bool TOptions::FindSwitch(const UnicodeString Switch,
     else if (FOptions[Index].Type == otSwitch)
     {
       if ((!CaseSensitive && ::SameText(FOptions[Index].Name, Switch)) ||
-        (CaseSensitive && ::SameText(FOptions[Index].Name, Switch)))
+          (CaseSensitive && ::SameText(FOptions[Index].Name, Switch)))
       {
         Found = true;
         Value = FOptions[Index].Value;
@@ -149,20 +151,20 @@ bool TOptions::FindSwitch(const UnicodeString Switch,
 
   return Found;
 }
-
+//---------------------------------------------------------------------------
 bool TOptions::FindSwitch(const UnicodeString Switch, UnicodeString &Value)
 {
   bool ValueSet;
   return FindSwitch(Switch, Value, ValueSet);
 }
-
+//---------------------------------------------------------------------------
 bool TOptions::FindSwitch(const UnicodeString Switch, UnicodeString &Value, bool &ValueSet)
 {
   intptr_t ParamsStart;
   intptr_t ParamsCount;
   return FindSwitch(Switch, Value, ParamsStart, ParamsCount, false, ValueSet);
 }
-
+//---------------------------------------------------------------------------
 bool TOptions::FindSwitch(const UnicodeString Switch)
 {
   UnicodeString Value;
@@ -171,7 +173,7 @@ bool TOptions::FindSwitch(const UnicodeString Switch)
   bool ValueSet;
   return FindSwitch(Switch, Value, ParamsStart, ParamsCount, false, ValueSet);
 }
-
+//---------------------------------------------------------------------------
 bool TOptions::FindSwitchCaseSensitive(const UnicodeString Switch)
 {
   UnicodeString Value;
@@ -180,19 +182,19 @@ bool TOptions::FindSwitchCaseSensitive(const UnicodeString Switch)
   bool ValueSet;
   return FindSwitch(Switch, Value, ParamsStart, ParamsCount, true, ValueSet);
 }
-
+//---------------------------------------------------------------------------
 bool TOptions::FindSwitch(const UnicodeString Switch,
   TStrings *Params, intptr_t ParamsMax)
 {
   return DoFindSwitch(Switch, Params, ParamsMax, false);
 }
-
+//---------------------------------------------------------------------------
 bool TOptions::FindSwitchCaseSensitive(const UnicodeString Switch,
   TStrings *Params, intptr_t ParamsMax)
 {
   return DoFindSwitch(Switch, Params, ParamsMax, true);
 }
-
+//---------------------------------------------------------------------------
 bool TOptions::DoFindSwitch(const UnicodeString Switch,
   TStrings *Params, intptr_t ParamsMax, bool CaseSensitive)
 {
@@ -218,7 +220,7 @@ bool TOptions::DoFindSwitch(const UnicodeString Switch,
   }
   return Result;
 }
-
+//---------------------------------------------------------------------------
 UnicodeString TOptions::SwitchValue(const UnicodeString Switch,
   const UnicodeString Default)
 {
@@ -230,7 +232,7 @@ UnicodeString TOptions::SwitchValue(const UnicodeString Switch,
   }
   return Value;
 }
-
+//---------------------------------------------------------------------------
 bool TOptions::SwitchValue(const UnicodeString Switch, bool Default, bool DefaultOnNonExistence)
 {
   bool Result;
@@ -262,12 +264,12 @@ bool TOptions::SwitchValue(const UnicodeString Switch, bool Default, bool Defaul
   }
   return Result;
 }
-
+//---------------------------------------------------------------------------
 bool TOptions::SwitchValue(const UnicodeString Switch, bool Default)
 {
   return SwitchValue(Switch, Default, Default);
 }
-
+//---------------------------------------------------------------------------
 bool TOptions::UnusedSwitch(UnicodeString &Switch) const
 {
   bool Result = false;
@@ -275,7 +277,7 @@ bool TOptions::UnusedSwitch(UnicodeString &Switch) const
   while (!Result && (Index < FOptions.size()))
   {
     if ((FOptions[Index].Type == otSwitch) &&
-      !FOptions[Index].Used)
+        !FOptions[Index].Used)
     {
       Switch = FOptions[Index].Name;
       Result = true;
@@ -285,7 +287,7 @@ bool TOptions::UnusedSwitch(UnicodeString &Switch) const
 
   return Result;
 }
-
+//---------------------------------------------------------------------------
 bool TOptions::WasSwitchAdded(UnicodeString &Switch, wchar_t &SwitchMark) const
 {
   bool Result =
@@ -299,7 +301,7 @@ bool TOptions::WasSwitchAdded(UnicodeString &Switch, wchar_t &SwitchMark) const
   }
   return Result;
 }
-
+//---------------------------------------------------------------------------
 void TOptions::ParamsProcessed(intptr_t ParamsStart, intptr_t ParamsCount)
 {
   if (ParamsCount > 0)
@@ -329,7 +331,7 @@ void TOptions::ParamsProcessed(intptr_t ParamsStart, intptr_t ParamsCount)
     }
   }
 }
-
+//---------------------------------------------------------------------------
 void TOptions::LogOptions(TLogOptionEvent OnLogOption)
 {
   for (size_t Index = 0; Index < FOriginalOptions.size(); ++Index)

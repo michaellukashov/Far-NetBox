@@ -24,11 +24,10 @@
 //#include <win2k.h>
 
 //#include <nbsystem.h>
-//#include <nbsystem_cpp.h>
 #include <nbglobals.h>
 #include <nbstring.h>
 
-#include <nbcore.h>
+#include <nbsystem.h>
 
 #include <nbstring.inl>
 #include <nbutils.h>

@@ -215,7 +215,7 @@ TFarInteractiveCustomCommand::TFarInteractiveCustomCommand(
   FPlugin = Plugin;
 }
 
-void TFarInteractiveCustomCommand::Prompt(intptr_t Index, const UnicodeString APrompt,
+void TFarInteractiveCustomCommand::Prompt(intptr_t /*Index*/, const UnicodeString APrompt,
   UnicodeString &Value) const
 {
   UnicodeString Prompt = APrompt;
@@ -1122,7 +1122,7 @@ void TWinSCPFileSystem::TemporarilyDownloadFiles(TStrings *AFileList, TCopyParam
   CopyParam.SetResumeSupport(rsOff);
 
   TempDir = GetWinSCPPlugin()->GetTemporaryDir();
-  if (TempDir.IsEmpty() || !::ForceDirectories(ApiPath(TempDir)))
+  if (TempDir.IsEmpty() || !::SysUtulsForceDirectories(ApiPath(TempDir)))
   {
     throw Exception(FMTLOAD(NB_CREATE_TEMP_DIR_ERROR, TempDir));
   }
@@ -2293,7 +2293,7 @@ bool TWinSCPFileSystem::SetDirectoryEx(const UnicodeString Dir, int OpMode)
             if (MoreMessageDialog(FORMAT(GetMsg(NB_SYNC_DIR_BROWSE_CREATE), LocalPath),
                 nullptr, qtInformation, qaYes | qaNo) == qaYes)
             {
-              if (!ForceDirectories(ApiPath(LocalPath)))
+              if (!::SysUtulsForceDirectories(ApiPath(LocalPath)))
               {
                 ::RaiseLastOSError();
               }
@@ -3209,17 +3209,17 @@ DWORD TWinSCPFileSystem::TerminalGetLocalFileAttributes(const UnicodeString &Loc
 
 bool TWinSCPFileSystem::TerminalSetLocalFileAttributes(const UnicodeString &LocalFileName, DWORD FileAttributes)
 {
-  return ::FileSetAttr(LocalFileName, FileAttributes);
+  return ::SysUtulsFileSetAttr(LocalFileName, FileAttributes);
 }
 
 bool TWinSCPFileSystem::TerminalMoveLocalFile(const UnicodeString &LocalFileName, const UnicodeString &NewLocalFileName, DWORD Flags)
 {
-  return ::MoveFileExW(ApiPath(LocalFileName).c_str(), NewLocalFileName.c_str(), Flags) != FALSE;
+  return ::SysUtulsMoveFile(LocalFileName, NewLocalFileName, Flags);
 }
 
 bool TWinSCPFileSystem::TerminalRemoveLocalDirectory(const UnicodeString &LocalDirName)
 {
-  return ::RemoveDir(LocalDirName);
+  return ::SysUtulsRemoveDir(LocalDirName);
 }
 
 bool TWinSCPFileSystem::TerminalCreateLocalDirectory(const UnicodeString &LocalDirName, LPSECURITY_ATTRIBUTES SecurityAttributes)
@@ -3885,11 +3885,11 @@ void TWinSCPFileSystem::ProcessEditorEvent(intptr_t Event, void * /*Param*/)
           UpdatePanel();
         }
 
-        if (::RemoveFile(Info->GetFileName()))
+        if (::SysUtulsRemoveFile(Info->GetFileName()))
         {
           // remove directory only if it is empty
           // (to avoid deleting another directory if user uses "save as")
-          ::RemoveDir(::ExcludeTrailingBackslash(::ExtractFilePath(Info->GetFileName())));
+          ::SysUtulsRemoveDir(::ExcludeTrailingBackslash(::ExtractFilePath(Info->GetFileName())));
         }
 
         FMultipleEdits.erase(it->first);

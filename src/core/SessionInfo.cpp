@@ -796,7 +796,7 @@ void TSessionLog::CheckSize(int64_t Addition)
 
     intptr_t Index = 0;
 
-    while (FileExists(LogPartFileName(BaseName, Index + 1)))
+    while (::SysUtulsFileExists(LogPartFileName(BaseName, Index + 1)))
     {
       Index++;
     }
@@ -812,7 +812,7 @@ void TSessionLog::CheckSize(int64_t Addition)
       }
       else
       {
-        THROWOSIFFALSE(::RenameFile(LogPart, LogPartFileName(BaseName, Index + 1)));
+        THROWOSIFFALSE(::SysUtulsRenameFile(LogPart, LogPartFileName(BaseName, Index + 1)));
       }
       Index--;
     }

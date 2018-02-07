@@ -12,7 +12,7 @@ CUSTOM_MEM_ALLOCATION_IMPL
 public:
   UTF8String() {}
   UTF8String(const UTF8String &rhs);
-  explicit UTF8String(const UnicodeString Str);
+  explicit UTF8String(const UnicodeString &Str);
   UTF8String(const wchar_t *Str);
   explicit UTF8String(const wchar_t *Str, intptr_t Length);
   explicit UTF8String(const char *Str, intptr_t Length);
@@ -39,7 +39,7 @@ public:
   void Unique() {}
 
 public:
-  UTF8String &operator=(const UnicodeString StrCopy);
+  UTF8String &operator=(const UnicodeString &StrCopy);
   UTF8String &operator=(const UTF8String &StrCopy);
   UTF8String &operator=(const RawByteString &StrCopy);
   UTF8String &operator=(const char *lpszData);
@@ -104,33 +104,33 @@ public:
   UnicodeString &MakeUpper() { Data.MakeUpper(); return *this; }
   UnicodeString &MakeLower() { Data.MakeLower(); return *this; }
 
-  intptr_t Compare(const UnicodeString Str) const;
-  intptr_t CompareIC(const UnicodeString Str) const;
+  intptr_t Compare(const UnicodeString &Str) const;
+  intptr_t CompareIC(const UnicodeString &Str) const;
   intptr_t ToIntPtr() const;
   intptr_t FindFirstOf(const wchar_t Ch) const;
   intptr_t FindFirstOf(const wchar_t *Str, size_t Offset = 0) const;
 //  intptr_t FindFirstNotOf(const wchar_t * Str) const { return (intptr_t)Data.find_first_not_of(Str); }
 
   UnicodeString &Replace(intptr_t Pos, intptr_t Len, const wchar_t *Str, intptr_t DataLen);
-  UnicodeString &Replace(intptr_t Pos, intptr_t Len, const UnicodeString Str) { return Replace(Pos, Len, Str.c_str(), Str.GetLength()); }
+  UnicodeString &Replace(intptr_t Pos, intptr_t Len, const UnicodeString &Str) { return Replace(Pos, Len, Str.c_str(), Str.GetLength()); }
   UnicodeString &Replace(intptr_t Pos, intptr_t Len, const wchar_t *Str);
   UnicodeString &Replace(intptr_t Pos, intptr_t Len, wchar_t Ch) { return Replace(Pos, Len, &Ch, 1); }
   UnicodeString &Replace(intptr_t Pos, wchar_t Ch) { return Replace(Pos, 1, &Ch, 1); }
 
   UnicodeString &Append(const wchar_t *Str, intptr_t StrLen) { return Replace(GetLength(), 0, Str, StrLen); }
-  UnicodeString &Append(const UnicodeString Str) { return Append(Str.c_str(), Str.GetLength()); }
+  UnicodeString &Append(const UnicodeString &Str) { return Append(Str.c_str(), Str.GetLength()); }
   UnicodeString &Append(const wchar_t *Str);
   UnicodeString &Append(const wchar_t Ch) { return Append(&Ch, 1); }
   UnicodeString &Append(const char *lpszAdd, UINT CodePage = CP_OEMCP);
 
   UnicodeString &Insert(intptr_t Pos, const wchar_t *Str, intptr_t StrLen);
-  UnicodeString &Insert(intptr_t Pos, const UnicodeString Str) { return Insert(Pos, Str.c_str(), Str.Length()); }
+  UnicodeString &Insert(intptr_t Pos, const UnicodeString &Str) { return Insert(Pos, Str.c_str(), Str.Length()); }
   UnicodeString &Insert(const wchar_t *Str, intptr_t Pos);
   UnicodeString &Insert(const wchar_t Ch, intptr_t Pos) { return Insert(Pos, &Ch, 1); }
-  UnicodeString &Insert(const UnicodeString Str, intptr_t Pos) { return Insert(Pos, Str); }
+  UnicodeString &Insert(const UnicodeString &Str, intptr_t Pos) { return Insert(Pos, Str); }
 
   intptr_t Pos(wchar_t Ch) const;
-  intptr_t Pos(const UnicodeString Str) const;
+  intptr_t Pos(const UnicodeString &Str) const;
 
   intptr_t RPos(wchar_t Ch) const { return (intptr_t)Data.ReverseFind(Ch) + 1; }
   bool RPos(intptr_t &nPos, wchar_t Ch, intptr_t nStartPos = 0) const;
@@ -140,8 +140,8 @@ public:
   UnicodeString SubString(intptr_t Pos, intptr_t Len) const;
   UnicodeString SubString(intptr_t Pos) const;
 
-  bool IsDelimiter(const UnicodeString Chars, intptr_t Pos) const;
-  intptr_t LastDelimiter(const UnicodeString Delimiters) const;
+  bool IsDelimiter(const UnicodeString &Chars, intptr_t Pos) const;
+  intptr_t LastDelimiter(const UnicodeString &Delimiters) const;
 
   UnicodeString Trim() const;
   UnicodeString TrimLeft() const;
@@ -150,7 +150,7 @@ public:
   void Unique();
 
 public:
-  UnicodeString &operator=(const UnicodeString StrCopy);
+  UnicodeString &operator=(const UnicodeString &StrCopy);
   UnicodeString &operator=(const RawByteString &StrCopy);
   UnicodeString &operator=(const AnsiString &StrCopy);
   UnicodeString &operator=(const UTF8String &StrCopy);
@@ -158,18 +158,18 @@ public:
   UnicodeString &operator=(const char *lpszData);
   UnicodeString &operator=(const wchar_t Ch);
 
-  UnicodeString operator+(const UnicodeString rhs) const;
+  UnicodeString operator+(const UnicodeString &rhs) const;
   UnicodeString operator+(const RawByteString &rhs) const;
   UnicodeString operator+(const AnsiString &rhs) const;
   UnicodeString operator+(const UTF8String &rhs) const;
 
-  NB_CORE_EXPORT friend UnicodeString operator+(const wchar_t lhs, const UnicodeString rhs);
-  NB_CORE_EXPORT friend UnicodeString operator+(const UnicodeString lhs, wchar_t rhs);
-  NB_CORE_EXPORT friend UnicodeString operator+(const wchar_t *lhs, const UnicodeString rhs);
-  NB_CORE_EXPORT friend UnicodeString operator+(const UnicodeString lhs, const wchar_t *rhs);
-  NB_CORE_EXPORT friend UnicodeString operator+(const UnicodeString lhs, const char *rhs);
+  NB_CORE_EXPORT friend UnicodeString operator+(const wchar_t lhs, const UnicodeString &rhs);
+  NB_CORE_EXPORT friend UnicodeString operator+(const UnicodeString &lhs, wchar_t rhs);
+  NB_CORE_EXPORT friend UnicodeString operator+(const wchar_t *lhs, const UnicodeString &rhs);
+  NB_CORE_EXPORT friend UnicodeString operator+(const UnicodeString &lhs, const wchar_t *rhs);
+  NB_CORE_EXPORT friend UnicodeString operator+(const UnicodeString &lhs, const char *rhs);
 
-  UnicodeString &operator+=(const UnicodeString rhs);
+  UnicodeString &operator+=(const UnicodeString &rhs);
   UnicodeString &operator+=(const wchar_t *rhs);
   UnicodeString &operator+=(const UTF8String &rhs);
   UnicodeString &operator+=(const RawByteString &rhs);
@@ -177,13 +177,13 @@ public:
   UnicodeString &operator+=(const char *Ch);
   UnicodeString &operator+=(const wchar_t Ch);
 
-  bool operator==(const UnicodeString Str) const { return Data == Str.Data; }
-  bool operator!=(const UnicodeString Str) const { return Data != Str.Data; }
+  bool operator==(const UnicodeString &Str) const { return Data == Str.Data; }
+  bool operator!=(const UnicodeString &Str) const { return Data != Str.Data; }
 
-  NB_CORE_EXPORT friend bool operator==(const UnicodeString lhs, const wchar_t *rhs);
-  NB_CORE_EXPORT friend bool operator==(const wchar_t *lhs, const UnicodeString rhs);
-  NB_CORE_EXPORT friend bool operator!=(const UnicodeString lhs, const wchar_t *rhs);
-  NB_CORE_EXPORT friend bool operator!=(const wchar_t *lhs, const UnicodeString rhs);
+  NB_CORE_EXPORT friend bool operator==(const UnicodeString &lhs, const wchar_t *rhs);
+  NB_CORE_EXPORT friend bool operator==(const wchar_t *lhs, const UnicodeString &rhs);
+  NB_CORE_EXPORT friend bool operator!=(const UnicodeString &lhs, const wchar_t *rhs);
+  NB_CORE_EXPORT friend bool operator!=(const wchar_t *lhs, const UnicodeString &rhs);
 
   wchar_t operator[](intptr_t Idx) const;
   wchar_t &operator[](intptr_t Idx);
@@ -213,7 +213,7 @@ public:
   explicit AnsiString(const char *Str, intptr_t Length);
   explicit AnsiString(const unsigned char *Str);
   explicit AnsiString(const unsigned char *Str, intptr_t Length);
-  explicit AnsiString(const UnicodeString Str);
+  explicit AnsiString(const UnicodeString &Str);
   explicit AnsiString(const UTF8String &Str);
   explicit AnsiString(const RawByteString &Str);
   inline ~AnsiString() {}
@@ -243,7 +243,7 @@ public:
   void Unique() {}
 
 public:
-  AnsiString &operator=(const UnicodeString StrCopy);
+  AnsiString &operator=(const UnicodeString &StrCopy);
   AnsiString &operator=(const RawByteString &StrCopy);
   AnsiString &operator=(const AnsiString &StrCopy);
   AnsiString &operator=(const UTF8String &StrCopy);
@@ -251,7 +251,7 @@ public:
   AnsiString &operator=(const wchar_t *Str);
   AnsiString &operator=(wchar_t chData);
 
-  AnsiString operator+(const UnicodeString rhs) const;
+  AnsiString operator+(const UnicodeString &rhs) const;
   AnsiString operator+(const AnsiString &rhs) const;
 
   AnsiString &operator+=(const AnsiString &rhs);
@@ -293,7 +293,7 @@ public:
   explicit RawByteString(const char *Str, intptr_t Length);
   explicit RawByteString(const unsigned char *Str);
   explicit RawByteString(const unsigned char *Str, intptr_t Length);
-  RawByteString(const UnicodeString Str);
+  RawByteString(const UnicodeString &Str);
   RawByteString(const RawByteString &Str);
   RawByteString(const AnsiString &Str);
   RawByteString(const UTF8String &Str);
@@ -320,7 +320,7 @@ public:
   void Unique() {}
 
 public:
-  RawByteString &operator=(const UnicodeString StrCopy);
+  RawByteString &operator=(const UnicodeString &StrCopy);
   RawByteString &operator=(const RawByteString &StrCopy);
   RawByteString &operator=(const AnsiString &StrCopy);
   RawByteString &operator=(const UTF8String &StrCopy);
@@ -348,6 +348,8 @@ private:
   typedef CMStringT< unsigned char, NBChTraitsCRT< unsigned char > > rawstring_t;
   rawstring_t Data;
 };
+
+// rde support
 
 namespace rde {
 
@@ -377,7 +379,9 @@ inline bool operator>(const S &lhs, const S &rhs)
 
 }  // namespace rde
 
-template <class T>
-inline char *ToChar(T &a) { return const_cast<char *>(a.c_str()); }
-template <class T>
-inline wchar_t *ToWChar(T &a) { return const_cast<wchar_t *>(a.c_str()); }
+// utility functions
+
+template <class StringClass>
+inline char *ToChar(StringClass &a) { return const_cast<char *>(a.c_str()); }
+template <class StringClass>
+inline wchar_t *ToWChar(StringClass &a) { return const_cast<wchar_t *>(a.c_str()); }

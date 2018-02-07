@@ -331,8 +331,6 @@ TFTPFileSystem::~TFTPFileSystem()
   SAFE_DESTROY(FLastError);
   SAFE_DESTROY(FFeatures);
   SAFE_DESTROY_EX(TFTPServerCapabilities, FServerCapabilities);
-  SAFE_DESTROY(FLastError);
-  SAFE_DESTROY(FFeatures);
 
   ResetCaches();
 }
@@ -3888,7 +3886,7 @@ static bool VerifyNameMask(const UnicodeString AName, const UnicodeString AMask)
   bool Result = true;
   UnicodeString Name = AName;
   UnicodeString Mask = AMask;
-  intptr_t Pos;
+  intptr_t Pos = 0;
   while (Result && (Pos = Mask.Pos(L"*")) > 0)
   {
     // Pos will typically be 1 here, so not actual comparison is done
@@ -4550,7 +4548,7 @@ bool TFTPFileSystem::GetFileModificationTimeInUtc(const wchar_t *AFileName, stru
     else
     {
       FILETIME MTime;
-      if (!GetFileTime(LocalFileHandle, nullptr, nullptr, &MTime))
+      if (!::GetFileTime(LocalFileHandle, nullptr, nullptr, &MTime))
       {
         Result = false;
       }

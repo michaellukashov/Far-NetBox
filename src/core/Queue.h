@@ -1,6 +1,6 @@
 
 #pragma once
-
+//---------------------------------------------------------------------------
 #include "Terminal.h"
 #include "FileOperationProgress.h"
 //---------------------------------------------------------------------------
@@ -51,7 +51,7 @@ protected:
   HANDLE FEvent;
   bool FTerminated;
 
-  explicit TSignalThread(TObjectClassId Kind, bool LowPriority);
+  explicit TSignalThread(TObjectClassId Kind);
   virtual ~TSignalThread();
 
   virtual bool WaitForEvent();
@@ -68,13 +68,13 @@ class TTerminalQueueStatus;
 //---------------------------------------------------------------------------
 #if 0
 typedef void (__closure * TQueueListUpdate)
-  (TTerminalQueue * Queue);
+(TTerminalQueue * Queue);
 #endif // #if 0
 typedef nb::FastDelegate1<void,
   TTerminalQueue * /*Queue*/> TQueueListUpdateEvent;
 #if 0
 typedef void (__closure * TQueueItemUpdateEvent)
-  (TTerminalQueue * Queue, TQueueItem * Item);
+(TTerminalQueue * Queue, TQueueItem * Item);
 enum TQueueEvent { qeEmpty, qeEmptyButMonitored, qePendingUserAction };
 #endif // #if 0
 typedef nb::FastDelegate2<void,
@@ -89,7 +89,7 @@ enum TQueueEvent
 
 #if 0
 typedef void (__closure * TQueueEventEvent)
-  (TTerminalQueue * Queue, TQueueEvent Event);
+(TTerminalQueue * Queue, TQueueEvent Event);
 #endif // #if 0
 typedef nb::FastDelegate2<void,
   TTerminalQueue * /*Queue*/, TQueueEvent /*Event*/> TQueueEventEvent;
@@ -218,8 +218,8 @@ class NB_CORE_EXPORT TQueueItem : public TObject
 public:
   static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TQueueItem); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TQueueItem) || TObject::is(Kind); }
-public:
 
+public:
   enum TStatus
   {
     qsPending, qsConnecting, qsProcessing, qsPrompt, qsQuery, qsError,
@@ -307,13 +307,13 @@ public:
   bool SetCPSLimit(intptr_t CPSLimit);
   bool GetCPSLimit(intptr_t &CPSLimit) const;
 
-  __property TFileOperationProgressType * ProgressData = { read = GetProgressData };
+  __property TFileOperationProgressType *ProgressData = { read = GetProgressData };
   __property int64_t TotalTransferred = { read = GetTotalTransferred };
-  __property TQueueItem::TInfo * Info = { read = FInfo };
+  __property TQueueItem::TInfo *Info = { read = FInfo };
   __property TQueueItem::TStatus Status = { read = FStatus };
   __property bool ProcessingUserAction = { read = FProcessingUserAction };
   __property int Index = { read = GetIndex };
-  __property void * UserData = { read = FUserData, write = FUserData };
+  __property void *UserData = { read = FUserData, write = FUserData };
 
   TQueueItem::TInfo *GetInfo() const { return FInfo; }
   TQueueItem::TStatus GetStatus() const { return FStatus; }

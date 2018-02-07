@@ -843,7 +843,7 @@ void TConfiguration::CleanupRandomSeedFile()
   try
   {
     DontSaveRandomSeed();
-    if (::FileExists(ApiPath(GetRandomSeedFileName())))
+    if (::SysUtulsFileExists(ApiPath(GetRandomSeedFileName())))
     {
       DeleteFileChecked(GetRandomSeedFileName());
     }
@@ -1473,7 +1473,7 @@ TStoredSessionList * TConfiguration::SelectFilezillaSessionsForImport(
   UnicodeString FilezillaConfigurationFile =
     ::IncludeTrailingBackslash(AppDataPath) + L"FileZilla\\filezilla.xml";
 
-  if (FileExists(ApiPath(FilezillaSiteManagerFile)))
+  if (::SysUtulsFileExists(ApiPath(FilezillaSiteManagerFile)))
   {
     ImportSessionList->ImportFromFilezilla(FilezillaSiteManagerFile, FilezillaConfigurationFile);
 
@@ -1522,7 +1522,7 @@ TStoredSessionList * TConfiguration::SelectKnownHostsSessionsForImport(
 
   try
   {
-    if (FileExists(ApiPath(KnownHostsFile)))
+    if (::SysUtulsFileExists(ApiPath(KnownHostsFile)))
     {
       std::unique_ptr<TStrings> Lines(new TStringList());
       __removed LoadScriptFromFile(KnownHostsFile, Lines.get());
@@ -1575,10 +1575,10 @@ void TConfiguration::SetRandomSeedFile(const UnicodeString Value)
 
     if (!PrevRandomSeedFileName.IsEmpty() &&
       (PrevRandomSeedFileName != GetRandomSeedFileName()) &&
-      ::FileExists(ApiPath(PrevRandomSeedFileName)))
+      ::SysUtulsFileExists(ApiPath(PrevRandomSeedFileName)))
     {
       // ignore any error
-      ::RemoveFile(ApiPath(PrevRandomSeedFileName));
+      ::SysUtulsRemoveFile(ApiPath(PrevRandomSeedFileName));
     }
   }
 }

@@ -326,7 +326,7 @@ void TFarDialog::GetNextItemPosition(intptr_t &Left, intptr_t &Top)
 
 LONG_PTR WINAPI TFarDialog::DialogProcGeneral(HANDLE Handle, int Msg, int Param1, LONG_PTR Param2)
 {
-  TFarPluginEnvGuard Guard;
+  volatile TFarPluginEnvGuard Guard;
 
   static rde::map<HANDLE, LONG_PTR> Dialogs;
   TFarDialog *Dialog = nullptr;
@@ -972,7 +972,7 @@ void TFarDialogContainer::SetEnabled(bool Value)
     FEnabled = true;
     for (intptr_t Index = 0; Index < GetItemCount(); ++Index)
     {
-      dyn_cast<TFarDialogItem>((*FItems)[Index])->UpdateEnabled();
+      FItems->GetAs<TFarDialogItem>(Index)->UpdateEnabled();
     }
   }
 }

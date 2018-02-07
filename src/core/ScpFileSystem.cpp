@@ -1755,7 +1755,7 @@ void TSCPFileSystem::CopyToRemote(TStrings *AFilesToCopy,
         {
           FTerminal->DirectoryModified(TargetDir, false);
 
-          if (::DirectoryExists(ApiPath(::ExtractFilePath(FileName))))
+          if (::SysUtulsDirectoryExists(ApiPath(::ExtractFilePath(FileName))))
           {
             FTerminal->DirectoryModified(base::UnixIncludeTrailingBackslash(TargetDir) +
               FileNameOnly, true);
@@ -2666,7 +2666,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString TargetDir,
               FMTLOAD(CREATE_DIR_ERROR, DestFileName), "",
             [&]()
             {
-              THROWOSIFFALSE(::ForceDirectories(ApiPath(DestFileName)));
+              THROWOSIFFALSE(::SysUtulsForceDirectories(ApiPath(DestFileName)));
             });
             __removed FILE_OPERATION_LOOP_END(FMTLOAD(CREATE_DIR_ERROR, (DestFileName)));
             /* SCP: can we set the timestamp for directories ? */
@@ -2697,7 +2697,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString TargetDir,
               };
               try
               {
-                if (::FileExists(ApiPath(DestFileName)))
+                if (::SysUtulsFileExists(ApiPath(DestFileName)))
                 {
                   int64_t MTime = 0;
                   TOverwriteFileParams FileParams;

@@ -69,12 +69,6 @@ EXTERN_PROCESS_LOCAL(_AFX_WIN_STATE, _afxWinState)
 
 #ifndef _AFX_NO_OLE_SUPPORT
 
-struct ITypeInfo;
-typedef ITypeInfo* LPTYPEINFO;
-
-struct ITypeLib;
-typedef ITypeLib* LPTYPELIB;
-
 typedef struct _GUID GUID;
 #ifndef _REFCLSID_DEFINED
 #define REFGUID const GUID &

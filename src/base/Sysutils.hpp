@@ -3,7 +3,6 @@
 #include <Global.h>
 #include <Classes.hpp>
 
-//#define EXCEPTION throw ExtException(nullptr, L"")
 #define THROWOSIFFALSE(C) { if (!(C)) ::RaiseLastOSError(); }
 #define SAFE_DESTROY_EX(CLASS, OBJ) { CLASS * PObj = OBJ; OBJ = nullptr; delete PObj; }
 #define SAFE_DESTROY(OBJ) SAFE_DESTROY_EX(TObject, OBJ)
@@ -305,19 +304,20 @@ NB_CORE_EXPORT int64_t FileRead(HANDLE AHandle, void *Buffer, int64_t Count);
 NB_CORE_EXPORT int64_t FileWrite(HANDLE AHandle, const void *Buffer, int64_t Count);
 NB_CORE_EXPORT int64_t FileSeek(HANDLE AHandle, int64_t Offset, DWORD Origin);
 
-NB_CORE_EXPORT bool FileExists(const UnicodeString AFileName);
-NB_CORE_EXPORT bool RenameFile(const UnicodeString From, const UnicodeString To);
-NB_CORE_EXPORT bool DirectoryExists(const UnicodeString ADir);
-NB_CORE_EXPORT UnicodeString FileSearch(const UnicodeString AFileName, const UnicodeString DirectoryList);
-NB_CORE_EXPORT void FileAge(const UnicodeString AFileName, TDateTime &ATimestamp);
+NB_CORE_EXPORT bool SysUtulsFileExists(const UnicodeString AFileName);
+NB_CORE_EXPORT bool SysUtulsRenameFile(const UnicodeString From, const UnicodeString To);
+NB_CORE_EXPORT bool SysUtulsDirectoryExists(const UnicodeString ADir);
+NB_CORE_EXPORT UnicodeString SysUtulsFileSearch(const UnicodeString AFileName, const UnicodeString DirectoryList);
+NB_CORE_EXPORT void SysUtulsFileAge(const UnicodeString AFileName, TDateTime &ATimestamp);
 
-NB_CORE_EXPORT DWORD FileGetAttr(const UnicodeString AFileName, bool FollowLink = true);
-NB_CORE_EXPORT bool FileSetAttr(const UnicodeString AFileName, DWORD LocalFileAttrs);
+NB_CORE_EXPORT DWORD SysUtulsFileGetAttr(const UnicodeString AFileName, bool FollowLink = true);
+NB_CORE_EXPORT bool SysUtulsFileSetAttr(const UnicodeString AFileName, DWORD LocalFileAttrs);
 
-NB_CORE_EXPORT bool ForceDirectories(const UnicodeString ADir);
-NB_CORE_EXPORT bool RemoveFile(const UnicodeString AFileName);
-NB_CORE_EXPORT bool CreateDir(const UnicodeString ADir, LPSECURITY_ATTRIBUTES SecurityAttributes = nullptr);
-NB_CORE_EXPORT bool RemoveDir(const UnicodeString ADir);
+NB_CORE_EXPORT bool SysUtulsForceDirectories(const UnicodeString ADir);
+NB_CORE_EXPORT bool SysUtulsRemoveFile(const UnicodeString AFileName);
+NB_CORE_EXPORT bool SysUtulsCreateDir(const UnicodeString ADir, LPSECURITY_ATTRIBUTES SecurityAttributes = nullptr);
+NB_CORE_EXPORT bool SysUtulsMoveFile(const UnicodeString LocalFileName, const UnicodeString NewLocalFileName, DWORD AFlags);
+NB_CORE_EXPORT bool SysUtulsRemoveDir(const UnicodeString ADir);
 
 // not used
 #if 0
@@ -458,26 +458,24 @@ const RAII_type ANONYMOUS_VARIABLE(scoped_object_)
 namespace detail {
 
 template<typename F>
-class scope_guard
+class scope_guard0
 {
 public:
-  explicit scope_guard(F &&f) : m_f(std::move(f)) {}
-  ~scope_guard() { m_f(); }
+  explicit scope_guard0(F &&f) : m_f(std::move(f)) {}
+  ~scope_guard0() { m_f(); }
 
 private:
-  scope_guard &operator=(const scope_guard &);
   const F m_f;
 };
 
 template<typename F, typename P>
-class scope_guard2
+class scope_guard1
 {
 public:
-  explicit scope_guard2(F &&f, P p) : m_f(std::move(f)), m_p(p) {}
-  ~scope_guard2() { m_f(m_p); }
+  explicit scope_guard1(F &&f, P p) : m_f(std::move(f)), m_p(p) {}
+  ~scope_guard1() { m_f(m_p); }
 
 private:
-  scope_guard2 &operator=(const scope_guard2 &);
   const F m_f;
   P m_p;
 };
@@ -486,7 +484,7 @@ class make_scope_guard
 {
 public:
   template<typename F>
-  scope_guard<F> operator<<(F &&f) { return scope_guard<F>(std::move(f)); }
+  scope_guard0<F> operator<<(F &&f) { return scope_guard0<F>(std::move(f)); }
 };
 
 } // namespace detail
@@ -496,7 +494,7 @@ public:
 
 #define ON_SCOPE_EXIT(FUNC, T, PARAM) \
   const auto ANONYMOUS_VARIABLE(scope_exit_guard) = \
-    detail::scope_guard2<nb::FastDelegate1<void, T>, T>(nb::bind(&FUNC, this), PARAM)
+    detail::scope_guard1<nb::FastDelegate1<void, T>, T>(nb::bind(&FUNC, this), PARAM)
 
 #define try__catch
 #define try__finally
@@ -558,15 +556,15 @@ enum class scope_type
 };
 
 template<typename F, scope_type Type>
-class scope_guard
+class scope_guard0
 {
 public:
-  NONCOPYABLE(scope_guard);
-  MOVABLE(scope_guard);
+  NONCOPYABLE(scope_guard0);
+  MOVABLE(scope_guard0);
 
-  explicit scope_guard(F &&f): m_f(std::forward<F>(f)) {}
+  explicit scope_guard0(F &&f): m_f(std::forward<F>(f)) {}
 
-  ~scope_guard() noexcept(Type == scope_type::fail)
+  ~scope_guard0() noexcept(Type == scope_type::fail)
   {
     if (*m_Active && (Type == scope_type::exit || (Type == scope_type::fail) == m_Ec.is_new()))
       m_f();
@@ -583,7 +581,7 @@ class make_scope_guard
 {
 public:
   template<typename F>
-  auto operator<<(F &&f) { return scope_guard<F, Type>(std::forward<F>(f)); }
+  auto operator<<(F &&f) { return scope_guard0<F, Type>(std::forward<F>(f)); }
 };
 
 } // namespace scope_exit
