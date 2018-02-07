@@ -28,6 +28,11 @@ public:
 
 TEST_CASE_METHOD(base_fixture_t, "testUnicodeString01", "netbox")
 {
+  SECTION("UTF8String")
+  {
+    UTF8String a("ab");
+    CHECK(a == "ab");
+  }
   SECTION("UnicodeString01")
   {
     UnicodeString a("1");
