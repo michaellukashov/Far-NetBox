@@ -2,13 +2,168 @@
 
 #include <nbstring.h>
 
+template<typename CharT>
+class NB_CORE_EXPORT BaseUnicodeString
+{
+CUSTOM_MEM_ALLOCATION_IMPL
+public:
+  BaseUnicodeString() {}
+  ~BaseUnicodeString() {}
+
+  BaseUnicodeString(const BaseUnicodeString &rhs) :
+    Data(rhs.c_str(), ToInt(rhs.Length()))
+  {}
+  BaseUnicodeString(const wchar_t *Str, int Length, int cp)
+    Data(Str(), Length, cp)
+  {}
+  const CharT *c_str() const { return Data.c_str(); }
+  const CharT *data() const { return Data.c_str(); }
+  intptr_t Length() const { return Data.GetLength(); }
+  intptr_t GetLength() const { return Length(); }
+  bool IsEmpty() const { return Length() == 0; }
+  CharT *SetLength(intptr_t nLength)
+  {
+    return Data.GetBufferSetLength(ToInt(nLength));
+  }
+
+  BaseUnicodeString &Delete(intptr_t Index, intptr_t Count)
+  {
+    Data.Delete(ToInt(Index) - 1, ToInt(Count));
+    return *this;
+  }
+  BaseUnicodeString &Clear() { Data.Empty(); return *this; }
+
+  BaseUnicodeString &Lower(intptr_t nStartPos = 1);
+  BaseUnicodeString &Lower(intptr_t nStartPos, intptr_t nLength);
+  BaseUnicodeString &Upper(intptr_t nStartPos = 1);
+  BaseUnicodeString &Upper(intptr_t nStartPos, intptr_t nLength);
+
+  BaseUnicodeString &LowerCase() { return Lower(); }
+  BaseUnicodeString &UpperCase() { return Upper(); }
+  BaseUnicodeString &MakeUpper() { Data.MakeUpper(); return *this; }
+  BaseUnicodeString &MakeLower() { Data.MakeLower(); return *this; }
+
+  intptr_t Compare(const BaseUnicodeString &Str) const;
+  intptr_t CompareIC(const BaseUnicodeString &Str) const;
+  intptr_t ToIntPtr() const;
+  intptr_t FindFirstOf(const wchar_t Ch) const;
+  intptr_t FindFirstOf(const wchar_t *Str, size_t Offset = 0) const;
+//  intptr_t FindFirstNotOf(const wchar_t * Str) const { return (intptr_t)Data.find_first_not_of(Str); }
+
+  BaseUnicodeString &Replace(intptr_t Pos, intptr_t Len, const wchar_t *Str, intptr_t DataLen);
+  BaseUnicodeString &Replace(intptr_t Pos, intptr_t Len, const BaseUnicodeString &Str) { return Replace(Pos, Len, Str.c_str(), Str.GetLength()); }
+  BaseUnicodeString &Replace(intptr_t Pos, intptr_t Len, const wchar_t *Str);
+  BaseUnicodeString &Replace(intptr_t Pos, intptr_t Len, wchar_t Ch) { return Replace(Pos, Len, &Ch, 1); }
+  BaseUnicodeString &Replace(intptr_t Pos, wchar_t Ch) { return Replace(Pos, 1, &Ch, 1); }
+
+  BaseUnicodeString &Append(const wchar_t *Str, intptr_t StrLen) { return Replace(GetLength(), 0, Str, StrLen); }
+  BaseUnicodeString &Append(const BaseUnicodeString &Str) { return Append(Str.c_str(), Str.GetLength()); }
+  BaseUnicodeString &Append(const wchar_t *Str);
+  BaseUnicodeString &Append(const wchar_t Ch) { return Append(&Ch, 1); }
+  BaseUnicodeString &Append(const char *lpszAdd, UINT CodePage = CP_OEMCP);
+
+  BaseUnicodeString &Insert(intptr_t Pos, const wchar_t *Str, intptr_t StrLen);
+  BaseUnicodeString &Insert(intptr_t Pos, const BaseUnicodeString &Str) { return Insert(Pos, Str.c_str(), Str.Length()); }
+  BaseUnicodeString &Insert(const CharT *Str, intptr_t Pos)
+  {
+    Data.Insert(ToInt(Pos) - 1, Str);
+    return *this;
+  }
+  BaseUnicodeString &Insert(const wchar_t Ch, intptr_t Pos) { return Insert(Pos, &Ch, 1); }
+  BaseUnicodeString &Insert(const BaseUnicodeString &Str, intptr_t Pos) { return Insert(Pos, Str); }
+
+  intptr_t Pos(CharT Ch) const
+  {
+    return Data.Find(Ch) + 1;
+  }
+  intptr_t Pos(const BaseUnicodeString &Str) const
+  {
+    return Data.Find(Str.Data.c_str()) + 1;
+  }
+
+  intptr_t RPos(wchar_t Ch) const { return (intptr_t)Data.ReverseFind(Ch) + 1; }
+  bool RPos(intptr_t &nPos, wchar_t Ch, intptr_t nStartPos = 0) const;
+
+  BaseUnicodeString<CharT> SubStr(intptr_t Pos, intptr_t Len) const
+  {
+    string_t Str(Data.Mid(ToInt(Pos) - 1), ToInt(Len));
+    return BaseUnicodeString<CharT>(Str.c_str(), Str.GetLength());
+  }
+  BaseUnicodeString SubStr(intptr_t Pos) const
+  {
+    string_t Str(Data.Mid(ToInt(Pos) - 1));
+    return BaseUnicodeString<CharT>(Str.c_str(), Str.GetLength());
+  }
+  BaseUnicodeString SubString(intptr_t Pos, intptr_t Len) const
+  {
+    string_t Str(Data.Mid(ToInt(Pos) - 1), ToInt(Len));
+    return BaseUnicodeString<CharT>(Str.c_str(), Str.GetLength());
+  }
+  BaseUnicodeString SubString(intptr_t Pos) const
+  {
+    string_t Str(Data.Mid(ToInt(Pos) - 1));
+    return BaseUnicodeString<CharT>(Str.c_str(), Str.GetLength());
+  }
+
+  bool IsDelimiter(const BaseUnicodeString<CharT> &Chars, intptr_t Pos) const;
+  intptr_t LastDelimiter(const BaseUnicodeString<CharT> &Delimiters) const;
+
+  BaseUnicodeString<CharT> Trim() const;
+  BaseUnicodeString<CharT> TrimLeft() const;
+  BaseUnicodeString<CharT> TrimRight() const;
+
+  void Unique();
+
+public:
+
+  friend bool operator==(const BaseUnicodeString<CharT> &lhs, const CharT *rhs)
+  {
+    return lhs.Data == rhs; // .Compare(NullToEmpty(rhs)) == 0;
+  }
+  bool operator==(const BaseUnicodeString<CharT> &Str) const { return Data == Str.Data; }
+  bool operator!=(const BaseUnicodeString<CharT> &Str) const { return Data != Str.Data; }
+
+  CharT operator[](intptr_t Idx) const
+  {
+    ThrowIfOutOfRange(Idx); // Should Range-checking be optional to avoid overhead ??
+    return Data.operator[](ToInt(Idx) - 1);
+  }
+  CharT &operator[](intptr_t Idx)
+  {
+    ThrowIfOutOfRange(Idx); // Should Range-checking be optional to avoid overhead ??
+    return Data.GetBuffer()[ToInt(Idx) - 1];
+  }
+
+private:
+  void ThrowIfOutOfRange(intptr_t Idx) const
+  {
+    if (Idx < 1 || Idx > Length()) // NOTE: UnicodeString is 1-based !!
+      throw Exception("Index is out of range"); // ERangeError(Sysconst_SRangeError);
+  }
+protected:
+  typedef CMStringT< CharT, NBChTraitsCRT< CharT > > string_t;
+  string_t Data;
+};
+
+//template<typename CharT>
+//bool operator==(const BaseUnicodeString<CharT> &lhs, const CharT *rhs)
+//{
+//  return lhs.Data.operator==(NullToEmpty(rhs));
+//}
+//template<typename CharT>
+//bool operator==(const CharT *lhs, const BaseUnicodeString<CharT> &rhs)
+//{
+//  return rhs.Data.operator==(NullToEmpty(lhs));
+//}
+
 class RawByteString;
 class UnicodeString;
 class AnsiString;
 
-class NB_CORE_EXPORT UTF8String
+class NB_CORE_EXPORT UTF8String : public BaseUnicodeString<char>
 {
 CUSTOM_MEM_ALLOCATION_IMPL
+  typedef BaseUnicodeString<char> Base;
 public:
   UTF8String() {}
   UTF8String(const UTF8String &rhs);
@@ -20,19 +175,19 @@ public:
 
   ~UTF8String() {}
 
-  operator const char *() const { return this->c_str(); }
-  const char *c_str() const { return Data.c_str(); }
-  intptr_t Length() const { return Data.GetLength(); }
-  intptr_t GetLength() const { return Length(); }
-  bool IsEmpty() const { return Length() == 0; }
-  char *SetLength(intptr_t nLength);
-  UTF8String &Delete(intptr_t Index, intptr_t Count);
-  UTF8String &Insert(wchar_t Ch, intptr_t Pos);
-  UTF8String &Insert(const wchar_t *Str, intptr_t Pos);
-  UTF8String SubString(intptr_t Pos) const;
-  UTF8String SubString(intptr_t Pos, intptr_t Len) const;
+//  operator const char *() const { return this->c_str(); }
+//  const char *c_str() const { return Data.c_str(); }
+//  intptr_t Length() const { return Data.GetLength(); }
+//  intptr_t GetLength() const { return Length(); }
+//  bool IsEmpty() const { return Length() == 0; }
+//  char *SetLength(intptr_t nLength);
+//  UTF8String &Delete(intptr_t Index, intptr_t Count);
+//  UTF8String &Insert(wchar_t Ch, intptr_t Pos);
+//  UTF8String &Insert(const wchar_t *Str, intptr_t Pos);
+//  UTF8String SubString(intptr_t Pos) const;
+//  UTF8String SubString(intptr_t Pos, intptr_t Len) const;
 
-  intptr_t Pos(char Ch) const;
+//  intptr_t Pos(char Ch) const;
 
   int vprintf(const char *Format, va_list ArgList);
 
@@ -54,15 +209,15 @@ public:
   UTF8String &operator+=(const char Ch);
   UTF8String &operator+=(const char *rhs);
 
-  NB_CORE_EXPORT friend bool operator==(const UTF8String &lhs, const UTF8String &rhs);
-  NB_CORE_EXPORT friend bool operator!=(const UTF8String &lhs, const UTF8String &rhs);
+//  NB_CORE_EXPORT friend bool operator==(const UTF8String &lhs, const UTF8String &rhs);
+//  NB_CORE_EXPORT friend bool operator!=(const UTF8String &lhs, const UTF8String &rhs);
 
 private:
   void Init(const wchar_t *Str, intptr_t Length);
   void Init(const char *Str, intptr_t Length);
 
-  typedef CMStringA string_t;
-  string_t Data;
+//  typedef CMStringA string_t;
+//  string_t Data;
 };
 
 class NB_CORE_EXPORT UnicodeString

@@ -383,61 +383,62 @@ RawByteString &RawByteString::operator+=(const char Ch)
 }
 
 
-UTF8String::UTF8String(const UTF8String &rhs) :
-  Data(rhs.c_str(), ToInt(rhs.Length()))
-{
-}
+//UTF8String::UTF8String(const UTF8String &rhs) :
+//  Data(rhs.c_str(), ToInt(rhs.Length()))
+//{
+//}
 
 UTF8String::UTF8String(const UnicodeString &Str) :
-  Data(Str.c_str(), ToInt(Str.Length()), CP_UTF8)
+  Base(Str.c_str(), ToInt(Str.Length()), CP_UTF8)
+  // BaseUnicodeString(Str)
 {
 }
 
-UTF8String::UTF8String(const wchar_t *Str) :
-  Data(Str, string_t::StringLength(Str))
-{
-}
+//UTF8String::UTF8String(const wchar_t *Str) :
+//  Data(Str, string_t::StringLength(Str))
+//{
+//}
 
-UTF8String::UTF8String(const wchar_t *Str, intptr_t Length) :
-  Data(Str, ToInt(Length))
-{
-}
+//UTF8String::UTF8String(const wchar_t *Str, intptr_t Length) :
+//  Data(Str, ToInt(Length))
+//{
+//}
 
-UTF8String::UTF8String(const char *Str, intptr_t Length) :
-  Data(Str, ToInt(Length))
-{
-}
+//UTF8String::UTF8String(const char *Str, intptr_t Length) :
+//  Data(Str, ToInt(Length))
+//{
+//}
 
-UTF8String::UTF8String(const char *Str) :
-  Data(Str, string_t::StringLength(Str))
-{
-}
+//UTF8String::UTF8String(const char *Str) :
+//  Data(Str, string_t::StringLength(Str))
+//{
+//}
 
-void UTF8String::Init(const wchar_t *Str, intptr_t Length)
-{
-  Data = string_t(Str, ToInt(Length));
-}
+//void UTF8String::Init(const wchar_t *Str, intptr_t Length)
+//{
+//  Data = string_t(Str, ToInt(Length));
+//}
 
-void UTF8String::Init(const char *Str, intptr_t Length)
-{
-  Data = string_t(Str, ToInt(Length));
-}
+//void UTF8String::Init(const char *Str, intptr_t Length)
+//{
+//  Data = string_t(Str, ToInt(Length));
+//}
 
-char *UTF8String::SetLength(intptr_t nLength)
-{
-  return Data.GetBufferSetLength(ToInt(nLength));
-}
+//char *UTF8String::SetLength(intptr_t nLength)
+//{
+//  return Data.GetBufferSetLength(ToInt(nLength));
+//}
 
-UTF8String &UTF8String::Delete(intptr_t Index, intptr_t Count)
-{
-  Data.Delete(ToInt(Index) - 1, ToInt(Count));
-  return *this;
-}
+//UTF8String &UTF8String::Delete(intptr_t Index, intptr_t Count)
+//{
+//  Data.Delete(ToInt(Index) - 1, ToInt(Count));
+//  return *this;
+//}
 
-intptr_t UTF8String::Pos(char Ch) const
-{
-  return Data.Find(Ch) + 1;
-}
+//intptr_t UTF8String::Pos(char Ch) const
+//{
+//  return Data.Find(Ch) + 1;
+//}
 
 int UTF8String::vprintf(const char *Format, va_list ArgList)
 {
@@ -447,31 +448,31 @@ int UTF8String::vprintf(const char *Format, va_list ArgList)
   return Size;
 }
 
-UTF8String &UTF8String::Insert(wchar_t Ch, intptr_t Pos)
-{
-  UTF8String UTF8(&Ch, 1);
-  Data.Insert(ToInt(Pos) - 1, UTF8.c_str());
-  return *this;
-}
+//UTF8String &UTF8String::Insert(wchar_t Ch, intptr_t Pos)
+//{
+//  UTF8String UTF8(&Ch, 1);
+//  Data.Insert(ToInt(Pos) - 1, UTF8.c_str());
+//  return *this;
+//}
 
-UTF8String &UTF8String::Insert(const wchar_t *Str, intptr_t Pos)
-{
-  UTF8String UTF8(Str);
-  Data.Insert(ToInt(Pos) - 1, UTF8.c_str());
-  return *this;
-}
+//UTF8String &UTF8String::Insert(const wchar_t *Str, intptr_t Pos)
+//{
+//  UTF8String UTF8(Str);
+//  Data.Insert(ToInt(Pos) - 1, UTF8.c_str());
+//  return *this;
+//}
 
-UTF8String UTF8String::SubString(intptr_t Pos) const
-{
-  string_t Str(Data.Mid(ToInt(Pos) - 1));
-  return UTF8String(Str.c_str(), Str.GetLength());
-}
+//UTF8String UTF8String::SubString(intptr_t Pos) const
+//{
+//  string_t Str(Data.Mid(ToInt(Pos) - 1));
+//  return UTF8String(Str.c_str(), Str.GetLength());
+//}
 
-UTF8String UTF8String::SubString(intptr_t Pos, intptr_t Len) const
-{
-  string_t Str(Data.Mid(ToInt(Pos) - 1), ToInt(Len));
-  return UTF8String(Str.c_str(), Str.GetLength());
-}
+//UTF8String UTF8String::SubString(intptr_t Pos, intptr_t Len) const
+//{
+//  string_t Str(Data.Mid(ToInt(Pos) - 1), ToInt(Len));
+//  return UTF8String(Str.c_str(), Str.GetLength());
+//}
 
 UTF8String &UTF8String::operator=(const UnicodeString &StrCopy)
 {
@@ -542,15 +543,15 @@ UTF8String &UTF8String::operator+=(const char *rhs)
   return *this;
 }
 
-bool operator==(const UTF8String &lhs, const UTF8String &rhs)
-{
-  return lhs.Data == rhs.Data;
-}
+//bool operator==(const UTF8String &lhs, const UTF8String &rhs)
+//{
+//  return lhs.Data == rhs.Data;
+//}
 
-bool operator!=(const UTF8String &lhs, const UTF8String &rhs)
-{
-  return lhs.Data != rhs.Data;
-}
+//bool operator!=(const UTF8String &lhs, const UTF8String &rhs)
+//{
+//  return lhs.Data != rhs.Data;
+//}
 
 UnicodeString::UnicodeString(const UnicodeString &Str) :
   Data(Str.c_str(), ToInt(Str.GetLength()))
