@@ -894,7 +894,7 @@ void TS3FileSystem::ReadDirectoryInternal(
       if (Data.IsTruncated && ((MaxKeys == 0) || (Data.KeyCount < MaxKeys)))
       {
         bool Cancel = false;
-        FTerminal->DoReadDirectoryProgress(FileList->GetCount(), false, Cancel);
+        FTerminal->DoReadDirectoryProgress(FileList->GetCount(), 0, Cancel);
         if (!Cancel)
         {
           Continue = true;
