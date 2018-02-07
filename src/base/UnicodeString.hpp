@@ -88,7 +88,6 @@ public:
   const wchar_t *data() const { return Data.c_str(); }
   intptr_t Length() const { return Data.GetLength(); }
   intptr_t GetLength() const { return Length(); }
-  intptr_t GetBytesCount() const { return (Length() + 1) * sizeof(wchar_t); }
   bool IsEmpty() const { return Length() == 0; }
   wchar_t *SetLength(intptr_t nLength);
   UnicodeString &Delete(intptr_t Index, intptr_t Count);
