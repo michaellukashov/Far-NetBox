@@ -111,12 +111,6 @@ public:
   CMSimpleStringT(const XCHAR *pchSrc, int nLength);
   ~CMSimpleStringT();
 
-  template<typename StringT>
-  inline operator StringT &()
-  {
-    return *static_cast<StringT *>(this);
-  }
-
   template< typename BaseType >
   __forceinline operator CMSimpleStringT<BaseType> &()
   {
