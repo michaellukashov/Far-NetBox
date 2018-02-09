@@ -3,75 +3,8 @@
 #include <nbstring.h>
 
 class RawByteString;
-class UnicodeString;
+class UTF8String;
 class AnsiString;
-
-class NB_CORE_EXPORT UTF8String : public CMStringT< char, NBChTraitsCRT<char> >
-{
-  typedef CMStringT< char, NBChTraitsCRT<char> > BaseT;
-public:
-  UTF8String() {}
-  UTF8String(const UTF8String &rhs);
-  explicit UTF8String(const UnicodeString &Str);
-  UTF8String(const wchar_t *Str);
-  explicit UTF8String(const wchar_t *Str, intptr_t Length);
-  explicit UTF8String(const char *Str, intptr_t Length);
-  explicit UTF8String(const char *Str);
-
-  ~UTF8String() {}
-
-  operator const char *() const { return this->c_str(); }
-  const char *c_str() const { return BaseT::c_str(); }
-  intptr_t Length() const { return GetLength(); }
-  intptr_t GetLength() const { return BaseT::GetLength(); }
-  bool IsEmpty() const { return Length() == 0; }
-  char *SetLength(intptr_t nLength);
-  UTF8String &Delete(intptr_t Index, intptr_t Count);
-  UTF8String &Insert(wchar_t Ch, intptr_t Pos);
-  UTF8String &Insert(const wchar_t *Str, intptr_t Pos);
-  UTF8String SubString(intptr_t Pos) const;
-  UTF8String SubString(intptr_t Pos, intptr_t Len) const;
-
-  intptr_t Pos(char Ch) const;
-
-  int vprintf(const char *Format, va_list ArgList);
-
-  void Unique() { }
-
-public:
-  UTF8String &operator=(const UnicodeString &StrCopy);
-  UTF8String &operator=(const UTF8String &StrCopy);
-  UTF8String &operator=(const RawByteString &StrCopy);
-  UTF8String &operator=(const char *lpszData);
-  UTF8String &operator=(const wchar_t *lpwszData);
-  UTF8String &operator=(wchar_t chData);
-
-  UTF8String operator+(const UTF8String &rhs) const;
-  UTF8String operator+(const RawByteString &rhs) const;
-  UTF8String operator+(const char *rhs) const;
-  UTF8String &operator+=(const UTF8String &rhs);
-  UTF8String &operator+=(const RawByteString &rhs);
-  UTF8String &operator+=(const char Ch);
-  UTF8String &operator+=(const char *rhs);
-
-  friend bool inline operator==(const UTF8String &lhs, const UTF8String &rhs)
-  {
-    return lhs.Compare(rhs.c_str()) == 0;
-  }
-  friend bool inline operator!=(const UTF8String &lhs, const UTF8String &rhs)
-  {
-    return lhs.Compare(rhs.c_str()) != 0;
-  }
-
-  char operator[](intptr_t Idx) const;
-  char &operator[](intptr_t Idx);
-
-private:
-  void Init(const wchar_t *Str, intptr_t Length);
-  void Init(const char *Str, intptr_t Length);
-
-  void ThrowIfOutOfRange(intptr_t Idx) const;
-};
 
 class NB_CORE_EXPORT UnicodeString : public CMStringT< wchar_t, NBChTraitsCRT<wchar_t> >
 {
@@ -216,7 +149,72 @@ private:
   void ThrowIfOutOfRange(intptr_t Idx) const;
 };
 
-class RawByteString;
+class NB_CORE_EXPORT UTF8String : public CMStringT< char, NBChTraitsCRT<char> >
+{
+  typedef CMStringT< char, NBChTraitsCRT<char> > BaseT;
+public:
+  UTF8String() {}
+  UTF8String(const UTF8String &rhs);
+  explicit UTF8String(const UnicodeString &Str);
+  UTF8String(const wchar_t *Str);
+  explicit UTF8String(const wchar_t *Str, intptr_t Length);
+  explicit UTF8String(const char *Str, intptr_t Length);
+  explicit UTF8String(const char *Str);
+
+  ~UTF8String() {}
+
+  operator const char *() const { return this->c_str(); }
+  const char *c_str() const { return BaseT::c_str(); }
+  intptr_t Length() const { return GetLength(); }
+  intptr_t GetLength() const { return BaseT::GetLength(); }
+  bool IsEmpty() const { return Length() == 0; }
+  char *SetLength(intptr_t nLength);
+  UTF8String &Delete(intptr_t Index, intptr_t Count);
+  UTF8String &Insert(wchar_t Ch, intptr_t Pos);
+  UTF8String &Insert(const wchar_t *Str, intptr_t Pos);
+  UTF8String SubString(intptr_t Pos) const;
+  UTF8String SubString(intptr_t Pos, intptr_t Len) const;
+
+  intptr_t Pos(char Ch) const;
+
+  int vprintf(const char *Format, va_list ArgList);
+
+  void Unique() { }
+
+public:
+  UTF8String &operator=(const UnicodeString &StrCopy);
+  UTF8String &operator=(const UTF8String &StrCopy);
+  UTF8String &operator=(const RawByteString &StrCopy);
+  UTF8String &operator=(const char *lpszData);
+  UTF8String &operator=(const wchar_t *lpwszData);
+  UTF8String &operator=(wchar_t chData);
+
+  UTF8String operator+(const UTF8String &rhs) const;
+  UTF8String operator+(const RawByteString &rhs) const;
+  UTF8String operator+(const char *rhs) const;
+  UTF8String &operator+=(const UTF8String &rhs);
+  UTF8String &operator+=(const RawByteString &rhs);
+  UTF8String &operator+=(const char Ch);
+  UTF8String &operator+=(const char *rhs);
+
+  friend bool inline operator==(const UTF8String &lhs, const UTF8String &rhs)
+  {
+    return lhs.Compare(rhs.c_str()) == 0;
+  }
+  friend bool inline operator!=(const UTF8String &lhs, const UTF8String &rhs)
+  {
+    return lhs.Compare(rhs.c_str()) != 0;
+  }
+
+  char operator[](intptr_t Idx) const;
+  char &operator[](intptr_t Idx);
+
+private:
+  void Init(const wchar_t *Str, intptr_t Length);
+  void Init(const char *Str, intptr_t Length);
+
+  void ThrowIfOutOfRange(intptr_t Idx) const;
+};
 
 class NB_CORE_EXPORT AnsiString : public CMStringT< char, NBChTraitsCRT<char> >
 {
@@ -354,9 +352,13 @@ public:
 
   bool operator==(const char *rhs) const
   { return BaseT::Compare(rhs) == 0; }
-  inline friend bool operator==(RawByteString &lhs, RawByteString &rhs)
+  inline friend bool operator==(const RawByteString &lhs, RawByteString &rhs)
   { return lhs.Compare(rhs.c_str()) == 0; }
-  inline friend bool operator!=(RawByteString &lhs, RawByteString &rhs)
+  inline friend bool operator!=(const RawByteString &lhs, const RawByteString &rhs)
+  { return lhs.Compare(rhs.c_str()) != 0; }
+  inline friend bool operator!=(const UnicodeString &lhs, const RawByteString &rhs)
+  { return lhs.Compare(rhs.c_str()) != 0; }
+  inline friend bool operator!=(const RawByteString &rhs, const UnicodeString &lhs)
   { return lhs.Compare(rhs.c_str()) != 0; }
 
 private:
