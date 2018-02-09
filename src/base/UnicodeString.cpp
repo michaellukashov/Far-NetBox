@@ -214,68 +214,73 @@ void AnsiString::ThrowIfOutOfRange(intptr_t Idx) const
 
 
 RawByteString::RawByteString(const wchar_t *Str) :
-  Data(Str, rawstring_t::StringLength(Str))
+  BaseT(Str, BaseT::StringLength(Str))
 {
 }
 
 RawByteString::RawByteString(const wchar_t *Str, intptr_t Length) :
-  Data(Str, ToInt(Length))
+  BaseT(Str, ToInt(Length))
 {
 }
 
 RawByteString::RawByteString(const char *Str) :
-  Data(Str, rawstring_t::StringLength(Str))
+  BaseT(Str, BaseT::StringLength(Str))
 {
 }
 
 RawByteString::RawByteString(const char *Str, intptr_t Length) :
-  Data(Str, ToInt(Length))
+  BaseT(Str, ToInt(Length))
 {
 }
 
 RawByteString::RawByteString(const unsigned char *Str) :
-  Data(reinterpret_cast<const char *>(Str), rawstring_t::StringLength(reinterpret_cast<const char *>(Str)))
+  BaseT(reinterpret_cast<const char *>(Str), BaseT::StringLength(reinterpret_cast<const char *>(Str)))
 {
 }
 
 RawByteString::RawByteString(const unsigned char *Str, intptr_t Length) :
-  Data(reinterpret_cast<const char *>(Str), ToInt(Length))
+  BaseT(reinterpret_cast<const char *>(Str), ToInt(Length))
 {
 }
 
 RawByteString::RawByteString(const UnicodeString &Str) :
-  Data(Str.c_str(), ToInt(Str.Length()))
+  BaseT(Str.c_str(), ToInt(Str.Length()))
 {
 }
 
 RawByteString::RawByteString(const RawByteString &Str) :
-  Data(Str.c_str(), ToInt(Str.Length()))
+  BaseT(Str.c_str(), ToInt(Str.Length()))
 {
 }
 
 RawByteString::RawByteString(const AnsiString &Str) :
-  Data(Str.c_str(), ToInt(Str.Length()))
+  BaseT(Str.c_str(), ToInt(Str.Length()))
 {
 }
 
 RawByteString::RawByteString(const UTF8String &Str) :
-  Data(Str.c_str(), ToInt(Str.Length()))
+  BaseT(Str.c_str(), ToInt(Str.Length()))
 {
 }
 
 void RawByteString::Init(const wchar_t *Str, intptr_t Length)
 {
-  Data = rawstring_t(Str, ToInt(Length));
+  *this = BaseT(Str, ToInt(Length));
 }
 
 void RawByteString::Init(const char *Str, intptr_t Length)
 {
-  Data = rawstring_t(Str, ToInt(Length));
+  *this = BaseT(Str, ToInt(Length));
 }
 
 void RawByteString::Init(const unsigned char *Str, intptr_t Length)
 {
-  Data = rawstring_t(reinterpret_cast<const char *>(Str), ToInt(Length));
+  *this = BaseT(reinterpret_cast<const char *>(Str), ToInt(Length));
+}
+
+void RawByteString::ThrowIfOutOfRange(intptr_t Idx) const
+{
+
 }
 
 RawByteString::operator UnicodeString() const
@@ -285,47 +290,59 @@ RawByteString::operator UnicodeString() const
 
 intptr_t RawByteString::Pos(wchar_t Ch) const
 {
-  return Data.Find(static_cast<unsigned char>(Ch)) + 1;
+  return BaseT::Find(static_cast<unsigned char>(Ch)) + 1;
 }
 
 intptr_t RawByteString::Pos(const char Ch) const
 {
-  return Data.Find(static_cast<unsigned char>(Ch)) + 1;
+  return BaseT::Find(static_cast<unsigned char>(Ch)) + 1;
 }
 
 intptr_t RawByteString::Pos(const char *Str) const
 {
-  return Data.Find(reinterpret_cast<const char *>(Str)) + 1;
+  return BaseT::Find(reinterpret_cast<const char *>(Str)) + 1;
 }
 
 char *RawByteString::SetLength(intptr_t nLength)
 {
-  return Data.GetBufferSetLength(ToInt(nLength));
+  return BaseT::GetBufferSetLength(ToInt(nLength));
 }
 
 RawByteString &RawByteString::Delete(intptr_t Index, intptr_t Count)
 {
-  Data.Delete(ToInt(Index) - 1, ToInt(Count));
+  BaseT::Delete(ToInt(Index) - 1, ToInt(Count));
   return *this;
 }
 
 RawByteString &RawByteString::Insert(const char *Str, intptr_t Pos)
 {
-  Data.Insert(ToInt(Pos) - 1, static_cast<const char *>(Str));
+  BaseT::Insert(ToInt(Pos) - 1, static_cast<const char *>(Str));
   return *this;
 }
 
 RawByteString RawByteString::SubString(intptr_t Pos) const
 {
-  rawstring_t Str(Data.Mid(ToInt(Pos) - 1));
+  BaseT Str(BaseT::Mid(ToInt(Pos) - 1));
   return UTF8String(Str.c_str(), Str.GetLength());
 }
 
 RawByteString RawByteString::SubString(intptr_t Pos, intptr_t Len) const
 {
-  rawstring_t s = Data.Mid(ToInt(Pos) - 1, ToInt(Len));
-  RawByteString Result(s.c_str(), s.GetLength());
+  BaseT Str = BaseT::Mid(ToInt(Pos) - 1, ToInt(Len));
+  RawByteString Result(Str.c_str(), Str.GetLength());
   return Result;
+}
+
+unsigned char RawByteString::operator[](intptr_t Idx) const
+{
+  ThrowIfOutOfRange(Idx); // Should Range-checking be optional to avoid overhead ??
+  return BaseT::operator[](ToInt(Idx) - 1);
+}
+
+unsigned char &RawByteString::operator[](intptr_t Idx)
+{
+  ThrowIfOutOfRange(Idx); // Should Range-checking be optional to avoid overhead ??
+  return reinterpret_cast<unsigned  char *>(BaseT::GetBuffer())[ToInt(Idx) - 1];
 }
 
 RawByteString &RawByteString::operator=(const UnicodeString &StrCopy)
@@ -354,7 +371,7 @@ RawByteString &RawByteString::operator=(const UTF8String &StrCopy)
 
 RawByteString &RawByteString::operator=(const char *lpszData)
 {
-  Init(lpszData, rawstring_t::StringLength(lpszData));
+  Init(lpszData, BaseT::StringLength(lpszData));
   return *this;
 }
 
@@ -366,25 +383,26 @@ RawByteString &RawByteString::operator=(const wchar_t *lpwszData)
 
 RawByteString RawByteString::operator+(const RawByteString &rhs) const
 {
-  rawstring_t Result = Data + rhs.Data;
-  return RawByteString(Result.c_str(), Result.GetLength());
+  RawByteString Result = *this;
+  Result.Append(rhs.c_str(), ToInt(rhs.GetLength()));
+  return Result;
 }
 
 RawByteString &RawByteString::operator+=(const RawByteString &rhs)
 {
-  Data.Append(rhs.c_str(), ToInt(rhs.Length()));
+  BaseT::Append(rhs.c_str(), ToInt(rhs.Length()));
   return *this;
 }
 
 RawByteString &RawByteString::operator+=(const char Ch)
 {
-  Data.AppendChar(Ch);
+  BaseT::AppendChar(Ch);
   return *this;
 }
 
 
 //UTF8String::UTF8String(const UTF8String &rhs) :
-//  Data(rhs.c_str(), ToInt(rhs.Length()))
+//  BaseT(rhs.c_str(), ToInt(rhs.Length()))
 //{
 //}
 
@@ -558,6 +576,7 @@ char UTF8String::operator[](intptr_t Idx) const
   ThrowIfOutOfRange(Idx); // Should Range-checking be optional to avoid overhead ??
   return BaseT::operator[](ToInt(Idx) - 1);
 }
+
 char &UTF8String::operator[](intptr_t Idx)
 {
   ThrowIfOutOfRange(Idx); // Should Range-checking be optional to avoid overhead ??
@@ -686,7 +705,7 @@ intptr_t UnicodeString::FindFirstOf(const wchar_t *Str, size_t Offset) const
   {
     return NPOS;
   }
-  // int Length = wstring_t::StringLength(Str);
+  // int Length = BaseT::StringLength(Str);
   UnicodeString str = BaseT::Mid(ToInt(Offset));
   int Res = str.FindOneOf(Str);
   if (Res != -1)

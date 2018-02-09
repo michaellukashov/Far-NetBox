@@ -291,9 +291,9 @@ private:
   void ThrowIfOutOfRange(intptr_t Idx) const;
 };
 
-class NB_CORE_EXPORT RawByteString
+class NB_CORE_EXPORT RawByteString : public CMStringT< unsigned char, NBChTraitsCRT<unsigned char> >
 {
-CUSTOM_MEM_ALLOCATION_IMPL
+  typedef CMStringT< unsigned char, NBChTraitsCRT<unsigned char> > BaseT;
 public:
   RawByteString() {}
   explicit RawByteString(const wchar_t *Str);
@@ -310,9 +310,9 @@ public:
 
   operator const char *() const { return this->c_str(); }
   operator UnicodeString() const;
-  const char *c_str() const { return Data.c_str(); }
-  intptr_t Length() const { return Data.GetLength(); }
-  intptr_t GetLength() const { return Length(); }
+  const char *c_str() const { return BaseT::c_str(); }
+  intptr_t Length() const { return GetLength(); }
+  intptr_t GetLength() const { return BaseT::GetLength(); }
   bool IsEmpty() const { return Length() == 0; }
   char *SetLength(intptr_t nLength);
   RawByteString &Clear() { SetLength(0); return *this; }
@@ -320,6 +320,9 @@ public:
   RawByteString &Insert(const char *Str, intptr_t Pos);
   RawByteString SubString(intptr_t Pos) const;
   RawByteString SubString(intptr_t Pos, intptr_t Len) const;
+
+  unsigned char operator[](intptr_t Idx) const;
+  unsigned char &operator[](intptr_t Idx);
 
   intptr_t Pos(wchar_t Ch) const;
   intptr_t Pos(const wchar_t *Str) const;
@@ -343,19 +346,17 @@ public:
   RawByteString &operator+=(const char Ch);
 
   bool operator==(const char *rhs) const
-  { return Data == rhs; }
+  { return BaseT::Compare(rhs) == 0; }
   inline friend bool operator==(RawByteString &lhs, RawByteString &rhs)
-  { return lhs.Data == rhs.Data; }
+  { return lhs.Compare(rhs.c_str()) == 0; }
   inline friend bool operator!=(RawByteString &lhs, RawByteString &rhs)
-  { return lhs.Data != rhs.Data; }
+  { return lhs.Compare(rhs.c_str()) != 0; }
 
 private:
   void Init(const wchar_t *Str, intptr_t Length);
   void Init(const char *Str, intptr_t Length);
   void Init(const unsigned char *Str, intptr_t Length);
-
-  typedef CMStringT< unsigned char, NBChTraitsCRT< unsigned char > > rawstring_t;
-  rawstring_t Data;
+  void ThrowIfOutOfRange(intptr_t Idx) const;
 };
 
 // rde support
