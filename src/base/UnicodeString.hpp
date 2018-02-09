@@ -189,8 +189,11 @@ public:
   NB_CORE_EXPORT friend bool operator==(const wchar_t *lhs, const UnicodeString &rhs);
   friend bool inline operator==(const UnicodeString &lhs, const char *rhs)
   {
-    // return lhs.Compare(UnicodeString(rhs).c_str()) == 0;
     return lhs.Compare(rhs) == 0;
+  }
+  friend bool inline operator==(const char *lhs, const UnicodeString &rhs)
+  {
+    return rhs.Compare(lhs) == 0;
   }
   NB_CORE_EXPORT friend bool operator!=(const UnicodeString &lhs, const UnicodeString &rhs);
   NB_CORE_EXPORT friend bool operator!=(const UnicodeString &lhs, const wchar_t *rhs);
@@ -198,6 +201,10 @@ public:
   friend bool inline operator!=(const UnicodeString &lhs, const char *rhs)
   {
     return lhs.Compare(rhs) != 0;
+  }
+  friend bool inline operator!=(const char *lhs, const UnicodeString &rhs)
+  {
+    return rhs.Compare(lhs) != 0;
   }
 
   wchar_t operator[](intptr_t Idx) const;
