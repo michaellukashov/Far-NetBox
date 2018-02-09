@@ -3,141 +3,258 @@
 #include <nbstring.h>
 
 template<typename CharT>
-class NB_CORE_EXPORT BaseUnicodeString
+class NB_CORE_EXPORT BaseStringT : public CMStringT< CharT, NBChTraitsCRT< CharT> >
 {
-CUSTOM_MEM_ALLOCATION_IMPL
-public:
-  BaseUnicodeString() {}
-  ~BaseUnicodeString() {}
+  typedef CMStringT< CharT, NBChTraitsCRT <CharT > > BaseT;
+  typedef typename BaseT::XCHAR XCHAR;
+  typedef typename BaseT::PXSTR PXSTR;
+  typedef typename BaseT::PCXSTR PCXSTR;
+  typedef typename BaseT::YCHAR YCHAR;
+  typedef typename BaseT::PYSTR PYSTR;
+  typedef typename BaseT::PCYSTR PCYSTR;
+  typedef CMStringT< YCHAR, NBChTraitsCRT <YCHAR > > BaseY;
 
-  explicit BaseUnicodeString(const BaseUnicodeString &rhs) :
-    Data(rhs.c_str(), ToInt(rhs.Length()))
+public:
+  BaseStringT() {}
+  ~BaseStringT() {}
+
+  BaseStringT(const BaseStringT &rhs) :
+    BaseT(rhs.c_str(), ToInt(rhs.GetLength()))
   {}
-  explicit BaseUnicodeString(const wchar_t *Str, int Length, int cp) :
-    Data(Str, Length, cp)
+  BaseStringT(const BaseY &rhs) :
+    BaseT(rhs.c_str(), ToInt(rhs.GetLength()))
   {}
-  explicit BaseUnicodeString(const wchar_t *Str, int Length) :
-    Data(Str, Length)
+  explicit BaseStringT(const wchar_t *Str, intptr_t Length, int CodePage) :
+    BaseT(Str, ToInt(Length), CodePage)
   {}
-  explicit BaseUnicodeString(const char *Str, int Length) :
-    Data(Str, Length)
+  explicit BaseStringT(const wchar_t *Str, intptr_t Length) :
+    BaseT(Str, ToInt(Length))
   {}
-  const CharT *c_str() const { return Data.c_str(); }
-  const CharT *data() const { return Data.c_str(); }
-  intptr_t Length() const { return Data.GetLength(); }
-  intptr_t GetLength() const { return Length(); }
-  bool IsEmpty() const { return Length() == 0; }
+  explicit BaseStringT(const char *Str, intptr_t Length, int CodePage) :
+    BaseT(Str, ToInt(Length), CodePage)
+  {}
+  explicit BaseStringT(const char *Str, intptr_t Length) :
+    BaseT(Str, ToInt(Length))
+  {}
+  explicit BaseStringT(intptr_t Length, CharT Ch) : BaseT(Ch, ToInt(Length)) {}
+
+  template<typename BaseType>
+  inline operator BaseStringT<BaseType> &()
+  {
+    return *static_cast<BaseStringT<BaseType> *>(this);
+  }
+
+  template<typename StringT> // , typename std::enable_if<std::is_base_of<BaseStringT, StringT>::value, StringT>::type>
+  inline operator StringT &()
+  {
+    return *static_cast<StringT *>(this);
+  }
+
+  template<typename StringT> // , typename std::enable_if<std::is_base_of<BaseStringT, StringT>::value, StringT>::type>
+  inline operator const StringT &() const
+  {
+    return *static_cast<const StringT *>(this);
+  }
+
+  const CharT *c_str() const { return BaseT::c_str(); }
+  const CharT *data() const { return BaseT::c_str(); }
+  intptr_t Length() const { return GetLength(); }
+  intptr_t GetLength() const { return ::ToIntPtr(BaseT::GetLength()); }
+  bool IsEmpty() const { return BaseT::IsEmpty(); }
   CharT *SetLength(intptr_t nLength)
   {
-    return Data.GetBufferSetLength(ToInt(nLength));
+    return BaseT::GetBufferSetLength(ToInt(nLength));
   }
 
-  BaseUnicodeString &Delete(intptr_t Index, intptr_t Count)
+  BaseStringT &Delete(intptr_t Index, intptr_t Count)
   {
-    Data.Delete(ToInt(Index) - 1, ToInt(Count));
+    BaseT::Delete(ToInt(Index) - 1, ToInt(Count));
     return *this;
   }
-  BaseUnicodeString &Clear() { Data.Empty(); return *this; }
+  BaseStringT &Clear() { BaseT::Empty(); return *this; }
 
-  BaseUnicodeString &Lower(intptr_t nStartPos = 1);
-  BaseUnicodeString &Lower(intptr_t nStartPos, intptr_t nLength);
-  BaseUnicodeString &Upper(intptr_t nStartPos = 1);
-  BaseUnicodeString &Upper(intptr_t nStartPos, intptr_t nLength);
+  BaseStringT &Lower(intptr_t nStartPos = 1)
+  {
+    *this = ::LowerCase(SubString(nStartPos)).c_str();
+    return *this;
+  }
 
-  BaseUnicodeString &LowerCase() { return Lower(); }
-  BaseUnicodeString &UpperCase() { return Upper(); }
-  BaseUnicodeString &MakeUpper() { Data.MakeUpper(); return *this; }
-  BaseUnicodeString &MakeLower() { Data.MakeLower(); return *this; }
+  BaseStringT &Lower(intptr_t nStartPos, intptr_t nLength)
+  {
+    *this = ::LowerCase(SubString(nStartPos, nLength)).c_str();
+    return *this;
+  }
+  BaseStringT &Upper(intptr_t nStartPos = 1)
+  {
+    *this = ::UpperCase(SubString(nStartPos)).c_str();
+    return *this;
+  }
+  BaseStringT &Upper(intptr_t nStartPos, intptr_t nLength)
+  {
+    *this = ::UpperCase(SubString(nStartPos, nLength)).c_str();
+    return *this;
+  }
 
-  intptr_t Compare(const BaseUnicodeString &Str) const;
-  intptr_t CompareIC(const BaseUnicodeString &Str) const;
-  intptr_t ToIntPtr() const;
+  BaseStringT &LowerCase() { return Lower(); }
+  BaseStringT &UpperCase() { return Upper(); }
+  BaseStringT &MakeUpper() { BaseT::MakeUpper(); return *this; }
+  BaseStringT &MakeLower() { BaseT::MakeLower(); return *this; }
+
+  intptr_t Compare(const BaseStringT &Str) const;
+  intptr_t CompareIC(const BaseStringT &Str) const;
+  // intptr_t ToIntPtr() const;
   intptr_t FindFirstOf(const wchar_t Ch) const;
   intptr_t FindFirstOf(const wchar_t *Str, size_t Offset = 0) const;
 //  intptr_t FindFirstNotOf(const wchar_t * Str) const { return (intptr_t)Data.find_first_not_of(Str); }
 
-  BaseUnicodeString &Replace(intptr_t Pos, intptr_t Len, const wchar_t *Str, intptr_t DataLen);
-  BaseUnicodeString &Replace(intptr_t Pos, intptr_t Len, const BaseUnicodeString &Str) { return Replace(Pos, Len, Str.c_str(), Str.GetLength()); }
-  BaseUnicodeString &Replace(intptr_t Pos, intptr_t Len, const wchar_t *Str);
-  BaseUnicodeString &Replace(intptr_t Pos, intptr_t Len, wchar_t Ch) { return Replace(Pos, Len, &Ch, 1); }
-  BaseUnicodeString &Replace(intptr_t Pos, wchar_t Ch) { return Replace(Pos, 1, &Ch, 1); }
+  BaseStringT &Replace(intptr_t Pos, intptr_t Len, const wchar_t *Str, intptr_t DataLen);
+  BaseStringT &Replace(intptr_t Pos, intptr_t Len, const BaseStringT &Str) { return Replace(Pos, Len, Str.c_str(), Str.GetLength()); }
+  BaseStringT &Replace(intptr_t Pos, intptr_t Len, const wchar_t *Str);
+  BaseStringT &Replace(intptr_t Pos, intptr_t Len, wchar_t Ch) { return Replace(Pos, Len, &Ch, 1); }
+  BaseStringT &Replace(intptr_t Pos, wchar_t Ch) { return Replace(Pos, 1, &Ch, 1); }
 
-  BaseUnicodeString &Append(const wchar_t *Str, intptr_t StrLen) { return Replace(GetLength(), 0, Str, StrLen); }
-  BaseUnicodeString &Append(const BaseUnicodeString &Str) { return Append(Str.c_str(), Str.GetLength()); }
-  BaseUnicodeString &Append(const wchar_t *Str);
-  BaseUnicodeString &Append(const wchar_t Ch) { return Append(&Ch, 1); }
-  BaseUnicodeString &Append(const char *lpszAdd, UINT CodePage = CP_OEMCP);
+  BaseStringT &Append(const wchar_t *Str, intptr_t StrLen) { return Replace(GetLength(), 0, Str, StrLen); }
+  BaseStringT &Append(const BaseStringT &Str) { return Append(Str.c_str(), Str.GetLength()); }
+  BaseStringT &Append(const wchar_t *Str);
+  BaseStringT &Append(const wchar_t Ch) { return Append(&Ch, 1); }
+  BaseStringT &Append(const char *lpszAdd, UINT CodePage = CP_OEMCP);
 
-  BaseUnicodeString &Insert(intptr_t Pos, const wchar_t *Str, intptr_t StrLen);
-  BaseUnicodeString &Insert(intptr_t Pos, const BaseUnicodeString &Str) { return Insert(Pos, Str.c_str(), Str.Length()); }
-  BaseUnicodeString &Insert(const CharT *Str, intptr_t Pos)
+  BaseStringT &Insert(intptr_t Pos, const wchar_t *Str, intptr_t StrLen)
   {
-    Data.Insert(ToInt(Pos) - 1, Str);
+    BaseT::Insert(ToInt(Pos) - 1, UnicodeString(Str, ToInt(StrLen)).c_str());
     return *this;
   }
-  BaseUnicodeString &Insert(const wchar_t Ch, intptr_t Pos) { return Insert(Pos, &Ch, 1); }
-  BaseUnicodeString &Insert(const BaseUnicodeString &Str, intptr_t Pos) { return Insert(Pos, Str); }
+  BaseStringT &Insert(intptr_t Pos, const BaseStringT &Str) { return Insert(Pos, Str.c_str(), Str.Length()); }
+  BaseStringT &Insert(const CharT *Str, intptr_t Pos)
+  {
+    BaseT::Insert(ToInt(Pos) - 1, Str);
+    return *this;
+  }
+  BaseStringT &Insert(const wchar_t Ch, intptr_t Pos) { return Insert(Pos, &Ch, 1); }
+  BaseStringT &Insert(const BaseStringT &Str, intptr_t Pos) { return Insert(Pos, Str); }
 
   intptr_t Pos(CharT Ch) const
   {
-    return Data.Find(Ch) + 1;
+    return BaseT::Find(Ch) + 1;
   }
-  intptr_t Pos(const BaseUnicodeString &Str) const
+  intptr_t Pos(const BaseStringT &Str) const
   {
-    return Data.Find(Str.Data.c_str()) + 1;
+    return BaseT::Find(Str.c_str()) + 1;
   }
 
-  intptr_t RPos(wchar_t Ch) const { return (intptr_t)Data.ReverseFind(Ch) + 1; }
-  bool RPos(intptr_t &nPos, wchar_t Ch, intptr_t nStartPos = 0) const;
-
-  BaseUnicodeString<CharT> SubStr(intptr_t Pos, intptr_t Len) const
+  intptr_t RPos(wchar_t Ch) const { return ::ToIntPtr(BaseT::ReverseFind(Ch)) + 1; }
+  bool RPos(intptr_t &nPos, wchar_t Ch, intptr_t nStartPos = 0) const
   {
-    string_t Str(Data.Mid(ToInt(Pos) - 1), ToInt(Len));
-    return BaseUnicodeString<CharT>(Str.c_str(), Str.GetLength());
-  }
-  BaseUnicodeString SubStr(intptr_t Pos) const
-  {
-    string_t Str(Data.Mid(ToInt(Pos) - 1));
-    return BaseUnicodeString<CharT>(Str.c_str(), Str.GetLength());
-  }
-  BaseUnicodeString SubString(intptr_t Pos, intptr_t Len) const
-  {
-    string_t Str(Data.Mid(ToInt(Pos) - 1), ToInt(Len));
-    return BaseUnicodeString<CharT>(Str.c_str(), Str.GetLength());
-  }
-  BaseUnicodeString SubString(intptr_t Pos) const
-  {
-    string_t Str(Data.Mid(ToInt(Pos) - 1));
-    return BaseUnicodeString<CharT>(Str.c_str(), Str.GetLength());
+    int Pos = BaseT::ReverseFind(Ch); //, Data.size() - nStartPos);
+    nPos = Pos + 1;
+    return Pos != -1;
   }
 
-  bool IsDelimiter(const BaseUnicodeString<CharT> &Chars, intptr_t Pos) const;
-  intptr_t LastDelimiter(const BaseUnicodeString<CharT> &Delimiters) const;
+  // template<typename CharT>
+  // BaseStringT<CharT> SubStr(intptr_t Pos, intptr_t Len) const
+  // template<typename StringT>
+  BaseStringT SubStr(intptr_t Pos, intptr_t Len) const
+  {
+    return BaseStringT(BaseT::Mid(ToInt(Pos) - 1, ToInt(Len)));
+    // StringT Str(BaseT::Mid(ToInt(Pos) - 1, ToInt(Len)));
+    // return StringT(Str.c_str(), Str.GetLength());
+  }
+  // template<typename StringT>
+  BaseStringT SubStr(intptr_t Pos) const
+  {
+    return BaseStringT(BaseT::Mid(ToInt(Pos) - 1));
+//    StringT Str(BaseT::Mid(ToInt(Pos) - 1));
+//    return StringT(Str.c_str(), Str.GetLength());
+  }
+  // template<typename StringT>
+  BaseStringT SubString(intptr_t Pos, intptr_t Len) const
+  {
+//    BaseStringT<CharT> Str(BaseT::Mid(ToInt(Pos) - 1), ToInt(Len));
+//    return BaseStringT<CharT>(Str.c_str(), Str.GetLength());
+    return SubStr(Pos, Len);
+  }
+  // template<typename StringT>
+  BaseStringT SubString(intptr_t Pos) const
+  {
+//    BaseStringT<CharT> Str(BaseT::Mid(ToInt(Pos) - 1));
+//    return BaseStringT<CharT>(Str.c_str(), Str.GetLength());
+    return SubStr(Pos);
+  }
 
-  BaseUnicodeString<CharT> Trim() const;
-  BaseUnicodeString<CharT> TrimLeft() const;
-  BaseUnicodeString<CharT> TrimRight() const;
+  template<typename StringT>
+  bool IsDelimiter(const StringT &Chars, intptr_t Pos) const
+  {
+    return ::IsDelimiter(Chars, *this, Pos);
+  }
+  template<typename StringT>
+  intptr_t LastDelimiter(const StringT &Delimiters) const
+  {
+    return ::LastDelimiter(Delimiters, *this);
+  }
 
-  void Unique();
+  BaseStringT Trim() const { return ::Trim(*this); }
+  BaseStringT TrimLeft() const { return ::TrimLeft(*this); }
+  BaseStringT TrimRight() const { return ::TrimRight(*this); }
+
+  void Unique() { this->operator=(BaseStringT(this->c_str(), this->GetLength())); }
 
 public:
-
-  friend bool operator==(const BaseUnicodeString<CharT> &lhs, const CharT *rhs)
+/*
+  friend bool inline operator==(const BaseT &lhs, const BaseT &rhs)
   {
-    return lhs.Data == rhs; // .Compare(NullToEmpty(rhs)) == 0;
+    return lhs.Compare(rhs) == 0;
   }
-  bool operator==(const BaseUnicodeString<CharT> &Str) const { return Data == Str.Data; }
-  bool operator!=(const BaseUnicodeString<CharT> &Str) const { return Data != Str.Data; }
+  friend bool inline operator==(const BaseT &lhs, const CharT *rhs)
+  {
+    return lhs.Compare(rhs) == 0;
+  }
+  friend bool inline operator==(const CharT *lhs, const BaseT &rhs)
+  {
+    return rhs.Compare(lhs) == 0;
+  }
+  friend bool inline operator!=(const BaseT &lhs, const BaseT &rhs)
+  {
+    return lhs.Compare(rhs) != 0;
+  }
+  friend bool inline operator!=(const BaseT &lhs, const CharT *rhs)
+  {
+    return lhs.Compare(rhs) != 0;
+  }
+  friend bool inline operator!=(const CharT *lhs, const BaseT &rhs)
+  {
+    return rhs.Compare(lhs) != 0;
+  }
+*/
+//  bool inline operator==(const CharT *rhs) const { return operator==(rhs, *this); }
+//  bool inline operator!=(const CharT *rhs) const { return BaseT::operator!=(rhs); }
+//  bool inline operator==(const BaseStringT<CharT> &rhs) const { return BaseT::operator==(rhs); }
+//  bool inline operator!=(const BaseStringT<CharT> &rhs) const { return BaseT::operator!=(rhs); }
+//  template<typename StringT>
+//  bool inline operator==(const StringT &rhs) const { return ::operator==(rhs, *this); }
+//  template<typename StringT>
+//  bool inline operator!=(const StringT &rhs) const { return ::operator!=(rhs, *this); }
 
   CharT operator[](intptr_t Idx) const
   {
     ThrowIfOutOfRange(Idx); // Should Range-checking be optional to avoid overhead ??
-    return Data.operator[](ToInt(Idx) - 1);
+    return BaseT::operator[](ToInt(Idx) - 1);
   }
   CharT &operator[](intptr_t Idx)
   {
     ThrowIfOutOfRange(Idx); // Should Range-checking be optional to avoid overhead ??
-    return Data.GetBuffer()[ToInt(Idx) - 1];
+    return BaseT::GetBuffer()[ToInt(Idx) - 1];
+  }
+
+public:
+  BaseStringT &operator=(const CharT *Str)
+  {
+    BaseT::operator=(BaseT(Str, ToInt(BaseStringT::StringLength(Str))));
+    return *this;
+  }
+  BaseStringT &operator=(const BaseStringT &StrCopy)
+  {
+    BaseT::operator=(BaseT(StrCopy.c_str(), ToInt(StrCopy.GetLength())));
+    return *this;
   }
 
 private:
@@ -146,41 +263,50 @@ private:
     if (Idx < 1 || Idx > Length()) // NOTE: UnicodeString is 1-based !!
       throw Exception("Index is out of range"); // ERangeError(Sysconst_SRangeError);
   }
-protected:
-  typedef CMStringT< CharT, NBChTraitsCRT< CharT > > string_t;
-  string_t Data;
+//protected:
+//  typedef CMStringT< CharT, NBChTraitsCRT< CharT > > string_t;
+//  string_t Data;
 };
 
 //template<typename CharT>
-//bool operator==(const BaseUnicodeString<CharT> &lhs, const CharT *rhs)
+//BaseStringT<CharT> BaseStringT<CharT>::SubStr(intptr_t Pos, intptr_t Len) const
 //{
-//  return lhs.Data.operator==(NullToEmpty(rhs));
-//}
-//template<typename CharT>
-//bool operator==(const CharT *lhs, const BaseUnicodeString<CharT> &rhs)
-//{
-//  return rhs.Data.operator==(NullToEmpty(lhs));
+//  return BaseStringT<CharT>(BaseT::Mid(ToInt(Pos) - 1, ToInt(Len)));
+//  // StringT Str(BaseT::Mid(ToInt(Pos) - 1, ToInt(Len)));
+//  // return StringT(Str.c_str(), Str.GetLength());
 //}
 
 class RawByteString;
 class UnicodeString;
 class AnsiString;
 
-class NB_CORE_EXPORT UTF8String : public BaseUnicodeString<char>
+class NB_CORE_EXPORT UTF8String : public BaseStringT<char>
 {
-CUSTOM_MEM_ALLOCATION_IMPL
-  typedef BaseUnicodeString<char> Base;
+  typedef BaseStringT<char> BaseT;
 public:
   UTF8String() {}
   UTF8String(const UTF8String &rhs);
+  // explicit UTF8String(const BaseT &Str);
+  // explicit UTF8String(const BaseStringT::BaseY &Str);
   explicit UTF8String(const UnicodeString &Str);
-  UTF8String(const wchar_t *Str);
+  explicit UTF8String(const wchar_t *Str);
   explicit UTF8String(const wchar_t *Str, intptr_t Length);
   explicit UTF8String(const char *Str, intptr_t Length);
   explicit UTF8String(const char *Str);
 
   ~UTF8String() {}
+/*
+  template<typename StringT>
+  inline operator StringT &()
+  {
+    return *static_cast<StringT *>(this);
+  }
 
+  inline operator BaseStringT<char> ()
+  {
+    return *static_cast<BaseStringT<char> *>(this);
+  }
+*/
 //  operator const char *() const { return this->c_str(); }
 //  const char *c_str() const { return Data.c_str(); }
 //  intptr_t Length() const { return Data.GetLength(); }
@@ -197,7 +323,7 @@ public:
 
   int vprintf(const char *Format, va_list ArgList);
 
-  void Unique() {}
+  void Unique() { }
 
 public:
   UTF8String &operator=(const UnicodeString &StrCopy);
@@ -227,9 +353,9 @@ private:
   // typedef CMStringT< char, NBChTraitsCRT< char > > string_t;
 };
 
-class NB_CORE_EXPORT UnicodeString
+class NB_CORE_EXPORT UnicodeString : public BaseStringT<wchar_t>
 {
-CUSTOM_MEM_ALLOCATION_IMPL
+  typedef BaseStringT<wchar_t> BaseT;
 public:
   UnicodeString() {}
   UnicodeString(const wchar_t *Str);
@@ -238,7 +364,7 @@ public:
   explicit UnicodeString(const char *Str, intptr_t Length);
   explicit UnicodeString(const char *Str, intptr_t Length, int CodePage);
   UnicodeString(const char *Str);
-  UnicodeString(intptr_t Length, wchar_t Ch) : Data(Ch, ToInt(Length)) {}
+  explicit UnicodeString(intptr_t Length, wchar_t Ch) : BaseT(Ch, ToInt(Length)) {}
 
   UnicodeString(const UnicodeString &Str);
   explicit UnicodeString(const UTF8String &Str);
@@ -246,24 +372,35 @@ public:
 
   ~UnicodeString() {}
 
-  const wchar_t *c_str() const { return Data.c_str(); }
-  const wchar_t *data() const { return Data.c_str(); }
-  intptr_t Length() const { return Data.GetLength(); }
-  intptr_t GetLength() const { return Length(); }
-  bool IsEmpty() const { return Length() == 0; }
-  wchar_t *SetLength(intptr_t nLength);
-  UnicodeString &Delete(intptr_t Index, intptr_t Count);
-  UnicodeString &Clear() { Data.Empty(); return *this; }
+  template<typename StringT>
+  inline operator StringT &()
+  {
+    return *static_cast<StringT *>(this);
+  }
 
-  UnicodeString &Lower(intptr_t nStartPos = 1);
-  UnicodeString &Lower(intptr_t nStartPos, intptr_t nLength);
-  UnicodeString &Upper(intptr_t nStartPos = 1);
-  UnicodeString &Upper(intptr_t nStartPos, intptr_t nLength);
+  inline operator BaseStringT<wchar_t> ()
+  {
+    return *static_cast<BaseStringT<wchar_t> *>(this);
+  }
 
-  UnicodeString &LowerCase() { return Lower(); }
-  UnicodeString &UpperCase() { return Upper(); }
-  UnicodeString &MakeUpper() { Data.MakeUpper(); return *this; }
-  UnicodeString &MakeLower() { Data.MakeLower(); return *this; }
+//  const wchar_t *c_str() const { return Data.c_str(); }
+//  const wchar_t *data() const { return Data.c_str(); }
+//  intptr_t Length() const { return Data.GetLength(); }
+//  intptr_t GetLength() const { return Length(); }
+//  bool IsEmpty() const { return Length() == 0; }
+//  wchar_t *SetLength(intptr_t nLength);
+//  UnicodeString &Delete(intptr_t Index, intptr_t Count);
+//  UnicodeString &Clear() { BaseT::Empty(); return *this; }
+
+//  UnicodeString &Lower(intptr_t nStartPos = 1);
+//  UnicodeString &Lower(intptr_t nStartPos, intptr_t nLength);
+//  UnicodeString &Upper(intptr_t nStartPos = 1);
+//  UnicodeString &Upper(intptr_t nStartPos, intptr_t nLength);
+
+//  UnicodeString &LowerCase() { return Lower(); }
+//  UnicodeString &UpperCase() { return Upper(); }
+//  UnicodeString &MakeUpper() { Data.MakeUpper(); return *this; }
+//  UnicodeString &MakeLower() { Data.MakeLower(); return *this; }
 
   intptr_t Compare(const UnicodeString &Str) const;
   intptr_t CompareIC(const UnicodeString &Str) const;
@@ -284,78 +421,100 @@ public:
   UnicodeString &Append(const wchar_t Ch) { return Append(&Ch, 1); }
   UnicodeString &Append(const char *lpszAdd, UINT CodePage = CP_OEMCP);
 
-  UnicodeString &Insert(intptr_t Pos, const wchar_t *Str, intptr_t StrLen);
-  UnicodeString &Insert(intptr_t Pos, const UnicodeString &Str) { return Insert(Pos, Str.c_str(), Str.Length()); }
-  UnicodeString &Insert(const wchar_t *Str, intptr_t Pos);
+  UnicodeString &Insert(intptr_t Pos, const wchar_t *Str, intptr_t StrLen)
+  {
+    BaseT::Insert(Pos, Str, ::ToIntPtr(StrLen));
+    return *this;
+  }
+  UnicodeString &Insert(intptr_t Pos, const UnicodeString &Str)
+  {
+    BaseT::Insert(Pos, Str.c_str(), Str.Length());
+    return *this;
+  }
+  UnicodeString &Insert(const wchar_t *Str, intptr_t Pos)
+  {
+    BaseT::Insert(Str, Pos);
+    return *this;
+  }
   UnicodeString &Insert(const wchar_t Ch, intptr_t Pos) { return Insert(Pos, &Ch, 1); }
   UnicodeString &Insert(const UnicodeString &Str, intptr_t Pos) { return Insert(Pos, Str); }
 
   intptr_t Pos(wchar_t Ch) const;
   intptr_t Pos(const UnicodeString &Str) const;
 
-  intptr_t RPos(wchar_t Ch) const { return (intptr_t)Data.ReverseFind(Ch) + 1; }
-  bool RPos(intptr_t &nPos, wchar_t Ch, intptr_t nStartPos = 0) const;
+//  intptr_t RPos(wchar_t Ch) const { return ::ToIntPtr(Data.ReverseFind(Ch)) + 1; }
+//  bool RPos(intptr_t &nPos, wchar_t Ch, intptr_t nStartPos = 0) const;
 
-  UnicodeString SubStr(intptr_t Pos, intptr_t Len) const;
-  UnicodeString SubStr(intptr_t Pos) const;
-  UnicodeString SubString(intptr_t Pos, intptr_t Len) const;
-  UnicodeString SubString(intptr_t Pos) const;
+//  UnicodeString SubStr(intptr_t Pos, intptr_t Len) const;
+//  UnicodeString SubStr(intptr_t Pos) const;
+//  UnicodeString SubString(intptr_t Pos, intptr_t Len) const;
+//  UnicodeString SubString(intptr_t Pos) const;
+//  UnicodeString SubStr(intptr_t Pos, intptr_t Len) const
 
-  bool IsDelimiter(const UnicodeString &Chars, intptr_t Pos) const;
-  intptr_t LastDelimiter(const UnicodeString &Delimiters) const;
+//  UnicodeString SubStr(intptr_t Pos, intptr_t Len) const
+//  {
+//    return BaseT::SubStr(Pos, Len);
+//  }
+//  UnicodeString SubStr(intptr_t Pos) const
+//  {
+//    return BaseT::SubStr(Pos);
+//  }
 
-  UnicodeString Trim() const;
-  UnicodeString TrimLeft() const;
-  UnicodeString TrimRight() const;
+//  bool IsDelimiter(const UnicodeString &Chars, intptr_t Pos) const;
+//  intptr_t LastDelimiter(const UnicodeString &Delimiters) const;
 
-  void Unique();
+//  UnicodeString Trim() const;
+//  UnicodeString TrimLeft() const;
+//  UnicodeString TrimRight() const;
+
+//  void Unique();
 
 public:
-  UnicodeString &operator=(const UnicodeString &StrCopy);
-  UnicodeString &operator=(const RawByteString &StrCopy);
-  UnicodeString &operator=(const AnsiString &StrCopy);
-  UnicodeString &operator=(const UTF8String &StrCopy);
-  UnicodeString &operator=(const wchar_t *Str);
-  UnicodeString &operator=(const char *lpszData);
-  UnicodeString &operator=(const wchar_t Ch);
+//  UnicodeString &operator=(const UnicodeString &StrCopy);
+//  UnicodeString &operator=(const RawByteString &StrCopy);
+//  UnicodeString &operator=(const AnsiString &StrCopy);
+//  UnicodeString &operator=(const UTF8String &StrCopy);
+//  UnicodeString &operator=(const wchar_t *Str);
+//  UnicodeString &operator=(const char *lpszData);
+//  UnicodeString &operator=(const wchar_t Ch);
 
-  UnicodeString operator+(const UnicodeString &rhs) const;
-  UnicodeString operator+(const RawByteString &rhs) const;
-  UnicodeString operator+(const AnsiString &rhs) const;
-  UnicodeString operator+(const UTF8String &rhs) const;
+//  UnicodeString operator+(const UnicodeString &rhs) const;
+//  UnicodeString operator+(const RawByteString &rhs) const;
+//  UnicodeString operator+(const AnsiString &rhs) const;
+//  UnicodeString operator+(const UTF8String &rhs) const;
 
-  NB_CORE_EXPORT friend UnicodeString operator+(const wchar_t lhs, const UnicodeString &rhs);
-  NB_CORE_EXPORT friend UnicodeString operator+(const UnicodeString &lhs, wchar_t rhs);
-  NB_CORE_EXPORT friend UnicodeString operator+(const wchar_t *lhs, const UnicodeString &rhs);
-  NB_CORE_EXPORT friend UnicodeString operator+(const UnicodeString &lhs, const wchar_t *rhs);
-  NB_CORE_EXPORT friend UnicodeString operator+(const UnicodeString &lhs, const char *rhs);
+//  NB_CORE_EXPORT friend UnicodeString operator+(const wchar_t lhs, const UnicodeString &rhs);
+//  NB_CORE_EXPORT friend UnicodeString operator+(const UnicodeString &lhs, wchar_t rhs);
+//  NB_CORE_EXPORT friend UnicodeString operator+(const wchar_t *lhs, const UnicodeString &rhs);
+//  NB_CORE_EXPORT friend UnicodeString operator+(const UnicodeString &lhs, const wchar_t *rhs);
+//  NB_CORE_EXPORT friend UnicodeString operator+(const UnicodeString &lhs, const char *rhs);
 
-  UnicodeString &operator+=(const UnicodeString &rhs);
-  UnicodeString &operator+=(const wchar_t *rhs);
-  UnicodeString &operator+=(const UTF8String &rhs);
-  UnicodeString &operator+=(const RawByteString &rhs);
-  UnicodeString &operator+=(const char Ch);
-  UnicodeString &operator+=(const char *Ch);
-  UnicodeString &operator+=(const wchar_t Ch);
+//  UnicodeString &operator+=(const UnicodeString &rhs);
+//  UnicodeString &operator+=(const wchar_t *rhs);
+//  UnicodeString &operator+=(const UTF8String &rhs);
+//  UnicodeString &operator+=(const RawByteString &rhs);
+//  UnicodeString &operator+=(const char Ch);
+//  UnicodeString &operator+=(const char *Ch);
+//  UnicodeString &operator+=(const wchar_t Ch);
 
-  bool operator==(const UnicodeString &Str) const { return Data == Str.Data; }
-  bool operator!=(const UnicodeString &Str) const { return Data != Str.Data; }
+//  bool operator==(const UnicodeString &Str) const { return BaseT::operator==(Str.c_str()); }
+//  bool operator!=(const UnicodeString &Str) const { return BaseT::operator!=(Str.c_str()); }
 
-  NB_CORE_EXPORT friend bool operator==(const UnicodeString &lhs, const wchar_t *rhs);
-  NB_CORE_EXPORT friend bool operator==(const wchar_t *lhs, const UnicodeString &rhs);
-  NB_CORE_EXPORT friend bool operator!=(const UnicodeString &lhs, const wchar_t *rhs);
-  NB_CORE_EXPORT friend bool operator!=(const wchar_t *lhs, const UnicodeString &rhs);
+//  NB_CORE_EXPORT friend bool operator==(const UnicodeString &lhs, const wchar_t *rhs);
+//  NB_CORE_EXPORT friend bool operator==(const wchar_t *lhs, const UnicodeString &rhs);
+//  NB_CORE_EXPORT friend bool operator!=(const UnicodeString &lhs, const wchar_t *rhs);
+//  NB_CORE_EXPORT friend bool operator!=(const wchar_t *lhs, const UnicodeString &rhs);
 
-  wchar_t operator[](intptr_t Idx) const;
-  wchar_t &operator[](intptr_t Idx);
+//  wchar_t operator[](intptr_t Idx) const;
+//  wchar_t &operator[](intptr_t Idx);
 
 private:
   void Init(const wchar_t *Str, intptr_t Length);
   void Init(const char *Str, intptr_t Length, int CodePage);
-  void ThrowIfOutOfRange(intptr_t Idx) const;
+//  void ThrowIfOutOfRange(intptr_t Idx) const;
 
-  typedef CMStringW wstring_t;
-  wstring_t Data;
+//  typedef CMStringW wstring_t;
+//  wstring_t Data;
 };
 
 class RawByteString;
