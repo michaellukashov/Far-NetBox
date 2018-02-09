@@ -28,15 +28,19 @@ public:
 
 TEST_CASE_METHOD(base_fixture_t, "testUnicodeString01", "netbox")
 {
-  SECTION("UTF8String")
+  SECTION("UTF8String01")
   {
     UTF8String a("ab");
     CHECK(a == "ab");
+    CHECK("ab" == a);
+    CHECK("abc" != a);
   }
   SECTION("UnicodeString01")
   {
     UnicodeString a("1");
     CHECK(a == "1");
+    CHECK("1" == a);
+    CHECK("2" != a);
   }
 }
 
