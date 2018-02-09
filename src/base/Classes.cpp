@@ -1293,7 +1293,7 @@ class EStreamError : public ExtException
 {
 public:
   explicit EStreamError(const UnicodeString Msg) :
-    ExtException(OBJECT_CLASS_EStreamError, static_cast<Exception *>(nullptr), Msg)
+    ExtException(OBJECT_CLASS_EStreamError, static_cast<const Exception *>(nullptr), Msg)
   {
   }
 };
