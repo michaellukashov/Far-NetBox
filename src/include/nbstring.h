@@ -51,7 +51,8 @@ enum CMStringDataFormat { CM_FORMAT };
 
 struct CMStringData
 {
-  CUSTOM_MEM_ALLOCATION_IMPL
+CUSTOM_MEM_ALLOCATION_IMPL
+
   long nRefs;        // Reference count: negative == locked
   int nDataLength;   // Length of currently used data in XCHARs (not including terminating null)
   int nAllocLength;  // Length of allocated data in XCHARs (not including terminating null)
@@ -109,6 +110,12 @@ public:
   CMSimpleStringT(PCXSTR pszSrc);
   CMSimpleStringT(const XCHAR *pchSrc, int nLength);
   ~CMSimpleStringT();
+
+  template<typename StringT>
+  inline operator StringT &()
+  {
+    return *static_cast<StringT *>(this);
+  }
 
   template< typename BaseType >
   __forceinline operator CMSimpleStringT<BaseType> &()
