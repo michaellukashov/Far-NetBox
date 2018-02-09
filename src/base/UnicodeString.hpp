@@ -189,11 +189,16 @@ public:
   NB_CORE_EXPORT friend bool operator==(const wchar_t *lhs, const UnicodeString &rhs);
   friend bool inline operator==(const UnicodeString &lhs, const char *rhs)
   {
-    return lhs.Compare(UnicodeString(rhs).c_str()) == 0;
+    // return lhs.Compare(UnicodeString(rhs).c_str()) == 0;
+    return lhs.Compare(rhs) == 0;
   }
   NB_CORE_EXPORT friend bool operator!=(const UnicodeString &lhs, const UnicodeString &rhs);
   NB_CORE_EXPORT friend bool operator!=(const UnicodeString &lhs, const wchar_t *rhs);
   NB_CORE_EXPORT friend bool operator!=(const wchar_t *lhs, const UnicodeString &rhs);
+  friend bool inline operator!=(const UnicodeString &lhs, const char *rhs)
+  {
+    return lhs.Compare(rhs) != 0;
+  }
 
   wchar_t operator[](intptr_t Idx) const;
   wchar_t &operator[](intptr_t Idx);
@@ -206,13 +211,13 @@ private:
 
 class RawByteString;
 
-class NB_CORE_EXPORT AnsiString
+class NB_CORE_EXPORT AnsiString : public CMStringT< char, NBChTraitsCRT<char> >
 {
-CUSTOM_MEM_ALLOCATION_IMPL
+  typedef CMStringT< char, NBChTraitsCRT<char> > BaseT;
 public:
   AnsiString() {}
   AnsiString(const AnsiString &rhs);
-  AnsiString(intptr_t Length, char Ch) : Data(Ch, ToInt(Length)) {}
+  AnsiString(intptr_t Length, char Ch) : BaseT(Ch, ToInt(Length)) {}
   explicit AnsiString(const wchar_t *Str);
   explicit AnsiString(const wchar_t *Str, intptr_t Length);
   explicit AnsiString(const wchar_t *Str, intptr_t Length, int CodePage);
@@ -225,9 +230,9 @@ public:
   explicit AnsiString(const RawByteString &Str);
   inline ~AnsiString() {}
 
-  const char *c_str() const { return Data.c_str(); }
-  intptr_t Length() const { return Data.GetLength(); }
-  intptr_t GetLength() const { return Length(); }
+  const char *c_str() const { return BaseT::c_str(); }
+  intptr_t Length() const { return GetLength(); }
+  intptr_t GetLength() const { return BaseT::GetLength(); }
   bool IsEmpty() const { return Length() == 0; }
   char *SetLength(intptr_t nLength);
   inline AnsiString &Delete(intptr_t Index, intptr_t Count);
@@ -266,27 +271,24 @@ public:
   AnsiString &operator+=(const char *rhs);
 
   inline friend bool operator==(const AnsiString &lhs, const AnsiString &rhs)
-  { return lhs.Data == rhs.Data; }
+  { return lhs.Compare(rhs.c_str()) == 0; }
   inline friend bool operator!=(const AnsiString &lhs, const AnsiString &rhs)
-  { return lhs.Data != rhs.Data; }
+  { return lhs.Compare(rhs.c_str()) != 0; }
 
   inline friend bool operator==(const AnsiString &lhs, const char *rhs)
-  { return lhs.Data == rhs; }
+  { return lhs.Compare(rhs) == 0; }
   inline friend bool operator==(const char *lhs, const AnsiString &rhs)
-  { return lhs == rhs.Data; }
+  { return rhs.Compare(lhs) == 0; }
   inline friend bool operator!=(const AnsiString &lhs, const char *rhs)
-  { return lhs.Data != rhs; }
+  { return lhs.Compare(rhs) != 0; }
   inline friend bool operator!=(const char *lhs, const AnsiString &rhs)
-  { return lhs != rhs.Data; }
+  { return rhs.Compare(lhs) != 0; }
 
 private:
   void Init(const wchar_t *Str, intptr_t Length);
   void Init(const char *Str, intptr_t Length);
   void Init(const unsigned char *Str, intptr_t Length);
   void ThrowIfOutOfRange(intptr_t Idx) const;
-
-  typedef CMStringA string_t;
-  string_t Data;
 };
 
 class NB_CORE_EXPORT RawByteString

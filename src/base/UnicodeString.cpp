@@ -7,117 +7,117 @@
 
 
 AnsiString::AnsiString(const AnsiString &rhs) :
-  Data(rhs.c_str(), ToInt(rhs.Length()))
+  BaseT(rhs.c_str(), ToInt(rhs.Length()))
 {
 }
 
 AnsiString::AnsiString(const wchar_t *Str) :
-  Data(Str, string_t::StringLength(Str), CP_UTF8)
+  BaseT(Str, BaseT::StringLength(Str), CP_UTF8)
 {
 }
 
 AnsiString::AnsiString(const wchar_t *Str, intptr_t Length) :
-  Data(Str, ToInt(Length), CP_UTF8)
+  BaseT(Str, ToInt(Length), CP_UTF8)
 {
 }
 
 AnsiString::AnsiString(const wchar_t *Str, intptr_t Length, int CodePage) :
-  Data(Str, ToInt(Length), CodePage)
+  BaseT(Str, ToInt(Length), CodePage)
 {
 }
 
 AnsiString::AnsiString(const char *Str) :
-  Data(Str, string_t::StringLength(Str))
+  BaseT(Str, BaseT::StringLength(Str))
 {
 }
 
 AnsiString::AnsiString(const char *Str, intptr_t Length) :
-  Data(Str, ToInt(Length))
+  BaseT(Str, ToInt(Length))
 {
 }
 
 AnsiString::AnsiString(const unsigned char *Str) :
-  Data(reinterpret_cast<const char *>(Str), string_t::StringLength(reinterpret_cast<const char *>(Str)))
+  BaseT(reinterpret_cast<const char *>(Str), BaseT::StringLength(reinterpret_cast<const char *>(Str)))
 {
 }
 
 AnsiString::AnsiString(const unsigned char *Str, intptr_t Length) :
-  Data(reinterpret_cast<const char *>(Str), ToInt(Length))
+  BaseT(reinterpret_cast<const char *>(Str), ToInt(Length))
 {
 }
 
 AnsiString::AnsiString(const UnicodeString &Str) :
-  Data(Str.c_str(), ToInt(Str.Length()))
+  BaseT(Str.c_str(), ToInt(Str.Length()))
 {
 }
 
 AnsiString::AnsiString(const UTF8String &Str) :
-  Data(Str.c_str(), ToInt(Str.GetLength()))
+  BaseT(Str.c_str(), ToInt(Str.GetLength()))
 {
 }
 
 AnsiString::AnsiString(const RawByteString &Str) :
-  Data(Str.c_str(), ToInt(Str.GetLength()))
+  BaseT(Str.c_str(), ToInt(Str.GetLength()))
 {
 }
 
 char *AnsiString::SetLength(intptr_t nLength)
 {
-  return Data.GetBufferSetLength(ToInt(nLength));
+  return BaseT::GetBufferSetLength(ToInt(nLength));
 }
 
 AnsiString &AnsiString::Delete(intptr_t Index, intptr_t Count)
 {
-  Data.Delete(ToInt(Index) - 1, ToInt(Count));
+  BaseT::Delete(ToInt(Index) - 1, ToInt(Count));
   return *this;
 }
 
 AnsiString &AnsiString::Clear()
 {
-  Data.Empty();
+  BaseT::Empty();
   return *this;
 }
 
 void AnsiString::Init(const wchar_t *Str, intptr_t Length)
 {
-  Data = string_t(Str, ToInt(Length));
+  *this = BaseT(Str, ToInt(Length));
 }
 
 void AnsiString::Init(const char *Str, intptr_t Length)
 {
-  Data = string_t(Str, ToInt(Length));
+  *this = BaseT(Str, ToInt(Length));
 }
 
 void AnsiString::Init(const unsigned char *Str, intptr_t Length)
 {
-  Data = string_t(reinterpret_cast<const char *>(Str), ToInt(Length));
+  *this = BaseT(reinterpret_cast<const char *>(Str), ToInt(Length));
 }
 
 intptr_t AnsiString::Pos(const AnsiString &Str) const
 {
-  return ToIntPtr(Data.Find(Str.c_str())) + 1;
+  return ToIntPtr(BaseT::Find(Str.c_str())) + 1;
 }
 
 intptr_t AnsiString::Pos(char Ch) const
 {
-  return ToIntPtr(Data.Find(Ch)) + 1;
+  return ToIntPtr(BaseT::Find(Ch)) + 1;
 }
 
 char AnsiString::operator[](intptr_t Idx) const
 {
   ThrowIfOutOfRange(Idx); // Should Range-checking be optional to avoid overhead ??
-  return Data.operator[](ToInt(Idx) - 1);
+  return BaseT::operator[](ToInt(Idx) - 1);
 }
 
 char &AnsiString::operator[](intptr_t Idx)
 {
   ThrowIfOutOfRange(Idx); // Should Range-checking be optional to avoid overhead ??
-  return Data.GetBuffer()[Idx - 1];
+  return BaseT::GetBuffer()[Idx - 1];
 }
 
 AnsiString &AnsiString::Append(const char *Str, intptr_t StrLen)
 {
-  Data.Append(Str, ToInt(StrLen));
+  BaseT::Append(Str, ToInt(StrLen));
   return *this;
 }
 
@@ -128,30 +128,30 @@ AnsiString &AnsiString::Append(const AnsiString &Str)
 
 AnsiString &AnsiString::Append(const char *Str)
 {
-  return Append(Str, string_t::StringLength(Str));
+  return Append(Str, BaseT::StringLength(Str));
 }
 
 AnsiString &AnsiString::Append(const char Ch)
 {
-  Data.AppendChar(Ch);
+  BaseT::AppendChar(Ch);
   return *this;
 }
 
 AnsiString &AnsiString::Insert(const char *Str, intptr_t Pos)
 {
-  Data.Insert(ToInt(Pos) - 1, Str);
+  BaseT::Insert(ToInt(Pos) - 1, Str);
   return *this;
 }
 
 AnsiString AnsiString::SubString(intptr_t Pos) const
 {
-  string_t Str(Data.Mid(ToInt(Pos) - 1));
+  BaseT Str(BaseT::Mid(ToInt(Pos) - 1));
   return AnsiString(Str.c_str(), Str.GetLength());
 }
 
 AnsiString AnsiString::SubString(intptr_t Pos, intptr_t Len) const
 {
-  string_t Str(Data.Mid(ToInt(Pos) - 1, ToInt(Len)));
+  BaseT Str(BaseT::Mid(ToInt(Pos) - 1, ToInt(Len)));
   return AnsiString(Str.c_str(), Str.GetLength());
 }
 
@@ -178,31 +178,31 @@ AnsiString &AnsiString::operator=(const UTF8String &StrCopy)
 
 AnsiString &AnsiString::operator=(const char *Str)
 {
-  Init(Str, string_t::StringLength(Str));
+  Init(Str, BaseT::StringLength(Str));
   return *this;
 }
 
 AnsiString &AnsiString::operator=(const wchar_t *Str)
 {
-  Init(Str, CMStringW::StringLength(Str));
+  Init(Str, BaseT::StringLength(Str));
   return *this;
 }
 
 AnsiString &AnsiString::operator+=(const AnsiString &rhs)
 {
-  Data.Append(rhs.c_str(), ToInt(rhs.Length()));
+  BaseT::Append(rhs.c_str(), ToInt(rhs.Length()));
   return *this;
 }
 
 AnsiString &AnsiString::operator+=(const char Ch)
 {
-  Data.AppendChar(Ch);
+  BaseT::AppendChar(Ch);
   return *this;
 }
 
 AnsiString &AnsiString::operator+=(const char *rhs)
 {
-  Data.Append(rhs);
+  BaseT::Append(rhs);
   return *this;
 }
 
@@ -280,7 +280,7 @@ void RawByteString::Init(const unsigned char *Str, intptr_t Length)
 
 RawByteString::operator UnicodeString() const
 {
-  return UnicodeString(reinterpret_cast<const char *>(Data.c_str()), Data.GetLength());
+  return UnicodeString(reinterpret_cast<const char *>(c_str()), GetLength());
 }
 
 intptr_t RawByteString::Pos(wchar_t Ch) const
