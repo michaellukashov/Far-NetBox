@@ -23,12 +23,12 @@
 #include "CoreMain.h"
 
 #include "testutils.h"
-//#include <gmock/gmock.h>
+#include <gmock/gmock.h>
 
 /*******************************************************************************
             test suite
 *******************************************************************************/
-#if 0
+//#if 0
 
 class TMockTerminal : public TTerminal
 {
@@ -63,7 +63,7 @@ public:
 TEST_CASE("testRemoteFileSetListingStr", "netbox")
 {
   DEBUG_PRINTF(L"testRemoteFileSetListingStr 0");
-//  TGlobalsIntfInitializer<TTestGlobalFunctions> FGlobalsIntfInitializer;
+  TGlobalsIntfInitializer<TTestGlobalFunctions> GlobalsIntfInitializer;
   testing::NiceMock<TMockWinSCPPlugin> StrictMockWinSCPPlugin(nullptr);
   FarPlugin = &StrictMockWinSCPPlugin;
   DEBUG_PRINTF(L"testRemoteFileSetListingStr 0.1");
@@ -100,4 +100,4 @@ TEST_CASE("testRemoteFileSetListingStr", "netbox")
   }
 }
 
-#endif // if 0
+//#endif // if 0

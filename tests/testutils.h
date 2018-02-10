@@ -94,6 +94,23 @@ static TCustomFarPlugin * CreateStub()
   return new TStubFarPlugin();
 }
 
+template<typename T>
+class TGlobalsIntfInitializer
+{
+public:
+  TGlobalsIntfInitializer()
+  {
+    ::SetGlobals(new T());
+  }
+
+  ~TGlobalsIntfInitializer()
+  {
+    TGlobalsIntf *Intf = GetGlobals();
+    delete Intf;
+    ::SetGlobals(nullptr);
+  }
+};
+
 //------------------------------------------------------------------------------
 
 // mocks
