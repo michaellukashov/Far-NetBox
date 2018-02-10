@@ -31,6 +31,7 @@ enum TFarShiftStatus
   fsAltShift,
   fsCtrlAlt
 };
+
 enum THandlesFunction
 {
   hfProcessKey,
