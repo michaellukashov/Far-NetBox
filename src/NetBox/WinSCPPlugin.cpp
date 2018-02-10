@@ -20,6 +20,13 @@ TCustomFarPlugin *CreateFarPlugin(HINSTANCE HInst)
   return Result;
 }
 
+void DestroyFarPlugin(TCustomFarPlugin *& Plugin)
+{
+  DebugAssert(FarPlugin);
+  Plugin->Finalize();
+  SAFE_DESTROY(Plugin);
+}
+
 TWinSCPPlugin::TWinSCPPlugin(HINSTANCE HInst) :
   TCustomFarPlugin(OBJECT_CLASS_TWinSCPPlugin, HInst),
   FInitialized(false)

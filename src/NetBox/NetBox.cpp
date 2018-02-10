@@ -9,6 +9,7 @@
 extern void InitExtensionModule(HINSTANCE HInst);
 extern void TermExtensionModule();
 extern TCustomFarPlugin * CreateFarPlugin(HINSTANCE HInst);
+extern void DestroyFarPlugin(TCustomFarPlugin *& Plugin);
 
 class TFarPluginGuard : public TFarPluginEnvGuard, public TGuard
 {
@@ -225,8 +226,7 @@ BOOL DllProcessDetach()
   Processes--;
   if (!Processes)
   {
-    DebugAssert(FarPlugin);
-    SAFE_DESTROY(FarPlugin);
+    DestroyFarPlugin(FarPlugin);
 #if !defined(NO_FILEZILLA)
     TermExtensionModule();
 #endif //if !defined(NO_FILEZILLA)
