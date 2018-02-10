@@ -104,11 +104,11 @@ public:
   typedef typename NBChTraitsBase< BaseType >::PCYSTR PCYSTR;
 
 public:
-  explicit CMSimpleStringT();
+  CMSimpleStringT();
 
   CMSimpleStringT(const CMSimpleStringT &strSrc);
-  CMSimpleStringT(PCXSTR pszSrc);
-  CMSimpleStringT(const XCHAR *pchSrc, int nLength);
+  explicit CMSimpleStringT(PCXSTR pszSrc);
+  explicit CMSimpleStringT(const XCHAR *pchSrc, int nLength);
   ~CMSimpleStringT();
 
   template< typename BaseType >
