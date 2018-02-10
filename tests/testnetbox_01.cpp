@@ -623,14 +623,14 @@ class CBaseClass
 protected:
   char * m_name;
 public:
-  CBaseClass(char * name) : m_name(name) {};
+  CBaseClass(char * name) : m_name(name) {}
   void SimpleMemberFunction(int num, char * str)
   {
     printf("In SimpleMemberFunction in %s. Num=%d, str = %s\n", m_name, num, str);
   }
   int SimpleMemberFunctionReturnsInt(int num, char * str)
   {
-    printf("In SimpleMemberFunction in %s. Num=%d, str = %s\n", m_name, num, str); return -1;
+    printf("In SimpleMemberFunctionReturnsInt in %s. Num=%d, str = %s\n", m_name, num, str); return -1;
   }
   void ConstMemberFunction(int num, char * str) const
   {
@@ -648,14 +648,23 @@ public:
 
 TEST_CASE_METHOD(base_fixture_t, "test26", "netbox")
 {
-  typedef nb::FastDelegate2<int, int, char *> TEvent;
-  TEvent sig;
+  typedef nb::FastDelegate2<void, int, char *> TEvent1;
+  typedef nb::FastDelegate2<int, int, char *> TEvent2;
 
-  CBaseClass a("Base A");
-  sig = nb::bind(&CBaseClass::SimpleMemberFunctionReturnsInt, &a);
-  int Result = sig(10, "abc");
-  INFO("Result = " << Result);
-  REQUIRE(Result == -1);
+  SECTION("SimpleMemberFunction")
+  {
+    CBaseClass a("Base A");
+    TEvent1 sig = nb::bind(&CBaseClass::SimpleMemberFunction, &a);
+    sig(11, "abcd");
+  }
+  SECTION("SimpleMemberFunctionReturnsInt")
+  {
+    CBaseClass a("Base A");
+    TEvent2 sig = nb::bind(&CBaseClass::SimpleMemberFunctionReturnsInt, &a);
+    int Result = sig(10, "abc");
+    INFO("Result = " << Result);
+    REQUIRE(Result == -1);
+  }
 }
 //------------------------------------------------------------------------------
 TEST_CASE_METHOD(base_fixture_t, "test27", "netbox")
@@ -802,11 +811,17 @@ TEST_CASE_METHOD(base_fixture_t, "test29", "netbox")
 //------------------------------------------------------------------------------
 TEST_CASE_METHOD(base_fixture_t, "test30", "netbox")
 {
+  printf("0\n");
+  INFO("Instructions1");
   UnicodeString Instructions = L"Using keyboard authentication.\x0A\x0A\x0APlease enter your password.";
+  printf("1\n");
   INFO("Instructions = " << Instructions);
   UnicodeString Instructions2 = ReplaceStrAll(Instructions, L"\x0D\x0A", L"\x01");
+  printf("2\n");
   Instructions2 = ReplaceStrAll(Instructions, L"\x0A\x0D", L"\x01");
+  printf("3\n");
   Instructions2 = ReplaceStrAll(Instructions2, L"\x0A", L"\x01");
+  printf("4\n");
   Instructions2 = ReplaceStrAll(Instructions2, L"\x0D", L"\x01");
   Instructions2 = ReplaceStrAll(Instructions2, L"\x01", L"\x0D\x0A");
   INFO("Instructions2 = " << Instructions2);
@@ -1049,18 +1064,19 @@ TEST_CASE_METHOD(base_fixture_t, "testProperty03", "netbox")
   {
     TDerived2 d2;
     printf("1\n");
-    CHECK(d2.ROProp1 == "42");
+    CHECK(d2.ROProp1() == "42");
     printf("2\n");
   }
   SECTION("RWProp1")
   {
     TDerived2 d2;
     printf("3\n");
-    CHECK(d2.RWProp1 == "RW");
+    CHECK(d2.RWProp1() == "RW");
     printf("4\n");
     d2.RWProp1 = "RW2";
-    CHECK(d2.RWProp1 == "RW2");
-    CHECK(d2.RWProp2 == "RW2");
+    CHECK(d2.RWProp1() == "RW2");
+    CHECK(d2.RWProp2() == "RW2");
+    CHECK("RW2" == d2.RWProp2);
   }
 }
 
