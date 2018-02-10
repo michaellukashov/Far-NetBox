@@ -80,17 +80,17 @@ AnsiString &AnsiString::Clear()
 
 void AnsiString::Init(const wchar_t *Str, intptr_t Length)
 {
-  *this = BaseT(Str, ToInt(Length));
+  BaseT::operator=(BaseT(Str, ToInt(Length)));
 }
 
 void AnsiString::Init(const char *Str, intptr_t Length)
 {
-  *this = BaseT(Str, ToInt(Length));
+  BaseT::operator=(BaseT(Str, ToInt(Length)));
 }
 
 void AnsiString::Init(const unsigned char *Str, intptr_t Length)
 {
-  *this = BaseT(reinterpret_cast<const char *>(Str), ToInt(Length));
+  BaseT::operator=(BaseT(reinterpret_cast<const char *>(Str), ToInt(Length)));
 }
 
 intptr_t AnsiString::Pos(const AnsiString &Str) const
@@ -401,21 +401,10 @@ RawByteString &RawByteString::operator+=(const char Ch)
 }
 
 
-//UTF8String::UTF8String(const UTF8String &rhs) :
-//  BaseT(rhs.c_str(), ToInt(rhs.Length()))
-//{
-//}
-
-//UTF8String::UTF8String(const UTF8String::BaseT &Str) :
-//  BaseT(Str.c_str(), ToInt(Str.Length()))
-//{
-//}
-
-//UTF8String::UTF8String(const BaseStringT::BaseY &Str) :
-//  BaseT(Str.c_str(), ToInt(Str.Length()), CP_UTF8)
-//{
-
-//}
+UTF8String::UTF8String(const UTF8String &rhs) :
+  BaseT(rhs.c_str(), ToInt(rhs.Length()))
+{
+}
 
 UTF8String::UTF8String(const UnicodeString &Str) :
   BaseT(Str.c_str(), ToInt(Str.Length()), CP_UTF8)
@@ -679,10 +668,10 @@ UnicodeString &UnicodeString::Upper(intptr_t nStartPos, intptr_t nLength)
   return *this;
 }
 
-intptr_t UnicodeString::Compare(const UnicodeString &Str) const
-{
-  return ::AnsiCompare(*this, Str);
-}
+//intptr_t UnicodeString::Compare(const UnicodeString &Str) const
+//{
+//  return ::AnsiCompare(*this, Str);
+//}
 
 intptr_t UnicodeString::CompareIC(const UnicodeString &Str) const
 {
@@ -715,10 +704,10 @@ intptr_t UnicodeString::FindFirstOf(const wchar_t *Str, size_t Offset) const
 
 UnicodeString &UnicodeString::Replace(intptr_t Pos, intptr_t Len, const wchar_t *Str, intptr_t DataLen)
 {
-  UnicodeString NewData = *this;
-  NewData.Delete(ToInt(Pos) - 1, ToInt(Len));
-  NewData.Insert(ToInt(Pos) - 1, UnicodeString(Str, ToInt(DataLen)).c_str());
-  *this = NewData;
+//  UnicodeString NewData = *this;
+  BaseT::Delete(ToInt(Pos) - 1, ToInt(Len));
+  BaseT::Insert(ToInt(Pos) - 1, UnicodeString(Str, ToInt(DataLen)).c_str());
+//  *this = NewData;
   return *this;
 }
 
@@ -916,6 +905,11 @@ void UnicodeString::ThrowIfOutOfRange(intptr_t Idx) const
     throw Exception("Index is out of range"); // ERangeError(Sysconst_SRangeError);
 }
 
+//UnicodeString::operator const char *() const
+//{
+//  return UTF8String(*this).c_str();
+//}
+
 UnicodeString operator+(const wchar_t lhs, const UnicodeString &rhs)
 {
   return UnicodeString(&lhs, 1) + rhs;
@@ -940,7 +934,7 @@ UnicodeString operator+(const UnicodeString &lhs, const char *rhs)
 {
   return lhs + UnicodeString(rhs);
 }
-
+/*
 bool operator==(const UnicodeString &lhs, const UnicodeString &rhs)
 {
   return lhs.Compare(rhs) == 0;
@@ -970,3 +964,4 @@ bool operator!=(const wchar_t *lhs, const UnicodeString &rhs)
 {
   return wcscmp(NullToEmpty(lhs), rhs.c_str()) != 0;
 }
+*/
