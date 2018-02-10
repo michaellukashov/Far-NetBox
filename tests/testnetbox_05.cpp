@@ -76,35 +76,30 @@ public:
 
 TEST_CASE("testRemoteFileSetListingStr", "netbox")
 {
-  DEBUG_PRINTF(L"testRemoteFileSetListingStr 0");
+//  DEBUG_PRINTF(L"testRemoteFileSetListingStr 0");
   TGlobalsIntfInitializer<TTestGlobalFunctions> GlobalsIntfInitializer;
   testing::NiceMock<TMockWinSCPPlugin> MockWinSCPPlugin(nullptr);
   MockWinSCPPlugin.Initialize();
   FarPlugin = &MockWinSCPPlugin;
-  DEBUG_PRINTF(L"testRemoteFileSetListingStr 0.1");
   testing::NiceMock<TMockTerminal> MockTerminal;
-  DEBUG_PRINTF(L"testRemoteFileSetListingStr 0.2");
-
-  DEBUG_PRINTF(L"testRemoteFileSetListingStr 1");
+//  DEBUG_PRINTF(L"MockTerminal.SessionData: %p", (void*)MockTerminal.GetSessionData());
   TSessionData SessionData("Test");
-  DEBUG_PRINTF(L"testRemoteFileSetListingStr 2");
+//  MockTerminal.Init(&SessionData, GetConfiguration());
   DEBUG_PRINTF(L"SessionData: %p", (void*)&SessionData);
-  DEBUG_PRINTF(L"testRemoteFileSetListingStr 3");
   ON_CALL(MockTerminal, GetSessionData())
     .WillByDefault(testing::Return(&SessionData));
-//  MockTerminal.Init(&SessionData, GetConfiguration());
-  DEBUG_PRINTF(L"MockTerminal.SessionData: %p", (void*)MockTerminal.GetSessionData());
+//  DEBUG_PRINTF(L"MockTerminal.SessionData: %p", (void*)MockTerminal.GetSessionData());
+  CHECK(&SessionData == MockTerminal.GetSessionData());
+  SECTION("RemoteFile01")
   {
     TRemoteFile RemoteFile1(nullptr);
-    DEBUG_PRINTF(L"testRemoteFileSetListingStr 4");
     RemoteFile1.SetTerminal(&MockTerminal);
-    DEBUG_PRINTF(L"testRemoteFileSetListingStr 5");
     UnicodeString Str1("lrwxrwxrwx    1 root     root             7 2017-08-03 06:05:01 +0300 TZ -> /tmp/TZ");
     RemoteFile1.SetListingStr(Str1);
     INFO("FileName1: " << RemoteFile1.GetFileName());
     CHECK(RemoteFile1.GetFileName() == "TZ");
   }
-
+  SECTION("RemoteFile02")
   {
     TRemoteFile RemoteFile2(nullptr);
     RemoteFile2.SetTerminal(&MockTerminal);
