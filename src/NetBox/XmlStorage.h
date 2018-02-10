@@ -8,7 +8,7 @@ class TXmlStorage : public THierarchicalStorage
 {
 public:
   explicit TXmlStorage(const UnicodeString AStorage, const UnicodeString StoredSessionsSubKey);
-  virtual void Init();
+  virtual void Init() override;
   virtual ~TXmlStorage();
 
   bool Copy(TXmlStorage *Storage);
@@ -38,11 +38,11 @@ public:
   virtual void WriteStringRaw(const UnicodeString Name, const UnicodeString Value) override;
   virtual void WriteBinaryData(const UnicodeString Name, const void *Buffer, size_t Size) override;
 
-  virtual void GetValueNames(TStrings *Strings) const;
+  virtual void GetValueNames(TStrings *Strings) const override;
 
-  virtual void SetAccessMode(TStorageAccessMode Value);
-  virtual bool DoKeyExists(const UnicodeString SubKey, bool ForceAnsi);
-  virtual bool DoOpenSubKey(const UnicodeString MungedSubKey, bool CanCreate);
+  virtual void SetAccessMode(TStorageAccessMode Value) override;
+  virtual bool DoKeyExists(const UnicodeString SubKey, bool ForceAnsi) override;
+  virtual bool DoOpenSubKey(const UnicodeString MungedSubKey, bool CanCreate) override;
 
 protected:
   intptr_t GetFailed();
