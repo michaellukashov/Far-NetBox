@@ -265,22 +265,23 @@ RawByteString::RawByteString(const UTF8String &Str) :
 
 void RawByteString::Init(const wchar_t *Str, intptr_t Length)
 {
-  *this = BaseT(Str, ToInt(Length));
+  BaseT::operator=(BaseT(Str, ToInt(Length)));
 }
 
 void RawByteString::Init(const char *Str, intptr_t Length)
 {
-  *this = BaseT(Str, ToInt(Length));
+  BaseT::operator=(BaseT(Str, ToInt(Length)));
 }
 
 void RawByteString::Init(const unsigned char *Str, intptr_t Length)
 {
-  *this = BaseT(reinterpret_cast<const char *>(Str), ToInt(Length));
+  BaseT::operator=(BaseT(reinterpret_cast<const char *>(Str), ToInt(Length)));
 }
 
 void RawByteString::ThrowIfOutOfRange(intptr_t Idx) const
 {
-
+  if (Idx < 1 || Idx > Length()) // NOTE: UnicodeString is 1-based !!
+    throw Exception("Index is out of range"); // ERangeError(Sysconst_SRangeError);
 }
 
 RawByteString::operator UnicodeString() const
@@ -704,10 +705,8 @@ intptr_t UnicodeString::FindFirstOf(const wchar_t *Str, size_t Offset) const
 
 UnicodeString &UnicodeString::Replace(intptr_t Pos, intptr_t Len, const wchar_t *Str, intptr_t DataLen)
 {
-//  UnicodeString NewData = *this;
   BaseT::Delete(ToInt(Pos) - 1, ToInt(Len));
   BaseT::Insert(ToInt(Pos) - 1, UnicodeString(Str, ToInt(DataLen)).c_str());
-//  *this = NewData;
   return *this;
 }
 
