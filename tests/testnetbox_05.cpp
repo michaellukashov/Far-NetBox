@@ -78,9 +78,9 @@ TEST_CASE("testRemoteFileSetListingStr", "netbox")
 {
   DEBUG_PRINTF(L"testRemoteFileSetListingStr 0");
   TGlobalsIntfInitializer<TTestGlobalFunctions> GlobalsIntfInitializer;
-  testing::NiceMock<TMockWinSCPPlugin> StrictMockWinSCPPlugin(nullptr);
-  StrictMockWinSCPPlugin.Initialize();
-  FarPlugin = &StrictMockWinSCPPlugin;
+  testing::NiceMock<TMockWinSCPPlugin> MockWinSCPPlugin(nullptr);
+  MockWinSCPPlugin.Initialize();
+  FarPlugin = &MockWinSCPPlugin;
   DEBUG_PRINTF(L"testRemoteFileSetListingStr 0.1");
   testing::NiceMock<TMockTerminal> MockTerminal;
   DEBUG_PRINTF(L"testRemoteFileSetListingStr 0.2");
@@ -113,7 +113,7 @@ TEST_CASE("testRemoteFileSetListingStr", "netbox")
     INFO("FileName2: " << RemoteFile2.GetFileName());
     CHECK(RemoteFile2.GetFileName() == "TZ2");
   }
-  StrictMockWinSCPPlugin.Finalize();
+  MockWinSCPPlugin.Finalize();
 }
 
 //#endif // if 0
