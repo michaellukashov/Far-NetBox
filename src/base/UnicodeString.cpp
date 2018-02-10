@@ -669,11 +669,6 @@ UnicodeString &UnicodeString::Upper(intptr_t nStartPos, intptr_t nLength)
   return *this;
 }
 
-//intptr_t UnicodeString::Compare(const UnicodeString &Str) const
-//{
-//  return ::AnsiCompare(*this, Str);
-//}
-
 intptr_t UnicodeString::CompareIC(const UnicodeString &Str) const
 {
   return ::AnsiCompareIC(*this, Str);
@@ -689,15 +684,15 @@ intptr_t UnicodeString::FindFirstOf(const wchar_t Ch) const
   return ::ToIntPtr(BaseT::Find(Ch, 0)) + 1;
 }
 
-intptr_t UnicodeString::FindFirstOf(const wchar_t *Str, size_t Offset) const
+intptr_t UnicodeString::FindFirstOf(const wchar_t *AStr, size_t Offset) const
 {
-  if (!Str || !*Str)
+  if (!AStr || !*AStr)
   {
     return NPOS;
   }
   // int Length = BaseT::StringLength(Str);
-  UnicodeString str = BaseT::Mid(ToInt(Offset));
-  int Res = str.FindOneOf(Str);
+  UnicodeString Str = BaseT::Mid(ToInt(Offset));
+  int Res = Str.FindOneOf(AStr);
   if (Res != -1)
     return Res + Offset;
   return NPOS;
@@ -904,11 +899,6 @@ void UnicodeString::ThrowIfOutOfRange(intptr_t Idx) const
     throw Exception("Index is out of range"); // ERangeError(Sysconst_SRangeError);
 }
 
-//UnicodeString::operator const char *() const
-//{
-//  return UTF8String(*this).c_str();
-//}
-
 UnicodeString operator+(const wchar_t lhs, const UnicodeString &rhs)
 {
   return UnicodeString(&lhs, 1) + rhs;
@@ -933,34 +923,3 @@ UnicodeString operator+(const UnicodeString &lhs, const char *rhs)
 {
   return lhs + UnicodeString(rhs);
 }
-/*
-bool operator==(const UnicodeString &lhs, const UnicodeString &rhs)
-{
-  return lhs.Compare(rhs) == 0;
-}
-
-bool operator==(const UnicodeString &lhs, const wchar_t *rhs)
-{
-  return wcscmp(lhs.c_str(), NullToEmpty(rhs)) == 0;
-}
-
-bool operator==(const wchar_t *lhs, const UnicodeString &rhs)
-{
-  return wcscmp(NullToEmpty(lhs), rhs.c_str()) == 0;
-}
-
-bool operator!=(const UnicodeString &lhs, const UnicodeString &rhs)
-{
-  return lhs.Compare(rhs) != 0;
-}
-
-bool operator!=(const UnicodeString &lhs, const wchar_t *rhs)
-{
-  return wcscmp(lhs.c_str(), NullToEmpty(rhs)) != 0;
-}
-
-bool operator!=(const wchar_t *lhs, const UnicodeString &rhs)
-{
-  return wcscmp(NullToEmpty(lhs), rhs.c_str()) != 0;
-}
-*/

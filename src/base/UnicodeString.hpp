@@ -12,7 +12,7 @@ class NB_CORE_EXPORT UnicodeString : public CMStringT< wchar_t, NBChTraitsCRT<wc
 public:
   UnicodeString() {}
   UnicodeString(const wchar_t *Str);
-  UnicodeString(const wchar_t *Str, intptr_t Length);
+  explicit UnicodeString(const wchar_t *Str, intptr_t Length);
   UnicodeString(const wchar_t Src);
   explicit UnicodeString(const char *Str, intptr_t Length);
   explicit UnicodeString(const char *Str, intptr_t Length, int CodePage);
@@ -44,7 +44,6 @@ public:
   UnicodeString &MakeUpper() { BaseT::MakeUpper(); return *this; }
   UnicodeString &MakeLower() { BaseT::MakeLower(); return *this; }
 
-  // intptr_t Compare(const UnicodeString &Str) const;
   intptr_t CompareIC(const UnicodeString &Str) const;
   intptr_t ToIntPtr() const;
   intptr_t FindFirstOf(const wchar_t Ch) const;
@@ -117,23 +116,11 @@ public:
   UnicodeString &operator+=(const char *Ch);
   UnicodeString &operator+=(const wchar_t Ch);
 
-  // operator const char *() const;
   friend bool inline operator==(const UnicodeString &lhs, const char *rhs)
   { return lhs == UnicodeString(rhs); }
   friend bool inline operator==(const char *lhs, const UnicodeString &rhs)
   { return rhs == UnicodeString(lhs); }
-//  NB_CORE_EXPORT friend bool operator==(const UnicodeString &lhs, const UnicodeString &rhs);
-//  NB_CORE_EXPORT friend bool operator==(const UnicodeString &lhs, const wchar_t *rhs);
-//  NB_CORE_EXPORT friend bool operator==(const wchar_t *lhs, const UnicodeString &rhs);
 
-//  template<typename StringT>
-//  friend bool inline operator==(const StringT &lhs, const UnicodeString &rhs)
-//  {
-//    return UnicodeString(lhs) == rhs;
-//  }
-//  NB_CORE_EXPORT friend bool operator!=(const UnicodeString &lhs, const UnicodeString &rhs);
-//  NB_CORE_EXPORT friend bool operator!=(const UnicodeString &lhs, const wchar_t *rhs);
-//  NB_CORE_EXPORT friend bool operator!=(const wchar_t *lhs, const UnicodeString &rhs);
   friend bool inline operator!=(const UnicodeString &lhs, const char *rhs)
   { return lhs != UnicodeString(rhs); }
   friend bool inline operator!=(const char *lhs, const UnicodeString &rhs)
@@ -196,14 +183,14 @@ public:
   UTF8String &operator+=(const char Ch);
   UTF8String &operator+=(const char *rhs);
 
-//  friend bool inline operator==(const UTF8String &lhs, const UTF8String &rhs)
-//  {
-//    return lhs.Compare(rhs.c_str()) == 0;
-//  }
-//  friend bool inline operator!=(const UTF8String &lhs, const UTF8String &rhs)
-//  {
-//    return lhs.Compare(rhs.c_str()) != 0;
-//  }
+  friend bool inline operator==(const UTF8String &lhs, const UTF8String &rhs)
+  {
+    return lhs.Compare(rhs.c_str()) == 0;
+  }
+  friend bool inline operator!=(const UTF8String &lhs, const UTF8String &rhs)
+  {
+    return lhs.Compare(rhs.c_str()) != 0;
+  }
 
   char operator[](intptr_t Idx) const;
   char &operator[](intptr_t Idx);
@@ -274,19 +261,19 @@ public:
   AnsiString &operator+=(const char Ch);
   AnsiString &operator+=(const char *rhs);
 
-//  inline friend bool operator==(const AnsiString &lhs, const AnsiString &rhs)
-//  { return lhs.Compare(rhs.c_str()) == 0; }
-//  inline friend bool operator!=(const AnsiString &lhs, const AnsiString &rhs)
-//  { return lhs.Compare(rhs.c_str()) != 0; }
+  inline friend bool operator==(const AnsiString &lhs, const AnsiString &rhs)
+  { return lhs.Compare(rhs.c_str()) == 0; }
+  inline friend bool operator!=(const AnsiString &lhs, const AnsiString &rhs)
+  { return lhs.Compare(rhs.c_str()) != 0; }
 
-//  inline friend bool operator==(const AnsiString &lhs, const char *rhs)
-//  { return lhs.Compare(rhs) == 0; }
-//  inline friend bool operator==(const char *lhs, const AnsiString &rhs)
-//  { return rhs.Compare(lhs) == 0; }
-//  inline friend bool operator!=(const AnsiString &lhs, const char *rhs)
-//  { return lhs.Compare(rhs) != 0; }
-//  inline friend bool operator!=(const char *lhs, const AnsiString &rhs)
-//  { return rhs.Compare(lhs) != 0; }
+  inline friend bool operator==(const AnsiString &lhs, const char *rhs)
+  { return lhs.Compare(rhs) == 0; }
+  inline friend bool operator==(const char *lhs, const AnsiString &rhs)
+  { return rhs.Compare(lhs) == 0; }
+  inline friend bool operator!=(const AnsiString &lhs, const char *rhs)
+  { return lhs.Compare(rhs) != 0; }
+  inline friend bool operator!=(const char *lhs, const AnsiString &rhs)
+  { return rhs.Compare(lhs) != 0; }
 
 private:
   void Init(const wchar_t *Str, intptr_t Length);
@@ -349,8 +336,8 @@ public:
   RawByteString &operator+=(const RawByteString &rhs);
   RawByteString &operator+=(const char Ch);
 
-//  bool operator==(const char *rhs) const
-//  { return BaseT::Compare(rhs) == 0; }
+  bool operator==(const char *rhs) const
+  { return BaseT::Compare(rhs) == 0; }
   inline friend bool operator==(const RawByteString &lhs, RawByteString &rhs)
   { return lhs.Compare(rhs.c_str()) == 0; }
   inline friend bool operator!=(const RawByteString &lhs, const RawByteString &rhs)
