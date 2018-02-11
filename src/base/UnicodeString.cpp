@@ -442,21 +442,21 @@ void UTF8String::Init(const char *Str, intptr_t Length)
   BaseT::operator=(BaseT(Str, ToInt(Length)));
 }
 
-char *UTF8String::SetLength(intptr_t nLength)
-{
-  return BaseT::GetBufferSetLength(ToInt(nLength));
-}
+//char *UTF8String::SetLength(intptr_t nLength)
+//{
+//  return BaseT::GetBufferSetLength(ToInt(nLength));
+//}
 
-UTF8String &UTF8String::Delete(intptr_t Index, intptr_t Count)
-{
-  BaseT::Delete(ToInt(Index) - 1, ToInt(Count));
-  return *this;
-}
+//UTF8String &UTF8String::Delete(intptr_t Index, intptr_t Count)
+//{
+//  BaseT::Delete(ToInt(Index) - 1, ToInt(Count));
+//  return *this;
+//}
 
-intptr_t UTF8String::Pos(char Ch) const
-{
-  return BaseT::Find(Ch) + 1;
-}
+//intptr_t UTF8String::Pos(char Ch) const
+//{
+//  return BaseT::Find(Ch) + 1;
+//}
 
 int UTF8String::vprintf(const char *Format, va_list ArgList)
 {
@@ -466,31 +466,31 @@ int UTF8String::vprintf(const char *Format, va_list ArgList)
   return Size;
 }
 
-UTF8String &UTF8String::Insert(wchar_t Ch, intptr_t Pos)
-{
-  UTF8String UTF8(&Ch, 1);
-  BaseT::Insert(ToInt(Pos) - 1, UTF8.c_str());
-  return *this;
-}
+//UTF8String &UTF8String::Insert(wchar_t Ch, intptr_t Pos)
+//{
+//  UTF8String UTF8(&Ch, 1);
+//  BaseT::Insert(ToInt(Pos) - 1, UTF8.c_str());
+//  return *this;
+//}
 
-UTF8String &UTF8String::Insert(const wchar_t *Str, intptr_t Pos)
-{
-  UTF8String UTF8(Str);
-  BaseT::Insert(ToInt(Pos) - 1, UTF8.c_str());
-  return *this;
-}
+//UTF8String &UTF8String::Insert(const wchar_t *Str, intptr_t Pos)
+//{
+//  UTF8String UTF8(Str);
+//  BaseT::Insert(ToInt(Pos) - 1, UTF8.c_str());
+//  return *this;
+//}
 
-UTF8String UTF8String::SubString(intptr_t Pos) const
-{
-  BaseT Str(BaseT::Mid(ToInt(Pos) - 1));
-  return UTF8String(Str.c_str(), Str.GetLength());
-}
+//UTF8String UTF8String::SubString(intptr_t Pos) const
+//{
+//  BaseT Str(BaseT::Mid(ToInt(Pos) - 1));
+//  return UTF8String(Str.c_str(), Str.GetLength());
+//}
 
-UTF8String UTF8String::SubString(intptr_t Pos, intptr_t Len) const
-{
-  BaseT Str(BaseT::Mid(ToInt(Pos) - 1, ToInt(Len)));
-  return UTF8String(Str.c_str(), Str.GetLength());
-}
+//UTF8String UTF8String::SubString(intptr_t Pos, intptr_t Len) const
+//{
+//  BaseT Str(BaseT::Mid(ToInt(Pos) - 1, ToInt(Len)));
+//  return UTF8String(Str.c_str(), Str.GetLength());
+//}
 
 UTF8String &UTF8String::operator=(const UnicodeString &StrCopy)
 {
@@ -522,25 +522,25 @@ UTF8String &UTF8String::operator=(const wchar_t *lpwszData)
   return *this;
 }
 
-UTF8String UTF8String::operator+(const UTF8String &rhs) const
-{
-  BaseT Result(*this);
-  Result += rhs;
-  return UTF8String(Result);
-}
+//UTF8String UTF8String::operator+(const UTF8String &rhs) const
+//{
+//  BaseT Result(*this);
+//  Result += rhs;
+//  return UTF8String(Result);
+//}
 
-UTF8String UTF8String::operator+(const char *rhs) const
-{
-  BaseT Result(*this);
-  Result += rhs;
-  return UTF8String(Result);
-}
+//UTF8String UTF8String::operator+(const char *rhs) const
+//{
+//  BaseT Result(*this);
+//  Result += rhs;
+//  return UTF8String(Result);
+//}
 
-UTF8String &UTF8String::operator+=(const UTF8String &rhs)
-{
-  BaseT::Append(rhs.c_str(), ToInt(rhs.Length()));
-  return *this;
-}
+//UTF8String &UTF8String::operator+=(const UTF8String &rhs)
+//{
+//  BaseT::Append(rhs.c_str(), ToInt(rhs.Length()));
+//  return *this;
+//}
 
 UTF8String &UTF8String::operator+=(const RawByteString &rhs)
 {
@@ -561,23 +561,23 @@ UTF8String &UTF8String::operator+=(const char *rhs)
   return *this;
 }
 
-char UTF8String::operator[](intptr_t Idx) const
-{
-  ThrowIfOutOfRange(Idx); // Should Range-checking be optional to avoid overhead ??
-  return BaseT::operator[](ToInt(Idx) - 1);
-}
+//char UTF8String::operator[](intptr_t Idx) const
+//{
+//  ThrowIfOutOfRange(Idx); // Should Range-checking be optional to avoid overhead ??
+//  return BaseT::operator[](ToInt(Idx) - 1);
+//}
 
-char &UTF8String::operator[](intptr_t Idx)
-{
-  ThrowIfOutOfRange(Idx); // Should Range-checking be optional to avoid overhead ??
-  return BaseT::GetBuffer()[ToInt(Idx) - 1];
-}
+//char &UTF8String::operator[](intptr_t Idx)
+//{
+//  ThrowIfOutOfRange(Idx); // Should Range-checking be optional to avoid overhead ??
+//  return BaseT::GetBuffer()[ToInt(Idx) - 1];
+//}
 
-void UTF8String::ThrowIfOutOfRange(intptr_t Idx) const
-{
-  if (Idx < 1 || Idx > Length()) // NOTE: UnicodeString is 1-based !!
-    throw Exception("Index is out of range"); // ERangeError(Sysconst_SRangeError);
-}
+//void UTF8String::ThrowIfOutOfRange(intptr_t Idx) const
+//{
+//  if (Idx < 1 || Idx > Length()) // NOTE: UnicodeString is 1-based !!
+//    throw Exception("Index is out of range"); // ERangeError(Sysconst_SRangeError);
+//}
 
 UnicodeString::UnicodeString(const UnicodeString &Str) :
   BaseT(Str.c_str(), ToInt(Str.GetLength()))
@@ -669,15 +669,15 @@ void UnicodeString::Init(const char *Str, intptr_t Length, int CodePage)
 //  return *this;
 //}
 
-intptr_t UnicodeString::CompareIC(const UnicodeString &Str) const
-{
-  return ::AnsiCompareIC(*this, Str);
-}
+//intptr_t UnicodeString::CompareIC(const UnicodeString &Str) const
+//{
+//  return ::AnsiCompareIC(*this, Str);
+//}
 
-intptr_t UnicodeString::ToIntPtr() const
-{
-  return ::StrToIntDef(*this, 0);
-}
+//intptr_t UnicodeString::ToIntPtr() const
+//{
+//  return ::StrToIntDef(*this, 0);
+//}
 
 //intptr_t UnicodeString::FindFirstOf(const wchar_t Ch) const
 //{
@@ -877,7 +877,7 @@ UnicodeString &UnicodeString::operator+=(const char Ch)
 
 UnicodeString &UnicodeString::operator+=(const wchar_t Ch)
 {
-  BaseT::Append(BaseStringT(Ch));
+  BaseT::AppendChar(Ch);
   return *this;
 }
 /*
