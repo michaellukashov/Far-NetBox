@@ -771,15 +771,15 @@ UnicodeString UnicodeString::SubString(intptr_t Pos) const
   return SubStr(Pos);
 }
 
-bool UnicodeString::IsDelimiter(const UnicodeString &Chars, intptr_t Pos) const
-{
-  return ::IsDelimiter(Chars, *this, Pos);
-}
+//bool UnicodeString::IsDelimiter(const UnicodeString &Chars, intptr_t Pos) const
+//{
+//  return ::IsDelimiter(Chars, *this, Pos);
+//}
 
-intptr_t UnicodeString::LastDelimiter(const UnicodeString &Delimiters) const
-{
-  return ::LastDelimiter(Delimiters, *this);
-}
+//intptr_t UnicodeString::LastDelimiter(const UnicodeString &Delimiters) const
+//{
+//  return ::LastDelimiter(Delimiters, *this);
+//}
 
 UnicodeString UnicodeString::Trim() const
 {
@@ -796,10 +796,10 @@ UnicodeString UnicodeString::TrimRight() const
   return ::TrimRight(*this);
 }
 
-void UnicodeString::Unique()
-{
-  Init(c_str(), GetLength());
-}
+//void UnicodeString::Unique()
+//{
+//  Init(c_str(), GetLength());
+//}
 
 UnicodeString &UnicodeString::operator=(const UnicodeString &StrCopy)
 {

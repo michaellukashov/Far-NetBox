@@ -27,11 +27,20 @@ public:
   BaseStringT(const BaseY &rhs) :
     BaseT(rhs.c_str(), ToInt(rhs.GetLength()))
   {}
+  BaseStringT(const XCHAR *Str) :
+    BaseT(Str, ToInt(BaseT::StringLength(Str)))
+  {}
   explicit BaseStringT(const XCHAR *Str, intptr_t Length, int CodePage) :
     BaseT(Str, ToInt(Length), CodePage)
   {}
   explicit BaseStringT(const XCHAR *Str, intptr_t Length) :
     BaseT(Str, ToInt(Length))
+  {}
+  BaseStringT(const YCHAR *Str) :
+    BaseT(Str, ToInt(BaseT::StringLength(Str)))
+  {}
+  BaseStringT(const YCHAR Str) :
+    BaseT(&Str, 1)
   {}
   explicit BaseStringT(const YCHAR *Str, intptr_t Length, int CodePage) :
     BaseT(Str, ToInt(Length), CodePage)
@@ -214,15 +223,37 @@ public:
     return SubStr(Pos);
   }
 */
-  template<typename StringT>
-  bool IsDelimiter(const StringT &Chars, intptr_t Pos) const
+  // template<typename StringT>
+  bool IsDelimiter(const BaseStringT &Delimiters, intptr_t Pos) const
   {
-    return ::IsDelimiter(Chars, *this, Pos);
+    // return ::IsDelimiter(Chars, *this, Pos);
+    if (Pos <= GetLength())
+    {
+      CharT Ch = operator[](Pos);
+      for (intptr_t Index = 1; Index <= Delimiters.GetLength(); ++Index)
+      {
+        if (Delimiters[Index] == Ch)
+        {
+          return true;
+        }
+      }
+    }
+    return false;
   }
-  template<typename StringT>
-  intptr_t LastDelimiter(const StringT &Delimiters) const
+//  template<typename StringT>
+  intptr_t LastDelimiter(const BaseStringT &Delimiters) const
   {
-    return ::LastDelimiter(Delimiters, *this);
+    if (GetLength())
+    {
+      for (intptr_t Index = GetLength(); Index >= 1; --Index)
+      {
+        if (IsDelimiter(Delimiters, Index))
+        {
+          return Index;
+        }
+      }
+    }
+    return 0;
   }
 
   BaseStringT Trim() const { return ::Trim(*this); }
@@ -240,6 +271,10 @@ public:
   {
     return lhs.Compare(rhs) == 0;
   }
+  friend bool inline operator==(const BaseStringT &lhs, const YCHAR *rhs)
+  {
+    return lhs.Compare(BaseStringT(rhs).c_str()) == 0;
+  }
   friend bool inline operator==(const CharT *lhs, const BaseStringT &rhs)
   {
     return rhs.Compare(lhs) == 0;
@@ -251,6 +286,10 @@ public:
   friend bool inline operator!=(const BaseStringT &lhs, const CharT *rhs)
   {
     return lhs.Compare(rhs) != 0;
+  }
+  friend bool inline operator!=(const BaseStringT &lhs, const YCHAR *rhs)
+  {
+    return lhs.Compare(BaseStringT(rhs).c_str()) != 0;
   }
   friend bool inline operator!=(const CharT *lhs, const BaseStringT &rhs)
   {
@@ -384,14 +423,14 @@ public:
   UnicodeString SubString(intptr_t Pos, intptr_t Len) const;
   UnicodeString SubString(intptr_t Pos) const;
 
-  bool IsDelimiter(const UnicodeString &Chars, intptr_t Pos) const;
-  intptr_t LastDelimiter(const UnicodeString &Delimiters) const;
+//  bool IsDelimiter(const UnicodeString &Chars, intptr_t Pos) const;
+//  intptr_t LastDelimiter(const UnicodeString &Delimiters) const;
 
   UnicodeString Trim() const;
   UnicodeString TrimLeft() const;
   UnicodeString TrimRight() const;
 
-  void Unique();
+  // void Unique();
 
 public:
   UnicodeString &operator=(const UnicodeString &StrCopy);
