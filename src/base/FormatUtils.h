@@ -26,5 +26,17 @@ FMT_VARIADIC_W(UnicodeString, FmtLoadStr, intptr_t)
 
 } // namespace nb
 
-NB_CORE_EXPORT std::basic_ostream<wchar_t>& operator<<(std::basic_ostream<wchar_t> &os, const UnicodeString &Value);
-NB_CORE_EXPORT std::basic_ostream<char>& operator<<(std::basic_ostream<char> &os, const AnsiString &Value);
+inline std::basic_ostream<wchar_t>& operator<<(std::basic_ostream<wchar_t> &os, const BaseStringT<wchar_t> &Value)
+{
+  os << Value.c_str();
+  return os;
+}
+
+inline std::basic_ostream<char>& operator<<(std::basic_ostream<char> &os, const BaseStringT<char> &Value)
+{
+  os << Value.c_str();
+  return os;
+}
+
+//NB_CORE_EXPORT std::basic_ostream<wchar_t>& operator<<(std::basic_ostream<wchar_t> &os, const UnicodeString &Value);
+//NB_CORE_EXPORT std::basic_ostream<char>& operator<<(std::basic_ostream<char> &os, const AnsiString &Value);
