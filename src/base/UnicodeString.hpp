@@ -393,7 +393,7 @@ public:
   friend BaseStringT inline operator+(const BaseStringT &lhs, const char *rhs)
   { return lhs + BaseStringT(rhs); }
 
-private:
+protected:
   void ThrowIfOutOfRange(intptr_t Idx) const
   {
     if (Idx < 1 || Idx > Length()) // NOTE: UnicodeString is 1-based !!
@@ -610,9 +610,9 @@ public:
 //  UTF8String operator+(const char *rhs) const;
 
   UTF8String &operator+=(const BaseStringT &rhs)
-  { UTF8String Result(*this); Result += rhs; return *this; }
+  { Append(rhs); return *this; }
   UTF8String &operator+=(const UTF8String &rhs)
-  { UTF8String Result(*this); Result += rhs; return *this; }
+  { Append(rhs); return *this; }
   UTF8String &operator+=(const RawByteString &rhs);
   UTF8String &operator+=(const char Ch);
   UTF8String &operator+=(const char *rhs);
@@ -699,11 +699,11 @@ public:
   AnsiString &operator=(const wchar_t *Str);
   AnsiString &operator=(wchar_t chData);
 
-  AnsiString operator+(const UnicodeString &rhs) const;
-  AnsiString operator+(const AnsiString &rhs) const;
+//  AnsiString operator+(const UnicodeString &rhs) const;
+//  AnsiString operator+(const AnsiString &rhs) const;
 
   AnsiString &operator+=(const BaseStringT &rhs)
-  { AnsiString Result(*this); Result += rhs; return *this; }
+  { Append(rhs); return *this; }
   AnsiString &operator+=(const AnsiString &rhs);
   AnsiString &operator+=(const char Ch);
   AnsiString &operator+=(const char *rhs);
@@ -729,47 +729,58 @@ private:
 //  void ThrowIfOutOfRange(intptr_t Idx) const;
 };
 
-class NB_CORE_EXPORT RawByteString : public CMStringT< unsigned char, NBChTraitsCRT<unsigned char> >
+class NB_CORE_EXPORT RawByteString : public BaseStringT<char> // public CMStringT< unsigned char, NBChTraitsCRT<unsigned char> >
 {
-  typedef CMStringT< unsigned char, NBChTraitsCRT<unsigned char> > BaseT;
+//  typedef CMStringT< unsigned char, NBChTraitsCRT<unsigned char> > BaseT;
+  typedef BaseStringT<char> BaseT;
 public:
   RawByteString() {}
-  explicit RawByteString(const wchar_t *Str);
-  explicit RawByteString(const wchar_t *Str, intptr_t Length);
+  RawByteString(const BaseStringT<wchar_t> &Str) :
+    BaseT(Str.c_str(), ToInt(Str.GetLength()))
+  {}
+  RawByteString(const BaseStringT<char> &Str) :
+    BaseT(Str.c_str(), ToInt(Str.GetLength()))
+  {}
   RawByteString(const char *Str);
-  explicit RawByteString(const char *Str, intptr_t Length);
-  explicit RawByteString(const unsigned char *Str);
-  explicit RawByteString(const unsigned char *Str, intptr_t Length);
   RawByteString(const UnicodeString &Str);
   RawByteString(const RawByteString &Str);
   RawByteString(const AnsiString &Str);
   RawByteString(const UTF8String &Str);
+  explicit RawByteString(const wchar_t *Str);
+  explicit RawByteString(const wchar_t *Str, intptr_t Length);
+  explicit RawByteString(const char *Str, intptr_t Length);
+  explicit RawByteString(const unsigned char *Str);
+  explicit RawByteString(const unsigned char *Str, intptr_t Length);
   ~RawByteString() {}
+
+  inline operator BaseT &() { return *static_cast<BaseT *>(this); }
 
   operator const char *() const { return this->c_str(); }
   operator UnicodeString() const;
-  const char *c_str() const { return BaseT::c_str(); }
-  intptr_t Length() const { return GetLength(); }
-  intptr_t GetLength() const { return BaseT::GetLength(); }
-  bool IsEmpty() const { return Length() == 0; }
-  char *SetLength(intptr_t nLength);
-  RawByteString &Clear() { SetLength(0); return *this; }
-  RawByteString &Delete(intptr_t Index, intptr_t Count);
-  RawByteString &Insert(const char *Str, intptr_t Pos);
-  RawByteString SubString(intptr_t Pos) const;
-  RawByteString SubString(intptr_t Pos, intptr_t Len) const;
+  const char *c_str() const { return reinterpret_cast<const char *>(BaseT::c_str()); }
+//  intptr_t Length() const { return GetLength(); }
+//  intptr_t GetLength() const { return BaseT::GetLength(); }
+//  bool IsEmpty() const { return Length() == 0; }
+//  char *SetLength(intptr_t nLength);
+//  RawByteString &Clear() { SetLength(0); return *this; }
+//  RawByteString &Delete(intptr_t Index, intptr_t Count);
+//  RawByteString &Insert(const char *Str, intptr_t Pos);
+//  RawByteString SubString(intptr_t Pos) const;
+//  RawByteString SubString(intptr_t Pos, intptr_t Len) const;
 
   unsigned char operator[](intptr_t Idx) const;
   unsigned char &operator[](intptr_t Idx);
 
-  intptr_t Pos(wchar_t Ch) const;
-  intptr_t Pos(const wchar_t *Str) const;
-  intptr_t Pos(const char Ch) const;
-  intptr_t Pos(const char *Str) const;
+//  intptr_t Pos(wchar_t Ch) const;
+//  intptr_t Pos(const wchar_t *Str) const;
+//  intptr_t Pos(const char Ch) const;
+//  intptr_t Pos(const char *Str) const;
 
-  void Unique() {}
+//  void Unique() {}
 
 public:
+  RawByteString &operator=(const BaseT &Str)
+  { Init(Str.c_str(), Str.GetLength()); return *this; }
   RawByteString &operator=(const UnicodeString &StrCopy);
   RawByteString &operator=(const RawByteString &StrCopy);
   RawByteString &operator=(const AnsiString &StrCopy);
@@ -778,10 +789,13 @@ public:
   RawByteString &operator=(const wchar_t *lpwszData);
   RawByteString &operator=(wchar_t chData);
 
-  RawByteString operator+(const RawByteString &rhs) const;
+//  RawByteString operator+(const RawByteString &rhs) const;
 
+  RawByteString &operator+=(const BaseStringT &rhs)
+  { Append(rhs); return *this; }
   RawByteString &operator+=(const RawByteString &rhs);
   RawByteString &operator+=(const char Ch);
+  RawByteString &operator+=(const char *Str);
 
   bool operator==(const char *rhs) const
   { return BaseT::Compare(rhs) == 0; }
@@ -798,7 +812,7 @@ private:
   void Init(const wchar_t *Str, intptr_t Length);
   void Init(const char *Str, intptr_t Length);
   void Init(const unsigned char *Str, intptr_t Length);
-  void ThrowIfOutOfRange(intptr_t Idx) const;
+//  void ThrowIfOutOfRange(intptr_t Idx) const;
 };
 
 // rde support

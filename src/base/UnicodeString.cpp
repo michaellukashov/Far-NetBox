@@ -278,61 +278,61 @@ void RawByteString::Init(const unsigned char *Str, intptr_t Length)
   BaseT::operator=(BaseT(reinterpret_cast<const char *>(Str), ToInt(Length)));
 }
 
-void RawByteString::ThrowIfOutOfRange(intptr_t Idx) const
-{
-  if (Idx < 1 || Idx > Length()) // NOTE: UnicodeString is 1-based !!
-    throw Exception("Index is out of range"); // ERangeError(Sysconst_SRangeError);
-}
+//void RawByteString::ThrowIfOutOfRange(intptr_t Idx) const
+//{
+//  if (Idx < 1 || Idx > Length()) // NOTE: UnicodeString is 1-based !!
+//    throw Exception("Index is out of range"); // ERangeError(Sysconst_SRangeError);
+//}
 
 RawByteString::operator UnicodeString() const
 {
   return UnicodeString(reinterpret_cast<const char *>(c_str()), GetLength());
 }
 
-intptr_t RawByteString::Pos(wchar_t Ch) const
-{
-  return BaseT::Find(static_cast<unsigned char>(Ch)) + 1;
-}
+//intptr_t RawByteString::Pos(wchar_t Ch) const
+//{
+//  return BaseT::Find(static_cast<unsigned char>(Ch)) + 1;
+//}
 
-intptr_t RawByteString::Pos(const char Ch) const
-{
-  return BaseT::Find(static_cast<unsigned char>(Ch)) + 1;
-}
+//intptr_t RawByteString::Pos(const char Ch) const
+//{
+//  return BaseT::Find(static_cast<unsigned char>(Ch)) + 1;
+//}
 
-intptr_t RawByteString::Pos(const char *Str) const
-{
-  return BaseT::Find(reinterpret_cast<const char *>(Str)) + 1;
-}
+//intptr_t RawByteString::Pos(const char *Str) const
+//{
+//  return BaseT::Find(reinterpret_cast<const char *>(Str)) + 1;
+//}
 
-char *RawByteString::SetLength(intptr_t nLength)
-{
-  return BaseT::GetBufferSetLength(ToInt(nLength));
-}
+//char *RawByteString::SetLength(intptr_t nLength)
+//{
+//  return BaseT::GetBufferSetLength(ToInt(nLength));
+//}
 
-RawByteString &RawByteString::Delete(intptr_t Index, intptr_t Count)
-{
-  BaseT::Delete(ToInt(Index) - 1, ToInt(Count));
-  return *this;
-}
+//RawByteString &RawByteString::Delete(intptr_t Index, intptr_t Count)
+//{
+//  BaseT::Delete(ToInt(Index) - 1, ToInt(Count));
+//  return *this;
+//}
 
-RawByteString &RawByteString::Insert(const char *Str, intptr_t Pos)
-{
-  BaseT::Insert(ToInt(Pos) - 1, static_cast<const char *>(Str));
-  return *this;
-}
+//RawByteString &RawByteString::Insert(const char *Str, intptr_t Pos)
+//{
+//  BaseT::Insert(ToInt(Pos) - 1, static_cast<const char *>(Str));
+//  return *this;
+//}
 
-RawByteString RawByteString::SubString(intptr_t Pos) const
-{
-  BaseT Str(BaseT::Mid(ToInt(Pos) - 1));
-  return UTF8String(Str.c_str(), Str.GetLength());
-}
+//RawByteString RawByteString::SubString(intptr_t Pos) const
+//{
+//  BaseT Str(BaseT::Mid(ToInt(Pos) - 1));
+//  return UTF8String(Str.c_str(), Str.GetLength());
+//}
 
-RawByteString RawByteString::SubString(intptr_t Pos, intptr_t Len) const
-{
-  BaseT Str = BaseT::Mid(ToInt(Pos) - 1, ToInt(Len));
-  RawByteString Result(Str.c_str(), Str.GetLength());
-  return Result;
-}
+//RawByteString RawByteString::SubString(intptr_t Pos, intptr_t Len) const
+//{
+//  BaseT Str = BaseT::Mid(ToInt(Pos) - 1, ToInt(Len));
+//  RawByteString Result(Str.c_str(), Str.GetLength());
+//  return Result;
+//}
 
 unsigned char RawByteString::operator[](intptr_t Idx) const
 {
@@ -382,22 +382,28 @@ RawByteString &RawByteString::operator=(const wchar_t *lpwszData)
   return *this;
 }
 
-RawByteString RawByteString::operator+(const RawByteString &rhs) const
-{
-  RawByteString Result = *this;
-  Result.Append(rhs.c_str(), ToInt(rhs.GetLength()));
-  return Result;
-}
+//RawByteString RawByteString::operator+(const RawByteString &rhs) const
+//{
+//  RawByteString Result = *this;
+//  Result.Append(rhs.data(), ToInt(rhs.GetLength()));
+//  return Result;
+//}
 
 RawByteString &RawByteString::operator+=(const RawByteString &rhs)
 {
-  BaseT::Append(rhs.c_str(), ToInt(rhs.Length()));
+  BaseT::Append(rhs.data(), ToInt(rhs.Length()));
   return *this;
 }
 
 RawByteString &RawByteString::operator+=(const char Ch)
 {
   BaseT::AppendChar(Ch);
+  return *this;
+}
+
+RawByteString &RawByteString::operator+=(const char *Str)
+{
+  BaseT::Append(Str);
   return *this;
 }
 
