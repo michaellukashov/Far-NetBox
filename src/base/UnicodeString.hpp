@@ -191,7 +191,7 @@ public:
     nPos = Pos + 1;
     return Pos != -1;
   }
-/*
+
   // template<typename CharT>
   // BaseStringT<CharT> SubStr(intptr_t Pos, intptr_t Len) const
   // template<typename StringT>
@@ -222,7 +222,7 @@ public:
 //    return BaseStringT<CharT>(Str.c_str(), Str.GetLength());
     return SubStr(Pos);
   }
-*/
+
   // template<typename StringT>
   bool IsDelimiter(const BaseStringT &Delimiters, intptr_t Pos) const
   {
@@ -256,9 +256,34 @@ public:
     return 0;
   }
 
-  BaseStringT Trim() const { return ::Trim(*this); }
-  BaseStringT TrimLeft() const { return ::TrimLeft(*this); }
-  BaseStringT TrimRight() const { return ::TrimRight(*this); }
+  BaseStringT Trim() const
+  {
+    return TrimRight(TrimLeft());
+  }
+
+  BaseStringT TrimLeft() const
+  {
+    BaseStringT Result = *this;
+    intptr_t Len = Result.GetLength();
+    intptr_t Pos = 1;
+    while ((Pos <= Len) && (Result[Pos] == L' '))
+      Pos++;
+    if (Pos > 1)
+      return BaseT::Mid(Pos, Len - Pos + 1);
+    return Result;
+  }
+  BaseStringT TrimRight() const
+  {
+    BaseStringT Result = *this;
+    intptr_t Len = Result.GetLength();
+    while (Len > 0 &&
+      ((Result[Len] == L' ') || (Result[Len] == L'\n') || (Result[Len] == L'\r') || (Result[Len] == L'\x00')))
+    {
+      Len--;
+    }
+    Result.SetLength(Len);
+    return Result;
+  }
 
   void Unique() { this->operator=(BaseStringT(this->c_str(), this->GetLength())); }
 
@@ -275,6 +300,10 @@ public:
   {
     return lhs.Compare(BaseStringT(rhs).c_str()) == 0;
   }
+  friend bool inline operator==(const YCHAR *lhs, const BaseStringT &rhs)
+  {
+    return rhs.Compare(BaseStringT(lhs).c_str()) == 0;
+  }
   friend bool inline operator==(const CharT *lhs, const BaseStringT &rhs)
   {
     return rhs.Compare(lhs) == 0;
@@ -290,6 +319,10 @@ public:
   friend bool inline operator!=(const BaseStringT &lhs, const YCHAR *rhs)
   {
     return lhs.Compare(BaseStringT(rhs).c_str()) != 0;
+  }
+  friend bool inline operator!=(const YCHAR *lhs, const BaseStringT &rhs)
+  {
+    return rhs.Compare(BaseStringT(lhs).c_str()) != 0;
   }
   friend bool inline operator!=(const CharT *lhs, const BaseStringT &rhs)
   {
@@ -328,6 +361,32 @@ public:
     return *this;
   }
 
+  template<typename StringT>
+  BaseStringT operator+(const StringT &rhs) const
+  {
+    BaseStringT Result(*this);
+    Result += rhs;
+    return Result;
+  }
+
+  // template<typename StringT>
+  BaseStringT &operator+=(const BaseStringT &rhs)
+  {
+    BaseT::Append(rhs.c_str(), ToInt(rhs.Length()));
+    return *this;
+  }
+
+  friend BaseStringT inline operator+(const wchar_t lhs, const BaseStringT &rhs)
+  { return BaseStringT(&lhs, 1) + rhs; }
+  friend BaseStringT inline operator+(const BaseStringT &lhs, wchar_t rhs)
+  { return lhs + BaseStringT(rhs); }
+  friend BaseStringT inline operator+(const wchar_t *lhs, const BaseStringT &rhs)
+  { return BaseStringT(lhs) + rhs; }
+  friend BaseStringT inline operator+(const BaseStringT &lhs, const wchar_t *rhs)
+  { return lhs + BaseStringT(rhs); }
+  friend BaseStringT inline operator+(const BaseStringT &lhs, const char *rhs)
+  { return lhs + BaseStringT(rhs); }
+
 private:
   void ThrowIfOutOfRange(intptr_t Idx) const
   {
@@ -343,13 +402,19 @@ public:
   UnicodeString() {}
   UnicodeString(const wchar_t *Str);
   UnicodeString(const char *Str);
-  explicit UnicodeString(const wchar_t *Str, intptr_t Length);
+  UnicodeString(const BaseStringT<wchar_t> &Str) :
+    BaseT(Str.c_str(), ToInt(Str.GetLength()))
+  {}
+  UnicodeString(const BaseStringT<char> &Str) :
+    BaseT(Str.c_str(), ToInt(Str.GetLength()))
+  {}
   UnicodeString(const wchar_t Src);
+  UnicodeString(const UnicodeString &Str);
+  explicit UnicodeString(const wchar_t *Str, intptr_t Length);
   explicit UnicodeString(const char *Str, intptr_t Length);
   explicit UnicodeString(const char *Str, intptr_t Length, int CodePage);
   explicit UnicodeString(intptr_t ALength, wchar_t Ch) : BaseT(Ch, ToInt(ALength)) {}
 
-  UnicodeString(const UnicodeString &Str);
   explicit UnicodeString(const UTF8String &Str);
   explicit UnicodeString(const AnsiString &Str);
 
@@ -413,26 +478,30 @@ public:
 //  UnicodeString &Insert(const UnicodeString &Str, intptr_t Pos) { return Insert(Pos, Str); }
 
 //  intptr_t Pos(wchar_t Ch) const { return BaseT::Pos(Ch) + 1; }
-  intptr_t Pos(const UnicodeString &Str) const { return BaseT::Pos(Str); }
+//  intptr_t Pos(const UnicodeString &Str) const { return BaseT::Pos(Str); }
 
-  intptr_t RPos(wchar_t Ch) const { return ::ToIntPtr(BaseT::ReverseFind(Ch)) + 1; }
-  bool RPos(intptr_t &nPos, wchar_t Ch, intptr_t nStartPos = 0) const;
+//  intptr_t RPos(wchar_t Ch) const { return ::ToIntPtr(BaseT::ReverseFind(Ch)) + 1; }
+//  bool RPos(intptr_t &nPos, wchar_t Ch, intptr_t nStartPos = 0) const;
 
-  UnicodeString SubStr(intptr_t Pos, intptr_t Len) const;
-  UnicodeString SubStr(intptr_t Pos) const;
-  UnicodeString SubString(intptr_t Pos, intptr_t Len) const;
-  UnicodeString SubString(intptr_t Pos) const;
+//  UnicodeString SubStr(intptr_t Pos, intptr_t Len) const;
+//  UnicodeString SubStr(intptr_t Pos) const;
+//  UnicodeString SubString(intptr_t Pos, intptr_t Len) const;
+//  UnicodeString SubString(intptr_t Pos) const;
 
 //  bool IsDelimiter(const UnicodeString &Chars, intptr_t Pos) const;
 //  intptr_t LastDelimiter(const UnicodeString &Delimiters) const;
 
-  UnicodeString Trim() const;
-  UnicodeString TrimLeft() const;
-  UnicodeString TrimRight() const;
+//  UnicodeString Trim() const;
+//  UnicodeString TrimLeft() const;
+//  UnicodeString TrimRight() const;
 
   // void Unique();
 
 public:
+  //  bool inline operator!=(const BaseStringT<CharT> &rhs) const { return BaseT::operator!=(rhs); }
+//  template<typename StringT>
+  UnicodeString &operator=(const BaseT &Str)
+  { Init(Str.c_str(), Str.GetLength()); return *this; }
   UnicodeString &operator=(const UnicodeString &StrCopy);
   UnicodeString &operator=(const RawByteString &StrCopy);
   UnicodeString &operator=(const AnsiString &StrCopy);
@@ -441,18 +510,21 @@ public:
   UnicodeString &operator=(const char *lpszData);
   UnicodeString &operator=(const wchar_t Ch);
 
-  UnicodeString operator+(const UnicodeString &rhs) const;
-  UnicodeString operator+(const RawByteString &rhs) const;
-  UnicodeString operator+(const AnsiString &rhs) const;
-  UnicodeString operator+(const UTF8String &rhs) const;
+//  UnicodeString operator+(const UnicodeString &rhs) const;
+//  UnicodeString operator+(const RawByteString &rhs) const;
+//  UnicodeString operator+(const AnsiString &rhs) const;
+//  UnicodeString operator+(const UTF8String &rhs) const;
 
-  NB_CORE_EXPORT friend UnicodeString operator+(const wchar_t lhs, const UnicodeString &rhs);
-  NB_CORE_EXPORT friend UnicodeString operator+(const UnicodeString &lhs, wchar_t rhs);
-  NB_CORE_EXPORT friend UnicodeString operator+(const wchar_t *lhs, const UnicodeString &rhs);
-  NB_CORE_EXPORT friend UnicodeString operator+(const UnicodeString &lhs, const wchar_t *rhs);
-  NB_CORE_EXPORT friend UnicodeString operator+(const UnicodeString &lhs, const char *rhs);
+//  NB_CORE_EXPORT friend UnicodeString operator+(const wchar_t lhs, const UnicodeString &rhs);
+//  NB_CORE_EXPORT friend UnicodeString operator+(const UnicodeString &lhs, wchar_t rhs);
+//  NB_CORE_EXPORT friend UnicodeString operator+(const wchar_t *lhs, const UnicodeString &rhs);
+//  NB_CORE_EXPORT friend UnicodeString operator+(const UnicodeString &lhs, const wchar_t *rhs);
+//  NB_CORE_EXPORT friend UnicodeString operator+(const UnicodeString &lhs, const char *rhs);
 
-  UnicodeString &operator+=(const UnicodeString &rhs);
+  UnicodeString &operator+=(const BaseStringT &rhs)
+  { UnicodeString Result(*this); Result += rhs; return *this; }
+  UnicodeString &operator+=(const UnicodeString &rhs)
+  { UnicodeString Result(*this); Result += rhs; return *this; }
   UnicodeString &operator+=(const wchar_t *rhs);
   UnicodeString &operator+=(const UTF8String &rhs);
   UnicodeString &operator+=(const RawByteString &rhs);

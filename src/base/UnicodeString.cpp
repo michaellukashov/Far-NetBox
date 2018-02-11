@@ -749,27 +749,27 @@ intptr_t UnicodeString::ToIntPtr() const
 //  return Pos != -1;
 //}
 
-UnicodeString UnicodeString::SubStr(intptr_t Pos, intptr_t Len) const
-{
-  UnicodeString Str(BaseT::Mid(ToInt(Pos) - 1, ToInt(Len)));
-  return Str; // UnicodeString(Str.c_str(), Str.GetLength());
-}
+//UnicodeString UnicodeString::SubStr(intptr_t Pos, intptr_t Len) const
+//{
+//  UnicodeString Str(BaseT::Mid(ToInt(Pos) - 1, ToInt(Len)));
+//  return Str; // UnicodeString(Str.c_str(), Str.GetLength());
+//}
 
-UnicodeString UnicodeString::SubStr(intptr_t Pos) const
-{
-  UnicodeString Str(BaseT::Mid(ToInt(Pos) - 1));
-  return Str; // UnicodeString(Str.c_str(), Str.GetLength());
-}
+//UnicodeString UnicodeString::SubStr(intptr_t Pos) const
+//{
+//  UnicodeString Str(BaseT::Mid(ToInt(Pos) - 1));
+//  return Str; // UnicodeString(Str.c_str(), Str.GetLength());
+//}
 
-UnicodeString UnicodeString::SubString(intptr_t Pos, intptr_t Len) const
-{
-  return SubStr(Pos, Len);
-}
+//UnicodeString UnicodeString::SubString(intptr_t Pos, intptr_t Len) const
+//{
+//  return SubStr(Pos, Len);
+//}
 
-UnicodeString UnicodeString::SubString(intptr_t Pos) const
-{
-  return SubStr(Pos);
-}
+//UnicodeString UnicodeString::SubString(intptr_t Pos) const
+//{
+//  return SubStr(Pos);
+//}
 
 //bool UnicodeString::IsDelimiter(const UnicodeString &Chars, intptr_t Pos) const
 //{
@@ -781,20 +781,20 @@ UnicodeString UnicodeString::SubString(intptr_t Pos) const
 //  return ::LastDelimiter(Delimiters, *this);
 //}
 
-UnicodeString UnicodeString::Trim() const
-{
-  return ::Trim(*this);
-}
+//UnicodeString UnicodeString::Trim() const
+//{
+//  return ::Trim(*this);
+//}
 
-UnicodeString UnicodeString::TrimLeft() const
-{
-  return ::TrimLeft(*this);
-}
+//UnicodeString UnicodeString::TrimLeft() const
+//{
+//  return ::TrimLeft(*this);
+//}
 
-UnicodeString UnicodeString::TrimRight() const
-{
-  return ::TrimRight(*this);
-}
+//UnicodeString UnicodeString::TrimRight() const
+//{
+//  return ::TrimRight(*this);
+//}
 
 //void UnicodeString::Unique()
 //{
@@ -843,18 +843,18 @@ UnicodeString &UnicodeString::operator=(const char *lpszData)
   return *this;
 }
 
-UnicodeString UnicodeString::operator+(const UnicodeString &rhs) const
-{
-  UnicodeString Result(*this);
-  Result += rhs;
-  return Result;
-}
+//UnicodeString UnicodeString::operator+(const UnicodeString &rhs) const
+//{
+//  UnicodeString Result(*this);
+//  Result += rhs;
+//  return Result;
+//}
 
-UnicodeString &UnicodeString::operator+=(const UnicodeString &rhs)
-{
-  BaseT::Append(rhs.c_str(), ToInt(rhs.Length()));
-  return *this;
-}
+//UnicodeString &UnicodeString::operator+=(const UnicodeString &rhs)
+//{
+//  BaseT::Append(rhs.c_str(), ToInt(rhs.Length()));
+//  return *this;
+//}
 
 UnicodeString &UnicodeString::operator+=(const wchar_t *rhs)
 {
@@ -877,7 +877,7 @@ UnicodeString &UnicodeString::operator+=(const char Ch)
 
 UnicodeString &UnicodeString::operator+=(const wchar_t Ch)
 {
-  BaseT::operator+=(Ch);
+  BaseT::Append(BaseStringT(Ch));
   return *this;
 }
 /*
@@ -899,27 +899,27 @@ void UnicodeString::ThrowIfOutOfRange(intptr_t Idx) const
     throw Exception("Index is out of range"); // ERangeError(Sysconst_SRangeError);
 }
 */
-UnicodeString operator+(const wchar_t lhs, const UnicodeString &rhs)
-{
-  return UnicodeString(&lhs, 1) + rhs;
-}
+//UnicodeString operator+(const wchar_t lhs, const UnicodeString &rhs)
+//{
+//  return UnicodeString(&lhs, 1) + rhs;
+//}
 
-UnicodeString operator+(const UnicodeString &lhs, const wchar_t rhs)
-{
-  return lhs + UnicodeString(rhs);
-}
+//UnicodeString operator+(const UnicodeString &lhs, const wchar_t rhs)
+//{
+//  return lhs + UnicodeString(rhs);
+//}
 
-UnicodeString operator+(const wchar_t *lhs, const UnicodeString &rhs)
-{
-  return UnicodeString(lhs) + rhs;
-}
+//UnicodeString operator+(const wchar_t *lhs, const UnicodeString &rhs)
+//{
+//  return UnicodeString(lhs) + rhs;
+//}
 
-UnicodeString operator+(const UnicodeString &lhs, const wchar_t *rhs)
-{
-  return lhs + UnicodeString(rhs);
-}
+//UnicodeString operator+(const UnicodeString &lhs, const wchar_t *rhs)
+//{
+//  return lhs + UnicodeString(rhs);
+//}
 
-UnicodeString operator+(const UnicodeString &lhs, const char *rhs)
-{
-  return lhs + UnicodeString(rhs);
-}
+//UnicodeString operator+(const UnicodeString &lhs, const char *rhs)
+//{
+//  return lhs + UnicodeString(rhs);
+//}
