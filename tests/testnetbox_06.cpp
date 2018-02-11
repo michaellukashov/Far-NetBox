@@ -44,5 +44,13 @@ TEST_CASE_METHOD(base_fixture_t, "testUnicodeString01", "netbox")
     CHECK("ab" == a);
     CHECK("abc" != a);
   }
+  SECTION("AnsiString01")
+  {
+    AnsiString a("ab");
+    CHECK(a == "ab");
+    CHECK(a != "abc");
+    CHECK("ab" == a);
+    CHECK("abc" != a);
+  }
 }
 
