@@ -128,7 +128,7 @@ public:
     TInputDialogInitializeEvent OnInitialize, bool Echo) override;
   virtual uintptr_t MoreMessageDialog(const UnicodeString Message,
     TStrings * MoreMessages, TQueryType Type, uint32_t Answers,
-      const TMessageParams * Params) override;
+    const TMessageParams * Params) override;
 };
 
 HINSTANCE TTestGlobalFunctions::GetInstanceHandle() const
