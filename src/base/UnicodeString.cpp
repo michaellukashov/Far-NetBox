@@ -61,22 +61,22 @@ AnsiString::AnsiString(const RawByteString &Str) :
 {
 }
 
-char *AnsiString::SetLength(intptr_t nLength)
-{
-  return BaseT::GetBufferSetLength(ToInt(nLength));
-}
+//char *AnsiString::SetLength(intptr_t nLength)
+//{
+//  return BaseT::GetBufferSetLength(ToInt(nLength));
+//}
 
-AnsiString &AnsiString::Delete(intptr_t Index, intptr_t Count)
-{
-  BaseT::Delete(ToInt(Index) - 1, ToInt(Count));
-  return *this;
-}
+//AnsiString &AnsiString::Delete(intptr_t Index, intptr_t Count)
+//{
+//  BaseT::Delete(ToInt(Index) - 1, ToInt(Count));
+//  return *this;
+//}
 
-AnsiString &AnsiString::Clear()
-{
-  BaseT::Empty();
-  return *this;
-}
+//AnsiString &AnsiString::Clear()
+//{
+//  BaseT::Empty();
+//  return *this;
+//}
 
 void AnsiString::Init(const wchar_t *Str, intptr_t Length)
 {
@@ -93,67 +93,67 @@ void AnsiString::Init(const unsigned char *Str, intptr_t Length)
   BaseT::operator=(BaseT(reinterpret_cast<const char *>(Str), ToInt(Length)));
 }
 
-intptr_t AnsiString::Pos(const AnsiString &Str) const
-{
-  return ToIntPtr(BaseT::Find(Str.c_str())) + 1;
-}
+//intptr_t AnsiString::Pos(const AnsiString &Str) const
+//{
+//  return ToIntPtr(BaseT::Find(Str.c_str())) + 1;
+//}
 
-intptr_t AnsiString::Pos(char Ch) const
-{
-  return ToIntPtr(BaseT::Find(Ch)) + 1;
-}
+//intptr_t AnsiString::Pos(char Ch) const
+//{
+//  return ToIntPtr(BaseT::Find(Ch)) + 1;
+//}
 
-char AnsiString::operator[](intptr_t Idx) const
-{
-  ThrowIfOutOfRange(Idx); // Should Range-checking be optional to avoid overhead ??
-  return BaseT::operator[](ToInt(Idx) - 1);
-}
+//char AnsiString::operator[](intptr_t Idx) const
+//{
+//  ThrowIfOutOfRange(Idx); // Should Range-checking be optional to avoid overhead ??
+//  return BaseT::operator[](ToInt(Idx) - 1);
+//}
 
-char &AnsiString::operator[](intptr_t Idx)
-{
-  ThrowIfOutOfRange(Idx); // Should Range-checking be optional to avoid overhead ??
-  return BaseT::GetBuffer()[Idx - 1];
-}
+//char &AnsiString::operator[](intptr_t Idx)
+//{
+//  ThrowIfOutOfRange(Idx); // Should Range-checking be optional to avoid overhead ??
+//  return BaseT::GetBuffer()[Idx - 1];
+//}
 
-AnsiString &AnsiString::Append(const char *Str, intptr_t StrLen)
-{
-  BaseT::Append(Str, ToInt(StrLen));
-  return *this;
-}
+//AnsiString &AnsiString::Append(const char *Str, intptr_t StrLen)
+//{
+//  BaseT::Append(Str, ToInt(StrLen));
+//  return *this;
+//}
 
-AnsiString &AnsiString::Append(const AnsiString &Str)
-{
-  return Append(Str.c_str(), Str.GetLength());
-}
+//AnsiString &AnsiString::Append(const AnsiString &Str)
+//{
+//  return Append(Str.c_str(), Str.GetLength());
+//}
 
-AnsiString &AnsiString::Append(const char *Str)
-{
-  return Append(Str, BaseT::StringLength(Str));
-}
+//AnsiString &AnsiString::Append(const char *Str)
+//{
+//  return Append(Str, BaseT::StringLength(Str));
+//}
 
-AnsiString &AnsiString::Append(const char Ch)
-{
-  BaseT::AppendChar(Ch);
-  return *this;
-}
+//AnsiString &AnsiString::Append(const char Ch)
+//{
+//  BaseT::AppendChar(Ch);
+//  return *this;
+//}
 
-AnsiString &AnsiString::Insert(const char *Str, intptr_t Pos)
-{
-  BaseT::Insert(ToInt(Pos) - 1, Str);
-  return *this;
-}
+//AnsiString &AnsiString::Insert(const char *Str, intptr_t Pos)
+//{
+//  BaseT::Insert(ToInt(Pos) - 1, Str);
+//  return *this;
+//}
 
-AnsiString AnsiString::SubString(intptr_t Pos) const
-{
-  BaseT Str(BaseT::Mid(ToInt(Pos) - 1));
-  return AnsiString(Str.c_str(), Str.GetLength());
-}
+//AnsiString AnsiString::SubString(intptr_t Pos) const
+//{
+//  BaseT Str(BaseT::Mid(ToInt(Pos) - 1));
+//  return AnsiString(Str.c_str(), Str.GetLength());
+//}
 
-AnsiString AnsiString::SubString(intptr_t Pos, intptr_t Len) const
-{
-  BaseT Str(BaseT::Mid(ToInt(Pos) - 1, ToInt(Len)));
-  return AnsiString(Str.c_str(), Str.GetLength());
-}
+//AnsiString AnsiString::SubString(intptr_t Pos, intptr_t Len) const
+//{
+//  BaseT Str(BaseT::Mid(ToInt(Pos) - 1, ToInt(Len)));
+//  return AnsiString(Str.c_str(), Str.GetLength());
+//}
 
 AnsiString &AnsiString::operator=(const UnicodeString &StrCopy)
 {
@@ -206,11 +206,11 @@ AnsiString &AnsiString::operator+=(const char *rhs)
   return *this;
 }
 
-void AnsiString::ThrowIfOutOfRange(intptr_t Idx) const
-{
-  if (Idx < 1 || Idx > Length()) // NOTE: UnicodeString is 1-based !!
-    throw Exception("Index is out of range"); // ERangeError(Sysconst_SRangeError);
-}
+//void AnsiString::ThrowIfOutOfRange(intptr_t Idx) const
+//{
+//  if (Idx < 1 || Idx > Length()) // NOTE: UnicodeString is 1-based !!
+//    throw Exception("Index is out of range"); // ERangeError(Sysconst_SRangeError);
+//}
 
 
 RawByteString::RawByteString(const wchar_t *Str) :

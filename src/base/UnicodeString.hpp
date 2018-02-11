@@ -7,7 +7,7 @@ class UTF8String;
 class AnsiString;
 
 template<typename CharT>
-class NB_CORE_EXPORT BaseStringT : public CMStringT< CharT, NBChTraitsCRT< CharT> >
+class BaseStringT : public CMStringT< CharT, NBChTraitsCRT< CharT> >
 {
   typedef CMStringT< CharT, NBChTraitsCRT <CharT > > BaseT;
   typedef typename BaseT::XCHAR XCHAR;
@@ -636,17 +636,24 @@ private:
 //  void ThrowIfOutOfRange(intptr_t Idx) const;
 };
 
-class NB_CORE_EXPORT AnsiString : public CMStringT< char, NBChTraitsCRT<char> >
+class NB_CORE_EXPORT AnsiString : public BaseStringT<char> // public CMStringT< char, NBChTraitsCRT<char> >
 {
-  typedef CMStringT< char, NBChTraitsCRT<char> > BaseT;
+//  typedef CMStringT< char, NBChTraitsCRT<char> > BaseT;
+  typedef BaseStringT<char> BaseT;
 public:
   AnsiString() {}
+  AnsiString(const BaseStringT<wchar_t> &Str) :
+    BaseT(Str.c_str(), ToInt(Str.GetLength()))
+  {}
+  AnsiString(const BaseStringT<char> &Str) :
+    BaseT(Str.c_str(), ToInt(Str.GetLength()))
+  {}
   AnsiString(const AnsiString &rhs);
   AnsiString(intptr_t Length, char Ch) : BaseT(Ch, ToInt(Length)) {}
+  AnsiString(const char *Str);
   explicit AnsiString(const wchar_t *Str);
   explicit AnsiString(const wchar_t *Str, intptr_t Length);
   explicit AnsiString(const wchar_t *Str, intptr_t Length, int CodePage);
-  AnsiString(const char *Str);
   explicit AnsiString(const char *Str, intptr_t Length);
   explicit AnsiString(const unsigned char *Str);
   explicit AnsiString(const unsigned char *Str, intptr_t Length);
@@ -655,31 +662,35 @@ public:
   explicit AnsiString(const RawByteString &Str);
   inline ~AnsiString() {}
 
-  const char *c_str() const { return BaseT::c_str(); }
-  intptr_t Length() const { return GetLength(); }
-  intptr_t GetLength() const { return BaseT::GetLength(); }
-  bool IsEmpty() const { return Length() == 0; }
-  char *SetLength(intptr_t nLength);
-  inline AnsiString &Delete(intptr_t Index, intptr_t Count);
-  AnsiString &Clear();
-  AnsiString &Insert(const char *Str, intptr_t Pos);
-  AnsiString SubString(intptr_t Pos) const;
-  AnsiString SubString(intptr_t Pos, intptr_t Len) const;
+  inline operator BaseT &() { return *static_cast<BaseT *>(this); }
 
-  intptr_t Pos(const AnsiString &Str) const;
-  intptr_t Pos(char Ch) const;
+//  const char *c_str() const { return BaseT::c_str(); }
+//  intptr_t Length() const { return GetLength(); }
+//  intptr_t GetLength() const { return BaseT::GetLength(); }
+//  bool IsEmpty() const { return Length() == 0; }
+//  char *SetLength(intptr_t nLength);
+//  inline AnsiString &Delete(intptr_t Index, intptr_t Count);
+//  AnsiString &Clear();
+//  AnsiString &Insert(const char *Str, intptr_t Pos);
+//  AnsiString SubString(intptr_t Pos) const;
+//  AnsiString SubString(intptr_t Pos, intptr_t Len) const;
 
-  char operator[](intptr_t Idx) const;
-  char &operator[](intptr_t Idx);
+//  intptr_t Pos(const AnsiString &Str) const;
+//  intptr_t Pos(char Ch) const;
 
-  AnsiString &Append(const char *Str, intptr_t StrLen);
-  AnsiString &Append(const AnsiString &Str);
-  AnsiString &Append(const char *Str);
-  AnsiString &Append(const char Ch);
+//  char operator[](intptr_t Idx) const;
+//  char &operator[](intptr_t Idx);
 
-  void Unique() {}
+//  AnsiString &Append(const char *Str, intptr_t StrLen);
+//  AnsiString &Append(const AnsiString &Str);
+//  AnsiString &Append(const char *Str);
+//  AnsiString &Append(const char Ch);
+
+//  void Unique() {}
 
 public:
+  AnsiString &operator=(const BaseT &Str)
+  { Init(Str.c_str(), Str.GetLength()); return *this; }
   AnsiString &operator=(const UnicodeString &StrCopy);
   AnsiString &operator=(const RawByteString &StrCopy);
   AnsiString &operator=(const AnsiString &StrCopy);
@@ -691,29 +702,31 @@ public:
   AnsiString operator+(const UnicodeString &rhs) const;
   AnsiString operator+(const AnsiString &rhs) const;
 
+  AnsiString &operator+=(const BaseStringT &rhs)
+  { AnsiString Result(*this); Result += rhs; return *this; }
   AnsiString &operator+=(const AnsiString &rhs);
   AnsiString &operator+=(const char Ch);
   AnsiString &operator+=(const char *rhs);
 
-  inline friend bool operator==(const AnsiString &lhs, const AnsiString &rhs)
-  { return lhs.Compare(rhs.c_str()) == 0; }
-  inline friend bool operator!=(const AnsiString &lhs, const AnsiString &rhs)
-  { return lhs.Compare(rhs.c_str()) != 0; }
+//  inline friend bool operator==(const AnsiString &lhs, const AnsiString &rhs)
+//  { return lhs.Compare(rhs.c_str()) == 0; }
+//  inline friend bool operator!=(const AnsiString &lhs, const AnsiString &rhs)
+//  { return lhs.Compare(rhs.c_str()) != 0; }
 
-  inline friend bool operator==(const AnsiString &lhs, const char *rhs)
-  { return lhs.Compare(rhs) == 0; }
-  inline friend bool operator==(const char *lhs, const AnsiString &rhs)
-  { return rhs.Compare(lhs) == 0; }
-  inline friend bool operator!=(const AnsiString &lhs, const char *rhs)
-  { return lhs.Compare(rhs) != 0; }
-  inline friend bool operator!=(const char *lhs, const AnsiString &rhs)
-  { return rhs.Compare(lhs) != 0; }
+//  inline friend bool operator==(const AnsiString &lhs, const char *rhs)
+//  { return lhs.Compare(rhs) == 0; }
+//  inline friend bool operator==(const char *lhs, const AnsiString &rhs)
+//  { return rhs.Compare(lhs) == 0; }
+//  inline friend bool operator!=(const AnsiString &lhs, const char *rhs)
+//  { return lhs.Compare(rhs) != 0; }
+//  inline friend bool operator!=(const char *lhs, const AnsiString &rhs)
+//  { return rhs.Compare(lhs) != 0; }
 
 private:
   void Init(const wchar_t *Str, intptr_t Length);
   void Init(const char *Str, intptr_t Length);
   void Init(const unsigned char *Str, intptr_t Length);
-  void ThrowIfOutOfRange(intptr_t Idx) const;
+//  void ThrowIfOutOfRange(intptr_t Idx) const;
 };
 
 class NB_CORE_EXPORT RawByteString : public CMStringT< unsigned char, NBChTraitsCRT<unsigned char> >
