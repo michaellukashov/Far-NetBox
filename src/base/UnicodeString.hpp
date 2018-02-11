@@ -803,14 +803,22 @@ public:
   { return lhs == UnicodeString(rhs); }
   inline friend bool operator==(const RawByteString &lhs, const UnicodeString &rhs)
   { return rhs == UnicodeString(lhs); }
-  inline friend bool operator==(const RawByteString &lhs, RawByteString &rhs)
+  inline friend bool operator==(const RawByteString &lhs, const RawByteString &rhs)
   { return lhs.Compare(rhs.c_str()) == 0; }
-  inline friend bool operator!=(const RawByteString &lhs, const RawByteString &rhs)
-  { return lhs.Compare(rhs.c_str()) != 0; }
+  inline friend bool operator==(const RawByteString &lhs, const char *rhs)
+  { return lhs.Compare(rhs) == 0; }
+  inline friend bool operator==(const char *lhs, const RawByteString &rhs)
+  { return rhs.Compare(lhs) == 0; }
   inline friend bool operator!=(const UnicodeString &lhs, const RawByteString &rhs)
   { return lhs != UnicodeString(rhs); }
   inline friend bool operator!=(const RawByteString &lhs, const UnicodeString &rhs)
   { return rhs != UnicodeString(lhs); }
+  inline friend bool operator!=(const RawByteString &lhs, const RawByteString &rhs)
+  { return lhs.Compare(rhs.c_str()) != 0; }
+  inline friend bool operator!=(const RawByteString &lhs, const char *rhs)
+  { return lhs.Compare(rhs) != 0; }
+  inline friend bool operator!=(const char *lhs, const RawByteString &rhs)
+  { return rhs.Compare(lhs) != 0; }
 
 private:
   void Init(const wchar_t *Str, intptr_t Length);
