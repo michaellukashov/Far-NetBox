@@ -366,19 +366,19 @@ class NB_CORE_EXPORT UnicodeString : public BaseStringT<wchar_t>
   typedef BaseStringT<wchar_t> BaseT;
 public:
   UnicodeString() {}
-  UnicodeString(const wchar_t *Str);
-  UnicodeString(const char *Str);
+  UnicodeString(const wchar_t *Str) : BaseT(Str, BaseT::StringLength(Str)) {}
+  UnicodeString(const char *Str) : BaseT(Str, BaseT::StringLength(Str)) {}
   UnicodeString(const BaseStringT<wchar_t> &Str) :
     BaseT(Str.c_str(), ToInt(Str.GetLength()))
   {}
   UnicodeString(const BaseStringT<char> &Str) :
     BaseT(Str.c_str(), ToInt(Str.GetLength()))
   {}
-  UnicodeString(const wchar_t Src);
+  UnicodeString(const wchar_t Src) : BaseT(&Src, 1) {}
   UnicodeString(const UnicodeString &Str);
-  explicit UnicodeString(const wchar_t *Str, intptr_t Length);
-  explicit UnicodeString(const char *Str, intptr_t Length);
-  explicit UnicodeString(const char *Str, intptr_t Length, int CodePage);
+  explicit UnicodeString(const wchar_t *Str, intptr_t Length) : BaseT(Str, ToInt(Length)) {}
+  explicit UnicodeString(const char *Str, intptr_t Length) : BaseT(Str, ToInt(Length)) {}
+  explicit UnicodeString(const char *Str, intptr_t Length, int CodePage) : BaseT(Str, ToInt(Length), CodePage) {}
   explicit UnicodeString(intptr_t ALength, wchar_t Ch) : BaseT(ALength, Ch) {}
 
   explicit UnicodeString(const UTF8String &Str);
@@ -411,8 +411,8 @@ public:
   UnicodeString &operator+=(const wchar_t Ch);
 
 private:
-  void Init(const wchar_t *Str, intptr_t Length);
-  void Init(const char *Str, intptr_t Length, int CodePage);
+  void Init(const wchar_t *Str, intptr_t Length) { BaseT::operator=(BaseT(Str, ToInt(Length))); }
+  void Init(const char *Str, intptr_t Length, int CodePage) { BaseT::operator=(BaseT(Str, ToInt(Length), CodePage)); }
 };
 
 class NB_CORE_EXPORT UTF8String : public BaseStringT<char>
@@ -427,11 +427,11 @@ public:
     BaseT(Str.c_str(), ToInt(Str.GetLength()))
   {}
   UTF8String(const UTF8String &rhs);
-  UTF8String(const wchar_t *Str);
+  UTF8String(const wchar_t *Str) : BaseT(Str, BaseT::StringLength(Str)) {}
   explicit UTF8String(const UnicodeString &Str);
-  explicit UTF8String(const wchar_t *Str, intptr_t Length);
-  explicit UTF8String(const char *Str, intptr_t Length);
-  explicit UTF8String(const char *Str);
+  explicit UTF8String(const wchar_t *Str, intptr_t Length) : BaseT(Str, ToInt(Length)) {}
+  explicit UTF8String(const char *Str, intptr_t Length) : BaseT(Str, ToInt(Length)) {}
+  explicit UTF8String(const char *Str) : BaseT(Str, BaseT::StringLength(Str)) {}
 
   ~UTF8String() {}
 
@@ -458,8 +458,8 @@ public:
   UTF8String &operator+=(const char *rhs);
 
 private:
-  void Init(const wchar_t *Str, intptr_t Length);
-  void Init(const char *Str, intptr_t Length);
+  void Init(const wchar_t *Str, intptr_t Length) { BaseT::operator=(BaseT(Str, ToInt(Length))); }
+  void Init(const char *Str, intptr_t Length) { BaseT::operator=(BaseT(Str, ToInt(Length))); }
 };
 
 class NB_CORE_EXPORT AnsiString : public BaseStringT<char>
@@ -475,13 +475,13 @@ public:
   {}
   AnsiString(const AnsiString &rhs);
   AnsiString(intptr_t Length, char Ch) : BaseT(Ch, ToInt(Length)) {}
-  AnsiString(const char *Str);
-  explicit AnsiString(const wchar_t *Str);
-  explicit AnsiString(const wchar_t *Str, intptr_t Length);
-  explicit AnsiString(const wchar_t *Str, intptr_t Length, int CodePage);
-  explicit AnsiString(const char *Str, intptr_t Length);
-  explicit AnsiString(const unsigned char *Str);
-  explicit AnsiString(const unsigned char *Str, intptr_t Length);
+  AnsiString(const char *Str) : BaseT(Str, BaseT::StringLength(Str)) {}
+  explicit AnsiString(const wchar_t *Str) : BaseT(Str, BaseT::StringLength(Str), CP_UTF8) {}
+  explicit AnsiString(const wchar_t *Str, intptr_t Length) : BaseT(Str, ToInt(Length), CP_UTF8) {}
+  explicit AnsiString(const wchar_t *Str, intptr_t Length, int CodePage) : BaseT(Str, ToInt(Length), CodePage) {}
+  explicit AnsiString(const char *Str, intptr_t Length) : BaseT(Str, ToInt(Length)) {}
+  explicit AnsiString(const unsigned char *Str) : BaseT(reinterpret_cast<const char *>(Str), BaseT::StringLength(reinterpret_cast<const char *>(Str))) {}
+  explicit AnsiString(const unsigned char *Str, intptr_t Length) : BaseT(reinterpret_cast<const char *>(Str), ToInt(Length)) {}
   explicit AnsiString(const UnicodeString &Str);
   explicit AnsiString(const UTF8String &Str);
   explicit AnsiString(const RawByteString &Str);
@@ -507,9 +507,9 @@ public:
   AnsiString &operator+=(const char *rhs);
 
 private:
-  void Init(const wchar_t *Str, intptr_t Length);
-  void Init(const char *Str, intptr_t Length);
-  void Init(const unsigned char *Str, intptr_t Length);
+  void Init(const wchar_t *Str, intptr_t Length) { BaseT::operator=(BaseT(Str, ToInt(Length))); }
+  void Init(const char *Str, intptr_t Length) { BaseT::operator=(BaseT(Str, ToInt(Length))); }
+  void Init(const unsigned char *Str, intptr_t Length) { BaseT::operator=(BaseT(reinterpret_cast<const char *>(Str), ToInt(Length))); }
 };
 
 class NB_CORE_EXPORT RawByteString : public BaseStringT<char>
@@ -523,16 +523,20 @@ public:
   RawByteString(const BaseStringT<char> &Str) :
     BaseT(Str.c_str(), ToInt(Str.GetLength()))
   {}
-  RawByteString(const char *Str);
+  RawByteString(const char *Str) : BaseT(Str, BaseT::StringLength(Str)) {}
   RawByteString(const UnicodeString &Str);
   RawByteString(const RawByteString &Str);
   RawByteString(const AnsiString &Str);
   RawByteString(const UTF8String &Str);
-  explicit RawByteString(const wchar_t *Str);
-  explicit RawByteString(const wchar_t *Str, intptr_t Length);
-  explicit RawByteString(const char *Str, intptr_t Length);
-  explicit RawByteString(const unsigned char *Str);
-  explicit RawByteString(const unsigned char *Str, intptr_t Length);
+  explicit RawByteString(const wchar_t *Str) : BaseT(Str, BaseT::StringLength(Str)) {}
+  explicit RawByteString(const wchar_t *Str, intptr_t Length) : BaseT(Str, ToInt(Length)) {}
+  explicit RawByteString(const char *Str, intptr_t Length) : BaseT(Str, BaseT::StringLength(Str)) {}
+  explicit RawByteString(const unsigned char *Str) :
+    BaseT(reinterpret_cast<const char *>(Str), BaseT::StringLength(reinterpret_cast<const char *>(Str)))
+  {}
+  explicit RawByteString(const unsigned char *Str, intptr_t Length) :
+    BaseT(reinterpret_cast<const char *>(Str), ToInt(Length))
+  {}
   ~RawByteString() {}
 
   inline operator BaseT &() { return *static_cast<BaseT *>(this); }
@@ -583,9 +587,9 @@ public:
   { return rhs.Compare(lhs) != 0; }
 
 private:
-  void Init(const wchar_t *Str, intptr_t Length);
-  void Init(const char *Str, intptr_t Length);
-  void Init(const unsigned char *Str, intptr_t Length);
+  void Init(const wchar_t *Str, intptr_t Length) { BaseT::operator=(BaseT(Str, ToInt(Length))); }
+  void Init(const char *Str, intptr_t Length) { BaseT::operator=(BaseT(Str, ToInt(Length))); }
+  void Init(const unsigned char *Str, intptr_t Length) { BaseT::operator=(BaseT(reinterpret_cast<const char *>(Str), ToInt(Length))); }
 };
 
 // rde support
