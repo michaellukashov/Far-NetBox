@@ -419,7 +419,7 @@ public:
   explicit UnicodeString(const wchar_t *Str, intptr_t Length);
   explicit UnicodeString(const char *Str, intptr_t Length);
   explicit UnicodeString(const char *Str, intptr_t Length, int CodePage);
-  explicit UnicodeString(intptr_t ALength, wchar_t Ch) : BaseT(Ch, ToInt(ALength)) {}
+  explicit UnicodeString(intptr_t ALength, wchar_t Ch) : BaseT(ALength, Ch) {}
 
   explicit UnicodeString(const UTF8String &Str);
   explicit UnicodeString(const AnsiString &Str);
