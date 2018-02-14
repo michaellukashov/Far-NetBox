@@ -107,10 +107,10 @@ void Shred(UTF8String &Str)
   DoShred(Str);
 }
 //---------------------------------------------------------------------------
-void Shred(AnsiString &Str)
-{
-  DoShred(Str);
-}
+//void Shred(AnsiString &Str)
+//{
+//  DoShred(Str);
+//}
 //---------------------------------------------------------------------------
 UnicodeString AnsiToString(const RawByteString S)
 {
