@@ -2,9 +2,7 @@
 
 #include <nbstring.h>
 
-// class RawByteString;
-// class UTF8String;
-// class AnsiString;
+void ThrowIfOutOfRange(intptr_t Idx, intptr_t Length);
 
 template<typename CharT>
 class BaseStringT : public CMStringT< CharT, NBChTraitsCRT< CharT> >
@@ -315,12 +313,12 @@ public:
 
   CharT operator[](intptr_t Idx) const
   {
-    ThrowIfOutOfRange(Idx); // Should Range-checking be optional to avoid overhead ??
+    ThrowIfOutOfRange(Idx, Length()); // Should Range-checking be optional to avoid overhead ??
     return BaseT::operator[](ToInt(Idx) - 1);
   }
   CharT &operator[](intptr_t Idx)
   {
-    ThrowIfOutOfRange(Idx); // Should Range-checking be optional to avoid overhead ??
+    ThrowIfOutOfRange(Idx, Length()); // Should Range-checking be optional to avoid overhead ??
     return BaseT::GetBuffer()[ToInt(Idx) - 1];
   }
 
@@ -367,174 +365,11 @@ public:
   { return lhs + BaseStringT(rhs); }
   friend BaseStringT inline operator+(const BaseStringT &lhs, const char *rhs)
   { return lhs + BaseStringT(rhs); }
-
-protected:
-  void ThrowIfOutOfRange(intptr_t Idx) const
-  {
-    if (Idx < 1 || Idx > Length()) // NOTE: UnicodeString is 1-based !!
-      throw Exception("Index is out of range"); // ERangeError(Sysconst_SRangeError);
-  }
 };
 
 typedef BaseStringT<wchar_t> UnicodeString;
-
-/*
-class NB_CORE_EXPORT UnicodeString : public BaseStringT<wchar_t>
-{
-  typedef BaseStringT<wchar_t> BaseT;
-public:
-  UnicodeString() {}
-  UnicodeString(const wchar_t *Str) : BaseT(Str, BaseT::StringLength(Str)) {}
-  UnicodeString(const char *Str) : BaseT(Str, BaseT::StringLength(Str)) {}
-  UnicodeString(const BaseStringT<wchar_t> &Str) :
-    BaseT(Str.c_str(), ToInt(Str.GetLength()))
-  {}
-  UnicodeString(const BaseStringT<char> &Str) :
-    BaseT(Str.c_str(), ToInt(Str.GetLength()))
-  {}
-  UnicodeString(const wchar_t Src) : BaseT(&Src, 1) {}
-  UnicodeString(const UnicodeString &Str);
-  explicit UnicodeString(const wchar_t *Str, intptr_t Length) : BaseT(Str, ToInt(Length)) {}
-  explicit UnicodeString(const char *Str, intptr_t Length) : BaseT(Str, ToInt(Length)) {}
-  explicit UnicodeString(const char *Str, intptr_t Length, int CodePage) : BaseT(Str, ToInt(Length), CodePage) {}
-  explicit UnicodeString(intptr_t ALength, wchar_t Ch) : BaseT(ALength, Ch) {}
-
-  explicit UnicodeString(const UTF8String &Str);
-  explicit UnicodeString(const AnsiString &Str);
-
-  ~UnicodeString() {}
-
-  inline operator BaseT &() { return *static_cast<BaseT *>(this); }
-
-public:
-  UnicodeString &operator=(const BaseT &Str)
-  { Init(Str.c_str(), Str.GetLength()); return *this; }
-  UnicodeString &operator=(const UnicodeString &StrCopy);
-  UnicodeString &operator=(const RawByteString &StrCopy);
-  UnicodeString &operator=(const AnsiString &StrCopy);
-  UnicodeString &operator=(const UTF8String &StrCopy);
-  UnicodeString &operator=(const wchar_t *Str);
-  UnicodeString &operator=(const char *lpszData);
-  UnicodeString &operator=(const wchar_t Ch);
-
-  UnicodeString &operator+=(const BaseStringT &rhs)
-  { Append(rhs); return *this; }
-  UnicodeString &operator+=(const UnicodeString &rhs)
-  { Append(rhs); return *this; }
-  UnicodeString &operator+=(const wchar_t *rhs);
-  UnicodeString &operator+=(const UTF8String &rhs);
-  UnicodeString &operator+=(const RawByteString &rhs);
-  UnicodeString &operator+=(const char Ch);
-  UnicodeString &operator+=(const char *Ch);
-  UnicodeString &operator+=(const wchar_t Ch);
-
-private:
-  void Init(const wchar_t *Str, intptr_t Length) { BaseT::operator=(BaseT(Str, ToInt(Length))); }
-  void Init(const char *Str, intptr_t Length, int CodePage) { BaseT::operator=(BaseT(Str, ToInt(Length), CodePage)); }
-};
-*/
 typedef BaseStringT<char> UTF8String;
-/*
-class NB_CORE_EXPORT UTF8String : public BaseStringT<char>
-{
-  typedef BaseStringT<char> BaseT;
-public:
-  UTF8String() {}
-  UTF8String(const BaseStringT<wchar_t> &Str) :
-    BaseT(Str.c_str(), ToInt(Str.GetLength()))
-  {}
-  UTF8String(const BaseStringT<char> &Str) :
-    BaseT(Str.c_str(), ToInt(Str.GetLength()))
-  {}
-  UTF8String(const UTF8String &rhs);
-  UTF8String(const wchar_t *Str) : BaseT(Str, BaseT::StringLength(Str)) {}
-  // explicit UTF8String(const UnicodeString &Str);
-  explicit UTF8String(const wchar_t *Str, intptr_t Length) : BaseT(Str, ToInt(Length)) {}
-  explicit UTF8String(const char *Str, intptr_t Length) : BaseT(Str, ToInt(Length)) {}
-  explicit UTF8String(const char *Str) : BaseT(Str, BaseT::StringLength(Str)) {}
-
-  ~UTF8String() {}
-
-  inline operator BaseT &() { return *static_cast<BaseT *>(this); }
-
-  int vprintf(const char *Format, va_list ArgList);
-
-public:
-  UTF8String &operator=(const BaseT &Str)
-  { Init(Str.c_str(), Str.GetLength()); return *this; }
-  UTF8String &operator=(const UnicodeString &StrCopy);
-  UTF8String &operator=(const UTF8String &StrCopy);
-  UTF8String &operator=(const RawByteString &StrCopy);
-  UTF8String &operator=(const char *lpszData);
-  UTF8String &operator=(const wchar_t *lpwszData);
-  UTF8String &operator=(wchar_t chData);
-
-  UTF8String &operator+=(const BaseStringT &rhs)
-  { Append(rhs); return *this; }
-  UTF8String &operator+=(const UTF8String &rhs)
-  { Append(rhs); return *this; }
-  UTF8String &operator+=(const RawByteString &rhs);
-  UTF8String &operator+=(const char Ch);
-  UTF8String &operator+=(const char *rhs);
-
-private:
-  void Init(const wchar_t *Str, intptr_t Length) { BaseT::operator=(BaseT(Str, ToInt(Length))); }
-  void Init(const char *Str, intptr_t Length) { BaseT::operator=(BaseT(Str, ToInt(Length))); }
-};
-*/
 typedef BaseStringT<char> AnsiString;
-/*
-class NB_CORE_EXPORT AnsiString : public BaseStringT<char>
-{
-  typedef BaseStringT<char> BaseT;
-public:
-  AnsiString() {}
-  AnsiString(const BaseStringT<wchar_t> &Str) :
-    BaseT(Str.c_str(), ToInt(Str.GetLength()))
-  {}
-  AnsiString(const BaseStringT<char> &Str) :
-    BaseT(Str.c_str(), ToInt(Str.GetLength()))
-  {}
-  AnsiString(const AnsiString &rhs);
-  AnsiString(intptr_t Length, char Ch) : BaseT(Ch, ToInt(Length)) {}
-  AnsiString(const char *Str) : BaseT(Str, BaseT::StringLength(Str)) {}
-  explicit AnsiString(const wchar_t *Str) : BaseT(Str, BaseT::StringLength(Str), CP_UTF8) {}
-  explicit AnsiString(const wchar_t *Str, intptr_t Length) : BaseT(Str, ToInt(Length), CP_UTF8) {}
-  explicit AnsiString(const wchar_t *Str, intptr_t Length, int CodePage) : BaseT(Str, ToInt(Length), CodePage) {}
-  explicit AnsiString(const char *Str, intptr_t Length) : BaseT(Str, ToInt(Length)) {}
-  explicit AnsiString(const unsigned char *Str) : BaseT(reinterpret_cast<const char *>(Str), BaseT::StringLength(reinterpret_cast<const char *>(Str))) {}
-  explicit AnsiString(const unsigned char *Str, intptr_t Length) : BaseT(reinterpret_cast<const char *>(Str), ToInt(Length)) {}
-  // explicit AnsiString(const UnicodeString &Str);
-  // explicit AnsiString(const UTF8String &Str);
-  explicit AnsiString(const RawByteString &Str);
-  inline ~AnsiString() {}
-
-  inline operator BaseT &() { return *static_cast<BaseT *>(this); }
-
-public:
-  AnsiString &operator=(const BaseT &Str)
-  { Init(Str.c_str(), Str.GetLength()); return *this; }
-  AnsiString &operator=(const UnicodeString &StrCopy);
-  AnsiString &operator=(const RawByteString &StrCopy);
-  AnsiString &operator=(const AnsiString &StrCopy);
-  // AnsiString &operator=(const UTF8String &StrCopy);
-  AnsiString &operator=(const char *Str);
-  AnsiString &operator=(const wchar_t *Str);
-  AnsiString &operator=(wchar_t chData);
-
-  AnsiString &operator+=(const BaseStringT &rhs)
-  { Append(rhs); return *this; }
-  AnsiString &operator+=(const AnsiString &rhs);
-  AnsiString &operator+=(const char Ch);
-  AnsiString &operator+=(const char *rhs);
-
-private:
-  void Init(const wchar_t *Str, intptr_t Length) { BaseT::operator=(BaseT(Str, ToInt(Length))); }
-  void Init(const char *Str, intptr_t Length) { BaseT::operator=(BaseT(Str, ToInt(Length))); }
-  void Init(const unsigned char *Str, intptr_t Length) { BaseT::operator=(BaseT(reinterpret_cast<const char *>(Str), ToInt(Length))); }
-};
-*/
-// typedef BaseStringT<char> RawByteString;
 
 class NB_CORE_EXPORT RawByteString : public BaseStringT<char>
 {
@@ -548,10 +383,7 @@ public:
     BaseT(Str.c_str(), ToInt(Str.GetLength()))
   {}
   RawByteString(const char *Str) : BaseT(Str, BaseT::StringLength(Str)) {}
-  // RawByteString(const UnicodeString &Str);
-  RawByteString(const RawByteString &Str);
-  // RawByteString(const AnsiString &Str);
-  // RawByteString(const UTF8String &Str);
+  RawByteString(const RawByteString &Str) : BaseT(Str.c_str(), ToInt(Str.Length())) {}
   explicit RawByteString(const wchar_t *Str) : BaseT(Str, BaseT::StringLength(Str)) {}
   explicit RawByteString(const wchar_t *Str, intptr_t Length) : BaseT(Str, ToInt(Length)) {}
   explicit RawByteString(const char *Str, intptr_t Length) : BaseT(Str, BaseT::StringLength(Str)) {}
@@ -566,28 +398,34 @@ public:
   inline operator BaseT &() { return *static_cast<BaseT *>(this); }
 
   operator const char *() const { return this->c_str(); }
-  operator UnicodeString() const;
+  operator UnicodeString() const { return UnicodeString(reinterpret_cast<const char *>(c_str()), GetLength()); }
   const char *c_str() const { return reinterpret_cast<const char *>(BaseT::c_str()); }
 
-  unsigned char operator[](intptr_t Idx) const;
-  unsigned char &operator[](intptr_t Idx);
+  unsigned char operator[](intptr_t Idx) const
+  {
+    ThrowIfOutOfRange(Idx, Length()); // Should Range-checking be optional to avoid overhead ??
+    return BaseT::operator[](ToInt(Idx) - 1);
+  }
+
+  unsigned char &operator[](intptr_t Idx)
+  {
+    ThrowIfOutOfRange(Idx, Length()); // Should Range-checking be optional to avoid overhead ??
+    return reinterpret_cast<unsigned  char *>(BaseT::GetBuffer())[ToInt(Idx) - 1];
+  }
 
 public:
   RawByteString &operator=(const BaseT &Str)
   { Init(Str.c_str(), Str.GetLength()); return *this; }
-  RawByteString &operator=(const UnicodeString &StrCopy);
-  RawByteString &operator=(const RawByteString &StrCopy);
-  // RawByteString &operator=(const AnsiString &StrCopy);
-  // RawByteString &operator=(const UTF8String &StrCopy);
-  RawByteString &operator=(const char *lpszData);
-  RawByteString &operator=(const wchar_t *lpwszData);
-  RawByteString &operator=(wchar_t chData);
+  RawByteString &operator=(const UnicodeString &StrCopy) { Init(StrCopy.c_str(), StrCopy.Length()); return *this; }
+  RawByteString &operator=(const RawByteString &StrCopy) { Init(StrCopy.c_str(), StrCopy.Length()); return *this; }
+  RawByteString &operator=(const char *lpszData) { Init(lpszData, BaseT::StringLength(lpszData)); return *this; }
+  RawByteString &operator=(const wchar_t *lpwszData) { Init(lpwszData, CMStringW::StringLength(lpwszData)); return *this; }
+  RawByteString &operator=(wchar_t chData) { Init(&chData, 1); return *this; }
 
-  RawByteString &operator+=(const BaseStringT &rhs)
-  { Append(rhs); return *this; }
-  RawByteString &operator+=(const RawByteString &rhs);
-  RawByteString &operator+=(const char Ch);
-  RawByteString &operator+=(const char *Str);
+  RawByteString &operator+=(const BaseStringT &rhs) { Append(rhs); return *this; }
+  RawByteString &operator+=(const RawByteString &rhs) { BaseT::Append(rhs.data(), ToInt(rhs.Length())); return *this; }
+  RawByteString &operator+=(const char Ch) { BaseT::AppendChar(Ch); return *this; }
+  RawByteString &operator+=(const char *Str) { BaseT::Append(Str); return *this; }
 
   inline friend bool operator==(const UnicodeString &lhs, const RawByteString &rhs)
   { return lhs == UnicodeString(rhs); }
