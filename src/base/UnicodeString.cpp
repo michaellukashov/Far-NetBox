@@ -5,7 +5,7 @@
 #include <Sysutils.hpp>
 #include "UnicodeString.hpp"
 
-
+/*
 UnicodeString::UnicodeString(const UnicodeString &Str) :
   BaseT(Str.c_str(), ToInt(Str.GetLength()))
 {
@@ -87,18 +87,18 @@ UnicodeString &UnicodeString::operator+=(const wchar_t Ch)
   BaseT::AppendChar(Ch);
   return *this;
 }
+*/
 
+//UTF8String::UTF8String(const UTF8String &rhs) :
+//  BaseT(rhs.c_str(), ToInt(rhs.Length()))
+//{
+//}
 
-UTF8String::UTF8String(const UTF8String &rhs) :
-  BaseT(rhs.c_str(), ToInt(rhs.Length()))
-{
-}
-
-UTF8String::UTF8String(const UnicodeString &Str) :
-  BaseT(Str.c_str(), ToInt(Str.Length()), CP_UTF8)
-{
-}
-
+//UTF8String::UTF8String(const UnicodeString &Str) :
+//  BaseT(Str.c_str(), ToInt(Str.Length()), CP_UTF8)
+//{
+//}
+/*
 int UTF8String::vprintf(const char *Format, va_list ArgList)
 {
   char *Buf = SetLength(32 * 1024);
@@ -155,99 +155,99 @@ UTF8String &UTF8String::operator+=(const char *rhs)
   BaseT::Append(rhs);
   return *this;
 }
+*/
+
+//AnsiString::AnsiString(const AnsiString &rhs) :
+//  BaseT(rhs.c_str(), ToInt(rhs.Length()))
+//{
+//}
+
+//AnsiString::AnsiString(const UnicodeString &Str) :
+//  BaseT(Str.c_str(), ToInt(Str.Length()))
+//{
+//}
+
+//AnsiString::AnsiString(const UTF8String &Str) :
+//  BaseT(Str.c_str(), ToInt(Str.GetLength()))
+//{
+//}
+
+//AnsiString::AnsiString(const RawByteString &Str) :
+//  BaseT(Str.c_str(), ToInt(Str.GetLength()))
+//{
+//}
+
+//AnsiString &AnsiString::operator=(const UnicodeString &StrCopy)
+//{
+//  Init(StrCopy.c_str(), StrCopy.Length());
+//  return *this;
+//}
+
+//AnsiString &AnsiString::operator=(const AnsiString &StrCopy)
+//{
+//  if (*this != StrCopy)
+//  {
+//    Init(StrCopy.c_str(), StrCopy.Length());
+//  }
+//  return *this;
+//}
+
+//AnsiString &AnsiString::operator=(const UTF8String &StrCopy)
+//{
+//  Init(StrCopy.c_str(), StrCopy.GetLength());
+//  return *this;
+//}
+
+//AnsiString &AnsiString::operator=(const char *Str)
+//{
+//  Init(Str, BaseT::StringLength(Str));
+//  return *this;
+//}
+
+//AnsiString &AnsiString::operator=(const wchar_t *Str)
+//{
+//  Init(Str, BaseT::StringLength(Str));
+//  return *this;
+//}
+
+//AnsiString &AnsiString::operator+=(const AnsiString &rhs)
+//{
+//  BaseT::Append(rhs.c_str(), ToInt(rhs.Length()));
+//  return *this;
+//}
+
+//AnsiString &AnsiString::operator+=(const char Ch)
+//{
+//  BaseT::AppendChar(Ch);
+//  return *this;
+//}
+
+//AnsiString &AnsiString::operator+=(const char *rhs)
+//{
+//  BaseT::Append(rhs);
+//  return *this;
+//}
 
 
-AnsiString::AnsiString(const AnsiString &rhs) :
-  BaseT(rhs.c_str(), ToInt(rhs.Length()))
-{
-}
-
-AnsiString::AnsiString(const UnicodeString &Str) :
-  BaseT(Str.c_str(), ToInt(Str.Length()))
-{
-}
-
-AnsiString::AnsiString(const UTF8String &Str) :
-  BaseT(Str.c_str(), ToInt(Str.GetLength()))
-{
-}
-
-AnsiString::AnsiString(const RawByteString &Str) :
-  BaseT(Str.c_str(), ToInt(Str.GetLength()))
-{
-}
-
-AnsiString &AnsiString::operator=(const UnicodeString &StrCopy)
-{
-  Init(StrCopy.c_str(), StrCopy.Length());
-  return *this;
-}
-
-AnsiString &AnsiString::operator=(const AnsiString &StrCopy)
-{
-  if (*this != StrCopy)
-  {
-    Init(StrCopy.c_str(), StrCopy.Length());
-  }
-  return *this;
-}
-
-AnsiString &AnsiString::operator=(const UTF8String &StrCopy)
-{
-  Init(StrCopy.c_str(), StrCopy.GetLength());
-  return *this;
-}
-
-AnsiString &AnsiString::operator=(const char *Str)
-{
-  Init(Str, BaseT::StringLength(Str));
-  return *this;
-}
-
-AnsiString &AnsiString::operator=(const wchar_t *Str)
-{
-  Init(Str, BaseT::StringLength(Str));
-  return *this;
-}
-
-AnsiString &AnsiString::operator+=(const AnsiString &rhs)
-{
-  BaseT::Append(rhs.c_str(), ToInt(rhs.Length()));
-  return *this;
-}
-
-AnsiString &AnsiString::operator+=(const char Ch)
-{
-  BaseT::AppendChar(Ch);
-  return *this;
-}
-
-AnsiString &AnsiString::operator+=(const char *rhs)
-{
-  BaseT::Append(rhs);
-  return *this;
-}
-
-
-RawByteString::RawByteString(const UnicodeString &Str) :
-  BaseT(Str.c_str(), ToInt(Str.Length()))
-{
-}
+//RawByteString::RawByteString(const UnicodeString &Str) :
+//  BaseT(Str.c_str(), ToInt(Str.Length()))
+//{
+//}
 
 RawByteString::RawByteString(const RawByteString &Str) :
   BaseT(Str.c_str(), ToInt(Str.Length()))
 {
 }
 
-RawByteString::RawByteString(const AnsiString &Str) :
-  BaseT(Str.c_str(), ToInt(Str.Length()))
-{
-}
+//RawByteString::RawByteString(const AnsiString &Str) :
+//  BaseT(Str.c_str(), ToInt(Str.Length()))
+//{
+//}
 
-RawByteString::RawByteString(const UTF8String &Str) :
-  BaseT(Str.c_str(), ToInt(Str.Length()))
-{
-}
+//RawByteString::RawByteString(const UTF8String &Str) :
+//  BaseT(Str.c_str(), ToInt(Str.Length()))
+//{
+//}
 
 RawByteString::operator UnicodeString() const
 {
@@ -278,17 +278,17 @@ RawByteString &RawByteString::operator=(const RawByteString &StrCopy)
   return *this;
 }
 
-RawByteString &RawByteString::operator=(const AnsiString &StrCopy)
-{
-  Init(StrCopy.c_str(), StrCopy.Length());
-  return *this;
-}
+//RawByteString &RawByteString::operator=(const AnsiString &StrCopy)
+//{
+//  Init(StrCopy.c_str(), StrCopy.Length());
+//  return *this;
+//}
 
-RawByteString &RawByteString::operator=(const UTF8String &StrCopy)
-{
-  Init(StrCopy.c_str(), StrCopy.Length());
-  return *this;
-}
+//RawByteString &RawByteString::operator=(const UTF8String &StrCopy)
+//{
+//  Init(StrCopy.c_str(), StrCopy.Length());
+//  return *this;
+//}
 
 RawByteString &RawByteString::operator=(const char *lpszData)
 {
