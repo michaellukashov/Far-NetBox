@@ -734,9 +734,7 @@ struct TMessageParams;
 class NB_CORE_EXPORT TGlobalsIntf
 {
 public:
-  virtual ~TGlobalsIntf()
-  {
-  }
+  virtual ~TGlobalsIntf() = default;
 
   virtual HINSTANCE GetInstanceHandle() const = 0;
   virtual UnicodeString GetMsg(intptr_t Id) const = 0;

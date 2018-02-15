@@ -31,6 +31,7 @@ enum TFarShiftStatus
   fsAltShift,
   fsCtrlAlt
 };
+
 enum THandlesFunction
 {
   hfProcessKey,
@@ -89,6 +90,8 @@ public:
   explicit TCustomFarPlugin(TObjectClassId Kind, HINSTANCE HInst);
   virtual ~TCustomFarPlugin();
   virtual void Initialize();
+  virtual void Finalize();
+
   virtual intptr_t GetMinFarVersion() const;
   virtual void SetStartupInfo(const struct PluginStartupInfo *Info);
   virtual const struct PluginStartupInfo *GetPluginStartupInfo() const { return &FStartupInfo; }
@@ -215,9 +218,6 @@ protected:
   void InvalidateOpenPluginInfo();
 
   const TCriticalSection &GetCriticalSection() const { return FCriticalSection; }
-
-  virtual void GlobalsInitialize();
-  virtual void GlobalsFinalize();
 
 #ifdef NETBOX_DEBUG
 public:
