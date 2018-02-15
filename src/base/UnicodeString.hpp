@@ -52,12 +52,6 @@ public:
   explicit BaseStringT(intptr_t Length, CharT Ch) : BaseT(Ch, ToInt(Length)) {}
   ~BaseStringT() {}
 
-//  template<typename BaseType>
-//  inline operator BaseStringT<BaseType> &()
-//  {
-//    return *static_cast<BaseStringT<BaseType> *>(this);
-//  }
-
   const CharT *c_str() const { return BaseT::c_str(); }
   const CharT *data() const { return BaseT::c_str(); }
   intptr_t Length() const { return GetLength(); }
