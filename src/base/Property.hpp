@@ -137,7 +137,9 @@ CUSTOM_MEM_ALLOCATION_IMPL
 private:
   typedef fastdelegate::FastDelegate0<T> TGetValueDelegate;
   TGetValueDelegate _getter;
+//  ROProperty() = delete;
 public:
+//  ROProperty(const ROProperty &) = default;
   explicit ROProperty(TGetValueDelegate Getter) :
     _getter(Getter)
   {}
@@ -161,10 +163,26 @@ public:
     assert(_getter);
     return _getter();
   }
-  bool operator==(const T Value) const
+  friend bool inline operator==(const ROProperty &lhs, const ROProperty &rhs)
   {
-    assert(_getter);
-    return _getter() == Value;
+    assert(lhs._getter);
+    assert(rhs._getter);
+    return lhs._getter() == rhs._getter();
+  }
+//  bool operator==(const T &Value) const
+//  {
+//    assert(_getter);
+//    return _getter() == Value;
+//  }
+  friend bool inline operator==(const ROProperty &lhs, const T &rhs)
+  {
+    assert(lhs._getter);
+    return lhs._getter() == rhs;
+  }
+  friend bool inline operator!=(ROProperty &lhs, const T &rhs)
+  {
+    assert(lhs._getter);
+    return lhs._getter() != rhs;
   }
 };
 
@@ -177,7 +195,9 @@ private:
   typedef fastdelegate::FastDelegate1<void, T> TSetValueDelegate;
   TGetValueDelegate _getter;
   TSetValueDelegate _setter;
+//  RWProperty() = delete;
 public:
+//  RWProperty(const RWProperty &) = default;
   explicit RWProperty(TGetValueDelegate Getter, TSetValueDelegate Setter) :
     _getter(Getter),
     _setter(Setter)
@@ -192,6 +212,11 @@ public:
     assert(_getter);
     return _getter();
   }
+  T operator->() const
+  {
+    assert(_getter);
+    return _getter();
+  }
   void operator()(const T &Value)
   {
     assert(_setter);
@@ -202,14 +227,19 @@ public:
     assert(_setter);
     _setter(Value);
   }
-  T operator->() const
-  {
-    assert(_getter);
-    return _getter();
-  }
   bool operator==(const T &Value) const
   {
     assert(_getter);
     return _getter() == Value;
+  }
+//  friend bool inline operator==(const RWProperty &lhs, const T &rhs)
+//  {
+//    assert(lhs._getter);
+//    return lhs._getter() == rhs;
+//  }
+  friend bool inline operator!=(RWProperty &lhs, const T &rhs)
+  {
+    assert(lhs._getter);
+    return lhs._getter() != rhs;
   }
 };
