@@ -276,18 +276,25 @@ TEST_CASE_METHOD(base_fixture_t, "testStorage", "netbox")
 {
   UnicodeString RootKey = L"Software\\Michael Lukashov\\TestNetBox";
   TRegistryStorage Storage(RootKey);
+  printf("1\n");
   Storage.SetAccessMode(smReadWrite);
+  printf("1.1\n");
   REQUIRE(Storage.OpenRootKey(true));
+  printf("1.2\n");
   UnicodeString SubKey = L"SubKey1";
+  printf("1.3\n");
   Storage.DeleteSubKey(SubKey);
+  printf("2\n");
   REQUIRE(!Storage.KeyExists(SubKey));
   REQUIRE(Storage.OpenSubKey(SubKey, true));
   Storage.SetAccessMode(smReadWrite);
   Storage.WriteInteger(L"IntVal", 1234);
+  printf("3\n");
   // INFO("Storage.GetFailed = " << Storage.GetFailed());
   Storage.CloseSubKey();
   REQUIRE(Storage.KeyExists(SubKey));
   REQUIRE(Storage.OpenSubKey(SubKey, false));
+  printf("4\n");
   intptr_t res = Storage.ReadInteger(L"IntVal", -1);
   INFO("res = " << res);
   REQUIRE(1234 == res);

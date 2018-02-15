@@ -60,14 +60,13 @@ message("CMAKE_CXX_COMPILER: ${CMAKE_CXX_COMPILER}")
 
 #-------------------------------------------------------------------------------
 
-set(LIBNEON_DEFS "-DNE_LFS -DNE_HAVE_SSL -DHAVE_OPENSSL -DHAVE_EXPAT -DHAVE_EXPAT_H -DNE_HAVE_DAV -DNE_HAVE_ZLIB") #" -DUSE_GETADDRINFO")
-set(LIBEXPAT_DEFS "-DCOMPILED_FROM_DSP -DXML_STATIC")
+set(LIBNEON_DEFS -DNE_LFS -DNE_HAVE_SSL -DHAVE_OPENSSL -DHAVE_EXPAT -DHAVE_EXPAT_H -DNE_HAVE_DAV -DNE_HAVE_ZLIB) #" -DUSE_GETADDRINFO")
+set(LIBEXPAT_DEFS -DCOMPILED_FROM_DSP -DXML_STATIC)
 set(NETBOX_DEFS "-DMPEXT -DWINSCP -DFARPLUGIN")
 set(NETBOX_DEFS "${NETBOX_DEFS} -DNO_GZIP -DSTRICT -DNOCRYPT -DOPENSSL_NO_LOCKING")
 set(NETBOX_DEFS "${NETBOX_DEFS} -D_CRTIMP= -D_LIB -D_WINDOWS -DWIN32 -D_WIN32_WINNT=0x0501")
 set(NETBOX_DEFS "${NETBOX_DEFS} -D_SCL_SECURE_NO_WARNINGS  -D_CRT_SECURE_NO_WARNINGS -D_WINSOCK_DEPRECATED_NO_WARNINGS")
 set(NETBOX_DEFS "${NETBOX_DEFS} -DCOM_NO_WINDOWS_H")
-set(NETBOX_DEFS "${NETBOX_DEFS} ${LIBEXPAT_DEFS} ${LIBNEON_DEFS}")
 #-D_WINDLL -D_USRDLL
 if (MSVC_VERSION GREATER 1899)
 set(NETBOX_DEFS "${NETBOX_DEFS} /Zc:threadSafeInit- /bigobj")
@@ -1078,7 +1077,7 @@ add_library(neon STATIC
   ../../libs/neon/src/ne_openssl.c
 )
 
-set(NEON_COMPILE_FLAGS )
+set(NEON_COMPILE_FLAGS ${LIBNEON_DEFS} ${LIBEXPAT_DEFS})
 if(MSVC)
 set(NEON_COMPILE_FLAGS ${NEON_COMPILE_FLAGS}
   -wd4996
@@ -1110,6 +1109,7 @@ add_library(expat STATIC
 )
 
 target_compile_options(expat PRIVATE
+  ${LIBEXPAT_DEFS}
   ${NETBOX_UNICODE_FLAGS}
 )
 
@@ -1615,6 +1615,8 @@ target_link_libraries(NetBox PRIVATE
 target_compile_options(NetBox PRIVATE
   -DBUILD_OFFICIAL
   -wd4251 -wd4275 -wd4661
+  ${LIBNEON_DEFS}
+  ${LIBEXPAT_DEFS}
   ${ATLMFC_COMPILE_FLAGS}
   ${NETBOX_UNICODE_FLAGS}
 )
@@ -1783,6 +1785,8 @@ target_include_directories(testnetbox_02 PRIVATE
 )
 
 target_compile_options(testnetbox_02 PRIVATE
+  ${LIBNEON_DEFS}
+  ${LIBEXPAT_DEFS}
   ${NETBOX_UNICODE_FLAGS}
 )
 
@@ -1821,6 +1825,8 @@ set_target_properties(testnetbox_03
 )
 
 target_compile_options(testnetbox_03 PRIVATE
+  ${LIBNEON_DEFS}
+  ${LIBEXPAT_DEFS}
   ${NETBOX_UNICODE_FLAGS}
 )
 
@@ -1848,6 +1854,8 @@ target_include_directories(testnetbox_04 PRIVATE
 )
 
 target_compile_options(testnetbox_04 PRIVATE
+  ${LIBNEON_DEFS}
+  ${LIBEXPAT_DEFS}
   ${NETBOX_UNICODE_FLAGS}
 )
 
@@ -1880,6 +1888,8 @@ target_include_directories(testnetbox_05 PRIVATE
 
 target_compile_options(testnetbox_05 PRIVATE
   ${GOOGLETEST_DEFINES}
+  ${LIBNEON_DEFS}
+  ${LIBEXPAT_DEFS}
   ${NETBOX_UNICODE_FLAGS}
 )
 
@@ -1887,6 +1897,38 @@ target_link_libraries(testnetbox_05 PRIVATE
   googletest
   googlemock
   ${NETBOX_LIBRARIES}
+)
+
+#-------------------------------------------------------
+# target testnetbox_06
+
+set(TESTNETBOX_06_SOURCES
+  ../../tests/UnityBuildMin.cpp
+  ../../tests/testnetbox_06.cpp
+)
+
+add_executable(testnetbox_06
+  ${TESTNETBOX_06_SOURCES}
+)
+
+target_include_directories(testnetbox_06 PRIVATE
+  ${GOOGLETEST_INCLUDES}
+  ${TEST_INCLUDES}
+)
+
+target_compile_options(testnetbox_06 PRIVATE
+  ${GOOGLETEST_DEFINES}
+#  ${LIBNEON_DEFS}
+#  ${LIBEXPAT_DEFS}
+  ${NETBOX_UNICODE_FLAGS}
+)
+
+target_link_libraries(testnetbox_06 PRIVATE
+  googletest
+  googlemock
+  dlmalloc
+  fmt
+  shlwapi.lib
 )
 
 endif(OPT_COMPILE_TESTS)

@@ -23,12 +23,12 @@
 #include "CoreMain.h"
 
 #include "testutils.h"
-//#include <gmock/gmock.h>
+#include <gmock/gmock.h>
 
 /*******************************************************************************
             test suite
 *******************************************************************************/
-#if 0
+//#if 0
 
 class TMockTerminal : public TTerminal
 {
@@ -49,47 +49,57 @@ public:
     ON_CALL(*this, GetMsg(testing::_))
       .WillByDefault(testing::Invoke(this, &TMockWinSCPPlugin::GetMsgFake));
 //      .WillByDefault(testing::Return(""));
+    ON_CALL(*this, Initialize())
+      .WillByDefault(testing::Invoke(this, &TMockWinSCPPlugin::InitializeFake));
+    ON_CALL(*this, Finalize())
+      .WillByDefault(testing::Invoke(this, &TMockWinSCPPlugin::FinalizeFake));
   }
   MOCK_CONST_METHOD0(GetModuleName, UnicodeString());
   MOCK_CONST_METHOD1(GetMsg, UnicodeString(intptr_t));
+  MOCK_METHOD0(Initialize, void(void));
+  MOCK_METHOD0(Finalize, void(void));
 
   UnicodeString GetMsgFake(intptr_t MsgId) const
   {
     DEBUG_PRINTF(L"GetMsgFake 1.1: MsgId: %d", MsgId);
     return "";
   }
+  void InitializeFake()
+  {
+    DEBUG_PRINTF(L"InitializeFake called");
+  }
+  void FinalizeFake()
+  {
+    DEBUG_PRINTF(L"FinalizeFake called");
+  }
 };
 
 TEST_CASE("testRemoteFileSetListingStr", "netbox")
 {
-  DEBUG_PRINTF(L"testRemoteFileSetListingStr 0");
-//  TGlobalsIntfInitializer<TTestGlobalFunctions> FGlobalsIntfInitializer;
-  testing::NiceMock<TMockWinSCPPlugin> StrictMockWinSCPPlugin(nullptr);
-  FarPlugin = &StrictMockWinSCPPlugin;
-  DEBUG_PRINTF(L"testRemoteFileSetListingStr 0.1");
+//  DEBUG_PRINTF(L"testRemoteFileSetListingStr 0");
+  TGlobalsIntfInitializer<TTestGlobalFunctions> GlobalsIntfInitializer;
+  testing::NiceMock<TMockWinSCPPlugin> MockWinSCPPlugin(nullptr);
+  MockWinSCPPlugin.Initialize();
+  FarPlugin = &MockWinSCPPlugin;
   testing::NiceMock<TMockTerminal> MockTerminal;
-  DEBUG_PRINTF(L"testRemoteFileSetListingStr 0.2");
-
-  DEBUG_PRINTF(L"testRemoteFileSetListingStr 1");
+//  DEBUG_PRINTF(L"MockTerminal.SessionData: %p", (void*)MockTerminal.GetSessionData());
   TSessionData SessionData("Test");
-  DEBUG_PRINTF(L"testRemoteFileSetListingStr 2");
+//  MockTerminal.Init(&SessionData, GetConfiguration());
   DEBUG_PRINTF(L"SessionData: %p", (void*)&SessionData);
-  DEBUG_PRINTF(L"testRemoteFileSetListingStr 3");
   ON_CALL(MockTerminal, GetSessionData())
     .WillByDefault(testing::Return(&SessionData));
-//  MockTerminal.Init(&SessionData, GetConfiguration());
-  DEBUG_PRINTF(L"MockTerminal.SessionData: %p", (void*)MockTerminal.GetSessionData());
+//  DEBUG_PRINTF(L"MockTerminal.SessionData: %p", (void*)MockTerminal.GetSessionData());
+  CHECK(&SessionData == MockTerminal.GetSessionData());
+  SECTION("RemoteFile01")
   {
     TRemoteFile RemoteFile1(nullptr);
-    DEBUG_PRINTF(L"testRemoteFileSetListingStr 4");
     RemoteFile1.SetTerminal(&MockTerminal);
-    DEBUG_PRINTF(L"testRemoteFileSetListingStr 5");
     UnicodeString Str1("lrwxrwxrwx    1 root     root             7 2017-08-03 06:05:01 +0300 TZ -> /tmp/TZ");
     RemoteFile1.SetListingStr(Str1);
     INFO("FileName1: " << RemoteFile1.GetFileName());
     CHECK(RemoteFile1.GetFileName() == "TZ");
   }
-
+  SECTION("RemoteFile02")
   {
     TRemoteFile RemoteFile2(nullptr);
     RemoteFile2.SetTerminal(&MockTerminal);
@@ -98,6 +108,7 @@ TEST_CASE("testRemoteFileSetListingStr", "netbox")
     INFO("FileName2: " << RemoteFile2.GetFileName());
     CHECK(RemoteFile2.GetFileName() == "TZ2");
   }
+  MockWinSCPPlugin.Finalize();
 }
 
-#endif // if 0
+//#endif // if 0
