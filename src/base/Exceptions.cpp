@@ -414,7 +414,7 @@ void ExtException::AddMoreMessages(const Exception *E)
 
     if (IsInternalException(E))
     {
-      AppendExceptionStackTraceAndForget(FMoreMessages);
+      // AppendExceptionStackTraceAndForget(FMoreMessages);
     }
 
     if (FMoreMessages->GetCount() == 0)
