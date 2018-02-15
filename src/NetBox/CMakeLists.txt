@@ -59,14 +59,13 @@ message("CMAKE_CXX_COMPILER: ${CMAKE_CXX_COMPILER}")
 
 #-------------------------------------------------------------------------------
 
-set(LIBNEON_DEFS "-DNE_LFS -DNE_HAVE_SSL -DHAVE_OPENSSL -DHAVE_EXPAT -DHAVE_EXPAT_H -DNE_HAVE_DAV -DNE_HAVE_ZLIB") #" -DUSE_GETADDRINFO")
-set(LIBEXPAT_DEFS "-DCOMPILED_FROM_DSP -DXML_STATIC")
+set(LIBNEON_DEFS -DNE_LFS -DNE_HAVE_SSL -DHAVE_OPENSSL -DHAVE_EXPAT -DHAVE_EXPAT_H -DNE_HAVE_DAV -DNE_HAVE_ZLIB) #" -DUSE_GETADDRINFO")
+set(LIBEXPAT_DEFS -DCOMPILED_FROM_DSP -DXML_STATIC)
 set(NETBOX_DEFS "-DMPEXT -DWINSCP -DFARPLUGIN")
 set(NETBOX_DEFS "${NETBOX_DEFS} -DNO_GZIP -DSTRICT -DNOCRYPT -DOPENSSL_NO_LOCKING")
 set(NETBOX_DEFS "${NETBOX_DEFS} -D_CRTIMP= -D_LIB -D_WINDOWS -DWIN32 -D_WIN32_WINNT=0x0501")
 set(NETBOX_DEFS "${NETBOX_DEFS} -D_SCL_SECURE_NO_WARNINGS  -D_CRT_SECURE_NO_WARNINGS -D_WINSOCK_DEPRECATED_NO_WARNINGS")
 set(NETBOX_DEFS "${NETBOX_DEFS} -DCOM_NO_WINDOWS_H")
-set(NETBOX_DEFS "${NETBOX_DEFS} ${LIBEXPAT_DEFS} ${LIBNEON_DEFS}")
 #-D_WINDLL -D_USRDLL
 if (MSVC_VERSION GREATER 1899)
 set(NETBOX_DEFS "${NETBOX_DEFS} /Zc:threadSafeInit- /bigobj")
@@ -140,7 +139,6 @@ function(nb_replace_compiler_option var old new)
 endfunction(nb_replace_compiler_option)
 
 if(MSVC)
-
 nb_replace_compiler_option(CMAKE_CXX_FLAGS "/GR-?" "/GR-")
 #nb_replace_compiler_option(CMAKE_CXX_FLAGS "/MD[d]?" "")
 nb_replace_compiler_option(CMAKE_CXX_FLAGS "/EH[-cs]+" "")
@@ -152,6 +150,7 @@ add_definitions(-DFASTDELEGATE_ALLOW_FUNCTION_TYPE_SYNTAX)
 add_definitions(-DUSE_DLMALLOC -DUSE_DL_PREFIX -DNO_MALLINFO -DUSE_LOCKS=1)
 add_definitions(-DHIDE_TODO)
 add_definitions(-DNEED_LIBS3)
+add_definitions(-DFARPLUGIN)
 
 set(NETBOX_DLL_LINK_FLAGS
   "
@@ -1075,7 +1074,7 @@ add_library(neon STATIC
   ../../libs/neon/src/ne_openssl.c
 )
 
-set(NEON_COMPILE_FLAGS )
+set(NEON_COMPILE_FLAGS ${LIBNEON_DEFS} ${LIBEXPAT_DEFS})
 if(MSVC)
 set(NEON_COMPILE_FLAGS ${NEON_COMPILE_FLAGS}
   -wd4996
@@ -1107,6 +1106,7 @@ add_library(expat STATIC
 )
 
 target_compile_options(expat PRIVATE
+  ${LIBEXPAT_DEFS}
   ${NETBOX_UNICODE_FLAGS}
 )
 
@@ -1612,6 +1612,8 @@ target_link_libraries(NetBox PRIVATE
 target_compile_options(NetBox PRIVATE
   -DBUILD_OFFICIAL
   -wd4251 -wd4275 -wd4661
+  ${LIBNEON_DEFS}
+  ${LIBEXPAT_DEFS}
   ${ATLMFC_COMPILE_FLAGS}
   ${NETBOX_UNICODE_FLAGS}
 )
@@ -1649,5 +1651,6 @@ add_custom_command(TARGET NetBox POST_BUILD
 
 add_dependencies(copy_to_plugin_dir create_plugin_dir )
 add_dependencies(NetBox copy_to_plugin_dir)
+
 
 #-------------------------------------------------------------------------------
