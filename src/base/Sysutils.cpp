@@ -1043,11 +1043,14 @@ UnicodeString SysErrorMessage(intptr_t ErrorCode)
 UnicodeString ReplaceStrAll(const UnicodeString Str, const UnicodeString What, const UnicodeString ByWhat)
 {
   UnicodeString Result = Str;
-  intptr_t Pos = Result.Pos(What);
-  while (Pos > 0)
+  if (What != ByWhat)
   {
-    Result.Replace(Pos, What.Length(), ByWhat.c_str(), ByWhat.Length());
-    Pos = Result.Pos(What);
+    intptr_t Pos = Result.Pos(What);
+    while (Pos > 0)
+    {
+      Result.Replace(Pos, What.Length(), ByWhat.c_str(), ByWhat.Length());
+      Pos = Result.Pos(What);
+    }
   }
   return Result;
 }

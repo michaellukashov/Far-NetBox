@@ -477,9 +477,8 @@ CMStringT<BaseType, StringTraits>::CMStringT(const CMStringT<BaseType, StringTra
 
 template< typename BaseType, class StringTraits >
 CMStringT<BaseType, StringTraits>::CMStringT(const XCHAR *pszSrc) :
-  CThisSimpleString()
+  CThisSimpleString(pszSrc)
 {
-  *this = pszSrc;
 }
 
 template< typename BaseType, class StringTraits >
