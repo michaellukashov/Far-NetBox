@@ -10,14 +10,14 @@ UnicodeString Format(const UnicodeString format_str, fmt::ArgList args)
 {
   fmt::WMemoryWriter w;
   w.write(format_str.c_str(), args);
-  return UnicodeString(w.c_str(), w.size());
+  return UnicodeString(w.c_str(), ToIntPtr(w.size()));
 }
 
-UnicodeString Sprintf(const UnicodeString format, fmt::ArgList args)
+UnicodeString Sprintf(const UnicodeString format_str, fmt::ArgList args)
 {
   fmt::WMemoryWriter w;
-  fmt::printf(w, format.c_str(), args);
-  return UnicodeString(w.c_str(), w.size());
+  fmt::printf(w, format_str.c_str(), args);
+  return UnicodeString(w.c_str(), ToIntPtr(w.size()));
 }
 
 UnicodeString FmtLoadStr(intptr_t Id, fmt::ArgList args)
@@ -33,16 +33,3 @@ UnicodeString FmtLoadStr(intptr_t Id, fmt::ArgList args)
 }
 
 } // namespace nb
-
-std::basic_ostream<wchar_t>& operator<<(std::basic_ostream<wchar_t> &os, const UnicodeString &Value)
-{
-  os << Value.c_str();
-  return os;
-}
-
-std::basic_ostream<char>& operator<<(std::basic_ostream<char> &os, const AnsiString &Value)
-{
-  os << Value.c_str();
-  return os;
-}
-
