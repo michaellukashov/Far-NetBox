@@ -744,7 +744,7 @@ public:
     const UnicodeString APrompt, UnicodeString &Value, const UnicodeString HelpKeyword,
     TStrings *History, bool PathInput,
     TInputDialogInitializeEvent OnInitialize, bool Echo) = 0;
-  virtual uintptr_t MoreMessageDialog(const UnicodeString Message,
+  virtual uintptr_t MoreMessageDialog(const UnicodeString AMessage,
     TStrings *MoreMessages, TQueryType Type, uint32_t Answers,
     const TMessageParams *Params) = 0;
 };
