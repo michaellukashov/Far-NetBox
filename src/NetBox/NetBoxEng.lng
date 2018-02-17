@@ -215,6 +215,7 @@
 "SFTP"
 "FTP"
 "WebDAV"
+"Amazon S3"
 "Allow SCP &fallback"
 "Insecure"
 "Use buttons on top or Ctrl+PgUp and Ctrl+PgDn keys to "
