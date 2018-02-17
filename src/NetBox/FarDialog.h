@@ -11,8 +11,10 @@ class TFarSeparator;
 class TFarBox;
 class TFarList;
 struct FarDialogItem;
+
 enum TItemPosition
 {
+  ipSame,
   ipNewLine,
   ipBelow,
   ipRight
