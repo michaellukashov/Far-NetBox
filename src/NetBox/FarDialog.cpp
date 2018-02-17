@@ -133,7 +133,7 @@ TPoint TFarDialog::GetClientSize() const
   return S;
 }
 
-TPoint TFarDialog::GetMaxSize()
+TPoint TFarDialog::GetMaxSize() const
 {
   TPoint P = GetFarPlugin()->TerminalInfo();
   P.x -= 2;

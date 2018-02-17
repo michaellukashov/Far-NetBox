@@ -93,7 +93,7 @@ public:
   TFarDialogItem *GetItemFocused() const { return FItemFocused; }
   void SetItemFocused(TFarDialogItem *Value);
   intptr_t GetResult() const { return FResult; }
-  TPoint GetMaxSize();
+  TPoint GetMaxSize() const;
 
   TFarKeyEvent GetOnKey() const { return FOnKey; }
   void SetOnKey(TFarKeyEvent Value) { FOnKey = Value; }
