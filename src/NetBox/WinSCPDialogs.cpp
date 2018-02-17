@@ -1662,7 +1662,7 @@ private:
   BUG(Symlink, NB_LOGIN_SFTP_BUGS_SYMLINK, SFTP); \
   BUG(SignedTS, NB_LOGIN_SFTP_BUGS_SIGNED_TS, SFTP);
 
-static const TFSProtocol FSOrder[] = { fsSFTPonly, fsSCPonly, fsFTP, fsWebDAV };
+static const TFSProtocol FSOrder[] = { fsSFTPonly, fsSCPonly, fsFTP, fsWebDAV, fsS3 };
 
 TSessionDialog::TSessionDialog(TCustomFarPlugin *AFarPlugin, TSessionActionEnum Action) :
   TTabbedDialog(AFarPlugin, tabCount),
@@ -1789,6 +1789,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin *AFarPlugin, TSessionActionEnum 
   TransferProtocolCombo->GetItems()->Add(GetMsg(NB_LOGIN_FTP));
 #endif
   TransferProtocolCombo->GetItems()->Add(GetMsg(NB_LOGIN_WEBDAV));
+  TransferProtocolCombo->GetItems()->Add(GetMsg(NB_LOGIN_S3));
 
   AllowScpFallbackCheck = new TFarCheckBox(this);
   AllowScpFallbackCheck->SetCaption(GetMsg(NB_LOGIN_ALLOW_SCP_FALLBACK));
@@ -2909,6 +2910,16 @@ void TSessionDialog::TransferProtocolComboChange()
       HostNameEdit->SetText(HostName);
     }
   }
+  else if (FSProtocol == fsS3)
+  {
+    if (Port == HTTPPortNumber)
+    {
+      PortNumberEdit->SetAsInteger(HTTPSPortNumber);
+      UnicodeString HostName = HostNameEdit->GetText();
+      ::AdjustRemoteDir(HostName, PortNumberEdit, RemoteDirectoryEdit);
+      HostNameEdit->SetText(HostName);
+    }
+  }
 }
 
 bool TSessionDialog::IsSshProtocol(TFSProtocol FSProtocol) const
@@ -2936,6 +2947,7 @@ void TSessionDialog::UpdateControls()
   bool InternalSshProtocol = IsSshProtocol(FSProtocol);
   bool InternalWebDAVProtocol = IsWebDAVProtocol(FSProtocol);
   bool HTTPSProtocol = (FSProtocol == fsWebDAV) && (Ftps != ftpsNone);
+  bool S3Protocol = (FSProtocol == fsS3);
   bool lSshProtocol = InternalSshProtocol;
   bool lSftpProtocol = (FSProtocol == fsSFTPonly) || (FSProtocol == fsSFTP);
   bool ScpOnlyProtocol = (FSProtocol == fsSCPonly);
@@ -2949,7 +2961,7 @@ void TSessionDialog::UpdateControls()
   AllowScpFallbackCheck->SetVisible(
     TransferProtocolCombo->GetVisible() &&
     (IndexToFSProtocol(TransferProtocolCombo->GetItemIndex(), false) == fsSFTPonly));
-  InsecureLabel->SetVisible(TransferProtocolCombo->GetVisible() && !lSshProtocol && !lFtpsProtocol && !HTTPSProtocol);
+  InsecureLabel->SetVisible(TransferProtocolCombo->GetVisible() && !lSshProtocol && !lFtpsProtocol && !HTTPSProtocol && !S3Protocol);
   bool FtpEncryptionVisible = (GetTab() == FtpEncryptionCombo->GetGroup()) &&
     (lFtpProtocol || lFtpsProtocol || InternalWebDAVProtocol || HTTPSProtocol);
   FtpEncryptionLabel->SetVisible(FtpEncryptionVisible);
@@ -3930,9 +3942,9 @@ TFtps TSessionDialog::GetFtps() const
 
 TFSProtocol TSessionDialog::IndexToFSProtocol(intptr_t Index, bool AllowScpFallback) const
 {
+  TFSProtocol Result = fsSFTP;
   bool InBounds = (Index >= 0) && (Index < ToIntPtr(_countof(FSOrder)));
   DebugAssert(InBounds || (Index == -1));
-  TFSProtocol Result = fsSFTP;
   if (InBounds)
   {
     Result = FSOrder[Index];
