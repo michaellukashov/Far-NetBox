@@ -208,6 +208,8 @@
 "Normal"
 "&User name:"
 "&Password:"
+"&Access key ID:"
+"&Secret access key:"
 "Private &key file:"
 " Protocol "
 "&File protocol: "

@@ -1535,8 +1535,14 @@ private:
   TFarButton *ConnectButton;
   TFarEdit *HostNameEdit;
   TFarEdit *PortNumberEdit;
+  TFarText *UserNameLabel;
   TFarEdit *UserNameEdit;
+  TFarText *PasswordLabel;
   TFarEdit *PasswordEdit;
+  TFarText *S3AccessKeyIDLabel;
+  TFarEdit *S3AccessKeyIDEdit;
+  TFarText *S3SecretAccessKeyLabel;
+  TFarEdit *S3SecretAccessKeyEdit;
   TFarEdit *PrivateKeyEdit;
   TFarComboBox *TransferProtocolCombo;
   TFarCheckBox *AllowScpFallbackCheck;
@@ -1840,23 +1846,45 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin *AFarPlugin, TSessionActionEnum 
   Text = new TFarText(this);
   SetNextItemPosition(ipNewLine);
 
-  Text = new TFarText(this);
-  Text->SetCaption(GetMsg(NB_LOGIN_USER_NAME));
-  Text->SetWidth(20);
+  UserNameLabel = new TFarText(this);
+  UserNameLabel->SetCaption(GetMsg(NB_LOGIN_USER_NAME));
+  UserNameLabel->SetWidth(20);
+  UserNameLabel->SetVisible(true);
+
+  SetNextItemPosition(ipSame);
+  S3AccessKeyIDLabel = new TFarText(this);
+  S3AccessKeyIDLabel->SetCaption(GetMsg(NB_LOGIN_S3_ACCESS_KEY));
+  S3AccessKeyIDLabel->SetWidth(20);
+  S3AccessKeyIDLabel->SetVisible(false);
 
   SetNextItemPosition(ipRight);
 
   UserNameEdit = new TFarEdit(this);
   UserNameEdit->SetWidth(20);
   UserNameEdit->SetRight(CRect.Right - 12 - 2);
+  UserNameEdit->SetVisible(true);
+
+  SetNextItemPosition(ipSame);
+  S3AccessKeyIDEdit = new TFarEdit(this);
+  S3AccessKeyIDEdit->SetWidth(20);
+  S3AccessKeyIDEdit->SetRight(CRect.Right - 12 - 2);
+  S3AccessKeyIDEdit->SetVisible(false);
 
   SetNextItemPosition(ipNewLine);
+
   Text = new TFarText(this);
   SetNextItemPosition(ipNewLine);
 
-  Text = new TFarText(this);
-  Text->SetCaption(GetMsg(NB_LOGIN_PASSWORD));
-  Text->SetWidth(20);
+  PasswordLabel = new TFarText(this);
+  PasswordLabel->SetCaption(GetMsg(NB_LOGIN_PASSWORD));
+  PasswordLabel->SetWidth(20);
+  PasswordLabel->SetVisible(true);
+
+  SetNextItemPosition(ipSame);
+  S3SecretAccessKeyLabel = new TFarText(this);
+  S3SecretAccessKeyLabel->SetCaption(GetMsg(NB_LOGIN_S3_SECRET_ACCESS_KEY));
+  S3SecretAccessKeyLabel->SetWidth(20);
+  S3SecretAccessKeyLabel->SetVisible(false);
 
   SetNextItemPosition(ipRight);
 
@@ -1864,6 +1892,14 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin *AFarPlugin, TSessionActionEnum 
   PasswordEdit->SetPassword(true);
   PasswordEdit->SetWidth(20);
   PasswordEdit->SetRight(CRect.Right - 12 - 2);
+  PasswordEdit->SetVisible(true);
+
+  SetNextItemPosition(ipSame);
+  S3SecretAccessKeyEdit = new TFarEdit(this);
+  S3SecretAccessKeyEdit->SetPassword(false);
+  S3SecretAccessKeyEdit->SetWidth(20);
+  S3SecretAccessKeyEdit->SetRight(CRect.Right - 12 - 2);
+  S3SecretAccessKeyEdit->SetVisible(false);
 
   SetNextItemPosition(ipNewLine);
   Text = new TFarText(this);
@@ -2916,6 +2952,10 @@ void TSessionDialog::TransferProtocolComboChange()
     {
       PortNumberEdit->SetAsInteger(HTTPSPortNumber);
       UnicodeString HostName = HostNameEdit->GetText();
+      if (HostName.IsEmpty())
+      {
+        HostName = "s3.amazonaws.com";
+      }
       ::AdjustRemoteDir(HostName, PortNumberEdit, RemoteDirectoryEdit);
       HostNameEdit->SetText(HostName);
     }
@@ -2971,6 +3011,23 @@ void TSessionDialog::UpdateControls()
 
   UserNameEdit->SetEnabled(!LoginAnonymous);
   PasswordEdit->SetEnabled(!LoginAnonymous);
+
+  if (S3Protocol)
+  {
+
+  }
+  else
+  {
+
+  }
+  UserNameLabel->SetVisible(!S3Protocol);
+  UserNameEdit->SetVisible(!S3Protocol);
+  PasswordLabel->SetVisible(!S3Protocol);
+  PasswordEdit->SetVisible(!S3Protocol);
+  S3AccessKeyIDLabel->SetVisible(S3Protocol);
+  S3AccessKeyIDEdit->SetVisible(S3Protocol);
+  S3SecretAccessKeyLabel->SetVisible(S3Protocol);
+  S3SecretAccessKeyEdit->SetVisible(S3Protocol);
 
   // Connection sheet
   FtpPasvModeCheck->SetEnabled(lFtpProtocol);
