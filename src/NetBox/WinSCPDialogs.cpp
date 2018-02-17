@@ -306,7 +306,7 @@ bool TWinSCPPlugin::ConfigurationDialog()
 
   Dialog->SetSize(TPoint(67, 22));
   Dialog->SetCaption(FORMAT("%s - %s",
-      GetMsg(NB_PLUGIN_TITLE), ::StripHotkey(GetMsg(NB_CONFIG_INTERFACE))));
+    GetMsg(NB_PLUGIN_TITLE), ::StripHotkey(GetMsg(NB_CONFIG_INTERFACE))));
 
   TFarCheckBox *DisksMenuCheck = new TFarCheckBox(Dialog);
   DisksMenuCheck->SetCaption(GetMsg(NB_CONFIG_DISKS_MENU));
@@ -440,7 +440,7 @@ bool TWinSCPPlugin::PanelConfigurationDialog()
   std::unique_ptr<TWinSCPDialog> Dialog(new TWinSCPDialog(this));
   Dialog->SetSize(TPoint(65, 7));
   Dialog->SetCaption(FORMAT("%s - %s",
-      GetMsg(NB_PLUGIN_TITLE), ::StripHotkey(GetMsg(NB_CONFIG_PANEL))));
+    GetMsg(NB_PLUGIN_TITLE), ::StripHotkey(GetMsg(NB_CONFIG_PANEL))));
 
   TFarCheckBox *AutoReadDirectoryAfterOpCheck = new TFarCheckBox(Dialog.get());
   AutoReadDirectoryAfterOpCheck->SetCaption(GetMsg(NB_CONFIG_AUTO_READ_DIRECTORY_AFTER_OP));
@@ -470,7 +470,7 @@ bool TWinSCPPlugin::LoggingConfigurationDialog()
 
   Dialog->SetSize(TPoint(65, 15));
   Dialog->SetCaption(FORMAT("%s - %s",
-      GetMsg(NB_PLUGIN_TITLE), ::StripHotkey(GetMsg(NB_CONFIG_LOGGING))));
+    GetMsg(NB_PLUGIN_TITLE), ::StripHotkey(GetMsg(NB_CONFIG_LOGGING))));
 
   TFarCheckBox *LoggingCheck = new TFarCheckBox(Dialog);
   LoggingCheck->SetCaption(GetMsg(NB_LOGGING_ENABLE));
@@ -559,7 +559,7 @@ bool TWinSCPPlugin::LoggingConfigurationDialog()
 bool TWinSCPPlugin::TransferConfigurationDialog()
 {
   UnicodeString Caption = FORMAT("%s - %s",
-      GetMsg(NB_PLUGIN_TITLE), ::StripHotkey(GetMsg(NB_CONFIG_TRANSFER)));
+    GetMsg(NB_PLUGIN_TITLE), ::StripHotkey(GetMsg(NB_CONFIG_TRANSFER)));
 
   TGUICopyParamType &CopyParam = GetGUIConfiguration()->GetDefaultCopyParam();
   bool Result = CopyParamDialog(Caption, CopyParam, 0);
@@ -578,7 +578,7 @@ bool TWinSCPPlugin::EnduranceConfigurationDialog()
 
   Dialog->SetSize(TPoint(76, 13));
   Dialog->SetCaption(FORMAT("%s - %s",
-      GetMsg(NB_PLUGIN_TITLE), ::StripHotkey(GetMsg(NB_CONFIG_ENDURANCE))));
+    GetMsg(NB_PLUGIN_TITLE), ::StripHotkey(GetMsg(NB_CONFIG_ENDURANCE))));
 
   TFarSeparator *Separator = new TFarSeparator(Dialog);
   Separator->SetCaption(GetMsg(NB_TRANSFER_RESUME));
@@ -706,7 +706,7 @@ bool TWinSCPPlugin::QueueConfigurationDialog()
 
   Dialog->SetSize(TPoint(76, 11));
   Dialog->SetCaption(FORMAT("%s - %s",
-      GetMsg(NB_PLUGIN_TITLE), ::StripHotkey(GetMsg(NB_CONFIG_BACKGROUND))));
+    GetMsg(NB_PLUGIN_TITLE), ::StripHotkey(GetMsg(NB_CONFIG_BACKGROUND))));
 
   TFarText *Text = new TFarText(Dialog);
   Text->SetCaption(GetMsg(NB_TRANSFER_QUEUE_LIMIT));
@@ -791,7 +791,7 @@ TTransferEditorConfigurationDialog::TTransferEditorConfigurationDialog(
 {
   SetSize(TPoint(65, 14));
   SetCaption(FORMAT("%s - %s",
-      GetMsg(NB_PLUGIN_TITLE), ::StripHotkey(GetMsg(NB_CONFIG_TRANSFER_EDITOR))));
+    GetMsg(NB_PLUGIN_TITLE), ::StripHotkey(GetMsg(NB_CONFIG_TRANSFER_EDITOR))));
 
   EditorMultipleCheck = new TFarCheckBox(this);
   EditorMultipleCheck->SetCaption(GetMsg(NB_TRANSFER_EDITOR_MULTIPLE));
@@ -887,7 +887,7 @@ bool TWinSCPPlugin::ConfirmationsConfigurationDialog()
 
   Dialog->SetSize(TPoint(67, 10));
   Dialog->SetCaption(FORMAT("%s - %s",
-      GetMsg(NB_PLUGIN_TITLE), ::StripHotkey(GetMsg(NB_CONFIG_CONFIRMATIONS))));
+    GetMsg(NB_PLUGIN_TITLE), ::StripHotkey(GetMsg(NB_CONFIG_CONFIRMATIONS))));
 
   TFarCheckBox *ConfirmOverwritingCheck = new TFarCheckBox(Dialog);
   ConfirmOverwritingCheck->SetAllowGrayed(true);
@@ -941,7 +941,7 @@ bool TWinSCPPlugin::IntegrationConfigurationDialog()
 
   Dialog->SetSize(TPoint(65, 14));
   Dialog->SetCaption(FORMAT("%s - %s",
-      GetMsg(NB_PLUGIN_TITLE), ::StripHotkey(GetMsg(NB_CONFIG_INTEGRATION))));
+    GetMsg(NB_PLUGIN_TITLE), ::StripHotkey(GetMsg(NB_CONFIG_INTEGRATION))));
 
   TFarText *Text = new TFarText(Dialog);
   Text->SetCaption(GetMsg(NB_INTEGRATION_PUTTY));
@@ -1042,7 +1042,7 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin *AFarPlugin) :
   SetSize(TPoint(55, Height));
 
   SetCaption(FORMAT("%s - %s",
-      GetMsg(NB_PLUGIN_TITLE), ::StripHotkey(GetMsg(NB_CONFIG_ABOUT))));
+    GetMsg(NB_PLUGIN_TITLE), ::StripHotkey(GetMsg(NB_CONFIG_ABOUT))));
   TFarText *Text = new TFarText(this);
   Text->SetCaption(GetConfiguration()->GetFileInfoString("FileDescription"));
   Text->SetCenterGroup(true);
@@ -1869,6 +1869,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin *AFarPlugin, TSessionActionEnum 
   S3AccessKeyIDEdit->SetWidth(20);
   S3AccessKeyIDEdit->SetRight(CRect.Right - 12 - 2);
   S3AccessKeyIDEdit->SetVisible(false);
+  S3AccessKeyIDEdit->SetEnabledFollow(S3AccessKeyIDLabel);
 
   SetNextItemPosition(ipNewLine);
 
@@ -1900,6 +1901,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin *AFarPlugin, TSessionActionEnum 
   S3SecretAccessKeyEdit->SetWidth(20);
   S3SecretAccessKeyEdit->SetRight(CRect.Right - 12 - 2);
   S3SecretAccessKeyEdit->SetVisible(false);
+  S3SecretAccessKeyLabel->SetEnabledFollow(S3SecretAccessKeyEdit);
 
   SetNextItemPosition(ipNewLine);
   Text = new TFarText(this);
@@ -3007,7 +3009,7 @@ void TSessionDialog::UpdateControls()
   FtpEncryptionLabel->SetVisible(FtpEncryptionVisible);
   FtpEncryptionCombo->SetVisible(FtpEncryptionVisible);
   PrivateKeyEdit->SetEnabled(lSshProtocol || lFtpsProtocol || HTTPSProtocol);
-  HostNameLabel->SetCaption(GetMsg(NB_LOGIN_HOST_NAME));
+//  HostNameLabel->SetCaption(GetMsg(NB_LOGIN_HOST_NAME));
 
   UserNameEdit->SetEnabled(!LoginAnonymous);
   PasswordEdit->SetEnabled(!LoginAnonymous);
