@@ -165,11 +165,11 @@ void TS3FileSystem::Open()
 //---------------------------------------------------------------------------
 struct TLibS3CallbackData
 {
-CUSTOM_MEM_ALLOCATION_IMPL
+  CUSTOM_MEM_ALLOCATION_IMPL
 
   TLibS3CallbackData()
   {
-    Status = (S3Status)-1;
+    Status = (S3Status) - 1;
     FileSystem = nullptr;
   }
 
@@ -461,7 +461,7 @@ void TS3FileSystem::ParsePath(const UnicodeString APath, UnicodeString &BucketNa
 //---------------------------------------------------------------------------
 struct TLibS3BucketContext : S3BucketContext
 {
-CUSTOM_MEM_ALLOCATION_IMPL
+  CUSTOM_MEM_ALLOCATION_IMPL
   // These keep data that that we point the native S3BucketContext fields to
   UTF8String HostNameBuf;
   UTF8String BucketNameBuf;
@@ -533,7 +533,7 @@ TLibS3BucketContext TS3FileSystem::GetBucketContext(const UnicodeString ABucketN
       Retry = false;
       UnicodeString EndpointDetail = Data.EndpointDetail;
       if ((Data.Status == S3StatusErrorAuthorizationHeaderMalformed) &&
-          (Region != Data.RegionDetail))
+        (Region != Data.RegionDetail))
       {
         FTerminal->LogEvent(FORMAT("Will use region \"%s\" for bucket \"%s\" from now on.", Data.RegionDetail, ABucketName));
         FRegions.insert(TRegions::value_type(ABucketName, Data.RegionDetail));
@@ -760,7 +760,7 @@ TRemoteToken TS3FileSystem::MakeRemoteToken(const char *OwnerId, const char *Own
 //---------------------------------------------------------------------------
 struct TLibS3ListServiceCallbackData : TLibS3CallbackData
 {
-CUSTOM_MEM_ALLOCATION_IMPL
+  CUSTOM_MEM_ALLOCATION_IMPL
 
   TRemoteFileList *FileList;
   UnicodeString FileName; // filter for buckets
@@ -952,7 +952,7 @@ void TS3FileSystem::DoReadFile(const UnicodeString AFileName, TRemoteFile *&AFil
 }
 //---------------------------------------------------------------------------
 void TS3FileSystem::ReadFile(const UnicodeString AFileName,
-  TRemoteFile *& File)
+  TRemoteFile *&File)
 {
   volatile TOperationVisualizer Visualizer(FTerminal->GetUseBusyCursor());
   DoReadFile(AFileName, File);
@@ -1193,7 +1193,7 @@ void TS3FileSystem::ConfirmOverwrite(
 //---------------------------------------------------------------------------
 struct TLibS3TransferObjectDataCallbackData : TLibS3CallbackData
 {
-CUSTOM_MEM_ALLOCATION_IMPL
+  CUSTOM_MEM_ALLOCATION_IMPL
 
   UnicodeString FileName;
   TStream *Stream;
@@ -1203,7 +1203,7 @@ CUSTOM_MEM_ALLOCATION_IMPL
 //---------------------------------------------------------------------------
 struct TLibS3PutObjectDataCallbackData : TLibS3TransferObjectDataCallbackData
 {
-CUSTOM_MEM_ALLOCATION_IMPL
+  CUSTOM_MEM_ALLOCATION_IMPL
 
   RawByteString ETag;
 };
@@ -1437,7 +1437,7 @@ void TS3FileSystem::Source(
         if (Multipart)
         {
           S3PutObjectHandler UploadPartHandler =
-            { CreateResponseHandlerCustom(LibS3MultipartResponsePropertiesCallback), LibS3PutObjectDataCallback };
+          { CreateResponseHandlerCustom(LibS3MultipartResponsePropertiesCallback), LibS3PutObjectDataCallback };
           int PartLength = std::min(S3MultiPartChunkSize, ToInt(Stream->Size - Stream->Position));
           FTerminal->LogEvent(FORMAT("Uploading part %d [%s]", Part, IntToStr(PartLength)));
           S3_upload_part(
@@ -1491,7 +1491,7 @@ void TS3FileSystem::Source(
         MultipartCommitPutObjectDataCallbackData.Remaining = ToInt(MultipartCommitPutObjectDataCallbackData.Message.Length());
 
         S3MultipartCommitHandler MultipartCommitHandler =
-          { CreateResponseHandler(), &LibS3MultipartCommitPutObjectDataCallback, nullptr };
+        { CreateResponseHandler(), &LibS3MultipartCommitPutObjectDataCallback, nullptr };
 
         S3_complete_multipart_upload(
           &BucketContext, StrToS3(Key), &MultipartCommitHandler, MultipartUploadId.c_str(),
