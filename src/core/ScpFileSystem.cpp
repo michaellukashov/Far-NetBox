@@ -449,10 +449,10 @@ void TSCPFileSystem::Idle()
   // Keep session alive
   const TSessionData *Data = FTerminal->GetSessionData();
   if ((Data->GetPingType() != ptOff) &&
-    (Now() - FSecureShell->GetLastDataSent() > Data->GetPingIntervalDT()))
+      (Now() - FSecureShell->GetLastDataSent() > Data->GetPingIntervalDT()))
   {
     if ((Data->GetPingType() == ptDummyCommand) &&
-      FSecureShell->GetReady())
+        FSecureShell->GetReady())
     {
       if (!FProcessingCommand)
       {
@@ -544,7 +544,9 @@ UnicodeString TSCPFileSystem::DelimitStr(const UnicodeString AStr)
   {
     Str = ::DelimitStr(Str, L"\\`$\"");
     if (Str[1] == L'-')
+    {
       Str = L"./" + Str;
+    }
   }
   return Str;
 }
@@ -770,10 +772,10 @@ void TSCPFileSystem::ExecCommand(TFSCommand Cmd, const TVarRec * args,
     Integer MinL = FCommandSet->MinLines[Cmd];
     Integer MaxL = FCommandSet->MaxLines[Cmd];
     if (((MinL >= 0) && (MinL > FOutput->Count)) ||
-        ((MaxL >= 0) && (MaxL > FOutput->Count)))
+      ((MaxL >= 0) && (MaxL > FOutput->Count)))
     {
       FTerminal->TerminalError(FmtLoadStr(INVALID_OUTPUT_ERROR,
-        ARRAYOFCONST((FullCommand, Output->Text))));
+          ARRAYOFCONST((FullCommand, Output->Text))));
     }
   }
 }
@@ -2167,7 +2169,6 @@ void TSCPFileSystem::SCPDirectorySource(const UnicodeString DirectoryName,
         SCPResponse();
       }
     };
-
     DWORD FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
     TSearchRecChecked SearchRec;
     bool FindOK = false;
