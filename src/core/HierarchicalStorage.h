@@ -3,7 +3,7 @@
 
 #include <registry.hpp>
 #include <memory>
-
+//---------------------------------------------------------------------------
 enum TStorage
 {
   stDetect,
@@ -18,7 +18,7 @@ enum TStorageAccessMode
   smRead,
   smReadWrite,
 };
-
+//---------------------------------------------------------------------------
 class NB_CORE_EXPORT THierarchicalStorage : public TObject
 {
   NB_DISABLE_COPY(THierarchicalStorage)
@@ -44,6 +44,7 @@ public:
   virtual void WriteValues(TStrings *Strings, bool MaintainKeys = false);
   virtual void ClearValues();
   virtual bool DeleteValue(const UnicodeString Name) = 0;
+
   virtual size_t BinaryDataSize(const UnicodeString Name) const = 0;
 
   virtual bool ReadBool(const UnicodeString Name, bool Default) const = 0;
@@ -90,8 +91,6 @@ public:
   bool GetMungeStringValues() const { return FMungeStringValues; }
   void SetMungeStringValues(bool Value) { FMungeStringValues = Value; }
 
-  virtual void SetAccessMode(TStorageAccessMode Value);
-
 protected:
   UnicodeString FStorage;
   TStrings *FKeyHistory;
@@ -100,22 +99,20 @@ protected:
   bool FMungeStringValues;
   bool FForceAnsi;
 
-public:
   UnicodeString GetCurrentSubKey() const;
   UnicodeString GetCurrentSubKeyMunged() const;
+  virtual void SetAccessMode(TStorageAccessMode Value) override;
+  virtual bool DoKeyExists(const UnicodeString SubKey, bool ForceAnsi) = 0;
   static UnicodeString IncludeTrailingBackslash(const UnicodeString S);
   static UnicodeString ExcludeTrailingBackslash(const UnicodeString S);
+  virtual bool DoOpenSubKey(const UnicodeString SubKey, bool CanCreate) = 0;
   UnicodeString MungeKeyName(const UnicodeString Key);
 
   virtual UnicodeString GetSource() const = 0;
   virtual UnicodeString GetSource() = 0;
   virtual bool GetTemporary() const;
-
-protected:
-  virtual bool DoKeyExists(const UnicodeString SubKey, bool ForceAnsi) = 0;
-  virtual bool DoOpenSubKey(const UnicodeString SubKey, bool CanCreate) = 0;
 };
-
+//---------------------------------------------------------------------------
 class NB_CORE_EXPORT TRegistryStorage : public THierarchicalStorage
 {
   NB_DISABLE_COPY(TRegistryStorage)
@@ -160,16 +157,16 @@ protected:
   virtual bool DoOpenSubKey(const UnicodeString SubKey, bool CanCreate) override;
 
   __property int Failed  = { read=GetFailed, write=FFailed };
+
 public:
   intptr_t GetFailed() const;
   void SetFailed(intptr_t Value) { FFailed = Value; }
-  virtual void SetAccessMode(TStorageAccessMode Value) override;
 
 private:
   TRegistry *FRegistry;
   mutable intptr_t FFailed;
 };
-
+//---------------------------------------------------------------------------
 #if 0
 class TCustomIniFileStorage : public THierarchicalStorage
 {
@@ -253,7 +250,7 @@ protected:
   virtual bool GetTemporary();
 };
 #endif // #if 0
-
+//---------------------------------------------------------------------------
 NB_CORE_EXPORT UnicodeString PuttyMungeStr(const UnicodeString Str);
 NB_CORE_EXPORT UnicodeString PuttyUnMungeStr(const UnicodeString Str);
-
+//---------------------------------------------------------------------------
