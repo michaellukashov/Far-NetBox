@@ -91,6 +91,10 @@ public:
   bool GetMungeStringValues() const { return FMungeStringValues; }
   void SetMungeStringValues(bool Value) { FMungeStringValues = Value; }
 
+  UnicodeString GetSource() const { return GetSourceProtected(); }
+  UnicodeString GetSource() { return GetSourceProtected(); }
+  void SetAccessMode(TStorageAccessMode Value) { SetAccessModeProtected(Value); }
+  bool GetTemporary() const { return GetTemporaryProtected(); }
 protected:
   UnicodeString FStorage;
   TStrings *FKeyHistory;
@@ -101,16 +105,16 @@ protected:
 
   UnicodeString GetCurrentSubKey() const;
   UnicodeString GetCurrentSubKeyMunged() const;
-  virtual void SetAccessMode(TStorageAccessMode Value) override;
+  virtual void SetAccessModeProtected(TStorageAccessMode Value);
   virtual bool DoKeyExists(const UnicodeString SubKey, bool ForceAnsi) = 0;
   static UnicodeString IncludeTrailingBackslash(const UnicodeString S);
   static UnicodeString ExcludeTrailingBackslash(const UnicodeString S);
   virtual bool DoOpenSubKey(const UnicodeString SubKey, bool CanCreate) = 0;
   UnicodeString MungeKeyName(const UnicodeString Key);
 
-  virtual UnicodeString GetSource() const = 0;
-  virtual UnicodeString GetSource() = 0;
-  virtual bool GetTemporary() const;
+  virtual UnicodeString GetSourceProtected() const = 0;
+  virtual UnicodeString GetSourceProtected() = 0;
+  virtual bool GetTemporaryProtected() const;
 };
 //---------------------------------------------------------------------------
 class NB_CORE_EXPORT TRegistryStorage : public THierarchicalStorage
@@ -150,9 +154,10 @@ public:
 
   virtual void GetValueNames(TStrings *Strings) const override;
 
-  virtual UnicodeString GetSource() const override;
-  virtual UnicodeString GetSource() override;
 protected:
+  virtual void SetAccessModeProtected(TStorageAccessMode Value) override;
+  virtual UnicodeString GetSourceProtected() const override;
+  virtual UnicodeString GetSourceProtected() override;
   virtual bool DoKeyExists(const UnicodeString SubKey, bool AForceAnsi) override;
   virtual bool DoOpenSubKey(const UnicodeString SubKey, bool CanCreate) override;
 
@@ -247,7 +252,7 @@ public:
   TOptionsStorage(TStrings *Options, const UnicodeString RootKey, THierarchicalStorage *MasterStorage);
 
 protected:
-  virtual bool GetTemporary();
+  virtual bool GetTemporaryProtected();
 };
 #endif // #if 0
 //---------------------------------------------------------------------------

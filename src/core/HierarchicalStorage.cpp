@@ -122,7 +122,7 @@ void THierarchicalStorage::Flush()
 {
 }
 
-void THierarchicalStorage::SetAccessMode(TStorageAccessMode Value)
+void THierarchicalStorage::SetAccessModeProtected(TStorageAccessMode Value)
 {
   FAccessMode = Value;
 }
@@ -414,7 +414,7 @@ UnicodeString THierarchicalStorage::ExcludeTrailingBackslash(const UnicodeString
   return ::ExcludeTrailingBackslash(S);
 }
 
-bool THierarchicalStorage::GetTemporary() const
+bool THierarchicalStorage::GetTemporaryProtected() const
 {
   return false;
 }
@@ -492,17 +492,17 @@ bool TRegistryStorage::Copy(TRegistryStorage *Storage)
   return Result;
 }
 
-UnicodeString TRegistryStorage::GetSource() const
+UnicodeString TRegistryStorage::GetSourceProtected() const
 {
   return RootKeyToStr(FRegistry->GetRootKey()) + L"\\" + GetStorage();
 }
 
-UnicodeString TRegistryStorage::GetSource()
+UnicodeString TRegistryStorage::GetSourceProtected()
 {
   return RootKeyToStr(FRegistry->GetRootKey()) + L"\\" + GetStorage();
 }
 
-void TRegistryStorage::SetAccessMode(TStorageAccessMode Value)
+void TRegistryStorage::SetAccessModeProtected(TStorageAccessMode Value)
 {
   THierarchicalStorage::SetAccessMode(Value);
   if (FRegistry)
