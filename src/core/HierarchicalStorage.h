@@ -155,16 +155,17 @@ public:
   virtual void GetValueNames(TStrings *Strings) const override;
 
 protected:
+  intptr_t GetFailedProtected() const;
   virtual void SetAccessModeProtected(TStorageAccessMode Value) override;
-  virtual UnicodeString GetSourceProtected() const override;
-  virtual UnicodeString GetSourceProtected() override;
   virtual bool DoKeyExists(const UnicodeString SubKey, bool AForceAnsi) override;
   virtual bool DoOpenSubKey(const UnicodeString SubKey, bool CanCreate) override;
+  virtual UnicodeString GetSourceProtected() const override;
+  virtual UnicodeString GetSourceProtected() override;
 
   __property int Failed  = { read=GetFailed, write=FFailed };
 
 public:
-  intptr_t GetFailed() const;
+  intptr_t GetFailed() const { return GetFailedProtected(); }
   void SetFailed(intptr_t Value) { FFailed = Value; }
 
 private:
