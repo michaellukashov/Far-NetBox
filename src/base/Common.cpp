@@ -122,8 +122,10 @@ UnicodeString AnsiToString(const char *S, size_t Len)
   return UnicodeString(AnsiString(S, Len));
 }
 //---------------------------------------------------------------------------
+// Note similar function ValidLocalFileName
 UnicodeString MakeValidFileName(const UnicodeString AFileName)
 {
+  // Note similar list in LocalInvalidChars
   UnicodeString Result = AFileName;
   UnicodeString IllegalChars(L":;,=+<>|\"[] \\/?*");
   for (intptr_t Index = 0; Index < IllegalChars.Length(); ++Index)
@@ -588,6 +590,7 @@ static wchar_t *ReplaceChar(
   return InvalidChar;
 }
 //---------------------------------------------------------------------------
+//  Note similar function MakeValidFileName
 UnicodeString ValidLocalFileName(const UnicodeString AFileName)
 {
   return ValidLocalFileName(AFileName, L'_', L"", LOCAL_INVALID_CHARS);

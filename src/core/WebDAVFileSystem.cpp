@@ -19,6 +19,7 @@
 #include <ne_session.h>
 #include <ne_request.h>
 #include <ne_xml.h>
+#include <ne_redirect.h>
 #include <ne_xmlreq.h>
 #include <ne_locks.h>
 #include <expat.h>
@@ -951,7 +952,6 @@ void TWebDAVFileSystem::ParsePropResultSet(TRemoteFile *AFile,
   UnicodeString HumanRights;
 
   // Proprietary property of mod_dav
-  // http://www.webdav.org/mod_dav/#imp
   const char *Executable = GetNeonProp(Results, PROP_EXECUTABLE, MODDAV_PROP_NAMESPACE);
   if (Executable != nullptr)
   {
