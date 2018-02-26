@@ -1574,8 +1574,8 @@ void TConfiguration::SetRandomSeedFile(const UnicodeString Value)
     }
 
     if (!PrevRandomSeedFileName.IsEmpty() &&
-      (PrevRandomSeedFileName != GetRandomSeedFileName()) &&
-      ::SysUtulsFileExists(ApiPath(PrevRandomSeedFileName)))
+        (PrevRandomSeedFileName != GetRandomSeedFileName()) &&
+        ::SysUtulsFileExists(ApiPath(PrevRandomSeedFileName)))
     {
       // ignore any error
       ::SysUtulsRemoveFile(ApiPath(PrevRandomSeedFileName));

@@ -8,8 +8,8 @@
 #include "SessionInfo.h"
 //---------------------------------------------------------------------------
 #ifndef PuttyIntfH
-struct Backend;
-struct Conf;
+__removed struct Backend;
+__removed struct Conf;
 #endif
 //---------------------------------------------------------------------------
 struct _WSANETWORKEVENTS;

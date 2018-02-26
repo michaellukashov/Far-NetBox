@@ -1,11 +1,11 @@
 #pragma once
 
 #include <Classes.hpp>
-
+//---------------------------------------------------------------------------
 class THierarchicalStorage;
 class TBookmarkList;
 class TShortCuts;
-
+//---------------------------------------------------------------------------
 class NB_CORE_EXPORT TBookmarks : public TObject
 {
   NB_DISABLE_COPY(TBookmarks)
@@ -36,7 +36,7 @@ private:
   void LoadLevel(THierarchicalStorage *Storage, const UnicodeString Key,
     intptr_t AIndex, TBookmarkList *BookmarkList);
 };
-
+//---------------------------------------------------------------------------
 class TBookmark;
 class NB_CORE_EXPORT TBookmarkList : public TPersistent
 {
@@ -86,7 +86,7 @@ public:
   bool GetNodeOpened(const UnicodeString AIndex) const;
   void SetNodeOpened(const UnicodeString AIndex, bool Value);
 };
-
+//---------------------------------------------------------------------------
 class NB_CORE_EXPORT TBookmark : public TPersistent
 {
   friend class TBookmarkList;
@@ -135,4 +135,4 @@ public:
 private:
   void Modify(intptr_t OldIndex);
 };
-
+//---------------------------------------------------------------------------
