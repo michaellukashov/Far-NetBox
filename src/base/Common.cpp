@@ -1428,6 +1428,7 @@ void ProcessLocalDirectory(const UnicodeString ADirName,
 //---------------------------------------------------------------------------
 DWORD FileGetAttrFix(const UnicodeString AFileName)
 {
+  UnicodeString FileName = ApiPath(AFileName);
   // The default for FileGetAttr is to follow links
   bool FollowLink = true;
   // But the FileGetAttr whe called for link with FollowLink set will always fail
@@ -1436,7 +1437,7 @@ DWORD FileGetAttrFix(const UnicodeString AFileName)
   {
     FollowLink = false;
   }
-  return ::SysUtulsFileGetAttr(AFileName, FollowLink);
+  return ::SysUtulsFileGetAttr(FileName, FollowLink);
 }
 //---------------------------------------------------------------------------
 TDateTime EncodeDateVerbose(Word Year, Word Month, Word Day)
