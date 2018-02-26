@@ -1261,8 +1261,8 @@ public:
     {
       DebugAssert(FResponses->GetCount());
 
-      std::unique_ptr<TSFTPQueuePacket> Request(FRequests->GetAs<TSFTPQueuePacket>(0));
-      std::unique_ptr<TSFTPPacket> Response(FResponses->GetAs<TSFTPPacket>(0));
+      std::unique_ptr<TSFTPQueuePacket> Request(DebugNotNull(FRequests->GetAs<TSFTPQueuePacket>(0)));
+      std::unique_ptr<TSFTPPacket> Response(DebugNotNull(FResponses->GetAs<TSFTPPacket>(0)));
 
       // Particularly when ExpectedType >= 0, the ReceiveResponse may throw, and we have to remove the packets from queue
       FRequests->Delete(0);
@@ -1553,7 +1553,7 @@ public:
   {
   }
 
-  bool Init(intptr_t QueueLen, RawByteString AHandle, int64_t ATransferred,
+  bool Init(intptr_t QueueLen, const RawByteString AHandle, int64_t ATransferred,
     TFileOperationProgressType *AOperationProgress)
   {
     FHandle = AHandle;
@@ -2195,114 +2195,114 @@ bool TSFTPFileSystem::IsCapable(intptr_t Capability) const
   DebugAssert(FTerminal);
   switch (Capability)
   {
-    case fcAnyCommand:
-    case fcShellAnyCommand:
-      return false;
+  case fcAnyCommand:
+  case fcShellAnyCommand:
+    return false;
 
-    case fcNewerOnlyUpload:
-    case fcTimestampChanging:
-    case fcIgnorePermErrors:
-    case fcPreservingTimestampUpload:
-    case fcSecondaryShell:
-    case fcRemoveCtrlZUpload:
-    case fcRemoveBOMUpload:
-    case fcMoveToQueue:
-    case fcPreservingTimestampDirs:
-    case fcResumeSupport:
-    case fsSkipTransfer:
-    case fsParallelTransfers:
-      return true;
+  case fcNewerOnlyUpload:
+  case fcTimestampChanging:
+  case fcIgnorePermErrors:
+  case fcPreservingTimestampUpload:
+  case fcSecondaryShell:
+  case fcRemoveCtrlZUpload:
+  case fcRemoveBOMUpload:
+  case fcMoveToQueue:
+  case fcPreservingTimestampDirs:
+  case fcResumeSupport:
+  case fsSkipTransfer:
+  case fsParallelTransfers:
+    return true;
 
-    case fcRename:
-    case fcRemoteMove:
-      return (FVersion >= 2);
+  case fcRename:
+  case fcRemoteMove:
+    return (FVersion >= 2);
 
-    case fcSymbolicLink:
-    case fcResolveSymlink:
-      return (FVersion >= 3);
+  case fcSymbolicLink:
+  case fcResolveSymlink:
+    return (FVersion >= 3);
 
-    case fcModeChanging:
-    case fcModeChangingUpload:
-      return !FSupport->Loaded ||
-        FLAGSET(FSupport->AttributeMask, SSH_FILEXFER_ATTR_PERMISSIONS);
+  case fcModeChanging:
+  case fcModeChangingUpload:
+    return !FSupport->Loaded ||
+      FLAGSET(FSupport->AttributeMask, SSH_FILEXFER_ATTR_PERMISSIONS);
 
-    case fcGroupOwnerChangingByID:
-      return (FVersion <= 3);
+  case fcGroupOwnerChangingByID:
+    return (FVersion <= 3);
 
-    case fcOwnerChanging:
-    case fcGroupChanging:
-      return
-        (FVersion <= 3) ||
-        ((FVersion >= 4) &&
-         (!FSupport->Loaded ||
-          FLAGSET(FSupport->AttributeMask, SSH_FILEXFER_ATTR_OWNERGROUP)));
+  case fcOwnerChanging:
+  case fcGroupChanging:
+    return
+      (FVersion <= 3) ||
+      ((FVersion >= 4) &&
+       (!FSupport->Loaded ||
+        FLAGSET(FSupport->AttributeMask, SSH_FILEXFER_ATTR_OWNERGROUP)));
 
-    case fcNativeTextMode:
-      return (FVersion >= 4);
+  case fcNativeTextMode:
+    return (FVersion >= 4);
 
-    case fcTextMode:
-      return (FVersion >= 4) ||
-        strcmp(GetEOL(), EOLToStr(FTerminal->GetConfiguration()->GetLocalEOLType())) != 0;
+  case fcTextMode:
+    return (FVersion >= 4) ||
+      strcmp(GetEOL(), EOLToStr(FTerminal->GetConfiguration()->GetLocalEOLType())) != 0;
 
-    case fcUserGroupListing:
-      return SupportsExtension(SFTP_EXT_OWNER_GROUP);
+  case fcUserGroupListing:
+    return SupportsExtension(SFTP_EXT_OWNER_GROUP);
 
-    case fcLoadingAdditionalProperties:
-      // We allow loading properties only, if "supported" extension is supported and
-      // the server supports "permissions" and/or "owner/group" attributes
-      // (no other attributes are loaded).
-      // This is here only because of VShell
-      // (it supports owner/group, but does not include them into response to
-      // SSH_FXP_READDIR)
-      // and Bitwise (the same as VShell, but it does not even bother to provide "supported" extension until 6.21)
-      // No other use is known.
-      return
-        (FSupport->Loaded &&
-         ((FSupport->AttributeMask &
-           (SSH_FILEXFER_ATTR_PERMISSIONS | SSH_FILEXFER_ATTR_OWNERGROUP)) != 0)) ||
-        (FSecureShell->GetSshImplementation() == sshiBitvise);
+  case fcLoadingAdditionalProperties:
+    // We allow loading properties only, if "supported" extension is supported and
+    // the server supports "permissions" and/or "owner/group" attributes
+    // (no other attributes are loaded).
+    // This is here only because of VShell
+    // (it supports owner/group, but does not include them into response to
+    // SSH_FXP_READDIR)
+    // and Bitwise (the same as VShell, but it does not even bother to provide "supported" extension until 6.21)
+    // No other use is known.
+    return
+      (FSupport->Loaded &&
+       ((FSupport->AttributeMask &
+         (SSH_FILEXFER_ATTR_PERMISSIONS | SSH_FILEXFER_ATTR_OWNERGROUP)) != 0)) ||
+      (FSecureShell->GetSshImplementation() == sshiBitvise);
 
-    case fcCheckingSpaceAvailable:
-      return
-        // extension announced in extension list of by
-        // SFTP_EXT_SUPPORTED/SFTP_EXT_SUPPORTED2 extension
-        // (SFTP version 5 and newer only)
-        SupportsExtension(SFTP_EXT_SPACE_AVAILABLE) ||
-        // extension announced by proprietary SFTP_EXT_STATVFS extension
-        FSupportsStatVfsV2 ||
-        // Bitwise (until 6.21) fails to report it's supported extensions.
-        (FSecureShell->GetSshImplementation() == sshiBitvise);
+  case fcCheckingSpaceAvailable:
+    return
+      // extension announced in extension list of by
+      // SFTP_EXT_SUPPORTED/SFTP_EXT_SUPPORTED2 extension
+      // (SFTP version 5 and newer only)
+      SupportsExtension(SFTP_EXT_SPACE_AVAILABLE) ||
+      // extension announced by proprietary SFTP_EXT_STATVFS extension
+      FSupportsStatVfsV2 ||
+      // Bitwise (until 6.21) fails to report it's supported extensions.
+      (FSecureShell->GetSshImplementation() == sshiBitvise);
 
-    case fcCalculatingChecksum:
-      return
-        // Specification says that "check-file" should be announced,
-        // yet Vandyke VShell (as of 4.0.3) announce "check-file-name"
-        // https://forums.vandyke.com/showthread.php?t=11597
-        SupportsExtension(SFTP_EXT_CHECK_FILE) ||
-        SupportsExtension(SFTP_EXT_CHECK_FILE_NAME) ||
-        // see above
-        (FSecureShell->GetSshImplementation() == sshiBitvise);
+  case fcCalculatingChecksum:
+    return
+      // Specification says that "check-file" should be announced,
+      // yet Vandyke VShell (as of 4.0.3) announce "check-file-name"
+      // https://forums.vandyke.com/showthread.php?t=11597
+      SupportsExtension(SFTP_EXT_CHECK_FILE) ||
+      SupportsExtension(SFTP_EXT_CHECK_FILE_NAME) ||
+      // see above
+      (FSecureShell->GetSshImplementation() == sshiBitvise);
 
-    case fcRemoteCopy:
-      return
-        SupportsExtension(SFTP_EXT_COPY_FILE) ||
-        // see above
-        (FSecureShell->GetSshImplementation() == sshiBitvise);
+  case fcRemoteCopy:
+    return
+      SupportsExtension(SFTP_EXT_COPY_FILE) ||
+      // see above
+      (FSecureShell->GetSshImplementation() == sshiBitvise);
 
-    case fcHardLink:
-      return
-        (FVersion >= 6) ||
-        FSupportsHardlink;
+  case fcHardLink:
+    return
+      (FVersion >= 6) ||
+      FSupportsHardlink;
 
-    case fcLocking:
-      return false;
+  case fcLocking:
+    return false;
 
-    case fcChangePassword:
-      return FSecureShell->CanChangePassword();
+  case fcChangePassword:
+    return FSecureShell->CanChangePassword();
 
-    default:
-      DebugFail();
-      return false;
+  default:
+    DebugFail();
+    return false;
   }
 }
 //---------------------------------------------------------------------------
@@ -2578,13 +2578,13 @@ SSH_FX_TYPES TSFTPFileSystem::GotStatusPacket(TSFTPPacket *Packet,
     UnicodeString HelpKeyword;
     switch (Code)
     {
-      case SSH_FX_FAILURE:
-        HelpKeyword = HELP_SFTP_STATUS_FAILURE;
-        break;
+    case SSH_FX_FAILURE:
+      HelpKeyword = HELP_SFTP_STATUS_FAILURE;
+      break;
 
-      case SSH_FX_PERMISSION_DENIED:
-        HelpKeyword = HELP_SFTP_STATUS_PERMISSION_DENIED;
-        break;
+    case SSH_FX_PERMISSION_DENIED:
+      HelpKeyword = HELP_SFTP_STATUS_PERMISSION_DENIED;
+      break;
     }
     UnicodeString Error = FMTLOAD(SFTP_ERROR_FORMAT3, MessageStr,
       int(Code), LanguageTag, ServerMessage);
@@ -2635,7 +2635,7 @@ intptr_t TSFTPFileSystem::PacketLength(uint8_t *LenBuf, SSH_FXP_TYPES ExpectedTy
   }
   return Length;
 }
-//---------------------------------------------------------------------------
+
 const TSessionData *TSFTPFileSystem::GetSessionData() const
 {
   return FTerminal->GetSessionData();
@@ -3186,8 +3186,8 @@ void TSFTPFileSystem::DoStartup()
         {
           FTerminal->LogEvent(FORMAT(
             "Server support information (%s):\n"
-             "  Attribute mask: %x, Attribute bits: %x, Open flags: %x\n"
-             "  Access mask: %x, Open block vector: %x, Block vector: %x, Max read size: %d\n",
+            "  Attribute mask: %x, Attribute bits: %x, Open flags: %x\n"
+            "  Access mask: %x, Open block vector: %x, Block vector: %x, Max read size: %d\n",
             ExtensionName,
              int(FSupport->AttributeMask),
              int(FSupport->AttributeBits),
@@ -3235,10 +3235,12 @@ void TSFTPFileSystem::DoStartup()
             {
               break;
             }
-            uint8_t Drive = RootsPacket.GetByte();
-            uint8_t MaybeType = RootsPacket.GetByte();
-            FTerminal->LogEvent(FORMAT("  %s: (type %d)", static_cast<char>(Drive), ToInt(MaybeType)));
-            FFixedPaths->Add(FORMAT("%s:", static_cast<char>(Drive)));
+            {
+              uint8_t Drive = RootsPacket.GetByte();
+              uint8_t MaybeType = RootsPacket.GetByte();
+              FTerminal->LogEvent(FORMAT("  %s: (type %d)", static_cast<char>(Drive), ToInt(MaybeType)));
+              FFixedPaths->Add(FORMAT("%s:", static_cast<char>(Drive)));
+            }
           }
         }
         catch (Exception &E)
@@ -3338,42 +3340,42 @@ void TSFTPFileSystem::DoStartup()
   const TSessionInfo &Info = GetSessionInfo();
   switch (GetSessionData()->GetNotUtf())
   {
-    case asOff:
-      FUtfStrings = asOn;
-      FTerminal->LogEvent("We will use UTF-8 strings as configured");
-      break;
+  case asOff:
+    FUtfStrings = asOn;
+    FTerminal->LogEvent("We will use UTF-8 strings as configured");
+    break;
 
-    case asAuto:
-      // Nb, Foxit server does not exist anymore
-      if (GetSessionInfo().SshImplementation.Pos(L"Foxit-WAC-Server") == 1)
+  case asAuto:
+    // Nb, Foxit server does not exist anymore
+    if (GetSessionInfo().SshImplementation.Pos(L"Foxit-WAC-Server") == 1)
+    {
+      FUtfStrings = asOff;
+      FTerminal->LogEvent("We will not use UTF-8 strings as the server is known not to use them");
+    }
+    else
+    {
+      if (FVersion >= 4)
       {
-        FUtfStrings = asOff;
-        FTerminal->LogEvent("We will not use UTF-8 strings as the server is known not to use them");
+        FTerminal->LogEvent("We will use UTF-8 strings as it is mandatory with SFTP version 4 and newer");
+        FUtfStrings = asOn;
       }
       else
       {
-        if (FVersion >= 4)
-        {
-          FTerminal->LogEvent("We will use UTF-8 strings as it is mandatory with SFTP version 4 and newer");
-          FUtfStrings = asOn;
-        }
-        else
-        {
-          FTerminal->LogEvent("We will use UTF-8 strings until server sends an invalid UTF-8 string as with SFTP version 3 and older UTF-8 strings are not mandatory");
-          FUtfStrings = asAuto;
-          FUtfDisablingAnnounced = false;
-        }
+        FTerminal->LogEvent("We will use UTF-8 strings until server sends an invalid UTF-8 string as with SFTP version 3 and older UTF-8 strings are not mandatory");
+        FUtfStrings = asAuto;
+        FUtfDisablingAnnounced = false;
       }
-      break;
+    }
+    break;
 
-    case asOn:
-      FTerminal->LogEvent("We will not use UTF-8 strings as configured");
-      FUtfStrings = asOff;
-      break;
+  case asOn:
+    FTerminal->LogEvent("We will not use UTF-8 strings as configured");
+    FUtfStrings = asOff;
+    break;
 
-    default:
-      DebugFail();
-      break;
+  default:
+    DebugFail();
+    break;
   }
 
   FMaxPacketSize = ToUInt32(GetSessionData()->GetSFTPMaxPacketSize());
@@ -3526,8 +3528,7 @@ void TSFTPFileSystem::ReadDirectory(TRemoteFileList *FileList)
 {
   DebugAssert(FileList && !FileList->GetDirectory().IsEmpty());
 
-  UnicodeString Directory;
-  Directory = base::UnixExcludeTrailingBackslash(LocalCanonify(FileList->GetDirectory()));
+  UnicodeString Directory = base::UnixExcludeTrailingBackslash(LocalCanonify(FileList->GetDirectory()));
   FTerminal->LogEvent(FORMAT("Listing directory \"%s\".", Directory));
 
   // moved before SSH_FXP_OPENDIR, so directory listing does not retain
@@ -3685,8 +3686,10 @@ void TSFTPFileSystem::ReadDirectory(TRemoteFileList *FileList)
           {
             throw;
           }
-          File = nullptr;
-          Failure = true;
+          {
+            File = nullptr;
+            Failure = true;
+          }
         }
       }
 

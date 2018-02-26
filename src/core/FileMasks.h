@@ -1,11 +1,11 @@
 
 #pragma once
-
+//---------------------------------------------------------------------------
 #include <rdestl/vector.h>
 #include <Masks.hpp>
 #include <Exceptions.h>
 #include "SessionData.h"
-
+//---------------------------------------------------------------------------
 class NB_CORE_EXPORT EFileMasksException : public Exception
 {
 public:
@@ -13,10 +13,10 @@ public:
   intptr_t ErrorStart;
   intptr_t ErrorLen;
 };
-
+//---------------------------------------------------------------------------
 extern const wchar_t IncludeExcludeFileMasksDelimiter;
 #define MASK_INDEX(DIRECTORY, INCLUDE) ((DIRECTORY ? 2 : 0) + (INCLUDE ? 0 : 1))
-
+//---------------------------------------------------------------------------
 class NB_CORE_EXPORT TFileMasks : public TObject
 {
 public:
@@ -60,10 +60,10 @@ public:
 
   __property UnicodeString Masks = { read = FStr, write = SetMasks };
 
-  __property TStrings * IncludeFileMasksStr = { read = GetMasksStr, index = MASK_INDEX(false, true) };
-  __property TStrings * ExcludeFileMasksStr = { read = GetMasksStr, index = MASK_INDEX(false, false) };
-  __property TStrings * IncludeDirectoryMasksStr = { read = GetMasksStr, index = MASK_INDEX(true, true) };
-  __property TStrings * ExcludeDirectoryMasksStr = { read = GetMasksStr, index = MASK_INDEX(true, false) };
+  __property TStrings *IncludeFileMasksStr = { read = GetMasksStr, index = MASK_INDEX(false, true) };
+  __property TStrings *ExcludeFileMasksStr = { read = GetMasksStr, index = MASK_INDEX(false, false) };
+  __property TStrings *IncludeDirectoryMasksStr = { read = GetMasksStr, index = MASK_INDEX(true, true) };
+  __property TStrings *ExcludeDirectoryMasksStr = { read = GetMasksStr, index = MASK_INDEX(true, false) };
 
   UnicodeString GetMasks() const { return FStr; }
   void SetMasks(const UnicodeString Value) { SetMasksPrivate(Value); }
@@ -133,14 +133,14 @@ private:
   mutable TStrings *FMasksStr[4];
 
 private:
-  void SetStr(const UnicodeString Str, bool SingleMask);
+  void SetStr(const UnicodeString Value, bool SingleMask);
   void SetMasksPrivate(const UnicodeString Value);
   void CreateMaskMask(const UnicodeString Mask, intptr_t Start, intptr_t End,
     bool Ex, TMaskMask &MaskMask) const;
   void CreateMask(const UnicodeString MaskStr, intptr_t MaskStart,
     intptr_t MaskEnd, bool Include);
   TStrings *GetMasksStr(intptr_t Index) const;
-  static UnicodeString MakeDirectoryMask(const UnicodeString AStr);
+  static UnicodeString MakeDirectoryMask(UnicodeString AStr);
   static inline void ReleaseMaskMask(TMaskMask &MaskMask);
   inline void Init();
   void DoInit(bool Delete);
@@ -152,12 +152,12 @@ private:
   static inline bool MatchesMaskMask(const TMaskMask &MaskMask, const UnicodeString Str);
   void ThrowError(intptr_t Start, intptr_t End) const;
 };
-
+//---------------------------------------------------------------------------
 UnicodeString MaskFileName(const UnicodeString AFileName, const UnicodeString Mask);
 bool IsFileNameMask(const UnicodeString AMask);
 bool IsEffectiveFileNameMask(const UnicodeString AMask);
 UnicodeString DelimitFileNameMask(const UnicodeString AMask);
-
+//---------------------------------------------------------------------------
 #if 0
 typedef void (__closure *TCustomCommandPatternEvent)
 (int Index, const UnicodeString Pattern, void *Arg, UnicodeString &Replacement,
@@ -166,7 +166,7 @@ typedef void (__closure *TCustomCommandPatternEvent)
 typedef nb::FastDelegate5<void,
         intptr_t /*Index*/, UnicodeString /*Pattern*/, void * /*Arg*/, UnicodeString & /*Replacement*/,
         bool & /*LastPass*/> TCustomCommandPatternEvent;
-
+//---------------------------------------------------------------------------
 class NB_CORE_EXPORT TCustomCommand : public TObject
 {
   friend class TInteractiveCustomCommand;
@@ -199,7 +199,7 @@ protected:
     UnicodeString &Replacement, bool &Delimit) const = 0;
   virtual void DelimitReplacement(UnicodeString &Replacement, wchar_t Quote);
 };
-
+//---------------------------------------------------------------------------
 class NB_CORE_EXPORT TInteractiveCustomCommand : public TCustomCommand
 {
   NB_DISABLE_COPY(TInteractiveCustomCommand)
@@ -221,12 +221,10 @@ protected:
 private:
   TCustomCommand *FChildCustomCommand;
 };
-
+//---------------------------------------------------------------------------
 class TTerminal;
-
 struct NB_CORE_EXPORT TCustomCommandData : public TObject
 {
-//NB_DISABLE_COPY(TCustomCommandData)
 public:
   TCustomCommandData();
   explicit TCustomCommandData(const TCustomCommandData &Data);
@@ -248,7 +246,7 @@ private:
 
   TSessionData *GetSessionDataPrivate() const;
 };
-
+//---------------------------------------------------------------------------
 class NB_CORE_EXPORT TFileCustomCommand : public TCustomCommand
 {
 public:
@@ -279,7 +277,8 @@ private:
   UnicodeString FFileName;
   UnicodeString FFileList;
 };
-
+//---------------------------------------------------------------------------
 typedef TFileCustomCommand TRemoteCustomCommand;
 extern UnicodeString FileMasksDelimiters;
 extern UnicodeString AnyMask;
+//---------------------------------------------------------------------------

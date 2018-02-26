@@ -8,14 +8,14 @@
 
 #include "TextsCore.h"
 #include "Terminal.h"
-
+//---------------------------------------------------------------------------
 const wchar_t IncludeExcludeFileMasksDelimiter = L'|';
 UnicodeString FileMasksDelimiters = L";,";
 static UnicodeString AllFileMasksDelimiters = FileMasksDelimiters + IncludeExcludeFileMasksDelimiter;
 static UnicodeString DirectoryMaskDelimiters = L"/\\";
 static UnicodeString FileMasksDelimiterStr = UnicodeString(FileMasksDelimiters[1]) + L' ';
 UnicodeString AnyMask = L"*.*";
-
+//---------------------------------------------------------------------------
 EFileMasksException::EFileMasksException(
   UnicodeString AMessage, intptr_t AErrorStart, intptr_t AErrorLen) :
   Exception(AMessage),
@@ -23,7 +23,7 @@ EFileMasksException::EFileMasksException(
   ErrorLen(AErrorLen)
 {
 }
-
+//---------------------------------------------------------------------------
 static UnicodeString MaskFilePart(const UnicodeString Part, const UnicodeString Mask, bool &Masked)
 {
   UnicodeString Result;
@@ -38,8 +38,8 @@ static UnicodeString MaskFilePart(const UnicodeString Part, const UnicodeString 
       {
         Delim = true;
         Masked = true;
+        break;
       }
-      break;
 
     case L'*':
       if (!Delim)
@@ -47,8 +47,8 @@ static UnicodeString MaskFilePart(const UnicodeString Part, const UnicodeString 
         Result += Part.SubString(RestStart, Part.Length() - RestStart + 1);
         RestStart = Part.Length() + 1;
         Masked = true;
+        break;
       }
-      break;
 
     case L'?':
       if (!Delim)
@@ -59,8 +59,8 @@ static UnicodeString MaskFilePart(const UnicodeString Part, const UnicodeString 
           RestStart++;
         }
         Masked = true;
+        break;
       }
-      break;
 
     default:
       Result += Mask[Index];
@@ -71,7 +71,7 @@ static UnicodeString MaskFilePart(const UnicodeString Part, const UnicodeString 
   }
   return Result;
 }
-
+//---------------------------------------------------------------------------
 UnicodeString MaskFileName(const UnicodeString AFileName, const UnicodeString Mask)
 {
   UnicodeString FileName = AFileName;
@@ -104,7 +104,7 @@ UnicodeString MaskFileName(const UnicodeString AFileName, const UnicodeString Ma
   }
   return FileName;
 }
-
+//---------------------------------------------------------------------------
 bool IsFileNameMask(const UnicodeString AMask)
 {
   bool Result = AMask.IsEmpty(); // empty mask is the same as *
@@ -114,12 +114,12 @@ bool IsFileNameMask(const UnicodeString AMask)
   }
   return Result;
 }
-
+//---------------------------------------------------------------------------
 bool IsEffectiveFileNameMask(const UnicodeString AMask)
 {
   return !AMask.IsEmpty() && (AMask != L"*") && (AMask != L"*.*");
 }
-
+//---------------------------------------------------------------------------
 UnicodeString DelimitFileNameMask(const UnicodeString AMask)
 {
   UnicodeString Mask = AMask;
@@ -133,24 +133,24 @@ UnicodeString DelimitFileNameMask(const UnicodeString AMask)
   }
   return Mask;
 }
-
-
+//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
 TFileMasks::TParams::TParams() :
   Size(0)
 {
 }
-
+//---------------------------------------------------------------------------
 UnicodeString TFileMasks::TParams::ToString() const
 {
   return UnicodeString(L"[") + ::Int64ToStr(Size) + L"/" + ::DateTimeToString(Modification) + L"]";
 }
-
-
+//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
 bool TFileMasks::IsMask(const UnicodeString Mask)
 {
   return (Mask.LastDelimiter(L"?*[") > 0);
 }
-
+//---------------------------------------------------------------------------
 UnicodeString TFileMasks::NormalizeMask(const UnicodeString Mask, const UnicodeString AAnyMask)
 {
   if (!IsEffectiveFileNameMask(Mask))
@@ -159,7 +159,7 @@ UnicodeString TFileMasks::NormalizeMask(const UnicodeString Mask, const UnicodeS
   }
   return Mask;
 }
-
+//---------------------------------------------------------------------------
 UnicodeString TFileMasks::ComposeMaskStr(
   TStrings *MasksStr, bool Directory)
 {
@@ -199,9 +199,16 @@ UnicodeString TFileMasks::ComposeMaskStr(
     }
   }
 
+  // For directories, the above will add slash ay the end of masks,
+  // breaking size and time masks and thus circumverting their validation.
+  // This performes as hoc validation to cover the scenario.
+  // For files this makes no difference, but no harm either
+  TFileMasks Temp(Directory ? 1 : 0);
+  Temp = ResultNoDirMask;
+
   return Result;
 }
-
+//---------------------------------------------------------------------------
 UnicodeString TFileMasks::ComposeMaskStr(
   TStrings *IncludeFileMasksStr, TStrings *ExcludeFileMasksStr,
   TStrings *IncludeDirectoryMasksStr, TStrings *ExcludeDirectoryMasksStr)
@@ -222,36 +229,36 @@ UnicodeString TFileMasks::ComposeMaskStr(
   }
   return Result;
 }
-
+//---------------------------------------------------------------------------
 TFileMasks::TFileMasks()
 {
   Init();
 }
-
-TFileMasks::TFileMasks(intptr_t ForceDirectoryMasks) :
-  FForceDirectoryMasks(ForceDirectoryMasks)
+//---------------------------------------------------------------------------
+TFileMasks::TFileMasks(intptr_t ForceDirectoryMasks)
 {
   Init();
+  FForceDirectoryMasks = ForceDirectoryMasks;
 }
-
+//---------------------------------------------------------------------------
 TFileMasks::TFileMasks(const TFileMasks &Source)
 {
   Init();
   FForceDirectoryMasks = Source.FForceDirectoryMasks;
   SetStr(Source.GetMasks(), false);
 }
-
+//---------------------------------------------------------------------------
 TFileMasks::TFileMasks(const UnicodeString AMasks)
 {
   Init();
   SetStr(AMasks, false);
 }
-
+//---------------------------------------------------------------------------
 TFileMasks::~TFileMasks()
 {
   Clear();
 }
-
+//---------------------------------------------------------------------------
 void TFileMasks::Init()
 {
   FForceDirectoryMasks = -1;
@@ -262,7 +269,7 @@ void TFileMasks::Init()
 
   DoInit(false);
 }
-
+//---------------------------------------------------------------------------
 void TFileMasks::DoInit(bool Delete)
 {
   for (intptr_t Index = 0; Index < 4; ++Index)
@@ -274,7 +281,7 @@ void TFileMasks::DoInit(bool Delete)
     FMasksStr[Index] = nullptr;
   }
 }
-
+//---------------------------------------------------------------------------
 void TFileMasks::Clear()
 {
   DoInit(true);
@@ -284,7 +291,7 @@ void TFileMasks::Clear()
     Clear(FMasks[Index]);
   }
 }
-
+//---------------------------------------------------------------------------
 void TFileMasks::Clear(TMasks &Masks)
 {
   TMasks::iterator it = Masks.begin();
@@ -296,7 +303,7 @@ void TFileMasks::Clear(TMasks &Masks)
   }
   Masks.clear();
 }
-
+//---------------------------------------------------------------------------
 bool TFileMasks::MatchesMasks(const UnicodeString AFileName, bool Directory,
   const UnicodeString APath, const TParams *Params, const TMasks &Masks, bool Recurse)
 {
@@ -402,7 +409,7 @@ bool TFileMasks::MatchesMasks(const UnicodeString AFileName, bool Directory,
 
   return Result;
 }
-
+//---------------------------------------------------------------------------
 bool TFileMasks::Matches(const UnicodeString AFileName, bool Directory,
   const UnicodeString APath, const TParams *Params) const
 {
@@ -424,14 +431,14 @@ bool TFileMasks::Matches(const UnicodeString AFileName, bool Directory,
     FMasks[MASK_INDEX(Directory, false)].empty();
   return Result;
 }
-
+//---------------------------------------------------------------------------
 bool TFileMasks::Matches(const UnicodeString AFileName, bool Local,
   bool Directory, const TParams *Params) const
 {
   bool ImplicitMatch;
   return Matches(AFileName, Local, Directory, Params, true, ImplicitMatch);
 }
-
+//---------------------------------------------------------------------------
 bool TFileMasks::Matches(const UnicodeString AFileName, bool Local,
   bool Directory, const TParams *Params, bool RecurseInclude, bool &ImplicitMatch) const
 {
@@ -454,37 +461,37 @@ bool TFileMasks::Matches(const UnicodeString AFileName, bool Local,
   }
   return Result;
 }
-
+//---------------------------------------------------------------------------
 bool TFileMasks::operator==(const TFileMasks &rhm) const
 {
   return (GetMasks() == rhm.GetMasks());
 }
-
+//---------------------------------------------------------------------------
 TFileMasks &TFileMasks::operator=(const UnicodeString rhs)
 {
   SetMasks(rhs);
   return *this;
 }
-
+//---------------------------------------------------------------------------
 TFileMasks &TFileMasks::operator=(const TFileMasks &rhm)
 {
   FForceDirectoryMasks = rhm.FForceDirectoryMasks;
   SetMasks(rhm.GetMasks());
   return *this;
 }
-
+//---------------------------------------------------------------------------
 bool TFileMasks::operator==(const UnicodeString rhs) const
 {
   return (GetMasks() == rhs);
 }
-
+//---------------------------------------------------------------------------
 void TFileMasks::ThrowError(intptr_t Start, intptr_t End) const
 {
   throw EFileMasksException(
     FMTLOAD(MASK_ERROR, GetMasks().SubString(Start, End - Start + 1)),
     Start, End - Start + 1);
 }
-
+//---------------------------------------------------------------------------
 void TFileMasks::CreateMaskMask(const UnicodeString Mask, intptr_t Start, intptr_t End,
   bool Ex, TMaskMask &MaskMask) const
 {
@@ -507,22 +514,21 @@ void TFileMasks::CreateMaskMask(const UnicodeString Mask, intptr_t Start, intptr
     ThrowError(Start, End);
   }
 }
-
-UnicodeString TFileMasks::MakeDirectoryMask(const UnicodeString Str)
+//---------------------------------------------------------------------------
+UnicodeString TFileMasks::MakeDirectoryMask(UnicodeString Str)
 {
-  UnicodeString Result(Str);
-  DebugAssert(!Result.IsEmpty());
-  if (Result.IsEmpty() || !Result.IsDelimiter(DirectoryMaskDelimiters, Result.Length()))
+  DebugAssert(!Str.IsEmpty());
+  if (Str.IsEmpty() || !Str.IsDelimiter(DirectoryMaskDelimiters, Str.Length()))
   {
-    intptr_t D = Result.LastDelimiter(DirectoryMaskDelimiters);
+    intptr_t D = Str.LastDelimiter(DirectoryMaskDelimiters);
     // if there's any [back]slash anywhere in str,
     // add the same [back]slash at the end, otherwise add slash
-    wchar_t Delimiter = (D > 0) ? Result[D] : DirectoryMaskDelimiters[1];
-    Result += Delimiter;
+    wchar_t Delimiter = (D > 0) ? Str[D] : DirectoryMaskDelimiters[1];
+    Str += Delimiter;
   }
-  return Result;
+  return Str;
 }
-
+//---------------------------------------------------------------------------
 void TFileMasks::CreateMask(
   const UnicodeString MaskStr, intptr_t MaskStart, intptr_t /*MaskEnd*/, bool Include)
 {
@@ -660,7 +666,7 @@ void TFileMasks::CreateMask(
 
   FMasks[MASK_INDEX(Directory, Include)].push_back(Mask);
 }
-
+//---------------------------------------------------------------------------
 TStrings *TFileMasks::GetMasksStr(intptr_t Index) const
 {
   if (FMasksStr[Index] == nullptr)
@@ -676,12 +682,12 @@ TStrings *TFileMasks::GetMasksStr(intptr_t Index) const
 
   return FMasksStr[Index];
 }
-
+//---------------------------------------------------------------------------
 void TFileMasks::ReleaseMaskMask(TMaskMask &MaskMask)
 {
   SAFE_DESTROY(MaskMask.Mask);
 }
-
+//---------------------------------------------------------------------------
 void TFileMasks::TrimEx(UnicodeString &Str, intptr_t &Start, intptr_t &End)
 {
   UnicodeString Buf = ::TrimLeft(Str);
@@ -689,7 +695,7 @@ void TFileMasks::TrimEx(UnicodeString &Str, intptr_t &Start, intptr_t &End)
   Str = ::TrimRight(Buf);
   End -= Buf.Length() - Str.Length();
 }
-
+//---------------------------------------------------------------------------
 bool TFileMasks::MatchesMaskMask(const TMaskMask &MaskMask, const UnicodeString Str)
 {
   bool Result;
@@ -707,7 +713,7 @@ bool TFileMasks::MatchesMaskMask(const TMaskMask &MaskMask, const UnicodeString 
   }
   return Result;
 }
-
+//---------------------------------------------------------------------------
 void TFileMasks::SetMasksPrivate(const UnicodeString Value)
 {
   if (FStr != Value)
@@ -715,36 +721,36 @@ void TFileMasks::SetMasksPrivate(const UnicodeString Value)
     SetStr(Value, false);
   }
 }
-
+//---------------------------------------------------------------------------
 void TFileMasks::SetMask(const UnicodeString Mask)
 {
   SetStr(Mask, true);
 }
-
-void TFileMasks::SetStr(const UnicodeString Str, bool SingleMask)
+//---------------------------------------------------------------------------
+void TFileMasks::SetStr(const UnicodeString Value, bool SingleMask)
 {
   UnicodeString Backup = FStr;
   try
   {
-    FStr = Str;
+    FStr = Value;
     Clear();
 
     intptr_t NextMaskFrom = 1;
     bool Include = true;
-    while (NextMaskFrom <= Str.Length())
+    while (NextMaskFrom <= Value.Length())
     {
       intptr_t MaskStart = NextMaskFrom;
       wchar_t NextMaskDelimiter;
       UnicodeString MaskStr;
       if (SingleMask)
       {
-        MaskStr = Str;
-        NextMaskFrom = Str.Length() + 1;
+        MaskStr = Value;
+        NextMaskFrom = Value.Length() + 1;
         NextMaskDelimiter = L'\0';
       }
       else
       {
-        MaskStr = CopyToChars(Str, NextMaskFrom, AllFileMasksDelimiters, false, &NextMaskDelimiter, true);
+        MaskStr = CopyToChars(Value, NextMaskFrom, AllFileMasksDelimiters, false, &NextMaskDelimiter, true);
       }
       intptr_t MaskEnd = NextMaskFrom - 2;
 
@@ -763,7 +769,7 @@ void TFileMasks::SetStr(const UnicodeString Str, bool SingleMask)
         }
         else
         {
-          ThrowError(NextMaskFrom - 1, Str.Length());
+          ThrowError(NextMaskFrom - 1, Value.Length());
         }
       }
     }
@@ -777,22 +783,22 @@ void TFileMasks::SetStr(const UnicodeString Str, bool SingleMask)
     throw;
   }
 }
-
-
+//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
 #define TEXT_TOKEN L'\255'
-
+//---------------------------------------------------------------------------
 const wchar_t TCustomCommand::NoQuote = L'\0';
 const UnicodeString TCustomCommand::Quotes = L"\"'";
-
+//---------------------------------------------------------------------------
 UnicodeString TCustomCommand::Escape(const UnicodeString S)
 {
   return ReplaceStr(S, L"!", L"!!");
 }
-
+//---------------------------------------------------------------------------
 TCustomCommand::TCustomCommand()
 {
 }
-
+//---------------------------------------------------------------------------
 void TCustomCommand::GetToken(
   const UnicodeString Command, intptr_t Index, intptr_t &Len, wchar_t &PatternCmd) const
 {
@@ -838,12 +844,12 @@ void TCustomCommand::GetToken(
     }
   }
 }
-
+//---------------------------------------------------------------------------
 void TCustomCommand::PatternHint(intptr_t /*Index*/, const UnicodeString /*Pattern*/)
 {
   // noop
 }
-
+//---------------------------------------------------------------------------
 UnicodeString TCustomCommand::Complete(const UnicodeString Command,
   bool LastPass)
 {
@@ -933,17 +939,17 @@ UnicodeString TCustomCommand::Complete(const UnicodeString Command,
 
   return Result;
 }
-
+//---------------------------------------------------------------------------
 void TCustomCommand::DelimitReplacement(UnicodeString &Replacement, wchar_t Quote)
 {
   Replacement = ShellDelimitStr(Replacement, Quote);
 }
-
+//---------------------------------------------------------------------------
 void TCustomCommand::Validate(const UnicodeString Command)
 {
   CustomValidate(Command, nullptr);
 }
-
+//---------------------------------------------------------------------------
 void TCustomCommand::CustomValidate(const UnicodeString Command,
   void *Arg)
 {
@@ -959,7 +965,7 @@ void TCustomCommand::CustomValidate(const UnicodeString Command,
     Index += Len;
   }
 }
-
+//---------------------------------------------------------------------------
 bool TCustomCommand::FindPattern(const UnicodeString Command,
   wchar_t PatternCmd) const
 {
@@ -983,36 +989,36 @@ bool TCustomCommand::FindPattern(const UnicodeString Command,
 
   return Result;
 }
-
+//---------------------------------------------------------------------------
 bool TCustomCommand::HasAnyPatterns(const UnicodeString Command) const
 {
   return FindPattern(Command, L'\0');
 }
-
+//---------------------------------------------------------------------------
 void TCustomCommand::ValidatePattern(const UnicodeString /*Command*/,
   intptr_t /*Index*/, intptr_t /*Len*/, wchar_t /*PatternCmd*/, void * /*Arg*/)
 {
 }
-
-
+//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
 TInteractiveCustomCommand::TInteractiveCustomCommand(
   TCustomCommand *ChildCustomCommand)
 {
   FChildCustomCommand = ChildCustomCommand;
 }
-
+//---------------------------------------------------------------------------
 void TInteractiveCustomCommand::Prompt(
   intptr_t /*Index*/, const UnicodeString /*Prompt*/, UnicodeString &Value) const
 {
   Value.Clear();
 }
-
+//---------------------------------------------------------------------------
 void TInteractiveCustomCommand::Execute(
   const UnicodeString /*Command*/, UnicodeString &Value) const
 {
   Value.Clear();
 }
-
+//---------------------------------------------------------------------------
 intptr_t TInteractiveCustomCommand::PatternLen(const UnicodeString Command, intptr_t Index) const
 {
   intptr_t Len;
@@ -1049,12 +1055,12 @@ intptr_t TInteractiveCustomCommand::PatternLen(const UnicodeString Command, intp
   }
   return Len;
 }
-
+//---------------------------------------------------------------------------
 bool TInteractiveCustomCommand::IsPromptPattern(const UnicodeString Pattern) const
 {
   return (Pattern.Length() >= 3) && (Pattern[2] == L'?');
 }
-
+//---------------------------------------------------------------------------
 void TInteractiveCustomCommand::ParsePromptPattern(
   const UnicodeString Pattern, UnicodeString &Prompt, UnicodeString &Default, bool &Delimit) const
 {
@@ -1074,7 +1080,7 @@ void TInteractiveCustomCommand::ParsePromptPattern(
     Prompt = Pattern.SubString(3, Pattern.Length() - 3);
   }
 }
-
+//---------------------------------------------------------------------------
 bool TInteractiveCustomCommand::PatternReplacement(intptr_t Index, const UnicodeString Pattern,
   UnicodeString &Replacement, bool &Delimit) const
 {
@@ -1106,8 +1112,8 @@ bool TInteractiveCustomCommand::PatternReplacement(intptr_t Index, const Unicode
 
   return Result;
 }
-
-
+//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
 TCustomCommandData::TCustomCommandData()
 {
 }
@@ -1116,19 +1122,19 @@ TCustomCommandData::TCustomCommandData(const TCustomCommandData &Data)
 {
   this->operator=(Data);
 }
-
+//---------------------------------------------------------------------------
 TCustomCommandData::TCustomCommandData(TTerminal *Terminal)
 {
   Init(Terminal->GetSessionData(), Terminal->TerminalGetUserName(), Terminal->GetPassword(),
   Terminal->GetSessionInfo().HostKeyFingerprintSHA256);
 }
-
+//---------------------------------------------------------------------------
 TCustomCommandData::TCustomCommandData(
   TSessionData *SessionData, const UnicodeString AUserName, const UnicodeString APassword)
 {
   Init(SessionData, AUserName, APassword, UnicodeString());
 }
-
+//---------------------------------------------------------------------------
 void TCustomCommandData::Init(
   TSessionData *ASessionData, const UnicodeString AUserName,
   const UnicodeString APassword, const UnicodeString AHostKey)
@@ -1139,7 +1145,7 @@ void TCustomCommandData::Init(
   FSessionData->SetPassword(APassword);
   FSessionData->SetHostKey(AHostKey);
 }
-
+//---------------------------------------------------------------------------
 TCustomCommandData &TCustomCommandData::operator=(const TCustomCommandData &Data)
 {
   if (&Data != this)
@@ -1150,24 +1156,24 @@ TCustomCommandData &TCustomCommandData::operator=(const TCustomCommandData &Data
   }
   return *this;
 }
-
+//---------------------------------------------------------------------------
 TSessionData *TCustomCommandData::GetSessionDataPrivate() const
 {
   return FSessionData.get();
 }
-
-
+//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
 TFileCustomCommand::TFileCustomCommand()
 {
 }
-
+//---------------------------------------------------------------------------
 TFileCustomCommand::TFileCustomCommand(const TCustomCommandData &Data,
-  UnicodeString APath) :
+  const UnicodeString APath) :
   FData(Data),
   FPath(APath)
 {
 }
-
+//---------------------------------------------------------------------------
 TFileCustomCommand::TFileCustomCommand(const TCustomCommandData &Data,
   const UnicodeString APath, const UnicodeString AFileName,
   const UnicodeString FileList) :
@@ -1177,7 +1183,7 @@ TFileCustomCommand::TFileCustomCommand(const TCustomCommandData &Data,
   FFileList(FileList)
 {
 }
-
+//---------------------------------------------------------------------------
 intptr_t TFileCustomCommand::PatternLen(const UnicodeString Command, intptr_t Index) const
 {
   intptr_t Len;
@@ -1201,7 +1207,7 @@ intptr_t TFileCustomCommand::PatternLen(const UnicodeString Command, intptr_t In
   }
   return Len;
 }
-
+//---------------------------------------------------------------------------
 bool TFileCustomCommand::PatternReplacement(
   intptr_t /*Index*/, const UnicodeString Pattern, UnicodeString &Replacement, bool &Delimit) const
 {
@@ -1269,7 +1275,7 @@ bool TFileCustomCommand::PatternReplacement(
 
   return true;
 }
-
+//---------------------------------------------------------------------------
 void TFileCustomCommand::Validate(const UnicodeString Command)
 {
   intptr_t Found[2] = {0, 0};
@@ -1280,7 +1286,7 @@ void TFileCustomCommand::Validate(const UnicodeString Command)
         Found[1], Found[0]));
   }
 }
-
+//---------------------------------------------------------------------------
 void TFileCustomCommand::ValidatePattern(const UnicodeString Command,
   intptr_t Index, intptr_t /*Len*/, wchar_t PatternCmd, void *Arg)
 {
@@ -1297,29 +1303,29 @@ void TFileCustomCommand::ValidatePattern(const UnicodeString Command,
     Found[1] = Index;
   }
 }
-
+//---------------------------------------------------------------------------
 bool TFileCustomCommand::IsFileListCommand(const UnicodeString Command) const
 {
   return FindPattern(Command, L'&');
 }
-
+//---------------------------------------------------------------------------
 bool TFileCustomCommand::IsRemoteFileCommand(const UnicodeString Command) const
 {
   return FindPattern(Command, L'!') || FindPattern(Command, L'&');
 }
-
+//---------------------------------------------------------------------------
 bool TFileCustomCommand::IsFileCommand(const UnicodeString Command) const
 {
   return IsRemoteFileCommand(Command);
 }
-
+//---------------------------------------------------------------------------
 bool TFileCustomCommand::IsSiteCommand(const UnicodeString Command) const
 {
   return FindPattern(Command, L'@');
 }
-
+//---------------------------------------------------------------------------
 bool TFileCustomCommand::IsPasswordCommand(const UnicodeString Command) const
 {
   return FindPattern(Command, L'p');
 }
-
+//---------------------------------------------------------------------------

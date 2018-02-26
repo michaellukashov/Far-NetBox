@@ -158,12 +158,12 @@ void TNamedObjectList::Notify(void *Ptr, TListNotification Action)
     }
   }
 }
-//---------------------------------------------------------------------------
+
 const TNamedObject * TNamedObjectList::FindByName(const UnicodeString AName) const
 {
   return const_cast<TNamedObjectList *>(this)->FindByName(AName);
 }
-
+//---------------------------------------------------------------------------
 TNamedObject * TNamedObjectList::FindByName(const UnicodeString AName)
 {
   // This should/can be optimized when list is sorted
