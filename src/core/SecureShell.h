@@ -6,12 +6,12 @@
 #include "Configuration.h"
 #include "SessionData.h"
 #include "SessionInfo.h"
-
+//---------------------------------------------------------------------------
 #ifndef PuttyIntfH
 struct Backend;
 struct Conf;
 #endif
-
+//---------------------------------------------------------------------------
 struct _WSANETWORKEVENTS;
 typedef struct _WSANETWORKEVENTS WSANETWORKEVENTS;
 typedef UINT_PTR SOCKET;
@@ -28,7 +28,7 @@ enum TSshImplementation
   sshiOpenVMS,
   sshiCerberus,
 };
-
+//---------------------------------------------------------------------------
 class TSecureShell : public TObject
 {
   friend class TPoolForDataEvent;
@@ -95,8 +95,8 @@ public:
   void Discard();
   void FreeBackend();
   void PoolForData(WSANETWORKEVENTS &Events, uint32_t &Result);
-  inline void CaptureOutput(TLogLineType Type,
-    UnicodeString Line);
+  void CaptureOutput(TLogLineType Type,
+    const UnicodeString Line);
   void ResetConnection();
   void ResetSessionInfo();
   void SocketEventSelect(SOCKET Socket, HANDLE Event, bool Startup);
@@ -204,4 +204,4 @@ public:
   bool GetUtfStrings() const { return FUtfStrings; }
   void SetUtfStrings(bool Value) { FUtfStrings = Value; }
 };
-
+//---------------------------------------------------------------------------

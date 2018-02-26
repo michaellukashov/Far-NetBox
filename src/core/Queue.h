@@ -107,7 +107,7 @@ public:
 
   void InitTerminalQueue();
   void AddItem(TQueueItem *Item);
-  TTerminalQueueStatus *CreateStatus(TTerminalQueueStatus *Current);
+  TTerminalQueueStatus *CreateStatus(TTerminalQueueStatus *&Current);
   void Idle();
 
   __property bool IsEmpty = { read = GetIsEmpty };
