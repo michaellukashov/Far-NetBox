@@ -38,8 +38,8 @@ public:
   __property UnicodeString Response = { read = GetResponse };
   __property RawByteString ResponseRaw = { read = FResponse };
   __property TStrings *ResponseHeaders = { read = FResponseHeaders };
-  __property __int64 ResponseLength = { read = GetResponseLength };
-  __property __int64 ResponseLimit = { read = FResponseLimit, write = FResponseLimit };
+  __property int64_t ResponseLength = { read = GetResponseLength };
+  __property int64_t ResponseLimit = { read = FResponseLimit, write = FResponseLimit };
   __property THttpDownloadEvent OnDownload = { read = FOnDownload, write = FOnDownload };
   __property THttpErrorEvent OnError = { read = FOnError, write = FOnError };
 
