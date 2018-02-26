@@ -200,7 +200,5 @@ private:
   static void NeonAuxRequestInit(ne_session_s *Session, ne_request *Request, void *UserData);
   void SetSessionTls(ne_session_s *Session, bool Aux);
   void InitSession(ne_session_s *Session);
-private:
-  TFtps GetFtps() const;
 };
 //---------------------------------------------------------------------------
