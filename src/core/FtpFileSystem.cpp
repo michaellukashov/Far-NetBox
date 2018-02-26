@@ -3671,7 +3671,7 @@ bool TFTPFileSystem::HandleAsynchRequestOverwrite(
     if (UserData.OverwriteResult >= 0)
     {
       // on retry, use the same answer as on the first attempt
-      RequestResult = UserData.OverwriteResult;
+      RequestResult = ToInt(UserData.OverwriteResult);
     }
     else
     {

@@ -27,13 +27,13 @@ enum TFSCommand
   fsLock,
 };
 //---------------------------------------------------------------------------
-// from FtpFileSystem.h
+__removed enum TOverwriteMode { omOverwrite, omResume, omComplete };
 enum TOverwriteMode
 {
   omOverwrite,
   omAppend,
   omResume,
-  omComplete
+  omComplete,
 };
 //---------------------------------------------------------------------------
 struct NB_CORE_EXPORT TSinkFileParams : public TObject
@@ -73,7 +73,7 @@ public:
   const TCopyParamType *CopyParam;
   TDateTime Modification;
   intptr_t Params;
-  int OverwriteResult;
+  intptr_t OverwriteResult;
   bool AutoResume;
 };
 //---------------------------------------------------------------------------
@@ -239,7 +239,6 @@ public:
 
   __property UnicodeString CurrentDirectory = { read = GetCurrentDirectory };
   ROProperty<UnicodeString> RemoteCurrentDirectory{nb::bind(&TCustomFileSystem::RemoteGetCurrentDirectory, this)};
-  // UnicodeString RemoteCurrentDirectory() const { return RemoteGetCurrentDirectory(); }
 
 protected:
   TTerminal *FTerminal;
