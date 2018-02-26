@@ -37,15 +37,15 @@ struct TLocalFileHandle;
 //---------------------------------------------------------------------------
 #if 0
 typedef void (__closure *TQueryUserEvent)
-  (TObject * Sender, const UnicodeString Query, TStrings * MoreMessages, unsigned int Answers,
-   const TQueryParams * Params, unsigned int & Answer, TQueryType QueryType, void * Arg);
+  (TObject * Sender, const UnicodeString Query, TStrings * MoreMessages, uint32_t Answers,
+   const TQueryParams * Params, uint32_t & Answer, TQueryType QueryType, void * Arg);
 #endif // #if 0
 typedef nb::FastDelegate8<void,
   TObject * /*Sender*/, const UnicodeString & /*AQuery*/, TStrings * /*MoreMessages*/, uint32_t /*Answers*/,
    const TQueryParams * /*Params*/, uint32_t & /*Answer*/, TQueryType /*QueryType*/, void * /*Arg*/> TQueryUserEvent;
 #if 0
 typedef void (__closure *TPromptUserEvent)
-  (TTerminal * Terminal, TPromptKind Kind, const UnicodeString Name, const UnicodeString Instructions,
+  (TTerminal * Terminal, TPromptKind Kind, UnicodeString Name, UnicodeString Instructions,
    TStrings * Prompts, TStrings * Results, bool & Result, void * Arg);
 #endif // #if 0
 typedef nb::FastDelegate8<void,
@@ -53,8 +53,8 @@ typedef nb::FastDelegate8<void,
   TStrings * /*Prompts*/, TStrings * /*Results*/, bool & /*Result*/, void * /*Arg*/> TPromptUserEvent;
 #if 0
 typedef void (__closure *TDisplayBannerEvent)
-  (TTerminal * Terminal, const UnicodeString SessionName, const UnicodeString & Banner,
-   bool & NeverShowAgain, int Options, unsigned int & Params);
+  (TTerminal * Terminal, UnicodeString SessionName, const UnicodeString & Banner,
+   bool & NeverShowAgain, int Options, uint32_t & Params);
 #endif // #if 0
 typedef nb::FastDelegate6<void,
   TTerminal * /*Terminal*/, const UnicodeString & /*ASessionName*/, const UnicodeString & /*ABanner*/,
@@ -117,13 +117,13 @@ typedef nb::FastDelegate3<int,
   TTerminal * /*Terminal*/, const UnicodeString & /*Directory*/, bool /*SubDirs*/> TDirectoryModifiedEvent;
 #if 0
 typedef void (__closure *TInformationEvent)
-  (TTerminal * Terminal, const UnicodeString Str, bool Status, int Phase);
+  (TTerminal * Terminal, const UnicodeString & Str, bool Status, int Phase);
 #endif // #if 0
 typedef nb::FastDelegate4<void,
   TTerminal * /*Terminal*/, const UnicodeString & /*Str*/, bool /*Status*/, intptr_t /*Phase*/> TInformationEvent;
 #if 0
 typedef void (__closure *TCustomCommandEvent)
-  (TTerminal * Terminal, const UnicodeString Command, bool & Handled);
+  (TTerminal * Terminal, const UnicodeString & Command, bool & Handled);
 #endif // #if 0
 typedef nb::FastDelegate3<void,
   TTerminal * /*Terminal*/, const UnicodeString & /*Command*/, bool & /*Handled*/> TCustomCommandEvent;
@@ -146,9 +146,9 @@ typedef nb::FastDelegate2<bool,
   LPSECURITY_ATTRIBUTES /*SecurityAttributes*/> TCreateLocalDirectoryEvent;
 typedef nb::FastDelegate0<bool> TCheckForEscEvent;
 //---------------------------------------------------------------------------
-const unsigned int folNone = 0x00;
-const unsigned int folAllowSkip = 0x01;
-const unsigned int folRetryOnFatal = 0x02;
+const uintptr_t folNone = 0x00;
+const uintptr_t folAllowSkip = 0x01;
+const uintptr_t folRetryOnFatal = 0x02;
 
 #if 0
 
@@ -248,17 +248,17 @@ public:
   static const int spDefault = TTerminal::spNoConfirmation | TTerminal::spPreviewChanges;
 
 // for TranslateLockedPath()
-  friend class TRemoteFile;
+friend class TRemoteFile;
 // for ReactOnCommand()
-  friend class TSCPFileSystem;
-  friend class TSFTPFileSystem;
-  friend class TFTPFileSystem;
-  friend class TWebDAVFileSystem;
+friend class TSCPFileSystem;
+friend class TSFTPFileSystem;
+friend class TFTPFileSystem;
+friend class TWebDAVFileSystem;
 friend class TS3FileSystem;
-  friend class TTunnelUI;
-  friend class TCallbackGuard;
-  friend class TSecondaryTerminal;
-  friend class TRetryOperationLoop;
+friend class TTunnelUI;
+friend class TCallbackGuard;
+friend class TSecondaryTerminal;
+friend class TRetryOperationLoop;
 
 private:
   TSessionData *FSessionData;

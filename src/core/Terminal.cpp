@@ -7861,42 +7861,42 @@ void TTerminal::SinkRobust(
 }
 //---------------------------------------------------------------------------
 void TTerminal::Sink(
-  const UnicodeString FileName, const TRemoteFile *File, const UnicodeString TargetDir,
-  const TCopyParamType *CopyParam, intptr_t Params, TFileOperationProgressType * OperationProgress, uintptr_t Flags,
+  const UnicodeString AFileName, const TRemoteFile *AFile, const UnicodeString ATargetDir,
+  const TCopyParamType *CopyParam, intptr_t AParams, TFileOperationProgressType *OperationProgress, uintptr_t Flags,
   TDownloadSessionAction &Action)
 {
-  Action.SetFileName(FileName);
+  Action.SetFileName(AFileName);
 
   TFileMasks::TParams MaskParams;
-  DebugAssert(File);
-  MaskParams.Size = File->GetSize();
-  MaskParams.Modification = File->GetModification();
+  DebugAssert(AFile);
+  MaskParams.Size = AFile->GetSize();
+  MaskParams.Modification = AFile->GetModification();
 
-  UnicodeString BaseFileName = GetBaseFileName(FileName);
-  if (!CopyParam->AllowTransfer(BaseFileName, osRemote, File->GetIsDirectory(), MaskParams))
+  UnicodeString BaseFileName = GetBaseFileName(AFileName);
+  if (!CopyParam->AllowTransfer(BaseFileName, osRemote, AFile->GetIsDirectory(), MaskParams))
   {
-    LogEvent(FORMAT("File \"%s\" excluded from transfer", FileName));
+    LogEvent(FORMAT("File \"%s\" excluded from transfer", AFileName));
     throw ESkipFile();
   }
 
-  if (CopyParam->SkipTransfer(FileName, File->GetIsDirectory()))
+  if (CopyParam->SkipTransfer(AFileName, AFile->GetIsDirectory()))
   {
-    OperationProgress->AddSkippedFileSize(File->GetSize());
+    OperationProgress->AddSkippedFileSize(AFile->GetSize());
     throw ESkipFile();
   }
 
-  LogFileDetails(FileName, File->GetModification(), File->GetSize());
+  LogFileDetails(AFileName, AFile->GetModification(), AFile->GetSize());
 
-  OperationProgress->SetFile(FileName);
+  OperationProgress->SetFile(AFileName);
 
-  UnicodeString OnlyFileName = base::UnixExtractFileName(FileName);
+  UnicodeString OnlyFileName = base::UnixExtractFileName(AFileName);
   UnicodeString DestFileName = ChangeFileName(CopyParam, OnlyFileName, osRemote, FLAGSET(Flags, tfFirstLevel));
-  UnicodeString DestFullName = TargetDir + DestFileName;
+  UnicodeString DestFullName = ATargetDir + DestFileName;
 
-  if (File->GetIsDirectory())
+  if (AFile->GetIsDirectory())
   {
     Action.Cancel();
-    if (CanRecurseToDirectory(File))
+    if (CanRecurseToDirectory(AFile))
     {
       FileOperationLoopCustom(this, OperationProgress, Flags,
         FMTLOAD(NOT_DIRECTORY_ERROR, DestFullName), "",
@@ -7918,24 +7918,24 @@ void TTerminal::Sink(
       });
       __removed FILE_OPERATION_LOOP_END(FMTLOAD(CREATE_DIR_ERROR, (DestFullName)));
 
-      if (FLAGCLEAR(Params, cpNoRecurse))
+      if (FLAGCLEAR(AParams, cpNoRecurse))
       {
         TSinkFileParams SinkFileParams;
         SinkFileParams.TargetDir = IncludeTrailingBackslash(DestFullName);
         SinkFileParams.CopyParam = CopyParam;
-        SinkFileParams.Params = Params;
+        SinkFileParams.Params = AParams;
         SinkFileParams.OperationProgress = OperationProgress;
         SinkFileParams.Skipped = false;
         SinkFileParams.Flags = Flags & ~(tfFirstLevel | tfAutoResume);
 
-        ProcessDirectory(FileName, nb::bind(&TTerminal::SinkFile, this), &SinkFileParams);
+        ProcessDirectory(AFileName, nb::bind(&TTerminal::SinkFile, this), &SinkFileParams);
 
-        FFileSystem->DirectorySunk(DestFullName, File, CopyParam);
+        FFileSystem->DirectorySunk(DestFullName, AFile, CopyParam);
 
         // Do not delete directory if some of its files were skip.
         // Throw "skip file" for the directory to avoid attempt to deletion
         // of any parent directory
-        if (FLAGSET(Params, cpDelete) && SinkFileParams.Skipped)
+        if (FLAGSET(AParams, cpDelete) && SinkFileParams.Skipped)
         {
           throw ESkipFile();
         }
@@ -7943,19 +7943,19 @@ void TTerminal::Sink(
     }
     else
     {
-      LogEvent(FORMAT("Skipping symlink to directory \"%s\".", FileName));
+      LogEvent(FORMAT("Skipping symlink to directory \"%s\".", AFileName));
     }
   }
   else
   {
-    LogEvent(FORMAT("Copying \"%s\" to local directory started.", FileName));
+    LogEvent(FORMAT("Copying \"%s\" to local directory started.", AFileName));
 
     // Will we use ASCII of BINARY file transfer?
     SelectTransferMode(BaseFileName, osRemote, CopyParam, MaskParams);
 
     // Suppose same data size to transfer as to write
     // (not true with ASCII transfer)
-    OperationProgress->SetTransferSize(File->GetSize());
+    OperationProgress->SetTransferSize(AFile->GetSize());
     OperationProgress->SetLocalSize(OperationProgress->GetTransferSize());
 
     intptr_t Attrs = 0;
@@ -7972,7 +7972,7 @@ void TTerminal::Sink(
    __removed FILE_OPERATION_LOOP_END(FMTLOAD(NOT_FILE_ERROR, (DestFullName)));
 
     FFileSystem->Sink(
-      FileName, File, TargetDir, DestFileName, Attrs, CopyParam, Params, OperationProgress, Flags, Action);
+      AFileName, AFile, ATargetDir, DestFileName, Attrs, CopyParam, AParams, OperationProgress, Flags, Action);
 
     LogFileDone(OperationProgress, ::ExpandUNCFileName(DestFullName));
   }
@@ -8050,40 +8050,40 @@ void TTerminal::CollectUsage()
 {
   switch (GetSessionData()->GetFSProtocol())
   {
-    case fsSCPonly:
+  case fsSCPonly:
 //      Configuration->Usage->Inc(L"OpenedSessionsSCP");
-      break;
+    break;
 
-    case fsSFTP:
-    case fsSFTPonly:
+  case fsSFTP:
+  case fsSFTPonly:
 //      Configuration->Usage->Inc(L"OpenedSessionsSFTP");
-      break;
+    break;
 
-    case fsFTP:
-      if (GetSessionData()->GetFtps() == ftpsNone)
-      {
+  case fsFTP:
+    if (GetSessionData()->GetFtps() == ftpsNone)
+    {
 //        Configuration->Usage->Inc(L"OpenedSessionsFTP");
-      }
-      else
-      {
+    }
+    else
+    {
 //        Configuration->Usage->Inc(L"OpenedSessionsFTPS");
-      }
-      break;
+    }
+    break;
 
-    case fsWebDAV:
-      if (GetSessionData()->GetFtps() == ftpsNone)
-      {
+  case fsWebDAV:
+    if (GetSessionData()->GetFtps() == ftpsNone)
+    {
 //        Configuration->Usage->Inc(L"OpenedSessionsWebDAV");
-      }
-      else
-      {
+    }
+    else
+    {
 //        Configuration->Usage->Inc(L"OpenedSessionsWebDAVS");
-      }
-      break;
+    }
+    break;
 
-    case fsS3:
-      // Configuration->Usage->Inc(L"OpenedSessionsS3");
-      break;
+  case fsS3:
+    // Configuration->Usage->Inc(L"OpenedSessionsS3");
+    break;
   }
 
   if (GetConfiguration()->GetLogging() && GetConfiguration()->GetLogToFile())
@@ -8183,7 +8183,7 @@ bool TTerminal::VerifyCertificate(
 }
 //---------------------------------------------------------------------------
 bool TTerminal::ConfirmCertificate(
-  TSessionInfo & SessionInfo, intptr_t Failures, const UnicodeString CertificateStorageKey, bool CanRemember)
+  TSessionInfo &SessionInfo, intptr_t Failures, const UnicodeString CertificateStorageKey, bool CanRemember)
 {
   TClipboardHandler ClipboardHandler;
   ClipboardHandler.Text = SessionInfo.CertificateFingerprint;
@@ -8207,25 +8207,25 @@ bool TTerminal::ConfirmCertificate(
   bool Result;
   switch (Answer)
   {
-    case qaYes:
-      CacheCertificate(
-        CertificateStorageKey, GetSessionData()->GetSiteKey(), SessionInfo.CertificateFingerprint, Failures);
-      Result = true;
-      break;
+  case qaYes:
+    CacheCertificate(
+      CertificateStorageKey, GetSessionData()->GetSiteKey(), SessionInfo.CertificateFingerprint, Failures);
+    Result = true;
+    break;
 
-    case qaNo:
-      Result = true;
-      break;
+  case qaNo:
+    Result = true;
+    break;
 
-    case qaCancel:
-      // Configuration->Usage->Inc(L"HostNotVerified");
-      Result = false;
-      break;
+  case qaCancel:
+    // Configuration->Usage->Inc(L"HostNotVerified");
+    Result = false;
+    break;
 
-    default:
-      DebugFail();
-      Result = false;
-      break;
+  default:
+    DebugFail();
+    Result = false;
+    break;
   }
 
   // Cache only if the certificate was accepted manually
