@@ -25,8 +25,8 @@ uint8_t SimpleDecryptNextChar(RawByteString &Str)
   if (Str.Length() > 0)
   {
     uint8_t Result = static_cast<uint8_t>(
-        ~((((PWALG_SIMPLE_STRING.Pos(Str.c_str()[0]) - 1) << 4) +
-            ((PWALG_SIMPLE_STRING.Pos(Str.c_str()[1]) - 1) << 0)) ^ PWALG_SIMPLE_MAGIC));
+      ~((((PWALG_SIMPLE_STRING.Pos(Str.c_str()[0]) - 1) << 4) +
+         ((PWALG_SIMPLE_STRING.Pos(Str.c_str()[1]) - 1) << 0)) ^ PWALG_SIMPLE_MAGIC));
     Str.Delete(1, 2);
     return Result;
   }
@@ -155,9 +155,9 @@ bool WindowsValidateCertificate(const uint8_t *Certificate, size_t Len, UnicodeS
     {
       const CERT_CHAIN_CONTEXT *ChainContext = nullptr;
       if (CertGetCertificateChain(ChainEngine, CertContext, nullptr, nullptr, &ChainPara,
-          CERT_CHAIN_CACHE_END_CERT |
-          CERT_CHAIN_REVOCATION_CHECK_CHAIN_EXCLUDE_ROOT,
-          nullptr, &ChainContext))
+            CERT_CHAIN_CACHE_END_CERT |
+            CERT_CHAIN_REVOCATION_CHECK_CHAIN_EXCLUDE_ROOT,
+            nullptr, &ChainContext))
       {
         CERT_CHAIN_POLICY_PARA PolicyPara;
 
@@ -169,13 +169,14 @@ bool WindowsValidateCertificate(const uint8_t *Certificate, size_t Len, UnicodeS
         PolicyStatus.cbSize = sizeof(PolicyStatus);
 
         if (CertVerifyCertificateChainPolicy(CERT_CHAIN_POLICY_SSL,
-            ChainContext, &PolicyPara, &PolicyStatus))
+              ChainContext, &PolicyPara, &PolicyStatus))
         {
           // Windows thinks the certificate is valid.
           Result = (PolicyStatus.dwError == S_OK);
           if (!Result)
           {
-            Error = FORMAT("Error: %x, Chain index: %d, Element index: %d", PolicyStatus.dwError, PolicyStatus.lChainIndex, PolicyStatus.lElementIndex);
+            Error = FORMAT("Error: %x, Chain index: %d, Element index: %d",
+               PolicyStatus.dwError, PolicyStatus.lChainIndex, PolicyStatus.lElementIndex);
           }
         }
 
