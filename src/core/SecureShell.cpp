@@ -2508,10 +2508,10 @@ void TSecureShell::VerifyHostKey(
       Aliases[0].Button = qaRetry;
       Aliases[0].Alias = LoadStr(COPY_KEY_BUTTON);
       Aliases[0].ActionAlias = LoadStr(COPY_KEY_ACTION);
-      Aliases[0].OnClick = nb::bind(&TClipboardHandler::Copy, &ClipboardHandler);
+      Aliases[0].OnSubmit = nb::bind(&TClipboardHandler::Copy, &ClipboardHandler);
       Aliases[1].Button = qaIgnore;
       Aliases[1].Alias = LoadStr(PASTE_KEY_BUTTON);
-      Aliases[1].OnClick = nb::bind(&TPasteKeyHandler::Paste, &PasteKeyHandler);
+      Aliases[1].OnSubmit = nb::bind(&TPasteKeyHandler::Paste, &PasteKeyHandler);
       Aliases[1].GroupWith = qaYes;
       Answers = qaYes | qaCancel | qaRetry | qaIgnore;
       AliasesCount = 2;

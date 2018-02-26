@@ -8192,7 +8192,7 @@ bool TTerminal::ConfirmCertificate(
   Aliases[0].Button = qaRetry;
   Aliases[0].Alias = LoadStr(COPY_KEY_BUTTON);
   Aliases[0].ActionAlias = LoadStr(COPY_CERTIFICATE_ACTION);
-  Aliases[0].OnClick = nb::bind(&TClipboardHandler::Copy, &ClipboardHandler);
+  Aliases[0].OnSubmit = nb::bind(&TClipboardHandler::Copy, &ClipboardHandler);
 
   TQueryParams Params(qpWaitInBatch);
   Params.HelpKeyword = HELP_VERIFY_CERTIFICATE;

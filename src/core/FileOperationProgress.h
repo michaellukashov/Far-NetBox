@@ -160,7 +160,7 @@ public:
 
   __property TBatchOverwrite BatchOverwrite = { read = GetBatchOverwrite };
   __property bool SkipToAll = { read = GetSkipToAll };
-  __property unsigned long CPSLimit = { read = GetCPSLimit };
+  __property uintptr_t CPSLimit = { read = GetCPSLimit };
 
   __property bool TotalSizeSet = { read = FTotalSizeSet };
 

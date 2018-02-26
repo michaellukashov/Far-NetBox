@@ -7,7 +7,7 @@
 #include "FileOperationProgress.h"
 #include "CoreMain.h"
 //---------------------------------------------------------------------------
-#define TRANSFER_BUF_SIZE 32 * 1024
+#define TRANSFER_BUF_SIZE (32 * 1024)
 //---------------------------------------------------------------------------
 TFileOperationProgressType::TFileOperationProgressType() :
   FParent(nullptr),

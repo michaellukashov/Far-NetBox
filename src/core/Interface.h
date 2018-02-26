@@ -1,6 +1,6 @@
 
 #pragma once
-
+//---------------------------------------------------------------------------
 #include <Classes.hpp>
 #if defined(FARPLUGIN)
 #include "Configuration.h"
@@ -64,7 +64,7 @@ NB_CORE_EXPORT void WinInitialize();
 NB_CORE_EXPORT void WinFinalize();
 
 #if 0
-typedef void (__closure *TButtonSubmitEvent)(TObject * Sender, unsigned int & Answer);
+typedef void (__closure *TButtonSubmitEvent)(TObject *Sender, unsigned int &Answer);
 #endif // #if 0
 typedef nb::FastDelegate2<void,
   TObject * /*Sender*/, uint32_t & /*Answer*/> TButtonSubmitEvent;
@@ -75,7 +75,7 @@ struct NB_CORE_EXPORT TQueryButtonAlias : public TObject
 
   uintptr_t Button;
   UnicodeString Alias;
-  TButtonSubmitEvent OnClick;
+  TButtonSubmitEvent OnSubmit;
   int GroupWith;
   bool Default;
   TShiftStateFlag GrouppedShiftState;
@@ -90,7 +90,7 @@ struct NB_CORE_EXPORT TQueryButtonAlias : public TObject
 };
 
 #if 0
-typedef void (__closure *TQueryParamsTimerEvent)(uintptr_t &Result);
+typedef void (__closure *TQueryParamsTimerEvent)(unsigned int &Result);
 #endif // #if 0
 typedef nb::FastDelegate1<void, uint32_t & /*Result*/> TQueryParamsTimerEvent;
 
@@ -116,9 +116,6 @@ struct NB_CORE_EXPORT TQueryParams : public TObject
 
 public:
   TQueryParams &operator=(const TQueryParams &other);
-
-private:
-  // NB_DISABLE_COPY(TQueryParams)
 };
 
 enum TPromptKind
@@ -146,11 +143,11 @@ NB_CORE_EXPORT bool IsPasswordPrompt(TPromptKind Kind, TStrings *Prompts);
 //---------------------------------------------------------------------------
 class TTerminal;
 class TRemoteFile;
-
+//---------------------------------------------------------------------------
 #if 0
 typedef void (__closure *TFileFoundEvent)
-  (TTerminal * Terminal, const UnicodeString FileName, const TRemoteFile * File,
-   bool & Cancel);
+(TTerminal *Terminal, const UnicodeString FileName, const TRemoteFile *File,
+  bool &Cancel);
 #endif // #if 0
 typedef nb::FastDelegate4<void,
   TTerminal * /*Terminal*/, UnicodeString /*FileName*/,
@@ -158,7 +155,7 @@ typedef nb::FastDelegate4<void,
   bool & /*Cancel*/> TFileFoundEvent;
 #if 0
 typedef void (__closure *TFindingFileEvent)
-  (TTerminal * Terminal, const UnicodeString Directory, bool & Cancel);
+(TTerminal *Terminal, const UnicodeString Directory, bool &Cancel);
 #endif // #if 0
 typedef nb::FastDelegate3<void,
   TTerminal * /*Terminal*/, const UnicodeString & /*ADirectory*/, bool & /*Cancel*/> TFindingFileEvent;
