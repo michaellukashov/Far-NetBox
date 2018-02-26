@@ -73,9 +73,9 @@ public:
 
   virtual void Flush();
 
-  __property UnicodeString Storage  = { read=FStorage };
-  __property UnicodeString CurrentSubKey  = { read=GetCurrentSubKey };
-  __property TStorageAccessMode AccessMode  = { read=FAccessMode, write=SetAccessMode };
+  __property UnicodeString Storage  = { read = FStorage };
+  __property UnicodeString CurrentSubKey  = { read = GetCurrentSubKey };
+  __property TStorageAccessMode AccessMode  = { read = FAccessMode, write = SetAccessMode };
   __property bool Explicit = { read = FExplicit, write = FExplicit };
   __property bool ForceAnsi = { read = FForceAnsi, write = FForceAnsi };
   __property bool MungeStringValues = { read = FMungeStringValues, write = FMungeStringValues };
@@ -162,7 +162,7 @@ protected:
   virtual UnicodeString GetSourceProtected() const override;
   virtual UnicodeString GetSourceProtected() override;
 
-  __property int Failed  = { read=GetFailed, write=FFailed };
+  __property int Failed  = { read = GetFailed, write = FFailed };
 
 public:
   intptr_t GetFailed() const { return GetFailedProtected(); }
@@ -181,7 +181,7 @@ public:
   virtual ~TCustomIniFileStorage();
 
   virtual bool OpenRootKey(bool CanCreate);
-  virtual bool OpenSubKey(const UnicodeString SubKey, bool CanCreate, bool Path = false);
+  virtual bool OpenSubKey(UnicodeString SubKey, bool CanCreate, bool Path = false);
   virtual void CloseSubKey();
   virtual bool DeleteSubKey(const UnicodeString SubKey);
   virtual bool DeleteValue(const UnicodeString Name);
@@ -192,7 +192,7 @@ public:
 
   virtual bool ReadBool(const UnicodeString Name, bool Default);
   virtual int ReadInteger(const UnicodeString Name, int Default);
-  virtual __int64 ReadInt64(const UnicodeString Name, __int64 Default);
+  virtual int64_t ReadInt64(const UnicodeString Name, int64_t Default);
   virtual TDateTime ReadDateTime(const UnicodeString Name, TDateTime Default);
   virtual double ReadFloat(const UnicodeString Name, double Default);
   virtual UnicodeString ReadStringRaw(const UnicodeString Name, const UnicodeString Default);
@@ -200,7 +200,7 @@ public:
 
   virtual void WriteBool(const UnicodeString Name, bool Value);
   virtual void WriteInteger(const UnicodeString Name, int Value);
-  virtual void WriteInt64(const UnicodeString Name, __int64 Value);
+  virtual void WriteInt64(const UnicodeString Name, int64_t Value);
   virtual void WriteDateTime(const UnicodeString Name, TDateTime Value);
   virtual void WriteFloat(const UnicodeString Name, double Value);
   virtual void WriteStringRaw(const UnicodeString Name, const UnicodeString Value);
@@ -211,10 +211,10 @@ public:
 private:
   UnicodeString GetCurrentSection();
   inline bool HandleByMasterStorage();
-  inline bool HandleReadByMasterStorage(const UnicodeString Name);
-  inline bool DoValueExists(const UnicodeString Value);
-  void DoWriteStringRaw(const UnicodeString Name, const UnicodeString Value);
-  void DoWriteBinaryData(const UnicodeString Name, const void *Buffer, int Size);
+  inline bool HandleReadByMasterStorage(const UnicodeString &Name);
+  inline bool DoValueExists(const UnicodeString &Value);
+  void DoWriteStringRaw(const UnicodeString &Name, const UnicodeString &Value);
+  void DoWriteBinaryData(const UnicodeString &Name, const void *Buffer, int Size);
 
 protected:
   TCustomIniFile *FIniFile;
@@ -223,7 +223,7 @@ protected:
   int FMasterStorageOpenFailures;
   bool FOpeningSubKey;
 
-  __property UnicodeString CurrentSection  = { read=GetCurrentSection };
+  __property UnicodeString CurrentSection  = { read = GetCurrentSection };
   virtual void SetAccessMode(TStorageAccessMode value);
   virtual bool DoKeyExists(const UnicodeString SubKey, bool ForceAnsi);
   virtual bool DoOpenSubKey(const UnicodeString SubKey, bool CanCreate);
@@ -250,10 +250,10 @@ class TOptionsStorage : public TCustomIniFileStorage
 {
 public:
   TOptionsStorage(TStrings *Options, bool AllowWrite);
-  TOptionsStorage(TStrings *Options, const UnicodeString RootKey, THierarchicalStorage *MasterStorage);
+  TOptionsStorage(TStrings *Options, const UnicodeString &RootKey, THierarchicalStorage *MasterStorage);
 
 protected:
-  virtual bool GetTemporaryProtected();
+  virtual bool GetTemporary();
 };
 #endif // #if 0
 //---------------------------------------------------------------------------
