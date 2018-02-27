@@ -21,8 +21,6 @@ public:
 
   void Add(const UnicodeString Value);
 
-  // void ParseParams(const UnicodeString Params);
-
   bool FindSwitch(const UnicodeString Switch);
   bool FindSwitch(const UnicodeString Switch, UnicodeString &Value);
   bool FindSwitch(const UnicodeString Switch, UnicodeString &Value, bool &ValueSet);
@@ -40,7 +38,7 @@ public:
   bool UnusedSwitch(UnicodeString &Switch) const;
   bool WasSwitchAdded(UnicodeString &Switch, wchar_t &SwitchMark) const;
 
-  void LogOptions(TLogOptionEvent OnLogOption);
+  void LogOptions(TLogOptionEvent OnEnumOption);
 
   __property int ParamCount = { read = FParamCount };
   __property UnicodeString Param[int Index] = { read = GetParam };
