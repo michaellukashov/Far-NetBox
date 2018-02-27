@@ -59,3 +59,4 @@ cov-int/
 *.VC.db
 *.VC.opendb
 ReSharper.DotSettings
+*.PVS-Studio.*
