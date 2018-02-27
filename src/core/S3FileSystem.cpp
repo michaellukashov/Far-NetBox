@@ -82,7 +82,6 @@ void TS3FileSystem::Init(void *)
 
 void TS3FileSystem::FileTransferProgress(int64_t /*TransferSize*/, int64_t /*Bytes*/)
 {
-
 }
 //---------------------------------------------------------------------------
 void TS3FileSystem::Open()

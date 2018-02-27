@@ -7,25 +7,25 @@
 #include "SessionData.h"
 #endif // FARPLUGIN
 __removed #include <typeinfo>
-#define HELP_NONE L""
+#define HELP_NONE ""
 #define SCRIPT_SWITCH "script"
-#define COMMAND_SWITCH L"Command"
-#define SESSIONNAME_SWITCH L"SessionName"
-#define NEWPASSWORD_SWITCH L"newpassword"
-#define INI_NUL L"nul"
-#define PRESERVETIME_SWITCH L"preservetime"
-#define PRESERVETIMEDIRS_SWITCH_VALUE L"all"
-#define NOPRESERVETIME_SWITCH L"nopreservetime"
-#define PERMISSIONS_SWITCH L"permissions"
-#define NOPERMISSIONS_SWITCH L"nopermissions"
-#define SPEED_SWITCH L"speed"
-#define TRANSFER_SWITCH L"transfer"
-#define FILEMASK_SWITCH L"filemask"
-#define RESUMESUPPORT_SWITCH L"resumesupport"
-#define NEWERONLY_SWICH L"neweronly"
-#define NONEWERONLY_SWICH L"noneweronly"
-#define DELETE_SWITCH L"delete"
-#define REFRESH_SWITCH L"refresh"
+#define COMMAND_SWITCH "Command"
+#define SESSIONNAME_SWITCH "SessionName"
+#define NEWPASSWORD_SWITCH "newpassword"
+#define INI_NUL "nul"
+#define PRESERVETIME_SWITCH "preservetime"
+#define PRESERVETIMEDIRS_SWITCH_VALUE "all"
+#define NOPRESERVETIME_SWITCH "nopreservetime"
+#define PERMISSIONS_SWITCH "permissions"
+#define NOPERMISSIONS_SWITCH "nopermissions"
+#define SPEED_SWITCH "speed"
+#define TRANSFER_SWITCH "transfer"
+#define FILEMASK_SWITCH "filemask"
+#define RESUMESUPPORT_SWITCH "resumesupport"
+#define NEWERONLY_SWICH "neweronly"
+#define NONEWERONLY_SWICH "noneweronly"
+#define DELETE_SWITCH "delete"
+#define REFRESH_SWITCH "refresh"
 extern const wchar_t *TransferModeNames[];
 extern const int TransferModeNamesCount;
 extern const wchar_t *ToggleNames[];
@@ -35,21 +35,18 @@ enum TToggle { ToggleOff, ToggleOn };
 NB_CORE_EXPORT TConfiguration *CreateConfiguration();
 class TOptions;
 NB_CORE_EXPORT TOptions *GetGlobalOptions();
-
 #endif // FARPLUGIN
 
 NB_CORE_EXPORT void ShowExtendedException(Exception *E);
 NB_CORE_EXPORT bool AppendExceptionStackTraceAndForget(TStrings *&MoreMessages);
-#if 0
-void IgnoreException(const std::type_info &ExceptionType);
-UnicodeString GetExceptionDebugInfo();
-#endif // #if 0
+__removed void IgnoreException(const std::type_info &ExceptionType);
+__removed UnicodeString GetExceptionDebugInfo();
 
 NB_CORE_EXPORT UnicodeString GetCompanyRegistryKey();
 NB_CORE_EXPORT UnicodeString GetRegistryKey();
 NB_CORE_EXPORT void *BusyStart();
 NB_CORE_EXPORT void BusyEnd(void *Token);
-NB_CORE_EXPORT extern const uint32_t GUIUpdateInterval;
+static const uint32_t GUIUpdateInterval = 100;
 NB_CORE_EXPORT void SetNoGUI();
 NB_CORE_EXPORT bool ProcessGUI(bool Force = false);
 NB_CORE_EXPORT UnicodeString GetAppNameString();
@@ -58,13 +55,13 @@ NB_CORE_EXPORT void CopyToClipboard(const UnicodeString Text);
 NB_CORE_EXPORT HANDLE StartThread(void *SecurityAttributes, DWORD StackSize,
   /*TThreadFunc ThreadFunc,*/ void *Parameter, DWORD CreationFlags,
   TThreadID &ThreadId);
-bool TextFromClipboard(UnicodeString &Text, bool Trim);
+NB_CORE_EXPORT bool TextFromClipboard(UnicodeString &Text, bool Trim);
 
 NB_CORE_EXPORT void WinInitialize();
 NB_CORE_EXPORT void WinFinalize();
 
 #if 0
-typedef void (__closure *TButtonSubmitEvent)(TObject *Sender, unsigned int &Answer);
+typedef void (__closure *TButtonSubmitEvent)(TObject *Sender, uint32_t &Answer);
 #endif // #if 0
 typedef nb::FastDelegate2<void,
   TObject * /*Sender*/, uint32_t & /*Answer*/> TButtonSubmitEvent;
@@ -90,7 +87,7 @@ struct NB_CORE_EXPORT TQueryButtonAlias : public TObject
 };
 
 #if 0
-typedef void (__closure *TQueryParamsTimerEvent)(unsigned int &Result);
+typedef void (__closure *TQueryParamsTimerEvent)(uint32_t &Result);
 #endif // #if 0
 typedef nb::FastDelegate1<void, uint32_t & /*Result*/> TQueryParamsTimerEvent;
 
@@ -140,7 +137,6 @@ enum TPromptUserParam
 NB_CORE_EXPORT bool IsAuthenticationPrompt(TPromptKind Kind);
 NB_CORE_EXPORT bool IsPasswordOrPassphrasePrompt(TPromptKind Kind, TStrings *Prompts);
 NB_CORE_EXPORT bool IsPasswordPrompt(TPromptKind Kind, TStrings *Prompts);
-//---------------------------------------------------------------------------
 class TTerminal;
 class TRemoteFile;
 //---------------------------------------------------------------------------

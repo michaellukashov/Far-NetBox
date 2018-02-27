@@ -133,14 +133,13 @@ protected:
   TRegions FRegions;
   TRegions FHostNames;
 
-  virtual UnicodeString RemoteGetCurrentDirectory() const;
+  virtual UnicodeString RemoteGetCurrentDirectory() const override;
 
   void LibS3Deinitialize();
   bool VerifyCertificate(TNeonCertificateData &Data);
   void CollectTLSSessionInfo();
   void CheckLibS3Error(const TLibS3CallbackData &Data, bool FatalOnConnectError = false);
   static void InitSslSession(ssl_st *Ssl, ne_session_s *Session);
-  void InitSslSessionImpl(ssl_st *Ssl) const;
   void RequestInit(TLibS3CallbackData &Data);
   void TryOpenDirectory(const UnicodeString ADirectory);
   void ReadDirectoryInternal(const UnicodeString APath, TRemoteFileList *FileList, intptr_t MaxKeys, const UnicodeString AFileName);
@@ -179,6 +178,8 @@ protected:
   static S3Status LibS3GetObjectDataCallback(int BufferSize, const char *Buffer, void *CallbackData);
 
   static const int S3MultiPartChunkSize;
+private:
+  void InitSslSessionImpl(ssl_st *Ssl) const;
 };
 //------------------------------------------------------------------------------
 UnicodeString S3LibVersion();

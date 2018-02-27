@@ -496,12 +496,12 @@ bool TRegistryStorage::Copy(TRegistryStorage *Storage)
   })
   return Result;
 }
-//---------------------------------------------------------------------------
+
 UnicodeString TRegistryStorage::GetSourceProtected() const
 {
-  return RootKeyToStr(FRegistry->GetRootKey()) + L"\\" + GetStorage();
+  return const_cast<TRegistryStorage *>(this)->GetSourceProtected();
 }
-
+//---------------------------------------------------------------------------
 UnicodeString TRegistryStorage::GetSourceProtected()
 {
   return RootKeyToStr(FRegistry->GetRootKey()) + L"\\" + GetStorage();

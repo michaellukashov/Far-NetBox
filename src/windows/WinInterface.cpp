@@ -4,7 +4,7 @@
 
 #include "WinInterface.h"
 
-const uint32_t GUIUpdateInterval = 100;
+// const uint32_t GUIUpdateInterval = 100;
 
 static bool IsPositiveAnswer(uint32_t Answer)
 {

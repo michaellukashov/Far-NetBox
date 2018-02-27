@@ -394,9 +394,9 @@ void ne_debug(void *Context, int Channel, const char *Format, ...)
     DebugFail();
   }
 
-  #ifndef _DEBUG
+#ifndef _DEBUG
   if (DoLog)
-  #endif
+#endif
   {
     va_list Args;
     va_start(Args, Format);
@@ -410,10 +410,10 @@ void ne_debug(void *Context, int Channel, const char *Format, ...)
     {
       // Note that this gets called for THttp sessions too.
       // It does no harm atm.
-      TTerminal * Terminal = nullptr;
+      TTerminal *Terminal = nullptr;
       if (Context != nullptr)
       {
-        ne_session * Session = static_cast<ne_session *>(Context);
+        ne_session *Session = static_cast<ne_session *>(Context);
 
         Terminal =
           static_cast<TTerminal *>(ne_get_session_private(Session, SESSION_TERMINAL_KEY));
