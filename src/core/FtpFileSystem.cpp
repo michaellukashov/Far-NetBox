@@ -1222,7 +1222,7 @@ void TFTPFileSystem::DoCalculateFilesChecksum(bool UsingHashCommand,
   intptr_t Index1 = 0;
   while ((Index1 < FileList->GetCount()) && !OperationProgress->GetCancel())
   {
-    TRemoteFile *File = static_cast<TRemoteFile *>(FileList->GetObj(Index1));
+    TRemoteFile *File = FileList->GetAs<TRemoteFile>(Index1);
     DebugAssert(File != nullptr);
 
     if (File && File->GetIsDirectory())

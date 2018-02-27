@@ -1144,7 +1144,7 @@ TStrings *TRemoteFileList::CloneStrings(TStrings *List)
   Result->SetOwnsObjects(true);
   for (intptr_t Index = 0; Index < List->GetCount(); Index++)
   {
-    TRemoteFile *File = static_cast<TRemoteFile *>(List->GetObj(Index));
+    TRemoteFile *File = List->GetAs<TRemoteFile>(Index);
     Result->AddObject(List->GetString(Index), File->Duplicate(true));
   }
   return Result.release();
