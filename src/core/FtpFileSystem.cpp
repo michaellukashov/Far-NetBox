@@ -1361,8 +1361,7 @@ void TFTPFileSystem::CalculateFilesChecksum(const UnicodeString Alg,
 }
 //---------------------------------------------------------------------------
 bool TFTPFileSystem::ConfirmOverwrite(
-  UnicodeString ASourceFullFileName,
-  UnicodeString &ATargetFileName,
+  UnicodeString ASourceFullFileName, UnicodeString &ATargetFileName,
   intptr_t Params, TFileOperationProgressType *OperationProgress,
   bool AutoResume,
   const TOverwriteFileParams *FileParams,

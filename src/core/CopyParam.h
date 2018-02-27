@@ -1,9 +1,9 @@
-
+//---------------------------------------------------------------------------
 #pragma once
 
 #include "FileMasks.h"
 #include "RemoteFiles.h"
-
+//---------------------------------------------------------------------------
 // When adding new options, mind TCopyParamType::GetLogStr()
 enum TOperationSide
 {
@@ -50,14 +50,14 @@ const int cpaNoRemoveCtrlZ      = 0x200;
 const int cpaNoRemoveBOM        = 0x400;
 const int cpaNoPreserveTimeDirs = 0x800;
 const int cpaNoResumeSupport    = 0x1000;
-
+//---------------------------------------------------------------------------
 struct TUsableCopyParamAttrs
 {
   int General;
   int Upload;
   int Download;
 };
-
+//---------------------------------------------------------------------------
 class NB_CORE_EXPORT TCopyParamType : public TObject
 {
 public:
@@ -148,24 +148,24 @@ public:
   __property bool PreserveTimeDirs = { read = FPreserveTimeDirs, write = FPreserveTimeDirs };
   __property TRights Rights = { read = FRights, write = FRights };
   __property TTransferMode TransferMode = { read = FTransferMode, write = FTransferMode };
-  __property UnicodeString LogStr  = { read=GetLogStr };
-  __property bool AddXToDirectories  = { read=FAddXToDirectories, write=FAddXToDirectories };
+  __property UnicodeString LogStr  = { read = GetLogStr };
+  __property bool AddXToDirectories  = { read = FAddXToDirectories, write = FAddXToDirectories };
   __property bool PreserveRights = { read = FPreserveRights, write = FPreserveRights };
   __property bool IgnorePermErrors = { read = FIgnorePermErrors, write = FIgnorePermErrors };
   __property TResumeSupport ResumeSupport = { read = FResumeSupport, write = FResumeSupport };
-  __property __int64 ResumeThreshold = { read = FResumeThreshold, write = FResumeThreshold };
+  __property int64_t ResumeThreshold = { read = FResumeThreshold, write = FResumeThreshold };
   __property wchar_t InvalidCharsReplacement = { read = FInvalidCharsReplacement, write = FInvalidCharsReplacement };
   __property bool ReplaceInvalidChars = { read = GetReplaceInvalidChars, write = SetReplaceInvalidChars };
   __property UnicodeString LocalInvalidChars = { read = FLocalInvalidChars, write = SetLocalInvalidChars };
   __property bool CalculateSize = { read = FCalculateSize, write = FCalculateSize };
   __property UnicodeString FileMask = { read = FFileMask, write = FFileMask };
   __property TFileMasks IncludeFileMask = { read = FIncludeFileMask, write = FIncludeFileMask };
-  __property TStrings * TransferSkipList = { read = GetTransferSkipList, write = SetTransferSkipList };
+  __property TStrings *TransferSkipList = { read = GetTransferSkipList, write = SetTransferSkipList };
   __property UnicodeString TransferResumeFile = { read = FTransferResumeFile, write = FTransferResumeFile };
   __property bool ClearArchive = { read = FClearArchive, write = FClearArchive };
   __property bool RemoveCtrlZ = { read = FRemoveCtrlZ, write = FRemoveCtrlZ };
   __property bool RemoveBOM = { read = FRemoveBOM, write = FRemoveBOM };
-  __property unsigned long CPSLimit = { read = FCPSLimit, write = FCPSLimit };
+  __property uintptr_t CPSLimit = { read = FCPSLimit, write = FCPSLimit };
   __property bool NewerOnly = { read = FNewerOnly, write = FNewerOnly };
 
   const TFileMasks &GetAsciiFileMask() const { return FAsciiFileMask; }
@@ -219,8 +219,9 @@ public:
   void SetNewerOnly(bool Value) { FNewerOnly = Value; }
 
 };
-
+//---------------------------------------------------------------------------
 NB_CORE_EXPORT uintptr_t GetSpeedLimit(const UnicodeString Text);
 NB_CORE_EXPORT UnicodeString SetSpeedLimit(uintptr_t Limit);
 NB_CORE_EXPORT void CopySpeedLimits(TStrings *Source, TStrings *Dest);
 NB_CORE_EXPORT TOperationSide ReverseOperationSide(TOperationSide Side);
+//---------------------------------------------------------------------------
