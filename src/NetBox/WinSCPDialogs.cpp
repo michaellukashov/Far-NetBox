@@ -2177,7 +2177,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin *AFarPlugin, TSessionActionEnum 
   SFTPMaxVersionCombo = new TFarComboBox(this);
   SFTPMaxVersionCombo->SetDropDownList(true);
   SFTPMaxVersionCombo->SetWidth(7);
-  for (intptr_t Index2 = 0; Index2 <= 5; ++Index2)
+  for (intptr_t Index2 = 0; Index2 <= 6; ++Index2)
   {
     SFTPMaxVersionCombo->GetItems()->Add(::IntToStr(Index2));
   }
