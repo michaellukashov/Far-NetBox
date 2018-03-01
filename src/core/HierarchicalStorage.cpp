@@ -106,7 +106,7 @@ THierarchicalStorage::THierarchicalStorage(const UnicodeString AStorage) :
   FStorage(AStorage),
   FKeyHistory(new TStringList())
 {
-  THierarchicalStorage::SetAccessMode(smRead);
+  SetAccessMode(smRead);
   SetExplicit(false);
   // While this was implemented in 5.0 already, for some reason
   // it was disabled (by mistake?). So although enabled for 5.6.1 only,
@@ -509,7 +509,7 @@ UnicodeString TRegistryStorage::GetSourceProtected()
 //---------------------------------------------------------------------------
 void TRegistryStorage::SetAccessModeProtected(TStorageAccessMode Value)
 {
-  THierarchicalStorage::SetAccessMode(Value);
+  THierarchicalStorage::SetAccessModeProtected(Value);
   if (FRegistry)
   {
     switch (GetAccessMode())
