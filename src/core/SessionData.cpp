@@ -217,7 +217,7 @@ void TSessionData::Default()
 
   // SCP
   SetReturnVar(L"");
-  SetLookupUserGroups(asAuto);
+  SetLookupUserGroups(asOn);
   SetEOLType(eolLF);
   SetTrimVMSVersions(false);
   SetShell(L""); //default shell
@@ -1187,7 +1187,10 @@ void TSessionData::DoSave(THierarchicalStorage *Storage,
     WRITE_DATA(String, CustomParam1);
     WRITE_DATA(String, CustomParam2);
 
-    WRITE_DATA_EX(String, "CodePage", GetCodePage(), );
+    if (!GetCodePage().IsEmpty())
+    {
+      WRITE_DATA_EX(String, "CodePage", GetCodePage(), );
+    }
     WRITE_DATA_EX(Integer, "LoginType", GetLoginType(), );
     WRITE_DATA_EX(Bool, "FtpAllowEmptyPassword", GetFtpAllowEmptyPassword(), );
   }
