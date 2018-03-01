@@ -74,7 +74,7 @@ enum THostKey
   hkDSA,
   hkECDSA,
   hkED25519,
-  hkMax
+  hkMax,
 };
 #define HOSTKEY_COUNT (hkMax)
 

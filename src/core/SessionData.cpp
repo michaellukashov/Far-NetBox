@@ -69,9 +69,6 @@ const UnicodeString RawSettingsOption(L"rawsettings");
 const UnicodeString S3HostName(S3LibDefaultHostName());
 const uintptr_t CONST_DEFAULT_CODEPAGE = CP_UTF8;
 const TFSProtocol CONST_DEFAULT_PROTOCOL = fsSFTP;
-
-const intptr_t SFTPMinVersion = 0;
-const intptr_t SFTPMaxVersion = 6;
 //---------------------------------------------------------------------
 static TDateTime SecToDateTime(intptr_t Sec)
 {
