@@ -9,7 +9,7 @@
 #include <iostream>
 #include <fstream>
 
-//#include "testutils.h"
+#include "testutils.h"
 //#include <gmock/gmock.h>
 #include <UnicodeString.hpp>
 
