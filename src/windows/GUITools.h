@@ -3,15 +3,14 @@
 
 #include <Classes.hpp>
 #include <FileMasks.h>
-
-
+//---------------------------------------------------------------------------
 class TSessionData;
-
+//---------------------------------------------------------------------------
 #if 0
 typedef void (__closure *TProcessMessagesEvent)();
 #endif // #if 0
 typedef nb::FastDelegate0<void> TProcessMessagesEvent;
-
+//---------------------------------------------------------------------------
 NB_CORE_EXPORT bool FindFile(UnicodeString &APath);
 NB_CORE_EXPORT bool FindTool(const UnicodeString Name, UnicodeString &APath);
 NB_CORE_EXPORT void ExecuteShellChecked(const UnicodeString APath, const UnicodeString Params,
@@ -63,7 +62,7 @@ void NavigateBrowserToUrl(TWebBrowserEx *WebBrowser, const UnicodeString Url);
 TComponent *FindComponentRecursively(TComponent *Root, const UnicodeString Name);
 
 #endif // #if 0
-
+//---------------------------------------------------------------------------
 class NB_CORE_EXPORT TLocalCustomCommand : public TFileCustomCommand
 {
 public:
@@ -72,8 +71,8 @@ public:
     const TCustomCommandData &Data, const UnicodeString RemotePath, const UnicodeString LocalPath);
   explicit TLocalCustomCommand(
     const TCustomCommandData &Data, const UnicodeString RemotePath, const UnicodeString LocalPath,
-    UnicodeString AFileName, const UnicodeString LocalFileName,
-    UnicodeString FileList);
+    const UnicodeString AFileName, const UnicodeString LocalFileName,
+    const UnicodeString FileList);
   virtual ~TLocalCustomCommand() {}
 
   virtual bool IsFileCommand(const UnicodeString Command) const;
@@ -89,20 +88,19 @@ private:
   UnicodeString FLocalPath;
   UnicodeString FLocalFileName;
 };
-
+//---------------------------------------------------------------------------
 #if 0
-
 namespace Pngimagelist {
 class TPngImageList;
 class TPngImageCollectionItem;
 }
 using namespace Pngimagelist;
-
+//---------------------------------------------------------------------------
 TPngImageList *GetAnimationsImages(TControl *Control);
 TImageList *GetButtonImages(TControl *Control);
 TPngImageList *GetDialogImages(TControl *Control);
 void ReleaseImagesModules();
-
+//---------------------------------------------------------------------------
 class TFrameAnimation
 {
 public:
@@ -133,7 +131,7 @@ private:
   void Rescale();
   static void PaintBoxRescale(TComponent *Sender, TObject *Token);
 };
-
+//---------------------------------------------------------------------------
 class TScreenTipHintWindow : public THintWindow
 {
 public:
@@ -165,7 +163,7 @@ private:
   TFont *GetFont(TControl *HintControl, const UnicodeString Hint);
   TControl *GetHintControl(void *Data);
 };
-
+//---------------------------------------------------------------------------
 // Newer version rich edit that supports "Friendly name hyperlinks" and
 // allows wider range of Unicode characters: https://stackoverflow.com/q/47433656/850848
 class TNewRichEdit : public TRichEdit
@@ -180,9 +178,8 @@ protected:
 private:
   HINSTANCE FLibrary;
 };
-//---------------------------------------------------------------------------
 #endif // #if 0
-
+//---------------------------------------------------------------------------
 NB_CORE_EXPORT extern const UnicodeString PageantTool;
 NB_CORE_EXPORT extern const UnicodeString PuttygenTool;
-
+//---------------------------------------------------------------------------

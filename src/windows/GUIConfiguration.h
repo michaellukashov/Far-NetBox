@@ -5,10 +5,10 @@
 #include "CopyParam.h"
 
 #define CONST_INVALID_CHARS L"/\\[]"
-
+//---------------------------------------------------------------------------
 class TGUIConfiguration;
 class TStoredSessionList;
-
+//---------------------------------------------------------------------------
 enum TLogView
 {
   lvNone,
@@ -21,7 +21,7 @@ enum TInterface
   ifCommander,
   ifExplorer
 };
-
+//---------------------------------------------------------------------------
 extern const intptr_t ccLocal;
 extern const intptr_t ccShowResults;
 extern const intptr_t ccCopyResults;
@@ -33,7 +33,7 @@ const int soRecurse =        0x01;
 const int soSynchronize =    0x02;
 const int soSynchronizeAsk = 0x04;
 const int soContinueOnError = 0x08;
-
+//---------------------------------------------------------------------------
 class NB_CORE_EXPORT TGUICopyParamType : public TCopyParamType
 {
 public:
@@ -75,7 +75,7 @@ private:
   bool FQueueNoConfirmation;
   bool FQueueParallel;
 };
-
+//---------------------------------------------------------------------------
 struct NB_CORE_EXPORT TCopyParamRuleData : public TObject
 {
   UnicodeString HostName;
@@ -85,7 +85,7 @@ struct NB_CORE_EXPORT TCopyParamRuleData : public TObject
 
   void Default();
 };
-
+//---------------------------------------------------------------------------
 class NB_CORE_EXPORT TCopyParamRule : public TObject
 {
 public:
@@ -122,7 +122,7 @@ private:
 public:
   bool GetEmpty() const;
 };
-
+//---------------------------------------------------------------------------
 class NB_CORE_EXPORT TLocaleInfo : public TObject
 {
 public:
@@ -130,7 +130,7 @@ public:
   UnicodeString Name;
   int Completeness;
 };
-
+//---------------------------------------------------------------------------
 class NB_CORE_EXPORT TCopyParamList : public TObject
 {
   friend class TGUIConfiguration;
@@ -162,10 +162,10 @@ public:
 
   __property int Count = { read = GetCount };
   __property UnicodeString Names[int Index] = { read = GetName };
-  __property const TCopyParamRule * Rules[int Index] = { read = GetRule };
-  __property const TCopyParamType * CopyParams[int Index] = { read = GetCopyParam };
+  __property const TCopyParamRule *Rules[int Index] = { read = GetRule };
+  __property const TCopyParamType *CopyParams[int Index] = { read = GetCopyParam };
   __property bool Modified = { read = FModified };
-  __property TStrings * NameList = { read = GetNameList };
+  __property TStrings *NameList = { read = GetNameList };
   __property bool AnyRule = { read = GetAnyRule };
 
 private:
@@ -191,7 +191,7 @@ private:
   bool CompareItem(intptr_t Index, const TCopyParamType *CopyParam,
     const TCopyParamRule *Rule) const;
 };
-
+//---------------------------------------------------------------------------
 class NB_CORE_EXPORT TGUIConfiguration : public TConfiguration
 {
   NB_DISABLE_COPY(TGUIConfiguration)
@@ -270,7 +270,6 @@ public:
   void SetQueueKeepDoneItems(bool Value);
   void SetQueueKeepDoneItemsFor(intptr_t Value);
   void SetLocaleInternal(LCID Value, bool Safe, bool CompleteOnly);
-  void SetInitialLocale(LCID Value);
   void SetAppliedLocale(LCID AppliedLocale, const UnicodeString LocaleModuleName);
   bool GetCanApplyLocaleImmediately() const;
   UnicodeString GetTranslationModule(const UnicodeString Path) const;
@@ -334,7 +333,6 @@ public:
   __property LCID AppliedLocale = { read = FAppliedLocale };
 
 public:
-
   bool GetContinueOnError() const { return FContinueOnError; }
   void SetContinueOnError(bool Value) { FContinueOnError = Value; }
   bool GetConfirmCommandSession() const { return FConfirmCommandSession; }
@@ -384,6 +382,6 @@ public:
   void SetSessionReopenAutoIdle(intptr_t Value) { FSessionReopenAutoIdle = Value; }
   LCID GetAppliedLocale() const { return FAppliedLocale; }
 };
-
+//---------------------------------------------------------------------------
 NB_CORE_EXPORT TGUIConfiguration *GetGUIConfiguration();
-
+//---------------------------------------------------------------------------

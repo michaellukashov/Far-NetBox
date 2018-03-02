@@ -1,6 +1,6 @@
 
 #pragma once
-
+//---------------------------------------------------------------------------
 #include <Classes.hpp>
 #include <Common.h>
 #include <Interface.h>
@@ -395,7 +395,7 @@ typedef nb::FastDelegate1<void,
 #if 0
 typedef void (__closure *TFeedSynchronizeError)
   (const UnicodeString Message, TStrings * MoreMessages, TQueryType Type,
-   UnicodeString HelpKeyword);
+   const UnicodeString HelpKeyword);
 #endif // #if 0
 typedef nb::FastDelegate4<void,
   UnicodeString /*Message*/, TStrings * /*MoreMessages*/, TQueryType /*Type*/,
@@ -433,7 +433,7 @@ typedef nb::FastDelegate3<void,
 
 bool DoSynchronizeChecklistDialog(TSynchronizeChecklist *Checklist,
   TSynchronizeMode Mode, intptr_t Params,
-  UnicodeString LocalDirectory, const UnicodeString RemoteDirectory,
+  const UnicodeString LocalDirectory, const UnicodeString RemoteDirectory,
   TCustomCommandMenuEvent OnCustomCommandMenu);
 
 #endif // FARPLUGIN
@@ -503,7 +503,7 @@ typedef nb::FastDelegate4<void,
   TFindingFileEvent /*OnFindingFile*/> TFindEvent;
 #if 0
 typedef void (__closure *TFocusFileEvent)
-  (TTerminal * Terminal, UnicodeString Path);
+  (TTerminal * Terminal, const UnicodeString Path);
 #endif // #if 0
 typedef nb::FastDelegate2<void,
   TTerminal * /*Terminal*/, UnicodeString /*Path*/> TFocusFileEvent;
@@ -555,7 +555,7 @@ TRect CalculatePopupRect(TButton *Button);
 TRect CalculatePopupRect(TControl *Control, TPoint MousePos);
 
 typedef void (__closure *TColorChangeEvent)
-(TColor Color);
+  (TColor Color);
 TPopupMenu *CreateSessionColorPopupMenu(TColor Color,
   TColorChangeEvent OnColorChange);
 void CreateSessionColorMenu(TComponent *AOwner, TColor Color,
@@ -598,9 +598,9 @@ TShortCut NormalizeCustomShortCut(TShortCut ShortCut);
 #ifdef _DEBUG
 void ForceTracing();
 #endif
-
+//---------------------------------------------------------------------------
 #define HIDDEN_WINDOW_NAME L"WinSCPHiddenWindow3"
-
+//---------------------------------------------------------------------------
 struct TCopyDataMessage
 {
   enum { CommandCanCommandLine, CommandCommandLine, MainWindowCheck, RefreshPanel };
@@ -626,7 +626,7 @@ struct TCopyDataMessage
     Command = static_cast<unsigned int>(-1);
   }
 };
-
+//---------------------------------------------------------------------------
 class TWinInteractiveCustomCommand : public TInteractiveCustomCommand
 {
 public:
@@ -648,9 +648,8 @@ private:
   TUnicodeStringVector FValues;
   UnicodeString FHelpKeyword;
 };
-
+//---------------------------------------------------------------------------
 #if 0
-
 class TTrayIcon
 {
 public:
@@ -684,7 +683,7 @@ private:
   void SetHint(UnicodeString Value);
   void BalloonCancelled();
 };
-
+//---------------------------------------------------------------------------
 #endif // #if 0
 
 #endif // FARPLUGIN

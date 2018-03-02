@@ -1,7 +1,7 @@
 #pragma once
-
+//---------------------------------------------------------------------------
 #include <CopyParam.h>
-
+//---------------------------------------------------------------------------
 struct NB_CORE_EXPORT TSynchronizeParamType : public TObject
 {
   UnicodeString LocalDirectory;
@@ -9,7 +9,7 @@ struct NB_CORE_EXPORT TSynchronizeParamType : public TObject
   intptr_t Params;
   intptr_t Options;
 };
-
+//---------------------------------------------------------------------------
 class TSynchronizeController;
 struct TSynchronizeOptions;
 class TSynchronizeChecklist;
@@ -84,17 +84,17 @@ typedef void (__closure * TSynchronizeTooManyDirectories)
 typedef nb::FastDelegate2<void,
   TSynchronizeController * /*Sender*/,
   intptr_t & /*MaxDirectories*/> TSynchronizeTooManyDirectoriesEvent;
-
+//---------------------------------------------------------------------------
 namespace Discmon {
 class TDiscMonitor;
 }
-
+//---------------------------------------------------------------------------
 enum TSynchronizeOperation
 {
   soUpload,
   soDelete
 };
-
+//---------------------------------------------------------------------------
 class NB_CORE_EXPORT TSynchronizeController : public TObject
 {
   NB_DISABLE_COPY(TSynchronizeController)
@@ -109,7 +109,7 @@ public:
     TSynchronizeOptions *Options,
     TSynchronizeAbortEvent OnAbort, TSynchronizeThreadsEvent OnSynchronizeThreads,
     TSynchronizeLogEvent OnSynchronizeLog);
-  void LogOperation(TSynchronizeOperation Operation, UnicodeString AFileName);
+  void LogOperation(TSynchronizeOperation Operation, const UnicodeString AFileName);
 
 private:
   TSynchronizeEvent FOnSynchronize;
@@ -123,15 +123,17 @@ private:
   TSynchronizeLogEvent FSynchronizeLog;
   TCopyParamType FCopyParam;
 
-  void SynchronizeChange(TObject *Sender, UnicodeString Directory,
+  void SynchronizeChange(TObject *Sender, const UnicodeString Directory,
     bool &SubdirsChanged);
   void SynchronizeAbort(bool Close);
-  void SynchronizeLog(TSynchronizeLogEntry Entry, UnicodeString Message);
-  void SynchronizeInvalid(TObject *Sender, UnicodeString Directory,
-    UnicodeString ErrorStr);
-  void SynchronizeFilter(TObject *Sender, UnicodeString DirectoryName,
+  void SynchronizeLog(TSynchronizeLogEntry Entry, const UnicodeString Message);
+  void SynchronizeInvalid(TObject *Sender, const UnicodeString Directory,
+    const UnicodeString ErrorStr);
+  void SynchronizeFilter(TObject *Sender, const UnicodeString DirectoryName,
     bool &Add);
   void SynchronizeTooManyDirectories(TObject *Sender, intptr_t &MaxDirectories);
   void SynchronizeDirectoriesChange(TObject *Sender, intptr_t Directories);
 };
-
+//---------------------------------------------------------------------------
+void LogSynchronizeEvent(TTerminal * Terminal, const UnicodeString & Message);
+//---------------------------------------------------------------------------
