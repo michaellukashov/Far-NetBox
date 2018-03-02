@@ -3,14 +3,14 @@
 #include <System.IOUtils.hpp>
 
 #include "WinInterface.h"
-
-// const uint32_t GUIUpdateInterval = 100;
-
+//---------------------------------------------------------------------------
+__removed #pragma package(smart_init)
+//---------------------------------------------------------------------------
 static bool IsPositiveAnswer(uint32_t Answer)
 {
   return (Answer == qaYes) || (Answer == qaOK) || (Answer == qaYesToAll);
 }
-
+//---------------------------------------------------------------------------
 TMessageParams::TMessageParams(uintptr_t AParams) :
   Aliases(nullptr),
   AliasesCount(0),
@@ -28,21 +28,36 @@ TMessageParams::TMessageParams(uintptr_t AParams) :
   MoreMessagesSize(0)
 {
 }
-
+//---------------------------------------------------------------------------
 void TMessageParams::Assign(const TMessageParams *AParams)
 {
-  Aliases = AParams->Aliases;
-  AliasesCount = AParams->AliasesCount;
-  Flags = AParams->Flags;
-  Params = AParams->Params;
-  Timer = AParams->Timer;
-  TimerEvent = AParams->TimerEvent;
-  TimerMessage = AParams->TimerMessage;
-  TimerAnswers = AParams->TimerAnswers;
-  Timeout = AParams->Timeout;
-  TimeoutAnswer = AParams->TimeoutAnswer;
-}
+  Reset();
 
+  if (AParams != nullptr)
+  {
+    Aliases = AParams->Aliases;
+    AliasesCount = AParams->AliasesCount;
+    Flags = AParams->Flags;
+    // Params = AParams->Params;
+    Timer = AParams->Timer;
+    TimerEvent = AParams->TimerEvent;
+    TimerMessage = AParams->TimerMessage;
+    TimerAnswers = AParams->TimerAnswers;
+    TimerQueryType = AParams->TimerQueryType;
+    Timeout = AParams->Timeout;
+    TimeoutAnswer = AParams->TimeoutAnswer;
+
+    if (FLAGSET(AParams->Params, qpNeverAskAgainCheck))
+    {
+      Params |= mpNeverAskAgainCheck;
+    }
+    if (FLAGSET(AParams->Params, qpAllowContinueOnError))
+    {
+      Params |= mpAllowContinueOnError;
+    }
+  }
+}
+//---------------------------------------------------------------------------
 inline void TMessageParams::Reset()
 {
   Params = 0;
@@ -66,6 +81,7 @@ inline void TMessageParams::Reset()
 }
 
 #if 0
+//---------------------------------------------------------------------------
 static void NeverAskAgainCheckClick(void * /*Data*/, TObject *Sender)
 {
   TFarCheckBox *CheckBox = dyn_cast<TFarCheckBox>(Sender);
@@ -126,11 +142,12 @@ static void NeverAskAgainCheckClick(void * /*Data*/, TObject *Sender)
 #endif
 
 #if 0
+//---------------------------------------------------------------------------
 static TFarCheckBox *FindNeverAskAgainCheck(TFarDialog *Dialog)
 {
   return nullptr; // DebugNotNull(dyn_cast<TFarCheckBox>(Dialog->FindComponent(L"NeverAskAgainCheck")));
 }
-
+//---------------------------------------------------------------------------
 TFarDialog *CreateMessageDialogEx(const UnicodeString Msg,
   TStrings *MoreMessages, TQueryType Type, uint32_t Answers, const UnicodeString AHelpKeyword,
   const TMessageParams *Params, TFarButton *&TimeoutButton)
@@ -165,7 +182,6 @@ TFarDialog *CreateMessageDialogEx(const UnicodeString Msg,
 
   UnicodeString ImageName;
   UnicodeString MoreMessagesUrl;
-
   TSize MoreMessagesSize;
   UnicodeString CustomCaption;
   if (Params != nullptr)
@@ -185,10 +201,10 @@ TFarDialog *CreateMessageDialogEx(const UnicodeString Msg,
   {
     NeverAskAgainCaption =
       !Params->NeverAskAgainTitle.IsEmpty() ?
-      (UnicodeString)Params->NeverAskAgainTitle :
-      // qaOK | qaIgnore is used, when custom "non-answer" button is required
-      LoadStr(((ActualAnswers == qaOK) || (ActualAnswers == (qaOK | qaIgnore))) ?
-        MSG_CHECK_NEVER_SHOW_AGAIN : MSG_CHECK_NEVER_ASK_AGAIN);
+        (UnicodeString)Params->NeverAskAgainTitle :
+        // qaOK | qaIgnore is used, when custom "non-answer" button is required
+        LoadStr(((ActualAnswers == qaOK) || (ActualAnswers == (qaOK | qaIgnore))) ?
+          MSG_CHECK_NEVER_SHOW_AGAIN : MSG_CHECK_NEVER_ASK_AGAIN);
   }
 
   TFarDialog *Dialog = CreateMoreMessageDialog(Msg, MoreMessages, DlgType, Answers,
@@ -201,17 +217,17 @@ TFarDialog *CreateMessageDialogEx(const UnicodeString Msg,
     {
       TFarCheckBox *NeverAskAgainCheck = FindNeverAskAgainCheck(Dialog);
       NeverAskAgainCheck->SetChecked(Params->NeverAskAgainCheckedInitially;
-        if (Params->NeverAskAgainAnswer > 0)
-    {
-      NeverAskAgainCheck->Tag = Params->NeverAskAgainAnswer;
-    }
-    TNotifyEvent OnClick;
-    ((TMethod *)&OnClick)->Code = NeverAskAgainCheckClick;
+      if (Params->NeverAskAgainAnswer > 0)
+      {
+        NeverAskAgainCheck->Tag = Params->NeverAskAgainAnswer;
+      }
+      TNotifyEvent OnClick;
+      ((TMethod *)&OnClick)->Code = NeverAskAgainCheckClick;
       NeverAskAgainCheck->OnClick = OnClick;
-  }
+    }
 
-  Dialog->HelpKeyword = HelpKeyword;
-  if (FLAGSET(Answers, qaHelp))
+    Dialog->HelpKeyword = HelpKeyword;
+    if (FLAGSET(Answers, qaHelp))
     {
       Dialog->BorderIcons = Dialog->BorderIcons << biHelp;
     }
@@ -224,7 +240,7 @@ TFarDialog *CreateMessageDialogEx(const UnicodeString Msg,
   }
   return Dialog;
 }
-
+//---------------------------------------------------------------------------
 uintptr_t ExecuteMessageDialog(TForm *Dialog, uint32_t Answers, const TMessageParams *Params)
 {
   FlashOnBackground();
@@ -256,7 +272,7 @@ uintptr_t ExecuteMessageDialog(TForm *Dialog, uint32_t Answers, const TMessagePa
 
   return Answer;
 }
-
+//---------------------------------------------------------------------------
 class TMessageTimer : public TTimer
 {
 public:
@@ -268,14 +284,14 @@ public:
 protected:
   void DoTimer(TObject *Sender);
 };
-
+//---------------------------------------------------------------------------
 TMessageTimer::TMessageTimer(TComponent *AOwner) : TTimer(AOwner)
 {
   Event = nullptr;
   OnTimer = DoTimer;
   Dialog = nullptr;
 }
-
+//---------------------------------------------------------------------------
 void TMessageTimer::DoTimer(TObject * /*Sender*/)
 {
   if (Event != nullptr)
@@ -288,7 +304,7 @@ void TMessageTimer::DoTimer(TObject * /*Sender*/)
     }
   }
 }
-
+//---------------------------------------------------------------------------
 class TMessageTimeout : public TTimer
 {
 public:
@@ -308,7 +324,7 @@ protected:
   void DoTimer(TObject *Sender);
   void UpdateButton();
 };
-
+//---------------------------------------------------------------------------
 TMessageTimeout::TMessageTimeout(TComponent *AOwner,
   uintptr_t Timeout, TButton *Button) :
   TTimer(AOwner), FOrigTimeout(Timeout), FTimeout(Timeout), FButton(Button)
@@ -319,7 +335,7 @@ TMessageTimeout::TMessageTimeout(TComponent *AOwner,
   FOrigCursorPos = Mouse->CursorPos;
   UpdateButton();
 }
-
+//---------------------------------------------------------------------------
 void TMessageTimeout::MouseMove()
 {
   TPoint CursorPos = Mouse->CursorPos;
@@ -339,20 +355,20 @@ void TMessageTimeout::MouseMove()
     UpdateButton();
   }
 }
-
+//---------------------------------------------------------------------------
 void TMessageTimeout::Cancel()
 {
   Enabled = false;
   UpdateButton();
 }
-
+//---------------------------------------------------------------------------
 void TMessageTimeout::UpdateButton()
 {
   DebugAssert(FButton != nullptr);
   FButton->Caption =
     !Enabled ? FOrigCaption : FMTLOAD(TIMEOUT_BUTTON, FOrigCaption, int(FTimeout / MSecsPerSec));
 }
-
+//---------------------------------------------------------------------------
 void TMessageTimeout::DoTimer(TObject * /*Sender*/)
 {
   if (FTimeout <= Interval)
@@ -380,7 +396,7 @@ class TPublicWinControl : public TWinControl
 {
   friend void SetTimeoutEvents(TControl *Control, TMessageTimeout *Timeout);
 };
-
+//---------------------------------------------------------------------------
 static void MessageDialogMouseMove(void *Data, TObject * /*Sender*/,
   TShiftState /*Shift*/, int /*X*/, int /*Y*/)
 {
@@ -388,7 +404,7 @@ static void MessageDialogMouseMove(void *Data, TObject * /*Sender*/,
   TMessageTimeout *Timeout = static_cast<TMessageTimeout *>(Data);
   Timeout->MouseMove();
 }
-
+//---------------------------------------------------------------------------
 static void MessageDialogMouseDown(void *Data, TObject * /*Sender*/,
   TMouseButton /*Button*/, TShiftState /*Shift*/, int /*X*/, int /*Y*/)
 {
@@ -396,7 +412,7 @@ static void MessageDialogMouseDown(void *Data, TObject * /*Sender*/,
   TMessageTimeout *Timeout = static_cast<TMessageTimeout *>(Data);
   Timeout->Cancel();
 }
-
+//---------------------------------------------------------------------------
 static void MessageDialogKeyDownUp(void *Data, TObject * /*Sender*/,
   Word & /*Key*/, TShiftState /*Shift*/)
 {
@@ -404,7 +420,7 @@ static void MessageDialogKeyDownUp(void *Data, TObject * /*Sender*/,
   TMessageTimeout *Timeout = static_cast<TMessageTimeout *>(Data);
   Timeout->Cancel();
 }
-
+//---------------------------------------------------------------------------
 void SetTimeoutEvents(TControl *Control, TMessageTimeout *Timeout)
 {
   TPublicControl *PublicControl = reinterpret_cast<TPublicControl *>(Control);
@@ -428,7 +444,7 @@ void SetTimeoutEvents(TControl *Control, TMessageTimeout *Timeout)
     }
   }
 }
-
+//---------------------------------------------------------------------------
 // Merge with CreateMessageDialogEx
 TForm *CreateMoreMessageDialogEx(const UnicodeString Message, TStrings *MoreMessages,
   TQueryType Type, uint32_t Answers, const UnicodeString HelpKeyword, const TMessageParams *Params)
@@ -481,7 +497,7 @@ TForm *CreateMoreMessageDialogEx(const UnicodeString Message, TStrings *MoreMess
 
   return Dialog.release();
 }
-
+//---------------------------------------------------------------------------
 uintptr_t MoreMessageDialog(const UnicodeString Message, TStrings *MoreMessages,
   TQueryType Type, uint32_t Answers, const UnicodeString HelpKeyword, const TMessageParams *Params)
 {
@@ -489,13 +505,13 @@ uintptr_t MoreMessageDialog(const UnicodeString Message, TStrings *MoreMessages,
   uintptr_t Result = ExecuteMessageDialog(Dialog.get(), Answers, Params);
   return Result;
 }
-
+//---------------------------------------------------------------------------
 uintptr_t MessageDialog(const UnicodeString Msg, TQueryType Type,
   uint32_t Answers, const UnicodeString HelpKeyword, const TMessageParams *Params)
 {
   return MoreMessageDialog(Msg, nullptr, Type, Answers, HelpKeyword, Params);
 }
-
+//---------------------------------------------------------------------------
 uintptr_t SimpleErrorDialog(const UnicodeString Msg, const UnicodeString MoreMessages)
 {
   uintptr_t Result;
@@ -517,6 +533,7 @@ uintptr_t SimpleErrorDialog(const UnicodeString Msg, const UnicodeString MoreMes
 #endif
 
 #if 0
+//---------------------------------------------------------------------------
 static TStrings *StackInfoListToStrings(
   TJclStackInfoList *StackInfoList)
 {
@@ -543,11 +560,11 @@ static TStrings *StackInfoListToStrings(
   return StackTrace.release();
 }
 #endif
-
+//---------------------------------------------------------------------------
 static TCriticalSection StackTraceCriticalSection;
 typedef rde::map<DWORD, TStrings *> TStackTraceMap;
 static TStackTraceMap StackTraceMap;
-
+//---------------------------------------------------------------------------
 bool AppendExceptionStackTraceAndForget(TStrings *&MoreMessages)
 {
   bool Result = false;
@@ -579,7 +596,7 @@ bool AppendExceptionStackTraceAndForget(TStrings *&MoreMessages)
   }
   return Result;
 }
-
+//---------------------------------------------------------------------------
 uintptr_t ExceptionMessageDialog(Exception * /*E*/, TQueryType /*Type*/,
   const UnicodeString /*AMessageFormat*/, uint32_t /*Answers*/, const UnicodeString /*AHelpKeyword*/,
   const TMessageParams * /*Params*/)
@@ -612,7 +629,7 @@ uintptr_t ExceptionMessageDialog(Exception * /*E*/, TQueryType /*Type*/,
   ThrowNotImplemented(3018);
   return 0;
 }
-
+//---------------------------------------------------------------------------
 uintptr_t FatalExceptionMessageDialog(Exception * /*E*/, TQueryType /*Type*/,
   intptr_t /*SessionReopenTimeout*/, const UnicodeString /*MessageFormat*/, uint32_t /*Answers*/,
   const UnicodeString /*HelpKeyword*/, const TMessageParams * /*Params*/)
@@ -646,7 +663,8 @@ uintptr_t FatalExceptionMessageDialog(Exception * /*E*/, TQueryType /*Type*/,
   ThrowNotImplemented(3017);
   return 0;
 }
-
+//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
 static void DoExceptNotify(TObject * /*ExceptObj*/, void * /*ExceptAddr*/,
   bool /*OSException*/, void * /*BaseOfStack*/)
 {
@@ -687,30 +705,30 @@ static void DoExceptNotify(TObject * /*ExceptObj*/, void * /*ExceptAddr*/,
 #endif
   ThrowNotImplemented(3016);
 }
-
+//---------------------------------------------------------------------------
 void *BusyStart()
 {
   void *Token = nullptr;  // ToPtr(Screen->Cursor);
 //  Screen->Cursor = crHourGlass;
   return Token;
 }
-
+//---------------------------------------------------------------------------
 void BusyEnd(void * /*Token*/)
 {
 //  Screen->Cursor = reinterpret_cast<TCursor>(Token);
 }
-
-
+//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
 static DWORD MainThread = 0;
 static TDateTime LastGUIUpdate(0.0);
 static double GUIUpdateIntervalFrac = ToDouble(OneSecond / 1000 * GUIUpdateInterval); // 1/5 sec
 static bool NoGUI = false;
-
+//---------------------------------------------------------------------------
 void SetNoGUI()
 {
   NoGUI = true;
 }
-
+//---------------------------------------------------------------------------
 bool ProcessGUI(bool Force)
 {
   DebugAssert(MainThread != 0);
@@ -729,7 +747,7 @@ bool ProcessGUI(bool Force)
   }
   return Result;
 }
-
+//---------------------------------------------------------------------------
 #if 0
 void CopyParamListButton(TButton *Button)
 {
@@ -738,12 +756,12 @@ void CopyParamListButton(TButton *Button)
     MenuButton(Button);
   }
 }
-
+//---------------------------------------------------------------------------
 const int cpiDefault = -1;
 const int cpiConfigure = -2;
 const int cpiCustom = -3;
 const int cpiSaveSettings = -4;
-
+//---------------------------------------------------------------------------
 void CopyParamListPopup(TRect Rect, TPopupMenu *Menu,
   const TCopyParamType &Param, const UnicodeString Preset, TNotifyEvent OnClick,
   int Options, int CopyParamAttrs, bool SaveSettings)
@@ -831,7 +849,6 @@ void CopyParamListPopup(TRect Rect, TPopupMenu *Menu,
 
   MenuPopup(Menu, Rect, nullptr);
 }
-
 //---------------------------------------------------------------------------
 int CopyParamListPopupClick(TObject *Sender,
   TCopyParamType &Param, UnicodeString &Preset, int CopyParamAttrs,
@@ -841,13 +858,13 @@ int CopyParamListPopupClick(TObject *Sender,
   DebugAssert(Item != nullptr);
   DebugAssert((Item->Tag >= cpiSaveSettings) && (Item->Tag < GUIConfiguration->CopyParamList->Count));
 
-  bool Result;
+  int Result = 0;
   if (Item->Tag == cpiConfigure)
   {
     bool MatchedPreset = (GUIConfiguration->CopyParamPreset[Preset] == Param);
     DoPreferencesDialog(pmPresets);
     Result = (MatchedPreset && GUIConfiguration->HasCopyParamPreset[Preset]);
-    if (Result)
+    if (Result > 0)
     {
       // For cast, see a comment below
       Param = TCopyParamType(GUIConfiguration->CopyParamPreset[Preset]);
@@ -855,7 +872,7 @@ int CopyParamListPopupClick(TObject *Sender,
   }
   else if (Item->Tag == cpiCustom)
   {
-    Result = DoCopyParamCustomDialog(Param, CopyParamAttrs);
+    Result = DoCopyParamCustomDialog(Param, CopyParamAttrs) ? 1 : 0;
   }
   else if (Item->Tag == cpiSaveSettings)
   {
@@ -896,7 +913,7 @@ private:
 };
 //---------------------------------------------------------------------------
 TCustomCommandPromptsDialog::TCustomCommandPromptsDialog(
-  UnicodeString CustomCommandName, const UnicodeString HelpKeyword,
+  const UnicodeString CustomCommandName, const UnicodeString HelpKeyword,
   const TUnicodeStringVector &Prompts, const TUnicodeStringVector &Defaults) :
   TCustomDialog(HelpKeyword)
 {
@@ -923,7 +940,8 @@ TCustomCommandPromptsDialog::TCustomCommandPromptsDialog(
 }
 
 #endif // #if 0
-
+//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
 TWinInteractiveCustomCommand::TWinInteractiveCustomCommand(
   TCustomCommand *ChildCustomCommand, const UnicodeString CustomCommandName, const UnicodeString HelpKeyword) :
   TInteractiveCustomCommand(ChildCustomCommand)
@@ -931,7 +949,7 @@ TWinInteractiveCustomCommand::TWinInteractiveCustomCommand(
   FCustomCommandName = StripEllipsis(StripHotkey(CustomCommandName));
   FHelpKeyword = HelpKeyword;
 }
-
+//---------------------------------------------------------------------------
 void TWinInteractiveCustomCommand::PatternHint(intptr_t /*AIndex*/, const UnicodeString Pattern)
 {
   if (IsPromptPattern(Pattern))
@@ -947,7 +965,7 @@ void TWinInteractiveCustomCommand::PatternHint(intptr_t /*AIndex*/, const Unicod
 #endif // #if 0
   }
 }
-
+//---------------------------------------------------------------------------
 void TWinInteractiveCustomCommand::Prompt(
   intptr_t /*Index*/, const UnicodeString Prompt, UnicodeString & /*Value*/) const
 {
@@ -969,7 +987,7 @@ void TWinInteractiveCustomCommand::Prompt(
   }
 #endif // #if 0
 }
-
+//---------------------------------------------------------------------------
 void TWinInteractiveCustomCommand::Execute(
   UnicodeString /*Command*/, UnicodeString & /*Value*/) const
 {
@@ -1108,12 +1126,12 @@ void TWinInteractiveCustomCommand::Execute(
 }
 
 #if 0
-
+//---------------------------------------------------------------------------
 void MenuPopup(TPopupMenu *Menu, TButton *Button)
 {
   MenuPopup(Menu, CalculatePopupRect(Button), Button);
 }
-
+//---------------------------------------------------------------------------
 void MenuPopup(TObject *Sender, const TPoint &MousePos, bool &Handled)
 {
   TControl *Control = dynamic_cast<TControl *>(Sender);
@@ -1133,7 +1151,7 @@ void MenuPopup(TObject *Sender, const TPoint &MousePos, bool &Handled)
   MenuPopup(PopupMenu, Rect, Control);
   Handled = true;
 }
-
+//---------------------------------------------------------------------------
 TComponent *GetPopupComponent(TObject *Sender)
 {
   TComponent *Item = dynamic_cast<TComponent *>(Sender);
@@ -1143,8 +1161,8 @@ TComponent *GetPopupComponent(TObject *Sender)
   DebugAssert(PopupMenu->PopupComponent != nullptr);
   return PopupMenu->PopupComponent;
 }
-
-void MenuButton(TButton *Button)
+//---------------------------------------------------------------------------
+static void SetMenuButtonImages(TButton * Button)
 {
   Button->Images = GetButtonImages(Button);
 }
@@ -1155,6 +1173,7 @@ static void MenuButtonRescale(TComponent *Sender, TObject * /*Token*/)
   SetMenuButtonImages(Button);
 }
 //---------------------------------------------------------------------------
+void MenuButton(TButton * Button)
 {
   SetMenuButtonImages(Button);
   Button->ImageIndex = 0;
@@ -1162,7 +1181,7 @@ static void MenuButtonRescale(TComponent *Sender, TObject * /*Token*/)
   Button->ImageAlignment = iaRight;
   SetRescaleFunction(Button, MenuButtonRescale);
 }
-
+//---------------------------------------------------------------------------
 TRect CalculatePopupRect(TButton *Button)
 {
   TPoint UpPoint = Button->ClientToScreen(TPoint(0, 0));
@@ -1173,14 +1192,14 @@ TRect CalculatePopupRect(TButton *Button)
   Rect.Inflate(Offset, Offset);
   return Rect;
 }
-
+//---------------------------------------------------------------------------
 TRect CalculatePopupRect(TControl *Control, TPoint MousePos)
 {
   MousePos = Control->ClientToScreen(MousePos);
   TRect Rect(MousePos, MousePos);
   return Rect;
 }
-
+//---------------------------------------------------------------------------
 void FixButtonImage(TButton *Button)
 {
   // with themes enabled, button image is by default drawn too high
@@ -1189,7 +1208,7 @@ void FixButtonImage(TButton *Button)
     Button->ImageMargins->Top = 1;
   }
 }
-
+//---------------------------------------------------------------------------
 void CenterButtonImage(TButton *Button)
 {
   // with themes disabled, the text seems to be drawn over the icon,
@@ -1201,8 +1220,9 @@ void CenterButtonImage(TButton *Button)
 
     std::unique_ptr<TControlCanvas> Canvas(new TControlCanvas());
     Canvas->Control = Button;
+    Canvas->Font = Button->Font;
 
-    UnicodeString Caption = Button->Caption;
+    UnicodeString Caption = Button->Caption.Trim();
     UnicodeString Padding;
     while (Canvas->TextWidth(Padding) < ImageWidth)
     {
@@ -1235,7 +1255,7 @@ void CenterButtonImage(TButton *Button)
     Button->ImageMargins->Left = 1;
   }
 }
-
+//---------------------------------------------------------------------------
 int AdjustLocaleFlag(const UnicodeString S, TLocaleFlagOverride LocaleFlagOverride, bool Recommended, int On, int Off)
 {
   int Result = !S.IsEmpty() && StrToInt64(S);
@@ -1263,7 +1283,7 @@ int AdjustLocaleFlag(const UnicodeString S, TLocaleFlagOverride LocaleFlagOverri
   }
   return Result;
 }
-
+//---------------------------------------------------------------------------
 void SetGlobalMinimizeHandler(TCustomForm * /*Form*/, TNotifyEvent OnMinimize)
 {
   if (GlobalOnMinimize == nullptr)
@@ -1271,7 +1291,7 @@ void SetGlobalMinimizeHandler(TCustomForm * /*Form*/, TNotifyEvent OnMinimize)
     GlobalOnMinimize = OnMinimize;
   }
 }
-
+//---------------------------------------------------------------------------
 void ClearGlobalMinimizeHandler(TNotifyEvent OnMinimize)
 {
   if (GlobalOnMinimize == OnMinimize)
@@ -1279,7 +1299,7 @@ void ClearGlobalMinimizeHandler(TNotifyEvent OnMinimize)
     GlobalOnMinimize = nullptr;
   }
 }
-
+//---------------------------------------------------------------------------
 void CallGlobalMinimizeHandler(TObject *Sender)
 {
   Configuration->Usage->Inc(L"OperationMinimizations");
@@ -1288,7 +1308,7 @@ void CallGlobalMinimizeHandler(TObject *Sender)
     GlobalOnMinimize(Sender);
   }
 }
-
+//---------------------------------------------------------------------------
 static void DoApplicationMinimizeRestore(bool Minimize)
 {
   // WORKAROUND
@@ -1300,7 +1320,7 @@ static void DoApplicationMinimizeRestore(bool Minimize)
   TForm *MainForm = Application->MainForm;
   bool RestoreMainForm = false;
   if (DebugAlwaysTrue(MainForm != nullptr) &&
-    !MainForm->Visible)
+      !MainForm->Visible)
   {
     SetAppMainForm(nullptr);
     RestoreMainForm = true;
@@ -1324,17 +1344,17 @@ static void DoApplicationMinimizeRestore(bool Minimize)
     }
   }
 }
-
+//---------------------------------------------------------------------------
 void ApplicationMinimize()
 {
   DoApplicationMinimizeRestore(true);
 }
-
+//---------------------------------------------------------------------------
 void ApplicationRestore()
 {
   DoApplicationMinimizeRestore(false);
 }
-
+//---------------------------------------------------------------------------
 bool IsApplicationMinimized()
 {
   // VCL help recommends handling Application->OnMinimize/OnRestore
@@ -1344,7 +1364,7 @@ bool IsApplicationMinimized()
   bool MainFormMinimized = IsIconic(Application->MainFormHandle);
   return AppMinimized || MainFormMinimized;
 }
-
+//---------------------------------------------------------------------------
 bool HandleMinimizeSysCommand(TMessage &Message)
 {
   TWMSysCommand &SysCommand = reinterpret_cast<TWMSysCommand &>(Message);
@@ -1358,7 +1378,7 @@ bool HandleMinimizeSysCommand(TMessage &Message)
   return Result;
 }
 #endif
-
+//---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 class TCallstackThread : public TSignalThread
 {
@@ -1454,13 +1474,12 @@ void WinInitialize()
   MainThread = ::GetCurrentThreadId();
   CallstackThread.reset(nullptr);
 }
-
-
+//---------------------------------------------------------------------------
 void WinFinalize()
 {
 //  JclRemoveExceptNotifier(DoExceptNotify);
 }
-
+//---------------------------------------------------------------------------
 bool InputDialog(const UnicodeString ACaption,
   const UnicodeString APrompt, UnicodeString &Value, const UnicodeString AHelpKeyword,
   TStrings *History, bool PathInput,
