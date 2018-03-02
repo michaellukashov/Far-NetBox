@@ -1299,6 +1299,7 @@ target_include_directories(s3 PRIVATE
 
 target_compile_options(s3 PRIVATE
   -DS3_EXPORT -DWIN32 -DWINSCP -DNE_LFS -DNEED_LIBS3
+  ${LIBEXPAT_DEFS}
   ${NETBOX_UNICODE_FLAGS}
 )
 
