@@ -123,7 +123,7 @@ public:
   virtual UnicodeString GetCurrDirectory() const override;
   virtual UnicodeString GetStrVersionNumber() const override;
   virtual bool InputDialog(const UnicodeString ACaption,
-    UnicodeString APrompt, UnicodeString & Value, const UnicodeString HelpKeyword,
+    const UnicodeString APrompt, UnicodeString & Value, const UnicodeString HelpKeyword,
     TStrings * History, bool PathInput,
     TInputDialogInitializeEvent OnInitialize, bool Echo) override;
   virtual uintptr_t MoreMessageDialog(const UnicodeString Message,
