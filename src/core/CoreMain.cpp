@@ -16,11 +16,12 @@
 //---------------------------------------------------------------------------
 __removed #pragma package(smart_init)
 //---------------------------------------------------------------------------
+__removed TConfiguration * Configuration = nullptr;
 TStoredSessionList *StoredSessions = nullptr;
 //---------------------------------------------------------------------------
 TQueryButtonAlias::TQueryButtonAlias() :
   Button(0),
-  OnClick(nullptr),
+  OnSubmit(nullptr),
   GroupWith(-1),
   Default(false),
   GrouppedShiftState(ssShift),
@@ -280,11 +281,11 @@ TInstantOperationVisualizer::TInstantOperationVisualizer() :
 TInstantOperationVisualizer::~TInstantOperationVisualizer()
 {
   TDateTime Time = Now();
-  __int64 Duration = MilliSecondsBetween(Time, FStart);
-  const __int64 MinDuration = 250;
+  int64_t Duration = MilliSecondsBetween(Time, FStart);
+  const int64_t MinDuration = 250;
   if (Duration < MinDuration)
   {
-    Sleep(static_cast<unsigned int>(MinDuration - Duration));
+    Sleep(static_cast<uint32_t>(MinDuration - Duration));
   }
 }
 //---------------------------------------------------------------------------

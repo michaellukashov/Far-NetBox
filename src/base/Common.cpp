@@ -122,8 +122,10 @@ UnicodeString AnsiToString(const char *S, size_t Len)
   return UnicodeString(AnsiString(S, Len));
 }
 //---------------------------------------------------------------------------
+// Note similar function ValidLocalFileName
 UnicodeString MakeValidFileName(const UnicodeString AFileName)
 {
+  // Note similar list in LocalInvalidChars
   UnicodeString Result = AFileName;
   UnicodeString IllegalChars(L":;,=+<>|\"[] \\/?*");
   for (intptr_t Index = 0; Index < IllegalChars.Length(); ++Index)
@@ -588,6 +590,7 @@ static wchar_t *ReplaceChar(
   return InvalidChar;
 }
 //---------------------------------------------------------------------------
+//  Note similar function MakeValidFileName
 UnicodeString ValidLocalFileName(const UnicodeString AFileName)
 {
   return ValidLocalFileName(AFileName, L'_', L"", LOCAL_INVALID_CHARS);
@@ -1425,6 +1428,7 @@ void ProcessLocalDirectory(const UnicodeString ADirName,
 //---------------------------------------------------------------------------
 DWORD FileGetAttrFix(const UnicodeString AFileName)
 {
+  UnicodeString FileName = ApiPath(AFileName);
   // The default for FileGetAttr is to follow links
   bool FollowLink = true;
   // But the FileGetAttr whe called for link with FollowLink set will always fail
@@ -1433,7 +1437,7 @@ DWORD FileGetAttrFix(const UnicodeString AFileName)
   {
     FollowLink = false;
   }
-  return ::SysUtulsFileGetAttr(AFileName, FollowLink);
+  return ::SysUtulsFileGetAttr(FileName, FollowLink);
 }
 //---------------------------------------------------------------------------
 TDateTime EncodeDateVerbose(Word Year, Word Month, Word Day)

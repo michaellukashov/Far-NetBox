@@ -56,7 +56,7 @@ CUSTOM_MEM_ALLOCATION_IMPL
   UnicodeString UserName;
   UnicodeString Password;
 };
-//---------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 static int NeonProxyAuth(
   void *UserData, const char * /*Realm*/, int Attempt, char *UserName, char *Password)
 {
@@ -161,7 +161,7 @@ void CheckNeonStatus(ne_session *Session, intptr_t NeonStatus,
       switch (NeonStatus)
       {
       case NE_ERROR:
-        case NE_SOCKET:
+      case NE_SOCKET:
         // noop
         DebugAssert(!NeonError.IsEmpty());
         Error = NeonError;
@@ -307,7 +307,7 @@ bool NeonWindowsValidateCertificateWithMessage(TNeonCertificateData &Data, Unico
   UnicodeString WindowsCertificateError;
   if (NeonWindowsValidateCertificate(Data.Failures, Data.AsciiCert, WindowsCertificateError))
   {
-    AMessage = L"Certificate verified against Windows certificate store";
+    AMessage = "Certificate verified against Windows certificate store";
     // There can be also other flags, not just the NE_SSL_UNTRUSTED.
     Result = (Data.Failures == 0);
   }
@@ -366,7 +366,7 @@ static rde::set<TTerminal *> NeonTerminals;
 extern "C"
 {
 
-void ne_debug(void * Context, int Channel, const char * Format, ...)
+void ne_debug(void *Context, int Channel, const char *Format, ...)
 {
   bool DoLog;
 
@@ -394,9 +394,9 @@ void ne_debug(void * Context, int Channel, const char * Format, ...)
     DebugFail();
   }
 
-  #ifndef _DEBUG
+#ifndef _DEBUG
   if (DoLog)
-  #endif
+#endif
   {
     va_list Args;
     va_start(Args, Format);
@@ -410,10 +410,10 @@ void ne_debug(void * Context, int Channel, const char * Format, ...)
     {
       // Note that this gets called for THttp sessions too.
       // It does no harm atm.
-      TTerminal * Terminal = nullptr;
+      TTerminal *Terminal = nullptr;
       if (Context != nullptr)
       {
-        ne_session * Session = static_cast<ne_session *>(Context);
+        ne_session *Session = static_cast<ne_session *>(Context);
 
         Terminal =
           static_cast<TTerminal *>(ne_get_session_private(Session, SESSION_TERMINAL_KEY));
@@ -438,20 +438,20 @@ void ne_debug(void * Context, int Channel, const char * Format, ...)
 
 } // extern "C"
 //---------------------------------------------------------------------------
-void RegisterForNeonDebug(TTerminal * Terminal)
+void RegisterForNeonDebug(TTerminal *Terminal)
 {
   volatile TGuard Guard(*DebugSection.get());
   NeonTerminals.insert(Terminal);
 }
 //---------------------------------------------------------------------------
-void UnregisterFromNeonDebug(TTerminal * Terminal)
+void UnregisterFromNeonDebug(TTerminal *Terminal)
 {
   volatile TGuard Guard(*DebugSection.get());
   NeonTerminals.erase(Terminal);
 }
 //---------------------------------------------------------------------------
 void RetrieveNeonCertificateData(
-  int Failures, const ne_ssl_certificate * Certificate, TNeonCertificateData &Data)
+  int Failures, const ne_ssl_certificate *Certificate, TNeonCertificateData &Data)
 {
   char Fingerprint[NE_SSL_DIGESTLEN] = {0};
   if (ne_ssl_cert_digest(Certificate, Fingerprint) != 0)
@@ -461,10 +461,10 @@ void RetrieveNeonCertificateData(
   Data.Fingerprint = StrFromNeon(Fingerprint);
   Data.AsciiCert = NeonExportCertificate(Certificate);
 
-  char * Subject = ne_ssl_readable_dname(ne_ssl_cert_subject(Certificate));
+  char *Subject = ne_ssl_readable_dname(ne_ssl_cert_subject(Certificate));
   Data.Subject = StrFromNeon(Subject);
   ne_free(Subject);
-  char * Issuer = ne_ssl_readable_dname(ne_ssl_cert_issuer(Certificate));
+  char *Issuer = ne_ssl_readable_dname(ne_ssl_cert_issuer(Certificate));
   Data.Issuer = StrFromNeon(Issuer);
   ne_free(Issuer);
 
@@ -481,7 +481,7 @@ UnicodeString CertificateVerificationMessage(const TNeonCertificateData &Data)
 {
   return
     FORMAT("Verifying certificate for \"%s\" with fingerprint %s and %2.2X failures",
-           Data.Subject, Data.Fingerprint, Data.Failures);
+      Data.Subject, Data.Fingerprint, Data.Failures);
 }
 //---------------------------------------------------------------------------
 UnicodeString CertificateSummary(const TNeonCertificateData &Data, const UnicodeString AHostName)

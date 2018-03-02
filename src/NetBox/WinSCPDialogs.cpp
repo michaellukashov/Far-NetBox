@@ -306,7 +306,7 @@ bool TWinSCPPlugin::ConfigurationDialog()
 
   Dialog->SetSize(TPoint(67, 22));
   Dialog->SetCaption(FORMAT("%s - %s",
-      GetMsg(NB_PLUGIN_TITLE), ::StripHotkey(GetMsg(NB_CONFIG_INTERFACE))));
+    GetMsg(NB_PLUGIN_TITLE), ::StripHotkey(GetMsg(NB_CONFIG_INTERFACE))));
 
   TFarCheckBox *DisksMenuCheck = new TFarCheckBox(Dialog);
   DisksMenuCheck->SetCaption(GetMsg(NB_CONFIG_DISKS_MENU));
@@ -440,7 +440,7 @@ bool TWinSCPPlugin::PanelConfigurationDialog()
   std::unique_ptr<TWinSCPDialog> Dialog(new TWinSCPDialog(this));
   Dialog->SetSize(TPoint(65, 7));
   Dialog->SetCaption(FORMAT("%s - %s",
-      GetMsg(NB_PLUGIN_TITLE), ::StripHotkey(GetMsg(NB_CONFIG_PANEL))));
+    GetMsg(NB_PLUGIN_TITLE), ::StripHotkey(GetMsg(NB_CONFIG_PANEL))));
 
   TFarCheckBox *AutoReadDirectoryAfterOpCheck = new TFarCheckBox(Dialog.get());
   AutoReadDirectoryAfterOpCheck->SetCaption(GetMsg(NB_CONFIG_AUTO_READ_DIRECTORY_AFTER_OP));
@@ -470,7 +470,7 @@ bool TWinSCPPlugin::LoggingConfigurationDialog()
 
   Dialog->SetSize(TPoint(65, 15));
   Dialog->SetCaption(FORMAT("%s - %s",
-      GetMsg(NB_PLUGIN_TITLE), ::StripHotkey(GetMsg(NB_CONFIG_LOGGING))));
+    GetMsg(NB_PLUGIN_TITLE), ::StripHotkey(GetMsg(NB_CONFIG_LOGGING))));
 
   TFarCheckBox *LoggingCheck = new TFarCheckBox(Dialog);
   LoggingCheck->SetCaption(GetMsg(NB_LOGGING_ENABLE));
@@ -559,7 +559,7 @@ bool TWinSCPPlugin::LoggingConfigurationDialog()
 bool TWinSCPPlugin::TransferConfigurationDialog()
 {
   UnicodeString Caption = FORMAT("%s - %s",
-      GetMsg(NB_PLUGIN_TITLE), ::StripHotkey(GetMsg(NB_CONFIG_TRANSFER)));
+    GetMsg(NB_PLUGIN_TITLE), ::StripHotkey(GetMsg(NB_CONFIG_TRANSFER)));
 
   TGUICopyParamType &CopyParam = GetGUIConfiguration()->GetDefaultCopyParam();
   bool Result = CopyParamDialog(Caption, CopyParam, 0);
@@ -578,7 +578,7 @@ bool TWinSCPPlugin::EnduranceConfigurationDialog()
 
   Dialog->SetSize(TPoint(76, 13));
   Dialog->SetCaption(FORMAT("%s - %s",
-      GetMsg(NB_PLUGIN_TITLE), ::StripHotkey(GetMsg(NB_CONFIG_ENDURANCE))));
+    GetMsg(NB_PLUGIN_TITLE), ::StripHotkey(GetMsg(NB_CONFIG_ENDURANCE))));
 
   TFarSeparator *Separator = new TFarSeparator(Dialog);
   Separator->SetCaption(GetMsg(NB_TRANSFER_RESUME));
@@ -706,7 +706,7 @@ bool TWinSCPPlugin::QueueConfigurationDialog()
 
   Dialog->SetSize(TPoint(76, 11));
   Dialog->SetCaption(FORMAT("%s - %s",
-      GetMsg(NB_PLUGIN_TITLE), ::StripHotkey(GetMsg(NB_CONFIG_BACKGROUND))));
+    GetMsg(NB_PLUGIN_TITLE), ::StripHotkey(GetMsg(NB_CONFIG_BACKGROUND))));
 
   TFarText *Text = new TFarText(Dialog);
   Text->SetCaption(GetMsg(NB_TRANSFER_QUEUE_LIMIT));
@@ -791,7 +791,7 @@ TTransferEditorConfigurationDialog::TTransferEditorConfigurationDialog(
 {
   SetSize(TPoint(65, 14));
   SetCaption(FORMAT("%s - %s",
-      GetMsg(NB_PLUGIN_TITLE), ::StripHotkey(GetMsg(NB_CONFIG_TRANSFER_EDITOR))));
+    GetMsg(NB_PLUGIN_TITLE), ::StripHotkey(GetMsg(NB_CONFIG_TRANSFER_EDITOR))));
 
   EditorMultipleCheck = new TFarCheckBox(this);
   EditorMultipleCheck->SetCaption(GetMsg(NB_TRANSFER_EDITOR_MULTIPLE));
@@ -887,7 +887,7 @@ bool TWinSCPPlugin::ConfirmationsConfigurationDialog()
 
   Dialog->SetSize(TPoint(67, 10));
   Dialog->SetCaption(FORMAT("%s - %s",
-      GetMsg(NB_PLUGIN_TITLE), ::StripHotkey(GetMsg(NB_CONFIG_CONFIRMATIONS))));
+    GetMsg(NB_PLUGIN_TITLE), ::StripHotkey(GetMsg(NB_CONFIG_CONFIRMATIONS))));
 
   TFarCheckBox *ConfirmOverwritingCheck = new TFarCheckBox(Dialog);
   ConfirmOverwritingCheck->SetAllowGrayed(true);
@@ -941,7 +941,7 @@ bool TWinSCPPlugin::IntegrationConfigurationDialog()
 
   Dialog->SetSize(TPoint(65, 14));
   Dialog->SetCaption(FORMAT("%s - %s",
-      GetMsg(NB_PLUGIN_TITLE), ::StripHotkey(GetMsg(NB_CONFIG_INTEGRATION))));
+    GetMsg(NB_PLUGIN_TITLE), ::StripHotkey(GetMsg(NB_CONFIG_INTEGRATION))));
 
   TFarText *Text = new TFarText(Dialog);
   Text->SetCaption(GetMsg(NB_INTEGRATION_PUTTY));
@@ -1042,7 +1042,7 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin *AFarPlugin) :
   SetSize(TPoint(55, Height));
 
   SetCaption(FORMAT("%s - %s",
-      GetMsg(NB_PLUGIN_TITLE), ::StripHotkey(GetMsg(NB_CONFIG_ABOUT))));
+    GetMsg(NB_PLUGIN_TITLE), ::StripHotkey(GetMsg(NB_CONFIG_ABOUT))));
   TFarText *Text = new TFarText(this);
   Text->SetCaption(GetConfiguration()->GetFileInfoString("FileDescription"));
   Text->SetCenterGroup(true);
@@ -1535,8 +1535,14 @@ private:
   TFarButton *ConnectButton;
   TFarEdit *HostNameEdit;
   TFarEdit *PortNumberEdit;
+  TFarText *UserNameLabel;
   TFarEdit *UserNameEdit;
+  TFarText *PasswordLabel;
   TFarEdit *PasswordEdit;
+  TFarText *S3AccessKeyIDLabel;
+  TFarEdit *S3AccessKeyIDEdit;
+  TFarText *S3SecretAccessKeyLabel;
+  TFarEdit *S3SecretAccessKeyEdit;
   TFarEdit *PrivateKeyEdit;
   TFarComboBox *TransferProtocolCombo;
   TFarCheckBox *AllowScpFallbackCheck;
@@ -1662,7 +1668,7 @@ private:
   BUG(Symlink, NB_LOGIN_SFTP_BUGS_SYMLINK, SFTP); \
   BUG(SignedTS, NB_LOGIN_SFTP_BUGS_SIGNED_TS, SFTP);
 
-static const TFSProtocol FSOrder[] = { fsSFTPonly, fsSCPonly, fsFTP, fsWebDAV };
+static const TFSProtocol FSOrder[] = { fsSFTPonly, fsSCPonly, fsFTP, fsWebDAV, fsS3 };
 
 TSessionDialog::TSessionDialog(TCustomFarPlugin *AFarPlugin, TSessionActionEnum Action) :
   TTabbedDialog(AFarPlugin, tabCount),
@@ -1789,6 +1795,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin *AFarPlugin, TSessionActionEnum 
   TransferProtocolCombo->GetItems()->Add(GetMsg(NB_LOGIN_FTP));
 #endif
   TransferProtocolCombo->GetItems()->Add(GetMsg(NB_LOGIN_WEBDAV));
+  TransferProtocolCombo->GetItems()->Add(GetMsg(NB_LOGIN_S3));
 
   AllowScpFallbackCheck = new TFarCheckBox(this);
   AllowScpFallbackCheck->SetCaption(GetMsg(NB_LOGIN_ALLOW_SCP_FALLBACK));
@@ -1839,23 +1846,46 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin *AFarPlugin, TSessionActionEnum 
   Text = new TFarText(this);
   SetNextItemPosition(ipNewLine);
 
-  Text = new TFarText(this);
-  Text->SetCaption(GetMsg(NB_LOGIN_USER_NAME));
-  Text->SetWidth(20);
+  UserNameLabel = new TFarText(this);
+  UserNameLabel->SetCaption(GetMsg(NB_LOGIN_USER_NAME));
+  UserNameLabel->SetWidth(20);
+  UserNameLabel->SetVisible(true);
+
+  SetNextItemPosition(ipSame);
+  S3AccessKeyIDLabel = new TFarText(this);
+  S3AccessKeyIDLabel->SetCaption(GetMsg(NB_LOGIN_S3_ACCESS_KEY));
+  S3AccessKeyIDLabel->SetWidth(20);
+  S3AccessKeyIDLabel->SetVisible(false);
 
   SetNextItemPosition(ipRight);
 
   UserNameEdit = new TFarEdit(this);
   UserNameEdit->SetWidth(20);
   UserNameEdit->SetRight(CRect.Right - 12 - 2);
+  UserNameEdit->SetVisible(true);
+
+  SetNextItemPosition(ipSame);
+  S3AccessKeyIDEdit = new TFarEdit(this);
+  S3AccessKeyIDEdit->SetWidth(20);
+  S3AccessKeyIDEdit->SetRight(CRect.Right - 12 - 2);
+  S3AccessKeyIDEdit->SetVisible(false);
+  S3AccessKeyIDEdit->SetEnabledFollow(S3AccessKeyIDLabel);
 
   SetNextItemPosition(ipNewLine);
+
   Text = new TFarText(this);
   SetNextItemPosition(ipNewLine);
 
-  Text = new TFarText(this);
-  Text->SetCaption(GetMsg(NB_LOGIN_PASSWORD));
-  Text->SetWidth(20);
+  PasswordLabel = new TFarText(this);
+  PasswordLabel->SetCaption(GetMsg(NB_LOGIN_PASSWORD));
+  PasswordLabel->SetWidth(20);
+  PasswordLabel->SetVisible(true);
+
+  SetNextItemPosition(ipSame);
+  S3SecretAccessKeyLabel = new TFarText(this);
+  S3SecretAccessKeyLabel->SetCaption(GetMsg(NB_LOGIN_S3_SECRET_ACCESS_KEY));
+  S3SecretAccessKeyLabel->SetWidth(20);
+  S3SecretAccessKeyLabel->SetVisible(false);
 
   SetNextItemPosition(ipRight);
 
@@ -1863,6 +1893,15 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin *AFarPlugin, TSessionActionEnum 
   PasswordEdit->SetPassword(true);
   PasswordEdit->SetWidth(20);
   PasswordEdit->SetRight(CRect.Right - 12 - 2);
+  PasswordEdit->SetVisible(true);
+
+  SetNextItemPosition(ipSame);
+  S3SecretAccessKeyEdit = new TFarEdit(this);
+  S3SecretAccessKeyEdit->SetPassword(false);
+  S3SecretAccessKeyEdit->SetWidth(20);
+  S3SecretAccessKeyEdit->SetRight(CRect.Right - 12 - 2);
+  S3SecretAccessKeyEdit->SetVisible(false);
+  S3SecretAccessKeyLabel->SetEnabledFollow(S3SecretAccessKeyEdit);
 
   SetNextItemPosition(ipNewLine);
   Text = new TFarText(this);
@@ -2138,7 +2177,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin *AFarPlugin, TSessionActionEnum 
   SFTPMaxVersionCombo = new TFarComboBox(this);
   SFTPMaxVersionCombo->SetDropDownList(true);
   SFTPMaxVersionCombo->SetWidth(7);
-  for (intptr_t Index2 = 0; Index2 <= 5; ++Index2)
+  for (intptr_t Index2 = 0; Index2 <= 6; ++Index2)
   {
     SFTPMaxVersionCombo->GetItems()->Add(::IntToStr(Index2));
   }
@@ -2909,6 +2948,20 @@ void TSessionDialog::TransferProtocolComboChange()
       HostNameEdit->SetText(HostName);
     }
   }
+  else if (FSProtocol == fsS3)
+  {
+    if (Port == HTTPPortNumber)
+    {
+      PortNumberEdit->SetAsInteger(HTTPSPortNumber);
+      UnicodeString HostName = HostNameEdit->GetText();
+      if (HostName.IsEmpty())
+      {
+        HostName = "s3.amazonaws.com";
+      }
+      ::AdjustRemoteDir(HostName, PortNumberEdit, RemoteDirectoryEdit);
+      HostNameEdit->SetText(HostName);
+    }
+  }
 }
 
 bool TSessionDialog::IsSshProtocol(TFSProtocol FSProtocol) const
@@ -2936,6 +2989,7 @@ void TSessionDialog::UpdateControls()
   bool InternalSshProtocol = IsSshProtocol(FSProtocol);
   bool InternalWebDAVProtocol = IsWebDAVProtocol(FSProtocol);
   bool HTTPSProtocol = (FSProtocol == fsWebDAV) && (Ftps != ftpsNone);
+  bool S3Protocol = (FSProtocol == fsS3);
   bool lSshProtocol = InternalSshProtocol;
   bool lSftpProtocol = (FSProtocol == fsSFTPonly) || (FSProtocol == fsSFTP);
   bool ScpOnlyProtocol = (FSProtocol == fsSCPonly);
@@ -2949,16 +3003,33 @@ void TSessionDialog::UpdateControls()
   AllowScpFallbackCheck->SetVisible(
     TransferProtocolCombo->GetVisible() &&
     (IndexToFSProtocol(TransferProtocolCombo->GetItemIndex(), false) == fsSFTPonly));
-  InsecureLabel->SetVisible(TransferProtocolCombo->GetVisible() && !lSshProtocol && !lFtpsProtocol && !HTTPSProtocol);
+  InsecureLabel->SetVisible(TransferProtocolCombo->GetVisible() && !lSshProtocol && !lFtpsProtocol && !HTTPSProtocol && !S3Protocol);
   bool FtpEncryptionVisible = (GetTab() == FtpEncryptionCombo->GetGroup()) &&
     (lFtpProtocol || lFtpsProtocol || InternalWebDAVProtocol || HTTPSProtocol);
   FtpEncryptionLabel->SetVisible(FtpEncryptionVisible);
   FtpEncryptionCombo->SetVisible(FtpEncryptionVisible);
   PrivateKeyEdit->SetEnabled(lSshProtocol || lFtpsProtocol || HTTPSProtocol);
-  HostNameLabel->SetCaption(GetMsg(NB_LOGIN_HOST_NAME));
+//  HostNameLabel->SetCaption(GetMsg(NB_LOGIN_HOST_NAME));
 
   UserNameEdit->SetEnabled(!LoginAnonymous);
   PasswordEdit->SetEnabled(!LoginAnonymous);
+
+  if (S3Protocol)
+  {
+
+  }
+  else
+  {
+
+  }
+  UserNameLabel->SetVisible(!S3Protocol);
+  UserNameEdit->SetVisible(!S3Protocol);
+  PasswordLabel->SetVisible(!S3Protocol);
+  PasswordEdit->SetVisible(!S3Protocol);
+  S3AccessKeyIDLabel->SetVisible(S3Protocol);
+  S3AccessKeyIDEdit->SetVisible(S3Protocol);
+  S3SecretAccessKeyLabel->SetVisible(S3Protocol);
+  S3SecretAccessKeyEdit->SetVisible(S3Protocol);
 
   // Connection sheet
   FtpPasvModeCheck->SetEnabled(lFtpProtocol);
@@ -3930,9 +4001,9 @@ TFtps TSessionDialog::GetFtps() const
 
 TFSProtocol TSessionDialog::IndexToFSProtocol(intptr_t Index, bool AllowScpFallback) const
 {
+  TFSProtocol Result = fsSFTP;
   bool InBounds = (Index >= 0) && (Index < ToIntPtr(_countof(FSOrder)));
   DebugAssert(InBounds || (Index == -1));
-  TFSProtocol Result = fsSFTP;
   if (InBounds)
   {
     Result = FSOrder[Index];

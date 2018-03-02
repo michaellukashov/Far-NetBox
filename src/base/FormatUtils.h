@@ -37,6 +37,3 @@ inline std::basic_ostream<char>& operator<<(std::basic_ostream<char> &os, const 
   os << Value.c_str();
   return os;
 }
-
-//NB_CORE_EXPORT std::basic_ostream<wchar_t>& operator<<(std::basic_ostream<wchar_t> &os, const UnicodeString &Value);
-//NB_CORE_EXPORT std::basic_ostream<char>& operator<<(std::basic_ostream<char> &os, const AnsiString &Value);

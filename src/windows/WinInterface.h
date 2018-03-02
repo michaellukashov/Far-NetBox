@@ -110,22 +110,22 @@ void InitializeWinHelp();
 void FinalizeWinHelp();
 
 // windows\WinInterface.cpp
-uintptr_t MessageDialog(const UnicodeString Msg, TQueryType Type,
-  uint32_t Answers, const UnicodeString HelpKeyword = HELP_NONE, const TMessageParams *Params = nullptr);
+uintptr_t MessageDialog(const UnicodeString AMsg, TQueryType Type,
+  uint32_t Answers, const UnicodeString AHelpKeyword = HELP_NONE, const TMessageParams *Params = nullptr);
 uintptr_t MessageDialog(intptr_t Ident, TQueryType Type,
-  uint32_t Answers, const UnicodeString HelpKeyword = HELP_NONE, const TMessageParams *Params = nullptr);
-uintptr_t SimpleErrorDialog(const UnicodeString Msg, const UnicodeString MoreMessages = L"");
+  uint32_t Answers, const UnicodeString AHelpKeyword = HELP_NONE, const TMessageParams *Params = nullptr);
+uintptr_t SimpleErrorDialog(const UnicodeString AMsg, const UnicodeString AMoreMessages = L"");
 
-uintptr_t MoreMessageDialog(const UnicodeString Message,
+uintptr_t MoreMessageDialog(const UnicodeString AMessage,
   TStrings *MoreMessages, TQueryType Type, uint32_t Answers,
-  const UnicodeString HelpKeyword, const TMessageParams *Params = nullptr);
+  const UnicodeString AHelpKeyword, const TMessageParams *Params = nullptr);
 
 uintptr_t ExceptionMessageDialog(Exception *E, TQueryType Type,
-  const UnicodeString MessageFormat = L"", uint32_t Answers = qaOK,
-  const UnicodeString HelpKeyword = HELP_NONE, const TMessageParams *Params = nullptr);
+  const UnicodeString AMessageFormat = L"", uint32_t Answers = qaOK,
+  const UnicodeString AHelpKeyword = HELP_NONE, const TMessageParams *Params = nullptr);
 uintptr_t FatalExceptionMessageDialog(Exception *E, TQueryType Type,
   intptr_t SessionReopenTimeout, const UnicodeString MessageFormat = L"", uint32_t Answers = qaOK,
-  const UnicodeString HelpKeyword = HELP_NONE, const TMessageParams *Params = nullptr);
+  const UnicodeString AHelpKeyword = HELP_NONE, const TMessageParams *Params = nullptr);
 
 #if defined(FARPLUGIN)
 
@@ -167,7 +167,7 @@ typedef void (__closure *TInputDialogInitialize)
   (TObject * Sender, TInputDialogData * Data);
 #endif // #if 0
 bool InputDialog(const UnicodeString ACaption,
-  const UnicodeString APrompt, UnicodeString &Value, const UnicodeString HelpKeyword = HELP_NONE,
+  const UnicodeString APrompt, UnicodeString &Value, const UnicodeString AHelpKeyword = HELP_NONE,
   TStrings *History = nullptr, bool PathInput = false,
   TInputDialogInitializeEvent OnInitialize = nullptr, bool Echo = true);
 

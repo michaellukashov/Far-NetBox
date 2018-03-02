@@ -4,7 +4,7 @@
 
 #include "WinInterface.h"
 
-const uint32_t GUIUpdateInterval = 100;
+// const uint32_t GUIUpdateInterval = 100;
 
 static bool IsPositiveAnswer(uint32_t Answer)
 {
@@ -581,7 +581,7 @@ bool AppendExceptionStackTraceAndForget(TStrings *&MoreMessages)
 }
 
 uintptr_t ExceptionMessageDialog(Exception * /*E*/, TQueryType /*Type*/,
-  const UnicodeString /*MessageFormat*/, uint32_t /*Answers*/, const UnicodeString /*HelpKeyword*/,
+  const UnicodeString /*AMessageFormat*/, uint32_t /*Answers*/, const UnicodeString /*AHelpKeyword*/,
   const TMessageParams * /*Params*/)
 {
 #if 0
@@ -1480,15 +1480,15 @@ uintptr_t MessageDialog(const UnicodeString AMsg, TQueryType Type,
 }
 
 uintptr_t MessageDialog(intptr_t Ident, TQueryType Type,
-  uint32_t Answers, const UnicodeString HelpKeyword, const TMessageParams *Params)
+  uint32_t Answers, const UnicodeString AHelpKeyword, const TMessageParams *Params)
 {
-  DebugUsedParam(HelpKeyword);
+  DebugUsedParam(AHelpKeyword);
   UnicodeString Msg = LoadStr(Ident);
   uintptr_t Result = GetGlobals()->MoreMessageDialog(Msg, nullptr, Type, Answers, Params);
   return Result;
 }
 
-uintptr_t SimpleErrorDialog(const UnicodeString AMsg, const UnicodeString /*MoreMessages*/)
+uintptr_t SimpleErrorDialog(const UnicodeString AMsg, const UnicodeString /*AMoreMessages*/)
 {
   uint32_t Answers = qaOK;
   uintptr_t Result = GetGlobals()->MoreMessageDialog(AMsg, nullptr, qtError, Answers, nullptr);
@@ -1497,9 +1497,9 @@ uintptr_t SimpleErrorDialog(const UnicodeString AMsg, const UnicodeString /*More
 
 uintptr_t MoreMessageDialog(const UnicodeString AMessage,
   TStrings *MoreMessages, TQueryType Type, uint32_t Answers,
-  const UnicodeString HelpKeyword, const TMessageParams *Params)
+  const UnicodeString AHelpKeyword, const TMessageParams *Params)
 {
-  DebugUsedParam(HelpKeyword);
+  DebugUsedParam(AHelpKeyword);
   uintptr_t Result = GetGlobals()->MoreMessageDialog(AMessage, MoreMessages, Type, Answers, Params);
   return Result;
 }

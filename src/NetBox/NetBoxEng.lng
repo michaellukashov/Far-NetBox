@@ -208,6 +208,8 @@
 "Normal"
 "&User name:"
 "&Password:"
+"&Access key ID:"
+"&Secret access key:"
 "Private &key file:"
 " Protocol "
 "&File protocol: "
@@ -215,6 +217,7 @@
 "SFTP"
 "FTP"
 "WebDAV"
+"Amazon S3"
 "Allow SCP &fallback"
 "Insecure"
 "Use buttons on top or Ctrl+PgUp and Ctrl+PgDn keys to "
@@ -1249,11 +1252,11 @@
 "$$"
 
 "WinSCP"
-"5.11.2"
+"5.12.2"
 "1.6.2"
 "Based on WinSCP: SFTP/FTP/SCP client for FAR"
 " Version %s"
-"Copyright © 2000-2017 Martin Prikryl"
+"Copyright © 2000-2018 Martin Prikryl"
 
 
 "**Continue connecting to an unknown server and add its host key to a cache?**\n\nThe server's host key was not found in the cache. You have no guarantee that the server is the computer you think it is.\n\nThe server's %s key fingerprint is:\n%s\n\nIf you trust this host, press Yes. To connect without adding host key to the cache, press No. To abandon the connection press Cancel."

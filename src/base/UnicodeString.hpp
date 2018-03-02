@@ -18,6 +18,7 @@ class BaseStringT : public CMStringT< CharT, NBChTraitsCRT< CharT> >
 
 public:
   BaseStringT() {}
+  BaseStringT(BaseStringT&&) = default;
 
   BaseStringT(const BaseStringT &rhs) :
     BaseT(rhs.c_str(), ToInt(rhs.GetLength()))
@@ -253,11 +254,11 @@ public:
     return Result;
   }
 
-  void Unique() { this->operator=(BaseStringT(this->c_str(), this->GetLength())); }
+  void Unique() { this->SetString(BaseT::c_str(), BaseT::GetLength()); }
 
   int vprintf(const char *Format, va_list ArgList)
   {
-    char *Buf = SetLength(32 * 1024);
+    char *Buf = BaseT::GetBufferSetLength(32 * 1024);
     int Size = vsnprintf_s(Buf, ::ToSizeT(GetLength()), _TRUNCATE, Format, ArgList);
     BaseT::Truncate(Size);
     return Size;
@@ -317,23 +318,10 @@ public:
   }
 
 public:
-  BaseStringT &operator=(const CharT *Str)
-  {
-    BaseT::operator=(BaseT(Str, ToInt(BaseStringT::StringLength(Str))));
-    return *this;
-  }
-
-  BaseStringT &operator=(const XCHAR Ch)
-  {
-    BaseT::operator=(BaseT(&Ch, 1));
-    return *this;
-  }
-
-  BaseStringT &operator=(const BaseStringT &StrCopy)
-  {
-    BaseT::operator=(BaseT(StrCopy.c_str(), ToInt(StrCopy.GetLength())));
-    return *this;
-  }
+  BaseStringT &operator=(BaseStringT&&) = default;
+  BaseStringT &operator=(const CharT *Str) { SetString(Str, ToInt(BaseStringT::StringLength(Str))); return *this; }
+  BaseStringT &operator=(const XCHAR Ch) { SetString(&Ch, 1); return *this; }
+  BaseStringT &operator=(const BaseStringT &StrCopy) { SetString(StrCopy.c_str(), ToInt(StrCopy.GetLength())); return *this; }
 
   template<typename StringT>
   BaseStringT operator+(const StringT &rhs) const
@@ -443,9 +431,9 @@ public:
   { return rhs.Compare(lhs) != 0; }
 
 private:
-  void Init(const wchar_t *Str, intptr_t Length) { BaseT::operator=(BaseT(Str, ToInt(Length))); }
-  void Init(const char *Str, intptr_t Length) { BaseT::operator=(BaseT(Str, ToInt(Length))); }
-  void Init(const unsigned char *Str, intptr_t Length) { BaseT::operator=(BaseT(reinterpret_cast<const char *>(Str), ToInt(Length))); }
+  void Init(const wchar_t *Str, intptr_t Length) { this->operator=(BaseT(Str, ToInt(Length))); }
+  void Init(const char *Str, intptr_t Length) { SetString(Str, ToInt(Length)); }
+  void Init(const unsigned char *Str, intptr_t Length) { SetString(reinterpret_cast<const char *>(Str), ToInt(Length)); }
 };
 
 

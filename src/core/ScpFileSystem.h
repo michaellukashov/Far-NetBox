@@ -3,9 +3,10 @@
 
 #include <FileSystems.h>
 #include <CopyParam.h>
-
+//---------------------------------------------------------------------------
 class TCommandSet;
 class TSecureShell;
+struct TOverwriteFileParams;
 //---------------------------------------------------------------------------
 class NB_CORE_EXPORT TSCPFileSystem : public TCustomFileSystem
 {

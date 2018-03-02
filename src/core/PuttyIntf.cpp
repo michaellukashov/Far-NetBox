@@ -12,12 +12,7 @@
 #include "SecureShell.h"
 #include "CoreMain.h"
 #include "TextsCore.h"
-
-extern "C"
-{
-#include <winstuff.h>
-}
-
+//---------------------------------------------------------------------------
 char sshver[50];
 extern const char commitid[] = "";
 const int platform_uses_x11_unix_by_default = TRUE;
@@ -27,12 +22,16 @@ char appname_[50];
 const char *const appname = appname_;
 extern "C" const int share_can_be_downstream = FALSE;
 extern "C" const int share_can_be_upstream = FALSE;
-
+//---------------------------------------------------------------------------
+extern "C"
+{
+#include <winstuff.h>
+}
 const UnicodeString OriginalPuttyRegistryStorageKey(PUTTY_REG_POS);
 const UnicodeString KittyRegistryStorageKey(L"Software\\9bis.com\\KiTTY");
 const UnicodeString OriginalPuttyExecutable("putty.exe");
 const UnicodeString KittyExecutable("kitty.exe");
-
+//---------------------------------------------------------------------------
 void PuttyInitialize()
 {
   SaveRandomSeed = true;
@@ -54,7 +53,7 @@ void PuttyInitialize()
   DebugAssert(!AppName.IsEmpty() && (ToSizeT(AppName.Length()) < _countof(appname_)));
   strcpy_s(appname_, sizeof(appname_), AppName.c_str());
 }
-
+//---------------------------------------------------------------------------
 void PuttyFinalize()
 {
   if (SaveRandomSeed)
@@ -69,12 +68,12 @@ void PuttyFinalize()
   ec_cleanup();
   DeleteCriticalSection(&putty_section);
 }
-
+//---------------------------------------------------------------------------
 void DontSaveRandomSeed()
 {
   SaveRandomSeed = false;
 }
-
+//---------------------------------------------------------------------------
 extern "C" char *do_select(Plug plug, SOCKET skt, int startup)
 {
   void *frontend;
@@ -108,7 +107,7 @@ extern "C" char *do_select(Plug plug, SOCKET skt, int startup)
 
   return nullptr;
 }
-
+//---------------------------------------------------------------------------
 int from_backend(void *frontend, int is_stderr, const char *data, int datalen)
 {
   DebugAssert(frontend);
@@ -126,21 +125,21 @@ int from_backend(void *frontend, int is_stderr, const char *data, int datalen)
   }
   return 0;
 }
-
+//---------------------------------------------------------------------------
 int from_backend_untrusted(void * /*frontend*/, const char * /*data*/, int /*len*/)
 {
   // currently used with authentication banner only,
   // for which we have own interface display_banner
   return 0;
 }
-
+//---------------------------------------------------------------------------
 int from_backend_eof(void * /*frontend*/)
 {
   return FALSE;
 }
 
 int GetUserpassInput(prompts_t *p, const uint8_t * /*in*/, int /*inlen*/);
-
+//---------------------------------------------------------------------------
 int get_userpass_input(prompts_t *p, const uint8_t *in, int inlen)
 {
   return GetUserpassInput(p, in, inlen);
@@ -218,14 +217,14 @@ int GetUserpassInput(prompts_t *p, const uint8_t * /*in*/, int /*inlen*/)
 
   return Result;
 }
-
+//---------------------------------------------------------------------------
 char *get_ttymode(void * /*frontend*/, const char * /*mode*/)
 {
   // should never happen when Config.nopty == TRUE
   DebugFail();
   return nullptr;
 }
-
+//---------------------------------------------------------------------------
 void logevent(void *frontend, const char *str)
 {
   // Frontend maybe NULL here
@@ -234,7 +233,7 @@ void logevent(void *frontend, const char *str)
     get_as<TSecureShell>(frontend)->PuttyLogEvent(str);
   }
 }
-
+//---------------------------------------------------------------------------
 void connection_fatal(void *frontend, const char *fmt, ...)
 {
   va_list Param;
@@ -248,7 +247,7 @@ void connection_fatal(void *frontend, const char *fmt, ...)
   DebugAssert(frontend != nullptr);
   get_as<TSecureShell>(frontend)->PuttyFatalError(UnicodeString(Str));
 }
-
+//---------------------------------------------------------------------------
 int verify_ssh_host_key(void *frontend, char *host, int port, const char *keytype,
   char *keystr, char *fingerprint, void ( * /*callback*/)(void *ctx, int result),
   void * /*ctx*/)
@@ -259,14 +258,14 @@ int verify_ssh_host_key(void *frontend, char *host, int port, const char *keytyp
   // We should return 0 when key was not confirmed, we throw exception instead.
   return 1;
 }
-
+//---------------------------------------------------------------------------
 int have_ssh_host_key(void *frontend, const char *hostname, int port,
   const char *keytype)
 {
   DebugAssert(frontend != nullptr);
   return static_cast<TSecureShell *>(frontend)->HaveHostKey(hostname, port, keytype) ? 1 : 0;
 }
-
+//---------------------------------------------------------------------------
 int askalg(void *frontend, const char *algtype, const char *algname,
   void ( * /*callback*/)(void *ctx, int result), void * /*ctx*/)
 {
@@ -276,25 +275,25 @@ int askalg(void *frontend, const char *algtype, const char *algname,
   // We should return 0 when alg was not confirmed, we throw exception instead.
   return 1;
 }
-
+//---------------------------------------------------------------------------
 int askhk(void * /*frontend*/, const char * /*algname*/, const char * /*betteralgs*/,
   void ( * /*callback*/)(void *ctx, int result), void * /*ctx*/)
 {
   return 1;
 }
-
+//---------------------------------------------------------------------------
 void old_keyfile_warning()
 {
   // no reference to TSecureShell instance available
 }
-
+//---------------------------------------------------------------------------
 void display_banner(void *frontend, const char *banner, int size)
 {
   DebugAssert(frontend);
   UnicodeString Banner(banner, size);
   get_as<TSecureShell>(frontend)->DisplayBanner(Banner);
 }
-
+//---------------------------------------------------------------------------
 static void SSHFatalError(const char *Format, va_list Param)
 {
   AnsiString Str;
@@ -307,7 +306,7 @@ static void SSHFatalError(const char *Format, va_list Param)
   // like 'out of memory' from putty\ssh.c.
   throw ESshFatal(nullptr, Str.c_str());
 }
-
+//---------------------------------------------------------------------------
 void fatalbox(const char *fmt, ...)
 {
   va_list Param;
@@ -315,7 +314,7 @@ void fatalbox(const char *fmt, ...)
   SSHFatalError(fmt, Param);
   va_end(Param);
 }
-
+//---------------------------------------------------------------------------
 void modalfatalbox(const char *fmt, ...)
 {
   va_list Param;
@@ -323,7 +322,7 @@ void modalfatalbox(const char *fmt, ...)
   SSHFatalError(fmt, Param);
   va_end(Param);
 }
-
+//---------------------------------------------------------------------------
 void nonfatal(const char *fmt, ...)
 {
   va_list Param;
@@ -332,18 +331,16 @@ void nonfatal(const char *fmt, ...)
   va_end(Param);
 }
 
-void CleanupExit(int /*code*/);
-
-void cleanup_exit(int code)
-{
-  CleanupExit(code);
-}
-
 void CleanupExit(int /*code*/)
 {
   throw ESshFatal(nullptr, L"");
 }
-
+//---------------------------------------------------------------------------
+void cleanup_exit(int code)
+{
+  CleanupExit(code);
+}
+//---------------------------------------------------------------------------
 int askappend(void * /*frontend*/, Filename * /*filename*/,
   void ( * /*callback*/)(void *ctx, int result), void * /*ctx*/)
 {
@@ -351,63 +348,63 @@ int askappend(void * /*frontend*/, Filename * /*filename*/,
   DebugFail();
   return 0;
 }
-
+//---------------------------------------------------------------------------
 void ldisc_echoedit_update(void * /*handle*/)
 {
   DebugFail();
 }
-
+//---------------------------------------------------------------------------
 void agent_schedule_callback(void ( * /*callback*/)(void *, void *, int),
   void * /*callback_ctx*/, void * /*data*/, int /*len*/)
 {
   DebugFail();
 }
-
+//---------------------------------------------------------------------------
 void notify_remote_exit(void * /*frontend*/)
 {
   // nothing
 }
-
+//---------------------------------------------------------------------------
 void update_specials_menu(void * /*frontend*/)
 {
   // nothing
 }
-
+//---------------------------------------------------------------------------
 unsigned long schedule_timer(int ticks, timer_fn_t /*fn*/, void * /*ctx*/)
 {
   return ticks + ::GetTickCount();
 }
-
+//---------------------------------------------------------------------------
 void expire_timer_context(void * /*ctx*/)
 {
   // nothing
 }
-
+//---------------------------------------------------------------------------
 Pinger pinger_new(Conf * /*conf*/, Backend * /*back*/, void * /*backhandle*/)
 {
   return nullptr;
 }
-
+//---------------------------------------------------------------------------
 void pinger_reconfig(Pinger /*pinger*/, Conf * /*oldconf*/, Conf * /*newconf*/)
 {
   // nothing
 }
-
+//---------------------------------------------------------------------------
 void pinger_free(Pinger /*pinger*/)
 {
   // nothing
 }
-
+//---------------------------------------------------------------------------
 void set_busy_status(void * /*frontend*/, int /*status*/)
 {
   // nothing
 }
-
+//---------------------------------------------------------------------------
 void platform_get_x11_auth(struct X11Display * /*display*/, Conf * /*conf*/)
 {
   // nothing, therefore no auth.
 }
-
+//---------------------------------------------------------------------------
 // Based on PuTTY's settings.c
 char *get_remote_username(Conf *conf)
 {
@@ -419,7 +416,7 @@ char *get_remote_username(Conf *conf)
   }
   return result;
 }
-
+//---------------------------------------------------------------------------
 static long OpenWinSCPKey(HKEY Key, const char *SubKey, HKEY *Result, bool CanCreate)
 {
   long R;
@@ -463,17 +460,17 @@ static long OpenWinSCPKey(HKEY Key, const char *SubKey, HKEY *Result, bool CanCr
 
   return R;
 }
-
+//---------------------------------------------------------------------------
 long reg_open_winscp_key(HKEY Key, const char *SubKey, HKEY *Result)
 {
   return OpenWinSCPKey(Key, SubKey, Result, false);
 }
-
+//---------------------------------------------------------------------------
 long reg_create_winscp_key(HKEY Key, const char *SubKey, HKEY *Result)
 {
   return OpenWinSCPKey(Key, SubKey, Result, true);
 }
-
+//---------------------------------------------------------------------------
 long reg_query_winscp_value_ex(HKEY Key, const char *ValueName, unsigned long * /*Reserved*/,
   unsigned long *Type, uint8_t *Data, unsigned long *DataSize)
 {
@@ -524,7 +521,7 @@ long reg_query_winscp_value_ex(HKEY Key, const char *ValueName, unsigned long * 
 
   return R;
 }
-
+//---------------------------------------------------------------------------
 long reg_set_winscp_value_ex(HKEY Key, const char *ValueName, unsigned long /*Reserved*/,
   unsigned long Type, const uint8_t *Data, unsigned long DataSize)
 {
@@ -542,7 +539,7 @@ long reg_set_winscp_value_ex(HKEY Key, const char *ValueName, unsigned long /*Re
 
   return ERROR_SUCCESS;
 }
-
+//---------------------------------------------------------------------------
 long reg_close_winscp_key(HKEY Key)
 {
   DebugAssert(GetConfiguration() != nullptr);
@@ -555,10 +552,11 @@ long reg_close_winscp_key(HKEY Key)
 
   return ERROR_SUCCESS;
 }
-
+//---------------------------------------------------------------------------
 TKeyType GetKeyType(const UnicodeString AFileName)
 {
   DebugAssert(ktUnopenable == SSH_KEYTYPE_UNOPENABLE);
+  DebugAssert(ktSSHCom == SSH_KEYTYPE_SSHCOM);
   DebugAssert(ktSSH2PublicOpenSSH == SSH_KEYTYPE_SSH2_PUBLIC_OPENSSH);
   UTF8String UtfFileName = UTF8String(::ExpandEnvironmentVariables(AFileName));
   Filename *KeyFile = filename_from_str(UtfFileName.c_str());
@@ -566,7 +564,7 @@ TKeyType GetKeyType(const UnicodeString AFileName)
   filename_free(KeyFile);
   return Result;
 }
-
+//---------------------------------------------------------------------------
 bool IsKeyEncrypted(TKeyType KeyType, const UnicodeString FileName, UnicodeString &Comment)
 {
   UTF8String UtfFileName = UTF8String(::ExpandEnvironmentVariables(FileName));
@@ -604,7 +602,7 @@ bool IsKeyEncrypted(TKeyType KeyType, const UnicodeString FileName, UnicodeStrin
   filename_free(KeyFile);
   return Result;
 }
-
+//---------------------------------------------------------------------------
 TPrivateKey *LoadKey(TKeyType KeyType, const UnicodeString FileName, const UnicodeString Passphrase)
 {
   UTF8String UtfFileName = UTF8String(::ExpandEnvironmentVariables(FileName));
@@ -648,7 +646,7 @@ TPrivateKey *LoadKey(TKeyType KeyType, const UnicodeString FileName, const Unico
   filename_free(KeyFile);
   return reinterpret_cast<TPrivateKey *>(Ssh2Key);
 }
-
+//---------------------------------------------------------------------------
 void ChangeKeyComment(TPrivateKey *PrivateKey, const UnicodeString Comment)
 {
   AnsiString AnsiComment(Comment);
@@ -656,7 +654,7 @@ void ChangeKeyComment(TPrivateKey *PrivateKey, const UnicodeString Comment)
   sfree(Ssh2Key->comment);
   Ssh2Key->comment = dupstr(AnsiComment.c_str());
 }
-
+//---------------------------------------------------------------------------
 void SaveKey(TKeyType KeyType, const UnicodeString FileName,
   const UnicodeString Passphrase, TPrivateKey *PrivateKey)
 {
@@ -681,14 +679,14 @@ void SaveKey(TKeyType KeyType, const UnicodeString FileName,
   }
   filename_free(KeyFile);
 }
-
+//---------------------------------------------------------------------------
 void FreeKey(TPrivateKey *PrivateKey)
 {
   struct ssh2_userkey *Ssh2Key = reinterpret_cast<struct ssh2_userkey *>(PrivateKey);
   Ssh2Key->alg->freekey(Ssh2Key->data);
   sfree(Ssh2Key);
 }
-
+//---------------------------------------------------------------------------
 bool HasGSSAPI(const UnicodeString CustomPath)
 {
   static int has = -1;
@@ -730,7 +728,7 @@ bool HasGSSAPI(const UnicodeString CustomPath)
   }
   return (has > 0);
 }
-
+//---------------------------------------------------------------------------
 static void DoNormalizeFingerprint(UnicodeString &Fingerprint, UnicodeString &KeyType)
 {
   const wchar_t NormalizedSeparator = L'-';
@@ -769,7 +767,7 @@ static void DoNormalizeFingerprint(UnicodeString &Fingerprint, UnicodeString &Ke
     }
   }
 }
-
+//---------------------------------------------------------------------------
 UnicodeString NormalizeFingerprint(const UnicodeString AFingerprint)
 {
   UnicodeString Fingerprint = AFingerprint;
@@ -777,7 +775,7 @@ UnicodeString NormalizeFingerprint(const UnicodeString AFingerprint)
   DoNormalizeFingerprint(Fingerprint, KeyType);
   return Fingerprint;
 }
-
+//---------------------------------------------------------------------------
 UnicodeString GetKeyTypeFromFingerprint(const UnicodeString AFingerprint)
 {
   UnicodeString Fingerprint = AFingerprint;
@@ -785,7 +783,7 @@ UnicodeString GetKeyTypeFromFingerprint(const UnicodeString AFingerprint)
   DoNormalizeFingerprint(Fingerprint, KeyType);
   return KeyType;
 }
-
+//---------------------------------------------------------------------------
 UnicodeString GetPuTTYVersion()
 {
   // "Release 0.64"
@@ -797,15 +795,15 @@ UnicodeString GetPuTTYVersion()
   Result.Delete(1, P);
   return Result;
 }
-
+//---------------------------------------------------------------------------
 UnicodeString Sha256(const char *Data, size_t Size)
 {
-  unsigned char Digest[32];
+  uint8_t Digest[32];
   putty_SHA256_Simple(Data, ToInt(Size), Digest);
   UnicodeString Result(BytesToHex(Digest, _countof(Digest)));
   return Result;
 }
-
+//---------------------------------------------------------------------------
 void DllHijackingProtection()
 {
   dll_hijacking_protection();
@@ -818,7 +816,7 @@ UnicodeString ParseOpenSshPubLine(const UnicodeString ALine, const struct ssh_si
   int PubBlobLen = 0;
   char * CommentPtr = nullptr;
   const char * ErrorStr = nullptr;
-  unsigned char * PubBlob = openssh_loadpub_line(UtfLine.c_str(), &AlgorithmName, &PubBlobLen, &CommentPtr, &ErrorStr);
+  uint8_t * PubBlob = openssh_loadpub_line(UtfLine.c_str(), &AlgorithmName, &PubBlobLen, &CommentPtr, &ErrorStr);
   UnicodeString Result;
   if (PubBlob == nullptr)
   {
@@ -894,4 +892,5 @@ UnicodeString GetKeyTypeHuman(const UnicodeString AKeyType)
   }
   return Result;
 }
-
+//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------

@@ -33,16 +33,3 @@ UnicodeString FmtLoadStr(intptr_t Id, fmt::ArgList args)
 }
 
 } // namespace nb
-
-//std::basic_ostream<wchar_t>& operator<<(std::basic_ostream<wchar_t> &os, const UnicodeString &Value)
-//{
-//  os << Value.c_str();
-//  return os;
-//}
-
-//std::basic_ostream<char>& operator<<(std::basic_ostream<char> &os, const AnsiString &Value)
-//{
-//  os << Value.c_str();
-//  return os;
-//}
-

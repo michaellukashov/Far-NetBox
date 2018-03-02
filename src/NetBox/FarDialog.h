@@ -11,8 +11,10 @@ class TFarSeparator;
 class TFarBox;
 class TFarList;
 struct FarDialogItem;
+
 enum TItemPosition
 {
+  ipSame,
   ipNewLine,
   ipBelow,
   ipRight
@@ -91,7 +93,7 @@ public:
   TFarDialogItem *GetItemFocused() const { return FItemFocused; }
   void SetItemFocused(TFarDialogItem *Value);
   intptr_t GetResult() const { return FResult; }
-  TPoint GetMaxSize();
+  TPoint GetMaxSize() const;
 
   TFarKeyEvent GetOnKey() const { return FOnKey; }
   void SetOnKey(TFarKeyEvent Value) { FOnKey = Value; }
@@ -457,9 +459,9 @@ public:
 
 protected:
   TFarAllowChangeEvent FOnAllowChange;
-  virtual LONG_PTR ItemProc(int Msg, LONG_PTR Param);
-  virtual bool GetIsEmpty() const;
-  virtual void SetData(const UnicodeString Value);
+  virtual LONG_PTR ItemProc(int Msg, LONG_PTR Param) override;
+  virtual bool GetIsEmpty() const override;
+  virtual void SetData(const UnicodeString Value) override;
 };
 
 class TFarEdit : public TFarDialogItem
@@ -662,8 +664,8 @@ public:
   void SetItemIndex(intptr_t Index) { FList->SetSelected(Index); }
 
 protected:
-  virtual LONG_PTR ItemProc(int Msg, LONG_PTR Param);
-  virtual void Init();
+  virtual LONG_PTR ItemProc(int Msg, LONG_PTR Param) override;
+  virtual void Init() override;
 
 private:
   TFarList *FList;
@@ -683,8 +685,8 @@ public:
   bool GetScrollBar() const;
 
 protected:
-  virtual LONG_PTR ItemProc(int Msg, LONG_PTR Param);
-  virtual void DoFocus();
+  virtual LONG_PTR ItemProc(int Msg, LONG_PTR Param) override;
+  virtual void DoFocus() override;
 
 private:
   void ItemsChange(TObject *Sender);

@@ -260,10 +260,7 @@ class NB_CORE_EXPORT TCwdSessionAction : public TSessionAction
 public:
   TCwdSessionAction(TActionLog *Log, const UnicodeString Path);
 };
-//---------------------------------------------------------------------------
-#if 0
-void (__closure *f)(TLogLineType Type, const UnicodeString Line));
-#endif // #if 0
+
 typedef nb::FastDelegate2<void,
   TLogLineType /*Type*/, UnicodeString /*Line*/> TDoAddLogEvent;
 //---------------------------------------------------------------------------
@@ -318,6 +315,7 @@ private:
   void OpenLogFile();
   UnicodeString GetLogFileName();
   void DoAdd(TLogLineType AType, const UnicodeString ALine,
+    __removed void (__closure *f)(TLogLineType Type, const UnicodeString &Line));
     TDoAddLogEvent Event);
   void DoAddToParent(TLogLineType AType, const UnicodeString ALine);
   void DoAddToSelf(TLogLineType AType, const UnicodeString ALine);
@@ -367,7 +365,7 @@ protected:
   inline void AddPendingAction(TSessionActionRecord *Action);
   void RecordPendingActions();
   void Add(const UnicodeString Line);
-  void AddIndented(const UnicodeString Line);
+  void AddIndented(const UnicodeString ALine);
   void AddMessages(const UnicodeString Indent, TStrings *Messages);
   void Init(TSessionUI *UI, TDateTime Started, TSessionData *SessionData,
     TConfiguration *Configuration);
@@ -389,8 +387,8 @@ private:
   UnicodeString FIndent;
   bool FEnabled;
 
-public:
   void OpenLogFile();
+public:
   UnicodeString GetLogFileName() const { return FCurrentLogFileName; }
   void SetEnabled(bool Value);
 };

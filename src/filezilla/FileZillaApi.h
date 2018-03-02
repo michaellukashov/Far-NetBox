@@ -45,7 +45,7 @@ CUSTOM_MEM_ALLOCATION_IMPL
   int  param4;
   CServerPath path;
   CServerPath newPath; // Used for rename
-  t_transferfile transferfile;
+  t_transferfile transferfile = {};
   t_server server;
 };
 

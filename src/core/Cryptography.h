@@ -1,8 +1,8 @@
-
+//---------------------------------------------------------------------------
 #pragma once
 
 #include <Classes.hpp>
-
+//---------------------------------------------------------------------------
 void CryptographyInitialize();
 void CryptographyFinalize();
 RawByteString ScramblePassword(const UnicodeString Password);
@@ -15,4 +15,4 @@ void AES256CreateVerifier(const UnicodeString Input, RawByteString &Verifier);
 bool AES256Verify(const UnicodeString Input, const RawByteString Verifier);
 int IsValidPassword(const UnicodeString Password);
 int PasswordMaxLength();
-
+//---------------------------------------------------------------------------

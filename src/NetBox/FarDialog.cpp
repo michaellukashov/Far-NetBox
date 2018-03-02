@@ -133,7 +133,7 @@ TPoint TFarDialog::GetClientSize() const
   return S;
 }
 
-TPoint TFarDialog::GetMaxSize()
+TPoint TFarDialog::GetMaxSize() const
 {
   TPoint P = GetFarPlugin()->TerminalInfo();
   P.x -= 2;
@@ -307,6 +307,11 @@ void TFarDialog::GetNextItemPosition(intptr_t &Left, intptr_t &Top)
   {
     switch (GetNextItemPosition())
     {
+    case ipSame:
+      Top = LastItem->GetTop();
+      Left = LastItem->GetLeft();
+      break;
+
     case ipNewLine:
       Top = LastItem->GetBottom() + 1;
       break;

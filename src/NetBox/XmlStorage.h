@@ -19,8 +19,6 @@ public:
   virtual bool ValueExists(const UnicodeString Value) const override;
   virtual bool DeleteValue(const UnicodeString Name) override;
   virtual size_t BinaryDataSize(const UnicodeString Name) const override;
-  virtual UnicodeString GetSource() const override;
-  virtual UnicodeString GetSource() override;
 
   virtual bool ReadBool(const UnicodeString Name, bool Default) const override;
   virtual intptr_t ReadInteger(const UnicodeString Name, intptr_t Default) const override;
@@ -40,10 +38,13 @@ public:
 
   virtual void GetValueNames(TStrings *Strings) const override;
 
-  virtual void SetAccessMode(TStorageAccessMode Value) override;
+protected:
+  virtual void SetAccessModeProtected(TStorageAccessMode Value) override;
   virtual bool DoKeyExists(const UnicodeString SubKey, bool ForceAnsi) override;
   virtual bool DoOpenSubKey(const UnicodeString MungedSubKey, bool CanCreate) override;
 
+  virtual UnicodeString GetSourceProtected() const override;
+  virtual UnicodeString GetSourceProtected() override;
 protected:
   intptr_t GetFailed();
   void SetFailed(intptr_t Value) { FFailed = Value; }

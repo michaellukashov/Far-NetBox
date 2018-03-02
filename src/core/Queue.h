@@ -17,9 +17,7 @@ public:
 
   virtual void Start();
   void WaitFor(uintptr_t Milliseconds = INFINITE) const;
-  virtual void Terminate()
-  {
-  }
+  virtual void Terminate() = 0;
   void Close();
   bool IsFinished() const;
 
@@ -67,14 +65,14 @@ class TQueueItemProxy;
 class TTerminalQueueStatus;
 //---------------------------------------------------------------------------
 #if 0
-typedef void (__closure * TQueueListUpdate)
-(TTerminalQueue * Queue);
+typedef void (__closure *TQueueListUpdate)
+(TTerminalQueue *Queue);
 #endif // #if 0
 typedef nb::FastDelegate1<void,
   TTerminalQueue * /*Queue*/> TQueueListUpdateEvent;
 #if 0
-typedef void (__closure * TQueueItemUpdateEvent)
-(TTerminalQueue * Queue, TQueueItem * Item);
+typedef void (__closure *TQueueItemUpdateEvent)
+(TTerminalQueue *Queue, TQueueItem *Item);
 enum TQueueEvent { qeEmpty, qeEmptyButMonitored, qePendingUserAction };
 #endif // #if 0
 typedef nb::FastDelegate2<void,
@@ -88,8 +86,8 @@ enum TQueueEvent
 };
 
 #if 0
-typedef void (__closure * TQueueEventEvent)
-(TTerminalQueue * Queue, TQueueEvent Event);
+typedef void (__closure *TQueueEventEvent)
+(TTerminalQueue *Queue, TQueueEvent Event);
 #endif // #if 0
 typedef nb::FastDelegate2<void,
   TTerminalQueue * /*Queue*/, TQueueEvent /*Event*/> TQueueEventEvent;
@@ -109,7 +107,7 @@ public:
 
   void InitTerminalQueue();
   void AddItem(TQueueItem *Item);
-  TTerminalQueueStatus *CreateStatus(TTerminalQueueStatus *Current);
+  TTerminalQueueStatus *CreateStatus(TTerminalQueueStatus *&Current);
   void Idle();
 
   __property bool IsEmpty = { read = GetIsEmpty };

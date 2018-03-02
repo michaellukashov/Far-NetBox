@@ -1,6 +1,6 @@
 
 #pragma once
-
+//---------------------------------------------------------------------------
 #include <Classes.hpp>
 #include <memory>
 //---------------------------------------------------------------------------
@@ -11,12 +11,12 @@ struct ssl_st;
 //---------------------------------------------------------------------------
 class THttp;
 #if 0
-typedef void (__closure * THttpDownloadEvent)(THttp * Sender, __int64 Size, bool & Cancel);
+typedef void (__closure *THttpDownloadEvent)(THttp *Sender, __int64 Size, bool &Cancel);
 #endif // #if 0
 typedef nb::FastDelegate3<void,
   THttp * /*Sender*/, int64_t /*Size*/, bool & /*Cancel*/> THttpDownloadEvent;
 #if 0
-typedef void (__closure * THttpErrorEvent)(THttp * Sender, int Status, const UnicodeString & Message);
+typedef void (__closure *THttpErrorEvent)(THttp *Sender, int Status, const UnicodeString &Message);
 #endif // #if 0
 typedef nb::FastDelegate3<void,
   THttp * /*Sender*/, int /*Status*/, const UnicodeString & /*Message*/> THttpErrorEvent;
@@ -34,12 +34,12 @@ public:
   __property UnicodeString URL = { read = FURL, write = FURL };
   __property UnicodeString ProxyHost = { read = FProxyHost, write = FProxyHost };
   __property int ProxyPort = { read = FProxyPort, write = FProxyPort };
-  __property TStrings * RequestHeaders = { read = FRequestHeaders, write = FRequestHeaders };
+  __property TStrings *RequestHeaders = { read = FRequestHeaders, write = FRequestHeaders };
   __property UnicodeString Response = { read = GetResponse };
   __property RawByteString ResponseRaw = { read = FResponse };
-  __property TStrings * ResponseHeaders = { read = FResponseHeaders };
-  __property __int64 ResponseLength = { read = GetResponseLength };
-  __property __int64 ResponseLimit = { read = FResponseLimit, write = FResponseLimit };
+  __property TStrings *ResponseHeaders = { read = FResponseHeaders };
+  __property int64_t ResponseLength = { read = GetResponseLength };
+  __property int64_t ResponseLimit = { read = FResponseLimit, write = FResponseLimit };
   __property THttpDownloadEvent OnDownload = { read = FOnDownload, write = FOnDownload };
   __property THttpErrorEvent OnError = { read = FOnError, write = FOnError };
 

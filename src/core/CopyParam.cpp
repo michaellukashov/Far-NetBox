@@ -7,26 +7,26 @@
 #include "HierarchicalStorage.h"
 #include "TextsCore.h"
 #include "Interface.h"
-
+//---------------------------------------------------------------------------
 const wchar_t *TransferModeNames[] = { L"binary", L"ascii", L"automatic" };
 const int TransferModeNamesCount = _countof(TransferModeNames);
-
+//---------------------------------------------------------------------------
 TCopyParamType::TCopyParamType(TObjectClassId Kind) :
   TObject(Kind)
 {
   TCopyParamType::Default();
 }
-
+//---------------------------------------------------------------------------
 TCopyParamType::TCopyParamType(const TCopyParamType &Source) :
   TObject(OBJECT_CLASS_TCopyParamType)
 {
   TCopyParamType::Assign(&Source);
 }
-
+//---------------------------------------------------------------------------
 TCopyParamType::~TCopyParamType()
 {
 }
-
+//---------------------------------------------------------------------------
 void TCopyParamType::Default()
 {
   // when changing defaults, make sure GetInfoStr() can handle it
@@ -56,7 +56,7 @@ void TCopyParamType::Default()
   SetCPSLimit(0);
   SetNewerOnly(false);
 }
-
+//---------------------------------------------------------------------------
 UnicodeString TCopyParamType::GetInfoStr(
   UnicodeString Separator, intptr_t Attrs) const
 {
@@ -71,7 +71,7 @@ UnicodeString TCopyParamType::GetInfoStr(
     UnicodeString(), ScriptArgs, NoScriptArgs, /*TAssemblyLanguage(0), AssemblyCode, */NoCodeProperties);
   return Result;
 }
-
+//---------------------------------------------------------------------------
 bool TCopyParamType::AnyUsableCopyParam(intptr_t Attrs) const
 {
   UnicodeString Result;
@@ -85,7 +85,7 @@ bool TCopyParamType::AnyUsableCopyParam(intptr_t Attrs) const
     UnicodeString(), ScriptArgs, NoScriptArgs, /*TAssemblyLanguage(0), AssemblyCode, */NoCodeProperties);
   return SomeAttrIncluded;
 }
-
+//---------------------------------------------------------------------------
 UnicodeString TCopyParamType::GenerateTransferCommandArgs(intptr_t Attrs, const UnicodeString Link, bool &NoScriptArgs) const
 {
   UnicodeString Result;
@@ -100,6 +100,7 @@ UnicodeString TCopyParamType::GenerateTransferCommandArgs(intptr_t Attrs, const 
 }
 
 #if 0
+//---------------------------------------------------------------------------
 UnicodeString TCopyParamType::GenerateAssemblyCode(
   TAssemblyLanguage /*Language*/, int /*Attrs*/, bool & /*NoCodeProperties*/) const
 {
@@ -112,11 +113,11 @@ UnicodeString TCopyParamType::GenerateAssemblyCode(
   return Result;
 }
 #endif // #if 0
-
+//---------------------------------------------------------------------------
 void TCopyParamType::DoGetInfoStr(
   UnicodeString Separator, intptr_t Attrs,
   UnicodeString &Result, bool &SomeAttrIncluded,
-  UnicodeString /*Link*/, UnicodeString & /*ScriptArgs*/, bool &NoScriptArgs,  /*TAssemblyLanguage Language, UnicodeString & AssemblyCode,*/
+  const UnicodeString /*Link*/, UnicodeString & /*ScriptArgs*/, bool &NoScriptArgs,  /*TAssemblyLanguage Language, UnicodeString & AssemblyCode,*/
   bool &NoCodeProperties) const
 {
   TCopyParamType Defaults;
@@ -496,7 +497,7 @@ void TCopyParamType::DoGetInfoStr(
   }
 #undef ADD
 }
-
+//---------------------------------------------------------------------------
 void TCopyParamType::Assign(const TCopyParamType *Source)
 {
   DebugAssert(Source != nullptr);
@@ -529,13 +530,13 @@ void TCopyParamType::Assign(const TCopyParamType *Source)
   COPY(NewerOnly);
 #undef COPY
 }
-
+//---------------------------------------------------------------------------
 TCopyParamType &TCopyParamType::operator=(const TCopyParamType &rhs)
 {
   Assign(&rhs);
   return *this;
 }
-
+//---------------------------------------------------------------------------
 void TCopyParamType::SetLocalInvalidChars(const UnicodeString Value)
 {
   if (Value != GetLocalInvalidChars())
@@ -544,12 +545,12 @@ void TCopyParamType::SetLocalInvalidChars(const UnicodeString Value)
     FTokenizibleChars = FLocalInvalidChars; // + TokenPrefix;
   }
 }
-
+//---------------------------------------------------------------------------
 bool TCopyParamType::GetReplaceInvalidChars() const
 {
   return (GetInvalidCharsReplacement() != NoReplacement);
 }
-
+//---------------------------------------------------------------------------
 void TCopyParamType::SetReplaceInvalidChars(bool Value)
 {
   if (GetReplaceInvalidChars() != Value)
@@ -557,12 +558,12 @@ void TCopyParamType::SetReplaceInvalidChars(bool Value)
     SetInvalidCharsReplacement(Value ? TokenReplacement : NoReplacement);
   }
 }
-
+//---------------------------------------------------------------------------
 UnicodeString TCopyParamType::ValidLocalFileName(const UnicodeString AFileName) const
 {
   return ::ValidLocalFileName(AFileName, GetInvalidCharsReplacement(), FTokenizibleChars, LOCAL_INVALID_CHARS);
 }
-
+//---------------------------------------------------------------------------
 UnicodeString TCopyParamType::RestoreChars(const UnicodeString AFileName) const
 {
   UnicodeString FileName = AFileName;
@@ -604,7 +605,7 @@ UnicodeString TCopyParamType::RestoreChars(const UnicodeString AFileName) const
   }
   return FileName;
 }
-
+//---------------------------------------------------------------------------
 UnicodeString TCopyParamType::ValidLocalPath(const UnicodeString APath) const
 {
   UnicodeString Result;
@@ -619,7 +620,7 @@ UnicodeString TCopyParamType::ValidLocalPath(const UnicodeString APath) const
   }
   return Result;
 }
-
+//---------------------------------------------------------------------------
 UnicodeString TCopyParamType::ChangeFileName(const UnicodeString AFileName,
   TOperationSide Side, bool FirstLevel) const
 {
@@ -662,7 +663,7 @@ UnicodeString TCopyParamType::ChangeFileName(const UnicodeString AFileName,
   }
   return FileName;
 }
-
+//---------------------------------------------------------------------------
 bool TCopyParamType::UseAsciiTransfer(const UnicodeString AFileName,
   TOperationSide Side, const TFileMasks::TParams &Params) const
 {
@@ -680,7 +681,7 @@ bool TCopyParamType::UseAsciiTransfer(const UnicodeString AFileName,
     return false;
   }
 }
-
+//---------------------------------------------------------------------------
 TRights TCopyParamType::RemoteFileRights(uintptr_t Attrs) const
 {
   TRights R = GetRights();
@@ -688,7 +689,7 @@ TRights TCopyParamType::RemoteFileRights(uintptr_t Attrs) const
     R.AddExecute();
   return R;
 }
-
+//---------------------------------------------------------------------------
 UnicodeString TCopyParamType::GetLogStr() const
 {
   wchar_t CaseC[] = L"NULFS";
@@ -724,7 +725,7 @@ UnicodeString TCopyParamType::GetLogStr() const
       ((FTransferSkipList.get() != nullptr) ? FTransferSkipList->GetCount() : 0) + (!FTransferResumeFile.IsEmpty() ? 1 : 0),
       GetAsciiFileMask().GetMasks());
 }
-
+//---------------------------------------------------------------------------
 DWORD TCopyParamType::LocalFileAttrs(const TRights &Rights) const
 {
   DWORD Result = 0;
@@ -750,7 +751,7 @@ bool TCopyParamType::AllowResume(int64_t Size) const
     return false;
   }
 }
-
+//---------------------------------------------------------------------------
 bool TCopyParamType::AllowAnyTransfer() const
 {
   return
@@ -758,7 +759,7 @@ bool TCopyParamType::AllowAnyTransfer() const
     ((FTransferSkipList.get() == nullptr) || (FTransferSkipList->GetCount() == 0)) &&
     FTransferResumeFile.IsEmpty();
 }
-
+//---------------------------------------------------------------------------
 bool TCopyParamType::AllowTransfer(const UnicodeString AFileName,
   TOperationSide Side, bool Directory, const TFileMasks::TParams &Params) const
 {
@@ -784,7 +785,7 @@ bool TCopyParamType::SkipTransfer(
   }
   return Result;
 }
-
+//---------------------------------------------------------------------------
 bool TCopyParamType::ResumeTransfer(const UnicodeString AFileName) const
 {
   // Returning true has the same effect as cpResume
@@ -792,12 +793,12 @@ bool TCopyParamType::ResumeTransfer(const UnicodeString AFileName) const
     (AFileName == FTransferResumeFile) &&
     DebugAlwaysTrue(!FTransferResumeFile.IsEmpty());
 }
-
+//---------------------------------------------------------------------------
 TStrings *TCopyParamType::GetTransferSkipList() const
 {
   return FTransferSkipList.get();
 }
-
+//---------------------------------------------------------------------------
 void TCopyParamType::SetTransferSkipList(TStrings *Value)
 {
   if ((Value == nullptr) || (Value->GetCount() == 0))
@@ -811,7 +812,7 @@ void TCopyParamType::SetTransferSkipList(TStrings *Value)
     FTransferSkipList->SetSorted(true);
   }
 }
-
+//---------------------------------------------------------------------------
 void TCopyParamType::Load(THierarchicalStorage *Storage)
 {
   SetAddXToDirectories(Storage->ReadBool("AddXToDirectories", GetAddXToDirectories()));
@@ -889,7 +890,7 @@ void TCopyParamType::Save(THierarchicalStorage *Storage) const
   Storage->WriteInteger("CPSLimit", GetCPSLimit());
   Storage->WriteBool("NewerOnly", GetNewerOnly());
 }
-
+//---------------------------------------------------------------------------
 #define C(Property) (Get ## Property() == rhp.Get ## Property())
 
 bool TCopyParamType::operator==(const TCopyParamType &rhp) const
@@ -923,7 +924,7 @@ bool TCopyParamType::operator==(const TCopyParamType &rhp) const
     true;
 }
 #undef C
-
+//---------------------------------------------------------------------------
 static bool TryGetSpeedLimit(const UnicodeString Text, uintptr_t &Speed)
 {
   bool Result;
@@ -943,7 +944,7 @@ static bool TryGetSpeedLimit(const UnicodeString Text, uintptr_t &Speed)
   }
   return Result;
 }
-
+//---------------------------------------------------------------------------
 uintptr_t GetSpeedLimit(const UnicodeString Text)
 {
   uintptr_t Speed = 0;
@@ -953,7 +954,7 @@ uintptr_t GetSpeedLimit(const UnicodeString Text)
   }
   return Speed;
 }
-
+//---------------------------------------------------------------------------
 UnicodeString SetSpeedLimit(uintptr_t Limit)
 {
   UnicodeString Text;
@@ -967,7 +968,7 @@ UnicodeString SetSpeedLimit(uintptr_t Limit)
   }
   return Text;
 }
-
+//---------------------------------------------------------------------------
 void CopySpeedLimits(TStrings *Source, TStrings *Dest)
 {
   std::unique_ptr<TStringList> Temp(new TStringList());
@@ -1002,19 +1003,19 @@ TOperationSide ReverseOperationSide(TOperationSide Side)
   TOperationSide Result;
   switch (Side)
   {
-    case osLocal:
-      Result = osRemote;
-      break;
+  case osLocal:
+    Result = osRemote;
+    break;
 
-    case osRemote:
-      Result = osLocal;
-      break;
+  case osRemote:
+    Result = osLocal;
+    break;
 
-    default:
-    case osCurrent:
-      DebugFail();
-      Result = Side;
-      break;
+  default:
+  case osCurrent:
+    DebugFail();
+    Result = Side;
+    break;
   }
   return Result;
 }

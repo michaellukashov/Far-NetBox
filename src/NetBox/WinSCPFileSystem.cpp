@@ -2623,7 +2623,8 @@ TTerminalQueueStatus *TWinSCPFileSystem::GetQueueStatus()
 {
   if (FQueueStatus == nullptr)
   {
-    FQueueStatus = GetQueue()->CreateStatus(nullptr);
+    TTerminalQueueStatus *Current = nullptr;
+    FQueueStatus = GetQueue()->CreateStatus(Current);
   }
   return FQueueStatus;
 }

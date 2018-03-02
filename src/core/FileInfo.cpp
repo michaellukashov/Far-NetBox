@@ -8,10 +8,11 @@
 #include <Windows.hpp>
 #include <Math.hpp>
 #include "FileInfo.h"
-
+//---------------------------------------------------------------------------
+__removed #pragma package(smart_init)
+//---------------------------------------------------------------------------
 #define DWORD_ALIGN( base, ptr ) \
     ( (LPBYTE)(base) + ((((LPBYTE)(ptr) - (LPBYTE)(base)) + 3) & ~3) )
-
 struct VS_VERSION_INFO_STRUCT32
 {
   WORD wLength;
@@ -19,7 +20,7 @@ struct VS_VERSION_INFO_STRUCT32
   WORD wType;
   WCHAR szKey[1];
 };
-
+//---------------------------------------------------------------------------
 static uintptr_t VERSION_GetFileVersionInfo_PE(const wchar_t *FileName, uintptr_t DataSize, void *Data)
 {
   uintptr_t Len = 0;
@@ -106,7 +107,7 @@ static uintptr_t VERSION_GetFileVersionInfo_PE(const wchar_t *FileName, uintptr_
 
   return Len;
 }
-
+//---------------------------------------------------------------------------
 static uintptr_t GetFileVersionInfoSizeFix(const wchar_t *FileName, DWORD *AHandle)
 {
   uintptr_t Len;
@@ -127,7 +128,7 @@ static uintptr_t GetFileVersionInfoSizeFix(const wchar_t *FileName, DWORD *AHand
 
   return Len;
 }
-
+//---------------------------------------------------------------------------
 bool GetFileVersionInfoFix(const wchar_t *FileName, uint32_t Handle,
   uintptr_t DataSize, void *Data)
 {
@@ -159,7 +160,7 @@ bool GetFileVersionInfoFix(const wchar_t *FileName, uint32_t Handle,
 
   return Result;
 }
-
+//---------------------------------------------------------------------------
 // Return pointer to file version info block
 void *CreateFileInfo(const UnicodeString AFileName)
 {
@@ -171,7 +172,7 @@ void *CreateFileInfo(const UnicodeString AFileName)
   // If size is valid
   if (Size > 0)
   {
-    Result = nb::calloc<void *>(1, Size);
+    Result = nb::calloc<void *>(Size, 1);
     // Get file version info block
     if (!GetFileVersionInfoFix(AFileName.c_str(), Handle, Size, Result))
     {
@@ -184,17 +185,17 @@ void *CreateFileInfo(const UnicodeString AFileName)
   }
   return Result;
 }
-
+//---------------------------------------------------------------------------
 // Free file version info block memory
 void FreeFileInfo(void *FileInfo)
 {
   if (FileInfo)
     nb_free(FileInfo);
 }
-
+//---------------------------------------------------------------------------
 typedef TTranslation TTranslations[65536];
 typedef TTranslation *PTranslations;
-
+//---------------------------------------------------------------------------
 // Return pointer to fixed file version info
 PVSFixedFileInfo GetFixedFileInfo(void *FileInfo)
 {
@@ -206,7 +207,7 @@ PVSFixedFileInfo GetFixedFileInfo(void *FileInfo)
   }
   return Result;
 }
-
+//---------------------------------------------------------------------------
 // Return number of available file version info translations
 uint32_t GetTranslationCount(void *FileInfo)
 {
@@ -216,7 +217,7 @@ uint32_t GetTranslationCount(void *FileInfo)
     throw Exception(L"File info translations not available");
   return Len / 4;
 }
-
+//---------------------------------------------------------------------------
 // Return i-th translation in the file version info translation list
 TTranslation GetTranslation(void *FileInfo, intptr_t I)
 {
@@ -229,7 +230,7 @@ TTranslation GetTranslation(void *FileInfo, intptr_t I)
     throw Exception(L"Specified translation not available");
   return P[I];
 }
-
+//---------------------------------------------------------------------------
 // Return the name of the specified language
 UnicodeString GetLanguage(Word Language)
 {
@@ -240,7 +241,7 @@ UnicodeString GetLanguage(Word Language)
     throw Exception(L"Language not available");
   return UnicodeString(P, Len);
 }
-
+//---------------------------------------------------------------------------
 // Return the value of the specified file version info string using the
 // specified translation
 UnicodeString GetFileInfoString(void *FileInfo,
@@ -267,7 +268,7 @@ UnicodeString GetFileInfoString(void *FileInfo,
   }
   return Result;
 }
-
+//---------------------------------------------------------------------------
 intptr_t CalculateCompoundVersion(intptr_t MajorVer,
   intptr_t MinorVer, intptr_t Release, intptr_t Build)
 {
@@ -275,7 +276,7 @@ intptr_t CalculateCompoundVersion(intptr_t MajorVer,
         100 * MajorVer));
   return CompoundVer;
 }
-
+//---------------------------------------------------------------------------
 intptr_t StrToCompoundVersion(const UnicodeString AStr)
 {
   UnicodeString S(AStr);
@@ -285,7 +286,7 @@ intptr_t StrToCompoundVersion(const UnicodeString AStr)
   int64_t Build = S.IsEmpty() ? 0 : StrToInt64(CutToChar(S, L'.', false));
   return CalculateCompoundVersion(ToIntPtr(MajorVer), ToIntPtr(MinorVer), ToIntPtr(Release), ToIntPtr(Build));
 }
-
+//---------------------------------------------------------------------------
 intptr_t CompareVersion(const UnicodeString V1, const UnicodeString V2)
 {
   intptr_t Result = 0;

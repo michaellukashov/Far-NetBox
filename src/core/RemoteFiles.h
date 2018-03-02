@@ -38,7 +38,7 @@ public:
 
   __property UnicodeString Name = { read = FName, write = FName };
   __property bool NameValid = { read = GetNameValid };
-  __property unsigned int ID = { read = FID, write = SetID };
+  __property uintptr_t ID = { read = FID, write = SetID };
   __property bool IDValid = { read = FIDValid };
   __property bool IsSet  = { read = GetIsSet };
   __property UnicodeString LogText = { read = GetLogText };
@@ -186,10 +186,10 @@ public:
   __property TRemoteFile * LinkedFile = { read = GetLinkedFile, write = SetLinkedFile };
   __property UnicodeString LinkTo = { read = FLinkTo, write = FLinkTo };
   __property UnicodeString ListingStr = { read = GetListingStr, write = SetListingStr };
-  __property TRights * Rights = { read = FRights, write = SetRights };
+  __property TRights *Rights = { read = FRights, write = SetRights };
   RWProperty<TRights *> Rights{nb::bind(&TRemoteFile::GetRights, this), nb::bind(&TRemoteFile::SetRights, this)};
   __property UnicodeString HumanRights = { read = FHumanRights, write = FHumanRights };
-  __property TTerminal * Terminal = { read = FTerminal, write = SetTerminal };
+  __property TTerminal *Terminal = { read = FTerminal, write = SetTerminal };
   __property wchar_t Type = { read = GetType, write = SetType };
   __property UnicodeString FullFileName  = { read = GetFullFileName, write = FFullFileName };
   RWProperty<UnicodeString> FullFileName{nb::bind(&TRemoteFile::GetFullFileName, this), nb::bind(&TRemoteFile::SetFullFileName, this)};
@@ -199,8 +199,8 @@ public:
   __property bool IsHidden = { read = GetIsHidden, write = SetIsHidden };
   __property bool IsParentDirectory = { read = GetIsParentDirectory };
   __property bool IsThisDirectory = { read = GetIsThisDirectory };
-  __property bool IsInaccesibleDirectory  = { read=GetIsInaccesibleDirectory };
-  __property UnicodeString Extension  = { read=GetExtension };
+  __property bool IsInaccesibleDirectory  = { read = GetIsInaccesibleDirectory };
+  __property UnicodeString Extension  = { read = GetExtension };
 
   TRemoteFileList *GetDirectory() const { return FDirectory; }
   void SetDirectory(TRemoteFileList *Value) { FDirectory = Value; }
@@ -283,7 +283,7 @@ public:
   explicit TRemoteFileList(TObjectClassId Kind);
   virtual ~TRemoteFileList() { Reset(); }
   virtual void Reset();
-  TRemoteFile * FindFile(const UnicodeString AFileName) const;
+  TRemoteFile *FindFile(const UnicodeString AFileName) const;
   virtual void DuplicateTo(TRemoteFileList *Copy) const;
   virtual void AddFile(TRemoteFile *AFile);
 

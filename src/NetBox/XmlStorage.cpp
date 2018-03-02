@@ -106,9 +106,9 @@ bool TXmlStorage::Copy(TXmlStorage * /*Storage*/)
   return Result;
 }
 
-void TXmlStorage::SetAccessMode(TStorageAccessMode Value)
+void TXmlStorage::SetAccessModeProtected(TStorageAccessMode Value)
 {
-  THierarchicalStorage::SetAccessMode(Value);
+  THierarchicalStorage::SetAccessModeProtected(Value);
   switch (GetAccessMode())
   {
   case smRead:
@@ -318,12 +318,12 @@ size_t TXmlStorage::BinaryDataSize(const UnicodeString /*Name*/) const
   return Result;
 }
 
-UnicodeString TXmlStorage::GetSource() const
+UnicodeString TXmlStorage::GetSourceProtected() const
 {
   return GetStorage();
 }
 
-UnicodeString TXmlStorage::GetSource()
+UnicodeString TXmlStorage::GetSourceProtected()
 {
   return GetStorage();
 }

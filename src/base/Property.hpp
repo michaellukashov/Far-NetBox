@@ -13,7 +13,7 @@ public:
   T dummy = T();
   T &obj  = dummy;
 
-  propertyBase(T &value):
+  explicit propertyBase(T &value):
     obj(value)
   {}
 };
@@ -34,7 +34,7 @@ public:
       propertyBase<T>(value.obj)
   {}*/
 
-  Property(T &value):
+  explicit Property(T &value):
     propertyBase<T>(value)
   {}
 
@@ -76,7 +76,7 @@ public:
     propertyBase<T>(value.obj)
   {}
 
-  Property(T &value):
+  explicit Property(T &value):
     propertyBase<T>(value)
   {}
 
@@ -101,7 +101,7 @@ CUSTOM_MEM_ALLOCATION_IMPL
 public:
   using T::T;
 
-  Property(const T &value):
+  explicit Property(const T &value):
     T(value)
   {}
 };
@@ -114,7 +114,7 @@ class Property<T, false, false> : public T
 public:
   using T::T;
 
-  Property(const T &value):
+  explicit Property(const T &value):
     T(value)
   {}
 

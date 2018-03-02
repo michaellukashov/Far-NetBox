@@ -535,8 +535,7 @@ static S3Status make_list_multipart_callback(ListMultipartData *lmData)
                        !strcmp(lmData->isTruncated, "1")) ? 1 : 0;
 
     // Convert the contents
-    // S3ListMultipartUpload * uploads = new S3ListMultipartUpload[lmData->uploadsCount]; // WINSCP (heap allocation)
-    S3ListMultipartUpload * uploads = (S3ListMultipartUpload *)nb_calloc(lmData->uploadsCount, sizeof(S3ListMultipartUpload));
+    S3ListMultipartUpload * uploads = (S3ListMultipartUpload *)nb_calloc(lmData->uploadsCount, sizeof(S3ListMultipartUpload)); // WINSCP (heap allocation)
 
     int uploadsCount = lmData->uploadsCount;
     for (i = 0; i < uploadsCount; i++) {
@@ -556,8 +555,7 @@ static S3Status make_list_multipart_callback(ListMultipartData *lmData)
 
     // Make the common prefixes array
     int commonPrefixesCount = lmData->commonPrefixesCount;
-    // char **commonPrefixes = new char*[commonPrefixesCount]; // WINSCP (heap allocation)
-    char **commonPrefixes = (char **)nb_calloc(commonPrefixesCount, sizeof(char *));
+    char **commonPrefixes = (char **)nb_calloc(commonPrefixesCount, sizeof(char *)); // WINSCP (heap allocation)
     for (i = 0; i < commonPrefixesCount; i++) {
         commonPrefixes[i] = lmData->commonPrefixes[i];
     }
@@ -566,9 +564,7 @@ static S3Status make_list_multipart_callback(ListMultipartData *lmData)
         (isTruncated, lmData->nextKeyMarker, lmData->nextUploadIdMarker,
          uploadsCount, uploads, commonPrefixesCount,
          (const char **) commonPrefixes, lmData->callbackData);
-//    delete[] uploads; // WINSCP (heap allocation)
-//    delete[] commonPrefixes;
-    nb_free(commonPrefixes);
+    nb_free(commonPrefixes); // WINSCP (heap allocation)
     nb_free(uploads);
     return status;
 }
@@ -583,8 +579,7 @@ static S3Status make_list_parts_callback(ListPartsData *lpData)
                        !strcmp(lpData->isTruncated, "1")) ? 1 : 0;
 
     // Convert the contents
-    //S3ListPart * Parts = new S3ListPart[lpData->partsCount]; // WINSCP (heap allocation)
-    S3ListPart * Parts = (S3ListPart *)nb_calloc(lpData->partsCount, sizeof(S3ListPart));
+    S3ListPart * Parts = (S3ListPart *)nb_calloc(lpData->partsCount, sizeof(S3ListPart)); // WINSCP (heap allocation)
     int partsCount = lpData->partsCount;
     for (i = 0; i < partsCount; i++) {
         S3ListPart *partDest = &(Parts[i]);
@@ -601,8 +596,7 @@ static S3Status make_list_parts_callback(ListPartsData *lpData)
          lpData->initiatorDisplayName, lpData->ownerId,
          lpData->ownerDisplayName, lpData->storageClass, partsCount,
          lpData->handlePartsStart, Parts, lpData->callbackData);
-//    delete[] Parts; // WINSCP (heap allocation)
-    nb_free(Parts);
+    nb_free(Parts); // WINSCP (heap allocation)
     return status;
 }
 

@@ -78,10 +78,14 @@ private:
   TObjectClassId FKind;
 };
 
-inline TObject *as_object(void *p) { return static_cast<TObject *>(p); }
-inline const TObject *as_object(const void *p) { return static_cast<const TObject *>(p); }
-template<class T> inline T *get_as(void *p) { return dyn_cast<T>(as_object(p)); }
-template<class T> inline const T *get_as(const void *p) { return dyn_cast<T>(as_object(p)); }
+template<class O, class T>
+inline O as_object(T p) { return static_cast<O>(p); }
+inline TObject *as_object(void *p) { return as_object<TObject *, void *>(p); }
+inline const TObject *as_object(const void *p) { return as_object<const TObject *, const void *>(p); }
+template<class O, class T>
+inline O *get_as(T p) { return dyn_cast<O>(as_object(p)); }
+template<class O> inline O *get_as(void *p) { return get_as<O, void *>(p); }
+template<class O> inline const O *get_as(const void *p) { return get_as<const O, const void *>(p); }
 template <class T>
 inline TObject *ToObj(const T &a) { return reinterpret_cast<TObject *>(ToSizeT(a)); }
 
@@ -744,7 +748,7 @@ public:
     const UnicodeString APrompt, UnicodeString &Value, const UnicodeString HelpKeyword,
     TStrings *History, bool PathInput,
     TInputDialogInitializeEvent OnInitialize, bool Echo) = 0;
-  virtual uintptr_t MoreMessageDialog(const UnicodeString Message,
+  virtual uintptr_t MoreMessageDialog(const UnicodeString AMessage,
     TStrings *MoreMessages, TQueryType Type, uint32_t Answers,
     const TMessageParams *Params) = 0;
 };

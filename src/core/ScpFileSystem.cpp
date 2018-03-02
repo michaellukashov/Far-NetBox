@@ -32,16 +32,6 @@ const int ecReadProgress = 4;
 const int ecDefault = ecRaiseExcept;
 //---------------------------------------------------------------------------
 DERIVE_EXT_EXCEPTION(EScpFileSkipped, ESkipFile);
-
-inline void ThrowFileSkipped(Exception *Exception, const UnicodeString AMessage)
-{
-  throw EScpFileSkipped(Exception, AMessage);
-}
-
-inline void ThrowScpEror(Exception *Exception, const UnicodeString AMessage)
-{
-  throw EScp(Exception, AMessage);
-}
 //===========================================================================
 #define MaxShellCommand fsLang
 #define ShellCommandCount MaxShellCommand + 1
@@ -106,17 +96,17 @@ public:
 
   __removed UnicodeString FullCommand(TFSCommand Cmd, const TVarRec * args, int size);
   static UnicodeString ExtractCommand(const UnicodeString ACommand);
-  __property int MaxLines[TFSCommand Cmd]  = { read=GetMaxLines};
-  __property int MinLines[TFSCommand Cmd]  = { read=GetMinLines };
-  __property bool ModifiesFiles[TFSCommand Cmd]  = { read=GetModifiesFiles };
-  __property bool ChangesDirectory[TFSCommand Cmd]  = { read=GetChangesDirectory };
-  __property bool OneLineCommand[TFSCommand Cmd]  = { read=GetOneLineCommand };
-  __property UnicodeString Commands[TFSCommand Cmd]  = { read=GetCommands, write=SetCommands };
+  __property int MaxLines[TFSCommand Cmd]  = { read = GetMaxLines};
+  __property int MinLines[TFSCommand Cmd]  = { read = GetMinLines };
+  __property bool ModifiesFiles[TFSCommand Cmd]  = { read = GetModifiesFiles };
+  __property bool ChangesDirectory[TFSCommand Cmd]  = { read = GetChangesDirectory };
+  __property bool OneLineCommand[TFSCommand Cmd]  = { read = GetOneLineCommand };
+  __property UnicodeString Commands[TFSCommand Cmd]  = { read = GetCommands, write = SetCommands };
   __property UnicodeString FirstLine = { read = GetFirstLine };
   __property bool InteractiveCommand[TFSCommand Cmd] = { read = GetInteractiveCommand };
-  __property UnicodeString LastLine  = { read=GetLastLine };
-  __property TSessionData * SessionData  = { read=FSessionData, write=FSessionData };
-  __property UnicodeString ReturnVar  = { read=GetReturnVar, write=FReturnVar };
+  __property UnicodeString LastLine  = { read = GetLastLine };
+  __property TSessionData *SessionData  = { read = FSessionData, write = FSessionData };
+  __property UnicodeString ReturnVar  = { read = GetReturnVar, write = FReturnVar };
 
   TSessionData *GetSessionData() const { return FSessionData; }
   void SetSessionData(TSessionData *Value) { FSessionData = Value; }
@@ -449,10 +439,10 @@ void TSCPFileSystem::Idle()
   // Keep session alive
   const TSessionData *Data = FTerminal->GetSessionData();
   if ((Data->GetPingType() != ptOff) &&
-    (Now() - FSecureShell->GetLastDataSent() > Data->GetPingIntervalDT()))
+      (Now() - FSecureShell->GetLastDataSent() > Data->GetPingIntervalDT()))
   {
     if ((Data->GetPingType() == ptDummyCommand) &&
-      FSecureShell->GetReady())
+        FSecureShell->GetReady())
     {
       if (!FProcessingCommand)
       {
@@ -474,12 +464,12 @@ void TSCPFileSystem::Idle()
 
   FSecureShell->Idle();
 }
-//---------------------------------------------------------------------------
+
 UnicodeString TSCPFileSystem::GetAbsolutePath(const UnicodeString APath, bool Local)
 {
   return static_cast<const TSCPFileSystem *>(this)->GetAbsolutePath(APath, Local);
 }
-
+//---------------------------------------------------------------------------
 UnicodeString TSCPFileSystem::GetAbsolutePath(const UnicodeString APath, bool /*Local*/) const
 {
   return base::AbsolutePath(RemoteGetCurrentDirectory(), APath);
@@ -544,7 +534,9 @@ UnicodeString TSCPFileSystem::DelimitStr(const UnicodeString AStr)
   {
     Str = ::DelimitStr(Str, L"\\`$\"");
     if (Str[1] == L'-')
+    {
       Str = L"./" + Str;
+    }
   }
   return Str;
 }
@@ -770,15 +762,15 @@ void TSCPFileSystem::ExecCommand(TFSCommand Cmd, const TVarRec * args,
     Integer MinL = FCommandSet->MinLines[Cmd];
     Integer MaxL = FCommandSet->MaxLines[Cmd];
     if (((MinL >= 0) && (MinL > FOutput->Count)) ||
-        ((MaxL >= 0) && (MaxL > FOutput->Count)))
+      ((MaxL >= 0) && (MaxL > FOutput->Count)))
     {
       FTerminal->TerminalError(FmtLoadStr(INVALID_OUTPUT_ERROR,
-        ARRAYOFCONST((FullCommand, Output->Text))));
+          ARRAYOFCONST((FullCommand, Output->Text))));
     }
   }
 }
 #endif // if defined(__BORLANDC__)
-//---------------------------------------------------------------------------
+
 void TSCPFileSystem::ExecCommand(TFSCommand Cmd, intptr_t Params, fmt::ArgList args)
 {
   UnicodeString FullCommand = FCommandSet->FullCommand(Cmd, args);
@@ -923,7 +915,7 @@ void TSCPFileSystem::DetectReturnVar()
   try
   {
     // #60 17.10.01: "status" and "?" switched
-    UnicodeString ReturnVars[2] = { L"status", L"?" };
+    UnicodeString ReturnVars[2] = { "status", "?" };
     UnicodeString NewReturnVar;
     FTerminal->LogEvent("Detecting variable containing return code of last command.");
     for (intptr_t Index = 0; Index < 2; ++Index)
@@ -1218,7 +1210,7 @@ void TSCPFileSystem::ReadFile(const UnicodeString AFileName,
 }
 //---------------------------------------------------------------------------
 TRemoteFile * TSCPFileSystem::CreateRemoteFile(
-  UnicodeString ListingStr, TRemoteFile *LinkedByFile)
+  const UnicodeString ListingStr, TRemoteFile *LinkedByFile)
 {
   std::unique_ptr<TRemoteFile> File(new TRemoteFile(LinkedByFile));
   try__catch
@@ -2167,7 +2159,6 @@ void TSCPFileSystem::SCPDirectorySource(const UnicodeString DirectoryName,
         SCPResponse();
       }
     };
-
     DWORD FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
     TSearchRecChecked SearchRec;
     bool FindOK = false;
@@ -2175,10 +2166,9 @@ void TSCPFileSystem::SCPDirectorySource(const UnicodeString DirectoryName,
       FMTLOAD(LIST_DIR_ERROR, DirectoryName), "",
     [&]()
     {
-      UnicodeString Path = ::IncludeTrailingBackslash(DirectoryName) + L"*.*";
       FindOK =
-       ::FindFirstChecked(Path,
-           FindAttrs, SearchRec) == 0;
+       ::FindFirstChecked(::IncludeTrailingBackslash(DirectoryName) + L"*.*",
+          FindAttrs, SearchRec) == 0;
     });
     __removed FILE_OPERATION_LOOP_END(FMTLOAD(LIST_DIR_ERROR, (DirectoryName)));
 
@@ -2550,41 +2540,41 @@ void TSCPFileSystem::SCPSink(const UnicodeString TargetDir,
 
         switch (Ctrl)
         {
-          case 1:
-            // Error (already logged by ReceiveLine())
-            throw EScpFileSkipped(nullptr, FMTLOAD(REMOTE_ERROR, (Line)));
+        case 1:
+          // Error (already logged by ReceiveLine())
+          throw EScpFileSkipped(nullptr, FMTLOAD(REMOTE_ERROR, (Line)));
 
-          case 2:
-            // Fatal error, terminate copying
-            FTerminal->TerminalError(Line);
-            return; // Unreachable
+        case 2:
+          // Fatal error, terminate copying
+          FTerminal->TerminalError(Line);
+          return; // Unreachable
 
-          case L'E': // Exit
+        case L'E': // Exit
+          FSecureShell->SendNull();
+          return;
+
+        case L'T':
+          int64_t MTime, ATime;
+          MTime = ATime = 0;
+          if (swscanf(Line.c_str(), L"%I64d %*d %I64d %*d", &MTime, &ATime) == 2)
+          {
+            FileData.Modification = ::UnixToDateTime(MTime, FTerminal->GetSessionData()->GetDSTMode());
             FSecureShell->SendNull();
-            return;
+            // File time is only valid until next pass
+            FileData.SetTime = 2;
+            continue;
+          }
+          else
+          {
+            SCPError(LoadStr(SCP_ILLEGAL_TIME_FORMAT), False);
+          }
 
-          case L'T':
-            int64_t MTime, ATime;
-            MTime = ATime = 0;
-            if (swscanf(Line.c_str(), L"%I64d %*d %I64d %*d", &MTime, &ATime) == 2)
-            {
-              FileData.Modification = ::UnixToDateTime(MTime, FTerminal->GetSessionData()->GetDSTMode());
-              FSecureShell->SendNull();
-              // File time is only valid until next pass
-              FileData.SetTime = 2;
-              continue;
-            }
-            else
-            {
-              SCPError(LoadStr(SCP_ILLEGAL_TIME_FORMAT), False);
-            }
+        case L'C':
+        case L'D':
+          break; // continue pass switch{}
 
-          case L'C':
-          case L'D':
-            break; // continue pass switch{}
-
-          default:
-            FTerminal->FatalError(nullptr, FMTLOAD(SCP_INVALID_CONTROL_RECORD, Ctrl, Line));
+        default:
+          FTerminal->FatalError(nullptr, FMTLOAD(SCP_INVALID_CONTROL_RECORD, Ctrl, Line));
         }
 
         TFileMasks::TParams MaskParams;

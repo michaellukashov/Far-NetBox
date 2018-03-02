@@ -762,12 +762,12 @@ void TTerminalQueue::UpdateStatusForList(
   {
     TQueueItem *Item = GetItem(List, Index);
     TQueueItemProxy *ItemProxy = nullptr;
-    if (Current)
+    if (Current != nullptr)
     {
       ItemProxy = Current->FindByQueueItem(Item);
     }
 
-    if (Current && ItemProxy)
+    if (ItemProxy != nullptr)
     {
       Current->Delete(ItemProxy);
       Status->Add(ItemProxy);
@@ -780,7 +780,7 @@ void TTerminalQueue::UpdateStatusForList(
   }
 }
 //---------------------------------------------------------------------------
-TTerminalQueueStatus *TTerminalQueue::CreateStatus(TTerminalQueueStatus *Current)
+TTerminalQueueStatus *TTerminalQueue::CreateStatus(TTerminalQueueStatus *&Current)
 {
   std::unique_ptr<TTerminalQueueStatus> Status(new TTerminalQueueStatus());
   try__catch

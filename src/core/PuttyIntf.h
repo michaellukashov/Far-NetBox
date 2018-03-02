@@ -1,14 +1,11 @@
-
-#ifndef PuttyIntfH
-#define PuttyIntfH
-
+#pragma once
 #include "PuttyTools.h"
-
+//---------------------------------------------------------------------------
 NB_CORE_EXPORT void PuttyInitialize();
 NB_CORE_EXPORT void PuttyFinalize();
-
+//---------------------------------------------------------------------------
 NB_CORE_EXPORT void DontSaveRandomSeed();
-
+//---------------------------------------------------------------------------
 #ifndef MPEXT
 #define MPEXT
 #endif
@@ -25,5 +22,5 @@ extern "C"
 
   extern CRITICAL_SECTION noise_section;
 }
+//---------------------------------------------------------------------------
 
-#endif

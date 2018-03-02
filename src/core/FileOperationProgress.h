@@ -41,14 +41,14 @@ enum TBatchOverwrite
 
 #if 0
 typedef void (__closure *TFileOperationProgressEvent)
-  (TFileOperationProgressType & ProgressData);
+(TFileOperationProgressType &ProgressData);
 #endif
 typedef nb::FastDelegate1<void,
   TFileOperationProgressType & /*ProgressData*/> TFileOperationProgressEvent;
 #if 0
 typedef void (__closure *TFileOperationFinished)
-  (TFileOperation Operation, TOperationSide Side, bool Temp,
-    const UnicodeString & FileName, bool Success, TOnceDoneOperation & OnceDoneOperation);
+(TFileOperation Operation, TOperationSide Side, bool Temp,
+  const UnicodeString &FileName, bool Success, TOnceDoneOperation &OnceDoneOperation);
 #endif
 typedef nb::FastDelegate6<void,
   TFileOperation /*Operation*/, TOperationSide /*Side*/, bool /*Temp*/,
@@ -160,7 +160,7 @@ public:
 
   __property TBatchOverwrite BatchOverwrite = { read = GetBatchOverwrite };
   __property bool SkipToAll = { read = GetSkipToAll };
-  __property unsigned long CPSLimit = { read = GetCPSLimit };
+  __property uintptr_t CPSLimit = { read = GetCPSLimit };
 
   __property bool TotalSizeSet = { read = FTotalSizeSet };
 

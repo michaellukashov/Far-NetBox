@@ -1267,9 +1267,9 @@ static void DoVerifyKey(
   }
 }
 
-void VerifyAndConvertKey(const UnicodeString FileName, TSshProt SshProt)
+void VerifyAndConvertKey(const UnicodeString AFileName, TSshProt SshProt)
 {
-  DoVerifyKey(FileName, SshProt, true);
+  DoVerifyKey(AFileName, SshProt, true);
 }
 
 void VerifyKey(const UnicodeString FileName, TSshProt SshProt)
