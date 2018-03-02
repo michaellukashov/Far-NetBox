@@ -17,6 +17,14 @@
 #define CATCH_CONFIG_CPP11_NO_SHUFFLE
 #include <catch/catch.hpp>
 
+// stubs
+bool AppendExceptionStackTraceAndForget(TStrings *&MoreMessages)
+{
+  return false;
+}
+
+TCustomFarPlugin *FarPlugin = nullptr;
+
 /*******************************************************************************
             test suite
 *******************************************************************************/
