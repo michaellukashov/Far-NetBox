@@ -18,6 +18,7 @@ class BaseStringT : public CMStringT< CharT, NBChTraitsCRT< CharT> >
 
 public:
   BaseStringT() {}
+  BaseStringT(BaseStringT&&) = default;
 
   BaseStringT(const BaseStringT &rhs) :
     BaseT(rhs.c_str(), ToInt(rhs.GetLength()))
@@ -317,23 +318,10 @@ public:
   }
 
 public:
-  BaseStringT &operator=(const CharT *Str)
-  {
-    SetString(Str, ToInt(BaseStringT::StringLength(Str)));
-    return *this;
-  }
-
-  BaseStringT &operator=(const XCHAR Ch)
-  {
-    SetString(&Ch, 1);
-    return *this;
-  }
-
-  BaseStringT &operator=(const BaseStringT &StrCopy)
-  {
-    SetString(StrCopy.c_str(), ToInt(StrCopy.GetLength()));
-    return *this;
-  }
+  BaseStringT &operator=(BaseStringT&&) = default;
+  BaseStringT &operator=(const CharT *Str) { SetString(Str, ToInt(BaseStringT::StringLength(Str))); return *this; }
+  BaseStringT &operator=(const XCHAR Ch) { SetString(&Ch, 1); return *this; }
+  BaseStringT &operator=(const BaseStringT &StrCopy) { SetString(StrCopy.c_str(), ToInt(StrCopy.GetLength())); return *this; }
 
   template<typename StringT>
   BaseStringT operator+(const StringT &rhs) const
