@@ -23,5 +23,11 @@
 #include "../base/System.SyncObjs.cpp"
 #include "../base/LibraryLoader.cpp"
 #include "../base/FileBuffer.cpp"
+// #include "../windows/WinInterface.cpp"
+// stub
+bool AppendExceptionStackTraceAndForget(TStrings *&MoreMessages)
+{
+  return false;
+}
 
 #include <disable_warnings_in_std_end.hpp>
