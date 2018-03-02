@@ -216,6 +216,7 @@ const int tfAutoResume = 0x04;
 const int tfPreCreateDir = 0x08;
 const int tfUseFileTransferAny = 0x10;
 //---------------------------------------------------------------------------
+NB_DEFINE_CLASS_ID(TTerminal);
 class NB_CORE_EXPORT TTerminal : public TSessionUI
 {
   NB_DISABLE_COPY(TTerminal)
@@ -844,6 +845,7 @@ private:
   void AfterMoveFiles(TStrings *AFileList);
 };
 //---------------------------------------------------------------------------
+NB_DEFINE_CLASS_ID(TSecondaryTerminal);
 class NB_CORE_EXPORT TSecondaryTerminal : public TTerminal
 {
   NB_DISABLE_COPY(TSecondaryTerminal)
@@ -874,6 +876,7 @@ private:
   TTerminal *FMainTerminal;
 };
 //---------------------------------------------------------------------------
+NB_DEFINE_CLASS_ID(TTerminalList);
 class NB_CORE_EXPORT TTerminalList : public TObjectList
 {
   NB_DISABLE_COPY(TTerminalList)
@@ -898,6 +901,7 @@ public:
   TTerminal * GetTerminal(intptr_t Index);
 };
 //---------------------------------------------------------------------------
+NB_DEFINE_CLASS_ID(TCustomCommandParams);
 struct NB_CORE_EXPORT TCustomCommandParams : public TObject
 {
 public:
@@ -920,6 +924,7 @@ struct NB_CORE_EXPORT TCalculateSizeStats : public TObject
   TStrings *FoundFiles;
 };
 //---------------------------------------------------------------------------
+NB_DEFINE_CLASS_ID(TCalculateSizeParams);
 struct NB_CORE_EXPORT TCalculateSizeParams : public TObject
 {
 public:
@@ -953,6 +958,7 @@ struct TOverwriteFileParams
 //---------------------------------------------------------------------------
 typedef rde::vector<TDateTime> TDateTimes;
 //---------------------------------------------------------------------------
+NB_DEFINE_CLASS_ID(TMakeLocalFileListParams);
 struct NB_CORE_EXPORT TMakeLocalFileListParams : public TObject
 {
 public:
@@ -990,7 +996,7 @@ enum TChecklistAction
   saDeleteLocal,
 };
 
-
+NB_DEFINE_CLASS_ID(TChecklistItem);
 class NB_CORE_EXPORT TChecklistItem : public TObject
 {
   friend class TTerminal;
@@ -1128,6 +1134,7 @@ private:
   TDateTime FStart;
 };
 //---------------------------------------------------------------------------
+NB_DEFINE_CLASS_ID(TCollectedFileList);
 class TCollectedFileList : public TObject
 {
 public:

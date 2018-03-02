@@ -86,7 +86,7 @@ private:
   mutable TIDMap FIDMap;
 };
 //---------------------------------------------------------------------------
-DEFINE_CLASS_ID(TRemoteFile);
+NB_DEFINE_CLASS_ID(TRemoteFile);
 class NB_CORE_EXPORT TRemoteFile : public TPersistent
 {
   NB_DISABLE_COPY(TRemoteFile)
@@ -234,7 +234,7 @@ private:
   void Init();
 };
 //---------------------------------------------------------------------------
-DEFINE_CLASS_ID(TRemoteDirectoryFile);
+NB_DEFINE_CLASS_ID(TRemoteDirectoryFile);
 class NB_CORE_EXPORT TRemoteDirectoryFile : public TRemoteFile
 {
 public:
@@ -247,7 +247,7 @@ public:
   virtual ~TRemoteDirectoryFile() {}
 };
 //---------------------------------------------------------------------------
-DEFINE_CLASS_ID(TRemoteParentDirectory);
+NB_DEFINE_CLASS_ID(TRemoteParentDirectory);
 class NB_CORE_EXPORT TRemoteParentDirectory : public TRemoteDirectoryFile
 {
 public:
@@ -258,7 +258,7 @@ public:
   virtual ~TRemoteParentDirectory() {}
 };
 //---------------------------------------------------------------------------
-DEFINE_CLASS_ID(TRemoteFileList);
+NB_DEFINE_CLASS_ID(TRemoteFileList);
 class NB_CORE_EXPORT TRemoteFileList : public TObjectList
 {
   friend class TSCPFileSystem;
@@ -305,7 +305,7 @@ public:
   TDateTime GetTimestamp() const { return FTimestamp; }
 };
 //---------------------------------------------------------------------------
-DEFINE_CLASS_ID(TRemoteDirectory);
+NB_DEFINE_CLASS_ID(TRemoteDirectory);
 class NB_CORE_EXPORT TRemoteDirectory : public TRemoteFileList
 {
   friend class TSCPFileSystem;
@@ -586,7 +586,7 @@ private:
 enum TValidProperty { vpRights, vpGroup, vpOwner, vpModification, vpLastAccess };
 typedef Set<TValidProperty, vpRights, vpLastAccess> TValidProperties;
 #endif // #if 0
-DEFINE_CLASS_ID(TRemoteProperties);
+NB_DEFINE_CLASS_ID(TRemoteProperties);
 class TRemoteProperties : public TObject
 {
 public:

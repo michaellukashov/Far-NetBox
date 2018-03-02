@@ -242,6 +242,7 @@ public:
   bool Loaded;
 };
 //---------------------------------------------------------------------------
+NB_DEFINE_CLASS_ID(TSFTPPacket);
 class TSFTPPacket : public TObject
 {
 public:
@@ -1198,6 +1199,7 @@ private:
   }
 };
 
+NB_DEFINE_CLASS_ID(TSFTPQueuePacket);
 class TSFTPQueuePacket : public TSFTPPacket
 {
   NB_DISABLE_COPY(TSFTPQueuePacket)
@@ -1216,6 +1218,7 @@ public:
 //---------------------------------------------------------------------------
 uint32_t TSFTPPacket::FMessageCounter = 0;
 //---------------------------------------------------------------------------
+NB_DEFINE_CLASS_ID(TSFTPQueue);
 class TSFTPQueue : public TObject
 {
   NB_DISABLE_COPY(TSFTPQueue)

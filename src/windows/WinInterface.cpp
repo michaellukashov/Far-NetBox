@@ -1380,6 +1380,7 @@ bool HandleMinimizeSysCommand(TMessage &Message)
 #endif
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
+NB_DEFINE_CLASS_ID(TCallstackThread);
 class TCallstackThread : public TSignalThread
 {
 public:

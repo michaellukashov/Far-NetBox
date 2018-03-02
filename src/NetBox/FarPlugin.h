@@ -74,7 +74,7 @@ public:
   void *Token;
 };
 
-DEFINE_CLASS_ID(TCustomFarPlugin);
+NB_DEFINE_CLASS_ID(TCustomFarPlugin);
 class TCustomFarPlugin : public TObject
 {
   friend class TCustomFarFileSystem;
@@ -249,7 +249,7 @@ private:
   void CloseFileSystem(TCustomFarFileSystem *FileSystem);
 };
 
-DEFINE_CLASS_ID(TCustomFarFileSystem);
+NB_DEFINE_CLASS_ID(TCustomFarFileSystem);
 class TCustomFarFileSystem : public TObject
 {
   friend class TFarPanelInfo;
@@ -391,7 +391,7 @@ private:
   static void ClearKeyBarTitles(KeyBarTitles &Titles);
 };
 
-DEFINE_CLASS_ID(TCustomFarPanelItem);
+NB_DEFINE_CLASS_ID(TCustomFarPanelItem);
 class TCustomFarPanelItem : public TObject
 {
   friend class TCustomFarFileSystem;
@@ -414,7 +414,7 @@ protected:
   void FillPanelItem(struct PluginPanelItem *PanelItem);
 };
 
-DEFINE_CLASS_ID(TFarPanelItem);
+NB_DEFINE_CLASS_ID(TFarPanelItem);
 class TFarPanelItem : public TCustomFarPanelItem
 {
   NB_DISABLE_COPY(TFarPanelItem)
@@ -447,6 +447,7 @@ protected:
   virtual UnicodeString GetCustomColumnData(size_t Column) override;
 };
 
+NB_DEFINE_CLASS_ID(THintPanelItem);
 class THintPanelItem : public TCustomFarPanelItem
 {
 public:
@@ -504,7 +505,7 @@ private:
   TCustomFarFileSystem *FOwner;
 };
 
-DEFINE_CLASS_ID(TFarMenuItems);
+NB_DEFINE_CLASS_ID(TFarMenuItems);
 class TFarMenuItems : public TStringList
 {
 public:

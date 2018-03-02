@@ -12,6 +12,7 @@ __removed #pragma package(smart_init)
 //---------------------------------------------------------------------------
 class TBackgroundTerminal;
 //---------------------------------------------------------------------------
+NB_DEFINE_CLASS_ID(TParallelTransferQueueItem);
 class TParallelTransferQueueItem : public TLocatedQueueItem
 {
 public:
@@ -275,6 +276,7 @@ public:
   bool Cancel;
 };
 //---------------------------------------------------------------------------
+NB_DEFINE_CLASS_ID(TTerminalItem);
 class TTerminalItem : public TSignalThread
 {
   friend class TQueueItem;
@@ -1278,6 +1280,7 @@ bool TTerminalQueue::ContinueParallelOperation() const
 //---------------------------------------------------------------------------
 // TBackgroundItem
 //---------------------------------------------------------------------------
+NB_DEFINE_CLASS_ID(TBackgroundTerminal);
 class TBackgroundTerminal : public TSecondaryTerminal
 {
   friend class TTerminalItem;

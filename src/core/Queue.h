@@ -4,6 +4,7 @@
 #include "Terminal.h"
 #include "FileOperationProgress.h"
 //---------------------------------------------------------------------------
+NB_DEFINE_CLASS_ID(TSimpleThread);
 class NB_CORE_EXPORT TSimpleThread : public TObject
 {
   NB_DISABLE_COPY(TSimpleThread)
@@ -33,6 +34,7 @@ public:
   static int ThreadProc(void *Thread);
 };
 //---------------------------------------------------------------------------
+NB_DEFINE_CLASS_ID(TSignalThread);
 class NB_CORE_EXPORT TSignalThread : public TSimpleThread
 {
   NB_DISABLE_COPY(TSignalThread)
@@ -94,6 +96,7 @@ typedef nb::FastDelegate2<void,
 
 class TTerminalItem;
 //---------------------------------------------------------------------------
+NB_DEFINE_CLASS_ID(TTerminalQueue);
 class NB_CORE_EXPORT TTerminalQueue : public TSignalThread
 {
   friend class TQueueItem;
@@ -207,6 +210,7 @@ public:
   bool ContinueParallelOperation() const;
 };
 //---------------------------------------------------------------------------
+NB_DEFINE_CLASS_ID(TQueueItem);
 class NB_CORE_EXPORT TQueueItem : public TObject
 {
   friend class TTerminalQueue;
@@ -284,6 +288,7 @@ public:
   bool Complete();
 };
 //---------------------------------------------------------------------------
+NB_DEFINE_CLASS_ID(TQueueItemProxy);
 class NB_CORE_EXPORT TQueueItemProxy : public TObject
 {
   friend class TQueueItem;
@@ -387,6 +392,7 @@ public:
   TQueueItemProxy *GetItem(intptr_t Index);
 };
 //---------------------------------------------------------------------------
+NB_DEFINE_CLASS_ID(TLocatedQueueItem);
 class NB_CORE_EXPORT TLocatedQueueItem : public TQueueItem
 {
 public:
@@ -406,6 +412,7 @@ private:
   UnicodeString FCurrentDir;
 };
 //---------------------------------------------------------------------------
+NB_DEFINE_CLASS_ID(TTransferQueueItem);
 class NB_CORE_EXPORT TTransferQueueItem : public TLocatedQueueItem
 {
   NB_DISABLE_COPY(TTransferQueueItem)
@@ -439,6 +446,7 @@ public:
   TParallelOperation *GetParallelOperation() { return FParallelOperation; }
 };
 //---------------------------------------------------------------------------
+NB_DEFINE_CLASS_ID(TUploadQueueItem);
 class NB_CORE_EXPORT TUploadQueueItem : public TTransferQueueItem
 {
 public:
@@ -456,6 +464,7 @@ protected:
   virtual void DoTransferExecute(TTerminal *Terminal, TParallelOperation *ParallelOperation) override;
 };
 //---------------------------------------------------------------------------
+NB_DEFINE_CLASS_ID(TDownloadQueueItem);
 class NB_CORE_EXPORT TDownloadQueueItem : public TTransferQueueItem
 {
 public:
@@ -474,6 +483,7 @@ protected:
 };
 //---------------------------------------------------------------------------
 class TUserAction;
+NB_DEFINE_CLASS_ID(TTerminalThread);
 class NB_CORE_EXPORT TTerminalThread : public TSignalThread
 {
   NB_DISABLE_COPY(TTerminalThread)

@@ -190,7 +190,7 @@ struct NB_CORE_EXPORT TIEProxyConfig : public TObject
 //---------------------------------------------------------------------------
 class TStoredSessionList;
 //---------------------------------------------------------------------------
-DEFINE_CLASS_ID(TSessionData);
+NB_DEFINE_CLASS_ID(TSessionData);
 class NB_CORE_EXPORT TSessionData : public TNamedObject
 {
   friend class TStoredSessionList;
@@ -922,7 +922,7 @@ private:
 
 };
 //---------------------------------------------------------------------------
-DEFINE_CLASS_ID(TStoredSessionList);
+NB_DEFINE_CLASS_ID(TStoredSessionList);
 class NB_CORE_EXPORT TStoredSessionList : public TNamedObjectList
 {
   NB_DISABLE_COPY(TStoredSessionList)

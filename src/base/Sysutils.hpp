@@ -141,7 +141,7 @@ public:
   }
 };
 
-DEFINE_CLASS_ID(EFileNotFoundError);
+NB_DEFINE_CLASS_ID(EFileNotFoundError);
 
 class NB_CORE_EXPORT EFileNotFoundError : public Exception
 {
@@ -154,7 +154,7 @@ public:
   }
 };
 
-DEFINE_CLASS_ID(EOSError);
+NB_DEFINE_CLASS_ID(EOSError);
 
 class NB_CORE_EXPORT EOSError : public Exception
 {
@@ -170,7 +170,7 @@ public:
   DWORD ErrorCode;
 };
 
-DEFINE_CLASS_ID(EInvalidOperation);
+NB_DEFINE_CLASS_ID(EInvalidOperation);
 
 class NB_CORE_EXPORT EInvalidOperation : public Exception
 {
@@ -403,7 +403,7 @@ public:
 NB_CORE_EXPORT void InitPlatformId();
 NB_CORE_EXPORT bool Win32Check(bool RetVal);
 
-DEFINE_CLASS_ID(EConvertError);
+NB_DEFINE_CLASS_ID(EConvertError);
 
 class NB_CORE_EXPORT EConvertError : public Exception
 {

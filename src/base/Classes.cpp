@@ -1289,7 +1289,7 @@ UnicodeString TSHFileInfo::GetFileType(const UnicodeString StrFileName)
 }
 */
 
-DEFINE_CLASS_ID(EStreamError);
+NB_DEFINE_CLASS_ID(EStreamError);
 class EStreamError : public ExtException
 {
 public:

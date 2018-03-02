@@ -21,7 +21,7 @@ class TFarDialog;
 class TTerminalQueue;
 class TTerminalQueueStatus;
 class TQueueItem;
-class TKeepaliveThread;
+class TKeepAliveThread;
 struct TMessageParams;
 #define REMOTE_DIR_HISTORY L"WinscpRemoteDirectory"
 #define ASCII_MASK_HISTORY L"WinscpAsciiMask"
@@ -78,11 +78,12 @@ typedef void (__closure *TProcessSessionEvent)(TSessionData *Data, void *Param);
 #endif // #if 0
 typedef nb::FastDelegate2<void, TSessionData * /*Data*/, void * /*Param*/> TProcessSessionEvent;
 
+NB_DEFINE_CLASS_ID(TWinSCPFileSystem);
 class TWinSCPFileSystem : public TCustomFarFileSystem
 {
   friend class TWinSCPPlugin;
   friend class TNetBoxPlugin;
-  friend class TKeepaliveThread;
+  friend class TKeepAliveThread;
   friend class TQueueDialog;
   NB_DISABLE_COPY(TWinSCPFileSystem)
 public:
@@ -326,7 +327,7 @@ private:
   UnicodeString FLastMultipleEditDirectory;
   intptr_t FLastEditorID;
   TGUICopyParamType FLastEditCopyParam;
-  TKeepaliveThread *FKeepaliveThread;
+  TKeepAliveThread *FKeepaliveThread;
   TSynchronizeController *FSynchronizeController;
   TStrings *FCapturedLog;
   TStrings *FAuthenticationLog;
@@ -356,6 +357,7 @@ private:
   bool FCurrentDirectoryWasChanged;
 };
 
+NB_DEFINE_CLASS_ID(TSessionPanelItem);
 class TSessionPanelItem : public TCustomFarPanelItem
 {
   NB_DISABLE_COPY(TSessionPanelItem)
@@ -376,6 +378,7 @@ protected:
     UnicodeString &Owner, void *&UserData, int &CustomColumnNumber) override;
 };
 
+NB_DEFINE_CLASS_ID(TSessionFolderPanelItem);
 class TSessionFolderPanelItem : public TCustomFarPanelItem
 {
 public:
@@ -392,6 +395,7 @@ protected:
     UnicodeString &Owner, void *&UserData, int &CustomColumnNumber) override;
 };
 
+NB_DEFINE_CLASS_ID(TRemoteFilePanelItem);
 class TRemoteFilePanelItem : public TCustomFarPanelItem
 {
   NB_DISABLE_COPY(TRemoteFilePanelItem)

@@ -26,7 +26,7 @@ enum TFtpEncryptionSwitch_219
 //---------------------------------------------------------------------------
 class TStoredSessionList;
 //---------------------------------------------------------------------------
-DEFINE_CLASS_ID(TConfiguration);
+NB_DEFINE_CLASS_ID(TConfiguration);
 class NB_CORE_EXPORT TConfiguration : public TObject
 {
   NB_DISABLE_COPY(TConfiguration)

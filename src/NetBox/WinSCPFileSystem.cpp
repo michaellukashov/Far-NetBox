@@ -232,12 +232,13 @@ void TFarInteractiveCustomCommand::Prompt(intptr_t /*Index*/, const UnicodeStrin
 
 // Attempt to allow keepalives from background thread.
 // Not finished nor used.
-class TKeepaliveThread : public TSimpleThread
+NB_DEFINE_CLASS_ID(TKeepAliveThread);
+class TKeepAliveThread : public TSimpleThread
 {
 public:
-  explicit TKeepaliveThread(TWinSCPFileSystem *FileSystem, const TDateTime &Interval);
+  explicit TKeepAliveThread(TWinSCPFileSystem *FileSystem, const TDateTime &Interval);
 
-  virtual ~TKeepaliveThread()
+  virtual ~TKeepAliveThread()
   {
   }
 
@@ -251,7 +252,7 @@ private:
   HANDLE FEvent;
 };
 
-TKeepaliveThread::TKeepaliveThread(TWinSCPFileSystem *FileSystem,
+TKeepAliveThread::TKeepAliveThread(TWinSCPFileSystem *FileSystem,
   const TDateTime &Interval) :
   TSimpleThread(OBJECT_CLASS_TKeepAliveThread),
   FFileSystem(FileSystem),
@@ -260,20 +261,20 @@ TKeepaliveThread::TKeepaliveThread(TWinSCPFileSystem *FileSystem,
 {
 }
 
-void TKeepaliveThread::InitKeepaliveThread()
+void TKeepAliveThread::InitKeepaliveThread()
 {
   TSimpleThread::InitSimpleThread();
   FEvent = ::CreateEvent(nullptr, false, false, nullptr);
   Start();
 }
 
-void TKeepaliveThread::Terminate()
+void TKeepAliveThread::Terminate()
 {
   // TCompThread::Terminate();
   ::SetEvent(FEvent);
 }
 
-void TKeepaliveThread::Execute()
+void TKeepAliveThread::Execute()
 {
   while (!IsFinished())
   {

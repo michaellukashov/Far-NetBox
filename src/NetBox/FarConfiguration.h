@@ -6,6 +6,7 @@ class TCustomFarPlugin;
 class TBookmarks;
 class TBookmarkList;
 
+NB_DEFINE_CLASS_ID(TFarConfiguration);
 class TFarConfiguration : public TGUIConfiguration
 {
   NB_DISABLE_COPY(TFarConfiguration)

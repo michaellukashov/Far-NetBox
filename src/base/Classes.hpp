@@ -63,10 +63,9 @@ NB_CORE_EXPORT void Error(intptr_t Id, intptr_t ErrorId);
 NB_CORE_EXPORT void ThrowNotImplemented(intptr_t ErrorId);
 
 enum class TObjectClassId {};
-#define DEFINE_CLASS_ID(CLASS_ID) static constexpr TObjectClassId OBJECT_CLASS_ ## CLASS_ID = (TObjectClassId)nb::counter_id()
+#define NB_DEFINE_CLASS_ID(CLASS_ID) static constexpr TObjectClassId OBJECT_CLASS_ ## CLASS_ID = (TObjectClassId)nb::counter_id()
 
-DEFINE_CLASS_ID(TObject);
-
+NB_DEFINE_CLASS_ID(TObject);
 class NB_CORE_EXPORT TObject
 {
   CUSTOM_MEM_ALLOCATION_IMPL
@@ -252,7 +251,7 @@ enum TDuplicatesEnum
 
 class TStream;
 
-DEFINE_CLASS_ID(TStrings);
+NB_DEFINE_CLASS_ID(TStrings);
 
 class NB_CORE_EXPORT TStrings : public TObjectList
 {
