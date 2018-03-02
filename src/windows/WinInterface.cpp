@@ -683,7 +683,7 @@ static void DoExceptNotify(TObject * /*ExceptObj*/, void * /*ExceptAddr*/,
         std::unique_ptr<TStrings> StackTrace(StackInfoListToStrings(StackInfoList));
 
         DWORD ThreadID = GetCurrentThreadId();
- volatile TGuard Guard(StackTraceCriticalSection.get());
+        volatile TGuard Guard(StackTraceCriticalSection.get());
 
         TStackTraceMap::iterator Iterator = StackTraceMap.find(ThreadID);
         if (Iterator != StackTraceMap.end())
@@ -899,7 +899,7 @@ class TCustomCommandPromptsDialog : public TCustomDialog
 {
 public:
   TCustomCommandPromptsDialog(
-    UnicodeString CustomCommandName, const UnicodeString HelpKeyword,
+    const UnicodeString CustomCommandName, const UnicodeString HelpKeyword,
     const TUnicodeStringVector &Prompts, const TUnicodeStringVector &Defaults);
 
   bool Execute(TUnicodeStringVector &Values);
@@ -989,7 +989,7 @@ void TWinInteractiveCustomCommand::Prompt(
 }
 //---------------------------------------------------------------------------
 void TWinInteractiveCustomCommand::Execute(
-  UnicodeString /*Command*/, UnicodeString & /*Value*/) const
+  const UnicodeString /*ACommand*/, UnicodeString & /*AValue*/) const
 {
 #if 0
   // inspired by
