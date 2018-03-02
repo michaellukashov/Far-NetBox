@@ -931,7 +931,7 @@ public:
   virtual void SetRWData1(int Value) { FRWData1 = Value; }
 
   virtual UnicodeString GetRWData2() const override { return FRWData2; }
-  virtual void SetRWData2(const UnicodeString Value) override { FRWData2 = Value; }
+  virtual void SetRWData2(UnicodeString Value) override { FRWData2 = Value; }
 private:
   int FRWData1 = 42;
   UnicodeString FRWData2 = "42";
