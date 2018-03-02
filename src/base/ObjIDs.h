@@ -2,7 +2,7 @@
 
 enum TObjectClassId
 {
-  OBJECT_CLASS_TObject = 1,
+  // OBJECT_CLASS_TObject = 1,
   OBJECT_CLASS_Exception,
   OBJECT_CLASS_ExtException,
   OBJECT_CLASS_EConvertError,

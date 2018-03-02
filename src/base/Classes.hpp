@@ -63,6 +63,8 @@ NB_CORE_EXPORT void Abort();
 NB_CORE_EXPORT void Error(intptr_t Id, intptr_t ErrorId);
 NB_CORE_EXPORT void ThrowNotImplemented(intptr_t ErrorId);
 
+static constexpr TObjectClassId OBJECT_CLASS_TObject = (TObjectClassId)nb::counter_id();
+
 class NB_CORE_EXPORT TObject
 {
   CUSTOM_MEM_ALLOCATION_IMPL
