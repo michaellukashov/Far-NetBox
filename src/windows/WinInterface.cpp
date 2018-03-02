@@ -6,11 +6,6 @@
 //---------------------------------------------------------------------------
 __removed #pragma package(smart_init)
 //---------------------------------------------------------------------------
-static bool IsPositiveAnswer(uint32_t Answer)
-{
-  return (Answer == qaYes) || (Answer == qaOK) || (Answer == qaYesToAll);
-}
-//---------------------------------------------------------------------------
 TMessageParams::TMessageParams(uintptr_t AParams) :
   Aliases(nullptr),
   AliasesCount(0),
@@ -79,7 +74,11 @@ inline void TMessageParams::Reset()
   MoreMessagesSize = 0;
   CustomCaption = L"";
 }
-
+//---------------------------------------------------------------------------
+static bool IsPositiveAnswer(uint32_t Answer)
+{
+  return (Answer == qaYes) || (Answer == qaOK) || (Answer == qaYesToAll);
+}
 #if 0
 //---------------------------------------------------------------------------
 static void NeverAskAgainCheckClick(void * /*Data*/, TObject *Sender)
