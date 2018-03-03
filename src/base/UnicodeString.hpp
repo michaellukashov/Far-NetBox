@@ -254,7 +254,7 @@ public:
     return Result;
   }
 
-  void Unique() { this->SetString(BaseT::c_str(), BaseT::GetLength()); }
+  void Unique() { BaseT::operator=(BaseStringT(BaseT::c_str(), BaseT::GetLength())); }
 
   int vprintf(const char *Format, va_list ArgList)
   {
