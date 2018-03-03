@@ -1446,7 +1446,6 @@ set(NETBOX_SOURCES
   ../base/vcl.h
   ../base/FileBuffer.h
   ../base/FormatUtils.h
-  ../base/ObjIDs.h
 
   ../core/WebDAVFileSystem.h
   ../core/S3FileSystem.h
