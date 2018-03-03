@@ -368,7 +368,7 @@ public:
   RawByteString(const RawByteString &Str) : BaseT(Str.c_str(), ToInt(Str.Length())) {}
   explicit RawByteString(const wchar_t *Str) : BaseT(Str, BaseT::StringLength(Str)) {}
   explicit RawByteString(const wchar_t *Str, intptr_t Length) : BaseT(Str, ToInt(Length)) {}
-  explicit RawByteString(const char *Str, intptr_t Length) : BaseT(Str, BaseT::StringLength(Str)) {}
+  explicit RawByteString(const char *Str, intptr_t Length) : BaseT(Str, ToInt(Length)) {}
   explicit RawByteString(const unsigned char *Str) :
     BaseT(reinterpret_cast<const char *>(Str), BaseT::StringLength(reinterpret_cast<const char *>(Str)))
   {}
@@ -377,7 +377,7 @@ public:
   {}
   ~RawByteString() {}
 
-  inline operator BaseT &() { return *static_cast<BaseT *>(this); }
+  // inline operator BaseT &() { return *static_cast<BaseT *>(this); }
 
   operator const char *() const { return this->c_str(); }
   operator UnicodeString() const { return UnicodeString(reinterpret_cast<const char *>(c_str()), GetLength()); }
