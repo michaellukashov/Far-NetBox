@@ -959,7 +959,7 @@ UnicodeString ExtractFileExt(const UnicodeString AFileName)
   return Result;
 }
 
-static UnicodeString ExpandFileName(const UnicodeString AFileName)
+UnicodeString ExpandFileName(const UnicodeString AFileName)
 {
   UnicodeString Buf(NB_MAX_PATH + 1, 0);
   intptr_t Size = ::GetFullPathNameW(ApiPath(AFileName).c_str(), ToDWord(Buf.Length() - 1),
