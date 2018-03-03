@@ -1403,7 +1403,7 @@ void ProcessLocalDirectory(const UnicodeString ADirName,
   UnicodeString DirName = ApiPath(::IncludeTrailingBackslash(ADirName));
   if (FindFirstChecked(DirName + L"*.*", FindAttrs, SearchRec) == 0)
   {
-    try__finally
+    try__finally2
     {
       SCOPE_EXIT
       {
@@ -1418,11 +1418,11 @@ void ProcessLocalDirectory(const UnicodeString ADirName,
         }
       }
       while (FindNextChecked(SearchRec) == 0);
-    }
+    },
     __finally__removed
     ({
       FindClose(SearchRec);
-    })
+    }) end_try__finally2
   }
 }
 //---------------------------------------------------------------------------
@@ -2341,7 +2341,7 @@ static bool DoRecursiveDeleteFile(const UnicodeString AFileName, bool ToRecycleB
 
         if (Result)
         {
-          try__finally
+          try__finally2
           {
             SCOPE_EXIT
             {
@@ -2367,11 +2367,11 @@ static bool DoRecursiveDeleteFile(const UnicodeString AFileName, bool ToRecycleB
               }
             }
             while (Result && (FindNextUnchecked(SearchRec) == 0));
-          }
+          },
           __finally__removed 
           ({
             FindClose(SearchRec);
-          })
+          }) end_try__finally2
 
           if (Result)
           {
