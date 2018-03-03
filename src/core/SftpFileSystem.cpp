@@ -2313,7 +2313,7 @@ bool TSFTPFileSystem::SupportsExtension(const UnicodeString Extension) const
   return FSupport->Loaded && (FSupport->Extensions->IndexOf(Extension) >= 0);
 }
 //---------------------------------------------------------------------------
-inline void TSFTPFileSystem::BusyStart()
+void TSFTPFileSystem::BusyStart()
 {
   if (FBusy == 0 && FTerminal->GetUseBusyCursor() && !FAvoidBusy)
   {
@@ -2323,7 +2323,7 @@ inline void TSFTPFileSystem::BusyStart()
   DebugAssert(FBusy < 10);
 }
 //---------------------------------------------------------------------------
-inline void TSFTPFileSystem::BusyEnd()
+void TSFTPFileSystem::BusyEnd()
 {
   DebugAssert(FBusy > 0);
   FBusy--;
