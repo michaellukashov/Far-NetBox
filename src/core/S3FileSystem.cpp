@@ -1094,7 +1094,7 @@ void TS3FileSystem::RemoteCreateLink(const UnicodeString /*AFileName*/,
   DebugFail();
 }
 //---------------------------------------------------------------------------
-void TS3FileSystem::ChangeFileProperties(const UnicodeString FileName,
+void TS3FileSystem::ChangeFileProperties(const UnicodeString /*AFileName*/,
   const TRemoteFile * /*File*/, const TRemoteProperties * /*Properties*/,
   TChmodSessionAction & /*Action*/)
 {

@@ -5,6 +5,7 @@
 
 #include "FileSystems.h"
 #include "RemoteFiles.h"
+#include "CopyParam.h"
 //---------------------------------------------------------------------------
 __removed #pragma package(smart_init)
 //---------------------------------------------------------------------------

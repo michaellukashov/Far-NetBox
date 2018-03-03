@@ -151,7 +151,7 @@ Conf *TSecureShell::StoreToConfig(TSessionData *Data, bool Simple)
 {
   Conf *conf = conf_new();
 
-  DebugAssert((asOn == FORCE_ON) && (asOff == FORCE_OFF) && (asAuto == AUTO));
+  DebugAssert((asOn == (TAutoSwitch)FORCE_ON) && (asOff == (TAutoSwitch)FORCE_OFF) && (asAuto == (TAutoSwitch)AUTO));
 
 #define CONF_ssh_cipherlist_MAX CIPHER_MAX
 #define CONF_DEF_INT_NONE(KEY) conf_set_int(conf, KEY, 0);
@@ -258,7 +258,7 @@ Conf *TSecureShell::StoreToConfig(TSessionData *Data, bool Simple)
     conf_set_int_int(conf, CONF_ssh_kexlist, k, pkex);
   }
 
-  DebugAssert(HK_MAX == HOSTKEY_COUNT);
+  DebugAssert((THostKey)HK_MAX == HOSTKEY_COUNT);
   for (int h = 0; h < HOSTKEY_COUNT; h++)
   {
     int phk = 0;
