@@ -390,18 +390,18 @@ static const int MAX_DEPTH = 16;
 template<int N>
 struct flag
 {
-  friend constexpr int adl_flag(flag<N>);
+  // friend constexpr int adl_flag(flag<N>);
 };
 
 // Used for noting how far down in the binary tree we are.
-// depth<0> equales leaf nodes. depth<MAX_DEPTH> equals root node.
+// depth<0> equals leaf nodes. depth<MAX_DEPTH> equals root node.
 template<int N> struct depth {};
 
 // Creating an instance of this struct marks the flag<N> as used.
 template<int N>
 struct mark
 {
-  friend constexpr int adl_flag (flag<N>)
+  friend constexpr int adl_flag(flag<N>)
   {
     return N;
   }
@@ -428,7 +428,7 @@ int constexpr binary_search_flag(float, depth<D>, flag<N>,
 }
 
 template <int N, class = char[noexcept( adl_flag(flag<N>()) ) ? +1 : -1]>
-int constexpr binary_search_flag(int,   depth<0>, flag<N>)
+int constexpr binary_search_flag(int, depth<0>, flag<N>)
 {
   return N + 1;
 }
