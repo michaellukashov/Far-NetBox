@@ -387,11 +387,7 @@ namespace nb {
 static const int MAX_DEPTH = 16;
 
 // Used for counting.
-template<int N>
-struct flag
-{
-  // friend constexpr int adl_flag(flag<N>);
-};
+template<int N> struct flag {};
 
 // Used for noting how far down in the binary tree we are.
 // depth<0> equals leaf nodes. depth<MAX_DEPTH> equals root node.
@@ -401,11 +397,7 @@ template<int N> struct depth {};
 template<int N>
 struct mark
 {
-  friend constexpr int adl_flag(flag<N>)
-  {
-    return N;
-  }
-
+  friend constexpr int adl_flag(flag<N>) { return N; }
   static constexpr int value = N;
 };
 
