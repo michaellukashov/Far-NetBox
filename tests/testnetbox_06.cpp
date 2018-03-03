@@ -70,6 +70,20 @@ TEST_CASE_METHOD(base_fixture_t, "testUnicodeString01", "netbox")
   }
 }
 
+TEST_CASE_METHOD(base_fixture_t, "testUnicodeString02", "netbox")
+{
+  UnicodeString a("1");
+  UnicodeString b(a);
+  a.Unique();
+  CHECK(a == "1");
+  a = "2";
+  b.Unique();
+  CHECK(b == "1");
+  b = "3";
+  CHECK(a == "2");
+  CHECK(b == "3");
+}
+
 TEST_CASE_METHOD(base_fixture_t, "testIsA01", "netbox")
 {
   TObject obj1;
