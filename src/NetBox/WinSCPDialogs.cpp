@@ -126,6 +126,7 @@ private:
   intptr_t FTabCount;
 };
 
+NB_DEFINE_CLASS_ID(TTabButton);
 class TTabButton : public TFarButton
 {
 public:
@@ -4321,6 +4322,7 @@ bool TWinSCPFileSystem::SessionDialog(TSessionData *SessionData,
   return Result;
 }
 
+NB_DEFINE_CLASS_ID(TRightsContainer);
 class TRightsContainer : public TFarDialogContainer
 {
   NB_DISABLE_COPY(TRightsContainer)
@@ -4980,6 +4982,7 @@ bool TWinSCPFileSystem::PropertiesDialog(TStrings *AFileList,
   return Result;
 }
 
+NB_DEFINE_CLASS_ID(TCopyParamsContainer);
 class TCopyParamsContainer : public TFarDialogContainer
 {
 public:
@@ -5946,6 +5949,7 @@ private:
   TFarButton *OkButton;
 };
 
+NB_DEFINE_CLASS_ID(TLabelList);
 class TLabelList : public TList
 {
 public:

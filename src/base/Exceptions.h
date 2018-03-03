@@ -23,6 +23,7 @@ enum TOnceDoneOperation
   odoShutDown,
 };
 //---------------------------------------------------------------------------
+NB_DEFINE_CLASS_ID(ExtException);
 class NB_CORE_EXPORT ExtException : public Exception
 {
 public:
@@ -110,6 +111,7 @@ private:
     }
 
 #define DERIVE_EXT_EXCEPTION(NAME, BASE) \
+  NB_DEFINE_CLASS_ID(NAME); \
   class NB_CORE_EXPORT NAME : public BASE \
   { \
     EXT_EXCEPTION_METHODS(NAME, BASE) \
@@ -119,7 +121,8 @@ DERIVE_EXT_EXCEPTION(ESsh, ExtException)
 DERIVE_EXT_EXCEPTION(ETerminal, ExtException)
 DERIVE_EXT_EXCEPTION(ECommand, ExtException)
 DERIVE_EXT_EXCEPTION(EScp, ExtException) // SCP protocol fatal error (non-fatal in application context)
-class ESkipFile : public ExtException
+NB_DEFINE_CLASS_ID(ESkipFile);
+class NB_CORE_EXPORT ESkipFile : public ExtException
 {
 public:
   inline ESkipFile() :
@@ -129,6 +132,7 @@ public:
   EXT_EXCEPTION_METHODS(ESkipFile, ExtException)
 };
 //---------------------------------------------------------------------------
+NB_DEFINE_CLASS_ID(EOSExtException);
 class NB_CORE_EXPORT EOSExtException : public ExtException
 {
 public:
@@ -141,6 +145,7 @@ public:
   explicit EOSExtException(TObjectClassId Kind, const UnicodeString Msg, intptr_t LastError);
 };
 //---------------------------------------------------------------------------
+NB_DEFINE_CLASS_ID(ECRTExtException);
 class NB_CORE_EXPORT ECRTExtException : public EOSExtException
 {
 public:
@@ -151,6 +156,7 @@ public:
   explicit ECRTExtException(const UnicodeString Msg);
 };
 //---------------------------------------------------------------------------
+NB_DEFINE_CLASS_ID(EFatal);
 class NB_CORE_EXPORT EFatal : public ExtException
 {
 public:
@@ -173,6 +179,7 @@ private:
 };
 //---------------------------------------------------------------------------
 #define DERIVE_FATAL_EXCEPTION(NAME, BASE) \
+  NB_DEFINE_CLASS_ID(NAME); \
   class NB_CORE_EXPORT NAME : public BASE \
   { \
   public: \
@@ -187,6 +194,7 @@ DERIVE_FATAL_EXCEPTION(ESshFatal, EFatal)
 //---------------------------------------------------------------------------
 // exception that closes application, but displays info message (not error message)
 // = close on completion
+NB_DEFINE_CLASS_ID(ESshTerminate);
 class NB_CORE_EXPORT ESshTerminate : public EFatal
 {
 public:
@@ -211,6 +219,7 @@ public:
   UnicodeString DestLocalFileName;
 };
 //---------------------------------------------------------------------------
+NB_DEFINE_CLASS_ID(ECallbackGuardAbort);
 class NB_CORE_EXPORT ECallbackGuardAbort : public EAbort
 {
 public:

@@ -15,7 +15,6 @@
 #pragma warning(push, 1)
 
 #include <rtlconsts.h>
-#include <ObjIDs.h>
 #include <UnicodeString.hpp>
 #include <rtti.hpp>
 #include <Property.hpp>
@@ -63,6 +62,10 @@ NB_CORE_EXPORT void Abort();
 NB_CORE_EXPORT void Error(intptr_t Id, intptr_t ErrorId);
 NB_CORE_EXPORT void ThrowNotImplemented(intptr_t ErrorId);
 
+enum class TObjectClassId {};
+#define NB_DEFINE_CLASS_ID(CLASS_ID) static constexpr TObjectClassId OBJECT_CLASS_ ## CLASS_ID = (TObjectClassId)nb::counter_id()
+
+NB_DEFINE_CLASS_ID(TObject);
 class NB_CORE_EXPORT TObject
 {
   CUSTOM_MEM_ALLOCATION_IMPL
@@ -151,6 +154,7 @@ struct TRect
   }
 };
 
+NB_DEFINE_CLASS_ID(TPersistent);
 class NB_CORE_EXPORT TPersistent : public TObject
 {
 public:
@@ -177,6 +181,7 @@ enum TListNotification
 
 typedef intptr_t (CompareFunc)(const void *Item1, const void *Item2);
 
+NB_DEFINE_CLASS_ID(TList);
 class NB_CORE_EXPORT TList : public TPersistent
 {
 public:
@@ -212,6 +217,7 @@ private:
   rde::vector<void *> FList;
 };
 
+NB_DEFINE_CLASS_ID(TObjectList);
 class NB_CORE_EXPORT TObjectList : public TList
 {
 public:
@@ -242,6 +248,7 @@ enum TDuplicatesEnum
 
 class TStream;
 
+NB_DEFINE_CLASS_ID(TStrings);
 class NB_CORE_EXPORT TStrings : public TObjectList
 {
 public:
@@ -310,6 +317,7 @@ protected:
 class TStringList;
 typedef intptr_t (TStringListSortCompare)(TStringList *List, intptr_t Index1, intptr_t Index2);
 
+NB_DEFINE_CLASS_ID(TStringList);
 class NB_CORE_EXPORT TStringList : public TStrings
 {
   friend intptr_t StringListCompareStrings(TStringList *List, intptr_t Index1, intptr_t Index2);

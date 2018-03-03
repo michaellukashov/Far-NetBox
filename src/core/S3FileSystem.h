@@ -29,6 +29,7 @@ enum S3Status { };
 enum _S3Protocol { };
 #endif
 //------------------------------------------------------------------------------
+NB_DEFINE_CLASS_ID(TS3FileSystem);
 class NB_CORE_EXPORT TS3FileSystem : public TCustomFileSystem
 {
   NB_DISABLE_COPY(TS3FileSystem)

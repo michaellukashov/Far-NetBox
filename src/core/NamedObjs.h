@@ -7,6 +7,7 @@
 #define CONST_HIDDEN_PREFIX L"_!_"
 //---------------------------------------------------------------------------
 class TNamedObjectList;
+NB_DEFINE_CLASS_ID(TNamedObject);
 class NB_CORE_EXPORT TNamedObject : public TPersistent
 {
 public:
@@ -35,6 +36,7 @@ private:
   __removed void SetName(const UnicodeString value);
 };
 //---------------------------------------------------------------------------
+NB_DEFINE_CLASS_ID(TNamedObjectList);
 class NB_CORE_EXPORT TNamedObjectList : public TObjectList
 {
 public:

@@ -58,6 +58,7 @@ struct TUsableCopyParamAttrs
   int Download;
 };
 //---------------------------------------------------------------------------
+NB_DEFINE_CLASS_ID(TCopyParamType);
 class NB_CORE_EXPORT TCopyParamType : public TObject
 {
 public:

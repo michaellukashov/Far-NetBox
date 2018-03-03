@@ -8,6 +8,7 @@ class TCommandSet;
 class TSecureShell;
 struct TOverwriteFileParams;
 //---------------------------------------------------------------------------
+NB_DEFINE_CLASS_ID(TSCPFileSystem);
 class NB_CORE_EXPORT TSCPFileSystem : public TCustomFileSystem
 {
   NB_DISABLE_COPY(TSCPFileSystem)

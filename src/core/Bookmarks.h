@@ -38,6 +38,7 @@ private:
 };
 //---------------------------------------------------------------------------
 class TBookmark;
+NB_DEFINE_CLASS_ID(TBookmarkList);
 class NB_CORE_EXPORT TBookmarkList : public TPersistent
 {
   friend class TBookmarks;
@@ -87,6 +88,7 @@ public:
   void SetNodeOpened(const UnicodeString AIndex, bool Value);
 };
 //---------------------------------------------------------------------------
+NB_DEFINE_CLASS_ID(TBookmark);
 class NB_CORE_EXPORT TBookmark : public TPersistent
 {
   friend class TBookmarkList;

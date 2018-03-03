@@ -18,6 +18,7 @@ class TSecureShell;
 __removed enum TSFTPOverwriteMode { omOverwrite, omAppend, omResume };
 __removed extern const int SFTPMaxVersion;
 //---------------------------------------------------------------------------
+NB_DEFINE_CLASS_ID(TSFTPFileSystem);
 class NB_CORE_EXPORT TSFTPFileSystem : public TCustomFileSystem
 {
   NB_DISABLE_COPY(TSFTPFileSystem)

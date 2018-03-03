@@ -8,6 +8,7 @@
 class TWinSCPFileSystem;
 class TCopyParamType;
 
+NB_DEFINE_CLASS_ID(TWinSCPPlugin);
 class TWinSCPPlugin : public TCustomFarPlugin
 {
   friend class TWinSCPFileSystem;

@@ -112,6 +112,7 @@ bool TLoopDetector::IsUnvisitedDirectory(const UnicodeString Directory)
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
+NB_DEFINE_CLASS_ID(TMoveFileParams);
 struct TMoveFileParams : public TObject
 {
 public:
@@ -125,6 +126,7 @@ public:
   UnicodeString FileMask;
 };
 //---------------------------------------------------------------------------
+NB_DEFINE_CLASS_ID(TFilesFindParams);
 struct TFilesFindParams : public TObject
 {
 public:
@@ -334,6 +336,7 @@ TChecklistAction TSynchronizeChecklist::Reverse(TChecklistAction Action)
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
+NB_DEFINE_CLASS_ID(TTunnelThread);
 class TTunnelThread : public TSimpleThread
 {
   NB_DISABLE_COPY(TTunnelThread)
@@ -399,6 +402,7 @@ void TTunnelThread::Execute()
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
+NB_DEFINE_CLASS_ID(TTunnelUI);
 class TTunnelUI : public TSessionUI
 {
   NB_DISABLE_COPY(TTunnelUI)
@@ -5858,6 +5862,7 @@ bool TTerminal::CalculateLocalFilesSize(TStrings *AFileList,
   return Result;
 }
 //---------------------------------------------------------------------------
+NB_DEFINE_CLASS_ID(TSynchronizeFileData);
 struct TSynchronizeFileData : public TObject
 {
 public:
@@ -5886,6 +5891,7 @@ public:
 };
 //---------------------------------------------------------------------------
 const intptr_t sfFirstLevel = 0x01;
+NB_DEFINE_CLASS_ID(TSynchronizeData);
 struct TSynchronizeData : public TObject
 {
 public:

@@ -39,6 +39,7 @@ typedef void (__closure *TFarProcessGroupEvent)
 typedef nb::FastDelegate2<void,
   TFarDialogItem * /*Item*/, void * /*Arg*/> TFarProcessGroupEvent;
 
+NB_DEFINE_CLASS_ID(TFarDialog);
 class TFarDialog : public TObject
 {
   friend class TFarDialogItem;
@@ -163,6 +164,7 @@ private:
   TThreadMethod FSynchronizeMethod;
 };
 
+NB_DEFINE_CLASS_ID(TFarDialogContainer);
 class TFarDialogContainer : public TObject
 {
   friend class TFarDialog;
@@ -203,6 +205,7 @@ private:
 
 #define DIF_INVERSE 0x00000001UL
 
+NB_DEFINE_CLASS_ID(TFarDialogItem);
 class TFarDialogItem : public TObject
 {
   friend class TFarDialog;
@@ -356,6 +359,7 @@ private:
   bool FIsEnabled;
 };
 
+NB_DEFINE_CLASS_ID(TFarBox);
 class TFarBox : public TFarDialogItem
 {
 public:
@@ -378,6 +382,7 @@ enum TFarButtonBrackets
   brNormal
 };
 
+NB_DEFINE_CLASS_ID(TFarButton);
 class TFarButton : public TFarDialogItem
 {
 public:
@@ -418,6 +423,7 @@ private:
 typedef nb::FastDelegate3<void,
   TFarDialogItem * /*Sender*/, intptr_t /*NewState*/, bool & /*AllowChange*/> TFarAllowChangeEvent;
 
+NB_DEFINE_CLASS_ID(TFarCheckBox);
 class TFarCheckBox : public TFarDialogItem
 {
   NB_DISABLE_COPY(TFarCheckBox)
@@ -445,6 +451,7 @@ protected:
   virtual void SetData(const UnicodeString Value) override;
 };
 
+NB_DEFINE_CLASS_ID(TFarRadioButton);
 class TFarRadioButton : public TFarDialogItem
 {
 public:
@@ -464,6 +471,7 @@ protected:
   virtual void SetData(const UnicodeString Value) override;
 };
 
+NB_DEFINE_CLASS_ID(TFarEdit);
 class TFarEdit : public TFarDialogItem
 {
 public:
@@ -500,6 +508,7 @@ private:
   void SetHistoryMask(size_t Index, const UnicodeString Value);
 };
 
+NB_DEFINE_CLASS_ID(TFarSeparator);
 class TFarSeparator : public TFarDialogItem
 {
 public:
@@ -516,6 +525,7 @@ protected:
   virtual void ResetBounds();
 };
 
+NB_DEFINE_CLASS_ID(TFarText);
 class TFarText : public TFarDialogItem
 {
 public:
@@ -539,6 +549,7 @@ class TFarListBox;
 class TFarComboBox;
 class TFarLister;
 
+NB_DEFINE_CLASS_ID(TFarList);
 class TFarList : public TStringList
 {
   friend class TFarListBox;
@@ -598,6 +609,7 @@ enum TFarListBoxAutoSelect
   asNever
 };
 
+NB_DEFINE_CLASS_ID(TFarListBox);
 class TFarListBox : public TFarDialogItem
 {
   NB_DISABLE_COPY(TFarListBox)
@@ -638,6 +650,7 @@ private:
   bool FDenyClose;
 };
 
+NB_DEFINE_CLASS_ID(TFarComboBox);
 class TFarComboBox : public TFarDialogItem
 {
   NB_DISABLE_COPY(TFarComboBox)
@@ -671,6 +684,7 @@ private:
   TFarList *FList;
 };
 
+NB_DEFINE_CLASS_ID(TFarLister);
 class TFarLister : public TFarDialogItem
 {
   NB_DISABLE_COPY(TFarLister)

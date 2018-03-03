@@ -36,6 +36,7 @@ enum TOverwriteMode
   omComplete,
 };
 //---------------------------------------------------------------------------
+NB_DEFINE_CLASS_ID(TSinkFileParams);
 struct NB_CORE_EXPORT TSinkFileParams : public TObject
 {
 public:
@@ -51,6 +52,7 @@ public:
   bool Skipped;
 };
 //---------------------------------------------------------------------------
+NB_DEFINE_CLASS_ID(TFileTransferData);
 struct NB_CORE_EXPORT TFileTransferData : public TObject
 {
   NB_DISABLE_COPY(TFileTransferData)
@@ -77,6 +79,7 @@ public:
   bool AutoResume;
 };
 //---------------------------------------------------------------------------
+NB_DEFINE_CLASS_ID(TOverwriteFileParams);
 struct NB_CORE_EXPORT TOverwriteFileParams : public TObject
 {
 public:
@@ -100,6 +103,7 @@ public:
   TModificationFmt DestPrecision;
 };
 //---------------------------------------------------------------------------
+NB_DEFINE_CLASS_ID(TOpenRemoteFileParams);
 struct NB_CORE_EXPORT TOpenRemoteFileParams : public TObject
 {
   NB_DISABLE_COPY(TOpenRemoteFileParams)
@@ -152,6 +156,7 @@ const int dfNoRecursive = 0x01;
 const int dfAlternative = 0x02;
 const int dfForceDelete = 0x04;
 //---------------------------------------------------------------------------
+NB_DEFINE_CLASS_ID(TCustomFileSystem);
 class NB_CORE_EXPORT TCustomFileSystem : public TObject, public TFileSystemIntf
 {
   NB_DISABLE_COPY(TCustomFileSystem)

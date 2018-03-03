@@ -110,6 +110,7 @@ static UnicodeString XmlAttributeEscape(const UnicodeString Str)
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 __removed #pragma warn -inl
+NB_DEFINE_CLASS_ID(TSessionActionRecord);
 class TSessionActionRecord : public TObject
 {
 public:

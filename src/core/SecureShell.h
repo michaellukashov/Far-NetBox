@@ -29,6 +29,7 @@ enum TSshImplementation
   sshiCerberus,
 };
 //---------------------------------------------------------------------------
+NB_DEFINE_CLASS_ID(TSecureShell);
 class TSecureShell : public TObject
 {
   friend class TPoolForDataEvent;
