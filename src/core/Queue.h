@@ -555,17 +555,17 @@ private:
   void TerminalReopenEvent(TObject *Sender);
 
   void TerminalInformation(
-    TTerminal *Terminal, const UnicodeString &Str, bool Status, intptr_t Phase);
+    TTerminal *Terminal, const UnicodeString AStr, bool Status, intptr_t Phase);
   void TerminalQueryUser(TObject *Sender,
-    const UnicodeString &AQuery, TStrings *MoreMessages, uint32_t Answers,
+    const UnicodeString AQuery, TStrings *MoreMessages, uint32_t Answers,
     const TQueryParams *Params, uint32_t &Answer, TQueryType Type, void *Arg);
   void TerminalPromptUser(TTerminal *Terminal, TPromptKind Kind,
-    const UnicodeString &Name, const UnicodeString &Instructions,
+    const UnicodeString AName, const UnicodeString AInstructions,
     TStrings *Prompts, TStrings *Results, bool &Result, void *Arg);
   void TerminalShowExtendedException(TTerminal *Terminal,
     Exception *E, void *Arg);
   void TerminalDisplayBanner(TTerminal *Terminal,
-    const UnicodeString &SessionName, const UnicodeString &Banner,
+    const UnicodeString SessionName, const UnicodeString Banner,
     bool &NeverShowAgain, intptr_t Options, uintptr_t &Params);
   void TerminalChangeDirectory(TObject *Sender);
   void TerminalReadDirectory(TObject *Sender, Boolean ReloadOnly);

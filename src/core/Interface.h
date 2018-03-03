@@ -154,7 +154,7 @@ typedef void (__closure *TFindingFileEvent)
 (TTerminal *Terminal, const UnicodeString Directory, bool &Cancel);
 #endif // #if 0
 typedef nb::FastDelegate3<void,
-  TTerminal * /*Terminal*/, const UnicodeString & /*ADirectory*/, bool & /*Cancel*/> TFindingFileEvent;
+  TTerminal * /*Terminal*/, UnicodeString /*ADirectory*/, bool & /*Cancel*/> TFindingFileEvent;
 //---------------------------------------------------------------------------
 class NB_CORE_EXPORT TOperationVisualizer
 {

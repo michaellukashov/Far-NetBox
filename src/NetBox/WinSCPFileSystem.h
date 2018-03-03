@@ -255,31 +255,31 @@ private:
   void TerminalReadDirectoryProgress(TObject *Sender, intptr_t Progress,
     intptr_t ResolvedLinks, bool &Cancel);
   void TerminalInformation(TTerminal *Terminal,
-    const UnicodeString &AStr, bool Status, intptr_t Phase);
+    const UnicodeString AStr, bool Status, intptr_t Phase);
   void TerminalQueryUser(TObject *Sender,
-    const UnicodeString &AQuery, TStrings *MoreMessages, uint32_t Answers,
+    const UnicodeString AQuery, TStrings *MoreMessages, uint32_t Answers,
     const TQueryParams *AParams, uint32_t &Answer, TQueryType Type, void *Arg);
   void TerminalPromptUser(TTerminal *Terminal,
-    TPromptKind Kind, const UnicodeString &AName, const UnicodeString &AInstructions,
+    TPromptKind Kind, const UnicodeString AName, const UnicodeString AInstructions,
     TStrings *Prompts, TStrings *Results, bool &AResult,
     void *Arg);
   void TerminalDisplayBanner(TTerminal *Terminal,
-    const UnicodeString &ASessionName, const UnicodeString &ABanner, bool &NeverShowAgain,
+    const UnicodeString ASessionName, const UnicodeString ABanner, bool &NeverShowAgain,
     intptr_t Options, uintptr_t & AParams);
   void TerminalShowExtendedException(TTerminal *Terminal,
     Exception *E, void *Arg);
-  void TerminalDeleteLocalFile(const UnicodeString &AFileName, bool Alternative);
-  HANDLE TerminalCreateLocalFile(const UnicodeString &LocalFileName,
+  void TerminalDeleteLocalFile(const UnicodeString AFileName, bool Alternative);
+  HANDLE TerminalCreateLocalFile(const UnicodeString ALocalFileName,
     DWORD DesiredAccess, DWORD ShareMode, DWORD CreationDisposition, DWORD FlagsAndAttributes);
-  DWORD TerminalGetLocalFileAttributes(const UnicodeString &LocalFileName) const;
-  bool TerminalSetLocalFileAttributes(const UnicodeString &LocalFileName, DWORD FileAttributes);
-  bool TerminalMoveLocalFile(const UnicodeString &LocalFileName, const UnicodeString &NewLocalFileName, DWORD Flags);
-  bool TerminalRemoveLocalDirectory(const UnicodeString &LocalDirName);
-  bool TerminalCreateLocalDirectory(const UnicodeString &LocalDirName, LPSECURITY_ATTRIBUTES SecurityAttributes);
+  DWORD TerminalGetLocalFileAttributes(const UnicodeString ALocalFileName) const;
+  bool TerminalSetLocalFileAttributes(const UnicodeString ALocalFileName, DWORD FileAttributes);
+  bool TerminalMoveLocalFile(const UnicodeString ALocalFileName, const UnicodeString ANewLocalFileName, DWORD Flags);
+  bool TerminalRemoveLocalDirectory(const UnicodeString ALocalDirName);
+  bool TerminalCreateLocalDirectory(const UnicodeString ALocalDirName, LPSECURITY_ATTRIBUTES SecurityAttributes);
   void OperationProgress(
     TFileOperationProgressType &ProgressData);
   void OperationFinished(TFileOperation Operation,
-    TOperationSide Side, bool DragDrop, const UnicodeString &AFileName, bool Success,
+    TOperationSide Side, bool DragDrop, const UnicodeString AFileName, bool Success,
     TOnceDoneOperation &DisconnectWhenComplete);
   void CancelConfiguration(TFileOperationProgressType &ProgressData);
   TStrings *CreateFileList(TObjectList *PanelItems,

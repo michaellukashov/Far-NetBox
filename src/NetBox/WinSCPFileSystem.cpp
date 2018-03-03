@@ -3096,7 +3096,7 @@ void TWinSCPFileSystem::LogAuthentication(
 }
 
 void TWinSCPFileSystem::TerminalInformation(
-  TTerminal *Terminal, const UnicodeString &AStr, bool /*Status*/, intptr_t Phase)
+  TTerminal *Terminal, const UnicodeString AStr, bool /*Status*/, intptr_t Phase)
 {
   if (Phase != 0)
   {
@@ -3188,7 +3188,7 @@ void TWinSCPFileSystem::TerminalReadDirectory(TObject * /*Sender*/,
   }
 }
 
-void TWinSCPFileSystem::TerminalDeleteLocalFile(const UnicodeString &AFileName, bool Alternative)
+void TWinSCPFileSystem::TerminalDeleteLocalFile(const UnicodeString AFileName, bool Alternative)
 {
   if (!RecursiveDeleteFile(AFileName,
       (FLAGSET(GetWinSCPPlugin()->GetFarSystemSettings(), FSS_DELETETORECYCLEBIN)) != Alternative))
@@ -3197,36 +3197,36 @@ void TWinSCPFileSystem::TerminalDeleteLocalFile(const UnicodeString &AFileName, 
   }
 }
 
-HANDLE TWinSCPFileSystem::TerminalCreateLocalFile(const UnicodeString &LocalFileName,
+HANDLE TWinSCPFileSystem::TerminalCreateLocalFile(const UnicodeString ALocalFileName,
   DWORD DesiredAccess, DWORD ShareMode, DWORD CreationDisposition, DWORD FlagsAndAttributes)
 {
-  return ::CreateFile(ApiPath(LocalFileName).c_str(), DesiredAccess, ShareMode, nullptr,
+  return ::CreateFile(ApiPath(ALocalFileName).c_str(), DesiredAccess, ShareMode, nullptr,
       CreationDisposition, FlagsAndAttributes, nullptr);
 }
 
-DWORD TWinSCPFileSystem::TerminalGetLocalFileAttributes(const UnicodeString &LocalFileName) const
+DWORD TWinSCPFileSystem::TerminalGetLocalFileAttributes(const UnicodeString ALocalFileName) const
 {
-  return ::FileGetAttrFix(LocalFileName);
+  return ::FileGetAttrFix(ALocalFileName);
 }
 
-bool TWinSCPFileSystem::TerminalSetLocalFileAttributes(const UnicodeString &LocalFileName, DWORD FileAttributes)
+bool TWinSCPFileSystem::TerminalSetLocalFileAttributes(const UnicodeString ALocalFileName, DWORD FileAttributes)
 {
-  return ::SysUtulsFileSetAttr(LocalFileName, FileAttributes);
+  return ::SysUtulsFileSetAttr(ALocalFileName, FileAttributes);
 }
 
-bool TWinSCPFileSystem::TerminalMoveLocalFile(const UnicodeString &LocalFileName, const UnicodeString &NewLocalFileName, DWORD Flags)
+bool TWinSCPFileSystem::TerminalMoveLocalFile(const UnicodeString ALocalFileName, const UnicodeString ANewLocalFileName, DWORD Flags)
 {
-  return ::SysUtulsMoveFile(LocalFileName, NewLocalFileName, Flags);
+  return ::SysUtulsMoveFile(ALocalFileName, ANewLocalFileName, Flags);
 }
 
-bool TWinSCPFileSystem::TerminalRemoveLocalDirectory(const UnicodeString &LocalDirName)
+bool TWinSCPFileSystem::TerminalRemoveLocalDirectory(const UnicodeString ALocalDirName)
 {
-  return ::SysUtulsRemoveDir(LocalDirName);
+  return ::SysUtulsRemoveDir(ALocalDirName);
 }
 
-bool TWinSCPFileSystem::TerminalCreateLocalDirectory(const UnicodeString &LocalDirName, LPSECURITY_ATTRIBUTES SecurityAttributes)
+bool TWinSCPFileSystem::TerminalCreateLocalDirectory(const UnicodeString ALocalDirName, LPSECURITY_ATTRIBUTES SecurityAttributes)
 {
-  return ::CreateDirectory(ApiPath(LocalDirName).c_str(), SecurityAttributes) != FALSE;
+  return ::CreateDirectory(ApiPath(ALocalDirName).c_str(), SecurityAttributes) != FALSE;
 }
 
 uint32_t TWinSCPFileSystem::MoreMessageDialog(const UnicodeString Str,
@@ -3250,7 +3250,7 @@ uint32_t TWinSCPFileSystem::MoreMessageDialog(const UnicodeString Str,
 }
 
 void TWinSCPFileSystem::TerminalQueryUser(TObject * /*Sender*/,
-  const UnicodeString &AQuery, TStrings *MoreMessages, uint32_t Answers,
+  const UnicodeString AQuery, TStrings *MoreMessages, uint32_t Answers,
   const TQueryParams *AParams, uint32_t &Answer, TQueryType Type, void * /*Arg*/)
 {
   TMessageParams Params(0);
@@ -3278,7 +3278,7 @@ void TWinSCPFileSystem::TerminalQueryUser(TObject * /*Sender*/,
 }
 
 void TWinSCPFileSystem::TerminalPromptUser(TTerminal *Terminal,
-  TPromptKind Kind, const UnicodeString &AName, const UnicodeString &AInstructions,
+  TPromptKind Kind, const UnicodeString AName, const UnicodeString AInstructions,
   TStrings *Prompts, TStrings *Results, bool &AResult,
   void * /*Arg*/)
 {
@@ -3303,8 +3303,8 @@ void TWinSCPFileSystem::TerminalPromptUser(TTerminal *Terminal,
 }
 
 void TWinSCPFileSystem::TerminalDisplayBanner(
-  TTerminal * /*Terminal*/, const UnicodeString &ASessionName,
-  const UnicodeString &ABanner, bool &NeverShowAgain, intptr_t Options, uintptr_t & /*Params*/)
+  TTerminal * /*Terminal*/, const UnicodeString ASessionName,
+  const UnicodeString ABanner, bool &NeverShowAgain, intptr_t Options, uintptr_t & /*Params*/)
 {
   BannerDialog(ASessionName, ABanner, NeverShowAgain, Options);
 }
@@ -3343,7 +3343,7 @@ void TWinSCPFileSystem::OperationProgress(
 }
 
 void TWinSCPFileSystem::OperationFinished(TFileOperation Operation,
-  TOperationSide Side, bool /*Temp*/, const UnicodeString &AFileName, bool Success,
+  TOperationSide Side, bool /*Temp*/, const UnicodeString AFileName, bool Success,
   TOnceDoneOperation & /*DisconnectWhenComplete*/)
 {
   DebugUsedParam(Side);
