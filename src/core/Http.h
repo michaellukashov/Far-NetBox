@@ -19,7 +19,7 @@ typedef nb::FastDelegate3<void,
 typedef void (__closure *THttpErrorEvent)(THttp *Sender, int Status, const UnicodeString &Message);
 #endif // #if 0
 typedef nb::FastDelegate3<void,
-  THttp * /*Sender*/, int /*Status*/, const UnicodeString & /*Message*/> THttpErrorEvent;
+  THttp * /*Sender*/, int /*Status*/, UnicodeString /*Message*/> THttpErrorEvent;
 //---------------------------------------------------------------------------
 class THttp : public TObject
 {

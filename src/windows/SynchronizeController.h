@@ -135,5 +135,5 @@ private:
   void SynchronizeDirectoriesChange(TObject *Sender, intptr_t Directories);
 };
 //---------------------------------------------------------------------------
-void LogSynchronizeEvent(TTerminal * Terminal, const UnicodeString & Message);
+void LogSynchronizeEvent(TTerminal * Terminal, const UnicodeString Message);
 //---------------------------------------------------------------------------

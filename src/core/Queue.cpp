@@ -312,15 +312,15 @@ protected:
   bool OverrideItemStatus(TQueueItem::TStatus &ItemStatus) const;
 
   void TerminalQueryUser(TObject *Sender,
-    const UnicodeString &AQuery, TStrings *MoreMessages, uint32_t Answers,
+    const UnicodeString AQuery, TStrings *MoreMessages, uint32_t Answers,
     const TQueryParams *Params, uint32_t &Answer, TQueryType Type, void *Arg);
   void TerminalPromptUser(TTerminal *Terminal, TPromptKind Kind,
-    const UnicodeString &Name, const UnicodeString &Instructions,
+    const UnicodeString AName, const UnicodeString AInstructions,
     TStrings *Prompts, TStrings *Results, bool &Result, void *Arg);
   void TerminalShowExtendedException(TTerminal *Terminal,
     Exception *E, void *Arg);
   void OperationFinished(TFileOperation Operation, TOperationSide Side,
-    bool Temp, const UnicodeString &AFileName, bool Success,
+    bool Temp, const UnicodeString AFileName, bool Success,
     TOnceDoneOperation &OnceDoneOperation);
   void OperationProgress(TFileOperationProgressType &ProgressData);
 };
@@ -1589,7 +1589,7 @@ bool TTerminalItem::Finished()
 }
 //---------------------------------------------------------------------------
 void TTerminalItem::TerminalQueryUser(TObject *Sender,
-  const UnicodeString &AQuery, TStrings *MoreMessages, uint32_t Answers,
+  const UnicodeString AQuery, TStrings *MoreMessages, uint32_t Answers,
   const TQueryParams *Params, uint32_t &Answer, TQueryType Type, void *Arg)
 {
   // so far query without queue item can occur only for key confirmation
@@ -1622,7 +1622,7 @@ void TTerminalItem::TerminalQueryUser(TObject *Sender,
 }
 //---------------------------------------------------------------------------
 void TTerminalItem::TerminalPromptUser(TTerminal *Terminal,
-  TPromptKind Kind, const UnicodeString &Name, const UnicodeString &Instructions, TStrings *Prompts,
+  TPromptKind Kind, const UnicodeString AName, const UnicodeString AInstructions, TStrings *Prompts,
   TStrings *Results, bool &Result, void *Arg)
 {
   if (FItem == nullptr)
@@ -1639,8 +1639,8 @@ void TTerminalItem::TerminalPromptUser(TTerminal *Terminal,
     TPromptUserAction Action(FQueue->GetOnPromptUser());
     Action.Terminal = Terminal;
     Action.Kind = Kind;
-    Action.Name = Name;
-    Action.Instructions = Instructions;
+    Action.Name = AName;
+    Action.Instructions = AInstructions;
     Action.Prompts = Prompts;
     Action.Results->AddStrings(Results);
 
@@ -1671,7 +1671,7 @@ void TTerminalItem::TerminalShowExtendedException(
 }
 //---------------------------------------------------------------------------
 void TTerminalItem::OperationFinished(TFileOperation /*Operation*/,
-  TOperationSide /*Side*/, bool /*Temp*/, const UnicodeString & /*AFileName*/,
+  TOperationSide /*Side*/, bool /*Temp*/, const UnicodeString /*AFileName*/,
   bool /*Success*/, TOnceDoneOperation & /*OnceDoneOperation*/)
 {
   // nothing
@@ -2927,11 +2927,11 @@ void TTerminalThread::WaitForUserAction(TUserAction *UserAction)
 }
 //---------------------------------------------------------------------------
 void TTerminalThread::TerminalInformation(
-  TTerminal *Terminal, const UnicodeString &Str, bool Status, intptr_t Phase)
+  TTerminal *Terminal, const UnicodeString AStr, bool Status, intptr_t Phase)
 {
   TInformationUserAction Action(FOnInformation);
   Action.Terminal = Terminal;
-  Action.Str = Str;
+  Action.Str = AStr;
   Action.Status = Status;
   Action.Phase = Phase;
 
@@ -2939,7 +2939,7 @@ void TTerminalThread::TerminalInformation(
 }
 //---------------------------------------------------------------------------
 void TTerminalThread::TerminalQueryUser(TObject *Sender,
-  const UnicodeString &AQuery, TStrings *MoreMessages, uint32_t Answers,
+  const UnicodeString AQuery, TStrings *MoreMessages, uint32_t Answers,
   const TQueryParams *Params, uint32_t &Answer, TQueryType Type, void *Arg)
 {
   DebugUsedParam(Arg);
@@ -2982,7 +2982,7 @@ void TTerminalThread::TerminalInitializeLog(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 void TTerminalThread::TerminalPromptUser(TTerminal *Terminal,
-  TPromptKind Kind, const UnicodeString &Name, const UnicodeString &Instructions, TStrings *Prompts,
+  TPromptKind Kind, const UnicodeString AName, const UnicodeString AInstructions, TStrings *Prompts,
   TStrings *Results, bool &Result, void *Arg)
 {
   DebugUsedParam(Arg);
@@ -2991,8 +2991,8 @@ void TTerminalThread::TerminalPromptUser(TTerminal *Terminal,
   TPromptUserAction Action(FOnPromptUser);
   Action.Terminal = Terminal;
   Action.Kind = Kind;
-  Action.Name = Name;
-  Action.Instructions = Instructions;
+  Action.Name = AName;
+  Action.Instructions = AInstructions;
   Action.Prompts = Prompts;
   Action.Results->AddStrings(Results);
 
@@ -3017,13 +3017,13 @@ void TTerminalThread::TerminalShowExtendedException(
 }
 //---------------------------------------------------------------------------
 void TTerminalThread::TerminalDisplayBanner(TTerminal *Terminal,
-  const UnicodeString &SessionName, const UnicodeString &Banner,
+  const UnicodeString ASessionName, const UnicodeString ABanner,
   bool &NeverShowAgain, intptr_t Options, uintptr_t &Params)
 {
   TDisplayBannerAction Action(FOnDisplayBanner);
   Action.Terminal = Terminal;
-  Action.SessionName = SessionName;
-  Action.Banner = Banner;
+  Action.SessionName = ASessionName;
+  Action.Banner = ABanner;
   Action.NeverShowAgain = NeverShowAgain;
   Action.Options = Options;
   Action.Params = Params;

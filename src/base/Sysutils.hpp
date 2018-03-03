@@ -84,8 +84,7 @@ NB_CORE_EXPORT AnsiString W2MB(const wchar_t *src, const UINT cp = CP_ACP);
 typedef int TDayTable[12];
 extern const TDayTable MonthDays[];
 
-static constexpr TObjectClassId OBJECT_CLASS_Exception = (TObjectClassId)nb::counter_id();
-
+NB_DEFINE_CLASS_ID(Exception);
 class NB_CORE_EXPORT Exception : public std::runtime_error
 {
   CUSTOM_MEM_ALLOCATION_IMPL
@@ -112,8 +111,7 @@ public:
   UnicodeString Message;
 };
 
-static constexpr TObjectClassId OBJECT_CLASS_EAbort = (TObjectClassId)nb::counter_id();
-
+NB_DEFINE_CLASS_ID(EAbort);
 class NB_CORE_EXPORT EAbort : public Exception
 {
 public:
@@ -128,8 +126,7 @@ public:
   }
 };
 
-static constexpr TObjectClassId OBJECT_CLASS_EAccessViolation = (TObjectClassId)nb::counter_id();
-
+NB_DEFINE_CLASS_ID(EAccessViolation);
 class NB_CORE_EXPORT EAccessViolation : public Exception
 {
 public:
@@ -142,7 +139,6 @@ public:
 };
 
 NB_DEFINE_CLASS_ID(EFileNotFoundError);
-
 class NB_CORE_EXPORT EFileNotFoundError : public Exception
 {
 public:
@@ -155,7 +151,6 @@ public:
 };
 
 NB_DEFINE_CLASS_ID(EOSError);
-
 class NB_CORE_EXPORT EOSError : public Exception
 {
 public:
@@ -171,7 +166,6 @@ public:
 };
 
 NB_DEFINE_CLASS_ID(EInvalidOperation);
-
 class NB_CORE_EXPORT EInvalidOperation : public Exception
 {
 public:
@@ -403,7 +397,6 @@ NB_CORE_EXPORT void InitPlatformId();
 NB_CORE_EXPORT bool Win32Check(bool RetVal);
 
 NB_DEFINE_CLASS_ID(EConvertError);
-
 class NB_CORE_EXPORT EConvertError : public Exception
 {
 public:

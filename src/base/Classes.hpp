@@ -154,8 +154,7 @@ struct TRect
   }
 };
 
-static constexpr TObjectClassId OBJECT_CLASS_TPersistent = (TObjectClassId)nb::counter_id();
-
+NB_DEFINE_CLASS_ID(TPersistent);
 class NB_CORE_EXPORT TPersistent : public TObject
 {
 public:
@@ -182,8 +181,7 @@ enum TListNotification
 
 typedef intptr_t (CompareFunc)(const void *Item1, const void *Item2);
 
-static constexpr TObjectClassId OBJECT_CLASS_TList = (TObjectClassId)nb::counter_id();
-
+NB_DEFINE_CLASS_ID(TList);
 class NB_CORE_EXPORT TList : public TPersistent
 {
 public:
@@ -219,8 +217,7 @@ private:
   rde::vector<void *> FList;
 };
 
-static constexpr TObjectClassId OBJECT_CLASS_TObjectList = (TObjectClassId)nb::counter_id();
-
+NB_DEFINE_CLASS_ID(TObjectList);
 class NB_CORE_EXPORT TObjectList : public TList
 {
 public:
@@ -321,8 +318,7 @@ protected:
 class TStringList;
 typedef intptr_t (TStringListSortCompare)(TStringList *List, intptr_t Index1, intptr_t Index2);
 
-static constexpr TObjectClassId OBJECT_CLASS_TStringList = (TObjectClassId)nb::counter_id();
-
+NB_DEFINE_CLASS_ID(TStringList);
 class NB_CORE_EXPORT TStringList : public TStrings
 {
   friend intptr_t StringListCompareStrings(TStringList *List, intptr_t Index1, intptr_t Index2);

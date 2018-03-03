@@ -52,7 +52,7 @@ typedef void (__closure *TFileOperationFinished)
 #endif
 typedef nb::FastDelegate6<void,
   TFileOperation /*Operation*/, TOperationSide /*Side*/, bool /*Temp*/,
-  const UnicodeString & /*FileName*/, bool /*Success*/,
+  UnicodeString /*FileName*/, bool /*Success*/,
   TOnceDoneOperation & /*OnceDoneOperation*/> TFileOperationFinishedEvent;
 //---------------------------------------------------------------------------
 class NB_CORE_EXPORT TFileOperationProgressType : public TObject
