@@ -203,8 +203,8 @@ protected:
   bool SFTPConfirmResume(const UnicodeString DestFileName, bool PartialBiggerThanSource,
     TFileOperationProgressType *OperationProgress);
   char *GetEOL() const;
-  inline void BusyStart();
-  inline void BusyEnd();
+  void BusyStart();
+  void BusyEnd();
   uint32_t TransferBlockSize(uint32_t Overhead,
     TFileOperationProgressType *OperationProgress,
     uint32_t MinPacketSize = 0,
