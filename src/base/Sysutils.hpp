@@ -217,12 +217,11 @@ public:
   uint16_t TwoDigitYearCenturyWindow;
 };
 
-NB_CORE_EXPORT void GetLocaleFormatSettings(int LCID, TFormatSettings &FormatSettings);
-
 NB_CORE_EXPORT UnicodeString ExtractShortPathName(const UnicodeString APath);
 NB_CORE_EXPORT UnicodeString ExtractDirectory(const UnicodeString APath, wchar_t Delimiter = L'/');
 NB_CORE_EXPORT UnicodeString ExtractFilename(const UnicodeString APath, wchar_t Delimiter = L'/');
 NB_CORE_EXPORT UnicodeString ExtractFileExtension(const UnicodeString APath, wchar_t Delimiter = L'/');
+UnicodeString ExpandFileName(const UnicodeString AFileName);
 NB_CORE_EXPORT UnicodeString ChangeFileExtension(const UnicodeString APath, const UnicodeString Ext, wchar_t Delimiter = L'/');
 
 NB_CORE_EXPORT UnicodeString IncludeTrailingBackslash(const UnicodeString Str);
