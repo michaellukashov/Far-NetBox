@@ -1636,21 +1636,6 @@ void TS3FileSystem::Sink(
 
     try__finally
     {
-      SCOPE_EXIT
-      {
-        SAFE_CLOSE_HANDLE(LocalFileHandle);
-
-        if (DeleteLocalFile)
-        {
-          FileOperationLoopCustom(FTerminal, OperationProgress, folAllowSkip,
-            FMTLOAD(CORE_DELETE_LOCAL_FILE_ERROR, DestFullName), "",
-          [&]()
-          {
-            THROWOSIFFALSE(::SysUtulsRemoveFile(ApiPath(DestFullName)));
-          });
-          __removed FILE_OPERATION_LOOP_END(FMTLOAD(DELETE_LOCAL_FILE_ERROR, (DestFullName)));
-        }
-      };
       TLibS3GetObjectDataCallbackData Data;
 
       FileOperationLoopCustom(FTerminal, OperationProgress, folAllowSkip,
@@ -1687,20 +1672,22 @@ void TS3FileSystem::Sink(
       {
         FTerminal->UpdateTargetTime(LocalFileHandle, AFile->Modification, FTerminal->SessionData->GetDSTMode());
       }
-    }
-    __finally__removed
-    ({
-      CloseHandle(LocalFileHandle);
+    },
+    __finally
+    {
+       SAFE_CLOSE_HANDLE(LocalFileHandle);
 
-      if (DeleteLocalFile)
-      {
-        FILE_OPERATION_LOOP_BEGIN
-        {
-          THROWOSIFFALSE(Sysutils::DeleteFile(ApiPath(DestFullName)));
-        }
-        FILE_OPERATION_LOOP_END(FMTLOAD(DELETE_LOCAL_FILE_ERROR, (DestFullName)));
-      }
-    })
+       if (DeleteLocalFile)
+       {
+         FileOperationLoopCustom(FTerminal, OperationProgress, folAllowSkip,
+           FMTLOAD(CORE_DELETE_LOCAL_FILE_ERROR, DestFullName), "",
+         [&]()
+         {
+           THROWOSIFFALSE(::SysUtulsRemoveFile(ApiPath(DestFullName)));
+         });
+         __removed FILE_OPERATION_LOOP_END(FMTLOAD(DELETE_LOCAL_FILE_ERROR, (DestFullName)));
+       }
+    } end_try__finally
   });
   __removed FILE_OPERATION_LOOP_END(FMTLOAD(TRANSFER_ERROR, (FileName)));
 

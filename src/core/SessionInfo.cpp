@@ -1075,11 +1075,11 @@ void TSessionLog::DoAddStartupInfo(TSessionData *Data)
       std::unique_ptr<THierarchicalStorage> Storage(FConfiguration->CreateConfigStorage());
       DebugAssert(Storage.get());
       ADF("Configuration: %s", Storage->GetSource());
-    }
+    },
     __finally__removed
     ({
       delete Storage;
-    })
+    }) end_try__finally
 
 #if 0
     typedef BOOL (WINAPI * TGetUserNameEx)(EXTENDED_NAME_FORMAT NameFormat, LPWSTR lpNameBuffer, PULONG nSize);
@@ -1517,11 +1517,11 @@ void TActionLog::AddFailure(Exception *E)
     try__finally
     {
       AddFailure(Messages.get());
-    }
+    },
     __finally__removed
     ({
       delete Messages;
-    })
+    }) end_try__finally
   }
 }
 //---------------------------------------------------------------------------

@@ -1155,10 +1155,6 @@ static void ConvertKey(UnicodeString &FileName, TKeyType Type)
 
   try__finally
   {
-    SCOPE_EXIT
-    {
-      FreeKey(PrivateKey);
-    };
     FileName = ::ChangeFileExt(FileName, ".ppk", L'\\');
 
     if (!SaveDialog(LoadStr(CONVERTKEY_SAVE_TITLE), LoadStr(CONVERTKEY_SAVE_FILTER), L"ppk", FileName))
@@ -1169,11 +1165,11 @@ static void ConvertKey(UnicodeString &FileName, TKeyType Type)
     SaveKey(ktSSH2, FileName, Passphrase, PrivateKey);
 
     MessageDialog(MainInstructions(FMTLOAD(CONVERTKEY_SAVED, FileName)), qtInformation, qaOK);
-  }
-  __finally__removed
-  ({
+  },
+  __finally
+  {
     FreeKey(PrivateKey);
-  })
+  } end_try__finally
 }
 //---------------------------------------------------------------------------
 static void DoVerifyKey(

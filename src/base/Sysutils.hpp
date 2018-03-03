@@ -493,6 +493,40 @@ public:
   scope_guard0<F> operator<<(F &&f) { return scope_guard0<F>(std::move(f)); }
 };
 
+template<typename F, typename F2>
+class scope_guard
+{
+public:
+  explicit scope_guard(F &&f, F2 &&f2) : m_f(std::move(f)), m_f2(std::move(f2))
+  {
+    try
+    {
+      m_f();
+    }
+    catch(...)
+    {
+      m_f2();
+      m_finally_executed = true;
+      throw;
+    }
+  }
+  ~scope_guard()
+  {
+    if (!m_finally_executed)
+    {
+      m_f2();
+    }
+  }
+
+private:
+  const F m_f;
+  const F2 m_f2;
+  bool m_finally_executed = false;
+};
+
+template<typename F, typename F2>
+scope_guard<F, F2> make_try_finally(F &&f, F2 &&f2) { return scope_guard<F, F2>(std::move(f), std::move(f2)); }
+
 } // namespace detail
 
 #define SCOPE_EXIT \
@@ -503,9 +537,16 @@ public:
     detail::scope_guard1<nb::FastDelegate1<void, T>, T>(nb::bind(&FUNC, this), PARAM)
 
 #define try__catch
-#define try__finally
 #define catch__removed(BLOCK)
-#define __finally__removed(BLOCK)
+#define __finally__removed(BLOCK) [](){}
+
+#define try__finally \
+  { volatile const auto ANONYMOUS_VARIABLE(try_finally) = detail::make_try_finally([&]()
+
+#define __finally \
+  [&]() /* lambda body here */
+
+#define end_try__finally ); }
 
 #if (defined _MSC_VER && _MSC_VER > 1900)
 

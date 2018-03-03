@@ -124,11 +124,11 @@ void TConfiguration::Default()
       LoadAdmin(AdminStorage.get());
       AdminStorage->CloseSubKey();
     }
-  }
+  },
   __finally__removed
   ({
     delete AdminStorage;
-  })
+  }) end_try__finally
 
   SetRandomSeedFile(FDefaultRandomSeedFile);
   SetPuttyRegistryStorageKey(OriginalPuttyRegistryStorageKey);
@@ -343,11 +343,11 @@ void TConfiguration::DoSave(bool All, bool Explicit)
       bool ConfigAll = All || Storage->GetTemporary();
       SaveData(Storage.get(), ConfigAll);
     }
-  }
+  },
   __finally__removed
   ({
     delete AStorage;
-  })
+  }) end_try__finally
 
   Saved();
 
@@ -522,17 +522,13 @@ void TConfiguration::Load(THierarchicalStorage * Storage)
   TStorageAccessMode StorageAccessMode = Storage->GetAccessMode();
   try__finally
   {
-    SCOPE_EXIT
-    {
-      Storage->SetAccessMode(StorageAccessMode);
-    };
     Storage->SetAccessMode(smRead);
     LoadFrom(Storage);
-  }
-  __finally__removed
-  ({
-    Storage->AccessMode = StorageAccessMode;
-  })
+  },
+  __finally
+  {
+    Storage->SetAccessMode(StorageAccessMode);
+  } end_try__finally
 }
 //---------------------------------------------------------------------------
 void TConfiguration::CopyData(THierarchicalStorage * Source,
@@ -603,11 +599,11 @@ void TConfiguration::CopyData(THierarchicalStorage * Source,
       }
       Source->CloseSubKey();
     }
-  }
+  },
   __finally__removed
   ({
     delete Names;
-  })
+  }) end_try__finally
 }
 //---------------------------------------------------------------------------
 void TConfiguration::LoadDirectoryChangesCache(const UnicodeString SessionKey,
@@ -623,11 +619,11 @@ void TConfiguration::LoadDirectoryChangesCache(const UnicodeString SessionKey,
     {
       DirectoryChangesCache->Deserialize(Storage->ReadBinaryData(SessionKey));
     }
-  }
+  },
   __finally__removed
   ({
     delete Storage;
-  })
+  }) end_try__finally
 }
 //---------------------------------------------------------------------------
 void TConfiguration::SaveDirectoryChangesCache(const UnicodeString SessionKey,
@@ -644,11 +640,11 @@ void TConfiguration::SaveDirectoryChangesCache(const UnicodeString SessionKey,
       DirectoryChangesCache->Serialize(Data);
       Storage->WriteBinaryData(SessionKey, Data);
     }
-  }
+  },
   __finally__removed
   ({
     delete Storage;
-  })
+  }) end_try__finally
 }
 //---------------------------------------------------------------------------
 UnicodeString TConfiguration::BannerHash(const UnicodeString ABanner) const
@@ -819,11 +815,11 @@ void TConfiguration::CleanupRegistry(const UnicodeString CleanupSubKey)
   try__finally
   {
     Registry->RecursiveDeleteSubKey(CleanupSubKey);
-  }
+  },
   __finally__removed
   ({
     delete Registry;
-  })
+  }) end_try__finally
 }
 //---------------------------------------------------------------------------
 void TConfiguration::CleanupHostKeys()
@@ -1079,16 +1075,12 @@ UnicodeString TConfiguration::GetFileVersion(const UnicodeString AFileName)
   void * FileInfo = CreateFileInfo(AFileName);
   try__finally
   {
-    SCOPE_EXIT
-    {
-      FreeFileInfo(FileInfo);
-    };
     Result = GetFileVersion(GetFixedFileInfo(FileInfo));
-  }
-  __finally__removed
-  ({
+  },
+  __finally
+  {
     FreeFileInfo(FileInfo);
-  })
+  } end_try__finally
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -1146,13 +1138,6 @@ UnicodeString TConfiguration::GetFileFileInfoString(const UnicodeString AKey,
   void *Info = GetFileApplicationInfo(AFileName);
   try__finally
   {
-    SCOPE_EXIT
-    {
-      if (!AFileName.IsEmpty() && Info)
-      {
-        FreeFileInfo(Info);
-      }
-    };
     if ((Info != nullptr) && (GetTranslationCount(Info) > 0))
     {
       TTranslation Translation = GetTranslation(Info, 0);
@@ -1171,14 +1156,14 @@ UnicodeString TConfiguration::GetFileFileInfoString(const UnicodeString AKey,
     {
       DebugAssert(!AFileName.IsEmpty());
     }
-  }
-  __finally__removed
-  ({
-    if (!FileName.IsEmpty())
+  },
+  __finally
+  {
+    if (!AFileName.IsEmpty() && Info)
     {
       FreeFileInfo(Info);
     }
-  })
+  } end_try__finally
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -1402,12 +1387,12 @@ void TConfiguration::MoveStorage(TStorage AStorage, const UnicodeString ACustomI
         // copy before save as it removes the ini file,
         // when switching from ini to registry
         CopyData(SourceStorage.get(), TargetStorage.get());
-      }
+      },
       __finally__removed
       ({
         delete SourceStorage;
         delete TargetStorage;
-      })
+      }) end_try__finally
 
       // save all and explicit,
       // this also removes an INI file, when switching to registry storage

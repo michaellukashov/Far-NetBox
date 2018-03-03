@@ -68,12 +68,6 @@ void THttp::SendRequest(const char *Method, const UnicodeString Request)
     ne_session_s *NeonSession = CreateNeonSession(uri);
     try__finally
     {
-      SCOPE_EXIT
-      {
-        DestroyNeonSession(NeonSession);
-        ne_uri_free(&uri);
-      };
-
       TProxyMethod ProxyMethod = GetProxyHost().IsEmpty() ? ::pmNone : pmHTTP;
       InitNeonSession(NeonSession, ProxyMethod, GetProxyHost(), GetProxyPort(), UnicodeString(), UnicodeString(), nullptr);
 
@@ -89,11 +83,6 @@ void THttp::SendRequest(const char *Method, const UnicodeString Request)
       ne_request_s *NeonRequest = ne_request_create(NeonSession, Method, StrToNeon(Uri));
       try__finally
       {
-        SCOPE_EXIT
-        {
-          ne_request_destroy(NeonRequest);
-        };
-
         if (FRequestHeaders != nullptr)
         {
           for (intptr_t Index = 0; Index < FRequestHeaders->GetCount(); Index++)
@@ -151,17 +140,17 @@ void THttp::SendRequest(const char *Method, const UnicodeString Request)
             FResponseHeaders->SetValue(StrFromNeon(HeaderName), StrFromNeon(HeaderValue));
           }
         }
-      }
-      __finally__removed
-      ({
+      },
+      __finally
+      {
         ne_request_destroy(NeonRequest);
-      })
-    }
-    __finally__removed
-    ({
+      } end_try__finally
+    },
+    __finally
+    {
       DestroyNeonSession(NeonSession);
       ne_uri_free(&uri);
-    })
+    } end_try__finally
   }
   while (Retry);
 }

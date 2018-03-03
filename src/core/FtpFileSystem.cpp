@@ -946,18 +946,14 @@ void TFTPFileSystem::AnyCommand(const UnicodeString Command,
   FOnCaptureOutput = OutputEvent;
   try__finally
   {
-    SCOPE_EXIT
-    {
-      FOnCaptureOutput = nullptr;
-    };
     SendCommand(Command);
 
     GotReply(WaitForCommandReply(), REPLY_2XX_CODE | REPLY_3XX_CODE);
-  }
-  __finally__removed
-  ({
+  },
+  __finally
+  {
     FOnCaptureOutput = nullptr;
-  })
+  } end_try__finally
 }
 //---------------------------------------------------------------------------
 void TFTPFileSystem::ResetCaches()
@@ -1087,11 +1083,11 @@ void TFTPFileSystem::ChangeFileProperties(const UnicodeString AFileName,
       FFileZillaIntf->Chmod(Rights.GetNumberDecadic(), FileNameOnly.c_str(), FilePath.c_str());
 
       GotReply(WaitForCommandReply(), REPLY_2XX_CODE);
-    }
+    },
     __finally__removed
     ({
       delete OwnedFile;
-    })
+    }) end_try__finally
   }
   else
   {
@@ -1242,14 +1238,6 @@ void TFTPFileSystem::DoCalculateFilesChecksum(bool UsingHashCommand,
           bool Success = false;
           try__finally
           {
-            SCOPE_EXIT
-            {
-              if (FirstLevel)
-              {
-                OperationProgress->Finish(File->GetFileName(), Success, OnceDoneOperation);
-              }
-            };
-
             OperationProgress->SetFile(File->GetFileName());
 
             for (intptr_t Index2 = 0; Index2 < SubFiles->GetCount(); Index2++)
@@ -1264,17 +1252,17 @@ void TFTPFileSystem::DoCalculateFilesChecksum(bool UsingHashCommand,
               OnCalculatedChecksum, OperationProgress, false);
 
             Success = true;
-          }
-          __finally__removed
-          ({
-            delete SubFiles;
-            delete SubFileList;
+          },
+          __finally
+          {
+            __removed delete SubFiles;
+            __removed delete SubFileList;
 
             if (FirstLevel)
             {
-              OperationProgress->Finish(File->FileName, Success, OnceDoneOperation);
+              OperationProgress->Finish(File->GetFileName(), Success, OnceDoneOperation);
             }
-          })
+          } end_try__finally
         }
       }
     }
@@ -1326,11 +1314,6 @@ void TFTPFileSystem::CalculateFilesChecksum(const UnicodeString Alg,
 
   try__finally
   {
-    SCOPE_EXIT
-    {
-      FTerminal->SetOperationProgress(nullptr);
-      Progress.Stop();
-    };
     UnicodeString NormalizedAlg = FindIdent(FindIdent(Alg, FHashAlgs.get()), FChecksumAlgs.get());
 
     bool UsingHashCommand = (FHashAlgs->IndexOf(NormalizedAlg) >= 0);
@@ -1352,12 +1335,12 @@ void TFTPFileSystem::CalculateFilesChecksum(const UnicodeString Alg,
 
     DoCalculateFilesChecksum(UsingHashCommand, NormalizedAlg, AFileList, Checksums, OnCalculatedChecksum,
       &Progress, true);
-  }
-  __finally__removed
-  ({
-    FTerminal->FOperationProgress = nullptr;
+  },
+  __finally
+  {
+    FTerminal->SetOperationProgress(nullptr);
     Progress.Stop();
-  })
+  } end_try__finally
 }
 //---------------------------------------------------------------------------
 bool TFTPFileSystem::ConfirmOverwrite(
@@ -1850,11 +1833,11 @@ void TFTPFileSystem::DoStartup()
         GotReply(WaitForCommandReply(), REPLY_2XX_CODE | REPLY_3XX_CODE);
       }
     }
-  }
+  },
   __finally__removed
   ({
     delete PostLoginCommands;
-  })
+  }) end_try__finally
 
   // retrieve initialize working directory to save it as home directory
   ReadCurrentDirectory();
@@ -2004,11 +1987,11 @@ void TFTPFileSystem::ReadCurrentDirectory()
       {
         throw Exception(FMTLOAD(FTP_RESPONSE_ERROR, Command, Response->GetText()));
       }
-    }
+    },
     __finally__removed
     ({
       delete Response;
-    })
+    }) end_try__finally
   }
 }
 //---------------------------------------------------------------------------
@@ -2339,11 +2322,11 @@ void TFTPFileSystem::DoReadFile(const UnicodeString AFileName,
     }
 
     FLastDataSent = Now();
-  }
+  },
   __finally__removed
   ({
     delete FileList;
-  })
+  }) end_try__finally
 }
 //---------------------------------------------------------------------------
 bool TFTPFileSystem::SupportsReadingFile() const
@@ -2899,29 +2882,21 @@ void TFTPFileSystem::PoolForFatalNonCommandReply()
 
   try__finally
   {
-    SCOPE_EXIT
-    {
-      FReply = 0;
-      DebugAssert(FCommandReply == 0);
-      FCommandReply = 0;
-      DebugAssert(FWaitingForReply);
-      FWaitingForReply = false;
-    };
     // discard up to one reply
     // (it should not happen here that two replies are posted anyway)
     while (ProcessMessage() && (FReply == 0))
     {
     }
     Reply = FReply;
-  }
-  __finally__removed
-  ({
+  },
+  __finally
+  {
     FReply = 0;
     DebugAssert(FCommandReply == 0);
     FCommandReply = 0;
     DebugAssert(FWaitingForReply);
     FWaitingForReply = false;
-  })
+  } end_try__finally
 
   if (Reply != 0)
   {
@@ -2995,25 +2970,18 @@ uintptr_t TFTPFileSystem::WaitForReply(bool Command, bool WantLastCode)
 
   try__finally
   {
-    SCOPE_EXIT
-    {
-      FReply = 0;
-      FCommandReply = 0;
-      DebugAssert(FWaitingForReply);
-      FWaitingForReply = false;
-    };
     uintptr_t &ReplyToAwait = (Command ? FCommandReply : FReply);
     DoWaitForReply(ReplyToAwait, WantLastCode);
 
     Reply = ReplyToAwait;
-  }
-  __finally__removed
-  ({
+  },
+  __finally
+  {
     FReply = 0;
     FCommandReply = 0;
     DebugAssert(FWaitingForReply);
     FWaitingForReply = false;
-  })
+  } end_try__finally
 
   return Reply;
 }
@@ -3056,10 +3024,6 @@ UnicodeString TFTPFileSystem::GotReply(uintptr_t Reply, uintptr_t Flags,
   UnicodeString Error = AError;
   try__finally
   {
-    SCOPE_EXIT
-    {
-      ResetReply();
-    };
     if (FLAGSET(Reply, TFileZillaIntf::REPLY_OK))
     {
       DebugAssert(Reply == TFileZillaIntf::REPLY_OK);
@@ -3207,11 +3171,11 @@ UnicodeString TFTPFileSystem::GotReply(uintptr_t Reply, uintptr_t Flags,
         try__finally
         {
           FTerminal->FatalError(E.get(), L"");
-        }
+        },
         __finally__removed 
         ({
           delete E;
-        })
+        }) end_try__finally
       }
       else
       {
@@ -3241,11 +3205,11 @@ UnicodeString TFTPFileSystem::GotReply(uintptr_t Reply, uintptr_t Flags,
       SAFE_DESTROY(FLastErrorResponse);
       FLastErrorResponse = new TStringList();
     }
-  }
-  __finally__removed 
-  ({
+  },
+  __finally
+  {
     ResetReply();
-  })
+  } end_try__finally
   return Result;
 }
 //---------------------------------------------------------------------------

@@ -40,13 +40,6 @@ static uintptr_t VERSION_GetFileVersionInfo_PE(const wchar_t *FileName, uintptr_
   {
     try__finally
     {
-      SCOPE_EXIT
-      {
-        if (NeedFree)
-        {
-          ::FreeLibrary(Module);
-        }
-      };
       HRSRC Rsrc = ::FindResource(Module, MAKEINTRESOURCE(VS_VERSION_INFO), VS_FILE_INFO);
       if (Rsrc == nullptr)
       {
@@ -62,10 +55,6 @@ static uintptr_t VERSION_GetFileVersionInfo_PE(const wchar_t *FileName, uintptr_
         {
           try__finally
           {
-            SCOPE_EXIT
-            {
-              ::FreeResource(Mem);
-            };
             VS_VERSION_INFO_STRUCT32 *VersionInfo = static_cast<VS_VERSION_INFO_STRUCT32 *>(LockResource(Mem));
             const VS_FIXEDFILEINFO *FixedInfo =
               reinterpret_cast<VS_FIXEDFILEINFO *>(DWORD_ALIGN(VersionInfo, VersionInfo->szKey + nb::StrLength(VersionInfo->szKey) + 1));
@@ -88,21 +77,21 @@ static uintptr_t VERSION_GetFileVersionInfo_PE(const wchar_t *FileName, uintptr_
                 }
               }
             }
-          }
-          __finally__removed
-          ({
-            FreeResource(Mem);
-          })
+          },
+          __finally
+          {
+            ::FreeResource(Mem);
+          } end_try__finally
         }
       }
-    }
-    __finally__removed
-    ({
+    },
+    __finally
+    {
       if (NeedFree)
       {
-        FreeLibrary(Module);
+        ::FreeLibrary(Module);
       }
-    })
+    } end_try__finally
   }
 
   return Len;
