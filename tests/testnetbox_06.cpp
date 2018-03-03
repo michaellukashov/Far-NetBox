@@ -109,3 +109,76 @@ TEST_CASE_METHOD(base_fixture_t, "testIsA01", "netbox")
     CHECK(per4 == nullptr);
   }
 }
+
+TEST_CASE_METHOD(base_fixture_t, "tryfinally01", "netbox")
+{
+  SECTION("nothrows")
+  {
+    int a = 1;
+    WARN("before try__finally");
+    printf("a = %d\n", a);
+    try__finally2
+    {
+      WARN("in try__finally");
+      a = 2;
+      printf("a = %d\n", a);
+      // throw std::runtime_error("error in try block");
+    },
+    __finally
+    {
+      WARN("in __finally");
+      a = 3;
+    } end_try__finally2
+    WARN("after try__finally");
+    printf("a = %d\n", a);
+    CHECK(a == 3);
+  }
+  SECTION("throws")
+  {
+    int a = 1;
+    {
+      auto throws = [&]()
+        try__finally2
+        {
+          WARN("in try__finally");
+          a = 2;
+          printf("a = %d\n", a);
+          throw std::runtime_error("error in try block");
+        },
+        __finally
+        {
+          WARN("in __finally");
+          a = 3;
+        } end_try__finally2;
+      REQUIRE_THROWS_AS(throws(), std::runtime_error);
+    }
+    WARN("after try__finally");
+    printf("a = %d\n", a);
+    CHECK(a == 3);
+  }
+  SECTION("throws2")
+  {
+    int a = 1;
+    try
+    {
+      try__finally2
+      {
+        WARN("in try__finally");
+        a = 2;
+        printf("a = %d\n", a);
+        throw std::runtime_error("error in try block");
+      },
+      __finally
+      {
+        WARN("in __finally");
+        a = 3;
+      } end_try__finally2
+    }
+    catch(std::runtime_error &)
+    {
+      WARN("in catch");
+    }
+    printf("a = %d\n", a);
+    CHECK(a == 3);
+  }
+}
