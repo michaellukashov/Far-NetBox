@@ -13,8 +13,8 @@ public:
   T dummy = T();
   T &obj  = dummy;
 
-  explicit propertyBase(T &value):
-    obj(value)
+  explicit propertyBase(T &Value):
+    obj(Value)
   {}
 };
 
@@ -26,33 +26,29 @@ CUSTOM_MEM_ALLOCATION_IMPL
 public:
   Property() = default;
 
-  Property(const Property<T, true, true> &value):
-    propertyBase<T>(value.obj)
+  Property(const Property<T, true, true> &Value):
+    propertyBase<T>(Value.obj)
   {}
 
-  /*Property(Property<T, true, true>& value):
-      propertyBase<T>(value.obj)
-  {}*/
-
-  explicit Property(T &value):
-    propertyBase<T>(value)
+  explicit Property(T &Value):
+    propertyBase<T>(Value)
   {}
 
-  T &operator=(const Property<T, true, true> &value)
+  T &operator=(const Property<T, true, true> &Value)
   {
-    this->obj = value.obj;
+    this->obj = Value.obj;
     return this->obj;
   }
 
-  T &operator=(const T &value)
+  T &operator=(const T &Value)
   {
-    this->obj = value;
+    this->obj = Value;
     return this->obj;
   }
 
-  T &operator=(T &value)
+  T &operator=(T &Value)
   {
-    this->obj = value;
+    this->obj = Value;
 
     return this->obj;
   }
@@ -72,17 +68,17 @@ CUSTOM_MEM_ALLOCATION_IMPL
 public:
   Property() = default;
 
-  Property(const Property<T, false, true> &value):
-    propertyBase<T>(value.obj)
+  Property(const Property<T, false, true> &Value):
+    propertyBase<T>(Value.obj)
   {}
 
-  explicit Property(T &value):
-    propertyBase<T>(value)
+  explicit Property(T &Value):
+    propertyBase<T>(Value)
   {}
 
-  T &operator=(const Property &value)
+  T &operator=(const Property &Value)
   {
-    this->obj = value.obj;
+    this->obj = Value.obj;
     return this->obj;
   }
 
@@ -101,8 +97,8 @@ CUSTOM_MEM_ALLOCATION_IMPL
 public:
   using T::T;
 
-  explicit Property(const T &value):
-    T(value)
+  explicit Property(const T &Value):
+    T(Value)
   {}
 };
 
@@ -114,8 +110,8 @@ class Property<T, false, false> : public T
 public:
   using T::T;
 
-  explicit Property(const T &value):
-    T(value)
+  explicit Property(const T &Value):
+    T(Value)
   {}
 
   const T *const operator->() const
