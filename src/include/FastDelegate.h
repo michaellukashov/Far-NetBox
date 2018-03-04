@@ -14,7 +14,7 @@
 //				  * Now works on /clr "managed C++" code on VC7, VC7.1
 //				  * Comeau C++ now compiles without warnings.
 //				  * Prevent the virtual inheritance case from being used on
-//					  VC6 and earlier, which generate incorrect code.
+//				    VC6 and earlier, which generate incorrect code.
 //				  * Improved warning and error messages. Non-standard hacks
 //					 now have compile-time checks to make them safer.
 //				  * implicit_cast used instead of static_cast in many cases.
@@ -25,25 +25,25 @@
 // 30-Oct-04 1.3  * Support for (non-void) return values.
 //				  * No more workarounds in client code!
 //					 MSVC and Intel now use a clever hack invented by John Dlugosz:
-//				     - The FASTDELEGATEDECLARE workaround is no longer necessary.
+//					 - The FASTDELEGATEDECLARE workaround is no longer necessary.
 //					 - No more warning messages for VC6
 //				  * Less use of macros. Error messages should be more comprehensible.
 //				  * Added include guards
 //				  * Added FastDelegate::empty() to test if invocation is safe (Thanks Neville Franks).
 //				  * Now tested on VS 2005 Express Beta, PGI C++
 // 24-Dec-04 1.4  * Added DelegateMemento, to allow collections of disparate delegates.
-//                * <,>,<=,>= comparison operators to allow storage in ordered containers.
-//				  * Substantial reduction of code size, especially the 'Closure' class.
-//				  * Standardised all the compiler-specific workarounds.
-//                * MFP conversion now works for CodePlay (but not yet supported in the full code).
-//                * Now compiles without warnings on _any_ supported compiler, including BCC 5.5.1
+//					* <,>,<=,>= comparison operators to allow storage in ordered containers.
+//					* Substantial reduction of code size, especially the 'Closure' class.
+//					* Standardised all the compiler-specific workarounds.
+//					* MFP conversion now works for CodePlay (but not yet supported in the full code).
+//					* Now compiles without warnings on _any_ supported compiler, including BCC 5.5.1
 //				  * New syntax: FastDelegate< int (char *, double) >.
 // 14-Feb-05 1.4.1* Now treats =0 as equivalent to .clear(), ==0 as equivalent to .empty(). (Thanks elfric).
-//				  * Now tested on Intel ICL for AMD64, VS2005 Beta for AMD64 and Itanium.
+//					* Now tested on Intel ICL for AMD64, VS2005 Beta for AMD64 and Itanium.
 // 30-Mar-05 1.5  * Safebool idiom: "if (dg)" is now equivalent to "if (!dg.empty())"
-//				  * Fully supported by CodePlay VectorC
-//                * Bugfix for Metrowerks: empty() was buggy because a valid MFP can be 0 on MWCC!
-//                * More optimal assignment,== and != operators for static function pointers.
+//					* Fully supported by CodePlay VectorC
+//					* Bugfix for Metrowerks: empty() was buggy because a valid MFP can be 0 on MWCC!
+//					* More optimal assignment,== and != operators for static function pointers.
 
 #ifndef FASTDELEGATE_H
 #define FASTDELEGATE_H
@@ -301,7 +301,7 @@ struct SimplifyMemFunc {
 	inline static GenericClass *Convert(X *pthis, XFuncType function_to_bind,
 		GenericMemFuncType &bound_func) {
 		// Unsupported member function type -- force a compile failure.
-	    // (it's illegal to have a array with negative size).
+		// (it's illegal to have a array with negative size).
 		typedef char ERROR_Unsupported_member_function_pointer_on_this_compiler[N-100];
 		return 0;
 	}
@@ -542,7 +542,7 @@ struct SimplifyMemFunc<SINGLE_MEMFUNCPTR_SIZE + 3*sizeof(int) >
 // A static function pointer is stored inside the class.
 // Here are the valid values:
 // +-- Static pointer --+--pThis --+-- pMemFunc-+-- Meaning------+
-// |   0				|  0       |   0        | Empty          |
+// |   0                |  0       |   0        | Empty          |
 // |   !=0              |(dontcare)|  Invoker   | Static function|
 // |   0                |  !=0     |  !=0*      | Method call    |
 // +--------------------+----------+------------+----------------+
@@ -592,7 +592,7 @@ public:
 public:
 #if !defined(FASTDELEGATE_USESTATICFUNCTIONHACK)
 	inline bool IsEqual (const DelegateMemento &x) const {
-	    // We have to cope with the static function pointers as a special case
+		// We have to cope with the static function pointers as a special case
 		if (m_pFunction!=x.m_pFunction) return false;
 		// the static function ptrs must either both be equal, or both be 0.
 		if (m_pStaticFunction!=x.m_pStaticFunction) return false;
@@ -652,7 +652,7 @@ protected:
 };
 
 
-//						ClosurePtr<>
+//                ClosurePtr<>
 //
 // A private wrapper class that adds function signatures to DelegateMemento.
 // It's the class that does most of the actual work.
