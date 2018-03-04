@@ -746,7 +746,7 @@ public:
 			m_pFunction=0;
 		} else {
 			bindmemfunc(pParent, static_function_invoker);
-        }
+		}
 		m_pStaticFunction=reinterpret_cast<GenericFuncPtr>(function_to_bind);
 	}
 	inline UnvoidStaticFuncPtr GetStaticFunction() const {
@@ -1005,7 +1005,7 @@ private:
 		int a_data_pointer_to_this_is_0_on_buggy_compilers;
 		StaticFunctionPtr m_nonzero;
 	} UselessTypedef;
-    typedef StaticFunctionPtr SafeBoolStruct::*unspecified_bool_type;
+	typedef StaticFunctionPtr SafeBoolStruct::*unspecified_bool_type;
 public:
 	operator unspecified_bool_type() const {
 		return empty()? 0: &SafeBoolStruct::m_nonzero;
@@ -1090,7 +1090,7 @@ private:
 		int a_data_pointer_to_this_is_0_on_buggy_compilers;
 		StaticFunctionPtr m_nonzero;
 	} UselessTypedef;
-    typedef StaticFunctionPtr SafeBoolStruct::*unspecified_bool_type;
+	typedef StaticFunctionPtr SafeBoolStruct::*unspecified_bool_type;
 public:
 	operator unspecified_bool_type() const {
 		return empty()? 0: &SafeBoolStruct::m_nonzero;
@@ -1175,7 +1175,7 @@ private:
 		int a_data_pointer_to_this_is_0_on_buggy_compilers;
 		StaticFunctionPtr m_nonzero;
 	} UselessTypedef;
-    typedef StaticFunctionPtr SafeBoolStruct::*unspecified_bool_type;
+	typedef StaticFunctionPtr SafeBoolStruct::*unspecified_bool_type;
 public:
 	operator unspecified_bool_type() const {
 		return empty()? 0: &SafeBoolStruct::m_nonzero;
@@ -1260,7 +1260,7 @@ private:
 		int a_data_pointer_to_this_is_0_on_buggy_compilers;
 		StaticFunctionPtr m_nonzero;
 	} UselessTypedef;
-    typedef StaticFunctionPtr SafeBoolStruct::*unspecified_bool_type;
+	typedef StaticFunctionPtr SafeBoolStruct::*unspecified_bool_type;
 public:
 	operator unspecified_bool_type() const {
 		return empty()? 0: &SafeBoolStruct::m_nonzero;
@@ -1345,11 +1345,11 @@ private:
 		int a_data_pointer_to_this_is_0_on_buggy_compilers;
 		StaticFunctionPtr m_nonzero;
 	} UselessTypedef;
-    typedef StaticFunctionPtr SafeBoolStruct::*unspecified_bool_type;
+	typedef StaticFunctionPtr SafeBoolStruct::*unspecified_bool_type;
 public:
 	operator unspecified_bool_type() const {
 		 return empty()? 0: &SafeBoolStruct::m_nonzero;
-    }
+	}
 	// necessary to allow ==0 to work despite the safe_bool idiom
 	inline bool operator==(StaticFunctionPtr funcptr) {
 		return m_Closure.IsEqualToStaticFuncPtr(funcptr); }
@@ -1430,7 +1430,7 @@ private:
 		int a_data_pointer_to_this_is_0_on_buggy_compilers;
 		StaticFunctionPtr m_nonzero;
 	} UselessTypedef;
-    typedef StaticFunctionPtr SafeBoolStruct::*unspecified_bool_type;
+	typedef StaticFunctionPtr SafeBoolStruct::*unspecified_bool_type;
 public:
 	operator unspecified_bool_type() const {
 		return empty()? 0: &SafeBoolStruct::m_nonzero;
