@@ -137,9 +137,7 @@ CUSTOM_MEM_ALLOCATION_IMPL
 private:
   typedef fastdelegate::FastDelegate0<T> TGetValueDelegate;
   TGetValueDelegate _getter;
-//  ROProperty() = delete;
 public:
-//  ROProperty(const ROProperty &) = default;
   explicit ROProperty(TGetValueDelegate Getter) :
     _getter(Getter)
   {}
@@ -169,11 +167,6 @@ public:
     assert(rhs._getter);
     return lhs._getter() == rhs._getter();
   }
-//  bool operator==(const T &Value) const
-//  {
-//    assert(_getter);
-//    return _getter() == Value;
-//  }
   friend bool inline operator==(const ROProperty &lhs, const T &rhs)
   {
     assert(lhs._getter);
@@ -195,9 +188,7 @@ private:
   typedef fastdelegate::FastDelegate1<void, T> TSetValueDelegate;
   TGetValueDelegate _getter;
   TSetValueDelegate _setter;
-//  RWProperty() = delete;
 public:
-//  RWProperty(const RWProperty &) = default;
   explicit RWProperty(TGetValueDelegate Getter, TSetValueDelegate Setter) :
     _getter(Getter),
     _setter(Setter)
@@ -232,11 +223,11 @@ public:
     assert(_getter);
     return _getter() == Value;
   }
-//  friend bool inline operator==(const RWProperty &lhs, const T &rhs)
-//  {
-//    assert(lhs._getter);
-//    return lhs._getter() == rhs;
-//  }
+  friend bool inline operator==(const RWProperty &lhs, const RWProperty &rhs)
+  {
+    assert(lhs._getter);
+    return lhs._getter == rhs._getter && lhs._setter == rhs._setter;
+  }
   friend bool inline operator!=(RWProperty &lhs, const T &rhs)
   {
     assert(lhs._getter);
