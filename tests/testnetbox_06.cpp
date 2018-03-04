@@ -187,18 +187,21 @@ class TBase
 {
 public:
   ROProperty<int> Data{nb::bind(&TBase::GetData, this)};
-  ROProperty<int> Data2{nb::bind([&]()->int { return FData; }, this)};
-  ROProperty<UnicodeString> Data2{nb::bind([&]()->int { return FString; }, this)};
+//  ROProperty<int> Data2{nb::bind([&]()->int { return FData; }, this)};
+//  ROProperty<UnicodeString> Data2{nb::bind([&]()->int { return FString; }, this)};
+//  ROProperty<bool> AutoSort{[&]()->bool { return FAutoSort; }};
 private:
   int GetData() const { return FData; }
 
   int FData = 1;
   UnicodeString FString = "42";
+  bool FAutoSort = false;
 };
 
 TEST_CASE_METHOD(base_fixture_t, "properties01", "netbox")
 {
   TBase obj1;
   CHECK(obj1.Data == 1);
-  CHECK(obj1.Data2 == 1);
+//  CHECK(obj1.Data2 == 1);
+//  CHECK(obj1.AutoSort == false);
 }
