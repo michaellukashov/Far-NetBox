@@ -591,7 +591,7 @@ public:
 #endif
 public:
 #if !defined(FASTDELEGATE_USESTATICFUNCTIONHACK)
-	inline bool IsEqual (const DelegateMemento &x) const{
+	inline bool IsEqual (const DelegateMemento &x) const {
 	    // We have to cope with the static function pointers as a special case
 		if (m_pFunction!=x.m_pFunction) return false;
 		// the static function ptrs must either both be equal, or both be 0.
@@ -600,7 +600,7 @@ public:
 		else return true;
 	}
 #else // Evil Method
-	inline bool IsEqual (const DelegateMemento &x) const{
+	inline bool IsEqual (const DelegateMemento &x) const {
 		return m_pthis==x.m_pthis && m_pFunction==x.m_pFunction;
 	}
 #endif
