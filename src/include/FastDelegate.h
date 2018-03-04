@@ -912,7 +912,7 @@ public:
 		m_Closure.bindstaticfunc(this, &FastDelegate0::InvokeStaticFunction,
 			function_to_bind); }
 	// Invoke the delegate
-	RetType operator() () const {
+	RetType operator()() const {
 	return (m_Closure.GetClosureThis()->*(m_Closure.GetClosureMemPtr()))(); }
 	// Implicit conversion to "bool" using the safe_bool idiom
 private:
