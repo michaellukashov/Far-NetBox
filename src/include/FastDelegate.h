@@ -997,7 +997,7 @@ public:
 		m_Closure.bindstaticfunc(this, &FastDelegate1::InvokeStaticFunction,
 			function_to_bind); }
 	// Invoke the delegate
-	RetType operator() (Param1 p1) const {
+	RetType operator()(Param1 p1) const {
 	return (m_Closure.GetClosureThis()->*(m_Closure.GetClosureMemPtr()))(p1); }
 	// Implicit conversion to "bool" using the safe_bool idiom
 private:
@@ -1082,7 +1082,7 @@ public:
 		m_Closure.bindstaticfunc(this, &FastDelegate2::InvokeStaticFunction,
 			function_to_bind); }
 	// Invoke the delegate
-	RetType operator() (Param1 p1, Param2 p2) const {
+	RetType operator()(Param1 p1, Param2 p2) const {
 	return (m_Closure.GetClosureThis()->*(m_Closure.GetClosureMemPtr()))(p1, p2); }
 	// Implicit conversion to "bool" using the safe_bool idiom
 private:
@@ -1167,7 +1167,7 @@ public:
 		m_Closure.bindstaticfunc(this, &FastDelegate3::InvokeStaticFunction,
 			function_to_bind); }
 	// Invoke the delegate
-	RetType operator() (Param1 p1, Param2 p2, Param3 p3) const {
+	RetType operator()(Param1 p1, Param2 p2, Param3 p3) const {
 	return (m_Closure.GetClosureThis()->*(m_Closure.GetClosureMemPtr()))(p1, p2, p3); }
 	// Implicit conversion to "bool" using the safe_bool idiom
 private:
@@ -1252,7 +1252,7 @@ public:
 		m_Closure.bindstaticfunc(this, &FastDelegate4::InvokeStaticFunction,
 			function_to_bind); }
 	// Invoke the delegate
-	RetType operator() (Param1 p1, Param2 p2, Param3 p3, Param4 p4) const {
+	RetType operator()(Param1 p1, Param2 p2, Param3 p3, Param4 p4) const {
 	return (m_Closure.GetClosureThis()->*(m_Closure.GetClosureMemPtr()))(p1, p2, p3, p4); }
 	// Implicit conversion to "bool" using the safe_bool idiom
 private:
@@ -1337,7 +1337,7 @@ public:
 		m_Closure.bindstaticfunc(this, &FastDelegate5::InvokeStaticFunction,
 			function_to_bind); }
 	// Invoke the delegate
-	RetType operator() (Param1 p1, Param2 p2, Param3 p3, Param4 p4, Param5 p5) const {
+	RetType operator()(Param1 p1, Param2 p2, Param3 p3, Param4 p4, Param5 p5) const {
 	return (m_Closure.GetClosureThis()->*(m_Closure.GetClosureMemPtr()))(p1, p2, p3, p4, p5); }
 	// Implicit conversion to "bool" using the safe_bool idiom
 private:
@@ -1422,7 +1422,7 @@ public:
 		m_Closure.bindstaticfunc(this, &FastDelegate6::InvokeStaticFunction,
 			function_to_bind); }
 	// Invoke the delegate
-	RetType operator() (Param1 p1, Param2 p2, Param3 p3, Param4 p4, Param5 p5, Param6 p6) const {
+	RetType operator()(Param1 p1, Param2 p2, Param3 p3, Param4 p4, Param5 p5, Param6 p6) const {
 	return (m_Closure.GetClosureThis()->*(m_Closure.GetClosureMemPtr()))(p1, p2, p3, p4, p5, p6); }
 	// Implicit conversion to "bool" using the safe_bool idiom
 private:
@@ -1507,7 +1507,7 @@ public:
 		m_Closure.bindstaticfunc(this, &FastDelegate7::InvokeStaticFunction,
 			function_to_bind); }
 	// Invoke the delegate
-	RetType operator() (Param1 p1, Param2 p2, Param3 p3, Param4 p4, Param5 p5, Param6 p6, Param7 p7) const {
+	RetType operator()(Param1 p1, Param2 p2, Param3 p3, Param4 p4, Param5 p5, Param6 p6, Param7 p7) const {
 	return (m_Closure.GetClosureThis()->*(m_Closure.GetClosureMemPtr()))(p1, p2, p3, p4, p5, p6, p7); }
 	// Implicit conversion to "bool" using the safe_bool idiom
 private:
@@ -1592,7 +1592,7 @@ public:
 		m_Closure.bindstaticfunc(this, &FastDelegate8::InvokeStaticFunction,
 			function_to_bind); }
 	// Invoke the delegate
-	RetType operator() (Param1 p1, Param2 p2, Param3 p3, Param4 p4, Param5 p5, Param6 p6, Param7 p7, Param8 p8) const {
+	RetType operator()(Param1 p1, Param2 p2, Param3 p3, Param4 p4, Param5 p5, Param6 p6, Param7 p7, Param8 p8) const {
 	return (m_Closure.GetClosureThis()->*(m_Closure.GetClosureMemPtr()))(p1, p2, p3, p4, p5, p6, p7, p8); }
 	// Implicit conversion to "bool" using the safe_bool idiom
 private:
