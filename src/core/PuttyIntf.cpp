@@ -208,12 +208,12 @@ int GetUserpassInput(prompts_t *p, const uint8_t * /*in*/, int /*inlen*/)
     {
       Result = 0;
     }
-  }
+  },
   __finally__removed
   ({
     delete Prompts;
     delete Results;
-  })
+  }) end_try__finally
 
   return Result;
 }
@@ -696,11 +696,6 @@ bool HasGSSAPI(const UnicodeString CustomPath)
     ssh_gss_liblist *List = nullptr;
     try__finally
     {
-      SCOPE_EXIT
-      {
-        ssh_gss_cleanup(List);
-        conf_free(conf);
-      };
       Filename *filename = filename_from_str(UTF8String(CustomPath).c_str());
       conf_set_filename(conf, CONF_ssh_gss_custom, filename);
       filename_free(filename);
@@ -714,12 +709,12 @@ bool HasGSSAPI(const UnicodeString CustomPath)
           ((library->acquire_cred(library, &ctx) == SSH_GSS_OK) &&
             (library->release_cred(library, &ctx) == SSH_GSS_OK)) ? 1 : 0;
       }
-    }
-    __finally__removed
-    ({
+    },
+    __finally
+    {
       ssh_gss_cleanup(List);
       conf_free(conf);
-    })
+    } end_try__finally
 
     if (has < 0)
     {
@@ -826,12 +821,6 @@ UnicodeString ParseOpenSshPubLine(const UnicodeString ALine, const struct ssh_si
   {
     try__finally
     {
-      SCOPE_EXIT
-      {
-        sfree(PubBlob);
-        sfree(AlgorithmName);
-        sfree(CommentPtr);
-      };
       Algorithm = find_pubkey_alg(AlgorithmName);
       if (Algorithm == nullptr)
       {
@@ -847,13 +836,13 @@ UnicodeString ParseOpenSshPubLine(const UnicodeString ALine, const struct ssh_si
       Result = UnicodeString(FmtKey);
       sfree(FmtKey);
       Algorithm->freekey(Key);
-    }
-    __finally__removed
-    ({
-      sfree(PubBlob);
-      sfree(AlgorithmName);
-      sfree(CommentPtr);
-    })
+    },
+    __finally
+    {
+       sfree(PubBlob);
+       sfree(AlgorithmName);
+       sfree(CommentPtr);
+    } end_try__finally
   }
   return Result;
 }

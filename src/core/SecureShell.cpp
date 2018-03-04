@@ -468,20 +468,16 @@ void TSecureShell::Open()
     FSendBuf = FSessionData->GetSendBuf();
     try__finally
     {
-      SCOPE_EXIT
-      {
-        conf_free(conf);
-      };
       InitError = FBackend->init(this, &FBackendHandle, conf,
           AnsiString(FSessionData->GetHostNameExpanded()).c_str(),
           ToInt(FSessionData->GetPortNumber()), &RealHost,
           FSessionData->GetTcpNoDelay() ? 1 : 0,
           conf_get_int(conf, CONF_tcp_keepalives));
-    }
-    __finally__removed
-    ({
+    },
+    __finally
+    {
       conf_free(conf);
-    })
+    } end_try__finally
 
     sfree(RealHost);
     if (InitError)
@@ -1117,21 +1113,17 @@ void TSecureShell::FromBackend(bool IsStdErr, const uint8_t *Data, intptr_t Leng
         FFrozen = true;
         try__finally
         {
-          SCOPE_EXIT
-          {
-            FFrozen = false;
-          };
           do
           {
             FDataWhileFrozen = false;
             FOnReceive(nullptr);
           }
           while (FDataWhileFrozen);
-        }
-        __finally__removed
-        ({
+        },
+        __finally
+        {
           FFrozen = false;
-        })
+        } end_try__finally
       }
       else
       {
@@ -1166,10 +1158,6 @@ intptr_t TSecureShell::Receive(uint8_t *Buf, intptr_t Length)
 
     try__finally
     {
-      SCOPE_EXIT
-      {
-        OutPtr = nullptr;
-      };
       /*
        * See if the pending-input block contains some of what we
        * need.
@@ -1210,11 +1198,11 @@ intptr_t TSecureShell::Receive(uint8_t *Buf, intptr_t Length)
         FatalError(LoadStr(LOST_CONNECTION));
       }
 #endif // #if 0
-    }
-    __finally__removed
-    ({
+    },
+    __finally
+    {
       OutPtr = nullptr;
-    })
+    } end_try__finally
   }
   if (GetConfiguration()->GetActualLogProtocol() >= 1)
   {
@@ -1303,10 +1291,6 @@ uint32_t TSecureShell::TimeoutPrompt(TQueryParamsTimerEvent PoolEvent)
   uint32_t Answer;
   try__finally
   {
-    SCOPE_EXIT
-    {
-      --FWaiting;
-    };
     TQueryParams Params(qpFatalAbort | qpAllowContinueOnError | qpIgnoreAbort);
     Params.HelpKeyword = HELP_MESSAGE_HOST_IS_NOT_COMMUNICATING;
     Params.Timer = 500;
@@ -1321,11 +1305,11 @@ uint32_t TSecureShell::TimeoutPrompt(TQueryParamsTimerEvent PoolEvent)
     }
     Answer = FUI->QueryUser(MainInstructions(FMTLOAD(CONFIRM_PROLONG_TIMEOUT3, FSessionData->GetTimeout(), FSessionData->GetTimeout())),
         nullptr, qaRetry | qaAbort, &Params);
-  }
-  __finally__removed
-  ({
+  },
+  __finally
+  {
     FWaiting--;
-  })
+  } end_try__finally
   return Answer;
 }
 //---------------------------------------------------------------------------
@@ -2023,10 +2007,6 @@ bool TSecureShell::EventSelectLoop(uintptr_t MSec, bool ReadEventRequired,
     HANDLE *Handles = handle_get_events(&HandleCount);
     try__finally
     {
-      SCOPE_EXIT
-      {
-        sfree(Handles);
-      };
       size_t n = ToSizeT(HandleCount + 1);
       Handles = sresize(Handles, n, HANDLE);
       Handles[HandleCount] = FSocketEvent;
@@ -2104,11 +2084,11 @@ bool TSecureShell::EventSelectLoop(uintptr_t MSec, bool ReadEventRequired,
 
         MSec = 0;
       }
-    }
-    __finally__removed
-    ({
+    },
+    __finally
+    {
       sfree(Handles);
-    })
+    } end_try__finally
 
     run_toplevel_callbacks();
 
@@ -2590,11 +2570,11 @@ void TSecureShell::VerifyHostKey(
       try__finally
       {
         FUI->FatalError(E.get(), FMTLOAD(HOSTKEY, (FingerprintSHA256)));
-      }
+      },
       __finally__removed
       ({
         delete E;
-      })
+      }) end_try__finally
     }
   }
 

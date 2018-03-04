@@ -117,7 +117,7 @@ TEST_CASE_METHOD(base_fixture_t, "tryfinally01", "netbox")
     int a = 1;
     WARN("before try__finally");
     printf("a = %d\n", a);
-    try__finally2
+    try__finally
     {
       WARN("in try__finally");
       a = 2;
@@ -128,7 +128,7 @@ TEST_CASE_METHOD(base_fixture_t, "tryfinally01", "netbox")
     {
       WARN("in __finally");
       a = 3;
-    } end_try__finally2
+    } end_try__finally
     WARN("after try__finally");
     printf("a = %d\n", a);
     CHECK(a == 3);
@@ -138,7 +138,7 @@ TEST_CASE_METHOD(base_fixture_t, "tryfinally01", "netbox")
     int a = 1;
     {
       auto throws = [&]()
-        try__finally2
+        try__finally
         {
           WARN("in try__finally");
           a = 2;
@@ -149,7 +149,7 @@ TEST_CASE_METHOD(base_fixture_t, "tryfinally01", "netbox")
         {
           WARN("in __finally");
           a = 3;
-        } end_try__finally2;
+        } end_try__finally;
       REQUIRE_THROWS_AS(throws(), std::runtime_error);
     }
     WARN("after try__finally");
@@ -161,7 +161,7 @@ TEST_CASE_METHOD(base_fixture_t, "tryfinally01", "netbox")
     int a = 1;
     try
     {
-      try__finally2
+      try__finally
       {
         WARN("in try__finally");
         a = 2;
@@ -172,7 +172,7 @@ TEST_CASE_METHOD(base_fixture_t, "tryfinally01", "netbox")
       {
         WARN("in __finally");
         a = 3;
-      } end_try__finally2
+      } end_try__finally
     }
     catch(std::runtime_error &)
     {
@@ -181,4 +181,8 @@ TEST_CASE_METHOD(base_fixture_t, "tryfinally01", "netbox")
     printf("a = %d\n", a);
     CHECK(a == 3);
   }
+}
+
+TEST_CASE_METHOD(base_fixture_t, "properties01", "netbox")
+{
 }

@@ -984,16 +984,12 @@ void TRemoteFile::FindLinkedFile()
     {
       try__finally
       {
-        SCOPE_EXIT
-        {
-          GetTerminal()->SetExceptionOnFail(false);
-        };
         GetTerminal()->ReadSymlink(this, FLinkedFile);
-      }
-      __finally__removed
-      ({
-        Terminal->ExceptionOnFail = false;
-      })
+      },
+      __finally
+      {
+        GetTerminal()->SetExceptionOnFail(false);
+      } end_try__finally
     }
     catch (Exception &E)
     {
@@ -1354,21 +1350,17 @@ void TRemoteDirectoryCache::Clear()
 
   try__finally
   {
-    SCOPE_EXIT
-    {
-      TStringList::Clear();
-    };
     for (intptr_t Index = 0; Index < GetCount(); ++Index)
     {
       TRemoteFileList *List = GetAs<TRemoteFileList>(Index);
       SAFE_DESTROY(List);
       SetObj(Index, nullptr);
     }
-  }
-  __finally__removed
-  ({
+  },
+  __finally
+  {
     TStringList::Clear();
-  })
+  } end_try__finally
 }
 //---------------------------------------------------------------------------
 bool TRemoteDirectoryCache::GetIsEmptyPrivate() const
@@ -1602,11 +1594,11 @@ void TRemoteDirectoryChangesCache::Serialize(UnicodeString &Data) const
         ++Index;
       }
       Data += Limited->GetText();
-    }
+    },
     __finally__removed
     ({
       delete Limited;
-    })
+    }) end_try__finally
   }
   else
   {

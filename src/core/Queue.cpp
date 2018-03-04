@@ -789,27 +789,19 @@ TTerminalQueueStatus *TTerminalQueue::CreateStatus(TTerminalQueueStatus *&Curren
   {
     try__finally
     {
-      SCOPE_EXIT
-      {
-        if (Current != nullptr)
-        {
-          SAFE_DESTROY(Current);
-        }
-      };
-
       volatile TGuard Guard(FItemsSection);
 
       UpdateStatusForList(Status.get(), FDoneItems, Current);
       Status->SetDoneCount(Status->GetCount());
       UpdateStatusForList(Status.get(), FItems, Current);
-    }
-    __finally__removed
-    ({
+    },
+    __finally
+    {
       if (Current != nullptr)
       {
-        delete Current;
+        SAFE_DESTROY(Current);
       }
-    })
+    } end_try__finally
   }
   catch__removed
   ({
@@ -1558,23 +1550,18 @@ bool TTerminalItem::WaitForUserAction(
 
   try__finally
   {
-    SCOPE_EXIT
-    {
-      FUserAction = nullptr;
-      FItem->SetStatus(PrevStatus);
-    };
     FUserAction = UserAction;
 
     FItem->SetStatus(ItemStatus);
     FQueue->DoEvent(qePendingUserAction);
 
     Result = !FTerminated && WaitForEvent() && !FCancel;
-  }
-  __finally__removed
-  ({
+  },
+  __finally
+  {
     FUserAction = nullptr;
     FItem->SetStatus(PrevStatus);
-  })
+  } end_try__finally
 
   return Result;
 }
@@ -1692,20 +1679,15 @@ void TTerminalItem::OperationProgress(
 
     try__finally
     {
-      SCOPE_EXIT
-      {
-        FItem->SetStatus(PrevStatus);
-        ProgressData.Resume();
-      };
       FItem->SetStatus(TQueueItem::qsPaused);
 
       WaitForEvent();
-    }
-    __finally__removed
-    ({
+    },
+    __finally
+    {
       FItem->SetStatus(PrevStatus);
       ProgressData.Resume();
-    })
+    } end_try__finally
   }
 
   if (FTerminated || FCancel)
@@ -2004,16 +1986,12 @@ bool TQueueItemProxy::ProcessUserAction()
   FProcessingUserAction = true;
   try__finally
   {
-    SCOPE_EXIT
-    {
-      FProcessingUserAction = false;
-    };
     Result = FQueue->ItemProcessUserAction(FQueueItem, nullptr);
-  }
-  __finally__removed
-  ({
+  },
+  __finally
+  {
     FProcessingUserAction = false;
-  })
+  } end_try__finally
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -2279,16 +2257,12 @@ void TTransferQueueItem::DoExecute(TTerminal *Terminal)
   FParallelOperation = &ParallelOperation;
   try__finally
   {
-    SCOPE_EXIT
-    {
-      FParallelOperation = nullptr;
-    };
     DoTransferExecute(Terminal, FParallelOperation);
-  }
-  __finally__removed
-  ({
+  },
+  __finally
+  {
     FParallelOperation = nullptr;
-  })
+  } end_try__finally
 }
 //---------------------------------------------------------------------------
 void TTransferQueueItem::ProgressUpdated()
@@ -2432,11 +2406,6 @@ void TParallelTransferQueueItem::DoExecute(TTerminal *Terminal)
 
   try__finally
   {
-    SCOPE_EXIT
-    {
-      OperationProgress.Stop();
-      FParallelOperation->RemoveClient();
-    };
     bool Continue = true;
     do
     {
@@ -2451,12 +2420,12 @@ void TParallelTransferQueueItem::DoExecute(TTerminal *Terminal)
       }
     }
     while (Continue);
-  }
-  __finally__removed
-  ({
+  },
+  __finally
+  {
     OperationProgress.Stop();
     FParallelOperation->RemoveClient();
-  })
+  } end_try__finally
 }
 //---------------------------------------------------------------------------
 // TDownloadQueueItem
@@ -2651,11 +2620,6 @@ void TTerminalThread::RunAction(TNotifyEvent Action)
   {
     try__finally
     {
-      SCOPE_EXIT
-      {
-        FAction = nullptr;
-        SAFE_DESTROY_EX(Exception, FException);
-      };
       TriggerEvent();
 
       bool Done = false;
@@ -2720,12 +2684,12 @@ void TTerminalThread::RunAction(TNotifyEvent Action)
       {
         Rethrow(FException);
       }
-    }
-    __finally__removed
-    ({
+    },
+    __finally
+    {
       FAction = nullptr;
       SAFE_DESTROY_EX(Exception, FException);
-    })
+    } end_try__finally
   }
   catch (...)
   {
@@ -2782,16 +2746,12 @@ void TTerminalThread::Rethrow(Exception *&AException)
   {
     try__finally
     {
-      SCOPE_EXIT
-      {
-        SAFE_DESTROY_EX(Exception, AException);
-      };
       RethrowException(AException);
-    }
-    __finally__removed
-    ({
+    },
+    __finally
+    {
       SAFE_DESTROY_EX(Exception, AException);
-    })
+    } end_try__finally
   }
 }
 //---------------------------------------------------------------------------
@@ -2855,11 +2815,6 @@ void TTerminalThread::WaitForUserAction(TUserAction *UserAction)
     TUserAction *PrevUserAction = FUserAction;
     try__finally
     {
-      SCOPE_EXIT
-      {
-        FUserAction = PrevUserAction;
-        SAFE_DESTROY_EX(Exception, FException);
-      };
       FUserAction = UserAction;
 
       while (true)
@@ -2909,12 +2864,12 @@ void TTerminalThread::WaitForUserAction(TUserAction *UserAction)
         // and rethrown)
         Rethrow(FIdleException);
       }
-    }
-    __finally__removed
-    ({
+    },
+    __finally
+    {
       FUserAction = PrevUserAction;
       SAFE_DESTROY_EX(Exception, FException);
-    })
+    } end_try__finally
 
     // Contrary to a call before, this is unconditional,
     // otherwise cancelling authentication won't work,

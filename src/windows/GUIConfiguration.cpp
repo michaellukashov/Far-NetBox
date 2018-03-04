@@ -435,10 +435,6 @@ void TCopyParamList::Load(THierarchicalStorage *Storage, intptr_t ACount)
       {
         try__finally
         {
-          SCOPE_EXIT
-          {
-            Storage->CloseSubKey();
-          };
           Name = Storage->ReadString("Name", Name);
           CopyParam->Load(Storage);
 
@@ -447,11 +443,11 @@ void TCopyParamList::Load(THierarchicalStorage *Storage, intptr_t ACount)
             Rule.reset(new TCopyParamRule());
             Rule->Load(Storage);
           }
-        }
-        __finally__removed
-        ({
+        },
+        __finally
+        {
           Storage->CloseSubKey();
-        })
+        } end_try__finally
       }
     }
     catch__removed
@@ -477,10 +473,6 @@ void TCopyParamList::Save(THierarchicalStorage *Storage) const
     {
       try__finally
       {
-        SCOPE_EXIT
-        {
-          Storage->CloseSubKey();
-        };
         const TCopyParamType *CopyParam = GetCopyParam(Index);
         const TCopyParamRule *Rule = GetRule(Index);
 
@@ -491,11 +483,11 @@ void TCopyParamList::Save(THierarchicalStorage *Storage) const
         {
           Rule->Save(Storage);
         }
-      }
-      __finally__removed
-      ({
+      },
+      __finally
+      {
         Storage->CloseSubKey();
-      })
+      } end_try__finally
     }
   }
 }
@@ -720,14 +712,10 @@ void TGUIConfiguration::SaveData(THierarchicalStorage *Storage, bool All)
 #undef KEY
 #undef KEYEX
 
-  if (Storage->OpenSubKey(L"Interface\\CopyParam", /*CanCreate*/ true, /*Path*/ true))
+  if (Storage->OpenSubKey("Interface\\CopyParam", /*CanCreate*/ true, /*Path*/ true))
   {
     try__finally
     {
-      SCOPE_EXIT
-      {
-        Storage->CloseSubKey();
-      };
       FDefaultCopyParam.Save(Storage);
 
       if (FCopyParamListDefaults)
@@ -740,27 +728,23 @@ void TGUIConfiguration::SaveData(THierarchicalStorage *Storage, bool All)
         Storage->WriteInteger("CopyParamList", FCopyParamList->GetCount());
         FCopyParamList->Save(Storage);
       }
-    }
-    __finally__removed
-    ({
+    },
+    __finally
+    {
       Storage->CloseSubKey();
-    })
+    } end_try__finally
   }
 
-  if (Storage->OpenSubKey(L"Interface\\NewDirectory", /*CanCreate*/ true, /*Path*/ true))
+  if (Storage->OpenSubKey("Interface\\NewDirectory", /*CanCreate*/ true, /*Path*/ true))
   {
     try__finally
     {
-      SCOPE_EXIT
-      {
-        Storage->CloseSubKey();
-      };
       FNewDirectoryProperties.Save(Storage);
-    }
-    __finally__removed
-    ({
+    },
+    __finally
+    {
       Storage->CloseSubKey();
-    })
+    } end_try__finally
   }
 }
 //---------------------------------------------------------------------------
@@ -777,14 +761,10 @@ void TGUIConfiguration::LoadData(THierarchicalStorage *Storage)
 #undef KEY
 #undef KEYEX
 
-  if (Storage->OpenSubKey(L"Interface\\CopyParam", /*CanCreate*/ false, /*Path*/ true))
+  if (Storage->OpenSubKey("Interface\\CopyParam", /*CanCreate*/ false, /*Path*/ true))
   {
     try__finally
     {
-      SCOPE_EXIT
-      {
-        Storage->CloseSubKey();
-      };
       // must be loaded before eventual setting defaults for CopyParamList
       FDefaultCopyParam.Load(Storage);
 
@@ -801,11 +781,11 @@ void TGUIConfiguration::LoadData(THierarchicalStorage *Storage)
         FCopyParamListDefaults = false;
       }
       FCopyParamList->Reset();
-    }
-    __finally__removed
-    ({
+    },
+    __finally
+    {
       Storage->CloseSubKey();
-    })
+    } end_try__finally
   }
 
   // Make it compatible with versions prior to 3.7.1 that have not saved PuttyPath
@@ -822,20 +802,16 @@ void TGUIConfiguration::LoadData(THierarchicalStorage *Storage)
     FPuttyPath = FormatCommand(FPuttyPath, L"");
   }
 
-  if (Storage->OpenSubKey(L"Interface\\NewDirectory", false, true))
+  if (Storage->OpenSubKey("Interface\\NewDirectory", false, true))
   {
     try__finally
     {
-      SCOPE_EXIT
-      {
-        Storage->CloseSubKey();
-      };
       FNewDirectoryProperties.Load(Storage);
-    }
-    __finally__removed
-    ({
+    },
+    __finally
+    {
       Storage->CloseSubKey();
-    })
+    } end_try__finally
   }
 }
 //---------------------------------------------------------------------------
@@ -1142,10 +1118,6 @@ void TGUIConfiguration::FindLocales(const UnicodeString LocalesMask, TStrings *E
     (FindFirstUnchecked(LocalesMask, FindAttrs, SearchRec) == 0);
   try__finally
   {
-    SCOPE_EXIT
-    {
-      base::FindClose(SearchRec);
-    };
     while (Found)
     {
       UnicodeString Ext = ::ExtractFileExt(SearchRec.Name).UpperCase();
@@ -1159,11 +1131,11 @@ void TGUIConfiguration::FindLocales(const UnicodeString LocalesMask, TStrings *E
       }
       Found = (FindNextChecked(SearchRec) == 0);
     }
-  }
-  __finally__removed
-  ({
-    FindClose(SearchRec);
-  })
+  },
+  __finally
+  {
+    base::FindClose(SearchRec);
+  } end_try__finally
 }
 //---------------------------------------------------------------------------
 void TGUIConfiguration::AddLocale(LCID Locale, const UnicodeString Name)
@@ -1178,16 +1150,12 @@ void TGUIConfiguration::AddLocale(LCID Locale, const UnicodeString Name)
     HINSTANCE Module = LoadNewResourceModule(Locale, FileName);
     try__finally
     {
-      SCOPE_EXIT
-      {
-        FreeResourceModule(Module);
-      };
       LocaleInfo->Completeness = GetResourceModuleCompleteness(Module);
-    }
-    __finally__removed
-    ({
+    },
+    __finally
+    {
       FreeResourceModule(Module);
-    })
+    } end_try__finally
   }
   catch (...)
   {

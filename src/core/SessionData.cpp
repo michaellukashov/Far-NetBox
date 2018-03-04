@@ -1650,18 +1650,14 @@ void TSessionData::SaveRecryptedPasswords(THierarchicalStorage *Storage)
   {
     try__finally
     {
-      SCOPE_EXIT
-      {
-        Storage->CloseSubKey();
-      };
       RecryptPasswords();
 
       SavePasswords(Storage, false, false);
-    }
-    __finally__removed
-    ({
+    },
+    __finally
+    {
       Storage->CloseSubKey();
-    })
+    } end_try__finally
   }
 }
 //---------------------------------------------------------------------
@@ -1676,11 +1672,11 @@ void TSessionData::Remove()
     {
       Storage->RecursiveDeleteSubKey(GetInternalStorageKey());
     }
-  }
+  },
   __finally__removed
   ({
     delete Storage;
-  })
+  }) end_try__finally
 }
 //---------------------------------------------------------------------
 void TSessionData::CacheHostKeyIfNotCached()
@@ -2206,12 +2202,12 @@ bool TSessionData::ParseUrl(const UnicodeString AUrl, TOptions *Options,
           OptionsStorage.reset(new TRegistryStorage(GetConfiguration()->GetRegistryStorageKey()));
           ApplyRawSettings(OptionsStorage.get());
         }
-      }
+      },
       __finally__removed
       ({
         delete RawSettings;
         delete OptionsStorage;
-      })
+      }) end_try__finally
     }
     if (Options->FindSwitch("allowemptypassword", Value))
     {
@@ -4467,12 +4463,6 @@ void TStoredSessionList::Load(THierarchicalStorage *Storage,
   std::unique_ptr<TList> Loaded(new TList());
   try__finally
   {
-    SCOPE_EXIT
-    {
-      FAutoSort = true;
-      AlphaSort();
-    };
-
     DebugAssert(FAutoSort);
     FAutoSort = false;
     bool WasEmpty = (GetCount() == 0);
@@ -4544,14 +4534,14 @@ void TStoredSessionList::Load(THierarchicalStorage *Storage,
         }
       }
     }
-  }
-  __finally__removed
-  ({
-    AutoSort = true;
+  },
+  __finally
+  {
+    FAutoSort = true;
     AlphaSort();
-    delete SubKeys;
-    delete Loaded;
-  })
+    __removed delete SubKeys;
+    __removed delete Loaded;
+  } end_try__finally
 }
 //---------------------------------------------------------------------
 void TStoredSessionList::Load()
@@ -4564,11 +4554,11 @@ void TStoredSessionList::Load()
     {
       Load(Storage.get());
     }
-  }
+  },
   __finally__removed
   ({
     delete Storage;
-  })
+  }) end_try__finally
 }
 //---------------------------------------------------------------------
 void TStoredSessionList::DoSave(THierarchicalStorage *Storage,
@@ -4616,11 +4606,11 @@ void TStoredSessionList::DoSave(THierarchicalStorage *Storage,
         }
       }
     }
-  }
+  },
   __finally__removed
   ({
     delete FactoryDefaults;
-  })
+  }) end_try__finally
 }
 //---------------------------------------------------------------------
 void TStoredSessionList::Save(THierarchicalStorage *Storage, bool All)
@@ -4641,11 +4631,11 @@ void TStoredSessionList::DoSave(bool All, bool Explicit,
     {
       DoSave(Storage.get(), All, RecryptPasswordOnly, RecryptPasswordErrors);
     }
-  }
+  },
   __finally__removed
   ({
     delete Storage;
-  })
+  }) end_try__finally
 
   Saved();
 }
@@ -4779,12 +4769,6 @@ void TStoredSessionList::ImportFromKnownHosts(TStrings *Lines)
           {
             try__finally
             {
-              SCOPE_EXIT
-              {
-                sfree(PubBlob);
-                sfree(AlgorithmName);
-                sfree(CommentPtr);
-              };
               P = Pos(L',', HostNameStr);
               if (P > 0)
               {
@@ -4834,10 +4818,6 @@ void TStoredSessionList::ImportFromKnownHosts(TStrings *Lines)
               void *Key = Algorithm->newkey(Algorithm, reinterpret_cast<const char *>(PubBlob), PubBlobLen);
               try__finally
               {
-                SCOPE_EXIT
-                {
-                  Algorithm->freekey(Key);
-                };
                 if (Key == nullptr)
                 {
                   throw Exception("Invalid public key.");
@@ -4856,23 +4836,23 @@ void TStoredSessionList::ImportFromKnownHosts(TStrings *Lines)
                 {
                         SessionData->SetSelected(true);
                 }
-              }
-              __finally__removed
-              ({
+              },
+              __finally
+              {
                 Algorithm->freekey(Key);
-              })
+              } end_try__finally
 
               if (SessionDataOwner.get() != nullptr)
               {
                 Add(SessionDataOwner.release());
               }
-            }
-            __finally__removed
-            ({
+            },
+            __finally
+            {
               sfree(PubBlob);
               sfree(AlgorithmName);
               sfree(CommentPtr);
-            })
+            } end_try__finally
           }
         }
       }
@@ -4975,11 +4955,11 @@ void TStoredSessionList::Cleanup()
       {
         Storage->RecursiveDeleteSubKey(GetConfiguration()->GetStoredSessionsSubKey());
       }
-    }
+    },
     __finally__removed
     ({
       delete Storage;
-    })
+    }) end_try__finally
   }
   catch (Exception &E)
   {
@@ -5241,13 +5221,13 @@ void TStoredSessionList::ImportHostKeys(
         }
       }
     }
-  }
+  },
   __finally__removed
   ({
     delete SourceStorage;
     delete TargetStorage;
     delete KeyList;
-  })
+  }) end_try__finally
 }
 //---------------------------------------------------------------------------
 void TStoredSessionList::ImportSelectedKnownHosts(TStoredSessionList *Sessions)

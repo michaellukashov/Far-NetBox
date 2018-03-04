@@ -1403,12 +1403,8 @@ void ProcessLocalDirectory(const UnicodeString ADirName,
   UnicodeString DirName = ApiPath(::IncludeTrailingBackslash(ADirName));
   if (FindFirstChecked(DirName + L"*.*", FindAttrs, SearchRec) == 0)
   {
-    try__finally2
+    try__finally
     {
-      SCOPE_EXIT
-      {
-        base::FindClose(SearchRec);
-      };
       do
       {
         if ((SearchRec.Name != THISDIRECTORY) && (SearchRec.Name != PARENTDIRECTORY))
@@ -1419,10 +1415,10 @@ void ProcessLocalDirectory(const UnicodeString ADirName,
       }
       while (FindNextChecked(SearchRec) == 0);
     },
-    __finally__removed
-    ({
-      FindClose(SearchRec);
-    }) end_try__finally2
+    __finally
+    {
+       base::FindClose(SearchRec);
+    } end_try__finally
   }
 }
 //---------------------------------------------------------------------------
@@ -2341,12 +2337,8 @@ static bool DoRecursiveDeleteFile(const UnicodeString AFileName, bool ToRecycleB
 
         if (Result)
         {
-          try__finally2
+          try__finally
           {
-            SCOPE_EXIT
-            {
-              base::FindClose(SearchRec);
-            };
             do
             {
               UnicodeString FileName2 = AFileName + L"\\" + SearchRec.Name;
@@ -2368,10 +2360,10 @@ static bool DoRecursiveDeleteFile(const UnicodeString AFileName, bool ToRecycleB
             }
             while (Result && (FindNextUnchecked(SearchRec) == 0));
           },
-          __finally__removed 
-          ({
-            FindClose(SearchRec);
-          }) end_try__finally2
+          __finally
+          {
+            base::FindClose(SearchRec);
+          } end_try__finally
 
           if (Result)
           {
@@ -3230,23 +3222,6 @@ void ParseCertificate(const UnicodeString Path,
 
     try__finally
     {
-      SCOPE_EXIT
-      {
-        // We loaded private key, but failed to load certificate, discard the certificate
-        // (either exception was thrown or WrongPassphrase)
-        if ((PrivateKey != nullptr) && (Certificate == nullptr))
-        {
-          EVP_PKEY_free(PrivateKey);
-          PrivateKey = nullptr;
-        }
-        // Certificate was verified, but passphrase was wrong when loading private key,
-        // so discard the certificate
-        else if ((Certificate != nullptr) && (PrivateKey == nullptr))
-        {
-          X509_free(Certificate);
-          Certificate = nullptr;
-        }
-      };
       if (PrivateKey == nullptr)
       {
         ThrowTlsCertificateErrorIgnorePassphraseErrors(Path, HasPassphrase);
@@ -3318,9 +3293,9 @@ void ParseCertificate(const UnicodeString Path,
           }
         }
       }
-    }
-    __finally__removed
-    ({
+    },
+    __finally
+    {
       // We loaded private key, but failed to load certificate, discard the certificate
       // (either exception was thrown or WrongPassphrase)
       if ((PrivateKey != nullptr) && (Certificate == nullptr))
@@ -3335,7 +3310,7 @@ void ParseCertificate(const UnicodeString Path,
         X509_free(Certificate);
         Certificate = nullptr;
       }
-    })
+    } end_try__finally
   }
 }
 //---------------------------------------------------------------------------

@@ -537,17 +537,16 @@ scope_guard<F, F2> make_try_finally(F &&f, F2 &&f2) { return scope_guard<F, F2>(
     detail::scope_guard1<nb::FastDelegate1<void, T>, T>(nb::bind(&FUNC, this), PARAM)
 
 #define try__catch
-#define try__finally
 #define catch__removed(BLOCK)
 #define __finally__removed(BLOCK) [](){}
 
-#define try__finally2 \
+#define try__finally \
   { volatile const auto ANONYMOUS_VARIABLE(try_finally) = detail::make_try_finally([&]()
 
 #define __finally \
   [&]() /* lambda body here */
 
-#define end_try__finally2 ); }
+#define end_try__finally ); }
 
 #if (defined _MSC_VER && _MSC_VER > 1900)
 

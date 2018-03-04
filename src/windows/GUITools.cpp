@@ -102,12 +102,6 @@ void OpenSessionInPutty(const UnicodeString PuttyPath,
       TRegistryStorage *SourceStorage = nullptr;
       try__finally
       {
-        SCOPE_EXIT
-        {
-          delete Storage;
-          delete ExportData;
-          delete SourceStorage;
-        };
         Storage = new TRegistryStorage(GetConfiguration()->GetPuttySessionsKey());
         Storage->SetAccessMode(smReadWrite);
         // make it compatible with putty
@@ -158,13 +152,13 @@ void OpenSessionInPutty(const UnicodeString PuttyPath,
             SessionName = GetGUIConfiguration()->GetPuttySession();
           }
         }
-      }
-      __finally__removed
-      ({
+      },
+      __finally
+      {
         delete Storage;
         delete ExportData;
         delete SourceStorage;
-      })
+      } end_try__finally
 
       UnicodeString LoadSwitch = L"-load";
       intptr_t P = Params2.LowerCase().Pos(LoadSwitch + L" ");

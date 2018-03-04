@@ -764,18 +764,13 @@ int TWebDAVFileSystem::ReadDirectoryInternal(
   int Result;
   try__finally
   {
-    SCOPE_EXIT
-    {
-      ne_lock_discovery_free(DiscoveryContext);
-      ne_propfind_destroy(PropFindHandler);
-    };
     Result = ne_propfind_allprop(PropFindHandler, NeonPropsResult, &Data);
-  }
-  __finally__removed
-  ({
+  },
+  __finally
+  {
     ne_lock_discovery_free(DiscoveryContext);
     ne_propfind_destroy(PropFindHandler);
-  })
+  } end_try__finally
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -1280,16 +1275,6 @@ void TWebDAVFileSystem::Source(
   int FD = -1;
   try__finally
   {
-    SCOPE_EXIT
-    {
-      if (FD >= 0)
-      {
-        // _close calls CloseHandle internally (even doc states, we should not call CloseHandle),
-        // but it crashes code guard
-        _close(FD);
-        AHandle.Dismiss();
-      }
-    };
     UnicodeString DestFullName = ATargetDir + ADestFileName;
 
     std::unique_ptr<TRemoteFile> RemoteFile;
@@ -1408,9 +1393,9 @@ void TWebDAVFileSystem::Source(
         throw;
       }
     }
-  }
-  __finally__removed
-  ({
+  },
+  __finally
+  {
     if (FD >= 0)
     {
       // _close calls CloseHandle internally (even doc states, we should not call CloseHandle),
@@ -1418,7 +1403,7 @@ void TWebDAVFileSystem::Source(
       _close(FD);
       AHandle.Dismiss();
     }
-  })
+  } end_try__finally
 }
 //---------------------------------------------------------------------------
 void TWebDAVFileSystem::CopyToLocal(TStrings *AFilesToCopy,
@@ -1746,31 +1731,6 @@ void TWebDAVFileSystem::Sink(
     int FD = -1;
     try__finally
     {
-      SCOPE_EXIT
-      {
-        if (FD >= 0)
-        {
-          // _close calls CloseHandle internally (even doc states, we should not call CloseHandle),
-          // but it crashes code guard
-          _close(FD);
-        }
-        else
-        {
-          SAFE_CLOSE_HANDLE(LocalFileHandle);
-        }
-
-        if (DeleteLocalFile)
-        {
-          FileOperationLoopCustom(FTerminal, OperationProgress, folAllowSkip,
-            FMTLOAD(CORE_DELETE_LOCAL_FILE_ERROR, DestFullName), "",
-          [&]()
-          {
-            THROWOSIFFALSE(::SysUtulsRemoveFile(ApiPath(DestFullName))); // TODO: Terminal->LocalRemoveFile
-          });
-          __removed FILE_OPERATION_LOOP_END(FMTLOAD(DELETE_LOCAL_FILE_ERROR, (DestFullName)));
-        }
-      };
-
       FD = _open_osfhandle((intptr_t)LocalFileHandle, O_BINARY);
       if (FD < 0)
       {
@@ -1787,9 +1747,9 @@ void TWebDAVFileSystem::Sink(
       {
         FTerminal->UpdateTargetTime(LocalFileHandle, AFile->GetModification(), FTerminal->GetSessionData()->GetDSTMode());
       }
-    }
-    __finally__removed
-    ({
+    },
+    __finally
+    {
       if (FD >= 0)
       {
         // _close calls CloseHandle internally (even doc states, we should not call CloseHandle),
@@ -1798,18 +1758,20 @@ void TWebDAVFileSystem::Sink(
       }
       else
       {
-        CloseHandle(LocalFileHandle);
+        SAFE_CLOSE_HANDLE(LocalFileHandle);
       }
 
       if (DeleteLocalFile)
       {
-        FILE_OPERATION_LOOP_BEGIN
+        FileOperationLoopCustom(FTerminal, OperationProgress, folAllowSkip,
+          FMTLOAD(CORE_DELETE_LOCAL_FILE_ERROR, DestFullName), "",
+        [&]()
         {
-          THROWOSIFFALSE(Sysutils::DeleteFile(ApiPath(DestFullName)));
-        }
-        FILE_OPERATION_LOOP_END(FMTLOAD(DELETE_LOCAL_FILE_ERROR, (DestFullName)));
+          THROWOSIFFALSE(::SysUtulsRemoveFile(ApiPath(DestFullName))); // TODO: Terminal->LocalRemoveFile
+        });
+        __removed FILE_OPERATION_LOOP_END(FMTLOAD(DELETE_LOCAL_FILE_ERROR, (DestFullName)));
       }
-    })
+    } end_try__finally
   });
   __removed FILE_OPERATION_LOOP_END(FMTLOAD(TRANSFER_ERROR, (FileName)));
 
@@ -2065,13 +2027,6 @@ void TWebDAVFileSystem::LockFile(const UnicodeString /*AFileName*/, const TRemot
   struct ne_lock *Lock = ne_lock_create();
   try__finally
   {
-    SCOPE_EXIT
-    {
-      if (Lock != nullptr)
-      {
-        ne_lock_destroy(Lock);
-      }
-    };
     Lock->uri.path = ne_strdup(PathToNeon(FilePath(AFile)));
     Lock->depth = NE_DEPTH_INFINITE;
     Lock->timeout = NE_TIMEOUT_INFINITE;
@@ -2087,14 +2042,14 @@ void TWebDAVFileSystem::LockFile(const UnicodeString /*AFileName*/, const TRemot
     }
     // ownership passed
     Lock = nullptr;
-  }
-  __finally__removed
-  ({
+  },
+  __finally
+  {
     if (Lock != nullptr)
     {
       ne_lock_destroy(Lock);
     }
-  })
+  } end_try__finally
 }
 //---------------------------------------------------------------------------
 void TWebDAVFileSystem::RequireLockStore()
@@ -2145,10 +2100,6 @@ void TWebDAVFileSystem::UnlockFile(const UnicodeString AFileName, const TRemoteF
   struct ne_lock *Lock = ne_lock_create();
   try__finally
   {
-    SCOPE_EXIT
-    {
-      ne_lock_destroy(Lock);
-    };
     RawByteString Path = PathToNeon(FilePath(AFile));
     RawByteString LockToken;
 
@@ -2197,11 +2148,11 @@ void TWebDAVFileSystem::UnlockFile(const UnicodeString AFileName, const TRemoteF
 
       DiscardLock(Path);
     }
-  }
-  __finally__removed
-  ({
+  },
+  __finally
+  {
     ne_lock_destroy(Lock);
-  })
+  } end_try__finally
 }
 //---------------------------------------------------------------------------
 void TWebDAVFileSystem::UpdateFromMain(TCustomFileSystem *AMainFileSystem)
