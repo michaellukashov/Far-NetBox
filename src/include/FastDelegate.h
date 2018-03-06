@@ -819,6 +819,37 @@ public:
 	}
 };
 
+} // namespace detail
+
+namespace detail {
+
+// std::function support
+
+template<unsigned ID, typename Functor>
+Functor &get_local()
+{
+  static Functor local;
+  return local;
+}
+
+template<unsigned ID, typename Functor>
+typename Functor::result_type wrapper()
+{
+  return get_local<ID, Functor>()();
+}
+
+template<typename ReturnType>
+struct Func
+{
+  typedef ReturnType (*type)();
+};
+
+template<unsigned ID, typename Functor>
+typename Func<typename Functor::result_type>::type get_wrapper(Functor f)
+{
+  (get_local<ID, Functor>()) = f;
+  return wrapper<ID, Functor>;
+}
 
 } // namespace detail
 
@@ -861,32 +892,6 @@ public:
 // in that case the static function constructor is not made explicit; this
 // allows "if (dg==0) ..." to compile.
 
-template<unsigned ID, typename Functor>
-Functor &get_local()
-{
-  static Functor local;
-  return local;
-}
-
-template<unsigned ID, typename Functor>
-typename Functor::result_type wrapper()
-{
-  return get_local<ID, Functor>()();
-}
-
-template<typename ReturnType>
-struct Func
-{
-  typedef ReturnType (*type)();
-};
-
-template<unsigned ID, typename Functor>
-typename Func<typename Functor::result_type>::type get_wrapper(Functor f)
-{
-  (get_local<ID, Functor>()) = f;
-  return wrapper<ID, Functor>;
-}
-
 //N=0
 template<class RetType=detail::DefaultVoid>
 class FASTDELEGATE_LIB FastDelegate0 {
@@ -903,10 +908,9 @@ public:
 
 	// Construction and comparison functions
 	FastDelegate0() { clear(); }
-	explicit FastDelegate0(const std::function<RetType()> &x)
-	{
+	explicit FastDelegate0(const std::function<RetType()> &x) {
 		clear();
-		m_Closure.bindstaticfunc(this, &FastDelegate0::InvokeStaticFunction, get_wrapper<nb::counter_id()>(x));
+		m_Closure.bindstaticfunc(this, &FastDelegate0::InvokeStaticFunction, detail::get_wrapper<nb::counter_id()>(x));
 	}
 	FastDelegate0(const FastDelegate0 &x) {
 		m_Closure.CopyFrom(this, x.m_Closure); }
