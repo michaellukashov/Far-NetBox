@@ -206,6 +206,13 @@ public:
     assert(_getter != nullptr);
     assert(_setter != nullptr);
   }
+  explicit RWProperty(const std::function<T()> &Getter, const std::function<void(T)> &Setter) :
+    _getter(Getter),
+    _setter(Setter)
+  {
+    assert(_getter != nullptr);
+    assert(_setter != nullptr);
+  }
   T operator()() const
   {
     assert(_getter);
