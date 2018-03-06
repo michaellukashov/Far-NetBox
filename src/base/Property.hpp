@@ -135,10 +135,10 @@ private:
   typedef fastdelegate::FastDelegate0<T> TGetValueDelegate;
   TGetValueDelegate _getter;
 public:
-  explicit ROProperty(TGetValueDelegate Getter) :
+  explicit ROProperty(const TGetValueDelegate &Getter) :
     _getter(Getter)
   {}
-  explicit ROProperty(std::function<T()> Getter) :
+  explicit ROProperty(const std::function<T()> &Getter) :
     _getter(Getter)
   {}
   T operator()() const
@@ -171,6 +171,12 @@ public:
   {
     assert(lhs._getter);
     return lhs._getter() == rhs;
+  }
+  friend bool inline operator!=(const ROProperty &lhs, const ROProperty &rhs)
+  {
+    assert(lhs._getter);
+    assert(rhs._getter);
+    return lhs._getter() != rhs._getter();
   }
   friend bool inline operator!=(ROProperty &lhs, const T &rhs)
   {
