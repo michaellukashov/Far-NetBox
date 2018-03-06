@@ -246,3 +246,37 @@ TEST_CASE_METHOD(base_fixture_t, "properties01", "netbox")
     CHECK(2 == d1.Data2);
   }
 }
+
+class TBase2
+{
+public:
+  RWProperty<int> Data{nb::bind(&TBase2::GetData, this), nb::bind(&TBase2::SetData, this)};
+  ROProperty<int> Data2{[&]()->int { return FData; }};
+  ROProperty<bool> AutoSort{[&]()->bool { return FAutoSort; }};
+  ROProperty<UnicodeString> Data3{[&]()->UnicodeString { return FString; }};
+
+  void Modify()
+  {
+    FData = 2;
+    FString = "43";
+    FAutoSort = false;
+  }
+protected:
+  virtual int GetData() const { return FData; }
+  virtual void SetData(int Value) { FData = Value; }
+private:
+  int FData = 1;
+  UnicodeString FString = "42";
+  bool FAutoSort = true;
+};
+
+TEST_CASE_METHOD(base_fixture_t, "properties02", "netbox")
+{
+  SECTION("TBase2")
+  {
+    TBase2 obj1;
+    CHECK(obj1.Data == 1);
+    obj1.Data = 2;
+    CHECK(obj1.Data == 2);
+  }
+}
