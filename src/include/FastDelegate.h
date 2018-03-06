@@ -940,7 +940,7 @@ private:
 
 // Handy macro for creating raw bind object
 // W is target function wrapper, B is source bind expression
-#define RAW_BIND(W,B) std::move(scoped_raw_bind<decltype(B), W<decltype(B), __COUNTER__>>(B));
+#define RAW_BIND(W,B) std::move(scoped_raw_bind<decltype(B), W<decltype(B), nb::counter_id()>>(B));
 
 } // namespace detail
 
