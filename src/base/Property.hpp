@@ -137,10 +137,14 @@ private:
 public:
   explicit ROProperty(const TGetValueDelegate &Getter) :
     _getter(Getter)
-  {}
+  {
+    assert(_getter != nullptr);
+  }
   explicit ROProperty(const std::function<T()> &Getter) :
     _getter(Getter)
-  {}
+  {
+    assert(_getter != nullptr);
+  }
   T operator()() const
   {
     assert(_getter);
@@ -195,10 +199,13 @@ private:
   TGetValueDelegate _getter;
   TSetValueDelegate _setter;
 public:
-  explicit RWProperty(TGetValueDelegate Getter, TSetValueDelegate Setter) :
+  explicit RWProperty(const TGetValueDelegate &Getter, const TSetValueDelegate &Setter) :
     _getter(Getter),
     _setter(Setter)
-  {}
+  {
+    assert(_getter != nullptr);
+    assert(_setter != nullptr);
+  }
   T operator()() const
   {
     assert(_getter);
