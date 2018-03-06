@@ -187,21 +187,40 @@ class TBase
 {
 public:
   ROProperty<int> Data{nb::bind(&TBase::GetData, this)};
-//  ROProperty<int> Data2{nb::bind([&]()->int { return FData; }, this)};
-//  ROProperty<UnicodeString> Data2{nb::bind([&]()->int { return FString; }, this)};
-//  ROProperty<bool> AutoSort{[&]()->bool { return FAutoSort; }};
+  ROProperty<int> Data2{[&]()->int { return FData; }};
+  ROProperty<bool> AutoSort{[&]()->bool { return FAutoSort; }};
+  ROProperty<UnicodeString> Data3{[&]()->UnicodeString { return FString; }};
+  void Modify()
+  {
+    FData = 2;
+    FString = "43";
+    FAutoSort = false;
+  }
 private:
-  int GetData() const { return FData; }
+  virtual int GetData() const { return FData; }
 
   int FData = 1;
   UnicodeString FString = "42";
-  bool FAutoSort = false;
+  bool FAutoSort = true;
 };
+
+//template<int s> struct Wow;
+//Wow<sizeof(TBase)> wow;
 
 TEST_CASE_METHOD(base_fixture_t, "properties01", "netbox")
 {
   TBase obj1;
   CHECK(obj1.Data == 1);
-//  CHECK(obj1.Data2 == 1);
-//  CHECK(obj1.AutoSort == false);
+  CHECK(obj1.Data2 == 1);
+  bool x = obj1.AutoSort;
+  CHECK(x == true);
+  CHECK(obj1.AutoSort == true);
+  CHECK(true == obj1.AutoSort);
+  CHECK("42" == obj1.Data3);
+  CHECK(obj1.Data3() == "42");
+  obj1.Modify();
+  CHECK(obj1.AutoSort == false);
+  CHECK(false == obj1.AutoSort);
+  CHECK("43" == obj1.Data3);
+  CHECK(obj1.Data3() == "43");
 }
