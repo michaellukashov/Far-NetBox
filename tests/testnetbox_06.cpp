@@ -190,15 +190,16 @@ public:
   ROProperty<int> Data2{[&]()->int { return FData; }};
   ROProperty<bool> AutoSort{[&]()->bool { return FAutoSort; }};
   ROProperty<UnicodeString> Data3{[&]()->UnicodeString { return FString; }};
+
   void Modify()
   {
     FData = 2;
     FString = "43";
     FAutoSort = false;
   }
-private:
+protected:
   virtual int GetData() const { return FData; }
-
+private:
   int FData = 1;
   UnicodeString FString = "42";
   bool FAutoSort = true;
@@ -207,20 +208,41 @@ private:
 //template<int s> struct Wow;
 //Wow<sizeof(TBase)> wow;
 
+class TDerived : public TBase
+{
+protected:
+  virtual int GetData() const override { return FData; }
+private:
+  int FData = 3;
+};
+
 TEST_CASE_METHOD(base_fixture_t, "properties01", "netbox")
 {
-  TBase obj1;
-  CHECK(obj1.Data == 1);
-  CHECK(obj1.Data2 == 1);
-  bool x = obj1.AutoSort;
-  CHECK(x == true);
-  CHECK(obj1.AutoSort == true);
-  CHECK(true == obj1.AutoSort);
-  CHECK("42" == obj1.Data3);
-  CHECK(obj1.Data3() == "42");
-  obj1.Modify();
-  CHECK(obj1.AutoSort == false);
-  CHECK(false == obj1.AutoSort);
-  CHECK("43" == obj1.Data3);
-  CHECK(obj1.Data3() == "43");
+  SECTION("TBase")
+  {
+    TBase obj1;
+    CHECK(obj1.Data == 1);
+    CHECK(obj1.Data2 == 1);
+    bool x = obj1.AutoSort;
+    CHECK(x == true);
+    CHECK(obj1.AutoSort == true);
+    CHECK(true == obj1.AutoSort);
+    CHECK("42" == obj1.Data3);
+    CHECK(obj1.Data3() == "42");
+    obj1.Modify();
+    CHECK(obj1.AutoSort == false);
+    CHECK(false == obj1.AutoSort);
+    CHECK("43" == obj1.Data3);
+    CHECK(obj1.Data3() == "43");
+  }
+  SECTION("TDerived")
+  {
+    TDerived d1;
+    CHECK(d1.Data == 3);
+    CHECK(3 == d1.Data);
+    CHECK(1 == d1.Data2);
+    d1.Modify();
+    CHECK(3 == d1.Data);
+    CHECK(2 == d1.Data2);
+  }
 }
