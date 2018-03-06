@@ -151,7 +151,7 @@
 
 
 namespace fastdelegate {
-namespace detail {	// we'll hide the implementation details in a nested namespace.
+namespace detail { // we'll hide the implementation details in a nested namespace.
 
 //		implicit_cast< >
 // I believe this was originally going to be in the C++ standard but
@@ -237,7 +237,7 @@ template <class T>
 struct DefaultVoidToVoid { typedef T type; };
 
 template <>
-struct DefaultVoidToVoid<DefaultVoid> {	typedef void type; };
+struct DefaultVoidToVoid<DefaultVoid> { typedef void type; };
 
 // Translate from 'void' into 'DefaultVoid'
 // Everything else is unchanged
@@ -588,7 +588,7 @@ public:
 	}
 #else
 	DelegateMemento() : m_pFunction(0), m_pthis(0) {}
-	void clear() {	m_pthis=0; m_pFunction=0; }
+	void clear() { m_pthis=0; m_pFunction=0; }
 #endif
 public:
 #if !defined(FASTDELEGATE_USESTATICFUNCTIONHACK)
@@ -936,7 +936,7 @@ public:
 		return m_Closure.IsEqualToStaticFuncPtr(funcptr); }
 	inline bool operator!=(StaticFunctionPtr funcptr) {
 		return !m_Closure.IsEqualToStaticFuncPtr(funcptr); }
-	inline bool operator!() const {	// Is it bound to anything?
+	inline bool operator!() const { // Is it bound to anything?
 			return !m_Closure; }
 	inline bool empty() const {
 			return !m_Closure; }
@@ -1021,7 +1021,7 @@ public:
 		return m_Closure.IsEqualToStaticFuncPtr(funcptr); }
 	inline bool operator!=(StaticFunctionPtr funcptr) {
 		return !m_Closure.IsEqualToStaticFuncPtr(funcptr); }
-	inline bool operator!() const {	// Is it bound to anything?
+	inline bool operator!() const { // Is it bound to anything?
 			return !m_Closure; }
 	inline bool empty() const {
 			return !m_Closure; }
@@ -1106,7 +1106,7 @@ public:
 		return m_Closure.IsEqualToStaticFuncPtr(funcptr); }
 	inline bool operator!=(StaticFunctionPtr funcptr) {
 		return !m_Closure.IsEqualToStaticFuncPtr(funcptr); }
-	inline bool operator!() const {	// Is it bound to anything?
+	inline bool operator!() const { // Is it bound to anything?
 			return !m_Closure; }
 	inline bool empty() const {
 			return !m_Closure; }
@@ -1191,7 +1191,7 @@ public:
 		return m_Closure.IsEqualToStaticFuncPtr(funcptr); }
 	inline bool operator!=(StaticFunctionPtr funcptr) {
 		return !m_Closure.IsEqualToStaticFuncPtr(funcptr); }
-	inline bool operator!() const {	// Is it bound to anything?
+	inline bool operator!() const { // Is it bound to anything?
 			return !m_Closure; }
 	inline bool empty() const {
 			return !m_Closure; }
@@ -1276,7 +1276,7 @@ public:
 		return m_Closure.IsEqualToStaticFuncPtr(funcptr); }
 	inline bool operator!=(StaticFunctionPtr funcptr) {
 		return !m_Closure.IsEqualToStaticFuncPtr(funcptr); }
-	inline bool operator!() const {	// Is it bound to anything?
+	inline bool operator!() const { // Is it bound to anything?
 			return !m_Closure; }
 	inline bool empty() const {
 			return !m_Closure; }
@@ -1361,7 +1361,7 @@ public:
 		return m_Closure.IsEqualToStaticFuncPtr(funcptr); }
 	inline bool operator!=(StaticFunctionPtr funcptr) {
 		return !m_Closure.IsEqualToStaticFuncPtr(funcptr); }
-	inline bool operator!() const {	// Is it bound to anything?
+	inline bool operator!() const { // Is it bound to anything?
 			return !m_Closure; }
 	inline bool empty() const {
 			return !m_Closure; }
@@ -1446,7 +1446,7 @@ public:
 		return m_Closure.IsEqualToStaticFuncPtr(funcptr); }
 	inline bool operator!=(StaticFunctionPtr funcptr) {
 		return !m_Closure.IsEqualToStaticFuncPtr(funcptr); }
-	inline bool operator!() const {	// Is it bound to anything?
+	inline bool operator!() const { // Is it bound to anything?
 			return !m_Closure; }
 	inline bool empty() const {
 			return !m_Closure; }
@@ -1531,7 +1531,7 @@ public:
 		return m_Closure.IsEqualToStaticFuncPtr(funcptr); }
 	inline bool operator!=(StaticFunctionPtr funcptr) {
 		return !m_Closure.IsEqualToStaticFuncPtr(funcptr); }
-	inline bool operator!() const {	// Is it bound to anything?
+	inline bool operator!() const { // Is it bound to anything?
 			return !m_Closure; }
 	inline bool empty() const {
 			return !m_Closure; }
@@ -1616,7 +1616,7 @@ public:
 		return m_Closure.IsEqualToStaticFuncPtr(funcptr); }
 	inline bool operator!=(StaticFunctionPtr funcptr) {
 		return !m_Closure.IsEqualToStaticFuncPtr(funcptr); }
-	inline bool operator!() const {	// Is it bound to anything?
+	inline bool operator!() const { // Is it bound to anything?
 			return !m_Closure; }
 	inline bool empty() const {
 			return !m_Closure; }
