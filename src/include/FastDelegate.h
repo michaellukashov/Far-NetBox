@@ -52,6 +52,7 @@
 #endif // _MSC_VER > 1000
 
 #include <memory.h> // to allow <,> comparisons
+#include <functional>
 
 ////////////////////////////////////////////////////////////////////////////////
 //						Configuration options
@@ -875,6 +876,11 @@ public:
 
 	// Construction and comparison functions
 	FastDelegate0() { clear(); }
+	explicit FastDelegate0(std::function<RetType()> x)
+	{
+		clear();
+		m_Closure.bindstaticfunc(this, &FastDelegate0::InvokeStaticFunction, &x);
+	}
 	FastDelegate0(const FastDelegate0 &x) {
 		m_Closure.CopyFrom(this, x.m_Closure); }
 	FastDelegate0 & operator=(const FastDelegate0 &x)  {
