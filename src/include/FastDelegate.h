@@ -311,7 +311,7 @@ struct SimplifyMemFunc {
 // For compilers where all member func ptrs are the same size, everything goes here.
 // For non-standard compilers, only single_inheritance classes go here.
 template <>
-struct SimplifyMemFunc<SINGLE_MEMFUNCPTR_SIZE>  {
+struct SimplifyMemFunc<SINGLE_MEMFUNCPTR_SIZE> {
 	template <class X, class XFuncType, class GenericMemFuncType>
 	inline static GenericClass *Convert(X *pthis, XFuncType function_to_bind,
 			GenericMemFuncType &bound_func) {
@@ -346,7 +346,7 @@ struct SimplifyMemFunc<SINGLE_MEMFUNCPTR_SIZE>  {
 // __multiple_inheritance classes go here
 // Nasty hack for Microsoft and Intel (IA32 and Itanium)
 template<>
-struct SimplifyMemFunc< SINGLE_MEMFUNCPTR_SIZE + sizeof(int) >  {
+struct SimplifyMemFunc< SINGLE_MEMFUNCPTR_SIZE + sizeof(int) > {
 	template <class X, class XFuncType, class GenericMemFuncType>
 	inline static GenericClass *Convert(X *pthis, XFuncType function_to_bind,
 		GenericMemFuncType &bound_func) {
@@ -626,7 +626,7 @@ public:
 	inline bool empty() const		// Is it bound to anything?
 	{ return m_pthis==0 && m_pFunction==0; }
 public:
-	DelegateMemento & operator=(const DelegateMemento &right)  {
+	DelegateMemento & operator=(const DelegateMemento &right) {
 		SetMementoFrom(right);
 		return *this;
 	}
@@ -643,7 +643,7 @@ public:
 #endif
 		{}
 protected:
-	void SetMementoFrom(const DelegateMemento &right)  {
+	void SetMementoFrom(const DelegateMemento &right) {
 		m_pFunction = right.m_pFunction;
 		m_pthis = right.m_pthis;
 #if !defined(FASTDELEGATE_USESTATICFUNCTIONHACK)
@@ -883,7 +883,7 @@ public:
 	}
 	FastDelegate0(const FastDelegate0 &x) {
 		m_Closure.CopyFrom(this, x.m_Closure); }
-	FastDelegate0 & operator=(const FastDelegate0 &x)  {
+	FastDelegate0 & operator=(const FastDelegate0 &x) {
 		m_Closure.CopyFrom(this, x.m_Closure); return *this; }
 	bool operator==(const FastDelegate0 &x) const {
 		return m_Closure.IsEqual(x.m_Closure); }
@@ -968,7 +968,7 @@ public:
 	FastDelegate1() { clear(); }
 	FastDelegate1(const FastDelegate1 &x) {
 		m_Closure.CopyFrom(this, x.m_Closure); }
-	FastDelegate1 & operator=(const FastDelegate1 &x)  {
+	FastDelegate1 & operator=(const FastDelegate1 &x) {
 		m_Closure.CopyFrom(this, x.m_Closure); return *this; }
 	bool operator==(const FastDelegate1 &x) const {
 		return m_Closure.IsEqual(x.m_Closure); }
@@ -1053,7 +1053,7 @@ public:
 	FastDelegate2() { clear(); }
 	FastDelegate2(const FastDelegate2 &x) {
 		m_Closure.CopyFrom(this, x.m_Closure); }
-	FastDelegate2 & operator=(const FastDelegate2 &x)  {
+	FastDelegate2 & operator=(const FastDelegate2 &x) {
 		m_Closure.CopyFrom(this, x.m_Closure); return *this; }
 	bool operator==(const FastDelegate2 &x) const {
 		return m_Closure.IsEqual(x.m_Closure); }
@@ -1138,7 +1138,7 @@ public:
 	FastDelegate3() { clear(); }
 	FastDelegate3(const FastDelegate3 &x) {
 		m_Closure.CopyFrom(this, x.m_Closure); }
-	FastDelegate3 & operator=(const FastDelegate3 &x)  {
+	FastDelegate3 & operator=(const FastDelegate3 &x) {
 		m_Closure.CopyFrom(this, x.m_Closure); return *this; }
 	bool operator==(const FastDelegate3 &x) const {
 		return m_Closure.IsEqual(x.m_Closure); }
@@ -1223,7 +1223,7 @@ public:
 	FastDelegate4() { clear(); }
 	FastDelegate4(const FastDelegate4 &x) {
 		m_Closure.CopyFrom(this, x.m_Closure); }
-	FastDelegate4 & operator=(const FastDelegate4 &x)  {
+	FastDelegate4 & operator=(const FastDelegate4 &x) {
 		m_Closure.CopyFrom(this, x.m_Closure); return *this; }
 	bool operator==(const FastDelegate4 &x) const {
 		return m_Closure.IsEqual(x.m_Closure); }
@@ -1308,7 +1308,7 @@ public:
 	FastDelegate5() { clear(); }
 	FastDelegate5(const FastDelegate5 &x) {
 		m_Closure.CopyFrom(this, x.m_Closure); }
-	FastDelegate5 & operator=(const FastDelegate5 &x)  {
+	FastDelegate5 & operator=(const FastDelegate5 &x) {
 		m_Closure.CopyFrom(this, x.m_Closure); return *this; }
 	bool operator==(const FastDelegate5 &x) const {
 		return m_Closure.IsEqual(x.m_Closure); }
@@ -1393,7 +1393,7 @@ public:
 	FastDelegate6() { clear(); }
 	FastDelegate6(const FastDelegate6 &x) {
 		m_Closure.CopyFrom(this, x.m_Closure); }
-	FastDelegate6 & operator=(const FastDelegate6 &x)  {
+	FastDelegate6 & operator=(const FastDelegate6 &x) {
 		m_Closure.CopyFrom(this, x.m_Closure); return *this; }
 	bool operator==(const FastDelegate6 &x) const {
 		return m_Closure.IsEqual(x.m_Closure); }
@@ -1478,7 +1478,7 @@ public:
 	FastDelegate7() { clear(); }
 	FastDelegate7(const FastDelegate7 &x) {
 		m_Closure.CopyFrom(this, x.m_Closure); }
-	FastDelegate7 & operator=(const FastDelegate7 &x)  {
+	FastDelegate7 & operator=(const FastDelegate7 &x) {
 		m_Closure.CopyFrom(this, x.m_Closure); return *this; }
 	bool operator==(const FastDelegate7 &x) const {
 		return m_Closure.IsEqual(x.m_Closure); }
@@ -1563,7 +1563,7 @@ public:
 	FastDelegate8() { clear(); }
 	FastDelegate8(const FastDelegate8 &x) {
 		m_Closure.CopyFrom(this, x.m_Closure); }
-	FastDelegate8 & operator=(const FastDelegate8 &x)  {
+	FastDelegate8 & operator=(const FastDelegate8 &x) {
 		m_Closure.CopyFrom(this, x.m_Closure); return *this; }
 	bool operator==(const FastDelegate8 &x) const {
 		return m_Closure.IsEqual(x.m_Closure); }
@@ -1672,17 +1672,17 @@ public:
   template < class X, class Y >
   FastDelegate(Y * pthis,
   R (X::* function_to_bind)(  ))
-    : BaseType(pthis, function_to_bind)  { }
+    : BaseType(pthis, function_to_bind) { }
 
   template < class X, class Y >
   FastDelegate(const Y *pthis,
       R (X::* function_to_bind)(  ) const)
     : BaseType(pthis, function_to_bind)
-  {  }
+  { }
 
   FastDelegate(R (*function_to_bind)(  ))
-    : BaseType(function_to_bind)  { }
-  FastDelegate & operator=(const BaseType &x)  {
+    : BaseType(function_to_bind) { }
+  FastDelegate & operator=(const BaseType &x) {
         *static_cast<BaseType*>(this) = x; return *this; }
 };
 
@@ -1709,17 +1709,17 @@ public:
   template < class X, class Y >
   FastDelegate(Y * pthis,
     R (X::* function_to_bind)( Param1 p1 ))
-    : BaseType(pthis, function_to_bind)  { }
+    : BaseType(pthis, function_to_bind) { }
 
   template < class X, class Y >
   FastDelegate(const Y *pthis,
       R (X::* function_to_bind)( Param1 p1 ) const)
     : BaseType(pthis, function_to_bind)
-  {  }
+  { }
 
   FastDelegate(R (*function_to_bind)( Param1 p1 ))
-    : BaseType(function_to_bind)  { }
-  FastDelegate & operator=(const BaseType &x)  {
+    : BaseType(function_to_bind) { }
+  FastDelegate & operator=(const BaseType &x) {
         *static_cast<BaseType*>(this) = x; return *this; }
 };
 
@@ -1746,17 +1746,17 @@ public:
   template < class X, class Y >
   FastDelegate(Y * pthis,
     R (X::* function_to_bind)( Param1 p1, Param2 p2 ))
-    : BaseType(pthis, function_to_bind)  { }
+    : BaseType(pthis, function_to_bind) { }
 
   template < class X, class Y >
   FastDelegate(const Y *pthis,
       R (X::* function_to_bind)( Param1 p1, Param2 p2 ) const)
     : BaseType(pthis, function_to_bind)
-  {  }
+  { }
 
   FastDelegate(R (*function_to_bind)( Param1 p1, Param2 p2 ))
-    : BaseType(function_to_bind)  { }
-  FastDelegate & operator=(const BaseType &x)  {
+    : BaseType(function_to_bind) { }
+  FastDelegate & operator=(const BaseType &x) {
         *static_cast<BaseType*>(this) = x; return *this; }
 };
 
@@ -1783,17 +1783,17 @@ public:
   template < class X, class Y >
   FastDelegate(Y * pthis,
     R (X::* function_to_bind)( Param1 p1, Param2 p2, Param3 p3 ))
-    : BaseType(pthis, function_to_bind)  { }
+    : BaseType(pthis, function_to_bind) { }
 
   template < class X, class Y >
   FastDelegate(const Y *pthis,
       R (X::* function_to_bind)( Param1 p1, Param2 p2, Param3 p3 ) const)
     : BaseType(pthis, function_to_bind)
-  {  }
+  { }
 
   FastDelegate(R (*function_to_bind)( Param1 p1, Param2 p2, Param3 p3 ))
-    : BaseType(function_to_bind)  { }
-  FastDelegate & operator=(const BaseType &x)  {
+    : BaseType(function_to_bind) { }
+  FastDelegate & operator=(const BaseType &x) {
         *static_cast<BaseType*>(this) = x; return *this; }
 };
 
@@ -1820,17 +1820,17 @@ public:
   template < class X, class Y >
   FastDelegate(Y * pthis,
     R (X::* function_to_bind)( Param1 p1, Param2 p2, Param3 p3, Param4 p4 ))
-    : BaseType(pthis, function_to_bind)  { }
+    : BaseType(pthis, function_to_bind) { }
 
   template < class X, class Y >
   FastDelegate(const Y *pthis,
       R (X::* function_to_bind)( Param1 p1, Param2 p2, Param3 p3, Param4 p4 ) const)
     : BaseType(pthis, function_to_bind)
-  {  }
+  { }
 
   FastDelegate(R (*function_to_bind)( Param1 p1, Param2 p2, Param3 p3, Param4 p4 ))
-    : BaseType(function_to_bind)  { }
-  FastDelegate & operator=(const BaseType &x)  {
+    : BaseType(function_to_bind) { }
+  FastDelegate & operator=(const BaseType &x) {
         *static_cast<BaseType*>(this) = x; return *this; }
 };
 
@@ -1857,17 +1857,17 @@ public:
   template < class X, class Y >
   FastDelegate(Y * pthis,
     R (X::* function_to_bind)( Param1 p1, Param2 p2, Param3 p3, Param4 p4, Param5 p5 ))
-    : BaseType(pthis, function_to_bind)  { }
+    : BaseType(pthis, function_to_bind) { }
 
   template < class X, class Y >
   FastDelegate(const Y *pthis,
       R (X::* function_to_bind)( Param1 p1, Param2 p2, Param3 p3, Param4 p4, Param5 p5 ) const)
     : BaseType(pthis, function_to_bind)
-  {  }
+  { }
 
   FastDelegate(R (*function_to_bind)( Param1 p1, Param2 p2, Param3 p3, Param4 p4, Param5 p5 ))
-    : BaseType(function_to_bind)  { }
-  FastDelegate & operator=(const BaseType &x)  {
+    : BaseType(function_to_bind) { }
+  FastDelegate & operator=(const BaseType &x) {
         *static_cast<BaseType*>(this) = x; return *this; }
 };
 
@@ -1894,17 +1894,17 @@ public:
   template < class X, class Y >
   FastDelegate(Y * pthis,
     R (X::* function_to_bind)( Param1 p1, Param2 p2, Param3 p3, Param4 p4, Param5 p5, Param6 p6 ))
-    : BaseType(pthis, function_to_bind)  { }
+    : BaseType(pthis, function_to_bind) { }
 
   template < class X, class Y >
   FastDelegate(const Y *pthis,
       R (X::* function_to_bind)( Param1 p1, Param2 p2, Param3 p3, Param4 p4, Param5 p5, Param6 p6 ) const)
     : BaseType(pthis, function_to_bind)
-  {  }
+  { }
 
   FastDelegate(R (*function_to_bind)( Param1 p1, Param2 p2, Param3 p3, Param4 p4, Param5 p5, Param6 p6 ))
-    : BaseType(function_to_bind)  { }
-  FastDelegate & operator=(const BaseType &x)  {
+    : BaseType(function_to_bind) { }
+  FastDelegate & operator=(const BaseType &x) {
         *static_cast<BaseType*>(this) = x; return *this; }
 };
 
@@ -1931,17 +1931,17 @@ public:
   template < class X, class Y >
   FastDelegate(Y * pthis,
     R (X::* function_to_bind)( Param1 p1, Param2 p2, Param3 p3, Param4 p4, Param5 p5, Param6 p6, Param7 p7 ))
-    : BaseType(pthis, function_to_bind)  { }
+    : BaseType(pthis, function_to_bind) { }
 
   template < class X, class Y >
   FastDelegate(const Y *pthis,
       R (X::* function_to_bind)( Param1 p1, Param2 p2, Param3 p3, Param4 p4, Param5 p5, Param6 p6, Param7 p7 ) const)
     : BaseType(pthis, function_to_bind)
-  {  }
+  { }
 
   FastDelegate(R (*function_to_bind)( Param1 p1, Param2 p2, Param3 p3, Param4 p4, Param5 p5, Param6 p6, Param7 p7 ))
-    : BaseType(function_to_bind)  { }
-  FastDelegate & operator=(const BaseType &x)  {
+    : BaseType(function_to_bind) { }
+  FastDelegate & operator=(const BaseType &x) {
         *static_cast<BaseType*>(this) = x; return *this; }
 };
 
@@ -1968,17 +1968,17 @@ public:
   template < class X, class Y >
   FastDelegate(Y * pthis,
     R (X::* function_to_bind)( Param1 p1, Param2 p2, Param3 p3, Param4 p4, Param5 p5, Param6 p6, Param7 p7, Param8 p8 ))
-    : BaseType(pthis, function_to_bind)  { }
+    : BaseType(pthis, function_to_bind) { }
 
   template < class X, class Y >
   FastDelegate(const Y *pthis,
       R (X::* function_to_bind)( Param1 p1, Param2 p2, Param3 p3, Param4 p4, Param5 p5, Param6 p6, Param7 p7, Param8 p8 ) const)
     : BaseType(pthis, function_to_bind)
-  {  }
+  { }
 
   FastDelegate(R (*function_to_bind)( Param1 p1, Param2 p2, Param3 p3, Param4 p4, Param5 p5, Param6 p6, Param7 p7, Param8 p8 ))
-    : BaseType(function_to_bind)  { }
-  FastDelegate & operator=(const BaseType &x)  {
+    : BaseType(function_to_bind) { }
+  FastDelegate & operator=(const BaseType &x) {
         *static_cast<BaseType*>(this) = x; return *this; }
 };
 
