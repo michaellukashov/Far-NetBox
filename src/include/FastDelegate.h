@@ -357,7 +357,7 @@ struct SimplifyMemFunc< SINGLE_MEMFUNCPTR_SIZE + sizeof(int) > {
 			XFuncType func;
 			struct {
 				GenericMemFuncType funcaddress; // points to the actual member function
-				int delta;	// #BYTES to be added to the 'this' pointer
+				int delta; // #BYTES to be added to the 'this' pointer
 			} s;
 		} u;
 		// Check that the horrible_cast will work
@@ -380,7 +380,7 @@ struct SimplifyMemFunc< SINGLE_MEMFUNCPTR_SIZE + sizeof(int) > {
 // is internally defined as:
 struct MicrosoftVirtualMFP {
 	void (GenericClass::*codeptr)(); // points to the actual member function
-	int delta;		// #bytes to be added to the 'this' pointer
+	int delta; 	// #bytes to be added to the 'this' pointer
 	int vtable_index; // or 0 if no virtual inheritance
 };
 // The CRUCIAL feature of Microsoft/Intel MFPs which we exploit is that the
@@ -490,8 +490,8 @@ struct SimplifyMemFunc<SINGLE_MEMFUNCPTR_SIZE + 3*sizeof(int) >
 			// is internally defined as:
 			struct {
 				GenericMemFuncType m_funcaddress; // points to the actual member function
-				int delta;		// #bytes to be added to the 'this' pointer
-				int vtordisp;		// #bytes to add to 'this' to find the vtable
+				int delta; 	// #bytes to be added to the 'this' pointer
+				int vtordisp; 	// #bytes to add to 'this' to find the vtable
 				int vtable_index; // or 0 if no virtual inheritance
 			} s;
 		} u;
@@ -944,7 +944,7 @@ public:
 		bind(function_to_bind); }
 	// for efficiency, prevent creation of a temporary
 	FastDelegate0 & operator=(DesiredRetType (*function_to_bind)() ) {
-		bind(function_to_bind);	return *this; }
+		bind(function_to_bind); return *this; }
 	inline void bind(DesiredRetType (*function_to_bind)()) {
 		m_Closure.bindstaticfunc(this, &FastDelegate0::InvokeStaticFunction,
 			function_to_bind); }
@@ -1029,7 +1029,7 @@ public:
 		bind(function_to_bind); }
 	// for efficiency, prevent creation of a temporary
 	FastDelegate1 & operator=(DesiredRetType (*function_to_bind)(Param1 p1) ) {
-		bind(function_to_bind);	return *this; }
+		bind(function_to_bind); return *this; }
 	inline void bind(DesiredRetType (*function_to_bind)(Param1 p1)) {
 		m_Closure.bindstaticfunc(this, &FastDelegate1::InvokeStaticFunction,
 			function_to_bind); }
@@ -1114,7 +1114,7 @@ public:
 		bind(function_to_bind); }
 	// for efficiency, prevent creation of a temporary
 	FastDelegate2 & operator=(DesiredRetType (*function_to_bind)(Param1 p1, Param2 p2) ) {
-		bind(function_to_bind);	return *this; }
+		bind(function_to_bind); return *this; }
 	inline void bind(DesiredRetType (*function_to_bind)(Param1 p1, Param2 p2)) {
 		m_Closure.bindstaticfunc(this, &FastDelegate2::InvokeStaticFunction,
 			function_to_bind); }
@@ -1199,7 +1199,7 @@ public:
 		bind(function_to_bind); }
 	// for efficiency, prevent creation of a temporary
 	FastDelegate3 & operator=(DesiredRetType (*function_to_bind)(Param1 p1, Param2 p2, Param3 p3) ) {
-		bind(function_to_bind);	return *this; }
+		bind(function_to_bind); return *this; }
 	inline void bind(DesiredRetType (*function_to_bind)(Param1 p1, Param2 p2, Param3 p3)) {
 		m_Closure.bindstaticfunc(this, &FastDelegate3::InvokeStaticFunction,
 			function_to_bind); }
@@ -1284,7 +1284,7 @@ public:
 		bind(function_to_bind); }
 	// for efficiency, prevent creation of a temporary
 	FastDelegate4 & operator=(DesiredRetType (*function_to_bind)(Param1 p1, Param2 p2, Param3 p3, Param4 p4) ) {
-		bind(function_to_bind);	return *this; }
+		bind(function_to_bind); return *this; }
 	inline void bind(DesiredRetType (*function_to_bind)(Param1 p1, Param2 p2, Param3 p3, Param4 p4)) {
 		m_Closure.bindstaticfunc(this, &FastDelegate4::InvokeStaticFunction,
 			function_to_bind); }
@@ -1369,7 +1369,7 @@ public:
 		bind(function_to_bind); }
 	// for efficiency, prevent creation of a temporary
 	FastDelegate5 & operator=(DesiredRetType (*function_to_bind)(Param1 p1, Param2 p2, Param3 p3, Param4 p4, Param5 p5) ) {
-		bind(function_to_bind);	return *this; }
+		bind(function_to_bind); return *this; }
 	inline void bind(DesiredRetType (*function_to_bind)(Param1 p1, Param2 p2, Param3 p3, Param4 p4, Param5 p5)) {
 		m_Closure.bindstaticfunc(this, &FastDelegate5::InvokeStaticFunction,
 			function_to_bind); }
@@ -1454,7 +1454,7 @@ public:
 		bind(function_to_bind); }
 	// for efficiency, prevent creation of a temporary
 	FastDelegate6 & operator=(DesiredRetType (*function_to_bind)(Param1 p1, Param2 p2, Param3 p3, Param4 p4, Param5 p5, Param6 p6) ) {
-		bind(function_to_bind);	return *this; }
+		bind(function_to_bind); return *this; }
 	inline void bind(DesiredRetType (*function_to_bind)(Param1 p1, Param2 p2, Param3 p3, Param4 p4, Param5 p5, Param6 p6)) {
 		m_Closure.bindstaticfunc(this, &FastDelegate6::InvokeStaticFunction,
 			function_to_bind); }
@@ -1539,7 +1539,7 @@ public:
 		bind(function_to_bind); }
 	// for efficiency, prevent creation of a temporary
 	FastDelegate7 & operator=(DesiredRetType (*function_to_bind)(Param1 p1, Param2 p2, Param3 p3, Param4 p4, Param5 p5, Param6 p6, Param7 p7) ) {
-		bind(function_to_bind);	return *this; }
+		bind(function_to_bind); return *this; }
 	inline void bind(DesiredRetType (*function_to_bind)(Param1 p1, Param2 p2, Param3 p3, Param4 p4, Param5 p5, Param6 p6, Param7 p7)) {
 		m_Closure.bindstaticfunc(this, &FastDelegate7::InvokeStaticFunction,
 			function_to_bind); }
@@ -1624,7 +1624,7 @@ public:
 		bind(function_to_bind); }
 	// for efficiency, prevent creation of a temporary
 	FastDelegate8 & operator=(DesiredRetType (*function_to_bind)(Param1 p1, Param2 p2, Param3 p3, Param4 p4, Param5 p5, Param6 p6, Param7 p7, Param8 p8) ) {
-		bind(function_to_bind);	return *this; }
+		bind(function_to_bind); return *this; }
 	inline void bind(DesiredRetType (*function_to_bind)(Param1 p1, Param2 p2, Param3 p3, Param4 p4, Param5 p5, Param6 p6, Param7 p7, Param8 p8)) {
 		m_Closure.bindstaticfunc(this, &FastDelegate8::InvokeStaticFunction,
 			function_to_bind); }
