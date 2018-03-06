@@ -832,10 +832,23 @@ Functor &get_local()
   return local;
 }
 
+template<unsigned ID, typename Functor, typename ParamType>
+Functor &get_local1()
+{
+  static Functor local;
+  return local;
+}
+
 template<unsigned ID, typename Functor>
 typename Functor::result_type wrapper()
 {
   return get_local<ID, Functor>()();
+}
+
+template<unsigned ID, typename Functor, typename ParamType>
+void wrapper1(ParamType p1)
+{
+  get_local1<ID, Functor, ParamType>()(p1);
 }
 
 template<typename ReturnType>
@@ -844,11 +857,24 @@ struct Func
   typedef ReturnType (*type)();
 };
 
+template<typename ParamType>
+struct Func1
+{
+  typedef void (*type)(ParamType);
+};
+
 template<unsigned ID, typename Functor>
 typename Func<typename Functor::result_type>::type get_wrapper(Functor f)
 {
   (get_local<ID, Functor>()) = f;
   return wrapper<ID, Functor>;
+}
+
+template<unsigned ID, typename Functor, typename ParamType>
+typename Func1<ParamType>::type get_wrapper1(Functor f)
+{
+  (get_local1<ID, Functor, ParamType>()) = f;
+  return wrapper1<ID, Functor, ParamType>();
 }
 
 } // namespace detail
@@ -997,6 +1023,10 @@ public:
 
 	// Construction and comparison functions
 	FastDelegate1() { clear(); }
+	explicit FastDelegate1(const std::function<void(Param1)> &x) {
+		clear();
+		m_Closure.bindstaticfunc(this, &FastDelegate1::InvokeStaticFunction, detail::get_wrapper1<nb::counter_id(), decltype(x), Param1>(x));
+	}
 	FastDelegate1(const FastDelegate1 &x) {
 		m_Closure.CopyFrom(this, x.m_Closure); }
 	FastDelegate1 & operator=(const FastDelegate1 &x) {
