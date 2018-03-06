@@ -1,6 +1,7 @@
 #pragma once
 
 #include <assert.h>
+#include <functional>
 #include <FastDelegate.h>
 #include <FastDelegateBind.h>
 #include <nbglobals.h>
@@ -135,6 +136,9 @@ private:
   TGetValueDelegate _getter;
 public:
   explicit ROProperty(TGetValueDelegate Getter) :
+    _getter(Getter)
+  {}
+  explicit ROProperty(std::function<T()> Getter) :
     _getter(Getter)
   {}
   T operator()() const
