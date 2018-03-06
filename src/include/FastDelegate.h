@@ -773,7 +773,7 @@ public:
 	// will be called. The parent then needs to call GetStaticFunction() to find out
 	// the actual function to invoke.
 	// ******** EVIL, EVIL CODE! *******
-	template < 	class DerivedClass, class ParentInvokerSig>
+	template <class DerivedClass, class ParentInvokerSig>
 	inline void bindstaticfunc(DerivedClass *pParent, ParentInvokerSig static_function_invoker,
 				StaticFuncPtr function_to_bind) {
 		if (function_to_bind==0) { // cope with assignment to 0
