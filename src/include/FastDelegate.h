@@ -825,30 +825,24 @@ namespace detail {
 
 // std::function support
 
-template<unsigned ID, typename Functor>
+template<typename Functor, unsigned ID>
 Functor &get_local()
 {
   static Functor local;
   return local;
 }
 
-template<unsigned ID, typename Functor, typename ParamType>
+template<typename Functor, typename ParamType, unsigned ID>
 Functor &get_local1()
 {
   static Functor local;
   return local;
 }
 
-template<unsigned ID, typename Functor>
+template<typename Functor, unsigned ID>
 typename Functor::result_type wrapper()
 {
-  return get_local<ID, Functor>()();
-}
-
-template<unsigned ID, typename Functor, typename ParamType>
-void wrapper1(ParamType p1)
-{
-  get_local1<ID, Functor, ParamType>()(p1);
+  return get_local<Functor, ID>()();
 }
 
 template<typename ReturnType>
@@ -857,31 +851,17 @@ struct Func
   typedef ReturnType (*type)();
 };
 
-template<typename ParamType>
-struct Func1
-{
-  typedef void (*type)(ParamType);
-};
-
 template<unsigned ID, typename Functor>
 typename Func<typename Functor::result_type>::type get_wrapper(Functor f)
 {
-  (get_local<ID, Functor>()) = f;
-  return wrapper<ID, Functor>;
-}
-
-template<unsigned ID, typename Functor, typename ParamType>
-typename Func1<ParamType>::type get_wrapper1(Functor f)
-{
-  (get_local1<ID, Functor, ParamType>()) = f;
-  return wrapper1<ID, Functor, ParamType>();
+  (get_local<Functor, ID>()) = f;
+  return wrapper<Functor, ID>;
 }
 
 // Raw Bind - simulating auto storage behavior for static storage data
 template <typename BindFunctor, typename FuncWrapper> class scoped_raw_bind
 {
 public:
-
   typedef scoped_raw_bind<BindFunctor, FuncWrapper> this_type;
 
   // Make it Move-Constructible only
@@ -927,7 +907,6 @@ public:
   }
 
 private:
-
   bool m_owning;
 
   static std::unique_ptr<BindFunctor>& get_bind_ptr()
@@ -940,7 +919,18 @@ private:
 
 // Handy macro for creating raw bind object
 // W is target function wrapper, B is source bind expression
-#define RAW_BIND(W,B) std::move(scoped_raw_bind<decltype(B), W<decltype(B), nb::counter_id()>>(B));
+#define RAW_BIND(W, P, B) std::move(detail::scoped_raw_bind<decltype(B), W<decltype(B), P, nb::counter_id()>>(B));
+
+// Wrapper for bound function
+// id is required to generate unique type with static data for
+// each raw bind instantiation.
+template <typename BindFunc, typename ParamType, int id = 0> struct fWrapper
+{
+  static void call(ParamType p1)
+  {
+    scoped_raw_bind<BindFunc, fWrapper<BindFunc, ParamType, id>>::get_bind()(p1);
+  }
+};
 
 } // namespace detail
 
@@ -1090,7 +1080,8 @@ public:
 	FastDelegate1() { clear(); }
 	explicit FastDelegate1(const std::function<void(Param1)> &x) {
 		clear();
-		m_Closure.bindstaticfunc(this, &FastDelegate1::InvokeStaticFunction, detail::get_wrapper1<nb::counter_id(), decltype(x), Param1>(x));
+		static auto rf1 = RAW_BIND(detail::fWrapper, Param1, std::bind(x, std::placeholders::_1));
+		m_Closure.bindstaticfunc(this, &FastDelegate1::InvokeStaticFunction, rf1.get_raw_ptr());
 	}
 	FastDelegate1(const FastDelegate1 &x) {
 		m_Closure.CopyFrom(this, x.m_Closure); }
