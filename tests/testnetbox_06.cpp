@@ -250,10 +250,13 @@ TEST_CASE_METHOD(base_fixture_t, "properties01", "netbox")
 class TBase2
 {
 public:
-  RWProperty<int> Data{nb::bind(&TBase2::GetData, this), nb::bind(&TBase2::SetData, this)};
+  RWProperty<int> Data{nb::bind(&TBase2::GetData, this), nb::bind(&TBase2::SetData, this)} ;
   RWProperty<int> Data2{[&]()->int { return FData; }, [&](int Value) { FData = Value; } };
   RWProperty<bool> AutoSort{[&]()->bool { return FAutoSort; }, [&](bool Value) { FAutoSort = Value; } };
   RWProperty<UnicodeString> Data3{[&]()->UnicodeString { return FString; }, [&](const UnicodeString Value) { FString = Value; } };
+
+  RWProperty<int> Data4{nb::bind(&TBase2::GetData, this), [&](int Value) { FData = Value; } };
+  RWProperty<int> Data5{[&]()->int { return FData; }, nb::bind(&TBase2::SetData, this) };
 
   void Modify()
   {
@@ -291,5 +294,20 @@ TEST_CASE_METHOD(base_fixture_t, "properties02", "netbox")
     CHECK("42" == obj1.Data3());
     obj1.Data3 = "43";
     CHECK("43" == obj1.Data3());
+  }
+}
+
+TEST_CASE_METHOD(base_fixture_t, "properties03", "netbox")
+{
+  SECTION("TBase2::Data4")
+  {
+    TBase2 obj1;
+    CHECK(1 == obj1.Data4);
+    obj1.Data4 = 4;
+    CHECK(4 == obj1.Data4);
+    CHECK(4 == obj1.Data5);
+    obj1.Data5 = 5;
+    CHECK(5 == obj1.Data5);
+    CHECK(5 == obj1.Data4);
   }
 }
