@@ -1,8 +1,7 @@
 #pragma once
 
 #include <assert.h>
-#include <FastDelegate.h>
-#include <FastDelegateBind.h>
+#include <function2.hpp>
 #include <nbglobals.h>
 
 template <typename T>
@@ -13,8 +12,8 @@ public:
   T dummy = T();
   T &obj  = dummy;
 
-  explicit propertyBase(T &value):
-    obj(value)
+  explicit propertyBase(T &Value):
+    obj(Value)
   {}
 };
 
@@ -26,33 +25,29 @@ CUSTOM_MEM_ALLOCATION_IMPL
 public:
   Property() = default;
 
-  Property(const Property<T, true, true> &value):
-    propertyBase<T>(value.obj)
+  Property(const Property<T, true, true> &Value):
+    propertyBase<T>(Value.obj)
   {}
 
-  /*Property(Property<T, true, true>& value):
-      propertyBase<T>(value.obj)
-  {}*/
-
-  explicit Property(T &value):
-    propertyBase<T>(value)
+  explicit Property(T &Value):
+    propertyBase<T>(Value)
   {}
 
-  T &operator=(const Property<T, true, true> &value)
+  T &operator=(const Property<T, true, true> &Value)
   {
-    this->obj = value.obj;
+    this->obj = Value.obj;
     return this->obj;
   }
 
-  T &operator=(const T &value)
+  T &operator=(const T &Value)
   {
-    this->obj = value;
+    this->obj = Value;
     return this->obj;
   }
 
-  T &operator=(T &value)
+  T &operator=(T &Value)
   {
-    this->obj = value;
+    this->obj = Value;
 
     return this->obj;
   }
@@ -72,17 +67,17 @@ CUSTOM_MEM_ALLOCATION_IMPL
 public:
   Property() = default;
 
-  Property(const Property<T, false, true> &value):
-    propertyBase<T>(value.obj)
+  Property(const Property<T, false, true> &Value):
+    propertyBase<T>(Value.obj)
   {}
 
-  explicit Property(T &value):
-    propertyBase<T>(value)
+  explicit Property(T &Value):
+    propertyBase<T>(Value)
   {}
 
-  T &operator=(const Property &value)
+  T &operator=(const Property &Value)
   {
-    this->obj = value.obj;
+    this->obj = Value.obj;
     return this->obj;
   }
 
@@ -101,8 +96,8 @@ CUSTOM_MEM_ALLOCATION_IMPL
 public:
   using T::T;
 
-  explicit Property(const T &value):
-    T(value)
+  explicit Property(const T &Value):
+    T(Value)
   {}
 };
 
@@ -114,8 +109,8 @@ class Property<T, false, false> : public T
 public:
   using T::T;
 
-  explicit Property(const T &value):
-    T(value)
+  explicit Property(const T &Value):
+    T(Value)
   {}
 
   const T *const operator->() const
@@ -135,14 +130,14 @@ class ROProperty
 {
 CUSTOM_MEM_ALLOCATION_IMPL
 private:
-  typedef fastdelegate::FastDelegate0<T> TGetValueDelegate;
-  TGetValueDelegate _getter;
-//  ROProperty() = delete;
+  typedef fu2::function<T() const> TGetValueFunctor;
+  TGetValueFunctor _getter;
 public:
-//  ROProperty(const ROProperty &) = default;
-  explicit ROProperty(TGetValueDelegate Getter) :
+  explicit ROProperty(const TGetValueFunctor &Getter) :
     _getter(Getter)
-  {}
+  {
+    assert(_getter != nullptr);
+  }
   T operator()() const
   {
     assert(_getter);
@@ -169,15 +164,16 @@ public:
     assert(rhs._getter);
     return lhs._getter() == rhs._getter();
   }
-//  bool operator==(const T &Value) const
-//  {
-//    assert(_getter);
-//    return _getter() == Value;
-//  }
   friend bool inline operator==(const ROProperty &lhs, const T &rhs)
   {
     assert(lhs._getter);
     return lhs._getter() == rhs;
+  }
+  friend bool inline operator!=(const ROProperty &lhs, const ROProperty &rhs)
+  {
+    assert(lhs._getter);
+    assert(rhs._getter);
+    return lhs._getter() != rhs._getter();
   }
   friend bool inline operator!=(ROProperty &lhs, const T &rhs)
   {
@@ -191,17 +187,18 @@ class RWProperty
 {
 CUSTOM_MEM_ALLOCATION_IMPL
 private:
-  typedef fastdelegate::FastDelegate0<T> TGetValueDelegate;
-  typedef fastdelegate::FastDelegate1<void, T> TSetValueDelegate;
-  TGetValueDelegate _getter;
-  TSetValueDelegate _setter;
-//  RWProperty() = delete;
+  typedef fu2::function<T() const> TGetValueFunctor;
+  typedef fu2::function<void(T)> TSetValueFunctor;
+  TGetValueFunctor _getter;
+  TSetValueFunctor _setter;
 public:
-//  RWProperty(const RWProperty &) = default;
-  explicit RWProperty(TGetValueDelegate Getter, TSetValueDelegate Setter) :
+  explicit RWProperty(const TGetValueFunctor &Getter, const TSetValueFunctor &Setter) :
     _getter(Getter),
     _setter(Setter)
-  {}
+  {
+    assert(_getter != nullptr);
+    assert(_setter != nullptr);
+  }
   T operator()() const
   {
     assert(_getter);
@@ -222,21 +219,21 @@ public:
     assert(_setter);
     _setter(Value);
   }
-  void operator=(const T &Value)
+  void operator=(T Value)
   {
     assert(_setter);
     _setter(Value);
   }
-  bool operator==(const T &Value) const
+  bool operator==(T Value) const
   {
     assert(_getter);
     return _getter() == Value;
   }
-//  friend bool inline operator==(const RWProperty &lhs, const T &rhs)
-//  {
-//    assert(lhs._getter);
-//    return lhs._getter() == rhs;
-//  }
+  friend bool inline operator==(const RWProperty &lhs, const RWProperty &rhs)
+  {
+    assert(lhs._getter);
+    return lhs._getter == rhs._getter && lhs._setter == rhs._setter;
+  }
   friend bool inline operator!=(RWProperty &lhs, const T &rhs)
   {
     assert(lhs._getter);
