@@ -224,7 +224,7 @@ typedef union {
 } data_accessor;
 
 /// See opcode::op_fetch_empty
-void write_empty(data_accessor* accessor, bool empty) noexcept {
+static void write_empty(data_accessor* accessor, bool empty) noexcept {
   accessor->inplace_storage_ = std::size_t(empty);
 }
 
@@ -239,7 +239,7 @@ using transfer_volatile_t =
 
 /// The retriever when the object is allocated inplace
 template <typename T, typename Accessor>
-constexpr auto retrieve(std::true_type /*is_inplace*/, Accessor from,
+auto retrieve(std::true_type /*is_inplace*/, Accessor from,
                         std::size_t from_capacity) {
   using Type = transfer_const_t<Accessor, transfer_volatile_t<Accessor, void>>*;
 
@@ -703,7 +703,7 @@ public:
 
   /// Invoke the function at the given index
   template <std::size_t Index, typename... Args>
-  constexpr auto invoke(Args&&... args) const {
+  auto invoke(Args&&... args) const {
     auto thunk = invoke_table_t::template fetch<Index>(vtable_);
     return thunk(std::forward<Args>(args)...);
   }
@@ -767,15 +767,15 @@ class internal_capacity_holder {
 public:
   constexpr internal_capacity_holder() = default;
 
-//  constexpr data_accessor* opaque_ptr() noexcept {
-//    return &storage_.accessor_;
-//  }
+  data_accessor* opaque_ptr() noexcept {
+    return &storage_.accessor_;
+  }
   constexpr data_accessor const* opaque_ptr() const noexcept {
     return &storage_.accessor_;
   }
-//  constexpr data_accessor volatile* opaque_ptr() volatile noexcept {
-//    return &storage_.accessor_;
-//  }
+  data_accessor volatile* opaque_ptr() volatile noexcept {
+    return &storage_.accessor_;
+  }
   constexpr data_accessor const volatile* opaque_ptr() const volatile noexcept {
     return &storage_.accessor_;
   }
