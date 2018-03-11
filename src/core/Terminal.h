@@ -190,10 +190,6 @@ NB_CORE_EXPORT void FileOperationLoopCustom(TTerminal *Terminal,
   const UnicodeString HelpKeyword,
   fu2::function<void()> Operation);
 
-// template<int s> struct Wow;
-// Wow<sizeof(fu2::function<void()>)> wow; //32
-// Wow<sizeof(std::function<void()>)> wow; //40
-
 //---------------------------------------------------------------------------
 enum TCurrentFSProtocol { cfsUnknown, cfsSCP, cfsSFTP, cfsFTP, cfsFTPS, cfsWebDAV, cfsS3 };
 //---------------------------------------------------------------------------
