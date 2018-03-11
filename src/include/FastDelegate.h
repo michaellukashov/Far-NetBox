@@ -52,10 +52,10 @@
 #endif // _MSC_VER > 1000
 
 #include <memory.h> // to allow <,> comparisons
-#ifdef FASTDELEGATE_FUNCTION_SUPPORT
+#ifdef FASTDELEGATE_STDFUNCTION_SUPPORT
 #include <functional>
 #include "rtti.hpp"
-#endif // #ifdef FASTDELEGATE_FUNCTION_SUPPORT
+#endif // #ifdef FASTDELEGATE_STDFUNCTION_SUPPORT
 ////////////////////////////////////////////////////////////////////////////////
 //						Configuration options
 //
@@ -822,7 +822,7 @@ public:
 
 } // namespace detail
 
-#ifdef FASTDELEGATE_FUNCTION_SUPPORT
+#ifdef FASTDELEGATE_STDFUNCTION_SUPPORT
 
 namespace detail {
 
@@ -937,7 +937,7 @@ template <typename BindFunc, typename ParamType, int id = 0> struct fWrapper
 
 } // namespace detail
 
-#endif // #ifdef FASTDELEGATE_FUNCTION_SUPPORT
+#endif // #ifdef FASTDELEGATE_STDFUNCTION_SUPPORT
 
 ////////////////////////////////////////////////////////////////////////////////
 //						Fast Delegates, part 3:
@@ -994,12 +994,12 @@ public:
 
 	// Construction and comparison functions
 	FastDelegate0() { clear(); }
-#ifdef FASTDELEGATE_FUNCTION_SUPPORT
+#ifdef FASTDELEGATE_STDFUNCTION_SUPPORT
 	explicit FastDelegate0(const std::function<RetType()> &x) {
 		clear();
 		m_Closure.bindstaticfunc(this, &FastDelegate0::InvokeStaticFunction, detail::get_wrapper<nb::counter_id()>(x));
 	}
-#endif // #ifdef FASTDELEGATE_FUNCTION_SUPPORT
+#endif // #ifdef FASTDELEGATE_STDFUNCTION_SUPPORT
 	FastDelegate0(const FastDelegate0 &x) {
 		m_Closure.CopyFrom(this, x.m_Closure); }
 	FastDelegate0 & operator=(const FastDelegate0 &x) {
@@ -1085,13 +1085,13 @@ public:
 
 	// Construction and comparison functions
 	FastDelegate1() { clear(); }
-#ifdef FASTDELEGATE_FUNCTION_SUPPORT
+#ifdef FASTDELEGATE_STDFUNCTION_SUPPORT
 	explicit FastDelegate1(const std::function<void(Param1)> &x) {
 		clear();
 		static auto rf1 = RAW_BIND(detail::fWrapper, Param1, std::bind(x, std::placeholders::_1));
 		m_Closure.bindstaticfunc(this, &FastDelegate1::InvokeStaticFunction, rf1.get_raw_ptr());
 	}
-#endif // #ifdef FASTDELEGATE_FUNCTION_SUPPORT
+#endif // #ifdef FASTDELEGATE_STDFUNCTION_SUPPORT
 	FastDelegate1(const FastDelegate1 &x) {
 		m_Closure.CopyFrom(this, x.m_Closure); }
 	FastDelegate1 & operator=(const FastDelegate1 &x) {
