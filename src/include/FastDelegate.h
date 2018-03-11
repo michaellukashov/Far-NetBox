@@ -869,12 +869,12 @@ public:
   this_type& operator=(const this_type&) = delete;
   this_type& operator=(this_type&& rhs) = delete;
 
-  scoped_raw_bind(this_type&& rhs): m_owning(rhs.m_owning)
+  scoped_raw_bind(this_type&& rhs) : m_owning(rhs.m_owning)
   {
     rhs.m_owning = false;
   }
 
-  scoped_raw_bind(BindFunctor b): m_owning(false)
+  scoped_raw_bind(BindFunctor b) : m_owning(false)
   {
     // Precondition - check that we don't override static data for another raw bind instance
     if(get_bind_ptr() != nullptr)
@@ -889,7 +889,7 @@ public:
 
   ~scoped_raw_bind()
   {
-    if(m_owning)
+    if (m_owning)
     {
       assert(get_bind_ptr() != nullptr);
       get_bind_ptr().reset();
