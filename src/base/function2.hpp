@@ -334,7 +334,7 @@ struct function_trait;
         return invocation::invoke(                                             \
             static_cast<std::decay_t<decltype(box->value_)> CONST VOLATILE     \
                             REF>(box->value_),                                 \
-            std::move(args)...);                                               \
+            std::forward<Args>(args)...);                                      \
       }                                                                        \
     };                                                                         \
                                                                                \
@@ -465,7 +465,7 @@ struct operator_impl;
       return erasure_attorney::invoke<Index>(                                  \
           static_cast<std::decay_t<decltype(function->erasure_)> CONST         \
                           VOLATILE REF>(function->erasure_),                   \
-          std::move(args)...);                                                 \
+          std::forward<Args>(args)...);                                        \
     }                                                                          \
   };                                                                           \
   template <std::size_t Index, typename Function, typename Ret,                \
@@ -477,7 +477,7 @@ struct operator_impl;
       return erasure_attorney::invoke<Index>(                                  \
           static_cast<std::decay_t<decltype(function->erasure_)> CONST         \
                           VOLATILE REF>(function->erasure_),                   \
-          std::move(args)...);                                                 \
+          std::forward<Args>(args)...);                                        \
     }                                                                          \
   };
 
@@ -545,7 +545,7 @@ class vtable<property<IsThrowing, HasStrongExceptGuarantee, FormalArgs...>> {
             from->ptr_ = nullptr;
 #endif
 
-            to_table->set_allocated<T>();
+            to_table->template set_allocated<T>();
 
           }
           // The object is allocated inplace
@@ -606,11 +606,11 @@ class vtable<property<IsThrowing, HasStrongExceptGuarantee, FormalArgs...>> {
       // Try to allocate the object inplace
       void* storage = retrieve<T>(std::true_type{}, to, to_capacity);
       if (storage) {
-        to_table->set_inplace<T>();
+        to_table->template set_inplace<T>();
       } else {
         // Allocate the object through the allocator
         to->ptr_ = storage = box.box_allocate();
-        to_table->set_allocated<T>();
+        to_table->template set_allocated<T>();
       }
       new (storage) T(std::forward<Box>(box));
     }
