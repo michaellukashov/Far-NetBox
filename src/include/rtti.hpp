@@ -1,6 +1,5 @@
 #pragma once
 
-#include <string>
 #include "type_traits.h"
 
 //===-- from llvm/Support/Casting.h - Allow flexible, checked casts
