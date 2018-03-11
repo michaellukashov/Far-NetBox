@@ -4,6 +4,8 @@
 #include <rdestl/map.h>
 #include <rdestl/vector.h>
 
+#include <function2.hpp>
+
 #include <Classes.hpp>
 #include <Common.h>
 #include <Exceptions.h>
@@ -186,7 +188,12 @@ NB_CORE_EXPORT void FileOperationLoopCustom(TTerminal *Terminal,
   TFileOperationProgressType *OperationProgress,
   uintptr_t Flags, const UnicodeString Message,
   const UnicodeString HelpKeyword,
-  const std::function<void()> &Operation);
+  fu2::function<void()> Operation);
+
+// template<int s> struct Wow;
+// Wow<sizeof(fu2::function<void()>)> wow; //32
+// Wow<sizeof(std::function<void()>)> wow; //40
+
 //---------------------------------------------------------------------------
 enum TCurrentFSProtocol { cfsUnknown, cfsSCP, cfsSFTP, cfsFTP, cfsFTPS, cfsWebDAV, cfsS3 };
 //---------------------------------------------------------------------------
