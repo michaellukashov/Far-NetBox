@@ -4,6 +4,8 @@
 #include <rdestl/map.h>
 #include <rdestl/vector.h>
 
+#include <function2.hpp>
+
 #include <Classes.hpp>
 #include <Common.h>
 #include <Exceptions.h>
@@ -186,7 +188,8 @@ NB_CORE_EXPORT void FileOperationLoopCustom(TTerminal *Terminal,
   TFileOperationProgressType *OperationProgress,
   uintptr_t Flags, const UnicodeString Message,
   const UnicodeString HelpKeyword,
-  const std::function<void()> &Operation);
+  fu2::function<void()> Operation);
+
 //---------------------------------------------------------------------------
 enum TCurrentFSProtocol { cfsUnknown, cfsSCP, cfsSFTP, cfsFTP, cfsFTPS, cfsWebDAV, cfsS3 };
 //---------------------------------------------------------------------------
