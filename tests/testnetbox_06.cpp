@@ -186,10 +186,10 @@ TEST_CASE_METHOD(base_fixture_t, "tryfinally01", "netbox")
 class TBase
 {
 public:
-  ROProperty<int> Data{nb::bind(&TBase::GetData, this)};
-  ROProperty<int> Data2{[&]()->int { return FData; }};
-  ROProperty<bool> AutoSort{[&]()->bool { return FAutoSort; }};
-  ROProperty<UnicodeString> Data3{[&]()->UnicodeString { return FString; }};
+  ROProperty<int> Data{ nb::bind(&TBase::GetData, this) };
+  ROProperty<int> Data2{ [&]()->int { return FData; } };
+  ROProperty<bool> AutoSort{ [&]()->bool { return FAutoSort; } };
+  ROProperty<UnicodeString> Data3{ [&]()->UnicodeString { return FString; } };
 
   void Modify()
   {
@@ -250,13 +250,15 @@ TEST_CASE_METHOD(base_fixture_t, "properties01", "netbox")
 class TBase2
 {
 public:
-  RWProperty<int> Data{nb::bind(&TBase2::GetData, this), nb::bind(&TBase2::SetData, this)} ;
-  RWProperty<int> Data2{[&]()->int { return FData; }, [&](int Value) { FData = Value; } };
-  RWProperty<bool> AutoSort{[&]()->bool { return FAutoSort; }, [&](bool Value) { FAutoSort = Value; } };
-  RWProperty<UnicodeString> Data3{[&]()->UnicodeString { return FString; }, [&](const UnicodeString Value) { FString = Value; } };
+  RWProperty<int> Data{ nb::bind(&TBase2::GetData, this), nb::bind(&TBase2::SetData, this) };
+  RWProperty<int> Data1{ [&]()->int { return GetData(); }, [&](int Value) { SetData(Value); } };
+  RWProperty<int> Data2{ [&]()->int { return FData; }, [&](int Value) { FData = Value; } };
+  RWProperty<bool> AutoSort{ [&]()->bool { return FAutoSort; }, [&](bool Value) { FAutoSort = Value; } };
+  RWProperty<UnicodeString> Data3{ [&]()->UnicodeString { return FString; }, [&](const UnicodeString Value) { FString = Value; } };
 
-  RWProperty<int> Data4{nb::bind(&TBase2::GetData, this), [&](int Value) { FData = Value; } };
-  RWProperty<int> Data5{[&]()->int { return FData; }, nb::bind(&TBase2::SetData, this) };
+  RWProperty<int> Data4{ nb::bind(&TBase2::GetData, this), [&](int Value) { FData = Value; } };
+  RWProperty<int> Data4_1{ [&]()->int { return GetData(); }, [&](int Value) { FData = Value; } };
+  RWProperty<int> Data5{ [&]()->int { return FData; }, nb::bind(&TBase2::SetData, this) };
 
   void Modify()
   {
@@ -282,7 +284,9 @@ TEST_CASE_METHOD(base_fixture_t, "properties02", "netbox")
   {
     TBase2 obj1;
     CHECK(obj1.Data == 1);
+    CHECK(obj1.Data1 == 1);
     obj1.Data = 2;
+    CHECK(obj1.Data1 == 2);
     CHECK(obj1.Data == 2);
     CHECK(obj1.Data2 == 2);
     obj1.Data2 = 3;
@@ -305,6 +309,10 @@ TEST_CASE_METHOD(base_fixture_t, "properties03", "netbox")
     CHECK(1 == obj1.Data4);
     obj1.Data4 = 4;
     CHECK(4 == obj1.Data4);
+    CHECK(4 == obj1.Data4_1);
+    obj1.Data4_1 = 41;
+    CHECK(41 == obj1.Data4_1);
+    CHECK(41 == obj1.Data4);
   }
   SECTION("TBase2::Data5")
   {

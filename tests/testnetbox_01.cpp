@@ -941,13 +941,13 @@ class TBase2
 {
 public:
   // ROProperty<int> Data{nb::bind(&TBase::GetData, this)};
-  ROProperty<int> Data2{nb::bind(&TBase2::GetData2, this)};
-  ROProperty<int> Data3{nb::bind(&TBase2::GetData3, this)};
+  ROProperty<int> Data2{ nb::bind(&TBase2::GetData2, this) };
+  ROProperty<int> Data3{ nb::bind(&TBase2::GetData3, this) };
 
-  RWProperty<int> RWData1{nb::bind(&TBase2::GetRWData1, this), nb::bind(&TBase2::SetRWData1, this)};
-  RWProperty<UnicodeString> RWData2{nb::bind(&TBase2::GetRWData2, this), nb::bind(&TBase2::SetRWData2, this)};
-  RWProperty<UnicodeString> RWData3{nb::bind(&TBase2::GetRWData3, this), nb::bind(&TBase2::SetRWData3, this)};
-  RWProperty<TDateTime> Modification{nb::bind(&TBase2::GetModification, this), nb::bind(&TBase2::SetModification, this)};
+  RWProperty<int> RWData1{ nb::bind(&TBase2::GetRWData1, this), nb::bind(&TBase2::SetRWData1, this) };
+  RWProperty<UnicodeString> RWData2{ nb::bind(&TBase2::GetRWData2, this), nb::bind(&TBase2::SetRWData2, this) };
+  RWProperty<UnicodeString> RWData3{ nb::bind(&TBase2::GetRWData3, this), nb::bind(&TBase2::SetRWData3, this) };
+  RWProperty<TDateTime> Modification{ nb::bind(&TBase2::GetModification, this), nb::bind(&TBase2::SetModification, this) };
 private:
   int GetData2() const { return 41; }
   int GetData3() const { return 41; }
