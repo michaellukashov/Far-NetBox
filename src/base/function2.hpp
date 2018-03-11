@@ -224,7 +224,7 @@ typedef union {
 } data_accessor;
 
 /// See opcode::op_fetch_empty
-constexpr void write_empty(data_accessor* accessor, bool empty) noexcept {
+void write_empty(data_accessor* accessor, bool empty) noexcept {
   accessor->inplace_storage_ = std::size_t(empty);
 }
 
@@ -767,15 +767,15 @@ class internal_capacity_holder {
 public:
   constexpr internal_capacity_holder() = default;
 
-  constexpr data_accessor* opaque_ptr() noexcept {
-    return &storage_.accessor_;
-  }
+//  constexpr data_accessor* opaque_ptr() noexcept {
+//    return &storage_.accessor_;
+//  }
   constexpr data_accessor const* opaque_ptr() const noexcept {
     return &storage_.accessor_;
   }
-  constexpr data_accessor volatile* opaque_ptr() volatile noexcept {
-    return &storage_.accessor_;
-  }
+//  constexpr data_accessor volatile* opaque_ptr() volatile noexcept {
+//    return &storage_.accessor_;
+//  }
   constexpr data_accessor const volatile* opaque_ptr() const volatile noexcept {
     return &storage_.accessor_;
   }
@@ -840,13 +840,13 @@ public:
     vtable_.weak_destroy(this->opaque_ptr(), capacity());
   }
 
-  constexpr erasure&
+  const erasure&
   operator=(std::nullptr_t) noexcept(Property::is_strong_exception_guaranteed) {
     vtable_.destroy(this->opaque_ptr(), capacity());
     return *this;
   }
 
-  constexpr erasure& operator=(erasure&& right) noexcept(
+  const erasure& operator=(erasure&& right) noexcept(
       Property::is_strong_exception_guaranteed) {
     vtable_.weak_destroy(this->opaque_ptr(), capacity());
     right.vtable_.move(vtable_, right.opaque_ptr(), right.capacity(),
@@ -854,7 +854,7 @@ public:
     return *this;
   }
 
-  constexpr erasure& operator=(erasure const& right) {
+  const erasure& operator=(erasure const& right) {
     vtable_.weak_destroy(this->opaque_ptr(), capacity());
     right.vtable_.copy(vtable_, right.opaque_ptr(), right.capacity(),
                        this->opaque_ptr(), capacity());
@@ -862,7 +862,7 @@ public:
   }
 
   template <typename OtherConfig>
-  constexpr erasure& operator=(erasure<OtherConfig, Property> right) noexcept(
+  const erasure& operator=(erasure<OtherConfig, Property> right) noexcept(
       Property::is_strong_exception_guaranteed) {
     vtable_.weak_destroy(this->opaque_ptr(), capacity());
     right.vtable_.move(vtable_, right.opaque_ptr(), right.capacity(),
@@ -872,7 +872,7 @@ public:
 
   template <typename T,
             std::enable_if_t<is_box<std::decay_t<T>>::value>* = nullptr>
-  constexpr erasure& operator=(T&& object) {
+  const erasure& operator=(T&& object) {
     vtable_.weak_destroy(this->opaque_ptr(), capacity());
     VTable::init(vtable_, std::forward<T>(object), this->opaque_ptr(),
                  capacity());
@@ -884,6 +884,7 @@ public:
     return vtable_.empty();
   }
 };
+
 } // namespace type_erasure
 
 /// Deduces to a true_type if the type T provides the given signature
