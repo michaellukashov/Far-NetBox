@@ -305,9 +305,13 @@ TEST_CASE_METHOD(base_fixture_t, "properties03", "netbox")
     CHECK(1 == obj1.Data4);
     obj1.Data4 = 4;
     CHECK(4 == obj1.Data4);
-    CHECK(4 == obj1.Data5);
-    obj1.Data5 = 5;
-    CHECK(5 == obj1.Data5);
-    CHECK(5 == obj1.Data4);
+  }
+  SECTION("TBase2::Data5")
+  {
+    TBase2 obj2;
+    CHECK(1 == obj2.Data5);
+    obj2.Data5 = 5;
+    CHECK(5 == obj2.Data5);
+    CHECK(5 == obj2.Data4);
   }
 }
