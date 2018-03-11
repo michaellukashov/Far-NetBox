@@ -199,14 +199,28 @@ private:
   TGetValueDelegate _getter;
   TSetValueDelegate _setter;
 public:
-  explicit RWProperty(const TGetValueDelegate &Getter, const TSetValueDelegate &Setter) :
+  explicit RWProperty(const std::function<T()> &Getter, const std::function<void(T)> &Setter) :
     _getter(Getter),
     _setter(Setter)
   {
     assert(_getter != nullptr);
     assert(_setter != nullptr);
   }
-  explicit RWProperty(const std::function<T()> &Getter, const std::function<void(T)> &Setter) :
+  explicit RWProperty(const std::function<T()> &Getter, const TSetValueDelegate &Setter) :
+    _getter(Getter),
+    _setter(Setter)
+  {
+    assert(_getter != nullptr);
+    assert(_setter != nullptr);
+  }
+  explicit RWProperty(const TGetValueDelegate &Getter, const std::function<void(T)> &Setter) :
+    _getter(Getter),
+    _setter(Setter)
+  {
+    assert(_getter != nullptr);
+    assert(_setter != nullptr);
+  }
+  explicit RWProperty(const TGetValueDelegate &Getter, const TSetValueDelegate &Setter) :
     _getter(Getter),
     _setter(Setter)
   {
@@ -233,12 +247,12 @@ public:
     assert(_setter);
     _setter(Value);
   }
-  void operator=(const T &Value)
+  void operator=(T Value)
   {
     assert(_setter);
     _setter(Value);
   }
-  bool operator==(const T &Value) const
+  bool operator==(T Value) const
   {
     assert(_getter);
     return _getter() == Value;
