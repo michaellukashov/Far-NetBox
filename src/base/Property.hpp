@@ -1,10 +1,7 @@
 #pragma once
 
 #include <assert.h>
-//#include <functional>
 #include <function2.hpp>
-//#include <FastDelegate.h>
-//#include <FastDelegateBind.h>
 #include <nbglobals.h>
 
 template <typename T>
@@ -133,8 +130,6 @@ class ROProperty
 {
 CUSTOM_MEM_ALLOCATION_IMPL
 private:
-  // typedef fastdelegate::FastDelegate0<T> TGetValueDelegate;
-  // TGetValueDelegate _getter;
   typedef fu2::function<T() const> TGetValueFunctor;
   TGetValueFunctor _getter;
 public:
@@ -143,11 +138,6 @@ public:
   {
     assert(_getter != nullptr);
   }
-//  explicit ROProperty(const fu2::function<T() const> &Getter) :
-//    _getter(Getter)
-//  {
-//    assert(_getter != nullptr);
-//  }
   T operator()() const
   {
     assert(_getter);
@@ -197,43 +187,18 @@ class RWProperty
 {
 CUSTOM_MEM_ALLOCATION_IMPL
 private:
-//  typedef fastdelegate::FastDelegate0<T> TGetValueDelegate;
-//  typedef fastdelegate::FastDelegate1<void, T> TSetValueDelegate;
-//  TGetValueDelegate _getter;
-//  TSetValueDelegate _setter;
   typedef fu2::function<T() const> TGetValueFunctor;
   typedef fu2::function<void(T)> TSetValueFunctor;
   TGetValueFunctor _getter;
   TSetValueFunctor _setter;
 public:
-  explicit RWProperty(TGetValueFunctor Getter, TSetValueFunctor Setter) :
+  explicit RWProperty(const TGetValueFunctor &Getter, const TSetValueFunctor &Setter) :
     _getter(Getter),
     _setter(Setter)
   {
     assert(_getter != nullptr);
     assert(_setter != nullptr);
   }
-//  explicit RWProperty(const std::function<T()> &Getter, const TSetValueDelegate &Setter) :
-//    _getter(Getter),
-//    _setter(Setter)
-//  {
-//    assert(_getter != nullptr);
-//    assert(_setter != nullptr);
-//  }
-//  explicit RWProperty(const TGetValueDelegate &Getter, const std::function<void(T)> &Setter) :
-//    _getter(Getter),
-//    _setter(Setter)
-//  {
-//    assert(_getter != nullptr);
-//    assert(_setter != nullptr);
-//  }
-//  explicit RWProperty(const TGetValueDelegate &Getter, const TSetValueDelegate &Setter) :
-//    _getter(Getter),
-//    _setter(Setter)
-//  {
-//    assert(_getter != nullptr);
-//    assert(_setter != nullptr);
-//  }
   T operator()() const
   {
     assert(_getter);
