@@ -375,6 +375,7 @@ private:
   UnicodeString FDDTemporaryDirectory;
   bool FDDWarnLackOfTempSpace;
   bool FDDExtEnabled;
+  bool FDDFakeFile;
   int FDDExtInstalled;
   int FDDExtTimeout;
   bool FConfirmClosingSession;
@@ -484,6 +485,7 @@ private:
   void SetDDTemporaryDirectory(const UnicodeString value);
   void SetDDWarnLackOfTempSpace(bool value);
   void SetDDExtEnabled(bool value);
+  bool GetDDExtEnabled() const;
   void SetDDExtTimeout(int value);
   void SetConfirmClosingSession(bool value);
   void SetDDWarnLackOfTempSpaceRatio(double value);
@@ -597,6 +599,8 @@ protected:
   void ReleaseExtensionTranslations();
   void LoadExtensionTranslations();
 
+  __property bool DDFakeFile = { read=FDDFakeFile, write=FDDFakeFile };
+
 public:
   TWinConfiguration();
   virtual ~TWinConfiguration();
@@ -632,6 +636,7 @@ public:
   UnicodeString ExtensionStringTranslation(const UnicodeString ExtensionId, const UnicodeString S);
   UnicodeString UniqueExtensionName(const UnicodeString ExtensionName, int Counter);
   UnicodeString GetProvisionaryExtensionId(const UnicodeString FileName);
+  bool __fastcall IsDDExtRunning();
 
   static void RestoreFont(const TFontConfiguration &Configuration, TFont *Font);
   static void StoreFont(TFont *Font, TFontConfiguration &Configuration);

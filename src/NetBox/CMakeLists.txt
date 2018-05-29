@@ -11,7 +11,6 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 message("Build type: ${CMAKE_BUILD_TYPE}")
 message("CMAKE_CL_64: ${CMAKE_CL_64}")
-message("MSVC10: ${MSVC10}")
 
 if(NOT DEFINED FAR_VERSION OR FAR_VERSION STREQUAL "")
   set(FAR_VERSION Far2)

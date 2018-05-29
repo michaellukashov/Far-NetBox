@@ -209,6 +209,11 @@ public:
     assert(_getter);
     return _getter();
   }
+  /*operator T&() const
+  {
+    assert(_getter);
+    return _getter();
+  }*/
   T operator->() const
   {
     assert(_getter);

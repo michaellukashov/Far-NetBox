@@ -1141,7 +1141,7 @@ void TCustomCommandData::Init(
 {
   FSessionData.reset(new TSessionData(L""));
   FSessionData->Assign(ASessionData);
-  FSessionData->SetUserName(AUserName);
+  FSessionData->SessionSetUserName(AUserName);
   FSessionData->SetPassword(APassword);
   FSessionData->SetHostKey(AHostKey);
 }

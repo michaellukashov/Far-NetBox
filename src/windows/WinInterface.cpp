@@ -1,8 +1,10 @@
 #include <Queue.h>
+#include <Queue.h>
 #include <Interface.h>
 #include <System.IOUtils.hpp>
 
 #include "WinInterface.h"
+#include <System.IOUtils.hpp>
 //---------------------------------------------------------------------------
 __removed #pragma package(smart_init)
 //---------------------------------------------------------------------------
@@ -1396,13 +1398,8 @@ private:
 };
 //---------------------------------------------------------------------------
 TCallstackThread::TCallstackThread() :
-  TSignalThread(OBJECT_CLASS_TCallstackThread)
+  TSignalThread(OBJECT_CLASS_TSignalThread)
 {
-}
-
-void TCallstackThread::InitCallstackThread(bool LowPriority)
-{
-  TSignalThread::InitSignalThread(LowPriority, DoCreateEvent());
 }
 //---------------------------------------------------------------------------
 void TCallstackThread::ProcessEvent()
@@ -1452,6 +1449,11 @@ HANDLE TCallstackThread::DoCreateEvent()
   UnicodeString Name = DoGetName();
   return ::CreateEventW(nullptr, false, false, Name.c_str());
 }
+
+void TCallstackThread::InitCallstackThread(bool LowPriority)
+{
+  TSignalThread::InitSignalThread(LowPriority, DoCreateEvent());
+}
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 std::unique_ptr<TCallstackThread> CallstackThread;
@@ -1480,6 +1482,7 @@ void WinFinalize()
 {
 //  JclRemoveExceptNotifier(DoExceptNotify);
 }
+
 //---------------------------------------------------------------------------
 bool InputDialog(const UnicodeString ACaption,
   const UnicodeString APrompt, UnicodeString &Value, const UnicodeString AHelpKeyword,

@@ -120,7 +120,7 @@ void TSessionData::Default()
 {
   SetHostName(L"");
   SetPortNumber(SshPortNumber);
-  SetUserName(L"");
+  SessionSetUserName(L"");
   SetPassword(L"");
   SetNewPassword(L"");
   SetChangePassword(false);
@@ -470,7 +470,7 @@ void TSessionData::CopyData(TSessionData *SourceData)
   //META_PROPERTIES;
 
 
-  SetUserName(SourceData->SessionGetUserName());
+  SessionSetUserName(SourceData->SessionGetUserName());
   for (intptr_t Index = 0; Index < ToIntPtr(_countof(FBugs)); ++Index)
   {
     // PROPERTY(Bug[(TSshBug)Index]);
@@ -601,7 +601,7 @@ void TSessionData::DoLoad(THierarchicalStorage *Storage, bool PuttyImport, bool 
   // (implemented by TOptionsIniFile)
 
   SetPortNumber(Storage->ReadInteger("PortNumber", GetPortNumber()));
-  SetUserName(Storage->ReadString("UserName", SessionGetUserName()));
+  SessionSetUserName(Storage->ReadString("UserName", SessionGetUserName()));
   // must be loaded after UserName, because HostName may be in format user@host
   SetHostName(Storage->ReadString("HostName", GetHostName()));
 
@@ -2063,7 +2063,7 @@ bool TSessionData::ParseUrl(const UnicodeString AUrl, TOptions *Options,
 
       UnicodeString RawUserName = CutToChar(UserInfo, L':', false);
       if (!RawUserName.IsEmpty())
-        SetUserName(DecodeUrlChars(RawUserName));
+        SessionSetUserName(DecodeUrlChars(RawUserName));
 
       SetPassword(DecodeUrlChars(UserInfo));
 
@@ -2238,7 +2238,7 @@ bool TSessionData::ParseUrl(const UnicodeString AUrl, TOptions *Options,
     {
       if (!Value.IsEmpty())
       {
-        SetUserName(Value);
+        SessionSetUserName(Value);
       }
     }
     if (Options->FindSwitch("password", Value))
@@ -2293,7 +2293,7 @@ void TSessionData::RollbackTunnel()
 void TSessionData::ExpandEnvironmentVariables()
 {
   SetHostName(GetHostNameExpanded());
-  SetUserName(GetUserNameExpanded());
+  SessionSetUserName(GetUserNameExpanded());
   SetPublicKeyFile(::ExpandEnvironmentVariables(GetPublicKeyFile()));
 }
 //---------------------------------------------------------------------
@@ -2402,7 +2402,7 @@ void TSessionData::SetHostName(const UnicodeString AValue)
     intptr_t P = Value.LastDelimiter(L"@");
     if (P > 0)
     {
-      SetUserName(Value.SubString(1, P - 1));
+      SessionSetUserName(Value.SubString(1, P - 1));
       Value = Value.SubString(P + 1, Value.Length() - P);
     }
     FHostName = Value;
@@ -2455,7 +2455,7 @@ void TSessionData::SetUnsetNationalVars(bool Value)
   SET_SESSION_PROPERTY(UnsetNationalVars);
 }
 //---------------------------------------------------------------------
-void TSessionData::SetUserName(UnicodeString Value)
+void TSessionData::SessionSetUserName(UnicodeString Value)
 {
   // Avoid password recryption (what may popup master password prompt)
   if (FUserName != Value)
@@ -3218,7 +3218,7 @@ UnicodeString TSessionData::GenerateOpenCommandArgs(bool /*Rtf*/) const
   }
   SessionData->SetHostName(FactoryDefaults->GetHostName());
   SessionData->SetPortNumber(FactoryDefaults->GetPortNumber());
-  SessionData->SetUserName(FactoryDefaults->SessionGetUserName());
+  SessionData->SessionSetUserName(FactoryDefaults->SessionGetUserName());
   SessionData->SetPassword(FactoryDefaults->GetPassword());
   SessionData->CopyNonCoreData(FactoryDefaults.get());
   SessionData->SetFtps(FactoryDefaults->GetFtps());
@@ -4342,7 +4342,7 @@ void TSessionData::SetLoginType(TLoginType Value)
   if (GetLoginType() == ltAnonymous)
   {
     SetPassword(L"");
-    SetUserName(AnonymousUserName);
+    SessionSetUserName(AnonymousUserName);
   }
 }
 

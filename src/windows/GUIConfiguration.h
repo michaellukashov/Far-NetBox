@@ -316,6 +316,7 @@ public:
   __property UnicodeString DefaultPuttyPath = { read = FDefaultPuttyPath };
   __property bool PuttyPassword = { read = FPuttyPassword, write = FPuttyPassword };
   __property bool TelnetForFtpInPutty = { read = FTelnetForFtpInPutty, write = FTelnetForFtpInPutty };
+  RWProperty<bool> TelnetForFtpInPutty{nb::bind(&TGUIConfiguration::GetTelnetForFtpInPutty, this), nb::bind(&TGUIConfiguration::SetTelnetForFtpInPutty, this)};
   __property UnicodeString PuttySession = { read = FPuttySession, write = FPuttySession };
   __property TDateTime IgnoreCancelBeforeFinish = { read = FIgnoreCancelBeforeFinish, write = FIgnoreCancelBeforeFinish };
   __property TGUICopyParamType DefaultCopyParam = { read = FDefaultCopyParam, write = SetDefaultCopyParam };

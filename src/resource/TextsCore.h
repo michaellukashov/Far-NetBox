@@ -4,6 +4,7 @@
 #define DIFFERENT_KEY5  2
 #define OLD_KEY         3
 
+#define SCRIPT_CP_HELP          30
 #define CORE_ERROR_STRINGS      100
 #define KEY_NOT_VERIFIED        101
 #define CONNECTION_FAILED       102
@@ -468,7 +469,7 @@
 #define OPENSSL_COPYRIGHT2       610
 #define OPENSSL_VERSION2         611
 #define OPENSSL_URL             612
-#define NEON_BASED_ON           613
+#define NEON_BASED_ON2          613
 #define NEON_COPYRIGHT          614
 #define NEON_URL                615
 #define EXPAT_BASED_ON          616
@@ -476,6 +477,10 @@
 #define PUTTY_LICENSE_URL       625
 #define MAIN_MSG_TAG            631
 #define INTERACTIVE_MSG_TAG     632
+#define S3_BASED_ON             633
+#define S3_COPYRIGHT            634
+#define S3_URL                  635
+#define S3_LICENSE_URL          636
 
 // 7xxx used by errors as secondary sequence
 

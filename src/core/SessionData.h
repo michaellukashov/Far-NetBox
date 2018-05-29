@@ -333,7 +333,7 @@ public:
   void SetHostName(const UnicodeString AValue);
   UnicodeString GetHostNameExpanded() const;
   void SetPortNumber(intptr_t Value);
-  void SetUserName(UnicodeString Value);
+  void SessionSetUserName(UnicodeString Value);
   UnicodeString GetUserNameExpanded() const;
   void SetPassword(UnicodeString AValue);
   UnicodeString GetPassword() const;
@@ -597,9 +597,12 @@ public:
   static UnicodeString FormatSiteKey(const UnicodeString HostName, intptr_t PortNumber);
 
   __property UnicodeString HostName  = { read = FHostName, write = SetHostName };
+  RWProperty<UnicodeString> HostName{nb::bind(&TSessionData::GetHostName, this), nb::bind(&TSessionData::SetHostName, this)};
   __property UnicodeString HostNameExpanded  = { read = GetHostNameExpanded };
-  __property int PortNumber  = { read = FPortNumber, write = SetPortNumber };
-  __property UnicodeString UserName  = { read = FUserName, write = SetUserName };
+  __property int PortNumber = { read = FPortNumber, write = SetPortNumber };
+  RWProperty<intptr_t> PortNumber{nb::bind(&TSessionData::GetPortNumber, this), nb::bind(&TSessionData::SetPortNumber, this)};
+  __property UnicodeString UserName = { read = FUserName, write = SessionSetUserName };
+  RWProperty<UnicodeString> UserName{nb::bind(&TSessionData::SessionGetUserName, this), nb::bind(&TSessionData::SessionSetUserName, this)};
   __property UnicodeString UserNameExpanded  = { read = GetUserNameExpanded };
   __property UnicodeString Password  = { read = GetPassword, write = SetPassword };
   __property UnicodeString NewPassword  = { read = GetNewPassword, write = SetNewPassword };
@@ -627,7 +630,8 @@ public:
   __property UnicodeString PublicKeyFile  = { read = FPublicKeyFile, write = SetPublicKeyFile };
   __property UnicodeString Passphrase  = { read = GetPassphrase, write = SetPassphrase };
   __property UnicodeString PuttyProtocol  = { read = FPuttyProtocol, write = SetPuttyProtocol };
-  __property TFSProtocol FSProtocol  = { read = FFSProtocol, write = SetFSProtocol  };
+  __property TFSProtocol FSProtocol = { read = FFSProtocol, write = SetFSProtocol  };
+  RWProperty<TFSProtocol> FSProtocol{nb::bind(&TSessionData::GetFSProtocol, this), nb::bind(&TSessionData::SetFSProtocol, this)};
   __property UnicodeString FSProtocolStr  = { read = GetFSProtocolStr };
   __property bool Modified  = { read = FModified, write = FModified };
   __property bool CanLogin  = { read = GetCanLogin };

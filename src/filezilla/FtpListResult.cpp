@@ -1458,11 +1458,11 @@ BOOL CFtpListResult::parseAsMlsd(const char *line, const int linelen, t_director
   {
     // do not try to detect path type, assume a standard *nix syntax + do not trim
     CServerPath path(fileName, FZ_SERVERTYPE_FTP, false);
-  direntry.name = path.GetLastSegment();
-  if (direntry.name.IsEmpty())
-  {
-    direntry.name = fileName;
-  }
+    direntry.name = path.GetLastSegment();
+    if (direntry.name.IsEmpty())
+    {
+      direntry.name = fileName;
+    }
   }
   else
   {
