@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #include "Buffer.h"
 #include "Utils.h"
 
@@ -35,10 +36,9 @@ private:
 
   intptr_t InternalWrite(const void *data, intptr_t ToWrite);
 
-  Buffer *pt_front_buff_;
-  Buffer *pt_back_buff_;
-  FILE *file_;
-  const char *pt_file_;
+  std::unique_ptr<Buffer> pt_front_buff_;
+  std::unique_ptr<Buffer> pt_back_buff_;
+  FILE *file_; // TODO: gsl::not_null
   int i_line_;
   const char *pt_func_;
 #if 0
@@ -55,7 +55,6 @@ private:
 inline
 void LogStream::SetPrefix(const char *pt_file, int i_line, const char *pt_func, Utils::LogLevel e_log_level)
 {
-  pt_file_ = pt_file;
   i_line_  = i_line;
   pt_func_ = pt_func;
 

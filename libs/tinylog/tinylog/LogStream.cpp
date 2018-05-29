@@ -10,8 +10,9 @@
 namespace tinylog {
 
 LogStream::LogStream(FILE *file, pthread_mutex_t &mutex, pthread_cond_t &cond, bool &already_swap) :
+  pt_front_buff_(std::make_unique<Buffer>(BUFFER_SIZE)),
+  pt_back_buff_(std::make_unique<Buffer>(BUFFER_SIZE)),
   file_(file),
-  pt_file_(nullptr),
   i_line_(0),
   pt_func_(nullptr),
   pt_tm_base_(nullptr),
@@ -19,17 +20,12 @@ LogStream::LogStream(FILE *file, pthread_mutex_t &mutex, pthread_cond_t &cond, b
   cond_(cond),
   already_swap_(already_swap)
 {
-  pt_front_buff_ = new Buffer(BUFFER_SIZE);
-  pt_back_buff_  = new Buffer(BUFFER_SIZE);
 
   Utils::CurrentTime(&tv_base_, &pt_tm_base_);
 }
 
 LogStream::~LogStream()
 {
-  delete pt_front_buff_;
-  delete pt_back_buff_;
-
   if (file_ != nullptr)
   {
     fclose(file_);
@@ -48,9 +44,10 @@ intptr_t LogStream::Write(const void *data, intptr_t ToWrite)
  */
 void LogStream::SwapBuffer()
 {
-  Buffer *pt_tmp = pt_front_buff_;
-  pt_front_buff_ = pt_back_buff_;
-  pt_back_buff_ = pt_tmp;
+//  Buffer *pt_tmp = pt_front_buff_.release();
+//  pt_front_buff_.reset(pt_back_buff_.release());
+//  pt_back_buff_.reset(pt_tmp);
+  std::swap(pt_front_buff_, pt_back_buff_);
 }
 
 /*
