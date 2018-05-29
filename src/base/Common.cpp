@@ -37,6 +37,7 @@ const char Bom[4] = "\xEF\xBB\xBF";
 const wchar_t TokenPrefix = L'%';
 const wchar_t NoReplacement = wchar_t(0);
 const wchar_t TokenReplacement = wchar_t(1);
+// Note similar list in MakeValidFileName
 const UnicodeString LocalInvalidChars(TraceInitStr(L"/\\:*?\"<>|"));
 const UnicodeString PasswordMask(TraceInitStr(L"***"));
 const UnicodeString Ellipsis(TraceInitStr(L"..."));
@@ -125,8 +126,8 @@ UnicodeString AnsiToString(const char *S, size_t Len)
 // Note similar function ValidLocalFileName
 UnicodeString MakeValidFileName(const UnicodeString AFileName)
 {
-  // Note similar list in LocalInvalidChars
   UnicodeString Result = AFileName;
+  // Note similar list in LocalInvalidChars
   UnicodeString IllegalChars(L":;,=+<>|\"[] \\/?*");
   for (intptr_t Index = 0; Index < IllegalChars.Length(); ++Index)
   {
@@ -2849,6 +2850,25 @@ bool IsWine()
     (::GetProcAddress(NtDll, "wine_get_version") != nullptr);
 }
 //---------------------------------------------------------------------------
+int GIsUWP = -1;
+//---------------------------------------------------------------------------
+bool IsUWP()
+{
+  if (GIsUWP < 0)
+  {
+    HINSTANCE Kernel32 = GetModuleHandle(L"kernel32.dll");
+    typedef LONG (WINAPI* GetPackageFamilyNameProc)(HANDLE hProcess, UINT32 *packageFamilyNameLength, PWSTR packageFamilyName);
+    GetPackageFamilyNameProc GetPackageFamilyName =
+      (GetPackageFamilyNameProc)GetProcAddress(Kernel32, "GetPackageFamilyName");
+    UINT32 Len = 0;
+    bool Result =
+      (GetPackageFamilyName != NULL) &&
+      (GetPackageFamilyName(GetCurrentProcess(), &Len, NULL) == ERROR_INSUFFICIENT_BUFFER);
+    GIsUWP = (Result ? 1 : 0);
+  }
+  return (GIsUWP > 0);
+}
+//---------------------------------------------------------------------------
 LCID GetDefaultLCID()
 {
   return GetUserDefaultLCID();
@@ -2911,17 +2931,28 @@ UnicodeString WindowsProductName()
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString WindowsVersion()
+static OSVERSIONINFO GetWindowsVersion()
 {
-  UnicodeString Result;
-  OSVERSIONINFO OSVersionInfo;
-  OSVersionInfo.dwOSVersionInfoSize = sizeof(OSVersionInfo);
+  OSVERSIONINFO Result{};
+  Result.dwOSVersionInfoSize = sizeof(Result);
+  memset(&Result, 0, sizeof(Result));
+  Result.dwOSVersionInfoSize = sizeof(Result);
   // Cannot use the VCL Win32MajorVersion+Win32MinorVersion+Win32BuildNumber as
   // on Windows 10 due to some hacking in InitPlatformId, the Win32BuildNumber is lost
-  if (GetVersionEx(&OSVersionInfo) != 0)
-  {
-    Result = FORMAT("%d.%d.%d", int(OSVersionInfo.dwMajorVersion), int(OSVersionInfo.dwMinorVersion), int(OSVersionInfo.dwBuildNumber));
-  }
+  // if (GetVersionEx(&OSVersionInfo) != 0)
+  GetVersionEx(&Result);
+  return Result;
+}
+//---------------------------------------------------------------------------
+int GetWindowsBuild()
+{
+  return GetWindowsVersion().dwBuildNumber;
+}
+//---------------------------------------------------------------------------
+UnicodeString WindowsVersion()
+{
+  OSVERSIONINFO OSVersionInfo = GetWindowsVersion();
+  UnicodeString Result = FORMAT(L"%d.%d.%d", int(OSVersionInfo.dwMajorVersion), int(OSVersionInfo.dwMinorVersion), int(OSVersionInfo.dwBuildNumber));
   return Result;
 }
 //---------------------------------------------------------------------------

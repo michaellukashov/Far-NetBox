@@ -25,6 +25,7 @@
 #include "TextsCore.h"
 #include "HelpCore.h"
 #include <ne_request.h>
+#include <limits>
 //---------------------------------------------------------------------------
 __removed #pragma package(smart_init)
 //---------------------------------------------------------------------------
@@ -1442,7 +1443,9 @@ void TS3FileSystem::Source(
         {
           S3PutObjectHandler UploadPartHandler =
           { CreateResponseHandlerCustom(LibS3MultipartResponsePropertiesCallback), LibS3PutObjectDataCallback };
-          int PartLength = std::min(S3MultiPartChunkSize, ToInt(Stream->Size - Stream->Position));
+          int64_t Remaining = Stream->Size - Stream->Position;
+          int RemainingInt = static_cast<int>(std::min(static_cast<int64_t>(std::numeric_limits<int>::max()), Remaining));
+          int PartLength = std::min(S3MultiPartChunkSize, RemainingInt);
           FTerminal->LogEvent(FORMAT("Uploading part %d [%s]", Part, IntToStr(PartLength)));
           S3_upload_part(
             &BucketContext, StrToS3(Key), &PutProperties, &UploadPartHandler, ToInt(Part), MultipartUploadId.c_str(),

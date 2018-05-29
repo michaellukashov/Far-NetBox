@@ -48,8 +48,8 @@ public:
   void TriggerEvent() const;
 
 protected:
-  HANDLE FEvent;
-  bool FTerminated;
+  HANDLE FEvent{};
+  bool FTerminated{false};
 
   explicit TSignalThread(TObjectClassId Kind);
   virtual ~TSignalThread();

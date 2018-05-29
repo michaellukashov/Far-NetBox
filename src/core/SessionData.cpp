@@ -568,10 +568,22 @@ bool TSessionData::IsSame(const TSessionData *Default, bool AdvancedOnly) const
   return IsSame(Default, AdvancedOnly, nullptr);
 }
 //---------------------------------------------------------------------------
-bool TSessionData::IsSameSite(const TSessionData *Other) const
+static TFSProtocol NormalizeFSProtocol(TFSProtocol FSProtocol)
+{
+  if ((FSProtocol == fsSCPonly) || (FSProtocol == fsSFTPonly))
+  {
+    FSProtocol = fsSFTP;
+  }
+  return FSProtocol;
+}
+//---------------------------------------------------------------------
+bool TSessionData::IsSameSite(const TSessionData * Other) const
 {
   return
-    (GetFSProtocol() == Other->GetFSProtocol()) &&
+    // Particularly when handling /refresh,
+    // fsSFTPonly sites when compared against sftp:// URLs (fsSFTP) have to match.
+    // But similarly also falled back SCP sites.
+    (NormalizeFSProtocol(GetFSProtocol()) == NormalizeFSProtocol(Other->GetFSProtocol())) &&
     (GetHostName() == Other->GetHostName()) &&
     (GetPortNumber() == Other->GetPortNumber()) &&
     (SessionGetUserName() == Other->SessionGetUserName());
@@ -2044,7 +2056,7 @@ bool TSessionData::ParseUrl(const UnicodeString AUrl, TOptions *Options,
         UnicodeString ConnectionParamName = CutToChar(ConnectionParam, UrlParamValueSeparator, false);
         if (::SameText(ConnectionParamName, UrlHostKeyParamName))
         {
-          SetHostKey(ConnectionParam);
+          SetHostKey(DecodeUrlChars(ConnectionParam));
           FOverrideCachedHostKey = false;
         }
       }
@@ -3105,9 +3117,20 @@ UnicodeString TSessionData::GenerateSessionUrl(uintptr_t Flags) const
 
     if (FLAGSET(Flags, sufHostKey) && !GetHostKey().IsEmpty())
     {
+      UnicodeString S = NormalizeFingerprint(GetHostKey());
+      // Many SHA-256 fingeprints end with an equal sign and we do not really need it to be encoded, so avoid that.
+      if (EndsStr(L"=", S))
+      {
+        S = EncodeUrlString(S.SubString(1, S.Length() - 1)) + L"=";
+      }
+      else
+      {
+        S = EncodeUrlString(S);
+      }
+
       Url +=
         UnicodeString(UrlParamSeparator) + UrlHostKeyParamName +
-        UnicodeString(UrlParamValueSeparator) + NormalizeFingerprint(GetHostKey());
+        UnicodeString(UrlParamValueSeparator) + S;
     }
 
     Url += L"@";
