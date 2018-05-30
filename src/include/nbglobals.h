@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <exception>
+#include <gsl/gsl>
 #endif
 
 #ifdef USE_DLMALLOC

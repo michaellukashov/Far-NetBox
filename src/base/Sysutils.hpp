@@ -20,9 +20,7 @@
 
 #else
 
-#define STRING2(x) #x
-#define STRING(x) STRING2(x)
-#define FILE_LINE __FILE__ "(" STRING(__LINE__) "): "
+#define FILE_LINE __FILE__ "(" GSL_STRINGIFY(__LINE__) "): "
 #ifdef HIDE_TODO
 #define TODO(s)
 #define WARNING(s)
