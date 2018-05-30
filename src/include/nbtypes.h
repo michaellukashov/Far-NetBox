@@ -14,6 +14,9 @@
 #define WIN32_LEAN_AND_MEAN
 #define VC_EXTRALEAN
 #define SECURITY_WIN32
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
 #include <Windows.h>
 
 #include "disable_warnings_in_std_begin.hpp"
