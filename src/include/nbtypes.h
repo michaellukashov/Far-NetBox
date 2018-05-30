@@ -14,8 +14,7 @@
 #define WIN32_LEAN_AND_MEAN
 #define VC_EXTRALEAN
 #define SECURITY_WIN32
-#include <windows.h>
-#include <tchar.h>
+#include <Windows.h>
 
 #include "disable_warnings_in_std_begin.hpp"
 #include <nbglobals.h>

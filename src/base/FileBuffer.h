@@ -36,7 +36,7 @@ public:
   __property int Position = { read=GetPosition, write=SetPosition };
 
 public:
-  TMemoryStream * GetMemory() const { return FMemory; }
+  TMemoryStream * GetMemory() const { return FMemory.get(); }
   void SetMemory(TMemoryStream * Value);
   char * GetData() const { return static_cast<char *>(FMemory->GetMemory()); }
   int64_t GetSize() const { return FMemory->GetSize(); }
@@ -45,7 +45,7 @@ public:
   int64_t GetPosition() const;
 
 private:
-  TMemoryStream * FMemory;
+  std::unique_ptr<TMemoryStream> FMemory;
 };
 //---------------------------------------------------------------------------
 char * EOLToStr(TEOLType EOLType);

@@ -1,6 +1,5 @@
 
 #include <vcl.h>
-#pragma hdrstop
 
 #include <Common.h>
 #include <StrUtils.hpp>
@@ -65,7 +64,7 @@ static bool WellKnownException(
     }
     Message = MainInstructions(LoadStr(ACCESS_VIOLATION_ERROR3));
     CounterName = L"AccessViolations";
-    Clone.reset(new EAccessViolation(E->Message));
+    Clone = std::make_unique<EAccessViolation>(E->Message);
   }
 #if 0
   // EIntError and EMathError are EExternal

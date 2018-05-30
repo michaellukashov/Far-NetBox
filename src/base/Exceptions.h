@@ -105,7 +105,7 @@ private:
     { \
       return new NAME(OBJECT_CLASS_##NAME, this, L""); \
     } \
-    virtual void Rethrow() \
+    virtual void Rethrow() override \
     { \
       throw NAME(OBJECT_CLASS_##NAME, this, L""); \
     }

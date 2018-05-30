@@ -96,7 +96,7 @@ NB_CORE_DLL(intptr_t)  CallProtoService(LPCSTR szModule, const char *szService, 
 
 typedef uint32_t (__cdecl *pfnExceptionFilter)(uint32_t code, EXCEPTION_POINTERS *info);
 
-NB_CORE_DLL(pfnExceptionFilter) GetExceptionFilter(void);
+NB_CORE_DLL(pfnExceptionFilter) GetExceptionFilter();
 NB_CORE_DLL(pfnExceptionFilter) SetExceptionFilter(pfnExceptionFilter pMirandaExceptFilter);
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -118,7 +118,7 @@ __forceinline uint32_t nbcore_hashstr(const char *key)
   }
   else
   {
-    uint32_t len = (uint32_t)strlen(key);
+    const uint32_t len = static_cast<uint32_t>(strlen(key));
     return nbcore_hash(key, len);
   }
 }
@@ -131,7 +131,7 @@ __forceinline uint32_t nbcore_hashstrW(const wchar_t *key)
   }
   else
   {
-    uint32_t len = (uint32_t)wcslen((const wchar_t *)key);
+    uint32_t len = static_cast<uint32_t>(wcslen(static_cast<const wchar_t *>(key)));
     return nbcore_hash(key, len * sizeof(wchar_t));
   }
 }
@@ -148,9 +148,9 @@ typedef int (*FSortFunc)(void *, void *); // sort function prototype
 // and uses it to perform sort/search operations, this results
 // in much better performance as no compare function calls needed
 // Incredibly useful for Hash Tables
-#define NumericKeySort (FSortFunc)(void*) -1
-#define HandleKeySort  (FSortFunc)(void*) -2
-#define PtrKeySort     (FSortFunc)(void*) -3
+#define NumericKeySort ((FSortFunc)(void*) -1)
+#define HandleKeySort  ((FSortFunc)(void*) -2)
+#define PtrKeySort     ((FSortFunc)(void*) -3)
 
 typedef struct
 {
@@ -384,8 +384,8 @@ NB_CORE_DLL(intptr_t) Thread_Push(HINSTANCE hInst, void *pOwner = nullptr);
 #else
 NB_CORE_DLL(intptr_t) Thread_Push(HINSTANCE hInst, void *pOwner);
 #endif
-NB_CORE_DLL(intptr_t) Thread_Pop(void);
-NB_CORE_DLL(void)    Thread_Wait(void);
+NB_CORE_DLL(intptr_t) Thread_Pop();
+NB_CORE_DLL(void)    Thread_Wait();
 
 #if defined( __cplusplus )
 NB_CORE_DLL(HANDLE) nbcore_forkthread(pThreadFunc aFunc, void *arg = nullptr);
@@ -457,7 +457,7 @@ NB_CORE_DLL(int) GetPluginLangByInstance(HINSTANCE);
 
 ///////////////////////////////////////////////////////////////////////////////
 
-NB_CORE_DLL(void) UnloadCoreModule(void);
+NB_CORE_DLL(void) UnloadCoreModule();
 
 #if defined(__cplusplus)
 } // extern "C"
@@ -467,7 +467,7 @@ inline int nbcore_snprintf(char(&buffer)[_Size], const char *fmt, ...)
 {
   va_list args;
   va_start(args, fmt);
-  int ret = nbcore_vsnprintf(buffer, _Size, fmt, args);
+  const int ret = nbcore_vsnprintf(buffer, _Size, fmt, args);
   va_end(args);
   return ret;
 }
@@ -477,7 +477,7 @@ inline int nbcore_snwprintf(wchar_t(&buffer)[_Size], const wchar_t *fmt, ...)
 {
   va_list args;
   va_start(args, fmt);
-  int ret = nbcore_vsnwprintf(buffer, _Size, fmt, args);
+  const int ret = nbcore_vsnwprintf(buffer, _Size, fmt, args);
   va_end(args);
   return ret;
 }

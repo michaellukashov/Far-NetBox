@@ -3,7 +3,6 @@
 #define NO_WIN32_LEAN_AND_MEAN
 #endif
 #include <vcl.h>
-#pragma hdrstop
 
 #include <System.ShlObj.hpp>
 #include <Exceptions.h>
@@ -183,7 +182,7 @@ UnicodeString DefaultStr(const UnicodeString Str, const UnicodeString Default)
 //---------------------------------------------------------------------------
 UnicodeString CutToChar(UnicodeString &Str, wchar_t Ch, bool Trim)
 {
-  intptr_t P = Str.Pos(Ch);
+  const intptr_t P = Str.Pos(Ch);
   UnicodeString Result;
   if (P)
   {
@@ -333,7 +332,7 @@ UnicodeString MainInstructionsFirstParagraph(const UnicodeString S)
   // WORKAROUND, we consider it bad practice, the highlighting should better
   // be localized (but maybe we change our mind later)
   UnicodeString Result;
-  intptr_t Pos = S.Pos(L"\n\n");
+  const intptr_t Pos = S.Pos(L"\n\n");
   // we would not be calling this on single paragraph message
   if (DebugAlwaysTrue(Pos > 0))
   {
@@ -4418,8 +4417,8 @@ int FakeFileImageIndex(const UnicodeString /*AFileName*/, uint32_t /*Attrs*/,
 bool SameUserName(const UnicodeString UserName1, const UnicodeString UserName2)
 {
   // Bitvise reports file owner as "user@host", but we login with "user" only.
-  UnicodeString AUserName1 = CopyToChar(UserName1, L'@', true);
-  UnicodeString AUserName2 = CopyToChar(UserName2, L'@', true);
+  const UnicodeString AUserName1 = CopyToChar(UserName1, L'@', true);
+  const UnicodeString AUserName2 = CopyToChar(UserName2, L'@', true);
   return ::SameText(AUserName1, AUserName2);
 }
 //---------------------------------------------------------------------------
@@ -4473,7 +4472,7 @@ UnicodeString FormatBytes(int64_t Bytes, bool UseOrders)
 
 UnicodeString UnixExtractFileName(const UnicodeString APath)
 {
-  intptr_t Pos = APath.LastDelimiter(L'/');
+  const intptr_t Pos = APath.LastDelimiter(L'/');
   UnicodeString Result;
   if (Pos > 0)
   {
@@ -4489,7 +4488,7 @@ UnicodeString UnixExtractFileName(const UnicodeString APath)
 UnicodeString UnixExtractFileExt(const UnicodeString APath)
 {
   UnicodeString FileName = base::UnixExtractFileName(APath);
-  intptr_t Pos = FileName.LastDelimiter(L".");
+  const intptr_t Pos = FileName.LastDelimiter(L".");
   return (Pos > 0) ? APath.SubString(Pos, APath.Length() - Pos + 1) : UnicodeString();
 }
 
@@ -4505,7 +4504,7 @@ UnicodeString ExtractFileName(const UnicodeString APath, bool Unix)
 UnicodeString GetEnvVariable(const UnicodeString AEnvVarName)
 {
   UnicodeString Result;
-  intptr_t Len = ::GetEnvironmentVariableW(AEnvVarName.c_str(), nullptr, 0);
+  const intptr_t Len = ::GetEnvironmentVariableW(AEnvVarName.c_str(), nullptr, 0);
   if (Len > 0)
   {
     wchar_t *Buffer = Result.SetLength(Len - 1);

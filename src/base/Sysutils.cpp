@@ -1,6 +1,5 @@
 
 #include <vcl.h>
-#pragma hdrstop
 
 #include <iomanip>
 #include <time.h>
@@ -10,38 +9,6 @@
 #include <rtlconsts.h>
 #include <Sysutils.hpp>
 #include <nbutils.h>
-
-#if 0
-intptr_t __cdecl debug_printf(const wchar_t *format, ...)
-{
-  (void)format;
-#ifndef NDEBUG
-  va_list args;
-  va_start(args, format);
-  intptr_t Len = _vscwprintf(format, args);
-  UnicodeString Buf(Len + 1, 0);
-  vswprintf(ToWChar(Buf), Buf.GetLength(), format, args);
-  va_end(args);
-  OutputDebugStringW(Buf.c_str());
-#endif
-  return Len;
-}
-
-intptr_t __cdecl debug_printf2(const char *format, ...)
-{
-  (void)format;
-#ifndef NDEBUG
-  va_list args;
-  va_start(args, format);
-  intptr_t Len = _vscprintf(format, args);
-  AnsiString Buf(Len + sizeof(char), 0);
-  vsprintf_s(&Buf[0], Buf.GetLength(), format, args);
-  va_end(args);
-  OutputDebugStringA(Buf.c_str());
-#endif
-  return Len;
-}
-#endif // #if 0
 
 UnicodeString MB2W(const char *src, const UINT cp)
 {
@@ -667,70 +634,6 @@ bool SysUtulsRemoveFile(const UnicodeString AFileName)
   ::DeleteFileW(ApiPath(AFileName).c_str());
   return !::SysUtulsFileExists(AFileName);
 }
-
-#if 0
-UnicodeString Format(const wchar_t *Format, ...)
-{
-  va_list Args;
-  va_start(Args, Format);
-  UnicodeString Result = ::FormatV(Format, Args);
-  va_end(Args);
-  PackStr(Result);
-  return Result;
-}
-
-UnicodeString FormatV(const wchar_t *Format, va_list Args)
-{
-  UnicodeString Result;
-  if (Format && *Format)
-  {
-    intptr_t Len = _vscwprintf(Format, Args);
-    wchar_t *Buffer = Result.SetLength(Len + 1);
-    vswprintf(Buffer, Len + 1, Format, Args);
-  }
-  PackStr(Result);
-  return Result;
-}
-
-AnsiString FormatA(const char *Format, ...)
-{
-  va_list Args;
-  va_start(Args, Format);
-  AnsiString Result = ::FormatA(Format, Args);
-  va_end(Args);
-  return Result;
-}
-
-AnsiString FormatA(const char *Format, va_list Args)
-{
-  if (Format && *Format)
-  {
-    intptr_t Len = _vscprintf(Format, Args);
-    AnsiString Result(Len + 1, 0);
-    vsprintf_s(&Result[1], Len + 1, Format, Args);
-    PackStr(Result);
-    return Result;
-  }
-  return AnsiString();
-}
-
-UnicodeString FmtLoadStr(intptr_t Id, ...)
-{
-  UnicodeString Fmt = GetGlobals()->GetMsg(Id);
-  if (!Fmt.IsEmpty())
-  {
-    va_list Args;
-    va_start(Args, Id);
-    intptr_t Len = _vscwprintf(Fmt.c_str(), Args) + 1; // _vscprintf doesn't count terminating '\0'
-    UnicodeString Result(Len, 0);
-    vswprintf_s(&Result[1], Result.Length(), Fmt.c_str(), Args);
-    va_end(Args);
-    return Result;
-  }
-  DEBUG_PRINTF("Unknown resource string id: %d\n", Id);
-  return UnicodeString();
-}
-#endif // #if 0
 
 // Returns the next available word, ignoring whitespace
 static const wchar_t *

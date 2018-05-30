@@ -17,7 +17,7 @@ class BaseStringT : public CMStringT< CharT, NBChTraitsCRT< CharT> >
   typedef CMStringT< YCHAR, NBChTraitsCRT <YCHAR > > BaseY;
 
 public:
-  BaseStringT() {}
+  BaseStringT() = default;
   BaseStringT(BaseStringT&&) = default;
 
   BaseStringT(const BaseStringT &rhs) :
@@ -51,7 +51,7 @@ public:
     BaseT(Str, ToInt(Length))
   {}
   explicit BaseStringT(intptr_t Length, CharT Ch) : BaseT(Ch, ToInt(Length)) {}
-  ~BaseStringT() {}
+  ~BaseStringT() = default;
 
   const CharT *c_str() const { return BaseT::c_str(); }
   const CharT *data() const { return BaseT::c_str(); }
@@ -65,7 +65,7 @@ public:
 
   BaseStringT &Delete(intptr_t Index, intptr_t Count)
   {
-    BaseT::Delete(ToInt(Index) - 1, ToInt(Count));
+    BaseT::Delete(ToInt(Index - 1), ToInt(Count));
     return *this;
   }
   BaseStringT &Clear() { BaseT::Empty(); return *this; }
@@ -98,10 +98,8 @@ public:
   BaseStringT &MakeLower() { BaseT::MakeLower(); return *this; }
 
   // intptr_t Compare(const BaseStringT &Str) const;
-  intptr_t CompareIC(const BaseStringT &Str) const
-  { return ::AnsiCompareIC(*this, Str); }
-  intptr_t ToIntPtr() const
-  { return ::StrToIntDef(*this, 0); }
+  intptr_t CompareIC(const BaseStringT &Str) const;
+  intptr_t ToIntPtr() const;
   intptr_t FindFirstOf(const CharT Ch) const
   { return ::ToIntPtr(BaseT::Find(Ch, 0)) + 1; }
   intptr_t FindFirstOf(const CharT *AStr, size_t Offset = 0) const
@@ -120,8 +118,8 @@ public:
 
   BaseStringT &Replace(intptr_t Pos, intptr_t Len, const wchar_t *Str, intptr_t DataLen)
   {
-    BaseT::Delete(ToInt(Pos) - 1, ToInt(Len));
-    BaseT::Insert(ToInt(Pos) - 1, BaseStringT(Str, ToInt(DataLen)).c_str());
+    BaseT::Delete(ToInt(Pos - 1), ToInt(Len));
+    BaseT::Insert(ToInt(Pos - 1), BaseStringT(Str, ToInt(DataLen)).c_str());
     return *this;
   }
   BaseStringT &Replace(intptr_t Pos, intptr_t Len, const BaseStringT &Str) { return Replace(Pos, Len, Str.c_str(), Str.GetLength()); }
@@ -143,13 +141,13 @@ public:
 
   BaseStringT &Insert(intptr_t Pos, const wchar_t *Str, intptr_t StrLen)
   {
-    BaseT::Insert(ToInt(Pos) - 1, BaseStringT(Str, ToInt(StrLen)).c_str());
+    BaseT::Insert(ToInt(Pos - 1), BaseStringT(Str, ToInt(StrLen)).c_str());
     return *this;
   }
   BaseStringT &Insert(intptr_t Pos, const BaseStringT &Str) { return Insert(Pos, Str.c_str(), Str.Length()); }
   BaseStringT &Insert(const CharT *Str, intptr_t Pos)
   {
-    BaseT::Insert(ToInt(Pos) - 1, Str);
+    BaseT::Insert(ToInt(Pos - 1), Str);
     return *this;
   }
   BaseStringT &Insert(const wchar_t Ch, intptr_t Pos) { return Insert(Pos, &Ch, 1); }
@@ -178,11 +176,11 @@ public:
 
   BaseStringT SubStr(intptr_t Pos, intptr_t Len) const
   {
-    return BaseStringT(BaseT::Mid(ToInt(Pos) - 1, ToInt(Len)));
+    return BaseStringT(BaseT::Mid(ToInt(Pos - 1), ToInt(Len)));
   }
   BaseStringT SubStr(intptr_t Pos) const
   {
-    return BaseStringT(BaseT::Mid(ToInt(Pos) - 1));
+    return BaseStringT(BaseT::Mid(ToInt(Pos - 1)));
   }
   BaseStringT SubString(intptr_t Pos, intptr_t Len) const
   {
@@ -309,12 +307,12 @@ public:
   CharT operator[](intptr_t Idx) const
   {
     ThrowIfOutOfRange(Idx, Length()); // Should Range-checking be optional to avoid overhead ??
-    return BaseT::operator[](ToInt(Idx) - 1);
+    return BaseT::operator[](ToInt(Idx - 1));
   }
   CharT &operator[](intptr_t Idx)
   {
     ThrowIfOutOfRange(Idx, Length()); // Should Range-checking be optional to avoid overhead ??
-    return BaseT::GetBuffer()[ToInt(Idx) - 1];
+    return BaseT::GetBuffer()[ToInt(Idx - 1)];
   }
 
 public:
@@ -357,7 +355,7 @@ class NB_CORE_EXPORT RawByteString : public BaseStringT<char>
 {
   typedef BaseStringT<char> BaseT;
 public:
-  RawByteString() {}
+  RawByteString() = default;
   RawByteString(const BaseStringT<wchar_t> &Str) :
     BaseT(Str.c_str(), ToInt(Str.GetLength()))
   {}
@@ -375,7 +373,7 @@ public:
   explicit RawByteString(const unsigned char *Str, intptr_t Length) :
     BaseT(reinterpret_cast<const char *>(Str), ToInt(Length))
   {}
-  ~RawByteString() {}
+  ~RawByteString() = default;
 
   // inline operator BaseT &() { return *static_cast<BaseT *>(this); }
 
@@ -386,13 +384,13 @@ public:
   unsigned char operator[](intptr_t Idx) const
   {
     ThrowIfOutOfRange(Idx, Length()); // Should Range-checking be optional to avoid overhead ??
-    return BaseT::operator[](ToInt(Idx) - 1);
+    return BaseT::operator[](ToInt(Idx - 1));
   }
 
   unsigned char &operator[](intptr_t Idx)
   {
     ThrowIfOutOfRange(Idx, Length()); // Should Range-checking be optional to avoid overhead ??
-    return reinterpret_cast<unsigned  char *>(BaseT::GetBuffer())[ToInt(Idx) - 1];
+    return reinterpret_cast<unsigned  char *>(BaseT::GetBuffer())[ToInt(Idx - 1)];
   }
 
 public:

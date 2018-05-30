@@ -54,11 +54,6 @@ enum FileAttributesEnum
   faAnyFile = 0x0000003f,
 };
 
-#if 0
-NB_CORE_EXPORT intptr_t __cdecl debug_printf(const wchar_t *format, ...);
-NB_CORE_EXPORT intptr_t __cdecl debug_printf2(const char *format, ...);
-#endif // #if 0
-
 #define NB_TEXT(T) L#T
 #ifndef NDEBUG
 #if defined(_MSC_VER)
@@ -323,15 +318,6 @@ NB_CORE_EXPORT bool SysUtulsRemoveFile(const UnicodeString AFileName);
 NB_CORE_EXPORT bool SysUtulsCreateDir(const UnicodeString ADir, LPSECURITY_ATTRIBUTES SecurityAttributes = nullptr);
 NB_CORE_EXPORT bool SysUtulsMoveFile(const UnicodeString LocalFileName, const UnicodeString NewLocalFileName, DWORD AFlags);
 NB_CORE_EXPORT bool SysUtulsRemoveDir(const UnicodeString ADir);
-
-// not used
-#if 0
-NB_CORE_EXPORT UnicodeString Format(const wchar_t *Format, ...);
-NB_CORE_EXPORT UnicodeString FormatV(const wchar_t *Format, va_list Args);
-NB_CORE_EXPORT AnsiString FormatA(const char *Format, ...);
-NB_CORE_EXPORT AnsiString FormatA(const char *Format, va_list Args);
-NB_CORE_EXPORT UnicodeString FmtLoadStr(intptr_t Id, ...);
-#endif // #if 0
 
 NB_CORE_EXPORT UnicodeString WrapText(const UnicodeString Line, intptr_t MaxWidth = 40);
 
