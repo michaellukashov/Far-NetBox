@@ -1750,13 +1750,13 @@ set(TESTNETBOX_01_SOURCES
   ../nbcore/nbutils.cpp
   ../nbcore/nbstring.cpp
   ../nbcore/nbmemory.cpp
+  ../base/UnicodeString.cpp
+  ../base/StrUtils.cpp
+  ../base/Sysutils.cpp
   ../base/Global.cpp
   ../base/System.SyncObjs.cpp
   ../base/LibraryLoader.cpp
   ../base/Classes.cpp
-  ../base/Sysutils.cpp
-  ../base/StrUtils.cpp
-  ../base/UnicodeString.cpp
   ../base/Common.cpp
   ../base/Exceptions.cpp
   ../base/FileBuffer.cpp
