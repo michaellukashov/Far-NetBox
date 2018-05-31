@@ -1687,6 +1687,7 @@ set(TEST_INCLUDES
   ../../libs/fmt
   ../../libs/tinylog
   ../../libs/libs3/inc
+  ../../libs/GSL/include
   ../filezilla
   ../filezilla/misc
   ../base
