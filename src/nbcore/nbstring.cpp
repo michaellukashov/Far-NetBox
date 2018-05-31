@@ -9,10 +9,10 @@ public:
   CNilMStringData();
 
 public:
-  wchar_t achNil[2];
+  wchar_t achNil[2]{};
 };
 
-CNilMStringData::CNilMStringData()
+CNilMStringData::CNilMStringData() : CMStringData()
 {
   nRefs = 2; // Never gets freed
   nDataLength = 0;
@@ -29,8 +29,8 @@ static CNilMStringData *m_nil = nullptr;
 NB_CORE_DLL(CMStringData *) nbstr_allocate(int nChars, int nCharSize)
 {
   nChars++; // nil char
-  size_t nDataBytes = nCharSize * nChars;
-  size_t nTotalSize = nDataBytes + sizeof(CMStringData);
+  const size_t nDataBytes = nCharSize * nChars;
+  const size_t nTotalSize = nDataBytes + sizeof(CMStringData);
 
   CMStringData *pData = static_cast<CMStringData *>(nbcore_alloc(nTotalSize));
   if (pData == nullptr)
@@ -50,8 +50,8 @@ NB_CORE_DLL(void) nbstr_free(CMStringData *pData)
 NB_CORE_DLL(CMStringData *) nbstr_realloc(CMStringData *pData, int nChars, int nCharSize)
 {
   nChars++; // nil char
-  ULONG nDataBytes = nCharSize * nChars;
-  ULONG nTotalSize = nDataBytes + sizeof(CMStringData);
+  const ULONG nDataBytes = nCharSize * nChars;
+  const ULONG nTotalSize = nDataBytes + sizeof(CMStringData);
 
   CMStringData *pNewData = static_cast<CMStringData *>(nbcore_realloc(pData, nTotalSize));
   if (pNewData == nullptr)

@@ -3526,7 +3526,7 @@ bool TSessionDialog::Execute(TSessionData *SessionData, TSessionActionEnum &Acti
 
     SessionData->SetHostName(HostName);
     SessionData->SetPortNumber(PortNumberEdit->GetAsInteger());
-    SessionData->SetUserName(UserName);
+    SessionData->SessionSetUserName(UserName);
     SessionData->SetPassword(Password);
     SessionData->SetLoginType(ltNormal);
     SessionData->SetPublicKeyFile(PrivateKeyEdit->GetText());

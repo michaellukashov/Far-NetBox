@@ -1,6 +1,5 @@
 #pragma once
 
-#include <assert.h>
 #include <function2.hpp>
 #include <nbglobals.h>
 
@@ -136,48 +135,48 @@ public:
   explicit ROProperty(const TGetValueFunctor &Getter) :
     _getter(Getter)
   {
-    assert(_getter != nullptr);
+    Expects(_getter != nullptr);
   }
   T operator()() const
   {
-    assert(_getter);
+    Expects(_getter);
     return _getter();
   }
   operator T() const
   {
-    assert(_getter);
+    Expects(_getter);
     return _getter();
   }
   const T operator->() const
   {
-    assert(_getter);
+    Expects(_getter);
     return _getter();
   }
   T operator->()
   {
-    assert(_getter);
+    Expects(_getter);
     return _getter();
   }
   friend bool inline operator==(const ROProperty &lhs, const ROProperty &rhs)
   {
-    assert(lhs._getter);
-    assert(rhs._getter);
+    Expects(lhs._getter);
+    Expects(rhs._getter);
     return lhs._getter() == rhs._getter();
   }
   friend bool inline operator==(const ROProperty &lhs, const T &rhs)
   {
-    assert(lhs._getter);
+    Expects(lhs._getter);
     return lhs._getter() == rhs;
   }
   friend bool inline operator!=(const ROProperty &lhs, const ROProperty &rhs)
   {
-    assert(lhs._getter);
-    assert(rhs._getter);
+    Expects(lhs._getter);
+    Expects(rhs._getter);
     return lhs._getter() != rhs._getter();
   }
   friend bool inline operator!=(ROProperty &lhs, const T &rhs)
   {
-    assert(lhs._getter);
+    Expects(lhs._getter);
     return lhs._getter() != rhs;
   }
 };
@@ -196,47 +195,52 @@ public:
     _getter(Getter),
     _setter(Setter)
   {
-    assert(_getter != nullptr);
-    assert(_setter != nullptr);
+    Expects(_getter != nullptr);
+    Expects(_setter != nullptr);
   }
   T operator()() const
   {
-    assert(_getter);
+    Expects(_getter);
     return _getter();
   }
   operator T() const
   {
-    assert(_getter);
+    Expects(_getter);
     return _getter();
   }
+  /*operator T&() const
+  {
+    Expects(_getter);
+    return _getter();
+  }*/
   T operator->() const
   {
-    assert(_getter);
+    Expects(_getter);
     return _getter();
   }
   void operator()(const T &Value)
   {
-    assert(_setter);
+    Expects(_setter);
     _setter(Value);
   }
   void operator=(T Value)
   {
-    assert(_setter);
+    Expects(_setter);
     _setter(Value);
   }
   bool operator==(T Value) const
   {
-    assert(_getter);
+    Expects(_getter);
     return _getter() == Value;
   }
   friend bool inline operator==(const RWProperty &lhs, const RWProperty &rhs)
   {
-    assert(lhs._getter);
+    Expects(lhs._getter);
     return lhs._getter == rhs._getter && lhs._setter == rhs._setter;
   }
   friend bool inline operator!=(RWProperty &lhs, const T &rhs)
   {
-    assert(lhs._getter);
+    Expects(lhs._getter);
     return lhs._getter() != rhs;
   }
 };

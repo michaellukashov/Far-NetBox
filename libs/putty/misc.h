@@ -154,11 +154,11 @@ void debug_memdump(const void *buf, int len, int L);
 #endif
 
 #ifndef MPEXT
-#ifndef min
-#define min(x,y) ( (x) < (y) ? (x) : (y) )
+#ifndef __min
+#define __min(x,y) ( (x) < (y) ? (x) : (y) )
 #endif
-#ifndef max
-#define max(x,y) ( (x) > (y) ? (x) : (y) )
+#ifndef __max
+#define __max(x,y) ( (x) > (y) ? (x) : (y) )
 #endif
 #endif
 

@@ -1846,7 +1846,7 @@ void TRights::SetText(const UnicodeString Value)
     bool KeepText = false;
     for (intptr_t Index = TextLen; Index >= 1; Index--)
     {
-      if (Value[Index] == UnsetSymbol)
+      if ((Value[Index] == UnsetSymbol) || (Value[Index] == UnsetSymbolWin))
       {
         FUnset |= static_cast<uint16_t>(Flag | ExtendedFlag);
       }

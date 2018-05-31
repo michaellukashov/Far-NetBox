@@ -120,7 +120,7 @@ void TSessionData::Default()
 {
   SetHostName(L"");
   SetPortNumber(SshPortNumber);
-  SetUserName(L"");
+  SessionSetUserName(L"");
   SetPassword(L"");
   SetNewPassword(L"");
   SetChangePassword(false);
@@ -470,7 +470,7 @@ void TSessionData::CopyData(TSessionData *SourceData)
   //META_PROPERTIES;
 
 
-  SetUserName(SourceData->SessionGetUserName());
+  SessionSetUserName(SourceData->SessionGetUserName());
   for (intptr_t Index = 0; Index < ToIntPtr(_countof(FBugs)); ++Index)
   {
     // PROPERTY(Bug[(TSshBug)Index]);
@@ -568,10 +568,22 @@ bool TSessionData::IsSame(const TSessionData *Default, bool AdvancedOnly) const
   return IsSame(Default, AdvancedOnly, nullptr);
 }
 //---------------------------------------------------------------------------
-bool TSessionData::IsSameSite(const TSessionData *Other) const
+static TFSProtocol NormalizeFSProtocol(TFSProtocol FSProtocol)
+{
+  if ((FSProtocol == fsSCPonly) || (FSProtocol == fsSFTPonly))
+  {
+    FSProtocol = fsSFTP;
+  }
+  return FSProtocol;
+}
+//---------------------------------------------------------------------
+bool TSessionData::IsSameSite(const TSessionData * Other) const
 {
   return
-    (GetFSProtocol() == Other->GetFSProtocol()) &&
+    // Particularly when handling /refresh,
+    // fsSFTPonly sites when compared against sftp:// URLs (fsSFTP) have to match.
+    // But similarly also falled back SCP sites.
+    (NormalizeFSProtocol(GetFSProtocol()) == NormalizeFSProtocol(Other->GetFSProtocol())) &&
     (GetHostName() == Other->GetHostName()) &&
     (GetPortNumber() == Other->GetPortNumber()) &&
     (SessionGetUserName() == Other->SessionGetUserName());
@@ -589,7 +601,7 @@ void TSessionData::DoLoad(THierarchicalStorage *Storage, bool PuttyImport, bool 
   // (implemented by TOptionsIniFile)
 
   SetPortNumber(Storage->ReadInteger("PortNumber", GetPortNumber()));
-  SetUserName(Storage->ReadString("UserName", SessionGetUserName()));
+  SessionSetUserName(Storage->ReadString("UserName", SessionGetUserName()));
   // must be loaded after UserName, because HostName may be in format user@host
   SetHostName(Storage->ReadString("HostName", GetHostName()));
 
@@ -2044,14 +2056,14 @@ bool TSessionData::ParseUrl(const UnicodeString AUrl, TOptions *Options,
         UnicodeString ConnectionParamName = CutToChar(ConnectionParam, UrlParamValueSeparator, false);
         if (::SameText(ConnectionParamName, UrlHostKeyParamName))
         {
-          SetHostKey(ConnectionParam);
+          SetHostKey(DecodeUrlChars(ConnectionParam));
           FOverrideCachedHostKey = false;
         }
       }
 
       UnicodeString RawUserName = CutToChar(UserInfo, L':', false);
       if (!RawUserName.IsEmpty())
-        SetUserName(DecodeUrlChars(RawUserName));
+        SessionSetUserName(DecodeUrlChars(RawUserName));
 
       SetPassword(DecodeUrlChars(UserInfo));
 
@@ -2226,7 +2238,7 @@ bool TSessionData::ParseUrl(const UnicodeString AUrl, TOptions *Options,
     {
       if (!Value.IsEmpty())
       {
-        SetUserName(Value);
+        SessionSetUserName(Value);
       }
     }
     if (Options->FindSwitch("password", Value))
@@ -2281,7 +2293,7 @@ void TSessionData::RollbackTunnel()
 void TSessionData::ExpandEnvironmentVariables()
 {
   SetHostName(GetHostNameExpanded());
-  SetUserName(GetUserNameExpanded());
+  SessionSetUserName(GetUserNameExpanded());
   SetPublicKeyFile(::ExpandEnvironmentVariables(GetPublicKeyFile()));
 }
 //---------------------------------------------------------------------
@@ -2390,7 +2402,7 @@ void TSessionData::SetHostName(const UnicodeString AValue)
     intptr_t P = Value.LastDelimiter(L"@");
     if (P > 0)
     {
-      SetUserName(Value.SubString(1, P - 1));
+      SessionSetUserName(Value.SubString(1, P - 1));
       Value = Value.SubString(P + 1, Value.Length() - P);
     }
     FHostName = Value;
@@ -2443,7 +2455,7 @@ void TSessionData::SetUnsetNationalVars(bool Value)
   SET_SESSION_PROPERTY(UnsetNationalVars);
 }
 //---------------------------------------------------------------------
-void TSessionData::SetUserName(UnicodeString Value)
+void TSessionData::SessionSetUserName(UnicodeString Value)
 {
   // Avoid password recryption (what may popup master password prompt)
   if (FUserName != Value)
@@ -3105,9 +3117,20 @@ UnicodeString TSessionData::GenerateSessionUrl(uintptr_t Flags) const
 
     if (FLAGSET(Flags, sufHostKey) && !GetHostKey().IsEmpty())
     {
+      UnicodeString S = NormalizeFingerprint(GetHostKey());
+      // Many SHA-256 fingeprints end with an equal sign and we do not really need it to be encoded, so avoid that.
+      if (EndsStr(L"=", S))
+      {
+        S = EncodeUrlString(S.SubString(1, S.Length() - 1)) + L"=";
+      }
+      else
+      {
+        S = EncodeUrlString(S);
+      }
+
       Url +=
         UnicodeString(UrlParamSeparator) + UrlHostKeyParamName +
-        UnicodeString(UrlParamValueSeparator) + NormalizeFingerprint(GetHostKey());
+        UnicodeString(UrlParamValueSeparator) + S;
     }
 
     Url += L"@";
@@ -3195,7 +3218,7 @@ UnicodeString TSessionData::GenerateOpenCommandArgs(bool /*Rtf*/) const
   }
   SessionData->SetHostName(FactoryDefaults->GetHostName());
   SessionData->SetPortNumber(FactoryDefaults->GetPortNumber());
-  SessionData->SetUserName(FactoryDefaults->SessionGetUserName());
+  SessionData->SessionSetUserName(FactoryDefaults->SessionGetUserName());
   SessionData->SetPassword(FactoryDefaults->GetPassword());
   SessionData->CopyNonCoreData(FactoryDefaults.get());
   SessionData->SetFtps(FactoryDefaults->GetFtps());
@@ -4319,7 +4342,7 @@ void TSessionData::SetLoginType(TLoginType Value)
   if (GetLoginType() == ltAnonymous)
   {
     SetPassword(L"");
-    SetUserName(AnonymousUserName);
+    SessionSetUserName(AnonymousUserName);
   }
 }
 

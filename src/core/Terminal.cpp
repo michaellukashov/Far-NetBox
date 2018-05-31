@@ -1707,7 +1707,7 @@ void TTerminal::OpenTunnel()
     FTunnelData->SetTunnel(false);
     FTunnelData->SetHostName(FSessionData->GetTunnelHostName());
     FTunnelData->SetPortNumber(FSessionData->GetTunnelPortNumber());
-    FTunnelData->SetUserName(FSessionData->GetTunnelUserName());
+    FTunnelData->SessionSetUserName(FSessionData->GetTunnelUserName());
     FTunnelData->SetPassword(FSessionData->GetTunnelPassword());
     FTunnelData->SetPublicKeyFile(FSessionData->GetTunnelPublicKeyFile());
     UnicodeString HostName = FSessionData->GetHostNameExpanded();
@@ -8263,7 +8263,7 @@ void TSecondaryTerminal::Init(
   GetSessionData()->NonPersistant();
   if (!FMainTerminal->TerminalGetUserName().IsEmpty())
   {
-    GetSessionData()->SetUserName(FMainTerminal->TerminalGetUserName());
+    GetSessionData()->SessionSetUserName(FMainTerminal->TerminalGetUserName());
   }
 }
 //---------------------------------------------------------------------------

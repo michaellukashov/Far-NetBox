@@ -25,6 +25,7 @@
 #include "TextsCore.h"
 #include "HelpCore.h"
 #include <ne_request.h>
+#include <limits>
 //---------------------------------------------------------------------------
 __removed #pragma package(smart_init)
 //---------------------------------------------------------------------------
@@ -1339,7 +1340,7 @@ void TS3FileSystem::Source(
 
     FileParams.SourceSize = AHandle.Size;
     FileParams.SourceTimestamp = AHandle.Modification;
-    FileParams.DestSize = RemoteFile->Size;
+    FileParams.DestSize = RemoteFile->Size();
     FileParams.DestTimestamp = TDateTime();
     FileParams.DestPrecision = mfNone;
     delete RemoteFile;
@@ -1423,10 +1424,10 @@ void TS3FileSystem::Source(
         FMTLOAD(TRANSFER_ERROR, AHandle.FileName), "",
       [&]()
       {
-        DebugAssert(Stream->Position == OperationProgress->TransferredSize);
+        DebugAssert(Stream->Position() == OperationProgress->TransferredSize());
 
         // If not, it's chunk retry and we have to undo the unsuccessful chunk upload
-        if (Position < Stream->Position)
+        if (Position < Stream->Position())
         {
           Stream->Position = Position;
           OperationProgress->AddTransferred(Position - OperationProgress->TransferredSize);
@@ -1442,7 +1443,9 @@ void TS3FileSystem::Source(
         {
           S3PutObjectHandler UploadPartHandler =
           { CreateResponseHandlerCustom(LibS3MultipartResponsePropertiesCallback), LibS3PutObjectDataCallback };
-          int PartLength = std::min(S3MultiPartChunkSize, ToInt(Stream->Size - Stream->Position));
+          int64_t Remaining = Stream->Size() - Stream->Position();
+          int RemainingInt = static_cast<int>(std::min(static_cast<int64_t>(std::numeric_limits<int>::max()), Remaining));
+          int PartLength = std::min(S3MultiPartChunkSize, RemainingInt);
           FTerminal->LogEvent(FORMAT("Uploading part %d [%s]", Part, IntToStr(PartLength)));
           S3_upload_part(
             &BucketContext, StrToS3(Key), &PutProperties, &UploadPartHandler, ToInt(Part), MultipartUploadId.c_str(),
@@ -1460,7 +1463,7 @@ void TS3FileSystem::Source(
           CheckLibS3Error(Data, true);
         }
 
-        Position = Stream->Position;
+        Position = Stream->Position();
 
         if (Multipart)
         {
@@ -1604,8 +1607,8 @@ void TS3FileSystem::Sink(
     FTerminal->TerminalOpenLocalFile(DestFullName, GENERIC_READ, nullptr, nullptr, nullptr, &MTime, nullptr, &Size);
     TOverwriteFileParams FileParams;
 
-    FileParams.SourceSize = AFile->Size;
-    FileParams.SourceTimestamp = AFile->Modification; // noop
+    FileParams.SourceSize = AFile->Size();
+    FileParams.SourceTimestamp = AFile->Modification(); // noop
     FileParams.DestSize = Size;
     FileParams.DestTimestamp = UnixToDateTime(MTime, FTerminal->GetSessionData()->GetDSTMode());
 
@@ -1651,7 +1654,7 @@ void TS3FileSystem::Sink(
         volatile TAutoFlag ResponseIgnoreSwitch(FResponseIgnore);
         S3GetObjectHandler GetObjectHandler = { CreateResponseHandler(), LibS3GetObjectDataCallback };
         S3_get_object(
-          &BucketContext, StrToS3(Key), nullptr, Stream->Position, 0, FRequestContext, FTimeout, &GetObjectHandler, &Data);
+          &BucketContext, StrToS3(Key), nullptr, Stream->Position(), 0, FRequestContext, FTimeout, &GetObjectHandler, &Data);
 
         // The "exception" was already seen by the user, its presence mean an accepted abort of the operation.
         if (Data.Exception.get() == nullptr)
@@ -1668,9 +1671,9 @@ void TS3FileSystem::Sink(
 
       DeleteLocalFile = false;
 
-      if (CopyParam->PreserveTime)
+      if (CopyParam->PreserveTime())
       {
-        FTerminal->UpdateTargetTime(LocalFileHandle, AFile->Modification, FTerminal->SessionData->GetDSTMode());
+        FTerminal->UpdateTargetTime(LocalFileHandle, AFile->Modification(), FTerminal->SessionData->GetDSTMode());
       }
     },
     __finally

@@ -1,6 +1,5 @@
 
 #include <vcl.h>
-#pragma hdrstop
 
 #include <Common.h>
 #include <FileBuffer.h>
@@ -26,13 +25,13 @@ char * EOLToStr(TEOLType EOLType)
 }
 //---------------------------------------------------------------------------
 TFileBuffer::TFileBuffer() :
-  FMemory(new TMemoryStream())
+  FMemory(std::make_unique<TMemoryStream>())
 {
 }
 //---------------------------------------------------------------------------
 TFileBuffer::~TFileBuffer()
 {
-  SAFE_DESTROY(FMemory);
+  FMemory.reset();
 }
 //---------------------------------------------------------------------------
 void TFileBuffer::SetSize(int64_t Value)
@@ -55,13 +54,9 @@ int64_t TFileBuffer::GetPosition() const
 //---------------------------------------------------------------------------
 void TFileBuffer::SetMemory(TMemoryStream * Value)
 {
-  if (FMemory != Value)
+  if (FMemory.get() != Value)
   {
-    if (FMemory)
-    {
-      SAFE_DESTROY(FMemory);
-    }
-    FMemory = Value;
+    FMemory.reset(Value);
   }
 }
 //---------------------------------------------------------------------------

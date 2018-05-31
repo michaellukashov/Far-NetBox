@@ -6115,7 +6115,7 @@ static void do_ssh1_connection(Ssh ssh, const unsigned char *in, int inlen,
 	    }
 	} else {
 	    while (inlen > 0) {
-		int len = min(inlen, 512);
+		int len = __min(inlen, 512);
 		send_packet(ssh, SSH1_CMSG_STDIN_DATA,
 			    PKT_INT, len, PKT_DATA, in, len,
                             PKT_END);

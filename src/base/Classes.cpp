@@ -1,6 +1,5 @@
 
 #include <vcl.h>
-#pragma hdrstop
 
 #include <Classes.hpp>
 #include <Common.h>

@@ -12,7 +12,6 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 message("Build type: ${CMAKE_BUILD_TYPE}")
 message("CMAKE_CL_64: ${CMAKE_CL_64}")
-message("MSVC10: ${MSVC10}")
 
 if(NOT DEFINED FAR_VERSION OR FAR_VERSION STREQUAL "")
   set(FAR_VERSION Far2)
@@ -910,6 +909,7 @@ set(ATLMFC_COMPILE_FLAGS
   -D_ATL_NO_DEBUG_CRT -D_ATL_NO_UUIDOF -D_ATL_NO_CONNECTION_POINTS -D_ATL_NO_DATETIME_RESOURCES_
   -D_ATL_NO_DEFAULT_LIBS -D_ATL_NO_PERF_SUPPORT -D_AFX_PORTABLE -D_ATL_NO_COMMODULE
   -D_AFX_NO_SOCKET_SUPPORT
+  -DNOMINMAX
 )
 
 if(CMAKE_COMPILER_IS_MINGW)
@@ -954,6 +954,7 @@ endif()
 target_include_directories(atlmfc PRIVATE
   ../../libs/atlmfc/include
   ../base
+  ../../libs/GSL/include
 )
 
 #-------------------------------------------------------------------------------
@@ -1044,6 +1045,10 @@ add_library(tinyxml2 STATIC
 
 target_compile_options(tinyxml2 PRIVATE
   -DTINYXML2_EXPORT
+)
+
+target_include_directories(tinyxml2 PRIVATE
+  ../../libs/GSL/include
 )
 
 #-------------------------------------------------------------------------------
@@ -1212,6 +1217,7 @@ add_library(rdestl STATIC
 
 target_include_directories(rdestl PRIVATE
   ../base
+  ../../libs/GSL/include
 )
 
 target_compile_options(rdestl PRIVATE
@@ -1235,6 +1241,7 @@ add_library(tinylog STATIC
 
 target_include_directories(tinylog PRIVATE
   ../base
+  ../../libs/GSL/include
 )
 
 target_compile_options(tinylog PRIVATE
@@ -1258,6 +1265,10 @@ add_library(fmt STATIC
 target_compile_options(fmt PRIVATE
   -DFMT_EXPORT
   ${NETBOX_UNICODE_FLAGS}
+)
+
+target_include_directories(fmt PRIVATE
+  ../../libs/GSL/include
 )
 
 #-------------------------------------------------------------------------------
@@ -1589,6 +1600,7 @@ target_include_directories(NetBox PRIVATE
   ../../libs/fmt
   ../../libs/tinylog
   ../../libs/libs3/inc
+  ../../libs/GSL/include
   ../filezilla
   ../base
   ../core
@@ -1619,6 +1631,8 @@ target_compile_options(NetBox PRIVATE
   ${LIBEXPAT_DEFS}
   ${ATLMFC_COMPILE_FLAGS}
   ${NETBOX_UNICODE_FLAGS}
+  -DGSL_THROW_ON_CONTRACT_VIOLATION
+  -DNOMINMAX
 )
 
 set(NETBOX_PLUGIN_DIR ${PROJECT_ROOT}/${FAR_VERSION}_${PROJECT_PLATFORM}/Plugins/NetBox)

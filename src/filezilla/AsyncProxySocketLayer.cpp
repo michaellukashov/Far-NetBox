@@ -455,8 +455,8 @@ void CAsyncProxySocketLayer::OnReceive(int nErrorCode)
   else if (m_ProxyData.nProxyType==PROXYTYPE_HTTP11)
   {
     DebugAssert(m_nProxyOpID==PROXYOP_CONNECT);
-    char buffer[9];
-    memset(buffer, 0, sizeof(buffer));
+    char buffer[9]{0};
+    bool responseLogged = false;
     for(;;)
     {
       int numread = ReceiveNext(buffer, m_pStrBuffer?1:8);
@@ -495,9 +495,13 @@ void CAsyncProxySocketLayer::OnReceive(int nErrorCode)
       char *pos = strstr(m_pStrBuffer, "\r\n");
       if (pos)
       {
-        CString status;
-        status.Format(L"HTTP proxy response: %s", (LPCWSTR)CString(m_pStrBuffer));
-        LogSocketMessageRaw(FZ_LOG_PROGRESS, status);
+        if (!responseLogged)
+        {
+          CString status;
+          status.Format(L"HTTP proxy response: %s", UnicodeString(m_pStrBuffer, pos - m_pStrBuffer).c_str());
+          LogSocketMessageRaw(FZ_LOG_PROGRESS, status);
+          responseLogged = true;
+        }
         char *pos2 = strstr(m_pStrBuffer, " ");
         if (!pos2 || *(pos2+1)!='2' || pos2>pos)
         {
@@ -510,6 +514,9 @@ void CAsyncProxySocketLayer::OnReceive(int nErrorCode)
       }
       if (strlen(m_pStrBuffer)>3 && !memcmp(m_pStrBuffer+strlen(m_pStrBuffer)-4, "\r\n\r\n", 4)) //End of the HTTP header
       {
+        CString status;
+        status.Format(L"HTTP proxy headers: %s", UnicodeString(pos).c_str());
+        LogSocketMessageRaw(FZ_LOG_PROGRESS, status);
         ConnectionEstablished();
         return;
       }

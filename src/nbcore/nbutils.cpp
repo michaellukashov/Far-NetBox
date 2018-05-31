@@ -1,7 +1,6 @@
 #include "stdafx.h"
 
 #include <WinUser.h>
-#pragma hdrstop
 
 namespace nb {
 
@@ -49,7 +48,7 @@ TEncodeType DetectUTF8Encoding(const uint8_t *str, intptr_t len)
 
   while (buf != endbuf)
   {
-    uint8_t c = *buf++;
+    const uint8_t c = *buf++;
     if (trailing)
     {
       if ((c & 0xC0) == 0x80) // Does trailing byte follow UTF-8 format?

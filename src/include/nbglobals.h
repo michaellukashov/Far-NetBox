@@ -1,10 +1,10 @@
 #pragma once
 
 #if defined(__cplusplus)
-#include <stddef.h>
 #include <stdlib.h>
 #include <stdint.h>
 #include <exception>
+#include <gsl/gsl>
 #endif
 
 #ifdef USE_DLMALLOC
