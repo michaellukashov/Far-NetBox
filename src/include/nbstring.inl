@@ -2,7 +2,7 @@
 
 #ifndef M_STRING_INL__
 
-template<typename BaseType>
+template <typename BaseType>
 CMSimpleStringT<BaseType>::CMSimpleStringT() :
   m_pszData(nullptr)
 {
@@ -10,7 +10,7 @@ CMSimpleStringT<BaseType>::CMSimpleStringT() :
   Attach(pData);
 }
 
-template<typename BaseType>
+template <typename BaseType>
 CMSimpleStringT<BaseType>::CMSimpleStringT(const CMSimpleStringT &strSrc) :
   m_pszData(nullptr)
 {
@@ -19,7 +19,7 @@ CMSimpleStringT<BaseType>::CMSimpleStringT(const CMSimpleStringT &strSrc) :
   Attach(pNewData);
 }
 
-template<typename BaseType>
+template <typename BaseType>
 CMSimpleStringT<BaseType>::CMSimpleStringT(PCXSTR pszSrc) :
   m_pszData(nullptr)
 {
@@ -33,7 +33,7 @@ CMSimpleStringT<BaseType>::CMSimpleStringT(PCXSTR pszSrc) :
   }
 }
 
-template<typename BaseType>
+template <typename BaseType>
 CMSimpleStringT<BaseType>::CMSimpleStringT(const XCHAR *pchSrc, int nLength) :
   m_pszData(nullptr)
 {
@@ -46,14 +46,14 @@ CMSimpleStringT<BaseType>::CMSimpleStringT(const XCHAR *pchSrc, int nLength) :
   }
 }
 
-template<typename BaseType>
+template <typename BaseType>
 CMSimpleStringT<BaseType>::~CMSimpleStringT()
 {
   CMStringData *pData = GetData();
   pData->Release();
 }
 
-template<typename BaseType>
+template <typename BaseType>
 CMSimpleStringT<BaseType> &CMSimpleStringT<BaseType>::operator=(const CMSimpleStringT &strSrc)
 {
   CMStringData *pSrcData = strSrc.GetData();
@@ -75,13 +75,13 @@ CMSimpleStringT<BaseType> &CMSimpleStringT<BaseType>::operator=(const CMSimpleSt
   return *this;
 }
 
-template<typename BaseType>
+template <typename BaseType>
 void CMSimpleStringT<BaseType>::Append(PCXSTR pszSrc)
 {
   Append(pszSrc, StringLength(pszSrc));
 }
 
-template<typename BaseType>
+template <typename BaseType>
 void CMSimpleStringT<BaseType>::Append(PCXSTR pszSrc, int nLength)
 {
   // See comment in SetString() about why we do this
@@ -110,7 +110,7 @@ void CMSimpleStringT<BaseType>::Append(PCXSTR pszSrc, int nLength)
   ReleaseBufferSetLength(nNewLength);
 }
 
-template<typename BaseType>
+template <typename BaseType>
 void CMSimpleStringT<BaseType>::AppendChar(XCHAR ch)
 {
   int nOldLength = GetLength();
@@ -120,13 +120,13 @@ void CMSimpleStringT<BaseType>::AppendChar(XCHAR ch)
   ReleaseBufferSetLength(nNewLength);
 }
 
-template<typename BaseType>
+template <typename BaseType>
 void CMSimpleStringT<BaseType>::Append(const CMSimpleStringT<BaseType> &strSrc)
 {
   Append(strSrc.GetString(), strSrc.GetLength());
 }
 
-template<typename BaseType>
+template <typename BaseType>
 void CMSimpleStringT<BaseType>::Empty()
 {
   CMStringData *pOldData = GetData();
@@ -146,7 +146,7 @@ void CMSimpleStringT<BaseType>::Empty()
   }
 }
 
-template<typename BaseType>
+template <typename BaseType>
 void CMSimpleStringT<BaseType>::FreeExtra()
 {
   CMStringData *pOldData = GetData();
@@ -172,7 +172,7 @@ void CMSimpleStringT<BaseType>::FreeExtra()
   }
 }
 
-template<typename BaseType>
+template <typename BaseType>
 typename CMSimpleStringT<BaseType>::PXSTR CMSimpleStringT<BaseType>::GetBuffer()
 {
   CMStringData *pData = GetData();
@@ -182,7 +182,7 @@ typename CMSimpleStringT<BaseType>::PXSTR CMSimpleStringT<BaseType>::GetBuffer()
   return m_pszData;
 }
 
-template<typename BaseType>
+template <typename BaseType>
 typename CMSimpleStringT<BaseType>::PXSTR CMSimpleStringT<BaseType>::GetBufferSetLength(int nLength)
 {
   PXSTR pszBuffer = GetBuffer(nLength);
@@ -191,7 +191,7 @@ typename CMSimpleStringT<BaseType>::PXSTR CMSimpleStringT<BaseType>::GetBufferSe
   return pszBuffer;
 }
 
-template<typename BaseType>
+template <typename BaseType>
 typename CMSimpleStringT<BaseType>::PXSTR CMSimpleStringT<BaseType>::LockBuffer()
 {
   CMStringData *pData = GetData();
@@ -205,14 +205,14 @@ typename CMSimpleStringT<BaseType>::PXSTR CMSimpleStringT<BaseType>::LockBuffer(
   return m_pszData;
 }
 
-template<typename BaseType>
+template <typename BaseType>
 void CMSimpleStringT<BaseType>::UnlockBuffer()
 {
   CMStringData *pData = GetData();
   pData->Unlock();
 }
 
-template<typename BaseType>
+template <typename BaseType>
 void CMSimpleStringT<BaseType>::ReleaseBuffer(int nNewLength)
 {
   if (nNewLength == -1)
@@ -223,14 +223,14 @@ void CMSimpleStringT<BaseType>::ReleaseBuffer(int nNewLength)
   SetLength(nNewLength);
 }
 
-template<typename BaseType>
+template <typename BaseType>
 void CMSimpleStringT<BaseType>::Truncate(int nNewLength)
 {
   GetBuffer(nNewLength);
   ReleaseBufferSetLength(nNewLength);
 }
 
-template<typename BaseType>
+template <typename BaseType>
 void CMSimpleStringT<BaseType>::SetAt(int iChar, XCHAR ch)
 {
   int nLength = GetLength();
@@ -240,13 +240,13 @@ void CMSimpleStringT<BaseType>::SetAt(int iChar, XCHAR ch)
 
 }
 
-template<typename BaseType>
+template <typename BaseType>
 void CMSimpleStringT<BaseType>::SetString(PCXSTR pszSrc)
 {
   SetString(pszSrc, StringLength(pszSrc));
 }
 
-template<typename BaseType>
+template <typename BaseType>
 void CMSimpleStringT<BaseType>::SetString(PCXSTR pszSrc, int nLength)
 {
   if (nLength == 0)
@@ -292,7 +292,7 @@ typename CMSimpleStringT<BaseType> operator+(typename CMSimpleStringT<BaseType>:
   return s;
 }
 
-template<typename BaseType>
+template <typename BaseType>
 void __stdcall CMSimpleStringT<BaseType>::CopyChars(XCHAR *pchDest, const XCHAR *pchSrc, int nChars)
 {
 #pragma warning (push)
@@ -301,13 +301,13 @@ void __stdcall CMSimpleStringT<BaseType>::CopyChars(XCHAR *pchDest, const XCHAR 
 #pragma warning (pop)
 }
 
-template<typename BaseType>
+template <typename BaseType>
 void __stdcall CMSimpleStringT<BaseType>::CopyChars(XCHAR *pchDest, size_t nDestLen, const XCHAR *pchSrc, int nChars)
 {
   memcpy_s(pchDest, nDestLen * sizeof(XCHAR), pchSrc, nChars * sizeof(XCHAR));
 }
 
-template<typename BaseType>
+template <typename BaseType>
 void __stdcall CMSimpleStringT<BaseType>::CopyCharsOverlapped(XCHAR *pchDest, const XCHAR *pchSrc, int nChars)
 {
 #pragma warning (push)
@@ -316,13 +316,13 @@ void __stdcall CMSimpleStringT<BaseType>::CopyCharsOverlapped(XCHAR *pchDest, co
 #pragma warning (pop)
 }
 
-template<typename BaseType>
+template <typename BaseType>
 void __stdcall CMSimpleStringT<BaseType>::CopyCharsOverlapped(XCHAR *pchDest, size_t nDestLen, const XCHAR *pchSrc, int nChars)
 {
   memmove_s(pchDest, nDestLen * sizeof(XCHAR), pchSrc, nChars * sizeof(XCHAR));
 }
 
-template<typename BaseType>
+template <typename BaseType>
 int __stdcall CMSimpleStringT<BaseType>::StringLength(const char *psz)
 {
   if (psz == nullptr)
@@ -340,7 +340,7 @@ int __stdcall CMSimpleStringT<BaseType>::StringLength(const wchar_t *psz)
   return (int)wcslen(psz);
 }
 
-template<typename BaseType>
+template <typename BaseType>
 int __stdcall CMSimpleStringT<BaseType>::StringLengthN(const char *psz, size_t sizeInXChar)
 {
   if (psz == nullptr)
@@ -349,7 +349,7 @@ int __stdcall CMSimpleStringT<BaseType>::StringLengthN(const char *psz, size_t s
   return int(strnlen(psz, sizeInXChar));
 }
 
-template<typename BaseType>
+template <typename BaseType>
 int __stdcall CMSimpleStringT<BaseType>::StringLengthN(const wchar_t *psz, size_t sizeInXChar)
 {
   if (psz == nullptr)
@@ -358,7 +358,7 @@ int __stdcall CMSimpleStringT<BaseType>::StringLengthN(const wchar_t *psz, size_
   return int(wcsnlen(psz, sizeInXChar));
 }
 
-template<typename BaseType>
+template <typename BaseType>
 void __stdcall CMSimpleStringT<BaseType>::Concatenate(CMSimpleStringT<BaseType> &strResult, PCXSTR psz1, int nLength1, PCXSTR psz2, int nLength2)
 {
   int nNewLength = nLength1 + nLength2;
@@ -368,13 +368,13 @@ void __stdcall CMSimpleStringT<BaseType>::Concatenate(CMSimpleStringT<BaseType> 
   strResult.ReleaseBufferSetLength(nNewLength);
 }
 
-template<typename BaseType>
+template <typename BaseType>
 void CMSimpleStringT<BaseType>::Attach(CMStringData *pData)
 {
   m_pszData = static_cast<PXSTR>(pData->data());
 }
 
-template<typename BaseType>
+template <typename BaseType>
 void CMSimpleStringT<BaseType>::Fork(int nLength)
 {
   CMStringData *pOldData = GetData();
@@ -390,7 +390,7 @@ void CMSimpleStringT<BaseType>::Fork(int nLength)
   }
 }
 
-template<typename BaseType>
+template <typename BaseType>
 typename CMSimpleStringT<BaseType>::PXSTR CMSimpleStringT<BaseType>::PrepareWrite(int nLength)
 {
   CMStringData *pOldData = GetData();
@@ -402,7 +402,7 @@ typename CMSimpleStringT<BaseType>::PXSTR CMSimpleStringT<BaseType>::PrepareWrit
   return m_pszData;
 }
 
-template<typename BaseType>
+template <typename BaseType>
 void CMSimpleStringT<BaseType>::PrepareWrite2(int nLength)
 {
   CMStringData *pOldData = GetData();
@@ -429,7 +429,7 @@ void CMSimpleStringT<BaseType>::PrepareWrite2(int nLength)
   }
 }
 
-template<typename BaseType>
+template <typename BaseType>
 void CMSimpleStringT<BaseType>::Reallocate(int nLength)
 {
   CMStringData *pOldData = GetData();
@@ -441,14 +441,14 @@ void CMSimpleStringT<BaseType>::Reallocate(int nLength)
     Attach(pNewData);
 }
 
-template<typename BaseType>
+template <typename BaseType>
 void CMSimpleStringT<BaseType>::SetLength(int nLength)
 {
   GetData()->nDataLength = nLength;
   m_pszData[nLength] = 0;
 }
 
-template<typename BaseType>
+template <typename BaseType>
 CMStringData *__stdcall CMSimpleStringT<BaseType>::CloneData(CMStringData *pData)
 {
   CMStringData *pNewData = nullptr;
@@ -462,26 +462,26 @@ CMStringData *__stdcall CMSimpleStringT<BaseType>::CloneData(CMStringData *pData
   return pNewData;
 }
 
-template< typename BaseType, class StringTraits >
+template <typename BaseType, class StringTraits>
 CMStringT<BaseType, StringTraits>::CMStringT() :
   CThisSimpleString()
 {
 }
 
 // Copy constructor
-template< typename BaseType, class StringTraits >
+template <typename BaseType, class StringTraits>
 CMStringT<BaseType, StringTraits>::CMStringT(const CMStringT<BaseType, StringTraits> &strSrc) :
   CThisSimpleString(strSrc)
 {
 }
 
-template< typename BaseType, class StringTraits >
+template <typename BaseType, class StringTraits>
 CMStringT<BaseType, StringTraits>::CMStringT(const XCHAR *pszSrc) :
   CThisSimpleString(pszSrc)
 {
 }
 
-template< typename BaseType, class StringTraits >
+template <typename BaseType, class StringTraits>
 CMStringT<BaseType, StringTraits>::CMStringT(CMStringDataFormat, const XCHAR *pszFormat, ...) :
   CThisSimpleString()
 {
@@ -491,21 +491,21 @@ CMStringT<BaseType, StringTraits>::CMStringT(CMStringDataFormat, const XCHAR *ps
   va_end(args);
 }
 
-template< typename BaseType, class StringTraits >
+template <typename BaseType, class StringTraits>
 CMStringT<BaseType, StringTraits>::CMStringT(const YCHAR *pszSrc) :
   CThisSimpleString()
 {
   *this = pszSrc;
 }
 
-template< typename BaseType, class StringTraits >
+template <typename BaseType, class StringTraits>
 CMStringT<BaseType, StringTraits>::CMStringT(const unsigned char *pszSrc) :
   CThisSimpleString()
 {
   *this = reinterpret_cast<const char *>(pszSrc);
 }
 
-template< typename BaseType, class StringTraits >
+template <typename BaseType, class StringTraits>
 CMStringT<BaseType, StringTraits>::CMStringT(char ch, int nLength) :
   CThisSimpleString()
 {
@@ -517,7 +517,7 @@ CMStringT<BaseType, StringTraits>::CMStringT(char ch, int nLength) :
   }
 }
 
-template< typename BaseType, class StringTraits >
+template <typename BaseType, class StringTraits>
 CMStringT<BaseType, StringTraits>::CMStringT(wchar_t ch, int nLength) :
   CThisSimpleString()
 {
@@ -555,13 +555,13 @@ CMStringT<BaseType, StringTraits>::CMStringT(wchar_t ch, int nLength) :
   }
 }
 
-template< typename BaseType, class StringTraits >
+template <typename BaseType, class StringTraits>
 CMStringT<BaseType, StringTraits>::CMStringT(const XCHAR *pch, int nLength) :
   CThisSimpleString(pch, nLength)
 {
 }
 
-template< typename BaseType, class StringTraits >
+template <typename BaseType, class StringTraits>
 CMStringT<BaseType, StringTraits>::CMStringT(const YCHAR *pch, int nLength) :
   CThisSimpleString()
 {
@@ -574,7 +574,7 @@ CMStringT<BaseType, StringTraits>::CMStringT(const YCHAR *pch, int nLength) :
   }
 }
 
-template< typename BaseType, class StringTraits >
+template <typename BaseType, class StringTraits>
 CMStringT<BaseType, StringTraits>::CMStringT(const YCHAR *pch, int nLength, int CodePage) :
   CThisSimpleString()
 {
@@ -588,27 +588,27 @@ CMStringT<BaseType, StringTraits>::CMStringT(const YCHAR *pch, int nLength, int 
 }
 
 // Destructor
-template< typename BaseType, class StringTraits >
+template <typename BaseType, class StringTraits>
 CMStringT<BaseType, StringTraits>::~CMStringT()
 {
 }
 
 // Assignment operators
-template< typename BaseType, class StringTraits >
+template <typename BaseType, class StringTraits>
 CMStringT<BaseType, StringTraits> &CMStringT<BaseType, StringTraits>::operator=(const CMStringT &strSrc)
 {
   CThisSimpleString::operator=(strSrc);
   return *this;
 }
 
-template< typename BaseType, class StringTraits >
+template <typename BaseType, class StringTraits>
 CMStringT<BaseType, StringTraits> &CMStringT<BaseType, StringTraits>::operator=(PCXSTR pszSrc)
 {
   CThisSimpleString::operator=(pszSrc);
   return *this;
 }
 
-template< typename BaseType, class StringTraits >
+template <typename BaseType, class StringTraits>
 CMStringT<BaseType, StringTraits> &CMStringT<BaseType, StringTraits>::operator=(PCYSTR pszSrc)
 {
   // nDestLength is in XCHARs
@@ -627,69 +627,69 @@ CMStringT<BaseType, StringTraits> &CMStringT<BaseType, StringTraits>::operator=(
   return *this;
 }
 
-template< typename BaseType, class StringTraits >
+template <typename BaseType, class StringTraits>
 CMStringT<BaseType, StringTraits> &CMStringT<BaseType, StringTraits>::operator=(const unsigned char *pszSrc)
 {
   return operator=(reinterpret_cast<const char *>(pszSrc));
 }
 
-template< typename BaseType, class StringTraits >
+template <typename BaseType, class StringTraits>
 CMStringT<BaseType, StringTraits> &CMStringT<BaseType, StringTraits>::operator=(char ch)
 {
   char ach[2] = { ch, 0 };
   return operator=(ach);
 }
 
-template< typename BaseType, class StringTraits >
+template <typename BaseType, class StringTraits>
 CMStringT<BaseType, StringTraits> &CMStringT<BaseType, StringTraits>::operator=(wchar_t ch)
 {
   wchar_t ach[2] = { ch, 0 };
   return operator=(ach);
 }
 
-template< typename BaseType, class StringTraits >
+template <typename BaseType, class StringTraits>
 CMStringT<BaseType, StringTraits> &CMStringT<BaseType, StringTraits>::operator+=(const CMStringT &str)
 {
   CThisSimpleString::operator+=(str);
   return *this;
 }
 
-template< typename BaseType, class StringTraits >
+template <typename BaseType, class StringTraits>
 CMStringT<BaseType, StringTraits> &CMStringT<BaseType, StringTraits>::operator+=(const CThisSimpleString &str)
 {
   CThisSimpleString::operator+=(str);
   return *this;
 }
 
-template< typename BaseType, class StringTraits >
+template <typename BaseType, class StringTraits>
 CMStringT<BaseType, StringTraits> &CMStringT<BaseType, StringTraits>::operator+=(PCXSTR pszSrc)
 {
   CThisSimpleString::operator+=(pszSrc);
   return *this;
 }
 
-template< typename BaseType, class StringTraits >
+template <typename BaseType, class StringTraits>
 CMStringT<BaseType, StringTraits> &CMStringT<BaseType, StringTraits>::operator+=(PCYSTR pszSrc)
 {
   CMStringT str(pszSrc);
   return operator+=(str);
 }
 
-template< typename BaseType, class StringTraits >
+template <typename BaseType, class StringTraits>
 CMStringT<BaseType, StringTraits> &CMStringT<BaseType, StringTraits>::operator+=(char ch)
 {
   CThisSimpleString::operator+=(ch);
   return *this;
 }
 
-template< typename BaseType, class StringTraits >
+template <typename BaseType, class StringTraits>
 CMStringT<BaseType, StringTraits> &CMStringT<BaseType, StringTraits>::operator+=(unsigned char ch)
 {
   CThisSimpleString::operator+=(ch);
   return *this;
 }
 
-template< typename BaseType, class StringTraits >
+template <typename BaseType, class StringTraits>
 CMStringT<BaseType, StringTraits> &CMStringT<BaseType, StringTraits>::operator+=(wchar_t ch)
 {
   CThisSimpleString::operator+=(ch);
@@ -698,25 +698,25 @@ CMStringT<BaseType, StringTraits> &CMStringT<BaseType, StringTraits>::operator+=
 
 // Comparison
 
-template< typename BaseType, class StringTraits >
+template <typename BaseType, class StringTraits>
 int CMStringT<BaseType, StringTraits>::Compare(PCXSTR psz) const
 {
   return StringTraits::StringCompare(this->GetString(), psz);
 }
 
-template< typename BaseType, class StringTraits >
+template <typename BaseType, class StringTraits>
 int CMStringT<BaseType, StringTraits>::CompareNoCase(PCXSTR psz) const
 {
   return StringTraits::StringCompareIgnore(this->GetString(), psz);
 }
 
-template< typename BaseType, class StringTraits >
+template <typename BaseType, class StringTraits>
 int CMStringT<BaseType, StringTraits>::Collate(PCXSTR psz) const
 {
   return StringTraits::StringCollate(this->GetString(), psz);
 }
 
-template< typename BaseType, class StringTraits >
+template <typename BaseType, class StringTraits>
 int CMStringT<BaseType, StringTraits>::CollateNoCase(PCXSTR psz) const
 {
   return StringTraits::StringCollateIgnore(this->GetString(), psz);
@@ -725,7 +725,7 @@ int CMStringT<BaseType, StringTraits>::CollateNoCase(PCXSTR psz) const
 // Advanced manipulation
 
 // Delete 'nCount' characters, starting at index 'iIndex'
-template< typename BaseType, class StringTraits >
+template <typename BaseType, class StringTraits>
 int CMStringT<BaseType, StringTraits>::Delete(int iIndex, int nCount)
 {
   if (iIndex < 0)
@@ -755,7 +755,7 @@ int CMStringT<BaseType, StringTraits>::Delete(int iIndex, int nCount)
 }
 
 // Insert character 'ch' before index 'iIndex'
-template< typename BaseType, class StringTraits >
+template <typename BaseType, class StringTraits>
 int CMStringT<BaseType, StringTraits>::Insert(int iIndex, XCHAR ch)
 {
   if (iIndex < 0)
@@ -781,7 +781,7 @@ int CMStringT<BaseType, StringTraits>::Insert(int iIndex, XCHAR ch)
 }
 
 // Insert string 'psz' before index 'iIndex'
-template< typename BaseType, class StringTraits >
+template <typename BaseType, class StringTraits>
 int CMStringT<BaseType, StringTraits>::Insert(int iIndex, PCXSTR psz)
 {
   if (iIndex < 0)
@@ -813,7 +813,7 @@ int CMStringT<BaseType, StringTraits>::Insert(int iIndex, PCXSTR psz)
 }
 
 // Replace all occurrences of character 'chOld' with character 'chNew'
-template< typename BaseType, class StringTraits >
+template <typename BaseType, class StringTraits>
 int CMStringT<BaseType, StringTraits>::Replace(XCHAR chOld, XCHAR chNew)
 {
   int nCount = 0;
@@ -851,7 +851,7 @@ int CMStringT<BaseType, StringTraits>::Replace(XCHAR chOld, XCHAR chNew)
 }
 
 // Replace all occurrences of string 'pszOld' with string 'pszNew'
-template< typename BaseType, class StringTraits >
+template <typename BaseType, class StringTraits>
 int CMStringT<BaseType, StringTraits>::Replace(PCXSTR pszOld, PCXSTR pszNew)
 {
   // can't have empty or NULL lpszOld
@@ -917,7 +917,7 @@ int CMStringT<BaseType, StringTraits>::Replace(PCXSTR pszOld, PCXSTR pszNew)
 }
 
 // Remove all occurrences of character 'chRemove'
-template< typename BaseType, class StringTraits >
+template <typename BaseType, class StringTraits>
 int CMStringT<BaseType, StringTraits>::Remove(XCHAR chRemove)
 {
   int nLength = this->GetLength();
@@ -952,7 +952,7 @@ int CMStringT<BaseType, StringTraits>::Remove(XCHAR chRemove)
   return nCount;
 }
 
-template< typename BaseType, class StringTraits >
+template <typename BaseType, class StringTraits>
 CMStringT<BaseType, StringTraits> CMStringT<BaseType, StringTraits>::Tokenize(PCXSTR pszTokens, int &iStart) const
 {
   if ((pszTokens == nullptr) || (*pszTokens == (XCHAR)0))
@@ -991,7 +991,7 @@ CMStringT<BaseType, StringTraits> CMStringT<BaseType, StringTraits>::Tokenize(PC
 // find routines
 
 // Find the first occurrence of character 'ch', starting at index 'iStart'
-template< typename BaseType, class StringTraits >
+template <typename BaseType, class StringTraits>
 int CMStringT<BaseType, StringTraits>::Find(XCHAR ch, int iStart) const
 {
   // nLength is in XCHARs
@@ -1009,7 +1009,7 @@ int CMStringT<BaseType, StringTraits>::Find(XCHAR ch, int iStart) const
 // look for a specific sub-string
 
 // Find the first occurrence of string 'pszSub', starting at index 'iStart'
-template< typename BaseType, class StringTraits >
+template <typename BaseType, class StringTraits>
 int CMStringT<BaseType, StringTraits>::Find(PCXSTR pszSub, int iStart) const
 {
   // iStart is in XCHARs
@@ -1029,7 +1029,7 @@ int CMStringT<BaseType, StringTraits>::Find(PCXSTR pszSub, int iStart) const
 }
 
 // Find the first occurrence of any of the characters in string 'pszCharSet'
-template< typename BaseType, class StringTraits >
+template <typename BaseType, class StringTraits>
 int CMStringT<BaseType, StringTraits>::FindOneOf(PCXSTR pszCharSet) const
 {
   PCXSTR psz = StringTraits::StringScanSet(this->GetString(), pszCharSet);
@@ -1037,7 +1037,7 @@ int CMStringT<BaseType, StringTraits>::FindOneOf(PCXSTR pszCharSet) const
 }
 
 // Find the last occurrence of character 'ch'
-template< typename BaseType, class StringTraits >
+template <typename BaseType, class StringTraits>
 int CMStringT<BaseType, StringTraits>::ReverseFind(XCHAR ch) const
 {
   // find last single character
@@ -1050,7 +1050,7 @@ int CMStringT<BaseType, StringTraits>::ReverseFind(XCHAR ch) const
 // manipulation
 
 // Convert the string to uppercase
-template< typename BaseType, class StringTraits >
+template <typename BaseType, class StringTraits>
 CMStringT<BaseType, StringTraits> &CMStringT<BaseType, StringTraits>::MakeUpper()
 {
   int nLength = this->GetLength();
@@ -1062,7 +1062,7 @@ CMStringT<BaseType, StringTraits> &CMStringT<BaseType, StringTraits>::MakeUpper(
 }
 
 // Convert the string to lowercase
-template< typename BaseType, class StringTraits >
+template <typename BaseType, class StringTraits>
 CMStringT<BaseType, StringTraits> &CMStringT<BaseType, StringTraits>::MakeLower()
 {
   int nLength = this->GetLength();
@@ -1074,7 +1074,7 @@ CMStringT<BaseType, StringTraits> &CMStringT<BaseType, StringTraits>::MakeLower(
 }
 
 // Reverse the string
-template< typename BaseType, class StringTraits >
+template <typename BaseType, class StringTraits>
 CMStringT<BaseType, StringTraits> &CMStringT<BaseType, StringTraits>::MakeReverse()
 {
   int nLength = this->GetLength();
@@ -1088,7 +1088,7 @@ CMStringT<BaseType, StringTraits> &CMStringT<BaseType, StringTraits>::MakeRevers
 // trimming
 
 // Remove all trailing whitespace
-template< typename BaseType, class StringTraits >
+template <typename BaseType, class StringTraits>
 CMStringT<BaseType, StringTraits> &CMStringT<BaseType, StringTraits>::TrimRight()
 {
   // find beginning of trailing spaces by starting
@@ -1124,7 +1124,7 @@ CMStringT<BaseType, StringTraits> &CMStringT<BaseType, StringTraits>::TrimRight(
 }
 
 // Remove all leading whitespace
-template< typename BaseType, class StringTraits >
+template <typename BaseType, class StringTraits>
 CMStringT<BaseType, StringTraits> &CMStringT<BaseType, StringTraits>::TrimLeft()
 {
   // find first non-space character
@@ -1149,21 +1149,21 @@ CMStringT<BaseType, StringTraits> &CMStringT<BaseType, StringTraits>::TrimLeft()
 }
 
 // Remove all leading and trailing whitespace
-template< typename BaseType, class StringTraits >
+template <typename BaseType, class StringTraits>
 CMStringT<BaseType, StringTraits> &CMStringT<BaseType, StringTraits>::Trim()
 {
   return TrimRight().TrimLeft();
 }
 
 // Remove all leading and trailing occurrences of character 'chTarget'
-template< typename BaseType, class StringTraits >
+template <typename BaseType, class StringTraits>
 CMStringT<BaseType, StringTraits> &CMStringT<BaseType, StringTraits>::Trim(XCHAR chTarget)
 {
   return TrimRight(chTarget).TrimLeft(chTarget);
 }
 
 // Remove all leading and trailing occurrences of any of the characters in the string 'pszTargets'
-template< typename BaseType, class StringTraits >
+template <typename BaseType, class StringTraits>
 CMStringT<BaseType, StringTraits> &CMStringT<BaseType, StringTraits>::Trim(PCXSTR pszTargets)
 {
   return TrimRight(pszTargets).TrimLeft(pszTargets);
@@ -1172,7 +1172,7 @@ CMStringT<BaseType, StringTraits> &CMStringT<BaseType, StringTraits>::Trim(PCXST
 // trimming anything (either side)
 
 // Remove all trailing occurrences of character 'chTarget'
-template< typename BaseType, class StringTraits >
+template <typename BaseType, class StringTraits>
 CMStringT<BaseType, StringTraits> &CMStringT<BaseType, StringTraits>::TrimRight(XCHAR chTarget)
 {
   // find beginning of trailing matches
@@ -1209,7 +1209,7 @@ CMStringT<BaseType, StringTraits> &CMStringT<BaseType, StringTraits>::TrimRight(
 }
 
 // Remove all trailing occurrences of any of the characters in string 'pszTargets'
-template< typename BaseType, class StringTraits >
+template <typename BaseType, class StringTraits>
 CMStringT<BaseType, StringTraits> &CMStringT<BaseType, StringTraits>::TrimRight(PCXSTR pszTargets)
 {
   // if we're not trimming anything, we're not doing any work
@@ -1251,7 +1251,7 @@ CMStringT<BaseType, StringTraits> &CMStringT<BaseType, StringTraits>::TrimRight(
 }
 
 // Remove all leading occurrences of character 'chTarget'
-template< typename BaseType, class StringTraits >
+template <typename BaseType, class StringTraits>
 CMStringT<BaseType, StringTraits> &CMStringT<BaseType, StringTraits>::TrimLeft(XCHAR chTarget)
 {
   // find first non-matching character
@@ -1278,7 +1278,7 @@ CMStringT<BaseType, StringTraits> &CMStringT<BaseType, StringTraits>::TrimLeft(X
 }
 
 // Remove all leading occurrences of any of the characters in string 'pszTargets'
-template< typename BaseType, class StringTraits >
+template <typename BaseType, class StringTraits>
 CMStringT<BaseType, StringTraits> &CMStringT<BaseType, StringTraits>::TrimLeft(PCXSTR pszTargets)
 {
   // if we're not trimming anything, we're not doing any work
@@ -1309,7 +1309,7 @@ CMStringT<BaseType, StringTraits> &CMStringT<BaseType, StringTraits>::TrimLeft(P
 }
 
 // Convert the string to the OEM character set
-template< typename BaseType, class StringTraits >
+template <typename BaseType, class StringTraits>
 void CMStringT<BaseType, StringTraits>::AnsiToOem()
 {
   int nLength = this->GetLength();
@@ -1319,7 +1319,7 @@ void CMStringT<BaseType, StringTraits>::AnsiToOem()
 }
 
 // Convert the string to the ANSI character set
-template< typename BaseType, class StringTraits >
+template <typename BaseType, class StringTraits>
 void CMStringT<BaseType, StringTraits>::OemToAnsi()
 {
   int nLength = this->GetLength();
@@ -1331,14 +1331,14 @@ void CMStringT<BaseType, StringTraits>::OemToAnsi()
 // Very simple sub-string extraction
 
 // Return the substring starting at index 'iFirst'
-template< typename BaseType, class StringTraits >
+template <typename BaseType, class StringTraits>
 CMStringT<BaseType, StringTraits> CMStringT<BaseType, StringTraits>::Mid(int iFirst) const
 {
   return Mid(iFirst, this->GetLength() - iFirst);
 }
 
 // Return the substring starting at index 'iFirst', with length 'nCount'
-template< typename BaseType, class StringTraits >
+template <typename BaseType, class StringTraits>
 CMStringT<BaseType, StringTraits> CMStringT<BaseType, StringTraits>::Mid(int iFirst, int nCount) const
 {
   // nCount is in XCHARs
@@ -1363,7 +1363,7 @@ CMStringT<BaseType, StringTraits> CMStringT<BaseType, StringTraits>::Mid(int iFi
 }
 
 // Return the substring consisting of the rightmost 'nCount' characters
-template< typename BaseType, class StringTraits >
+template <typename BaseType, class StringTraits>
 CMStringT<BaseType, StringTraits> CMStringT<BaseType, StringTraits>::Right(int nCount) const
 {
   // nCount is in XCHARs
@@ -1378,7 +1378,7 @@ CMStringT<BaseType, StringTraits> CMStringT<BaseType, StringTraits>::Right(int n
 }
 
 // Return the substring consisting of the leftmost 'nCount' characters
-template< typename BaseType, class StringTraits >
+template <typename BaseType, class StringTraits>
 CMStringT<BaseType, StringTraits> CMStringT<BaseType, StringTraits>::Left(int nCount) const
 {
   // nCount is in XCHARs
@@ -1393,21 +1393,21 @@ CMStringT<BaseType, StringTraits> CMStringT<BaseType, StringTraits>::Left(int nC
 }
 
 // Return the substring consisting of the leftmost characters in the set 'pszCharSet'
-template< typename BaseType, class StringTraits >
+template <typename BaseType, class StringTraits>
 CMStringT<BaseType, StringTraits> CMStringT<BaseType, StringTraits>::SpanIncluding(PCXSTR pszCharSet) const
 {
   return Left(StringTraits::StringSpanIncluding(this->GetString(), pszCharSet));
 }
 
 // Return the substring consisting of the leftmost characters not in the set 'pszCharSet'
-template< typename BaseType, class StringTraits >
+template <typename BaseType, class StringTraits>
 CMStringT<BaseType, StringTraits> CMStringT<BaseType, StringTraits>::SpanExcluding(PCXSTR pszCharSet) const
 {
   return Left(StringTraits::StringSpanExcluding(this->GetString(), pszCharSet));
 }
 
 // Format data using format string 'pszFormat'
-template< typename BaseType, class StringTraits >
+template <typename BaseType, class StringTraits>
 typename CMStringT<BaseType, StringTraits>::PCXSTR CMStringT<BaseType, StringTraits>::Format(PCXSTR pszFormat, ...)
 {
   va_list argList;
@@ -1418,7 +1418,7 @@ typename CMStringT<BaseType, StringTraits>::PCXSTR CMStringT<BaseType, StringTra
 }
 
 // Append formatted data using format string 'pszFormat'
-template< typename BaseType, class StringTraits >
+template <typename BaseType, class StringTraits>
 typename CMStringT<BaseType, StringTraits>::PCXSTR CMStringT<BaseType, StringTraits>::AppendFormat(PCXSTR pszFormat, ...)
 {
   va_list argList;
@@ -1428,7 +1428,7 @@ typename CMStringT<BaseType, StringTraits>::PCXSTR CMStringT<BaseType, StringTra
   return this->GetString();
 }
 
-template< typename BaseType, class StringTraits >
+template <typename BaseType, class StringTraits>
 void CMStringT<BaseType, StringTraits>::AppendFormatV(PCXSTR pszFormat, va_list args)
 {
   int nCurrentLength = this->GetLength();
@@ -1438,7 +1438,7 @@ void CMStringT<BaseType, StringTraits>::AppendFormatV(PCXSTR pszFormat, va_list 
   this->ReleaseBufferSetLength(nCurrentLength + nAppendLength);
 }
 
-template< typename BaseType, class StringTraits >
+template <typename BaseType, class StringTraits>
 typename CMStringT<BaseType, StringTraits>::PCXSTR CMStringT<BaseType, StringTraits>::FormatV(PCXSTR pszFormat, va_list args)
 {
   int nLength = StringTraits::GetFormattedLength(pszFormat, args);
@@ -1449,7 +1449,7 @@ typename CMStringT<BaseType, StringTraits>::PCXSTR CMStringT<BaseType, StringTra
 }
 
 // Set the string to the value of environment variable 'pszVar'
-template< typename BaseType, class StringTraits >
+template <typename BaseType, class StringTraits>
 BOOL CMStringT<BaseType, StringTraits>::GetEnvVariable(PCXSTR pszVar)
 {
   ULONG nLength = StringTraits::GetEnvVariable(pszVar, nullptr, 0);
@@ -1471,7 +1471,7 @@ BOOL CMStringT<BaseType, StringTraits>::GetEnvVariable(PCXSTR pszVar)
 }
 
 // Set the string to the value of environment variable 'pszVar'
-template< typename BaseType, class StringTraits >
+template <typename BaseType, class StringTraits>
 typename CMStringT<BaseType, StringTraits>::PXSTR CMStringT<BaseType, StringTraits>::Detach() const
 {
   return StringTraits::NBCopy(CMStringT<BaseType, StringTraits>::GetString(), this->GetLength());
@@ -1479,7 +1479,7 @@ typename CMStringT<BaseType, StringTraits>::PXSTR CMStringT<BaseType, StringTrai
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-template< typename BaseType, class StringTraits >
+template <typename BaseType, class StringTraits>
 NB_CORE_EXPORT CMStringT<BaseType, StringTraits> CALLBACK operator+(const CMStringT<BaseType, StringTraits> &str1, const CMStringT<BaseType, StringTraits> &str2)
 {
   CMStringT<BaseType, StringTraits> strResult;
@@ -1487,7 +1487,7 @@ NB_CORE_EXPORT CMStringT<BaseType, StringTraits> CALLBACK operator+(const CMStri
   return strResult;
 }
 
-template< typename BaseType, class StringTraits >
+template <typename BaseType, class StringTraits>
 NB_CORE_EXPORT CMStringT<BaseType, StringTraits> CALLBACK operator+(const CMStringT<BaseType, StringTraits> &str1, typename CMStringT<BaseType, StringTraits>::PCXSTR psz2)
 {
   CMStringT<BaseType, StringTraits> strResult;
@@ -1495,7 +1495,7 @@ NB_CORE_EXPORT CMStringT<BaseType, StringTraits> CALLBACK operator+(const CMStri
   return strResult;
 }
 
-template< typename BaseType, class StringTraits >
+template <typename BaseType, class StringTraits>
 NB_CORE_EXPORT CMStringT<BaseType, StringTraits> CALLBACK operator+(typename CMStringT<BaseType, StringTraits>::PCXSTR psz1, const CMStringT<BaseType, StringTraits> &str2)
 {
   CMStringT<BaseType, StringTraits> strResult;
@@ -1503,7 +1503,7 @@ NB_CORE_EXPORT CMStringT<BaseType, StringTraits> CALLBACK operator+(typename CMS
   return strResult;
 }
 
-template< typename BaseType, class StringTraits >
+template <typename BaseType, class StringTraits>
 NB_CORE_EXPORT CMStringT<BaseType, StringTraits> CALLBACK operator+(const CMStringT<BaseType, StringTraits> &str1, wchar_t ch2)
 {
   CMStringT<BaseType, StringTraits> strResult;
@@ -1512,7 +1512,7 @@ NB_CORE_EXPORT CMStringT<BaseType, StringTraits> CALLBACK operator+(const CMStri
   return strResult;
 }
 
-template< typename BaseType, class StringTraits >
+template <typename BaseType, class StringTraits>
 NB_CORE_EXPORT CMStringT<BaseType, StringTraits> CALLBACK operator+(const CMStringT<BaseType, StringTraits> &str1, char ch2)
 {
   CMStringT<BaseType, StringTraits> strResult;
@@ -1521,7 +1521,7 @@ NB_CORE_EXPORT CMStringT<BaseType, StringTraits> CALLBACK operator+(const CMStri
   return strResult;
 }
 
-template< typename BaseType, class StringTraits >
+template <typename BaseType, class StringTraits>
 NB_CORE_EXPORT CMStringT<BaseType, StringTraits> CALLBACK operator+(wchar_t ch1, const CMStringT<BaseType, StringTraits> &str2)
 {
   CMStringT<BaseType, StringTraits> strResult;
@@ -1530,7 +1530,7 @@ NB_CORE_EXPORT CMStringT<BaseType, StringTraits> CALLBACK operator+(wchar_t ch1,
   return strResult;
 }
 
-template< typename BaseType, class StringTraits >
+template <typename BaseType, class StringTraits>
 NB_CORE_EXPORT CMStringT<BaseType, StringTraits> CALLBACK operator+(char ch1, const CMStringT<BaseType, StringTraits> &str2)
 {
   CMStringT<BaseType, StringTraits> strResult;
