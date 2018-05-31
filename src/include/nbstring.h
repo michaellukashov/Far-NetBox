@@ -67,7 +67,7 @@ CUSTOM_MEM_ALLOCATION_IMPL
   __forceinline void Unlock() { nbstr_unlock(this); }
 };
 
-template< typename BaseType = char >
+template<typename BaseType = char>
 class NBChTraitsBase
 {
 public:
@@ -91,27 +91,28 @@ public:
   typedef LPCSTR PCYSTR;
 };
 
-template< typename BaseType >
+template<typename BaseType>
 class NB_CORE_EXPORT CMSimpleStringT
 {
   CUSTOM_MEM_ALLOCATION_IMPL
 public:
-  typedef typename NBChTraitsBase< BaseType >::XCHAR XCHAR;
-  typedef typename NBChTraitsBase< BaseType >::PXSTR PXSTR;
-  typedef typename NBChTraitsBase< BaseType >::PCXSTR PCXSTR;
-  typedef typename NBChTraitsBase< BaseType >::YCHAR YCHAR;
-  typedef typename NBChTraitsBase< BaseType >::PYSTR PYSTR;
-  typedef typename NBChTraitsBase< BaseType >::PCYSTR PCYSTR;
+  typedef typename NBChTraitsBase<BaseType>::XCHAR XCHAR;
+  typedef typename NBChTraitsBase<BaseType>::PXSTR PXSTR;
+  typedef typename NBChTraitsBase<BaseType>::PCXSTR PCXSTR;
+  typedef typename NBChTraitsBase<BaseType>::YCHAR YCHAR;
+  typedef typename NBChTraitsBase<BaseType>::PYSTR PYSTR;
+  typedef typename NBChTraitsBase<BaseType>::PCYSTR PCYSTR;
 
 public:
   CMSimpleStringT();
+  CMSimpleStringT(CMSimpleStringT&&) = default;
 
   CMSimpleStringT(const CMSimpleStringT &strSrc);
   explicit CMSimpleStringT(PCXSTR pszSrc);
   explicit CMSimpleStringT(const XCHAR *pchSrc, int nLength);
   ~CMSimpleStringT();
 
-  template< typename BaseType >
+  template< typename BaseType>
   __forceinline operator CMSimpleStringT<BaseType> &()
   {
     return *(CMSimpleStringT<BaseType> *)this;
@@ -271,10 +272,11 @@ private:
 };
 
 
-template< typename _CharType = char >
-class NBChTraitsCRT : public NBChTraitsBase < _CharType >
+template<typename CharType = char>
+class NBChTraitsCRT : public NBChTraitsBase <CharType>
 {
 public:
+
   static char *__stdcall CharNext(const char *p)
   {
     return reinterpret_cast<char *>(_mbsinc(reinterpret_cast<const unsigned char *>(p)));
@@ -439,17 +441,17 @@ public:
     ::WideCharToMultiByte(CodePage, 0, pszSrc, nSrcLength, pszDest, nDestLength, nullptr, nullptr);
   }
 
-  static void ConvertToOem(_CharType *pstrString)
+  static void ConvertToOem(CharType *pstrString)
   {
     BOOL fSuccess = ::CharToOemA(pstrString, pstrString);
   }
 
-  static void ConvertToAnsi(_CharType *pstrString)
+  static void ConvertToAnsi(CharType *pstrString)
   {
     BOOL fSuccess = ::OemToCharA(pstrString, pstrString);
   }
 
-  static void ConvertToOem(_CharType *pstrString, size_t size)
+  static void ConvertToOem(CharType *pstrString, size_t size)
   {
     if (size > UINT_MAX)
     {
@@ -459,7 +461,7 @@ public:
     ::CharToOemBuffA(pstrString, pstrString, dwSize);
   }
 
-  static void ConvertToAnsi(_CharType *pstrString, size_t size)
+  static void ConvertToAnsi(CharType *pstrString, size_t size)
   {
     if (size > UINT_MAX)
     {
@@ -513,7 +515,7 @@ public:
 
 // specialization for wchar_t
 template<>
-class NBChTraitsCRT< wchar_t > : public NBChTraitsBase< wchar_t >
+class NBChTraitsCRT<wchar_t> : public NBChTraitsBase<wchar_t>
 {
   static DWORD __stdcall GetEnvVariableW(LPCWSTR pszName, LPWSTR pszBuffer, uint32_t nSize)
   {
@@ -523,7 +525,7 @@ class NBChTraitsCRT< wchar_t > : public NBChTraitsBase< wchar_t >
 public:
   static LPWSTR __stdcall CharNext(LPCWSTR psz)
   {
-    return const_cast< LPWSTR >(psz + 1);
+    return const_cast<LPWSTR>(psz + 1);
   }
 
   static int __stdcall IsDigit(wchar_t ch)
@@ -563,7 +565,7 @@ public:
 
   static LPWSTR __stdcall StringFindString(LPWSTR pszBlock, LPCWSTR pszMatch)
   {
-    return const_cast< LPWSTR >(StringFindString(const_cast< LPCWSTR >(pszBlock), pszMatch));
+    return const_cast<LPWSTR>(StringFindString(const_cast<LPCWSTR>(pszBlock), pszMatch));
   }
 
   static LPCWSTR __stdcall StringFindChar(LPCWSTR pszBlock, wchar_t chMatch)
@@ -729,7 +731,7 @@ public:
   static int __stdcall GetCharLen(const char *pch)
   {
     // returns char length
-    return (int)(_mbclen(reinterpret_cast< const unsigned char *>(pch)));
+    return (int)(_mbclen(reinterpret_cast<const unsigned char *>(pch)));
   }
 
   static uint32_t __stdcall GetEnvVariable(LPCWSTR pszVar, LPWSTR pszBuffer, uint32_t dwSize)
@@ -759,11 +761,11 @@ public:
   }
 };
 
-template< typename BaseType, class StringTraits >
-class NB_CORE_EXPORT CMStringT : public CMSimpleStringT< BaseType >
+template<typename BaseType, class StringTraits>
+class NB_CORE_EXPORT CMStringT : public CMSimpleStringT<BaseType>
 {
 public:
-  typedef CMSimpleStringT< BaseType> CThisSimpleString;
+  typedef CMSimpleStringT<BaseType> CThisSimpleString;
   typedef typename CThisSimpleString::XCHAR XCHAR;
   typedef typename CThisSimpleString::PXSTR PXSTR;
   typedef typename CThisSimpleString::PCXSTR PCXSTR;
@@ -776,6 +778,7 @@ public:
 
   // Copy constructor
   CMStringT(const CMStringT &strSrc);
+  CMStringT(CMStringT &&) = default;
 
   CMStringT(const XCHAR *pszSrc);
   CMStringT(CMStringDataFormat, const XCHAR *pszFormat, ...);
@@ -793,6 +796,7 @@ public:
   // Destructor
   ~CMStringT();
 
+  inline operator CMStringT &() { return *static_cast<CMStringT *>(this); }
   // Assignment operators
   CMStringT &operator=(const CMStringT &strSrc);
   CMStringT &operator=(PCXSTR pszSrc);
@@ -971,29 +975,29 @@ public:
   friend bool __forceinline operator!=(const CMStringT &str1, XCHAR ch2) { return (str1.GetLength() != 1) || (str1[0] != ch2); }
 };
 
-template< typename BaseType, class StringTraits >
+template<typename BaseType, class StringTraits>
 NB_CORE_EXPORT CMStringT<BaseType, StringTraits> CALLBACK operator+(const CMStringT<BaseType, StringTraits> &str1, const CMStringT<BaseType, StringTraits> &str2);
 
-template< typename BaseType, class StringTraits >
+template<typename BaseType, class StringTraits>
 NB_CORE_EXPORT CMStringT<BaseType, StringTraits> CALLBACK operator+(const CMStringT<BaseType, StringTraits> &str1, typename CMStringT<BaseType, StringTraits>::PCXSTR psz2);
 
-template< typename BaseType, class StringTraits >
+template<typename BaseType, class StringTraits>
 NB_CORE_EXPORT CMStringT<BaseType, StringTraits> CALLBACK operator+(typename CMStringT<BaseType, StringTraits>::PCXSTR psz1, const CMStringT<BaseType, StringTraits> &str2);
 
-template< typename BaseType, class StringTraits >
+template<typename BaseType, class StringTraits>
 NB_CORE_EXPORT CMStringT<BaseType, StringTraits> CALLBACK operator+(const CMStringT<BaseType, StringTraits> &str1, wchar_t ch2);
 
-template< typename BaseType, class StringTraits >
+template<typename BaseType, class StringTraits>
 NB_CORE_EXPORT CMStringT<BaseType, StringTraits> CALLBACK operator+(const CMStringT<BaseType, StringTraits> &str1, char ch2);
 
-template< typename BaseType, class StringTraits >
+template<typename BaseType, class StringTraits>
 NB_CORE_EXPORT CMStringT<BaseType, StringTraits> CALLBACK operator+(wchar_t ch1, const CMStringT<BaseType, StringTraits> &str2);
 
-template< typename BaseType, class StringTraits >
+template<typename BaseType, class StringTraits>
 NB_CORE_EXPORT CMStringT<BaseType, StringTraits> CALLBACK operator+(char ch1, const CMStringT<BaseType, StringTraits> &str2);
 
-typedef CMStringT< wchar_t, NBChTraitsCRT< wchar_t > > CMStringW;
-typedef CMStringT< char, NBChTraitsCRT< char > > CMStringA;
+typedef CMStringT<wchar_t, NBChTraitsCRT<wchar_t>> CMStringW;
+typedef CMStringT<char, NBChTraitsCRT<char>> CMStringA;
 
 #ifdef _UNICODE
 typedef CMStringW CMString;
