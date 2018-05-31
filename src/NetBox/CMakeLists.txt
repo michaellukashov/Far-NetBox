@@ -1167,7 +1167,7 @@ target_compile_options(dlmalloc PRIVATE
 #rdestl
 
 add_library(rdestl STATIC
-  ../../libs/rdestl/allocator.cpp
+#  ../../libs/rdestl/allocator.cpp
   ../../libs/rdestl/intrusive_list.cpp
   ../../libs/rdestl/list.cpp
 #  ../../libs/rdestl/intrusive_slist.cpp
