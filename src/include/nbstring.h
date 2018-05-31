@@ -105,6 +105,7 @@ public:
 
 public:
   CMSimpleStringT();
+  CMSimpleStringT(CMSimpleStringT&&) = default;
 
   CMSimpleStringT(const CMSimpleStringT &strSrc);
   explicit CMSimpleStringT(PCXSTR pszSrc);
@@ -777,6 +778,7 @@ public:
 
   // Copy constructor
   CMStringT(const CMStringT &strSrc);
+  CMStringT(CMStringT &&) = default;
 
   CMStringT(const XCHAR *pszSrc);
   CMStringT(CMStringDataFormat, const XCHAR *pszFormat, ...);
@@ -794,6 +796,7 @@ public:
   // Destructor
   ~CMStringT();
 
+  inline operator CMStringT &() { return *static_cast<CMStringT *>(this); }
   // Assignment operators
   CMStringT &operator=(const CMStringT &strSrc);
   CMStringT &operator=(PCXSTR pszSrc);
