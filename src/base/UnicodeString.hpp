@@ -5,7 +5,7 @@
 void ThrowIfOutOfRange(intptr_t Idx, intptr_t Length);
 
 template<typename CharT>
-class BaseStringT : public CMStringT< CharT, NBChTraitsCRT< CharT> >
+class NB_CORE_EXPORT BaseStringT : public CMStringT< CharT, NBChTraitsCRT< CharT> >
 {
   typedef CMStringT< CharT, NBChTraitsCRT <CharT > > BaseT;
   typedef typename BaseT::XCHAR XCHAR;
@@ -98,10 +98,21 @@ public:
   BaseStringT &MakeLower() { BaseT::MakeLower(); return *this; }
 
   // intptr_t Compare(const BaseStringT &Str) const;
-  intptr_t CompareIC(const BaseStringT &Str) const;
-  intptr_t ToIntPtr() const;
+  intptr_t CompareIC(const BaseStringT &Str) const
+  {
+    return ::AnsiCompareIC(*this, Str);
+  }
+
+  intptr_t ToIntPtr() const
+  {
+    return ::StrToIntDef(*this, 0);
+  }
+
   intptr_t FindFirstOf(const CharT Ch) const
-  { return ::ToIntPtr(BaseT::Find(Ch, 0)) + 1; }
+  {
+    return ::ToIntPtr(BaseT::Find(Ch, 0)) + 1;
+  }
+
   intptr_t FindFirstOf(const CharT *AStr, size_t Offset = 0) const
   {
     if (!AStr || !*AStr)
