@@ -231,7 +231,7 @@ UnicodeString TCopyParamRule::GetInfoStr(const UnicodeString Separator) const
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-UnicodeString TCopyParamList::FInvalidChars(L"/\\[]");
+std::wstring_view TCopyParamList::FInvalidChars{L"/\\[]"};
 //---------------------------------------------------------------------------
 TCopyParamList::TCopyParamList() :
   FRules(new TList()),

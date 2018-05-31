@@ -1,5 +1,6 @@
 #pragma once
 
+#include <string_view>
 #include <Classes.hpp>
 //---------------------------------------------------------------------------
 class THierarchicalStorage;
@@ -24,7 +25,7 @@ public:
 private:
   TStringList *FBookmarkLists;
   UnicodeString FSharedKey;
-  static UnicodeString Keys[];
+  static std::string_view Keys[];
 
 public:
   TBookmarkList *GetBookmarks(const UnicodeString AIndex);

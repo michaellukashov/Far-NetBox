@@ -31,13 +31,13 @@ void TBookmarks::Clear()
   FBookmarkLists->Clear();
 }
 //---------------------------------------------------------------------------
-UnicodeString TBookmarks::Keys[] = {"Local", "Remote", "ShortCuts", "Options"};
+std::string_view TBookmarks::Keys[]{"Local", "Remote", "ShortCuts", "Options"};
 //---------------------------------------------------------------------------
 void TBookmarks::Load(THierarchicalStorage *Storage)
 {
   for (intptr_t Idx = 0; Idx <= 3; ++Idx)
   {
-    if (Storage->OpenSubKey(Keys[Idx], false))
+    if (Storage->OpenSubKey(Keys[Idx].data(), false))
     {
       std::unique_ptr<TStrings> BookmarkKeys(new TStringList());
       try__finally
@@ -157,7 +157,7 @@ void TBookmarks::Save(THierarchicalStorage *Storage, bool All)
 {
   for (intptr_t Idx = 0; Idx <= 3; Idx++)
   {
-    if (Storage->OpenSubKey(Keys[Idx], true))
+    if (Storage->OpenSubKey(Keys[Idx].data(), true))
     {
       for (intptr_t Index = 0; Index < FBookmarkLists->GetCount(); ++Index)
       {

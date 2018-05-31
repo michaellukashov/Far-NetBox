@@ -171,7 +171,7 @@ public:
   __property bool AnyRule = { read = GetAnyRule };
 
 private:
-  static UnicodeString FInvalidChars;
+  static std::wstring_view FInvalidChars;
   TList *FRules;
   TList *FCopyParams;
   TStrings *FNames;
