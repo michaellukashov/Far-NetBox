@@ -1105,14 +1105,14 @@ BOOL AfxIsValidAtom(LPCTSTR psz);
 #if defined(_DEBUG) && !defined(_AFX_NO_DEBUG_CRT)
 
 // Memory tracking allocation
-void* AFX_CDECL operator new(size_t nSize, LPCSTR lpszFileName, int nLine) throw(std::bad_alloc);
+void* AFX_CDECL operator new(size_t nSize, LPCSTR lpszFileName, int nLine) noexcept(false);
 #define DEBUG_NEW new(THIS_FILE, __LINE__)
 void AFX_CDECL operator delete(void* p, LPCSTR lpszFileName, int nLine) throw();
 
 #if !defined(__MINGW32__)
-void* __cdecl operator new[](size_t nSize) throw(std::bad_alloc);
+void* __cdecl operator new[](size_t nSize) noexcept(false);
 #endif // #if !defined(__MINGW32__)
-void* __cdecl operator new[](size_t nSize, LPCSTR lpszFileName, int nLine) throw(std::bad_alloc);
+void* __cdecl operator new[](size_t nSize, LPCSTR lpszFileName, int nLine) noexcept(false);
 void __cdecl operator delete[](void* p, LPCSTR lpszFileName, int nLine) throw();
 #if defined(__MINGW32__)
 void operator delete(void*) _GLIBCXX_USE_NOEXCEPT
