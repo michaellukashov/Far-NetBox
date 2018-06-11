@@ -124,6 +124,7 @@ using roProperty = Property<T, false, std::is_pod<T>::value>;
 template <typename T>
 using rwProperty = Property<T, true, std::is_pod<T>::value>;
 
+// 40 bytes
 template <typename T>
 class ROProperty
 {
@@ -132,11 +133,18 @@ private:
   typedef fu2::function<T() const> TGetValueFunctor;
   TGetValueFunctor _getter;
 public:
+  ROProperty() = delete;
   explicit ROProperty(const TGetValueFunctor &Getter) :
     _getter(Getter)
   {
     Expects(_getter != nullptr);
   }
+  ROProperty(const ROProperty&) = default;
+  ROProperty(ROProperty&&) = default;
+  ROProperty& operator=(const ROProperty&) = default;
+  ROProperty& operator=(ROProperty&&) = default;
+//  ROProperty(const T& in) : data(in) {}
+//  ROProperty(T&& in) : data(std::forward<T>(in)) {}
   T operator()() const
   {
     Expects(_getter);
@@ -181,6 +189,7 @@ public:
   }
 };
 
+// 80 bytes
 template <typename T>
 class RWProperty
 {
@@ -191,6 +200,7 @@ private:
   TGetValueFunctor _getter;
   TSetValueFunctor _setter;
 public:
+  RWProperty() = delete;
   explicit RWProperty(const TGetValueFunctor &Getter, const TSetValueFunctor &Setter) :
     _getter(Getter),
     _setter(Setter)
@@ -198,6 +208,19 @@ public:
     Expects(_getter != nullptr);
     Expects(_setter != nullptr);
   }
+  RWProperty(const RWProperty&) = default;
+  RWProperty(RWProperty&&) = default;
+  RWProperty& operator=(const RWProperty&) = default;
+  RWProperty& operator=(RWProperty&&) = default;
+//  RWProperty(const T& in) : data(in) {}
+//  RWProperty(T&& in) : data(std::forward<T>(in)) {}
+//  T const& get() const {
+//      return data;
+//  }
+
+//  T&& unwrap() && {
+//      return std::move(data);
+//  }
   T operator()() const
   {
     Expects(_getter);
@@ -244,3 +267,7 @@ public:
     return lhs._getter() != rhs;
   }
 };
+//template<int s> struct CheckSizeT;
+//CheckSizeT<sizeof(ROProperty<int>)> checkSize;
+//template<int s> struct CheckSizeT;
+//CheckSizeT<sizeof(RWProperty<double>)> checkSize;
