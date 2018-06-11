@@ -1,7 +1,9 @@
 #pragma once
 
-#include <function2.hpp>
+//#include <function2.hpp>
 #include <nbglobals.h>
+#include <FastDelegate.h>
+//#include <FastDelegateBind.h>
 
 template <typename T>
 class propertyBase
@@ -124,13 +126,15 @@ using roProperty = Property<T, false, std::is_pod<T>::value>;
 template <typename T>
 using rwProperty = Property<T, true, std::is_pod<T>::value>;
 
-// 40 bytes
+// 40 bytes using fu2::function
+// 16 bytes using FastDelegate
 template <typename T>
 class ROProperty
 {
 CUSTOM_MEM_ALLOCATION_IMPL
 private:
-  typedef fu2::function<T() const> TGetValueFunctor;
+//  typedef fu2::function<T() const> TGetValueFunctor;
+  typedef fastdelegate::FastDelegate0<T> TGetValueFunctor;
   TGetValueFunctor _getter;
 public:
   ROProperty() = delete;
@@ -147,56 +151,49 @@ public:
 //  ROProperty(T&& in) : data(std::forward<T>(in)) {}
   T operator()() const
   {
-    Expects(_getter);
     return _getter();
   }
   operator T() const
   {
-    Expects(_getter);
     return _getter();
   }
   const T operator->() const
   {
-    Expects(_getter);
     return _getter();
   }
   T operator->()
   {
-    Expects(_getter);
     return _getter();
   }
   friend bool inline operator==(const ROProperty &lhs, const ROProperty &rhs)
   {
-    Expects(lhs._getter);
-    Expects(rhs._getter);
     return lhs._getter() == rhs._getter();
   }
   friend bool inline operator==(const ROProperty &lhs, const T &rhs)
   {
-    Expects(lhs._getter);
     return lhs._getter() == rhs;
   }
   friend bool inline operator!=(const ROProperty &lhs, const ROProperty &rhs)
   {
-    Expects(lhs._getter);
-    Expects(rhs._getter);
     return lhs._getter() != rhs._getter();
   }
   friend bool inline operator!=(ROProperty &lhs, const T &rhs)
   {
-    Expects(lhs._getter);
     return lhs._getter() != rhs;
   }
 };
 
-// 80 bytes
+// 80 bytes using fu2::function
+// 32 bytes using FastDelegate
 template <typename T>
 class RWProperty
 {
 CUSTOM_MEM_ALLOCATION_IMPL
 private:
-  typedef fu2::function<T() const> TGetValueFunctor;
-  typedef fu2::function<void(T)> TSetValueFunctor;
+//  typedef fu2::function<T() const> TGetValueFunctor;
+//  typedef fu2::function<void(T)> TSetValueFunctor;
+  typedef fastdelegate::FastDelegate0<T> TGetValueFunctor;
+  typedef fastdelegate::FastDelegate1<void, T> TSetValueFunctor;
   TGetValueFunctor _getter;
   TSetValueFunctor _setter;
 public:
@@ -223,12 +220,10 @@ public:
 //  }
   T operator()() const
   {
-    Expects(_getter);
     return _getter();
   }
   operator T() const
   {
-    Expects(_getter);
     return _getter();
   }
   /*operator T&() const
@@ -238,32 +233,26 @@ public:
   }*/
   T operator->() const
   {
-    Expects(_getter);
     return _getter();
   }
   void operator()(const T &Value)
   {
-    Expects(_setter);
     _setter(Value);
   }
   void operator=(T Value)
   {
-    Expects(_setter);
     _setter(Value);
   }
   bool operator==(T Value) const
   {
-    Expects(_getter);
     return _getter() == Value;
   }
   friend bool inline operator==(const RWProperty &lhs, const RWProperty &rhs)
   {
-    Expects(lhs._getter);
     return lhs._getter == rhs._getter && lhs._setter == rhs._setter;
   }
   friend bool inline operator!=(RWProperty &lhs, const T &rhs)
   {
-    Expects(lhs._getter);
     return lhs._getter() != rhs;
   }
 };
