@@ -149,15 +149,15 @@ public:
   ROProperty& operator=(ROProperty&&) = default;
 //  ROProperty(const T& in) : data(in) {}
 //  ROProperty(T&& in) : data(std::forward<T>(in)) {}
-  T operator()() const
+  constexpr T operator()() const
   {
     return _getter();
   }
-  operator T() const
+  constexpr operator T() const
   {
     return _getter();
   }
-  const T operator->() const
+  constexpr const T operator->() const
   {
     return _getter();
   }
@@ -165,6 +165,8 @@ public:
   {
     return _getter();
   }
+  constexpr decltype(auto) operator*() const { return *_getter(); }
+
   friend bool inline operator==(const ROProperty &lhs, const ROProperty &rhs)
   {
     return lhs._getter() == rhs._getter();
@@ -218,11 +220,11 @@ public:
 //  T&& unwrap() && {
 //      return std::move(data);
 //  }
-  T operator()() const
+  constexpr T operator()() const
   {
     return _getter();
   }
-  operator T() const
+  constexpr operator T() const
   {
     return _getter();
   }
@@ -231,10 +233,11 @@ public:
     Expects(_getter);
     return _getter();
   }*/
-  T operator->() const
+  constexpr T operator->() const
   {
     return _getter();
   }
+  constexpr decltype(auto) operator*() const { return *_getter(); }
   void operator()(const T &Value)
   {
     _setter(Value);
