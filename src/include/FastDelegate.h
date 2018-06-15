@@ -574,8 +574,8 @@ protected:
 	// the data is protected, not private, because many
 	// compilers have problems with template friends.
 	typedef void (detail::GenericClass::*GenericMemFuncType)(); // arbitrary MFP.
-	GenericMemFuncType m_pFunction;
-	detail::GenericClass *m_pthis;
+	GenericMemFuncType m_pFunction{nullptr};
+	detail::GenericClass *m_pthis{nullptr};
 
 #if !defined(FASTDELEGATE_USESTATICFUNCTIONHACK)
 	typedef void (*GenericFuncPtr)(); // arbitrary code pointer
@@ -1084,7 +1084,7 @@ public:
 	typedef FastDelegate1 type;
 
 	// Construction and comparison functions
-	FastDelegate1() { clear(); }
+	FastDelegate1() = default; // { clear(); }
 #ifdef FASTDELEGATE_STDFUNCTION_SUPPORT
 	explicit FastDelegate1(const std::function<void(Param1)> &x) {
 		clear();
@@ -1092,6 +1092,8 @@ public:
 		m_Closure.bindstaticfunc(this, &FastDelegate1::InvokeStaticFunction, rf1.get_raw_ptr());
 	}
 #endif // #ifdef FASTDELEGATE_STDFUNCTION_SUPPORT
+	FastDelegate1(FastDelegate1&&) = default;
+	FastDelegate1& operator=(FastDelegate1&&) = default;
 	FastDelegate1(const FastDelegate1 &x) {
 		m_Closure.CopyFrom(this, x.m_Closure); }
 	FastDelegate1 & operator=(const FastDelegate1 &x) {
@@ -1176,7 +1178,9 @@ public:
 	typedef FastDelegate2 type;
 
 	// Construction and comparison functions
-	FastDelegate2() { clear(); }
+	FastDelegate2() = default; // { clear(); }
+	FastDelegate2(FastDelegate2&&) = default;
+	FastDelegate2& operator=(FastDelegate2&&) = default;
 	FastDelegate2(const FastDelegate2 &x) {
 		m_Closure.CopyFrom(this, x.m_Closure); }
 	FastDelegate2 & operator=(const FastDelegate2 &x) {
@@ -1261,7 +1265,9 @@ public:
 	typedef FastDelegate3 type;
 
 	// Construction and comparison functions
-	FastDelegate3() { clear(); }
+	FastDelegate3() = default; // { clear(); }
+	FastDelegate3(FastDelegate3&&) = default;
+	FastDelegate3& operator=(FastDelegate3&&) = default;
 	FastDelegate3(const FastDelegate3 &x) {
 		m_Closure.CopyFrom(this, x.m_Closure); }
 	FastDelegate3 & operator=(const FastDelegate3 &x) {
@@ -1346,7 +1352,9 @@ public:
 	typedef FastDelegate4 type;
 
 	// Construction and comparison functions
-	FastDelegate4() { clear(); }
+	FastDelegate4() = default; // { clear(); }
+	FastDelegate4(FastDelegate4&&) = default;
+	FastDelegate4& operator=(FastDelegate4&&) = default;
 	FastDelegate4(const FastDelegate4 &x) {
 		m_Closure.CopyFrom(this, x.m_Closure); }
 	FastDelegate4 & operator=(const FastDelegate4 &x) {
@@ -1431,7 +1439,7 @@ public:
 	typedef FastDelegate5 type;
 
 	// Construction and comparison functions
-	FastDelegate5() { clear(); }
+	FastDelegate5() = default; // { clear(); }
 	FastDelegate5(const FastDelegate5 &x) {
 		m_Closure.CopyFrom(this, x.m_Closure); }
 	FastDelegate5 & operator=(const FastDelegate5 &x) {
@@ -1516,7 +1524,9 @@ public:
 	typedef FastDelegate6 type;
 
 	// Construction and comparison functions
-	FastDelegate6() { clear(); }
+	FastDelegate6() = default; // { clear(); }
+	FastDelegate6(FastDelegate6&&) = default;
+	FastDelegate6& operator=(FastDelegate6&&) = default;
 	FastDelegate6(const FastDelegate6 &x) {
 		m_Closure.CopyFrom(this, x.m_Closure); }
 	FastDelegate6 & operator=(const FastDelegate6 &x) {
@@ -1601,7 +1611,9 @@ public:
 	typedef FastDelegate7 type;
 
 	// Construction and comparison functions
-	FastDelegate7() { clear(); }
+	FastDelegate7() = default; // { clear(); }
+	FastDelegate7(FastDelegate7&&) = default;
+	FastDelegate7& operator=(FastDelegate7&&) = default;
 	FastDelegate7(const FastDelegate7 &x) {
 		m_Closure.CopyFrom(this, x.m_Closure); }
 	FastDelegate7 & operator=(const FastDelegate7 &x) {
@@ -1680,13 +1692,15 @@ private:
 	typedef RetType (*UnvoidStaticFunctionPtr)(Param1 p1, Param2 p2, Param3 p3, Param4 p4, Param5 p5, Param6 p6, Param7 p7, Param8 p8);
 	typedef RetType (detail::GenericClass::*GenericMemFn)(Param1 p1, Param2 p2, Param3 p3, Param4 p4, Param5 p5, Param6 p6, Param7 p7, Param8 p8);
 	typedef detail::ClosurePtr<GenericMemFn, StaticFunctionPtr, UnvoidStaticFunctionPtr> ClosureType;
-	ClosureType m_Closure;
+	ClosureType m_Closure{};
 public:
 	// Typedefs to aid generic programming
 	typedef FastDelegate8 type;
 
 	// Construction and comparison functions
-	FastDelegate8() { clear(); }
+	FastDelegate8() = default; // { clear(); }
+	FastDelegate8(FastDelegate8&&) = default;
+	FastDelegate8& operator=(FastDelegate8&&) = default;
 	FastDelegate8(const FastDelegate8 &x) {
 		m_Closure.CopyFrom(this, x.m_Closure); }
 	FastDelegate8 & operator=(const FastDelegate8 &x) {

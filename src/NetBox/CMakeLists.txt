@@ -96,7 +96,7 @@ if(MSVC)
 
 set(NETBOX_C_WARNING_FLAGS "")
 set(NETBOX_CXX_WARNING_FLAGS "")
-set(NETBOX_CXX_FLAGS "/MP2 /Zi")
+set(NETBOX_CXX_FLAGS "/std:c++17 /MP2 /Zi")
 set(NETBOX_FLAGS_RELEASE "${NETBOX_FLAGS_RELEASE} /Gm- /MT -Ox -Ob1 -Oi -Os -GF -GS- -Gy /fp:fast")
 set(NETBOX_FLAGS_DEBUG "${NETBOX_FLAGS_DEBUG} /Gm- /Od /MTd /GS /RTC1")
 
@@ -104,7 +104,7 @@ elseif(CMAKE_COMPILER_IS_MINGW)
 
 set(NETBOX_C_WARNING_FLAGS "-Wno-unknown-pragmas")
 set(NETBOX_CXX_WARNING_FLAGS "${NETBOX_C_WARNING_FLAGS} -Wno-attributes -Wno-write-strings -Wno-old-style-cast -Wno-effc++ -Wno-unknown-pragmas -Wno-unused-value")
-set(NETBOX_CXX_FLAGS "${NETBOX_CXX_FLAGS} -std=c++11 -Woverloaded-virtual -Wnon-virtual-dtor")
+set(NETBOX_CXX_FLAGS "${NETBOX_CXX_FLAGS} -std=c++17 -Woverloaded-virtual -Wnon-virtual-dtor")
 set(NETBOX_C_FLAGS "${NETBOX_C_FLAGS} -static -s -O2 -Wall -Wextra -pedantic -Wconversion -Wsign-conversion -Winit-self -Wunreachable-code")
 #-Weffc++
 set(NETBOX_FLAGS_RELEASE "${NETBOX_FLAGS_RELEASE}")
@@ -1170,7 +1170,7 @@ target_compile_options(dlmalloc PRIVATE
 #rdestl
 
 add_library(rdestl STATIC
-  ../../libs/rdestl/allocator.cpp
+#  ../../libs/rdestl/allocator.cpp
   ../../libs/rdestl/intrusive_list.cpp
   ../../libs/rdestl/list.cpp
 #  ../../libs/rdestl/intrusive_slist.cpp

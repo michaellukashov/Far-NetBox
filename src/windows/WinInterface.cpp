@@ -210,8 +210,8 @@ TFarDialog *CreateMessageDialogEx(const UnicodeString Msg,
   }
 
   TFarDialog *Dialog = CreateMoreMessageDialog(Msg, MoreMessages, DlgType, Answers,
-      Aliases, AliasesCount, TimeoutAnswer, &TimeoutButton, ImageName, NeverAskAgainCaption,
-      MoreMessagesUrl, MoreMessagesSize, CustomCaption);
+    Aliases, AliasesCount, TimeoutAnswer, &TimeoutButton, ImageName, NeverAskAgainCaption,
+    MoreMessagesUrl, MoreMessagesSize, CustomCaption);
 
   try
   {
@@ -341,7 +341,7 @@ TMessageTimeout::TMessageTimeout(TComponent *AOwner,
 void TMessageTimeout::MouseMove()
 {
   TPoint CursorPos = Mouse->CursorPos;
-  int Delta = std::max(std::abs(FOrigCursorPos.X - CursorPos.X), std::abs(FOrigCursorPos.Y - CursorPos.Y));
+  int Delta = (std::max)(std::abs(FOrigCursorPos.X - CursorPos.X), std::abs(FOrigCursorPos.Y - CursorPos.Y));
 
   int Threshold = 8;
   if (DebugAlwaysTrue(FButton != nullptr))
@@ -353,7 +353,7 @@ void TMessageTimeout::MouseMove()
   {
     FOrigCursorPos = CursorPos;
     const uintptr_t SuspendTime = 30 * MSecsPerSec;
-    FTimeout = std::max(FOrigTimeout, SuspendTime);
+    FTimeout = (std::max)(FOrigTimeout, SuspendTime);
     UpdateButton();
   }
 }
