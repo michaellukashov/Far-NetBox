@@ -187,11 +187,13 @@ TEST_CASE_METHOD(base_fixture_t, "tryfinally01", "netbox")
 class TBase
 {
 public:
-  ROProperty<int> Data{ nb::bind(&TBase::GetData, this) };
+//  ROProperty<int> Data{ [&]()->int { return GetData(); } };
+  ROProperty2<int, TBase> Data{ this, [](TBase* self)->int { return self->GetData(); } };
 //  ROProperty<int> Data2{ fastdelegate::FastDelegate0<int>(std::bind([this]()->int { return FData; }) ) };
-  ROProperty<int> Data2{ [this]()->int { return FData; } };
-  ROProperty<bool> AutoSort{ [&]()->bool { return FAutoSort; } };
-  ROProperty<UnicodeString> Data3{ [&]()->UnicodeString { return FString; } };
+  ROProperty2<int, TBase> Data2{ this, [](TBase* self)->int { return self->FData; } };
+//  ROProperty2<int, TBase> Data2_1{ this, nb::bind(&TBase::GetData, this) };
+  ROProperty2<bool, TBase> AutoSort{ this, [](TBase* self)->bool { return self->FAutoSort; } };
+  ROProperty2<UnicodeString, TBase> Data3{ this, [](TBase* self)->UnicodeString { return self->FString; } };
 
   void Modify()
   {
