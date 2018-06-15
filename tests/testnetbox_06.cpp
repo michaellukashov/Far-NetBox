@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <iostream>
 #include <fstream>
+#include <functional>
 
 #include "testutils.h"
 //#include <gmock/gmock.h>
@@ -187,7 +188,8 @@ class TBase
 {
 public:
   ROProperty<int> Data{ nb::bind(&TBase::GetData, this) };
-  ROProperty<int> Data2{ [&]()->int { return FData; } };
+//  ROProperty<int> Data2{ fastdelegate::FastDelegate0<int>(std::bind([this]()->int { return FData; }) ) };
+  ROProperty<int> Data2{ [this]()->int { return FData; } };
   ROProperty<bool> AutoSort{ [&]()->bool { return FAutoSort; } };
   ROProperty<UnicodeString> Data3{ [&]()->UnicodeString { return FString; } };
 
