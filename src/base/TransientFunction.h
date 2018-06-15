@@ -1,4 +1,4 @@
-// TransientFuction: A light-weight alternative to std::function [C++11]
+// TransientFunction: A light-weight alternative to std::function [C++11]
 // Pass any callback - including capturing lambdas - cheaply and quickly as a 
 // function argument
 // 
