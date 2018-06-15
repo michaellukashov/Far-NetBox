@@ -143,12 +143,12 @@ public:
   explicit ROProperty(const TGetValueFunctor &Getter) :
     _getter(Getter)
   {
-     Expects(_getter.m_Target != nullptr);
+    Expects(_getter.m_Target != nullptr);
   }
   ROProperty(const ROProperty&) = default;
-  ROProperty(ROProperty&&) = default;
+  ROProperty(ROProperty&&) noexcept = default;
   ROProperty& operator=(const ROProperty&) = default;
-  ROProperty& operator=(ROProperty&&) = default;
+  ROProperty& operator=(ROProperty&&) noexcept = default;
 //  ROProperty(const T& in) : data(in) {}
 //  ROProperty(T&& in) : data(std::forward<T>(in)) {}
   constexpr T operator()() const
@@ -184,6 +184,67 @@ public:
   friend bool inline operator!=(ROProperty &lhs, const T &rhs)
   {
     return lhs._getter() != rhs;
+  }
+};
+
+template <typename T, typename Owner>
+class ROProperty2
+{
+CUSTOM_MEM_ALLOCATION_IMPL
+private:
+//  typedef fu2::function<T() const> TGetValueFunctor;
+//  typedef fastdelegate::FastDelegate0<T> TGetValueFunctor;
+  using TGetValueFunctor = TransientFunction<T(Owner* owner)>; // 16 bytes
+  Owner* owner_;
+  TGetValueFunctor getter_;
+public:
+  ROProperty2() = delete;
+  ROProperty2(Owner* owner, const TGetValueFunctor& Getter) :
+    owner_(owner),
+    getter_(Getter)
+  {
+    Expects(owner_ != nullptr);
+    Expects(getter_.m_Target != nullptr);
+  }
+  ROProperty2(const ROProperty2&) = default;
+  ROProperty2(ROProperty2&&) noexcept = default;
+  ROProperty2& operator=(const ROProperty2&) = default;
+  ROProperty2& operator=(ROProperty2&&) noexcept = default;
+//  ROProperty2(const T& in) : data(in) {}
+//  ROProperty2(T&& in) : data(std::forward<T>(in)) {}
+  constexpr T operator()() const
+  {
+    return getter_(owner_);
+  }
+  constexpr operator T() const
+  {
+    return getter_(owner_);
+  }
+  constexpr const T operator->() const
+  {
+    return getter_(owner_);
+  }
+  T operator->()
+  {
+    return getter_(owner_);
+  }
+  constexpr decltype(auto) operator*() const { return *getter_(owner_); }
+
+  friend bool inline operator==(const ROProperty2 &lhs, const ROProperty2 &rhs)
+  {
+    return lhs.getter_(lhs.owner_) == rhs.getter_(rhs.owner_);
+  }
+  friend bool inline operator==(const ROProperty2 &lhs, const T &rhs)
+  {
+    return lhs.getter_(lhs.owner_) == rhs;
+  }
+  friend bool inline operator!=(const ROProperty2 &lhs, const ROProperty2 &rhs)
+  {
+    return lhs.getter_(lhs.owner_) != rhs.getter_(rhs.owner_);
+  }
+  friend bool inline operator!=(ROProperty2 &lhs, const T &rhs)
+  {
+    return lhs.getter_(lhs.owner_) != rhs;
   }
 };
 
@@ -264,6 +325,6 @@ public:
   }
 };
 //template<int s> struct CheckSizeT;
-//CheckSizeT<sizeof(ROProperty<int>)> checkSize;
+//CheckSizeT<sizeof(ROProperty2<int, int>)> checkSize; // 24 bytes (with TransientFunction)
 //template<int s> struct CheckSizeT;
 //CheckSizeT<sizeof(RWProperty<double>)> checkSize; // 32 bytes (with TransientFunction)
