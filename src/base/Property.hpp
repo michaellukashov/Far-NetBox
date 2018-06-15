@@ -4,6 +4,7 @@
 #include <nbglobals.h>
 #include <FastDelegate.h>
 //#include <FastDelegateBind.h>
+#include <TransientFunction.h>
 
 template <typename T>
 class propertyBase
@@ -134,14 +135,15 @@ class ROProperty
 CUSTOM_MEM_ALLOCATION_IMPL
 private:
 //  typedef fu2::function<T() const> TGetValueFunctor;
-  typedef fastdelegate::FastDelegate0<T> TGetValueFunctor;
+//  typedef fastdelegate::FastDelegate0<T> TGetValueFunctor;
+  using TGetValueFunctor = TransientFunction<T()>; // 16 bytes
   TGetValueFunctor _getter;
 public:
   ROProperty() = delete;
   explicit ROProperty(const TGetValueFunctor &Getter) :
     _getter(Getter)
   {
-    Expects(_getter != nullptr);
+     Expects(_getter.m_Target != nullptr);
   }
   ROProperty(const ROProperty&) = default;
   ROProperty(ROProperty&&) = default;
@@ -194,8 +196,10 @@ CUSTOM_MEM_ALLOCATION_IMPL
 private:
 //  typedef fu2::function<T() const> TGetValueFunctor;
 //  typedef fu2::function<void(T)> TSetValueFunctor;
-  typedef fastdelegate::FastDelegate0<T> TGetValueFunctor;
-  typedef fastdelegate::FastDelegate1<void, T> TSetValueFunctor;
+//  typedef fastdelegate::FastDelegate0<T> TGetValueFunctor;
+//  typedef fastdelegate::FastDelegate1<void, T> TSetValueFunctor;
+  using TGetValueFunctor = TransientFunction<T()>; // 16 bytes
+  using TSetValueFunctor = TransientFunction<void(T)>; // 16 bytes
   TGetValueFunctor _getter;
   TSetValueFunctor _setter;
 public:
@@ -204,8 +208,8 @@ public:
     _getter(Getter),
     _setter(Setter)
   {
-    Expects(_getter != nullptr);
-    Expects(_setter != nullptr);
+    Expects(_getter.m_Target != nullptr);
+    Expects(_setter.m_Target != nullptr);
   }
   RWProperty(const RWProperty&) = default;
   RWProperty(RWProperty&&) = default;
@@ -262,4 +266,4 @@ public:
 //template<int s> struct CheckSizeT;
 //CheckSizeT<sizeof(ROProperty<int>)> checkSize;
 //template<int s> struct CheckSizeT;
-//CheckSizeT<sizeof(RWProperty<double>)> checkSize;
+//CheckSizeT<sizeof(RWProperty<double>)> checkSize; // 32 bytes (with TransientFunction)
