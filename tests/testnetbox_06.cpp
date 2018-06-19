@@ -380,15 +380,18 @@ public:
 };
 
 template <typename T>
-class RWProp : TransientFunction<const T()>, TransientFunction<void(const T&)> // 16 bytes
+class RWProp // : TransientFunction<const T()>, TransientFunction<void(const T&)> // 32 bytes
 {
   typedef TransientFunction<const T()> ro_base_t;
   typedef TransientFunction<void(const T&)> wr_base_t;
+  ro_base_t getter_;
+  wr_base_t setter_;
 public:
   RWProp() = delete;
-  explicit RWProp(const ro_base_t &Getter, const wr_base_t &Setter) :
-    ro_base_t(Getter),
-    wr_base_t(Setter)
+  template<typename T1, typename T2>
+  RWProp(T1& getter, T2& setter) :
+    getter_(getter),
+    setter_(setter)
   {
 //    Expects(_getter.m_Target != nullptr);
 //    Expects(_setter.m_Target != nullptr);
@@ -396,16 +399,16 @@ public:
 
   void operator=(const T& Value)
   {
-    wr_base_t::operator()(Value);
+    setter_.operator()(Value);
   }
 
   friend bool inline operator==(const RWProp &lhs, const T& rhs)
   {
-    return lhs() == rhs;
+    return lhs.getter_() == rhs;
   }
   friend bool inline operator==(const T& lhs, const RWProp &rhs)
   {
-    return rhs() == lhs;
+    return rhs.getter_() == lhs;
   }
 };
 
