@@ -39,7 +39,7 @@ struct TransientFunction<R(Args...)>
 {
   using Dispatcher = R(*)(void*, Args...);
   
-  Dispatcher m_Dispatcher; // A pointer to the static function that will call the 
+  Dispatcher m_Dispatcher{nullptr}; // A pointer to the static function that will call the
                            // wrapped invokable object
   void* m_Target{nullptr}; // A pointer to the invokable object
 
