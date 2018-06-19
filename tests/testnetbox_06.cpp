@@ -327,3 +327,162 @@ TEST_CASE_METHOD(base_fixture_t, "properties03", "netbox")
     CHECK(5 == obj2.Data4);
   }
 }
+
+namespace prop_01 {
+
+template <typename T>
+class ROProp
+{
+  using TProp = TransientFunction<T()>;
+  TProp getter_;
+public:
+  ROProp(const TProp& Getter) : getter_(Getter) {}
+
+  friend bool inline operator==(const ROProp &lhs, const T &rhs)
+  {
+    return lhs.getter_() == rhs;
+  }
+  friend bool inline operator==(const T &lhs, const ROProp &rhs)
+  {
+    return rhs.getter_() == lhs;
+  }
+};
+
+class TBase1
+{
+public:
+//  ROProp<int> Data1{ nb::bind(&TBase1::GetData1, this) };
+  ROProp<int> Data1{ nb::bind(&TBase1::GetData1, this) };
+  ROProp<int> Data2{ [&]() { return GetData1(); } };
+private:
+  int GetData1() { return 42; }
+};
+
+} // namespace prop_01
+
+namespace prop_02 {
+
+template <typename T>
+class ROProp : TransientFunction<const T()> // 16 bytes
+{
+  typedef TransientFunction<const T()> base_t;
+public:
+  using base_t::base_t;
+
+  friend bool inline operator==(const ROProp &lhs, const T& rhs)
+  {
+    return lhs() == rhs;
+  }
+  friend bool inline operator==(const T& lhs, const ROProp &rhs)
+  {
+    return rhs() == lhs;
+  }
+};
+
+template <typename T>
+class RWProp : TransientFunction<const T()>, TransientFunction<void(const T&)> // 16 bytes
+{
+  typedef TransientFunction<const T()> ro_base_t;
+  typedef TransientFunction<void(const T&)> wr_base_t;
+public:
+
+  friend bool inline operator==(const ROProp &lhs, const T& rhs)
+  {
+    return lhs() == rhs;
+  }
+  friend bool inline operator==(const T& lhs, const ROProp &rhs)
+  {
+    return rhs() == lhs;
+  }
+};
+
+class TBase1
+{
+public:
+  ROProp<int> Data1{ [&]() { return GetData1(); } };
+  ROProp<const UnicodeString> StrData1{ [&]() { return GetStrData1(); } };
+  ROProp<UnicodeString> StrData2{ [&]() { return GetStrData2(); } };
+  RWProp<int> RWData1{ [&]() { return GetRWData1(); }, [&](const int Value) { SetRWData1(Value); }};
+private:
+  int GetData1() { return 42; }
+  UnicodeString GetStrData1() const { return "42"; }
+  UnicodeString GetStrData2() { return "42"; }
+  int GetRWData1() { return FIntData1; }
+  void SetRWData1(int Value) { FIntData2 = Value; }
+
+  int FIntData1{1};
+};
+
+//template<int s> struct CheckSizeT;
+//CheckSizeT<sizeof(ROProp<UnicodeString>)> checkSize;
+
+} // namespace prop_02
+
+TEST_CASE_METHOD(base_fixture_t, "properties04", "netbox")
+{
+  SECTION("TBase1::Data1")
+  {
+    prop_02::TBase1 obj;
+    {
+      bool res = (obj.Data1 == 42);
+      CHECK(res);
+    }
+    {
+      bool res = (42 == obj.Data1);
+      CHECK(res);
+    }
+  }
+  SECTION("TBase1::StrData1")
+  {
+    prop_02::TBase1 obj;
+    {
+      bool res = (obj.StrData1 == "42");
+      CHECK(res);
+    }
+    {
+      bool res = ("42" == obj.StrData1);
+      CHECK(res);
+    }
+  }
+  SECTION("TBase1::StrData2")
+  {
+    prop_02::TBase1 obj;
+    {
+      bool res = (obj.StrData2 == "42");
+      CHECK(res);
+    }
+    {
+      bool res = ("42" == obj.StrData2);
+      CHECK(res);
+    }
+  }
+  SECTION("TBase1::RWData1")
+  {
+    prop_02::TBase1 obj;
+    {
+      bool res = (obj.RWData1 == 1);
+      CHECK(res);
+    }
+    {
+      bool res = (1 == obj.RWData1);
+      CHECK(res);
+    }
+    {
+      obj.RWData1 = 2;
+      bool res = (2 == obj.RWData1);
+      CHECK(res);
+    }
+  }
+  SECTION("TBase1::Data1")
+  {
+    prop_01::TBase1 obj;
+    {
+      bool res = (obj.Data1 == 42);
+      CHECK(res);
+    }
+    {
+      bool res = (42 == obj.Data1);
+      CHECK(res);
+    }
+  }
+}
