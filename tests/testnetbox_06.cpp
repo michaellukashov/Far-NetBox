@@ -385,12 +385,25 @@ class RWProp : TransientFunction<const T()>, TransientFunction<void(const T&)> /
   typedef TransientFunction<const T()> ro_base_t;
   typedef TransientFunction<void(const T&)> wr_base_t;
 public:
+  RWProp() = delete;
+  explicit RWProp(const ro_base_t &Getter, const wr_base_t &Setter) :
+    ro_base_t(Getter),
+    wr_base_t(Setter)
+  {
+//    Expects(_getter.m_Target != nullptr);
+//    Expects(_setter.m_Target != nullptr);
+  }
 
-  friend bool inline operator==(const ROProp &lhs, const T& rhs)
+  void operator=(const T& Value)
+  {
+    wr_base_t::operator()(Value);
+  }
+
+  friend bool inline operator==(const RWProp &lhs, const T& rhs)
   {
     return lhs() == rhs;
   }
-  friend bool inline operator==(const T& lhs, const ROProp &rhs)
+  friend bool inline operator==(const T& lhs, const RWProp &rhs)
   {
     return rhs() == lhs;
   }
@@ -403,14 +416,18 @@ public:
   ROProp<const UnicodeString> StrData1{ [&]() { return GetStrData1(); } };
   ROProp<UnicodeString> StrData2{ [&]() { return GetStrData2(); } };
   RWProp<int> RWData1{ [&]() { return GetRWData1(); }, [&](const int Value) { SetRWData1(Value); }};
+  RWProp<UnicodeString> RWStrData1{ [&]() { return GetRWStrData1(); }, [&](const UnicodeString& Value) { SetRWStrData1(Value); }};
 private:
   int GetData1() { return 42; }
   UnicodeString GetStrData1() const { return "42"; }
   UnicodeString GetStrData2() { return "42"; }
   int GetRWData1() { return FIntData1; }
-  void SetRWData1(int Value) { FIntData2 = Value; }
+  void SetRWData1(int Value) { FIntData1 = Value; }
+  UnicodeString GetRWStrData1() { return FStrData1; }
+  void SetRWStrData1(const UnicodeString Value) { FStrData1 = Value; }
 
   int FIntData1{1};
+  UnicodeString FStrData1{"test"};
 };
 
 //template<int s> struct CheckSizeT;
@@ -470,6 +487,15 @@ TEST_CASE_METHOD(base_fixture_t, "properties04", "netbox")
     {
       obj.RWData1 = 2;
       bool res = (2 == obj.RWData1);
+      CHECK(res);
+    }
+    {
+      bool res = ("test" == obj.RWStrData1);
+      CHECK(res);
+      obj.RWStrData1 = "42";
+      res = ("42" == obj.RWStrData1);
+      CHECK(res);
+      res = (obj.RWStrData1 == "42");
       CHECK(res);
     }
   }
