@@ -51,12 +51,12 @@ struct TransientFunction<R(Args...)>
     return (*(S*)target)(args...);
   }
   
-  template<typename T>
-  TransientFunction(T&& target)
+  /*template<typename T>
+  explicit TransientFunction(T&& target)
     : m_Dispatcher(&Dispatch<typename std::decay<T>::type>)
     , m_Target(&target)
   {
-  }
+  }*/
 
   // Specialize for reference-to-function, to ensure that a valid pointer is 
   // stored.
@@ -64,7 +64,7 @@ struct TransientFunction<R(Args...)>
   TransientFunction(TargetFunctionRef target)
     : m_Dispatcher(Dispatch<TargetFunctionRef>)
   {
-    static_assert(sizeof(void*) == sizeof target, 
+    static_assert(sizeof(void*) == sizeof(target),
     "It will not be possible to pass functions by reference on this platform. "
     "Please use explicit function pointers i.e. foo(target) -> foo(&target)");
     m_Target = (void*)target;
