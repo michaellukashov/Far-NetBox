@@ -135,15 +135,15 @@ class ROProperty
 CUSTOM_MEM_ALLOCATION_IMPL
 private:
 //  typedef fu2::function<T() const> TGetValueFunctor;
-//  typedef fastdelegate::FastDelegate0<T> TGetValueFunctor;
-  using TGetValueFunctor = TransientFunction<T()>; // 16 bytes
+  typedef fastdelegate::FastDelegate0<T> TGetValueFunctor;
+//  using TGetValueFunctor = TransientFunction<T()>; // 16 bytes
   TGetValueFunctor _getter;
 public:
   ROProperty() = delete;
   explicit ROProperty(const TGetValueFunctor &Getter) :
     _getter(Getter)
   {
-    Expects(_getter.m_Target != nullptr);
+    // Expects(_getter.m_Target != nullptr);
   }
   ROProperty(const ROProperty&) = default;
   ROProperty(ROProperty&&) noexcept = default;
@@ -257,20 +257,20 @@ CUSTOM_MEM_ALLOCATION_IMPL
 private:
 //  typedef fu2::function<T() const> TGetValueFunctor;
 //  typedef fu2::function<void(T)> TSetValueFunctor;
-//  typedef fastdelegate::FastDelegate0<T> TGetValueFunctor;
-//  typedef fastdelegate::FastDelegate1<void, T> TSetValueFunctor;
-  using TGetValueFunctor = TransientFunction<T()>; // 16 bytes
-  using TSetValueFunctor = TransientFunction<void(T)>; // 16 bytes
+  typedef fastdelegate::FastDelegate0<T> TGetValueFunctor;
+  typedef fastdelegate::FastDelegate1<void, T> TSetValueFunctor;
+//  using TGetValueFunctor = TransientFunction<T()>; // 16 bytes
+//  using TSetValueFunctor = TransientFunction<void(T)>; // 16 bytes
   TGetValueFunctor _getter;
   TSetValueFunctor _setter;
 public:
   RWProperty() = delete;
-  explicit RWProperty(const TGetValueFunctor &Getter, const TSetValueFunctor &Setter) :
+  explicit RWProperty(const TGetValueFunctor& Getter, const TSetValueFunctor& Setter) :
     _getter(Getter),
     _setter(Setter)
   {
-    Expects(_getter.m_Target != nullptr);
-    Expects(_setter.m_Target != nullptr);
+//    Expects(_getter.m_Target != nullptr);
+//    Expects(_setter.m_Target != nullptr);
   }
   RWProperty(const RWProperty&) = default;
   RWProperty(RWProperty&&) = default;
