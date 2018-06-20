@@ -338,11 +338,11 @@ class ROProp
 public:
   ROProp(const TProp& Getter) : getter_(Getter) {}
 
-  friend bool inline operator==(const ROProp &lhs, const T &rhs)
+  friend bool inline operator==(const ROProp& lhs, const T& rhs)
   {
     return lhs.getter_() == rhs;
   }
-  friend bool inline operator==(const T &lhs, const ROProp &rhs)
+  friend bool inline operator==(const T& lhs, const ROProp& rhs)
   {
     return rhs.getter_() == lhs;
   }
@@ -369,11 +369,11 @@ class ROProp : TransientFunction<const T()> // 16 bytes
 public:
   using base_t::base_t;
 
-  friend bool inline operator==(const ROProp &lhs, const T& rhs)
+  friend bool inline operator==(const ROProp& lhs, const T& rhs)
   {
     return lhs() == rhs;
   }
-  friend bool inline operator==(const T& lhs, const ROProp &rhs)
+  friend bool inline operator==(const T& lhs, const ROProp& rhs)
   {
     return rhs() == lhs;
   }
@@ -383,30 +383,25 @@ template <typename T>
 class RWProp // : TransientFunction<const T()>, TransientFunction<void(const T&)> // 32 bytes
 {
   typedef TransientFunction<const T()> ro_base_t;
-  typedef TransientFunction<void(const T&)> wr_base_t;
-  ro_base_t getter_;
-  wr_base_t setter_;
+  typedef TransientFunction<void(const T&)> rw_base_t;
+  const ro_base_t getter_;
+  const rw_base_t setter_;
 public:
   RWProp() = delete;
-  template<typename T1, typename T2>
-  RWProp(T1& getter, T2& setter) :
-    getter_(getter),
-    setter_(setter)
-  {
-//    Expects(_getter.m_Target != nullptr);
-//    Expects(_setter.m_Target != nullptr);
-  }
+//  template<typename T1, typename T2>
+//  RWProp(T1&& getter, T2&& setter) : getter_(getter), setter_(setter) {}
+  RWProp(const ro_base_t getter, const rw_base_t setter) : getter_(getter), setter_(setter) {}
 
   void operator=(const T& Value)
   {
     setter_.operator()(Value);
   }
 
-  friend bool inline operator==(const RWProp &lhs, const T& rhs)
+  friend bool inline operator==(const RWProp& lhs, const T& rhs)
   {
     return lhs.getter_() == rhs;
   }
-  friend bool inline operator==(const T& lhs, const RWProp &rhs)
+  friend bool inline operator==(const T& lhs, const RWProp& rhs)
   {
     return rhs.getter_() == lhs;
   }
@@ -418,7 +413,7 @@ public:
   ROProp<int> Data1{ [&]() { return GetData1(); } };
   ROProp<const UnicodeString> StrData1{ [&]() { return GetStrData1(); } };
   ROProp<UnicodeString> StrData2{ [&]() { return GetStrData2(); } };
-  RWProp<int> RWData1{ [&]() { return GetRWData1(); }, [&](const int Value) { SetRWData1(Value); }};
+  RWProp<int> RWData1{ [&]() { return GetRWData1(); }, [&](const int& Value) { SetRWData1(Value); }};
   RWProp<UnicodeString> RWStrData1{ [&]() { return GetRWStrData1(); }, [&](const UnicodeString& Value) { SetRWStrData1(Value); }};
 private:
   int GetData1() { return 42; }
@@ -480,11 +475,11 @@ TEST_CASE_METHOD(base_fixture_t, "properties04", "netbox")
   {
     prop_02::TBase1 obj;
     {
-      bool res = (obj.RWData1 == 1);
+      bool res = (1 == obj.RWData1);
       CHECK(res);
     }
     {
-      bool res = (1 == obj.RWData1);
+      bool res = (obj.RWData1 == 1);
       CHECK(res);
     }
     {
