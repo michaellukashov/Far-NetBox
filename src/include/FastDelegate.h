@@ -987,7 +987,7 @@ private:
 	typedef RetType (*UnvoidStaticFunctionPtr)();
 	typedef RetType (detail::GenericClass::*GenericMemFn)();
 	typedef detail::ClosurePtr<GenericMemFn, StaticFunctionPtr, UnvoidStaticFunctionPtr> ClosureType;
-	ClosureType m_Closure;
+	ClosureType m_Closure{};
 public:
 	// Typedefs to aid generic programming
 	typedef FastDelegate0 type;
