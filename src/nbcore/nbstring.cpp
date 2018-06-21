@@ -81,7 +81,7 @@ NB_CORE_DLL(void) nbstr_lock(CMStringData *pThis)
 
 NB_CORE_DLL(void) nbstr_release(CMStringData *pThis)
 {
-  if (InterlockedDecrement(&pThis->nRefs) <= 0)
+  if (InterlockedDecrement(&pThis->nRefs) == 0)
     nbstr_free(pThis);
 }
 
