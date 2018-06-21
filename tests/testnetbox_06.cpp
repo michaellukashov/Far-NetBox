@@ -469,7 +469,7 @@ struct TransientFunction<R(Args...)>
   }
 
   template<typename T>
-  TransientFunction(T target)
+  TransientFunction(T&& target)
     : m_Dispatcher(&Dispatch<typename std::decay<T>::type>)
     , m_Target(&target)
   {
@@ -499,7 +499,7 @@ struct TransientFunction<R(Args...)>
 template <typename T>
 class WOProp : tf::TransientFunction<void(const T)> // 16 bytes
 {
-  typedef TransientFunction<void(const T)> base_t;
+  typedef tf::TransientFunction<void(const T)> base_t;
 public:
   using base_t::base_t;
 
@@ -781,6 +781,123 @@ TEST_CASE_METHOD(base_fixture_t, "properties05", "netbox")
 //      obj.RWData1 = 2;
 //      bool res = (2 == obj.RWData1);
 //      CHECK(res);
+    }
+  }
+}
+
+namespace prop_04 {
+
+template <typename T>
+class RWProperty
+{
+CUSTOM_MEM_ALLOCATION_IMPL
+private:
+//  typedef fu2::function<T() const> TGetValueFunctor;
+//  typedef fu2::function<void(T)> TSetValueFunctor;
+  typedef fastdelegate::FastDelegate0<T> TGetValueFunctor;
+  typedef fastdelegate::FastDelegate1<void, T> TSetValueFunctor;
+//  using TGetValueFunctor = TransientFunction<T()>; // 16 bytes
+//  using TSetValueFunctor = TransientFunction<void(T)>; // 16 bytes
+  TGetValueFunctor _getter;
+  TSetValueFunctor _setter;
+public:
+  RWProperty() = delete;
+  explicit RWProperty(const TGetValueFunctor& Getter, const TSetValueFunctor& Setter) :
+    _getter(Getter),
+    _setter(Setter)
+  {
+//    Expects(_getter.m_Target != nullptr);
+//    Expects(_setter.m_Target != nullptr);
+  }
+  RWProperty(const RWProperty&) noexcept = default;
+  RWProperty(RWProperty&&) noexcept = default;
+  RWProperty& operator=(const RWProperty&) noexcept = default;
+  RWProperty& operator=(RWProperty&&) noexcept = default;
+//  RWProperty(const T& in) : data(in) {}
+//  RWProperty(T&& in) : data(std::forward<T>(in)) {}
+//  T const& get() const {
+//      return data;
+//  }
+
+//  T&& unwrap() && {
+//      return std::move(data);
+//  }
+//  constexpr T operator()() const
+//  {
+//    return _getter();
+//  }
+  constexpr operator T() const
+  {
+    return _getter();
+  }
+  /*operator T&() const
+  {
+    Expects(_getter);
+    return _getter();
+  }*/
+  constexpr T operator->() const
+  {
+    return _getter();
+  }
+  constexpr decltype(auto) operator*() const { return *_getter(); }
+  void operator()(const T &Value)
+  {
+    _setter(Value);
+  }
+  void operator=(T Value)
+  {
+    _setter(Value);
+  }
+//  bool operator==(T Value) const
+//  {
+//    return _getter() == Value;
+//  }
+  friend bool inline operator==(const RWProperty& lhs, const T& rhs)
+  {
+    return lhs._getter() == rhs;
+  }
+  friend bool inline operator==(const T& lhs, const RWProperty<T>& rhs)
+  {
+    return rhs._getter() == lhs;
+  }
+  friend bool inline operator!=(RWProperty<T> &lhs, const T &rhs)
+  {
+    return lhs._getter() != rhs;
+  }
+};
+
+class TBase1
+{
+public:
+  prop_04::RWProperty<int64_t> RWData1{nb::bind(&TBase1::GetRWData1, this), nb::bind(&TBase1::SetRWData1, this)};
+
+private:
+  int64_t GetRWData1() { return FRWData1; }
+  void SetRWData1(int64_t  Value) { FRWData1 = Value; }
+  UnicodeString GetRWStrData1() { return FStrRWData1; }
+  void SetRWStrData1(const UnicodeString Value) { FStrRWData1 = Value; }
+
+  int64_t FRWData1{42};
+  UnicodeString FStrRWData1{"test"};
+};
+
+} // namespace prop_04
+
+TEST_CASE_METHOD(base_fixture_t, "properties06", "netbox")
+{
+  SECTION("TBase1::RWData1")
+  {
+    prop_04::TBase1 obj;
+    {
+      bool res = (obj.RWData1 == 42);
+      CHECK(res);
+      res = (42 == obj.RWData1);
+      CHECK(res);
+    }
+    {
+      obj.RWData1 = 43;
+      bool res = (43 == obj.RWData1);
+      CHECK(res);
     }
   }
 }
