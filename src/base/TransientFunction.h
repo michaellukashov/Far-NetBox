@@ -45,22 +45,22 @@ struct TransientFunction<R(Args...)>
 
   // Dispatch() is instantiated by the TransientFunction constructor,
   // which will store a pointer to the function in m_Dispatcher.
-  template<typename S>
+  template<typename S, typename ...Args>
   static R Dispatch(void* target, Args... args)
   {
     return (*(S*)target)(args...);
   }
   
-  /*template<typename T>
-  explicit TransientFunction(T&& target)
+  template<typename T>
+  TransientFunction(T&& target)
     : m_Dispatcher(&Dispatch<typename std::decay<T>::type>)
     , m_Target(&target)
   {
-  }*/
+  }
 
   // Specialize for reference-to-function, to ensure that a valid pointer is 
   // stored.
-  using TargetFunctionRef = R(Args...);
+  using TargetFunctionRef = const R(Args...);
   TransientFunction(TargetFunctionRef target)
     : m_Dispatcher(Dispatch<TargetFunctionRef>)
   {
