@@ -284,15 +284,18 @@ public:
   }
   friend bool inline operator==(const BaseStringT &lhs, const YCHAR *rhs)
   {
-    return lhs.Compare(BaseStringT(rhs).c_str()) == 0;
+    return (lhs.Compare(BaseStringT(rhs).c_str()) == 0) &&
+      (NBChTraitsCRT<XCHAR>::GetBaseTypeLength(lhs.c_str()) == NBChTraitsCRT<YCHAR>::GetBaseTypeLength(rhs));
   }
   friend bool inline operator==(const YCHAR *lhs, const BaseStringT &rhs)
   {
-    return rhs.Compare(BaseStringT(lhs).c_str()) == 0;
+    return (rhs.Compare(BaseStringT(lhs).c_str()) == 0) &&
+      (NBChTraitsCRT<XCHAR>::GetBaseTypeLength(rhs.c_str()) == NBChTraitsCRT<YCHAR>::GetBaseTypeLength(lhs));
   }
   friend bool inline operator==(const CharT *lhs, const BaseStringT &rhs)
   {
-    return rhs.Compare(lhs) == 0;
+    return (rhs.Compare(lhs) == 0) &&
+        (NBChTraitsCRT<XCHAR>::GetBaseTypeLength(rhs.c_str()) == NBChTraitsCRT<XCHAR>::GetBaseTypeLength(lhs));
   }
   friend bool inline operator!=(const BaseStringT &lhs, const BaseStringT &rhs)
   {
