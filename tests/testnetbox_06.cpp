@@ -9,6 +9,7 @@
 #include <iostream>
 #include <fstream>
 #include <functional>
+#include <type_traits>
 
 #include "testutils.h"
 //#include <gmock/gmock.h>
@@ -184,16 +185,82 @@ TEST_CASE_METHOD(base_fixture_t, "tryfinally01", "netbox")
   }
 }
 
+namespace prop_01 {
+
+template <typename T, typename Owner>
+class ROProperty2
+{
+CUSTOM_MEM_ALLOCATION_IMPL
+private:
+//  typedef fu2::function<T() const> TGetValueFunctor;
+//  typedef fastdelegate::FastDelegate1<T, Owner*> TGetValueFunctor;
+  using TGetValueFunctor = TransientFunction<T(Owner* owner)>; // 16 bytes
+  Owner* owner_;
+  TGetValueFunctor getter_;
+public:
+  ROProperty2() = delete;
+  explicit ROProperty2(Owner* owner, TGetValueFunctor&& Getter) :
+    owner_(owner),
+    getter_(Getter)
+  {
+    Expects(owner_ != nullptr);
+    Expects(getter_.m_Target != nullptr);
+  }
+  ROProperty2(const ROProperty2&) = default;
+  // ROProperty2(ROProperty2&&) noexcept = default;
+  // ROProperty2& operator=(const ROProperty2&) = default;
+  ROProperty2& operator=(ROProperty2&&) noexcept = default;
+//  ROProperty2(const T& in) : data(in) {}
+//  ROProperty2(T&& in) : data(std::forward<T>(in)) {}
+  constexpr T operator()() const
+  {
+    return getter_(owner_);
+  }
+  constexpr operator T() const
+  {
+    return getter_(owner_);
+  }
+  constexpr const T operator->() const
+  {
+    return getter_(owner_);
+  }
+  T operator->()
+  {
+    return getter_(owner_);
+  }
+  constexpr decltype(auto) operator*() const { return *getter_(owner_); }
+
+  friend bool inline operator==(const ROProperty2 &lhs, const ROProperty2 &rhs)
+  {
+    return lhs.getter_(lhs.owner_) == rhs.getter_(rhs.owner_);
+  }
+  friend bool inline operator==(const ROProperty2 &lhs, const T &rhs)
+  {
+    return lhs.getter_(lhs.owner_) == rhs;
+  }
+  friend bool inline operator!=(const ROProperty2 &lhs, const ROProperty2 &rhs)
+  {
+    return lhs.getter_(lhs.owner_) != rhs.getter_(rhs.owner_);
+  }
+  friend bool inline operator!=(ROProperty2 &lhs, const T &rhs)
+  {
+    return lhs.getter_(lhs.owner_) != rhs;
+  }
+};
+
+} // namespace prop_01
+
 class TBase
 {
 public:
 //  ROProperty<int> Data{ [&]()->int { return GetData(); } };
-  ROProperty2<int, TBase> Data{ this, [](TBase* self)->int { return self->GetData(); } };
+  prop_01::ROProperty2<int, TBase> Data{ this, [](TBase* self)->int { return self->GetData(); } };
+//  prop_01::ROProperty2<int, TBase> Data{ this, nb::bind([](TBase* self)->int { return self->GetData(); }, this); };
 //  ROProperty<int> Data2{ fastdelegate::FastDelegate0<int>(std::bind([this]()->int { return FData; }) ) };
-  ROProperty2<int, TBase> Data2{ this, [](TBase* self)->int { return self->FData; } };
+//  ROProperty2<int, TBase> Data2{ this, [](TBase* self)->int { return self->FData; } };
 //  ROProperty2<int, TBase> Data2_1{ this, nb::bind(&TBase::GetData, this) };
-  ROProperty2<bool, TBase> AutoSort{ this, [](TBase* self)->bool { return self->FAutoSort; } };
-  ROProperty2<UnicodeString, TBase> Data3{ this, [](TBase* self)->UnicodeString { return self->FString; } };
+//  ROProperty2<bool, TBase> AutoSort{ this, [](TBase* self)->bool { return self->FAutoSort; } };
+//  ROProperty2<UnicodeString, TBase> Data3{ this, [](TBase* self)->UnicodeString { return self->FString; } };
 
   void Modify()
   {
@@ -226,7 +293,7 @@ TEST_CASE_METHOD(base_fixture_t, "properties01", "netbox")
   {
     TBase obj1;
     CHECK(obj1.Data == 1);
-    CHECK(obj1.Data2 == 1);
+    /*CHECK(obj1.Data2 == 1);
     bool x = obj1.AutoSort;
     CHECK(x == true);
     CHECK(obj1.AutoSort == true);
@@ -237,21 +304,21 @@ TEST_CASE_METHOD(base_fixture_t, "properties01", "netbox")
     CHECK(obj1.AutoSort == false);
     CHECK(false == obj1.AutoSort);
     CHECK("43" == obj1.Data3);
-    CHECK(obj1.Data3() == "43");
+    CHECK(obj1.Data3() == "43");*/
   }
   SECTION("TDerived")
   {
     TDerived d1;
-    CHECK(d1.Data == 3);
-    CHECK(3 == d1.Data);
-    CHECK(1 == d1.Data2);
+//    CHECK(d1.Data == 3);
+//    CHECK(3 == d1.Data);
+    // CHECK(1 == d1.Data2);
     d1.Modify();
-    CHECK(3 == d1.Data);
-    CHECK(2 == d1.Data2);
+//    CHECK(3 == d1.Data);
+    // CHECK(2 == d1.Data2);
   }
 }
 
-class TBase2
+/*class TBase2
 {
 public:
   RWProperty<int> Data{ nb::bind(&TBase2::GetData, this), nb::bind(&TBase2::SetData, this) };
@@ -277,14 +344,14 @@ private:
   int FData = 1;
   UnicodeString FString = "42";
   bool FAutoSort = true;
-};
+};*/
 
 //template<int s> struct Wow;
 //Wow<sizeof(TBase2)> wow;
 
 TEST_CASE_METHOD(base_fixture_t, "properties02", "netbox")
 {
-  SECTION("TBase2")
+  /*SECTION("TBase2")
   {
     TBase2 obj1;
     CHECK(obj1.Data == 1);
@@ -302,12 +369,12 @@ TEST_CASE_METHOD(base_fixture_t, "properties02", "netbox")
     CHECK("42" == obj1.Data3());
     obj1.Data3 = "43";
     CHECK("43" == obj1.Data3());
-  }
+  }*/
 }
 
 TEST_CASE_METHOD(base_fixture_t, "properties03", "netbox")
 {
-  SECTION("TBase2::Data4")
+  /*SECTION("TBase2::Data4")
   {
     TBase2 obj1;
     CHECK(1 == obj1.Data4);
@@ -325,15 +392,15 @@ TEST_CASE_METHOD(base_fixture_t, "properties03", "netbox")
     obj2.Data5 = 5;
     CHECK(5 == obj2.Data5);
     CHECK(5 == obj2.Data4);
-  }
+  }*/
 }
 
-namespace prop_01 {
+/*namespace prop_01 {
 
 template <typename T>
 class ROProp
 {
-  using TProp = TransientFunction<T()>;
+  using TProp = TransientFunction<const T()>;
   TProp getter_;
 public:
   ROProp(const TProp& Getter) : getter_(Getter) {}
@@ -352,14 +419,14 @@ class TBase1
 {
 public:
 //  ROProp<int> Data1{ nb::bind(&TBase1::GetData1, this) };
-  ROProp<int> Data1{ nb::bind(&TBase1::GetData1, this) };
+//  ROProp<int> Data1{ nb::bind(&TBase1::GetData1, this) };
   ROProp<int> Data2{ [&]() { return GetData1(); } };
 private:
   int GetData1() { return 42; }
 };
 
 } // namespace prop_01
-
+*/
 namespace prop_02 {
 
 template <typename T>
@@ -379,17 +446,89 @@ public:
   }
 };
 
+namespace tf {
+
+template<typename>
+struct TransientFunction; // intentionally not defined
+
+template<typename R, typename ...Args>
+struct TransientFunction<R(Args...)>
+{
+  using Dispatcher = R(*)(void*, Args...);
+
+  Dispatcher m_Dispatcher{nullptr}; // A pointer to the static function that will call the
+                           // wrapped invokable object
+  void* m_Target{nullptr}; // A pointer to the invokable object
+
+  // Dispatch() is instantiated by the TransientFunction constructor,
+  // which will store a pointer to the function in m_Dispatcher.
+  template<typename S, typename ...Args1>
+  static R Dispatch(void* target, Args1... args)
+  {
+    return (*(S*)target)(args...);
+  }
+
+  template<typename T>
+  TransientFunction(T target)
+    : m_Dispatcher(&Dispatch<typename std::decay<T>::type>)
+    , m_Target(&target)
+  {
+  }
+
+  // Specialize for reference-to-function, to ensure that a valid pointer is
+  // stored.
+  using TargetFunctionRef = const R(Args...);
+  TransientFunction(TargetFunctionRef target)
+    : m_Dispatcher(Dispatch<TargetFunctionRef>)
+  {
+    static_assert(sizeof(void*) == sizeof(target),
+    "It will not be possible to pass functions by reference on this platform. "
+    "Please use explicit function pointers i.e. foo(target) -> foo(&target)");
+    m_Target = (void*)target;
+  }
+
+  template<typename ...Args2>
+  R operator()(Args2... args) const
+  {
+    return m_Dispatcher(m_Target, args...);
+  }
+};
+
+} // namespace tf
+
+template <typename T>
+class WOProp : tf::TransientFunction<void(const T)> // 16 bytes
+{
+  typedef TransientFunction<void(const T)> base_t;
+public:
+  using base_t::base_t;
+
+  /*friend bool inline operator==(const WOProp& lhs, const T& rhs)
+  {
+    return lhs() == rhs;
+  }
+  friend bool inline operator==(const T& lhs, const WOProp& rhs)
+  {
+    return rhs() == lhs;
+  }*/
+  base_t& operator=(const T Value)
+  {
+    base_t::operator()(Value);
+    return *this;
+  }
+};
+
 template <typename T>
 class RWProp // : TransientFunction<const T()>, TransientFunction<void(const T&)> // 32 bytes
 {
   typedef TransientFunction<const T()> ro_base_t;
-  typedef TransientFunction<void(const T&)> rw_base_t;
-  const ro_base_t getter_;
-  const rw_base_t setter_;
+  typedef TransientFunction<void(const T)> rw_base_t;
+  ro_base_t getter_;
+  rw_base_t setter_;
 public:
   RWProp() = delete;
-//  template<typename T1, typename T2>
-//  RWProp(T1&& getter, T2&& setter) : getter_(getter), setter_(setter) {}
+  template<typename T1, typename T2>
+  RWProp(T1& getter, T2& setter) : getter_(getter), setter_(setter) {}
   RWProp(const ro_base_t getter, const rw_base_t setter) : getter_(getter), setter_(setter) {}
 
   void operator=(const T& Value)
@@ -411,12 +550,18 @@ class TBase1
 {
 public:
   ROProp<int> Data1{ [&]() { return GetData1(); } };
+//  ROProp<int> Data1{ nb::bind(&TBase1::GetData1(), this) };
   ROProp<const UnicodeString> StrData1{ [&]() { return GetStrData1(); } };
   ROProp<UnicodeString> StrData2{ [&]() { return GetStrData2(); } };
+//  WOProp<const UnicodeString> WOStrData2{ nb::bind(&TBase1::SetWOStrData2, this) };
+  WOProp<const UnicodeString> WOStrData2{ [&](const UnicodeString Value) { SetWOStrData2(Value); } };
   RWProp<int> RWData1{ [&]() { return GetRWData1(); }, [&](const int& Value) { SetRWData1(Value); }};
   RWProp<UnicodeString> RWStrData1{ [&]() { return GetRWStrData1(); }, [&](const UnicodeString& Value) { SetRWStrData1(Value); }};
+public:
+  void SetWOStrData2(const UnicodeString Value) { FStrData2 = Value; }
+  UnicodeString GetWOStrData2() const { return FStrData2; }
 private:
-  int GetData1() { return 42; }
+  int GetData1() const { return FIntData1; }
   UnicodeString GetStrData1() const { return "42"; }
   UnicodeString GetStrData2() { return "42"; }
   int GetRWData1() { return FIntData1; }
@@ -426,6 +571,7 @@ private:
 
   int FIntData1{1};
   UnicodeString FStrData1{"test"};
+  UnicodeString FStrData2{"test2"};
 };
 
 //template<int s> struct CheckSizeT;
@@ -471,15 +617,27 @@ TEST_CASE_METHOD(base_fixture_t, "properties04", "netbox")
       CHECK(res);
     }
   }
+  SECTION("TBase1::WOStrData1")
+  {
+    prop_02::TBase1 obj;
+    {
+      bool res = (obj.GetWOStrData2() == "test2");
+      CHECK(res);
+      obj.WOStrData2 = UnicodeString("42");
+      res = (obj.GetWOStrData2() == "42");
+      CHECK(res);
+    }
+  }
+
   SECTION("TBase1::RWData1")
   {
     prop_02::TBase1 obj;
     {
-      bool res = (1 == obj.RWData1);
+      bool res = (obj.RWData1 == 1);
       CHECK(res);
     }
     {
-      bool res = (obj.RWData1 == 1);
+      bool res = (1 == obj.RWData1);
       CHECK(res);
     }
     {
@@ -499,7 +657,7 @@ TEST_CASE_METHOD(base_fixture_t, "properties04", "netbox")
   }
   SECTION("TBase1::Data1")
   {
-    prop_01::TBase1 obj;
+    /*prop_01::TBase1 obj;
     {
       bool res = (obj.Data1 == 42);
       CHECK(res);
@@ -507,6 +665,122 @@ TEST_CASE_METHOD(base_fixture_t, "properties04", "netbox")
     {
       bool res = (42 == obj.Data1);
       CHECK(res);
+    }*/
+  }
+}
+
+namespace prop_03 {
+
+//template<typename>
+//struct RWProp; // intentionally not defined
+
+template <typename T>
+class RWProp : TransientFunction<const T()>
+{
+  typedef TransientFunction<const T()> base_t;
+public:
+  using base_t::base_t;
+
+//  typedef const T (GetterFn)(); // void* target
+//  typedef void (SetterFn)(const T& Value); // , void* target
+//  GetterFn getter_;
+//  SetterFn setter_;
+  /*using Dispatcher = T(*)(void*);
+  Dispatcher m_Dispatcher{nullptr}; // A pointer to the static function that will call the
+                                    // wrapped invokable object
+  void* m_Target{nullptr}; // A pointer to the invokable object
+
+  template<typename S>
+  static T Dispatch(void* target)
+  {
+    return (*(S*)target)();
+  }*/
+public:
+//  RWProp() = delete;
+  // template<typename T1, typename T2>
+//  RWProp(GetterFn getter, SetterFn setter) : getter_(getter), setter_(setter) {}
+//  template<typename T1> //, typename T2>
+//  explicit RWProp(T1&& t1) : // , T2&& t2) :
+//    m_Dispatcher(&Dispatch<typename std::decay<T1>::type>),
+//    m_Target(&t1)
+//  {
+//    /*auto closure = [](void *target) -> const T
+//    {
+//      return (*(T1*)target)();
+//    };*/
+////    getter_ = closure;
+//  }
+
+  // Specialize for reference-to-function, to ensure that a valid pointer is
+  // stored.
+//  using TargetFunctionRef = const T(Args...);
+//  RWProp(TargetFunctionRef target) :
+//    m_Dispatcher(Dispatch<TargetFunctionRef>)
+//  {
+//    static_assert(sizeof(void*) == sizeof(target),
+//    "It will not be possible to pass functions by reference on this platform. "
+//    "Please use explicit function pointers i.e. foo(target) -> foo(&target)");
+//    m_Target = (void*)target;
+//  }
+
+//  T operator()() const
+//  {
+//    return base_t::operator()();
+//  }
+
+  /*void operator=(const T& Value)
+  {
+    // setter_(Value);
+  }*/
+
+  friend bool inline operator==(const RWProp& lhs, const T& rhs)
+  {
+    return lhs() == rhs;
+  }
+  friend bool inline operator==(const T& lhs, const RWProp& rhs)
+  {
+    return rhs() == lhs;
+  }
+};
+
+class TBase1
+{
+public:
+//  RWProp<int> RWData1{ [&]() { return GetRWData1(); }, [&](int Value) { SetRWData1(Value); } };
+  RWProp<int> RWData1{ [&]() { return GetRWData1(); } };
+//  RWProp<UnicodeString> RWStrData1{ [&]() { return GetRWStrData1(); }, [&](const UnicodeString& Value) { SetRWStrData1(Value); }};
+private:
+  int GetData1() { return 42; }
+  UnicodeString GetStrData1() const { return "42"; }
+  UnicodeString GetStrData2() { return "42"; }
+  int GetRWData1() { return FIntData1; }
+  void SetRWData1(int Value) { FIntData1 = Value; }
+  UnicodeString GetRWStrData1() { return FStrData1; }
+  void SetRWStrData1(const UnicodeString Value) { FStrData1 = Value; }
+
+  int FIntData1{1};
+  UnicodeString FStrData1{"test"};
+};
+
+} // namespace prop_03
+
+TEST_CASE_METHOD(base_fixture_t, "properties05", "netbox")
+{
+  SECTION("TBase1::RWData1")
+  {
+    prop_03::TBase1 obj;
+    {
+      bool res = (obj.RWData1 == 1);
+      CHECK(res);
+    }
+    {
+      bool res = (1 == obj.RWData1);
+      CHECK(res);
+    }
+    {
+//      obj.RWData1 = 2;
+//      bool res = (2 == obj.RWData1);
+//      CHECK(res);
     }
   }
 }
