@@ -427,24 +427,6 @@ private:
 
 } // namespace prop_01
 */
-namespace prop_02 {
-
-template <typename T>
-class ROProp : TransientFunction<const T()> // 16 bytes
-{
-  typedef TransientFunction<const T()> base_t;
-public:
-  using base_t::base_t;
-
-  friend bool inline operator==(const ROProp& lhs, const T& rhs)
-  {
-    return lhs() == rhs;
-  }
-  friend bool inline operator==(const T& lhs, const ROProp& rhs)
-  {
-    return rhs() == lhs;
-  }
-};
 
 namespace tf {
 
@@ -495,6 +477,25 @@ struct TransientFunction<R(Args...)>
 };
 
 } // namespace tf
+
+namespace prop_02 {
+
+template <typename T>
+class ROProp : tf::TransientFunction<const T()> // 16 bytes
+{
+  typedef tf::TransientFunction<const T()> base_t;
+public:
+  using base_t::base_t;
+
+  friend bool inline operator==(const ROProp& lhs, const T& rhs)
+  {
+    return lhs() == rhs;
+  }
+  friend bool inline operator==(const T& lhs, const ROProp& rhs)
+  {
+    return rhs() == lhs;
+  }
+};
 
 template <typename T>
 class WOProp : tf::TransientFunction<void(const T)> // 16 bytes
@@ -787,6 +788,7 @@ TEST_CASE_METHOD(base_fixture_t, "properties05", "netbox")
 
 namespace prop_04 {
 
+// 32 bytes
 template <typename T>
 class RWProperty
 {
@@ -809,9 +811,10 @@ public:
 //    Expects(_getter.m_Target != nullptr);
 //    Expects(_setter.m_Target != nullptr);
   }
-  RWProperty(const RWProperty&) noexcept = default;
+  RWProperty(const T&) noexcept = delete;
+  RWProperty(const RWProperty&) = default;
   RWProperty(RWProperty&&) noexcept = default;
-  RWProperty& operator=(const RWProperty&) noexcept = default;
+  RWProperty& operator=(const RWProperty&) = default;
   RWProperty& operator=(RWProperty&&) noexcept = default;
 //  RWProperty(const T& in) : data(in) {}
 //  RWProperty(T&& in) : data(std::forward<T>(in)) {}
@@ -844,7 +847,7 @@ public:
   {
     _setter(Value);
   }
-  void operator=(T Value)
+  void operator=(const T& Value)
   {
     _setter(Value);
   }
@@ -852,17 +855,25 @@ public:
 //  {
 //    return _getter() == Value;
 //  }
-  friend bool inline operator==(const RWProperty& lhs, const T& rhs)
+  template <typename T1>
+  friend bool inline operator==(const RWProperty& lhs, const T1& rhs)
   {
     return lhs._getter() == rhs;
   }
-  friend bool inline operator==(const T& lhs, const RWProperty<T>& rhs)
+  template <typename T1>
+  friend bool inline operator==(const T1& lhs, const RWProperty<T>& rhs)
   {
     return rhs._getter() == lhs;
   }
-  friend bool inline operator!=(RWProperty<T> &lhs, const T &rhs)
+  template <typename T1>
+  friend bool inline operator!=(const RWProperty<T>& lhs, const T1& rhs)
   {
     return lhs._getter() != rhs;
+  }
+  template <typename T1>
+  friend bool inline operator!=(const T1& lhs, const RWProperty<T>& rhs)
+  {
+    return rhs._getter() != lhs;
   }
 };
 
@@ -870,16 +881,21 @@ class TBase1
 {
 public:
   prop_04::RWProperty<int64_t> RWData1{nb::bind(&TBase1::GetRWData1, this), nb::bind(&TBase1::SetRWData1, this)};
+  prop_04::RWProperty<UnicodeString> RWStrData1{nb::bind(&TBase1::GetRWStrData1, this), nb::bind(&TBase1::SetRWStrData1, this)};
 
 private:
   int64_t GetRWData1() { return FRWData1; }
   void SetRWData1(int64_t  Value) { FRWData1 = Value; }
-  UnicodeString GetRWStrData1() { return FStrRWData1; }
+  UnicodeString GetRWStrData1() const { return FStrRWData1; }
   void SetRWStrData1(const UnicodeString Value) { FStrRWData1 = Value; }
 
   int64_t FRWData1{42};
   UnicodeString FStrRWData1{"test"};
 };
+
+//template<int s> struct CheckSizeT;
+//CheckSizeT<sizeof(prop_04::RWProperty<int64_t>)> checkSize;
+
 
 } // namespace prop_04
 
@@ -897,6 +913,41 @@ TEST_CASE_METHOD(base_fixture_t, "properties06", "netbox")
     {
       obj.RWData1 = 43;
       bool res = (43 == obj.RWData1);
+      CHECK(res);
+    }
+    {
+      prop_04::TBase1 obj2 = obj;
+      bool res = (43 == obj2.RWData1);
+      CHECK(res);
+    }
+    {
+      prop_04::TBase1 obj2(obj);
+      bool res = (43 == obj2.RWData1);
+      CHECK(res);
+    }
+  }
+  SECTION("TBase1::RWStrData1")
+  {
+    prop_04::TBase1 obj;
+    {
+      bool res = (obj.RWStrData1 == "test2");
+      CHECK(!res);
+      res = ("test" == obj.RWStrData1);
+      CHECK(res);
+    }
+    {
+      obj.RWStrData1 = "43";
+      bool res = ("43" == obj.RWStrData1);
+      CHECK(res);
+    }
+    {
+      prop_04::TBase1 obj2 = obj;
+      bool res = ("43" == obj2.RWStrData1);
+      CHECK(res);
+    }
+    {
+      prop_04::TBase1 obj2(obj);
+      bool res = ("43" == obj2.RWStrData1);
       CHECK(res);
     }
   }
