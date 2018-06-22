@@ -5690,6 +5690,7 @@ void TSFTPFileSystem::Sink(
           DeleteFileChecked(DestFullName);
         }
         THROWOSIFFALSE(::SysUtulsRenameFile(DestPartialFullName, DestFullName));
+        THROWOSIFFALSE(::SysUtulsRenameFile(ApiPath(DestPartialFullName), ApiPath(DestFullName)));
       });
       __removed FILE_OPERATION_LOOP_END(FMTLOAD(RENAME_AFTER_RESUME_ERROR, (ExtractFileName(DestPartialFullName), ADestFileName)));
     }

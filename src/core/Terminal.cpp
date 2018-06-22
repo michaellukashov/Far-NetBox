@@ -3832,7 +3832,7 @@ bool TTerminal::DeleteContentsIfDirectory(
       throw;
     }
   }
-  return Dir;
+  return Dir && !File->IsSymLink;
 }
 //---------------------------------------------------------------------------
 void TTerminal::ProcessDirectory(const UnicodeString ADirName,
@@ -5108,7 +5108,15 @@ TTerminal * TTerminal::CreateSecondarySession(const UnicodeString Name, TSession
 void TTerminal::FillSessionDataForCode(TSessionData *Data) const
 {
   const TSessionInfo &SessionInfo = GetSessionInfo();
-  Data->SetHostKey(SessionInfo.HostKeyFingerprintSHA256);
+  if (!SessionInfo.HostKeyFingerprintSHA256.IsEmpty())
+  {
+    // Data->HostKey = SessionInfo.HostKeyFingerprintSHA256;
+    Data->SetHostKey(SessionInfo.HostKeyFingerprintSHA256);
+  }
+  else if (!SessionInfo.CertificateFingerprint.IsEmpty())
+  {
+    Data->HostKey = SessionInfo.CertificateFingerprint;
+  }
 }
 //---------------------------------------------------------------------------
 TTerminal * TTerminal::GetCommandSession()

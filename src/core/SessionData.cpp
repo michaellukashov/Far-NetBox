@@ -3119,14 +3119,8 @@ UnicodeString TSessionData::GenerateSessionUrl(uintptr_t Flags) const
     {
       UnicodeString S = NormalizeFingerprint(GetHostKey());
       // Many SHA-256 fingeprints end with an equal sign and we do not really need it to be encoded, so avoid that.
-      if (EndsStr(L"=", S))
-      {
-        S = EncodeUrlString(S.SubString(1, S.Length() - 1)) + L"=";
-      }
-      else
-      {
-        S = EncodeUrlString(S);
-      }
+      // Also colons in TLS/SSL fingerprint do not really need encoding.
+      UnicodeString S = EncodeUrlString(NormalizeFingerprint(HostKey), L"=:");
 
       Url +=
         UnicodeString(UrlParamSeparator) + UrlHostKeyParamName +

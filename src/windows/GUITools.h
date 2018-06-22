@@ -174,6 +174,7 @@ public:
 protected:
   virtual void CreateParams(TCreateParams & Params);
   virtual void DestroyWnd();
+  virtual void CreateWnd();
 
 private:
   HINSTANCE FLibrary;
