@@ -143,7 +143,7 @@ NB_CORE_EXPORT bool IsLetter(wchar_t Ch);
 NB_CORE_EXPORT bool IsDigit(wchar_t Ch);
 NB_CORE_EXPORT bool IsHex(wchar_t Ch);
 NB_CORE_EXPORT UnicodeString DecodeUrlChars(const UnicodeString S);
-NB_CORE_EXPORT UnicodeString EncodeUrlString(const UnicodeString S);
+NB_CORE_EXPORT UnicodeString EncodeUrlString(const UnicodeString S, const UnicodeString DoNotEncode = UnicodeString());
 NB_CORE_EXPORT UnicodeString EncodeUrlPath(const UnicodeString S);
 NB_CORE_EXPORT UnicodeString AppendUrlParams(const UnicodeString AURL, const UnicodeString Params);
 NB_CORE_EXPORT UnicodeString ExtractFileNameFromUrl(const UnicodeString Url);
