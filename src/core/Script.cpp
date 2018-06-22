@@ -7,7 +7,3 @@
 #include "Script.h"
 
 const wchar_t * ToggleNames[] = { L"off", L"on" };
-  if (!FTerminal->IsCapable[fcSymbolicLink])
-  {
-    NotSupported();
-  }
