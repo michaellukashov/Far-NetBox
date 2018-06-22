@@ -4221,9 +4221,6 @@ bool TFTPFileSystem::HandleListData(const wchar_t *Path,
   else if (FFileList)
   {
     DebugAssert(FFileList != nullptr);
-    // This can actually fail in real life,
-    // when connected to server with case insensitive paths
-    // Is empty when called from DoReadFile
     UnicodeString AbsPath = GetAbsolutePath(FFileList->GetDirectory(), false);
     DebugAssert(FFileList->GetDirectory().IsEmpty() || base::UnixSamePath(AbsPath, Path));
     DebugUsedParam(Path);
