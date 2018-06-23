@@ -134,23 +134,19 @@ class ROProperty
 {
 CUSTOM_MEM_ALLOCATION_IMPL
 private:
-//  typedef fu2::function<T() const> TGetValueFunctor;
   typedef fastdelegate::FastDelegate0<T> TGetValueFunctor;
-//  using TGetValueFunctor = TransientFunction<T()>; // 16 bytes
   TGetValueFunctor _getter;
 public:
   ROProperty() = delete;
-  explicit ROProperty(const TGetValueFunctor &Getter) :
+  explicit ROProperty(TGetValueFunctor& Getter) :
     _getter(Getter)
   {
-    // Expects(_getter.m_Target != nullptr);
+    Expects(_getter != nullptr);
   }
   ROProperty(const ROProperty&) = default;
   ROProperty(ROProperty&&) noexcept = default;
   ROProperty& operator=(const ROProperty&) = default;
   ROProperty& operator=(ROProperty&&) noexcept = default;
-//  ROProperty(const T& in) : data(in) {}
-//  ROProperty(T&& in) : data(std::forward<T>(in)) {}
   constexpr T operator()() const
   {
     return _getter();
@@ -169,122 +165,51 @@ public:
   }
   constexpr decltype(auto) operator*() const { return *_getter(); }
 
-  friend bool inline operator==(const ROProperty &lhs, const ROProperty &rhs)
-  {
-    return lhs._getter() == rhs._getter();
-  }
-  friend bool inline operator==(const ROProperty &lhs, const T &rhs)
+  template <typename T1>
+  friend bool inline operator==(const ROProperty &lhs, const T1 &rhs)
   {
     return lhs._getter() == rhs;
   }
-  friend bool inline operator!=(const ROProperty &lhs, const ROProperty &rhs)
+  template <typename T1>
+  friend bool inline operator==(const T1 &lhs, const ROProperty &rhs)
   {
-    return lhs._getter() != rhs._getter();
+    return rhs._getter() == lhs;
   }
+  template <typename T1>
   friend bool inline operator!=(ROProperty &lhs, const T &rhs)
   {
     return lhs._getter() != rhs;
   }
-};
-
-template <typename T, typename Owner>
-class ROProperty2
-{
-CUSTOM_MEM_ALLOCATION_IMPL
-private:
-//  typedef fu2::function<T() const> TGetValueFunctor;
-//  typedef fastdelegate::FastDelegate0<T> TGetValueFunctor;
-  using TGetValueFunctor = TransientFunction<T(Owner* owner)>; // 16 bytes
-  Owner* owner_;
-  TGetValueFunctor getter_;
-public:
-  ROProperty2() = delete;
-  ROProperty2(Owner* owner, const TGetValueFunctor& Getter) :
-    owner_(owner),
-    getter_(Getter)
+  template <typename T1>
+  friend bool inline operator!=(const T &lhs, ROProperty &rhs)
   {
-    Expects(owner_ != nullptr);
-    Expects(getter_.m_Target != nullptr);
-  }
-  ROProperty2(const ROProperty2&) = default;
-  ROProperty2(ROProperty2&&) noexcept = default;
-  ROProperty2& operator=(const ROProperty2&) = default;
-  ROProperty2& operator=(ROProperty2&&) noexcept = default;
-//  ROProperty2(const T& in) : data(in) {}
-//  ROProperty2(T&& in) : data(std::forward<T>(in)) {}
-  constexpr T operator()() const
-  {
-    return getter_(owner_);
-  }
-  constexpr operator T() const
-  {
-    return getter_(owner_);
-  }
-  constexpr const T operator->() const
-  {
-    return getter_(owner_);
-  }
-  T operator->()
-  {
-    return getter_(owner_);
-  }
-  constexpr decltype(auto) operator*() const { return *getter_(owner_); }
-
-  friend bool inline operator==(const ROProperty2 &lhs, const ROProperty2 &rhs)
-  {
-    return lhs.getter_(lhs.owner_) == rhs.getter_(rhs.owner_);
-  }
-  friend bool inline operator==(const ROProperty2 &lhs, const T &rhs)
-  {
-    return lhs.getter_(lhs.owner_) == rhs;
-  }
-  friend bool inline operator!=(const ROProperty2 &lhs, const ROProperty2 &rhs)
-  {
-    return lhs.getter_(lhs.owner_) != rhs.getter_(rhs.owner_);
-  }
-  friend bool inline operator!=(ROProperty2 &lhs, const T &rhs)
-  {
-    return lhs.getter_(lhs.owner_) != rhs;
+    return rhs._getter() != lhs;
   }
 };
 
-// 80 bytes using fu2::function
-// 32 bytes using FastDelegate
 template <typename T>
 class RWProperty
 {
 CUSTOM_MEM_ALLOCATION_IMPL
 private:
-//  typedef fu2::function<T() const> TGetValueFunctor;
-//  typedef fu2::function<void(T)> TSetValueFunctor;
   typedef fastdelegate::FastDelegate0<T> TGetValueFunctor;
   typedef fastdelegate::FastDelegate1<void, T> TSetValueFunctor;
-//  using TGetValueFunctor = TransientFunction<T()>; // 16 bytes
-//  using TSetValueFunctor = TransientFunction<void(T)>; // 16 bytes
   TGetValueFunctor _getter;
   TSetValueFunctor _setter;
 public:
   RWProperty() = delete;
-  explicit RWProperty(const TGetValueFunctor& Getter, const TSetValueFunctor& Setter) :
+  explicit RWProperty(TGetValueFunctor& Getter, TSetValueFunctor& Setter) :
     _getter(Getter),
     _setter(Setter)
   {
-//    Expects(_getter.m_Target != nullptr);
-//    Expects(_setter.m_Target != nullptr);
+    Expects(_getter != nullptr);
+    Expects(_setter != nullptr);
   }
+  RWProperty(const T&) noexcept = delete;
   RWProperty(const RWProperty&) = default;
-  RWProperty(RWProperty&&) = default;
+  RWProperty(RWProperty&&) noexcept = default;
   RWProperty& operator=(const RWProperty&) = default;
-  RWProperty& operator=(RWProperty&&) = default;
-//  RWProperty(const T& in) : data(in) {}
-//  RWProperty(T&& in) : data(std::forward<T>(in)) {}
-//  T const& get() const {
-//      return data;
-//  }
-
-//  T&& unwrap() && {
-//      return std::move(data);
-//  }
+  RWProperty& operator=(RWProperty&&) noexcept = default;
   constexpr T operator()() const
   {
     return _getter();
@@ -303,28 +228,32 @@ public:
     return _getter();
   }
   constexpr decltype(auto) operator*() const { return *_getter(); }
-  void operator()(const T &Value)
+  void operator()(const T& Value)
   {
     _setter(Value);
   }
-  void operator=(T Value)
+  void operator=(const T& Value)
   {
     _setter(Value);
   }
-  bool operator==(T Value) const
+  template <typename T1>
+  friend bool inline operator==(const RWProperty& lhs, const T1& rhs)
   {
-    return _getter() == Value;
+    return lhs._getter() == rhs;
   }
-  friend bool inline operator==(const RWProperty &lhs, const RWProperty &rhs)
+  template <typename T1>
+  friend bool inline operator==(const T1& lhs, const RWProperty<T>& rhs)
   {
-    return lhs._getter == rhs._getter && lhs._setter == rhs._setter;
+    return rhs._getter() == lhs;
   }
-  friend bool inline operator!=(RWProperty &lhs, const T &rhs)
+  template <typename T1>
+  friend bool inline operator!=(const RWProperty<T>& lhs, const T1& rhs)
   {
     return lhs._getter() != rhs;
   }
+  template <typename T1>
+  friend bool inline operator!=(const T1& lhs, const RWProperty<T>& rhs)
+  {
+    return rhs._getter() != lhs;
+  }
 };
-//template<int s> struct CheckSizeT;
-//CheckSizeT<sizeof(ROProperty2<int, int>)> checkSize; // 24 bytes (with TransientFunction)
-//template<int s> struct CheckSizeT;
-//CheckSizeT<sizeof(RWProperty<double>)> checkSize; // 32 bytes (with TransientFunction)
