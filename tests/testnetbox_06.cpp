@@ -796,7 +796,7 @@ CUSTOM_MEM_ALLOCATION_IMPL
 private:
 //  typedef fu2::function<T() const> TGetValueFunctor;
 //  typedef fu2::function<void(T)> TSetValueFunctor;
-  typedef fastdelegate::FastDelegate0<T> TGetValueFunctor;
+  typedef fastdelegate::FastDelegate0<const T> TGetValueFunctor;
   typedef fastdelegate::FastDelegate1<void, T> TSetValueFunctor;
 //  using TGetValueFunctor = TransientFunction<T()>; // 16 bytes
 //  using TSetValueFunctor = TransientFunction<void(T)>; // 16 bytes
@@ -804,7 +804,7 @@ private:
   TSetValueFunctor _setter;
 public:
   RWProperty() = delete;
-  explicit RWProperty(const TGetValueFunctor& Getter, const TSetValueFunctor& Setter) :
+  explicit RWProperty(TGetValueFunctor& Getter, TSetValueFunctor& Setter) :
     _getter(Getter),
     _setter(Setter)
   {
@@ -825,10 +825,10 @@ public:
 //  T&& unwrap() && {
 //      return std::move(data);
 //  }
-//  constexpr T operator()() const
-//  {
-//    return _getter();
-//  }
+  constexpr T operator()() const
+  {
+    return _getter();
+  }
   constexpr operator T() const
   {
     return _getter();
@@ -884,9 +884,9 @@ public:
   prop_04::RWProperty<UnicodeString> RWStrData1{nb::bind(&TBase1::GetRWStrData1, this), nb::bind(&TBase1::SetRWStrData1, this)};
 
 private:
-  int64_t GetRWData1() { return FRWData1; }
-  void SetRWData1(int64_t  Value) { FRWData1 = Value; }
-  UnicodeString GetRWStrData1() const { return FStrRWData1; }
+  const int64_t GetRWData1() const { return FRWData1; }
+  void SetRWData1(int64_t Value) { FRWData1 = Value; }
+  const UnicodeString GetRWStrData1() const { return FStrRWData1; }
   void SetRWStrData1(const UnicodeString Value) { FStrRWData1 = Value; }
 
   int64_t FRWData1{42};
@@ -929,16 +929,73 @@ TEST_CASE_METHOD(base_fixture_t, "properties06", "netbox")
   SECTION("TBase1::RWStrData1")
   {
     prop_04::TBase1 obj;
+    bool res;
     {
-      bool res = (obj.RWStrData1 == "test2");
+      res = (obj.RWStrData1 == "test2");
+      CHECK(!res);
+      res = (obj.RWStrData1() == "test2");
+      CHECK(!res);
+      res = ("test2" == obj.RWStrData1);
+      CHECK(!res);
+      res = ("test" != obj.RWStrData1);
+      CHECK(!res);
+      res = (obj.RWStrData1 != "test");
       CHECK(!res);
       res = ("test" == obj.RWStrData1);
+      CHECK(res);
+      res = (obj.RWStrData1 == "test");
+      CHECK(res);
+    }
+    {
+      res = (obj.RWStrData1() == L"test2");
+      CHECK(!res);
+      res = (L"test2" == obj.RWStrData1);
+      CHECK(!res);
+      res = (L"test" != obj.RWStrData1);
+      CHECK(!res);
+      res = (obj.RWStrData1 != L"test");
+      CHECK(!res);
+      res = (L"test" == obj.RWStrData1);
+      CHECK(res);
+      res = (obj.RWStrData1 == L"test");
+      CHECK(res);
+    }
+    {
+      UnicodeString str1("test");
+      UnicodeString str2("test2");
+      bool res = (obj.RWStrData1() == str2);
+      CHECK(!res);
+      res = (str2 == obj.RWStrData1);
+      CHECK(!res);
+      res = (str1 != obj.RWStrData1);
+      CHECK(!res);
+      res = (obj.RWStrData1 != str1);
+      CHECK(!res);
+      res = (str1 == obj.RWStrData1);
+      CHECK(res);
+      res = (obj.RWStrData1 == str1);
       CHECK(res);
     }
     {
       obj.RWStrData1 = "43";
-      bool res = ("43" == obj.RWStrData1);
+      res = ("43" == obj.RWStrData1);
       CHECK(res);
+      res = (obj.RWStrData1 == "43");
+      CHECK(res);
+      res = (obj.RWStrData1 == L"43");
+      CHECK(res);
+      res = (obj.RWStrData1 == UnicodeString(L"43"));
+      CHECK(res);
+      res = (obj.RWStrData1 != UnicodeString(L"43"));
+      CHECK(!res);
+      res = (obj.RWStrData1 != UnicodeString(L"42"));
+      CHECK(res);
+      res = (obj.RWStrData1 == UnicodeString(L"42"));
+      CHECK(!res);
+      res = (UnicodeString(L"42") == obj.RWStrData1);
+      CHECK(!res);
+      res = (UnicodeString(L"431") == obj.RWStrData1);
+      CHECK(!res);
     }
     {
       prop_04::TBase1 obj2 = obj;
