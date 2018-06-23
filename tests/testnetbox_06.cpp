@@ -185,6 +185,71 @@ TEST_CASE_METHOD(base_fixture_t, "tryfinally01", "netbox")
   }
 }
 
+namespace ro2 {
+
+template <typename T, typename Owner>
+class ROProperty2
+{
+CUSTOM_MEM_ALLOCATION_IMPL
+private:
+//  typedef fu2::function<T() const> TGetValueFunctor;
+//  typedef fastdelegate::FastDelegate0<T> TGetValueFunctor;
+  using TGetValueFunctor = TransientFunction<T(Owner* owner)>; // 16 bytes
+  Owner* owner_;
+  TGetValueFunctor getter_;
+public:
+  ROProperty2() = delete;
+  ROProperty2(Owner* owner, const TGetValueFunctor& Getter) :
+    owner_(owner),
+    getter_(Getter)
+  {
+    Expects(owner_ != nullptr);
+    Expects(getter_.m_Target != nullptr);
+  }
+  ROProperty2(const ROProperty2&) = default;
+  ROProperty2(ROProperty2&&) noexcept = default;
+  ROProperty2& operator=(const ROProperty2&) = default;
+  ROProperty2& operator=(ROProperty2&&) noexcept = default;
+//  ROProperty2(const T& in) : data(in) {}
+//  ROProperty2(T&& in) : data(std::forward<T>(in)) {}
+  constexpr T operator()() const
+  {
+    return getter_(owner_);
+  }
+  constexpr operator T() const
+  {
+    return getter_(owner_);
+  }
+  constexpr const T operator->() const
+  {
+    return getter_(owner_);
+  }
+  T operator->()
+  {
+    return getter_(owner_);
+  }
+  constexpr decltype(auto) operator*() const { return *getter_(owner_); }
+
+  friend bool inline operator==(const ROProperty2 &lhs, const ROProperty2 &rhs)
+  {
+    return lhs.getter_(lhs.owner_) == rhs.getter_(rhs.owner_);
+  }
+  friend bool inline operator==(const ROProperty2 &lhs, const T &rhs)
+  {
+    return lhs.getter_(lhs.owner_) == rhs;
+  }
+  friend bool inline operator!=(const ROProperty2 &lhs, const ROProperty2 &rhs)
+  {
+    return lhs.getter_(lhs.owner_) != rhs.getter_(rhs.owner_);
+  }
+  friend bool inline operator!=(ROProperty2 &lhs, const T &rhs)
+  {
+    return lhs.getter_(lhs.owner_) != rhs;
+  }
+};
+
+} // namespace ro2
+
 namespace prop_01 {
 
 template <typename T, typename Owner>
@@ -253,8 +318,8 @@ public:
 class TBase
 {
 public:
-//  ROProperty<int> Data{ [&]()->int { return GetData(); } };
-  prop_01::ROProperty2<int, TBase> Data{ this, [](TBase* self)->int { return self->GetData(); } };
+  // prop_01::ROProperty2<int, TBase> Data{ this, [](TBase* self)->int { return self->GetData(); } };
+  ROProperty<int> Data{nb::bind(&TBase::GetData, this) };
 //  prop_01::ROProperty2<int, TBase> Data{ this, nb::bind([](TBase* self)->int { return self->GetData(); }, this); };
 //  ROProperty<int> Data2{ fastdelegate::FastDelegate0<int>(std::bind([this]()->int { return FData; }) ) };
 //  ROProperty2<int, TBase> Data2{ this, [](TBase* self)->int { return self->FData; } };
@@ -309,11 +374,11 @@ TEST_CASE_METHOD(base_fixture_t, "properties01", "netbox")
   SECTION("TDerived")
   {
     TDerived d1;
-//    CHECK(d1.Data == 3);
-//    CHECK(3 == d1.Data);
+    CHECK(d1.Data == 3);
+    CHECK(3 == d1.Data);
     // CHECK(1 == d1.Data2);
     d1.Modify();
-//    CHECK(3 == d1.Data);
+    CHECK(3 == d1.Data);
     // CHECK(2 == d1.Data2);
   }
 }
@@ -550,21 +615,25 @@ public:
 class TBase1
 {
 public:
-  ROProp<int> Data1{ [&]() { return GetData1(); } };
-//  ROProp<int> Data1{ nb::bind(&TBase1::GetData1(), this) };
-  ROProp<const UnicodeString> StrData1{ [&]() { return GetStrData1(); } };
-  ROProp<UnicodeString> StrData2{ [&]() { return GetStrData2(); } };
+//  ROProp<int> Data1{ [&]() { return GetData1(); } };
+  ROProperty<int> Data1{ nb::bind(&TBase1::GetData1, this) };
+//  ROProp<const UnicodeString> StrData1{ [&]() { return GetStrData1(); } };
+  ROProperty<const UnicodeString> StrData1{ nb::bind(&TBase1::GetStrData1, this) };
+//  ROProp<UnicodeString> StrData2{ [&]() { return GetStrData2(); } };
+  ROProperty<UnicodeString> StrData2{ nb::bind(&TBase1::GetStrData2, this) };
 //  WOProp<const UnicodeString> WOStrData2{ nb::bind(&TBase1::SetWOStrData2, this) };
-  WOProp<const UnicodeString> WOStrData2{ [&](const UnicodeString Value) { SetWOStrData2(Value); } };
-  RWProp<int> RWData1{ [&]() { return GetRWData1(); }, [&](const int& Value) { SetRWData1(Value); }};
-  RWProp<UnicodeString> RWStrData1{ [&]() { return GetRWStrData1(); }, [&](const UnicodeString& Value) { SetRWStrData1(Value); }};
+//  WOProp<const UnicodeString> WOStrData2{ [&](const UnicodeString Value) { SetWOStrData2(Value); } };
+//  RWProp<int> RWData1{ [&]() { return GetRWData1(); }, [&](const int& Value) { SetRWData1(Value); }};
+  RWProperty<int> RWData1{ nb::bind(&TBase1::GetRWData1, this), nb::bind(&TBase1::SetRWData1, this) };
+//  RWProp<UnicodeString> RWStrData1{ [&]() { return GetRWStrData1(); }, [&](const UnicodeString& Value) { SetRWStrData1(Value); }};
+  RWProperty<UnicodeString> RWStrData1{ nb::bind(&TBase1::GetRWStrData1, this), nb::bind(&TBase1::SetRWStrData1, this) };
 public:
   void SetWOStrData2(const UnicodeString Value) { FStrData2 = Value; }
   UnicodeString GetWOStrData2() const { return FStrData2; }
 private:
   int GetData1() const { return FIntData1; }
-  UnicodeString GetStrData1() const { return "42"; }
-  UnicodeString GetStrData2() { return "42"; }
+  const UnicodeString GetStrData1() const { return FStrData1; }
+  UnicodeString GetStrData2() { return FStrData2; }
   int GetRWData1() { return FIntData1; }
   void SetRWData1(int Value) { FIntData1 = Value; }
   UnicodeString GetRWStrData1() { return FStrData1; }
@@ -586,11 +655,11 @@ TEST_CASE_METHOD(base_fixture_t, "properties04", "netbox")
   {
     prop_02::TBase1 obj;
     {
-      bool res = (obj.Data1 == 42);
+      bool res = (obj.Data1 == 1);
       CHECK(res);
     }
     {
-      bool res = (42 == obj.Data1);
+      bool res = (1 == obj.Data1);
       CHECK(res);
     }
   }
@@ -598,11 +667,11 @@ TEST_CASE_METHOD(base_fixture_t, "properties04", "netbox")
   {
     prop_02::TBase1 obj;
     {
-      bool res = (obj.StrData1 == "42");
+      bool res = (obj.StrData1 == "test");
       CHECK(res);
     }
     {
-      bool res = ("42" == obj.StrData1);
+      bool res = ("test" == obj.StrData1);
       CHECK(res);
     }
   }
@@ -610,11 +679,11 @@ TEST_CASE_METHOD(base_fixture_t, "properties04", "netbox")
   {
     prop_02::TBase1 obj;
     {
-      bool res = (obj.StrData2 == "42");
+      bool res = (obj.StrData2 == "test2");
       CHECK(res);
     }
     {
-      bool res = ("42" == obj.StrData2);
+      bool res = ("test2" == obj.StrData2);
       CHECK(res);
     }
   }
@@ -624,8 +693,8 @@ TEST_CASE_METHOD(base_fixture_t, "properties04", "netbox")
     {
       bool res = (obj.GetWOStrData2() == "test2");
       CHECK(res);
-      obj.WOStrData2 = UnicodeString("42");
-      res = (obj.GetWOStrData2() == "42");
+//      obj.WOStrData2 = UnicodeString("42");
+//      res = (obj.GetWOStrData2() == "42");
       CHECK(res);
     }
   }
@@ -748,13 +817,13 @@ class TBase1
 {
 public:
 //  RWProp<int> RWData1{ [&]() { return GetRWData1(); }, [&](int Value) { SetRWData1(Value); } };
-  RWProp<int> RWData1{ [&]() { return GetRWData1(); } };
+  RWProperty<int> RWData1{ nb::bind(&TBase1::GetRWData1, this), nb::bind(&TBase1::SetRWData1, this),  };
 //  RWProp<UnicodeString> RWStrData1{ [&]() { return GetRWStrData1(); }, [&](const UnicodeString& Value) { SetRWStrData1(Value); }};
 private:
   int GetData1() { return 42; }
   UnicodeString GetStrData1() const { return "42"; }
   UnicodeString GetStrData2() { return "42"; }
-  int GetRWData1() { return FIntData1; }
+  int GetRWData1() const { return FIntData1; }
   void SetRWData1(int Value) { FIntData1 = Value; }
   UnicodeString GetRWStrData1() { return FStrData1; }
   void SetRWStrData1(const UnicodeString Value) { FStrData1 = Value; }
@@ -777,11 +846,6 @@ TEST_CASE_METHOD(base_fixture_t, "properties05", "netbox")
     {
       bool res = (1 == obj.RWData1);
       CHECK(res);
-    }
-    {
-//      obj.RWData1 = 2;
-//      bool res = (2 == obj.RWData1);
-//      CHECK(res);
     }
   }
 }
@@ -880,8 +944,8 @@ public:
 class TBase1
 {
 public:
-  prop_04::RWProperty<int64_t> RWData1{nb::bind(&TBase1::GetRWData1, this), nb::bind(&TBase1::SetRWData1, this)};
-  prop_04::RWProperty<UnicodeString> RWStrData1{nb::bind(&TBase1::GetRWStrData1, this), nb::bind(&TBase1::SetRWStrData1, this)};
+  RWProperty<int64_t> RWData1{nb::bind(&TBase1::GetRWData1, this), nb::bind(&TBase1::SetRWData1, this)};
+  RWProperty<UnicodeString> RWStrData1{nb::bind(&TBase1::GetRWStrData1, this), nb::bind(&TBase1::SetRWStrData1, this)};
 
 private:
   const int64_t GetRWData1() const { return FRWData1; }
