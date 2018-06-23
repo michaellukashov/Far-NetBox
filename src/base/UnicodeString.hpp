@@ -18,7 +18,7 @@ class NB_CORE_EXPORT BaseStringT : public CMStringT< CharT, NBChTraitsCRT< CharT
 
 public:
   BaseStringT() = default;
-  BaseStringT(BaseStringT&&) = default;
+  BaseStringT(BaseStringT&&) noexcept = default;
 
   BaseStringT(const BaseStringT &rhs) :
     BaseT(rhs.c_str(), ToInt(rhs.GetLength()))
@@ -327,7 +327,7 @@ public:
   }
 
 public:
-  BaseStringT &operator=(BaseStringT&&) = default;
+  BaseStringT &operator=(BaseStringT&&) noexcept = default;
   BaseStringT &operator=(const CharT *Str) { SetString(Str, ToInt(BaseStringT::StringLength(Str))); return *this; }
   BaseStringT &operator=(const XCHAR Ch) { SetString(&Ch, 1); return *this; }
   BaseStringT &operator=(const BaseStringT &StrCopy) { SetString(StrCopy.c_str(), ToInt(StrCopy.GetLength())); return *this; }
