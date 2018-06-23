@@ -105,20 +105,21 @@ public:
 
 public:
   CMSimpleStringT();
-  CMSimpleStringT(CMSimpleStringT&&) = default;
 
   CMSimpleStringT(const CMSimpleStringT &strSrc);
+  CMSimpleStringT(CMSimpleStringT&&) noexcept = default;
   explicit CMSimpleStringT(PCXSTR pszSrc);
   explicit CMSimpleStringT(const XCHAR *pchSrc, int nLength);
   ~CMSimpleStringT();
 
-  template< typename BaseType>
+  template<typename BaseType>
   __forceinline operator CMSimpleStringT<BaseType> &()
   {
     return *(CMSimpleStringT<BaseType> *)this;
   }
 
   CMSimpleStringT &operator=(const CMSimpleStringT &strSrc);
+  CMSimpleStringT &operator=(CMSimpleStringT&&) noexcept = default;
 
   __forceinline CMSimpleStringT &operator=(PCXSTR pszSrc)
   {
@@ -778,7 +779,7 @@ public:
 
   // Copy constructor
   CMStringT(const CMStringT &strSrc);
-  CMStringT(CMStringT &&) = default;
+  CMStringT(CMStringT&&) noexcept = default;
 
   CMStringT(const XCHAR *pszSrc);
   CMStringT(CMStringDataFormat, const XCHAR *pszFormat, ...);
@@ -799,6 +800,7 @@ public:
   inline operator CMStringT &() { return *static_cast<CMStringT *>(this); }
   // Assignment operators
   CMStringT &operator=(const CMStringT &strSrc);
+  CMStringT &operator=(CMStringT&&) noexcept = default;
   CMStringT &operator=(PCXSTR pszSrc);
   CMStringT &operator=(PCYSTR pszSrc);
   CMStringT &operator=(const unsigned char *pszSrc);
