@@ -5,16 +5,16 @@
 void ThrowIfOutOfRange(intptr_t Idx, intptr_t Length);
 
 template<typename CharT>
-class NB_CORE_EXPORT BaseStringT : public CMStringT< CharT, NBChTraitsCRT< CharT> >
+class NB_CORE_EXPORT BaseStringT : public CMStringT<CharT, NBChTraitsCRT<CharT>>
 {
-  typedef CMStringT< CharT, NBChTraitsCRT <CharT > > BaseT;
+  typedef CMStringT<CharT, NBChTraitsCRT<CharT>> BaseT;
   typedef typename BaseT::XCHAR XCHAR;
   typedef typename BaseT::PXSTR PXSTR;
   typedef typename BaseT::PCXSTR PCXSTR;
   typedef typename BaseT::YCHAR YCHAR;
   typedef typename BaseT::PYSTR PYSTR;
   typedef typename BaseT::PCYSTR PCYSTR;
-  typedef CMStringT< YCHAR, NBChTraitsCRT <YCHAR > > BaseY;
+  typedef CMStringT<YCHAR, NBChTraitsCRT<YCHAR>> BaseY;
 
 public:
   BaseStringT() = default;
@@ -478,7 +478,7 @@ inline bool operator>(const S &lhs, const S &rhs)
 
 // utility functions
 
-template <class StringClass>
+template<class StringClass>
 inline char *ToChar(StringClass &a) { return const_cast<char *>(a.c_str()); }
-template <class StringClass>
+template<class StringClass>
 inline wchar_t *ToWChar(StringClass &a) { return const_cast<wchar_t *>(a.c_str()); }
