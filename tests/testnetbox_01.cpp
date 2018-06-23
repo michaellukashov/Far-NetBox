@@ -151,8 +151,10 @@ TEST_CASE_METHOD(base_fixture_t, "test2", "netbox")
     REQUIRE(1 == strings.GetCount());
     str = strings.GetString(0);
     // DEBUG_PRINTF(L"str = %s", str.c_str());
-    res = W2MB(str.c_str()) == "line 1";
-    REQUIRE(res);
+    {
+      res = W2MB(str.c_str()) == "line 1";
+      REQUIRE(res);
+    }
     strings.SetString(0, L"line 0");
     REQUIRE(1 == strings.GetCount());
     str = strings.GetString(0);
