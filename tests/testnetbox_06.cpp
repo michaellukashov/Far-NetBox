@@ -1072,4 +1072,7 @@ TEST_CASE_METHOD(base_fixture_t, "properties06", "netbox")
       CHECK(res);
     }
   }
+  auto [A, F] = std::make_pair(1, "42");
+  CHECK(A == 1);
+  CHECK(F == "42");
 }
