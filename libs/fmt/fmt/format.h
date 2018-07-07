@@ -1038,7 +1038,7 @@ struct IntTraits {
     TypeSelector<std::numeric_limits<T>::digits <= 32>::Type MainType;
 };
 
-FMT_API FMT_NORETURN void report_unknown_type(char code, const char *type);
+FMT_NORETURN FMT_API void report_unknown_type(char code, const char *type);
 
 // Static data is placed in this class template to allow header-only
 // configuration.
@@ -1298,6 +1298,7 @@ struct ConvertToIntImpl2<T, true> {
 template <typename T>
 struct ConvertToInt {
   enum {
+#pragma warning(suppress: 4244)
     enable_conversion = sizeof(fmt::internal::convert(get<T>())) == sizeof(Yes)
   };
   enum { value = ConvertToIntImpl2<T, enable_conversion>::value };
@@ -1400,11 +1401,11 @@ class MakeValue : public Arg {
   //   fmt::format("{}", L"test");
   // To fix this, use a wide format string: fmt::format(L"{}", L"test").
 #if !FMT_MSC_VER || defined(_NATIVE_WCHAR_T_DEFINED)
-  explicit MakeValue(typename WCharHelper<wchar_t, Char>::Unsupported);
+  MakeValue(typename WCharHelper<wchar_t, Char>::Unsupported);
 #endif
-  explicit MakeValue(typename WCharHelper<wchar_t *, Char>::Unsupported);
-  explicit MakeValue(typename WCharHelper<const wchar_t *, Char>::Unsupported);
-  explicit MakeValue(typename WCharHelper<const std::wstring &, Char>::Unsupported);
+  MakeValue(typename WCharHelper<wchar_t *, Char>::Unsupported);
+  MakeValue(typename WCharHelper<const wchar_t *, Char>::Unsupported);
+  MakeValue(typename WCharHelper<const std::wstring &, Char>::Unsupported);
 #if FMT_HAS_STRING_VIEW
   MakeValue(typename WCharHelper<const std::wstring_view &, Char>::Unsupported);
 #endif
@@ -1457,7 +1458,7 @@ class MakeValue : public Arg {
       long_long_value = value;
   }
   static uint64_t type(long) {
-    return sizeof(long) == sizeof(int) ? INT : LONG_LONG;
+    return sizeof(long) == sizeof(int) ? Arg::INT : Arg::LONG_LONG;
   }
 
   MakeValue(unsigned long value) {
@@ -1468,7 +1469,7 @@ class MakeValue : public Arg {
   }
   static uint64_t type(unsigned long) {
     return sizeof(unsigned long) == sizeof(unsigned) ?
-          UINT : ULONG_LONG;
+          Arg::UINT : Arg::ULONG_LONG;
   }
 
   FMT_MAKE_VALUE(LongLong, long_long_value, LONG_LONG)
@@ -2576,10 +2577,10 @@ inline uint64_t make_type(FMT_GEN15(FMT_ARG_TYPE_DEFAULT)) {
 */
 class SystemError : public internal::RuntimeError {
  private:
-  FMT_API virtual void init(int err_code, CStringRef format_str, ArgList args);
+  FMT_API void init(int err_code, CStringRef format_str, ArgList args);
 
  protected:
-  int error_code_ = 0;
+  int error_code_{0};
 
   typedef char Char;  // For FMT_VARIADIC_CTOR.
 
@@ -2605,9 +2606,8 @@ class SystemError : public internal::RuntimeError {
    \endrst
   */
   SystemError(int error_code, CStringRef message) {
-    SystemError::init(error_code, message, ArgList());
+    init(error_code, message, ArgList());
   }
-  SystemError& operator=(const SystemError&) { return *this; }
   FMT_DEFAULTED_COPY_CTOR(SystemError)
   FMT_VARIADIC_CTOR(SystemError, init, int, CStringRef)
 
@@ -3128,7 +3128,7 @@ void BasicWriter<Char>::write_int(T value, Spec spec) {
   case 'n': {
     unsigned num_digits = internal::count_digits(abs_value);
     fmt::StringRef sep = "";
-#if !(defined(ANDROID) || defined(__ANDROID__))
+#ifndef __ANDROID__
     sep = internal::thousands_sep(std::localeconv());
 #endif
     unsigned size = static_cast<unsigned>(
@@ -3427,7 +3427,7 @@ FMT_API void report_system_error(int error_code,
 /** A Windows error. */
 class WindowsError : public SystemError {
  private:
-  FMT_API void init(int error_code, CStringRef format_str, ArgList args) override;
+  FMT_API void init(int error_code, CStringRef format_str, ArgList args);
 
  public:
   /**
@@ -3459,7 +3459,7 @@ class WindowsError : public SystemError {
    \endrst
   */
   WindowsError(int error_code, CStringRef message) {
-    WindowsError::init(error_code, message, ArgList());
+    init(error_code, message, ArgList());
   }
   FMT_VARIADIC_CTOR(WindowsError, init, int, CStringRef)
 };
@@ -4102,7 +4102,8 @@ ArgJoin<wchar_t, It> join(It first, It last, const BasicCStringRef<wchar_t>& sep
   return ArgJoin<wchar_t, It>(first, last, sep);
 }
 
-#if FMT_HAS_GXX_CXX11
+#if FMT_HAS_GXX_CXX11 && \
+    (!FMT_GCC_VERSION || FMT_GCC_VERSION >= 405 || __clang__)
 template <typename Range>
 auto join(const Range& range, const BasicCStringRef<char>& sep)
     -> ArgJoin<char, decltype(std::begin(range))> {
