@@ -1702,7 +1702,7 @@ void TFTPFileSystem::CopyToLocal(const TStrings *AFilesToCopy,
       try
       {
         SinkRobust(AbsoluteFilePath, File, TargetDirectory, CopyParam, Params,
-          OperationProgress, tfFirstLevel);
+          OperationProgress, FLAGSET(Params, cpFirstLevel) ? tfFirstLevel : 0);
         Success = true;
         FLastDataSent = Now();
       }
@@ -2011,7 +2011,7 @@ void TFTPFileSystem::CopyToRemote(const TStrings *AFilesToCopy,
           }
         }
         SourceRobust(FileName, File, FullTargetDir, CopyParam, Params, OperationProgress,
-          tfFirstLevel);
+          FLAGSET(Params, cpFirstLevel) ? tfFirstLevel : 0);
         Success = true;
         FLastDataSent = Now();
       }
