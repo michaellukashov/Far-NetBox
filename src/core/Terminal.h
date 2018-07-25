@@ -219,6 +219,7 @@ const int cpNewerOnly = 0x10;
 const int cpAppend = 0x20;
 const int cpResume = 0x40;
 const int cpNoRecurse = 0x80;
+const int cpFirstLevel = 0x100;
 
 const int ccApplyToDirectories = 0x01;
 const int ccRecursive = 0x02;
@@ -1149,7 +1150,7 @@ public:
   void RemoveClient();
   intptr_t GetNext(
     TTerminal *Terminal, UnicodeString &FileName, TObject *&Object, UnicodeString &TargetDir,
-    bool &Dir, bool &Recursed);
+    bool &Dir, bool &Recursed, bool &FirstLevel);
   void Done(UnicodeString FileName, bool Dir, bool Success);
 
 #if 0
