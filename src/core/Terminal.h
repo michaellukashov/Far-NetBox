@@ -207,6 +207,7 @@ constexpr const int cpTemporary = 0x04;
 constexpr const int cpNoConfirmation = 0x08;
 constexpr const int cpNewerOnly = 0x10;
 constexpr const int cpAppend = 0x20;
+constexpr const int cpFirstLevel = 0x100;
 constexpr const int cpResume = 0x40;
 constexpr const int cpNoRecurse = 0x80;
 //---------------------------------------------------------------------------
@@ -1109,7 +1110,7 @@ public:
   void RemoveClient();
   intptr_t GetNext(
     TTerminal *Terminal, UnicodeString &AFileName, TObject *&Object, UnicodeString &ATargetDir,
-    bool &Dir, bool &Recursed);
+    bool &Dir, bool &Recursed, bool &FirstLevel);
   void Done(const UnicodeString AFileName, bool Dir, bool Success);
 
   __property TOperationSide Side = { read = FSide };

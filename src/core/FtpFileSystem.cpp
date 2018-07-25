@@ -1593,6 +1593,7 @@ void TFTPFileSystem::CopyToLocal(TStrings *AFilesToCopy,
   TOnceDoneOperation &OnceDoneOperation)
 {
   Params &= ~cpAppend;
+  Params |= FLAGSET(Params, cpFirstLevel) ? tfFirstLevel : 0;
 
   FTerminal->DoCopyToLocal(
     AFilesToCopy, ATargetDir, CopyParam, Params, OperationProgress, tfUseFileTransferAny, OnceDoneOperation);
@@ -1660,6 +1661,7 @@ void TFTPFileSystem::CopyToRemote(TStrings *AFilesToCopy,
   TOnceDoneOperation &OnceDoneOperation)
 {
   Params &= ~cpAppend;
+  Params |= FLAGSET(Params, cpFirstLevel) ? tfFirstLevel : 0;
 
   FTerminal->DoCopyToRemote(AFilesToCopy, TargetDir, CopyParam, Params, OperationProgress, tfUseFileTransferAny, OnceDoneOperation);
 }

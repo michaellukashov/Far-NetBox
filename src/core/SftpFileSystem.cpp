@@ -4416,6 +4416,7 @@ void TSFTPFileSystem::CopyToRemote(TStrings *AFilesToCopy,
   TOnceDoneOperation &OnceDoneOperation)
 {
   TAutoFlag AvoidBusyFlag(FAvoidBusy); nb::used(AvoidBusyFlag);
+  Params |= FLAGSET(Params, cpFirstLevel) ? tfFirstLevel : 0;
   FTerminal->DoCopyToRemote(AFilesToCopy, ATargetDir, CopyParam, Params, OperationProgress, tfPreCreateDir, OnceDoneOperation);
 }
 //---------------------------------------------------------------------------
@@ -5305,6 +5306,7 @@ void TSFTPFileSystem::CopyToLocal(TStrings *AFilesToCopy,
   TOnceDoneOperation &OnceDoneOperation)
 {
   TAutoFlag AvoidBusyFlag(FAvoidBusy); nb::used(AvoidBusyFlag);
+  Params |= FLAGSET(Params, cpFirstLevel) ? tfFirstLevel : 0;
   FTerminal->DoCopyToLocal(AFilesToCopy, TargetDir, CopyParam, Params, OperationProgress, tfNone, OnceDoneOperation);
 }
 //---------------------------------------------------------------------------

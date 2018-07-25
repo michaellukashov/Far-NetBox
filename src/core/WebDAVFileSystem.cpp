@@ -1264,6 +1264,7 @@ void TWebDAVFileSystem::CopyToRemote(TStrings *AFilesToCopy,
   if (!AFilesToCopy)
     return;
   Params &= ~cpAppend;
+  Params |= FLAGSET(Params, cpFirstLevel) ? tfFirstLevel : 0;
 
   FTerminal->DoCopyToRemote(AFilesToCopy, TargetDir, CopyParam, Params, OperationProgress, tfPreCreateDir, OnceDoneOperation);
 }
@@ -1414,6 +1415,7 @@ void TWebDAVFileSystem::CopyToLocal(TStrings *AFilesToCopy,
   TOnceDoneOperation &OnceDoneOperation)
 {
   Params &= ~cpAppend;
+  Params |= FLAGSET(Params, cpFirstLevel) ? tfFirstLevel : 0;
 
   FTerminal->DoCopyToLocal(AFilesToCopy, TargetDir, CopyParam, Params, OperationProgress, tfNone, OnceDoneOperation);
 }

@@ -884,11 +884,12 @@ bool TParallelOperation::CheckEnd(TCollectedFileList *Files)
   return Result;
 }
 //---------------------------------------------------------------------------
-intptr_t TParallelOperation::GetNext(TTerminal *Terminal, UnicodeString &FileName, TObject *&Object, UnicodeString &TargetDir, bool &Dir, bool &Recursed)
+intptr_t TParallelOperation::GetNext(TTerminal *Terminal, UnicodeString &FileName, TObject *&Object, UnicodeString &TargetDir, bool &Dir, bool &Recursed, bool &FirstLevel)
 {
   TGuard Guard(*FSection.get()); nb::used(Guard);
   intptr_t Result = 1;
   TCollectedFileList *Files;
+  FirstLevel = false;
   do
   {
     if (FFileList->GetCount() > 0)
@@ -917,7 +918,6 @@ intptr_t TParallelOperation::GetNext(TTerminal *Terminal, UnicodeString &FileNam
     Dir = Files->IsDir(FIndex);
     Recursed = Files->IsRecursed(FIndex);
     UnicodeString DirPath;
-    bool FirstLevel;
     if (FSide == osLocal)
     {
       DirPath = ::ExtractFileDir(FileName);
@@ -935,10 +935,13 @@ intptr_t TParallelOperation::GetNext(TTerminal *Terminal, UnicodeString &FileNam
     }
     else
     {
+      UnicodeString DirPath_nobs = Sysutils::ExcludeTrailingBackslash(DirPath);
       TDirectories::const_iterator DirectoryIterator = FDirectories.find(DirPath);
-      if (DebugAlwaysFalse(DirectoryIterator == FDirectories.end()))
+      if (DirectoryIterator == FDirectories.end())
       {
-        throw EInvalidOperation(L"Parent path not known");
+        DirectoryIterator = FDirectories.find(DirPath_nobs);
+		if (DirectoryIterator == FDirectories.end())
+			throw EInvalidOperation(L"Parent path not known");
       }
       const TDirectoryData &DirectoryData = DirectoryIterator->second;
       if (!DirectoryData.Exists)
@@ -5109,7 +5112,7 @@ TTerminal * TTerminal::CreateSecondarySession(const UnicodeString Name, TSession
 
   Result->SetAutoReadDirectory(false);
 
-  Result->SetExceptionOnFail(FExceptionOnFail > 0);
+  Result->FExceptionOnFail=FExceptionOnFail;
 
   Result->SetOnQueryUser(GetOnQueryUser());
   Result->SetOnPromptUser(GetOnPromptUser());
@@ -5169,7 +5172,7 @@ TTerminal * TTerminal::GetCommandSession()
 
     CommandSession->SetAutoReadDirectory(false);
 
-    CommandSession->SetExceptionOnFail(FExceptionOnFail > 0);
+    CommandSession->SetExceptionOnFail(FExceptionOnFail);
 
     CommandSession->SetOnQueryUser(GetOnQueryUser());
     CommandSession->SetOnPromptUser(GetOnPromptUser());
@@ -6988,8 +6991,9 @@ intptr_t TTerminal::CopyToParallel(TParallelOperation *ParallelOperation, TFileO
   UnicodeString TargetDir;
   bool Dir;
   bool Recursed;
+  bool FirstLevel;
 
-  intptr_t Result = ParallelOperation->GetNext(this, FileName, Object, TargetDir, Dir, Recursed);
+  intptr_t Result = ParallelOperation->GetNext(this, FileName, Object, TargetDir, Dir, Recursed, FirstLevel);
   if (Result > 0)
   {
     std::unique_ptr<TStrings> FilesToCopy(std::make_unique<TStringList>());
@@ -7007,6 +7011,10 @@ intptr_t TTerminal::CopyToParallel(TParallelOperation *ParallelOperation, TFileO
     if (Dir && Recursed)
     {
       Params = Params | cpNoRecurse;
+    }
+    if (FirstLevel)
+    {
+      Params = Params | cpFirstLevel;
     }
 
     intptr_t Prev = OperationProgress->GetFilesFinishedSuccessfully();
