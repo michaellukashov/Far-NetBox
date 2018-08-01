@@ -1864,7 +1864,13 @@ void TCustomFarFileSystem::GetOpenPluginInfo(struct OpenPluginInfo *Info)
     // FAR WORKAROUND
     // if plugin is closed from ProcessEvent(FE_IDLE), is does not close,
     // so we close it here on the very next opportunity
-    ClosePlugin();
+    static bool InsideClose = false;
+    if (!InsideClose)
+    {
+      InsideClose = true;
+      ClosePlugin();
+      InsideClose = false;
+    }
   }
   else
   {
@@ -2940,4 +2946,3 @@ uintptr_t TGlobalFunctions::MoreMessageDialog(const UnicodeString AMessage, TStr
   TWinSCPPlugin *WinSCPPlugin = dyn_cast<TWinSCPPlugin>(FarPlugin);
   return WinSCPPlugin->MoreMessageDialog(AMessage, MoreMessages, Type, Answers, Params);
 }
-
