@@ -34,6 +34,7 @@
 
 /* #define GEN_TREES_H */
 
+#include "zbuild.h"
 #include "deflate.h"
 
 #ifdef ZLIB_DEBUG
@@ -796,7 +797,8 @@ void ZLIB_INTERNAL _tr_stored_block(deflate_state *s, char *buf, unsigned long s
     bi_windup(s);        /* align on byte boundary */
     put_short(s, (uint16_t)stored_len);
     put_short(s, (uint16_t)~stored_len);
-    memcpy(s->pending_buf + s->pending, (unsigned char *)buf, stored_len);
+    if (stored_len)
+        memcpy(s->pending_buf + s->pending, (unsigned char *)buf, stored_len);
     s->pending += stored_len;
 #ifdef ZLIB_DEBUG
     s->compressed_len = (s->compressed_len + 3 + 7) & (unsigned long)~7L;
@@ -977,7 +979,7 @@ static void compress_block(deflate_state *s, const ct_data *ltree, const ct_data
     unsigned dist;      /* distance of matched string */
     int lc;             /* match length or unmatched char (if dist == 0) */
     unsigned lx = 0;    /* running index in l_buf */
-    unsigned code;      /* the code to send */
+    int code;           /* the code to send */
     int extra;          /* number of extra bits to send */
 
     if (s->last_lit != 0) {

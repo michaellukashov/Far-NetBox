@@ -5,9 +5,13 @@
 
 /* @(#) $Id$ */
 
+#include "zbuild.h"
 #include "zutil.h"
 #ifdef WITH_GZFILEOP
 #  include "gzguts.h"
+#endif
+#ifndef UNALIGNED_OK
+#  include "malloc.h"
 #endif
 
 const char * const z_errmsg[10] = {
@@ -26,12 +30,19 @@ const char * const z_errmsg[10] = {
 const char zlibng_string[] =
    " zlib-ng 1.9.9 forked from zlib 1.2.11 ";
 
+#ifdef ZLIB_COMPAT
 const char * ZEXPORT zlibVersion(void)
 {
     return ZLIB_VERSION;
 }
+#endif
 
-unsigned long ZEXPORT zlibCompileFlags(void)
+const char * ZEXPORT zlibng_version(void)
+{
+    return ZLIBNG_VERSION;
+}
+
+unsigned long ZEXPORT PREFIX(zlibCompileFlags)(void)
 {
     unsigned long flags;
 
@@ -102,7 +113,7 @@ void ZLIB_INTERNAL z_error (m)
 /* exported to allow conversion of error code to string for compress() and
  * uncompress()
  */
-const char * ZEXPORT zError(int err)
+const char * ZEXPORT PREFIX(zError)(int err)
 {
     return ERR_MSG(err);
 }
@@ -112,8 +123,12 @@ const char * ZEXPORT zError(int err)
 void ZLIB_INTERNAL *zcalloc (void *opaque, unsigned items, unsigned size)
 {
     (void)opaque;
+#ifndef UNALIGNED_OK
+    return memalign(16, items * size);
+#else
     return sizeof(unsigned int) > 2 ? (void *)malloc(items * size) :
                               (void *)calloc(items, size);
+#endif
 }
 
 void ZLIB_INTERNAL zcfree (void *opaque, void *ptr)

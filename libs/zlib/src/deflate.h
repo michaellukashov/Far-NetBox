@@ -103,17 +103,17 @@ typedef unsigned IPos;
  */
 
 typedef struct internal_state {
-    z_stream      *strm;             /* pointer back to this zlib stream */
-    int           status;            /* as the name implies */
-    unsigned char *pending_buf;      /* output still pending */
-    unsigned long pending_buf_size;  /* size of pending_buf */
-    unsigned char *pending_out;      /* next pending byte to output to the stream */
-    uint32_t      pending;           /* nb of bytes in the pending buffer */
-    int           wrap;              /* bit 0 true for zlib, bit 1 true for gzip */
-    gz_headerp    gzhead;            /* gzip header information to write */
-    uint32_t      gzindex;           /* where in extra, name, or comment */
-    unsigned char method;            /* can only be DEFLATED */
-    int           last_flush;        /* value of flush param for previous deflate call */
+    PREFIX3(stream)      *strm;            /* pointer back to this zlib stream */
+    int                  status;           /* as the name implies */
+    unsigned char        *pending_buf;     /* output still pending */
+    unsigned long        pending_buf_size; /* size of pending_buf */
+    unsigned char        *pending_out;     /* next pending byte to output to the stream */
+    uint32_t             pending;          /* nb of bytes in the pending buffer */
+    int                  wrap;             /* bit 0 true for zlib, bit 1 true for gzip */
+    PREFIX(gz_headerp)   gzhead;           /* gzip header information to write */
+    uint32_t             gzindex;          /* where in extra, name, or comment */
+    unsigned char        method;           /* can only be DEFLATED */
+    int                  last_flush;       /* value of flush param for previous deflate call */
 
 #ifdef X86_PCLMULQDQ_CRC
     unsigned ALIGNED_(16) crc0[4 * 5];
@@ -341,6 +341,9 @@ typedef enum {
 #define WIN_INIT MAX_MATCH
 /* Number of bytes after end of data in window to initialize in order to avoid
    memory checker errors from longest match routines */
+
+
+void ZLIB_INTERNAL fill_window_c(deflate_state *s);
 
         /* in trees.c */
 void ZLIB_INTERNAL _tr_init(deflate_state *s);

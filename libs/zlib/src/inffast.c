@@ -3,6 +3,7 @@
  * For conditions of distribution and use, see copyright notice in zlib.h
  */
 
+#include "zbuild.h"
 #include "zutil.h"
 #include "inftrees.h"
 #include "inflate.h"
@@ -136,7 +137,7 @@ static inline unsigned char* chunkunroll(unsigned char *out, unsigned *dist, uns
       requires strm->avail_out >= 258 for each loop to avoid checking for
       output space.
  */
-void ZLIB_INTERNAL inflate_fast(z_stream *strm, unsigned long start) {
+void ZLIB_INTERNAL inflate_fast(PREFIX3(stream) *strm, unsigned long start) {
     /* start: inflate()'s starting value for strm->avail_out */
     struct inflate_state *state;
     const unsigned char *in;    /* local strm->next_in */

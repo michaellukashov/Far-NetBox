@@ -10,11 +10,13 @@
  */
 #ifdef X86_SSE2_FILL_WINDOW
 
+#include "zbuild.h"
 #include <immintrin.h>
 #include "deflate.h"
 #include "deflate_p.h"
+#include "functable.h"
 
-extern int read_buf(z_stream *strm, unsigned char *buf, unsigned size);
+extern int read_buf(PREFIX3(stream) *strm, unsigned char *buf, unsigned size);
 
 ZLIB_INTERNAL void fill_window_sse(deflate_state *s) {
     const __m128i xmm_wsize = _mm_set1_epi16(s->w_size);
@@ -109,11 +111,11 @@ ZLIB_INTERNAL void fill_window_sse(deflate_state *s) {
             unsigned int str = s->strstart - s->insert;
             s->ins_h = s->window[str];
             if (str >= 1)
-                insert_string(s, str + 2 - MIN_MATCH, 1);
+                functable.insert_string(s, str + 2 - MIN_MATCH, 1);
 #if MIN_MATCH != 3
 #error Call insert_string() MIN_MATCH-3 more times
             while (s->insert) {
-                insert_string(s, str, 1);
+                functable.insert_string(s, str, 1);
                 str++;
                 s->insert--;
                 if (s->lookahead + s->insert < MIN_MATCH)
@@ -126,7 +128,7 @@ ZLIB_INTERNAL void fill_window_sse(deflate_state *s) {
             }else{
                 count = s->insert;
             }
-            insert_string(s,str,count);
+            functable.insert_string(s, str, count);
             s->insert -= count;
 #endif
         }

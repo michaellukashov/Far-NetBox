@@ -17,6 +17,7 @@
  * For conditions of distribution and use, see copyright notice in zlib.h
  */
 
+#include "zbuild.h"
 #include <immintrin.h>
 #ifdef _MSC_VER
 #  include <nmmintrin.h>
@@ -28,7 +29,7 @@
 #endif
 
 extern void fill_window_sse(deflate_state *s);
-extern void flush_pending(z_stream *strm);
+extern void flush_pending(PREFIX3(stream) *strm);
 
 static inline long compare258(const unsigned char *const src0, const unsigned char *const src1) {
 #ifdef _MSC_VER
