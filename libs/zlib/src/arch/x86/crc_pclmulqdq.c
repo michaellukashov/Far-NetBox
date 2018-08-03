@@ -4,6 +4,7 @@
  *
  */
 
+#include "zbuild.h"
 #include "x86.h"
 #include "crc_folding.h"
 #include "deflate.h"
@@ -14,7 +15,7 @@ ZLIB_INTERNAL void crc_reset(deflate_state *const s) {
         crc_fold_init(s);
         return;
     }
-    s->strm->adler = crc32(0L, NULL, 0);
+    s->strm->adler = PREFIX(crc32)(0L, NULL, 0);
 }
 
 ZLIB_INTERNAL void crc_finalize(deflate_state *const s) {
@@ -22,13 +23,13 @@ ZLIB_INTERNAL void crc_finalize(deflate_state *const s) {
         s->strm->adler = crc_fold_512to32(s);
 }
 
-ZLIB_INTERNAL void copy_with_crc(z_stream *strm, uint8_t *dst, uint64_t size)
+ZLIB_INTERNAL void copy_with_crc(PREFIX3(stream) *strm, uint8_t *dst, uint64_t size)
 {
     if (x86_cpu_has_pclmulqdq) {
         crc_fold_copy(strm->state, dst, strm->next_in, size);
         return;
     }
     memcpy(dst, strm->next_in, size);
-    strm->adler = crc32(strm->adler, dst, size);
+    strm->adler = PREFIX(crc32)(strm->adler, dst, size);
 }
 #endif

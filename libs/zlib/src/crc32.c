@@ -11,40 +11,9 @@
 
 /* @(#) $Id$ */
 
-#ifdef __MINGW32__
-# include <sys/param.h>
-#elif defined(WIN32) || defined(_WIN32)
-# define LITTLE_ENDIAN 1234
-# define BIG_ENDIAN 4321
-# if defined(_M_IX86) || defined(_M_AMD64) || defined(_M_IA64) || defined (_M_ARM)
-#  define BYTE_ORDER LITTLE_ENDIAN
-# else
-#  error Unknown endianness!
-# endif
-#elif defined(__linux__)
-# include <endian.h>
-#elif defined(__APPLE__) || defined(__arm__) || defined(__aarch64__)
-# include <machine/endian.h>
-#elif defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__) || defined(__bsdi__) || defined(__DragonFly__)
-# include <sys/endian.h>
-#elif defined(__sun) || defined(sun)
-# include <sys/byteorder.h>
-# if !defined(LITTLE_ENDIAN)
-#  define LITTLE_ENDIAN 4321
-# endif
-# if !defined(BIG_ENDIAN)
-#  define BIG_ENDIAN 1234
-# endif
-# if !defined(BYTE_ORDER)
-#  if defined(_BIG_ENDIAN)
-#   define BYTE_ORDER BIG_ENDIAN
-#  else
-#   define BYTE_ORDER LITTLE_ENDIAN
-#  endif
-# endif
-#else
-# include <endian.h>
-#endif
+# include "zbuild.h"
+# include "gzendian.h"
+
 
 /*
   Note on the use of DYNAMIC_CRC_TABLE: there is no mutex or semaphore
@@ -64,6 +33,7 @@
 #endif /* MAKECRCH */
 
 #include "deflate.h"
+#include "functable.h"
 
 ZLIB_INTERNAL uint32_t crc32_generic(uint32_t, const uint8_t *, z_off64_t);
 
@@ -71,11 +41,6 @@ ZLIB_INTERNAL uint32_t crc32_generic(uint32_t, const uint8_t *, z_off64_t);
 extern uint32_t crc32_acle(uint32_t, const uint8_t *, z_off64_t);
 #endif
 
-#if BYTE_ORDER == LITTLE_ENDIAN
-ZLIB_INTERNAL uint32_t crc32_little(uint32_t, const uint8_t *, size_t);
-#elif BYTE_ORDER == BIG_ENDIAN
-ZLIB_INTERNAL uint32_t crc32_big(uint32_t, const uint8_t *, size_t);
-#endif
 
 /* Local functions for crc concatenation */
 static uint32_t gf2_matrix_times(uint32_t *mat, uint32_t vec);
@@ -116,8 +81,7 @@ static void write_table(FILE *, const uint32_t *);
   allow for word-at-a-time CRC calculation for both big-endian and little-
   endian machines, where a word is four bytes.
 */
-static void make_crc_table()
-{
+static void make_crc_table() {
     uint32_t c;
     int n, k;
     uint32_t poly;                       /* polynomial exclusive-or pattern */
@@ -131,7 +95,7 @@ static void make_crc_table()
     if (first) {
         first = 0;
 
-        /* make exclusive-or pattern from polynomial (0xedb88320UL) */
+        /* make exclusive-or pattern from polynomial (0xedb88320) */
         poly = 0;
         for (n = 0; n < (int)(sizeof(p)/sizeof(uint8_t)); n++)
             poly |= (uint32_t)1 << (31 - p[n]);
@@ -157,11 +121,10 @@ static void make_crc_table()
         }
 
         crc_table_empty = 0;
-    }
-    else {      /* not first */
+    } else {      /* not first */
         /* wait for the other guy to finish (not efficient, but rare) */
         while (crc_table_empty)
-            ;
+            {}
     }
 
 #ifdef MAKECRCH
@@ -187,8 +150,7 @@ static void make_crc_table()
 }
 
 #ifdef MAKECRCH
-static void write_table(FILE *out, const uint32_t *table)
-{
+static void write_table(FILE *out, const uint32_t *table) {
     int n;
 
     for (n = 0; n < 256; n++)
@@ -208,8 +170,7 @@ static void write_table(FILE *out, const uint32_t *table)
 /* =========================================================================
  * This function can be used by asm versions of crc32()
  */
-const uint32_t * ZEXPORT get_crc_table(void)
-{
+const uint32_t * ZEXPORT PREFIX(get_crc_table)(void) {
 #ifdef DYNAMIC_CRC_TABLE
     if (crc_table_empty)
         make_crc_table();
@@ -217,27 +178,17 @@ const uint32_t * ZEXPORT get_crc_table(void)
     return (const uint32_t *)crc_table;
 }
 
-uint32_t ZEXPORT crc32_z(uint32_t crc, const uint8_t *buf, size_t len)
+uint32_t ZEXPORT PREFIX(crc32_z)(uint32_t crc, const uint8_t *buf, size_t len) {
+    if (buf == NULL) return 0;
+
+    return functable.crc32(crc, buf, len);
+}
+ZLIB_INTERNAL uint32_t crc32_generic(uint32_t crc, const unsigned char *buf, uint64_t len)
 {
-    if (buf == Z_NULL)
-        return 0;
-
-#ifdef DYNAMIC_CRC_TABLE
-    if (crc_table_empty)
-        make_crc_table();
-#endif /* DYNAMIC_CRC_TABLE */
-
-    if (sizeof(void *) == sizeof(ptrdiff_t)) {
-#if BYTE_ORDER == LITTLE_ENDIAN
 #  if __ARM_FEATURE_CRC32
         return crc32_acle(crc, buf, len);
 #  else
-        return crc32_little(crc, buf, len);
 #  endif
-#elif BYTE_ORDER == BIG_ENDIAN
-        return crc32_big(crc, buf, len);
-#endif
-    }
 
     return crc32_generic(crc, buf, len);
 }
@@ -267,13 +218,11 @@ ZLIB_INTERNAL uint32_t crc32_generic(uint32_t crc, const uint8_t *buf, z_off64_t
     if (len) do {
         DO1;
     } while (--len);
-    return crc ^ 0xffffffffUL;
+    return crc ^ 0xffffffff;
 }
 
-/* ========================================================================= */
-uint32_t ZEXPORT crc32(uint32_t crc, const uint8_t *buf, size_t len)
-{
-    return crc32_z(crc, buf, len);
+uint32_t ZEXPORT PREFIX(crc32)(uint32_t crc, const uint8_t *buf, uint32_t len) {
+    return PREFIX(crc32_z)(crc, buf, len);
 }
 
 /*
@@ -296,8 +245,7 @@ uint32_t ZEXPORT crc32(uint32_t crc, const uint8_t *buf, size_t len)
 #define DOLIT32 DOLIT4; DOLIT4; DOLIT4; DOLIT4; DOLIT4; DOLIT4; DOLIT4; DOLIT4
 
 /* ========================================================================= */
-ZLIB_INTERNAL uint32_t crc32_little(uint32_t crc, const uint8_t *buf, size_t len)
-{
+ZLIB_INTERNAL uint32_t crc32_little(uint32_t crc, const uint8_t *buf, uint64_t len) {
     register uint32_t c;
     register const uint32_t *buf4;
 
@@ -339,8 +287,7 @@ ZLIB_INTERNAL uint32_t crc32_little(uint32_t crc, const uint8_t *buf, size_t len
 #define DOBIG32 DOBIG4; DOBIG4; DOBIG4; DOBIG4; DOBIG4; DOBIG4; DOBIG4; DOBIG4
 
 /* ========================================================================= */
-ZLIB_INTERNAL uint32_t crc32_big(uint32_t crc, const uint8_t *buf, size_t len)
-{
+ZLIB_INTERNAL uint32_t crc32_big(uint32_t crc, const uint8_t *buf, uint64_t len) {
     register uint32_t c;
     register const uint32_t *buf4;
 
@@ -378,8 +325,7 @@ ZLIB_INTERNAL uint32_t crc32_big(uint32_t crc, const uint8_t *buf, size_t len)
 #define GF2_DIM 32      /* dimension of GF(2) vectors (length of CRC) */
 
 /* ========================================================================= */
-static uint32_t gf2_matrix_times(uint32_t *mat, uint32_t vec)
-{
+static uint32_t gf2_matrix_times(uint32_t *mat, uint32_t vec) {
     uint32_t sum;
 
     sum = 0;
@@ -393,8 +339,7 @@ static uint32_t gf2_matrix_times(uint32_t *mat, uint32_t vec)
 }
 
 /* ========================================================================= */
-static void gf2_matrix_square(uint32_t *square, uint32_t *mat)
-{
+static void gf2_matrix_square(uint32_t *square, uint32_t *mat) {
     int n;
 
     for (n = 0; n < GF2_DIM; n++)
@@ -402,8 +347,7 @@ static void gf2_matrix_square(uint32_t *square, uint32_t *mat)
 }
 
 /* ========================================================================= */
-static uint32_t crc32_combine_(uint32_t crc1, uint32_t crc2, z_off64_t len2)
-{
+static uint32_t crc32_combine_(uint32_t crc1, uint32_t crc2, z_off64_t len2) {
     int n;
     uint32_t row;
     uint32_t even[GF2_DIM];    /* even-power-of-two zeros operator */
@@ -414,7 +358,7 @@ static uint32_t crc32_combine_(uint32_t crc1, uint32_t crc2, z_off64_t len2)
         return crc1;
 
     /* put operator for one zero bit in odd */
-    odd[0] = 0xedb88320UL;          /* CRC-32 polynomial */
+    odd[0] = 0xedb88320;          /* CRC-32 polynomial */
     row = 1;
     for (n = 1; n < GF2_DIM; n++) {
         odd[n] = row;
@@ -455,24 +399,22 @@ static uint32_t crc32_combine_(uint32_t crc1, uint32_t crc2, z_off64_t len2)
 }
 
 /* ========================================================================= */
-uint32_t ZEXPORT crc32_combine(uint32_t crc1, uint32_t crc2, z_off_t len2)
-{
+uint32_t ZEXPORT PREFIX(crc32_combine)(uint32_t crc1, uint32_t crc2, z_off_t len2) {
     return crc32_combine_(crc1, crc2, len2);
 }
 
-uint32_t ZEXPORT crc32_combine64(uint32_t crc1, uint32_t crc2, z_off64_t len2)
-{
+uint32_t ZEXPORT PREFIX(crc32_combine64)(uint32_t crc1, uint32_t crc2, z_off64_t len2) {
     return crc32_combine_(crc1, crc2, len2);
 }
 
 #ifndef X86_PCLMULQDQ_CRC
 ZLIB_INTERNAL void crc_reset(deflate_state *const s) {
-    s->strm->adler = crc32(0L, NULL, 0);
+    s->strm->adler = PREFIX(crc32)(0L, NULL, 0);
 }
 
-ZLIB_INTERNAL void copy_with_crc(z_stream *strm, uint8_t *dst, size_t size) {
+ZLIB_INTERNAL void copy_with_crc(PREFIX3(stream) *strm, uint8_t *dst, uint64_t size) {
     zmemcpy(dst, strm->next_in, size);
-    strm->adler = crc32(strm->adler, dst, size);
+    strm->adler = PREFIX(crc32)(strm->adler, dst, size);
 }
 #endif
 

@@ -3,6 +3,7 @@
  * For conditions of distribution and use, see copyright notice in zlib.h
  */
 
+#include "zbuild.h"
 #include "zutil.h"
 #include "inftrees.h"
 
@@ -29,9 +30,8 @@ const char inflate_copyright[] =
    table index bits.  It will differ if the request is greater than the
    longest code or if it is less than the shortest code.
  */
-int ZLIB_INTERNAL inflate_table(codetype type, uint16_t *lens, uint32_t codes,
-                                code * *table, uint32_t *bits, uint16_t  *work)
-{
+int ZLIB_INTERNAL inflate_table(codetype type, uint16_t *lens, unsigned codes,
+                                code * *table, unsigned *bits, uint16_t  *work) {
     uint32_t len;               /* a code's length in bits */
     uint32_t sym;               /* index of code symbols */
     uint32_t min, max;          /* minimum and maximum code lengths */
@@ -49,7 +49,7 @@ int ZLIB_INTERNAL inflate_table(codetype type, uint16_t *lens, uint32_t codes,
     code *next;                 /* next available space in table */
     const uint16_t *base;       /* base value table to use */
     const uint16_t *extra;      /* extra bits table to use */
-    uint32_t match;              /* use base and extra for symbol > match */
+    uint32_t match;             /* use base and extra for symbol >= match */
     uint16_t count[MAXBITS+1];  /* number of codes of each length */
     uint16_t offs[MAXBITS+1];   /* offsets in table for each length */
     static const uint16_t lbase[31] = { /* Length codes 257..285 base */
@@ -183,7 +183,7 @@ int ZLIB_INTERNAL inflate_table(codetype type, uint16_t *lens, uint32_t codes,
         extra = lext;
         match = 257;
         break;
-    default:            /* DISTS */
+    default:    /* DISTS */
         base = dbase;
         extra = dext;
         match = 0;
@@ -212,12 +212,10 @@ int ZLIB_INTERNAL inflate_table(codetype type, uint16_t *lens, uint32_t codes,
         if (work[sym] + 1U < match) {
             here.op = (uint8_t)0;
             here.val = work[sym];
-        }
-        else if (work[sym] >= match) {
+        } else if (work[sym] >= match) {
             here.op = (uint8_t)(extra[work[sym] - match]);
             here.val = base[work[sym] - match];
-        }
-        else {
+        } else {
             here.op = (uint8_t)(32 + 64);         /* end of block */
             here.val = 0;
         }
@@ -238,8 +236,7 @@ int ZLIB_INTERNAL inflate_table(codetype type, uint16_t *lens, uint32_t codes,
         if (incr != 0) {
             huff &= incr - 1;
             huff += incr;
-        }
-        else {
+        } else {
             huff = 0;
         }
 
@@ -273,8 +270,7 @@ int ZLIB_INTERNAL inflate_table(codetype type, uint16_t *lens, uint32_t codes,
 
             /* check for enough space */
             used += 1U << curr;
-            if ((type == LENS && used > ENOUGH_LENS) ||
-                (type == DISTS && used > ENOUGH_DISTS))
+            if ((type == LENS && used > ENOUGH_LENS) || (type == DISTS && used > ENOUGH_DISTS))
                 return 1;
 
             /* point entry in root table to sub-table */

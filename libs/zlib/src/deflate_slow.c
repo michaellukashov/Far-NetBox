@@ -4,9 +4,11 @@
  * For conditions of distribution and use, see copyright notice in zlib.h
  */
 
+#include "zbuild.h"
 #include "deflate.h"
 #include "deflate_p.h"
 #include "match.h"
+#include "functable.h"
 
 /* ===========================================================================
  * Local data
@@ -22,7 +24,7 @@
  * evaluation for matches: a match is finally adopted only if there is
  * no better match at the next window position.
  */
-block_state deflate_slow(deflate_state *s, int flush) {
+ZLIB_INTERNAL block_state deflate_slow(deflate_state *s, int flush) {
     IPos hash_head;          /* head of hash chain */
     int bflush;              /* set if current block must be flushed */
 
@@ -34,7 +36,7 @@ block_state deflate_slow(deflate_state *s, int flush) {
          * string following the next match.
          */
         if (s->lookahead < MIN_LOOKAHEAD) {
-            fill_window(s);
+            functable.fill_window(s);
             if (s->lookahead < MIN_LOOKAHEAD && flush == Z_NO_FLUSH) {
                 return need_more;
             }
@@ -47,7 +49,7 @@ block_state deflate_slow(deflate_state *s, int flush) {
          */
         hash_head = NIL;
         if (s->lookahead >= MIN_MATCH) {
-            hash_head = insert_string(s, s->strstart, 1);
+            hash_head = functable.insert_string(s, s->strstart, 1);
         }
 
         /* Find the longest match, discarding those <= prev_length.
@@ -79,7 +81,7 @@ block_state deflate_slow(deflate_state *s, int flush) {
          * match is not better, output the previous match:
          */
         if (s->prev_length >= MIN_MATCH && s->match_length <= s->prev_length) {
-            uint32_t max_insert = s->strstart + s->lookahead - MIN_MATCH;
+            unsigned int max_insert = s->strstart + s->lookahead - MIN_MATCH;
             /* Do not insert strings in hash table beyond this. */
 
             check_match(s, s->strstart-1, s->prev_match, s->prev_length);
@@ -97,7 +99,7 @@ block_state deflate_slow(deflate_state *s, int flush) {
             s->prev_length -= 2;
             do {
                 if (++s->strstart <= max_insert) {
-                    insert_string(s, s->strstart);
+                    functable.insert_string(s, s->strstart, 1);
                 }
             } while (--s->prev_length != 0);
             s->match_available = 0;
@@ -105,12 +107,12 @@ block_state deflate_slow(deflate_state *s, int flush) {
             s->strstart++;
 #else
             {
-                uint32_t mov_fwd = s->prev_length - 2;
-                uint32_t insert_cnt = mov_fwd;
+                unsigned int mov_fwd = s->prev_length - 2;
+                unsigned int insert_cnt = mov_fwd;
                 if (unlikely(insert_cnt > max_insert - s->strstart))
                     insert_cnt = max_insert - s->strstart;
 
-                bulk_insert_str(s, s->strstart + 1, insert_cnt);
+                functable.insert_string(s, s->strstart + 1, insert_cnt);
                 s->prev_length = 0;
                 s->match_available = 0;
                 s->match_length = MIN_MATCH-1;

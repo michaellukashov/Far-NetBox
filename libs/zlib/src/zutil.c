@@ -5,29 +5,44 @@
 
 /* @(#) $Id$ */
 
+#include "zbuild.h"
 #include "zutil.h"
+#ifdef WITH_GZFILEOP
+#  include "gzguts.h"
+#endif
+#ifndef UNALIGNED_OK
+#  include "malloc.h"
+#endif
 
 const char * const z_errmsg[10] = {
-"need dictionary",     /* Z_NEED_DICT       2  */
-"stream end",          /* Z_STREAM_END      1  */
-"",                    /* Z_OK              0  */
-"file error",          /* Z_ERRNO         (-1) */
-"stream error",        /* Z_STREAM_ERROR  (-2) */
-"data error",          /* Z_DATA_ERROR    (-3) */
-"insufficient memory", /* Z_MEM_ERROR     (-4) */
-"buffer error",        /* Z_BUF_ERROR     (-5) */
-"incompatible version",/* Z_VERSION_ERROR (-6) */
-""};
+    (const char *)"need dictionary",     /* Z_NEED_DICT       2  */
+    (const char *)"stream end",          /* Z_STREAM_END      1  */
+    (const char *)"",                    /* Z_OK              0  */
+    (const char *)"file error",          /* Z_ERRNO         (-1) */
+    (const char *)"stream error",        /* Z_STREAM_ERROR  (-2) */
+    (const char *)"data error",          /* Z_DATA_ERROR    (-3) */
+    (const char *)"insufficient memory", /* Z_MEM_ERROR     (-4) */
+    (const char *)"buffer error",        /* Z_BUF_ERROR     (-5) */
+    (const char *)"incompatible version",/* Z_VERSION_ERROR (-6) */
+    (const char *)""
+};
 
 const char zlibng_string[] =
    " zlib-ng 1.9.9 forked from zlib 1.2.11 ";
 
+#ifdef ZLIB_COMPAT
 const char * ZEXPORT zlibVersion(void)
 {
     return ZLIB_VERSION;
 }
+#endif
 
-uint64_t ZEXPORT zlibCompileFlags(void)
+const char * ZEXPORT zlibng_version(void)
+{
+    return ZLIBNG_VERSION;
+}
+
+unsigned long ZEXPORT PREFIX(zlibCompileFlags)(void)
 {
     uint64_t flags;
 
@@ -77,38 +92,11 @@ uint64_t ZEXPORT zlibCompileFlags(void)
 #ifdef PKZIP_BUG_WORKAROUND
     flags += 1L << 20;
 #endif
-#ifdef FASTEST
-    flags += 1L << 21;
-#endif
-#if defined(STDC) || defined(Z_HAVE_STDARG_H)
-#  ifdef NO_vsnprintf
-    flags += 1L << 25;
-#    ifdef HAS_vsprintf_void
-    flags += 1L << 26;
-#    endif
-#  else
-#    ifdef HAS_vsnprintf_void
-    flags += 1L << 26;
-#    endif
-#  endif
-#else
-    flags += 1L << 24;
-#  ifdef NO_snprintf
-    flags += 1L << 25;
-#    ifdef HAS_sprintf_void
-    flags += 1L << 26;
-#    endif
-#  else
-#    ifdef HAS_snprintf_void
-    flags += 1L << 26;
-#    endif
-#  endif
-#endif
     return flags;
 }
 
 #ifdef ZLIB_DEBUG
-#include <stdlib.h>
+
 #  ifndef verbose
 #    define verbose 0
 #  endif
@@ -125,53 +113,21 @@ void ZLIB_INTERNAL z_error (m)
 /* exported to allow conversion of error code to string for compress() and
  * uncompress()
  */
-const char * ZEXPORT zError(int err)
+const char * ZEXPORT PREFIX(zError)(int err)
 {
     return ERR_MSG(err);
 }
 
-#ifndef HAVE_MEMCPY
-
-void ZLIB_INTERNAL zmemcpy(uint8_t* dest, const uint8_t* source, uint32_t len)
-{
-    if (len == 0) return;
-    do {
-        *dest++ = *source++; /* ??? to be unrolled */
-    } while (--len != 0);
-}
-
-int ZLIB_INTERNAL zmemcmp(const uint8_t* s1, const uint8_t* s2, uint32_t len)
-{
-    uint32_t j;
-
-    for (j = 0; j < len; j++) {
-        if (s1[j] != s2[j]) return 2*(s1[j] > s2[j])-1;
-    }
-    return 0;
-}
-
-void ZLIB_INTERNAL zmemzero(uint8_t* dest, uint32_t len)
-{
-    if (len == 0) return;
-    do {
-        *dest++ = 0;  /* ??? to be unrolled */
-    } while (--len != 0);
-}
-#endif
-
 #ifndef MY_ZCALLOC /* Any system without a special alloc function */
 
-#ifndef STDC
-extern void *  malloc (uint32_t size);
-extern void *  calloc (uint32_t items, uint32_t size);
-extern void   free   (void * ptr);
-#endif
-
-void ZLIB_INTERNAL *zcalloc (void *opaque, uint32_t items, uint32_t size)
+void ZLIB_INTERNAL *zcalloc (void *opaque, unsigned items, unsigned size)
 {
     (void)opaque;
-    return sizeof(uint32_t) > 2 ? (void *)malloc(items * size) :
+#ifndef UNALIGNED_OK
+    return memalign(16, items * size);
+#else
                               (void *)calloc(items, size);
+#endif
 }
 
 void ZLIB_INTERNAL zcfree (void *opaque, void *ptr)
