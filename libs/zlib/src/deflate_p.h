@@ -32,9 +32,6 @@ void flush_pending(PREFIX3(stream) *strm);
  */
 
 static inline Pos insert_string_c(deflate_state *const s, const Pos str, unsigned int count) {
-#elif defined(ARM_ACLE_CRC_HASH)
-extern Pos insert_string_acle(deflate_state *const s, const Pos str, uint32_t count);
-{
     Pos ret = 0;
     unsigned int idx;
 
@@ -47,8 +44,6 @@ extern Pos insert_string_acle(deflate_state *const s, const Pos str, uint32_t co
                 ret = s->prev[(str+idx) & s->w_mask];
             }
         }
-{
-#if defined(ARM_ACLE_CRC_HASH)
     return insert_string_acle(s, str, count);
 #else
 #endif

@@ -44,6 +44,11 @@ const char * ZEXPORT zlibng_version(void)
 
 unsigned long ZEXPORT PREFIX(zlibCompileFlags)(void)
 {
+    return ZLIBNG_VERSION;
+}
+
+unsigned long ZEXPORT PREFIX(zlibCompileFlags)(void)
+{
     uint64_t flags;
 
     flags = 0;

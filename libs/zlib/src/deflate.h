@@ -105,10 +105,9 @@ typedef uint32_t IPos;
 typedef struct internal_state {
     PREFIX3(stream)      *strm;            /* pointer back to this zlib stream */
     int                  status;           /* as the name implies */
-    uint8_t       *pending_buf;            /* output still pending */
-    uint64_t      pending_buf_size;        /* size of pending_buf */
-    uint8_t       *pending_out;            /* next pending byte to output to the stream */
-    uint64_t      pending;                 /* nb of bytes in the pending buffer */
+    uint8_t              *pending_buf;     /* output still pending */
+    uint64_t             pending_buf_size; /* size of pending_buf */
+    uint8_t              *pending_out;     /* next pending byte to output to the stream */
     uint32_t             pending;          /* nb of bytes in the pending buffer */
     int                  wrap;             /* bit 0 true for zlib, bit 1 true for gzip */
     PREFIX(gz_headerp)   gzhead;           /* gzip header information to write */
@@ -354,6 +353,7 @@ void ZLIB_INTERNAL _tr_flush_bits(deflate_state *s);
 void ZLIB_INTERNAL _tr_align(deflate_state *s);
 void ZLIB_INTERNAL _tr_stored_block(deflate_state *s, char *buf, unsigned long stored_len, int last);
 void bi_windup(deflate_state *s);
+void ZLIB_INTERNAL bi_windup(deflate_state *s);
 
 #define d_code(dist) ((dist) < 256 ? _dist_code[dist] : _dist_code[256+((dist)>>7)])
 /* Mapping from a distance to a distance code. dist is the distance - 1 and

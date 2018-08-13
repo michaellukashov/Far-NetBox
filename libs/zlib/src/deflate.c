@@ -55,7 +55,7 @@
 #include "match.h"
 #include "functable.h"
 
-const char deflate_copyright[] =
+const char deflate_copyright[] = " deflate 1.2.11.f Copyright 1995-2016 Jean-loup Gailly and Mark Adler ";
    " deflate 1.2.11.f Copyright 1995-2016 Jean-loup Gailly and Mark Adler ";
 /*
   If you use the zlib library in a product, an acknowledgment is welcome
@@ -92,7 +92,7 @@ extern void crc_reset(deflate_state *const s);
 extern void crc_finalize(deflate_state *const s);
 #endif
 extern void copy_with_crc(z_stream *strm, uint8_t *dst, uint64_t size);
-extern void copy_with_crc(PREFIX3(stream) *strm, unsigned char *dst, unsigned long size);
+extern void copy_with_crc(PREFIX3(stream) *strm, unsigned char *dst, uint64_t size);
 
 /* ===========================================================================
  * Local data
@@ -1083,8 +1083,8 @@ int ZEXPORT PREFIX(deflateCopy)(PREFIX3(stream) *dest, PREFIX3(stream) *source) 
     }
 
     zmemcpy(ds->window, ss->window, ds->w_size * 2 * sizeof(uint8_t));
-    zmemcpy((void *)ds->prev, (void *)ss->prev, ds->w_size * sizeof(Pos));
-    zmemcpy((void *)ds->head, (void *)ss->head, ds->hash_size * sizeof(Pos));
+    memcpy((void *)ds->prev, (void *)ss->prev, ds->w_size * sizeof(Pos));
+    memcpy((void *)ds->head, (void *)ss->head, ds->hash_size * sizeof(Pos));
     zmemcpy(ds->pending_buf, ss->pending_buf, (uint32_t)ds->pending_buf_size);
 
     ds->pending_out = ds->pending_buf + (ss->pending_out - ss->pending_buf);
