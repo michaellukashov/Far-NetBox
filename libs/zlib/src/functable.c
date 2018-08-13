@@ -30,28 +30,28 @@ extern void fill_window_arm(deflate_state *s);
 #endif
 
 /* adler32 */
-extern uint32_t adler32_c(uint32_t adler, const unsigned char *buf, size_t len);
+extern uint32_t adler32_c(uint32_t adler, const uint8_t *buf, size_t len);
 #if ((defined(__ARM_NEON__) || defined(__ARM_NEON)) && defined(ARM_NEON_ADLER32))
-extern uint32_t adler32_neon(uint32_t adler, const unsigned char *buf, size_t len);
+extern uint32_t adler32_neon(uint32_t adler, const uint8_t *buf, size_t len);
 #endif
 
-ZLIB_INTERNAL uint32_t crc32_generic(uint32_t, const unsigned char *, uint64_t);
+ZLIB_INTERNAL uint32_t crc32_generic(uint32_t, const uint8_t *, uint64_t);
 
 #ifdef __ARM_FEATURE_CRC32
-extern uint32_t crc32_acle(uint32_t, const unsigned char *, uint64_t);
+extern uint32_t crc32_acle(uint32_t, const uint8_t *, uint64_t);
 #endif
 
 #if BYTE_ORDER == LITTLE_ENDIAN
-extern uint32_t crc32_little(uint32_t, const unsigned char *, uint64_t);
+extern uint32_t crc32_little(uint32_t, const uint8_t *, uint64_t);
 #elif BYTE_ORDER == BIG_ENDIAN
-extern uint32_t crc32_big(uint32_t, const unsigned char *, uint64_t);
+extern uint32_t crc32_big(uint32_t, const uint8_t *, uint64_t);
 #endif
 
 /* stub definitions */
-ZLIB_INTERNAL Pos insert_string_stub(deflate_state *const s, const Pos str, unsigned int count);
+ZLIB_INTERNAL Pos insert_string_stub(deflate_state *const s, const Pos str, uint32_t count);
 ZLIB_INTERNAL void fill_window_stub(deflate_state *s);
-ZLIB_INTERNAL uint32_t adler32_stub(uint32_t adler, const unsigned char *buf, size_t len);
-ZLIB_INTERNAL uint32_t crc32_stub(uint32_t crc, const unsigned char *buf, uint64_t len);
+ZLIB_INTERNAL uint32_t adler32_stub(uint32_t adler, const uint8_t *buf, size_t len);
+ZLIB_INTERNAL uint32_t crc32_stub(uint32_t crc, const uint8_t *buf, uint64_t len);
 
 /* functable init */
 ZLIB_INTERNAL struct functable_s functable = {fill_window_stub,insert_string_stub,adler32_stub,crc32_stub};
@@ -88,7 +88,7 @@ ZLIB_INTERNAL void fill_window_stub(deflate_state *s) {
     functable.fill_window(s);
 }
 
-ZLIB_INTERNAL uint32_t adler32_stub(uint32_t adler, const unsigned char *buf, size_t len) {
+ZLIB_INTERNAL uint32_t adler32_stub(uint32_t adler, const uint8_t *buf, size_t len) {
     // Initialize default
     functable.adler32=&adler32_c;
 
@@ -99,7 +99,7 @@ ZLIB_INTERNAL uint32_t adler32_stub(uint32_t adler, const unsigned char *buf, si
     return functable.adler32(adler, buf, len);
 }
 
-ZLIB_INTERNAL uint32_t crc32_stub(uint32_t crc, const unsigned char *buf, uint64_t len) {
+ZLIB_INTERNAL uint32_t crc32_stub(uint32_t crc, const uint8_t *buf, uint64_t len) {
 
 
    Assert(sizeof(uint64_t) >= sizeof(size_t),

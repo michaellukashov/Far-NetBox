@@ -84,7 +84,7 @@ typedef void  (*free_func)  (void *opaque, void *address);
 struct internal_state;
 
 typedef struct zng_stream_s {
-    const unsigned char   *next_in;   /* next input byte */
+    const uint8_t         *next_in;   /* next input byte */
     uint32_t              avail_in;   /* number of bytes available at next_in */
     size_t                total_in;   /* total number of input bytes read so far */
 
@@ -596,8 +596,8 @@ ZEXTERN int ZEXPORT zng_deflateInit2 (zng_stream *strm,
 */
 
 ZEXTERN int ZEXPORT zng_deflateSetDictionary(zng_stream *strm,
-                                             const unsigned char *dictionary,
-                                             unsigned int dictLength);
+                                             const uint8_t *dictionary,
+                                             uint32_t dictLength);
 /*
      Initializes the compression dictionary from the given byte sequence
    without producing any compressed output.  When using the zlib format, this
@@ -735,7 +735,7 @@ ZEXTERN int ZEXPORT zng_deflateTune(zng_stream *strm, int good_length, int max_l
    returns Z_OK on success, or Z_STREAM_ERROR for an invalid deflate stream.
  */
 
-ZEXTERN unsigned long ZEXPORT zng_deflateBound(zng_stream *strm, unsigned long sourceLen);
+ZEXTERN uint64_t ZEXPORT zng_deflateBound(zng_stream *strm, uint64_t sourceLen);
 /*
      deflateBound() returns an upper bound on the compressed size after
    deflation of sourceLen bytes.  It must be called after deflateInit() or
@@ -852,7 +852,7 @@ ZEXTERN int ZEXPORT zng_inflateInit2(zng_stream *strm, int  windowBits);
    deferred until inflate() is called.
 */
 
-ZEXTERN int ZEXPORT zng_inflateSetDictionary(zng_stream *strm, const unsigned char *dictionary, unsigned int dictLength);
+ZEXTERN int ZEXPORT zng_inflateSetDictionary(zng_stream *strm, const uint8_t *dictionary, uint32_t dictLength);
 /*
      Initializes the decompression dictionary from the given uncompressed byte
    sequence.  This function must be called immediately after a call of inflate,
@@ -1050,8 +1050,8 @@ ZEXTERN int ZEXPORT zng_inflateBackInit (zng_stream *strm, int windowBits, unsig
    the version of the header file.
 */
 
-typedef uint32_t (*in_func) (void *, const unsigned char * *);
-typedef int (*out_func) (void *, unsigned char *, uint32_t);
+typedef uint32_t (*in_func) (void *, const uint8_t * *);
+typedef int (*out_func) (void *, uint8_t *, uint32_t);
 
 ZEXTERN int ZEXPORT zng_inflateBack(zng_stream *strm, in_func in, void *in_desc, out_func out, void *out_desc);
 /*
@@ -1129,7 +1129,7 @@ ZEXTERN int ZEXPORT zng_inflateBackEnd(zng_stream *strm);
    state was inconsistent.
 */
 
-ZEXTERN unsigned long ZEXPORT zng_zlibCompileFlags(void);
+ZEXTERN uint64_t ZEXPORT zng_zlibCompileFlags(void);
 /* Return flags indicating compile-time options.
 
     Type sizes, two bits each, 00 = 16 bits, 01 = 32, 10 = 64, 11 = other:
@@ -1181,7 +1181,7 @@ ZEXTERN unsigned long ZEXPORT zng_zlibCompileFlags(void);
    you need special options.
 */
 
-ZEXTERN int ZEXPORT zng_compress(unsigned char *dest, size_t *destLen, const unsigned char *source, size_t sourceLen);
+ZEXTERN int ZEXPORT zng_compress(unsigned char *dest, size_t *destLen, const uint8_t *source, size_t sourceLen);
 /*
      Compresses the source buffer into the destination buffer.  sourceLen is
    the byte length of the source buffer.  Upon entry, destLen is the total size
@@ -1195,7 +1195,7 @@ ZEXTERN int ZEXPORT zng_compress(unsigned char *dest, size_t *destLen, const uns
    buffer.
 */
 
-ZEXTERN int ZEXPORT zng_compress2(unsigned char *dest, size_t *destLen, const unsigned char *source,
+ZEXTERN int ZEXPORT zng_compress2(unsigned char *dest, size_t *destLen, const uint8_t *source,
                               size_t sourceLen, int level);
 /*
      Compresses the source buffer into the destination buffer.  The level
@@ -1217,7 +1217,7 @@ ZEXTERN size_t ZEXPORT zng_compressBound(size_t sourceLen);
    compress() or compress2() call to allocate the destination buffer.
 */
 
-ZEXTERN int ZEXPORT zng_uncompress(unsigned char *dest, size_t *destLen, const unsigned char *source, size_t sourceLen);
+ZEXTERN int ZEXPORT zng_uncompress(unsigned char *dest, size_t *destLen, const uint8_t *source, size_t sourceLen);
 /*
      Decompresses the source buffer into the destination buffer.  sourceLen is
    the byte length of the source buffer.  Upon entry, destLen is the total size
@@ -1236,7 +1236,7 @@ ZEXTERN int ZEXPORT zng_uncompress(unsigned char *dest, size_t *destLen, const u
 
 
 ZEXTERN int ZEXPORT zng_uncompress2 (unsigned char *dest,         size_t *destLen,
-                                 const unsigned char *source, size_t *sourceLen);
+                                 const uint8_t *source, size_t *sourceLen);
 /*
      Same as uncompress, except that sourceLen is a pointer, where the
    length of the source is *sourceLen.  On return, *sourceLen is the number of
@@ -1634,7 +1634,7 @@ ZEXTERN void ZEXPORT zng_gzclearerr(gzFile file);
    library.
 */
 
-ZEXTERN uint32_t ZEXPORT zng_adler32(uint32_t adler, const unsigned char *buf, uint32_t len);
+ZEXTERN uint32_t ZEXPORT zng_adler32(uint32_t adler, const uint8_t *buf, uint32_t len);
 /*
      Update a running Adler-32 checksum with the bytes buf[0..len-1] and
    return the updated checksum.  If buf is NULL, this function returns the
@@ -1653,7 +1653,7 @@ ZEXTERN uint32_t ZEXPORT zng_adler32(uint32_t adler, const unsigned char *buf, u
      if (adler != original_adler) error();
 */
 
-ZEXTERN uint32_t ZEXPORT zng_adler32_z (uint32_t adler, const unsigned char *buf, size_t len);
+ZEXTERN uint32_t ZEXPORT zng_adler32_z (uint32_t adler, const uint8_t *buf, uint32_t len);
 /*
      Same as adler32(), but with a size_t length.
 */
@@ -1669,7 +1669,7 @@ ZEXTERN uint32_t ZEXPORT zng_adler32_combine(uint32_t adler1, uint32_t adler2, z
    negative, the result has no meaning or utility.
 */
 
-ZEXTERN uint32_t ZEXPORT zng_crc32(uint32_t crc, const unsigned char *buf, uint32_t len);
+ZEXTERN uint32_t ZEXPORT zng_crc32(uint32_t crc, const uint8_t *buf, uint32_t len);
 /*
      Update a running CRC-32 with the bytes buf[0..len-1] and return the
    updated CRC-32.  If buf is NULL, this function returns the required
@@ -1686,7 +1686,7 @@ ZEXTERN uint32_t ZEXPORT zng_crc32(uint32_t crc, const unsigned char *buf, uint3
      if (crc != original_crc) error();
 */
 
-ZEXTERN uint32_t ZEXPORT zng_crc32_z (uint32_t crc, const unsigned char *buf, size_t len);
+ZEXTERN uint32_t ZEXPORT zng_crc32_z (uint32_t crc, const uint8_t *buf, uint32_t len);
 /*
      Same as crc32(), but with a size_t length.
 */
@@ -1803,7 +1803,7 @@ ZEXTERN int              ZEXPORT zng_inflateSyncPoint (zng_stream *);
 ZEXTERN const uint32_t * ZEXPORT zng_get_crc_table    (void);
 ZEXTERN int              ZEXPORT zng_inflateUndermine (zng_stream *, int);
 ZEXTERN int              ZEXPORT zng_inflateValidate  (zng_stream *, int);
-ZEXTERN unsigned long    ZEXPORT zng_inflateCodesUsed (zng_stream *);
+ZEXTERN uint64_t         ZEXPORT zng_inflateCodesUsed (zng_stream *);
 ZEXTERN int              ZEXPORT zng_inflateResetKeep (zng_stream *);
 ZEXTERN int              ZEXPORT zng_deflateResetKeep (zng_stream *);
 

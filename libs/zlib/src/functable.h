@@ -10,9 +10,9 @@
 
 struct functable_s {
     void     (* fill_window)    (deflate_state *s);
-    Pos      (* insert_string)  (deflate_state *const s, const Pos str, unsigned int count);
-    uint32_t (* adler32)        (uint32_t adler, const unsigned char *buf, size_t len);
-    uint32_t (* crc32)          (uint32_t crc, const unsigned char *buf, uint64_t len);
+    Pos      (* insert_string)  (deflate_state *const s, const Pos str, uint32_t count);
+    uint32_t (* adler32)        (uint32_t adler, const uint8_t *buf, uint32_t len);
+    uint32_t (* crc32)          (uint32_t crc, const uint8_t *buf, uint32_t len);
 };
 
 ZLIB_INTERNAL extern struct functable_s functable;

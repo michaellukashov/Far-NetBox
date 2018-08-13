@@ -1,5 +1,5 @@
 /* trees.c -- output deflated data using Huffman coding
- * Copyright (C) 1995-2016 Jean-loup Gailly
+ * Copyright (C) 1995-2017 Jean-loup Gailly
  * detect_data_type() function provided freely by Cosmin Truta, 2006
  * For conditions of distribution and use, see copyright notice in zlib.h
  */
@@ -479,7 +479,7 @@ static void gen_bitlen(deflate_state *s, tree_desc *desc) {
                 continue;
             if (tree[m].Len != bits) {
                 Trace((stderr, "code %d bits %d->%u\n", m, tree[m].Len, bits));
-                s->opt_len += ((uint64_t)bits - tree[m].Len) * tree[m].Freq);
+                s->opt_len += (uint64_t)((bits - tree[m].Len) * tree[m].Freq);
                 tree[m].Len = (uint16_t)bits;
             }
             n--;
@@ -789,7 +789,7 @@ static void send_all_trees(deflate_state *s, int lcodes, int dcodes, int blcodes
 /* ===========================================================================
  * Send a stored block
  */
-void ZLIB_INTERNAL _tr_stored_block(deflate_state *s, char *buf, uint64_t stored_len, int last) {
+void ZLIB_INTERNAL _tr_stored_block(deflate_state *s, char *buf, uint32_t stored_len, int last) {
     /* buf: input block */
     /* stored_len: length of input block */
     /* last: one if this is the last block for a file */
@@ -832,7 +832,7 @@ void ZLIB_INTERNAL _tr_align(deflate_state *s) {
  * Determine the best encoding for the current block: dynamic trees, static
  * trees or store, and write out the encoded block.
  */
-void ZLIB_INTERNAL _tr_flush_block(deflate_state *s, char *buf, uint64_t stored_len, int last) {
+void ZLIB_INTERNAL _tr_flush_block(deflate_state *s, char *buf, uint32_t stored_len, int last) {
     /* buf: input block, or NULL if too old */
     /* stored_len: length of input block */
     /* last: one if this is the last block for a file */
@@ -909,7 +909,7 @@ void ZLIB_INTERNAL _tr_flush_block(deflate_state *s, char *buf, uint64_t stored_
     }
     Assert(s->compressed_len == s->bits_sent, "bad compressed size");
     /* The above check is made mod 2^32, for files larger than 512 MB
-     * and uint64_t implemented on 32 bits.
+     * and unsigned long implemented on 32 bits.
      */
     init_block(s);
 

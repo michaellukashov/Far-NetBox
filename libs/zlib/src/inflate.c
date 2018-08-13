@@ -22,7 +22,7 @@
  * 1.2.beta2    4 Dec 2002
  * - Change external routine names to reduce potential conflicts
  * - Correct filename to inffixed.h for fixed tables in inflate.c
- * - Make hbuf[] uint8_t to match parameter type in inflate.c
+ * - Make hbuf[] unsigned char to match parameter type in inflate.c
  * - Change strm->next_out[-state->offset] to *(strm->next_out - state->offset)
  *   to avoid negation problem on Alphas (64 bit) in inflate.c
  *
@@ -46,7 +46,7 @@
  * - Unroll last copy for window match in inflate_fast()
  * - Use local copies of window variables in inflate_fast() for speed
  * - Pull out common wnext == 0 case for speed in inflate_fast()
- * - Make op and len in inflate_fast() uint32_t for consistency
+ * - Make op and len in inflate_fast() unsigned for consistency
  * - Add FAR to lcode and dcode declarations in inflate_fast()
  * - Simplified bad distance check in inflate_fast()
  * - Added inflateBackInit(), inflateBack(), and inflateBackEnd() in new
@@ -64,10 +64,10 @@
  * - Typecasting all around to reduce compiler warnings
  * - Changed loops from while (1) or do {} while (1) to for (;;), again to
  *   make compilers happy
- * - Changed type of window in inflateBackInit() to uint8_t *
+ * - Changed type of window in inflateBackInit() to unsigned char *
  *
  * 1.2.beta7    27 Jan 2003
- * - Changed many types to uint32_t or uint32_t short to avoid warnings
+ * - Changed many types to unsigned or unsigned short to avoid warnings
  * - Added inflateCopy() function
  *
  * 1.2.0        9 Mar 2003
@@ -119,8 +119,7 @@ int ZEXPORT PREFIX(inflateResetKeep)(PREFIX3(stream) *strm) {
     if (inflateStateCheck(strm))
         return Z_STREAM_ERROR;
     state = (struct inflate_state *)strm->state;
-    strm->total_in = strm->total_out = 0;
-    state->total = 0;
+    strm->total_in = strm->total_out = state->total = 0;
     strm->msg = NULL;
     if (state->wrap)        /* to support ill-conceived Java test suite */
         strm->adler = state->wrap & 1;
@@ -1299,9 +1298,9 @@ int ZEXPORT PREFIX(inflateGetDictionary)(PREFIX3(stream) *strm, uint8_t *diction
     return Z_OK;
 }
 
-int ZEXPORT PREFIX(inflateSetDictionary)(PREFIX3(stream) *strm, const uint8_t *dictionary, unsigned int dictLength) {
+int ZEXPORT PREFIX(inflateSetDictionary)(PREFIX3(stream) *strm, const uint8_t *dictionary, uint32_t dictLength) {
     struct inflate_state *state;
-    uint64_t dictid;
+    uint32_t dictid;
     int ret;
 
     /* check state */

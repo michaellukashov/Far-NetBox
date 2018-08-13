@@ -457,8 +457,6 @@ void ZLIB_INTERNAL inflate_fast(PREFIX3(stream) *strm, unsigned long start) {
                          */
                         out = chunkunroll(out, &dist, &len);
                         out = chunkcopy(out, out - dist, len);
-                        out += len;
-                    } else {
                     }
 #else
                     if (len < sizeof(uint64_t))
@@ -468,7 +466,7 @@ void ZLIB_INTERNAL inflate_fast(PREFIX3(stream) *strm, unsigned long start) {
                     else
                       out = chunk_memset(out, out - dist, dist, len);
 #endif
-                    }
+                }
             } else if ((op & 64) == 0) {          /* 2nd level distance code */
                 here = dcode[here.val + BITS(op)];
                 goto dodist;

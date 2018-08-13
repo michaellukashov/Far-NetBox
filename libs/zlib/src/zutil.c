@@ -1,5 +1,5 @@
 /* zutil.c -- target dependent utility functions for the compression library
- * Copyright (C) 1995-2016 Jean-loup Gailly
+ * Copyright (C) 1995-2017 Jean-loup Gailly
  * For conditions of distribution and use, see copyright notice in zlib.h
  */
 
@@ -42,12 +42,7 @@ const char * ZEXPORT zlibng_version(void)
     return ZLIBNG_VERSION;
 }
 
-unsigned long ZEXPORT PREFIX(zlibCompileFlags)(void)
-{
-    return ZLIBNG_VERSION;
-}
-
-unsigned long ZEXPORT PREFIX(zlibCompileFlags)(void)
+uint64_t ZEXPORT PREFIX(zlibCompileFlags)(void)
 {
     uint64_t flags;
 
@@ -125,12 +120,13 @@ const char * ZEXPORT PREFIX(zError)(int err)
 
 #ifndef MY_ZCALLOC /* Any system without a special alloc function */
 
-void ZLIB_INTERNAL *zcalloc (void *opaque, unsigned items, unsigned size)
+void ZLIB_INTERNAL *zcalloc (void *opaque, uint32_t items, uint32_t size)
 {
     (void)opaque;
 #ifndef UNALIGNED_OK
     return memalign(16, items * size);
 #else
+    return sizeof(uint32_t) > 2 ? (void *)malloc(items * size) :
                               (void *)calloc(items, size);
 #endif
 }

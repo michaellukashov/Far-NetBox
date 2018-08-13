@@ -44,9 +44,6 @@ static inline Pos insert_string_c(deflate_state *const s, const Pos str, unsigne
                 ret = s->prev[(str+idx) & s->w_mask];
             }
         }
-    return insert_string_acle(s, str, count);
-#else
-#endif
     }
     return ret;
 }

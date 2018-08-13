@@ -55,7 +55,7 @@
 #include "match.h"
 #include "functable.h"
 
-const char deflate_copyright[] = " deflate 1.2.11.f Copyright 1995-2016 Jean-loup Gailly and Mark Adler ";
+const char deflate_copyright[] =
    " deflate 1.2.11.f Copyright 1995-2016 Jean-loup Gailly and Mark Adler ";
 /*
   If you use the zlib library in a product, an acknowledgment is welcome
@@ -91,8 +91,7 @@ extern void crc_reset(deflate_state *const s);
 #ifdef X86_PCLMULQDQ_CRC
 extern void crc_finalize(deflate_state *const s);
 #endif
-extern void copy_with_crc(z_stream *strm, uint8_t *dst, uint64_t size);
-extern void copy_with_crc(PREFIX3(stream) *strm, unsigned char *dst, uint64_t size);
+extern void copy_with_crc(PREFIX3(stream) *strm, uint8_t *dst, uint64_t size);
 
 /* ===========================================================================
  * Local data
@@ -157,7 +156,7 @@ static const config configuration_table[10] = {
  */
 #define CLEAR_HASH(s) \
     s->head[s->hash_size-1] = NIL; \
-    zmemzero((uint8_t *)s->head, (uint32_t)(s->hash_size-1)*sizeof(*s->head));
+    memset((uint8_t *)s->head, 0, (uint32_t)(s->hash_size-1)*sizeof(*s->head));
 
 /* ===========================================================================
  * Slide the hash table when sliding the window down (could be avoided with 32
@@ -183,7 +182,7 @@ static void slide_hash(deflate_state *s) {
              * To avoid this defect, we can change the loop such that
              *    o. the pointer advance forward, and
              *    o. demote the variable 'm' to be local to the loop, and
-             *       choose type "Pos" (instead of 'uint32_t') for the
+             *       choose type "Pos" (instead of 'unsigned int') for the
              *       variable to avoid unncessary zero-extension.
              */
             {
@@ -1082,10 +1081,10 @@ int ZEXPORT PREFIX(deflateCopy)(PREFIX3(stream) *dest, PREFIX3(stream) *source) 
         return Z_MEM_ERROR;
     }
 
-    zmemcpy(ds->window, ss->window, ds->w_size * 2 * sizeof(uint8_t));
+    memcpy(ds->window, ss->window, ds->w_size * 2 * sizeof(uint8_t));
     memcpy((void *)ds->prev, (void *)ss->prev, ds->w_size * sizeof(Pos));
     memcpy((void *)ds->head, (void *)ss->head, ds->hash_size * sizeof(Pos));
-    zmemcpy(ds->pending_buf, ss->pending_buf, (uint32_t)ds->pending_buf_size);
+    memcpy(ds->pending_buf, ss->pending_buf, (uint32_t)ds->pending_buf_size);
 
     ds->pending_out = ds->pending_buf + (ss->pending_out - ss->pending_buf);
     ds->d_buf = overlay + ds->lit_bufsize/sizeof(uint16_t);
@@ -1105,7 +1104,7 @@ int ZEXPORT PREFIX(deflateCopy)(PREFIX3(stream) *dest, PREFIX3(stream) *source) 
  * allocating a large strm->next_in buffer and copying from it.
  * (See also flush_pending()).
  */
-ZLIB_INTERNAL uint32_t read_buf(PREFIX3(stream) *strm, uint8_t *buf, uint32_t) {
+ZLIB_INTERNAL uint32_t read_buf(PREFIX3(stream) *strm, uint8_t *buf, uint32_t size) {
     uint32_t len = strm->avail_in;
 
     if (len > size)
@@ -1153,6 +1152,8 @@ static void lm_init(deflate_state *s) {
     s->match_length = s->prev_length = MIN_MATCH-1;
     s->match_available = 0;
     s->ins_h = 0;
+}
+
 #ifdef ZLIB_DEBUG
 #define EQUAL 0
 /* result of memcmp for equal strings */
@@ -1190,16 +1191,11 @@ void check_match(deflate_state *s, IPos start, IPos match, int length) {
  *    performed for at least two bytes (required for the zip translate_eol
  *    option -- not supported here).
  */
-#elif defined(__arm__) || defined(__aarch64__) || defined(_M_ARM)
-extern void fill_window_arm(deflate_state *s);
-#elif defined(__arm__) || defined(__aarch64__) || defined(_M_ARM)
-    fill_window_arm(s);
 
 void ZLIB_INTERNAL fill_window_c(deflate_state *s) {
     uint32_t n;
     uint32_t more;    /* Amount of free space at the end of the window. */
     uint32_t wsize = s->w_size;
-    uint32_t count;
 
     Assert(s->lookahead < MIN_LOOKAHEAD, "already enough lookahead");
 
@@ -1210,7 +1206,7 @@ void ZLIB_INTERNAL fill_window_c(deflate_state *s) {
          * move the upper half to the lower one to make room in the upper half.
          */
         if (s->strstart >= wsize+MAX_DIST(s)) {
-            zmemcpy(s->window, s->window+wsize, (uint32_t)wsize - more);
+            memcpy(s->window, s->window+wsize, (uint32_t)wsize - more);
             s->match_start -= wsize;
             s->strstart    -= wsize; /* we now have strstart >= MAX_DIST */
             s->block_start -= (int64_t) wsize;
@@ -1286,7 +1282,7 @@ void ZLIB_INTERNAL fill_window_c(deflate_state *s) {
             init = s->window_size - curr;
             if (init > WIN_INIT)
                 init = WIN_INIT;
-            zmemzero(s->window + curr, (uint32_t)init);
+            memset(s->window + curr, 0, (uint32_t)init);
             s->high_water = curr + init;
         } else if (s->high_water < (uint64_t)curr + WIN_INIT) {
             /* High water mark at or above current data, but below current data
@@ -1296,7 +1292,7 @@ void ZLIB_INTERNAL fill_window_c(deflate_state *s) {
             init = (uint64_t)curr + WIN_INIT - s->high_water;
             if (init > s->window_size - s->high_water)
                 init = s->window_size - s->high_water;
-            zmemzero(s->window + s->high_water, (uint32_t)init);
+            memset(s->window + s->high_water, 0, (uint32_t)init);
             s->high_water += init;
         }
     }

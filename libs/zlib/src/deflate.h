@@ -348,11 +348,10 @@ void ZLIB_INTERNAL fill_window_c(deflate_state *s);
         /* in trees.c */
 void ZLIB_INTERNAL _tr_init(deflate_state *s);
 int ZLIB_INTERNAL _tr_tally(deflate_state *s, uint32_t dist, uint32_t lc);
-void ZLIB_INTERNAL _tr_flush_block(deflate_state *s, char *buf, unsigned long stored_len, int last);
+void ZLIB_INTERNAL _tr_flush_block(deflate_state *s, char *buf, uint32_t stored_len, int last);
 void ZLIB_INTERNAL _tr_flush_bits(deflate_state *s);
 void ZLIB_INTERNAL _tr_align(deflate_state *s);
-void ZLIB_INTERNAL _tr_stored_block(deflate_state *s, char *buf, unsigned long stored_len, int last);
-void bi_windup(deflate_state *s);
+void ZLIB_INTERNAL _tr_stored_block(deflate_state *s, char *buf, uint32_t stored_len, int last);
 void ZLIB_INTERNAL bi_windup(deflate_state *s);
 
 #define d_code(dist) ((dist) < 256 ? _dist_code[dist] : _dist_code[256+((dist)>>7)])

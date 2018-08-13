@@ -222,19 +222,17 @@ static inline uint8_t *set_bytes(uint8_t *out, uint8_t *from, uint32_t dist, uin
 /* Byte by byte semantics: copy LEN bytes from OUT + DIST and write them to OUT. Return OUT + LEN. */
 static inline uint8_t *chunk_memcpy(uint8_t *out, uint8_t *from, uint32_t len) {
     uint32_t sz = sizeof(uint64_t);
-    uint32_t rem;
-    uint32_t by8;
     Assert(len >= sz, "chunk_memcpy should be called on larger chunks");
 
     /* Copy a few bytes to make sure the loop below has a multiple of SZ bytes to be copied. */
     copy_8_bytes(out, from);
 
-    rem = len % sz;
+    uint32_t rem = len % sz;
     len /= sz;
     out += rem;
     from += rem;
 
-    by8 = len % sz;
+    uint32_t by8 = len % sz;
     len -= by8;
     switch (by8) {
     case 7:
@@ -287,23 +285,19 @@ static inline uint8_t *chunk_memcpy(uint8_t *out, uint8_t *from, uint32_t len) {
 /* Memset LEN bytes in OUT with the value at OUT - 1. Return OUT + LEN. */
 static inline uint8_t *byte_memset(uint8_t *out, uint32_t len) {
     uint32_t sz = sizeof(uint64_t);
-    uint8_t *from;
-    uint8_t c;
-    uint32_t rem;
-    uint32_t by8;
     Assert(len >= sz, "byte_memset should be called on larger chunks");
 
-    from = out - 1;
-    c = *from;
+    uint8_t *from = out - 1;
+    uint8_t c = *from;
 
     /* First, deal with the case when LEN is not a multiple of SZ. */
     MEMSET(out, c, sz);
-    rem = len % sz;
+    uint32_t rem = len % sz;
     len /= sz;
     out += rem;
     from += rem;
 
-    by8 = len % 8;
+    uint32_t by8 = len % 8;
     len -= by8;
     switch (by8) {
     case 7:
@@ -356,14 +350,13 @@ static inline uint8_t *byte_memset(uint8_t *out, uint32_t len) {
 
 /* Copy DIST bytes from OUT - DIST into OUT + DIST * k, for 0 <= k < LEN/DIST. Return OUT + LEN. */
 static inline uint8_t *chunk_memset(uint8_t *out, uint8_t *from, uint32_t dist, uint32_t len) {
-    uint32_t sz;
     if (dist >= len)
         return chunk_memcpy(out, from, len);
 
     Assert(len >= sizeof(uint64_t), "chunk_memset should be called on larger chunks");
 
     /* Double up the size of the memset pattern until reaching the largest pattern of size less than SZ. */
-    sz = sizeof(uint64_t);
+    uint32_t sz = sizeof(uint64_t);
     while (dist < len && dist < sz) {
         copy_8_bytes(out, from);
 

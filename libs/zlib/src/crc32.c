@@ -12,8 +12,7 @@
 /* @(#) $Id$ */
 
 # include "zbuild.h"
-# include "gzendian.h"
-
+//# include "gzendian.h"
 
 /*
   Note on the use of DYNAMIC_CRC_TABLE: there is no mutex or semaphore
@@ -36,10 +35,6 @@
 #include "functable.h"
 
 ZLIB_INTERNAL uint32_t crc32_generic(uint32_t, const uint8_t *, z_off64_t);
-
-#ifdef __ARM_FEATURE_CRC32
-extern uint32_t crc32_acle(uint32_t, const uint8_t *, z_off64_t);
-
 
 /* Local functions for crc concatenation */
 static uint32_t gf2_matrix_times(uint32_t *mat, uint32_t vec);
@@ -177,21 +172,11 @@ const uint32_t * ZEXPORT PREFIX(get_crc_table)(void) {
     return (const uint32_t *)crc_table;
 }
 
-uint32_t ZEXPORT PREFIX(crc32_z)(uint32_t crc, const uint8_t *buf, size_t len) {
+uint32_t ZEXPORT PREFIX(crc32_z)(uint32_t crc, const uint8_t *buf, uint32_t len) {
     if (buf == NULL) return 0;
 
     return functable.crc32(crc, buf, len);
 }
-ZLIB_INTERNAL uint32_t crc32_generic(uint32_t crc, const unsigned char *buf, uint64_t len)
-{
-#  if __ARM_FEATURE_CRC32
-        return crc32_acle(crc, buf, len);
-#  else
-#  endif
-
-    return crc32_generic(crc, buf, len);
-}
-
 /* ========================================================================= */
 #define DO1 crc = crc_table[0][((int)crc ^ (*buf++)) & 0xff] ^ (crc >> 8)
 #define DO8 DO1; DO1; DO1; DO1; DO1; DO1; DO1; DO1
@@ -225,7 +210,7 @@ uint32_t ZEXPORT PREFIX(crc32)(uint32_t crc, const uint8_t *buf, uint32_t len) {
 }
 
 /*
-   This BYFOUR code accesses the passed uint8_t * buffer with a 32-bit
+   This BYFOUR code accesses the passed unsigned char * buffer with a 32-bit
    integer pointer type. This violates the strict aliasing rule, where a
    compiler can assume, for optimization purposes, that two pointers to
    fundamentally different types won't ever point to the same memory. This can
@@ -411,8 +396,8 @@ ZLIB_INTERNAL void crc_reset(deflate_state *const s) {
     s->strm->adler = PREFIX(crc32)(0L, NULL, 0);
 }
 
-ZLIB_INTERNAL void copy_with_crc(PREFIX3(stream) *strm, uint8_t *dst, uint64_t size) {
-    zmemcpy(dst, strm->next_in, size);
+ZLIB_INTERNAL void copy_with_crc(PREFIX3(stream) *strm, uint8_t *dst, uint32_t size) {
+    memcpy(dst, strm->next_in, size);
     strm->adler = PREFIX(crc32)(strm->adler, dst, size);
 }
 #endif

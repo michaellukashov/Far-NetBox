@@ -106,10 +106,6 @@ extern const char * const z_errmsg[10]; /* indexed by 2-zlib_error */
 #  define OS_CODE  10
 #endif
 
-#if defined(WIN32) && !defined(__CYGWIN__)
-#  define OS_CODE  10
-#endif
-
 #ifdef __APPLE__
 #  define OS_CODE 19
 #endif

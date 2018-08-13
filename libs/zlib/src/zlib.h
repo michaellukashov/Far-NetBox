@@ -1143,8 +1143,8 @@ ZEXTERN uint64_t ZEXPORT zlibCompileFlags(void);
 /* Return flags indicating compile-time options.
 
     Type sizes, two bits each, 00 = 16 bits, 01 = 32, 10 = 64, 11 = other:
-     1.0: size of uint32_t
-     3.2: size of uint64_t
+     1.0: size of unsigned int
+     3.2: size of unsigned long
      5.4: size of void * (pointer)
      7.6: size of z_off_t
 
@@ -1462,7 +1462,7 @@ ZEXTERN char * ZEXPORT gzgets(gzFile file, char *buf, int len);
 
 ZEXTERN int ZEXPORT gzputc(gzFile file, int c);
 /*
-     Writes c, converted to an uint8_t, into the compressed file.  gzputc
+     Writes c, converted to an unsigned char, into the compressed file.  gzputc
    returns the value that was written, or -1 in case of error.
 */
 
@@ -1661,7 +1661,7 @@ ZEXTERN uint32_t ZEXPORT adler32(uint32_t adler, const uint8_t *buf, uint32_t le
      if (adler != original_adler) error();
 */
 
-ZEXTERN uint32_t ZEXPORT adler32_z (uint32_t adler, const uint8_t *buf, size_t len);
+ZEXTERN uint32_t ZEXPORT adler32_z (uint32_t adler, const uint8_t *buf, uint32_t len);
 /*
      Same as adler32(), but with a size_t length.
 */
@@ -1694,7 +1694,7 @@ ZEXTERN uint32_t ZEXPORT crc32(uint32_t crc, const uint8_t *buf, uint32_t len);
      if (crc != original_crc) error();
 */
 
-ZEXTERN uint32_t ZEXPORT crc32_z (uint32_t crc, const uint8_t *buf, size_t len);
+ZEXTERN uint32_t ZEXPORT crc32_z (uint32_t crc, const uint8_t *buf, uint32_t len);
 /*
      Same as crc32(), but with a size_t length.
 */
