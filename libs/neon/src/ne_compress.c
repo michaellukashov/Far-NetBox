@@ -215,7 +215,7 @@ static int do_inflate(ne_decompress *ctx, const char *buf, size_t len)
 #endif
 	/* update checksum. */
 	ctx->checksum = crc32(ctx->checksum, (uint8_t *)ctx->outbuf,
-						(uint32_t)ctx->zstr.total_out);
+			      (uint32_t)ctx->zstr.total_out);
 
 	/* pass on the inflated data, if any */
         if (ctx->zstr.total_out > 0) {
