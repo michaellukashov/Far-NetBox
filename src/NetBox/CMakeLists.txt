@@ -1133,6 +1133,7 @@ add_library(zlib STATIC
 )
 
 target_compile_options(zlib PRIVATE
+  -DUNALIGNED_OK
   ${NETBOX_UNICODE_FLAGS}
 )
 
