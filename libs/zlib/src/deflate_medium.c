@@ -182,6 +182,9 @@ static void fizzle_matches(deflate_state *s, struct match *current, struct match
         match--;
         orig--;
         changed++;
+
+        if (n.match_start <= 0)
+            break;
     }
 
     if (!changed)
