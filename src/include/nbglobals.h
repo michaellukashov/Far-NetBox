@@ -1,8 +1,8 @@
 #pragma once
 
 #if defined(__cplusplus)
-#include <stdlib.h>
-#include <stdint.h>
+#include <cstdlib>
+#include <cstdint>
 #include <exception>
 #include <gsl/gsl>
 #endif
@@ -89,6 +89,8 @@ inline void *operator_new(size_t size)
   }*/
   return p;
 }
+template <typename T>
+inline T *operator_new(size_t size) { return static_cast<T*>(operator_new(size)); }
 
 inline void operator_delete(void *p)
 {
@@ -200,21 +202,24 @@ struct custom_nballocator_t
   typedef T value_type;
 
   template <class U> struct rebind { typedef custom_nballocator_t<U> other; };
-  inline custom_nballocator_t() noexcept {}
-  inline custom_nballocator_t(const custom_nballocator_t &) noexcept {}
+  inline custom_nballocator_t() noexcept = default;
+  inline custom_nballocator_t(const custom_nballocator_t &) noexcept = default;
+  inline custom_nballocator_t& operator=(const custom_nballocator_t&) noexcept = default;
+  inline custom_nballocator_t(custom_nballocator_t&&) noexcept = default;
+  custom_nballocator_t& operator=(custom_nballocator_t&&) noexcept = default;
 
   template <class U> custom_nballocator_t(const custom_nballocator_t<U> &) noexcept {}
 
-  ~custom_nballocator_t() noexcept {}
+  ~custom_nballocator_t() noexcept = default;
 
-  pointer address(reference x) const { return &x; }
-  const_pointer address(const_reference x) const { return &x; }
+  static pointer address(reference x) { return &x; }
+  static const_pointer address(const_reference x) { return &x; }
 
-  pointer allocate(size_type s, void const * = 0)
+  pointer allocate(size_type s, void const * = nullptr)
   {
     if (0 == s)
       return nullptr;
-    pointer temp = nb::calloc<pointer>(s, sizeof(T));
+    const pointer temp = nb::calloc<pointer>(s, sizeof(T));
 #if !defined(__MINGW32__)
     if (temp == nullptr)
       throw std::bad_alloc();
@@ -222,18 +227,18 @@ struct custom_nballocator_t
     return temp;
   }
 
-  void deallocate(pointer p, size_type)
+  static void deallocate(pointer p, size_type)
   {
     nb_free(p);
   }
 
-  size_type max_size() const noexcept
+  static size_type max_size() noexcept
   {
     // return std::numeric_limits<size_t>::max() / sizeof(T);
     return size_t(-1) / sizeof(T);
   }
 
-  void construct(pointer p, const T &val)
+  static void construct(pointer p, const T &val)
   {
     new(reinterpret_cast<void *>(p)) T(val);
   }
@@ -274,8 +279,10 @@ struct SelfTest {       \
 
 #define NB_DISABLE_COPY(Class) \
 private: \
-  Class(const Class &); \
-  Class & operator=(const Class &);
+  Class(Class&&) = default; \
+  Class& operator=(Class&&) = default; \
+  Class(const Class&) = delete; \
+  Class& operator=(const Class&) = delete;
 
 #define NB_STATIC_ASSERT(Condition, Message) \
   static_assert(bool(Condition), Message)
@@ -322,3 +329,21 @@ private: \
 #undef __property
 // #define __property / ## /
 #define __property NB_CONCATENATE(/, /)
+
+#if defined(__cplusplus)
+
+namespace nb {
+
+template <typename T1>
+constexpr void used(const T1&)
+{}
+template <typename T1>
+constexpr void unused(const T1&)
+{}
+template <typename T1>
+constexpr void ignore(const T1&)
+{}
+
+} // namespace nb
+
+#endif // if defined(__cplusplus)

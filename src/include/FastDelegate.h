@@ -162,7 +162,7 @@ namespace detail { // we'll hide the implementation details in a nested namespac
 // anything nasty.
 // Usage is identical to static_cast<>
 template <class OutputClass, class InputClass>
-inline OutputClass implicit_cast(InputClass input){
+inline OutputClass implicit_cast(InputClass input) {
 	return input;
 }
 
@@ -183,7 +183,7 @@ union horrible_union{
 };
 
 template <class OutputClass, class InputClass>
-inline OutputClass horrible_cast(const InputClass input){
+inline OutputClass horrible_cast(const InputClass input) {
 	horrible_union<OutputClass, InputClass> u;
 	// Cause a compile-time error if in, out and u are not the same size.
 	// If the compile fails here, it means the compiler has peculiar
@@ -306,7 +306,7 @@ struct SimplifyMemFunc {
 		// Unsupported member function type -- force a compile failure.
 		// (it's illegal to have a array with negative size).
 		typedef char ERROR_Unsupported_member_function_pointer_on_this_compiler[N-100];
-		return 0;
+		return nullptr;
 	}
 };
 
@@ -362,7 +362,7 @@ struct SimplifyMemFunc< SINGLE_MEMFUNCPTR_SIZE + sizeof(int) > {
 			} s;
 		} u;
 		// Check that the horrible_cast will work
-		typedef int ERROR_CantUsehorrible_cast[sizeof(function_to_bind)==sizeof(u.s)? 1 : -1];
+		typedef int ERROR_CantUsehorrible_cast[sizeof(function_to_bind)==sizeof(u.s) ? 1 : -1];
 		u.func = function_to_bind;
 		bound_func = u.s.funcaddress;
 		return reinterpret_cast<GenericClass *>(reinterpret_cast<char *>(pthis) + u.s.delta);
@@ -497,7 +497,7 @@ struct SimplifyMemFunc<SINGLE_MEMFUNCPTR_SIZE + 3*sizeof(int) >
 			} s;
 		} u;
 		// Check that the horrible_cast will work
-		typedef int ERROR_CantUsehorrible_cast[sizeof(XFuncType)==sizeof(u.s)? 1 : -1];
+		typedef int ERROR_CantUsehorrible_cast[sizeof(XFuncType)==sizeof(u.s) ? 1 : -1];
 		u.func = function_to_bind;
 		bound_func = u.s.funcaddress;
 		int virtual_delta = 0;
@@ -579,19 +579,21 @@ protected:
 
 #if !defined(FASTDELEGATE_USESTATICFUNCTIONHACK)
 	typedef void (*GenericFuncPtr)(); // arbitrary code pointer
-	GenericFuncPtr m_pStaticFunction;
+	GenericFuncPtr m_pStaticFunction{nullptr};
 #endif
 
 public:
 #if !defined(FASTDELEGATE_USESTATICFUNCTIONHACK)
-	DelegateMemento() : m_pthis(0), m_pFunction(0), m_pStaticFunction(0) {};
+	DelegateMemento() = default;
 	void clear() {
-		m_pthis=0; m_pFunction=0; m_pStaticFunction=0;
+		m_pthis = nullptr; m_pFunction = nullptr; m_pStaticFunction = nullptr;
 	}
 #else
-	DelegateMemento() : m_pFunction(0), m_pthis(0) {}
-	void clear() { m_pthis=0; m_pFunction=0; }
+	DelegateMemento() noexcept = default;
+	void clear() { m_pthis = nullptr; m_pFunction = nullptr; }
 #endif
+	DelegateMemento(DelegateMemento&&) = default;
+	DelegateMemento& operator=(DelegateMemento&&) = default;
 public:
 #if !defined(FASTDELEGATE_USESTATICFUNCTIONHACK)
 	inline bool IsEqual (const DelegateMemento &x) const {
@@ -624,18 +626,18 @@ public:
 	// We can't just compare m_pFunction because on Metrowerks,
 	// m_pFunction can be zero even if the delegate is not empty!
 	inline bool operator!() const		// Is it bound to anything?
-	{ return m_pthis==0 && m_pFunction==0; }
+	{ return (m_pthis == nullptr) && (m_pFunction == nullptr); }
 	inline bool empty() const		// Is it bound to anything?
-	{ return m_pthis==0 && m_pFunction==0; }
+	{ return (m_pthis == nullptr) && (m_pFunction == nullptr); }
 public:
 	DelegateMemento & operator=(const DelegateMemento &right) {
 		SetMementoFrom(right);
 		return *this;
 	}
-	inline bool operator<(const DelegateMemento &right) {
+	inline bool operator<(const DelegateMemento &right) const {
 		return IsLess(right);
 	}
-	inline bool operator>(const DelegateMemento &right) {
+	inline bool operator>(const DelegateMemento &right) const {
 		return right.IsLess(*this);
 	}
 	DelegateMemento (const DelegateMemento &right)  :
@@ -780,7 +782,7 @@ public:
 	inline void bindstaticfunc(DerivedClass *pParent, ParentInvokerSig static_function_invoker,
 				StaticFuncPtr function_to_bind) {
 		if (function_to_bind==0) { // cope with assignment to 0
-			m_pFunction=0;
+			m_pFunction = nullptr;
 		} else {
 			// We'll be ignoring the 'this' pointer, but we need to make sure we pass
 			// a valid value to bindmemfunc().
@@ -812,11 +814,11 @@ public:
 #endif // !defined(FASTDELEGATE_USESTATICFUNCTIONHACK)
 
 	// Does the closure contain this static function?
-	inline bool IsEqualToStaticFuncPtr(StaticFuncPtr funcptr){
-		if (funcptr==0) return empty();
+	inline bool IsEqualToStaticFuncPtr(StaticFuncPtr funcptr) {
+		if (funcptr == nullptr) return empty();
 	// For the Evil method, if it doesn't actually contain a static function, this will return an arbitrary
 	// value that is not equal to any valid function pointer.
-		else return funcptr==reinterpret_cast<StaticFuncPtr>(GetStaticFunction());
+		else return funcptr == reinterpret_cast<StaticFuncPtr>(GetStaticFunction());
 	}
 };
 
@@ -1000,6 +1002,8 @@ public:
 		m_Closure.bindstaticfunc(this, &FastDelegate0::InvokeStaticFunction, detail::get_wrapper<nb::counter_id()>(x));
 	}
 #endif // #ifdef FASTDELEGATE_STDFUNCTION_SUPPORT
+	FastDelegate0(FastDelegate0&&) = default;
+	FastDelegate0& operator=(FastDelegate0&&) = default;
 	FastDelegate0(const FastDelegate0 &x) {
 		m_Closure.CopyFrom(this, x.m_Closure); }
 	FastDelegate0 & operator=(const FastDelegate0 &x) {
@@ -1048,7 +1052,7 @@ private:
 	typedef StaticFunctionPtr SafeBoolStruct::*unspecified_bool_type;
 public:
 	operator unspecified_bool_type() const {
-		return empty()? 0: &SafeBoolStruct::m_nonzero;
+		return empty() ? 0 : &SafeBoolStruct::m_nonzero;
 	}
 	// necessary to allow ==0 to work despite the safe_bool idiom
 	inline bool operator==(StaticFunctionPtr funcptr) {
@@ -1059,9 +1063,9 @@ public:
 			return !m_Closure; }
 	inline bool empty() const {
 			return !m_Closure; }
-	void clear() { m_Closure.clear();}
+	void clear() { m_Closure.clear(); }
 	// Conversion to and from the DelegateMemento storage class
-	const DelegateMemento & GetMemento() { return m_Closure; }
+	const DelegateMemento & GetMemento() const { return m_Closure; }
 	void SetMemento(const DelegateMemento &any) { m_Closure.CopyFrom(this, any); }
 
 private:	// Invoker for static functions
@@ -1084,7 +1088,7 @@ public:
 	typedef FastDelegate1 type;
 
 	// Construction and comparison functions
-	FastDelegate1() = default; // { clear(); }
+	FastDelegate1() { clear(); }
 #ifdef FASTDELEGATE_STDFUNCTION_SUPPORT
 	explicit FastDelegate1(const std::function<void(Param1)> &x) {
 		clear();
@@ -1096,6 +1100,7 @@ public:
 	FastDelegate1& operator=(FastDelegate1&&) = default;
 	FastDelegate1(const FastDelegate1 &x) {
 		m_Closure.CopyFrom(this, x.m_Closure); }
+	~FastDelegate1() = default;
 	FastDelegate1 & operator=(const FastDelegate1 &x) {
 		m_Closure.CopyFrom(this, x.m_Closure); return *this; }
 	bool operator==(const FastDelegate1 &x) const {
@@ -1142,7 +1147,7 @@ private:
 	typedef StaticFunctionPtr SafeBoolStruct::*unspecified_bool_type;
 public:
 	operator unspecified_bool_type() const {
-		return empty()? 0: &SafeBoolStruct::m_nonzero;
+		return empty() ? 0 : &SafeBoolStruct::m_nonzero;
 	}
 	// necessary to allow ==0 to work despite the safe_bool idiom
 	inline bool operator==(StaticFunctionPtr funcptr) {
@@ -1153,9 +1158,9 @@ public:
 			return !m_Closure; }
 	inline bool empty() const {
 			return !m_Closure; }
-	void clear() { m_Closure.clear();}
+	void clear() { m_Closure.clear(); }
 	// Conversion to and from the DelegateMemento storage class
-	const DelegateMemento & GetMemento() { return m_Closure; }
+	const DelegateMemento & GetMemento() const { return m_Closure; }
 	void SetMemento(const DelegateMemento &any) { m_Closure.CopyFrom(this, any); }
 
 private:	// Invoker for static functions
@@ -1178,13 +1183,14 @@ public:
 	typedef FastDelegate2 type;
 
 	// Construction and comparison functions
-	FastDelegate2() = default; // { clear(); }
-	FastDelegate2(FastDelegate2&&) = default;
-	FastDelegate2& operator=(FastDelegate2&&) = default;
+	FastDelegate2() { clear(); }
 	FastDelegate2(const FastDelegate2 &x) {
 		m_Closure.CopyFrom(this, x.m_Closure); }
-	FastDelegate2 & operator=(const FastDelegate2 &x) {
+	FastDelegate2& operator=(const FastDelegate2& x) {
 		m_Closure.CopyFrom(this, x.m_Closure); return *this; }
+	FastDelegate2(FastDelegate2&&) = default;
+	FastDelegate2& operator=(FastDelegate2&&) = default;
+	~FastDelegate2() = default;
 	bool operator==(const FastDelegate2 &x) const {
 		return m_Closure.IsEqual(x.m_Closure); }
 	bool operator!=(const FastDelegate2 &x) const {
@@ -1229,7 +1235,7 @@ private:
 	typedef StaticFunctionPtr SafeBoolStruct::*unspecified_bool_type;
 public:
 	operator unspecified_bool_type() const {
-		return empty()? 0: &SafeBoolStruct::m_nonzero;
+		return empty() ? 0 : &SafeBoolStruct::m_nonzero;
 	}
 	// necessary to allow ==0 to work despite the safe_bool idiom
 	inline bool operator==(StaticFunctionPtr funcptr) {
@@ -1240,9 +1246,9 @@ public:
 			return !m_Closure; }
 	inline bool empty() const {
 			return !m_Closure; }
-	void clear() { m_Closure.clear();}
+	void clear() { m_Closure.clear(); }
 	// Conversion to and from the DelegateMemento storage class
-	const DelegateMemento & GetMemento() { return m_Closure; }
+	const DelegateMemento & GetMemento() const { return m_Closure; }
 	void SetMemento(const DelegateMemento &any) { m_Closure.CopyFrom(this, any); }
 
 private:	// Invoker for static functions
@@ -1265,13 +1271,14 @@ public:
 	typedef FastDelegate3 type;
 
 	// Construction and comparison functions
-	FastDelegate3() = default; // { clear(); }
-	FastDelegate3(FastDelegate3&&) = default;
-	FastDelegate3& operator=(FastDelegate3&&) = default;
+	FastDelegate3() { clear(); }
 	FastDelegate3(const FastDelegate3 &x) {
 		m_Closure.CopyFrom(this, x.m_Closure); }
 	FastDelegate3 & operator=(const FastDelegate3 &x) {
 		m_Closure.CopyFrom(this, x.m_Closure); return *this; }
+	FastDelegate3(FastDelegate3&&) = default;
+	FastDelegate3& operator=(FastDelegate3&&) = default;
+	~FastDelegate3() = default;
 	bool operator==(const FastDelegate3 &x) const {
 		return m_Closure.IsEqual(x.m_Closure); }
 	bool operator!=(const FastDelegate3 &x) const {
@@ -1316,7 +1323,7 @@ private:
 	typedef StaticFunctionPtr SafeBoolStruct::*unspecified_bool_type;
 public:
 	operator unspecified_bool_type() const {
-		return empty()? 0: &SafeBoolStruct::m_nonzero;
+		return empty() ? 0 : &SafeBoolStruct::m_nonzero;
 	}
 	// necessary to allow ==0 to work despite the safe_bool idiom
 	inline bool operator==(StaticFunctionPtr funcptr) {
@@ -1327,9 +1334,9 @@ public:
 			return !m_Closure; }
 	inline bool empty() const {
 			return !m_Closure; }
-	void clear() { m_Closure.clear();}
+	void clear() { m_Closure.clear(); }
 	// Conversion to and from the DelegateMemento storage class
-	const DelegateMemento & GetMemento() { return m_Closure; }
+	const DelegateMemento & GetMemento() const { return m_Closure; }
 	void SetMemento(const DelegateMemento &any) { m_Closure.CopyFrom(this, any); }
 
 private:	// Invoker for static functions
@@ -1352,13 +1359,14 @@ public:
 	typedef FastDelegate4 type;
 
 	// Construction and comparison functions
-	FastDelegate4() = default; // { clear(); }
-	FastDelegate4(FastDelegate4&&) = default;
-	FastDelegate4& operator=(FastDelegate4&&) = default;
+	FastDelegate4() { clear(); }
 	FastDelegate4(const FastDelegate4 &x) {
 		m_Closure.CopyFrom(this, x.m_Closure); }
 	FastDelegate4 & operator=(const FastDelegate4 &x) {
 		m_Closure.CopyFrom(this, x.m_Closure); return *this; }
+	FastDelegate4(FastDelegate4&&) = default;
+	FastDelegate4& operator=(FastDelegate4&&) = default;
+	~FastDelegate4() = default;
 	bool operator==(const FastDelegate4 &x) const {
 		return m_Closure.IsEqual(x.m_Closure); }
 	bool operator!=(const FastDelegate4 &x) const {
@@ -1403,7 +1411,7 @@ private:
 	typedef StaticFunctionPtr SafeBoolStruct::*unspecified_bool_type;
 public:
 	operator unspecified_bool_type() const {
-		return empty()? 0: &SafeBoolStruct::m_nonzero;
+		return empty() ? 0 : &SafeBoolStruct::m_nonzero;
 	}
 	// necessary to allow ==0 to work despite the safe_bool idiom
 	inline bool operator==(StaticFunctionPtr funcptr) {
@@ -1414,9 +1422,9 @@ public:
 			return !m_Closure; }
 	inline bool empty() const {
 			return !m_Closure; }
-	void clear() { m_Closure.clear();}
+	void clear() { m_Closure.clear(); }
 	// Conversion to and from the DelegateMemento storage class
-	const DelegateMemento & GetMemento() { return m_Closure; }
+	const DelegateMemento & GetMemento() const { return m_Closure; }
 	void SetMemento(const DelegateMemento &any) { m_Closure.CopyFrom(this, any); }
 
 private:	// Invoker for static functions
@@ -1439,11 +1447,14 @@ public:
 	typedef FastDelegate5 type;
 
 	// Construction and comparison functions
-	FastDelegate5() = default; // { clear(); }
+	FastDelegate5() { clear(); }
 	FastDelegate5(const FastDelegate5 &x) {
 		m_Closure.CopyFrom(this, x.m_Closure); }
 	FastDelegate5 & operator=(const FastDelegate5 &x) {
 		m_Closure.CopyFrom(this, x.m_Closure); return *this; }
+	FastDelegate5(FastDelegate5&&) = default;
+	FastDelegate5& operator=(FastDelegate5&&) = default;
+	~FastDelegate5() = default;
 	bool operator==(const FastDelegate5 &x) const {
 		return m_Closure.IsEqual(x.m_Closure); }
 	bool operator!=(const FastDelegate5 &x) const {
@@ -1488,7 +1499,7 @@ private:
 	typedef StaticFunctionPtr SafeBoolStruct::*unspecified_bool_type;
 public:
 	operator unspecified_bool_type() const {
-		 return empty()? 0: &SafeBoolStruct::m_nonzero;
+		 return empty() ? 0 : &SafeBoolStruct::m_nonzero;
 	}
 	// necessary to allow ==0 to work despite the safe_bool idiom
 	inline bool operator==(StaticFunctionPtr funcptr) {
@@ -1499,9 +1510,9 @@ public:
 			return !m_Closure; }
 	inline bool empty() const {
 			return !m_Closure; }
-	void clear() { m_Closure.clear();}
+	void clear() { m_Closure.clear(); }
 	// Conversion to and from the DelegateMemento storage class
-	const DelegateMemento & GetMemento() { return m_Closure; }
+	const DelegateMemento & GetMemento() const { return m_Closure; }
 	void SetMemento(const DelegateMemento &any) { m_Closure.CopyFrom(this, any); }
 
 private:	// Invoker for static functions
@@ -1524,13 +1535,14 @@ public:
 	typedef FastDelegate6 type;
 
 	// Construction and comparison functions
-	FastDelegate6() = default; // { clear(); }
-	FastDelegate6(FastDelegate6&&) = default;
-	FastDelegate6& operator=(FastDelegate6&&) = default;
+	FastDelegate6() { clear(); }
 	FastDelegate6(const FastDelegate6 &x) {
 		m_Closure.CopyFrom(this, x.m_Closure); }
 	FastDelegate6 & operator=(const FastDelegate6 &x) {
 		m_Closure.CopyFrom(this, x.m_Closure); return *this; }
+	FastDelegate6(FastDelegate6&&) = default;
+	FastDelegate6& operator=(FastDelegate6&&) = default;
+	~FastDelegate6() = default;
 	bool operator==(const FastDelegate6 &x) const {
 		return m_Closure.IsEqual(x.m_Closure); }
 	bool operator!=(const FastDelegate6 &x) const {
@@ -1575,7 +1587,7 @@ private:
 	typedef StaticFunctionPtr SafeBoolStruct::*unspecified_bool_type;
 public:
 	operator unspecified_bool_type() const {
-		return empty()? 0: &SafeBoolStruct::m_nonzero;
+		return empty() ? 0 : &SafeBoolStruct::m_nonzero;
 	}
 	// necessary to allow ==0 to work despite the safe_bool idiom
 	inline bool operator==(StaticFunctionPtr funcptr) {
@@ -1586,9 +1598,9 @@ public:
 			return !m_Closure; }
 	inline bool empty() const {
 			return !m_Closure; }
-	void clear() { m_Closure.clear();}
+	void clear() { m_Closure.clear(); }
 	// Conversion to and from the DelegateMemento storage class
-	const DelegateMemento & GetMemento() { return m_Closure; }
+	const DelegateMemento & GetMemento() const { return m_Closure; }
 	void SetMemento(const DelegateMemento &any) { m_Closure.CopyFrom(this, any); }
 
 private:	// Invoker for static functions
@@ -1611,13 +1623,14 @@ public:
 	typedef FastDelegate7 type;
 
 	// Construction and comparison functions
-	FastDelegate7() = default; // { clear(); }
-	FastDelegate7(FastDelegate7&&) = default;
-	FastDelegate7& operator=(FastDelegate7&&) = default;
+	FastDelegate7() { clear(); }
 	FastDelegate7(const FastDelegate7 &x) {
 		m_Closure.CopyFrom(this, x.m_Closure); }
 	FastDelegate7 & operator=(const FastDelegate7 &x) {
 		m_Closure.CopyFrom(this, x.m_Closure); return *this; }
+	FastDelegate7(FastDelegate7&&) = default;
+	FastDelegate7& operator=(FastDelegate7&&) = default;
+	~FastDelegate7() = default;
 	bool operator==(const FastDelegate7 &x) const {
 		return m_Closure.IsEqual(x.m_Closure); }
 	bool operator!=(const FastDelegate7 &x) const {
@@ -1662,7 +1675,7 @@ private:
 	typedef StaticFunctionPtr SafeBoolStruct::*unspecified_bool_type;
 public:
 	operator unspecified_bool_type() const {
-		return empty()? 0: &SafeBoolStruct::m_nonzero;
+		return empty() ? 0 : &SafeBoolStruct::m_nonzero;
 	}
 	// necessary to allow ==0 to work despite the safe_bool idiom
 	inline bool operator==(StaticFunctionPtr funcptr) {
@@ -1673,9 +1686,9 @@ public:
 			return !m_Closure; }
 	inline bool empty() const {
 			return !m_Closure; }
-	void clear() { m_Closure.clear();}
+	void clear() { m_Closure.clear(); }
 	// Conversion to and from the DelegateMemento storage class
-	const DelegateMemento & GetMemento() { return m_Closure; }
+	const DelegateMemento & GetMemento() const { return m_Closure; }
 	void SetMemento(const DelegateMemento &any) { m_Closure.CopyFrom(this, any); }
 
 private:	// Invoker for static functions
@@ -1698,13 +1711,14 @@ public:
 	typedef FastDelegate8 type;
 
 	// Construction and comparison functions
-	FastDelegate8() = default; // { clear(); }
-	FastDelegate8(FastDelegate8&&) = default;
-	FastDelegate8& operator=(FastDelegate8&&) = default;
+	FastDelegate8() { clear(); }
 	FastDelegate8(const FastDelegate8 &x) {
 		m_Closure.CopyFrom(this, x.m_Closure); }
 	FastDelegate8 & operator=(const FastDelegate8 &x) {
 		m_Closure.CopyFrom(this, x.m_Closure); return *this; }
+	FastDelegate8(FastDelegate8&&) = default;
+	FastDelegate8& operator=(FastDelegate8&&) = default;
+	~FastDelegate8() = default;
 	bool operator==(const FastDelegate8 &x) const {
 		return m_Closure.IsEqual(x.m_Closure); }
 	bool operator!=(const FastDelegate8 &x) const {
@@ -1749,7 +1763,7 @@ private:
 	typedef StaticFunctionPtr SafeBoolStruct::*unspecified_bool_type;
 public:
 	operator unspecified_bool_type() const {
-		return empty()? 0: &SafeBoolStruct::m_nonzero;
+		return empty() ? 0 : &SafeBoolStruct::m_nonzero;
 	}
 	// necessary to allow ==0 to work despite the safe_bool idiom
 	inline bool operator==(StaticFunctionPtr funcptr) {
@@ -1760,9 +1774,9 @@ public:
 			return !m_Closure; }
 	inline bool empty() const {
 			return !m_Closure; }
-	void clear() { m_Closure.clear();}
+	void clear() { m_Closure.clear(); }
 	// Conversion to and from the DelegateMemento storage class
-	const DelegateMemento & GetMemento() { return m_Closure; }
+	const DelegateMemento & GetMemento() const { return m_Closure; }
 	void SetMemento(const DelegateMemento &any) { m_Closure.CopyFrom(this, any); }
 
 private:	// Invoker for static functions

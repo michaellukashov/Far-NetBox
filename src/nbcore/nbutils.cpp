@@ -49,23 +49,7 @@ TEncodeType DetectUTF8Encoding(const uint8_t *str, intptr_t len)
   while (buf != endbuf)
   {
     const uint8_t c = *buf++;
-    if (trailing)
-    {
-      if ((c & 0xC0) == 0x80) // Does trailing byte follow UTF-8 format?
-      {
-        if (byte2mask) // Need to check 2nd byte for proper range?
-        {
-          if (c & byte2mask) // Are appropriate bits set?
-            byte2mask = 0x00;
-          else
-            return etANSI;
-        }
-        trailing--;
-      }
-      else
-        return etANSI;
-    }
-    else
+    if (!trailing)
     {
       if ((c & 0x80) == 0x00)
         continue; // valid 1 byte UTF-8
@@ -111,6 +95,22 @@ TEncodeType DetectUTF8Encoding(const uint8_t *str, intptr_t len)
           byte2mask = 0x3C; // If not set mask
         // to check next byte
         trailing = 5;
+      }
+      else
+        return etANSI;
+    }
+    else
+    {
+      if ((c & 0xC0) == 0x80) // Does trailing byte follow UTF-8 format?
+      {
+        if (byte2mask) // Need to check 2nd byte for proper range?
+        {
+          if (c & byte2mask) // Are appropriate bits set?
+            byte2mask = 0x00;
+          else
+            return etANSI;
+        }
+        trailing--;
       }
       else
         return etANSI;

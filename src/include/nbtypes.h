@@ -60,6 +60,6 @@ typedef bool Boolean;
 typedef WORD Word;
 #endif
 
-#define NullToEmptyA(s) (s ? s : "")
-#define NullToEmpty(s) (s ? s : L"")
+#define NullToEmptyA(s) ((s) ? (s) : "")
+#define NullToEmpty(s) ((s) ? (s) : L"")
 

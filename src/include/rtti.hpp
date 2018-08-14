@@ -223,7 +223,7 @@ template<class To, class FromTy> struct cast_convert_val<To, FromTy, FromTy>
   static typename cast_retty<To, FromTy>::ret_type doit(const FromTy &Val)
   {
     typename cast_retty<To, FromTy>::ret_type Res2
-      = (typename cast_retty<To, FromTy>::ret_type)const_cast<FromTy &>(Val);
+      = static_cast<typename cast_retty<To, FromTy>::ret_type>(const_cast<FromTy &>(Val));
     return Res2;
   }
 };

@@ -13,8 +13,8 @@ protected:
   T *data;
 
 public:
-  __inline explicit nb_ptr() : data(nullptr) {}
-  __inline explicit nb_ptr(T *_p) : data(_p) {}
+  __inline explicit nb_ptr() noexcept : data(nullptr) {}
+  __inline explicit nb_ptr(T *_p) noexcept : data(_p) {}
   __inline ~nb_ptr() { nbcore_free(data); }
   __inline T *get() const { return data; }
   __inline T *operator = (T *_p) { if (data) nbcore_free(data); data = _p; return data; }
@@ -35,8 +35,8 @@ class nb_cs
   CRITICAL_SECTION m_cs;
 
 public:
-  __inline nb_cs() { ::InitializeCriticalSection(&m_cs); }
-  __inline ~nb_cs() { ::DeleteCriticalSection(&m_cs); }
+  __inline nb_cs() noexcept { ::InitializeCriticalSection(&m_cs); }
+  __inline ~nb_cs() noexcept { ::DeleteCriticalSection(&m_cs); }
 
   __inline operator CRITICAL_SECTION &() { return m_cs; }
 };
@@ -60,8 +60,8 @@ public:
 class pass_ptrA : public nb_ptr<char>
 {
 public:
-  __inline explicit pass_ptrA() : nb_ptr() {}
-  __inline explicit pass_ptrA(char *_p) : nb_ptr(_p) {}
+  __inline explicit pass_ptrA() noexcept : nb_ptr() {}
+  __inline explicit pass_ptrA(char *_p) noexcept : nb_ptr(_p) {}
   __inline ~pass_ptrA() { zero(); }
   __inline char *operator = (char *_p) { zero(); return nb_ptr::operator=(_p); }
   __inline void zero()
@@ -73,8 +73,8 @@ public:
 class pass_ptrW : public nb_ptr<wchar_t>
 {
 public:
-  __inline explicit pass_ptrW() : nb_ptr() {}
-  __inline explicit pass_ptrW(wchar_t *_p) : nb_ptr(_p) {}
+  __inline explicit pass_ptrW() noexcept : nb_ptr() {}
+  __inline explicit pass_ptrW(wchar_t *_p) noexcept : nb_ptr(_p) {}
   __inline ~pass_ptrW() { zero(); }
   __inline wchar_t *operator = (wchar_t *_p) { zero(); return nb_ptr::operator=(_p); }
   __inline void zero()
@@ -89,7 +89,7 @@ public:
 class nb_cslockfull
 {
   CRITICAL_SECTION &cs;
-  bool bIsLocked;
+  bool bIsLocked{false};
   __inline nb_cslockfull &operator = (const nb_cslockfull &) = delete;
   __inline nb_cslockfull(const nb_cslockfull &) = delete;
 

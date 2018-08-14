@@ -1,8 +1,8 @@
 #pragma once
 
-#include <stddef.h>
-#include <stdint.h>
-#include <stdlib.h>
+#include <cstddef>
+#include <cstdint>
+#include <cstdlib>
 
 #include <nbtypes.h>
 
@@ -131,7 +131,7 @@ __forceinline uint32_t nbcore_hashstrW(const wchar_t *key)
   }
   else
   {
-    uint32_t len = static_cast<uint32_t>(wcslen(static_cast<const wchar_t *>(key)));
+    const uint32_t len = static_cast<uint32_t>(wcslen(static_cast<const wchar_t *>(key)));
     return nbcore_hash(key, len * sizeof(wchar_t));
   }
 }
