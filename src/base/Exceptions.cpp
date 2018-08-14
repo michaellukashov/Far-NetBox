@@ -40,7 +40,7 @@ static bool WellKnownException(
 
 
   bool Result = true;
-  bool IgnoreException = false;
+  const bool IgnoreException = false;
 
 #if 0
   if (!IgnoredExceptions.empty())
@@ -219,7 +219,7 @@ TStrings *ExceptionToMoreMessages(Exception *E)
 //---------------------------------------------------------------------------
 bool ExceptionFullMessage(Exception *E, UnicodeString &Message)
 {
-  bool Result = ExceptionMessage(E, Message);
+  const bool Result = ExceptionMessage(E, Message);
   if (Result)
   {
     Message += L"\n";
@@ -275,32 +275,28 @@ bool IsInternalErrorHelpKeyword(const UnicodeString HelpKeyword)
 }
 //---------------------------------------------------------------------------
 ExtException::ExtException(const Exception *E) :
-  Exception(OBJECT_CLASS_ExtException, L""),
-  FMoreMessages(nullptr)
+  Exception(OBJECT_CLASS_ExtException, L"")
 {
   AddMoreMessages(E);
   FHelpKeyword = GetExceptionHelpKeyword(E);
 }
 
 ExtException::ExtException(TObjectClassId Kind, const Exception *E) :
-  Exception(Kind, L""),
-  FMoreMessages(nullptr)
+  Exception(Kind, L"")
 {
   AddMoreMessages(E);
   FHelpKeyword = GetExceptionHelpKeyword(E);
 }
 //---------------------------------------------------------------------------
 ExtException::ExtException(const Exception *E, const UnicodeString Msg, const UnicodeString HelpKeyword) :
-  Exception(OBJECT_CLASS_ExtException, Msg),
-  FMoreMessages(nullptr)
+  Exception(OBJECT_CLASS_ExtException, Msg)
 {
   AddMoreMessages(E);
   FHelpKeyword = MergeHelpKeyword(HelpKeyword, GetExceptionHelpKeyword(E));
 }
 
 ExtException::ExtException(TObjectClassId Kind, const Exception *E, const UnicodeString Msg, const UnicodeString HelpKeyword) :
-  Exception(Kind, Msg),
-  FMoreMessages(nullptr)
+  Exception(Kind, Msg)
 {
   AddMoreMessages(E);
   FHelpKeyword = MergeHelpKeyword(HelpKeyword, GetExceptionHelpKeyword(E));
@@ -308,14 +304,12 @@ ExtException::ExtException(TObjectClassId Kind, const Exception *E, const Unicod
 //---------------------------------------------------------------------------
 ExtException::ExtException(TObjectClassId Kind, Exception *E, intptr_t Ident, const UnicodeString HelpKeyword) :
   Exception(Kind, E, Ident),
-  FMoreMessages(nullptr),
   FHelpKeyword(HelpKeyword)
 {
 }
 //---------------------------------------------------------------------------
 ExtException::ExtException(TObjectClassId Kind, const UnicodeString Msg, const Exception *E, const UnicodeString HelpKeyword) :
-  Exception(Kind, L""),
-  FMoreMessages(nullptr)
+  Exception(Kind, L"")
 {
   // "copy exception"
   AddMoreMessages(E);
@@ -339,10 +333,9 @@ ExtException::ExtException(TObjectClassId Kind, const UnicodeString Msg, const E
 }
 //---------------------------------------------------------------------------
 ExtException::ExtException(const UnicodeString Msg, const UnicodeString MoreMessages,
-  UnicodeString HelpKeyword) :
+  const UnicodeString HelpKeyword) :
   Exception(OBJECT_CLASS_ExtException, Msg),
-  FMoreMessages(nullptr),
-  FHelpKeyword(HelpKeyword)
+  FHelpKeyword(std::move(HelpKeyword))
 {
   if (!MoreMessages.IsEmpty())
   {
@@ -353,7 +346,6 @@ ExtException::ExtException(const UnicodeString Msg, const UnicodeString MoreMess
 ExtException::ExtException(TObjectClassId Kind, const UnicodeString Msg, const UnicodeString MoreMessages,
   const UnicodeString HelpKeyword) :
   Exception(Kind, Msg),
-  FMoreMessages(nullptr),
   FHelpKeyword(HelpKeyword)
 {
   if (!MoreMessages.IsEmpty())
@@ -365,7 +357,6 @@ ExtException::ExtException(TObjectClassId Kind, const UnicodeString Msg, const U
 ExtException::ExtException(const UnicodeString Msg, TStrings *MoreMessages,
   bool Own, const UnicodeString HelpKeyword) :
   Exception(OBJECT_CLASS_ExtException, Msg),
-  FMoreMessages(nullptr),
   FHelpKeyword(HelpKeyword)
 {
   if (Own)

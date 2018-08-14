@@ -2,7 +2,7 @@
 #include <vcl.h>
 
 #ifdef _DEBUG
-#include <stdio.h>
+//#include <cstdio>
 #include <rdestl/vector.h>
 // TODO: remove src/core dep
 #include <Interface.h>
@@ -42,7 +42,7 @@ TUnguard::~TUnguard()
 
 static HANDLE TraceFile = nullptr;
 bool IsTracing = false;
-const uintptr_t CallstackTlsOff = (uintptr_t) - 1;
+const uintptr_t CallstackTlsOff = static_cast<uintptr_t>(-1);
 uintptr_t CallstackTls = CallstackTlsOff;
 TCriticalSection *TracingCriticalSection = nullptr;
 
@@ -67,7 +67,7 @@ std::unique_ptr<TCriticalSection> TracesInMemoryListsSection;
 inline static UTF8String TraceFormat(TDateTime Time, DWORD Thread, const wchar_t *SourceFile,
   const wchar_t *Func, int Line, const wchar_t *Message)
 {
-  UnicodeString TimeString = DateTimeToString(Time); // TimeString, L"hh:mm:ss.zzz", Time);
+  const UnicodeString TimeString = DateTimeToString(Time); // TimeString, L"hh:mm:ss.zzz", Time);
   const wchar_t *Slash = wcsrchr(SourceFile, L'\\');
   if (Slash != nullptr)
   {
@@ -82,7 +82,7 @@ inline static UTF8String TraceFormat(TDateTime Time, DWORD Thread, const wchar_t
 inline static void WriteTraceBuffer(const char *Buffer, size_t Length)
 {
   DWORD Written;
-  ::WriteFile(TraceFile, Buffer, (DWORD)Length, &Written, nullptr);
+  ::WriteFile(TraceFile, Buffer, static_cast<DWORD>(Length), &Written, nullptr);
 }
 
 inline static void DoDirectTrace(DWORD Thread, const wchar_t *SourceFile,
@@ -265,7 +265,7 @@ void DoTrace(const wchar_t *SourceFile, const wchar_t *Func,
 {
   DebugAssert(IsTracing);
 
-  UnicodeString TimeString;
+  const UnicodeString TimeString;
   // DateTimeToString(TimeString, L"hh:mm:ss.zzz", Now());
   TODO("use Format");
   const wchar_t *Slash = wcsrchr(SourceFile, L'\\');
@@ -316,7 +316,7 @@ void DoAssert(const wchar_t *Message, const wchar_t *Filename, uintptr_t LineNum
   {
     DoTrace(Filename, L"assert", LineNumber, Message);
   }
-  _wassert(Message, Filename, (unsigned int)LineNumber);
+  _wassert(Message, Filename, static_cast<unsigned int>(LineNumber));
 }
 
 #endif // _DEBUG

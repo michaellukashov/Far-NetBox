@@ -4,7 +4,7 @@
 #include <nbcore.h>
 
 #include <tchar.h>
-#include <assert.h>
+#include <cassert>
 
 #include <FormatUtils.h>
 //---------------------------------------------------------------------------
@@ -44,7 +44,7 @@ private:
 };
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-#include <assert.h>
+//#include <assert.h>
 #define ACCESS_VIOLATION_TEST { (*((int*)nullptr)) = 0; }
 #if !defined(_DEBUG) || defined(DESIGN_ONLY)
 #define DebugAssert(p)   (void)(p)

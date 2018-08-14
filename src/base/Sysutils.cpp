@@ -2,7 +2,7 @@
 #include <vcl.h>
 
 #include <iomanip>
-#include <time.h>
+#include <ctime>
 
 #include <Classes.hpp>
 #include <Common.h>
@@ -204,7 +204,7 @@ UnicodeString Trim(const UnicodeString Str)
 UnicodeString TrimLeft(const UnicodeString Str)
 {
   UnicodeString Result = Str;
-  intptr_t Len = Result.Length();
+  const intptr_t Len = Result.Length();
   intptr_t Pos = 1;
   while ((Pos <= Len) && (Result[Pos] == L' '))
     Pos++;
@@ -262,13 +262,13 @@ UnicodeString AnsiReplaceStr(const UnicodeString Str, const UnicodeString From,
 
 intptr_t AnsiPos(const UnicodeString Str, wchar_t Ch)
 {
-  intptr_t Result = Str.Pos(Ch);
+  const intptr_t Result = Str.Pos(Ch);
   return Result;
 }
 
 intptr_t Pos(const UnicodeString Str, const UnicodeString Substr)
 {
-  intptr_t Result = Str.Pos(Substr.c_str());
+  const intptr_t Result = Str.Pos(Substr.c_str());
   return Result;
 }
 
@@ -281,7 +281,7 @@ bool IsDelimiter(const UnicodeString Delimiters, const UnicodeString Str, intptr
 {
   if (AIndex <= Str.Length())
   {
-    wchar_t Ch = Str[AIndex];
+    const wchar_t Ch = Str[AIndex];
     for (intptr_t Index = 1; Index <= Delimiters.Length(); ++Index)
     {
       if (Delimiters[Index] == Ch)
@@ -398,7 +398,7 @@ UnicodeString RightStr(const UnicodeString Str, intptr_t ACount)
 intptr_t PosEx(const UnicodeString SubStr, const UnicodeString Str, intptr_t Offset)
 {
   UnicodeString S = Str.SubString(Offset);
-  intptr_t Result = S.Pos(SubStr) + Offset;
+  const intptr_t Result = S.Pos(SubStr) + Offset;
   return Result;
 }
 
@@ -414,7 +414,7 @@ UnicodeString UTF8ToString(const char *Str, intptr_t Len)
     return UnicodeString(L"");
   }
 
-  intptr_t reqLength = ::MultiByteToWideChar(CP_UTF8, 0, Str, ToInt(Len), nullptr, 0);
+  const intptr_t reqLength = ::MultiByteToWideChar(CP_UTF8, 0, Str, ToInt(Len), nullptr, 0);
   UnicodeString Result;
   if (reqLength)
   {
@@ -459,9 +459,9 @@ bool IsZero(double Value)
 
 TTimeStamp DateTimeToTimeStamp(const TDateTime &DateTime)
 {
-  TTimeStamp Result;
+  TTimeStamp Result{};
   double intpart;
-  double fractpart = modf(DateTime, &intpart);
+  const double fractpart = modf(DateTime, &intpart);
   Result.Time = ToInt(fractpart * MSecsPerDay + 0.5);
   Result.Date = ToInt(intpart + DateDelta);
   return Result;
@@ -512,7 +512,7 @@ bool SysUtulsFileExists(const UnicodeString AFileName)
 
 bool SysUtulsRenameFile(const UnicodeString From, const UnicodeString To)
 {
-  bool Result = ::MoveFileW(ApiPath(From).c_str(), ApiPath(To).c_str()) != FALSE;
+  const bool Result = ::MoveFileW(ApiPath(From).c_str(), ApiPath(To).c_str()) != FALSE;
   return Result;
 }
 
@@ -523,7 +523,7 @@ bool SysUtulsDirectoryExists(const UnicodeString ADir)
     return true;
   }
 
-  DWORD LocalFileAttrs = SysUtulsFileGetAttr(ADir);
+  const DWORD LocalFileAttrs = SysUtulsFileGetAttr(ADir);
 
   if ((LocalFileAttrs != INVALID_FILE_ATTRIBUTES) && FLAGSET(LocalFileAttrs, FILE_ATTRIBUTE_DIRECTORY))
   {
@@ -536,7 +536,7 @@ UnicodeString SysUtulsFileSearch(const UnicodeString AFileName, const UnicodeStr
 {
   UnicodeString Result;
   UnicodeString Temp = DirectoryList;
-  UnicodeString PathSeparators = L"/\\";
+  const UnicodeString PathSeparators = L"/\\";
   do
   {
     intptr_t Index = ::Pos(Temp, PathSeparators);
@@ -570,7 +570,7 @@ UnicodeString SysUtulsFileSearch(const UnicodeString AFileName, const UnicodeStr
 void SysUtulsFileAge(const UnicodeString AFileName, TDateTime &ATimestamp)
 {
   WIN32_FIND_DATA FindData;
-  HANDLE LocalFileHandle = ::FindFirstFileW(ApiPath(AFileName).c_str(), &FindData);
+  const HANDLE LocalFileHandle = ::FindFirstFileW(ApiPath(AFileName).c_str(), &FindData);
   if (LocalFileHandle != INVALID_HANDLE_VALUE)
   {
     ATimestamp =
@@ -584,13 +584,13 @@ void SysUtulsFileAge(const UnicodeString AFileName, TDateTime &ATimestamp)
 DWORD SysUtulsFileGetAttr(const UnicodeString AFileName, bool /*FollowLink*/)
 {
   TODO("FollowLink");
-  DWORD LocalFileAttrs = ::GetFileAttributesW(ApiPath(AFileName).c_str());
+  const DWORD LocalFileAttrs = ::GetFileAttributesW(ApiPath(AFileName).c_str());
   return LocalFileAttrs;
 }
 
 bool SysUtulsFileSetAttr(const UnicodeString AFileName, DWORD LocalFileAttrs)
 {
-  bool Result = ::SetFileAttributesW(ApiPath(AFileName).c_str(), LocalFileAttrs) != FALSE;
+  const bool Result = ::SetFileAttributesW(ApiPath(AFileName).c_str(), LocalFileAttrs) != FALSE;
   return Result;
 }
 
@@ -831,7 +831,7 @@ void AppendPathDelimiterW(UnicodeString &Str)
 UnicodeString ExpandEnvVars(const UnicodeString Str)
 {
   UnicodeString Buf(NB_MAX_PATH, 0);
-  intptr_t Size = ::ExpandEnvironmentStringsW(Str.c_str(), ToWChar(Buf), ToDWord(NB_MAX_PATH - 1));
+  const intptr_t Size = ::ExpandEnvironmentStringsW(Str.c_str(), ToWChar(Buf), ToDWord(NB_MAX_PATH - 1));
   UnicodeString Result = UnicodeString(Buf.c_str(), Size - 1);
   return Result;
 }
@@ -896,7 +896,7 @@ UnicodeString ExpandUNCFileName(const UnicodeString AFileName)
 
 static DWORD FindMatchingFile(TSearchRec &Rec)
 {
-  TFileTime LocalFileTime = {0};
+  TFileTime LocalFileTime{};
   DWORD Result;
   while ((Rec.FindData.dwFileAttributes && Rec.ExcludeAttr) != 0)
   {
@@ -993,7 +993,7 @@ UnicodeString ExtractFilename(const UnicodeString APath, wchar_t Delimiter)
 UnicodeString ExtractFileExtension(const UnicodeString APath, wchar_t Delimiter)
 {
   UnicodeString FileName = ::ExtractFilename(APath, Delimiter);
-  intptr_t N = FileName.RPos(L'.');
+  const intptr_t N = FileName.RPos(L'.');
   if (N > 0)
   {
     return FileName.SubString(N);
@@ -1037,7 +1037,7 @@ UnicodeString ExcludeTrailingBackslash(const UnicodeString Str)
 UnicodeString IncludeTrailingBackslash(const UnicodeString Str)
 {
   UnicodeString Result = Str;
-  intptr_t L = Result.Length();
+  const intptr_t L = Result.Length();
   if ((L == 0) || ((Result[L] != L'/') && (Result[L] != L'\\')))
   {
     Result += L'\\';
@@ -1053,7 +1053,7 @@ UnicodeString IncludeTrailingPathDelimiter(const UnicodeString Str)
 UnicodeString ExtractFileDir(const UnicodeString Str)
 {
   UnicodeString Result;
-  intptr_t Pos = Str.LastDelimiter(L"/\\");
+  const intptr_t Pos = Str.LastDelimiter(L"/\\");
   // it used to return Path when no slash was found
   if (Pos > 1)
   {
@@ -1096,13 +1096,13 @@ UnicodeString HexToStr(const UnicodeString Hex)
 {
   UnicodeString Digits = "0123456789ABCDEF";
   UnicodeString Result;
-  intptr_t L = Hex.Length() - 1;
+  const intptr_t L = Hex.Length() - 1;
   if (L % 2 == 0)
   {
     for (intptr_t Index = 1; Index <= Hex.Length(); Index += 2)
     {
-      intptr_t P1 = Digits.FindFirstOf(::UpCase(Hex[Index]));
-      intptr_t P2 = Digits.FindFirstOf(::UpCase(Hex[Index + 1]));
+      const intptr_t P1 = Digits.FindFirstOf(::UpCase(Hex[Index]));
+      const intptr_t P2 = Digits.FindFirstOf(::UpCase(Hex[Index + 1]));
       if ((P1 == NPOS) || (P2 == NPOS))
       {
         Result.Clear();
@@ -1121,7 +1121,7 @@ uintptr_t HexToIntPtr(const UnicodeString Hex, uintptr_t MinChars)
   intptr_t Index = 1;
   while (Index <= Hex.Length())
   {
-    intptr_t A = Digits.FindFirstOf(UpCase(Hex[Index]));
+    const intptr_t A = Digits.FindFirstOf(UpCase(Hex[Index]));
     if (A == NPOS)
     {
       if ((ToIntPtr(MinChars) == NPOS) || (Index <= ToIntPtr(MinChars)))
@@ -1141,7 +1141,7 @@ uintptr_t HexToIntPtr(const UnicodeString Hex, uintptr_t MinChars)
 UnicodeString IntToHex(uintptr_t Int, uintptr_t MinChars)
 {
   UnicodeString Result = FORMAT("%X", Int);
-  intptr_t Pad = MinChars - Result.Length();
+  const intptr_t Pad = MinChars - Result.Length();
   if (Pad > 0)
   {
     for (intptr_t Index = 0; Index < Pad; ++Index)
@@ -1159,7 +1159,7 @@ char HexToChar(const UnicodeString Hex, uintptr_t MinChars)
 
 static void ConvertError(intptr_t ErrorID)
 {
-  UnicodeString Msg = FMTLOAD(ErrorID, 0);
+  const UnicodeString Msg = FMTLOAD(ErrorID, 0);
   throw EConvertError(Msg);
 }
 
@@ -1213,7 +1213,7 @@ static bool DecodeDateFully(const TDateTime &DateTime,
     D += ToWord(D1);
   }
   Y += I;
-  bool Result = IsLeapYear(ToWord(Y));
+  const bool Result = IsLeapYear(ToWord(Y));
   const TDayTable *DayTable = &MonthDays[Result];
   uintptr_t M = 1;
   while (true)
@@ -1263,7 +1263,7 @@ static bool TryEncodeDate(int Year, int Month, int Day, TDateTime &Date)
     {
       Day += (*DayTable)[Index - 1];
     }
-    int Idx = Year - 1;
+    const int Idx = Year - 1;
     Date = TDateTime(ToDouble(Idx * 365 + Idx / 4 - Idx / 100 + Idx / 400 + Day - DateDelta));
     return true;
   }
@@ -1569,9 +1569,9 @@ uintptr_t StrToVersionNumber(const UnicodeString VersionMumberStr)
 
 UnicodeString VersionNumberToStr(uintptr_t VersionNumber)
 {
-  DWORD Major = (VersionNumber >> 16) & 0xFF;
-  DWORD Minor = (VersionNumber >> 8) & 0xFF;
-  DWORD Revision = (VersionNumber & 0xFF);
+  const DWORD Major = (VersionNumber >> 16) & 0xFF;
+  const DWORD Minor = (VersionNumber >> 8) & 0xFF;
+  const DWORD Revision = (VersionNumber & 0xFF);
   UnicodeString Result = FORMAT("%d.%d.%d", Major, Minor, Revision);
   return Result;
 }
@@ -1632,7 +1632,7 @@ DWORD FindNext(TSearchRec &Rec)
 
 DWORD FindClose(TSearchRec &Rec)
 {
-  DWORD Result = 0;
+  const DWORD Result = 0;
   if (Rec.FindHandle != INVALID_HANDLE_VALUE)
   {
     ::FindClose(Rec.FindHandle);

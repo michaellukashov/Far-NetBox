@@ -4,8 +4,7 @@
 
 // TCriticalSection
 
-TCriticalSection::TCriticalSection() :
-  FAcquired(0)
+TCriticalSection::TCriticalSection()
 {
   InitializeCriticalSection(&FSection);
 }

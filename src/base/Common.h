@@ -171,8 +171,8 @@ NB_CORE_EXPORT bool IsUWP();
 __removed TLibModule * FindModule(void * Instance);
 NB_CORE_EXPORT int64_t Round(double Number);
 NB_CORE_EXPORT bool TryRelativeStrToDateTime(const UnicodeString AStr, TDateTime &DateTime, bool Add);
-NB_CORE_EXPORT bool TryStrToSize(const UnicodeString SizeStr, int64_t &Size);
-NB_CORE_EXPORT UnicodeString SizeToStr(int64_t Size);
+NB_CORE_EXPORT bool TryStrToSize(const UnicodeString ASizeStr, int64_t &ASize);
+NB_CORE_EXPORT UnicodeString SizeToStr(int64_t ASize);
 NB_CORE_EXPORT LCID GetDefaultLCID();
 NB_CORE_EXPORT UnicodeString DefaultEncodingName();
 NB_CORE_EXPORT UnicodeString WindowsProductName();
@@ -182,7 +182,7 @@ NB_CORE_EXPORT UnicodeString WindowsVersion();
 NB_CORE_EXPORT UnicodeString WindowsVersionLong();
 NB_CORE_EXPORT bool IsDirectoryWriteable(const UnicodeString APath);
 NB_CORE_EXPORT UnicodeString FormatNumber(int64_t Number);
-NB_CORE_EXPORT UnicodeString FormatSize(int64_t Size);
+NB_CORE_EXPORT UnicodeString FormatSize(int64_t ASize);
 NB_CORE_EXPORT UnicodeString ExtractFileBaseName(const UnicodeString APath);
 NB_CORE_EXPORT TStringList *TextToStringList(const UnicodeString Text);
 NB_CORE_EXPORT UnicodeString StringsToText(TStrings *Strings);
@@ -353,6 +353,11 @@ public:
   {
   }
 
+  inline ~TValueRestorer()
+  {
+    Release();
+  }
+
   void Release()
   {
     if (FArmed)
@@ -360,11 +365,6 @@ public:
       FTarget = FValue;
       FArmed = false;
     }
-  }
-
-  inline ~TValueRestorer()
-  {
-    Release();
   }
 
 protected:
@@ -383,6 +383,7 @@ public:
     ++Target;
   }
 
+  TAutoNestingCounter() = default;
   inline ~TAutoNestingCounter()
   {
     DebugAssert(!FArmed || (FTarget == (FValue + 1)));
@@ -399,6 +400,7 @@ public:
     Target = true;
   }
 
+  TAutoFlag() = default;
   ~TAutoFlag()
   {
     DebugAssert(!FArmed || FTarget);

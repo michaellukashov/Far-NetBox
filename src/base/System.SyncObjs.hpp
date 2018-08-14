@@ -2,7 +2,6 @@
 
 #include <nbsystem.h>
 
-
 class TCriticalSection
 {
 CUSTOM_MEM_ALLOCATION_IMPL
@@ -17,6 +16,6 @@ public:
   intptr_t GetAcquired() const { return FAcquired; }
 
 private:
-  mutable CRITICAL_SECTION FSection;
-  mutable intptr_t FAcquired;
+  mutable CRITICAL_SECTION FSection{};
+  mutable intptr_t FAcquired{0};
 };

@@ -9,15 +9,3 @@ void ThrowIfOutOfRange(intptr_t Idx, intptr_t Length)
     throw Exception("Index is out of range"); // ERangeError(Sysconst_SRangeError);
 }
 
-
-template<typename CharT>
-intptr_t BaseStringT<CharT>::CompareIC(const BaseStringT<CharT>& Str) const
-{
-  return ::AnsiCompareIC(*this, Str);
-}
-
-template<typename CharT>
-intptr_t BaseStringT<CharT>::ToIntPtr() const
-{
-  return ::StrToIntDef(*this, 0);
-}

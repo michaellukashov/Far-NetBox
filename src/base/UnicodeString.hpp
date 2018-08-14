@@ -5,23 +5,23 @@
 void ThrowIfOutOfRange(intptr_t Idx, intptr_t Length);
 
 template<typename CharT>
-class BaseStringT : public CMStringT< CharT, NBChTraitsCRT< CharT> >
+class NB_CORE_EXPORT BaseStringT : public CMStringT<CharT, NBChTraitsCRT<CharT>>
 {
-  typedef CMStringT< CharT, NBChTraitsCRT <CharT > > BaseT;
+  typedef CMStringT<CharT, NBChTraitsCRT<CharT>> BaseT;
   typedef typename BaseT::XCHAR XCHAR;
   typedef typename BaseT::PXSTR PXSTR;
   typedef typename BaseT::PCXSTR PCXSTR;
   typedef typename BaseT::YCHAR YCHAR;
   typedef typename BaseT::PYSTR PYSTR;
   typedef typename BaseT::PCYSTR PCYSTR;
-  typedef CMStringT< YCHAR, NBChTraitsCRT <YCHAR > > BaseY;
+  typedef CMStringT<YCHAR, NBChTraitsCRT<YCHAR>> BaseY;
 
 public:
-  BaseStringT() = default;
+  BaseStringT() noexcept = default;
   BaseStringT(BaseStringT&&) = default;
 
   BaseStringT(const BaseStringT &rhs) :
-    BaseT(rhs.c_str(), ToInt(rhs.GetLength()))
+    BaseT(reinterpret_cast<const char *>(rhs.c_str()), ToInt(rhs.GetLength()))
   {}
   BaseStringT(const BaseY &rhs) :
     BaseT(rhs.c_str(), ToInt(rhs.GetLength()))
@@ -41,6 +41,12 @@ public:
   explicit BaseStringT(const XCHAR *Str, intptr_t Length, int CodePage) :
     BaseT(Str, ToInt(Length), CodePage)
   {}
+  explicit BaseStringT(const unsigned char *Str, intptr_t Length, int CodePage) :
+    BaseT(reinterpret_cast<const char *>(Str), ToInt(Length), CodePage)
+  {}
+  explicit BaseStringT(const unsigned char *Str, intptr_t Length) :
+    BaseT(reinterpret_cast<const char *>(Str), ToInt(Length))
+  {}
   explicit BaseStringT(const XCHAR *Str, intptr_t Length) :
     BaseT(Str, ToInt(Length))
   {}
@@ -53,7 +59,7 @@ public:
   explicit BaseStringT(intptr_t Length, CharT Ch) : BaseT(Ch, ToInt(Length)) {}
   ~BaseStringT() = default;
 
-  const CharT *c_str() const { return BaseT::c_str(); }
+  const CharT *c_str() const { return reinterpret_cast<const CharT *>(BaseT::c_str()); }
   const CharT *data() const { return BaseT::c_str(); }
   intptr_t Length() const { return GetLength(); }
   intptr_t GetLength() const { return ::ToIntPtr(BaseT::GetLength()); }
@@ -108,7 +114,7 @@ public:
     {
       return NPOS;
     }
-    int Res = BaseT::Mid(ToInt(Offset)).FindOneOf(AStr);
+    const int Res = BaseT::Mid(ToInt(Offset)).FindOneOf(AStr);
     if (Res != -1)
       return Res + Offset;
     return NPOS;
@@ -169,7 +175,7 @@ public:
   intptr_t RPos(wchar_t Ch) const { return ::ToIntPtr(BaseT::ReverseFind(Ch)) + 1; }
   bool RPos(intptr_t &nPos, wchar_t Ch, intptr_t nStartPos = 0) const
   {
-    int Pos = BaseT::ReverseFind(Ch); //, Data.size() - nStartPos);
+    const int Pos = BaseT::ReverseFind(Ch); //, Data.size() - nStartPos);
     nPos = Pos + 1;
     return Pos != -1;
   }
@@ -230,7 +236,7 @@ public:
   BaseStringT TrimLeft() const
   {
     BaseStringT Result = *this;
-    intptr_t Len = Result.GetLength();
+    const intptr_t Len = Result.GetLength();
     intptr_t Pos = 1;
     while ((Pos <= Len) && (Result[Pos] == L' '))
       Pos++;
@@ -334,6 +340,9 @@ public:
     BaseT::Append(rhs.c_str(), ToInt(rhs.Length()));
     return *this;
   }
+  BaseStringT &operator+=(const wchar_t Ch) { BaseT::Append(BaseStringT(&Ch, 1)); return *this; }
+  BaseStringT &operator+=(const uint8_t Ch) { BaseT::AppendChar(static_cast<char>(Ch)); return *this; }
+  BaseStringT &operator+=(const char Ch) { BaseT::AppendChar(Ch); return *this; }
 
   friend BaseStringT inline operator+(const wchar_t lhs, const BaseStringT &rhs)
   { return BaseStringT(&lhs, 1) + rhs; }
@@ -346,6 +355,18 @@ public:
   friend BaseStringT inline operator+(const BaseStringT &lhs, const char *rhs)
   { return lhs + BaseStringT(rhs); }
 };
+
+template<typename CharT>
+inline intptr_t BaseStringT<CharT>::CompareIC(const BaseStringT &Str) const
+{
+  return ::AnsiCompareIC(*this, Str);
+}
+
+template<typename CharT>
+inline intptr_t BaseStringT<CharT>::ToIntPtr() const
+{
+  return ::StrToIntDef(*this, 0);
+}
 
 typedef BaseStringT<wchar_t> UnicodeString;
 typedef BaseStringT<char> UTF8String;

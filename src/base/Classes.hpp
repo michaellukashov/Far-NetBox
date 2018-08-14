@@ -73,7 +73,7 @@ public:
   static inline bool classof(const TObject * /*Obj*/) { return true; }
   virtual bool is(TObjectClassId Kind) const { return Kind == FKind; }
 public:
-  TObject() : FKind(OBJECT_CLASS_TObject) {}
+  TObject() noexcept : FKind(OBJECT_CLASS_TObject) {}
   explicit TObject(TObjectClassId Kind) : FKind(Kind) {}
   virtual ~TObject() {}
   virtual void Changed() {}
@@ -96,7 +96,7 @@ struct TPoint
 {
   int x;
   int y;
-  TPoint() :
+  TPoint() noexcept :
     x(0),
     y(0)
   {
@@ -116,7 +116,7 @@ struct TRect
   int Bottom;
   int Width() const { return Right - Left; }
   int Height() const { return Bottom - Top; }
-  TRect() :
+  TRect() noexcept :
     Left(0),
     Top(0),
     Right(0),
@@ -161,9 +161,9 @@ public:
   static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TPersistent); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TPersistent) || TObject::is(Kind); }
 public:
-  TPersistent() : TObject(OBJECT_CLASS_TPersistent) {}
+  TPersistent() noexcept : TObject(OBJECT_CLASS_TPersistent) {}
   explicit TPersistent(TObjectClassId Kind);
-  virtual ~TPersistent();
+  virtual ~TPersistent() = default;
   virtual void Assign(const TPersistent *Source);
   virtual TPersistent *GetOwner();
 protected:
@@ -257,7 +257,7 @@ public:
 public:
   TStrings();
   explicit TStrings(TObjectClassId Kind);
-  virtual ~TStrings();
+  virtual ~TStrings() = default;
   intptr_t Add(const UnicodeString S, TObject *AObject = nullptr);
   virtual UnicodeString GetTextStr() const;
   virtual void SetTextStr(const UnicodeString Text);
@@ -326,7 +326,7 @@ public:
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TStringList) || TStrings::is(Kind); }
 public:
   explicit TStringList(TObjectClassId Kind = OBJECT_CLASS_TStringList);
-  virtual ~TStringList();
+  virtual ~TStringList() = default;
 
   intptr_t Add(const UnicodeString S);
   virtual intptr_t AddObject(const UnicodeString S, TObject *AObject) override;
@@ -383,7 +383,7 @@ private:
 class NB_CORE_EXPORT TDateTime : public TObject
 {
 public:
-  TDateTime() :
+  TDateTime() noexcept :
     FValue(0.0)
   {}
   explicit TDateTime(double Value) :
@@ -448,7 +448,7 @@ public:
   }
   UnicodeString GetDateString() const;
   UnicodeString GetTimeString(bool Short) const;
-  UnicodeString FormatString(wchar_t *fmt) const;
+  UnicodeString FormatString(const wchar_t *fmt) const;
   void DecodeDate(uint16_t &Y, uint16_t &M, uint16_t &D) const;
   void DecodeTime(uint16_t &H, uint16_t &N, uint16_t &S, uint16_t &MS) const;
 private:
@@ -500,8 +500,8 @@ enum TSeekOrigin
 class NB_CORE_EXPORT TStream : public TObject
 {
 public:
-  TStream();
-  virtual ~TStream();
+  TStream() = default;
+  virtual ~TStream() = default;
   virtual int64_t Read(void *Buffer, int64_t Count) = 0;
   virtual int64_t Write(const void *Buffer, int64_t Count) = 0;
   virtual int64_t Seek(int64_t Offset, int Origin) const = 0;
@@ -512,7 +512,7 @@ public:
 
 public:
   int64_t GetPosition() const;
-  int64_t GetSize() const;
+  virtual int64_t GetSize() const;
   virtual void SetSize(const int64_t NewSize) = 0;
   void SetPosition(const int64_t Pos);
 
@@ -525,7 +525,7 @@ class NB_CORE_EXPORT THandleStream : public TStream
   NB_DISABLE_COPY(THandleStream)
 public:
   explicit THandleStream(HANDLE AHandle);
-  virtual ~THandleStream();
+  virtual ~THandleStream() = default;
   virtual int64_t Read(void *Buffer, int64_t Count) override;
   virtual int64_t Write(const void *Buffer, int64_t Count) override;
   virtual int64_t Seek(int64_t Offset, int Origin) const override;
@@ -580,7 +580,7 @@ public:
   void Clear();
   void LoadFromStream(TStream *Stream);
   __removed void LoadFromFile(const UnicodeString AFileName);
-  int64_t GetSize() const { return FSize; }
+  virtual int64_t GetSize() const override { return FSize; }
   virtual void SetSize(const int64_t NewSize) override;
   virtual int64_t Write(const void *Buffer, int64_t Count) override;
 
@@ -631,8 +631,8 @@ public:
   void GetValueNames(TStrings *Names) const;
   void GetKeyNames(TStrings *Names) const;
   void CloseKey();
-  bool OpenKey(const UnicodeString Key, bool CanCreate);
-  bool DeleteKey(const UnicodeString Key);
+  bool OpenKey(const UnicodeString AKey, bool CanCreate);
+  bool DeleteKey(const UnicodeString AKey);
   bool DeleteValue(const UnicodeString Value) const;
   bool KeyExists(const UnicodeString SubKey) const;
   bool ValueExists(const UnicodeString Value) const;
@@ -661,7 +661,7 @@ public:
 private:
   void ChangeKey(HKEY Value, const UnicodeString APath);
   HKEY GetBaseKey(bool Relative) const;
-  HKEY GetKey(const UnicodeString Key) const;
+  HKEY GetKey(const UnicodeString AKey) const;
   void SetCurrentKey(HKEY Value) { FCurrentKey = Value; }
   bool GetKeyInfo(TRegKeyInfo &Value) const;
   int GetData(const UnicodeString Name, void *Buffer,
@@ -765,14 +765,14 @@ class NB_CORE_EXPORT TGlobals : public TGlobalsIntf, public TObject
 {
 public:
   TGlobals();
-  virtual ~TGlobals();
+  virtual ~TGlobals() = default;
 
 public:
-  wchar_t Win32CSDVersion[128];
-  int Win32Platform;
-  int Win32MajorVersion;
-  int Win32MinorVersion;
-  int Win32BuildNumber;
+  wchar_t Win32CSDVersion[128]{};
+  int Win32Platform{};
+  int Win32MajorVersion{};
+  int Win32MinorVersion{};
+  int Win32BuildNumber{};
 
 private:
   void InitPlatformId();

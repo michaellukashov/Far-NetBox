@@ -81,7 +81,8 @@ int64_t TFileBuffer::ReadStream(TStream * Stream, const int64_t Len, bool ForceL
     {
       SetSize(GetSize() - Len + Result);
     }
-    FMemory->Seek(Len, soFromCurrent);
+    auto const res = FMemory->Seek(Len, soFromCurrent);
+    DebugAssert(res >= Len);
   }
   catch (EReadError &)
   {
@@ -92,7 +93,8 @@ int64_t TFileBuffer::ReadStream(TStream * Stream, const int64_t Len, bool ForceL
 //---------------------------------------------------------------------------
 int64_t TFileBuffer::LoadStream(TStream * Stream, const int64_t Len, bool ForceLen)
 {
-  FMemory->Seek(0, soFromBeginning);
+  auto const res = FMemory->Seek(0, soFromBeginning);
+  DebugAssert(res == 0);
   return ReadStream(Stream, Len, ForceLen);
 }
 //---------------------------------------------------------------------------
@@ -124,7 +126,7 @@ void TFileBuffer::Convert(char * Source, char * Dest, intptr_t Params,
   // one character source EOL
   if (!Source[1])
   {
-    bool PrevToken = Token;
+    const bool PrevToken = Token;
     Token = false;
 
     for (intptr_t Index = 0; Index < GetSize(); ++Index)
@@ -231,7 +233,8 @@ void TFileBuffer::WriteToStream(TStream * Stream, const int64_t Len)
   try
   {
     Stream->WriteBuffer(GetData() + GetPosition(), Len);
-    FMemory->Seek(Len, soFromCurrent);
+    auto const res = FMemory->Seek(Len, soFromCurrent);
+    DebugAssert(res >= Len);
   }
   catch (EWriteError &)
   {

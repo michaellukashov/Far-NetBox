@@ -10,8 +10,8 @@ static int CmpName_Body(const wchar_t * pattern, const wchar_t * str, bool CmpNa
 {
   for (;; ++str)
   {
-    wchar_t stringc = nb::Upper(*str);
-    wchar_t patternc = nb::Upper(*pattern++);
+    const wchar_t stringc = nb::Upper(*str);
+    const wchar_t patternc = nb::Upper(*pattern++);
 
     switch (patternc)
     {

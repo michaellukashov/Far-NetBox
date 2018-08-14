@@ -4,13 +4,13 @@
 #include <Classes.hpp>
 
 #define THROWOSIFFALSE(C) { if (!(C)) ::RaiseLastOSError(); }
-#define SAFE_DESTROY_EX(CLASS, OBJ) { CLASS * PObj = OBJ; OBJ = nullptr; delete PObj; }
-#define SAFE_DESTROY(OBJ) SAFE_DESTROY_EX(TObject, OBJ)
+#define SAFE_DESTROY_EX(CLASS, OBJ) { CLASS * PObj = (OBJ); (OBJ) = nullptr; delete PObj; }
+#define SAFE_DESTROY(OBJ) SAFE_DESTROY_EX(TObject, (OBJ))
 #define SAFE_CLOSE_HANDLE(H) { if ((H) && (H) != INVALID_HANDLE_VALUE) { HANDLE HH = (H); (H) = nullptr; if (HH != nullptr) { ::CloseHandle(HH); } } }
 #define NULL_TERMINATE(S) S[LENOF(S) - 1] = L'\0'
 
 #define SWAP(TYPE, FIRST, SECOND) \
-  { TYPE __Backup = FIRST; FIRST = SECOND; SECOND = __Backup; }
+  { TYPE __Backup = (FIRST); (FIRST) = (SECOND); (SECOND) = __Backup; }
 
 #if !defined(_MSC_VER)
 
@@ -85,6 +85,7 @@ public:
   static inline bool classof(const Exception *Obj) { return Obj->is(OBJECT_CLASS_Exception); }
   virtual bool is(TObjectClassId Kind) const { return (Kind == FKind); }
 public:
+  Exception() noexcept = default;
   explicit Exception(TObjectClassId Kind, const wchar_t *Msg);
   explicit Exception(const wchar_t *Msg);
   explicit Exception(TObjectClassId Kind, const UnicodeString Msg);
@@ -94,12 +95,10 @@ public:
   explicit Exception(TObjectClassId Kind, const UnicodeString Msg, intptr_t AHelpContext);
   explicit Exception(TObjectClassId Kind, Exception *E, intptr_t Ident);
   explicit Exception(TObjectClassId Kind, intptr_t Ident);
-  ~Exception() {}
+  virtual ~Exception() = default;
 
-protected:
-  // UnicodeString FHelpKeyword;
 private:
-  TObjectClassId FKind;
+  TObjectClassId FKind{};
 public:
   UnicodeString Message;
 };
@@ -138,7 +137,7 @@ public:
   static inline bool classof(const Exception *Obj) { return Obj->is(OBJECT_CLASS_EFileNotFoundError); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_EFileNotFoundError) || Exception::is(Kind); }
 public:
-  EFileNotFoundError() : Exception(OBJECT_CLASS_EFileNotFoundError, L"")
+  EFileNotFoundError() noexcept : Exception(OBJECT_CLASS_EFileNotFoundError, L"")
   {
   }
 };
@@ -285,7 +284,6 @@ NB_CORE_EXPORT UnicodeString IntToStr(intptr_t Value);
 NB_CORE_EXPORT UnicodeString UIntToStr(uintptr_t Value);
 NB_CORE_EXPORT UnicodeString Int64ToStr(int64_t Value);
 NB_CORE_EXPORT intptr_t StrToIntPtr(const UnicodeString Value);
-NB_CORE_EXPORT int64_t StrToInt64(const UnicodeString Value);
 NB_CORE_EXPORT intptr_t StrToIntDef(const UnicodeString Value, intptr_t DefVal);
 NB_CORE_EXPORT int64_t StrToInt64(const UnicodeString Value);
 NB_CORE_EXPORT int64_t StrToInt64Def(const UnicodeString Value, int64_t DefVal);
@@ -359,22 +357,14 @@ struct NB_CORE_EXPORT TSearchRec : public TObject
 {
   NB_DISABLE_COPY(TSearchRec)
 public:
-  TSearchRec() :
-    Time(0),
-    Size(0),
-    Attr(0),
-    ExcludeAttr(0),
-    FindHandle(INVALID_HANDLE_VALUE)
-  {
-    ClearStruct(FindData);
-  }
-  Integer Time;
-  Int64 Size;
-  Integer Attr;
+  TSearchRec() noexcept = default;
+  Integer Time{0};
+  Int64 Size{0};
+  Integer Attr{0};
   TFileName Name;
-  Integer ExcludeAttr;
-  THandle FindHandle;
-  TWin32FindData FindData;
+  Integer ExcludeAttr{0};
+  THandle FindHandle{INVALID_HANDLE_VALUE};
+  TWin32FindData FindData{};
 };
 
 NB_CORE_EXPORT void InitPlatformId();
@@ -451,37 +441,39 @@ template<typename F>
 class scope_guard0
 {
 public:
-  explicit scope_guard0(F &&f) : m_f(std::move(f)) {}
+  explicit scope_guard0(F&& f) : m_f(std::move(f)) {}
   ~scope_guard0() { m_f(); }
 
 private:
   const F m_f;
+  NB_DISABLE_COPY(scope_guard0)
 };
 
 template<typename F, typename P>
 class scope_guard1
 {
 public:
-  explicit scope_guard1(F &&f, P p) : m_f(std::move(f)), m_p(p) {}
+  explicit scope_guard1(F&& f, P p) : m_f(std::move(f)), m_p(p) {}
   ~scope_guard1() { m_f(m_p); }
 
 private:
   const F m_f;
   P m_p;
+  NB_DISABLE_COPY(scope_guard1)
 };
 
 class make_scope_guard
 {
 public:
   template<typename F>
-  scope_guard0<F> operator<<(F &&f) { return scope_guard0<F>(std::move(f)); }
+  scope_guard0<F> operator<<(F&& f) { return scope_guard0<F>(std::move(f)); }
 };
 
 template<typename F, typename F2>
 class scope_guard
 {
 public:
-  explicit scope_guard(F &&f, F2 &&f2) : m_f(std::move(f)), m_f2(std::move(f2))
+  explicit scope_guard(F&& f, F2&& f2) : m_f(std::move(f)), m_f2(std::move(f2))
   {
     try
     {
@@ -503,13 +495,14 @@ public:
   }
 
 private:
-  const F m_f;
-  const F2 m_f2;
-  bool m_finally_executed = false;
+  const F m_f{};
+  const F2 m_f2{};
+  bool m_finally_executed{false};
+//  NB_DISABLE_COPY(scope_guard)
 };
 
 template<typename F, typename F2>
-scope_guard<F, F2> make_try_finally(F &&f, F2 &&f2) { return scope_guard<F, F2>(std::move(f), std::move(f2)); }
+scope_guard<F, F2> make_try_finally(F&& f, F2&& f2) { return scope_guard<F, F2>(std::move(f), std::move(f2)); }
 
 } // namespace detail
 
@@ -518,7 +511,7 @@ scope_guard<F, F2> make_try_finally(F &&f, F2 &&f2) { return scope_guard<F, F2>(
 
 #define ON_SCOPE_EXIT(FUNC, T, PARAM) \
   const auto ANONYMOUS_VARIABLE(scope_exit_guard) = \
-    detail::scope_guard1<nb::FastDelegate1<void, T>, T>(nb::bind(&FUNC, this), PARAM)
+    detail::scope_guard1<nb::FastDelegate1<void, (T)>, (T)>(nb::bind(&(FUNC), this), (PARAM))
 
 #define try__catch
 #define catch__removed(BLOCK)
@@ -534,11 +527,14 @@ scope_guard<F, F2> make_try_finally(F &&f, F2 &&f2) { return scope_guard<F, F2>(
 
 #if (defined _MSC_VER && _MSC_VER > 1900)
 
-#define NONCOPYABLE(Type) \
+#define NB_NONCOPYABLE(Type) \
   Type(const Type&) = delete; \
   Type& operator=(const Type&) = delete;
 
-#define MOVABLE(Type) \
+//  Type(Type&&) = delete; \
+//  Type& operator=(Type&&) = delete;
+
+#define NB_MOVABLE(Type) \
   Type(Type&&) = default; \
   Type& operator=(Type&&) = default;
 
@@ -547,19 +543,19 @@ class movable
 {
 public:
   movable(T Value): m_Value(Value) {}
-  auto &operator=(T Value) { m_Value = Value; return *this; }
+  movable& operator=(T Value) { m_Value = Value; return *this; }
 
   movable(const movable &rhs) { *this = rhs; }
-  auto &operator=(const movable &rhs) { m_Value = rhs.m_Value; return *this; }
+  movable& operator=(const movable &rhs) { m_Value = rhs.m_Value; return *this; }
 
   movable(movable &&rhs) noexcept { *this = std::move(rhs); }
-  auto &operator=(movable &&rhs) noexcept { m_Value = rhs.m_Value; rhs.m_Value = Default; return *this; }
+  movable& operator=(movable &&rhs) noexcept { m_Value = rhs.m_Value; rhs.m_Value = Default; return *this; }
 
-  auto &operator*() const { return m_Value; }
-  auto &operator*() { return m_Value; }
+  T& operator*() const { return m_Value; }
+  T& operator*() { return m_Value; }
 
 private:
-  T m_Value;
+  T m_Value{};
 };
 
 namespace detail {
@@ -590,10 +586,10 @@ template<typename F, scope_type Type>
 class scope_guard0
 {
 public:
-  NONCOPYABLE(scope_guard0);
-  MOVABLE(scope_guard0);
+  NB_NONCOPYABLE(scope_guard0);
+  NB_MOVABLE(scope_guard0);
 
-  explicit scope_guard0(F &&f): m_f(std::forward<F>(f)) {}
+  explicit scope_guard0(F&& f): m_f(std::forward<F>(f)) {}
 
   ~scope_guard0() noexcept(Type == scope_type::fail)
   {

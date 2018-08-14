@@ -30,6 +30,8 @@ public:
   static inline bool classof(const Exception *Obj) { return Obj->is(OBJECT_CLASS_ExtException); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_ExtException) || Exception::is(Kind); }
 public:
+  ExtException() noexcept = default;
+  virtual ~ExtException() noexcept;
   explicit ExtException(const Exception *E);
   explicit ExtException(TObjectClassId Kind, const Exception *E);
   explicit ExtException(const Exception *E, const UnicodeString Msg, const UnicodeString HelpKeyword = L"");
@@ -41,22 +43,21 @@ public:
   explicit ExtException(const UnicodeString Msg, const UnicodeString MoreMessages, const UnicodeString HelpKeyword = L"");
   explicit ExtException(TObjectClassId Kind, const UnicodeString Msg, const UnicodeString MoreMessages, const UnicodeString HelpKeyword = L"");
   explicit ExtException(const UnicodeString Msg, TStrings *MoreMessages, bool Own, const UnicodeString HelpKeyword = L"");
-  virtual ~ExtException() noexcept;
   __property TStrings* MoreMessages = {read=FMoreMessages};
   __property UnicodeString HelpKeyword = {read=FHelpKeyword};
   TStrings * GetMoreMessages() const { return FMoreMessages; }
   UnicodeString GetHelpKeyword() const { return FHelpKeyword; }
 
-  explicit inline ExtException(const UnicodeString Msg) : Exception(OBJECT_CLASS_ExtException, Msg), FMoreMessages(nullptr) {}
-  explicit inline ExtException(TObjectClassId Kind, const UnicodeString Msg) : Exception(Kind, Msg), FMoreMessages(nullptr) {}
-  explicit inline ExtException(TObjectClassId Kind, intptr_t Ident) : Exception(Kind, Ident), FMoreMessages(nullptr) {}
-  explicit inline ExtException(TObjectClassId Kind, const UnicodeString Msg, intptr_t AHelpContext) : Exception(Kind, Msg, AHelpContext), FMoreMessages(nullptr) {}
+  explicit ExtException(const UnicodeString Msg) : Exception(OBJECT_CLASS_ExtException, Msg) {}
+  explicit ExtException(TObjectClassId Kind, const UnicodeString Msg) : Exception(Kind, Msg) {}
+  explicit ExtException(TObjectClassId Kind, intptr_t Ident) : Exception(Kind, Ident) {}
+  explicit ExtException(TObjectClassId Kind, const UnicodeString Msg, intptr_t AHelpContext) : Exception(Kind, Msg, AHelpContext) {}
 
-  ExtException(const ExtException & E) : Exception(OBJECT_CLASS_ExtException, L""), FMoreMessages(nullptr), FHelpKeyword(E.FHelpKeyword)
+  ExtException(const ExtException& E) : Exception(OBJECT_CLASS_ExtException, L""), FHelpKeyword(E.FHelpKeyword)
   {
     AddMoreMessages(&E);
   }
-  ExtException & operator=(const ExtException &rhs)
+  ExtException &operator=(const ExtException &rhs)
   {
     FHelpKeyword = rhs.FHelpKeyword;
     Message = rhs.Message;
@@ -73,7 +74,7 @@ protected:
   void AddMoreMessages(const Exception * E);
 
 private:
-  TStrings * FMoreMessages;
+  TStrings * FMoreMessages{nullptr};
   UnicodeString FHelpKeyword;
 };
 //---------------------------------------------------------------------------
@@ -152,7 +153,7 @@ public:
   static inline bool classof(const Exception * Obj) { return Obj->is(OBJECT_CLASS_ECRTExtException); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_ECRTExtException) || EOSExtException::is(Kind); }
 public:
-  ECRTExtException();
+  ECRTExtException() = default;
   explicit ECRTExtException(const UnicodeString Msg);
 };
 //---------------------------------------------------------------------------
