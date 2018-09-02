@@ -215,7 +215,7 @@
 "SFTP"
 "FTP"
 "WebDAV"
-"Allow SCP &fallback"
+"Allow &SCP fallback"
 "Insecure"
 "Use buttons on top or Ctrl+PgUp and Ctrl+PgDn keys to "
 "display additional session options."
