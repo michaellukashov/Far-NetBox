@@ -39,7 +39,7 @@ void TBookmarks::Load(THierarchicalStorage *Storage)
   {
     if (Storage->OpenSubKey(Keys[Idx].data(), false))
     {
-      std::unique_ptr<TStrings> BookmarkKeys(new TStringList());
+      std::unique_ptr<TStrings> BookmarkKeys(std::make_unique<TStringList>());
       try__finally
       {
         Storage->GetSubKeyNames(BookmarkKeys.get());
