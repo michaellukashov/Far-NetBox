@@ -252,7 +252,7 @@ TCustomFarFileSystem *TWinSCPPlugin::OpenPluginEx(intptr_t OpenFrom, intptr_t It
       UnicodeString CommandLine = reinterpret_cast<wchar_t *>(Item);
       if (OpenFrom == OPEN_SHORTCUT)
       {
-        intptr_t P = CommandLine.Pos(L"\1");
+        const intptr_t P = CommandLine.Pos(L"\1");
         if (P > 0)
         {
           Directory = CommandLine.SubString(P + 1, CommandLine.Length() - P);
@@ -305,7 +305,7 @@ TCustomFarFileSystem *TWinSCPPlugin::OpenPluginEx(intptr_t OpenFrom, intptr_t It
         DebugAssert(false);
         Abort();
       }
-      UnicodeString SessionName = ::PuttyUnMungeStr(ImportStorage->ReadStringRaw("Session", L""));
+      const UnicodeString SessionName = ::PuttyUnMungeStr(ImportStorage->ReadStringRaw("Session", L""));
       std::unique_ptr<TSessionData> Session(new TSessionData(SessionName));
       Session->Load(ImportStorage.get(), false);
       Session->SetModified(true);
@@ -757,7 +757,7 @@ uint32_t TWinSCPPlugin::MoreMessageDialog(const UnicodeString Str,
   {
     Result = FarParams.TimerAnswer;
   }
-  else if (Result == NPOS)
+  else if (Result == static_cast<uint32_t>(-1))
   {
     Result = CancelAnswer(Answers);
   }
@@ -789,7 +789,7 @@ void TWinSCPPlugin::CleanupConfiguration()
     }
     else
     {
-      UnicodeString Version = Storage->ReadString("Version", L"");
+      const UnicodeString Version = Storage->ReadString("Version", L"");
       if (::StrToVersionNumber(Version) < MAKEVERSIONNUMBER(2, 1, 19))
       {
         Storage->DeleteSubKey("CDCache");

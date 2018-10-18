@@ -20,7 +20,7 @@ public:
   __inline T *operator = (T *_p) { if (data) nbcore_free(data); data = _p; return data; }
   __inline T *operator->() const { return data; }
   __inline operator T *() const { return data; }
-  __inline operator intptr_t() const { return (intptr_t)data; }
+  __inline operator intptr_t() const { return static_cast<intptr_t>(data); }
   __inline T *detach() { T *res = data; data = nullptr; return res; }
 };
 
@@ -48,6 +48,7 @@ class nb_cslock
 {
   CRITICAL_SECTION &cs;
   __inline nb_cslock &operator = (const nb_cslock &) { return *this; }
+  __inline nb_cslock(const nb_cslock &) = delete;
 
 public:
   __inline nb_cslock(CRITICAL_SECTION &_cs) : cs(_cs) { ::EnterCriticalSection(&cs); }
@@ -120,9 +121,9 @@ public:
 ///////////////////////////////////////////////////////////////////////////////
 // general lists' templates
 
-#define  NumericKeySortT -1
-#define  HandleKeySortT  -2
-#define  PtrKeySortT     -3
+#define  NumericKeySortT (-1)
+#define  HandleKeySortT  (-2)
+#define  PtrKeySortT     (-3)
 
 template<class T> struct LIST
 {
@@ -145,13 +146,13 @@ template<class T> struct LIST
   __inline LIST(const LIST &x)
   {
     items = nullptr;
-    List_Copy((SortedList *)&x, (SortedList *)this, sizeof(T));
+    List_Copy(static_cast<SortedList *>(&x), static_cast<SortedList *>(this), sizeof(T));
   }
 
   __inline LIST &operator = (const LIST &x)
   {
     destroy();
-    List_Copy((SortedList *)&x, (SortedList *)this, sizeof(T));
+    List_Copy(static_cast<SortedList *>(&x), static_cast<SortedList *>(this), sizeof(T));
     return *this;
   }
 
@@ -161,23 +162,23 @@ template<class T> struct LIST
   }
 
   __inline T  *operator[](int idx) const { return (idx >= 0 && idx < count) ? items[idx] : nullptr; }
-  __inline int getCount(void)     const { return count; }
-  __inline T **getArray(void)     const { return items; }
+  __inline int getCount()     const { return count; }
+  __inline T **getArray()     const { return items; }
 
   __inline int getIndex(T *p) const
   {
     int idx;
-    return (!List_GetIndex((SortedList *)this, p, &idx)) ? -1 : idx;
+    return (!List_GetIndex(static_cast<SortedList *>(this), p, &idx)) ? -1 : idx;
   }
 
-  __inline void destroy(void)         { List_Destroy((SortedList *)this); }
-  __inline T   *find(T *p) const      { return (T *)List_Find((SortedList *)this, p); }
-  __inline int  indexOf(T *p) const   { return List_IndexOf((SortedList *)this, p); }
-  __inline int  insert(T *p, int idx) { return List_Insert((SortedList *)this, p, idx); }
-  __inline int  remove(int idx)       { return List_Remove((SortedList *)this, idx); }
+  __inline void destroy()         { List_Destroy(static_cast<SortedList *>(this)); }
+  __inline T   *find(T *p) const      { return static_cast<T *>(List_Find(static_cast<SortedList *>(this), p)); }
+  __inline int  indexOf(T *p) const   { return List_IndexOf(static_cast<SortedList *>(this), p); }
+  __inline int  insert(T *p, int idx) { return List_Insert(static_cast<SortedList *>(this), p, idx); }
+  __inline int  remove(int idx)       { return List_Remove(static_cast<SortedList *>(this), idx); }
 
-  __inline int  insert(T *p)          { return List_InsertPtr((SortedList *)this, p); }
-  __inline int  remove(T *p)          { return List_RemovePtr((SortedList *)this, p); }
+  __inline int  insert(T *p)          { return List_InsertPtr(static_cast<SortedList *>(this), p); }
+  __inline int  remove(T *p)          { return List_RemovePtr(static_cast<SortedList *>(this), p); }
 
   __inline void put(int idx, T *p)   { items[idx] = p; }
 
@@ -196,20 +197,20 @@ template<class T> struct OBJLIST : public LIST<T>
   {}
 
   __inline OBJLIST(int aincr, intptr_t id) :
-    LIST<T>(aincr, (FTSortFunc) id)
+    LIST<T>(aincr, static_cast<FTSortFunc>(id))
   {}
 
   __inline OBJLIST(const OBJLIST &x) :
     LIST<T>(x.increment, x.sortFunc)
   {
     this->items = nullptr;
-    List_ObjCopy((SortedList *)&x, (SortedList *)this, sizeof(T));
+    List_ObjCopy(static_cast<SortedList *>(&x), static_cast<SortedList *>(this), sizeof(T));
   }
 
   __inline OBJLIST &operator = (const OBJLIST &x)
   {
     destroy();
-    List_ObjCopy((SortedList *)&x, (SortedList *)this, sizeof(T));
+    List_ObjCopy(static_cast<SortedList *>(&x), static_cast<SortedList *>(this), sizeof(T));
     return *this;
   }
 
@@ -218,18 +219,18 @@ template<class T> struct OBJLIST : public LIST<T>
     destroy();
   }
 
-  __inline void destroy(void)
+  __inline void destroy()
   {
     for (int i = 0; i < this->count; i++)
       delete this->items[i];
 
-    List_Destroy((SortedList *)this);
+    List_Destroy(static_cast<SortedList *>(this));
   }
 
   __inline int remove(int idx)
   {
     delete this->items[idx];
-    return List_Remove((SortedList *)this, idx);
+    return List_Remove(static_cast<SortedList *>(this), idx);
   }
 
   __inline int remove(T *p)
@@ -267,7 +268,7 @@ class T2Utf : public ptrA
 {
 public:
   __forceinline T2Utf(const wchar_t *str) : ptrA(nbcore_utf8encodeW(str)) {}
-  __forceinline operator BYTE *() const { return (BYTE *)data; }
+  __forceinline operator BYTE *() const { return reinterpret_cast<BYTE *>(data); }
 #ifdef _XSTRING_
   std::string str() const { return std::string(data); }
 #endif
