@@ -156,7 +156,7 @@
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
-      <AdditionalIncludeDirectories>include;../../src/base;../../src/include;../../libs;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>include;../../src/base;../../src/include;../../libs;../../libs/GSL/include;</AdditionalIncludeDirectories>
       <PrecompiledHeaderFile>
       </PrecompiledHeaderFile>
       <ExceptionHandling>Sync</ExceptionHandling>
