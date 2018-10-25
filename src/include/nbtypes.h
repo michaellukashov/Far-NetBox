@@ -1,5 +1,10 @@
 #pragma once
 
+#pragma push_macro("min")
+#pragma push_macro("max")
+#undef min
+#undef max
+
 #ifndef INCL_WINSOCK_API_TYPEDEFS
 #define INCL_WINSOCK_API_TYPEDEFS 1
 #endif
@@ -63,3 +68,6 @@ typedef WORD Word;
 #define NullToEmptyA(s) ((s) ? (s) : "")
 #define NullToEmpty(s) ((s) ? (s) : L"")
 
+
+#pragma pop_macro("min")
+#pragma pop_macro("max")
