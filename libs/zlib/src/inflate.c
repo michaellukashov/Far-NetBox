@@ -674,7 +674,6 @@ int ZEXPORT PREFIX(inflate)(PREFIX3(stream) *strm, int flush) {
             state->dmax = 1U << len;
             Tracev((stderr, "inflate:   zlib header ok\n"));
             strm->adler = state->check = functable.adler32(0L, NULL, 0);
-            state->check = strm->adler;
             state->mode = hold & 0x200 ? DICTID : TYPE;
             INITBITS();
             break;
@@ -813,8 +812,7 @@ int ZEXPORT PREFIX(inflate)(PREFIX3(stream) *strm, int flush) {
 #endif
         case DICTID:
             NEEDBITS(32);
-            strm->adler = ZSWAP32(hold);
-            state->check = strm->adler;
+            strm->adler = state->check = ZSWAP32(hold);
             INITBITS();
             state->mode = DICT;
         case DICT:
@@ -823,7 +821,6 @@ int ZEXPORT PREFIX(inflate)(PREFIX3(stream) *strm, int flush) {
                 return Z_NEED_DICT;
             }
             strm->adler = state->check = functable.adler32(0L, NULL, 0);
-            state->check = strm->adler;
             state->mode = TYPE;
         case TYPE:
             if (flush == Z_BLOCK || flush == Z_TREES)
@@ -1196,7 +1193,6 @@ int ZEXPORT PREFIX(inflate)(PREFIX3(stream) *strm, int flush) {
                 state->total += out;
                 if ((state->wrap & 4) && out) {
                     strm->adler = state->check = UPDATE(state->check, put - out, out);
-                    state->check = strm->adler;
                 }
                 out = left;
                 if ((state->wrap & 4) && (
@@ -1260,7 +1256,6 @@ int ZEXPORT PREFIX(inflate)(PREFIX3(stream) *strm, int flush) {
     state->total += out;
     if ((state->wrap & 4) && out) {
         strm->adler = state->check = UPDATE(state->check, strm->next_out - out, out);
-        state->check =strm->adler;
     }
     strm->data_type = (int)state->bits + (state->last ? 64 : 0) +
                       (state->mode == TYPE ? 128 : 0) + (state->mode == LEN_ || state->mode == COPY_ ? 256 : 0);
