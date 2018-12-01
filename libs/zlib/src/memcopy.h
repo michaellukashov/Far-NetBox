@@ -295,7 +295,6 @@ static inline uint8_t *byte_memset(uint8_t *out, uint32_t len) {
     uint32_t rem = len % sz;
     len /= sz;
     out += rem;
-    from += rem;
 
     uint32_t by8 = len % 8;
     len -= by8;
