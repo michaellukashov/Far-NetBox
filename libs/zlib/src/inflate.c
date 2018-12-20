@@ -124,6 +124,7 @@ int ZEXPORT PREFIX(inflateResetKeep)(PREFIX3(stream) *strm) {
     if (state->wrap)        /* to support ill-conceived Java test suite */
         strm->adler = state->wrap & 1;
     state->mode = HEAD;
+    state->check = functable.adler32(0L, NULL, 0);
     state->last = 0;
     state->havedict = 0;
     state->dmax = 32768U;
@@ -1015,7 +1016,8 @@ int ZEXPORT PREFIX(inflate)(PREFIX3(stream) *strm, int flush) {
         case LEN_:
             state->mode = LEN;
         case LEN:
-            if (have >= 6 && left >= 258) {
+            if (have >= INFLATE_FAST_MIN_HAVE &&
+                left >= INFLATE_FAST_MIN_LEFT) {
                 RESTORE();
                 inflate_fast(strm, out);
                 LOAD();
@@ -1408,6 +1410,8 @@ int ZEXPORT PREFIX(inflateSync)(PREFIX3(stream) *strm) {
     /* return no joy or set up to restart inflate() on a new block */
     if (state->have != 4)
         return Z_DATA_ERROR;
+    if (state->mode == HEAD)
+        state->wrap = 0;    /* never processed header, so assume raw */
     in = strm->total_in;
     out = strm->total_out;
     PREFIX(inflateReset)(strm);
