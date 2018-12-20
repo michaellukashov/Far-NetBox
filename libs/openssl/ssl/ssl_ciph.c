@@ -56,7 +56,7 @@
  * [including the GNU Public Licence.]
  */
 /* ====================================================================
- * Copyright (c) 1998-2007 The OpenSSL Project.  All rights reserved.
+ * Copyright (c) 1998-2018 The OpenSSL Project.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -489,7 +489,7 @@ static void load_builtin_compressions(void)
                     comp->method = COMP_zlib();
                     if (comp->method && comp->method->type == NID_undef)
                         OPENSSL_free(comp);
-                    else if(comp->method) {
+                    else {
                         comp->id = SSL_COMP_ZLIB_IDX;
                         comp->name = comp->method->name;
                         sk_SSL_COMP_push(ssl_comp_methods, comp);
@@ -1205,7 +1205,7 @@ static int ssl_cipher_process_rulestr(const char *rule_str,
                    ((ch >= '0') && (ch <= '9')) ||
                    ((ch >= 'a') && (ch <= 'z')) || (ch == '-') || (ch == '.'))
 #else
-            while (isalnum(ch) || (ch == '-') || (ch == '.'))
+            while (isalnum((unsigned char)ch) || (ch == '-') || (ch == '.'))
 #endif
             {
                 ch = *(++l);
@@ -1406,11 +1406,17 @@ static int ssl_cipher_process_rulestr(const char *rule_str,
 static int check_suiteb_cipher_list(const SSL_METHOD *meth, CERT *c,
                                     const char **prule_str)
 {
-    unsigned int suiteb_flags = 0, suiteb_comb2 = 0;
+    unsigned int suiteb_flags = 0;
+# ifndef OPENSSL_NO_ECDH
+    unsigned int suiteb_comb2 = 0;
+#endif
+
     if (strncmp(*prule_str, "SUITEB128ONLY", 13) == 0) {
         suiteb_flags = SSL_CERT_FLAG_SUITEB_128_LOS_ONLY;
     } else if (strncmp(*prule_str, "SUITEB128C2", 11) == 0) {
+# ifndef OPENSSL_NO_ECDH
         suiteb_comb2 = 1;
+# endif
         suiteb_flags = SSL_CERT_FLAG_SUITEB_128_LOS;
     } else if (strncmp(*prule_str, "SUITEB128", 9) == 0) {
         suiteb_flags = SSL_CERT_FLAG_SUITEB_128_LOS;
@@ -2001,7 +2007,7 @@ int SSL_COMP_add_compression_method(int id, COMP_METHOD *cm)
     if (id < 193 || id > 255) {
         SSLerr(SSL_F_SSL_COMP_ADD_COMPRESSION_METHOD,
                SSL_R_COMPRESSION_ID_NOT_WITHIN_PRIVATE_RANGE);
-        return 0;
+        return 1;
     }
 
     MemCheck_off();
@@ -2013,6 +2019,7 @@ int SSL_COMP_add_compression_method(int id, COMP_METHOD *cm)
     }
     comp->id = id;
     comp->method = cm;
+    comp->name = cm->name;
     load_builtin_compressions();
     if (ssl_comp_methods && sk_SSL_COMP_find(ssl_comp_methods, comp) >= 0) {
         OPENSSL_free(comp);

@@ -161,9 +161,9 @@ int EVP_PBE_CipherInit(ASN1_OBJECT *pbe_obj, const char *pass, int passlen,
         char obj_tmp[80];
         EVPerr(EVP_F_EVP_PBE_CIPHERINIT, EVP_R_UNKNOWN_PBE_ALGORITHM);
         if (!pbe_obj)
-            BUF_strlcpy(obj_tmp, "NULL", sizeof obj_tmp);
+            BUF_strlcpy(obj_tmp, "NULL", sizeof(obj_tmp));
         else
-            i2t_ASN1_OBJECT(obj_tmp, sizeof obj_tmp, pbe_obj);
+            i2t_ASN1_OBJECT(obj_tmp, sizeof(obj_tmp), pbe_obj);
         ERR_add_error_data(2, "TYPE=", obj_tmp);
         return 0;
     }
@@ -171,15 +171,7 @@ int EVP_PBE_CipherInit(ASN1_OBJECT *pbe_obj, const char *pass, int passlen,
     if (!pass)
         passlen = 0;
     else if (passlen == -1)
-    {
-    #if defined(WINSCP) && defined(PBE_UNICODE)
-        // OPENSSL_asc2uni adds the trailing \0 to the length,
-        // even if input ascii password length does not include it
-        passlen = (wcslen((const wchar_t*)pass) * sizeof(wchar_t)) + sizeof(wchar_t);
-    #else
         passlen = strlen(pass);
-    #endif
-    }
 
     if (cipher_nid == -1)
         cipher = NULL;
