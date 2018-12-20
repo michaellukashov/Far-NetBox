@@ -122,10 +122,10 @@ static int ssl_free(BIO *a)
     if (a == NULL)
         return (0);
     bs = (BIO_SSL *)a->ptr;
-    if (bs->ssl != NULL)
+    if (bs && bs->ssl != NULL)
         SSL_shutdown(bs->ssl);
     if (a->shutdown) {
-        if (a->init && (bs->ssl != NULL))
+        if (a->init && bs && (bs->ssl != NULL))
             SSL_free(bs->ssl);
         a->init = 0;
         a->flags = 0;
