@@ -1,6 +1,6 @@
 
 perl util\mkfiles.pl >MINFO
-perl util\mk1mf.pl no-asm VC-WIN32 >ms\nt.mak
+perl util\mk1mf.pl no-asm no-cast no-err no-bf no-sctp no-rsax VC-WIN32 >ms\nt.mak
 perl util\mk1mf.pl dll no-asm VC-WIN32 >ms\ntdll.mak
 if x%OSVERSION% == x goto skipce
 perl util\mk1mf.pl no-asm VC-CE >ms\ce.mak

@@ -48,7 +48,7 @@ if ($FLAVOR =~ /WIN64/)
     my $f = $shlib || $fips ?' /MD':' /MT';
     $opt_cflags=$f.' /O2 /Gw /GL';
     $dbg_cflags=$f.'d /Od -DDEBUG -D_DEBUG';
-    $lflags="/nologo /subsystem:console /opt:ref";
+    $lflags="/nologo /subsystem:console /opt:ref /opt:icf";
     $opt_lflags=" /LTCG";
 
     *::perlasm_compile_target = sub {
@@ -135,7 +135,7 @@ else	# Win32
     $ff = "/fixed";
     $opt_cflags=$f.' /O2 /Ob2 /Gw /GL';
     $dbg_cflags=$f.'d /Od -DDEBUG -D_DEBUG';
-    $lflags="/nologo /subsystem:console /opt:ref";
+    $lflags="/nologo /subsystem:console /opt:ref /opt:icf";
     $opt_lflags=" /LTCG";
     }
 $lib_cflag='/Zl' if (!$shlib);	# remove /DEFAULTLIBs from static lib
@@ -191,7 +191,7 @@ if ($FLAVOR =~ /CE/)
 			}
 		}
 	$ex_libs.=' $(PORTSDK_LIBPATH)/portlib.lib'	if (defined($ENV{'PORTSDK_LIBPATH'}));
-	$ex_libs.=' /nodefaultlib coredll.lib corelibc.lib' if ($ENV{'TARGETCPU'} eq "X86");
+	$ex_libs.=' /nodefaultlib:oldnames.lib coredll.lib corelibc.lib' if ($ENV{'TARGETCPU'} eq "X86");
 	}
 else
 	{
