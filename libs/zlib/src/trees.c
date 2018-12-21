@@ -145,7 +145,7 @@ static int  build_bl_tree    (deflate_state *s);
 static void send_all_trees   (deflate_state *s, int lcodes, int dcodes, int blcodes);
 static void compress_block   (deflate_state *s, const ct_data *ltree, const ct_data *dtree);
 static int  detect_data_type (deflate_state *s);
-static unsigned bi_reverse   (uint32_t value, int length);
+static uint32_t bi_reverse   (uint32_t code, int len);
 static void bi_flush         (deflate_state *s);
 
 #ifdef GEN_TREES_H
@@ -479,7 +479,8 @@ static void gen_bitlen(deflate_state *s, tree_desc *desc) {
                 continue;
             if (tree[m].Len != bits) {
                 Trace((stderr, "code %d bits %d->%u\n", m, tree[m].Len, bits));
-                s->opt_len += (uint64_t)((bits - tree[m].Len) * tree[m].Freq);
+                s->opt_len += (uint64_t)(bits * tree[m].Freq);
+                s->opt_len -= (uint64_t)(tree[m].Len * tree[m].Freq);
                 tree[m].Len = (uint16_t)bits;
             }
             n--;
