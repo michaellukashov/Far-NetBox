@@ -42,6 +42,16 @@
 #endif
 
 
+#if defined(_MSC_VER) && (_MSC_VER <= 1700)
+  /* for vs2012/11.0/1700 and earlier Visual Studio compilers */
+# define bool   int
+# define false  0
+# define true   1
+#else
+# include <stdbool.h>
+#endif
+
+
 #ifdef _WIN32
 #include "winconfig.h"
 #else
@@ -421,7 +431,7 @@ utf8_toUtf8(const ENCODING *UNUSED_P(enc),
 
   /* Avoid copying partial characters (from incomplete input). */
   {
-    fromLimBefore = fromLim;
+    const char * const fromLimBefore = fromLim;
     _INTERNAL_trim_to_complete_utf8_characters(*fromP, &fromLim);
     if (fromLim < fromLimBefore) {
       input_incomplete = true;
@@ -429,7 +439,7 @@ utf8_toUtf8(const ENCODING *UNUSED_P(enc),
   }
 
   {
-    bytesToCopy = fromLim - *fromP;
+    const ptrdiff_t bytesToCopy = fromLim - *fromP;
     memcpy(*toP, *fromP, bytesToCopy);
     *fromP += bytesToCopy;
     *toP += bytesToCopy;
