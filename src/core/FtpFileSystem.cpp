@@ -2163,6 +2163,13 @@ void TFTPFileSystem::AutoDetectTimeDifference(TRemoteFileList *FileList)
             FORMAT("Not using file %s to detect timezone difference as it has the timestamp in the future [%s]",
               File->GetFullFileName(), StandardTimestamp(UtcModification)));
         }
+        // "SecureLink FTP Proxy" succeeds CWD for a file, so we never get a timestamp here
+        else if (UtcModification == TDateTime())
+        {
+          FTerminal->LogEvent(
+            FORMAT(L"Not using file %s to detect timezone difference as its timestamp was not resolved",
+              (File->FullFileName)));
+        }
         else
         {
           FDetectTimeDifference = false;
@@ -2176,7 +2183,7 @@ void TFTPFileSystem::AutoDetectTimeDifference(TRemoteFileList *FileList)
           FTimeDifference = ToInt64(SecsPerDay * (UtcModification - File->GetModification()));
 
           UnicodeString FileLog =
-            FORMAT("%s (Listing: %s, UTF: %s)", File->GetFullFileName(), StandardTimestamp(File->GetModification()), StandardTimestamp(UtcModification));
+            FORMAT("%s (Listing: %s, UTC: %s)", File->GetFullFileName(), StandardTimestamp(File->GetModification()), StandardTimestamp(UtcModification));
           UnicodeString LogMessage;
           if (FTimeDifference == 0)
           {

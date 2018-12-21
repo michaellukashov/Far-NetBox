@@ -609,7 +609,9 @@ public:
   __property bool ChangePassword  = { read = FChangePassword, write = SetChangePassword };
   __property int PingInterval  = { read = FPingInterval, write = SetPingInterval };
   __property bool TryAgent  = { read = FTryAgent, write = SetTryAgent };
+  RWProperty<bool> TryAgent{nb::bind(&TSessionData::GetTryAgent, this), nb::bind(&TSessionData::SetTryAgent, this)};
   __property bool AgentFwd  = { read = FAgentFwd, write = SetAgentFwd };
+  RWProperty<bool> AgentFwd{nb::bind(&TSessionData::GetAgentFwd, this), nb::bind(&TSessionData::SetAgentFwd, this)};
   __property UnicodeString ListingCommand = { read = FListingCommand, write = SetListingCommand };
   __property bool AuthTIS  = { read = FAuthTIS, write = SetAuthTIS };
   __property bool AuthKI  = { read = FAuthKI, write = SetAuthKI };
@@ -618,7 +620,9 @@ public:
   __property bool GSSAPIFwdTGT = { read = FGSSAPIFwdTGT, write = SetGSSAPIFwdTGT };
   __property bool ChangeUsername  = { read = FChangeUsername, write = SetChangeUsername };
   __property bool Compression  = { read = FCompression, write = SetCompression };
+  RWProperty<bool> Compression{nb::bind(&TSessionData::GetCompression, this), nb::bind(&TSessionData::SetCompression, this)};
   __property TSshProt SshProt  = { read = FSshProt, write = SetSshProt };
+  RWProperty<TSshProt> SshProt{nb::bind(&TSessionData::GetSshProt, this), nb::bind(&TSessionData::SetSshProt, this)};
   __property bool UsesSsh = { read = GetUsesSsh };
   __property bool Ssh2DES  = { read = FSsh2DES, write = SetSsh2DES };
   __property bool SshNoUserAuth  = { read = FSshNoUserAuth, write = SetSshNoUserAuth };
@@ -708,6 +712,7 @@ public:
   __property UnicodeString RecycleBinPath = { read = FRecycleBinPath, write = SetRecycleBinPath };
   __property UnicodeString PostLoginCommands = { read = FPostLoginCommands, write = SetPostLoginCommands };
   __property TAddressFamily AddressFamily = { read = FAddressFamily, write = SetAddressFamily };
+  RWProperty<TAddressFamily> AddressFamily{nb::bind(&TSessionData::GetAddressFamily, this), nb::bind(&TSessionData::SetAddressFamily, this)};
   __property UnicodeString RekeyData = { read = FRekeyData, write = SetRekeyData };
   __property uintptr_t RekeyTime = { read = FRekeyTime, write = SetRekeyTime };
   __property int Color = { read = FColor, write = SetColor };
@@ -733,6 +738,7 @@ public:
   __property TTlsVersion MinTlsVersion = { read = FMinTlsVersion, write = SetMinTlsVersion };
   __property TTlsVersion MaxTlsVersion = { read = FMaxTlsVersion, write = SetMaxTlsVersion };
   __property UnicodeString LogicalHostName = { read = FLogicalHostName, write = SetLogicalHostName };
+  RWProperty<UnicodeString> LogicalHostName{nb::bind(&TSessionData::GetLogicalHostName, this), nb::bind(&TSessionData::SetLogicalHostName, this)};
   __property TAutoSwitch NotUtf = { read = FNotUtf, write = SetNotUtf };
   __property int InternalEditorEncoding = { read = FInternalEditorEncoding, write = SetInternalEditorEncoding };
   __property UnicodeString S3DefaultRegion = { read = FS3DefaultRegion, write = SetS3DefaultRegion };

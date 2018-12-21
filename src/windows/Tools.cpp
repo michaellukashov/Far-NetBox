@@ -361,11 +361,19 @@ static void ExecuteProcessAndReadOutput(const
         CloseHandle(PipeWrite);
       }
 
-      char Buffer[4096];
-      DWORD BytesRead;
-      while (ReadFile(PipeRead, Buffer, sizeof(Buffer), &BytesRead, nullptr))
+      DWORD BytesAvail;
+      while (PeekNamedPipe(PipeRead, NULL, 0, NULL, &BytesAvail, NULL))
       {
-        Output += UnicodeString(UTF8String(Buffer, BytesRead));
+        if (BytesAvail > 0)
+        {
+          char Buffer[4096];
+          DWORD BytesToRead = std::min(BytesAvail, static_cast<unsigned long>(sizeof(Buffer)));
+          DWORD BytesRead;
+          if (ReadFile(PipeRead, Buffer, BytesToRead, &BytesRead, nullptr))
+          {
+            Output += UnicodeString(UTF8String(Buffer, BytesRead));
+          }
+        }
         // Same as in ExecuteShellCheckedAndWait
         Sleep(200);
         Application->ProcessMessages();
@@ -1126,7 +1134,7 @@ void SuspendWindows()
 {
   AcquireShutDownPrivileges();
 
-  // https://msdn.microsoft.com/en-us/library/windows/desktop/aa373201.aspx
+  // https://docs.microsoft.com/en-us/windows/desktop/api/powrprof/nf-powrprof-setsuspendstate
   Win32Check(FALSE != SetSuspendState(false, false, false));
 }
 //---------------------------------------------------------------------------

@@ -3035,11 +3035,6 @@ bool TTerminalThread::Release()
   {
     delete this;
   }
-  else
-  {
-    // only now has the owner released ownership of the thread, so we are safe to kill outselves.
-    Terminate();
-  }
   return Result;
 }
 //---------------------------------------------------------------------------

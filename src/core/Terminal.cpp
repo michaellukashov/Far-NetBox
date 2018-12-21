@@ -1507,6 +1507,7 @@ void TTerminal::InternalTryOpen()
     // Particularly to prevent reusing a wrong client certificate passphrase
     // in the next login attempt
     FRememberedPassword = UnicodeString();
+    FRememberedPasswordKind = TPromptKind(-1);
     FRememberedTunnelPassword = UnicodeString();
     throw;
   }
@@ -1651,6 +1652,9 @@ void TTerminal::InitFileSystem()
     {
       SAFE_DESTROY(FSecureShell);
       FSecureShell = nullptr;
+      // This does not make it through, if terminal thread is abandonded,
+      // see also TTerminalManager::DoConnectTerminal
+      DoInformation(L"", true, 0);
     } end_try__finally
   }
 }
@@ -2006,6 +2010,7 @@ bool TTerminal::DoPromptUser(TSessionData * /*Data*/, TPromptKind Kind,
       else
       {
         GetPasswordSource()->SetRememberedPassword(EncryptedPassword);
+        GetPasswordSource()->FRememberedPasswordKind = Kind;
       }
     }
   }
@@ -2251,8 +2256,14 @@ void TTerminal::SaveCapabilities(TFileSystemInfo &FileSystemInfo)
 //---------------------------------------------------------------------------
 bool TTerminal::GetIsCapableProtected(TFSCapability Capability) const
 {
-  DebugAssert(FFileSystem);
-  return FFileSystem->IsCapable(Capability);
+  if (DebugAlwaysTrue(FFileSystem != NULL))
+  {
+    return FFileSystem->IsCapable(Capability);
+  }
+  else
+  {
+    return false;
+  }
 }
 //---------------------------------------------------------------------------
 UnicodeString TTerminal::GetAbsolutePath(const UnicodeString APath, bool Local) const
@@ -5840,7 +5851,7 @@ TSynchronizeChecklist * TTerminal::SynchronizeCollect(const UnicodeString LocalD
       Checklist.get());
     Checklist->Sort();
   }
-  catch__removed 
+  catch__removed
   ({
     delete Checklist;
     throw;
@@ -6539,7 +6550,7 @@ void TTerminal::SynchronizeLocalTimestamp(const UnicodeString /*AFileName*/,
   UnicodeString LocalFile =
     ::IncludeTrailingBackslash(ChecklistItem->Local.Directory) +
     ChecklistItem->Local.FileName;
-  FileOperationLoopCustom(this, OperationProgress, folAllowSkip, 
+  FileOperationLoopCustom(this, OperationProgress, folAllowSkip,
     FMTLOAD(CANT_SET_ATTRS, LocalFile), "",
   [&]()
   {
@@ -6795,7 +6806,7 @@ UnicodeString TTerminal::GetPassword() const
   {
     Result = GetSessionData()->GetPassword();
   }
-  else
+  else if (FRememberedPasswordKind != pkPassphrase)
   {
     Result = GetRememberedPassword();
   }
@@ -6985,12 +6996,11 @@ bool TTerminal::CopyToRemote(TStrings *AFilesToCopy,
       Files.reset(new TStringList());
       Files->SetOwnsObjects(true);
     }
-    // dirty trick: when moving, do not pass copy param to avoid exclude mask
     bool CalculatedSize =
-      CalculateLocalFilesSize(
-        AFilesToCopy,
-        (FLAGCLEAR(AParams, cpDelete) ? CopyParam : nullptr),
-        CopyParam->GetCalculateSize(), Files.get(), Size);
+      CalculateLocalFilesSize(AFilesToCopy, CopyParam, CopyParam->GetCalculateSize(), Files.get(), Size);
+//        AFilesToCopy,
+//        (FLAGCLEAR(AParams, cpDelete) ? CopyParam : nullptr),
+//        CopyParam->GetCalculateSize(), Files.get(), Size);
 
     FLastProgressLogged = GetTickCount();
     OperationProgress.Start((AParams & cpDelete) ? foMove : foCopy, osLocal,
@@ -7452,13 +7462,12 @@ bool TTerminal::CopyToLocal(TStrings *AFilesToCopy,
     SetExceptionOnFail(true);
     try__finally
     {
-      // dirty trick: when moving, do not pass copy param to avoid exclude mask
       TCalculateSizeStats Stats;
       Stats.FoundFiles = Files.get();
-      if (CalculateFilesSize(
-            AFilesToCopy, TotalSize, csIgnoreErrors,
-            (FLAGCLEAR(AParams, cpDelete) ? CopyParam : nullptr),
-            CopyParam->GetCalculateSize(), Stats))
+      if (CalculateFilesSize(AFilesToCopy, TotalSize, csIgnoreErrors, CopyParam, CopyParam->GetCalculateSize(), Stats))
+//            AFilesToCopy, TotalSize, csIgnoreErrors,
+//            (FLAGCLEAR(AParams, cpDelete) ? CopyParam : nullptr),
+//            CopyParam->GetCalculateSize(), Stats))
       {
         TotalSizeKnown = true;
       }
@@ -7790,7 +7799,7 @@ void TTerminal::UpdateTargetAttrs(
   {
     Attrs = faArchive;
   }
-	uintptr_t NewAttrs = CopyParam->LocalFileAttrs(*AFile->GetRights());
+  uintptr_t NewAttrs = CopyParam->LocalFileAttrs(*AFile->GetRights());
   if ((NewAttrs & Attrs) != NewAttrs)
   {
     FileOperationLoopCustom(this, FOperationProgress, folAllowSkip,

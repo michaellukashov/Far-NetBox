@@ -1171,6 +1171,12 @@ static UnicodeString MakeUnicodeLargePath(const UnicodeString APath)
 UnicodeString ApiPath(const UnicodeString APath)
 {
   UnicodeString Result = APath;
+  /*UnicodeString Drive = ExtractFileDrive(Result);
+  // This may match even a path like "C:" or "\\server\\share", but we do not really care
+  if (Drive.IsEmpty() || (Result.SubString(Drive.Length() + 1, 1) != L"\\"))
+  {
+    Result = ExpandFileName(Result);
+  }*/
 
   if (IsWin7() || (Result.Length() >= MAX_PATH))
   {

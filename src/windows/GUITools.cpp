@@ -85,9 +85,23 @@ void OpenSessionInPutty(const UnicodeString PuttyPath,
   {
 
     Params = ::ExpandEnvironmentVariables(Params);
-    UnicodeString Password = GetGUIConfiguration()->GetPuttyPassword() ? SessionData->GetPassword() : UnicodeString();
+    // UnicodeString Password = GetGUIConfiguration()->GetPuttyPassword() ? SessionData->GetPassword() : UnicodeString();
+    UnicodeString Password;
+    if (GetGUIConfiguration()->GetPuttyPassword())
+    {
+      // Passphrase has precendence, as it's more likely entered by user during authentication, hence more likely really needed.
+      if (!SessionData->GetPassphrase().IsEmpty())
+      {
+        Password = SessionData->GetPassphrase();
+      }
+      else if (!SessionData->GetPassword().IsEmpty())
+      {
+        Password = SessionData->GetPassword();
+      }
+    }
     TCustomCommandData Data(SessionData, SessionData->SessionGetUserName(), Password);
     TRemoteCustomCommand RemoteCustomCommand(Data, SessionData->GetRemoteDirectory());
+
     TWinInteractiveCustomCommand InteractiveCustomCommand(
       &RemoteCustomCommand, L"PuTTY", UnicodeString());
 
@@ -99,7 +113,8 @@ void OpenSessionInPutty(const UnicodeString PuttyPath,
     {
       if (IsUWP())
       {
-        if ((SessionData->FSProtocol() == fsFTP) && GetGUIConfiguration()->TelnetForFtpInPutty())
+        bool Telnet = (SessionData->FSProtocol() == fsFTP) && GetGUIConfiguration()->GetTelnetForFtpInPutty();
+        if (Telnet)
         {
           AddToList(PuttyParams, L"-telnet", L" ");
           // PuTTY  does not allow -pw for telnet
@@ -113,6 +128,38 @@ void OpenSessionInPutty(const UnicodeString PuttyPath,
         if ((SessionData->FSProtocol != fsFTP) && (SessionData->PortNumber() != SshPortNumber))
         {
           AddToList(PuttyParams, FORMAT(L"-P %d", SessionData->PortNumber()), L" ");
+        }
+
+        if (!Telnet)
+        {
+          if (!SessionData->GetPublicKeyFile().IsEmpty())
+          {
+            AddToList(PuttyParams, FORMAT(L"-i \"%s\"", (SessionData->GetPublicKeyFile())), L" ");
+          }
+          AddToList(PuttyParams, (SessionData->TryAgent ? L"-agent" : L"-noagent"), L" ");
+          if (SessionData->TryAgent)
+          {
+            AddToList(PuttyParams, (SessionData->AgentFwd ? L"-A" : L"-a"), L" ");
+          }
+          if (SessionData->Compression)
+          {
+            AddToList(PuttyParams, L"-C", L" ");
+          }
+          AddToList(PuttyParams,
+            ((SessionData->SshProt == ssh1only || SessionData->SshProt == ssh1deprecated) ? L"-1" : L"-2"), L" ");
+          if (!SessionData->LogicalHostName().IsEmpty())
+          {
+            AddToList(PuttyParams, FORMAT(L"-loghost \"%s\"", (SessionData->LogicalHostName)), L" ");
+          }
+        }
+
+        if (SessionData->AddressFamily == afIPv4)
+        {
+          AddToList(PuttyParams, L"-4", L" ");
+        }
+        else if (SessionData->AddressFamily == afIPv6)
+        {
+          AddToList(PuttyParams, L"-6", L" ");
         }
       }
       else
@@ -227,9 +274,11 @@ bool FindTool(const UnicodeString Name, UnicodeString &APath)
   return Result;
 }
 //---------------------------------------------------------------------------
+bool DontCopyCommandToClipboard = false;
+//---------------------------------------------------------------------------
 bool CopyCommandToClipboard(const UnicodeString Command)
 {
-  bool Result = false; // UseAlternativeFunction() && IsKeyPressed(VK_CONTROL);
+  bool Result = !DontCopyCommandToClipboard; // && UseAlternativeFunction() && IsKeyPressed(VK_CONTROL);
   if (Result)
   {
     volatile TInstantOperationVisualizer Visualizer;
@@ -1626,7 +1675,7 @@ void TNewRichEdit::CreateParams(TCreateParams & Params)
 
   TCustomMemo::CreateParams(Params);
   // MSDN says that we should use MSFTEDIT_CLASS to load Rich Edit 4.1:
-  // https://msdn.microsoft.com/en-us/library/windows/desktop/bb787873.aspx
+  // https://docs.microsoft.com/en-us/windows/desktop/controls/about-rich-edit-controls
   // But MSFTEDIT_CLASS is defined as "RICHEDIT50W",
   // so not sure what version we are loading.
   // Seem to work on Windows XP SP3.

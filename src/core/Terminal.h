@@ -307,6 +307,7 @@ private:
   TSessionStatus FStatus;
   intptr_t FOpening;
   RawByteString FRememberedPassword;
+  TPromptKind FRememberedPasswordKind;
   RawByteString FRememberedTunnelPassword;
   TTunnelThread *FTunnelThread;
   TSecureShell *FTunnel;

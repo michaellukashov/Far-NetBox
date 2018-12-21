@@ -851,7 +851,7 @@ void TS3FileSystem::DoListBucket(
 void TS3FileSystem::ReadDirectoryInternal(
   const UnicodeString APath, TRemoteFileList *FileList, intptr_t MaxKeys, const UnicodeString AFileName)
 {
-  UnicodeString Path = GetAbsolutePath(APath, false);
+  UnicodeString Path = base::UnixExcludeTrailingBackslash(GetAbsolutePath(APath, false));
   if (base::IsUnixRootPath(Path))
   {
     DebugAssert(FileList != nullptr);
@@ -1001,6 +1001,10 @@ void TS3FileSystem::RemoteDeleteFile(const UnicodeString AFileName,
 void TS3FileSystem::RemoteRenameFile(const UnicodeString AFileName, const TRemoteFile *AFile,
   const UnicodeString ANewName)
 {
+  if (DebugAlwaysTrue(AFile != nullptr) && AFile->GetIsDirectory())
+  {
+    throw Exception(LoadStr(FS_RENAME_NOT_SUPPORTED));
+  }
   RemoteCopyFile(AFileName, AFile, ANewName);
   TRmSessionAction DummyAction(FTerminal->GetActionLog(), AFileName);
   RemoteDeleteFile(AFileName, AFile, dfForceDelete, DummyAction);

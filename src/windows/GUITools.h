@@ -20,6 +20,7 @@ NB_CORE_EXPORT bool ExecuteShell(const UnicodeString Path, const UnicodeString P
   HANDLE &Handle);
 NB_CORE_EXPORT void ExecuteShellCheckedAndWait(const UnicodeString Command, TProcessMessagesEvent ProcessMessages);
 NB_CORE_EXPORT bool CopyCommandToClipboard(const UnicodeString Command);
+//NB_CORE_EXPORT bool DontCopyCommandToClipboard;
 NB_CORE_EXPORT void OpenSessionInPutty(const UnicodeString PuttyPath,
   TSessionData *SessionData);
 NB_CORE_EXPORT bool SpecialFolderLocation(intptr_t PathID, UnicodeString &APath);
