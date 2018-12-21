@@ -1,4 +1,4 @@
-#
+#! /usr/bin/env python3
 #                          __  __            _
 #                       ___\ \/ /_ __   __ _| |_
 #                      / _ \\  /| '_ \ / _` | __|
@@ -28,49 +28,35 @@
 # OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
 # USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-include_HEADERS = \
-    ../expat_config.h \
-    expat.h \
-    expat_external.h
+import argparse
+import difflib
+import sys
 
-lib_LTLIBRARIES = libexpat.la
 
-libexpat_la_LDFLAGS = \
-    -no-undefined \
-    -version-info @LIBCURRENT@:@LIBREVISION@:@LIBAGE@
+def _read_lines(filename):
+    try:
+        with open(filename) as f:
+            return f.readlines()
+    except UnicodeDecodeError:
+        with open(filename, encoding='utf_16') as f:
+            return f.readlines()
 
-libexpat_la_SOURCES = \
-    loadlibrary.c \
-    xmlparse.c \
-    xmltok.c \
-    xmlrole.c
 
-doc_DATA = \
-    ../AUTHORS \
-    ../Changes
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('first', metavar='FILE')
+    parser.add_argument('second', metavar='FILE')
+    config = parser.parse_args()
 
-install-data-hook:
-	cd "$(DESTDIR)$(docdir)" && $(am__mv) Changes changelog
+    first = _read_lines(config.first)
+    second = _read_lines(config.second)
 
-uninstall-local:
-	$(RM) "$(DESTDIR)$(docdir)/changelog"
+    diffs = list(difflib.unified_diff(first, second, fromfile=config.first,
+                                      tofile=config.second))
+    if diffs:
+        sys.stdout.writelines(diffs)
+        sys.exit(1)
 
-EXTRA_DIST = \
-    ascii.h \
-    asciitab.h \
-    expat_external.h \
-    expat.h \
-    iasciitab.h \
-    internal.h \
-    latin1tab.h \
-    libexpat.def \
-    libexpatw.def \
-    nametab.h \
-    siphash.h \
-    utf8tab.h \
-    winconfig.h \
-    xmlrole.h \
-    xmltok.h \
-    xmltok_impl.c \
-    xmltok_impl.h \
-    xmltok_ns.c
+
+if __name__ == '__main__':
+    main()
