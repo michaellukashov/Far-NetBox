@@ -77,6 +77,7 @@ public:
   __property UnicodeString CurrentSubKey  = { read = GetCurrentSubKey };
   __property TStorageAccessMode AccessMode  = { read = FAccessMode, write = SetAccessMode };
   __property bool Explicit = { read = FExplicit, write = FExplicit };
+  __property bool ForceSave = { read = FForceSave, write = FForceSave };
   __property bool ForceAnsi = { read = FForceAnsi, write = FForceAnsi };
   __property bool MungeStringValues = { read = FMungeStringValues, write = FMungeStringValues };
   __property UnicodeString Source = { read = GetSource };
@@ -100,6 +101,7 @@ protected:
   TStrings *FKeyHistory;
   TStorageAccessMode FAccessMode;
   bool FExplicit;
+  bool FForceSave;
   bool FMungeStringValues;
   bool FForceAnsi;
 
@@ -121,7 +123,7 @@ class NB_CORE_EXPORT TRegistryStorage : public THierarchicalStorage
 {
   NB_DISABLE_COPY(TRegistryStorage)
 public:
-  explicit TRegistryStorage(const UnicodeString AStorage, HKEY ARootKey);
+  explicit TRegistryStorage(const UnicodeString AStorage, HKEY ARootKey, REGSAM WowMode = 0);
   explicit TRegistryStorage(const UnicodeString AStorage);
   virtual void Init() override;
   virtual ~TRegistryStorage();
@@ -171,6 +173,7 @@ public:
 private:
   TRegistry *FRegistry;
   mutable intptr_t FFailed;
+  REGSAM FWowMode;
 };
 //---------------------------------------------------------------------------
 #if 0

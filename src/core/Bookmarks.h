@@ -5,6 +5,8 @@
 //---------------------------------------------------------------------------
 #include <CopyParam.h>
 //---------------------------------------------------------------------------
+#include <CopyParam.h>
+//---------------------------------------------------------------------------
 class THierarchicalStorage;
 class TBookmarkList;
 class TShortCuts;
@@ -103,6 +105,8 @@ public:
   TBookmark();
 
   virtual void Assign(const TPersistent *Source) override;
+
+  UnicodeString __fastcall GetSideDirectory(TOperationSide Side);
 
   UnicodeString __fastcall GetSideDirectory(TOperationSide Side);
 

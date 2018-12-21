@@ -11,10 +11,6 @@
 #include "putty.h"
 #include "misc.h"
 
-#ifdef USE_DLMALLOC
-#include <nbglobals.h>
-#endif
-
 /*
  * Parse a string block size specification. This is approximately a
  * subset of the block size specs supported by GNU fileutils:
@@ -24,10 +20,10 @@
  * All numbers are decimal, and suffixes refer to powers of two.
  * Case-insensitive.
  */
-int64_t parse_blocksize64(const char *bs)
+unsigned long parse_blocksize(const char *bs)
 {
     char *suf;
-    int64_t r = strtoul(bs, &suf, 10);
+    unsigned long r = strtoul(bs, &suf, 10);
     if (*suf != '\0') {
 	while (*suf && isspace((unsigned char)*suf)) suf++;
 	switch (*suf) {
@@ -265,7 +261,7 @@ void prompt_ensure_result_size(prompt_t *pr, int newlen)
 }
 void prompt_set_result(prompt_t *pr, const char *newstr)
 {
-    prompt_ensure_result_size(pr, (int)strlen(newstr) + 1);
+    prompt_ensure_result_size(pr, strlen(newstr) + 1);
     strcpy(pr->result, newstr);
 }
 void free_prompts(prompts_t *p)
@@ -292,7 +288,7 @@ char *dupstr(const char *s)
 {
     char *p = NULL;
     if (s) {
-        int len = (int)strlen(s);
+        int len = strlen(s);
         p = snewn(len + 1, char);
         strcpy(p, s);
     }
@@ -302,7 +298,7 @@ char *dupstr(const char *s)
 /* Allocate the concatenation of N strings. Terminate arg list with NULL. */
 char *dupcat(const char *s1, ...)
 {
-    size_t len;
+    int len;
     char *p, *q, *sn;
     va_list ap;
 
@@ -501,7 +497,7 @@ char *strbuf_to_str(strbuf *buf)
 void strbuf_catfv(strbuf *buf, const char *fmt, va_list ap)
 {
     buf->s = dupvprintf_inner(buf->s, buf->len, &buf->size, fmt, ap);
-    buf->len += (int)strlen(buf->s + buf->len);
+    buf->len += strlen(buf->s + buf->len);
 }
 void strbuf_catf(strbuf *buf, const char *fmt, ...)
 {
@@ -518,8 +514,8 @@ void strbuf_catf(strbuf *buf, const char *fmt, ...)
 char *fgetline(FILE *fp)
 {
     char *ret = snewn(512, char);
-    size_t size = 512, len = 0;
-    while (fgets(ret + len, (int)(size - len), fp)) {
+    int size = 512, len = 0;
+    while (fgets(ret + len, size - len, fp)) {
 	len += strlen(ret + len);
 	if (len > 0 && ret[len-1] == '\n')
 	    break;		       /* got a newline, we're done */
@@ -544,7 +540,7 @@ char *fgetline(FILE *fp)
 char *chomp(char *str)
 {
     if (str) {
-        size_t len = strlen(str);
+        int len = strlen(str);
         while (len > 0 && (str[len-1] == '\r' || str[len-1] == '\n'))
             len--;
         str[len] = '\0';
@@ -644,7 +640,7 @@ int base64_decode_atom(const char *atom, unsigned char *out)
 /* MP:
 * Default granule of 512 leads to low performance.
 */
-#define BUFFER_MIN_GRANULE  32*2*512
+#define BUFFER_MIN_GRANULE  512*2*32
 
 struct bufchain_granule {
     struct bufchain_granule *next;
@@ -674,25 +670,25 @@ int bufchain_size(bufchain *ch)
     return ch->buffersize;
 }
 
-void bufchain_add(bufchain *ch, const void *data, size_t len)
+void bufchain_add(bufchain *ch, const void *data, int len)
 {
     const char *buf = (const char *)data;
 
     if (len == 0) return;
 
-    ch->buffersize += (int)len;
+    ch->buffersize += len;
 
     while (len > 0) {
 	if (ch->tail && ch->tail->bufend < ch->tail->bufmax) {
-	    size_t copylen = __min(len, (size_t)(ch->tail->bufmax - ch->tail->bufend));
+	    int copylen = min(len, ch->tail->bufmax - ch->tail->bufend);
 	    memcpy(ch->tail->bufend, buf, copylen);
 	    buf += copylen;
 	    len -= copylen;
 	    ch->tail->bufend += copylen;
 	}
 	if (len > 0) {
-	    size_t grainlen =
-		__max(sizeof(struct bufchain_granule) + len, BUFFER_MIN_GRANULE);
+	    int grainlen =
+		max(sizeof(struct bufchain_granule) + len, BUFFER_MIN_GRANULE);
 	    struct bufchain_granule *newbuf;
 	    newbuf = smalloc(grainlen);
 	    newbuf->bufpos = newbuf->bufend =
@@ -714,10 +710,10 @@ void bufchain_consume(bufchain *ch, int len)
 
     assert(ch->buffersize >= len);
     while (len > 0) {
-		int remlen = len;
-		assert(ch->head != NULL);
-		if (remlen >= ch->head->bufend - ch->head->bufpos) {
-	    remlen = (int)(ch->head->bufend - ch->head->bufpos);
+	int remlen = len;
+	assert(ch->head != NULL);
+	if (remlen >= ch->head->bufend - ch->head->bufpos) {
+	    remlen = ch->head->bufend - ch->head->bufpos;
 	    tmp = ch->head;
 	    ch->head = tmp->next;
 	    if (!ch->head)
@@ -732,7 +728,7 @@ void bufchain_consume(bufchain *ch, int len)
 
 void bufchain_prefix(bufchain *ch, void **data, int *len)
 {
-    *len = (int)(ch->head->bufend - ch->head->bufpos);
+    *len = ch->head->bufend - ch->head->bufpos;
     *data = ch->head->bufpos;
 }
 
@@ -745,11 +741,11 @@ void bufchain_fetch(bufchain *ch, void *data, int len)
 
     assert(ch->buffersize >= len);
     while (len > 0) {
-      int remlen = len;
+	int remlen = len;
 
 	assert(tmp != NULL);
 	if (remlen >= tmp->bufend - tmp->bufpos)
-			remlen = (int)(tmp->bufend - tmp->bufpos);
+	    remlen = tmp->bufend - tmp->bufpos;
 	memcpy(data_c, tmp->bufpos, remlen);
 
 	tmp = tmp->next;
@@ -805,11 +801,7 @@ void *safemalloc(size_t n, size_t size)
 #ifdef MINEFIELD
 	p = minefield_c_malloc(size);
 #else
-#ifdef USE_DLMALLOC
-    p = nb_malloc(size);
-#else
-    p = malloc(size);
-#endif
+	p = malloc(size);
 #endif
     }
 
@@ -844,21 +836,13 @@ void *saferealloc(void *ptr, size_t n, size_t size)
 #ifdef MINEFIELD
 	    p = minefield_c_malloc(size);
 #else
-#ifdef USE_DLMALLOC
-        p = nb_malloc(size);
-#else
-        p = malloc(size);
-#endif
+	    p = malloc(size);
 #endif
 	} else {
 #ifdef MINEFIELD
 	    p = minefield_c_realloc(ptr, size);
 #else
-#ifdef USE_DLMALLOC
-        p = nb_realloc(ptr, size);
-#else
-        p = realloc(ptr, size);
-#endif
+	    p = realloc(ptr, size);
 #endif
 	}
     }
@@ -892,11 +876,7 @@ void safefree(void *ptr)
 #ifdef MINEFIELD
 	minefield_c_free(ptr);
 #else
-#ifdef USE_DLMALLOC
-    nb_free(ptr);
-#else
-    free(ptr);
-#endif
+	free(ptr);
 #endif
     }
 #ifdef MALLOC_LOG
@@ -1107,7 +1087,7 @@ int validate_manual_hostkey(char *key)
                 goto not_ssh2_blob;    /* sorry */
 
             minlen = ((alglen + 4) + 2) / 3;
-            if ((int)strlen(q) < minlen)
+            if (strlen(q) < minlen)
                 goto not_ssh2_blob;    /* sorry */
 
             strcpy(key, q);
@@ -1137,7 +1117,7 @@ int smemeq(const void *av, const void *bv, size_t len)
 
 int match_ssh_id(int stringlen, const void *string, const char *id)
 {
-    size_t idlen = strlen(id);
+    int idlen = strlen(id);
     return (idlen == stringlen && !memcmp(string, id, idlen));
 }
 
@@ -1149,7 +1129,7 @@ void *get_ssh_string(int *datalen, const void **data, int *stringlen)
     if (*datalen < 4)
         return NULL;
     len = GET_32BIT_MSB_FIRST((const unsigned char *)*data);
-    if (*datalen - 4 < (int)len)
+    if (*datalen - 4 < len)
         return NULL;
     ret = (void *)((const char *)*data + 4);
     *datalen -= len + 4;
@@ -1265,9 +1245,7 @@ char *buildinfo(const char *newline)
     strbuf_catf(buf, "%sBuild option: DEBUG", newline);
 #endif
 
-#if 0
     strbuf_catf(buf, "%sSource commit: %s", newline, commitid);
-#endif // #if 0
 
     return strbuf_to_str(buf);
 }

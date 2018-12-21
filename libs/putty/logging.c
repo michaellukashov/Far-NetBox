@@ -68,7 +68,7 @@ static void logprintf(struct LogContext *ctx, const char *fmt, ...)
     data = dupvprintf(fmt, ap);
     va_end(ap);
 
-    logwrite(ctx, data, (int)strlen(data));
+    logwrite(ctx, data, strlen(data));
     sfree(data);
 }
 
@@ -136,7 +136,7 @@ static void logfopen_callback(void *handle, int mode)
          * output, because the whole point is that we haven't managed
          * to open any such log file :-)
          */
-        from_backend(ctx->frontend, 1, event, (int)strlen(event));
+        from_backend(ctx->frontend, 1, event, strlen(event));
         from_backend(ctx->frontend, 1, "\r\n", 2);
     }
     sfree(event);
@@ -351,7 +351,7 @@ void log_packet(void *handle, int direction, int type,
 	    }
 	    dumpdata[10+2+3*(p%16)] = smalldata[0];
 	    dumpdata[10+2+3*(p%16)+1] = smalldata[1];
-	    dumpdata[10+1+3*16+2+(p%16)] = (c >= 0x20 && c < 0x7F ? c : '.');
+	    dumpdata[10+1+3*16+2+(p%16)] = (isprint(c) ? c : '.');
 	    output_pos = (p%16) + 1;
 	}
 
@@ -361,7 +361,7 @@ void log_packet(void *handle, int direction, int type,
 	if (((p % 16) == 0) || (p == len) || omitted) {
 	    if (output_pos) {
 		strcpy(dumpdata + 10+1+3*16+2+output_pos, "\r\n");
-		logwrite(ctx, dumpdata, (int)strlen(dumpdata));
+		logwrite(ctx, dumpdata, strlen(dumpdata));
 		output_pos = 0;
 	    }
 	}
@@ -435,9 +435,9 @@ static Filename *xlatlognam(Filename *src, char *hostname, int port,
                             struct tm *tm)
 {
     char buf[32], *bufp;
-    size_t size;
+    int size;
     char *buffer;
-    size_t buflen, bufsize;
+    int buflen, bufsize;
     const char *s;
     Filename *ret;
 

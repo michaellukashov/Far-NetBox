@@ -108,6 +108,7 @@ THierarchicalStorage::THierarchicalStorage(const UnicodeString AStorage) :
 {
   SetAccessMode(smRead);
   SetExplicit(false);
+  ForceSave = false;
   // While this was implemented in 5.0 already, for some reason
   // it was disabled (by mistake?). So although enabled for 5.6.1 only,
   // data written in Unicode/UTF8 can be read by all versions back to 5.0.
@@ -161,14 +162,12 @@ UnicodeString THierarchicalStorage::MungeKeyName(const UnicodeString Key)
 //---------------------------------------------------------------------------
 bool THierarchicalStorage::OpenSubKey(const UnicodeString ASubKey, bool CanCreate, bool Path)
 {
-  bool Result;
   UnicodeString MungedKey;
   UnicodeString Key = ASubKey;
   if (Path)
   {
     DebugAssert(Key.IsEmpty() || (Key[Key.Length()] != L'\\'));
-    Result = true;
-    while (!Key.IsEmpty() && Result)
+    while (!Key.IsEmpty())
     {
       if (!MungedKey.IsEmpty())
       {
@@ -190,6 +189,8 @@ bool THierarchicalStorage::OpenSubKey(const UnicodeString ASubKey, bool CanCreat
     MungedKey = MungeKeyName(Key);
     Result = DoOpenSubKey(MungedKey, CanCreate);
   }
+
+  bool Result = DoOpenSubKey(MungedKey, CanCreate);
 
   if (Result)
   {
@@ -534,6 +535,13 @@ bool TRegistryStorage::DoOpenSubKey(const UnicodeString SubKey, bool CanCreate)
   }
   UnicodeString Key = ::ExcludeTrailingBackslash(GetStorage() + GetCurrentSubKey() + SubKey);
   return FRegistry->OpenKey(Key, CanCreate);
+  UnicodeString K = ExcludeTrailingBackslash(Storage + CurrentSubKey + SubKey);
+  bool Result = FRegistry->OpenKey(K, CanCreate);
+  if (!Result && WasOpened)
+  {
+    FRegistry->OpenKey(PrevPath, false);
+  }
+  return Result;
 }
 //---------------------------------------------------------------------------
 void TRegistryStorage::CloseSubKey()
@@ -1245,6 +1253,11 @@ void TIniFileStorage::Flush()
           Attr = FILE_ATTRIBUTE_NORMAL;
         }
 
+        if (FLAGSET(Attr, FILE_ATTRIBUTE_READONLY) && ForceSave)
+        {
+          SetFileAttributes(ApiPath(Storage).c_str(), Attr & ~FILE_ATTRIBUTE_READONLY);
+        }
+
         HANDLE Handle = CreateFile(ApiPath(Storage).c_str(), GENERIC_READ | GENERIC_WRITE,
             0, nullptr, CREATE_ALWAYS, Attr, 0);
 
@@ -1350,6 +1363,8 @@ private:
 
   bool AllowWrite();
   void NotImplemented();
+  bool __fastcall AllowSection(const UnicodeString & Section);
+  UnicodeString __fastcall FormatKey(const UnicodeString & Section, const UnicodeString & Ident);
 };
 //---------------------------------------------------------------------------
 TOptionsIniFile::TOptionsIniFile(TStrings *Options, TWriteMode WriteMode, const UnicodeString RootKey) :
@@ -1396,6 +1411,27 @@ UnicodeString TOptionsIniFile::ReadString(const UnicodeString Section, const Uni
   {
     Name += PathDelim;
   }
+  bool Result = SameText(Name.SubString(1, FRootKey.Length()), FRootKey);
+  return Result;
+}
+//---------------------------------------------------------------------------
+UnicodeString __fastcall TOptionsIniFile::FormatKey(const UnicodeString & Section, const UnicodeString & Ident)
+{
+  UnicodeString Result = Section;
+  if (!Result.IsEmpty())
+  {
+    Result += PathDelim;
+  }
+  Result += Ident; // Can be empty, when called from a contructor, AllowSection or ReadSection
+  if (DebugAlwaysTrue(AllowSection(Section)))
+  {
+    Result.Delete(1, FRootKey.Length());
+  }
+  return Result;
+}
+//---------------------------------------------------------------------------
+UnicodeString __fastcall TOptionsIniFile::ReadString(const UnicodeString Section, const UnicodeString Ident, const UnicodeString Default)
+{
   UnicodeString Value;
   if (!::SameText(Name.SubString(1, FRootKey.Length()), FRootKey))
   {
@@ -1403,8 +1439,7 @@ UnicodeString TOptionsIniFile::ReadString(const UnicodeString Section, const Uni
   }
   else
   {
-    Name.Delete(1, FRootKey.Length());
-    Name += Ident;
+    UnicodeString Name = FormatKey(Section, Ident);
 
     int Index = FOptions->IndexOfName(Name);
     if (Index >= 0)
@@ -1425,22 +1460,18 @@ void TOptionsIniFile::WriteString(const UnicodeString Section, const UnicodeStri
     // Implemented for TSessionData.DoSave only
     DebugAlwaysTrue(Section.IsEmpty() && FRootKey.IsEmpty()))
   {
-    FOptions->Values[Ident] = Value;
+    UnicodeString Name = FormatKey(Section, Ident);
+    FOptions->Values[Name] = Value;
   }
 }
 //---------------------------------------------------------------------------
 void TOptionsIniFile::ReadSection(const UnicodeString Section, TStrings *Strings)
 {
 
-  UnicodeString SectionPrefix = Section;
-  if (!SectionPrefix.IsEmpty())
-  {
-    SectionPrefix += PathDelim;
-  }
-
+  if (AllowSection(Section))
   if (::SameText(SectionPrefix.SubString(1, FRootKey.Length()), FRootKey))
   {
-    SectionPrefix.Delete(1, FRootKey.Length());
+    UnicodeString SectionPrefix = FormatKey(Section, UnicodeString());
 
     Strings->BeginUpdate();
     try
@@ -1505,7 +1536,9 @@ void TOptionsIniFile::DeleteKey(const UnicodeString Section, const UnicodeString
     // Implemented for TSessionData.DoSave only
     DebugAlwaysTrue(Section.IsEmpty() && FRootKey.IsEmpty()))
   {
-    int Index = FOptions->IndexOfName(Ident);
+    UnicodeString Name = FormatKey(Section, Ident);
+
+    int Index = FOptions->IndexOfName(Name);
     if (Index >= 0)
     {
       FOptions->Delete(Index);

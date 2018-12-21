@@ -5599,7 +5599,6 @@ void __fastcall TTerminal::DoSynchronizeCollectDirectory(const UnicodeString Loc
           LogEvent(0, FORMAT(L"Local file %s excluded from synchronization",
             (FormatFileDetailsForLog(FullLocalFileName, SearchRec.GetLastWriteTime(), SearchRec.Size))));
         }
-
       }
       while (LocalFindNextLoop(SearchRec));
 

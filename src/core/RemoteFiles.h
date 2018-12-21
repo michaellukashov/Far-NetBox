@@ -8,8 +8,6 @@
 #include <Common.h>
 //---------------------------------------------------------------------------
 #define SYMLINKSTR L" -> "
-#define PARENTDIRECTORY L".."
-#define THISDIRECTORY L"."
 #define ROOTDIRECTORY L"/"
 #define FILETYPE_DEFAULT L'-'
 #define FILETYPE_SYMLINK L'L'
@@ -590,8 +588,6 @@ private:
 };
 //---------------------------------------------------------------------------
 #if 0
-enum TValidProperty { vpRights, vpGroup, vpOwner, vpModification, vpLastAccess };
-typedef Set<TValidProperty, vpRights, vpLastAccess> TValidProperties;
 #endif // #if 0
 NB_DEFINE_CLASS_ID(TRemoteProperties);
 class TRemoteProperties : public TObject
@@ -626,15 +622,65 @@ public:
   TRemoteProperties &operator=(const TRemoteProperties &other);
 };
 //---------------------------------------------------------------------------
-class TSynchronizeChecklist
+enum TChecklistAction
 {
-friend class TTerminal;
+  saNone,
+  saUploadNew,
+  saDownloadNew,
+  saUploadUpdate,
+  saDownloadUpdate,
+  saDeleteRemote,
+  saDeleteLocal,
+};
+//---------------------------------------------------------------------------
+NB_DEFINE_CLASS_ID(TChecklistItem);
+class NB_CORE_EXPORT TChecklistItem : public TObject
+{
+  friend class TTerminal;
+  NB_DISABLE_COPY(TChecklistItem)
+public:
+  static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TChecklistItem); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TChecklistItem) || TObject::is(Kind); }
+public:
+
+  struct NB_CORE_EXPORT TFileInfo : public TObject
+  {
+    UnicodeString FileName;
+    UnicodeString Directory;
+    TDateTime Modification;
+    TModificationFmt ModificationFmt;
+    int64_t Size;
+  };
+
+  TChecklistAction Action;
+  bool IsDirectory;
+  TFileInfo Local;
+  TFileInfo Remote;
+  intptr_t ImageIndex;
+  bool Checked;
+  TRemoteFile *RemoteFile;
+
+  UnicodeString GetFileName() const;
+
+  ~TChecklistItem();
+
+private:
+  FILETIME FLocalLastWriteTime;
+
+  TChecklistItem();
+};
+//---------------------------------------------------------------------------
+class NB_CORE_EXPORT TSynchronizeChecklist : public TObject
+{
+  NB_DISABLE_COPY(TSynchronizeChecklist)
+  friend class TTerminal;
 
 public:
-  enum TAction {
-    saNone, saUploadNew, saDownloadNew, saUploadUpdate, saDownloadUpdate, saDeleteRemote, saDeleteLocal };
-  static const int ActionCount = saDeleteLocal;
+//  enum TAction {
+//    saNone, saUploadNew, saDownloadNew, saUploadUpdate, saDownloadUpdate, saDeleteRemote, saDeleteLocal };
+  static const intptr_t ActionCount = saDeleteLocal;
 
+#if 0
   class TItem
   {
   friend class TTerminal;
@@ -647,7 +693,7 @@ public:
       UnicodeString Directory;
       TDateTime Modification;
       TModificationFmt ModificationFmt;
-      int64_t Size;
+      __int64 Size;
     };
 
     TAction Action;
@@ -656,53 +702,55 @@ public:
     TFileInfo Remote;
     int ImageIndex;
     bool Checked;
-    TRemoteFile * RemoteFile;
+    TRemoteFile *RemoteFile;
 
-    const UnicodeString& GetFileName() const;
+    const UnicodeString &GetFileName() const;
     bool IsRemoteOnly() const { return (Action == saDownloadNew) || (Action == saDeleteRemote); }
     bool IsLocalOnly() const { return (Action == saUploadNew) || (Action == saDeleteLocal); }
     bool HasSize() const { return !IsDirectory || FDirectoryHasSize; }
-    int64_t __fastcall GetSize() const;
-    int64_t __fastcall GetSize(TAction AAction) const;
+    __int64 __fastcall GetSize() const;
+    __int64 __fastcall GetSize(TAction AAction) const;
 
     ~TItem();
 
   private:
     FILETIME FLocalLastWriteTime;
-    bool FDirectoryHasSize;
 
     TItem();
   };
-
-  typedef std::vector<const TSynchronizeChecklist::TItem *> TItemList;
+#endif // #if 0
 
   ~TSynchronizeChecklist();
 
-  void __fastcall Update(const TItem * Item, bool Check, TAction Action);
-  void __fastcall UpdateDirectorySize(const TItem * Item, int64_t Size);
-  void Delete(const TItem * Item);
+  void Update(const TChecklistItem *Item, bool Check, TChecklistAction Action);
+  void UpdateDirectorySize(const TChecklistItem * Item, int64_t Size);
+  void Delete(const TChecklistItem* Item);
 
-  static TAction __fastcall Reverse(TAction Action);
-  static bool __fastcall IsItemSizeIrrelevant(TAction Action);
+  static TChecklistAction Reverse(TChecklistAction Action);
 
+#if 0
   __property int Count = { read = GetCount };
   __property int CheckedCount = { read = GetCheckedCount };
   __property const TItem * Item[int Index] = { read = GetItem };
+#endif
 
 protected:
   TSynchronizeChecklist();
 
   void Sort();
-  void Add(TItem * Item);
+  void Add(TChecklistItem *Item);
 
-  int GetCount() const;
+public:
+  void SetMasks(UnicodeString Value);
+
+  intptr_t GetCount() const;
   int GetCheckedCount() const;
-  const TItem * GetItem(int Index) const;
+  const TChecklistItem *GetItem(intptr_t Index) const;
 
 private:
-  TList * FList;
+  TList FList;
 
-  static int __fastcall Compare(void * Item1, void * Item2);
+  static intptr_t Compare(const void *AItem1, const void *AItem2);
 };
 //---------------------------------------------------------------------------
 class TFileOperationProgressType;
@@ -712,7 +760,7 @@ class TSynchronizeProgress
 public:
   TSynchronizeProgress(const TSynchronizeChecklist * Checklist);
 
-  void ItemProcessed(const TSynchronizeChecklist::TItem * ChecklistItem);
+  void ItemProcessed(const TChecklistItem* ChecklistItem);
   int Progress(const TFileOperationProgressType * CurrentItemOperationProgress) const;
   TDateTime TimeLeft(const TFileOperationProgressType * CurrentItemOperationProgress) const;
 
@@ -721,7 +769,7 @@ private:
   mutable int64_t FTotalSize;
   int64_t FProcessedSize;
 
-  int64_t ItemSize(const TSynchronizeChecklist::TItem * ChecklistItem) const;
+  int64_t ItemSize(const TChecklistItem* ChecklistItem) const;
   int64_t GetProcessed(const TFileOperationProgressType * CurrentItemOperationProgress) const;
 };
 //---------------------------------------------------------------------------
