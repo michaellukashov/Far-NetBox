@@ -291,7 +291,7 @@ public:
         return _mem;
     }
 
-    T* Mem()							{
+    T* Mem() {
         TIXMLASSERT( _mem );
         return _mem;
     }
@@ -337,7 +337,6 @@ public:
     virtual void* Alloc() = 0;
     virtual void Free( void* ) = 0;
     virtual void SetTracked() = 0;
-    virtual void Clear() = 0;
 };
 
 
@@ -350,7 +349,7 @@ class MemPoolT : public MemPool
 public:
     MemPoolT() : _blockPtrs(), _root(0), _currentAllocs(0), _nAllocs(0), _maxAllocs(0), _nUntracked(0)	{}
     ~MemPoolT() {
-        Clear();
+        MemPoolT< ITEM_SIZE >::Clear();
     }
 
     void Clear() {
@@ -944,7 +943,7 @@ public:
 	void* GetUserData() const			{ return _userData; }
 
 protected:
-    XMLNode( XMLDocument* );
+    explicit XMLNode( XMLDocument* );
     virtual ~XMLNode();
 
     virtual char* ParseDeep( char* p, StrPair* parentEndTag, int* curLineNumPtr);
@@ -1012,7 +1011,7 @@ public:
     virtual bool ShallowEqual( const XMLNode* compare ) const;
 
 protected:
-    XMLText( XMLDocument* doc )	: XMLNode( doc ), _isCData( false )	{}
+    explicit XMLText( XMLDocument* doc )	: XMLNode( doc ), _isCData( false )	{}
     virtual ~XMLText()												{}
 
     char* ParseDeep( char* p, StrPair* parentEndTag, int* curLineNumPtr );
@@ -1043,7 +1042,7 @@ public:
     virtual bool ShallowEqual( const XMLNode* compare ) const;
 
 protected:
-    XMLComment( XMLDocument* doc );
+    explicit XMLComment( XMLDocument* doc );
     virtual ~XMLComment();
 
     char* ParseDeep( char* p, StrPair* parentEndTag, int* curLineNumPtr);
@@ -1082,7 +1081,7 @@ public:
     virtual bool ShallowEqual( const XMLNode* compare ) const;
 
 protected:
-    XMLDeclaration( XMLDocument* doc );
+    explicit XMLDeclaration( XMLDocument* doc );
     virtual ~XMLDeclaration();
 
     char* ParseDeep( char* p, StrPair* parentEndTag, int* curLineNumPtr );
@@ -1117,7 +1116,7 @@ public:
     virtual bool ShallowEqual( const XMLNode* compare ) const;
 
 protected:
-    XMLUnknown( XMLDocument* doc );
+    explicit XMLUnknown( XMLDocument* doc );
     virtual ~XMLUnknown();
 
     char* ParseDeep( char* p, StrPair* parentEndTag, int* curLineNumPtr );
@@ -1840,7 +1839,7 @@ public:
     /// A (trivial) utility function that prints the ErrorStr() to stdout.
     void PrintError() const;
 
-    /// Return the line where the error occured, or zero if unknown.
+    /// Return the line where the error occurred, or zero if unknown.
     int ErrorLineNum() const
     {
         return _errorLineNum;
@@ -1908,7 +1907,7 @@ private:
 	// the stack. Track stack depth, and error out if needed.
 	class DepthTracker {
 	public:
-		DepthTracker(XMLDocument * document) {
+		explicit DepthTracker(XMLDocument * document) {
 			this->_document = document;
 			document->PushDepth();
 		}
@@ -1998,10 +1997,10 @@ class TINYXML2_LIB XMLHandle
     CUSTOM_MEM_ALLOCATION_IMPL
 public:
     /// Create a handle from any node (at any depth of the tree.) This can be a null pointer.
-    XMLHandle( XMLNode* node ) : _node( node ) {
+    explicit XMLHandle( XMLNode* node ) : _node( node ) {
     }
     /// Create a handle from a node.
-    XMLHandle( XMLNode& node ) : _node( &node ) {
+    explicit XMLHandle( XMLNode& node ) : _node( &node ) {
     }
     /// Copy constructor
     XMLHandle( const XMLHandle& ref ) : _node( ref._node ) {
@@ -2079,9 +2078,9 @@ class TINYXML2_LIB XMLConstHandle
 {
     CUSTOM_MEM_ALLOCATION_IMPL
 public:
-    XMLConstHandle( const XMLNode* node ) : _node( node ) {
+    explicit XMLConstHandle( const XMLNode* node ) : _node( node ) {
     }
-    XMLConstHandle( const XMLNode& node ) : _node( &node ) {
+    explicit XMLConstHandle( const XMLNode& node ) : _node( &node ) {
     }
     XMLConstHandle( const XMLConstHandle& ref ) : _node( ref._node ) {
     }
