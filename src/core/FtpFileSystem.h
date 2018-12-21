@@ -1,9 +1,10 @@
-//---------------------------------------------------------------------------
-#ifndef FtpFileSystemH
-#define FtpFileSystemH
+
+#pragma once
+
 
 //---------------------------------------------------------------------------
 #include <time.h>
+#include <rdestl/map.h>
 #include <FileSystems.h>
 //---------------------------------------------------------------------------
 class TFileZillaIntf;
@@ -16,201 +17,210 @@ struct TFileTransferData;
 struct TFtpsCertificateData;
 struct TRemoteFileTime;
 //---------------------------------------------------------------------------
-class TFTPFileSystem : public TCustomFileSystem
+NB_DEFINE_CLASS_ID(TFTPFileSystem);
+class NB_CORE_EXPORT TFTPFileSystem : public TCustomFileSystem
 {
-friend class TFileZillaImpl;
-friend class TFileListHelper;
-
+  friend class TFileZillaImpl;
+  friend class TFTPFileListHelper;
+  NB_DISABLE_COPY(TFTPFileSystem)
 public:
-  __fastcall TFTPFileSystem(TTerminal * ATerminal);
-  virtual __fastcall ~TFTPFileSystem();
+  static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TFTPFileSystem); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TFTPFileSystem) || TCustomFileSystem::is(Kind); }
+public:
+  explicit TFTPFileSystem(TTerminal *ATerminal);
+  virtual ~TFTPFileSystem();
+  virtual void Init(void *) override;
 
-  virtual void __fastcall Open();
-  virtual void __fastcall Close();
-  virtual bool __fastcall GetActive();
-  virtual void __fastcall CollectUsage();
-  virtual void __fastcall Idle();
-  virtual UnicodeString __fastcall AbsolutePath(UnicodeString Path, bool Local);
-  virtual void __fastcall AnyCommand(const UnicodeString Command,
-    TCaptureOutputEvent OutputEvent);
-  virtual void __fastcall ChangeDirectory(const UnicodeString Directory);
-  virtual void __fastcall CachedChangeDirectory(const UnicodeString Directory);
-  virtual void __fastcall AnnounceFileListOperation();
-  virtual void __fastcall ChangeFileProperties(const UnicodeString FileName,
-    const TRemoteFile * File, const TRemoteProperties * Properties,
-    TChmodSessionAction & Action);
-  virtual bool __fastcall LoadFilesProperties(TStrings * FileList);
-  virtual void __fastcall CalculateFilesChecksum(const UnicodeString & Alg,
-    TStrings * FileList, TStrings * Checksums,
-    TCalculatedChecksumEvent OnCalculatedChecksum);
-  virtual void __fastcall CopyToLocal(TStrings * FilesToCopy,
-    const UnicodeString TargetDir, const TCopyParamType * CopyParam,
-    int Params, TFileOperationProgressType * OperationProgress,
-    TOnceDoneOperation & OnceDoneOperation);
-  virtual void __fastcall TransferOnDirectory(
-    const UnicodeString & Directory, const TCopyParamType * CopyParam, int Params);
-  virtual void __fastcall CopyToRemote(TStrings * FilesToCopy,
-    const UnicodeString TargetDir, const TCopyParamType * CopyParam,
-    int Params, TFileOperationProgressType * OperationProgress,
-    TOnceDoneOperation & OnceDoneOperation);
-  virtual void __fastcall Source(
-    TLocalFileHandle & Handle, const UnicodeString & TargetDir, UnicodeString & DestFileName,
-    const TCopyParamType * CopyParam, int Params,
-    TFileOperationProgressType * OperationProgress, unsigned int Flags,
-    TUploadSessionAction & Action, bool & ChildError);
-  virtual void __fastcall Sink(
-    const UnicodeString & FileName, const TRemoteFile * File,
-    const UnicodeString & TargetDir, UnicodeString & DestFileName, int Attrs,
-    const TCopyParamType * CopyParam, int Params, TFileOperationProgressType * OperationProgress,
-    unsigned int Flags, TDownloadSessionAction & Action);
-  virtual void __fastcall CreateDirectory(const UnicodeString & DirName, bool Encrypt);
-  virtual void __fastcall CreateLink(const UnicodeString FileName, const UnicodeString PointTo, bool Symbolic);
-  virtual void __fastcall DeleteFile(const UnicodeString FileName,
-    const TRemoteFile * File, int Params, TRmSessionAction & Action);
-  virtual void __fastcall CustomCommandOnFile(const UnicodeString FileName,
-    const TRemoteFile * File, UnicodeString Command, int Params, TCaptureOutputEvent OutputEvent);
-  virtual void __fastcall DoStartup();
-  virtual void __fastcall HomeDirectory();
-  virtual bool __fastcall IsCapable(int Capability) const;
-  virtual void __fastcall LookupUsersGroups();
-  virtual void __fastcall ReadCurrentDirectory();
-  virtual void __fastcall ReadDirectory(TRemoteFileList * FileList);
-  virtual void __fastcall ReadFile(const UnicodeString FileName,
-    TRemoteFile *& File);
-  virtual void __fastcall ReadSymlink(TRemoteFile * SymlinkFile,
-    TRemoteFile *& File);
-  virtual void __fastcall RenameFile(const UnicodeString FileName, const TRemoteFile * File,
-    const UnicodeString NewName);
-  virtual void __fastcall CopyFile(const UnicodeString FileName, const TRemoteFile * File,
-    const UnicodeString NewName);
-  virtual TStrings * __fastcall GetFixedPaths();
-  virtual void __fastcall SpaceAvailable(const UnicodeString Path,
-    TSpaceAvailable & ASpaceAvailable);
-  virtual const TSessionInfo & __fastcall GetSessionInfo();
-  virtual const TFileSystemInfo & __fastcall GetFileSystemInfo(bool Retrieve);
-  virtual bool __fastcall TemporaryTransferFile(const UnicodeString & FileName);
-  virtual bool __fastcall GetStoredCredentialsTried();
-  virtual UnicodeString __fastcall GetUserName();
-  virtual void __fastcall GetSupportedChecksumAlgs(TStrings * Algs);
-  virtual void __fastcall LockFile(const UnicodeString & FileName, const TRemoteFile * File);
-  virtual void __fastcall UnlockFile(const UnicodeString & FileName, const TRemoteFile * File);
-  virtual void __fastcall UpdateFromMain(TCustomFileSystem * MainFileSystem);
-  virtual void __fastcall ClearCaches();
+  virtual void Open() override;
+  virtual void Close() override;
+  virtual bool GetActive() const override;
+  virtual void CollectUsage() override;
+  virtual void Idle() override;
+  virtual UnicodeString GetAbsolutePath(const UnicodeString APath, bool Local) override;
+  virtual UnicodeString GetAbsolutePath(const UnicodeString APath, bool Local) const override;
+  virtual void AnyCommand(const UnicodeString Command,
+    TCaptureOutputEvent OutputEvent) override;
+  virtual void ChangeDirectory(const UnicodeString ADirectory) override;
+  virtual void CachedChangeDirectory(const UnicodeString ADirectory) override;
+  virtual void AnnounceFileListOperation() override;
+  virtual void ChangeFileProperties(const UnicodeString AFileName,
+    const TRemoteFile *AFile, const TRemoteProperties *Properties,
+    TChmodSessionAction &Action) override;
+  virtual bool LoadFilesProperties(TStrings *AFileList) override;
+  virtual void CalculateFilesChecksum(const UnicodeString Alg,
+    TStrings *AFileList, TStrings *Checksums,
+    TCalculatedChecksumEvent OnCalculatedChecksum) override;
+  virtual void CopyToLocal(TStrings *AFilesToCopy,
+    const UnicodeString ATargetDir, const TCopyParamType *CopyParam,
+    intptr_t Params, TFileOperationProgressType *OperationProgress,
+    TOnceDoneOperation &OnceDoneOperation) override;
+  virtual void TransferOnDirectory(
+    const UnicodeString ADirectory, const TCopyParamType *CopyParam, intptr_t AParams);
+  virtual void CopyToRemote(TStrings *AFilesToCopy,
+    const UnicodeString ATargetDir, const TCopyParamType *CopyParam,
+    intptr_t AParams, TFileOperationProgressType *OperationProgress,
+    TOnceDoneOperation &OnceDoneOperation) override;
+  virtual void Source(
+    TLocalFileHandle &AHandle, const UnicodeString ATargetDir, UnicodeString &ADestFileName,
+    const TCopyParamType *CopyParam, intptr_t AParams,
+    TFileOperationProgressType *OperationProgress, uintptr_t AFlags,
+    TUploadSessionAction &Action, bool &ChildError);
+  virtual void Sink(
+    const UnicodeString AFileName, const TRemoteFile *AFile,
+    const UnicodeString ATargetDir, UnicodeString &ADestFileName, uintptr_t Attrs,
+    const TCopyParamType *CopyParam, intptr_t AParams, TFileOperationProgressType *OperationProgress,
+    uintptr_t AFlags, TDownloadSessionAction &Action);
+  virtual void RemoteCreateDirectory(const UnicodeString ADirName) override;
+  virtual void RemoteCreateLink(const UnicodeString AFileName, const UnicodeString APointTo, bool Symbolic) override;
+  virtual void RemoteDeleteFile(const UnicodeString AFileName,
+    const TRemoteFile *AFile, intptr_t Params, TRmSessionAction &Action) override;
+  virtual void CustomCommandOnFile(const UnicodeString AFileName,
+    const TRemoteFile *AFile, const UnicodeString ACommand, intptr_t AParams, TCaptureOutputEvent OutputEvent) override;
+  virtual void DoStartup() override;
+  virtual void HomeDirectory() override;
+  virtual bool IsCapable(intptr_t Capability) const override;
+  virtual void LookupUsersGroups() override;
+  virtual void ReadCurrentDirectory() override;
+  virtual void ReadDirectory(TRemoteFileList *FileList) override;
+  virtual void ReadFile(const UnicodeString AFileName,
+    TRemoteFile *&AFile) override;
+  virtual void ReadSymlink(TRemoteFile *SymlinkFile,
+    TRemoteFile *&AFile) override;
+  virtual void RemoteRenameFile(const UnicodeString AFileName, const TRemoteFile *AFile,
+    const UnicodeString ANewName) override;
+  virtual void RemoteCopyFile(const UnicodeString AFileName, const TRemoteFile *AFile,
+    const UnicodeString ANewName) override;
+  virtual TStrings * GetFixedPaths() const override;
+  virtual void SpaceAvailable(const UnicodeString APath,
+    TSpaceAvailable &ASpaceAvailable) override;
+  virtual const TSessionInfo & GetSessionInfo() const override;
+  virtual const TFileSystemInfo & GetFileSystemInfo(bool Retrieve) override;
+  virtual bool TemporaryTransferFile(const UnicodeString AFileName) override;
+  virtual bool GetStoredCredentialsTried() const override;
+  virtual UnicodeString RemoteGetUserName() const override;
+  virtual void GetSupportedChecksumAlgs(TStrings *Algs) override;
+  virtual void LockFile(const UnicodeString AFileName, const TRemoteFile *AFile) override;
+  virtual void UnlockFile(const UnicodeString AFileName, const TRemoteFile *AFile) override;
+  virtual void UpdateFromMain(TCustomFileSystem *MainFileSystem) override;
+  virtual void ClearCaches() override;
 
 protected:
-  enum TOverwriteMode { omOverwrite, omResume, omComplete };
+  __removed enum TOverwriteMode { omOverwrite, omResume, omComplete };
 
-  virtual UnicodeString __fastcall GetCurrentDirectory();
+  virtual UnicodeString RemoteGetCurrentDirectory() const override;
 
-  const wchar_t * __fastcall GetOption(int OptionID) const;
-  int __fastcall GetOptionVal(int OptionID) const;
+  const wchar_t *GetOption(intptr_t OptionID) const;
+  intptr_t GetOptionVal(intptr_t OptionID) const;
 
   enum
   {
-    REPLY_CONNECT =      0x01,
-    REPLY_2XX_CODE =     0x02,
+    REPLY_CONNECT      = 0x01,
+    REPLY_2XX_CODE     = 0x02,
     REPLY_ALLOW_CANCEL = 0x04,
-    REPLY_3XX_CODE =     0x08,
-    REPLY_SINGLE_LINE =  0x10
+    REPLY_3XX_CODE     = 0x08,
+    REPLY_SINGLE_LINE  = 0x10,
   };
 
-  bool __fastcall PostMessage(unsigned int Type, WPARAM wParam, LPARAM lParam);
-  bool __fastcall ProcessMessage();
-  void __fastcall DiscardMessages();
-  void __fastcall WaitForMessages();
-  unsigned int __fastcall WaitForReply(bool Command, bool WantLastCode);
-  unsigned int __fastcall WaitForCommandReply(bool WantLastCode = true);
-  void __fastcall WaitForFatalNonCommandReply();
-  void __fastcall PoolForFatalNonCommandReply();
-  void __fastcall GotNonCommandReply(unsigned int Reply);
-  UnicodeString __fastcall GotReply(unsigned int Reply, unsigned int Flags = 0,
-    UnicodeString Error = L"", unsigned int * Code = NULL,
-    TStrings ** Response = NULL);
-  void __fastcall ResetReply();
-  void __fastcall HandleReplyStatus(UnicodeString Response);
-  void __fastcall DoWaitForReply(unsigned int& ReplyToAwait, bool WantLastCode);
-  bool __fastcall KeepWaitingForReply(unsigned int& ReplyToAwait, bool WantLastCode);
-  inline bool __fastcall NoFinalLastCode();
+  bool FTPPostMessage(uintptr_t Type, WPARAM wParam, LPARAM lParam);
+  bool ProcessMessage();
+  void DiscardMessages();
+  void WaitForMessages();
+  uintptr_t WaitForReply(bool Command, bool WantLastCode);
+  uintptr_t WaitForCommandReply(bool WantLastCode = true);
+  void WaitForFatalNonCommandReply();
+  void PoolForFatalNonCommandReply();
+  void GotNonCommandReply(uintptr_t Reply);
+  UnicodeString GotReply(uintptr_t Reply, uintptr_t Flags = 0,
+    const UnicodeString Error = L"", uintptr_t *Code = nullptr,
+    TStrings **Response = nullptr);
+  void ResetReply();
+  void HandleReplyStatus(const UnicodeString Response);
+  void DoWaitForReply(uintptr_t &ReplyToAwait, bool WantLastCode);
+  bool KeepWaitingForReply(uintptr_t &ReplyToAwait, bool WantLastCode) const;
+  inline bool NoFinalLastCode() const;
 
-  bool __fastcall HandleStatus(const wchar_t * Status, int Type);
-  bool __fastcall HandleAsynchRequestOverwrite(
-    wchar_t * FileName1, size_t FileName1Len, const wchar_t * FileName2,
-    const wchar_t * Path1, const wchar_t * Path2,
-    __int64 Size1, __int64 Size2, time_t LocalTime,
-    bool HasLocalTime, const TRemoteFileTime & RemoteTime, void * UserData, int & RequestResult);
-  bool __fastcall HandleAsynchRequestVerifyCertificate(
-    const TFtpsCertificateData & Data, int & RequestResult);
-  bool __fastcall HandleAsynchRequestNeedPass(
-    struct TNeedPassRequestData & Data, int & RequestResult);
-  bool __fastcall HandleListData(const wchar_t * Path, const TListDataEntry * Entries,
-    unsigned int Count);
-  bool __fastcall HandleTransferStatus(bool Valid, __int64 TransferSize,
-    __int64 Bytes, bool FileTransfer);
-  bool __fastcall HandleReply(int Command, unsigned int Reply);
-  bool __fastcall HandleCapabilities(TFTPServerCapabilities * ServerCapabilities);
-  bool __fastcall CheckError(int ReturnCode, const wchar_t * Context);
-  void __fastcall PreserveDownloadFileTime(HANDLE Handle, void * UserData);
-  bool __fastcall GetFileModificationTimeInUtc(const wchar_t * FileName, struct tm & Time);
-  void __fastcall EnsureLocation(const UnicodeString & Directory, bool Log);
-  void __fastcall EnsureLocation();
-  UnicodeString __fastcall ActualCurrentDirectory();
-  void __fastcall Discard();
-  void __fastcall DoChangeDirectory(const UnicodeString & Directory);
+  bool HandleStatus(const wchar_t *AStatus, int Type);
+  bool HandleAsynchRequestOverwrite(
+    wchar_t *FileName1, size_t FileName1Len, const wchar_t *FileName2,
+    const wchar_t *Path1, const wchar_t *Path2,
+    int64_t Size1, int64_t Size2, time_t LocalTime,
+    bool HasLocalTime, const TRemoteFileTime &RemoteTime, void *AUserData,
+    HANDLE &ALocalFileHandle,
+    int &RequestResult);
+  bool HandleAsynchRequestVerifyCertificate(
+    const TFtpsCertificateData &Data, int &RequestResult);
+  bool HandleAsynchRequestNeedPass(
+    struct TNeedPassRequestData &Data, int &RequestResult) const;
+  bool HandleListData(const wchar_t *Path, const TListDataEntry *Entries,
+    uintptr_t Count);
+  bool HandleTransferStatus(bool Valid, int64_t TransferSize,
+    int64_t Bytes, bool FileTransfer);
+  bool HandleReply(intptr_t Command, uintptr_t Reply);
+  bool HandleCapabilities(TFTPServerCapabilities *ServerCapabilities);
+  bool CheckError(intptr_t ReturnCode, const wchar_t *Context);
+  void PreserveDownloadFileTime(HANDLE AHandle, void *UserData) const;
+  bool GetFileModificationTimeInUtc(const wchar_t *AFileName, struct tm &Time);
+  void EnsureLocation(const UnicodeString ADirectory, bool Log);
+  void EnsureLocation();
+  UnicodeString GetActualCurrentDirectory() const;
+  void Discard();
+  void DoChangeDirectory(const UnicodeString ADirectory);
 
-  void __fastcall Sink(const UnicodeString FileName,
-    const TRemoteFile * File, const UnicodeString TargetDir,
-    const TCopyParamType * CopyParam, int Params,
-    TFileOperationProgressType * OperationProgress, unsigned int Flags,
-    TDownloadSessionAction & Action);
-  bool __fastcall ConfirmOverwrite(const UnicodeString & SourceFullFileName, UnicodeString & TargetFileName,
-    TOverwriteMode & OverwriteMode, TFileOperationProgressType * OperationProgress,
-    const TOverwriteFileParams * FileParams, const TCopyParamType * CopyParam,
-    int Params, bool AutoResume);
-  void __fastcall ReadDirectoryProgress(__int64 Bytes);
-  void __fastcall ResetFileTransfer();
-  void __fastcall DoFileTransferProgress(__int64 TransferSize, __int64 Bytes);
-  void __fastcall FileTransferProgress(__int64 TransferSize, __int64 Bytes);
-  void __fastcall ResetCaches();
-  void __fastcall CaptureOutput(const UnicodeString & Str);
-  void __fastcall DoReadDirectory(TRemoteFileList * FileList);
-  void __fastcall DoReadFile(const UnicodeString & FileName, TRemoteFile *& AFile);
-  void __fastcall FileTransfer(const UnicodeString & FileName, const UnicodeString & LocalFile,
-    const UnicodeString & RemoteFile, const UnicodeString & RemotePath, bool Get,
-    __int64 Size, int Type, TFileTransferData & UserData,
-    TFileOperationProgressType * OperationProgress);
-  TDateTime __fastcall ConvertLocalTimestamp(time_t Time);
-  void __fastcall RemoteFileTimeToDateTimeAndPrecision(const TRemoteFileTime & Source,
-    TDateTime & DateTime, TModificationFmt & ModificationFmt);
-  void __fastcall SetLastCode(int Code);
-  void __fastcall StoreLastResponse(const UnicodeString & Text);
-  void __fastcall SetCPSLimit(TFileOperationProgressType * OperationProgress);
-  bool __fastcall VerifyCertificateHostName(const TFtpsCertificateData & Data);
-  bool __fastcall SupportsReadingFile();
-  void __fastcall AutoDetectTimeDifference(TRemoteFileList * FileList);
-  void __fastcall AutoDetectTimeDifference(const UnicodeString & Directory, const TCopyParamType * CopyParam, int Params);
-  void __fastcall ApplyTimeDifference(TRemoteFile * File);
-  void __fastcall ApplyTimeDifference(
-    const UnicodeString & FileName, TDateTime & Modification, TModificationFmt & ModificationFmt);
-  void __fastcall DummyReadDirectory(const UnicodeString & Directory);
-  bool __fastcall IsEmptyFileList(TRemoteFileList * FileList);
-  void __fastcall CheckTimeDifference();
-  inline bool __fastcall NeedAutoDetectTimeDifference();
-  bool __fastcall LookupUploadModificationTime(
-    const UnicodeString & FileName, TDateTime & Modification, TModificationFmt ModificationFmt);
-  UnicodeString __fastcall DoCalculateFileChecksum(bool UsingHashCommand, const UnicodeString & Alg, TRemoteFile * File);
-  void __fastcall DoCalculateFilesChecksum(bool UsingHashCommand, const UnicodeString & Alg,
-    TStrings * FileList, TStrings * Checksums,
+  void Sink(const UnicodeString AFileName,
+    const TRemoteFile *AFile, const UnicodeString ATargetDir,
+    const TCopyParamType *CopyParam, intptr_t AParams,
+    TFileOperationProgressType *OperationProgress, uintptr_t AFlags,
+    TDownloadSessionAction &Action);
+  bool ConfirmOverwrite(const UnicodeString ASourceFullFileName, UnicodeString &ATargetFileName,
+    intptr_t AParams, TFileOperationProgressType *OperationProgress,
+    bool AutoResume,
+    const TOverwriteFileParams *FileParams, const TCopyParamType *CopyParam,
+    TOverwriteMode &OverwriteMode);
+  void ReadDirectoryProgress(int64_t Bytes);
+  void ResetFileTransfer();
+  virtual void DoFileTransferProgress(int64_t TransferSize, int64_t Bytes);
+  virtual void FileTransferProgress(int64_t TransferSize, int64_t Bytes) override;
+  void ResetCaches();
+  void CaptureOutput(const UnicodeString AStr);
+  void DoReadDirectory(TRemoteFileList *AFileList);
+  void DoReadFile(const UnicodeString AFileName, TRemoteFile *& AFile);
+  void FileTransfer(const UnicodeString AFileName, const UnicodeString LocalFile,
+    const UnicodeString RemoteFile, const UnicodeString RemotePath, bool Get,
+    int64_t Size, intptr_t Type, TFileTransferData &UserData,
+    TFileOperationProgressType *OperationProgress);
+  TDateTime ConvertLocalTimestamp(time_t Time);
+  void RemoteFileTimeToDateTimeAndPrecision(const TRemoteFileTime &Source,
+    TDateTime &DateTime, TModificationFmt &ModificationFmt) const;
+  void SetLastCode(intptr_t Code);
+  void StoreLastResponse(const UnicodeString Text);
+  void SetCPSLimit(TFileOperationProgressType *OperationProgress);
+  bool VerifyCertificateHostName(const TFtpsCertificateData &Data);
+  bool SupportsReadingFile() const;
+  void AutoDetectTimeDifference(TRemoteFileList *FileList);
+  void AutoDetectTimeDifference(const UnicodeString ADirectory, const TCopyParamType *CopyParam, intptr_t AParams);
+  void ApplyTimeDifference(TRemoteFile *File);
+  void ApplyTimeDifference(
+    const UnicodeString FileName, TDateTime &Modification, TModificationFmt &ModificationFmt);
+  void DummyReadDirectory(const UnicodeString ADirectory);
+  bool IsEmptyFileList(TRemoteFileList *FileList) const;
+  void CheckTimeDifference();
+  inline bool NeedAutoDetectTimeDifference() const;
+  bool LookupUploadModificationTime(
+    const UnicodeString FileName, TDateTime &Modification, TModificationFmt ModificationFmt);
+  UnicodeString DoCalculateFileChecksum(bool UsingHashCommand, const UnicodeString Alg, TRemoteFile *File);
+  void DoCalculateFilesChecksum(bool UsingHashCommand, const UnicodeString Alg,
+    TStrings *FileList, TStrings *Checksums,
     TCalculatedChecksumEvent OnCalculatedChecksum,
-    TFileOperationProgressType * OperationProgress, bool FirstLevel);
-  void __fastcall HandleFeatReply();
-  void __fastcall ResetFeatures();
-  bool __fastcall SupportsSiteCommand(const UnicodeString & Command) const;
-  bool __fastcall SupportsCommand(const UnicodeString & Command) const;
-  void __fastcall RegisterChecksumAlgCommand(const UnicodeString & Alg, const UnicodeString & Command);
-  void __fastcall SendCommand(const UnicodeString & Command);
-  bool __fastcall CanTransferSkipList(int Params, unsigned int Flags, const TCopyParamType * CopyParam);
+    TFileOperationProgressType *OperationProgress, bool FirstLevel);
+  void HandleFeatReply();
+  void ResetFeatures();
+  bool SupportsSiteCommand(const UnicodeString ACommand) const;
+  bool SupportsCommand(const UnicodeString ACommand) const;
+  void RegisterChecksumAlgCommand(const UnicodeString Alg, const UnicodeString ACommand);
+  void SendCommand(const UnicodeString ACommand);
+  bool CanTransferSkipList(intptr_t AParams, uintptr_t AFlags, const TCopyParamType *CopyParam) const;
 
-  static bool __fastcall Unquote(UnicodeString & Str);
+  static bool Unquote(UnicodeString &Str);
 
 private:
   enum TCommand
@@ -221,79 +231,85 @@ private:
     FEAT
   };
 
-  TFileZillaIntf * FFileZillaIntf;
-  TCriticalSection * FQueueCriticalSection;
-  TCriticalSection * FTransferStatusCriticalSection;
-  TMessageQueue * FQueue;
+  mutable TFileZillaIntf *FFileZillaIntf;
+  TCriticalSection FQueueCriticalSection;
+  TCriticalSection FTransferStatusCriticalSection;
+  TMessageQueue *FQueue;
   HANDLE FQueueEvent;
   TSessionInfo FSessionInfo;
   TFileSystemInfo FFileSystemInfo;
   bool FFileSystemInfoValid;
-  unsigned int FReply;
-  unsigned int FCommandReply;
+  uintptr_t FReply;
+  uintptr_t FCommandReply;
   TCommand FLastCommand;
   bool FPasswordFailed;
   bool FStoredPasswordTried;
   bool FMultineResponse;
-  int FLastCode;
-  int FLastCodeClass;
-  int FLastReadDirectoryProgress;
+  intptr_t FLastCode;
+  intptr_t FLastCodeClass;
+  intptr_t FLastReadDirectoryProgress;
   UnicodeString FTimeoutStatus;
   UnicodeString FDisconnectStatus;
-  TStrings * FLastResponse;
-  TStrings * FLastErrorResponse;
-  TStrings * FLastError;
+  TStrings *FLastResponse;
+  TStrings *FLastErrorResponse;
+  TStrings *FLastError;
   UnicodeString FSystem;
-  TStrings * FFeatures;
+  TStrings *FFeatures;
   UnicodeString FCurrentDirectory;
   bool FReadCurrentDirectory;
   UnicodeString FHomeDirectory;
-  TRemoteFileList * FFileList;
-  TRemoteFileList * FFileListCache;
+  TRemoteFileList *FFileList;
+  TRemoteFileList *FFileListCache;
   UnicodeString FFileListCachePath;
   UnicodeString FWelcomeMessage;
   bool FActive;
   bool FOpening;
   bool FWaitingForReply;
-  enum { ftaNone, ftaSkip, ftaCancel } FFileTransferAbort;
+  __removed enum { ftaNone, ftaSkip, ftaCancel } FFileTransferAbort;
+  enum
+  {
+    ftaNone,
+    ftaSkip,
+    ftaCancel,
+  } FFileTransferAbort;
   bool FIgnoreFileList;
   bool FFileTransferCancelled;
-  __int64 FFileTransferResumed;
+  int64_t FFileTransferResumed;
   bool FFileTransferPreserveTime;
   bool FFileTransferRemoveBOM;
   bool FFileTransferNoList;
-  unsigned long FFileTransferCPSLimit;
+  uintptr_t FFileTransferCPSLimit;
   bool FAwaitingProgress;
   TCaptureOutputEvent FOnCaptureOutput;
   UnicodeString FUserName;
   TAutoSwitch FListAll;
   bool FDoListAll;
-  TFTPServerCapabilities * FServerCapabilities;
+  TFTPServerCapabilities *FServerCapabilities;
   TDateTime FLastDataSent;
   bool FDetectTimeDifference;
-  __int64 FTimeDifference;
+  int64_t FTimeDifference;
   std::unique_ptr<TStrings> FChecksumAlgs;
   std::unique_ptr<TStrings> FChecksumCommands;
   std::unique_ptr<TStrings> FSupportedCommands;
   std::unique_ptr<TStrings> FSupportedSiteCommands;
   std::unique_ptr<TStrings> FHashAlgs;
-  typedef std::map<UnicodeString, TDateTime> TUploadedTimes;
+  typedef rde::map<UnicodeString, TDateTime> TUploadedTimes;
   TUploadedTimes FUploadedTimes;
   bool FSupportsAnyChecksumFeature;
   UnicodeString FLastCommandSent;
-  X509 * FCertificate;
-  EVP_PKEY * FPrivateKey;
+  X509 *FCertificate;
+  EVP_PKEY *FPrivateKey;
   bool FTransferActiveImmediately;
   bool FWindowsServer;
-  __int64 FBytesAvailable;
-  bool FBytesAvailableSuppoted;
+  int64_t FBytesAvailable;
+  bool FBytesAvailableSupported;
   bool FMVS;
   bool FVMS;
   bool FFileTransferAny;
-  bool FLoggedIn;
   mutable UnicodeString FOptionScratch;
+private:
+  bool DoQuit();
 };
 //---------------------------------------------------------------------------
-UnicodeString __fastcall GetOpenSSLVersionText();
+UnicodeString GetOpenSSLVersionText();
 //---------------------------------------------------------------------------
-#endif // FtpFileSystemH

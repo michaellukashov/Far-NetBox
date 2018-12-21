@@ -213,6 +213,8 @@ public:
   intptr_t GetCount() const;
   void SetCount(intptr_t NewCount);
 
+  ROProperty<intptr_t> Count{nb::bind(&TList::GetCount, this)};
+
 private:
   rde::vector<void *> FList;
 };

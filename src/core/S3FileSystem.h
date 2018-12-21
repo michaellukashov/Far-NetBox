@@ -1,8 +1,7 @@
-//------------------------------------------------------------------------------
-#ifndef S3FileSystemH
-#define S3FileSystemH
+#pragma once
 //------------------------------------------------------------------------------
 #include <FileSystems.h>
+#include <rdestl/map.h>
 //------------------------------------------------------------------------------
 struct TNeonCertificateData;
 struct TOverwriteFileParams;
@@ -16,7 +15,7 @@ struct ssl_st;
 #ifdef NEED_LIBS3
 // resolve clash
 #define S3Protocol _S3Protocol
-#include "libs3.h"
+#include <libs3.h>
 #undef S3Protocol
 #else
 struct ne_session_s;
@@ -30,83 +29,91 @@ enum S3Status { };
 enum _S3Protocol { };
 #endif
 //------------------------------------------------------------------------------
-class TS3FileSystem : public TCustomFileSystem
+NB_DEFINE_CLASS_ID(TS3FileSystem);
+class NB_CORE_EXPORT TS3FileSystem : public TCustomFileSystem
 {
+  NB_DISABLE_COPY(TS3FileSystem)
 public:
-  explicit TS3FileSystem(TTerminal * ATerminal);
-  virtual __fastcall ~TS3FileSystem();
+  static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TS3FileSystem); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TS3FileSystem) || TObject::is(Kind); }
+public:
+  explicit TS3FileSystem(TTerminal *ATerminal);
+  virtual ~TS3FileSystem();
 
-  virtual void __fastcall Open();
-  virtual void __fastcall Close();
-  virtual bool __fastcall GetActive();
-  virtual void __fastcall CollectUsage();
-  virtual void __fastcall Idle();
-  virtual UnicodeString __fastcall AbsolutePath(UnicodeString Path, bool Local);
-  virtual void __fastcall AnyCommand(const UnicodeString Command,
-    TCaptureOutputEvent OutputEvent);
-  virtual void __fastcall ChangeDirectory(const UnicodeString Directory);
-  virtual void __fastcall CachedChangeDirectory(const UnicodeString Directory);
-  virtual void __fastcall AnnounceFileListOperation();
-  virtual void __fastcall ChangeFileProperties(const UnicodeString FileName,
-    const TRemoteFile * File, const TRemoteProperties * Properties,
-    TChmodSessionAction & Action);
-  virtual bool __fastcall LoadFilesProperties(TStrings * FileList);
-  virtual void __fastcall CalculateFilesChecksum(const UnicodeString & Alg,
-    TStrings * FileList, TStrings * Checksums,
-    TCalculatedChecksumEvent OnCalculatedChecksum);
-  virtual void __fastcall CopyToLocal(TStrings * FilesToCopy,
-    const UnicodeString TargetDir, const TCopyParamType * CopyParam,
-    int Params, TFileOperationProgressType * OperationProgress,
-    TOnceDoneOperation & OnceDoneOperation);
-  virtual void __fastcall CopyToRemote(TStrings * FilesToCopy,
-    const UnicodeString TargetDir, const TCopyParamType * CopyParam,
-    int Params, TFileOperationProgressType * OperationProgress,
-    TOnceDoneOperation & OnceDoneOperation);
-  virtual void __fastcall Source(
-    TLocalFileHandle & Handle, const UnicodeString & TargetDir, UnicodeString & DestFileName,
-    const TCopyParamType * CopyParam, int Params,
-    TFileOperationProgressType * OperationProgress, unsigned int Flags,
-    TUploadSessionAction & Action, bool & ChildError);
-  virtual void __fastcall Sink(
-    const UnicodeString & FileName, const TRemoteFile * File,
-    const UnicodeString & TargetDir, UnicodeString & DestFileName, int Attrs,
-    const TCopyParamType * CopyParam, int Params, TFileOperationProgressType * OperationProgress,
-    unsigned int Flags, TDownloadSessionAction & Action);
-  virtual void __fastcall CreateDirectory(const UnicodeString & DirName, bool Encrypt);
-  virtual void __fastcall CreateLink(const UnicodeString FileName, const UnicodeString PointTo, bool Symbolic);
-  virtual void __fastcall DeleteFile(const UnicodeString FileName,
-    const TRemoteFile * File, int Params,
-    TRmSessionAction & Action);
-  virtual void __fastcall CustomCommandOnFile(const UnicodeString FileName,
-    const TRemoteFile * File, UnicodeString Command, int Params, TCaptureOutputEvent OutputEvent);
-  virtual void __fastcall DoStartup();
-  virtual void __fastcall HomeDirectory();
-  virtual bool __fastcall IsCapable(int Capability) const;
-  virtual void __fastcall LookupUsersGroups();
-  virtual void __fastcall ReadCurrentDirectory();
-  virtual void __fastcall ReadDirectory(TRemoteFileList * FileList);
-  virtual void __fastcall ReadFile(const UnicodeString FileName,
-    TRemoteFile *& File);
-  virtual void __fastcall ReadSymlink(TRemoteFile * SymLinkFile,
-    TRemoteFile *& File);
-  virtual void __fastcall RenameFile(const UnicodeString FileName, const TRemoteFile * File,
-    const UnicodeString NewName);
-  virtual void __fastcall CopyFile(const UnicodeString FileName, const TRemoteFile * File,
-    const UnicodeString NewName);
-  virtual TStrings * __fastcall GetFixedPaths();
-  virtual void __fastcall SpaceAvailable(const UnicodeString Path,
-    TSpaceAvailable & ASpaceAvailable);
-  virtual const TSessionInfo & __fastcall GetSessionInfo();
-  virtual const TFileSystemInfo & __fastcall GetFileSystemInfo(bool Retrieve);
-  virtual bool __fastcall TemporaryTransferFile(const UnicodeString & FileName);
-  virtual bool __fastcall GetStoredCredentialsTried();
-  virtual UnicodeString __fastcall GetUserName();
-  virtual void __fastcall GetSupportedChecksumAlgs(TStrings * Algs);
-  virtual void __fastcall LockFile(const UnicodeString & FileName, const TRemoteFile * File);
-  virtual void __fastcall UnlockFile(const UnicodeString & FileName, const TRemoteFile * File);
-  virtual void __fastcall UpdateFromMain(TCustomFileSystem * MainFileSystem);
-  virtual void __fastcall ClearCaches();
+  virtual void Open() override;
+  virtual void Close() override;
+  virtual bool GetActive() const override;
+  virtual void CollectUsage() override;
+  virtual void Idle() override;
+  virtual UnicodeString GetAbsolutePath(const UnicodeString APath, bool Local) override;
+  virtual UnicodeString GetAbsolutePath(const UnicodeString APath, bool Local) const override;
+  virtual void AnyCommand(const UnicodeString ACommand,
+    TCaptureOutputEvent OutputEvent) override;
+  virtual void ChangeDirectory(const UnicodeString ADirectory) override;
+  virtual void CachedChangeDirectory(const UnicodeString ADirectory) override;
+  virtual void AnnounceFileListOperation() override;
+  virtual void ChangeFileProperties(const UnicodeString AFileName,
+    const TRemoteFile *AFile, const TRemoteProperties *Properties,
+    TChmodSessionAction &Action) override;
+  virtual bool LoadFilesProperties(TStrings *FileList) override;
+  virtual void CalculateFilesChecksum(const UnicodeString Alg,
+    TStrings *AFileList, TStrings *Checksums,
+    TCalculatedChecksumEvent OnCalculatedChecksum) override;
+  virtual void CopyToLocal(TStrings *AFilesToCopy,
+    const UnicodeString ATargetDir, const TCopyParamType *CopyParam,
+    intptr_t AParams, TFileOperationProgressType *OperationProgress,
+    TOnceDoneOperation &OnceDoneOperation) override;
+  virtual void CopyToRemote(TStrings *AFilesToCopy,
+    const UnicodeString ATargetDir, const TCopyParamType *CopyParam,
+    intptr_t AParams, TFileOperationProgressType *OperationProgress,
+    TOnceDoneOperation &OnceDoneOperation) override;
+  virtual void Source(
+    TLocalFileHandle &AHandle, const UnicodeString ATargetDir, UnicodeString &ADestFileName,
+    const TCopyParamType *CopyParam, intptr_t AParams,
+    TFileOperationProgressType *OperationProgress, uintptr_t AFlags,
+    TUploadSessionAction &Action, bool &ChildError) override;
+  virtual void Sink(
+    const UnicodeString AFileName, const TRemoteFile *AFile,
+    const UnicodeString ATargetDir, UnicodeString &ADestFileName, uintptr_t Attrs,
+    const TCopyParamType *CopyParam, intptr_t AParams, TFileOperationProgressType *OperationProgress,
+    uintptr_t AFlags, TDownloadSessionAction &Action) override;
+  virtual void RemoteCreateDirectory(const UnicodeString ADirName) override;
+  virtual void RemoteCreateLink(const UnicodeString AFileName, const UnicodeString APointTo, bool Symbolic) override;
+  virtual void RemoteDeleteFile(const UnicodeString AFileName,
+    const TRemoteFile *File, intptr_t AParams,
+    TRmSessionAction &Action) override;
+  virtual void CustomCommandOnFile(const UnicodeString AFileName,
+    const TRemoteFile *File, const UnicodeString ACommand, intptr_t AParams, TCaptureOutputEvent OutputEvent) override;
+  virtual void DoStartup() override;
+  virtual void HomeDirectory() override;
+  virtual bool IsCapable(intptr_t Capability) const override;
+  virtual void LookupUsersGroups() override;
+  virtual void ReadCurrentDirectory() override;
+  virtual void ReadDirectory(TRemoteFileList *AFileList) override;
+  virtual void ReadFile(const UnicodeString AFileName,
+    TRemoteFile *&AFile) override;
+  virtual void ReadSymlink(TRemoteFile *ASymLinkFile,
+    TRemoteFile *&AFile) override;
+  virtual void RemoteRenameFile(const UnicodeString AFileName, const TRemoteFile *AFile,
+    const UnicodeString ANewName) override;
+  virtual void RemoteCopyFile(const UnicodeString AFileName, const TRemoteFile *AFile,
+    const UnicodeString ANewName) override;
+  virtual TStrings *GetFixedPaths() const override;
+  virtual void SpaceAvailable(const UnicodeString APath,
+    TSpaceAvailable &ASpaceAvailable) override;
+  virtual const TSessionInfo &GetSessionInfo() const override;
+  virtual const TFileSystemInfo &GetFileSystemInfo(bool Retrieve) override;
+  virtual bool TemporaryTransferFile(const UnicodeString AFileName) override;
+  virtual bool GetStoredCredentialsTried() const override;
+  virtual UnicodeString RemoteGetUserName() const override;
+  virtual void GetSupportedChecksumAlgs(TStrings *Algs) override;
+  virtual void LockFile(const UnicodeString AFileName, const TRemoteFile *AFile) override;
+  virtual void UnlockFile(const UnicodeString AFileName, const TRemoteFile *AFile) override;
+  virtual void UpdateFromMain(TCustomFileSystem *MainFileSystem) override;
+  virtual void ClearCaches() override;
 
+  virtual void Init(void *) override;
+  virtual void FileTransferProgress(int64_t TransferSize, int64_t Bytes) override;
 protected:
   bool FActive;
   TFileSystemInfo FFileSystemInfo;
@@ -117,67 +124,66 @@ protected:
   UTF8String FSecretAccessKey;
   UTF8String FHostName;
   int FTimeout;
-  S3RequestContext * FRequestContext;
+  S3RequestContext *FRequestContext;
   _S3Protocol FLibS3Protocol;
-  ne_session_s * FNeonSession;
+  ne_session_s *FNeonSession;
   UnicodeString FTlsVersionStr;
   UnicodeString FResponse;
   bool FResponseIgnore;
-  typedef std::map<UnicodeString, UnicodeString> TRegions;
+  typedef rde::map<UnicodeString, UnicodeString> TRegions;
   TRegions FRegions;
   TRegions FHostNames;
-  UnicodeString FAuthRegion;
 
-  virtual UnicodeString __fastcall GetCurrentDirectory();
+  virtual UnicodeString RemoteGetCurrentDirectory() const override;
 
   void LibS3Deinitialize();
-  bool VerifyCertificate(TNeonCertificateData Data);
+  bool VerifyCertificate(TNeonCertificateData &Data);
   void CollectTLSSessionInfo();
-  void CheckLibS3Error(const TLibS3CallbackData & Data, bool FatalOnConnectError = false);
-  void InitSslSession(ssl_st * Ssl, ne_session_s * Session);
-  void RequestInit(TLibS3CallbackData & Data);
-  void TryOpenDirectory(const UnicodeString & Directory);
-  void ReadDirectoryInternal(const UnicodeString & Path, TRemoteFileList * FileList, int MaxKeys, const UnicodeString & FileName);
-  void ParsePath(UnicodeString Path, UnicodeString & BucketName, UnicodeString & Key);
-  TRemoteToken MakeRemoteToken(const char * OwnerId, const char * OwnerDisplayName);
-  TLibS3BucketContext GetBucketContext(const UnicodeString & BucketName, const UnicodeString & Prefix);
+  void CheckLibS3Error(const TLibS3CallbackData &Data, bool FatalOnConnectError = false);
+  static void InitSslSession(ssl_st *Ssl, ne_session_s *Session);
+  void RequestInit(TLibS3CallbackData &Data);
+  void TryOpenDirectory(const UnicodeString ADirectory);
+  void ReadDirectoryInternal(const UnicodeString APath, TRemoteFileList *FileList, intptr_t MaxKeys, const UnicodeString AFileName);
+  void ParsePath(const UnicodeString APath, UnicodeString &BucketName, UnicodeString &AKey);
+  TRemoteToken MakeRemoteToken(const char *OwnerId, const char *OwnerDisplayName);
+  TLibS3BucketContext GetBucketContext(const UnicodeString ABucketName);
   void DoListBucket(
-    const UnicodeString & Prefix, TRemoteFileList * FileList, int MaxKeys, const TLibS3BucketContext & BucketContext,
-    TLibS3ListBucketCallbackData & Data);
-  UnicodeString GetFolderKey(const UnicodeString & Key);
-  void HandleNonBucketStatus(TLibS3CallbackData & Data, bool & Retry);
-  void DoReadFile(const UnicodeString & FileName, TRemoteFile *& File);
+    const UnicodeString APrefix, TRemoteFileList *FileList, intptr_t MaxKeys, const TLibS3BucketContext &BucketContext,
+    TLibS3ListBucketCallbackData &Data);
+  UnicodeString GetFolderKey(const UnicodeString AKey);
+  void DoReadFile(const UnicodeString AFileName, TRemoteFile *&AFile);
   void ConfirmOverwrite(
-    const UnicodeString & SourceFullFileName, UnicodeString & TargetFileName,
-    TFileOperationProgressType * OperationProgress, const TOverwriteFileParams * FileParams,
-    const TCopyParamType * CopyParam, int Params);
-  int PutObjectData(int BufferSize, char * Buffer, TLibS3PutObjectDataCallbackData & Data);
-  S3Status GetObjectData(int BufferSize, const char * Buffer, TLibS3GetObjectDataCallbackData & Data);
-  bool ShouldCancelTransfer(TLibS3TransferObjectDataCallbackData & Data);
+    const UnicodeString ASourceFullFileName, UnicodeString &ATargetFileName,
+    TFileOperationProgressType *OperationProgress, const TOverwriteFileParams *FileParams,
+    const TCopyParamType *CopyParam, intptr_t AParams);
+  int PutObjectData(int BufferSize, char *Buffer, TLibS3PutObjectDataCallbackData &Data);
+  S3Status GetObjectData(int BufferSize, const char *Buffer, TLibS3GetObjectDataCallbackData &Data);
+  bool ShouldCancelTransfer(TLibS3TransferObjectDataCallbackData &Data);
 
-  static TS3FileSystem * GetFileSystem(void * CallbackData);
-  static void LibS3SessionCallback(ne_session_s * Session, void * CallbackData);
-  static S3Status LibS3ResponsePropertiesCallback(const S3ResponseProperties * Properties, void * CallbackData);
-  static void LibS3ResponseCompleteCallback(S3Status Status, const S3ErrorDetails * Error, void * CallbackData);
-  static int LibS3SslCallback(int Failures, const ne_ssl_certificate_s * Certificate, void * CallbackData);
-  static void LibS3ResponseDataCallback(const char * Data, size_t Size, void * CallbackData);
+  static TS3FileSystem *GetFileSystem(void *CallbackData);
+  static void LibS3SessionCallback(ne_session_s *Session, void *CallbackData);
+  static S3Status LibS3ResponsePropertiesCallback(const S3ResponseProperties *Properties, void *CallbackData);
+  static void LibS3ResponseCompleteCallback(S3Status Status, const S3ErrorDetails *Error, void *CallbackData);
+  static int LibS3SslCallback(int Failures, const ne_ssl_certificate_s *Certificate, void *CallbackData);
+  static void LibS3ResponseDataCallback(const char *Data, size_t Size, void *CallbackData);
   static S3Status LibS3ListServiceCallback(
-    const char * OwnerId, const char * OwnerDisplayName, const char * BucketName,
-    int64_t CreationDate, void * CallbackData);
+    const char *OwnerId, const char *OwnerDisplayName, const char *BucketName,
+    int64_t CreationDate, void *CallbackData);
   static S3Status LibS3ListBucketCallback(
-    int IsTruncated, const char * NextMarker, int ContentsCount, const S3ListBucketContent * Contents,
-    int CommonPrefixesCount, const char ** CommonPrefixes, void * CallbackData);
-  static int LibS3PutObjectDataCallback(int BufferSize, char * Buffer, void * CallbackData);
-  static S3Status LibS3MultipartInitialCallback(const char * UploadId, void * CallbackData);
-  static int LibS3MultipartCommitPutObjectDataCallback(int BufferSize, char * Buffer, void * CallbackData);
-  static S3Status LibS3MultipartResponsePropertiesCallback(const S3ResponseProperties * Properties, void * CallbackData);
-  static S3Status LibS3GetObjectDataCallback(int BufferSize, const char * Buffer, void * CallbackData);
+    int IsTruncated, const char *NextMarker, int ContentsCount, const S3ListBucketContent *Contents,
+    int CommonPrefixesCount, const char **CommonPrefixes, void *CallbackData);
+  static int LibS3PutObjectDataCallback(int BufferSize, char *Buffer, void *CallbackData);
+  static S3Status LibS3MultipartInitialCallback(const char *UploadId, void *CallbackData);
+  static int LibS3MultipartCommitPutObjectDataCallback(int BufferSize, char *Buffer, void *CallbackData);
+  static S3Status LibS3MultipartResponsePropertiesCallback(const S3ResponseProperties *Properties, void *CallbackData);
+  static S3Status LibS3GetObjectDataCallback(int BufferSize, const char *Buffer, void *CallbackData);
 
   static const int S3MultiPartChunkSize;
+private:
+  void InitSslSessionImpl(ssl_st *Ssl) const;
 };
 //------------------------------------------------------------------------------
-UnicodeString __fastcall S3LibVersion();
-UnicodeString __fastcall S3LibDefaultHostName();
-UnicodeString __fastcall S3LibDefaultRegion();
+UnicodeString S3LibVersion();
+UnicodeString S3LibDefaultHostName();
+UnicodeString S3LibDefaultRegion();
 //------------------------------------------------------------------------------
-#endif

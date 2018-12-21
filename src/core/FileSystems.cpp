@@ -1,24 +1,43 @@
-//---------------------------------------------------------------------------
 #include <vcl.h>
 #pragma hdrstop
 
+#include <Common.h>
+
 #include "FileSystems.h"
 #include "RemoteFiles.h"
-#include "Common.h"
+#include "CopyParam.h"
 //---------------------------------------------------------------------------
-#pragma package(smart_init)
+__removed #pragma package(smart_init)
 //---------------------------------------------------------------------------
-__fastcall TCustomFileSystem::TCustomFileSystem(TTerminal * ATerminal):
+TCustomFileSystem::TCustomFileSystem(TObjectClassId Kind, TTerminal *ATerminal) :
+  TObject(Kind),
   FTerminal(ATerminal)
 {
   DebugAssert(FTerminal);
 }
 //---------------------------------------------------------------------------
-__fastcall TCustomFileSystem::~TCustomFileSystem()
+TCustomFileSystem::~TCustomFileSystem()
 {
+#ifdef USE_DLMALLOC
+  dlmalloc_trim(0); // 64 * 1024);
+#endif
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall TCustomFileSystem::GetHomeDirectory()
+UnicodeString TCustomFileSystem::CreateTargetDirectory(
+  IN UnicodeString AFileName,
+  IN UnicodeString ADirectory,
+  IN const TCopyParamType *CopyParam)
 {
-  throw Exception(L"Not implemented");
+  UnicodeString Result = ADirectory;
+  UnicodeString DestFileName = CopyParam->ChangeFileName(base::UnixExtractFileName(AFileName),
+      osRemote, true);
+  UnicodeString FileNamePath = ::ExtractFilePath(DestFileName);
+  if (!FileNamePath.IsEmpty())
+  {
+    Result = ::IncludeTrailingBackslash(ADirectory + FileNamePath);
+    if (!::SysUtulsForceDirectories(ApiPath(Result)))
+      Result.Clear();
+  }
+  return Result;
 }
+

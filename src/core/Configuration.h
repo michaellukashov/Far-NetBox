@@ -35,7 +35,6 @@ public:
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TConfiguration) || TObject::is(Kind); }
 private:
   bool FDontSave;
-  bool FForceSave;
   bool FChanged;
   intptr_t FUpdating;
   TNotifyEvent FOnChange;
@@ -86,8 +85,6 @@ private:
   intptr_t FParallelDurationThreshold;
   bool FScripting;
   UnicodeString FMimeTypes;
-  int FDontReloadMoreThanSessions;
-  int FScriptProgressFileNameLimit;
   intptr_t FSessionReopenAutoMaximumNumberOfRetries;
 
   bool FDisablePasswordStoring;
@@ -325,8 +322,6 @@ public:
   __property bool TryFtpWhenSshFails = { read = FTryFtpWhenSshFails, write = SetTryFtpWhenSshFails };
   __property int ParallelDurationThreshold = { read = FParallelDurationThreshold, write = SetParallelDurationThreshold };
   __property UnicodeString MimeTypes = { read = FMimeTypes, write = SetMimeTypes };
-  __property int DontReloadMoreThanSessions = { read = FDontReloadMoreThanSessions, write = FDontReloadMoreThanSessions };
-  __property int ScriptProgressFileNameLimit = { read = FScriptProgressFileNameLimit, write = FScriptProgressFileNameLimit };
 
   __property UnicodeString TimeFormat = { read = GetTimeFormat };
   __property TStorage Storage  = { read = GetStorage };
@@ -336,7 +331,6 @@ public:
   __property UnicodeString IniFileStorageNameForReading  = { read = GetIniFileStorageNameForReading };
   __property TStrings *OptionsStorage = { read = GetOptionsStorage, write = SetOptionsStorage };
   __property bool Persistent = { read = GetPersistent };
-  __property bool ForceSave = { read = FForceSave, write = FForceSave };
   __property bool Scripting = { read = FScripting, write = FScripting };
 
   __property UnicodeString DefaultKeyFile = { read = GetDefaultKeyFile };

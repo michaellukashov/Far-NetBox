@@ -1,4 +1,4 @@
-//---------------------------------------------------------------------------
+
 #include <vcl.h>
 #pragma hdrstop
 
@@ -6,194 +6,197 @@
 #include <lmcons.h>
 #define SECURITY_WIN32
 #include <sspi.h>
-#include <secext.h>
 
-#include "Common.h"
+#include <Common.h>
+#include <nbutils.h>
+#include <Exceptions.h>
+
 #include "SessionInfo.h"
-#include "Exceptions.h"
 #include "TextsCore.h"
-#include "CoreMain.h"
 #include "Script.h"
-#include <System.IOUtils.hpp>
 //---------------------------------------------------------------------------
-#pragma package(smart_init)
+__removed #pragma package(smart_init)
 //---------------------------------------------------------------------------
-UnicodeString __fastcall DoXmlEscape(UnicodeString Str, bool NewLine)
+static UnicodeString DoXmlEscape(const UnicodeString AStr, bool NewLine)
 {
-  for (int i = 1; i <= Str.Length(); i++)
+  UnicodeString Str = AStr;
+  for (intptr_t Index = 1; Index <= Str.Length(); ++Index)
   {
     UnicodeString Repl;
-    switch (Str[i])
+    switch (Str[Index])
     {
-      case L'\x00': // \0 Is not valid in XML anyway
-      case L'\x01':
-      case L'\x02':
-      case L'\x03':
-      case L'\x04':
-      case L'\x05':
-      case L'\x06':
-      case L'\x07':
-      case L'\x08':
-      // \n is handled below
-      case L'\x0B':
-      case L'\x0C':
-      // \r is handled below
-      case L'\x0E':
-      case L'\x0F':
-      case L'\x10':
-      case L'\x11':
-      case L'\x12':
-      case L'\x13':
-      case L'\x14':
-      case L'\x15':
-      case L'\x16':
-      case L'\x17':
-      case L'\x18':
-      case L'\x19':
-      case L'\x1A':
-      case L'\x1B':
-      case L'\x1C':
-      case L'\x1D':
-      case L'\x1E':
-      case L'\x1F':
-        Repl = L"#x" + ByteToHex((unsigned char)Str[i]) + L";";
-        break;
+    case L'\x00': // \0 Is not valid in XML anyway
+    case L'\x01':
+    case L'\x02':
+    case L'\x03':
+    case L'\x04':
+    case L'\x05':
+    case L'\x06':
+    case L'\x07':
+    case L'\x08':
+    // \n is handled below
+    case L'\x0B':
+    case L'\x0C':
+    // \r is handled below
+    case L'\x0E':
+    case L'\x0F':
+    case L'\x10':
+    case L'\x11':
+    case L'\x12':
+    case L'\x13':
+    case L'\x14':
+    case L'\x15':
+    case L'\x16':
+    case L'\x17':
+    case L'\x18':
+    case L'\x19':
+    case L'\x1A':
+    case L'\x1B':
+    case L'\x1C':
+    case L'\x1D':
+    case L'\x1E':
+    case L'\x1F':
+      Repl = L"#x" + ByteToHex((uint8_t)Str[Index]) + L";";
+      break;
 
-      case L'&':
-        Repl = L"amp;";
-        break;
+    case L'&':
+      Repl = L"amp;";
+      break;
 
-      case L'>':
-        Repl = L"gt;";
-        break;
+    case L'>':
+      Repl = L"gt;";
+      break;
 
-      case L'<':
-        Repl = L"lt;";
-        break;
+    case L'<':
+      Repl = L"lt;";
+      break;
 
-      case L'"':
-        Repl = L"quot;";
-        break;
+    case L'"':
+      Repl = L"quot;";
+      break;
 
-      case L'\n':
-        if (NewLine)
-        {
-          Repl = L"#10;";
-        }
-        break;
+    case L'\n':
+      if (NewLine)
+      {
+        Repl = L"#10;";
+      }
+      break;
 
-      case L'\r':
-        Str.Delete(i, 1);
-        i--;
-        break;
+    case L'\r':
+      Str.Delete(Index, 1);
+      --Index;
+      break;
     }
 
     if (!Repl.IsEmpty())
     {
-      Str[i] = L'&';
-      Str.Insert(Repl, i + 1);
-      i += Repl.Length();
+      Str[Index] = L'&';
+      Str.Insert(Repl, Index + 1);
+      Index += Repl.Length();
     }
   }
   return Str;
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall XmlEscape(UnicodeString Str)
+static UnicodeString XmlEscape(const UnicodeString Str)
 {
   return DoXmlEscape(Str, false);
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall XmlAttributeEscape(UnicodeString Str)
+static UnicodeString XmlAttributeEscape(const UnicodeString Str)
 {
   return DoXmlEscape(Str, true);
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-#pragma warn -inl
-class TSessionActionRecord
+__removed #pragma warn -inl
+NB_DEFINE_CLASS_ID(TSessionActionRecord);
+class TSessionActionRecord : public TObject
 {
 public:
-  __fastcall TSessionActionRecord(TActionLog * Log, TLogAction Action) :
+  static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TSessionActionRecord); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TSessionActionRecord) || TObject::is(Kind); }
+public:
+  explicit TSessionActionRecord(TActionLog *Log, TLogAction Action) :
+    TObject(OBJECT_CLASS_TSessionActionRecord),
     FLog(Log),
     FAction(Action),
     FState(Opened),
     FRecursive(false),
-    FErrorMessages(NULL),
+    FErrorMessages(nullptr),
     FNames(new TStringList()),
     FValues(new TStringList()),
-    FFileList(NULL),
-    FFile(NULL)
+    FFileList(nullptr),
+    FFile(nullptr)
   {
     FLog->AddPendingAction(this);
   }
 
-  __fastcall ~TSessionActionRecord()
+  ~TSessionActionRecord()
   {
-    delete FErrorMessages;
-    delete FNames;
-    delete FValues;
-    delete FFileList;
-    delete FFile;
+    SAFE_DESTROY(FErrorMessages);
+    SAFE_DESTROY(FNames);
+    SAFE_DESTROY(FValues);
+    SAFE_DESTROY(FFileList);
+    SAFE_DESTROY(FFile);
   }
 
-  void __fastcall Restart()
+  void Restart()
   {
     FState = Opened;
     FRecursive = false;
-    delete FErrorMessages;
-    FErrorMessages = NULL;
-    delete FFileList;
-    FFileList = NULL;
-    delete FFile;
-    FFile = NULL;
+    SAFE_DESTROY(FErrorMessages);
+    SAFE_DESTROY(FFileList);
+    SAFE_DESTROY(FFile);
     FNames->Clear();
     FValues->Clear();
   }
 
-  bool __fastcall Record()
+  bool Record()
   {
     bool Result = (FState != Opened);
+#if 0
     if (Result)
     {
       if (FLog->FLogging && (FState != Cancelled))
       {
-        const wchar_t * Name = ActionName();
+        const wchar_t *Name = ActionName();
         UnicodeString Attrs;
         if (FRecursive)
         {
           Attrs = L" recursive=\"true\"";
         }
-        FLog->AddIndented(FORMAT(L"<%s%s>", (Name,  Attrs)));
-        for (int Index = 0; Index < FNames->Count; Index++)
+        FLog->AddIndented(FORMAT("<%s%s>", Name,  Attrs));
+        for (intptr_t Index = 0; Index < FNames->GetCount(); ++Index)
         {
-          UnicodeString Value = FValues->Strings[Index];
+          UnicodeString Value = FValues->GetString(Index);
           if (Value.IsEmpty())
           {
-            FLog->AddIndented(FORMAT(L"  <%s />", (FNames->Strings[Index])));
+            FLog->AddIndented(FORMAT("  <%s />", FNames->GetString(Index)));
           }
           else
           {
-            FLog->AddIndented(FORMAT(L"  <%s value=\"%s\" />",
-              (FNames->Strings[Index], XmlAttributeEscape(Value))));
+            FLog->AddIndented(FORMAT("  <%s value=\"%s\" />",
+                FNames->GetString(Index), XmlAttributeEscape(Value)));
           }
         }
-        if (FFileList != NULL)
+        if (FFileList != nullptr)
         {
           FLog->AddIndented(L"  <files>");
-          for (int Index = 0; Index < FFileList->Count; Index++)
+          for (intptr_t Index = 0; Index < FFileList->GetCount(); ++Index)
           {
-            TRemoteFile * File = FFileList->Files[Index];
+            TRemoteFile *File = FFileList->GetFile(Index);
             RecordFile(L"    ", File, true);
           }
           FLog->AddIndented(L"  </files>");
         }
-        if (FFile != NULL)
+        if (FFile != nullptr)
         {
           RecordFile(L"  ", FFile, false);
         }
         if (FState == RolledBack)
         {
-          if (FErrorMessages != NULL)
+          if (FErrorMessages != nullptr)
           {
             FLog->AddIndented(L"  <result success=\"false\">");
             FLog->AddMessages(L"    ", FErrorMessages);
@@ -208,67 +211,68 @@ public:
         {
           FLog->AddIndented(L"  <result success=\"true\" />");
         }
-        FLog->AddIndented(FORMAT(L"</%s>", (Name)));
+        FLog->AddIndented(FORMAT("</%s>", Name));
       }
       delete this;
     }
+#endif
     return Result;
   }
 
-  void __fastcall Commit()
+  void Commit()
   {
     Close(Committed);
   }
 
-  void __fastcall Rollback(Exception * E)
+  void Rollback(Exception *E)
   {
-    DebugAssert(FErrorMessages == NULL);
+    DebugAssert(FErrorMessages == nullptr);
     FErrorMessages = ExceptionToMoreMessages(E);
     Close(RolledBack);
   }
 
-  void __fastcall Cancel()
+  void Cancel()
   {
     Close(Cancelled);
   }
 
-  void __fastcall FileName(const UnicodeString & FileName)
+  void SetFileName(const UnicodeString AFileName)
   {
-    Parameter(L"filename", FileName);
+    Parameter(L"filename", AFileName);
   }
 
-  void __fastcall Destination(const UnicodeString & Destination)
+  void Destination(const UnicodeString Destination)
   {
     Parameter(L"destination", Destination);
   }
 
-  void __fastcall Rights(const TRights & Rights)
+  void Rights(const TRights &Rights)
   {
-    Parameter(L"permissions", Rights.Text);
+    Parameter(L"permissions", Rights.GetText());
   }
 
-  void __fastcall Modification(const TDateTime & DateTime)
+  void Modification(const TDateTime &DateTime)
   {
     Parameter(L"modification", StandardTimestamp(DateTime));
   }
 
-  void __fastcall Recursive()
+  void Recursive()
   {
     FRecursive = true;
   }
 
-  void __fastcall Command(const UnicodeString & Command)
+  void Command(const UnicodeString Command)
   {
     Parameter(L"command", Command);
   }
 
-  void __fastcall AddOutput(UnicodeString Output, bool StdError)
+  void AddOutput(const UnicodeString Output, bool StdError)
   {
-    const wchar_t * Name = (StdError ? L"erroroutput" : L"output");
-    int Index = FNames->IndexOf(Name);
+    const wchar_t *Name = (StdError ? L"erroroutput" : L"output");
+    intptr_t Index = FNames->IndexOf(Name);
     if (Index >= 0)
     {
-      FValues->Strings[Index] = FValues->Strings[Index] + L"\r\n" + Output;
+      FValues->SetString(Index, FValues->GetString(Index) + L"\r\n" + Output);
     }
     else
     {
@@ -276,189 +280,132 @@ public:
     }
   }
 
-  void __fastcall ExitCode(int ExitCode)
+  void ExitCode(int ExitCode)
   {
-    Parameter(L"exitcode", IntToStr(ExitCode));
+    Parameter(L"exitcode", ::IntToStr(ExitCode));
   }
 
-  void __fastcall Checksum(const UnicodeString & Alg, const UnicodeString & Checksum)
+  void Checksum(const UnicodeString Alg, const UnicodeString Checksum)
   {
     Parameter(L"algorithm", Alg);
     Parameter(L"checksum", Checksum);
   }
 
-  void __fastcall Cwd(const UnicodeString & Path)
+  void Cwd(const UnicodeString Path)
   {
     Parameter(L"cwd", Path);
   }
 
-  void __fastcall FileList(TRemoteFileList * FileList)
+  void FileList(TRemoteFileList *FileList)
   {
-    if (FFileList == NULL)
+    if (FFileList == nullptr)
     {
       FFileList = new TRemoteFileList();
     }
     FileList->DuplicateTo(FFileList);
   }
 
-  void __fastcall File(TRemoteFile * File)
+  void File(TRemoteFile *AFile)
   {
-    if (FFile != NULL)
+    if (FFile != nullptr)
     {
-      delete FFile;
+      SAFE_DESTROY(FFile);
     }
-    FFile = File->Duplicate(true);
+    FFile = AFile->Duplicate(true);
   }
-
-  void __fastcall SynchronizeChecklistItem(const TSynchronizeChecklist::TItem * Item)
-  {
-    UnicodeString Action;
-    bool RecordLocal = false;
-    bool RecordRemote = false;
-    switch (Item->Action)
-    {
-      case TSynchronizeChecklist::saUploadNew:
-        Action = L"uploadnew";
-        RecordLocal = true;
-        break;
-      case TSynchronizeChecklist::saDownloadNew:
-        Action = L"downloadnew";
-        RecordRemote = true;
-        break;
-      case TSynchronizeChecklist::saUploadUpdate:
-        Action = L"uploadupdate";
-        RecordLocal = true;
-        RecordRemote = true;
-        break;
-      case TSynchronizeChecklist::saDownloadUpdate:
-        Action = L"downloadupdate";
-        RecordLocal = true;
-        RecordRemote = true;
-        break;
-      case TSynchronizeChecklist::saDeleteRemote:
-        Action = L"deleteremote";
-        RecordRemote = true;
-        break;
-      case TSynchronizeChecklist::saDeleteLocal:
-        Action = L"deletelocal";
-        RecordLocal = true;
-        break;
-      default:
-        DebugFail();
-        break;
-    }
-
-    Parameter(L"action", Action);
-
-    if (RecordLocal)
-    {
-      UnicodeString FileName = TPath::Combine(Item->Local.Directory, Item->Local.FileName);
-      SynchronizeChecklistItemFileInfo(FileName, Item->IsDirectory, Item->Local);
-    }
-    if (RecordRemote)
-    {
-      UnicodeString FileName = UnixCombinePaths(Item->Remote.Directory, Item->Remote.FileName);
-      SynchronizeChecklistItemFileInfo(FileName, Item->IsDirectory, Item->Remote);
-    }
-  }
-
 
 protected:
-  enum TState { Opened, Committed, RolledBack, Cancelled };
+  enum TState
+  {
+    Opened,
+    Committed,
+    RolledBack,
+    Cancelled,
+  };
 
-  inline void __fastcall Close(TState State)
+  inline void Close(TState State)
   {
     DebugAssert(FState == Opened);
     FState = State;
     FLog->RecordPendingActions();
   }
 
-  const wchar_t * __fastcall ActionName()
+  const wchar_t *ActionName() const
   {
     switch (FAction)
     {
-      case laUpload: return L"upload";
-      case laDownload: return L"download";
-      case laTouch: return L"touch";
-      case laChmod: return L"chmod";
-      case laMkdir: return L"mkdir";
-      case laRm: return L"rm";
-      case laMv: return L"mv";
-      case laCp: return L"cp";
-      case laCall: return L"call";
-      case laLs: return L"ls";
-      case laStat: return L"stat";
-      case laChecksum: return L"checksum";
-      case laCwd: return L"cwd";
-      case laDifference: return L"difference";
-      default: DebugFail(); return L"";
+    case laUpload: return L"upload";
+    case laDownload: return L"download";
+    case laTouch: return L"touch";
+    case laChmod: return L"chmod";
+    case laMkdir: return L"mkdir";
+    case laRm: return L"rm";
+    case laMv: return L"mv";
+    case laCp: return L"cp";
+    case laCall: return L"call";
+    case laLs: return L"ls";
+    case laStat: return L"stat";
+    case laChecksum: return L"checksum";
+    case laCwd: return L"cwd";
+    default:
+      DebugFail();
+      return L"";
     }
   }
 
-  void __fastcall Parameter(const UnicodeString & Name, const UnicodeString & Value = L"")
+  void Parameter(const UnicodeString Name, const UnicodeString Value = L"")
   {
     FNames->Add(Name);
     FValues->Add(Value);
   }
 
-  void __fastcall RecordFile(const UnicodeString & Indent, TRemoteFile * File, bool IncludeFileName)
+#if 0
+  void RecordFile(const UnicodeString AIndent, TRemoteFile *AFile, bool IncludeFileName)
   {
-    FLog->AddIndented(Indent + L"<file>");
-    FLog->AddIndented(Indent + FORMAT(L"  <filename value=\"%s\" />", (XmlAttributeEscape(File->FileName))));
-    FLog->AddIndented(Indent + FORMAT(L"  <type value=\"%s\" />", (XmlAttributeEscape(File->Type))));
-    if (!File->IsDirectory)
+    FLog->AddIndented(AIndent + L"<file>");
+    FLog->AddIndented(AIndent + FORMAT(L"  <filename value=\"%s\" />", (XmlAttributeEscape(AFile->FileName))));
+    FLog->AddIndented(AIndent + FORMAT(L"  <type value=\"%s\" />", (XmlAttributeEscape(AFile->Type))));
+    if (!AFile->IsDirectory)
     {
-      FLog->AddIndented(Indent + FORMAT(L"  <size value=\"%s\" />", (IntToStr(File->Size))));
+      FLog->AddIndented(AIndent + FORMAT(L"  <size value=\"%s\" />", (IntToStr(AFile->Size))));
     }
-    if (File->ModificationFmt != mfNone)
+    if (AFile->ModificationFmt != mfNone)
     {
-      FLog->AddIndented(Indent + FORMAT(L"  <modification value=\"%s\" />", (StandardTimestamp(File->Modification))));
+      FLog->AddIndented(AIndent + FORMAT(L"  <modification value=\"%s\" />", (StandardTimestamp(AFile->Modification))));
     }
-    if (!File->Rights->Unknown)
+    if (!AFile->Rights->Unknown)
     {
-      FLog->AddIndented(Indent + FORMAT(L"  <permissions value=\"%s\" />", (XmlAttributeEscape(File->Rights->Text))));
+      FLog->AddIndented(AIndent + FORMAT(L"  <permissions value=\"%s\" />", (XmlAttributeEscape(AFile->Rights->Text))));
     }
-    if (File->Owner.IsSet)
+    if (AFile->Owner.IsSet)
     {
-      FLog->AddIndented(Indent + FORMAT(L"  <owner value=\"%s\" />", (XmlAttributeEscape(File->Owner.DisplayText))));
+      FLog->AddIndented(AIndent + FORMAT(L"  <owner value=\"%s\" />", (XmlAttributeEscape(AFile->Owner.DisplayText))));
     }
-    if (File->Group.IsSet)
+    if (AFile->Group.IsSet)
     {
-      FLog->AddIndented(Indent + FORMAT(L"  <group value=\"%s\" />", (XmlAttributeEscape(File->Group.DisplayText))));
+      FLog->AddIndented(AIndent + FORMAT(L"  <group value=\"%s\" />", (XmlAttributeEscape(AFile->Group.DisplayText))));
     }
-    FLog->AddIndented(Indent + L"</file>");
+    FLog->AddIndented(AIndent + L"</file>");
   }
-
-  void __fastcall SynchronizeChecklistItemFileInfo(
-    const UnicodeString & AFileName, bool IsDirectory, const TSynchronizeChecklist::TItem::TFileInfo FileInfo)
-  {
-    Parameter(L"type", XmlAttributeEscape(IsDirectory ? L'D' : L'-'));
-    FileName(XmlAttributeEscape(AFileName));
-    if (!IsDirectory)
-    {
-      Parameter(L"size", XmlAttributeEscape(IntToStr(FileInfo.Size)));
-    }
-    if (FileInfo.ModificationFmt != mfNone)
-    {
-      Modification(FileInfo.Modification);
-    }
-  }
+#endif // #if 0
 
 private:
-  TActionLog * FLog;
+  TActionLog *FLog;
   TLogAction FAction;
   TState FState;
   bool FRecursive;
-  TStrings * FErrorMessages;
-  TStrings * FNames;
-  TStrings * FValues;
-  TRemoteFileList * FFileList;
-  TRemoteFile * FFile;
+  TStrings *FErrorMessages;
+  TStrings *FNames;
+  TStrings *FValues;
+  TRemoteFileList *FFileList;
+  TRemoteFile *FFile;
 };
+#if 0
 #pragma warn .inl
+#endif // #if 0
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-__fastcall TSessionAction::TSessionAction(TActionLog * Log, TLogAction Action)
+TSessionAction::TSessionAction(TActionLog *Log, TLogAction Action)
 {
   if (Log->FLogging)
   {
@@ -466,379 +413,372 @@ __fastcall TSessionAction::TSessionAction(TActionLog * Log, TLogAction Action)
   }
   else
   {
-    FRecord = NULL;
+    FRecord = nullptr;
   }
 }
 //---------------------------------------------------------------------------
-__fastcall TSessionAction::~TSessionAction()
+TSessionAction::~TSessionAction()
 {
-  if (FRecord != NULL)
+  if (FRecord != nullptr)
   {
     Commit();
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TSessionAction::Restart()
+void TSessionAction::Restart()
 {
-  if (FRecord != NULL)
+  if (FRecord != nullptr)
   {
     FRecord->Restart();
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TSessionAction::Commit()
+void TSessionAction::Commit()
 {
-  if (FRecord != NULL)
+  if (FRecord != nullptr)
   {
-    TSessionActionRecord * Record = FRecord;
-    FRecord = NULL;
+    TSessionActionRecord *Record = FRecord;
+    FRecord = nullptr;
     Record->Commit();
   }
 }
-//---------------------------------------------------------------------------
-void __fastcall TSessionAction::Rollback(Exception * E)
+
+void TSessionAction::Rollback(Exception *E)
 {
-  if (FRecord != NULL)
+  if (FRecord != nullptr)
   {
-    TSessionActionRecord * Record = FRecord;
-    FRecord = NULL;
+    TSessionActionRecord *Record = FRecord;
+    FRecord = nullptr;
     Record->Rollback(E);
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TSessionAction::Cancel()
+void TSessionAction::Cancel()
 {
-  if (FRecord != NULL)
+  if (FRecord != nullptr)
   {
-    TSessionActionRecord * Record = FRecord;
-    FRecord = NULL;
+    TSessionActionRecord *Record = FRecord;
+    FRecord = nullptr;
     Record->Cancel();
   }
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-__fastcall TFileSessionAction::TFileSessionAction(TActionLog * Log, TLogAction Action) :
+TFileSessionAction::TFileSessionAction(TActionLog *Log, TLogAction Action) :
   TSessionAction(Log, Action)
 {
 }
 //---------------------------------------------------------------------------
-__fastcall TFileSessionAction::TFileSessionAction(
-    TActionLog * Log, TLogAction Action, const UnicodeString & AFileName) :
+TFileSessionAction::TFileSessionAction(
+  TActionLog *Log, TLogAction Action, const UnicodeString AFileName) :
   TSessionAction(Log, Action)
 {
-  FileName(AFileName);
+  SetFileName(AFileName);
 }
 //---------------------------------------------------------------------------
-void __fastcall TFileSessionAction::FileName(const UnicodeString & FileName)
+void TFileSessionAction::SetFileName(const UnicodeString AFileName)
 {
-  if (FRecord != NULL)
+  if (FRecord != nullptr)
   {
-    FRecord->FileName(FileName);
+    FRecord->SetFileName(AFileName);
   }
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-__fastcall TFileLocationSessionAction::TFileLocationSessionAction(
-    TActionLog * Log, TLogAction Action) :
+TFileLocationSessionAction::TFileLocationSessionAction(
+  TActionLog *Log, TLogAction Action) :
   TFileSessionAction(Log, Action)
 {
 }
 //---------------------------------------------------------------------------
-__fastcall TFileLocationSessionAction::TFileLocationSessionAction(
-    TActionLog * Log, TLogAction Action, const UnicodeString & FileName) :
-  TFileSessionAction(Log, Action, FileName)
+TFileLocationSessionAction::TFileLocationSessionAction(
+  TActionLog *Log, TLogAction Action, const UnicodeString AFileName) :
+  TFileSessionAction(Log, Action, AFileName)
 {
 }
 //---------------------------------------------------------------------------
-void __fastcall TFileLocationSessionAction::Destination(const UnicodeString & Destination)
+void TFileLocationSessionAction::Destination(const UnicodeString Destination)
 {
-  if (FRecord != NULL)
+  if (FRecord != nullptr)
   {
     FRecord->Destination(Destination);
   }
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-__fastcall TUploadSessionAction::TUploadSessionAction(TActionLog * Log) :
+TUploadSessionAction::TUploadSessionAction(TActionLog *Log) :
   TFileLocationSessionAction(Log, laUpload)
 {
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-__fastcall TDownloadSessionAction::TDownloadSessionAction(TActionLog * Log) :
+TDownloadSessionAction::TDownloadSessionAction(TActionLog *Log) :
   TFileLocationSessionAction(Log, laDownload)
 {
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-__fastcall TChmodSessionAction::TChmodSessionAction(
-    TActionLog * Log, const UnicodeString & FileName) :
-  TFileSessionAction(Log, laChmod, FileName)
+TChmodSessionAction::TChmodSessionAction(
+  TActionLog *Log, const UnicodeString AFileName) :
+  TFileSessionAction(Log, laChmod, AFileName)
 {
 }
 //---------------------------------------------------------------------------
-void __fastcall TChmodSessionAction::Recursive()
+void TChmodSessionAction::Recursive()
 {
-  if (FRecord != NULL)
+  if (FRecord != nullptr)
   {
     FRecord->Recursive();
   }
 }
 //---------------------------------------------------------------------------
-__fastcall TChmodSessionAction::TChmodSessionAction(
-    TActionLog * Log, const UnicodeString & FileName, const TRights & ARights) :
-  TFileSessionAction(Log, laChmod, FileName)
+TChmodSessionAction::TChmodSessionAction(
+  TActionLog *Log, const UnicodeString AFileName, const TRights &ARights) :
+  TFileSessionAction(Log, laChmod, AFileName)
 {
   Rights(ARights);
 }
 //---------------------------------------------------------------------------
-void __fastcall TChmodSessionAction::Rights(const TRights & Rights)
+void TChmodSessionAction::Rights(const TRights &Rights)
 {
-  if (FRecord != NULL)
+  if (FRecord != nullptr)
   {
     FRecord->Rights(Rights);
   }
 }
 //---------------------------------------------------------------------------
-__fastcall TTouchSessionAction::TTouchSessionAction(
-    TActionLog * Log, const UnicodeString & FileName, const TDateTime & Modification) :
-  TFileSessionAction(Log, laTouch, FileName)
+TTouchSessionAction::TTouchSessionAction(
+  TActionLog *Log, const UnicodeString AFileName, const TDateTime &Modification) :
+  TFileSessionAction(Log, laTouch, AFileName)
 {
-  if (FRecord != NULL)
+  if (FRecord != nullptr)
   {
     FRecord->Modification(Modification);
   }
 }
 //---------------------------------------------------------------------------
-__fastcall TMkdirSessionAction::TMkdirSessionAction(
-    TActionLog * Log, const UnicodeString & FileName) :
-  TFileSessionAction(Log, laMkdir, FileName)
+TMkdirSessionAction::TMkdirSessionAction(
+  TActionLog *Log, const UnicodeString AFileName) :
+  TFileSessionAction(Log, laMkdir, AFileName)
 {
 }
 //---------------------------------------------------------------------------
-__fastcall TRmSessionAction::TRmSessionAction(
-    TActionLog * Log, const UnicodeString & FileName) :
-  TFileSessionAction(Log, laRm, FileName)
+TRmSessionAction::TRmSessionAction(
+  TActionLog *Log, const UnicodeString AFileName) :
+  TFileSessionAction(Log, laRm, AFileName)
 {
 }
 //---------------------------------------------------------------------------
-void __fastcall TRmSessionAction::Recursive()
+void TRmSessionAction::Recursive()
 {
-  if (FRecord != NULL)
+  if (FRecord != nullptr)
   {
     FRecord->Recursive();
   }
 }
 //---------------------------------------------------------------------------
-__fastcall TMvSessionAction::TMvSessionAction(TActionLog * Log,
-    const UnicodeString & FileName, const UnicodeString & ADestination) :
-  TFileLocationSessionAction(Log, laMv, FileName)
+TMvSessionAction::TMvSessionAction(TActionLog *Log,
+  const UnicodeString AFileName, const UnicodeString ADestination) :
+  TFileLocationSessionAction(Log, laMv, AFileName)
 {
   Destination(ADestination);
 }
 //---------------------------------------------------------------------------
-__fastcall TCpSessionAction::TCpSessionAction(TActionLog * Log,
-    const UnicodeString & FileName, const UnicodeString & ADestination) :
-  TFileLocationSessionAction(Log, laCp, FileName)
+TCpSessionAction::TCpSessionAction(TActionLog * Log,
+  const UnicodeString AFileName, const UnicodeString ADestination) :
+  TFileLocationSessionAction(Log, laCp, AFileName)
 {
   Destination(ADestination);
 }
 //---------------------------------------------------------------------------
-__fastcall TCallSessionAction::TCallSessionAction(TActionLog * Log,
-    const UnicodeString & Command, const UnicodeString & Destination) :
+TCallSessionAction::TCallSessionAction(TActionLog *Log,
+  UnicodeString ACommand, const UnicodeString ADestination) :
   TSessionAction(Log, laCall)
 {
-  if (FRecord != NULL)
+  if (FRecord != nullptr)
   {
-    FRecord->Command(Command);
-    FRecord->Destination(Destination);
+    FRecord->Command(ACommand);
+    FRecord->Destination(ADestination);
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TCallSessionAction::AddOutput(const UnicodeString & Output, bool StdError)
+void TCallSessionAction::AddOutput(const UnicodeString Output, bool StdError)
 {
-  if (FRecord != NULL)
+  if (FRecord != nullptr)
   {
     FRecord->AddOutput(Output, StdError);
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TCallSessionAction::ExitCode(int ExitCode)
+void TCallSessionAction::ExitCode(int ExitCode)
 {
-  if (FRecord != NULL)
+  if (FRecord != nullptr)
   {
     FRecord->ExitCode(ExitCode);
   }
 }
 //---------------------------------------------------------------------------
-__fastcall TLsSessionAction::TLsSessionAction(TActionLog * Log,
-    const UnicodeString & Destination) :
+TLsSessionAction::TLsSessionAction(TActionLog *Log,
+  const UnicodeString Destination) :
   TSessionAction(Log, laLs)
 {
-  if (FRecord != NULL)
+  if (FRecord != nullptr)
   {
     FRecord->Destination(Destination);
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TLsSessionAction::FileList(TRemoteFileList * FileList)
+void TLsSessionAction::FileList(TRemoteFileList *FileList)
 {
-  if (FRecord != NULL)
+  if (FRecord != nullptr)
   {
     FRecord->FileList(FileList);
   }
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-__fastcall TStatSessionAction::TStatSessionAction(TActionLog * Log, const UnicodeString & FileName) :
-  TFileSessionAction(Log, laStat, FileName)
+TStatSessionAction::TStatSessionAction(TActionLog *Log, const UnicodeString AFileName) :
+  TFileSessionAction(Log, laStat, AFileName)
 {
 }
 //---------------------------------------------------------------------------
-void __fastcall TStatSessionAction::File(TRemoteFile * File)
+void TStatSessionAction::File(TRemoteFile *AFile)
 {
-  if (FRecord != NULL)
+  if (FRecord != nullptr)
   {
-    FRecord->File(File);
+    FRecord->File(AFile);
   }
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-__fastcall TChecksumSessionAction::TChecksumSessionAction(TActionLog * Log) :
+TChecksumSessionAction::TChecksumSessionAction(TActionLog *Log) :
   TFileSessionAction(Log, laChecksum)
 {
 }
 //---------------------------------------------------------------------------
-void __fastcall TChecksumSessionAction::Checksum(const UnicodeString & Alg, const UnicodeString & Checksum)
+void TChecksumSessionAction::Checksum(const UnicodeString Alg, const UnicodeString Checksum)
 {
-  if (FRecord != NULL)
+  if (FRecord != nullptr)
   {
     FRecord->Checksum(Alg, Checksum);
   }
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-__fastcall TCwdSessionAction::TCwdSessionAction(TActionLog * Log, const UnicodeString & Path) :
+TCwdSessionAction::TCwdSessionAction(TActionLog *Log, const UnicodeString Path) :
   TSessionAction(Log, laCwd)
 {
-  if (FRecord != NULL)
+  if (FRecord != nullptr)
   {
     FRecord->Cwd(Path);
   }
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-__fastcall TDifferenceSessionAction::TDifferenceSessionAction(TActionLog * Log, const TSynchronizeChecklist::TItem * Item) :
-  TSessionAction(Log, laDifference)
+TSessionInfo::TSessionInfo() :
+  LoginTime(Now())
 {
-  if (FRecord != NULL)
-  {
-    FRecord->SynchronizeChecklistItem(Item);
-  }
-}
-//---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
-TSessionInfo::TSessionInfo()
-{
-  LoginTime = Now();
-  CertificateVerifiedManually = false;
 }
 //---------------------------------------------------------------------------
 TFileSystemInfo::TFileSystemInfo()
 {
-  memset(&IsCapable, false, sizeof(IsCapable));
+  ClearArray(IsCapable);
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-FILE * __fastcall OpenFile(UnicodeString LogFileName, TDateTime Started, TSessionData * SessionData, bool Append, UnicodeString & NewFileName)
+static FILE *LocalOpenLogFile(const UnicodeString LogFileName, TDateTime Started, TSessionData *SessionData, bool Append, UnicodeString &ANewFileName)
 {
-  FILE * Result;
-  UnicodeString ANewFileName = GetExpandedLogFileName(LogFileName, Started, SessionData);
-  Result = _wfopen(ApiPath(ANewFileName).c_str(), (Append ? L"ab" : L"wb"));
-  if (Result != NULL)
+  UnicodeString NewFileName = StripPathQuotes(GetExpandedLogFileName(LogFileName, Started, SessionData));
+  FILE *Result = _wfsopen(ApiPath(NewFileName).c_str(),
+      Append ? L"ab" : L"wb", SH_DENYWR);
+  if (Result != nullptr)
   {
-    setvbuf(Result, NULL, _IONBF, BUFSIZ);
-    NewFileName = ANewFileName;
+    setvbuf(Result, nullptr, _IONBF, BUFSIZ);
+    ANewFileName = NewFileName;
   }
   else
   {
-    throw ECRTExtException(FMTLOAD(LOG_OPENERROR, (ANewFileName)));
+    throw ECRTExtException(FMTLOAD(LOG_OPENERROR, NewFileName));
   }
   return Result;
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 const wchar_t *LogLineMarks = L"<>!.*";
-__fastcall TSessionLog::TSessionLog(TSessionUI* UI, TDateTime Started, TSessionData * SessionData,
-  TConfiguration * Configuration)
+TSessionLog::TSessionLog(TSessionUI *UI, TDateTime Started, TSessionData *SessionData,
+  TConfiguration *Configuration) :
+  FConfiguration(Configuration),
+  FParent(nullptr),
+  FLogging(false),
+  FLogger(nullptr),
+  FCurrentFileSize(0),
+  FUI(UI),
+  FSessionData(SessionData),
+  FStarted(Started),
+  FClosed(false)
 {
-  FCriticalSection = new TCriticalSection;
-  FLogging = false;
-  FConfiguration = Configuration;
-  FParent = NULL;
-  FUI = UI;
-  FSessionData = SessionData;
-  FStarted = Started;
-  FFile = NULL;
-  FCurrentLogFileName = L"";
-  FCurrentFileName = L"";
-  FClosed = false;
 }
 //---------------------------------------------------------------------------
-__fastcall TSessionLog::~TSessionLog()
+TSessionLog::~TSessionLog()
 {
   FClosed = true;
   ReflectSettings();
-  DebugAssert(FFile == NULL);
-  delete FCriticalSection;
+  DebugAssert(FLogger == nullptr);
 }
 //---------------------------------------------------------------------------
-void __fastcall TSessionLog::SetParent(TSessionLog * Parent, const UnicodeString & Name)
+void TSessionLog::SetParent(TSessionLog *AParent, const UnicodeString AName)
 {
-  FParent = Parent;
-  FName = Name;
+  FParent = AParent;
+  FName = AName;
 }
 //---------------------------------------------------------------------------
-void __fastcall TSessionLog::DoAddToParent(TLogLineType Type, const UnicodeString & Line)
+void TSessionLog::DoAddToParent(TLogLineType Type, const UnicodeString ALine)
 {
-  DebugAssert(FParent != NULL);
-  FParent->Add(Type, Line);
+  DebugAssert(FParent != nullptr);
+  FParent->Add(Type, ALine);
 }
 //---------------------------------------------------------------------------
-void __fastcall TSessionLog::DoAddToSelf(TLogLineType Type, const UnicodeString & Line)
+void TSessionLog::DoAddToSelf(TLogLineType Type, const UnicodeString ALine)
 {
-  if (LogToFile())
+  if (LogToFile()) { try
   {
-    if (FFile == NULL)
+    if (FLogger == nullptr)
     {
       OpenLogFile();
     }
 
-    if (FFile != NULL)
+    if (FLogger != nullptr)
     {
       UnicodeString Timestamp = FormatDateTime(L" yyyy-mm-dd hh:nn:ss.zzz ", Now());
-      UTF8String UtfLine = UTF8String(UnicodeString(LogLineMarks[Type]) + Timestamp + Line + L"\r\n");
-      for (int Index = 1; Index <= UtfLine.Length(); Index++)
+      UTF8String UtfLine = UTF8String(UnicodeString(LogLineMarks[Type]) + Timestamp + TrimRight(ALine)) + "\r\n";
+#if 0
+      for (intptr_t Index = 1; Index <= UtfLine.Length(); Index++)
       {
         if ((UtfLine[Index] == '\n') &&
-            ((Index == 1) || (UtfLine[Index - 1] != '\r')))
+            (UtfLine[Index - 1] != '\r'))
         {
-          UtfLine.Insert('\r', Index);
+          UtfLine.Insert(L'\r', Index);
         }
       }
-      int Writting = UtfLine.Length();
-      CheckSize(Writting);
-      FCurrentFileSize += fwrite(UtfLine.c_str(), 1, Writting, (FILE *)FFile);
+#endif // #if 0
+      intptr_t ToWrite = UtfLine.Length();
+      CheckSize(ToWrite);
+      FCurrentFileSize += FLogger->Write(UtfLine.c_str(), ToWrite);
+    }}
+    catch (...)
+    {
+      // TODO: log error
+      DEBUG_PRINTF("TSessionLog::DoAddToSelf: error");
     }
   }
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall TSessionLog::LogPartFileName(const UnicodeString & BaseName, int Index)
+UnicodeString TSessionLog::LogPartFileName(const UnicodeString BaseName, intptr_t Index)
 {
   UnicodeString Result;
   if (Index >= 1)
   {
-    Result = FORMAT(L"%s.%d", (BaseName, Index));
+    Result = FORMAT("%s.%d", BaseName, Index);
   }
   else
   {
@@ -847,9 +787,9 @@ UnicodeString __fastcall TSessionLog::LogPartFileName(const UnicodeString & Base
   return Result;
 }
 //---------------------------------------------------------------------------
-void __fastcall TSessionLog::CheckSize(__int64 Addition)
+void TSessionLog::CheckSize(int64_t Addition)
 {
-  __int64 MaxSize = FConfiguration->LogMaxSize;
+  int64_t MaxSize = FConfiguration->GetLogMaxSize();
   if ((MaxSize > 0) && (FCurrentFileSize + Addition >= MaxSize))
   {
     // Before we close it
@@ -857,14 +797,14 @@ void __fastcall TSessionLog::CheckSize(__int64 Addition)
     CloseLogFile();
     FCurrentFileSize = 0;
 
-    int Index = 0;
+    intptr_t Index = 0;
 
-    while (FileExists(LogPartFileName(BaseName, Index + 1)))
+    while (::SysUtulsFileExists(LogPartFileName(BaseName, Index + 1)))
     {
       Index++;
     }
 
-    int MaxCount = FConfiguration->LogMaxCount;
+    intptr_t MaxCount = FConfiguration->GetLogMaxCount();
 
     do
     {
@@ -875,7 +815,7 @@ void __fastcall TSessionLog::CheckSize(__int64 Addition)
       }
       else
       {
-        THROWOSIFFALSE(RenameFile(LogPart, LogPartFileName(BaseName, Index + 1)));
+        THROWOSIFFALSE(::SysUtulsRenameFile(LogPart, LogPartFileName(BaseName, Index + 1)));
       }
       Index--;
     }
@@ -885,111 +825,114 @@ void __fastcall TSessionLog::CheckSize(__int64 Addition)
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TSessionLog::DoAdd(TLogLineType Type, UnicodeString Line,
-  void __fastcall (__closure *f)(TLogLineType Type, const UnicodeString & Line))
+void TSessionLog::DoAdd(TLogLineType AType, const UnicodeString ALine,
+  TDoAddLogEvent Event)
 {
   UnicodeString Prefix;
 
-  if (!FName.IsEmpty())
+  if (!GetName().IsEmpty())
   {
-    Prefix = L"[" + FName + L"] ";
+    Prefix = L"[" + GetName() + L"] ";
   }
 
+  UnicodeString Line = ALine;
   while (!Line.IsEmpty())
   {
-    f(Type, Prefix + CutToChar(Line, L'\n', false));
+    Event(AType, Prefix + CutToChar(Line, L'\n', false));
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TSessionLog::Add(TLogLineType Type, const UnicodeString & Line)
+void TSessionLog::Add(TLogLineType Type, const UnicodeString ALine)
 {
   DebugAssert(FConfiguration);
-  if (Logging)
+  if (GetLogging())
   {
     try
     {
-      if (FParent != NULL)
+      if (FParent != nullptr)
       {
-        DoAdd(Type, Line, DoAddToParent);
+        DoAdd(Type, ALine, nb::bind(&TSessionLog::DoAddToParent, this));
       }
       else
       {
-        TGuard Guard(FCriticalSection);
+        volatile TGuard Guard(FCriticalSection);
 
-        DoAdd(Type, Line, DoAddToSelf);
+        DoAdd(Type, ALine, nb::bind(&TSessionLog::DoAddToSelf, this));
       }
     }
     catch (Exception &E)
     {
       // We failed logging, turn it off and notify user.
-      FConfiguration->Logging = false;
+      FConfiguration->SetLogging(false);
       try
       {
         throw ExtException(&E, LoadStr(LOG_GEN_ERROR));
       }
-      catch (Exception &E)
+      catch (Exception &E2)
       {
-        AddException(&E);
-        FUI->HandleExtendedException(&E);
+        AddException(&E2);
+        FUI->HandleExtendedException(&E2);
       }
     }
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TSessionLog::AddException(Exception * E)
+void TSessionLog::AddException(Exception *E)
 {
-  if (E != NULL)
+  if (E != nullptr)
   {
     Add(llException, ExceptionLogString(E));
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TSessionLog::ReflectSettings()
+void TSessionLog::ReflectSettings()
 {
-  TGuard Guard(FCriticalSection);
+  volatile TGuard Guard(FCriticalSection);
 
   FLogging =
     !FClosed &&
-    ((FParent != NULL) || FConfiguration->Logging);
+    ((FParent != nullptr) || FConfiguration->GetLogging());
 
   // if logging to file was turned off or log file was changed -> close current log file
-  if ((FFile != NULL) &&
-      (!LogToFile() || (FCurrentLogFileName != FConfiguration->LogFileName)))
+  if ((FLogger != nullptr) &&
+    (!LogToFile() || (FCurrentLogFileName != FConfiguration->GetLogFileName())))
   {
     CloseLogFile();
   }
 
-  if (FFile != NULL)
+  if (FLogger != nullptr)
   {
     CheckSize(0);
   }
-
 }
 //---------------------------------------------------------------------------
-bool __fastcall TSessionLog::LogToFile()
+bool TSessionLog::LogToFileProtected() const
 {
-  return Logging && FConfiguration->LogToFile && (FParent == NULL);
+  return GetLogging() && FConfiguration->GetLogToFile() && (FParent == nullptr);
 }
 //---------------------------------------------------------------------------
-void __fastcall TSessionLog::CloseLogFile()
+void TSessionLog::CloseLogFile()
 {
-  if (FFile != NULL)
+  if (FLogger != nullptr)
   {
-    fclose((FILE *)FFile);
-    FFile = NULL;
+    delete FLogger;
+    FLogger = nullptr;
   }
-  FCurrentLogFileName = L"";
-  FCurrentFileName = L"";
+  FCurrentLogFileName.Clear();
+  FCurrentFileName.Clear();
 }
 //---------------------------------------------------------------------------
-void __fastcall TSessionLog::OpenLogFile()
+void TSessionLog::OpenLogFile()
 {
+  DebugAssert(FConfiguration != nullptr);
+  if (!FConfiguration)
+    return;
   try
   {
-    DebugAssert(FFile == NULL);
-    DebugAssert(FConfiguration != NULL);
-    FCurrentLogFileName = FConfiguration->LogFileName;
-    FFile = OpenFile(FCurrentLogFileName, FStarted, FSessionData, FConfiguration->LogFileAppend, FCurrentFileName);
+    DebugAssert(FLogger == nullptr);
+    FCurrentLogFileName = FConfiguration->GetLogFileName();
+    FILE *file = LocalOpenLogFile(FCurrentLogFileName, FStarted, FSessionData, FConfiguration->GetLogFileAppend(), FCurrentFileName);
+    FLogger = new tinylog::TinyLog(file);
     TSearchRec SearchRec;
     if (FileSearchRec(FCurrentFileName, SearchRec))
     {
@@ -1000,48 +943,48 @@ void __fastcall TSessionLog::OpenLogFile()
       FCurrentFileSize = 0;
     }
   }
-  catch (Exception & E)
+  catch (Exception &E)
   {
     // We failed logging to file, turn it off and notify user.
-    FCurrentLogFileName = L"";
-    FCurrentFileName = L"";
-    FConfiguration->LogFileName = UnicodeString();
+    FCurrentLogFileName.Clear();
+    FCurrentFileName.Clear();
+    FConfiguration->SetLogFileName(UnicodeString());
     try
     {
       throw ExtException(&E, LoadStr(LOG_GEN_ERROR));
     }
-    catch (Exception & E)
+    catch (Exception &E2)
     {
-      AddException(&E);
+      AddException(&E2);
       // not to deadlock with TSessionLog::ReflectSettings invoked by FConfiguration->LogFileName setter above
-      TUnguard Unguard(FCriticalSection);
-      FUI->HandleExtendedException(&E);
+      volatile TUnguard Unguard(FCriticalSection);
+      FUI->HandleExtendedException(&E2);
     }
   }
 
   // in case we are appending and the existing log file is already too large
-  if (FFile != NULL)
+  if (FLogger != nullptr)
   {
     CheckSize(0);
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TSessionLog::AddSystemInfo()
+void TSessionLog::AddSystemInfo()
 {
   AddStartupInfo(true);
 }
 //---------------------------------------------------------------------------
-void __fastcall TSessionLog::AddStartupInfo()
+void TSessionLog::AddStartupInfo()
 {
   AddStartupInfo(false);
 }
 //---------------------------------------------------------------------------
-void __fastcall TSessionLog::AddStartupInfo(bool System)
+void TSessionLog::AddStartupInfo(bool System)
 {
-  TSessionData * Data = (System ? NULL : FSessionData);
-  if (Logging)
+  TSessionData *Data = (System ? nullptr : FSessionData);
+  if (GetLogging())
   {
-    if (FParent != NULL)
+    if (FParent != nullptr)
     {
       // do not add session info for secondary session
       // (this should better be handled in the TSecondaryTerminal)
@@ -1053,55 +996,55 @@ void __fastcall TSessionLog::AddStartupInfo(bool System)
   }
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall TSessionLog::GetTlsVersionName(TTlsVersion TlsVersion)
+UnicodeString TSessionLog::GetTlsVersionName(TTlsVersion TlsVersion) const
 {
   switch (TlsVersion)
   {
-    default:
-      DebugFail();
-    case ssl2:
-      return "SSLv2";
-    case ssl3:
-      return "SSLv3";
-    case tls10:
-      return "TLSv1.0";
-    case tls11:
-      return "TLSv1.1";
-    case tls12:
-      return "TLSv1.2";
+  default:
+    DebugFail();
+  case ssl2:
+    return "SSLv2";
+  case ssl3:
+    return "SSLv3";
+  case tls10:
+    return "TLSv1.0";
+  case tls11:
+    return "TLSv1.1";
+  case tls12:
+    return "TLSv1.2";
   }
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall TSessionLog::LogSensitive(const UnicodeString & Str)
+UnicodeString TSessionLog::LogSensitive(const UnicodeString Str)
 {
-  if (FConfiguration->LogSensitive && !Str.IsEmpty())
+  if (FConfiguration->GetLogSensitive() && !Str.IsEmpty())
   {
     return Str;
   }
-  else
-  {
-    return BooleanToEngStr(!Str.IsEmpty());
-  }
+  return BooleanToEngStr(!Str.IsEmpty());
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall TSessionLog::GetCmdLineLog()
+UnicodeString TSessionLog::GetCmdLineLog() const
 {
-  UnicodeString Result = CmdLine;
+  TODO("GetCmdLine()");
+  UnicodeString Result = L"";
 
-  if (!Configuration->LogSensitive)
+  if (!FConfiguration->GetLogSensitive())
   {
+#if 0
     TManagementScript Script(StoredSessions, false);
     Script.MaskPasswordInCommandLine(Result, true);
+#endif
   }
 
   return Result;
 }
 //---------------------------------------------------------------------------
 template <typename T>
-UnicodeString __fastcall EnumName(T Value, UnicodeString Names)
+UnicodeString EnumName(T Value, const UnicodeString ANames)
 {
-  int N = int(Value);
-
+  intptr_t N = intptr_t(Value);
+  UnicodeString Names = ANames;
   do
   {
     UnicodeString Name = CutToChar(Names, L';', true);
@@ -1109,342 +1052,370 @@ UnicodeString __fastcall EnumName(T Value, UnicodeString Names)
     {
       return Name;
     }
-    N--;
+    --N;
   }
   while ((N >= 0) && !Names.IsEmpty());
 
   return L"(unknown)";
 }
 //---------------------------------------------------------------------------
-#define ADSTR(S) DoAdd(llMessage, S, DoAddToSelf);
-#define ADF(S, F) ADSTR(FORMAT(S, F));
+#define ADSTR(S) DoAdd(llMessage, S, nb::bind(&TSessionLog::DoAddToSelf, this));
+#define ADF(S, ...) DoAdd(llMessage, FORMAT(S, __VA_ARGS__), nb::bind(&TSessionLog::DoAddToSelf, this));
 //---------------------------------------------------------------------------
-void __fastcall TSessionLog::DoAddStartupInfo(TSessionData * Data)
+void TSessionLog::DoAddStartupInfo(TSessionData *Data)
 {
-  if (Data == NULL)
+  if (Data == nullptr)
   {
     AddSeparator();
-    ADSTR(GetEnvironmentInfo());
-    THierarchicalStorage * Storage = FConfiguration->CreateConfigStorage();
-    try
+    UnicodeString OS = WindowsVersionLong();
+    AddToList(OS, WindowsProductName(), L" - ");
+    ADF("NetBox %s (OS %s)", FConfiguration->GetProductVersionStr(), OS);
+    try__finally
     {
-      ADF(L"Configuration: %s", (Storage->Source));
-    }
-    __finally
-    {
+      std::unique_ptr<THierarchicalStorage> Storage(FConfiguration->CreateConfigStorage());
+      DebugAssert(Storage.get());
+      ADF("Configuration: %s", Storage->GetSource());
+    },
+    __finally__removed
+    ({
       delete Storage;
-    }
+    }) end_try__finally
 
+#if 0
+    typedef BOOL (WINAPI * TGetUserNameEx)(EXTENDED_NAME_FORMAT NameFormat, LPWSTR lpNameBuffer, PULONG nSize);
+    HINSTANCE Secur32 = LoadLibrary(L"secur32.dll");
+    TGetUserNameEx GetUserNameEx =
+      (Secur32 != nullptr) ? reinterpret_cast<TGetUserNameEx>(::GetProcAddress(Secur32, "GetUserNameExW")) : nullptr;
     wchar_t UserName[UNLEN + 1];
-    unsigned long UserNameSize = LENOF(UserName);
-    if (DebugAlwaysFalse(!GetUserNameEx(NameSamCompatible, UserName, &UserNameSize)))
+    ULONG UserNameSize = _countof(UserName);
+    if ((GetUserNameEx == nullptr) || DebugAlwaysFalse(!GetUserNameEx(NameSamCompatible, (LPWSTR)UserName, &UserNameSize)))
     {
-      wcscpy(UserName, L"<Failed to retrieve username>");
+      wcscpy_s(UserName, UNLEN, L"<Failed to retrieve username>");
     }
+#endif // #if 0
     UnicodeString LogStr;
-    if (FConfiguration->LogProtocol <= -1)
-    {
-      LogStr = L"Reduced";
-    }
-    else if (FConfiguration->LogProtocol <= 0)
+    if (FConfiguration->GetLogProtocol() <= 0)
     {
       LogStr = L"Normal";
     }
-    else if (FConfiguration->LogProtocol == 1)
+    else if (FConfiguration->GetLogProtocol() == 1)
     {
       LogStr = L"Debug 1";
     }
-    else if (FConfiguration->LogProtocol >= 2)
+    else if (FConfiguration->GetLogProtocol() >= 2)
     {
       LogStr = L"Debug 2";
     }
-    if (FConfiguration->LogSensitive)
+#if 0
+    if (FConfiguration->GetLogSensitive())
     {
       LogStr += L", Logging passwords";
     }
-    if (FConfiguration->LogMaxSize > 0)
+#endif // #if 0
+    if (FConfiguration->GetLogMaxSize() > 0)
     {
-      LogStr += FORMAT(L", Rotating after: %s", (SizeToStr(FConfiguration->LogMaxSize)));
-      if (FConfiguration->LogMaxCount > 0)
+      LogStr += FORMAT(", Rotating after: %s", SizeToStr(FConfiguration->GetLogMaxSize()));
+      if (FConfiguration->GetLogMaxCount() > 0)
       {
-        LogStr += FORMAT(L", Keeping at most %d logs", (FConfiguration->LogMaxCount));
+        LogStr += FORMAT(", Keeping at most %d logs", FConfiguration->GetLogMaxCount());
       }
     }
-    ADF(L"Log level: %s", (LogStr));
-    ADF(L"Local account: %s", (UserName));
-    ADF(L"Working directory: %s", (GetCurrentDir()));
-    ADF(L"Process ID: %d", (int(GetCurrentProcessId())));
-    ADF(L"Command-line: %s", (GetCmdLineLog()));
-    if (FConfiguration->LogProtocol >= 1)
+#if 0
+    ADF("Log level: %s", LogStr);
+    ADF("Local account: %s", UserName);
+#endif // #if 0
+    ADF("Working directory: %s", GetCurrentDir());
+    ADF("Process ID: %d", intptr_t(GetCurrentProcessId()));
+#if 0
+    ADF("Command-line: %s", GetCmdLineLog());
+    if (FConfiguration->GetLogProtocol() >= 1)
     {
       AddOptions(GetGlobalOptions());
     }
-    ADF(L"Time zone: %s", (GetTimeZoneLogString()));
+#endif // #if 0
+    ADF("Time zone: %s", GetTimeZoneLogString());
     if (!AdjustClockForDSTEnabled())
     {
-      ADSTR(L"Warning: System option \"Automatically adjust clock for Daylight Saving Time\" is disabled, timestamps will not be represented correctly");
+      ADF("Warning: System option \"Automatically adjust clock for Daylight Saving Time\" is disabled, timestamps will not be represented correctly");
     }
-    ADF(L"Login time: %s", (FormatDateTime(L"dddddd tt", Now())));
+#if 0
+    ADF("Login time: %s", dt);
+#endif // #if 0
     AddSeparator();
   }
   else
   {
-    ADF(L"Session name: %s (%s)", (Data->SessionName, Data->Source));
-    ADF(L"Host name: %s (Port: %d)", (Data->HostNameExpanded, Data->PortNumber));
-    ADF(L"User name: %s (Password: %s, Key file: %s, Passphrase: %s)",
-      (Data->UserNameExpanded, LogSensitive(NormalizeString(Data->Password)),
-       LogSensitive(Data->PublicKeyFile), LogSensitive(Data->Passphrase)));
-    if (Data->UsesSsh)
+#if 0
+    ADF("Session name: %s (%s)", Data->GetSessionName(), Data->GetSource());
+    ADF("Host name: %s (Port: %d)", Data->GetHostNameExpanded(), Data->GetPortNumber());
+    ADF("User name: %s (Password: %s, Key file: %s, Passphrase: %s)",
+      Data->GetUserNameExpanded(), LogSensitive(Data->GetPassword()),
+      LogSensitive(Data->GetPublicKeyFile()), LogSensitive(Data->GetPassphrase()))
+#endif // #if 0
+    if (Data->GetUsesSsh())
     {
-      ADF(L"Tunnel: %s", (BooleanToEngStr(Data->Tunnel)));
-      if (Data->Tunnel)
+      ADF("Tunnel: %s", BooleanToEngStr(Data->GetTunnel()));
+      if (Data->GetTunnel())
       {
-        ADF(L"Tunnel: Host name: %s (Port: %d)", (Data->TunnelHostName, Data->TunnelPortNumber));
-        ADF(L"Tunnel: User name: %s (Password: %s, Key file: %s)",
-          (Data->TunnelUserName,
-           LogSensitive(Data->TunnelPassword),
-           LogSensitive(Data->TunnelPublicKeyFile)));
-        ADF(L"Tunnel: Local port number: %d", (Data->TunnelLocalPortNumber));
+        ADF("Tunnel: Host name: %s (Port: %d)", Data->GetTunnelHostName(), Data->GetTunnelPortNumber());
+#if 0
+        ADF("Tunnel: User name: %s (Password: %s, Key file: %s)",
+          Data->GetTunnelUserName(), BooleanToEngStr(!Data->GetTunnelPassword().IsEmpty()),
+          BooleanToEngStr(!Data->GetTunnelPublicKeyFile().IsEmpty()));
+        ADF("Tunnel: Local port number: %d", Data->GetTunnelLocalPortNumber());
+#endif // #if 0
       }
     }
-    ADF(L"Transfer Protocol: %s", (Data->FSProtocolStr));
-    if (Data->UsesSsh || (Data->FSProtocol == fsFTP))
+    ADF("Transfer Protocol: %s", Data->GetFSProtocolStr());
+    ADF("Code Page: %d", Data->GetCodePageAsNumber());
+    if (Data->GetUsesSsh() || (Data->GetFSProtocol() == fsFTP))
     {
       TPingType PingType;
-      int PingInterval;
-      if (Data->FSProtocol == fsFTP)
+      intptr_t PingInterval;
+      if (Data->GetFSProtocol() == fsFTP)
       {
-        PingType = Data->FtpPingType;
-        PingInterval = Data->FtpPingInterval;
+        PingType = Data->GetFtpPingType();
+        PingInterval = Data->GetFtpPingInterval();
       }
       else
       {
-        PingType = Data->PingType;
-        PingInterval = Data->PingInterval;
+        PingType = Data->GetPingType();
+        PingInterval = Data->GetPingInterval();
       }
-      ADF(L"Ping type: %s, Ping interval: %d sec; Timeout: %d sec",
-        (EnumName(PingType, PingTypeNames), PingInterval, Data->Timeout));
-      ADF(L"Disable Nagle: %s",
-        (BooleanToEngStr(Data->TcpNoDelay)));
+      ADF("Ping type: %s, Ping interval: %d sec; Timeout: %d sec",
+        EnumName(PingType, PingTypeNames), PingInterval, Data->GetTimeout());
+      ADF("Disable Nagle: %s",
+        BooleanToEngStr(Data->GetTcpNoDelay()));
     }
-    ADF(L"Proxy: %s",
-      ((Data->FtpProxyLogonType != 0) ?
-        FORMAT(L"FTP proxy %d", (Data->FtpProxyLogonType)) :
-        EnumName(Data->ProxyMethod, ProxyMethodNames)));
-    if ((Data->FtpProxyLogonType != 0) || (Data->ProxyMethod != ::pmNone))
+    TProxyMethod ProxyMethod = Data->GetActualProxyMethod();
     {
-      ADF(L"HostName: %s (Port: %d); Username: %s; Passwd: %s",
-        (Data->ProxyHost, Data->ProxyPort,
-         Data->ProxyUsername, LogSensitive(Data->ProxyPassword)));
-      if (Data->ProxyMethod == pmTelnet)
+      UnicodeString fp = FORMAT("FTP proxy %d", Data->GetFtpProxyLogonType());
+      ADF("Proxy: %s",
+        (Data->GetFtpProxyLogonType() != 0) ? fp : EnumName(ProxyMethod, ProxyMethodNames));
+    }
+    if ((Data->GetFtpProxyLogonType() != 0) || (ProxyMethod != ::pmNone))
+    {
+      ADF("ProxyHostName: %s (Port: %d); ProxyUsername: %s; Passwd: %s",
+        Data->GetProxyHost(), Data->GetProxyPort(),
+        Data->GetProxyUsername(), BooleanToEngStr(!Data->GetProxyPassword().IsEmpty()));
+      if (ProxyMethod == pmTelnet)
       {
-        ADF(L"Telnet command: %s", (Data->ProxyTelnetCommand));
+        ADF("Telnet command: %s", Data->GetProxyTelnetCommand());
       }
-      if (Data->ProxyMethod == pmCmd)
+      if (ProxyMethod == pmCmd)
       {
-        ADF(L"Local command: %s", (Data->ProxyLocalCommand));
+        ADF("Local command: %s", Data->GetProxyLocalCommand());
       }
     }
-    if (Data->UsesSsh || (Data->FSProtocol == fsFTP))
+    if (Data->GetUsesSsh() || (Data->GetFSProtocol() == fsFTP))
     {
-      ADF(L"Send buffer: %d", (Data->SendBuf));
+      ADF("Send buffer: %d", Data->GetSendBuf());
     }
-    if (Data->UsesSsh)
+    if (Data->GetUsesSsh())
     {
-      ADF(L"SSH protocol version: %s; Compression: %s",
-        (Data->SshProtStr, BooleanToEngStr(Data->Compression)));
-      ADF(L"Bypass authentication: %s",
-       (BooleanToEngStr(Data->SshNoUserAuth)));
-      ADF(L"Try agent: %s; Agent forwarding: %s; TIS/CryptoCard: %s; KI: %s; GSSAPI: %s",
-        (BooleanToEngStr(Data->TryAgent), BooleanToEngStr(Data->AgentFwd), BooleanToEngStr(Data->AuthTIS),
-         BooleanToEngStr(Data->AuthKI), BooleanToEngStr(Data->AuthGSSAPI)));
-      if (Data->AuthGSSAPI)
+      ADF("SSH protocol version: %s; Compression: %s",
+        Data->GetSshProtStr(), BooleanToEngStr(Data->GetCompression()));
+      ADF("Bypass authentication: %s",
+        BooleanToEngStr(Data->GetSshNoUserAuth()));
+      ADF("Try agent: %s; Agent forwarding: %s; TIS/CryptoCard: %s; KI: %s; GSSAPI: %s",
+        BooleanToEngStr(Data->GetTryAgent()), BooleanToEngStr(Data->GetAgentFwd()), BooleanToEngStr(Data->GetAuthTIS()),
+        BooleanToEngStr(Data->GetAuthKI()), BooleanToEngStr(Data->GetAuthGSSAPI()));
+      if (Data->GetAuthGSSAPI())
       {
-        ADF(L"GSSAPI: Forwarding: %s; Libs: %s; Custom: %s",
-          (BooleanToEngStr(Data->GSSAPIFwdTGT), Data->GssLibList, Data->GssLibCustom));
+        ADF("GSSAPI: Forwarding: %s; Libs: %s; Custom: %s",
+          BooleanToEngStr(Data->GetGSSAPIFwdTGT()), Data->GetGssLibList(), Data->GetGssLibCustom());
       }
-      ADF(L"Ciphers: %s; Ssh2DES: %s",
-        (Data->CipherList, BooleanToEngStr(Data->Ssh2DES)));
-      ADF(L"KEX: %s", (Data->KexList));
+      ADF("Ciphers: %s; Ssh2DES: %s",
+        Data->GetCipherList(), BooleanToEngStr(Data->GetSsh2DES()));
+      ADF("KEX: %s", Data->GetKexList());
       UnicodeString Bugs;
-      for (int Index = 0; Index < BUG_COUNT; Index++)
+      for (intptr_t Index = 0; Index < BUG_COUNT; ++Index)
       {
-        AddToList(Bugs, EnumName(Data->Bug[(TSshBug)Index], AutoSwitchNames), L",");
+        AddToList(Bugs, EnumName(Data->GetBug(static_cast<TSshBug>(Index)), AutoSwitchNames), L",");
       }
-      ADF(L"SSH Bugs: %s", (Bugs));
-      ADF(L"Simple channel: %s", (BooleanToEngStr(Data->SshSimple)));
-      ADF(L"Return code variable: %s; Lookup user groups: %s",
-        ((Data->DetectReturnVar ? UnicodeString(L"Autodetect") : Data->ReturnVar),
-         EnumName(Data->LookupUserGroups, AutoSwitchNames)));
-      ADF(L"Shell: %s", ((Data->Shell.IsEmpty()? UnicodeString(L"default") : Data->Shell)));
-      ADF(L"EOL: %s, UTF: %s", (EnumName(Data->EOLType, EOLTypeNames), EnumName(Data->NotUtf, NotAutoSwitchNames))); // NotUtf duplicated in FTP branch
-      ADF(L"Clear aliases: %s, Unset nat.vars: %s, Resolve symlinks: %s; Follow directory symlinks: %s",
-        (BooleanToEngStr(Data->ClearAliases), BooleanToEngStr(Data->UnsetNationalVars),
-         BooleanToEngStr(Data->ResolveSymlinks), BooleanToEngStr(Data->FollowDirectorySymlinks)));
-      ADF(L"LS: %s, Ign LS warn: %s, Scp1 Comp: %s; Exit code 1 is error: %s",
-        (Data->ListingCommand,
-         BooleanToEngStr(Data->IgnoreLsWarnings),
-         BooleanToEngStr(Data->Scp1Compatibility),
-         BooleanToEngStr(Data->ExitCode1IsError)));
+      ADF("SSH Bugs: %s", Bugs);
+      ADF("Simple channel: %s", BooleanToEngStr(Data->GetSshSimple()));
+      ADF("Return code variable: %s; Lookup user groups: %s",
+        Data->GetDetectReturnVar() ? UnicodeString(L"Autodetect") : Data->GetReturnVar(),
+        EnumName(Data->GetLookupUserGroups(), AutoSwitchNames));
+      ADF("Shell: %s", Data->GetShell().IsEmpty() ? UnicodeString(L"default") : Data->GetShell());
+      ADF("EOL: %s, UTF: %s", EnumName(Data->GetEOLType(), EOLTypeNames), EnumName(Data->GetNotUtf(), NotAutoSwitchNames)); // NotUtf duplicated in FTP branch
+      ADF("Clear aliases: %s, Unset nat.vars: %s, Resolve symlinks: %s; Follow directory symlinks: %s",
+        BooleanToEngStr(Data->GetClearAliases()), BooleanToEngStr(Data->GetUnsetNationalVars()),
+        BooleanToEngStr(Data->GetResolveSymlinks()), BooleanToEngStr(Data->GetFollowDirectorySymlinks()));
+      ADF("LS: %s, Ign LS warn: %s, Scp1 Comp: %s",
+        Data->GetListingCommand(),
+        BooleanToEngStr(Data->GetIgnoreLsWarnings()),
+        BooleanToEngStr(Data->GetScp1Compatibility()));
     }
-    if ((Data->FSProtocol == fsSFTP) || (Data->FSProtocol == fsSFTPonly))
+    if ((Data->GetFSProtocol() == fsSFTP) || (Data->GetFSProtocol() == fsSFTPonly))
     {
       UnicodeString Bugs;
-      for (int Index = 0; Index < SFTP_BUG_COUNT; Index++)
+      for (intptr_t Index = 0; Index < SFTP_BUG_COUNT; ++Index)
       {
-        AddToList(Bugs, EnumName(Data->SFTPBug[(TSftpBug)Index], AutoSwitchNames), L",");
+        AddToList(Bugs, EnumName(Data->GetSFTPBug(static_cast<TSftpBug>(Index)), AutoSwitchNames), L",");
       }
-      ADF(L"SFTP Bugs: %s", (Bugs));
-      ADF(L"SFTP Server: %s", ((Data->SftpServer.IsEmpty()? UnicodeString(L"default") : Data->SftpServer)));
+      ADF("SFTP Bugs: %s", Bugs);
+      ADF("SFTP Server: %s", Data->GetSftpServer().IsEmpty() ? UnicodeString(L"default") : Data->GetSftpServer());
     }
     bool FtpsOn = false;
-    if (Data->FSProtocol == fsFTP)
+    if (Data->GetFSProtocol() == fsFTP)
     {
-      ADF(L"UTF: %s", (EnumName(Data->NotUtf, NotAutoSwitchNames))); // duplicated in UsesSsh branch
+      ADF("UTF: %s", EnumName(Data->GetNotUtf(), NotAutoSwitchNames)); // duplicated in UsesSsh branch
       UnicodeString Ftps;
-      switch (Data->Ftps)
+      switch (Data->GetFtps())
       {
-        case ftpsImplicit:
-          Ftps = L"Implicit TLS/SSL";
-          FtpsOn = true;
-          break;
+      case ftpsImplicit:
+        Ftps = L"Implicit TLS/SSL";
+        FtpsOn = true;
+        break;
 
-        case ftpsExplicitSsl:
-          Ftps = L"Explicit SSL/TLS";
-          FtpsOn = true;
-          break;
+      case ftpsExplicitSsl:
+        Ftps = L"Explicit SSL/TLS";
+        FtpsOn = true;
+        break;
 
-        case ftpsExplicitTls:
-          Ftps = L"Explicit TLS/SSL";
-          FtpsOn = true;
-          break;
+      case ftpsExplicitTls:
+        Ftps = L"Explicit TLS/SSL";
+        FtpsOn = true;
+        break;
 
-        default:
-          DebugAssert(Data->Ftps == ftpsNone);
-          Ftps = L"None";
-          break;
+      default:
+        DebugAssert(Data->GetFtps() == ftpsNone);
+        Ftps = L"None";
+        break;
       }
       // kind of hidden option, so do not reveal it unless it is set
-      if (Data->FtpTransferActiveImmediately != asAuto)
+      if (Data->GetFtpTransferActiveImmediately() != asAuto)
       {
-        ADF(L"Transfer active immediately: %s", (EnumName(Data->FtpTransferActiveImmediately, AutoSwitchNames)));
+        ADF("Transfer active immediately: %s", EnumName(Data->GetFtpTransferActiveImmediately(), AutoSwitchNames));
       }
-      ADF(L"FTPS: %s [Client certificate: %s]",
-        (Ftps, LogSensitive(Data->TlsCertificateFile)));
-      ADF(L"FTP: Passive: %s [Force IP: %s]; MLSD: %s [List all: %s]; HOST: %s",
-        (BooleanToEngStr(Data->FtpPasvMode),
-         EnumName(Data->FtpForcePasvIp, AutoSwitchNames),
-         EnumName(Data->FtpUseMlsd, AutoSwitchNames),
-         EnumName(Data->FtpListAll, AutoSwitchNames),
-         EnumName(Data->FtpHost, AutoSwitchNames)));
+      ADF("FTPS: %s [Client certificate: %s]",
+        Ftps, LogSensitive(Data->GetTlsCertificateFile()));
+      ADF("FTP: Passive: %s [Force IP: %s]; MLSD: %s [List all: %s]; HOST: %s",
+        BooleanToEngStr(Data->GetFtpPasvMode()),
+        EnumName(Data->GetFtpForcePasvIp(), AutoSwitchNames),
+        EnumName(Data->GetFtpUseMlsd(), AutoSwitchNames),
+        EnumName(Data->GetFtpListAll(), AutoSwitchNames),
+        EnumName(Data->GetFtpHost(), AutoSwitchNames));
     }
-    if (Data->FSProtocol == fsWebDAV)
+    if (Data->GetFSProtocol() == fsWebDAV)
     {
-      FtpsOn = (Data->Ftps != ftpsNone);
-      ADF(L"HTTPS: %s [Client certificate: %s]",
-        (BooleanToEngStr(FtpsOn), LogSensitive(Data->TlsCertificateFile)));
+      FtpsOn = (Data->GetFtps() != ftpsNone);
+      ADF("HTTPS: %s [Client certificate: %s]",
+        BooleanToEngStr(FtpsOn), LogSensitive(Data->GetTlsCertificateFile()));
     }
-    if (Data->FSProtocol == fsS3)
+    if (Data->GetFSProtocol() == fsS3)
     {
-      FtpsOn = (Data->Ftps != ftpsNone);
-      ADF(L"HTTPS: %s", (BooleanToEngStr(FtpsOn)));
-      if (!Data->S3DefaultRegion.IsEmpty())
+      FtpsOn = (Data->GetFtps() != ftpsNone);
+      ADF(L"HTTPS: %s", BooleanToEngStr(FtpsOn));
+      if (!Data->GetS3DefaultRegion().IsEmpty())
       {
-        ADF(L"S3: Default region: %s", (Data->S3DefaultRegion));
+        ADF(L"S3: Default region: %s", Data->GetS3DefaultRegion());
       }
     }
     if (FtpsOn)
     {
-      if (Data->FSProtocol == fsFTP)
+      if (Data->GetFSProtocol() == fsFTP)
       {
-        ADF(L"Session reuse: %s", (BooleanToEngStr(Data->SslSessionReuse)));
+        ADF("Session reuse: %s", BooleanToEngStr(Data->GetSslSessionReuse()));
       }
-      ADF(L"TLS/SSL versions: %s-%s", (GetTlsVersionName(Data->MinTlsVersion), GetTlsVersionName(Data->MaxTlsVersion)));
+      ADF("TLS/SSL versions: %s-%s", GetTlsVersionName(Data->GetMinTlsVersion()), GetTlsVersionName(Data->GetMaxTlsVersion()));
     }
-    ADF(L"Local directory: %s, Remote directory: %s, Update: %s, Cache: %s",
-      ((Data->LocalDirectory.IsEmpty() ? UnicodeString(L"default") : Data->LocalDirectory),
-       (Data->RemoteDirectory.IsEmpty() ? UnicodeString(L"home") : Data->RemoteDirectory),
-       BooleanToEngStr(Data->UpdateDirectories),
-       BooleanToEngStr(Data->CacheDirectories)));
-    ADF(L"Cache directory changes: %s, Permanent: %s",
-      (BooleanToEngStr(Data->CacheDirectoryChanges),
-       BooleanToEngStr(Data->PreserveDirectoryChanges)));
-    ADF(L"Recycle bin: Delete to: %s, Overwritten to: %s, Bin path: %s",
-      (BooleanToEngStr(Data->DeleteToRecycleBin),
-       BooleanToEngStr(Data->OverwrittenToRecycleBin),
-       Data->RecycleBinPath));
-    if (Data->TrimVMSVersions)
+    ADF("Local directory: %s, Remote directory: %s, Update: %s, Cache: %s",
+      Data->GetLocalDirectory().IsEmpty() ? UnicodeString(L"default") : Data->GetLocalDirectory(),
+      Data->GetRemoteDirectory().IsEmpty() ? UnicodeString(L"home") : Data->GetRemoteDirectory(),
+      BooleanToEngStr(Data->GetUpdateDirectories()),
+      BooleanToEngStr(Data->GetCacheDirectories()));
+    ADF("Cache directory changes: %s, Permanent: %s",
+      BooleanToEngStr(Data->GetCacheDirectoryChanges()),
+      BooleanToEngStr(Data->GetPreserveDirectoryChanges()));
+    ADF("Recycle bin: Delete to: %s, Overwritten to: %s, Bin path: %s",
+      BooleanToEngStr(Data->GetDeleteToRecycleBin()),
+      BooleanToEngStr(Data->GetOverwrittenToRecycleBin()),
+      Data->GetRecycleBinPath());
+    if (Data->GetTrimVMSVersions())
     {
-      ADF(L"Trim VMS versions: %s",
-        (BooleanToEngStr(Data->TrimVMSVersions)));
+      ADF("Trim VMS versions: %s",
+        BooleanToEngStr(Data->GetTrimVMSVersions()));
     }
     UnicodeString TimeInfo;
-    if ((Data->FSProtocol == fsSFTP) || (Data->FSProtocol == fsSFTPonly) || (Data->FSProtocol == fsSCPonly) || (Data->FSProtocol == fsWebDAV))
+    if ((Data->GetFSProtocol() == fsSFTP) || (Data->GetFSProtocol() == fsSFTPonly) || (Data->GetFSProtocol() == fsSCPonly) || (Data->GetFSProtocol() == fsWebDAV))
     {
-      AddToList(TimeInfo, FORMAT(L"DST mode: %s", (EnumName(Data->DSTMode, DSTModeNames))), L";");
+      AddToList(TimeInfo, FORMAT("DST mode: %s", EnumName(ToInt(Data->GetDSTMode()), DSTModeNames)), L";");
     }
-    if ((Data->FSProtocol == fsSCPonly) || (Data->FSProtocol == fsFTP))
+    if ((Data->GetFSProtocol() == fsSCPonly) || (Data->GetFSProtocol() == fsFTP))
     {
-      int TimeDifferenceMin = TimeToMinutes(Data->TimeDifference);
-      AddToList(TimeInfo, FORMAT(L"Timezone offset: %dh %dm", ((TimeDifferenceMin / MinsPerHour), (TimeDifferenceMin % MinsPerHour))), L";");
+      intptr_t TimeDifferenceMin = TimeToMinutes(Data->GetTimeDifference());
+      AddToList(TimeInfo, FORMAT("Timezone offset: %dh %dm", TimeDifferenceMin / MinsPerHour, TimeDifferenceMin % MinsPerHour), L";");
     }
     ADSTR(TimeInfo);
 
-    if (Data->FSProtocol == fsWebDAV)
+    if (Data->GetFSProtocol() == fsWebDAV)
     {
-      ADF(L"Compression: %s",
-        (BooleanToEngStr(Data->Compression)));
+      ADF("Compression: %s",
+        BooleanToEngStr(Data->GetCompression()));
     }
 
     AddSeparator();
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TSessionLog::AddOption(const UnicodeString & LogStr)
+void TSessionLog::AddOption(const UnicodeString LogStr)
 {
   ADSTR(LogStr);
 }
 //---------------------------------------------------------------------------
-void __fastcall TSessionLog::AddOptions(TOptions * Options)
+void TSessionLog::AddOptions(TOptions *Options)
 {
-  Options->LogOptions(AddOption);
+  Options->LogOptions(nb::bind(&TSessionLog::AddOption, this));
 }
 //---------------------------------------------------------------------------
 #undef ADF
 #undef ADSTR
 //---------------------------------------------------------------------------
-void __fastcall TSessionLog::AddSeparator()
+void TSessionLog::AddSeparator()
 {
   Add(llMessage, L"--------------------------------------------------------------------------");
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-__fastcall TActionLog::TActionLog(TSessionUI * UI, TDateTime Started, TSessionData * SessionData,
-  TConfiguration * Configuration)
+TActionLog::TActionLog(TSessionUI *UI, TDateTime Started, TSessionData *SessionData,
+  TConfiguration *Configuration) :
+  FConfiguration(Configuration),
+  FLogging(false),
+  FLogger(nullptr),
+  FUI(UI),
+  FSessionData(SessionData),
+  FPendingActions(new TList()),
+  FIndent(L"  "),
+  FFailed(false),
+  FClosed(false),
+  FInGroup(false),
+  FEnabled(true)
 {
-  DebugAssert(UI != NULL);
-  DebugAssert(SessionData != NULL);
+  DebugAssert(UI != nullptr);
+  DebugAssert(SessionData != nullptr);
   Init(UI, Started, SessionData, Configuration);
 }
 //---------------------------------------------------------------------------
-__fastcall TActionLog::TActionLog(TDateTime Started, TConfiguration * Configuration)
+TActionLog::TActionLog(TDateTime Started, TConfiguration *Configuration)
 {
-  Init(NULL, Started, NULL, Configuration);
+  Init(nullptr, Started, nullptr, Configuration);
   // not associated with session, so no need to waiting for anything
   ReflectSettings();
 }
 //---------------------------------------------------------------------------
-void __fastcall TActionLog::Init(TSessionUI * UI, TDateTime Started, TSessionData * SessionData,
-  TConfiguration * Configuration)
+void TActionLog::Init(TSessionUI *UI, TDateTime Started, TSessionData *SessionData,
+  TConfiguration *Configuration)
 {
-  FCriticalSection = new TCriticalSection;
   FConfiguration = Configuration;
   FUI = UI;
   FSessionData = SessionData;
   FStarted = Started;
-  FFile = NULL;
-  FCurrentLogFileName = L"";
-  FCurrentFileName = L"";
+  FLogger = nullptr;
+  FCurrentLogFileName.Clear();
+  FCurrentFileName.Clear();
   FLogging = false;
   FClosed = false;
   FFailed = false;
@@ -1454,42 +1425,39 @@ void __fastcall TActionLog::Init(TSessionUI * UI, TDateTime Started, TSessionDat
   FEnabled = true;
 }
 //---------------------------------------------------------------------------
-__fastcall TActionLog::~TActionLog()
+TActionLog::~TActionLog()
 {
-  DebugAssert(FPendingActions->Count == 0);
-  delete FPendingActions;
+  DebugAssert(FPendingActions->GetCount() == 0);
+  SAFE_DESTROY(FPendingActions);
   FClosed = true;
   ReflectSettings();
-  DebugAssert(FFile == NULL);
-  delete FCriticalSection;
+  DebugAssert(FLogger == nullptr);
 }
 //---------------------------------------------------------------------------
-void __fastcall TActionLog::Add(const UnicodeString & Line)
+void TActionLog::Add(const UnicodeString Line)
 {
   DebugAssert(FConfiguration);
   if (FLogging)
   {
-    TGuard Guard(FCriticalSection);
-    if (FFile == NULL)
+    volatile TGuard Guard(FCriticalSection);
+    if (FLogger == nullptr)
     {
       OpenLogFile();
     }
 
-    if (FFile != NULL)
+    if (FLogger != nullptr)
     {
       try
       {
         UTF8String UtfLine = UTF8String(Line);
         size_t Written =
-          fwrite(UtfLine.c_str(), 1, UtfLine.Length(), (FILE *)FFile);
-        if (Written != static_cast<size_t>(UtfLine.Length()))
+          FLogger->Write(UtfLine.c_str(), UtfLine.Length());
+        if (Written != ToSizeT(UtfLine.Length()))
         {
           throw ECRTExtException(L"");
         }
-        #ifdef _DEBUG
-        #endif
         Written =
-          fwrite("\n", 1, 1, (FILE *)FFile);
+          FLogger->Write("\n", 1);
         if (Written != 1)
         {
           throw ECRTExtException(L"");
@@ -1497,15 +1465,15 @@ void __fastcall TActionLog::Add(const UnicodeString & Line)
       }
       catch (Exception &E)
       {
-        FCriticalSection->Release();
+//        FCriticalSection.Release();
 
         // avoid endless loop when trying to close tags when closing log, when logging has failed
         if (!FFailed)
         {
           FFailed = true;
           // We failed logging, turn it off and notify user.
-          FConfiguration->LogActions = false;
-          if (FConfiguration->LogActionsRequired)
+          FConfiguration->SetLogActions(false);
+          if (FConfiguration->GetLogActionsRequired())
           {
             throw EFatal(&E, LoadStr(LOG_FATAL_ERROR));
           }
@@ -1515,11 +1483,11 @@ void __fastcall TActionLog::Add(const UnicodeString & Line)
             {
               throw ExtException(&E, LoadStr(LOG_GEN_ERROR));
             }
-            catch (Exception &E)
+            catch (Exception &E2)
             {
-              if (FUI != NULL)
+              if (FUI != nullptr)
               {
-                FUI->HandleExtendedException(&E);
+                FUI->HandleExtendedException(&E2);
               }
             }
           }
@@ -1529,58 +1497,60 @@ void __fastcall TActionLog::Add(const UnicodeString & Line)
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TActionLog::AddIndented(const UnicodeString & Line)
+void TActionLog::AddIndented(const UnicodeString ALine)
 {
-  Add(FIndent + Line);
+  Add(FIndent + ALine);
 }
 //---------------------------------------------------------------------------
-void __fastcall TActionLog::AddFailure(TStrings * Messages)
+void TActionLog::AddFailure(TStrings *Messages)
 {
   AddIndented(L"<failure>");
   AddMessages(L"  ", Messages);
   AddIndented(L"</failure>");
 }
 //---------------------------------------------------------------------------
-void __fastcall TActionLog::AddFailure(Exception * E)
+void TActionLog::AddFailure(Exception *E)
 {
-  TStrings * Messages = ExceptionToMoreMessages(E);
-  if (Messages != NULL)
+  std::unique_ptr<TStrings> Messages(ExceptionToMoreMessages(E));
+  if (Messages.get() != nullptr)
   {
-    try
+    try__finally
     {
-      AddFailure(Messages);
-    }
-    __finally
-    {
+      AddFailure(Messages.get());
+    },
+    __finally__removed
+    ({
       delete Messages;
-    }
+    }) end_try__finally
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TActionLog::AddMessages(UnicodeString Indent, TStrings * Messages)
+void TActionLog::AddMessages(const UnicodeString Indent, TStrings *Messages)
 {
-  for (int Index = 0; Index < Messages->Count; Index++)
+  for (intptr_t Index = 0; Index < Messages->GetCount(); ++Index)
   {
     AddIndented(
-      FORMAT(Indent + L"<message>%s</message>", (XmlEscape(Messages->Strings[Index]))));
+      FORMAT((Indent + L"<message>%s</message>"), XmlEscape(Messages->GetString(Index))));
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TActionLog::ReflectSettings()
+void TActionLog::ReflectSettings()
 {
-  TGuard Guard(FCriticalSection);
+  volatile TGuard Guard(FCriticalSection);
 
   bool ALogging =
-    !FClosed && FConfiguration->LogActions && Enabled;
+    !FClosed && FConfiguration->GetLogActions() && GetEnabled();
 
   if (ALogging && !FLogging)
   {
     FLogging = true;
+#if 0
     Add(L"<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
     UnicodeString SessionName =
-      (FSessionData != NULL) ? XmlAttributeEscape(FSessionData->SessionName) : UnicodeString(L"nosession");
+      (FSessionData != nullptr) ? XmlAttributeEscape(FSessionData->SessionName) : UnicodeString(L"nosession");
     Add(FORMAT(L"<session xmlns=\"http://winscp.net/schema/session/1.0\" name=\"%s\" start=\"%s\">",
-      (SessionName, StandardTimestamp())));
+        (SessionName, StandardTimestamp())));
+#endif // #if 0
   }
   else if (!ALogging && FLogging)
   {
@@ -1589,9 +1559,11 @@ void __fastcall TActionLog::ReflectSettings()
       EndGroup();
     }
     // do not try to close the file, if it has not been opened, to avoid recursion
-    if (FFile != NULL)
+    if (FLogger != nullptr)
     {
+#if 0
       Add(L"</session>");
+#endif // #if 0
     }
     CloseLogFile();
     FLogging = false;
@@ -1599,33 +1571,36 @@ void __fastcall TActionLog::ReflectSettings()
 
 }
 //---------------------------------------------------------------------------
-void __fastcall TActionLog::CloseLogFile()
+void TActionLog::CloseLogFile()
 {
-  if (FFile != NULL)
+  if (FLogger != nullptr)
   {
-    fclose((FILE *)FFile);
-    FFile = NULL;
+    delete FLogger;
+    FLogger = nullptr;
   }
-  FCurrentLogFileName = L"";
-  FCurrentFileName = L"";
+  FCurrentLogFileName.Clear();
+  FCurrentFileName.Clear();
 }
 //---------------------------------------------------------------------------
-void __fastcall TActionLog::OpenLogFile()
+void TActionLog::OpenLogFile()
 {
+  DebugAssert(FConfiguration != nullptr);
+  if (!FConfiguration)
+    return;
   try
   {
-    DebugAssert(FFile == NULL);
-    DebugAssert(FConfiguration != NULL);
-    FCurrentLogFileName = FConfiguration->ActionsLogFileName;
-    FFile = OpenFile(FCurrentLogFileName, FStarted, FSessionData, false, FCurrentFileName);
+    DebugAssert(FLogger == nullptr);
+    FCurrentLogFileName = FConfiguration->GetActionsLogFileName();
+    FILE *file = LocalOpenLogFile(FCurrentLogFileName, FStarted, FSessionData, false, FCurrentFileName);
+    FLogger = new tinylog::TinyLog(file);
   }
-  catch (Exception & E)
+  catch (Exception &E)
   {
     // We failed logging to file, turn it off and notify user.
-    FCurrentLogFileName = L"";
-    FCurrentFileName = L"";
-    FConfiguration->LogActions = false;
-    if (FConfiguration->LogActionsRequired)
+    FCurrentLogFileName.Clear();
+    FCurrentFileName.Clear();
+    FConfiguration->SetLogActions(false);
+    if (FConfiguration->GetLogActionsRequired())
     {
       throw EFatal(&E, LoadStr(LOG_FATAL_ERROR));
     }
@@ -1635,44 +1610,44 @@ void __fastcall TActionLog::OpenLogFile()
       {
         throw ExtException(&E, LoadStr(LOG_GEN_ERROR));
       }
-      catch (Exception & E)
+      catch (Exception &E2)
       {
-        if (FUI != NULL)
+        if (FUI != nullptr)
         {
           // not to deadlock with TSessionLog::ReflectSettings invoked by FConfiguration->LogFileName setter above
-          TUnguard Unguard(FCriticalSection);
-          FUI->HandleExtendedException(&E);
+          volatile TUnguard Unguard(FCriticalSection);
+          FUI->HandleExtendedException(&E2);
         }
       }
     }
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TActionLog::AddPendingAction(TSessionActionRecord * Action)
+void TActionLog::AddPendingAction(TSessionActionRecord *Action)
 {
   FPendingActions->Add(Action);
 }
 //---------------------------------------------------------------------------
-void __fastcall TActionLog::RecordPendingActions()
+void TActionLog::RecordPendingActions()
 {
-  while ((FPendingActions->Count > 0) &&
-         static_cast<TSessionActionRecord *>(FPendingActions->Items[0])->Record())
+  while ((FPendingActions->GetCount() > 0) &&
+    FPendingActions->GetAs<TSessionActionRecord>(0)->Record())
   {
     FPendingActions->Delete(0);
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TActionLog::BeginGroup(UnicodeString Name)
+void TActionLog::BeginGroup(const UnicodeString Name)
 {
   DebugAssert(!FInGroup);
   FInGroup = true;
   DebugAssert(FIndent == L"  ");
-  AddIndented(FORMAT(L"<group name=\"%s\" start=\"%s\">",
-    (XmlAttributeEscape(Name), StandardTimestamp())));
+  AddIndented(FORMAT("<group name=\"%s\" start=\"%s\">",
+      XmlAttributeEscape(Name), StandardTimestamp()));
   FIndent = L"    ";
 }
 //---------------------------------------------------------------------------
-void __fastcall TActionLog::EndGroup()
+void TActionLog::EndGroup()
 {
   DebugAssert(FInGroup);
   FInGroup = false;
@@ -1680,17 +1655,18 @@ void __fastcall TActionLog::EndGroup()
   FIndent = L"  ";
   // this is called from ReflectSettings that in turn is called when logging fails,
   // so do not try to close the group, if it has not been opened, to avoid recursion
-  if (FFile != NULL)
+  if (FLogger != nullptr)
   {
-    AddIndented(L"</group>");
+    AddIndented("</group>");
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TActionLog::SetEnabled(bool value)
+void TActionLog::SetEnabled(bool Value)
 {
-  if (Enabled != value)
+  if (GetEnabled() != Value)
   {
-    FEnabled = value;
+    FEnabled = Value;
     ReflectSettings();
   }
 }
+

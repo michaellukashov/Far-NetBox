@@ -1,19 +1,20 @@
 //---------------------------------------------------------------------------
-#ifndef CryptographyH
-#define CryptographyH
+#pragma once
+
+#include <Classes.hpp>
 //---------------------------------------------------------------------------
-void __fastcall CryptographyInitialize();
-void __fastcall CryptographyFinalize();
-RawByteString __fastcall ScramblePassword(UnicodeString Password);
-bool __fastcall UnscramblePassword(RawByteString Scrambled, UnicodeString & Password);
-void __fastcall AES256EncyptWithMAC(RawByteString Input, UnicodeString Password,
-  RawByteString & Output);
-bool __fastcall AES256DecryptWithMAC(RawByteString Input, UnicodeString Password,
-  RawByteString & Output);
-void __fastcall AES256CreateVerifier(UnicodeString Input, RawByteString & Verifier);
-bool __fastcall AES256Verify(UnicodeString Input, RawByteString Verifier);
-int __fastcall IsValidPassword(UnicodeString Password);
-int __fastcall PasswordMaxLength();
+void CryptographyInitialize();
+void CryptographyFinalize();
+RawByteString ScramblePassword(const UnicodeString Password);
+bool UnscramblePassword(const RawByteString Scrambled, const UnicodeString Password);
+void AES256EncyptWithMAC(const RawByteString Input, const UnicodeString Password,
+  RawByteString &Output);
+bool AES256DecryptWithMAC(const RawByteString Input, const UnicodeString Password,
+  RawByteString &Output);
+void AES256CreateVerifier(const UnicodeString Input, RawByteString &Verifier);
+bool AES256Verify(const UnicodeString Input, const RawByteString Verifier);
+int IsValidPassword(const UnicodeString Password);
+int PasswordMaxLength();
 RawByteString GenerateEncryptKey();
 void ValidateEncryptKey(const RawByteString & Key);
 //---------------------------------------------------------------------------
@@ -53,4 +54,3 @@ private:
   void SetSalt();
 };
 //---------------------------------------------------------------------------
-#endif

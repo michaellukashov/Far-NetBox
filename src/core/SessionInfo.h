@@ -1,14 +1,21 @@
-//---------------------------------------------------------------------------
-#ifndef SessionInfoH
-#define SessionInfoH
 
+#pragma once
+
+#include <tinylog/TinyLog.h>
 #include "SessionData.h"
 #include "Interface.h"
 //---------------------------------------------------------------------------
-enum TSessionStatus { ssClosed, ssOpening, ssOpened };
-//---------------------------------------------------------------------------
-struct TSessionInfo
+enum TSessionStatus
 {
+  ssClosed,
+  ssOpening,
+  ssOpened,
+  ssClosing,
+};
+//---------------------------------------------------------------------------
+struct NB_CORE_EXPORT TSessionInfo
+{
+  CUSTOM_MEM_ALLOCATION_IMPL
   TSessionInfo();
 
   TDateTime LoginTime;
@@ -28,10 +35,11 @@ struct TSessionInfo
 
   UnicodeString CertificateFingerprint;
   UnicodeString Certificate;
-  bool CertificateVerifiedManually;
 };
 //---------------------------------------------------------------------------
-enum TFSCapability { fcUserGroupListing, fcModeChanging, fcGroupChanging,
+enum TFSCapability
+{
+  fcUserGroupListing = 0, fcModeChanging, fcGroupChanging,
   fcOwnerChanging, fcGroupOwnerChangingByID, fcAnyCommand, fcHardLink,
   fcSymbolicLink,
   // With WebDAV this is always true, to avoid double-click on
@@ -44,11 +52,13 @@ enum TFSCapability { fcUserGroupListing, fcModeChanging, fcGroupChanging,
   fcModeChangingUpload, fcPreservingTimestampUpload, fcShellAnyCommand,
   fcSecondaryShell, fcRemoveCtrlZUpload, fcRemoveBOMUpload, fcMoveToQueue,
   fcLocking, fcPreservingTimestampDirs, fcResumeSupport,
-  fcChangePassword, fsSkipTransfer, fsParallelTransfers, fsBackgroundTransfers,
-  fcCount };
+  fcChangePassword, fsSkipTransfer, fsParallelTransfers,
+  fcCount,
+};
 //---------------------------------------------------------------------------
-struct TFileSystemInfo
+struct NB_CORE_EXPORT TFileSystemInfo
 {
+  CUSTOM_MEM_ALLOCATION_IMPL
   TFileSystemInfo();
 
   UnicodeString ProtocolBaseName;
@@ -58,288 +68,329 @@ struct TFileSystemInfo
   bool IsCapable[fcCount];
 };
 //---------------------------------------------------------------------------
-class TSessionUI
+NB_DEFINE_CLASS_ID(TSessionUI);
+class NB_CORE_EXPORT TSessionUI : public TObject
 {
 public:
-  virtual void __fastcall Information(const UnicodeString & Str, bool Status) = 0;
-  virtual unsigned int __fastcall QueryUser(const UnicodeString Query,
-    TStrings * MoreMessages, unsigned int Answers, const TQueryParams * Params,
+  static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TSessionUI); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TSessionUI) || TObject::is(Kind); }
+public:
+  explicit TSessionUI(TObjectClassId Kind) : TObject(Kind) {}
+  virtual ~TSessionUI() {}
+  virtual void Information(const UnicodeString AStr, bool Status) = 0;
+  virtual uint32_t QueryUser(const UnicodeString AQuery,
+    TStrings *MoreMessages, uint32_t Answers, const TQueryParams *Params,
     TQueryType QueryType = qtConfirmation) = 0;
-  virtual unsigned int __fastcall QueryUserException(const UnicodeString Query,
-    Exception * E, unsigned int Answers, const TQueryParams * Params,
+  virtual uint32_t QueryUserException(const UnicodeString AQuery,
+    Exception *E, uint32_t Answers, const TQueryParams *Params,
     TQueryType QueryType = qtConfirmation) = 0;
-  virtual bool __fastcall PromptUser(TSessionData * Data, TPromptKind Kind,
-    UnicodeString Name, UnicodeString Instructions, TStrings * Prompts,
-    TStrings * Results) = 0;
-  virtual void __fastcall DisplayBanner(const UnicodeString & Banner) = 0;
-  virtual void __fastcall FatalError(Exception * E, UnicodeString Msg, UnicodeString HelpKeyword = L"") = 0;
-  virtual void __fastcall HandleExtendedException(Exception * E) = 0;
-  virtual void __fastcall Closed() = 0;
-  virtual void __fastcall ProcessGUI() = 0;
+  virtual bool PromptUser(TSessionData *Data, TPromptKind Kind,
+    const UnicodeString AName, const UnicodeString AInstructions, TStrings *Prompts,
+    TStrings *Results) = 0;
+  virtual void DisplayBanner(const UnicodeString ABanner) = 0;
+  virtual void FatalError(Exception *E, const UnicodeString AMsg, const UnicodeString AHelpKeyword = L"") = 0;
+  virtual void HandleExtendedException(Exception *E) = 0;
+  virtual void Closed() = 0;
+  virtual void ProcessGUI() = 0;
 };
 //---------------------------------------------------------------------------
-enum TLogLineType { llOutput, llInput, llStdError, llMessage, llException };
+enum TLogLineType
+{
+  llOutput,
+  llInput,
+  llStdError,
+  llMessage,
+  llException,
+};
+
 enum TLogAction
 {
   laUpload, laDownload, laTouch, laChmod, laMkdir, laRm, laMv, laCp, laCall, laLs,
-  laStat, laChecksum, laCwd, laDifference
+  laStat, laChecksum, laCwd
 };
 //---------------------------------------------------------------------------
 enum TCaptureOutputType { cotOutput, cotError, cotExitCode };
-typedef void __fastcall (__closure *TCaptureOutputEvent)(
-  const UnicodeString & Str, TCaptureOutputType OutputType);
-typedef void __fastcall (__closure *TCalculatedChecksumEvent)(
-  const UnicodeString & FileName, const UnicodeString & Alg, const UnicodeString & Hash);
+#if 0
+typedef void (__closure *TCaptureOutputEvent)(
+  const UnicodeString Str, TCaptureOutputType OutputType);
+#endif // #if 0
+typedef nb::FastDelegate2<void,
+  UnicodeString /*Str*/, TCaptureOutputType /*OutputType*/> TCaptureOutputEvent;
+#if 0
+typedef void (__closure *TCalculatedChecksumEvent)(
+  const UnicodeString FileName, const UnicodeString Alg, const UnicodeString Hash);
+#endif // #if 0
+typedef nb::FastDelegate3<void,
+  UnicodeString /*FileName*/, UnicodeString /*Alg*/, UnicodeString /*Hash*/> TCalculatedChecksumEvent;
 //---------------------------------------------------------------------------
 class TSessionActionRecord;
 class TActionLog;
 //---------------------------------------------------------------------------
-class TSessionAction
+class NB_CORE_EXPORT TSessionAction
 {
+  CUSTOM_MEM_ALLOCATION_IMPL
+  NB_DISABLE_COPY(TSessionAction)
 public:
-  __fastcall TSessionAction(TActionLog * Log, TLogAction Action);
-  __fastcall ~TSessionAction();
+  explicit TSessionAction(TActionLog *Log, TLogAction Action);
+  virtual ~TSessionAction();
 
-  void __fastcall Restart();
+  void Restart();
 
-  void __fastcall Commit();
-  void __fastcall Rollback(Exception * E = NULL);
-  void __fastcall Cancel();
+  void Commit();
+  void Rollback(Exception *E = nullptr);
+  void Cancel();
 
 protected:
-  TSessionActionRecord * FRecord;
+  TSessionActionRecord *FRecord;
 };
 //---------------------------------------------------------------------------
-class TFileSessionAction : public TSessionAction
+class NB_CORE_EXPORT TFileSessionAction : public TSessionAction
 {
 public:
-  __fastcall TFileSessionAction(TActionLog * Log, TLogAction Action);
-  __fastcall TFileSessionAction(TActionLog * Log, TLogAction Action, const UnicodeString & FileName);
+  explicit TFileSessionAction(TActionLog *Log, TLogAction Action);
+  explicit TFileSessionAction(TActionLog *Log, TLogAction Action, const UnicodeString AFileName);
 
-  void __fastcall FileName(const UnicodeString & FileName);
+  void SetFileName(const UnicodeString AFileName);
 };
 //---------------------------------------------------------------------------
-class TFileLocationSessionAction : public TFileSessionAction
+class NB_CORE_EXPORT TFileLocationSessionAction : public TFileSessionAction
 {
 public:
-  __fastcall TFileLocationSessionAction(TActionLog * Log, TLogAction Action);
-  __fastcall TFileLocationSessionAction(TActionLog * Log, TLogAction Action, const UnicodeString & FileName);
+  explicit TFileLocationSessionAction(TActionLog *Log, TLogAction Action);
+  explicit TFileLocationSessionAction(TActionLog *Log, TLogAction Action, const UnicodeString AFileName);
 
-  void __fastcall Destination(const UnicodeString & Destination);
+  void Destination(const UnicodeString Destination);
 };
 //---------------------------------------------------------------------------
-class TUploadSessionAction : public TFileLocationSessionAction
+class NB_CORE_EXPORT TUploadSessionAction : public TFileLocationSessionAction
 {
 public:
-  __fastcall TUploadSessionAction(TActionLog * Log);
+  explicit TUploadSessionAction(TActionLog *Log);
 };
 //---------------------------------------------------------------------------
-class TDownloadSessionAction : public TFileLocationSessionAction
+class NB_CORE_EXPORT TDownloadSessionAction : public TFileLocationSessionAction
 {
 public:
-  __fastcall TDownloadSessionAction(TActionLog * Log);
+  explicit TDownloadSessionAction(TActionLog *Log);
 };
 //---------------------------------------------------------------------------
 class TRights;
 //---------------------------------------------------------------------------
-class TChmodSessionAction : public TFileSessionAction
+class NB_CORE_EXPORT TChmodSessionAction : public TFileSessionAction
 {
 public:
-  __fastcall TChmodSessionAction(TActionLog * Log, const UnicodeString & FileName);
-  __fastcall TChmodSessionAction(TActionLog * Log, const UnicodeString & FileName,
-    const TRights & Rights);
+  explicit TChmodSessionAction(TActionLog *Log, const UnicodeString AFileName);
+  explicit TChmodSessionAction(TActionLog *Log, const UnicodeString AFileName,
+    const TRights &ARights);
 
-  void __fastcall Rights(const TRights & Rights);
-  void __fastcall Recursive();
+  void Rights(const TRights &Rights);
+  void Recursive();
 };
 //---------------------------------------------------------------------------
-class TTouchSessionAction : public TFileSessionAction
+class NB_CORE_EXPORT TTouchSessionAction : public TFileSessionAction
 {
 public:
-  __fastcall TTouchSessionAction(TActionLog * Log, const UnicodeString & FileName,
-    const TDateTime & Modification);
+  explicit TTouchSessionAction(TActionLog *Log, const UnicodeString AFileName,
+    const TDateTime &Modification);
 };
 //---------------------------------------------------------------------------
-class TMkdirSessionAction : public TFileSessionAction
+class NB_CORE_EXPORT TMkdirSessionAction : public TFileSessionAction
 {
 public:
-  __fastcall TMkdirSessionAction(TActionLog * Log, const UnicodeString & FileName);
+  explicit TMkdirSessionAction(TActionLog *Log, const UnicodeString AFileName);
 };
 //---------------------------------------------------------------------------
-class TRmSessionAction : public TFileSessionAction
+class NB_CORE_EXPORT TRmSessionAction : public TFileSessionAction
 {
 public:
-  __fastcall TRmSessionAction(TActionLog * Log, const UnicodeString & FileName);
+  explicit TRmSessionAction(TActionLog *Log, const UnicodeString AFileName);
 
-  void __fastcall Recursive();
+  void Recursive();
 };
 //---------------------------------------------------------------------------
-class TMvSessionAction : public TFileLocationSessionAction
+class NB_CORE_EXPORT TMvSessionAction : public TFileLocationSessionAction
 {
 public:
-  __fastcall TMvSessionAction(TActionLog * Log, const UnicodeString & FileName,
-    const UnicodeString & Destination);
+  explicit TMvSessionAction(TActionLog *Log, const UnicodeString AFileName,
+    const UnicodeString ADestination);
 };
 //---------------------------------------------------------------------------
-class TCpSessionAction : public TFileLocationSessionAction
+class NB_CORE_EXPORT TCpSessionAction : public TFileLocationSessionAction
 {
 public:
-  __fastcall TCpSessionAction(TActionLog * Log, const UnicodeString & FileName,
-    const UnicodeString & Destination);
+  explicit TCpSessionAction(TActionLog * Log, const UnicodeString AFileName,
+    const UnicodeString ADestination);
 };
 //---------------------------------------------------------------------------
-class TCallSessionAction : public TSessionAction
+class NB_CORE_EXPORT TCallSessionAction : public TSessionAction
 {
 public:
-  __fastcall TCallSessionAction(TActionLog * Log, const UnicodeString & Command,
-    const UnicodeString & Destination);
+  explicit TCallSessionAction(TActionLog *Log, const UnicodeString Command,
+    const UnicodeString ADestination);
 
-  void __fastcall AddOutput(const UnicodeString & Output, bool StdError);
-  void __fastcall ExitCode(int ExitCode);
+  void AddOutput(const UnicodeString Output, bool StdError);
+  void ExitCode(int ExitCode);
 };
 //---------------------------------------------------------------------------
-class TLsSessionAction : public TSessionAction
+class NB_CORE_EXPORT TLsSessionAction : public TSessionAction
 {
 public:
-  __fastcall TLsSessionAction(TActionLog * Log, const UnicodeString & Destination);
+  explicit TLsSessionAction(TActionLog *Log, const UnicodeString Destination);
 
-  void __fastcall FileList(TRemoteFileList * FileList);
+  void FileList(TRemoteFileList *FileList);
 };
 //---------------------------------------------------------------------------
-class TStatSessionAction : public TFileSessionAction
+class NB_CORE_EXPORT TStatSessionAction : public TFileSessionAction
 {
 public:
-  __fastcall TStatSessionAction(TActionLog * Log, const UnicodeString & FileName);
+  explicit TStatSessionAction(TActionLog *Log, const UnicodeString AFileName);
 
-  void __fastcall File(TRemoteFile * File);
+  void File(TRemoteFile *AFile);
 };
 //---------------------------------------------------------------------------
-class TChecksumSessionAction : public TFileSessionAction
+class NB_CORE_EXPORT TChecksumSessionAction : public TFileSessionAction
 {
 public:
-  __fastcall TChecksumSessionAction(TActionLog * Log);
+  explicit TChecksumSessionAction(TActionLog *Log);
 
-  void __fastcall Checksum(const UnicodeString & Alg, const UnicodeString & Checksum);
+  void Checksum(const UnicodeString Alg, const UnicodeString Checksum);
 };
 //---------------------------------------------------------------------------
-class TCwdSessionAction : public TSessionAction
+class NB_CORE_EXPORT TCwdSessionAction : public TSessionAction
 {
 public:
-  __fastcall TCwdSessionAction(TActionLog * Log, const UnicodeString & Path);
+  TCwdSessionAction(TActionLog *Log, const UnicodeString Path);
 };
+
+typedef nb::FastDelegate2<void,
+  TLogLineType /*Type*/, UnicodeString /*Line*/> TDoAddLogEvent;
 //---------------------------------------------------------------------------
-class TDifferenceSessionAction : public TSessionAction
+class NB_CORE_EXPORT TSessionLog
 {
+  CUSTOM_MEM_ALLOCATION_IMPL
+  friend class TSessionAction;
+  friend class TSessionActionRecord;
+  NB_DISABLE_COPY(TSessionLog)
 public:
-  __fastcall TDifferenceSessionAction(TActionLog * Log, const TSynchronizeChecklist::TItem * Item);
-};
-//---------------------------------------------------------------------------
-class TSessionLog
-{
-public:
-  __fastcall TSessionLog(TSessionUI* UI, TDateTime Started, TSessionData * SessionData,
-    TConfiguration * Configuration);
-  __fastcall ~TSessionLog();
+  explicit TSessionLog(TSessionUI *UI, TDateTime Started, TSessionData *SessionData,
+    TConfiguration *Configuration);
+  virtual ~TSessionLog();
 
-  void __fastcall SetParent(TSessionLog * Parent, const UnicodeString & Name);
+  void SetParent(TSessionLog *AParent, const UnicodeString AName);
 
-  void __fastcall Add(TLogLineType Type, const UnicodeString & Line);
-  void __fastcall AddSystemInfo();
-  void __fastcall AddStartupInfo();
-  void __fastcall AddException(Exception * E);
-  void __fastcall AddSeparator();
+  void Add(TLogLineType Type, const UnicodeString ALine);
+  void AddSystemInfo();
+  void AddStartupInfo();
+  void AddException(Exception *E);
+  void AddSeparator();
 
-  void __fastcall ReflectSettings();
+  void ReflectSettings();
 
   __property bool Logging = { read = FLogging };
   __property UnicodeString Name = { read = FName };
 
+  bool GetLogging() const { return FLogging; }
+  UnicodeString GetName() const { return FName; }
+  UnicodeString GetLogFileName() const { return FCurrentLogFileName; }
+  bool LogToFile() const { return LogToFileProtected(); }
+
 protected:
-  void __fastcall CloseLogFile();
-  bool __fastcall LogToFile();
+  void CloseLogFile();
+  bool LogToFileProtected() const;
 
 private:
-  TConfiguration * FConfiguration;
-  TSessionLog * FParent;
-  TCriticalSection * FCriticalSection;
+  TConfiguration *FConfiguration;
+  TSessionLog *FParent;
+  TCriticalSection FCriticalSection;
   bool FLogging;
-  void * FFile;
+  tinylog::TinyLog *FLogger;
   UnicodeString FCurrentLogFileName;
   UnicodeString FCurrentFileName;
-  __int64 FCurrentFileSize;
-  TSessionUI * FUI;
-  TSessionData * FSessionData;
+  int64_t FCurrentFileSize;
+  TSessionUI *FUI;
+  TSessionData *FSessionData;
   TDateTime FStarted;
   UnicodeString FName;
   bool FClosed;
 
-  void __fastcall OpenLogFile();
-  UnicodeString __fastcall GetLogFileName();
-  void __fastcall DoAdd(TLogLineType Type, UnicodeString Line,
-    void __fastcall (__closure *f)(TLogLineType Type, const UnicodeString & Line));
-  void __fastcall DoAddToParent(TLogLineType aType, const UnicodeString & aLine);
-  void __fastcall DoAddToSelf(TLogLineType aType, const UnicodeString & aLine);
-  void __fastcall AddStartupInfo(bool System);
-  void __fastcall DoAddStartupInfo(TSessionData * Data);
-  UnicodeString __fastcall GetTlsVersionName(TTlsVersion TlsVersion);
-  UnicodeString __fastcall LogSensitive(const UnicodeString & Str);
-  void __fastcall AddOption(const UnicodeString & LogStr);
-  void __fastcall AddOptions(TOptions * Options);
-  UnicodeString __fastcall GetCmdLineLog();
-  void __fastcall CheckSize(__int64 Addition);
-  UnicodeString __fastcall LogPartFileName(const UnicodeString & BaseName, int Index);
+  void OpenLogFile();
+  UnicodeString GetLogFileName();
+  void DoAdd(TLogLineType AType, const UnicodeString ALine,
+    __removed void (__closure *f)(TLogLineType Type, const UnicodeString &Line));
+    TDoAddLogEvent Event);
+  void DoAddToParent(TLogLineType AType, const UnicodeString ALine);
+  void DoAddToSelf(TLogLineType AType, const UnicodeString ALine);
+  void AddStartupInfo(bool System);
+  void DoAddStartupInfo(TSessionData *Data);
+  UnicodeString GetTlsVersionName(TTlsVersion TlsVersion) const;
+  UnicodeString LogSensitive(const UnicodeString Str);
+  void AddOption(const UnicodeString LogStr);
+  void AddOptions(TOptions *Options);
+  UnicodeString GetCmdLineLog() const;
+  void CheckSize(int64_t Addition);
+  UnicodeString LogPartFileName(const UnicodeString BaseName, intptr_t Index);
+
+public:
+  UnicodeString GetLine(intptr_t Index) const;
+  TLogLineType GetType(intptr_t Index) const;
+  void DeleteUnnecessary();
+  void StateChange();
 };
 //---------------------------------------------------------------------------
-class TActionLog
+class NB_CORE_EXPORT TActionLog : public TObject
 {
 friend class TSessionAction;
 friend class TSessionActionRecord;
+  NB_DISABLE_COPY(TActionLog)
 public:
-  __fastcall TActionLog(TSessionUI* UI, TDateTime Started, TSessionData * SessionData,
-    TConfiguration * Configuration);
+  explicit TActionLog(TSessionUI *UI, TDateTime Started, TSessionData *SessionData,
+    TConfiguration *Configuration);
   // For fatal failures for .NET assembly
-  __fastcall TActionLog(TDateTime Started, TConfiguration * Configuration);
-  __fastcall ~TActionLog();
+  explicit TActionLog(TDateTime Started, TConfiguration *Configuration);
+  virtual ~TActionLog();
 
-  void __fastcall ReflectSettings();
-  void __fastcall AddFailure(Exception * E);
-  void __fastcall AddFailure(TStrings * Messages);
-  void __fastcall BeginGroup(UnicodeString Name);
-  void __fastcall EndGroup();
+  void ReflectSettings();
+  void AddFailure(Exception *E);
+  void AddFailure(TStrings *Messages);
+  void BeginGroup(const UnicodeString Name);
+  void EndGroup();
 
   __property UnicodeString CurrentFileName = { read = FCurrentFileName };
   __property bool Enabled = { read = FEnabled, write = SetEnabled };
 
+  UnicodeString GetCurrentFileName() const { return FCurrentFileName; }
+  bool GetEnabled() const { return FEnabled; }
+
 protected:
-  void __fastcall CloseLogFile();
-  inline void __fastcall AddPendingAction(TSessionActionRecord * Action);
-  void __fastcall RecordPendingActions();
-  void __fastcall Add(const UnicodeString & Line);
-  void __fastcall AddIndented(const UnicodeString & Line);
-  void __fastcall AddMessages(UnicodeString Indent, TStrings * Messages);
-  void __fastcall Init(TSessionUI * UI, TDateTime Started, TSessionData * SessionData,
-    TConfiguration * Configuration);
+  void CloseLogFile();
+  inline void AddPendingAction(TSessionActionRecord *Action);
+  void RecordPendingActions();
+  void Add(const UnicodeString Line);
+  void AddIndented(const UnicodeString ALine);
+  void AddMessages(const UnicodeString Indent, TStrings *Messages);
+  void Init(TSessionUI *UI, TDateTime Started, TSessionData *SessionData,
+    TConfiguration *Configuration);
 
 private:
-  TConfiguration * FConfiguration;
-  TCriticalSection * FCriticalSection;
+  TConfiguration *FConfiguration;
+  TCriticalSection FCriticalSection;
   bool FLogging;
-  void * FFile;
+  tinylog::TinyLog *FLogger;
   UnicodeString FCurrentLogFileName;
   UnicodeString FCurrentFileName;
-  TSessionUI * FUI;
-  TSessionData * FSessionData;
+  TSessionUI *FUI;
+  TSessionData *FSessionData;
   TDateTime FStarted;
-  TList * FPendingActions;
+  TList *FPendingActions;
   bool FFailed;
   bool FClosed;
   bool FInGroup;
   UnicodeString FIndent;
   bool FEnabled;
 
-  void __fastcall OpenLogFile();
-  UnicodeString __fastcall GetLogFileName();
-  void __fastcall SetEnabled(bool value);
+  void OpenLogFile();
+public:
+  UnicodeString GetLogFileName() const { return FCurrentLogFileName; }
+  void SetEnabled(bool Value);
 };
 //---------------------------------------------------------------------------
-#endif
