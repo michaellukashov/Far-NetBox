@@ -110,6 +110,7 @@ private:
   UnicodeString FHumanRights;
   UnicodeString FFullFileName;
   UnicodeString FTypeName;
+  bool FIsEncrypted;
   int64_t FSize;
   int64_t FINodeBlocks;
   intptr_t FIconIndex;
@@ -159,6 +160,7 @@ public:
   void ShiftTimeInSeconds(int64_t Seconds);
   bool GetIsTimeShiftingApplicable() const;
   void Complete();
+  void SetEncrypted();
 
   static bool GetIsTimeShiftingApplicable(TModificationFmt ModificationFmt);
   static void ShiftTimeInSeconds(TDateTime &DateTime, TModificationFmt ModificationFmt, int64_t Seconds);
@@ -202,6 +204,7 @@ public:
   __property bool IsThisDirectory = { read = GetIsThisDirectory };
   __property bool IsInaccesibleDirectory  = { read = GetIsInaccesibleDirectory };
   __property UnicodeString Extension  = { read = GetExtension };
+  __property bool IsEncrypted  = { read = FIsEncrypted };
 
   TRemoteFileList *GetDirectory() const { return FDirectory; }
   void SetDirectory(TRemoteFileList *Value) { FDirectory = Value; }
@@ -539,6 +542,7 @@ enum TValidProperty
   vpOwner = 0x4,
   vpModification = 0x8,
   vpLastAccess = 0x10,
+  vpEncrypt = 0x20,
 };
 
 // FIXME
@@ -602,6 +606,7 @@ public:
   TRemoteToken Owner;
   int64_t Modification; // unix time
   int64_t LastAccess; // unix time
+  bool Encrypt;
   bool Recursive;
   bool AddXToDirectories;
 
@@ -619,6 +624,105 @@ public:
 
 public:
   TRemoteProperties &operator=(const TRemoteProperties &other);
+};
+//---------------------------------------------------------------------------
+class TSynchronizeChecklist
+{
+friend class TTerminal;
+
+public:
+  enum TAction {
+    saNone, saUploadNew, saDownloadNew, saUploadUpdate, saDownloadUpdate, saDeleteRemote, saDeleteLocal };
+  static const int ActionCount = saDeleteLocal;
+
+  class TItem
+  {
+  friend class TTerminal;
+  friend class TSynchronizeChecklist;
+
+  public:
+    struct TFileInfo
+    {
+      UnicodeString FileName;
+      UnicodeString Directory;
+      TDateTime Modification;
+      TModificationFmt ModificationFmt;
+      int64_t Size;
+    };
+
+    TAction Action;
+    bool IsDirectory;
+    TFileInfo Local;
+    TFileInfo Remote;
+    int ImageIndex;
+    bool Checked;
+    TRemoteFile * RemoteFile;
+
+    const UnicodeString& GetFileName() const;
+    bool IsRemoteOnly() const { return (Action == saDownloadNew) || (Action == saDeleteRemote); }
+    bool IsLocalOnly() const { return (Action == saUploadNew) || (Action == saDeleteLocal); }
+    bool HasSize() const { return !IsDirectory || FDirectoryHasSize; }
+    int64_t __fastcall GetSize() const;
+    int64_t __fastcall GetSize(TAction AAction) const;
+
+    ~TItem();
+
+  private:
+    FILETIME FLocalLastWriteTime;
+    bool FDirectoryHasSize;
+
+    TItem();
+  };
+
+  typedef std::vector<const TSynchronizeChecklist::TItem *> TItemList;
+
+  ~TSynchronizeChecklist();
+
+  void __fastcall Update(const TItem * Item, bool Check, TAction Action);
+  void __fastcall UpdateDirectorySize(const TItem * Item, int64_t Size);
+  void Delete(const TItem * Item);
+
+  static TAction __fastcall Reverse(TAction Action);
+  static bool __fastcall IsItemSizeIrrelevant(TAction Action);
+
+  __property int Count = { read = GetCount };
+  __property int CheckedCount = { read = GetCheckedCount };
+  __property const TItem * Item[int Index] = { read = GetItem };
+
+protected:
+  TSynchronizeChecklist();
+
+  void Sort();
+  void Add(TItem * Item);
+
+  int GetCount() const;
+  int GetCheckedCount() const;
+  const TItem * GetItem(int Index) const;
+
+private:
+  TList * FList;
+
+  static int __fastcall Compare(void * Item1, void * Item2);
+};
+//---------------------------------------------------------------------------
+class TFileOperationProgressType;
+//---------------------------------------------------------------------------
+class TSynchronizeProgress
+{
+public:
+  TSynchronizeProgress(const TSynchronizeChecklist * Checklist);
+
+  void ItemProcessed(const TSynchronizeChecklist::TItem * ChecklistItem);
+  int Progress(const TFileOperationProgressType * CurrentItemOperationProgress) const;
+  TDateTime TimeLeft(const TFileOperationProgressType * CurrentItemOperationProgress) const;
+
+private:
+  const TSynchronizeChecklist * FChecklist;
+  mutable int64_t FTotalSize;
+  int64_t FProcessedSize;
+
+  int64_t ItemSize(const TSynchronizeChecklist::TItem * ChecklistItem) const;
+  int64_t GetProcessed(const TFileOperationProgressType * CurrentItemOperationProgress) const;
 };
 //---------------------------------------------------------------------------
 

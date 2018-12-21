@@ -1,42 +1,48 @@
-
-#pragma once
-
-#include <Classes.hpp>
+//---------------------------------------------------------------------------
+#ifndef PuttyToolsH
+#define PuttyToolsH
 //---------------------------------------------------------------------------
 enum TKeyType
 {
   ktUnopenable, ktUnknown,
   ktSSH1, ktSSH2,
   ktOpenSSHAuto, ktOpenSSHPEM, ktOpenSSHNew, ktSSHCom,
-  ktSSH1Public, ktSSH2PublicRFC4716, ktSSH2PublicOpenSSH,
+  ktSSH1Public, ktSSH2PublicRFC4716, ktSSH2PublicOpenSSH
 };
-NB_CORE_EXPORT TKeyType GetKeyType(const UnicodeString AFileName);
-NB_CORE_EXPORT UnicodeString GetKeyTypeName(TKeyType KeyType);
-NB_CORE_EXPORT bool IsKeyEncrypted(TKeyType KeyType, const UnicodeString FileName, UnicodeString &Comment);
+TKeyType KeyType(UnicodeString FileName);
+bool IsKeyEncrypted(TKeyType KeyType, const UnicodeString & FileName, UnicodeString & Comment);
 struct TPrivateKey;
-NB_CORE_EXPORT TPrivateKey *LoadKey(TKeyType KeyType, const UnicodeString FileName, const UnicodeString Passphrase);
-NB_CORE_EXPORT void ChangeKeyComment(TPrivateKey *PrivateKey, const UnicodeString Comment);
-NB_CORE_EXPORT void SaveKey(TKeyType KeyType, const UnicodeString FileName,
-  const UnicodeString Passphrase, TPrivateKey *PrivateKey);
-NB_CORE_EXPORT void FreeKey(TPrivateKey *PrivateKey);
-
-NB_CORE_EXPORT int64_t ParseSize(const UnicodeString SizeStr);
+TPrivateKey * LoadKey(TKeyType KeyType, const UnicodeString & FileName, const UnicodeString & Passphrase);
+void ChangeKeyComment(TPrivateKey * PrivateKey, const UnicodeString & Comment);
+void SaveKey(TKeyType KeyType, const UnicodeString & FileName,
+  const UnicodeString & Passphrase, TPrivateKey * PrivateKey);
+void FreeKey(TPrivateKey * PrivateKey);
+UnicodeString GetPublicKeyLine(const UnicodeString & FileName, UnicodeString & Comment);
+extern const UnicodeString PuttyKeyExt;
 //---------------------------------------------------------------------------
-NB_CORE_EXPORT bool HasGSSAPI(const UnicodeString CustomPath);
+bool __fastcall HasGSSAPI(UnicodeString CustomPath);
 //---------------------------------------------------------------------------
-NB_CORE_EXPORT void AES256EncodeWithMAC(char *Data, size_t Len, const char *Password,
-  size_t PasswordLen, const char *Salt);
+void __fastcall AES256EncodeWithMAC(char * Data, size_t Len, const char * Password,
+  size_t PasswordLen, const char * Salt);
 //---------------------------------------------------------------------------
-NB_CORE_EXPORT UnicodeString NormalizeFingerprint(const UnicodeString AFingerprint);
-NB_CORE_EXPORT UnicodeString GetKeyTypeFromFingerprint(const UnicodeString AFingerprint);
+UnicodeString __fastcall NormalizeFingerprint(UnicodeString Fingerprint);
+UnicodeString __fastcall KeyTypeFromFingerprint(UnicodeString Fingerprint);
 //---------------------------------------------------------------------------
-NB_CORE_EXPORT UnicodeString GetPuTTYVersion();
+UnicodeString __fastcall GetPuTTYVersion();
 //---------------------------------------------------------------------------
-NB_CORE_EXPORT UnicodeString Sha256(const char *Data, size_t Size);
+UnicodeString __fastcall Sha256(const char * Data, size_t Size);
 //---------------------------------------------------------------------------
-NB_CORE_EXPORT void DllHijackingProtection();
+void __fastcall DllHijackingProtection();
 //---------------------------------------------------------------------------
-UnicodeString ParseOpenSshPubLine(const UnicodeString ALine, const struct ssh_signkey *& Algorithm);
+UnicodeString __fastcall ParseOpenSshPubLine(const UnicodeString & Line, const struct ssh_signkey *& Algorithm);
 //---------------------------------------------------------------------------
-UnicodeString GetKeyTypeHuman(const UnicodeString AKeyType);
+UnicodeString __fastcall GetKeyTypeHuman(const UnicodeString & KeyType);
 //---------------------------------------------------------------------------
+bool IsOpenSSH(const UnicodeString & SshImplementation);
+//---------------------------------------------------------------------------
+TStrings * SshCipherList();
+TStrings * SshKexList();
+TStrings * SshHostKeyList();
+TStrings * SshMacList();
+//---------------------------------------------------------------------------
+#endif

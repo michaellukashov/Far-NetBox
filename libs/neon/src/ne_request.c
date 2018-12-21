@@ -629,7 +629,7 @@ int ne_get_request_body_buffer(ne_request *req, const char **buffer,
 
 void ne_set_request_flag(ne_request *req, ne_request_flag flag, int value)
 {
-    if (flag < (ne_request_flag)NE_REQFLAG_LAST) {
+    if (flag < (ne_request_flag)NE_SESSFLAG_LAST) {
         req->flags[flag] = value;
     }
 }

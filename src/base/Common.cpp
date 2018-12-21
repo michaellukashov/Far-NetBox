@@ -11,6 +11,7 @@
 #include <Common.h>
 #include <Global.h>
 #include <StrUtils.hpp>
+//#include <CoreMain.h>
 #include <cmath>
 #include <rdestl/map.h>
 #include <rdestl/vector.h>
@@ -877,6 +878,20 @@ intptr_t CompareLogicalText(
   }
 }
 //---------------------------------------------------------------------------
+bool ContainsTextSemiCaseSensitive(const UnicodeString Text, const UnicodeString SubText)
+{
+  bool Result;
+  if (LowerCase(SubText) == SubText)
+  {
+    Result = ContainsText(Text, SubText);
+  }
+  else
+  {
+    Result = ContainsStr(Text, SubText);
+  }
+  return Result;
+}
+//---------------------------------------------------------------------------
 bool IsReservedName(const UnicodeString AFileName)
 {
   UnicodeString FileName = AFileName;
@@ -1395,6 +1410,19 @@ bool FileSearchRec(const UnicodeString AFileName, TSearchRec &Rec)
   return Result;
 }
 //---------------------------------------------------------------------------
+UnicodeString GetOSInfo()
+{
+  UnicodeString Result = WindowsVersionLong();
+  AddToList(Result, WindowsProductName(), L" - ");
+  return Result;
+}
+//---------------------------------------------------------------------------
+UnicodeString GetEnvironmentInfo()
+{
+  UnicodeString Result; // = FORMAT("WinSCP %s (OS %s)", GetConfiguration()->GetVersionStr(), GetOSInfo());
+  return Result;
+}
+//---------------------------------------------------------------------------
 void ProcessLocalDirectory(const UnicodeString ADirName,
   TProcessLocalFileEvent CallBackFunc, void *Param,
   DWORD FindAttrs)
@@ -1803,6 +1831,17 @@ bool TryRelativeStrToDateTime(const UnicodeString AStr, TDateTime &DateTime, boo
     }
   }
   return Result;
+}
+ //---------------------------------------------------------------------------
+bool TryStrToDateTimeStandard(const UnicodeString S, TDateTime &Value)
+{
+  TFormatSettings FormatSettings = TFormatSettings::Create(GetDefaultLCID());
+  FormatSettings.DateSeparator = L'-';
+  FormatSettings.TimeSeparator = L':';
+  FormatSettings.ShortDateFormat = "yyyy/mm/dd";
+  FormatSettings.ShortTimeFormat = "hh:nn:ss";
+
+  return TryStrToDateTime(S, Value, FormatSettings);
 }
 //---------------------------------------------------------------------------
 const wchar_t KiloSize = L'K';
@@ -4113,10 +4152,11 @@ bool IsUnixRootPath(const UnicodeString APath)
   return APath.IsEmpty() || (APath == ROOTDIRECTORY);
 }
 //---------------------------------------------------------------------------
-bool IsUnixHiddenFile(const UnicodeString APath)
+bool IsUnixHiddenFile(const UnicodeString AFileName)
 {
-  return (APath != THISDIRECTORY) && (APath != PARENTDIRECTORY) &&
-    !APath.IsEmpty() && (APath[1] == L'.');
+//  return (APath != THISDIRECTORY) && (APath != PARENTDIRECTORY) &&
+//    !APath.IsEmpty() && (APath[1] == L'.');
+  return IsRealFile(AFileName) && !AFileName.IsEmpty() && (AFileName[1] == L'.');
 }
 //---------------------------------------------------------------------------
 UnicodeString AbsolutePath(const UnicodeString Base, const UnicodeString APath)

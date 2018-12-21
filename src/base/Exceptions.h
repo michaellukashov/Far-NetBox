@@ -173,6 +173,7 @@ public:
   void SetReopenQueried(bool Value) { FReopenQueried = Value; }
 
   virtual ExtException *Clone() const override;
+  virtual void __fastcall Rethrow() override;
 
 private:
   void Init(const Exception *E);

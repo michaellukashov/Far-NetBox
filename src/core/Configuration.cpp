@@ -40,6 +40,7 @@ const UnicodeString HttpsCertificateStorageKey(L"HttpsCertificates");
 TConfiguration::TConfiguration(TObjectClassId Kind) :
   TObject(Kind),
   FDontSave(false),
+  FForceSave(false),
   FChanged(false),
   FUpdating(0),
   FApplicationInfo(nullptr),
@@ -73,6 +74,8 @@ TConfiguration::TConfiguration(TObjectClassId Kind) :
   FShowFtpWelcomeMessage(false),
   FTryFtpWhenSshFails(false),
   FParallelDurationThreshold(0),
+  FDontReloadMoreThanSessions(1000),
+  FScriptProgressFileNameLimit(25),
   FScripting(false),
   FSessionReopenAutoMaximumNumberOfRetries(0),
   FDisablePasswordStoring(false),
@@ -284,6 +287,8 @@ UnicodeString TConfiguration::PropertyToKey(const UnicodeString AProperty)
     KEY(Bool,     TryFtpWhenSshFails); \
     KEY(Integer,  ParallelDurationThreshold); \
     KEY(String,   MimeTypes); \
+    KEY(Integer,  DontReloadMoreThanSessions); \
+    KEY(Integer,  ScriptProgressFileNameLimit); \
     KEY(Bool,     CollectUsage); \
     KEY(Integer,  SessionReopenAutoMaximumNumberOfRetries); \
   ); \
@@ -336,6 +341,7 @@ void TConfiguration::DoSave(bool All, bool Explicit)
   {
     Storage->SetAccessMode(smReadWrite);
     Storage->SetExplicit(Explicit);
+    AStorage->SetForceSave(FForceSave);
     if (Storage->OpenSubKey(GetConfigurationSubKey(), true))
     {
       // if saving to TOptionsStorage, make sure we save everything so that
@@ -1909,7 +1915,7 @@ void TConfiguration::SetSessionReopenAutoMaximumNumberOfRetries(intptr_t Value)
 //---------------------------------------------------------------------------
 bool TConfiguration::GetPersistent() const
 {
-  return (GetStorage() != stNul);
+  return (GetStorage() != stNul) && !FDontSave;
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------

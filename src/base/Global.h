@@ -63,6 +63,7 @@ NB_CORE_EXPORT void DoAssert(const wchar_t *Message, const wchar_t *Filename, ui
 #define TraceInitPtr(p) (p)
 #define TraceInitStr(p) (p)
 #define DebugUsedParam(p) (void)(p)
+#define DebugUsedArg(p)
 //---------------------------------------------------------------------------
 #if defined(_DEBUG)
 NB_CORE_EXPORT void SetTraceFile(HANDLE ATraceFile);

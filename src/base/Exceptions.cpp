@@ -353,7 +353,7 @@ ExtException::ExtException(TObjectClassId Kind, const UnicodeString Msg, const U
     FMoreMessages = TextToStringList(MoreMessages);
   }
 }
-
+//---------------------------------------------------------------------------
 ExtException::ExtException(const UnicodeString Msg, TStrings *MoreMessages,
   bool Own, const UnicodeString HelpKeyword) :
   Exception(OBJECT_CLASS_ExtException, Msg),
@@ -484,11 +484,6 @@ EFatal::EFatal(TObjectClassId Kind, const Exception *E, const UnicodeString Msg,
   Init(E);
 }
 //---------------------------------------------------------------------------
-ExtException *EFatal::Clone() const
-{
-  return new EFatal(OBJECT_CLASS_EFatal, this, L"");
-}
-
 void EFatal::Init(const Exception *E)
 {
   const EFatal *F = dyn_cast<EFatal>(E);
@@ -501,6 +496,16 @@ void EFatal::Init(const Exception *E)
 ECRTExtException::ECRTExtException(const UnicodeString Msg) :
   EOSExtException(OBJECT_CLASS_ECRTExtException, Msg, errno)
 {
+}
+//---------------------------------------------------------------------------
+ExtException *EFatal::Clone() const
+{
+  return new EFatal(OBJECT_CLASS_EFatal, this, L"");
+}
+//---------------------------------------------------------------------------
+void EFatal::Rethrow()
+{
+  throw EFatal(this, L"");
 }
 //---------------------------------------------------------------------------
 ExtException *ESshTerminate::Clone() const
@@ -559,7 +564,7 @@ void RethrowException(Exception *E)
   // this list has to be in sync with ExceptionMessage
   if (isa<EFatal>(E))
   {
-    throw EFatal(E, L"");
+    dyn_cast<ExtException>(E)->Rethrow();
   }
   if (isa<ECallbackGuardAbort>(E))
   {

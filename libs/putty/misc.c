@@ -48,11 +48,6 @@ int64_t parse_blocksize64(const char *bs)
     return r;
 }
 
-unsigned long parse_blocksize(const char *bs)
-{
-  return (unsigned long)parse_blocksize64(bs);
-}
-
 /*
  * Parse a ^C style character specification.
  * Returns NULL in `next' if we didn't recognise it as a control character,

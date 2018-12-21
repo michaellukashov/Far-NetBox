@@ -12,6 +12,7 @@
 #include "Terminal.h"
 #include "TextsCore.h"
 #include "HelpCore.h"
+#include "Cryptography.h"
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 TRemoteToken::TRemoteToken() :
@@ -341,6 +342,7 @@ TRemoteFile *TRemoteFile::Duplicate(bool Standalone) const
     COPY_FP(Type);
     COPY_FP(CyclicLink);
     COPY_FP(HumanRights);
+    COPY_FP(IsEncrypted);
 #undef COPY_FP
     if (Standalone && (!FFullFileName.IsEmpty() || (GetDirectory() != nullptr)))
     {
@@ -387,6 +389,7 @@ void TRemoteFile::Init()
   FINodeBlocks = 0;
   FIconIndex = -1;
   FIsHidden = -1;
+  FIsEncrypted = false;
   FType = 0;
   FIsSymLink = false;
   FCyclicLink = false;
@@ -679,9 +682,11 @@ void TRemoteFile::SetListingStr(const UnicodeString Value)
     while (ASize < 0);
 
     // do not read modification time and filename if it is already set
-    if (::IsZero(FModification.GetValue()) && GetFileName().IsEmpty())
+    // if (::IsZero(FModification.GetValue()) && GetFileName().IsEmpty())
+    // Do not read modification time and filename (test close to the end of this block) if it is already set.
+    if (::IsZero(FModification.GetValue()) == 0)
     {
-      FSize = ASize;
+//      FSize = ASize;
 
       Word Year = 0, Month = 0, Day = 0, Hour = 0, Min = 0, Sec = 0;
       Word CurrYear = 0, CurrMonth = 0, CurrDay = 0;
@@ -903,7 +908,11 @@ void TRemoteFile::SetListingStr(const UnicodeString Value)
 
       // separating space is already deleted, other spaces are treated as part of name
 
+      // see comment at the beginning of the block
+      if (FileName.IsEmpty())
       {
+        FSize = ASize;
+
         FLinkTo.Clear();
         if (GetIsSymLink())
         {
@@ -935,6 +944,15 @@ void TRemoteFile::Complete()
   if (GetIsSymLink() && GetTerminal()->GetResolvingSymlinks())
   {
     FindLinkedFile();
+  }
+}
+ //---------------------------------------------------------------------------
+void TRemoteFile::SetEncrypted()
+{
+  FIsEncrypted = true;
+  if (Size > TEncryption::GetOverhead())
+  {
+    Size -= TEncryption::GetOverhead();
   }
 }
 //---------------------------------------------------------------------------
@@ -2221,6 +2239,7 @@ TRemoteProperties::TRemoteProperties(const TRemoteProperties &rhp) :
   Owner(rhp.Owner),
   Modification(rhp.Modification),
   LastAccess(rhp.Modification),
+  Encrypt(rhp.Encrypt),
   Recursive(rhp.Recursive),
   AddXToDirectories(rhp.AddXToDirectories)
 {
@@ -2237,6 +2256,7 @@ void TRemoteProperties::Default()
   Modification = 0;
   LastAccess = 0;
   Recursive = false;
+  Encrypt = false;
 }
 //---------------------------------------------------------------------------
 bool TRemoteProperties::operator==(const TRemoteProperties &rhp) const
@@ -2250,7 +2270,8 @@ bool TRemoteProperties::operator==(const TRemoteProperties &rhp) const
         (Valid.Contains(vpOwner) && (Owner != rhp.Owner)) ||
         (Valid.Contains(vpGroup) && (Group != rhp.Group)) ||
         (Valid.Contains(vpModification) && (Modification != rhp.Modification)) ||
-        (Valid.Contains(vpLastAccess) && (LastAccess != rhp.LastAccess)))
+        (Valid.Contains(vpLastAccess) && (LastAccess != rhp.LastAccess)) ||
+        (Valid.Contains(vpEncrypt) && (Encrypt != rhp.Encrypt)))
     {
       Result = false;
     }
@@ -2312,6 +2333,7 @@ TRemoteProperties TRemoteProperties::CommonProperties(TStrings *AFileList)
 TRemoteProperties TRemoteProperties::ChangedProperties(
   const TRemoteProperties &OriginalProperties, TRemoteProperties &NewProperties)
 {
+  DebugAssert(!OriginalProperties.Valid.Contains(vpEncrypt));
   TODO("Modification and LastAccess");
   if (!NewProperties.Recursive)
   {
@@ -2374,5 +2396,312 @@ void TRemoteProperties::Save(THierarchicalStorage *Storage) const
   }
 
   // TODO
+}
+//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
+TSynchronizeChecklist::TItem::TItem() :
+  Action(saNone), IsDirectory(false), RemoteFile(NULL), Checked(true), ImageIndex(-1), FDirectoryHasSize(false)
+{
+  Local.ModificationFmt = mfFull;
+  Local.Modification = 0;
+  Local.Size = 0;
+  Remote.ModificationFmt = mfFull;
+  Remote.Modification = 0;
+  Remote.Size = 0;
+}
+//---------------------------------------------------------------------------
+TSynchronizeChecklist::TItem::~TItem()
+{
+  delete RemoteFile;
+}
+//---------------------------------------------------------------------------
+const UnicodeString& TSynchronizeChecklist::TItem::GetFileName() const
+{
+  if (!Remote.FileName.IsEmpty())
+  {
+    return Remote.FileName;
+  }
+  else
+  {
+    DebugAssert(!Local.FileName.IsEmpty());
+    return Local.FileName;
+  }
+}
+//---------------------------------------------------------------------------
+int64_t TSynchronizeChecklist::TItem::GetSize() const
+{
+  return GetSize(Action);
+}
+//---------------------------------------------------------------------------
+int64_t TSynchronizeChecklist::TItem::GetSize(TAction AAction) const
+{
+  if (IsItemSizeIrrelevant(AAction))
+  {
+    return 0;
+  }
+  else
+  {
+    switch (AAction)
+    {
+      case saUploadNew:
+      case saUploadUpdate:
+        return Local.Size;
+
+      case saDownloadNew:
+      case saDownloadUpdate:
+        return Remote.Size;
+
+      default:
+        DebugFail();
+        return 0;
+    }
+  }
+}
+//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
+TSynchronizeChecklist::TSynchronizeChecklist() :
+  FList(new TList())
+{
+}
+//---------------------------------------------------------------------------
+TSynchronizeChecklist::~TSynchronizeChecklist()
+{
+  for (int Index = 0; Index < FList->Count; Index++)
+  {
+    delete static_cast<TItem *>(FList->Items[Index]);
+  }
+  delete FList;
+}
+//---------------------------------------------------------------------------
+void TSynchronizeChecklist::Add(TItem * Item)
+{
+  FList->Add(Item);
+}
+//---------------------------------------------------------------------------
+int TSynchronizeChecklist::Compare(void * AItem1, void * AItem2)
+{
+  TItem * Item1 = static_cast<TItem *>(AItem1);
+  TItem * Item2 = static_cast<TItem *>(AItem2);
+
+  int Result;
+  if (!Item1->Local.Directory.IsEmpty())
+  {
+    Result = AnsiCompareText(Item1->Local.Directory, Item2->Local.Directory);
+  }
+  else
+  {
+    DebugAssert(!Item1->Remote.Directory.IsEmpty());
+    Result = AnsiCompareText(Item1->Remote.Directory, Item2->Remote.Directory);
+  }
+
+  if (Result == 0)
+  {
+    Result = AnsiCompareText(Item1->GetFileName(), Item2->GetFileName());
+  }
+
+  return Result;
+}
+//---------------------------------------------------------------------------
+void TSynchronizeChecklist::Sort()
+{
+  FList->Sort(Compare);
+}
+//---------------------------------------------------------------------------
+int TSynchronizeChecklist::GetCount() const
+{
+  return FList->Count;
+}
+//---------------------------------------------------------------------------
+int TSynchronizeChecklist::GetCheckedCount() const
+{
+  int Result = 0;
+  for (int Index = 0; (Index < Count); Index++)
+  {
+    if (Item[Index]->Checked)
+    {
+      Result++;
+    }
+  }
+  return Result;
+}
+//---------------------------------------------------------------------------
+const TSynchronizeChecklist::TItem * TSynchronizeChecklist::GetItem(int Index) const
+{
+  return static_cast<TItem *>(FList->Items[Index]);
+}
+//---------------------------------------------------------------------------
+void TSynchronizeChecklist::Update(const TItem * Item, bool Check, TAction Action)
+{
+  // TSynchronizeChecklist owns non-const items so it can manipulate them freely,
+  // const_cast here is just an optimization
+  TItem * MutableItem = const_cast<TItem *>(Item);
+  DebugAssert(FList->IndexOf(MutableItem) >= 0);
+  MutableItem->Checked = Check;
+  MutableItem->Action = Action;
+}
+//---------------------------------------------------------------------------
+void TSynchronizeChecklist::Delete(const TItem * Item)
+{
+  // See comment in Update()
+  TItem * MutableItem = const_cast<TItem *>(Item);
+  FList->Extract(MutableItem);
+  delete Item;
+}
+//---------------------------------------------------------------------------
+void TSynchronizeChecklist::UpdateDirectorySize(const TItem * Item, int64_t Size)
+{
+  // See comment in Update
+  TItem * MutableItem = const_cast<TItem *>(Item);
+  DebugAssert(FList->IndexOf(MutableItem) >= 0);
+  if (DebugAlwaysTrue(Item->IsDirectory))
+  {
+    MutableItem->FDirectoryHasSize = true;
+
+    if (Item->IsRemoteOnly())
+    {
+      MutableItem->Remote.Size = Size;
+    }
+    else if (Item->IsLocalOnly())
+    {
+      MutableItem->Local.Size = Size;
+    }
+    else
+    {
+      // "update" actions are not relevant for directories
+      DebugFail();
+    }
+  }
+}
+//---------------------------------------------------------------------------
+TSynchronizeChecklist::TAction TSynchronizeChecklist::Reverse(TSynchronizeChecklist::TAction Action)
+{
+  switch (Action)
+  {
+    case saUploadNew:
+      return saDeleteLocal;
+
+    case saDownloadNew:
+      return saDeleteRemote;
+
+    case saUploadUpdate:
+      return saDownloadUpdate;
+
+    case saDownloadUpdate:
+      return saUploadUpdate;
+
+    case saDeleteRemote:
+      return saDownloadNew;
+
+    case saDeleteLocal:
+      return saUploadNew;
+
+    default:
+    case saNone:
+      DebugFail();
+      return saNone;
+  }
+}
+//---------------------------------------------------------------------------
+bool TSynchronizeChecklist::IsItemSizeIrrelevant(TAction Action)
+{
+  switch (Action)
+  {
+    case saNone:
+    case saDeleteRemote:
+    case saDeleteLocal:
+      return true;
+
+    default:
+      return false;
+  }
+}
+//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
+TSynchronizeProgress::TSynchronizeProgress(const TSynchronizeChecklist * Checklist)
+{
+  FTotalSize = -1;
+  FProcessedSize = 0;
+  FChecklist = Checklist;
+}
+//---------------------------------------------------------------------------
+int64_t TSynchronizeProgress::ItemSize(const TSynchronizeChecklist::TItem * ChecklistItem) const
+{
+  int64_t Result;
+  switch (ChecklistItem->Action)
+  {
+    case TSynchronizeChecklist::saDeleteRemote:
+    case TSynchronizeChecklist::saDeleteLocal:
+      Result = ChecklistItem->IsDirectory ? 1024*1024 : 100*1024;
+      break;
+
+    default:
+      if (ChecklistItem->HasSize())
+      {
+        Result = ChecklistItem->GetSize();
+      }
+      else
+      {
+        DebugAssert(ChecklistItem->IsDirectory);
+        Result = 1024*1024;
+      }
+      break;
+  }
+  return Result;
+}
+//---------------------------------------------------------------------------
+void TSynchronizeProgress::ItemProcessed(const TSynchronizeChecklist::TItem * ChecklistItem)
+{
+  FProcessedSize += ItemSize(ChecklistItem);
+}
+//---------------------------------------------------------------------------
+int64_t TSynchronizeProgress::GetProcessed(const TFileOperationProgressType * CurrentItemOperationProgress) const
+{
+  DebugAssert(!TFileOperationProgressType::IsIndeterminateOperation(CurrentItemOperationProgress->Operation));
+
+  // Need to calculate the total size on the first call only,
+  // as at the time the contrusctor it called, we usually do not have sizes of folders caculated yet.
+  if (FTotalSize < 0)
+  {
+    FTotalSize = 0;
+
+    for (int Index = 0; Index < FChecklist->Count; Index++)
+    {
+      const TSynchronizeChecklist::TItem * ChecklistItem = FChecklist->Item[Index];
+      if (ChecklistItem->Checked)
+      {
+        FTotalSize += ItemSize(ChecklistItem);
+      }
+    }
+  }
+
+  // For (single-item-)delete operation, this should return 0
+  int64_t CurrentItemProcessedSize = CurrentItemOperationProgress->OperationTransferred;
+  return (FProcessedSize + CurrentItemProcessedSize);
+}
+//---------------------------------------------------------------------------
+int TSynchronizeProgress::Progress(const TFileOperationProgressType * CurrentItemOperationProgress) const
+{
+  int64_t Processed = GetProcessed(CurrentItemOperationProgress);
+  int Result;
+  if (FTotalSize > 0)
+  {
+    Result = (Processed * 100) / FTotalSize;
+  }
+  else
+  {
+    Result = 0;
+  }
+  return Result;
+}
+//---------------------------------------------------------------------------
+TDateTime TSynchronizeProgress::TimeLeft(const TFileOperationProgressType * CurrentItemOperationProgress) const
+{
+  TDateTime Result;
+  int64_t Processed = GetProcessed(CurrentItemOperationProgress);
+  if (Processed > 0)
+  {
+    Result = TDateTime(double(Now() - CurrentItemOperationProgress->StartTime) / Processed * (FTotalSize - Processed));
+  }
+  return Result;
 }
 

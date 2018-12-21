@@ -9,20 +9,20 @@
       <Configuration>Template</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="Debug|Win32">
-      <Configuration>Debug</Configuration>
+    <ProjectConfiguration Include="UnityDebug|Win32">
+      <Configuration>UnityDebug</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="Debug|x64">
-      <Configuration>Debug</Configuration>
+    <ProjectConfiguration Include="UnityDebug|x64">
+      <Configuration>UnityDebug</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="Release|Win32">
-      <Configuration>Release</Configuration>
+    <ProjectConfiguration Include="UnityRelease|Win32">
+      <Configuration>UnityRelease</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="Release|x64">
-      <Configuration>Release</Configuration>
+    <ProjectConfiguration Include="UnityRelease|x64">
+      <Configuration>UnityRelease</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
@@ -32,30 +32,30 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Template|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Template|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='UnityRelease|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseOfMfc>false</UseOfMfc>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='UnityRelease|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseOfMfc>false</UseOfMfc>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='UnityDebug|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseOfMfc>false</UseOfMfc>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='UnityDebug|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseOfMfc>false</UseOfMfc>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -66,40 +66,40 @@
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Template|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='UnityRelease|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="$(VCTargetsPath)Microsoft.Cpp.UpgradeFromVC60.props" />
   </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='UnityRelease|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="$(VCTargetsPath)Microsoft.Cpp.UpgradeFromVC60.props" />
   </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='UnityDebug|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="$(VCTargetsPath)Microsoft.Cpp.UpgradeFromVC60.props" />
   </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='UnityDebug|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="$(VCTargetsPath)Microsoft.Cpp.UpgradeFromVC60.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>.\..\..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</OutDir>
-    <IntDir>.\..\..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</IntDir>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='UnityDebug|Win32'">
+    <OutDir>.\..\..\..\Temp\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</OutDir>
+    <IntDir>.\..\..\..\Temp\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</IntDir>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>.\..\..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</OutDir>
-    <IntDir>.\..\..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</IntDir>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='UnityDebug|x64'">
+    <OutDir>.\..\..\..\Temp\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</OutDir>
+    <IntDir>.\..\..\..\Temp\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</IntDir>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>.\..\..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</OutDir>
-    <IntDir>.\..\..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</IntDir>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='UnityRelease|Win32'">
+    <OutDir>.\..\..\..\Temp\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</OutDir>
+    <IntDir>.\..\..\..\Temp\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</IntDir>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>.\..\..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</OutDir>
-    <IntDir>.\..\..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</IntDir>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='UnityRelease|x64'">
+    <OutDir>.\..\..\..\Temp\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</OutDir>
+    <IntDir>.\..\..\..\Temp\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</IntDir>
   </PropertyGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='UnityDebug|Win32'">
     <ClCompile>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <InlineFunctionExpansion>Default</InlineFunctionExpansion>
@@ -107,15 +107,14 @@
       <Optimization>Disabled</Optimization>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <WarningLevel>Level3</WarningLevel>
-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_LIB;COMPILED_FROM_DSP;XML_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AssemblerListingLocation>.\..\..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</AssemblerListingLocation>
+      <AssemblerListingLocation>.\..\..\..\Temp\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</AssemblerListingLocation>
       <BrowseInformation>true</BrowseInformation>
-      <PrecompiledHeaderOutputFile>.\..\..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\libexpat.pch</PrecompiledHeaderOutputFile>
-      <ObjectFileName>.\..\..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</ObjectFileName>
-      <ProgramDataBaseFileName>.\..\..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</ProgramDataBaseFileName>
+      <PrecompiledHeaderOutputFile>.\..\..\..\Temp\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\libexpat.pch</PrecompiledHeaderOutputFile>
+      <ObjectFileName>.\..\..\..\Temp\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</ObjectFileName>
+      <ProgramDataBaseFileName>.\..\..\..\Temp\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</ProgramDataBaseFileName>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
-      <RuntimeTypeInfo>false</RuntimeTypeInfo>
     </ClCompile>
     <ResourceCompile>
       <Culture>0x0409</Culture>
@@ -123,14 +122,14 @@
     </ResourceCompile>
     <Bscmake>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <OutputFile>.\..\..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\libexpat.bsc</OutputFile>
+      <OutputFile>.\..\..\..\Temp\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\libexpat.bsc</OutputFile>
     </Bscmake>
     <Lib>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <OutputFile>.\..\..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\libexpat.lib</OutputFile>
+      <OutputFile>.\..\..\..\Temp\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\libexpat.lib</OutputFile>
     </Lib>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='UnityDebug|x64'">
     <ClCompile>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <InlineFunctionExpansion>Default</InlineFunctionExpansion>
@@ -139,14 +138,13 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <PreprocessorDefinitions>WIN32;WIN64;_DEBUG;_WINDOWS;_LIB;COMPILED_FROM_DSP;XML_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AssemblerListingLocation>.\..\..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</AssemblerListingLocation>
+      <PreprocessorDefinitions>WIN64;_DEBUG;_WINDOWS;_LIB;COMPILED_FROM_DSP;XML_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AssemblerListingLocation>.\..\..\..\Temp\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</AssemblerListingLocation>
       <BrowseInformation>true</BrowseInformation>
-      <PrecompiledHeaderOutputFile>.\..\..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\libexpat.pch</PrecompiledHeaderOutputFile>
-      <ObjectFileName>.\..\..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</ObjectFileName>
-      <ProgramDataBaseFileName>.\..\..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</ProgramDataBaseFileName>
+      <PrecompiledHeaderOutputFile>.\..\..\..\Temp\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\libexpat.pch</PrecompiledHeaderOutputFile>
+      <ObjectFileName>.\..\..\..\Temp\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</ObjectFileName>
+      <ProgramDataBaseFileName>.\..\..\..\Temp\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</ProgramDataBaseFileName>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
-      <RuntimeTypeInfo>false</RuntimeTypeInfo>
     </ClCompile>
     <ResourceCompile>
       <Culture>0x0409</Culture>
@@ -154,14 +152,14 @@
     </ResourceCompile>
     <Bscmake>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <OutputFile>.\..\..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\libexpat.bsc</OutputFile>
+      <OutputFile>.\..\..\..\Temp\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\libexpat.bsc</OutputFile>
     </Bscmake>
     <Lib>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <OutputFile>.\..\..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\libexpat.lib</OutputFile>
+      <OutputFile>.\..\..\..\Temp\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\libexpat.lib</OutputFile>
     </Lib>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='UnityRelease|Win32'">
     <ClCompile>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
@@ -171,11 +169,10 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;_LIB;COMPILED_FROM_DSP;XML_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AssemblerListingLocation>.\..\..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</AssemblerListingLocation>
-      <PrecompiledHeaderOutputFile>.\..\..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\libexpat.pch</PrecompiledHeaderOutputFile>
-      <ObjectFileName>.\..\..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</ObjectFileName>
-      <ProgramDataBaseFileName>.\..\..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</ProgramDataBaseFileName>
-      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <AssemblerListingLocation>.\..\..\..\Temp\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</AssemblerListingLocation>
+      <PrecompiledHeaderOutputFile>.\..\..\..\Temp\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\libexpat.pch</PrecompiledHeaderOutputFile>
+      <ObjectFileName>.\..\..\..\Temp\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</ObjectFileName>
+      <ProgramDataBaseFileName>.\..\..\..\Temp\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\</ProgramDataBaseFileName>
     </ClCompile>
     <ResourceCompile>
       <Culture>0x0409</Culture>
@@ -183,14 +180,14 @@
     </ResourceCompile>
     <Bscmake>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <OutputFile>.\..\..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\libexpat.bsc</OutputFile>
+      <OutputFile>.\..\..\..\Temp\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\libexpat.bsc</OutputFile>
     </Bscmake>
     <Lib>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <OutputFile>.\..\..\..\build\vc10\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\libexpat.lib</OutputFile>
+      <OutputFile>.\..\..\..\Temp\$(SolutionName)\$(Configuration)\x86\$(ProjectName)\libexpat.lib</OutputFile>
     </Lib>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='UnityRelease|x64'">
     <ClCompile>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
@@ -199,12 +196,11 @@
       <Optimization>MaxSpeed</Optimization>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>WIN32;WIN64;_WINDOWS;NDEBUG;_LIB;COMPILED_FROM_DSP;XML_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AssemblerListingLocation>.\..\..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</AssemblerListingLocation>
-      <PrecompiledHeaderOutputFile>.\..\..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\libexpat.pch</PrecompiledHeaderOutputFile>
-      <ObjectFileName>.\..\..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</ObjectFileName>
-      <ProgramDataBaseFileName>.\..\..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</ProgramDataBaseFileName>
-      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <PreprocessorDefinitions>WIN64;_WINDOWS;NDEBUG;_LIB;COMPILED_FROM_DSP;XML_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AssemblerListingLocation>.\..\..\..\Temp\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</AssemblerListingLocation>
+      <PrecompiledHeaderOutputFile>.\..\..\..\Temp\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\libexpat.pch</PrecompiledHeaderOutputFile>
+      <ObjectFileName>.\..\..\..\Temp\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</ObjectFileName>
+      <ProgramDataBaseFileName>.\..\..\..\Temp\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\</ProgramDataBaseFileName>
     </ClCompile>
     <ResourceCompile>
       <Culture>0x0409</Culture>
@@ -212,11 +208,11 @@
     </ResourceCompile>
     <Bscmake>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <OutputFile>.\..\..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\libexpat.bsc</OutputFile>
+      <OutputFile>.\..\..\..\Temp\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\libexpat.bsc</OutputFile>
     </Bscmake>
     <Lib>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <OutputFile>.\..\..\..\build\vc10\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\libexpat.lib</OutputFile>
+      <OutputFile>.\..\..\..\Temp\$(SolutionName)\$(Configuration)\x64\$(ProjectName)\libexpat.lib</OutputFile>
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>

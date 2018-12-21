@@ -128,6 +128,7 @@ NB_CORE_EXPORT bool SamePaths(const UnicodeString APath1, const UnicodeString AP
 NB_CORE_EXPORT bool IsPathToSameFile(const UnicodeString APath1, const UnicodeString APath2);
 NB_CORE_EXPORT intptr_t CompareLogicalText(
   const UnicodeString S1, const UnicodeString S2, bool NaturalOrderNumericalSorting);
+NB_CORE_EXPORT bool ContainsTextSemiCaseSensitive(const UnicodeString Text, const UnicodeString SubText);
 NB_CORE_EXPORT bool IsReservedName(const UnicodeString AFileName);
 NB_CORE_EXPORT UnicodeString ApiPath(const UnicodeString APath);
 NB_CORE_EXPORT UnicodeString DisplayableStr(const RawByteString Str);
@@ -171,6 +172,7 @@ NB_CORE_EXPORT bool IsUWP();
 __removed TLibModule * FindModule(void * Instance);
 NB_CORE_EXPORT int64_t Round(double Number);
 NB_CORE_EXPORT bool TryRelativeStrToDateTime(const UnicodeString AStr, TDateTime &DateTime, bool Add);
+NB_CORE_EXPORT bool TryStrToDateTimeStandard(const UnicodeString S, TDateTime &Value);
 NB_CORE_EXPORT bool TryStrToSize(const UnicodeString ASizeStr, int64_t &ASize);
 NB_CORE_EXPORT UnicodeString SizeToStr(int64_t ASize);
 NB_CORE_EXPORT LCID GetDefaultLCID();
@@ -206,6 +208,9 @@ NB_CORE_EXPORT UnicodeString ChangeUrlProtocol(const UnicodeString S, const Unic
 NB_CORE_EXPORT void LoadScriptFromFile(const UnicodeString FileName, TStrings *Lines);
 NB_CORE_EXPORT UnicodeString StripEllipsis(const UnicodeString S);
 NB_CORE_EXPORT UnicodeString GetFileMimeType(const UnicodeString FileName);
+NB_CORE_EXPORT bool IsRealFile(const UnicodeString FileName);
+NB_CORE_EXPORT UnicodeString GetOSInfo();
+NB_CORE_EXPORT UnicodeString GetEnvironmentInfo();
 //---------------------------------------------------------------------------
 NB_CORE_EXPORT bool CompareFileName(const UnicodeString APath1, const UnicodeString APath2);
 NB_CORE_EXPORT bool ComparePaths(const UnicodeString APath1, const UnicodeString APath2);
@@ -481,7 +486,7 @@ NB_CORE_EXPORT bool ExtractCommonPath(const TStrings *AFiles, UnicodeString &APa
 NB_CORE_EXPORT bool UnixExtractCommonPath(const TStrings *AFiles, UnicodeString &APath);
 NB_CORE_EXPORT UnicodeString ExtractFileName(const UnicodeString APath, bool Unix);
 NB_CORE_EXPORT bool IsUnixRootPath(const UnicodeString APath);
-NB_CORE_EXPORT bool IsUnixHiddenFile(const UnicodeString APath);
+NB_CORE_EXPORT bool IsUnixHiddenFile(const UnicodeString AFileName);
 NB_CORE_EXPORT UnicodeString AbsolutePath(const UnicodeString Base, const UnicodeString APath);
 NB_CORE_EXPORT UnicodeString FromUnixPath(const UnicodeString APath);
 NB_CORE_EXPORT UnicodeString ToUnixPath(const UnicodeString APath);
