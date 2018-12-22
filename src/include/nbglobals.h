@@ -387,6 +387,20 @@ inline constexpr void ignore_result(const T&)
 {
 }
 
+template<class T>
+struct add_const
+{
+  typedef T const type;
+};
+
+template<class T> struct
+add_const<T&>
+{
+  typedef T& type;
+};
+
+template<class T> using add_const_t = typename add_const<T>::type;
+
 } // namespace nb
 
 #endif // if defined(__cplusplus)
