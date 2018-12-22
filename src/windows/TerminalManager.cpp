@@ -1635,18 +1635,18 @@ TRemoteFile * __fastcall TTerminalManager::CheckRights(
   TRemoteFile * File;
   try
   {
-    Terminal->LogEvent(FORMAT(L"Checking %s \"%s\"...", (LowerCase(EntryType), FileName)));
+    Terminal->LogEvent(FORMAT(L"Checking %s \"%s\"...", LowerCase(EntryType), FileName));
     Terminal->ReadFile(FileName, File);
     FileOwner.reset(File);
     int ForbiddenRights = TRights::rfGroupWrite | TRights::rfOtherWrite;
     if ((File->Rights->Number & ForbiddenRights) != 0)
     {
-      Terminal->LogEvent(FORMAT(L"%s \"%s\" exists, but has incorrect permissions %s.", (EntryType, FileName, File->Rights->Octal)));
+      Terminal->LogEvent(FORMAT(L"%s \"%s\" exists, but has incorrect permissions %s.", EntryType, FileName, File->Rights->Octal));
       WrongRights = true;
     }
     else
     {
-      Terminal->LogEvent(FORMAT(L"%s \"%s\" exists and has correct permissions %s.", (EntryType, FileName, File->Rights->Octal)));
+      Terminal->LogEvent(FORMAT(L"%s \"%s\" exists and has correct permissions %s.", EntryType, FileName, File->Rights->Octal));
     }
   }
   catch (Exception & E)
@@ -1721,7 +1721,7 @@ bool __fastcall TTerminalManager::UploadPublicKey(
           (MessageDialog(NotOpenSSHMessage, qtConfirmation, qaOK | qaCancel, HELP_LOGIN_AUTHORIZED_KEYS) == qaOK))
       {
         Terminal->Log->AddSeparator();
-        Terminal->LogEvent(FORMAT(L"Adding public key line to \"%s\" file:\n%s", (AuthorizedKeysFilePath, Line)));
+        Terminal->LogEvent(FORMAT(L"Adding public key line to \"%s\" file:\n%s", AuthorizedKeysFilePath, Line));
 
         // Ad-hoc terminal
         if (FAuthenticateForm != NULL)
@@ -1739,7 +1739,7 @@ bool __fastcall TTerminalManager::UploadPublicKey(
           SshFolderProperties.Rights = SshFolderRights;
           SshFolderProperties.Valid = TValidProperties() << vpRights;
 
-          Terminal->LogEvent(FORMAT(L"Trying to create \"%s\" folder with permissions %s...", (SshFolder, SshFolderRights.Octal)));
+          Terminal->LogEvent(FORMAT(L"Trying to create \"%s\" folder with permissions %s...", SshFolder, SshFolderRights.Octal));
           Terminal->CreateDirectory(SshFolderAbsolutePath, &SshFolderProperties);
         }
 
@@ -1764,7 +1764,7 @@ bool __fastcall TTerminalManager::UploadPublicKey(
           AuthorizedKeysFileFile->FullFileName = AuthorizedKeysFileAbsolutePath;
           std::unique_ptr<TStrings> Files(new TStringList());
           Files->AddObject(AuthorizedKeysFileAbsolutePath, AuthorizedKeysFileFile.get());
-          Terminal->LogEvent(FORMAT(L"Downloading current \"%s\" file...", (AuthorizedKeysFile)));
+          Terminal->LogEvent(FORMAT(L"Downloading current \"%s\" file...", AuthorizedKeysFile));
           Terminal->CopyToLocal(Files.get(), TemporaryDir, &CopyParam, cpNoConfirmation, NULL);
           // Overload with Encoding parameter work incorrectly, when used on a file without BOM
           AuthorizedKeys = TFile::ReadAllText(TemporaryAuthorizedKeysFile);
@@ -1780,24 +1780,24 @@ bool __fastcall TTerminalManager::UploadPublicKey(
           {
             if (StartsStr(Prefix, AuthorizedKeysLines->Strings[Index]))
             {
-              Terminal->LogEvent(FORMAT(L"\"%s\" file already contains public key line:\n%s", (AuthorizedKeysFile, AuthorizedKeysLines->Strings[Index])));
+              Terminal->LogEvent(FORMAT(L"\"%s\" file already contains public key line:\n%s", AuthorizedKeysFile, AuthorizedKeysLines->Strings[Index]));
               Updated = false;
             }
           }
 
           if (Updated)
           {
-            Terminal->LogEvent(FORMAT(L"\"%s\" file does not contain the public key line yet.", (AuthorizedKeysFile)));
+            Terminal->LogEvent(FORMAT(L"\"%s\" file does not contain the public key line yet.", AuthorizedKeysFile));
             if (!EndsStr(L"\n", AuthorizedKeys))
             {
-              Terminal->LogEvent(FORMAT(L"Adding missing trailing new line to \"%s\" file...", (AuthorizedKeysFile)));
+              Terminal->LogEvent(FORMAT(L"Adding missing trailing new line to \"%s\" file...", AuthorizedKeysFile));
               AuthorizedKeys += L"\n";
             }
           }
         }
         else
         {
-          Terminal->LogEvent(FORMAT(L"Creating new \"%s\" file...", (AuthorizedKeysFile)));
+          Terminal->LogEvent(FORMAT(L"Creating new \"%s\" file...", AuthorizedKeysFile));
           CopyParam.PreserveRights = true;
           CopyParam.Rights.Number = TRights::rfUserRead | TRights::rfUserWrite;
         }
@@ -1809,7 +1809,7 @@ bool __fastcall TTerminalManager::UploadPublicKey(
           TFile::WriteAllText(TemporaryAuthorizedKeysFile, AuthorizedKeys);
           std::unique_ptr<TStrings> Files(new TStringList());
           Files->Add(TemporaryAuthorizedKeysFile);
-          Terminal->LogEvent(FORMAT(L"Uploading updated \"%s\" file...", (AuthorizedKeysFile)));
+          Terminal->LogEvent(FORMAT(L"Uploading updated \"%s\" file...", AuthorizedKeysFile));
           Terminal->CopyToRemote(Files.get(), SshFolderAbsolutePath, &CopyParam, cpNoConfirmation, NULL);
         }
       }
