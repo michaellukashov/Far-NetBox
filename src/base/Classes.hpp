@@ -226,8 +226,8 @@ public:
   static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TObjectList); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TObjectList) || TList::is(Kind); }
 public:
-  explicit TObjectList(TObjectClassId Kind = OBJECT_CLASS_TObjectList);
-  virtual ~TObjectList();
+  explicit TObjectList(TObjectClassId Kind = OBJECT_CLASS_TObjectList) noexcept;
+  virtual ~TObjectList() noexcept;
 
   template<class T>
   T *GetAs(intptr_t Index) const { return dyn_cast<T>(GetObj(Index)); }

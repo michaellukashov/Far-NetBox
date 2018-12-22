@@ -275,13 +275,13 @@ void TList::Sort()
 }
 
 
-TObjectList::TObjectList(TObjectClassId Kind) :
+TObjectList::TObjectList(TObjectClassId Kind) noexcept :
   TList(Kind),
   FOwnsObjects(true)
 {
 }
 
-TObjectList::~TObjectList()
+TObjectList::~TObjectList() noexcept
 {
   TList::Clear();
 }
