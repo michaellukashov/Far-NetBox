@@ -521,7 +521,7 @@ scope_guard<F, F2> make_try_finally(F&& f, F2&& f2) { return scope_guard<F, F2>(
   { volatile const auto ANONYMOUS_VARIABLE(try_finally) = detail::make_try_finally([&]()
 
 #define __finally \
-  [&]() /* lambda body here */
+  [&]() // lambda body here
 
 #define end_try__finally ); }
 
@@ -571,7 +571,7 @@ class uncaught_exceptions_counter
 {
 public:
   bool is_new() const noexcept { return std::uncaught_exceptions() > m_Count; }
-  int m_Count{ std::uncaught_exceptions() }; // int... "a camel is a horse designed by a committee" :(
+  int m_Count{std::uncaught_exceptions()}; // int... "a camel is a horse designed by a committee" :(
 };
 
 enum class scope_type
@@ -599,7 +599,7 @@ public:
 
 private:
   F m_f;
-  movable<bool> m_Active{ true };
+  movable<bool> m_Active{true};
   uncaught_exceptions_counter m_Ec;
 };
 
