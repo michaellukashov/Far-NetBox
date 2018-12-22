@@ -474,9 +474,9 @@ protected:
     TFileOperationProgressType *OperationProgress, const UnicodeString AMessage = L"");
   void DoSynchronizeCollectDirectory(const UnicodeString ALocalDirectory,
     const UnicodeString ARemoteDirectory, TSynchronizeMode Mode,
-    const TCopyParamType *CopyParam, intptr_t Params,
+    const TCopyParamType *CopyParam, intptr_t AParams,
     TSynchronizeDirectoryEvent OnSynchronizeDirectory,
-    TSynchronizeOptions *Options, intptr_t Level, TSynchronizeChecklist *Checklist);
+    TSynchronizeOptions *Options, intptr_t AFlags, TSynchronizeChecklist *Checklist);
   bool LocalFindFirstLoop(const UnicodeString ADirectory, TSearchRecChecked & SearchRec);
   bool LocalFindNextLoop(TSearchRecChecked & SearchRec);
   bool DoAllowLocalFileTransfer(
@@ -560,7 +560,7 @@ protected:
   UnicodeString DecryptPassword(const RawByteString APassword) const;
   UnicodeString GetRemoteFileInfo(TRemoteFile *AFile) const;
   void LogRemoteFile(TRemoteFile *AFile);
-  UnicodeString FormatFileDetailsForLog(const UnicodeString AFileName, const TDateTime &AModification, int64_t Size);
+  UnicodeString FormatFileDetailsForLog(const UnicodeString AFileName, const TDateTime &AModification, int64_t Size) const;
   void LogFileDetails(const UnicodeString AFileName, const TDateTime &AModification, int64_t Size);
   void LogFileDone(TFileOperationProgressType *OperationProgress, const UnicodeString DestFileName);
   void LogTotalTransferDetails(
