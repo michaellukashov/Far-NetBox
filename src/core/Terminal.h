@@ -36,7 +36,7 @@ class TCallbackGuard;
 class TParallelOperation;
 class TCollectedFileList;
 struct TLocalFileHandle;
-typedef std::vector<__int64> TCalculatedSizes;
+typedef std::vector<int64_t> TCalculatedSizes;
 //---------------------------------------------------------------------------
 #if 0
 typedef void (__closure *TQueryUserEvent)
@@ -118,8 +118,8 @@ typedef nb::FastDelegate2<void,
   const UnicodeString FileName, bool Alternative, int & Deleted);
 typedef void (__closure *TDeleteLocalFileEvent)(
 #endif // #if 0
-typedef nb::FastDelegate2<void,
-  UnicodeString /*FileName*/, bool /*Alternative*/> TDeleteLocalFileEvent;
+typedef nb::FastDelegate3<void,
+  UnicodeString /*FileName*/, bool /*Alternative*/, int & /*Deleted*/> TDeleteLocalFileEvent;
 #if 0
 typedef int (__closure *TDirectoryModifiedEvent)
   (TTerminal * Terminal, const UnicodeString Directory, bool SubDirs);
@@ -354,7 +354,7 @@ private:
   rde::set<UnicodeString> FFoldersScannedForEncryptedFiles;
   RawByteString FEncryptKey;
   TFileOperationProgressType::TPersistence * FOperationProgressPersistence{nullptr};
-  TOnceDoneOperation FOperationProgressOnceDoneOperation;
+  TOnceDoneOperation FOperationProgressOnceDoneOperation{odoIdle};
 
 public:
   void CommandError(Exception *E, const UnicodeString AMsg);
@@ -391,10 +391,10 @@ public:
   TRemoteTokenList * GetMembership();
 
 protected:
-  bool FReadCurrentDirectoryPending;
-  bool FReadDirectoryPending;
-  bool FTunnelOpening;
-  TCustomFileSystem *FFileSystem;
+  bool FReadCurrentDirectoryPending{false};
+  bool FReadDirectoryPending{false};
+  bool FTunnelOpening{false};
+  TCustomFileSystem *FFileSystem{nullptr};
 
   void DoStartReadDirectory();
   void DoReadDirectoryProgress(intptr_t Progress, intptr_t ResolvedLinks, bool &Cancel);
@@ -449,7 +449,7 @@ protected:
     int64_t *AMTime, int64_t *AATime, int64_t *ASize,
     bool TryWriteReadOnly = true);
   void TerminalOpenLocalFile(
-    const UnicodeString AFileName, unsigned int Access, TLocalFileHandle & Handle, bool TryWriteReadOnly = true);
+    const UnicodeString AFileName, uintptr_t Access, TLocalFileHandle & Handle, bool TryWriteReadOnly = true);
   bool AllowLocalFileTransfer(
     const UnicodeString AFileName, const TSearchRecSmart * SearchRec,
     const TCopyParamType *CopyParam, TFileOperationProgressType *OperationProgress);
@@ -460,14 +460,7 @@ protected:
     const TRemoteFile *AFile, void *AParam);
   bool DoCalculateDirectorySize(const UnicodeString AFileName, TCalculateSizeParams * Params);
   void CalculateLocalFileSize(
-    const UnicodeString AFileName, const TSearchRecSmart & Rec, /*__int64*/ void * Size);
-  bool DoCalculateDirectorySize(const UnicodeString AFileName,
-    const TRemoteFile *AFile, TCalculateSizeParams *Params);
-  void CalculateLocalFileSize(const UnicodeString AFileName,
-    const TSearchRec &Rec, /*int64_t*/ void *Size);
-  bool CalculateLocalFilesSize(TStrings *AFileList,
-    const TCopyParamType *CopyParam, bool AllowDirs, TStrings *Files,
-    int64_t &Size);
+    UnicodeString AFileName, const TSearchRecSmart & Rec, /*int64_t*/ void * Size);
   TBatchOverwrite EffectiveBatchOverwrite(
     const UnicodeString ASourceFullFileName, const TCopyParamType *CopyParam, intptr_t Params,
     TFileOperationProgressType *OperationProgress, bool Special) const;
@@ -635,6 +628,7 @@ protected:
   bool IsFileEncrypted(const UnicodeString APath, bool EncryptNewFiles = false);
 
   __property TFileOperationProgressType *OperationProgress = { read = FOperationProgress };
+  TFileOperationProgressType*& OperationProgress{FOperationProgress};
 
   const TFileOperationProgressType *GetOperationProgress() const { return FOperationProgress; }
   TFileOperationProgressType *GetOperationProgress() { return FOperationProgress; }
@@ -742,7 +736,7 @@ public:
   void UnlockFiles(TStrings *AFileList);
   TRemoteFileList * DirectoryFileList(const UnicodeString APath, TDateTime Timestamp, bool CanLoad);
   void MakeLocalFileList(
-    const UnicodeString AFileName, const TSearchRecSmart & Rec, void * Param);
+    UnicodeString AFileName, const TSearchRecSmart & Rec, void * Param);
   bool FileOperationLoopQuery(Exception &E,
     TFileOperationProgressType *OperationProgress, const UnicodeString Message,
     uintptr_t AFlags, const UnicodeString SpecialRetry = L"", const UnicodeString HelpKeyword = L"");
@@ -796,6 +790,7 @@ public:
   __property TNotifyEvent OnStartReadDirectory = { read = FOnStartReadDirectory, write = FOnStartReadDirectory };
   __property TReadDirectoryProgressEvent OnReadDirectoryProgress = { read = FOnReadDirectoryProgress, write = FOnReadDirectoryProgress };
   __property TDeleteLocalFileEvent OnDeleteLocalFile = { read = FOnDeleteLocalFile, write = FOnDeleteLocalFile };
+  TDeleteLocalFileEvent &OnDeleteLocalFile{FOnDeleteLocalFile};
   __property TNotifyEvent OnInitializeLog = { read = FOnInitializeLog, write = FOnInitializeLog };
   __property const TRemoteTokenList * Groups = { read = GetGroups };
   __property const TRemoteTokenList * Users = { read = GetUsers };
@@ -805,6 +800,7 @@ public:
   __property TCurrentFSProtocol FSProtocol = { read = FFSProtocol };
   __property bool UseBusyCursor = { read = FUseBusyCursor, write = FUseBusyCursor };
   __property UnicodeString UserName = { read=GetUserName };
+  ROProperty<UnicodeString> UserName{nb::bind(&TTerminal::TerminalGetUserName, this)};
   __property bool IsCapable[TFSCapability Capability] = { read = GetIsCapable };
   __property bool AreCachesEmpty = { read = GetAreCachesEmpty };
   __property bool CommandSessionOpened = { read = GetCommandSessionOpened };
@@ -813,6 +809,7 @@ public:
   __property TStrings * FixedPaths = { read = GetFixedPaths };
   __property bool ResolvingSymlinks = { read = GetResolvingSymlinks };
   __property UnicodeString Password = { read = GetPassword };
+  ROProperty<UnicodeString> Password{nb::bind(&TTerminal::GetPassword, this)};
   __property bool StoredCredentialsTried = { read = GetStoredCredentialsTried };
   __property TQueryUserEvent OnQueryUser = { read = FOnQueryUser, write = FOnQueryUser };
   __property TPromptUserEvent OnPromptUser = { read = FOnPromptUser, write = FOnPromptUser };
@@ -984,11 +981,11 @@ struct NB_CORE_EXPORT TCalculateSizeStats : public TObject
 {
   TCalculateSizeStats();
 
-  intptr_t Files;
-  intptr_t Directories;
-  intptr_t SymLinks;
-  TStrings *FoundFiles;
-  TCalculatedSizes * CalculatedSizes;
+  intptr_t Files{0};
+  intptr_t Directories{0};
+  intptr_t SymLinks{0};
+  TStrings *FoundFiles{nullptr};
+  TCalculatedSizes * CalculatedSizes{nullptr};
 };
 //---------------------------------------------------------------------------
 NB_DEFINE_CLASS_ID(TCalculateSizeParams);
@@ -1033,10 +1030,10 @@ public:
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TMakeLocalFileListParams) || TObject::is(Kind); }
 public:
   TMakeLocalFileListParams() : TObject(OBJECT_CLASS_TMakeLocalFileListParams), FileList(nullptr), FileTimes(nullptr), IncludeDirs(false), Recursive(false) {}
-  TStrings *FileList;
-  TDateTimes *FileTimes;
-  bool IncludeDirs;
-  bool Recursive;
+  TStrings *FileList{nullptr};
+  TDateTimes *FileTimes{nullptr};
+  bool IncludeDirs{false};
+  bool Recursive{false};
 };
 //---------------------------------------------------------------------------
 struct NB_CORE_EXPORT TSynchronizeOptions : public TObject

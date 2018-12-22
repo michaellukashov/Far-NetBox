@@ -625,6 +625,7 @@ public:
   RWProperty<UnicodeString> UserName{nb::bind(&TSessionData::SessionGetUserName, this), nb::bind(&TSessionData::SessionSetUserName, this)};
   __property UnicodeString UserNameExpanded  = { read = GetUserNameExpanded };
   __property UnicodeString Password  = { read = GetPassword, write = SetPassword };
+  RWProperty<UnicodeString> Password{nb::bind(&TSessionData::GetPassword, this), nb::bind(&TSessionData::SetPassword, this)};
   __property UnicodeString NewPassword  = { read = GetNewPassword, write = SetNewPassword };
   __property bool ChangePassword  = { read = FChangePassword, write = SetChangePassword };
   __property int PingInterval  = { read = FPingInterval, write = SetPingInterval };
@@ -653,10 +654,13 @@ public:
   __property UnicodeString GssLibCustom = { read = FGssLibCustom, write = SetGssLibCustom };
   __property UnicodeString PublicKeyFile  = { read = FPublicKeyFile, write = SetPublicKeyFile };
   __property UnicodeString Passphrase  = { read = GetPassphrase, write = SetPassphrase };
+  RWProperty<UnicodeString> Passphrase{nb::bind(&TSessionData::GetPassphrase, this), nb::bind(&TSessionData::SetPassphrase, this)};
   __property UnicodeString PuttyProtocol  = { read = FPuttyProtocol, write = SetPuttyProtocol };
+  RWProperty<UnicodeString> PuttyProtoco{nb::bind(&TSessionData::GetPuttyProtocol, this), nb::bind(&TSessionData::SetPuttyProtocol, this)};
   __property TFSProtocol FSProtocol = { read = FFSProtocol, write = SetFSProtocol  };
   RWProperty<TFSProtocol> FSProtocol{nb::bind(&TSessionData::GetFSProtocol, this), nb::bind(&TSessionData::SetFSProtocol, this)};
   __property UnicodeString FSProtocolStr  = { read = GetFSProtocolStr };
+  ROProperty<UnicodeString> FSProtocolStr{nb::bind(&TSessionData::GetFSProtocolStr, this)};
   __property bool Modified  = { read = FModified, write = FModified };
   __property bool CanLogin  = { read = GetCanLogin };
   __property bool ClearAliases = { read = FClearAliases, write = SetClearAliases };

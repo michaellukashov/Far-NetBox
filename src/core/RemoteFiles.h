@@ -35,12 +35,18 @@ public:
   intptr_t Compare(const TRemoteToken &rhs) const;
 
   __property UnicodeString Name = { read = FName, write = FName };
+  UnicodeString& Name{FName};
   __property bool NameValid = { read = GetNameValid };
+  ROProperty<bool> NameValid{nb::bind(&TRemoteToken::GetNameValid, this)};
   __property uintptr_t ID = { read = FID, write = SetID };
   __property bool IDValid = { read = FIDValid };
+  ROProperty<bool> IDValid{nb::bind(&TRemoteToken::GetIDValid, this)};
   __property bool IsSet  = { read = GetIsSet };
+  ROProperty<bool> IsSet{nb::bind(&TRemoteToken::GetIsSet, this)};
   __property UnicodeString LogText = { read = GetLogText };
+  ROProperty<UnicodeString> LogText{nb::bind(&TRemoteToken::GetLogText, this)};
   __property UnicodeString DisplayText = { read = GetDisplayText };
+  ROProperty<UnicodeString> DisplayText{nb::bind(&TRemoteToken::GetDisplayText, this)};
 
   UnicodeString GetName() const { return FName; }
   void SetName(const UnicodeString Value) { FName = Value; }
@@ -49,8 +55,8 @@ public:
 
 private:
   UnicodeString FName;
-  intptr_t FID;
-  bool FIDValid;
+  intptr_t FID{0};
+  bool FIDValid{false};
 
 public:
   void SetID(intptr_t Value);
@@ -92,30 +98,30 @@ public:
   static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TRemoteFile); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TRemoteFile) || TPersistent::is(Kind); }
 private:
-  TRemoteFileList *FDirectory;
+  TRemoteFileList *FDirectory{nullptr};
   TRemoteToken FOwner;
-  TModificationFmt FModificationFmt;
+  TModificationFmt FModificationFmt{};
   UnicodeString FFileName;
   UnicodeString FDisplayName;
-  TDateTime FModification;
-  TDateTime FLastAccess;
-  TRemoteToken FGroup;
-  TRemoteFile *FLinkedFile;
-  TRemoteFile *FLinkedByFile;
-  TRights *FRights;
-  TTerminal *FTerminal;
+  TDateTime FModification{};
+  TDateTime FLastAccess{};
+  TRemoteToken FGroup{};
+  TRemoteFile *FLinkedFile{nullptr};
+  TRemoteFile *FLinkedByFile{nullptr};
+  TRights *FRights{nullptr};
+  TTerminal *FTerminal{nullptr};
   UnicodeString FLinkTo;
   UnicodeString FHumanRights;
   UnicodeString FFullFileName;
   UnicodeString FTypeName;
-  bool FIsEncrypted;
-  int64_t FSize;
-  int64_t FINodeBlocks;
-  intptr_t FIconIndex;
-  intptr_t FIsHidden;
-  wchar_t FType;
-  bool FIsSymLink;
-  bool FCyclicLink;
+  bool FIsEncrypted{false};
+  int64_t FSize{0};
+  int64_t FINodeBlocks{0};
+  intptr_t FIconIndex{0};
+  intptr_t FIsHidden{0};
+  wchar_t FType{};
+  bool FIsSymLink{false};
+  bool FCyclicLink{false};
 
 public:
   intptr_t GetAttr() const;
@@ -142,6 +148,7 @@ public:
   bool GetIsThisDirectory() const;
   bool GetIsInaccesibleDirectory() const;
   UnicodeString GetExtension() const;
+  bool GetIsEncrypted() const { return FIsEncrypted; }
   UnicodeString GetUserModificationStr() const;
   void LoadTypeInfo() const;
   int64_t GetSize() const;
@@ -170,7 +177,9 @@ public:
   __property __int64 Size = { read = GetSize, write = FSize };
   RWProperty<int64_t> Size{nb::bind(&TRemoteFile::GetSize, this), nb::bind(&TRemoteFile::SetSize, this)};
   __property TRemoteToken Owner = { read = FOwner, write = FOwner };
+  TRemoteToken& Owner{FOwner};
   __property TRemoteToken Group = { read = FGroup, write = FGroup };
+  TRemoteToken& Group{FGroup};
   __property UnicodeString FileName = { read = FFileName, write = FFileName };
   RWProperty<UnicodeString> FileName{nb::bind(&TRemoteFile::GetFileName, this), nb::bind(&TRemoteFile::SetFileName, this)};
   __property UnicodeString DisplayName = { read = FDisplayName, write = FDisplayName };
@@ -184,6 +193,7 @@ public:
   __property bool IsSymLink = { read = FIsSymLink };
   ROProperty<bool> IsSymLink{nb::bind(&TRemoteFile::GetIsSymLink, this)};
   __property bool IsDirectory = { read = GetIsDirectory };
+  ROProperty<bool> IsDirectory{nb::bind(&TRemoteFile::GetIsDirectory, this)};
   __property TRemoteFile * LinkedFile = { read = GetLinkedFile, write = SetLinkedFile };
   __property UnicodeString LinkTo = { read = FLinkTo, write = FLinkTo };
   __property UnicodeString ListingStr = { read = GetListingStr, write = SetListingStr };
@@ -198,11 +208,17 @@ public:
   __property int IconIndex = { read = GetIconIndex };
   __property UnicodeString TypeName = { read = GetTypeName };
   __property bool IsHidden = { read = GetIsHidden, write = SetIsHidden };
+  ROProperty<bool> IsHidden{nb::bind(&TRemoteFile::GetIsHidden, this)};
   __property bool IsParentDirectory = { read = GetIsParentDirectory };
+  ROProperty<bool> IsParentDirectory{nb::bind(&TRemoteFile::GetIsParentDirectory, this)};
   __property bool IsThisDirectory = { read = GetIsThisDirectory };
+  ROProperty<bool> IsThisDirectory{nb::bind(&TRemoteFile::GetIsThisDirectory, this)};
   __property bool IsInaccesibleDirectory  = { read = GetIsInaccesibleDirectory };
+  ROProperty<bool> IsInaccesibleDirectory{nb::bind(&TRemoteFile::GetIsInaccesibleDirectory, this)};
   __property UnicodeString Extension  = { read = GetExtension };
+  ROProperty<UnicodeString> Extension{nb::bind(&TRemoteFile::GetExtension, this)};
   __property bool IsEncrypted  = { read = FIsEncrypted };
+  ROProperty<bool> IsEncrypted{nb::bind(&TRemoteFile::GetIsEncrypted, this)};
 
   TRemoteFileList *GetDirectory() const { return FDirectory; }
   void SetDirectory(TRemoteFileList *Value) { FDirectory = Value; }
@@ -493,6 +509,7 @@ public:
   __property UnicodeString ModeStr = { read = GetModeStr };
   __property UnicodeString SimplestStr = { read = GetSimplestStr };
   __property UnicodeString Octal = { read = GetOctal, write = SetOctal };
+  RWProperty<UnicodeString> Octal{nb::bind(&TRights::GetOctal, this), nb::bind(&TRights::SetOctal, this)};
   __property unsigned short Number = { read = GetNumber, write = SetNumber };
   __property unsigned short NumberSet = { read = FSet };
   __property unsigned short NumberUnset = { read = FUnset };
@@ -587,7 +604,7 @@ public:
   }
 
 private:
-  int64_t FValue;
+  int64_t FValue{0};
 };
 //---------------------------------------------------------------------------
 #if 0
@@ -603,11 +620,11 @@ public:
   TRights Rights;
   TRemoteToken Group;
   TRemoteToken Owner;
-  int64_t Modification; // unix time
-  int64_t LastAccess; // unix time
-  bool Encrypt;
-  bool Recursive;
-  bool AddXToDirectories;
+  int64_t Modification{0}; // unix time
+  int64_t LastAccess{0}; // unix time
+  bool Encrypt{false};
+  bool Recursive{false};
+  bool AddXToDirectories{false};
 
   TRemoteProperties();
   TRemoteProperties(const TRemoteProperties &rhp);

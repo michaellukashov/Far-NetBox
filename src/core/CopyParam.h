@@ -160,20 +160,35 @@ public:
   __property wchar_t InvalidCharsReplacement = { read = FInvalidCharsReplacement, write = FInvalidCharsReplacement };
   __property bool ReplaceInvalidChars = { read = GetReplaceInvalidChars, write = SetReplaceInvalidChars };
   __property UnicodeString LocalInvalidChars = { read = FLocalInvalidChars, write = SetLocalInvalidChars };
+  RWProperty<UnicodeString> LocalInvalidChars{nb::bind(&TCopyParamType::GetLocalInvalidChars, this), nb::bind(&TCopyParamType::SetLocalInvalidChars, this)};
   __property bool CalculateSize = { read = FCalculateSize, write = FCalculateSize };
+  bool& CalculateSize{FCalculateSize};
   __property UnicodeString FileMask = { read = FFileMask, write = FFileMask };
+  UnicodeString& FileMask{FFileMask};
   __property TFileMasks IncludeFileMask = { read = FIncludeFileMask, write = FIncludeFileMask };
+  TFileMasks& IncludeFileMask{FIncludeFileMask};
   __property TStrings *TransferSkipList = { read = GetTransferSkipList, write = SetTransferSkipList };
+  RWProperty<TStrings *>TransferSkipList{nb::bind(&TCopyParamType::GetTransferSkipList, this), nb::bind(&TCopyParamType::SetTransferSkipList, this)};
   __property UnicodeString TransferResumeFile = { read = FTransferResumeFile, write = FTransferResumeFile };
+  UnicodeString& TransferResumeFile{FTransferResumeFile};
   __property bool ClearArchive = { read = FClearArchive, write = FClearArchive };
+  bool& ClearArchive{FClearArchive};
   __property bool RemoveCtrlZ = { read = FRemoveCtrlZ, write = FRemoveCtrlZ };
+  bool& RemoveCtrlZ{FRemoveCtrlZ};
   __property bool RemoveBOM = { read = FRemoveBOM, write = FRemoveBOM };
+  bool& RemoveBOM{FRemoveBOM};
   __property uintptr_t CPSLimit = { read = FCPSLimit, write = FCPSLimit };
+  uintptr_t& CPSLimit{FCPSLimit};
   __property bool NewerOnly = { read = FNewerOnly, write = FNewerOnly };
+  bool& NewerOnly{FNewerOnly};
   __property bool EncryptNewFiles = { read = FEncryptNewFiles, write = FEncryptNewFiles };
+  bool& EncryptNewFiles{FEncryptNewFiles};
   __property bool ExcludeHiddenFiles = { read = FExcludeHiddenFiles, write = FExcludeHiddenFiles };
+  bool& ExcludeHiddenFiles{FExcludeHiddenFiles};
   __property bool ExcludeEmptyDirectories = { read = FExcludeEmptyDirectories, write = FExcludeEmptyDirectories };
+  bool& ExcludeEmptyDirectories{FExcludeEmptyDirectories};
   __property __int64 Size = { read = FSize, write = FSize };
+  int64_t& Size{FSize};
 
   const TFileMasks &GetAsciiFileMask() const { return FAsciiFileMask; }
   TFileMasks &GetAsciiFileMask() { return FAsciiFileMask; }
