@@ -91,7 +91,7 @@ static void random_stir(void)
         for (p = 0; p < POOLSIZE; p += HASHSIZE) {
             printf("   ");
             for (q = 0; q < HASHSIZE; q += 4) {
-                printf(" %08x", *(word32 *)(pool.pool + p + q));
+                printf(" %08x", *(word32 *)(pool.pool + p + q));            
             }
             printf("\n");
         }
@@ -322,10 +322,10 @@ void random_unref(void)
     MPEXT_PUTTY_SECTION_ENTER;
     assert(random_active > 0);
     if (random_active == 1) {
-#ifndef MPEXT
+        #ifndef MPEXT
         // We control this on our own in PuttyFinalize()
         random_save_seed();
-#endif
+        #endif
         expire_timer_context(&pool);
     }
     random_active--;

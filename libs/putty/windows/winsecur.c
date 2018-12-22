@@ -36,13 +36,13 @@ int got_advapi(void)
         attempted = TRUE;
         advapi = load_system32_dll("advapi32.dll");
         successful = advapi &&
-            PUTTY_GET_WINDOWS_FUNCTION(advapi, GetSecurityInfo) &&
-            PUTTY_GET_WINDOWS_FUNCTION(advapi, SetSecurityInfo) &&
-            PUTTY_GET_WINDOWS_FUNCTION(advapi, OpenProcessToken) &&
-            PUTTY_GET_WINDOWS_FUNCTION(advapi, GetTokenInformation) &&
-            PUTTY_GET_WINDOWS_FUNCTION(advapi, InitializeSecurityDescriptor) &&
-            PUTTY_GET_WINDOWS_FUNCTION(advapi, SetSecurityDescriptorOwner) &&
-            PUTTY_GET_WINDOWS_FUNCTION(advapi, SetEntriesInAclA);
+            GET_WINDOWS_FUNCTION(advapi, GetSecurityInfo) &&
+            GET_WINDOWS_FUNCTION(advapi, SetSecurityInfo) &&
+            GET_WINDOWS_FUNCTION(advapi, OpenProcessToken) &&
+            GET_WINDOWS_FUNCTION(advapi, GetTokenInformation) &&
+            GET_WINDOWS_FUNCTION(advapi, InitializeSecurityDescriptor) &&
+            GET_WINDOWS_FUNCTION(advapi, SetSecurityDescriptorOwner) &&
+            GET_WINDOWS_FUNCTION(advapi, SetEntriesInAclA);
     }
     return successful;
 }
@@ -108,8 +108,8 @@ int getsids(char **error)
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wmissing-braces"
 #endif
-    SID_IDENTIFIER_AUTHORITY world_auth = { SECURITY_WORLD_SID_AUTHORITY };
-    SID_IDENTIFIER_AUTHORITY nt_auth = { SECURITY_NT_AUTHORITY };
+    SID_IDENTIFIER_AUTHORITY world_auth = SECURITY_WORLD_SID_AUTHORITY;
+    SID_IDENTIFIER_AUTHORITY nt_auth = SECURITY_NT_AUTHORITY;
 #ifdef __clang__
 #pragma clang diagnostic pop
 #endif

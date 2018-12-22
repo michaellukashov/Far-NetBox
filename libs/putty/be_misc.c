@@ -100,7 +100,7 @@ void log_proxy_stderr(Plug plug, bufchain *buf, const void *vdata, int len)
         /*
          * Advance past the newline.
          */
-        pos += (int)(nlpos+1 - (data + pos));
+        pos += nlpos+1 - (data + pos);
     }
 
     /*

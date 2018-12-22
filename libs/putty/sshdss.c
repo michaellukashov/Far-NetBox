@@ -15,10 +15,10 @@ static void sha_mpint(SHA_State * s, Bignum b)
     int len;
     len = (bignum_bitcount(b) + 8) / 8;
     PUT_32BIT(lenbuf, len);
-    putty_SHA_Bytes(s, lenbuf, 4);
+    SHA_Bytes(s, lenbuf, 4);
     while (len-- > 0) {
 	lenbuf[0] = bignum_byte(b, len);
-	putty_SHA_Bytes(s, lenbuf, 1);
+	SHA_Bytes(s, lenbuf, 1);
     }
     smemclr(lenbuf, sizeof(lenbuf));
 }
@@ -29,10 +29,10 @@ static void sha512_mpint(SHA512_State * s, Bignum b)
     int len;
     len = (bignum_bitcount(b) + 8) / 8;
     PUT_32BIT(lenbuf, len);
-    putty_SHA512_Bytes(s, lenbuf, 4);
+    SHA512_Bytes(s, lenbuf, 4);
     while (len-- > 0) {
 	lenbuf[0] = bignum_byte(b, len);
-	putty_SHA512_Bytes(s, lenbuf, 1);
+	SHA512_Bytes(s, lenbuf, 1);
     }
     smemclr(lenbuf, sizeof(lenbuf));
 }
@@ -260,7 +260,7 @@ static int dss_verifysig(void *key, const char *sig, int siglen,
     /*
      * Step 2. u1 <- SHA(message) * w mod q.
      */
-    putty_SHA_Simple(data, datalen, (unsigned char *)hash);
+    SHA_Simple(data, datalen, (unsigned char *)hash);
     p = hash;
     slen = 20;
     sha = get160(&p, &slen);
@@ -394,11 +394,11 @@ static void *dss_createkey(const struct ssh_signkey *self,
     hashlen = -1;
     getstring(&pb, &priv_len, &hash, &hashlen);
     if (hashlen == 20) {
-	putty_SHA_Init(&s);
+	SHA_Init(&s);
 	sha_mpint(&s, dss->p);
 	sha_mpint(&s, dss->q);
 	sha_mpint(&s, dss->g);
-	putty_SHA_Final(&s, digest);
+	SHA_Final(&s, digest);
 	if (0 != memcmp(hash, digest, 20)) {
 	    dss_freekey(dss);
 	    return NULL;
@@ -567,21 +567,21 @@ Bignum *dss_gen_k(const char *id_string, Bignum modulus, Bignum private_key,
     /*
      * Hash some identifying text plus x.
      */
-    putty_SHA512_Init(&ss);
-    putty_SHA512_Bytes(&ss, id_string, (int)strlen(id_string) + 1);
+    SHA512_Init(&ss);
+    SHA512_Bytes(&ss, id_string, strlen(id_string) + 1);
     sha512_mpint(&ss, private_key);
-    putty_SHA512_Final(&ss, digest512);
+    SHA512_Final(&ss, digest512);
 
     /*
      * Now hash that digest plus the message hash.
      */
-    putty_SHA512_Init(&ss);
-    putty_SHA512_Bytes(&ss, digest512, sizeof(digest512));
-    putty_SHA512_Bytes(&ss, digest, digest_len);
+    SHA512_Init(&ss);
+    SHA512_Bytes(&ss, digest512, sizeof(digest512));
+    SHA512_Bytes(&ss, digest, digest_len);
 
     while (1) {
         SHA512_State ss2 = ss;         /* structure copy */
-        putty_SHA512_Final(&ss2, digest512);
+        SHA512_Final(&ss2, digest512);
 
         smemclr(&ss2, sizeof(ss2));
 
@@ -601,7 +601,7 @@ Bignum *dss_gen_k(const char *id_string, Bignum modulus, Bignum private_key,
         /* Very unlikely we get here, but if so, k was unsuitable. */
         freebn(k);
         /* Perturb the hash to think of a different k. */
-        putty_SHA512_Bytes(&ss, "x", 1);
+        SHA512_Bytes(&ss, "x", 1);
         /* Go round and try again. */
     }
 }
@@ -615,7 +615,7 @@ static unsigned char *dss_sign(void *key, const char *data, int datalen,
     unsigned char *bytes;
     int nbytes, i;
 
-    putty_SHA_Simple(data, datalen, digest);
+    SHA_Simple(data, datalen, digest);
 
     k = dss_gen_k("DSA deterministic k generator", dss->q, dss->x,
                   digest, sizeof(digest));

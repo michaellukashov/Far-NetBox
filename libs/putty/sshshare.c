@@ -345,7 +345,7 @@ static unsigned share_find_unused_id
     while (high - low > 1) {
 	mid = (high + low) / 2;
 	cs = index234(sharestate->connections, mid);
-	if (cs && cs->id == first + (mid - low_orig))
+	if (cs->id == first + (mid - low_orig))
 	    low = mid;		       /* this one is still in the sequence */
 	else
 	    high = mid;		       /* this one is past the end */
@@ -774,23 +774,19 @@ static void share_try_cleanup(struct ssh_sharing_connstate *cs)
      * CHANNEL_OPEN from the server but not passed back a response
      * from downstream, should be responded to with OPEN_FAILURE.
      */
-    static const char reason[] = "PuTTY downstream no longer available";
-    static const char lang[] = "en";
-    const int strlen_reason = (int)strlen(reason);
-    const int strlen_lang = (int)strlen(lang);
-    static const char request[] = "cancel-tcpip-forward";
-    const int strlen_request = (int)strlen(request);
     while ((hc = (struct share_halfchannel *)
             index234(cs->halfchannels, 0)) != NULL) {
+        static const char reason[] = "PuTTY downstream no longer available";
+        static const char lang[] = "en";
         unsigned char packet[256];
         int pos = 0;
 
         PUT_32BIT(packet + pos, hc->server_id); pos += 4;
         PUT_32BIT(packet + pos, SSH2_OPEN_CONNECT_FAILED); pos += 4;
-        PUT_32BIT(packet + pos, strlen_reason); pos += 4;
-        memcpy(packet + pos, reason, strlen_reason); pos += (int)strlen(reason);
-        PUT_32BIT(packet + pos, strlen_lang); pos += 4;
-        memcpy(packet + pos, lang, strlen_lang); pos += (int)strlen(lang);
+        PUT_32BIT(packet + pos, strlen(reason)); pos += 4;
+        memcpy(packet + pos, reason, strlen(reason)); pos += strlen(reason);
+        PUT_32BIT(packet + pos, strlen(lang)); pos += 4;
+        memcpy(packet + pos, lang, strlen(lang)); pos += strlen(lang);
         ssh_send_packet_from_downstream(cs->parent->ssh, cs->id,
                                         SSH2_MSG_CHANNEL_OPEN_FAILURE,
                                         packet, pos, "cleanup after"
@@ -845,18 +841,19 @@ static void share_try_cleanup(struct ssh_sharing_connstate *cs)
     for (i = 0; (fwd = (struct share_forwarding *)
                  index234(cs->forwardings, i)) != NULL; i++) {
         if (fwd->active) {
+            static const char request[] = "cancel-tcpip-forward";
             char *packet = snewn(256 + strlen(fwd->host), char);
             int pos = 0;
 
-            PUT_32BIT(packet + pos, strlen_request); pos += 4;
-            memcpy(packet + pos, request, strlen_request);
-            pos += strlen_request;
+            PUT_32BIT(packet + pos, strlen(request)); pos += 4;
+            memcpy(packet + pos, request, strlen(request));
+            pos += strlen(request);
 
             packet[pos++] = 0;         /* !want_reply */
 
             PUT_32BIT(packet + pos, strlen(fwd->host)); pos += 4;
             memcpy(packet + pos, fwd->host, strlen(fwd->host));
-            pos += (int)strlen(fwd->host);
+            pos += strlen(fwd->host);
 
             PUT_32BIT(packet + pos, fwd->port); pos += 4;
 
@@ -896,8 +893,7 @@ static void share_disconnect(struct ssh_sharing_connstate *cs,
                              const char *message)
 {
     static const char lang[] = "en";
-    int msglen = (int)strlen(message);
-    int langlen = (int)strlen(lang);
+    int msglen = strlen(message);
     char *packet = snewn(msglen + 256, char);
     int pos = 0;
 
@@ -908,7 +904,7 @@ static void share_disconnect(struct ssh_sharing_connstate *cs,
     pos += msglen;
 
     PUT_32BIT(packet + pos, strlen(lang)); pos += 4;
-    memcpy(packet + pos, lang, langlen); pos += langlen;
+    memcpy(packet + pos, lang, strlen(lang)); pos += strlen(lang);
 
     send_packet_to_downstream(cs, SSH2_MSG_DISCONNECT, packet, pos, NULL);
 
@@ -1154,7 +1150,7 @@ void share_setup_x11_channel(void *csv, void *chanv,
     /*
      * Send on a CHANNEL_OPEN to downstream.
      */
-    pktlen = 27 + (int)strlen(peer_addr);
+    pktlen = 27 + strlen(peer_addr);
     pkt = snewn(pktlen, unsigned char);
     PUT_32BIT(pkt, 3);                 /* strlen("x11") */
     memcpy(pkt+4, "x11", 3);
@@ -1714,8 +1710,8 @@ static void share_got_pkt_from_downstream(struct ssh_sharing_connstate *cs,
                  * containing our own auth data, and send that to the
                  * server.
                  */
-                protolen = (int)strlen(chan->x11_auth_upstream->protoname);
-                datalen = (int)strlen(chan->x11_auth_upstream->datastring);
+                protolen = strlen(chan->x11_auth_upstream->protoname);
+                datalen = strlen(chan->x11_auth_upstream->datastring);
                 pktlen = 29+protolen+datalen;
                 pkt = snewn(pktlen, unsigned char);
                 PUT_32BIT(pkt, server_id);
@@ -1893,7 +1889,7 @@ static void share_send_verstring(struct ssh_sharing_connstate *cs)
 {
     char *fullstring = dupcat("SSHCONNECTION@putty.projects.tartarus.org-2.0-",
                               cs->parent->server_verstring, "\015\012", NULL);
-    sk_write(cs->sock, fullstring, (int)strlen(fullstring));
+    sk_write(cs->sock, fullstring, strlen(fullstring));
     sfree(fullstring);
 
     cs->sent_verstring = TRUE;

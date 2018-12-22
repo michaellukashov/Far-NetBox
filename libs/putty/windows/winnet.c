@@ -18,7 +18,7 @@
 #include "network.h"
 #include "tree234.h"
 
-#if defined(MPEXT) && !defined(_MSC_VER)
+#ifdef MPEXT
 // ws2tcpip.h does not compile without _MSC_VER defined
 #define _MSC_VER 1000
 #endif
@@ -161,58 +161,58 @@ static int cmpforsearch(void *av, void *bv)
     return 0;
 }
 
-PUTTY_DECL_WINDOWS_FUNCTION(static, int, WSAStartup, (WORD, LPWSADATA));
-PUTTY_DECL_WINDOWS_FUNCTION(static, int, WSACleanup, (void));
-PUTTY_DECL_WINDOWS_FUNCTION(static, int, closesocket, (SOCKET));
-PUTTY_DECL_WINDOWS_FUNCTION(static, u_long, ntohl, (u_long));
-PUTTY_DECL_WINDOWS_FUNCTION(static, u_long, htonl, (u_long));
-PUTTY_DECL_WINDOWS_FUNCTION(static, u_short, htons, (u_short));
-PUTTY_DECL_WINDOWS_FUNCTION(static, u_short, ntohs, (u_short));
-PUTTY_DECL_WINDOWS_FUNCTION(static, int, gethostname, (char *, int));
-PUTTY_DECL_WINDOWS_FUNCTION(static, struct hostent FAR *, gethostbyname,
+DECL_WINDOWS_FUNCTION(static, int, WSAStartup, (WORD, LPWSADATA));
+DECL_WINDOWS_FUNCTION(static, int, WSACleanup, (void));
+DECL_WINDOWS_FUNCTION(static, int, closesocket, (SOCKET));
+DECL_WINDOWS_FUNCTION(static, u_long, ntohl, (u_long));
+DECL_WINDOWS_FUNCTION(static, u_long, htonl, (u_long));
+DECL_WINDOWS_FUNCTION(static, u_short, htons, (u_short));
+DECL_WINDOWS_FUNCTION(static, u_short, ntohs, (u_short));
+DECL_WINDOWS_FUNCTION(static, int, gethostname, (char *, int));
+DECL_WINDOWS_FUNCTION(static, struct hostent FAR *, gethostbyname,
 		      (const char FAR *));
-PUTTY_DECL_WINDOWS_FUNCTION(static, struct servent FAR *, getservbyname,
+DECL_WINDOWS_FUNCTION(static, struct servent FAR *, getservbyname,
 		      (const char FAR *, const char FAR *));
-PUTTY_DECL_WINDOWS_FUNCTION(static, unsigned long, inet_addr, (const char FAR *));
-PUTTY_DECL_WINDOWS_FUNCTION(static, char FAR *, inet_ntoa, (struct in_addr));
-PUTTY_DECL_WINDOWS_FUNCTION(static, const char FAR *, inet_ntop,
+DECL_WINDOWS_FUNCTION(static, unsigned long, inet_addr, (const char FAR *));
+DECL_WINDOWS_FUNCTION(static, char FAR *, inet_ntoa, (struct in_addr));
+DECL_WINDOWS_FUNCTION(static, const char FAR *, inet_ntop,
                       (int, void FAR *, char *, size_t));
-PUTTY_DECL_WINDOWS_FUNCTION(static, int, connect,
+DECL_WINDOWS_FUNCTION(static, int, connect,
 		      (SOCKET, const struct sockaddr FAR *, int));
-PUTTY_DECL_WINDOWS_FUNCTION(static, int, bind,
+DECL_WINDOWS_FUNCTION(static, int, bind,
 		      (SOCKET, const struct sockaddr FAR *, int));
 #ifdef MPEXT
-PUTTY_DECL_WINDOWS_FUNCTION(static, int, getsockopt,
+DECL_WINDOWS_FUNCTION(static, int, getsockopt,
 		      (SOCKET, int, int, char FAR *, int *));
 #endif
-PUTTY_DECL_WINDOWS_FUNCTION(static, int, setsockopt,
+DECL_WINDOWS_FUNCTION(static, int, setsockopt,
 		      (SOCKET, int, int, const char FAR *, int));
-PUTTY_DECL_WINDOWS_FUNCTION(static, SOCKET, socket, (int, int, int));
-PUTTY_DECL_WINDOWS_FUNCTION(static, int, listen, (SOCKET, int));
-PUTTY_DECL_WINDOWS_FUNCTION(static, int, send, (SOCKET, const char FAR *, int, int));
-PUTTY_DECL_WINDOWS_FUNCTION(static, int, shutdown, (SOCKET, int));
-PUTTY_DECL_WINDOWS_FUNCTION(static, int, ioctlsocket,
+DECL_WINDOWS_FUNCTION(static, SOCKET, socket, (int, int, int));
+DECL_WINDOWS_FUNCTION(static, int, listen, (SOCKET, int));
+DECL_WINDOWS_FUNCTION(static, int, send, (SOCKET, const char FAR *, int, int));
+DECL_WINDOWS_FUNCTION(static, int, shutdown, (SOCKET, int));
+DECL_WINDOWS_FUNCTION(static, int, ioctlsocket,
 		      (SOCKET, long, u_long FAR *));
-PUTTY_DECL_WINDOWS_FUNCTION(static, SOCKET, accept,
+DECL_WINDOWS_FUNCTION(static, SOCKET, accept,
 		      (SOCKET, struct sockaddr FAR *, int FAR *));
-PUTTY_DECL_WINDOWS_FUNCTION(static, int, getpeername,
+DECL_WINDOWS_FUNCTION(static, int, getpeername,
 		      (SOCKET, struct sockaddr FAR *, int FAR *));
-PUTTY_DECL_WINDOWS_FUNCTION(static, int, recv, (SOCKET, char FAR *, int, int));
-PUTTY_DECL_WINDOWS_FUNCTION(static, int, WSAIoctl,
+DECL_WINDOWS_FUNCTION(static, int, recv, (SOCKET, char FAR *, int, int));
+DECL_WINDOWS_FUNCTION(static, int, WSAIoctl,
 		      (SOCKET, DWORD, LPVOID, DWORD, LPVOID, DWORD,
 		       LPDWORD, LPWSAOVERLAPPED,
 		       LPWSAOVERLAPPED_COMPLETION_ROUTINE));
 #ifndef NO_IPV6
-PUTTY_DECL_WINDOWS_FUNCTION(static, int, getaddrinfo,
+DECL_WINDOWS_FUNCTION(static, int, getaddrinfo,
 		      (const char *nodename, const char *servname,
 		       const struct addrinfo *hints, struct addrinfo **res));
-PUTTY_DECL_WINDOWS_FUNCTION(static, void, freeaddrinfo, (struct addrinfo *res));
-PUTTY_DECL_WINDOWS_FUNCTION(static, int, getnameinfo,
+DECL_WINDOWS_FUNCTION(static, void, freeaddrinfo, (struct addrinfo *res));
+DECL_WINDOWS_FUNCTION(static, int, getnameinfo,
 		      (const struct sockaddr FAR * sa, socklen_t salen,
-		       char FAR * host, DWORD hostlen, char FAR * serv,
-		       DWORD servlen, int flags));
-PUTTY_DECL_WINDOWS_FUNCTION(static, char *, gai_strerror, (int ecode));
-PUTTY_DECL_WINDOWS_FUNCTION(static, int, WSAAddressToStringA,
+		       char FAR * host, size_t hostlen, char FAR * serv,
+		       size_t servlen, int flags));
+DECL_WINDOWS_FUNCTION(static, char *, gai_strerror, (int ecode));
+DECL_WINDOWS_FUNCTION(static, int, WSAAddressToStringA,
 		      (LPSOCKADDR, DWORD, LPWSAPROTOCOL_INFO,
 		       LPSTR, LPDWORD));
 #endif
@@ -251,7 +251,7 @@ int sk_startup(int hi, int lo)
 /* Actually define this function pointer, which won't have been
  * defined alongside all the others by PUTTY_DO_GLOBALS because of the
  * annoying winelib header-ordering issue. (See comment in winstuff.h.) */
-PUTTY_DECL_WINDOWS_FUNCTION(/* empty */, int, select,
+DECL_WINDOWS_FUNCTION(/* empty */, int, select,
 		      (int, fd_set FAR *, fd_set FAR *,
 		       fd_set FAR *, const struct timeval FAR *));
 
@@ -266,7 +266,7 @@ void sk_init(void)
     }
     if (!winsock_module)
     {
-        fatalbox("Unable to load any WinSock library");
+	fatalbox("Unable to load any WinSock library");
     }
 
 #ifndef NO_IPV6
@@ -275,13 +275,15 @@ void sk_init(void)
 #ifdef NET_SETUP_DIAGNOSTICS
 	logevent(NULL, "Native WinSock IPv6 support detected");
 #endif
-	PUTTY_GET_WINDOWS_FUNCTION(winsock_module, getaddrinfo);
-	PUTTY_GET_WINDOWS_FUNCTION(winsock_module, freeaddrinfo);
-	PUTTY_GET_WINDOWS_FUNCTION_NO_TYPECHECK(winsock_module, getnameinfo);
+	GET_WINDOWS_FUNCTION(winsock_module, getaddrinfo);
+	GET_WINDOWS_FUNCTION(winsock_module, freeaddrinfo);
+#pragma option push -w-cpt
+	GET_WINDOWS_FUNCTION(winsock_module, getnameinfo);
+#pragma option pop
         /* This function would fail its type-check if we did one,
          * because the VS header file provides an inline definition
          * which is __cdecl instead of WINAPI. */
-        PUTTY_GET_WINDOWS_FUNCTION_NO_TYPECHECK(winsock_module, gai_strerror);
+        GET_WINDOWS_FUNCTION_NO_TYPECHECK(winsock_module, gai_strerror);
     } else {
 	/* Fall back to wship6.dll for Windows 2000 */
 	wship6_module = load_system32_dll("wship6.dll");
@@ -289,79 +291,75 @@ void sk_init(void)
 #ifdef NET_SETUP_DIAGNOSTICS
 	    logevent(NULL, "WSH IPv6 support detected");
 #endif
-	    PUTTY_GET_WINDOWS_FUNCTION(wship6_module, getaddrinfo);
-	    PUTTY_GET_WINDOWS_FUNCTION(wship6_module, freeaddrinfo);
-	    PUTTY_GET_WINDOWS_FUNCTION_NO_TYPECHECK(wship6_module, getnameinfo);
+	    GET_WINDOWS_FUNCTION(wship6_module, getaddrinfo);
+	    GET_WINDOWS_FUNCTION(wship6_module, freeaddrinfo);
+#pragma option push -w-cpt
+	    GET_WINDOWS_FUNCTION(wship6_module, getnameinfo);
+#pragma option pop
             /* See comment above about type check */
-            PUTTY_GET_WINDOWS_FUNCTION_NO_TYPECHECK(winsock_module, gai_strerror);
+            GET_WINDOWS_FUNCTION_NO_TYPECHECK(winsock_module, gai_strerror);
 	} else {
 #ifdef NET_SETUP_DIAGNOSTICS
 	    logevent(NULL, "No IPv6 support detected");
 #endif
 	}
     }
-    PUTTY_GET_WINDOWS_FUNCTION(winsock2_module, WSAAddressToStringA);
+    GET_WINDOWS_FUNCTION(winsock2_module, WSAAddressToStringA);
 #else
 #ifdef NET_SETUP_DIAGNOSTICS
     logevent(NULL, "PuTTY was built without IPv6 support");
 #endif
 #endif
 
-    PUTTY_GET_WINDOWS_FUNCTION(winsock_module, WSAAsyncSelect);
-    PUTTY_GET_WINDOWS_FUNCTION(winsock_module, WSAEventSelect);
-    PUTTY_GET_WINDOWS_FUNCTION(winsock_module, select);
-    PUTTY_GET_WINDOWS_FUNCTION(winsock_module, WSAGetLastError);
-    PUTTY_GET_WINDOWS_FUNCTION(winsock_module, WSAEnumNetworkEvents);
-    PUTTY_GET_WINDOWS_FUNCTION(winsock_module, WSAStartup);
-    PUTTY_GET_WINDOWS_FUNCTION(winsock_module, WSACleanup);
-    PUTTY_GET_WINDOWS_FUNCTION(winsock_module, closesocket);
+    GET_WINDOWS_FUNCTION(winsock_module, WSAAsyncSelect);
+    GET_WINDOWS_FUNCTION(winsock_module, WSAEventSelect);
+    GET_WINDOWS_FUNCTION(winsock_module, select);
+    GET_WINDOWS_FUNCTION(winsock_module, WSAGetLastError);
+    GET_WINDOWS_FUNCTION(winsock_module, WSAEnumNetworkEvents);
+    GET_WINDOWS_FUNCTION(winsock_module, WSAStartup);
+    GET_WINDOWS_FUNCTION(winsock_module, WSACleanup);
+    GET_WINDOWS_FUNCTION(winsock_module, closesocket);
 #ifndef COVERITY
-    PUTTY_GET_WINDOWS_FUNCTION(winsock_module, ntohl);
-    PUTTY_GET_WINDOWS_FUNCTION(winsock_module, htonl);
-    PUTTY_GET_WINDOWS_FUNCTION(winsock_module, htons);
-    PUTTY_GET_WINDOWS_FUNCTION(winsock_module, ntohs);
-    PUTTY_GET_WINDOWS_FUNCTION(winsock_module, gethostname);
+    GET_WINDOWS_FUNCTION(winsock_module, ntohl);
+    GET_WINDOWS_FUNCTION(winsock_module, htonl);
+    GET_WINDOWS_FUNCTION(winsock_module, htons);
+    GET_WINDOWS_FUNCTION(winsock_module, ntohs);
+    GET_WINDOWS_FUNCTION(winsock_module, gethostname);
 #else
     /* The toolchain I use for Windows Coverity builds doesn't know
      * the type signatures of these */
-    PUTTY_GET_WINDOWS_FUNCTION_NO_TYPECHECK(winsock_module, ntohl);
-    PUTTY_GET_WINDOWS_FUNCTION_NO_TYPECHECK(winsock_module, htonl);
-    PUTTY_GET_WINDOWS_FUNCTION_NO_TYPECHECK(winsock_module, htons);
-    PUTTY_GET_WINDOWS_FUNCTION_NO_TYPECHECK(winsock_module, ntohs);
-    PUTTY_GET_WINDOWS_FUNCTION_NO_TYPECHECK(winsock_module, gethostname);
+    GET_WINDOWS_FUNCTION_NO_TYPECHECK(winsock_module, ntohl);
+    GET_WINDOWS_FUNCTION_NO_TYPECHECK(winsock_module, htonl);
+    GET_WINDOWS_FUNCTION_NO_TYPECHECK(winsock_module, htons);
+    GET_WINDOWS_FUNCTION_NO_TYPECHECK(winsock_module, ntohs);
+    GET_WINDOWS_FUNCTION_NO_TYPECHECK(winsock_module, gethostname);
 #endif
-    PUTTY_GET_WINDOWS_FUNCTION(winsock_module, gethostbyname);
-    PUTTY_GET_WINDOWS_FUNCTION(winsock_module, getservbyname);
-    PUTTY_GET_WINDOWS_FUNCTION(winsock_module, inet_addr);
-    PUTTY_GET_WINDOWS_FUNCTION(winsock_module, inet_ntoa);
-#if (defined _MSC_VER && _MSC_VER < 1900) || defined __MINGW32__ || defined MPEXT
+    GET_WINDOWS_FUNCTION(winsock_module, gethostbyname);
+    GET_WINDOWS_FUNCTION(winsock_module, getservbyname);
+    GET_WINDOWS_FUNCTION(winsock_module, inet_addr);
+    GET_WINDOWS_FUNCTION(winsock_module, inet_ntoa);
+#if (defined _MSC_VER && _MSC_VER < 1900) || defined __MINGW32__
     /* Older Visual Studio, and MinGW as of Ubuntu 16.04, don't know
      * about this function at all, so can't type-check it */
+    GET_WINDOWS_FUNCTION_NO_TYPECHECK(winsock_module, inet_ntop);
 #else
-    PUTTY_GET_WINDOWS_FUNCTION(winsock_module, inet_ntop);
+    GET_WINDOWS_FUNCTION(winsock_module, inet_ntop);
 #endif
-    PUTTY_GET_WINDOWS_FUNCTION(winsock_module, connect);
-    PUTTY_GET_WINDOWS_FUNCTION(winsock_module, bind);
-#if (defined _MSC_VER) || defined __MINGW32__
-    /* Older Visual Studio, and MinGW as of Ubuntu 16.04, don't know
-     * about this function at all, so can't type-check it */
-    PUTTY_GET_WINDOWS_FUNCTION_NO_TYPECHECK(winsock_module, inet_ntop);
-#else
-    PUTTY_GET_WINDOWS_FUNCTION(winsock_module, inet_ntop);
-#endif
-#ifdef MPEXT
-    PUTTY_GET_WINDOWS_FUNCTION(winsock_module, getsockopt);
-#endif
-    PUTTY_GET_WINDOWS_FUNCTION(winsock_module, setsockopt);
-    PUTTY_GET_WINDOWS_FUNCTION(winsock_module, socket);
-    PUTTY_GET_WINDOWS_FUNCTION(winsock_module, listen);
-    PUTTY_GET_WINDOWS_FUNCTION(winsock_module, send);
-    PUTTY_GET_WINDOWS_FUNCTION(winsock_module, shutdown);
-    PUTTY_GET_WINDOWS_FUNCTION(winsock_module, ioctlsocket);
-    PUTTY_GET_WINDOWS_FUNCTION(winsock_module, accept);
-    PUTTY_GET_WINDOWS_FUNCTION(winsock_module, getpeername);
-    PUTTY_GET_WINDOWS_FUNCTION(winsock_module, recv);
-    PUTTY_GET_WINDOWS_FUNCTION(winsock_module, WSAIoctl);
+    GET_WINDOWS_FUNCTION(winsock_module, connect);
+    GET_WINDOWS_FUNCTION(winsock_module, bind);
+    #ifdef MPEXT
+    GET_WINDOWS_FUNCTION(winsock_module, getsockopt);
+    #endif
+    GET_WINDOWS_FUNCTION(winsock_module, setsockopt);
+    GET_WINDOWS_FUNCTION(winsock_module, socket);
+    GET_WINDOWS_FUNCTION(winsock_module, listen);
+    GET_WINDOWS_FUNCTION(winsock_module, send);
+    GET_WINDOWS_FUNCTION(winsock_module, shutdown);
+    GET_WINDOWS_FUNCTION(winsock_module, ioctlsocket);
+    GET_WINDOWS_FUNCTION(winsock_module, accept);
+    GET_WINDOWS_FUNCTION(winsock_module, getpeername);
+    GET_WINDOWS_FUNCTION(winsock_module, recv);
+    GET_WINDOWS_FUNCTION(winsock_module, WSAIoctl);
 
     /* Try to get the best WinSock version we can get */
     if (!sk_startup(2,2) &&
@@ -388,7 +386,7 @@ void sk_cleanup(void)
 
     if (p_WSACleanup)
     {
-	  p_WSACleanup();
+	p_WSACleanup();
     }
     if (winsock_module)
 	FreeLibrary(winsock_module);
@@ -531,7 +529,7 @@ const char *winsock_error_string(int error)
         bufsize = 65535 + sizeof(prefix);
         es->text = snewn(bufsize, char);
         strcpy(es->text, prefix);
-        bufused = (int)strlen(es->text);
+        bufused = strlen(es->text);
         if (!FormatMessage((FORMAT_MESSAGE_FROM_SYSTEM |
                             FORMAT_MESSAGE_IGNORE_INSERTS), NULL, error,
                            MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
@@ -540,7 +538,7 @@ const char *winsock_error_string(int error)
                     "Windows error code %d (and FormatMessage returned %u)",
                     error, (unsigned int)GetLastError());
         } else {
-            int len = (int)strlen(es->text);
+            int len = strlen(es->text);
             if (len > 0 && es->text[len-1] == '\n')
                 es->text[len-1] = '\0';
         }
@@ -600,8 +598,8 @@ SockAddr sk_namelookup(const char *host, char **canonicalname,
             }
 	    if (err == 0)
 	    {
-	    	ret->resolved = TRUE;
-	    }
+		ret->resolved = TRUE;
+	    }	
 	} else
 #endif
 	{
@@ -743,7 +741,7 @@ void sk_getaddr(SockAddr addr, char *buf, int buflen)
 	int err = 0;
 	if (p_WSAAddressToStringA) {
 	    DWORD dwbuflen = buflen;
-	    err = p_WSAAddressToStringA(step.ai->ai_addr, (DWORD)step.ai->ai_addrlen,
+	    err = p_WSAAddressToStringA(step.ai->ai_addr, step.ai->ai_addrlen,
 					NULL, buf, &dwbuflen);
 	} else
 	    err = -1;
@@ -1092,28 +1090,28 @@ static DWORD try_connect(Actual_Socket sock,
 	SetHandleInformation((HANDLE)s, HANDLE_FLAG_INHERIT, 0);
 
     if (sock->oobinline) {
-	  BOOL b = TRUE;
-	  p_setsockopt(s, SOL_SOCKET, SO_OOBINLINE, (void *) &b, sizeof(b));
+	BOOL b = TRUE;
+	p_setsockopt(s, SOL_SOCKET, SO_OOBINLINE, (void *) &b, sizeof(b));
     }
 
     if (sock->nodelay) {
-	  BOOL b = TRUE;
-	  p_setsockopt(s, IPPROTO_TCP, TCP_NODELAY, (void *) &b, sizeof(b));
+	BOOL b = TRUE;
+	p_setsockopt(s, IPPROTO_TCP, TCP_NODELAY, (void *) &b, sizeof(b));
     }
 
     if (sock->keepalive) {
-	  BOOL b = TRUE;
-	  p_setsockopt(s, SOL_SOCKET, SO_KEEPALIVE, (void *) &b, sizeof(b));
+	BOOL b = TRUE;
+	p_setsockopt(s, SOL_SOCKET, SO_KEEPALIVE, (void *) &b, sizeof(b));
     }
 
     if (sndbuf > 0)
     {
-	  int rcvbuf = 256 * 1024; // 4 * 1024 * 1024;
-	  p_setsockopt(s, SOL_SOCKET, SO_SNDBUF, (void *) &sndbuf, sizeof(sndbuf));
+	int rcvbuf = 4 * 1024 * 1024;
+	p_setsockopt(s, SOL_SOCKET, SO_SNDBUF, (void *) &sndbuf, sizeof(sndbuf));
 
-	  // For now we increase receive buffer, whenever send buffer is set.
-	  // The size is not configurable. The constant taken from FZ.
-	  p_setsockopt(s, SOL_SOCKET, SO_RCVBUF, (void*) &rcvbuf, sizeof(rcvbuf));
+	// For now we increase receive buffer, whenever send buffer is set.
+	// The size is not configurable. The constant taken from FZ.
+	p_setsockopt(s, SOL_SOCKET, SO_RCVBUF, (void*) &rcvbuf, sizeof(rcvbuf));
     }
 
     /*
@@ -1211,7 +1209,7 @@ static DWORD try_connect(Actual_Socket sock,
 #ifdef MPEXT
     if (timeout > 0)
     {
-        if (p_getsockopt (s, SOL_SOCKET, SO_RCVTIMEO, (char *)&rcvtimeo, (int *)&rcvtimeo) < 0)
+        if (p_getsockopt (s, SOL_SOCKET, SO_RCVTIMEO, (char *)&rcvtimeo, &rcvtimeo) < 0)
         {
             rcvtimeo.tv_sec = -1;
         }
@@ -1244,8 +1242,8 @@ static DWORD try_connect(Actual_Socket sock,
 	 */
 	if ( err != WSAEWOULDBLOCK ) {
 #ifdef MPEXT
-        // unselect on error
-        do_select(sock->plug, s, 0);
+    // unselect on error
+    do_select(sock->plug, s, 0);
 #endif
 	    sock->error = winsock_error_string(err);
 	    goto ret;
@@ -1292,7 +1290,7 @@ static DWORD try_connect(Actual_Socket sock,
     return err;
 }
 
-Socket putty_sk_new(SockAddr addr, int port, int privport, int oobinline,
+Socket sk_new(SockAddr addr, int port, int privport, int oobinline,
 	      int nodelay, int keepalive, Plug plug,
 #ifdef MPEXT
 	      int timeout,
@@ -1648,21 +1646,27 @@ void try_send(Actual_Socket s)
 		 */
 		s->writable = FALSE;
 		return;
-	    } else {
+	    } else if (nsent == 0 ||
+		       err == WSAECONNABORTED || err == WSAECONNRESET) {
 		/*
-		 * If send() returns a socket error, we unfortunately
-		 * can't just call plug_closing(), because it's quite
-		 * likely that we're currently _in_ a call from the
-		 * code we'd be calling back to, so we'd have to make
-		 * half the SSH code reentrant. Instead we flag a
-		 * pending error on the socket, to be dealt with (by
-		 * calling plug_closing()) at some suitable future
-		 * moment.
+		 * If send() returns CONNABORTED or CONNRESET, we
+		 * unfortunately can't just call plug_closing(),
+		 * because it's quite likely that we're currently
+		 * _in_ a call from the code we'd be calling back
+		 * to, so we'd have to make half the SSH code
+		 * reentrant. Instead we flag a pending error on
+		 * the socket, to be dealt with (by calling
+		 * plug_closing()) at some suitable future moment.
 		 */
 		s->pending_error = err;
                 queue_toplevel_callback(socket_error_callback, s);
 		return;
-    }
+	    } else {
+		/* We're inside the Windows frontend here, so we know
+		 * that the frontend handle is unnecessary. */
+		logevent(NULL, winsock_error_string(err));
+		fatalbox("%s", winsock_error_string(err));
+	    }
 	} else {
 	    if (s->sending_oob) {
 		if (nsent < len) {
@@ -1790,7 +1794,7 @@ void select_result(WPARAM wParam, LPARAM lParam)
 	}
     }
 
-    noise_ultralight((unsigned long)lParam);
+    noise_ultralight(lParam);
 
     switch (WSAGETSELECTEVENT(lParam)) {
       case FD_CONNECT:
@@ -1857,8 +1861,12 @@ void select_result(WPARAM wParam, LPARAM lParam)
 	ret = p_recv(s->s, buf, sizeof(buf), MSG_OOB);
 	noise_ultralight(ret);
 	if (ret <= 0) {
-            int err = p_WSAGetLastError();
-	    plug_closing(s->plug, winsock_error_string(err), err, 0);
+	    const char *str = (ret == 0 ? "Internal networking trouble" :
+			 winsock_error_string(p_WSAGetLastError()));
+	    /* We're inside the Windows frontend here, so we know
+	     * that the frontend handle is unnecessary. */
+	    logevent(NULL, str);
+	    fatalbox("%s", str);
 	} else {
 	    plug_receive(s->plug, 2, buf, ret);
 	}
@@ -1887,7 +1895,9 @@ void select_result(WPARAM wParam, LPARAM lParam)
 		if (ret)
 		    plug_receive(s->plug, 0, buf, ret);
 		else
+		{
 		    plug_closing(s->plug, NULL, 0, 0);
+		}
 	    }
 	} while (ret > 0);
 	return;

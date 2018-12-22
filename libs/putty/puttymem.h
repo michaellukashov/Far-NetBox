@@ -31,7 +31,7 @@ void safefree(void *);
 
 /*
  * Direct use of smalloc within the code should be avoided where
- * possible, in favor of these type-casting macros which ensure
+ * possible, in favour of these type-casting macros which ensure
  * you don't mistakenly allocate enough space for one sort of
  * structure and assign it to a different sort of pointer.
  *

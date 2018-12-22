@@ -67,7 +67,7 @@
   #define BIGNUM_INT_BITS 64
   #define DEFINE_BIGNUMDBLINT typedef __uint128_t BignumDblInt
 
-#elif defined _MSC_VER && (_MSC_VER > 1600) && defined _M_AMD64
+#elif defined _MSC_VER && defined _M_AMD64
 
   /*
    * 64-bit BignumInt, using Visual Studio x86-64 compiler intrinsics.
@@ -84,13 +84,13 @@
 
   #include <intrin.h>
   typedef unsigned char BignumCarry; /* the type _addcarry_u64 likes to use */
-  typedef unsigned long long BignumInt;
+  typedef unsigned __int64 BignumInt;
   #define BIGNUM_INT_BITS 64
   #define BignumADC(ret, retc, a, b, c) do                \
       {                                                   \
           BignumInt ADC_tmp;                              \
-          (retc) = (BignumCarry)_addcarry_u64(c, a, b, &ADC_tmp);      \
-          (ret) = (BignumInt)ADC_tmp;                                \
+          (retc) = _addcarry_u64(c, a, b, &ADC_tmp);      \
+          (ret) = ADC_tmp;                                \
       } while (0)
   #define BignumMUL(rh, rl, a, b) do              \
       {                                           \
@@ -124,13 +124,13 @@
 
 #elif (defined _MSC_VER && defined _M_IX86) || defined(MPEXT)
 
-  /* 32-bit BignumInt, using Visual Studio int64_t as BignumDblInt */
+  /* 32-bit BignumInt, using Visual Studio __int64 as BignumDblInt */
 
   typedef unsigned int BignumInt;
   #define BIGNUM_INT_BITS  32
-  #define DEFINE_BIGNUMDBLINT typedef unsigned long long BignumDblInt
+  #define DEFINE_BIGNUMDBLINT typedef unsigned __int64 BignumDblInt
 
-#if defined(MPEXT) && !defined(_MSC_VER)
+#ifdef MPEXT
 // BCC requires semicolons
 #define DIVMOD_WORD(q, r, hi, lo, w) do { \
     __asm mov edx, hi; \
