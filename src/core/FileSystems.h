@@ -207,7 +207,7 @@ public:
     const UnicodeString ATargetDir, UnicodeString &ADestFileName, uintptr_t Attrs,
     const TCopyParamType *CopyParam, intptr_t AParams, TFileOperationProgressType *OperationProgress,
     uintptr_t AFlags, TDownloadSessionAction &Action) = 0;
-  virtual void RemoteCreateDirectory(const UnicodeString ADirName) = 0;
+  virtual void RemoteCreateDirectory(const UnicodeString ADirName, bool Encrypt) = 0;
   virtual void RemoteCreateLink(const UnicodeString AFileName, const UnicodeString APointTo, bool Symbolic) = 0;
   virtual void RemoteDeleteFile(const UnicodeString AFileName,
     const TRemoteFile *AFile, intptr_t AParams,
@@ -216,6 +216,7 @@ public:
     const TRemoteFile *AFile, const UnicodeString ACommand, intptr_t AParams, TCaptureOutputEvent OutputEvent) = 0;
   virtual void DoStartup() = 0;
   virtual void HomeDirectory() = 0;
+  virtual UnicodeString GetHomeDirectory();
   virtual bool IsCapable(intptr_t Capability) const = 0;
   virtual void LookupUsersGroups() = 0;
   virtual void ReadCurrentDirectory() = 0;

@@ -214,6 +214,7 @@ void TWebDAVFileSystem::Open()
   TSessionData *Data = FTerminal->GetSessionData();
 
   FSessionInfo.LoginTime = Now();
+  FSessionInfo.CertificateVerifiedManually = false;
 
   UnicodeString HostName = Data->GetHostNameExpanded();
   size_t Port = Data->GetPortNumber();
@@ -838,7 +839,7 @@ void TWebDAVFileSystem::NeonPropsResult(
     UnicodeString FileListPath = Data.FileSystem->GetAbsolutePath(Data.FileList->GetDirectory(), false);
     if (base::UnixSamePath(Path, FileListPath))
     {
-      Path = base::UnixIncludeTrailingBackslash(base::UnixIncludeTrailingBackslash(Path) + L"..");
+      Path = base::UnixIncludeTrailingBackslash(base::UnixIncludeTrailingBackslash(Path) + PARENTDIRECTORY);
     }
     std::unique_ptr<TRemoteFile> File(new TRemoteFile());
     File->SetTerminal(Data.FileSystem->FTerminal);
@@ -948,7 +949,6 @@ void TWebDAVFileSystem::ParsePropResultSet(TRemoteFile *AFile,
 
   // Proprietary property of mod_dav
   // http://www.webdav.org/mod_dav/#imp
-  const char *Executable = GetNeonProp(Results, PROP_EXECUTABLE, MODDAV_PROP_NAMESPACE);
   if (Executable != nullptr)
   {
     if (strcmp(Executable, "T") == 0)
@@ -1093,7 +1093,7 @@ void TWebDAVFileSystem::RemoteCopyFile(const UnicodeString AFileName, const TRem
   CheckStatus(NeonStatus);
 }
 //---------------------------------------------------------------------------
-void TWebDAVFileSystem::RemoteCreateDirectory(const UnicodeString ADirName)
+void TWebDAVFileSystem::RemoteCreateDirectory(const UnicodeString ADirName, bool /*Encrypt*/)
 {
   ClearNeonError();
   volatile TOperationVisualizer Visualizer(FTerminal->GetUseBusyCursor());
@@ -1791,24 +1791,32 @@ bool TWebDAVFileSystem::VerifyCertificate(TNeonCertificateData &Data, bool Aux)
   }
   else
   {
-    FTerminal->LogEvent(CertificateVerificationMessage(Data));
+    FTerminal->LogEvent(0, CertificateVerificationMessage(Data));
 
     UnicodeString SiteKey = TSessionData::FormatSiteKey(FHostName, FPortNumber);
     Result =
       FTerminal->VerifyCertificate(HttpsCertificateStorageKey, SiteKey, Data.Fingerprint, Data.Subject, Data.Failures);
 
-    if (!Result)
+    if (Result)
+    {
+      FSessionInfo.CertificateVerifiedManually = true;
+    }
+    else
     {
       UnicodeString Message;
       Result = NeonWindowsValidateCertificateWithMessage(Data, Message);
-      FTerminal->LogEvent(Message);
+      FTerminal->LogEvent(0, Message);
     }
 
     FSessionInfo.Certificate = CertificateSummary(Data, FHostName);
 
     if (!Result)
     {
-      Result = FTerminal->ConfirmCertificate(FSessionInfo, Data.Failures, HttpsCertificateStorageKey, !Aux);
+      if (FTerminal->ConfirmCertificate(FSessionInfo, Data.Failures, HttpsCertificateStorageKey, !Aux))
+      {
+        Result = true;
+        FSessionInfo.CertificateVerifiedManually = true;
+      }
     }
 
     if (Result && !Aux)
@@ -1826,7 +1834,7 @@ void TWebDAVFileSystem::CollectTLSSessionInfo()
   // Have to cache the value as the connection (the neon HTTP session, not "our" session)
   // can be closed at the time we need it in CollectUsage().
   UnicodeString Message = NeonTlsSessionInfo(FNeonSession, FSessionInfo, FTlsVersionStr);
-  FTerminal->LogEvent(Message);
+  FTerminal->LogEvent(0, Message);
 }
 //---------------------------------------------------------------------------
 // A neon-session callback to validate the SSL certificate when the CA
@@ -1927,7 +1935,7 @@ int TWebDAVFileSystem::NeonRequestAuth(
     {
       if (!SessionData->GetPassword().IsEmpty() && !FileSystem->FStoredPasswordTried)
       {
-        APassword = SessionData->GetPassword();
+        APassword = NormalizeString(SessionData->GetPassword());
         FileSystem->FStoredPasswordTried = true;
       }
       else

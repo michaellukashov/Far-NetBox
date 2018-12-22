@@ -12,6 +12,7 @@
 #include "SecureShell.h"
 #include "CoreMain.h"
 #include "TextsCore.h"
+#include <Soap.EncdDecd.hpp>
 //---------------------------------------------------------------------------
 char sshver[50];
 extern const char commitid[] = "";
@@ -31,6 +32,7 @@ const UnicodeString OriginalPuttyRegistryStorageKey(PUTTY_REG_POS);
 const UnicodeString KittyRegistryStorageKey(L"Software\\9bis.com\\KiTTY");
 const UnicodeString OriginalPuttyExecutable("putty.exe");
 const UnicodeString KittyExecutable("kitty.exe");
+const UnicodeString PuttyKeyExt(L"ppk");
 //---------------------------------------------------------------------------
 void PuttyInitialize()
 {
@@ -568,25 +570,32 @@ TKeyType GetKeyType(const UnicodeString AFileName)
 bool IsKeyEncrypted(TKeyType KeyType, const UnicodeString FileName, UnicodeString &Comment)
 {
   UTF8String UtfFileName = UTF8String(::ExpandEnvironmentVariables(FileName));
-  Filename *KeyFile = filename_from_str(UtfFileName.c_str());
   bool Result;
   char *CommentStr = nullptr;
-  switch (KeyType)
+  Filename * KeyFile = filename_from_str(UtfFileName.c_str());
+  try
   {
-  case ktSSH2:
-    Result = (ssh2_userkey_encrypted(KeyFile, &CommentStr) != 0);
-    break;
+    switch (KeyType)
+    {
+      case ktSSH2:
+        Result = (ssh2_userkey_encrypted(KeyFile, &CommentStr) != 0);
+        break;
 
-  case ktOpenSSHPEM:
-  case ktOpenSSHNew:
-  case ktSSHCom:
-    Result = (import_encrypted(KeyFile, KeyType, &CommentStr) != 0);
-    break;
+      case ktOpenSSHPEM:
+      case ktOpenSSHNew:
+      case ktSSHCom:
+        Result = (import_encrypted(KeyFile, KeyType, &CommentStr) != NULL);
+        break;
 
-  default:
-    DebugFail();
-    Result = false;
-    break;
+      default:
+        DebugFail();
+        Result = false;
+        break;
+    }
+  }
+  __finally
+  {
+    filename_free(KeyFile);
   }
 
   if (CommentStr != nullptr)
@@ -607,28 +616,33 @@ TPrivateKey *LoadKey(TKeyType KeyType, const UnicodeString FileName, const Unico
 {
   UTF8String UtfFileName = UTF8String(::ExpandEnvironmentVariables(FileName));
   Filename *KeyFile = filename_from_str(UtfFileName.c_str());
-  AnsiString AnsiPassphrase = AnsiString(Passphrase);
   struct ssh2_userkey *Ssh2Key = nullptr;
   const char *ErrorStr = nullptr;
-
-  switch (KeyType)
+  AnsiString AnsiPassphrase = Passphrase;
+  try
   {
-  case ktSSH2:
-    Ssh2Key = ssh2_load_userkey(KeyFile, AnsiPassphrase.c_str(), &ErrorStr);
-    break;
+    switch (KeyType)
+    {
+      case ktSSH2:
+        Ssh2Key = ssh2_load_userkey(KeyFile, AnsiPassphrase.c_str(), &ErrorStr);
+        break;
 
-  case ktOpenSSHPEM:
-  case ktOpenSSHNew:
-  case ktSSHCom:
-    Ssh2Key = import_ssh2(KeyFile, KeyType, AnsiPassphrase.c_str(), &ErrorStr);
-    break;
+      case ktOpenSSHPEM:
+      case ktOpenSSHNew:
+      case ktSSHCom:
+        Ssh2Key = import_ssh2(KeyFile, KeyType, AnsiPassphrase.c_str(), &ErrorStr);
+        break;
 
-  default:
-    DebugFail();
-    break;
+      default:
+        DebugFail();
+        break;
+    }
   }
-
-  Shred(AnsiPassphrase);
+  __finally
+  {
+    Shred(AnsiPassphrase);
+    filename_free(KeyFile);
+  }
 
   if (Ssh2Key == nullptr)
   {
@@ -660,34 +674,84 @@ void SaveKey(TKeyType KeyType, const UnicodeString FileName,
 {
   UTF8String UtfFileName = UTF8String(::ExpandEnvironmentVariables(FileName));
   Filename *KeyFile = filename_from_str(UtfFileName.c_str());
-  struct ssh2_userkey *Ssh2Key = reinterpret_cast<struct ssh2_userkey *>(PrivateKey);
-  AnsiString AnsiPassphrase = AnsiString(Passphrase);
-  const char *PassphrasePtr = (AnsiPassphrase.IsEmpty() ? nullptr : AnsiPassphrase.c_str());
-  switch (KeyType)
+  try
   {
-  case ktSSH2:
-    if (!ssh2_save_userkey(KeyFile, Ssh2Key, PassphrasePtr))
+    struct ssh2_userkey * Ssh2Key = reinterpret_cast<struct ssh2_userkey *>(PrivateKey);
+    AnsiString AnsiPassphrase = Passphrase;
+    char * PassphrasePtr = (AnsiPassphrase.IsEmpty() ? NULL : AnsiPassphrase.c_str());
+    switch (KeyType)
     {
-      intptr_t Error = errno;
-      throw EOSExtException(FMTLOAD(KEY_SAVE_ERROR, FileName), Error);
-    }
-    break;
+      case ktSSH2:
+        if (!ssh2_save_userkey(KeyFile, Ssh2Key, PassphrasePtr))
+        {
+          int Error = errno;
+          throw EOSExtException(FMTLOAD(KEY_SAVE_ERROR, (FileName)), Error);
+        }
+        break;
 
-  default:
-    DebugFail();
-    break;
-  }
+      default:
+        DebugFail();
+        break;
+    }
   filename_free(KeyFile);
+  }
+  __finally
+  {
+    filename_free(KeyFile);
+  }
 }
 //---------------------------------------------------------------------------
 void FreeKey(TPrivateKey *PrivateKey)
 {
   struct ssh2_userkey *Ssh2Key = reinterpret_cast<struct ssh2_userkey *>(PrivateKey);
   Ssh2Key->alg->freekey(Ssh2Key->data);
+  sfree(Ssh2Key->comment);
   sfree(Ssh2Key);
 }
 //---------------------------------------------------------------------------
-bool HasGSSAPI(const UnicodeString CustomPath)
+RawByteString LoadPublicKey(const UnicodeString & FileName, UnicodeString & Algorithm, UnicodeString & Comment)
+{
+  RawByteString Result;
+  UTF8String UtfFileName = UTF8String(FileName);
+  Filename * KeyFile = filename_from_str(UtfFileName.c_str());
+  try
+  {
+    char * AlgorithmStr = NULL;
+    int PublicKeyLen = 0;
+    char * CommentStr = NULL;
+    const char * ErrorStr = NULL;
+    unsigned char * PublicKeyPtr =
+      ssh2_userkey_loadpub(KeyFile, &AlgorithmStr, &PublicKeyLen, &CommentStr, &ErrorStr);
+    if (PublicKeyPtr == NULL)
+    {
+      UnicodeString Error = UnicodeString(AnsiString(ErrorStr));
+      throw Exception(Error);
+    }
+    Algorithm = UnicodeString(AnsiString(AlgorithmStr));
+    sfree(AlgorithmStr);
+    Comment = UnicodeString(AnsiString(CommentStr));
+    sfree(CommentStr);
+    Result = RawByteString(reinterpret_cast<char *>(PublicKeyPtr), PublicKeyLen);
+    free(PublicKeyPtr);
+  }
+  __finally
+  {
+    filename_free(KeyFile);
+  }
+  return Result;
+}
+//---------------------------------------------------------------------------
+UnicodeString GetPublicKeyLine(const UnicodeString & FileName, UnicodeString & Comment)
+{
+  UnicodeString Algorithm;
+  RawByteString PublicKey = LoadPublicKey(FileName, Algorithm, Comment);
+  UnicodeString PublicKeyBase64 = EncodeBase64(PublicKey.c_str(), PublicKey.Length());
+  PublicKeyBase64 = ReplaceStr(PublicKeyBase64, L"\r", L"");
+  PublicKeyBase64 = ReplaceStr(PublicKeyBase64, L"\n", L"");
+  UnicodeString Result = FORMAT(L"%s %s %s", (Algorithm, PublicKeyBase64, Comment));
+  return Result;
+}
+//---------------------------------------------------------------------------
 {
   static int has = -1;
   if (has < 0)
@@ -880,6 +944,79 @@ UnicodeString GetKeyTypeHuman(const UnicodeString AKeyType)
     Result = AKeyType;
   }
   return Result;
+}
+//---------------------------------------------------------------------------
+bool IsOpenSSH(const UnicodeString & SshImplementation)
+{
+  return
+    // e.g. "OpenSSH_5.3"
+    (SshImplementation.Pos(L"OpenSSH") == 1) ||
+    // Sun SSH is based on OpenSSH (suffers the same bugs)
+    (SshImplementation.Pos(L"Sun_SSH") == 1);
+}
+//---------------------------------------------------------------------------
+TStrings * SshCipherList()
+{
+  std::unique_ptr<TStrings> Result(new TStringList());
+  // Same order as DefaultCipherList
+  const ssh2_ciphers * Ciphers[] = { &ssh2_aes, &ssh2_ccp, &ssh2_blowfish, &ssh2_3des, &ssh2_arcfour, &ssh2_des };
+  for (unsigned int Index = 0; Index < LENOF(Ciphers); Index++)
+  {
+    for (int Index2 = 0; Index2 < Ciphers[Index]->nciphers; Index2++)
+    {
+      UnicodeString Name = UnicodeString(Ciphers[Index]->list[Index2]->name);
+      Result->Add(Name);
+    }
+  }
+  return Result.release();
+}
+//---------------------------------------------------------------------------
+TStrings * SshKexList()
+{
+  std::unique_ptr<TStrings> Result(new TStringList());
+  // Same order as DefaultKexList
+  const ssh_kexes * Kexes[] = { &ssh_ecdh_kex, &ssh_diffiehellman_gex, &ssh_diffiehellman_group14, &ssh_rsa_kex, &ssh_diffiehellman_group1 };
+  for (unsigned int Index = 0; Index < LENOF(Kexes); Index++)
+  {
+    for (int Index2 = 0; Index2 < Kexes[Index]->nkexes; Index2++)
+    {
+      UnicodeString Name = UnicodeString(Kexes[Index]->list[Index2]->name);
+      Result->Add(Name);
+    }
+  }
+  return Result.release();
+}
+//---------------------------------------------------------------------------
+TStrings * SshHostKeyList()
+{
+  std::unique_ptr<TStrings> Result(new TStringList());
+  const int MaxCount = 10;
+  const ssh_signkey * SignKeys[MaxCount];
+  int Count = LENOF(SignKeys);
+  get_hostkey_algs(&Count, SignKeys);
+
+  for (int Index = 0; Index < Count; Index++)
+  {
+    const ssh_signkey * SignKey = SignKeys[Index];
+    UnicodeString Name = UnicodeString(SignKey->name);
+    Result->Add(Name);
+  }
+  return Result.release();
+}
+//---------------------------------------------------------------------------
+TStrings * SshMacList()
+{
+  std::unique_ptr<TStrings> Result(new TStringList());
+  const struct ssh_mac ** Macs = NULL;
+  int Count = 0;
+  get_macs(&Count, &Macs);
+
+  for (int Index = 0; Index < Count; Index++)
+  {
+    UnicodeString Name = UnicodeString(Macs[Index]->name);
+    Result->Add(Name);
+  }
+  return Result.release();
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------

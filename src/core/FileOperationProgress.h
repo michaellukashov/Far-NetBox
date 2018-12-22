@@ -68,8 +68,10 @@ public:
   __int64 TotalDownloaded;
 };
 //---------------------------------------------------------------------------
-class NB_CORE_EXPORT TFileOperationProgressType : public TObject
 {
+public:
+  class TPersistence
+  {
 public:
   class TPersistence
   {
@@ -77,6 +79,18 @@ public:
   public:
     TPersistence();
     __property TFileOperationStatistics * Statistics = { read = FStatistics, write = FStatistics };
+
+    TDateTime StartTime;
+    TBatchOverwrite BatchOverwrite;
+    bool SkipToAll;
+    unsigned long CPSLimit;
+    bool CounterSet;
+    std::vector<unsigned long> Ticks;
+    std::vector<__int64> TotalTransferredThen;
+    TOperationSide Side;
+    __int64 TotalTransferred;
+    TFileOperationStatistics * FStatistics;
+  };
 
   private:
     void Clear(bool Batch, bool Speed);
@@ -121,6 +135,7 @@ private:
   bool FSuspended{false};
   bool FRestored;
   TFileOperationProgressType *FParent{nullptr};
+  bool FRestored;
 
   // when it was last time suspended (to calculate suspend time in Resume())
   uintptr_t FSuspendTime{0};
@@ -134,8 +149,6 @@ private:
   uintptr_t FLastSecond{0};
   int64_t FRemainingCPS{0};
   bool FCounterSet{false};
-  rde::vector<intptr_t> FTicks;
-  rde::vector<int64_t> FTotalTransferredThen;
   TPersistence FPersistence;
   TCriticalSection *FSection{nullptr};
   TCriticalSection *FUserSelectionsSection{nullptr};
@@ -152,7 +165,7 @@ public:
 protected:
   void ClearTransfer();
   inline void DoProgress();
-  intptr_t OperationProgress() const;
+  int __fastcall OperationProgress() const;
   void AddTransferredToTotals(int64_t ASize);
   void AddSkipped(int64_t ASize);
   void AddTotalSize(int64_t ASize);
@@ -222,7 +235,6 @@ public:
   void Finish(const UnicodeString AFileName, bool Success,
     TOnceDoneOperation &OnceDoneOperation);
   void Succeeded(int Count = 1);
-  void Progress();
   int64_t LocalBlockSize();
   bool IsLocallyDone() const;
   bool IsTransferDone() const;

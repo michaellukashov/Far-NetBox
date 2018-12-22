@@ -44,6 +44,36 @@ void TFileOperationProgressType::TPersistence::Clear(bool Batch, bool Speed)
   }
 }
 //---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
+TFileOperationProgressType::TPersistence::TPersistence()
+{
+  FStatistics = NULL;
+  Clear(true, true);
+}
+//---------------------------------------------------------------------------
+bool TFileOperationProgressType::IsIndeterminateOperation(TFileOperation Operation)
+{
+  return (Operation == foCalculateSize);
+}
+//---------------------------------------------------------------------------
+void TFileOperationProgressType::TPersistence::Clear(bool Batch, bool Speed)
+{
+  if (Batch)
+  {
+    TotalTransferred = 0;
+    StartTime = Now();
+    SkipToAll = false;
+    BatchOverwrite = boNo;
+    CPSLimit = 0;
+    CounterSet = false;
+  }
+  if (Speed)
+  {
+    Ticks.clear();
+    TotalTransferredThen.clear();
+  }
+}
+//---------------------------------------------------------------------------
 {
   Init();
   Clear();
@@ -264,7 +294,7 @@ void TFileOperationProgressType::Resume()
   DoProgress();
 }
 //---------------------------------------------------------------------------
-intptr_t TFileOperationProgressType::OperationProgress() const
+int __fastcall TFileOperationProgressType::OperationProgress() const
 {
   intptr_t Result;
   if (FCount > 0)
@@ -292,7 +322,7 @@ intptr_t TFileOperationProgressType::TransferProgress() const
   return Result;
 }
 //---------------------------------------------------------------------------
-intptr_t TFileOperationProgressType::TotalTransferProgress() const
+int __fastcall TFileOperationProgressType::TotalTransferProgress() const
 {
   volatile TGuard Guard(*FSection);
   DebugAssert(FTotalSizeSet);
@@ -308,7 +338,7 @@ intptr_t TFileOperationProgressType::TotalTransferProgress() const
   return Result < 100 ? Result : 100;
 }
 //---------------------------------------------------------------------------
-intptr_t TFileOperationProgressType::OverallProgress() const
+int __fastcall TFileOperationProgressType::OverallProgress() const
 {
   if (FTotalSizeSet)
   {
@@ -377,7 +407,6 @@ void __fastcall TFileOperationProgressType::Succeeded(int Count)
   }
 }
 //---------------------------------------------------------------------------
-void TFileOperationProgressType::SetFile(const UnicodeString AFileName, bool AFileInProgress)
 {
   UnicodeString FileName = AFileName;
   FFullFileName = FileName;

@@ -264,6 +264,20 @@ struct TFileColorData
   static UnicodeString SaveList(const TList & List);
 };
 //---------------------------------------------------------------------------
+struct TFileColorData
+{
+  TFileColorData();
+
+  TFileMasks FileMask;
+  TColor Color;
+
+  void Load(const UnicodeString & S);
+  UnicodeString Save() const;
+  typedef std::vector<TFileColorData> TList;
+  static void LoadList(const UnicodeString & S, TList & List);
+  static UnicodeString SaveList(const TList & List);
+};
+//---------------------------------------------------------------------------
 #undef C
 //---------------------------------------------------------------------------
 class TEditorPreferences
@@ -465,8 +479,6 @@ private:
 
   void __fastcall SetDoubleClickAction(TDoubleClickAction value);
   void __fastcall SetCopyOnDoubleClickConfirmation(bool value);
-  void __fastcall SetDDTransferConfirmation(TAutoSwitch value);
-  void __fastcall SetDeleteToRecycleBin(bool value);
   void __fastcall SetDimmHiddenFiles(bool value);
   void __fastcall SetRenameWholeName(bool value);
   void __fastcall SetScpCommander(TScpCommanderConfiguration value);
@@ -476,7 +488,7 @@ private:
   void __fastcall SetFormatSizeBytes(TFormatBytesStyle value);
   void __fastcall SetPanelSearch(TIncrementalSearch value);
   void __fastcall SetShowInaccesibleDirectories(bool value);
-  void __fastcall SetConfirmTransferring(bool value);
+  void __fastcall SetPanelSearch(TIncrementalSearch value);
   void __fastcall SetConfirmDeleting(bool value);
   void __fastcall SetConfirmRecycling(bool value);
   void __fastcall SetUseLocationProfiles(bool value);
@@ -485,8 +497,8 @@ private:
   void __fastcall SetDDDrives(UnicodeString value);
   void __fastcall SetDDWarnLackOfTempSpace(bool value);
   void __fastcall SetDDFakeFile(bool value);
-  void __fastcall SetDDExtTimeout(int value);
-  void __fastcall SetConfirmClosingSession(bool value);
+  void __fastcall SetDDDrives(UnicodeString value);
+  void __fastcall SetDDFakeFile(bool value);
   void __fastcall SetDDWarnLackOfTempSpaceRatio(double value);
   void __fastcall SetBookmarks(UnicodeString Key, TBookmarkList * value);
   TBookmarkList * __fastcall GetBookmarks(UnicodeString Key);
@@ -508,7 +520,7 @@ private:
   void __fastcall SetPreservePanelState(bool value);
   void __fastcall SetDarkTheme(TAutoSwitch value);
   void __fastcall SetLastStoredSession(UnicodeString value);
-  void __fastcall SetAutoSaveWorkspace(bool value);
+  void __fastcall SetDarkTheme(TAutoSwitch value);
   void __fastcall SetAutoSaveWorkspacePasswords(bool value);
   void __fastcall SetAutoWorkspace(UnicodeString value);
   void __fastcall SetPathInCaption(TPathInCaption value);
@@ -551,15 +563,16 @@ private:
   void __fastcall SetFileColors(UnicodeString value);
   void __fastcall SetRunsSinceLastTip(int value);
   bool __fastcall GetHonorDrivePolicy();
-  void __fastcall SetHonorDrivePolicy(bool value);
+  void __fastcall SetFileColors(UnicodeString value);
   bool __fastcall GetIsBeta();
   TStrings * __fastcall GetCustomCommandOptions();
   void __fastcall SetCustomCommandOptions(TStrings * value);
   void __fastcall SetLockedInterface(bool value);
   bool __fastcall GetTimeoutShellOperations();
   void __fastcall SetTimeoutShellOperations(bool value);
+  bool __fastcall GetTimeoutShellOperations();
+  void __fastcall SetTimeoutShellOperations(bool value);
   void __fastcall SetTimeoutShellIconRetrieval(bool value);
-  int __fastcall GetLocaleCompletenessTreshold();
 
   bool __fastcall GetDDExtInstalled();
   void __fastcall AddVersionToHistory();

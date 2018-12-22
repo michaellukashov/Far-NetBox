@@ -128,6 +128,13 @@ TColor __fastcall GetWindowColor(TColor Color)
 TColor __fastcall GetBtnFaceColor()
 {
   return WinConfiguration->UseDarkTheme() ? TColor(RGB(43, 43, 43)) : clBtnFace;
+  }
+  return Color;
+}
+//---------------------------------------------------------------------------
+TColor __fastcall GetBtnFaceColor()
+{
+  return WinConfiguration->UseDarkTheme() ? TColor(RGB(43, 43, 43)) : clBtnFace;
 }
 //---------------------------------------------------------------------------
 TColor __fastcall GetNonZeroColor(TColor Color)
@@ -466,7 +473,7 @@ bool __fastcall OpenInNewWindow()
   return UseAlternativeFunction();
 }
 //---------------------------------------------------------------------------
-void __fastcall ExecuteNewInstance(const UnicodeString & Param, const UnicodeString & AdditionalParams)
+void ExecuteNewInstance(const UnicodeString Param, const UnicodeString AdditionalParams)
 {
   UnicodeString Arg = Param;
   if (!Arg.IsEmpty())
@@ -1169,7 +1176,7 @@ static void __fastcall ConvertKey(UnicodeString & FileName, TKeyType Type)
 
   try
   {
-    FileName = ChangeFileExt(FileName, FORMAT(L".%s", (PuttyKeyExt)));
+    FileName = ::ChangeFileExt(FileName, FORMAT(".%s", PuttyKeyExt));
 
     if (!SaveDialog(LoadStr(CONVERTKEY_SAVE_TITLE), LoadStr(CONVERTKEY_SAVE_FILTER), PuttyKeyExt, FileName))
     {

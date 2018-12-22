@@ -283,7 +283,7 @@ public:
   intptr_t GetCPSLimit() const;
   virtual intptr_t DefaultCPSLimit() const;
   virtual UnicodeString GetStartupDirectory() const = 0;
-  virtual void ProgressUpdated();
+  virtual bool Complete();
   virtual TQueueItem *CreateParallelOperation();
   bool Complete();
 };
@@ -387,9 +387,17 @@ public:
   intptr_t GetActivePrimaryCount() const;
   intptr_t GetActiveAndPendingPrimaryCount() const;
   intptr_t GetDoneCount() const { return FDoneCount; }
-  void SetDoneCount(intptr_t Value);
-  TQueueItemProxy *GetItem(intptr_t Index) const;
-  TQueueItemProxy *GetItem(intptr_t Index);
+};
+//---------------------------------------------------------------------------
+class TBootstrapQueueItem : public TQueueItem
+{
+public:
+  __fastcall TBootstrapQueueItem();
+
+protected:
+  virtual void __fastcall DoExecute(TTerminal * Terminal);
+  virtual UnicodeString __fastcall StartupDirectory() const;
+  virtual bool __fastcall Complete();
 };
 //---------------------------------------------------------------------------
 NB_DEFINE_CLASS_ID(TLocatedQueueItem);

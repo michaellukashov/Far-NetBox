@@ -10,7 +10,8 @@
 #include "FileBuffer.h"
 #include "TextsCore.h"
 #include <openssl\rand.h>
-#include <process.h>
+#include <Soap.EncdDecd.hpp>
+#include <System.StrUtils.hpp>
 
 /*
  ---------------------------------------------------------------------------
@@ -313,7 +314,6 @@ static void fcrypt_init(
   const uint8_t pwd[], /* the user specified password (input)  */
   uint32_t pwd_len, /* the length of the password (input)   */
   const uint8_t salt[], /* the salt (input)                     */
-  uint8_t pwd_ver[PWD_VER_LENGTH], /* 2 byte password verifier (output)    */
   fcrypt_ctx cx[1]) /* the file encryption context (output) */
 {
   uint8_t kbuf[2 * MAX_KEY_LENGTH + PWD_VER_LENGTH];
@@ -338,11 +338,6 @@ static void fcrypt_init(
   /* initialise for authentication using key 2        */
   hmac_sha1_begin(&cx->auth_ctx);
   hmac_sha1_key(kbuf + KEY_LENGTH(mode), KEY_LENGTH(mode), &cx->auth_ctx);
-
-  if (pwd_ver != nullptr)
-  {
-    memmove(pwd_ver, kbuf + 2 * KEY_LENGTH(mode), PWD_VER_LENGTH);
-  }
 }
 
 /* perform 'in place' encryption and authentication */
@@ -372,37 +367,41 @@ static int fcrypt_end(uint8_t mac[], fcrypt_ctx cx[1])
 //---------------------------------------------------------------------------
 #define PASSWORD_MANAGER_AES_MODE 3
 //---------------------------------------------------------------------------
-static void FillBufferWithRandomData(char *Buf, intptr_t Len)
+static void AES256Salt(RawByteString & Salt)
 {
-  while (Len > 0)
-  {
-    *Buf = static_cast<int8_t>((rand() >> 7) & 0xFF);
-    Buf++;
-    Len--;
-  }
+  Salt.SetLength(SALT_LENGTH(PASSWORD_MANAGER_AES_MODE));
+  RAND_pseudo_bytes(reinterpret_cast<unsigned char *>(Salt.c_str()), Salt.Length());
 }
 //---------------------------------------------------------------------------
-static RawByteString AES256Salt()
+RawByteString GenerateEncryptKey()
 {
   RawByteString Result;
-  char *Buf = Result.SetLength(SALT_LENGTH(PASSWORD_MANAGER_AES_MODE));
-  FillBufferWithRandomData(Buf, Result.Length());
+  Result.SetLength(KEY_LENGTH(PASSWORD_MANAGER_AES_MODE));
+  RAND_pseudo_bytes(reinterpret_cast<unsigned char *>(Result.c_str()), Result.Length());
   return Result;
 }
 //---------------------------------------------------------------------------
-void AES256EncryptWithMAC(const RawByteString Input, const UnicodeString Password,
+void ValidateEncryptKey(const RawByteString & Key)
+{
+  int Len = KEY_LENGTH(PASSWORD_MANAGER_AES_MODE);
+  if (Key.Length() != Len)
+  {
+    throw Exception(FMTLOAD(INVALID_ENCRYPT_KEY, (L"AES-256", Len, Len * 2)));
+  }
+}
+//---------------------------------------------------------------------------
   RawByteString &Salt, RawByteString &Output, RawByteString &Mac)
 {
   fcrypt_ctx aes;
   if (Salt.IsEmpty())
   {
-    Salt = AES256Salt();
+    AES256Salt(Salt);
   }
   DebugAssert(Salt.Length() == SALT_LENGTH(PASSWORD_MANAGER_AES_MODE));
   UTF8String UtfPassword = UTF8String(Password);
   fcrypt_init(PASSWORD_MANAGER_AES_MODE,
     reinterpret_cast<const uint8_t *>(UtfPassword.c_str()), ToUInt32(UtfPassword.Length()),
-    reinterpret_cast<const uint8_t *>(Salt.c_str()), nullptr, &aes);
+    reinterpret_cast<const unsigned char *>(Salt.c_str()), &aes);
   Output = Input;
   Output.Unique();
   fcrypt_encrypt(reinterpret_cast<uint8_t *>(ToChar(Output)), ToUInt32(Output.Length()), &aes);
@@ -428,7 +427,7 @@ bool AES256DecryptWithMAC(RawByteString Input, const UnicodeString Password,
   UTF8String UtfPassword = UTF8String(Password);
   fcrypt_init(PASSWORD_MANAGER_AES_MODE,
     reinterpret_cast<const uint8_t *>(UtfPassword.c_str()), ToUInt32(UtfPassword.Length()),
-    reinterpret_cast<const uint8_t *>(Salt.c_str()), nullptr, &aes);
+    reinterpret_cast<const unsigned char *>(Salt.c_str()), &aes);
   Output = Input;
   Output.Unique();
   fcrypt_decrypt(reinterpret_cast<uint8_t *>(ToChar(Output)), ToUInt32(Output.Length()), &aes);
@@ -460,8 +459,9 @@ bool AES256DecryptWithMAC(RawByteString Input, const UnicodeString Password,
 //---------------------------------------------------------------------------
 void AES256CreateVerifier(const UnicodeString Input, RawByteString &Verifier)
 {
-  RawByteString Salt = AES256Salt();
-  RawByteString Dummy = AES256Salt();
+  RawByteString Salt;
+  RawByteString Dummy;
+  AES256Salt(Dummy);
 
   RawByteString Encrypted;
   RawByteString Mac;
@@ -596,6 +596,7 @@ void CryptographyInitialize()
     UnscrambleTable[SScrambleTable[Index]] = static_cast<uint8_t>(Index);
   }
   srand(ToUInt32(time(nullptr)) ^ ToUInt32(_getpid()));
+  RAND_poll();
 }
 //---------------------------------------------------------------------------
 void CryptographyFinalize()
@@ -641,6 +642,138 @@ int IsValidPassword(const UnicodeString Password)
   }
   return (Password.Length() >= 6) && ((A + B + C + D) >= 2);
 }
+//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
+TEncryption::TEncryption(const RawByteString & Key)
+{
+  FKey = Key;
+  FOutputtedHeader = false;
+  if (!FKey.IsEmpty())
+  {
+    DebugAssert(FKey.Length() == KEY_LENGTH(PASSWORD_MANAGER_AES_MODE));
+    FContext = call_aes_make_context();
+    aes_set_encrypt_key(reinterpret_cast<unsigned char *>(FKey.c_str()), FKey.Length(), FContext);
+  }
+  else
+  {
+    FContext = NULL;
+  }
+}
+//---------------------------------------------------------------------------
+TEncryption::~TEncryption()
+{
+  if (FContext != NULL)
+  {
+    call_aes_free_context(FContext);
+  }
+  Shred(FKey);
+  if ((FInputHeader.Length() > 0) && (FInputHeader.Length() < GetOverhead()))
+  {
+    throw Exception(LoadStr(UNKNOWN_FILE_ENCRYPTION));
+  }
+}
+//---------------------------------------------------------------------------
+void TEncryption::SetSalt()
+{
+  aes_iv(FContext, reinterpret_cast<unsigned char *>(FSalt.c_str()));
+}
+//---------------------------------------------------------------------------
+void TEncryption::NeedSalt()
+{
+  if (FSalt.IsEmpty())
+  {
+    AES256Salt(FSalt);
+    SetSalt();
+  }
+}
+//---------------------------------------------------------------------------
+const int AesBlock = 16;
+const int AesBlockMask = 0x0F;
+UnicodeString AesCtrExt(L".aesctr.enc");
+RawByteString AesCtrMagic("aesctr.........."); // 16 bytes fixed [to match AES block size], even for future algos
+//---------------------------------------------------------------------------
+int TEncryption::RoundToBlock(int Size)
+{
+  int M = (Size % BLOCK_SIZE);
+  if (M != 0)
+  {
+    Size += (BLOCK_SIZE - M);
+  }
+  return Size;
+}
+//---------------------------------------------------------------------------
+int TEncryption::RoundToBlockDown(int Size)
+{
+  return Size - (Size % BLOCK_SIZE);
+}
+//---------------------------------------------------------------------------
+void TEncryption::Aes(char * Buffer, int Size)
+{
+  DebugAssert(!FSalt.IsEmpty());
+  call_aes_sdctr(reinterpret_cast<unsigned char *>(Buffer), Size, FContext);
+}
+//---------------------------------------------------------------------------
+void TEncryption::Aes(TFileBuffer & Buffer, bool Last)
+{
+  if (!FOverflowBuffer.IsEmpty())
+  {
+    Buffer.Insert(0, FOverflowBuffer.c_str(), FOverflowBuffer.Length());
+    FOverflowBuffer.SetLength(0);
+  }
+
+  int Size;
+  if (Last)
+  {
+    Size = Buffer.Size;
+    Buffer.Size = RoundToBlock(Size);
+  }
+  else
+  {
+    int RoundedSize = RoundToBlockDown(Buffer.Size);
+    if (RoundedSize != Buffer.Size)
+    {
+      FOverflowBuffer += RawByteString(Buffer.Data + RoundedSize, Buffer.Size - RoundedSize);
+      Buffer.Size = RoundedSize;
+    }
+  }
+
+  Aes(Buffer.Data, Buffer.Size);
+
+  if (Last)
+  {
+    Buffer.Size = Size;
+  }
+}
+//---------------------------------------------------------------------------
+void TEncryption::Encrypt(TFileBuffer & Buffer, bool Last)
+{
+  NeedSalt();
+  Aes(Buffer, Last);
+  if (!FOutputtedHeader)
+  {
+    DebugAssert(AesCtrMagic.Length() == BLOCK_SIZE);
+    RawByteString Header = AesCtrMagic + FSalt;
+    DebugAssert(Header.Length() == GetOverhead());
+    Buffer.Insert(0, Header.c_str(), Header.Length());
+    FOutputtedHeader = true;
+  }
+}
+//---------------------------------------------------------------------------
+void TEncryption::Decrypt(TFileBuffer & Buffer)
+{
+  if (FInputHeader.Length() < GetOverhead())
+  {
+    int HeaderSize = std::min(GetOverhead() - FInputHeader.Length(), Buffer.Size);
+    FInputHeader += RawByteString(Buffer.Data, HeaderSize);
+    Buffer.Delete(0, HeaderSize);
+
+    if (FInputHeader.Length() >= GetOverhead())
+    {
+      if (FInputHeader.SubString(1, AesCtrMagic.Length()) != AesCtrMagic)
+      {
+        throw Exception(LoadStr(UNKNOWN_FILE_ENCRYPTION));
+      }
+
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 TEncryption::TEncryption(const RawByteString & Key)

@@ -3,6 +3,8 @@
 #include <string_view>
 #include <Classes.hpp>
 //---------------------------------------------------------------------------
+#include <CopyParam.h>
+//---------------------------------------------------------------------------
 class THierarchicalStorage;
 class TBookmarkList;
 class TShortCuts;
@@ -101,6 +103,8 @@ public:
   TBookmark();
 
   virtual void Assign(const TPersistent *Source) override;
+
+  UnicodeString __fastcall GetSideDirectory(TOperationSide Side);
 
   __property UnicodeString Name = { read = FName, write = SetName };
   __property UnicodeString Local = { read = FLocal, write = SetLocal };

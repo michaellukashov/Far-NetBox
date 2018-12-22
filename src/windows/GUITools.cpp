@@ -110,6 +110,7 @@ void __fastcall OpenSessionInPutty(const UnicodeString PuttyPath,
     if (!RemoteCustomCommand.IsSiteCommand(AParams))
     {
       {
+      {
         bool SessionList = false;
         std::unique_ptr<THierarchicalStorage> SourceHostKeyStorage(Configuration->CreateScpStorage(SessionList));
         std::unique_ptr<THierarchicalStorage> TargetHostKeyStorage(new TRegistryStorage(Configuration->PuttyRegistryStorageKey));
@@ -138,6 +139,38 @@ void __fastcall OpenSessionInPutty(const UnicodeString PuttyPath,
         if ((SessionData->FSProtocol != fsFTP) && (SessionData->PortNumber != SshPortNumber))
         {
           AddToList(PuttyParams, FORMAT(L"-P %d", (SessionData->PortNumber)), L" ");
+        }
+
+        if (!Telnet)
+        {
+          if (!SessionData->PublicKeyFile.IsEmpty())
+          {
+            AddToList(PuttyParams, FORMAT(L"-i \"%s\"", (SessionData->PublicKeyFile)), L" ");
+          }
+          AddToList(PuttyParams, (SessionData->TryAgent ? L"-agent" : L"-noagent"), L" ");
+          if (SessionData->TryAgent)
+          {
+            AddToList(PuttyParams, (SessionData->AgentFwd ? L"-A" : L"-a"), L" ");
+          }
+          if (SessionData->Compression)
+          {
+            AddToList(PuttyParams, L"-C", L" ");
+          }
+          AddToList(PuttyParams,
+            ((SessionData->SshProt == ssh1only || SessionData->SshProt == ssh1deprecated) ? L"-1" : L"-2"), L" ");
+          if (!SessionData->LogicalHostName.IsEmpty())
+          {
+            AddToList(PuttyParams, FORMAT(L"-loghost \"%s\"", (SessionData->LogicalHostName)), L" ");
+          }
+        }
+
+        if (SessionData->AddressFamily == afIPv4)
+        {
+          AddToList(PuttyParams, L"-4", L" ");
+        }
+        else if (SessionData->AddressFamily == afIPv6)
+        {
+          AddToList(PuttyParams, L"-6", L" ");
         }
 
         if (!Telnet)
@@ -526,8 +559,8 @@ bool __fastcall DeleteDirectory(const UnicodeString DirName)
       { // VCL Function
         if (sr.IsDirectory())
         {
+        if (sr.IsDirectory())
           if (sr.IsRealFile())
-            retval = DeleteDirectory(DirName + L"\\" + sr.Name);
         }
         else
         {
@@ -556,6 +589,17 @@ public:
     TSessionColors * SessionColors = dynamic_cast<TSessionColors *>(Component->FindComponent(QualifiedClassName()));
     if (SessionColors == NULL)
     {
+public:
+  __fastcall TSessionColors(TComponent * Owner) : TComponent(Owner)
+  {
+    Name = QualifiedClassName();
+  }
+
+  static TSessionColors * __fastcall Retrieve(TComponent * Component)
+  {
+    TSessionColors * SessionColors = dynamic_cast<TSessionColors *>(Component->FindComponent(QualifiedClassName()));
+    if (SessionColors == NULL)
+    {
       SessionColors = new TSessionColors(Component);
     }
     return SessionColors;
@@ -566,7 +610,6 @@ public:
 };
 //---------------------------------------------------------------------------
 int __fastcall GetSessionColorImage(
-  TCustomImageList * ImageList, TColor Color, int MaskIndex)
 {
 
   TSessionColors * SessionColors = TSessionColors::Retrieve(ImageList);
@@ -629,6 +672,37 @@ int __fastcall GetSessionColorImage(
     SessionColors->ColorMap.insert(std::make_pair(Color, Result));
   }
   return Result;
+}
+//---------------------------------------------------------------------------
+void __fastcall RegenerateSessionColorsImageList(TCustomImageList * ImageList, int MaskIndex)
+{
+  TSessionColors * SessionColors = TSessionColors::Retrieve(ImageList);
+
+  std::vector<TColor> Colors;
+  size_t FixedImages = static_cast<size_t>(ImageList->Count);
+  Colors.resize(FixedImages + SessionColors->ColorMap.size());
+  TSessionColors::TColorMap::const_iterator I = SessionColors->ColorMap.begin();
+  while (I != SessionColors->ColorMap.end())
+  {
+    DebugAssert(Colors[I->second] == TColor());
+    Colors[I->second] = I->first;
+    I++;
+  }
+
+  TSessionColors::TColorMap ColorMap = SessionColors->ColorMap;
+  SessionColors->ColorMap.clear();
+
+  for (size_t Index = 0; Index < Colors.size(); Index++)
+  {
+    bool IsFixedImageIndex = (Index < FixedImages);
+    DebugAssert((Colors[Index] == TColor()) == IsFixedImageIndex);
+    if (!IsFixedImageIndex)
+    {
+      GetSessionColorImage(ImageList, Colors[Index], MaskIndex);
+    }
+  }
+
+  DebugAssert(SessionColors->ColorMap == ColorMap);
 }
 //---------------------------------------------------------------------------
 void __fastcall RegenerateSessionColorsImageList(TCustomImageList * ImageList, int MaskIndex)
@@ -1327,6 +1401,94 @@ void LoadBrowserDocument(TWebBrowserEx * WebBrowser, const UnicodeString & Docum
   }
 }
 //---------------------------------------------------------------------------
+{
+  // This creates TWebBrowserEx::Document, which we need to stream in an in-memory document
+  NavigateBrowserToUrl(WebBrowser, L"about:blank");
+  // Needs to be followed by WaitBrowserToIdle
+}
+//---------------------------------------------------------------------------
+void WaitBrowserToIdle(TWebBrowserEx * WebBrowser)
+{
+  while (WebBrowser->ReadyState < ::READYSTATE_INTERACTIVE)
+  {
+    Application->ProcessMessages();
+  }
+}
+//---------------------------------------------------------------------------
+void HideBrowserScrollbars(TWebBrowserEx * WebBrowser)
+{
+  ICustomDoc * CustomDoc = NULL;
+  if (DebugAlwaysTrue(WebBrowser->Document != NULL) &&
+      SUCCEEDED(WebBrowser->Document->QueryInterface(&CustomDoc)) &&
+      DebugAlwaysTrue(CustomDoc != NULL))
+  {
+    TCustomDocHandler * Handler = new TCustomDocHandler(WebBrowser);
+    CustomDoc->SetUIHandler(Handler);
+  }
+}
+//---------------------------------------------------------------------------
+UnicodeString GenerateAppHtmlPage(TFont * Font, TPanel * Parent, const UnicodeString & Body, bool Seamless)
+{
+  UnicodeString Result =
+    L"<!DOCTYPE html>\n"
+    L"<meta charset=\"utf-8\">\n"
+    L"<html>\n"
+    L"<head>\n"
+    L"<style>\n"
+    L"\n"
+    L"body\n"
+    L"{\n"
+    L"    font-family: '" + Font->Name + L"';\n"
+    L"    margin: " + UnicodeString(Seamless ? L"0" : L"0.5em") + L";\n"
+    L"    background-color: " + ColorToWebColorStr(Parent->Color) + L";\n" +
+    UnicodeString(Seamless ? L"    overflow: hidden;\n" : L"") +
+    L"}\n"
+    L"\n"
+    L"body\n"
+    L"{\n"
+    L"    font-size: " + IntToStr(Font->Size) + L"pt;\n"
+    L"}\n"
+    L"\n"
+    L"p\n"
+    L"{\n"
+    L"    margin-top: 0;\n"
+    L"    margin-bottom: 1em;\n"
+    L"}\n"
+    L"\n"
+    L"a, a:visited, a:hover, a:visited, a:current\n"
+    L"{\n"
+    L"    color: " + ColorToWebColorStr(LinkColor) + L";\n"
+    L"}\n"
+    L"</style>\n"
+    L"</head>\n"
+    L"<body>\n" +
+    Body +
+    L"</body>\n"
+    L"</html>\n";
+  return Result;
+}
+//---------------------------------------------------------------------------
+void LoadBrowserDocument(TWebBrowserEx * WebBrowser, const UnicodeString & Document)
+{
+  std::unique_ptr<TMemoryStream> DocumentStream(new TMemoryStream());
+  UTF8String DocumentUTF8 = UTF8String(Document);
+  DocumentStream->Write(DocumentUTF8.c_str(), DocumentUTF8.Length());
+  DocumentStream->Seek(0, 0);
+
+  // For stream-loaded document, when set only after loading from OnDocumentComplete,
+  // browser stops working
+  SetBrowserDesignModeOff(WebBrowser);
+
+  TStreamAdapter * DocumentStreamAdapter = new TStreamAdapter(DocumentStream.get(), soReference);
+  IPersistStreamInit * PersistStreamInit = NULL;
+  if (DebugAlwaysTrue(WebBrowser->Document != NULL) &&
+      SUCCEEDED(WebBrowser->Document->QueryInterface(IID_IPersistStreamInit, (void **)&PersistStreamInit)) &&
+      DebugAlwaysTrue(PersistStreamInit != NULL))
+  {
+    PersistStreamInit->Load(static_cast<_di_IStream>(*DocumentStreamAdapter));
+  }
+}
+//---------------------------------------------------------------------------
 TComponent * __fastcall FindComponentRecursively(TComponent * Root, const UnicodeString & Name)
 {
   for (int Index = 0; Index < Root->ComponentCount; Index++)
@@ -1346,6 +1508,18 @@ TComponent * __fastcall FindComponentRecursively(TComponent * Root, const Unicod
   return NULL;
 }
 //---------------------------------------------------------------------------
+void __fastcall GetInstrutionsTheme(
+  TColor & MainInstructionColor, HFONT & MainInstructionFont, HFONT & InstructionFont)
+{
+  MainInstructionColor = Graphics::clNone;
+  MainInstructionFont = 0;
+  InstructionFont = 0;
+  HTHEME Theme = OpenThemeData(0, L"TEXTSTYLE");
+  if (Theme != NULL)
+  {
+    LOGFONT AFont;
+    COLORREF AColor;
+
 void __fastcall GetInstrutionsTheme(
   TColor & MainInstructionColor, HFONT & MainInstructionFont, HFONT & InstructionFont)
 {
@@ -1797,7 +1971,7 @@ bool __fastcall TScreenTipHintWindow::IsPathLabel(TControl * HintControl)
   return (dynamic_cast<TPathLabel *>(HintControl) != NULL);
 }
 //---------------------------------------------------------------------------
-int __fastcall TScreenTipHintWindow::GetMargin(TControl * HintControl, const UnicodeString & Hint)
+intptr_t TScreenTipHintWindow::GetMargin(TControl *HintControl, const UnicodeString Hint)
 {
   int Result;
 

@@ -5,15 +5,16 @@
 #include <Common.h>
 #include "Option.h"
 #include "TextsCore.h"
+#include "System.StrUtils.hpp"
 //---------------------------------------------------------------------------
 __removed #pragma package(smart_init)
 //---------------------------------------------------------------------------
-TOptions::TOptions() :
-  FSwitchMarks(L"/-"),
-  FSwitchValueDelimiters(L"=:"),
-  FParamCount(0),
-  FNoMoreSwitches(false)
+const wchar_t ArrayValueDelimiter = L'[';
+const wchar_t ArrayValueEnd = L']';
+//---------------------------------------------------------------------------
+TOptions::TOptions()
 {
+  FSwitchValueDelimiters = UnicodeString(L"=:") + ArrayValueDelimiter;
 }
 //---------------------------------------------------------------------------
 void TOptions::Add(const UnicodeString Value)
@@ -30,6 +31,7 @@ void TOptions::Add(const UnicodeString Value)
     bool Switch = false;
     intptr_t Index = 0; // shut up
     wchar_t SwitchMark = L'\0';
+    wchar_t ValueDelimiter = L'\0';
     if (!FNoMoreSwitches &&
         (Value.Length() >= 2) &&
         (FSwitchMarks.Pos(Value[1]) > 0))
@@ -41,6 +43,7 @@ void TOptions::Add(const UnicodeString Value)
       {
         if (Value.IsDelimiter(FSwitchValueDelimiters, Index))
         {
+          ValueDelimiter = Value[Index];
           break;
         }
         // this is to treat /home/martin as parameter, not as switch
@@ -60,6 +63,10 @@ void TOptions::Add(const UnicodeString Value)
       Option.Type = otSwitch;
       Option.Name = Value.SubString(2, Index - 2);
       Option.Value = Value.SubString(Index + 1, Value.Length());
+      if ((ValueDelimiter == ArrayValueDelimiter) && EndsStr(ArrayValueEnd, Option.Value))
+      {
+        Option.Value.SetLength(Option.Value.Length() - 1);
+      }
       Option.ValueSet = (Index <= Value.Length());
     }
     else
@@ -205,6 +212,11 @@ bool TOptions::DoFindSwitch(const UnicodeString Switch,
   bool Result = FindSwitch(Switch, Value, ParamsStart, ParamsCount, CaseSensitive, ValueSet);
   if (Result)
   {
+    int AParamsCount;
+    if (TryStrToInt(Value, AParamsCount) && (AParamsCount < ParamsCount))
+    {
+      ParamsCount = AParamsCount;
+    }
     if ((ParamsMax >= 0) && (ParamsCount > ParamsMax))
     {
       ParamsCount = ParamsMax;

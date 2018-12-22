@@ -2333,7 +2333,6 @@ TRemoteProperties TRemoteProperties::ChangedProperties(
   const TRemoteProperties &OriginalProperties, TRemoteProperties &NewProperties)
 {
   DebugAssert(!OriginalProperties.Valid.Contains(vpEncrypt));
-  TODO("Modification and LastAccess");
   if (!NewProperties.Recursive)
   {
     if (NewProperties.Rights == OriginalProperties.Rights &&

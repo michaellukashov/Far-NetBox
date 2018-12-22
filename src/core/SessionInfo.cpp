@@ -14,6 +14,7 @@
 #include "SessionInfo.h"
 #include "TextsCore.h"
 #include "Script.h"
+#include <System.IOUtils.hpp>
 //---------------------------------------------------------------------------
 __removed #pragma package(smart_init)
 //---------------------------------------------------------------------------
@@ -314,6 +315,59 @@ public:
     FFile = AFile->Duplicate(true);
   }
 
+  void __fastcall SynchronizeChecklistItem(const TSynchronizeChecklist::TItem * Item)
+  {
+    UnicodeString Action;
+    bool RecordLocal = false;
+    bool RecordRemote = false;
+    switch (Item->Action)
+    {
+      case TSynchronizeChecklist::saUploadNew:
+        Action = L"uploadnew";
+        RecordLocal = true;
+        break;
+      case TSynchronizeChecklist::saDownloadNew:
+        Action = L"downloadnew";
+        RecordRemote = true;
+        break;
+      case TSynchronizeChecklist::saUploadUpdate:
+        Action = L"uploadupdate";
+        RecordLocal = true;
+        RecordRemote = true;
+        break;
+      case TSynchronizeChecklist::saDownloadUpdate:
+        Action = L"downloadupdate";
+        RecordLocal = true;
+        RecordRemote = true;
+        break;
+      case TSynchronizeChecklist::saDeleteRemote:
+        Action = L"deleteremote";
+        RecordRemote = true;
+        break;
+      case TSynchronizeChecklist::saDeleteLocal:
+        Action = L"deletelocal";
+        RecordLocal = true;
+        break;
+      default:
+        DebugFail();
+        break;
+    }
+
+    Parameter(L"action", Action);
+
+    if (RecordLocal)
+    {
+      UnicodeString FileName = TPath::Combine(Item->Local.Directory, Item->Local.FileName);
+      SynchronizeChecklistItemFileInfo(FileName, Item->IsDirectory, Item->Local);
+    }
+    if (RecordRemote)
+    {
+      UnicodeString FileName = UnixCombinePaths(Item->Remote.Directory, Item->Remote.FileName);
+      SynchronizeChecklistItemFileInfo(FileName, Item->IsDirectory, Item->Remote);
+    }
+  }
+
+
 protected:
   enum TState
   {
@@ -347,7 +401,7 @@ protected:
     case laStat: return L"stat";
     case laChecksum: return L"checksum";
     case laCwd: return L"cwd";
-    default:
+      case laDifference: return L"difference";
       DebugFail();
       return L"";
     }
@@ -388,6 +442,21 @@ protected:
     FLog->AddIndented(AIndent + L"</file>");
   }
 #endif // #if 0
+
+  void __fastcall SynchronizeChecklistItemFileInfo(
+    const UnicodeString & AFileName, bool IsDirectory, const TSynchronizeChecklist::TItem::TFileInfo FileInfo)
+  {
+    Parameter(L"type", XmlAttributeEscape(IsDirectory ? L'D' : L'-'));
+    FileName(XmlAttributeEscape(AFileName));
+    if (!IsDirectory)
+    {
+      Parameter(L"size", XmlAttributeEscape(IntToStr(FileInfo.Size)));
+    }
+    if (FileInfo.ModificationFmt != mfNone)
+    {
+      Modification(FileInfo.Modification);
+    }
+  }
 
 private:
   TActionLog *FLog;
@@ -675,9 +744,18 @@ TCwdSessionAction::TCwdSessionAction(TActionLog *Log, const UnicodeString Path) 
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-TSessionInfo::TSessionInfo() :
-  LoginTime(Now())
+__fastcall TDifferenceSessionAction::TDifferenceSessionAction(TActionLog * Log, const TSynchronizeChecklist::TItem * Item) :
+  TSessionAction(Log, laDifference)
 {
+  if (FRecord != NULL)
+  {
+    FRecord->SynchronizeChecklistItem(Item);
+  }
+}
+//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
+{
+  CertificateVerifiedManually = false;
 }
 //---------------------------------------------------------------------------
 TFileSystemInfo::TFileSystemInfo()
@@ -1067,9 +1145,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData *Data)
   if (Data == nullptr)
   {
     AddSeparator();
-    UnicodeString OS = WindowsVersionLong();
-    AddToList(OS, WindowsProductName(), L" - ");
-    ADF("NetBox %s (OS %s)", FConfiguration->GetProductVersionStr(), OS);
+    ADSTR(GetEnvironmentInfo());
     try__finally
     {
       std::unique_ptr<THierarchicalStorage> Storage(FConfiguration->CreateConfigStorage());
@@ -1094,7 +1170,11 @@ void TSessionLog::DoAddStartupInfo(TSessionData *Data)
     }
 #endif // #if 0
     UnicodeString LogStr;
-    if (FConfiguration->GetLogProtocol() <= 0)
+    if (FConfiguration->GetLogProtocol() <= -1)
+    {
+      LogStr = L"Reduced";
+    }
+    else if (FConfiguration->LogProtocol <= 0)
     {
       LogStr = L"Normal";
     }
@@ -1149,7 +1229,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData *Data)
     ADF("Session name: %s (%s)", Data->GetSessionName(), Data->GetSource());
     ADF("Host name: %s (Port: %d)", Data->GetHostNameExpanded(), Data->GetPortNumber());
     ADF("User name: %s (Password: %s, Key file: %s, Passphrase: %s)",
-      Data->GetUserNameExpanded(), LogSensitive(Data->GetPassword()),
+      Data->GetUserNameExpanded(), LogSensitive(NormalizeString(Data->GetPassword())),
       LogSensitive(Data->GetPublicKeyFile()), LogSensitive(Data->GetPassphrase()))
 #endif // #if 0
     if (Data->GetUsesSsh())
@@ -1243,10 +1323,11 @@ void TSessionLog::DoAddStartupInfo(TSessionData *Data)
       ADF("Clear aliases: %s, Unset nat.vars: %s, Resolve symlinks: %s; Follow directory symlinks: %s",
         BooleanToEngStr(Data->GetClearAliases()), BooleanToEngStr(Data->GetUnsetNationalVars()),
         BooleanToEngStr(Data->GetResolveSymlinks()), BooleanToEngStr(Data->GetFollowDirectorySymlinks()));
-      ADF("LS: %s, Ign LS warn: %s, Scp1 Comp: %s",
+      ADF("LS: %s, Ign LS warn: %s, Scp1 Comp: %s; Exit code 1 is error: %s",
         Data->GetListingCommand(),
         BooleanToEngStr(Data->GetIgnoreLsWarnings()),
-        BooleanToEngStr(Data->GetScp1Compatibility()));
+        BooleanToEngStr(Data->Scp1Compatibility),
+        BooleanToEngStr(Data->ExitCode1IsError)));
     }
     if ((Data->GetFSProtocol() == fsSFTP) || (Data->GetFSProtocol() == fsSFTPonly))
     {

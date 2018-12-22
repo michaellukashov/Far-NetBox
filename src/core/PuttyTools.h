@@ -19,8 +19,8 @@ NB_CORE_EXPORT void ChangeKeyComment(TPrivateKey *PrivateKey, const UnicodeStrin
 NB_CORE_EXPORT void SaveKey(TKeyType KeyType, const UnicodeString FileName,
   const UnicodeString Passphrase, TPrivateKey *PrivateKey);
 NB_CORE_EXPORT void FreeKey(TPrivateKey *PrivateKey);
-
-NB_CORE_EXPORT int64_t ParseSize(const UnicodeString SizeStr);
+UnicodeString GetPublicKeyLine(const UnicodeString & FileName, UnicodeString & Comment);
+extern const UnicodeString PuttyKeyExt;
 //---------------------------------------------------------------------------
 NB_CORE_EXPORT bool HasGSSAPI(const UnicodeString CustomPath);
 //---------------------------------------------------------------------------
@@ -39,4 +39,11 @@ NB_CORE_EXPORT void DllHijackingProtection();
 UnicodeString ParseOpenSshPubLine(const UnicodeString ALine, const struct ssh_signkey *& Algorithm);
 //---------------------------------------------------------------------------
 UnicodeString GetKeyTypeHuman(const UnicodeString AKeyType);
+//---------------------------------------------------------------------------
+bool IsOpenSSH(const UnicodeString & SshImplementation);
+//---------------------------------------------------------------------------
+TStrings * SshCipherList();
+TStrings * SshKexList();
+TStrings * SshHostKeyList();
+TStrings * SshMacList();
 //---------------------------------------------------------------------------

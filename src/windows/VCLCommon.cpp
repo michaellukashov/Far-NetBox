@@ -381,11 +381,6 @@ void __fastcall ReadOnlyControl(TControl * Control, bool ReadOnly)
   DoReadOnlyControl(Control, ReadOnly, true);
 }
 //---------------------------------------------------------------------------
-void __fastcall ReadOnlyControl(TControl * Control, bool ReadOnly)
-{
-  DoReadOnlyControl(Control, ReadOnly, true);
-}
-//---------------------------------------------------------------------------
 // Some of MainFormLike code can now be obsolete, thanks to Application->OnGetMainFormHandle.
 static TForm * MainLikeForm = NULL;
 //---------------------------------------------------------------------------

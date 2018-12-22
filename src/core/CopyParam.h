@@ -50,6 +50,8 @@ const int cpaNoRemoveCtrlZ      = 0x200;
 const int cpaNoRemoveBOM        = 0x400;
 const int cpaNoPreserveTimeDirs = 0x800;
 const int cpaNoResumeSupport    = 0x1000;
+const int cpaNoEncryptNewFiles  = 0x2000;
+const int cpaNoCalculateSize    = 0x4000;
 //---------------------------------------------------------------------------
 struct TUsableCopyParamAttrs
 {
@@ -91,8 +93,10 @@ private:
   bool FRemoveBOM;
   uintptr_t FCPSLimit;
   bool FNewerOnly;
-
-public:
+  bool FEncryptNewFiles;
+  bool FExcludeHiddenFiles;
+  bool FExcludeEmptyDirectories;
+  __int64 FSize;
   static const wchar_t TokenPrefix = L'%';
   static const wchar_t NoReplacement = wchar_t(0);
   static const wchar_t TokenReplacement = wchar_t(1);
@@ -102,10 +106,8 @@ public:
   bool GetReplaceInvalidChars() const;
   void SetReplaceInvalidChars(bool Value);
   UnicodeString RestoreChars(const UnicodeString AFileName) const;
-  void DoGetInfoStr(const UnicodeString Separator, intptr_t Attrs,
-    UnicodeString &Result, bool &SomeAttrIncluded,
-    const UnicodeString Link, UnicodeString &ScriptArgs, bool &NoScriptArgs,
-    /*TAssemblyLanguage Language, UnicodeString & AssemblyCode, */bool &NoCodeProperties) const;
+    UnicodeString & Result, bool & SomeAttrIncluded, const UnicodeString & Link, UnicodeString & ScriptArgs,
+    TAssemblyLanguage Language, UnicodeString & AssemblyCode) const;
   TStrings *GetTransferSkipList() const;
   void SetTransferSkipList(TStrings *Value);
 
@@ -128,16 +130,15 @@ public:
   UnicodeString ValidLocalPath(const UnicodeString APath) const;
   bool AllowAnyTransfer() const;
   bool AllowTransfer(const UnicodeString AFileName, TOperationSide Side,
-    bool Directory, const TFileMasks::TParams &Params) const;
+    bool Directory, const TFileMasks::TParams & Params, bool Hidden) const;
   bool SkipTransfer(const UnicodeString AFileName, bool Directory) const;
 
-  void Load(THierarchicalStorage *Storage);
-  void Save(THierarchicalStorage *Storage) const;
+  virtual void Load(THierarchicalStorage *Storage);
+  virtual void __fastcall Save(THierarchicalStorage * Storage, const TCopyParamType * Defaults = NULL) const;
   UnicodeString GetInfoStr(const UnicodeString Separator, intptr_t Attrs) const;
   bool AnyUsableCopyParam(intptr_t Attrs) const;
-  UnicodeString GenerateTransferCommandArgs(
-    intptr_t Attrs, const UnicodeString Link, bool &NoScriptArgs) const;
-  __removed UnicodeString GenerateAssemblyCode(TAssemblyLanguage Language, int Attrs, bool &NoCodeProperties) const;
+  UnicodeString __fastcall GenerateTransferCommandArgs(int Attrs, const UnicodeString & Link) const;
+  UnicodeString __fastcall GenerateAssemblyCode(TAssemblyLanguage Language, int Attrs) const;
 
   bool operator==(const TCopyParamType &rhp) const;
 
@@ -168,6 +169,10 @@ public:
   __property bool RemoveBOM = { read = FRemoveBOM, write = FRemoveBOM };
   __property uintptr_t CPSLimit = { read = FCPSLimit, write = FCPSLimit };
   __property bool NewerOnly = { read = FNewerOnly, write = FNewerOnly };
+  __property bool EncryptNewFiles = { read = FEncryptNewFiles, write = FEncryptNewFiles };
+  __property bool ExcludeHiddenFiles = { read = FExcludeHiddenFiles, write = FExcludeHiddenFiles };
+  __property bool ExcludeEmptyDirectories = { read = FExcludeEmptyDirectories, write = FExcludeEmptyDirectories };
+  __property __int64 Size = { read = FSize, write = FSize };
 
   const TFileMasks &GetAsciiFileMask() const { return FAsciiFileMask; }
   TFileMasks &GetAsciiFileMask() { return FAsciiFileMask; }

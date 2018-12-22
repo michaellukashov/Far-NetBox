@@ -23,10 +23,10 @@ IShellLink * __fastcall CreateDesktopShortCut(const UnicodeString &Name,
   int SpecialFolder = -1, int IconIndex = 0, bool Return = false);
 IShellLink * __fastcall CreateDesktopSessionShortCut(
   const UnicodeString & SessionName, UnicodeString Name,
-  const UnicodeString & AdditionalParams,
-  int SpecialFolder = -1, int IconIndex = SITE_ICON, bool Return = false);
-UnicodeString __fastcall GetListViewStr(TListView * ListView);
-void __fastcall LoadListViewStr(TListView * ListView, UnicodeString LayoutStr);
+TColor __fastcall GetWindowTextColor(TColor BackgroundColor, TColor Color = static_cast<TColor>(0));
+TColor __fastcall GetWindowColor(TColor Color = static_cast<TColor>(0));
+TColor __fastcall GetBtnFaceColor();
+void __fastcall VerifyAndConvertKey(UnicodeString & FileName, TSshProt SshProt, bool CanIgnore);
 void __fastcall RestoreForm(UnicodeString Data, TForm * Form, bool PositionOnly = false);
 UnicodeString __fastcall StoreForm(TCustomForm * Form);
 void __fastcall RestoreFormSize(UnicodeString Data, TForm * Form);

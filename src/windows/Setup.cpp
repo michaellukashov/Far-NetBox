@@ -1561,7 +1561,6 @@ static void __fastcall InsertDonateLink(void * /*Data*/, TObject * Sender)
     LoadBrowserDocument(DonateBrowser, Document);
     HideBrowserScrollbars(DonateBrowser);
   }
-  }
 }
 //---------------------------------------------------------------------------
 bool __fastcall CheckForUpdates(bool CachedResults)

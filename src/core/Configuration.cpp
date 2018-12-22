@@ -84,6 +84,7 @@ TConfiguration::TConfiguration(TObjectClassId Kind) :
   FUpdating = 0;
   FStorage = stDetect;
   FDontSave = false;
+  FForceSave = false;
   FApplicationInfo = nullptr;
   __removed FUsage = new TUsage(this);
   FDefaultCollectUsage = false;
@@ -147,6 +148,8 @@ void TConfiguration::Default()
   FTryFtpWhenSshFails = true;
   FParallelDurationThreshold = 10;
   SetCollectUsage(FDefaultCollectUsage);
+  FDontReloadMoreThanSessions = 1000;
+  FScriptProgressFileNameLimit = 25;
   SetMimeTypes(UnicodeString());
   FSessionReopenAutoMaximumNumberOfRetries = CONST_DEFAULT_NUMBER_OF_RETRIES;
 
@@ -284,6 +287,8 @@ UnicodeString TConfiguration::PropertyToKey(const UnicodeString AProperty)
     KEY(Bool,     TryFtpWhenSshFails); \
     KEY(Integer,  ParallelDurationThreshold); \
     KEY(String,   MimeTypes); \
+    KEY(Integer,  DontReloadMoreThanSessions); \
+    KEY(Integer,  ScriptProgressFileNameLimit); \
     KEY(Bool,     CollectUsage); \
     KEY(Integer,  SessionReopenAutoMaximumNumberOfRetries); \
   ); \
@@ -336,6 +341,7 @@ void TConfiguration::DoSave(bool All, bool Explicit)
   {
     Storage->SetAccessMode(smReadWrite);
     Storage->SetExplicit(Explicit);
+    AStorage->ForceSave = FForceSave;
     if (Storage->OpenSubKey(GetConfigurationSubKey(), true))
     {
       // if saving to TOptionsStorage, make sure we save everything so that
@@ -1909,7 +1915,7 @@ void TConfiguration::SetSessionReopenAutoMaximumNumberOfRetries(intptr_t Value)
 //---------------------------------------------------------------------------
 bool TConfiguration::GetPersistent() const
 {
-  return (GetStorage() != stNul);
+  return (Storage != stNul) && !FDontSave;
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------

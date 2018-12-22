@@ -51,6 +51,8 @@ const int mpAllowContinueOnError = 0x02;
 
 #define DUMPCALLSTACK_EVENT L"WinSCPCallstack%d"
 
+#define DUMPCALLSTACK_EVENT L"WinSCPCallstack%d"
+
 struct TMessageParams
 {
   TMessageParams(unsigned int AParams = 0);
@@ -603,6 +605,32 @@ private:
   void __fastcall SetHint(UnicodeString value);
   void __fastcall BalloonCancelled();
 };
+//---------------------------------------------------------------------------
+class TConsole
+{
+public:
+  virtual __fastcall ~TConsole() {};
+  virtual void __fastcall Print(UnicodeString Str, bool FromBeginning = false, bool Error = false) = 0;
+  void __fastcall PrintLine(const UnicodeString & Str = UnicodeString(), bool Error = false);
+  virtual bool __fastcall Input(UnicodeString & Str, bool Echo, unsigned int Timer) = 0;
+  virtual int __fastcall Choice(
+    UnicodeString Options, int Cancel, int Break, int Continue, int Timeouted, bool Timeouting, unsigned int Timer,
+    UnicodeString Message) = 0;
+  virtual bool __fastcall PendingAbort() = 0;
+  virtual void __fastcall SetTitle(UnicodeString Title) = 0;
+  virtual bool __fastcall LimitedOutput() = 0;
+  virtual bool __fastcall LiveOutput() = 0;
+  virtual bool __fastcall NoInteractiveInput() = 0;
+  virtual void __fastcall WaitBeforeExit() = 0;
+  virtual bool __fastcall CommandLineOnly() = 0;
+  virtual bool __fastcall WantsProgress() = 0;
+  virtual void __fastcall Progress(TScriptProgress & Progress) = 0;
+  virtual UnicodeString __fastcall FinalLogMessage() = 0;
+};
+//---------------------------------------------------------------------------
+int __fastcall HandleException(TConsole * Console, Exception & E);
+//---------------------------------------------------------------------------
+enum { RESULT_SUCCESS = 0, RESULT_ANY_ERROR = 1 };
 //---------------------------------------------------------------------------
 class TConsole
 {

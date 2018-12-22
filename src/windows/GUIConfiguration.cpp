@@ -86,7 +86,7 @@ void __fastcall TGUICopyParamType::Load(THierarchicalStorage * Storage)
   QueueParallel = Storage->ReadBool(L"QueueParallel", QueueParallel);
 }
 //---------------------------------------------------------------------------
-void __fastcall TGUICopyParamType::Save(THierarchicalStorage * Storage, const TCopyParamType * Defaults) const
+void TGUICopyParamType::Save(THierarchicalStorage * Storage, const TCopyParamType * Defaults) const
 {
   DebugAssert(Defaults == NULL);
   TCopyParamType::Save(Storage, Defaults);
@@ -655,7 +655,7 @@ void __fastcall TGUIConfiguration::UpdateStaticUsage()
     KEY(Integer,  SessionReopenAutoIdle); \
   ); \
 //---------------------------------------------------------------------------
-bool __fastcall TGUIConfiguration::DoSaveCopyParam(THierarchicalStorage * Storage, const TCopyParamType * CopyParam, const TCopyParamType * Defaults)
+bool TGUIConfiguration::DoSaveCopyParam(THierarchicalStorage * Storage, const TCopyParamType * CopyParam, const TCopyParamType * Defaults)
 {
   bool Result = Storage->OpenSubKey(L"Interface\\CopyParam", true, true);
   if (Result)
@@ -674,7 +674,7 @@ void __fastcall TGUIConfiguration::SaveData(THierarchicalStorage * Storage, bool
   REGCONFIG(true);
   #undef KEYEX
 
-  if (DoSaveCopyParam(Storage, &FDefaultCopyParam, NULL))
+  if (DoSaveCopyParam(Storage, &FDefaultCopyParam, nullptr))
   try
   {
     FDefaultCopyParam.Save(Storage);
@@ -706,7 +706,7 @@ void __fastcall TGUIConfiguration::SaveData(THierarchicalStorage * Storage, bool
   }
 }
 //---------------------------------------------------------------------------
-bool __fastcall TGUIConfiguration::LoadCopyParam(THierarchicalStorage * Storage, TCopyParamType * CopyParam)
+bool TGUIConfiguration::LoadCopyParam(THierarchicalStorage * Storage, TCopyParamType * CopyParam)
 {
   bool Result =
     Storage->OpenSubKey(L"Interface\\CopyParam", false, true);
@@ -745,8 +745,6 @@ void __fastcall TGUIConfiguration::LoadData(THierarchicalStorage * Storage)
   if (LoadCopyParam(Storage, &FDefaultCopyParam))
   try
   {
-    int CopyParamListCount = Storage->ReadInteger(L"CopyParamList", -1);
-    FCopyParamListDefaults = (CopyParamListCount < 0);
     if (!FCopyParamListDefaults)
     {
       FCopyParamList->Clear();
@@ -1080,7 +1078,6 @@ void __fastcall TGUIConfiguration::SetResourceModule(HINSTANCE Instance)
 void __fastcall TGUIConfiguration::FindLocales(const UnicodeString & LocalesMask, TStrings * Exts, UnicodeString & LocalesExts)
 {
   int FindAttrs = faReadOnly | faArchive;
-
   TSearchRecOwned SearchRec;
   bool Found = (FindFirstUnchecked(LocalesMask, FindAttrs, SearchRec) == 0);
   while (Found)
@@ -1341,6 +1338,11 @@ void __fastcall TGUIConfiguration::SetNewDirectoryProperties(
 void __fastcall TGUIConfiguration::SetQueueTransfersLimit(int value)
 {
   SET_CONFIG_PROPERTY(QueueTransfersLimit);
+}
+//---------------------------------------------------------------------------
+void __fastcall TGUIConfiguration::SetQueueBootstrap(bool value)
+{
+  SET_CONFIG_PROPERTY(QueueBootstrap);
 }
 //---------------------------------------------------------------------------
 void __fastcall TGUIConfiguration::SetQueueBootstrap(bool value)

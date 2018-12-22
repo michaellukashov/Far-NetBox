@@ -35,6 +35,7 @@ struct NB_CORE_EXPORT TSessionInfo
 
   UnicodeString CertificateFingerprint;
   UnicodeString Certificate;
+  bool CertificateVerifiedManually;
 };
 //---------------------------------------------------------------------------
 enum TFSCapability
@@ -52,7 +53,7 @@ enum TFSCapability
   fcModeChangingUpload, fcPreservingTimestampUpload, fcShellAnyCommand,
   fcSecondaryShell, fcRemoveCtrlZUpload, fcRemoveBOMUpload, fcMoveToQueue,
   fcLocking, fcPreservingTimestampDirs, fcResumeSupport,
-  fcChangePassword, fsSkipTransfer, fsParallelTransfers,
+  fcChangePassword, fsSkipTransfer, fsParallelTransfers, fsBackgroundTransfers,
   fcCount,
 };
 //---------------------------------------------------------------------------
@@ -106,7 +107,7 @@ enum TLogLineType
 enum TLogAction
 {
   laUpload, laDownload, laTouch, laChmod, laMkdir, laRm, laMv, laCp, laCall, laLs,
-  laStat, laChecksum, laCwd
+  laStat, laChecksum, laCwd, laDifference
 };
 //---------------------------------------------------------------------------
 enum TCaptureOutputType { cotOutput, cotError, cotExitCode };
@@ -260,6 +261,12 @@ class NB_CORE_EXPORT TCwdSessionAction : public TSessionAction
 {
 public:
   TCwdSessionAction(TActionLog *Log, const UnicodeString Path);
+};
+//---------------------------------------------------------------------------
+class TDifferenceSessionAction : public TSessionAction
+{
+public:
+  __fastcall TDifferenceSessionAction(TActionLog * Log, const TSynchronizeChecklist::TItem * Item);
 };
 
 typedef nb::FastDelegate2<void,

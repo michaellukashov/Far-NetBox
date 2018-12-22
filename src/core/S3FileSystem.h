@@ -77,7 +77,7 @@ public:
     const UnicodeString ATargetDir, UnicodeString &ADestFileName, uintptr_t Attrs,
     const TCopyParamType *CopyParam, intptr_t AParams, TFileOperationProgressType *OperationProgress,
     uintptr_t AFlags, TDownloadSessionAction &Action) override;
-  virtual void RemoteCreateDirectory(const UnicodeString ADirName) override;
+  virtual void RemoteCreateDirectory(const UnicodeString ADirName, bool Encrypt) override;
   virtual void RemoteCreateLink(const UnicodeString AFileName, const UnicodeString APointTo, bool Symbolic) override;
   virtual void RemoteDeleteFile(const UnicodeString AFileName,
     const TRemoteFile *File, intptr_t AParams,
@@ -133,6 +133,7 @@ protected:
   typedef rde::map<UnicodeString, UnicodeString> TRegions;
   TRegions FRegions;
   TRegions FHostNames;
+  UnicodeString FAuthRegion;
 
   virtual UnicodeString RemoteGetCurrentDirectory() const override;
 
@@ -146,11 +147,12 @@ protected:
   void ReadDirectoryInternal(const UnicodeString APath, TRemoteFileList *FileList, intptr_t MaxKeys, const UnicodeString AFileName);
   void ParsePath(const UnicodeString APath, UnicodeString &BucketName, UnicodeString &AKey);
   TRemoteToken MakeRemoteToken(const char *OwnerId, const char *OwnerDisplayName);
-  TLibS3BucketContext GetBucketContext(const UnicodeString ABucketName);
+  TLibS3BucketContext GetBucketContext(const UnicodeString ABucketName, const UnicodeString Prefix);
   void DoListBucket(
     const UnicodeString APrefix, TRemoteFileList *FileList, intptr_t MaxKeys, const TLibS3BucketContext &BucketContext,
     TLibS3ListBucketCallbackData &Data);
   UnicodeString GetFolderKey(const UnicodeString AKey);
+  void HandleNonBucketStatus(TLibS3CallbackData & Data, bool & Retry);
   void DoReadFile(const UnicodeString AFileName, TRemoteFile *&AFile);
   void ConfirmOverwrite(
     const UnicodeString ASourceFullFileName, UnicodeString &ATargetFileName,

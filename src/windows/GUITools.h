@@ -3,7 +3,11 @@
 #define GUIToolsH
 //---------------------------------------------------------------------------
 #include <FileMasks.H>
-#include <Tbx.hpp>
+
+#pragma once
+
+#include <Classes.hpp>
+#include <FileMasks.h>
 #include <DirectoryMonitor.hpp>
 //---------------------------------------------------------------------------
 class TSessionData;
@@ -58,8 +62,8 @@ void WaitBrowserToIdle(TWebBrowserEx * WebBrowser);
 void HideBrowserScrollbars(TWebBrowserEx * WebBrowser);
 UnicodeString GenerateAppHtmlPage(TFont * Font, TPanel * Parent, const UnicodeString & Body, bool Seamless);
 void LoadBrowserDocument(TWebBrowserEx * WebBrowser, const UnicodeString & Document);
-TComponent * __fastcall FindComponentRecursively(TComponent * Root, const UnicodeString & Name);
 void __fastcall GetInstrutionsTheme(
+  TColor & MainInstructionColor, HFONT & MainInstructionFont, HFONT & InstructionFont);
   TColor & MainInstructionColor, HFONT & MainInstructionFont, HFONT & InstructionFont);
 //---------------------------------------------------------------------------
 class TLocalCustomCommand : public TFileCustomCommand
@@ -154,11 +158,13 @@ private:
 
   UnicodeString __fastcall GetLongHintIfAny(const UnicodeString & AHint);
   static int __fastcall GetTextFlags(TControl * Control);
-  bool __fastcall IsPathLabel(TControl * HintControl);
+
   bool __fastcall UseBoldShortHint(TControl * HintControl);
   int __fastcall GetMargin(TControl * HintControl, const UnicodeString & Hint);
   TFont * __fastcall GetFont(TControl * HintControl, const UnicodeString & Hint);
   TControl * __fastcall GetHintControl(void * Data);
+  void __fastcall SplitHint(
+    TControl * HintControl, const UnicodeString & Hint, UnicodeString & ShortHint, UnicodeString & LongHint);
   void __fastcall SplitHint(
     TControl * HintControl, const UnicodeString & Hint, UnicodeString & ShortHint, UnicodeString & LongHint);
 };

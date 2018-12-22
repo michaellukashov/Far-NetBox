@@ -28,8 +28,8 @@ public:
   __fastcall TGUICopyParamType(const TCopyParamType & Source);
   __fastcall TGUICopyParamType(const TGUICopyParamType & Source);
 
-  virtual void __fastcall Load(THierarchicalStorage * Storage);
-  virtual void __fastcall Save(THierarchicalStorage * Storage, const TCopyParamType * Defaults = NULL) const;
+  virtual void Load(THierarchicalStorage * Storage);
+  virtual void Save(THierarchicalStorage * Storage, const TCopyParamType * Defaults = nullptr) const;
 
   virtual void __fastcall Default();
   virtual void __fastcall Assign(const TCopyParamType * Source);
@@ -233,6 +233,7 @@ protected:
   virtual int __fastcall GetResourceModuleCompleteness(HINSTANCE Module);
   virtual bool __fastcall IsTranslationComplete(HINSTANCE Module);
   static int __fastcall LocalesCompare(void * Item1, void * Item2);
+  bool __fastcall DoSaveCopyParam(THierarchicalStorage * Storage, const TCopyParamType * CopyParam, const TCopyParamType * Defaults);
   bool __fastcall DoSaveCopyParam(THierarchicalStorage * Storage, const TCopyParamType * CopyParam, const TCopyParamType * Defaults);
 
 public:

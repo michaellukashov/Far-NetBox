@@ -389,7 +389,7 @@ void __fastcall ConfigureInterface()
   UserDocumentDirectory = GetPersonalFolder();
 }
 //---------------------------------------------------------------------------
-void __fastcall DoAboutDialog(TConfiguration *Configuration)
+void DoAboutDialog(TConfiguration *Configuration)
 {
   DoAboutDialog(Configuration, true, NULL);
 }
@@ -922,6 +922,11 @@ static void __fastcall ColorPickClick(void * /*Data*/, TObject * Sender)
         {
           break;
         }
+      }
+      else
+      {
+        // no standard font colors
+        break;
       }
       else
       {

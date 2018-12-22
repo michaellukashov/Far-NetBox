@@ -952,6 +952,22 @@ int __fastcall CopyParamListPopupClick(TObject * Sender,
   {
     Result = -cplGenerateCode;
   }
+  else if (Item->Tag == cpiSavePreset)
+  {
+    std::unique_ptr<TCopyParamList> CopyParamList(new TCopyParamList());
+    *CopyParamList = *GUIConfiguration->CopyParamList;
+    int Index = -1;
+    if (DoCopyParamPresetDialog(CopyParamList.get(), Index, cpmAdd, NULL, Param))
+    {
+      GUIConfiguration->CopyParamList = CopyParamList.get();
+      // If saved unmodified, then make this the selected preset
+      if (*CopyParamList->CopyParams[Index] == Param)
+      {
+        Preset = CopyParamList->Names[Index];
+      }
+    }
+    Result = 0;
+  }
   else
   {
     Preset = (Item->Tag >= 0) ?
@@ -1408,6 +1424,19 @@ static void __fastcall DoApplicationMinimizeRestore(bool Minimize)
     // as we capture command-line operation above.
     // Had we called TApplication::Minimize, it would hide all non-MainForm windows, including MainLineForm,
     // so it actually also hides taskbar button, what we do not want.
+      MainLikeForm->WindowState = wsMinimized;
+    }
+    else
+    {
+      MainLikeForm->WindowState = PreviousWindowState;
+    }
+  }
+  else
+  {
+    // What is described below should not ever happen, except when minimizing to tray,
+    // as we capture command-line operation above.
+    // Had we called TApplication::Minimize, it would hide all non-MainForm windows, including MainLineForm,
+    // so it actually also hides taskbar button, what we do not want.
     // WORKAROUND
     // When main window is hidden (command-line operation),
     // we do not want it to be shown by TApplication.Restore,
@@ -1529,6 +1558,36 @@ void CheckConfigurationForceSave()
   }
 }
 //---------------------------------------------------------------------------
+UnicodeString DumpCallstackEventName(int ProcessId)
+{
+  return FORMAT(DUMPCALLSTACK_EVENT, (ProcessId));
+}
+//---------------------------------------------------------------------------
+UnicodeString DumpCallstackFileName(int ProcessId)
+{
+  UnicodeString FileName = FORMAT(L"%s.txt", (DumpCallstackEventName(ProcessId)));
+  UnicodeString Result = TPath::Combine(SystemTemporaryDirectory(), FileName);
+  return Result;
+}
+//---------------------------------------------------------------------------
+void CheckConfigurationForceSave()
+{
+  if (UseAlternativeFunction() && Configuration->Persistent &&
+      (Configuration->Storage == stIniFile) && Sysutils::FileExists(ApiPath(Configuration->IniFileStorageName)) &&
+      !Configuration->ForceSave)
+  {
+    int Attr = GetFileAttributes(ApiPath(Configuration->IniFileStorageName).c_str());
+    if (FLAGSET(Attr, FILE_ATTRIBUTE_READONLY))
+    {
+      UnicodeString Message = FMTLOAD(READONLY_INI_FILE_OVERWRITE, (Configuration->IniFileStorageName));
+      if (MessageDialog(Message, qtConfirmation, qaOK | qaCancel, HELP_READONLY_INI_FILE) == qaOK)
+      {
+        Configuration->ForceSave = true;
+      }
+    }
+  }
+}
+//---------------------------------------------------------------------------
 class TCallstackThread : public TSignalThread
 {
 public:
@@ -1578,8 +1637,6 @@ void __fastcall TCallstackThread::ProcessEvent()
   catch (...)
   {
   }
-}
-//---------------------------------------------------------------------------
 HANDLE TCallstackThread::DoCreateEvent()
 {
   UnicodeString Name = DumpCallstackEventName(GetCurrentProcessId());

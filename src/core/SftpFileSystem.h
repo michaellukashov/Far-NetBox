@@ -14,6 +14,7 @@ class TSFTPPacket;
 struct TOverwriteFileParams;
 struct TSFTPSupport;
 class TSecureShell;
+class TEncryption;
 //---------------------------------------------------------------------------
 __removed enum TSFTPOverwriteMode { omOverwrite, omAppend, omResume };
 __removed extern const int SFTPMaxVersion;
@@ -79,10 +80,11 @@ public:
     const UnicodeString ATargetDir, UnicodeString &ADestFileName, uintptr_t Attrs,
     const TCopyParamType * CopyParam, intptr_t Params, TFileOperationProgressType *OperationProgress,
     uintptr_t AFlags, TDownloadSessionAction &Action) override;
-  virtual void RemoteCreateDirectory(const UnicodeString ADirName) override;
+  virtual void RemoteCreateDirectory(const UnicodeString ADirName, bool Encrypt) override;
   virtual void RemoteCreateLink(const UnicodeString AFileName, const UnicodeString APointTo, bool Symbolic) override;
   virtual void RemoteDeleteFile(const UnicodeString AFileName,
     const TRemoteFile *AFile, intptr_t Params, TRmSessionAction &Action) override;
+  virtual UnicodeString __fastcall GetHomeDirectory();
   virtual void CustomCommandOnFile(const UnicodeString AFileName,
     const TRemoteFile *AFile, const UnicodeString ACommand, intptr_t AParams, TCaptureOutputEvent OutputEvent) override;
   virtual void DoStartup() override;
@@ -149,6 +151,7 @@ protected:
     SSH_FX_TYPES AllowStatus = -1);
   virtual UnicodeString RemoteGetCurrentDirectory() const override;
   UnicodeString GetHomeDirectory();
+  
   SSH_FX_TYPES GotStatusPacket(TSFTPPacket *Packet, SSH_FX_TYPES AllowStatus);
   bool RemoteFileExists(const UnicodeString AFullPath, TRemoteFile **AFile = nullptr);
   TRemoteFile * LoadFile(TSFTPPacket *Packet,
@@ -191,7 +194,7 @@ protected:
     TFileOperationProgressType *OperationProgress, uintptr_t Flags,
     TUploadSessionAction &Action, bool &ChildError);
   RawByteString SFTPOpenRemoteFile(const UnicodeString AFileName,
-    SSH_FXF_TYPES OpenType, int64_t Size = -1);
+    SSH_FXF_TYPES OpenType, bool EncryptNewFiles = false, int64_t Size = -1);
   intptr_t SFTPOpenRemote(void *AOpenParams, void *Param2);
   void SFTPCloseRemote(const RawByteString Handle,
     const UnicodeString AFileName, TFileOperationProgressType *OperationProgress,
@@ -213,6 +216,10 @@ protected:
     TFileOperationProgressType *OperationProgress) const;
   uint32_t DownloadBlockSize(
     TFileOperationProgressType *OperationProgress) const;
+  void AddPathString(TSFTPPacket & Packet, const UnicodeString & Value, bool EncryptNewFiles = false);
+  void __fastcall WriteLocalFile(
+    TStream * FileStream, TFileBuffer & BlockBuf, const UnicodeString & LocalFileName,
+    TFileOperationProgressType * OperationProgress);
   intptr_t PacketLength(uint8_t *LenBuf, SSH_FXP_TYPES ExpectedType) const;
   void Progress(TFileOperationProgressType *OperationProgress);
 

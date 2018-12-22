@@ -2673,21 +2673,6 @@ void __fastcall TWinConfiguration::SetTimeoutShellIconRetrieval(bool value)
   SET_CONFIG_PROPERTY(TimeoutShellIconRetrieval);
 }
 //---------------------------------------------------------------------------
-bool __fastcall TWinConfiguration::GetTimeoutShellOperations()
-{
-  return ::TimeoutShellOperations;
-}
-//---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::SetTimeoutShellOperations(bool value)
-{
-  ::TimeoutShellOperations = value;
-}
-//---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::SetTimeoutShellIconRetrieval(bool value)
-{
-  SET_CONFIG_PROPERTY(TimeoutShellIconRetrieval);
-}
-//---------------------------------------------------------------------------
 TStringList * __fastcall TWinConfiguration::LoadJumpList(
   THierarchicalStorage * Storage, UnicodeString Name)
 {

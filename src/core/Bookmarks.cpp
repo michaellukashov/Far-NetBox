@@ -572,3 +572,7 @@ UnicodeString TBookmark::GetKey() const
   return BookmarkKey(GetNode(), GetName());
 }
 //---------------------------------------------------------------------------
+UnicodeString __fastcall TBookmark::GetSideDirectory(TOperationSide Side)
+{
+  return (Side == osLocal) ? Local : Remote;
+}

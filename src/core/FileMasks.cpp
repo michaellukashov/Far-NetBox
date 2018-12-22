@@ -574,15 +574,9 @@ void TFileMasks::CreateMask(
         Boundary = TMask::Open;
       }
 
-      TFormatSettings FormatSettings = TFormatSettings::Create(GetDefaultLCID());
-      FormatSettings.DateSeparator = L'-';
-      FormatSettings.TimeSeparator = L':';
-      FormatSettings.ShortDateFormat = "yyyy/mm/dd";
-      FormatSettings.ShortTimeFormat = "hh:nn:ss";
-
       TDateTime Modification;
       int64_t DummySize;
-      if ((!TryStrToInt64(PartStr, DummySize) && TryStrToDateTime(PartStr, Modification, FormatSettings)) ||
+      if ((!TryStrToInt64(PartStr, DummySize) && TryStrToDateTimeStandard(PartStr, Modification)) ||
         TryRelativeStrToDateTime(PartStr, Modification, false))
       {
         TMask::TMaskBoundary &ModificationMask =
@@ -1191,6 +1185,7 @@ intptr_t TFileCustomCommand::PatternLen(const UnicodeString Command, intptr_t In
   switch (PatternCmd)
   {
   case L's':
+    case L'e':
   case L'@':
   case L'u':
   case L'p':
@@ -1219,7 +1214,13 @@ bool TFileCustomCommand::PatternReplacement(
   {
     if (SessionData != nullptr)
     {
-      Replacement = SessionData->GenerateSessionUrl(sufComplete);
+      Replacement = FData.SessionData->GenerateSessionUrl(sufSession);
+    }
+  }
+  else if (SameText(Pattern, L"!e"))
+  {
+    if (FData.SessionData != NULL)
+    {
     }
   }
   else if (Pattern == L"!@")
@@ -1240,7 +1241,7 @@ bool TFileCustomCommand::PatternReplacement(
   {
     if (SessionData != nullptr)
     {
-      Replacement = SessionData->GetPassword();
+      Replacement = NormalizeString(FData.SessionData->Password);
     }
   }
   else if (::SameText(Pattern, L"!#"))
