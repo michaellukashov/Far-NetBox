@@ -86,16 +86,16 @@ public:
   virtual bool is(TObjectClassId Kind) const { return (Kind == FKind); }
 public:
   Exception() noexcept = default;
-  explicit Exception(TObjectClassId Kind, const wchar_t *Msg);
-  explicit Exception(const wchar_t *Msg);
-  explicit Exception(TObjectClassId Kind, const UnicodeString Msg);
-  explicit Exception(const UnicodeString Msg);
-  explicit Exception(TObjectClassId Kind, Exception *E);
-  explicit Exception(TObjectClassId Kind, std::exception *E);
-  explicit Exception(TObjectClassId Kind, const UnicodeString Msg, intptr_t AHelpContext);
-  explicit Exception(TObjectClassId Kind, Exception *E, intptr_t Ident);
-  explicit Exception(TObjectClassId Kind, intptr_t Ident);
-  virtual ~Exception() = default;
+  explicit Exception(TObjectClassId Kind, const wchar_t *Msg) noexcept;
+  explicit Exception(const wchar_t *Msg) noexcept;
+  explicit Exception(TObjectClassId Kind, const UnicodeString Msg) noexcept;
+  explicit Exception(const UnicodeString Msg) noexcept;
+  explicit Exception(TObjectClassId Kind, Exception *E) noexcept;
+  explicit Exception(TObjectClassId Kind, std::exception *E) noexcept;
+  explicit Exception(TObjectClassId Kind, const UnicodeString Msg, intptr_t AHelpContext) noexcept;
+  explicit Exception(TObjectClassId Kind, Exception *E, intptr_t Ident) noexcept;
+  explicit Exception(TObjectClassId Kind, intptr_t Ident) noexcept;
+  virtual ~Exception() noexcept = default;
 
 private:
   TObjectClassId FKind{};
@@ -207,7 +207,7 @@ NB_CORE_EXPORT UnicodeString ExtractShortPathName(const UnicodeString APath);
 NB_CORE_EXPORT UnicodeString ExtractDirectory(const UnicodeString APath, wchar_t Delimiter = L'/');
 NB_CORE_EXPORT UnicodeString ExtractFilename(const UnicodeString APath, wchar_t Delimiter = L'/');
 NB_CORE_EXPORT UnicodeString ExtractFileExtension(const UnicodeString APath, wchar_t Delimiter = L'/');
-UnicodeString ExpandFileName(const UnicodeString AFileName);
+NB_CORE_EXPORT UnicodeString ExpandFileName(const UnicodeString AFileName);
 NB_CORE_EXPORT UnicodeString ChangeFileExtension(const UnicodeString APath, const UnicodeString Ext, wchar_t Delimiter = L'/');
 
 NB_CORE_EXPORT UnicodeString IncludeTrailingBackslash(const UnicodeString Str);

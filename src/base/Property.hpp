@@ -161,25 +161,25 @@ public:
   {
     return _getter();
   }
-  T operator->()
+  constexpr T operator->()
   {
     return _getter();
   }
   constexpr decltype(auto) operator*() const { return *_getter(); }
 
-  friend bool inline operator==(const ROProperty &lhs, const ROProperty &rhs)
+  friend bool constexpr inline operator==(const ROProperty &lhs, const ROProperty &rhs)
   {
     return lhs._getter() == rhs._getter();
   }
-  friend bool inline operator==(const ROProperty &lhs, const T &rhs)
+  friend bool constexpr inline operator==(const ROProperty &lhs, const T &rhs)
   {
     return lhs._getter() == rhs;
   }
-  friend bool inline operator!=(const ROProperty &lhs, const ROProperty &rhs)
+  friend bool constexpr inline operator!=(const ROProperty &lhs, const ROProperty &rhs)
   {
     return lhs._getter() != rhs._getter();
   }
-  friend bool inline operator!=(ROProperty &lhs, const T &rhs)
+  friend bool constexpr inline operator!=(ROProperty &lhs, const T &rhs)
   {
     return lhs._getter() != rhs;
   }
@@ -246,15 +246,15 @@ public:
   {
     _setter(Value);
   }
-  bool operator==(T Value) const
+  constexpr bool operator==(T Value) const
   {
     return _getter() == Value;
   }
-  friend bool inline operator==(const RWProperty &lhs, const RWProperty &rhs)
+  friend constexpr bool inline operator==(const RWProperty &lhs, const RWProperty &rhs)
   {
     return lhs._getter == rhs._getter && lhs._setter == rhs._setter;
   }
-  friend bool inline operator!=(RWProperty &lhs, const T &rhs)
+  friend constexpr bool inline operator!=(RWProperty &lhs, const T &rhs)
   {
     return lhs._getter() != rhs;
   }

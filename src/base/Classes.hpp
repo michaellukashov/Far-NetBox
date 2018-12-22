@@ -74,8 +74,8 @@ public:
   virtual bool is(TObjectClassId Kind) const { return Kind == FKind; }
 public:
   TObject() noexcept : FKind(OBJECT_CLASS_TObject) {}
-  explicit TObject(TObjectClassId Kind) : FKind(Kind) {}
-  virtual ~TObject() {}
+  explicit TObject(TObjectClassId Kind) noexcept : FKind(Kind) {}
+  virtual ~TObject() = default;
   virtual void Changed() {}
 private:
   TObjectClassId FKind;

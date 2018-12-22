@@ -28,48 +28,48 @@ const TDayTable MonthDays[] =
   {31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31}
 };
 
-Exception::Exception(TObjectClassId Kind, Exception *E) :
+Exception::Exception(TObjectClassId Kind, Exception *E) noexcept :
   std::runtime_error(E ? E->what() : ""),
   FKind(Kind),
   Message(E ? E->Message : L"")
 {
 }
 
-Exception::Exception(const UnicodeString Msg) :
+Exception::Exception(const UnicodeString Msg) noexcept :
   std::runtime_error(""),
   FKind(OBJECT_CLASS_Exception),
   Message(Msg)
 {
 }
 
-Exception::Exception(TObjectClassId Kind, const wchar_t *Msg) :
+Exception::Exception(TObjectClassId Kind, const wchar_t *Msg) noexcept :
   std::runtime_error(""),
   FKind(Kind),
   Message(Msg)
 {
 }
 
-Exception::Exception(const wchar_t *Msg) :
+Exception::Exception(const wchar_t *Msg) noexcept :
   std::runtime_error(""),
   FKind(OBJECT_CLASS_Exception),
   Message(Msg)
 {
 }
 
-Exception::Exception(TObjectClassId Kind, const UnicodeString Msg) :
+Exception::Exception(TObjectClassId Kind, const UnicodeString Msg) noexcept :
   std::runtime_error(""),
   FKind(Kind),
   Message(Msg)
 {
 }
 
-Exception::Exception(TObjectClassId Kind, std::exception *E) :
+Exception::Exception(TObjectClassId Kind, std::exception *E) noexcept :
   std::runtime_error(E ? E->what() : ""),
   FKind(Kind)
 {
 }
 
-Exception::Exception(TObjectClassId Kind, const UnicodeString Msg, intptr_t AHelpContext) :
+Exception::Exception(TObjectClassId Kind, const UnicodeString Msg, intptr_t AHelpContext) noexcept :
   std::runtime_error(""),
   FKind(Kind),
   Message(Msg)
@@ -78,14 +78,14 @@ Exception::Exception(TObjectClassId Kind, const UnicodeString Msg, intptr_t AHel
   (void)AHelpContext;
 }
 
-Exception::Exception(TObjectClassId Kind, Exception *E, intptr_t Ident) :
+Exception::Exception(TObjectClassId Kind, Exception *E, intptr_t Ident) noexcept :
   std::runtime_error(E ? E->what() : ""),
   FKind(Kind)
 {
   Message = FMTLOAD(Ident);
 }
 
-Exception::Exception(TObjectClassId Kind, intptr_t Ident) :
+Exception::Exception(TObjectClassId Kind, intptr_t Ident) noexcept :
   std::runtime_error(""),
   FKind(Kind)
 {
