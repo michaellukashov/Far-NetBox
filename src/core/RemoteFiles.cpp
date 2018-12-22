@@ -2675,7 +2675,7 @@ int64_t TSynchronizeProgress::GetProcessed(const TFileOperationProgressType * Cu
   }
 
   // For (single-item-)delete operation, this should return 0
-  int64_t CurrentItemProcessedSize = CurrentItemOperationProgress->OperationTransferred;
+  int64_t CurrentItemProcessedSize = CurrentItemOperationProgress->GetOperationTransferred();
   return (FProcessedSize + CurrentItemProcessedSize);
 }
 //---------------------------------------------------------------------------

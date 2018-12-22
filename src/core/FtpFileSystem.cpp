@@ -304,6 +304,7 @@ void TFTPFileSystem::Init(void *)
   FPrivateKey = nullptr;
   FBytesAvailable = -1;
   FBytesAvailableSupported = false;
+  FLoggedIn = false;
 
   FChecksumAlgs.reset(new TStringList());
   FChecksumCommands.reset(new TStringList());
@@ -349,6 +350,7 @@ void TFTPFileSystem::Open()
   FReadCurrentDirectory = true;
   FCurrentDirectory.Clear();
   FHomeDirectory.Clear();
+  FLoggedIn = false;
 
   FLastDataSent = Now();
 
@@ -365,6 +367,10 @@ void TFTPFileSystem::Open()
       switch (FTerminal->GetConfiguration()->GetActualLogProtocol())
       {
       default:
+        case -1:
+          LogLevel = TFileZillaIntf::LOG_WARNING;
+          break;
+
       case 0:
       case 1:
         LogLevel = TFileZillaIntf::LOG_PROGRESS;
@@ -395,10 +401,11 @@ void TFTPFileSystem::Open()
   FTransferActiveImmediately = (Data->GetFtpTransferActiveImmediately() == asOn);
 
   FSessionInfo.LoginTime = Now();
+  FSessionInfo.CertificateVerifiedManually = false;
 
   UnicodeString HostName = Data->GetHostNameExpanded();
   UnicodeString UserName = Data->GetUserNameExpanded();
-  UnicodeString Password = Data->GetPassword();
+  UnicodeString Password = NormalizeString(Data->GetPassword());
   UnicodeString Account = Data->GetFtpAccount();
   UnicodeString Path = Data->GetRemoteDirectory();
   int ServerType = 0;
@@ -557,6 +564,7 @@ void TFTPFileSystem::Open()
   FSessionInfo.SCCipher = FSessionInfo.CSCipher;
   UnicodeString TlsVersionStr = FFileZillaIntf->GetTlsVersionStr().c_str();
   AddToList(FSessionInfo.SecurityProtocolName, TlsVersionStr, L", ");
+  FLoggedIn = true;
 }
 //---------------------------------------------------------------------------
 void TFTPFileSystem::Close()
@@ -1224,7 +1232,8 @@ void TFTPFileSystem::DoCalculateFilesChecksum(bool UsingHashCommand,
     if (File && File->GetIsDirectory())
     {
       if (FTerminal->CanRecurseToDirectory(File) &&
-        !File->GetIsParentDirectory() && !File->GetIsThisDirectory() &&
+        //!File->GetIsParentDirectory() && !File->GetIsThisDirectory() &&
+          IsRealFile(File->GetFileName()) &&
         // recurse into subdirectories only if we have callback function
         (OnCalculatedChecksum != nullptr))
       {
@@ -1308,9 +1317,7 @@ void TFTPFileSystem::CalculateFilesChecksum(const UnicodeString Alg,
   TCalculatedChecksumEvent OnCalculatedChecksum)
 {
   TFileOperationProgressType Progress(nb::bind(&TTerminal::DoProgress, FTerminal), nb::bind(&TTerminal::DoFinished, FTerminal));
-  Progress.Start(foCalculateChecksum, osRemote, AFileList->GetCount());
-
-  FTerminal->SetOperationProgress(&Progress);
+  FTerminal->OperationStart(Progress, foCalculateChecksum, osRemote, AFileList->GetCount());
 
   try__finally
   {
@@ -1338,8 +1345,7 @@ void TFTPFileSystem::CalculateFilesChecksum(const UnicodeString Alg,
   },
   __finally
   {
-    FTerminal->SetOperationProgress(nullptr);
-    Progress.Stop();
+    FTerminal->OperationStop(Progress);
   } end_try__finally
 }
 //---------------------------------------------------------------------------
@@ -1735,7 +1741,7 @@ void TFTPFileSystem::Source(
   FLastDataSent = Now();
 }
 //---------------------------------------------------------------------------
-void TFTPFileSystem::RemoteCreateDirectory(const UnicodeString ADirName)
+void TFTPFileSystem::RemoteCreateDirectory(const UnicodeString ADirName, bool /*Encrypt*/)
 {
   UnicodeString DirName = GetAbsolutePath(ADirName, false);
 
@@ -2702,7 +2708,7 @@ intptr_t TFTPFileSystem::GetOptionVal(intptr_t OptionID) const
     break;
 
   case OPTION_DEBUGSHOWLISTING:
-    Result = TRUE;
+    Result = (FTerminal->Configuration->ActualLogProtocol >= 0);
     break;
 
   case OPTION_PASV:
@@ -2919,14 +2925,18 @@ bool TFTPFileSystem::NoFinalLastCode() const
 //---------------------------------------------------------------------------
 bool TFTPFileSystem::KeepWaitingForReply(uintptr_t &ReplyToAwait, bool WantLastCode) const
 {
-  // to keep waiting,
+  // To keep waiting,
   // non-command reply must be unset,
   // the reply we wait for must be unset or
-  // last code must be unset (if we wait for it)
+  // last code must be unset (if we wait for it).
+
+  // Though make sure that disconnect makes it through always. As for example when connection is closed already,
+  // when sending commands, we may get REPLY_DISCONNECTED as a command response and no other response after,
+  // what would cause a hang.
   return
     (FReply == 0) &&
     ((ReplyToAwait == 0) ||
-      (WantLastCode && NoFinalLastCode()));
+      (WantLastCode && NoFinalLastCode() && FLAGCLEAR(ReplyToAwait, TFileZillaIntf::REPLY_DISCONNECTED)));
 }
 //---------------------------------------------------------------------------
 void TFTPFileSystem::DoWaitForReply(uintptr_t &ReplyToAwait, bool WantLastCode)
@@ -3526,8 +3536,10 @@ bool TFTPFileSystem::HandleStatus(const wchar_t *AStatus, int Type)
     {
       FLastCommand = CMD_UNKNOWN;
     }
-    LogType = llInput;
-  }
+      if (!FLoggedIn || (FTerminal->Configuration->ActualLogProtocol >= 0))
+      {
+        LogType = llInput;
+      }
   break;
 
   case TFileZillaIntf::LOG_ERROR:
@@ -3566,7 +3578,10 @@ bool TFTPFileSystem::HandleStatus(const wchar_t *AStatus, int Type)
 
   case TFileZillaIntf::LOG_REPLY:
     HandleReplyStatus(AStatus);
-    LogType = llOutput;
+      if (!FLoggedIn || (FTerminal->Configuration->ActualLogProtocol >= 0))
+      {
+        LogType = llOutput;
+      }
     break;
 
   case TFileZillaIntf::LOG_INFO:
@@ -4055,6 +4070,7 @@ bool TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
         {
           // certificate is trusted, but for not purposes of info dialog
           VerificationResult = true;
+          FSessionInfo.CertificateVerifiedManually = true;
         }
       }
 
@@ -4114,10 +4130,13 @@ bool TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
 
       if (RequestResult == 0)
       {
-        bool Confirmed = FTerminal->ConfirmCertificate(FSessionInfo, Data.VerificationResult, CertificateStorageKey, true);
-        // FZ's VerifyCertDlg.cpp returns 2 for "cached", what we do nto distinguish here,
-        // however FZAPI takes all non-zero values equally.
-        RequestResult = Confirmed ? 1 : 0;
+        if (FTerminal->ConfirmCertificate(FSessionInfo, Data.VerificationResult, CertificateStorageKey, true))
+        {
+          // FZ's VerifyCertDlg.cpp returns 2 for "cached", what we do nto distinguish here,
+          // however FZAPI takes all non-zero values equally.
+          RequestResult = 1;
+          FSessionInfo.CertificateVerifiedManually = true;
+        }
       }
     }
 

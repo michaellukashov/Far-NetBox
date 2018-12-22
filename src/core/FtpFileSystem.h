@@ -70,7 +70,8 @@ public:
     const UnicodeString ATargetDir, UnicodeString &ADestFileName, uintptr_t Attrs,
     const TCopyParamType *CopyParam, intptr_t AParams, TFileOperationProgressType *OperationProgress,
     uintptr_t AFlags, TDownloadSessionAction &Action);
-  virtual void RemoteCreateDirectory(const UnicodeString ADirName) override;
+  virtual void RemoteCreateDirectory(const UnicodeString ADirName, bool Encrypt) override;
+  // virtual void __fastcall CreateDirectory(const UnicodeString & DirName, bool Encrypt);
   virtual void RemoteCreateLink(const UnicodeString AFileName, const UnicodeString APointTo, bool Symbolic) override;
   virtual void RemoteDeleteFile(const UnicodeString AFileName,
     const TRemoteFile *AFile, intptr_t Params, TRmSessionAction &Action) override;
@@ -306,6 +307,7 @@ private:
   bool FMVS;
   bool FVMS;
   bool FFileTransferAny;
+  bool FLoggedIn;
   mutable UnicodeString FOptionScratch;
 private:
   bool DoQuit();

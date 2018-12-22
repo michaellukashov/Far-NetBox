@@ -55,8 +55,44 @@ typedef nb::FastDelegate6<void,
   UnicodeString /*FileName*/, bool /*Success*/,
   TOnceDoneOperation & /*OnceDoneOperation*/> TFileOperationFinishedEvent;
 //---------------------------------------------------------------------------
+class TFileOperationStatistics
+{
+public:
+  TFileOperationStatistics();
+
+  int FilesUploaded;
+  int FilesDownloaded;
+  int FilesDeletedLocal;
+  int FilesDeletedRemote;
+  __int64 TotalUploaded;
+  __int64 TotalDownloaded;
+};
+//---------------------------------------------------------------------------
 class NB_CORE_EXPORT TFileOperationProgressType : public TObject
 {
+public:
+  class TPersistence
+  {
+  friend class TFileOperationProgressType;
+  public:
+    TPersistence();
+    __property TFileOperationStatistics * Statistics = { read = FStatistics, write = FStatistics };
+
+  private:
+    void Clear(bool Batch, bool Speed);
+
+    TDateTime StartTime;
+    TBatchOverwrite BatchOverwrite;
+    bool SkipToAll;
+    unsigned long CPSLimit;
+    bool CounterSet;
+    std::vector<unsigned long> Ticks;
+    std::vector<__int64> TotalTransferredThen;
+    TOperationSide Side;
+    __int64 TotalTransferred;
+    TFileOperationStatistics * FStatistics;
+  };
+
 private:
   TFileOperation FOperation{foNone};
   TOperationSide FSide{osLocal};
@@ -76,15 +112,14 @@ private:
   bool FFileInProgress{false};
   TCancelStatus FCancel;
   intptr_t FCount{0};
-  TDateTime FStartTime;
-  int64_t FTotalTransferred{0};
+  int64_t FTotalTransferBase{0};
   int64_t FTotalSkipped{0};
   int64_t FTotalSize{0};
-  TBatchOverwrite FBatchOverwrite;
   bool FSkipToAll{false};
   intptr_t FCPSLimit{0};
   bool FTotalSizeSet{false};
   bool FSuspended{false};
+  bool FRestored;
   TFileOperationProgressType *FParent{nullptr};
 
   // when it was last time suspended (to calculate suspend time in Resume())
@@ -101,15 +136,18 @@ private:
   bool FCounterSet{false};
   rde::vector<intptr_t> FTicks;
   rde::vector<int64_t> FTotalTransferredThen;
-  TCriticalSection *FSection;
-  TCriticalSection *FUserSelectionsSection;
+  TPersistence FPersistence;
+  TCriticalSection *FSection{nullptr};
+  TCriticalSection *FUserSelectionsSection{nullptr};
 
 public:
-  int64_t GetTotalTransferred() const;
+  int64_t  GetOperationTransferred() const;
   int64_t GetTotalSize() const;
   intptr_t GetCPSLimit() const;
   TBatchOverwrite GetBatchOverwrite() const;
   bool GetSkipToAll() const;
+  TDateTime GetStartTime() const { return FPersistence.StartTime; };
+  TOperationSide GetSide() const { return FPersistence.Side; };
 
 protected:
   void ClearTransfer();
@@ -122,13 +160,14 @@ protected:
   uintptr_t GetCPS() const;
   void Init();
   static bool PassCancelToParent(TCancelStatus ACancel);
+  void DoClear(bool Batch, bool Speed);
 
 public:
   // common data
   __property TFileOperation Operation = { read = FOperation };
   ROProperty<TFileOperation> Operation{nb::bind(&TFileOperationProgressType::GetOperation, this)};
   // on what side if operation being processed (local/remote), source of copy
-  __property TOperationSide Side = { read = FSide };
+  __property TOperationSide Side = { read = GetSide };
   __property int Count =  { read = FCount };
   ROProperty<intptr_t> Count{nb::bind(&TFileOperationProgressType::GetCount, this)};
   __property UnicodeString FileName =  { read = FFileName };
@@ -152,10 +191,11 @@ public:
   __property TCancelStatus Cancel = { read = GetCancel };
   ROProperty<TCancelStatus> Cancel{nb::bind(&TFileOperationProgressType::GetCancel, this)};
   // when operation started
-  __property TDateTime StartTime = { read = FStartTime };
+  __property TDateTime StartTime = { read = GetStartTime };
   // bytes transferred
   __property int64_t TotalTransferred = { read = GetTotalTransferred };
-  __property int64_t TotalSize = { read = GetTotalSize };
+  __property __int64 OperationTransferred = { read = GetOperationTransferred };
+  __property __int64 TotalSize = { read = GetTotalSize };
   __property int FilesFinishedSuccessfully = { read = FFilesFinishedSuccessfully };
 
   __property TBatchOverwrite BatchOverwrite = { read = GetBatchOverwrite };
@@ -181,6 +221,7 @@ public:
   uintptr_t CPS() const;
   void Finish(const UnicodeString AFileName, bool Success,
     TOnceDoneOperation &OnceDoneOperation);
+  void Succeeded(int Count = 1);
   void Progress();
   int64_t LocalBlockSize();
   bool IsLocallyDone() const;
@@ -226,14 +267,13 @@ public:
   void SetBatchOverwrite(TBatchOverwrite ABatchOverwrite);
   void SetSkipToAll();
   UnicodeString GetLogStr(bool Done) const;
-//  void Store(TPersistence & Persistence);
-//  void Restore(TPersistence & Persistence);
+  void Store(TPersistence & Persistence);
+  void Restore(TPersistence & Persistence);
 
   static bool IsIndeterminateOperation(TFileOperation Operation);
 
   TFileOperation GetOperation() const { return FOperation; }
   // on what side if operation being processed (local/remote), source of copy
-  TOperationSide GetSide() const { return FSide; }
   UnicodeString GetFileName() const { return FFileName; }
   UnicodeString GetFullFileName() const { return FFullFileName; }
   UnicodeString GetDirectory() const { return FDirectory; }
@@ -252,10 +292,7 @@ public:
   bool GetInProgress() const { return FInProgress; }
   bool GetDone() const { return FDone; }
   bool GetFileInProgress() const { return FFileInProgress; }
-
-  TDateTime GetStartTime() const { return FStartTime; }
   int64_t GetTotalSkipped() const { return FTotalSkipped; }
-
   intptr_t GetFilesFinishedSuccessfully() const { return FFilesFinishedSuccessfully; }
   bool GetTotalSizeSet() const { return FTotalSizeSet; }
   bool GetSuspended() const { return FSuspended; }
