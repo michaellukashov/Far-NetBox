@@ -3970,8 +3970,7 @@ bool TTerminal::ProcessFiles(TStrings * AFileList,
   try
   {
     TFileOperationProgressType Progress(nb::bind(&TTerminal::DoProgress, this), nb::bind(&TTerminal::DoFinished, this));
-    OperationStart(Progress, Operation, Side, FileList->Count);
-
+    OperationStart(Progress, Operation, Side, AFileList->Count);
 
     FOperationProgress = &Progress; //-V506
     try__finally
@@ -3988,7 +3987,7 @@ bool TTerminal::ProcessFiles(TStrings * AFileList,
         while ((Index < AFileList->GetCount()) && (Progress.GetCancel() == csContinue))
         {
           UnicodeString FileName = AFileList->GetString(Index);
-          TRemoteFile * File = reinterpret_cast<TRemoteFile *>(FileList->Objects[Index]);
+          TRemoteFile * File = reinterpret_cast<TRemoteFile *>(AFileList->GetObj(Index));
           try
           {
             bool Success = false;
@@ -3997,7 +3996,6 @@ bool TTerminal::ProcessFiles(TStrings * AFileList,
               if (!Ex)
               {
                 ProcessFile(FileName, File, Param);
-                ProcessFile(FileName, RemoteFile, Param);
               }
               else
               {
