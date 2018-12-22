@@ -23,6 +23,9 @@
   { TYPE __Backup = FIRST; FIRST = SECOND; SECOND = __Backup; }
 #endif // if 0
 //---------------------------------------------------------------------------
+#define PARENTDIRECTORY L".."
+#define THISDIRECTORY L"."
+//---------------------------------------------------------------------------
 extern const wchar_t EngShortMonthNames[12][4];
 __removed extern const char Bom[3];
 #define CONST_BOM "\xEF\xBB\xBF"
@@ -32,44 +35,11 @@ extern const wchar_t TokenReplacement;
 extern const UnicodeString LocalInvalidChars;
 extern const UnicodeString PasswordMask;
 extern const UnicodeString Ellipsis;
+extern const UnicodeString EmptyString;
 //---------------------------------------------------------------------------
 extern const UnicodeString HttpProtocol;
 extern const UnicodeString HttpsProtocol;
 extern const UnicodeString ProtocolSeparator;
-//---------------------------------------------------------------------------
-#define LOCAL_INVALID_CHARS "/\\:*?\"<>|"
-#define PASSWORD_MASK "***"
-#define sLineBreak L"\n"
-
-// Order of the values also define order of the buttons/answers on the prompts
-// MessageDlg relies on these to be <= 0x0000FFFF
-const uint32_t qaYes      = 0x00000001;
-// MessageDlg relies that answer do not conflict with mrCancel (=0x2)
-const uint32_t qaNo       = 0x00000004;
-const uint32_t qaOK       = 0x00000008;
-const uint32_t qaCancel   = 0x00000010;
-const uint32_t qaYesToAll = 0x00000020;
-const uint32_t qaNoToAll  = 0x00000040;
-const uint32_t qaAbort    = 0x00000080;
-const uint32_t qaRetry    = 0x00000100;
-const uint32_t qaIgnore   = 0x00000200;
-const uint32_t qaSkip     = 0x00000400;
-const uint32_t qaAll      = 0x00000800;
-const uint32_t qaHelp     = 0x00001000;
-const uint32_t qaReport   = 0x00002000;
-
-const uint32_t qaFirst = qaYes;
-const uint32_t qaLast  = qaReport;
-
-const uint32_t qaNeverAskAgain = 0x00010000;
-
-const intptr_t qpFatalAbort           = 0x01;
-const intptr_t qpNeverAskAgainCheck   = 0x02;
-const intptr_t qpAllowContinueOnError = 0x04;
-const intptr_t qpIgnoreAbort          = 0x08;
-const intptr_t qpWaitInBatch          = 0x10;
-
-inline void ThrowExtException() { throw ExtException(static_cast<Exception *>(nullptr), UnicodeString(L"")); }
 //---------------------------------------------------------------------------
 NB_CORE_EXPORT UnicodeString ReplaceChar(const UnicodeString Str, wchar_t A, wchar_t B);
 NB_CORE_EXPORT UnicodeString DeleteChar(const UnicodeString Str, wchar_t C);
@@ -212,8 +182,19 @@ NB_CORE_EXPORT bool IsRealFile(const UnicodeString FileName);
 NB_CORE_EXPORT UnicodeString GetOSInfo();
 NB_CORE_EXPORT UnicodeString GetEnvironmentInfo();
 //---------------------------------------------------------------------------
-NB_CORE_EXPORT bool CompareFileName(const UnicodeString APath1, const UnicodeString APath2);
-NB_CORE_EXPORT bool ComparePaths(const UnicodeString APath1, const UnicodeString APath2);
+struct TSearchRecSmart : public TSearchRec
+{
+public:
+  TSearchRecSmart();
+  TDateTime GetLastWriteTime() const;
+  bool IsRealFile() const;
+  bool IsDirectory() const;
+  bool IsHidden() const;
+private:
+  mutable FILETIME FLastWriteTimeSource;
+  mutable TDateTime FLastWriteTime;
+};
+//---------------------------------------------------------------------------
 #if 0
 typedef void (__closure* TProcessLocalFileEvent)
   (const UnicodeString FileName, const TSearchRec Rec, void * Param);
@@ -333,6 +314,9 @@ UnicodeString AssemblyNewClassInstance(
 UnicodeString AssemblyNewClassInstanceStart(
   TAssemblyLanguage Language, const UnicodeString & ClassName, bool Inline);
 UnicodeString AssemblyNewClassInstanceEnd(TAssemblyLanguage Language, bool Inline);
+UnicodeString AssemblyAddRawSettings(
+  TAssemblyLanguage Language, TStrings * RawSettings, const UnicodeString & ClassName,
+  const UnicodeString & MethodName);
 #endif // if 0
 
 #pragma warning(push)
@@ -358,11 +342,6 @@ public:
   {
   }
 
-  inline ~TValueRestorer()
-  {
-    Release();
-  }
-
   void Release()
   {
     if (FArmed)
@@ -370,6 +349,11 @@ public:
       FTarget = FValue;
       FArmed = false;
     }
+  }
+
+  inline ~TValueRestorer()
+  {
+    Release();
   }
 
 protected:
@@ -514,4 +498,40 @@ NB_CORE_EXPORT UnicodeString FormatBytes(int64_t Bytes, bool UseOrders = true);
 NB_CORE_EXPORT UnicodeString GetEnvVariable(const UnicodeString AEnvVarName);
 
 } // namespace base
+//---------------------------------------------------------------------------
+#define LOCAL_INVALID_CHARS "/\\:*?\"<>|"
+#define PASSWORD_MASK "***"
+#define sLineBreak L"\n"
+
+// Order of the values also define order of the buttons/answers on the prompts
+// MessageDlg relies on these to be <= 0x0000FFFF
+const uint32_t qaYes      = 0x00000001;
+// MessageDlg relies that answer do not conflict with mrCancel (=0x2)
+const uint32_t qaNo       = 0x00000004;
+const uint32_t qaOK       = 0x00000008;
+const uint32_t qaCancel   = 0x00000010;
+const uint32_t qaYesToAll = 0x00000020;
+const uint32_t qaNoToAll  = 0x00000040;
+const uint32_t qaAbort    = 0x00000080;
+const uint32_t qaRetry    = 0x00000100;
+const uint32_t qaIgnore   = 0x00000200;
+const uint32_t qaSkip     = 0x00000400;
+const uint32_t qaAll      = 0x00000800;
+const uint32_t qaHelp     = 0x00001000;
+const uint32_t qaReport   = 0x00002000;
+
+const uint32_t qaFirst = qaYes;
+const uint32_t qaLast  = qaReport;
+
+const uint32_t qaNeverAskAgain = 0x00010000;
+
+const intptr_t qpFatalAbort           = 0x01;
+const intptr_t qpNeverAskAgainCheck   = 0x02;
+const intptr_t qpAllowContinueOnError = 0x04;
+const intptr_t qpIgnoreAbort          = 0x08;
+const intptr_t qpWaitInBatch          = 0x10;
+
+inline void ThrowExtException() { throw ExtException(static_cast<Exception *>(nullptr), UnicodeString(L"")); }
+NB_CORE_EXPORT bool CompareFileName(const UnicodeString APath1, const UnicodeString APath2);
+NB_CORE_EXPORT bool ComparePaths(const UnicodeString APath1, const UnicodeString APath2);
 //---------------------------------------------------------------------------

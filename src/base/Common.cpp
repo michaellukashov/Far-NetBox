@@ -19,6 +19,7 @@
 #include <openssl/pkcs12.h>
 #include <openssl/pem.h>
 #include <openssl/err.h>
+#include <openssl/ssl.h>
 #endif // HAVE_OPENSSL
 //---------------------------------------------------------------------------
 __removed #pragma package(smart_init)
@@ -3959,7 +3960,41 @@ UnicodeString GetFileMimeType(const UnicodeString /*FileName*/)
 #endif // if 0
   return Result;
 }
+//---------------------------------------------------------------------------
+UnicodeString NormalizeString(const UnicodeString & S)
+{
+  UnicodeString Result = S;
+  if (Result == EmptyString)
+  {
+    Result = UnicodeString();
+  }
+  return Result;
+}
+//---------------------------------------------------------------------------
+TStrings * TlsCipherList()
+{
+  // OpenSSL initialization happens in NeonInitialize
+  std::unique_ptr<TStrings> Result(new TStringList());
+  const SSL_METHOD * Method = TLSv1_client_method();
+  SSL_CTX * Ctx = SSL_CTX_new(Method);
+  SSL * Ssl = SSL_new(Ctx);
 
+  int Index = 0;
+  const char * CipherName;
+  do
+  {
+    CipherName = SSL_get_cipher_list(Ssl, Index);
+    Index++;
+    if (CipherName != NULL)
+    {
+      Result->Add(UnicodeString(CipherName));
+    }
+  }
+  while (CipherName != NULL);
+
+  return Result.release();
+}
+//---------------------------------------------------------------------------
 namespace base {
 
 /* TODO 1 : Path class instead of UnicodeString (handle relativity...) */
@@ -4560,3 +4595,4 @@ UnicodeString GetEnvVariable(const UnicodeString AEnvVarName)
 }
 
 } // namespace base
+//---------------------------------------------------------------------------

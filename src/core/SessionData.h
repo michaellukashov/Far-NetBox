@@ -1002,21 +1002,20 @@ public:
   __property TSessionData *Sessions[int Index]  = { read = AtSession };
   __property TSessionData *DefaultSettings  = { read = FDefaultSettings, write = SetDefaultSettings };
 
-  const TSessionData *GetSession(intptr_t Index) const { return dyn_cast<TSessionData>(AtObject(Index)); }
+  static void ImportHostKeys(
     THierarchicalStorage * SourceStorage, THierarchicalStorage * TargetStorage, TStoredSessionList * Sessions, bool OnlySelected);
-  static void __fastcall ImportHostKeys(
+  static void ImportHostKeys(
     const UnicodeString & SourceKey, TStoredSessionList * Sessions, bool OnlySelected);
+
+  static void ImportSelectedKnownHosts(TStoredSessionList *Sessions);
+  static bool OpenHostKeysSubKey(THierarchicalStorage *Storage, bool CanCreate);
+
+  const TSessionData *GetSession(intptr_t Index) const { return dyn_cast<TSessionData>(AtObject(Index)); }
   TSessionData *GetSession(intptr_t Index) { return dyn_cast<TSessionData>(AtObject(Index)); }
   const TSessionData *GetDefaultSettings() const { return FDefaultSettings; }
   TSessionData *GetDefaultSettings() { return FDefaultSettings; }
   void SetDefaultSettings(const TSessionData *Value);
   const TSessionData *GetSessionByName(const UnicodeString SessionName) const;
-
-  static void ImportHostKeys(
-    const UnicodeString SourceKey, TStoredSessionList *Sessions,
-  static void ImportSelectedKnownHosts(TStoredSessionList *Sessions);
-  static bool __fastcall OpenHostKeysSubKey(THierarchicalStorage * Storage, bool CanCreate);
-
 private:
   TSessionData *FDefaultSettings;
   bool FReadOnly;
@@ -1036,7 +1035,6 @@ private:
     TSessionData *Data, const UnicodeString Name);
   __removed void ImportLevelFromFilezilla(_di_IXMLNode Node, const UnicodeString Path);
   static THierarchicalStorage *CreateHostKeysStorageForWritting();
-  static bool OpenHostKeysSubKey(THierarchicalStorage *Storage, bool CanCreate);
 };
 //---------------------------------------------------------------------------
 NB_CORE_EXPORT UnicodeString GetExpandedLogFileName(const UnicodeString LogFileName, TDateTime Started, TSessionData *SessionData);

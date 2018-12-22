@@ -744,7 +744,7 @@ TCwdSessionAction::TCwdSessionAction(TActionLog *Log, const UnicodeString Path) 
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-__fastcall TDifferenceSessionAction::TDifferenceSessionAction(TActionLog * Log, const TSynchronizeChecklist::TItem * Item) :
+__fastcall TDifferenceSessionAction::TDifferenceSessionAction(TActionLog * Log, const TChecklistItem* Item) :
   TSessionAction(Log, laDifference)
 {
   if (FRecord != NULL)

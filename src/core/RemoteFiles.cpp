@@ -2699,7 +2699,7 @@ TDateTime TSynchronizeProgress::TimeLeft(const TFileOperationProgressType * Curr
   int64_t Processed = GetProcessed(CurrentItemOperationProgress);
   if (Processed > 0)
   {
-    Result = TDateTime(double(Now() - CurrentItemOperationProgress->FStartTime) / Processed * (FTotalSize - Processed));
+    Result = TDateTime(double(Now() - CurrentItemOperationProgress->StartTime) / Processed * (FTotalSize - Processed));
   }
   return Result;
 }

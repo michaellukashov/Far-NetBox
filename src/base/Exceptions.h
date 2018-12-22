@@ -169,12 +169,12 @@ public:
   explicit EFatal(TObjectClassId Kind, const Exception *E, const UnicodeString Msg, const UnicodeString HelpKeyword = L"");
 
   __property bool ReopenQueried = { read = FReopenQueried, write = FReopenQueried };
-  bool GetReopenQueried() const { return FReopenQueried; }
-  void SetReopenQueried(bool Value) { FReopenQueried = Value; }
 
   virtual ExtException *Clone() const override;
   virtual void __fastcall Rethrow() override;
 
+  bool GetReopenQueried() const { return FReopenQueried; }
+  void SetReopenQueried(bool Value) { FReopenQueried = Value; }
 private:
   void Init(const Exception *E);
   bool FReopenQueried;

@@ -266,7 +266,7 @@ public:
 class TDifferenceSessionAction : public TSessionAction
 {
 public:
-  __fastcall TDifferenceSessionAction(TActionLog * Log, const TSynchronizeChecklist::TItem * Item);
+  TDifferenceSessionAction(TActionLog * Log, const TChecklistItem* Item);
 };
 
 typedef nb::FastDelegate2<void,

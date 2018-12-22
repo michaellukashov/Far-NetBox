@@ -68,10 +68,8 @@ public:
   __int64 TotalDownloaded;
 };
 //---------------------------------------------------------------------------
+class TFileOperationProgressType
 {
-public:
-  class TPersistence
-  {
 public:
   class TPersistence
   {
@@ -79,18 +77,6 @@ public:
   public:
     TPersistence();
     __property TFileOperationStatistics * Statistics = { read = FStatistics, write = FStatistics };
-
-    TDateTime StartTime;
-    TBatchOverwrite BatchOverwrite;
-    bool SkipToAll;
-    unsigned long CPSLimit;
-    bool CounterSet;
-    std::vector<unsigned long> Ticks;
-    std::vector<__int64> TotalTransferredThen;
-    TOperationSide Side;
-    __int64 TotalTransferred;
-    TFileOperationStatistics * FStatistics;
-  };
 
   private:
     void Clear(bool Batch, bool Speed);
@@ -129,13 +115,10 @@ private:
   int64_t FTotalTransferBase{0};
   int64_t FTotalSkipped{0};
   int64_t FTotalSize{0};
-  bool FSkipToAll{false};
-  intptr_t FCPSLimit{0};
   bool FTotalSizeSet{false};
   bool FSuspended{false};
-  bool FRestored;
+  bool FRestored{false};
   TFileOperationProgressType *FParent{nullptr};
-  bool FRestored;
 
   // when it was last time suspended (to calculate suspend time in Resume())
   uintptr_t FSuspendTime{0};
@@ -153,19 +136,22 @@ private:
   TCriticalSection *FSection{nullptr};
   TCriticalSection *FUserSelectionsSection{nullptr};
 
+  bool FSkipToAll{false};
+  intptr_t FCPSLimit{0};
 public:
+  int64_t GetTotalTransferred() const;
   int64_t  GetOperationTransferred() const;
   int64_t GetTotalSize() const;
   intptr_t GetCPSLimit() const;
   TBatchOverwrite GetBatchOverwrite() const;
   bool GetSkipToAll() const;
-  TDateTime GetStartTime() const { return FPersistence.StartTime; };
-  TOperationSide GetSide() const { return FPersistence.Side; };
+  TDateTime GetStartTime() const { return FPersistence.StartTime; }
+  TOperationSide GetSide() const { return FPersistence.Side; }
 
 protected:
   void ClearTransfer();
   inline void DoProgress();
-  int __fastcall OperationProgress() const;
+  int OperationProgress() const;
   void AddTransferredToTotals(int64_t ASize);
   void AddSkipped(int64_t ASize);
   void AddTotalSize(int64_t ASize);
@@ -205,6 +191,7 @@ public:
   ROProperty<TCancelStatus> Cancel{nb::bind(&TFileOperationProgressType::GetCancel, this)};
   // when operation started
   __property TDateTime StartTime = { read = GetStartTime };
+  ROProperty<TDateTime> StartTime{nb::bind(&TFileOperationProgressType::GetStartTime, this)};
   // bytes transferred
   __property int64_t TotalTransferred = { read = GetTotalTransferred };
   __property __int64 OperationTransferred = { read = GetOperationTransferred };
@@ -235,15 +222,16 @@ public:
   void Finish(const UnicodeString AFileName, bool Success,
     TOnceDoneOperation &OnceDoneOperation);
   void Succeeded(int Count = 1);
-  int64_t LocalBlockSize();
+  void Progress();
+  uint64_t LocalBlockSize() const;
   bool IsLocallyDone() const;
   bool IsTransferDone() const;
   void SetFile(const UnicodeString AFileName, bool AFileInProgress = true);
   void SetFileInProgress();
-  uintptr_t TransferBlockSize();
+  uint64_t TransferBlockSize();
   int64_t AdjustToCPSLimit(int64_t Size);
   void ThrottleToCPSLimit(int64_t Size);
-  static uintptr_t StaticBlockSize();
+  static uint64_t StaticBlockSize();
   void Reset();
   void Resume();
   void SetLocalSize(int64_t ASize);
