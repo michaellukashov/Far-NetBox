@@ -16,6 +16,7 @@
 #include <winsock2.h>
 #include <ws2tcpip.h>
 
+#ifdef _MSC_VER
 #define WIN32_LEAN_AND_MEAN
 #define VC_EXTRALEAN
 #define SECURITY_WIN32
@@ -23,6 +24,7 @@
 #define NOMINMAX
 #endif
 #include <Windows.h>
+#endif
 
 #include "disable_warnings_in_std_begin.hpp"
 #include <nbglobals.h>

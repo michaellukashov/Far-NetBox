@@ -18,7 +18,7 @@
 #define nb_realloc(ptr, size) ::dlrealloc(ptr, size)
 
 template<typename T>
-void nb_free(const T *ptr) { ::dlfree(reinterpret_cast<void *>(const_cast<T *>(ptr))); }
+void nb_free(const T* ptr) { ::dlfree(reinterpret_cast<void *>(const_cast<T *>(ptr))); }
 
 #else // #if defined(__cplusplus)
 
@@ -73,15 +73,16 @@ namespace nb {
 
 template<typename T>
 inline T calloc(size_t count, size_t size) { return static_cast<T>(nb_calloc(count, size)); }
+
 template<typename T>
 inline T realloc(T ptr, size_t size) { return static_cast<T>(nb_realloc(ptr, size)); }
 
-inline char *chcalloc(size_t size) { return calloc<char *>(1, size); }
-inline wchar_t *wchcalloc(size_t size) { return calloc<wchar_t *>(1, size * sizeof(wchar_t)); }
+inline char* chcalloc(size_t size) { return calloc<char *>(1, size); }
+inline wchar_t* wchcalloc(size_t size) { return calloc<wchar_t *>(1, size * sizeof(wchar_t)); }
 
-inline void *operator_new(size_t size)
+inline void* operator_new(size_t size)
 {
-  void *p = nb::calloc<void *>(1, size);
+  void* p = nb::calloc<void *>(1, size);
   /*if (!p)
   {
     static std::bad_alloc badalloc;
@@ -89,10 +90,11 @@ inline void *operator_new(size_t size)
   }*/
   return p;
 }
-template <typename T>
-inline T *operator_new(size_t size) { return static_cast<T*>(operator_new(size)); }
 
-inline void operator_delete(void *p)
+template<typename T>
+inline T* operator_new(size_t size) { return static_cast<T*>(operator_new(size)); }
+
+inline void operator_delete(void* p)
 {
   nb_free(p);
 }
@@ -167,59 +169,80 @@ inline void operator_delete(void *p)
 #pragma warning(push)
 #pragma warning(disable: 4100) // unreferenced formal parameter
 
-namespace nballoc
+namespace nballoc {
+
+inline void destruct(char*)
 {
-  inline void destruct(char *) {}
-  inline void destruct(wchar_t *) {}
-  template <typename T>
-  inline void destruct(T * t) { t->~T(); }
+}
+
+inline void destruct(wchar_t*)
+{
+}
+
+template<typename T>
+inline void destruct(T* t) { t->~T(); }
+
 } // namespace nballoc
 
 #pragma warning(pop)
 
-template <typename T> struct custom_nballocator_t;
+template<typename T>
+struct custom_nballocator_t;
 
-template <> struct custom_nballocator_t<void>
+template<>
+struct custom_nballocator_t<void>
 {
 public:
-  typedef void *pointer;
-  typedef const void *const_pointer;
+  typedef void* pointer;
+  typedef const void* const_pointer;
   // reference to void members are impossible.
   typedef void value_type;
-  template <class U>
-  struct rebind { typedef custom_nballocator_t<U> other; };
+
+  template<class U>
+  struct rebind
+  {
+    typedef custom_nballocator_t<U> other;
+  };
 };
 
-template <typename T>
+template<typename T>
 struct custom_nballocator_t
 {
   typedef size_t size_type;
   typedef ptrdiff_t difference_type;
-  typedef T *pointer;
-  typedef const T *const_pointer;
-  typedef T &reference;
-  typedef const T &const_reference;
+  typedef T* pointer;
+  typedef const T* const_pointer;
+  typedef T& reference;
+  typedef const T& const_reference;
   typedef T value_type;
 
-  template <class U> struct rebind { typedef custom_nballocator_t<U> other; };
+  template<class U>
+  struct rebind
+  {
+    typedef custom_nballocator_t<U> other;
+  };
+
   inline custom_nballocator_t() noexcept = default;
-  inline custom_nballocator_t(const custom_nballocator_t &) noexcept = default;
+  inline custom_nballocator_t(const custom_nballocator_t&) noexcept = default;
   inline custom_nballocator_t& operator=(const custom_nballocator_t&) noexcept = default;
   inline custom_nballocator_t(custom_nballocator_t&&) noexcept = default;
   custom_nballocator_t& operator=(custom_nballocator_t&&) noexcept = default;
 
-  template <class U> custom_nballocator_t(const custom_nballocator_t<U> &) noexcept {}
+  template<class U>
+  custom_nballocator_t(const custom_nballocator_t<U>&) noexcept
+  {
+  }
 
   ~custom_nballocator_t() noexcept = default;
 
   static pointer address(reference x) { return &x; }
   static const_pointer address(const_reference x) { return &x; }
 
-  pointer allocate(size_type s, void const * = nullptr)
+  pointer allocate(size_type s, void const* = nullptr)
   {
     if (0 == s)
       return nullptr;
-    const pointer temp = nb::calloc<pointer>(s, sizeof(T));
+    const auto temp = nb::calloc<pointer>(s, sizeof(T));
 #if !defined(__MINGW32__)
     if (temp == nullptr)
       throw std::bad_alloc();
@@ -238,7 +261,7 @@ struct custom_nballocator_t
     return size_t(-1) / sizeof(T);
   }
 
-  static void construct(pointer p, const T &val)
+  static void construct(pointer p, const T& val)
   {
     new(reinterpret_cast<void *>(p)) T(val);
   }
@@ -249,22 +272,23 @@ struct custom_nballocator_t
   }
 };
 
-template <typename T, typename U>
-inline bool operator==(const custom_nballocator_t<T> &, const custom_nballocator_t<U> &)
+template<typename T, typename U>
+inline bool operator==(const custom_nballocator_t<T>&, const custom_nballocator_t<U>&)
 {
   return true;
 }
 
-template <typename T, typename U>
-inline bool operator!=(const custom_nballocator_t<T> &, const custom_nballocator_t<U> &)
+template<typename T, typename U>
+inline bool operator!=(const custom_nballocator_t<T>&, const custom_nballocator_t<U>&)
 {
   return false;
 }
 
-template <typename T>
-bool CheckNullOrStructSize(const T *s) { return !s || (s->StructSize >= sizeof(T)); }
-template <typename T>
-bool CheckStructSize(const T *s) { return s && (s->StructSize >= sizeof(T)); }
+template<typename T>
+bool CheckNullOrStructSize(const T* s) { return !s || (s->StructSize >= sizeof(T)); }
+
+template<typename T>
+bool CheckStructSize(const T* s) { return s && (s->StructSize >= sizeof(T)); }
 
 #ifdef _DEBUG
 #define SELF_TEST(code) \
@@ -323,26 +347,45 @@ constexpr intptr_t NPOS  = static_cast<intptr_t>(-1);
 #define NB_CONCATENATE_IMPL(s1, s2) s1 ## s2
 #define NB_CONCATENATE(s1, s2) NB_CONCATENATE_IMPL(s1, s2)
 #endif
-// #define __removed / ## /
+#ifdef _MSC_VER
 #define __removed NB_CONCATENATE(/, /)
+#else
+//#define PASTE2(a, b) a ## b
+//#define _PASTE2(a, b) PASTE2(a, b)
+//#define PASTE3(a, b, c) _PASTE2(PASTE2(a, b), c)
+#define __removed NB_CONCATENATE(/, /)
+#endif
 
 #undef __property
-// #define __property / ## /
+#ifdef _MSC_VER
 #define __property NB_CONCATENATE(/, /)
+#else
+#define __property //
+#endif
 
 #if defined(__cplusplus)
 
 namespace nb {
 
-template <typename T1>
-constexpr void used(const T1&)
-{}
-template <typename T1>
-constexpr void unused(const T1&)
-{}
-template <typename T1>
-constexpr void ignore(const T1&)
-{}
+template<typename T1>
+inline constexpr void used(const T1&)
+{
+}
+
+template<typename T1>
+inline constexpr void unused(const T1&)
+{
+}
+
+template<typename T1>
+inline constexpr void ignore(const T1&)
+{
+}
+
+template<typename T>
+inline constexpr void ignore_result(const T&)
+{
+}
 
 } // namespace nb
 

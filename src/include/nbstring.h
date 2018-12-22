@@ -1,6 +1,8 @@
 #pragma once
 
+#ifdef _MSC_VER
 #include <mbstring.h>
+#endif
 #include <cwchar>
 
 #include <nbsystem.h>
