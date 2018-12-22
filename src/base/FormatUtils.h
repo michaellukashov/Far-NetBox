@@ -1,12 +1,9 @@
 #pragma once
 
-#ifdef max
+#pragma push_macro("min")
+#pragma push_macro("max")
 #undef max
-#endif
-
-#ifdef min
 #undef min
-#endif
 
 #include <fmt/format.h>
 #include <fmt/printf.h>
@@ -28,12 +25,15 @@ FMT_VARIADIC_W(UnicodeString, FmtLoadStr, intptr_t)
 
 inline std::basic_ostream<wchar_t>& operator<<(std::basic_ostream<wchar_t> &os, const BaseStringT<wchar_t> &Value)
 {
-  os << Value.c_str();
+  os << Value.data();
   return os;
 }
 
 inline std::basic_ostream<char>& operator<<(std::basic_ostream<char> &os, const BaseStringT<char> &Value)
 {
-  os << Value.c_str();
+  os << Value.data();
   return os;
 }
+
+#pragma pop_macro("min")
+#pragma pop_macro("max")
