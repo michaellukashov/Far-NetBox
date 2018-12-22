@@ -296,6 +296,8 @@ public:
   __property bool Logging = { read = FLogging };
   __property UnicodeString Name = { read = FName };
 
+  ROProperty<bool> Logging{nb::bind(&TSessionLog::GetLogging, this)};
+
   bool GetLogging() const { return FLogging; }
   UnicodeString GetName() const { return FName; }
   UnicodeString GetLogFileName() const { return FCurrentLogFileName; }
@@ -310,7 +312,7 @@ private:
   TSessionLog *FParent;
   TCriticalSection FCriticalSection;
   bool FLogging;
-  tinylog::TinyLog *FLogger;
+  tinylog::TinyLog *FLogger{nullptr};
   UnicodeString FCurrentLogFileName;
   UnicodeString FCurrentFileName;
   int64_t FCurrentFileSize;
@@ -323,8 +325,8 @@ private:
   void OpenLogFile();
   UnicodeString GetLogFileName();
   void DoAdd(TLogLineType AType, const UnicodeString ALine,
-    __removed void (__closure *f)(TLogLineType Type, const UnicodeString &Line));
     TDoAddLogEvent Event);
+  __removed void (__closure *f)(TLogLineType Type, const UnicodeString &Line));
   void DoAddToParent(TLogLineType AType, const UnicodeString ALine);
   void DoAddToSelf(TLogLineType AType, const UnicodeString ALine);
   void AddStartupInfo(bool System);

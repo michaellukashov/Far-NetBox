@@ -273,6 +273,7 @@ protected:
 
 public:
   void SetMasks(const UnicodeString Value);
+public:
   void SetStatus(TStatus Status);
   TStatus GetStatus() const;
   void Execute(TTerminalItem *TerminalItem);
@@ -283,9 +284,9 @@ public:
   intptr_t GetCPSLimit() const;
   virtual intptr_t DefaultCPSLimit() const;
   virtual UnicodeString GetStartupDirectory() const = 0;
-  virtual bool Complete();
+  virtual void ProgressUpdated();
   virtual TQueueItem *CreateParallelOperation();
-  bool Complete();
+  virtual bool Complete();
 };
 //---------------------------------------------------------------------------
 NB_DEFINE_CLASS_ID(TQueueItemProxy);

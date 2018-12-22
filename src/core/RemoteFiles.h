@@ -295,6 +295,7 @@ public:
   static TStrings * CloneStrings(TStrings *List);
 
   __property UnicodeString Directory = { read = FDirectory, write = SetDirectory };
+  RWProperty<UnicodeString> Directory{nb::bind(&TRemoteFileList::GetDirectory, this), nb::bind(&TRemoteFileList::SetDirectory, this)};
   __property TRemoteFile * Files[Integer Index] = { read = GetFiles };
   __property UnicodeString FullDirectory  = { read=GetFullDirectory };
   __property Boolean IsRoot = { read = GetIsRoot };
@@ -661,7 +662,7 @@ public:
   TFileInfo Local;
   TFileInfo Remote;
   intptr_t ImageIndex{-1};
-  bool Checked{false};
+  bool Checked{true};
   TRemoteFile *RemoteFile{nullptr};
 
   const UnicodeString& GetFileName() const;

@@ -276,16 +276,16 @@ friend class TSecondaryTerminal;
 friend class TRetryOperationLoop;
 
 private:
-  TSessionData *FSessionData;
-  TSessionLog *FLog;
-  TActionLog *FActionLog;
-  TConfiguration *FConfiguration;
+  TSessionData *FSessionData{nullptr};
+  TSessionLog *FLog{nullptr};
+  TActionLog *FActionLog{nullptr};
+  TConfiguration *FConfiguration{nullptr};
   UnicodeString FCurrentDirectory;
   UnicodeString FLockDirectory;
-  intptr_t FExceptionOnFail;
-  TRemoteDirectory *FFiles;
-  intptr_t FInTransaction;
-  bool FSuspendTransaction;
+  intptr_t FExceptionOnFail{0};
+  TRemoteDirectory *FFiles{nullptr};
+  intptr_t FInTransaction{0};
+  bool FSuspendTransaction{false};
   TNotifyEvent FOnChangeDirectory;
   TReadDirectoryEvent FOnReadDirectory;
   TNotifyEvent FOnStartReadDirectory;
@@ -301,59 +301,59 @@ private:
   TRemoteTokenList FMembership;
   TRemoteTokenList FGroups;
   TRemoteTokenList FUsers;
-  bool FUsersGroupsLookedup;
-  TFileOperationProgressEvent FOnProgress;
-  TFileOperationFinishedEvent FOnFinished;
-  TFileOperationProgressType *FOperationProgress;
-  bool FUseBusyCursor;
-  TRemoteDirectoryCache *FDirectoryCache;
-  TRemoteDirectoryChangesCache *FDirectoryChangesCache;
-  TSecureShell *FSecureShell;
+  bool FUsersGroupsLookedup{false};
+  TFileOperationProgressEvent FOnProgress{nullptr};
+  TFileOperationFinishedEvent FOnFinished{nullptr};
+  TFileOperationProgressType *FOperationProgress{nullptr};
+  bool FUseBusyCursor{false};
+  TRemoteDirectoryCache *FDirectoryCache{nullptr};
+  TRemoteDirectoryChangesCache *FDirectoryChangesCache{nullptr};
+  TSecureShell *FSecureShell{nullptr};
   UnicodeString FLastDirectoryChange;
-  TCurrentFSProtocol FFSProtocol;
-  TTerminal *FCommandSession;
-  bool FAutoReadDirectory;
-  bool FReadingCurrentDirectory;
-  bool *FClosedOnCompletion;
+  TCurrentFSProtocol FFSProtocol{};
+  TTerminal *FCommandSession{nullptr};
+  bool FAutoReadDirectory{false};
+  bool FReadingCurrentDirectory{false};
+  bool *FClosedOnCompletion{nullptr};
   TSessionStatus FStatus;
-  intptr_t FOpening;
+  intptr_t FOpening{0};
   RawByteString FRememberedPassword;
-  TPromptKind FRememberedPasswordKind;
+  TPromptKind FRememberedPasswordKind{};
   RawByteString FRememberedTunnelPassword;
-  TTunnelThread *FTunnelThread;
-  TSecureShell *FTunnel;
-  TSessionData *FTunnelData;
-  TSessionLog *FTunnelLog;
-  TTunnelUI *FTunnelUI;
-  intptr_t FTunnelLocalPortNumber;
+  TTunnelThread *FTunnelThread{nullptr};
+  TSecureShell *FTunnel{nullptr};
+  TSessionData *FTunnelData{nullptr};
+  TSessionLog *FTunnelLog{nullptr};
+  TTunnelUI *FTunnelUI{nullptr};
+  intptr_t FTunnelLocalPortNumber{0};
   UnicodeString FTunnelError;
-  TQueryUserEvent FOnQueryUser;
-  TPromptUserEvent FOnPromptUser;
-  TDisplayBannerEvent FOnDisplayBanner;
-  TExtendedExceptionEvent FOnShowExtendedException;
-  TInformationEvent FOnInformation;
-  TCustomCommandEvent FOnCustomCommand;
-  TNotifyEvent FOnClose;
-  TCheckForEscEvent FOnCheckForEsc;
-  TCallbackGuard *FCallbackGuard;
-  TFindingFileEvent FOnFindingFile;
-  bool FEnableSecureShellUsage;
-  bool FCollectFileSystemUsage;
-  bool FRememberedPasswordTried;
-  bool FRememberedTunnelPasswordTried;
-  intptr_t FNesting;
+  TQueryUserEvent FOnQueryUser{nullptr};
+  TPromptUserEvent FOnPromptUser{nullptr};
+  TDisplayBannerEvent FOnDisplayBanner{nullptr};
+  TExtendedExceptionEvent FOnShowExtendedException{nullptr};
+  TInformationEvent FOnInformation{nullptr};
+  TCustomCommandEvent FOnCustomCommand{nullptr};
+  TNotifyEvent FOnClose{nullptr};
+  TCheckForEscEvent FOnCheckForEsc{nullptr};
+  TCallbackGuard *FCallbackGuard{nullptr};
+  TFindingFileEvent FOnFindingFile{nullptr};
+  bool FEnableSecureShellUsage{false};
+  bool FCollectFileSystemUsage{false};
+  bool FRememberedPasswordTried{false};
+  bool FRememberedTunnelPasswordTried{false};
+  intptr_t FNesting{0};
   UnicodeString FFingerprintScannedSHA256;
   UnicodeString FFingerprintScannedMD5;
-  DWORD FLastProgressLogged;
-  TRemoteDirectory *FOldFiles;
+  DWORD FLastProgressLogged{0};
+  TRemoteDirectory *FOldFiles{nullptr};
   UnicodeString FDestFileName;
-  bool FMultipleDestinationFiles;
-  bool FFileTransferAny;
+  bool FMultipleDestinationFiles{false};
+  bool FFileTransferAny{true};
   typedef rde::map<UnicodeString, UnicodeString> TEncryptedFileNames;
   TEncryptedFileNames FEncryptedFileNames;
   rde::set<UnicodeString> FFoldersScannedForEncryptedFiles;
   RawByteString FEncryptKey;
-  TFileOperationProgressType::TPersistence * FOperationProgressPersistence;
+  TFileOperationProgressType::TPersistence * FOperationProgressPersistence{nullptr};
   TOnceDoneOperation FOperationProgressOnceDoneOperation;
 
 public:
@@ -535,10 +535,10 @@ protected:
     TFileOperationProgressType * Progress, const void * Item, const UnicodeString AFileName,
     bool Success, TOnceDoneOperation & OnceDoneOperation);
   void OperationStart(
-    TFileOperationProgressType & Progress, TFileOperation Operation, TOperationSide Side, int Count);
+    TFileOperationProgressType & Progress, TFileOperation Operation, TOperationSide Side, intptr_t Count);
   void OperationStart(
-    TFileOperationProgressType & Progress, TFileOperation Operation, TOperationSide Side, int Count,
-    bool Temp, const UnicodeString ADirectory, unsigned long CPSLimit);
+    TFileOperationProgressType & Progress, TFileOperation Operation, TOperationSide Side, intptr_t Count,
+    bool Temp, const UnicodeString ADirectory, uint64_t CPSLimit);
   void OperationStop(TFileOperationProgressType & Progress);
   virtual void Information(const UnicodeString AStr, bool Status) override;
   virtual uint32_t QueryUser(const UnicodeString AQuery,
@@ -789,6 +789,7 @@ public:
   __property TSessionStatus Status = { read = FStatus };
   __property UnicodeString CurrentDirectory = { read = GetCurrentDirectory, write = SetCurrentDirectory };
   __property bool ExceptionOnFail = { read = GetExceptionOnFail, write = SetExceptionOnFail };
+  RWProperty<bool> ExceptionOnFail{nb::bind(&TTerminal::GetExceptionOnFail, this), nb::bind(&TTerminal::SetExceptionOnFail, this)};
   __property TRemoteDirectory * Files = { read = FFiles };
   __property TNotifyEvent OnChangeDirectory = { read = FOnChangeDirectory, write = FOnChangeDirectory };
   __property TReadDirectoryEvent OnReadDirectory = { read = FOnReadDirectory, write = FOnReadDirectory };
@@ -997,15 +998,15 @@ public:
   static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TCalculateSizeParams); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TCalculateSizeParams) || TObject::is(Kind); }
 public:
-  TCalculateSizeParams() : TObject(OBJECT_CLASS_TCalculateSizeParams), Size(0), Params(0), CopyParam(nullptr), Stats(nullptr), Files(nullptr), AllowDirs(false), Result(false) {}
-  int64_t Size;
-  intptr_t Params;
-  const TCopyParamType *CopyParam;
-  TCalculateSizeStats *Stats;
-  TCollectedFileList *Files;
+  TCalculateSizeParams();
+  int64_t Size{0};
+  intptr_t Params{0};
+  const TCopyParamType *CopyParam{nullptr};
+  TCalculateSizeStats *Stats{nullptr};
+  TCollectedFileList *Files{nullptr};
   UnicodeString LastDirPath;
-  bool AllowDirs;
-  bool Result;
+  bool AllowDirs{true};
+  bool Result{true};
 };
 //---------------------------------------------------------------------------
 #if 0
@@ -1056,11 +1057,11 @@ struct NB_CORE_EXPORT TSpaceAvailable
   CUSTOM_MEM_ALLOCATION_IMPL
   TSpaceAvailable();
 
-  int64_t BytesOnDevice;
-  int64_t UnusedBytesOnDevice;
-  int64_t BytesAvailableToUser;
-  int64_t UnusedBytesAvailableToUser;
-  uintptr_t BytesPerAllocationUnit;
+  int64_t BytesOnDevice{0};
+  int64_t UnusedBytesOnDevice{0};
+  int64_t BytesAvailableToUser{0};
+  int64_t UnusedBytesAvailableToUser{0};
+  uintptr_t BytesPerAllocationUnit{0};
 };
 //---------------------------------------------------------------------------
 class NB_CORE_EXPORT TRobustOperationLoop : public TObject

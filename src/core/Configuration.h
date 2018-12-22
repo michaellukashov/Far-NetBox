@@ -4,6 +4,7 @@
 
 #include "RemoteFiles.h"
 #include "HierarchicalStorage.h"
+#include "Usage.h"
 //---------------------------------------------------------------------------
 #define SET_CONFIG_PROPERTY_EX(PROPERTY, APPLY) \
   if (Get ## PROPERTY() != Value) { F ## PROPERTY = Value; Changed(); APPLY; }
@@ -41,7 +42,7 @@ private:
   TNotifyEvent FOnChange;
 
   mutable void *FApplicationInfo;
-  __removed TUsage * FUsage;
+  TUsage * FUsage{nullptr};
   bool FLogging;
   bool FPermanentLogging;
   UnicodeString FLogFileName;
@@ -220,8 +221,8 @@ public:
   __property int PermanentLogMaxCount  = { read = GetLogMaxCount, write = SetLogMaxCount };
 
 public:
-  explicit TConfiguration(TObjectClassId Kind = OBJECT_CLASS_TConfiguration);
-  virtual ~TConfiguration();
+  explicit TConfiguration(TObjectClassId Kind = OBJECT_CLASS_TConfiguration) noexcept;
+  virtual ~TConfiguration() noexcept;
   virtual void Default();
   virtual void UpdateStaticUsage();
   void Load(THierarchicalStorage *Storage);
@@ -277,6 +278,7 @@ public:
   __property TVSFixedFileInfo *FixedApplicationInfo  = { read = GetFixedApplicationInfo };
   __property void *ApplicationInfo  = { read = GetApplicationInfo };
   __property TUsage *Usage = { read = FUsage };
+  ROProperty<TUsage*> Usage{nb::bind(&TConfiguration::GetUsage, this)};
   __property bool CollectUsage = { read = GetCollectUsage, write = SetCollectUsage };
   __property UnicodeString StoredSessionsSubKey = {read = GetStoredSessionsSubKey};
   __property UnicodeString PuttyRegistryStorageKey  = { read = FPuttyRegistryStorageKey, write = SetPuttyRegistryStorageKey };
@@ -303,6 +305,7 @@ public:
   __property int LogMaxCount  = { read = FLogMaxCount, write = SetLogMaxCount };
   __property int LogProtocol  = { read = FLogProtocol, write = SetLogProtocol };
   __property int ActualLogProtocol  = { read = FActualLogProtocol };
+  ROProperty<intptr_t> ActualLogProtocol{nb::bind(&TConfiguration::GetActualLogProtocol, this)};
   __property bool LogActions  = { read = FLogActions, write = SetLogActions };
   __property bool LogActionsRequired  = { read = FLogActionsRequired, write = FLogActionsRequired };
   __property UnicodeString ActionsLogFileName  = { read = GetActionsLogFileName, write = SetActionsLogFileName };
@@ -345,7 +348,7 @@ public:
   __property bool ForceBanners = { read = FForceBanners };
   __property bool DisableAcceptingHostKeys = { read = FDisableAcceptingHostKeys };
 
-  __removed TUsage * GetUsage() { return FUsage; }
+  TUsage * GetUsage() { return FUsage; }
   UnicodeString GetPuttyRegistryStorageKey() const { return FPuttyRegistryStorageKey; }
   UnicodeString GetRandomSeedFile() const { return FRandomSeedFile; }
   bool GetLogFileAppend() const { return FLogFileAppend; }

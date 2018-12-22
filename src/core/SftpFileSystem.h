@@ -150,8 +150,7 @@ protected:
     TRemoteFile *&AFile, SSH_FXP_TYPES Type, TRemoteFile *ALinkedByFile = nullptr,
     SSH_FX_TYPES AllowStatus = -1);
   virtual UnicodeString RemoteGetCurrentDirectory() const override;
-  UnicodeString GetHomeDirectory();
-  
+
   SSH_FX_TYPES GotStatusPacket(TSFTPPacket *Packet, SSH_FX_TYPES AllowStatus);
   bool RemoteFileExists(const UnicodeString AFullPath, TRemoteFile **AFile = nullptr);
   TRemoteFile * LoadFile(TSFTPPacket *Packet,

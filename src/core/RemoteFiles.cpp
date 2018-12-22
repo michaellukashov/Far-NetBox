@@ -2398,7 +2398,7 @@ void TRemoteProperties::Save(THierarchicalStorage *Storage) const
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 TChecklistItem::TChecklistItem() :
-  Action(saNone), IsDirectory(false), RemoteFile(NULL), Checked(true), ImageIndex(-1), FDirectoryHasSize(false)
+  Action(saNone), IsDirectory(false), RemoteFile(nullptr), Checked(true), ImageIndex(-1), FDirectoryHasSize(false)
 {
   Local.ModificationFmt = mfFull;
   Local.Modification = 0;
@@ -2406,6 +2406,8 @@ TChecklistItem::TChecklistItem() :
   Remote.ModificationFmt = mfFull;
   Remote.Modification = 0;
   Remote.Size = 0;
+  FLocalLastWriteTime.dwHighDateTime = 0;
+  FLocalLastWriteTime.dwLowDateTime = 0;
 }
 //---------------------------------------------------------------------------
 TChecklistItem::~TChecklistItem()
