@@ -1363,6 +1363,52 @@ bool IsHex(wchar_t Ch)
     ((Ch >= L'a') && (Ch <= L'f'));
 }
 //---------------------------------------------------------------------------
+TSearchRecSmart::TSearchRecSmart()
+{
+  FLastWriteTimeSource.dwLowDateTime = 0;
+  FLastWriteTimeSource.dwLowDateTime = 0;
+}
+//---------------------------------------------------------------------------
+TDateTime TSearchRecSmart::GetLastWriteTime() const
+{
+  if ((FindData.ftLastWriteTime.dwLowDateTime != FLastWriteTimeSource.dwLowDateTime) ||
+      (FindData.ftLastWriteTime.dwHighDateTime != FLastWriteTimeSource.dwHighDateTime))
+  {
+    FLastWriteTimeSource = FindData.ftLastWriteTime;
+    FLastWriteTime = FileTimeToDateTime(FLastWriteTimeSource);
+  }
+  return FLastWriteTime;
+}
+//---------------------------------------------------------------------------
+bool TSearchRecSmart::IsRealFile() const
+{
+  return ::IsRealFile(Name);
+}
+//---------------------------------------------------------------------------
+bool TSearchRecSmart::IsDirectory() const
+{
+  return FLAGSET(Attr, faDirectory);
+}
+//---------------------------------------------------------------------------
+bool TSearchRecSmart::IsHidden() const
+{
+  return FLAGSET(Attr, faHidden);
+}
+//---------------------------------------------------------------------------
+TSearchRecOwned::~TSearchRecOwned()
+{
+  if (Opened)
+  {
+    base::FindClose(*this);
+  }
+}
+//---------------------------------------------------------------------------
+void TSearchRecOwned::Close()
+{
+  base::FindClose(*this);
+  Opened = false;
+}
+//---------------------------------------------------------------------------
 DWORD FindCheck(DWORD Result, const UnicodeString APath)
 {
   if ((Result != ERROR_SUCCESS) &&
@@ -2362,9 +2408,11 @@ intptr_t TimeToMinutes(const TDateTime &T)
   return TimeToSeconds(T) / SecsPerMin;
 }
 //---------------------------------------------------------------------------
-static bool DoRecursiveDeleteFile(const UnicodeString AFileName, bool ToRecycleBin, UnicodeString &AErrorPath)
+static bool DoRecursiveDeleteFile(
+  const UnicodeString AFileName, bool ToRecycleBin, UnicodeString &AErrorPath, int & Deleted)
 {
   bool Result;
+  Deleted = 0;
 
   UnicodeString ErrorPath = AFileName;
 
@@ -2377,6 +2425,10 @@ static bool DoRecursiveDeleteFile(const UnicodeString AFileName, bool ToRecycleB
       if (FLAGCLEAR(SearchRec.Attr, faDirectory))
       {
         Result = ::SysUtulsRemoveFile(ApiPath(AFileName));
+        if (Result)
+        {
+          Deleted++;
+        }
       }
       else
       {
@@ -2389,19 +2441,23 @@ static bool DoRecursiveDeleteFile(const UnicodeString AFileName, bool ToRecycleB
             do
             {
               UnicodeString FileName2 = AFileName + L"\\" + SearchRec.Name;
-              if (FLAGSET(SearchRec.Attr, faDirectory))
+              if (SearchRec.IsDirectory())
               {
-                if ((SearchRec.Name != L".") && (SearchRec.Name != L".."))
+                if (SearchRec.IsRealFile())
                 {
-                  Result = DoRecursiveDeleteFile(FileName2, DebugAlwaysFalse(ToRecycleBin), ErrorPath);
+                  Result = DoRecursiveDeleteFile(FileName2, DebugAlwaysFalse(ToRecycleBin), ErrorPath, Deleted);
                 }
               }
               else
               {
-                Result = ::SysUtulsRemoveFile(FileName2);
+                Result = ::SysUtulsRemoveFile(ApiPath(FileName2));
                 if (!Result)
                 {
                   ErrorPath = FileName2;
+                }
+                else
+                {
+                  Deleted++;
                 }
               }
             }
@@ -2415,6 +2471,10 @@ static bool DoRecursiveDeleteFile(const UnicodeString AFileName, bool ToRecycleB
           if (Result)
           {
             Result = ::SysUtulsRemoveDir(ApiPath(AFileName));
+            if (Result)
+            {
+              Deleted++;
+            }
           }
         }
       }
@@ -2455,6 +2515,11 @@ static bool DoRecursiveDeleteFile(const UnicodeString AFileName, bool ToRecycleB
       }
       ::SetLastError(ErrorCode);
     }
+
+    if (Result)
+    {
+      Deleted = 1;
+    }
   }
 
   if (!Result)
@@ -2468,17 +2533,20 @@ static bool DoRecursiveDeleteFile(const UnicodeString AFileName, bool ToRecycleB
 bool RecursiveDeleteFile(const UnicodeString AFileName, bool ToRecycleBin)
 {
   UnicodeString ErrorPath; // unused
-  const bool Result = DoRecursiveDeleteFile(AFileName, ToRecycleBin, ErrorPath);
+  int Deleted;
+  const bool Result = DoRecursiveDeleteFile(AFileName, ToRecycleBin, ErrorPath, Deleted);
   return Result;
 }
 //---------------------------------------------------------------------------
-void RecursiveDeleteFileChecked(const UnicodeString AFileName, bool ToRecycleBin)
+int RecursiveDeleteFileChecked(const UnicodeString AFileName, bool ToRecycleBin)
 {
   UnicodeString ErrorPath;
-  if (!DoRecursiveDeleteFile(AFileName, ToRecycleBin, ErrorPath))
+  int Deleted;
+  if (!DoRecursiveDeleteFile(AFileName, ToRecycleBin, ErrorPath, Deleted))
   {
     throw EOSExtException(FMTLOAD(CORE_DELETE_LOCAL_FILE_ERROR, ErrorPath));
   }
+  return Deleted;
 }
 //---------------------------------------------------------------------------
 void DeleteFileChecked(const UnicodeString AFileName)

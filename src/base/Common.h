@@ -49,6 +49,7 @@ NB_CORE_EXPORT void PackStr(AnsiString &Str);
 NB_CORE_EXPORT void Shred(UnicodeString &Str);
 NB_CORE_EXPORT void Shred(UTF8String &Str);
 NB_CORE_EXPORT void Shred(AnsiString &Str);
+NB_CORE_EXPORT void Shred(RawByteString & Str);
 NB_CORE_EXPORT UnicodeString AnsiToString(const RawByteString S);
 NB_CORE_EXPORT UnicodeString AnsiToString(const char *S, size_t Len);
 NB_CORE_EXPORT UnicodeString MakeValidFileName(const UnicodeString AFileName);
@@ -93,6 +94,7 @@ NB_CORE_EXPORT UnicodeString ExpandFileNameCommand(const UnicodeString ACommand,
 NB_CORE_EXPORT void ReformatFileNameCommand(UnicodeString &ACommand);
 NB_CORE_EXPORT UnicodeString EscapeParam(const UnicodeString AParam);
 NB_CORE_EXPORT UnicodeString EscapePuttyCommandParam(const UnicodeString AParam);
+NB_CORE_EXPORT UnicodeString StringsToParams(TStrings * Strings);
 NB_CORE_EXPORT UnicodeString ExpandEnvironmentVariables(const UnicodeString Str);
 NB_CORE_EXPORT bool SamePaths(const UnicodeString APath1, const UnicodeString APath2);
 NB_CORE_EXPORT bool IsPathToSameFile(const UnicodeString APath1, const UnicodeString APath2);
@@ -119,7 +121,7 @@ NB_CORE_EXPORT UnicodeString EncodeUrlPath(const UnicodeString S);
 NB_CORE_EXPORT UnicodeString AppendUrlParams(const UnicodeString AURL, const UnicodeString Params);
 NB_CORE_EXPORT UnicodeString ExtractFileNameFromUrl(const UnicodeString Url);
 NB_CORE_EXPORT bool RecursiveDeleteFile(const UnicodeString AFileName, bool ToRecycleBin);
-NB_CORE_EXPORT void RecursiveDeleteFileChecked(const UnicodeString AFileName, bool ToRecycleBin);
+NB_CORE_EXPORT int RecursiveDeleteFileChecked(const UnicodeString AFileName, bool ToRecycleBin);
 NB_CORE_EXPORT void DeleteFileChecked(const UnicodeString AFileName);
 NB_CORE_EXPORT uint32_t CancelAnswer(uint32_t Answers);
 NB_CORE_EXPORT uint32_t AbortAnswer(uint32_t Answers);
@@ -191,22 +193,29 @@ public:
   bool IsDirectory() const;
   bool IsHidden() const;
 private:
-  mutable FILETIME FLastWriteTimeSource;
-  mutable TDateTime FLastWriteTime;
+  mutable FILETIME FLastWriteTimeSource{};
+  mutable TDateTime FLastWriteTime{};
 };
 //---------------------------------------------------------------------------
 #if 0
 typedef void (__closure* TProcessLocalFileEvent)
-  (const UnicodeString FileName, const TSearchRec Rec, void * Param);
+  (const UnicodeString & FileName, const TSearchRecSmart & Rec, void * Param);
 #endif // #if 0
 typedef nb::FastDelegate3<void,
-  UnicodeString /*FileName*/, const TSearchRec & /*Rec*/,
+  UnicodeString /*FileName*/, const TSearchRecSmart & /*Rec*/,
   void * /*Param*/> TProcessLocalFileEvent;
 
-NB_CORE_EXPORT bool FileSearchRec(const UnicodeString AFileName, TSearchRec &Rec);
-struct TSearchRecChecked : public TSearchRec
+NB_CORE_EXPORT bool FileSearchRec(const UnicodeString FileName, TSearchRec & Rec);
+NB_CORE_EXPORT void CopySearchRec(const TSearchRec & Source, TSearchRec & Dest);
+struct TSearchRecChecked : public TSearchRecSmart
 {
   UnicodeString Path;
+  bool Opened{false};
+};
+struct TSearchRecOwned : public TSearchRecChecked
+{
+  ~TSearchRecOwned();
+  void Close();
 };
 NB_CORE_EXPORT DWORD FindCheck(DWORD Result, const UnicodeString APath);
 NB_CORE_EXPORT DWORD FindFirstUnchecked(const UnicodeString APath, DWORD LocalFileAttrs, TSearchRecChecked &F);
@@ -252,6 +261,7 @@ NB_CORE_EXPORT intptr_t TimeToMSec(const TDateTime &T);
 NB_CORE_EXPORT intptr_t TimeToSeconds(const TDateTime &T);
 NB_CORE_EXPORT intptr_t TimeToMinutes(const TDateTime &T);
 NB_CORE_EXPORT UnicodeString FormatDateTimeSpan(const UnicodeString TimeFormat, TDateTime DateTime);
+NB_CORE_EXPORT TStrings * TlsCipherList();
 //---------------------------------------------------------------------------
 #if 0
 template<class MethodT>
@@ -286,7 +296,7 @@ UnicodeString RtfSwitch(
   const UnicodeString & Name, const UnicodeString & Link, const UnicodeString & Value, bool Rtf = true);
 UnicodeString RtfSwitch(
   const UnicodeString & Name, const UnicodeString & Link, int Value, bool Rtf = true);
-UnicodeString RtfEscapeParam(UnicodeString Param);
+UnicodeString RtfEscapeParam(UnicodeString Param, bool PowerShellEscape);
 UnicodeString RtfRemoveHyperlinks(UnicodeString Text);
 UnicodeString ScriptCommandLink(const UnicodeString & Command);
 UnicodeString AssemblyBoolean(TAssemblyLanguage Language, bool Value);
@@ -309,6 +319,7 @@ UnicodeString RtfLibraryMethod(const UnicodeString & ClassName, const UnicodeStr
 UnicodeString RtfLibraryClass(const UnicodeString & ClassName);
 UnicodeString AssemblyVariableName(TAssemblyLanguage Language, const UnicodeString & ClassName);
 UnicodeString AssemblyStatementSeparator(TAssemblyLanguage Language);
+UnicodeString AssemblyVariableDeclaration(TAssemblyLanguage Language);
 UnicodeString AssemblyNewClassInstance(
   TAssemblyLanguage Language, const UnicodeString & ClassName, bool Inline);
 UnicodeString AssemblyNewClassInstanceStart(
