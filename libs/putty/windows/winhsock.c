@@ -58,11 +58,11 @@ static int handle_gotdata(struct handle *h, void *data, int len)
     Handle_Socket ps = (Handle_Socket) handle_get_privdata(h);
 
     if (len < 0) {
-	plug_closing(ps->plug, "Read error from handle", 0, 0);
-	return 0;
+  plug_closing(ps->plug, "Read error from handle", 0, 0);
+  return 0;
     } else if (len == 0) {
-	plug_closing(ps->plug, NULL, 0, 0);
-	return 0;
+  plug_closing(ps->plug, NULL, 0, 0);
+  return 0;
     } else {
         assert(ps->frozen != FROZEN && ps->frozen != THAWING);
         if (ps->frozen == FREEZING) {
@@ -82,7 +82,7 @@ static int handle_gotdata(struct handle *h, void *data, int len)
             return INT_MAX;
         } else {
             plug_receive(ps->plug, 0, data, len);
-	    return 0;
+      return 0;
         }
     }
 }
@@ -119,7 +119,7 @@ static Plug sk_handle_plug(Socket s, Plug p)
     Handle_Socket ps = (Handle_Socket) s;
     Plug ret = ps->plug;
     if (p)
-	ps->plug = p;
+  ps->plug = p;
     return ret;
 }
 
@@ -136,6 +136,11 @@ static void sk_handle_close(Socket s)
     // WinSCP core uses do_select as signalization of connection up/down
     do_select(ps->plug, INVALID_SOCKET, 0);
     #endif
+
+    if (ps->defer_close) {
+        ps->deferred_close = TRUE;
+        return;
+    }
 
     handle_free(ps->send_h);
     handle_free(ps->recv_h);
@@ -215,7 +220,7 @@ static void handle_socket_unfreeze(void *psv)
     bufchain_consume(&ps->inputdata, len);
     ps->defer_close = FALSE;
     if (ps->deferred_close) {
-        sk_handle_close(ps);
+        sk_handle_close((Socket)ps);
         return;
     }
 
@@ -300,20 +305,20 @@ static char *sk_handle_peer_info(Socket s)
     Handle_Socket ps = (Handle_Socket) s;
     ULONG pid;
     static HMODULE kernel32_module;
-    DECL_WINDOWS_FUNCTION(static, BOOL, GetNamedPipeClientProcessId,
+    PUTTY_DECL_WINDOWS_FUNCTION(static, BOOL, GetNamedPipeClientProcessId,
                           (HANDLE, PULONG));
 
     if (!kernel32_module) {
         kernel32_module = load_system32_dll("kernel32.dll");
-#if (defined _MSC_VER && _MSC_VER < 1900) || defined __MINGW32__ || defined COVERITY
+#if (defined _MSC_VER && _MSC_VER < 1900) || defined __MINGW32__ || defined COVERITY || defined MPEXT
         /* For older Visual Studio, and MinGW too (at least as of
          * Ubuntu 16.04), this function isn't available in the header
          * files to type-check. Ditto the toolchain I use for
          * Coveritying the Windows code. */
-        GET_WINDOWS_FUNCTION_NO_TYPECHECK(
+        PUTTY_PUTTY_GET_WINDOWS_FUNCTION_NO_TYPECHECK(
             kernel32_module, GetNamedPipeClientProcessId);
 #else
-        GET_WINDOWS_FUNCTION(
+        PUTTY_PUTTY_GET_WINDOWS_FUNCTION(
             kernel32_module, GetNamedPipeClientProcessId);
 #endif
     }
@@ -334,14 +339,14 @@ Socket make_handle_socket(HANDLE send_H, HANDLE recv_H, HANDLE stderr_H,
                           Plug plug, int overlapped)
 {
     static const struct socket_function_table socket_fn_table = {
-	sk_handle_plug,
-	sk_handle_close,
-	sk_handle_write,
-	sk_handle_write_oob,
-	sk_handle_write_eof,
-	sk_handle_flush,
-	sk_handle_set_frozen,
-	sk_handle_socket_error,
+  sk_handle_plug,
+  sk_handle_close,
+  sk_handle_write,
+  sk_handle_write_oob,
+  sk_handle_write_eof,
+  sk_handle_flush,
+  sk_handle_set_frozen,
+  sk_handle_socket_error,
         sk_handle_peer_info,
     };
 

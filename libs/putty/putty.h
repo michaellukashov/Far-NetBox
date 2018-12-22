@@ -74,8 +74,8 @@ typedef struct terminal_tag Terminal;
 #define LATTR_MODE   0x00000003UL
 #define LATTR_WRAPPED 0x00000010UL     /* this line wraps to next */
 #define LATTR_WRAPPED2 0x00000020UL    /* with WRAPPED: CJK wide character
-					  wrapped to next line, so last
-					  single-width cell is empty */
+	          wrapped to next line, so last
+	          single-width cell is empty */
 
 #define ATTR_INVALID 0x03FFFFU
 
@@ -437,39 +437,39 @@ enum {
 };
 
 struct backend_tag {
-    const char *(*init) (void *frontend_handle, void **backend_handle,
-			 Conf *conf, const char *host, int port,
-                         char **realhost, int nodelay, int keepalive);
-    void (*free) (void *handle);
-    /* back->reconfig() passes in a replacement configuration. */
-    void (*reconfig) (void *handle, Conf *conf);
-    /* back->send() returns the current amount of buffered data. */
-    int (*send) (void *handle, const char *buf, int len);
-    /* back->sendbuffer() does the same thing but without attempting a send */
-    int (*sendbuffer) (void *handle);
-    void (*size) (void *handle, int width, int height);
-    void (*special) (void *handle, Telnet_Special code);
-    const struct telnet_special *(*get_specials) (void *handle);
-    int (*connected) (void *handle);
-    int (*exitcode) (void *handle);
-    /* If back->sendok() returns FALSE, data sent to it from the frontend
-     * may be lost. */
-    int (*sendok) (void *handle);
-    int (*ldisc) (void *handle, int);
-    void (*provide_ldisc) (void *handle, void *ldisc);
-    void (*provide_logctx) (void *handle, void *logctx);
-    /*
-     * back->unthrottle() tells the back end that the front end
-     * buffer is clearing.
-     */
-    void (*unthrottle) (void *handle, int);
-    int (*cfg_info) (void *handle);
-    /* Only implemented in the SSH protocol: check whether a
-     * connection-sharing upstream exists for a given configuration. */
-    int (*test_for_upstream)(const char *host, int port, Conf *conf);
-    const char *name;
-    int protocol;
-    int default_port;
+	  const char *(*init) (void *frontend_handle, void **backend_handle,
+		   Conf *conf, const char *host, int port,
+		                     char **realhost, int nodelay, int keepalive);
+		void (*free) (void *handle);
+		/* back->reconfig() passes in a replacement configuration. */
+		void (*reconfig) (void *handle, Conf *conf);
+		/* back->send() returns the current amount of buffered data. */
+		int (*send) (void *handle, const char *buf, int len);
+		/* back->sendbuffer() does the same thing but without attempting a send */
+		int (*sendbuffer) (void *handle);
+		void (*size) (void *handle, int width, int height);
+		void (*special) (void *handle, Telnet_Special code);
+		const struct telnet_special *(*get_specials) (void *handle);
+		int (*connected) (void *handle);
+		int (*exitcode) (void *handle);
+		/* If back->sendok() returns FALSE, data sent to it from the frontend
+		 * may be lost. */
+		int (*sendok) (void *handle);
+		int (*ldisc) (void *handle, int);
+		void (*provide_ldisc) (void *handle, void *ldisc);
+		void (*provide_logctx) (void *handle, void *logctx);
+		/*
+		 * back->unthrottle() tells the back end that the front end
+		 * buffer is clearing.
+		 */
+		void (*unthrottle) (void *handle, int);
+		int (*cfg_info) (void *handle);
+		/* Only implemented in the SSH protocol: check whether a
+		 * connection-sharing upstream exists for a given configuration. */
+		int (*test_for_upstream)(const char *host, int port, Conf *conf);
+		const char *name;
+		int protocol;
+		int default_port;
 };
 
 extern Backend *backends[];
@@ -583,7 +583,7 @@ typedef struct {
     prompt_t **prompts;
     void *frontend;
     void *data;		/* slot for housekeeping data, managed by
-			 * get_userpass_input(); initially NULL */
+       * get_userpass_input(); initially NULL */
 } prompts_t;
 prompts_t *new_prompts(void *frontend);
 void add_prompt(prompts_t *p, char *promptstr, int echo);
@@ -609,7 +609,7 @@ Context get_ctx(void *frontend);
 void free_ctx(Context);
 void palette_set(void *frontend, int, int, int, int);
 void palette_reset(void *frontend);
-void write_aclip(void *frontend, char *, int, int);
+void write_aclip(void *frontend, int clipboard, char *, int, int);
 void write_clip(void *frontend, wchar_t *, int *, int, int);
 void get_clip(void *frontend, wchar_t **, int *);
 void optimised_move(void *frontend, int, int, int);
@@ -666,8 +666,8 @@ char *get_window_title(void *frontend, int icon);
 enum {
     BUSY_NOT,	    /* Not busy, all user interaction OK */
     BUSY_WAITING,   /* Waiting for something; local event loops still running
-		       so some local interaction (e.g. menus) OK, but network
-		       stuff is suspended */
+           so some local interaction (e.g. menus) OK, but network
+           stuff is suspended */
     BUSY_CPU	    /* Locally busy (e.g. crypto); user interaction suspended */
 };
 void set_busy_status(void *frontend, int status);
@@ -951,7 +951,7 @@ void conf_set_int(Conf *conf, int key, int value);
 void conf_set_int_int(Conf *conf, int key, int subkey, int value);
 void conf_set_str(Conf *conf, int key, const char *value);
 void conf_set_str_str(Conf *conf, int key,
-		      const char *subkey, const char *val);
+          const char *subkey, const char *val);
 void conf_del_str_str(Conf *conf, int key, const char *subkey);
 void conf_set_filename(Conf *conf, int key, const Filename *val);
 void conf_set_fontspec(Conf *conf, int key, const FontSpec *val);
@@ -1031,9 +1031,9 @@ void term_scroll_to_selection(Terminal *, int);
 void term_pwron(Terminal *, int);
 void term_clrsb(Terminal *);
 void term_mouse(Terminal *, Mouse_Button, Mouse_Button, Mouse_Action,
-		int,int,int,int,int);
+    int,int,int,int,int);
 void term_key(Terminal *, Key_Sym, wchar_t *, size_t, unsigned int,
-	      unsigned int);
+        unsigned int);
 void term_deselect(Terminal *);
 void term_update(Terminal *);
 void term_invalidate(Terminal *);
@@ -1047,13 +1047,13 @@ void term_seen_key_event(Terminal *);
 int term_data(Terminal *, int is_stderr, const char *data, int len);
 int term_data_untrusted(Terminal *, const char *data, int len);
 void term_provide_resize_fn(Terminal *term,
-			    void (*resize_fn)(void *, int, int),
-			    void *resize_ctx);
+          void (*resize_fn)(void *, int, int),
+          void *resize_ctx);
 void term_provide_logctx(Terminal *term, void *logctx);
 void term_set_focus(Terminal *term, int has_focus);
 char *term_get_ttymode(Terminal *term, const char *mode);
 int term_get_userpass_input(Terminal *term, prompts_t *p,
-			    const unsigned char *in, int inlen);
+          const unsigned char *in, int inlen);
 
 int format_arrow_key(char *buf, Terminal *term, int xkey, int ctrl);
 
@@ -1076,9 +1076,9 @@ struct logblank_t {
     int type;
 };
 void log_packet(void *logctx, int direction, int type,
-		const char *texttype, const void *data, int len,
-		int n_blanks, const struct logblank_t *blanks,
-		const unsigned long *sequence,
+    const char *texttype, const void *data, int len,
+    int n_blanks, const struct logblank_t *blanks,
+    const unsigned long *sequence,
                 unsigned downstream_id, const char *additional_log_text);
 
 /*
@@ -1161,7 +1161,7 @@ char const *conf_dest(Conf *conf);
  * Exports from sercfg.c.
  */
 void ser_setup_config_box(struct controlbox *b, int midsession,
-			  int parity_mask, int flow_mask);
+        int parity_mask, int flow_mask);
 
 /*
  * Exports from version.c.
@@ -1177,10 +1177,10 @@ extern const char ver[];
 /* void init_ucs(void); -- this is now in platform-specific headers */
 int is_dbcs_leadbyte(int codepage, char byte);
 int mb_to_wc(int codepage, int flags, const char *mbstr, int mblen,
-	     wchar_t *wcstr, int wclen);
+       wchar_t *wcstr, int wclen);
 int wc_to_mb(int codepage, int flags, const wchar_t *wcstr, int wclen,
-	     char *mbstr, int mblen, const char *defchr, int *defused,
-	     struct unicode_data *ucsdata);
+       char *mbstr, int mblen, const char *defchr, int *defused,
+       struct unicode_data *ucsdata);
 wchar_t xlat_uskbd2cyrllic(int ch);
 int check_compose(int first, int second);
 int decode_codepage(char *cp_name);
@@ -1280,7 +1280,7 @@ int have_ssh_host_key(const char *host, int port, const char *keytype);
  * one acceptable algorithm is available that we don't have cached.)
  */
 int askalg(void *frontend, const char *algtype, const char *algname,
-	   void (*callback)(void *ctx, int result), void *ctx);
+     void (*callback)(void *ctx, int result), void *ctx);
 int askhk(void *frontend, const char *algname, const char *betteralgs,
           void (*callback)(void *ctx, int result), void *ctx);
 /*
@@ -1292,7 +1292,7 @@ int askhk(void *frontend, const char *algname, const char *betteralgs,
  *  - -1 means please wait.
  */
 int askappend(void *frontend, Filename *filename,
-	      void (*callback)(void *ctx, int result), void *ctx);
+        void (*callback)(void *ctx, int result), void *ctx);
 
 #ifdef MPEXT
 void display_banner(void *frontend, const char* banner, int size);
@@ -1345,18 +1345,18 @@ void cmdline_error(const char *, ...);
 struct controlbox;
 union control;
 void conf_radiobutton_handler(union control *ctrl, void *dlg,
-			      void *data, int event);
+            void *data, int event);
 #define CHECKBOX_INVERT (1<<30)
 void conf_checkbox_handler(union control *ctrl, void *dlg,
-			   void *data, int event);
+         void *data, int event);
 void conf_editbox_handler(union control *ctrl, void *dlg,
-			  void *data, int event);
+        void *data, int event);
 void conf_filesel_handler(union control *ctrl, void *dlg,
-			  void *data, int event);
+        void *data, int event);
 void conf_fontsel_handler(union control *ctrl, void *dlg,
-			  void *data, int event);
+        void *data, int event);
 void setup_config_box(struct controlbox *b, int midsession,
-		      int protocol, int protcfginfo);
+          int protocol, int protcfginfo);
 
 /*
  * Exports from minibidi.c.

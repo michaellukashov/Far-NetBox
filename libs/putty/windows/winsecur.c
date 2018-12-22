@@ -36,13 +36,13 @@ int got_advapi(void)
         attempted = TRUE;
         advapi = load_system32_dll("advapi32.dll");
         successful = advapi &&
-            GET_WINDOWS_FUNCTION(advapi, GetSecurityInfo) &&
-            GET_WINDOWS_FUNCTION(advapi, SetSecurityInfo) &&
-            GET_WINDOWS_FUNCTION(advapi, OpenProcessToken) &&
-            GET_WINDOWS_FUNCTION(advapi, GetTokenInformation) &&
-            GET_WINDOWS_FUNCTION(advapi, InitializeSecurityDescriptor) &&
-            GET_WINDOWS_FUNCTION(advapi, SetSecurityDescriptorOwner) &&
-            GET_WINDOWS_FUNCTION(advapi, SetEntriesInAclA);
+            PUTTY_GET_WINDOWS_FUNCTION(advapi, GetSecurityInfo) &&
+            PUTTY_GET_WINDOWS_FUNCTION(advapi, SetSecurityInfo) &&
+            PUTTY_GET_WINDOWS_FUNCTION(advapi, OpenProcessToken) &&
+            PUTTY_GET_WINDOWS_FUNCTION(advapi, GetTokenInformation) &&
+            PUTTY_GET_WINDOWS_FUNCTION(advapi, InitializeSecurityDescriptor) &&
+            PUTTY_GET_WINDOWS_FUNCTION(advapi, SetSecurityDescriptorOwner) &&
+            PUTTY_GET_WINDOWS_FUNCTION(advapi, SetEntriesInAclA);
     }
     return successful;
 }

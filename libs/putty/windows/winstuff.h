@@ -5,6 +5,10 @@
 #ifndef PUTTY_WINSTUFF_H
 #define PUTTY_WINSTUFF_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif /* C++ */
+
 #ifndef AUTO_WINSOCK
 #include <winsock2.h>
 #endif
@@ -60,7 +64,11 @@ struct FontSpec *fontspec_new(const char *name,
     CLEARTYPE_QUALITY)
 
 #define PLATFORM_IS_UTF16 /* enable UTF-16 processing when exchanging
-			   * wchar_t strings with environment */
+         * wchar_t strings with environment */
+
+#define PLATFORM_CLIPBOARDS(X)                      \
+    X(CLIP_SYSTEM, "system clipboard")              \
+    /* end of list */
 
 /*
  * Where we can, we use GetWindowLongPtr and friends because they're
@@ -125,11 +133,11 @@ struct FontSpec *fontspec_new(const char *name,
 /*
  * Dynamically linked functions. These come in two flavours:
  *
- *  - GET_WINDOWS_FUNCTION does not expose "name" to the preprocessor,
+ *  - PUTTY_GET_WINDOWS_FUNCTION does not expose "name" to the preprocessor,
  *    so will always dynamically link against exactly what is specified
  *    in "name". If you're not sure, use this one.
  *
- *  - GET_WINDOWS_FUNCTION_PP allows "name" to be redirected via
+ *  - PUTTY_GET_WINDOWS_FUNCTION_PP allows "name" to be redirected via
  *    preprocessor definitions like "#define foo bar"; this is principally
  *    intended for the ANSI/Unicode DoSomething/DoSomethingA/DoSomethingW.
  *    If your function has an argument of type "LPTSTR" or similar, this
@@ -137,26 +145,26 @@ struct FontSpec *fontspec_new(const char *name,
  *    (However, it can't always be used, as it trips over more complicated
  *    macro trickery such as the WspiapiGetAddrInfo wrapper for getaddrinfo.)
  *
- * (DECL_WINDOWS_FUNCTION works with both these variants.)
+ * (PUTTY_DECL_WINDOWS_FUNCTION works with both these variants.)
  */
-#define TYPECHECK(to_check, to_return)          \
+#define PUTTY_TYPECHECK(to_check, to_return)          \
     (sizeof(to_check) ? to_return : to_return)
-#define DECL_WINDOWS_FUNCTION(linkage, rettype, name, params)   \
-    typedef rettype (WINAPI *t_##name) params;                  \
-    linkage t_##name p_##name
+#define PUTTY_DECL_WINDOWS_FUNCTION(flinkage, frettype, fname, fparams)   \
+    typedef frettype (WINAPI *t_##fname) fparams;                  \
+    flinkage t_##fname p_##fname
 #define STR1(x) #x
 #define STR(x) STR1(x)
-#define GET_WINDOWS_FUNCTION_PP(module, name)                           \
-    TYPECHECK((t_##name)NULL == name,                                   \
-              (p_##name = module ?                                      \
-               (t_##name) GetProcAddress(module, STR(name)) : NULL))
-#define GET_WINDOWS_FUNCTION(module, name)                              \
-    TYPECHECK((t_##name)NULL == name,                                   \
-              (p_##name = module ?                                      \
-               (t_##name) GetProcAddress(module, #name) : NULL))
-#define GET_WINDOWS_FUNCTION_NO_TYPECHECK(module, name) \
-    (p_##name = module ?                                \
-     (t_##name) GetProcAddress(module, #name) : NULL)
+#define PUTTY_GET_WINDOWS_FUNCTION_PP(module, fname)                           \
+    PUTTY_TYPECHECK((t_##fname)NULL == fname,                                   \
+              (p_##fname = module ?                                      \
+               (t_##fname) GetProcAddress(module, STR(fname)) : NULL))
+#define PUTTY_GET_WINDOWS_FUNCTION(module, fname)                              \
+    PUTTY_TYPECHECK((t_##fname)NULL == fname,                                   \
+              (p_##fname = module ?                                      \
+               (t_##fname) GetProcAddress(module, #fname) : NULL))
+#define PUTTY_PUTTY_GET_WINDOWS_FUNCTION_NO_TYPECHECK(module, fname) \
+    (p_##fname = module ?                                \
+     (t_##fname) GetProcAddress(module, #fname) : NULL)
 
 /*
  * Global variables. Most modules declare these `extern', but
@@ -253,6 +261,13 @@ void quit_help(HWND hwnd);
 GLOBAL Terminal *term;
 GLOBAL void *logctx;
 
+/*
+ * Windows-specific clipboard helper function shared with windlg.c,
+ * which takes the data string in the system code page instead of
+ * Unicode.
+ */
+void write_aclip(void *frontend, int clipboard, char *, int, int);
+
 #define WM_NETEVENT  (WM_APP + 5)
 
 /*
@@ -286,11 +301,11 @@ GLOBAL void *logctx;
  * `lpstrFilter' in an OPENFILENAME structure.
  */
 #define FILTER_KEY_FILES ("PuTTY Private Key Files (*.ppk)\0*.ppk\0" \
-			      "All Files (*.*)\0*\0\0\0")
+            "All Files (*.*)\0*\0\0\0")
 #define FILTER_WAVE_FILES ("Wave Files (*.wav)\0*.WAV\0" \
-			       "All Files (*.*)\0*\0\0\0")
+             "All Files (*.*)\0*\0\0\0")
 #define FILTER_DYNLIB_FILES ("Dynamic Library Files (*.dll)\0*.dll\0" \
-				 "All Files (*.*)\0*\0\0\0")
+         "All Files (*.*)\0*\0\0\0")
 
 /*
  * Exports from winnet.c.
@@ -303,13 +318,13 @@ extern void select_result(WPARAM, LPARAM);
  * that module must be exported from it as function pointers. So
  * here they are.
  */
-DECL_WINDOWS_FUNCTION(GLOBAL, int, WSAAsyncSelect,
-		      (SOCKET, HWND, u_int, long));
-DECL_WINDOWS_FUNCTION(GLOBAL, int, WSAEventSelect,
-		      (SOCKET, WSAEVENT, long));
-DECL_WINDOWS_FUNCTION(GLOBAL, int, WSAGetLastError, (void));
-DECL_WINDOWS_FUNCTION(GLOBAL, int, WSAEnumNetworkEvents,
-		      (SOCKET, WSAEVENT, LPWSANETWORKEVENTS));
+PUTTY_DECL_WINDOWS_FUNCTION(GLOBAL, int, WSAAsyncSelect,
+          (SOCKET, HWND, u_int, long));
+PUTTY_DECL_WINDOWS_FUNCTION(GLOBAL, int, WSAEventSelect,
+          (SOCKET, WSAEVENT, long));
+PUTTY_DECL_WINDOWS_FUNCTION(GLOBAL, int, WSAGetLastError, (void));
+PUTTY_DECL_WINDOWS_FUNCTION(GLOBAL, int, WSAEnumNetworkEvents,
+          (SOCKET, WSAEVENT, LPWSANETWORKEVENTS));
 #ifdef NEED_DECLARATION_OF_SELECT
 /* This declaration is protected by an ifdef for the sake of building
  * against winelib, in which you have to include winsock2.h before
@@ -318,9 +333,9 @@ DECL_WINDOWS_FUNCTION(GLOBAL, int, WSAEnumNetworkEvents,
  * only a modules actually needing to use (or define, or initialise)
  * this function pointer will see its declaration, and _those_ modules
  * - which will be Windows-specific anyway - can take more care. */
-DECL_WINDOWS_FUNCTION(GLOBAL, int, select,
-		      (int, fd_set FAR *, fd_set FAR *,
-		       fd_set FAR *, const struct timeval FAR *));
+PUTTY_DECL_WINDOWS_FUNCTION(GLOBAL, int, select,
+          (int, fd_set FAR *, fd_set FAR *,
+           fd_set FAR *, const struct timeval FAR *));
 #endif
 
 extern int socket_writable(SOCKET skt);
@@ -346,7 +361,9 @@ void init_common_controls(void);       /* also does some DLL-loading */
  * Exports from winutils.c.
  */
 typedef struct filereq_tag filereq; /* cwd for file requester */
+#ifndef MPEXT
 BOOL request_file(filereq *state, OPENFILENAME *of, int preserve, int save);
+#endif
 filereq *filereq_new(void);
 void filereq_free(filereq *state);
 int message_box(LPCTSTR text, LPCTSTR caption, DWORD style, DWORD helpctxid);
@@ -378,7 +395,7 @@ struct dlgparam {
     union control *focused, *lastfocused; /* which ctrl has focus now/before */
     char shortcuts[128];	       /* track which shortcuts in use */
     int coloursel_wanted;	       /* has an event handler asked for
-					* a colour selector? */
+          * a colour selector? */
     struct { unsigned char r, g, b, ok; } coloursel_result;   /* 0-255 */
     tree234 *privdata;		       /* stores per-control private data */
     int ended, endresult;	       /* has the dialog been ended? */
@@ -389,57 +406,57 @@ struct dlgparam {
  * Exports from winctrls.c.
  */
 void ctlposinit(struct ctlpos *cp, HWND hwnd,
-		int leftborder, int rightborder, int topborder);
+    int leftborder, int rightborder, int topborder);
 HWND doctl(struct ctlpos *cp, RECT r,
-	   char *wclass, int wstyle, int exstyle, char *wtext, int wid);
+     char *wclass, int wstyle, int exstyle, char *wtext, int wid);
 void bartitle(struct ctlpos *cp, char *name, int id);
 void beginbox(struct ctlpos *cp, char *name, int idbox);
 void endbox(struct ctlpos *cp);
 void editboxfw(struct ctlpos *cp, int password, char *text,
-	       int staticid, int editid);
+         int staticid, int editid);
 void radioline(struct ctlpos *cp, char *text, int id, int nacross, ...);
 void bareradioline(struct ctlpos *cp, int nacross, ...);
 void radiobig(struct ctlpos *cp, char *text, int id, ...);
 void checkbox(struct ctlpos *cp, char *text, int id);
 void statictext(struct ctlpos *cp, char *text, int lines, int id);
 void staticbtn(struct ctlpos *cp, char *stext, int sid,
-	       char *btext, int bid);
+         char *btext, int bid);
 void static2btn(struct ctlpos *cp, char *stext, int sid,
-		char *btext1, int bid1, char *btext2, int bid2);
+    char *btext1, int bid1, char *btext2, int bid2);
 void staticedit(struct ctlpos *cp, char *stext,
-		int sid, int eid, int percentedit);
+    int sid, int eid, int percentedit);
 void staticddl(struct ctlpos *cp, char *stext,
-	       int sid, int lid, int percentlist);
+         int sid, int lid, int percentlist);
 void combobox(struct ctlpos *cp, char *text, int staticid, int listid);
 void staticpassedit(struct ctlpos *cp, char *stext,
-		    int sid, int eid, int percentedit);
+        int sid, int eid, int percentedit);
 void bigeditctrl(struct ctlpos *cp, char *stext,
-		 int sid, int eid, int lines);
+     int sid, int eid, int lines);
 void ersatztab(struct ctlpos *cp, char *stext, int sid, int lid, int s2id);
 void editbutton(struct ctlpos *cp, char *stext, int sid,
-		int eid, char *btext, int bid);
+    int eid, char *btext, int bid);
 void sesssaver(struct ctlpos *cp, char *text,
-	       int staticid, int editid, int listid, ...);
+         int staticid, int editid, int listid, ...);
 void envsetter(struct ctlpos *cp, char *stext, int sid,
-	       char *e1stext, int e1sid, int e1id,
-	       char *e2stext, int e2sid, int e2id,
-	       int listid, char *b1text, int b1id, char *b2text, int b2id);
+         char *e1stext, int e1sid, int e1id,
+         char *e2stext, int e2sid, int e2id,
+         int listid, char *b1text, int b1id, char *b2text, int b2id);
 void charclass(struct ctlpos *cp, char *stext, int sid, int listid,
-	       char *btext, int bid, int eid, char *s2text, int s2id);
+         char *btext, int bid, int eid, char *s2text, int s2id);
 void colouredit(struct ctlpos *cp, char *stext, int sid, int listid,
-		char *btext, int bid, ...);
+    char *btext, int bid, ...);
 void prefslist(struct prefslist *hdl, struct ctlpos *cp, int lines,
-	       char *stext, int sid, int listid, int upbid, int dnbid);
+         char *stext, int sid, int listid, int upbid, int dnbid);
 int handle_prefslist(struct prefslist *hdl,
-		     int *array, int maxmemb,
-		     int is_dlmsg, HWND hwnd,
-		     WPARAM wParam, LPARAM lParam);
+         int *array, int maxmemb,
+         int is_dlmsg, HWND hwnd,
+         WPARAM wParam, LPARAM lParam);
 void progressbar(struct ctlpos *cp, int id);
 void fwdsetter(struct ctlpos *cp, int listid, char *stext, int sid,
-	       char *e1stext, int e1sid, int e1id,
-	       char *e2stext, int e2sid, int e2id,
-	       char *btext, int bid,
-	       char *r1text, int r1id, char *r2text, int r2id);
+         char *e1stext, int e1sid, int e1id,
+         char *e2stext, int e2sid, int e2id,
+         char *btext, int bid,
+         char *r1text, int r1id, char *r2text, int r2id);
 
 void dlg_auto_set_fixed_pitch_flag(void *dlg);
 int dlg_get_fixed_pitch_flag(void *dlg);
@@ -494,9 +511,9 @@ struct winctrl *winctrl_findbyctrl(struct winctrls *, union control *);
 struct winctrl *winctrl_findbyid(struct winctrls *, int);
 struct winctrl *winctrl_findbyindex(struct winctrls *, int);
 void winctrl_layout(struct dlgparam *dp, struct winctrls *wc,
-		    struct ctlpos *cp, struct controlset *s, int *id);
+        struct ctlpos *cp, struct controlset *s, int *id);
 int winctrl_handle_command(struct dlgparam *dp, UINT msg,
-			   WPARAM wParam, LPARAM lParam);
+         WPARAM wParam, LPARAM lParam);
 void winctrl_rem_shortcuts(struct dlgparam *dp, struct winctrl *c);
 int winctrl_context_help(struct dlgparam *dp, HWND hwnd, int id);
 
@@ -508,7 +525,7 @@ void dp_cleanup(struct dlgparam *dp);
  * Exports from wincfg.c.
  */
 void win_setup_config_box(struct controlbox *b, HWND *hwndp, int has_help,
-			  int midsession, int protocol);
+        int midsession, int protocol);
 
 /*
  * Exports from windlg.c.
@@ -549,6 +566,42 @@ typedef PVOID DLL_DIRECTORY_COOKIE;
 DECLSPEC_IMPORT DLL_DIRECTORY_COOKIE WINAPI AddDllDirectory (PCWSTR NewDirectory);
 #endif
 
+/* A few pieces of up-to-date Windows API definition needed for older
+ * compilers. */
+#ifndef LOAD_LIBRARY_SEARCH_SYSTEM32
+#define LOAD_LIBRARY_SEARCH_SYSTEM32 0x00000800
+#endif
+#ifndef LOAD_LIBRARY_SEARCH_USER_DIRS
+#define LOAD_LIBRARY_SEARCH_USER_DIRS 0x00000400
+#endif
+#ifndef LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR
+#define LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR 0x00000100
+#endif
+#if _MSC_VER < 1400
+#ifndef DLL_DIRECTORY_COOKIE
+typedef PVOID DLL_DIRECTORY_COOKIE;
+DECLSPEC_IMPORT DLL_DIRECTORY_COOKIE WINAPI AddDllDirectory (PCWSTR NewDirectory);
+#endif
+#endif
+
+/* A few pieces of up-to-date Windows API definition needed for older
+ * compilers. */
+#ifndef LOAD_LIBRARY_SEARCH_SYSTEM32
+#define LOAD_LIBRARY_SEARCH_SYSTEM32 0x00000800
+#endif
+#ifndef LOAD_LIBRARY_SEARCH_USER_DIRS
+#define LOAD_LIBRARY_SEARCH_USER_DIRS 0x00000400
+#endif
+#ifndef LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR
+#define LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR 0x00000100
+#endif
+#ifndef DLL_DIRECTORY_COOKIE
+DECLSPEC_IMPORT DLL_DIRECTORY_COOKIE WINAPI AddDllDirectory (PCWSTR NewDirectory);
+#endif
+#if _MSC_VER <= 1600
+typedef PVOID DLL_DIRECTORY_COOKIE;
+#endif
+
 /*
  * Exports from sizetip.c.
  */
@@ -571,9 +624,9 @@ struct handle;
 typedef int (*handle_inputfn_t)(struct handle *h, void *data, int len);
 typedef void (*handle_outputfn_t)(struct handle *h, int new_backlog);
 struct handle *handle_input_new(HANDLE handle, handle_inputfn_t gotdata,
-				void *privdata, int flags);
+        void *privdata, int flags);
 struct handle *handle_output_new(HANDLE handle, handle_outputfn_t sentdata,
-				 void *privdata, int flags);
+         void *privdata, int flags);
 int handle_write(struct handle *h, const void *data, int len);
 void handle_write_eof(struct handle *h);
 HANDLE *handle_get_events(int *nevents);
@@ -593,13 +646,21 @@ struct handle *handle_add_foreign_event(HANDLE event,
  * winpgntc.c needs to schedule callbacks for asynchronous agent
  * requests. This has to be done differently in GUI and console, so
  * there's an exported function used for the purpose.
- * 
+ *
  * Also, we supply FLAG_SYNCAGENT to force agent requests to be
  * synchronous in pscp and psftp.
  */
 void agent_schedule_callback(void (*callback)(void *, void *, int),
-			     void *callback_ctx, void *data, int len);
+           void *callback_ctx, void *data, int len);
 #define FLAG_SYNCAGENT 0x1000
+
+/*
+ * winpgntc.c also exports these two functions which are used by the
+ * server side of Pageant as well, to get the user SID for comparing
+ * with clients'.
+ */
+int init_advapi(void);  /* initialises everything needed by get_user_sid */
+PSID get_user_sid(void);
 
 /*
  * Exports from winser.c.
@@ -609,7 +670,9 @@ extern Backend serial_backend;
 /*
  * Exports from winjump.c.
  */
+#if 0
 #define JUMPLIST_SUPPORTED             /* suppress #defines in putty.h */
+#endif
 void add_session_to_jumplist(const char * const sessionname);
 void remove_session_from_jumplist(const char * const sessionname);
 void clear_jumplist(void);
@@ -637,5 +700,16 @@ int remove_from_jumplist_registry(const char *item);
  * sequence of NUL-terminated strings in memory, terminated with an
  * empty one. */
 char *get_jumplist_registry_entries(void);
+
+#ifdef __cplusplus
+}
+#endif /* C++ */
+#define CLIPNAME_IMPLICIT "Last selected text"
+#define CLIPNAME_EXPLICIT "System clipboard"
+#define CLIPNAME_EXPLICIT_OBJECT "system clipboard"
+/* These defaults are the ones PuTTY has historically had */
+#define CLIPUI_DEFAULT_AUTOCOPY TRUE
+#define CLIPUI_DEFAULT_MOUSE CLIPUI_EXPLICIT
+#define CLIPUI_DEFAULT_INS CLIPUI_EXPLICIT
 
 #endif

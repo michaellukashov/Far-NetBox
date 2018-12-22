@@ -17,13 +17,13 @@ static void sha_mpint(SHA_State * s, Bignum b)
     PUT_32BIT(lenbuf, len);
     SHA_Bytes(s, lenbuf, 4);
     while (len-- > 0) {
-	lenbuf[0] = bignum_byte(b, len);
-	SHA_Bytes(s, lenbuf, 1);
+  lenbuf[0] = bignum_byte(b, len);
+  SHA_Bytes(s, lenbuf, 1);
     }
     smemclr(lenbuf, sizeof(lenbuf));
 }
 
-static void sha512_mpint(SHA512_State * s, Bignum b)
+static void putty_sha512_mpint(putty_SHA512_State * s, Bignum b)
 {
     unsigned char lenbuf[4];
     int len;
@@ -31,8 +31,8 @@ static void sha512_mpint(SHA512_State * s, Bignum b)
     PUT_32BIT(lenbuf, len);
     SHA512_Bytes(s, lenbuf, 4);
     while (len-- > 0) {
-	lenbuf[0] = bignum_byte(b, len);
-	SHA512_Bytes(s, lenbuf, 1);
+  lenbuf[0] = bignum_byte(b, len);
+  SHA512_Bytes(s, lenbuf, 1);
     }
     smemclr(lenbuf, sizeof(lenbuf));
 }
@@ -42,14 +42,14 @@ static void getstring(const char **data, int *datalen,
 {
     *p = NULL;
     if (*datalen < 4)
-	return;
+  return;
     *length = toint(GET_32BIT(*data));
     if (*length < 0)
         return;
     *datalen -= 4;
     *data += 4;
     if (*datalen < *length)
-	return;
+  return;
     *p = *data;
     *data += *length;
     *datalen -= *length;
@@ -62,9 +62,9 @@ static Bignum getmp(const char **data, int *datalen)
 
     getstring(data, datalen, &p, &length);
     if (!p)
-	return NULL;
+  return NULL;
     if (p[0] & 0x80)
-	return NULL;		       /* negative mp */
+  return NULL;		       /* negative mp */
     b = bignum_from_bytes((const unsigned char *)p, length);
     return b;
 }
@@ -97,17 +97,17 @@ static void *dss_newkey(const struct ssh_signkey *self,
 
 #ifdef DEBUG_DSS
     {
-	int i;
-	printf("key:");
-	for (i = 0; i < len; i++)
-	    printf("  %02x", (unsigned char) (data[i]));
-	printf("\n");
+  int i;
+  printf("key:");
+  for (i = 0; i < len; i++)
+      printf("  %02x", (unsigned char) (data[i]));
+  printf("\n");
     }
 #endif
 
     if (!p || slen != 7 || memcmp(p, "ssh-dss", 7)) {
-	sfree(dss);
-	return NULL;
+  sfree(dss);
+  return NULL;
     }
     dss->p = getmp(&data, &len);
     dss->q = getmp(&data, &len);
@@ -148,7 +148,7 @@ static char *dss_fmtkey(void *key)
     int len, i, pos, nibbles;
     static const char hex[] = "0123456789abcdef";
     if (!dss->p)
-	return NULL;
+  return NULL;
     len = 8 + 4 + 1;		       /* 4 x "0x", punctuation, \0 */
     len += 4 * (bignum_bitcount(dss->p) + 15) / 16;
     len += 4 * (bignum_bitcount(dss->q) + 15) / 16;
@@ -156,43 +156,43 @@ static char *dss_fmtkey(void *key)
     len += 4 * (bignum_bitcount(dss->y) + 15) / 16;
     p = snewn(len, char);
     if (!p)
-	return NULL;
+  return NULL;
 
     pos = 0;
     pos += sprintf(p + pos, "0x");
     nibbles = (3 + bignum_bitcount(dss->p)) / 4;
     if (nibbles < 1)
-	nibbles = 1;
+  nibbles = 1;
     for (i = nibbles; i--;)
-	p[pos++] =
-	    hex[(bignum_byte(dss->p, i / 2) >> (4 * (i % 2))) & 0xF];
+  p[pos++] =
+      hex[(bignum_byte(dss->p, i / 2) >> (4 * (i % 2))) & 0xF];
     pos += sprintf(p + pos, ",0x");
     nibbles = (3 + bignum_bitcount(dss->q)) / 4;
     if (nibbles < 1)
-	nibbles = 1;
+  nibbles = 1;
     for (i = nibbles; i--;)
-	p[pos++] =
-	    hex[(bignum_byte(dss->q, i / 2) >> (4 * (i % 2))) & 0xF];
+  p[pos++] =
+      hex[(bignum_byte(dss->q, i / 2) >> (4 * (i % 2))) & 0xF];
     pos += sprintf(p + pos, ",0x");
     nibbles = (3 + bignum_bitcount(dss->g)) / 4;
     if (nibbles < 1)
-	nibbles = 1;
+  nibbles = 1;
     for (i = nibbles; i--;)
-	p[pos++] =
-	    hex[(bignum_byte(dss->g, i / 2) >> (4 * (i % 2))) & 0xF];
+  p[pos++] =
+      hex[(bignum_byte(dss->g, i / 2) >> (4 * (i % 2))) & 0xF];
     pos += sprintf(p + pos, ",0x");
     nibbles = (3 + bignum_bitcount(dss->y)) / 4;
     if (nibbles < 1)
-	nibbles = 1;
+  nibbles = 1;
     for (i = nibbles; i--;)
-	p[pos++] =
-	    hex[(bignum_byte(dss->y, i / 2) >> (4 * (i % 2))) & 0xF];
+  p[pos++] =
+      hex[(bignum_byte(dss->y, i / 2) >> (4 * (i % 2))) & 0xF];
     p[pos] = '\0';
     return p;
 }
 
 static int dss_verifysig(void *key, const char *sig, int siglen,
-			 const char *data, int datalen)
+       const char *data, int datalen)
 {
     struct dss_key *dss = (struct dss_key *) key;
     const char *p;
@@ -202,15 +202,15 @@ static int dss_verifysig(void *key, const char *sig, int siglen,
     int ret;
 
     if (!dss->p)
-	return 0;
+  return 0;
 
 #ifdef DEBUG_DSS
     {
-	int i;
-	printf("sig:");
-	for (i = 0; i < siglen; i++)
-	    printf("  %02x", (unsigned char) (sig[i]));
-	printf("\n");
+  int i;
+  printf("sig:");
+  for (i = 0; i < siglen; i++)
+      printf("  %02x", (unsigned char) (sig[i]));
+  printf("\n");
     }
 #endif
     /*
@@ -225,11 +225,11 @@ static int dss_verifysig(void *key, const char *sig, int siglen,
      * else is assumed to be RFC-compliant.
      */
     if (siglen != 40) {		       /* bug not present; read admin fields */
-	getstring(&sig, &siglen, &p, &slen);
-	if (!p || slen != 7 || memcmp(p, "ssh-dss", 7)) {
-	    return 0;
-	}
-	sig += 4, siglen -= 4;	       /* skip yet another length field */
+  getstring(&sig, &siglen, &p, &slen);
+  if (!p || slen != 7 || memcmp(p, "ssh-dss", 7)) {
+      return 0;
+  }
+  sig += 4, siglen -= 4;	       /* skip yet another length field */
     }
     r = get160(&sig, &siglen);
     s = get160(&sig, &siglen);
@@ -238,7 +238,7 @@ static int dss_verifysig(void *key, const char *sig, int siglen,
             freebn(r);
         if (s)
             freebn(s);
-	return 0;
+  return 0;
     }
 
     if (!bignum_cmp(s, Zero)) {
@@ -325,19 +325,19 @@ static unsigned char *dss_public_blob(void *key, int *len)
     PUT_32BIT(p, plen);
     p += 4;
     for (i = plen; i--;)
-	*p++ = bignum_byte(dss->p, i);
+  *p++ = bignum_byte(dss->p, i);
     PUT_32BIT(p, qlen);
     p += 4;
     for (i = qlen; i--;)
-	*p++ = bignum_byte(dss->q, i);
+  *p++ = bignum_byte(dss->q, i);
     PUT_32BIT(p, glen);
     p += 4;
     for (i = glen; i--;)
-	*p++ = bignum_byte(dss->g, i);
+  *p++ = bignum_byte(dss->g, i);
     PUT_32BIT(p, ylen);
     p += 4;
     for (i = ylen; i--;)
-	*p++ = bignum_byte(dss->y, i);
+  *p++ = bignum_byte(dss->y, i);
     assert(p == blob + bloblen);
     *len = bloblen;
     return blob;
@@ -361,7 +361,7 @@ static unsigned char *dss_private_blob(void *key, int *len)
     PUT_32BIT(p, xlen);
     p += 4;
     for (i = xlen; i--;)
-	*p++ = bignum_byte(dss->x, i);
+  *p++ = bignum_byte(dss->x, i);
     assert(p == blob + bloblen);
     *len = bloblen;
     return blob;
@@ -369,7 +369,7 @@ static unsigned char *dss_private_blob(void *key, int *len)
 
 static void *dss_createkey(const struct ssh_signkey *self,
                            const unsigned char *pub_blob, int pub_len,
-			   const unsigned char *priv_blob, int priv_len)
+         const unsigned char *priv_blob, int priv_len)
 {
     struct dss_key *dss;
     const char *pb = (const char *) priv_blob;
@@ -394,15 +394,15 @@ static void *dss_createkey(const struct ssh_signkey *self,
     hashlen = -1;
     getstring(&pb, &priv_len, &hash, &hashlen);
     if (hashlen == 20) {
-	SHA_Init(&s);
-	sha_mpint(&s, dss->p);
-	sha_mpint(&s, dss->q);
-	sha_mpint(&s, dss->g);
-	SHA_Final(&s, digest);
-	if (0 != memcmp(hash, digest, 20)) {
-	    dss_freekey(dss);
-	    return NULL;
-	}
+  SHA_Init(&s);
+  sha_mpint(&s, dss->p);
+  sha_mpint(&s, dss->q);
+  sha_mpint(&s, dss->g);
+  SHA_Final(&s, digest);
+  if (0 != memcmp(hash, digest, 20)) {
+      dss_freekey(dss);
+      return NULL;
+  }
     }
 
     /*
@@ -410,9 +410,9 @@ static void *dss_createkey(const struct ssh_signkey *self,
      */
     ytest = modpow(dss->g, dss->x, dss->p);
     if (0 != bignum_cmp(ytest, dss->y)) {
-	dss_freekey(dss);
+  dss_freekey(dss);
         freebn(ytest);
-	return NULL;
+  return NULL;
     }
     freebn(ytest);
 
@@ -449,14 +449,14 @@ static int dss_openssh_fmtkey(void *key, unsigned char *blob, int len)
     int bloblen, i;
 
     bloblen =
-	ssh2_bignum_length(dss->p) +
-	ssh2_bignum_length(dss->q) +
-	ssh2_bignum_length(dss->g) +
-	ssh2_bignum_length(dss->y) +
-	ssh2_bignum_length(dss->x);
+  ssh2_bignum_length(dss->p) +
+  ssh2_bignum_length(dss->q) +
+  ssh2_bignum_length(dss->g) +
+  ssh2_bignum_length(dss->y) +
+  ssh2_bignum_length(dss->x);
 
     if (bloblen > len)
-	return bloblen;
+  return bloblen;
 
     bloblen = 0;
 #define ENC(x) \
@@ -491,59 +491,59 @@ Bignum *dss_gen_k(const char *id_string, Bignum modulus, Bignum private_key,
 {
     /*
      * The basic DSS signing algorithm is:
-     * 
+     *
      *  - invent a random k between 1 and q-1 (exclusive).
      *  - Compute r = (g^k mod p) mod q.
      *  - Compute s = k^-1 * (hash + x*r) mod q.
-     * 
+     *
      * This has the dangerous properties that:
-     * 
+     *
      *  - if an attacker in possession of the public key _and_ the
      *    signature (for example, the host you just authenticated
      *    to) can guess your k, he can reverse the computation of s
      *    and work out x = r^-1 * (s*k - hash) mod q. That is, he
      *    can deduce the private half of your key, and masquerade
      *    as you for as long as the key is still valid.
-     * 
+     *
      *  - since r is a function purely of k and the public key, if
      *    the attacker only has a _range of possibilities_ for k
      *    it's easy for him to work through them all and check each
      *    one against r; he'll never be unsure of whether he's got
      *    the right one.
-     * 
+     *
      *  - if you ever sign two different hashes with the same k, it
      *    will be immediately obvious because the two signatures
      *    will have the same r, and moreover an attacker in
      *    possession of both signatures (and the public key of
      *    course) can compute k = (hash1-hash2) * (s1-s2)^-1 mod q,
      *    and from there deduce x as before.
-     * 
+     *
      *  - the Bleichenbacher attack on DSA makes use of methods of
      *    generating k which are significantly non-uniformly
      *    distributed; in particular, generating a 160-bit random
      *    number and reducing it mod q is right out.
-     * 
+     *
      * For this reason we must be pretty careful about how we
      * generate our k. Since this code runs on Windows, with no
      * particularly good system entropy sources, we can't trust our
      * RNG itself to produce properly unpredictable data. Hence, we
      * use a totally different scheme instead.
-     * 
+     *
      * What we do is to take a SHA-512 (_big_) hash of the private
      * key x, and then feed this into another SHA-512 hash that
      * also includes the message hash being signed. That is:
-     * 
+     *
      *   proto_k = SHA512 ( SHA512(x) || SHA160(message) )
-     * 
+     *
      * This number is 512 bits long, so reducing it mod q won't be
      * noticeably non-uniform. So
-     * 
+     *
      *   k = proto_k mod q
-     * 
+     *
      * This has the interesting property that it's _deterministic_:
      * signing the same hash twice with the same key yields the
      * same signature.
-     * 
+     *
      * Despite this determinism, it's still not predictable to an
      * attacker, because in order to repeat the SHA-512
      * construction that created it, the attacker would have to
@@ -554,13 +554,13 @@ Bignum *dss_gen_k(const char *id_string, Bignum modulus, Bignum private_key,
      * Reuse of k is left to chance; all it does is prevent
      * _excessively high_ chances of reuse of k due to entropy
      * problems.)
-     * 
+     *
      * Thanks to Colin Plumb for the general idea of using x to
      * ensure k is hard to guess, and to the Cambridge University
      * Computer Security Group for helping to argue out all the
      * fine details.
      */
-    SHA512_State ss;
+    putty_SHA512_State ss;
     unsigned char digest512[64];
     Bignum proto_k, k;
 
@@ -580,8 +580,8 @@ Bignum *dss_gen_k(const char *id_string, Bignum modulus, Bignum private_key,
     SHA512_Bytes(&ss, digest, digest_len);
 
     while (1) {
-        SHA512_State ss2 = ss;         /* structure copy */
-        SHA512_Final(&ss2, digest512);
+        putty_SHA512_State ss2 = ss;         /* structure copy */
+        putty_SHA512_Final(&ss2, digest512);
 
         smemclr(&ss2, sizeof(ss2));
 
@@ -639,10 +639,10 @@ static unsigned char *dss_sign(void *key, const char *data, int datalen,
 
     /*
      * Signature blob is
-     * 
+     *
      *   string  "ssh-dss"
      *   string  two 20-byte numbers r and s, end to end
-     * 
+     *
      * i.e. 4+7 + 4+40 bytes.
      */
     nbytes = 4 + 7 + 4 + 40;
@@ -651,8 +651,8 @@ static unsigned char *dss_sign(void *key, const char *data, int datalen,
     memcpy(bytes + 4, "ssh-dss", 7);
     PUT_32BIT(bytes + 4 + 7, 40);
     for (i = 0; i < 20; i++) {
-	bytes[4 + 7 + 4 + i] = bignum_byte(r, 19 - i);
-	bytes[4 + 7 + 4 + 20 + i] = bignum_byte(s, 19 - i);
+  bytes[4 + 7 + 4 + i] = bignum_byte(r, 19 - i);
+  bytes[4 + 7 + 4 + 20 + i] = bignum_byte(s, 19 - i);
     }
     freebn(r);
     freebn(s);
