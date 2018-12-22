@@ -938,7 +938,7 @@ add_library(atlmfc STATIC
   ../../libs/atlmfc/src/mfc/thrdcore.cpp
 )
 
-target_compile_options(atlmfc PRIVATE 
+target_compile_options(atlmfc PRIVATE
   ${ATLMFC_COMPILE_FLAGS}
   ${NETBOX_UNICODE_FLAGS}
 )
@@ -1355,6 +1355,7 @@ set(NETBOX_SOURCES
   ../core/FileMasks.cpp
   ../core/CopyParam.cpp
   ../core/SessionData.cpp
+  ../core/Usage.cpp
   ../core/Configuration.cpp
   ../core/ScpFileSystem.cpp
   ../core/FtpFileSystem.cpp
