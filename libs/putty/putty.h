@@ -440,7 +440,7 @@ struct backend_tag {
 	  const char *(*init) (void *frontend_handle, void **backend_handle,
 		   Conf *conf, const char *host, int port,
 		                     char **realhost, int nodelay, int keepalive);
-		void (*free) (void *handle);
+		void (*putty_free) (void *handle);
 		/* back->reconfig() passes in a replacement configuration. */
 		void (*reconfig) (void *handle, Conf *conf);
 		/* back->send() returns the current amount of buffered data. */
