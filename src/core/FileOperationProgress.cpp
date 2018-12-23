@@ -971,7 +971,7 @@ UnicodeString TFileOperationProgressType::GetLogStr(bool Done) const
     Time = TimeElapsed();
     TimeLabel = L"Elapsed";
   }
-  UnicodeString TimeStr = FormatDateTimeSpan(GetConfiguration()->TimeFormat(), Time);
+  UnicodeString TimeStr = FormatDateTimeSpan(GetConfiguration()->GetTimeFormat(), Time);
   UnicodeString CPSStr = FormatSize(CPS());
   return FORMAT("Transferred: %s, %s: %s, CPS: %s/s", Transferred, TimeLabel, TimeStr, CPSStr);
 }

@@ -682,6 +682,7 @@ public:
   __property bool LockInHome = { read = FLockInHome, write = SetLockInHome };
   __property bool Special = { read = FSpecial, write = SetSpecial };
   __property bool Selected  = { read = FSelected, write = FSelected };
+  bool& Selected{FSelected};
   __property UnicodeString InfoTip  = { read = GetInfoTip };
   __property bool DefaultShell = { read = GetDefaultShell, write = SetDefaultShell };
   __property bool DetectReturnVar = { read = GetDetectReturnVar, write = SetDetectReturnVar };
@@ -762,6 +763,7 @@ public:
   __property TPingType FtpPingType = { read = FFtpPingType, write = SetFtpPingType };
   __property TAutoSwitch FtpTransferActiveImmediately = { read = FFtpTransferActiveImmediately, write = SetFtpTransferActiveImmediately };
   __property TFtps Ftps = { read = FFtps, write = SetFtps };
+  RWProperty<TFtps> Ftps{nb::bind(&TSessionData::GetFtps, this), nb::bind(&TSessionData::SetFtps, this)};
   __property TTlsVersion MinTlsVersion = { read = FMinTlsVersion, write = SetMinTlsVersion };
   __property TTlsVersion MaxTlsVersion = { read = FMaxTlsVersion, write = SetMaxTlsVersion };
   __property UnicodeString LogicalHostName = { read = FLogicalHostName, write = SetLogicalHostName };
@@ -774,6 +776,7 @@ public:
   __property UnicodeString Link = { read = FLink, write = SetLink };
   __property UnicodeString NameOverride = { read = FNameOverride, write = SetNameOverride };
   __property UnicodeString HostKey = { read = FHostKey, write = SetHostKey };
+  RWProperty<UnicodeString> HostKey{nb::bind(&TSessionData::GetHostKey, this), nb::bind(&TSessionData::SetHostKey, this)};
   __property bool FingerprintScan = { read = FFingerprintScan, write = FFingerprintScan };
   __property bool OverrideCachedHostKey = { read = FOverrideCachedHostKey };
   __property UnicodeString Note = { read = FNote, write = SetNote };
@@ -1022,12 +1025,12 @@ public:
 
   const TSessionData *GetSession(intptr_t Index) const { return dyn_cast<TSessionData>(AtObject(Index)); }
   TSessionData *GetSession(intptr_t Index) { return dyn_cast<TSessionData>(AtObject(Index)); }
-  const TSessionData *GetDefaultSettings() const { return FDefaultSettings; }
-  TSessionData *GetDefaultSettings() { return FDefaultSettings; }
+  const TSessionData *GetDefaultSettings() const { return FDefaultSettings.get(); }
+  TSessionData *GetDefaultSettings() { return FDefaultSettings.get(); }
   void SetDefaultSettings(const TSessionData *Value);
   const TSessionData *GetSessionByName(const UnicodeString SessionName) const;
 private:
-  TSessionData *FDefaultSettings;
+  std::unique_ptr<TSessionData> FDefaultSettings;
   bool FReadOnly;
   std::unique_ptr<TStrings> FPendingRemovals;
   void Load(const UnicodeString AKey, bool UseDefaults);

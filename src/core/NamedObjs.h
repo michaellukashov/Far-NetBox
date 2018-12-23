@@ -15,7 +15,9 @@ public:
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TNamedObject) || TPersistent::is(Kind); }
 public:
   __property UnicodeString Name = { read = FName, write = SetName };
+  RWProperty<UnicodeString> Name{nb::bind(&TNamedObject::GetName, this), nb::bind(&TNamedObject::SetName, this)};
   __property bool Hidden = { read = FHidden };
+  const bool& Hidden{FHidden};
 
   UnicodeString GetName() const { return FName; }
   void SetName(const UnicodeString Value);

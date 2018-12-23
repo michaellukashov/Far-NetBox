@@ -132,7 +132,7 @@ public:
   UnicodeString GetPermanentActionsLogFileName() const;
   UnicodeString GetActionsLogFileName() const;
   UnicodeString GetDefaultLogFileName() const;
-  UnicodeString TimeFormat() const;
+  UnicodeString GetTimeFormat() const;
   UnicodeString GetRegistryStorageKey() const;
 #if 0
   UnicodeString GetIniFileStorageNameForReadingWriting() const;
@@ -281,6 +281,7 @@ public:
   ROProperty<TUsage*> Usage{nb::bind(&TConfiguration::GetUsage, this)};
   __property bool CollectUsage = { read = GetCollectUsage, write = SetCollectUsage };
   __property UnicodeString StoredSessionsSubKey = {read = GetStoredSessionsSubKey};
+  ROProperty<UnicodeString> StoredSessionsSubKey{nb::bind(&TConfiguration::GetStoredSessionsSubKey, this)};
   __property UnicodeString PuttyRegistryStorageKey  = { read = FPuttyRegistryStorageKey, write = SetPuttyRegistryStorageKey };
   __property UnicodeString PuttySessionsKey  = { read = GetPuttySessionsKey };
   __property UnicodeString RandomSeedFile  = { read = FRandomSeedFile, write = SetRandomSeedFile };
@@ -330,7 +331,9 @@ public:
   __property int ParallelDurationThreshold = { read = FParallelDurationThreshold, write = SetParallelDurationThreshold };
   __property UnicodeString MimeTypes = { read = FMimeTypes, write = SetMimeTypes };
   __property int DontReloadMoreThanSessions = { read = FDontReloadMoreThanSessions, write = FDontReloadMoreThanSessions };
+  int& DontReloadMoreThanSessions{FDontReloadMoreThanSessions};
   __property int ScriptProgressFileNameLimit = { read = FScriptProgressFileNameLimit, write = FScriptProgressFileNameLimit };
+  int& ScriptProgressFileNameLimit{FScriptProgressFileNameLimit};
 
   __property UnicodeString TimeFormat = { read = GetTimeFormat };
   __property TStorage Storage  = { read = GetStorage };
@@ -346,8 +349,11 @@ public:
   __property UnicodeString DefaultKeyFile = { read = GetDefaultKeyFile };
 
   __property bool DisablePasswordStoring = { read = FDisablePasswordStoring };
+  const bool& DisablePasswordStoring{FDisablePasswordStoring};
   __property bool ForceBanners = { read = FForceBanners };
+  const bool& ForceBanners{FForceBanners};
   __property bool DisableAcceptingHostKeys = { read = FDisableAcceptingHostKeys };
+  const bool& DisableAcceptingHostKeys{FDisableAcceptingHostKeys};
 
   TUsage * GetUsage() { return FUsage; }
   UnicodeString GetPuttyRegistryStorageKey() const { return FPuttyRegistryStorageKey; }
