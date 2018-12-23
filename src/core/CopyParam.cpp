@@ -70,7 +70,7 @@ UnicodeString TCopyParamType::GetInfoStr(
 //  UnicodeString AssemblyCode;
   DoGetInfoStr(
     Separator, Attrs, Result, SomeAttrIncluded,
-    UnicodeString(), ScriptArgs, TAssemblyLanguage(0), AssemblyCode);
+    UnicodeString(), ScriptArgs, /*TAssemblyLanguage(0), */AssemblyCode);
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -82,11 +82,11 @@ bool TCopyParamType::AnyUsableCopyParam(intptr_t Attrs) const
 //  UnicodeString AssemblyCode;
   DoGetInfoStr(
     L";", Attrs, Result, SomeAttrIncluded,
-    UnicodeString(), ScriptArgs, TAssemblyLanguage(0), AssemblyCode);
+    UnicodeString(), ScriptArgs/*TAssemblyLanguage(0), AssemblyCode*/);
   return SomeAttrIncluded;
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall TCopyParamType::GenerateTransferCommandArgs(int Attrs, const UnicodeString & Link) const
+UnicodeString TCopyParamType::GenerateTransferCommandArgs(int Attrs, const UnicodeString & Link) const
 {
   UnicodeString Result;
   bool SomeAttrIncluded;
@@ -94,7 +94,7 @@ UnicodeString __fastcall TCopyParamType::GenerateTransferCommandArgs(int Attrs, 
   UnicodeString AssemblyCode;
   DoGetInfoStr(
     L";", Attrs, Result, SomeAttrIncluded,
-    Link, ScriptArgs, TAssemblyLanguage(0), AssemblyCode);
+    Link, ScriptArgs); // , TAssemblyLanguage(0), AssemblyCode);
   return ScriptArgs;
 }
 
@@ -114,7 +114,7 @@ UnicodeString __fastcall TCopyParamType::GenerateAssemblyCode(TAssemblyLanguage 
 void TCopyParamType::DoGetInfoStr(
   UnicodeString Separator, intptr_t Attrs,
   UnicodeString &Result, bool &SomeAttrIncluded,
-  const UnicodeString & Link, UnicodeString & ScriptArgs, TAssemblyLanguage Language, UnicodeString & AssemblyCode) const
+  const UnicodeString ALink, UnicodeString &ScriptArgs, /*TAssemblyLanguage Language, UnicodeString & AssemblyCode*/) const
 {
   TCopyParamType Defaults;
   TCopyParamType ScriptNonDefaults;
@@ -509,7 +509,7 @@ void TCopyParamType::DoGetInfoStr(
   if (RawOptions->Count > 0)
   {
     ScriptArgs +=
-      RtfSwitch(RAWTRANSFERSETTINGS_SWITCH, Link) +
+      RtfSwitch(RAWTRANSFERSETTINGS_SWITCH, ALink) +
       FORMAT(L"[%d]", (RawOptions->Count)) +
       StringsToParams(RawOptions.get());
   }
@@ -935,7 +935,7 @@ void TCopyParamType::Load(THierarchicalStorage *Storage)
   Size = -1;
 }
 
-void __fastcall TCopyParamType::Save(THierarchicalStorage * Storage, const TCopyParamType * Defaults) const
+void TCopyParamType::Save(THierarchicalStorage * Storage, const TCopyParamType * Defaults) const
 {
   // Same as in TSessionData::DoSave
   #define WRITE_DATA_EX(TYPE, NAME, PROPERTY, CONV) \

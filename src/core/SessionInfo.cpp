@@ -1329,8 +1329,8 @@ void TSessionLog::DoAddStartupInfo(TSessionData *Data)
       ADF("LS: %s, Ign LS warn: %s, Scp1 Comp: %s; Exit code 1 is error: %s",
         Data->GetListingCommand(),
         BooleanToEngStr(Data->GetIgnoreLsWarnings()),
-        BooleanToEngStr(Data->Scp1Compatibility),
-        BooleanToEngStr(Data->ExitCode1IsError)));
+        BooleanToEngStr(Data->GetScp1Compatibility()),
+        BooleanToEngStr(Data->GetExitCode1IsError()));
     }
     if ((Data->GetFSProtocol() == fsSFTP) || (Data->GetFSProtocol() == fsSFTPonly))
     {

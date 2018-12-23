@@ -206,30 +206,30 @@ public:
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TSessionData) || TNamedObject::is(Kind); }
 private:
   UnicodeString FHostName;
-  intptr_t FPortNumber;
+  intptr_t FPortNumber{0};
   UnicodeString FUserName;
   RawByteString FPassword;
   RawByteString FNewPassword;
-  bool FChangePassword;
-  intptr_t FPingInterval;
-  TPingType FPingType;
-  bool FTryAgent;
-  bool FAgentFwd;
+  bool FChangePassword{false};
+  intptr_t FPingInterval{0};
+  TPingType FPingType{};
+  bool FTryAgent{false};
+  bool FAgentFwd{false};
   UnicodeString FListingCommand;
-  bool FAuthTIS;
-  bool FAuthKI;
-  bool FAuthKIPassword;
-  bool FAuthGSSAPI;
-  bool FGSSAPIFwdTGT;
-  bool FChangeUsername;
-  bool FCompression;
-  TSshProt FSshProt;
-  bool FSsh2DES;
-  bool FSshNoUserAuth;
-  TCipher FCiphers[CIPHER_COUNT];
-  TKex FKex[KEX_COUNT];
-  THostKey FHostKeys[HOSTKEY_COUNT];
-  TGssLib FGssLib[GSSLIB_COUNT];
+  bool FAuthTIS{false};
+  bool FAuthKI{false};
+  bool FAuthKIPassword{false};
+  bool FAuthGSSAPI{false};
+  bool FGSSAPIFwdTGT{false};
+  bool FChangeUsername{false};
+  bool FCompression{false};
+  TSshProt FSshProt{};
+  bool FSsh2DES{false};
+  bool FSshNoUserAuth{false};
+  TCipher FCiphers[CIPHER_COUNT]{};
+  TKex FKex[KEX_COUNT]{};
+  THostKey FHostKeys[HOSTKEY_COUNT]{};
+  TGssLib FGssLib[GSSLIB_COUNT]{};
   UnicodeString FGssLibCustom;
   bool FClearAliases{false};
   TEOLType FEOLType{};
@@ -268,7 +268,7 @@ private:
   RawByteString FProxyPassword;
   UnicodeString FProxyTelnetCommand;
   UnicodeString FProxyLocalCommand;
-  TAutoSwitch FProxyDNS;
+  TAutoSwitch FProxyDNS{};
   bool FProxyLocalhost{false};
   intptr_t FFtpProxyLogonType{0};
   TAutoSwitch FBugs[BUG_COUNT]{};
@@ -846,6 +846,7 @@ public:
   bool GetTrimVMSVersions() const { return FTrimVMSVersions; }
   TAutoSwitch GetLookupUserGroups() const { return FLookupUserGroups; }
   UnicodeString GetReturnVar() const { return FReturnVar; }
+  bool GetExitCode1IsError() const { return FExitCode1IsError; }
   bool GetScp1Compatibility() const { return FScp1Compatibility; }
   UnicodeString GetShell() const { return FShell; }
   UnicodeString GetSftpServer() const { return FSftpServer; }

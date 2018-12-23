@@ -1219,8 +1219,9 @@ bool TFileCustomCommand::PatternReplacement(
   }
   else if (SameText(Pattern, L"!e"))
   {
-    if (FData.SessionData != NULL)
+    if (FData.SessionData != nullptr)
     {
+      Replacement = FData.SessionData->GenerateSessionUrl(sufComplete);
     }
   }
   else if (Pattern == L"!@")

@@ -37,27 +37,27 @@ enum TResumeSupport
 };
 
 class THierarchicalStorage;
-const int cpaIncludeMaskOnly = 0x01;
-const int cpaNoTransferMode  = 0x02;
-const int cpaNoIncludeMask   = 0x04;
-const int cpaNoClearArchive  = 0x08;
-const int cpaNoPreserveTime  = 0x10;
-const int cpaNoRights        = 0x20;
-const int cpaNoPreserveReadOnly = 0x40;
-const int cpaNoIgnorePermErrors = 0x80;
-const int cpaNoNewerOnly        = 0x100;
-const int cpaNoRemoveCtrlZ      = 0x200;
-const int cpaNoRemoveBOM        = 0x400;
-const int cpaNoPreserveTimeDirs = 0x800;
-const int cpaNoResumeSupport    = 0x1000;
-const int cpaNoEncryptNewFiles  = 0x2000;
-const int cpaNoCalculateSize    = 0x4000;
+constexpr const int cpaIncludeMaskOnly = 0x01;
+constexpr const int cpaNoTransferMode  = 0x02;
+constexpr const int cpaNoIncludeMask   = 0x04;
+constexpr const int cpaNoClearArchive  = 0x08;
+constexpr const int cpaNoPreserveTime  = 0x10;
+constexpr const int cpaNoRights        = 0x20;
+constexpr const int cpaNoPreserveReadOnly = 0x40;
+constexpr const int cpaNoIgnorePermErrors = 0x80;
+constexpr const int cpaNoNewerOnly        = 0x100;
+constexpr const int cpaNoRemoveCtrlZ      = 0x200;
+constexpr const int cpaNoRemoveBOM        = 0x400;
+constexpr const int cpaNoPreserveTimeDirs = 0x800;
+constexpr const int cpaNoResumeSupport    = 0x1000;
+constexpr const int cpaNoEncryptNewFiles  = 0x2000;
+constexpr const int cpaNoCalculateSize    = 0x4000;
 //---------------------------------------------------------------------------
 struct TUsableCopyParamAttrs
 {
-  int General;
-  int Upload;
-  int Download;
+  int General{0};
+  int Upload{0};
+  int Download{0};
 };
 //---------------------------------------------------------------------------
 NB_DEFINE_CLASS_ID(TCopyParamType);
@@ -68,35 +68,35 @@ public:
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TCopyParamType) || TObject::is(Kind); }
 private:
   TFileMasks FAsciiFileMask;
-  TFileNameCase FFileNameCase;
-  bool FPreserveReadOnly;
-  bool FPreserveTime;
-  bool FPreserveTimeDirs;
-  TRights FRights;
-  TTransferMode FTransferMode;
-  bool FAddXToDirectories;
-  bool FPreserveRights;
-  bool FIgnorePermErrors;
+  TFileNameCase FFileNameCase{};
+  bool FPreserveReadOnly{false};
+  bool FPreserveTime{false};
+  bool FPreserveTimeDirs{false};
+  TRights FRights{};
+  TTransferMode FTransferMode{};
+  bool FAddXToDirectories{false};
+  bool FPreserveRights{false};
+  bool FIgnorePermErrors{false};
   TResumeSupport FResumeSupport;
-  int64_t FResumeThreshold;
+  int64_t FResumeThreshold{0};
   __removed UnicodeString GetLogStr() const;
-  wchar_t FInvalidCharsReplacement;
+  wchar_t FInvalidCharsReplacement{};
   UnicodeString FLocalInvalidChars;
   UnicodeString FTokenizibleChars;
-  bool FCalculateSize;
+  bool FCalculateSize{false};
   UnicodeString FFileMask;
   TFileMasks FIncludeFileMask;
   std::unique_ptr<TStringList> FTransferSkipList;
   UnicodeString FTransferResumeFile;
-  bool FClearArchive;
-  bool FRemoveCtrlZ;
-  bool FRemoveBOM;
-  uintptr_t FCPSLimit;
-  bool FNewerOnly;
-  bool FEncryptNewFiles;
-  bool FExcludeHiddenFiles;
-  bool FExcludeEmptyDirectories;
-  __int64 FSize;
+  bool FClearArchive{false};
+  bool FRemoveCtrlZ{false};
+  bool FRemoveBOM{false};
+  uintptr_t FCPSLimit{0};
+  bool FNewerOnly{false};
+  bool FEncryptNewFiles{false};
+  bool FExcludeHiddenFiles{false};
+  bool FExcludeEmptyDirectories{false};
+  int64_t FSize{0};
   static const wchar_t TokenPrefix = L'%';
   static const wchar_t NoReplacement = wchar_t(0);
   static const wchar_t TokenReplacement = wchar_t(1);
@@ -106,9 +106,9 @@ public:
   bool GetReplaceInvalidChars() const;
   void SetReplaceInvalidChars(bool Value);
   UnicodeString RestoreChars(const UnicodeString AFileName) const;
-  void DoGetInfoStr(UnicodeString Separator, int Attrs,
-    UnicodeString & Result, bool & SomeAttrIncluded, const UnicodeString & Link, UnicodeString & ScriptArgs,
-    /*TAssemblyLanguage Language, */UnicodeString & AssemblyCode) const;
+  void DoGetInfoStr(UnicodeString Separator, intptr_t AAttrs,
+    UnicodeString & Result, bool & SomeAttrIncluded, const UnicodeString ALink, UnicodeString & ScriptArgs
+    /*TAssemblyLanguage Language, UnicodeString & AssemblyCode*/) const;
   TStrings *GetTransferSkipList() const;
   void SetTransferSkipList(TStrings *Value);
 
