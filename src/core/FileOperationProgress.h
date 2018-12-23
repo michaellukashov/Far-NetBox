@@ -60,15 +60,15 @@ class TFileOperationStatistics
 public:
   TFileOperationStatistics();
 
-  int FilesUploaded;
-  int FilesDownloaded;
-  int FilesDeletedLocal;
-  int FilesDeletedRemote;
-  __int64 TotalUploaded;
-  __int64 TotalDownloaded;
+  int FilesUploaded{0};
+  int FilesDownloaded{0};
+  int FilesDeletedLocal{0};
+  int FilesDeletedRemote{0};
+  int64_t TotalUploaded{0};
+  int64_t TotalDownloaded{0};
 };
 //---------------------------------------------------------------------------
-class TFileOperationProgressType
+class NB_CORE_EXPORT TFileOperationProgressType : public TObject
 {
 public:
   class TPersistence
@@ -77,20 +77,21 @@ public:
   public:
     TPersistence();
     __property TFileOperationStatistics * Statistics = { read = FStatistics, write = FStatistics };
+    TFileOperationStatistics *& Statistics{FStatistics};
 
   private:
     void Clear(bool Batch, bool Speed);
 
     TDateTime StartTime;
-    TBatchOverwrite BatchOverwrite;
-    bool SkipToAll;
-    unsigned long CPSLimit;
-    bool CounterSet;
-    std::vector<unsigned long> Ticks;
-    std::vector<__int64> TotalTransferredThen;
-    TOperationSide Side;
-    __int64 TotalTransferred;
-    TFileOperationStatistics * FStatistics;
+    TBatchOverwrite BatchOverwrite{};
+    bool SkipToAll{false};
+    uint64_t CPSLimit{0};
+    bool CounterSet{false};
+    rde::vector<uint64_t> Ticks;
+    rde::vector<int64_t> TotalTransferredThen;
+    TOperationSide Side{};
+    int64_t TotalTransferred{0};
+    TFileOperationStatistics * FStatistics{nullptr};
   };
 
 private:
@@ -131,11 +132,11 @@ private:
   bool FReset{false};
   uintptr_t FLastSecond{0};
   int64_t FRemainingCPS{0};
-  bool FCounterSet{false};
   TPersistence FPersistence;
   TCriticalSection *FSection{nullptr};
   TCriticalSection *FUserSelectionsSection{nullptr};
 
+  bool FCounterSet{false};
   bool FSkipToAll{false};
   intptr_t FCPSLimit{0};
 public:
@@ -167,12 +168,14 @@ public:
   ROProperty<TFileOperation> Operation{nb::bind(&TFileOperationProgressType::GetOperation, this)};
   // on what side if operation being processed (local/remote), source of copy
   __property TOperationSide Side = { read = GetSide };
+  ROProperty<TOperationSide> Side{nb::bind(&TFileOperationProgressType::GetSide, this)};
   __property int Count =  { read = FCount };
   ROProperty<intptr_t> Count{nb::bind(&TFileOperationProgressType::GetCount, this)};
   __property UnicodeString FileName =  { read = FFileName };
   __property UnicodeString FullFileName = { read = FFullFileName };
   __property UnicodeString Directory = { read = FDirectory };
   __property bool AsciiTransfer = { read = FAsciiTransfer };
+  bool& AsciiTransfer{FAsciiTransfer};
   // Can be true with SCP protocol only
   __property bool TransferringFile = { read = FTransferringFile };
   __property bool Temp = { read = FTemp };
@@ -223,7 +226,7 @@ public:
     TOnceDoneOperation &OnceDoneOperation);
   void Succeeded(int Count = 1);
   void Progress();
-  uint64_t LocalBlockSize() const;
+  int64_t LocalBlockSize();
   bool IsLocallyDone() const;
   bool IsTransferDone() const;
   void SetFile(const UnicodeString AFileName, bool AFileInProgress = true);

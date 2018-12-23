@@ -751,7 +751,7 @@ public:
   };
 #endif // #if 0
 
-  typedef rde::vector<TChecklistItem*> TItemList;
+  typedef rde::vector<const TChecklistItem*> TItemList;
 
   ~TSynchronizeChecklist();
 

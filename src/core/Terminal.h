@@ -113,7 +113,7 @@ typedef nb::FastDelegate4<void,
 typedef nb::FastDelegate1<void,
   const TSynchronizeChecklist::TItemList & /*Items*/> TUpdatedSynchronizationChecklistItems;
 typedef nb::FastDelegate2<void,
-  void * /*Token*/, const TChecklistItem* /*Item*/> TProcessedSynchronizationChecklistItem;
+  void * /*Token*/, const TChecklistItem * /*Item*/> TProcessedSynchronizationChecklistItem;
 #if 0
   const UnicodeString FileName, bool Alternative, int & Deleted);
 typedef void (__closure *TDeleteLocalFileEvent)(
@@ -487,18 +487,18 @@ protected:
     const UnicodeString ALocalDirectory, const TCopyParamType * CopyParam, bool DisallowTemporaryTransferFiles);
   bool IsEmptyRemoteDirectory(
     const TRemoteFile * File, const TCopyParamType * CopyParam, bool DisallowTemporaryTransferFiles);
-  void DoSynchronizeCollectFile(const UnicodeString AFileName,
+  void DoSynchronizeCollectFile(UnicodeString AFileName,
     const TRemoteFile *AFile, /*TSynchronizeData* */void * Param);
-  void SynchronizeCollectFile(const UnicodeString AFileName,
+  void SynchronizeCollectFile(UnicodeString AFileName,
     const TRemoteFile *AFile, /*TSynchronizeData* */ void *Param);
-  void SynchronizeRemoteTimestamp(const UnicodeString AFileName,
+  void SynchronizeRemoteTimestamp(UnicodeString AFileName,
     const TRemoteFile *AFile, void *Param);
-  void SynchronizeLocalTimestamp(const UnicodeString AFileName,
+  void SynchronizeLocalTimestamp(UnicodeString AFileName,
     const TRemoteFile *AFile, void *Param);
   void DoSynchronizeProgress(const TSynchronizeData &Data, bool Collect);
-  void DeleteLocalFile(const UnicodeString AFileName,
+  void DeleteLocalFile(UnicodeString AFileName,
     const TRemoteFile *AFile, void *Params);
-  void RecycleFile(const UnicodeString AFileName, const TRemoteFile *AFile);
+  void RecycleFile(UnicodeString AFileName, const TRemoteFile *AFile);
   TStrings * GetFixedPaths() const;
   void DoStartup();
   virtual bool DoQueryReopen(Exception *E);
@@ -520,10 +520,10 @@ protected:
     bool Resume,
     bool NoConfirmation,
     HANDLE *AHandle);
-  void LockFile(const UnicodeString AFileName, const TRemoteFile *AFile, void * Param);
-  void UnlockFile(const UnicodeString AFileName, const TRemoteFile *AFile, void * Param);
-  void DoLockFile(const UnicodeString AFileName, const TRemoteFile *AFile);
-  void DoUnlockFile(const UnicodeString AFileName, const TRemoteFile *AFile);
+  void LockFile(UnicodeString AFileName, const TRemoteFile *AFile, void * Param);
+  void UnlockFile(UnicodeString AFileName, const TRemoteFile *AFile, void * Param);
+  void DoLockFile(UnicodeString AFileName, const TRemoteFile *AFile);
+  void DoUnlockFile(UnicodeString AFileName, const TRemoteFile *AFile);
   void OperationFinish(
     TFileOperationProgressType * Progress, const void * Item, const UnicodeString AFileName,
     bool Success, TOnceDoneOperation & OnceDoneOperation);
@@ -596,7 +596,7 @@ protected:
     TFileOperationProgressType * OperationProgress, uintptr_t AFlags);
   void Source(
     const UnicodeString AFileName, const TSearchRecSmart * SearchRec,
-    const UnicodeString ATargetDir, const TCopyParamType * CopyParam, int Params,
+    const UnicodeString ATargetDir, const TCopyParamType * CopyParam, intptr_t AParams,
     TFileOperationProgressType * OperationProgress, uintptr_t AFlags, TUploadSessionAction &Action, bool &ChildError);
   void DirectorySource(
     const UnicodeString ADirectoryName, const UnicodeString ATargetDir, const UnicodeString ADestDirectoryName,
@@ -664,20 +664,16 @@ public:
   bool FileExists(const UnicodeString AFileName, TRemoteFile **AFile = nullptr);
   void ReadSymlink(TRemoteFile * SymlinkFile, TRemoteFile *& AFile);
   bool CopyToLocal(
-    TStrings * FilesToCopy, const UnicodeString ATargetDir, const TCopyParamType * CopyParam, int Params,
+    TStrings * AFilesToCopy, const UnicodeString ATargetDir, const TCopyParamType * CopyParam, intptr_t AParams,
     TParallelOperation * ParallelOperation);
   bool CopyToRemote(
-    TStrings * FilesToCopy, const UnicodeString ATargetDir, const TCopyParamType * CopyParam, int Params,
+    TStrings * AFilesToCopy, const UnicodeString ATargetDir, const TCopyParamType * CopyParam, intptr_t AParams,
     TParallelOperation * ParallelOperation);
-  bool CopyToLocal(TStrings *AFilesToCopy,
-    const UnicodeString ATargetDir, const TCopyParamType *CopyParam, intptr_t AParams, TParallelOperation *ParallelOperation);
-  bool CopyToRemote(TStrings *AFilesToCopy,
-    UnicodeString ATargetDir, const TCopyParamType *CopyParam, intptr_t Params, TParallelOperation *ParallelOperation);
   intptr_t CopyToParallel(TParallelOperation *ParallelOperation, TFileOperationProgressType *OperationProgress);
   void LogParallelTransfer(TParallelOperation *ParallelOperation);
   void RemoteCreateDirectory(const UnicodeString ADirName, const TRemoteProperties * Properties = nullptr);
-  void RemoteCreateLink(const UnicodeString AFileName, const UnicodeString APointTo, bool Symbolic);
-  void RemoteDeleteFile(const UnicodeString AFileName,
+  void RemoteCreateLink(UnicodeString AFileName, const UnicodeString APointTo, bool Symbolic);
+  void RemoteDeleteFile(UnicodeString AFileName,
     const TRemoteFile *AFile = nullptr, void *AParams = nullptr);
   bool RemoteDeleteFiles(TStrings *AFilesToDelete, intptr_t Params = 0);
   bool DeleteLocalFiles(TStrings *AFileList, intptr_t Params = 0);
@@ -709,7 +705,7 @@ public:
   bool TerminalCopyFiles(TStrings *AFileList, const UnicodeString ATarget,
     const UnicodeString AFileMask);
   bool CalculateFilesSize(TStrings *AFileList, int64_t &Size,
-    intptr_t Params, const TCopyParamType *CopyParam, bool AllowDirs,
+    intptr_t AParams, const TCopyParamType *CopyParam, bool AllowDirs,
     TCalculateSizeStats &Stats);
   bool CalculateLocalFilesSize(TStrings * FileList, int64_t & Size,
     const TCopyParamType * CopyParam, bool AllowDirs, TStrings * Files, TCalculatedSizes * CalculatedSizes);
@@ -718,11 +714,11 @@ public:
   void ClearCaches();
   TSynchronizeChecklist * SynchronizeCollect(const UnicodeString LocalDirectory,
     const UnicodeString ARemoteDirectory, TSynchronizeMode Mode,
-    const TCopyParamType *CopyParam, intptr_t Params,
+    const TCopyParamType *CopyParam, intptr_t AParams,
     TSynchronizeDirectoryEvent OnSynchronizeDirectory, TSynchronizeOptions *Options);
   void SynchronizeApply(
     TSynchronizeChecklist * Checklist,
-    const TCopyParamType *CopyParam, intptr_t Params,
+    const TCopyParamType *CopyParam, intptr_t AParams,
     TSynchronizeDirectoryEvent OnSynchronizeDirectory, TProcessedSynchronizationChecklistItem OnProcessedItem,
     TUpdatedSynchronizationChecklistItems OnUpdatedSynchronizationChecklistItems, void * Token,
     TFileOperationStatistics * Statistics);
@@ -1118,7 +1114,7 @@ public:
   ~TParallelOperation();
 
   void Init(
-    TStrings *AFiles, const UnicodeString ATargetDir, const TCopyParamType *CopyParam, intptr_t Params,
+    TStrings *AFiles, const UnicodeString ATargetDir, const TCopyParamType *CopyParam, intptr_t AParams,
     TFileOperationProgressType *MainOperationProgress, const UnicodeString AMainName);
 
   bool IsInitialized() const;

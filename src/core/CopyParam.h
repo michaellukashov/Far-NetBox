@@ -152,6 +152,7 @@ public:
   __property TRights Rights = { read = FRights, write = FRights };
   __property TTransferMode TransferMode = { read = FTransferMode, write = FTransferMode };
   __property UnicodeString LogStr  = { read = GetLogStr };
+  ROProperty<UnicodeString> LogStr{nb::bind(&TCopyParamType::GetLogStr, this)};
   __property bool AddXToDirectories  = { read = FAddXToDirectories, write = FAddXToDirectories };
   __property bool PreserveRights = { read = FPreserveRights, write = FPreserveRights };
   __property bool IgnorePermErrors = { read = FIgnorePermErrors, write = FIgnorePermErrors };
