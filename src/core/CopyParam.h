@@ -106,7 +106,7 @@ public:
   bool GetReplaceInvalidChars() const;
   void SetReplaceInvalidChars(bool Value);
   UnicodeString RestoreChars(const UnicodeString AFileName) const;
-  void DoGetInfoStr(UnicodeString Separator, intptr_t AAttrs,
+  void DoGetInfoStr(UnicodeString Separator, intptr_t Options,
     UnicodeString & Result, bool & SomeAttrIncluded, const UnicodeString ALink, UnicodeString & ScriptArgs
     /*TAssemblyLanguage Language, UnicodeString & AssemblyCode*/) const;
   TStrings *GetTransferSkipList() const;
@@ -144,22 +144,35 @@ public:
   bool operator==(const TCopyParamType &rhp) const;
 
   __property TFileMasks AsciiFileMask = { read = FAsciiFileMask, write = FAsciiFileMask };
+  TFileMasks& AsciiFileMask{FAsciiFileMask};
   __property TFileNameCase FileNameCase = { read = FFileNameCase, write = FFileNameCase };
+  TFileNameCase& FileNameCase{FFileNameCase};
   __property bool PreserveReadOnly = { read = FPreserveReadOnly, write = FPreserveReadOnly };
+  bool& PreserveReadOnly{FPreserveReadOnly};
   __property bool PreserveTime = { read = FPreserveTime, write = FPreserveTime };
   RWProperty<bool> PreserveTime{nb::bind(&TCopyParamType::GetPreserveTime, this), nb::bind(&TCopyParamType::SetPreserveTime, this)};
   __property bool PreserveTimeDirs = { read = FPreserveTimeDirs, write = FPreserveTimeDirs };
+  bool& PreserveTimeDirs{FPreserveTimeDirs};
   __property TRights Rights = { read = FRights, write = FRights };
+  TRights& Rights{FRights};
   __property TTransferMode TransferMode = { read = FTransferMode, write = FTransferMode };
+  TTransferMode& TransferMode{FTransferMode};
   __property UnicodeString LogStr  = { read = GetLogStr };
   ROProperty<UnicodeString> LogStr{nb::bind(&TCopyParamType::GetLogStr, this)};
   __property bool AddXToDirectories  = { read = FAddXToDirectories, write = FAddXToDirectories };
+  bool& AddXToDirectories{FAddXToDirectories};
   __property bool PreserveRights = { read = FPreserveRights, write = FPreserveRights };
+  bool& PreserveRights{FPreserveRights};
   __property bool IgnorePermErrors = { read = FIgnorePermErrors, write = FIgnorePermErrors };
+  bool& IgnorePermErrors{FIgnorePermErrors};
   __property TResumeSupport ResumeSupport = { read = FResumeSupport, write = FResumeSupport };
+  TResumeSupport& ResumeSupport{FResumeSupport};
   __property int64_t ResumeThreshold = { read = FResumeThreshold, write = FResumeThreshold };
+  int64_t& ResumeThreshold{FResumeThreshold};
   __property wchar_t InvalidCharsReplacement = { read = FInvalidCharsReplacement, write = FInvalidCharsReplacement };
+  wchar_t& InvalidCharsReplacement{FInvalidCharsReplacement};
   __property bool ReplaceInvalidChars = { read = GetReplaceInvalidChars, write = SetReplaceInvalidChars };
+  RWProperty<bool> ReplaceInvalidChars{nb::bind(&TCopyParamType::GetReplaceInvalidChars, this), nb::bind(&TCopyParamType::SetReplaceInvalidChars, this)};
   __property UnicodeString LocalInvalidChars = { read = FLocalInvalidChars, write = SetLocalInvalidChars };
   RWProperty<UnicodeString> LocalInvalidChars{nb::bind(&TCopyParamType::GetLocalInvalidChars, this), nb::bind(&TCopyParamType::SetLocalInvalidChars, this)};
   __property bool CalculateSize = { read = FCalculateSize, write = FCalculateSize };

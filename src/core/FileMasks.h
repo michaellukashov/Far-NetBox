@@ -59,6 +59,7 @@ public:
     const TParams *Params, bool RecurseInclude, bool &ImplicitMatch) const;
 
   __property UnicodeString Masks = { read = FStr, write = SetMasks };
+  RWProperty<UnicodeString> Masks{nb::bind(&TFileMasks::GetMasks, this),nb::bind(&TFileMasks::SetMasks, this)};
 
   __property TStrings *IncludeFileMasksStr = { read = GetMasksStr, index = MASK_INDEX(false, true) };
   __property TStrings *ExcludeFileMasksStr = { read = GetMasksStr, index = MASK_INDEX(false, false) };

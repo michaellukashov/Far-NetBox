@@ -16,7 +16,7 @@ THttp::THttp() :
   FOnDownload(nullptr),
   FOnError(nullptr),
   FRequestHeaders(nullptr),
-  FResponseHeaders(new TStringList())
+  FResponseHeaders(std::make_unique<TStringList>())
 {
 }
 //---------------------------------------------------------------------------

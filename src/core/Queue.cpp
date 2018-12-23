@@ -2241,7 +2241,7 @@ TTransferQueueItem::TTransferQueueItem(TObjectClassId Kind, TTerminal *Terminal,
   DebugAssert(AFilesToCopy != nullptr);
   if (!AFilesToCopy)
     return;
-  FFilesToCopy = new TStringList();
+  FFilesToCopy = std::make_unique<TStringList>();
   for (intptr_t Index = 0; Index < AFilesToCopy->GetCount(); ++Index)
   {
     FFilesToCopy->AddObject(AFilesToCopy->GetString(Index),

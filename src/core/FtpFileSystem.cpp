@@ -297,7 +297,7 @@ void TFTPFileSystem::Init(void *)
   FTimeoutStatus = LoadStr(IDS_ERRORMSG_TIMEOUT);
   FDisconnectStatus = LoadStr(IDS_STATUSMSG_DISCONNECTED);
   FServerCapabilities = new TFTPServerCapabilities();
-  FHashAlgs.reset(new TStringList());
+  FHashAlgs(std::make_unique<TStringList>());
   FSupportedCommands.reset(CreateSortedStringList());
   FSupportedSiteCommands.reset(CreateSortedStringList());
   FCertificate = nullptr;
@@ -306,8 +306,8 @@ void TFTPFileSystem::Init(void *)
   FBytesAvailableSupported = false;
   FLoggedIn = false;
 
-  FChecksumAlgs.reset(new TStringList());
-  FChecksumCommands.reset(new TStringList());
+  FChecksumAlgs = std::make_unique<TStringList>();
+  FChecksumCommands = std::make_unique<TStringList>();
   RegisterChecksumAlgCommand(Sha1ChecksumAlg, L"XSHA1"); // e.g. Cerberos FTP
   RegisterChecksumAlgCommand(Sha256ChecksumAlg, L"XSHA256"); // e.g. Cerberos FTP
   RegisterChecksumAlgCommand(Sha512ChecksumAlg, L"XSHA512"); // e.g. Cerberos FTP
@@ -1242,7 +1242,7 @@ void TFTPFileSystem::DoCalculateFilesChecksum(bool UsingHashCommand,
 
         if (SubFiles != nullptr)
         {
-          std::unique_ptr<TStrings> SubFileList(new TStringList());
+          std::unique_ptr<TStrings> SubFileList(std::make_unique<TStringList>());
           bool Success = false;
           try__finally
           {
@@ -1824,7 +1824,7 @@ void TFTPFileSystem::CustomCommandOnFile(const UnicodeString /*FileName*/,
 //---------------------------------------------------------------------------
 void TFTPFileSystem::DoStartup()
 {
-  std::unique_ptr<TStrings> PostLoginCommands(new TStringList());
+  std::unique_ptr<TStrings> PostLoginCommands(std::make_unique<TStringList>());
   try__finally
   {
     PostLoginCommands->SetText(FTerminal->GetSessionData()->GetPostLoginCommands());
@@ -3086,7 +3086,7 @@ UnicodeString TFTPFileSystem::GotReply(uintptr_t Reply, uintptr_t Flags,
         FLAGSET(Reply, TFileZillaIntf::REPLY_NOTCONNECTED);
 
       UnicodeString HelpKeyword;
-      std::unique_ptr<TStrings> MoreMessages(new TStringList());
+      std::unique_ptr<TStrings> MoreMessages(std::make_unique<TStringList>());
       try__catch
       {
         if (Disconnected)
@@ -3188,7 +3188,7 @@ UnicodeString TFTPFileSystem::GotReply(uintptr_t Reply, uintptr_t Flags,
         {
           FTerminal->FatalError(E.get(), L"");
         },
-        __finally__removed 
+        __finally__removed
         ({
           delete E;
         }) end_try__finally

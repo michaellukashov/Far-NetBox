@@ -238,8 +238,8 @@ public:
   uint32_t MaxReadSize;
   uint32_t OpenBlockVector;
   uint32_t BlockVector;
-  TStrings *AttribExtensions;
-  TStrings *Extensions;
+  std::unique_ptr<TStrings> AttribExtensions;
+  std::unique_ptr<TStrings> Extensions;
   bool Loaded;
 };
 //---------------------------------------------------------------------------
@@ -929,7 +929,7 @@ public:
 
   void LoadFromFile(const UnicodeString AFileName)
   {
-    std::unique_ptr<TStringList> DumpLines(new TStringList());
+    std::unique_ptr<TStringList> DumpLines(std::make_unique<TStringList>());
     RawByteString Dump;
     try__finally
     {
@@ -1415,7 +1415,7 @@ protected:
         Request.reset();
       }
     }
-    catch__removed 
+    catch__removed
     ({
       delete Request;
       throw;
@@ -2021,8 +2021,8 @@ void TSFTPFileSystem::Init(void *Data)
   FFixedPaths = nullptr;
   FFileSystemInfoValid = false;
 
-  FChecksumAlgs.reset(new TStringList());
-  FChecksumSftpAlgs.reset(new TStringList());
+  FChecksumAlgs = std::make_unique<TStringList>();
+  FChecksumSftpAlgs = std::make_unique<TStringList>();
   // List as defined by draft-ietf-secsh-filexfer-extensions-00
   // MD5 moved to the back
   RegisterChecksumAlg(Sha1ChecksumAlg, L"sha1");
@@ -4161,7 +4161,7 @@ void TSFTPFileSystem::DoCalculateFilesChecksum(
 
         if (SubFiles.get() != nullptr)
         {
-          std::unique_ptr<TStrings> SubFileList(new TStringList());
+          std::unique_ptr<TStrings> SubFileList(std::make_unique<TStringList>());
           bool Success = false;
           try__finally
           {

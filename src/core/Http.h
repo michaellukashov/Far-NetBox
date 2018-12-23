@@ -71,8 +71,8 @@ private:
   THttpErrorEvent FOnError;
   UnicodeString FHostName;
   UnicodeString FCertificateError;
-  TStrings *FRequestHeaders;
-  TStrings *FResponseHeaders;
+  std::unique_ptr<TStrings> FRequestHeaders;
+  std::unique_ptr<TStrings> FResponseHeaders;
 
   static int NeonBodyReader(void *UserData, const char *Buf, size_t Len);
   int NeonBodyReaderImpl(const char *Buf, size_t Len);

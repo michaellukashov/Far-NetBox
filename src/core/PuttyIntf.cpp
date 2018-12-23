@@ -158,8 +158,8 @@ int GetUserpassInput(prompts_t *p, const uint8_t * /*in*/, int /*inlen*/)
     return -1;
 
   int Result;
-  std::unique_ptr<TStrings> Prompts(new TStringList());
-  std::unique_ptr<TStrings> Results(new TStringList());
+  std::unique_ptr<TStrings> Prompts(std::make_unique<TStringList>());
+  std::unique_ptr<TStrings> Results(std::make_unique<TStringList>());
   try__finally
   {
     UnicodeString Name = UTF8ToString(p->name);
@@ -957,7 +957,7 @@ bool IsOpenSSH(const UnicodeString & SshImplementation)
 //---------------------------------------------------------------------------
 TStrings * SshCipherList()
 {
-  std::unique_ptr<TStrings> Result(new TStringList());
+  std::unique_ptr<TStrings> Result(std::make_unique<TStringList>());
   // Same order as DefaultCipherList
   const ssh2_ciphers * Ciphers[] = { &ssh2_aes, &ssh2_ccp, &ssh2_blowfish, &ssh2_3des, &ssh2_arcfour, &ssh2_des };
   for (unsigned int Index = 0; Index < LENOF(Ciphers); Index++)
@@ -973,7 +973,7 @@ TStrings * SshCipherList()
 //---------------------------------------------------------------------------
 TStrings * SshKexList()
 {
-  std::unique_ptr<TStrings> Result(new TStringList());
+  std::unique_ptr<TStrings> Result(std::make_unique<TStringList>());
   // Same order as DefaultKexList
   const ssh_kexes * Kexes[] = { &ssh_ecdh_kex, &ssh_diffiehellman_gex, &ssh_diffiehellman_group14, &ssh_rsa_kex, &ssh_diffiehellman_group1 };
   for (unsigned int Index = 0; Index < LENOF(Kexes); Index++)
@@ -989,7 +989,7 @@ TStrings * SshKexList()
 //---------------------------------------------------------------------------
 TStrings * SshHostKeyList()
 {
-  std::unique_ptr<TStrings> Result(new TStringList());
+  std::unique_ptr<TStrings> Result(std::make_unique<TStringList>());
   const int MaxCount = 10;
   const ssh_signkey * SignKeys[MaxCount];
   int Count = LENOF(SignKeys);
@@ -1006,7 +1006,7 @@ TStrings * SshHostKeyList()
 //---------------------------------------------------------------------------
 TStrings * SshMacList()
 {
-  std::unique_ptr<TStrings> Result(new TStringList());
+  std::unique_ptr<TStrings> Result(std::make_unique<TStringList>());
   const struct ssh_mac ** Macs = NULL;
   int Count = 0;
   get_macs(&Count, &Macs);

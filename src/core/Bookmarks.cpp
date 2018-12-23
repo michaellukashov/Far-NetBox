@@ -80,7 +80,7 @@ void TBookmarks::Load(THierarchicalStorage *Storage)
 void TBookmarks::LoadLevel(THierarchicalStorage *Storage, const UnicodeString Key,
   intptr_t AIndex, TBookmarkList *BookmarkList)
 {
-  std::unique_ptr<TStrings> Names(new TStringList());
+  std::unique_ptr<TStrings> Names(std::make_unique<TStringList>());
   try__finally
   {
     Storage->GetValueNames(Names.get());
@@ -271,7 +271,7 @@ void TBookmarks::SetSharedBookmarks(TBookmarkList *Value)
 //---------------------------------------------------------------------------
 TBookmarkList::TBookmarkList() :
   TPersistent(OBJECT_CLASS_TBookmarkList),
-  FBookmarks(new TStringList()),
+  FBookmarks(std::make_unique<TStringList>()),
   FOpenedNodes(CreateSortedStringList()),
   FModified(false)
 {

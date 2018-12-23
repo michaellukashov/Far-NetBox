@@ -518,7 +518,9 @@ public:
   __property bool Right[TRight Right] = { read = GetRight, write = SetRight };
   __property TState RightUndef[TRight Right] = { read = GetRightUndef, write = SetRightUndef };
   __property UnicodeString Text = { read = GetText, write = SetText };
+  RWProperty<UnicodeString> Text{nb::bind(&TRights::GetText, this), nb::bind(&TRights::SetText, this)};
   __property bool Unknown = { read = FUnknown };
+  const bool& Unknown{FUnknown};
 
 private:
   UnicodeString FText;

@@ -1107,7 +1107,7 @@ void TSCPFileSystem::ReadDirectory(TRemoteFileList *FileList)
       {
         // Copy LS command output, because eventual symlink analysis would
         // modify FTerminal->Output
-        std::unique_ptr<TStringList> OutputCopy(new TStringList());
+        std::unique_ptr<TStringList> OutputCopy(std::make_unique<TStringList>());
         try__finally
         {
           OutputCopy->Assign(FOutput);
@@ -2092,7 +2092,7 @@ void TSCPFileSystem::SCPDirectorySource(const UnicodeString DirectoryName,
       CopyParam, base::ExtractFileName(DirectoryName, false), osLocal, Level == 0);
 
   // Get directory attributes
-  FileOperationLoopCustom(FTerminal, OperationProgress, folAllowSkip, 
+  FileOperationLoopCustom(FTerminal, OperationProgress, folAllowSkip,
     FMTLOAD(CANT_GET_ATTRS, DirectoryName), "",
   [&]()
   {
@@ -2177,7 +2177,7 @@ void TSCPFileSystem::SCPDirectorySource(const UnicodeString DirectoryName,
       }
       else if (CopyParam->GetClearArchive() && FLAGSET(LocalFileAttrs, faArchive))
       {
-        FileOperationLoopCustom(FTerminal, OperationProgress, folAllowSkip, 
+        FileOperationLoopCustom(FTerminal, OperationProgress, folAllowSkip,
           FMTLOAD(CANT_SET_ATTRS, DirectoryName), "",
         [&]()
         {
@@ -2754,7 +2754,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString TargetDir,
           DWORD NewAttrs = CopyParam->LocalFileAttrs(FileData.RemoteRights);
           if ((NewAttrs & FileData.LocalFileAttrs) != NewAttrs)
           {
-            FileOperationLoopCustom(FTerminal, OperationProgress, folAllowSkip, 
+            FileOperationLoopCustom(FTerminal, OperationProgress, folAllowSkip,
               FMTLOAD(CANT_SET_ATTRS, DestFileName), "",
             [&]()
             {

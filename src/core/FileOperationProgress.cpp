@@ -11,13 +11,13 @@ constexpr int64_t TRANSFER_BUF_SIZE = (32 * 1024);
 //---------------------------------------------------------------------------
 TFileOperationStatistics::TFileOperationStatistics()
 {
-  // memset(this, 0, sizeof(*this));
+  __removed memset(this, 0, sizeof(*this));
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 TFileOperationProgressType::TPersistence::TPersistence()
 {
-  FStatistics = NULL;
+  FStatistics = nullptr;
   Clear(true, true);
 }
 //---------------------------------------------------------------------------
@@ -343,13 +343,13 @@ void TFileOperationProgressType::Finish(const UnicodeString AFileName,
   DoProgress();
 }
 //---------------------------------------------------------------------------
-void TFileOperationProgressType::Succeeded(int Count)
+void TFileOperationProgressType::Succeeded(intptr_t Count)
 {
-  if (FPersistence.Statistics != NULL)
+  if (FPersistence.Statistics != nullptr)
   {
     if ((Operation == foCopy) || (Operation == foMove))
     {
-      __int64 Transferred = FTransferredSize - FSkippedSize;
+      int64_t Transferred = FTransferredSize - FSkippedSize;
       if (Side == osLocal)
       {
         FPersistence.Statistics->FilesUploaded += Count;

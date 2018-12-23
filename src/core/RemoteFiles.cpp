@@ -1153,7 +1153,7 @@ void TRemoteFileList::AddFiles(const TRemoteFileList *AFileList)
 //---------------------------------------------------------------------------
 TStrings *TRemoteFileList::CloneStrings(TStrings *List)
 {
-  std::unique_ptr<TStringList> Result(new TStringList());
+  std::unique_ptr<TStringList> Result(std::make_unique<TStringList>());
   Result->SetOwnsObjects(true);
   for (intptr_t Index = 0; Index < List->GetCount(); Index++)
   {
@@ -1601,7 +1601,7 @@ void TRemoteDirectoryChangesCache::Serialize(UnicodeString &Data) const
   intptr_t ACount = GetCount();
   if (ACount > FMaxSize)
   {
-    std::unique_ptr<TStrings> Limited(new TStringList());
+    std::unique_ptr<TStrings> Limited(std::make_unique<TStringList>());
     try__finally
     {
       intptr_t Index = ACount - FMaxSize;

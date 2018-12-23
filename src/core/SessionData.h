@@ -769,6 +769,7 @@ public:
   __property TAutoSwitch NotUtf = { read = FNotUtf, write = SetNotUtf };
   __property int InternalEditorEncoding = { read = FInternalEditorEncoding, write = SetInternalEditorEncoding };
   __property UnicodeString S3DefaultRegion = { read = FS3DefaultRegion, write = SetS3DefaultRegion };
+  RWProperty<UnicodeString> S3DefaultRegion{nb::bind(&TSessionData::GetS3DefaultRegion, this), nb::bind(&TSessionData::SetS3DefaultRegion, this)};
   __property bool IsWorkspace = { read = FIsWorkspace, write = SetIsWorkspace };
   __property UnicodeString Link = { read = FLink, write = SetLink };
   __property UnicodeString NameOverride = { read = FNameOverride, write = SetNameOverride };
@@ -921,6 +922,7 @@ public:
   UnicodeString GetS3DefaultRegion() const { return FS3DefaultRegion; }
   bool GetIsWorkspace() const { return FIsWorkspace; }
   UnicodeString GetLink() const { return FLink; }
+  UnicodeString GetNameOverride() const { return FNameOverride; }
   UnicodeString GetHostKey() const { return FHostKey; }
   bool GetFingerprintScan() const { return FFingerprintScan; }
   bool GetOverrideCachedHostKey() const { return FOverrideCachedHostKey; }

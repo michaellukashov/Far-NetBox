@@ -80,9 +80,9 @@ protected:
   void SetModified(bool Value) { FModified = Value; }
 
 private:
-  TStringList *FBookmarks;
-  TStringList *FOpenedNodes;
-  bool FModified;
+  std::unique_ptr<TStringList> FBookmarks;
+  std::unique_ptr<TStringList> FOpenedNodes;
+  bool FModified{false};
 
 public:
   intptr_t GetCount() const;

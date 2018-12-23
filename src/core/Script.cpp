@@ -1077,7 +1077,7 @@ void TScript::CopyParamParams(TCopyParamType & CopyParam, TScriptProcParams * Pa
     CopyParam.NewerOnly = true;
   }
 
-  std::unique_ptr<TStrings> RawSettings(new TStringList());
+  std::unique_ptr<TStrings> RawSettings(std::make_unique<TStringList>());
   if (Parameters->FindSwitch(RAWTRANSFERSETTINGS_SWITCH, RawSettings.get()))
   {
     std::unique_ptr<TOptionsStorage> OptionsStorage(new TOptionsStorage(RawSettings.get(), false));
@@ -1202,7 +1202,7 @@ void TScript::ChecksumProc(TScriptProcParams * Parameters)
   }
 
   UnicodeString Alg = Parameters->Param[1];
-  std::unique_ptr<TStrings> Checksums(new TStringList());
+  std::unique_ptr<TStrings> Checksums(std::make_unique<TStringList>());
   TStrings * FileList = CreateFileList(Parameters, 2, 2, fltQueryServer);
   FTerminal->ExceptionOnFail = true;
   try

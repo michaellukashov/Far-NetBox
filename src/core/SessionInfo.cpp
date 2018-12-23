@@ -125,8 +125,8 @@ public:
     FState(Opened),
     FRecursive(false),
     FErrorMessages(nullptr),
-    FNames(new TStringList()),
-    FValues(new TStringList()),
+    FNames(std::make_unique<TStringList>()),
+    FValues(std::make_unique<TStringList>()),
     FFileList(nullptr),
     FFile(nullptr)
   {
@@ -136,8 +136,8 @@ public:
   ~TSessionActionRecord()
   {
     SAFE_DESTROY(FErrorMessages);
-    SAFE_DESTROY(FNames);
-    SAFE_DESTROY(FValues);
+//    SAFE_DESTROY(FNames);
+//    SAFE_DESTROY(FValues);
     SAFE_DESTROY(FFileList);
     SAFE_DESTROY(FFile);
   }
@@ -464,8 +464,8 @@ private:
   TState FState{};
   bool FRecursive{false};
   TStrings *FErrorMessages{nullptr};
-  TStrings *FNames{nullptr};
-  TStrings *FValues{nullptr};
+  std::unique_ptr<TStrings> FNames{nullptr};
+  std::unique_ptr<TStrings> FValues{nullptr};
   TRemoteFileList *FFileList{nullptr};
   TRemoteFile *FFile{nullptr};
 };

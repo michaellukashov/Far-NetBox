@@ -540,7 +540,7 @@ void TConfiguration::Load(THierarchicalStorage * Storage)
 void TConfiguration::CopyData(THierarchicalStorage * Source,
   THierarchicalStorage * Target)
 {
-  std::unique_ptr<TStrings> Names(new TStringList());
+  std::unique_ptr<TStrings> Names(std::make_unique<TStringList>());
   try__finally
   {
     if (Source->OpenSubKey(GetConfigurationSubKey(), false))
@@ -1334,7 +1334,7 @@ void TConfiguration::SetOptionsStorage(TStrings * Value)
   volatile TGuard Guard(FCriticalSection);
   if (FOptionsStorage.get() == nullptr)
   {
-    FOptionsStorage.reset(new TStringList());
+    FOptionsStorage = std::make_unique<TStringList>());
   }
   FOptionsStorage->AddStrings(Value);
 }
@@ -1515,7 +1515,7 @@ TStoredSessionList * TConfiguration::SelectKnownHostsSessionsForImport(
   {
     if (::SysUtulsFileExists(ApiPath(KnownHostsFile)))
     {
-      std::unique_ptr<TStrings> Lines(new TStringList());
+      std::unique_ptr<TStrings> Lines(std::make_unique<TStringList>());
       __removed LoadScriptFromFile(KnownHostsFile, Lines.get());
       ImportSessionList->ImportFromKnownHosts(Lines.get());
     }

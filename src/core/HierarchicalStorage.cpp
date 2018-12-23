@@ -104,7 +104,7 @@ UnicodeString UnMungeIniName(const UnicodeString Str)
 //===========================================================================
 THierarchicalStorage::THierarchicalStorage(const UnicodeString AStorage) :
   FStorage(AStorage),
-  FKeyHistory(new TStringList())
+  FKeyHistory(std::make_unique<TStringList>())
 {
   SetAccessMode(smRead);
   SetExplicit(false);
@@ -209,7 +209,7 @@ void THierarchicalStorage::CloseAll()
 //---------------------------------------------------------------------------
 void THierarchicalStorage::ClearSubKeys()
 {
-  std::unique_ptr<TStringList> SubKeys(new TStringList());
+  std::unique_ptr<TStringList> SubKeys(std::make_unique<TStringList>());
   try__finally
   {
     GetSubKeyNames(SubKeys.get());
@@ -237,7 +237,7 @@ void THierarchicalStorage::RecursiveDeleteSubKey(const UnicodeString Key)
 bool THierarchicalStorage::HasSubKeys()
 {
   bool Result;
-  std::unique_ptr<TStrings> SubKeys(new TStringList());
+  std::unique_ptr<TStrings> SubKeys(std::make_unique<TStringList>());
   try__finally
   {
     GetSubKeyNames(SubKeys.get());
@@ -268,7 +268,7 @@ bool THierarchicalStorage::KeyExists(const UnicodeString SubKey)
 void THierarchicalStorage::ReadValues(TStrings *Strings,
   bool MaintainKeys)
 {
-  std::unique_ptr<TStrings> Names(new TStringList());
+  std::unique_ptr<TStrings> Names(std::make_unique<TStringList>());
   try__finally
   {
     GetValueNames(Names.get());
@@ -293,7 +293,7 @@ void THierarchicalStorage::ReadValues(TStrings *Strings,
 //---------------------------------------------------------------------------
 void THierarchicalStorage::ClearValues()
 {
-  std::unique_ptr<TStrings> Names(new TStringList());
+  std::unique_ptr<TStrings> Names(std::make_unique<TStringList>());
   try__finally
   {
     GetValueNames(Names.get());
@@ -448,7 +448,7 @@ bool TRegistryStorage::Copy(TRegistryStorage *Storage)
 {
   TRegistry *Registry = Storage->FRegistry;
   bool Result = true;
-  std::unique_ptr<TStrings> Names(new TStringList());
+  std::unique_ptr<TStrings> Names(std::make_unique<TStringList>());
   try__finally
   {
     rde::vector<uint8_t> Buffer(1024);
@@ -748,7 +748,7 @@ void TCustomIniFileStorage::CacheSections()
 {
   if (FSections.get() == nullptr)
   {
-    FSections.reset(new TStringList());
+    FSections.reset(std::make_unique<TStringList>());
     FIniFile->ReadSections(FSections.get());
     FSections->Sorted = true; // has to set only after reading as ReadSections reset it to false
   }

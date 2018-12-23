@@ -41,13 +41,13 @@ enum TBatchOverwrite
 
 #if 0
 typedef void (__closure *TFileOperationProgressEvent)
-(TFileOperationProgressType &ProgressData);
+  (TFileOperationProgressType &ProgressData);
 #endif
 typedef nb::FastDelegate1<void,
   TFileOperationProgressType & /*ProgressData*/> TFileOperationProgressEvent;
 #if 0
 typedef void (__closure *TFileOperationFinished)
-(TFileOperation Operation, TOperationSide Side, bool Temp,
+  (TFileOperation Operation, TOperationSide Side, bool Temp,
   const UnicodeString &FileName, bool Success, TOnceDoneOperation &OnceDoneOperation);
 #endif
 typedef nb::FastDelegate6<void,
@@ -55,7 +55,7 @@ typedef nb::FastDelegate6<void,
   UnicodeString /*FileName*/, bool /*Success*/,
   TOnceDoneOperation & /*OnceDoneOperation*/> TFileOperationFinishedEvent;
 //---------------------------------------------------------------------------
-class TFileOperationStatistics
+class TFileOperationStatistics : public TObject
 {
 public:
   TFileOperationStatistics();
@@ -198,16 +198,22 @@ public:
   // bytes transferred
   __property int64_t TotalTransferred = { read = GetTotalTransferred };
   __property __int64 OperationTransferred = { read = GetOperationTransferred };
+  ROProperty<int64_t> OperationTransferred{nb::bind(&TFileOperationProgressType::GetOperationTransferred, this)};
   __property __int64 TotalSize = { read = GetTotalSize };
+  ROProperty<int64_t> TotalSize{nb::bind(&TFileOperationProgressType::GetTotalSize, this)};
   __property int FilesFinishedSuccessfully = { read = FFilesFinishedSuccessfully };
+  const intptr_t& FilesFinishedSuccessfully{FFilesFinishedSuccessfully};
 
   __property TBatchOverwrite BatchOverwrite = { read = GetBatchOverwrite };
   __property bool SkipToAll = { read = GetSkipToAll };
   __property uintptr_t CPSLimit = { read = GetCPSLimit };
+  ROProperty<intptr_t> CPSLimit{nb::bind(&TFileOperationProgressType::GetCPSLimit, this)};
 
   __property bool TotalSizeSet = { read = FTotalSizeSet };
+  const bool& TotalSizeSet{FTotalSizeSet};
 
   __property bool Suspended = { read = FSuspended };
+  const bool& Suspended{FSuspended};
 
   TFileOperationProgressType();
   explicit TFileOperationProgressType(
@@ -224,7 +230,7 @@ public:
   uintptr_t CPS() const;
   void Finish(const UnicodeString AFileName, bool Success,
     TOnceDoneOperation &OnceDoneOperation);
-  void Succeeded(int Count = 1);
+  void Succeeded(intptr_t Count = 1);
   void Progress();
   int64_t LocalBlockSize();
   bool IsLocallyDone() const;
