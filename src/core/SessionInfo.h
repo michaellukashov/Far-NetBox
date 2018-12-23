@@ -142,7 +142,7 @@ public:
   void Cancel();
 
 protected:
-  TSessionActionRecord *FRecord;
+  TSessionActionRecord *FRecord{nullptr};
 };
 //---------------------------------------------------------------------------
 class NB_CORE_EXPORT TFileSessionAction : public TSessionAction
@@ -308,19 +308,19 @@ protected:
   bool LogToFileProtected() const;
 
 private:
-  TConfiguration *FConfiguration;
-  TSessionLog *FParent;
+  TConfiguration *FConfiguration{nullptr};
+  TSessionLog *FParent{nullptr};
   TCriticalSection FCriticalSection;
-  bool FLogging;
+  bool FLogging{false};
   tinylog::TinyLog *FLogger{nullptr};
   UnicodeString FCurrentLogFileName;
   UnicodeString FCurrentFileName;
-  int64_t FCurrentFileSize;
-  TSessionUI *FUI;
-  TSessionData *FSessionData;
+  int64_t FCurrentFileSize{0};
+  TSessionUI *FUI{nullptr};
+  TSessionData *FSessionData{nullptr};
   TDateTime FStarted;
   UnicodeString FName;
-  bool FClosed;
+  bool FClosed{false};
 
   void OpenLogFile();
   UnicodeString GetLogFileName();
@@ -381,21 +381,21 @@ protected:
     TConfiguration *Configuration);
 
 private:
-  TConfiguration *FConfiguration;
+  TConfiguration *FConfiguration{nullptr};
   TCriticalSection FCriticalSection;
-  bool FLogging;
-  tinylog::TinyLog *FLogger;
+  bool FLogging{false};
+  tinylog::TinyLog *FLogger{nullptr};
   UnicodeString FCurrentLogFileName;
   UnicodeString FCurrentFileName;
-  TSessionUI *FUI;
-  TSessionData *FSessionData;
+  TSessionUI *FUI{nullptr};
+  TSessionData *FSessionData{nullptr};
   TDateTime FStarted;
-  TList *FPendingActions;
-  bool FFailed;
-  bool FClosed;
-  bool FInGroup;
+  TList *FPendingActions{nullptr};
+  bool FFailed{false};
+  bool FClosed{false};
+  bool FInGroup{false};
   UnicodeString FIndent;
-  bool FEnabled;
+  bool FEnabled{false};
 
   void OpenLogFile();
 public:

@@ -304,6 +304,7 @@ public:
   __property int64_t LogMaxSize  = { read = FLogMaxSize, write = SetLogMaxSize };
   __property int LogMaxCount  = { read = FLogMaxCount, write = SetLogMaxCount };
   __property int LogProtocol  = { read = FLogProtocol, write = SetLogProtocol };
+  RWProperty<intptr_t> LogProtocol{nb::bind(&TConfiguration::GetLogProtocol, this), nb::bind(&TConfiguration::SetLogProtocol, this)};
   __property int ActualLogProtocol  = { read = FActualLogProtocol };
   ROProperty<intptr_t> ActualLogProtocol{nb::bind(&TConfiguration::GetActualLogProtocol, this)};
   __property bool LogActions  = { read = FLogActions, write = SetLogActions };

@@ -1,4 +1,4 @@
-
+//---------------------------------------------------------------------------
 #pragma once
 //---------------------------------------------------------------------------
 #include "Terminal.h"
@@ -23,9 +23,9 @@ public:
   bool IsFinished() const;
 
 protected:
-  HANDLE FThread;
-  TThreadID FThreadId;
-  bool FFinished;
+  HANDLE FThread{};
+  TThreadID FThreadId{};
+  bool FFinished{false};
 
   virtual void Execute() = 0;
   virtual bool Finished();
@@ -155,27 +155,27 @@ protected:
   TQueueItemUpdateEvent FOnQueueItemUpdate;
   TQueueListUpdateEvent FOnListUpdate;
   TQueueEventEvent FOnEvent;
-  TTerminal *FTerminal;
-  TConfiguration *FConfiguration;
-  TSessionData *FSessionData;
-  TList *FItems;
-  TList *FDoneItems;
-  intptr_t FItemsInProcess;
+  TTerminal *FTerminal{nullptr};
+  TConfiguration *FConfiguration{nullptr};
+  std::unique_ptr<TSessionData> FSessionData;
+  std::unique_ptr<TList> FItems;
+  std::unique_ptr<TList> FDoneItems;
+  intptr_t FItemsInProcess{0};
   TCriticalSection FItemsSection;
-  intptr_t FFreeTerminals;
-  TList *FTerminals;
-  TList *FForcedItems;
-  intptr_t FTemporaryTerminals;
-  intptr_t FOverallTerminals;
-  intptr_t FTransfersLimit;
-  intptr_t FKeepDoneItemsFor;
-  bool FEnabled;
+  intptr_t FFreeTerminals{0};
+  std::unique_ptr<TList> FTerminals;
+  std::unique_ptr<TList> FForcedItems;
+  intptr_t FTemporaryTerminals{0};
+  intptr_t FOverallTerminals{0};
+  intptr_t FTransfersLimit{0};
+  intptr_t FKeepDoneItemsFor{0};
+  bool FEnabled{false};
   TDateTime FIdleInterval;
   TDateTime FLastIdle;
 
   static TQueueItem *GetItem(TList *List, intptr_t Index);
   TQueueItem *GetItem(intptr_t Index) const;
-  void FreeItemsList(TList *&List) const;
+  void FreeItemsList(TList *List) const;
   void UpdateStatusForList(
     TTerminalQueueStatus *Status, TList *List, TTerminalQueueStatus *Current);
   bool ItemGetData(TQueueItem *Item, TQueueItemProxy *Proxy);
@@ -230,23 +230,16 @@ public:
 
   struct TInfo : public TObject
   {
-    TInfo() :
-      Operation(foNone),
-      Side(osLocal),
-      SingleFile(false),
-      Primary(false),
-      GroupToken(nullptr)
-    {
-    }
-    TFileOperation Operation;
-    TOperationSide Side;
+    TInfo() = default;
+    TFileOperation Operation{foNone};
+    TOperationSide Side{osLocal};
     UnicodeString Source;
     UnicodeString Destination;
     UnicodeString ModifiedLocal;
     UnicodeString ModifiedRemote;
-    bool SingleFile;
-    bool Primary;
-    void *GroupToken;
+    bool SingleFile{false};
+    bool Primary{false};
+    void *GroupToken{nullptr};
   };
 
   static bool IsUserActionStatus(TQueueItem::TStatus Status);
@@ -260,13 +253,13 @@ public:
 protected:
   TStatus FStatus;
   TCriticalSection FSection;
-  TTerminalItem *FTerminalItem;
-  TFileOperationProgressType *FProgressData;
-  TQueueItem::TInfo *FInfo;
-  TTerminalQueue *FQueue;
-  HANDLE FCompleteEvent;
-  intptr_t FCPSLimit;
-  TDateTime FDoneAt;
+  TTerminalItem *FTerminalItem{nullptr};
+  TFileOperationProgressType *FProgressData{nullptr};
+  std::unique_ptr<TQueueItem::TInfo> FInfo;
+  TTerminalQueue *FQueue{nullptr};
+  HANDLE FCompleteEvent{};
+  intptr_t FCPSLimit{0};
+  TDateTime FDoneAt{};
 
   explicit TQueueItem(TObjectClassId Kind);
   virtual ~TQueueItem();
@@ -319,7 +312,7 @@ public:
   __property int Index = { read = GetIndex };
   __property void *UserData = { read = FUserData, write = FUserData };
 
-  TQueueItem::TInfo *GetInfo() const { return FInfo; }
+  TQueueItem::TInfo *GetInfo() const { return FInfo.get(); }
   TQueueItem::TStatus GetStatus() const { return FStatus; }
   bool GetProcessingUserAction() const { return FProcessingUserAction; }
   void *GetUserData() const { return FUserData; }
@@ -328,14 +321,14 @@ public:
   void SetMasks(const UnicodeString Value);
 
 private:
-  TFileOperationProgressType *FProgressData;
-  TQueueItem::TStatus FStatus;
-  TTerminalQueue *FQueue;
-  TQueueItem *FQueueItem;
-  TTerminalQueueStatus *FQueueStatus;
-  TQueueItem::TInfo *FInfo;
-  bool FProcessingUserAction;
-  void *FUserData;
+  std::unique_ptr<TFileOperationProgressType> FProgressData;
+  TQueueItem::TStatus FStatus{};
+  TTerminalQueue *FQueue{nullptr};
+  TQueueItem *FQueueItem{nullptr};
+  TTerminalQueueStatus *FQueueStatus{nullptr};
+  std::unique_ptr<TQueueItem::TInfo> FInfo;
+  bool FProcessingUserAction{false};
+  void *FUserData{nullptr};
 
   explicit TQueueItemProxy(TTerminalQueue *Queue, TQueueItem *QueueItem);
   virtual ~TQueueItemProxy();
@@ -375,11 +368,11 @@ protected:
   void NeedStats() const;
 
 private:
-  TList *FList;
-  intptr_t FDoneCount;
-  mutable intptr_t FActiveCount;
-  mutable intptr_t FActivePrimaryCount;
-  mutable intptr_t FActiveAndPendingPrimaryCount;
+  std::unique_ptr<TList> FList;
+  intptr_t FDoneCount{0};
+  mutable intptr_t FActiveCount{0};
+  mutable intptr_t FActivePrimaryCount{0};
+  mutable intptr_t FActiveAndPendingPrimaryCount{0};
 
 public:
   intptr_t GetCount() const;
@@ -388,17 +381,25 @@ public:
   intptr_t GetActivePrimaryCount() const;
   intptr_t GetActiveAndPendingPrimaryCount() const;
   intptr_t GetDoneCount() const { return FDoneCount; }
+  void SetDoneCount(intptr_t Value);
+  TQueueItemProxy * GetItem(intptr_t Index);
+  TQueueItemProxy * GetItem(intptr_t Index) const;
 };
 //---------------------------------------------------------------------------
+NB_DEFINE_CLASS_ID(TBootstrapQueueItem);
 class TBootstrapQueueItem : public TQueueItem
 {
 public:
-  __fastcall TBootstrapQueueItem();
+  static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TBootstrapQueueItem); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TBootstrapQueueItem) || TQueueItem::is(Kind); }
+public:
+  TBootstrapQueueItem();
+  explicit TBootstrapQueueItem(TObjectClassId Kind);
 
 protected:
-  virtual void __fastcall DoExecute(TTerminal * Terminal);
-  virtual UnicodeString __fastcall StartupDirectory() const;
-  virtual bool __fastcall Complete();
+  virtual void DoExecute(TTerminal * Terminal);
+  virtual UnicodeString StartupDirectory() const;
+  virtual bool Complete();
 };
 //---------------------------------------------------------------------------
 NB_DEFINE_CLASS_ID(TLocatedQueueItem);
@@ -436,13 +437,13 @@ public:
   virtual ~TTransferQueueItem();
 
 protected:
-  TStrings *FFilesToCopy;
+  std::unique_ptr<TStrings> FFilesToCopy;
   UnicodeString FTargetDir;
-  TCopyParamType *FCopyParam;
-  intptr_t FParams;
-  bool FParallel;
-  DWORD FLastParallelOperationAdded;
-  TParallelOperation *FParallelOperation;
+  TCopyParamType *FCopyParam{nullptr};
+  intptr_t FParams{0};
+  bool FParallel{false};
+  DWORD FLastParallelOperationAdded{false};
+  TParallelOperation *FParallelOperation{nullptr};
 
   virtual intptr_t DefaultCPSLimit() const override;
   virtual void DoExecute(TTerminal *Terminal) override;
@@ -465,9 +466,7 @@ public:
   explicit TUploadQueueItem(TTerminal *Terminal,
     const TStrings *AFilesToCopy, const UnicodeString ATargetDir,
     const TCopyParamType *CopyParam, intptr_t Params, bool SingleFile, bool Parallel);
-  virtual ~TUploadQueueItem()
-  {
-  }
+  virtual ~TUploadQueueItem() = default;
 
 protected:
   virtual void DoTransferExecute(TTerminal *Terminal, TParallelOperation *ParallelOperation) override;
@@ -483,9 +482,7 @@ public:
   explicit TDownloadQueueItem(TTerminal *Terminal,
     const TStrings *AFilesToCopy, const UnicodeString ATargetDir,
     const TCopyParamType *CopyParam, intptr_t Params, bool SingleFile, bool Parallel);
-  virtual ~TDownloadQueueItem()
-  {
-  }
+  virtual ~TDownloadQueueItem() = default;
 
 protected:
   virtual void DoTransferExecute(TTerminal *Terminal, TParallelOperation *ParallelOperation) override;
@@ -521,7 +518,7 @@ protected:
   virtual bool Finished();
 
 private:
-  TTerminal *FTerminal;
+  TTerminal *FTerminal{nullptr};
 
   TInformationEvent FOnInformation;
   TQueryUserEvent FOnQueryUser;
@@ -536,20 +533,20 @@ private:
 
   TNotifyEvent FOnIdle;
 
-  TNotifyEvent FAction;
-  HANDLE FActionEvent;
-  TUserAction *FUserAction;
+  TNotifyEvent FAction{};
+  HANDLE FActionEvent{};
+  TUserAction *FUserAction{nullptr};
 
-  Exception *FException;
-  Exception *FIdleException;
-  bool FCancel;
+  Exception *FException{nullptr};
+  Exception *FIdleException{nullptr};
+  bool FCancel{false};
   TDateTime FCancelAfter;
-  bool FAbandoned;
-  bool FCancelled;
-  bool FPendingIdle;
-  bool FAllowAbandon;
+  bool FAbandoned{false};
+  bool FCancelled{false};
+  bool FPendingIdle{false};
+  bool FAllowAbandon{false};
 
-  DWORD FMainThread;
+  DWORD FMainThread{0};
   TCriticalSection FSection;
 
   void WaitForUserAction(TUserAction *UserAction);

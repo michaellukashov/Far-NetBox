@@ -8355,7 +8355,7 @@ typename TTerminal::TEncryptedFileNames::const_iterator TTerminal::GetEncryptedF
     {
       delete DoReadDirectoryListing(FileDir, true);
     }
-    catch (Exception & E)
+    catch (Exception & /*E*/)
     {
       if (!Active)
       {

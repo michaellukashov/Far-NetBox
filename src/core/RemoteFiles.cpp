@@ -2686,7 +2686,7 @@ int TSynchronizeProgress::Progress(const TFileOperationProgressType * CurrentIte
   int Result;
   if (FTotalSize > 0)
   {
-    Result = (Processed * 100) / FTotalSize;
+    Result = (int)((Processed * 100) / FTotalSize);
   }
   else
   {

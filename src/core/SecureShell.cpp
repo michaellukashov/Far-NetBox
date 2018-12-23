@@ -1269,7 +1269,7 @@ UnicodeString TSecureShell::ConvertInput(RawByteString Input, uintptr_t CodePage
 //---------------------------------------------------------------------------
 void TSecureShell::SendSpecial(intptr_t Code)
 {
-  if (Configuration->ActualLogProtocol >= 0)
+  if (GetConfiguration()->ActualLogProtocol >= 0)
   {
     LogEvent(FORMAT("Sending special code: %d", Code));
   }

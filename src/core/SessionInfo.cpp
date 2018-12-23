@@ -315,36 +315,36 @@ public:
     FFile = AFile->Duplicate(true);
   }
 
-  void __fastcall SynchronizeChecklistItem(const TSynchronizeChecklist::TItem * Item)
+  void SynchronizeChecklistItem(const TChecklistItem* Item)
   {
     UnicodeString Action;
     bool RecordLocal = false;
     bool RecordRemote = false;
     switch (Item->Action)
     {
-      case TSynchronizeChecklist::saUploadNew:
+      case TChecklistAction::saUploadNew:
         Action = L"uploadnew";
         RecordLocal = true;
         break;
-      case TSynchronizeChecklist::saDownloadNew:
+      case TChecklistAction::saDownloadNew:
         Action = L"downloadnew";
         RecordRemote = true;
         break;
-      case TSynchronizeChecklist::saUploadUpdate:
+      case TChecklistAction::saUploadUpdate:
         Action = L"uploadupdate";
         RecordLocal = true;
         RecordRemote = true;
         break;
-      case TSynchronizeChecklist::saDownloadUpdate:
+      case TChecklistAction::saDownloadUpdate:
         Action = L"downloadupdate";
         RecordLocal = true;
         RecordRemote = true;
         break;
-      case TSynchronizeChecklist::saDeleteRemote:
+      case TChecklistAction::saDeleteRemote:
         Action = L"deleteremote";
         RecordRemote = true;
         break;
-      case TSynchronizeChecklist::saDeleteLocal:
+      case TChecklistAction::saDeleteLocal:
         Action = L"deletelocal";
         RecordLocal = true;
         break;
@@ -358,12 +358,12 @@ public:
     if (RecordLocal)
     {
       UnicodeString FileName = TPath::Combine(Item->Local.Directory, Item->Local.FileName);
-      SynchronizeChecklistItemFileInfo(FileName, Item->IsDirectory, Item->Local);
+      __removed SynchronizeChecklistItemFileInfo(FileName, Item->IsDirectory, Item->Local);
     }
     if (RecordRemote)
     {
-      UnicodeString FileName = UnixCombinePaths(Item->Remote.Directory, Item->Remote.FileName);
-      SynchronizeChecklistItemFileInfo(FileName, Item->IsDirectory, Item->Remote);
+      UnicodeString FileName = base::UnixCombinePaths(Item->Remote.Directory, Item->Remote.FileName);
+      __removed SynchronizeChecklistItemFileInfo(FileName, Item->IsDirectory, Item->Remote);
     }
   }
 
@@ -441,10 +441,9 @@ protected:
     }
     FLog->AddIndented(AIndent + L"</file>");
   }
-#endif // #if 0
 
-  void __fastcall SynchronizeChecklistItemFileInfo(
-    const UnicodeString & AFileName, bool IsDirectory, const TSynchronizeChecklist::TItem::TFileInfo FileInfo)
+  void SynchronizeChecklistItemFileInfo(
+    const UnicodeString & AFileName, bool IsDirectory, const TChecklistItem::TFileInfo FileInfo)
   {
     Parameter(L"type", XmlAttributeEscape(IsDirectory ? L'D' : L'-'));
     FileName(XmlAttributeEscape(AFileName));
@@ -457,21 +456,20 @@ protected:
       Modification(FileInfo.Modification);
     }
   }
+#endif // #if 0
 
 private:
-  TActionLog *FLog;
-  TLogAction FAction;
-  TState FState;
-  bool FRecursive;
-  TStrings *FErrorMessages;
-  TStrings *FNames;
-  TStrings *FValues;
-  TRemoteFileList *FFileList;
-  TRemoteFile *FFile;
+  TActionLog *FLog{nullptr};
+  TLogAction FAction{};
+  TState FState{};
+  bool FRecursive{false};
+  TStrings *FErrorMessages{nullptr};
+  TStrings *FNames{nullptr};
+  TStrings *FValues{nullptr};
+  TRemoteFileList *FFileList{nullptr};
+  TRemoteFile *FFile{nullptr};
 };
-#if 0
-#pragma warn .inl
-#endif // #if 0
+__removed #pragma warn .inl
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 TSessionAction::TSessionAction(TActionLog *Log, TLogAction Action)
@@ -511,7 +509,7 @@ void TSessionAction::Commit()
     Record->Commit();
   }
 }
-
+//---------------------------------------------------------------------------
 void TSessionAction::Rollback(Exception *E)
 {
   if (FRecord != nullptr)
@@ -744,7 +742,7 @@ TCwdSessionAction::TCwdSessionAction(TActionLog *Log, const UnicodeString Path) 
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-__fastcall TDifferenceSessionAction::TDifferenceSessionAction(TActionLog * Log, const TChecklistItem* Item) :
+TDifferenceSessionAction::TDifferenceSessionAction(TActionLog * Log, const TChecklistItem* Item) :
   TSessionAction(Log, laDifference)
 {
   if (FRecord != NULL)
@@ -754,12 +752,15 @@ __fastcall TDifferenceSessionAction::TDifferenceSessionAction(TActionLog * Log, 
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
+TSessionInfo::TSessionInfo()
 {
+  LoginTime = Now();
   CertificateVerifiedManually = false;
 }
 //---------------------------------------------------------------------------
 TFileSystemInfo::TFileSystemInfo()
 {
+  __removed memset(&IsCapable, false, sizeof(IsCapable));
   ClearArray(IsCapable);
 }
 //---------------------------------------------------------------------------
@@ -802,6 +803,7 @@ TSessionLog::~TSessionLog()
   FClosed = true;
   ReflectSettings();
   DebugAssert(FLogger == nullptr);
+  __removed delete FCriticalSection;
 }
 //---------------------------------------------------------------------------
 void TSessionLog::SetParent(TSessionLog *AParent, const UnicodeString AName)
@@ -982,6 +984,7 @@ void TSessionLog::ReflectSettings()
   {
     CheckSize(0);
   }
+
 }
 //---------------------------------------------------------------------------
 bool TSessionLog::LogToFileProtected() const
