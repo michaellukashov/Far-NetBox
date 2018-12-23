@@ -3132,7 +3132,7 @@ UnicodeString ExtractFileBaseName(const UnicodeString APath)
 //---------------------------------------------------------------------------
 TStringList *TextToStringList(const UnicodeString Text)
 {
-  std::unique_ptr<TStringList> List(new TStringList());
+  std::unique_ptr<TStringList> List(std::make_unique<TStringList>());
   List->SetText(Text);
   return List.release();
 }
@@ -3153,7 +3153,7 @@ UnicodeString StringsToText(TStrings *Strings)
 //---------------------------------------------------------------------------
 TStrings *CloneStrings(TStrings *Strings)
 {
-  std::unique_ptr<TStringList> List(new TStringList());
+  std::unique_ptr<TStringList> List(std::make_unique<TStringList>());
   List->AddStrings(Strings);
   return List.release();
 }
@@ -3203,11 +3203,11 @@ intptr_t ParseShortEngMonthName(const UnicodeString MonthStr)
 //---------------------------------------------------------------------------
 TStringList *CreateSortedStringList(bool CaseSensitive, TDuplicatesEnum Duplicates)
 {
-  TStringList *Result = new TStringList();
+  std::unique_ptr<TStringList> Result = std::make_unique<TStringList>();
   Result->SetCaseSensitive(CaseSensitive);
   Result->SetSorted(true);
   Result->SetDuplicates(Duplicates);
-  return Result;
+  return Result.release();
 }
 //---------------------------------------------------------------------------
 static UnicodeString NormalizeIdent(const UnicodeString Ident)
@@ -4042,7 +4042,7 @@ UnicodeString NormalizeString(const UnicodeString & S)
 TStrings * TlsCipherList()
 {
   // OpenSSL initialization happens in NeonInitialize
-  std::unique_ptr<TStrings> Result(new TStringList());
+  std::unique_ptr<TStrings> Result(std::make_unique<TStringList>());
   const SSL_METHOD * Method = TLSv1_client_method();
   SSL_CTX * Ctx = SSL_CTX_new(Method);
   SSL * Ssl = SSL_new(Ctx);
