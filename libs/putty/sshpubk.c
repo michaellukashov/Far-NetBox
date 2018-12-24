@@ -1029,7 +1029,7 @@ unsigned char *rfc4716_loadpub(FILE *fp, char **algorithm,
 }
 
 #ifdef MPEXT
-unsigned char *openssh_loadpub_line(char * aline, char **algorithm,
+unsigned char *openssh_loadpub_line(const char * aline, char **algorithm,
 #else
 unsigned char *openssh_loadpub_line(FILE *fp, char **algorithm,
 #endif

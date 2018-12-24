@@ -786,7 +786,7 @@ char *ssh2_fingerprint(const struct ssh_signkey *alg, void *data);
 int key_type(const Filename *filename);
 const char *key_type_to_str(int type);
 #ifdef MPEXT
-unsigned char *openssh_loadpub_line(char * line, char **algorithm,
+unsigned char *openssh_loadpub_line(const char * line, char **algorithm,
                                     int *pub_blob_len, char **commentptr,
                                     const char **errorstr);
 #endif
