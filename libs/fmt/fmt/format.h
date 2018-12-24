@@ -721,12 +721,12 @@ typedef BasicCStringRef<char> CStringRef;
 typedef BasicCStringRef<wchar_t> WCStringRef;
 
 /** A formatting error such as invalid format string. */
-class FormatError : public std::runtime_error {
+class FMT_API FormatError : public std::runtime_error {
  public:
   explicit FormatError(CStringRef message)
   : std::runtime_error(message.c_str()) {}
   FormatError(const FormatError &ferr) : std::runtime_error(ferr) {}
-  FMT_API ~FormatError() FMT_DTOR_NOEXCEPT FMT_OVERRIDE;
+  ~FormatError() FMT_DTOR_NOEXCEPT FMT_OVERRIDE;
 };
 
 namespace internal {
@@ -784,7 +784,7 @@ class Buffer {
   std::size_t size_;
   std::size_t capacity_;
 
-  Buffer(T *ptr = FMT_NULL, std::size_t capacity = 0)
+  Buffer(T *ptr = FMT_NULL, std::size_t capacity = 0) FMT_NOEXCEPT
     : ptr_(ptr), size_(0), capacity_(capacity) {}
 
   /**
@@ -869,7 +869,7 @@ class MemoryBuffer : private Allocator, public Buffer<T> {
   void grow(std::size_t size) FMT_OVERRIDE;
 
  public:
-  explicit MemoryBuffer(const Allocator &alloc = Allocator())
+  explicit MemoryBuffer(const Allocator &alloc = Allocator()) FMT_NOEXCEPT
       : Allocator(alloc), Buffer<T>(data_, SIZE) {}
   ~MemoryBuffer() FMT_OVERRIDE { deallocate(); }
 
@@ -1181,7 +1181,7 @@ class UTF16ToUTF8 {
   MemoryBuffer<char, INLINE_BUFFER_SIZE, custom_nballocator_t<char> > buffer_;
 
  public:
-  UTF16ToUTF8() {}
+  UTF16ToUTF8() FMT_NOEXCEPT {}
   FMT_API explicit UTF16ToUTF8(WStringRef s);
   operator StringRef() const { return StringRef(&buffer_[0], size()); }
   size_t size() const { return buffer_.size() - 1; }
@@ -1401,11 +1401,11 @@ class MakeValue : public Arg {
   //   fmt::format("{}", L"test");
   // To fix this, use a wide format string: fmt::format(L"{}", L"test").
 #if !FMT_MSC_VER || defined(_NATIVE_WCHAR_T_DEFINED)
-  MakeValue(typename WCharHelper<wchar_t, Char>::Unsupported);
+  explicit MakeValue(typename WCharHelper<wchar_t, Char>::Unsupported);
 #endif
-  MakeValue(typename WCharHelper<wchar_t *, Char>::Unsupported);
-  MakeValue(typename WCharHelper<const wchar_t *, Char>::Unsupported);
-  MakeValue(typename WCharHelper<const std::wstring &, Char>::Unsupported);
+  explicit MakeValue(typename WCharHelper<wchar_t *, Char>::Unsupported);
+  explicit MakeValue(typename WCharHelper<const wchar_t *, Char>::Unsupported);
+  explicit MakeValue(typename WCharHelper<const std::wstring &, Char>::Unsupported);
 #if FMT_HAS_STRING_VIEW
   MakeValue(typename WCharHelper<const std::wstring_view &, Char>::Unsupported);
 #endif
@@ -1600,7 +1600,7 @@ struct NamedArgWithType : NamedArg<Char> {
 
 class RuntimeError : public std::runtime_error {
  protected:
-  RuntimeError() : std::runtime_error("") {}
+  RuntimeError() FMT_NOEXCEPT : std::runtime_error("") {}
   RuntimeError(const RuntimeError &rerr) : std::runtime_error(rerr) {}
   FMT_API ~RuntimeError() FMT_DTOR_NOEXCEPT FMT_OVERRIDE;
 };
@@ -1614,14 +1614,14 @@ class ArgList {
  private:
   // To reduce compiled code size per formatting function call, types of first
   // MAX_PACKED_ARGS arguments are passed in the types_ field.
-  uint64_t types_;
+  uint64_t types_{0};
   union {
     // If the number of arguments is less than MAX_PACKED_ARGS, the argument
     // values are stored in values_, otherwise they are stored in args_.
     // This is done to reduce compiled code size as storing larger objects
     // may require more code (at least on x86-64) even if the same amount of
     // data is actually copied to stack. It saves ~10% on the bloat test.
-    const internal::Value *values_;
+    const internal::Value *values_{nullptr};
     const internal::Arg *args_;
   };
 
@@ -1907,7 +1907,7 @@ struct FormatSpec : AlignSpec {
   char type_;
 
   FormatSpec(
-    unsigned width = 0, char type = 0, wchar_t fill = ' ')
+    unsigned width = 0, char type = 0, wchar_t fill = ' ') FMT_NOEXCEPT
   : AlignSpec(width, fill), flags_(0), precision_(-1), type_(type) {}
 
   bool flag(unsigned f) const { return (flags_ & f) != 0; }
@@ -2577,14 +2577,14 @@ inline uint64_t make_type(FMT_GEN15(FMT_ARG_TYPE_DEFAULT)) {
 */
 class SystemError : public internal::RuntimeError {
  private:
-  FMT_API void init(int err_code, CStringRef format_str, ArgList args);
+  FMT_API virtual void init(int err_code, CStringRef format_str, ArgList args);
 
  protected:
   int error_code_{0};
 
   typedef char Char;  // For FMT_VARIADIC_CTOR.
 
-  SystemError() {}
+  SystemError() FMT_NOEXCEPT {}
 
  public:
   /**
@@ -2606,8 +2606,9 @@ class SystemError : public internal::RuntimeError {
    \endrst
   */
   SystemError(int error_code, CStringRef message) {
-    init(error_code, message, ArgList());
+    SystemError::init(error_code, message, ArgList());
   }
+  SystemError& operator=(const SystemError&) { return *this; }
   FMT_DEFAULTED_COPY_CTOR(SystemError)
   FMT_VARIADIC_CTOR(SystemError, init, int, CStringRef)
 
@@ -3339,7 +3340,7 @@ class BasicMemoryWriter : public BasicWriter<Char> {
   internal::MemoryBuffer<Char, internal::INLINE_BUFFER_SIZE, Allocator> buffer_;
 
  public:
-  explicit BasicMemoryWriter(const Allocator& alloc = Allocator())
+  explicit BasicMemoryWriter(const Allocator& alloc = Allocator()) FMT_NOEXCEPT
     : BasicWriter<Char>(buffer_), buffer_(alloc) {}
 
 #if FMT_USE_RVALUE_REFERENCES
@@ -3358,7 +3359,7 @@ class BasicMemoryWriter : public BasicWriter<Char> {
     Moves the content of the other ``BasicMemoryWriter`` object to this one.
     \endrst
    */
-  BasicMemoryWriter &operator=(BasicMemoryWriter &&other) {
+  BasicMemoryWriter &operator=(BasicMemoryWriter &&other) FMT_NOEXCEPT {
     buffer_ = std::move(other.buffer_);
     return *this;
   }
@@ -3427,7 +3428,7 @@ FMT_API void report_system_error(int error_code,
 /** A Windows error. */
 class WindowsError : public SystemError {
  private:
-  FMT_API void init(int error_code, CStringRef format_str, ArgList args);
+  FMT_API void init(int error_code, CStringRef format_str, ArgList args) override;
 
  public:
   /**
@@ -3459,7 +3460,7 @@ class WindowsError : public SystemError {
    \endrst
   */
   WindowsError(int error_code, CStringRef message) {
-    init(error_code, message, ArgList());
+    WindowsError::init(error_code, message, ArgList());
   }
   FMT_VARIADIC_CTOR(WindowsError, init, int, CStringRef)
 };
@@ -3532,8 +3533,8 @@ class FormatInt {
   // Buffer should be large enough to hold all digits (digits10 + 1),
   // a sign and a null character.
   enum {BUFFER_SIZE = std::numeric_limits<ULongLong>::digits10 + 3};
-  mutable char buffer_[BUFFER_SIZE] = {};
-  char *str_ = nullptr;
+  mutable char buffer_[BUFFER_SIZE]{};
+  char *str_{nullptr};
 
   // Formats value in reverse and returns the number of digits.
   char *format_decimal(ULongLong value) {
