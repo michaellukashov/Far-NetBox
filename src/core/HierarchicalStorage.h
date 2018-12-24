@@ -24,8 +24,8 @@ class NB_CORE_EXPORT THierarchicalStorage : public TObject
   NB_DISABLE_COPY(THierarchicalStorage)
 
 public:
-  explicit THierarchicalStorage(const UnicodeString AStorage);
-  virtual ~THierarchicalStorage();
+  explicit THierarchicalStorage(const UnicodeString AStorage) noexcept;
+  virtual ~THierarchicalStorage() noexcept;
   virtual void Init() {}
   virtual bool OpenRootKey(bool CanCreate);
   virtual bool OpenSubKey(const UnicodeString ASubKey, bool CanCreate, bool Path = false);
@@ -99,12 +99,12 @@ public:
   bool GetTemporary() const { return GetTemporaryProtected(); }
 protected:
   UnicodeString FStorage;
-  TStrings *FKeyHistory;
+  std::unique_ptr<TStrings> FKeyHistory;
   TStorageAccessMode FAccessMode;
-  bool FExplicit;
-  bool FForceSave;
-  bool FMungeStringValues;
-  bool FForceAnsi;
+  bool FExplicit{false};
+  bool FForceSave{false};
+  bool FMungeStringValues{false};
+  bool FForceAnsi{false};
 
   UnicodeString GetCurrentSubKey() const;
   UnicodeString GetCurrentSubKeyMunged() const;
@@ -172,9 +172,9 @@ public:
   void SetFailed(intptr_t Value) { FFailed = Value; }
 
 private:
-  TRegistry *FRegistry;
-  mutable intptr_t FFailed;
-  REGSAM FWowMode;
+  std::unique_ptr<TRegistry> FRegistry{nullptr};
+  mutable intptr_t FFailed{0};
+  REGSAM FWowMode{};
 };
 //---------------------------------------------------------------------------
 #if 0

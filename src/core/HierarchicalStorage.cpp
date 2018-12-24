@@ -102,7 +102,7 @@ UnicodeString UnMungeIniName(const UnicodeString Str)
   return Str;
 }
 //===========================================================================
-THierarchicalStorage::THierarchicalStorage(const UnicodeString AStorage) :
+THierarchicalStorage::THierarchicalStorage(const UnicodeString AStorage) noexcept :
   FStorage(AStorage),
   FKeyHistory(std::make_unique<TStringList>())
 {
@@ -116,9 +116,9 @@ THierarchicalStorage::THierarchicalStorage(const UnicodeString AStorage) :
   SetMungeStringValues(true);
 }
 //---------------------------------------------------------------------------
-THierarchicalStorage::~THierarchicalStorage()
+THierarchicalStorage::~THierarchicalStorage() noexcept
 {
-  SAFE_DESTROY(FKeyHistory);
+  __removed SAFE_DESTROY(FKeyHistory);
 }
 //---------------------------------------------------------------------------
 void THierarchicalStorage::Flush()
@@ -435,13 +435,13 @@ __fastcall TRegistryStorage::TRegistryStorage(const UnicodeString AStorage, HKEY
 void TRegistryStorage::Init()
 {
   FFailed = 0;
-  FRegistry = new TRegistry();
-  FRegistry->Access = KEY_READ | FWowMode;
+  FRegistry = std::make_unique<TRegistry>();
+  FRegistry->SetAccess(KEY_READ | FWowMode);
 }
 //---------------------------------------------------------------------------
 TRegistryStorage::~TRegistryStorage()
 {
-  SAFE_DESTROY(FRegistry);
+  __removed SAFE_DESTROY(FRegistry);
 }
 //---------------------------------------------------------------------------
 bool TRegistryStorage::Copy(TRegistryStorage *Storage)
@@ -507,12 +507,12 @@ void TRegistryStorage::SetAccessModeProtected(TStorageAccessMode Value)
     switch (GetAccessMode())
     {
     case smRead:
-        FRegistry->Access = KEY_READ | FWowMode;
+        FRegistry->SetAccess(KEY_READ | FWowMode);
       break;
 
     case smReadWrite:
     default:
-        FRegistry->Access = KEY_READ | KEY_WRITE | FWowMode;
+        FRegistry->SetAccess(KEY_READ | KEY_WRITE | FWowMode);
       break;
     }
   }
@@ -521,7 +521,7 @@ void TRegistryStorage::SetAccessModeProtected(TStorageAccessMode Value)
 bool TRegistryStorage::DoOpenSubKey(const UnicodeString SubKey, bool CanCreate)
 {
   UnicodeString PrevPath;
-  bool WasOpened = (FRegistry->CurrentKey != NULL);
+  bool WasOpened = (FRegistry->GetCurrentKey() != nullptr);
   if (WasOpened)
   {
     PrevPath = FRegistry->CurrentPath;
@@ -700,12 +700,12 @@ void TRegistryStorage::WriteInt64(const UnicodeString Name, int64_t Value)
   }
 }
 //---------------------------------------------------------------------------
-void TRegistryStorage::WriteBinaryData(const UnicodeString Name,
-  const void *Buffer, size_t Size)
+void TRegistryStorage::WriteBinaryData(const UnicodeString AName,
+  const void *ABuffer, size_t Size)
 {
   try
   {
-    FRegistry->WriteBinaryData(Name, const_cast<void *>(Buffer), Size);
+    FRegistry->WriteBinaryData(AName, const_cast<void *>(ABuffer), Size);
   }
   catch (...)
   {
