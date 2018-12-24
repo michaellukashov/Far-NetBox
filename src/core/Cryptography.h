@@ -7,7 +7,7 @@ void CryptographyInitialize();
 void CryptographyFinalize();
 RawByteString ScramblePassword(const UnicodeString Password);
 bool UnscramblePassword(const RawByteString Scrambled, const UnicodeString Password);
-void AES256EncyptWithMAC(const RawByteString Input, const UnicodeString Password,
+void AES256EncryptWithMAC(const RawByteString Input, const UnicodeString Password,
   RawByteString &Output);
 bool AES256DecryptWithMAC(const RawByteString Input, const UnicodeString Password,
   RawByteString &Output);
@@ -20,11 +20,11 @@ void ValidateEncryptKey(const RawByteString & Key);
 //---------------------------------------------------------------------------
 class TFileBuffer;
 //---------------------------------------------------------------------------
-class TEncryption
+class TEncryption : public TObject
 {
 public:
-  TEncryption(const RawByteString & Key);
-  ~TEncryption();
+  TEncryption(const RawByteString AKey) noexcept;
+  ~TEncryption() noexcept;
 
   static bool IsEncryptedFileName(const UnicodeString & FileName);
 
@@ -43,8 +43,8 @@ private:
   RawByteString FSalt;
   RawByteString FInputHeader;
   RawByteString FOverflowBuffer;
-  bool FOutputtedHeader;
-  void * FContext;
+  bool FOutputtedHeader{false};
+  void * FContext{nullptr};
 
   void Init(const RawByteString & Key, const RawByteString & Salt);
   void Aes(char * Buffer, int Size);
