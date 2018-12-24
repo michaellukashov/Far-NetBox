@@ -504,8 +504,8 @@ enum TSeekOrigin
 class NB_CORE_EXPORT TStream : public TObject
 {
 public:
-  TStream() = default;
-  virtual ~TStream() = default;
+  TStream() noexcept = default;
+  virtual ~TStream() noexcept = default;
   virtual int64_t Read(void *Buffer, int64_t Count) = 0;
   virtual int64_t Write(const void *Buffer, int64_t Count) = 0;
   virtual int64_t Seek(int64_t Offset, int Origin) const = 0;
@@ -528,8 +528,8 @@ class NB_CORE_EXPORT THandleStream : public TStream
 {
   NB_DISABLE_COPY(THandleStream)
 public:
-  explicit THandleStream(HANDLE AHandle);
-  virtual ~THandleStream() = default;
+  explicit THandleStream(HANDLE AHandle) noexcept;
+  virtual ~THandleStream() noexcept = default;
   virtual int64_t Read(void *Buffer, int64_t Count) override;
   virtual int64_t Write(const void *Buffer, int64_t Count) override;
   virtual int64_t Seek(int64_t Offset, int Origin) const override;
@@ -541,7 +541,7 @@ protected:
   virtual void SetSize(const int64_t NewSize) override;
 
 protected:
-  HANDLE FHandle;
+  HANDLE FHandle{};
 };
 
 class NB_CORE_EXPORT TSafeHandleStream : public THandleStream
@@ -599,20 +599,20 @@ private:
   void SetCapacity(int64_t NewCapacity);
 
 private:
-  void *FMemory;
-  int64_t FSize;
-  mutable int64_t FPosition;
-  int64_t FCapacity;
+  void *FMemory{nullptr};
+  int64_t FSize{0};
+  mutable int64_t FPosition{0};
+  int64_t FCapacity{0};
 };
 
 struct TRegKeyInfo
 {
-  DWORD NumSubKeys;
-  DWORD MaxSubKeyLen;
-  DWORD NumValues;
-  DWORD MaxValueLen;
-  DWORD MaxDataLen;
-  FILETIME FileTime;
+  DWORD NumSubKeys{0};
+  DWORD MaxSubKeyLen{0};
+  DWORD NumValues{0};
+  DWORD MaxValueLen{0};
+  DWORD MaxDataLen{0};
+  FILETIME FileTime{};
 };
 
 enum TRegDataType
@@ -622,16 +622,16 @@ enum TRegDataType
 
 struct TRegDataInfo
 {
-  TRegDataType RegData;
-  DWORD DataSize;
+  TRegDataType RegData{};
+  DWORD DataSize{0};
 };
 
 class NB_CORE_EXPORT TRegistry : public TObject
 {
   NB_DISABLE_COPY(TRegistry)
 public:
-  TRegistry();
-  ~TRegistry();
+  TRegistry() noexcept;
+  ~TRegistry() noexcept;
   void GetValueNames(TStrings *Names) const;
   void GetKeyNames(TStrings *Names) const;
   void CloseKey();
@@ -680,18 +680,18 @@ public:
   void SetRootKey(HKEY ARootKey);
 
 private:
-  HKEY FCurrentKey;
-  HKEY FRootKey;
+  HKEY FCurrentKey{};
+  HKEY FRootKey{};
   // bool FLazyWrite;
   UnicodeString FCurrentPath;
-  bool FCloseRootKey;
-  mutable uint32_t FAccess;
+  bool FCloseRootKey{false};
+  mutable uint32_t FAccess{0};
 };
 
 struct TTimeStamp
 {
-  int Time; // Number of milliseconds since midnight
-  int Date; // One plus number of days since 1/1/0001
+  int Time{0}; // Number of milliseconds since midnight
+  int Date{0}; // One plus number of days since 1/1/0001
 };
 
 // FIXME
@@ -705,7 +705,7 @@ public:
   intptr_t Compare(const TShortCut &rhs) const { return FValue - rhs.FValue; }
 
 private:
-  intptr_t FValue;
+  intptr_t FValue{0};
 };
 
 enum TReplaceFlag
@@ -727,7 +727,7 @@ inline double Abs(double Value) { return fabs(Value); }
 struct TInputDialogData
 {
 //  TCustomEdit * Edit;
-  void *Edit;
+  void *Edit{nullptr};
 };
 
 #if 0
@@ -750,7 +750,7 @@ struct TMessageParams;
 class NB_CORE_EXPORT TGlobalsIntf
 {
 public:
-  virtual ~TGlobalsIntf() = default;
+  virtual ~TGlobalsIntf() noexcept = default;
 
   virtual HINSTANCE GetInstanceHandle() const = 0;
   virtual UnicodeString GetMsg(intptr_t Id) const = 0;
@@ -768,8 +768,8 @@ public:
 class NB_CORE_EXPORT TGlobals : public TGlobalsIntf, public TObject
 {
 public:
-  TGlobals();
-  virtual ~TGlobals() = default;
+  TGlobals() noexcept;
+  virtual ~TGlobals() noexcept = default;
 
 public:
   wchar_t Win32CSDVersion[128]{};

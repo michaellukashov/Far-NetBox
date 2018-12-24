@@ -1327,7 +1327,7 @@ static void ReadError(const UnicodeString Name)
   throw Exception(FORMAT("InvalidRegType: %s", Name)); // FIXME ERegistryException.CreateResFmt(@SInvalidRegType, [Name]);
 }
 
-THandleStream::THandleStream(HANDLE AHandle) :
+THandleStream::THandleStream(HANDLE AHandle) noexcept :
   FHandle(AHandle)
 {
 }
@@ -1633,7 +1633,7 @@ class ERegistryException : public std::exception
 {
 };
 
-TRegistry::TRegistry() :
+TRegistry::TRegistry() noexcept :
   FCurrentKey(nullptr),
   FRootKey(nullptr),
   FCloseRootKey(false),
@@ -1643,7 +1643,7 @@ TRegistry::TRegistry() :
   SetAccess(KEY_ALL_ACCESS);
 }
 
-TRegistry::~TRegistry()
+TRegistry::~TRegistry() noexcept
 {
   CloseKey();
 }
@@ -2082,7 +2082,7 @@ void GetLocaleFormatSettings(int LCID, TFormatSettings &FormatSettings)
 }
 
 
-TGlobals::TGlobals()
+TGlobals::TGlobals() noexcept
 {
   InitPlatformId();
 }
