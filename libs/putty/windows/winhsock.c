@@ -315,10 +315,10 @@ static char *sk_handle_peer_info(Socket s)
          * Ubuntu 16.04), this function isn't available in the header
          * files to type-check. Ditto the toolchain I use for
          * Coveritying the Windows code. */
-        PUTTY_PUTTY_GET_WINDOWS_FUNCTION_NO_TYPECHECK(
+        PUTTY_GET_WINDOWS_FUNCTION_NO_TYPECHECK(
             kernel32_module, GetNamedPipeClientProcessId);
 #else
-        PUTTY_PUTTY_GET_WINDOWS_FUNCTION(
+        PUTTY_GET_WINDOWS_FUNCTION(
             kernel32_module, GetNamedPipeClientProcessId);
 #endif
     }

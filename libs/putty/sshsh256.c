@@ -101,7 +101,7 @@ void putty_SHA256_Block(putty_SHA256_State *s, uint32 *block) {
 #define BLKSIZE 64
 
 void putty_SHA256_Init(putty_SHA256_State *s) {
-    SHA256_Core_Init(s);
+    putty_SHA256_Core_Init(s);
     s->blkused = 0;
     s->lenhi = s->lenlo = 0;
 }
@@ -164,7 +164,7 @@ void putty_SHA256_Final(putty_SHA256_State *s, unsigned char *digest) {
 
     memset(c, 0, pad);
     c[0] = 0x80;
-    SHA256_Bytes(s, &c, pad);
+    putty_SHA256_Bytes(s, &c, pad);
 
     c[0] = (lenhi >> 24) & 0xFF;
     c[1] = (lenhi >> 16) & 0xFF;
@@ -175,7 +175,7 @@ void putty_SHA256_Final(putty_SHA256_State *s, unsigned char *digest) {
     c[6] = (lenlo >>  8) & 0xFF;
     c[7] = (lenlo >>  0) & 0xFF;
 
-    SHA256_Bytes(s, &c, 8);
+    putty_SHA256_Bytes(s, &c, 8);
 
     for (i = 0; i < 8; i++) {
   digest[i*4+0] = (s->h[i] >> 24) & 0xFF;
@@ -188,9 +188,9 @@ void putty_SHA256_Final(putty_SHA256_State *s, unsigned char *digest) {
 void putty_SHA256_Simple(const void *p, int len, unsigned char *output) {
     putty_SHA256_State s;
 
-    SHA256_Init(&s);
-    SHA256_Bytes(&s, p, len);
-    SHA256_Final(&s, output);
+    putty_SHA256_Init(&s);
+    putty_SHA256_Bytes(&s, p, len);
+    putty_SHA256_Final(&s, output);
     smemclr(&s, sizeof(s));
 }
 

@@ -24,8 +24,8 @@
 static int key_type_fp(FILE *fp);
 
 static int loadrsakey_main(FILE * fp, struct RSAKey *key, int pub_only,
-			   char **commentptr, const char *passphrase,
-			   const char **error)
+				 char **commentptr, const char *passphrase,
+				 const char **error)
 {
     unsigned char buf[16384];
     unsigned char keybuf[16];
@@ -41,8 +41,8 @@ static int loadrsakey_main(FILE * fp, struct RSAKey *key, int pub_only,
     len = fread(buf, 1, sizeof(buf), fp);
     fclose(fp);
     if (len < 0 || len == sizeof(buf)) {
-	*error = "error reading file";
-	goto end;		       /* file too big or not read */
+  *error = "error reading file";
+  goto end;		       /* file too big or not read */
     }
 
     i = 0;
@@ -52,66 +52,66 @@ static int loadrsakey_main(FILE * fp, struct RSAKey *key, int pub_only,
      * A zero byte. (The signature includes a terminating NUL.)
      */
     if (len - i < 1 || buf[i] != 0)
-	goto end;
+  goto end;
     i++;
 
     /* One byte giving encryption type, and one reserved uint32. */
     if (len - i < 1)
-	goto end;
+  goto end;
     ciphertype = buf[i];
     if (ciphertype != 0 && ciphertype != SSH_CIPHER_3DES)
-	goto end;
+  goto end;
     i++;
     if (len - i < 4)
-	goto end;		       /* reserved field not present */
+  goto end;		       /* reserved field not present */
     if (buf[i] != 0 || buf[i + 1] != 0 || buf[i + 2] != 0
-	|| buf[i + 3] != 0) goto end;  /* reserved field nonzero, panic! */
+  || buf[i + 3] != 0) goto end;  /* reserved field nonzero, panic! */
     i += 4;
 
     /* Now the serious stuff. An ordinary SSH-1 public key. */
     j = makekey(buf + i, len - i, key, NULL, 1);
     if (j < 0)
-	goto end;		       /* overran */
+  goto end;		       /* overran */
     i += j;
 
     /* Next, the comment field. */
     j = toint(GET_32BIT(buf + i));
     i += 4;
     if (j < 0 || len - i < j)
-	goto end;
+  goto end;
     comment = snewn(j + 1, char);
     if (comment) {
-	memcpy(comment, buf + i, j);
-	comment[j] = '\0';
+  memcpy(comment, buf + i, j);
+  comment[j] = '\0';
     }
     i += j;
     if (commentptr)
-	*commentptr = dupstr(comment);
+  *commentptr = dupstr(comment);
     if (key)
-	key->comment = comment;
+  key->comment = comment;
     else
-	sfree(comment);
+  sfree(comment);
 
-    if (pub_only) {
+		if (pub_only) {
 	ret = 1;
 	goto end;
-    }
+		}
 
-    if (!key) {
+		if (!key) {
 	ret = ciphertype != 0;
 	*error = NULL;
 	goto end;
-    }
+		}
 
     /*
      * Decrypt remainder of buffer.
      */
     if (ciphertype) {
-	MD5Init(&md5c);
-	MD5Update(&md5c, (unsigned char *)passphrase, strlen(passphrase));
-	MD5Final(keybuf, &md5c);
-	des3_decrypt_pubkey(keybuf, buf + i, (len - i + 7) & ~7);
-	smemclr(keybuf, sizeof(keybuf));	/* burn the evidence */
+  MD5Init(&md5c);
+  MD5Update(&md5c, (unsigned char *)passphrase, strlen(passphrase));
+  MD5Final(keybuf, &md5c);
+  des3_decrypt_pubkey(keybuf, buf + i, (len - i + 7) & ~7);
+  smemclr(keybuf, sizeof(keybuf));	/* burn the evidence */
     }
 
     /*
@@ -119,11 +119,11 @@ static int loadrsakey_main(FILE * fp, struct RSAKey *key, int pub_only,
      * bytes should be of the form a, b, a, b.
      */
     if (len - i < 4)
-	goto end;
+  goto end;
     if (buf[i] != buf[i + 2] || buf[i + 1] != buf[i + 3]) {
-	*error = "wrong passphrase";
-	ret = -1;
-	goto end;
+  *error = "wrong passphrase";
+  ret = -1;
+  goto end;
     }
     i += 4;
 
@@ -145,11 +145,11 @@ static int loadrsakey_main(FILE * fp, struct RSAKey *key, int pub_only,
     if (j < 0) goto end;
     i += j;
 
-    if (!rsa_verify(key)) {
+		if (!rsa_verify(key)) {
 	*error = "rsa_verify failed";
 	freersakey(key);
 	ret = 0;
-    } else
+		} else
 	ret = 1;
 
   end:
@@ -167,8 +167,8 @@ int loadrsakey(const Filename *filename, struct RSAKey *key,
 
     fp = f_open(filename, "rb", FALSE);
     if (!fp) {
-	error = "can't open file";
-	goto end;
+  error = "can't open file";
+  goto end;
     }
 
     /*
@@ -176,12 +176,12 @@ int loadrsakey(const Filename *filename, struct RSAKey *key,
      * key file.
      */
     if (fgets(buf, sizeof(buf), fp) && !strcmp(buf, rsa_signature)) {
-	/*
-	 * This routine will take care of calling fclose() for us.
-	 */
-	ret = loadrsakey_main(fp, key, FALSE, NULL, passphrase, &error);
-	fp = NULL;
-	goto end;
+  /*
+   * This routine will take care of calling fclose() for us.
+   */
+  ret = loadrsakey_main(fp, key, FALSE, NULL, passphrase, &error);
+  fp = NULL;
+  goto end;
     }
 
     /*
@@ -191,9 +191,9 @@ int loadrsakey(const Filename *filename, struct RSAKey *key,
 
   end:
     if (fp)
-	fclose(fp);
+  fclose(fp);
     if ((ret != 1) && errorstr)
-	*errorstr = error;
+  *errorstr = error;
     return ret;
 }
 
@@ -208,18 +208,18 @@ int rsakey_encrypted(const Filename *filename, char **comment)
 
     fp = f_open(filename, "rb", FALSE);
     if (!fp)
-	return 0;		       /* doesn't even exist */
+  return 0;		       /* doesn't even exist */
 
     /*
      * Read the first line of the file and see if it's a v1 private
      * key file.
      */
     if (fgets(buf, sizeof(buf), fp) && !strcmp(buf, rsa_signature)) {
-	const char *dummy;
-	/*
-	 * This routine will take care of calling fclose() for us.
-	 */
-	return loadrsakey_main(fp, NULL, FALSE, comment, NULL, &dummy);
+  const char *dummy;
+  /*
+   * This routine will take care of calling fclose() for us.
+   */
+  return loadrsakey_main(fp, NULL, FALSE, comment, NULL, &dummy);
     }
     fclose(fp);
     return 0;			       /* wasn't the right kind of file */
@@ -231,7 +231,7 @@ int rsakey_encrypted(const Filename *filename, char **comment)
  * exponent, modulus).
  */
 int rsakey_pubblob(const Filename *filename, void **blob, int *bloblen,
-		   char **commentptr, const char **errorstr)
+       char **commentptr, const char **errorstr)
 {
     FILE *fp;
     char buf[64];
@@ -246,8 +246,8 @@ int rsakey_pubblob(const Filename *filename, void **blob, int *bloblen,
 
     fp = f_open(filename, "rb", FALSE);
     if (!fp) {
-	error = "can't open file";
-	goto end;
+  error = "can't open file";
+  goto end;
     }
 
     /*
@@ -255,13 +255,13 @@ int rsakey_pubblob(const Filename *filename, void **blob, int *bloblen,
      * key file.
      */
     if (fgets(buf, sizeof(buf), fp) && !strcmp(buf, rsa_signature)) {
-	memset(&key, 0, sizeof(key));
-	if (loadrsakey_main(fp, &key, TRUE, commentptr, NULL, &error)) {
-	    *blob = rsa_public_blob(&key, bloblen);
-	    freersakey(&key);
-	    ret = 1;
-	}
-	fp = NULL; /* loadrsakey_main unconditionally closes fp */
+  memset(&key, 0, sizeof(key));
+  if (loadrsakey_main(fp, &key, TRUE, commentptr, NULL, &error)) {
+      *blob = rsa_public_blob(&key, bloblen);
+      freersakey(&key);
+      ret = 1;
+  }
+  fp = NULL; /* loadrsakey_main unconditionally closes fp */
     } else {
         /*
          * Try interpreting the file as an SSH-1 public key.
@@ -295,7 +295,7 @@ int rsakey_pubblob(const Filename *filename, void **blob, int *bloblen,
             commentp = NULL;
         }
 
-	memset(&key, 0, sizeof(key));
+  memset(&key, 0, sizeof(key));
         key.exponent = bignum_from_decimal(expp);
         key.modulus = bignum_from_decimal(modp);
         if (atoi(bitsp) != bignum_bitcount(key.modulus)) {
@@ -315,14 +315,14 @@ int rsakey_pubblob(const Filename *filename, void **blob, int *bloblen,
 
       not_public_either:
         sfree(line);
-	error = "not an SSH-1 RSA file";
+  error = "not an SSH-1 RSA file";
     }
 
   end:
     if (fp)
-	fclose(fp);
+  fclose(fp);
     if ((ret != 1) && errorstr)
-	*errorstr = error;
+  *errorstr = error;
     return ret;
 }
 
@@ -366,13 +366,13 @@ int saversakey(const Filename *filename, struct RSAKey *key, char *passphrase)
      * A string containing the comment field.
      */
     if (key->comment) {
-	PUT_32BIT(p, strlen(key->comment));
-	p += 4;
-	memcpy(p, key->comment, strlen(key->comment));
-	p += strlen(key->comment);
+  PUT_32BIT(p, strlen(key->comment));
+  p += 4;
+  memcpy(p, key->comment, strlen(key->comment));
+  p += strlen(key->comment);
     } else {
-	PUT_32BIT(p, 0);
-	p += 4;
+  PUT_32BIT(p, 0);
+  p += 4;
     }
 
     /*
@@ -403,17 +403,17 @@ int saversakey(const Filename *filename, struct RSAKey *key, char *passphrase)
      * 8 bytes.
      */
     while ((p - estart) % 8)
-	*p++ = '\0';
+  *p++ = '\0';
 
     /*
      * Now encrypt the encrypted portion.
      */
     if (passphrase) {
-	MD5Init(&md5c);
-	MD5Update(&md5c, (unsigned char *)passphrase, strlen(passphrase));
-	MD5Final(keybuf, &md5c);
-	des3_encrypt_pubkey(keybuf, estart, p - estart);
-	smemclr(keybuf, sizeof(keybuf));	/* burn the evidence */
+  MD5Init(&md5c);
+  MD5Update(&md5c, (unsigned char *)passphrase, strlen(passphrase));
+  MD5Final(keybuf, &md5c);
+  des3_encrypt_pubkey(keybuf, estart, p - estart);
+  smemclr(keybuf, sizeof(keybuf));	/* burn the evidence */
     }
 
     /*
@@ -421,12 +421,12 @@ int saversakey(const Filename *filename, struct RSAKey *key, char *passphrase)
      */
     fp = f_open(filename, "wb", TRUE);
     if (fp) {
-	int ret = (fwrite(buf, 1, p - buf, fp) == (size_t) (p - buf));
+  int ret = (fwrite(buf, 1, p - buf, fp) == (size_t) (p - buf));
         if (fclose(fp))
             ret = 0;
-	return ret;
+  return ret;
     } else
-	return 0;
+  return 0;
 }
 
 /* ----------------------------------------------------------------------
@@ -473,7 +473,7 @@ int saversakey(const Filename *filename, struct RSAKey *key, char *passphrase)
  *
  *    mpint  x                  (the private key parameter)
  *  [ string hash   20-byte hash of mpints p || q || g   only in old format ]
- * 
+ *
  * Finally, there is a line saying "Private-MAC: " plus a hex
  * representation of a HMAC-SHA-1 of:
  *
@@ -484,9 +484,9 @@ int saversakey(const Filename *filename, struct RSAKey *key, char *passphrase)
  *    string  private-plaintext (the plaintext version of the
  *                               private part, including the final
  *                               padding)
- * 
+ *
  * The key to the MAC is itself a SHA-1 hash of:
- * 
+ *
  *    data    "putty-private-key-file-mac-key"
  *    data    passphrase
  *
@@ -517,23 +517,23 @@ static int read_header(FILE * fp, char *header)
     int len = 39;
     int c;
 
-    while (1) {
+		while (1) {
 	c = fgetc(fp);
 	if (c == '\n' || c == '\r' || c == EOF)
-	    return 0;		       /* failure */
+			return 0;		       /* failure */
 	if (c == ':') {
-	    c = fgetc(fp);
-	    if (c != ' ')
+			c = fgetc(fp);
+			if (c != ' ')
 		return 0;
-	    *header = '\0';
-	    return 1;		       /* success! */
+			*header = '\0';
+			return 1;		       /* success! */
 	}
 	if (len == 0)
-	    return 0;		       /* failure */
+			return 0;		       /* failure */
 	*header++ = c;
 	len--;
-    }
-    return 0;			       /* failure */
+		}
+		return 0;			       /* failure */
 }
 
 static char *read_body(FILE * fp)
@@ -548,23 +548,23 @@ static char *read_body(FILE * fp)
     len = 0;
     text[len] = '\0';
 
-    while (1) {
+		while (1) {
 	c = fgetc(fp);
 	if (c == '\r' || c == '\n' || c == EOF) {
-	    if (c != EOF) {
+			if (c != EOF) {
 		c = fgetc(fp);
 		if (c != '\r' && c != '\n')
-		    ungetc(c, fp);
-	    }
-	    return text;
+				ungetc(c, fp);
+			}
+			return text;
 	}
 	if (len + 1 >= size) {
-	    size += 128;
-	    text = sresize(text, size, char);
+			size += 128;
+			text = sresize(text, size, char);
 	}
 	text[len++] = c;
 	text[len] = '\0';
-    }
+		}
 }
 
 static unsigned char *read_blob(FILE * fp, int nlines, int *bloblen)
@@ -578,27 +578,27 @@ static unsigned char *read_blob(FILE * fp, int nlines, int *bloblen)
     blob = snewn(48 * nlines, unsigned char);
     len = 0;
     for (i = 0; i < nlines; i++) {
-	line = read_body(fp);
-	if (!line) {
-	    sfree(blob);
-	    return NULL;
-	}
-	linelen = strlen(line);
-	if (linelen % 4 != 0 || linelen > 64) {
-	    sfree(blob);
-	    sfree(line);
-	    return NULL;
-	}
-	for (j = 0; j < linelen; j += 4) {
-	    k = base64_decode_atom(line + j, blob + len);
-	    if (!k) {
-		sfree(line);
-		sfree(blob);
-		return NULL;
-	    }
-	    len += k;
-	}
-	sfree(line);
+  line = read_body(fp);
+  if (!line) {
+      sfree(blob);
+      return NULL;
+  }
+  linelen = strlen(line);
+  if (linelen % 4 != 0 || linelen > 64) {
+      sfree(blob);
+      sfree(line);
+      return NULL;
+  }
+  for (j = 0; j < linelen; j += 4) {
+      k = base64_decode_atom(line + j, blob + len);
+      if (!k) {
+    sfree(line);
+    sfree(blob);
+    return NULL;
+      }
+      len += k;
+  }
+  sfree(line);
     }
     *bloblen = len;
     return blob;
@@ -613,29 +613,29 @@ struct ssh2_userkey ssh2_wrong_passphrase = {
 
 const struct ssh_signkey *find_pubkey_alg_len(int namelen, const char *name)
 {
-    if (match_ssh_id(namelen, name, "ssh-rsa"))
+		if (match_ssh_id(namelen, name, "ssh-rsa"))
 	return &ssh_rsa;
-    else if (match_ssh_id(namelen, name, "ssh-dss"))
+		else if (match_ssh_id(namelen, name, "ssh-dss"))
 	return &ssh_dss;
-    else if (match_ssh_id(namelen, name, "ecdsa-sha2-nistp256"))
-        return &ssh_ecdsa_nistp256;
-    else if (match_ssh_id(namelen, name, "ecdsa-sha2-nistp384"))
-        return &ssh_ecdsa_nistp384;
-    else if (match_ssh_id(namelen, name, "ecdsa-sha2-nistp521"))
-        return &ssh_ecdsa_nistp521;
-    else if (match_ssh_id(namelen, name, "ssh-ed25519"))
-        return &ssh_ecdsa_ed25519;
-    else
+		else if (match_ssh_id(namelen, name, "ecdsa-sha2-nistp256"))
+				return &ssh_ecdsa_nistp256;
+		else if (match_ssh_id(namelen, name, "ecdsa-sha2-nistp384"))
+				return &ssh_ecdsa_nistp384;
+		else if (match_ssh_id(namelen, name, "ecdsa-sha2-nistp521"))
+				return &ssh_ecdsa_nistp521;
+		else if (match_ssh_id(namelen, name, "ssh-ed25519"))
+				return &ssh_ecdsa_ed25519;
+		else
 	return NULL;
 }
 
 const struct ssh_signkey *find_pubkey_alg(const char *name)
 {
-    return find_pubkey_alg_len(strlen(name), name);
+		return find_pubkey_alg_len(strlen(name), name);
 }
 
 struct ssh2_userkey *ssh2_load_userkey(const Filename *filename,
-				       const char *passphrase,
+               const char *passphrase,
                                        const char **errorstr)
 {
     FILE *fp;
@@ -655,93 +655,93 @@ struct ssh2_userkey *ssh2_load_userkey(const Filename *filename,
 
     fp = f_open(filename, "rb", FALSE);
     if (!fp) {
-	error = "can't open file";
-	goto error;
+  error = "can't open file";
+  goto error;
     }
 
     /* Read the first header line which contains the key type. */
     if (!read_header(fp, header))
-	goto error;
+  goto error;
     if (0 == strcmp(header, "PuTTY-User-Key-File-2")) {
-	old_fmt = 0;
+  old_fmt = 0;
     } else if (0 == strcmp(header, "PuTTY-User-Key-File-1")) {
-	/* this is an old key file; warn and then continue */
-	old_keyfile_warning();
-	old_fmt = 1;
+  /* this is an old key file; warn and then continue */
+  old_keyfile_warning();
+  old_fmt = 1;
     } else if (0 == strncmp(header, "PuTTY-User-Key-File-", 20)) {
-	/* this is a key file FROM THE FUTURE; refuse it, but with a
+  /* this is a key file FROM THE FUTURE; refuse it, but with a
          * more specific error message than the generic one below */
-	error = "PuTTY key format too new";
-	goto error;
+  error = "PuTTY key format too new";
+  goto error;
     } else {
-	error = "not a PuTTY SSH-2 private key";
-	goto error;
+  error = "not a PuTTY SSH-2 private key";
+  goto error;
     }
     error = "file format error";
     if ((b = read_body(fp)) == NULL)
-	goto error;
+  goto error;
     /* Select key algorithm structure. */
     alg = find_pubkey_alg(b);
     if (!alg) {
-	sfree(b);
-	goto error;
+  sfree(b);
+  goto error;
     }
     sfree(b);
 
     /* Read the Encryption header line. */
     if (!read_header(fp, header) || 0 != strcmp(header, "Encryption"))
-	goto error;
+  goto error;
     if ((encryption = read_body(fp)) == NULL)
-	goto error;
+  goto error;
     if (!strcmp(encryption, "aes256-cbc")) {
-	cipher = 1;
-	cipherblk = 16;
+  cipher = 1;
+  cipherblk = 16;
     } else if (!strcmp(encryption, "none")) {
-	cipher = 0;
-	cipherblk = 1;
+  cipher = 0;
+  cipherblk = 1;
     } else {
-	goto error;
+  goto error;
     }
 
     /* Read the Comment header line. */
     if (!read_header(fp, header) || 0 != strcmp(header, "Comment"))
-	goto error;
+  goto error;
     if ((comment = read_body(fp)) == NULL)
-	goto error;
+  goto error;
 
     /* Read the Public-Lines header line and the public blob. */
     if (!read_header(fp, header) || 0 != strcmp(header, "Public-Lines"))
-	goto error;
+  goto error;
     if ((b = read_body(fp)) == NULL)
-	goto error;
+  goto error;
     i = atoi(b);
     sfree(b);
     if ((public_blob = read_blob(fp, i, &public_blob_len)) == NULL)
-	goto error;
+  goto error;
 
     /* Read the Private-Lines header line and the Private blob. */
     if (!read_header(fp, header) || 0 != strcmp(header, "Private-Lines"))
-	goto error;
+  goto error;
     if ((b = read_body(fp)) == NULL)
-	goto error;
+  goto error;
     i = atoi(b);
     sfree(b);
     if ((private_blob = read_blob(fp, i, &private_blob_len)) == NULL)
-	goto error;
+  goto error;
 
     /* Read the Private-MAC or Private-Hash header line. */
     if (!read_header(fp, header))
-	goto error;
+  goto error;
     if (0 == strcmp(header, "Private-MAC")) {
-	if ((mac = read_body(fp)) == NULL)
-	    goto error;
-	is_mac = 1;
+  if ((mac = read_body(fp)) == NULL)
+      goto error;
+  is_mac = 1;
     } else if (0 == strcmp(header, "Private-Hash") && old_fmt) {
-	if ((mac = read_body(fp)) == NULL)
-	    goto error;
-	is_mac = 0;
+  if ((mac = read_body(fp)) == NULL)
+      goto error;
+  is_mac = 0;
     } else
-	goto error;
+  goto error;
 
     fclose(fp);
     fp = NULL;
@@ -750,13 +750,13 @@ struct ssh2_userkey *ssh2_load_userkey(const Filename *filename,
      * Decrypt the private blob.
      */
     if (cipher) {
-	unsigned char key[40];
-	SHA_State s;
+  unsigned char key[40];
+  SHA_State s;
 
 	if (!passphrase)
-	    goto error;
+			goto error;
 	if (private_blob_len % cipherblk)
-	    goto error;
+			goto error;
 
 	SHA_Init(&s);
 	SHA_Bytes(&s, "\0\0\0\0", 4);
@@ -767,87 +767,87 @@ struct ssh2_userkey *ssh2_load_userkey(const Filename *filename,
 	SHA_Bytes(&s, passphrase, passlen);
 	SHA_Final(&s, key + 20);
 	aes256_decrypt_pubkey(key, private_blob, private_blob_len);
-    }
+		}
 
     /*
      * Verify the MAC.
      */
     {
-	char realmac[41];
-	unsigned char binary[20];
-	unsigned char *macdata;
-	int maclen;
-	int free_macdata;
+  char realmac[41];
+  unsigned char binary[20];
+  unsigned char *macdata;
+  int maclen;
+  int free_macdata;
 
 	if (old_fmt) {
-	    /* MAC (or hash) only covers the private blob. */
-	    macdata = private_blob;
-	    maclen = private_blob_len;
-	    free_macdata = 0;
+			/* MAC (or hash) only covers the private blob. */
+			macdata = private_blob;
+			maclen = private_blob_len;
+			free_macdata = 0;
 	} else {
-	    unsigned char *p;
-	    int namelen = strlen(alg->name);
-	    int enclen = strlen(encryption);
-	    int commlen = strlen(comment);
-	    maclen = (4 + namelen +
-		      4 + enclen +
-		      4 + commlen +
-		      4 + public_blob_len +
-		      4 + private_blob_len);
-	    macdata = snewn(maclen, unsigned char);
-	    p = macdata;
+			unsigned char *p;
+			int namelen = strlen(alg->name);
+			int enclen = strlen(encryption);
+			int commlen = strlen(comment);
+			maclen = (4 + namelen +
+					4 + enclen +
+					4 + commlen +
+					4 + public_blob_len +
+					4 + private_blob_len);
+			macdata = snewn(maclen, unsigned char);
+			p = macdata;
 #define DO_STR(s,len) PUT_32BIT(p,(len));memcpy(p+4,(s),(len));p+=4+(len)
-	    DO_STR(alg->name, namelen);
-	    DO_STR(encryption, enclen);
-	    DO_STR(comment, commlen);
-	    DO_STR(public_blob, public_blob_len);
-	    DO_STR(private_blob, private_blob_len);
+			DO_STR(alg->name, namelen);
+			DO_STR(encryption, enclen);
+			DO_STR(comment, commlen);
+			DO_STR(public_blob, public_blob_len);
+			DO_STR(private_blob, private_blob_len);
 
-	    free_macdata = 1;
+			free_macdata = 1;
 	}
 
 	if (is_mac) {
-	    SHA_State s;
-	    unsigned char mackey[20];
-	    char header[] = "putty-private-key-file-mac-key";
+			SHA_State s;
+			unsigned char mackey[20];
+			char header[] = "putty-private-key-file-mac-key";
 
-	    SHA_Init(&s);
-	    SHA_Bytes(&s, header, sizeof(header)-1);
-	    if (cipher && passphrase)
+			SHA_Init(&s);
+			SHA_Bytes(&s, header, sizeof(header)-1);
+			if (cipher && passphrase)
 		SHA_Bytes(&s, passphrase, passlen);
-	    SHA_Final(&s, mackey);
+			SHA_Final(&s, mackey);
 
-	    hmac_sha1_simple(mackey, 20, macdata, maclen, binary);
+			hmac_sha1_simple(mackey, 20, macdata, maclen, binary);
 
-	    smemclr(mackey, sizeof(mackey));
-	    smemclr(&s, sizeof(s));
+			smemclr(mackey, sizeof(mackey));
+			smemclr(&s, sizeof(s));
 	} else {
-	    SHA_Simple(macdata, maclen, binary);
+			SHA_Simple(macdata, maclen, binary);
 	}
 
 	if (free_macdata) {
-	    smemclr(macdata, maclen);
-	    sfree(macdata);
+			smemclr(macdata, maclen);
+			sfree(macdata);
 	}
 
 	for (i = 0; i < 20; i++)
-	    sprintf(realmac + 2 * i, "%02x", binary[i]);
+			sprintf(realmac + 2 * i, "%02x", binary[i]);
 
 	if (strcmp(mac, realmac)) {
-	    /* An incorrect MAC is an unconditional Error if the key is
-	     * unencrypted. Otherwise, it means Wrong Passphrase. */
-	    if (cipher) {
+			/* An incorrect MAC is an unconditional Error if the key is
+			 * unencrypted. Otherwise, it means Wrong Passphrase. */
+			if (cipher) {
 		error = "wrong passphrase";
 		ret = SSH2_WRONG_PASSPHRASE;
-	    } else {
+			} else {
 		error = "MAC failed";
 		ret = NULL;
-	    }
-	    goto error;
+			}
+			goto error;
 	}
-    }
-    sfree(mac);
-    mac = NULL;
+		}
+		sfree(mac);
+		mac = NULL;
 
     /*
      * Create and return the key.
@@ -856,19 +856,19 @@ struct ssh2_userkey *ssh2_load_userkey(const Filename *filename,
     ret->alg = alg;
     ret->comment = comment;
     ret->data = alg->createkey(alg, public_blob, public_blob_len,
-			       private_blob, private_blob_len);
+             private_blob, private_blob_len);
     if (!ret->data) {
-	sfree(ret);
-	ret = NULL;
-	error = "createkey failed";
-	goto error;
+  sfree(ret);
+  ret = NULL;
+  error = "createkey failed";
+  goto error;
     }
     sfree(public_blob);
     smemclr(private_blob, private_blob_len);
     sfree(private_blob);
     sfree(encryption);
     if (errorstr)
-	*errorstr = NULL;
+  *errorstr = NULL;
     return ret;
 
     /*
@@ -876,21 +876,21 @@ struct ssh2_userkey *ssh2_load_userkey(const Filename *filename,
      */
   error:
     if (fp)
-	fclose(fp);
+  fclose(fp);
     if (comment)
-	sfree(comment);
+  sfree(comment);
     if (encryption)
-	sfree(encryption);
+  sfree(encryption);
     if (mac)
-	sfree(mac);
+  sfree(mac);
     if (public_blob)
-	sfree(public_blob);
+  sfree(public_blob);
     if (private_blob) {
         smemclr(private_blob, private_blob_len);
         sfree(private_blob);
     }
     if (errorstr)
-	*errorstr = error;
+  *errorstr = error;
     return ret;
 }
 
@@ -1129,8 +1129,8 @@ unsigned char *openssh_loadpub(FILE *fp, char **algorithm,
 #endif
 
 unsigned char *ssh2_userkey_loadpub(const Filename *filename, char **algorithm,
-				    int *pub_blob_len, char **commentptr,
-				    const char **errorstr)
+						int *pub_blob_len, char **commentptr,
+						const char **errorstr)
 {
     FILE *fp;
     char header[40], *b;
@@ -1145,8 +1145,8 @@ unsigned char *ssh2_userkey_loadpub(const Filename *filename, char **algorithm,
 
     fp = f_open(filename, "rb", FALSE);
     if (!fp) {
-	error = "can't open file";
-	goto error;
+  error = "can't open file";
+  goto error;
     }
 
     /* Initially, check if this is a public-only key file. Sometimes
@@ -1169,57 +1169,57 @@ unsigned char *ssh2_userkey_loadpub(const Filename *filename, char **algorithm,
 
     /* Read the first header line which contains the key type. */
     if (!read_header(fp, header)
-	|| (0 != strcmp(header, "PuTTY-User-Key-File-2") &&
-	    0 != strcmp(header, "PuTTY-User-Key-File-1"))) {
+  || (0 != strcmp(header, "PuTTY-User-Key-File-2") &&
+      0 != strcmp(header, "PuTTY-User-Key-File-1"))) {
         if (0 == strncmp(header, "PuTTY-User-Key-File-", 20))
             error = "PuTTY key format too new";
         else
             error = "not a PuTTY SSH-2 private key";
-	goto error;
+  goto error;
     }
     error = "file format error";
     if ((b = read_body(fp)) == NULL)
-	goto error;
+  goto error;
     /* Select key algorithm structure. */
     alg = find_pubkey_alg(b);
     sfree(b);
     if (!alg) {
-	goto error;
+  goto error;
     }
 
     /* Read the Encryption header line. */
     if (!read_header(fp, header) || 0 != strcmp(header, "Encryption"))
-	goto error;
+  goto error;
     if ((b = read_body(fp)) == NULL)
-	goto error;
+  goto error;
     sfree(b);			       /* we don't care */
 
     /* Read the Comment header line. */
     if (!read_header(fp, header) || 0 != strcmp(header, "Comment"))
-	goto error;
+  goto error;
     if ((comment = read_body(fp)) == NULL)
-	goto error;
+  goto error;
 
-    if (commentptr)
+		if (commentptr)
 	*commentptr = comment;
-    else
+		else
 	sfree(comment);
 
     /* Read the Public-Lines header line and the public blob. */
     if (!read_header(fp, header) || 0 != strcmp(header, "Public-Lines"))
-	goto error;
+  goto error;
     if ((b = read_body(fp)) == NULL)
-	goto error;
+  goto error;
     i = atoi(b);
     sfree(b);
     if ((public_blob = read_blob(fp, i, &public_blob_len)) == NULL)
-	goto error;
+  goto error;
 
     fclose(fp);
     if (pub_blob_len)
-	*pub_blob_len = public_blob_len;
+  *pub_blob_len = public_blob_len;
     if (algorithm)
-	*algorithm = dupstr(alg->name);
+  *algorithm = dupstr(alg->name);
     return public_blob;
 
     /*
@@ -1227,11 +1227,11 @@ unsigned char *ssh2_userkey_loadpub(const Filename *filename, char **algorithm,
      */
   error:
     if (fp)
-	fclose(fp);
+  fclose(fp);
     if (public_blob)
-	sfree(public_blob);
+  sfree(public_blob);
     if (errorstr)
-	*errorstr = error;
+  *errorstr = error;
     if (comment && commentptr) {
         sfree(comment);
         *commentptr = NULL;
@@ -1245,55 +1245,55 @@ int ssh2_userkey_encrypted(const Filename *filename, char **commentptr)
     char header[40], *b, *comment;
     int ret;
 
-    if (commentptr)
+		if (commentptr)
 	*commentptr = NULL;
 
     fp = f_open(filename, "rb", FALSE);
     if (!fp)
-	return 0;
+  return 0;
     if (!read_header(fp, header)
-	|| (0 != strcmp(header, "PuTTY-User-Key-File-2") &&
-	    0 != strcmp(header, "PuTTY-User-Key-File-1"))) {
-	fclose(fp);
-	return 0;
+  || (0 != strcmp(header, "PuTTY-User-Key-File-2") &&
+      0 != strcmp(header, "PuTTY-User-Key-File-1"))) {
+  fclose(fp);
+  return 0;
     }
     if ((b = read_body(fp)) == NULL) {
-	fclose(fp);
-	return 0;
+  fclose(fp);
+  return 0;
     }
     sfree(b);			       /* we don't care about key type here */
     /* Read the Encryption header line. */
     if (!read_header(fp, header) || 0 != strcmp(header, "Encryption")) {
-	fclose(fp);
-	return 0;
+  fclose(fp);
+  return 0;
     }
     if ((b = read_body(fp)) == NULL) {
-	fclose(fp);
-	return 0;
+  fclose(fp);
+  return 0;
     }
 
     /* Read the Comment header line. */
     if (!read_header(fp, header) || 0 != strcmp(header, "Comment")) {
-	fclose(fp);
-	sfree(b);
-	return 1;
+  fclose(fp);
+  sfree(b);
+  return 1;
     }
     if ((comment = read_body(fp)) == NULL) {
-	fclose(fp);
-	sfree(b);
-	return 1;
+  fclose(fp);
+  sfree(b);
+  return 1;
     }
 
-    if (commentptr)
+		if (commentptr)
 	*commentptr = comment;
-    else
-        sfree(comment);
+		else
+				sfree(comment);
 
     fclose(fp);
     if (!strcmp(b, "aes256-cbc"))
-	ret = 1;
+  ret = 1;
     else
-	ret = 0;
+  ret = 0;
     sfree(b);
     return ret;
 }
@@ -1310,39 +1310,39 @@ void base64_encode(FILE *fp, const unsigned char *data, int datalen, int cpl)
     char out[4];
     int n, i;
 
-    while (datalen > 0) {
+		while (datalen > 0) {
 	n = (datalen < 3 ? datalen : 3);
 	base64_encode_atom(data, n, out);
 	data += n;
 	datalen -= n;
 	for (i = 0; i < 4; i++) {
-	    if (linelen >= cpl) {
+			if (linelen >= cpl) {
 		linelen = 0;
 		fputc('\n', fp);
-	    }
-	    fputc(out[i], fp);
-	    linelen++;
+			}
+			fputc(out[i], fp);
+			linelen++;
 	}
-    }
-    fputc('\n', fp);
+		}
+		fputc('\n', fp);
 }
 
 void base64_encode_buf(const unsigned char *data, int datalen, unsigned char *out)
 {
     int n;
 
-    while (datalen > 0) {
+		while (datalen > 0) {
 	n = (datalen < 3 ? datalen : 3);
 	base64_encode_atom(data, n, out);
 	data += n;
 	out += 4;
 	datalen -= n;
-    }
-    *out = 0;
+		}
+		*out = 0;
 }
 
 int ssh2_save_userkey(const Filename *filename, struct ssh2_userkey *key,
-		      char *passphrase)
+          char *passphrase)
 {
     FILE *fp;
     unsigned char *pub_blob, *priv_blob, *priv_blob_encrypted;
@@ -1359,20 +1359,20 @@ int ssh2_save_userkey(const Filename *filename, struct ssh2_userkey *key,
     pub_blob = key->alg->public_blob(key->data, &pub_blob_len);
     priv_blob = key->alg->private_blob(key->data, &priv_blob_len);
     if (!pub_blob || !priv_blob) {
-	sfree(pub_blob);
-	sfree(priv_blob);
-	return 0;
+  sfree(pub_blob);
+  sfree(priv_blob);
+  return 0;
     }
 
     /*
      * Determine encryption details, and encrypt the private blob.
      */
     if (passphrase) {
-	cipherstr = "aes256-cbc";
-	cipherblk = 16;
+  cipherstr = "aes256-cbc";
+  cipherblk = 16;
     } else {
-	cipherstr = "none";
-	cipherblk = 1;
+  cipherstr = "none";
+  cipherblk = 1;
     }
     priv_encrypted_len = priv_blob_len + cipherblk - 1;
     priv_encrypted_len -= priv_encrypted_len % cipherblk;
@@ -1384,25 +1384,25 @@ int ssh2_save_userkey(const Filename *filename, struct ssh2_userkey *key,
     SHA_Simple(priv_blob, priv_blob_len, priv_mac);
     assert(priv_encrypted_len - priv_blob_len < 20);
     memcpy(priv_blob_encrypted + priv_blob_len, priv_mac,
-	   priv_encrypted_len - priv_blob_len);
+     priv_encrypted_len - priv_blob_len);
 
     /* Now create the MAC. */
     {
-	unsigned char *macdata;
-	int maclen;
-	unsigned char *p;
-	int namelen = strlen(key->alg->name);
-	int enclen = strlen(cipherstr);
-	int commlen = strlen(key->comment);
-	SHA_State s;
-	unsigned char mackey[20];
-	char header[] = "putty-private-key-file-mac-key";
+  unsigned char *macdata;
+  int maclen;
+  unsigned char *p;
+  int namelen = strlen(key->alg->name);
+  int enclen = strlen(cipherstr);
+  int commlen = strlen(key->comment);
+  SHA_State s;
+  unsigned char mackey[20];
+  char header[] = "putty-private-key-file-mac-key";
 
 	maclen = (4 + namelen +
-		  4 + enclen +
-		  4 + commlen +
-		  4 + pub_blob_len +
-		  4 + priv_encrypted_len);
+			4 + enclen +
+			4 + commlen +
+			4 + pub_blob_len +
+			4 + priv_encrypted_len);
 	macdata = snewn(maclen, unsigned char);
 	p = macdata;
 #define DO_STR(s,len) PUT_32BIT(p,(len));memcpy(p+4,(s),(len));p+=4+(len)
@@ -1415,16 +1415,16 @@ int ssh2_save_userkey(const Filename *filename, struct ssh2_userkey *key,
 	SHA_Init(&s);
 	SHA_Bytes(&s, header, sizeof(header)-1);
 	if (passphrase)
-	    SHA_Bytes(&s, passphrase, strlen(passphrase));
+			SHA_Bytes(&s, passphrase, strlen(passphrase));
 	SHA_Final(&s, mackey);
 	hmac_sha1_simple(mackey, 20, macdata, maclen, priv_mac);
 	smemclr(macdata, maclen);
 	sfree(macdata);
 	smemclr(mackey, sizeof(mackey));
 	smemclr(&s, sizeof(s));
-    }
+		}
 
-    if (passphrase) {
+		if (passphrase) {
 	unsigned char key[40];
 	SHA_State s;
 
@@ -1439,11 +1439,11 @@ int ssh2_save_userkey(const Filename *filename, struct ssh2_userkey *key,
 	SHA_Bytes(&s, passphrase, passlen);
 	SHA_Final(&s, key + 20);
 	aes256_encrypt_pubkey(key, priv_blob_encrypted,
-			      priv_encrypted_len);
+						priv_encrypted_len);
 
 	smemclr(key, sizeof(key));
 	smemclr(&s, sizeof(s));
-    }
+		}
 
     fp = f_open(filename, "w", TRUE);
     if (!fp) {
@@ -1463,7 +1463,7 @@ int ssh2_save_userkey(const Filename *filename, struct ssh2_userkey *key,
     base64_encode(fp, priv_blob_encrypted, priv_encrypted_len, 64);
     fprintf(fp, "Private-MAC: ");
     for (i = 0; i < 20; i++)
-	fprintf(fp, "%02x", priv_mac[i]);
+  fprintf(fp, "%02x", priv_mac[i]);
     fprintf(fp, "\n");
     fclose(fp);
 
@@ -1486,7 +1486,7 @@ char *ssh1_pubkey_str(struct RSAKey *key)
     dec1 = bignum_decimal(key->exponent);
     dec2 = bignum_decimal(key->modulus);
     buffer = dupprintf("%d %s %s%s%s", bignum_bitcount(key->modulus),
-		       dec1, dec2,
+           dec1, dec2,
                        key->comment ? " " : "",
                        key->comment ? key->comment : "");
     sfree(dec1);
@@ -1630,7 +1630,7 @@ char *ssh2_fingerprint_blob(const void *blob, int bloblen)
     for (i = 0; i < 16; i++)
         sprintf(fingerprint_str_md5 + i*3, "%02x%s", digest[i], i==15 ? "" : ":");
 
-    SHA256_Simple(blob, bloblen, digest);
+    putty_SHA256_Simple(blob, bloblen, digest);
     base64_encode_buf(digest, 32, fingerprint_str_sha256);
 
     /*
@@ -1687,34 +1687,34 @@ static int key_type_fp(FILE *fp)
     i = fread(buf, 1, sizeof(buf)-1, fp);
     rewind(fp);
 
-    if (i < 0)
+		if (i < 0)
 	return SSH_KEYTYPE_UNOPENABLE;
-    if (i < 32)
+		if (i < 32)
 	return SSH_KEYTYPE_UNKNOWN;
-    assert(i > 0 && i < sizeof(buf));
-    buf[i] = '\0';
-    if (!memcmp(buf, rsa_signature, sizeof(rsa_signature)-1))
+		assert(i > 0 && i < sizeof(buf));
+		buf[i] = '\0';
+		if (!memcmp(buf, rsa_signature, sizeof(rsa_signature)-1))
 	return SSH_KEYTYPE_SSH1;
-    if (!memcmp(buf, public_std_sig, sizeof(public_std_sig)-1))
+		if (!memcmp(buf, public_std_sig, sizeof(public_std_sig)-1))
 	return SSH_KEYTYPE_SSH2_PUBLIC_RFC4716;
-    if (!memcmp(buf, putty2_sig, sizeof(putty2_sig)-1))
+		if (!memcmp(buf, putty2_sig, sizeof(putty2_sig)-1))
 	return SSH_KEYTYPE_SSH2;
-    if (!memcmp(buf, openssh_new_sig, sizeof(openssh_new_sig)-1))
+		if (!memcmp(buf, openssh_new_sig, sizeof(openssh_new_sig)-1))
 	return SSH_KEYTYPE_OPENSSH_NEW;
-    if (!memcmp(buf, openssh_sig, sizeof(openssh_sig)-1))
+		if (!memcmp(buf, openssh_sig, sizeof(openssh_sig)-1))
 	return SSH_KEYTYPE_OPENSSH_PEM;
-    if (!memcmp(buf, sshcom_sig, sizeof(sshcom_sig)-1))
+		if (!memcmp(buf, sshcom_sig, sizeof(sshcom_sig)-1))
 	return SSH_KEYTYPE_SSHCOM;
-    if ((p = buf + strspn(buf, "0123456789"), *p == ' ') &&
-        (p = p+1 + strspn(p+1, "0123456789"), *p == ' ') &&
-        (p = p+1 + strspn(p+1, "0123456789"), *p == ' ' || *p == '\n' || !*p))
+		if ((p = buf + strspn(buf, "0123456789"), *p == ' ') &&
+				(p = p+1 + strspn(p+1, "0123456789"), *p == ' ') &&
+				(p = p+1 + strspn(p+1, "0123456789"), *p == ' ' || *p == '\n' || !*p))
 	return SSH_KEYTYPE_SSH1_PUBLIC;
-    if ((p = buf + strcspn(buf, " "), find_pubkey_alg_len(p-buf, buf)) &&
-        (p = p+1 + strspn(p+1, "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghij"
-                          "klmnopqrstuvwxyz+/="),
-         *p == ' ' || *p == '\n' || !*p))
+		if ((p = buf + strcspn(buf, " "), find_pubkey_alg_len(p-buf, buf)) &&
+				(p = p+1 + strspn(p+1, "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghij"
+													"klmnopqrstuvwxyz+/="),
+				 *p == ' ' || *p == '\n' || !*p))
 	return SSH_KEYTYPE_SSH2_PUBLIC_OPENSSH;
-    return SSH_KEYTYPE_UNKNOWN;	       /* unrecognised or EOF */
+		return SSH_KEYTYPE_UNKNOWN;	       /* unrecognised or EOF */
 }
 
 int key_type(const Filename *filename)
@@ -1724,7 +1724,7 @@ int key_type(const Filename *filename)
 
     fp = f_open(filename, "r", FALSE);
     if (!fp)
-	return SSH_KEYTYPE_UNOPENABLE;
+  return SSH_KEYTYPE_UNOPENABLE;
     ret = key_type_fp(fp);
     fclose(fp);
     return ret;

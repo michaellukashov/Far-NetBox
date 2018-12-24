@@ -29,10 +29,10 @@ static void putty_sha512_mpint(putty_SHA512_State * s, Bignum b)
     int len;
     len = (bignum_bitcount(b) + 8) / 8;
     PUT_32BIT(lenbuf, len);
-    SHA512_Bytes(s, lenbuf, 4);
+    putty_SHA512_Bytes(s, lenbuf, 4);
     while (len-- > 0) {
   lenbuf[0] = bignum_byte(b, len);
-  SHA512_Bytes(s, lenbuf, 1);
+  putty_SHA512_Bytes(s, lenbuf, 1);
     }
     smemclr(lenbuf, sizeof(lenbuf));
 }
@@ -567,17 +567,17 @@ Bignum *dss_gen_k(const char *id_string, Bignum modulus, Bignum private_key,
     /*
      * Hash some identifying text plus x.
      */
-    SHA512_Init(&ss);
-    SHA512_Bytes(&ss, id_string, strlen(id_string) + 1);
-    sha512_mpint(&ss, private_key);
-    SHA512_Final(&ss, digest512);
+    putty_SHA512_Init(&ss);
+    putty_SHA512_Bytes(&ss, id_string, strlen(id_string) + 1);
+    putty_sha512_mpint(&ss, private_key);
+    putty_SHA512_Final(&ss, digest512);
 
     /*
      * Now hash that digest plus the message hash.
      */
-    SHA512_Init(&ss);
-    SHA512_Bytes(&ss, digest512, sizeof(digest512));
-    SHA512_Bytes(&ss, digest, digest_len);
+    putty_SHA512_Init(&ss);
+    putty_SHA512_Bytes(&ss, digest512, sizeof(digest512));
+    putty_SHA512_Bytes(&ss, digest, digest_len);
 
     while (1) {
         putty_SHA512_State ss2 = ss;         /* structure copy */
@@ -601,7 +601,7 @@ Bignum *dss_gen_k(const char *id_string, Bignum modulus, Bignum private_key,
         /* Very unlikely we get here, but if so, k was unsuitable. */
         freebn(k);
         /* Perturb the hash to think of a different k. */
-        SHA512_Bytes(&ss, "x", 1);
+        putty_SHA512_Bytes(&ss, "x", 1);
         /* Go round and try again. */
     }
 }

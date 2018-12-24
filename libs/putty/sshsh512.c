@@ -250,7 +250,7 @@ void putty_SHA512_Bytes(putty_SHA512_State *s, const void *p, int len) {
     }
 }
 
-void SHA512_Final(putty_SHA512_State *s, unsigned char *digest) {
+void putty_SHA512_Final(putty_SHA512_State *s, unsigned char *digest) {
     int i;
     int pad;
     unsigned char c[BLKSIZE];
@@ -269,7 +269,7 @@ void SHA512_Final(putty_SHA512_State *s, unsigned char *digest) {
 
     memset(c, 0, pad);
     c[0] = 0x80;
-    SHA512_Bytes(s, &c, pad);
+    putty_SHA512_Bytes(s, &c, pad);
 
     for (i = 0; i < 4; i++) {
   c[i*4+0] = (len[3-i] >> 24) & 0xFF;
@@ -278,7 +278,7 @@ void SHA512_Final(putty_SHA512_State *s, unsigned char *digest) {
   c[i*4+3] = (len[3-i] >>  0) & 0xFF;
     }
 
-    SHA512_Bytes(s, &c, 16);
+    putty_SHA512_Bytes(s, &c, 16);
 
     for (i = 0; i < 8; i++) {
   uint32 h, l;
@@ -296,24 +296,24 @@ void SHA512_Final(putty_SHA512_State *s, unsigned char *digest) {
 
 void SHA384_Final(putty_SHA512_State *s, unsigned char *digest) {
     unsigned char biggerDigest[512 / 8];
-    SHA512_Final(s, biggerDigest);
+    putty_SHA512_Final(s, biggerDigest);
     memcpy(digest, biggerDigest, 384 / 8);
 }
 
 void SHA512_Simple(const void *p, int len, unsigned char *output) {
     putty_SHA512_State s;
 
-    SHA512_Init(&s);
-    SHA512_Bytes(&s, p, len);
-    SHA512_Final(&s, output);
+    putty_SHA512_Init(&s);
+    putty_SHA512_Bytes(&s, p, len);
+    putty_SHA512_Final(&s, output);
     smemclr(&s, sizeof(s));
 }
 
 void SHA384_Simple(const void *p, int len, unsigned char *output) {
     putty_SHA512_State s;
 
-    SHA384_Init(&s);
-    SHA512_Bytes(&s, p, len);
+    putty_SHA384_Init(&s);
+    putty_SHA512_Bytes(&s, p, len);
     SHA384_Final(&s, output);
     smemclr(&s, sizeof(s));
 }
@@ -360,7 +360,7 @@ static void sha512_final(void *handle, unsigned char *output)
 {
     putty_SHA512_State *s = handle;
 
-    SHA512_Final(s, output);
+    putty_SHA512_Final(s, output);
     sha512_free(s);
 }
 
@@ -450,9 +450,9 @@ int main(void) {
       int n;
       SHA512_Init(&s);
       for (n = 0; n < 1000000 / 40; n++)
-    SHA512_Bytes(&s, "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    putty_SHA512_Bytes(&s, "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
            40);
-      SHA512_Final(&s, digest);
+      putty_SHA512_Final(&s, digest);
   }
   for (j = 0; j < 64; j++) {
       if (digest[j] != tests[i].digest512[j]) {

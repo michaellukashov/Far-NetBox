@@ -162,7 +162,7 @@ struct FontSpec *fontspec_new(const char *name,
     PUTTY_TYPECHECK((t_##fname)NULL == fname,                                   \
               (p_##fname = module ?                                      \
                (t_##fname) GetProcAddress(module, #fname) : NULL))
-#define PUTTY_PUTTY_GET_WINDOWS_FUNCTION_NO_TYPECHECK(module, fname) \
+#define PUTTY_GET_WINDOWS_FUNCTION_NO_TYPECHECK(module, fname) \
     (p_##fname = module ?                                \
      (t_##fname) GetProcAddress(module, #fname) : NULL)
 
