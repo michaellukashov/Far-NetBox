@@ -12,7 +12,7 @@
 #include "SecureShell.h"
 #include "CoreMain.h"
 #include "TextsCore.h"
-#include <Soap.EncdDecd.hpp>
+__removed #include <Soap.EncdDecd.hpp>
 //---------------------------------------------------------------------------
 char sshver[50];
 extern const char commitid[] = "";

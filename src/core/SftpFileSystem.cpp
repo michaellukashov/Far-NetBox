@@ -5333,18 +5333,25 @@ void TSFTPFileSystem::DirectorySunk(
 }
 //---------------------------------------------------------------------------
 void TSFTPFileSystem::WriteLocalFile(
-  TStream * FileStream, TFileBuffer & BlockBuf, const UnicodeString & LocalFileName,
+  TStream * FileStream, TFileBuffer & BlockBuf, const UnicodeString ALocalFileName,
   TFileOperationProgressType * OperationProgress)
 {
-  FILE_OPERATION_LOOP_BEGIN
+  FileOperationLoopCustom(FTerminal, OperationProgress, folAllowSkip,
+    FMTLOAD(WRITE_ERROR, ALocalFileName), "",
+  [&]()
   {
     BlockBuf.WriteToStream(FileStream, BlockBuf.Size);
-  }
-  FILE_OPERATION_LOOP_END(FMTLOAD(WRITE_ERROR, (LocalFileName)));
+  });
+  __removed FILE_OPERATION_LOOP_END(FMTLOAD(WRITE_ERROR, (ALocalFileName)));
 
   OperationProgress->AddLocallyUsed(BlockBuf.Size);
 }
 //---------------------------------------------------------------------------
+void TSFTPFileSystem::Sink(
+  const UnicodeString AFileName, const TRemoteFile * AFile,
+  const UnicodeString ATargetDir, UnicodeString& ADestFileName, intptr_t Attrs,
+  const TCopyParamType * CopyParam, intptr_t AParams, TFileOperationProgressType * OperationProgress,
+  uintptr_t /*AFlags*/, TDownloadSessionAction & Action)
 {
   // resume has no sense for temporary downloads
   bool ResumeAllowed =
@@ -5432,7 +5439,7 @@ void TSFTPFileSystem::WriteLocalFile(
       RemoteHandle = SFTPOpenRemoteFile(AFileName, OpenType);
       OperationProgress->Progress();
     });
-    __removed FILE_OPERATION_LOOP_END(FMTLOAD(SFTP_OPEN_FILE_ERROR, (FileName)));
+    __removed FILE_OPERATION_LOOP_END(FMTLOAD(SFTP_OPEN_FILE_ERROR, (AFileName)));
 
     FILETIME AcTime;
     ClearStruct(AcTime);
@@ -5549,6 +5556,7 @@ void TSFTPFileSystem::WriteLocalFile(
     FileStream = new TSafeHandleStream((THandle)LocalFileHandle);
 
     // at end of this block queue is discarded
+    try__finally
     {
       TSFTPDownloadQueue Queue(this, FCodePage);
       try__finally
@@ -5576,7 +5584,7 @@ void TSFTPFileSystem::WriteLocalFile(
         uintptr_t BlockSize = 0;
         bool ConvertToken = false;
         TEncryption Encryption(FTerminal->GetEncryptKey());
-        bool Decrypt = FTerminal->IsFileEncrypted(FileName);
+        bool Decrypt = FTerminal->IsFileEncrypted(AFileName);
 
         while (!Eof)
         {
@@ -5701,6 +5709,7 @@ void TSFTPFileSystem::WriteLocalFile(
             WriteLocalFile(FileStream, BlockBuf, LocalFileName, OperationProgress);
           }
         }
+      },
       __finally
       {
         Queue.DisposeSafe();

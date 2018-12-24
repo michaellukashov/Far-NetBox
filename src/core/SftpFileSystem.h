@@ -77,9 +77,9 @@ public:
     const UnicodeString ADestFullName, const TRemoteFile *AFile, const TCopyParamType * CopyParam) override;
   virtual void Sink(
     const UnicodeString AFileName, const TRemoteFile *AFile,
-    const UnicodeString ATargetDir, UnicodeString &ADestFileName, uintptr_t Attrs,
-    const TCopyParamType * CopyParam, intptr_t Params, TFileOperationProgressType *OperationProgress,
-    uintptr_t AFlags, TDownloadSessionAction &Action) override;
+    const UnicodeString ATargetDir, UnicodeString &ADestFileName, intptr_t AAttrs,
+    const TCopyParamType* CopyParam, intptr_t AParams, TFileOperationProgressType* OperationProgress,
+    uintptr_t AFlags, TDownloadSessionAction& Action) override;
   virtual void RemoteCreateDirectory(const UnicodeString ADirName, bool Encrypt) override;
   virtual void RemoteCreateLink(const UnicodeString AFileName, const UnicodeString APointTo, bool Symbolic) override;
   virtual void RemoteDeleteFile(const UnicodeString AFileName,
@@ -217,7 +217,7 @@ protected:
     TFileOperationProgressType *OperationProgress) const;
   void AddPathString(TSFTPPacket & Packet, const UnicodeString & Value, bool EncryptNewFiles = false);
   void WriteLocalFile(
-    TStream * FileStream, TFileBuffer & BlockBuf, const UnicodeString & LocalFileName,
+    TStream * FileStream, TFileBuffer & BlockBuf, const UnicodeString ALocalFileName,
     TFileOperationProgressType * OperationProgress);
   intptr_t PacketLength(uint8_t *LenBuf, SSH_FXP_TYPE ExpectedType) const;
   void Progress(TFileOperationProgressType *OperationProgress);

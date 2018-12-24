@@ -204,9 +204,9 @@ public:
     const UnicodeString /*ADestFullName*/, const TRemoteFile * /*AFile*/, const TCopyParamType * /*ACopyParam*/) {}
   virtual void Sink(
     const UnicodeString AFileName, const TRemoteFile *AFile,
-    const UnicodeString ATargetDir, UnicodeString &ADestFileName, uintptr_t Attrs,
-    const TCopyParamType *CopyParam, intptr_t AParams, TFileOperationProgressType *OperationProgress,
-    uintptr_t AFlags, TDownloadSessionAction &Action) = 0;
+    const UnicodeString ATargetDir, UnicodeString &ADestFileName, intptr_t AAttrs,
+    const TCopyParamType* CopyParam, intptr_t AParams, TFileOperationProgressType* OperationProgress,
+    uintptr_t AFlags, TDownloadSessionAction& Action) = 0;
   virtual void RemoteCreateDirectory(const UnicodeString ADirName, bool Encrypt) = 0;
   virtual void RemoteCreateLink(const UnicodeString AFileName, const UnicodeString APointTo, bool Symbolic) = 0;
   virtual void RemoteDeleteFile(const UnicodeString AFileName,
