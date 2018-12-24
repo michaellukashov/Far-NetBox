@@ -34,8 +34,8 @@ namespace nb {
   using fastdelegate::FastDelegate8;
 } // namespace nb
 
-typedef HANDLE THandle;
-typedef DWORD TThreadID;
+using THandle = HANDLE;
+using TThreadID = DWORD;
 
 class Exception;
 
@@ -78,7 +78,7 @@ public:
   virtual ~TObject() = default;
   virtual void Changed() {}
 private:
-  TObjectClassId FKind;
+  TObjectClassId FKind{};
 };
 
 template<class O, class T>
@@ -94,8 +94,8 @@ inline TObject *ToObj(const T &a) { return reinterpret_cast<TObject *>(ToSizeT(a
 
 struct TPoint
 {
-  int x;
-  int y;
+  int x{0};
+  int y{0};
   TPoint() noexcept :
     x(0),
     y(0)
@@ -110,10 +110,10 @@ struct TPoint
 
 struct TRect
 {
-  int Left;
-  int Top;
-  int Right;
-  int Bottom;
+  int Left{0};
+  int Top{0};
+  int Right{0};
+  int Bottom{0};
   int Width() const { return Right - Left; }
   int Height() const { return Bottom - Top; }
   TRect() noexcept :
@@ -122,7 +122,7 @@ struct TRect
     Right(0),
     Bottom(0)
   {}
-  TRect(int left, int top, int right, int bottom) :
+  TRect(int left, int top, int right, int bottom) noexcept :
     Left(left),
     Top(top),
     Right(right),
@@ -279,6 +279,7 @@ public:
   void SaveToStream(TStream *Stream) const;
   wchar_t GetDelimiter() const { return FDelimiter; }
   void SetDelimiter(wchar_t Value) { FDelimiter = Value; }
+  void SetStrictDelimiter(bool Value) { FStrictDelimiter = Value; }
   wchar_t GetQuoteChar() const { return FQuoteChar; }
   void SetQuoteChar(wchar_t Value) { FQuoteChar = Value; }
   UnicodeString GetDelimitedText() const;
@@ -310,10 +311,11 @@ public:
   UnicodeString GetValueFromIndex(intptr_t Index) const;
 
 protected:
-  TDuplicatesEnum FDuplicates;
-  mutable wchar_t FDelimiter;
-  mutable wchar_t FQuoteChar;
-  intptr_t FUpdateCount;
+  TDuplicatesEnum FDuplicates{};
+  mutable wchar_t FDelimiter{};
+  bool FStrictDelimiter{false};
+  mutable wchar_t FQuoteChar{};
+  intptr_t FUpdateCount{0};
 };
 
 class TStringList;
@@ -370,8 +372,8 @@ private:
   TNotifyEvent FOnChange;
   TNotifyEvent FOnChanging;
   rde::vector<UnicodeString> FStrings;
-  bool FSorted;
-  bool FCaseSensitive;
+  bool FSorted{false};
+  bool FCaseSensitive{false};
 
 private:
   void ExchangeItems(intptr_t Index1, intptr_t Index2);
@@ -454,7 +456,7 @@ public:
   void DecodeDate(uint16_t &Y, uint16_t &M, uint16_t &D) const;
   void DecodeTime(uint16_t &H, uint16_t &N, uint16_t &S, uint16_t &MS) const;
 private:
-  double FValue;
+  double FValue{0};
 };
 
 #define MinDateTime TDateTime(-657434.0)

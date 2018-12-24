@@ -4,12 +4,12 @@
 
 // TCriticalSection
 
-TCriticalSection::TCriticalSection()
+TCriticalSection::TCriticalSection() noexcept
 {
   InitializeCriticalSection(&FSection);
 }
 
-TCriticalSection::~TCriticalSection()
+TCriticalSection::~TCriticalSection() noexcept
 {
   DebugAssert(FAcquired == 0);
   DeleteCriticalSection(&FSection);

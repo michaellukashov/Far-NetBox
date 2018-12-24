@@ -586,8 +586,8 @@ template<typename F, scope_type Type>
 class scope_guard0
 {
 public:
-  NB_NONCOPYABLE(scope_guard0);
-  NB_MOVABLE(scope_guard0);
+  NB_NONCOPYABLE(scope_guard0)
+  NB_MOVABLE(scope_guard0)
 
   explicit scope_guard0(F&& f): m_f(std::forward<F>(f)) {}
 

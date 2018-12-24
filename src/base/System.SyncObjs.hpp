@@ -7,8 +7,8 @@ class TCriticalSection
 CUSTOM_MEM_ALLOCATION_IMPL
 NB_DISABLE_COPY(TCriticalSection)
 public:
-  TCriticalSection();
-  ~TCriticalSection();
+  TCriticalSection() noexcept;
+  ~TCriticalSection() noexcept;
 
   void Enter() const;
   void Leave() const;

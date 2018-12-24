@@ -21,3 +21,8 @@ bool EndsStr(const UnicodeString SubStr, const UnicodeString Str)
     return false;
   return Str.SubStr(Str.Length() - SubStr.Length() + 1, SubStr.Length()) == SubStr;
 }
+
+NB_CORE_EXPORT bool EndsText(const UnicodeString SubStr, const UnicodeString Str)
+{
+  return EndsStr(SubStr, Str);
+}

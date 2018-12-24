@@ -24,6 +24,7 @@ class NB_CORE_EXPORT TGuard
   CUSTOM_MEM_ALLOCATION_IMPL
   NB_DISABLE_COPY(TGuard)
 public:
+  TGuard() = delete;
   explicit TGuard(const TCriticalSection &ACriticalSection);
   ~TGuard();
 
@@ -36,6 +37,7 @@ class NB_CORE_EXPORT TUnguard
   CUSTOM_MEM_ALLOCATION_IMPL
   NB_DISABLE_COPY(TUnguard)
 public:
+  TUnguard() = delete;
   explicit TUnguard(TCriticalSection &ACriticalSection);
   ~TUnguard();
 
