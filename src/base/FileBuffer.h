@@ -11,15 +11,15 @@ enum TEOLType
   eolCR     // \r
 };
 
-const intptr_t cpRemoveCtrlZ = 0x01;
-const intptr_t cpRemoveBOM   = 0x02;
+constexpr const intptr_t cpRemoveCtrlZ = 0x01;
+constexpr const intptr_t cpRemoveBOM   = 0x02;
 //---------------------------------------------------------------------------
 class NB_CORE_EXPORT TFileBuffer : public TObject
 {
 NB_DISABLE_COPY(TFileBuffer)
 public:
-  TFileBuffer();
-  virtual ~TFileBuffer();
+  TFileBuffer() noexcept;
+  virtual ~TFileBuffer() noexcept;
   void Convert(char * Source, char * Dest, intptr_t Params, bool & Token);
   void Convert(TEOLType Source, TEOLType Dest, intptr_t Params, bool & Token);
   void Convert(char * Source, TEOLType Dest, intptr_t Params, bool & Token);
@@ -32,8 +32,11 @@ public:
   __property TMemoryStream * Memory  = { read=FMemory, write=SetMemory };
   RWProperty<TMemoryStream *> Memory{nb::bind(&TFileBuffer::GetMemory, this), nb::bind(&TFileBuffer::SetMemory, this)};
   __property char * Data = { read=GetData };
+  ROProperty<char *> Data{nb::bind(&TFileBuffer::GetData, this)};
   __property int Size = { read=FSize, write=SetSize };
+  RWProperty<intptr_t> Size{nb::bind(&TFileBuffer::GetSize, this), nb::bind(&TFileBuffer::SetSize, this)};
   __property int Position = { read=GetPosition, write=SetPosition };
+  RWProperty<intptr_t> Position{nb::bind(&TFileBuffer::GetPosition, this), nb::bind(&TFileBuffer::SetPosition, this)};
 
 public:
   TMemoryStream * GetMemory() const { return FMemory.get(); }

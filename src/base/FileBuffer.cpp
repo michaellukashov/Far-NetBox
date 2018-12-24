@@ -24,12 +24,12 @@ char * EOLToStr(TEOLType EOLType)
   }
 }
 //---------------------------------------------------------------------------
-TFileBuffer::TFileBuffer() :
+TFileBuffer::TFileBuffer() noexcept :
   FMemory(std::make_unique<TMemoryStream>())
 {
 }
 //---------------------------------------------------------------------------
-TFileBuffer::~TFileBuffer()
+TFileBuffer::~TFileBuffer() noexcept
 {
   FMemory.reset();
 }
@@ -233,7 +233,7 @@ void TFileBuffer::WriteToStream(TStream * Stream, const int64_t Len)
   try
   {
     Stream->WriteBuffer(GetData() + GetPosition(), Len);
-    auto const res = FMemory->Seek(Len, soFromCurrent);
+    const int64_t res = FMemory->Seek(Len, soFromCurrent);
     DebugAssert(res >= Len);
   }
   catch (EWriteError &)
