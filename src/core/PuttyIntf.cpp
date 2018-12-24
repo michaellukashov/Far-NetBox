@@ -573,7 +573,7 @@ bool IsKeyEncrypted(TKeyType KeyType, const UnicodeString FileName, UnicodeStrin
   bool Result;
   char *CommentStr = nullptr;
   Filename * KeyFile = filename_from_str(UtfFileName.c_str());
-  try
+  try__finally
   {
     switch (KeyType)
     {
@@ -592,11 +592,11 @@ bool IsKeyEncrypted(TKeyType KeyType, const UnicodeString FileName, UnicodeStrin
         Result = false;
         break;
     }
-  }
+  },
   __finally
   {
     filename_free(KeyFile);
-  }
+  } end_try__finally
 
   if (CommentStr != nullptr)
   {
@@ -619,7 +619,7 @@ TPrivateKey *LoadKey(TKeyType KeyType, const UnicodeString FileName, const Unico
   struct ssh2_userkey *Ssh2Key = nullptr;
   const char *ErrorStr = nullptr;
   AnsiString AnsiPassphrase = Passphrase;
-  try
+  try__finally
   {
     switch (KeyType)
     {
@@ -637,12 +637,12 @@ TPrivateKey *LoadKey(TKeyType KeyType, const UnicodeString FileName, const Unico
         DebugFail();
         break;
     }
-  }
+  },
   __finally
   {
     Shred(AnsiPassphrase);
     filename_free(KeyFile);
-  }
+  } end_try__finally
 
   if (Ssh2Key == nullptr)
   {
@@ -674,11 +674,11 @@ void SaveKey(TKeyType KeyType, const UnicodeString FileName,
 {
   UTF8String UtfFileName = UTF8String(::ExpandEnvironmentVariables(FileName));
   Filename *KeyFile = filename_from_str(UtfFileName.c_str());
-  try
+  try__finally
   {
     struct ssh2_userkey * Ssh2Key = reinterpret_cast<struct ssh2_userkey *>(PrivateKey);
     AnsiString AnsiPassphrase = Passphrase;
-    char * PassphrasePtr = (AnsiPassphrase.IsEmpty() ? NULL : AnsiPassphrase.c_str());
+    char * PassphrasePtr = (char *)(AnsiPassphrase.IsEmpty() ? nullptr : AnsiPassphrase.c_str());
     switch (KeyType)
     {
       case ktSSH2:
@@ -693,12 +693,11 @@ void SaveKey(TKeyType KeyType, const UnicodeString FileName,
         DebugFail();
         break;
     }
-  filename_free(KeyFile);
-  }
+  },
   __finally
   {
     filename_free(KeyFile);
-  }
+  } end_try__finally
 }
 //---------------------------------------------------------------------------
 void FreeKey(TPrivateKey *PrivateKey)
@@ -714,15 +713,15 @@ RawByteString LoadPublicKey(const UnicodeString & FileName, UnicodeString & Algo
   RawByteString Result;
   UTF8String UtfFileName = UTF8String(FileName);
   Filename * KeyFile = filename_from_str(UtfFileName.c_str());
-  try
+  try__finally
   {
-    char * AlgorithmStr = NULL;
+    char * AlgorithmStr = nullptr;
     int PublicKeyLen = 0;
-    char * CommentStr = NULL;
-    const char * ErrorStr = NULL;
+    char * CommentStr = nullptr;
+    const char * ErrorStr = nullptr;
     unsigned char * PublicKeyPtr =
       ssh2_userkey_loadpub(KeyFile, &AlgorithmStr, &PublicKeyLen, &CommentStr, &ErrorStr);
-    if (PublicKeyPtr == NULL)
+    if (PublicKeyPtr == nullptr)
     {
       UnicodeString Error = UnicodeString(AnsiString(ErrorStr));
       throw Exception(Error);
@@ -733,11 +732,11 @@ RawByteString LoadPublicKey(const UnicodeString & FileName, UnicodeString & Algo
     sfree(CommentStr);
     Result = RawByteString(reinterpret_cast<char *>(PublicKeyPtr), PublicKeyLen);
     free(PublicKeyPtr);
-  }
+  },
   __finally
   {
     filename_free(KeyFile);
-  }
+  } end_try__finally
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -748,10 +747,11 @@ UnicodeString GetPublicKeyLine(const UnicodeString & FileName, UnicodeString & C
   UnicodeString PublicKeyBase64 = EncodeBase64(PublicKey.c_str(), PublicKey.Length());
   PublicKeyBase64 = ReplaceStr(PublicKeyBase64, L"\r", L"");
   PublicKeyBase64 = ReplaceStr(PublicKeyBase64, L"\n", L"");
-  UnicodeString Result = FORMAT(L"%s %s %s", (Algorithm, PublicKeyBase64, Comment));
+  UnicodeString Result = FORMAT("%s %s %s", Algorithm, PublicKeyBase64, Comment);
   return Result;
 }
 //---------------------------------------------------------------------------
+bool HasGSSAPI(UnicodeString CustomPath)
 {
   static int has = -1;
   if (has < 0)
@@ -827,7 +827,7 @@ static void DoNormalizeFingerprint(UnicodeString &Fingerprint, UnicodeString &Ke
   }
 }
 //---------------------------------------------------------------------------
-UnicodeString NormalizeFingerprint(const UnicodeString AFingerprint)
+UnicodeString NormalizeFingerprint(UnicodeString AFingerprint)
 {
   UnicodeString Fingerprint = AFingerprint;
   UnicodeString KeyType; // unused
@@ -835,11 +835,10 @@ UnicodeString NormalizeFingerprint(const UnicodeString AFingerprint)
   return Fingerprint;
 }
 //---------------------------------------------------------------------------
-UnicodeString GetKeyTypeFromFingerprint(const UnicodeString AFingerprint)
+UnicodeString GetKeyTypeFromFingerprint(UnicodeString AFingerprint)
 {
-  UnicodeString Fingerprint = AFingerprint;
   UnicodeString KeyType;
-  DoNormalizeFingerprint(Fingerprint, KeyType);
+  DoNormalizeFingerprint(AFingerprint, KeyType);
   return KeyType;
 }
 //---------------------------------------------------------------------------
@@ -857,7 +856,7 @@ UnicodeString GetPuTTYVersion()
 //---------------------------------------------------------------------------
 UnicodeString Sha256(const char *Data, size_t Size)
 {
-  uint8_t Digest[32];
+  uint8_t Digest[32]{};
   putty_SHA256_Simple(Data, ToInt(Size), Digest);
   UnicodeString Result(BytesToHex(Digest, _countof(Digest)));
   return Result;
@@ -903,9 +902,9 @@ UnicodeString ParseOpenSshPubLine(const UnicodeString ALine, const struct ssh_si
     },
     __finally
     {
-       sfree(PubBlob);
-       sfree(AlgorithmName);
-       sfree(CommentPtr);
+      sfree(PubBlob);
+      sfree(AlgorithmName);
+      sfree(CommentPtr);
     } end_try__finally
   }
   return Result;
@@ -1007,7 +1006,7 @@ TStrings * SshHostKeyList()
 TStrings * SshMacList()
 {
   std::unique_ptr<TStrings> Result(std::make_unique<TStringList>());
-  const struct ssh_mac ** Macs = NULL;
+  const struct ssh_mac ** Macs = nullptr;
   int Count = 0;
   get_macs(&Count, &Macs);
 

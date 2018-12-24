@@ -37,8 +37,8 @@ public:
   static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TS3FileSystem); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TS3FileSystem) || TObject::is(Kind); }
 public:
-  explicit TS3FileSystem(TTerminal *ATerminal);
-  virtual ~TS3FileSystem();
+  explicit TS3FileSystem(TTerminal *ATerminal) noexcept;
+  virtual ~TS3FileSystem() noexcept;
 
   virtual void Open() override;
   virtual void Close() override;
@@ -83,7 +83,7 @@ public:
     const TRemoteFile *File, intptr_t AParams,
     TRmSessionAction &Action) override;
   virtual void CustomCommandOnFile(const UnicodeString AFileName,
-    const TRemoteFile *File, const UnicodeString ACommand, intptr_t AParams, TCaptureOutputEvent OutputEvent) override;
+    const TRemoteFile *File, UnicodeString ACommand, intptr_t AParams, TCaptureOutputEvent OutputEvent) override;
   virtual void DoStartup() override;
   virtual void HomeDirectory() override;
   virtual bool IsCapable(intptr_t Capability) const override;
@@ -115,7 +115,7 @@ public:
   virtual void Init(void *) override;
   virtual void FileTransferProgress(int64_t TransferSize, int64_t Bytes) override;
 protected:
-  bool FActive;
+  bool FActive{false};
   TFileSystemInfo FFileSystemInfo;
   UnicodeString FCurrentDirectory;
   UnicodeString FCachedDirectoryChange;
@@ -123,13 +123,13 @@ protected:
   UTF8String FAccessKeyId;
   UTF8String FSecretAccessKey;
   UTF8String FHostName;
-  int FTimeout;
-  S3RequestContext *FRequestContext;
+  int FTimeout{0};
+  S3RequestContext *FRequestContext{nullptr};
   _S3Protocol FLibS3Protocol;
-  ne_session_s *FNeonSession;
+  ne_session_s *FNeonSession{nullptr};
   UnicodeString FTlsVersionStr;
   UnicodeString FResponse;
-  bool FResponseIgnore;
+  bool FResponseIgnore{false};
   typedef rde::map<UnicodeString, UnicodeString> TRegions;
   TRegions FRegions;
   TRegions FHostNames;

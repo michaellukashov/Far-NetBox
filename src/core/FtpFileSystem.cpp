@@ -1600,7 +1600,7 @@ void TFTPFileSystem::CopyToLocal(TStrings *AFilesToCopy,
 //---------------------------------------------------------------------------
 void TFTPFileSystem::Sink(
   const UnicodeString AFileName, const TRemoteFile *File,
-  const UnicodeString TargetDir, UnicodeString &DestFileName, uintptr_t Attrs,
+  const UnicodeString TargetDir, UnicodeString &DestFileName, intptr_t Attrs,
   const TCopyParamType * CopyParam, intptr_t Params, TFileOperationProgressType *OperationProgress,
   uintptr_t AFlags, TDownloadSessionAction &Action)
 {
@@ -1616,7 +1616,7 @@ void TFTPFileSystem::Sink(
 
   {
     // ignore file list
-    volatile TFTPFileListHelper Helper(this, nullptr, true);
+    volatile TFTPFileListHelper Helper(this, nullptr, true); nb::used(Helper);
 
     SetCPSLimit(OperationProgress);
     FFileTransferPreserveTime = CopyParam->GetPreserveTime();
@@ -1814,7 +1814,7 @@ void TFTPFileSystem::RemoteDeleteFile(const UnicodeString AFileName,
 }
 //---------------------------------------------------------------------------
 void TFTPFileSystem::CustomCommandOnFile(const UnicodeString /*FileName*/,
-  const TRemoteFile * /*File*/, const UnicodeString /*Command*/, intptr_t /*Params*/,
+  const TRemoteFile * /*File*/, UnicodeString /*Command*/, intptr_t /*Params*/,
   TCaptureOutputEvent /*OutputEvent*/)
 {
   // if ever implemented, do not forget to add EnsureLocation,

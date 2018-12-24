@@ -4295,7 +4295,7 @@ void TSFTPFileSystem::CalculateFilesChecksum(const UnicodeString Alg,
 }
 //---------------------------------------------------------------------------
 void TSFTPFileSystem::CustomCommandOnFile(const UnicodeString /*AFileName*/,
-  const TRemoteFile * /*AFile*/, const UnicodeString /*Command*/, intptr_t /*AParams*/,
+  const TRemoteFile * /*AFile*/, UnicodeString /*Command*/, intptr_t /*AParams*/,
   TCaptureOutputEvent /*OutputEvent*/)
 {
   DebugFail();
@@ -5556,7 +5556,6 @@ void TSFTPFileSystem::Sink(
     FileStream = new TSafeHandleStream((THandle)LocalFileHandle);
 
     // at end of this block queue is discarded
-    try__finally
     {
       TSFTPDownloadQueue Queue(this, FCodePage);
       try__finally
@@ -5674,11 +5673,9 @@ void TSFTPFileSystem::Sink(
             }
 
             if (Decrypt)
-              FMTLOAD(WRITE_ERROR, LocalFileName), "",
-            [&]()
             {
               Encryption.Decrypt(BlockBuf);
-            });
+            }
 
             WriteLocalFile(FileStream, BlockBuf, LocalFileName, OperationProgress);
           }
@@ -5694,7 +5691,7 @@ void TSFTPFileSystem::Sink(
               Abort();
             }
           }
-        };
+        }
 
         if (GapCount > 0)
         {

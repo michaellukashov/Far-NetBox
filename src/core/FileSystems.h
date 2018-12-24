@@ -213,7 +213,7 @@ public:
     const TRemoteFile *AFile, intptr_t AParams,
     TRmSessionAction &Action) = 0;
   virtual void CustomCommandOnFile(const UnicodeString AFileName,
-    const TRemoteFile *AFile, const UnicodeString ACommand, intptr_t AParams, TCaptureOutputEvent OutputEvent) = 0;
+    const TRemoteFile *AFile, UnicodeString ACommand, intptr_t AParams, TCaptureOutputEvent OutputEvent) = 0;
   virtual void DoStartup() = 0;
   virtual void HomeDirectory() = 0;
   virtual UnicodeString GetHomeDirectory();

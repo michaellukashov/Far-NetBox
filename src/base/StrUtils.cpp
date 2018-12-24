@@ -26,3 +26,8 @@ NB_CORE_EXPORT bool EndsText(const UnicodeString SubStr, const UnicodeString Str
 {
   return EndsStr(SubStr, Str);
 }
+
+NB_CORE_EXPORT UnicodeString LeftStr(const UnicodeString AStr, intptr_t Len)
+{
+  return AStr.SubString(Len);
+}

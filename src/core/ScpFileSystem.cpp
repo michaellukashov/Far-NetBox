@@ -1388,7 +1388,7 @@ void TSCPFileSystem::CalculateFilesChecksum(const UnicodeString /*Alg*/,
 }
 //---------------------------------------------------------------------------
 void TSCPFileSystem::CustomCommandOnFile(const UnicodeString AFileName,
-  const TRemoteFile *AFile, const UnicodeString ACommand, intptr_t AParams,
+  const TRemoteFile *AFile, UnicodeString ACommand, intptr_t AParams,
   TCaptureOutputEvent OutputEvent)
 {
   DebugAssert(AFile);
@@ -2321,7 +2321,7 @@ void TSCPFileSystem::CopyToLocal(TStrings *AFilesToCopy,
 //---------------------------------------------------------------------------
 void TSCPFileSystem::Sink(
   const UnicodeString /*AFileName*/, const TRemoteFile * /*AFile*/,
-  const UnicodeString /*ATargetDir*/, UnicodeString & /*ADestFileName*/, uintptr_t /*Attrs*/,
+  const UnicodeString /*ATargetDir*/, UnicodeString & /*ADestFileName*/, intptr_t /*Attrs*/,
   const TCopyParamType * /*CopyParam*/, intptr_t /*Params*/, TFileOperationProgressType * /*OperationProgress*/,
   uintptr_t /*Flags*/, TDownloadSessionAction & /*Action*/)
 {

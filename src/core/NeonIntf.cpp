@@ -51,7 +51,7 @@ bool IsTlsUri(const ne_uri &uri)
 //---------------------------------------------------------------------------
 struct TProxyAuthData
 {
-CUSTOM_MEM_ALLOCATION_IMPL
+  CUSTOM_MEM_ALLOCATION_IMPL
 
   UnicodeString UserName;
   UnicodeString Password;

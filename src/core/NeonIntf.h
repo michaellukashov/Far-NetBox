@@ -25,7 +25,7 @@ struct TNeonCertificateData
   UnicodeString Fingerprint;
   AnsiString AsciiCert;
 
-  int Failures = 0;
+  int Failures{0};
 };
 //---------------------------------------------------------------------------
 void NeonParseUrl(const UnicodeString Url, ne_uri &uri);

@@ -63,9 +63,9 @@ public:
 private:
   UnicodeString FURL;
   UnicodeString FProxyHost;
-  intptr_t FProxyPort;
+  intptr_t FProxyPort{0};
   RawByteString FResponse;
-  int64_t FResponseLimit;
+  int64_t FResponseLimit{0};
   std::unique_ptr<Exception> FException;
   THttpDownloadEvent FOnDownload;
   THttpErrorEvent FOnError;
