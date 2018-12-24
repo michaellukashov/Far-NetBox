@@ -58,7 +58,7 @@ typedef nb::FastDelegate6<void,
 class TFileOperationStatistics : public TObject
 {
 public:
-  TFileOperationStatistics();
+  TFileOperationStatistics() noexcept;
 
   int FilesUploaded{0};
   int FilesDownloaded{0};
@@ -75,7 +75,7 @@ public:
   {
   friend class TFileOperationProgressType;
   public:
-    TPersistence();
+    TPersistence() noexcept;
     __property TFileOperationStatistics * Statistics = { read = FStatistics, write = FStatistics };
     TFileOperationStatistics *& Statistics{FStatistics};
 
@@ -172,24 +172,36 @@ public:
   __property int Count =  { read = FCount };
   ROProperty<intptr_t> Count{nb::bind(&TFileOperationProgressType::GetCount, this)};
   __property UnicodeString FileName =  { read = FFileName };
+  const UnicodeString& FileName{FFileName};
   __property UnicodeString FullFileName = { read = FFullFileName };
+  const UnicodeString& FullFileName{FFullFileName};
   __property UnicodeString Directory = { read = FDirectory };
+  const UnicodeString& Directory{FDirectory};
   __property bool AsciiTransfer = { read = FAsciiTransfer };
   bool& AsciiTransfer{FAsciiTransfer};
   // Can be true with SCP protocol only
   __property bool TransferringFile = { read = FTransferringFile };
+  const bool& TransferringFile{FTransferringFile};
   __property bool Temp = { read = FTemp };
+  const bool& Temp{FTemp};
 
   // file size to read/write
   __property int64_t LocalSize = { read = FLocalSize };
+  const int64_t& LocalSize{FLocalSize};
   __property int64_t LocallyUsed = { read = FLocallyUsed };
+  const int64_t& LocallyUsed{FLocallyUsed};
   __property int64_t TransferSize = { read = FTransferSize };
+  const int64_t& TransferSize{FTransferSize};
   __property int64_t TransferredSize = { read = FTransferredSize };
-  ROProperty<int64_t> TransferredSize{nb::bind(&TFileOperationProgressType::GetTransferredSize, this)};
+  const int64_t& TransferredSize{FTransferredSize};
+  //ROProperty<int64_t> TransferredSize{nb::bind(&TFileOperationProgressType::GetTransferredSize, this)};
   __property int64_t SkippedSize = { read = FSkippedSize };
   __property bool InProgress = { read = FInProgress };
+  const bool& InProgress{FInProgress};
   __property bool Done = { read = FDone };
+  const bool& Done{FDone};
   __property bool FileInProgress = { read = FFileInProgress };
+  const bool& FileInProgress{FFileInProgress};
   __property TCancelStatus Cancel = { read = GetCancel };
   ROProperty<TCancelStatus> Cancel{nb::bind(&TFileOperationProgressType::GetCancel, this)};
   // when operation started
@@ -197,6 +209,7 @@ public:
   ROProperty<TDateTime> StartTime{nb::bind(&TFileOperationProgressType::GetStartTime, this)};
   // bytes transferred
   __property int64_t TotalTransferred = { read = GetTotalTransferred };
+  ROProperty<int64_t> TotalTransferred{nb::bind(&TFileOperationProgressType::GetTotalTransferred, this)};
   __property __int64 OperationTransferred = { read = GetOperationTransferred };
   ROProperty<int64_t> OperationTransferred{nb::bind(&TFileOperationProgressType::GetOperationTransferred, this)};
   __property __int64 TotalSize = { read = GetTotalSize };
@@ -205,7 +218,9 @@ public:
   const intptr_t& FilesFinishedSuccessfully{FFilesFinishedSuccessfully};
 
   __property TBatchOverwrite BatchOverwrite = { read = GetBatchOverwrite };
+  ROProperty<TBatchOverwrite> BatchOverwrite{nb::bind(&TFileOperationProgressType::GetBatchOverwrite, this)};
   __property bool SkipToAll = { read = GetSkipToAll };
+  ROProperty<bool> SkipToAll{nb::bind(&TFileOperationProgressType::GetSkipToAll, this)};
   __property uintptr_t CPSLimit = { read = GetCPSLimit };
   ROProperty<intptr_t> CPSLimit{nb::bind(&TFileOperationProgressType::GetCPSLimit, this)};
 
@@ -215,11 +230,12 @@ public:
   __property bool Suspended = { read = FSuspended };
   const bool& Suspended{FSuspended};
 
-  TFileOperationProgressType();
+  TFileOperationProgressType() noexcept;
   explicit TFileOperationProgressType(
     TFileOperationProgressEvent AOnProgress, TFileOperationFinishedEvent AOnFinished,
-    TFileOperationProgressType *Parent = nullptr);
-  virtual ~TFileOperationProgressType();
+    TFileOperationProgressType *Parent = nullptr) noexcept;
+  virtual ~TFileOperationProgressType() noexcept;
+  TFileOperationProgressType& operator=(const TFileOperationProgressType&) = default;
   void Assign(const TFileOperationProgressType &Other);
   void AssignButKeepSuspendState(const TFileOperationProgressType &Other);
   void AddLocallyUsed(int64_t ASize);

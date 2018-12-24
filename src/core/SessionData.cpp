@@ -4897,7 +4897,7 @@ void TStoredSessionList::ImportFromKnownHosts(TStrings *Lines)
           int PubBlobLen = 0;
           char *CommentPtr = nullptr;
           const char *ErrorStr = nullptr;
-          unsigned char *PubBlob = openssh_loadpub_line(UtfLine.c_str(), &AlgorithmName, &PubBlobLen, &CommentPtr, &ErrorStr);
+          unsigned char *PubBlob = openssh_loadpub_line(UtfLine.data(), &AlgorithmName, &PubBlobLen, &CommentPtr, &ErrorStr);
           if (PubBlob == nullptr)
           {
             throw Exception(UnicodeString(ErrorStr));
@@ -5288,7 +5288,7 @@ TSessionData *TStoredSessionList::NewSession(
 void TStoredSessionList::SetDefaultSettings(const TSessionData *Value)
 {
   DebugAssert(FDefaultSettings);
-  if (FDefaultSettings != Value)
+  if (FDefaultSettings.get() != Value)
   {
     FDefaultSettings->Assign(Value);
     // make sure default settings are saved
@@ -5475,7 +5475,7 @@ void TStoredSessionList::GetFolderOrWorkspace(const UnicodeString Name, TList *L
         Data2->CopyStateData(RawData);
       }
 
-      if (!RawData->NameOverride.IsEmpty())
+      if (!RawData->NameOverride().IsEmpty())
       {
         Data2->Name = RawData->NameOverride;
       }
@@ -5498,7 +5498,7 @@ TStrings *TStoredSessionList::GetFolderOrWorkspaceList(
     if (Data != nullptr)
     {
       UnicodeString Name;
-      if (!Data->NameOverride.IsEmpty())
+      if (!Data->NameOverride().IsEmpty())
       {
         Name = Data->NameOverride;
       }
@@ -5574,7 +5574,7 @@ TSessionData *TStoredSessionList::ParseUrl(const UnicodeString Url,
   std::unique_ptr<TSessionData> Data(new TSessionData(L""));
   try__catch
   {
-    Data->ParseUrl(Url, Options, this, DefaultsOnly, FileName, AProtocolDefined, MaskedUrl, Flags);
+    Data->ParseUrl(Url, Options, this, DefaultsOnly, AFileName, AProtocolDefined, MaskedUrl, Flags);
   }
   catch__removed
   ({

@@ -43,13 +43,13 @@ public:
   static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TSinkFileParams); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TSinkFileParams) || TObject::is(Kind); }
 public:
-  TSinkFileParams() : TObject(OBJECT_CLASS_TSinkFileParams), CopyParam(nullptr), OperationProgress(nullptr), Params(0), Flags(0), Skipped(false) {}
+  TSinkFileParams() noexcept : TObject(OBJECT_CLASS_TSinkFileParams), CopyParam(nullptr), OperationProgress(nullptr), Params(0), Flags(0), Skipped(false) {}
   UnicodeString TargetDir;
-  const TCopyParamType *CopyParam;
-  TFileOperationProgressType *OperationProgress;
-  intptr_t Params;
-  uintptr_t Flags;
-  bool Skipped;
+  const TCopyParamType *CopyParam{nullptr};
+  TFileOperationProgressType *OperationProgress{nullptr};
+  intptr_t Params{0};
+  uintptr_t Flags{0};
+  bool Skipped{false};
 };
 //---------------------------------------------------------------------------
 NB_DEFINE_CLASS_ID(TFileTransferData);
@@ -72,11 +72,11 @@ public:
   }
 
   UnicodeString FileName;
-  const TCopyParamType *CopyParam;
-  TDateTime Modification;
-  intptr_t Params;
-  intptr_t OverwriteResult;
-  bool AutoResume;
+  const TCopyParamType *CopyParam{nullptr};
+  TDateTime Modification{};
+  intptr_t Params{0};
+  intptr_t OverwriteResult{0};
+  bool AutoResume{false};
 };
 //---------------------------------------------------------------------------
 NB_DEFINE_CLASS_ID(TOverwriteFileParams);
@@ -86,7 +86,7 @@ public:
   static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TOverwriteFileParams); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TOverwriteFileParams) || TObject::is(Kind); }
 public:
-  TOverwriteFileParams() :
+  TOverwriteFileParams() noexcept :
     TObject(OBJECT_CLASS_TOverwriteFileParams),
     SourceSize(0),
     DestSize(0),
@@ -95,12 +95,12 @@ public:
   {
   }
 
-  int64_t SourceSize;
-  int64_t DestSize;
-  TDateTime SourceTimestamp;
-  TDateTime DestTimestamp;
-  TModificationFmt SourcePrecision;
-  TModificationFmt DestPrecision;
+  int64_t SourceSize{0};
+  int64_t DestSize{0};
+  TDateTime SourceTimestamp{};
+  TDateTime DestTimestamp{};
+  TModificationFmt SourcePrecision{mfFull};
+  TModificationFmt DestPrecision{mfFull};
 };
 //---------------------------------------------------------------------------
 NB_DEFINE_CLASS_ID(TOpenRemoteFileParams);
@@ -125,19 +125,19 @@ public:
     Confirmed(false)
   {
   }
-  uintptr_t LocalFileAttrs;
+  uintptr_t LocalFileAttrs{0};
   UnicodeString FileName;
   UnicodeString RemoteFileName;
-  TFileOperationProgressType *OperationProgress;
-  const TCopyParamType *CopyParam;
-  intptr_t Params;
-  bool Resume;
-  bool Resuming;
-  TOverwriteMode OverwriteMode;
-  int64_t DestFileSize; // output
+  TFileOperationProgressType *OperationProgress{nullptr};
+  const TCopyParamType *CopyParam{nullptr};
+  intptr_t Params{0};
+  bool Resume{false};
+  bool Resuming{false};
+  TOverwriteMode OverwriteMode{};
+  int64_t DestFileSize{0}; // output
   RawByteString RemoteFileHandle; // output
-  TOverwriteFileParams *FileParams;
-  bool Confirmed;
+  TOverwriteFileParams *FileParams{nullptr};
+  bool Confirmed{false};
 };
 
 /** @brief Interface for custom filesystems
@@ -146,15 +146,15 @@ public:
 class NB_CORE_EXPORT TFileSystemIntf
 {
 public:
-  virtual ~TFileSystemIntf() {}
+  virtual ~TFileSystemIntf() = default;
 
   virtual void Init(void *) = 0;
   virtual void FileTransferProgress(int64_t TransferSize, int64_t Bytes) = 0;
 };
 //---------------------------------------------------------------------------
-const int dfNoRecursive = 0x01;
-const int dfAlternative = 0x02;
-const int dfForceDelete = 0x04;
+constexpr const int dfNoRecursive = 0x01;
+constexpr const int dfAlternative = 0x02;
+constexpr const int dfForceDelete = 0x04;
 //---------------------------------------------------------------------------
 NB_DEFINE_CLASS_ID(TCustomFileSystem);
 class NB_CORE_EXPORT TCustomFileSystem : public TObject, public TFileSystemIntf
@@ -164,7 +164,7 @@ public:
   static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TCustomFileSystem); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TCustomFileSystem) || TObject::is(Kind); }
 public:
-  virtual ~TCustomFileSystem();
+  virtual ~TCustomFileSystem() noexcept;
 
   virtual void Open() = 0;
   virtual void Close() = 0;
@@ -247,10 +247,10 @@ public:
   ROProperty<UnicodeString> RemoteCurrentDirectory{nb::bind(&TCustomFileSystem::RemoteGetCurrentDirectory, this)};
 
 protected:
-  TTerminal *FTerminal;
+  TTerminal *FTerminal{nullptr};
 
-  explicit TCustomFileSystem(TObjectClassId Kind) : TObject(Kind), FTerminal(nullptr) {}
-  explicit TCustomFileSystem(TObjectClassId Kind, TTerminal *ATerminal);
+  explicit TCustomFileSystem(TObjectClassId Kind) noexcept : TObject(Kind), FTerminal(nullptr) {}
+  explicit TCustomFileSystem(TObjectClassId Kind, TTerminal *ATerminal) noexcept;
   virtual UnicodeString RemoteGetCurrentDirectory() const = 0;
 
   UnicodeString CreateTargetDirectory(

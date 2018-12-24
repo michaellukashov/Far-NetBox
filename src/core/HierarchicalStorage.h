@@ -78,6 +78,7 @@ public:
   __property TStorageAccessMode AccessMode  = { read = FAccessMode, write = SetAccessMode };
   __property bool Explicit = { read = FExplicit, write = FExplicit };
   __property bool ForceSave = { read = FForceSave, write = FForceSave };
+  bool& ForceSave{FForceSave};
   __property bool ForceAnsi = { read = FForceAnsi, write = FForceAnsi };
   __property bool MungeStringValues = { read = FMungeStringValues, write = FMungeStringValues };
   __property UnicodeString Source = { read = GetSource };

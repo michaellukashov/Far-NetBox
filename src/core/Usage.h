@@ -6,18 +6,18 @@
 //---------------------------------------------------------------------------
 class TConfiguration;
 //---------------------------------------------------------------------------
-class TUsage
+class TUsage : public TObject
 {
 public:
-  TUsage(TConfiguration * Configuration);
+  explicit TUsage(TConfiguration * Configuration);
   virtual ~TUsage();
 
-  void Set(const UnicodeString & Key, const UnicodeString & Value);
-  void Set(const UnicodeString & Key, int Value);
-  void Set(const UnicodeString & Key, bool Value);
-  void Inc(const UnicodeString & Key, int Increment = 1);
-  void SetMax(const UnicodeString & Key, int Value);
-  UnicodeString Get(const UnicodeString & Key);
+  void Set(const UnicodeString AKey, const UnicodeString AValue);
+  void Set(const UnicodeString AKey, intptr_t Value);
+  void Set(const UnicodeString AKey, bool Value);
+  void Inc(const UnicodeString AKey, intptr_t Increment = 1);
+  void SetMax(const UnicodeString AKey, intptr_t Value);
+  UnicodeString Get(const UnicodeString AKey) const;
 
   void UpdateCurrentVersion();
   void Reset();
@@ -25,37 +25,37 @@ public:
   void Default();
   void Load(THierarchicalStorage * Storage);
   void Save(THierarchicalStorage * Storage) const;
-  UnicodeString Serialize(const UnicodeString & Delimiter = L"&", const UnicodeString & Filter = L"") const;
+  UnicodeString Serialize(const UnicodeString ADelimiter = L"&", const UnicodeString AFilter = L"") const;
 
   static int CalculateCounterSize(int64_t Size);
 
   __property bool Collect = { read = FCollect, write = SetCollect };
 
 private:
-  typedef rde::map<UnicodeString, int> TCounters;
-  TCriticalSection * FCriticalSection;
-  TConfiguration * FConfiguration;
+  typedef rde::map<UnicodeString, intptr_t> TCounters;
+  std::unique_ptr<TCriticalSection> FCriticalSection;
+  TConfiguration * FConfiguration{nullptr};
   TCounters FPeriodCounters;
   TCounters FLifetimeCounters;
-  TStringList * FValues;
-  bool FCollect;
+  std::unique_ptr<TStringList> FValues;
+  bool FCollect{true};
 
   void SetCollect(bool value);
   void UpdateLastReport();
   void Load(THierarchicalStorage * Storage,
-    const UnicodeString & Name, TCounters & Counters);
+    const UnicodeString AName, TCounters & Counters);
   void Save(THierarchicalStorage * Storage,
-    const UnicodeString & Name, const TCounters & Counters) const;
-  void Inc(const UnicodeString & Key, TCounters & Counters, int Increment);
-  void SetMax(const UnicodeString & Key, int Value, TCounters & Counters);
+    const UnicodeString AName, const TCounters & Counters) const;
+  void Inc(const UnicodeString AKey, TCounters & Counters, intptr_t Increment);
+  void SetMax(const UnicodeString AKey, intptr_t Value, TCounters & Counters);
   void Serialize(
-    UnicodeString& List, const UnicodeString & Name, const TCounters & Counters,
-    const UnicodeString & Delimiter, const UnicodeString & FilterUpper) const;
+    UnicodeString& AList, const UnicodeString AName, const TCounters & Counters,
+    const UnicodeString ADelimiter, const UnicodeString AFilterUpper) const;
   void Serialize(
-    UnicodeString & List, const UnicodeString & Name, const UnicodeString & Value,
-    const UnicodeString & Delimiter, const UnicodeString & FilterUpper) const;
+    UnicodeString & List, const UnicodeString AName, const UnicodeString AValue,
+    const UnicodeString ADelimiter, const UnicodeString AFilterUpper) const;
   void ResetLastExceptions();
-  void ResetValue(const UnicodeString & Key);
+  void ResetValue(const UnicodeString AKey);
 };
 //---------------------------------------------------------------------------
 extern const UnicodeString LastInternalExceptionCounter;

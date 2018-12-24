@@ -9,13 +9,13 @@
 //---------------------------------------------------------------------------
 constexpr int64_t TRANSFER_BUF_SIZE = (32 * 1024);
 //---------------------------------------------------------------------------
-TFileOperationStatistics::TFileOperationStatistics()
+TFileOperationStatistics::TFileOperationStatistics() noexcept
 {
   __removed memset(this, 0, sizeof(*this));
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-TFileOperationProgressType::TPersistence::TPersistence()
+TFileOperationProgressType::TPersistence::TPersistence() noexcept
 {
   FStatistics = nullptr;
   Clear(true, true);
@@ -44,7 +44,7 @@ void TFileOperationProgressType::TPersistence::Clear(bool Batch, bool Speed)
   }
 }
 //---------------------------------------------------------------------------
-TFileOperationProgressType::TFileOperationProgressType()
+TFileOperationProgressType::TFileOperationProgressType() noexcept
 {
   FOnProgress = nullptr;
   FOnFinished = nullptr;
@@ -55,7 +55,7 @@ TFileOperationProgressType::TFileOperationProgressType()
 //---------------------------------------------------------------------------
 TFileOperationProgressType::TFileOperationProgressType(
   TFileOperationProgressEvent AOnProgress, TFileOperationFinishedEvent AOnFinished,
-  TFileOperationProgressType *Parent) :
+  TFileOperationProgressType *Parent) noexcept :
   FParent(Parent),
   FOnProgress(AOnProgress),
   FOnFinished(AOnFinished),
@@ -65,7 +65,7 @@ TFileOperationProgressType::TFileOperationProgressType(
   Clear();
 }
 //---------------------------------------------------------------------------
-TFileOperationProgressType::~TFileOperationProgressType()
+TFileOperationProgressType::~TFileOperationProgressType() noexcept
 {
   DebugAssert(!GetInProgress() || FReset);
   DebugAssert(!GetSuspended() || FReset);
@@ -323,7 +323,7 @@ void TFileOperationProgressType::Progress()
 //---------------------------------------------------------------------------
 void TFileOperationProgressType::DoProgress()
 {
-  SetThreadExecutionState(ES_SYSTEM_REQUIRED);
+  ::SetThreadExecutionState(ES_SYSTEM_REQUIRED);
   FOnProgress(*this);
 }
 //---------------------------------------------------------------------------

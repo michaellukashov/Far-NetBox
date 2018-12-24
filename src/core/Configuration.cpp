@@ -37,7 +37,7 @@ const UnicodeString TlsFingerprintType(L"tls");
 //---------------------------------------------------------------------------
 const UnicodeString HttpsCertificateStorageKey(L"HttpsCertificates");
 //---------------------------------------------------------------------------
-TConfiguration::TConfiguration(TObjectClassId Kind) :
+TConfiguration::TConfiguration(TObjectClassId Kind) noexcept :
   TObject(Kind),
   FDontSave(false),
   FChanged(false),
@@ -111,7 +111,7 @@ TConfiguration::TConfiguration(TObjectClassId Kind) :
 //---------------------------------------------------------------------------
 void TConfiguration::Default()
 {
-  volatile TGuard Guard(FCriticalSection);
+  TGuard Guard(FCriticalSection); nb::used(Guard);
 
   FDisablePasswordStoring = false;
   FForceBanners = false;
@@ -178,7 +178,7 @@ void TConfiguration::Default()
   Changed();
 }
 //---------------------------------------------------------------------------
-TConfiguration::~TConfiguration()
+TConfiguration::~TConfiguration() noexcept
 {
   DebugAssert(!FUpdating);
   if (FApplicationInfo)
@@ -210,7 +210,7 @@ THierarchicalStorage * TConfiguration::CreateConfigStorage()
 //---------------------------------------------------------------------------
 THierarchicalStorage * TConfiguration::CreateStorage(bool & SessionList)
 {
-  volatile TGuard Guard(FCriticalSection);
+  TGuard Guard(FCriticalSection); nb::used(Guard);
   THierarchicalStorage *Result = nullptr;
   if (GetStorage() == stRegistry)
   {
@@ -267,6 +267,7 @@ UnicodeString TConfiguration::PropertyToKey(const UnicodeString AProperty)
   if (Storage->OpenSubKey(KEY, CANCREATE, true)) \
     { SCOPE_EXIT { Storage->CloseSubKey(); }; { BLOCK } }
 #define KEY(TYPE, VAR) KEYEX(TYPE, VAR, VAR)
+#define KEY2(TYPE, VAR) KEYEX2(TYPE, VAR, VAR)
 #undef REGCONFIG
 #define REGCONFIG(CANCREATE) \
   BLOCK(L"Interface", CANCREATE, \
@@ -287,8 +288,8 @@ UnicodeString TConfiguration::PropertyToKey(const UnicodeString AProperty)
     KEY(Bool,     TryFtpWhenSshFails); \
     KEY(Integer,  ParallelDurationThreshold); \
     KEY(String,   MimeTypes); \
-    KEY(Integer,  DontReloadMoreThanSessions); \
-    KEY(Integer,  ScriptProgressFileNameLimit); \
+    KEY2(Integer,  DontReloadMoreThanSessions); \
+    KEY2(Integer,  ScriptProgressFileNameLimit); \
     KEY(Bool,     CollectUsage); \
     KEY(Integer,  SessionReopenAutoMaximumNumberOfRetries); \
   ); \
@@ -307,7 +308,9 @@ UnicodeString TConfiguration::PropertyToKey(const UnicodeString AProperty)
 void TConfiguration::SaveData(THierarchicalStorage *Storage, bool /*All*/)
 {
 #define KEYEX(TYPE, NAME, VAR) Storage->Write ## TYPE(LASTELEM(UnicodeString(#NAME)), Get ## VAR())
+#define KEYEX2(TYPE, NAME, VAR) Storage->Write ## TYPE(LASTELEM(UnicodeString(#NAME)), VAR)
   REGCONFIG(true);
+  #undef KEYEX2
   #undef KEYEX
 
   if (Storage->OpenSubKey("Usage", true))
@@ -341,7 +344,7 @@ void TConfiguration::DoSave(bool All, bool Explicit)
   {
     Storage->SetAccessMode(smReadWrite);
     Storage->SetExplicit(Explicit);
-    AStorage->ForceSave = FForceSave;
+    Storage->ForceSave = FForceSave;
     if (Storage->OpenSubKey(GetConfigurationSubKey(), true))
     {
       // if saving to TOptionsStorage, make sure we save everything so that
@@ -469,7 +472,9 @@ void TConfiguration::Import(const UnicodeString /*AFileName*/)
 void TConfiguration::LoadData(THierarchicalStorage * Storage)
 {
 #define KEYEX(TYPE, NAME, VAR) Set ## VAR(Storage->Read ## TYPE(LASTELEM(UnicodeString(#NAME)), Get ## VAR()))
+#define KEYEX2(TYPE, NAME, VAR) VAR = Storage->Read ## TYPE(LASTELEM(UnicodeString(#NAME)), VAR)
   REGCONFIG(false);
+  #undef KEYEX2
   #undef KEYEX
 
   if (Storage->OpenSubKey("Usage", false))
@@ -524,7 +529,7 @@ UnicodeString TConfiguration::LoadCustomIniFileStorageName()
 //---------------------------------------------------------------------------
 void TConfiguration::Load(THierarchicalStorage * Storage)
 {
-  volatile TGuard Guard(FCriticalSection);
+  TGuard Guard(FCriticalSection); nb::used(Guard);
   TStorageAccessMode StorageAccessMode = Storage->GetAccessMode();
   try__finally
   {
@@ -757,7 +762,7 @@ void TConfiguration::Changed()
   TNotifyEvent AOnChange = nullptr;
 
   {
-    volatile TGuard Guard(FCriticalSection);
+    TGuard Guard(FCriticalSection); nb::used(Guard);
     if (FUpdating == 0)
     {
       AOnChange = GetOnChange();
@@ -1004,10 +1009,15 @@ bool TConfiguration::GetIsUnofficial() const
   #endif
 }
 //---------------------------------------------------------------------------
+UnicodeString TConfiguration::GetVersionStr() const
+{
+  return GetProductVersionStr();
+}
+
 UnicodeString TConfiguration::GetProductVersionStr() const
 {
   UnicodeString Result;
-  volatile TGuard Guard(FCriticalSection);
+  TGuard Guard(FCriticalSection); nb::used(Guard);
   try
   {
     TVSFixedFileInfo *FixedApplicationInfo = GetFixedApplicationInfo();
@@ -1075,7 +1085,7 @@ UnicodeString TConfiguration::GetProductVersionStr() const
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString TConfiguration::GetFileVersion(const UnicodeString AFileName)
+UnicodeString TConfiguration::GetFileVersion(const UnicodeString AFileName) const
 {
   UnicodeString Result;
   void * FileInfo = CreateFileInfo(AFileName);
@@ -1090,9 +1100,9 @@ UnicodeString TConfiguration::GetFileVersion(const UnicodeString AFileName)
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString TConfiguration::GetFileVersion(TVSFixedFileInfo * Info)
+UnicodeString TConfiguration::GetFileVersion(TVSFixedFileInfo * Info) const
 {
-  volatile TGuard Guard(FCriticalSection);
+  TGuard Guard(FCriticalSection); nb::used(Guard);
   try
   {
     UnicodeString Result =
@@ -1110,7 +1120,7 @@ UnicodeString TConfiguration::GetFileVersion(TVSFixedFileInfo * Info)
 //---------------------------------------------------------------------------
 UnicodeString TConfiguration::GetProductVersion() const
 {
-  volatile TGuard Guard(FCriticalSection);
+  TGuard Guard(FCriticalSection); nb::used(Guard);
   UnicodeString Result;
   try
   {
@@ -1129,8 +1139,8 @@ UnicodeString TConfiguration::GetProductVersion() const
   }
   return Result;
 }
-
-UnicodeString TConfiguration::GetVersion()
+//---------------------------------------------------------------------------
+UnicodeString TConfiguration::GetVersion() const
 {
   return GetFileVersion(GetFixedApplicationInfo());
 }
@@ -1138,7 +1148,7 @@ UnicodeString TConfiguration::GetVersion()
 UnicodeString TConfiguration::GetFileFileInfoString(const UnicodeString AKey,
   const UnicodeString AFileName, bool AllowEmpty) const
 {
-  volatile TGuard Guard(FCriticalSection);
+  TGuard Guard(FCriticalSection); nb::used(Guard);
 
   UnicodeString Result;
   void *Info = GetFileApplicationInfo(AFileName);
@@ -1331,10 +1341,10 @@ UnicodeString TConfiguration::GetIniFileStorageName(bool ReadingOnly)
 //---------------------------------------------------------------------------
 void TConfiguration::SetOptionsStorage(TStrings * Value)
 {
-  volatile TGuard Guard(FCriticalSection);
+  TGuard Guard(FCriticalSection); nb::used(Guard);
   if (FOptionsStorage.get() == nullptr)
   {
-    FOptionsStorage = std::make_unique<TStringList>());
+    FOptionsStorage = std::make_unique<TStringList>();
   }
   FOptionsStorage->AddStrings(Value);
 }
@@ -1432,7 +1442,7 @@ void TConfiguration::Saved()
 //---------------------------------------------------------------------------
 TStorage TConfiguration::GetStorage() const
 {
-  volatile TGuard Guard(FCriticalSection);
+  TGuard Guard(FCriticalSection); nb::used(Guard);
   if (FStorage == stDetect)
   {
 #if 0
@@ -1663,7 +1673,7 @@ void TConfiguration::TemporaryLogMaxCount(intptr_t ALogMaxCount)
 //---------------------------------------------------------------------
 void TConfiguration::SetLogging(bool Value)
 {
-  volatile TGuard Guard(FCriticalSection);
+  TGuard Guard(FCriticalSection); nb::used(Guard);
   if (GetLogging() != Value)
   {
     FPermanentLogging = Value;
@@ -1675,13 +1685,13 @@ void TConfiguration::SetLogging(bool Value)
 //---------------------------------------------------------------------
 bool TConfiguration::GetLogging() const
 {
-  volatile TGuard Guard(FCriticalSection);
+  TGuard Guard(FCriticalSection); nb::used(Guard);
   return FPermanentLogging;
 }
 //---------------------------------------------------------------------
 void TConfiguration::SetLogFileName(UnicodeString Value)
 {
-  volatile TGuard Guard(FCriticalSection);
+  TGuard Guard(FCriticalSection); nb::used(Guard);
   if (GetLogFileName() != Value)
   {
     FPermanentLogFileName = Value;
@@ -1692,13 +1702,13 @@ void TConfiguration::SetLogFileName(UnicodeString Value)
 //---------------------------------------------------------------------
 UnicodeString  TConfiguration::GetLogFileName() const
 {
-  volatile TGuard Guard(FCriticalSection);
+  TGuard Guard(FCriticalSection); nb::used(Guard);
   return FPermanentLogFileName;
 }
 //---------------------------------------------------------------------
 void TConfiguration::SetActionsLogFileName(UnicodeString Value)
 {
-  volatile TGuard Guard(FCriticalSection);
+  TGuard Guard(FCriticalSection); nb::used(Guard);
   if (GetActionsLogFileName() != Value)
   {
     FPermanentActionsLogFileName = Value;
@@ -1709,13 +1719,13 @@ void TConfiguration::SetActionsLogFileName(UnicodeString Value)
 //---------------------------------------------------------------------
 UnicodeString TConfiguration::GetPermanentActionsLogFileName() const
 {
-  volatile TGuard Guard(FCriticalSection);
+  TGuard Guard(FCriticalSection); nb::used(Guard);
   return FPermanentActionsLogFileName;
 }
 //---------------------------------------------------------------------
 UnicodeString TConfiguration::GetActionsLogFileName() const
 {
-  volatile TGuard Guard(FCriticalSection);
+  TGuard Guard(FCriticalSection); nb::used(Guard);
   return FActionsLogFileName;
 }
 //---------------------------------------------------------------------
@@ -1732,7 +1742,7 @@ void TConfiguration::UpdateActualLogProtocol()
 //---------------------------------------------------------------------
 void TConfiguration::SetLogProtocol(intptr_t Value)
 {
-  volatile TGuard Guard(FCriticalSection);
+  TGuard Guard(FCriticalSection); nb::used(Guard);
   if (GetLogProtocol() != Value)
   {
     FPermanentLogProtocol = Value;
@@ -1744,7 +1754,7 @@ void TConfiguration::SetLogProtocol(intptr_t Value)
 //---------------------------------------------------------------------
 void TConfiguration::SetLogActions(bool Value)
 {
-  volatile TGuard Guard(FCriticalSection);
+  TGuard Guard(FCriticalSection); nb::used(Guard);
   if (GetLogActions() != Value)
   {
     FPermanentLogActions = Value;
@@ -1755,7 +1765,7 @@ void TConfiguration::SetLogActions(bool Value)
 //---------------------------------------------------------------------
 bool TConfiguration::GetLogActions() const
 {
-  volatile TGuard Guard(FCriticalSection);
+  TGuard Guard(FCriticalSection); nb::used(Guard);
   return FPermanentLogActions;
 }
 //---------------------------------------------------------------------
@@ -1776,7 +1786,7 @@ void TConfiguration::SetLogSensitive(bool Value)
 //---------------------------------------------------------------------
 void TConfiguration::SetLogMaxSize(int64_t Value)
 {
-  volatile TGuard Guard(FCriticalSection);
+  TGuard Guard(FCriticalSection); nb::used(Guard);
   if (GetLogMaxSize() != Value)
   {
     FPermanentLogMaxSize = Value;
@@ -1787,7 +1797,7 @@ void TConfiguration::SetLogMaxSize(int64_t Value)
 //---------------------------------------------------------------------
 int64_t TConfiguration::GetLogMaxSize() const
 {
-  volatile TGuard Guard(FCriticalSection);
+  TGuard Guard(FCriticalSection); nb::used(Guard);
   return FPermanentLogMaxSize;
 }
 //---------------------------------------------------------------------
@@ -1803,7 +1813,7 @@ void TConfiguration::SetLogMaxCount(intptr_t Value)
 //---------------------------------------------------------------------
 intptr_t TConfiguration::GetLogMaxCount() const
 {
-  volatile TGuard Guard(FCriticalSection);
+  TGuard Guard(FCriticalSection); nb::used(Guard);
   return FPermanentLogMaxCount;
 }
 //---------------------------------------------------------------------
@@ -1814,37 +1824,37 @@ UnicodeString TConfiguration::GetDefaultLogFileName() const
 //---------------------------------------------------------------------------
 void TConfiguration::SetConfirmOverwriting(bool Value)
 {
-  volatile TGuard Guard(FCriticalSection);
+  TGuard Guard(FCriticalSection); nb::used(Guard);
   SET_CONFIG_PROPERTY(ConfirmOverwriting);
 }
 //---------------------------------------------------------------------------
 bool TConfiguration::GetConfirmOverwriting() const
 {
-  volatile TGuard Guard(FCriticalSection);
+  TGuard Guard(FCriticalSection); nb::used(Guard);
   return FConfirmOverwriting;
 }
 //---------------------------------------------------------------------------
 void TConfiguration::SetConfirmResume(bool Value)
 {
-  volatile TGuard Guard(FCriticalSection);
+  TGuard Guard(FCriticalSection); nb::used(Guard);
   SET_CONFIG_PROPERTY(ConfirmResume);
 }
 //---------------------------------------------------------------------------
 bool TConfiguration::GetConfirmResume() const
 {
-  volatile TGuard Guard(FCriticalSection);
+  TGuard Guard(FCriticalSection); nb::used(Guard);
   return FConfirmResume;
 }
 //---------------------------------------------------------------------------
 void TConfiguration::SetAutoReadDirectoryAfterOp(bool Value)
 {
-  volatile TGuard Guard(FCriticalSection);
+  TGuard Guard(FCriticalSection); nb::used(Guard);
   SET_CONFIG_PROPERTY(AutoReadDirectoryAfterOp);
 }
 //---------------------------------------------------------------------------
 bool TConfiguration::GetAutoReadDirectoryAfterOp() const
 {
-  volatile TGuard Guard(FCriticalSection);
+  TGuard Guard(FCriticalSection); nb::used(Guard);
   return FAutoReadDirectoryAfterOp;
 }
 //---------------------------------------------------------------------------
@@ -1915,7 +1925,7 @@ void TConfiguration::SetSessionReopenAutoMaximumNumberOfRetries(intptr_t Value)
 //---------------------------------------------------------------------------
 bool TConfiguration::GetPersistent() const
 {
-  return (Storage != stNul) && !FDontSave;
+  return (FStorage != stNul) && !FDontSave;
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------

@@ -677,10 +677,7 @@ void TSCPFileSystem::ReadCommandOutput(intptr_t Params, const UnicodeString *Cmd
       UnicodeString Message = FSecureShell->GetStdError();
       if (FLAGSET(Params, coExpectNoOutput) && (FOutput->Count > 0))
       {
-        AddToList(Message, FOutput->Text, L"\n");
-          Message += L"\n";
-        }
-        Message += FOutput->GetText();
+        AddToList(Message, FOutput->GetText(), L"\n");
       }
 
       while (!Message.IsEmpty() && (Message.LastDelimiter(L"\n\r") == Message.Length()))
@@ -689,8 +686,8 @@ void TSCPFileSystem::ReadCommandOutput(intptr_t Params, const UnicodeString *Cmd
       }
 
       bool WrongReturnCode =
-        (ReturnCode > 1) ||
-        ((ReturnCode == 1) && FLAGCLEAR(Params, coIgnoreWarnings));
+        (FReturnCode > 1) ||
+        ((FReturnCode == 1) && FLAGCLEAR(Params, coIgnoreWarnings));
 
       if (FOnCaptureOutput != nullptr)
       {
@@ -701,21 +698,21 @@ void TSCPFileSystem::ReadCommandOutput(intptr_t Params, const UnicodeString *Cmd
       {
         if (WrongReturnCode)
         {
-          FTerminal->TerminalError(FMTLOAD(COMMAND_FAILED_CODEONLY, (ReturnCode)));
+          FTerminal->TerminalError(FMTLOAD(COMMAND_FAILED_CODEONLY, FReturnCode));
         }
       }
       else
       {
         bool IsStdErrOnlyError = (FLAGCLEAR(Params, coIgnoreWarnings) && FLAGCLEAR(Params, coIgnoreStdErr));
-        bool WrongOutput = !Message.IsEmpty() && ((FOutput->Count == 0) || IsStdErrOnlyError);
+        bool WrongOutput = !Message.IsEmpty() && ((FOutput->Count() == 0) || IsStdErrOnlyError);
         if (WrongOutput || WrongReturnCode)
         {
           DebugAssert(Cmd != NULL);
-          FTerminal->TerminalError(FMTLOAD(COMMAND_FAILED, (*Cmd, ReturnCode, Message)));
+          FTerminal->TerminalError(FMTLOAD(COMMAND_FAILED, *Cmd, FReturnCode, Message));
         }
       }
     }
-  }
+  },
   __finally
   {
     FProcessingCommand = false;
@@ -730,7 +727,7 @@ void TSCPFileSystem::ExecCommand(const UnicodeString Cmd, intptr_t Params,
     Params = ecDefault;
   }
 
-  volatile TOperationVisualizer Visualizer(FTerminal->GetUseBusyCursor());
+  TOperationVisualizer Visualizer(FTerminal->GetUseBusyCursor()); nb::used(Visualizer);
 
   SendCommand(Cmd);
 
@@ -741,12 +738,6 @@ void TSCPFileSystem::ExecCommand(const UnicodeString Cmd, intptr_t Params,
     FLAGMASK(FLAGSET(Params, ecReadProgress), coReadProgress) |
     FLAGMASK(FLAGSET(Params, ecIgnoreStdErr), coIgnoreStdErr);
 
-    COParams |= coIgnoreWarnings;
-  }
-  if (Params & ecReadProgress)
-  {
-    COParams |= coReadProgress;
-  }
   ReadCommandOutput(COParams, &CmdString);
 }
 //---------------------------------------------------------------------------
@@ -763,10 +754,10 @@ void TSCPFileSystem::ExecCommand(TFSCommand Cmd, const TVarRec * args,
     Integer MinL = FCommandSet->MinLines[Cmd];
     Integer MaxL = FCommandSet->MaxLines[Cmd];
     if (((MinL >= 0) && (MinL > FOutput->Count)) ||
-      ((MaxL >= 0) && (MaxL > FOutput->Count)))
+        ((MaxL >= 0) && (MaxL > FOutput->Count)))
     {
       FTerminal->TerminalError(FmtLoadStr(INVALID_OUTPUT_ERROR,
-          ARRAYOFCONST((FullCommand, Output->Text))));
+        ARRAYOFCONST((FullCommand, Output->Text))));
     }
   }
 }
@@ -1453,11 +1444,12 @@ void TSCPFileSystem::AnyCommand(const UnicodeString Command,
 
   try__finally
   {
-    int Params =
+    intptr_t Params =
       ecDefault |
-      (FTerminal->SessionData->ExitCode1IsError ? ecIgnoreStdErr : ecIgnoreWarnings);
+      (FTerminal->SessionData->GetExitCode1IsError() ? ecIgnoreStdErr : ecIgnoreWarnings);
 
-    ExecCommand(fsAnyCommand, ARRAYOFCONST((Command)), Params);
+    ExecCommand(fsAnyCommand, Params, Command);
+  },
   __finally
   {
     FOnCaptureOutput = nullptr;
@@ -1721,7 +1713,7 @@ void TSCPFileSystem::CopyToRemote(TStrings *AFilesToCopy,
           }
         }
 
-        void * Item = static_cast<void *>(FilesToCopy->Objects[IFile]);
+        void * Item = static_cast<void *>(AFilesToCopy->GetObj(IFile));
 
         try
         {
@@ -2120,7 +2112,6 @@ void TSCPFileSystem::SCPDirectorySource(const UnicodeString DirectoryName,
   {
     TSearchRecOwned SearchRec;
     bool FindOK = FTerminal->LocalFindFirstLoop(IncludeTrailingBackslash(DirectoryName) + L"*.*", SearchRec);
-    [&]()
 
     while (FindOK && !OperationProgress->Cancel)
     {
@@ -2138,7 +2129,7 @@ void TSCPFileSystem::SCPDirectorySource(const UnicodeString DirectoryName,
       catch (EScpFileSkipped &E)
       {
         TQueryParams Params(qpAllowContinueOnError);
-        TSuspendFileOperationProgress Suspend(OperationProgress);
+        TSuspendFileOperationProgress Suspend(OperationProgress); nb::used(Suspend);
 
         if (FTerminal->QueryUserException(FMTLOAD(COPY_ERROR, (FileName)), &E,
               qaOK | qaAbort, &Params, qtError) == qaAbort)
@@ -2153,17 +2144,14 @@ void TSCPFileSystem::SCPDirectorySource(const UnicodeString DirectoryName,
       catch (ESkipFile &E)
       {
         // If ESkipFile occurs, just log it and continue with next file
-        TSuspendFileOperationProgress Suspend(OperationProgress);
+        TSuspendFileOperationProgress Suspend(OperationProgress); nb::used(Suspend);
         if (!FTerminal->HandleException(&E))
         {
           throw;
         }
       }
-        FileOperationLoopCustom(FTerminal, OperationProgress, folAllowSkip,
       FindOK = FTerminal->LocalFindNextLoop(SearchRec);
-        [&]()
-    },
-    } end_try__finally
+    }
 
     SearchRec.Close();
 
@@ -2499,7 +2487,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString TargetDir,
           {
             FTerminal->LogEvent(FORMAT("Warning: Remote host set a compound pathname '%s'", Line));
           }
-          if ((Level == 0) && (OnlyFileName != UnixExtractFileName(FileName)))
+          if ((Level == 0) && (OnlyFileName != base::UnixExtractFileName(AFileName)))
           {
             SCPError(LoadStr(UNREQUESTED_FILE), False);
           }
@@ -2525,7 +2513,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString TargetDir,
 
         bool Dir = (Ctrl == L'D');
         UnicodeString BaseFileName = FTerminal->GetBaseFileName(FullFileName);
-        if (!CopyParam->AllowTransfer(BaseFileName, osRemote, Dir, MaskParams, IsUnixHiddenFile(BaseFileName)))
+        if (!CopyParam->AllowTransfer(BaseFileName, osRemote, Dir, MaskParams, base::IsUnixHiddenFile(BaseFileName)))
         {
           FTerminal->LogEvent(FORMAT("File \"%s\" excluded from transfer",
             FullFileName));

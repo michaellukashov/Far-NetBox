@@ -35,76 +35,78 @@ public:
   static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TConfiguration); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TConfiguration) || TObject::is(Kind); }
 private:
-  bool FDontSave;
-  bool FForceSave;
-  bool FChanged;
-  intptr_t FUpdating;
+  bool FDontSave{false};
+  bool FForceSave{false};
+  bool FChanged{false};
+  intptr_t FUpdating{0};
   TNotifyEvent FOnChange;
 
-  mutable void *FApplicationInfo;
+  mutable void *FApplicationInfo{nullptr};
   TUsage * FUsage{nullptr};
-  bool FLogging;
-  bool FPermanentLogging;
+  bool FLogging{false};
+  bool FPermanentLogging{false};
   UnicodeString FLogFileName;
   UnicodeString FPermanentLogFileName;
-  intptr_t FLogWindowLines;
-  bool FLogFileAppend;
-  bool FLogSensitive;
-  bool FPermanentLogSensitive;
-  int64_t FLogMaxSize;
-  int64_t FPermanentLogMaxSize;
-  intptr_t FLogMaxCount;
-  intptr_t FPermanentLogMaxCount;
-  intptr_t FLogProtocol;
-  intptr_t FPermanentLogProtocol;
-  intptr_t FActualLogProtocol;
-  bool FLogActions;
-  bool FPermanentLogActions;
-  bool FLogActionsRequired;
+  intptr_t FLogWindowLines{0};
+  bool FLogFileAppend{false};
+  bool FLogSensitive{false};
+  bool FPermanentLogSensitive{false};
+  int64_t FLogMaxSize{0};
+  int64_t FPermanentLogMaxSize{0};
+  intptr_t FLogMaxCount{0};
+  intptr_t FPermanentLogMaxCount{0};
+  intptr_t FLogProtocol{0};
+  intptr_t FPermanentLogProtocol{0};
+  intptr_t FActualLogProtocol{0};
+  bool FLogActions{false};
+  bool FPermanentLogActions{false};
+  bool FLogActionsRequired{false};
   UnicodeString FActionsLogFileName;
   UnicodeString FPermanentActionsLogFileName;
-  bool FConfirmOverwriting;
-  bool FConfirmResume;
-  bool FAutoReadDirectoryAfterOp;
-  intptr_t FSessionReopenAuto;
-  intptr_t FSessionReopenBackground;
-  intptr_t FSessionReopenTimeout;
-  intptr_t FSessionReopenAutoStall;
+  bool FConfirmOverwriting{false};
+  bool FConfirmResume{false};
+  bool FAutoReadDirectoryAfterOp{false};
+  intptr_t FSessionReopenAuto{0};
+  intptr_t FSessionReopenBackground{0};
+  intptr_t FSessionReopenTimeout{0};
+  intptr_t FSessionReopenAutoStall{0};
   UnicodeString FCustomIniFileStorageName;
   UnicodeString FIniFileStorageName;
   UnicodeString FVirtualIniFileStorageName;
   std::unique_ptr<TStrings> FOptionsStorage;
-  intptr_t FProgramIniPathWritable;
-  intptr_t FTunnelLocalPortNumberLow;
-  intptr_t FTunnelLocalPortNumberHigh;
-  intptr_t FCacheDirectoryChangesMaxSize;
-  bool FShowFtpWelcomeMessage;
+  intptr_t FProgramIniPathWritable{0};
+  intptr_t FTunnelLocalPortNumberLow{0};
+  intptr_t FTunnelLocalPortNumberHigh{0};
+  intptr_t FCacheDirectoryChangesMaxSize{0};
+  bool FShowFtpWelcomeMessage{false};
   UnicodeString FDefaultRandomSeedFile;
   UnicodeString FRandomSeedFile;
   UnicodeString FPuttyRegistryStorageKey;
   UnicodeString FExternalIpAddress;
-  bool FTryFtpWhenSshFails;
+  bool FTryFtpWhenSshFails{false};
   intptr_t FParallelDurationThreshold;
-  bool FScripting;
+  bool FScripting{false};
   UnicodeString FMimeTypes;
-  int FDontReloadMoreThanSessions;
-  int FScriptProgressFileNameLimit;
-  intptr_t FSessionReopenAutoMaximumNumberOfRetries;
+  int FDontReloadMoreThanSessions{0};
+  int FScriptProgressFileNameLimit{0};
+  intptr_t FSessionReopenAutoMaximumNumberOfRetries{0};
 
-  bool FDisablePasswordStoring;
-  bool FForceBanners;
-  bool FDisableAcceptingHostKeys;
-  bool FDefaultCollectUsage;
+  bool FDisablePasswordStoring{false};
+  bool FForceBanners{false};
+  bool FDisableAcceptingHostKeys{false};
+  bool FDefaultCollectUsage{false};
 
 public:
   TVSFixedFileInfo *GetFixedApplicationInfo() const;
   void *GetApplicationInfo() const;
+  virtual UnicodeString GetVersionStr() const;
+  virtual UnicodeString GetVersion() const;
   virtual UnicodeString GetProductVersion() const;
-  UnicodeString GetVersion();
+  virtual UnicodeString GetProductVersionStr() const;
   UnicodeString GetFileProductVersion() const;
   UnicodeString GetProductName() const;
   UnicodeString GetCompanyName() const;
-  UnicodeString GetFileVersion(TVSFixedFileInfo *Info);
+  UnicodeString GetFileVersion(TVSFixedFileInfo *Info) const;
   UnicodeString GetStoredSessionsSubKey() const;
   UnicodeString GetPuttySessionsKey() const;
   void SetRandomSeedFile(UnicodeString Value);
@@ -165,12 +167,11 @@ public:
 
   bool GetScripting() const { return FScripting; }
   void SetScripting(bool Value) { FScripting = Value; }
-  virtual UnicodeString GetProductVersionStr() const;
   void SetStorage(TStorage Value);
 
 protected:
-  mutable TStorage FStorage;
-  TCriticalSection FCriticalSection;
+  mutable TStorage FStorage{};
+  mutable TCriticalSection FCriticalSection;
 
 public:
   virtual TStorage GetStorage() const;
@@ -264,7 +265,7 @@ public:
   virtual UnicodeString DecryptPassword(const RawByteString Password, const UnicodeString Key);
   virtual RawByteString StronglyRecryptPassword(const RawByteString Password, const UnicodeString Key);
   UnicodeString GetFileDescription(const UnicodeString AFileName) const;
-  UnicodeString GetFileVersion(const UnicodeString AFileName);
+  UnicodeString GetFileVersion(const UnicodeString AFileName) const;
   UnicodeString GetFileMimeType(const UnicodeString AFileName) const;
 
   TStoredSessionList *SelectFilezillaSessionsForImport(
@@ -280,6 +281,7 @@ public:
   __property TUsage *Usage = { read = FUsage };
   ROProperty<TUsage*> Usage{nb::bind(&TConfiguration::GetUsage, this)};
   __property bool CollectUsage = { read = GetCollectUsage, write = SetCollectUsage };
+  RWProperty<bool> CollectUsage{nb::bind(&TConfiguration::GetCollectUsage, this), nb::bind(&TConfiguration::SetCollectUsage, this)};
   __property UnicodeString StoredSessionsSubKey = {read = GetStoredSessionsSubKey};
   ROProperty<UnicodeString> StoredSessionsSubKey{nb::bind(&TConfiguration::GetStoredSessionsSubKey, this)};
   __property UnicodeString PuttyRegistryStorageKey  = { read = FPuttyRegistryStorageKey, write = SetPuttyRegistryStorageKey };
@@ -287,13 +289,20 @@ public:
   __property UnicodeString RandomSeedFile  = { read = FRandomSeedFile, write = SetRandomSeedFile };
   __property UnicodeString RandomSeedFileName  = { read = GetRandomSeedFileName };
   __property UnicodeString SshHostKeysSubKey  = { read = GetSshHostKeysSubKey };
+  ROProperty<UnicodeString> SshHostKeysSubKey{nb::bind(&TConfiguration::GetSshHostKeysSubKey, this)};
   __property UnicodeString RootKeyStr  = { read = GetRootKeyStr };
+  ROProperty<UnicodeString> RootKeyStr{nb::bind(&TConfiguration::GetRootKeyStr, this)};
   __property UnicodeString ConfigurationSubKey  = { read = GetConfigurationSubKey };
+  ROProperty<UnicodeString> ConfigurationSubKey{nb::bind(&TConfiguration::GetConfigurationSubKey, this)};
   __property TEOLType LocalEOLType = { read = GetLocalEOLType };
+  ROProperty<TEOLType> LocalEOLType{nb::bind(&TConfiguration::GetLocalEOLType, this)};
   __property UnicodeString VersionStr = { read = GetVersionStr };
+  ROProperty<UnicodeString> VersionStr{nb::bind(&TConfiguration::GetVersionStr, this)};
   __property UnicodeString Version = { read = GetVersion };
   __property int CompoundVersion = { read = GetCompoundVersion };
+  ROProperty<intptr_t> CompoundVersion{nb::bind(&TConfiguration::GetCompoundVersion, this)};
   __property UnicodeString ProductVersion = { read = GetProductVersion };
+  ROProperty<UnicodeString> ProductVersion{nb::bind(&TConfiguration::GetProductVersionStr, this)};
   __property UnicodeString ProductName = { read = GetProductName };
   __property UnicodeString CompanyName = { read = GetCompanyName };
   __property bool IsUnofficial = { read = GetIsUnofficial };
@@ -336,17 +345,25 @@ public:
   int& ScriptProgressFileNameLimit{FScriptProgressFileNameLimit};
 
   __property UnicodeString TimeFormat = { read = GetTimeFormat };
+  ROProperty<UnicodeString> TimeFormat{nb::bind(&TConfiguration::GetTimeFormat, this)};
   __property TStorage Storage  = { read = GetStorage };
+  ROProperty<TStorage> Storage{nb::bind(&TConfiguration::GetStorage, this)};
   __property UnicodeString RegistryStorageKey  = { read = GetRegistryStorageKey };
+  ROProperty<UnicodeString> RegistryStorageKey{nb::bind(&TConfiguration::GetRegistryStorageKey, this)};
   __property UnicodeString CustomIniFileStorageName  = { read = FCustomIniFileStorageName };
   __property UnicodeString IniFileStorageName  = { read = GetIniFileStorageNameForReadingWriting, write = SetIniFileStorageName };
   __property UnicodeString IniFileStorageNameForReading  = { read = GetIniFileStorageNameForReading };
   __property TStrings *OptionsStorage = { read = GetOptionsStorage, write = SetOptionsStorage };
+  RWProperty<TStrings*> OptionsStorage{nb::bind(&TConfiguration::GetOptionsStorage, this), nb::bind(&TConfiguration::SetOptionsStorage, this)};
   __property bool Persistent = { read = GetPersistent };
+  ROProperty<bool> Persistent{nb::bind(&TConfiguration::GetPersistent, this)};
   __property bool ForceSave = { read = FForceSave, write = FForceSave };
+  bool& ForceSave{FForceSave};
   __property bool Scripting = { read = FScripting, write = FScripting };
+  bool& Scripting{FScripting};
 
   __property UnicodeString DefaultKeyFile = { read = GetDefaultKeyFile };
+  ROProperty<UnicodeString> DefaultKeyFile{nb::bind(&TConfiguration::GetDefaultKeyFile, this)};
 
   __property bool DisablePasswordStoring = { read = FDisablePasswordStoring };
   const bool& DisablePasswordStoring{FDisablePasswordStoring};

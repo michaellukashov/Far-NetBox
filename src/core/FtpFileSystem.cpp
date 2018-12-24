@@ -233,7 +233,7 @@ private:
   bool FIgnoreFileList;
 };
 //---------------------------------------------------------------------------
-TFTPFileSystem::TFTPFileSystem(TTerminal *ATerminal) :
+TFTPFileSystem::TFTPFileSystem(TTerminal *ATerminal) noexcept :
   TCustomFileSystem(OBJECT_CLASS_TFTPFileSystem, ATerminal),
   FFileZillaIntf(nullptr),
   FQueue(new TMessageQueue),
@@ -296,8 +296,8 @@ void TFTPFileSystem::Init(void *)
   FFileSystemInfo.ProtocolName = FFileSystemInfo.ProtocolBaseName;
   FTimeoutStatus = LoadStr(IDS_ERRORMSG_TIMEOUT);
   FDisconnectStatus = LoadStr(IDS_STATUSMSG_DISCONNECTED);
-  FServerCapabilities = new TFTPServerCapabilities();
-  FHashAlgs(std::make_unique<TStringList>());
+  FServerCapabilities = std::make_unique<TFTPServerCapabilities>();
+  FHashAlgs = std::make_unique<TStringList>();
   FSupportedCommands.reset(CreateSortedStringList());
   FSupportedSiteCommands.reset(CreateSortedStringList());
   FCertificate = nullptr;
@@ -316,7 +316,7 @@ void TFTPFileSystem::Init(void *)
   RegisterChecksumAlgCommand(Crc32ChecksumAlg, L"XCRC"); // e.g. Cerberos FTP
 }
 //---------------------------------------------------------------------------
-TFTPFileSystem::~TFTPFileSystem()
+TFTPFileSystem::~TFTPFileSystem() noexcept
 {
   DebugAssert(FFileList == nullptr);
 
@@ -336,7 +336,7 @@ TFTPFileSystem::~TFTPFileSystem()
   SAFE_DESTROY(FLastErrorResponse);
   SAFE_DESTROY(FLastError);
   SAFE_DESTROY(FFeatures);
-  SAFE_DESTROY_EX(TFTPServerCapabilities, FServerCapabilities);
+//  SAFE_DESTROY_EX(TFTPServerCapabilities, FServerCapabilities);
 
   ResetCaches();
 }
@@ -3535,10 +3535,11 @@ bool TFTPFileSystem::HandleStatus(const wchar_t *AStatus, int Type)
     {
       FLastCommand = CMD_UNKNOWN;
     }
-      if (!FLoggedIn || (FTerminal->Configuration->ActualLogProtocol >= 0))
-      {
-        LogType = llInput;
-      }
+    if (!FLoggedIn || (FTerminal->Configuration->ActualLogProtocol >= 0))
+    {
+      LogType = llInput;
+    }
+  }
   break;
 
   case TFileZillaIntf::LOG_ERROR:

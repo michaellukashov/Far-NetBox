@@ -619,6 +619,7 @@ public:
   __property UnicodeString HostName  = { read = FHostName, write = SetHostName };
   RWProperty<UnicodeString> HostName{nb::bind(&TSessionData::GetHostName, this), nb::bind(&TSessionData::SetHostName, this)};
   __property UnicodeString HostNameExpanded  = { read = GetHostNameExpanded };
+  ROProperty<UnicodeString> HostNameExpanded{nb::bind(&TSessionData::GetHostNameExpanded, this)};
   __property int PortNumber = { read = FPortNumber, write = SetPortNumber };
   RWProperty<intptr_t> PortNumber{nb::bind(&TSessionData::GetPortNumber, this), nb::bind(&TSessionData::SetPortNumber, this)};
   __property UnicodeString UserName = { read = FUserName, write = SessionSetUserName };
@@ -669,7 +670,9 @@ public:
   __property bool TimeDifferenceAuto = { read = FTimeDifferenceAuto, write = SetTimeDifferenceAuto };
   __property TPingType PingType = { read = FPingType, write = SetPingType };
   __property UnicodeString SessionName  = { read = GetSessionName };
+  ROProperty<UnicodeString> SessionName{nb::bind(&TSessionData::GetSessionName, this)};
   __property UnicodeString DefaultSessionName  = { read = GetDefaultSessionName };
+  ROProperty<UnicodeString> DefaultSessionName{nb::bind(&TSessionData::GetDefaultSessionName, this)};
   __property UnicodeString LocalDirectory  = { read = FLocalDirectory, write = SetLocalDirectory };
   __property UnicodeString RemoteDirectory  = { read = FRemoteDirectory, write = SetRemoteDirectory };
   RWProperty<UnicodeString> RemoteDirectory{nb::bind(&TSessionData::GetRemoteDirectory, this), nb::bind(&TSessionData::SetRemoteDirectory, this)};
@@ -775,6 +778,7 @@ public:
   __property bool IsWorkspace = { read = FIsWorkspace, write = SetIsWorkspace };
   __property UnicodeString Link = { read = FLink, write = SetLink };
   __property UnicodeString NameOverride = { read = FNameOverride, write = SetNameOverride };
+  RWProperty<UnicodeString> NameOverride{nb::bind(&TSessionData::GetNameOverride, this), nb::bind(&TSessionData::SetNameOverride, this)};
   __property UnicodeString HostKey = { read = FHostKey, write = SetHostKey };
   RWProperty<UnicodeString> HostKey{nb::bind(&TSessionData::GetHostKey, this), nb::bind(&TSessionData::SetHostKey, this)};
   __property bool FingerprintScan = { read = FFingerprintScan, write = FFingerprintScan };

@@ -875,7 +875,7 @@ UnicodeString ParseOpenSshPubLine(const UnicodeString ALine, const struct ssh_si
   int PubBlobLen = 0;
   char * CommentPtr = nullptr;
   const char * ErrorStr = nullptr;
-  uint8_t * PubBlob = openssh_loadpub_line(UtfLine.c_str(), &AlgorithmName, &PubBlobLen, &CommentPtr, &ErrorStr);
+  uint8_t * PubBlob = openssh_loadpub_line(UtfLine.data(), &AlgorithmName, &PubBlobLen, &CommentPtr, &ErrorStr);
   UnicodeString Result;
   if (PubBlob == nullptr)
   {

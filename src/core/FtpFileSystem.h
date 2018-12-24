@@ -27,8 +27,8 @@ public:
   static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TFTPFileSystem); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TFTPFileSystem) || TCustomFileSystem::is(Kind); }
 public:
-  explicit TFTPFileSystem(TTerminal *ATerminal);
-  virtual ~TFTPFileSystem();
+  explicit TFTPFileSystem(TTerminal *ATerminal) noexcept;
+  virtual ~TFTPFileSystem() noexcept;
   virtual void Init(void *) override;
 
   virtual void Open() override;
@@ -232,82 +232,82 @@ private:
     FEAT
   };
 
-  mutable TFileZillaIntf *FFileZillaIntf;
+  mutable TFileZillaIntf *FFileZillaIntf{nullptr};
   TCriticalSection FQueueCriticalSection;
   TCriticalSection FTransferStatusCriticalSection;
-  TMessageQueue *FQueue;
-  HANDLE FQueueEvent;
+  TMessageQueue *FQueue{nullptr};
+  HANDLE FQueueEvent{};
   TSessionInfo FSessionInfo;
   TFileSystemInfo FFileSystemInfo;
-  bool FFileSystemInfoValid;
-  uintptr_t FReply;
-  uintptr_t FCommandReply;
+  bool FFileSystemInfoValid{false};
+  uintptr_t FReply{0};
+  uintptr_t FCommandReply{0};
   TCommand FLastCommand;
-  bool FPasswordFailed;
-  bool FStoredPasswordTried;
-  bool FMultineResponse;
-  intptr_t FLastCode;
-  intptr_t FLastCodeClass;
-  intptr_t FLastReadDirectoryProgress;
+  bool FPasswordFailed{false};
+  bool FStoredPasswordTried{false};
+  bool FMultineResponse{false};
+  intptr_t FLastCode{0};
+  intptr_t FLastCodeClass{0};
+  intptr_t FLastReadDirectoryProgress{0};
   UnicodeString FTimeoutStatus;
   UnicodeString FDisconnectStatus;
-  TStrings *FLastResponse;
-  TStrings *FLastErrorResponse;
-  TStrings *FLastError;
+  TStrings *FLastResponse{nullptr};
+  TStrings *FLastErrorResponse{nullptr};
+  TStrings *FLastError{nullptr};
   UnicodeString FSystem;
-  TStrings *FFeatures;
+  TStrings *FFeatures{nullptr};
   UnicodeString FCurrentDirectory;
-  bool FReadCurrentDirectory;
+  bool FReadCurrentDirectory{false};
   UnicodeString FHomeDirectory;
-  TRemoteFileList *FFileList;
-  TRemoteFileList *FFileListCache;
+  TRemoteFileList *FFileList{nullptr};
+  TRemoteFileList *FFileListCache{nullptr};
   UnicodeString FFileListCachePath;
   UnicodeString FWelcomeMessage;
-  bool FActive;
-  bool FOpening;
-  bool FWaitingForReply;
+  bool FActive{false};
+  bool FOpening{false};
+  bool FWaitingForReply{false};
   __removed enum { ftaNone, ftaSkip, ftaCancel } FFileTransferAbort;
   enum
   {
     ftaNone,
     ftaSkip,
     ftaCancel,
-  } FFileTransferAbort;
-  bool FIgnoreFileList;
-  bool FFileTransferCancelled;
-  int64_t FFileTransferResumed;
-  bool FFileTransferPreserveTime;
-  bool FFileTransferRemoveBOM;
-  bool FFileTransferNoList;
+  } FFileTransferAbort{ftaNone};
+  bool FIgnoreFileList{false};
+  bool FFileTransferCancelled{false};
+  int64_t FFileTransferResumed{0};
+  bool FFileTransferPreserveTime{false};
+  bool FFileTransferRemoveBOM{false};
+  bool FFileTransferNoList{false};
   uintptr_t FFileTransferCPSLimit;
-  bool FAwaitingProgress;
+  bool FAwaitingProgress{false};
   TCaptureOutputEvent FOnCaptureOutput;
   UnicodeString FUserName;
   TAutoSwitch FListAll;
-  bool FDoListAll;
-  TFTPServerCapabilities *FServerCapabilities;
-  TDateTime FLastDataSent;
-  bool FDetectTimeDifference;
-  int64_t FTimeDifference;
+  bool FDoListAll{false};
+  std::unique_ptr<TFTPServerCapabilities> FServerCapabilities;
+  TDateTime FLastDataSent{};
+  bool FDetectTimeDifference{false};
+  int64_t FTimeDifference{0};
   std::unique_ptr<TStrings> FChecksumAlgs;
   std::unique_ptr<TStrings> FChecksumCommands;
   std::unique_ptr<TStrings> FSupportedCommands;
   std::unique_ptr<TStrings> FSupportedSiteCommands;
   std::unique_ptr<TStrings> FHashAlgs;
   typedef rde::map<UnicodeString, TDateTime> TUploadedTimes;
-  TUploadedTimes FUploadedTimes;
-  bool FSupportsAnyChecksumFeature;
+  TUploadedTimes FUploadedTimes{};
+  bool FSupportsAnyChecksumFeature{false};
   UnicodeString FLastCommandSent;
-  X509 *FCertificate;
-  EVP_PKEY *FPrivateKey;
-  bool FTransferActiveImmediately;
-  bool FWindowsServer;
-  int64_t FBytesAvailable;
-  bool FBytesAvailableSupported;
-  bool FMVS;
-  bool FVMS;
-  bool FFileTransferAny;
-  bool FLoggedIn;
+  X509 *FCertificate{nullptr};
+  EVP_PKEY *FPrivateKey{nullptr};
+  bool FTransferActiveImmediately{false};
+  bool FWindowsServer{false};
+  int64_t FBytesAvailable{0};
+  bool FBytesAvailableSupported{false};
+  bool FMVS{false};
+  bool FVMS{false};
+  bool FFileTransferAny{false};
+  bool FLoggedIn{false};
   mutable UnicodeString FOptionScratch;
 private:
   bool DoQuit();
