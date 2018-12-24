@@ -150,6 +150,8 @@ add_definitions(-DUSE_DLMALLOC -DUSE_DL_PREFIX -DNO_MALLINFO -DUSE_LOCKS=1)
 add_definitions(-DHIDE_TODO)
 add_definitions(-DNEED_LIBS3)
 add_definitions(-DFARPLUGIN)
+add_definitions(${fmt_DEFINES})
+
 
 set(NETBOX_DLL_LINK_FLAGS
   "
@@ -1248,7 +1250,7 @@ target_compile_options(tinylog PRIVATE
 
 #-------------------------------------------------------------------------------
 #fmt
-
+if(FALSE)
 add_library(fmt STATIC
   ../../libs/fmt/fmt/format.cc
   ../../libs/fmt/fmt/format.h
@@ -1260,12 +1262,17 @@ add_library(fmt STATIC
 )
 
 target_compile_options(fmt PRIVATE
-  -DFMT_EXPORT
+  ${fmt_DEFINES}
   ${NETBOX_UNICODE_FLAGS}
 )
 
 target_include_directories(fmt PRIVATE
   ../../libs/GSL/include
+)
+endif(FALSE)
+
+set(fmt_DEFINES
+  -DFMT_EXPORT -DFMT_HEADER_ONLY
 )
 
 #-------------------------------------------------------------------------------
@@ -1549,7 +1556,7 @@ set(NETBOX_LIBRARIES
   expat
   dlmalloc
   rdestl
-  fmt
+#  fmt
   s3
   tinylog
 
