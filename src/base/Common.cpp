@@ -4029,7 +4029,7 @@ UnicodeString GetFileMimeType(const UnicodeString /*FileName*/)
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString NormalizeString(const UnicodeString & S)
+UnicodeString NormalizeString(const UnicodeString S)
 {
   UnicodeString Result = S;
   if (Result == EmptyString)

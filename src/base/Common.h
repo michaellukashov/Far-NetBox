@@ -72,6 +72,7 @@ NB_CORE_EXPORT UnicodeString RemoveMainInstructionsTag(const UnicodeString S);
 NB_CORE_EXPORT UnicodeString UnformatMessage(const UnicodeString S);
 NB_CORE_EXPORT UnicodeString RemoveInteractiveMsgTag(const UnicodeString S);
 NB_CORE_EXPORT UnicodeString RemoveEmptyLines(const UnicodeString S);
+NB_CORE_EXPORT UnicodeString NormalizeString(const UnicodeString S);
 NB_CORE_EXPORT bool IsNumber(const UnicodeString Str);
 NB_CORE_EXPORT UnicodeString GetSystemTemporaryDirectory();
 NB_CORE_EXPORT UnicodeString GetShellFolderPath(intptr_t CSIdl);
