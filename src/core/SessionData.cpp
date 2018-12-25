@@ -4571,7 +4571,7 @@ TFtps TSessionData::TranslateFtpEncryptionNumber(intptr_t FtpEncryption) const
 }
 
 //=== TStoredSessionList ----------------------------------------------
-TStoredSessionList::TStoredSessionList(bool AReadOnly) :
+TStoredSessionList::TStoredSessionList(bool AReadOnly) noexcept :
   TNamedObjectList(OBJECT_CLASS_TStoredSessionList),
   FDefaultSettings(std::make_unique<TSessionData>(DefaultName)),
   FReadOnly(AReadOnly)
@@ -4581,12 +4581,12 @@ TStoredSessionList::TStoredSessionList(bool AReadOnly) :
   FPendingRemovals = std::make_unique<TStringList>();
 }
 //---------------------------------------------------------------------
-TStoredSessionList::~TStoredSessionList()
+TStoredSessionList::~TStoredSessionList() noexcept
 {
 //  SAFE_DESTROY(FDefaultSettings);
   for (intptr_t Index = 0; Index < GetCount(); ++Index)
   {
-    delete TNamedObjectList::AtObject(Index);
+    SAFE_DESTROY(TNamedObjectList::AtObject(Index));
     SetItem(Index, nullptr);
   }
 }

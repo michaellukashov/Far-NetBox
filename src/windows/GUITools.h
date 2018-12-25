@@ -21,7 +21,7 @@ NB_CORE_EXPORT void ExecuteShellChecked(const UnicodeString Command);
 NB_CORE_EXPORT bool ExecuteShell(const UnicodeString Path, const UnicodeString Params,
   HANDLE &Handle);
 NB_CORE_EXPORT void ExecuteShellCheckedAndWait(const UnicodeString Command, TProcessMessagesEvent ProcessMessages);
-__removed TObjectList * StartCreationDirectoryMonitorsOnEachDrive(unsigned int Filter, TFileChangedEvent OnChanged);
+__removed TObjectList * StartCreationDirectoryMonitorsOnEachDrive(uintptr_t Filter, TFileChangedEvent OnChanged);
 NB_CORE_EXPORT bool CopyCommandToClipboard(const UnicodeString ACommand);
 extern bool DontCopyCommandToClipboard;
 NB_CORE_EXPORT void OpenSessionInPutty(const UnicodeString PuttyPath,
@@ -85,8 +85,8 @@ public:
   explicit TLocalCustomCommand(
     const TCustomCommandData &Data, const UnicodeString RemotePath, const UnicodeString LocalPath,
     const UnicodeString AFileName, const UnicodeString LocalFileName,
-    const UnicodeString FileList);
-  virtual ~TLocalCustomCommand()noexcept = default;
+    const UnicodeString FileList) noexcept;
+  virtual ~TLocalCustomCommand() noexcept = default;
 
   virtual bool IsFileCommand(const UnicodeString Command) const;
   bool HasLocalFileName(const UnicodeString Command) const;

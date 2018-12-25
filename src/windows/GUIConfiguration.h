@@ -154,45 +154,45 @@ private:
 class TGUIConfiguration : public TConfiguration
 {
 private:
-  TObjectList * FLocales;
+  std::unique_ptr<TObjectList> FLocales;
   UnicodeString FLastLocalesExts;
-  bool FContinueOnError;
-  bool FConfirmCommandSession;
+  bool FContinueOnError{false};
+  bool FConfirmCommandSession{false};
   UnicodeString FPuttyPath;
-  bool FPuttyPassword;
-  bool FTelnetForFtpInPutty;
+  bool FPuttyPassword{false};
+  bool FTelnetForFtpInPutty{false};
   UnicodeString FPuttySession;
-  int FSynchronizeParams;
-  int FSynchronizeOptions;
-  int FSynchronizeModeAuto;
-  int FSynchronizeMode;
-  int FMaxWatchDirectories;
+  int FSynchronizeParams{0};
+  int FSynchronizeOptions{0};
+  int FSynchronizeModeAuto{0};
+  int FSynchronizeMode{0};
+  int FMaxWatchDirectories{0};
   TDateTime FIgnoreCancelBeforeFinish;
-  bool FQueueAutoPopup;
-  bool FSessionRememberPassword;
-  int FQueueTransfersLimit;
-  bool FQueueBootstrap;
-  bool FQueueKeepDoneItems;
-  int FQueueKeepDoneItemsFor;
+  bool FQueueAutoPopup{false};
+  bool FSessionRememberPassword{false};
+  int FQueueTransfersLimit{0};
+  bool FQueueBootstrap{false};
+  bool FQueueKeepDoneItems{false};
+  int FQueueKeepDoneItemsFor{0};
   TGUICopyParamType FDefaultCopyParam;
-  bool FBeepOnFinish;
+  bool FBeepOnFinish{false};
   TDateTime FBeepOnFinishAfter;
   UnicodeString FBeepSound;
   UnicodeString FDefaultPuttyPathOnly;
   UnicodeString FDefaultPuttyPath;
-  TCopyParamList * FCopyParamList;
-  bool FCopyParamListDefaults;
+  std::unique_ptr<TCopyParamList> FCopyParamList;
+  bool FCopyParamListDefaults{false};
   UnicodeString FCopyParamCurrent;
   TRemoteProperties FNewDirectoryProperties;
-  int FKeepUpToDateChangeDelay;
+  int FKeepUpToDateChangeDelay{0};
   UnicodeString FChecksumAlg;
-  int FSessionReopenAutoIdle;
+  int FSessionReopenAutoIdle{0};
   LCID FAppliedLocale;
   // Corresponds to FAppliedLocale
   UnicodeString FLocaleModuleName;
 
 protected:
-  LCID FLocale;
+  LCID FLocale{};
 
   virtual void SaveData(THierarchicalStorage * Storage, bool All);
   virtual void LoadData(THierarchicalStorage * Storage);
@@ -236,8 +236,8 @@ protected:
   bool DoSaveCopyParam(THierarchicalStorage * Storage, const TCopyParamType * CopyParam, const TCopyParamType * Defaults);
 
 public:
-  TGUIConfiguration();
-  virtual ~TGUIConfiguration();
+  TGUIConfiguration() noexcept;
+  virtual ~TGUIConfiguration() noexcept;
   virtual void Default();
   virtual void UpdateStaticUsage();
   bool LoadCopyParam(THierarchicalStorage * Storage, TCopyParamType * CopyParam);
@@ -268,11 +268,17 @@ public:
   __property LCID LocaleSafe = { read = GetLocale, write = SetLocaleSafe };
   __property UnicodeString AppliedLocaleHex = { read = GetAppliedLocaleHex };
   __property TObjectList * Locales = { read = GetLocales };
+  ROProperty<TObjectList *> Locales{nb::bind(&TGUIConfiguration::GetLocales, this)};
   __property UnicodeString PuttyPath = { read = FPuttyPath, write = FPuttyPath };
+  UnicodeString& PuttyPath{FPuttyPath};
   __property UnicodeString DefaultPuttyPath = { read = FDefaultPuttyPath };
+  const UnicodeString& DefaultPuttyPath{FDefaultPuttyPath};
   __property bool PuttyPassword = { read = FPuttyPassword, write = FPuttyPassword };
+  bool& PuttyPassword{FPuttyPassword};
   __property bool TelnetForFtpInPutty = { read = FTelnetForFtpInPutty, write = FTelnetForFtpInPutty };
+  bool& TelnetForFtpInPutty{FTelnetForFtpInPutty};
   __property UnicodeString PuttySession = { read = FPuttySession, write = FPuttySession };
+  UnicodeString& PuttySession{FPuttySession};
   __property TDateTime IgnoreCancelBeforeFinish = { read = FIgnoreCancelBeforeFinish, write = FIgnoreCancelBeforeFinish };
   __property TGUICopyParamType DefaultCopyParam = { read = FDefaultCopyParam, write = SetDefaultCopyParam };
   __property bool BeepOnFinish = { read = FBeepOnFinish, write = FBeepOnFinish };

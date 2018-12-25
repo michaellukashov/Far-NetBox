@@ -92,11 +92,11 @@ void OpenSessionInPutty(const UnicodeString PuttyPath,
     if (GUIConfiguration->PuttyPassword)
     {
       // Passphrase has precendence, as it's more likely entered by user during authentication, hence more likely really needed.
-      if (!SessionData->Passphrase.IsEmpty())
+      if (!SessionData->Passphrase().IsEmpty())
       {
         Password = SessionData->Passphrase;
       }
-      else if (!SessionData->Password.IsEmpty())
+      else if (!SessionData->Password().IsEmpty())
       {
         Password = SessionData->Password;
       }
@@ -114,12 +114,12 @@ void OpenSessionInPutty(const UnicodeString PuttyPath,
     {
       {
         bool SessionList = false;
-        std::unique_ptr<THierarchicalStorage> SourceHostKeyStorage(Configuration->CreateScpStorage(SessionList));
-        std::unique_ptr<THierarchicalStorage> TargetHostKeyStorage(new TRegistryStorage(Configuration->PuttyRegistryStorageKey));
-        TargetHostKeyStorage->Explicit = true;
-        TargetHostKeyStorage->AccessMode = smReadWrite;
-        std::unique_ptr<TStoredSessionList> HostKeySessionList(new TStoredSessionList());
-        HostKeySessionList->OwnsObjects = false;
+        std::unique_ptr<THierarchicalStorage> SourceHostKeyStorage(GetConfiguration()->CreateStorage(SessionList));
+        std::unique_ptr<THierarchicalStorage> TargetHostKeyStorage(std::make_unique<TRegistryStorage>(GetConfiguration()->PuttyRegistryStorageKey()));
+        TargetHostKeyStorage->SetExplicit(true);
+        TargetHostKeyStorage->SetAccessMode(smReadWrite);
+        std::unique_ptr<TStoredSessionList> HostKeySessionList(std::make_unique<TStoredSessionList>());
+        HostKeySessionList->SetOwnsObjects(false);
         HostKeySessionList->Add(SessionData);
         TStoredSessionList::ImportHostKeys(SourceHostKeyStorage.get(), TargetHostKeyStorage.get(), HostKeySessionList.get(), false);
       }
@@ -145,9 +145,9 @@ void OpenSessionInPutty(const UnicodeString PuttyPath,
 
         if (!Telnet)
         {
-          if (!SessionData->PublicKeyFile.IsEmpty())
+          if (!SessionData->PublicKeyFile().IsEmpty())
           {
-            AddToList(PuttyParams, FORMAT(L"-i \"%s\"", (SessionData->PublicKeyFile)), L" ");
+            AddToList(PuttyParams, FORMAT(L"-i \"%s\"", SessionData->PublicKeyFile()), L" ");
           }
           AddToList(PuttyParams, (SessionData->TryAgent ? L"-agent" : L"-noagent"), L" ");
           if (SessionData->TryAgent)
@@ -160,41 +160,9 @@ void OpenSessionInPutty(const UnicodeString PuttyPath,
           }
           AddToList(PuttyParams,
             ((SessionData->SshProt == ssh1only || SessionData->SshProt == ssh1deprecated) ? L"-1" : L"-2"), L" ");
-          if (!SessionData->LogicalHostName.IsEmpty())
+          if (!SessionData->LogicalHostName().IsEmpty())
           {
-            AddToList(PuttyParams, FORMAT(L"-loghost \"%s\"", (SessionData->LogicalHostName)), L" ");
-          }
-        }
-
-        if (SessionData->AddressFamily == afIPv4)
-        {
-          AddToList(PuttyParams, L"-4", L" ");
-        }
-        else if (SessionData->AddressFamily == afIPv6)
-        {
-          AddToList(PuttyParams, L"-6", L" ");
-        }
-
-        if (!Telnet)
-        {
-          if (!SessionData->PublicKeyFile.IsEmpty())
-          {
-            AddToList(PuttyParams, FORMAT(L"-i \"%s\"", (SessionData->PublicKeyFile)), L" ");
-          }
-          AddToList(PuttyParams, (SessionData->TryAgent ? L"-agent" : L"-noagent"), L" ");
-          if (SessionData->TryAgent)
-          {
-            AddToList(PuttyParams, (SessionData->AgentFwd ? L"-A" : L"-a"), L" ");
-          }
-          if (SessionData->Compression)
-          {
-            AddToList(PuttyParams, L"-C", L" ");
-          }
-          AddToList(PuttyParams,
-            ((SessionData->SshProt == ssh1only || SessionData->SshProt == ssh1deprecated) ? L"-1" : L"-2"), L" ");
-          if (!SessionData->LogicalHostName.IsEmpty())
-          {
-            AddToList(PuttyParams, FORMAT(L"-loghost \"%s\"", (SessionData->LogicalHostName)), L" ");
+            AddToList(PuttyParams, FORMAT(L"-loghost \"%s\"", SessionData->LogicalHostName()), L" ");
           }
         }
 
@@ -210,12 +178,12 @@ void OpenSessionInPutty(const UnicodeString PuttyPath,
       else
       {
         UnicodeString SessionName;
-        TRegistryStorage *Storage = nullptr;
-        TSessionData *ExportData = nullptr;
-        TRegistryStorage *SourceStorage = nullptr;
+        std::unique_ptr<TRegistryStorage> Storage = nullptr;
+        std::unique_ptr<TSessionData> ExportData = nullptr;
+        std::unique_ptr<TRegistryStorage> SourceStorage = nullptr;
         try__finally
         {
-          Storage = new TRegistryStorage(GetConfiguration()->GetPuttySessionsKey());
+          Storage = std::make_unique<TRegistryStorage>(GetConfiguration()->GetPuttySessionsKey());
           Storage->SetAccessMode(smReadWrite);
           // make it compatible with putty
           Storage->SetMungeStringValues(false);
@@ -228,7 +196,7 @@ void OpenSessionInPutty(const UnicodeString PuttyPath,
             }
             else
             {
-              SourceStorage = new TRegistryStorage(Configuration->PuttySessionsKey);
+              SourceStorage = std::make_unique<TRegistryStorage>(GetConfiguration()->PuttySessionsKey);
               SourceStorage->MungeStringValues = false;
               SourceStorage->ForceAnsi = true;
               if (SourceStorage->OpenSubKey(StoredSessions->DefaultSettings->Name, false) &&
@@ -238,12 +206,12 @@ void OpenSessionInPutty(const UnicodeString PuttyPath,
                 Storage->CloseSubKey();
               }
 
-              ExportData = new TSessionData(L"");
+              ExportData = std::make_unique<TSessionData>(L"");
               ExportData->Assign(SessionData);
-              ExportData->Modified = true;
-              ExportData->Name = GetGUIConfiguration()->PuttySession;
-              ExportData->WinTitle = SessionData->SessionName;
-              ExportData->Password = L"";
+              ExportData->SetModified(true);
+              ExportData->SetName(GetGUIConfiguration()->PuttySession);
+              ExportData->SetWinTitle(SessionData->SessionName);
+              ExportData->SetPassword(L"");
 
               if (SessionData->FSProtocol == fsFTP)
               {
@@ -265,13 +233,13 @@ void OpenSessionInPutty(const UnicodeString PuttyPath,
               SessionName = GUIConfiguration->PuttySession;
             }
           }
-        }б
-        __finally
-        {
+        },
+        __finally__removed
+        ({
           delete Storage;
           delete ExportData;
           delete SourceStorage;
-        } end_try__finally
+        }) end_try__finally
 
         UnicodeString LoadSwitch = L"-load";
         intptr_t P = Params2.LowerCase().Pos(LoadSwitch + L" ");
@@ -320,22 +288,22 @@ bool FindTool(const UnicodeString Name, UnicodeString &APath)
   return Result;
 }
 //---------------------------------------------------------------------------
-void __fastcall ExecuteTool(const UnicodeString & Name)
+void ExecuteTool(const UnicodeString AName)
 {
   UnicodeString Path;
-  if (!FindTool(Name, Path))
+  if (!FindTool(AName, Path))
   {
-    throw Exception(FMTLOAD(EXECUTE_APP_ERROR, (Name)));
+    throw Exception(FMTLOAD(EXECUTE_APP_ERROR, AName));
   }
 
   ExecuteShellChecked(Path, L"");
 }
 //---------------------------------------------------------------------------
-TObjectList * StartCreationDirectoryMonitorsOnEachDrive(unsigned int Filter, TFileChangedEvent OnChanged)
+TObjectList * StartCreationDirectoryMonitorsOnEachDrive(uintptr_t Filter, TFileChangedEvent OnChanged)
 {
-  std::unique_ptr<TStrings> Drives(new TStringList());
+  std::unique_ptr<TStrings> Drives(std::make_unique<TStringList>());
 
-  std::unique_ptr<TStrings> DDDrives(new TStringList());
+  std::unique_ptr<TStrings> DDDrives(std::make_unique<TStringList>());
   DDDrives->CommaText = WinConfiguration->DDDrives;
   UnicodeString ExcludedDrives;
   for (int Index = 0; Index < DDDrives->Count; Index++)
@@ -369,9 +337,10 @@ TObjectList * StartCreationDirectoryMonitorsOnEachDrive(unsigned int Filter, TFi
     }
   }
 
-  std::unique_ptr<TObjectList> Result(new TObjectList());
+  std::unique_ptr<TObjectList> Result(std::make_unique<TObjectList>());
   for (int Index = 0; Index < Drives->Count; Index++)
   {
+#if 0
     UnicodeString Drive = Drives->Strings[Index];
     std::unique_ptr<TDirectoryMonitor> Monitor(new TDirectoryMonitor(Application));
     try
@@ -388,6 +357,7 @@ TObjectList * StartCreationDirectoryMonitorsOnEachDrive(unsigned int Filter, TFi
     {
       // Ignore errors watching not-ready drives
     }
+#endif // #if 0
   }
   return Result.release();
 }
@@ -1031,18 +1001,19 @@ void __fastcall HideComponentsPanel(TForm * Form)
   }
 }
 //---------------------------------------------------------------------------
-UnicodeString FormatIncrementalSearchStatus(const UnicodeString & Text, bool HaveNext)
+UnicodeString FormatIncrementalSearchStatus(const UnicodeString AText, bool HaveNext)
 {
   UnicodeString Result =
-    L" " + FMTLOAD(INC_SEARCH, (Text)) +
+    L" " + FMTLOAD(INC_SEARCH, AText) +
     (HaveNext ? L" " + LoadStr(INC_NEXT_SEARCH) : UnicodeString());
   return Result;
 }
+#if 0
 //---------------------------------------------------------------------------
 class TCustomDocHandler : public TComponent, public ::IDocHostUIHandler
 {
 public:
-  __fastcall TCustomDocHandler(TComponent * Owner) : TComponent(Owner)
+  TCustomDocHandler(TComponent * Owner) : TComponent(Owner)
   {
   }
 
@@ -1547,14 +1518,15 @@ void __fastcall GetInstrutionsTheme(
     CloseThemeData(Theme);
   }
 }
+#endif // #if 0
 //---------------------------------------------------------------------------
-TLocalCustomCommand::TLocalCustomCommand()
+TLocalCustomCommand::TLocalCustomCommand() noexcept
 {
 }
 //---------------------------------------------------------------------------
 TLocalCustomCommand::TLocalCustomCommand(
   const TCustomCommandData &Data, const UnicodeString RemotePath, const UnicodeString LocalPath) :
-  TFileCustomCommand(Data, RemotePath)
+  TFileCustomCommand(Data, RemotePath) noexcept
 {
   FLocalPath = LocalPath;
 }
@@ -1562,7 +1534,7 @@ TLocalCustomCommand::TLocalCustomCommand(
 TLocalCustomCommand::TLocalCustomCommand(const TCustomCommandData &Data,
   const UnicodeString RemotePath, const UnicodeString LocalPath, const UnicodeString FileName,
   const UnicodeString LocalFileName, const UnicodeString FileList) :
-  TFileCustomCommand(Data, RemotePath, FileName, FileList)
+  TFileCustomCommand(Data, RemotePath, FileName, FileList) noexcept
 {
   FLocalPath = LocalPath;
   FLocalFileName = LocalFileName;

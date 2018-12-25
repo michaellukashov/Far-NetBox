@@ -522,7 +522,7 @@ bool __fastcall TCopyParamList::GetAnyRule() const
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-__fastcall TGUIConfiguration::TGUIConfiguration(): TConfiguration()
+TGUIConfiguration::TGUIConfiguration() noexcept: TConfiguration()
 {
   FLocale = 0;
   SetAppliedLocale(InternalLocale(), UnicodeString());
@@ -532,10 +532,10 @@ __fastcall TGUIConfiguration::TGUIConfiguration(): TConfiguration()
   CoreSetResourceModule(GetResourceModule());
 }
 //---------------------------------------------------------------------------
-__fastcall TGUIConfiguration::~TGUIConfiguration()
+TGUIConfiguration::~TGUIConfiguration() noexcept
 {
-  delete FLocales;
-  delete FCopyParamList;
+  __removed delete FLocales;
+  __removed delete FCopyParamList;
 }
 //---------------------------------------------------------------------------
 void __fastcall TGUIConfiguration::Default()

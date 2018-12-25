@@ -654,6 +654,7 @@ public:
   __property TGssLib GssLib[int Index] = { read = GetGssLib, write = SetGssLib };
   __property UnicodeString GssLibCustom = { read = FGssLibCustom, write = SetGssLibCustom };
   __property UnicodeString PublicKeyFile  = { read = FPublicKeyFile, write = SetPublicKeyFile };
+  RWProperty<UnicodeString> PublicKeyFile{nb::bind(&TSessionData::GetPublicKeyFile, this), nb::bind(&TSessionData::SetPublicKeyFile, this)};
   __property UnicodeString Passphrase  = { read = GetPassphrase, write = SetPassphrase };
   RWProperty<UnicodeString> Passphrase{nb::bind(&TSessionData::GetPassphrase, this), nb::bind(&TSessionData::SetPassphrase, this)};
   __property UnicodeString PuttyProtocol  = { read = FPuttyProtocol, write = SetPuttyProtocol };
@@ -789,13 +790,21 @@ public:
   RWProperty<UnicodeString> EncryptKey{nb::bind(&TSessionData::GetEncryptKey, this), nb::bind(&TSessionData::SetEncryptKey, this)};
 
   __property UnicodeString StorageKey = { read = GetStorageKey };
+  ROProperty<UnicodeString> StorageKey{nb::bind(&TSessionData::GetStorageKey, this)};
   __property UnicodeString SiteKey = { read = GetSiteKey };
+  ROProperty<UnicodeString> SiteKey{nb::bind(&TSessionData::GetSiteKey, this)};
   __property UnicodeString OrigHostName = { read = FOrigHostName };
+  const UnicodeString& OrigHostName{FOrigHostName};
   __property int OrigPortNumber = { read = FOrigPortNumber };
+  const intptr_t& OrigPortNumber{FOrigPortNumber};
   __property UnicodeString LocalName = { read = GetLocalName };
+  ROProperty<UnicodeString> LocalName{nb::bind(&TSessionData::GetLocalName, this)};
   __property UnicodeString FolderName = { read = GetFolderName };
+  ROProperty<UnicodeString> FolderName{nb::bind(&TSessionData::GetFolderName, this)};
   __property UnicodeString Source = { read = GetSource };
+  ROProperty<UnicodeString> Source{nb::bind(&TSessionData::GetSource, this)};
   __property bool SaveOnly = { read = FSaveOnly };
+  const bool& SaveOnly{FSaveOnly};
 
 public:
   void SetSFTPMinPacketSize(intptr_t Value);
@@ -981,7 +990,7 @@ public:
   static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TStoredSessionList); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TStoredSessionList) || TNamedObjectList::is(Kind); }
 public:
-  explicit TStoredSessionList(bool AReadOnly = false);
+  explicit TStoredSessionList(bool AReadOnly = false) noexcept;
   void Reload();
   void Load();
   void Save(bool All, bool Explicit);
@@ -1015,9 +1024,10 @@ public:
   TStrings *GetWorkspaces() const;
   bool HasAnyWorkspace() const;
   TSessionData * SaveWorkspaceData(TSessionData * Data, int Index);
-  virtual ~TStoredSessionList();
+  virtual ~TStoredSessionList() noexcept;
   __property TSessionData *Sessions[int Index]  = { read = AtSession };
   __property TSessionData *DefaultSettings  = { read = FDefaultSettings, write = SetDefaultSettings };
+  RWProperty<TSessionData *> DefaultSettings{nb::bind(&TStoredSessionList::GetDefaultSettingsConst, this), nb::bind(&TStoredSessionList::SetDefaultSettings, this)};
 
   static void ImportHostKeys(
     THierarchicalStorage * SourceStorage, THierarchicalStorage * TargetStorage, TStoredSessionList * Sessions, bool OnlySelected);
@@ -1029,7 +1039,7 @@ public:
 
   const TSessionData *GetSession(intptr_t Index) const { return dyn_cast<TSessionData>(AtObject(Index)); }
   TSessionData *GetSession(intptr_t Index) { return dyn_cast<TSessionData>(AtObject(Index)); }
-  const TSessionData *GetDefaultSettings() const { return FDefaultSettings.get(); }
+  const TSessionData *GetDefaultSettingsConst() const { return FDefaultSettings.get(); }
   TSessionData *GetDefaultSettings() { return FDefaultSettings.get(); }
   void SetDefaultSettings(const TSessionData *Value);
   const TSessionData *GetSessionByName(const UnicodeString SessionName) const;

@@ -144,8 +144,6 @@ uintptr_t FatalExceptionMessageDialog(Exception *E, TQueryType Type,
   intptr_t SessionReopenTimeout, UnicodeString MessageFormat = L"", uintptr_t Answers = qaOK,
   UnicodeString HelpKeyword = HELP_NONE, const TMessageParams *Params = nullptr);
 
-#if defined(FARPLUGIN)
-
 // forms\Custom.cpp
 TSessionData * DoSaveSession(TSessionData * SessionData,
   TSessionData * OriginalSession, bool ForceDialog,
@@ -172,14 +170,15 @@ bool DoChangeMasterPasswordDialog(UnicodeString & NewPassword);
 // windows\WinMain.cpp
 int Execute();
 void GetLoginData(UnicodeString SessionName, TOptions * Options,
-  TObjectList * DataList, UnicodeString & DownloadFile, bool NeedSession, TForm * LinkedForm, int Flags = 0);
+  TObjectList * DataList, UnicodeString & DownloadFile, bool NeedSession, // TForm * LinkedForm,
+  int Flags = 0);
 
+#if 0
 // forms\InputDlg.cpp
 struct TInputDialogData
 {
   TCustomEdit * Edit{nullptr};
 };
-#if 0
 typedef void (__closure *TInputDialogInitialize)
   (TObject * Sender, TInputDialogData * Data);
 #endif // #if 0
@@ -211,8 +210,6 @@ bool DoCleanupDialog(TStoredSessionList *SessionList,
 // forms\Console.cpp
 void DoConsoleDialog(TTerminal * Terminal,
     const UnicodeString Command = L"", const TStrings * Log = nullptr);
-
-#if defined(FARPLUGIN)
 
 // forms\Copy.cpp
 constexpr const int coTemp                = 0x001;
@@ -248,7 +245,7 @@ bool DoImportSessionsDialog(TList * Imported);
 enum TLicense { lcNoLicense = -1, lcWinScp, lcExpat };
 void DoLicenseDialog(TLicense License);
 
-bool DoLoginDialog(TStoredSessionList * SessionList, TList * DataList, TForm * LinkedForm);
+bool DoLoginDialog(TStoredSessionList * SessionList, TList * DataList); // , TForm * LinkedForm);
 
   // forms\SiteAdvanced.cpp
 bool DoSiteAdvancedDialog(TSessionData * SessionData);
@@ -292,7 +289,7 @@ typedef nb::FastDelegate1<void,
 
 bool DoCustomCommandDialog(TCustomCommandType & Command,
   const TCustomCommandList * CustomCommandList,
-  TCustomCommandsMode Mode, int Options, TCustomCommandValidate OnValidate,
+  TCustomCommandsMode Mode, int Options, TCustomCommandValidateEvent OnValidate,
   const TShortCuts * ShortCuts);
 
 // forms\CopyParamPreset.cpp
@@ -335,7 +332,7 @@ typedef nb::FastDelegate4<void,
   bool & /*Close*/> TCalculateChecksumEvent;
 
 bool DoPropertiesDialog(TStrings * FileList,
-    const UnicodeString Directory, const TRemoteTokenList * GroupList,
+    UnicodeString Directory, const TRemoteTokenList * GroupList,
     const TRemoteTokenList * UserList, TStrings * ChecksumAlgs,
     TRemoteProperties * Properties,
     int AllowedChanges, bool UserGroupByID, TCalculateSizeEvent OnCalculateSize,
@@ -347,6 +344,7 @@ bool DoRemoteCopyDialog(TStrings * Sessions, TStrings * Directories,
   TDirectRemoteCopy AllowDirectCopy, bool Multi, void *& Session,
   UnicodeString & Target, UnicodeString & FileMask, bool & DirectCopy, void * CurrentSession);
 
+#if 0
 // forms\SelectMask.cpp
 bool DoSelectMaskDialog(TControl * Parent, bool Select, TFileFilter & Filter);
 bool DoFilterMaskDialog(TControl * Parent, UnicodeString & Mask);
@@ -354,6 +352,7 @@ bool DoFileColorDialog(TFileColorData & FileColorData);
 
 // forms\EditMask.cpp
 bool DoEditMaskDialog(TFileMasks & Mask);
+#endif // #if 0
 
 // forms\Synchronize.cpp
 constexpr const int soDoNotUsePresets =  0x01;
@@ -380,14 +379,16 @@ typedef nb::FastDelegate1<void,
 typedef nb::FastDelegate4<void,
   UnicodeString /*Message*/, TStrings * /*MoreMessages*/, TQueryType /*Type*/,
   UnicodeString /*HelpKeyword*/> TFeedSynchronizeErrorEvent;
+typedef nb::FastDelegate4<void,
+  const TSynchronizeParamType & /*Params*/, const TCopyParamType * /*CopyParams*/> TSynchronizeInNewWindowEvent;
 
 bool DoSynchronizeDialog(TSynchronizeParamType & Params,
   const TCopyParamType * CopyParams, TSynchronizeStartStopEvent OnStartStop,
-  bool & SaveSettings, int Options, int CopyParamAttrs,
+  bool & SaveSettings, intptr_t Options, intptr_t CopyParamAttrs,
   TGetSynchronizeOptionsEvent OnGetOptions,
-  TSynchronizeSessionLog OnSynchronizeSessionLog,
-  TFeedSynchronizeError & OnFeedSynchronizeError,
-  TSynchronizeInNewWindow OnSynchronizeInNewWindow,
+  TSynchronizeSessionLogEvent OnSynchronizeSessionLog,
+  TFeedSynchronizeErrorEvent & OnFeedSynchronizeError,
+  TSynchronizeInNewWindowEvent OnSynchronizeInNewWindow,
   bool Start);
 
 // forms\FullSynchronize.cpp
@@ -401,11 +402,15 @@ typedef void (__closure *TFullSynchronizeInNewWindow)
   (TSynchronizeMode Mode, int Params, const UnicodeString & LocalDirectory, const UnicodeString & RemoteDirectory,
    const TCopyParamType * CopyParams);
 #endif // #if 0
-bool DoFullSynchronizeDialog(TSynchronizeMode & Mode, int & Params,
+typedef nb::FastDelegate5<void,
+  TSynchronizeMode /*Mode*/, intptr_t /*Params*/, UnicodeString /*LocalDirectory*/, UnicodeString /*RemoteDirectory*/,
+   const TCopyParamType * /*CopyParams*/> TFullSynchronizeInNewWindowEvent;
+
+bool DoFullSynchronizeDialog(TSynchronizeMode & Mode, intptr_t & Params,
   UnicodeString & LocalDirectory, UnicodeString & RemoteDirectory,
   TCopyParamType * CopyParams, bool & SaveSettings, bool & SaveMode,
-  int Options, const TUsableCopyParamAttrs & CopyParamAttrs,
-  TFullSynchronizeInNewWindow OnFullSynchronizeInNewWindow);
+  intptr_t Options, const TUsableCopyParamAttrs & CopyParamAttrs,
+  TFullSynchronizeInNewWindowEvent OnFullSynchronizeInNewWindow);
 
 // forms\SynchronizeChecklist.cpp
 class TSynchronizeChecklist;
@@ -423,14 +428,20 @@ typedef void (__closure *TSynchronizeMoveEvent)(
 typedef nb::FastDelegate3<void,
   void * /*Action*/, TStrings * /*LocalFileList*/,
   TStrings * /*RemoteFileList*/> TCustomCommandMenuEvent;
+typedef nb::FastDelegate3<void,
+  void * /*Token*/, TProcessedSynchronizationChecklistItem /*OnProcessedItem*/,
+  TUpdatedSynchronizationChecklistItems /*OnUpdatedSynchronizationChecklistItems*/> TFullSynchronizeEvent;
+typedef nb::FastDelegate3<void,
+  TSynchronizeChecklist * /*Checklist*/, const TSynchronizeChecklist::TItemList & /*Items*/, void * /*Token*/> TSynchronizeChecklistCalculateSizeEvent;
+typedef nb::FastDelegate4<void,
+  TOperationSide /*Side*/, UnicodeString /*FileName*/, UnicodeString /*NewFileName*/, TRemoteFile * /*RemoteFile*/> TSynchronizeMoveEvent;
+
 bool DoSynchronizeChecklistDialog(TSynchronizeChecklist * Checklist,
   TSynchronizeMode Mode, int Params,
   const UnicodeString LocalDirectory, const UnicodeString RemoteDirectory,
   TCustomCommandMenuEvent OnCustomCommandMenu, TFullSynchronizeEvent OnSynchronize,
-  TSynchronizeChecklistCalculateSize OnSynchronizeChecklistCalculateSize, TSynchronizeMoveEvent OnSynchronizeMove,
+  TSynchronizeChecklistCalculateSizeEvent OnSynchronizeChecklistCalculateSize, TSynchronizeMoveEvent OnSynchronizeMove,
   void * Token);
-
-#endif // FARPLUGIN
 
 // forms\Editor.cpp
 #if 0
@@ -438,8 +449,6 @@ typedef void (__closure *TFileClosedEvent)
   (TObject * Sender, bool Forced);
 typedef void (__closure *TAnyModifiedEvent)
   (TObject * Sender, bool & Modified);
-#endif // #if 0
-#if 0
 typedef nb::FastDelegate2<void,
   TObject * /*Sender* /, bool /*Forced*/> TFileClosedEvent;
 typedef nb::FastDelegate2<void,
@@ -453,8 +462,6 @@ void EditorFormFileUploadComplete(TForm * Form);
 void EditorFormFileSave(TForm * Form);
 bool IsEditorFormModified(TForm * Form);
 #endif // #if 0
-
-#if defined(FARPLUGIN)
 
 bool DoSymlinkDialog(UnicodeString & FileName, UnicodeString & PointTo,
   TOperationSide Side, bool & SymbolicLink, bool Edit, bool AllowSymbolic);
@@ -473,7 +480,7 @@ typedef nb::FastDelegate3<void,
 
 void DoFileSystemInfoDialog(
   const TSessionInfo & SessionInfo, const TFileSystemInfo & FileSystemInfo,
-  UnicodeString SpaceAvailablePath, TGetSpaceAvailable OnGetSpaceAvailable);
+  UnicodeString SpaceAvailablePath, TGetSpaceAvailableEvent OnGetSpaceAvailable);
 
 //moved to FarInterface.h
 #if 0
@@ -497,7 +504,6 @@ extern const UnicodeString MainMessageLabelName;
 extern const UnicodeString MessageLabelName;
 extern const UnicodeString YesButtonName;
 extern const UnicodeString OKButtonName;
-
 #endif // #if 0
 
 // windows\Console.cpp
@@ -531,7 +537,7 @@ typedef void (__closure *TFileOperationFinishedEvent)
   (const UnicodeString & FileName, bool Success);
 #endif // #if 0
 typedef nb::FastDelegate2<void,
-  UnicodeString /*FileName*/, bool /*Success*/> TFileOperationFinishedEvent;
+  UnicodeString /*FileName*/, bool /*Success*/> TFileOperationFinished2Event;
 #if 0
 typedef void (__closure *TFileListOperationEvent)
   (TTerminal * Terminal, TStrings * FileList, TFileOperationFinishedEvent OnFileOperationFinished);
@@ -539,6 +545,7 @@ typedef void (__closure *TFileListOperationEvent)
 typedef nb::FastDelegate3<void,
   TTerminal * /*Terminal*/, TStrings * /*FileList*/, TFileOperationFinished2Event /*OnFileOperationFinished*/> TFileListOperationEvent;
 
+#if 0
 void ShowFileFindDialog(
   TTerminal * Terminal, UnicodeString Directory, TFindEvent OnFind, TFocusFileEvent OnFocusFile,
   TFileListOperationEvent OnDeleteFiles, TFileListOperationEvent OnDownloadFiles,
@@ -552,7 +559,6 @@ void DoGenerateTransferCodeDialog(
   bool ToRemote, bool Move, int CopyParamAttrs, TSessionData * Data, TFilesSelected FilesSelected,
   TStrings * FileList, UnicodeString Path, const TCopyParamType & CopyParam);
 
-#if 0
 void CopyParamListButton(TButton * Button);
 const int cplNone =             0x00;
 const int cplCustomizeDefault = 0x02;
@@ -628,17 +634,17 @@ struct TCopyDataMessage
   enum { CommandCanCommandLine, CommandCommandLine, MainWindowCheck, RefreshPanel };
   static const unsigned int Version1 = 1;
 
-  uintptr_t Version;
-  uintptr_t Command;
+  uintptr_t Version{0};
+  uintptr_t Command{0};
 
   union
   {
-    wchar_t CommandLine[10240];
+    wchar_t CommandLine[10240]{};
 
     struct
     {
-      wchar_t Session[1024];
-      wchar_t Path[1024];
+      wchar_t Session[1024]{};
+      wchar_t Path[1024]{};
     } Refresh;
   };
 
@@ -758,7 +764,4 @@ int HandleException(TConsole * Console, Exception & E);
 //---------------------------------------------------------------------------
 enum { RESULT_SUCCESS = 0, RESULT_ANY_ERROR = 1 };
 //---------------------------------------------------------------------------
-
 #endif // #if 0
-
-#endif // FARPLUGIN
