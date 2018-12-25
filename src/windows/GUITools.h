@@ -1,8 +1,3 @@
-//---------------------------------------------------------------------------
-#ifndef GUIToolsH
-#define GUIToolsH
-//---------------------------------------------------------------------------
-#include <FileMasks.H>
 
 #pragma once
 
@@ -12,28 +7,42 @@
 //---------------------------------------------------------------------------
 class TSessionData;
 //---------------------------------------------------------------------------
-typedef void __fastcall (__closure* TProcessMessagesEvent)();
+#if 0
+typedef void (__closure *TProcessMessagesEvent)();
+#endif // #if 0
+typedef nb::FastDelegate0<void> TProcessMessagesEvent;
 //---------------------------------------------------------------------------
-bool __fastcall FindFile(UnicodeString & Path);
-bool __fastcall FindTool(const UnicodeString & Name, UnicodeString & Path);
-void __fastcall ExecuteTool(const UnicodeString & Name);
-void __fastcall ExecuteShellChecked(const UnicodeString Path, const UnicodeString Params,
+NB_CORE_EXPORT bool FindFile(UnicodeString &APath);
+NB_CORE_EXPORT bool FindTool(const UnicodeString Name, UnicodeString &APath);
+void ExecuteTool(const UnicodeString & Name);
+NB_CORE_EXPORT void ExecuteShellChecked(const UnicodeString APath, const UnicodeString Params,
   bool ChangeWorkingDirectory = false);
-void __fastcall ExecuteShellChecked(const UnicodeString Command);
-bool __fastcall ExecuteShell(const UnicodeString Path, const UnicodeString Params,
-  HANDLE & Handle);
-void __fastcall ExecuteShellCheckedAndWait(const UnicodeString Command, TProcessMessagesEvent ProcessMessages);
-TObjectList * StartCreationDirectoryMonitorsOnEachDrive(unsigned int Filter, TFileChangedEvent OnChanged);
+NB_CORE_EXPORT void ExecuteShellChecked(const UnicodeString Command);
+NB_CORE_EXPORT bool ExecuteShell(const UnicodeString Path, const UnicodeString Params,
+  HANDLE &Handle);
+NB_CORE_EXPORT void ExecuteShellCheckedAndWait(const UnicodeString Command, TProcessMessagesEvent ProcessMessages);
+__removed TObjectList * StartCreationDirectoryMonitorsOnEachDrive(unsigned int Filter, TFileChangedEvent OnChanged);
+NB_CORE_EXPORT bool CopyCommandToClipboard(const UnicodeString ACommand);
 extern bool DontCopyCommandToClipboard;
-bool __fastcall CopyCommandToClipboard(const UnicodeString & Command);
-void __fastcall OpenSessionInPutty(const UnicodeString PuttyPath,
-  TSessionData * SessionData);
-bool __fastcall SpecialFolderLocation(int PathID, UnicodeString & Path);
-UnicodeString __fastcall UniqTempDir(const UnicodeString BaseDir,
+NB_CORE_EXPORT void OpenSessionInPutty(const UnicodeString PuttyPath,
+  TSessionData *SessionData);
+NB_CORE_EXPORT bool SpecialFolderLocation(intptr_t PathID, UnicodeString &APath);
+NB_CORE_EXPORT UnicodeString UniqTempDir(const UnicodeString BaseDir,
   const UnicodeString Identity, bool Mask = false);
-bool __fastcall DeleteDirectory(const UnicodeString DirName);
-int __fastcall GetSessionColorImage(TCustomImageList * ImageList, TColor Color, int MaskIndex);
-void __fastcall RegenerateSessionColorsImageList(TCustomImageList * ImageList, int MaskIndex);
+NB_CORE_EXPORT bool DeleteDirectory(const UnicodeString ADirName);
+
+NB_CORE_EXPORT UnicodeString FormatDateTimeSpan(const UnicodeString TimeFormat, const TDateTime & DateTime);
+#if 0
+int GetSessionColorImage(TCustomImageList * ImageList, TColor Color, int MaskIndex);
+void RegenerateSessionColorsImageList(TCustomImageList * ImageList, int MaskIndex);
+NB_CORE_EXPORT UnicodeString ItemsFormatString(const UnicodeString SingleItemFormat,
+  const UnicodeString MultiItemsFormat, intptr_t Count, const UnicodeString FirstItem);
+NB_CORE_EXPORT UnicodeString GetPersonalFolder();
+NB_CORE_EXPORT UnicodeString ItemsFormatString(const UnicodeString SingleItemFormat,
+  const UnicodeString MultiItemsFormat, const TStrings *Items);
+NB_CORE_EXPORT UnicodeString FileNameFormatString(const UnicodeString SingleFileFormat,
+  const UnicodeString MultiFilesFormat, const TStrings *AFiles, bool Remote);
+
 void __fastcall SetSubmenu(TTBXCustomItem * Item);
 typedef int __fastcall (*TCalculateWidth)(UnicodeString Text, void * Arg);
 void __fastcall ApplyTabs(
@@ -65,36 +74,38 @@ void LoadBrowserDocument(TWebBrowserEx * WebBrowser, const UnicodeString & Docum
 void __fastcall GetInstrutionsTheme(
   TColor & MainInstructionColor, HFONT & MainInstructionFont, HFONT & InstructionFont);
   TColor & MainInstructionColor, HFONT & MainInstructionFont, HFONT & InstructionFont);
+#endif // #if 0
 //---------------------------------------------------------------------------
-class TLocalCustomCommand : public TFileCustomCommand
+class NB_CORE_EXPORT TLocalCustomCommand : public TFileCustomCommand
 {
 public:
-  TLocalCustomCommand();
-  TLocalCustomCommand(
-    const TCustomCommandData & Data, const UnicodeString & RemotePath, const UnicodeString & LocalPath);
-  TLocalCustomCommand(
-    const TCustomCommandData & Data, const UnicodeString & RemotePath, const UnicodeString & LocalPath,
-    const UnicodeString & FileName, const UnicodeString & LocalFileName,
-    const UnicodeString & FileList);
+  TLocalCustomCommand() noexcept;
+  explicit TLocalCustomCommand(
+    const TCustomCommandData &Data, const UnicodeString RemotePath, const UnicodeString LocalPath);
+  explicit TLocalCustomCommand(
+    const TCustomCommandData &Data, const UnicodeString RemotePath, const UnicodeString LocalPath,
+    const UnicodeString AFileName, const UnicodeString LocalFileName,
+    const UnicodeString FileList);
+  virtual ~TLocalCustomCommand()noexcept = default;
 
-  virtual bool __fastcall IsFileCommand(const UnicodeString & Command);
-  bool __fastcall HasLocalFileName(const UnicodeString & Command);
+  virtual bool IsFileCommand(const UnicodeString Command) const;
+  bool HasLocalFileName(const UnicodeString Command) const;
 
 protected:
-  virtual int __fastcall PatternLen(const UnicodeString & Command, int Index);
-  virtual bool __fastcall PatternReplacement(int Index, const UnicodeString & Pattern,
-    UnicodeString & Replacement, bool & Delimit);
-  virtual void __fastcall DelimitReplacement(UnicodeString & Replacement, wchar_t Quote);
+  virtual intptr_t PatternLen(const UnicodeString Command, intptr_t Index) const;
+  virtual bool PatternReplacement(intptr_t Index, const UnicodeString Pattern,
+    UnicodeString &Replacement, bool &Delimit) const;
+  virtual void DelimitReplacement(UnicodeString &Replacement, wchar_t Quote);
 
 private:
   UnicodeString FLocalPath;
   UnicodeString FLocalFileName;
 };
 //---------------------------------------------------------------------------
-namespace Pngimagelist
-{
-  class TPngImageList;
-  class TPngImageCollectionItem;
+#if 0
+namespace Pngimagelist {
+class TPngImageList;
+class TPngImageCollectionItem;
 }
 using namespace Pngimagelist;
 //---------------------------------------------------------------------------
@@ -184,8 +195,8 @@ protected:
 private:
   HINSTANCE FLibrary;
 };
+#endif // #if 0
 //---------------------------------------------------------------------------
-extern const UnicodeString PageantTool;
-extern const UnicodeString PuttygenTool;
+NB_CORE_EXPORT extern const UnicodeString PageantTool;
+NB_CORE_EXPORT extern const UnicodeString PuttygenTool;
 //---------------------------------------------------------------------------
-#endif

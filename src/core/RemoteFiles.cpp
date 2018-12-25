@@ -2397,7 +2397,7 @@ void TRemoteProperties::Save(THierarchicalStorage *Storage) const
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-TChecklistItem::TChecklistItem() :
+TChecklistItem::TChecklistItem() noexcept :
   Action(saNone), IsDirectory(false), RemoteFile(nullptr), Checked(true), ImageIndex(-1), FDirectoryHasSize(false)
 {
   Local.ModificationFmt = mfFull;
@@ -2410,7 +2410,7 @@ TChecklistItem::TChecklistItem() :
   FLocalLastWriteTime.dwLowDateTime = 0;
 }
 //---------------------------------------------------------------------------
-TChecklistItem::~TChecklistItem()
+TChecklistItem::~TChecklistItem() noexcept
 {
   SAFE_DESTROY(RemoteFile);
 }
@@ -2459,12 +2459,12 @@ int64_t TChecklistItem::GetSize(TChecklistAction AAction) const
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-TSynchronizeChecklist::TSynchronizeChecklist() :
+TSynchronizeChecklist::TSynchronizeChecklist() noexcept :
   FList(std::make_unique<TList>())
 {
 }
 //---------------------------------------------------------------------------
-TSynchronizeChecklist::~TSynchronizeChecklist()
+TSynchronizeChecklist::~TSynchronizeChecklist() noexcept
 {
   for (int Index = 0; Index < FList->Count; Index++)
   {

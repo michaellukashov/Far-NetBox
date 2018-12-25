@@ -24,8 +24,8 @@ typedef nb::FastDelegate3<void,
 class THttp : public TObject
 {
 public:
-  THttp();
-  ~THttp();
+  THttp() noexcept;
+  ~THttp() noexcept;
 
   void Get();
   void Post(const UnicodeString Request);
@@ -49,10 +49,10 @@ public:
   void SetProxyHost(UnicodeString Value) { FProxyHost = Value; }
   intptr_t GetProxyPort() const { return FProxyPort; }
   void SetProxyPort(intptr_t Value) { FProxyPort = Value; }
-  TStrings *GetRequestHeaders() const { return FRequestHeaders; }
-  void SetRequestHeaders(TStrings *Value) { FRequestHeaders = Value; }
+  TStrings *GetRequestHeaders() const { return FRequestHeaders.get(); }
+  void SetRequestHeaders(TStrings *Value) { FRequestHeaders.reset(Value); }
   RawByteString GetResponseRaw() const { return FResponse; }
-  TStrings *GetResponseHeaders() const { return FResponseHeaders; }
+  TStrings *GetResponseHeaders() const { return FResponseHeaders.get(); }
   int64_t GetResponseLimit() const { return FResponseLimit; }
   void SetResponseLimit(int64_t Value) { FResponseLimit = Value; }
   THttpDownloadEvent GetOnDownload() const { return FOnDownload; }
@@ -65,10 +65,10 @@ private:
   UnicodeString FProxyHost;
   intptr_t FProxyPort{0};
   RawByteString FResponse;
-  int64_t FResponseLimit{0};
+  int64_t FResponseLimit{-1};
   std::unique_ptr<Exception> FException;
-  THttpDownloadEvent FOnDownload;
-  THttpErrorEvent FOnError;
+  THttpDownloadEvent FOnDownload{nullptr};
+  THttpErrorEvent FOnError{nullptr};
   UnicodeString FHostName;
   UnicodeString FCertificateError;
   std::unique_ptr<TStrings> FRequestHeaders;

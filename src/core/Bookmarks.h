@@ -13,8 +13,8 @@ class NB_CORE_EXPORT TBookmarks : public TObject
 {
   NB_DISABLE_COPY(TBookmarks)
 public:
-  TBookmarks();
-  virtual ~TBookmarks();
+  TBookmarks() noexcept;
+  virtual ~TBookmarks() noexcept;
 
   void Load(THierarchicalStorage *Storage);
   void Save(THierarchicalStorage *Storage, bool All);
@@ -51,8 +51,8 @@ public:
   static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TBookmarkList); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TBookmarkList) || TPersistent::is(Kind); }
 public:
-  explicit TBookmarkList();
-  virtual ~TBookmarkList();
+  explicit TBookmarkList() noexcept;
+  virtual ~TBookmarkList() noexcept;
 
   void Clear();
   void Add(TBookmark *Bookmark);
@@ -68,6 +68,7 @@ public:
   void ShortCuts(TShortCuts &ShortCuts);
 
   __property int Count = { read = GetCount };
+  ROProperty<intptr_t> Count{nb::bind(&TBookmarkList::GetCount, this)};
   __property TBookmark * Bookmarks[int Index] = { read = GetBookmarks };
   __property bool NodeOpened[UnicodeString Index] = { read = GetNodeOpened, write = SetNodeOpened };
 
@@ -76,6 +77,7 @@ protected:
   void KeyChanged(intptr_t Index);
 
   __property bool Modified = { read = FModified, write = FModified };
+  bool& Modified{FModified};
   bool GetModified() const { return FModified; }
   void SetModified(bool Value) { FModified = Value; }
 
@@ -100,11 +102,11 @@ public:
   static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TBookmark); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TBookmark) || TPersistent::is(Kind); }
 public:
-  TBookmark();
+  TBookmark() noexcept;
 
   virtual void Assign(const TPersistent *Source) override;
 
-  UnicodeString __fastcall GetSideDirectory(TOperationSide Side);
+  UnicodeString GetSideDirectory(TOperationSide Side) const;
 
   __property UnicodeString Name = { read = FName, write = SetName };
   __property UnicodeString Local = { read = FLocal, write = SetLocal };
@@ -113,17 +115,18 @@ public:
   __property TShortCut ShortCut = { read = FShortCut, write = SetShortCut };
 
 protected:
-  TBookmarkList *FOwner;
+  TBookmarkList *FOwner{nullptr};
 
   static UnicodeString BookmarkKey(const UnicodeString Node, const UnicodeString Name);
   __property UnicodeString Key = { read = GetKey };
+  ROProperty<UnicodeString> Key{nb::bind(&TBookmark::GetKey, this)};
 
 private:
   UnicodeString FName;
   UnicodeString FLocal;
   UnicodeString FRemote;
   UnicodeString FNode;
-  TShortCut FShortCut;
+  TShortCut FShortCut{};
 
 public:
   UnicodeString GetName() const { return FName; }

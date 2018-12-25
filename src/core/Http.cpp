@@ -10,7 +10,7 @@
 #include "Exceptions.h"
 #include "TextsCore.h"
 //---------------------------------------------------------------------------
-THttp::THttp() :
+THttp::THttp() noexcept :
   FProxyPort(0),
   FResponseLimit(-1),
   FOnDownload(nullptr),
@@ -20,10 +20,10 @@ THttp::THttp() :
 {
 }
 //---------------------------------------------------------------------------
-THttp::~THttp()
+THttp::~THttp() noexcept
 {
-  SAFE_DESTROY(FResponseHeaders);
-  SAFE_DESTROY(FRequestHeaders);
+  __removed SAFE_DESTROY(FResponseHeaders);
+  __removed SAFE_DESTROY(FRequestHeaders);
 }
 //---------------------------------------------------------------------------
 void THttp::SendRequest(const char *Method, const UnicodeString Request)

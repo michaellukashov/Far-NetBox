@@ -696,13 +696,13 @@ public:
   int64_t GetSize() const;
   int64_t GetSize(TChecklistAction AAction) const;
 
-  ~TChecklistItem();
+  ~TChecklistItem() noexcept;
 
 private:
-  FILETIME FLocalLastWriteTime;
-  bool FDirectoryHasSize;
+  FILETIME FLocalLastWriteTime{};
+  bool FDirectoryHasSize{false};
 
-  TChecklistItem();
+  TChecklistItem() noexcept;
 };
 //---------------------------------------------------------------------------
 class NB_CORE_EXPORT TSynchronizeChecklist : public TObject
@@ -760,7 +760,7 @@ public:
 
   typedef rde::vector<const TChecklistItem*> TItemList;
 
-  ~TSynchronizeChecklist();
+  ~TSynchronizeChecklist() noexcept;
 
   void Update(const TChecklistItem *Item, bool Check, TChecklistAction Action);
   void UpdateDirectorySize(const TChecklistItem * Item, int64_t Size);
@@ -776,7 +776,7 @@ public:
   __property const TItem * Item[int Index] = { read = GetItem };
 
 protected:
-  TSynchronizeChecklist();
+  TSynchronizeChecklist() noexcept;
 
   void Sort();
   void Add(TChecklistItem *Item);

@@ -24,25 +24,25 @@ const int soContinueOnError = 0x08;
 class TGUICopyParamType : public TCopyParamType
 {
 public:
-  __fastcall TGUICopyParamType();
-  __fastcall TGUICopyParamType(const TCopyParamType & Source);
-  __fastcall TGUICopyParamType(const TGUICopyParamType & Source);
+  TGUICopyParamType();
+  TGUICopyParamType(const TCopyParamType & Source);
+  TGUICopyParamType(const TGUICopyParamType & Source);
 
   virtual void Load(THierarchicalStorage * Storage);
   virtual void Save(THierarchicalStorage * Storage, const TCopyParamType * Defaults = nullptr) const;
 
-  virtual void __fastcall Default();
-  virtual void __fastcall Assign(const TCopyParamType * Source);
-  TGUICopyParamType & __fastcall operator =(const TGUICopyParamType & rhp);
-  TGUICopyParamType & __fastcall operator =(const TCopyParamType & rhp);
+  virtual void Default();
+  virtual void Assign(const TCopyParamType * Source);
+  TGUICopyParamType & operator =(const TGUICopyParamType & rhp);
+  TGUICopyParamType & operator =(const TCopyParamType & rhp);
 
   __property bool Queue = { read = FQueue, write = FQueue };
   __property bool QueueNoConfirmation = { read = FQueueNoConfirmation, write = FQueueNoConfirmation };
   __property bool QueueParallel = { read = FQueueParallel, write = FQueueParallel };
 
 protected:
-  void __fastcall GUIDefault();
-  void __fastcall GUIAssign(const TGUICopyParamType * Source);
+  void GUIDefault();
+  void GUIAssign(const TGUICopyParamType * Source);
 
 private:
   bool FQueue;
@@ -57,23 +57,23 @@ struct TCopyParamRuleData
   UnicodeString RemoteDirectory;
   UnicodeString LocalDirectory;
 
-  void __fastcall Default();
+  void Default();
 };
 //---------------------------------------------------------------------------
 class TCopyParamRule
 {
 public:
-  __fastcall TCopyParamRule();
-  __fastcall TCopyParamRule(const TCopyParamRuleData & Data);
-  __fastcall TCopyParamRule(const TCopyParamRule & Source);
+  TCopyParamRule();
+  TCopyParamRule(const TCopyParamRuleData & Data);
+  TCopyParamRule(const TCopyParamRule & Source);
 
-  bool __fastcall Matches(const TCopyParamRuleData & Value) const;
-  void __fastcall Load(THierarchicalStorage * Storage);
-  void __fastcall Save(THierarchicalStorage * Storage) const;
+  bool Matches(const TCopyParamRuleData & Value) const;
+  void Load(THierarchicalStorage * Storage);
+  void Save(THierarchicalStorage * Storage) const;
 
-  UnicodeString __fastcall GetInfoStr(UnicodeString Separator) const;
+  UnicodeString GetInfoStr(UnicodeString Separator) const;
 
-  bool __fastcall operator ==(const TCopyParamRule & rhp) const;
+  bool operator ==(const TCopyParamRule & rhp) const;
 
   __property TCopyParamRuleData Data = { read = FData, write = FData };
   __property bool IsEmpty = { read = GetEmpty };
@@ -81,9 +81,9 @@ public:
 private:
   TCopyParamRuleData FData;
 
-  inline bool __fastcall Match(const UnicodeString & Mask,
+  inline bool Match(const UnicodeString & Mask,
     const UnicodeString & Value, bool Path, bool Local, int ForceDirectoryMasks) const;
-  bool __fastcall GetEmpty() const;
+  bool GetEmpty() const;
 };
 //---------------------------------------------------------------------------
 class TLocaleInfo : public TObject
@@ -98,28 +98,28 @@ class TCopyParamList
 {
 friend class TGUIConfiguration;
 public:
-  __fastcall TCopyParamList();
-  virtual __fastcall ~TCopyParamList();
-  int __fastcall Find(const TCopyParamRuleData & Value) const;
+  TCopyParamList();
+  virtual ~TCopyParamList();
+  int Find(const TCopyParamRuleData & Value) const;
 
-  void __fastcall Load(THierarchicalStorage * Storage, int Count);
-  void __fastcall Save(THierarchicalStorage * Storage) const;
+  void Load(THierarchicalStorage * Storage, int Count);
+  void Save(THierarchicalStorage * Storage) const;
 
-  static void __fastcall ValidateName(const UnicodeString Name);
+  static void ValidateName(const UnicodeString Name);
 
-  TCopyParamList & __fastcall operator=(const TCopyParamList & rhl);
-  bool __fastcall operator==(const TCopyParamList & rhl) const;
+  TCopyParamList & operator=(const TCopyParamList & rhl);
+  bool operator==(const TCopyParamList & rhl) const;
 
-  void __fastcall Clear();
-  void __fastcall Add(const UnicodeString Name,
+  void Clear();
+  void Add(const UnicodeString Name,
     TCopyParamType * CopyParam, TCopyParamRule * Rule);
-  void __fastcall Insert(int Index, const UnicodeString Name,
+  void Insert(int Index, const UnicodeString Name,
     TCopyParamType * CopyParam, TCopyParamRule * Rule);
-  void __fastcall Change(int Index, const UnicodeString Name,
+  void Change(int Index, const UnicodeString Name,
     TCopyParamType * CopyParam, TCopyParamRule * Rule);
-  void __fastcall Move(int CurIndex, int NewIndex);
-  void __fastcall Delete(int Index);
-  int __fastcall IndexOfName(const UnicodeString Name) const;
+  void Move(int CurIndex, int NewIndex);
+  void Delete(int Index);
+  int IndexOfName(const UnicodeString Name) const;
 
   __property int Count = { read = GetCount };
   __property UnicodeString Names[int Index] = { read = GetName };
@@ -137,17 +137,17 @@ private:
   mutable TStrings * FNameList;
   bool FModified;
 
-  int __fastcall GetCount() const;
-  const TCopyParamRule * __fastcall GetRule(int Index) const;
-  const TCopyParamType * __fastcall GetCopyParam(int Index) const;
-  UnicodeString __fastcall GetName(int Index) const;
-  TStrings * __fastcall GetNameList() const;
-  bool __fastcall GetAnyRule() const;
+  int GetCount() const;
+  const TCopyParamRule * GetRule(int Index) const;
+  const TCopyParamType * GetCopyParam(int Index) const;
+  UnicodeString GetName(int Index) const;
+  TStrings * GetNameList() const;
+  bool GetAnyRule() const;
 
-  void __fastcall Init();
-  void __fastcall Reset();
-  void __fastcall Modify();
-  bool __fastcall CompareItem(int Index, const TCopyParamType * CopyParam,
+  void Init();
+  void Reset();
+  void Modify();
+  bool CompareItem(int Index, const TCopyParamType * CopyParam,
     const TCopyParamRule * Rule) const;
 };
 //---------------------------------------------------------------------------
@@ -194,63 +194,62 @@ private:
 protected:
   LCID FLocale;
 
-  virtual void __fastcall SaveData(THierarchicalStorage * Storage, bool All);
-  virtual void __fastcall LoadData(THierarchicalStorage * Storage);
-  LCID __fastcall GetLocale();
-  void __fastcall SetLocale(LCID value);
-  void __fastcall SetLocaleSafe(LCID value);
-  UnicodeString __fastcall GetAppliedLocaleHex();
-  virtual HINSTANCE __fastcall LoadNewResourceModule(LCID Locale,
+  virtual void SaveData(THierarchicalStorage * Storage, bool All);
+  virtual void LoadData(THierarchicalStorage * Storage);
+  LCID GetLocale();
+  void SetLocale(LCID value);
+  void SetLocaleSafe(LCID value);
+  UnicodeString GetAppliedLocaleHex();
+  virtual HINSTANCE LoadNewResourceModule(LCID Locale,
     UnicodeString & FileName);
-  HANDLE __fastcall GetResourceModule();
-  void __fastcall SetResourceModule(HINSTANCE Instance);
-  TObjectList * __fastcall GetLocales();
-  void __fastcall AddLocale(LCID Locale, const UnicodeString & Name);
-  void __fastcall FreeResourceModule(HANDLE Instance);
-  void __fastcall SetDefaultCopyParam(const TGUICopyParamType & value);
-  virtual bool __fastcall GetRememberPassword();
-  const TCopyParamList * __fastcall GetCopyParamList();
-  void __fastcall SetCopyParamList(const TCopyParamList * value);
-  virtual void __fastcall DefaultLocalized();
-  int __fastcall GetCopyParamIndex();
-  TGUICopyParamType __fastcall GetCurrentCopyParam();
-  TGUICopyParamType __fastcall GetCopyParamPreset(UnicodeString Name);
-  bool __fastcall GetHasCopyParamPreset(UnicodeString Name);
-  void __fastcall SetCopyParamIndex(int value);
-  void __fastcall SetCopyParamCurrent(UnicodeString value);
-  void __fastcall SetNewDirectoryProperties(const TRemoteProperties & value);
-  virtual void __fastcall Saved();
-  void __fastcall SetQueueTransfersLimit(int value);
-  void __fastcall SetQueueBootstrap(bool value);
-  void __fastcall SetQueueKeepDoneItems(bool value);
-  void __fastcall SetQueueKeepDoneItemsFor(int value);
-  void __fastcall SetLocaleInternal(LCID value, bool Safe, bool CompleteOnly);
-  void __fastcall SetAppliedLocale(LCID AppliedLocale, const UnicodeString & LocaleModuleName);
-  bool __fastcall GetCanApplyLocaleImmediately();
-  UnicodeString __fastcall GetTranslationModule(const UnicodeString & Path);
-  UnicodeString __fastcall AddTranslationsSubFolder(const UnicodeString & Path);
-  void __fastcall FindLocales(const UnicodeString & LocalesMask, TStrings * Exts, UnicodeString & LocalesExts);
-  virtual int __fastcall GetResourceModuleCompleteness(HINSTANCE Module);
-  virtual bool __fastcall IsTranslationComplete(HINSTANCE Module);
-  static int __fastcall LocalesCompare(void * Item1, void * Item2);
-  bool __fastcall DoSaveCopyParam(THierarchicalStorage * Storage, const TCopyParamType * CopyParam, const TCopyParamType * Defaults);
-  bool __fastcall DoSaveCopyParam(THierarchicalStorage * Storage, const TCopyParamType * CopyParam, const TCopyParamType * Defaults);
+  HANDLE GetResourceModule();
+  void SetResourceModule(HINSTANCE Instance);
+  TObjectList * GetLocales();
+  void AddLocale(LCID Locale, const UnicodeString & Name);
+  void FreeResourceModule(HANDLE Instance);
+  void SetDefaultCopyParam(const TGUICopyParamType & value);
+  virtual bool GetRememberPassword();
+  const TCopyParamList * GetCopyParamList();
+  void SetCopyParamList(const TCopyParamList * value);
+  virtual void DefaultLocalized();
+  int GetCopyParamIndex();
+  TGUICopyParamType GetCurrentCopyParam();
+  TGUICopyParamType GetCopyParamPreset(UnicodeString Name);
+  bool GetHasCopyParamPreset(UnicodeString Name);
+  void SetCopyParamIndex(int value);
+  void SetCopyParamCurrent(UnicodeString value);
+  void SetNewDirectoryProperties(const TRemoteProperties & value);
+  virtual void Saved();
+  void SetQueueTransfersLimit(int value);
+  void SetQueueBootstrap(bool value);
+  void SetQueueKeepDoneItems(bool value);
+  void SetQueueKeepDoneItemsFor(int value);
+  void SetLocaleInternal(LCID value, bool Safe, bool CompleteOnly);
+  void SetAppliedLocale(LCID AppliedLocale, const UnicodeString & LocaleModuleName);
+  bool GetCanApplyLocaleImmediately();
+  UnicodeString GetTranslationModule(const UnicodeString & Path);
+  UnicodeString AddTranslationsSubFolder(const UnicodeString & Path);
+  void FindLocales(const UnicodeString & LocalesMask, TStrings * Exts, UnicodeString & LocalesExts);
+  virtual int GetResourceModuleCompleteness(HINSTANCE Module);
+  virtual bool IsTranslationComplete(HINSTANCE Module);
+  static int LocalesCompare(void * Item1, void * Item2);
+  bool DoSaveCopyParam(THierarchicalStorage * Storage, const TCopyParamType * CopyParam, const TCopyParamType * Defaults);
 
 public:
-  __fastcall TGUIConfiguration();
-  virtual __fastcall ~TGUIConfiguration();
-  virtual void __fastcall Default();
-  virtual void __fastcall UpdateStaticUsage();
-  bool __fastcall LoadCopyParam(THierarchicalStorage * Storage, TCopyParamType * CopyParam);
-  void __fastcall LoadDefaultCopyParam(THierarchicalStorage * Storage);
+  TGUIConfiguration();
+  virtual ~TGUIConfiguration();
+  virtual void Default();
+  virtual void UpdateStaticUsage();
+  bool LoadCopyParam(THierarchicalStorage * Storage, TCopyParamType * CopyParam);
+  void LoadDefaultCopyParam(THierarchicalStorage * Storage);
 
-  HANDLE __fastcall ChangeToDefaultResourceModule();
-  HANDLE __fastcall ChangeResourceModule(HANDLE Instance);
-  LCID __fastcall InternalLocale();
-  UnicodeString __fastcall AppliedLocaleCopyright();
-  UnicodeString __fastcall AppliedLocaleVersion();
-  TStoredSessionList * __fastcall SelectPuttySessionsForImport(TStoredSessionList * Sessions, UnicodeString & Error);
-  bool __fastcall AnyPuttySessionForImport(TStoredSessionList * Sessions);
+  HANDLE ChangeToDefaultResourceModule();
+  HANDLE ChangeResourceModule(HANDLE Instance);
+  LCID InternalLocale();
+  UnicodeString AppliedLocaleCopyright();
+  UnicodeString AppliedLocaleVersion();
+  TStoredSessionList * SelectPuttySessionsForImport(TStoredSessionList * Sessions, UnicodeString & Error);
+  bool AnyPuttySessionForImport(TStoredSessionList * Sessions);
 
   __property bool ContinueOnError = { read = FContinueOnError, write = FContinueOnError };
   __property bool ConfirmCommandSession = { read = FConfirmCommandSession, write = FConfirmCommandSession };

@@ -416,14 +416,13 @@ bool THierarchicalStorage::GetTemporaryProtected() const
   return false;
 }
 //===========================================================================
-TRegistryStorage::TRegistryStorage(const UnicodeString AStorage) :
-  THierarchicalStorage(IncludeTrailingBackslash(AStorage)),
-  FRegistry(nullptr)
+TRegistryStorage::TRegistryStorage(const UnicodeString AStorage) noexcept :
+  THierarchicalStorage(IncludeTrailingBackslash(AStorage))
 {
   FWowMode = 0;
 }
 //---------------------------------------------------------------------------
-__fastcall TRegistryStorage::TRegistryStorage(const UnicodeString AStorage, HKEY ARootKey, REGSAM WowMode):
+TRegistryStorage::TRegistryStorage(const UnicodeString AStorage, HKEY ARootKey, REGSAM WowMode) noexcept :
   THierarchicalStorage(IncludeTrailingBackslash(AStorage)),
   FRegistry(nullptr),
   FFailed(0)
@@ -439,14 +438,14 @@ void TRegistryStorage::Init()
   FRegistry->SetAccess(KEY_READ | FWowMode);
 }
 //---------------------------------------------------------------------------
-TRegistryStorage::~TRegistryStorage()
+TRegistryStorage::~TRegistryStorage() noexcept
 {
   __removed SAFE_DESTROY(FRegistry);
 }
 //---------------------------------------------------------------------------
 bool TRegistryStorage::Copy(TRegistryStorage *Storage)
 {
-  TRegistry *Registry = Storage->FRegistry;
+  TRegistry *Registry = Storage->FRegistry.get();
   bool Result = true;
   std::unique_ptr<TStrings> Names(std::make_unique<TStringList>());
   try__finally
@@ -468,14 +467,13 @@ bool TRegistryStorage::Copy(TRegistryStorage *Storage)
         {
           Buffer.resize(Size);
         }
-      }
-      while (RegResult == ERROR_MORE_DATA);
+      } while (RegResult == ERROR_MORE_DATA);
 
       Result = (RegResult == ERROR_SUCCESS);
       if (Result)
       {
         RegResult = ::RegSetValueEx(FRegistry->GetCurrentKey(), Name.c_str(), 0, Type,
-            &Buffer[0], Size);
+          &Buffer[0], Size);
         Result = (RegResult == ERROR_SUCCESS);
       }
 
@@ -524,13 +522,11 @@ bool TRegistryStorage::DoOpenSubKey(const UnicodeString SubKey, bool CanCreate)
   bool WasOpened = (FRegistry->GetCurrentKey() != nullptr);
   if (WasOpened)
   {
-    PrevPath = FRegistry->CurrentPath;
-    DebugAssert(SamePaths(PrevPath, Storage + GetCurrentSubKeyMunged()));
+    PrevPath = FRegistry->GetCurrentPath();
+    DebugAssert(SamePaths(PrevPath, Storage() + GetCurrentSubKeyMunged()));
     FRegistry->CloseKey();
   }
-  bool Result = FRegistry->OpenKey(K, CanCreate);
-  if (!Result && WasOpened)
-  UnicodeString K = ExcludeTrailingBackslash(Storage + CurrentSubKey + SubKey);
+  UnicodeString K = ExcludeTrailingBackslash(Storage() + CurrentSubKey() + SubKey);
   bool Result = FRegistry->OpenKey(K, CanCreate);
   if (!Result && WasOpened)
   {
@@ -805,7 +801,7 @@ bool TCustomIniFileStorage::OpenSubKey(const UnicodeString Key, bool CanCreate, 
   bool Result;
 
   {
-    volatile TAutoFlag Flag(FOpeningSubKey);
+    TAutoFlag Flag(FOpeningSubKey); nb::used(Flag);
     Result = THierarchicalStorage::OpenSubKey(Key, CanCreate, Path);
   }
 
@@ -1303,10 +1299,10 @@ void TIniFileStorage::ApplyOverrides()
     UnicodeString Section = FSections->Strings[i];
 
     if (::SameText(OverridesKey,
-        Section.SubString(1, OverridesKey.Length())))
+          Section.SubString(1, OverridesKey.Length())))
     {
       UnicodeString SubKey = Section.SubString(OverridesKey.Length() + 1,
-          Section.Length() - OverridesKey.Length());
+        Section.Length() - OverridesKey.Length());
 
       // this all uses raw names (munged)
       TStrings *Names = new TStringList;
@@ -1358,8 +1354,8 @@ private:
 
   bool AllowWrite();
   void NotImplemented();
-  bool __fastcall AllowSection(const UnicodeString & Section);
-  UnicodeString __fastcall FormatKey(const UnicodeString & Section, const UnicodeString & Ident);
+  bool AllowSection(const UnicodeString & Section);
+  UnicodeString FormatKey(const UnicodeString & Section, const UnicodeString & Ident);
 };
 //---------------------------------------------------------------------------
 TOptionsIniFile::TOptionsIniFile(TStrings *Options, TWriteMode WriteMode, const UnicodeString RootKey) :
@@ -1399,7 +1395,7 @@ bool TOptionsIniFile::AllowWrite()
   }
 }
 //---------------------------------------------------------------------------
-bool __fastcall TOptionsIniFile::AllowSection(const UnicodeString & Section)
+bool TOptionsIniFile::AllowSection(const UnicodeString & Section)
 {
   UnicodeString Name = Section;
   if (!Name.IsEmpty())
@@ -1410,7 +1406,7 @@ bool __fastcall TOptionsIniFile::AllowSection(const UnicodeString & Section)
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall TOptionsIniFile::FormatKey(const UnicodeString & Section, const UnicodeString & Ident)
+UnicodeString TOptionsIniFile::FormatKey(const UnicodeString & Section, const UnicodeString & Ident)
 {
   UnicodeString Result = Section;
   if (!Result.IsEmpty())
@@ -1425,7 +1421,7 @@ UnicodeString __fastcall TOptionsIniFile::FormatKey(const UnicodeString & Sectio
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall TOptionsIniFile::ReadString(const UnicodeString Section, const UnicodeString Ident, const UnicodeString Default)
+UnicodeString TOptionsIniFile::ReadString(const UnicodeString Section, const UnicodeString Ident, const UnicodeString Default)
 {
   UnicodeString Value;
   if (!AllowSection(Section))

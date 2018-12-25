@@ -2,7 +2,7 @@
 #include <vcl.h>
 #pragma hdrstop
 
-#include <shlobj.h>
+#include <System.ShlObj.hpp>
 #include <mshtmhst.h>
 #include <Common.h>
 
@@ -13,6 +13,9 @@
 #include <CoreMain.h>
 #include <SessionData.h>
 #include <WinInterface.h>
+#include <Interface.h>
+
+#if 0
 #include <TbxUtils.hpp>
 #include <Math.hpp>
 #include <WebBrowserEx.hpp>
@@ -31,29 +34,29 @@
 #include "Animations120.h"
 #include "Animations144.h"
 #include "Animations192.h"
+#endif // #if 0
 //---------------------------------------------------------------------------
-#pragma package(smart_init)
+__removed #pragma package(smart_init)
 //---------------------------------------------------------------------------
 extern const UnicodeString PageantTool = L"pageant.exe";
 extern const UnicodeString PuttygenTool = L"puttygen.exe";
 //---------------------------------------------------------------------------
-bool __fastcall FindFile(UnicodeString & Path)
+bool FindFile(UnicodeString &APath)
 {
-  bool Result = FileExists(ApiPath(Path));
-
+  bool Result = ::SysUtulsFileExists(ApiPath(APath));
   if (!Result)
   {
-    UnicodeString ProgramFiles32 = IncludeTrailingBackslash(GetEnvironmentVariable(L"ProgramFiles"));
-    UnicodeString ProgramFiles64 = IncludeTrailingBackslash(GetEnvironmentVariable(L"ProgramW6432"));
+    UnicodeString ProgramFiles32 = ::IncludeTrailingBackslash(base::GetEnvVariable(L"ProgramFiles"));
+    UnicodeString ProgramFiles64 = ::IncludeTrailingBackslash(base::GetEnvVariable(L"ProgramW6432"));
     if (!ProgramFiles32.IsEmpty() &&
-        SameText(Path.SubString(1, ProgramFiles32.Length()), ProgramFiles32) &&
-        !ProgramFiles64.IsEmpty())
+      SameText(APath.SubString(1, ProgramFiles32.Length()), ProgramFiles32) &&
+      !ProgramFiles64.IsEmpty())
     {
       UnicodeString Path64 =
-        ProgramFiles64 + Path.SubString(ProgramFiles32.Length() + 1, Path.Length() - ProgramFiles32.Length());
-      if (FileExists(ApiPath(Path64)))
+        ProgramFiles64 + APath.SubString(ProgramFiles32.Length() + 1, APath.Length() - ProgramFiles32.Length());
+      if (::SysUtulsFileExists(ApiPath(Path64)))
       {
-        Path = Path64;
+        APath = Path64;
         Result = true;
       }
     }
@@ -61,30 +64,30 @@ bool __fastcall FindFile(UnicodeString & Path)
 
   if (!Result)
   {
-    UnicodeString Paths = GetEnvironmentVariable(L"PATH");
-    if (!Paths.IsEmpty())
+    UnicodeString Paths = base::GetEnvVariable("PATH");
+    if (Paths.Length() > 0)
     {
-      UnicodeString NewPath = FileSearch(ExtractFileName(Path), Paths);
+      UnicodeString NewPath = ::SysUtulsFileSearch(base::ExtractFileName(APath, false), Paths);
       Result = !NewPath.IsEmpty();
       if (Result)
       {
-        Path = NewPath;
+        APath = NewPath;
       }
     }
   }
   return Result;
 }
 //---------------------------------------------------------------------------
-void __fastcall OpenSessionInPutty(const UnicodeString PuttyPath,
-  TSessionData * SessionData)
+void OpenSessionInPutty(const UnicodeString PuttyPath,
+  TSessionData *SessionData)
 {
-  UnicodeString Program, AParams, Dir;
-  SplitCommand(PuttyPath, Program, AParams, Dir);
-  Program = ExpandEnvironmentVariables(Program);
+  UnicodeString Program, Params, Dir;
+  SplitCommand(PuttyPath, Program, Params, Dir);
+  Program = ::ExpandEnvironmentVariables(Program);
   if (FindFile(Program))
   {
 
-    AParams = ExpandEnvironmentVariables(AParams);
+    Params = ::ExpandEnvironmentVariables(Params);
     UnicodeString Password;
     if (GUIConfiguration->PuttyPassword)
     {
@@ -103,13 +106,12 @@ void __fastcall OpenSessionInPutty(const UnicodeString PuttyPath,
     TWinInteractiveCustomCommand InteractiveCustomCommand(
       &RemoteCustomCommand, L"PuTTY", UnicodeString());
 
-    UnicodeString Params =
-      RemoteCustomCommand.Complete(InteractiveCustomCommand.Complete(AParams, false), true);
+    UnicodeString Params2 =
+      RemoteCustomCommand.Complete(InteractiveCustomCommand.Complete(Params, false), true);
     UnicodeString PuttyParams;
 
-    if (!RemoteCustomCommand.IsSiteCommand(AParams))
+    if (!RemoteCustomCommand.IsSiteCommand(Params))
     {
-      {
       {
         bool SessionList = false;
         std::unique_ptr<THierarchicalStorage> SourceHostKeyStorage(Configuration->CreateScpStorage(SessionList));
@@ -131,14 +133,14 @@ void __fastcall OpenSessionInPutty(const UnicodeString PuttyPath,
           // PuTTY  does not allow -pw for telnet
           Password = L"";
         }
-        AddToList(PuttyParams, EscapePuttyCommandParam(SessionData->HostName), L" ");
-        if (!SessionData->UserName.IsEmpty())
+        AddToList(PuttyParams, EscapePuttyCommandParam(SessionData->HostName()), L" ");
+        if (!SessionData->UserName().IsEmpty())
         {
-          AddToList(PuttyParams, FORMAT(L"-l %s", (EscapePuttyCommandParam(SessionData->UserName))), L" ");
+          AddToList(PuttyParams, FORMAT(L"-l %s", EscapePuttyCommandParam(SessionData->UserName())), L" ");
         }
-        if ((SessionData->FSProtocol != fsFTP) && (SessionData->PortNumber != SshPortNumber))
+        if ((SessionData->FSProtocol != fsFTP) && (SessionData->PortNumber() != SshPortNumber))
         {
-          AddToList(PuttyParams, FORMAT(L"-P %d", (SessionData->PortNumber)), L" ");
+          AddToList(PuttyParams, FORMAT(L"-P %d", SessionData->PortNumber()), L" ");
         }
 
         if (!Telnet)
@@ -208,16 +210,16 @@ void __fastcall OpenSessionInPutty(const UnicodeString PuttyPath,
       else
       {
         UnicodeString SessionName;
-        TRegistryStorage * Storage = NULL;
-        TSessionData * ExportData = NULL;
-        TRegistryStorage * SourceStorage = NULL;
-        try
+        TRegistryStorage *Storage = nullptr;
+        TSessionData *ExportData = nullptr;
+        TRegistryStorage *SourceStorage = nullptr;
+        try__finally
         {
-          Storage = new TRegistryStorage(Configuration->PuttySessionsKey);
-          Storage->AccessMode = smReadWrite;
+          Storage = new TRegistryStorage(GetConfiguration()->GetPuttySessionsKey());
+          Storage->SetAccessMode(smReadWrite);
           // make it compatible with putty
-          Storage->MungeStringValues = false;
-          Storage->ForceAnsi = true;
+          Storage->SetMungeStringValues(false);
+          Storage->SetForceAnsi(true);
           if (Storage->OpenRootKey(true))
           {
             if (Storage->KeyExists(SessionData->StorageKey))
@@ -239,7 +241,7 @@ void __fastcall OpenSessionInPutty(const UnicodeString PuttyPath,
               ExportData = new TSessionData(L"");
               ExportData->Assign(SessionData);
               ExportData->Modified = true;
-              ExportData->Name = GUIConfiguration->PuttySession;
+              ExportData->Name = GetGUIConfiguration()->PuttySession;
               ExportData->WinTitle = SessionData->SessionName;
               ExportData->Password = L"";
 
@@ -263,19 +265,19 @@ void __fastcall OpenSessionInPutty(const UnicodeString PuttyPath,
               SessionName = GUIConfiguration->PuttySession;
             }
           }
-        }
+        }б
         __finally
         {
           delete Storage;
           delete ExportData;
           delete SourceStorage;
-        }
+        } end_try__finally
 
         UnicodeString LoadSwitch = L"-load";
-        int P = Params.LowerCase().Pos(LoadSwitch + L" ");
-        if ((P == 0) || ((P > 1) && (Params[P - 1] != L' ')))
+        intptr_t P = Params2.LowerCase().Pos(LoadSwitch + L" ");
+        if ((P == 0) || ((P > 1) && (Params2[P - 1] != L' ')))
         {
-          AddToList(PuttyParams, FORMAT(L"%s %s", (LoadSwitch, EscapePuttyCommandParam(SessionName))), L" ");
+          AddToList(PuttyParams, FORMAT(L"%s %s", LoadSwitch, EscapePuttyCommandParam(SessionName)), L" ");
         }
       }
     }
@@ -286,7 +288,7 @@ void __fastcall OpenSessionInPutty(const UnicodeString PuttyPath,
       AddToList(PuttyParams, FORMAT(L"-pw %s", (EscapePuttyCommandParam(Password))), L" ");
     }
 
-    AddToList(PuttyParams, Params, L" ");
+    AddToList(PuttyParams, Params2, L" ");
 
     // PuTTY is started in its binary directory to allow relative paths in private key,
     // when opening PuTTY's own stored session.
@@ -294,22 +296,22 @@ void __fastcall OpenSessionInPutty(const UnicodeString PuttyPath,
   }
   else
   {
-    throw Exception(FMTLOAD(FILE_NOT_FOUND, (Program)));
+    throw Exception(FMTLOAD(FILE_NOT_FOUND, Program));
   }
 }
 //---------------------------------------------------------------------------
-bool __fastcall FindTool(const UnicodeString & Name, UnicodeString & Path)
+bool FindTool(const UnicodeString Name, UnicodeString &APath)
 {
-  UnicodeString AppPath = IncludeTrailingBackslash(ExtractFilePath(Application->ExeName));
-  Path = AppPath + Name;
+  UnicodeString AppPath = ::IncludeTrailingBackslash(::ExtractFilePath(GetConfiguration()->ModuleFileName()));
+  APath = AppPath + Name;
   bool Result = true;
-  if (!FileExists(ApiPath(Path)))
+  if (!::SysUtulsFileExists(ApiPath(APath)))
   {
-    Path = AppPath + L"PuTTY\\" + Name;
-    if (!FileExists(ApiPath(Path)))
+    APath = AppPath + L"PuTTY\\" + Name;
+    if (!::SysUtulsFileExists(ApiPath(APath)))
     {
-      Path = Name;
-      if (!FindFile(Path))
+      APath = Name;
+      if (!FindFile(APath))
       {
         Result = false;
       }
@@ -392,49 +394,49 @@ TObjectList * StartCreationDirectoryMonitorsOnEachDrive(unsigned int Filter, TFi
 //---------------------------------------------------------------------------
 bool DontCopyCommandToClipboard = false;
 //---------------------------------------------------------------------------
-bool __fastcall CopyCommandToClipboard(const UnicodeString & Command)
+bool CopyCommandToClipboard(const UnicodeString ACommand)
 {
   bool Result = !DontCopyCommandToClipboard && UseAlternativeFunction() && IsKeyPressed(VK_CONTROL);
   if (Result)
   {
-    TInstantOperationVisualizer Visualizer;
-    CopyToClipboard(Command);
+    TInstantOperationVisualizer Visualizer; nb::used(Visualizer);
+    CopyToClipboard(ACommand);
   }
   return Result;
 }
 //---------------------------------------------------------------------------
-static bool __fastcall DoExecuteShell(const UnicodeString Path, const UnicodeString Params,
-  bool ChangeWorkingDirectory, HANDLE * Handle)
+static bool DoExecuteShell(const UnicodeString APath, const UnicodeString Params,
+  bool ChangeWorkingDirectory, HANDLE *Handle)
 {
-  bool Result = CopyCommandToClipboard(FormatCommand(Path, Params));
+  bool Result = CopyCommandToClipboard(FormatCommand(APath, Params));
 
   if (Result)
   {
-    if (Handle != NULL)
+    if (Handle != nullptr)
     {
-      *Handle = NULL;
+      *Handle = nullptr;
     }
   }
   else
   {
-    UnicodeString Directory = ExtractFilePath(Path);
+    UnicodeString Directory = ::ExtractFilePath(APath);
 
     TShellExecuteInfoW ExecuteInfo;
-    memset(&ExecuteInfo, 0, sizeof(ExecuteInfo));
+    ClearStruct(ExecuteInfo);
     ExecuteInfo.cbSize = sizeof(ExecuteInfo);
     ExecuteInfo.fMask =
       SEE_MASK_FLAG_NO_UI |
-      FLAGMASK((Handle != NULL), SEE_MASK_NOCLOSEPROCESS);
-    ExecuteInfo.hwnd = Application->Handle;
-    ExecuteInfo.lpFile = (wchar_t*)Path.data();
-    ExecuteInfo.lpParameters = (wchar_t*)Params.data();
-    ExecuteInfo.lpDirectory = (ChangeWorkingDirectory ? Directory.c_str() : NULL);
+      FLAGMASK((Handle != nullptr), SEE_MASK_NOCLOSEPROCESS);
+    ExecuteInfo.hwnd = reinterpret_cast<HWND>(::GetModuleHandle(nullptr));
+    ExecuteInfo.lpFile = ToWChar(APath);
+    ExecuteInfo.lpParameters = ToWChar(Params);
+    ExecuteInfo.lpDirectory = (ChangeWorkingDirectory ? Directory.c_str() : nullptr);
     ExecuteInfo.nShow = SW_SHOW;
 
-    Result = (ShellExecuteEx(&ExecuteInfo) != 0);
+    Result = (::ShellExecuteEx(&ExecuteInfo) != 0);
     if (Result)
     {
-      if (Handle != NULL)
+      if (Handle != nullptr)
       {
         *Handle = ExecuteInfo.hProcess;
       }
@@ -443,28 +445,28 @@ static bool __fastcall DoExecuteShell(const UnicodeString Path, const UnicodeStr
   return Result;
 }
 //---------------------------------------------------------------------------
-void __fastcall ExecuteShellChecked(const UnicodeString Path, const UnicodeString Params, bool ChangeWorkingDirectory)
+void ExecuteShellChecked(const UnicodeString APath, const UnicodeString Params, bool ChangeWorkingDirectory)
 {
-  if (!DoExecuteShell(Path, Params, ChangeWorkingDirectory, NULL))
+  if (!DoExecuteShell(APath, Params, ChangeWorkingDirectory, nullptr))
   {
-    throw EOSExtException(FMTLOAD(EXECUTE_APP_ERROR, (Path)));
+    throw EOSExtException(FMTLOAD(EXECUTE_APP_ERROR, APath));
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall ExecuteShellChecked(const UnicodeString Command)
+void ExecuteShellChecked(const UnicodeString Command)
 {
   UnicodeString Program, Params, Dir;
   SplitCommand(Command, Program, Params, Dir);
   ExecuteShellChecked(Program, Params);
 }
 //---------------------------------------------------------------------------
-bool __fastcall ExecuteShell(const UnicodeString Path, const UnicodeString Params,
-  HANDLE & Handle)
+bool ExecuteShell(const UnicodeString Path, const UnicodeString Params,
+  HANDLE &Handle)
 {
   return DoExecuteShell(Path, Params, false, &Handle);
 }
 //---------------------------------------------------------------------------
-void __fastcall ExecuteShellCheckedAndWait(const UnicodeString Command,
+void ExecuteShellCheckedAndWait(const UnicodeString Command,
   TProcessMessagesEvent ProcessMessages)
 {
   UnicodeString Program, Params, Dir;
@@ -473,13 +475,13 @@ void __fastcall ExecuteShellCheckedAndWait(const UnicodeString Command,
   bool Result = DoExecuteShell(Program, Params, false, &ProcessHandle);
   if (!Result)
   {
-    throw EOSExtException(FMTLOAD(EXECUTE_APP_ERROR, (Program)));
+    throw EOSExtException(FMTLOAD(EXECUTE_APP_ERROR, Program));
   }
   else
   {
-    if (ProcessHandle != NULL) // only if command was copied to clipboard only
+    if (ProcessHandle != nullptr) // only if command was copied to clipboard only
     {
-      if (ProcessMessages != NULL)
+      if (ProcessMessages != nullptr)
       {
         unsigned long WaitResult;
         do
@@ -502,69 +504,71 @@ void __fastcall ExecuteShellCheckedAndWait(const UnicodeString Command,
   }
 }
 //---------------------------------------------------------------------------
-bool __fastcall SpecialFolderLocation(int PathID, UnicodeString & Path)
+bool SpecialFolderLocation(intptr_t PathID, UnicodeString &APath)
 {
+#if defined(_MSC_VER) && !defined(__clang__)
   LPITEMIDLIST Pidl;
-  wchar_t Buf[256];
-  if (SHGetSpecialFolderLocation(NULL, PathID, &Pidl) == NO_ERROR &&
-      SHGetPathFromIDList(Pidl, Buf))
+  wchar_t Buf[MAX_PATH];
+  if (::SHGetSpecialFolderLocation(nullptr, ToInt(PathID), &Pidl) == NO_ERROR &&
+    ::SHGetPathFromIDList(Pidl, Buf))
   {
-    Path = UnicodeString(Buf);
+    APath = UnicodeString(Buf);
     return true;
   }
+#endif // if defined(_MSC_VER) && !defined(__clang__)
   return false;
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall UniqTempDir(const UnicodeString BaseDir, const UnicodeString Identity,
+UnicodeString UniqTempDir(const UnicodeString BaseDir, const UnicodeString Identity,
   bool Mask)
 {
   DebugAssert(!BaseDir.IsEmpty());
   UnicodeString TempDir;
   do
   {
-    TempDir = IncludeTrailingBackslash(BaseDir) + Identity;
+    TempDir = ::IncludeTrailingBackslash(BaseDir) + Identity;
     if (Mask)
     {
       TempDir += L"?????";
     }
     else
     {
-      TempDir += IncludeTrailingBackslash(FormatDateTime(L"nnzzz", Now()));
+      TempDir += ::IncludeTrailingBackslash(FormatDateTime(L"nnzzz", Now()));
     }
   }
-  while (!Mask && DirectoryExists(ApiPath(TempDir)));
+  while (!Mask && ::SysUtulsDirectoryExists(ApiPath(TempDir)));
 
   return TempDir;
 }
 //---------------------------------------------------------------------------
-bool __fastcall DeleteDirectory(const UnicodeString DirName)
+bool DeleteDirectory(const UnicodeString ADirName)
 {
   TSearchRecOwned sr;
   bool retval = true;
-  if (FindFirstUnchecked(DirName + L"\\*", faAnyFile, sr) == 0) // VCL Function
+  if (FindFirstUnchecked(ADirName + L"\\*", faAnyFile, sr) == 0) // VCL Function
   {
     if (sr.IsDirectory())
     {
       if (sr.IsRealFile())
-        retval = DeleteDirectory(DirName + L"\\" + sr.Name);
+        retval = ::DeleteDirectory(ADirName + L"\\" + sr.Name);
     }
     else
     {
-      retval = DeleteFile(ApiPath(DirName + L"\\" + sr.Name));
+      retval = ::SysUtulsRemoveFile(ApiPath(ADirName + L"\\" + sr.Name));
     }
 
     if (retval)
     {
       while (FindNextChecked(sr) == 0)
-      { // VCL Function
+      {
         if (sr.IsDirectory())
         {
-        if (sr.IsDirectory())
           if (sr.IsRealFile())
+            retval = DeleteDirectory(ADirName + L"\\" + sr.Name);
         }
         else
         {
-          retval = DeleteFile(ApiPath(DirName + L"\\" + sr.Name));
+          retval = ::SysUtulsRemoveFile(ApiPath(ADirName + L"\\" + sr.Name));
         }
 
         if (!retval) break;
@@ -572,23 +576,12 @@ bool __fastcall DeleteDirectory(const UnicodeString DirName)
     }
   }
   sr.Close();
-  if (retval) retval = RemoveDir(ApiPath(DirName)); // VCL function
+  if (retval) retval = ::SysUtulsRemoveDir(ApiPath(ADirName)); // VCL function
   return retval;
 }
 //---------------------------------------------------------------------------
 class TSessionColors : public TComponent
 {
-public:
-  __fastcall TSessionColors(TComponent * Owner) : TComponent(Owner)
-  {
-    Name = QualifiedClassName();
-  }
-
-  static TSessionColors * __fastcall Retrieve(TComponent * Component)
-  {
-    TSessionColors * SessionColors = dynamic_cast<TSessionColors *>(Component->FindComponent(QualifiedClassName()));
-    if (SessionColors == NULL)
-    {
 public:
   __fastcall TSessionColors(TComponent * Owner) : TComponent(Owner)
   {
@@ -1560,24 +1553,24 @@ TLocalCustomCommand::TLocalCustomCommand()
 }
 //---------------------------------------------------------------------------
 TLocalCustomCommand::TLocalCustomCommand(
-    const TCustomCommandData & Data, const UnicodeString & RemotePath, const UnicodeString & LocalPath) :
+  const TCustomCommandData &Data, const UnicodeString RemotePath, const UnicodeString LocalPath) :
   TFileCustomCommand(Data, RemotePath)
 {
   FLocalPath = LocalPath;
 }
 //---------------------------------------------------------------------------
-TLocalCustomCommand::TLocalCustomCommand(const TCustomCommandData & Data,
-  const UnicodeString & RemotePath, const UnicodeString & LocalPath, const UnicodeString & FileName,
-  const UnicodeString & LocalFileName, const UnicodeString & FileList) :
+TLocalCustomCommand::TLocalCustomCommand(const TCustomCommandData &Data,
+  const UnicodeString RemotePath, const UnicodeString LocalPath, const UnicodeString FileName,
+  const UnicodeString LocalFileName, const UnicodeString FileList) :
   TFileCustomCommand(Data, RemotePath, FileName, FileList)
 {
   FLocalPath = LocalPath;
   FLocalFileName = LocalFileName;
 }
 //---------------------------------------------------------------------------
-int __fastcall TLocalCustomCommand::PatternLen(const UnicodeString & Command, int Index)
+intptr_t TLocalCustomCommand::PatternLen(const UnicodeString Command, intptr_t Index) const
 {
-  int Len;
+  intptr_t Len;
   if ((Index < Command.Length()) && (Command[Index + 1] == L'\\'))
   {
     Len = 2;
@@ -1593,15 +1586,15 @@ int __fastcall TLocalCustomCommand::PatternLen(const UnicodeString & Command, in
   return Len;
 }
 //---------------------------------------------------------------------------
-bool __fastcall TLocalCustomCommand::PatternReplacement(
-  int Index, const UnicodeString & Pattern, UnicodeString & Replacement, bool & Delimit)
+bool TLocalCustomCommand::PatternReplacement(
+  intptr_t Index, const UnicodeString Pattern, UnicodeString &Replacement, bool &Delimit) const
 {
   bool Result;
   if (Pattern == L"!\\")
   {
     // When used as "!\" in an argument to PowerShell, the trailing \ would escpae the ",
     // so we exclude it
-    Replacement = ExcludeTrailingBackslash(FLocalPath);
+    Replacement = ::ExcludeTrailingBackslash(FLocalPath);
     Result = true;
   }
   else if (Pattern == L"!^!")
@@ -1616,23 +1609,24 @@ bool __fastcall TLocalCustomCommand::PatternReplacement(
   return Result;
 }
 //---------------------------------------------------------------------------
-void __fastcall TLocalCustomCommand::DelimitReplacement(
+void TLocalCustomCommand::DelimitReplacement(
   UnicodeString & /*Replacement*/, wchar_t /*Quote*/)
 {
   // never delimit local commands
 }
 //---------------------------------------------------------------------------
-bool __fastcall TLocalCustomCommand::HasLocalFileName(const UnicodeString & Command)
+bool TLocalCustomCommand::HasLocalFileName(const UnicodeString Command) const
 {
   return FindPattern(Command, L'^');
 }
 //---------------------------------------------------------------------------
-bool __fastcall TLocalCustomCommand::IsFileCommand(const UnicodeString & Command)
+bool TLocalCustomCommand::IsFileCommand(const UnicodeString Command) const
 {
   return TFileCustomCommand::IsFileCommand(Command) || HasLocalFileName(Command);
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
+#if 0
 typedef std::set<TDataModule *> TImagesModules;
 static TImagesModules ImagesModules;
 static std::map<int, TPngImageList *> AnimationsImages;
@@ -2242,3 +2236,5 @@ void __fastcall TNewRichEdit::DestroyWnd()
     FreeLibrary(FLibrary);
   }
 }
+
+#endif // #if 0

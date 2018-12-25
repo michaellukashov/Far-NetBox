@@ -9,13 +9,13 @@
 //---------------------------------------------------------------------------
 __removed #pragma package(smart_init)
 //---------------------------------------------------------------------------
-TBookmarks::TBookmarks() : TObject(),
+TBookmarks::TBookmarks() noexcept : TObject(),
   FSharedKey(UnicodeString(CONST_HIDDEN_PREFIX) + "shared")
 {
   FBookmarkLists = CreateSortedStringList(false, dupError);
 }
 //---------------------------------------------------------------------------
-TBookmarks::~TBookmarks()
+TBookmarks::~TBookmarks() noexcept
 {
   Clear();
   SAFE_DESTROY(FBookmarkLists);
@@ -269,7 +269,7 @@ void TBookmarks::SetSharedBookmarks(TBookmarkList *Value)
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-TBookmarkList::TBookmarkList() :
+TBookmarkList::TBookmarkList() noexcept :
   TPersistent(OBJECT_CLASS_TBookmarkList),
   FBookmarks(std::make_unique<TStringList>()),
   FOpenedNodes(CreateSortedStringList()),
@@ -278,11 +278,11 @@ TBookmarkList::TBookmarkList() :
   FBookmarks->SetCaseSensitive(false);
 }
 //---------------------------------------------------------------------------
-TBookmarkList::~TBookmarkList()
+TBookmarkList::~TBookmarkList() noexcept
 {
   Clear();
-  SAFE_DESTROY(FBookmarks);
-  SAFE_DESTROY(FOpenedNodes);
+  __removed SAFE_DESTROY(FBookmarks);
+  __removed SAFE_DESTROY(FOpenedNodes);
 }
 //---------------------------------------------------------------------------
 void TBookmarkList::Clear()
@@ -308,7 +308,7 @@ void TBookmarkList::Assign(const TPersistent *Source)
       Bookmark->Assign(SourceList->FBookmarks->GetAs<TBookmark>(Index));
       Add(Bookmark);
     }
-    FOpenedNodes->Assign(SourceList->FOpenedNodes);
+    FOpenedNodes->Assign(SourceList->FOpenedNodes.get());
     SetModified(SourceList->GetModified());
   }
   else
@@ -471,7 +471,7 @@ void TBookmarkList::ShortCuts(TShortCuts &ShortCuts)
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-TBookmark::TBookmark() :
+TBookmark::TBookmark() noexcept :
   TPersistent(OBJECT_CLASS_TBookmark),
   FOwner(nullptr)
 {
@@ -572,7 +572,7 @@ UnicodeString TBookmark::GetKey() const
   return BookmarkKey(GetNode(), GetName());
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall TBookmark::GetSideDirectory(TOperationSide Side)
+UnicodeString TBookmark::GetSideDirectory(TOperationSide Side) const
 {
-  return (Side == osLocal) ? Local : Remote;
+  return (Side == osLocal) ? FLocal : FRemote;
 }

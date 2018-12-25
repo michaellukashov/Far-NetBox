@@ -212,7 +212,7 @@ bool TOptions::DoFindSwitch(const UnicodeString Switch,
   bool Result = FindSwitch(Switch, Value, ParamsStart, ParamsCount, CaseSensitive, ValueSet);
   if (Result)
   {
-    int AParamsCount;
+    intptr_t AParamsCount;
     if (TryStrToInt(Value, AParamsCount) && (AParamsCount < ParamsCount))
     {
       ParamsCount = AParamsCount;

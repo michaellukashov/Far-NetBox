@@ -6,8 +6,8 @@ struct NB_CORE_EXPORT TSynchronizeParamType : public TObject
 {
   UnicodeString LocalDirectory;
   UnicodeString RemoteDirectory;
-  intptr_t Params;
-  intptr_t Options;
+  intptr_t Params{0};
+  intptr_t Options{0};
 };
 //---------------------------------------------------------------------------
 class TSynchronizeController;
@@ -101,8 +101,8 @@ class NB_CORE_EXPORT TSynchronizeController : public TObject
 public:
   explicit TSynchronizeController(TSynchronizeEvent AOnSynchronize,
     TSynchronizeInvalidEvent AOnSynchronizeInvalid,
-    TSynchronizeTooManyDirectoriesEvent AOnTooManyDirectories);
-  virtual ~TSynchronizeController();
+    TSynchronizeTooManyDirectoriesEvent AOnTooManyDirectories) noexcept;
+  virtual ~TSynchronizeController() noexcept;
 
   void StartStop(TObject *Sender, bool Start,
     const TSynchronizeParamType &Params, const TCopyParamType &CopyParam,
@@ -114,9 +114,9 @@ public:
 private:
   TSynchronizeEvent FOnSynchronize;
   TSynchronizeParamType FSynchronizeParams;
-  TSynchronizeOptions *FOptions;
+  TSynchronizeOptions *FOptions{nullptr};
   TSynchronizeThreadsEvent FOnSynchronizeThreads;
-  Discmon::TDiscMonitor *FSynchronizeMonitor;
+  Discmon::TDiscMonitor *FSynchronizeMonitor{nullptr};
   TSynchronizeAbortEvent FSynchronizeAbort;
   TSynchronizeInvalidEvent FOnSynchronizeInvalid;
   TSynchronizeTooManyDirectoriesEvent FOnTooManyDirectories;

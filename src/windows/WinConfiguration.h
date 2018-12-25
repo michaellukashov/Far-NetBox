@@ -4,6 +4,7 @@
 #define WinConfigurationH
 //---------------------------------------------------------------------------
 #include "CustomWinConfiguration.h"
+#if 0
 #include "CustomDirView.hpp"
 //---------------------------------------------------------------------------
 enum TEditor { edInternal, edExternal, edOpen };
@@ -882,4 +883,5 @@ private:
 extern TWinConfiguration * WinConfiguration;
 extern const UnicodeString WinSCPExtensionExt;
 //---------------------------------------------------------------------------
+#endif // #if 0
 #endif

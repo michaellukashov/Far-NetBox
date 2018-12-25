@@ -74,15 +74,23 @@ public:
   virtual void Flush();
 
   __property UnicodeString Storage  = { read = FStorage };
+  ROProperty<UnicodeString> Storage{nb::bind(&THierarchicalStorage::GetStorage, this)};
   __property UnicodeString CurrentSubKey  = { read = GetCurrentSubKey };
+  ROProperty<UnicodeString> CurrentSubKey{nb::bind(&THierarchicalStorage::GetCurrentSubKey, this)};
   __property TStorageAccessMode AccessMode  = { read = FAccessMode, write = SetAccessMode };
+  RWProperty<TStorageAccessMode> AccessMode{nb::bind(&THierarchicalStorage::GetAccessMode, this), nb::bind(&THierarchicalStorage::SetAccessMode, this) };
   __property bool Explicit = { read = FExplicit, write = FExplicit };
+  bool& Explicit{FExplicit};
   __property bool ForceSave = { read = FForceSave, write = FForceSave };
   bool& ForceSave{FForceSave};
   __property bool ForceAnsi = { read = FForceAnsi, write = FForceAnsi };
+  bool& ForceAnsi{FForceAnsi};
   __property bool MungeStringValues = { read = FMungeStringValues, write = FMungeStringValues };
+  bool& MungeStringValues{FMungeStringValues};
   __property UnicodeString Source = { read = GetSource };
+  ROProperty<UnicodeString> Source{nb::bind(&THierarchicalStorage::GetSourceConst, this)};
   __property bool Temporary = { read = GetTemporary };
+  ROProperty<bool> Temporary{nb::bind(&THierarchicalStorage::GetTemporary, this)};
 
   UnicodeString GetStorage() const { return FStorage; }
   TStorageAccessMode GetAccessMode() const { return FAccessMode; }
@@ -93,7 +101,7 @@ public:
   bool GetMungeStringValues() const { return FMungeStringValues; }
   void SetMungeStringValues(bool Value) { FMungeStringValues = Value; }
 
-  UnicodeString GetSource() const { return GetSourceProtected(); }
+  UnicodeString GetSourceConst() const { return GetSourceProtected(); }
   UnicodeString GetSource() { return GetSourceProtected(); }
   void SetAccessMode(TStorageAccessMode Value) { SetAccessModeProtected(Value); }
   bool GetTemporary() const { return GetTemporaryProtected(); }
@@ -124,10 +132,10 @@ class NB_CORE_EXPORT TRegistryStorage : public THierarchicalStorage
 {
   NB_DISABLE_COPY(TRegistryStorage)
 public:
-  explicit TRegistryStorage(const UnicodeString AStorage, HKEY ARootKey, REGSAM WowMode = 0);
-  explicit TRegistryStorage(const UnicodeString AStorage);
+  explicit TRegistryStorage(const UnicodeString AStorage, HKEY ARootKey, REGSAM WowMode = 0) noexcept;
+  explicit TRegistryStorage(const UnicodeString AStorage) noexcept;
   virtual void Init() override;
-  virtual ~TRegistryStorage();
+  virtual ~TRegistryStorage() noexcept;
 
   bool Copy(TRegistryStorage *Storage);
 
@@ -151,7 +159,7 @@ public:
   virtual void WriteInteger(const UnicodeString Name, intptr_t Value) override;
   virtual void WriteInt64(const UnicodeString Name, int64_t Value) override;
   virtual void WriteDateTime(const UnicodeString Name, const TDateTime &Value) override;
-  virtual void WriteFloat(const UnicodeString Name, double Value);
+  virtual void WriteFloat(const UnicodeString Name, double Value) override;
   virtual void WriteStringRaw(const UnicodeString Name, const UnicodeString Value) override;
   virtual void WriteBinaryData(const UnicodeString Name, const void *Buffer, size_t Size) override;
 
@@ -174,7 +182,7 @@ public:
 private:
   std::unique_ptr<TRegistry> FRegistry{nullptr};
   mutable intptr_t FFailed{0};
-  REGSAM FWowMode{};
+  REGSAM FWowMode{0};
 };
 //---------------------------------------------------------------------------
 #if 0

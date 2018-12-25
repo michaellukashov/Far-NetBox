@@ -26,25 +26,25 @@ static const UnicodeString TranslationsSubFolder(L"Translations");
 //---------------------------------------------------------------------------
 TGUIConfiguration * GUIConfiguration = NULL;
 //---------------------------------------------------------------------------
-__fastcall TGUICopyParamType::TGUICopyParamType()
+TGUICopyParamType::TGUICopyParamType()
   : TCopyParamType()
 {
   GUIDefault();
 }
 //---------------------------------------------------------------------------
-__fastcall TGUICopyParamType::TGUICopyParamType(const TCopyParamType & Source)
+TGUICopyParamType::TGUICopyParamType(const TCopyParamType & Source)
   : TCopyParamType(Source)
 {
   GUIDefault();
 }
 //---------------------------------------------------------------------------
-__fastcall TGUICopyParamType::TGUICopyParamType(const TGUICopyParamType & Source)
+TGUICopyParamType::TGUICopyParamType(const TGUICopyParamType & Source)
   : TCopyParamType(Source)
 {
   GUIAssign(&Source);
 }
 //---------------------------------------------------------------------------
-void __fastcall TGUICopyParamType::Assign(const TCopyParamType * Source)
+void TGUICopyParamType::Assign(const TCopyParamType * Source)
 {
   TCopyParamType::Assign(Source);
 
@@ -56,7 +56,7 @@ void __fastcall TGUICopyParamType::Assign(const TCopyParamType * Source)
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TGUICopyParamType::GUIAssign(const TGUICopyParamType * Source)
+void TGUICopyParamType::GUIAssign(const TGUICopyParamType * Source)
 {
   Queue = Source->Queue;
   QueueNoConfirmation = Source->QueueNoConfirmation;
