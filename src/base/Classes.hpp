@@ -678,6 +678,7 @@ public:
   HKEY GetCurrentKey() const;
   HKEY GetRootKey() const;
   void SetRootKey(HKEY ARootKey);
+  UnicodeString GetCurrentPath() const { return FCurrentPath; }
 
 private:
   HKEY FCurrentKey{};

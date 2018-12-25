@@ -195,6 +195,14 @@ bool TryStrToInt64(const UnicodeString StrValue, int64_t &Value)
   return Result;
 }
 
+bool TryStrToInt(const UnicodeString StrValue, intptr_t &Value)
+{
+  int64_t Val{0};
+  bool res = TryStrToInt64(StrValue, Val);
+  Value = (intptr_t)Val;
+  return res;
+}
+
 UnicodeString Trim(const UnicodeString Str)
 {
   UnicodeString Result = TrimRight(TrimLeft(Str));
