@@ -89,7 +89,7 @@ void OpenSessionInPutty(const UnicodeString PuttyPath,
 
     Params = ::ExpandEnvironmentVariables(Params);
     UnicodeString Password;
-    if (GUIConfiguration->PuttyPassword)
+    if (GetGUIConfiguration()->PuttyPassword)
     {
       // Passphrase has precendence, as it's more likely entered by user during authentication, hence more likely really needed.
       if (!SessionData->Passphrase().IsEmpty())
@@ -126,7 +126,7 @@ void OpenSessionInPutty(const UnicodeString PuttyPath,
 
       if (IsUWP())
       {
-        bool Telnet = (SessionData->FSProtocol == fsFTP) && GUIConfiguration->TelnetForFtpInPutty;
+        bool Telnet = (SessionData->FSProtocol == fsFTP) && GetGUIConfiguration()->TelnetForFtpInPutty;
         if (Telnet)
         {
           AddToList(PuttyParams, L"-telnet", L" ");
@@ -200,7 +200,7 @@ void OpenSessionInPutty(const UnicodeString PuttyPath,
               SourceStorage->MungeStringValues = false;
               SourceStorage->ForceAnsi = true;
               if (SourceStorage->OpenSubKey(StoredSessions->DefaultSettings->Name, false) &&
-                  Storage->OpenSubKey(GUIConfiguration->PuttySession, true))
+                  Storage->OpenSubKey(GetGUIConfiguration()->PuttySession, true))
               {
                 Storage->Copy(SourceStorage.get());
                 Storage->CloseSubKey();
@@ -215,22 +215,22 @@ void OpenSessionInPutty(const UnicodeString PuttyPath,
 
               if (SessionData->FSProtocol == fsFTP)
               {
-                if (GUIConfiguration->TelnetForFtpInPutty)
+                if (GetGUIConfiguration()->TelnetForFtpInPutty)
                 {
-                  ExportData->PuttyProtocol = PuttyTelnetProtocol;
+                  ExportData->SetPuttyProtocol(PuttyTelnetProtocol);
                   ExportData->PortNumber = TelnetPortNumber;
                   // PuTTY  does not allow -pw for telnet
                   Password = L"";
                 }
                 else
                 {
-                  ExportData->PuttyProtocol = PuttySshProtocol;
+                  ExportData->SetPuttyProtocol(PuttySshProtocol);
                   ExportData->PortNumber = SshPortNumber;
                 }
               }
 
               ExportData->Save(Storage, true);
-              SessionName = GUIConfiguration->PuttySession;
+              SessionName = GetGUIConfiguration()->PuttySession;
             }
           }
         },
@@ -250,10 +250,10 @@ void OpenSessionInPutty(const UnicodeString PuttyPath,
       }
     }
 
-    if (!Password.IsEmpty() && !RemoteCustomCommand.IsPasswordCommand(AParams))
+    if (!Password.IsEmpty() && !RemoteCustomCommand.IsPasswordCommand(Params))
     {
       Password = NormalizeString(Password); // if password is empty, we should quote it always
-      AddToList(PuttyParams, FORMAT(L"-pw %s", (EscapePuttyCommandParam(Password))), L" ");
+      AddToList(PuttyParams, FORMAT(L"-pw %s", EscapePuttyCommandParam(Password)), L" ");
     }
 
     AddToList(PuttyParams, Params2, L" ");
@@ -299,6 +299,7 @@ void ExecuteTool(const UnicodeString AName)
   ExecuteShellChecked(Path, L"");
 }
 //---------------------------------------------------------------------------
+#if 0
 TObjectList * StartCreationDirectoryMonitorsOnEachDrive(uintptr_t Filter, TFileChangedEvent OnChanged)
 {
   std::unique_ptr<TStrings> Drives(std::make_unique<TStringList>());
@@ -340,7 +341,6 @@ TObjectList * StartCreationDirectoryMonitorsOnEachDrive(uintptr_t Filter, TFileC
   std::unique_ptr<TObjectList> Result(std::make_unique<TObjectList>());
   for (int Index = 0; Index < Drives->Count; Index++)
   {
-#if 0
     UnicodeString Drive = Drives->Strings[Index];
     std::unique_ptr<TDirectoryMonitor> Monitor(new TDirectoryMonitor(Application));
     try
@@ -357,10 +357,10 @@ TObjectList * StartCreationDirectoryMonitorsOnEachDrive(uintptr_t Filter, TFileC
     {
       // Ignore errors watching not-ready drives
     }
-#endif // #if 0
   }
   return Result.release();
 }
+#endif // #if 0
 //---------------------------------------------------------------------------
 bool DontCopyCommandToClipboard = false;
 //---------------------------------------------------------------------------

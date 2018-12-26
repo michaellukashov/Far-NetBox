@@ -72,6 +72,7 @@ struct NB_CORE_EXPORT TCopyParamRuleData : public TObject
   void Default();
 };
 //---------------------------------------------------------------------------
+NB_DEFINE_CLASS_ID(TCopyParamRule);
 class NB_CORE_EXPORT TCopyParamRule : public TObject
 {
 public:
@@ -177,6 +178,7 @@ private:
     const TCopyParamRule * Rule) const;
 };
 //---------------------------------------------------------------------------
+NB_DEFINE_CLASS_ID(TGUIConfiguration);
 class NB_CORE_EXPORT TGUIConfiguration : public TConfiguration
 {
   NB_DISABLE_COPY(TGUIConfiguration)

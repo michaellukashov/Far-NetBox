@@ -278,6 +278,7 @@ public:
 
   __property TVSFixedFileInfo *FixedApplicationInfo  = { read = GetFixedApplicationInfo };
   __property void *ApplicationInfo  = { read = GetApplicationInfo };
+  ROProperty<void *> ApplicationInfo{nb::bind(&TConfiguration::GetApplicationInfo, this)};
   __property TUsage *Usage = { read = FUsage };
   ROProperty<TUsage*> Usage{nb::bind(&TConfiguration::GetUsage, this)};
   __property bool CollectUsage = { read = GetCollectUsage, write = SetCollectUsage };
@@ -285,6 +286,7 @@ public:
   __property UnicodeString StoredSessionsSubKey = {read = GetStoredSessionsSubKey};
   ROProperty<UnicodeString> StoredSessionsSubKey{nb::bind(&TConfiguration::GetStoredSessionsSubKey, this)};
   __property UnicodeString PuttyRegistryStorageKey  = { read = FPuttyRegistryStorageKey, write = SetPuttyRegistryStorageKey };
+  RWProperty<UnicodeString> PuttyRegistryStorageKey{nb::bind(&TConfiguration::GetPuttyRegistryStorageKey, this), nb::bind(&TConfiguration::SetPuttyRegistryStorageKey, this)};
   __property UnicodeString PuttySessionsKey  = { read = GetPuttySessionsKey };
   ROProperty<UnicodeString> PuttySessionsKey{nb::bind(&TConfiguration::GetPuttySessionsKey, this)};
   __property UnicodeString RandomSeedFile  = { read = FRandomSeedFile, write = SetRandomSeedFile };
@@ -308,8 +310,10 @@ public:
   __property UnicodeString CompanyName = { read = GetCompanyName };
   __property bool IsUnofficial = { read = GetIsUnofficial };
   __property bool Logging  = { read = FLogging, write = SetLogging };
+  RWProperty<bool> Logging{nb::bind(&TConfiguration::GetLogging, this), nb::bind(&TConfiguration::SetLogging, this)};
   __property UnicodeString LogFileName  = { read = FLogFileName, write = SetLogFileName };
   __property bool LogToFile  = { read = GetLogToFile };
+  ROProperty<bool> LogToFile{nb::bind(&TConfiguration::GetLogToFile, this)};
   __property bool LogFileAppend  = { read = FLogFileAppend, write = SetLogFileAppend };
   __property bool LogSensitive  = { read = FLogSensitive, write = SetLogSensitive };
   __property int64_t LogMaxSize  = { read = FLogMaxSize, write = SetLogMaxSize };
