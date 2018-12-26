@@ -286,6 +286,7 @@ public:
   ROProperty<UnicodeString> StoredSessionsSubKey{nb::bind(&TConfiguration::GetStoredSessionsSubKey, this)};
   __property UnicodeString PuttyRegistryStorageKey  = { read = FPuttyRegistryStorageKey, write = SetPuttyRegistryStorageKey };
   __property UnicodeString PuttySessionsKey  = { read = GetPuttySessionsKey };
+  ROProperty<UnicodeString> PuttySessionsKey{nb::bind(&TConfiguration::GetPuttySessionsKey, this)};
   __property UnicodeString RandomSeedFile  = { read = FRandomSeedFile, write = SetRandomSeedFile };
   __property UnicodeString RandomSeedFileName  = { read = GetRandomSeedFileName };
   __property UnicodeString SshHostKeysSubKey  = { read = GetSshHostKeysSubKey };

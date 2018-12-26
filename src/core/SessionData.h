@@ -840,7 +840,7 @@ public:
   TSshProt GetSshProt() const { return FSshProt; }
   bool GetSsh2DES() const { return FSsh2DES; }
   bool GetSshNoUserAuth() const { return FSshNoUserAuth; }
-  const UnicodeString GetPublicKeyFile() const { return FPublicKeyFile; }
+  UnicodeString GetPublicKeyFile() const { return FPublicKeyFile; }
   UnicodeString GetPuttyProtocol() const { return FPuttyProtocol; }
   TFSProtocol GetFSProtocol() const { return FFSProtocol; }
   bool GetModified() const { return FModified; }
@@ -1027,7 +1027,7 @@ public:
   virtual ~TStoredSessionList() noexcept;
   __property TSessionData *Sessions[int Index]  = { read = AtSession };
   __property TSessionData *DefaultSettings  = { read = FDefaultSettings, write = SetDefaultSettings };
-  RWProperty<TSessionData *> DefaultSettings{nb::bind(&TStoredSessionList::GetDefaultSettingsConst, this), nb::bind(&TStoredSessionList::SetDefaultSettings, this)};
+  RWProperty<const TSessionData *> DefaultSettings{nb::bind(&TStoredSessionList::GetDefaultSettingsConst, this), nb::bind(&TStoredSessionList::SetDefaultSettings, this)};
 
   static void ImportHostKeys(
     THierarchicalStorage * SourceStorage, THierarchicalStorage * TargetStorage, TStoredSessionList * Sessions, bool OnlySelected);

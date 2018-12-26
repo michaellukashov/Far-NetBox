@@ -202,7 +202,7 @@ void OpenSessionInPutty(const UnicodeString PuttyPath,
               if (SourceStorage->OpenSubKey(StoredSessions->DefaultSettings->Name, false) &&
                   Storage->OpenSubKey(GUIConfiguration->PuttySession, true))
               {
-                Storage->Copy(SourceStorage);
+                Storage->Copy(SourceStorage.get());
                 Storage->CloseSubKey();
               }
 

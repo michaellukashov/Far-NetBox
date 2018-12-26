@@ -4586,7 +4586,8 @@ TStoredSessionList::~TStoredSessionList() noexcept
 //  SAFE_DESTROY(FDefaultSettings);
   for (intptr_t Index = 0; Index < GetCount(); ++Index)
   {
-    SAFE_DESTROY(TNamedObjectList::AtObject(Index));
+    TObject* Obj = TNamedObjectList::AtObject(Index);
+    SAFE_DESTROY(Obj);
     SetItem(Index, nullptr);
   }
 }
