@@ -11,7 +11,7 @@
 #define FORMAT(S, ...) nb::Sprintf(S, __VA_ARGS__)
 #define FMTLOAD(Id, ...) nb::FmtLoadStr(Id, __VA_ARGS__)
 #ifndef LENOF
-#define LENOF(x) (_countof(x))
+#define LENOF(x) (_countof((x)))
 #endif
 #define FLAGSET(SET, FLAG) (((SET) & (FLAG)) == (FLAG))
 #define FLAGCLEAR(SET, FLAG) (((SET) & (FLAG)) == 0)

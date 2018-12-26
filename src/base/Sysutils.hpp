@@ -514,6 +514,7 @@ scope_guard<F, F2> make_try_finally(F&& f, F2&& f2) { return scope_guard<F, F2>(
   const auto ANONYMOUS_VARIABLE(scope_exit_guard) = \
     detail::scope_guard1<nb::FastDelegate1<void, (T)>, (T)>(nb::bind(&(FUNC), this), (PARAM))
 
+#define try__removed
 #define try__catch
 #define catch__removed(BLOCK)
 #define __finally__removed(BLOCK) [](){}
