@@ -254,7 +254,7 @@ void CoreMaintenanceTask()
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-TOperationVisualizer::TOperationVisualizer(bool UseBusyCursor) :
+TOperationVisualizer::TOperationVisualizer(bool UseBusyCursor) noexcept :
   FUseBusyCursor(UseBusyCursor),
   FToken(nullptr)
 {
@@ -264,7 +264,7 @@ TOperationVisualizer::TOperationVisualizer(bool UseBusyCursor) :
   }
 }
 //---------------------------------------------------------------------------
-TOperationVisualizer::~TOperationVisualizer()
+TOperationVisualizer::~TOperationVisualizer() noexcept
 {
   if (FUseBusyCursor)
   {
@@ -273,13 +273,13 @@ TOperationVisualizer::~TOperationVisualizer()
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-TInstantOperationVisualizer::TInstantOperationVisualizer() :
+TInstantOperationVisualizer::TInstantOperationVisualizer() noexcept :
   TOperationVisualizer(true),
   FStart(Now())
 {
 }
 //---------------------------------------------------------------------------
-TInstantOperationVisualizer::~TInstantOperationVisualizer()
+TInstantOperationVisualizer::~TInstantOperationVisualizer() noexcept
 {
   TDateTime Time = Now();
   int64_t Duration = MilliSecondsBetween(Time, FStart);

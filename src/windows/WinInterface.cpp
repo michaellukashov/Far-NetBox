@@ -14,20 +14,21 @@
 #include <HelpCore.h>
 #include <Interface.h>
 #include <VCLCommon.h>
-#include <Glyphs.h>
+__removed #include <Glyphs.h>
 #include <PasTools.hpp>
 #include <DateUtils.hpp>
-#include <Custom.h>
-#include <HistoryComboBox.hpp>
+__removed #include <Custom.h>
+__removed #include <HistoryComboBox.hpp>
 
 #include "WinInterface.h"
 #include "GUITools.h"
-#include "JclDebug.hpp"
-#include "JclHookExcept.hpp"
+__removed #include "JclDebug.hpp"
+__removed #include "JclHookExcept.hpp"
 #include <System.IOUtils.hpp>
 #include <StrUtils.hpp>
-#include <WinApi.h>
+__removed #include <WinApi.h>
 #include "Tools.h"
+#if 0
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 //---------------------------------------------------------------------------
@@ -41,18 +42,19 @@ void __fastcall FormHelp(TCustomForm * Form)
 {
   InvokeHelp(Form->ActiveControl != NULL ? Form->ActiveControl : Form);
 }
+#endif // #if 0
 //---------------------------------------------------------------------------
-TMessageParams::TMessageParams(unsigned int AParams)
+TMessageParams::TMessageParams(uintptr_t AParams) noexcept
 {
   Reset();
   Params = AParams;
 }
 //---------------------------------------------------------------------------
-TMessageParams::TMessageParams(const TQueryParams * AParams)
+void TMessageParams::Assign(const TMessageParams * AParams)
 {
   Reset();
 
-  if (AParams != NULL)
+  if (AParams != nullptr)
   {
     Aliases = AParams->Aliases;
     AliasesCount = AParams->AliasesCount;
@@ -75,13 +77,13 @@ TMessageParams::TMessageParams(const TQueryParams * AParams)
   }
 }
 //---------------------------------------------------------------------------
-inline void TMessageParams::Reset()
+void TMessageParams::Reset()
 {
   Params = 0;
-  Aliases = NULL;
+  Aliases = nullptr;
   AliasesCount = 0;
   Timer = 0;
-  TimerEvent = NULL;
+  TimerEvent = nullptr;
   TimerMessage = L"";
   TimerAnswers = 0;
   TimerQueryType = static_cast<TQueryType>(-1);
@@ -93,16 +95,17 @@ inline void TMessageParams::Reset()
   AllowHelp = true;
   ImageName = L"";
   MoreMessagesUrl = L"";
-  MoreMessagesSize = TSize();
+  MoreMessagesSize = 0; //TSize();
   CustomCaption = L"";
 }
 //---------------------------------------------------------------------------
-static bool __fastcall IsPositiveAnswer(unsigned int Answer)
+static bool IsPositiveAnswer(uintptr_t Answer)
 {
   return (Answer == qaYes) || (Answer == qaOK) || (Answer == qaYesToAll);
 }
 //---------------------------------------------------------------------------
-static void __fastcall NeverAskAgainCheckClick(void * /*Data*/, TObject * Sender)
+#if 0
+static void NeverAskAgainCheckClick(void * /*Data*/, TObject * Sender)
 {
   TCheckBox * CheckBox = dynamic_cast<TCheckBox *>(Sender);
   DebugAssert(CheckBox != NULL);
@@ -570,15 +573,17 @@ static TStrings * __fastcall StackInfoListToStrings(
   }
   return StackTrace.release();
 }
+#endif // #if 0
 //---------------------------------------------------------------------------
 static std::unique_ptr<TCriticalSection> StackTraceCriticalSection(TraceInitPtr(new TCriticalSection()));
-typedef std::map<DWORD, TStrings *> TStackTraceMap;
+typedef rde::map<DWORD, TStrings *> TStackTraceMap;
 static TStackTraceMap StackTraceMap;
 //---------------------------------------------------------------------------
-UnicodeString __fastcall GetExceptionDebugInfo()
+UnicodeString GetExceptionDebugInfo()
 {
   UnicodeString Result;
-  TGuard Guard(StackTraceCriticalSection.get());
+#if 0
+  TGuard Guard(StackTraceCriticalSection.get()); nb::used(Guard);
   TStackTraceMap::iterator Iterator = StackTraceMap.find(GetCurrentThreadId());
   if (Iterator != StackTraceMap.end())
   {
@@ -608,12 +613,14 @@ UnicodeString __fastcall GetExceptionDebugInfo()
       }
     }
   }
+#endif // #if 0
   return Result;
 }
 //---------------------------------------------------------------------------
-bool __fastcall AppendExceptionStackTraceAndForget(TStrings *& MoreMessages)
+bool AppendExceptionStackTraceAndForget(TStrings *& MoreMessages)
 {
   bool Result = false;
+#if 0
 
   TGuard Guard(StackTraceCriticalSection.get());
 
@@ -621,7 +628,7 @@ bool __fastcall AppendExceptionStackTraceAndForget(TStrings *& MoreMessages)
   if (Iterator != StackTraceMap.end())
   {
     std::unique_ptr<TStrings> OwnedMoreMessages;
-    if (MoreMessages == NULL)
+    if (MoreMessages == nullptr)
     {
       OwnedMoreMessages.reset(new TStringList());
       MoreMessages = OwnedMoreMessages.get();
@@ -639,16 +646,18 @@ bool __fastcall AppendExceptionStackTraceAndForget(TStrings *& MoreMessages)
 
     OwnedMoreMessages.release();
   }
+#endif // #if 0
   return Result;
 }
 //---------------------------------------------------------------------------
-unsigned int __fastcall ExceptionMessageDialog(Exception * E, TQueryType Type,
-  const UnicodeString MessageFormat, unsigned int Answers, UnicodeString HelpKeyword,
-  const TMessageParams * Params)
+uintptr_t ExceptionMessageDialog(Exception * /*E*/, TQueryType /*Type*/,
+  const UnicodeString /*MessageFormat*/, uintptr_t /*Answers*/, UnicodeString /*HelpKeyword*/,
+  const TMessageParams * /*Params*/)
 {
-  TStrings * MoreMessages = NULL;
+#if 0
+  TStrings * MoreMessages = nullptr;
   ExtException * EE = dynamic_cast<ExtException *>(E);
-  if (EE != NULL)
+  if (EE != nullptr)
   {
     MoreMessages = EE->MoreMessages;
   }
@@ -669,12 +678,14 @@ unsigned int __fastcall ExceptionMessageDialog(Exception * E, TQueryType Type,
   return MoreMessageDialog(
     FORMAT(MessageFormat.IsEmpty() ? UnicodeString(L"%s") : MessageFormat, (Message)),
     MoreMessages, Type, Answers, HelpKeyword, Params);
+#endif // #if 0
 }
 //---------------------------------------------------------------------------
-unsigned int __fastcall FatalExceptionMessageDialog(Exception * E, TQueryType Type,
-  int SessionReopenTimeout, const UnicodeString MessageFormat, unsigned int Answers,
+uintptr_t FatalExceptionMessageDialog(Exception * E, TQueryType Type,
+  int SessionReopenTimeout, const UnicodeString MessageFormat, uintptr_t Answers,
   UnicodeString HelpKeyword, const TMessageParams * Params)
 {
+#if 0
   DebugAssert(FLAGCLEAR(Answers, qaRetry));
   Answers |= qaRetry;
 
@@ -683,7 +694,7 @@ unsigned int __fastcall FatalExceptionMessageDialog(Exception * E, TQueryType Ty
   Aliases[0].Alias = LoadStr(RECONNECT_BUTTON);
 
   TMessageParams AParams;
-  if (Params != NULL)
+  if (Params != nullptr)
   {
     AParams = *Params;
   }
@@ -699,12 +710,16 @@ unsigned int __fastcall FatalExceptionMessageDialog(Exception * E, TQueryType Ty
   AParams.AliasesCount = LENOF(Aliases);
 
   return ExceptionMessageDialog(E, Type, MessageFormat, Answers, HelpKeyword, &AParams);
+#endif // #if 0
+  ThrowNotImplemented(3017);
+  return 0;
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-static void __fastcall DoExceptNotify(TObject * ExceptObj, void * ExceptAddr,
+static void DoExceptNotify(TObject * ExceptObj, void * ExceptAddr,
   bool OSException, void * BaseOfStack)
 {
+#if 0
   if (ExceptObj != NULL)
   {
     Exception * E = dynamic_cast<Exception *>(ExceptObj);
@@ -739,35 +754,38 @@ static void __fastcall DoExceptNotify(TObject * ExceptObj, void * ExceptAddr,
       }
     }
   }
+#endif // #if 0
+  ThrowNotImplemented(3016);
 }
 //---------------------------------------------------------------------------
-void * __fastcall BusyStart()
+void * BusyStart()
 {
-  void * Token = reinterpret_cast<void *>(Screen->Cursor);
-  Screen->Cursor = crHourGlass;
+  void * Token = nullptr; // reinterpret_cast<void *>(Screen->Cursor);
+  __removed Screen->Cursor = crHourGlass;
   return Token;
 }
 //---------------------------------------------------------------------------
-void __fastcall BusyEnd(void * Token)
+void BusyEnd(void * Token)
 {
-  Screen->Cursor = reinterpret_cast<TCursor>(Token);
+  __removed Screen->Cursor = reinterpret_cast<TCursor>(Token);
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 static DWORD MainThread = 0;
-static TDateTime LastGUIUpdate = 0;
+static TDateTime LastGUIUpdate{};
 static double GUIUpdateIntervalFrac = static_cast<double>(OneSecond/1000*GUIUpdateInterval);  // 1/5 sec
 static bool NoGUI = false;
 //---------------------------------------------------------------------------
-void __fastcall SetNoGUI()
+void SetNoGUI()
 {
   NoGUI = true;
 }
 //---------------------------------------------------------------------------
-bool __fastcall ProcessGUI(bool Force)
+bool ProcessGUI(bool Force)
 {
   DebugAssert(MainThread != 0);
   bool Result = false;
+#if 0
   // Calling ProcessMessages in Azure WebJob causes access violation in VCL.
   // As we do not really need to call it in scripting/.NET, just skip it.
   if ((MainThread == GetCurrentThreadId()) && !NoGUI)
@@ -781,8 +799,10 @@ bool __fastcall ProcessGUI(bool Force)
       Result = true;
     }
   }
+#endif // #if 0
   return Result;
 }
+#if 0
 //---------------------------------------------------------------------------
 void __fastcall CopyParamListButton(TButton * Button)
 {
@@ -1054,6 +1074,7 @@ bool __fastcall TCustomCommandPromptsDialog::Execute(TUnicodeStringVector & Valu
 
   return Result;
 }
+#endif // #if 0
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 TWinInteractiveCustomCommand::TWinInteractiveCustomCommand(
@@ -1064,7 +1085,7 @@ TWinInteractiveCustomCommand::TWinInteractiveCustomCommand(
   FHelpKeyword = HelpKeyword;
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinInteractiveCustomCommand::PatternHint(int Index, const UnicodeString & Pattern)
+void TWinInteractiveCustomCommand::PatternHint(intptr_t Index, const UnicodeString Pattern)
 {
   if (IsPromptPattern(Pattern))
   {
@@ -1072,15 +1093,18 @@ void __fastcall TWinInteractiveCustomCommand::PatternHint(int Index, const Unico
     UnicodeString Default;
     bool Delimit = false;
     ParsePromptPattern(Pattern, Prompt, Default, Delimit);
+#if 0
     FIndexes.insert(std::make_pair(Index, FPrompts.size()));
     FPrompts.push_back(Prompt);
     FDefaults.push_back(Default);
+#endif // #if 0
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinInteractiveCustomCommand::Prompt(
-  int Index, const UnicodeString & /*Prompt*/, UnicodeString & Value)
+void TWinInteractiveCustomCommand::Prompt(
+  intptr_t /*Index*/, const UnicodeString /*Prompt*/, UnicodeString &/*Value*/) const
 {
+#if 0
   if (DebugAlwaysTrue(FIndexes.find(Index) != FIndexes.end()))
   {
     size_t PromptIndex = FIndexes[Index];
@@ -1105,11 +1129,13 @@ void __fastcall TWinInteractiveCustomCommand::Prompt(
       Value = FValues[PromptIndex];
     }
   }
+#endif // #if 0
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinInteractiveCustomCommand::Execute(
-  const UnicodeString & Command, UnicodeString & Value)
+void TWinInteractiveCustomCommand::Execute(
+  const UnicodeString /*Command*/, UnicodeString &/*Value*/) const
 {
+#if 0
   // inspired by
   // http://forum.codecall.net/topic/72472-execute-a-console-program-and-capture-its-output/
   HANDLE StdOutOutput;
@@ -1216,7 +1242,10 @@ void __fastcall TWinInteractiveCustomCommand::Execute(
       CloseHandle(StdInInput);
     }
   }
+#endif // #if 0
+  ThrowNotImplemented(3019);
 }
+#if 0
 //---------------------------------------------------------------------------
 void __fastcall MenuPopup(TPopupMenu * Menu, TButton * Button)
 {
@@ -1657,9 +1686,11 @@ static void __fastcall AppGetMainFormHandle(void * /*Data*/, HWND & Handle)
     Handle = MainForm->Handle;
   }
 }
+#endif // #if 0
 //---------------------------------------------------------------------------
-void __fastcall WinInitialize()
+void WinInitialize()
 {
+#if 0
   if (JclHookExceptions())
   {
     JclStackTrackingOptions << stAllModules;
@@ -1667,22 +1698,26 @@ void __fastcall WinInitialize()
     CallstackThread.reset(new TCallstackThread());
     CallstackThread->Start();
   }
+#endif // #if 0
 
-  SetErrorMode(SEM_FAILCRITICALERRORS);
-  OnApiPath = ApiPath;
+  __removed SetErrorMode(SEM_FAILCRITICALERRORS);
+  __removed OnApiPath = ApiPath;
   MainThread = GetCurrentThreadId();
-  Application->OnGetMainFormHandle = MakeMethod<TGetHandleEvent>(NULL, AppGetMainFormHandle);
+  __removed Application->OnGetMainFormHandle = MakeMethod<TGetHandleEvent>(NULL, AppGetMainFormHandle);
 
-#pragma warn -8111
-#pragma warn .8111
+__removed #pragma warn -8111
+__removed #pragma warn .8111
 
 }
 //---------------------------------------------------------------------------
-void __fastcall WinFinalize()
+void WinFinalize()
 {
+#if 0
   CallstackThread.reset(NULL);
   JclRemoveExceptNotifier(DoExceptNotify);
+#endif // #if 0
 }
+#if 0
 //---------------------------------------------------------------------------
 __fastcall ::TTrayIcon::TTrayIcon(unsigned int Id)
 {
@@ -1951,5 +1986,49 @@ void __fastcall ::TTrayIcon::SetHint(UnicodeString value)
     StrPLCopy(FTrayIcon->szTip, value, Max - 1);
     Update();
   }
+}
+#endif // #if 0
+//---------------------------------------------------------------------------
+bool InputDialog(UnicodeString ACaption,
+  UnicodeString APrompt, UnicodeString &Value, UnicodeString HelpKeyword,
+  TStrings *History, bool PathInput,
+  TInputDialogInitializeEvent OnInitialize, bool Echo)
+{
+  bool Result = GetGlobals()->InputDialog(ACaption, APrompt, Value, HelpKeyword,
+      History, PathInput, OnInitialize, Echo);
+  return Result;
+}
+
+uintptr_t MessageDialog(UnicodeString Msg, TQueryType Type,
+  uintptr_t Answers, UnicodeString HelpKeyword, const TMessageParams *Params)
+{
+  DebugUsedParam(HelpKeyword);
+  uintptr_t Result = GetGlobals()->MoreMessageDialog(Msg, nullptr, Type, Answers, Params);
+  return Result;
+}
+
+uintptr_t MessageDialog(intptr_t Ident, TQueryType Type,
+  uintptr_t Answers, UnicodeString HelpKeyword, const TMessageParams *Params)
+{
+  DebugUsedParam(HelpKeyword);
+  UnicodeString Msg = LoadStr(Ident);
+  uintptr_t Result = GetGlobals()->MoreMessageDialog(Msg, nullptr, Type, Answers, Params);
+  return Result;
+}
+
+uintptr_t SimpleErrorDialog(UnicodeString Msg, UnicodeString /*MoreMessages*/)
+{
+  uintptr_t Answers = qaOK;
+  uintptr_t Result = GetGlobals()->MoreMessageDialog(Msg, nullptr, qtError, Answers, nullptr);
+  return Result;
+}
+
+uintptr_t MoreMessageDialog(UnicodeString Message,
+  TStrings *MoreMessages, TQueryType Type, uintptr_t Answers,
+  UnicodeString HelpKeyword, const TMessageParams *Params)
+{
+  DebugUsedParam(HelpKeyword);
+  uintptr_t Result = GetGlobals()->MoreMessageDialog(Message, MoreMessages, Type, Answers, Params);
+  return Result;
 }
 //---------------------------------------------------------------------------

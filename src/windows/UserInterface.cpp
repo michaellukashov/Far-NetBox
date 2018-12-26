@@ -2,8 +2,8 @@
 #include <vcl.h>
 #pragma hdrstop
 
-#include "ScpCommander.h"
-#include "ScpExplorer.h"
+__removed #include "ScpCommander.h"
+__removed #include "ScpExplorer.h"
 
 #include <CoreMain.h>
 #include <Common.h>
@@ -12,18 +12,19 @@
 #include "ProgParams.h"
 #include "VCLCommon.h"
 #include "WinConfiguration.h"
-#include "TerminalManager.h"
+__removed #include "TerminalManager.h"
 #include "TextsWin.h"
 #include "WinInterface.h"
-#include "PasswordEdit.hpp"
+__removed #include "PasswordEdit.hpp"
 #include "ProgParams.h"
 #include "Tools.h"
-#include "Custom.h"
+__removed #include "Custom.h"
 #include "HelpWin.h"
 #include <Math.hpp>
 #include <PasTools.hpp>
 #include <GUITools.h>
 //---------------------------------------------------------------------------
+#if 0
 #pragma package(smart_init)
 //---------------------------------------------------------------------------
 const UnicodeString AppName = L"WinSCP";
@@ -60,11 +61,13 @@ TConfiguration * __fastcall CreateConfiguration()
 
   return WinConfiguration;
 }
+#endif // #if 0
 //---------------------------------------------------------------------------
-TOptions * __fastcall GetGlobalOptions()
+TOptions * GetGlobalOptions()
 {
-  return TProgramParams::Instance();
+  return nullptr; // TProgramParams::Instance();
 }
+#if 0
 //---------------------------------------------------------------------------
 TCustomScpExplorerForm * __fastcall CreateScpExplorer()
 {
@@ -448,7 +451,7 @@ static int __fastcall ToolbarReadInt(const UnicodeString ToolbarName,
     if (Storage->IndexOfName(ToolbarKey) >= 0)
     {
       Result = StrToIntDef(Storage->Values[ToolbarKey], Default);
-      #if 0
+#if 0
       // this does not work well, as it scales down the stretched
       // toolbars (path toolbars) too much, it has to be reimplemented smarter
       if (Value == L"DockPos")
@@ -1438,3 +1441,5 @@ bool __fastcall CheckSafe(TProgramParams * Params)
 
   return !Params->FindSwitch(UNSAFE_SWITCH);
 }
+
+#endif // #if 0

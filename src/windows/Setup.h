@@ -1,6 +1,7 @@
 //---------------------------------------------------------------------------
 #ifndef SetupH
 #define SetupH
+#if 0
 //---------------------------------------------------------------------------
 #include <Interface.h>
 #include <WinConfiguration.h>
@@ -37,4 +38,5 @@ UnicodeString __fastcall GetNetVersionStr();
 UnicodeString __fastcall GetPowerShellVersionStr();
 int ComRegistration(TConsole * Console);
 //---------------------------------------------------------------------------
+#endif // #if 0
 #endif

@@ -60,31 +60,31 @@ struct NB_CORE_EXPORT TMessageParams : public TObject
 {
   NB_DISABLE_COPY(TMessageParams)
 public:
-  explicit TMessageParams(uintptr_t AParams);
+  explicit TMessageParams(uintptr_t AParams) noexcept;
   void Assign(const TMessageParams *AParams);
 
-  const TQueryButtonAlias *Aliases;
-  uintptr_t AliasesCount;
-  uintptr_t Flags;
-  uintptr_t Params;
-  uintptr_t Timer;
+  const TQueryButtonAlias *Aliases{nullptr};
+  uintptr_t AliasesCount{0};
+  uintptr_t Flags{0};
+  uintptr_t Params{0};
+  uintptr_t Timer{0};
   TQueryParamsTimerEvent TimerEvent;
   UnicodeString TimerMessage;
-  uintptr_t TimerAnswers;
+  uintptr_t TimerAnswers{0};
   TQueryType TimerQueryType;
-  uintptr_t Timeout;
-  uintptr_t TimeoutAnswer;
+  uintptr_t Timeout{0};
+  uintptr_t TimeoutAnswer{0};
   UnicodeString NeverAskAgainTitle;
-  uintptr_t NeverAskAgainAnswer;
-  bool NeverAskAgainCheckedInitially;
-  bool AllowHelp;
+  uintptr_t NeverAskAgainAnswer{0};
+  bool NeverAskAgainCheckedInitially{false};
+  bool AllowHelp{false};
   UnicodeString ImageName;
   UnicodeString MoreMessagesUrl;
-  int MoreMessagesSize;
+  intptr_t MoreMessagesSize{0};
   UnicodeString CustomCaption;
 
 private:
-  inline void Reset();
+  void Reset();
 };
 
 class TCustomScpExplorerForm;
@@ -662,9 +662,9 @@ public:
     TCustomCommand * ChildCustomCommand, const UnicodeString CustomCommandName, const UnicodeString HelpKeyword);
 
 protected:
-  virtual void Prompt(intptr_t Index, UnicodeString Prompt,
+  virtual void Prompt(intptr_t Index, const UnicodeString Prompt,
     UnicodeString &Value) const override;
-  virtual void Execute(UnicodeString Command,
+  virtual void Execute(const UnicodeString Command,
     UnicodeString &Value) const override;
   virtual void PatternHint(intptr_t Index, UnicodeString Pattern) override;
 

@@ -17,11 +17,17 @@ __removed #include <Consts.hpp>
 #include <CoreMain.h>
 #include <RemoteFiles.h>
 #include <PuttyTools.h>
+#include <Interface.h>
+#include <LibraryLoader.hpp>
 
+#include "WinInterface.h"
 #include "GUITools.h"
 #include "VCLCommon.h"
 #include "Setup.h"
 #include "Tools.h"
+#include "PuttyTools.h"
+#include "Tools.h"
+#include "WinConfiguration.h"
 #if 0
 #include <WinHelpViewer.hpp>
 #include <PasTools.hpp>
@@ -69,7 +75,7 @@ __removed #include <Consts.hpp>
 #undef HTTP_VERSION_INFO
 #undef LPHTTP_VERSION_INFO
 //---------------------------------------------------------------------------
-#pragma package(smart_init)
+__removed #pragma package(smart_init)
 //---------------------------------------------------------------------------
 TFontStyles IntToFontStyles(int value)
 {
@@ -316,13 +322,13 @@ UnicodeString StoreForm(TCustomForm * Form)
   TRect Bounds = Form->BoundsRect;
   OffsetRect(Bounds, -Form->Monitor->Left, -Form->Monitor->Top);
   UnicodeString Result =
-    FORMAT(L"%d;%d;%d;%d;%d;%s", (SaveDimension(Bounds.Left), SaveDimension(Bounds.Top),
+    FORMAT(L"%d;%d;%d;%d;%d;%s", SaveDimension(Bounds.Left), SaveDimension(Bounds.Top),
       SaveDimension(Bounds.Right), SaveDimension(Bounds.Bottom),
       // we do not want WinSCP to start minimized next time (we cannot handle that anyway).
       // note that WindowState is wsNormal when window in minimized for some reason.
       // actually it is wsMinimized only when minimized by MSVDM
       (int)(Form->WindowState == wsMinimized ? wsNormal : Form->WindowState),
-      SavePixelsPerInch(Form)));
+      SavePixelsPerInch(Form));
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -341,7 +347,7 @@ void RestoreFormSize(UnicodeString Data, TForm * Form)
 //---------------------------------------------------------------------------
 UnicodeString StoreFormSize(TForm * Form)
 {
-  return FORMAT(L"%d,%d,%s", (Form->Width, Form->Height, SavePixelsPerInch(Form)));
+  return FORMAT(L"%d,%d,%s", Form->Width, Form->Height, SavePixelsPerInch(Form));
 }
 //---------------------------------------------------------------------------
 static void ExecuteProcessAndReadOutput(const
@@ -361,7 +367,7 @@ static void ExecuteProcessAndReadOutput(const
     if (!CreatePipe(&PipeRead, &PipeWrite, &SecurityAttributes, 0) ||
         !SetHandleInformation(PipeRead, HANDLE_FLAG_INHERIT, 0))
     {
-      throw EOSExtException(FMTLOAD(EXECUTE_APP_ERROR, (Command)));
+      throw EOSExtException(FMTLOAD(EXECUTE_APP_ERROR, Command));
     }
 
     PROCESS_INFORMATION ProcessInformation;
@@ -381,7 +387,7 @@ static void ExecuteProcessAndReadOutput(const
 
         if (!CreateProcess(NULL, Command.c_str(), NULL, NULL, TRUE, 0, NULL, NULL, &StartupInfo, &ProcessInformation))
         {
-          throw EOSExtException(FMTLOAD(EXECUTE_APP_ERROR, (Command)));
+          throw EOSExtException(FMTLOAD(EXECUTE_APP_ERROR, Command));
         }
       }
       __finally
@@ -392,12 +398,12 @@ static void ExecuteProcessAndReadOutput(const
       }
 
       DWORD BytesAvail;
-      while (PeekNamedPipe(PipeRead, NULL, 0, NULL, &BytesAvail, NULL))
+      while (PeekNamedPipe(PipeRead, NULL, 0, nullptr, &BytesAvail, nullptr))
       {
         if (BytesAvail > 0)
         {
-          char Buffer[4096];
-          DWORD BytesToRead = std::min(BytesAvail, static_cast<unsigned long>(sizeof(Buffer)));
+          char Buffer[4096]{};
+          DWORD BytesToRead = std::min<DWORD>(BytesAvail, static_cast<unsigned long>(sizeof(Buffer)));
           DWORD BytesRead;
           if (ReadFile(PipeRead, Buffer, BytesToRead, &BytesRead, NULL))
           {
@@ -421,7 +427,7 @@ static void ExecuteProcessAndReadOutput(const
         }
         else
         {
-          throw ExtException(MainInstructions(FMTLOAD(COMMAND_FAILED_CODEONLY, (static_cast<int>(ExitCode)))), Output, HelpKeyword);
+          throw ExtException(MainInstructions(FMTLOAD(COMMAND_FAILED_CODEONLY, static_cast<int>(ExitCode))), Output, HelpKeyword);
         }
       }
     }
@@ -434,7 +440,7 @@ static void ExecuteProcessAndReadOutput(const
 }
 //---------------------------------------------------------------------------
 void ExecuteProcessChecked(
-  const UnicodeString & Command, const UnicodeString & HelpKeyword, UnicodeString * Output)
+  const UnicodeString Command, const UnicodeString HelpKeyword, UnicodeString * Output)
 {
   if (Output == NULL)
   {
@@ -447,7 +453,7 @@ void ExecuteProcessChecked(
 }
 //---------------------------------------------------------------------------
 void ExecuteProcessCheckedAndWait(
-  const UnicodeString & Command, const UnicodeString & HelpKeyword, UnicodeString * Output)
+  const UnicodeString Command, const UnicodeString HelpKeyword, UnicodeString * Output)
 {
   if (Output == NULL)
   {
@@ -479,7 +485,7 @@ void ExecuteNewInstance(const UnicodeString Param, const UnicodeString Additiona
   UnicodeString Arg = Param;
   if (!Arg.IsEmpty())
   {
-    Arg = FORMAT(L"\"%s\" %s", (Arg, TProgramParams::FormatSwitch(NEWINSTANCE_SWICH)));
+    Arg = FORMAT(L"\"%s\" %s", Arg, TProgramParams::FormatSwitch(NEWINSTANCE_SWICH));
     if (!AdditionalParams.IsEmpty())
     {
       Arg += L" " + AdditionalParams;
@@ -623,7 +629,7 @@ IShellLink * CreateDesktopSessionShortCut(
 
   return
     CreateDesktopShortCut(ValidLocalFileName(Name), Application->ExeName,
-      FORMAT(L"\"%s\"%s%s", (EncodeUrlString(SessionName), (AdditionalParams.IsEmpty() ? L"" : L" "), AdditionalParams)),
+      FORMAT(L"\"%s\"%s%s", EncodeUrlString(SessionName), (AdditionalParams.IsEmpty() ? L"" : L" "), AdditionalParams),
       InfoTip, SpecialFolder, IconIndex, Return);
 }
 //---------------------------------------------------------------------------
@@ -713,16 +719,16 @@ void OpenBrowser(UnicodeString URL)
   ShellExecute(Application->Handle, L"open", URL.c_str(), NULL, NULL, SW_SHOWNORMAL);
 }
 //---------------------------------------------------------------------------
-void OpenFolderInExplorer(const UnicodeString & Path)
+void OpenFolderInExplorer(const UnicodeString Path)
 {
   if ((int)ShellExecute(Application->Handle, L"explore",
       (wchar_t*)Path.data(), NULL, NULL, SW_SHOWNORMAL) <= 32)
   {
-    throw Exception(FMTLOAD(EXPLORE_LOCAL_DIR_ERROR, (Path)));
+    throw Exception(FMTLOAD(EXPLORE_LOCAL_DIR_ERROR, Path));
   }
 }
 //---------------------------------------------------------------------------
-void OpenFileInExplorer(const UnicodeString & Path)
+void OpenFileInExplorer(const UnicodeString Path)
 {
   PCIDLIST_ABSOLUTE Folder = ILCreateFromPathW(ApiPath(Path).c_str());
   SHOpenFolderAndSelectItems(Folder, 0, NULL, 0);
@@ -734,7 +740,7 @@ void ShowHelp(const UnicodeString & AHelpKeyword)
   UnicodeString HelpKeyword = AHelpKeyword;
   const wchar_t FragmentSeparator = L'#';
   UnicodeString HelpPath = CutToChar(HelpKeyword, FragmentSeparator, false);
-  UnicodeString HelpUrl = FMTLOAD(DOCUMENTATION_KEYWORD_URL2, (HelpPath, Configuration->ProductVersion, GUIConfiguration->AppliedLocaleHex));
+  UnicodeString HelpUrl = FMTLOAD(DOCUMENTATION_KEYWORD_URL2, HelpPath, Configuration->ProductVersion, GUIConfiguration->AppliedLocaleHex);
   AddToList(HelpUrl, HelpKeyword, FragmentSeparator);
   OpenBrowser(HelpUrl);
 }
@@ -824,19 +830,19 @@ static bool GetResource(
     Size = SizeofResource(HInstance, Resource);
     if (!Size)
     {
-      throw Exception(FORMAT(L"Cannot get size of resource %s", (ResName)));
+      throw Exception(FORMAT(L"Cannot get size of resource %s", ResName));
     }
 
     Content = LoadResource(HInstance, Resource);
     if (!Content)
     {
-      throw Exception(FORMAT(L"Cannot read resource %s", (ResName)));
+      throw Exception(FORMAT(L"Cannot read resource %s", ResName));
     }
 
     Content = LockResource(Content);
     if (!Content)
     {
-      throw Exception(FORMAT(L"Cannot lock resource %s", (ResName)));
+      throw Exception(FORMAT(L"Cannot lock resource %s", ResName));
     }
   }
 
@@ -855,11 +861,11 @@ bool DumpResourceToFile(const UnicodeString ResName,
     FILE * f = _wfopen(ApiPath(FileName).c_str(), L"wb");
     if (!f)
     {
-      throw Exception(FORMAT(L"Cannot create file %s", (FileName)));
+      throw Exception(FORMAT(L"Cannot create file %s", FileName));
     }
     if (fwrite(Content, 1, Size, f) != Size)
     {
-      throw Exception(FORMAT(L"Cannot write to file %s", (FileName)));
+      throw Exception(FORMAT(L"Cannot write to file %s", FileName));
     }
     fclose(f);
   }
@@ -1189,7 +1195,7 @@ static void ConvertKey(UnicodeString & FileName, TKeyType Type)
 
     SaveKey(ktSSH2, FileName, Passphrase, PrivateKey);
 
-    MessageDialog(MainInstructions(FMTLOAD(CONVERTKEY_SAVED, (FileName))), qtInformation, qaOK);
+    MessageDialog(MainInstructions(FMTLOAD(CONVERTKEY_SAVED, FileName)), qtInformation, qaOK);
   },
   __finally
   {
@@ -1203,7 +1209,7 @@ static void DoVerifyKey(
   if (!FileName.Trim().IsEmpty())
   {
     FileName = ExpandEnvironmentVariables(FileName);
-    TKeyType Type = KeyType(FileName);
+    TKeyType Type = GetKeyType(FileName);
     // reason _wfopen failed
     int Error = errno;
     UnicodeString Message;
@@ -1217,17 +1223,17 @@ static void DoVerifyKey(
       case ktSSHCom:
         {
           UnicodeString TypeName = ((Type == ktOpenSSHPEM) || (Type == ktOpenSSHNew)) ? L"OpenSSH" : L"ssh.com";
-          Message = FMTLOAD(KEY_TYPE_UNSUPPORTED2, (FileName, TypeName));
+          Message = FMTLOAD(KEY_TYPE_UNSUPPORTED2, FileName, TypeName);
 
           if (Convert)
           {
-            Configuration->Usage->Inc(L"PrivateKeyConvertSuggestionsNative");
-            UnicodeString ConvertMessage = FMTLOAD(KEY_TYPE_CONVERT3, (TypeName, RemoveMainInstructionsTag(Message)));
+            GetConfiguration()->Usage->Inc(L"PrivateKeyConvertSuggestionsNative");
+            UnicodeString ConvertMessage = FMTLOAD(KEY_TYPE_CONVERT3, TypeName, RemoveMainInstructionsTag(Message));
             Message = UnicodeString();
-            if (MoreMessageDialog(ConvertMessage, NULL, qtConfirmation, qaOK | qaCancel, HelpKeyword) == qaOK)
+            if (MoreMessageDialog(ConvertMessage, nullptr, qtConfirmation, qaOK | qaCancel, HelpKeyword) == qaOK)
             {
               ConvertKey(FileName, Type);
-              Configuration->Usage->Inc(L"PrivateKeyConverted");
+              GetConfiguration()->Usage->Inc(L"PrivateKeyConverted");
             }
             else
             {
@@ -1248,7 +1254,7 @@ static void DoVerifyKey(
           Message =
             MainInstructions(
               FMTLOAD(KEY_TYPE_DIFFERENT_SSH,
-                (FileName, (Type == ktSSH1 ? L"SSH-1" : L"PuTTY SSH-2"))));
+                FileName, (Type == ktSSH1 ? L"SSH-1" : L"PuTTY SSH-2")));
         }
         break;
 
@@ -1260,7 +1266,7 @@ static void DoVerifyKey(
         break;
 
       case ktUnopenable:
-        Message = MainInstructions(FMTLOAD(KEY_TYPE_UNOPENABLE, (FileName)));
+        Message = MainInstructions(FMTLOAD(KEY_TYPE_UNOPENABLE, FileName));
         if (Error != ERROR_SUCCESS)
         {
           MoreMessages.reset(TextToStringList(SysErrorMessageForError(Error)));
@@ -1271,14 +1277,14 @@ static void DoVerifyKey(
         DebugFail();
         // fallthru
       case ktUnknown:
-        Message = MainInstructions(FMTLOAD(KEY_TYPE_UNKNOWN2, (FileName)));
+        Message = MainInstructions(FMTLOAD(KEY_TYPE_UNKNOWN2, FileName));
         break;
     }
 
     if (!Message.IsEmpty())
     {
-      Configuration->Usage->Inc(L"PrivateKeySelectErrors");
-      unsigned int Answers = (CanIgnore ? (qaIgnore | qaAbort) : qaOK);
+      GetConfiguration()->Usage->Inc(L"PrivateKeySelectErrors");
+      uintptr_t Answers = (CanIgnore ? (qaIgnore | qaAbort) : qaOK);
       if (MoreMessageDialog(Message, MoreMessages.get(), qtWarning, Answers, HelpKeyword) != qaIgnore)
       {
         Abort();

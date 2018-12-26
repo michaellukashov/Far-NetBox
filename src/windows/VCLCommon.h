@@ -1,11 +1,11 @@
 //---------------------------------------------------------------------------
-#ifndef VCLCommonH
-#define VCLCommonH
+#pragma once
 //---------------------------------------------------------------------------
 #include "Common.h"
 #include "Configuration.h"
 #include "Exceptions.h"
 #include <ComCtrls.hpp>
+#if 0
 //---------------------------------------------------------------------------
 const TColor LinkColor = clBlue;
 //---------------------------------------------------------------------------
@@ -85,4 +85,6 @@ void __fastcall SetRescaleFunction(
   TComponent * Component, TRescaleEvent OnRescale, TObject * Token = NULL, bool OwnsToken = false);
 void __fastcall RecordFormImplicitRescale(TForm * Form);
 //---------------------------------------------------------------------------
-#endif  // VCLCommonH
+
+#endif // #if 0
+

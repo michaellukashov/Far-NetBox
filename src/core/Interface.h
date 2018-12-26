@@ -47,7 +47,7 @@ NB_CORE_EXPORT UnicodeString GetCompanyRegistryKey();
 NB_CORE_EXPORT UnicodeString GetRegistryKey();
 NB_CORE_EXPORT void *BusyStart();
 NB_CORE_EXPORT void BusyEnd(void *Token);
-static const uint32_t GUIUpdateInterval = 100;
+NB_CORE_EXPORT static const uint32_t GUIUpdateInterval = 100;
 NB_CORE_EXPORT void SetNoGUI();
 NB_CORE_EXPORT bool ProcessGUI(bool Force = false);
 NB_CORE_EXPORT UnicodeString GetAppNameString();
@@ -71,14 +71,14 @@ struct NB_CORE_EXPORT TQueryButtonAlias : public TObject
 {
   TQueryButtonAlias();
 
-  uintptr_t Button;
+  uintptr_t Button{0};
   UnicodeString Alias;
   TButtonSubmitEvent OnSubmit;
-  int GroupWith;
-  bool Default;
-  TShiftStateFlag GrouppedShiftState;
-  bool ElevationRequired;
-  bool MenuButton;
+  int GroupWith{0};
+  bool Default{false};
+  TShiftStateFlag GrouppedShiftState{};
+  bool ElevationRequired{false};
+  bool MenuButton{false};
   UnicodeString ActionAlias;
 
   static TQueryButtonAlias CreateYesToAllGrouppedWithYes();
@@ -99,17 +99,17 @@ struct NB_CORE_EXPORT TQueryParams : public TObject
 
   void Assign(const TQueryParams &Source);
 
-  const TQueryButtonAlias *Aliases;
-  uintptr_t AliasesCount;
-  uintptr_t Params;
-  uintptr_t Timer;
+  const TQueryButtonAlias *Aliases{nullptr};
+  uintptr_t AliasesCount{0};
+  uintptr_t Params{0};
+  uintptr_t Timer{0};
   TQueryParamsTimerEvent TimerEvent;
   UnicodeString TimerMessage;
-  uint32_t TimerAnswers;
+  uint32_t TimerAnswers{0};
   TQueryType TimerQueryType;
-  uintptr_t Timeout;
-  uintptr_t TimeoutAnswer;
-  uintptr_t NoBatchAnswers;
+  uintptr_t Timeout{0};
+  uintptr_t TimeoutAnswer{0};
+  uintptr_t NoBatchAnswers{0};
   UnicodeString HelpKeyword;
 
 public:
@@ -161,19 +161,19 @@ class NB_CORE_EXPORT TOperationVisualizer
 {
   NB_DISABLE_COPY(TOperationVisualizer)
 public:
-  explicit TOperationVisualizer(bool UseBusyCursor = true);
-  ~TOperationVisualizer();
+  explicit TOperationVisualizer(bool UseBusyCursor = true) noexcept;
+  ~TOperationVisualizer() noexcept;
 
 private:
-  bool FUseBusyCursor;
-  void *FToken;
+  bool FUseBusyCursor{false};
+  void *FToken{nullptr};
 };
 //---------------------------------------------------------------------------
 class NB_CORE_EXPORT TInstantOperationVisualizer : public TOperationVisualizer
 {
 public:
-  TInstantOperationVisualizer();
-  ~TInstantOperationVisualizer();
+  TInstantOperationVisualizer() noexcept;
+  ~TInstantOperationVisualizer() noexcept;
 
 private:
   TDateTime FStart;
@@ -183,13 +183,13 @@ struct TClipboardHandler
 {
   NB_DISABLE_COPY(TClipboardHandler)
 public:
-  TClipboardHandler() {}
+  TClipboardHandler() noexcept = default;
 
   UnicodeString Text;
 
   void Copy(TObject * /*Sender*/, uint32_t & /*Answer*/)
   {
-    volatile TInstantOperationVisualizer Visualizer;
+    TInstantOperationVisualizer Visualizer; nb::used(Visualizer);
     CopyToClipboard(Text);
   }
 };

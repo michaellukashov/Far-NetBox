@@ -143,6 +143,7 @@ TCopyParamRule::TCopyParamRule(const TCopyParamRule & Source) noexcept :
   FData.LocalDirectory = Source.FData.LocalDirectory;
 }
 //---------------------------------------------------------------------------
+#undef C
 #define C(Property) (Property == rhp.Property)
 bool TCopyParamRule::operator==(const TCopyParamRule & rhp) const
 {
@@ -622,15 +623,15 @@ void TGUIConfiguration::DefaultLocalized()
 
       CopyParam = new TCopyParamType(FDefaultCopyParam);
       CopyParam->SetTransferMode(tmBinary);
-      FCopyParamList->Add(LoadStr(COPY_PARAM_PRESET_BINARY), CopyParam, NULL);
+      FCopyParamList->Add(LoadStr(COPY_PARAM_PRESET_BINARY), CopyParam, nullptr);
 
       CopyParam = new TCopyParamType(FDefaultCopyParam);
       CopyParam->SetNewerOnly(true);
-      FCopyParamList->Add(LoadStr(COPY_PARAM_NEWER_ONLY), CopyParam, NULL);
+      FCopyParamList->Add(LoadStr(COPY_PARAM_NEWER_ONLY), CopyParam, nullptr);
 
       CopyParam = new TCopyParamType(FDefaultCopyParam);
-      CopyParam->IncludeFileMask = TFileMasks(FORMAT(L"%s */", (IncludeExcludeFileMasksDelimiter)));
-      FCopyParamList->Add(LoadStr(COPY_PARAM_PRESET_EXCLUDE_ALL_DIR), CopyParam, NULL);
+      CopyParam->IncludeFileMask = TFileMasks(FORMAT(L"%s */", IncludeExcludeFileMasksDelimiter));
+      FCopyParamList->Add(LoadStr(COPY_PARAM_PRESET_EXCLUDE_ALL_DIR), CopyParam, nullptr);
     }
 
     FCopyParamList->Reset();
@@ -669,11 +670,10 @@ static UnicodeString PropertyToKey(UnicodeString Property)
     KEY(Integer,  MaxWatchDirectories); \
     KEY(Integer,  QueueTransfersLimit); \
     KEY(Bool,     QueueBootstrap); \
-    KEY(Integer,  QueueKeepDoneItems); \
+    KEY(Bool,     QueueKeepDoneItems); \
     KEY(Integer,  QueueKeepDoneItemsFor); \
     KEY(Bool,     QueueAutoPopup); \
-    KEYEX(Bool,   SessionRememberPassword, "SessionRememberPassword"); \
-    KEYEX(Bool,   QueueRememberPassword, "QueueRememberPassword"); \
+    KEYEX2(Bool,   SessionRememberPassword, SessionRememberPassword); \
     KEY(String,   PuttySession); \
     KEY(String,   PuttyPath); \
     KEY(Bool,     PuttyPassword); \
@@ -707,9 +707,13 @@ void TGUIConfiguration::SaveData(THierarchicalStorage * Storage, bool All)
   ELEM.SubString(ELEM.LastDelimiter(L".>")+1, ELEM.Length() - ELEM.LastDelimiter(L".>"))
 #endif
 #undef KEYEX
+#undef KEYEX2
 #define KEYEX(TYPE, NAME, VAR) Storage->Write ## TYPE(LASTELEM(UnicodeString(#NAME)), Get ## VAR())
+#define KEYEX2(TYPE, NAME, VAR) Storage->Write ## TYPE(LASTELEM(UnicodeString(#NAME)), VAR)
 #undef KEY
+#undef KEY2
 #define KEY(TYPE, NAME) Storage->Write ## TYPE(PropertyToKey(#NAME), Get ## NAME())
+#define KEY2(TYPE, NAME) Storage->Write ## TYPE(PropertyToKey(#NAME), NAME)
   REGCONFIG(true);
 #undef KEY
 #undef KEYEX
@@ -777,8 +781,11 @@ void TGUIConfiguration::LoadData(THierarchicalStorage * Storage)
   // duplicated from core\configuration.cpp
 #undef KEYEX
 #define KEYEX(TYPE, NAME, VAR) Set ## VAR(Storage->Read ## TYPE(LASTELEM(UnicodeString(#NAME)), Get ## VAR()))
+#define KEYEX2(TYPE, NAME, VAR) VAR = Storage->Read ## TYPE(LASTELEM(UnicodeString(#NAME)), VAR)
 #undef KEY
+#undef KEY2
 #define KEY(TYPE, NAME) Set ## NAME(Storage->Read ## TYPE(PropertyToKey(#NAME), Get ## NAME()))
+#define KEY2(TYPE, NAME) NAME = Storage->Read ## TYPE(PropertyToKey(#NAME), NAME)
   REGCONFIG(false);
 #undef KEY
 #undef KEYEX
@@ -1211,14 +1218,14 @@ TObjectList * TGUIConfiguration::GetLocales()
         Locale = Langs->LocaleID[Index];
         DWORD SubLang = SUBLANGID(Locale);
         int Ext = Exts->IndexOf(Langs->Ext[Index]);
-        if ((Ext >= 0) && (Exts->Objects[Ext] == NULL))
+        if ((Ext >= 0) && (Exts->Objects[Ext] == nullptr))
         {
           // noop
         }
         else if (SubLang == SUBLANG_DEFAULT)
         {
           Ext = Exts->IndexOf(Langs->Ext[Index].SubString(1, 2));
-          if ((Ext >= 0) && (Exts->Objects[Ext] == NULL))
+          if ((Ext >= 0) && (Exts->Objects[Ext] == nullptr))
           {
             Locale = MAKELANGID(PRIMARYLANGID(Locale), SUBLANG_DEFAULT);
           }
@@ -1226,7 +1233,7 @@ TObjectList * TGUIConfiguration::GetLocales()
 
         if (Ext >= 0)
         {
-          Exts->Objects[Ext] = reinterpret_cast<TObject*>(Locale);
+          Exts->SetObj(Ext, ToObj(Locale));
         }
         else
         {
@@ -1256,7 +1263,7 @@ TObjectList * TGUIConfiguration::GetLocales()
 
     for (int Index = 0; Index < Exts->Count; Index++)
     {
-      if ((Exts->Objects[Index] == NULL) &&
+      if ((Exts->Objects[Index] == nullptr) &&
           (Exts->Strings[Index].Length() == 3) &&
           SameText(Exts->Strings[Index].SubString(1, 2), AdditionaLanguagePrefix))
       {

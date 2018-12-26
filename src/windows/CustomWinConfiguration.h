@@ -15,12 +15,13 @@
 // CM_DPICHANGED + 10 (packages/my/PasTools.pas)
 #define WM_WANTS_MOUSEWHEEL_INACTIVE (WM_WINSCP_USER + 11)
 //---------------------------------------------------------------------------
+#if 0
 #define C(Property) (Property != rhc.Property) ||
 struct TSynchronizeChecklistConfiguration
 {
   UnicodeString WindowParams;
   UnicodeString ListParams;
-  bool __fastcall operator !=(TSynchronizeChecklistConfiguration & rhc)
+  bool operator !=(TSynchronizeChecklistConfiguration & rhc)
     { return C(WindowParams) C(ListParams) 0; };
 };
 typedef TSynchronizeChecklistConfiguration TFindFileConfiguration;
@@ -28,7 +29,7 @@ typedef TSynchronizeChecklistConfiguration TFindFileConfiguration;
 struct TConsoleWinConfiguration
 {
   UnicodeString WindowSize;
-  bool __fastcall operator !=(TConsoleWinConfiguration & rhc)
+  bool operator !=(TConsoleWinConfiguration & rhc)
     { return C(WindowSize) 0; };
 };
 //---------------------------------------------------------------------------
@@ -37,9 +38,10 @@ enum TIncrementalSearch { isNameStartOnly, isName, isAll };
 struct TLoginDialogConfiguration : public TConsoleWinConfiguration
 {
   TIncrementalSearch SiteSearch;
-  bool __fastcall operator !=(TLoginDialogConfiguration & rhc)
+  bool operator !=(TLoginDialogConfiguration & rhc)
     { return (TConsoleWinConfiguration::operator !=(rhc)) || C(SiteSearch) 0; };
 };
+#undef C
 //---------------------------------------------------------------------------
 class TCustomWinConfiguration : public TGUIConfiguration
 {
@@ -63,37 +65,37 @@ private:
   bool FHttpForWebDAV;
   TNotifyEvent FOnMasterPasswordRecrypt;
 
-  void __fastcall SetInterface(TInterface value);
-  void __fastcall SetHistory(const UnicodeString Index, TStrings * value);
-  TStrings * __fastcall GetHistory(const UnicodeString Index);
-  void __fastcall SetSynchronizeChecklist(TSynchronizeChecklistConfiguration value);
-  void __fastcall SetFindFile(TFindFileConfiguration value);
-  void __fastcall SetConsoleWin(TConsoleWinConfiguration value);
-  void __fastcall SetLoginDialog(TLoginDialogConfiguration value);
-  void __fastcall SetConfirmExitOnCompletion(bool value);
-  void __fastcall SetSynchronizeSummary(bool value);
-  UnicodeString __fastcall GetDefaultFixedWidthFontName();
-  int __fastcall GetDefaultFixedWidthFontSize();
+  void SetInterface(TInterface value);
+  void SetHistory(const UnicodeString Index, TStrings * value);
+  TStrings * GetHistory(const UnicodeString Index);
+  void SetSynchronizeChecklist(TSynchronizeChecklistConfiguration value);
+  void SetFindFile(TFindFileConfiguration value);
+  void SetConsoleWin(TConsoleWinConfiguration value);
+  void SetLoginDialog(TLoginDialogConfiguration value);
+  void SetConfirmExitOnCompletion(bool value);
+  void SetSynchronizeSummary(bool value);
+  UnicodeString GetDefaultFixedWidthFontName();
+  int GetDefaultFixedWidthFontSize();
 
 protected:
-  virtual void __fastcall SaveData(THierarchicalStorage * Storage, bool All);
-  virtual void __fastcall LoadData(THierarchicalStorage * Storage);
-  virtual void __fastcall LoadAdmin(THierarchicalStorage * Storage);
-  virtual void __fastcall Saved();
-  void __fastcall ClearHistory();
-  virtual void __fastcall DefaultHistory();
-  void __fastcall RecryptPasswords(TStrings * RecryptPasswordErrors);
-  virtual bool __fastcall GetUseMasterPassword() = 0;
-  UnicodeString __fastcall FormatDefaultWindowParams(int Width, int Height);
-  UnicodeString __fastcall FormatDefaultWindowSize(int Width, int Height);
+  virtual void SaveData(THierarchicalStorage * Storage, bool All);
+  virtual void LoadData(THierarchicalStorage * Storage);
+  virtual void LoadAdmin(THierarchicalStorage * Storage);
+  virtual void Saved();
+  void ClearHistory();
+  virtual void DefaultHistory();
+  void RecryptPasswords(TStrings * RecryptPasswordErrors);
+  virtual bool GetUseMasterPassword() = 0;
+  UnicodeString FormatDefaultWindowParams(int Width, int Height);
+  UnicodeString FormatDefaultWindowSize(int Width, int Height);
 
 public:
-  __fastcall TCustomWinConfiguration();
-  virtual __fastcall ~TCustomWinConfiguration();
-  virtual void __fastcall Default();
-  virtual void __fastcall AskForMasterPasswordIfNotSet() = 0;
-  void __fastcall AskForMasterPasswordIfNotSetAndNeededToPersistSessionData(TSessionData * SessionData);
-  static UnicodeString __fastcall GetValidHistoryKey(UnicodeString Key);
+  TCustomWinConfiguration();
+  virtual ~TCustomWinConfiguration();
+  virtual void Default();
+  virtual void AskForMasterPasswordIfNotSet() = 0;
+  void AskForMasterPasswordIfNotSetAndNeededToPersistSessionData(TSessionData * SessionData);
+  static UnicodeString GetValidHistoryKey(UnicodeString Key);
 
   __property TInterface Interface = { read = FInterface, write = SetInterface };
   __property TInterface AppliedInterface = { read = FAppliedInterface, write = FAppliedInterface };
@@ -117,4 +119,6 @@ public:
 //---------------------------------------------------------------------------
 extern TCustomWinConfiguration * CustomWinConfiguration;
 //---------------------------------------------------------------------------
+#endif // #if 0
+
 #endif
