@@ -12,7 +12,7 @@ __removed #pragma package(smart_init)
 const UnicodeString LastInternalExceptionCounter(L"LastInternalException2");
 const UnicodeString LastUpdateExceptionCounter(L"LastUpdateException");
 //---------------------------------------------------------------------------
-TUsage::TUsage(TConfiguration * Configuration)
+TUsage::TUsage(TConfiguration * Configuration) noexcept
 {
   FCriticalSection = std::make_unique<TCriticalSection>();
   FConfiguration = Configuration;
@@ -23,7 +23,7 @@ TUsage::TUsage(TConfiguration * Configuration)
   Default();
 }
 //---------------------------------------------------------------------------
-TUsage::~TUsage()
+TUsage::~TUsage() noexcept
 {
   __removed delete FValues;
   __removed delete FCriticalSection;

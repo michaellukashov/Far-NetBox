@@ -9,8 +9,8 @@ class TConfiguration;
 class TUsage : public TObject
 {
 public:
-  explicit TUsage(TConfiguration * Configuration);
-  virtual ~TUsage();
+  explicit TUsage(TConfiguration * Configuration) noexcept;
+  virtual ~TUsage() noexcept;
 
   void Set(const UnicodeString AKey, const UnicodeString AValue);
   void Set(const UnicodeString AKey, intptr_t Value);

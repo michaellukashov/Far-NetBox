@@ -2,7 +2,7 @@
 #include <vcl.h>
 #pragma hdrstop
 
-#include <Consts.hpp>
+__removed #include <Consts.hpp>
 #include <shlobj.h>
 #include <stdio.h>
 #define INITGUID
@@ -22,6 +22,7 @@
 #include "VCLCommon.h"
 #include "Setup.h"
 #include "Tools.h"
+#if 0
 #include <WinHelpViewer.hpp>
 #include <PasTools.hpp>
 #include <System.Win.ComObj.hpp>
@@ -70,7 +71,7 @@
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 //---------------------------------------------------------------------------
-TFontStyles __fastcall IntToFontStyles(int value)
+TFontStyles IntToFontStyles(int value)
 {
   TFontStyles Result;
   for (int i = fsBold; i <= fsStrikeOut; i++)
@@ -84,7 +85,7 @@ TFontStyles __fastcall IntToFontStyles(int value)
   return Result;
 }
 //---------------------------------------------------------------------------
-int __fastcall FontStylesToInt(const TFontStyles value)
+int FontStylesToInt(const TFontStyles value)
 {
   int Result = 0;
   for (int i = fsStrikeOut; i >= fsBold; i--)
@@ -98,7 +99,7 @@ int __fastcall FontStylesToInt(const TFontStyles value)
   return Result;
 }
 //---------------------------------------------------------------------------
-bool __fastcall SameFont(TFont * Font1, TFont * Font2)
+bool SameFont(TFont * Font1, TFont * Font2)
 {
   // keep in sync with TFontConfiguration::operator !=
   return
@@ -106,7 +107,7 @@ bool __fastcall SameFont(TFont * Font1, TFont * Font2)
     (Font1->Charset == Font2->Charset) && (Font1->Style == Font2->Style);
 }
 //---------------------------------------------------------------------------
-TColor __fastcall GetWindowTextColor(TColor BackgroundColor, TColor Color)
+TColor GetWindowTextColor(TColor BackgroundColor, TColor Color)
 {
   if (Color == TColor(0))
   {
@@ -116,7 +117,7 @@ TColor __fastcall GetWindowTextColor(TColor BackgroundColor, TColor Color)
   return Color;
 }
 //---------------------------------------------------------------------------
-TColor __fastcall GetWindowColor(TColor Color)
+TColor GetWindowColor(TColor Color)
 {
   if (Color == TColor(0))
   {
@@ -125,19 +126,19 @@ TColor __fastcall GetWindowColor(TColor Color)
   return Color;
 }
 //---------------------------------------------------------------------------
-TColor __fastcall GetBtnFaceColor()
+TColor GetBtnFaceColor()
 {
   return WinConfiguration->UseDarkTheme() ? TColor(RGB(43, 43, 43)) : clBtnFace;
   }
   return Color;
 }
 //---------------------------------------------------------------------------
-TColor __fastcall GetBtnFaceColor()
+TColor GetBtnFaceColor()
 {
   return WinConfiguration->UseDarkTheme() ? TColor(RGB(43, 43, 43)) : clBtnFace;
 }
 //---------------------------------------------------------------------------
-TColor __fastcall GetNonZeroColor(TColor Color)
+TColor GetNonZeroColor(TColor Color)
 {
   // 0,0,0 is "default color"
   if (Color == TColor(0))
@@ -148,14 +149,14 @@ TColor __fastcall GetNonZeroColor(TColor Color)
   return Color;
 }
 //---------------------------------------------------------------------------
-void __fastcall CenterFormOn(TForm * Form, TControl * CenterOn)
+void CenterFormOn(TForm * Form, TControl * CenterOn)
 {
   TPoint ScreenPoint = CenterOn->ClientToScreen(TPoint(0, 0));
   Form->Left = ScreenPoint.x + (CenterOn->Width / 2) - (Form->Width / 2);
   Form->Top = ScreenPoint.y + (CenterOn->Height / 2) - (Form->Height / 2);
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall GetListViewStr(TListView * ListView)
+UnicodeString GetListViewStr(TListView * ListView)
 {
   UnicodeString Result;
   for (int Index = 0; Index < ListView->Columns->Count; Index++)
@@ -172,7 +173,7 @@ UnicodeString __fastcall GetListViewStr(TListView * ListView)
   return Result;
 }
 //---------------------------------------------------------------------------
-void __fastcall LoadListViewStr(TListView * ListView, UnicodeString ALayoutStr)
+void LoadListViewStr(TListView * ListView, UnicodeString ALayoutStr)
 {
   UnicodeString LayoutStr = CutToChar(ALayoutStr, L';', true);
   int PixelsPerInch = LoadPixelsPerInch(CutToChar(ALayoutStr, L';', true), ListView);
@@ -188,7 +189,7 @@ void __fastcall LoadListViewStr(TListView * ListView, UnicodeString ALayoutStr)
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall RestoreForm(UnicodeString Data, TForm * Form, bool PositionOnly)
+void RestoreForm(UnicodeString Data, TForm * Form, bool PositionOnly)
 {
   DebugAssert(Form);
   if (!Data.IsEmpty())
@@ -309,7 +310,7 @@ void __fastcall RestoreForm(UnicodeString Data, TForm * Form, bool PositionOnly)
   }
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall StoreForm(TCustomForm * Form)
+UnicodeString StoreForm(TCustomForm * Form)
 {
   DebugAssert(Form);
   TRect Bounds = Form->BoundsRect;
@@ -325,7 +326,7 @@ UnicodeString __fastcall StoreForm(TCustomForm * Form)
   return Result;
 }
 //---------------------------------------------------------------------------
-void __fastcall RestoreFormSize(UnicodeString Data, TForm * Form)
+void RestoreFormSize(UnicodeString Data, TForm * Form)
 {
   // This has to be called only after DoFormWindowProc(CM_SHOWINGCHANGED).
   // See comment in ResizeForm.
@@ -338,12 +339,12 @@ void __fastcall RestoreFormSize(UnicodeString Data, TForm * Form)
   ResizeForm(Form, Width, Height);
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall StoreFormSize(TForm * Form)
+UnicodeString StoreFormSize(TForm * Form)
 {
   return FORMAT(L"%d,%d,%s", (Form->Width, Form->Height, SavePixelsPerInch(Form)));
 }
 //---------------------------------------------------------------------------
-static void __fastcall ExecuteProcessAndReadOutput(const
+static void ExecuteProcessAndReadOutput(const
   UnicodeString & Command, const UnicodeString & HelpKeyword, UnicodeString & Output)
 {
   if (!CopyCommandToClipboard(Command))
@@ -432,7 +433,7 @@ static void __fastcall ExecuteProcessAndReadOutput(const
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall ExecuteProcessChecked(
+void ExecuteProcessChecked(
   const UnicodeString & Command, const UnicodeString & HelpKeyword, UnicodeString * Output)
 {
   if (Output == NULL)
@@ -445,7 +446,7 @@ void __fastcall ExecuteProcessChecked(
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall ExecuteProcessCheckedAndWait(
+void ExecuteProcessCheckedAndWait(
   const UnicodeString & Command, const UnicodeString & HelpKeyword, UnicodeString * Output)
 {
   if (Output == NULL)
@@ -458,17 +459,17 @@ void __fastcall ExecuteProcessCheckedAndWait(
   }
 }
 //---------------------------------------------------------------------------
-bool __fastcall IsKeyPressed(int VirtualKey)
+bool IsKeyPressed(int VirtualKey)
 {
   return FLAGSET(GetAsyncKeyState(VirtualKey), 0x8000);
 }
 //---------------------------------------------------------------------------
-bool __fastcall UseAlternativeFunction()
+bool UseAlternativeFunction()
 {
   return IsKeyPressed(VK_SHIFT);
 }
 //---------------------------------------------------------------------------
-bool __fastcall OpenInNewWindow()
+bool OpenInNewWindow()
 {
   return UseAlternativeFunction();
 }
@@ -488,7 +489,7 @@ void ExecuteNewInstance(const UnicodeString Param, const UnicodeString Additiona
   ExecuteShellChecked(Application->ExeName, Arg);
 }
 //---------------------------------------------------------------------------
-IShellLink * __fastcall CreateDesktopShortCut(const UnicodeString & Name,
+IShellLink * CreateDesktopShortCut(const UnicodeString & Name,
   const UnicodeString &File, const UnicodeString & Params, const UnicodeString & Description,
   int SpecialFolder, int IconIndex, bool Return)
 {
@@ -582,7 +583,7 @@ IShellLink * __fastcall CreateDesktopShortCut(const UnicodeString & Name,
   return pLink;
 }
 //---------------------------------------------------------------------------
-IShellLink * __fastcall CreateDesktopSessionShortCut(
+IShellLink * CreateDesktopSessionShortCut(
   const UnicodeString & SessionName, UnicodeString Name,
   const UnicodeString & AdditionalParams, int SpecialFolder, int IconIndex,
   bool Return)
@@ -627,7 +628,7 @@ IShellLink * __fastcall CreateDesktopSessionShortCut(
 }
 //---------------------------------------------------------------------------
 template<class TEditControl>
-void __fastcall ValidateMaskEditT(const UnicodeString & Mask, TEditControl * Edit, int ForceDirectoryMasks)
+void ValidateMaskEditT(const UnicodeString & Mask, TEditControl * Edit, int ForceDirectoryMasks)
 {
   DebugAssert(Edit != NULL);
   TFileMasks Masks(ForceDirectoryMasks);
@@ -647,30 +648,30 @@ void __fastcall ValidateMaskEditT(const UnicodeString & Mask, TEditControl * Edi
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall ValidateMaskEdit(TComboBox * Edit)
+void ValidateMaskEdit(TComboBox * Edit)
 {
   ValidateMaskEditT(Edit->Text, Edit, -1);
 }
 //---------------------------------------------------------------------------
-void __fastcall ValidateMaskEdit(TEdit * Edit)
+void ValidateMaskEdit(TEdit * Edit)
 {
   ValidateMaskEditT(Edit->Text, Edit, -1);
 }
 //---------------------------------------------------------------------------
-void __fastcall ValidateMaskEdit(TMemo * Edit, bool Directory)
+void ValidateMaskEdit(TMemo * Edit, bool Directory)
 {
   UnicodeString Mask = TFileMasks::ComposeMaskStr(GetUnwrappedMemoLines(Edit), Directory);
   ValidateMaskEditT(Mask, Edit, Directory ? 1 : 0);
 }
 //---------------------------------------------------------------------------
-TStrings * __fastcall GetUnwrappedMemoLines(TMemo * Memo)
+TStrings * GetUnwrappedMemoLines(TMemo * Memo)
 {
   // This removes soft linebreakes when text in memo wraps
   // (Memo->Lines includes soft linebreaks, while Memo->Text does not)
   return TextToStringList(Memo->Text);
 }
 //---------------------------------------------------------------------------
-void __fastcall ExitActiveControl(TForm * Form)
+void ExitActiveControl(TForm * Form)
 {
   if (Form->ActiveControl != NULL)
   {
@@ -682,7 +683,7 @@ void __fastcall ExitActiveControl(TForm * Form)
   }
 }
 //---------------------------------------------------------------------------
-bool __fastcall IsWinSCPUrl(const UnicodeString & Url)
+bool IsWinSCPUrl(const UnicodeString & Url)
 {
   UnicodeString HomePageUrl = LoadStr(HOMEPAGE_URL);
   UnicodeString HttpHomePageUrl = ChangeUrlProtocol(HomePageUrl, HttpProtocol);
@@ -692,7 +693,7 @@ bool __fastcall IsWinSCPUrl(const UnicodeString & Url)
     StartsText(HttpHomePageUrl, Url);
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall SecureUrl(const UnicodeString & Url)
+UnicodeString SecureUrl(const UnicodeString & Url)
 {
   UnicodeString Result = Url;
   if (IsWinSCPUrl(Url) && IsHttpUrl(Url))
@@ -702,7 +703,7 @@ UnicodeString __fastcall SecureUrl(const UnicodeString & Url)
   return Result;
 }
 //---------------------------------------------------------------------------
-void __fastcall OpenBrowser(UnicodeString URL)
+void OpenBrowser(UnicodeString URL)
 {
   if (IsWinSCPUrl(URL))
   {
@@ -712,7 +713,7 @@ void __fastcall OpenBrowser(UnicodeString URL)
   ShellExecute(Application->Handle, L"open", URL.c_str(), NULL, NULL, SW_SHOWNORMAL);
 }
 //---------------------------------------------------------------------------
-void __fastcall OpenFolderInExplorer(const UnicodeString & Path)
+void OpenFolderInExplorer(const UnicodeString & Path)
 {
   if ((int)ShellExecute(Application->Handle, L"explore",
       (wchar_t*)Path.data(), NULL, NULL, SW_SHOWNORMAL) <= 32)
@@ -721,13 +722,13 @@ void __fastcall OpenFolderInExplorer(const UnicodeString & Path)
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall OpenFileInExplorer(const UnicodeString & Path)
+void OpenFileInExplorer(const UnicodeString & Path)
 {
   PCIDLIST_ABSOLUTE Folder = ILCreateFromPathW(ApiPath(Path).c_str());
   SHOpenFolderAndSelectItems(Folder, 0, NULL, 0);
 }
 //---------------------------------------------------------------------------
-void __fastcall ShowHelp(const UnicodeString & AHelpKeyword)
+void ShowHelp(const UnicodeString & AHelpKeyword)
 {
   // see also AppendUrlParams
   UnicodeString HelpKeyword = AHelpKeyword;
@@ -738,7 +739,7 @@ void __fastcall ShowHelp(const UnicodeString & AHelpKeyword)
   OpenBrowser(HelpUrl);
 }
 //---------------------------------------------------------------------------
-bool __fastcall IsFormatInClipboard(unsigned int Format)
+bool IsFormatInClipboard(unsigned int Format)
 {
   bool Result = OpenClipboard(0);
   if (Result)
@@ -749,7 +750,7 @@ bool __fastcall IsFormatInClipboard(unsigned int Format)
   return Result;
 }
 //---------------------------------------------------------------------------
-HANDLE __fastcall OpenTextFromClipboard(const wchar_t *& Text)
+HANDLE OpenTextFromClipboard(const wchar_t *& Text)
 {
   HANDLE Result = NULL;
   if (OpenClipboard(0))
@@ -768,7 +769,7 @@ HANDLE __fastcall OpenTextFromClipboard(const wchar_t *& Text)
   return Result;
 }
 //---------------------------------------------------------------------------
-void __fastcall CloseTextFromClipboard(HANDLE Handle)
+void CloseTextFromClipboard(HANDLE Handle)
 {
   if (Handle != NULL)
   {
@@ -777,7 +778,7 @@ void __fastcall CloseTextFromClipboard(HANDLE Handle)
   CloseClipboard();
 }
 //---------------------------------------------------------------------------
-bool __fastcall TextFromClipboard(UnicodeString & Text, bool Trim)
+bool TextFromClipboard(UnicodeString & Text, bool Trim)
 {
   const wchar_t * AText = NULL;
   HANDLE Handle = OpenTextFromClipboard(AText);
@@ -805,14 +806,14 @@ bool __fastcall TextFromClipboard(UnicodeString & Text, bool Trim)
   return Result;
 }
 //---------------------------------------------------------------------------
-bool __fastcall NonEmptyTextFromClipboard(UnicodeString & Text)
+bool NonEmptyTextFromClipboard(UnicodeString & Text)
 {
   return
     TextFromClipboard(Text, true) &&
     !Text.IsEmpty();
 }
 //---------------------------------------------------------------------------
-static bool __fastcall GetResource(
+static bool GetResource(
   const UnicodeString ResName, void *& Content, unsigned long & Size)
 {
   HRSRC Resource = FindResourceEx(HInstance, RT_RCDATA, ResName.c_str(),
@@ -842,7 +843,7 @@ static bool __fastcall GetResource(
   return Result;
 }
 //---------------------------------------------------------------------------
-bool __fastcall DumpResourceToFile(const UnicodeString ResName,
+bool DumpResourceToFile(const UnicodeString ResName,
   const UnicodeString FileName)
 {
   void * Content;
@@ -866,7 +867,7 @@ bool __fastcall DumpResourceToFile(const UnicodeString ResName,
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall ReadResource(const UnicodeString ResName)
+UnicodeString ReadResource(const UnicodeString ResName)
 {
   void * Content;
   unsigned long Size;
@@ -881,7 +882,7 @@ UnicodeString __fastcall ReadResource(const UnicodeString ResName)
 }
 //---------------------------------------------------------------------------
 template <class T>
-void __fastcall BrowseForExecutableT(T * Control, UnicodeString Title,
+void BrowseForExecutableT(T * Control, UnicodeString Title,
   UnicodeString Filter, bool FileNameCommand, bool Escape)
 {
   UnicodeString Executable, Program, Params, Dir;
@@ -943,19 +944,19 @@ void __fastcall BrowseForExecutableT(T * Control, UnicodeString Title,
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall BrowseForExecutable(TEdit * Control, UnicodeString Title,
+void BrowseForExecutable(TEdit * Control, UnicodeString Title,
   UnicodeString Filter, bool FileNameCommand, bool Escape)
 {
   BrowseForExecutableT(Control, Title, Filter, FileNameCommand, Escape);
 }
 //---------------------------------------------------------------------------
-void __fastcall BrowseForExecutable(TComboBox * Control, UnicodeString Title,
+void BrowseForExecutable(TComboBox * Control, UnicodeString Title,
   UnicodeString Filter, bool FileNameCommand, bool Escape)
 {
   BrowseForExecutableT(Control, Title, Filter, FileNameCommand, Escape);
 }
 //---------------------------------------------------------------------------
-bool __fastcall FontDialog(TFont * Font)
+bool FontDialog(TFont * Font)
 {
   bool Result;
   TFontDialog * Dialog = new TFontDialog(Application);
@@ -977,11 +978,11 @@ bool __fastcall FontDialog(TFont * Font)
   return Result;
 }
 //---------------------------------------------------------------------------
-bool __fastcall SaveDialog(UnicodeString Title, UnicodeString Filter,
+bool SaveDialog(UnicodeString Title, UnicodeString Filter,
   UnicodeString DefaultExt, UnicodeString & FileName)
 {
   bool Result;
-  #if 0
+#if 0
   TFileSaveDialog * Dialog = new TFileSaveDialog(Application);
   try
   {
@@ -1031,11 +1032,12 @@ bool __fastcall SaveDialog(UnicodeString Title, UnicodeString Filter,
   {
     delete Dialog;
   }
-  #endif
+#endif // #if 0
   return Result;
 }
+#if 0
 //---------------------------------------------------------------------------
-void __fastcall CopyToClipboard(UnicodeString Text)
+void CopyToClipboard(UnicodeString Text)
 {
   HANDLE Data;
   void * DataPtr;
@@ -1076,8 +1078,9 @@ void __fastcall CopyToClipboard(UnicodeString Text)
     throw Exception(Vcl_Consts_SCannotOpenClipboard);
   }
 }
+#endif // #if 0
 //---------------------------------------------------------------------------
-void __fastcall CopyToClipboard(TStrings * Strings)
+void CopyToClipboard(TStrings * Strings)
 {
   if (Strings->Count > 0)
   {
@@ -1085,7 +1088,7 @@ void __fastcall CopyToClipboard(TStrings * Strings)
   }
 }
 //---------------------------------------------------------------------------
-bool __fastcall IsWin64()
+bool IsWin64()
 {
   static int Result = -1;
   if (Result < 0)
@@ -1104,44 +1107,44 @@ bool __fastcall IsWin64()
   return (Result > 0);
 }
 //---------------------------------------------------------------------------
-static void __fastcall AcquireShutDownPrivileges()
+static void AcquireShutDownPrivileges()
 {
   HANDLE Token;
   // Get a token for this process.
-  Win32Check(OpenProcessToken(GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, &Token));
+  Win32Check(FALSE != OpenProcessToken(GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, &Token));
 
   TOKEN_PRIVILEGES Priv;
   ZeroMemory(&Priv, sizeof(Priv));
   // Get the LUID for the shutdown privilege.
   // For hibernate/suspend, you need the same:
   // https://stackoverflow.com/q/959589/850848
-  Win32Check(LookupPrivilegeValue(NULL, SE_SHUTDOWN_NAME, &Priv.Privileges[0].Luid));
+  Win32Check(FALSE != LookupPrivilegeValue(nullptr, SE_SHUTDOWN_NAME, &Priv.Privileges[0].Luid));
 
   Priv.PrivilegeCount = 1;  // one privilege to set
   Priv.Privileges[0].Attributes = SE_PRIVILEGE_ENABLED;
 
   // Get the shutdown privilege for this process.
-  Win32Check(AdjustTokenPrivileges(Token, FALSE, &Priv, 0, (PTOKEN_PRIVILEGES)NULL, 0));
+  Win32Check(FALSE != AdjustTokenPrivileges(Token, FALSE, &Priv, 0, (PTOKEN_PRIVILEGES)NULL, 0));
 }
 //---------------------------------------------------------------------------
-void __fastcall ShutDownWindows()
+void ShutDownWindows()
 {
   AcquireShutDownPrivileges();
 
   // Shut down the system and force all applications to close.
-  Win32Check(ExitWindowsEx(EWX_SHUTDOWN | EWX_POWEROFF,
+  Win32Check(FALSE != ExitWindowsEx(EWX_SHUTDOWN | EWX_POWEROFF,
     SHTDN_REASON_MAJOR_OTHER | SHTDN_REASON_MINOR_OTHER | SHTDN_REASON_FLAG_PLANNED));
 }
 //---------------------------------------------------------------------------
-void __fastcall SuspendWindows()
+void SuspendWindows()
 {
   AcquireShutDownPrivileges();
 
   // https://docs.microsoft.com/en-us/windows/desktop/api/powrprof/nf-powrprof-setsuspendstate
-  Win32Check(SetSuspendState(false, false, false));
+  Win32Check(FALSE != SetSuspendState(false, false, false));
 }
 //---------------------------------------------------------------------------
-void __fastcall EditSelectBaseName(HWND Edit)
+void EditSelectBaseName(HWND Edit)
 {
   UnicodeString Text;
   Text.SetLength(GetWindowTextLength(Edit) + 1);
@@ -1155,8 +1158,9 @@ void __fastcall EditSelectBaseName(HWND Edit)
     PostMessage(Edit, EM_SETSEL, 0, P - 1);
   }
 }
+#endif // #if 0
 //---------------------------------------------------------------------------
-static void __fastcall ConvertKey(UnicodeString & FileName, TKeyType Type)
+static void ConvertKey(UnicodeString & FileName, TKeyType Type)
 {
   UnicodeString Passphrase;
 
@@ -1174,7 +1178,7 @@ static void __fastcall ConvertKey(UnicodeString & FileName, TKeyType Type)
 
   TPrivateKey * PrivateKey = LoadKey(Type, FileName, Passphrase);
 
-  try
+  try__finally
   {
     FileName = ::ChangeFileExt(FileName, FORMAT(".%s", PuttyKeyExt));
 
@@ -1186,14 +1190,14 @@ static void __fastcall ConvertKey(UnicodeString & FileName, TKeyType Type)
     SaveKey(ktSSH2, FileName, Passphrase, PrivateKey);
 
     MessageDialog(MainInstructions(FMTLOAD(CONVERTKEY_SAVED, (FileName))), qtInformation, qaOK);
-  }
+  },
   __finally
   {
     FreeKey(PrivateKey);
-  }
+  } end_try__finally
 }
 //---------------------------------------------------------------------------
-static void __fastcall DoVerifyKey(
+static void DoVerifyKey(
   UnicodeString & FileName, TSshProt SshProt, bool Convert, bool CanIgnore)
 {
   if (!FileName.Trim().IsEmpty())
@@ -1283,17 +1287,17 @@ static void __fastcall DoVerifyKey(
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall VerifyAndConvertKey(UnicodeString & FileName, TSshProt SshProt, bool CanIgnore)
+void VerifyAndConvertKey(UnicodeString & FileName, TSshProt SshProt, bool CanIgnore)
 {
   DoVerifyKey(FileName, SshProt, true, CanIgnore);
 }
 //---------------------------------------------------------------------------
-void __fastcall VerifyKey(UnicodeString FileName, TSshProt SshProt)
+void VerifyKey(UnicodeString FileName, TSshProt SshProt)
 {
   DoVerifyKey(FileName, SshProt, false, true);
 }
 //---------------------------------------------------------------------------
-void __fastcall VerifyCertificate(const UnicodeString & FileName)
+void VerifyCertificate(const UnicodeString FileName)
 {
   if (!FileName.Trim().IsEmpty())
   {
@@ -1311,12 +1315,13 @@ void __fastcall VerifyCertificate(const UnicodeString & FileName)
   }
 }
 //---------------------------------------------------------------------------
-bool __fastcall DetectSystemExternalEditor(
+bool DetectSystemExternalEditor(
   bool AllowDefaultEditor,
   UnicodeString & Executable, UnicodeString & ExecutableDescription,
   UnicodeString & UsageState, bool & TryNextTime)
 {
   bool Result = false;
+#if 0
   UnicodeString TempName = ExcludeTrailingBackslash(WinConfiguration->TemporaryDir()) + L".txt";
   if (FileExists(ApiPath(TempName)))
   {
@@ -1390,6 +1395,7 @@ bool __fastcall DetectSystemExternalEditor(
       }
     }
   }
+#endif // #if 0
   return Result;
 }
 //---------------------------------------------------------------------------
@@ -1397,7 +1403,7 @@ bool __fastcall DetectSystemExternalEditor(
 // not sure it really helped
 WINHTTP_CURRENT_USER_IE_PROXY_CONFIG IEProxyInfo;
 //---------------------------------------------------------------------------
-static bool __fastcall GetProxyUrlFromIE(UnicodeString & Proxy)
+static bool GetProxyUrlFromIE(UnicodeString & Proxy)
 {
   bool Result = false;
   memset(&IEProxyInfo, 0, sizeof(IEProxyInfo));
@@ -1427,11 +1433,11 @@ static bool __fastcall GetProxyUrlFromIE(UnicodeString & Proxy)
       GlobalFree(IEProxyInfo.lpszProxy);
       Result = true;
     }
-    if (IEProxyInfo.lpszAutoConfigUrl != NULL)
+    if (IEProxyInfo.lpszAutoConfigUrl != nullptr)
     {
       GlobalFree(IEProxyInfo.lpszAutoConfigUrl);
     }
-    if (IEProxyInfo.lpszProxyBypass != NULL)
+    if (IEProxyInfo.lpszProxyBypass != nullptr)
     {
       GlobalFree(IEProxyInfo.lpszProxyBypass);
     }
@@ -1439,7 +1445,7 @@ static bool __fastcall GetProxyUrlFromIE(UnicodeString & Proxy)
   return Result;
 }
 //---------------------------------------------------------------------------
-bool __fastcall AutodetectProxy(UnicodeString & HostName, int & PortNumber)
+bool AutodetectProxy(UnicodeString & HostName, int & PortNumber)
 {
   bool Result = false;
 
@@ -1492,17 +1498,18 @@ bool __fastcall AutodetectProxy(UnicodeString & HostName, int & PortNumber)
 
   return Result;
 }
+#if 0
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 class TWinHelpTester : public TInterfacedObject, public IWinHelpTester
 {
 public:
-  virtual bool __fastcall CanShowALink(const UnicodeString ALink, const UnicodeString FileName);
-  virtual bool __fastcall CanShowTopic(const UnicodeString Topic, const UnicodeString FileName);
-  virtual bool __fastcall CanShowContext(const int Context, const UnicodeString FileName);
-  virtual TStringList * __fastcall GetHelpStrings(const UnicodeString ALink);
-  virtual UnicodeString __fastcall GetHelpPath();
-  virtual UnicodeString __fastcall GetDefaultHelpFile();
+  virtual bool CanShowALink(const UnicodeString ALink, const UnicodeString FileName);
+  virtual bool CanShowTopic(const UnicodeString Topic, const UnicodeString FileName);
+  virtual bool CanShowContext(const int Context, const UnicodeString FileName);
+  virtual TStringList * GetHelpStrings(const UnicodeString ALink);
+  virtual UnicodeString GetHelpPath();
+  virtual UnicodeString GetDefaultHelpFile();
 
   IUNKNOWN
 };
@@ -1510,10 +1517,10 @@ public:
 class TCustomHelpSelector : public TInterfacedObject, public IHelpSelector
 {
 public:
-  __fastcall TCustomHelpSelector(const UnicodeString & Name);
+  TCustomHelpSelector(const UnicodeString & Name);
 
-  virtual int __fastcall SelectKeyword(TStrings * Keywords);
-  virtual int __fastcall TableOfContents(TStrings * Contents);
+  virtual int SelectKeyword(TStrings * Keywords);
+  virtual int TableOfContents(TStrings * Contents);
 
   IUNKNOWN
 
@@ -1521,7 +1528,7 @@ private:
   UnicodeString FName;
 };
 //---------------------------------------------------------------------------
-void __fastcall AssignHelpSelector(IHelpSelector * HelpSelector)
+void AssignHelpSelector(IHelpSelector * HelpSelector)
 {
   _di_IHelpSystem HelpSystem;
   if (GetHelpSystem(HelpSystem))
@@ -1530,7 +1537,7 @@ void __fastcall AssignHelpSelector(IHelpSelector * HelpSelector)
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall InitializeCustomHelp(ICustomHelpViewer * HelpViewer)
+void InitializeCustomHelp(ICustomHelpViewer * HelpViewer)
 {
   _di_IHelpManager HelpManager;
   RegisterViewer(HelpViewer, HelpManager);
@@ -1541,33 +1548,33 @@ void __fastcall InitializeCustomHelp(ICustomHelpViewer * HelpViewer)
   AssignHelpSelector(new TCustomHelpSelector(HelpViewer->GetViewerName()));
 }
 //---------------------------------------------------------------------------
-void __fastcall FinalizeCustomHelp()
+void FinalizeCustomHelp()
 {
   AssignHelpSelector(NULL);
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-bool __fastcall TWinHelpTester::CanShowALink(const UnicodeString ALink,
+bool TWinHelpTester::CanShowALink(const UnicodeString ALink,
   const UnicodeString FileName)
 {
   return !Application->HelpFile.IsEmpty();
 }
 //---------------------------------------------------------------------------
-bool __fastcall TWinHelpTester::CanShowTopic(const UnicodeString Topic,
-  const UnicodeString FileName)
-{
-  DebugFail();
-  return !Application->HelpFile.IsEmpty();
-}
-//---------------------------------------------------------------------------
-bool __fastcall TWinHelpTester::CanShowContext(const int /*Context*/,
+bool TWinHelpTester::CanShowTopic(const UnicodeString Topic,
   const UnicodeString FileName)
 {
   DebugFail();
   return !Application->HelpFile.IsEmpty();
 }
 //---------------------------------------------------------------------------
-TStringList * __fastcall TWinHelpTester::GetHelpStrings(const UnicodeString ALink)
+bool TWinHelpTester::CanShowContext(const int /*Context*/,
+  const UnicodeString FileName)
+{
+  DebugFail();
+  return !Application->HelpFile.IsEmpty();
+}
+//---------------------------------------------------------------------------
+TStringList * TWinHelpTester::GetHelpStrings(const UnicodeString ALink)
 {
   DebugFail();
   TStringList * Result = new TStringList();
@@ -1575,30 +1582,31 @@ TStringList * __fastcall TWinHelpTester::GetHelpStrings(const UnicodeString ALin
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall TWinHelpTester::GetHelpPath()
+UnicodeString TWinHelpTester::GetHelpPath()
 {
   // never called on windows anyway
   return ExtractFilePath(Application->HelpFile);
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall TWinHelpTester::GetDefaultHelpFile()
+UnicodeString TWinHelpTester::GetDefaultHelpFile()
 {
   return Application->HelpFile;
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-__fastcall TCustomHelpSelector::TCustomHelpSelector(const UnicodeString & Name) :
+TCustomHelpSelector::TCustomHelpSelector(const UnicodeString & Name) :
   FName(Name)
 {
 }
 //---------------------------------------------------------------------------
-int __fastcall TCustomHelpSelector::SelectKeyword(TStrings * /*Keywords*/)
+int TCustomHelpSelector::SelectKeyword(TStrings * /*Keywords*/)
 {
   DebugFail();
   return 0;
 }
 //---------------------------------------------------------------------------
-int __fastcall TCustomHelpSelector::TableOfContents(TStrings * Contents)
+int TCustomHelpSelector::TableOfContents(TStrings * Contents)
 {
   return Contents->IndexOf(FName);
 }
+#endif // #if 0

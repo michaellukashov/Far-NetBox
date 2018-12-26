@@ -229,7 +229,7 @@ void OpenSessionInPutty(const UnicodeString PuttyPath,
                 }
               }
 
-              ExportData->Save(Storage, true);
+              ExportData->Save(Storage.get(), true);
               SessionName = GetGUIConfiguration()->PuttySession;
             }
           }
@@ -366,7 +366,7 @@ bool DontCopyCommandToClipboard = false;
 //---------------------------------------------------------------------------
 bool CopyCommandToClipboard(const UnicodeString ACommand)
 {
-  bool Result = !DontCopyCommandToClipboard && UseAlternativeFunction() && IsKeyPressed(VK_CONTROL);
+  bool Result = !DontCopyCommandToClipboard; // && UseAlternativeFunction && IsKeyPressed(VK_CONTROL);
   if (Result)
   {
     TInstantOperationVisualizer Visualizer; nb::used(Visualizer);
@@ -549,6 +549,7 @@ bool DeleteDirectory(const UnicodeString ADirName)
   if (retval) retval = ::SysUtulsRemoveDir(ApiPath(ADirName)); // VCL function
   return retval;
 }
+#if 0
 //---------------------------------------------------------------------------
 class TSessionColors : public TComponent
 {
@@ -1008,7 +1009,7 @@ UnicodeString FormatIncrementalSearchStatus(const UnicodeString AText, bool Have
     (HaveNext ? L" " + LoadStr(INC_NEXT_SEARCH) : UnicodeString());
   return Result;
 }
-#if 0
+
 //---------------------------------------------------------------------------
 class TCustomDocHandler : public TComponent, public ::IDocHostUIHandler
 {
@@ -1525,16 +1526,16 @@ TLocalCustomCommand::TLocalCustomCommand() noexcept
 }
 //---------------------------------------------------------------------------
 TLocalCustomCommand::TLocalCustomCommand(
-  const TCustomCommandData &Data, const UnicodeString RemotePath, const UnicodeString LocalPath) :
-  TFileCustomCommand(Data, RemotePath) noexcept
+  const TCustomCommandData &Data, const UnicodeString RemotePath, const UnicodeString LocalPath) noexcept :
+  TFileCustomCommand(Data, RemotePath)
 {
   FLocalPath = LocalPath;
 }
 //---------------------------------------------------------------------------
 TLocalCustomCommand::TLocalCustomCommand(const TCustomCommandData &Data,
   const UnicodeString RemotePath, const UnicodeString LocalPath, const UnicodeString FileName,
-  const UnicodeString LocalFileName, const UnicodeString FileList) :
-  TFileCustomCommand(Data, RemotePath, FileName, FileList) noexcept
+  const UnicodeString LocalFileName, const UnicodeString FileList) noexcept :
+  TFileCustomCommand(Data, RemotePath, FileName, FileList)
 {
   FLocalPath = LocalPath;
   FLocalFileName = LocalFileName;

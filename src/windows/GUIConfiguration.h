@@ -1,6 +1,5 @@
 //---------------------------------------------------------------------------
-#ifndef GUIConfigurationH
-#define GUIConfigurationH
+#pragma once
 //---------------------------------------------------------------------------
 #include "Configuration.h"
 #include "CopyParam.h"
@@ -146,6 +145,7 @@ public:
   intptr_t IndexOfName(const UnicodeString Name) const;
 
   __property int Count = { read = GetCount };
+  ROProperty<intptr_t> Count{nb::bind(&TCopyParamList::GetCount, this)};
   __property UnicodeString Names[int Index] = { read = GetName };
   __property const TCopyParamRule * Rules[int Index] = { read = GetRule };
   __property const TCopyParamType * CopyParams[int Index] = { read = GetCopyParam };
@@ -155,10 +155,10 @@ public:
 
 private:
   static UnicodeString FInvalidChars;
-  TList * FRules{nullptr};
-  TList * FCopyParams{nullptr};
-  TStrings * FNames{nullptr};
-  mutable TStrings * FNameList{nullptr};
+  std::unique_ptr<TList> FRules{nullptr};
+  std::unique_ptr<TList> FCopyParams;
+  std::unique_ptr<TStrings> FNames;
+  mutable std::unique_ptr<TStrings> FNameList;
   bool FModified{false};
 
 public:
@@ -299,6 +299,7 @@ public:
   __property intptr_t QueueKeepDoneItemsFor = { read = FQueueKeepDoneItemsFor, write = SetQueueKeepDoneItemsFor };
   __property bool QueueAutoPopup = { read = FQueueAutoPopup, write = FQueueAutoPopup };
   __property bool SessionRememberPassword = { read = FSessionRememberPassword, write = FSessionRememberPassword };
+  bool& SessionRememberPassword{FSessionRememberPassword};
   __property LCID Locale = { read = GetLocale, write = SetLocale };
   __property LCID LocaleSafe = { read = GetLocale, write = SetLocaleSafe };
   __property UnicodeString AppliedLocaleHex = { read = GetAppliedLocaleHex };
@@ -349,6 +350,7 @@ public:
   intptr_t GetMaxWatchDirectories() const { return FMaxWatchDirectories; }
   void SetMaxWatchDirectories(intptr_t Value) { FMaxWatchDirectories = Value; }
   intptr_t GetQueueTransfersLimit() const { return FQueueTransfersLimit; }
+  bool GetQueueBootstrap() const { return FQueueBootstrap; }
   bool GetQueueKeepDoneItems() const { return FQueueKeepDoneItems; }
   intptr_t GetQueueKeepDoneItemsFor() const { return FQueueKeepDoneItemsFor; }
   bool GetQueueAutoPopup() const { return FQueueAutoPopup; }
@@ -386,4 +388,4 @@ public:
 //---------------------------------------------------------------------------
 NB_CORE_EXPORT TGUIConfiguration *GetGUIConfiguration();
 //---------------------------------------------------------------------------
-#endif
+
