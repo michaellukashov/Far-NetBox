@@ -90,11 +90,11 @@ public:
   static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TWinSCPFileSystem); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TWinSCPFileSystem) || TCustomFarFileSystem::is(Kind); }
 public:
-  explicit TWinSCPFileSystem(TCustomFarPlugin *APlugin);
+  explicit TWinSCPFileSystem(TCustomFarPlugin *APlugin) noexcept;
   void Init(TSecureShell *SecureShell);
-  virtual ~TWinSCPFileSystem();
+  virtual ~TWinSCPFileSystem() noexcept;
 
-  virtual void Close();
+  virtual void Close() override;
 
 protected:
   bool Connect(TSessionData *Data);
@@ -268,7 +268,7 @@ private:
     intptr_t Options, uintptr_t & AParams);
   void TerminalShowExtendedException(TTerminal *Terminal,
     Exception *E, void *Arg);
-  void TerminalDeleteLocalFile(const UnicodeString AFileName, bool Alternative);
+  void TerminalDeleteLocalFile(UnicodeString AFileName, bool Alternative, intptr_t& Deleted);
   HANDLE TerminalCreateLocalFile(const UnicodeString ALocalFileName,
     DWORD DesiredAccess, DWORD ShareMode, DWORD CreationDisposition, DWORD FlagsAndAttributes);
   DWORD TerminalGetLocalFileAttributes(const UnicodeString ALocalFileName) const;
@@ -308,53 +308,53 @@ private:
   TTerminalQueueStatus *GetQueueStatus();
 
 private:
-  TTerminal *FTerminal;
-  TTerminalQueue *FQueue;
-  TTerminalQueueStatus *FQueueStatus;
+  TTerminal *FTerminal{nullptr};
+  TTerminalQueue *FQueue{nullptr};
+  TTerminalQueueStatus *FQueueStatus{nullptr};
   TCriticalSection FQueueStatusSection;
   TQueueEvent FQueueEvent;
-  HANDLE FProgressSaveScreenHandle;
-  HANDLE FSynchronizationSaveScreenHandle;
-  HANDLE FAuthenticationSaveScreenHandle;
+  HANDLE FProgressSaveScreenHandle{};
+  HANDLE FSynchronizationSaveScreenHandle{};
+  HANDLE FAuthenticationSaveScreenHandle{};
   TDateTime FSynchronizationStart;
-  TStrings *FFileList;
-  TList *FPanelItems;
+  TStrings *FFileList{nullptr};
+  TList *FPanelItems{nullptr};
   UnicodeString FSavedFindFolder;
   UnicodeString FOriginalEditFile;
   UnicodeString FLastEditFile;
   UnicodeString FLastMultipleEditFile;
   UnicodeString FLastMultipleEditFileTitle;
   UnicodeString FLastMultipleEditDirectory;
-  intptr_t FLastEditorID;
+  intptr_t FLastEditorID{0};
   TGUICopyParamType FLastEditCopyParam;
-  TKeepAliveThread *FKeepaliveThread;
-  TSynchronizeController *FSynchronizeController;
-  TStrings *FCapturedLog;
-  TStrings *FAuthenticationLog;
+  TKeepAliveThread *FKeepaliveThread{nullptr};
+  TSynchronizeController *FSynchronizeController{nullptr};
+  TStrings *FCapturedLog{nullptr};
+  TStrings *FAuthenticationLog{nullptr};
   typedef rde::map<intptr_t, TMultipleEdit> TMultipleEdits;
   TMultipleEdits FMultipleEdits;
   typedef rde::vector<TEditHistory> TEditHistories;
   TEditHistories FEditHistories;
   UnicodeString FLastPath;
-  TStrings *FPathHistory;
+  TStrings *FPathHistory{nullptr};
   UnicodeString FSessionsFolder;
   UnicodeString FNewSessionsFolder;
   UnicodeString FPrevSessionName;
-  bool FQueueStatusInvalidated;
-  bool FQueueItemInvalidated;
-  bool FRefreshLocalDirectory;
-  bool FRefreshRemoteDirectory;
-  bool FQueueEventPending;
-  bool FReloadDirectory;
-  bool FLastMultipleEditReadOnly;
-  bool FNoProgress;
-  bool FSynchronizationCompare;
-  bool FEditorPendingSave;
-  bool FNoProgressFinish;
-  bool FSynchronisingBrowse;
-  bool FOutputLog;
-  bool FLoadingSessionList;
-  bool FCurrentDirectoryWasChanged;
+  bool FQueueStatusInvalidated{false};
+  bool FQueueItemInvalidated{false};
+  bool FRefreshLocalDirectory{false};
+  bool FRefreshRemoteDirectory{false};
+  bool FQueueEventPending{false};
+  bool FReloadDirectory{false};
+  bool FLastMultipleEditReadOnly{false};
+  bool FNoProgress{false};
+  bool FSynchronizationCompare{false};
+  bool FEditorPendingSave{false};
+  bool FNoProgressFinish{false};
+  bool FSynchronisingBrowse{false};
+  bool FOutputLog{false};
+  bool FLoadingSessionList{false};
+  bool FCurrentDirectoryWasChanged{false};
 };
 
 NB_DEFINE_CLASS_ID(TSessionPanelItem);

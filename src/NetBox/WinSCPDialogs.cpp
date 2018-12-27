@@ -1492,7 +1492,7 @@ private:
   TFtps IndexToFtps(intptr_t Index) const;
   TFtps GetFtps() const;
   TLoginType IndexToLoginType(intptr_t Index) const;
-  bool VerifyKey(const UnicodeString AFileName, bool TypeOnly);
+  bool VerifyKey(UnicodeString& AFileName, bool TypeOnly);
   void PrevTabClick(TFarButton * /*Sender*/, bool &Close);
   void NextTabClick(TFarButton * /*Sender*/, bool &Close);
   void CipherButtonClick(TFarButton *Sender, bool &Close);
@@ -4028,12 +4028,12 @@ TLoginType TSessionDialog::IndexToLoginType(intptr_t Index) const
   return Result;
 }
 
-bool TSessionDialog::VerifyKey(const UnicodeString AFileName, bool /*TypeOnly*/)
+bool TSessionDialog::VerifyKey(UnicodeString& AFileName, bool /*TypeOnly*/)
 {
   bool Result = true;
 
 //  ::VerifyKey(AFileName, TypeOnly);
-  ::VerifyAndConvertKey(AFileName, ssh2only);
+  ::VerifyAndConvertKey(AFileName, ssh2only, false);
 #if 0
   if (!::Trim(AFileName).IsEmpty())
   {
@@ -5354,7 +5354,7 @@ void TCopyParamsContainer::SetParams(const TCopyParamType &Value)
 
   PreserveReadOnlyCheck->SetChecked(Value.GetPreserveReadOnly());
   ReplaceInvalidCharsCheck->SetChecked(
-    Value.GetInvalidCharsReplacement() != TCopyParamType::NoReplacement);
+    Value.GetInvalidCharsReplacement() != NoReplacement);
 
   ClearArchiveCheck->SetChecked(Value.GetClearArchive());
 
@@ -7120,7 +7120,7 @@ bool TFullSynchronizeDialog::Execute(TTerminal::TSynchronizeMode &Mode,
   SynchronizeDeleteCheck->SetChecked(FLAGSET(Params, TTerminal::spDelete));
   SynchronizeExistingOnlyCheck->SetChecked(FLAGSET(Params, TTerminal::spExistingOnly));
   SynchronizePreviewChangesCheck->SetChecked(FLAGSET(Params, TTerminal::spPreviewChanges));
-  SynchronizeSelectedOnlyCheck->SetChecked(FLAGSET(Params, spSelectedOnly));
+  SynchronizeSelectedOnlyCheck->SetChecked(FLAGSET(Params, TTerminal::spSelectedOnly));
   if (FLAGSET(Params, TTerminal::spTimestamp) && FLAGCLEAR(FOptions, fsoDisableTimestamp))
   {
     SynchronizeTimestampsButton->SetChecked(true);
@@ -7152,12 +7152,12 @@ bool TFullSynchronizeDialog::Execute(TTerminal::TSynchronizeMode &Mode,
     Params &= ~(TTerminal::spDelete | TTerminal::spNoConfirmation |
         TTerminal::spExistingOnly | TTerminal::spPreviewChanges |
         TTerminal::spTimestamp | TTerminal::spNotByTime | TTerminal::spBySize |
-        spSelectedOnly | TTerminal::spMirror);
+        TTerminal::spSelectedOnly | TTerminal::spMirror);
     Params |=
       FLAGMASK(SynchronizeDeleteCheck->GetChecked(), TTerminal::spDelete) |
       FLAGMASK(SynchronizeExistingOnlyCheck->GetChecked(), TTerminal::spExistingOnly) |
       FLAGMASK(SynchronizePreviewChangesCheck->GetChecked(), TTerminal::spPreviewChanges) |
-      FLAGMASK(SynchronizeSelectedOnlyCheck->GetChecked(), spSelectedOnly) |
+      FLAGMASK(SynchronizeSelectedOnlyCheck->GetChecked(), TTerminal::spSelectedOnly) |
       FLAGMASK(SynchronizeTimestampsButton->GetChecked() && FLAGCLEAR(FOptions, fsoDisableTimestamp),
         TTerminal::spTimestamp) |
       FLAGMASK(MirrorFilesButton->GetChecked(), TTerminal::spMirror) |
@@ -7995,7 +7995,7 @@ bool TSynchronizeDialog::Execute(TSynchronizeParamType &Params,
   LocalDirectoryEdit->SetText(Params.LocalDirectory);
   SynchronizeDeleteCheck->SetChecked(FLAGSET(Params.Params, TTerminal::spDelete));
   SynchronizeExistingOnlyCheck->SetChecked(FLAGSET(Params.Params, TTerminal::spExistingOnly));
-  SynchronizeSelectedOnlyCheck->SetChecked(FLAGSET(Params.Params, spSelectedOnly));
+  SynchronizeSelectedOnlyCheck->SetChecked(FLAGSET(Params.Params, TTerminal::spSelectedOnly));
   SynchronizeRecursiveCheck->SetChecked(FLAGSET(Params.Options, soRecurse));
   SynchronizeSynchronizeCheck->SetSelected(
     FLAGSET(Params.Options, soSynchronizeAsk) ? BSTATE_3STATE :
@@ -8020,10 +8020,10 @@ TSynchronizeParamType TSynchronizeDialog::GetParams() const
   Result.LocalDirectory = LocalDirectoryEdit->GetText();
   Result.Params =
     (Result.Params & ~(TTerminal::spDelete | TTerminal::spExistingOnly |
-        spSelectedOnly | TTerminal::spTimestamp)) |
+        TTerminal::spSelectedOnly | TTerminal::spTimestamp)) |
     FLAGMASK(SynchronizeDeleteCheck->GetChecked(), TTerminal::spDelete) |
     FLAGMASK(SynchronizeExistingOnlyCheck->GetChecked(), TTerminal::spExistingOnly) |
-    FLAGMASK(SynchronizeSelectedOnlyCheck->GetChecked(), spSelectedOnly);
+    FLAGMASK(SynchronizeSelectedOnlyCheck->GetChecked(), TTerminal::spSelectedOnly);
   Result.Options =
     (Result.Options & ~(soRecurse | soSynchronize | soSynchronizeAsk)) |
     FLAGMASK(SynchronizeRecursiveCheck->GetChecked(), soRecurse) |

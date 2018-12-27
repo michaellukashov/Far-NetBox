@@ -288,7 +288,7 @@ void TKeepAliveThread::Execute()
   SAFE_CLOSE_HANDLE(FEvent);
 }
 
-TWinSCPFileSystem::TWinSCPFileSystem(TCustomFarPlugin *APlugin) :
+TWinSCPFileSystem::TWinSCPFileSystem(TCustomFarPlugin *APlugin) noexcept :
   TCustomFarFileSystem(OBJECT_CLASS_TWinSCPFileSystem, APlugin),
   FTerminal(nullptr),
   FQueue(nullptr),
@@ -330,7 +330,7 @@ void TWinSCPFileSystem::Init(TSecureShell * /*SecureShell*/)
   TCustomFarFileSystem::Init();
 }
 
-TWinSCPFileSystem::~TWinSCPFileSystem()
+TWinSCPFileSystem::~TWinSCPFileSystem() noexcept
 {
   Disconnect();
   SAFE_DESTROY(FPathHistory);
@@ -1433,9 +1433,9 @@ void TWinSCPFileSystem::Synchronize(const UnicodeString LocalDirectory,
         GetWinSCPPlugin()->ClearConsoleTitle();
         GetWinSCPPlugin()->RestoreScreen(FSynchronizationSaveScreenHandle);
       };
-      FTerminal->SynchronizeApply(Checklist, LocalDirectory, RemoteDirectory,
-        &CopyParam, Params | TTerminal::spNoConfirmation,
-        nb::bind(&TWinSCPFileSystem::TerminalSynchronizeDirectory, this));
+      FTerminal->SynchronizeApply(Checklist, &CopyParam, LocalDirectory, RemoteDirectory,
+        Params | TTerminal::spNoConfirmation,
+        nb::bind(&TWinSCPFileSystem::TerminalSynchronizeDirectory, this), nullptr);
     }
   }
 }
@@ -1450,7 +1450,7 @@ bool TWinSCPFileSystem::SynchronizeAllowSelectedOnly()
 void TWinSCPFileSystem::GetSynchronizeOptions(
   intptr_t Params, TSynchronizeOptions &Options)
 {
-  if (FLAGSET(Params, spSelectedOnly) && SynchronizeAllowSelectedOnly())
+  if (FLAGSET(Params, TTerminal::spSelectedOnly) && SynchronizeAllowSelectedOnly())
   {
     Options.Filter = new TStringList();
     Options.Filter->SetCaseSensitive(false);
@@ -3188,13 +3188,10 @@ void TWinSCPFileSystem::TerminalReadDirectory(TObject * /*Sender*/,
   }
 }
 
-void TWinSCPFileSystem::TerminalDeleteLocalFile(const UnicodeString AFileName, bool Alternative)
+void TWinSCPFileSystem::TerminalDeleteLocalFile(UnicodeString AFileName, bool Alternative, intptr_t& Deleted)
 {
-  if (!RecursiveDeleteFile(AFileName,
-      (FLAGSET(GetWinSCPPlugin()->GetFarSystemSettings(), FSS_DELETETORECYCLEBIN)) != Alternative))
-  {
-    throw Exception(FORMAT(GetMsg(NB_DELETE_LOCAL_FILE_ERROR), AFileName));
-  }
+  Deleted = RecursiveDeleteFileChecked(AFileName,
+      (FLAGSET(GetWinSCPPlugin()->GetFarSystemSettings(), FSS_DELETETORECYCLEBIN) != Alternative));
 }
 
 HANDLE TWinSCPFileSystem::TerminalCreateLocalFile(const UnicodeString ALocalFileName,
@@ -3389,12 +3386,12 @@ void TWinSCPFileSystem::OperationFinished(TFileOperation Operation,
   {
     if (Operation == foCopy)
     {
-      DebugAssert(Side == osLocal);
+      DebugAssert(Side() == osLocal);
       FSynchronizeController->LogOperation(soUpload, AFileName);
     }
     else if (Operation == foDelete)
     {
-      DebugAssert(Side == osRemote);
+      DebugAssert(Side() == osRemote);
       FSynchronizeController->LogOperation(soDelete, AFileName);
     }
   }

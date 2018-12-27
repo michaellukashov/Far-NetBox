@@ -583,7 +583,7 @@ public:
     TStrings *History, bool PathInput,
     TInputDialogInitializeEvent OnInitialize, bool Echo) override;
   virtual uintptr_t MoreMessageDialog(const UnicodeString AMessage,
-    TStrings *MoreMessages, TQueryType Type, uint32_t Answers,
+    TStrings *MoreMessages, TQueryType Type, uintptr_t Answers,
     const TMessageParams *Params) override;
 };
 
