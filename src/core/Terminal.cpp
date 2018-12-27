@@ -150,7 +150,7 @@ public:
   UnicodeString RealDirectory;
 };
 //---------------------------------------------------------------------------
-TCalculateSizeStats::TCalculateSizeStats() :
+TCalculateSizeStats::TCalculateSizeStats() noexcept :
   Files(0),
   Directories(0),
   SymLinks(0),
@@ -159,14 +159,14 @@ TCalculateSizeStats::TCalculateSizeStats() :
 __removed memset(this, 0, sizeof(*this));
 }
 //---------------------------------------------------------------------------
-TCalculateSizeParams::TCalculateSizeParams() : TObject(OBJECT_CLASS_TCalculateSizeParams)
+TCalculateSizeParams::TCalculateSizeParams() noexcept : TObject(OBJECT_CLASS_TCalculateSizeParams)
 {
   __removed memset(this, 0, sizeof(*this));
   Result = true;
   AllowDirs = true;
 }
 //---------------------------------------------------------------------------
-TSynchronizeOptions::~TSynchronizeOptions()
+TSynchronizeOptions::~TSynchronizeOptions() noexcept
 {
   SAFE_DESTROY(Filter);
 }
@@ -987,7 +987,7 @@ intptr_t TParallelOperation::GetNext(TTerminal *Terminal, UnicodeString &FileNam
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-TTerminal::TTerminal(TObjectClassId Kind) :
+TTerminal::TTerminal(TObjectClassId Kind) noexcept :
   TSessionUI(Kind),
   FSessionData(new TSessionData(L"")),
   FLog(nullptr),
@@ -1105,7 +1105,7 @@ void TTerminal::Init(TSessionData *ASessionData,
   FClosedOnCompletion = nullptr;
 }
 //---------------------------------------------------------------------------
-TTerminal::~TTerminal()
+TTerminal::~TTerminal() noexcept
 {
   if (GetActive())
   {
@@ -4159,7 +4159,7 @@ void TTerminal::RecycleFile(UnicodeString AFileName,
 
     TerminalMoveFile(FileName, AFile, &Params);
 
-    if ((GetOperationProgress() != nullptr) && (GetOperationProgress()->Operation == foDelete))
+    if ((GetOperationProgress() != nullptr) && (GetOperationProgress()->Operation() == foDelete))
     {
       GetOperationProgress()->Succeeded();
     }
@@ -4236,7 +4236,7 @@ void TTerminal::DoDeleteFile(const UnicodeString AFileName,
       DebugAssert(FFileSystem);
       // 'File' parameter: SFTPFileSystem needs to know if file is file or directory
       FFileSystem->RemoteDeleteFile(AFileName, AFile, Params, Action);
-      if ((OperationProgress != nullptr) && (OperationProgress->Operation == foDelete))
+      if ((OperationProgress != nullptr) && (OperationProgress->Operation() == foDelete))
       {
         OperationProgress->Succeeded();
       }
@@ -4264,16 +4264,16 @@ void TTerminal::DeleteLocalFile(UnicodeString AFileName,
   const TRemoteFile * /*AFile*/, void *Params)
 {
   StartOperationWithFile(AFileName, foDelete);
-  int Deleted;
+  intptr_t Deleted;
   if (OnDeleteLocalFile == nullptr)
   {
     Deleted = RecursiveDeleteFileChecked(AFileName, false);
   }
   else
   {
-    OnDeleteLocalFile(AFileName, FLAGSET(*((int*)Params), dfAlternative), Deleted);
+    OnDeleteLocalFile(AFileName, FLAGSET(*((intptr_t *)Params), dfAlternative), Deleted);
   }
-  if (DebugAlwaysTrue((OperationProgress != nullptr) && (OperationProgress->Operation == foDelete)))
+  if (DebugAlwaysTrue((OperationProgress != nullptr) && (OperationProgress->Operation() == foDelete)))
   {
     OperationProgress->Succeeded(Deleted);
   }
@@ -5863,10 +5863,10 @@ TSynchronizeChecklist * TTerminal::SynchronizeCollect(const UnicodeString LocalD
   TSynchronizeDirectoryEvent OnSynchronizeDirectory,
   TSynchronizeOptions *Options)
 {
-  volatile TValueRestorer<bool> UseBusyCursorRestorer(FUseBusyCursor);
+  TValueRestorer<bool> UseBusyCursorRestorer(FUseBusyCursor); nb::used(UseBusyCursorRestorer);
   FUseBusyCursor = false;
 
-  std::unique_ptr<TSynchronizeChecklist> Checklist(std::make_unique<TSynchronizeChecklist>());
+  std::unique_ptr<TSynchronizeChecklist> Checklist(new TSynchronizeChecklist());
   try__catch
   {
     DoSynchronizeCollectDirectory(LocalDirectory, RemoteDirectory, Mode,
@@ -6112,7 +6112,7 @@ void TTerminal::DoSynchronizeCollectDirectory(const UnicodeString ALocalDirector
 
         if (Modified || New)
         {
-          std::unique_ptr<TChecklistItem> ChecklistItem(std::make_unique<TChecklistItem>());
+          std::unique_ptr<TChecklistItem> ChecklistItem(new TChecklistItem());
           try__finally
           {
             ChecklistItem->IsDirectory = FileData->IsDirectory;
@@ -6227,7 +6227,7 @@ void TTerminal::DoSynchronizeCollectFile(UnicodeString AFileName,
         Data->Options->MatchesFilter(AFile->GetFileName()) ||
         Data->Options->MatchesFilter(LocalFileName)))
   {
-    std::unique_ptr<TChecklistItem> ChecklistItem(std::make_unique<TChecklistItem>());
+    std::unique_ptr<TChecklistItem> ChecklistItem(new TChecklistItem());
     try__finally
     {
       ChecklistItem->IsDirectory = AFile->GetIsDirectory();
@@ -6476,7 +6476,7 @@ void TTerminal::SynchronizeApply(
 
           LogEvent(
             FORMAT(L"Synchronizing local directory '%s' with remote directory '%s', params = 0x%x (%s)",
-            Data.LocalDirectory, Data.RemoteDirectory, int(Params), SynchronizeParamsStr(Params)));
+              Data.LocalDirectory, Data.RemoteDirectory, int(Params), SynchronizeParamsStr(Params)));
 
           DoSynchronizeProgress(Data, false);
         }
@@ -8434,13 +8434,13 @@ UnicodeString TTerminal::DecryptFileName(const UnicodeString Path)
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-TSecondaryTerminal::TSecondaryTerminal(TTerminal *MainTerminal) :
+TSecondaryTerminal::TSecondaryTerminal(TTerminal *MainTerminal) noexcept :
   TTerminal(OBJECT_CLASS_TSecondaryTerminal),
   FMainTerminal(MainTerminal)
 {
 }
 
-TSecondaryTerminal::TSecondaryTerminal(TObjectClassId Kind, TTerminal *MainTerminal) :
+TSecondaryTerminal::TSecondaryTerminal(TObjectClassId Kind, TTerminal *MainTerminal) noexcept :
   TTerminal(Kind),
   FMainTerminal(MainTerminal)
 {
@@ -8486,14 +8486,14 @@ TTerminal * TSecondaryTerminal::GetPasswordSource()
   return FMainTerminal;
 }
 //---------------------------------------------------------------------------
-TTerminalList::TTerminalList(TConfiguration *AConfiguration) :
+TTerminalList::TTerminalList(TConfiguration *AConfiguration) noexcept :
   TObjectList(OBJECT_CLASS_TTerminalList),
   FConfiguration(AConfiguration)
 {
   DebugAssert(FConfiguration);
 }
 //---------------------------------------------------------------------------
-TTerminalList::~TTerminalList()
+TTerminalList::~TTerminalList() noexcept
 {
   DebugAssert(GetCount() == 0);
 }

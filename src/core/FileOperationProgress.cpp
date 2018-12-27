@@ -141,6 +141,8 @@ TFileOperationProgressType&TFileOperationProgressType::operator=(const TFileOper
   FTransferredSize = rhs.FTransferredSize;
   FTransferringFile = rhs.FTransferringFile;
   FLastSecond = rhs.FLastSecond;
+
+  return *this;
 }
 
 //---------------------------------------------------------------------------
@@ -418,10 +420,10 @@ void TFileOperationProgressType::Succeeded(intptr_t Count)
 {
   if (FPersistence.Statistics != nullptr)
   {
-    if ((Operation == foCopy) || (Operation == foMove))
+    if ((Operation() == foCopy) || (Operation() == foMove))
     {
       int64_t Transferred = FTransferredSize - FSkippedSize;
-      if (Side == osLocal)
+      if (Side() == osLocal)
       {
         FPersistence.Statistics->FilesUploaded += Count;
         FPersistence.Statistics->TotalUploaded += Transferred;
@@ -432,9 +434,9 @@ void TFileOperationProgressType::Succeeded(intptr_t Count)
         FPersistence.Statistics->TotalDownloaded += Transferred;
       }
     }
-    else if (Operation == foDelete)
+    else if (Operation() == foDelete)
     {
-      if (Side == osLocal)
+      if (Side() == osLocal)
       {
         FPersistence.Statistics->FilesDeletedLocal += Count;
       }
@@ -450,7 +452,7 @@ void TFileOperationProgressType::SetFile(UnicodeString AFileName, bool AFileInPr
 {
   UnicodeString FileName = AFileName;
   FFullFileName = FileName;
-  if (FSide == osRemote)
+  if (Side() == osRemote)
   {
     // historically set were passing filename-only for remote site operations,
     // now we need to collect a full paths, so we pass in full path,

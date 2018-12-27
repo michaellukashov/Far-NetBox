@@ -109,7 +109,7 @@ LPTSTR find_reg_str(LPTSTR str, LPCTSTR what, LPTSTR * next){
             pos = curr_tok - tok_buff;
         }
         free(curr_tok_dup);
-        curr_tok = _tcstok(NULL, _T(";"));
+        curr_tok = _tcstok(nullptr, _T(";"));
         if (pos != -1 && next){
             if (curr_tok)
                 *next = str + (curr_tok - tok_buff);
@@ -121,7 +121,7 @@ LPTSTR find_reg_str(LPTSTR str, LPCTSTR what, LPTSTR * next){
     if (pos != -1)
         ret = str + pos;
     else
-        ret = NULL;
+        ret = nullptr;
     return ret;
 }
 //---------------------------------------------------------------------------
@@ -157,18 +157,18 @@ BOOL add_path_reg(LPCTSTR path){
         return FALSE;
     }
 
-    RegQueryValueEx(key, _T("PATH"), NULL, NULL, NULL, &data_size);
+    RegQueryValueEx(key, _T("PATH"), nullptr, nullptr, nullptr, &data_size);
     data_size += _tcslen(path) + 3 ; /* ";" and quotes, "data_size" already
                                         includes '\0'. */
     reg_str = (LPTSTR)malloc(data_size * sizeof(TCHAR));
-    ret = RegQueryValueEx(key, _T("PATH"), NULL, NULL, (LPBYTE)reg_str,
+    ret = RegQueryValueEx(key, _T("PATH"), nullptr, nullptr, (LPBYTE)reg_str,
                           &data_size);
     if (ret != ERROR_SUCCESS){
         err_out_sys(_T("Cannot read \"PATH\" key."), ret);
         func_ret = FALSE;
     }
     else{
-        if (!find_reg_str(reg_str, path, NULL)){
+        if (!find_reg_str(reg_str, path, nullptr)){
             _tcscat(reg_str, _T(";"));
             _tcscat(reg_str, path);
             size_t len = _tcslen(reg_str);
@@ -219,18 +219,18 @@ BOOL remove_path_reg(LPCTSTR path){
         return FALSE;
     }
 
-    RegQueryValueEx(key, _T("PATH"), NULL, NULL, NULL, &data_size);
+    RegQueryValueEx(key, _T("PATH"), nullptr, nullptr, nullptr, &data_size);
     data_size += _tcslen(path) + 3; /* ";" and quotes,"data_size" already
                                         includes '\0'. */
     reg_str = (LPTSTR)malloc(data_size * sizeof(TCHAR));
-    ret = RegQueryValueEx(key, _T("PATH"), NULL, NULL,
+    ret = RegQueryValueEx(key, _T("PATH"), nullptr, nullptr,
                           (LPBYTE)reg_str, &data_size);
     if (ret != ERROR_SUCCESS){
         err_out_sys(_T("Cannot read \"PATH\" key."), ret);
         func_ret = FALSE;
     }
     else{
-        if ((del_part = find_reg_str(reg_str, path, &next)) != NULL){
+        if ((del_part = find_reg_str(reg_str, path, &next)) != nullptr){
             reg_str2 = (LPTSTR)malloc((_tcslen(reg_str) + 1) * sizeof(TCHAR));
             *del_part = '\0';
             _stprintf(reg_str2, _T("%s%s"), reg_str, next);
@@ -258,7 +258,7 @@ BOOL remove_path_reg(LPCTSTR path){
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-void __fastcall AddSearchPath(const UnicodeString Path)
+void AddSearchPath(const UnicodeString Path)
 {
   if (!add_path_reg(Path.c_str()))
   {
@@ -266,7 +266,7 @@ void __fastcall AddSearchPath(const UnicodeString Path)
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall RemoveSearchPath(const UnicodeString Path)
+void RemoveSearchPath(const UnicodeString Path)
 {
   if (!remove_path_reg(Path.c_str()))
   {
@@ -276,7 +276,7 @@ void __fastcall RemoveSearchPath(const UnicodeString Path)
 //---------------------------------------------------------------------------
 static const UnicodeString SoftwareClassesBaseKey = L"Software\\Classes\\";
 //---------------------------------------------------------------------------
-static void __fastcall DeleteKeyIfEmpty(TRegistry * Registry, const UnicodeString & Key, bool AllowRootValues)
+static void DeleteKeyIfEmpty(TRegistry * Registry, const UnicodeString & Key, bool AllowRootValues)
 {
   if (Registry->OpenKey(Key, false))
   {
@@ -318,7 +318,7 @@ static void __fastcall DeleteKeyIfEmpty(TRegistry * Registry, const UnicodeStrin
   }
 }
 //---------------------------------------------------------------------------
-static void __fastcall RegisterProtocol(TRegistry * Registry,
+static void RegisterProtocol(TRegistry * Registry,
   const UnicodeString & Protocol, UnicodeString Description, bool Force)
 {
 
@@ -353,13 +353,13 @@ static void __fastcall RegisterProtocol(TRegistry * Registry,
   }
 }
 //---------------------------------------------------------------------------
-static void __fastcall UnregisterProtocol(TRegistry * Registry,
+static void UnregisterProtocol(TRegistry * Registry,
   const UnicodeString & Protocol)
 {
   DeleteKeyIfEmpty(Registry, SoftwareClassesBaseKey + Protocol, true);
 }
 //---------------------------------------------------------------------------
-static TRegistry * __fastcall CreateRegistry(HKEY RootKey)
+static TRegistry * CreateRegistry(HKEY RootKey)
 {
   std::unique_ptr<TRegistry> Registry(new TRegistry());
 
@@ -369,7 +369,7 @@ static TRegistry * __fastcall CreateRegistry(HKEY RootKey)
   return Registry.release();
 }
 //---------------------------------------------------------------------------
-static void __fastcall RegisterAsUrlHandler(HKEY RootKey,
+static void RegisterAsUrlHandler(HKEY RootKey,
   const UnicodeString & Protocol, UnicodeString Description = L"")
 {
   std::unique_ptr<TRegistry> Registry(CreateRegistry(RootKey));
@@ -390,7 +390,7 @@ static void __fastcall RegisterAsUrlHandler(HKEY RootKey,
   }
 }
 //---------------------------------------------------------------------------
-static void __fastcall RegisterAsUrlHandler(const UnicodeString & Protocol, UnicodeString Description = L"")
+static void RegisterAsUrlHandler(const UnicodeString & Protocol, UnicodeString Description = L"")
 {
 
   try
@@ -417,7 +417,7 @@ static void __fastcall RegisterAsUrlHandler(const UnicodeString & Protocol, Unic
   }
 }
 //---------------------------------------------------------------------------
-static void __fastcall UnregisterAsUrlHandler(HKEY RootKey,
+static void UnregisterAsUrlHandler(HKEY RootKey,
   const UnicodeString & Protocol, bool UnregisterProtocol, bool ForceHandlerUnregistration)
 {
   std::unique_ptr<TRegistry> Registry(CreateRegistry(RootKey));
@@ -457,13 +457,13 @@ static void __fastcall UnregisterAsUrlHandler(HKEY RootKey,
   }
 }
 //---------------------------------------------------------------------------
-static void __fastcall UnregisterAsUrlHandler(const UnicodeString & Protocol, bool UnregisterProtocol)
+static void UnregisterAsUrlHandler(const UnicodeString & Protocol, bool UnregisterProtocol)
 {
   UnregisterAsUrlHandler(HKEY_LOCAL_MACHINE, Protocol, UnregisterProtocol, false);
   UnregisterAsUrlHandler(HKEY_CURRENT_USER, Protocol, UnregisterProtocol, false);
 }
 //---------------------------------------------------------------------------
-static void __fastcall RegisterAsNonBrowserUrlHandler(const UnicodeString & Prefix)
+static void RegisterAsNonBrowserUrlHandler(const UnicodeString & Prefix)
 {
   RegisterAsUrlHandler(Prefix + SftpProtocol.UpperCase());
   RegisterAsUrlHandler(Prefix + ScpProtocol.UpperCase());
@@ -472,7 +472,7 @@ static void __fastcall RegisterAsNonBrowserUrlHandler(const UnicodeString & Pref
   RegisterAsUrlHandler(Prefix + S3Protocol.UpperCase());
 }
 //---------------------------------------------------------------------------
-static void __fastcall UnregisterAsUrlHandlers(const UnicodeString & Prefix, bool UnregisterProtocol)
+static void UnregisterAsUrlHandlers(const UnicodeString & Prefix, bool UnregisterProtocol)
 {
   UnregisterAsUrlHandler(Prefix + SftpProtocol, UnregisterProtocol);
   UnregisterAsUrlHandler(Prefix + ScpProtocol, UnregisterProtocol);
@@ -483,7 +483,7 @@ static void __fastcall UnregisterAsUrlHandlers(const UnicodeString & Prefix, boo
 //---------------------------------------------------------------------------
 static const UnicodeString GenericUrlHandler(L"WinSCP.Url");
 //---------------------------------------------------------------------------
-static void __fastcall RegisterProtocolForDefaultPrograms(HKEY RootKey, const UnicodeString & Protocol)
+static void RegisterProtocolForDefaultPrograms(HKEY RootKey, const UnicodeString & Protocol)
 {
   // Register protocol, if it does not exist yet.
   // Prior to Windows 8, we need to register ourselves as legacy handler to
@@ -527,7 +527,7 @@ static void __fastcall RegisterProtocolForDefaultPrograms(HKEY RootKey, const Un
   Registry->CloseKey();
 }
 //---------------------------------------------------------------------------
-static void __fastcall UnregisterProtocolForDefaultPrograms(HKEY RootKey,
+static void UnregisterProtocolForDefaultPrograms(HKEY RootKey,
   const UnicodeString & Protocol, bool ForceHandlerUnregistration)
 {
   std::unique_ptr<TRegistry> Registry(CreateRegistry(RootKey));
@@ -571,7 +571,7 @@ static void __fastcall UnregisterProtocolForDefaultPrograms(HKEY RootKey,
   }
 }
 //---------------------------------------------------------------------------
-static void __fastcall RegisterProtocolsForDefaultPrograms(HKEY RootKey)
+static void RegisterProtocolsForDefaultPrograms(HKEY RootKey)
 {
   // register URL handler, if it does not exist yet
   RegisterAsUrlHandler(RootKey, GenericUrlHandler, L"WinSCP URL");
@@ -590,7 +590,7 @@ static void __fastcall RegisterProtocolsForDefaultPrograms(HKEY RootKey)
   // to non-browser application
 }
 //---------------------------------------------------------------------------
-static void __fastcall UnregisterProtocolsForDefaultPrograms(HKEY RootKey, bool ForceHandlerUnregistration)
+static void UnregisterProtocolsForDefaultPrograms(HKEY RootKey, bool ForceHandlerUnregistration)
 {
   UnregisterProtocolForDefaultPrograms(RootKey, FtpProtocol, ForceHandlerUnregistration);
   UnregisterProtocolForDefaultPrograms(RootKey, FtpsProtocol, ForceHandlerUnregistration);
@@ -605,7 +605,7 @@ static void __fastcall UnregisterProtocolsForDefaultPrograms(HKEY RootKey, bool 
   UnregisterAsUrlHandler(RootKey, GenericUrlHandler, true, true);
 }
 //---------------------------------------------------------------------------
-static void __fastcall RegisterForDefaultPrograms()
+static void RegisterForDefaultPrograms()
 {
   try
   {
@@ -628,12 +628,12 @@ static void __fastcall RegisterForDefaultPrograms()
   }
 }
 //---------------------------------------------------------------------------
-static void __fastcall NotifyChangedAssociations()
+static void NotifyChangedAssociations()
 {
   SHChangeNotify(SHCNE_ASSOCCHANGED, 0, 0, 0);
 }
 //---------------------------------------------------------------------------
-void __fastcall RegisterForDefaultProtocols()
+void RegisterForDefaultProtocols()
 {
   if (IsWinVista())
   {
@@ -655,7 +655,7 @@ void __fastcall RegisterForDefaultProtocols()
   NotifyChangedAssociations();
 }
 //---------------------------------------------------------------------------
-void __fastcall UnregisterForProtocols()
+void UnregisterForProtocols()
 {
   UnregisterAsUrlHandlers(UnicodeString(), false);
   UnregisterAsUrlHandlers(WinSCPProtocolPrefix, true);
@@ -672,7 +672,7 @@ void __fastcall UnregisterForProtocols()
   NotifyChangedAssociations();
 }
 //---------------------------------------------------------------------------
-void __fastcall LaunchAdvancedAssociationUI()
+void LaunchAdvancedAssociationUI()
 {
   DebugAssert(IsWinVista());
 
@@ -690,11 +690,11 @@ void __fastcall LaunchAdvancedAssociationUI()
 
     HRESULT Result =
       CoCreateInstance(CLSID_OpenControlPanel,
-        NULL, CLSCTX_INPROC, __uuidof(IOpenControlPanel), (void**)&OpenControlPanel);
+        nullptr, CLSCTX_INPROC, __uuidof(IOpenControlPanel), (void**)&OpenControlPanel);
     if (SUCCEEDED(Result))
     {
       UnicodeString Page = FORMAT(L"pageDefaultProgram\\pageAdvancedSettings?pszAppName=%s", (AppNameString()));
-      OpenControlPanel->Open(L"Microsoft.DefaultPrograms", Page.c_str(), NULL);
+      OpenControlPanel->Open(L"Microsoft.DefaultPrograms", Page.c_str(), nullptr);
       OpenControlPanel->Release();
     }
   }
@@ -704,7 +704,7 @@ void __fastcall LaunchAdvancedAssociationUI()
 
     HRESULT Result =
       CoCreateInstance(CLSID_ApplicationAssociationRegistrationUI,
-        NULL, CLSCTX_INPROC, __uuidof(IApplicationAssociationRegistrationUI), (void**)&AppAssocRegUI);
+        nullptr, CLSCTX_INPROC, __uuidof(IApplicationAssociationRegistrationUI), (void**)&AppAssocRegUI);
     if (SUCCEEDED(Result))
     {
       AppAssocRegUI->LaunchAdvancedAssociationUI(AppNameString().c_str());
@@ -713,16 +713,16 @@ void __fastcall LaunchAdvancedAssociationUI()
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TemporaryDirectoryCleanup()
+void TemporaryDirectoryCleanup()
 {
   bool Continue = true;
-  TStrings * Folders = NULL;
+  TStrings * Folders = nullptr;
   try
   {
     if (WinConfiguration->ConfirmTemporaryDirectoryCleanup)
     {
       Folders = WinConfiguration->FindTemporaryFolders();
-      Continue = (Folders != NULL);
+      Continue = (Folders != nullptr);
 
       if (Continue)
       {
@@ -748,8 +748,8 @@ void __fastcall TemporaryDirectoryCleanup()
         {
           for (int Index = 0; Index < Folders->Count; Index++)
           {
-            ShellExecute(Application->Handle, NULL,
-              Folders->Strings[Index].c_str(), NULL, NULL, SW_SHOWNORMAL);
+            ShellExecute(Application->Handle, nullptr,
+              Folders->Strings[Index].c_str(), nullptr, nullptr, SW_SHOWNORMAL);
           }
         }
         Continue = (Answer == qaYes);
@@ -774,7 +774,7 @@ void __fastcall TemporaryDirectoryCleanup()
   }
 }
 //-------------------------------------------- -------------------------------
-UnicodeString __fastcall VersionStrFromCompoundVersion(int Version)
+UnicodeString VersionStrFromCompoundVersion(int Version)
 {
   int MajorVer = Version / (10000*100*100);
   int MinorVer = (Version % (10000*100*100)) / (10000*100);
@@ -791,7 +791,7 @@ UnicodeString __fastcall VersionStrFromCompoundVersion(int Version)
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall CampaignUrl(UnicodeString URL)
+UnicodeString CampaignUrl(UnicodeString URL)
 {
   int CurrentCompoundVer = Configuration->CompoundVersion;
   UnicodeString Version = VersionStrFromCompoundVersion(CurrentCompoundVer);
@@ -803,7 +803,7 @@ UnicodeString __fastcall CampaignUrl(UnicodeString URL)
   return AppendUrlParams(URL, Params);
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall ProgramUrl(UnicodeString URL)
+UnicodeString ProgramUrl(UnicodeString URL)
 {
   TVSFixedFileInfo * FileInfo = Configuration->FixedApplicationInfo;
   UnicodeString CurrentVersionStr =
@@ -824,7 +824,7 @@ UnicodeString __fastcall ProgramUrl(UnicodeString URL)
   return AppendUrlParams(URL, Params);
 }
 //---------------------------------------------------------------------------
-static UnicodeString __fastcall WantBetaUrl(UnicodeString URL, bool Force)
+static UnicodeString WantBetaUrl(UnicodeString URL, bool Force)
 {
   bool Beta;
   if (WinConfiguration->IsBeta)
@@ -855,7 +855,7 @@ static UnicodeString __fastcall WantBetaUrl(UnicodeString URL, bool Force)
   return URL;
 }
 //---------------------------------------------------------------------------
-static THttp * __fastcall CreateHttp(const TUpdatesConfiguration & Updates)
+static THttp * CreateHttp(const TUpdatesConfiguration & Updates)
 {
   std::unique_ptr<THttp> Http(new THttp());
 
@@ -884,12 +884,12 @@ static THttp * __fastcall CreateHttp(const TUpdatesConfiguration & Updates)
   return Http.release();
 }
 //---------------------------------------------------------------------------
-THttp * __fastcall CreateHttp()
+THttp * CreateHttp()
 {
   return CreateHttp(WinConfiguration->Updates);
 }
 //---------------------------------------------------------------------------
-static bool __fastcall DoQueryUpdates(TUpdatesConfiguration & Updates, bool CollectUsage)
+static bool DoQueryUpdates(TUpdatesConfiguration & Updates, bool CollectUsage)
 {
   bool Complete = false;
   UnicodeString Response;
@@ -1082,12 +1082,12 @@ static bool __fastcall DoQueryUpdates(TUpdatesConfiguration & Updates, bool Coll
   return Complete;
 }
 //---------------------------------------------------------------------------
-bool __fastcall QueryUpdates(TUpdatesConfiguration & Updates)
+bool QueryUpdates(TUpdatesConfiguration & Updates)
 {
   return DoQueryUpdates(Updates, false);
 }
 //---------------------------------------------------------------------------
-static void __fastcall DoQueryUpdates(bool CollectUsage)
+static void DoQueryUpdates(bool CollectUsage)
 {
   try
   {
@@ -1117,7 +1117,7 @@ static void __fastcall DoQueryUpdates(bool CollectUsage)
   }
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall FormatUpdatesMessage(UnicodeString Message)
+UnicodeString FormatUpdatesMessage(UnicodeString Message)
 {
   Message = ReplaceStr(Message, "%UPDATE_UNAUTHORIZED%", LoadStr(UPDATE_UNAUTHORIZED));
   Message = ReplaceStr(Message, "%UPDATE_EXPIRED%", LoadStr(UPDATE_EXPIRED));
@@ -1128,7 +1128,7 @@ UnicodeString __fastcall FormatUpdatesMessage(UnicodeString Message)
   return Message;
 }
 //---------------------------------------------------------------------------
-void __fastcall GetUpdatesMessage(UnicodeString & Message, bool & New,
+void GetUpdatesMessage(UnicodeString & Message, bool & New,
   TQueryType & Type, bool Force)
 {
   TUpdatesConfiguration Updates = WinConfiguration->Updates;
@@ -1185,17 +1185,17 @@ void __fastcall GetUpdatesMessage(UnicodeString & Message, bool & New,
   }
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall GetEnableAutomaticUpdatesUrl()
+UnicodeString GetEnableAutomaticUpdatesUrl()
 {
   return AppendUrlParams(LoadStr(DONATE_URL), L"automaticupdates=1");
 }
 //---------------------------------------------------------------------------
-void __fastcall EnableAutomaticUpdates()
+void EnableAutomaticUpdates()
 {
   OpenBrowser(GetEnableAutomaticUpdatesUrl());
 }
 //---------------------------------------------------------------------------
-static void __fastcall OpenHistory(void * /*Data*/, TObject * /*Sender*/, unsigned int & /*Answer*/)
+static void OpenHistory(void * /*Data*/, TObject * /*Sender*/, unsigned int & /*Answer*/)
 {
   Configuration->Usage->Inc(L"UpdateHistoryOpens");
   OpenBrowser(LoadStr(HISTORY_URL));
@@ -1212,20 +1212,20 @@ public:
   TUpdateDownloadThread(TProgressBar * ProgressBar) noexcept;
   virtual ~TUpdateDownloadThread() noexcept;
 
-  void __fastcall CancelClicked(TObject * Sender);
+  void CancelClicked(TObject * Sender);
 
-  bool __fastcall CancelDownload();
+  bool CancelDownload();
 
   __property bool Done = { read = FDone };
 
 protected:
-  virtual void __fastcall Execute();
-  void __fastcall UpdateDownloaded();
-  void __fastcall HttpDownload(THttp * Sender, __int64 Size, bool & Cancel);
-  void __fastcall UpdateProgress();
-  void __fastcall ShowException();
-  void __fastcall DownloadNotVerified();
-  void __fastcall CancelForm();
+  virtual void Execute();
+  void UpdateDownloaded();
+  void HttpDownload(THttp * Sender, int64_t Size, bool & Cancel);
+  void UpdateProgress();
+  void ShowException();
+  void DownloadNotVerified();
+  void CancelForm();
 
 private:
   TCustomForm * FForm{nullptr};
@@ -1237,7 +1237,7 @@ private:
   bool FDone{false};
 };
 //---------------------------------------------------------------------------
-__fastcall TUpdateDownloadThread::TUpdateDownloadThread(TProgressBar * ProgressBar) :
+TUpdateDownloadThread::TUpdateDownloadThread(TProgressBar * ProgressBar) :
   TCompThread(true)
 {
   // cache, as the progress bar miht be destroyed already when
@@ -1249,11 +1249,11 @@ __fastcall TUpdateDownloadThread::TUpdateDownloadThread(TProgressBar * ProgressB
   FDone = false;
 }
 //---------------------------------------------------------------------------
-__fastcall TUpdateDownloadThread::~TUpdateDownloadThread()
+TUpdateDownloadThread::~TUpdateDownloadThread()
 {
 }
 //---------------------------------------------------------------------------
-void __fastcall TUpdateDownloadThread::Execute()
+void TUpdateDownloadThread::Execute()
 {
   try
   {
@@ -1322,12 +1322,12 @@ void __fastcall TUpdateDownloadThread::Execute()
   Synchronize(CancelForm);
 }
 //---------------------------------------------------------------------------
-void __fastcall TUpdateDownloadThread::CancelForm()
+void TUpdateDownloadThread::CancelForm()
 {
   FForm->ModalResult = mrCancel;
 }
 //---------------------------------------------------------------------------
-void __fastcall TUpdateDownloadThread::UpdateDownloaded()
+void TUpdateDownloadThread::UpdateDownloaded()
 {
   size_t Size = static_cast<size_t>(FHttp->ResponseLength);
   const char * Buffer = FHttp->ResponseRaw.c_str();
@@ -1359,7 +1359,7 @@ void __fastcall TUpdateDownloadThread::UpdateDownloaded()
 
   std::unique_ptr<TFileStream> FileStream(new TFileStream(SetupPath, fmCreate));
   FileStream->Write(Buffer, Size);
-  FileStream.reset(NULL);
+  FileStream.reset(nullptr);
 
   UnicodeString Params = L"/SILENT /NORESTART /AutomaticUpdate";
   if (FUpdates.Results.OpenGettingStarted)
@@ -1373,12 +1373,17 @@ void __fastcall TUpdateDownloadThread::UpdateDownloaded()
   TerminateApplication();
 }
 //---------------------------------------------------------------------------
-void __fastcall TUpdateDownloadThread::DownloadNotVerified()
+void TUpdateDownloadThread::DownloadNotVerified()
 {
   throw Exception(MainInstructions(LoadStr(UPDATE_VERIFY_ERROR)));
 }
 //---------------------------------------------------------------------------
-void __fastcall TUpdateDownloadThread::HttpDownload(THttp * /*Sender*/, __int64 Size, bool & Cancel)
+void TUpdateDownloadThread::HttpDownload(THttp * /*Sender*/, int64_t Size, bool & Cancel)
+{
+
+}
+
+int64_t Size, bool & Cancel)
 {
   FDownloaded = Size;
   Synchronize(UpdateProgress);
@@ -1395,18 +1400,18 @@ void __fastcall TUpdateDownloadThread::HttpDownload(THttp * /*Sender*/, __int64 
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TUpdateDownloadThread::UpdateProgress()
+void TUpdateDownloadThread::UpdateProgress()
 {
   FProgressBar->Position = DownloadSizeToProgress(FDownloaded);
 }
 //---------------------------------------------------------------------------
-void __fastcall TUpdateDownloadThread::ShowException()
+void TUpdateDownloadThread::ShowException()
 {
-  DebugAssert(FException.get() != NULL);
+  DebugAssert(FException.get() != nullptr);
   ShowExtendedException(FException.get());
 }
 //---------------------------------------------------------------------------
-bool __fastcall TUpdateDownloadThread::CancelDownload()
+bool TUpdateDownloadThread::CancelDownload()
 {
   bool Result = !Terminated;
   if (Result)
@@ -1417,7 +1422,7 @@ bool __fastcall TUpdateDownloadThread::CancelDownload()
   return Result;
 }
 //---------------------------------------------------------------------------
-void __fastcall TUpdateDownloadThread::CancelClicked(TObject * /*Sender*/)
+void TUpdateDownloadThread::CancelClicked(TObject * /*Sender*/)
 {
   if (CancelDownload())
   {
@@ -1431,18 +1436,18 @@ class TUpdateDownloadData : public TComponent
 public:
   TUpdateDownloadThread * Thread;
 
-  __fastcall TUpdateDownloadData() :
-    TComponent(NULL)
+  TUpdateDownloadData() :
+    TComponent(nullptr)
   {
   }
 
-  virtual __fastcall ~TUpdateDownloadData()
+  virtual ~TUpdateDownloadData()
   {
     // will stop the thread
     delete Thread;
   }
 
-  static TUpdateDownloadData * __fastcall Retrieve(TObject * Object)
+  static TUpdateDownloadData * Retrieve(TObject * Object)
   {
     TComponent * Component = DebugNotNull(dynamic_cast<TComponent *>(Object));
     TComponent * UpdateDownloadDataComponent = Component->FindComponent(QualifiedClassName());
@@ -1450,7 +1455,7 @@ public:
   }
 };
 //---------------------------------------------------------------------------
-static void __fastcall DownloadClose(void * /*Data*/, TObject * Sender, TCloseAction & Action)
+static void DownloadClose(void * /*Data*/, TObject * Sender, TCloseAction & Action)
 {
   TUpdateDownloadData * UpdateDownloadData = TUpdateDownloadData::Retrieve(Sender);
   // If the form was closed by CancelForm at the end of the thread, do nothing
@@ -1465,7 +1470,7 @@ static void __fastcall DownloadClose(void * /*Data*/, TObject * Sender, TCloseAc
   }
 }
 //---------------------------------------------------------------------------
-static void __fastcall DownloadUpdate(void * /*Data*/, TObject * Sender, unsigned int & /*Answer*/)
+static void DownloadUpdate(void * /*Data*/, TObject * Sender, unsigned int & /*Answer*/)
 {
   Configuration->Usage->Inc(L"UpdateDownloadStarts");
   TButton * Button = DebugNotNull(dynamic_cast<TButton *>(Sender));
@@ -1512,12 +1517,12 @@ static void __fastcall DownloadUpdate(void * /*Data*/, TObject * Sender, unsigne
   Thread->Resume();
 }
 //---------------------------------------------------------------------------
-static void __fastcall UpdatesDonateClick(void * /*Data*/, TObject * /*Sender*/)
+static void UpdatesDonateClick(void * /*Data*/, TObject * /*Sender*/)
 {
   EnableAutomaticUpdates();
 }
 //---------------------------------------------------------------------------
-static void __fastcall InsertDonateLink(void * /*Data*/, TObject * Sender)
+static void InsertDonateLink(void * /*Data*/, TObject * Sender)
 {
   const UnicodeString DonatePanelName = L"DonatePanel";
   TForm * Dialog = DebugNotNull(dynamic_cast<TForm *>(Sender));
@@ -1563,7 +1568,7 @@ static void __fastcall InsertDonateLink(void * /*Data*/, TObject * Sender)
   }
 }
 //---------------------------------------------------------------------------
-bool __fastcall CheckForUpdates(bool CachedResults)
+bool CheckForUpdates(bool CachedResults)
 {
   TCustomForm * ActiveForm = Screen->ActiveCustomForm;
 
@@ -1710,26 +1715,26 @@ bool __fastcall CheckForUpdates(bool CachedResults)
 class TUpdateThread : public TCompThread
 {
 public:
-  __fastcall TUpdateThread(TThreadMethod OnUpdatesChecked);
+  TUpdateThread(TThreadMethod OnUpdatesChecked);
 protected:
-  virtual void __fastcall Execute();
+  virtual void Execute();
   TThreadMethod FOnUpdatesChecked;
 };
 //---------------------------------------------------------------------------
-TUpdateThread * UpdateThread = NULL;
+TUpdateThread * UpdateThread = nullptr;
 //---------------------------------------------------------------------------
-__fastcall TUpdateThread::TUpdateThread(TThreadMethod OnUpdatesChecked) :
+TUpdateThread::TUpdateThread(TThreadMethod OnUpdatesChecked) :
   TCompThread(false),
   FOnUpdatesChecked(OnUpdatesChecked)
 {
 }
 //---------------------------------------------------------------------------
-void __fastcall TUpdateThread::Execute()
+void TUpdateThread::Execute()
 {
   try
   {
     DoQueryUpdates(WinConfiguration->CollectUsage);
-    if (FOnUpdatesChecked != NULL)
+    if (FOnUpdatesChecked != nullptr)
     {
       Synchronize(FOnUpdatesChecked);
     }
@@ -1740,33 +1745,33 @@ void __fastcall TUpdateThread::Execute()
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall StartUpdateThread(TThreadMethod OnUpdatesChecked)
+void StartUpdateThread(TThreadMethod OnUpdatesChecked)
 {
-  DebugAssert(UpdateThread == NULL);
+  DebugAssert(UpdateThread == nullptr);
   UpdateThread = new TUpdateThread(OnUpdatesChecked);
 }
 //---------------------------------------------------------------------------
-void __fastcall StopUpdateThread()
+void StopUpdateThread()
 {
-  if (UpdateThread != NULL)
+  if (UpdateThread != nullptr)
   {
     SAFE_DESTROY(UpdateThread);
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall SetupInitialize()
+void SetupInitialize()
 {
   WinConfiguration->UpdateJumpList();
 }
 //---------------------------------------------------------------------------
-static bool __fastcall AddJumpListCategory(TStrings * Names,
+static bool AddJumpListCategory(TStrings * Names,
   UnicodeString AdditionalParams, TStringList * Removed,
   ICustomDestinationList * DestinationList, UnicodeString CategoryName,
   int IconIndex)
 {
   bool Result = false;
-  IObjectCollection * Collection = NULL;
-  if (SUCCEEDED(CoCreateInstance(CLSID_EnumerableObjectCollection, NULL,
+  IObjectCollection * Collection = nullptr;
+  if (SUCCEEDED(CoCreateInstance(CLSID_EnumerableObjectCollection, nullptr,
         CLSCTX_INPROC_SERVER, IID_IObjectCollection, (void**)&Collection)))
   {
     try
@@ -1828,22 +1833,22 @@ static bool __fastcall AddJumpListCategory(TStrings * Names,
   return Result;
 }
 //---------------------------------------------------------------------------
-void __fastcall UpdateJumpList(TStrings * SessionNames, TStrings * WorkspaceNames)
+void UpdateJumpList(TStrings * SessionNames, TStrings * WorkspaceNames)
 {
-  ICustomDestinationList * DestinationList = NULL;
+  ICustomDestinationList * DestinationList = nullptr;
   IObjectArray * RemovedArray;
-  TStringList * Removed = NULL;
+  TStringList * Removed = nullptr;
   int OldErrMode = SetErrorMode(SEM_FAILCRITICALERRORS);
 
   try
   {
-    if (SUCCEEDED(CoCreateInstance(CLSID_DestinationList, NULL,
+    if (SUCCEEDED(CoCreateInstance(CLSID_DestinationList, nullptr,
           CLSCTX_INPROC_SERVER, IID_ICustomDestinationList, (void**)&DestinationList)))
     {
 
       unsigned int MinSlots;
       HRESULT Result = DestinationListBeginList(DestinationList, MinSlots, IID_IObjectArray, reinterpret_cast<void *>(RemovedArray), 50000);
-      if (SUCCEEDED(Result) && DebugAlwaysTrue(RemovedArray != NULL))
+      if (SUCCEEDED(Result) && DebugAlwaysTrue(RemovedArray != nullptr))
       {
         Removed = new TStringList();
 
@@ -1872,7 +1877,7 @@ void __fastcall UpdateJumpList(TStrings * SessionNames, TStrings * WorkspaceName
           SessionNames, TProgramParams::FormatSwitch(UPLOAD_IF_ANY_SWITCH), Removed, DestinationList,
           LoadStr(JUMPLIST_RECENT), SITE_ICON);
 
-        if (DestinationList != NULL)
+        if (DestinationList != nullptr)
         {
           DestinationList->CommitList();
         }
@@ -1882,7 +1887,7 @@ void __fastcall UpdateJumpList(TStrings * SessionNames, TStrings * WorkspaceName
   __finally
   {
     SetErrorMode(OldErrMode);
-    if (DestinationList != NULL)
+    if (DestinationList != nullptr)
     {
       DestinationList->Release();
     }
@@ -1890,10 +1895,10 @@ void __fastcall UpdateJumpList(TStrings * SessionNames, TStrings * WorkspaceName
   }
 }
 //---------------------------------------------------------------------------
-bool __fastcall AnyOtherInstanceOfSelf()
+bool AnyOtherInstanceOfSelf()
 {
 
-  HANDLE Snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, NULL);
+  HANDLE Snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, nullptr);
 
   bool Result = false;
 
@@ -1927,7 +1932,7 @@ bool __fastcall AnyOtherInstanceOfSelf()
   return Result;
 }
 //---------------------------------------------------------------------------
-static bool __fastcall DoIsInstalled(HKEY RootKey)
+static bool DoIsInstalled(HKEY RootKey)
 {
   std::unique_ptr<TRegistry> Registry(new TRegistry(KEY_READ));
   Registry->RootKey = RootKey;
@@ -1944,21 +1949,21 @@ static bool __fastcall DoIsInstalled(HKEY RootKey)
   return Result;
 }
 //---------------------------------------------------------------------------
-bool __fastcall IsInstalled()
+bool IsInstalled()
 {
   return
     DoIsInstalled(HKEY_LOCAL_MACHINE) ||
     DoIsInstalled(HKEY_CURRENT_USER);
 }
 //---------------------------------------------------------------------------
-static TStringList * __fastcall TextToTipList(const UnicodeString & Text)
+static TStringList * TextToTipList(const UnicodeString & Text)
 {
   std::unique_ptr<TStringList> List(new TStringList());
   List->CommaText = Text;
   return List.release();
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall FirstUnshownTip()
+UnicodeString FirstUnshownTip()
 {
   TUpdatesConfiguration Updates = WinConfiguration->Updates;
   std::unique_ptr<TStringList> Tips(TextToTipList(Updates.Results.Tips));
@@ -1987,15 +1992,15 @@ UnicodeString __fastcall FirstUnshownTip()
 class TTipsData : public TComponent
 {
 public:
-  __fastcall TTipsData() :
-    TComponent(NULL)
+  TTipsData() :
+    TComponent(nullptr)
   {
   }
 
   int Index;
   TStringList * Tips;
 
-  static TTipsData * __fastcall Retrieve(TObject * Object)
+  static TTipsData * Retrieve(TObject * Object)
   {
     TComponent * Component = DebugNotNull(dynamic_cast<TComponent *>(Object));
     TComponent * TipsDataComponent = Component->FindComponent(QualifiedClassName());
@@ -2003,12 +2008,12 @@ public:
   }
 };
 //---------------------------------------------------------------------------
-static UnicodeString __fastcall TipsMessage(TTipsData * TipsData)
+static UnicodeString TipsMessage(TTipsData * TipsData)
 {
   return FMTLOAD(TIPS_MESSAGE, (TipsData->Index + 1, TipsData->Tips->Count));
 }
 //---------------------------------------------------------------------------
-static void __fastcall UpdateTipsForm(TCustomForm * Form)
+static void UpdateTipsForm(TCustomForm * Form)
 {
   TTipsData * TipsData = TTipsData::Retrieve(Form);
 
@@ -2021,14 +2026,14 @@ static void __fastcall UpdateTipsForm(TCustomForm * Form)
   MessageLabel->Caption = TipsMessage(TipsData);
 }
 //---------------------------------------------------------------------------
-static UnicodeString __fastcall TipUrl(TTipsData * TipsData)
+static UnicodeString TipUrl(TTipsData * TipsData)
 {
   UnicodeString Tip = TipsData->Tips->Strings[TipsData->Index];
   UnicodeString TipParams = FORMAT(L"tip=%s", (Tip));
   return AppendUrlParams(WinConfiguration->Updates.Results.TipsUrl, TipParams);
 }
 //---------------------------------------------------------------------------
-static void __fastcall TipSeen(const UnicodeString & Tip)
+static void TipSeen(const UnicodeString & Tip)
 {
   std::unique_ptr<TStringList> TipsSeen(TextToTipList(WinConfiguration->TipsSeen));
   TipsSeen->Values[Tip] = FormatDateTime(L"yyyy-mm-dd", Now());
@@ -2039,7 +2044,7 @@ static void __fastcall TipSeen(const UnicodeString & Tip)
   WinConfiguration->Save();
 }
 //---------------------------------------------------------------------------
-static void __fastcall PrevNextTipClick(void * Data, TObject * Sender, unsigned int & /*Answer*/)
+static void PrevNextTipClick(void * Data, TObject * Sender, unsigned int & /*Answer*/)
 {
   TCustomForm * Form = GetParentForm(dynamic_cast<TControl *>(Sender));
   TTipsData * TipsData = TTipsData::Retrieve(Form);
@@ -2050,7 +2055,7 @@ static void __fastcall PrevNextTipClick(void * Data, TObject * Sender, unsigned 
   NavigateMessageDialogToUrl(Form, Url);
 }
 //---------------------------------------------------------------------------
-static void __fastcall ShowTip(bool AutoShow)
+static void ShowTip(bool AutoShow)
 {
   TUpdatesConfiguration Updates = WinConfiguration->Updates;
   UnicodeString Tip = FirstUnshownTip();
@@ -2101,7 +2106,7 @@ static void __fastcall ShowTip(bool AutoShow)
   }
 
   int Answers = qaYes | qaNo | qaCancel;
-  std::unique_ptr<TForm> Dialog(CreateMoreMessageDialogEx(Message, NULL, qtInformation, Answers, HELP_TIPS, &Params));
+  std::unique_ptr<TForm> Dialog(CreateMoreMessageDialogEx(Message, nullptr, qtInformation, Answers, HELP_TIPS, &Params));
   Dialog->InsertComponent(TipsData.release());
   UpdateTipsForm(Dialog.get());
   TipSeen(Tip);
@@ -2115,13 +2120,13 @@ static void __fastcall ShowTip(bool AutoShow)
   WinConfiguration->Updates = Updates;
 }
 //---------------------------------------------------------------------------
-void __fastcall AutoShowNewTip()
+void AutoShowNewTip()
 {
   Configuration->Usage->Inc(L"TipsShownAuto");
   ShowTip(true);
 }
 //---------------------------------------------------------------------------
-void __fastcall ShowTips()
+void ShowTips()
 {
   {
     TOperationVisualizer Visualizer;
@@ -2137,7 +2142,7 @@ void __fastcall ShowTips()
   ShowTip(false);
 }
 //---------------------------------------------------------------------------
-void __fastcall TipsUpdateStaticUsage()
+void TipsUpdateStaticUsage()
 {
   TUpdatesConfiguration Updates = WinConfiguration->Updates;
   std::unique_ptr<TStringList> Tips(TextToTipList(Updates.Results.Tips));
@@ -2155,7 +2160,7 @@ static void ReadNetVersion(TRegistryStorage * Registry)
   }
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall GetNetVersionStr()
+UnicodeString GetNetVersionStr()
 {
   if (NetVersionStr.IsEmpty())
   {
@@ -2193,7 +2198,7 @@ UnicodeString __fastcall GetNetVersionStr()
   return NetVersionStr;
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall GetPowerShellVersionStr()
+UnicodeString GetPowerShellVersionStr()
 {
   if (PowerShellVersionStr.IsEmpty())
   {
@@ -2408,7 +2413,7 @@ static void DoCollectComRegistration(TConsole * Console, TStrings * Keys)
             Keys->Add(KeyName);
             UnicodeString Platforms;
             CollectCLSIDKey(Console, Keys, 32, Storage.get(), CLSID, CommonCodeBase, L"32-bit", Platforms);
-            if (Storage64.get() != NULL)
+            if (Storage64.get() != nullptr)
             {
               CollectCLSIDKey(Console, Keys, 64, Storage64.get(), CLSID, CommonCodeBase, L"64-bit", Platforms);
             }
@@ -2438,7 +2443,7 @@ static void DoCollectComRegistration(TConsole * Console, TStrings * Keys)
 
     UnicodeString InterfaceKey = L"Interface";
     if (Storage->OpenSubKey(InterfaceKey, false) &&
-        ((Storage64.get() == NULL) || Storage64->OpenSubKey(InterfaceKey, false)))
+        ((Storage64.get() == nullptr) || Storage64->OpenSubKey(InterfaceKey, false)))
     {
       Console->PrintLine(L"Interfaces:");
       std::unique_ptr<TStringList> KeyNames(new TStringList());
@@ -2448,7 +2453,7 @@ static void DoCollectComRegistration(TConsole * Console, TStrings * Keys)
       {
         KeyNames->Objects[Index] = reinterpret_cast<TObject *>(32);
       }
-      if (Storage64.get() != NULL)
+      if (Storage64.get() != nullptr)
       {
         std::unique_ptr<TStringList> KeyNames64(new TStringList());
         Storage64->GetSubKeyNames(KeyNames64.get());
@@ -2561,7 +2566,7 @@ bool DoUnregisterChoice(TConsole * Console)
 }
 //---------------------------------------------------------------------------
 typedef HRESULT WINAPI (* RegDeleteTreeProc)(HKEY Key, LPCWSTR SubKey);
-static RegDeleteTreeProc ARegDeleteTree = NULL;
+static RegDeleteTreeProc ARegDeleteTree = nullptr;
 //---------------------------------------------------------------------------
 void DoDeleteKey(TConsole * Console, TRegistry * Registry, const UnicodeString & Key, int Platform, bool & AnyDeleted, bool & AllDeleted)
 {
@@ -2570,7 +2575,7 @@ void DoDeleteKey(TConsole * Console, TRegistry * Registry, const UnicodeString &
   bool Result = Registry->OpenKey(ParentKey, false);
   if (Result)
   {
-    if (DebugAlwaysFalse(ARegDeleteTree == NULL))
+    if (DebugAlwaysFalse(ARegDeleteTree == nullptr))
     {
       Result = false;
     }
@@ -2600,16 +2605,16 @@ int ComRegistration(TConsole * Console)
   int Result = RESULT_SUCCESS;
   try
   {
-    if (ARegDeleteTree == NULL)
+    if (ARegDeleteTree == nullptr)
     {
       HINSTANCE AdvapiLibrary = LoadLibrary(L"advapi32.dll");
-      if (DebugAlwaysTrue(AdvapiLibrary != NULL))
+      if (DebugAlwaysTrue(AdvapiLibrary != nullptr))
       {
         ARegDeleteTree = reinterpret_cast<RegDeleteTreeProc>(GetProcAddress(AdvapiLibrary, "RegDeleteTreeW"));
       }
     }
 
-    if (ARegDeleteTree == NULL)
+    if (ARegDeleteTree == nullptr)
     {
       throw Exception(FORMAT(L"Not supported on %s", (GetOSInfo())));
     }

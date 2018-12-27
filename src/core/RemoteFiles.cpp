@@ -2657,7 +2657,7 @@ void TSynchronizeProgress::ItemProcessed(const TChecklistItem * ChecklistItem)
 //---------------------------------------------------------------------------
 int64_t TSynchronizeProgress::GetProcessed(const TFileOperationProgressType * CurrentItemOperationProgress) const
 {
-  DebugAssert(!TFileOperationProgressType::IsIndeterminateOperation(CurrentItemOperationProgress->Operation));
+  DebugAssert(!TFileOperationProgressType::IsIndeterminateOperation(CurrentItemOperationProgress->Operation()));
 
   // Need to calculate the total size on the first call only,
   // as at the time the contrusctor it called, we usually do not have sizes of folders caculated yet.
@@ -2665,7 +2665,7 @@ int64_t TSynchronizeProgress::GetProcessed(const TFileOperationProgressType * Cu
   {
     FTotalSize = 0;
 
-    for (int Index = 0; Index < FChecklist->Count; Index++)
+    for (intptr_t Index = 0; Index < FChecklist->Count; Index++)
     {
       const TChecklistItem * ChecklistItem = FChecklist->GetItem(Index);
       if (ChecklistItem->Checked)
@@ -2680,13 +2680,13 @@ int64_t TSynchronizeProgress::GetProcessed(const TFileOperationProgressType * Cu
   return (FProcessedSize + CurrentItemProcessedSize);
 }
 //---------------------------------------------------------------------------
-int TSynchronizeProgress::Progress(const TFileOperationProgressType * CurrentItemOperationProgress) const
+intptr_t TSynchronizeProgress::Progress(const TFileOperationProgressType * CurrentItemOperationProgress) const
 {
   int64_t Processed = GetProcessed(CurrentItemOperationProgress);
-  int Result;
+  intptr_t Result;
   if (FTotalSize > 0)
   {
-    Result = (int)((Processed * 100) / FTotalSize);
+    Result = ToIntPtr((Processed * 100) / FTotalSize);
   }
   else
   {

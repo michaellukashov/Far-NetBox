@@ -780,6 +780,7 @@ void TGUIConfiguration::LoadData(THierarchicalStorage * Storage)
 
   // duplicated from core\configuration.cpp
 #undef KEYEX
+#undef KEYEX2
 #define KEYEX(TYPE, NAME, VAR) Set ## VAR(Storage->Read ## TYPE(LASTELEM(UnicodeString(#NAME)), Get ## VAR()))
 #define KEYEX2(TYPE, NAME, VAR) VAR = Storage->Read ## TYPE(LASTELEM(UnicodeString(#NAME)), VAR)
 #undef KEY

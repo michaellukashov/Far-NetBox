@@ -784,7 +784,7 @@ void TTerminalQueue::UpdateStatusForList(
 //---------------------------------------------------------------------------
 TTerminalQueueStatus *TTerminalQueue::CreateStatus(TTerminalQueueStatus *&Current)
 {
-  std::unique_ptr<TTerminalQueueStatus> Status(std::make_unique<TTerminalQueueStatus>());
+  std::unique_ptr<TTerminalQueueStatus> Status(new TTerminalQueueStatus());
   try__catch
   {
     try__finally

@@ -119,7 +119,7 @@ typedef nb::FastDelegate2<void,
 typedef void (__closure *TDeleteLocalFileEvent)(
 #endif // #if 0
 typedef nb::FastDelegate3<void,
-  UnicodeString /*FileName*/, bool /*Alternative*/, int & /*Deleted*/> TDeleteLocalFileEvent;
+  UnicodeString /*FileName*/, bool /*Alternative*/, intptr_t & /*Deleted*/> TDeleteLocalFileEvent;
 #if 0
 typedef int (__closure *TDirectoryModifiedEvent)
   (TTerminal * Terminal, const UnicodeString Directory, bool SubDirs);
@@ -239,13 +239,7 @@ public:
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TTerminal) || TSessionUI::is(Kind); }
 public:
   // TScript::SynchronizeProc relies on the order
-  __removed enum TSynchronizeMode { smRemote, smLocal, smBoth };
-  enum TSynchronizeMode
-  {
-    smRemote,
-    smLocal,
-    smBoth,
-  };
+  enum TSynchronizeMode { smRemote, smLocal, smBoth };
 
   static const int spDelete = 0x01; // cannot be combined with spTimestamp
   static const int spNoConfirmation = 0x02; // has no effect for spTimestamp
@@ -636,9 +630,9 @@ protected:
   virtual const TTerminal *GetPasswordSource() const { return this; }
 
 public:
-  explicit TTerminal(TObjectClassId Kind = OBJECT_CLASS_TTerminal);
+  explicit TTerminal(TObjectClassId Kind = OBJECT_CLASS_TTerminal) noexcept;
   void Init(TSessionData *ASessionData, TConfiguration *AConfiguration);
-  virtual ~TTerminal();
+  virtual ~TTerminal() noexcept;
   void Open();
   void Close();
   void FingerprintScan(UnicodeString &SHA256, UnicodeString &MD5);
@@ -912,10 +906,10 @@ public:
   static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TSecondaryTerminal); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TSecondaryTerminal) || TTerminal::is(Kind); }
 public:
-  TSecondaryTerminal() : TTerminal(OBJECT_CLASS_TSecondaryTerminal), FMainTerminal(nullptr) {}
-  explicit TSecondaryTerminal(TTerminal *MainTerminal);
-  explicit TSecondaryTerminal(TObjectClassId Kind, TTerminal *MainTerminal);
-  virtual ~TSecondaryTerminal() = default;
+  TSecondaryTerminal() noexcept : TTerminal(OBJECT_CLASS_TSecondaryTerminal), FMainTerminal(nullptr) {}
+  explicit TSecondaryTerminal(TTerminal *MainTerminal) noexcept;
+  explicit TSecondaryTerminal(TObjectClassId Kind, TTerminal *MainTerminal) noexcept;
+  virtual ~TSecondaryTerminal() noexcept = default;
   void Init(TSessionData *ASessionData, TConfiguration *AConfiguration,
     const UnicodeString Name);
 
@@ -940,8 +934,8 @@ class NB_CORE_EXPORT TTerminalList : public TObjectList
 {
   NB_DISABLE_COPY(TTerminalList)
 public:
-  explicit TTerminalList(TConfiguration *AConfiguration);
-  virtual ~TTerminalList();
+  explicit TTerminalList(TConfiguration *AConfiguration) noexcept;
+  virtual ~TTerminalList() noexcept;
 
   virtual TTerminal * NewTerminal(TSessionData *Data);
   virtual void FreeTerminal(TTerminal *Terminal);
@@ -954,7 +948,7 @@ protected:
   virtual TTerminal * CreateTerminal(TSessionData *Data);
 
 private:
-  TConfiguration *FConfiguration;
+  TConfiguration *FConfiguration{nullptr};
 
 public:
   TTerminal * GetTerminal(intptr_t Index);
@@ -967,15 +961,15 @@ public:
   static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TCustomCommandParams); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TCustomCommandParams) || TObject::is(Kind); }
 public:
-  TCustomCommandParams() : TObject(OBJECT_CLASS_TCustomCommandParams), Params(0) {}
+  TCustomCommandParams() : TObject(OBJECT_CLASS_TCustomCommandParams) {}
   UnicodeString Command;
-  intptr_t Params;
+  intptr_t Params{0};
   TCaptureOutputEvent OutputEvent;
 };
 //---------------------------------------------------------------------------
 struct NB_CORE_EXPORT TCalculateSizeStats : public TObject
 {
-  TCalculateSizeStats();
+  TCalculateSizeStats() noexcept;
 
   intptr_t Files{0};
   intptr_t Directories{0};
@@ -991,7 +985,7 @@ public:
   static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TCalculateSizeParams); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TCalculateSizeParams) || TObject::is(Kind); }
 public:
-  TCalculateSizeParams();
+  TCalculateSizeParams() noexcept;
   int64_t Size{0};
   intptr_t Params{0};
   const TCopyParamType *CopyParam{nullptr};
@@ -1036,10 +1030,10 @@ struct NB_CORE_EXPORT TSynchronizeOptions : public TObject
 {
   NB_DISABLE_COPY(TSynchronizeOptions)
 public:
-  TSynchronizeOptions();
-  ~TSynchronizeOptions();
+  TSynchronizeOptions() noexcept;
+  ~TSynchronizeOptions() noexcept;
 
-  TStringList *Filter;
+  TStringList *Filter{nullptr};
 
   bool FilterFind(const UnicodeString AFileName) const;
   bool MatchesFilter(const UnicodeString AFileName) const;

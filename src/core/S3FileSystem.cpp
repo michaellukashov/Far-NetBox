@@ -887,7 +887,7 @@ void TS3FileSystem::ReadDirectoryInternal(
 
       S3_list_service(
         FLibS3Protocol, FAccessKeyId.c_str(), FSecretAccessKey.c_str(), 0, FHostName.c_str(),
-        StrToS3(FAuthRegion), MaxKeys, FRequestContext, FTimeout, &ListServiceHandler, &Data);
+        StrToS3(FAuthRegion), (int)MaxKeys, FRequestContext, FTimeout, &ListServiceHandler, &Data);
 
       HandleNonBucketStatus(Data, Retry);
     }

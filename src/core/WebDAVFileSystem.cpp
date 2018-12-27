@@ -1325,7 +1325,7 @@ void TWebDAVFileSystem::Source(
     {
       ::SetFilePointer(AHandle.Handle, 0, nullptr, FILE_BEGIN);
 
-      FD = _open_osfhandle((intptr_t)AHandle.Handle, O_BINARY);
+      FD = _open_osfhandle(ToIntPtr(AHandle.Handle), O_BINARY);
       if (FD < 0)
       {
         throw ESkipFile();
@@ -1733,7 +1733,7 @@ void TWebDAVFileSystem::Sink(
     int FD = -1;
     try__finally
     {
-      FD = _open_osfhandle((intptr_t)LocalFileHandle, O_BINARY);
+      FD = _open_osfhandle(ToIntPtr(LocalFileHandle), O_BINARY);
       if (FD < 0)
       {
         throw ESkipFile();

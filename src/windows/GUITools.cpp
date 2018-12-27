@@ -126,7 +126,7 @@ void OpenSessionInPutty(const UnicodeString PuttyPath,
 
       if (IsUWP())
       {
-        bool Telnet = (SessionData->FSProtocol == fsFTP) && GetGUIConfiguration()->TelnetForFtpInPutty;
+        bool Telnet = (SessionData->FSProtocol() == fsFTP) && GetGUIConfiguration()->TelnetForFtpInPutty;
         if (Telnet)
         {
           AddToList(PuttyParams, L"-telnet", L" ");
@@ -138,7 +138,7 @@ void OpenSessionInPutty(const UnicodeString PuttyPath,
         {
           AddToList(PuttyParams, FORMAT(L"-l %s", EscapePuttyCommandParam(SessionData->UserName())), L" ");
         }
-        if ((SessionData->FSProtocol != fsFTP) && (SessionData->PortNumber() != SshPortNumber))
+        if ((SessionData->FSProtocol() != fsFTP) && (SessionData->PortNumber() != SshPortNumber))
         {
           AddToList(PuttyParams, FORMAT(L"-P %d", SessionData->PortNumber()), L" ");
         }
@@ -149,12 +149,12 @@ void OpenSessionInPutty(const UnicodeString PuttyPath,
           {
             AddToList(PuttyParams, FORMAT(L"-i \"%s\"", SessionData->PublicKeyFile()), L" ");
           }
-          AddToList(PuttyParams, (SessionData->TryAgent ? L"-agent" : L"-noagent"), L" ");
-          if (SessionData->TryAgent)
+          AddToList(PuttyParams, (SessionData->TryAgent() ? L"-agent" : L"-noagent"), L" ");
+          if (SessionData->TryAgent())
           {
-            AddToList(PuttyParams, (SessionData->AgentFwd ? L"-A" : L"-a"), L" ");
+            AddToList(PuttyParams, (SessionData->AgentFwd() ? L"-A" : L"-a"), L" ");
           }
-          if (SessionData->Compression)
+          if (SessionData->Compression())
           {
             AddToList(PuttyParams, L"-C", L" ");
           }
@@ -213,7 +213,7 @@ void OpenSessionInPutty(const UnicodeString PuttyPath,
               ExportData->SetWinTitle(SessionData->SessionName);
               ExportData->SetPassword(L"");
 
-              if (SessionData->FSProtocol == fsFTP)
+              if (SessionData->FSProtocol() == fsFTP)
               {
                 if (GetGUIConfiguration()->TelnetForFtpInPutty)
                 {

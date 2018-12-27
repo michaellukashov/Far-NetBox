@@ -580,10 +580,7 @@ class NB_CORE_EXPORT TValidProperties // : public TObject
 {
   CUSTOM_MEM_ALLOCATION_IMPL
 public:
-  TValidProperties() :
-    FValue(0)
-  {
-  }
+  TValidProperties() noexcept = default;
   void Clear()
   {
     FValue = 0;
@@ -682,7 +679,7 @@ public:
     UnicodeString FileName;
     UnicodeString Directory;
     TDateTime Modification;
-    TModificationFmt ModificationFmt;
+    TModificationFmt ModificationFmt{mfNone};
     int64_t Size{0};
   };
 
@@ -807,7 +804,7 @@ public:
   explicit TSynchronizeProgress(const TSynchronizeChecklist * Checklist);
 
   void ItemProcessed(const TChecklistItem* ChecklistItem);
-  int Progress(const TFileOperationProgressType * CurrentItemOperationProgress) const;
+  intptr_t Progress(const TFileOperationProgressType * CurrentItemOperationProgress) const;
   TDateTime TimeLeft(const TFileOperationProgressType * CurrentItemOperationProgress) const;
 
 private:

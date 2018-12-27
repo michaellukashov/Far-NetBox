@@ -243,7 +243,7 @@ void __fastcall ShowExtendedExceptionEx(TTerminal * Terminal,
       DebugAssert(Show);
       bool ConfirmExitOnCompletion =
         CloseOnCompletion &&
-        ((Terminate->Operation == odoDisconnect) || (Terminate->Operation == odoSuspend)) &&
+        ((Terminate->Operation() == odoDisconnect) || (Terminate->Operation() == odoSuspend)) &&
         WinConfiguration->ConfirmExitOnCompletion;
 
       if (ConfirmExitOnCompletion)

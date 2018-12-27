@@ -955,6 +955,7 @@ void TCopyParamType::Save(THierarchicalStorage * Storage, const TCopyParamType *
       Storage->Write ## TYPE(NAME, CONV(PROPERTY)); \
     }
   #define WRITE_DATA_CONV(TYPE, NAME, PROPERTY) WRITE_DATA_EX(TYPE, NAME, PROPERTY, WRITE_DATA_CONV_FUNC)
+  #undef WRITE_DATA
   #define WRITE_DATA(TYPE, PROPERTY) WRITE_DATA_EX(TYPE, TEXT(#PROPERTY), PROPERTY, )
 
   WRITE_DATA(Bool, AddXToDirectories);
@@ -969,6 +970,7 @@ void TCopyParamType::Save(THierarchicalStorage * Storage, const TCopyParamType *
   WRITE_DATA(Integer, TransferMode);
   WRITE_DATA(Integer, ResumeSupport);
   WRITE_DATA(Int64, ResumeThreshold);
+  #undef WRITE_DATA_CONV_FUNC
   #define WRITE_DATA_CONV_FUNC(X) (uint32_t)(X)
   WRITE_DATA_CONV(Integer, L"ReplaceInvalidChars", InvalidCharsReplacement);
   WRITE_DATA(String, LocalInvalidChars);

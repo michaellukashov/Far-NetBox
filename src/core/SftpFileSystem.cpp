@@ -2344,11 +2344,11 @@ uint32_t TSFTPFileSystem::TransferBlockSize(uint32_t Overhead,
   // size + message number + type
   const uint32_t SFTPPacketOverhead = 4 + 4 + 1;
   uint32_t AMinPacketSize = FSecureShell->MinPacketSize();
-  (void)AMinPacketSize;
+  nb::used(AMinPacketSize);
   uint32_t AMaxPacketSize = FSecureShell->MaxPacketSize();
   bool MaxPacketSizeValid = (AMaxPacketSize > 0);
-  unsigned long CPSRounded = TEncryption::RoundToBlock(OperationProgress->CPS());
-  unsigned long Result = CPSRounded;
+  uintptr_t CPSRounded = TEncryption::RoundToBlock(OperationProgress->CPS());
+  uint32_t Result = (uint32_t)CPSRounded;
 
   if ((MaxPacketSize > 0) &&
     ((MaxPacketSize < AMaxPacketSize) || !MaxPacketSizeValid))
@@ -2388,10 +2388,10 @@ uint32_t TSFTPFileSystem::TransferBlockSize(uint32_t Overhead,
       AMaxPacketSize -= Overhead;
       if (Result > AMaxPacketSize)
       {
-        unsigned int MaxPacketSizeRounded = TEncryption::RoundToBlockDown(AMaxPacketSize);
+        intptr_t MaxPacketSizeRounded = TEncryption::RoundToBlockDown(AMaxPacketSize);
         if (MaxPacketSizeRounded > 0)
         {
-          AMaxPacketSize = MaxPacketSizeRounded;
+          AMaxPacketSize = (uint32_t)MaxPacketSizeRounded;
         }
         Result = AMaxPacketSize;
       }

@@ -1001,6 +1001,7 @@ void TSessionData::DoSave(THierarchicalStorage *Storage,
       Storage->Write ## TYPE(NAME, CONV(PROPERTY)); \
     }
 #define WRITE_DATA_CONV(TYPE, NAME, PROPERTY) WRITE_DATA_EX(TYPE, NAME, PROPERTY, WRITE_DATA_CONV_FUNC)
+#undef WRITE_DATA
 #define WRITE_DATA(TYPE, PROPERTY) WRITE_DATA_EX(TYPE, MB_TEXT(#PROPERTY), Get ## PROPERTY(), )
 
   Storage->WriteString("Version", ::VersionNumberToStr(::GetCurrentVersionNumber()));
@@ -1132,11 +1133,13 @@ void TSessionData::DoSave(THierarchicalStorage *Storage,
   {
     WRITE_DATA_EX(StringRaw, "ProxyTelnetCommand", GetProxyTelnetCommand(), );
   }
+#undef WRITE_DATA_CONV_FUNC
 #define WRITE_DATA_CONV_FUNC(X) (((X) + 2) % 3)
   WRITE_DATA_CONV(Integer, "ProxyDNS", GetProxyDNS());
 #undef WRITE_DATA_CONV_FUNC
   WRITE_DATA_EX(Bool, "ProxyLocalhost", GetProxyLocalhost(), );
 
+#undef WRITE_DATA_CONV_FUNC
 #define WRITE_DATA_CONV_FUNC(X) (2 - (X))
 #define WRITE_BUG(BUG) WRITE_DATA_CONV(Integer, MB_TEXT("Bug" #BUG), GetBug(sb##BUG));
   WRITE_BUG(Ignore1);

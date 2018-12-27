@@ -679,6 +679,7 @@ uintptr_t ExceptionMessageDialog(Exception * /*E*/, TQueryType /*Type*/,
     FORMAT(MessageFormat.IsEmpty() ? UnicodeString(L"%s") : MessageFormat, (Message)),
     MoreMessages, Type, Answers, HelpKeyword, Params);
 #endif // #if 0
+  return 0;
 }
 //---------------------------------------------------------------------------
 uintptr_t FatalExceptionMessageDialog(Exception * E, TQueryType Type,

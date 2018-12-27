@@ -64,7 +64,7 @@ bool FontDialog(TFont * Font);
 
 NB_CORE_EXPORT bool SaveDialog(UnicodeString Title, UnicodeString Filter,
   UnicodeString DefaultExt, UnicodeString & FileName);
-NB_CORE_EXPORT bool AutodetectProxy(UnicodeString & HostName, int & PortNumber);
+NB_CORE_EXPORT bool AutodetectProxy(UnicodeString & HostName, intptr_t& PortNumber);
 NB_CORE_EXPORT bool IsWin64();
 NB_CORE_EXPORT void CopyToClipboard(UnicodeString Text);
 NB_CORE_EXPORT void CopyToClipboard(TStrings * Strings);
