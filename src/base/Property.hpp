@@ -209,7 +209,7 @@ public:
   }
   RWProperty(const RWProperty&) noexcept = default;
   RWProperty(RWProperty&&) noexcept = default;
-  RWProperty& operator=(const RWProperty&) noexcept = default;
+  RWProperty& operator=(const RWProperty&) = default;
   RWProperty& operator=(RWProperty&&) noexcept = default;
 //  RWProperty(const T& in) : data(in) {}
 //  RWProperty(T&& in) : data(std::forward<T>(in)) {}
