@@ -8,6 +8,7 @@
 //---------------------------------------------------------------------------
 #include "stdafx.h"
 #include "AsyncSslSocketLayer.h"
+#include <TextsCore.h>
 
 #include <openssl/x509v3.h>
 #include <openssl/err.h>
@@ -18,7 +19,7 @@ CCriticalSectionWrapper CAsyncSslSocketLayer::m_sCriticalSection;
 
 CAsyncSslSocketLayer::t_SslLayerList* CAsyncSslSocketLayer::m_pSslLayerList = 0;
 int CAsyncSslSocketLayer::m_nSslRefCount = 0;
-std::map<SSL_CTX *, int> CAsyncSslSocketLayer::m_contextRefCount;
+rde::map<SSL_CTX *, int> CAsyncSslSocketLayer::m_contextRefCount;
 
 CAsyncSslSocketLayer::CAsyncSslSocketLayer()
 {
@@ -61,8 +62,8 @@ CAsyncSslSocketLayer::CAsyncSslSocketLayer()
 CAsyncSslSocketLayer::~CAsyncSslSocketLayer()
 {
   UnloadSSL();
-  delete [] m_pNetworkSendBuffer;
-  delete [] m_pRetrySendBuffer;
+  nb_free(m_pNetworkSendBuffer);
+  nb_free(m_pRetrySendBuffer);
 }
 
 int CAsyncSslSocketLayer::InitSSL()
@@ -108,7 +109,7 @@ void CAsyncSslSocketLayer::OnReceive(int nErrorCode)
     m_mayTriggerRead = false;
 
     //Get number of bytes we can receive and store in the network input bio
-    int len = BIO_ctrl_get_write_guarantee(m_nbio);
+    size_t len = BIO_ctrl_get_write_guarantee(m_nbio);
     if (len > 16384)
       len = 16384;
     else if (!len)
@@ -121,7 +122,7 @@ void CAsyncSslSocketLayer::OnReceive(int nErrorCode)
     int numread = 0;
 
     // Receive data
-    numread = ReceiveNext(buffer, len);
+    numread = ReceiveNext(buffer, (int)len);
     if (numread > 0)
     {
       //Store it in the network input bio and process data
@@ -157,14 +158,14 @@ void CAsyncSslSocketLayer::OnReceive(int nErrorCode)
       if (numwrite >= 0)
       {
         BIO_ctrl(m_sslbio, BIO_CTRL_FLUSH, 0, NULL);
-        delete [] m_pRetrySendBuffer;
+        nb_free(m_pRetrySendBuffer);
         m_pRetrySendBuffer = 0;
       }
       else if (numwrite == -1)
       {
         if (!BIO_should_retry(m_sslbio))
         {
-          delete [] m_pRetrySendBuffer;
+          nb_free(m_pRetrySendBuffer);
           m_pRetrySendBuffer = 0;
 
           ::SetLastError(WSAECONNABORTED);
@@ -253,7 +254,7 @@ void CAsyncSslSocketLayer::OnSend(int nErrorCode)
     //Send the data waiting in the network bio
     char buffer[32 * 1024];
     size_t len = BIO_ctrl_pending(m_nbio);
-    int numread = BIO_read(m_nbio, buffer, std::min(len, sizeof(buffer)));
+    int numread = BIO_read(m_nbio, buffer, std::min<int>(len, sizeof(buffer)));
     if (numread <= 0)
       m_mayTriggerWrite = true;
     while (numread > 0)
@@ -281,11 +282,11 @@ void CAsyncSslSocketLayer::OnSend(int nErrorCode)
         {
           char * tmp = m_pNetworkSendBuffer;
           m_nNetworkSendBufferMaxLen = static_cast<int>((m_nNetworkSendBufferLen + numread - numsent) * 1.5);
-          m_pNetworkSendBuffer = new char[m_nNetworkSendBufferMaxLen];
+          m_pNetworkSendBuffer = nb::chcalloc(m_nNetworkSendBufferMaxLen);
           if (tmp)
           {
             memcpy(m_pNetworkSendBuffer, tmp, m_nNetworkSendBufferLen);
-            delete [] tmp;
+            nb_free(tmp);
           }
         }
         DebugAssert(m_pNetworkSendBuffer);
@@ -302,7 +303,7 @@ void CAsyncSslSocketLayer::OnSend(int nErrorCode)
         m_mayTriggerWrite = true;
         break;
       }
-      numread = BIO_read(m_nbio, buffer, len);
+      numread = BIO_read(m_nbio, buffer, (int)len);
       if (numread <= 0)
       {
         m_mayTriggerWrite = true;
@@ -315,14 +316,14 @@ void CAsyncSslSocketLayer::OnSend(int nErrorCode)
       if (numwrite >= 0)
       {
         BIO_ctrl(m_sslbio, BIO_CTRL_FLUSH, 0, NULL);
-        delete [] m_pRetrySendBuffer;
+        nb_free(m_pRetrySendBuffer);
         m_pRetrySendBuffer = 0;
       }
       else if (numwrite == -1)
       {
         if (!BIO_should_retry(m_sslbio))
         {
-          delete [] m_pRetrySendBuffer;
+          nb_free(m_pRetrySendBuffer);
           m_pRetrySendBuffer = 0;
 
           ::SetLastError(WSAECONNABORTED);
@@ -337,7 +338,7 @@ void CAsyncSslSocketLayer::OnSend(int nErrorCode)
     if (m_nShutDown == 1 && ShutDownComplete())
     {
       //Send shutdown notification if all pending data has been sent
-            // FileZilla3 calls ShutDownNext() here
+      // FileZilla3 calls ShutDownNext() here
       DoLayerCallback(LAYERCALLBACK_LAYERSPECIFIC, SSL_INFO, SSL_INFO_SHUTDOWNCOMPLETE);
       m_nShutDown++;
     }
@@ -389,9 +390,9 @@ int CAsyncSslSocketLayer::Send(const void* lpBuf, int nBufLen, int nFlags)
       return 0;
     }
 
-    int len = BIO_ctrl_get_write_guarantee(m_sslbio);
-    if (nBufLen > len)
-      nBufLen = len;
+    size_t len = BIO_ctrl_get_write_guarantee(m_sslbio);
+    if (nBufLen > (int)len)
+      nBufLen = (int)len;
     if (!len)
     {
       m_mayTriggerWriteUp = true;
@@ -399,7 +400,7 @@ int CAsyncSslSocketLayer::Send(const void* lpBuf, int nBufLen, int nFlags)
       ::SetLastError(WSAEWOULDBLOCK);
     }
 
-    m_pRetrySendBuffer = new char[nBufLen];
+    m_pRetrySendBuffer = nb::chcalloc(nBufLen);
     m_nRetrySendBufferLen = nBufLen;
     memcpy(m_pRetrySendBuffer, lpBuf, nBufLen);
 
@@ -407,7 +408,7 @@ int CAsyncSslSocketLayer::Send(const void* lpBuf, int nBufLen, int nFlags)
     if (numwrite >= 0)
     {
       BIO_ctrl(m_sslbio, BIO_CTRL_FLUSH, 0, NULL);
-      delete [] m_pRetrySendBuffer;
+      nb_free(m_pRetrySendBuffer);
       m_pRetrySendBuffer = 0;
     }
     else if (numwrite == -1)
@@ -430,7 +431,7 @@ int CAsyncSslSocketLayer::Send(const void* lpBuf, int nBufLen, int nFlags)
       }
       else
       {
-        delete [] m_pRetrySendBuffer;
+        nb_free(m_pRetrySendBuffer);
         m_pRetrySendBuffer = 0;
 
         ::SetLastError(WSAECONNABORTED);
@@ -648,7 +649,8 @@ int CAsyncSslSocketLayer::InitSSLConnection(bool clientMode,
     return res;
 
   m_sCriticalSection.Lock();
-  if ((SSL_CTX*)pSslContext)
+  SSL_CTX * ssl_ctx = (SSL_CTX*)pSslContext;
+  if (ssl_ctx)
   {
     if (m_ssl_ctx)
     {
@@ -657,14 +659,14 @@ int CAsyncSslSocketLayer::InitSSLConnection(bool clientMode,
       return SSL_FAILURE_INITSSL;
     }
 
-    std::map<SSL_CTX *, int>::iterator iter = m_contextRefCount.find((SSL_CTX*)pSslContext);
+    rde::map<SSL_CTX *, int>::iterator iter = m_contextRefCount.find(ssl_ctx);
     if (iter == m_contextRefCount.end() || iter->second < 1)
     {
       m_sCriticalSection.Unlock();
       ResetSslSession();
       return SSL_FAILURE_INITSSL;
     }
-    m_ssl_ctx = (SSL_CTX*)pSslContext;
+    m_ssl_ctx = ssl_ctx;
     iter->second++;
   }
   else if (!m_ssl_ctx)
@@ -707,7 +709,7 @@ int CAsyncSslSocketLayer::InitSSLConnection(bool clientMode,
     STACK_OF(SSL_CIPHER) * ciphers = SSL_get_ciphers(m_ssl);
     for (int i = 0; i < sk_SSL_CIPHER_num(ciphers); i++)
     {
-      SSL_CIPHER * cipher = sk_SSL_CIPHER_value(ciphers, i);
+      const SSL_CIPHER * cipher = sk_SSL_CIPHER_value(ciphers, i);
       LogSocketMessageRaw(FZ_LOG_INFO, A2CT(cipher->name));
     }
   }
@@ -715,7 +717,7 @@ int CAsyncSslSocketLayer::InitSSLConnection(bool clientMode,
 
   //Add current instance to list of active instances
   t_SslLayerList *tmp = m_pSslLayerList;
-  m_pSslLayerList = new t_SslLayerList;
+  m_pSslLayerList = new t_SslLayerList();
   m_pSslLayerList->pNext = tmp;
   m_pSslLayerList->pLayer = this;
   m_sCriticalSection.Unlock();
@@ -724,7 +726,7 @@ int CAsyncSslSocketLayer::InitSSLConnection(bool clientMode,
 
   //Create bios
   m_sslbio = BIO_new(BIO_f_ssl());
-  BIO_new_bio_pair(&m_ibio, 32768, &m_nbio, 32768);
+  BIO_new_bio_pair(&m_ibio, 32 * 1024, &m_nbio, 32 * 1024);
 
   if (!m_sslbio || !m_nbio || !m_ibio)
   {
@@ -799,7 +801,7 @@ void CAsyncSslSocketLayer::ResetSslSession()
 {
   if (m_pRetrySendBuffer)
   {
-    delete [] m_pRetrySendBuffer;
+    nb_free(m_pRetrySendBuffer);
     m_pRetrySendBuffer = 0;
   }
 
@@ -844,13 +846,13 @@ void CAsyncSslSocketLayer::ResetSslSession()
 
   if (m_ssl_ctx)
   {
-    std::map<SSL_CTX *, int>::iterator iter = m_contextRefCount.find(m_ssl_ctx);
+    rde::map<SSL_CTX *, int>::iterator iter = m_contextRefCount.find(m_ssl_ctx);
     if (iter != m_contextRefCount.end())
     {
       if (iter->second <= 1)
       {
         SSL_CTX_free(m_ssl_ctx);
-        m_contextRefCount.erase(iter);
+        m_contextRefCount.erase(m_ssl_ctx);
       }
       else
         iter->second--;
@@ -1023,7 +1025,8 @@ void CAsyncSslSocketLayer::apps_ssl_info_callback(const SSL *s, int where, int r
   if (!cur)
   {
     m_sCriticalSection.Unlock();
-    MessageBox(0, L"Can't lookup TLS session!", L"Critical error", MB_ICONEXCLAMATION);
+    // TODO: report error
+//    MessageBox(0, L"Can't lookup TLS session!", L"Critical error", MB_ICONEXCLAMATION);
     return;
   }
   else
@@ -1034,10 +1037,10 @@ void CAsyncSslSocketLayer::apps_ssl_info_callback(const SSL *s, int where, int r
   if (!pLayer->m_bUseSSL && (where != SSL_CB_LOOP))
     return;
 
-  char * str;
+  const char * str;
   int w;
 
-  w = where& ~SSL_ST_MASK;
+  w = where & ~SSL_ST_MASK;
 
   if (w & SSL_ST_CONNECT)
   {
@@ -1088,9 +1091,9 @@ void CAsyncSslSocketLayer::apps_ssl_info_callback(const SSL *s, int where, int r
     // exact SSL_CB_LOOP is abused for debugging
     if (where == SSL_CB_LOOP)
     {
-      debug = reinterpret_cast<char*>(ret);
+      debug = reinterpret_cast<char *>(ToIntPtr(ret));
     }
-    char *buffer = new char[4096 + ((debug != NULL) ? strlen(debug) : 0)];
+    char *buffer = nb::chcalloc(4096 + ((debug != NULL) ? strlen(debug) : 0));
     sprintf(buffer, "%s: %s",
         str,
         SSL_state_string_long(s));
@@ -1101,7 +1104,7 @@ void CAsyncSslSocketLayer::apps_ssl_info_callback(const SSL *s, int where, int r
     }
     USES_CONVERSION;
     pLayer->LogSocketMessageRaw(FZ_LOG_INFO, A2T(buffer));
-    delete[] buffer;
+    nb_free(buffer);
   }
   else if (where & SSL_CB_ALERT)
   {
@@ -1113,14 +1116,14 @@ void CAsyncSslSocketLayer::apps_ssl_info_callback(const SSL *s, int where, int r
     {
       if (strcmp(desc, "close notify"))
       {
-        char *buffer = new char[4096];
+        char *buffer = nb::chcalloc(4 * 1024);
         sprintf(buffer, "SSL3 alert %s: %s: %s",
             str,
             SSL_alert_type_string_long(ret),
             desc);
         pLayer->LogSocketMessageRaw(FZ_LOG_WARNING, A2T(buffer));
         pLayer->PrintLastErrorMsg();
-        delete [] buffer;
+        nb_free(buffer);
       }
     }
   }
@@ -1129,13 +1132,13 @@ void CAsyncSslSocketLayer::apps_ssl_info_callback(const SSL *s, int where, int r
   {
     if (ret == 0)
     {
-      char *buffer = new char[4096];
+      char *buffer = nb::chcalloc(4 * 1024);
       sprintf(buffer, "%s: failed in %s",
           str,
           SSL_state_string_long(s));
       pLayer->LogSocketMessageRaw(FZ_LOG_WARNING, A2T(buffer));
       pLayer->PrintLastErrorMsg();
-      delete [] buffer;
+      nb_free(buffer);
       if (!pLayer->m_bFailureSent)
       {
         pLayer->m_bFailureSent=TRUE;
@@ -1147,12 +1150,12 @@ void CAsyncSslSocketLayer::apps_ssl_info_callback(const SSL *s, int where, int r
       int error = SSL_get_error(s,ret);
       if (error != SSL_ERROR_WANT_READ && error != SSL_ERROR_WANT_WRITE)
       {
-        char *buffer = new char[4096];
+        char *buffer = nb::chcalloc(4 * 1024);
         sprintf(buffer, "%s: error in %s",
             str,
             SSL_state_string_long(s));
         pLayer->LogSocketMessageRaw(FZ_LOG_WARNING, A2T(buffer));
-        delete [] buffer;
+        nb_free(buffer);
         if (!pLayer->m_bFailureSent)
         {
           pLayer->m_bFailureSent=TRUE;
@@ -1281,12 +1284,12 @@ BOOL CAsyncSslSocketLayer::GetPeerCertificateData(t_SslCertData &SslCertData, LP
       ASN1_STRING *pString = X509_NAME_ENTRY_get_data(pX509NameEntry);
       CString str;
 
-      unsigned char *out;
+      uint8_t *out;
       int len = ASN1_STRING_to_UTF8(&out, pString);
       if (len > 0)
       {
         // Keep it huge
-        LPWSTR unicode = new WCHAR[len * 10];
+        LPWSTR unicode = nb::wchcalloc(len * 10);
         memset(unicode, 0, sizeof(WCHAR) * len * 10);
         int unicodeLen = MultiByteToWideChar(CP_UTF8, 0, (const char *)out, len, unicode, len * 10);
         if (unicodeLen > 0)
@@ -1294,17 +1297,17 @@ BOOL CAsyncSslSocketLayer::GetPeerCertificateData(t_SslCertData &SslCertData, LP
 #ifdef _UNICODE
           str = unicode;
 #else
-          LPSTR ansi = new CHAR[len * 10];
+          LPSTR ansi = nb::calloc(len * 10 * sizeof(CHAR));
           memset(ansi, 0, sizeof(CHAR) * len * 10);
           int ansiLen = WideCharToMultiByte(CP_ACP, 0, unicode, unicodeLen, ansi, len * 10, 0, 0);
           if (ansiLen > 0)
             str = ansi;
 
-          delete [] ansi;
+          nb_free(ansi);
 #endif
         }
-        delete [] unicode;
-        CRYPTO_free(out);
+        nb_free(unicode);
+        OPENSSL_free(out);
       }
 
       switch(OBJ_obj2nid(pObject))
@@ -1342,7 +1345,7 @@ BOOL CAsyncSslSocketLayer::GetPeerCertificateData(t_SslCertData &SslCertData, LP
         {
           TCHAR tmp[20];
           _stprintf(tmp, L"%d", OBJ_obj2nid(pObject));
-          int maxlen = 1024 - _tcslen(SslCertData.subject.Other)-1;
+          size_t  maxlen = 1024 - _tcslen(SslCertData.subject.Other)-1;
           _tcsncpy(SslCertData.subject.Other+_tcslen(SslCertData.subject.Other), tmp, maxlen);
 
           maxlen = 1024 - _tcslen(SslCertData.subject.Other)-1;
@@ -1356,7 +1359,7 @@ BOOL CAsyncSslSocketLayer::GetPeerCertificateData(t_SslCertData &SslCertData, LP
         }
         else
         {
-          int maxlen = 1024 - _tcslen(SslCertData.subject.Other)-1;
+          size_t maxlen = 1024 - _tcslen(SslCertData.subject.Other)-1;
 
           USES_CONVERSION;
           _tcsncpy(SslCertData.subject.Other+_tcslen(SslCertData.subject.Other), A2CT(OBJ_nid2sn(OBJ_obj2nid(pObject))), maxlen);
@@ -1390,12 +1393,12 @@ BOOL CAsyncSslSocketLayer::GetPeerCertificateData(t_SslCertData &SslCertData, LP
 
       CString str;
 
-      unsigned char *out;
+      uint8_t *out;
       int len = ASN1_STRING_to_UTF8(&out, pString);
       if (len > 0)
       {
         // Keep it huge
-        LPWSTR unicode = new WCHAR[len * 10];
+        LPWSTR unicode = nb::wchcalloc(len * 10);
         memset(unicode, 0, sizeof(WCHAR) * len * 10);
         int unicodeLen = MultiByteToWideChar(CP_UTF8, 0, (const char *)out, len, unicode, len * 10);
         if (unicodeLen > 0)
@@ -1403,17 +1406,17 @@ BOOL CAsyncSslSocketLayer::GetPeerCertificateData(t_SslCertData &SslCertData, LP
 #ifdef _UNICODE
           str = unicode;
 #else
-          LPSTR ansi = new CHAR[len * 10];
+          LPSTR ansi = nb::calloc(len * 10 * sizeof(CHAR));
           memset(ansi, 0, sizeof(CHAR) * len * 10);
           int ansiLen = WideCharToMultiByte(CP_ACP, 0, unicode, unicodeLen, ansi, len * 10, 0, 0);
           if (ansiLen > 0)
             str = ansi;
 
-          delete [] ansi;
+          nb_free(ansi);
 #endif
         }
-        delete [] unicode;
-        CRYPTO_free(out);
+        nb_free(unicode);
+        OPENSSL_free(out);
       }
 
       switch(OBJ_obj2nid(pObject))
@@ -1451,7 +1454,7 @@ BOOL CAsyncSslSocketLayer::GetPeerCertificateData(t_SslCertData &SslCertData, LP
         {
           TCHAR tmp[20];
           _stprintf(tmp, L"%d", OBJ_obj2nid(pObject));
-          int maxlen = 1024 - _tcslen(SslCertData.issuer.Other)-1;
+          size_t maxlen = 1024 - _tcslen(SslCertData.issuer.Other)-1;
           _tcsncpy(SslCertData.issuer.Other+_tcslen(SslCertData.issuer.Other), tmp, maxlen);
 
           maxlen = 1024 - _tcslen(SslCertData.issuer.Other)-1;
@@ -1465,7 +1468,7 @@ BOOL CAsyncSslSocketLayer::GetPeerCertificateData(t_SslCertData &SslCertData, LP
         }
         else
         {
-          int maxlen = 1024 - _tcslen(SslCertData.issuer.Other)-1;
+          size_t maxlen = 1024 - _tcslen(SslCertData.issuer.Other)-1;
 
           USES_CONVERSION;
           _tcsncpy(SslCertData.issuer.Other+_tcslen(SslCertData.issuer.Other), A2CT(OBJ_nid2sn(OBJ_obj2nid(pObject))), maxlen);
@@ -1529,12 +1532,13 @@ BOOL CAsyncSslSocketLayer::GetPeerCertificateData(t_SslCertData &SslCertData, LP
       USES_CONVERSION;
       u_char *data;
       int len = BIO_get_mem_data(subjectAltNameBio, &data);
-      char * buf = new char[len + 1];
+      char * buf = nb::chcalloc(len + 1);
+
       memcpy(buf, data, len);
       buf[len] = '\0';
       _tcsncpy(SslCertData.subjectAltName, A2CT(buf), LENOF(SslCertData.subjectAltName));
       SslCertData.subjectAltName[LENOF(SslCertData.subjectAltName) - 1] = '\0';
-      delete [] buf;
+      nb_free(buf);
     }
 
     BIO_vfree(subjectAltNameBio);
@@ -1546,7 +1550,7 @@ BOOL CAsyncSslSocketLayer::GetPeerCertificateData(t_SslCertData &SslCertData, LP
   // Inspired by ne_ssl_cert_export()
   // Find the length of the DER encoding.
   SslCertData.certificateLen = i2d_X509(pX509, NULL);
-  SslCertData.certificate = new unsigned char[SslCertData.certificateLen];
+  SslCertData.certificate = nb::calloc<uint8_t *>(1, SslCertData.certificateLen);
   unsigned char * p = SslCertData.certificate;
   i2d_X509(pX509, &p);
 
@@ -1633,9 +1637,9 @@ void CAsyncSslSocketLayer::PrintSessionInfo()
      * otherwise we should print their lengths too */
   }
 
-  const int buffer_size = 4096;
-  char *buffer = new char[buffer_size];
-  char *buffer2 = new char[buffer_size];
+  const int buffer_size = 4 * 1024;
+  char *buffer = nb::chcalloc(buffer_size);
+  char *buffer2 = nb::chcalloc(buffer_size);
   // see also ne_ssl_get_version and ne_ssl_get_cipher
   m_TlsVersionStr = SSL_get_version(m_ssl);
   sprintf(buffer, "%s: %s, %s, %s",
@@ -1649,9 +1653,9 @@ void CAsyncSslSocketLayer::PrintSessionInfo()
       m_TlsVersionStr.c_str(),
       m_CipherName.c_str());
   USES_CONVERSION;
-  LogSocketMessageRaw(FZ_LOG_PROGRESS, A2T(buffer));
-  delete [] buffer;
-  delete [] buffer2;
+  LogSocketMessageRaw(FZ_LOG_WARNING, A2T(buffer));
+  nb_free(buffer2);
+  nb_free(buffer);
 }
 
 void CAsyncSslSocketLayer::OnConnect(int nErrorCode)
@@ -1678,7 +1682,8 @@ CAsyncSslSocketLayer * CAsyncSslSocketLayer::LookupLayer(SSL * Ssl)
 
   if (Cur == NULL)
   {
-    MessageBox(0, L"Can't lookup TLS session!", L"Critical error", MB_ICONEXCLAMATION);
+    // TODO: report error
+//    MessageBox(0, L"Can't lookup TLS session!", L"Critical error", MB_ICONEXCLAMATION);
     Result = NULL;
   }
   else
@@ -1747,7 +1752,7 @@ int CAsyncSslSocketLayer::ProvideClientCert(
   USES_CONVERSION;
   CString Message;
   Message.LoadString(NEED_CLIENT_CERTIFICATE);
-  char * Buffer = new char[Message.GetLength() + 1];
+  char * Buffer = nb::chcalloc(Message.GetLength() + 1);
   strcpy(Buffer, T2A(Message));
 
   int Level;
@@ -1767,7 +1772,7 @@ int CAsyncSslSocketLayer::ProvideClientCert(
   }
 
   Layer->LogSocketMessageRaw(Level, A2T(Buffer));
-  delete [] Buffer;
+  nb_free(Buffer);
 
   return Result;
 }
@@ -1787,7 +1792,7 @@ BOOL CAsyncSslSocketLayer::SetCertStorage(CString file)
 void CAsyncSslSocketLayer::OnClose(int nErrorCode)
 {
   m_onCloseCalled = true;
-  if (m_bUseSSL && BIO_ctrl)
+  if (m_bUseSSL && &BIO_ctrl)
   {
     size_t pending = BIO_ctrl_pending(m_sslbio);
     if (pending > 0)
@@ -1805,14 +1810,14 @@ void CAsyncSslSocketLayer::PrintLastErrorMsg()
   int err = ERR_get_error();
   while (err)
   {
-    char *buffer = new char[512];
+    char *buffer = nb::chcalloc(512);
     const char *reason = ERR_reason_error_string(err);
     ERR_error_string(err, buffer);
     err = ERR_get_error();
     USES_CONVERSION;
     LogSocketMessageRaw(FZ_LOG_PROGRESS, A2T(buffer));
     LogSocketMessageRaw(FZ_LOG_WARNING, A2T(reason));
-    delete [] buffer;
+    nb_free(buffer);
   }
 }
 
@@ -1846,7 +1851,7 @@ void CAsyncSslSocketLayer::TriggerEvents()
   }
   else
   {
-    int len = BIO_ctrl_get_write_guarantee(m_nbio);
+    size_t len = BIO_ctrl_get_write_guarantee(m_nbio);
     if (len > 0 && m_mayTriggerRead)
     {
       m_mayTriggerRead = false;

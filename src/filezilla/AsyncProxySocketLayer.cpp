@@ -153,7 +153,7 @@ void CAsyncProxySocketLayer::OnReceive(int nErrorCode)
           t_ListenSocketCreatedStruct data;
           data.ip=ip;
           data.nPort=port;
-          DoLayerCallback(LAYERCALLBACK_LAYERSPECIFIC, PROXYSTATUS_LISTENSOCKETCREATED, (intptr_t)&data);
+          DoLayerCallback(LAYERCALLBACK_LAYERSPECIFIC, PROXYSTATUS_LISTENSOCKETCREATED, ToIntPtr(&data));
         }
         ClearBuffer();
       }
@@ -420,7 +420,7 @@ void CAsyncProxySocketLayer::OnReceive(int nErrorCode)
           t_ListenSocketCreatedStruct data;
           data.ip=ip;
           data.nPort=port;
-          DoLayerCallback(LAYERCALLBACK_LAYERSPECIFIC, PROXYSTATUS_LISTENSOCKETCREATED, (intptr_t)&data);
+          DoLayerCallback(LAYERCALLBACK_LAYERSPECIFIC, PROXYSTATUS_LISTENSOCKETCREATED, ToIntPtr(&data));
         }
         ClearBuffer();
       }
