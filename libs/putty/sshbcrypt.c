@@ -56,13 +56,13 @@ void bcrypt_genblock(int counter,
 {
     putty_SHA512_State shastate;
     unsigned char hashed_salt[64];
-    unsigned char countbuf[4];
 
     /* Hash the input salt with the counter value optionally suffixed
      * to get our real 32-byte salt */
     putty_SHA512_Init(&shastate);
     putty_SHA512_Bytes(&shastate, salt, saltbytes);
     if (counter) {
+        unsigned char countbuf[4];
         PUT_32BIT_MSB_FIRST(countbuf, counter);
         putty_SHA512_Bytes(&shastate, countbuf, 4);
     }

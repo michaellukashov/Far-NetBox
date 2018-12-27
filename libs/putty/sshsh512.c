@@ -294,7 +294,7 @@ void putty_SHA512_Final(putty_SHA512_State *s, unsigned char *digest) {
     }
 }
 
-void SHA384_Final(putty_SHA512_State *s, unsigned char *digest) {
+void putty_SHA384_Final(putty_SHA512_State *s, unsigned char *digest) {
     unsigned char biggerDigest[512 / 8];
     putty_SHA512_Final(s, biggerDigest);
     memcpy(digest, biggerDigest, 384 / 8);
@@ -314,7 +314,7 @@ void SHA384_Simple(const void *p, int len, unsigned char *output) {
 
     putty_SHA384_Init(&s);
     putty_SHA512_Bytes(&s, p, len);
-    SHA384_Final(&s, output);
+    putty_SHA384_Final(&s, output);
     smemclr(&s, sizeof(s));
 }
 
@@ -353,7 +353,7 @@ static void sha512_bytes(void *handle, const void *p, int len)
 {
     putty_SHA512_State *s = handle;
 
-    SHA512_Bytes(s, p, len);
+    putty_SHA512_Bytes(s, p, len);
 }
 
 static void sha512_final(void *handle, unsigned char *output)
@@ -374,7 +374,7 @@ static void *sha384_init(void)
     putty_SHA512_State *s;
 
     s = snew(putty_SHA512_State);
-    SHA384_Init(s);
+    putty_SHA384_Init(s);
     return s;
 }
 
@@ -382,7 +382,7 @@ static void sha384_final(void *handle, unsigned char *output)
 {
     putty_SHA512_State *s = handle;
 
-    SHA384_Final(s, output);
+    putty_SHA384_Final(s, output);
     smemclr(s, sizeof(*s));
     sfree(s);
 }
