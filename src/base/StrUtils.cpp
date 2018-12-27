@@ -31,3 +31,15 @@ NB_CORE_EXPORT UnicodeString LeftStr(const UnicodeString AStr, intptr_t Len)
 {
   return AStr.SubString(Len);
 }
+
+NB_CORE_EXPORT UnicodeString EncodeBase64(const char* AStr, intptr_t Len)
+{
+  UnicodeString Result;
+  return Result;
+}
+
+NB_CORE_EXPORT rde::vector<uint8_t> DecodeBase64(UnicodeString AStr)
+{
+  rde::vector<uint8_t> Result;
+  return Result;
+}

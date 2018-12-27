@@ -2409,7 +2409,7 @@ intptr_t TimeToMinutes(const TDateTime &T)
 }
 //---------------------------------------------------------------------------
 static bool DoRecursiveDeleteFile(
-  const UnicodeString AFileName, bool ToRecycleBin, UnicodeString &AErrorPath, int & Deleted)
+  const UnicodeString AFileName, bool ToRecycleBin, UnicodeString &AErrorPath, intptr_t& Deleted)
 {
   bool Result;
   Deleted = 0;
@@ -2533,15 +2533,15 @@ static bool DoRecursiveDeleteFile(
 bool RecursiveDeleteFile(const UnicodeString AFileName, bool ToRecycleBin)
 {
   UnicodeString ErrorPath; // unused
-  int Deleted;
-  const bool Result = DoRecursiveDeleteFile(AFileName, ToRecycleBin, ErrorPath, Deleted);
+  intptr_t Deleted;
+  bool Result = DoRecursiveDeleteFile(AFileName, ToRecycleBin, ErrorPath, Deleted);
   return Result;
 }
 //---------------------------------------------------------------------------
-int RecursiveDeleteFileChecked(const UnicodeString AFileName, bool ToRecycleBin)
+intptr_t RecursiveDeleteFileChecked(const UnicodeString AFileName, bool ToRecycleBin)
 {
   UnicodeString ErrorPath;
-  int Deleted;
+  intptr_t Deleted;
   if (!DoRecursiveDeleteFile(AFileName, ToRecycleBin, ErrorPath, Deleted))
   {
     throw EOSExtException(FMTLOAD(CORE_DELETE_LOCAL_FILE_ERROR, ErrorPath));

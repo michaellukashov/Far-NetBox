@@ -122,7 +122,7 @@ NB_CORE_EXPORT UnicodeString EncodeUrlPath(const UnicodeString S);
 NB_CORE_EXPORT UnicodeString AppendUrlParams(const UnicodeString AURL, const UnicodeString Params);
 NB_CORE_EXPORT UnicodeString ExtractFileNameFromUrl(const UnicodeString Url);
 NB_CORE_EXPORT bool RecursiveDeleteFile(const UnicodeString AFileName, bool ToRecycleBin);
-NB_CORE_EXPORT int RecursiveDeleteFileChecked(const UnicodeString AFileName, bool ToRecycleBin);
+NB_CORE_EXPORT intptr_t RecursiveDeleteFileChecked(const UnicodeString AFileName, bool ToRecycleBin);
 NB_CORE_EXPORT void DeleteFileChecked(const UnicodeString AFileName);
 NB_CORE_EXPORT uint32_t CancelAnswer(uint32_t Answers);
 NB_CORE_EXPORT uint32_t AbortAnswer(uint32_t Answers);
