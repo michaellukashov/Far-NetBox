@@ -1250,7 +1250,7 @@ target_compile_options(tinylog PRIVATE
 
 #-------------------------------------------------------------------------------
 #fmt
-if(FALSE)
+#if(FALSE)
 add_library(fmt STATIC
   ../../libs/fmt/fmt/format.cc
   ../../libs/fmt/fmt/format.h
@@ -1269,10 +1269,10 @@ target_compile_options(fmt PRIVATE
 target_include_directories(fmt PRIVATE
   ../../libs/GSL/include
 )
-endif(FALSE)
+#endif(FALSE)
 
 set(fmt_DEFINES
-  -DFMT_EXPORT -DFMT_HEADER_ONLY
+  -DFMT_EXPORT #-DFMT_HEADER_ONLY
 )
 
 #-------------------------------------------------------------------------------
@@ -1556,7 +1556,7 @@ set(NETBOX_LIBRARIES
   expat
   dlmalloc
   rdestl
-#  fmt
+  fmt
   s3
   tinylog
 
