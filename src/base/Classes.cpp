@@ -45,7 +45,7 @@ void ThrowNotImplemented(intptr_t ErrorId)
   Error(SNotImplemented, ErrorId);
 }
 
-TPersistent::TPersistent(TObjectClassId Kind) :
+TPersistent::TPersistent(TObjectClassId Kind) noexcept :
   TObject(Kind)
 {
 }
@@ -78,17 +78,17 @@ void TPersistent::AssignError(const TPersistent *Source)
   throw Exception(L"Cannot assign");
 }
 
-TList::TList() :
+TList::TList() noexcept :
   TPersistent(OBJECT_CLASS_TList)
 {
 }
 
-TList::TList(TObjectClassId Kind) :
+TList::TList(TObjectClassId Kind) noexcept :
   TPersistent(Kind)
 {
 }
 
-TList::~TList()
+TList::~TList() noexcept
 {
   TList::Clear();
 }
@@ -328,7 +328,7 @@ const intptr_t DateDelta = 693594;
 const intptr_t UnixDateDelta = 25569;
 static const int MemoryDelta = 0x2000;
 
-TStrings::TStrings() :
+TStrings::TStrings() noexcept :
   TObjectList(OBJECT_CLASS_TStrings),
   FDuplicates(dupAccept),
   FDelimiter(L','),
@@ -337,7 +337,7 @@ TStrings::TStrings() :
 {
 }
 
-TStrings::TStrings(TObjectClassId Kind) :
+TStrings::TStrings(TObjectClassId Kind) noexcept :
   TObjectList(Kind),
   FDuplicates(dupAccept),
   FDelimiter(L','),
@@ -740,7 +740,7 @@ intptr_t StringListCompareStrings(TStringList *List, intptr_t Index1, intptr_t I
   return Result;
 }
 
-TStringList::TStringList(TObjectClassId Kind) :
+TStringList::TStringList(TObjectClassId Kind) noexcept :
   TStrings(Kind),
   FSorted(false),
   FCaseSensitive(false)

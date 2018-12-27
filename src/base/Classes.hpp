@@ -162,8 +162,8 @@ public:
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TPersistent) || TObject::is(Kind); }
 public:
   TPersistent() noexcept : TObject(OBJECT_CLASS_TPersistent) {}
-  explicit TPersistent(TObjectClassId Kind);
-  virtual ~TPersistent() = default;
+  explicit TPersistent(TObjectClassId Kind) noexcept;
+  virtual ~TPersistent() noexcept = default;
   virtual void Assign(const TPersistent *Source);
   virtual TPersistent *GetOwner();
 protected:
@@ -188,9 +188,9 @@ public:
   static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TList); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TList) || TPersistent::is(Kind); }
 public:
-  TList();
-  explicit TList(TObjectClassId Kind);
-  virtual ~TList();
+  TList() noexcept;
+  explicit TList(TObjectClassId Kind) noexcept;
+  virtual ~TList() noexcept;
 
   template<class T>
   T *GetAs(intptr_t Index) const { return get_as<T>(GetItem(Index)); }
@@ -238,7 +238,7 @@ public:
   virtual void Notify(void *Ptr, TListNotification Action) override;
 
 private:
-  bool FOwnsObjects;
+  bool FOwnsObjects{false};
 };
 
 enum TDuplicatesEnum
@@ -257,9 +257,9 @@ public:
   static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TStrings); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TStrings) || TObjectList::is(Kind); }
 public:
-  TStrings();
-  explicit TStrings(TObjectClassId Kind);
-  virtual ~TStrings() = default;
+  TStrings() noexcept;
+  explicit TStrings(TObjectClassId Kind) noexcept;
+  virtual ~TStrings() noexcept = default;
   intptr_t Add(const UnicodeString S, TObject *AObject = nullptr);
   virtual UnicodeString GetTextStr() const;
   virtual void SetTextStr(const UnicodeString Text);
@@ -329,8 +329,8 @@ public:
   static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TStringList); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TStringList) || TStrings::is(Kind); }
 public:
-  explicit TStringList(TObjectClassId Kind = OBJECT_CLASS_TStringList);
-  virtual ~TStringList() = default;
+  explicit TStringList(TObjectClassId Kind = OBJECT_CLASS_TStringList) noexcept;
+  virtual ~TStringList() noexcept = default;
 
   intptr_t Add(const UnicodeString S);
   virtual intptr_t AddObject(const UnicodeString S, TObject *AObject) override;
@@ -390,13 +390,13 @@ public:
   TDateTime() noexcept :
     FValue(0.0)
   {}
-  explicit TDateTime(double Value) :
+  explicit TDateTime(double Value) noexcept :
     FValue(Value)
   {
   }
   explicit TDateTime(uint16_t Hour,
     uint16_t Min, uint16_t Sec, uint16_t MSec = 0);
-  TDateTime(const TDateTime &rhs) :
+  TDateTime(const TDateTime &rhs) noexcept :
     FValue(rhs.FValue)
   {
   }
@@ -456,7 +456,7 @@ public:
   void DecodeDate(uint16_t &Y, uint16_t &M, uint16_t &D) const;
   void DecodeTime(uint16_t &H, uint16_t &N, uint16_t &S, uint16_t &MS) const;
 private:
-  double FValue{0};
+  double FValue{0.0};
 };
 
 #define MinDateTime TDateTime(-657434.0)
