@@ -199,7 +199,7 @@ bool TryStrToInt(const UnicodeString StrValue, intptr_t &Value)
 {
   int64_t Val{0};
   bool res = TryStrToInt64(StrValue, Val);
-  Value = (intptr_t)Val;
+  Value = ToIntPtr(Val);
   return res;
 }
 

@@ -250,11 +250,11 @@ public:
   {
     return _getter() == Value;
   }
-  friend constexpr bool inline operator==(const RWProperty &lhs, const RWProperty &rhs)
+  friend bool inline operator==(const RWProperty &lhs, const RWProperty &rhs)
   {
     return lhs._getter == rhs._getter && lhs._setter == rhs._setter;
   }
-  friend constexpr bool inline operator!=(RWProperty &lhs, const T &rhs)
+  friend bool inline operator!=(RWProperty &lhs, const T &rhs)
   {
     return lhs._getter() != rhs;
   }
