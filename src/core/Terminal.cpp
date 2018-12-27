@@ -6454,9 +6454,8 @@ void TTerminal::SynchronizeApply(
   }
 
   BeginTransaction();
-  TValueRestorer<TFileOperationProgressType::TPersistence *> OperationProgressPersistenceRestorer(FOperationProgressPersistence);
-  TValueRestorer<TOnceDoneOperation> OperationProgressOnceDoneOperationRestorer(FOperationProgressOnceDoneOperation);
-  nb::used(OperationProgressOnceDoneOperationRestorer);
+  TValueRestorer<TFileOperationProgressType::TPersistence *> OperationProgressPersistenceRestorer(FOperationProgressPersistence);  nb::used(OperationProgressPersistenceRestorer);
+  TValueRestorer<TOnceDoneOperation> OperationProgressOnceDoneOperationRestorer(FOperationProgressOnceDoneOperation); nb::used(OperationProgressOnceDoneOperationRestorer);
   TFileOperationProgressType::TPersistence OperationProgressPersistence;
   OperationProgressPersistence.Statistics = Statistics;
   FOperationProgressPersistence = &OperationProgressPersistence;

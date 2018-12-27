@@ -1645,7 +1645,7 @@ void TSessionData::RecryptPasswords()
   SetProxyPassword(GetProxyPassword());
   SetTunnelPassword(GetTunnelPassword());
   SetPassphrase(GetPassphrase());
-  EncryptKey = EncryptKey;
+  SetEncryptKey(GetEncryptKey());
 }
 //---------------------------------------------------------------------
 bool TSessionData::HasPassword() const
