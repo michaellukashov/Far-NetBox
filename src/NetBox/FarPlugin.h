@@ -58,20 +58,20 @@ struct TFarMessageParams : public TObject
 {
   NB_DISABLE_COPY(TFarMessageParams)
 public:
-  TFarMessageParams();
+  TFarMessageParams() noexcept;
 
-  TStrings *MoreMessages;
+  TStrings *MoreMessages{nullptr};
   UnicodeString CheckBoxLabel;
-  bool CheckBox;
-  uintptr_t Timer;
-  uint32_t TimerAnswer;
+  bool CheckBox{false};
+  uintptr_t Timer{0};
+  uint32_t TimerAnswer{0};
   TFarMessageTimerEvent TimerEvent;
-  uintptr_t Timeout;
-  uintptr_t TimeoutButton;
-  uintptr_t DefaultButton;
+  uintptr_t Timeout{0};
+  uintptr_t TimeoutButton{0};
+  uintptr_t DefaultButton{0};
   UnicodeString TimeoutStr;
   TFarMessageClickEvent ClickEvent;
-  void *Token;
+  void *Token{nullptr};
 };
 
 NB_DEFINE_CLASS_ID(TCustomFarPlugin);
@@ -88,8 +88,8 @@ public:
   static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TCustomFarPlugin); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TCustomFarPlugin) || TObject::is(Kind); }
 public:
-  explicit TCustomFarPlugin(TObjectClassId Kind, HINSTANCE HInst);
-  virtual ~TCustomFarPlugin();
+  explicit TCustomFarPlugin(TObjectClassId Kind, HINSTANCE HInst) noexcept;
+  virtual ~TCustomFarPlugin() noexcept;
   virtual void Initialize();
   virtual void Finalize();
 
@@ -186,16 +186,16 @@ protected:
   PluginStartupInfo FStartupInfo;
   FarStandardFunctions FFarStandardFunctions;
   HINSTANCE FHandle;
-  TList *FOpenedPlugins;
-  TFarDialog *FTopDialog;
-  HANDLE FConsoleInput;
-  HANDLE FConsoleOutput;
-  mutable intptr_t FFarVersion;
-  bool FTerminalScreenShowing;
+  TList *FOpenedPlugins{nullptr};
+  TFarDialog *FTopDialog{nullptr};
+  HANDLE FConsoleInput{};
+  HANDLE FConsoleOutput{};
+  mutable intptr_t FFarVersion{0};
+  bool FTerminalScreenShowing{false};
   TCriticalSection FCriticalSection;
-  uintptr_t FFarThreadId;
-  mutable bool FValidFarSystemSettings;
-  mutable intptr_t FFarSystemSettings;
+  uintptr_t FFarThreadId{0};
+  mutable bool FValidFarSystemSettings{false};
+  mutable intptr_t FFarSystemSettings{0};
   TPoint FNormalConsoleSize;
 
   virtual bool HandlesFunction(THandlesFunction Function) const;

@@ -9,14 +9,16 @@
 #include "FarDialog.h"
 #include "FileMasks.h"
 #include "RemoteFiles.h"
-#include "puttyexp.h"
+extern "C" {
+#include <puttyexp.h>
+}
 #include "plugin_version.hpp"
 
 TCustomFarPlugin *FarPlugin = nullptr;
 
 #define FAR_TITLE_SUFFIX L" - Far"
 
-TFarMessageParams::TFarMessageParams() :
+TFarMessageParams::TFarMessageParams() noexcept :
   MoreMessages(nullptr),
   CheckBox(false),
   Timer(0),
@@ -30,7 +32,7 @@ TFarMessageParams::TFarMessageParams() :
 {
 }
 
-TCustomFarPlugin::TCustomFarPlugin(TObjectClassId Kind, HINSTANCE HInst) :
+TCustomFarPlugin::TCustomFarPlugin(TObjectClassId Kind, HINSTANCE HInst) noexcept :
   TObject(Kind),
   FOpenedPlugins(new TList()),
   FTopDialog(nullptr),
@@ -65,7 +67,7 @@ TCustomFarPlugin::TCustomFarPlugin(TObjectClassId Kind, HINSTANCE HInst) :
   }
 }
 
-TCustomFarPlugin::~TCustomFarPlugin()
+TCustomFarPlugin::~TCustomFarPlugin() noexcept
 {
   DebugAssert(FTopDialog == nullptr);
 

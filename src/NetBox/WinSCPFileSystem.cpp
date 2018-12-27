@@ -1433,9 +1433,11 @@ void TWinSCPFileSystem::Synchronize(const UnicodeString LocalDirectory,
         GetWinSCPPlugin()->ClearConsoleTitle();
         GetWinSCPPlugin()->RestoreScreen(FSynchronizationSaveScreenHandle);
       };
-      FTerminal->SynchronizeApply(Checklist, &CopyParam, LocalDirectory, RemoteDirectory,
-        Params | TTerminal::spNoConfirmation,
-        nb::bind(&TWinSCPFileSystem::TerminalSynchronizeDirectory, this), nullptr);
+      FTerminal->SynchronizeApply(Checklist, &CopyParam,
+                                  Params | TTerminal::spNoConfirmation,
+                                  nb::bind(&TWinSCPFileSystem::TerminalSynchronizeDirectory, this),
+                                  nullptr, nullptr, nullptr, nullptr);
+//        LocalDirectory, RemoteDirectory,
     }
   }
 }
@@ -1551,9 +1553,11 @@ void TWinSCPFileSystem::FullSynchronize(bool Source)
             GetWinSCPPlugin()->ClearConsoleTitle();
             GetWinSCPPlugin()->RestoreScreen(FSynchronizationSaveScreenHandle);
           };
-          FTerminal->SynchronizeApply(Checklist.get(), LocalDirectory, RemoteDirectory,
-            &CopyParam, Params | TTerminal::spNoConfirmation,
-            nb::bind(&TWinSCPFileSystem::TerminalSynchronizeDirectory, this));
+          FTerminal->SynchronizeApply(Checklist.get(), &CopyParam,
+                                      Params | TTerminal::spNoConfirmation,
+                                      nb::bind(&TWinSCPFileSystem::TerminalSynchronizeDirectory, this),
+                                      nullptr, nullptr, nullptr, nullptr);
+//            LocalDirectory, RemoteDirectory,
         }
       }
     }
@@ -3386,12 +3390,12 @@ void TWinSCPFileSystem::OperationFinished(TFileOperation Operation,
   {
     if (Operation == foCopy)
     {
-      DebugAssert(Side() == osLocal);
+      DebugAssert(Side == osLocal);
       FSynchronizeController->LogOperation(soUpload, AFileName);
     }
     else if (Operation == foDelete)
     {
-      DebugAssert(Side() == osRemote);
+      DebugAssert(Side == osRemote);
       FSynchronizeController->LogOperation(soDelete, AFileName);
     }
   }
