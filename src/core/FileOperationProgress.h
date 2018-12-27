@@ -33,10 +33,10 @@ class TFileOperationStatistics : public TObject
 public:
   TFileOperationStatistics() noexcept;
 
-  int FilesUploaded{0};
-  int FilesDownloaded{0};
-  int FilesDeletedLocal{0};
-  int FilesDeletedRemote{0};
+  intptr_t FilesUploaded{0};
+  intptr_t FilesDownloaded{0};
+  intptr_t FilesDeletedLocal{0};
+  intptr_t FilesDeletedRemote{0};
   int64_t TotalUploaded{0};
   int64_t TotalDownloaded{0};
 };
@@ -44,12 +44,13 @@ public:
 class NB_CORE_EXPORT TFileOperationProgressType : public TObject
 {
 public:
-  class TPersistence
+  class TPersistence : public TObject
   {
   friend class TFileOperationProgressType;
   public:
     TPersistence() noexcept;
     TPersistence(const TPersistence&) noexcept = default;
+    TPersistence& operator=(const TPersistence&);
     __property TFileOperationStatistics * Statistics = { read = FStatistics, write = FStatistics };
     TFileOperationStatistics *& Statistics{FStatistics};
 
@@ -125,7 +126,7 @@ public:
 
 protected:
   void ClearTransfer();
-  inline void DoProgress();
+  void DoProgress();
   int OperationProgress() const;
   void AddTransferredToTotals(int64_t ASize);
   void AddSkipped(int64_t ASize);
@@ -210,7 +211,7 @@ public:
     TFileOperationProgressType *Parent = nullptr) noexcept;
   virtual ~TFileOperationProgressType() noexcept;
   TFileOperationProgressType(const TFileOperationProgressType&) noexcept = default;
-  TFileOperationProgressType& operator=(const TFileOperationProgressType&) noexcept = default;
+  TFileOperationProgressType& operator=(const TFileOperationProgressType&);
   void Assign(const TFileOperationProgressType &Other);
   void AssignButKeepSuspendState(const TFileOperationProgressType &Other);
   void AddLocallyUsed(int64_t ASize);

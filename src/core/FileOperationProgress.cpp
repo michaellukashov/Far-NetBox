@@ -20,6 +20,24 @@ TFileOperationProgressType::TPersistence::TPersistence() noexcept
   FStatistics = nullptr;
   Clear(true, true);
 }
+
+TFileOperationProgressType::TPersistence& TFileOperationProgressType::TPersistence::operator=(const TFileOperationProgressType::TPersistence& rhs)
+{
+  FStatistics = rhs.FStatistics;
+  {
+    TotalTransferred = rhs.TotalTransferred;
+    StartTime = rhs.StartTime;
+    SkipToAll = rhs.SkipToAll;
+    BatchOverwrite = rhs.BatchOverwrite;
+    CPSLimit = rhs.CPSLimit;
+    CounterSet = rhs.CounterSet;
+  }
+  {
+    Ticks = rhs.Ticks;
+    TotalTransferredThen = rhs.TotalTransferredThen;
+  }
+  return *this;
+}
 //---------------------------------------------------------------------------
 bool TFileOperationProgressType::IsIndeterminateOperation(TFileOperation Operation)
 {
@@ -72,6 +90,59 @@ TFileOperationProgressType::~TFileOperationProgressType() noexcept
   SAFE_DESTROY_EX(TCriticalSection, FSection);
   SAFE_DESTROY_EX(TCriticalSection, FUserSelectionsSection);
 }
+
+TFileOperationProgressType&TFileOperationProgressType::operator=(const TFileOperationProgressType& rhs)
+{
+  FFileName = rhs.FFileName;
+  FFullFileName = rhs.FFullFileName;
+  FDirectory = rhs.FDirectory;
+  FAsciiTransfer = rhs.FAsciiTransfer;
+  FCount = rhs.FCount;
+  FFilesFinished = rhs.FFilesFinished;
+  FFilesFinishedSuccessfully = rhs.FFilesFinishedSuccessfully;
+  FSuspended = rhs.FSuspended;
+  FSuspendTime = rhs.FSuspendTime;
+  FInProgress = rhs.FInProgress;
+  FDone = rhs.FDone;
+  FFileInProgress = rhs.FFileInProgress;
+  FTotalSkipped = rhs.FTotalSkipped;
+  FTotalSize = rhs.FTotalSize;
+  FSkippedSize = rhs.FSkippedSize;
+  FTotalSizeSet = rhs.FTotalSizeSet;
+  FFileStartTime = rhs.FFileStartTime;
+  FFilesFinished = rhs.FFilesFinished;
+  FReset = rhs.FReset;
+  FLastSecond = rhs.FLastSecond;
+  FRemainingCPS = rhs.FRemainingCPS;
+  FCounterSet = rhs.FCounterSet;
+  FOperation = rhs.FOperation;
+  FSide = rhs.FSide;
+  FFileName = rhs.FFileName;
+  FDirectory = rhs.FDirectory;
+  FAsciiTransfer = rhs.FAsciiTransfer;
+  FLocalSize = rhs.FLocalSize;
+  FLocallyUsed = rhs.FLocallyUsed;
+  FOperation = rhs.FOperation;
+  FTemp = rhs.FTemp;
+  FPersistence = rhs.FPersistence;
+  FTransferSize = rhs.FTransferSize;
+
+  FTransferredSize = rhs.FTransferredSize;
+  FCancel = rhs.FCancel;
+  FCount = rhs.FCount;
+
+  FCPSLimit = rhs.FCPSLimit;
+  FSuspended = rhs.FSuspended;
+
+  FLocalSize = rhs.FLocalSize;
+  FTransferSize = rhs.FTransferSize;
+  FLocallyUsed = rhs.FLocallyUsed;
+  FSkippedSize = rhs.FSkippedSize;
+  FTransferredSize = rhs.FTransferredSize;
+  FTransferringFile = rhs.FTransferringFile;
+  FLastSecond = rhs.FLastSecond;
+}
+
 //---------------------------------------------------------------------------
 void TFileOperationProgressType::Init()
 {
