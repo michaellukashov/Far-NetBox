@@ -5,36 +5,11 @@
 #include "RemoteFiles.h"
 //---------------------------------------------------------------------------
 // When adding new options, mind TCopyParamType::GetLogStr()
-enum TOperationSide
-{
-  osLocal,
-  osRemote,
-  osCurrent,
-};
-
-enum TFileNameCase
-{
-  ncNoChange,
-  ncUpperCase,
-  ncLowerCase,
-  ncFirstUpperCase,
-  ncLowerCaseShort,
-};
-
+enum TOperationSide { osLocal, osRemote, osCurrent, };
+enum TFileNameCase { ncNoChange, ncUpperCase, ncLowerCase, ncFirstUpperCase, ncLowerCaseShort, };
 // TScript::OptionProc depend on the order
-enum TTransferMode
-{
-  tmBinary,
-  tmAscii,
-  tmAutomatic,
-};
-
-enum TResumeSupport
-{
-  rsOn,
-  rsSmart,
-  rsOff,
-};
+enum TTransferMode { tmBinary, tmAscii, tmAutomatic, };
+enum TResumeSupport { rsOn, rsSmart, rsOff, };
 
 class THierarchicalStorage;
 constexpr const int cpaIncludeMaskOnly = 0x01;
@@ -157,9 +132,9 @@ public:
   TRights& Rights{FRights};
   __property TTransferMode TransferMode = { read = FTransferMode, write = FTransferMode };
   TTransferMode& TransferMode{FTransferMode};
-  __property UnicodeString LogStr  = { read = GetLogStr };
+  __property UnicodeString LogStr  = { read=GetLogStr };
   ROProperty<UnicodeString> LogStr{nb::bind(&TCopyParamType::GetLogStr, this)};
-  __property bool AddXToDirectories  = { read = FAddXToDirectories, write = FAddXToDirectories };
+  __property bool AddXToDirectories  = { read=FAddXToDirectories, write=FAddXToDirectories };
   bool& AddXToDirectories{FAddXToDirectories};
   __property bool PreserveRights = { read = FPreserveRights, write = FPreserveRights };
   bool& PreserveRights{FPreserveRights};
@@ -167,7 +142,7 @@ public:
   bool& IgnorePermErrors{FIgnorePermErrors};
   __property TResumeSupport ResumeSupport = { read = FResumeSupport, write = FResumeSupport };
   TResumeSupport& ResumeSupport{FResumeSupport};
-  __property int64_t ResumeThreshold = { read = FResumeThreshold, write = FResumeThreshold };
+  __property __int64 ResumeThreshold = { read = FResumeThreshold, write = FResumeThreshold };
   int64_t& ResumeThreshold{FResumeThreshold};
   __property wchar_t InvalidCharsReplacement = { read = FInvalidCharsReplacement, write = FInvalidCharsReplacement };
   wchar_t& InvalidCharsReplacement{FInvalidCharsReplacement};
@@ -181,7 +156,7 @@ public:
   UnicodeString& FileMask{FFileMask};
   __property TFileMasks IncludeFileMask = { read = FIncludeFileMask, write = FIncludeFileMask };
   TFileMasks& IncludeFileMask{FIncludeFileMask};
-  __property TStrings *TransferSkipList = { read = GetTransferSkipList, write = SetTransferSkipList };
+  __property TStrings * TransferSkipList = { read = GetTransferSkipList, write = SetTransferSkipList };
   RWProperty<TStrings *>TransferSkipList{nb::bind(&TCopyParamType::GetTransferSkipList, this), nb::bind(&TCopyParamType::SetTransferSkipList, this)};
   __property UnicodeString TransferResumeFile = { read = FTransferResumeFile, write = FTransferResumeFile };
   UnicodeString& TransferResumeFile{FTransferResumeFile};
@@ -191,7 +166,7 @@ public:
   bool& RemoveCtrlZ{FRemoveCtrlZ};
   __property bool RemoveBOM = { read = FRemoveBOM, write = FRemoveBOM };
   bool& RemoveBOM{FRemoveBOM};
-  __property uintptr_t CPSLimit = { read = FCPSLimit, write = FCPSLimit };
+  __property unsigned long CPSLimit = { read = FCPSLimit, write = FCPSLimit };
   uintptr_t& CPSLimit{FCPSLimit};
   __property bool NewerOnly = { read = FNewerOnly, write = FNewerOnly };
   bool& NewerOnly{FNewerOnly};

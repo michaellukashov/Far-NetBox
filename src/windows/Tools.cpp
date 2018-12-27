@@ -1293,7 +1293,7 @@ static void DoVerifyKey(
   }
 }
 //---------------------------------------------------------------------------
-void VerifyAndConvertKey(UnicodeString & FileName, TSshProt SshProt, bool CanIgnore)
+void VerifyAndConvertKey(UnicodeString& FileName, TSshProt SshProt, bool CanIgnore)
 {
   DoVerifyKey(FileName, SshProt, true, CanIgnore);
 }

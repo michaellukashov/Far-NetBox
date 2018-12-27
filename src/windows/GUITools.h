@@ -31,18 +31,9 @@ NB_CORE_EXPORT UnicodeString UniqTempDir(const UnicodeString BaseDir,
   const UnicodeString Identity, bool Mask = false);
 NB_CORE_EXPORT bool DeleteDirectory(const UnicodeString ADirName);
 
-NB_CORE_EXPORT UnicodeString FormatDateTimeSpan(const UnicodeString TimeFormat, const TDateTime & DateTime);
 #if 0
 int GetSessionColorImage(TCustomImageList * ImageList, TColor Color, int MaskIndex);
 void RegenerateSessionColorsImageList(TCustomImageList * ImageList, int MaskIndex);
-NB_CORE_EXPORT UnicodeString ItemsFormatString(const UnicodeString SingleItemFormat,
-  const UnicodeString MultiItemsFormat, intptr_t Count, const UnicodeString FirstItem);
-NB_CORE_EXPORT UnicodeString GetPersonalFolder();
-NB_CORE_EXPORT UnicodeString ItemsFormatString(const UnicodeString SingleItemFormat,
-  const UnicodeString MultiItemsFormat, const TStrings *Items);
-NB_CORE_EXPORT UnicodeString FileNameFormatString(const UnicodeString SingleFileFormat,
-  const UnicodeString MultiFilesFormat, const TStrings *AFiles, bool Remote);
-
 void __fastcall SetSubmenu(TTBXCustomItem * Item);
 typedef int __fastcall (*TCalculateWidth)(UnicodeString Text, void * Arg);
 void __fastcall ApplyTabs(
@@ -196,6 +187,16 @@ private:
   HINSTANCE FLibrary;
 };
 #endif // #if 0
+
+NB_CORE_EXPORT UnicodeString ItemsFormatString(const UnicodeString SingleItemFormat,
+  const UnicodeString MultiItemsFormat, intptr_t Count, const UnicodeString FirstItem);
+NB_CORE_EXPORT UnicodeString GetPersonalFolder();
+NB_CORE_EXPORT UnicodeString ItemsFormatString(const UnicodeString SingleItemFormat,
+  const UnicodeString MultiItemsFormat, const TStrings *Items);
+NB_CORE_EXPORT UnicodeString FileNameFormatString(const UnicodeString SingleFileFormat,
+  const UnicodeString MultiFilesFormat, const TStrings *AFiles, bool Remote);
+NB_CORE_EXPORT UnicodeString FileNameFormatString(UnicodeString SingleFileFormat,
+  UnicodeString MultiFilesFormat, const TStrings *AFiles, bool Remote);
 //---------------------------------------------------------------------------
 NB_CORE_EXPORT extern const UnicodeString PageantTool;
 NB_CORE_EXPORT extern const UnicodeString PuttygenTool;

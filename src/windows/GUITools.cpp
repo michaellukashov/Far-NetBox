@@ -2211,3 +2211,18 @@ void __fastcall TNewRichEdit::DestroyWnd()
 }
 
 #endif // #if 0
+
+//---------------------------------------------------------------------------
+UnicodeString FileNameFormatString(UnicodeString SingleFileFormat,
+  UnicodeString MultiFilesFormat, const TStrings *AFiles, bool Remote)
+{
+  DebugAssert(AFiles != nullptr);
+  UnicodeString Item;
+  if (AFiles && (AFiles->GetCount() > 0))
+  {
+    Item = Remote ? base::UnixExtractFileName(AFiles->GetString(0)) :
+      base::ExtractFileName(AFiles->GetString(0), true);
+  }
+  return ItemsFormatString(SingleFileFormat, MultiFilesFormat,
+      AFiles ? AFiles->GetCount() : 0, Item);
+}
