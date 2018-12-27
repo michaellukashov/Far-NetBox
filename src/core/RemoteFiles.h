@@ -22,9 +22,9 @@ class THierarchicalStorage;
 class NB_CORE_EXPORT TRemoteToken : public TObject
 {
 public:
-  TRemoteToken();
-  TRemoteToken(const TRemoteToken &rhs);
-  explicit TRemoteToken(const UnicodeString Name);
+  TRemoteToken() noexcept;
+  TRemoteToken(const TRemoteToken &rhs) noexcept;
+  explicit TRemoteToken(const UnicodeString Name) noexcept;
 
   void Clear();
 
@@ -157,9 +157,9 @@ protected:
   void FindLinkedFile();
 
 public:
-  explicit TRemoteFile(TRemoteFile *ALinkedByFile = nullptr);
-  explicit TRemoteFile(TObjectClassId Kind, TRemoteFile *ALinkedByFile = nullptr);
-  virtual ~TRemoteFile();
+  explicit TRemoteFile(TRemoteFile *ALinkedByFile = nullptr) noexcept;
+  explicit TRemoteFile(TObjectClassId Kind, TRemoteFile *ALinkedByFile = nullptr) noexcept;
+  virtual ~TRemoteFile() noexcept;
   TRemoteFile *Duplicate(bool Standalone = true) const;
 
   void ShiftTimeInSeconds(int64_t Seconds);
@@ -263,10 +263,10 @@ public:
   static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TRemoteDirectoryFile); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TRemoteDirectoryFile) || TRemoteFile::is(Kind); }
 public:
-  TRemoteDirectoryFile();
-  explicit TRemoteDirectoryFile(TObjectClassId Kind);
+  TRemoteDirectoryFile() noexcept;
+  explicit TRemoteDirectoryFile(TObjectClassId Kind) noexcept;
   void Init();
-  virtual ~TRemoteDirectoryFile() {}
+  virtual ~TRemoteDirectoryFile() = default;
 };
 //---------------------------------------------------------------------------
 NB_DEFINE_CLASS_ID(TRemoteParentDirectory);
@@ -305,9 +305,9 @@ public:
   virtual void AddFiles(const TRemoteFileList *AFileList);
 
 public:
-  TRemoteFileList();
-  explicit TRemoteFileList(TObjectClassId Kind);
-  virtual ~TRemoteFileList() { Reset(); }
+  TRemoteFileList() noexcept;
+  explicit TRemoteFileList(TObjectClassId Kind) noexcept;
+  virtual ~TRemoteFileList() noexcept { TRemoteFileList::Reset(); }
   virtual void Reset();
   TRemoteFile *FindFile(const UnicodeString AFileName) const;
   virtual void DuplicateTo(TRemoteFileList *Copy) const;
@@ -319,10 +319,15 @@ public:
   RWProperty<UnicodeString> Directory{nb::bind(&TRemoteFileList::GetDirectory, this), nb::bind(&TRemoteFileList::SetDirectory, this)};
   __property TRemoteFile * Files[Integer Index] = { read = GetFiles };
   __property UnicodeString FullDirectory  = { read=GetFullDirectory };
+  ROProperty<UnicodeString> FullDirectory{nb::bind(&TRemoteFileList::GetFullDirectory, this)};
   __property Boolean IsRoot = { read = GetIsRoot };
+  ROProperty<Boolean> IsRoot{nb::bind(&TRemoteFileList::GetIsRoot, this)};
   __property UnicodeString ParentPath = { read = GetParentPath };
+  ROProperty<UnicodeString> ParentPath{nb::bind(&TRemoteFileList::GetParentPath, this)};
   __property __int64 TotalSize = { read = GetTotalSize };
+  ROProperty<int64_t> TotalSize{nb::bind(&TRemoteFileList::GetTotalSize, this)};
   __property TDateTime Timestamp = { read = FTimestamp };
+  const TDateTime& Timestamp{FTimestamp};
 
   UnicodeString GetDirectory() const { return FDirectory; }
   TDateTime GetTimestamp() const { return FTimestamp; }

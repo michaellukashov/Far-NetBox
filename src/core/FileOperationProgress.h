@@ -8,48 +8,21 @@
 #include "CopyParam.h"
 //---------------------------------------------------------------------------
 class TFileOperationProgressType;
-
-enum TFileOperation
-{
-  foNone, foCopy, foMove, foDelete, foSetProperties,
+enum TFileOperation { foNone, foCopy, foMove, foDelete, foSetProperties,
   foRename, foCustomCommand, foCalculateSize, foRemoteMove, foRemoteCopy,
-  foGetProperties, foCalculateChecksum, foLock, foUnlock,
-};
-
+  foGetProperties, foCalculateChecksum, foLock, foUnlock };
 // csCancelTransfer and csRemoteAbort are used with SCP only
-__removed enum TCancelStatus { csContinue = 0, csCancelFile, csCancel, csCancelTransfer, csRemoteAbort };
-enum TCancelStatus
-{
-  csContinue = 0,
-  csCancelFile,
-  csCancel,
-  csCancelTransfer,
-  csRemoteAbort,
-};
-
-__removed enum TBatchOverwrite { boNo, boAll, boNone, boOlder, boAlternateResume, boAppend, boResume };
-enum TBatchOverwrite
-{
-  boNo,
-  boAll,
-  boNone,
-  boOlder,
-  boAlternateResume,
-  boAppend,
-  boResume,
-};
-
+enum TCancelStatus { csContinue = 0, csCancelFile, csCancel, csCancelTransfer, csRemoteAbort };
+enum TBatchOverwrite { boNo, boAll, boNone, boOlder, boAlternateResume, boAppend, boResume };
 #if 0
 typedef void (__closure *TFileOperationProgressEvent)
-  (TFileOperationProgressType &ProgressData);
-#endif
-typedef nb::FastDelegate1<void,
-  TFileOperationProgressType & /*ProgressData*/> TFileOperationProgressEvent;
-#if 0
+  (TFileOperationProgressType & ProgressData);
 typedef void (__closure *TFileOperationFinished)
   (TFileOperation Operation, TOperationSide Side, bool Temp,
-  const UnicodeString &FileName, bool Success, TOnceDoneOperation &OnceDoneOperation);
-#endif
+    const UnicodeString & FileName, bool Success, TOnceDoneOperation & OnceDoneOperation);
+#endif // #if 0
+typedef nb::FastDelegate1<void,
+  TFileOperationProgressType & /*ProgressData*/> TFileOperationProgressEvent;
 typedef nb::FastDelegate6<void,
   TFileOperation /*Operation*/, TOperationSide /*Side*/, bool /*Temp*/,
   UnicodeString /*FileName*/, bool /*Success*/,
@@ -76,6 +49,7 @@ public:
   friend class TFileOperationProgressType;
   public:
     TPersistence() noexcept;
+    TPersistence(const TPersistence&) noexcept = default;
     __property TFileOperationStatistics * Statistics = { read = FStatistics, write = FStatistics };
     TFileOperationStatistics *& Statistics{FStatistics};
 
@@ -112,7 +86,7 @@ private:
   bool FDone{false};
   bool FFileInProgress{false};
   TCancelStatus FCancel;
-  intptr_t FCount{0};
+  intptr_t FCount{-1};
   int64_t FTotalTransferBase{0};
   int64_t FTotalSkipped{0};
   int64_t FTotalSize{0};
@@ -186,16 +160,16 @@ public:
   const bool& Temp{FTemp};
 
   // file size to read/write
-  __property int64_t LocalSize = { read = FLocalSize };
+  __property __int64 LocalSize = { read = FLocalSize };
   const int64_t& LocalSize{FLocalSize};
-  __property int64_t LocallyUsed = { read = FLocallyUsed };
+  __property __int64 LocallyUsed = { read = FLocallyUsed };
   const int64_t& LocallyUsed{FLocallyUsed};
-  __property int64_t TransferSize = { read = FTransferSize };
+  __property __int64 TransferSize = { read = FTransferSize };
   const int64_t& TransferSize{FTransferSize};
-  __property int64_t TransferredSize = { read = FTransferredSize };
+  __property __int64 TransferredSize = { read = FTransferredSize };
   const int64_t& TransferredSize{FTransferredSize};
-  //ROProperty<int64_t> TransferredSize{nb::bind(&TFileOperationProgressType::GetTransferredSize, this)};
-  __property int64_t SkippedSize = { read = FSkippedSize };
+  __property __int64 SkippedSize = { read = FSkippedSize };
+  const int64_t& SkippedSize{FSkippedSize};
   __property bool InProgress = { read = FInProgress };
   const bool& InProgress{FInProgress};
   __property bool Done = { read = FDone };
@@ -208,7 +182,7 @@ public:
   __property TDateTime StartTime = { read = GetStartTime };
   ROProperty<TDateTime> StartTime{nb::bind(&TFileOperationProgressType::GetStartTime, this)};
   // bytes transferred
-  __property int64_t TotalTransferred = { read = GetTotalTransferred };
+  __property __int64 TotalTransferred = { read = GetTotalTransferred };
   ROProperty<int64_t> TotalTransferred{nb::bind(&TFileOperationProgressType::GetTotalTransferred, this)};
   __property __int64 OperationTransferred = { read = GetOperationTransferred };
   ROProperty<int64_t> OperationTransferred{nb::bind(&TFileOperationProgressType::GetOperationTransferred, this)};
@@ -221,7 +195,7 @@ public:
   ROProperty<TBatchOverwrite> BatchOverwrite{nb::bind(&TFileOperationProgressType::GetBatchOverwrite, this)};
   __property bool SkipToAll = { read = GetSkipToAll };
   ROProperty<bool> SkipToAll{nb::bind(&TFileOperationProgressType::GetSkipToAll, this)};
-  __property uintptr_t CPSLimit = { read = GetCPSLimit };
+  __property unsigned long CPSLimit = { read = GetCPSLimit };
   ROProperty<intptr_t> CPSLimit{nb::bind(&TFileOperationProgressType::GetCPSLimit, this)};
 
   __property bool TotalSizeSet = { read = FTotalSizeSet };
@@ -235,7 +209,8 @@ public:
     TFileOperationProgressEvent AOnProgress, TFileOperationFinishedEvent AOnFinished,
     TFileOperationProgressType *Parent = nullptr) noexcept;
   virtual ~TFileOperationProgressType() noexcept;
-  TFileOperationProgressType& operator=(const TFileOperationProgressType&) = default;
+  TFileOperationProgressType(const TFileOperationProgressType&) noexcept = default;
+  TFileOperationProgressType& operator=(const TFileOperationProgressType&) noexcept = default;
   void Assign(const TFileOperationProgressType &Other);
   void AssignButKeepSuspendState(const TFileOperationProgressType &Other);
   void AddLocallyUsed(int64_t ASize);
@@ -327,8 +302,8 @@ class NB_CORE_EXPORT TSuspendFileOperationProgress : public TObject
 {
   NB_DISABLE_COPY(TSuspendFileOperationProgress)
 public:
-  TSuspendFileOperationProgress() = default;
-  explicit TSuspendFileOperationProgress(TFileOperationProgressType *OperationProgress) :
+  TSuspendFileOperationProgress() noexcept = default;
+  explicit TSuspendFileOperationProgress(TFileOperationProgressType *OperationProgress) noexcept :
     FOperationProgress(OperationProgress)
   {
     if (FOperationProgress != nullptr)
@@ -337,7 +312,7 @@ public:
     }
   }
 
-  virtual ~TSuspendFileOperationProgress()
+  virtual ~TSuspendFileOperationProgress() noexcept
   {
     if (FOperationProgress != nullptr)
     {

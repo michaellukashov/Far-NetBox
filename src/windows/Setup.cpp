@@ -1201,7 +1201,7 @@ static void __fastcall OpenHistory(void * /*Data*/, TObject * /*Sender*/, unsign
   OpenBrowser(LoadStr(HISTORY_URL));
 }
 //---------------------------------------------------------------------------
-static int __fastcall DownloadSizeToProgress(__int64 Size)
+static int DownloadSizeToProgress(int64_t Size)
 {
   return static_cast<int>(Size / 1024);
 }
@@ -1209,8 +1209,8 @@ static int __fastcall DownloadSizeToProgress(__int64 Size)
 class TUpdateDownloadThread : public TCompThread
 {
 public:
-  __fastcall TUpdateDownloadThread(TProgressBar * ProgressBar);
-  virtual __fastcall ~TUpdateDownloadThread();
+  TUpdateDownloadThread(TProgressBar * ProgressBar) noexcept;
+  virtual ~TUpdateDownloadThread() noexcept;
 
   void __fastcall CancelClicked(TObject * Sender);
 
@@ -1228,13 +1228,13 @@ protected:
   void __fastcall CancelForm();
 
 private:
-  TCustomForm * FForm;
-  TProgressBar * FProgressBar;
-  __int64 FDownloaded;
+  TCustomForm * FForm{nullptr};
+  TProgressBar * FProgressBar{nullptr};
+  int64_t FDownloaded{0};
   std::unique_ptr<Exception> FException;
   std::unique_ptr<THttp> FHttp;
   TUpdatesConfiguration FUpdates;
-  bool FDone;
+  bool FDone{false};
 };
 //---------------------------------------------------------------------------
 __fastcall TUpdateDownloadThread::TUpdateDownloadThread(TProgressBar * ProgressBar) :

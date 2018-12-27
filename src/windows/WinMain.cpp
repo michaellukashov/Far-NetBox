@@ -759,7 +759,7 @@ int __fastcall Execute()
       SwitchValue = SwitchValue.Trim();
     }
 
-    __int64 LogMaxSize;
+    int64_t LogMaxSize;
     if ((LogMaxCount >= 0) &&
         !SwitchValue.IsEmpty() &&
         TryStrToSize(SwitchValue, LogMaxSize))

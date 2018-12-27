@@ -15,20 +15,20 @@
 #include "Cryptography.h"
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-TRemoteToken::TRemoteToken() :
+TRemoteToken::TRemoteToken() noexcept :
   FID(0),
   FIDValid(false)
 {
 }
 //---------------------------------------------------------------------------
-TRemoteToken::TRemoteToken(const UnicodeString Name) :
+TRemoteToken::TRemoteToken(const UnicodeString Name) noexcept :
   FName(Name),
   FID(0),
   FIDValid(false)
 {
 }
 
-TRemoteToken::TRemoteToken(const TRemoteToken &rhs) :
+TRemoteToken::TRemoteToken(const TRemoteToken &rhs) noexcept :
   FName(rhs.FName),
   FID(rhs.FID),
   FIDValid(rhs.FIDValid)
@@ -280,7 +280,7 @@ const TRemoteToken *TRemoteTokenList::Token(intptr_t Index) const
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-TRemoteFile::TRemoteFile(TObjectClassId Kind, TRemoteFile *ALinkedByFile) :
+TRemoteFile::TRemoteFile(TObjectClassId Kind, TRemoteFile *ALinkedByFile) noexcept :
   TPersistent(Kind),
   FDirectory(nullptr),
   FModificationFmt(mfFull),
@@ -300,7 +300,7 @@ TRemoteFile::TRemoteFile(TObjectClassId Kind, TRemoteFile *ALinkedByFile) :
   FLinkedByFile = ALinkedByFile;
 }
 
-TRemoteFile::TRemoteFile(TRemoteFile *ALinkedByFile) :
+TRemoteFile::TRemoteFile(TRemoteFile *ALinkedByFile) noexcept :
   TPersistent(OBJECT_CLASS_TRemoteFile)
 {
   Init();
@@ -308,7 +308,7 @@ TRemoteFile::TRemoteFile(TRemoteFile *ALinkedByFile) :
   FIsEncrypted = false;
 }
 //---------------------------------------------------------------------------
-TRemoteFile::~TRemoteFile()
+TRemoteFile::~TRemoteFile() noexcept
 {
   SAFE_DESTROY(FRights);
   SAFE_DESTROY(FLinkedFile);
@@ -1088,13 +1088,13 @@ void TRemoteFile::SetTerminal(TTerminal *Value)
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-TRemoteDirectoryFile::TRemoteDirectoryFile() :
+TRemoteDirectoryFile::TRemoteDirectoryFile() noexcept :
   TRemoteFile(OBJECT_CLASS_TRemoteDirectoryFile)
 {
   Init();
 }
 
-TRemoteDirectoryFile::TRemoteDirectoryFile(TObjectClassId Kind) :
+TRemoteDirectoryFile::TRemoteDirectoryFile(TObjectClassId Kind) noexcept :
   TRemoteFile(Kind)
 {
   Init();
@@ -1118,14 +1118,14 @@ TRemoteParentDirectory::TRemoteParentDirectory(TTerminal *ATerminal) :
 }
 
 //=== TRemoteFileList ------------------------------------------------------
-TRemoteFileList::TRemoteFileList() :
+TRemoteFileList::TRemoteFileList() noexcept :
   TObjectList(OBJECT_CLASS_TRemoteFileList),
   FTimestamp(Now())
 {
   SetOwnsObjects(true);
 }
 
-TRemoteFileList::TRemoteFileList(TObjectClassId Kind) :
+TRemoteFileList::TRemoteFileList(TObjectClassId Kind) noexcept :
   TObjectList(Kind),
   FTimestamp(Now())
 {
