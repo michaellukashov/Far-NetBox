@@ -516,7 +516,12 @@ bool TWinSCPFileSystem::GetFindDataEx(TObjectList *PanelItems, int OpMode)
   {
     Result = true;
     DebugAssert(StoredSessions);
-    StoredSessions->Load();
+    bool SessionList = true;
+    std::unique_ptr<THierarchicalStorage> Storage(GetConfiguration()->CreateStorage(SessionList));
+    if (Storage->OpenSubKey(GetConfiguration()->GetStoredSessionsSubKey(), False))
+    {
+      StoredSessions->Load(Storage.get());
+    }
     UnicodeString Folder = FSessionsFolder;
     if (!FSessionsFolder.IsEmpty())
     {
