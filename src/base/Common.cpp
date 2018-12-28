@@ -109,10 +109,15 @@ void Shred(UTF8String &Str)
   DoShred(Str);
 }
 //---------------------------------------------------------------------------
-//void Shred(AnsiString &Str)
-//{
-//  DoShred(Str);
-//}
+/*void Shred(AnsiString &Str)
+{
+  DoShred(Str);
+}*/
+//---------------------------------------------------------------------------
+void Shred(RawByteString &Str)
+{
+  DoShred(Str);
+}
 //---------------------------------------------------------------------------
 UnicodeString AnsiToString(const RawByteString S)
 {
@@ -125,16 +130,15 @@ UnicodeString AnsiToString(const char *S, size_t Len)
 }
 //---------------------------------------------------------------------------
 // Note similar function ValidLocalFileName
-UnicodeString MakeValidFileName(const UnicodeString AFileName)
+UnicodeString MakeValidFileName(UnicodeString AFileName)
 {
-  UnicodeString Result = AFileName;
   // Note similar list in LocalInvalidChars
   UnicodeString IllegalChars(L":;,=+<>|\"[] \\/?*");
   for (intptr_t Index = 0; Index < IllegalChars.Length(); ++Index)
   {
-    Result = ReplaceChar(Result, IllegalChars[Index + 1], L'-');
+    AFileName = ReplaceChar(AFileName, IllegalChars[Index + 1], L'-');
   }
-  return Result;
+  return AFileName;
 }
 //---------------------------------------------------------------------------
 UnicodeString RootKeyToStr(HKEY RootKey)
@@ -1363,7 +1367,7 @@ bool IsHex(wchar_t Ch)
     ((Ch >= L'a') && (Ch <= L'f'));
 }
 //---------------------------------------------------------------------------
-TSearchRecSmart::TSearchRecSmart()
+TSearchRecSmart::TSearchRecSmart() noexcept
 {
   FLastWriteTimeSource.dwLowDateTime = 0;
   FLastWriteTimeSource.dwLowDateTime = 0;
@@ -1395,7 +1399,7 @@ bool TSearchRecSmart::IsHidden() const
   return FLAGSET(Attr, faHidden);
 }
 //---------------------------------------------------------------------------
-TSearchRecOwned::~TSearchRecOwned()
+TSearchRecOwned::~TSearchRecOwned() noexcept
 {
   if (Opened)
   {
@@ -1457,6 +1461,17 @@ bool FileSearchRec(const UnicodeString AFileName, TSearchRec &Rec)
   return Result;
 }
 //---------------------------------------------------------------------------
+void CopySearchRec(const TSearchRec & Source, TSearchRec & Dest)
+{
+  // Strangely isses a compiler warning (W8111 due to TSearchRec::Time), when used in Script.cpp, but not here.
+  Dest.Assign(Source);
+}
+//---------------------------------------------------------------------------
+bool IsRealFile(const UnicodeString AFileName)
+{
+  return (AFileName != THISDIRECTORY) && (AFileName != PARENTDIRECTORY);
+}
+//---------------------------------------------------------------------------
 UnicodeString GetOSInfo()
 {
   UnicodeString Result = WindowsVersionLong();
@@ -1479,27 +1494,20 @@ void ProcessLocalDirectory(const UnicodeString ADirName,
   {
     FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
   }
-  TSearchRecChecked SearchRec;
+  TSearchRecOwned SearchRec;
 
   UnicodeString DirName = ApiPath(::IncludeTrailingBackslash(ADirName));
   if (FindFirstChecked(DirName + L"*.*", FindAttrs, SearchRec) == 0)
   {
-    try__finally
+    do
     {
-      do
+      if (SearchRec.IsRealFile())
       {
-        if ((SearchRec.Name != THISDIRECTORY) && (SearchRec.Name != PARENTDIRECTORY))
-        {
-          UnicodeString FileName = DirName + SearchRec.Name;
-          CallBackFunc(FileName, SearchRec, Param);
-        }
+        UnicodeString FileName = DirName + SearchRec.Name;
+        CallBackFunc(FileName, SearchRec, Param);
       }
-      while (FindNextChecked(SearchRec) == 0);
-    },
-    __finally
-    {
-       base::FindClose(SearchRec);
-    } end_try__finally
+    }
+    while (FindNextChecked(SearchRec) == 0);
   }
 }
 //---------------------------------------------------------------------------
@@ -1508,13 +1516,21 @@ DWORD FileGetAttrFix(const UnicodeString AFileName)
   const UnicodeString FileName = ApiPath(AFileName);
   // The default for FileGetAttr is to follow links
   bool FollowLink = true;
-  // But the FileGetAttr whe called for link with FollowLink set will always fail
-  // as its calls InternalGetFileNameFromSymLink, which test for CheckWin32Version(6, 0)
+  // WORKAROUND:
+  // But the FileGetAttr when called for link with FollowLink set will always fail
+  // as it calls InternalGetFileNameFromSymLink, which test for CheckWin32Version(6, 0)
   if (!IsWinVista())
   {
     FollowLink = false;
   }
-  return ::SysUtulsFileGetAttr(FileName, FollowLink);
+  DWORD Result = SysUtulsFileGetAttr(FileName, FollowLink);
+  if ((long)Result < 0)
+  {
+    // When referring to files in some special symlinked locations
+    // (like a deduplicated drive or a commvault archive), the first call to GetFileAttributes fails.
+    Result = SysUtulsFileGetAttr(FileName, FollowLink);
+  }
+  return Result;
 }
 //---------------------------------------------------------------------------
 TDateTime EncodeDateVerbose(Word Year, Word Month, Word Day)

@@ -49,7 +49,7 @@ NB_CORE_EXPORT void PackStr(AnsiString &Str);
 NB_CORE_EXPORT void Shred(UnicodeString &Str);
 NB_CORE_EXPORT void Shred(UTF8String &Str);
 NB_CORE_EXPORT void Shred(AnsiString &Str);
-NB_CORE_EXPORT void Shred(RawByteString & Str);
+NB_CORE_EXPORT void Shred(RawByteString &Str);
 NB_CORE_EXPORT UnicodeString AnsiToString(const RawByteString S);
 NB_CORE_EXPORT UnicodeString AnsiToString(const char *S, size_t Len);
 NB_CORE_EXPORT UnicodeString MakeValidFileName(const UnicodeString AFileName);
@@ -178,17 +178,17 @@ NB_CORE_EXPORT void ParseCertificate(const UnicodeString Path,
 NB_CORE_EXPORT bool IsHttpUrl(const UnicodeString S);
 NB_CORE_EXPORT bool IsHttpOrHttpsUrl(const UnicodeString S);
 NB_CORE_EXPORT UnicodeString ChangeUrlProtocol(const UnicodeString S, const UnicodeString Protocol);
-NB_CORE_EXPORT void LoadScriptFromFile(const UnicodeString FileName, TStrings *Lines);
+NB_CORE_EXPORT void LoadScriptFromFile(const UnicodeString AFileName, TStrings *Lines);
 NB_CORE_EXPORT UnicodeString StripEllipsis(const UnicodeString S);
-NB_CORE_EXPORT UnicodeString GetFileMimeType(const UnicodeString FileName);
-NB_CORE_EXPORT bool IsRealFile(const UnicodeString FileName);
+NB_CORE_EXPORT UnicodeString GetFileMimeType(const UnicodeString AFileName);
+NB_CORE_EXPORT bool IsRealFile(const UnicodeString AFileName);
 NB_CORE_EXPORT UnicodeString GetOSInfo();
 NB_CORE_EXPORT UnicodeString GetEnvironmentInfo();
 //---------------------------------------------------------------------------
 struct TSearchRecSmart : public TSearchRec
 {
 public:
-  TSearchRecSmart();
+  TSearchRecSmart() noexcept;
   TDateTime GetLastWriteTime() const;
   bool IsRealFile() const;
   bool IsDirectory() const;
@@ -215,7 +215,7 @@ struct TSearchRecChecked : public TSearchRecSmart
 };
 struct TSearchRecOwned : public TSearchRecChecked
 {
-  ~TSearchRecOwned();
+  ~TSearchRecOwned() noexcept;
   void Close();
 };
 NB_CORE_EXPORT DWORD FindCheck(DWORD Result, const UnicodeString APath);
