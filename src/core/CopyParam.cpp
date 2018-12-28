@@ -945,7 +945,8 @@ void TCopyParamType::Save(THierarchicalStorage * Storage, const TCopyParamType *
   nb::used(Storage);
   nb::used(Defaults);
   // Same as in TSessionData::DoSave
-  #define WRITE_DATA_EX(TYPE, NAME, PROPERTY, CONV) \
+#undef WRITE_DATA_EX
+#define WRITE_DATA_EX(TYPE, NAME, PROPERTY, CONV) \
     if ((Defaults != nullptr) && (CONV(Defaults->PROPERTY) == CONV(PROPERTY))) \
     { \
       Storage->DeleteValue(NAME); \

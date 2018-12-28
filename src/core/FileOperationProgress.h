@@ -97,7 +97,7 @@ private:
   TFileOperationProgressType *FParent{nullptr};
 
   // when it was last time suspended (to calculate suspend time in Resume())
-  uintptr_t FSuspendTime{0};
+  uint64_t FSuspendTime{0};
   // when current file was started being transferred
   TDateTime FFileStartTime;
   intptr_t FFilesFinished{0};
@@ -127,7 +127,7 @@ public:
 protected:
   void ClearTransfer();
   void DoProgress();
-  int OperationProgress() const;
+  intptr_t OperationProgress() const;
   void AddTransferredToTotals(int64_t ASize);
   void AddSkipped(int64_t ASize);
   void AddTotalSize(int64_t ASize);

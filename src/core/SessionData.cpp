@@ -987,6 +987,7 @@ void TSessionData::DoSave(THierarchicalStorage *Storage,
   bool PuttyExport, const TSessionData *Default, bool DoNotEncryptPasswords)
 {
   // Same as in TCopyParamType::Save
+#undef WRITE_DATA_EX
 #define WRITE_DATA_EX(TYPE, NAME, PROPERTY, CONV) \
     if ((Default != nullptr) && (CONV(Default->PROPERTY) == CONV(PROPERTY))) \
     { \
@@ -996,10 +997,12 @@ void TSessionData::DoSave(THierarchicalStorage *Storage,
     { \
       Storage->Write ## TYPE(NAME, CONV(PROPERTY)); \
     }
+#undef WRITE_DATA_EX2
 #define WRITE_DATA_EX2(TYPE, NAME, PROPERTY, CONV) \
     { \
       Storage->Write ## TYPE(NAME, CONV(PROPERTY)); \
     }
+#undef WRITE_DATA_CONV
 #define WRITE_DATA_CONV(TYPE, NAME, PROPERTY) WRITE_DATA_EX(TYPE, NAME, PROPERTY, WRITE_DATA_CONV_FUNC)
 #undef WRITE_DATA
 #define WRITE_DATA(TYPE, PROPERTY) WRITE_DATA_EX(TYPE, MB_TEXT(#PROPERTY), Get ## PROPERTY(), )

@@ -335,7 +335,7 @@ void TFileOperationProgressType::Resume()
   DoProgress();
 }
 //---------------------------------------------------------------------------
-int TFileOperationProgressType::OperationProgress() const
+intptr_t TFileOperationProgressType::OperationProgress() const
 {
   intptr_t Result;
   if (FCount > 0)
@@ -799,7 +799,7 @@ void TFileOperationProgressType::AddTransferredToTotals(int64_t ASize)
   FPersistence.TotalTransferred += ASize;
   if (ASize >= 0)
   {
-    intptr_t Ticks = ToIntPtr(::GetTickCount());
+    uint64_t Ticks = ToUInt64(::GetTickCount());
     if (FPersistence.Ticks.empty() ||
         (FPersistence.Ticks.back() > Ticks) || // ticks wrap after 49.7 days
         ((Ticks - FPersistence.Ticks.back()) >= MSecsPerSec))
@@ -937,7 +937,7 @@ uintptr_t TFileOperationProgressType::GetCPS() const
   }
   else
   {
-    intptr_t Ticks = (GetSuspended() ? FSuspendTime : ::GetTickCount());
+    uint64_t Ticks = (GetSuspended() ? FSuspendTime : ::GetTickCount());
     intptr_t TimeSpan;
     if (Ticks < FPersistence.Ticks.front())
     {
