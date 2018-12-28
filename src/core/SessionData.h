@@ -979,7 +979,6 @@ private:
   uintptr_t FSessionVersion;
 
   mutable TIEProxyConfig *FIEProxyConfig;
-
 };
 //---------------------------------------------------------------------------
 NB_DEFINE_CLASS_ID(TStoredSessionList);
@@ -992,7 +991,6 @@ public:
 public:
   explicit TStoredSessionList(bool AReadOnly = false) noexcept;
   void Reload();
-  void Load();
   void Save(bool All, bool Explicit);
   void Saved();
   void ImportFromFilezilla(const UnicodeString FileName, const UnicodeString ConfigurationFileName);

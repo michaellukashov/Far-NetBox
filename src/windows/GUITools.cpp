@@ -2209,10 +2209,30 @@ void __fastcall TNewRichEdit::DestroyWnd()
     FreeLibrary(FLibrary);
   }
 }
-
 #endif // #if 0
-
 //---------------------------------------------------------------------------
+UnicodeString ItemsFormatString(UnicodeString SingleItemFormat,
+  UnicodeString MultiItemsFormat, intptr_t Count, UnicodeString FirstItem)
+{
+  UnicodeString Result;
+  if (Count == 1)
+  {
+    Result = FORMAT(SingleItemFormat, FirstItem);
+  }
+  else
+  {
+    Result = FORMAT(MultiItemsFormat, Count);
+  }
+  return Result;
+}
+
+UnicodeString ItemsFormatString(UnicodeString SingleItemFormat,
+  UnicodeString MultiItemsFormat, const TStrings *Items)
+{
+  return ItemsFormatString(SingleItemFormat, MultiItemsFormat,
+      Items->GetCount(), (Items->GetCount() > 0 ? Items->GetString(0) : UnicodeString()));
+}
+
 UnicodeString FileNameFormatString(UnicodeString SingleFileFormat,
   UnicodeString MultiFilesFormat, const TStrings *AFiles, bool Remote)
 {

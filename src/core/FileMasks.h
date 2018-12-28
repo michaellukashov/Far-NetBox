@@ -23,7 +23,7 @@ public:
   struct NB_CORE_EXPORT TParams : public TObject
   {
     TParams();
-    int64_t Size;
+    int64_t Size{0};
     TDateTime Modification;
 
     UnicodeString ToString() const;
@@ -36,11 +36,11 @@ public:
     TStrings *IncludeDirectoryMasksStr, TStrings *ExcludeDirectoryMasksStr);
   static UnicodeString ComposeMaskStr(TStrings *MasksStr, bool Directory);
 
-  TFileMasks();
-  explicit TFileMasks(intptr_t ForceDirectoryMasks);
-  TFileMasks(const TFileMasks &Source);
-  explicit TFileMasks(const UnicodeString AMasks);
-  virtual ~TFileMasks();
+  TFileMasks() noexcept;
+  explicit TFileMasks(intptr_t ForceDirectoryMasks) noexcept;
+  TFileMasks(const TFileMasks &Source) noexcept;
+  explicit TFileMasks(const UnicodeString AMasks) noexcept;
+  virtual ~TFileMasks() noexcept;
   TFileMasks &operator=(const TFileMasks &rhm);
   TFileMasks &operator=(const UnicodeString rhs);
   bool operator==(const TFileMasks &rhm) const;
@@ -75,7 +75,7 @@ public:
   TStrings *GetExcludeDirectoryMasksStr() const { return GetMasksStr(MASK_INDEX(true, false)); }
 
 private:
-  intptr_t FForceDirectoryMasks;
+  intptr_t FForceDirectoryMasks{0};
   UnicodeString FStr;
 
   struct TMaskMask : public TObject
@@ -91,7 +91,7 @@ private:
       NoExt,
       Regular,
     } Kind;
-    Masks::TMask *Mask;
+    Masks::TMask *Mask{nullptr};
   };
 
   struct TMask : public TObject
@@ -116,9 +116,9 @@ private:
     };
 
     TMaskBoundary HighSizeMask;
-    int64_t HighSize;
+    int64_t HighSize{0};
     TMaskBoundary LowSizeMask;
-    int64_t LowSize;
+    int64_t LowSize{0};
 
     TMaskBoundary HighModificationMask;
     TDateTime HighModification;
@@ -173,9 +173,9 @@ class NB_CORE_EXPORT TCustomCommand : public TObject
   friend class TInteractiveCustomCommand;
 
 public:
-  TCustomCommand();
+  TCustomCommand() noexcept;
   // Needs an explicit virtual destructor, as is has virtual methods
-  virtual ~TCustomCommand() {}
+  virtual ~TCustomCommand() noexcept = default;
 
   UnicodeString Complete(const UnicodeString Command, bool LastPass);
   virtual void Validate(const UnicodeString Command);
@@ -220,7 +220,7 @@ protected:
   bool IsPromptPattern(const UnicodeString Pattern) const;
 
 private:
-  TCustomCommand *FChildCustomCommand;
+  TCustomCommand *FChildCustomCommand{nullptr};
 };
 //---------------------------------------------------------------------------
 class TTerminal;
@@ -252,11 +252,11 @@ private:
 class NB_CORE_EXPORT TFileCustomCommand : public TCustomCommand
 {
 public:
-  TFileCustomCommand();
-  explicit TFileCustomCommand(const TCustomCommandData &Data, const UnicodeString APath);
+  TFileCustomCommand() noexcept;
+  explicit TFileCustomCommand(const TCustomCommandData &Data, const UnicodeString APath) noexcept;
   explicit TFileCustomCommand(const TCustomCommandData &Data, const UnicodeString APath,
-    const UnicodeString AFileName, const UnicodeString FileList);
-  virtual ~TFileCustomCommand() {}
+    const UnicodeString AFileName, const UnicodeString FileList) noexcept;
+  virtual ~TFileCustomCommand() noexcept = default;
 
   virtual void Validate(const UnicodeString Command) override;
   virtual void ValidatePattern(const UnicodeString Command,

@@ -1,7 +1,7 @@
-#if 0
 //---------------------------------------------------------------------------
 #include <vcl.h>
 #pragma hdrstop
+#if 0
 
 #include <SysUtils.hpp>
 
@@ -14,9 +14,11 @@
 #include "CoreMain.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
+#endif //if 0
 //---------------------------------------------------------------------------
 const wchar_t * ToggleNames[] = { L"off", L"on" };
 //---------------------------------------------------------------------------
+#if 0
 TScriptProcParams::TScriptProcParams(const UnicodeString & FullCommand, const UnicodeString & ParamsStr)
 {
   int P = FSwitchMarks.Pos(L"/");

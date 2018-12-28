@@ -428,17 +428,14 @@ protected:
   void ReadDirectory(TRemoteFileList *AFileList);
   void CustomReadDirectory(TRemoteFileList *AFileList);
   void DoCreateLink(const UnicodeString AFileName, const UnicodeString APointTo, bool Symbolic);
-  HANDLE TerminalCreateLocalFile(const UnicodeString LocalFileName, DWORD DesiredAccess,
-    DWORD ShareMode, DWORD CreationDisposition, DWORD FlagsAndAttributes);
   bool TerminalCreateLocalFile(const UnicodeString ATargetFileName,
     TFileOperationProgressType *OperationProgress, HANDLE *AHandle,
     bool NoConfirmation);
   void TerminalOpenLocalFile(const UnicodeString ATargetFileName, DWORD Access,
     DWORD *AAttrs, HANDLE *AHandle, int64_t *ACTime,
-    int64_t *AMTime, int64_t *AATime, int64_t *ASize,
-    bool TryWriteReadOnly = true);
+    int64_t *AMTime, int64_t *AATime, int64_t *ASize, bool TryWriteReadOnly = true);
   void TerminalOpenLocalFile(
-    const UnicodeString AFileName, uintptr_t Access, TLocalFileHandle & Handle, bool TryWriteReadOnly = true);
+    const UnicodeString AFileName, DWORD Access, TLocalFileHandle & Handle, bool TryWriteReadOnly = true);
   bool AllowLocalFileTransfer(
     const UnicodeString AFileName, const TSearchRecSmart * SearchRec,
     const TCopyParamType *CopyParam, TFileOperationProgressType *OperationProgress);
@@ -879,6 +876,9 @@ public:
   void SetTunnelPassword(UnicodeString Value) { FRememberedTunnelPassword = Value; }
   TCustomFileSystem *GetFileSystem() const { return FFileSystem; }
   TCustomFileSystem *GetFileSystem() { return FFileSystem; }
+
+  HANDLE TerminalCreateLocalFile(const UnicodeString LocalFileName, DWORD DesiredAccess,
+    DWORD ShareMode, DWORD CreationDisposition, DWORD FlagsAndAttributes);
 
   bool CheckForEsc() const;
   void SetupTunnelLocalPortNumber();

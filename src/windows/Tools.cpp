@@ -1043,6 +1043,17 @@ bool SaveDialog(UnicodeString Title, UnicodeString Filter,
 #endif // #if 0
   return Result;
 }
+#endif //if 0
+bool SaveDialog(UnicodeString ATitle, UnicodeString Filter,
+  UnicodeString ADefaultExt, UnicodeString &AFileName)
+{
+  bool Result = false;
+  DebugUsedParam(Filter);
+  DebugUsedParam(ADefaultExt);
+
+  Result = InputDialog(ATitle, L""/*LoadStr(LOGIN_PRIVATE_KEY)*/, AFileName, L"", nullptr, true, nullptr, true);
+  return Result;
+}
 #if 0
 //---------------------------------------------------------------------------
 void CopyToClipboard(UnicodeString Text)
@@ -1143,6 +1154,7 @@ void ShutDownWindows()
   Win32Check(FALSE != ExitWindowsEx(EWX_SHUTDOWN | EWX_POWEROFF,
     SHTDN_REASON_MAJOR_OTHER | SHTDN_REASON_MINOR_OTHER | SHTDN_REASON_FLAG_PLANNED));
 }
+#if 0
 //---------------------------------------------------------------------------
 void SuspendWindows()
 {

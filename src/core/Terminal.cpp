@@ -166,6 +166,11 @@ TCalculateSizeParams::TCalculateSizeParams() noexcept : TObject(OBJECT_CLASS_TCa
   AllowDirs = true;
 }
 //---------------------------------------------------------------------------
+TSynchronizeOptions::TSynchronizeOptions() noexcept
+{
+  __removed memset(this, 0, sizeof(*this));
+}
+//---------------------------------------------------------------------------
 TSynchronizeOptions::~TSynchronizeOptions() noexcept
 {
   SAFE_DESTROY(Filter);
@@ -5558,11 +5563,11 @@ void TTerminal::TerminalOpenLocalFile(const UnicodeString ATargetFileName,
 }
 //---------------------------------------------------------------------------
 void TTerminal::TerminalOpenLocalFile(
-  const UnicodeString AFileName, uintptr_t Access, TLocalFileHandle &AHandle, bool TryWriteReadOnly)
+  const UnicodeString AFileName, DWORD Access, TLocalFileHandle &AHandle, bool TryWriteReadOnly)
 {
   AHandle.FileName = AFileName;
   this->TerminalOpenLocalFile(
-    AFileName, ToDWord(Access), &AHandle.Attrs, &AHandle.Handle, nullptr, &AHandle.MTime, &AHandle.ATime, &AHandle.Size,
+    AFileName, Access, &AHandle.Attrs, &AHandle.Handle, nullptr, &AHandle.MTime, &AHandle.ATime, &AHandle.Size,
     TryWriteReadOnly);
   AHandle.Modification = ::UnixToDateTime(AHandle.MTime, GetSessionData()->GetDSTMode());
   AHandle.Directory = FLAGSET(AHandle.Attrs, faDirectory);
@@ -8426,6 +8431,94 @@ UnicodeString TTerminal::DecryptFileName(const UnicodeString Path)
     }
   }
   return Result;
+}
+//---------------------------------------------------------------------------
+void TTerminal::SetLocalFileTime(UnicodeString LocalFileName,
+  const TDateTime &Modification)
+{
+  FILETIME WrTime = ::DateTimeToFileTime(Modification,
+      GetSessionData()->GetDSTMode());
+  SetLocalFileTime(LocalFileName, nullptr, &WrTime);
+}
+
+void TTerminal::SetLocalFileTime(UnicodeString LocalFileName,
+  FILETIME *AcTime, FILETIME *WrTime)
+{
+  TFileOperationProgressType *OperationProgress = GetOperationProgress();
+  FileOperationLoopCustom(this, OperationProgress, True, FMTLOAD(CANT_SET_ATTRS, LocalFileName), "",
+  [&]()
+  {
+    HANDLE LocalFileHandle;
+    SCOPE_EXIT
+    {
+      SAFE_CLOSE_HANDLE(LocalFileHandle);
+    };
+    this->TerminalOpenLocalFile(LocalFileName, GENERIC_WRITE, nullptr,
+      &LocalFileHandle, nullptr, nullptr, nullptr, nullptr);
+    THROWOSIFFALSE(::SetFileTime(LocalFileHandle, nullptr, AcTime, WrTime));
+  });
+}
+
+HANDLE TTerminal::TerminalCreateLocalFile(UnicodeString LocalFileName, DWORD DesiredAccess,
+  DWORD ShareMode, DWORD CreationDisposition, DWORD FlagsAndAttributes)
+{
+  if (GetOnCreateLocalFile())
+  {
+    return GetOnCreateLocalFile()(ApiPath(LocalFileName), DesiredAccess, ShareMode, CreationDisposition, FlagsAndAttributes);
+  }
+  return ::CreateFile(ApiPath(LocalFileName).c_str(), DesiredAccess, ShareMode, nullptr, CreationDisposition, FlagsAndAttributes, nullptr);
+}
+
+DWORD TTerminal::GetLocalFileAttributes(UnicodeString LocalFileName) const
+{
+  if (GetOnGetLocalFileAttributes())
+  {
+    return GetOnGetLocalFileAttributes()(ApiPath(LocalFileName));
+  }
+  return ::FileGetAttrFix(LocalFileName);
+}
+
+bool TTerminal::SetLocalFileAttributes(UnicodeString LocalFileName, DWORD FileAttributes)
+{
+  if (GetOnSetLocalFileAttributes())
+  {
+    return GetOnSetLocalFileAttributes()(ApiPath(LocalFileName), FileAttributes);
+  }
+  return SysUtulsFileSetAttr(LocalFileName, FileAttributes);
+}
+
+bool TTerminal::MoveLocalFile(UnicodeString LocalFileName, UnicodeString NewLocalFileName, DWORD Flags)
+{
+  if (GetOnMoveLocalFile())
+  {
+    return GetOnMoveLocalFile()(LocalFileName, NewLocalFileName, Flags);
+  }
+  return ::MoveFileEx(ApiPath(LocalFileName).c_str(), ApiPath(NewLocalFileName).c_str(), Flags) != FALSE;
+}
+
+bool TTerminal::RemoveLocalDirectory(UnicodeString LocalDirName)
+{
+  if (GetOnRemoveLocalDirectory())
+  {
+    return GetOnRemoveLocalDirectory()(LocalDirName);
+  }
+  return SysUtulsRemoveDir(LocalDirName);
+}
+
+bool TTerminal::CreateLocalDirectory(UnicodeString LocalDirName, LPSECURITY_ATTRIBUTES SecurityAttributes)
+{
+  if (GetOnCreateLocalDirectory())
+  {
+    return GetOnCreateLocalDirectory()(LocalDirName, SecurityAttributes);
+  }
+  return SysUtulsCreateDir(LocalDirName, SecurityAttributes);
+}
+
+bool TTerminal::IsThisOrChild(TTerminal *Terminal) const
+{
+  return
+    (this == Terminal) ||
+    ((FCommandSession != nullptr) && (FCommandSession == Terminal));
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------

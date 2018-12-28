@@ -230,31 +230,31 @@ UnicodeString TFileMasks::ComposeMaskStr(
   return Result;
 }
 //---------------------------------------------------------------------------
-TFileMasks::TFileMasks()
+TFileMasks::TFileMasks() noexcept
 {
   Init();
 }
 //---------------------------------------------------------------------------
-TFileMasks::TFileMasks(intptr_t ForceDirectoryMasks)
+TFileMasks::TFileMasks(intptr_t ForceDirectoryMasks) noexcept
 {
   Init();
   FForceDirectoryMasks = ForceDirectoryMasks;
 }
 //---------------------------------------------------------------------------
-TFileMasks::TFileMasks(const TFileMasks &Source)
+TFileMasks::TFileMasks(const TFileMasks &Source) noexcept
 {
   Init();
   FForceDirectoryMasks = Source.FForceDirectoryMasks;
   SetStr(Source.GetMasks(), false);
 }
 //---------------------------------------------------------------------------
-TFileMasks::TFileMasks(const UnicodeString AMasks)
+TFileMasks::TFileMasks(const UnicodeString AMasks) noexcept
 {
   Init();
   SetStr(AMasks, false);
 }
 //---------------------------------------------------------------------------
-TFileMasks::~TFileMasks()
+TFileMasks::~TFileMasks() noexcept
 {
   Clear();
 }
@@ -789,7 +789,7 @@ UnicodeString TCustomCommand::Escape(const UnicodeString S)
   return ReplaceStr(S, L"!", L"!!");
 }
 //---------------------------------------------------------------------------
-TCustomCommand::TCustomCommand()
+TCustomCommand::TCustomCommand() noexcept
 {
 }
 //---------------------------------------------------------------------------
@@ -1157,12 +1157,12 @@ TSessionData *TCustomCommandData::GetSessionDataPrivate() const
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-TFileCustomCommand::TFileCustomCommand()
+TFileCustomCommand::TFileCustomCommand() noexcept
 {
 }
 //---------------------------------------------------------------------------
 TFileCustomCommand::TFileCustomCommand(const TCustomCommandData &Data,
-  const UnicodeString APath) :
+  const UnicodeString APath) noexcept :
   FData(Data),
   FPath(APath)
 {
@@ -1170,7 +1170,7 @@ TFileCustomCommand::TFileCustomCommand(const TCustomCommandData &Data,
 //---------------------------------------------------------------------------
 TFileCustomCommand::TFileCustomCommand(const TCustomCommandData &Data,
   const UnicodeString APath, const UnicodeString AFileName,
-  const UnicodeString FileList) :
+  const UnicodeString FileList) noexcept :
   FData(Data),
   FPath(APath),
   FFileName(AFileName),
