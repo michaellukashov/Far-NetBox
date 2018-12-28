@@ -16,23 +16,23 @@
  * Functions loaded from advapi32.dll.
  */
 PUTTY_DECL_WINDOWS_FUNCTION(WINSECUR_GLOBAL, BOOL, OpenProcessToken,
-          (HANDLE, DWORD, PHANDLE));
+  (HANDLE, DWORD, PHANDLE));
 PUTTY_DECL_WINDOWS_FUNCTION(WINSECUR_GLOBAL, BOOL, GetTokenInformation,
-          (HANDLE, TOKEN_INFORMATION_CLASS,
-                       LPVOID, DWORD, PDWORD));
+  (HANDLE, TOKEN_INFORMATION_CLASS,
+    LPVOID, DWORD, PDWORD));
 PUTTY_DECL_WINDOWS_FUNCTION(WINSECUR_GLOBAL, BOOL, InitializeSecurityDescriptor,
-          (PSECURITY_DESCRIPTOR, DWORD));
+  (PSECURITY_DESCRIPTOR, DWORD));
 PUTTY_DECL_WINDOWS_FUNCTION(WINSECUR_GLOBAL, BOOL, SetSecurityDescriptorOwner,
-          (PSECURITY_DESCRIPTOR, PSID, BOOL));
+  (PSECURITY_DESCRIPTOR, PSID, BOOL));
 PUTTY_DECL_WINDOWS_FUNCTION(WINSECUR_GLOBAL, DWORD, GetSecurityInfo,
-          (HANDLE, SE_OBJECT_TYPE, SECURITY_INFORMATION,
-           PSID *, PSID *, PACL *, PACL *,
-           PSECURITY_DESCRIPTOR *));
+  (HANDLE, SE_OBJECT_TYPE, SECURITY_INFORMATION,
+    PSID*, PSID*, PACL*, PACL*,
+    PSECURITY_DESCRIPTOR*));
 PUTTY_DECL_WINDOWS_FUNCTION(WINSECUR_GLOBAL, DWORD, SetSecurityInfo,
-          (HANDLE, SE_OBJECT_TYPE, SECURITY_INFORMATION,
-           PSID, PSID, PACL, PACL));
+  (HANDLE, SE_OBJECT_TYPE, SECURITY_INFORMATION,
+    PSID, PSID, PACL, PACL));
 PUTTY_DECL_WINDOWS_FUNCTION(WINSECUR_GLOBAL, DWORD, SetEntriesInAclA,
-          (ULONG, PEXPLICIT_ACCESS, PACL, PACL *));
+  (ULONG, PEXPLICIT_ACCESS, PACL, PACL*));
 int got_advapi(void);
 
 /*
@@ -52,8 +52,8 @@ PSID get_user_sid(void);
  * 'error' has been filled with a dynamically allocated error message.
  */
 int make_private_security_descriptor(DWORD permissions,
-                                     PSECURITY_DESCRIPTOR *psd,
-                                     PACL *acl,
-                                     char **error);
+  PSECURITY_DESCRIPTOR* psd,
+  PACL* acl,
+  char** error);
 
 #endif
