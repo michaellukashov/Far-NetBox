@@ -154,7 +154,7 @@ public:
     ErrorCode(Code)
   {
   }
-  DWORD ErrorCode;
+  DWORD ErrorCode{0};
 };
 
 NB_DEFINE_CLASS_ID(EInvalidOperation);
@@ -183,16 +183,16 @@ namespace Sysutils {
 struct NB_CORE_EXPORT TFormatSettings : public TObject
 {
 public:
-  explicit TFormatSettings(int /*LCID*/);
+  explicit TFormatSettings(int /*LCID*/) noexcept;
   static TFormatSettings Create(int LCID ) { return TFormatSettings(LCID); }
-  uint8_t CurrencyFormat;
-  uint8_t NegCurrFormat;
-  wchar_t ThousandSeparator;
-  wchar_t DecimalSeparator;
-  uint8_t CurrencyDecimals;
-  wchar_t DateSeparator;
-  wchar_t TimeSeparator;
-  wchar_t ListSeparator;
+  uint8_t CurrencyFormat{0};
+  uint8_t NegCurrFormat{0};
+  wchar_t ThousandSeparator{};
+  wchar_t DecimalSeparator{};
+  uint8_t CurrencyDecimals{0};
+  wchar_t DateSeparator{};
+  wchar_t TimeSeparator{};
+  wchar_t ListSeparator{};
   UnicodeString CurrencyString;
   UnicodeString ShortDateFormat;
   UnicodeString LongDateFormat;
@@ -200,7 +200,7 @@ public:
   UnicodeString TimePMString;
   UnicodeString ShortTimeFormat;
   UnicodeString LongTimeFormat;
-  uint16_t TwoDigitYearCenturyWindow;
+  uint16_t TwoDigitYearCenturyWindow{0};
 };
 
 NB_CORE_EXPORT UnicodeString ExtractShortPathName(const UnicodeString APath);
@@ -409,10 +409,10 @@ NB_CORE_EXPORT bool StartsText(const UnicodeString ASubText, const UnicodeString
 
 struct NB_CORE_EXPORT TVersionInfo
 {
-  DWORD Major;
-  DWORD Minor;
-  DWORD Revision;
-  DWORD Build;
+  DWORD Major{0};
+  DWORD Minor{0};
+  DWORD Revision{0};
+  DWORD Build{0};
 };
 
 #define MAKEVERSIONNUMBER(major, minor, revision) ( ((major)<<16) | ((minor)<<8) | (revision))

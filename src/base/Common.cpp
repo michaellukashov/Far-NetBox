@@ -42,6 +42,7 @@ const wchar_t TokenReplacement = wchar_t(1);
 const UnicodeString LocalInvalidChars(TraceInitStr(L"/\\:*?\"<>|"));
 const UnicodeString PasswordMask(TraceInitStr(L"***"));
 const UnicodeString Ellipsis(TraceInitStr(L"..."));
+const UnicodeString EmptyString(TraceInitStr(L"\1\1\1")); // magic
 //---------------------------------------------------------------------------
 UnicodeString ReplaceChar(const UnicodeString Str, wchar_t A, wchar_t B)
 {

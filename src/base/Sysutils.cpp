@@ -1584,7 +1584,7 @@ UnicodeString VersionNumberToStr(uintptr_t VersionNumber)
   return Result;
 }
 
-TFormatSettings::TFormatSettings(int /*LCID*/) :
+TFormatSettings::TFormatSettings(int /*LCID*/) noexcept :
   CurrencyFormat(0),
   NegCurrFormat(0),
   ThousandSeparator(0),
