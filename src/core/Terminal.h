@@ -428,15 +428,10 @@ protected:
   void ReadDirectory(TRemoteFileList *AFileList);
   void CustomReadDirectory(TRemoteFileList *AFileList);
   void DoCreateLink(const UnicodeString AFileName, const UnicodeString APointTo, bool Symbolic);
-  bool TerminalCreateLocalFile(const UnicodeString ATargetFileName,
-    TFileOperationProgressType *OperationProgress,
-    bool Resume,
-    bool NoConfirmation,
-    HANDLE *AHandle);
   HANDLE TerminalCreateLocalFile(const UnicodeString LocalFileName, DWORD DesiredAccess,
     DWORD ShareMode, DWORD CreationDisposition, DWORD FlagsAndAttributes);
-  bool TerminalCreateLocalFile(const UnicodeString FileName,
-    TFileOperationProgressType * OperationProgress, HANDLE * AHandle,
+  bool TerminalCreateLocalFile(const UnicodeString ATargetFileName,
+    TFileOperationProgressType *OperationProgress, HANDLE *AHandle,
     bool NoConfirmation);
   void TerminalOpenLocalFile(const UnicodeString ATargetFileName, DWORD Access,
     DWORD *AAttrs, HANDLE *AHandle, int64_t *ACTime,
@@ -510,10 +505,8 @@ protected:
   void FileFind(const UnicodeString AFileName, const TRemoteFile *AFile, void *Param);
   void DoFilesFind(const UnicodeString ADirectory, TFilesFindParams &Params, const UnicodeString ARealDirectory);
   bool DoCreateLocalFile(const UnicodeString AFileName,
-    TFileOperationProgressType *OperationProgress,
-    bool Resume,
-    bool NoConfirmation,
-    HANDLE *AHandle);
+    TFileOperationProgressType *OperationProgress, HANDLE *AHandle,
+    bool NoConfirmation);
   void LockFile(UnicodeString AFileName, const TRemoteFile *AFile, void * Param);
   void UnlockFile(UnicodeString AFileName, const TRemoteFile *AFile, void * Param);
   void DoLockFile(UnicodeString AFileName, const TRemoteFile *AFile);

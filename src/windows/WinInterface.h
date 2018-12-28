@@ -25,8 +25,10 @@ class TStoredSessionList;
 class TConfiguration;
 class TTerminal;
 
-constexpr const int mpNeverAskAgainCheck =   0x01;
-constexpr const int mpAllowContinueOnError = 0x02;
+constexpr const uintptr_t mpNeverAskAgainCheck =   0x01;
+constexpr const uintptr_t mpAllowContinueOnError = 0x02;
+
+extern HINSTANCE HInstance;
 
 #define UPLOAD_IF_ANY_SWITCH L"UploadIfAny"
 #define UPLOAD_SWITCH L"Upload"

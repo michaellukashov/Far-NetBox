@@ -5542,9 +5542,7 @@ void TSFTPFileSystem::Sink(
     if (!LocalFileHandle)
     {
       if (!FTerminal->TerminalCreateLocalFile(LocalFileName, OperationProgress,
-             FLAGSET(AParams, cpResume),
-             FLAGSET(AParams, cpNoConfirmation),
-             &LocalFileHandle))
+             &LocalFileHandle, FLAGSET(AParams, cpNoConfirmation)))
       {
         throw ESkipFile();
       }

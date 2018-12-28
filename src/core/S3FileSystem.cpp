@@ -1674,7 +1674,7 @@ void TS3FileSystem::Sink(
   [&]()
   {
     HANDLE LocalFileHandle;
-    if (!FTerminal->TerminalCreateLocalFile(DestFullName, OperationProgress, FLAGSET(Params, cpResume), FLAGSET(Params, cpNoConfirmation), &LocalFileHandle))
+    if (!FTerminal->TerminalCreateLocalFile(DestFullName, OperationProgress, &LocalFileHandle, FLAGSET(Params, cpNoConfirmation)))
     {
       throw ESkipFile();
     }

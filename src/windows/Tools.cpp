@@ -744,6 +744,7 @@ void ShowHelp(const UnicodeString & AHelpKeyword)
   AddToList(HelpUrl, HelpKeyword, FragmentSeparator);
   OpenBrowser(HelpUrl);
 }
+#endif // #if 0
 //---------------------------------------------------------------------------
 bool IsFormatInClipboard(unsigned int Format)
 {
@@ -886,6 +887,7 @@ UnicodeString ReadResource(const UnicodeString ResName)
 
   return Result;
 }
+#if 0
 //---------------------------------------------------------------------------
 template <class T>
 void BrowseForExecutableT(T * Control, UnicodeString Title,

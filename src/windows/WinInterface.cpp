@@ -44,6 +44,8 @@ void __fastcall FormHelp(TCustomForm * Form)
 }
 #endif // #if 0
 //---------------------------------------------------------------------------
+HINSTANCE HInstance = 0;
+//---------------------------------------------------------------------------
 TMessageParams::TMessageParams(uintptr_t AParams) noexcept
 {
   Reset();

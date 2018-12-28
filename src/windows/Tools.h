@@ -47,10 +47,12 @@ void OpenBrowser(UnicodeString URL);
 void OpenFileInExplorer(const UnicodeString & Path);
 void OpenFolderInExplorer(const UnicodeString & Path);
 void ShowHelp(const UnicodeString & HelpKeyword);
-bool IsFormatInClipboard(unsigned int Format);
-bool NonEmptyTextFromClipboard(UnicodeString & Text);
-HANDLE OpenTextFromClipboard(const wchar_t *& Text);
-void CloseTextFromClipboard(HANDLE Handle);
+#endif // #if 0
+NB_CORE_EXPORT bool IsFormatInClipboard(unsigned int Format);
+NB_CORE_EXPORT bool NonEmptyTextFromClipboard(UnicodeString & Text);
+NB_CORE_EXPORT HANDLE OpenTextFromClipboard(const wchar_t *& Text);
+NB_CORE_EXPORT void CloseTextFromClipboard(HANDLE Handle);
+#if 0
 void ExitActiveControl(TForm * Form);
 UnicodeString ReadResource(const UnicodeString ResName);
 bool DumpResourceToFile(const UnicodeString ResName,

@@ -5310,10 +5310,8 @@ void TTerminal::DoAnyCommand(const UnicodeString ACommand,
 }
 //---------------------------------------------------------------------------
 bool TTerminal::DoCreateLocalFile(const UnicodeString AFileName,
-  TFileOperationProgressType *OperationProgress,
-  bool Resume,
-  bool NoConfirmation,
-  HANDLE *AHandle)
+  TFileOperationProgressType *OperationProgress, HANDLE *AHandle,
+  bool NoConfirmation)
 {
   DebugAssert(OperationProgress);
   DebugAssert(AHandle);
@@ -5321,7 +5319,7 @@ bool TTerminal::DoCreateLocalFile(const UnicodeString AFileName,
   bool Done;
   DWORD DesiredAccess = GENERIC_WRITE;
   DWORD ShareMode = FILE_SHARE_READ;
-  DWORD CreationDisposition = Resume ? OPEN_ALWAYS : CREATE_ALWAYS;
+  DWORD CreationDisposition = CREATE_ALWAYS; // Resume ? OPEN_ALWAYS : CREATE_ALWAYS;
   DWORD FlagsAndAttributes = FILE_ATTRIBUTE_NORMAL;
   do
   {
@@ -5422,10 +5420,8 @@ bool TTerminal::DoCreateLocalFile(const UnicodeString AFileName,
 }
 //---------------------------------------------------------------------------
 bool TTerminal::TerminalCreateLocalFile(const UnicodeString ATargetFileName,
-  TFileOperationProgressType *OperationProgress,
-  bool Resume,
-  bool NoConfirmation,
-  HANDLE *AHandle)
+  TFileOperationProgressType *OperationProgress, HANDLE *AHandle,
+  bool NoConfirmation)
 {
   DebugAssert(OperationProgress);
   DebugAssert(AHandle);
@@ -5434,8 +5430,7 @@ bool TTerminal::TerminalCreateLocalFile(const UnicodeString ATargetFileName,
     FMTLOAD(CREATE_FILE_ERROR, ATargetFileName), "",
   [&]()
   {
-    Result = DoCreateLocalFile(ATargetFileName, OperationProgress, Resume, NoConfirmation,
-        AHandle);
+    Result = DoCreateLocalFile(ATargetFileName, OperationProgress, AHandle, NoConfirmation);
   });
   __removed FILE_OPERATION_LOOP_END(FMTLOAD(CREATE_FILE_ERROR, (FileName)));
 
