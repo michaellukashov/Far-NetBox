@@ -90,6 +90,10 @@ inline int64_t
 ToInt64(T a) { return static_cast<int64_t>(a); }
 
 template <class T>
+inline uint64_t
+ToUInt64(T a) { return static_cast<uint64_t>(a); }
+
+template <class T>
 inline typename std::is_convertible<T, void *>::value
 ToPtr(T a) { return const_cast<void *>(a); }
 
