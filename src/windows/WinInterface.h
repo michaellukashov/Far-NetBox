@@ -395,20 +395,20 @@ bool DoSynchronizeDialog(TSynchronizeParamType & Params,
 
 // forms\FullSynchronize.cpp
 struct TUsableCopyParamAttrs;
-enum TSynchronizeMode { smRemote, smLocal, smBoth };
-constexpr const int fsoDisableTimestamp = 0x01;
-constexpr const int fsoDoNotUsePresets =  0x02;
-constexpr const int fsoAllowSelectedOnly = 0x04;
+__removed enum TSynchronizeMode { smRemote, smLocal, smBoth };
+constexpr const intptr_t fsoDisableTimestamp = 0x01;
+constexpr const intptr_t fsoDoNotUsePresets =  0x02;
+constexpr const intptr_t fsoAllowSelectedOnly = 0x04;
 #if 0
 typedef void (__closure *TFullSynchronizeInNewWindow)
   (TSynchronizeMode Mode, int Params, const UnicodeString & LocalDirectory, const UnicodeString & RemoteDirectory,
    const TCopyParamType * CopyParams);
 #endif // #if 0
 typedef nb::FastDelegate5<void,
-  TSynchronizeMode /*Mode*/, intptr_t /*Params*/, UnicodeString /*LocalDirectory*/, UnicodeString /*RemoteDirectory*/,
+  TTerminal::TSynchronizeMode /*Mode*/, intptr_t /*Params*/, UnicodeString /*LocalDirectory*/, UnicodeString /*RemoteDirectory*/,
    const TCopyParamType * /*CopyParams*/> TFullSynchronizeInNewWindowEvent;
 
-bool DoFullSynchronizeDialog(TSynchronizeMode & Mode, intptr_t & Params,
+bool DoFullSynchronizeDialog(TTerminal::TSynchronizeMode & Mode, intptr_t & Params,
   UnicodeString & LocalDirectory, UnicodeString & RemoteDirectory,
   TCopyParamType * CopyParams, bool & SaveSettings, bool & SaveMode,
   intptr_t Options, const TUsableCopyParamAttrs & CopyParamAttrs,
@@ -439,7 +439,7 @@ typedef nb::FastDelegate4<void,
   TOperationSide /*Side*/, UnicodeString /*FileName*/, UnicodeString /*NewFileName*/, TRemoteFile * /*RemoteFile*/> TSynchronizeMoveEvent;
 
 bool DoSynchronizeChecklistDialog(TSynchronizeChecklist * Checklist,
-  TSynchronizeMode Mode, int Params,
+  TTerminal::TSynchronizeMode Mode, int Params,
   const UnicodeString LocalDirectory, const UnicodeString RemoteDirectory,
   TCustomCommandMenuEvent OnCustomCommandMenu, TFullSynchronizeEvent OnSynchronize,
   TSynchronizeChecklistCalculateSizeEvent OnSynchronizeChecklistCalculateSize, TSynchronizeMoveEvent OnSynchronizeMove,
