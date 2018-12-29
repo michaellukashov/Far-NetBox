@@ -196,22 +196,9 @@ protected:
   bool QueueDialog(TTerminalQueueStatus *Status, bool ClosingPlugin);
   bool SynchronizeDialog(TSynchronizeParamType &Params,
     const TCopyParamType *CopyParams, TSynchronizeStartStopEvent OnStartStop,
-    bool &SaveSettings, intptr_t Options, intptr_t CopyParamAttrs,
+    bool &SaveSettings, uintptr_t Options, intptr_t CopyParamAttrs,
     TGetSynchronizeOptionsEvent OnGetOptions);
-  void DoSynchronize(TSynchronizeController *Sender,
-    const UnicodeString LocalDirectory, const UnicodeString RemoteDirectory,
-    const TCopyParamType &CopyParam, const TSynchronizeParamType &Params,
-    TSynchronizeChecklist **Checklist, TSynchronizeOptions *Options, bool Full);
-  void DoSynchronizeInvalid(TSynchronizeController *Sender,
-    const UnicodeString Directory, const UnicodeString ErrorStr);
-  void DoSynchronizeTooManyDirectories(TSynchronizeController *Sender,
-    intptr_t &MaxDirectories);
-  void Synchronize(const UnicodeString LocalDirectory,
-    const UnicodeString RemoteDirectory, TTerminal::TSynchronizeMode Mode,
-    const TCopyParamType &CopyParam, intptr_t Params, TSynchronizeChecklist **AChecklist,
-    TSynchronizeOptions *Options);
   bool SynchronizeAllowSelectedOnly();
-  void GetSynchronizeOptions(intptr_t Params, TSynchronizeOptions &Options);
   void RequireCapability(intptr_t Capability);
   void RequireLocalPanel(TFarPanelInfo *Panel, const UnicodeString Message);
   bool AreCachesEmpty() const;
@@ -291,25 +278,23 @@ private:
     TFarPanelInfo **APanelInfo = nullptr);
   void CustomCommandGetParamValue(
     const UnicodeString AName, UnicodeString &Value);
-  void TerminalSynchronizeDirectory(UnicodeString LocalDirectory,
-    UnicodeString RemoteDirectory, bool &Continue, bool Collect);
   void HandleErrorList(TStringList *& ErrorList);
-  void TerminalSynchronizeDirectory(const UnicodeString LocalDirectory,
-    const UnicodeString RemoteDirectory, bool & Continue, bool Collect);
+  void TerminalSynchronizeDirectory(UnicodeString LocalDirectory,
+    UnicodeString RemoteDirectory, bool & Continue, bool Collect);
   void DoSynchronize(TSynchronizeController * Sender,
-    const UnicodeString LocalDirectory, const UnicodeString RemoteDirectory,
+    UnicodeString LocalDirectory, UnicodeString RemoteDirectory,
     const TCopyParamType & CopyParam, const TSynchronizeParamType & Params,
     TSynchronizeChecklist ** Checklist, TSynchronizeOptions * Options, bool Full);
   void DoSynchronizeInvalid(TSynchronizeController * Sender,
-    const UnicodeString Directory, const UnicodeString ErrorStr);
+    UnicodeString Directory, UnicodeString ErrorStr);
   void DoSynchronizeTooManyDirectories(TSynchronizeController * Sender,
-    int & MaxDirectories);
-  void Synchronize(const UnicodeString LocalDirectory,
-    const UnicodeString RemoteDirectory, TSynchronizeMode Mode,
+    intptr_t & MaxDirectories);
+  void Synchronize(UnicodeString LocalDirectory,
+    UnicodeString RemoteDirectory, TTerminal::TSynchronizeMode Mode,
     const TCopyParamType & CopyParam, intptr_t Params, TSynchronizeChecklist ** Checklist,
     TSynchronizeOptions * Options);
   void SynchronizeSessionLog(const UnicodeString & Message);
-  void GetSynchronizeOptions(int Params, TSynchronizeOptions & Options);
+  void GetSynchronizeOptions(intptr_t Params, TSynchronizeOptions & Options);
   void QueueListUpdate(TTerminalQueue *Queue);
   void QueueItemUpdate(TTerminalQueue *Queue, TQueueItem *Item);
   void QueueEvent(TTerminalQueue *Queue, TQueueEvent Event);

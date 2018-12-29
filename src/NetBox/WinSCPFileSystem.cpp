@@ -1393,7 +1393,7 @@ void TWinSCPFileSystem::ApplyCommand()
   }
 }
 
-void TWinSCPFileSystem::Synchronize(const UnicodeString LocalDirectory,
+void TWinSCPFileSystem::Synchronize(UnicodeString LocalDirectory,
   UnicodeString RemoteDirectory, TTerminal::TSynchronizeMode Mode,
   const TCopyParamType &CopyParam, intptr_t Params, TSynchronizeChecklist **AChecklist,
   TSynchronizeOptions *Options)
@@ -1668,8 +1668,8 @@ void TWinSCPFileSystem::Synchronize()
 }
 
 void TWinSCPFileSystem::DoSynchronize(
-  TSynchronizeController * /*Sender*/, const UnicodeString LocalDirectory,
-  const UnicodeString RemoteDirectory, const TCopyParamType &CopyParam,
+  TSynchronizeController * /*Sender*/, UnicodeString LocalDirectory,
+  UnicodeString RemoteDirectory, const TCopyParamType &CopyParam,
   const TSynchronizeParamType &Params, TSynchronizeChecklist **Checklist,
   TSynchronizeOptions *Options, bool Full)
 {
@@ -1702,7 +1702,7 @@ void TWinSCPFileSystem::DoSynchronize(
 }
 
 void TWinSCPFileSystem::DoSynchronizeInvalid(
-  TSynchronizeController * /*Sender*/, const UnicodeString Directory,
+  TSynchronizeController * /*Sender*/, UnicodeString Directory,
   UnicodeString /*ErrorStr*/)
 {
   UnicodeString Message;
