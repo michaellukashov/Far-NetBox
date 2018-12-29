@@ -15,11 +15,11 @@ static void sha_mpint(SHA_State* s, Bignum b)
   int len;
   len = (bignum_bitcount(b) + 8) / 8;
   PUT_32BIT(lenbuf, len);
-  SHA_Bytes(s, lenbuf, 4);
+  putty_SHA_Bytes(s, lenbuf, 4);
   while (len-- > 0)
   {
     lenbuf[0] = bignum_byte(b, len);
-    SHA_Bytes(s, lenbuf, 1);
+    putty_SHA_Bytes(s, lenbuf, 1);
   }
   smemclr(lenbuf, sizeof(lenbuf));
 }
@@ -269,7 +269,7 @@ static int dss_verifysig(void* key, const char* sig, int siglen,
   /*
    * Step 2. u1 <- SHA(message) * w mod q.
    */
-  SHA_Simple(data, datalen, (unsigned char*)hash);
+  putty_SHA_Simple(data, datalen, (unsigned char*)hash);
   p = hash;
   slen = 20;
   sha = get160(&p, &slen);
@@ -405,11 +405,11 @@ static void* dss_createkey(const struct ssh_signkey* self,
   getstring(&pb, &priv_len, &hash, &hashlen);
   if (hashlen == 20)
   {
-    SHA_Init(&s);
+    putty_SHA_Init(&s);
     sha_mpint(&s, dss->p);
     sha_mpint(&s, dss->q);
     sha_mpint(&s, dss->g);
-    SHA_Final(&s, digest);
+    putty_SHA_Final(&s, digest);
     if (0 != memcmp(hash, digest, 20))
     {
       dss_freekey(dss);
@@ -631,7 +631,7 @@ static unsigned char* dss_sign(void* key, const char* data, int datalen,
   unsigned char* bytes;
   int nbytes, i;
 
-  SHA_Simple(data, datalen, digest);
+  putty_SHA_Simple(data, datalen, digest);
 
   k = dss_gen_k("DSA deterministic k generator", dss->q, dss->x,
       digest, sizeof(digest));

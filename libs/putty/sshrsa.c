@@ -881,7 +881,7 @@ static int rsa2_verifysig(void* key, const char* sig, int siglen,
       ret = 0;
   }
   /* Finally, we expect to see the SHA-1 hash of the signed data. */
-  SHA_Simple(data, datalen, hash);
+  putty_SHA_Simple(data, datalen, hash);
   for (i = 19, j = 0; i >= 0; i--, j++)
   {
     if (bignum_byte(out, i) != hash[j])
@@ -902,7 +902,7 @@ static unsigned char* rsa2_sign(void* key, const char* data, int datalen,
   Bignum in, out;
   int i, j;
 
-  SHA_Simple(data, datalen, hash);
+  putty_SHA_Simple(data, datalen, hash);
 
   nbytes = (bignum_bitcount(rsa->modulus) - 1) / 8;
   assert(1 <= nbytes - 20 - ASN1_LEN);

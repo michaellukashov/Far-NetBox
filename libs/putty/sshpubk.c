@@ -815,14 +815,14 @@ struct ssh2_userkey* ssh2_load_userkey(const Filename* filename,
     if (private_blob_len % cipherblk)
       goto error;
 
-    SHA_Init(&s);
-    SHA_Bytes(&s, "\0\0\0\0", 4);
-    SHA_Bytes(&s, passphrase, passlen);
-    SHA_Final(&s, key + 0);
-    SHA_Init(&s);
-    SHA_Bytes(&s, "\0\0\0\1", 4);
-    SHA_Bytes(&s, passphrase, passlen);
-    SHA_Final(&s, key + 20);
+    putty_SHA_Init(&s);
+    putty_SHA_Bytes(&s, "\0\0\0\0", 4);
+    putty_SHA_Bytes(&s, passphrase, passlen);
+    putty_SHA_Final(&s, key + 0);
+    putty_SHA_Init(&s);
+    putty_SHA_Bytes(&s, "\0\0\0\1", 4);
+    putty_SHA_Bytes(&s, passphrase, passlen);
+    putty_SHA_Final(&s, key + 20);
     aes256_decrypt_pubkey(key, private_blob, private_blob_len);
   }
 
@@ -872,11 +872,11 @@ struct ssh2_userkey* ssh2_load_userkey(const Filename* filename,
       unsigned char mackey[20];
       char header[] = "putty-private-key-file-mac-key";
 
-      SHA_Init(&s);
-      SHA_Bytes(&s, header, sizeof(header) - 1);
+      putty_SHA_Init(&s);
+      putty_SHA_Bytes(&s, header, sizeof(header) - 1);
       if (cipher && passphrase)
-        SHA_Bytes(&s, passphrase, passlen);
-      SHA_Final(&s, mackey);
+        putty_SHA_Bytes(&s, passphrase, passlen);
+      putty_SHA_Final(&s, mackey);
 
       hmac_sha1_simple(mackey, 20, macdata, maclen, binary);
 
@@ -885,7 +885,7 @@ struct ssh2_userkey* ssh2_load_userkey(const Filename* filename,
     }
     else
     {
-      SHA_Simple(macdata, maclen, binary);
+      putty_SHA_Simple(macdata, maclen, binary);
     }
 
     if (free_macdata)
@@ -1496,7 +1496,7 @@ int ssh2_save_userkey(const Filename* filename, struct ssh2_userkey* key,
   memcpy(priv_blob_encrypted, priv_blob, priv_blob_len);
   /* Create padding based on the SHA hash of the unpadded blob. This prevents
    * too easy a known-plaintext attack on the last block. */
-  SHA_Simple(priv_blob, priv_blob_len, priv_mac);
+  putty_SHA_Simple(priv_blob, priv_blob_len, priv_mac);
   assert(priv_encrypted_len - priv_blob_len < 20);
   memcpy(priv_blob_encrypted + priv_blob_len, priv_mac,
     priv_encrypted_len - priv_blob_len);
@@ -1527,11 +1527,11 @@ int ssh2_save_userkey(const Filename* filename, struct ssh2_userkey* key,
     DO_STR(pub_blob, pub_blob_len);
     DO_STR(priv_blob_encrypted, priv_encrypted_len);
 
-    SHA_Init(&s);
-    SHA_Bytes(&s, header, sizeof(header) - 1);
+    putty_SHA_Init(&s);
+    putty_SHA_Bytes(&s, header, sizeof(header) - 1);
     if (passphrase)
-      SHA_Bytes(&s, passphrase, strlen(passphrase));
-    SHA_Final(&s, mackey);
+      putty_SHA_Bytes(&s, passphrase, strlen(passphrase));
+    putty_SHA_Final(&s, mackey);
     hmac_sha1_simple(mackey, 20, macdata, maclen, priv_mac);
     smemclr(macdata, maclen);
     sfree(macdata);
@@ -1546,14 +1546,14 @@ int ssh2_save_userkey(const Filename* filename, struct ssh2_userkey* key,
 
     passlen = strlen(passphrase);
 
-    SHA_Init(&s);
-    SHA_Bytes(&s, "\0\0\0\0", 4);
-    SHA_Bytes(&s, passphrase, passlen);
-    SHA_Final(&s, key + 0);
-    SHA_Init(&s);
-    SHA_Bytes(&s, "\0\0\0\1", 4);
-    SHA_Bytes(&s, passphrase, passlen);
-    SHA_Final(&s, key + 20);
+    putty_SHA_Init(&s);
+    putty_SHA_Bytes(&s, "\0\0\0\0", 4);
+    putty_SHA_Bytes(&s, passphrase, passlen);
+    putty_SHA_Final(&s, key + 0);
+    putty_SHA_Init(&s);
+    putty_SHA_Bytes(&s, "\0\0\0\1", 4);
+    putty_SHA_Bytes(&s, passphrase, passlen);
+    putty_SHA_Final(&s, key + 20);
     aes256_encrypt_pubkey(key, priv_blob_encrypted,
       priv_encrypted_len);
 

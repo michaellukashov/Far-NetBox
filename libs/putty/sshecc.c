@@ -1741,7 +1741,7 @@ static void _ecdsa_sign(const Bignum privateKey, const struct ec_curve* curve,
 
   /* Generate k between 1 and curve->n, using the same deterministic
    * k generation system we use for conventional DSA. */
-  SHA_Simple(data, dataLen, digest);
+  putty_SHA_Simple(data, dataLen, digest);
   k = dss_gen_k("ECDSA deterministic k generator", curve->w.n, privateKey,
       digest, sizeof(digest));
 
