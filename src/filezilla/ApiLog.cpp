@@ -1,4 +1,4 @@
-
+//---------------------------------------------------------------------------
 #include "stdafx.h"
 #include "ApiLog.h"
 #include "FileZillaApi.h"

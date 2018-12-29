@@ -1,10 +1,9 @@
-
-#ifndef FileZillaToolsH
-#define FileZillaToolsH
-
+//---------------------------------------------------------------------------
+#pragma once
+//---------------------------------------------------------------------------
 #include <ctime>
 #include <nbsystem.h>
-
+//---------------------------------------------------------------------------
 class CFileZillaTools //: public TObject
 {
 CUSTOM_MEM_ALLOCATION_IMPL
@@ -15,5 +14,4 @@ public:
   virtual wchar_t * LastSysErrorMessage() const = 0;
   virtual std::wstring GetClientString() const = 0;
 };
-
-#endif // FileZillaToolsH
+//---------------------------------------------------------------------------

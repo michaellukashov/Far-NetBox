@@ -1,4 +1,4 @@
-/*           CAsyncSslSocketLayer by Tim Kosse 
+/*           CAsyncSslSocketLayer by Tim Kosse
           mailto: tim.kosse@filezilla-project.org)
                  Version 2.0 (2005-02-27)
 -------------------------------------------------------------
@@ -69,13 +69,12 @@ to tim.kosse@filezilla-project.org would be appreciated but is not required.
 This product includes software developed by the OpenSSL Project
 for use in the OpenSSL Toolkit. (https://www.openssl.org/)
 */
-
-#ifndef AsyncSslSocketLayerH
-#define AsyncSslSocketLayerH
-
+//---------------------------------------------------------------------------
+#pragma once
+//---------------------------------------------------------------------------
 #include "AsyncSocketExLayer.h"
 #include <openssl/ssl.h>
-
+//---------------------------------------------------------------------------
 // Details of SSL certificate, can be used by app to verify if certificate is valid
 struct t_SslCertData
 {
@@ -131,9 +130,9 @@ CUSTOM_MEM_ALLOCATION_IMPL
 
   int priv_data; //Internal data, do not modify
 };
-
+//---------------------------------------------------------------------------
 class CCriticalSectionWrapper;
-
+//---------------------------------------------------------------------------
 class CAsyncSslSocketLayer : public CAsyncSocketExLayer
 {
 public:
@@ -246,24 +245,24 @@ private:
   X509 * FCertificate;
   EVP_PKEY * FPrivateKey;
 };
-
+//---------------------------------------------------------------------------
 #define SSL_INFO 0
 #define SSL_FAILURE 1
 #define SSL_VERIFY_CERT 2
-
+//---------------------------------------------------------------------------
 #define SSL_INFO_ESTABLISHED 0
 #define SSL_INFO_SHUTDOWNCOMPLETE 1
-
+//---------------------------------------------------------------------------
 #define SSL_FAILURE_UNKNOWN 0
 #define SSL_FAILURE_ESTABLISH 1
 #define SSL_FAILURE_INITSSL 4
 #define SSL_FAILURE_VERIFYCERT 8
 #define SSL_FAILURE_CERTREJECTED 0x10
-
+//---------------------------------------------------------------------------
 #define SSL_VERSION_SSL2 2
 #define SSL_VERSION_SSL3 3
 #define SSL_VERSION_TLS10 10
 #define SSL_VERSION_TLS11 11
 #define SSL_VERSION_TLS12 12
+//---------------------------------------------------------------------------
 
-#endif // AsyncSslSocketLayerH

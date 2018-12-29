@@ -1,4 +1,4 @@
-
+//---------------------------------------------------------------------------
 #include "stdafx.h"
 #include <nbutils.h>
 #include "FtpListResult.h"

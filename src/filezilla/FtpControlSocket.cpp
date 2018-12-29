@@ -1,4 +1,4 @@
-
+//---------------------------------------------------------------------------
 #include "stdafx.h"
 #include "FtpControlSocket.h"
 #include "MainThread.h"
@@ -6509,7 +6509,7 @@ bool CFtpControlSocket::CheckForcePasvIp(CString & host)
   return result;
 }
 
-
+//---------------------------------------------------------------------------
 ftp_capabilities_t TFTPServerCapabilities::GetCapability(ftp_capability_names_t Name) const
 {
   t_cap tcap = FCapabilityMap[Name];

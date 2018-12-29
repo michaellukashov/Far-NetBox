@@ -8,6 +8,7 @@
 //---------------------------------------------------------------------------
 #include "stdafx.h"
 #include "AsyncSslSocketLayer.h"
+#include "FileZillaApi.h"
 #include <TextsCore.h>
 
 #include <openssl/x509v3.h>
@@ -254,7 +255,7 @@ void CAsyncSslSocketLayer::OnSend(int nErrorCode)
     //Send the data waiting in the network bio
     char buffer[32 * 1024];
     size_t len = BIO_ctrl_pending(m_nbio);
-    int numread = BIO_read(m_nbio, buffer, std::min<int>(len, sizeof(buffer)));
+    int numread = BIO_read(m_nbio, buffer, (int)std::min<size_t>(len, sizeof(buffer)));
     if (numread <= 0)
       m_mayTriggerWrite = true;
     while (numread > 0)

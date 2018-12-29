@@ -60,14 +60,13 @@ and this copyright notice stays intact in the source files.
 If you use this class in commercial applications, please send a short message
 to tim.kosse@gmx.de
 */
-
-#ifndef AsyncSocketExLayerH
-#define AsyncSocketExLayerH
-
+//---------------------------------------------------------------------------
+#pragma once
+//---------------------------------------------------------------------------
 #include "AsyncSocketEx.h"
-
+//---------------------------------------------------------------------------
 class CAsyncSocketEx;
-
+//---------------------------------------------------------------------------
 class CAsyncSocketExLayer // : public TObject
 {
 CUSTOM_MEM_ALLOCATION_IMPL
@@ -170,5 +169,4 @@ private:
     long lEvent;
   };
 };
-
-#endif // AsyncSocketExLayerH
+//---------------------------------------------------------------------------

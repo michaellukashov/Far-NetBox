@@ -1,8 +1,9 @@
-
+//---------------------------------------------------------------------------
 #include "stdafx.h"
-
+//---------------------------------------------------------------------------
 #include "FileZillaIntf.h"
 #include "FileZillaIntern.h"
+//---------------------------------------------------------------------------
 #include "FzApiStructures.h"
 #include "FileZillaApi.h"
 #include "structures.h"
@@ -12,7 +13,9 @@ static HMODULE winsock_module = NULL;
 static HMODULE winsock2_module = NULL;
 static HMODULE wship6_module = NULL;
 #endif // NO_IPV6
-
+//---------------------------------------------------------------------------
+__removed #pragma package(smart_init)
+//---------------------------------------------------------------------------
 void TFileZillaIntf::Initialize()
 {
 #ifndef NO_IPV6
@@ -51,7 +54,7 @@ void TFileZillaIntf::Initialize()
   }
 #endif // NO_IPV6
 }
-
+//---------------------------------------------------------------------------
 void TFileZillaIntf::Finalize()
 {
 #ifndef NO_IPV6
@@ -63,7 +66,7 @@ void TFileZillaIntf::Finalize()
   if (winsock_module)
     ::FreeLibrary(winsock_module);
 }
-
+//---------------------------------------------------------------------------
 void TFileZillaIntf::SetResourceModule(void * ResourceHandle)
 {
   // set afx resource handles, taken from AfxWinInit (mfc/appinit.cpp)
@@ -71,15 +74,15 @@ void TFileZillaIntf::SetResourceModule(void * ResourceHandle)
   ModuleState->m_hCurrentInstanceHandle = static_cast<HINSTANCE>(ResourceHandle);
   ModuleState->m_hCurrentResourceHandle = static_cast<HINSTANCE>(ResourceHandle);
 }
-
-TFileZillaIntf::TFileZillaIntf() :
+//---------------------------------------------------------------------------
+TFileZillaIntf::TFileZillaIntf() noexcept :
   FFileZillaApi(NULL),
   FServer(new t_server())
 {
   FIntern = new TFileZillaIntern(this);
 }
-
-TFileZillaIntf::~TFileZillaIntf()
+//---------------------------------------------------------------------------
+TFileZillaIntf::~TFileZillaIntf() noexcept
 {
   DebugAssert(FFileZillaApi == NULL);
 
@@ -105,7 +108,7 @@ bool TFileZillaIntf::Init()
 
   return Result;
 }
-
+//---------------------------------------------------------------------------
 void TFileZillaIntf::Destroying()
 {
   // need to close FZAPI before calling destructor as it in turn post messages
@@ -114,14 +117,14 @@ void TFileZillaIntf::Destroying()
   delete FFileZillaApi;
   FFileZillaApi = NULL;
 }
-
+//---------------------------------------------------------------------------
 bool TFileZillaIntf::SetCurrentPath(const wchar_t * APath)
 {
   DebugAssert(FFileZillaApi != NULL);
   CServerPath Path(APath);
   return Check(FFileZillaApi->SetCurrentPath(Path), L"setcurrentpath");
 }
-
+//---------------------------------------------------------------------------
 bool TFileZillaIntf::GetCurrentPath(wchar_t * APath, size_t MaxLen)
 {
   CServerPath ServerPath;
@@ -133,14 +136,14 @@ bool TFileZillaIntf::GetCurrentPath(wchar_t * APath, size_t MaxLen)
   }
   return Result;
 }
-
+//---------------------------------------------------------------------------
 bool TFileZillaIntf::Cancel()
 {
   DebugAssert(FFileZillaApi != NULL);
   // tolerate even "idle" state, quite possible in MT environment
   return Check(FFileZillaApi->Cancel(), L"cancel", FZ_REPLY_WOULDBLOCK | FZ_REPLY_IDLE);
 }
-
+//---------------------------------------------------------------------------
 bool TFileZillaIntf::Connect(const wchar_t * Host, int Port, const wchar_t * User,
   const wchar_t * Pass, const wchar_t * Account,
   const wchar_t * Path, int ServerType, int Pasv, int TimeZoneOffset, int UTF8, int CodePage,
@@ -175,7 +178,7 @@ bool TFileZillaIntf::Connect(const wchar_t * Host, int Port, const wchar_t * Use
 
   return Check(FFileZillaApi->Connect(Server), L"connect");
 }
-
+//---------------------------------------------------------------------------
 bool TFileZillaIntf::Close(bool AllowBusy)
 {
   bool Result;
@@ -212,20 +215,20 @@ bool TFileZillaIntf::Close(bool AllowBusy)
   }
   return Result;
 }
-
+//---------------------------------------------------------------------------
 bool TFileZillaIntf::CustomCommand(const wchar_t * Command)
 {
   DebugAssert(FFileZillaApi != NULL);
   return Check(FFileZillaApi->CustomCommand(Command), L"customcommand");
 }
-
+//---------------------------------------------------------------------------
 bool TFileZillaIntf::MakeDir(const wchar_t* APath)
 {
   DebugAssert(FFileZillaApi != NULL);
   CServerPath Path(APath);
   return Check(FFileZillaApi->MakeDir(Path), L"makedir");
 }
-
+//---------------------------------------------------------------------------
 bool TFileZillaIntf::Chmod(int Value, const wchar_t* FileName,
   const wchar_t* APath)
 {
@@ -233,21 +236,21 @@ bool TFileZillaIntf::Chmod(int Value, const wchar_t* FileName,
   CServerPath Path(APath);
   return Check(FFileZillaApi->Chmod(Value, FileName, Path), L"chmod");
 }
-
+//---------------------------------------------------------------------------
 bool TFileZillaIntf::Delete(const wchar_t* FileName, const wchar_t* APath, bool FileNameOnly)
 {
   DebugAssert(FFileZillaApi != NULL);
   CServerPath Path(APath);
   return Check(FFileZillaApi->Delete(FileName, Path, FileNameOnly), L"delete");
 }
-
+//---------------------------------------------------------------------------
 bool TFileZillaIntf::RemoveDir(const wchar_t* FileName, const wchar_t* APath)
 {
   DebugAssert(FFileZillaApi != NULL);
   CServerPath Path(APath);
   return Check(FFileZillaApi->RemoveDir(FileName, Path), L"removedir");
 }
-
+//---------------------------------------------------------------------------
 bool TFileZillaIntf::Rename(const wchar_t* OldName,
   const wchar_t* NewName, const wchar_t* APath, const wchar_t* ANewPath)
 {
@@ -256,21 +259,21 @@ bool TFileZillaIntf::Rename(const wchar_t* OldName,
   CServerPath NewPath(ANewPath);
   return Check(FFileZillaApi->Rename(OldName, NewName, Path, NewPath), L"rename");
 }
-
+//---------------------------------------------------------------------------
 bool TFileZillaIntf::List(const wchar_t * APath)
 {
   DebugAssert(FFileZillaApi != NULL);
   CServerPath Path(APath);
   return Check(FFileZillaApi->List(Path), L"list");
 }
-
+//---------------------------------------------------------------------------
 bool TFileZillaIntf::ListFile(const wchar_t * FileName, const wchar_t * APath)
 {
   DebugAssert(FFileZillaApi != NULL);
   CServerPath Path(APath);
   return Check(FFileZillaApi->ListFile(FileName, Path), L"listfile");
 }
-
+//---------------------------------------------------------------------------
 bool TFileZillaIntf::FileTransfer(const wchar_t * LocalFile,
   const wchar_t * RemoteFile, const wchar_t * RemotePath, bool Get, int64_t Size,
   int Type, void * UserData)
@@ -289,12 +292,12 @@ bool TFileZillaIntf::FileTransfer(const wchar_t * LocalFile,
 
   return Check(FFileZillaApi->FileTransfer(Transfer), L"filetransfer");
 }
-
+//---------------------------------------------------------------------------
 void TFileZillaIntf::SetDebugLevel(TLogLevel Level)
 {
   FIntern->SetDebugLevel(Level - LOG_APIERROR + 1);
 }
-
+//---------------------------------------------------------------------------
 bool TFileZillaIntf::FZPostMessage(WPARAM wParam, LPARAM lParam)
 {
   unsigned int MessageID = FZ_MSG_ID(wParam);
@@ -311,7 +314,7 @@ bool TFileZillaIntf::FZPostMessage(WPARAM wParam, LPARAM lParam)
   }
   return DoPostMessage(Type, wParam, lParam);
 }
-
+//---------------------------------------------------------------------------
 void CopyContact(TFtpsCertificateData::TContact & Dest,
   const t_SslCertData::t_Contact& Source)
 {
@@ -324,7 +327,7 @@ void CopyContact(TFtpsCertificateData::TContact & Dest,
   Dest.Town = Source.Town;
   Dest.Other = Source.Other;
 }
-
+//---------------------------------------------------------------------------
 void CopyValidityTime(TFtpsCertificateData::TValidityTime & Dest,
   const t_SslCertData::t_validTime& Source)
 {
@@ -335,7 +338,7 @@ void CopyValidityTime(TFtpsCertificateData::TValidityTime & Dest,
   Dest.Min = Source.m;
   Dest.Sec = Source.s;
 }
-
+//---------------------------------------------------------------------------
 void CopyFileTime(TRemoteFileTime & Dest, const t_directory::t_direntry::t_date & Source)
 {
   Dest.Year = (WORD)Source.year;
@@ -349,7 +352,7 @@ void CopyFileTime(TRemoteFileTime & Dest, const t_directory::t_direntry::t_date 
   Dest.HasSeconds = Source.hasseconds;
   Dest.Utc = Source.utc;
 }
-
+//---------------------------------------------------------------------------
 bool TFileZillaIntf::HandleMessage(WPARAM wParam, LPARAM lParam)
 {
   bool Result = false;
@@ -545,12 +548,12 @@ bool TFileZillaIntf::HandleMessage(WPARAM wParam, LPARAM lParam)
 
   return Result;
 }
-
+//---------------------------------------------------------------------------
 bool TFileZillaIntf::CheckError(intptr_t /*ReturnCode*/, const wchar_t * /*Context*/)
 {
   return false;
 }
-
+//---------------------------------------------------------------------------
 inline bool TFileZillaIntf::Check(intptr_t ReturnCode,
   const wchar_t * Context, intptr_t Expected)
 {
@@ -563,22 +566,22 @@ inline bool TFileZillaIntf::Check(intptr_t ReturnCode,
     return CheckError(ReturnCode, Context);
   }
 }
-
+//---------------------------------------------------------------------------
 bool TFileZillaIntf::UsingMlsd()
 {
   return FFileZillaApi->UsingMlsd();
 }
-
+//---------------------------------------------------------------------------
 bool TFileZillaIntf::UsingUtf8()
 {
   return FFileZillaApi->UsingUtf8();
 }
-
+//---------------------------------------------------------------------------
 std::string TFileZillaIntf::GetTlsVersionStr()
 {
   return FFileZillaApi->GetTlsVersionStr();
 }
-
+//---------------------------------------------------------------------------
 std::string TFileZillaIntf::GetCipherName()
 {
   return FFileZillaApi->GetCipherName();

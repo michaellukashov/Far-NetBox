@@ -1,14 +1,15 @@
 // CAsyncProxySocketLayer by Tim Kosse (Tim.Kosse@gmx.de)
 //                 Version 1.6 (2003-03-26)
-
+//---------------------------------------------------------------------------
 // Feel free to use this class, as long as you don't claim that you wrote it
 // and this copyright notice stays intact in the source files.
 // If you use this class in commercial applications, please send a short message
 // to tim.kosse@gmx.de
-
+//---------------------------------------------------------------------------
 #include "stdafx.h"
 #include "AsyncProxySocketLayer.h"
 #include "atlconv.h" //Unicode<->Ascii conversion macros declared here
+
 #include "misc/CBase64Coding.hpp"
 #include "FileZillaApi.h"
 
@@ -790,9 +791,9 @@ void CAsyncProxySocketLayer::OnConnect(int nErrorCode)
       USES_CONVERSION;
       CString status;
       status.Format(L"HTTP proxy command: %s", (LPCWSTR)CString(str));
+      LogSocketMessageRaw(FZ_LOG_PROGRESS, status);
       int numsent=SendNext(str, (int)strlen(str) );
       int nErrorCode=::WSAGetLastError();
-      LogSocketMessageRaw(FZ_LOG_PROGRESS, status);
       if (numsent==SOCKET_ERROR)//nErrorCode!=WSAEWOULDBLOCK)
       {
         ConnectionFailed((m_nProxyOpID == PROXYOP_CONNECT) && (nErrorCode == WSAEWOULDBLOCK) ? WSAECONNABORTED : nErrorCode);
