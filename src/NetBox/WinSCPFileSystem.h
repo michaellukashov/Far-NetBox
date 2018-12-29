@@ -184,8 +184,8 @@ protected:
   bool RemoteTransferDialog(TStrings *AFileList, UnicodeString &Target,
     UnicodeString &FileMask, bool Move);
   bool RenameFileDialog(TRemoteFile *AFile, UnicodeString &NewName);
-  uint32_t MoreMessageDialog(const UnicodeString Str, TStrings *MoreMessages,
-    TQueryType Type, uint32_t Answers, const TMessageParams *AParams = nullptr);
+  uintptr_t MoreMessageDialog(const UnicodeString Str, TStrings *MoreMessages,
+    TQueryType Type, uintptr_t Answers, const TMessageParams *AParams = nullptr);
   bool PasswordDialog(TSessionData *SessionData,
     TPromptKind Kind, const UnicodeString Name, const UnicodeString Instructions, TStrings *Prompts,
     TStrings *Results, bool StoredCredentialsTried);
@@ -257,8 +257,8 @@ private:
   void TerminalInformation(TTerminal *Terminal,
     const UnicodeString AStr, bool Status, intptr_t Phase);
   void TerminalQueryUser(TObject *Sender,
-    const UnicodeString AQuery, TStrings *MoreMessages, uint32_t Answers,
-    const TQueryParams *AParams, uint32_t &Answer, TQueryType Type, void *Arg);
+    const UnicodeString AQuery, TStrings *MoreMessages, uintptr_t Answers,
+    const TQueryParams *AParams, uintptr_t &Answer, TQueryType Type, void *Arg);
   void TerminalPromptUser(TTerminal *Terminal,
     TPromptKind Kind, const UnicodeString AName, const UnicodeString AInstructions,
     TStrings *Prompts, TStrings *Results, bool &AResult,
@@ -293,6 +293,23 @@ private:
     const UnicodeString AName, UnicodeString &Value);
   void TerminalSynchronizeDirectory(UnicodeString LocalDirectory,
     UnicodeString RemoteDirectory, bool &Continue, bool Collect);
+  void HandleErrorList(TStringList *& ErrorList);
+  void TerminalSynchronizeDirectory(const UnicodeString LocalDirectory,
+    const UnicodeString RemoteDirectory, bool & Continue, bool Collect);
+  void DoSynchronize(TSynchronizeController * Sender,
+    const UnicodeString LocalDirectory, const UnicodeString RemoteDirectory,
+    const TCopyParamType & CopyParam, const TSynchronizeParamType & Params,
+    TSynchronizeChecklist ** Checklist, TSynchronizeOptions * Options, bool Full);
+  void DoSynchronizeInvalid(TSynchronizeController * Sender,
+    const UnicodeString Directory, const UnicodeString ErrorStr);
+  void DoSynchronizeTooManyDirectories(TSynchronizeController * Sender,
+    int & MaxDirectories);
+  void Synchronize(const UnicodeString LocalDirectory,
+    const UnicodeString RemoteDirectory, TSynchronizeMode Mode,
+    const TCopyParamType & CopyParam, intptr_t Params, TSynchronizeChecklist ** Checklist,
+    TSynchronizeOptions * Options);
+  void SynchronizeSessionLog(const UnicodeString & Message);
+  void GetSynchronizeOptions(int Params, TSynchronizeOptions & Options);
   void QueueListUpdate(TTerminalQueue *Queue);
   void QueueItemUpdate(TTerminalQueue *Queue, TQueueItem *Item);
   void QueueEvent(TTerminalQueue *Queue, TQueueEvent Event);

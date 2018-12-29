@@ -843,7 +843,7 @@ bool TWinSCPFileSystem::EnsureCommandSessionFallback(TFSCapability Capability)
     {
       TMessageParams Params(0);
       Params.Params = qpNeverAskAgainCheck;
-      uint32_t Answer = MoreMessageDialog(
+      uintptr_t Answer = MoreMessageDialog(
           FORMAT(GetMsg(NB_PERFORM_ON_COMMAND_SESSION),
             FTerminal->GetFileSystemInfo().ProtocolName,
             FTerminal->GetFileSystemInfo().ProtocolName),
@@ -3235,8 +3235,8 @@ bool TWinSCPFileSystem::TerminalCreateLocalDirectory(const UnicodeString ALocalD
   return ::CreateDirectory(ApiPath(ALocalDirName).c_str(), SecurityAttributes) != FALSE;
 }
 
-uint32_t TWinSCPFileSystem::MoreMessageDialog(const UnicodeString Str,
-  TStrings *MoreMessages, TQueryType Type, uint32_t Answers, const TMessageParams *AParams)
+uintptr_t TWinSCPFileSystem::MoreMessageDialog(const UnicodeString Str,
+  TStrings *MoreMessages, TQueryType Type, uintptr_t Answers, const TMessageParams *AParams)
 {
   TMessageParams Params(0);
 
@@ -3256,8 +3256,8 @@ uint32_t TWinSCPFileSystem::MoreMessageDialog(const UnicodeString Str,
 }
 
 void TWinSCPFileSystem::TerminalQueryUser(TObject * /*Sender*/,
-  const UnicodeString AQuery, TStrings *MoreMessages, uint32_t Answers,
-  const TQueryParams *AParams, uint32_t &Answer, TQueryType Type, void * /*Arg*/)
+  const UnicodeString AQuery, TStrings *MoreMessages, uintptr_t Answers,
+  const TQueryParams *AParams, uintptr_t &Answer, TQueryType Type, void * /*Arg*/)
 {
   TMessageParams Params(0);
   UnicodeString Query = AQuery;

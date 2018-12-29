@@ -757,7 +757,7 @@ uintptr_t TWinSCPPlugin::MoreMessageDialog(const UnicodeString Str,
   {
     Result = FarParams.TimerAnswer;
   }
-  else if (Result == static_cast<uint32_t>(-1))
+  else if (Result == static_cast<uintptr_t>(-1))
   {
     Result = CancelAnswer(Answers);
   }
