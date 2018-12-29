@@ -1367,7 +1367,7 @@ bool TFTPFileSystem::ConfirmOverwrite(
     // upload.
     (DestIsSmaller || (DestIsSame && CanAutoResume));
 
-  uint32_t Answer;
+  uintptr_t Answer;
   if (CanAutoResume && CanResume)
   {
     if (DestIsSame)
@@ -1385,7 +1385,7 @@ bool TFTPFileSystem::ConfirmOverwrite(
     // retry = "resume"
     // all = "yes to newer"
     // ignore = "rename"
-    uint32_t Answers = qaYes | qaNo | qaCancel | qaYesToAll | qaNoToAll | qaAll | qaIgnore;
+    uintptr_t Answers = qaYes | qaNo | qaCancel | qaYesToAll | qaNoToAll | qaAll | qaIgnore;
     if (CanResume)
     {
       Answers |= qaRetry;

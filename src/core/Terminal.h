@@ -39,15 +39,15 @@ struct TLocalFileHandle;
 typedef std::vector<int64_t> TCalculatedSizes;
 //---------------------------------------------------------------------------
 #if 0
-typedef void (__closure *TQueryUserEvent)
+typedef void __fastcall (__closure *TQueryUserEvent)
   (TObject * Sender, const UnicodeString Query, TStrings * MoreMessages, uint32_t Answers,
-   const TQueryParams * Params, uint32_t & Answer, TQueryType QueryType, void * Arg);
+   const TQueryParams * Params, unsigned int & Answer, TQueryType QueryType, void * Arg);
 #endif // #if 0
 typedef nb::FastDelegate8<void,
-  TObject * /*Sender*/, UnicodeString /*AQuery*/, TStrings * /*MoreMessages*/, uint32_t /*Answers*/,
-   const TQueryParams * /*Params*/, uint32_t & /*Answer*/, TQueryType /*QueryType*/, void * /*Arg*/> TQueryUserEvent;
+  TObject * /*Sender*/, UnicodeString /*AQuery*/, TStrings * /*MoreMessages*/, uintptr_t /*Answers*/,
+   const TQueryParams * /*Params*/, uintptr_t & /*Answer*/, TQueryType /*QueryType*/, void * /*Arg*/> TQueryUserEvent;
 #if 0
-typedef void (__closure *TPromptUserEvent)
+typedef void __fastcall (__closure *TPromptUserEvent)
   (TTerminal * Terminal, TPromptKind Kind, UnicodeString Name, UnicodeString Instructions,
    TStrings * Prompts, TStrings * Results, bool & Result, void * Arg);
 #endif // #if 0
@@ -55,51 +55,51 @@ typedef nb::FastDelegate8<void,
   TTerminal * /*Terminal*/, TPromptKind /*Kind*/, UnicodeString /*AName*/, UnicodeString /*AInstructions*/,
   TStrings * /*Prompts*/, TStrings * /*Results*/, bool & /*Result*/, void * /*Arg*/> TPromptUserEvent;
 #if 0
-typedef void (__closure *TDisplayBannerEvent)
+typedef void __fastcall (__closure *TDisplayBannerEvent)
   (TTerminal * Terminal, UnicodeString SessionName, const UnicodeString & Banner,
-   bool & NeverShowAgain, int Options, uint32_t & Params);
+   bool & NeverShowAgain, int Options, unsigned int & Params);
 #endif // #if 0
 typedef nb::FastDelegate6<void,
   TTerminal * /*Terminal*/, UnicodeString /*ASessionName*/, UnicodeString /*ABanner*/,
   bool & /*NeverShowAgain*/, intptr_t /*Options*/, uintptr_t & /*Params*/> TDisplayBannerEvent;
 #if 0
-typedef void (__closure *TExtendedExceptionEvent)
+typedef void __fastcall (__closure *TExtendedExceptionEvent)
   (TTerminal * Terminal, Exception * E, void * Arg);
 #endif // #if 0
 typedef nb::FastDelegate3<void,
   TTerminal * /*Terminal*/, Exception * /*E*/, void * /*Arg*/ > TExtendedExceptionEvent;
 #if 0
-typedef void (__closure *TReadDirectoryEvent)(System::TObject * Sender, Boolean ReloadOnly);
+typedef void __fastcall (__closure *TReadDirectoryEvent)(System::TObject * Sender, Boolean ReloadOnly);
 #endif // #if 0
 typedef nb::FastDelegate2<void, TObject * /*Sender*/,
   Boolean /*ReloadOnly*/> TReadDirectoryEvent;
 #if 0
-typedef void (__closure *TReadDirectoryProgressEvent)(
+typedef void __fastcall (__closure *TReadDirectoryProgressEvent)(
   System::TObject* Sender, int Progress, int ResolvedLinks, bool & Cancel);
 #endif // #if 0
 typedef nb::FastDelegate4<void,
   TObject * /*Sender*/, intptr_t /*Progress*/, intptr_t /*ResolvedLinks*/, bool & /*Cancel*/> TReadDirectoryProgressEvent;
 #if 0
-typedef void (__closure *TProcessFileEvent)
+typedef void __fastcall (__closure *TProcessFileEvent)
   (const UnicodeString FileName, const TRemoteFile * File, void * Param);
 #endif // #if 0
 typedef nb::FastDelegate3<void,
   UnicodeString /*AFileName*/, const TRemoteFile * /*AFile*/, void * /*AParam*/> TProcessFileEvent;
 #if 0
-typedef void (__closure *TProcessFileEventEx)
+typedef void __fastcall (__closure *TProcessFileEventEx)
   (const UnicodeString FileName, const TRemoteFile * File, void * Param, int Index);
 #endif // #if 0
 typedef nb::FastDelegate4<void,
   const UnicodeString /*AFileName*/, const TRemoteFile * /*File*/,
   void * /*Param*/, intptr_t /*Index*/> TProcessFileEventEx;
 #if 0
-typedef int (__closure *TFileOperationEvent)
+typedef int __fastcall (__closure *TFileOperationEvent)
   (void * Param1, void * Param2);
 #endif // #if 0
 typedef nb::FastDelegate2<intptr_t,
   void * /*Param1*/, void * /*Param2*/> TFileOperationEvent;
 #if 0
-typedef void (__closure *TSynchronizeDirectory)
+typedef void __fastcall (__closure *TSynchronizeDirectory)
   (const UnicodeString LocalDirectory, const UnicodeString RemoteDirectory,
    bool & Continue, bool Collect);
 typedef void __fastcall (__closure *TUpdatedSynchronizationChecklistItems)(
@@ -115,25 +115,25 @@ typedef nb::FastDelegate1<void,
 typedef nb::FastDelegate2<void,
   void * /*Token*/, const TChecklistItem * /*Item*/> TProcessedSynchronizationChecklistItem;
 #if 0
+typedef void __fastcall (__closure *TDeleteLocalFileEvent)(
   const UnicodeString FileName, bool Alternative, int & Deleted);
-typedef void (__closure *TDeleteLocalFileEvent)(
 #endif // #if 0
 typedef nb::FastDelegate3<void,
   UnicodeString /*FileName*/, bool /*Alternative*/, intptr_t & /*Deleted*/> TDeleteLocalFileEvent;
 #if 0
-typedef int (__closure *TDirectoryModifiedEvent)
+typedef int __fastcall (__closure *TDirectoryModifiedEvent)
   (TTerminal * Terminal, const UnicodeString Directory, bool SubDirs);
 #endif // #if 0
 typedef nb::FastDelegate3<int,
   TTerminal * /*Terminal*/, UnicodeString /*Directory*/, bool /*SubDirs*/> TDirectoryModifiedEvent;
 #if 0
-typedef void (__closure *TInformationEvent)
+typedef void __fastcall (__closure *TInformationEvent)
   (TTerminal * Terminal, const UnicodeString & Str, bool Status, int Phase);
 #endif // #if 0
 typedef nb::FastDelegate4<void,
   TTerminal * /*Terminal*/, UnicodeString /*Str*/, bool /*Status*/, intptr_t /*Phase*/> TInformationEvent;
 #if 0
-typedef void (__closure *TCustomCommandEvent)
+typedef void __fastcall (__closure *TCustomCommandEvent)
   (TTerminal * Terminal, const UnicodeString & Command, bool & Handled);
 #endif // #if 0
 typedef nb::FastDelegate3<void,
@@ -231,7 +231,7 @@ const int tfPreCreateDir = 0x08;
 const int tfUseFileTransferAny = 0x10;
 //---------------------------------------------------------------------------
 NB_DEFINE_CLASS_ID(TTerminal);
-class NB_CORE_EXPORT TTerminal : public TSessionUI
+class NB_CORE_EXPORT TTerminal : /*public TObject,*/ public TSessionUI
 {
   NB_DISABLE_COPY(TTerminal)
 public:
@@ -240,7 +240,6 @@ public:
 public:
   // TScript::SynchronizeProc relies on the order
   enum TSynchronizeMode { smRemote, smLocal, smBoth };
-
   static const int spDelete = 0x01; // cannot be combined with spTimestamp
   static const int spNoConfirmation = 0x02; // has no effect for spTimestamp
   static const int spExistingOnly = 0x04; // is implicit for spTimestamp
@@ -380,10 +379,6 @@ public:
   static UnicodeString SynchronizeModeStr(TSynchronizeMode Mode);
   static UnicodeString SynchronizeParamsStr(intptr_t Params);
 
-  TRemoteTokenList * GetGroups();
-  TRemoteTokenList * GetUsers();
-  TRemoteTokenList * GetMembership();
-
 protected:
   bool FReadCurrentDirectoryPending{false};
   bool FReadDirectoryPending{false};
@@ -453,9 +448,9 @@ protected:
   bool CheckRemoteFile(
     const UnicodeString AFileName, const TCopyParamType *CopyParam,
     intptr_t Params, TFileOperationProgressType *OperationProgress) const;
-  uint32_t ConfirmFileOverwrite(
+  uintptr_t ConfirmFileOverwrite(
     const UnicodeString ASourceFullFileName, const UnicodeString ATargetFileName,
-    const TOverwriteFileParams *FileParams, uint32_t Answers, TQueryParams *QueryParams,
+    const TOverwriteFileParams *FileParams, uintptr_t Answers, TQueryParams *QueryParams,
     TOperationSide Side, const TCopyParamType *CopyParam, intptr_t Params,
     TFileOperationProgressType *OperationProgress, const UnicodeString AMessage = L"");
   void DoSynchronizeCollectDirectory(const UnicodeString ALocalDirectory,
@@ -518,11 +513,11 @@ protected:
     bool Temp, const UnicodeString ADirectory, uint64_t CPSLimit);
   void OperationStop(TFileOperationProgressType & Progress);
   virtual void Information(const UnicodeString AStr, bool Status) override;
-  virtual uint32_t QueryUser(const UnicodeString AQuery,
-    TStrings *MoreMessages, uint32_t Answers, const TQueryParams *Params,
+  virtual uintptr_t QueryUser(const UnicodeString AQuery,
+    TStrings *MoreMessages, uintptr_t Answers, const TQueryParams *Params,
     TQueryType QueryType = qtConfirmation) override;
-  virtual uint32_t QueryUserException(const UnicodeString AQuery,
-    Exception *E, uint32_t Answers, const TQueryParams *Params,
+  virtual uintptr_t QueryUserException(const UnicodeString AQuery,
+    Exception *E, uintptr_t Answers, const TQueryParams *Params,
     TQueryType QueryType = qtConfirmation) override;
   virtual bool PromptUser(TSessionData *Data, TPromptKind Kind,
     const UnicodeString AName, const UnicodeString AInstructions, TStrings *Prompts, TStrings *Results) override;
@@ -882,6 +877,9 @@ public:
 
   bool CheckForEsc() const;
   void SetupTunnelLocalPortNumber();
+  TRemoteTokenList * GetGroups();
+  TRemoteTokenList * GetUsers();
+  TRemoteTokenList * GetMembership();
 
 private:
   void InternalTryOpen();

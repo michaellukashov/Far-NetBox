@@ -4429,7 +4429,7 @@ void TSFTPFileSystem::SFTPConfirmOverwrite(
   bool CanResume =
     (FileParams != nullptr) &&
     (FileParams->DestSize < FileParams->SourceSize);
-  uint32_t Answer;
+  uintptr_t Answer;
 
   {
     volatile TSuspendFileOperationProgress Suspend(OperationProgress);
@@ -4561,7 +4561,7 @@ bool TSFTPFileSystem::SFTPConfirmResume(const UnicodeString DestFileName,
   DebugAssert(OperationProgress);
   if (PartialBiggerThanSource)
   {
-    uint32_t Answer;
+    uintptr_t Answer;
     {
       volatile TSuspendFileOperationProgress Suspend(OperationProgress);
       TQueryParams Params(qpAllowContinueOnError, HELP_PARTIAL_BIGGER_THAN_SOURCE);
@@ -4579,7 +4579,7 @@ bool TSFTPFileSystem::SFTPConfirmResume(const UnicodeString DestFileName,
   }
   else if (FTerminal->GetConfiguration()->GetConfirmResume())
   {
-    uint32_t Answer;
+    uintptr_t Answer;
 
     {
       volatile TSuspendFileOperationProgress Suspend(OperationProgress);

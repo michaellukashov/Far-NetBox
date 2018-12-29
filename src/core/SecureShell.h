@@ -110,7 +110,7 @@ public:
   bool GetReady() const;
   void DispatchSendBuffer(intptr_t BufSize);
   void SendBuffer(uint32_t &Result);
-  uint32_t TimeoutPrompt(TQueryParamsTimerEvent PoolEvent);
+  uintptr_t TimeoutPrompt(TQueryParamsTimerEvent PoolEvent);
   bool TryFtp();
   UnicodeString ConvertInput(RawByteString Input, uintptr_t CodePage = CP_ACP) const;
   void GetRealHost(UnicodeString &Host, intptr_t &Port) const;

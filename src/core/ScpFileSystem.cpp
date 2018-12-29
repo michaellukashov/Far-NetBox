@@ -1470,7 +1470,7 @@ void TSCPFileSystem::SpaceAvailable(const UnicodeString /*APath*/,
 //---------------------------------------------------------------------------
 // transfer protocol
 //---------------------------------------------------------------------------
-uint32_t TSCPFileSystem::ConfirmOverwrite(
+uintptr_t TSCPFileSystem::ConfirmOverwrite(
   const UnicodeString ASourceFullFileName, const UnicodeString ATargetFileName, TOperationSide Side,
   const TOverwriteFileParams *FileParams, const TCopyParamType *CopyParam,
   intptr_t Params, TFileOperationProgressType *OperationProgress)
@@ -1484,7 +1484,7 @@ uint32_t TSCPFileSystem::ConfirmOverwrite(
   TQueryParams QueryParams(qpNeverAskAgainCheck);
   QueryParams.Aliases = Aliases;
   QueryParams.AliasesCount = _countof(Aliases);
-  uint32_t Answer =
+  uintptr_t Answer =
     FTerminal->ConfirmFileOverwrite(
       ASourceFullFileName, ATargetFileName, FileParams,
       qaYes | qaNo | qaCancel | qaYesToAll | qaNoToAll | qaAll,
@@ -1644,7 +1644,7 @@ void TSCPFileSystem::CopyToRemote(TStrings *AFilesToCopy,
         TRemoteFile *File2 = FTerminal->FFiles->FindFile(FileNameOnly);
         if (File2 != nullptr)
         {
-          uint32_t Answer;
+          uintptr_t Answer;
           if (File2->GetIsDirectory())
           {
             UnicodeString Message = FMTLOAD(DIRECTORY_OVERWRITE, FileNameOnly);
@@ -2591,7 +2591,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString TargetDir,
                   FileParams.DestTimestamp = ::UnixToDateTime(MTime,
                       FTerminal->GetSessionData()->GetDSTMode());
 
-                  uint32_t Answer =
+                  uintptr_t Answer =
                     ConfirmOverwrite(OperationProgress->GetFileName(), DestFileNameOnly, osLocal,
                       &FileParams, CopyParam, Params, OperationProgress);
 

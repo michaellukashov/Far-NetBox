@@ -5,6 +5,7 @@
 __removed #include <Consts.hpp>
 #include <shlobj.h>
 #include <stdio.h>
+#include <winhttp.h>
 #define INITGUID
 #include <propkey.h>
 #include <powrprof.h>

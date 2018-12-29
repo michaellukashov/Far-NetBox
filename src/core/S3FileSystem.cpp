@@ -1207,7 +1207,7 @@ void TS3FileSystem::ConfirmOverwrite(
   QueryParams.Aliases = &Aliases[0];
   QueryParams.AliasesCount = Aliases.size();
 
-  uint32_t Answer;
+  uintptr_t Answer;
 
   {
     TSuspendFileOperationProgress Suspend(OperationProgress); nb::used(Suspend);

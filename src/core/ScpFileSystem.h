@@ -154,7 +154,7 @@ private:
   void CaptureOutput(const UnicodeString AddedLine, TCaptureOutputType OutputType);
   void ChangeFileToken(const UnicodeString DelimitedName,
     const TRemoteToken &Token, TFSCommand Cmd, const UnicodeString RecursiveStr);
-  uint32_t ConfirmOverwrite(
+  uintptr_t ConfirmOverwrite(
     const UnicodeString ASourceFullFileName, const UnicodeString ATargetFileName,
     TOperationSide Side,
     const TOverwriteFileParams *FileParams, const TCopyParamType *CopyParam,

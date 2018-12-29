@@ -57,7 +57,7 @@ __removed #include <Soap.EncdDecd.hpp>
 
 #define sha1_ctx                  SHA_State
 #define sha1_begin(ctx)           putty_SHA_Init(ctx)
-#define sha1_hash(buf, len, ctx)  SHA_Bytes(ctx, buf, len)
+#define sha1_hash(buf, len, ctx)  putty_SHA_Bytes(ctx, buf, len)
 #define sha1_end(dig, ctx)        putty_SHA_Final(ctx, dig)
 
 #define IN_BLOCK_LENGTH     64

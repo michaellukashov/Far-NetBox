@@ -19,26 +19,21 @@ public:
   static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TParallelTransferQueueItem); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TParallelTransferQueueItem) || TLocatedQueueItem::is(Kind); }
 public:
-  TParallelTransferQueueItem(const TLocatedQueueItem *ParentItem, TParallelOperation *ParallelOperation);
+  TParallelTransferQueueItem(const TLocatedQueueItem *ParentItem, TParallelOperation *ParallelOperation) noexcept;
 
 protected:
   virtual void DoExecute(TTerminal *Terminal) override;
 
 private:
-  TParallelOperation *FParallelOperation;
+  TParallelOperation *FParallelOperation{nullptr};
 };
 //---------------------------------------------------------------------------
 class TUserAction : public TObject
 {
   NB_DISABLE_COPY(TUserAction)
 public:
-  explicit TUserAction()
-  {
-  }
-
-  virtual ~TUserAction()
-  {
-  }
+  explicit TUserAction() noexcept = default;
+  virtual ~TUserAction() noexcept = default;
 
   virtual void Execute(void *Arg) = 0;
   virtual bool Force() const { return false; }
@@ -64,7 +59,7 @@ public:
   }
 
   TNotifyEvent OnNotify;
-  TObject *Sender;
+  TObject *Sender{nullptr};
 };
 //---------------------------------------------------------------------------
 class TInformationUserAction : public TUserAction
@@ -95,10 +90,10 @@ public:
   }
 
   TInformationEvent OnInformation;
-  TTerminal *Terminal;
+  TTerminal *Terminal{nullptr};
   UnicodeString Str;
-  bool Status;
-  intptr_t Phase;
+  bool Status{false};
+  intptr_t Phase{0};
 };
 //---------------------------------------------------------------------------
 class TQueryUserAction : public TUserAction
@@ -125,13 +120,13 @@ public:
   }
 
   TQueryUserEvent OnQueryUser;
-  TObject *Sender;
+  TObject *Sender{nullptr};
   UnicodeString Query;
-  TStrings *MoreMessages;
-  uint32_t Answers;
+  TStrings *MoreMessages{nullptr};
+  uintptr_t Answers{0};
   const TQueryParams *Params;
-  uint32_t Answer;
-  TQueryType Type;
+  uintptr_t Answer{0};
+  TQueryType Type{};
 };
 //---------------------------------------------------------------------------
 class TPromptUserAction : public TUserAction
@@ -312,8 +307,8 @@ protected:
   bool OverrideItemStatus(TQueueItem::TStatus &ItemStatus) const;
 
   void TerminalQueryUser(TObject *Sender,
-    const UnicodeString AQuery, TStrings *MoreMessages, uint32_t Answers,
-    const TQueryParams *Params, uint32_t &Answer, TQueryType Type, void *Arg);
+    const UnicodeString AQuery, TStrings *MoreMessages, uintptr_t Answers,
+    const TQueryParams *Params, uintptr_t &Answer, TQueryType Type, void *Arg);
   void TerminalPromptUser(TTerminal *Terminal, TPromptKind Kind,
     const UnicodeString AName, const UnicodeString AInstructions,
     TStrings *Prompts, TStrings *Results, bool &Result, void *Arg);
@@ -1576,8 +1571,8 @@ bool TTerminalItem::Finished()
 }
 //---------------------------------------------------------------------------
 void TTerminalItem::TerminalQueryUser(TObject *Sender,
-  const UnicodeString AQuery, TStrings *MoreMessages, uint32_t Answers,
-  const TQueryParams *Params, uint32_t &Answer, TQueryType Type, void *Arg)
+  const UnicodeString AQuery, TStrings *MoreMessages, uintptr_t Answers,
+  const TQueryParams *Params, uintptr_t &Answer, TQueryType Type, void *Arg)
 {
   // so far query without queue item can occur only for key confirmation
   // on re-key with non-cached host key. make it fail.
@@ -2403,7 +2398,7 @@ void TUploadQueueItem::DoTransferExecute(TTerminal *Terminal, TParallelOperation
 // TParallelTransferQueueItem
 //---------------------------------------------------------------------------
 TParallelTransferQueueItem::TParallelTransferQueueItem(
-  const TLocatedQueueItem *ParentItem, TParallelOperation *ParallelOperation) :
+  const TLocatedQueueItem *ParentItem, TParallelOperation *ParallelOperation) noexcept :
   TLocatedQueueItem(*ParentItem),
   FParallelOperation(ParallelOperation)
 {
@@ -2463,7 +2458,7 @@ void TParallelTransferQueueItem::DoExecute(TTerminal *Terminal)
 //---------------------------------------------------------------------------
 TDownloadQueueItem::TDownloadQueueItem(TTerminal *Terminal,
   const TStrings *AFilesToCopy, const UnicodeString TargetDir,
-  const TCopyParamType *CopyParam, intptr_t Params, bool SingleFile, bool Parallel) :
+  const TCopyParamType *CopyParam, intptr_t Params, bool SingleFile, bool Parallel) noexcept :
   TTransferQueueItem(OBJECT_CLASS_TDownloadQueueItem, Terminal, AFilesToCopy, TargetDir, CopyParam, Params, osRemote, SingleFile, Parallel)
 {
   if (AFilesToCopy->GetCount() > 1)
@@ -2925,8 +2920,8 @@ void TTerminalThread::TerminalInformation(
 }
 //---------------------------------------------------------------------------
 void TTerminalThread::TerminalQueryUser(TObject *Sender,
-  const UnicodeString AQuery, TStrings *MoreMessages, uint32_t Answers,
-  const TQueryParams *Params, uint32_t &Answer, TQueryType Type, void *Arg)
+  const UnicodeString AQuery, TStrings *MoreMessages, uintptr_t Answers,
+  const TQueryParams *Params, uintptr_t &Answer, TQueryType Type, void *Arg)
 {
   DebugUsedParam(Arg);
   DebugAssert(Arg == nullptr);

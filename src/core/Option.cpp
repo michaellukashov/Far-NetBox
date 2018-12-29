@@ -12,7 +12,7 @@ __removed #pragma package(smart_init)
 const wchar_t ArrayValueDelimiter = L'[';
 const wchar_t ArrayValueEnd = L']';
 //---------------------------------------------------------------------------
-TOptions::TOptions()
+TOptions::TOptions() noexcept
 {
   FSwitchValueDelimiters = UnicodeString(L"=:") + ArrayValueDelimiter;
 }
@@ -86,7 +86,7 @@ void TOptions::Add(const UnicodeString Value)
   FOriginalOptions = FOptions;
 }
 //---------------------------------------------------------------------------
-UnicodeString TOptions::GetParam(intptr_t AIndex)
+UnicodeString TOptions::GetParam(intptr_t AIndex) const
 {
   DebugAssert((AIndex >= 1) && (AIndex <= FParamCount));
 

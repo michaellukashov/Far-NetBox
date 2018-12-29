@@ -17,7 +17,7 @@ typedef nb::FastDelegate1<void, UnicodeString /*LogStr*/> TLogOptionEvent;
 class NB_CORE_EXPORT TOptions : public TObject
 {
 public:
-  TOptions();
+  TOptions() noexcept;
 
   void Add(const UnicodeString Value);
 
@@ -60,23 +60,23 @@ protected:
 private:
   struct TOption : public TObject
   {
-    TOption() : Type(otParam), ValueSet(false), Used(false), SwitchMark(0) {}
+    TOption() noexcept : Type(otParam), ValueSet(false), Used(false), SwitchMark(0) {}
     UnicodeString Name;
     UnicodeString Value;
-    TOptionType Type;
-    bool ValueSet;
-    bool Used;
-    wchar_t SwitchMark;
+    TOptionType Type{otParam};
+    bool ValueSet{false};
+    bool Used{false};
+    wchar_t SwitchMark{};
   };
 
   typedef rde::vector<TOption> TOptionsVector;
-  TOptionsVector FOptions;
+  mutable TOptionsVector FOptions;
   TOptionsVector FOriginalOptions;
-  intptr_t FParamCount;
-  bool FNoMoreSwitches;
+  intptr_t FParamCount{0};
+  bool FNoMoreSwitches{false};
 
 public:
-  UnicodeString GetParam(intptr_t AIndex);
+  UnicodeString GetParam(intptr_t AIndex) const;
   bool GetEmpty() const;
 };
 //---------------------------------------------------------------------------

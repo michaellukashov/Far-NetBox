@@ -87,8 +87,8 @@ private:
   intptr_t FParallelDurationThreshold;
   bool FScripting{false};
   UnicodeString FMimeTypes;
-  int FDontReloadMoreThanSessions{0};
-  int FScriptProgressFileNameLimit{0};
+  intptr_t FDontReloadMoreThanSessions{0};
+  intptr_t FScriptProgressFileNameLimit{0};
   intptr_t FSessionReopenAutoMaximumNumberOfRetries{0};
 
   bool FDisablePasswordStoring{false};
@@ -345,9 +345,9 @@ public:
   __property int ParallelDurationThreshold = { read = FParallelDurationThreshold, write = SetParallelDurationThreshold };
   __property UnicodeString MimeTypes = { read = FMimeTypes, write = SetMimeTypes };
   __property int DontReloadMoreThanSessions = { read = FDontReloadMoreThanSessions, write = FDontReloadMoreThanSessions };
-  int& DontReloadMoreThanSessions{FDontReloadMoreThanSessions};
+  intptr_t& DontReloadMoreThanSessions{FDontReloadMoreThanSessions};
   __property int ScriptProgressFileNameLimit = { read = FScriptProgressFileNameLimit, write = FScriptProgressFileNameLimit };
-  int& ScriptProgressFileNameLimit{FScriptProgressFileNameLimit};
+  intptr_t& ScriptProgressFileNameLimit{FScriptProgressFileNameLimit};
 
   __property UnicodeString TimeFormat = { read = GetTimeFormat };
   ROProperty<UnicodeString> TimeFormat{nb::bind(&TConfiguration::GetTimeFormat, this)};

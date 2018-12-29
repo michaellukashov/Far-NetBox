@@ -230,7 +230,7 @@ public:
 
   struct TInfo : public TObject
   {
-    TInfo() = default;
+    TInfo() noexcept = default;
     TFileOperation Operation{foNone};
     TOperationSide Side{osLocal};
     UnicodeString Source;
@@ -479,8 +479,8 @@ public:
 public:
   explicit TDownloadQueueItem(TTerminal *Terminal,
     const TStrings *AFilesToCopy, const UnicodeString ATargetDir,
-    const TCopyParamType *CopyParam, intptr_t Params, bool SingleFile, bool Parallel);
-  virtual ~TDownloadQueueItem() = default;
+    const TCopyParamType *CopyParam, intptr_t Params, bool SingleFile, bool Parallel) noexcept;
+  virtual ~TDownloadQueueItem() noexcept = default;
 
 protected:
   virtual void DoTransferExecute(TTerminal *Terminal, TParallelOperation *ParallelOperation) override;
@@ -561,8 +561,8 @@ private:
   void TerminalInformation(
     TTerminal *Terminal, const UnicodeString AStr, bool Status, intptr_t Phase);
   void TerminalQueryUser(TObject *Sender,
-    const UnicodeString AQuery, TStrings *MoreMessages, uint32_t Answers,
-    const TQueryParams *Params, uint32_t &Answer, TQueryType Type, void *Arg);
+    const UnicodeString AQuery, TStrings *MoreMessages, uintptr_t Answers,
+    const TQueryParams *Params, uintptr_t &Answer, TQueryType Type, void *Arg);
   void TerminalPromptUser(TTerminal *Terminal, TPromptKind Kind,
     const UnicodeString AName, const UnicodeString AInstructions,
     TStrings *Prompts, TStrings *Results, bool &Result, void *Arg);

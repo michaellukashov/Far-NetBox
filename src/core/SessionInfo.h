@@ -76,14 +76,14 @@ public:
   static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TSessionUI); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TSessionUI) || TObject::is(Kind); }
 public:
-  explicit TSessionUI(TObjectClassId Kind) : TObject(Kind) {}
-  virtual ~TSessionUI() {}
+  explicit TSessionUI(TObjectClassId Kind) noexcept : TObject(Kind) {}
+  virtual ~TSessionUI() noexcept = default;
   virtual void Information(const UnicodeString AStr, bool Status) = 0;
-  virtual uint32_t QueryUser(const UnicodeString AQuery,
-    TStrings *MoreMessages, uint32_t Answers, const TQueryParams *Params,
+  virtual uintptr_t QueryUser(const UnicodeString AQuery,
+    TStrings *MoreMessages, uintptr_t Answers, const TQueryParams *Params,
     TQueryType QueryType = qtConfirmation) = 0;
-  virtual uint32_t QueryUserException(const UnicodeString AQuery,
-    Exception *E, uint32_t Answers, const TQueryParams *Params,
+  virtual uintptr_t QueryUserException(const UnicodeString AQuery,
+    Exception *E, uintptr_t Answers, const TQueryParams *Params,
     TQueryType QueryType = qtConfirmation) = 0;
   virtual bool PromptUser(TSessionData *Data, TPromptKind Kind,
     const UnicodeString AName, const UnicodeString AInstructions, TStrings *Prompts,

@@ -1147,7 +1147,7 @@ void TWebDAVFileSystem::ConfirmOverwrite(
   QueryParams.Aliases = Aliases;
   QueryParams.AliasesCount = _countof(Aliases);
 
-  uint32_t Answer;
+  uintptr_t Answer;
 
   {
     TSuspendFileOperationProgress Suspend(OperationProgress); nb::used(Suspend);

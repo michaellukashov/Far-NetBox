@@ -286,11 +286,11 @@ public:
   }
 
   virtual void Information(const UnicodeString AStr, bool Status) override;
-  virtual uint32_t QueryUser(const UnicodeString AQuery,
-    TStrings *MoreMessages, uint32_t Answers, const TQueryParams *Params,
+  virtual uintptr_t QueryUser(const UnicodeString AQuery,
+    TStrings *MoreMessages, uintptr_t Answers, const TQueryParams *Params,
     TQueryType QueryType) override;
-  virtual uint32_t QueryUserException(const UnicodeString AQuery,
-    Exception *E, uint32_t Answers, const TQueryParams *Params,
+  virtual uintptr_t QueryUserException(const UnicodeString AQuery,
+    Exception *E, uintptr_t Answers, const TQueryParams *Params,
     TQueryType QueryType) override;
   virtual bool PromptUser(TSessionData *Data, TPromptKind Kind,
     const UnicodeString AName, const UnicodeString AInstructions, TStrings *Prompts,
@@ -321,11 +321,11 @@ void TTunnelUI::Information(const UnicodeString AStr, bool Status)
   }
 }
 //---------------------------------------------------------------------------
-uint32_t TTunnelUI::QueryUser(const UnicodeString AQuery,
-  TStrings *MoreMessages, uint32_t Answers, const TQueryParams *Params,
+uintptr_t TTunnelUI::QueryUser(const UnicodeString AQuery,
+  TStrings *MoreMessages, uintptr_t Answers, const TQueryParams *Params,
   TQueryType QueryType)
 {
-  uint32_t Result;
+  uintptr_t Result;
   if (GetCurrentThreadId() == FTerminalThreadID)
   {
     Result = FTerminal->QueryUser(AQuery, MoreMessages, Answers, Params, QueryType);
@@ -337,11 +337,11 @@ uint32_t TTunnelUI::QueryUser(const UnicodeString AQuery,
   return Result;
 }
 //---------------------------------------------------------------------------
-uint32_t TTunnelUI::QueryUserException(const UnicodeString AQuery,
-  Exception *E, uint32_t Answers, const TQueryParams *Params,
+uintptr_t TTunnelUI::QueryUserException(const UnicodeString AQuery,
+  Exception *E, uintptr_t Answers, const TQueryParams *Params,
   TQueryType QueryType)
 {
-  uint32_t Result;
+  uintptr_t Result;
   if (GetCurrentThreadId() == FTerminalThreadID)
   {
     Result = FTerminal->QueryUserException(AQuery, E, Answers, Params, QueryType);
@@ -1892,12 +1892,12 @@ bool TTerminal::DoPromptUser(TSessionData * /*Data*/, TPromptKind Kind,
   return Result;
 }
 //---------------------------------------------------------------------------
-uint32_t TTerminal::QueryUser(const UnicodeString AQuery,
-  TStrings *MoreMessages, uint32_t Answers, const TQueryParams *Params,
+uintptr_t TTerminal::QueryUser(const UnicodeString AQuery,
+  TStrings *MoreMessages, uintptr_t Answers, const TQueryParams *Params,
   TQueryType QueryType)
 {
   LogEvent(FORMAT("Asking user:\n%s (%s)", AQuery, UnicodeString(MoreMessages ? MoreMessages->GetCommaText() : L"")));
-  uint32_t Answer = AbortAnswer(Answers);
+  uintptr_t Answer = AbortAnswer(Answers);
   if (FOnQueryUser)
   {
     TCallbackGuard Guard(this);
@@ -1917,11 +1917,11 @@ uint32_t TTerminal::QueryUser(const UnicodeString AQuery,
   return Answer;
 }
 //---------------------------------------------------------------------------
-uint32_t TTerminal::QueryUserException(const UnicodeString AQuery,
-  Exception *E, uint32_t Answers, const TQueryParams *Params,
+uintptr_t TTerminal::QueryUserException(const UnicodeString AQuery,
+  Exception *E, uintptr_t Answers, const TQueryParams *Params,
   TQueryType QueryType)
 {
-  uint32_t Result = 0;
+  uintptr_t Result = 0;
   UnicodeString ExMessage;
   if (DebugAlwaysTrue(ExceptionMessage(E, ExMessage) || !AQuery.IsEmpty()))
   {
@@ -2320,7 +2320,7 @@ bool TTerminal::FileOperationLoopQuery(Exception &E,
 {
   bool Result = false;
   GetLog()->AddException(&E);
-  uint32_t Answer;
+  uintptr_t Answer;
   bool AllowSkip = FLAGSET(AFlags, folAllowSkip);
   bool SkipToAllPossible = AllowSkip && (OperationProgress != nullptr);
 
@@ -3024,13 +3024,13 @@ bool TTerminal::CheckRemoteFile(
   return Result;
 }
 //---------------------------------------------------------------------------
-uint32_t TTerminal::ConfirmFileOverwrite(
+uintptr_t TTerminal::ConfirmFileOverwrite(
   const UnicodeString ASourceFullFileName, const UnicodeString ATargetFileName,
-  const TOverwriteFileParams *FileParams, uint32_t Answers, TQueryParams *QueryParams,
+  const TOverwriteFileParams *FileParams, uintptr_t Answers, TQueryParams *QueryParams,
   TOperationSide Side, const TCopyParamType *CopyParam, intptr_t Params, TFileOperationProgressType *OperationProgress,
   UnicodeString AMessage)
 {
-  uint32_t Result = 0;
+  uintptr_t Result = 0;
   TBatchOverwrite BatchOverwrite;
   bool CanAlternateResume =
     (FileParams != nullptr) &&
@@ -5350,7 +5350,7 @@ bool TTerminal::DoCreateLocalFile(const UnicodeString AFileName,
             }
             else if ((OperationProgress->GetBatchOverwrite() != boAll) && !NoConfirmation)
             {
-              uint32_t Answer;
+              uintptr_t Answer;
               {
                 volatile TSuspendFileOperationProgress Suspend(OperationProgress);
                 Answer = QueryUser(
@@ -8182,7 +8182,7 @@ bool TTerminal::ConfirmCertificate(
   Params.NoBatchAnswers = qaYes | qaRetry;
   Params.Aliases = Aliases;
   Params.AliasesCount = _countof(Aliases);
-  uint32_t Answer =
+  uintptr_t Answer =
     QueryUser(
       FMTLOAD(VERIFY_CERT_PROMPT3, SessionInfo.Certificate),
       nullptr, qaYes | qaNo | qaCancel | qaRetry, &Params, qtWarning);

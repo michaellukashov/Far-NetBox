@@ -1284,11 +1284,11 @@ void TSecureShell::SendEOF()
   SendSpecial(TS_EOF);
 }
 //---------------------------------------------------------------------------
-uint32_t TSecureShell::TimeoutPrompt(TQueryParamsTimerEvent PoolEvent)
+uintptr_t TSecureShell::TimeoutPrompt(TQueryParamsTimerEvent PoolEvent)
 {
   ++FWaiting;
 
-  uint32_t Answer;
+  uintptr_t Answer;
   try__finally
   {
     TQueryParams Params(qpFatalAbort | qpAllowContinueOnError | qpIgnoreAbort);
@@ -1358,7 +1358,7 @@ void TSecureShell::DispatchSendBuffer(intptr_t BufSize)
     if (Now() - Start > FSessionData->GetTimeoutDT())
     {
       LogEvent("Waiting for dispatching send buffer timed out, asking user what to do.");
-      uint32_t Answer = TimeoutPrompt(nb::bind(&TSecureShell::SendBuffer, this));
+      uintptr_t Answer = TimeoutPrompt(nb::bind(&TSecureShell::SendBuffer, this));
       switch (Answer)
       {
       case qaRetry:
@@ -1861,7 +1861,7 @@ void TSecureShell::WaitForData()
       TPoolForDataEvent Event(this, Events);
 
       LogEvent("Waiting for data timed out, asking user what to do.");
-      uint32_t Answer = TimeoutPrompt(nb::bind(&TPoolForDataEvent::PoolForData, &Event));
+      uintptr_t Answer = TimeoutPrompt(nb::bind(&TPoolForDataEvent::PoolForData, &Event));
       switch (Answer)
       {
       case qaRetry:

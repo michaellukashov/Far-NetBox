@@ -802,7 +802,7 @@ void TFileOperationProgressType::AddTransferredToTotals(int64_t ASize)
     uint64_t Ticks = ToUInt64(::GetTickCount());
     if (FPersistence.Ticks.empty() ||
         (FPersistence.Ticks.back() > Ticks) || // ticks wrap after 49.7 days
-        ((Ticks - FPersistence.Ticks.back()) >= MSecsPerSec))
+        ((Ticks - FPersistence.Ticks.back()) >= (uint64_t)MSecsPerSec))
     {
       FPersistence.Ticks.push_back(Ticks);
       FPersistence.TotalTransferredThen.push_back(FPersistence.TotalTransferred);
