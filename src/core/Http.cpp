@@ -1,4 +1,4 @@
-
+//---------------------------------------------------------------------------
 #include <vcl.h>
 #pragma hdrstop
 
@@ -92,6 +92,7 @@ void THttp::SendRequest(const char *Method, const UnicodeString Request)
           }
         }
 
+        __removed UTF8String RequestUtf;
         if (!Request.IsEmpty())
         {
           UTF8String RequestUtf = UTF8String(Request);
@@ -175,7 +176,7 @@ int THttp::NeonBodyReaderImpl(const char *Buf, size_t Len)
 {
   bool Result = true;
   if ((FResponseLimit < 0) ||
-    (FResponse.Length() + nb::ToIntPtr(Len) <= FResponseLimit))
+      (FResponse.Length() + nb::ToIntPtr(Len) <= FResponseLimit))
   {
     FResponse += RawByteString(Buf, Len);
 
