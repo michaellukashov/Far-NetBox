@@ -55,9 +55,9 @@ struct CMStringData
 {
 CUSTOM_MEM_ALLOCATION_IMPL
 
-  long nRefs;        // Reference count: negative == locked
-  int nDataLength;   // Length of currently used data in XCHARs (not including terminating null)
-  int nAllocLength;  // Length of allocated data in XCHARs (not including terminating null)
+  long nRefs{0};        // Reference count: negative == locked
+  int nDataLength{0};   // Length of currently used data in XCHARs (not including terminating null)
+  int nAllocLength{0};  // Length of allocated data in XCHARs (not including terminating null)
 
   __forceinline void *data() { return (this + 1); }
   __forceinline void AddRef() { InterlockedIncrement(&nRefs); }
@@ -286,7 +286,7 @@ private:
   static CMStringData *__stdcall CloneData(CMStringData *pData);
 
 private:
-  PXSTR m_pszData;
+  PXSTR m_pszData{nullptr};
 };
 
 
