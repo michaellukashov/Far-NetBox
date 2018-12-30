@@ -269,9 +269,9 @@ friend class TSecondaryTerminal;
 friend class TRetryOperationLoop;
 
 private:
-  TSessionData *FSessionData{nullptr};
-  TSessionLog *FLog{nullptr};
-  TActionLog *FActionLog{nullptr};
+  std::unique_ptr<TSessionData> FSessionData{nullptr};
+  std::unique_ptr<TSessionLog> FLog{nullptr};
+  std::unique_ptr<TActionLog> FActionLog{nullptr};
   TConfiguration *FConfiguration{nullptr};
   UnicodeString FCurrentDirectory;
   UnicodeString FLockDirectory;
@@ -301,7 +301,7 @@ private:
   bool FUseBusyCursor{false};
   TRemoteDirectoryCache *FDirectoryCache{nullptr};
   TRemoteDirectoryChangesCache *FDirectoryChangesCache{nullptr};
-  TSecureShell *FSecureShell{nullptr};
+  std::unique_ptr<TSecureShell> FSecureShell{nullptr};
   UnicodeString FLastDirectoryChange;
   TCurrentFSProtocol FFSProtocol{};
   TTerminal *FCommandSession{nullptr};
@@ -383,7 +383,7 @@ protected:
   bool FReadCurrentDirectoryPending{false};
   bool FReadDirectoryPending{false};
   bool FTunnelOpening{false};
-  TCustomFileSystem *FFileSystem{nullptr};
+  std::unique_ptr<TCustomFileSystem> FFileSystem{nullptr};
 
   void DoStartReadDirectory();
   void DoReadDirectoryProgress(intptr_t Progress, intptr_t ResolvedLinks, bool &Cancel);
@@ -808,10 +808,10 @@ public:
   bool RemoveLocalDirectory(const UnicodeString LocalDirName);
   bool CreateLocalDirectory(const UnicodeString LocalDirName, LPSECURITY_ATTRIBUTES SecurityAttributes);
 
-  TSessionData *GetSessionData() const { return FSessionData; }
-  TSessionLog *GetLogConst() const { return FLog; }
-  TSessionLog *GetLog() { return FLog; }
-  TActionLog *GetActionLog() const { return FActionLog; }
+  TSessionData *GetSessionData() const { return FSessionData.get(); }
+  TSessionLog *GetLogConst() const { return FLog.get(); }
+  TSessionLog *GetLog() { return FLog.get(); }
+  TActionLog *GetActionLog() const { return FActionLog.get(); }
   const TConfiguration *GetConfigurationConst() const { return FConfiguration; }
   TConfiguration *GetConfiguration() { return FConfiguration; }
   TSessionStatus GetStatus() const { return FStatus; }
@@ -869,8 +869,8 @@ public:
   void SetRememberedPassword(UnicodeString Value) { FRememberedPassword = Value; }
   void SetRememberedTunnelPassword(UnicodeString Value) { FRememberedTunnelPassword = Value; }
   void SetTunnelPassword(UnicodeString Value) { FRememberedTunnelPassword = Value; }
-  TCustomFileSystem *GetFileSystem() const { return FFileSystem; }
-  TCustomFileSystem *GetFileSystem() { return FFileSystem; }
+  TCustomFileSystem *GetFileSystem() const { return FFileSystem.get(); }
+  TCustomFileSystem *GetFileSystem() { return FFileSystem.get(); }
 
   HANDLE TerminalCreateLocalFile(const UnicodeString LocalFileName, DWORD DesiredAccess,
     DWORD ShareMode, DWORD CreationDisposition, DWORD FlagsAndAttributes);

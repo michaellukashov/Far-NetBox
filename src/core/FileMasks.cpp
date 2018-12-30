@@ -1133,7 +1133,7 @@ void TCustomCommandData::Init(
   TSessionData *ASessionData, const UnicodeString AUserName,
   const UnicodeString APassword, const UnicodeString AHostKey)
 {
-  FSessionData.reset(new TSessionData(L""));
+  FSessionData = std::make_unique<TSessionData>(L"");
   FSessionData->Assign(ASessionData);
   FSessionData->SessionSetUserName(AUserName);
   FSessionData->SetPassword(APassword);
@@ -1145,7 +1145,7 @@ TCustomCommandData &TCustomCommandData::operator=(const TCustomCommandData &Data
   if (&Data != this)
   {
     DebugAssert(Data.GetSessionData() != nullptr);
-    FSessionData.reset(new TSessionData(L""));
+    FSessionData = std::make_unique<TSessionData>(L"");
     FSessionData->Assign(Data.GetSessionData());
   }
   return *this;

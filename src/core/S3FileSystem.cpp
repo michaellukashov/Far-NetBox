@@ -1268,11 +1268,11 @@ bool TS3FileSystem::ShouldCancelTransfer(TLibS3TransferObjectDataCallbackData &D
   {
     if (Data.OperationProgress->ClearCancelFile())
     {
-      Data.Exception.reset(new ESkipFile());
+      Data.Exception = std::make_unique<ESkipFile>();
     }
     else
     {
-      Data.Exception.reset(new EAbort(L""));
+      Data.Exception = std::make_unique<EAbort>(L"");
     }
   }
   return Result;

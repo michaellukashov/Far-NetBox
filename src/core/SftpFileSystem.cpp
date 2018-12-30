@@ -204,8 +204,8 @@ public:
     MaxReadSize(0),
     OpenBlockVector(0),
     BlockVector(0),
-    AttribExtensions(new TStringList()),
-    Extensions(new TStringList()),
+    AttribExtensions(std::make_unique<TStringList>()),
+    Extensions(std::make_unique<TStringList>()),
     Loaded(false)
   {
     Reset();
@@ -1228,8 +1228,8 @@ public:
 public:
   explicit TSFTPQueue(TSFTPFileSystem *AFileSystem, uintptr_t CodePage) noexcept :
     TObject(OBJECT_CLASS_TSFTPQueue),
-    FRequests(new TList()),
-    FResponses(new TList()),
+    FRequests(std::make_unique<TList>()),
+    FResponses(std::make_unique<TList>()),
     FFileSystem(AFileSystem),
     FCodePage(CodePage)
   {
@@ -1249,8 +1249,8 @@ public:
       DebugAssert(Response);
       SAFE_DESTROY(Response);
     }
-    SAFE_DESTROY(FRequests);
-    SAFE_DESTROY(FResponses);
+//    SAFE_DESTROY(FRequests);
+//    SAFE_DESTROY(FResponses);
   }
 
   bool Init()
@@ -1366,9 +1366,9 @@ public:
   }
 
 protected:
-  TList *FRequests{nullptr};
-  TList *FResponses{nullptr};
-  TSFTPFileSystem *FFileSystem{nullptr};
+  std::unique_ptr<TList> FRequests{nullptr};
+  std::unique_ptr<TList> FResponses{nullptr};
+  TSFTPFileSystem* FFileSystem{nullptr};
   uintptr_t FCodePage{0};
 
 #if 0
@@ -1406,7 +1406,7 @@ protected:
 
   virtual bool SendRequest()
   {
-    std::unique_ptr<TSFTPQueuePacket> Request(new TSFTPQueuePacket(FCodePage));
+    std::unique_ptr<TSFTPQueuePacket> Request(std::make_unique<TSFTPQueuePacket>(FCodePage));
     try__catch
     {
       if (!InitRequest(Request.get()))
@@ -3063,7 +3063,7 @@ TRemoteFile * TSFTPFileSystem::LoadFile(TSFTPPacket *Packet,
   TRemoteFile *ALinkedByFile, const UnicodeString AFileName,
   TRemoteFileList *TempFileList, bool Complete)
 {
-  std::unique_ptr<TRemoteFile> File(new TRemoteFile(ALinkedByFile));
+  std::unique_ptr<TRemoteFile> File(std::make_unique<TRemoteFile>(ALinkedByFile));
   try__catch
   {
     File->SetTerminal(FTerminal);
@@ -4961,8 +4961,8 @@ void TSFTPFileSystem::Source(
       TDateTime MDateTime = ::UnixToDateTime(AHandle.MTime, GetSessionData()->GetDSTMode());
       FTerminal->LogEvent(FORMAT("Preserving timestamp [%s]",
         StandardTimestamp(MDateTime)));
-      TouchAction.reset(new TTouchSessionAction(FTerminal->GetActionLog(), DestFullName,
-        MDateTime));
+      TouchAction = std::make_unique<TTouchSessionAction>(FTerminal->GetActionLog(), DestFullName,
+        MDateTime);
     }
     std::unique_ptr<TChmodSessionAction> ChmodAction;
     // do record chmod only if it was explicitly requested,
@@ -4970,7 +4970,7 @@ void TSFTPFileSystem::Source(
     // of overwritten file to new file
     if (CopyParam->GetPreserveRights())
     {
-      ChmodAction.reset(new TChmodSessionAction(FTerminal->GetActionLog(), DestFullName, Rights));
+      ChmodAction = std::make_unique<TChmodSessionAction>(FTerminal->GetActionLog(), DestFullName, Rights);
     }
     try
     {

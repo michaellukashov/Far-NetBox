@@ -151,7 +151,7 @@ UnicodeString TRemoteToken::GetLogText() const
 //---------------------------------------------------------------------------
 TRemoteTokenList *TRemoteTokenList::Duplicate() const
 {
-  std::unique_ptr<TRemoteTokenList> Result(new TRemoteTokenList());
+  std::unique_ptr<TRemoteTokenList> Result(std::make_unique<TRemoteTokenList>());
   try__catch
   {
     TTokens::const_iterator it = FTokens.begin();
@@ -316,7 +316,7 @@ TRemoteFile::~TRemoteFile() noexcept
 //---------------------------------------------------------------------------
 TRemoteFile *TRemoteFile::Duplicate(bool Standalone) const
 {
-  std::unique_ptr<TRemoteFile> Result(new TRemoteFile());
+  std::unique_ptr<TRemoteFile> Result(std::make_unique<TRemoteFile>());
   try__catch
   {
     if (FLinkedFile)

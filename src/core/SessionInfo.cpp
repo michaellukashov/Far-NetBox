@@ -1471,7 +1471,7 @@ TActionLog::TActionLog(TSessionUI *UI, TDateTime Started, TSessionData *SessionD
   FLogger(nullptr),
   FUI(UI),
   FSessionData(SessionData),
-  FPendingActions(new TList()),
+  FPendingActions(std::make_unique<TList>()),
   FIndent(L"  "),
   FFailed(false),
   FClosed(false),
@@ -1503,7 +1503,7 @@ void TActionLog::Init(TSessionUI *UI, TDateTime Started, TSessionData *SessionDa
   FLogging = false;
   FClosed = false;
   FFailed = false;
-  FPendingActions = new TList();
+//  FPendingActions = new TList();
   FIndent = L"  ";
   FInGroup = false;
   FEnabled = true;
@@ -1512,7 +1512,7 @@ void TActionLog::Init(TSessionUI *UI, TDateTime Started, TSessionData *SessionDa
 TActionLog::~TActionLog()
 {
   DebugAssert(FPendingActions->GetCount() == 0);
-  SAFE_DESTROY(FPendingActions);
+//  SAFE_DESTROY(FPendingActions);
   FClosed = true;
   ReflectSettings();
   DebugAssert(FLogger == nullptr);

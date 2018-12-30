@@ -2566,7 +2566,7 @@ void TSecureShell::VerifyHostKey(
         Message = LoadStr(KEY_NOT_VERIFIED);
       }
 
-      std::unique_ptr<Exception> E(new Exception(MainInstructions(Message)));
+      std::unique_ptr<Exception> E(std::make_unique<Exception>(MainInstructions(Message)));
       try__finally
       {
         FUI->FatalError(E.get(), FMTLOAD(HOSTKEY, (FingerprintSHA256)));

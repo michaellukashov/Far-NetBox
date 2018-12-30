@@ -117,7 +117,7 @@ void TConfiguration::Default()
   FForceBanners = false;
   FDisableAcceptingHostKeys = false;
 
-  std::unique_ptr<TRegistryStorage> AdminStorage(new TRegistryStorage(GetRegistryStorageKey(), HKEY_LOCAL_MACHINE));
+  std::unique_ptr<TRegistryStorage> AdminStorage(std::make_unique<TRegistryStorage>(GetRegistryStorageKey(), HKEY_LOCAL_MACHINE));
   try__finally
   {
     if (AdminStorage->OpenRootKey(false))
@@ -517,7 +517,7 @@ UnicodeString TConfiguration::GetRegistryStorageOverrideKey() const
 UnicodeString TConfiguration::LoadCustomIniFileStorageName()
 {
   UnicodeString Result;
-  std::unique_ptr<TRegistryStorage> RegistryStorage(new TRegistryStorage(GetRegistryStorageOverrideKey()));
+  std::unique_ptr<TRegistryStorage> RegistryStorage(std::make_unique<TRegistryStorage>(GetRegistryStorageOverrideKey()));
   if (RegistryStorage->OpenRootKey(false))
   {
     Result = RegistryStorage->ReadString(L"IniFile", L"");
@@ -822,7 +822,7 @@ void TConfiguration::CleanupConfiguration()
 //---------------------------------------------------------------------------
 void TConfiguration::CleanupRegistry(const UnicodeString CleanupSubKey)
 {
-  std::unique_ptr<TRegistryStorage> Registry(new TRegistryStorage(GetRegistryStorageKey()));
+  std::unique_ptr<TRegistryStorage> Registry(std::make_unique<TRegistryStorage>(GetRegistryStorageKey()));
   try__finally
   {
     Registry->RecursiveDeleteSubKey(CleanupSubKey);
@@ -1462,7 +1462,7 @@ TStorage TConfiguration::GetStorage() const
 TStoredSessionList * TConfiguration::SelectFilezillaSessionsForImport(
   TStoredSessionList *Sessions, UnicodeString &Error)
 {
-  std::unique_ptr<TStoredSessionList> ImportSessionList(new TStoredSessionList(true));
+  std::unique_ptr<TStoredSessionList> ImportSessionList(std::make_unique<TStoredSessionList>(true));
   ImportSessionList->SetDefaultSettings(Sessions->GetDefaultSettings());
 
   UnicodeString AppDataPath;
@@ -1512,7 +1512,7 @@ bool TConfiguration::AnyFilezillaSessionForImport(TStoredSessionList * Sessions)
 TStoredSessionList * TConfiguration::SelectKnownHostsSessionsForImport(
   TStoredSessionList *Sessions, UnicodeString &Error)
 {
-  std::unique_ptr<TStoredSessionList> ImportSessionList(new TStoredSessionList(true));
+  std::unique_ptr<TStoredSessionList> ImportSessionList(std::make_unique<TStoredSessionList>(true));
   ImportSessionList->SetDefaultSettings(Sessions->GetDefaultSettings());
 
   UnicodeString ProfilePath;
@@ -1545,7 +1545,7 @@ TStoredSessionList * TConfiguration::SelectKnownHostsSessionsForImport(
 TStoredSessionList * TConfiguration::SelectKnownHostsSessionsForImport(
   TStrings *Lines, TStoredSessionList *Sessions, UnicodeString &Error)
 {
-  std::unique_ptr<TStoredSessionList> ImportSessionList(new TStoredSessionList(true));
+  std::unique_ptr<TStoredSessionList> ImportSessionList(std::make_unique<TStoredSessionList>(true));
   ImportSessionList->SetDefaultSettings(Sessions->GetDefaultSettings());
 
   try

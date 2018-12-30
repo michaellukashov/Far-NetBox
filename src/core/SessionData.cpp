@@ -114,7 +114,7 @@ intptr_t TSessionData::Compare(const TNamedObject *Other) const
 //---------------------------------------------------------------------
 TSessionData *TSessionData::Clone() const
 {
-  std::unique_ptr<TSessionData> Data(new TSessionData(L""));
+  std::unique_ptr<TSessionData> Data(std::make_unique<TSessionData>(L""));
   Data->Assign(this);
   return Data.release();
 }
@@ -1754,7 +1754,7 @@ void TSessionData::CacheHostKeyIfNotCached()
 
   // Should allow importing to INI file as ImportHostKeys
   UnicodeString TargetKey = GetConfiguration()->GetRegistryStorageKey() + L"\\" + GetConfiguration()->GetSshHostKeysSubKey();
-  std::unique_ptr<TRegistryStorage> Storage(new TRegistryStorage(TargetKey));
+  std::unique_ptr<TRegistryStorage> Storage(std::make_unique<TRegistryStorage>(TargetKey));
   Storage->SetAccessMode(smReadWrite);
   if (Storage->OpenRootKey(true))
   {
@@ -3210,7 +3210,7 @@ UnicodeString EscapeIPv6Literal(const UnicodeString IP)
 //---------------------------------------------------------------------
 TStrings * TSessionData::GetRawSettingsForUrl()
 {
-  std::unique_ptr<TSessionData> FactoryDefaults(new TSessionData(L""));
+  std::unique_ptr<TSessionData> FactoryDefaults(std::make_unique<TSessionData>(L""));
   std::unique_ptr<TSessionData> SessionData(Clone());
   SessionData->FSProtocol = FactoryDefaults->FSProtocol;
   SessionData->HostName = FactoryDefaults->HostName;
@@ -4877,7 +4877,7 @@ void TStoredSessionList::ImportFromKnownHosts(TStrings *Lines)
 {
   bool SessionList = false;
   std::unique_ptr<THierarchicalStorage> HostKeyStorage(GetConfiguration()->CreateStorage(SessionList));
-  std::unique_ptr<TStrings> KeyList(new TStringList());
+  std::unique_ptr<TStrings> KeyList(std::make_unique<TStringList>());
   if (OpenHostKeysSubKey(HostKeyStorage.get(), false))
   {
     HostKeyStorage->GetValueNames(KeyList.get());
@@ -5091,7 +5091,7 @@ void TStoredSessionList::Cleanup()
     {
       Clear();
     }
-    std::unique_ptr<TRegistryStorage> Storage(new TRegistryStorage(GetConfiguration()->GetRegistryStorageKey()));
+    std::unique_ptr<TRegistryStorage> Storage(std::make_unique<TRegistryStorage>(GetConfiguration()->GetRegistryStorageKey()));
     try__finally
     {
       Storage->SetAccessMode(smReadWrite);
@@ -5403,7 +5403,7 @@ const TSessionData *TStoredSessionList::GetSessionByName(const UnicodeString Ses
 
 void TStoredSessionList::Load(const UnicodeString AKey, bool UseDefaults)
 {
-  std::unique_ptr<TRegistryStorage> Storage(new TRegistryStorage(AKey));
+  std::unique_ptr<TRegistryStorage> Storage(std::make_unique<TRegistryStorage>(AKey));
   if (Storage->OpenRootKey(false))
   {
     Load(Storage.get(), false, UseDefaults);
@@ -5578,7 +5578,7 @@ TSessionData *TStoredSessionList::ParseUrl(const UnicodeString Url,
   TOptions *Options, bool &DefaultsOnly, UnicodeString *AFileName,
   bool * AProtocolDefined, UnicodeString * MaskedUrl, int Flags)
 {
-  std::unique_ptr<TSessionData> Data(new TSessionData(L""));
+  std::unique_ptr<TSessionData> Data(std::make_unique<TSessionData>(L""));
   try__catch
   {
     Data->ParseUrl(Url, Options, this, DefaultsOnly, AFileName, AProtocolDefined, MaskedUrl, Flags);
@@ -5615,7 +5615,7 @@ TSessionData *TStoredSessionList::ResolveWorkspaceData(TSessionData *Data)
 //---------------------------------------------------------------------------
 TSessionData * TStoredSessionList::SaveWorkspaceData(TSessionData * Data, int Index)
 {
-  std::unique_ptr<TSessionData> Result(new TSessionData(L""));
+  std::unique_ptr<TSessionData> Result(std::make_unique<TSessionData>(L""));
 
   const TSessionData *SameData = StoredSessions->FindSame(Data);
   if (SameData != nullptr)

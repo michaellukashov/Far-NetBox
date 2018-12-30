@@ -1204,7 +1204,7 @@ void TSCPFileSystem::ReadFile(const UnicodeString AFileName,
 TRemoteFile * TSCPFileSystem::CreateRemoteFile(
   const UnicodeString ListingStr, TRemoteFile *LinkedByFile)
 {
-  std::unique_ptr<TRemoteFile> File(new TRemoteFile(LinkedByFile));
+  std::unique_ptr<TRemoteFile> File(std::make_unique<TRemoteFile>(LinkedByFile));
   try__catch
   {
     File->SetTerminal(FTerminal);
@@ -1834,7 +1834,7 @@ void TSCPFileSystem::SCPSource(const UnicodeString AFileName,
     UnicodeString AbsoluteFileName = FTerminal->GetAbsolutePath(TargetDir + DestFileName, false);
     DebugAssert(LocalFileHandle.Handle != INVALID_HANDLE_VALUE);
     DebugAssert(LocalFileHandle.Handle);
-    std::unique_ptr<TStream> Stream(new TSafeHandleStream((THandle)LocalFileHandle.Handle));
+    std::unique_ptr<TStream> Stream(std::make_unique<TSafeHandleStream>((THandle)LocalFileHandle.Handle));
 
     // File is regular file (not directory)
     FTerminal->LogEvent(FORMAT("Copying \"%s\" to remote directory started.", AFileName));
@@ -2615,7 +2615,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString TargetDir,
                   ThrowExtException();
                 }
 
-                FileStream.reset(new TSafeHandleStream(LocalFileHandle));
+                FileStream = std::make_unique<TSafeHandleStream>(LocalFileHandle);
               }
               catch (Exception &E)
               {

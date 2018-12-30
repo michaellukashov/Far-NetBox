@@ -736,7 +736,7 @@ void TParallelOperation::Init(
   // But in general the code should work with more lists anyway, it just was not tested for it.
   DebugAssert(AFileList->GetCount() == 1);
   FFileList.reset(AFileList);
-  FSection.reset(new TCriticalSection());
+  FSection = std::make_unique<TCriticalSection>();
   FTargetDir = TargetDir;
   FCopyParam = CopyParam;
   FParams = Params;
@@ -994,7 +994,7 @@ intptr_t TParallelOperation::GetNext(TTerminal *Terminal, UnicodeString &FileNam
 //---------------------------------------------------------------------------
 TTerminal::TTerminal(TObjectClassId Kind) noexcept :
   TSessionUI(Kind),
-  FSessionData(new TSessionData(L"")),
+  FSessionData(std::make_unique<TSessionData>(L"")),
   FLog(nullptr),
   FActionLog(nullptr),
   FConfiguration(nullptr),
@@ -1055,8 +1055,8 @@ void TTerminal::Init(TSessionData *ASessionData,
   FConfiguration = AConfiguration;
   FSessionData->Assign(ASessionData);
   TDateTime Started = Now(); // use the same time for session and XML log
-  FLog = new TSessionLog(this, Started, FSessionData, FConfiguration);
-  FActionLog = new TActionLog(this, Started, FSessionData, FConfiguration);
+  FLog = std::make_unique<TSessionLog>(this, Started, FSessionData.get(), FConfiguration);
+  FActionLog = std::make_unique<TActionLog>(this, Started, FSessionData.get(), FConfiguration);
   FFiles = new TRemoteDirectory(this);
   FExceptionOnFail = 0;
   FInTransaction = 0;
@@ -1133,13 +1133,13 @@ TTerminal::~TTerminal() noexcept
       FDirectoryChangesCache);
   }
 
-  SAFE_DESTROY_EX(TCustomFileSystem, FFileSystem);
-  SAFE_DESTROY_EX(TSessionLog, FLog);
-  SAFE_DESTROY_EX(TActionLog, FActionLog);
+//  SAFE_DESTROY_EX(TCustomFileSystem, FFileSystem);
+//  SAFE_DESTROY_EX(TSessionLog, FLog);
+//  SAFE_DESTROY_EX(TActionLog, FActionLog);
   SAFE_DESTROY(FFiles);
   SAFE_DESTROY_EX(TRemoteDirectoryCache, FDirectoryCache);
   SAFE_DESTROY_EX(TRemoteDirectoryChangesCache, FDirectoryChangesCache);
-  SAFE_DESTROY(FSessionData);
+//  SAFE_DESTROY(FSessionData);
   SAFE_DESTROY(FOldFiles);
 }
 //---------------------------------------------------------------------------
@@ -1432,7 +1432,7 @@ void TTerminal::InitFileSystem()
   if ((FSProtocol == fsFTP) && (GetSessionData()->GetFtps() == ftpsNone))
   {
     FFSProtocol = cfsFTP;
-    FFileSystem = new TFTPFileSystem(this);
+    FFileSystem = std::make_unique<TFTPFileSystem>(this);
     FFileSystem->Init(nullptr);
     FFileSystem->Open();
     GetLog()->AddSeparator();
@@ -1445,7 +1445,7 @@ void TTerminal::InitFileSystem()
     FatalError(nullptr, "FTP is not supported");
 #else
     FFSProtocol = cfsFTPS;
-    FFileSystem = new TFTPFileSystem(this);
+    FFileSystem = std::make_unique<TFTPFileSystem>(this);
     FFileSystem->Init(nullptr);
     FFileSystem->Open();
     GetLog()->AddSeparator();
@@ -1455,7 +1455,7 @@ void TTerminal::InitFileSystem()
   else if (FSProtocol == fsWebDAV)
   {
     FFSProtocol = cfsWebDAV;
-    FFileSystem = new TWebDAVFileSystem(this);
+    FFileSystem = std::make_unique<TWebDAVFileSystem>(this);
     FFileSystem->Init(nullptr);
     FFileSystem->Open();
     GetLog()->AddSeparator();
@@ -1464,7 +1464,7 @@ void TTerminal::InitFileSystem()
   else if (GetSessionData()->GetFSProtocol() == fsS3)
   {
     FFSProtocol = cfsS3;
-    FFileSystem = new TS3FileSystem(this);
+    FFileSystem = std::make_unique<TS3FileSystem>(this);
     FFileSystem->Init(nullptr);
     FFileSystem->Open();
     GetLog()->AddSeparator();
@@ -1475,7 +1475,7 @@ void TTerminal::InitFileSystem()
     DebugAssert(FSecureShell == nullptr);
     try__finally
     {
-      FSecureShell = new TSecureShell(this, FSessionData, GetLog(), FConfiguration);
+      FSecureShell = std::make_unique<TSecureShell>(this, FSessionData.get(), GetLog(), FConfiguration);
       try
       {
         // there will be only one channel in this session
@@ -1508,24 +1508,24 @@ void TTerminal::InitFileSystem()
           (FSProtocol == fsSFTP && FSecureShell->SshFallbackCmd()))
       {
         FFSProtocol = cfsSCP;
-        FFileSystem = new TSCPFileSystem(this);
-        FFileSystem->Init(FSecureShell);
+        FFileSystem = std::make_unique<TSCPFileSystem>(this);
+        FFileSystem->Init(FSecureShell.get());
         FSecureShell = nullptr; // ownership passed
         LogEvent("Using SCP protocol.");
       }
       else
       {
         FFSProtocol = cfsSFTP;
-        FFileSystem = new TSFTPFileSystem(this);
-        FFileSystem->Init(FSecureShell);
+        FFileSystem = std::make_unique<TSFTPFileSystem>(this);
+        FFileSystem->Init(FSecureShell.get());
         FSecureShell = nullptr; // ownership passed
         LogEvent("Using SFTP protocol.");
       }
     },
     __finally
     {
-      SAFE_DESTROY(FSecureShell);
-      FSecureShell = nullptr;
+//      SAFE_DESTROY(FSecureShell);
+//      FSecureShell = nullptr;
       // This does not make it through, if terminal thread is abandonded,
       // see also TTerminalManager::DoConnectTerminal
       DoInformation(L"", true, 0);
@@ -1629,7 +1629,7 @@ void TTerminal::OpenTunnel()
 
     // The Started argument is not used with Parent being set
     FTunnelLog = new TSessionLog(this, TDateTime(), FTunnelData, FConfiguration);
-    FTunnelLog->SetParent(FLog, L"Tunnel");
+    FTunnelLog->SetParent(FLog.get(), L"Tunnel");
     FTunnelLog->ReflectSettings();
     FTunnelUI = new TTunnelUI(this);
     FTunnel = new TSecureShell(FTunnelUI, FTunnelData, FTunnelLog, FConfiguration);
@@ -5866,7 +5866,7 @@ TSynchronizeChecklist * TTerminal::SynchronizeCollect(const UnicodeString LocalD
   TValueRestorer<bool> UseBusyCursorRestorer(FUseBusyCursor); nb::used(UseBusyCursorRestorer);
   FUseBusyCursor = false;
 
-  std::unique_ptr<TSynchronizeChecklist> Checklist(new TSynchronizeChecklist());
+  std::unique_ptr<TSynchronizeChecklist> Checklist(std::make_unique<TSynchronizeChecklist>());
   try__catch
   {
     DoSynchronizeCollectDirectory(LocalDirectory, RemoteDirectory, Mode,
@@ -6112,7 +6112,7 @@ void TTerminal::DoSynchronizeCollectDirectory(const UnicodeString ALocalDirector
 
         if (Modified || New)
         {
-          std::unique_ptr<TChecklistItem> ChecklistItem(new TChecklistItem());
+          std::unique_ptr<TChecklistItem> ChecklistItem(std::make_unique<TChecklistItem>());
           try__finally
           {
             ChecklistItem->IsDirectory = FileData->IsDirectory;
@@ -6227,7 +6227,7 @@ void TTerminal::DoSynchronizeCollectFile(UnicodeString AFileName,
         Data->Options->MatchesFilter(AFile->GetFileName()) ||
         Data->Options->MatchesFilter(LocalFileName)))
   {
-    std::unique_ptr<TChecklistItem> ChecklistItem(new TChecklistItem());
+    std::unique_ptr<TChecklistItem> ChecklistItem(std::make_unique<TChecklistItem>());
     try__finally
     {
       ChecklistItem->IsDirectory = AFile->GetIsDirectory();
@@ -8018,9 +8018,9 @@ void TTerminal::SinkFile(const UnicodeString AFileName, const TRemoteFile *AFile
 //---------------------------------------------------------------------------
 void TTerminal::ReflectSettings() const
 {
-  DebugAssert(FLog != nullptr);
+  DebugAssert(FLog.get() != nullptr);
   FLog->ReflectSettings();
-  DebugAssert(FActionLog != nullptr);
+  DebugAssert(FActionLog.get() != nullptr);
   FActionLog->ReflectSettings();
   // also FTunnelLog ?
 }
@@ -8552,7 +8552,7 @@ void TSecondaryTerminal::UpdateFromMain()
 {
   if ((FFileSystem != nullptr) && (FMainTerminal->FFileSystem != nullptr))
   {
-    FFileSystem->UpdateFromMain(FMainTerminal->FFileSystem);
+    FFileSystem->UpdateFromMain(FMainTerminal->FFileSystem.get());
   }
 }
 //---------------------------------------------------------------------------

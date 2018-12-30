@@ -345,6 +345,7 @@ class NB_CORE_EXPORT TTerminalQueueStatus : public TObject
   friend class TQueueItemProxy;
   NB_DISABLE_COPY(TTerminalQueueStatus)
 public:
+  TTerminalQueueStatus() noexcept;
   virtual ~TTerminalQueueStatus() noexcept;
 
   TQueueItemProxy *FindByQueueItem(TQueueItem *QueueItem);
@@ -360,7 +361,7 @@ public:
   bool IsOnlyOneActiveAndNoPending() const;
 
 protected:
-  TTerminalQueueStatus() noexcept;
+  __removed TTerminalQueueStatus() noexcept;
 
   void Add(TQueueItemProxy *ItemProxy);
   void Delete(TQueueItemProxy *ItemProxy);

@@ -841,7 +841,7 @@ void TWebDAVFileSystem::NeonPropsResult(
     {
       Path = base::UnixIncludeTrailingBackslash(base::UnixIncludeTrailingBackslash(Path) + PARENTDIRECTORY);
     }
-    std::unique_ptr<TRemoteFile> File(new TRemoteFile());
+    std::unique_ptr<TRemoteFile> File(std::make_unique<TRemoteFile>());
     File->SetTerminal(Data.FileSystem->FTerminal);
     Data.FileSystem->ParsePropResultSet(File.get(), Path, Results);
     Data.FileList->AddFile(File.release());
@@ -1000,7 +1000,7 @@ void TWebDAVFileSystem::ParsePropResultSet(TRemoteFile *AFile,
 intptr_t TWebDAVFileSystem::CustomReadFileInternal(const UnicodeString AFileName,
   TRemoteFile *& AFile, TRemoteFile *ALinkedByFile)
 {
-  std::unique_ptr<TRemoteFile> File(new TRemoteFile(ALinkedByFile));
+  std::unique_ptr<TRemoteFile> File(std::make_unique<TRemoteFile>(ALinkedByFile));
   TReadFileData Data;
   Data.FileSystem = this;
   Data.File = File.get();

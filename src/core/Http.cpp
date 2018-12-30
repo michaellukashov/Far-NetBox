@@ -195,7 +195,7 @@ int THttp::NeonBodyReaderImpl(const char *Buf, size_t Len)
 
       if (Cancel)
       {
-        FException.reset(new EAbort(UnicodeString()));
+        FException = std::make_unique<EAbort>(UnicodeString());
         Result = false;
       }
     }

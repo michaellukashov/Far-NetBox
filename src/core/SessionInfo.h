@@ -390,7 +390,7 @@ private:
   TSessionUI *FUI{nullptr};
   TSessionData *FSessionData{nullptr};
   TDateTime FStarted;
-  TList *FPendingActions{nullptr};
+  std::unique_ptr<TList> FPendingActions{nullptr};
   bool FFailed{false};
   bool FClosed{false};
   bool FInGroup{false};

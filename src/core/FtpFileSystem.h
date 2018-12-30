@@ -235,7 +235,7 @@ private:
   mutable TFileZillaIntf *FFileZillaIntf{nullptr};
   TCriticalSection FQueueCriticalSection;
   TCriticalSection FTransferStatusCriticalSection;
-  TMessageQueue *FQueue{nullptr};
+  std::unique_ptr<TMessageQueue> FQueue{nullptr};
   HANDLE FQueueEvent{};
   TSessionInfo FSessionInfo;
   TFileSystemInfo FFileSystemInfo;
@@ -251,11 +251,11 @@ private:
   intptr_t FLastReadDirectoryProgress{0};
   UnicodeString FTimeoutStatus;
   UnicodeString FDisconnectStatus;
-  TStrings *FLastResponse{nullptr};
-  TStrings *FLastErrorResponse{nullptr};
-  TStrings *FLastError{nullptr};
+  std::unique_ptr<TStrings> FLastResponse{nullptr};
+  std::unique_ptr<TStrings> FLastErrorResponse{nullptr};
+  std::unique_ptr<TStrings> FLastError{nullptr};
   UnicodeString FSystem;
-  TStrings *FFeatures{nullptr};
+  std::unique_ptr<TStrings> FFeatures{nullptr};
   UnicodeString FCurrentDirectory;
   bool FReadCurrentDirectory{false};
   UnicodeString FHomeDirectory;

@@ -236,7 +236,7 @@ private:
 TFTPFileSystem::TFTPFileSystem(TTerminal *ATerminal) noexcept :
   TCustomFileSystem(OBJECT_CLASS_TFTPFileSystem, ATerminal),
   FFileZillaIntf(nullptr),
-  FQueue(new TMessageQueue),
+  FQueue(std::make_unique<TMessageQueue>()),
   FQueueEvent(::CreateEvent(nullptr, true, false, nullptr)),
   FFileSystemInfoValid(false),
   FReply(0),
@@ -248,10 +248,10 @@ TFTPFileSystem::TFTPFileSystem(TTerminal *ATerminal) noexcept :
   FLastCode(0),
   FLastCodeClass(0),
   FLastReadDirectoryProgress(0),
-  FLastResponse(new TStringList()),
-  FLastErrorResponse(new TStringList()),
-  FLastError(new TStringList()),
-  FFeatures(new TStringList()),
+  FLastResponse(std::make_unique<TStringList>()),
+  FLastErrorResponse(std::make_unique<TStringList>()),
+  FLastError(std::make_unique<TStringList>()),
+  FFeatures(std::make_unique<TStringList>()),
   FReadCurrentDirectory(false),
   FFileList(nullptr),
   FFileListCache(nullptr),
@@ -270,7 +270,7 @@ TFTPFileSystem::TFTPFileSystem(TTerminal *ATerminal) noexcept :
   FOnCaptureOutput(nullptr),
   FListAll(asOn),
   FDoListAll(false),
-  FServerCapabilities(new TFTPServerCapabilities()),
+  FServerCapabilities(std::make_unique<TFTPServerCapabilities>()),
   FDetectTimeDifference(false),
   FTimeDifference(0),
   FSupportsAnyChecksumFeature(false),
@@ -329,13 +329,13 @@ TFTPFileSystem::~TFTPFileSystem() noexcept
 
   SAFE_DESTROY_EX(CFileZillaTools, FFileZillaIntf);
 
-  SAFE_DESTROY(FQueue);
+//  SAFE_DESTROY(FQueue);
   SAFE_CLOSE_HANDLE(FQueueEvent);
 
-  SAFE_DESTROY(FLastResponse);
-  SAFE_DESTROY(FLastErrorResponse);
-  SAFE_DESTROY(FLastError);
-  SAFE_DESTROY(FFeatures);
+//  SAFE_DESTROY(FLastResponse);
+//  SAFE_DESTROY(FLastErrorResponse);
+//  SAFE_DESTROY(FLastError);
+//  SAFE_DESTROY(FFeatures);
 //  SAFE_DESTROY_EX(TFTPServerCapabilities, FServerCapabilities);
 
   ResetCaches();
@@ -359,7 +359,7 @@ void TFTPFileSystem::Open()
   // initialize FZAPI on the first connect only
   if (FFileZillaIntf == nullptr)
   {
-    std::unique_ptr<TFileZillaIntf> FileZillaImpl(new TFileZillaImpl(this));
+    std::unique_ptr<TFileZillaIntf> FileZillaImpl(std::make_unique<TFileZillaImpl>(this));
 
     try__catch
     {
@@ -827,7 +827,7 @@ void TFTPFileSystem::CollectUsage()
 //---------------------------------------------------------------------------
 void TFTPFileSystem::DummyReadDirectory(const UnicodeString ADirectory)
 {
-  std::unique_ptr<TRemoteDirectory> Files(new TRemoteDirectory(FTerminal));
+  std::unique_ptr<TRemoteDirectory> Files(std::make_unique<TRemoteDirectory>(FTerminal));
   try
   {
     Files->SetDirectory(ADirectory);
@@ -2318,7 +2318,7 @@ void TFTPFileSystem::DoReadFile(const UnicodeString AFileName,
     FilePath = base::UnixExtractFilePath(FileName);
   }
 
-  std::unique_ptr<TRemoteFileList> FileList(new TRemoteFileList());
+  std::unique_ptr<TRemoteFileList> FileList(std::make_unique<TRemoteFileList>());
   try__finally
   {
     // Duplicate() call below would use this to compose FullFileName
@@ -2397,7 +2397,7 @@ void TFTPFileSystem::ReadFile(const UnicodeString AFileName,
       // if cache is invalid or file is not in cache, (re)read the directory
       if (File == nullptr)
       {
-        std::unique_ptr<TRemoteFileList> FileListCache(new TRemoteFileList());
+        std::unique_ptr<TRemoteFileList> FileListCache(std::make_unique<TRemoteFileList>());
         FileListCache->SetDirectory(Path);
         try__catch
         {
@@ -2443,7 +2443,7 @@ void TFTPFileSystem::ReadSymlink(TRemoteFile *SymlinkFile,
   // (involves opening TCPIP connection for retrieving "directory listing").
   // Moreover FZAPI does not support that anyway.
   // Though nowadays we could use MLST to read the symlink.
-  std::unique_ptr<TRemoteFile> File(new TRemoteFile(SymlinkFile));
+  std::unique_ptr<TRemoteFile> File(std::make_unique<TRemoteFile>(SymlinkFile));
   try__catch
   {
     File->SetTerminal(FTerminal);
@@ -2507,7 +2507,7 @@ void TFTPFileSystem::SpaceAvailable(const UnicodeString APath,
 {
   if (FBytesAvailableSupported)
   {
-    std::unique_ptr<TRemoteFileList> DummyFileList(new TRemoteFileList());
+    std::unique_ptr<TRemoteFileList> DummyFileList(std::make_unique<TRemoteFileList>());
     DummyFileList->SetDirectory(APath);
     ReadDirectory(DummyFileList.get());
     ASpaceAvailable.UnusedBytesAvailableToUser = FBytesAvailable;
@@ -3149,13 +3149,13 @@ UnicodeString TFTPFileSystem::GotReply(uintptr_t Reply, uintptr_t Flags,
           HelpKeyword = HELP_STATUSMSG_DISCONNECTED;
         }
 
-        MoreMessages->AddStrings(FLastError);
+        MoreMessages->AddStrings(FLastError.get());
         // already cleared from WaitForReply, but GotReply can be also called
         // from Closed. then make sure that error from previous command not
         // associated with session closure is not reused
         FLastError->Clear();
 
-        MoreMessages->AddStrings(FLastErrorResponse);
+        MoreMessages->AddStrings(FLastErrorResponse.get());
         // see comment for FLastError
         FLastResponse->Clear();
         FLastErrorResponse->Clear();
@@ -3183,7 +3183,7 @@ UnicodeString TFTPFileSystem::GotReply(uintptr_t Reply, uintptr_t Flags,
       {
         // for fatal error, it is essential that there is some message
         DebugAssert(!Error.IsEmpty());
-        std::unique_ptr<ExtException> E(new ExtException(Error, MoreMessages.release(), true));
+        std::unique_ptr<ExtException> E(std::make_unique<ExtException>(Error, MoreMessages.release(), true));
         try__finally
         {
           FTerminal->FatalError(E.get(), L"");
@@ -3215,11 +3215,11 @@ UnicodeString TFTPFileSystem::GotReply(uintptr_t Reply, uintptr_t Flags,
 
     if (Response != nullptr)
     {
-      *Response = FLastResponse;
-      FLastResponse = new TStringList();
+      *Response = FLastResponse.release();
+      FLastResponse = std::make_unique<TStringList>();
       // just to be consistent
-      SAFE_DESTROY(FLastErrorResponse);
-      FLastErrorResponse = new TStringList();
+//      SAFE_DESTROY(FLastErrorResponse);
+      FLastErrorResponse = std::make_unique<TStringList>();
     }
   },
   __finally
@@ -3446,7 +3446,7 @@ void TFTPFileSystem::HandleFeatReply()
   {
     FLastResponse->Delete(0);
     FLastResponse->Delete(FLastResponse->GetCount() - 1);
-    FFeatures->Assign(FLastResponse);
+    FFeatures->Assign(FLastResponse.get());
     for (intptr_t Index = 0; Index < FFeatures->GetCount(); Index++)
     {
       // IIS 2003 indents response by 4 spaces, instead of one,
@@ -4254,7 +4254,7 @@ bool TFTPFileSystem::HandleListData(const wchar_t *Path,
     for (uintptr_t Index = 0; Index < Count; ++Index)
     {
       const TListDataEntry *Entry = &Entries[Index];
-      std::unique_ptr<TRemoteFile> File(new TRemoteFile());
+      std::unique_ptr<TRemoteFile> File(std::make_unique<TRemoteFile>());
       try
       {
         File->SetTerminal(FTerminal);
