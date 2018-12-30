@@ -172,7 +172,7 @@ void DoTrace(const wchar_t *SourceFile, const wchar_t *Func,
     TraceInMemory.Line = Line;
     TraceInMemory.Message = Message;
 
-    volatile TGuard Guard(TracingCriticalSection);
+    TGuard Guard(TracingCriticalSection); nb::used(Guard);
 
     if (TracesInMemory.capacity() == 0)
     {
@@ -199,7 +199,7 @@ void TraceDumpToFile()
 {
   if (TraceFile != nullptr)
   {
-    volatile TGuard Guard(TracingCriticalSection);
+    TGuard Guard(TracingCriticalSection); nb::used(Guard);
 
     DWORD Written;
 
@@ -282,7 +282,7 @@ void DoTrace(const wchar_t *SourceFile, const wchar_t *Func,
     TTraceInMemory TraceInMemory;
     TraceInMemory.Message = Buffer;
 
-    volatile TGuard Guard(TracingCriticalSection);
+    TGuard Guard(TracingCriticalSection); nb::used(Guard);
 
     if (TracesInMemory.capacity() == 0)
     {

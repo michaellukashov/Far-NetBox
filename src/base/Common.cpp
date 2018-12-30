@@ -1648,7 +1648,7 @@ static uint16_t DecodeYear(const TDateTime &DateTime)
 //---------------------------------------------------------------------------
 static const TDateTimeParams *GetDateTimeParams(uint16_t Year)
 {
-  volatile TGuard Guard(DateTimeParamsSection);
+  TGuard Guard(DateTimeParamsSection); nb::used(Guard);
 
   TDateTimeParams *Result;
 
