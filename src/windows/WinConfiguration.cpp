@@ -1940,7 +1940,7 @@ TUpdatesConfiguration TWinConfiguration::GetUpdates()
 {
   TUpdatesConfiguration Result;
   {
-    TGuard Guard(FCriticalSection);
+    TGuard Guard(FCriticalSection); nb::used(Guard);
     Result = FUpdates;
   }
   return Result;
@@ -1948,7 +1948,7 @@ TUpdatesConfiguration TWinConfiguration::GetUpdates()
 //---------------------------------------------------------------------------
 void TWinConfiguration::SetUpdates(TUpdatesConfiguration value)
 {
-  TGuard Guard(FCriticalSection);
+  TGuard Guard(FCriticalSection); nb::used(Guard);
   // do not use SET_CONFIG_PROPERTY to avoid OnChange handler call (not synchronized)
   FUpdates = value;
 }

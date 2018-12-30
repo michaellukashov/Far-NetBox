@@ -4415,7 +4415,7 @@ void TSFTPFileSystem::CopyToRemote(TStrings *AFilesToCopy,
   intptr_t Params, TFileOperationProgressType *OperationProgress,
   TOnceDoneOperation &OnceDoneOperation)
 {
-  volatile TAutoFlag AvoidBusyFlag(FAvoidBusy);
+  TAutoFlag AvoidBusyFlag(FAvoidBusy); nb::used(AvoidBusyFlag);
   FTerminal->DoCopyToRemote(AFilesToCopy, ATargetDir, CopyParam, Params, OperationProgress, tfPreCreateDir, OnceDoneOperation);
 }
 //---------------------------------------------------------------------------
@@ -4432,7 +4432,7 @@ void TSFTPFileSystem::SFTPConfirmOverwrite(
   uintptr_t Answer;
 
   {
-    volatile TSuspendFileOperationProgress Suspend(OperationProgress);
+    TSuspendFileOperationProgress Suspend(OperationProgress); nb::used(Suspend);
     uint32_t Answers = qaYes | qaNo | qaCancel | qaYesToAll | qaNoToAll | qaAll | qaIgnore;
 
     // possibly we can allow alternate resume at least in some cases
@@ -4491,7 +4491,7 @@ void TSFTPFileSystem::SFTPConfirmOverwrite(
         TQueryParams Params(0, HELP_APPEND_OR_RESUME);
 
         {
-          volatile TSuspendFileOperationProgress Suspend(OperationProgress);
+          TSuspendFileOperationProgress Suspend(OperationProgress); nb::used(Suspend);
           Answer = FTerminal->QueryUser(FORMAT(LoadStr(APPEND_OR_RESUME2), ASourceFullFileName),
               nullptr, qaYes | qaNo | qaNoToAll | qaCancel, &Params);
         }
@@ -4563,7 +4563,7 @@ bool TSFTPFileSystem::SFTPConfirmResume(const UnicodeString DestFileName,
   {
     uintptr_t Answer;
     {
-      volatile TSuspendFileOperationProgress Suspend(OperationProgress);
+      TSuspendFileOperationProgress Suspend(OperationProgress); nb::used(Suspend);
       TQueryParams Params(qpAllowContinueOnError, HELP_PARTIAL_BIGGER_THAN_SOURCE);
       Answer = FTerminal->QueryUser(
         FMTLOAD(PARTIAL_BIGGER_THAN_SOURCE, DestFileName), nullptr,
@@ -4582,7 +4582,7 @@ bool TSFTPFileSystem::SFTPConfirmResume(const UnicodeString DestFileName,
     uintptr_t Answer;
 
     {
-      volatile TSuspendFileOperationProgress Suspend(OperationProgress);
+      TSuspendFileOperationProgress Suspend(OperationProgress); nb::used(Suspend);
       TQueryParams Params(qpAllowContinueOnError | qpNeverAskAgainCheck,
         HELP_RESUME_TRANSFER);
       // "abort" replaced with "cancel" to unify with "append/resume" query
@@ -5303,7 +5303,7 @@ void TSFTPFileSystem::CopyToLocal(TStrings *AFilesToCopy,
   intptr_t Params, TFileOperationProgressType *OperationProgress,
   TOnceDoneOperation &OnceDoneOperation)
 {
-  volatile TAutoFlag AvoidBusyFlag(FAvoidBusy);
+  TAutoFlag AvoidBusyFlag(FAvoidBusy); nb::used(AvoidBusyFlag);
   FTerminal->DoCopyToLocal(AFilesToCopy, TargetDir, CopyParam, Params, OperationProgress, tfNone, OnceDoneOperation);
 }
 //---------------------------------------------------------------------------

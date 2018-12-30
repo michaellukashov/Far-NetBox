@@ -1475,7 +1475,7 @@ uintptr_t TSCPFileSystem::ConfirmOverwrite(
   const TOverwriteFileParams *FileParams, const TCopyParamType *CopyParam,
   intptr_t Params, TFileOperationProgressType *OperationProgress)
 {
-  volatile TSuspendFileOperationProgress Suspend(OperationProgress);
+  TSuspendFileOperationProgress Suspend(OperationProgress); nb::used(Suspend);
 
   TQueryButtonAlias Aliases[3];
   Aliases[0] = TQueryButtonAlias::CreateAllAsYesToNewerGrouppedWithYes();
@@ -1650,7 +1650,7 @@ void TSCPFileSystem::CopyToRemote(TStrings *AFilesToCopy,
             UnicodeString Message = FMTLOAD(DIRECTORY_OVERWRITE, FileNameOnly);
             TQueryParams QueryParams(qpNeverAskAgainCheck);
 
-            volatile TSuspendFileOperationProgress Suspend(OperationProgress);
+            TSuspendFileOperationProgress Suspend(OperationProgress); nb::used(Suspend);
             Answer = FTerminal->ConfirmFileOverwrite(
               FileName, FileNameOnly, nullptr,
               qaYes | qaNo | qaCancel | qaYesToAll | qaNoToAll,
@@ -1725,7 +1725,7 @@ void TSCPFileSystem::CopyToRemote(TStrings *AFilesToCopy,
         {
           TQueryParams QueryParams(qpAllowContinueOnError);
 
-          volatile TSuspendFileOperationProgress Suspend1(OperationProgress);
+          TSuspendFileOperationProgress Suspend1(OperationProgress); nb::used(Suspend1);
 
           if (FTerminal->QueryUserException(FMTLOAD(COPY_ERROR, FileName), &E,
               qaOK | qaAbort, &QueryParams, qtError) == qaAbort)
@@ -1743,7 +1743,7 @@ void TSCPFileSystem::CopyToRemote(TStrings *AFilesToCopy,
           FTerminal->OperationFinish(OperationProgress, Item, FileName, false, OnceDoneOperation);
 
           {
-            volatile TSuspendFileOperationProgress Suspend(OperationProgress);
+            TSuspendFileOperationProgress Suspend(OperationProgress); nb::used(Suspend);
             // If ESkipFile occurs, just log it and continue with next file
             if (!FTerminal->HandleException(&E))
             {
@@ -2499,7 +2499,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString TargetDir,
         catch (Exception &E)
         {
           {
-            volatile TSuspendFileOperationProgress Suspend(OperationProgress);
+            TSuspendFileOperationProgress Suspend(OperationProgress); nb::used(Suspend);
             FTerminal->GetLog()->AddException(&E);
           }
           SCPError(LoadStr(SCP_ILLEGAL_FILE_DESCRIPTOR), false);
@@ -2758,7 +2758,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString TargetDir,
     {
       if (!SkipConfirmed)
       {
-        volatile TSuspendFileOperationProgress Suspend(OperationProgress);
+        TSuspendFileOperationProgress Suspend(OperationProgress); nb::used(Suspend);
         TQueryParams QueryParams(qpAllowContinueOnError);
         if (FTerminal->QueryUserException(FMTLOAD(COPY_ERROR, (FullFileName)),
             &E, qaOK | qaAbort, &QueryParams, qtError) == qaAbort)

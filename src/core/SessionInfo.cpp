@@ -935,7 +935,7 @@ void TSessionLog::Add(TLogLineType Type, const UnicodeString ALine)
       }
       else
       {
-        volatile TGuard Guard(FCriticalSection);
+        TGuard Guard(FCriticalSection); nb::used(Guard);
 
         DoAdd(Type, ALine, nb::bind(&TSessionLog::DoAddToSelf, this));
       }
@@ -967,7 +967,7 @@ void TSessionLog::AddException(Exception *E)
 //---------------------------------------------------------------------------
 void TSessionLog::ReflectSettings()
 {
-  volatile TGuard Guard(FCriticalSection);
+  TGuard Guard(FCriticalSection); nb::used(Guard);
 
   FLogging =
     !FClosed &&
@@ -1038,7 +1038,7 @@ void TSessionLog::OpenLogFile()
     {
       AddException(&E2);
       // not to deadlock with TSessionLog::ReflectSettings invoked by FConfiguration->LogFileName setter above
-      volatile TUnguard Unguard(FCriticalSection);
+      TUnguard Unguard(FCriticalSection); nb::used(Unguard);
       FUI->HandleExtendedException(&E2);
     }
   }
@@ -1523,7 +1523,7 @@ void TActionLog::Add(const UnicodeString Line)
   DebugAssert(FConfiguration);
   if (FLogging)
   {
-    volatile TGuard Guard(FCriticalSection);
+    TGuard Guard(FCriticalSection); nb::used(Guard);
     if (FLogger == nullptr)
     {
       OpenLogFile();
@@ -1620,7 +1620,7 @@ void TActionLog::AddMessages(const UnicodeString Indent, TStrings *Messages)
 //---------------------------------------------------------------------------
 void TActionLog::ReflectSettings()
 {
-  volatile TGuard Guard(FCriticalSection);
+  TGuard Guard(FCriticalSection); nb::used(Guard);
 
   bool ALogging =
     !FClosed && FConfiguration->GetLogActions() && GetEnabled();
@@ -1699,7 +1699,7 @@ void TActionLog::OpenLogFile()
         if (FUI != nullptr)
         {
           // not to deadlock with TSessionLog::ReflectSettings invoked by FConfiguration->LogFileName setter above
-          volatile TUnguard Unguard(FCriticalSection);
+          TUnguard Unguard(FCriticalSection); nb::used(Unguard);
           FUI->HandleExtendedException(&E2);
         }
       }

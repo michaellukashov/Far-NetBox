@@ -624,7 +624,7 @@ bool AppendExceptionStackTraceAndForget(TStrings *& MoreMessages)
   bool Result = false;
 #if 0
 
-  TGuard Guard(StackTraceCriticalSection.get());
+  TGuard Guard(StackTraceCriticalSection.get()); nb::used(Guard);
 
   TStackTraceMap::iterator Iterator = StackTraceMap.find(GetCurrentThreadId());
   if (Iterator != StackTraceMap.end())
@@ -738,7 +738,7 @@ static void DoExceptNotify(TObject * ExceptObj, void * ExceptAddr,
 
         DWORD ThreadID = GetCurrentThreadId();
 
-        TGuard Guard(StackTraceCriticalSection.get());
+        TGuard Guard(StackTraceCriticalSection.get()); nb::used(Guard);
 
         TStackTraceMap::iterator Iterator = StackTraceMap.find(ThreadID);
         if (Iterator != StackTraceMap.end())

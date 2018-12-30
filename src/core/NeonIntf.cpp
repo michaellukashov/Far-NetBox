@@ -420,7 +420,7 @@ void ne_debug(void *Context, int Channel, const char *Format, ...)
       }
       else
       {
-        volatile TGuard Guard(*DebugSection.get());
+        TGuard Guard(*DebugSection.get()); nb::used(Guard);
 
         if (NeonTerminals.size() == 1)
         {
@@ -440,13 +440,13 @@ void ne_debug(void *Context, int Channel, const char *Format, ...)
 //---------------------------------------------------------------------------
 void RegisterForNeonDebug(TTerminal *Terminal)
 {
-  volatile TGuard Guard(*DebugSection.get());
+  TGuard Guard(*DebugSection.get()); nb::used(Guard);
   NeonTerminals.insert(Terminal);
 }
 //---------------------------------------------------------------------------
 void UnregisterFromNeonDebug(TTerminal *Terminal)
 {
-  volatile TGuard Guard(*DebugSection.get());
+  TGuard Guard(*DebugSection.get()); nb::used(Guard);
   NeonTerminals.erase(Terminal);
 }
 //---------------------------------------------------------------------------

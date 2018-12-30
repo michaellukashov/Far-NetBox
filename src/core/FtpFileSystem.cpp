@@ -516,7 +516,7 @@ void TFTPFileSystem::Open()
     }
 
     FPasswordFailed = false;
-    volatile TAutoFlag OpeningFlag(FOpening);
+    TAutoFlag OpeningFlag(FOpening); nb::used(OpeningFlag);
 
     FActive = FFileZillaIntf->Connect(
         HostName.c_str(), ToInt(Data->GetPortNumber()), UserName.c_str(),
@@ -1404,7 +1404,7 @@ bool TFTPFileSystem::ConfirmOverwrite(
     QueryParams.AliasesCount = _countof(Aliases);
 
     {
-      volatile TSuspendFileOperationProgress Suspend(OperationProgress);
+      TSuspendFileOperationProgress Suspend(OperationProgress); nb::used(Suspend);
       Answer = FTerminal->ConfirmFileOverwrite(
           ASourceFullFileName, ATargetFileName, FileParams, Answers, &QueryParams,
           ReverseOperationSide(OperationProgress->GetSide()),
@@ -1545,7 +1545,7 @@ void TFTPFileSystem::SetCPSLimit(TFileOperationProgressType *OperationProgress)
 void TFTPFileSystem::FileTransferProgress(int64_t TransferSize,
   int64_t Bytes)
 {
-  volatile TGuard Guard(FTransferStatusCriticalSection);
+  TGuard Guard(FTransferStatusCriticalSection); nb::used(Guard);
 
   DoFileTransferProgress(TransferSize, Bytes);
 }
@@ -1616,7 +1616,7 @@ void TFTPFileSystem::Sink(
 
   {
     // ignore file list
-    volatile TFTPFileListHelper Helper(this, nullptr, true); nb::used(Helper);
+    TFTPFileListHelper Helper(this, nullptr, true); nb::used(Helper); nb::used(Helper);
 
     SetCPSLimit(OperationProgress);
     FFileTransferPreserveTime = CopyParam->GetPreserveTime();
@@ -1723,7 +1723,7 @@ void TFTPFileSystem::Source(
       ((FServerCapabilities->GetCapability(mfmt_command) == yes) ||
        ((FServerCapabilities->GetCapability(mdtm_command) == yes))))
   {
-    volatile TTouchSessionAction TouchAction(FTerminal->GetActionLog(), DestFullName, Handle.Modification);
+    TTouchSessionAction TouchAction(FTerminal->GetActionLog(), DestFullName, Handle.Modification); nb::used(TouchAction);
 
     if (!FFileZillaIntf->UsingMlsd())
     {
@@ -1746,7 +1746,7 @@ void TFTPFileSystem::RemoteCreateDirectory(const UnicodeString ADirName, bool /*
 
   {
     // ignore file list
-    volatile TFTPFileListHelper Helper(this, nullptr, true);
+    TFTPFileListHelper Helper(this, nullptr, true); nb::used(Helper);
 
     FFileZillaIntf->MakeDir(DirName.c_str());
 
@@ -1779,7 +1779,7 @@ void TFTPFileSystem::RemoteDeleteFile(const UnicodeString AFileName,
 
   {
     // ignore file list
-    volatile TFTPFileListHelper Helper(this, nullptr, true);
+    TFTPFileListHelper Helper(this, nullptr, true); nb::used(Helper);
 
     if (Dir)
     {
@@ -2009,7 +2009,7 @@ void TFTPFileSystem::DoReadDirectory(TRemoteFileList *AFileList)
 
   FLastReadDirectoryProgress = 0;
 
-  volatile TFTPFileListHelper Helper(this, AFileList, false);
+  TFTPFileListHelper Helper(this, AFileList, false); nb::used(Helper);
 
   // always specify path to list, do not attempt to list "current" dir as:
   // 1) List() lists again the last listed directory, not the current working directory
@@ -2323,7 +2323,7 @@ void TFTPFileSystem::DoReadFile(const UnicodeString AFileName,
   {
     // Duplicate() call below would use this to compose FullFileName
     FileList->SetDirectory(FilePath);
-    volatile TFTPFileListHelper Helper(this, FileList.get(), false);
+    TFTPFileListHelper Helper(this, FileList.get(), false); nb::used(Helper);
     FFileZillaIntf->ListFile(FileNameOnly.c_str(), FilePath.c_str());
 
     GotReply(WaitForCommandReply(), REPLY_2XX_CODE | REPLY_ALLOW_CANCEL);
@@ -2473,7 +2473,7 @@ void TFTPFileSystem::RemoteRenameFile(const UnicodeString AFileName, const TRemo
 
   {
     // ignore file list
-    volatile TFTPFileListHelper Helper(this, nullptr, true);
+    TFTPFileListHelper Helper(this, nullptr, true); nb::used(Helper);
 
     FFileZillaIntf->Rename(FileNameOnly.c_str(), NewNameOnly.c_str(),
       FilePathOnly.c_str(), NewPathOnly.c_str());
@@ -2820,10 +2820,10 @@ bool TFTPFileSystem::FTPPostMessage(uintptr_t Type, WPARAM wParam, LPARAM lParam
     // it makes "pause" in queue work.
     // Paused queue item stops in some of the TFileOperationProgressType
     // methods called from FileTransferProgress
-    volatile TGuard Guard(FTransferStatusCriticalSection);
+    TGuard Guard(FTransferStatusCriticalSection); nb::used(Guard);
   }
 
-  volatile TGuard Guard(FQueueCriticalSection);
+  TGuard Guard(FQueueCriticalSection); nb::used(Guard);
 
   FQueue->push_back(TMessageQueue::value_type(wParam, lParam));
   ::SetEvent(FQueueEvent);
@@ -2837,7 +2837,7 @@ bool TFTPFileSystem::ProcessMessage()
   TMessageQueue::value_type Message;
 
   {
-    volatile TGuard Guard(FQueueCriticalSection);
+    TGuard Guard(FQueueCriticalSection); nb::used(Guard);
 
     Result = !FQueue->empty();
     if (Result)

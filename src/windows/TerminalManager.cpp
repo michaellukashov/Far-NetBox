@@ -1237,7 +1237,7 @@ void __fastcall TTerminalManager::OperationProgress(
 //---------------------------------------------------------------------------
 void __fastcall TTerminalManager::QueueEvent(TTerminalQueue * Queue, TQueueEvent Event)
 {
-  TGuard Guard(FQueueSection);
+  TGuard Guard(FQueueSection); nb::used(Guard);
   FQueueEvents.push_back(std::make_pair(Queue, Event));
 }
 //---------------------------------------------------------------------------
@@ -1270,7 +1270,7 @@ void __fastcall TTerminalManager::ConfigurationChange(TObject * /*Sender*/)
   }
   else
   {
-    TGuard Guard(FChangeSection.get());
+    TGuard Guard(FChangeSection.get()); nb::used(Guard);
     FPendingConfigurationChange++;
   }
 }
@@ -1448,7 +1448,7 @@ void __fastcall TTerminalManager::Idle(bool SkipCurrentTerminal)
     bool Changed = false;
 
     {
-      TGuard Guard(FChangeSection.get());
+      TGuard Guard(FChangeSection.get()); nb::used(Guard);
       if (DebugAlwaysTrue(FPendingConfigurationChange > 0))
       {
         FPendingConfigurationChange--;
@@ -1527,10 +1527,10 @@ void __fastcall TTerminalManager::Idle(bool SkipCurrentTerminal)
 
   do
   {
-    QueueWithEvent = NULL;
+    QueueWithEvent = nullptr;
 
     {
-      TGuard Guard(FQueueSection);
+      TGuard Guard(FQueueSection); nb::used(Guard);
 
       if (!FQueueEvents.empty())
       {

@@ -765,7 +765,7 @@ bool TParallelOperation::ShouldAddClient() const
   }
   else
   {
-    volatile TGuard Guard(*FSection.get());
+    TGuard Guard(*FSection.get()); nb::used(Guard);
     Result = !FProbablyEmpty && (FMainOperationProgress->GetCancel() < csCancel);
   }
   return Result;
@@ -773,13 +773,13 @@ bool TParallelOperation::ShouldAddClient() const
 //---------------------------------------------------------------------------
 void TParallelOperation::AddClient()
 {
-  volatile TGuard Guard(*FSection.get());
+  TGuard Guard(*FSection.get()); nb::used(Guard);
   FClients++;
 }
 //---------------------------------------------------------------------------
 void TParallelOperation::RemoveClient()
 {
-  volatile TGuard Guard(*FSection.get());
+  TGuard Guard(*FSection.get()); nb::used(Guard);
   FClients--;
 }
 //---------------------------------------------------------------------------
@@ -794,7 +794,7 @@ void TParallelOperation::WaitFor()
     do
     {
       {
-        volatile TGuard Guard(*FSection.get());
+        TGuard Guard(*FSection.get()); nb::used(Guard);
         Done = (FClients == 0);
       }
 
@@ -819,7 +819,7 @@ void TParallelOperation::Done(const UnicodeString FileName, bool Dir, bool Succe
 {
   if (Dir)
   {
-    volatile TGuard Guard(*FSection.get());
+    TGuard Guard(*FSection.get()); nb::used(Guard);
 
     TDirectories::iterator DirectoryIterator = FDirectories.find(FileName);
     if (DebugAlwaysTrue(DirectoryIterator != FDirectories.end()))
@@ -886,7 +886,7 @@ bool TParallelOperation::CheckEnd(TCollectedFileList *Files)
 //---------------------------------------------------------------------------
 intptr_t TParallelOperation::GetNext(TTerminal *Terminal, UnicodeString &FileName, TObject *&Object, UnicodeString &TargetDir, bool &Dir, bool &Recursed)
 {
-  volatile TGuard Guard(*FSection.get());
+  TGuard Guard(*FSection.get()); nb::used(Guard);
   intptr_t Result = 1;
   TCollectedFileList *Files;
   do
@@ -1151,7 +1151,7 @@ void TTerminal::Idle()
   // as we may recurse for good, timeouting eventually.
   if (GetActive() && (FNesting == 0))
   {
-    volatile TAutoNestingCounter NestingCounter(FNesting);
+    TAutoNestingCounter NestingCounter(FNesting); nb::used(NestingCounter);
 
     if (FConfiguration->GetActualLogProtocol() >= 1)
     {
@@ -1700,7 +1700,7 @@ void TTerminal::ProcessGUI()
   // Alternatively we may check for (FOperationProgress == nullptr)
   if (FNesting == 0)
   {
-    volatile TAutoNestingCounter NestingCounter(FNesting);
+    TAutoNestingCounter NestingCounter(FNesting); nb::used(NestingCounter);
     ::ProcessGUI();
   }
 }
@@ -1709,7 +1709,7 @@ void TTerminal::Progress(TFileOperationProgressType *OperationProgress)
 {
   if (FNesting == 0)
   {
-    volatile TAutoNestingCounter NestingCounter(FNesting);
+    TAutoNestingCounter NestingCounter(FNesting); nb::used(NestingCounter);
     OperationProgress->Progress();
   }
 }
@@ -2280,7 +2280,7 @@ bool TTerminal::ContinueReopen(TDateTime Start) const
 bool TTerminal::QueryReopen(Exception *E, intptr_t AParams,
   TFileOperationProgressType *OperationProgress)
 {
-  volatile TSuspendFileOperationProgress Suspend(OperationProgress);
+  TSuspendFileOperationProgress Suspend(OperationProgress); nb::used(Suspend);
 
   bool Result = DoQueryReopen(E);
 
@@ -2359,7 +2359,7 @@ bool TTerminal::FileOperationLoopQuery(Exception &E,
     }
 
     {
-      volatile TSuspendFileOperationProgress Suspend(OperationProgress);
+      TSuspendFileOperationProgress Suspend(OperationProgress); nb::used(Suspend);
       Answer = QueryUserException(Message, &E, Answers, &Params, qtError);
     }
 
@@ -4021,7 +4021,7 @@ bool TTerminal::ProcessFiles(TStrings * AFileList,
           catch (ESkipFile &E)
           {
             DEBUG_PRINTF("before HandleException");
-            volatile TSuspendFileOperationProgress Suspend(GetOperationProgress());
+            TSuspendFileOperationProgress Suspend(GetOperationProgress()); nb::used(Suspend);
             if (!HandleException(&E))
             {
               throw;
@@ -4256,7 +4256,7 @@ void TTerminal::DoDeleteFile(const UnicodeString AFileName,
 //---------------------------------------------------------------------------
 bool TTerminal::RemoteDeleteFiles(TStrings *AFilesToDelete, intptr_t Params)
 {
-  volatile TValueRestorer<bool> UseBusyCursorRestorer(FUseBusyCursor);
+  TValueRestorer<bool> UseBusyCursorRestorer(FUseBusyCursor); nb::used(UseBusyCursorRestorer);
   FUseBusyCursor = false;
 
   TODO("avoid resolving symlinks while reading subdirectories.");
@@ -4490,7 +4490,7 @@ void TTerminal::DoChangeFileProperties(const UnicodeString AFileName,
 void TTerminal::ChangeFilesProperties(TStrings *AFileList,
   const TRemoteProperties *Properties)
 {
-  volatile TValueRestorer<bool> UseBusyCursorRestorer(FUseBusyCursor);
+  TValueRestorer<bool> UseBusyCursorRestorer(FUseBusyCursor); nb::used(UseBusyCursorRestorer);
   FUseBusyCursor = false;
 
   AnnounceFileListOperation();
@@ -4673,7 +4673,7 @@ bool TTerminal::CalculateFilesSize(TStrings *AFileList,
   // draft-peterson-streamlined-ftp-command-extensions-10
   // Implemented by Serv-U FTP.
 
-  volatile TValueRestorer<bool> UseBusyCursorRestorer(FUseBusyCursor);
+  TValueRestorer<bool> UseBusyCursorRestorer(FUseBusyCursor); nb::used(UseBusyCursorRestorer);
   FUseBusyCursor = false;
 
   TCalculateSizeParams Param;
@@ -4883,7 +4883,7 @@ void TTerminal::DoCopyFile(const UnicodeString AFileName, const TRemoteFile *AFi
   TRetryOperationLoop RetryLoop(this);
   do
   {
-    volatile TCpSessionAction Action(GetActionLog(), GetAbsolutePath(AFileName, true), GetAbsolutePath(ANewName, true));
+    TCpSessionAction Action(GetActionLog(), GetAbsolutePath(AFileName, true), GetAbsolutePath(ANewName, true)); nb::used(Action);
     try
     {
       DebugAssert(FFileSystem);
@@ -5352,7 +5352,7 @@ bool TTerminal::DoCreateLocalFile(const UnicodeString AFileName,
             {
               uintptr_t Answer;
               {
-                volatile TSuspendFileOperationProgress Suspend(OperationProgress);
+                TSuspendFileOperationProgress Suspend(OperationProgress); nb::used(Suspend);
                 Answer = QueryUser(
                   MainInstructions(FMTLOAD(READ_ONLY_OVERWRITE, AFileName)), nullptr,
                   qaYes | qaNo | qaCancel | qaYesToAll | qaNoToAll, nullptr);
@@ -6186,7 +6186,7 @@ void TTerminal::SynchronizeCollectFile(UnicodeString AFileName,
   }
   catch (ESkipFile &E)
   {
-    volatile TSuspendFileOperationProgress Suspend(OperationProgress);
+    TSuspendFileOperationProgress Suspend(OperationProgress); nb::used(Suspend);
     nb::used(Suspend);
     if (!HandleException(&E))
     {
@@ -7284,7 +7284,7 @@ void TTerminal::DoCopyToRemote(
       }
       catch (ESkipFile &E)
       {
-        volatile TSuspendFileOperationProgress Suspend(OperationProgress);
+        TSuspendFileOperationProgress Suspend(OperationProgress); nb::used(Suspend);
         if (!HandleException(&E))
         {
           throw;
@@ -7748,7 +7748,7 @@ void TTerminal::DoCopyToLocal(
       }
       catch (ESkipFile &E)
       {
-        volatile TSuspendFileOperationProgress Suspend(OperationProgress);
+        TSuspendFileOperationProgress Suspend(OperationProgress); nb::used(Suspend);
         if (!HandleException(&E))
         {
           throw;
@@ -8002,7 +8002,7 @@ void TTerminal::SinkFile(const UnicodeString AFileName, const TRemoteFile *AFile
     Params->Skipped = true;
 
     {
-      volatile TSuspendFileOperationProgress Suspend(Params->OperationProgress);
+      TSuspendFileOperationProgress Suspend(Params->OperationProgress); nb::used(Suspend);
       if (!HandleException(&E))
       {
         throw;

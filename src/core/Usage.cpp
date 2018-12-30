@@ -31,7 +31,7 @@ TUsage::~TUsage() noexcept
 //---------------------------------------------------------------------------
 void TUsage::Default()
 {
-  TGuard Guard(*FCriticalSection);
+  TGuard Guard(*FCriticalSection); nb::used(Guard);
   FPeriodCounters.clear();
   FLifetimeCounters.clear();
   FValues->Clear();
@@ -46,7 +46,7 @@ void TUsage::Default()
 //---------------------------------------------------------------------------
 void TUsage::Load(THierarchicalStorage * Storage)
 {
-  TGuard Guard(*FCriticalSection);
+  TGuard Guard(*FCriticalSection); nb::used(Guard);
   Default();
 
   if (Storage->OpenSubKey(L"Values", false))
@@ -97,7 +97,7 @@ void TUsage::Load(THierarchicalStorage * Storage,
 //---------------------------------------------------------------------------
 void TUsage::Save(THierarchicalStorage * Storage) const
 {
-  TGuard Guard(*FCriticalSection);
+  TGuard Guard(*FCriticalSection); nb::used(Guard);
   if (Storage->OpenSubKey("Values", true))
   {
     Storage->ClearValues();
@@ -129,7 +129,7 @@ void TUsage::Set(const UnicodeString AKey, const UnicodeString AValue)
 {
   if (FCollect)
   {
-    TGuard Guard(*FCriticalSection);
+    TGuard Guard(*FCriticalSection); nb::used(Guard);
     FValues->SetValue(AKey, AValue);
   }
 }
@@ -146,7 +146,7 @@ void TUsage::Set(const UnicodeString AKey, bool Value)
 //---------------------------------------------------------------------------
 UnicodeString TUsage::Get(const UnicodeString AKey) const
 {
-  TGuard Guard(*FCriticalSection);
+  TGuard Guard(*FCriticalSection); nb::used(Guard);
   UnicodeString Result = FValues->GetValue(AKey);
   Result.Unique();
   return Result;
@@ -159,7 +159,7 @@ void TUsage::UpdateLastReport()
 //---------------------------------------------------------------------------
 void TUsage::Reset()
 {
-  TGuard Guard(*FCriticalSection);
+  TGuard Guard(*FCriticalSection); nb::used(Guard);
   UpdateLastReport();
   FPeriodCounters.clear();
   ResetLastExceptions();
@@ -167,7 +167,7 @@ void TUsage::Reset()
 //---------------------------------------------------------------------------
 void TUsage::UpdateCurrentVersion()
 {
-  TGuard Guard(*FCriticalSection);
+  TGuard Guard(*FCriticalSection); nb::used(Guard);
   intptr_t CompoundVersion = FConfiguration->CompoundVersion;
   intptr_t PrevVersion = StrToIntDef(Get("CurrentVersion"), 0);
   if (PrevVersion != CompoundVersion)
@@ -204,7 +204,7 @@ void TUsage::ResetValue(const UnicodeString AKey)
 //---------------------------------------------------------------------------
 void TUsage::ResetLastExceptions()
 {
-  TGuard Guard(*FCriticalSection);
+  TGuard Guard(*FCriticalSection); nb::used(Guard);
   ResetValue(LastInternalExceptionCounter);
   ResetValue(LastUpdateExceptionCounter);
 }
@@ -213,7 +213,7 @@ void TUsage::Inc(const UnicodeString AKey, intptr_t Increment)
 {
   if (FCollect)
   {
-    TGuard Guard(*FCriticalSection);
+    TGuard Guard(*FCriticalSection); nb::used(Guard);
     Inc(AKey, FPeriodCounters, Increment);
     Inc(AKey, FLifetimeCounters, Increment);
   }
@@ -236,7 +236,7 @@ void TUsage::SetMax(const UnicodeString AKey, intptr_t Value)
 {
   if (FCollect)
   {
-    TGuard Guard(*FCriticalSection);
+    TGuard Guard(*FCriticalSection); nb::used(Guard);
     SetMax(AKey, Value, FPeriodCounters);
     SetMax(AKey, Value, FLifetimeCounters);
   }
@@ -261,7 +261,7 @@ void TUsage::SetMax(const UnicodeString AKey, intptr_t Value,
 //---------------------------------------------------------------------------
 void TUsage::SetCollect(bool Value)
 {
-  TGuard Guard(*FCriticalSection);
+  TGuard Guard(*FCriticalSection); nb::used(Guard);
   if (FCollect != Value)
   {
     FCollect = Value;
@@ -280,7 +280,7 @@ void TUsage::SetCollect(bool Value)
 //---------------------------------------------------------------------------
 UnicodeString TUsage::Serialize(const UnicodeString ADelimiter, const UnicodeString AFilter) const
 {
-  TGuard Guard(*FCriticalSection);
+  TGuard Guard(*FCriticalSection); nb::used(Guard);
   UnicodeString Result;
 
   UnicodeString FilterUpper = UpperCase(AFilter);
