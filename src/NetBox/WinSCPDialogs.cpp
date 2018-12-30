@@ -656,7 +656,7 @@ bool TWinSCPPlugin::EnduranceConfigurationDialog()
   ResumeSmartButton->SetChecked(CopyParam.GetResumeSupport() == rsSmart);
   ResumeOffButton->SetChecked(CopyParam.GetResumeSupport() == rsOff);
   ResumeThresholdEdit->SetAsInteger(
-    ToInt(CopyParam.GetResumeThreshold() / 1024));
+    nb::ToInt(CopyParam.GetResumeThreshold() / 1024));
 
   SessionReopenAutoCheck->SetChecked((GetConfiguration()->GetSessionReopenAuto() > 0));
   SessionReopenAutoEdit->SetAsInteger((GetConfiguration()->GetSessionReopenAuto() > 0 ?
@@ -1278,7 +1278,7 @@ void TPasswordDialog::GenerateLabel(const UnicodeString ACaption,
   }
   FPrompt += Caption;
 
-  if (GetSize().x - 10 < ToInt(Caption.Length()))
+  if (GetSize().x - 10 < nb::ToInt(Caption.Length()))
   {
     Caption.SetLength(GetSize().x - 10 - 4);
     Caption += L" ...";
@@ -1301,7 +1301,7 @@ void TPasswordDialog::GeneratePrompt(bool ShowSavePassword,
   FEdits->Clear();
   TPoint S = TPoint(40, ShowSavePassword ? 1 : 0);
 
-  int x = ToInt(Instructions.Length());
+  int x = nb::ToInt(Instructions.Length());
   if (S.x < x)
   {
     S.x = x;
@@ -1313,7 +1313,7 @@ void TPasswordDialog::GeneratePrompt(bool ShowSavePassword,
 
   for (intptr_t Index = 0; Index < Prompts->GetCount(); ++Index)
   {
-    int l = ToInt(Prompts->GetString(Index).Length());
+    int l = nb::ToInt(Prompts->GetString(Index).Length());
     if (S.x < l)
     {
       S.x = l;
@@ -1339,7 +1339,7 @@ void TPasswordDialog::GeneratePrompt(bool ShowSavePassword,
   {
     GenerateLabel(Prompts->GetString(Index), Truncated);
 
-    FEdits->Add(GenerateEdit(FLAGSET(ToIntPtr(Prompts->GetObj(Index)), pupEcho)));
+    FEdits->Add(GenerateEdit(FLAGSET(nb::ToIntPtr(Prompts->GetObj(Index)), pupEcho)));
   }
 }
 
@@ -2255,7 +2255,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin *AFarPlugin, TSessionActionEnum 
   Text = new TFarText(this);
   Text->SetCaption(GetMsg(NB_LOGIN_FTP_POST_LOGIN_COMMANDS));
 
-  for (intptr_t Index3 = 0; Index3 < ToIntPtr(_countof(PostLoginCommandsEdits)); ++Index3)
+  for (intptr_t Index3 = 0; Index3 < nb::ToIntPtr(_countof(PostLoginCommandsEdits)); ++Index3)
   {
     TFarEdit *Edit = new TFarEdit(this);
     PostLoginCommandsEdits[Index3] = Edit;
@@ -2828,13 +2828,13 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin *AFarPlugin, TSessionActionEnum 
 void TSessionDialog::FtpProxyMethodComboAddNewItem(int ProxyTypeId, TProxyMethod ProxyType)
 {
   FtpProxyMethodCombo->GetItems()->AddObject(GetMsg(ProxyTypeId),
-    as_object(ToPtr(ProxyType)));
+    as_object(nb::ToPtr(ProxyType)));
 }
 
 void TSessionDialog::SshProxyMethodComboAddNewItem(int ProxyTypeId, TProxyMethod ProxyType)
 {
   SshProxyMethodCombo->GetItems()->AddObject(GetMsg(ProxyTypeId),
-    as_object(ToPtr(ProxyType)));
+    as_object(nb::ToPtr(ProxyType)));
 }
 
 TSessionDialog::~TSessionDialog()
@@ -3195,7 +3195,7 @@ bool TSessionDialog::Execute(TSessionData *SessionData, TSessionActionEnum &Acti
 
   bool AllowScpFallback;
   TransferProtocolCombo->SetItemIndex(
-    ToIntPtr(FSProtocolToIndex(SessionData->GetFSProtocol(), AllowScpFallback)));
+    nb::ToIntPtr(FSProtocolToIndex(SessionData->GetFSProtocol(), AllowScpFallback)));
   AllowScpFallbackCheck->SetChecked(AllowScpFallback);
 
   // Directories tab
@@ -3271,7 +3271,7 @@ bool TSessionDialog::Execute(TSessionData *SessionData, TSessionActionEnum &Acti
   // SFTP tab
 
 #define TRISTATE(COMBO, PROP, MSG) \
-    COMBO->SetItemIndex(ToIntPtr(2 - SessionData->Get ## PROP))
+    COMBO->SetItemIndex(nb::ToIntPtr(2 - SessionData->Get ## PROP))
   SFTP_BUGS();
 
   if (SessionData->GetSftpServer().IsEmpty())
@@ -3282,17 +3282,17 @@ bool TSessionDialog::Execute(TSessionData *SessionData, TSessionActionEnum &Acti
   {
     SftpServerEdit->SetText(SessionData->GetSftpServer());
   }
-  SFTPMaxVersionCombo->SetItemIndex(ToIntPtr(SessionData->GetSFTPMaxVersion()));
+  SFTPMaxVersionCombo->SetItemIndex(nb::ToIntPtr(SessionData->GetSFTPMaxVersion()));
   SFTPMinPacketSizeEdit->SetAsInteger(SessionData->GetSFTPMinPacketSize());
   SFTPMaxPacketSizeEdit->SetAsInteger(SessionData->GetSFTPMaxPacketSize());
 
   // FTP tab
-  FtpUseMlsdCombo->SetItemIndex(ToIntPtr(2 - SessionData->GetFtpUseMlsd()));
+  FtpUseMlsdCombo->SetItemIndex(nb::ToIntPtr(2 - SessionData->GetFtpUseMlsd()));
   FtpAllowEmptyPasswordCheck->SetChecked(SessionData->GetFtpAllowEmptyPassword());
   std::unique_ptr<TStrings> PostLoginCommands(std::make_unique<TStringList>());
   PostLoginCommands->SetText(SessionData->GetPostLoginCommands());
   for (intptr_t Index = 0; (Index < PostLoginCommands->GetCount()) &&
-    (Index < ToIntPtr(_countof(PostLoginCommandsEdits))); ++Index)
+    (Index < nb::ToIntPtr(_countof(PostLoginCommandsEdits))); ++Index)
   {
     PostLoginCommandsEdits[Index]->SetText(PostLoginCommands->GetString(Index));
   }
@@ -3432,9 +3432,9 @@ bool TSessionDialog::Execute(TSessionData *SessionData, TSessionActionEnum &Acti
     DebugAssert(NB_CIPHER_NAME_WARN + CIPHER_COUNT - 1 == NB_CIPHER_NAME_CHACHA20);
     for (intptr_t Index2 = 0; Index2 < CIPHER_COUNT; ++Index2)
     {
-      TObject *Obj = as_object(ToPtr(SessionData->GetCipher(Index2)));
+      TObject *Obj = as_object(nb::ToPtr(SessionData->GetCipher(Index2)));
       CipherListBox->GetItems()->AddObject(
-        GetMsg(NB_CIPHER_NAME_WARN + ToIntPtr(SessionData->GetCipher(Index2))),
+        GetMsg(NB_CIPHER_NAME_WARN + nb::ToIntPtr(SessionData->GetCipher(Index2))),
         Obj);
     }
   }
@@ -3455,8 +3455,8 @@ bool TSessionDialog::Execute(TSessionData *SessionData, TSessionActionEnum &Acti
     for (intptr_t Index3 = 0; Index3 < KEX_COUNT; ++Index3)
     {
       KexListBox->GetItems()->AddObject(
-        GetMsg(NB_KEX_NAME_WARN + ToIntPtr(SessionData->GetKex(Index3))),
-        as_object(ToPtr(SessionData->GetKex(Index3))));
+        GetMsg(NB_KEX_NAME_WARN + nb::ToIntPtr(SessionData->GetKex(Index3))),
+        as_object(nb::ToPtr(SessionData->GetKex(Index3))));
     }
   }
 
@@ -3578,8 +3578,8 @@ bool TSessionDialog::Execute(TSessionData *SessionData, TSessionActionEnum &Acti
     SessionData->SetListingCommand(ListingCommandEdit->GetText());
     SessionData->SetSCPLsFullTime(SCPLsFullTimeAutoCheck->GetChecked() ? asAuto : asOff);
     SessionData->SetTimeDifference(TDateTime(
-        (ToDouble(TimeDifferenceEdit->GetAsInteger()) / 24) +
-        (ToDouble(TimeDifferenceMinutesEdit->GetAsInteger()) / 24 / 60)));
+        (nb::ToDouble(TimeDifferenceEdit->GetAsInteger()) / 24) +
+        (nb::ToDouble(TimeDifferenceMinutesEdit->GetAsInteger()) / 24 / 60)));
 
     // SFTP tab
 
@@ -3605,7 +3605,7 @@ bool TSessionDialog::Execute(TSessionData *SessionData, TSessionActionEnum &Acti
     TODO("TlsCertificateFileEdit->GetText()");
     SessionData->SetTlsCertificateFile(PrivateKeyEdit->GetText());
     std::unique_ptr<TStrings> PostLoginCommands2(std::make_unique<TStringList>());
-    for (intptr_t Index4 = 0; Index4 < ToIntPtr(_countof(PostLoginCommandsEdits)); ++Index4)
+    for (intptr_t Index4 = 0; Index4 < nb::ToIntPtr(_countof(PostLoginCommandsEdits)); ++Index4)
     {
       UnicodeString Text = PostLoginCommandsEdits[Index4]->GetText();
       if (!Text.IsEmpty())
@@ -3772,7 +3772,7 @@ bool TSessionDialog::Execute(TSessionData *SessionData, TSessionActionEnum &Acti
     for (intptr_t Index5 = 0; Index5 < CIPHER_COUNT; ++Index5)
     {
       TObject *Obj = as_object(CipherListBox->GetItems()->GetObj(Index5));
-      SessionData->SetCipher(Index5, static_cast<TCipher>(ToIntPtr(Obj)));
+      SessionData->SetCipher(Index5, static_cast<TCipher>(nb::ToIntPtr(Obj)));
     }
 
     // KEX tab
@@ -3782,7 +3782,7 @@ bool TSessionDialog::Execute(TSessionData *SessionData, TSessionActionEnum &Acti
 
     for (intptr_t Index6 = 0; Index6 < KEX_COUNT; ++Index6)
     {
-      SessionData->SetKex(Index6, static_cast<TKex>(ToIntPtr(KexListBox->GetItems()->GetObj(Index))));
+      SessionData->SetKex(Index6, static_cast<TKex>(nb::ToIntPtr(KexListBox->GetItems()->GetObj(Index))));
     }
 
     // Authentication tab
@@ -3902,7 +3902,7 @@ intptr_t TSessionDialog::ProxyMethodToIndex(TProxyMethod ProxyMethod, TFarList *
   for (intptr_t Index = 0; Index < Items->GetCount(); ++Index)
   {
     TObject *Obj = Items->GetObj(Index);
-    TProxyMethod Method = ToProxyMethod(ToIntPtr(Obj));
+    TProxyMethod Method = ToProxyMethod(nb::ToIntPtr(Obj));
     if (Method == ProxyMethod)
       return Index;
   }
@@ -3915,7 +3915,7 @@ TProxyMethod TSessionDialog::IndexToProxyMethod(intptr_t Index, TFarList *Items)
   if (Index >= 0 && Index < Items->GetCount())
   {
     TObject *Obj = Items->GetObj(Index);
-    Result = ToProxyMethod(ToIntPtr(Obj));
+    Result = ToProxyMethod(nb::ToIntPtr(Obj));
   }
   return Result;
 }
@@ -4003,7 +4003,7 @@ TFtps TSessionDialog::GetFtps() const
 TFSProtocol TSessionDialog::IndexToFSProtocol(intptr_t Index, bool AllowScpFallback) const
 {
   TFSProtocol Result = fsSFTP;
-  bool InBounds = (Index >= 0) && (Index < ToIntPtr(_countof(FSOrder)));
+  bool InBounds = (Index >= 0) && (Index < nb::ToIntPtr(_countof(FSOrder)));
   DebugAssert(InBounds || (Index == -1));
   if (InBounds)
   {
@@ -4284,7 +4284,7 @@ void TSessionDialog::FillCodePageEdit()
 {
   // CodePageEditAdd(CP_UTF8);
   CodePageEdit->GetItems()->AddObject(L"65001 (UTF-8)",
-    as_object(ToPtr(ToIntPtr(65001))));
+    as_object(nb::ToPtr(nb::ToIntPtr(65001))));
   CodePageEditAdd(CP_ACP);
   CodePageEditAdd(CP_OEMCP);
   CodePageEditAdd(20866); // KOI8-r
@@ -4293,11 +4293,11 @@ void TSessionDialog::FillCodePageEdit()
 void TSessionDialog::CodePageEditAdd(uint32_t Cp)
 {
   CPINFOEX cpInfoEx;
-  ::ClearStruct(cpInfoEx);
+  nb::ClearStruct(cpInfoEx);
   if (::GetCodePageInfo(Cp, cpInfoEx))
   {
     CodePageEdit->GetItems()->AddObject(cpInfoEx.CodePageName,
-      as_object(ToPtr(ToIntPtr(cpInfoEx.CodePage))));
+      as_object(nb::ToPtr(nb::ToIntPtr(cpInfoEx.CodePage))));
   }
 }
 
@@ -4483,7 +4483,7 @@ TRightsContainer::TRightsContainer(TFarDialog *ADialog,
   {
     FDirectoriesXCheck = nullptr;
   }
-  ClearArray(FFixedStates);
+  nb::ClearArray(FFixedStates);
 }
 
 void TRightsContainer::RightsButtonClick(TFarButton *Sender,
@@ -4546,8 +4546,8 @@ void TRightsContainer::Change()
 
 TFarCheckBox *TRightsContainer::GetChecks(TRights::TRight Right)
 {
-  DebugAssert((Right >= 0) && (ToSizeT(Right) < _countof(FCheckBoxes)));
-  return FCheckBoxes[ToSizeT(Right)];
+  DebugAssert((Right >= 0) && (nb::ToSizeT(Right) < _countof(FCheckBoxes)));
+  return FCheckBoxes[nb::ToSizeT(Right)];
 }
 
 TRights::TState TRightsContainer::GetStates(TRights::TRight Right)
@@ -4756,7 +4756,7 @@ TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin *AFarPlugin,
     }
     else
     {
-      Text->SetCaption(base::MinimizeName(AFileList->GetString(0), ToIntPtr(GetClientSize().x), true));
+      Text->SetCaption(base::MinimizeName(AFileList->GetString(0), nb::ToIntPtr(GetClientSize().x), true));
     }
     TRemoteFile *File = AFileList->GetAs<TRemoteFile>(0);
     if (!File->GetLinkTo().IsEmpty())
@@ -5755,7 +5755,7 @@ bool TWinSCPPlugin::CopyParamDialog(const UnicodeString Caption,
   TCopyParamsContainer *CopyParamsContainer = new TCopyParamsContainer(
     Dialog, 0, CopyParamAttrs);
 
-  Dialog->SetSize(TPoint(78, 2 + ToInt(CopyParamsContainer->GetHeight()) + 3));
+  Dialog->SetSize(TPoint(78, 2 + nb::ToInt(CopyParamsContainer->GetHeight()) + 3));
 
   Dialog->SetNextItemPosition(ipNewLine);
 
@@ -6041,8 +6041,7 @@ TFileSystemInfoDialog::TFileSystemInfoDialog(TCustomFarPlugin *AFarPlugin,
   SetNextItemPosition(ipRight);
 
   SpaceAvailablePathEdit = new TFarEdit(this);
-  SpaceAvailablePathEdit->SetRight(
-    - (ToInt(GetMsg(NB_SPACE_AVAILABLE_CHECK_SPACE).Length() + 11)));
+  SpaceAvailablePathEdit->SetRight(-(nb::ToInt(GetMsg(NB_SPACE_AVAILABLE_CHECK_SPACE).Length() + 11)));
 
   TFarButton *Button = new TFarButton(this);
   Button->SetCaption(GetMsg(NB_SPACE_AVAILABLE_CHECK_SPACE));
@@ -6564,7 +6563,7 @@ bool TWinSCPFileSystem::OpenDirectoryDialog(
       }
       else if (BreakCode == 2)
       {
-        FarControl(FCTL_INSERTCMDLINE, 0, ToIntPtr(BookmarkPaths->GetStringRef(ItemFocused).c_str()));
+        FarControl(FCTL_INSERTCMDLINE, 0, nb::ToIntPtr(BookmarkPaths->GetStringRef(ItemFocused).c_str()));
       }
       else if (BreakCode == 3 || BreakCode == 4)
       {
@@ -7290,7 +7289,7 @@ void TSynchronizeChecklistDialog::AddColumn(UnicodeString &List,
 {
   wchar_t Separator = L'|'; // '\xB3';
   intptr_t Len = Value.Length();
-  intptr_t Width = ToIntPtr(FWidths[Column]);
+  intptr_t Width = nb::ToIntPtr(FWidths[Column]);
   bool Right = (Column == 2) || (Column == 3) || (Column == 6) || (Column == 7);
   bool LastCol = (Column == FColumns - 1);
   if (Len <= Width)
@@ -7385,8 +7384,8 @@ void TSynchronizeChecklistDialog::AdaptSize()
   {
     if (Ratio[Index] >= 0)
     {
-      double W = ToDouble(Ratio[Index]) * (Width - FixedRatio) / TotalRatio;
-      FWidths[Index] = ToInt(floor(W));
+      double W = nb::ToDouble(Ratio[Index]) * (Width - FixedRatio) / TotalRatio;
+      FWidths[Index] = nb::ToInt(floor(W));
       Temp[Index] = W - FWidths[Index];
     }
     else
@@ -7423,7 +7422,7 @@ void TSynchronizeChecklistDialog::AdaptSize()
 UnicodeString TSynchronizeChecklistDialog::FormatSize(
   int64_t Size, int Column)
 {
-  intptr_t Width = ToIntPtr(FWidths[Column]);
+  intptr_t Width = nb::ToIntPtr(FWidths[Column]);
   UnicodeString Result = FORMAT("%lu", Size);
 
   if (Result.Length() > Width)
@@ -7497,9 +7496,9 @@ UnicodeString TSynchronizeChecklistDialog::ItemLine(const TChecklistItem *Checkl
     }
   }
 
-  intptr_t Action = ToIntPtr(ChecklistItem->Action - 1);
-  DebugAssert((Action != NPOS) && (Action < ToIntPtr(_countof(FActions))));
-  if ((Action != NPOS) && (Action < ToIntPtr(_countof(FActions))))
+  intptr_t Action = nb::ToIntPtr(ChecklistItem->Action - 1);
+  DebugAssert((Action != NPOS) && (Action < nb::ToIntPtr(_countof(FActions))));
+  if ((Action != NPOS) && (Action < nb::ToIntPtr(_countof(FActions))))
     AddColumn(Line, FActions[Action], 4);
 
   if (ChecklistItem->Action == saDeleteLocal)

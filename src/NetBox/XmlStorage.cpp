@@ -43,7 +43,7 @@ bool TXmlStorage::ReadXml()
   {
     return false;
   }
-  size_t buffSize = ToSizeT(xmlFile.GetFileSize() + 1);
+  size_t buffSize = nb::ToSizeT(xmlFile.GetFileSize() + 1);
   if (buffSize > 1000000)
   {
     return false;

@@ -555,7 +555,7 @@ public:
     Params(nullptr),
     ButtonCount(0)
   {
-    ClearArray(Buttons);
+    nb::ClearArray(Buttons);
   }
 
   const TMessageParams *Params;
@@ -568,7 +568,7 @@ void TWinSCPPlugin::MessageClick(void *Token, uintptr_t Result, bool &Close)
   DebugAssert(Token);
   TFarMessageData &Data = *get_as<TFarMessageData>(Token);
 
-  DebugAssert(Result != ToUIntPtr(-1) && Result < Data.ButtonCount);
+  DebugAssert(Result != nb::ToUIntPtr(-1) && Result < Data.ButtonCount);
 
   if ((Data.Params != nullptr) && (Data.Params->Aliases != nullptr))
   {
@@ -752,7 +752,7 @@ uintptr_t TWinSCPPlugin::MoreMessageDialog(const UnicodeString Str,
     FarParams.MoreMessages = nullptr;
   }
 
-  Result = Message(ToDWord(Flags), GetMsg(TitleId), DialogStr, ButtonLabels.get(), &FarParams);
+  Result = Message(nb::ToDWord(Flags), GetMsg(TitleId), DialogStr, ButtonLabels.get(), &FarParams);
   if (FarParams.TimerAnswer > 0)
   {
     Result = FarParams.TimerAnswer;
@@ -763,7 +763,7 @@ uintptr_t TWinSCPPlugin::MoreMessageDialog(const UnicodeString Str,
   }
   else
   {
-    DebugAssert(Result != ToUIntPtr(-1) && Result < Data.ButtonCount);
+    DebugAssert(Result != nb::ToUIntPtr(-1) && Result < Data.ButtonCount);
     Result = Data.Buttons[Result];
   }
 

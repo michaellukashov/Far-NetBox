@@ -56,7 +56,7 @@ void TSessionPanelItem::GetData(
   UnicodeString & /*Owner*/, void *&UserData, int & /*CustomColumnNumber*/)
 {
   AFileName = base::UnixExtractFileName(FSessionData->GetName());
-  UserData = ToPtr(const_cast<TSessionData *>(FSessionData));
+  UserData = nb::ToPtr(const_cast<TSessionData *>(FSessionData));
 }
 
 TSessionFolderPanelItem::TSessionFolderPanelItem(const UnicodeString Folder) :
@@ -278,8 +278,8 @@ void TKeepAliveThread::Execute()
 {
   while (!IsFinished())
   {
-    if ((::WaitForSingleObject(FEvent, ToDWord(
-            ToDouble(FInterval) * MSecsPerDay)) != WAIT_FAILED) &&
+    if ((::WaitForSingleObject(FEvent, nb::ToDWord(
+            nb::ToDouble(FInterval) * MSecsPerDay)) != WAIT_FAILED) &&
       !IsFinished())
     {
       FFileSystem->KeepaliveThreadCallback();
@@ -891,7 +891,7 @@ bool TWinSCPFileSystem::ExecuteCommand(const UnicodeString Command)
           RedrawPanel(true);
         }
       };
-      FarControl(FCTL_SETCMDLINE, 0, ToIntPtr(L""));
+      FarControl(FCTL_SETCMDLINE, 0, nb::ToIntPtr(L""));
       TWinSCPPlugin *WinSCPPlugin = GetWinSCPPlugin();
       WinSCPPlugin->ShowConsoleTitle(Command);
       {
@@ -1302,7 +1302,7 @@ void TWinSCPFileSystem::ApplyCommand()
 
             TFileOperationProgressType Progress(nb::bind(&TWinSCPFileSystem::OperationProgress, this), nb::bind(&TWinSCPFileSystem::OperationFinished, this));
 
-            Progress.Start(foCustomCommand, osRemote, ToIntPtr(FileListCommand ? 1 : FileList->GetCount()));
+            Progress.Start(foCustomCommand, osRemote, nb::ToIntPtr(FileListCommand ? 1 : FileList->GetCount()));
             {
               SCOPE_EXIT
               {
@@ -1902,7 +1902,7 @@ void TWinSCPFileSystem::InsertTokenOnCommandLine(const UnicodeString Token, bool
       Token2 += L" ";
     }
 
-    FarControl(FCTL_INSERTCMDLINE, 0, ToIntPtr(Token2.c_str()));
+    FarControl(FCTL_INSERTCMDLINE, 0, nb::ToIntPtr(Token2.c_str()));
   }
 }
 
@@ -2148,7 +2148,7 @@ bool TWinSCPFileSystem::SynchronizeBrowsing(const UnicodeString NewPath)
   UnicodeString LocalPath = ::IncludeTrailingBackslash(NewPath);
   if (!FarControl(FCTL_SETPANELDIR,
       0,
-      ToIntPtr(LocalPath.c_str()),
+      nb::ToIntPtr(LocalPath.c_str()),
       reinterpret_cast<HANDLE>(PANEL_PASSIVE)))
   {
     Result = false;
@@ -2165,7 +2165,7 @@ bool TWinSCPFileSystem::SynchronizeBrowsing(const UnicodeString NewPath)
       // previous directory.
       FarControl(FCTL_SETPANELDIR,
         0,
-        ToIntPtr(OldPath.c_str()),
+        nb::ToIntPtr(OldPath.c_str()),
         reinterpret_cast<HANDLE>(PANEL_PASSIVE));
       Result = false;
     }
@@ -3446,7 +3446,7 @@ void TWinSCPFileSystem::ShowOperationProgress(
 
     UnicodeString ProgressBarCurrentFile;
     UnicodeString Message2;
-    UnicodeString Title = GetMsg(Captions[ToInt(ProgressData.GetOperation() - 1)]);
+    UnicodeString Title = GetMsg(Captions[nb::ToInt(ProgressData.GetOperation() - 1)]);
     UnicodeString FileName = ProgressData.GetFileName();
     // for upload from temporary directory,
     // do not show source directory
@@ -3661,7 +3661,7 @@ void TWinSCPFileSystem::QueueItemUpdate(TTerminalQueue *Queue,
 
     if (QueueItem != nullptr)
     {
-      QueueItem->SetUserData(ToPtr(1LL));
+      QueueItem->SetUserData(nb::ToPtr(1LL));
       FQueueItemInvalidated = true;
     }
   }
@@ -3815,7 +3815,7 @@ void TWinSCPFileSystem::ProcessEditorEvent(intptr_t Event, void * /*Param*/)
           UnicodeString FullFileName = base::UnixIncludeTrailingBackslash(it->second.Directory) +
             it->second.FileTitle;
           GetWinSCPPlugin()->FarEditorControl(ECTL_SETTITLE,
-            ToPtr(ToWChar(FullFileName)));
+            nb::ToPtr(ToWChar(FullFileName)));
         }
       }
     }
@@ -3855,7 +3855,7 @@ void TWinSCPFileSystem::ProcessEditorEvent(intptr_t Event, void * /*Param*/)
             if (FLastMultipleEditReadOnly)
             {
               EditorSetParameter Parameter;
-              ClearStruct(Parameter);
+              nb::ClearStruct(Parameter);
               Parameter.Type = ESPT_LOCKMODE;
               Parameter.Param.iParam = TRUE;
               GetWinSCPPlugin()->FarEditorControl(ECTL_SETPARAM, &Parameter);
@@ -3934,7 +3934,7 @@ void TWinSCPFileSystem::ProcessEditorEvent(intptr_t Event, void * /*Param*/)
             it->second.FileTitle;
           // note that we need to reset the title periodically (see EE_REDRAW)
           GetWinSCPPlugin()->FarEditorControl(ECTL_SETTITLE,
-            ToPtr(ToWChar(FullFileName)));
+            nb::ToPtr(ToWChar(FullFileName)));
         }
 
         if (GetFarConfiguration()->GetEditorUploadOnSave())
@@ -4055,11 +4055,11 @@ void TWinSCPFileSystem::MultipleEdit(const UnicodeString Directory,
     while (Pos < WindowCount)
     {
       WindowInfo Window;
-      ClearStruct(Window);
-      Window.Pos = ToInt(Pos);
+      nb::ClearStruct(Window);
+      Window.Pos = nb::ToInt(Pos);
       UnicodeString EditedFileName(1024, 0);
       Window.Name = ToWChar(EditedFileName);
-      Window.NameSize = ToInt(EditedFileName.GetLength());
+      Window.NameSize = nb::ToInt(EditedFileName.GetLength());
       if (FarPlugin->FarAdvControl(ACTL_GETWINDOWINFO, &Window) != 0)
       {
         if ((Window.Type == WTYPE_EDITOR) &&
@@ -4067,7 +4067,7 @@ void TWinSCPFileSystem::MultipleEdit(const UnicodeString Directory,
         {
           // Switch to current editor.
           if (FarPlugin->FarAdvControl(ACTL_SETCURRENTWINDOW,
-              ToPtr(Pos)) != 0)
+              nb::ToPtr(Pos)) != 0)
           {
             FarPlugin->FarAdvControl(ACTL_COMMIT, nullptr);
           }
@@ -4136,7 +4136,7 @@ void TWinSCPFileSystem::EditHistory()
   intptr_t Result = GetWinSCPPlugin()->Menu(FMENU_REVERSEAUTOHIGHLIGHT | FMENU_SHOWAMPERSAND | FMENU_WRAPMODE,
       GetMsg(NB_MENU_EDIT_HISTORY), L"", MenuItems.get(), BreakKeys, BreakCode);
 
-  if ((Result >= 0) && (Result < ToIntPtr(FEditHistories.size())))
+  if ((Result >= 0) && (Result < nb::ToIntPtr(FEditHistories.size())))
   {
     TRemoteFile *File = nullptr;
     const TEditHistory &EditHistory = FEditHistories[Result];
@@ -4170,7 +4170,7 @@ UnicodeString TWinSCPFileSystem::GetFileNameHash(const UnicodeString AFileName) 
   RawByteString Result;
   char *Buf = Result.SetLength(16);
   md5checksum(
-    reinterpret_cast<const char *>(AFileName.c_str()), ToInt(AFileName.Length() * sizeof(wchar_t)),
+    reinterpret_cast<const char *>(AFileName.c_str()), nb::ToInt(AFileName.Length() * sizeof(wchar_t)),
     reinterpret_cast<uint8_t *>(Buf));
   return BytesToHex(Result);
 }
