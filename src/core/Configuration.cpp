@@ -663,7 +663,7 @@ UnicodeString TConfiguration::BannerHash(const UnicodeString ABanner) const
   RawByteString Result;
   char *Buf = Result.SetLength(16);
   md5checksum(
-    reinterpret_cast<const char *>(ABanner.c_str()), ToInt(ABanner.Length() * sizeof(wchar_t)),
+    reinterpret_cast<const char *>(ABanner.c_str()), nb::ToInt(ABanner.Length() * sizeof(wchar_t)),
     reinterpret_cast<uint8_t *>(Buf));
   return BytesToHex(Result);
 }

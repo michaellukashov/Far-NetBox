@@ -181,7 +181,7 @@ Conf *TSecureShell::StoreToConfig(TSessionData *Data, bool Simple)
   // user-configurable settings
   conf_set_str(conf, CONF_host, AnsiString(Data->GetHostNameExpanded()).c_str());
   conf_set_str(conf, CONF_username, UTF8String(Data->GetUserNameExpanded()).c_str());
-  conf_set_int(conf, CONF_port, ToInt(Data->GetPortNumber()));
+  conf_set_int(conf, CONF_port, nb::ToInt(Data->GetPortNumber()));
   conf_set_int(conf, CONF_protocol, PROT_SSH);
   conf_set_int(conf, CONF_change_password, Data->GetChangePassword());
   // always set 0, as we will handle keepalives ourselves to avoid
@@ -192,7 +192,7 @@ Conf *TSecureShell::StoreToConfig(TSessionData *Data, bool Simple)
   conf_set_int(conf, CONF_agentfwd, Data->GetAgentFwd());
   conf_set_int(conf, CONF_addressfamily, Data->GetAddressFamily());
   conf_set_str(conf, CONF_ssh_rekey_data, AnsiString(Data->GetRekeyData()).c_str());
-  conf_set_int(conf, CONF_ssh_rekey_time, ToInt(Data->GetRekeyTime()));
+  conf_set_int(conf, CONF_ssh_rekey_time, nb::ToInt(Data->GetRekeyTime()));
 
   DebugAssert(CIPHER_MAX == CIPHER_COUNT);
   for (int c = 0; c < CIPHER_COUNT; c++)
@@ -320,7 +320,7 @@ Conf *TSecureShell::StoreToConfig(TSessionData *Data, bool Simple)
 
   conf_set_int(conf, CONF_proxy_type, Data->GetActualProxyMethod());
   conf_set_str(conf, CONF_proxy_host, AnsiString(Data->GetProxyHost()).c_str());
-  conf_set_int(conf, CONF_proxy_port, ToInt(Data->GetProxyPort()));
+  conf_set_int(conf, CONF_proxy_port, nb::ToInt(Data->GetProxyPort()));
   conf_set_str(conf, CONF_proxy_username, UTF8String(Data->GetProxyUsername()).c_str());
   conf_set_str(conf, CONF_proxy_password, UTF8String(Data->GetProxyPassword()).c_str());
   if (Data->GetProxyMethod() == pmCmd)
@@ -426,8 +426,8 @@ Conf *TSecureShell::StoreToConfig(TSessionData *Data, bool Simple)
     }
   }
 
-  conf_set_int(conf, CONF_connect_timeout, ToInt(Data->GetTimeout() * MSecsPerSec));
-  conf_set_int(conf, CONF_sndbuf, ToInt(Data->GetSendBuf()));
+  conf_set_int(conf, CONF_connect_timeout, nb::ToInt(Data->GetTimeout() * MSecsPerSec));
+  conf_set_int(conf, CONF_sndbuf, nb::ToInt(Data->GetSendBuf()));
 
   // permanent settings
   conf_set_int(conf, CONF_nopty, TRUE);
@@ -470,7 +470,7 @@ void TSecureShell::Open()
     {
       InitError = FBackend->init(this, &FBackendHandle, conf,
           AnsiString(FSessionData->GetHostNameExpanded()).c_str(),
-          ToInt(FSessionData->GetPortNumber()), &RealHost,
+          nb::ToInt(FSessionData->GetPortNumber()), &RealHost,
           FSessionData->GetTcpNoDelay() ? 1 : 0,
           conf_get_int(conf, CONF_tcp_keepalives));
     },
@@ -580,7 +580,7 @@ bool TSecureShell::TryFtp()
         {
           SOCKADDR_IN Address;
 
-          ClearStruct(Address);
+          nb::ClearStruct(Address);
           Address.sin_family = AF_INET;
           intptr_t Port = FtpPortNumber;
           Address.sin_port = htons(static_cast<short>(Port));
@@ -677,7 +677,7 @@ UnicodeString TSecureShell::ConvertFromPutty(const char *Str, intptr_t Length) c
 //---------------------------------------------------------------------------
 void TSecureShell::PuttyLogEvent(const char *AStr)
 {
-  UnicodeString Str = ConvertFromPutty(AStr, ToIntPtr(NBChTraitsCRT<char>::SafeStringLen(AStr)));
+  UnicodeString Str = ConvertFromPutty(AStr, nb::ToIntPtr(NBChTraitsCRT<char>::SafeStringLen(AStr)));
 #define SERVER_VERSION_MSG L"Server version: "
   // Gross hack
   if (Str.Pos(SERVER_VERSION_MSG) == 1)
@@ -916,7 +916,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
   {
     if (FSessionData->GetAuthKIPassword() && !FSessionData->GetPassword().IsEmpty() &&
       !FStoredPasswordTriedForKI && (Prompts->GetCount() == 1) &&
-      FLAGCLEAR(ToIntPtr(Prompts->GetObj(0)), pupEcho))
+      FLAGCLEAR(nb::ToIntPtr(Prompts->GetObj(0)), pupEcho))
     {
       LogEvent("Using stored password.");
       FUI->Information(LoadStr(AUTH_PASSWORD), false);
@@ -978,7 +978,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
     if (Result)
     {
       if ((Prompts->GetCount() >= 1) &&
-        (FLAGSET(ToIntPtr(Prompts->GetObj(0)), pupEcho) || GetConfiguration()->GetLogSensitive()))
+        (FLAGSET(nb::ToIntPtr(Prompts->GetObj(0)), pupEcho) || GetConfiguration()->GetLogSensitive()))
       {
         LogEvent(FORMAT("Response: \"%s\"", Results->GetString(0)));
       }
@@ -1053,7 +1053,7 @@ void TSecureShell::FromBackend(bool IsStdErr, const uint8_t *Data, intptr_t Leng
 
   if (GetConfiguration()->GetActualLogProtocol() >= 1)
   {
-    LogEvent(FORMAT("Received %u bytes (%d)", Length, ToInt(IsStdErr)));
+    LogEvent(FORMAT("Received %u bytes (%d)", Length, nb::ToInt(IsStdErr)));
   }
 
   // Following is taken from scp.c from_backend() and modified
@@ -1183,7 +1183,7 @@ intptr_t TSecureShell::Receive(uint8_t *Buf, intptr_t Length)
       {
         if (GetConfiguration()->GetActualLogProtocol() >= 1)
         {
-          LogEvent(FORMAT("Waiting for another %u bytes", ToInt(OutLen)));
+          LogEvent(FORMAT("Waiting for another %u bytes", nb::ToInt(OutLen)));
         }
         WaitForData();
       }
@@ -1204,7 +1204,7 @@ intptr_t TSecureShell::Receive(uint8_t *Buf, intptr_t Length)
   if (GetConfiguration()->GetActualLogProtocol() >= 1)
   {
     LogEvent(FORMAT("Read %d bytes (%d pending)",
-        ToInt(Length), ToInt(PendLen)));
+        nb::ToInt(Length), nb::ToInt(PendLen)));
   }
   return Length;
 }
@@ -1385,10 +1385,10 @@ void TSecureShell::DispatchSendBuffer(intptr_t BufSize)
 void TSecureShell::Send(const uint8_t *Buf, intptr_t Length)
 {
   CheckConnection();
-  int BufSize = FBackend->send(FBackendHandle, const_cast<char *>(reinterpret_cast<const char *>(Buf)), ToInt(Length));
+  int BufSize = FBackend->send(FBackendHandle, const_cast<char *>(reinterpret_cast<const char *>(Buf)), nb::ToInt(Length));
   if (GetConfiguration()->GetActualLogProtocol() >= 1)
   {
-    LogEvent(FORMAT("Sent %d bytes", ToInt(Length)));
+    LogEvent(FORMAT("Sent %d bytes", nb::ToInt(Length)));
     LogEvent(FORMAT("There are %u bytes remaining in the send buffer", BufSize));
   }
   FLastDataSent = Now();
@@ -1441,7 +1441,7 @@ int TSecureShell::TranslatePuttyMessage(
       if (wcscmp(Message.c_str(), Original) == 0)
       {
         Message = LoadStr(Translation[Index].Translation);
-        Result = ToInt(Index);
+        Result = nb::ToInt(Index);
         break;
       }
     }
@@ -1450,13 +1450,13 @@ int TSecureShell::TranslatePuttyMessage(
       size_t OriginalLen = nb::StrLength(Original);
       size_t PrefixLen = Div - Original;
       size_t SuffixLen = OriginalLen - PrefixLen - 1;
-      if ((ToSizeT(Message.Length()) >= OriginalLen - 1) &&
+      if ((nb::ToSizeT(Message.Length()) >= OriginalLen - 1) &&
         (wcsncmp(Message.c_str(), Original, PrefixLen) == 0) &&
         (wcsncmp(Message.c_str() + Message.Length() - SuffixLen, Div + 1, SuffixLen) == 0))
       {
         Message = FMTLOAD(Translation[Index].Translation,
             Message.SubString(PrefixLen + 1, Message.Length() - PrefixLen - SuffixLen).TrimRight());
-        Result = ToInt(Index);
+        Result = nb::ToInt(Index);
         break;
       }
     }
@@ -1625,14 +1625,14 @@ void TSecureShell::SocketEventSelect(SOCKET Socket, HANDLE Event, bool Startup)
 
   if (GetConfiguration()->GetActualLogProtocol() >= 2)
   {
-    LogEvent(FORMAT("Selecting events %d for socket %d", ToInt(Events), ToInt(Socket)));
+    LogEvent(FORMAT("Selecting events %d for socket %d", nb::ToInt(Events), nb::ToInt(Socket)));
   }
 
   if (::WSAEventSelect(Socket, static_cast<WSAEVENT>(Event), Events) == SOCKET_ERROR)
   {
     if (GetConfiguration()->GetActualLogProtocol() >= 2)
     {
-      LogEvent(FORMAT("Error selecting events %d for socket %d", ToInt(Events), ToInt(Socket)));
+      LogEvent(FORMAT("Error selecting events %d for socket %d", nb::ToInt(Events), nb::ToInt(Socket)));
     }
 
     if (Startup)
@@ -1685,7 +1685,7 @@ void TSecureShell::UpdatePortFwdSocket(SOCKET Value, bool Startup)
 {
   if (GetConfiguration()->GetActualLogProtocol() >= 2)
   {
-    LogEvent(FORMAT("Updating forwarding socket %d (%d)", ToInt(Value), ToInt(Startup)));
+    LogEvent(FORMAT("Updating forwarding socket %d (%d)", nb::ToInt(Value), nb::ToInt(Startup)));
   }
 
   SocketEventSelect(Value, FSocketEvent, Startup);
@@ -1857,7 +1857,7 @@ void TSecureShell::WaitForData()
       TAutoNestingCounter NestingCounter(FWaitingForData); nb::used(NestingCounter);
 
       WSANETWORKEVENTS Events;
-      ClearStruct(Events);
+      nb::ClearStruct(Events);
       TPoolForDataEvent Event(this, Events);
 
       LogEvent("Waiting for data timed out, asking user what to do.");
@@ -1898,14 +1898,14 @@ bool TSecureShell::EnumNetworkEvents(SOCKET Socket, WSANETWORKEVENTS &Events)
 {
   if (GetConfiguration()->GetActualLogProtocol() >= 2)
   {
-    LogEvent(FORMAT("Enumerating network events for socket %d", ToInt(Socket)));
+    LogEvent(FORMAT("Enumerating network events for socket %d", nb::ToInt(Socket)));
   }
 
   // see winplink.c
   WSANETWORKEVENTS AEvents;
   if (::WSAEnumNetworkEvents(Socket, nullptr, &AEvents) == 0)
   {
-    noise_ultralight(ToUInt32(Socket));
+    noise_ultralight(nb::ToUInt32(Socket));
     noise_ultralight(AEvents.lNetworkEvents);
 
     Events.lNetworkEvents |= AEvents.lNetworkEvents;
@@ -1920,14 +1920,14 @@ bool TSecureShell::EnumNetworkEvents(SOCKET Socket, WSANETWORKEVENTS &Events)
     if (GetConfiguration()->GetActualLogProtocol() >= 2)
     {
       LogEvent(FORMAT("Enumerated %d network events making %d cumulative events for socket %d",
-          ToInt(AEvents.lNetworkEvents), ToInt(Events.lNetworkEvents), ToInt(Socket)));
+          nb::ToInt(AEvents.lNetworkEvents), nb::ToInt(Events.lNetworkEvents), nb::ToInt(Socket)));
     }
   }
   else
   {
     if (GetConfiguration()->GetActualLogProtocol() >= 2)
     {
-      LogEvent(FORMAT("Error enumerating network events for socket %d", ToInt(Socket)));
+      LogEvent(FORMAT("Error enumerating network events for socket %d", nb::ToInt(Socket)));
     }
   }
 
@@ -1975,7 +1975,7 @@ void TSecureShell::HandleNetworkEvents(SOCKET Socket, WSANETWORKEVENTS &Events)
 bool TSecureShell::ProcessNetworkEvents(SOCKET Socket)
 {
   WSANETWORKEVENTS Events;
-  ClearStruct(Events);
+  nb::ClearStruct(Events);
   bool Result = EnumNetworkEvents(Socket, Events);
   HandleNetworkEvents(Socket, Events);
   return Result;
@@ -2007,10 +2007,10 @@ bool TSecureShell::EventSelectLoop(uintptr_t MSec, bool ReadEventRequired,
     HANDLE *Handles = handle_get_events(&HandleCount);
     try__finally
     {
-      size_t n = ToSizeT(HandleCount + 1);
+      size_t n = nb::ToSizeT(HandleCount + 1);
       Handles = sresize(Handles, n, HANDLE);
       Handles[HandleCount] = FSocketEvent;
-      intptr_t Timeout = ToIntPtr(MSec);
+      intptr_t Timeout = nb::ToIntPtr(MSec);
       if (toplevel_callback_pending())
       {
         Timeout = 0;
@@ -2019,7 +2019,7 @@ bool TSecureShell::EventSelectLoop(uintptr_t MSec, bool ReadEventRequired,
       uint32_t WaitResult;
       do
       {
-        uint32_t TimeoutStep = Min(GUIUpdateInterval, ToUInt32(Timeout));
+        uint32_t TimeoutStep = nb::Min(GUIUpdateInterval, nb::ToUInt32(Timeout));
         Timeout -= TimeoutStep;
         WaitResult = ::WaitForMultipleObjects(HandleCount + 1, Handles, FALSE, TimeoutStep);
         FUI->ProcessGUI();
@@ -2079,7 +2079,7 @@ bool TSecureShell::EventSelectLoop(uintptr_t MSec, bool ReadEventRequired,
       {
         if (GetConfiguration()->GetActualLogProtocol() >= 2)
         {
-          LogEvent(FORMAT("Unknown waiting result %d", ToInt(WaitResult)));
+          LogEvent(FORMAT("Unknown waiting result %d", nb::ToInt(WaitResult)));
         }
 
         MSec = 0;
@@ -2114,14 +2114,14 @@ bool TSecureShell::EventSelectLoop(uintptr_t MSec, bool ReadEventRequired,
       if (::WSAIoctl(FSocket, SIO_IDEAL_SEND_BACKLOG_QUERY, nullptr, 0, &BufferLen, sizeof(BufferLen), &OutBuffLen, nullptr, nullptr) == 0)
       {
         DebugAssert(OutBuffLen == sizeof(BufferLen));
-        if (FSendBuf < ToIntPtr(BufferLen))
+        if (FSendBuf < nb::ToIntPtr(BufferLen))
         {
-          LogEvent(FORMAT("Increasing send buffer from %d to %d", FSendBuf, ToInt(BufferLen)));
+          LogEvent(FORMAT("Increasing send buffer from %d to %d", FSendBuf, nb::ToInt(BufferLen)));
           FSendBuf = BufferLen;
           setsockopt(FSocket, SOL_SOCKET, SO_SNDBUF, reinterpret_cast<const char *>(&BufferLen), sizeof(BufferLen));
         }
       }
-      FLastSendBufferUpdate = ToDWord(TicksAfter);
+      FLastSendBufferUpdate = nb::ToDWord(TicksAfter);
     }
   }
   while (ReadEventRequired && (MSec > 0) && !Result);
@@ -2218,7 +2218,7 @@ TCipher TSecureShell::FuncToSsh1Cipher(const void *Cipher)
   DebugAssert(_countof(CipherFuncs) == _countof(TCiphers));
   TCipher Result = cipWarn;
 
-  for (intptr_t Index = 0; Index < ToIntPtr(_countof(TCiphers)); ++Index)
+  for (intptr_t Index = 0; Index < nb::ToIntPtr(_countof(TCiphers)); ++Index)
   {
     if (static_cast<ssh_cipher *>(const_cast<void *>(Cipher)) == CipherFuncs[Index])
     {
@@ -2294,8 +2294,8 @@ UnicodeString TSecureShell::RetrieveHostKey(const UnicodeString Host, intptr_t P
   AnsiString AnsiStoredKeys;
   char *Buf = AnsiStoredKeys.SetLength(10 * 1024);
   UnicodeString Result;
-  if (retrieve_host_key(AnsiString(Host).c_str(), ToInt(Port), AnsiString(KeyType).c_str(),
-      Buf, ToInt(AnsiStoredKeys.Length())) == 0)
+  if (retrieve_host_key(AnsiString(Host).c_str(), nb::ToInt(Port), AnsiString(KeyType).c_str(),
+      Buf, nb::ToInt(AnsiStoredKeys.Length())) == 0)
   {
     PackStr(AnsiStoredKeys);
     Result = UnicodeString(AnsiStoredKeys);
@@ -2534,7 +2534,7 @@ void TSecureShell::VerifyHostKey(
         StoreKeyStr = (StoredKeys + HostKeyDelimiter + StoreKeyStr);
       // fall thru
       case qaYes:
-        store_host_key(AnsiString(Host).c_str(), ToInt(Port), AnsiString(AKeyType).c_str(), AnsiString(StoreKeyStr).c_str());
+        store_host_key(AnsiString(Host).c_str(), nb::ToInt(Port), AnsiString(AKeyType).c_str(), AnsiString(StoreKeyStr).c_str());
         Verified = true;
         break;
 

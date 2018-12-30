@@ -927,7 +927,7 @@ HINSTANCE TGUIConfiguration::LoadNewResourceModule(LCID ALocale,
 
   if (!NewInstance && !Internal)
   {
-    throw Exception(FMTLOAD(LOCALE_LOAD_ERROR, ToInt(ALocale)));
+    throw Exception(FMTLOAD(LOCALE_LOAD_ERROR, nb::ToInt(ALocale)));
   }
   else
   {

@@ -519,14 +519,14 @@ void TFTPFileSystem::Open()
     TAutoFlag OpeningFlag(FOpening); nb::used(OpeningFlag);
 
     FActive = FFileZillaIntf->Connect(
-        HostName.c_str(), ToInt(Data->GetPortNumber()), UserName.c_str(),
+        HostName.c_str(), nb::ToInt(Data->GetPortNumber()), UserName.c_str(),
         Password.c_str(), Account.c_str(), Path.c_str(),
-        ServerType, ToInt(Pasv), ToInt(TimeZoneOffset), UTF8,
-        ToInt(CodePage),
-        ToInt(Data->GetFtpForcePasvIp()),
-        ToInt(Data->GetFtpUseMlsd()),
-        ToInt(Data->GetFtpDupFF()),
-        ToInt(Data->GetFtpUndupFF()),
+        ServerType, nb::ToInt(Pasv), nb::ToInt(TimeZoneOffset), UTF8,
+        nb::ToInt(CodePage),
+        nb::ToInt(Data->GetFtpForcePasvIp()),
+        nb::ToInt(Data->GetFtpUseMlsd()),
+        nb::ToInt(Data->GetFtpDupFF()),
+        nb::ToInt(Data->GetFtpUndupFF()),
         FCertificate, FPrivateKey);
 
     DebugAssert(FActive);
@@ -1062,7 +1062,7 @@ void TFTPFileSystem::ChangeFileProperties(const UnicodeString AFileName,
         try
         {
           FTerminal->ProcessDirectory(AFileName, nb::bind(&TTerminal::ChangeFileProperties, FTerminal),
-            ToPtr(const_cast<TRemoteProperties *>(Properties)));
+            nb::ToPtr(const_cast<TRemoteProperties *>(Properties)));
         }
         catch (...)
         {
@@ -1480,7 +1480,7 @@ void TFTPFileSystem::ReadDirectoryProgress(int64_t Bytes)
   // with FTP we do not know exactly how many entries we have received,
   // instead we know number of bytes received only.
   // so we report approximation based on average size of entry.
-  intptr_t Progress = ToIntPtr(Bytes / 80);
+  intptr_t Progress = nb::ToIntPtr(Bytes / 80);
   if (Progress - FLastReadDirectoryProgress >= 10)
   {
     bool Cancel = false;
@@ -1528,7 +1528,7 @@ void TFTPFileSystem::DoFileTransferProgress(int64_t TransferSize,
     FFileZillaIntf->Cancel();
   }
 
-  if (ToIntPtr(FFileTransferCPSLimit) != OperationProgress->GetCPSLimit())
+  if (nb::ToIntPtr(FFileTransferCPSLimit) != OperationProgress->GetCPSLimit())
   {
     SetCPSLimit(OperationProgress);
   }
@@ -1560,7 +1560,7 @@ void TFTPFileSystem::FileTransfer(const UnicodeString AFileName,
   [&]()
   {
     FFileZillaIntf->FileTransfer(ApiPath(LocalFile).c_str(), RemoteFile.c_str(),
-      RemotePath.c_str(), Get, Size, ToInt(Type), &UserData);
+      RemotePath.c_str(), Get, Size, nb::ToInt(Type), &UserData);
     // we may actually catch response code of the listing
     // command (when checking for existence of the remote file)
     uintptr_t Reply = WaitForCommandReply();
@@ -2185,7 +2185,7 @@ void TFTPFileSystem::AutoDetectTimeDifference(TRemoteFileList *FileList)
           // Time difference between timestamp retrieved using MDTM (UTC converted to local timezone)
           // and using LIST (no conversion, expecting the server uses the same timezone as the client).
           // Note that FormatTimeZone reverses the value.
-          FTimeDifference = ToInt64(SecsPerDay * (UtcModification - File->GetModification()));
+          FTimeDifference = nb::ToInt64(SecsPerDay * (UtcModification - File->GetModification()));
 
           UnicodeString FileLog =
             FORMAT("%s (Listing: %s, UTC: %s)", File->GetFullFileName(), StandardTimestamp(File->GetModification()), StandardTimestamp(UtcModification));
@@ -2196,7 +2196,7 @@ void TFTPFileSystem::AutoDetectTimeDifference(TRemoteFileList *FileList)
           }
           else
           {
-            LogMessage = FORMAT("Timezone difference of %s detected using file %s", FormatTimeZone(ToIntPtr(FTimeDifference)), FileLog);
+            LogMessage = FORMAT("Timezone difference of %s detected using file %s", FormatTimeZone(nb::ToIntPtr(FTimeDifference)), FileLog);
           }
           FTerminal->LogEvent(LogMessage);
 
@@ -2756,7 +2756,7 @@ intptr_t TFTPFileSystem::GetOptionVal(intptr_t OptionID) const
 
   case OPTION_SPEEDLIMIT_DOWNLOAD_VALUE:
   case OPTION_SPEEDLIMIT_UPLOAD_VALUE:
-    Result = ToIntPtr((FFileTransferCPSLimit / 1024)); // FZAPI expects KB/s
+    Result = nb::ToIntPtr((FFileTransferCPSLimit / 1024)); // FZAPI expects KB/s
     break;
 
   case OPTION_MPEXT_SHOWHIDDEN:
@@ -3067,7 +3067,7 @@ UnicodeString TFTPFileSystem::GotReply(uintptr_t Reply, uintptr_t Flags,
         TFileZillaIntf::REPLY_IDLE | TFileZillaIntf::REPLY_NOTINITIALIZED |
         TFileZillaIntf::REPLY_ALREADYINIZIALIZED))
     {
-      FTerminal->FatalError(nullptr, FMTLOAD(INTERNAL_ERROR, "ftp#2", FORMAT("0x%x", ToInt(Reply))));
+      FTerminal->FatalError(nullptr, FMTLOAD(INTERNAL_ERROR, "ftp#2", FORMAT("0x%x", nb::ToInt(Reply))));
     }
     else
     {
@@ -3201,7 +3201,7 @@ UnicodeString TFTPFileSystem::GotReply(uintptr_t Reply, uintptr_t Flags,
 
     if ((Code != nullptr) && (FLastCodeClass != DummyCodeClass))
     {
-      *Code = ToUIntPtr(FLastCode);
+      *Code = nb::ToUIntPtr(FLastCode);
     }
 
     if (FLAGSET(Flags, REPLY_SINGLE_LINE))
@@ -3306,7 +3306,7 @@ void TFTPFileSystem::HandleReplyStatus(const UnicodeString Response)
     FMultineResponse = (Response.Length() >= 4) && (Response[4] == L'-');
     FLastResponse->Clear();
     FLastErrorResponse->Clear();
-    SetLastCode(ToIntPtr(Code));
+    SetLastCode(nb::ToIntPtr(Code));
     if (Response.Length() >= 5)
     {
       StoreLastResponse(Response.SubString(5, Response.Length() - 4));
@@ -3614,13 +3614,13 @@ TDateTime TFTPFileSystem::ConvertLocalTimestamp(time_t Time)
   if (Tm != nullptr)
   {
     SYSTEMTIME SystemTime;
-    SystemTime.wYear = ToWord(Tm->tm_year + 1900);
-    SystemTime.wMonth = ToWord(Tm->tm_mon + 1);
+    SystemTime.wYear = nb::ToWord(Tm->tm_year + 1900);
+    SystemTime.wMonth = nb::ToWord(Tm->tm_mon + 1);
     SystemTime.wDayOfWeek = 0;
-    SystemTime.wDay = ToWord(Tm->tm_mday);
-    SystemTime.wHour = ToWord(Tm->tm_hour);
-    SystemTime.wMinute = ToWord(Tm->tm_min);
-    SystemTime.wSecond = ToWord(Tm->tm_sec);
+    SystemTime.wDay = nb::ToWord(Tm->tm_mday);
+    SystemTime.wHour = nb::ToWord(Tm->tm_hour);
+    SystemTime.wMinute = nb::ToWord(Tm->tm_min);
+    SystemTime.wSecond = nb::ToWord(Tm->tm_sec);
     SystemTime.wMilliseconds = 0;
 
     FILETIME LocalTime;
@@ -3656,7 +3656,7 @@ bool TFTPFileSystem::HandleAsynchRequestOverwrite(
     if (UserData.OverwriteResult >= 0)
     {
       // on retry, use the same answer as on the first attempt
-      RequestResult = ToInt(UserData.OverwriteResult);
+      RequestResult = nb::ToInt(UserData.OverwriteResult);
     }
     else
     {
@@ -4374,7 +4374,7 @@ bool TFTPFileSystem::HandleReply(intptr_t Command, uintptr_t Reply)
   }
   if (FTerminal->GetConfiguration()->GetActualLogProtocol() >= 1)
   {
-    FTerminal->LogEvent(FORMAT("Got reply %x to the command %d", ToInt(Reply), Command));
+    FTerminal->LogEvent(FORMAT("Got reply %x to the command %d", nb::ToInt(Reply), Command));
   }
 
   // reply with Command 0 is not associated with current operation

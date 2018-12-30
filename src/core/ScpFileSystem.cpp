@@ -612,7 +612,7 @@ bool TSCPFileSystem::RemoveLastLine(UnicodeString &Line,
       IsLastLine = true;
       Line.SetLength(Pos - 1);
     }
-    ReturnCode = ToIntPtr(Code);
+    ReturnCode = nb::ToIntPtr(Code);
   }
   return IsLastLine;
 }
@@ -772,8 +772,8 @@ void TSCPFileSystem::ExecCommand(TFSCommand Cmd, intptr_t Params, fmt::ArgList a
   {
     int MinL = FCommandSet->GetMinLines(Cmd);
     int MaxL = FCommandSet->GetMaxLines(Cmd);
-    if (((MinL >= 0) && (MinL > ToInt(FOutput->GetCount()))) ||
-        ((MaxL >= 0) && (MaxL > ToInt(FOutput->GetCount()))))
+    if (((MinL >= 0) && (MinL > nb::ToInt(FOutput->GetCount()))) ||
+        ((MaxL >= 0) && (MaxL > nb::ToInt(FOutput->GetCount()))))
     {
       FTerminal->TerminalError(FMTLOAD(INVALID_OUTPUT_ERROR,
           FullCommand, GetOutput()->GetText()));
@@ -1927,8 +1927,8 @@ void TSCPFileSystem::SCPSource(const UnicodeString AFileName,
           {
             // Send last file access and modification time
             // TVarRec don't understand 'unsigned int' -> we use sprintf()
-            Buf = FORMAT("T%lu 0 %lu 0", ToUInt32(LocalFileHandle.MTime),
-              ToUInt32(LocalFileHandle.ATime));
+            Buf = FORMAT("T%lu 0 %lu 0", nb::ToUInt32(LocalFileHandle.MTime),
+              nb::ToUInt32(LocalFileHandle.ATime));
             FSecureShell->SendLine(Buf);
             SCPResponse();
           }
@@ -1960,7 +1960,7 @@ void TSCPFileSystem::SCPSource(const UnicodeString AFileName,
             {
               uintptr_t BlockSize = OperationProgress->TransferBlockSize();
               FSecureShell->Send(
-                reinterpret_cast<uint8_t *>(AsciiBuf.GetData() + ToIntPtr(OperationProgress->GetTransferredSize())),
+                reinterpret_cast<uint8_t *>(AsciiBuf.GetData() + nb::ToIntPtr(OperationProgress->GetTransferredSize())),
                 BlockSize);
               OperationProgress->AddTransferred(BlockSize);
               if (OperationProgress->GetCancel() == csCancelTransfer)
@@ -1984,7 +1984,7 @@ void TSCPFileSystem::SCPSource(const UnicodeString AFileName,
             FTerminal->LogEvent(FORMAT("Sending BINARY data (%u bytes)",
                 BlockBuf.GetSize()));
           }
-          FSecureShell->Send(reinterpret_cast<const uint8_t *>(BlockBuf.GetData()), ToInt(BlockBuf.GetSize()));
+          FSecureShell->Send(reinterpret_cast<const uint8_t *>(BlockBuf.GetData()), nb::ToInt(BlockBuf.GetSize()));
           OperationProgress->AddTransferred(BlockBuf.GetSize());
         }
 
@@ -2338,7 +2338,7 @@ void TSCPFileSystem::SCPSendError(const UnicodeString Message, bool Fatal)
 {
   uint8_t ErrorLevel = static_cast<uint8_t>(Fatal ? 2 : 1);
   FTerminal->LogEvent(FORMAT("Sending SCP error (%d) to remote side:",
-      ToInt(ErrorLevel)));
+      nb::ToInt(ErrorLevel)));
   FSecureShell->Send(&ErrorLevel, 1);
   // We don't send exact error message, because some unspecified
   // characters can terminate remote scp
@@ -2651,7 +2651,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString TargetDir,
                   BlockBuf.SetSize(OperationProgress->TransferBlockSize());
                   BlockBuf.SetPosition(0);
 
-                  FSecureShell->Receive(reinterpret_cast<uint8_t *>(BlockBuf.GetData()), ToIntPtr(BlockBuf.GetSize()));
+                  FSecureShell->Receive(reinterpret_cast<uint8_t *>(BlockBuf.GetData()), nb::ToIntPtr(BlockBuf.GetSize()));
                   OperationProgress->AddTransferred(BlockBuf.GetSize());
 
                   if (OperationProgress->GetAsciiTransfer())
@@ -2668,7 +2668,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString TargetDir,
                     FMTLOAD(WRITE_ERROR, DestFileName), "",
                   [&]()
                   {
-                    BlockBuf.WriteToStream(FileStream.get(), ToUInt32(BlockBuf.GetSize()));
+                    BlockBuf.WriteToStream(FileStream.get(), nb::ToUInt32(BlockBuf.GetSize()));
                   });
                   __removed FILE_OPERATION_LOOP_END_EX(FMTLOAD(WRITE_ERROR, (DestFileName)), folNone);
 

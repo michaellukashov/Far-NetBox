@@ -47,7 +47,7 @@ RawByteString EncryptPassword(const UnicodeString UnicodePassword, const Unicode
   }
   Password = Key + Password;
   intptr_t Shift = (Password.Length() < PWALG_SIMPLE_MAXLEN) ?
-    static_cast<uint8_t>(random(PWALG_SIMPLE_MAXLEN - ToInt(Password.Length()))) : 0;
+    static_cast<uint8_t>(random(PWALG_SIMPLE_MAXLEN - nb::ToInt(Password.Length()))) : 0;
   Result += SimpleEncryptChar(static_cast<uint8_t>(PWALG_SIMPLE_FLAG)); // Flag
   Result += SimpleEncryptChar(static_cast<uint8_t>(PWALG_SIMPLE_INTERNAL)); // Dummy
   Result += SimpleEncryptChar(static_cast<uint8_t>(Password.Length()));
@@ -76,7 +76,7 @@ UnicodeString DecryptPassword(RawByteString Password, const UnicodeString Unicod
   }
   else
     Length = Flag;
-  Password.Delete(1, (ToIntPtr(SimpleDecryptNextChar(Password)) * 2));
+  Password.Delete(1, nb::ToIntPtr(SimpleDecryptNextChar(Password)) * 2);
   for (uint8_t Index = 0; Index < Length; ++Index)
     Result += static_cast<char>(SimpleDecryptNextChar(Password));
   if (Flag == PWALG_SIMPLE_FLAG)
@@ -117,19 +117,19 @@ bool WindowsValidateCertificate(const uint8_t *Certificate, size_t Len, UnicodeS
   // Parse the certificate into a context.
   const CERT_CONTEXT *CertContext =
     CertCreateCertificateContext(
-      X509_ASN_ENCODING | PKCS_7_ASN_ENCODING, Certificate, ToDWord(Len));
+      X509_ASN_ENCODING | PKCS_7_ASN_ENCODING, Certificate, nb::ToDWord(Len));
 
   if (CertContext != nullptr)
   {
     CERT_CHAIN_PARA ChainPara;
     // Retrieve the certificate chain of the certificate
     // (a certificate without a valid root does not have a chain).
-    ClearStruct(ChainPara);
+    nb::ClearStruct(ChainPara);
     ChainPara.cbSize = sizeof(ChainPara);
 
     CERT_CHAIN_ENGINE_CONFIG ChainConfig;
 
-    ClearStruct(ChainConfig);
+    nb::ClearStruct(ChainConfig);
     /*const size_t ChainConfigSize =
       reinterpret_cast<const char *>(&ChainConfig.CycleDetectionModulus) + sizeof(ChainConfig.CycleDetectionModulus) -
       reinterpret_cast<const char *>(&ChainConfig);

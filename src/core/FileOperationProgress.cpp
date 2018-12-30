@@ -323,7 +323,7 @@ void TFileOperationProgressType::Resume()
 
     // shift timestamps for CPS calculation in advance
     // by the time the progress was suspended
-    intptr_t Stopped = ToIntPtr(::GetTickCount() - FSuspendTime);
+    intptr_t Stopped = nb::ToIntPtr(::GetTickCount() - FSuspendTime);
     size_t Index = 0;
     while (Index < FPersistence.Ticks.size())
     {
@@ -354,7 +354,7 @@ intptr_t TFileOperationProgressType::TransferProgress() const
   intptr_t Result;
   if (FTransferSize)
   {
-    Result = ToIntPtr((FTransferredSize * 100) / FTransferSize);
+    Result = nb::ToIntPtr((FTransferredSize * 100) / FTransferSize);
   }
   else
   {
@@ -370,7 +370,7 @@ intptr_t TFileOperationProgressType::TotalTransferProgress() const
   intptr_t Result;
   if (FTotalSize > 0)
   {
-    Result = ToIntPtr(((GetTotalTransferred() - FTotalTransferBase + FTotalSkipped) * 100) / FTotalSize);
+    Result = nb::ToIntPtr(((GetTotalTransferred() - FTotalTransferBase + FTotalSkipped) * 100) / FTotalSize);
   }
   else
   {
@@ -799,7 +799,7 @@ void TFileOperationProgressType::AddTransferredToTotals(int64_t ASize)
   FPersistence.TotalTransferred += ASize;
   if (ASize >= 0)
   {
-    uint64_t Ticks = ToUInt64(::GetTickCount());
+    uint64_t Ticks = nb::ToUInt64(::GetTickCount());
     if (FPersistence.Ticks.empty() ||
         (FPersistence.Ticks.back() > Ticks) || // ticks wrap after 49.7 days
         ((Ticks - FPersistence.Ticks.back()) >= (uint64_t)MSecsPerSec))
@@ -896,7 +896,7 @@ uintptr_t TFileOperationProgressType::TransferBlockSize()
     Result = FTransferSize - FTransferredSize;
   }
   Result = AdjustToCPSLimit(Result);
-  return ToUIntPtr(Result);
+  return nb::ToUIntPtr(Result);
 }
 //---------------------------------------------------------------------------
 uintptr_t TFileOperationProgressType::StaticBlockSize()
@@ -924,7 +924,7 @@ TDateTime TFileOperationProgressType::TimeElapsed() const
 uintptr_t TFileOperationProgressType::CPS() const
 {
   TGuard Guard(*FSection); nb::used(Guard);
-  return ToUIntPtr(GetCPS());
+  return nb::ToUIntPtr(GetCPS());
 }
 //---------------------------------------------------------------------------
 // Has to be called from a guarded method
@@ -959,7 +959,7 @@ uintptr_t TFileOperationProgressType::GetCPS() const
       Result = int64_t(Transferred * MSecsPerSec / TimeSpan);
     }
   }
-  return ToUIntPtr(Result);
+  return nb::ToUIntPtr(Result);
 }
 //---------------------------------------------------------------------------
 TDateTime TFileOperationProgressType::TimeExpected() const
@@ -967,7 +967,7 @@ TDateTime TFileOperationProgressType::TimeExpected() const
   uintptr_t CurCps = CPS();
   if (CurCps)
   {
-    return TDateTime(ToDouble((ToDouble(FTransferSize - FTransferredSize)) / CurCps) / SecsPerDay);
+    return TDateTime(nb::ToDouble((nb::ToDouble(FTransferSize - FTransferredSize)) / CurCps) / SecsPerDay);
   }
   return TDateTime(0.0);
 }
@@ -981,7 +981,7 @@ TDateTime TFileOperationProgressType::TotalTimeLeft() const
   int64_t Processed = FTotalSkipped + FPersistence.TotalTransferred - FTotalTransferBase;
   if ((CurCps > 0) && (FTotalSize > Processed))
   {
-    return TDateTime(ToDouble(ToDouble(FTotalSize - Processed) / CurCps) / SecsPerDay);
+    return TDateTime(nb::ToDouble(nb::ToDouble(FTotalSize - Processed) / CurCps) / SecsPerDay);
   }
   return TDateTime(0.0);
 }

@@ -459,7 +459,7 @@ void TCopyParamType::DoGetInfoStr(
   {
     UnicodeString Value;
     UnicodeString CodeState;
-    intptr_t ResumeThresholdKB = ToIntPtr(GetResumeThreshold() / 1024);
+    intptr_t ResumeThresholdKB = nb::ToIntPtr(GetResumeThreshold() / 1024);
     switch (GetResumeSupport())
     {
     case rsOff:
@@ -776,7 +776,7 @@ UnicodeString TCopyParamType::GetLogStr() const
       CaseC[GetFileNameCase()],
       CharToHex(GetInvalidCharsReplacement()),
       ResumeC[GetResumeSupport()],
-      ToInt(GetResumeThreshold()),
+      nb::ToInt(GetResumeThreshold()),
       BooleanToEngStr(GetCalculateSize()),
       GetFileMask()) +
     FORMAT(
@@ -903,7 +903,7 @@ void TCopyParamType::Load(THierarchicalStorage *Storage)
   SetResumeSupport(static_cast<TResumeSupport>(Storage->ReadInteger("ResumeSupport", GetResumeSupport())));
   SetResumeThreshold(Storage->ReadInt64("ResumeThreshold", GetResumeThreshold()));
   SetInvalidCharsReplacement(static_cast<wchar_t>(Storage->ReadInteger("ReplaceInvalidChars",
-        ToIntPtr(GetInvalidCharsReplacement()))));
+        nb::ToIntPtr(GetInvalidCharsReplacement()))));
   SetLocalInvalidChars(Storage->ReadString("LocalInvalidChars", GetLocalInvalidChars()));
   SetCalculateSize(Storage->ReadBool("CalculateSize", GetCalculateSize()));
   if (Storage->ValueExists("IncludeFileMask"))
@@ -1043,7 +1043,7 @@ static bool TryGetSpeedLimit(const UnicodeString Text, uintptr_t &Speed)
     Result = TryStrToInt64(Text, SSpeed) && (SSpeed >= 0);
     if (Result)
     {
-      Speed = ToUIntPtr(SSpeed * 1024);
+      Speed = nb::ToUIntPtr(SSpeed * 1024);
     }
   }
   return Result;

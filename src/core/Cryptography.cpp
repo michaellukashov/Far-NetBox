@@ -402,11 +402,11 @@ void AES256EncryptWithMAC(const RawByteString Input, const UnicodeString Passwor
   DebugAssert(Salt.Length() == SALT_LENGTH(PASSWORD_MANAGER_AES_MODE));
   UTF8String UtfPassword = UTF8String(Password);
   fcrypt_init(PASSWORD_MANAGER_AES_MODE,
-    reinterpret_cast<const uint8_t *>(UtfPassword.c_str()), ToUInt32(UtfPassword.Length()),
+    reinterpret_cast<const uint8_t *>(UtfPassword.c_str()), nb::ToUInt32(UtfPassword.Length()),
     reinterpret_cast<const unsigned char *>(Salt.c_str()), &aes);
   Output = Input;
   Output.Unique();
-  fcrypt_encrypt(reinterpret_cast<uint8_t *>(ToChar(Output)), ToUInt32(Output.Length()), &aes);
+  fcrypt_encrypt(reinterpret_cast<uint8_t *>(ToChar(Output)), nb::ToUInt32(Output.Length()), &aes);
   Mac.SetLength(MAC_LENGTH(PASSWORD_MANAGER_AES_MODE));
   fcrypt_end(reinterpret_cast<uint8_t *>(ToChar(Mac)), &aes);
 }
@@ -428,11 +428,11 @@ bool AES256DecryptWithMAC(RawByteString Input, const UnicodeString Password,
   DebugAssert(Salt.Length() == SALT_LENGTH(PASSWORD_MANAGER_AES_MODE));
   UTF8String UtfPassword = UTF8String(Password);
   fcrypt_init(PASSWORD_MANAGER_AES_MODE,
-    reinterpret_cast<const uint8_t *>(UtfPassword.c_str()), ToUInt32(UtfPassword.Length()),
+    reinterpret_cast<const uint8_t *>(UtfPassword.c_str()), nb::ToUInt32(UtfPassword.Length()),
     reinterpret_cast<const unsigned char *>(Salt.c_str()), &aes);
   Output = Input;
   Output.Unique();
-  fcrypt_decrypt(reinterpret_cast<uint8_t *>(ToChar(Output)), ToUInt32(Output.Length()), &aes);
+  fcrypt_decrypt(reinterpret_cast<uint8_t *>(ToChar(Output)), nb::ToUInt32(Output.Length()), &aes);
   RawByteString Mac2;
   Mac2.SetLength(MAC_LENGTH(PASSWORD_MANAGER_AES_MODE));
   DebugAssert(Mac.Length() == Mac2.Length());
@@ -523,7 +523,7 @@ RawByteString ScramblePassword(const UnicodeString Password)
     int P = 0;
     while ((P <= 0) || (P > 255) || IsDigit(static_cast<wchar_t>(P)))
     {
-      P = ToInt(ToDouble(rand()) / (ToDouble(RAND_MAX) / 256.0));
+      P = nb::ToInt(nb::ToDouble(rand()) / (nb::ToDouble(RAND_MAX) / 256.0));
     }
     Buf[Index] = static_cast<uint8_t>(P);
   }
@@ -552,7 +552,7 @@ bool UnscramblePassword(const RawByteString Scrambled, UnicodeString &Password)
   int Last = 31;
   while (*S != '\0')
   {
-    int X = ToInt(UnscrambleTable[static_cast<uint8_t>(*S)]) - 1 - (Last % 255);
+    int X = nb::ToInt(UnscrambleTable[static_cast<uint8_t>(*S)]) - 1 - (Last % 255);
     if (X <= 0)
     {
       X += 255;
@@ -597,7 +597,7 @@ void CryptographyInitialize()
   {
     UnscrambleTable[SScrambleTable[Index]] = static_cast<uint8_t>(Index);
   }
-  srand(ToUInt32(time(nullptr)) ^ ToUInt32(_getpid()));
+  srand(nb::ToUInt32(time(nullptr)) ^ nb::ToUInt32(_getpid()));
   RAND_poll();
 }
 //---------------------------------------------------------------------------
@@ -840,7 +840,7 @@ UnicodeString TEncryption::DecryptFileName(const UnicodeString AFileName)
   }
 //  DynamicArray<Byte> BufferBytes = DecodeBase64(Base64);
   rde::vector<uint8_t> BufferBytes = DecodeBase64(Base64);
-  RawByteString Buffer(reinterpret_cast<const char *>(&BufferBytes[0]), ToIntPtr(BufferBytes.size()));
+  RawByteString Buffer(reinterpret_cast<const char *>(&BufferBytes[0]), nb::ToIntPtr(BufferBytes.size()));
   FSalt = Buffer.SubString(1, SALT_LENGTH(PASSWORD_MANAGER_AES_MODE));
   SetSalt();
   Buffer.Delete(1, FSalt.Length());

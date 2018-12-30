@@ -313,9 +313,9 @@ void TWebDAVFileSystem::InitSession(ne_session_s *Session)
     Session, Data->GetProxyMethod(), Data->GetProxyHost(), Data->GetProxyPort(),
     Data->GetProxyUsername(), Data->GetProxyPassword(), FTerminal);
 
-  ne_set_read_timeout(Session, ToInt(Data->GetTimeout()));
+  ne_set_read_timeout(Session, nb::ToInt(Data->GetTimeout()));
 
-  ne_set_connect_timeout(Session, ToInt(Data->GetTimeout()));
+  ne_set_connect_timeout(Session, nb::ToInt(Data->GetTimeout()));
 
   ne_set_session_private(Session, SESSION_FS_KEY, this);
 }
@@ -1013,7 +1013,7 @@ intptr_t TWebDAVFileSystem::CustomReadFileInternal(const UnicodeString AFileName
   {
     AFile = File.release();
   }
-  return ToIntPtr(Result);
+  return nb::ToIntPtr(Result);
 }
 //---------------------------------------------------------------------------
 void TWebDAVFileSystem::CustomReadFile(const UnicodeString AFileName,
@@ -1241,7 +1241,7 @@ void TWebDAVFileSystem::SpaceAvailable(const UnicodeString APath,
   UnicodeString Path = DirectoryPath(APath);
 
   ne_propname QuotaProps[3];
-  ClearArray(QuotaProps);
+  nb::ClearArray(QuotaProps);
   QuotaProps[0].nspace = DAV_PROP_NAMESPACE;
   QuotaProps[0].name = PROP_QUOTA_AVAILABLE;
   QuotaProps[1].nspace = DAV_PROP_NAMESPACE;
@@ -1325,7 +1325,7 @@ void TWebDAVFileSystem::Source(
     {
       ::SetFilePointer(AHandle.Handle, 0, nullptr, FILE_BEGIN);
 
-      FD = _open_osfhandle(ToIntPtr(AHandle.Handle), O_BINARY);
+      FD = _open_osfhandle(nb::ToIntPtr(AHandle.Handle), O_BINARY);
       if (FD < 0)
       {
         throw ESkipFile();
@@ -1733,7 +1733,7 @@ void TWebDAVFileSystem::Sink(
     int FD = -1;
     try__finally
     {
-      FD = _open_osfhandle(ToIntPtr(LocalFileHandle), O_BINARY);
+      FD = _open_osfhandle(nb::ToIntPtr(LocalFileHandle), O_BINARY);
       if (FD < 0)
       {
         throw ESkipFile();

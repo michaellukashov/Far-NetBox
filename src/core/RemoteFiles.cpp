@@ -145,7 +145,7 @@ UnicodeString TRemoteToken::GetDisplayText() const
 //---------------------------------------------------------------------------
 UnicodeString TRemoteToken::GetLogText() const
 {
-  return FORMAT("\"%s\" [%d]", FName, ToInt(FID));
+  return FORMAT("\"%s\" [%d]", FName, nb::ToInt(FID));
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
@@ -258,7 +258,7 @@ void TRemoteTokenList::Log(TTerminal *Terminal, const wchar_t *Title)
   if (!FTokens.empty())
   {
     Terminal->LogEvent(FORMAT("Following %s found:", Title));
-    for (intptr_t Index = 0; Index < ToIntPtr(FTokens.size()); ++Index)
+    for (intptr_t Index = 0; Index < nb::ToIntPtr(FTokens.size()); ++Index)
     {
       Terminal->LogEvent(UnicodeString(L"  ") + FTokens[Index].GetLogText());
     }
@@ -271,7 +271,7 @@ void TRemoteTokenList::Log(TTerminal *Terminal, const wchar_t *Title)
 //---------------------------------------------------------------------------
 intptr_t TRemoteTokenList::GetCount() const
 {
-  return ToIntPtr(FTokens.size());
+  return nb::ToIntPtr(FTokens.size());
 }
 //---------------------------------------------------------------------------
 const TRemoteToken *TRemoteTokenList::Token(intptr_t Index) const
@@ -709,17 +709,17 @@ void TRemoteFile::SetListingStr(const UnicodeString Value)
           swscanf(Col.c_str(), L"%04d-%02d-%02d", &Y, &M, &D);
         if (Filled == 3)
         {
-          Year = ToWord(Y);
-          Month = ToWord(M);
-          Day = ToWord(D);
+          Year = nb::ToWord(Y);
+          Month = nb::ToWord(M);
+          Day = nb::ToWord(D);
           GetCol();
           int H, Mn, S, MS;
           Filled = swscanf(Col.c_str(), L"%02d:%02d:%02d.%d", &H, &Mn, &S, &MS);
           if (Filled == 4)
           {
-            Hour = ToWord(H);
-            Min = ToWord(Mn);
-            Sec = ToWord(S);
+            Hour = nb::ToWord(H);
+            Min = nb::ToWord(Mn);
+            Sec = nb::ToWord(S);
             FModificationFmt = mfFull;
             // skip TZ (TODO)
             // do not trim leading space of filename
@@ -731,9 +731,9 @@ void TRemoteFile::SetListingStr(const UnicodeString Value)
             Filled = swscanf(Col.c_str(), L"%02d:%02d:%02d", &H, &Mn, &S);
             if (Filled == 3)
             {
-              Hour = ToWord(H);
-              Min = ToWord(Mn);
-              Sec = ToWord(S);
+              Hour = nb::ToWord(H);
+              Min = nb::ToWord(Mn);
+              Sec = nb::ToWord(S);
               FModificationFmt = mfFull;
               // skip TZ (TODO)
               // do not trim leading space of filename
@@ -742,7 +742,7 @@ void TRemoteFile::SetListingStr(const UnicodeString Value)
           }
         } else {
         // format dd mmm or mmm dd ?
-        Day = ::ToWord(::StrToIntDef(Col, 0));
+        Day = nb::ToWord(::StrToIntDef(Col, 0));
         if (Day > 0)
         {
           DayMonthFormat = true;
@@ -765,15 +765,15 @@ void TRemoteFile::SetListingStr(const UnicodeString Value)
         // for --full-time format
         if ((Month == 0) && (Col.Length() == 10) && (Col[5] == L'-') && (Col[8] == L'-'))
         {
-          Year = ToWord(Col.SubString(1, 4).ToIntPtr());
-          Month = ToWord(Col.SubString(6, 2).ToIntPtr());
-          Day = ToWord(Col.SubString(9, 2).ToIntPtr());
+          Year = nb::ToWord(Col.SubString(1, 4).ToIntPtr());
+          Month = nb::ToWord(Col.SubString(6, 2).ToIntPtr());
+          Day = nb::ToWord(Col.SubString(9, 2).ToIntPtr());
           GetCol();
-          Hour = ToWord(Col.SubString(1, 2).ToIntPtr());
-          Min = ToWord(Col.SubString(4, 2).ToIntPtr());
+          Hour = nb::ToWord(Col.SubString(1, 2).ToIntPtr());
+          Min = nb::ToWord(Col.SubString(4, 2).ToIntPtr());
           if (Col.Length() >= 8)
           {
-            Sec = ToWord(::StrToInt64(Col.SubString(7, 2)));
+            Sec = nb::ToWord(::StrToInt64(Col.SubString(7, 2)));
           }
           else
           {
@@ -806,7 +806,7 @@ void TRemoteFile::SetListingStr(const UnicodeString Value)
           if (Day == 0)
           {
             GetNCol();
-            Day = ToWord(::StrToInt64(Col));
+            Day = nb::ToWord(::StrToInt64(Col));
           }
           if ((Day < 1) || (Day > 31))
           {
@@ -822,13 +822,13 @@ void TRemoteFile::SetListingStr(const UnicodeString Value)
             {
               Abort();
             }
-            Hour = ToWord(::StrToInt64(Col.SubString(1, 2)));
-            Min = ToWord(::StrToInt64(Col.SubString(4, 2)));
-            Sec = ToWord(::StrToInt64(Col.SubString(7, 2)));
+            Hour = nb::ToWord(::StrToInt64(Col.SubString(1, 2)));
+            Min = nb::ToWord(::StrToInt64(Col.SubString(4, 2)));
+            Sec = nb::ToWord(::StrToInt64(Col.SubString(7, 2)));
             FModificationFmt = mfFull;
             // do not trim leading space of filename
             GetNCol();
-            Year = ToWord(::StrToInt64(Col));
+            Year = nb::ToWord(::StrToInt64(Col));
           }
           else
           {
@@ -852,10 +852,10 @@ void TRemoteFile::SetListingStr(const UnicodeString Value)
             // GETNCOL; // We don't want to trim input strings (name with space at beginning???)
             // Check if we got time (contains :) or year
             intptr_t P;
-            if ((P = ToWord(Col.Pos(L':'))) > 0)
+            if ((P = nb::ToWord(Col.Pos(L':'))) > 0)
             {
-              Hour = ToWord(::StrToInt64(Col.SubString(1, P - 1)));
-              Min = ToWord(::StrToInt64(Col.SubString(P + 1, Col.Length() - P)));
+              Hour = nb::ToWord(::StrToInt64(Col.SubString(1, P - 1)));
+              Min = nb::ToWord(::StrToInt64(Col.SubString(P + 1, Col.Length() - P)));
               if ((Hour > 23) || (Min > 59))
                 Abort();
               // When we don't got year, we assume current year
@@ -872,7 +872,7 @@ void TRemoteFile::SetListingStr(const UnicodeString Value)
             }
             else
             {
-              Year = ToWord(::StrToInt64(Col));
+              Year = nb::ToWord(::StrToInt64(Col));
               if (Year > 10000)
                 Abort();
               // When we don't got time we assume midnight
@@ -2370,7 +2370,7 @@ TRemoteProperties &TRemoteProperties::operator=(const TRemoteProperties &other)
 void TRemoteProperties::Load(THierarchicalStorage *Storage)
 {
   uint8_t Buf[sizeof(Valid)];
-  if (ToSizeT(Storage->ReadBinaryData("Valid", &Buf, sizeof(Buf))) == sizeof(Buf))
+  if (nb::ToSizeT(Storage->ReadBinaryData("Valid", &Buf, sizeof(Buf))) == sizeof(Buf))
   {
     memmove(&Valid, Buf, sizeof(Valid));
   }
@@ -2686,7 +2686,7 @@ intptr_t TSynchronizeProgress::Progress(const TFileOperationProgressType * Curre
   intptr_t Result;
   if (FTotalSize > 0)
   {
-    Result = ToIntPtr((Processed * 100) / FTotalSize);
+    Result = nb::ToIntPtr((Processed * 100) / FTotalSize);
   }
   else
   {

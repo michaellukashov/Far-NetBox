@@ -392,7 +392,7 @@ static bool DoExecuteShell(const UnicodeString APath, const UnicodeString Params
     UnicodeString Directory = ::ExtractFilePath(APath);
 
     TShellExecuteInfoW ExecuteInfo;
-    ClearStruct(ExecuteInfo);
+    nb::ClearStruct(ExecuteInfo);
     ExecuteInfo.cbSize = sizeof(ExecuteInfo);
     ExecuteInfo.fMask =
       SEE_MASK_FLAG_NO_UI |
@@ -479,7 +479,7 @@ bool SpecialFolderLocation(intptr_t PathID, UnicodeString &APath)
 #if defined(_MSC_VER) && !defined(__clang__)
   LPITEMIDLIST Pidl;
   wchar_t Buf[MAX_PATH];
-  if (::SHGetSpecialFolderLocation(nullptr, ToInt(PathID), &Pidl) == NO_ERROR &&
+  if (::SHGetSpecialFolderLocation(nullptr, nb::ToInt(PathID), &Pidl) == NO_ERROR &&
     ::SHGetPathFromIDList(Pidl, Buf))
   {
     APath = UnicodeString(Buf);

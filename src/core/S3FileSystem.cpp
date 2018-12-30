@@ -129,7 +129,7 @@ void TS3FileSystem::Open()
   FSecretAccessKey = UTF8String(SecretAccessKey);
 
   FHostName = UTF8String(Data->GetHostNameExpanded());
-  FTimeout = ToInt(Data->GetTimeout());
+  FTimeout = nb::ToInt(Data->GetTimeout());
 
   RegisterForNeonDebug(FTerminal);
   UpdateNeonDebugMask();
@@ -850,7 +850,7 @@ void TS3FileSystem::DoListBucket(
 
   S3_list_bucket(
     &BucketContext, StrToS3(APrefix), StrToS3(Data.NextMarker),
-    LibS3Delimiter.c_str(), ToInt(MaxKeys), FRequestContext, FTimeout, &ListBucketHandler, &Data);
+    LibS3Delimiter.c_str(), nb::ToInt(MaxKeys), FRequestContext, FTimeout, &ListBucketHandler, &Data);
 }
 //---------------------------------------------------------------------------
 void TS3FileSystem::HandleNonBucketStatus(TLibS3CallbackData & Data, bool & Retry)
@@ -1295,7 +1295,7 @@ int TS3FileSystem::PutObjectData(int BufferSize, char *Buffer, TLibS3PutObjectDa
         FMTLOAD(READ_ERROR, Data.FileName), "",
       [&]()
       {
-        Result = ToInt(Data.Stream->Read(Buffer, BufferSize));
+        Result = nb::ToInt(Data.Stream->Read(Buffer, BufferSize));
       });
       __removed FILE_OPERATION_LOOP_END(FMTLOAD(READ_ERROR, Data.FileName));
 
@@ -1424,7 +1424,7 @@ void TS3FileSystem::Source(
     0
   };
 
-  int Parts = std::max(1, ToInt((AHandle.Size + S3MultiPartChunkSize - 1) / S3MultiPartChunkSize));
+  int Parts = std::max(1, nb::ToInt((AHandle.Size + S3MultiPartChunkSize - 1) / S3MultiPartChunkSize));
   bool Multipart = (Parts > 1);
 
   RawByteString MultipartUploadId;
@@ -1494,7 +1494,7 @@ void TS3FileSystem::Source(
           int PartLength = std::min(S3MultiPartChunkSize, RemainingInt);
           FTerminal->LogEvent(FORMAT("Uploading part %d [%s]", Part, IntToStr(PartLength)));
           S3_upload_part(
-            &BucketContext, StrToS3(Key), &PutProperties, &UploadPartHandler, ToInt(Part), MultipartUploadId.c_str(),
+            &BucketContext, StrToS3(Key), &PutProperties, &UploadPartHandler, nb::ToInt(Part), MultipartUploadId.c_str(),
             PartLength, FRequestContext, FTimeout, &Data);
         }
         else
@@ -1541,7 +1541,7 @@ void TS3FileSystem::Source(
       {
         RequestInit(MultipartCommitPutObjectDataCallbackData);
 
-        MultipartCommitPutObjectDataCallbackData.Remaining = ToInt(MultipartCommitPutObjectDataCallbackData.Message.Length());
+        MultipartCommitPutObjectDataCallbackData.Remaining = nb::ToInt(MultipartCommitPutObjectDataCallbackData.Message.Length());
 
         S3MultipartCommitHandler MultipartCommitHandler =
         { CreateResponseHandler(), &LibS3MultipartCommitPutObjectDataCallback, nullptr };

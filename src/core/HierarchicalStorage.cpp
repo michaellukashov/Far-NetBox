@@ -53,7 +53,7 @@ UnicodeString UnMungeStr(const UnicodeString Str)
   RawByteString Source = Str;
   RawByteString Dest;
   char *Buffer = Dest.SetLength(Source.GetLength());
-  putty_unmungestr(Source.c_str(), Buffer, ToInt(Source.GetLength()));
+  putty_unmungestr(Source.c_str(), Buffer, nb::ToInt(Source.GetLength()));
   // Cut the string at null character
   PackStr(Dest);
   UnicodeString Result;
@@ -456,7 +456,7 @@ bool TRegistryStorage::Copy(TRegistryStorage *Storage)
     while ((Index < Names->GetCount()) && Result)
     {
       UnicodeString Name = MungeStr(Names->GetString(Index), GetForceAnsi(), false);
-      DWORD Size = ToDWord(Buffer.size());
+      DWORD Size = nb::ToDWord(Buffer.size());
       DWORD Type;
       int RegResult;
       do

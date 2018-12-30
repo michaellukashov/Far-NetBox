@@ -189,7 +189,7 @@ void TSessionData::Default()
   SetProxyDNS(asAuto);
   SetProxyLocalhost(false);
 
-  for (intptr_t Index = 0; Index < ToIntPtr(_countof(FBugs)); ++Index)
+  for (intptr_t Index = 0; Index < nb::ToIntPtr(_countof(FBugs)); ++Index)
   {
     SetBug(static_cast<TSshBug>(Index), asAuto);
   }
@@ -245,7 +245,7 @@ void TSessionData::Default()
   SetSFTPMaxPacketSize(0);
   SetSFTPMinPacketSize(0);
 
-  for (intptr_t Index = 0; Index < ToIntPtr(_countof(FSFTPBugs)); ++Index)
+  for (intptr_t Index = 0; Index < nb::ToIntPtr(_countof(FSFTPBugs)); ++Index)
   {
     SetSFTPBug(static_cast<TSftpBug>(Index), asAuto);
   }
@@ -478,13 +478,13 @@ void TSessionData::CopyData(TSessionData *SourceData)
 
 
   SessionSetUserName(SourceData->SessionGetUserName());
-  for (intptr_t Index = 0; Index < ToIntPtr(_countof(FBugs)); ++Index)
+  for (intptr_t Index = 0; Index < nb::ToIntPtr(_countof(FBugs)); ++Index)
   {
     // PROPERTY(Bug[(TSshBug)Index]);
     SetBug(static_cast<TSshBug>(Index),
       SourceData->GetBug(static_cast<TSshBug>(Index)));
   }
-  for (intptr_t Index = 0; Index < ToIntPtr(_countof(FSFTPBugs)); ++Index)
+  for (intptr_t Index = 0; Index < nb::ToIntPtr(_countof(FSFTPBugs)); ++Index)
   {
     // PROPERTY(SFTPBug[(TSftpBug)Index]);
     SetSFTPBug(static_cast<TSftpBug>(Index),
@@ -554,13 +554,13 @@ bool TSessionData::IsSame(const TSessionData *Default, bool AdvancedOnly, TStrin
   ADVANCED_PROPERTIES;
 #undef PROPERTY
 
-  for (intptr_t Index = 0; Index < ToIntPtr(_countof(FBugs)); ++Index)
+  for (intptr_t Index = 0; Index < nb::ToIntPtr(_countof(FBugs)); ++Index)
   {
     // PROPERTY(Bug[(TSshBug)Index]);
     if (GetBug(static_cast<TSshBug>(Index)) != Default->GetBug(static_cast<TSshBug>(Index)))
       return false;
   }
-  for (intptr_t Index = 0; Index < ToIntPtr(_countof(FSFTPBugs)); ++Index)
+  for (intptr_t Index = 0; Index < nb::ToIntPtr(_countof(FSFTPBugs)); ++Index)
   {
     // PROPERTY(SFTPBug[(TSftpBug)Index]);
     if (GetSFTPBug(static_cast<TSftpBug>(Index)) != Default->GetSFTPBug(static_cast<TSftpBug>(Index)))
@@ -2242,7 +2242,7 @@ bool TSessionData::ParseUrl(const UnicodeString AUrl, TOptions *Options,
     }
     if (Options->FindSwitch("timeout", Value))
     {
-      SetTimeout(ToIntPtr(::StrToInt64(Value)));
+      SetTimeout(nb::ToIntPtr(::StrToInt64(Value)));
     }
     if (Options->FindSwitch("hostkey", Value) ||
         Options->FindSwitch("certificate", Value))
@@ -2450,7 +2450,7 @@ UnicodeString TSessionData::GetStorageKey() const
 //---------------------------------------------------------------------
 UnicodeString TSessionData::FormatSiteKey(const UnicodeString HostName, intptr_t PortNumber)
 {
-  return FORMAT("%s:%d", HostName, ToInt(PortNumber));
+  return FORMAT("%s:%d", HostName, nb::ToInt(PortNumber));
 }
 //---------------------------------------------------------------------
 UnicodeString TSessionData::GetSiteKey() const
@@ -3877,7 +3877,7 @@ void TSessionData::PrepareProxyData() const
   {
     FIEProxyConfig = new TIEProxyConfig;
     WINHTTP_CURRENT_USER_IE_PROXY_CONFIG IEProxyConfig;
-    ClearStruct(IEProxyConfig);
+    nb::ClearStruct(IEProxyConfig);
     TLibraryLoader LibraryLoader(L"winhttp.dll", true);
     if (LibraryLoader.Loaded())
     {
@@ -4052,13 +4052,13 @@ void TSessionData::SetFtpProxyLogonType(intptr_t Value)
 //---------------------------------------------------------------------
 void TSessionData::SetBug(TSshBug Bug, TAutoSwitch Value)
 {
-  DebugAssert(Bug >= 0 && ToUInt32(Bug) < _countof(FBugs));
+  DebugAssert(Bug >= 0 && nb::ToUInt32(Bug) < _countof(FBugs));
   SET_SESSION_PROPERTY(Bugs[Bug]);
 }
 //---------------------------------------------------------------------
 TAutoSwitch TSessionData::GetBug(TSshBug Bug) const
 {
-  DebugAssert(Bug >= 0 && ToUInt32(Bug) < _countof(FBugs));
+  DebugAssert(Bug >= 0 && nb::ToUInt32(Bug) < _countof(FBugs));
   return FBugs[Bug];
 }
 //---------------------------------------------------------------------
@@ -4099,13 +4099,13 @@ void TSessionData::SetSFTPMaxPacketSize(intptr_t Value)
 //---------------------------------------------------------------------
 void TSessionData::SetSFTPBug(TSftpBug Bug, TAutoSwitch Value)
 {
-  DebugAssert(Bug >= 0 && ToUInt32(Bug) < _countof(FSFTPBugs));
+  DebugAssert(Bug >= 0 && nb::ToUInt32(Bug) < _countof(FSFTPBugs));
   SET_SESSION_PROPERTY(SFTPBugs[Bug]);
 }
 //---------------------------------------------------------------------
 TAutoSwitch TSessionData::GetSFTPBug(TSftpBug Bug) const
 {
-  DebugAssert(Bug >= 0 && ToUInt32(Bug) < _countof(FSFTPBugs));
+  DebugAssert(Bug >= 0 && nb::ToUInt32(Bug) < _countof(FSFTPBugs));
   return FSFTPBugs[Bug];
 }
 //---------------------------------------------------------------------
@@ -4935,7 +4935,7 @@ void TStoredSessionList::ImportFromKnownHosts(TStrings *Lines)
               UnicodeString NameStr = HostNameStr;
               if (PortNumber >= 0)
               {
-                NameStr = FORMAT("%s:%d", NameStr, ToInt(PortNumber));
+                NameStr = FORMAT("%s:%d", NameStr, nb::ToInt(PortNumber));
               }
 
               std::unique_ptr<TSessionData> SessionDataOwner;
@@ -4949,7 +4949,7 @@ void TStoredSessionList::ImportFromKnownHosts(TStrings *Lines)
                 SessionData->SetHostName(HostNameStr);
                 if (PortNumber >= 0)
                 {
-                  SessionData->SetPortNumber(ToIntPtr(PortNumber));
+                  SessionData->SetPortNumber(nb::ToIntPtr(PortNumber));
                 }
               }
 
@@ -5678,7 +5678,7 @@ UnicodeString GetExpandedLogFileName(const UnicodeString LogFileName, TDateTime 
         break;
 
       case 'p':
-        Replacement = ::Int64ToStr(ToInt(::GetCurrentProcessId()));
+        Replacement = ::Int64ToStr(nb::ToInt(::GetCurrentProcessId()));
         break;
 
       case L'@':
@@ -5795,7 +5795,7 @@ bool GetCodePageInfo(UINT CodePage, CPINFOEX &CodePageInfoEx)
 uintptr_t GetCodePageAsNumber(const UnicodeString CodePage)
 {
   uintptr_t codePage = _wtoi(CodePage.c_str());
-  return ToUIntPtr(codePage == 0 ? CONST_DEFAULT_CODEPAGE : codePage);
+  return nb::ToUIntPtr(codePage == 0 ? CONST_DEFAULT_CODEPAGE : codePage);
 }
 
 UnicodeString GetCodePageAsString(uintptr_t CodePage)

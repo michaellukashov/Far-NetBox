@@ -133,7 +133,7 @@ bool GetFileVersionInfoFix(const wchar_t *FileName, uint32_t Handle,
     if (Result)
     {
       static const char Signature[] = "FE2X";
-      uintptr_t BufSize = ToUIntPtr(VersionInfo->wLength + NBChTraitsCRT<char>::SafeStringLen(Signature));
+      uintptr_t BufSize = nb::ToUIntPtr(VersionInfo->wLength + NBChTraitsCRT<char>::SafeStringLen(Signature));
 
       if (DataSize >= BufSize)
       {
@@ -144,7 +144,7 @@ bool GetFileVersionInfoFix(const wchar_t *FileName, uint32_t Handle,
   }
   else
   {
-    Result = ::GetFileVersionInfo(FileName, Handle, ToDWord(DataSize), Data) != 0;
+    Result = ::GetFileVersionInfo(FileName, Handle, nb::ToDWord(DataSize), Data) != 0;
   }
 
   return Result;
@@ -273,7 +273,7 @@ intptr_t StrToCompoundVersion(const UnicodeString AStr)
   int64_t MinorVer = ::StrToInt64(CutToChar(S, L'.', false));
   int64_t Release = S.IsEmpty() ? 0 : StrToInt64(CutToChar(S, L'.', false));
   int64_t Build = S.IsEmpty() ? 0 : StrToInt64(CutToChar(S, L'.', false));
-  return CalculateCompoundVersion(ToIntPtr(MajorVer), ToIntPtr(MinorVer), ToIntPtr(Release), ToIntPtr(Build));
+  return CalculateCompoundVersion(nb::ToIntPtr(MajorVer), nb::ToIntPtr(MinorVer), nb::ToIntPtr(Release), nb::ToIntPtr(Build));
 }
 //---------------------------------------------------------------------------
 intptr_t CompareVersion(const UnicodeString V1, const UnicodeString V2)

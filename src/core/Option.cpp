@@ -121,7 +121,7 @@ bool TOptions::FindSwitch(const UnicodeString Switch,
   ValueSet = false;
   intptr_t Index = 0;
   bool Found = false;
-  while ((Index < ToIntPtr(FOptions.size())) && !Found)
+  while ((Index < nb::ToIntPtr(FOptions.size())) && !Found)
   {
     if (FOptions[Index].Type == otParam)
     {
@@ -145,7 +145,7 @@ bool TOptions::FindSwitch(const UnicodeString Switch,
   if (Found)
   {
     ParamsStart++;
-    while ((Index + ParamsCount < ToIntPtr(FOptions.size())) &&
+    while ((Index + ParamsCount < nb::ToIntPtr(FOptions.size())) &&
       (FOptions[Index + ParamsCount].Type == otParam))
     {
       ParamsCount++;

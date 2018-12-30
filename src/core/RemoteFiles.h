@@ -604,7 +604,7 @@ public:
   }
   TValidProperties &operator>>(const TValidProperty Value)
   {
-    FValue &= ~(ToInt64(Value));
+    FValue &= ~(nb::ToInt64(Value));
     return *this;
   }
   bool Empty() const

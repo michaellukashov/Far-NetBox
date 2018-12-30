@@ -92,11 +92,11 @@ void InitNeonSession(ne_session *Session, TProxyMethod ProxyMethod, const Unicod
     if ((ProxyMethod == pmSocks4) || (ProxyMethod == pmSocks5))
     {
       enum ne_sock_sversion vers = (ProxyMethod == pmSocks4) ? NE_SOCK_SOCKSV4A : NE_SOCK_SOCKSV5;
-      ne_session_socks_proxy(Session, vers, StrToNeon(AProxyHost), ToInt(ProxyPort), StrToNeon(AProxyUsername), StrToNeon(AProxyPassword));
+      ne_session_socks_proxy(Session, vers, StrToNeon(AProxyHost), nb::ToInt(ProxyPort), StrToNeon(AProxyUsername), StrToNeon(AProxyPassword));
     }
     else if (!AProxyHost.IsEmpty())
     {
-      ne_session_proxy(Session, StrToNeon(AProxyHost), ToInt(ProxyPort));
+      ne_session_proxy(Session, StrToNeon(AProxyHost), nb::ToInt(ProxyPort));
 
       if (!AProxyUsername.IsEmpty())
       {
@@ -260,7 +260,7 @@ void ne_init_ssl_session(struct ssl_st * Ssl, ne_session * Session)
 //---------------------------------------------------------------------------
 void SetNeonTlsInit(ne_session *Session, TNeonTlsInit OnNeonTlsInit)
 {
-  ne_set_session_private(Session, SESSION_TLS_INIT_KEY, ToPtr(OnNeonTlsInit));
+  ne_set_session_private(Session, SESSION_TLS_INIT_KEY, nb::ToPtr(OnNeonTlsInit));
 #if 0
   TMethod &Method = *(TMethod*)&OnNeonTlsInit;
   ne_set_session_private(Session, SESSION_TLS_INIT_KEY, Method.Code);

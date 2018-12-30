@@ -761,7 +761,7 @@ TSessionInfo::TSessionInfo()
 TFileSystemInfo::TFileSystemInfo()
 {
   __removed memset(&IsCapable, false, sizeof(IsCapable));
-  ClearArray(IsCapable);
+  nb::ClearArray(IsCapable);
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
@@ -1426,7 +1426,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData *Data)
     UnicodeString TimeInfo;
     if ((Data->GetFSProtocol() == fsSFTP) || (Data->GetFSProtocol() == fsSFTPonly) || (Data->GetFSProtocol() == fsSCPonly) || (Data->GetFSProtocol() == fsWebDAV))
     {
-      AddToList(TimeInfo, FORMAT("DST mode: %s", EnumName(ToInt(Data->GetDSTMode()), DSTModeNames)), L";");
+      AddToList(TimeInfo, FORMAT("DST mode: %s", EnumName(nb::ToInt(Data->GetDSTMode()), DSTModeNames)), L";");
     }
     if ((Data->GetFSProtocol() == fsSCPonly) || (Data->GetFSProtocol() == fsFTP))
     {
@@ -1536,7 +1536,7 @@ void TActionLog::Add(const UnicodeString Line)
         UTF8String UtfLine = UTF8String(Line);
         size_t Written =
           FLogger->Write(UtfLine.c_str(), UtfLine.Length());
-        if (Written != ToSizeT(UtfLine.Length()))
+        if (Written != nb::ToSizeT(UtfLine.Length()))
         {
           throw ECRTExtException(L"");
         }

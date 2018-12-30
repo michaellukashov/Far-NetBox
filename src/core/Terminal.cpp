@@ -1541,7 +1541,7 @@ bool TTerminal::IsListenerFree(uintptr_t PortNumber) const
   {
     SOCKADDR_IN Address;
 
-    ClearStruct(Address);
+    nb::ClearStruct(Address);
     Address.sin_family = AF_INET;
     Address.sin_port = htons(static_cast<short>(PortNumber));
     Address.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
@@ -1853,7 +1853,7 @@ bool TTerminal::DoPromptUser(TSessionData * /*Data*/, TPromptKind Kind,
   {
     if (PasswordOrPassphrasePrompt && !GetConfiguration()->GetRememberPassword())
     {
-      Prompts->SetObj(0, ToObj(ToIntPtr(Prompts->GetObj(0)) | pupRemember));
+      Prompts->SetObj(0, ToObj(nb::ToIntPtr(Prompts->GetObj(0)) | pupRemember));
     }
 
     if (GetOnPromptUser() != nullptr)
@@ -1874,7 +1874,7 @@ bool TTerminal::DoPromptUser(TSessionData * /*Data*/, TPromptKind Kind,
     }
 
     if (Result && PasswordOrPassphrasePrompt &&
-        (GetConfiguration()->GetRememberPassword() || FLAGSET(ToIntPtr(Prompts->GetObj(0)), pupRemember)))
+        (GetConfiguration()->GetRememberPassword() || FLAGSET(nb::ToIntPtr(Prompts->GetObj(0)), pupRemember)))
     {
       RawByteString EncryptedPassword = EncryptPassword(Response->GetString(0));
       if (FTunnelOpening)
@@ -5208,7 +5208,7 @@ public:
       FAction.AddOutput(Str, true);
       break;
     case cotExitCode:
-      FAction.ExitCode(ToInt(::StrToInt64(Str)));
+      FAction.ExitCode(nb::ToInt(::StrToInt64(Str)));
       break;
     }
 
@@ -5530,11 +5530,11 @@ void TTerminal::TerminalOpenLocalFile(const UnicodeString ATargetFileName,
           uint32_t LSize;
           DWORD HSize;
           LSize = ::GetFileSize(LocalFileHandle, &HSize);
-          if ((LSize == ToUInt32(-1)) && (::GetLastError() != NO_ERROR))
+          if ((LSize == nb::ToUInt32(-1)) && (::GetLastError() != NO_ERROR))
           {
             ::RaiseLastOSError();
           }
-          *ASize = (ToInt64(HSize) << 32) + LSize;
+          *ASize = (nb::ToInt64(HSize) << 32) + LSize;
         });
         __removed FILE_OPERATION_LOOP_END(FMTLOAD(CANT_GET_ATTRS, (FileName)));
       }
@@ -5807,7 +5807,7 @@ public:
     MatchingRemoteFileFile(nullptr),
     MatchingRemoteFileImageIndex(0)
   {
-    ClearStruct(LocalLastWriteTime);
+    nb::ClearStruct(LocalLastWriteTime);
   }
 
   bool Modified;
@@ -5930,7 +5930,7 @@ UnicodeString TTerminal::SynchronizeParamsStr(intptr_t Params)
   AddFlagName(ParamsStr, Params, spMirror, L"Mirror");
   if (Params > 0)
   {
-    AddToList(ParamsStr, FORMAT("0x%x", ToInt(Params)), L", ");
+    AddToList(ParamsStr, FORMAT("0x%x", nb::ToInt(Params)), L", ");
   }
   return ParamsStr;
 }

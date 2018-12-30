@@ -397,7 +397,7 @@ void TSimpleThread::Close()
 //---------------------------------------------------------------------------
 void TSimpleThread::WaitFor(uintptr_t Milliseconds) const
 {
-  ::WaitForSingleObject(FThread, ToDWord(Milliseconds));
+  ::WaitForSingleObject(FThread, nb::ToDWord(Milliseconds));
 }
 //---------------------------------------------------------------------------
 // TSignalThread
@@ -466,7 +466,7 @@ uintptr_t TSignalThread::WaitForEvent(uint32_t Timeout) const
   uintptr_t Result;
   if ((Res == WAIT_TIMEOUT) && !FTerminated)
   {
-    Result = ToUIntPtr(-1);
+    Result = nb::ToUIntPtr(-1);
   }
   else
   {
@@ -1317,7 +1317,7 @@ bool TBackgroundTerminal::DoQueryReopen(Exception * /*E*/)
   }
   else
   {
-    ::Sleep(ToDWord(GetConfiguration()->GetSessionReopenBackground()));
+    ::Sleep(nb::ToDWord(GetConfiguration()->GetSessionReopenBackground()));
     Result = true;
   }
   return Result;
@@ -1722,7 +1722,7 @@ TQueueItem::TQueueItem(TObjectClassId Kind) noexcept :
   FInfo(std::make_unique<TInfo>()),
   FQueue(nullptr),
   FCompleteEvent(INVALID_HANDLE_VALUE),
-  FCPSLimit(ToUIntPtr(-1))
+  FCPSLimit(nb::ToUIntPtr(-1))
 {
   FInfo->SingleFile = false;
   FInfo->Primary = true;
@@ -2683,7 +2683,7 @@ void TTerminalThread::RunAction(TNotifyEvent Action)
             {
               FOnIdle(nullptr);
             }
-            Wait = Min(Wait + 10, MaxWait);
+            Wait = nb::Min(Wait + 10, MaxWait);
           }
         }
         break;
@@ -2868,7 +2868,7 @@ void TTerminalThread::WaitForUserAction(TUserAction *UserAction)
           }
         }
 
-        intptr_t WaitResult = ToIntPtr(WaitForEvent(1000));
+        intptr_t WaitResult = nb::ToIntPtr(WaitForEvent(1000));
         if (WaitResult == 0)
         {
           SAFE_DESTROY_EX(Exception, FIdleException);
