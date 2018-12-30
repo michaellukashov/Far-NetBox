@@ -19,7 +19,7 @@ __removed #pragma package(smart_init)
 //---------------------------------------------------------------------------
 __removed #define FILE_OPERATION_LOOP_TERMINAL FTerminal
 //---------------------------------------------------------------------------
-static const SSH_FX_TYPE
+constexpr const SSH_FX_TYPE
   SSH_FX_OK = 0,
   SSH_FX_EOF = 1,
   SSH_FX_NO_SUCH_FILE = 2,
@@ -27,7 +27,7 @@ static const SSH_FX_TYPE
   SSH_FX_FAILURE = 4,
   SSH_FX_OP_UNSUPPORTED = 8;
 
-static const SSH_FXP_TYPE
+constexpr const SSH_FXP_TYPE
   SSH_FXP_INIT = 1,
   SSH_FXP_VERSION = 2,
   SSH_FXP_OPEN = 3,
@@ -58,7 +58,7 @@ static const SSH_FXP_TYPE
   SSH_FXP_EXTENDED_REPLY = 201;
   // SSH_FXP_ATTRS = 105;
 
-static const SSH_FILEXFER_ATTR_TYPE
+constexpr const SSH_FILEXFER_ATTR_TYPE
   SSH_FILEXFER_ATTR_SIZE = 0x00000001,
   SSH_FILEXFER_ATTR_UIDGID = 0x00000002,
   SSH_FILEXFER_ATTR_PERMISSIONS = 0x00000004,
@@ -79,20 +79,20 @@ static const SSH_FILEXFER_ATTR_TYPE
   SSH_FILEXFER_ATTR_CTIME = 0x00008000;
   // SSH_FILEXFER_ATTR_EXTENDED = 0x80000000;
 
-static const SSH_FILEXFER_ATTR_TYPE
+constexpr const SSH_FILEXFER_ATTR_TYPE
 SSH_FILEXFER_ATTR_COMMON =
   (SSH_FILEXFER_ATTR_SIZE | SSH_FILEXFER_ATTR_OWNERGROUP |
    SSH_FILEXFER_ATTR_PERMISSIONS | SSH_FILEXFER_ATTR_ACCESSTIME |
    SSH_FILEXFER_ATTR_MODIFYTIME);
 
-static const SSH_FILEXFER_TYPE
+constexpr const SSH_FILEXFER_TYPE
   SSH_FILEXFER_TYPE_REGULAR = 1,
   SSH_FILEXFER_TYPE_DIRECTORY = 2,
   SSH_FILEXFER_TYPE_SYMLINK = 3,
   SSH_FILEXFER_TYPE_SPECIAL = 4,
   SSH_FILEXFER_TYPE_UNKNOWN = 5;
 
-static const SSH_FXF_TYPE
+constexpr const SSH_FXF_TYPE
   SSH_FXF_READ = 0x00000001,
   SSH_FXF_WRITE = 0x00000002,
   SSH_FXF_APPEND = 0x00000004,
@@ -111,7 +111,7 @@ static const SSH_FXF_TYPE
   SSH_FXF_ACCESS_APPEND_DATA_ATOMIC = 0x00000010,
   SSH_FXF_ACCESS_TEXT_MODE = 0x00000020;
 
-static const ACE4_TYPE
+constexpr const ACE4_TYPE
   ACE4_READ_DATA = 0x00000001,
   ACE4_LIST_DIRECTORY = 0x00000001,
   ACE4_WRITE_DATA = 0x00000002,
@@ -130,15 +130,15 @@ static const ACE4_TYPE
   ACE4_WRITE_OWNER = 0x00080000,
   ACE4_SYNCHRONIZE = 0x00100000;
 
-static const uint32_t SSH_FILEXFER_ATTR_FLAGS_HIDDEN = 0x00000004;
+constexpr const uint32_t SSH_FILEXFER_ATTR_FLAGS_HIDDEN = 0x00000004;
 
-typedef uint8_t SSH_FXP_REALPATH_TYPES;
-static const SSH_FXP_REALPATH_TYPES
+using SSH_FXP_REALPATH_TYPE = uint8_t;
+constexpr const SSH_FXP_REALPATH_TYPE
   SSH_FXP_REALPATH_NO_CHECK = 0x00000001,
   SSH_FXP_REALPATH_STAT_IF = 0x00000002,
   SSH_FXP_REALPATH_STAT_ALWAYS = 0x00000003;
 
-static const intptr_t SFTP_MAX_PACKET_LEN = 1000 * 1024;
+constexpr const intptr_t SFTP_MAX_PACKET_LEN = 1000 * 1024;
 //---------------------------------------------------------------------------
 #define SFTP_EXT_OWNER_GROUP "owner-group-query@generic-extensions"
 #define SFTP_EXT_OWNER_GROUP_REPLY "owner-group-query-reply@generic-extensions"
