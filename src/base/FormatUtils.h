@@ -13,13 +13,13 @@
 namespace nb {
 
 NB_CORE_EXPORT UnicodeString Format(const UnicodeString format_str, fmt::ArgList args);
-FMT_VARIADIC_W(UnicodeString, Format, UnicodeString)
+FMT_VARIADIC_W(const UnicodeString, Format, const UnicodeString)
 
 NB_CORE_EXPORT UnicodeString Sprintf(const UnicodeString format_str, fmt::ArgList args);
-FMT_VARIADIC_W(UnicodeString, Sprintf, UnicodeString)
+FMT_VARIADIC_W(const UnicodeString, Sprintf, const UnicodeString)
 
 NB_CORE_EXPORT UnicodeString FmtLoadStr(intptr_t Id, fmt::ArgList args);
-FMT_VARIADIC_W(UnicodeString, FmtLoadStr, intptr_t)
+FMT_VARIADIC_W(const UnicodeString, FmtLoadStr, intptr_t)
 
 } // namespace nb
 

@@ -8,8 +8,8 @@
 
 #include <FormatUtils.h>
 //---------------------------------------------------------------------------
-#define FORMAT(S, ...) nb::Sprintf(S, __VA_ARGS__)
-#define FMTLOAD(Id, ...) nb::FmtLoadStr(Id, __VA_ARGS__)
+#define FORMAT(S, ...) nb::Sprintf((S), __VA_ARGS__)
+#define FMTLOAD(Id, ...) nb::FmtLoadStr((Id), __VA_ARGS__)
 #ifndef LENOF
 #define LENOF(x) (_countof((x)))
 #endif
