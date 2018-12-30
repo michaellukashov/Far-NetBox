@@ -23,15 +23,15 @@ FMT_VARIADIC_W(const UnicodeString, FmtLoadStr, intptr_t)
 
 } // namespace nb
 
-inline std::basic_ostream<wchar_t>& operator<<(std::basic_ostream<wchar_t> &os, const BaseStringT<wchar_t> &Value)
+inline std::basic_ostream<wchar_t>& operator<<(std::basic_ostream<wchar_t> &os, const CMStringW &Value)
 {
-  os << Value.data();
+  os << Value.c_str();
   return os;
 }
 
-inline std::basic_ostream<char>& operator<<(std::basic_ostream<char> &os, const BaseStringT<char> &Value)
+inline std::basic_ostream<char>& operator<<(std::basic_ostream<char> &os, const CMStringA &Value)
 {
-  os << Value.data();
+  os << Value.c_str();
   return os;
 }
 

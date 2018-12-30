@@ -270,6 +270,7 @@ NB_CORE_EXPORT intptr_t AnsiCompareIC(const UnicodeString Str1, const UnicodeStr
 NB_CORE_EXPORT bool AnsiSameStr(const UnicodeString Str1, const UnicodeString Str2);
 NB_CORE_EXPORT bool AnsiContainsText(const UnicodeString Str1, const UnicodeString Str2);
 NB_CORE_EXPORT bool ContainsStr(const AnsiString Str1, const AnsiString Str2);
+NB_CORE_EXPORT bool ContainsStr(const UnicodeString Str1, const UnicodeString Str2);
 NB_CORE_EXPORT bool ContainsText(const UnicodeString Str1, const UnicodeString Str2);
 NB_CORE_EXPORT UnicodeString RightStr(const UnicodeString Str, intptr_t ACount);
 NB_CORE_EXPORT intptr_t PosEx(const UnicodeString SubStr, const UnicodeString Str, intptr_t Offset = 1);
