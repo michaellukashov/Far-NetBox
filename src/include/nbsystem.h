@@ -5,100 +5,102 @@
 
 #if defined(__cplusplus)
 
-template <class T>
-inline const T Min(const T a, const T b) { return a < b ? a : b; }
+namespace nb {
 
 template <class T>
-inline const T Max(const T a, const T b) { return a > b ? a : b; }
+inline constexpr const T Min(const T a, const T b) { return a < b ? a : b; }
 
 template <class T>
-inline const T Round(const T a, const T b) { return a / b + (a % b * 2 > b ? 1 : 0); }
+inline constexpr const T Max(const T a, const T b) { return a > b ? a : b; }
 
 template <class T>
-inline double ToDouble(const T a) { return static_cast<double>(a); }
+inline constexpr const T Round(const T a, const T b) { return a / b + (a % b * 2 > b ? 1 : 0); }
 
 template <class T>
-inline Word ToWord(const T a) { return static_cast<Word>(a); }
-template <class T>
-inline DWORD ToDWord(const T a) { return static_cast<DWORD>(a); }
+inline constexpr double ToDouble(const T a) { return static_cast<double>(a); }
 
 template <class T>
-inline typename std::is_convertible<T, intptr_t>::value
+inline constexpr Word ToWord(const T a) { return static_cast<Word>(a); }
+template <class T>
+inline constexpr DWORD ToDWord(const T a) { return static_cast<DWORD>(a); }
+
+template <class T>
+inline constexpr typename std::is_convertible<T, intptr_t>::value
 ToIntPtr(T a) { return static_cast<intptr_t>(a); }
 
 template <class T>
-inline typename std::enable_if<std::is_integral<T>::value, intptr_t>::type
+inline constexpr typename std::enable_if<std::is_integral<T>::value, intptr_t>::type
 ToIntPtr(T a) { return static_cast<intptr_t>(a); }
 
 template <class T>
-inline typename std::enable_if<std::is_enum<T>::value, intptr_t>::type
+inline constexpr typename std::enable_if<std::is_enum<T>::value, intptr_t>::type
 ToIntPtr(T a) { return static_cast<intptr_t>(a); }
 
 template <class T>
-inline typename std::enable_if<std::is_pointer<T>::value, intptr_t>::type
+inline constexpr typename std::enable_if<std::is_pointer<T>::value, intptr_t>::type
 ToIntPtr(T a) { return (intptr_t)(a); }
 
 template <class T>
-inline typename std::enable_if<std::is_floating_point<T>::value, intptr_t>::type
+inline constexpr typename std::enable_if<std::is_floating_point<T>::value, intptr_t>::type
 ToIntPtr(T a) { return static_cast<intptr_t>(a); }
 
 template <class T>
-inline typename std::is_convertible<T, uintptr_t>::value
+inline constexpr typename std::is_convertible<T, uintptr_t>::value
 ToUIntPtr(T a) { return static_cast<uintptr_t>(a); }
 
 template <class T>
-inline typename std::enable_if<std::is_enum<T>::value, uintptr_t>::type
+inline constexpr typename std::enable_if<std::is_enum<T>::value, uintptr_t>::type
 ToUIntPtr(T a) { return static_cast<uintptr_t>(a); }
 
 template <class T>
-inline typename std::enable_if<std::is_pointer<T>::value, uintptr_t>::type
+inline constexpr typename std::enable_if<std::is_pointer<T>::value, uintptr_t>::type
 ToUIntPtr(T a) { return (uintptr_t)(a); }
 
 template <class T>
-inline typename std::enable_if<std::is_floating_point<T>::value, uintptr_t>::type
+inline constexpr typename std::enable_if<std::is_floating_point<T>::value, uintptr_t>::type
 ToUIntPtr(T a) { return static_cast<uintptr_t>(a); }
 
 template <class T>
-inline typename std::enable_if<sizeof(T) >= sizeof(uintptr_t), uintptr_t>::value
+inline constexpr typename std::enable_if<sizeof(T) >= sizeof(uintptr_t), uintptr_t>::value
 ToUIntPtr(T a) { return static_cast<uintptr_t>(a); }
 
-inline uintptr_t
+inline constexpr uintptr_t
 ToUIntPtr(int64_t a) { return static_cast<uintptr_t>(a); }
 
 template <class T>
-inline typename std::is_convertible<T, int>::value
+inline constexpr typename std::is_convertible<T, int>::value
 ToInt(T a) { return static_cast<int>(a); }
 
 template <class T>
-inline int
+inline constexpr int
 ToInt(T a) { return static_cast<int>(a); }
 
 template <class T>
-inline typename std::is_convertible<T, uint32_t>::value
+inline constexpr typename std::is_convertible<T, uint32_t>::value
 ToUInt32(T a) { return static_cast<uint32_t>(a); }
 
 template <class T>
-inline uint32_t
+inline constexpr uint32_t
 ToUInt32(T a) { return static_cast<uint32_t>(a); }
 
 template <class T>
-inline typename std::is_convertible<T, int64_t>::value
+inline constexpr typename std::is_convertible<T, int64_t>::value
 ToInt64(T a) { return static_cast<int64_t>(a); }
 
 template <class T>
-inline int64_t
+inline constexpr int64_t
 ToInt64(T a) { return static_cast<int64_t>(a); }
 
 template <class T>
-inline uint64_t
+inline constexpr uint64_t
 ToUInt64(T a) { return static_cast<uint64_t>(a); }
 
 template <class T>
-inline typename std::is_convertible<T, void *>::value
+inline constexpr typename std::is_convertible<T, void *>::value
 ToPtr(T a) { return const_cast<void *>(a); }
 
 template <class T>
-inline void *ToPtr(T a) { return reinterpret_cast<void *>((intptr_t)(a)); }
+inline constexpr void *ToPtr(T a) { return reinterpret_cast<void *>((intptr_t)(a)); }
 
 // MakeOtherType<T>::Type gives an other type corresponding to integer type T.
 template <typename T>
@@ -128,4 +130,7 @@ inline void ClearStruct(T *s) { T dont_instantiate_this_template_with_pointers =
 template<typename T, size_t N>
 inline void ClearArray(T (&a)[N]) { ::ZeroMemory(a, sizeof(a[0]) * N); }
 
+} // namespace nb
+
 #endif // #if defined(__cplusplus)
+
