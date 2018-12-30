@@ -392,7 +392,7 @@ bool TFileZillaIntf::HandleMessage(WPARAM wParam, LPARAM lParam)
             (Data->localtime != NULL) ? Data->localtime->GetTime() : 0,
             (Data->localtime != NULL) && ((Data->localtime->GetHour() != 0) || (Data->localtime->GetMinute() != 0)),
             RemoteTime,
-            ToPtr(Data->pTransferFile->nUserData),
+            nb::ToPtr(Data->pTransferFile->nUserData),
             Data->localFileHandle,
             RequestResult);
         }

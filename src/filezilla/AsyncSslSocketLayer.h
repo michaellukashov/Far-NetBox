@@ -82,12 +82,12 @@ CUSTOM_MEM_ALLOCATION_IMPL
 
   t_SslCertData()
   {
-    ClearStruct(subject);
-    ClearStruct(issuer);
-    ClearStruct(validFrom);
-    ClearStruct(validUntil);
-    ClearArray(subjectAltName);
-    ClearArray(hash);
+    nb::ClearStruct(subject);
+    nb::ClearStruct(issuer);
+    nb::ClearStruct(validFrom);
+    nb::ClearStruct(validUntil);
+    nb::ClearArray(subjectAltName);
+    nb::ClearArray(hash);
     certificate = 0;
     certificateLen = 0;
     verificationResult = 0;

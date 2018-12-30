@@ -46,7 +46,7 @@ CString TFileZillaIntern::GetOption(int OptionID) const
 //---------------------------------------------------------------------------
 int TFileZillaIntern::GetOptionVal(int OptionID) const
 {
-  return ToInt(FOwner->OptionVal(OptionID));
+  return nb::ToInt(FOwner->OptionVal(OptionID));
 }
 //---------------------------------------------------------------------------
 int TFileZillaIntern::GetDebugLevel() const

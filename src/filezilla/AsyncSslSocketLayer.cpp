@@ -1092,7 +1092,7 @@ void CAsyncSslSocketLayer::apps_ssl_info_callback(const SSL *s, int where, int r
     // exact SSL_CB_LOOP is abused for debugging
     if (where == SSL_CB_LOOP)
     {
-      debug = reinterpret_cast<char *>(ToIntPtr(ret));
+      debug = reinterpret_cast<char *>(nb::ToIntPtr(ret));
     }
     char *buffer = nb::chcalloc(4096 + ((debug != NULL) ? strlen(debug) : 0));
     sprintf(buffer, "%s: %s",
