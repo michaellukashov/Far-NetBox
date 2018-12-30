@@ -56,8 +56,8 @@ public:
   explicit BaseStringT(const YCHAR *Str, intptr_t Length) :
     BaseT(Str, ToInt(Length))
   {}
-  explicit BaseStringT(intptr_t Length, CharT Ch) : BaseT(Ch, ToInt(Length)) {}
-  ~BaseStringT() = default;
+  explicit BaseStringT(intptr_t Length, CharT Ch) noexcept : BaseT(Ch, ToInt(Length)) {}
+  ~BaseStringT() noexcept = default;
 
   const CharT *c_str() const { return reinterpret_cast<const CharT *>(BaseT::c_str()); }
   const CharT *data() const { return BaseT::c_str(); }
@@ -175,9 +175,9 @@ public:
   intptr_t RPos(wchar_t Ch) const { return ::ToIntPtr(BaseT::ReverseFind(Ch)) + 1; }
   bool RPos(intptr_t &nPos, wchar_t Ch, intptr_t nStartPos = 0) const
   {
-    const int Pos = BaseT::ReverseFind(Ch); //, Data.size() - nStartPos);
-    nPos = Pos + 1;
-    return Pos != -1;
+    const int pos = BaseT::ReverseFind(Ch); //, Data.size() - nStartPos);
+    nPos = pos + 1;
+    return pos != -1;
   }
 
   BaseStringT SubStr(intptr_t Pos, intptr_t Len) const
@@ -237,11 +237,11 @@ public:
   {
     BaseStringT Result = *this;
     const intptr_t Len = Result.GetLength();
-    intptr_t Pos = 1;
-    while ((Pos <= Len) && (Result[Pos] == L' '))
-      Pos++;
-    if (Pos > 1)
-      return SubStr(Pos, Len - Pos + 1);
+    intptr_t pos = 1;
+    while ((pos <= Len) && (Result[pos] == L' '))
+      pos++;
+    if (pos > 1)
+      return SubStr(pos, Len - pos + 1);
     return Result;
   }
 
@@ -376,7 +376,7 @@ class NB_CORE_EXPORT RawByteString : public BaseStringT<char>
 {
   typedef BaseStringT<char> BaseT;
 public:
-  RawByteString() = default;
+  RawByteString() noexcept = default;
   RawByteString(const BaseStringT<wchar_t> &Str) :
     BaseT(Str.c_str(), ToInt(Str.GetLength()))
   {}
@@ -394,7 +394,7 @@ public:
   explicit RawByteString(const unsigned char *Str, intptr_t Length) :
     BaseT(reinterpret_cast<const char *>(Str), ToInt(Length))
   {}
-  ~RawByteString() = default;
+  ~RawByteString() noexcept = default;
 
   // inline operator BaseT &() { return *static_cast<BaseT *>(this); }
 
