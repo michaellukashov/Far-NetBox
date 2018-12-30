@@ -112,12 +112,12 @@ int RandSeed = 0;
 
 int random(int range)
 {
-  return ToInt(ToDouble(rand()) / (ToDouble(RAND_MAX) / range));
+  return nb::ToInt(nb::ToDouble(rand()) / (nb::ToDouble(RAND_MAX) / range));
 }
 
 void Randomize()
 {
-  srand(ToUInt32(time(nullptr)));
+  srand(nb::ToUInt32(time(nullptr)));
 }
 
 
@@ -146,7 +146,7 @@ intptr_t StrToIntPtr(const UnicodeString Value)
   int64_t Result = 0;
   if (TryStrToInt64(Value, Result))
   {
-    return ToIntPtr(Result);
+    return nb::ToIntPtr(Result);
   }
   return 0;
 }
@@ -166,7 +166,7 @@ intptr_t StrToIntDef(const UnicodeString Value, intptr_t DefVal)
   int64_t Result = DefVal;
   if (TryStrToInt64(Value, Result))
   {
-    return ToIntPtr(Result);
+    return nb::ToIntPtr(Result);
   }
   return DefVal;
 }
@@ -199,7 +199,7 @@ bool TryStrToInt(const UnicodeString StrValue, intptr_t &Value)
 {
   int64_t Val{0};
   bool res = TryStrToInt64(StrValue, Val);
-  Value = ToIntPtr(Val);
+  Value = nb::ToIntPtr(Val);
   return res;
 }
 
@@ -427,12 +427,12 @@ UnicodeString UTF8ToString(const char *Str, intptr_t Len)
     return UnicodeString(L"");
   }
 
-  const intptr_t reqLength = ::MultiByteToWideChar(CP_UTF8, 0, Str, ToInt(Len), nullptr, 0);
+  const intptr_t reqLength = ::MultiByteToWideChar(CP_UTF8, 0, Str, nb::ToInt(Len), nullptr, 0);
   UnicodeString Result;
   if (reqLength)
   {
     Result.SetLength(reqLength);
-    ::MultiByteToWideChar(CP_UTF8, 0, Str, ToInt(Len), const_cast<LPWSTR>(Result.c_str()), ToInt(reqLength));
+    ::MultiByteToWideChar(CP_UTF8, 0, Str, nb::ToInt(Len), const_cast<LPWSTR>(Result.c_str()), nb::ToInt(reqLength));
     Result.SetLength(Result.Length() - 1); //remove NULL character
   }
   return Result;
@@ -475,8 +475,8 @@ TTimeStamp DateTimeToTimeStamp(const TDateTime &DateTime)
   TTimeStamp Result{};
   double intpart;
   const double fractpart = modf(DateTime, &intpart);
-  Result.Time = ToInt(fractpart * MSecsPerDay + 0.5);
-  Result.Date = ToInt(intpart + DateDelta);
+  Result.Time = nb::ToInt(fractpart * MSecsPerDay + 0.5);
+  Result.Date = nb::ToInt(intpart + DateDelta);
   return Result;
 }
 
@@ -484,7 +484,7 @@ int64_t FileRead(HANDLE AHandle, void *Buffer, int64_t Count)
 {
   int64_t Result;
   DWORD Res = 0;
-  if (::ReadFile(AHandle, reinterpret_cast<LPVOID>(Buffer), ToDWord(Count), &Res, nullptr))
+  if (::ReadFile(AHandle, reinterpret_cast<LPVOID>(Buffer), nb::ToDWord(Count), &Res, nullptr))
   {
     Result = Res;
   }
@@ -499,7 +499,7 @@ int64_t FileWrite(HANDLE AHandle, const void *Buffer, int64_t Count)
 {
   int64_t Result;
   DWORD Res = 0;
-  if (::WriteFile(AHandle, Buffer, ToDWord(Count), &Res, nullptr))
+  if (::WriteFile(AHandle, Buffer, nb::ToDWord(Count), &Res, nullptr))
   {
     Result = Res;
   }
@@ -515,7 +515,7 @@ int64_t FileSeek(HANDLE AHandle, int64_t Offset, DWORD Origin)
   LONG low = Offset & 0xFFFFFFFF;
   LONG high = Offset >> 32;
   low = ::SetFilePointer(AHandle, low, &high, Origin);
-  return (ToInt64(high) << 32) + low;
+  return (nb::ToInt64(high) << 32) + low;
 }
 
 bool SysUtulsFileExists(const UnicodeString AFileName)
@@ -844,7 +844,7 @@ void AppendPathDelimiterW(UnicodeString &Str)
 UnicodeString ExpandEnvVars(const UnicodeString Str)
 {
   UnicodeString Buf(NB_MAX_PATH, 0);
-  const intptr_t Size = ::ExpandEnvironmentStringsW(Str.c_str(), ToWChar(Buf), ToDWord(NB_MAX_PATH - 1));
+  const intptr_t Size = ::ExpandEnvironmentStringsW(Str.c_str(), ToWChar(Buf), nb::ToDWord(NB_MAX_PATH - 1));
   UnicodeString Result = UnicodeString(Buf.c_str(), Size - 1);
   return Result;
 }
@@ -878,12 +878,12 @@ UnicodeString ExtractFileExt(const UnicodeString AFileName)
 UnicodeString ExpandFileName(const UnicodeString AFileName)
 {
   UnicodeString Buf(NB_MAX_PATH + 1, 0);
-  intptr_t Size = ::GetFullPathNameW(ApiPath(AFileName).c_str(), ToDWord(Buf.Length() - 1),
+  intptr_t Size = ::GetFullPathNameW(ApiPath(AFileName).c_str(), nb::ToDWord(Buf.Length() - 1),
       reinterpret_cast<LPWSTR>(ToWChar(Buf)), nullptr);
   if (Size > Buf.Length())
   {
     Buf.SetLength(Size);
-    Size = ::GetFullPathNameW(ApiPath(AFileName).c_str(), ToDWord(Buf.Length() - 1),
+    Size = ::GetFullPathNameW(ApiPath(AFileName).c_str(), nb::ToDWord(Buf.Length() - 1),
         reinterpret_cast<LPWSTR>(ToWChar(Buf)), nullptr);
   }
   UnicodeString Result = UnicodeString(Buf.c_str(), Size);
@@ -923,8 +923,8 @@ static DWORD FindMatchingFile(TSearchRec &Rec)
   WORD Hi = (Rec.Time & 0xFFFF0000) >> 16;
   WORD Lo = Rec.Time & 0xFFFF;
   FileTimeToDosDateTime(reinterpret_cast<LPFILETIME>(&LocalFileTime), &Hi, &Lo);
-  Rec.Time = (ToIntPtr(Hi) << 16) + Lo;
-  Rec.Size = Rec.FindData.nFileSizeLow || ToInt64(Rec.FindData.nFileSizeHigh) << 32;
+  Rec.Time = (nb::ToIntPtr(Hi) << 16) + Lo;
+  Rec.Size = Rec.FindData.nFileSizeLow || nb::ToInt64(Rec.FindData.nFileSizeHigh) << 32;
   Rec.Attr = Rec.FindData.dwFileAttributes;
   Rec.Name = Rec.FindData.cFileName;
   Result = ERROR_SUCCESS;
@@ -944,7 +944,7 @@ UnicodeString SysErrorMessage(intptr_t ErrorCode)
 {
   wchar_t Buffer[255];
   intptr_t Len = ::FormatMessageW(FORMAT_MESSAGE_FROM_SYSTEM |
-      FORMAT_MESSAGE_ARGUMENT_ARRAY, nullptr, ToInt(ErrorCode), 0,
+      FORMAT_MESSAGE_ARGUMENT_ARRAY, nullptr, nb::ToInt(ErrorCode), 0,
       static_cast<LPTSTR>(Buffer),
       _countof(Buffer), nullptr);
   while ((Len > 0) && ((Buffer[Len - 1] != 0) &&
@@ -1137,14 +1137,14 @@ uintptr_t HexToIntPtr(const UnicodeString Hex, uintptr_t MinChars)
     const intptr_t A = Digits.FindFirstOf(UpCase(Hex[Index]));
     if (A == NPOS)
     {
-      if ((ToIntPtr(MinChars) == NPOS) || (Index <= ToIntPtr(MinChars)))
+      if ((nb::ToIntPtr(MinChars) == NPOS) || (Index <= nb::ToIntPtr(MinChars)))
       {
         Result = 0;
       }
       break;
     }
 
-    Result = (Result * 16) + (ToInt(A) - 1);
+    Result = (Result * 16) + (nb::ToInt(A) - 1);
 
     ++Index;
   }
@@ -1223,10 +1223,10 @@ static bool DecodeDateFully(const TDateTime &DateTime,
   if (I == 4)
   {
     I--;
-    D += ToWord(D1);
+    D += nb::ToWord(D1);
   }
   Y += I;
-  const bool Result = IsLeapYear(ToWord(Y));
+  const bool Result = IsLeapYear(nb::ToWord(Y));
   const TDayTable *DayTable = &MonthDays[Result];
   uintptr_t M = 1;
   while (true)
@@ -1268,7 +1268,7 @@ void DecodeTime(const TDateTime &DateTime, uint16_t &Hour,
 
 static bool TryEncodeDate(int Year, int Month, int Day, TDateTime &Date)
 {
-  const TDayTable *DayTable = &MonthDays[IsLeapYear(ToWord(Year))];
+  const TDayTable *DayTable = &MonthDays[IsLeapYear(nb::ToWord(Year))];
   if ((Year >= 1) && (Year <= 9999) && (Month >= 1) && (Month <= 12) &&
     (Day >= 1) && (Day <= (*DayTable)[Month - 1]))
   {
@@ -1277,7 +1277,7 @@ static bool TryEncodeDate(int Year, int Month, int Day, TDateTime &Date)
       Day += (*DayTable)[Index - 1];
     }
     const int Idx = Year - 1;
-    Date = TDateTime(ToDouble(Idx * 365 + Idx / 4 - Idx / 100 + Idx / 400 + Day - DateDelta));
+    Date = TDateTime(nb::ToDouble(Idx * 365 + Idx / 4 - Idx / 100 + Idx / 400 + Day - DateDelta));
     return true;
   }
   return false;
@@ -1299,7 +1299,7 @@ static bool TryEncodeTime(uint32_t Hour, uint32_t Min, uint32_t Sec, uint32_t MS
   bool Result = false;
   if ((Hour < 24) && (Min < 60) && (Sec < 60) && (MSec < 1000))
   {
-    Time = (Hour * 3600000 + Min * 60000 + Sec * 1000 + MSec) / ToDouble(MSecsPerDay);
+    Time = (Hour * 3600000 + Min * 60000 + Sec * 1000 + MSec) / nb::ToDouble(MSecsPerDay);
     Result = true;
   }
   return Result;
@@ -1447,15 +1447,15 @@ static void IncAMonth(Word &Year, Word &Month, Word &Day, Int64 NumberOfMonths =
     Sign = -1;
   Year = Year + (NumberOfMonths % 12);
   NumberOfMonths = NumberOfMonths / 12;
-  Month += ToWord(NumberOfMonths);
-  if (ToWord(Month - 1) > 11) // if Month <= 0, word(Month-1) > 11)
+  Month += nb::ToWord(NumberOfMonths);
+  if (nb::ToWord(Month - 1) > 11) // if Month <= 0, word(Month-1) > 11)
   {
-    Year += ToWord(Sign);
-    Month += -12 * ToWord(Sign);
+    Year += nb::ToWord(Sign);
+    Month += -12 * nb::ToWord(Sign);
   }
   const TDayTable *DayTable = &MonthDays[IsLeapYear(Year)];
   if (Day > (*DayTable)[Month])
-    Day = ToWord(*DayTable[Month]);
+    Day = nb::ToWord(*DayTable[Month]);
 }
 
 static void ReplaceTime(TDateTime &DateTime, const TDateTime &NewTime)
@@ -1573,7 +1573,7 @@ uintptr_t StrToVersionNumber(const UnicodeString VersionMumberStr)
   while (!Version.IsEmpty())
   {
     UnicodeString Num = CutToChar(Version, L'.', true);
-    Result += ToUIntPtr(Num.ToIntPtr()) << Shift;
+    Result += nb::ToUIntPtr(Num.ToIntPtr()) << Shift;
     if (Shift >= 8)
       Shift -= 8;
   }

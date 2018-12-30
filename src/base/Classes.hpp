@@ -90,7 +90,7 @@ inline O *get_as(T p) { return dyn_cast<O>(as_object(p)); }
 template<class O> inline O *get_as(void *p) { return get_as<O, void *>(p); }
 template<class O> inline const O *get_as(const void *p) { return get_as<const O, const void *>(p); }
 template <class T>
-inline TObject *ToObj(const T &a) { return reinterpret_cast<TObject *>(ToSizeT(a)); }
+inline TObject *ToObj(const T &a) { return reinterpret_cast<TObject *>(nb::ToSizeT(a)); }
 
 struct TPoint
 {

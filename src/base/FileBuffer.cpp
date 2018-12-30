@@ -217,13 +217,13 @@ void TFileBuffer::Convert(TEOLType Source, char * Dest, intptr_t Params,
 void TFileBuffer::Insert(int64_t Index, const char * Buf, int64_t Len)
 {
   SetSize(GetSize() + Len);
-  memmove(GetData() + Index + Len, GetData() + Index, ToSizeT(GetSize() - Index - Len));
-  memmove(GetData() + Index, Buf, ToSizeT(Len));
+  memmove(GetData() + Index + Len, GetData() + Index, nb::ToSizeT(GetSize() - Index - Len));
+  memmove(GetData() + Index, Buf, nb::ToSizeT(Len));
 }
 //---------------------------------------------------------------------------
 void TFileBuffer::Delete(int64_t Index, int64_t Len)
 {
-  memmove(GetData() + Index, GetData() + Index + Len, ToSizeT(GetSize() - Index - Len));
+  memmove(GetData() + Index, GetData() + Index + Len, nb::ToSizeT(GetSize() - Index - Len));
   SetSize(GetSize() - Len);
 }
 //---------------------------------------------------------------------------

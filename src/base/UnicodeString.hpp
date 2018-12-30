@@ -21,75 +21,75 @@ public:
   BaseStringT(BaseStringT&&) = default;
 
   BaseStringT(const BaseStringT &rhs) :
-    BaseT(rhs.c_str(), ToInt(rhs.GetLength()))
+    BaseT(rhs.c_str(), nb::ToInt(rhs.GetLength()))
   {}
   BaseStringT(const BaseY &rhs) :
-    BaseT(rhs.c_str(), ToInt(rhs.GetLength()))
+    BaseT(rhs.c_str(), nb::ToInt(rhs.GetLength()))
   {}
   BaseStringT(const XCHAR *Str) :
-    BaseT(Str, ToInt(BaseT::StringLength(Str)))
+    BaseT(Str, nb::ToInt(BaseT::StringLength(Str)))
   {}
   BaseStringT(const XCHAR Ch) :
     BaseT(&Ch, 1)
   {}
   BaseStringT(const YCHAR *Str) :
-    BaseT(Str, ToInt(BaseT::StringLength(Str)))
+    BaseT(Str, nb::ToInt(BaseT::StringLength(Str)))
   {}
   BaseStringT(const YCHAR Ch) :
     BaseT(&Ch, 1)
   {}
   explicit BaseStringT(const XCHAR *Str, intptr_t Length, int CodePage) :
-    BaseT(Str, ToInt(Length), CodePage)
+    BaseT(Str, nb::ToInt(Length), CodePage)
   {}
   explicit BaseStringT(const unsigned char *Str, intptr_t Length, int CodePage) :
-    BaseT(reinterpret_cast<const char *>(Str), ToInt(Length), CodePage)
+    BaseT(reinterpret_cast<const char *>(Str), nb::ToInt(Length), CodePage)
   {}
   explicit BaseStringT(const unsigned char *Str, intptr_t Length) :
-    BaseT(reinterpret_cast<const char *>(Str), ToInt(Length))
+    BaseT(reinterpret_cast<const char *>(Str), nb::ToInt(Length))
   {}
   explicit BaseStringT(const XCHAR *Str, intptr_t Length) :
-    BaseT(Str, ToInt(Length))
+    BaseT(Str, nb::ToInt(Length))
   {}
   explicit BaseStringT(const YCHAR *Str, intptr_t Length, int CodePage) :
-    BaseT(Str, ToInt(Length), CodePage)
+    BaseT(Str, nb::ToInt(Length), CodePage)
   {}
   explicit BaseStringT(const YCHAR *Str, intptr_t Length) :
-    BaseT(Str, ToInt(Length))
+    BaseT(Str, nb::ToInt(Length))
   {}
-  explicit BaseStringT(intptr_t Length, CharT Ch) noexcept : BaseT(Ch, ToInt(Length)) {}
+  explicit BaseStringT(intptr_t Length, CharT Ch) noexcept : BaseT(Ch, nb::ToInt(Length)) {}
   ~BaseStringT() noexcept = default;
 
   const CharT *c_str() const { return reinterpret_cast<const CharT *>(BaseT::c_str()); }
   const CharT *data() const { return BaseT::c_str(); }
   intptr_t Length() const { return GetLength(); }
-  intptr_t GetLength() const { return ::ToIntPtr(BaseT::GetLength()); }
+  intptr_t GetLength() const { return nb::ToIntPtr(BaseT::GetLength()); }
   bool IsEmpty() const { return BaseT::IsEmpty(); }
   CharT *SetLength(intptr_t nLength)
   {
-    return BaseT::GetBufferSetLength(ToInt(nLength));
+    return BaseT::GetBufferSetLength(nb::ToInt(nLength));
   }
 
   BaseStringT &Delete(intptr_t Index, intptr_t Count)
   {
-    BaseT::Delete(ToInt(Index - 1), ToInt(Count));
+    BaseT::Delete(nb::ToInt(Index - 1), nb::ToInt(Count));
     return *this;
   }
   BaseStringT &Clear() { BaseT::Empty(); return *this; }
 
   BaseStringT &Lower(intptr_t nStartPos = 1)
   {
-    *this = BaseT::Mid(ToInt(nStartPos)).MakeLower();
+    *this = BaseT::Mid(nb::ToInt(nStartPos)).MakeLower();
     return *this;
   }
 
   BaseStringT &Lower(intptr_t nStartPos, intptr_t nLength)
   {
-    *this = BaseT::Mid(ToInt(nStartPos), ToInt(nLength)).MakeLower();
+    *this = BaseT::Mid(nb::ToInt(nStartPos), nb::ToInt(nLength)).MakeLower();
     return *this;
   }
   BaseStringT &Upper(intptr_t nStartPos = 1)
   {
-    *this = BaseT::Mid(ToInt(nStartPos)).MakeUpper();
+    *this = BaseT::Mid(nb::ToInt(nStartPos)).MakeUpper();
     return *this;
   }
   BaseStringT &Upper(intptr_t nStartPos, intptr_t nLength)
@@ -107,14 +107,14 @@ public:
   intptr_t CompareIC(const BaseStringT &Str) const;
   intptr_t ToIntPtr() const;
   intptr_t FindFirstOf(const CharT Ch) const
-  { return ::ToIntPtr(BaseT::Find(Ch, 0)) + 1; }
+  { return nb::ToIntPtr(BaseT::Find(Ch, 0)) + 1; }
   intptr_t FindFirstOf(const CharT *AStr, size_t Offset = 0) const
   {
     if (!AStr || !*AStr)
     {
       return NPOS;
     }
-    const int Res = BaseT::Mid(ToInt(Offset)).FindOneOf(AStr);
+    const int Res = BaseT::Mid(nb::ToInt(Offset)).FindOneOf(AStr);
     if (Res != -1)
       return Res + Offset;
     return NPOS;
@@ -124,8 +124,8 @@ public:
 
   BaseStringT &Replace(intptr_t Pos, intptr_t Len, const wchar_t *Str, intptr_t DataLen)
   {
-    BaseT::Delete(ToInt(Pos - 1), ToInt(Len));
-    BaseT::Insert(ToInt(Pos - 1), BaseStringT(Str, ToInt(DataLen)).c_str());
+    BaseT::Delete(nb::ToInt(Pos - 1), nb::ToInt(Len));
+    BaseT::Insert(nb::ToInt(Pos - 1), BaseStringT(Str, nb::ToInt(DataLen)).c_str());
     return *this;
   }
   BaseStringT &Replace(intptr_t Pos, intptr_t Len, const BaseStringT &Str) { return Replace(Pos, Len, Str.c_str(), Str.GetLength()); }
@@ -136,7 +136,7 @@ public:
   BaseStringT &Replace(intptr_t Pos, intptr_t Len, CharT Ch) { return Replace(Pos, Len, &Ch, 1); }
   BaseStringT &Replace(intptr_t Pos, CharT Ch) { return Replace(Pos, 1, &Ch, 1); }
 
-  BaseStringT &Append(const CharT *Str, intptr_t StrLen) { BaseT::Append(Str, ToInt(StrLen)); return *this; } // Replace(GetLength(), 0, Str, StrLen); }
+  BaseStringT &Append(const CharT *Str, intptr_t StrLen) { BaseT::Append(Str, nb::ToInt(StrLen)); return *this; } // Replace(GetLength(), 0, Str, StrLen); }
   BaseStringT &Append(const BaseStringT &Str) { return Append(Str.c_str(), Str.GetLength()); }
   BaseStringT &Append(const CharT *Str)
   {
@@ -147,13 +147,13 @@ public:
 
   BaseStringT &Insert(intptr_t Pos, const wchar_t *Str, intptr_t StrLen)
   {
-    BaseT::Insert(ToInt(Pos - 1), BaseStringT(Str, ToInt(StrLen)).c_str());
+    BaseT::Insert(nb::ToInt(Pos - 1), BaseStringT(Str, nb::ToInt(StrLen)).c_str());
     return *this;
   }
   BaseStringT &Insert(intptr_t Pos, const BaseStringT &Str) { return Insert(Pos, Str.c_str(), Str.Length()); }
   BaseStringT &Insert(const CharT *Str, intptr_t Pos)
   {
-    BaseT::Insert(ToInt(Pos - 1), Str);
+    BaseT::Insert(nb::ToInt(Pos - 1), Str);
     return *this;
   }
   BaseStringT &Insert(const wchar_t Ch, intptr_t Pos) { return Insert(Pos, &Ch, 1); }
@@ -172,7 +172,7 @@ public:
     return BaseT::Find(Str.c_str()) + 1;
   }
 
-  intptr_t RPos(wchar_t Ch) const { return ::ToIntPtr(BaseT::ReverseFind(Ch)) + 1; }
+  intptr_t RPos(wchar_t Ch) const { return nb::ToIntPtr(BaseT::ReverseFind(Ch)) + 1; }
   bool RPos(intptr_t &nPos, wchar_t Ch, intptr_t nStartPos = 0) const
   {
     const int pos = BaseT::ReverseFind(Ch); //, Data.size() - nStartPos);
@@ -182,11 +182,11 @@ public:
 
   BaseStringT SubStr(intptr_t Pos, intptr_t Len) const
   {
-    return BaseStringT(BaseT::Mid(ToInt(Pos - 1), ToInt(Len)));
+    return BaseStringT(BaseT::Mid(nb::ToInt(Pos - 1), nb::ToInt(Len)));
   }
   BaseStringT SubStr(intptr_t Pos) const
   {
-    return BaseStringT(BaseT::Mid(ToInt(Pos - 1)));
+    return BaseStringT(BaseT::Mid(nb::ToInt(Pos - 1)));
   }
   BaseStringT SubString(intptr_t Pos, intptr_t Len) const
   {
@@ -263,7 +263,7 @@ public:
   int vprintf(const char *Format, va_list ArgList)
   {
     char *Buf = BaseT::GetBufferSetLength(32 * 1024);
-    int Size = vsnprintf_s(Buf, ::ToSizeT(GetLength()), _TRUNCATE, Format, ArgList);
+    int Size = vsnprintf_s(Buf, nb::ToSizeT(GetLength()), _TRUNCATE, Format, ArgList);
     BaseT::Truncate(Size);
     return Size;
   }
@@ -313,19 +313,19 @@ public:
   CharT operator[](intptr_t Idx) const
   {
     ThrowIfOutOfRange(Idx, Length()); // Should Range-checking be optional to avoid overhead ??
-    return BaseT::operator[](ToInt(Idx - 1));
+    return BaseT::operator[](nb::ToInt(Idx - 1));
   }
   CharT &operator[](intptr_t Idx)
   {
     ThrowIfOutOfRange(Idx, Length()); // Should Range-checking be optional to avoid overhead ??
-    return BaseT::GetBuffer()[ToInt(Idx - 1)];
+    return BaseT::GetBuffer()[nb::ToInt(Idx - 1)];
   }
 
 public:
   BaseStringT &operator=(BaseStringT&&) = default;
-  BaseStringT &operator=(const CharT *Str) { SetString(Str, ToInt(BaseStringT::StringLength(Str))); return *this; }
+  BaseStringT &operator=(const CharT *Str) { SetString(Str, nb::ToInt(BaseStringT::StringLength(Str))); return *this; }
   BaseStringT &operator=(const XCHAR Ch) { SetString(&Ch, 1); return *this; }
-  BaseStringT &operator=(const BaseStringT &StrCopy) { SetString(StrCopy.c_str(), ToInt(StrCopy.GetLength())); return *this; }
+  BaseStringT &operator=(const BaseStringT &StrCopy) { SetString(StrCopy.c_str(), nb::ToInt(StrCopy.GetLength())); return *this; }
 
   template<typename StringT>
   BaseStringT operator+(const StringT &rhs) const
@@ -337,7 +337,7 @@ public:
 
   BaseStringT &operator+=(const BaseStringT &rhs)
   {
-    BaseT::Append(rhs.c_str(), ToInt(rhs.Length()));
+    BaseT::Append(rhs.c_str(), nb::ToInt(rhs.Length()));
     return *this;
   }
   BaseStringT &operator+=(const wchar_t Ch) { BaseT::Append(BaseStringT(&Ch, 1)); return *this; }
@@ -378,21 +378,21 @@ class NB_CORE_EXPORT RawByteString : public BaseStringT<char>
 public:
   RawByteString() noexcept = default;
   RawByteString(const BaseStringT<wchar_t> &Str) :
-    BaseT(Str.c_str(), ToInt(Str.GetLength()))
+    BaseT(Str.c_str(), nb::ToInt(Str.GetLength()))
   {}
   RawByteString(const BaseStringT<char> &Str) :
-    BaseT(Str.c_str(), ToInt(Str.GetLength()))
+    BaseT(Str.c_str(), nb::ToInt(Str.GetLength()))
   {}
   RawByteString(const char *Str) : BaseT(Str, BaseT::StringLength(Str)) {}
-  RawByteString(const RawByteString &Str) : BaseT(Str.c_str(), ToInt(Str.Length())) {}
+  RawByteString(const RawByteString &Str) : BaseT(Str.c_str(), nb::ToInt(Str.Length())) {}
   explicit RawByteString(const wchar_t *Str) : BaseT(Str, BaseT::StringLength(Str)) {}
-  explicit RawByteString(const wchar_t *Str, intptr_t Length) : BaseT(Str, ToInt(Length)) {}
-  explicit RawByteString(const char *Str, intptr_t Length) : BaseT(Str, ToInt(Length)) {}
+  explicit RawByteString(const wchar_t *Str, intptr_t Length) : BaseT(Str, nb::ToInt(Length)) {}
+  explicit RawByteString(const char *Str, intptr_t Length) : BaseT(Str, nb::ToInt(Length)) {}
   explicit RawByteString(const unsigned char *Str) :
     BaseT(reinterpret_cast<const char *>(Str), BaseT::StringLength(reinterpret_cast<const char *>(Str)))
   {}
   explicit RawByteString(const unsigned char *Str, intptr_t Length) :
-    BaseT(reinterpret_cast<const char *>(Str), ToInt(Length))
+    BaseT(reinterpret_cast<const char *>(Str), nb::ToInt(Length))
   {}
   ~RawByteString() noexcept = default;
 
@@ -405,13 +405,13 @@ public:
   unsigned char operator[](intptr_t Idx) const
   {
     ThrowIfOutOfRange(Idx, Length()); // Should Range-checking be optional to avoid overhead ??
-    return BaseT::operator[](ToInt(Idx - 1));
+    return BaseT::operator[](nb::ToInt(Idx - 1));
   }
 
   unsigned char &operator[](intptr_t Idx)
   {
     ThrowIfOutOfRange(Idx, Length()); // Should Range-checking be optional to avoid overhead ??
-    return reinterpret_cast<unsigned  char *>(BaseT::GetBuffer())[ToInt(Idx - 1)];
+    return reinterpret_cast<unsigned  char *>(BaseT::GetBuffer())[nb::ToInt(Idx - 1)];
   }
 
 public:
@@ -424,7 +424,7 @@ public:
   RawByteString &operator=(wchar_t chData) { Init(&chData, 1); return *this; }
 
   RawByteString &operator+=(const BaseStringT &rhs) { Append(rhs); return *this; }
-  RawByteString &operator+=(const RawByteString &rhs) { BaseT::Append(rhs.data(), ToInt(rhs.Length())); return *this; }
+  RawByteString &operator+=(const RawByteString &rhs) { BaseT::Append(rhs.data(), nb::ToInt(rhs.Length())); return *this; }
   RawByteString &operator+=(const char Ch) { BaseT::AppendChar(Ch); return *this; }
   RawByteString &operator+=(const char *Str) { BaseT::Append(Str); return *this; }
 
@@ -450,9 +450,9 @@ public:
   { return rhs.Compare(lhs) != 0; }
 
 private:
-  void Init(const wchar_t *Str, intptr_t Length) { this->operator=(BaseT(Str, ToInt(Length))); }
-  void Init(const char *Str, intptr_t Length) { SetString(Str, ToInt(Length)); }
-  void Init(const unsigned char *Str, intptr_t Length) { SetString(reinterpret_cast<const char *>(Str), ToInt(Length)); }
+  void Init(const wchar_t *Str, intptr_t Length) { this->operator=(BaseT(Str, nb::ToInt(Length))); }
+  void Init(const char *Str, intptr_t Length) { SetString(Str, nb::ToInt(Length)); }
+  void Init(const unsigned char *Str, intptr_t Length) { SetString(reinterpret_cast<const char *>(Str), nb::ToInt(Length)); }
 };
 
 

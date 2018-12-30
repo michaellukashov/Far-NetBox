@@ -95,7 +95,7 @@ void DoShred(T &Str)
   if (!Str.IsEmpty())
   {
     Str.Unique();
-    ::ZeroMemory(ToPtr(Str.c_str()), Str.Length() * sizeof(*Str.c_str()));
+    ::ZeroMemory(nb::ToPtr(Str.c_str()), Str.Length() * sizeof(*Str.c_str()));
     Str = L"";
   }
 }
@@ -460,7 +460,7 @@ UnicodeString GetShellFolderPath(intptr_t CSIdl)
   UnicodeString Result;
 #if defined(_MSC_VER) && !defined(__clang__)
   wchar_t Path[2 * MAX_PATH + 10] = L"\0";
-  if (SUCCEEDED(::SHGetFolderPath(nullptr, ToInt(CSIdl), nullptr, SHGFP_TYPE_CURRENT, Path)))
+  if (SUCCEEDED(::SHGetFolderPath(nullptr, nb::ToInt(CSIdl), nullptr, SHGFP_TYPE_CURRENT, Path)))
   {
     Result = Path;
   }
@@ -807,12 +807,12 @@ UnicodeString ExpandEnvironmentVariables(const UnicodeString Str)
   const intptr_t Size = 1024;
 
   Buf.SetLength(Size);
-  const intptr_t Len = ::ExpandEnvironmentStringsW(Str.c_str(), const_cast<LPWSTR>(Buf.c_str()), ToDWord(Size));
+  const intptr_t Len = ::ExpandEnvironmentStringsW(Str.c_str(), const_cast<LPWSTR>(Buf.c_str()), nb::ToDWord(Size));
 
   if (Len > Size)
   {
     Buf.SetLength(Len);
-    ::ExpandEnvironmentStringsW(Str.c_str(), const_cast<LPWSTR>(Buf.c_str()), ToDWord(Len));
+    ::ExpandEnvironmentStringsW(Str.c_str(), const_cast<LPWSTR>(Buf.c_str()), nb::ToDWord(Len));
   }
 
   PackStr(Buf);
@@ -869,7 +869,7 @@ intptr_t CompareLogicalText(
     return -1;
   }
 #if defined(_MSC_VER) && !defined(__clang__)
-  return ::StrCmpNCW(S1.c_str(), S2.c_str(), ToInt(S1.Length()));
+  return ::StrCmpNCW(S1.c_str(), S2.c_str(), nb::ToInt(S1.Length()));
 #else
   return S1.Compare(S2);
 #endif
@@ -916,7 +916,7 @@ bool IsReservedName(const UnicodeString AFileName)
       "COM1", "COM2", "COM3", "COM4", "COM5", "COM6", "COM7", "COM8", "COM9",
       "LPT1", "LPT2", "LPT3", "LPT4", "LPT5", "LPT6", "LPT7", "LPT8", "LPT9"
     };
-    for (intptr_t Index = 0; Index < ToIntPtr(_countof(Reserved)); ++Index)
+    for (intptr_t Index = 0; Index < nb::ToIntPtr(_countof(Reserved)); ++Index)
     {
       if (SameText(FileName, Reserved[Index]))
       {
@@ -1590,8 +1590,8 @@ struct TDateTimeParams : public TObject
     DaylightDifferenceSec(0),
     DaylightHack(false)
   {
-    ClearStruct(SystemStandardDate);
-    ClearStruct(SystemDaylightDate);
+    nb::ClearStruct(SystemStandardDate);
+    nb::ClearStruct(SystemDaylightDate);
   }
 
   TDateTime UnixEpoch{};
@@ -1701,23 +1701,23 @@ static const TDateTimeParams *GetDateTimeParams(uint16_t Year)
     }
 
     Result->BaseDifferenceSec = TZI.Bias;
-    Result->BaseDifference = ToDouble(TZI.Bias) / MinsPerDay;
+    Result->BaseDifference = nb::ToDouble(TZI.Bias) / MinsPerDay;
     Result->BaseDifferenceSec *= SecsPerMin;
 
     Result->CurrentDifferenceSec = TZI.Bias +
       Result->CurrentDaylightDifferenceSec;
     Result->CurrentDifference =
-      ToDouble(Result->CurrentDifferenceSec) / MinsPerDay;
+      nb::ToDouble(Result->CurrentDifferenceSec) / MinsPerDay;
     Result->CurrentDifferenceSec *= SecsPerMin;
 
     Result->CurrentDaylightDifference =
-      ToDouble(Result->CurrentDaylightDifferenceSec) / MinsPerDay;
+      nb::ToDouble(Result->CurrentDaylightDifferenceSec) / MinsPerDay;
     Result->CurrentDaylightDifferenceSec *= SecsPerMin;
 
     Result->DaylightDifferenceSec = TZI.DaylightBias * SecsPerMin;
-    Result->DaylightDifference = ToDouble(TZI.DaylightBias) / MinsPerDay;
+    Result->DaylightDifference = nb::ToDouble(TZI.DaylightBias) / MinsPerDay;
     Result->StandardDifferenceSec = TZI.StandardBias * SecsPerMin;
-    Result->StandardDifference = ToDouble(TZI.StandardBias) / MinsPerDay;
+    Result->StandardDifference = nb::ToDouble(TZI.StandardBias) / MinsPerDay;
 
     Result->SystemStandardDate = TZI.StandardDate;
     Result->SystemDaylightDate = TZI.DaylightDate;
@@ -1813,7 +1813,7 @@ TDateTime UnixToDateTime(int64_t TimeStamp, TDSTMode DSTMode)
 {
   DebugAssert(int(EncodeDateVerbose(1970, 1, 1)) == UnixDateDelta);
 
-  TDateTime Result = TDateTime(UnixDateDelta + (ToDouble(TimeStamp) / SecsPerDay));
+  TDateTime Result = TDateTime(UnixDateDelta + (nb::ToDouble(TimeStamp) / SecsPerDay));
   const TDateTimeParams *Params = GetDateTimeParams(DecodeYear(Result));
 
   if (Params->DaylightHack)
@@ -1845,7 +1845,7 @@ int64_t Round(double Number)
 {
   double Floor = floor(Number);
   double Ceil = ceil(Number);
-  return ToInt64(((Number - Floor) > (Ceil - Number)) ? Ceil : Floor);
+  return nb::ToInt64(((Number - Floor) > (Ceil - Number)) ? Ceil : Floor);
 }
 //---------------------------------------------------------------------------
 bool TryRelativeStrToDateTime(const UnicodeString AStr, TDateTime &DateTime, bool Add)
@@ -1989,7 +1989,7 @@ static int64_t DateTimeToUnix(const TDateTime &DateTime)
 
   DebugAssert(int(EncodeDateVerbose(1970, 1, 1)) == UnixDateDelta);
 
-  return Round(ToDouble(DateTime - UnixDateDelta) * SecsPerDay) +
+  return Round(nb::ToDouble(DateTime - UnixDateDelta) * SecsPerDay) +
     CurrentParams->CurrentDifferenceSec;
 }
 //---------------------------------------------------------------------------
@@ -2019,7 +2019,7 @@ FILETIME DateTimeToFileTime(const TDateTime &DateTime,
   }
 
   FILETIME Result;
-  (*reinterpret_cast<int64_t *>(&(Result)) = (ToInt64(UnixTimeStamp) + 11644473600LL) * 10000000LL);
+  (*reinterpret_cast<int64_t *>(&(Result)) = (nb::ToInt64(UnixTimeStamp) + 11644473600LL) * 10000000LL);
 
   return Result;
 }
@@ -2502,7 +2502,7 @@ static bool DoRecursiveDeleteFile(
     SHFILEOPSTRUCT Data;
 
     __removed memset(&Data, 0, sizeof(Data));
-    ClearStruct(Data);
+    nb::ClearStruct(Data);
     Data.hwnd = nullptr;
     Data.wFunc = FO_DELETE;
     // SHFileOperation does not support long paths anyway
@@ -2670,7 +2670,7 @@ static UnicodeString DoLoadStrFrom(HINSTANCE Module, intptr_t Ident, uintptr_t M
 {
   UnicodeString Result;
   Result.SetLength(MaxLength);
-  const int Length = ::LoadStringW(Module, static_cast<UINT>(Ident), const_cast<LPWSTR>(Result.c_str()), ToInt(MaxLength));
+  const int Length = ::LoadStringW(Module, static_cast<UINT>(Ident), const_cast<LPWSTR>(Result.c_str()), nb::ToInt(MaxLength));
   Result.SetLength(Length);
 
   return Result;
@@ -3112,7 +3112,7 @@ bool IsDirectoryWriteable(const UnicodeString APath)
 UnicodeString FormatNumber(int64_t Number)
 {
 //  return FormatFloat(L"#,##0", Number);
-  return FORMAT("%.0f", ToDouble(Number));
+  return FORMAT("%.0f", nb::ToDouble(Number));
 }
 //---------------------------------------------------------------------------
 // simple alternative to FormatBytes
@@ -3126,13 +3126,13 @@ UnicodeString FormatDateTimeSpan(const UnicodeString TimeFormat, TDateTime DateT
   UnicodeString Result;
   try
   {
-    if (ToInt64(DateTime) > 0)
+    if (nb::ToInt64(DateTime) > 0)
     {
-      Result = Int64ToStr(ToInt64(DateTime)) + L", ";
+      Result = Int64ToStr(nb::ToInt64(DateTime)) + L", ";
     }
     // days are decremented, because when there are to many of them,
     // "integer overflow" error occurs
-    Result += FormatDateTime(TimeFormat, DateTime - TDateTime(ToDouble(ToInt64(DateTime))));
+    Result += FormatDateTime(TimeFormat, DateTime - TDateTime(nb::ToDouble(nb::ToInt64(DateTime))));
   }
   catch (...)
   {
@@ -3189,7 +3189,7 @@ UnicodeString TrimVersion(const UnicodeString Version)
 //---------------------------------------------------------------------------
 UnicodeString FormatVersion(intptr_t MajorVersion, intptr_t MinorVersion, intptr_t Patch)
 {
-  return FORMAT("%d.%d.%d", ToInt(MajorVersion), ToInt(MinorVersion), ToInt(Patch));
+  return FORMAT("%d.%d.%d", nb::ToInt(MajorVersion), nb::ToInt(MinorVersion), nb::ToInt(Patch));
 }
 //---------------------------------------------------------------------------
 TFormatSettings GetEngFormatSettings()
@@ -3292,7 +3292,7 @@ static int PemPasswordCallback(char *Buf, int ASize, int /*RWFlag*/, void *UserD
   strncpy(Buf, UtfPassphrase.c_str(), ASize);
   Shred(UtfPassphrase);
   Buf[ASize - 1] = '\0';
-  return ToInt(NBChTraitsCRT<char>::SafeStringLen(Buf));
+  return nb::ToInt(NBChTraitsCRT<char>::SafeStringLen(Buf));
 }
 //---------------------------------------------------------------------------
 static bool IsTlsPassphraseError(int Error, bool HasPassphrase)
@@ -4618,20 +4618,20 @@ UnicodeString FormatBytes(int64_t Bytes, bool UseOrders)
 {
   UnicodeString Result;
 
-  if (!UseOrders || (Bytes < ToInt64(100 * 1024)))
+  if (!UseOrders || (Bytes < nb::ToInt64(100 * 1024)))
   {
     // Result = FormatFloat(L"#,##0 \"B\"", Bytes);
-    Result = FORMAT("%.0f B", ToDouble(Bytes));
+    Result = FORMAT("%.0f B", nb::ToDouble(Bytes));
   }
-  else if (Bytes < ToInt64(100 * 1024 * 1024))
+  else if (Bytes < nb::ToInt64(100 * 1024 * 1024))
   {
     // Result = FormatFloat(L"#,##0 \"KB\"", Bytes / 1024);
-    Result = FORMAT("%.0f KB", ToDouble(Bytes / 1024.0));
+    Result = FORMAT("%.0f KB", nb::ToDouble(Bytes / 1024.0));
   }
   else
   {
     // Result = FormatFloat(L"#,##0 \"MiB\"", Bytes / (1024*1024));
-    Result = FORMAT("%.0f MiB", ToDouble(Bytes / (1024 * 1024.0)));
+    Result = FORMAT("%.0f MiB", nb::ToDouble(Bytes / (1024 * 1024.0)));
   }
   return Result;
 }
@@ -4674,7 +4674,7 @@ UnicodeString GetEnvVariable(const UnicodeString AEnvVarName)
   if (Len > 0)
   {
     wchar_t *Buffer = Result.SetLength(Len - 1);
-    ::GetEnvironmentVariableW(AEnvVarName.c_str(), reinterpret_cast<LPWSTR>(Buffer), ToDWord(Len));
+    ::GetEnvironmentVariableW(AEnvVarName.c_str(), reinterpret_cast<LPWSTR>(Buffer), nb::ToDWord(Len));
   }
   return Result;
 }
