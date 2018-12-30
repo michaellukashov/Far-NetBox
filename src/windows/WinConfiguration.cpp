@@ -52,7 +52,7 @@ UnicodeString TFileColorData::Save() const
 //---------------------------------------------------------------------------
 void TFileColorData::LoadList(const UnicodeString & S, TList & List)
 {
-  std::unique_ptr<TStringList> Strings(new TStringList());
+  std::unique_ptr<TStringList> Strings(std::make_unique<TStringList>());
   Strings->CommaText = S;
 
   List.clear();
@@ -66,7 +66,7 @@ void TFileColorData::LoadList(const UnicodeString & S, TList & List)
 //---------------------------------------------------------------------------
 UnicodeString TFileColorData::SaveList(const TList & List)
 {
-  std::unique_ptr<TStringList> Strings(new TStringList());
+  std::unique_ptr<TStringList> Strings(std::make_unique<TStringList>());
   for (TFileColorData::TList::const_iterator Iter = List.begin(); Iter != List.end(); Iter++)
   {
     Strings->Add((*Iter).Save());
@@ -75,7 +75,7 @@ UnicodeString TFileColorData::SaveList(const TList & List)
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-__fastcall TEditorData::TEditorData() :
+TEditorData::TEditorData() :
   FileMask(AnyMask),
   Editor(edInternal),
   ExternalEditor(L""),
@@ -85,7 +85,7 @@ __fastcall TEditorData::TEditorData() :
 {
 }
 //---------------------------------------------------------------------------
-__fastcall TEditorData::TEditorData(const TEditorData & Source) :
+TEditorData::TEditorData(const TEditorData & Source) :
   FileMask(Source.FileMask),
   Editor(Source.Editor),
   ExternalEditor(Source.ExternalEditor),
@@ -96,7 +96,7 @@ __fastcall TEditorData::TEditorData(const TEditorData & Source) :
 }
 //---------------------------------------------------------------------------
 #define C(Property) (Property == rhd.Property)
-bool __fastcall TEditorData::operator==(const TEditorData & rhd) const
+bool TEditorData::operator==(const TEditorData & rhd) const
 {
   return
     C(FileMask) &&
@@ -109,7 +109,7 @@ bool __fastcall TEditorData::operator==(const TEditorData & rhd) const
 }
 #undef C
 //---------------------------------------------------------------------------
-bool __fastcall TEditorData::DecideExternalEditorText(UnicodeString ExternalEditor)
+bool TEditorData::DecideExternalEditorText(UnicodeString ExternalEditor)
 {
   bool Result = false;
   // By default we use default transfer mode (binary),
@@ -129,7 +129,7 @@ bool __fastcall TEditorData::DecideExternalEditorText(UnicodeString ExternalEdit
   return Result;
 }
 //---------------------------------------------------------------------------
-void __fastcall TEditorData::DecideExternalEditorText()
+void TEditorData::DecideExternalEditorText()
 {
   if (DecideExternalEditorText(ExternalEditor))
   {
@@ -137,39 +137,39 @@ void __fastcall TEditorData::DecideExternalEditorText()
   }
 }
 //---------------------------------------------------------------------------
-__fastcall TEditorPreferences::TEditorPreferences()
+TEditorPreferences::TEditorPreferences()
 {
 }
 //---------------------------------------------------------------------------
-__fastcall TEditorPreferences::TEditorPreferences(const TEditorData & Data) :
+TEditorPreferences::TEditorPreferences(const TEditorData & Data) :
   FData(Data)
 {
 }
 //---------------------------------------------------------------------------
-bool __fastcall TEditorPreferences::operator==(const TEditorPreferences & rhp) const
+bool TEditorPreferences::operator==(const TEditorPreferences & rhp) const
 {
   return (FData == rhp.FData);
 }
 #undef C
 //---------------------------------------------------------------------------
-bool __fastcall TEditorPreferences::Matches(const UnicodeString FileName,
+bool TEditorPreferences::Matches(const UnicodeString FileName,
   bool Local, const TFileMasks::TParams & Params) const
 {
   return FData.FileMask.Matches(FileName, Local, false, &Params);
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall TEditorPreferences::GetDefaultExternalEditor()
+UnicodeString TEditorPreferences::GetDefaultExternalEditor()
 {
   return NotepadName;
 }
 //---------------------------------------------------------------------------
-void __fastcall TEditorPreferences::LegacyDefaults()
+void TEditorPreferences::LegacyDefaults()
 {
   FData.ExternalEditor = GetDefaultExternalEditor();
   FData.DecideExternalEditorText();
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall TEditorPreferences::ExtractExternalEditorName() const
+UnicodeString TEditorPreferences::ExtractExternalEditorName() const
 {
   DebugAssert(FData.Editor == edExternal);
   UnicodeString ExternalEditor = FData.ExternalEditor;
@@ -178,7 +178,7 @@ UnicodeString __fastcall TEditorPreferences::ExtractExternalEditorName() const
   return ExtractProgramName(ExternalEditor).Trim();
 }
 //---------------------------------------------------------------------------
-void __fastcall TEditorPreferences::Load(THierarchicalStorage * Storage, bool Legacy)
+void TEditorPreferences::Load(THierarchicalStorage * Storage, bool Legacy)
 {
   if (!Legacy)
   {
@@ -191,7 +191,7 @@ void __fastcall TEditorPreferences::Load(THierarchicalStorage * Storage, bool Le
   FData.DetectMDIExternalEditor = Storage->ReadBool(L"DetectMDIExternalEditor", FData.DetectMDIExternalEditor);
 }
 //---------------------------------------------------------------------------
-void __fastcall TEditorPreferences::Save(THierarchicalStorage * Storage) const
+void TEditorPreferences::Save(THierarchicalStorage * Storage) const
 {
   Storage->WriteString(L"FileMask", FData.FileMask.Masks);
   Storage->WriteInteger(L"Editor", FData.Editor);
@@ -201,14 +201,14 @@ void __fastcall TEditorPreferences::Save(THierarchicalStorage * Storage) const
   Storage->WriteBool(L"DetectMDIExternalEditor", FData.DetectMDIExternalEditor);
 }
 //---------------------------------------------------------------------------
-TEditorData * __fastcall TEditorPreferences::GetData()
+TEditorData * TEditorPreferences::GetData()
 {
   // returning non-const data, possible data change, invalidate cached name
   FName = L"";
   return &FData;
 };
 //---------------------------------------------------------------------------
-UnicodeString __fastcall TEditorPreferences::GetName() const
+UnicodeString TEditorPreferences::GetName() const
 {
   if (FName.IsEmpty())
   {
@@ -255,34 +255,34 @@ UnicodeString __fastcall TEditorPreferences::GetName() const
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-__fastcall TEditorList::TEditorList()
+TEditorList::TEditorList()
 {
   Init();
 }
 //---------------------------------------------------------------------------
-void __fastcall TEditorList::Init()
+void TEditorList::Init()
 {
   FEditors = new TList();
   FModified = false;
 }
 //---------------------------------------------------------------------------
-__fastcall TEditorList::~TEditorList()
+TEditorList::~TEditorList()
 {
   Clear();
   delete FEditors;
 }
 //---------------------------------------------------------------------
-void __fastcall TEditorList::Modify()
+void TEditorList::Modify()
 {
   FModified = true;
 }
 //---------------------------------------------------------------------------
-void __fastcall TEditorList::Saved()
+void TEditorList::Saved()
 {
   FModified = false;
 }
 //---------------------------------------------------------------------------
-TEditorList & __fastcall TEditorList::operator=(const TEditorList & rhl)
+TEditorList & TEditorList::operator=(const TEditorList & rhl)
 {
   Clear();
 
@@ -296,7 +296,7 @@ TEditorList & __fastcall TEditorList::operator=(const TEditorList & rhl)
   return *this;
 }
 //---------------------------------------------------------------------------
-bool __fastcall TEditorList::operator==(const TEditorList & rhl) const
+bool TEditorList::operator==(const TEditorList & rhl) const
 {
   bool Result = (Count == rhl.Count);
   if (Result)
@@ -311,7 +311,7 @@ bool __fastcall TEditorList::operator==(const TEditorList & rhl) const
   return Result;
 }
 //---------------------------------------------------------------------------
-void __fastcall TEditorList::Clear()
+void TEditorList::Clear()
 {
   for (int i = 0; i < Count; i++)
   {
@@ -320,18 +320,18 @@ void __fastcall TEditorList::Clear()
   FEditors->Clear();
 }
 //---------------------------------------------------------------------------
-void __fastcall TEditorList::Add(TEditorPreferences * Editor)
+void TEditorList::Add(TEditorPreferences * Editor)
 {
   Insert(Count, Editor);
 }
 //---------------------------------------------------------------------------
-void __fastcall TEditorList::Insert(int Index, TEditorPreferences * Editor)
+void TEditorList::Insert(int Index, TEditorPreferences * Editor)
 {
   FEditors->Insert(Index, reinterpret_cast<TObject *>(Editor));
   Modify();
 }
 //---------------------------------------------------------------------------
-void __fastcall TEditorList::Change(int Index, TEditorPreferences * Editor)
+void TEditorList::Change(int Index, TEditorPreferences * Editor)
 {
   if (!((*Editors[Index]) == *Editor))
   {
@@ -345,7 +345,7 @@ void __fastcall TEditorList::Change(int Index, TEditorPreferences * Editor)
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TEditorList::Move(int CurIndex, int NewIndex)
+void TEditorList::Move(int CurIndex, int NewIndex)
 {
   if (CurIndex != NewIndex)
   {
@@ -354,7 +354,7 @@ void __fastcall TEditorList::Move(int CurIndex, int NewIndex)
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TEditorList::Delete(int Index)
+void TEditorList::Delete(int Index)
 {
   DebugAssert((Index >= 0) && (Index < Count));
   delete Editors[Index];
@@ -362,7 +362,7 @@ void __fastcall TEditorList::Delete(int Index)
   Modify();
 }
 //---------------------------------------------------------------------------
-const TEditorPreferences * __fastcall TEditorList::Find(
+const TEditorPreferences * TEditorList::Find(
   const UnicodeString FileName, bool Local, const TFileMasks::TParams & Params) const
 {
   const TEditorPreferences * Result = NULL;
@@ -379,7 +379,7 @@ const TEditorPreferences * __fastcall TEditorList::Find(
   return Result;
 }
 //---------------------------------------------------------------------------
-void __fastcall TEditorList::Load(THierarchicalStorage * Storage)
+void TEditorList::Load(THierarchicalStorage * Storage)
 {
   int Index = 0;
   bool Next;
@@ -422,7 +422,7 @@ void __fastcall TEditorList::Load(THierarchicalStorage * Storage)
   FModified = false;
 }
 //---------------------------------------------------------------------------
-void __fastcall TEditorList::Save(THierarchicalStorage * Storage) const
+void TEditorList::Save(THierarchicalStorage * Storage) const
 {
   Storage->ClearSubKeys();
   for (int Index = 0; Index < Count; Index++)
@@ -441,18 +441,18 @@ void __fastcall TEditorList::Save(THierarchicalStorage * Storage) const
   }
 }
 //---------------------------------------------------------------------------
-int __fastcall TEditorList::GetCount() const
+int TEditorList::GetCount() const
 {
   int X = FEditors->Count;
   return X;
 }
 //---------------------------------------------------------------------------
-const TEditorPreferences * __fastcall TEditorList::GetEditor(int Index) const
+const TEditorPreferences * TEditorList::GetEditor(int Index) const
 {
   return reinterpret_cast<TEditorPreferences *>(FEditors->Items[Index]);
 }
 //---------------------------------------------------------------------------
-bool __fastcall TEditorList::IsDefaultList() const
+bool TEditorList::IsDefaultList() const
 {
   bool Result = true;
   for (int Index = 0; Result && (Index < Count); Index++)
@@ -477,7 +477,7 @@ bool __fastcall TEditorList::IsDefaultList() const
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-__fastcall TWinConfiguration::TWinConfiguration(): TCustomWinConfiguration()
+TWinConfiguration::TWinConfiguration(): TCustomWinConfiguration()
 {
   ResetSysDarkTheme();
   FInvalidDefaultTranslationMessage = L"";
@@ -490,9 +490,9 @@ __fastcall TWinConfiguration::TWinConfiguration(): TCustomWinConfiguration()
   FDontDecryptPasswords = 0;
   FMasterPasswordSession = 0;
   FMasterPasswordSessionAsked = false;
-  FCustomCommandOptions.reset(new TStringList());
+  FCustomCommandOptions = std::make_unique<TStringList>();
   FCustomCommandOptionsModified = false;
-  FExtensionTranslations.reset(new TStringList());
+  FExtensionTranslations = std::make_unique<TStringList>();
   Default();
 
   // This matters only if the translations are in the executable folder and auto-loaded by VCL (System.Pas - DelayLoadResourceModule)
@@ -511,7 +511,7 @@ __fastcall TWinConfiguration::TWinConfiguration(): TCustomWinConfiguration()
   FDefaultLocale = AppliedLocale;
 }
 //---------------------------------------------------------------------------
-__fastcall TWinConfiguration::~TWinConfiguration()
+TWinConfiguration::~TWinConfiguration()
 {
   if (!FTemporarySessionFile.IsEmpty()) DeleteFile(ApiPath(FTemporarySessionFile));
   ClearTemporaryLoginData();
@@ -523,7 +523,7 @@ __fastcall TWinConfiguration::~TWinConfiguration()
   delete FEditorList;
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::Default()
+void TWinConfiguration::Default()
 {
   FCustomCommandsDefaults = true;
   FCustomCommandOptionsModified = false;
@@ -763,7 +763,7 @@ void __fastcall TWinConfiguration::Default()
   FBookmarks->Clear();
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::DefaultLocalized()
+void TWinConfiguration::DefaultLocalized()
 {
   TGUIConfiguration::DefaultLocalized();
 
@@ -787,7 +787,7 @@ void __fastcall TWinConfiguration::DefaultLocalized()
   }
 }
 //---------------------------------------------------------------------------
-bool __fastcall TWinConfiguration::DetectRegistryStorage(HKEY RootKey)
+bool TWinConfiguration::DetectRegistryStorage(HKEY RootKey)
 {
   bool Result = false;
   TRegistryStorage * Storage = new TRegistryStorage(RegistryStorageKey, RootKey);
@@ -806,7 +806,7 @@ bool __fastcall TWinConfiguration::DetectRegistryStorage(HKEY RootKey)
   return Result;
 }
 //---------------------------------------------------------------------------
-bool __fastcall TWinConfiguration::CanWriteToStorage()
+bool TWinConfiguration::CanWriteToStorage()
 {
   bool Result = false;
   try
@@ -838,7 +838,7 @@ bool __fastcall TWinConfiguration::CanWriteToStorage()
   return Result;
 }
 //---------------------------------------------------------------------------
-TStorage __fastcall TWinConfiguration::GetStorage()
+TStorage TWinConfiguration::GetStorage()
 {
   if (FStorage == stDetect)
   {
@@ -875,7 +875,7 @@ TStorage __fastcall TWinConfiguration::GetStorage()
   return Result;
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::Saved()
+void TWinConfiguration::Saved()
 {
   TCustomWinConfiguration::Saved();
   FBookmarks->ModifyAll(false);
@@ -883,7 +883,7 @@ void __fastcall TWinConfiguration::Saved()
   FEditorList->Saved();
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::RecryptPasswords(TStrings * RecryptPasswordErrors)
+void TWinConfiguration::RecryptPasswords(TStrings * RecryptPasswordErrors)
 {
   TCustomWinConfiguration::RecryptPasswords(RecryptPasswordErrors);
 
@@ -908,7 +908,7 @@ void __fastcall TWinConfiguration::RecryptPasswords(TStrings * RecryptPasswordEr
   }
 }
 //---------------------------------------------------------------------------
-bool __fastcall TWinConfiguration::GetUseMasterPassword()
+bool TWinConfiguration::GetUseMasterPassword()
 {
   return FUseMasterPassword;
 }
@@ -1146,7 +1146,7 @@ THierarchicalStorage * TWinConfiguration::CreateScpStorage(bool & SessionList)
     KEYEX(String,FMasterPasswordVerifier, L"MasterPasswordVerifier"); \
   );
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::SaveData(THierarchicalStorage * Storage, bool All)
+void TWinConfiguration::SaveData(THierarchicalStorage * Storage, bool All)
 {
   TCustomWinConfiguration::SaveData(Storage, All);
 
@@ -1187,7 +1187,7 @@ void __fastcall TWinConfiguration::SaveData(THierarchicalStorage * Storage, bool
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::LoadFrom(THierarchicalStorage * Storage)
+void TWinConfiguration::LoadFrom(THierarchicalStorage * Storage)
 {
   FLegacyEditor = new TEditorPreferences();
   try
@@ -1259,7 +1259,7 @@ void __fastcall TWinConfiguration::LoadFrom(THierarchicalStorage * Storage)
   AddVersionToHistory();
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::DoLoadExtensionList(
+void TWinConfiguration::DoLoadExtensionList(
   const UnicodeString & Path, const UnicodeString & PathId, TStringList * DeletedExtensions)
 {
   TSearchRecOwned SearchRec;
@@ -1279,7 +1279,7 @@ void __fastcall TWinConfiguration::DoLoadExtensionList(
         }
         else
         {
-          std::unique_ptr<TCustomCommandType> CustomCommand(new TCustomCommandType());
+          std::unique_ptr<TCustomCommandType> CustomCommand(std::make_unique<TCustomCommandType>());
           CustomCommand->Id = Id;
 
           try
@@ -1298,7 +1298,7 @@ void __fastcall TWinConfiguration::DoLoadExtensionList(
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall ParseExtensionList(TStrings * Strings, UnicodeString S)
+void ParseExtensionList(TStrings * Strings, UnicodeString S)
 {
   while (!S.IsEmpty())
   {
@@ -1312,7 +1312,7 @@ const UnicodeString ExtensionsCommonPathId(L"common");
 const UnicodeString ExtensionsCommonExtPathId(L"commonext");
 const UnicodeString ExtensionsUserExtPathId(L"userext");
 //---------------------------------------------------------------------------
-static UnicodeString __fastcall ExtractExtensionBaseName(const UnicodeString & FileName)
+static UnicodeString ExtractExtensionBaseName(const UnicodeString & FileName)
 {
   UnicodeString S = ExtractFileName(FileName);
   // ExtractFileNameOnly trims the last extension only, we want to trim all extensions
@@ -1320,19 +1320,19 @@ static UnicodeString __fastcall ExtractExtensionBaseName(const UnicodeString & F
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall TWinConfiguration::GetProvisionaryExtensionId(const UnicodeString & FileName)
+UnicodeString TWinConfiguration::GetProvisionaryExtensionId(const UnicodeString & FileName)
 {
   return IncludeTrailingBackslash(ExtensionsUserExtPathId) + ExtractExtensionBaseName(FileName);
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall TWinConfiguration::GetUserExtensionsPath()
+UnicodeString TWinConfiguration::GetUserExtensionsPath()
 {
   return IncludeTrailingBackslash(GetShellFolderPath(CSIDL_APPDATA)) + L"WinSCP\\" + ExtensionsSubFolder;
 }
 //---------------------------------------------------------------------------
-TStrings * __fastcall TWinConfiguration::GetExtensionsPaths()
+TStrings * TWinConfiguration::GetExtensionsPaths()
 {
-  std::unique_ptr<TStrings> Result(new TStringList());
+  std::unique_ptr<TStrings> Result(std::make_unique<TStringList>());
   UnicodeString ExeParentPath = ExcludeTrailingBackslash(ExtractFilePath(Application->ExeName));
   Result->Values[ExtensionsCommonPathId] = ExeParentPath;
   UnicodeString CommonExtensions = IncludeTrailingBackslash(ExeParentPath) + ExtensionsSubFolder;
@@ -1341,7 +1341,7 @@ TStrings * __fastcall TWinConfiguration::GetExtensionsPaths()
   return Result.release();
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall TWinConfiguration::GetExtensionId(const UnicodeString & ExtensionPath)
+UnicodeString TWinConfiguration::GetExtensionId(const UnicodeString & ExtensionPath)
 {
   UnicodeString Path = ExcludeTrailingBackslash(ExtractFilePath(ExtensionPath));
 
@@ -1360,7 +1360,7 @@ UnicodeString __fastcall TWinConfiguration::GetExtensionId(const UnicodeString &
   return L"";
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::ReleaseExtensionTranslations()
+void TWinConfiguration::ReleaseExtensionTranslations()
 {
   for (int Index = 0; Index < FExtensionTranslations->Count; Index++)
   {
@@ -1369,10 +1369,10 @@ void __fastcall TWinConfiguration::ReleaseExtensionTranslations()
   FExtensionTranslations->Clear();
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::LoadExtensionTranslations()
+void TWinConfiguration::LoadExtensionTranslations()
 {
   ReleaseExtensionTranslations();
-  FExtensionTranslations.reset(new TStringList());
+  FExtensionTranslations = std::make_unique<TStringList>());
   int Index = EXTENSION_STRINGS;
   UnicodeString S;
   while (!((S = LoadStr(Index)).IsEmpty()))
@@ -1392,13 +1392,13 @@ void __fastcall TWinConfiguration::LoadExtensionTranslations()
   }
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall TWinConfiguration::UniqueExtensionName(const UnicodeString & ExtensionName, int Counter)
+UnicodeString TWinConfiguration::UniqueExtensionName(const UnicodeString & ExtensionName, int Counter)
 {
   // See how the digits are removed in the ExtensionStringTranslation
   return ExtensionName + IntToStr(Counter);
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall TWinConfiguration::ExtensionStringTranslation(const UnicodeString & ExtensionId, const UnicodeString & S)
+UnicodeString TWinConfiguration::ExtensionStringTranslation(const UnicodeString & ExtensionId, const UnicodeString & S)
 {
   UnicodeString Result = S;
   if (!ExtensionId.IsEmpty())
@@ -1432,7 +1432,7 @@ UnicodeString __fastcall TWinConfiguration::ExtensionStringTranslation(const Uni
   return Result;
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::LoadExtensionList()
+void TWinConfiguration::LoadExtensionList()
 {
   FExtensionList->Clear();
 
@@ -1447,7 +1447,7 @@ void __fastcall TWinConfiguration::LoadExtensionList()
     DoLoadExtensionList(ExtensionsPaths->ValueFromIndex[Index], ExtensionsPaths->Names[Index], DeletedExtensions.get());
   }
 
-  std::unique_ptr<TStringList> OrderedExtensions(new TStringList());
+  std::unique_ptr<TStringList> OrderedExtensions(std::make_unique<TStringList>());
   ParseExtensionList(OrderedExtensions.get(), FExtensionsOrder);
   FExtensionList->SortBy(OrderedExtensions.get());
 
@@ -1476,7 +1476,7 @@ static UnicodeString KeyName(THierarchicalStorage * Storage, const UnicodeString
   return Result;
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::LoadData(THierarchicalStorage * Storage)
+void TWinConfiguration::LoadData(THierarchicalStorage * Storage)
 {
   TCustomWinConfiguration::LoadData(Storage);
 
@@ -1544,7 +1544,7 @@ void __fastcall TWinConfiguration::LoadData(THierarchicalStorage * Storage)
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::LoadAdmin(THierarchicalStorage * Storage)
+void TWinConfiguration::LoadAdmin(THierarchicalStorage * Storage)
 {
   TCustomWinConfiguration::LoadAdmin(Storage);
   FDisableOpenEdit = Storage->ReadBool(L"DisableOpenEdit", FDisableOpenEdit);
@@ -1552,7 +1552,7 @@ void __fastcall TWinConfiguration::LoadAdmin(THierarchicalStorage * Storage)
   FMachineInstallations = Storage->ReadInteger(L"Installations", 0);
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::CopyData(THierarchicalStorage * Source, THierarchicalStorage * Target)
+void TWinConfiguration::CopyData(THierarchicalStorage * Source, THierarchicalStorage * Target)
 {
   TCustomWinConfiguration::CopyData(Source, Target);
 
@@ -1568,7 +1568,7 @@ void __fastcall TWinConfiguration::CopyData(THierarchicalStorage * Source, THier
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::ClearTemporaryLoginData()
+void TWinConfiguration::ClearTemporaryLoginData()
 {
   if (!FTemporaryKeyFile.IsEmpty())
   {
@@ -1577,7 +1577,7 @@ void __fastcall TWinConfiguration::ClearTemporaryLoginData()
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::AddVersionToHistory()
+void TWinConfiguration::AddVersionToHistory()
 {
   int CurrentVersion = CompoundVersion;
 
@@ -1606,18 +1606,18 @@ void __fastcall TWinConfiguration::AddVersionToHistory()
   Usage->Set(L"AnyBetaUsed", AnyBetaInVersionHistory);
 }
 //---------------------------------------------------------------------------
-bool __fastcall TWinConfiguration::DoIsBeta(const UnicodeString & ReleaseType)
+bool TWinConfiguration::DoIsBeta(const UnicodeString & ReleaseType)
 {
   // What about "Development" release type?
   return SameText(ReleaseType, L"beta") || SameText(ReleaseType, L"rc");
 }
 //---------------------------------------------------------------------------
-bool __fastcall TWinConfiguration::GetIsBeta()
+bool TWinConfiguration::GetIsBeta()
 {
   return DoIsBeta(GetReleaseType());
 }
 //---------------------------------------------------------------------------
-bool __fastcall TWinConfiguration::GetAnyBetaInVersionHistory()
+bool TWinConfiguration::GetAnyBetaInVersionHistory()
 {
   int From = 1;
   bool AnyBeta = false;
@@ -1635,7 +1635,7 @@ bool __fastcall TWinConfiguration::GetAnyBetaInVersionHistory()
   return AnyBeta;
 }
 //---------------------------------------------------------------------------
-bool __fastcall TWinConfiguration::GetDDExtInstalled()
+bool TWinConfiguration::GetDDExtInstalled()
 {
   if (FDDExtInstalled < 0)
   {
@@ -1680,7 +1680,7 @@ bool __fastcall TWinConfiguration::GetDDExtInstalled()
   return (FDDExtInstalled > 0);
 }
 //---------------------------------------------------------------------------
-bool __fastcall TWinConfiguration::IsDDExtRunning()
+bool TWinConfiguration::IsDDExtRunning()
 {
   bool Result;
   if (!DDExtInstalled)
@@ -1697,12 +1697,12 @@ bool __fastcall TWinConfiguration::IsDDExtRunning()
   return Result;
 }
 //---------------------------------------------------------------------------
-bool __fastcall TWinConfiguration::IsDDExtBroken()
+bool TWinConfiguration::IsDDExtBroken()
 {
   return (GetWindowsBuild() >= 17134);
 }
 //---------------------------------------------------------------------------
-RawByteString __fastcall TWinConfiguration::StronglyRecryptPassword(RawByteString Password, UnicodeString Key)
+RawByteString TWinConfiguration::StronglyRecryptPassword(RawByteString Password, UnicodeString Key)
 {
   RawByteString Dummy;
   RawByteString Result;
@@ -1729,7 +1729,7 @@ RawByteString __fastcall TWinConfiguration::StronglyRecryptPassword(RawByteStrin
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall TWinConfiguration::DecryptPassword(RawByteString Password, UnicodeString Key)
+UnicodeString TWinConfiguration::DecryptPassword(RawByteString Password, UnicodeString Key)
 {
   UnicodeString Result;
   RawByteString Buf;
@@ -1763,7 +1763,7 @@ UnicodeString __fastcall TWinConfiguration::DecryptPassword(RawByteString Passwo
   return Result;
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::SetMasterPassword(UnicodeString value)
+void TWinConfiguration::SetMasterPassword(UnicodeString value)
 {
   // just stores the plain-text version of the password
 
@@ -1784,7 +1784,7 @@ void __fastcall TWinConfiguration::SetMasterPassword(UnicodeString value)
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::ChangeMasterPassword(
+void TWinConfiguration::ChangeMasterPassword(
   UnicodeString value, TStrings * RecryptPasswordErrors)
 {
   RawByteString Verifier;
@@ -1802,7 +1802,7 @@ void __fastcall TWinConfiguration::ChangeMasterPassword(
   }
 }
 //---------------------------------------------------------------------------
-bool __fastcall TWinConfiguration::ValidateMasterPassword(UnicodeString value)
+bool TWinConfiguration::ValidateMasterPassword(UnicodeString value)
 {
   DebugAssert(UseMasterPassword);
   DebugAssert(!FMasterPasswordVerifier.IsEmpty());
@@ -1810,7 +1810,7 @@ bool __fastcall TWinConfiguration::ValidateMasterPassword(UnicodeString value)
   return Result;
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::ClearMasterPassword(TStrings * RecryptPasswordErrors)
+void TWinConfiguration::ClearMasterPassword(TStrings * RecryptPasswordErrors)
 {
   FMasterPasswordVerifier = L"";
   FUseMasterPassword = false;
@@ -1825,7 +1825,7 @@ void __fastcall TWinConfiguration::ClearMasterPassword(TStrings * RecryptPasswor
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::AskForMasterPassword()
+void TWinConfiguration::AskForMasterPassword()
 {
   if (FMasterPasswordSession > 0)
   {
@@ -1850,7 +1850,7 @@ void __fastcall TWinConfiguration::AskForMasterPassword()
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::AskForMasterPasswordIfNotSet()
+void TWinConfiguration::AskForMasterPasswordIfNotSet()
 {
   if (FPlainMasterPasswordEncrypt.IsEmpty())
   {
@@ -1858,7 +1858,7 @@ void __fastcall TWinConfiguration::AskForMasterPasswordIfNotSet()
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::BeginMasterPasswordSession()
+void TWinConfiguration::BeginMasterPasswordSession()
 {
   // We do not expect nesting
   DebugAssert(FMasterPasswordSession == 0);
@@ -1867,7 +1867,7 @@ void __fastcall TWinConfiguration::BeginMasterPasswordSession()
   FMasterPasswordSession++;
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::EndMasterPasswordSession()
+void TWinConfiguration::EndMasterPasswordSession()
 {
   if (DebugAlwaysTrue(FMasterPasswordSession > 0))
   {
@@ -1876,67 +1876,67 @@ void __fastcall TWinConfiguration::EndMasterPasswordSession()
   FMasterPasswordSessionAsked = false;
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::SetDDTransferConfirmation(TAutoSwitch value)
+void TWinConfiguration::SetDDTransferConfirmation(TAutoSwitch value)
 {
   SET_CONFIG_PROPERTY(DDTransferConfirmation);
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::SetDDTemporaryDirectory(UnicodeString value)
+void TWinConfiguration::SetDDTemporaryDirectory(UnicodeString value)
 {
   SET_CONFIG_PROPERTY(DDTemporaryDirectory);
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::SetDDDrives(UnicodeString value)
+void TWinConfiguration::SetDDDrives(UnicodeString value)
 {
   SET_CONFIG_PROPERTY(DDDrives);
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::SetDDFakeFile(bool value)
+void TWinConfiguration::SetDDFakeFile(bool value)
 {
   SET_CONFIG_PROPERTY(DDFakeFile);
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::SetDDExtTimeout(int value)
+void TWinConfiguration::SetDDExtTimeout(int value)
 {
   SET_CONFIG_PROPERTY(DDExtTimeout);
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::SetDDWarnLackOfTempSpace(bool value)
+void TWinConfiguration::SetDDWarnLackOfTempSpace(bool value)
 {
   SET_CONFIG_PROPERTY(DDWarnLackOfTempSpace);
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::SetDDWarnLackOfTempSpaceRatio(double value)
+void TWinConfiguration::SetDDWarnLackOfTempSpaceRatio(double value)
 {
   SET_CONFIG_PROPERTY(DDWarnLackOfTempSpaceRatio);
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::SetScpExplorer(TScpExplorerConfiguration value)
+void TWinConfiguration::SetScpExplorer(TScpExplorerConfiguration value)
 {
   SET_CONFIG_PROPERTY(ScpExplorer);
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::SetScpCommander(TScpCommanderConfiguration value)
+void TWinConfiguration::SetScpCommander(TScpCommanderConfiguration value)
 {
   SET_CONFIG_PROPERTY(ScpCommander);
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::SetEditor(TEditorConfiguration value)
+void TWinConfiguration::SetEditor(TEditorConfiguration value)
 {
   SET_CONFIG_PROPERTY(Editor);
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::SetQueueView(TQueueViewConfiguration value)
+void TWinConfiguration::SetQueueView(TQueueViewConfiguration value)
 {
   SET_CONFIG_PROPERTY(QueueView);
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::SetEnableQueueByDefault(bool value)
+void TWinConfiguration::SetEnableQueueByDefault(bool value)
 {
   SET_CONFIG_PROPERTY(EnableQueueByDefault);
 }
 //---------------------------------------------------------------------------
-TUpdatesConfiguration __fastcall TWinConfiguration::GetUpdates()
+TUpdatesConfiguration TWinConfiguration::GetUpdates()
 {
   TUpdatesConfiguration Result;
   {
@@ -1946,151 +1946,151 @@ TUpdatesConfiguration __fastcall TWinConfiguration::GetUpdates()
   return Result;
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::SetUpdates(TUpdatesConfiguration value)
+void TWinConfiguration::SetUpdates(TUpdatesConfiguration value)
 {
   TGuard Guard(FCriticalSection);
   // do not use SET_CONFIG_PROPERTY to avoid OnChange handler call (not synchronized)
   FUpdates = value;
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::SetVersionHistory(UnicodeString value)
+void TWinConfiguration::SetVersionHistory(UnicodeString value)
 {
   SET_CONFIG_PROPERTY(VersionHistory);
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::SetDeleteToRecycleBin(bool value)
+void TWinConfiguration::SetDeleteToRecycleBin(bool value)
 {
   SET_CONFIG_PROPERTY(DeleteToRecycleBin);
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::SetSelectDirectories(bool value)
+void TWinConfiguration::SetSelectDirectories(bool value)
 {
   SET_CONFIG_PROPERTY(SelectDirectories);
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::SetShowHiddenFiles(bool value)
+void TWinConfiguration::SetShowHiddenFiles(bool value)
 {
   SET_CONFIG_PROPERTY(ShowHiddenFiles);
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::SetFormatSizeBytes(TFormatBytesStyle value)
+void TWinConfiguration::SetFormatSizeBytes(TFormatBytesStyle value)
 {
   SET_CONFIG_PROPERTY(FormatSizeBytes);
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::SetPanelSearch(TIncrementalSearch value)
+void TWinConfiguration::SetPanelSearch(TIncrementalSearch value)
 {
   SET_CONFIG_PROPERTY(PanelSearch);
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::SetShowInaccesibleDirectories(bool value)
+void TWinConfiguration::SetShowInaccesibleDirectories(bool value)
 {
   SET_CONFIG_PROPERTY(ShowInaccesibleDirectories);
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::SetConfirmTransferring(bool value)
+void TWinConfiguration::SetConfirmTransferring(bool value)
 {
   SET_CONFIG_PROPERTY(ConfirmTransferring);
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::SetConfirmDeleting(bool value)
+void TWinConfiguration::SetConfirmDeleting(bool value)
 {
   SET_CONFIG_PROPERTY(ConfirmDeleting);
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::SetConfirmRecycling(bool value)
+void TWinConfiguration::SetConfirmRecycling(bool value)
 {
   SET_CONFIG_PROPERTY(ConfirmRecycling);
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::SetUseLocationProfiles(bool value)
+void TWinConfiguration::SetUseLocationProfiles(bool value)
 {
   SET_CONFIG_PROPERTY(UseLocationProfiles);
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::SetUseSharedBookmarks(bool value)
+void TWinConfiguration::SetUseSharedBookmarks(bool value)
 {
   SET_CONFIG_PROPERTY(UseSharedBookmarks);
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::SetConfirmClosingSession(bool value)
+void TWinConfiguration::SetConfirmClosingSession(bool value)
 {
   SET_CONFIG_PROPERTY(ConfirmClosingSession);
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::SetDoubleClickAction(TDoubleClickAction value)
+void TWinConfiguration::SetDoubleClickAction(TDoubleClickAction value)
 {
   SET_CONFIG_PROPERTY(DoubleClickAction);
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::SetCopyOnDoubleClickConfirmation(bool value)
+void TWinConfiguration::SetCopyOnDoubleClickConfirmation(bool value)
 {
   SET_CONFIG_PROPERTY(CopyOnDoubleClickConfirmation);
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::SetDimmHiddenFiles(bool value)
+void TWinConfiguration::SetDimmHiddenFiles(bool value)
 {
   SET_CONFIG_PROPERTY(DimmHiddenFiles);
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::SetRenameWholeName(bool value)
+void TWinConfiguration::SetRenameWholeName(bool value)
 {
   SET_CONFIG_PROPERTY(RenameWholeName);
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::SetAutoStartSession(UnicodeString value)
+void TWinConfiguration::SetAutoStartSession(UnicodeString value)
 {
   SET_CONFIG_PROPERTY(AutoStartSession);
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::SetExpertMode(bool value)
+void TWinConfiguration::SetExpertMode(bool value)
 {
   SET_CONFIG_PROPERTY(ExpertMode);
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::SetDefaultDirIsHome(bool value)
+void TWinConfiguration::SetDefaultDirIsHome(bool value)
 {
   SET_CONFIG_PROPERTY(DefaultDirIsHome);
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::SetTemporaryDirectoryAppendSession(bool value)
+void TWinConfiguration::SetTemporaryDirectoryAppendSession(bool value)
 {
   SET_CONFIG_PROPERTY(TemporaryDirectoryAppendSession);
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::SetTemporaryDirectoryAppendPath(bool value)
+void TWinConfiguration::SetTemporaryDirectoryAppendPath(bool value)
 {
   SET_CONFIG_PROPERTY(TemporaryDirectoryAppendPath);
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::SetTemporaryDirectoryDeterministic(bool value)
+void TWinConfiguration::SetTemporaryDirectoryDeterministic(bool value)
 {
   SET_CONFIG_PROPERTY(TemporaryDirectoryDeterministic);
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::SetTemporaryDirectoryCleanup(bool value)
+void TWinConfiguration::SetTemporaryDirectoryCleanup(bool value)
 {
   SET_CONFIG_PROPERTY(TemporaryDirectoryCleanup);
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::SetConfirmTemporaryDirectoryCleanup(bool value)
+void TWinConfiguration::SetConfirmTemporaryDirectoryCleanup(bool value)
 {
   SET_CONFIG_PROPERTY(ConfirmTemporaryDirectoryCleanup);
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::SetPreservePanelState(bool value)
+void TWinConfiguration::SetPreservePanelState(bool value)
 {
   SET_CONFIG_PROPERTY(PreservePanelState);
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::SetDarkTheme(TAutoSwitch value)
+void TWinConfiguration::SetDarkTheme(TAutoSwitch value)
 {
   SET_CONFIG_PROPERTY_EX(DarkTheme, ConfigureInterface());
 }
 //---------------------------------------------------------------------------
-static int __fastcall SysDarkTheme(HKEY RootKey)
+static int SysDarkTheme(HKEY RootKey)
 {
-  std::unique_ptr<TRegistry> Registry(new TRegistry());
+  std::unique_ptr<TRegistry> Registry(std::make_unique<TRegistry>());
   Registry->RootKey = RootKey;
   UnicodeString ThemesPersonalizeKey = L"Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize";
   UnicodeString AppsUseLightThemeValue = L"AppsUseLightTheme";
@@ -2103,12 +2103,12 @@ static int __fastcall SysDarkTheme(HKEY RootKey)
   return Result;
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::ResetSysDarkTheme()
+void TWinConfiguration::ResetSysDarkTheme()
 {
   FSysDarkTheme = -1;
 }
 //---------------------------------------------------------------------------
-bool __fastcall TWinConfiguration::UseDarkTheme()
+bool TWinConfiguration::UseDarkTheme()
 {
   if (FSysDarkTheme < 0)
   {
@@ -2134,204 +2134,204 @@ bool __fastcall TWinConfiguration::UseDarkTheme()
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::SetLastStoredSession(UnicodeString value)
+void TWinConfiguration::SetLastStoredSession(UnicodeString value)
 {
   SET_CONFIG_PROPERTY(LastStoredSession);
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::SetAutoSaveWorkspace(bool value)
+void TWinConfiguration::SetAutoSaveWorkspace(bool value)
 {
   SET_CONFIG_PROPERTY(AutoSaveWorkspace);
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::SetAutoSaveWorkspacePasswords(bool value)
+void TWinConfiguration::SetAutoSaveWorkspacePasswords(bool value)
 {
   SET_CONFIG_PROPERTY(AutoSaveWorkspacePasswords);
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::SetAutoWorkspace(UnicodeString value)
+void TWinConfiguration::SetAutoWorkspace(UnicodeString value)
 {
   SET_CONFIG_PROPERTY(AutoWorkspace);
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::SetPathInCaption(TPathInCaption value)
+void TWinConfiguration::SetPathInCaption(TPathInCaption value)
 {
   SET_CONFIG_PROPERTY(PathInCaption);
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::SetMinimizeToTray(bool value)
+void TWinConfiguration::SetMinimizeToTray(bool value)
 {
   SET_CONFIG_PROPERTY(MinimizeToTray);
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::MinimizeToTrayOnce()
+void TWinConfiguration::MinimizeToTrayOnce()
 {
   FMinimizeToTrayOnce = true;
 }
 //---------------------------------------------------------------------------
-bool __fastcall TWinConfiguration::GetMinimizeToTray()
+bool TWinConfiguration::GetMinimizeToTray()
 {
   bool Result = FMinimizeToTrayOnce || FMinimizeToTray;
   FMinimizeToTrayOnce = false;
   return Result;
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::SetBalloonNotifications(bool value)
+void TWinConfiguration::SetBalloonNotifications(bool value)
 {
   SET_CONFIG_PROPERTY(BalloonNotifications);
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::SetNotificationsTimeout(unsigned int value)
+void TWinConfiguration::SetNotificationsTimeout(unsigned int value)
 {
   SET_CONFIG_PROPERTY(NotificationsTimeout);
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::SetNotificationsStickTime(unsigned int value)
+void TWinConfiguration::SetNotificationsStickTime(unsigned int value)
 {
   SET_CONFIG_PROPERTY(NotificationsStickTime);
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::SetCopyParamAutoSelectNotice(bool value)
+void TWinConfiguration::SetCopyParamAutoSelectNotice(bool value)
 {
   SET_CONFIG_PROPERTY(CopyParamAutoSelectNotice);
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::SetLockToolbars(bool value)
+void TWinConfiguration::SetLockToolbars(bool value)
 {
   SET_CONFIG_PROPERTY(LockToolbars);
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::SetSelectiveToolbarText(bool value)
+void TWinConfiguration::SetSelectiveToolbarText(bool value)
 {
   SET_CONFIG_PROPERTY(SelectiveToolbarText);
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::SetAutoOpenInPutty(bool value)
+void TWinConfiguration::SetAutoOpenInPutty(bool value)
 {
   SET_CONFIG_PROPERTY(AutoOpenInPutty);
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::SetRefreshRemotePanel(bool value)
+void TWinConfiguration::SetRefreshRemotePanel(bool value)
 {
   SET_CONFIG_PROPERTY(RefreshRemotePanel);
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::SetRefreshRemotePanelInterval(TDateTime value)
+void TWinConfiguration::SetRefreshRemotePanelInterval(TDateTime value)
 {
   SET_CONFIG_PROPERTY(RefreshRemotePanelInterval);
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::UpdateIconFont()
+void TWinConfiguration::UpdateIconFont()
 {
   UpdateDesktopFont();
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::SetPanelFont(const TFontConfiguration & value)
+void TWinConfiguration::SetPanelFont(const TFontConfiguration & value)
 {
   SET_CONFIG_PROPERTY_EX(PanelFont, UpdateIconFont());
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::SetNaturalOrderNumericalSorting(bool value)
+void TWinConfiguration::SetNaturalOrderNumericalSorting(bool value)
 {
   SET_CONFIG_PROPERTY(NaturalOrderNumericalSorting);
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::SetFullRowSelect(bool value)
+void TWinConfiguration::SetFullRowSelect(bool value)
 {
   SET_CONFIG_PROPERTY(FullRowSelect);
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::SetOfferedEditorAutoConfig(bool value)
+void TWinConfiguration::SetOfferedEditorAutoConfig(bool value)
 {
   SET_CONFIG_PROPERTY(OfferedEditorAutoConfig);
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::SetOpenedStoredSessionFolders(UnicodeString value)
+void TWinConfiguration::SetOpenedStoredSessionFolders(UnicodeString value)
 {
   SET_CONFIG_PROPERTY(OpenedStoredSessionFolders);
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::SetAutoImportedFromPuttyOrFilezilla(bool value)
+void TWinConfiguration::SetAutoImportedFromPuttyOrFilezilla(bool value)
 {
   SET_CONFIG_PROPERTY(AutoImportedFromPuttyOrFilezilla);
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::SetGenerateUrlComponents(int value)
+void TWinConfiguration::SetGenerateUrlComponents(int value)
 {
   SET_CONFIG_PROPERTY(GenerateUrlComponents);
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::SetGenerateUrlCodeTarget(TGenerateUrlCodeTarget value)
+void TWinConfiguration::SetGenerateUrlCodeTarget(TGenerateUrlCodeTarget value)
 {
   SET_CONFIG_PROPERTY(GenerateUrlCodeTarget);
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::SetGenerateUrlScriptFormat(TScriptFormat value)
+void TWinConfiguration::SetGenerateUrlScriptFormat(TScriptFormat value)
 {
   SET_CONFIG_PROPERTY(GenerateUrlScriptFormat);
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::SetGenerateUrlAssemblyLanguage(TAssemblyLanguage value)
+void TWinConfiguration::SetGenerateUrlAssemblyLanguage(TAssemblyLanguage value)
 {
   SET_CONFIG_PROPERTY(GenerateUrlAssemblyLanguage);
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::SetExternalSessionInExistingInstance(bool value)
+void TWinConfiguration::SetExternalSessionInExistingInstance(bool value)
 {
   SET_CONFIG_PROPERTY(ExternalSessionInExistingInstance);
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::SetKeepOpenWhenNoSession(bool value)
+void TWinConfiguration::SetKeepOpenWhenNoSession(bool value)
 {
   SET_CONFIG_PROPERTY(KeepOpenWhenNoSession);
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::SetLocalIconsByExt(bool value)
+void TWinConfiguration::SetLocalIconsByExt(bool value)
 {
   SET_CONFIG_PROPERTY(LocalIconsByExt);
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::SetBidiModeOverride(TLocaleFlagOverride value)
+void TWinConfiguration::SetBidiModeOverride(TLocaleFlagOverride value)
 {
   SET_CONFIG_PROPERTY(BidiModeOverride);
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::SetFlipChildrenOverride(TLocaleFlagOverride value)
+void TWinConfiguration::SetFlipChildrenOverride(TLocaleFlagOverride value)
 {
   SET_CONFIG_PROPERTY(FlipChildrenOverride);
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::SetShowTips(bool value)
+void TWinConfiguration::SetShowTips(bool value)
 {
   SET_CONFIG_PROPERTY(ShowTips);
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::SetTipsSeen(UnicodeString value)
+void TWinConfiguration::SetTipsSeen(UnicodeString value)
 {
   SET_CONFIG_PROPERTY(TipsSeen);
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::SetTipsShown(TDateTime value)
+void TWinConfiguration::SetTipsShown(TDateTime value)
 {
   SET_CONFIG_PROPERTY(TipsShown);
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::SetFileColors(UnicodeString value)
+void TWinConfiguration::SetFileColors(UnicodeString value)
 {
   SET_CONFIG_PROPERTY(FileColors);
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::SetRunsSinceLastTip(int value)
+void TWinConfiguration::SetRunsSinceLastTip(int value)
 {
   SET_CONFIG_PROPERTY(RunsSinceLastTip);
 }
 //---------------------------------------------------------------------------
-bool __fastcall TWinConfiguration::GetHonorDrivePolicy()
+bool TWinConfiguration::GetHonorDrivePolicy()
 {
   return DriveInfo->HonorDrivePolicy;
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::SetHonorDrivePolicy(bool value)
+void TWinConfiguration::SetHonorDrivePolicy(bool value)
 {
   if (HonorDrivePolicy != value)
   {
@@ -2340,7 +2340,7 @@ void __fastcall TWinConfiguration::SetHonorDrivePolicy(bool value)
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::SetCustomCommandList(TCustomCommandList * value)
+void TWinConfiguration::SetCustomCommandList(TCustomCommandList * value)
 {
   DebugAssert(FCustomCommandList);
   if (!FCustomCommandList->Equals(value))
@@ -2350,7 +2350,7 @@ void __fastcall TWinConfiguration::SetCustomCommandList(TCustomCommandList * val
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::SetExtensionList(TCustomCommandList * value)
+void TWinConfiguration::SetExtensionList(TCustomCommandList * value)
 {
   if (!ExtensionList->Equals(value))
   {
@@ -2406,51 +2406,51 @@ void __fastcall TWinConfiguration::SetExtensionList(TCustomCommandList * value)
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::CustomCommandShortCuts(TShortCuts & ShortCuts) const
+void TWinConfiguration::CustomCommandShortCuts(TShortCuts & ShortCuts) const
 {
   CustomCommandList->ShortCuts(ShortCuts);
   ExtensionList->ShortCuts(ShortCuts);
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::SetBookmarks(UnicodeString Key,
+void TWinConfiguration::SetBookmarks(UnicodeString Key,
   TBookmarkList * value)
 {
   FBookmarks->Bookmarks[Key] = value;
   Changed();
 }
 //---------------------------------------------------------------------------
-TBookmarkList * __fastcall TWinConfiguration::GetBookmarks(UnicodeString Key)
+TBookmarkList * TWinConfiguration::GetBookmarks(UnicodeString Key)
 {
   return FBookmarks->Bookmarks[Key];
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::SetSharedBookmarks(TBookmarkList * value)
+void TWinConfiguration::SetSharedBookmarks(TBookmarkList * value)
 {
   FBookmarks->SharedBookmarks = value;
   Changed();
 }
 //---------------------------------------------------------------------------
-TBookmarkList * __fastcall TWinConfiguration::GetSharedBookmarks()
+TBookmarkList * TWinConfiguration::GetSharedBookmarks()
 {
   return FBookmarks->SharedBookmarks;
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall TWinConfiguration::GetDefaultKeyFile()
+UnicodeString TWinConfiguration::GetDefaultKeyFile()
 {
   return (!FDefaultKeyFile.IsEmpty() ? FDefaultKeyFile : FTemporaryKeyFile);
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::SetLastMonitor(int value)
+void TWinConfiguration::SetLastMonitor(int value)
 {
   ::SetLastMonitor(value);
 }
 //---------------------------------------------------------------------------
-int __fastcall TWinConfiguration::GetLastMonitor()
+int TWinConfiguration::GetLastMonitor()
 {
   return ::GetLastMonitor();
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall TWinConfiguration::ExpandedTemporaryDirectory()
+UnicodeString TWinConfiguration::ExpandedTemporaryDirectory()
 {
   UnicodeString Result =
     ExpandFileName(ExpandEnvironmentVariables(DDTemporaryDirectory));
@@ -2461,12 +2461,12 @@ UnicodeString __fastcall TWinConfiguration::ExpandedTemporaryDirectory()
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall TWinConfiguration::TemporaryDir(bool Mask)
+UnicodeString TWinConfiguration::TemporaryDir(bool Mask)
 {
   return UniqTempDir(ExpandedTemporaryDirectory(), L"scp", Mask);
 }
 //---------------------------------------------------------------------------
-TStrings * __fastcall TWinConfiguration::FindTemporaryFolders()
+TStrings * TWinConfiguration::FindTemporaryFolders()
 {
   TStrings * Result = new TStringList();
   try
@@ -2501,7 +2501,7 @@ TStrings * __fastcall TWinConfiguration::FindTemporaryFolders()
   return Result;
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::CleanupTemporaryFolders(TStrings * Folders)
+void TWinConfiguration::CleanupTemporaryFolders(TStrings * Folders)
 {
   UnicodeString ErrorList;
   TStrings * F;
@@ -2550,23 +2550,23 @@ void __fastcall TWinConfiguration::CleanupTemporaryFolders(TStrings * Folders)
   }
 }
 //---------------------------------------------------------------------------
-int __fastcall TWinConfiguration::GetResourceModuleCompleteness(HINSTANCE Module)
+int TWinConfiguration::GetResourceModuleCompleteness(HINSTANCE Module)
 {
   UnicodeString CompletenessStr = LoadStrFrom(Module, TRANSLATION_COMPLETENESS);
   return StrToIntDef(CompletenessStr, -1);
 }
 //---------------------------------------------------------------------------
-int __fastcall TWinConfiguration::GetLocaleCompletenessTreshold()
+int TWinConfiguration::GetLocaleCompletenessTreshold()
 {
   return 80;
 }
 //---------------------------------------------------------------------------
-bool __fastcall TWinConfiguration::IsTranslationComplete(HINSTANCE Module)
+bool TWinConfiguration::IsTranslationComplete(HINSTANCE Module)
 {
   return (GetResourceModuleCompleteness(Module) >= LocaleCompletenessTreshold);
 }
 //---------------------------------------------------------------------------
-HINSTANCE __fastcall TWinConfiguration::LoadNewResourceModule(LCID ALocale,
+HINSTANCE TWinConfiguration::LoadNewResourceModule(LCID ALocale,
   UnicodeString & FileName)
 {
   HINSTANCE Instance = TCustomWinConfiguration::LoadNewResourceModule(ALocale, FileName);
@@ -2585,7 +2585,7 @@ HINSTANCE __fastcall TWinConfiguration::LoadNewResourceModule(LCID ALocale,
   return Instance;
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::CheckTranslationVersion(const UnicodeString FileName,
+void TWinConfiguration::CheckTranslationVersion(const UnicodeString FileName,
   bool InternalLocaleOnError)
 {
   UnicodeString TranslationProductVersion = GetFileProductVersion(FileName);
@@ -2610,7 +2610,7 @@ void __fastcall TWinConfiguration::CheckTranslationVersion(const UnicodeString F
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::CheckDefaultTranslation()
+void TWinConfiguration::CheckDefaultTranslation()
 {
   if (!FInvalidDefaultTranslationMessage.IsEmpty())
   {
@@ -2619,18 +2619,18 @@ void __fastcall TWinConfiguration::CheckDefaultTranslation()
   }
 }
 //---------------------------------------------------------------------------
-const TEditorPreferences * __fastcall TWinConfiguration::DefaultEditorForFile(
+const TEditorPreferences * TWinConfiguration::DefaultEditorForFile(
   const UnicodeString FileName, bool Local, const TFileMasks::TParams & MaskParams)
 {
   return FEditorList->Find(FileName, Local, MaskParams);
 }
 //---------------------------------------------------------------------------
-const TEditorList * __fastcall TWinConfiguration::GetEditorList()
+const TEditorList * TWinConfiguration::GetEditorList()
 {
   return FEditorList;
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::SetEditorList(const TEditorList * value)
+void TWinConfiguration::SetEditorList(const TEditorList * value)
 {
   if (!(*FEditorList == *value))
   {
@@ -2639,12 +2639,12 @@ void __fastcall TWinConfiguration::SetEditorList(const TEditorList * value)
   }
 }
 //---------------------------------------------------------------------------
-TStrings * __fastcall TWinConfiguration::GetCustomCommandOptions()
+TStrings * TWinConfiguration::GetCustomCommandOptions()
 {
   return FCustomCommandOptions.get();
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::SetCustomCommandOptions(TStrings * value)
+void TWinConfiguration::SetCustomCommandOptions(TStrings * value)
 {
   if (!FCustomCommandOptions->Equals(value))
   {
@@ -2653,38 +2653,38 @@ void __fastcall TWinConfiguration::SetCustomCommandOptions(TStrings * value)
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::SetLockedInterface(bool value)
+void TWinConfiguration::SetLockedInterface(bool value)
 {
   SET_CONFIG_PROPERTY(LockedInterface);
 }
 //---------------------------------------------------------------------------
-bool __fastcall TWinConfiguration::GetTimeoutShellOperations()
+bool TWinConfiguration::GetTimeoutShellOperations()
 {
   return ::TimeoutShellOperations;
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::SetTimeoutShellOperations(bool value)
+void TWinConfiguration::SetTimeoutShellOperations(bool value)
 {
   ::TimeoutShellOperations = value;
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::SetTimeoutShellIconRetrieval(bool value)
+void TWinConfiguration::SetTimeoutShellIconRetrieval(bool value)
 {
   SET_CONFIG_PROPERTY(TimeoutShellIconRetrieval);
 }
 //---------------------------------------------------------------------------
-TStringList * __fastcall TWinConfiguration::LoadJumpList(
+TStringList * TWinConfiguration::LoadJumpList(
   THierarchicalStorage * Storage, UnicodeString Name)
 {
   UnicodeString JumpList = Storage->ReadString(Name, L"");
 
-  std::unique_ptr<TStringList> List(new TStringList());
+  std::unique_ptr<TStringList> List(std::make_unique<TStringList>());
   List->CaseSensitive = false;
   List->CommaText = JumpList;
   return List.release();
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::SaveJumpList(
+void TWinConfiguration::SaveJumpList(
   THierarchicalStorage * Storage, UnicodeString Name, TStringList * List)
 {
   UnicodeString JumpList = Storage->ReadString(Name, L"");
@@ -2696,7 +2696,7 @@ void __fastcall TWinConfiguration::SaveJumpList(
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::TrimJumpList(TStringList * List)
+void TWinConfiguration::TrimJumpList(TStringList * List)
 {
   while (List->Count > 30)
   {
@@ -2704,7 +2704,7 @@ void __fastcall TWinConfiguration::TrimJumpList(TStringList * List)
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::UpdateEntryInJumpList(
+void TWinConfiguration::UpdateEntryInJumpList(
   bool Session, const UnicodeString & Name, bool Add)
 {
   THierarchicalStorage * Storage = CreateConfigStorage();
@@ -2749,32 +2749,32 @@ void __fastcall TWinConfiguration::UpdateEntryInJumpList(
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::AddSessionToJumpList(UnicodeString SessionName)
+void TWinConfiguration::AddSessionToJumpList(UnicodeString SessionName)
 {
   UpdateEntryInJumpList(true, SessionName, true);
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::DeleteSessionFromJumpList(UnicodeString SessionName)
+void TWinConfiguration::DeleteSessionFromJumpList(UnicodeString SessionName)
 {
   UpdateEntryInJumpList(true, SessionName, false);
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::AddWorkspaceToJumpList(UnicodeString Workspace)
+void TWinConfiguration::AddWorkspaceToJumpList(UnicodeString Workspace)
 {
   UpdateEntryInJumpList(false, Workspace, true);
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::DeleteWorkspaceFromJumpList(UnicodeString Workspace)
+void TWinConfiguration::DeleteWorkspaceFromJumpList(UnicodeString Workspace)
 {
   UpdateEntryInJumpList(false, Workspace, false);
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::UpdateJumpList()
+void TWinConfiguration::UpdateJumpList()
 {
   AddSessionToJumpList(L"");
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::UpdateStaticUsage()
+void TWinConfiguration::UpdateStaticUsage()
 {
   // This is here because of TStoredSessionList::UpdateStaticUsage() call
   // from TConfiguration::UpdateStaticUsage()
@@ -2854,7 +2854,7 @@ void __fastcall TWinConfiguration::UpdateStaticUsage()
   Usage->Set(L"ExtensionsDeleted", (DeletedExtensions->Count));
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::RestoreFont(
+void TWinConfiguration::RestoreFont(
   const TFontConfiguration & Configuration, TFont * Font)
 {
   Font->Name = Configuration.FontName;
@@ -2863,7 +2863,7 @@ void __fastcall TWinConfiguration::RestoreFont(
   Font->Style = IntToFontStyles(Configuration.FontStyle);
 }
 //---------------------------------------------------------------------------
-void __fastcall TWinConfiguration::StoreFont(
+void TWinConfiguration::StoreFont(
   TFont * Font, TFontConfiguration & Configuration)
 {
   Configuration.FontName = Font->Name;
@@ -2873,12 +2873,12 @@ void __fastcall TWinConfiguration::StoreFont(
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-__fastcall TCustomCommandType::TCustomCommandType() :
+TCustomCommandType::TCustomCommandType() :
   FParams(0), FShortCut(0), FShortCutOriginal(0)
 {
 }
 //---------------------------------------------------------------------------
-__fastcall TCustomCommandType::TCustomCommandType(const TCustomCommandType & Other) :
+TCustomCommandType::TCustomCommandType(const TCustomCommandType & Other) :
   FName(Other.FName),
   FCommand(Other.FCommand),
   FParams(Other.FParams),
@@ -2909,7 +2909,7 @@ TCustomCommandType & TCustomCommandType::operator=(const TCustomCommandType & Ot
   return *this;
 }
 //---------------------------------------------------------------------------
-bool __fastcall TCustomCommandType::Equals(const TCustomCommandType * Other) const
+bool TCustomCommandType::Equals(const TCustomCommandType * Other) const
 {
   return
     (FName == Other->FName) &&
@@ -2930,7 +2930,7 @@ const UnicodeString ExtensionCommandDirective(L"command");
 const wchar_t ExtensionMark = L'@';
 const UnicodeString WinSCPExtensionExt(L".WinSCPextension");
 //---------------------------------------------------------------------------
-UnicodeString __fastcall TCustomCommandType::GetExtensionId(const UnicodeString & Name)
+UnicodeString TCustomCommandType::GetExtensionId(const UnicodeString & Name)
 {
   UnicodeString Result;
   int P = Pos(UpperCase(WinSCPExtensionExt), UpperCase(Name));
@@ -2943,16 +2943,16 @@ UnicodeString __fastcall TCustomCommandType::GetExtensionId(const UnicodeString 
   return Result;
 }
 //---------------------------------------------------------------------------
-void __fastcall TCustomCommandType::LoadExtension(const UnicodeString & Path)
+void TCustomCommandType::LoadExtension(const UnicodeString & Path)
 {
-  std::unique_ptr<TStringList> Lines(new TStringList());
+  std::unique_ptr<TStringList> Lines(std::make_unique<TStringList>());
   FileName = Path;
   LoadScriptFromFile(Path, Lines.get());
   LoadExtension(Lines.get(), Path);
   Command = ReplaceStr(Command, L"%EXTENSION_PATH%", Path);
 }
 //---------------------------------------------------------------------------
-void __fastcall TCustomCommandType::LoadExtension(TStrings * Lines, const UnicodeString & PathForBaseName)
+void TCustomCommandType::LoadExtension(TStrings * Lines, const UnicodeString & PathForBaseName)
 {
   Params = ccLocal;
   bool AnythingFound = false;
@@ -3191,7 +3191,7 @@ void __fastcall TCustomCommandType::LoadExtension(TStrings * Lines, const Unicod
   }
 }
 //---------------------------------------------------------------------------
-bool __fastcall TCustomCommandType::ParseOption(const UnicodeString & Value, TOption & Option, const UnicodeString & ExtensionBaseName)
+bool TCustomCommandType::ParseOption(const UnicodeString & Value, TOption & Option, const UnicodeString & ExtensionBaseName)
 {
   UnicodeString Buf = Value;
   UnicodeString KindName;
@@ -3347,17 +3347,17 @@ bool __fastcall TCustomCommandType::ParseOption(const UnicodeString & Value, TOp
   return Result;
 }
 //---------------------------------------------------------------------------
-int __fastcall TCustomCommandType::GetOptionsCount() const
+int TCustomCommandType::GetOptionsCount() const
 {
   return FOptions.size();
 }
 //---------------------------------------------------------------------------
-const TCustomCommandType::TOption & __fastcall TCustomCommandType::GetOption(int Index) const
+const TCustomCommandType::TOption & TCustomCommandType::GetOption(int Index) const
 {
   return FOptions[Index];
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall TCustomCommandType::GetOptionKey(
+UnicodeString TCustomCommandType::GetOptionKey(
   const TCustomCommandType::TOption & Option, const UnicodeString & Site) const
 {
   UnicodeString Result = Id + L"\\" + Option.Id;
@@ -3368,7 +3368,7 @@ UnicodeString __fastcall TCustomCommandType::GetOptionKey(
   return Result;
 }
 //---------------------------------------------------------------------------
-bool __fastcall TCustomCommandType::AnyOptionWithFlag(unsigned int Flag) const
+bool TCustomCommandType::AnyOptionWithFlag(unsigned int Flag) const
 {
   bool Result = false;
   for (int Index = 0; !Result && (Index < OptionsCount); Index++)
@@ -3379,7 +3379,7 @@ bool __fastcall TCustomCommandType::AnyOptionWithFlag(unsigned int Flag) const
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall TCustomCommandType::GetCommandWithExpandedOptions(
+UnicodeString TCustomCommandType::GetCommandWithExpandedOptions(
   TStrings * CustomCommandOptions, const UnicodeString & Site) const
 {
   UnicodeString Result = Command;
@@ -3406,7 +3406,7 @@ UnicodeString __fastcall TCustomCommandType::GetCommandWithExpandedOptions(
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall TCustomCommandType::GetOptionCommand(const TOption & Option, const UnicodeString & Value) const
+UnicodeString TCustomCommandType::GetOptionCommand(const TOption & Option, const UnicodeString & Value) const
 {
   UnicodeString Result = Value;
 
@@ -3435,13 +3435,13 @@ UnicodeString __fastcall TCustomCommandType::GetOptionCommand(const TOption & Op
   return Result;
 }
 //---------------------------------------------------------------------------
-bool __fastcall TCustomCommandType::HasCustomShortCut() const
+bool TCustomCommandType::HasCustomShortCut() const
 {
   return (ShortCut != FShortCutOriginal);
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-bool __fastcall TCustomCommandType::TOption::GetIsControl() const
+bool TCustomCommandType::TOption::GetIsControl() const
 {
   return (Id != L"-");
 }
@@ -3486,29 +3486,29 @@ bool TCustomCommandType::TOption::operator==(const TCustomCommandType::TOption &
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-__fastcall TCustomCommandList::TCustomCommandList()
+TCustomCommandList::TCustomCommandList()
 {
   FCommands = new TList();
   FModified = false;
 }
 //---------------------------------------------------------------------------
-__fastcall TCustomCommandList::~TCustomCommandList()
+TCustomCommandList::~TCustomCommandList()
 {
   Clear();
   delete FCommands;
 }
 //---------------------------------------------------------------------------
-void __fastcall TCustomCommandList::Reset()
+void TCustomCommandList::Reset()
 {
   FModified = false;
 }
 //---------------------------------------------------------------------------
-void __fastcall TCustomCommandList::Modify()
+void TCustomCommandList::Modify()
 {
   FModified = true;
 }
 //---------------------------------------------------------------------------
-void __fastcall TCustomCommandList::Load(THierarchicalStorage * Storage)
+void TCustomCommandList::Load(THierarchicalStorage * Storage)
 {
   Clear();
 
@@ -3555,7 +3555,7 @@ void __fastcall TCustomCommandList::Load(THierarchicalStorage * Storage)
   Reset();
 }
 //---------------------------------------------------------------------------
-void __fastcall TCustomCommandList::Save(THierarchicalStorage * Storage)
+void TCustomCommandList::Save(THierarchicalStorage * Storage)
 {
   if (Storage->OpenSubKey(L"CustomCommands", true))
   {
@@ -3592,7 +3592,7 @@ void __fastcall TCustomCommandList::Save(THierarchicalStorage * Storage)
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TCustomCommandList::Clear()
+void TCustomCommandList::Clear()
 {
   for (int Index = 0; Index < FCommands->Count; Index++)
   {
@@ -3601,7 +3601,7 @@ void __fastcall TCustomCommandList::Clear()
   FCommands->Clear();
 }
 //---------------------------------------------------------------------------
-void __fastcall TCustomCommandList::Add(const UnicodeString Name,
+void TCustomCommandList::Add(const UnicodeString Name,
   const UnicodeString ACommand, int Params)
 {
   TCustomCommandType * Command = new TCustomCommandType();
@@ -3611,18 +3611,18 @@ void __fastcall TCustomCommandList::Add(const UnicodeString Name,
   Add(Command);
 }
 //---------------------------------------------------------------------------
-void __fastcall TCustomCommandList::Add(TCustomCommandType * Command)
+void TCustomCommandList::Add(TCustomCommandType * Command)
 {
   Insert(Count, Command);
 }
 //---------------------------------------------------------------------------
-void __fastcall TCustomCommandList::Insert(int Index, TCustomCommandType * Command)
+void TCustomCommandList::Insert(int Index, TCustomCommandType * Command)
 {
   FCommands->Insert(Index, Command);
   Modify();
 }
 //---------------------------------------------------------------------------
-void __fastcall TCustomCommandList::Change(int Index, TCustomCommandType * ACommand)
+void TCustomCommandList::Change(int Index, TCustomCommandType * ACommand)
 {
   TCustomCommandType * Command = GetCommand(Index);
   if (!Command->Equals(ACommand))
@@ -3637,7 +3637,7 @@ void __fastcall TCustomCommandList::Change(int Index, TCustomCommandType * AComm
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TCustomCommandList::Move(int CurIndex, int NewIndex)
+void TCustomCommandList::Move(int CurIndex, int NewIndex)
 {
   if (CurIndex != NewIndex)
   {
@@ -3646,7 +3646,7 @@ void __fastcall TCustomCommandList::Move(int CurIndex, int NewIndex)
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TCustomCommandList::Delete(int Index)
+void TCustomCommandList::Delete(int Index)
 {
   DebugAssert((Index >= 0) && (Index < Count));
   delete GetCommand(Index);
@@ -3662,7 +3662,7 @@ public:
     FIds = Ids;
   }
 
-  virtual int __fastcall Invoke(void * Item1, void * Item2)
+  virtual int Invoke(void * Item1, void * Item2)
   {
     TCustomCommandType * CustomCommand1 = static_cast<TCustomCommandType *>(Item1);
     TCustomCommandType * CustomCommand2 = static_cast<TCustomCommandType *>(Item2);
@@ -3694,28 +3694,28 @@ private:
   TStrings * FIds;
 };
 //---------------------------------------------------------------------------
-void __fastcall TCustomCommandList::SortBy(TStrings * Ids)
+void TCustomCommandList::SortBy(TStrings * Ids)
 {
   TCustomCommandCompareFunc * Func = new TCustomCommandCompareFunc(Ids);
   FCommands->SortList(Func);
 }
 //---------------------------------------------------------------------------
-int __fastcall TCustomCommandList::GetCount() const
+int TCustomCommandList::GetCount() const
 {
   return FCommands->Count;
 }
 //---------------------------------------------------------------------------
-const TCustomCommandType * __fastcall TCustomCommandList::GetConstCommand(int Index) const
+const TCustomCommandType * TCustomCommandList::GetConstCommand(int Index) const
 {
   return static_cast<TCustomCommandType *>(FCommands->Items[Index]);
 }
 //---------------------------------------------------------------------------
-TCustomCommandType * __fastcall TCustomCommandList::GetCommand(int Index)
+TCustomCommandType * TCustomCommandList::GetCommand(int Index)
 {
   return static_cast<TCustomCommandType *>(FCommands->Items[Index]);
 }
 //---------------------------------------------------------------------------
-bool __fastcall TCustomCommandList::Equals(const TCustomCommandList * Other) const
+bool TCustomCommandList::Equals(const TCustomCommandList * Other) const
 {
   bool Result = (Count == Other->Count);
   for (int Index = 0; Result && (Index < Count); Index++)
@@ -3725,7 +3725,7 @@ bool __fastcall TCustomCommandList::Equals(const TCustomCommandList * Other) con
   return Result;
 }
 //---------------------------------------------------------------------------
-void __fastcall TCustomCommandList::Assign(const TCustomCommandList * Other)
+void TCustomCommandList::Assign(const TCustomCommandList * Other)
 {
   Clear();
   for (int Index = 0; Index < Other->Count; Index++)
@@ -3773,7 +3773,7 @@ int TCustomCommandList::FindIndexByFileName(const UnicodeString & FileName) cons
   return -1;
 }
 //---------------------------------------------------------------------------
-void __fastcall TCustomCommandList::ShortCuts(TShortCuts & ShortCuts) const
+void TCustomCommandList::ShortCuts(TShortCuts & ShortCuts) const
 {
   for (int Index = 0; Index < FCommands->Count; Index++)
   {

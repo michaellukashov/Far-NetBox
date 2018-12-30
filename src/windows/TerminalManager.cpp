@@ -74,11 +74,11 @@ __fastcall TTerminalManager::TTerminalManager() :
   FTaskbarList = NULL;
   FAuthenticating = 0;
   FMainThread = GetCurrentThreadId();
-  FChangeSection.reset(new TCriticalSection());
+  FChangeSection = std::make_unique<TCriticalSection>());
   FPendingConfigurationChange = 0;
   FKeepAuthenticateForm = false;
 
-  FApplicationsEvents.reset(new TApplicationEvents(Application));
+  FApplicationsEvents = std::make_unique<TApplicationEvents>(Application);
   FApplicationsEvents->OnException = ApplicationException;
   FApplicationsEvents->OnShowHint = ApplicationShowHint;
   FApplicationsEvents->OnMessage = ApplicationMessage;
@@ -98,7 +98,7 @@ __fastcall TTerminalManager::TTerminalManager() :
   FTerminalList = new TStringList();
   FQueues = new TList();
   FTerminationMessages = new TStringList();
-  std::unique_ptr<TSessionData> DummyData(new TSessionData(L""));
+  std::unique_ptr<TSessionData> DummyData(std::make_unique<TSessionData>(L""));
   FLocalTerminal = CreateTerminal(DummyData.get());
   SetupTerminal(FLocalTerminal);
 }
@@ -1430,7 +1430,7 @@ void __fastcall TTerminalManager::NewSession(bool /*FromSite*/, const UnicodeStr
   }
 
   UnicodeString DownloadFile; // unused
-  std::unique_ptr<TObjectList> DataList(new TObjectList());
+  std::unique_ptr<TObjectList> DataList(std::make_unique<TObjectList>());
 
   GetLoginData(SessionUrl, NULL, DataList.get(), DownloadFile, true, LinkedForm);
 
@@ -1658,7 +1658,7 @@ TRemoteFile * __fastcall TTerminalManager::CheckRights(
 bool __fastcall TTerminalManager::UploadPublicKey(
   TTerminal * Terminal, TSessionData * Data, UnicodeString & FileName)
 {
-  std::unique_ptr<TOpenDialog> OpenDialog(new TOpenDialog(Application));
+  std::unique_ptr<TOpenDialog> OpenDialog(std::make_unique<TOpenDialog>(Application));
   OpenDialog->Title = LoadStr(LOGIN_PUBLIC_KEY_TITLE);
   OpenDialog->Filter = LoadStr(LOGIN_PUBLIC_KEY_FILTER);
   OpenDialog->DefaultExt = PuttyKeyExt;
@@ -1762,7 +1762,7 @@ bool __fastcall TTerminalManager::UploadPublicKey(
         if (AuthorizedKeysFileFile.get() != NULL)
         {
           AuthorizedKeysFileFile->FullFileName = AuthorizedKeysFileAbsolutePath;
-          std::unique_ptr<TStrings> Files(new TStringList());
+          std::unique_ptr<TStrings> Files(std::make_unique<TStringList>());
           Files->AddObject(AuthorizedKeysFileAbsolutePath, AuthorizedKeysFileFile.get());
           Terminal->LogEvent(FORMAT(L"Downloading current \"%s\" file...", AuthorizedKeysFile));
           Terminal->CopyToLocal(Files.get(), TemporaryDir, &CopyParam, cpNoConfirmation, NULL);
@@ -1807,7 +1807,7 @@ bool __fastcall TTerminalManager::UploadPublicKey(
           AuthorizedKeys += Line + L"\n";
           // Overload without Encoding parameter uses TEncoding::UTF8, but does not write BOM, what we want
           TFile::WriteAllText(TemporaryAuthorizedKeysFile, AuthorizedKeys);
-          std::unique_ptr<TStrings> Files(new TStringList());
+          std::unique_ptr<TStrings> Files(std::make_unique<TStringList>());
           Files->Add(TemporaryAuthorizedKeysFile);
           Terminal->LogEvent(FORMAT(L"Uploading updated \"%s\" file...", AuthorizedKeysFile));
           Terminal->CopyToRemote(Files.get(), SshFolderAbsolutePath, &CopyParam, cpNoConfirmation, NULL);

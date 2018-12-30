@@ -663,7 +663,7 @@ static void __fastcall ChangeFormPixelsPerInch(TForm * Form, int PixelsPerInch)
     // (e.g. with TLoginDialog)
     std::unique_ptr<TSizeConstraints> Constraints(new TSizeConstraints(NULL));
     Constraints->Assign(PublicCustomForm->Constraints);
-    std::unique_ptr<TSizeConstraints> NoConstraints(new TSizeConstraints(NULL));
+    std::unique_ptr<TSizeConstraints> NoConstraints(std::make_unique<TSizeConstraints>(NULL));
     PublicCustomForm->Constraints = NoConstraints.get();
 
     // Does not seem to have any effect
@@ -2460,7 +2460,7 @@ static void __fastcall FixFormIcon(TForm * Form, int Size, int WidthMetric, int 
 
   // Clone the icon data (whole .ico file content, that is originally loaded from .dfm)
   // to a new TIcon that does not have a size fixed yet (size cannot be changed after handle is allocated)
-  std::unique_ptr<TMemoryStream> Stream(new TMemoryStream());
+  std::unique_ptr<TMemoryStream> Stream(std::make_unique<TMemoryStream>());
   Form->Icon->SaveToStream(Stream.get());
   std::unique_ptr<TIcon> Icon(new TIcon());
   Stream->Position = 0;

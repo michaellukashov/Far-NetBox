@@ -2290,7 +2290,7 @@ void __fastcall Usage(TConsole * Console)
 //---------------------------------------------------------------------------
 void __fastcall BatchSettings(TConsole * Console, TProgramParams * Params)
 {
-  std::unique_ptr<TStrings> Arguments(new TStringList());
+  std::unique_ptr<TStrings> Arguments(std::make_unique<TStringList>());
   if (DebugAlwaysTrue(Params->FindSwitch(L"batchsettings", Arguments.get())))
   {
     if (Arguments->Count < 1)
@@ -2306,7 +2306,7 @@ void __fastcall BatchSettings(TConsole * Console, TProgramParams * Params)
       TFileMasks Mask(Arguments->Strings[0]);
       Arguments->Delete(0);
 
-      std::unique_ptr<TOptionsStorage> OptionsStorage(new TOptionsStorage(Arguments.get(), false));
+      std::unique_ptr<TOptionsStorage> OptionsStorage(std::make_unique<TOptionsStorage>(Arguments.get(), false));
 
       int Matches = 0;
       int Changes = 0;
@@ -2318,7 +2318,7 @@ void __fastcall BatchSettings(TConsole * Console, TProgramParams * Params)
             Mask.Matches(Data->Name, false, false))
         {
           Matches++;
-          std::unique_ptr<TSessionData> OriginalData(new TSessionData(L""));
+          std::unique_ptr<TSessionData> OriginalData(std::make_unique<TSessionData>(L""));
           OriginalData->Assign(Data);
           Data->ApplyRawSettings(OptionsStorage.get());
           bool Changed = !OriginalData->IsSame(Data, false);
@@ -2355,7 +2355,7 @@ bool __fastcall FindPuttygenCompatibleSwitch(
   bool Result = Params->FindSwitch(Name, Value, Set);
   if (!Result)
   {
-    std::unique_ptr<TStrings> Args(new TStringList());
+    std::unique_ptr<TStrings> Args(std::make_unique<TStringList>());
     Result = Params->FindSwitchCaseSensitive(PuttygenName, Args.get(), 1);
     if (Result && (Args->Count >= 1))
     {
@@ -2374,7 +2374,7 @@ int __fastcall KeyGen(TConsole * Console, TProgramParams * Params)
   try
   {
     UnicodeString InputFileName;
-    std::unique_ptr<TStrings> Args(new TStringList());
+    std::unique_ptr<TStrings> Args(std::make_unique<TStringList>());
     if (!Params->FindSwitch(KEYGEN_SWITCH, Args.get(), 1) ||
         (Args->Count < 1) ||
         Args->Strings[0].IsEmpty())
@@ -2538,7 +2538,7 @@ int __fastcall FingerprintScan(TConsole * Console, TProgramParams * Params)
       throw Exception(LoadStr(FINGERPRINTSCAN_NEED_SECURE_SESSION));
     }
 
-    std::unique_ptr<TTerminal> Terminal(new TTerminal(SessionData.get(), Configuration));
+    std::unique_ptr<TTerminal> Terminal(std::make_unique<TTerminal>(SessionData.get(), Configuration));
     UnicodeString SHA256;
     UnicodeString MD5;
     Terminal->FingerprintScan(SHA256, MD5);

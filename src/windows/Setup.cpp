@@ -280,7 +280,7 @@ static void DeleteKeyIfEmpty(TRegistry * Registry, const UnicodeString & Key, bo
 {
   if (Registry->OpenKey(Key, false))
   {
-    std::unique_ptr<TStrings> List(new TStringList());
+    std::unique_ptr<TStrings> List(std::make_unique<TStringList>());
 
     Registry->GetValueNames(List.get());
     bool CanDelete = true;
@@ -361,7 +361,7 @@ static void UnregisterProtocol(TRegistry * Registry,
 //---------------------------------------------------------------------------
 static TRegistry * CreateRegistry(HKEY RootKey)
 {
-  std::unique_ptr<TRegistry> Registry(new TRegistry());
+  std::unique_ptr<TRegistry> Registry(std::make_unique<TRegistry>());
 
   Registry->Access = KEY_WRITE | KEY_READ;
   Registry->RootKey = RootKey;
@@ -857,7 +857,7 @@ static UnicodeString WantBetaUrl(UnicodeString URL, bool Force)
 //---------------------------------------------------------------------------
 static THttp * CreateHttp(const TUpdatesConfiguration & Updates)
 {
-  std::unique_ptr<THttp> Http(new THttp());
+  std::unique_ptr<THttp> Http(std::make_unique<THttp>());
 
   UnicodeString ProxyHost;
   int ProxyPort = 0;
@@ -1357,7 +1357,7 @@ void TUpdateDownloadThread::UpdateDownloaded()
       FORMAT(".%d", (Index)) + ExtractFileExt(SetupPathBase);
   }
 
-  std::unique_ptr<TFileStream> FileStream(new TFileStream(SetupPath, fmCreate));
+  std::unique_ptr<TFileStream> FileStream(std::make_unique<TFileStream>(SetupPath, fmCreate));
   FileStream->Write(Buffer, Size);
   FileStream.reset(nullptr);
 
@@ -1934,7 +1934,7 @@ bool AnyOtherInstanceOfSelf()
 //---------------------------------------------------------------------------
 static bool DoIsInstalled(HKEY RootKey)
 {
-  std::unique_ptr<TRegistry> Registry(new TRegistry(KEY_READ));
+  std::unique_ptr<TRegistry> Registry(std::make_unique<TRegistry>(KEY_READ));
   Registry->RootKey = RootKey;
   bool Result =
     Registry->OpenKey(L"Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\winscp3_is1", false);
@@ -1958,7 +1958,7 @@ bool IsInstalled()
 //---------------------------------------------------------------------------
 static TStringList * TextToTipList(const UnicodeString & Text)
 {
-  std::unique_ptr<TStringList> List(new TStringList());
+  std::unique_ptr<TStringList> List(std::make_unique<TStringList>());
   List->CommaText = Text;
   return List.release();
 }

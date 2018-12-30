@@ -148,7 +148,7 @@ void __fastcall Download(TTerminal * Terminal, const UnicodeString FileName,
     }
 
     UnicodeString FriendyFileName = UnixIncludeTrailingBackslash(UnixExtractFilePath(FileName)) + DisplayName;
-    std::unique_ptr<TStrings> FileListFriendly(new TStringList());
+    std::unique_ptr<TStrings> FileListFriendly(std::make_unique<TStringList>());
     FileListFriendly->AddObject(FriendyFileName, File);
 
     int Options = coDisableQueue;
@@ -164,7 +164,7 @@ void __fastcall Download(TTerminal * Terminal, const UnicodeString FileName,
         CopyParam.FileMask = DisplayName;
       }
 
-      std::unique_ptr<TStrings> FileList(new TStringList());
+      std::unique_ptr<TStrings> FileList(std::make_unique<TStringList>());
       FileList->AddObject(FileName, File);
       Terminal->CopyToLocal(FileList.get(), TargetDirectory, &CopyParam, 0, NULL);
     }
@@ -769,10 +769,10 @@ int __fastcall Execute()
     }
   }
 
-  std::unique_ptr<TStrings> RawSettings(new TStringList());
+  std::unique_ptr<TStrings> RawSettings(std::make_unique<TStringList>());
   if (Params->FindSwitch(RAWTRANSFERSETTINGS_SWITCH, RawSettings.get()))
   {
-    std::unique_ptr<TOptionsStorage> OptionsStorage(new TOptionsStorage(RawSettings.get(), false));
+    std::unique_ptr<TOptionsStorage> OptionsStorage(std::make_unique<TOptionsStorage>(RawSettings.get(), false));
     GUIConfiguration->LoadDefaultCopyParam(OptionsStorage.get());
   }
 
@@ -1062,7 +1062,7 @@ int __fastcall Execute()
       do
       {
         Retry = false;
-        std::unique_ptr<TObjectList> DataList(new TObjectList());
+        std::unique_ptr<TObjectList> DataList(std::make_unique<TObjectList>());
         try
         {
           GetLoginData(AutoStartSession, Params, DataList.get(), DownloadFile, NeedSession, NULL, pufAllowStoredSiteWithProtocol);

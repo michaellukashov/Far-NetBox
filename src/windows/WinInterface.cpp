@@ -553,7 +553,7 @@ unsigned int __fastcall SimpleErrorDialog(const UnicodeString Msg, const Unicode
 static TStrings * __fastcall StackInfoListToStrings(
   TJclStackInfoList * StackInfoList)
 {
-  std::unique_ptr<TStrings> StackTrace(new TStringList());
+  std::unique_ptr<TStrings> StackTrace(std::make_unique<TStringList>());
   StackInfoList->AddToStrings(StackTrace.get(), true, false, true, true);
   for (int Index = 0; Index < StackTrace->Count; Index++)
   {
@@ -632,7 +632,7 @@ bool AppendExceptionStackTraceAndForget(TStrings *& MoreMessages)
     std::unique_ptr<TStrings> OwnedMoreMessages;
     if (MoreMessages == nullptr)
     {
-      OwnedMoreMessages.reset(new TStringList());
+      OwnedMoreMessages = std::make_unique<TStringList>();
       MoreMessages = OwnedMoreMessages.get();
       Result = true;
     }

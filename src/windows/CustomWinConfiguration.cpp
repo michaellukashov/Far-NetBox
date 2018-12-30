@@ -67,7 +67,7 @@ void __fastcall TCustomWinConfiguration::DefaultHistory()
   std::unique_ptr<THistoryStrings> Strings;
 
   // Defaults for speed limits.
-  Strings.reset(new THistoryStrings());
+  Strings = std::make_unique<THistoryStrings>();
   // This is language-specifics, what has to be dealt with when changing language.
   // There's ad-hoc workaround in CopySpeedLimits.
   // If we need to solve this for another history, we should introduce
@@ -81,7 +81,7 @@ void __fastcall TCustomWinConfiguration::DefaultHistory()
   }
   FHistory->AddObject(L"SpeedLimit", Strings.release());
 
-  Strings.reset(new THistoryStrings());
+  Strings = std::make_unique<THistoryStrings>();
   Strings->Add(FormatCommand(DefaultPuttyPath, L""));
   Strings->Add(FormatCommand(DefaultPuttyPath, L"-t -m \"%TEMP%\\putty.txt\" !`cmd.exe /c echo cd '!/' ; /bin/bash -login > \"%TEMP%\\putty.txt\"`"));
   Strings->Add(KittyExecutable);

@@ -429,7 +429,7 @@ void TCopyParamList::Load(THierarchicalStorage * Storage, intptr_t ACount)
   {
     UnicodeString Name = ::IntToStr(Index);
     std::unique_ptr<TCopyParamRule> Rule;
-    std::unique_ptr<TCopyParamType> CopyParam(new TCopyParamType());
+    std::unique_ptr<TCopyParamType> CopyParam(std::make_unique<TCopyParamType>());
     try__removed
     {
       if (Storage->OpenSubKey(Name, false))
@@ -441,7 +441,7 @@ void TCopyParamList::Load(THierarchicalStorage * Storage, intptr_t ACount)
 
           if (Storage->ReadBool("HasRule", false))
           {
-            Rule.reset(new TCopyParamRule());
+            Rule = std::make_unique<TCopyParamRule>();
             Rule->Load(Storage);
           }
         },
@@ -1159,7 +1159,7 @@ void TGUIConfiguration::FindLocales(const UnicodeString LocalesMask, TStrings * 
 //---------------------------------------------------------------------------
 void TGUIConfiguration::AddLocale(LCID Locale, const UnicodeString Name)
 {
-  std::unique_ptr<TLocaleInfo> LocaleInfo(new TLocaleInfo());
+  std::unique_ptr<TLocaleInfo> LocaleInfo(std::make_unique<TLocaleInfo>());
   LocaleInfo->Locale = Locale;
   LocaleInfo->Name = Name;
 
@@ -1422,7 +1422,7 @@ void TGUIConfiguration::SetQueueKeepDoneItemsFor(intptr_t Value)
 TStoredSessionList * TGUIConfiguration::SelectPuttySessionsForImport(
   TStoredSessionList * Sessions, UnicodeString & /*Error*/)
 {
-  std::unique_ptr<TStoredSessionList> ImportSessionList(new TStoredSessionList(true));
+  std::unique_ptr<TStoredSessionList> ImportSessionList(std::make_unique<TStoredSessionList>(true));
   ImportSessionList->SetDefaultSettings(Sessions->GetDefaultSettings());
 
   std::unique_ptr<TRegistryStorage> Storage(new TRegistryStorage(GetPuttySessionsKey()));
