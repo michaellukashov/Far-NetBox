@@ -5,30 +5,30 @@
 
 namespace nb {
 
-UnicodeString Format(const UnicodeString format_str, fmt::ArgList args)
+UnicodeString Format(const UnicodeString fmt, fmt::ArgList args)
 {
   fmt::WMemoryWriter w;
-  w.write(format_str.data(), args);
+  w.write(fmt.data(), args);
   return UnicodeString(w.data(), ToIntPtr(w.size()));
 }
 
-UnicodeString Sprintf(const UnicodeString format_str, fmt::ArgList args)
+UnicodeString Sprintf(const UnicodeString fmt, fmt::ArgList args)
 {
   fmt::WMemoryWriter w;
-  fmt::printf(w, format_str.data(), args);
+  fmt::printf(w, fmt.data(), args);
   return UnicodeString(w.data(), ToIntPtr(w.size()));
 }
 
-UnicodeString FmtLoadStr(intptr_t Id, fmt::ArgList args)
+UnicodeString FmtLoadStr(intptr_t id, fmt::ArgList args)
 {
   Expects(GetGlobals() != nullptr);
-  UnicodeString Fmt = GetGlobals()->GetMsg(Id);
+  UnicodeString Fmt = GetGlobals()->GetMsg(id);
   if (!Fmt.IsEmpty())
   {
     UnicodeString Result = Sprintf(Fmt, args);
     return Result;
   }
-  DEBUG_PRINTF("Unknown resource string id: %d\n", Id);
+  DEBUG_PRINTF("Unknown resource string id: %d\n", id);
   return UnicodeString();
 }
 
