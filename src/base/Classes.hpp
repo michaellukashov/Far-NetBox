@@ -101,7 +101,7 @@ struct TPoint
     y(0)
   {
   }
-  TPoint(int ax, int ay) :
+  TPoint(int ax, int ay) noexcept :
     x(ax),
     y(ay)
   {

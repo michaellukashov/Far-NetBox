@@ -2981,7 +2981,7 @@ bool IsWine()
     (::GetProcAddress(NtDll, "wine_get_version") != nullptr);
 }
 //---------------------------------------------------------------------------
-int GIsUWP = -1;
+static int GIsUWP = -1;
 //---------------------------------------------------------------------------
 bool IsUWP()
 {
@@ -2993,8 +2993,8 @@ bool IsUWP()
       (GetPackageFamilyNameProc)GetProcAddress(Kernel32, "GetPackageFamilyName");
     UINT32 Len = 0;
     bool Result =
-      (GetPackageFamilyName != NULL) &&
-      (GetPackageFamilyName(GetCurrentProcess(), &Len, NULL) == ERROR_INSUFFICIENT_BUFFER);
+      (GetPackageFamilyName != nullptr) &&
+      (GetPackageFamilyName(GetCurrentProcess(), &Len, nullptr) == ERROR_INSUFFICIENT_BUFFER);
     GIsUWP = (Result ? 1 : 0);
   }
   return (GIsUWP > 0);
@@ -4070,12 +4070,12 @@ TStrings * TlsCipherList()
   {
     CipherName = SSL_get_cipher_list(Ssl, Index);
     Index++;
-    if (CipherName != NULL)
+    if (CipherName != nullptr)
     {
       Result->Add(UnicodeString(CipherName));
     }
   }
-  while (CipherName != NULL);
+  while (CipherName != nullptr);
 
   return Result.release();
 }
