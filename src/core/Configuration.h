@@ -42,7 +42,7 @@ private:
   TNotifyEvent FOnChange;
 
   mutable void *FApplicationInfo{nullptr};
-  TUsage * FUsage{nullptr};
+  std::unique_ptr<TUsage> FUsage{nullptr};
   bool FLogging{false};
   bool FPermanentLogging{false};
   UnicodeString FLogFileName;
@@ -377,7 +377,7 @@ public:
   __property bool DisableAcceptingHostKeys = { read = FDisableAcceptingHostKeys };
   const bool& DisableAcceptingHostKeys{FDisableAcceptingHostKeys};
 
-  TUsage * GetUsage() { return FUsage; }
+  TUsage * GetUsage() { return FUsage.get(); }
   UnicodeString GetPuttyRegistryStorageKey() const { return FPuttyRegistryStorageKey; }
   UnicodeString GetRandomSeedFile() const { return FRandomSeedFile; }
   bool GetLogFileAppend() const { return FLogFileAppend; }

@@ -86,7 +86,7 @@ TConfiguration::TConfiguration(TObjectClassId Kind) noexcept :
   FDontSave = false;
   FForceSave = false;
   FApplicationInfo = nullptr;
-  __removed FUsage = new TUsage(this);
+  FUsage = std::make_unique<TUsage>(this);
   FDefaultCollectUsage = false;
   FScripting = false;
 
@@ -315,7 +315,7 @@ void TConfiguration::SaveData(THierarchicalStorage *Storage, bool /*All*/)
 
   if (Storage->OpenSubKey("Usage", true))
   {
-    __removed FUsage->Save(Storage);
+    FUsage->Save(Storage);
     Storage->CloseSubKey();
   }
 }
@@ -479,7 +479,7 @@ void TConfiguration::LoadData(THierarchicalStorage * Storage)
 
   if (Storage->OpenSubKey("Usage", false))
   {
-    __removed FUsage->Load(Storage);
+    FUsage->Load(Storage);
     Storage->CloseSubKey();
   }
 
@@ -1622,12 +1622,12 @@ TEOLType TConfiguration::GetLocalEOLType() const
 //---------------------------------------------------------------------
 bool TConfiguration::GetCollectUsage() const
 {
-  return false; // FUsage->Collect;
+  return FUsage->GetCollect();
 }
 //---------------------------------------------------------------------------
-void TConfiguration::SetCollectUsage(bool /*Value*/)
+void TConfiguration::SetCollectUsage(bool Value)
 {
-  // FUsage->Collect = Value;
+  FUsage->SetCollect(Value);
 }
 //---------------------------------------------------------------------
 void TConfiguration::TemporaryLogging(const UnicodeString ALogFileName)

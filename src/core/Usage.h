@@ -40,6 +40,8 @@ private:
   std::unique_ptr<TStringList> FValues;
   bool FCollect{true};
 
+public:
+  bool GetCollect() const { return FCollect; }
   void SetCollect(bool value);
   void UpdateLastReport();
   void Load(THierarchicalStorage * Storage,
