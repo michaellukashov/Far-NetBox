@@ -362,7 +362,7 @@ void TWinSCPFileSystem::HandleException(Exception *E, int OpMode)
 
 void TWinSCPFileSystem::KeepaliveThreadCallback()
 {
-  volatile TGuard Guard(FCriticalSection);
+  TGuard Guard(FCriticalSection); nb::used(Guard);
 
   if (Connected())
   {
@@ -3546,7 +3546,7 @@ TTerminalQueueStatus *TWinSCPFileSystem::ProcessQueue(bool Hidden)
   {
     if (FQueueStatusInvalidated)
     {
-      volatile TGuard Guard(FQueueStatusSection);
+      TGuard Guard(FQueueStatusSection); nb::used(Guard);
 
       FQueueStatusInvalidated = false;
 
@@ -3603,7 +3603,7 @@ TTerminalQueueStatus *TWinSCPFileSystem::ProcessQueue(bool Hidden)
     TQueueEvent Event;
 
     {
-      volatile TGuard Guard(FQueueStatusSection);
+      TGuard Guard(FQueueStatusSection); nb::used(Guard);
       Event = FQueueEvent;
       FQueueEventPending = false;
     }
@@ -3644,7 +3644,7 @@ void TWinSCPFileSystem::QueueItemUpdate(TTerminalQueue *Queue,
 {
   if (GetQueue() == Queue)
   {
-    volatile TGuard Guard(FQueueStatusSection);
+    TGuard Guard(FQueueStatusSection); nb::used(Guard);
 
     TTerminalQueueStatus *QueueStatus = GetQueueStatus();
     DebugAssert(QueueStatus != nullptr);
@@ -3670,7 +3670,7 @@ void TWinSCPFileSystem::QueueItemUpdate(TTerminalQueue *Queue,
 void TWinSCPFileSystem::QueueEvent(TTerminalQueue *Queue,
   TQueueEvent Event)
 {
-  volatile TGuard Guard(FQueueStatusSection);
+  TGuard Guard(FQueueStatusSection); nb::used(Guard);
   if (Queue == GetQueue())
   {
     FQueueEventPending = true;

@@ -331,7 +331,7 @@ void TFarDialog::GetNextItemPosition(intptr_t &Left, intptr_t &Top)
 
 LONG_PTR WINAPI TFarDialog::DialogProcGeneral(HANDLE Handle, int Msg, int Param1, LONG_PTR Param2)
 {
-  volatile TFarPluginEnvGuard Guard;
+  TFarPluginEnvGuard Guard; nb::used(Guard);
 
   static rde::map<HANDLE, LONG_PTR> Dialogs;
   TFarDialog *Dialog = nullptr;
@@ -550,7 +550,7 @@ LONG_PTR TFarDialog::DefaultDialogProc(int Msg, intptr_t Param1, LONG_PTR Param2
 {
   if (GetHandle())
   {
-    volatile TFarEnvGuard Guard;
+    TFarEnvGuard Guard; nb::used(Guard);
     return GetFarPlugin()->GetPluginStartupInfo()->DefDlgProc(GetHandle(), Msg, ToInt(Param1), Param2);
   }
   return 0;
@@ -713,7 +713,7 @@ intptr_t TFarDialog::ShowModal()
     intptr_t BResult;
 
     {
-      volatile TFarEnvGuard Guard;
+      TFarEnvGuard Guard; nb::used(Guard);
       TRect Bounds = GetBounds();
       const PluginStartupInfo &Info = *GetFarPlugin()->GetPluginStartupInfo();
       Handle = Info.DialogInit(
@@ -799,7 +799,7 @@ LONG_PTR TFarDialog::SendDlgMessage(int Msg, intptr_t Param1, LONG_PTR Param2)
 {
   if (GetHandle())
   {
-    volatile TFarEnvGuard Guard;
+    TFarEnvGuard Guard; nb::used(Guard);
     return GetFarPlugin()->GetPluginStartupInfo()->SendDlgMessage(GetHandle(),
         Msg, ToInt(Param1), Param2);
   }
@@ -1368,7 +1368,7 @@ LONG_PTR TFarDialogItem::DefaultItemProc(int Msg, LONG_PTR Param)
 {
   if (GetDialog() && GetDialog()->GetHandle())
   {
-    volatile TFarEnvGuard Guard;
+    TFarEnvGuard Guard; nb::used(Guard);
     return GetPluginStartupInfo()->DefDlgProc(GetDialog()->GetHandle(),
         Msg, ToInt(GetItem()), Param);
   }
@@ -1379,7 +1379,7 @@ LONG_PTR TFarDialogItem::DefaultDialogProc(int Msg, intptr_t Param1, LONG_PTR Pa
 {
   if (GetDialog() && GetDialog()->GetHandle())
   {
-    volatile TFarEnvGuard Guard;
+    TFarEnvGuard Guard; nb::used(Guard);
     return GetPluginStartupInfo()->DefDlgProc(GetDialog()->GetHandle(),
         Msg, ToInt(Param1), Param2);
   }
@@ -1662,7 +1662,7 @@ bool TFarDialogItem::MouseMove(intptr_t /*X*/, intptr_t /*Y*/,
 
 void TFarDialogItem::Text(intptr_t X, intptr_t Y, uintptr_t Color, const UnicodeString Str)
 {
-  volatile TFarEnvGuard Guard;
+  TFarEnvGuard Guard; nb::used(Guard);
   GetPluginStartupInfo()->Text(
     ToInt(GetDialog()->GetBounds().Left + GetLeft() + X),
     ToInt(GetDialog()->GetBounds().Top + GetTop() + Y),

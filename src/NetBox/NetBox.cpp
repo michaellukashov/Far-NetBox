@@ -25,35 +25,35 @@ extern "C" {
 int WINAPI GetMinFarVersionW()
 {
   DebugAssert(FarPlugin);
-  volatile TFarPluginGuard Guard;
+  TFarPluginGuard Guard; nb::used(Guard);
   return ToInt(FarPlugin->GetMinFarVersion());
 }
 
 void WINAPI SetStartupInfoW(const struct PluginStartupInfo * psi)
 {
   DebugAssert(FarPlugin);
-  volatile TFarPluginGuard Guard;
+  TFarPluginGuard Guard; nb::used(Guard);
   FarPlugin->SetStartupInfo(psi);
 }
 
 void WINAPI ExitFARW()
 {
   DebugAssert(FarPlugin);
-  volatile TFarPluginGuard Guard;
+  TFarPluginGuard Guard; nb::used(Guard);
   FarPlugin->ExitFAR();
 }
 
 void WINAPI GetPluginInfoW(PluginInfo * pi)
 {
   DebugAssert(FarPlugin);
-  volatile TFarPluginGuard Guard;
+  TFarPluginGuard Guard; nb::used(Guard);
   FarPlugin->GetPluginInfo(pi);
 }
 
 int WINAPI ConfigureW(int item)
 {
   DebugAssert(FarPlugin);
-  volatile TFarPluginGuard Guard;
+  TFarPluginGuard Guard; nb::used(Guard);
   return ToInt(FarPlugin->Configure(ToIntPtr(item)));
 }
 
@@ -74,35 +74,35 @@ HANDLE WINAPI OpenPluginW(int openFrom, intptr_t item)
     assert(wcscmp(Instructions2.c_str(), UnicodeString(L"Using keyboard authentication.\x0D\x0A\x0D\x0A\x0D\x0APlease enter your password.").c_str()) == 0);
   )
   DebugAssert(FarPlugin);
-  volatile TFarPluginGuard Guard;
+  TFarPluginGuard Guard; nb::used(Guard);
   return FarPlugin->OpenPlugin(openFrom, item);
 }
 
 void WINAPI ClosePluginW(HANDLE Plugin)
 {
   DebugAssert(FarPlugin);
-  volatile TFarPluginGuard Guard;
+  TFarPluginGuard Guard; nb::used(Guard);
   FarPlugin->ClosePlugin(Plugin);
 }
 
 void WINAPI GetOpenPluginInfoW(HANDLE Plugin, OpenPluginInfo * pluginInfo)
 {
   DebugAssert(FarPlugin);
-  volatile TFarPluginGuard Guard;
+  TFarPluginGuard Guard; nb::used(Guard);
   FarPlugin->GetOpenPluginInfo(Plugin, pluginInfo);
 }
 
 int WINAPI GetFindDataW(HANDLE Plugin, PluginPanelItem ** PanelItem, int * itemsNumber, int OpMode)
 {
   DebugAssert(FarPlugin);
-  volatile TFarPluginGuard Guard;
+  TFarPluginGuard Guard; nb::used(Guard);
   return ToInt(FarPlugin->GetFindData(Plugin, PanelItem, itemsNumber, OpMode));
 }
 
 void WINAPI FreeFindDataW(HANDLE Plugin, PluginPanelItem * PanelItem, int itemsNumber)
 {
   DebugAssert(FarPlugin);
-  volatile TFarPluginGuard Guard;
+  TFarPluginGuard Guard; nb::used(Guard);
   FarPlugin->FreeFindData(Plugin, PanelItem, itemsNumber);
 }
 
@@ -110,28 +110,28 @@ int WINAPI ProcessHostFileW(HANDLE Plugin,
   struct PluginPanelItem * PanelItem, int ItemsNumber, int OpMode)
 {
   DebugAssert(FarPlugin);
-  volatile TFarPluginGuard Guard;
+  TFarPluginGuard Guard; nb::used(Guard);
   return ToInt(FarPlugin->ProcessHostFile(Plugin, PanelItem, ItemsNumber, OpMode));
 }
 
 int WINAPI ProcessKeyW(HANDLE Plugin, int key, unsigned int controlState)
 {
   DebugAssert(FarPlugin);
-  volatile TFarPluginGuard Guard;
+  TFarPluginGuard Guard; nb::used(Guard);
   return ToInt(FarPlugin->ProcessKey(Plugin, key, controlState));
 }
 
 int WINAPI ProcessEventW(HANDLE Plugin, int Event, void * Param)
 {
   DebugAssert(FarPlugin);
-  volatile TFarPluginGuard Guard;
+  TFarPluginGuard Guard; nb::used(Guard);
   return ToInt(FarPlugin->ProcessEvent(Plugin, Event, Param));
 }
 
 int WINAPI SetDirectoryW(HANDLE Plugin, const wchar_t * Dir, int OpMode)
 {
   DebugAssert(FarPlugin);
-  volatile TFarPluginGuard Guard;
+  TFarPluginGuard Guard; nb::used(Guard);
   int Result = ToInt(FarPlugin->SetDirectory(Plugin, Dir, OpMode));
   return Result;
 }
@@ -139,7 +139,7 @@ int WINAPI SetDirectoryW(HANDLE Plugin, const wchar_t * Dir, int OpMode)
 int WINAPI MakeDirectoryW(HANDLE Plugin, const wchar_t ** Name, int OpMode)
 {
   DebugAssert(FarPlugin);
-  volatile TFarPluginGuard Guard;
+  TFarPluginGuard Guard; nb::used(Guard);
   int Result = ToInt(FarPlugin->MakeDirectory(Plugin, Name, OpMode));
   return Result;
 }
@@ -147,7 +147,7 @@ int WINAPI MakeDirectoryW(HANDLE Plugin, const wchar_t ** Name, int OpMode)
 int WINAPI DeleteFilesW(HANDLE Plugin, PluginPanelItem * PanelItem, int itemsNumber, int OpMode)
 {
   DebugAssert(FarPlugin);
-  volatile TFarPluginGuard Guard;
+  TFarPluginGuard Guard; nb::used(Guard);
   return ToInt(FarPlugin->DeleteFiles(Plugin, PanelItem, itemsNumber, OpMode));
 }
 
@@ -155,7 +155,7 @@ int WINAPI GetFilesW(HANDLE Plugin, PluginPanelItem * PanelItem, int itemsNumber
   int Move, const wchar_t ** destPath, int OpMode)
 {
   DebugAssert(FarPlugin);
-  volatile TFarPluginGuard Guard;
+  TFarPluginGuard Guard; nb::used(Guard);
   return ToInt(FarPlugin->GetFiles(Plugin, PanelItem, itemsNumber,
     Move, destPath, OpMode));
 }
@@ -163,7 +163,7 @@ int WINAPI GetFilesW(HANDLE Plugin, PluginPanelItem * PanelItem, int itemsNumber
 int WINAPI PutFilesW(HANDLE Plugin, PluginPanelItem * PanelItem, int itemsNumber, int Move, const wchar_t * SrcPath, int OpMode)
 {
   DebugAssert(FarPlugin);
-  volatile TFarPluginGuard Guard;
+  TFarPluginGuard Guard; nb::used(Guard);
   int Result = ToInt(FarPlugin->PutFiles(Plugin, PanelItem, itemsNumber,
     Move, SrcPath, OpMode));
   return Result;
@@ -172,21 +172,21 @@ int WINAPI PutFilesW(HANDLE Plugin, PluginPanelItem * PanelItem, int itemsNumber
 int WINAPI ProcessEditorEventW(int Event, void * Param)
 {
   DebugAssert(FarPlugin);
-  volatile TFarPluginGuard Guard;
+  TFarPluginGuard Guard; nb::used(Guard);
   return ToInt(FarPlugin->ProcessEditorEvent(Event, Param));
 }
 
 int WINAPI ProcessEditorInputW(const INPUT_RECORD * Rec)
 {
   DebugAssert(FarPlugin);
-  volatile TFarPluginGuard Guard;
+  TFarPluginGuard Guard; nb::used(Guard);
   return ToInt(FarPlugin->ProcessEditorInput(Rec));
 }
 
 HANDLE WINAPI OpenFilePluginW(const wchar_t * fileName, const uint8_t * fileHeader, int fileHeaderSize, int /*OpMode*/)
 {
   DebugAssert(FarPlugin);
-  volatile TFarPluginGuard Guard;
+  TFarPluginGuard Guard; nb::used(Guard);
   if (!fileName)
   {
     return INVALID_HANDLE_VALUE;
