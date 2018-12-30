@@ -21,7 +21,7 @@ public:
   BaseStringT(BaseStringT&&) = default;
 
   BaseStringT(const BaseStringT &rhs) :
-    BaseT(reinterpret_cast<const char *>(rhs.c_str()), ToInt(rhs.GetLength()))
+    BaseT(rhs.c_str(), ToInt(rhs.GetLength()))
   {}
   BaseStringT(const BaseY &rhs) :
     BaseT(rhs.c_str(), ToInt(rhs.GetLength()))
