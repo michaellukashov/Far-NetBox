@@ -565,6 +565,8 @@ void TCopyParamType::Assign(const TCopyParamType *Source)
   DebugAssert(Source != nullptr);
   if (!Source)
     return;
+#undef COPY
+#undef COPY2
 #define COPY(Prop) Set ## Prop(Source->Get ## Prop())
 #define COPY2(Prop) Prop = (Source->##Prop)
   COPY(FileNameCase);
