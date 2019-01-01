@@ -1779,7 +1779,7 @@ void TCustomFarPlugin::RunTests()
 
 uintptr_t TCustomFarFileSystem::FInstances = 0;
 
-TCustomFarFileSystem::TCustomFarFileSystem(TObjectClassId Kind, TCustomFarPlugin *APlugin) :
+TCustomFarFileSystem::TCustomFarFileSystem(TObjectClassId Kind, TCustomFarPlugin *APlugin) noexcept :
   TObject(Kind),
   FPlugin(APlugin),
   FClosed(false),
@@ -1801,7 +1801,7 @@ void TCustomFarFileSystem::Init()
   FInstances++;
 }
 
-TCustomFarFileSystem::~TCustomFarFileSystem()
+TCustomFarFileSystem::~TCustomFarFileSystem() noexcept
 {
   FInstances--;
   ResetCachedInfo();
@@ -2171,13 +2171,13 @@ TObjectList *TCustomFarFileSystem::CreatePanelItemList(
   return PanelItems.release();
 }
 
-TFarPanelModes::TFarPanelModes() : TObject(),
+TFarPanelModes::TFarPanelModes() noexcept : TObject(),
   FReferenced(false)
 {
   nb::ClearArray(FPanelModes);
 }
 
-TFarPanelModes::~TFarPanelModes()
+TFarPanelModes::~TFarPanelModes() noexcept
 {
   if (!FReferenced)
   {
@@ -2269,13 +2269,13 @@ intptr_t TFarPanelModes::CommaCount(const UnicodeString ColumnTypes)
   return Count;
 }
 
-TFarKeyBarTitles::TFarKeyBarTitles() :
+TFarKeyBarTitles::TFarKeyBarTitles() noexcept :
   FReferenced(false)
 {
   nb::ClearStruct(FKeyBarTitles);
 }
 
-TFarKeyBarTitles::~TFarKeyBarTitles()
+TFarKeyBarTitles::~TFarKeyBarTitles() noexcept
 {
   if (!FReferenced)
   {
@@ -2410,7 +2410,7 @@ void TCustomFarPanelItem::FillPanelItem(struct PluginPanelItem *PanelItem)
   PanelItem->CustomColumnData = CustomColumnData;
 }
 
-TFarPanelItem::TFarPanelItem(PluginPanelItem *APanelItem, bool OwnsItem) :
+TFarPanelItem::TFarPanelItem(PluginPanelItem *APanelItem, bool OwnsItem) noexcept :
   TCustomFarPanelItem(OBJECT_CLASS_TFarPanelItem),
   FPanelItem(APanelItem),
   FOwnsItem(OwnsItem)
@@ -2418,7 +2418,7 @@ TFarPanelItem::TFarPanelItem(PluginPanelItem *APanelItem, bool OwnsItem) :
   DebugAssert(FPanelItem);
 }
 
-TFarPanelItem::~TFarPanelItem()
+TFarPanelItem::~TFarPanelItem() noexcept
 {
   if (FOwnsItem)
     nb_free(FPanelItem);
@@ -2489,7 +2489,7 @@ bool TFarPanelItem::GetIsFile() const
   return (GetFileAttrs() & FILE_ATTRIBUTE_DIRECTORY) == 0;
 }
 
-THintPanelItem::THintPanelItem(const UnicodeString AHint) :
+THintPanelItem::THintPanelItem(const UnicodeString AHint) noexcept :
   TCustomFarPanelItem(OBJECT_CLASS_THintPanelItem),
   FHint(AHint)
 {
@@ -2505,7 +2505,7 @@ void THintPanelItem::GetData(
   AFileName = FHint;
 }
 
-TFarPanelInfo::TFarPanelInfo(PanelInfo *APanelInfo, TCustomFarFileSystem *AOwner) :
+TFarPanelInfo::TFarPanelInfo(PanelInfo *APanelInfo, TCustomFarFileSystem *AOwner) noexcept :
   TObject(),
   FPanelInfo(APanelInfo),
   FItems(nullptr),
@@ -2514,7 +2514,7 @@ TFarPanelInfo::TFarPanelInfo(PanelInfo *APanelInfo, TCustomFarFileSystem *AOwner
   DebugAssert(FPanelInfo);
 }
 
-TFarPanelInfo::~TFarPanelInfo()
+TFarPanelInfo::~TFarPanelInfo() noexcept
 {
   nb_free(FPanelInfo);
   SAFE_DESTROY(FItems);
@@ -2706,7 +2706,7 @@ UnicodeString TFarPanelInfo::GetCurrDirectory() const
   return Result;
 }
 
-TFarMenuItems::TFarMenuItems() :
+TFarMenuItems::TFarMenuItems() noexcept :
   TStringList(OBJECT_CLASS_TFarMenuItems),
   FItemFocused(NPOS)
 {
@@ -2800,12 +2800,12 @@ bool TFarMenuItems::GetFlag(intptr_t Index, uintptr_t Flag) const
   return (reinterpret_cast<uintptr_t>(GetObj(Index)) & Flag) > 0;
 }
 
-TFarEditorInfo::TFarEditorInfo(EditorInfo *Info) :
+TFarEditorInfo::TFarEditorInfo(EditorInfo *Info) noexcept :
   FEditorInfo(Info)
 {
 }
 
-TFarEditorInfo::~TFarEditorInfo()
+TFarEditorInfo::~TFarEditorInfo() noexcept
 {
   nb_free(FEditorInfo);
 }
@@ -2828,12 +2828,12 @@ UnicodeString TFarEditorInfo::GetFileName()
   return Result;
 }
 
-TFarEnvGuard::TFarEnvGuard()
+TFarEnvGuard::TFarEnvGuard() noexcept
 {
   DebugAssert(FarPlugin != nullptr);
 }
 
-TFarEnvGuard::~TFarEnvGuard()
+TFarEnvGuard::~TFarEnvGuard() noexcept
 {
   DebugAssert(FarPlugin != nullptr);
   /*
@@ -2849,12 +2849,12 @@ TFarEnvGuard::~TFarEnvGuard()
   */
 }
 
-TFarPluginEnvGuard::TFarPluginEnvGuard()
+TFarPluginEnvGuard::TFarPluginEnvGuard() noexcept
 {
   DebugAssert(FarPlugin != nullptr);
 }
 
-TFarPluginEnvGuard::~TFarPluginEnvGuard()
+TFarPluginEnvGuard::~TFarPluginEnvGuard() noexcept
 {
   DebugAssert(FarPlugin != nullptr);
 }

@@ -17,15 +17,15 @@ inline TRect Rect(int Left, int Top, int Right, int Bottom)
   return TRect(Left, Top, Right, Bottom);
 }
 
-TFarDialog::TFarDialog(TCustomFarPlugin *AFarPlugin) :
+TFarDialog::TFarDialog(TCustomFarPlugin *AFarPlugin) noexcept :
   TObject(OBJECT_CLASS_TFarDialog),
   FFarPlugin(AFarPlugin),
   FBounds(-1, -1, 40, 10),
   FFlags(0),
   FHelpTopic(),
   FVisible(false),
-  FItems(new TObjectList()),
-  FContainers(new TObjectList()),
+  FItems(std::make_unique<TObjectList>()),
+  FContainers(std::make_unique<TObjectList>()),
   FHandle(nullptr),
   FDefaultButton(nullptr),
   FBorderBox(nullptr),
@@ -51,16 +51,16 @@ TFarDialog::TFarDialog(TCustomFarPlugin *AFarPlugin) :
   FBorderBox->SetDouble(true);
 }
 
-TFarDialog::~TFarDialog()
+TFarDialog::~TFarDialog() noexcept
 {
   for (intptr_t Index = 0; Index < GetItemCount(); ++Index)
   {
     GetItem(Index)->Detach();
   }
-  SAFE_DESTROY(FItems);
+//  SAFE_DESTROY(FItems);
   nb_free(FDialogItems);
   FDialogItemsCapacity = 0;
-  SAFE_DESTROY(FContainers);
+//  SAFE_DESTROY(FContainers);
   SAFE_CLOSE_HANDLE(FSynchronizeObjects[0]);
   SAFE_CLOSE_HANDLE(FSynchronizeObjects[1]);
 }
@@ -910,11 +910,11 @@ bool TFarDialog::ChangesLocked() const
   return (FChangesLocked > 0);
 }
 
-TFarDialogContainer::TFarDialogContainer(TObjectClassId Kind, TFarDialog *ADialog) :
+TFarDialogContainer::TFarDialogContainer(TObjectClassId Kind, TFarDialog *ADialog) noexcept :
   TObject(Kind),
   FLeft(0),
   FTop(0),
-  FItems(new TObjectList()),
+  FItems(std::make_unique<TObjectList>()),
   FDialog(ADialog),
   FEnabled(true)
 {
@@ -924,9 +924,9 @@ TFarDialogContainer::TFarDialogContainer(TObjectClassId Kind, TFarDialog *ADialo
   GetDialog()->GetNextItemPosition(FLeft, FTop);
 }
 
-TFarDialogContainer::~TFarDialogContainer()
+TFarDialogContainer::~TFarDialogContainer() noexcept
 {
-  SAFE_DESTROY(FItems);
+//  SAFE_DESTROY(FItems);
 }
 
 UnicodeString TFarDialogContainer::GetMsg(intptr_t MsgId) const
@@ -987,7 +987,7 @@ intptr_t TFarDialogContainer::GetItemCount() const
   return FItems->GetCount();
 }
 
-TFarDialogItem::TFarDialogItem(TObjectClassId Kind, TFarDialog *ADialog, uintptr_t AType) :
+TFarDialogItem::TFarDialogItem(TObjectClassId Kind, TFarDialog *ADialog, uintptr_t AType) noexcept :
   TObject(Kind),
   FDefaultType(AType),
   FGroup(0),
@@ -1011,7 +1011,7 @@ TFarDialogItem::TFarDialogItem(TObjectClassId Kind, TFarDialog *ADialog, uintptr
   GetDialogItem()->Type = nb::ToInt(AType);
 }
 
-TFarDialogItem::~TFarDialogItem()
+TFarDialogItem::~TFarDialogItem() noexcept
 {
   TFarDialog *Dlg = GetDialog();
   DebugAssert(!Dlg);
@@ -1699,12 +1699,12 @@ bool TFarDialogItem::HotKey(char /*HotKey*/)
   return false;
 }
 
-TFarBox::TFarBox(TFarDialog *ADialog) :
+TFarBox::TFarBox(TFarDialog *ADialog) noexcept :
   TFarDialogItem(OBJECT_CLASS_TFarBox, ADialog, DI_SINGLEBOX)
 {
 }
 
-TFarButton::TFarButton(TFarDialog *ADialog) :
+TFarButton::TFarButton(TFarDialog *ADialog) noexcept :
   TFarDialogItem(OBJECT_CLASS_TFarButton, ADialog, DI_BUTTON),
   FResult(0),
   FOnClick(nullptr),
@@ -1712,7 +1712,7 @@ TFarButton::TFarButton(TFarDialog *ADialog) :
 {
 }
 
-TFarButton::TFarButton(TObjectClassId Kind, TFarDialog *ADialog) :
+TFarButton::TFarButton(TObjectClassId Kind, TFarDialog *ADialog) noexcept :
   TFarDialogItem(Kind, ADialog, DI_BUTTON),
   FResult(0),
   FOnClick(nullptr),
@@ -1862,7 +1862,7 @@ bool TFarButton::HotKey(char HotKey)
   return Result;
 }
 
-TFarCheckBox::TFarCheckBox(TFarDialog *ADialog) :
+TFarCheckBox::TFarCheckBox(TFarDialog *ADialog) noexcept :
   TFarDialogItem(OBJECT_CLASS_TFarCheckBox, ADialog, DI_CHECKBOX),
   FOnAllowChange(nullptr)
 {
@@ -1900,7 +1900,7 @@ void TFarCheckBox::SetData(UnicodeString Value)
   }
 }
 
-TFarRadioButton::TFarRadioButton(TFarDialog *ADialog) :
+TFarRadioButton::TFarRadioButton(TFarDialog *ADialog) noexcept :
   TFarDialogItem(OBJECT_CLASS_TFarRadioButton, ADialog, DI_RADIOBUTTON),
   FOnAllowChange(nullptr)
 {
@@ -1941,7 +1941,7 @@ void TFarRadioButton::SetData(UnicodeString Value)
   }
 }
 
-TFarEdit::TFarEdit(TFarDialog *ADialog) :
+TFarEdit::TFarEdit(TFarDialog *ADialog) noexcept :
   TFarDialogItem(OBJECT_CLASS_TFarEdit, ADialog, DI_EDIT)
 {
   SetAutoSelect(false);
@@ -2022,7 +2022,7 @@ intptr_t TFarEdit::GetAsInteger() const
   return ::StrToIntDef(::Trim(GetText()), 0);
 }
 
-TFarSeparator::TFarSeparator(TFarDialog *ADialog) :
+TFarSeparator::TFarSeparator(TFarDialog *ADialog) noexcept :
   TFarDialogItem(OBJECT_CLASS_TFarSeparator, ADialog, DI_TEXT)
 {
   SetLeft(-1);
@@ -2066,7 +2066,7 @@ int TFarSeparator::GetPosition() const
   return GetBounds().Top;
 }
 
-TFarText::TFarText(TFarDialog *ADialog) :
+TFarText::TFarText(TFarDialog *ADialog) noexcept :
   TFarDialogItem(OBJECT_CLASS_TFarText, ADialog, DI_TEXT)
 {
 }
@@ -2080,7 +2080,7 @@ void TFarText::SetData(UnicodeString Value)
   }
 }
 
-TFarList::TFarList(TFarDialogItem *ADialogItem) :
+TFarList::TFarList(TFarDialogItem *ADialogItem) noexcept :
   TStringList(OBJECT_CLASS_TFarList),
   FDialogItem(ADialogItem),
   FNoDialogUpdate(false)
@@ -2090,7 +2090,7 @@ TFarList::TFarList(TFarDialogItem *ADialogItem) :
   FListItems = nb::calloc<FarList *>(1, sizeof(FarList));
 }
 
-TFarList::~TFarList()
+TFarList::~TFarList() noexcept
 {
   for (intptr_t Index = 0; Index < FListItems->ItemsNumber; ++Index)
   {
@@ -2397,18 +2397,18 @@ LONG_PTR TFarList::ItemProc(int Msg, LONG_PTR Param)
   return 0;
 }
 
-TFarListBox::TFarListBox(TFarDialog *ADialog) :
+TFarListBox::TFarListBox(TFarDialog *ADialog) noexcept :
   TFarDialogItem(OBJECT_CLASS_TFarListBox, ADialog, DI_LISTBOX),
   FAutoSelect(asOnlyFocus),
   FDenyClose(false)
 {
-  FList = new TFarList(this);
+  FList = std::make_unique<TFarList>(this);
   GetDialogItem()->ListItems = FList->GetListItems();
 }
 
-TFarListBox::~TFarListBox()
+TFarListBox::~TFarListBox() noexcept
 {
-  SAFE_DESTROY(FList);
+//  SAFE_DESTROY(FList);
 }
 
 LONG_PTR TFarListBox::ItemProc(int Msg, LONG_PTR Param)
@@ -2470,18 +2470,17 @@ bool TFarListBox::CloseQuery()
   return true;
 }
 
-TFarComboBox::TFarComboBox(TFarDialog *ADialog) :
+TFarComboBox::TFarComboBox(TFarDialog *ADialog) noexcept :
   TFarDialogItem(OBJECT_CLASS_TFarComboBox, ADialog, DI_COMBOBOX),
-  FList(nullptr)
+  FList(std::make_unique<TFarList>(this))
 {
-  FList = new TFarList(this);
   GetDialogItem()->ListItems = FList->GetListItems();
   SetAutoSelect(false);
 }
 
-TFarComboBox::~TFarComboBox()
+TFarComboBox::~TFarComboBox() noexcept
 {
-  SAFE_DESTROY(FList);
+//  SAFE_DESTROY(FList);
 }
 
 void TFarComboBox::ResizeToFitContent()
@@ -2511,17 +2510,17 @@ void TFarComboBox::Init()
   GetItems()->Init();
 }
 
-TFarLister::TFarLister(TFarDialog *ADialog) :
+TFarLister::TFarLister(TFarDialog *ADialog) noexcept :
   TFarDialogItem(OBJECT_CLASS_TFarLister, ADialog, DI_USERCONTROL),
-  FItems(new TStringList()),
+  FItems(std::make_unique<TStringList>()),
   FTopIndex(0)
 {
   FItems->SetOnChange(nb::bind(&TFarLister::ItemsChange, this));
 }
 
-TFarLister::~TFarLister()
+TFarLister::~TFarLister() noexcept
 {
-  SAFE_DESTROY(FItems);
+//  SAFE_DESTROY(FItems);
 }
 
 void TFarLister::ItemsChange(TObject * /*Sender*/)
@@ -2549,7 +2548,7 @@ void TFarLister::SetTopIndex(intptr_t Value)
 
 TStrings *TFarLister::GetItems() const
 {
-  return FItems;
+  return FItems.get();
 }
 
 void TFarLister::SetItems(const TStrings *Value)

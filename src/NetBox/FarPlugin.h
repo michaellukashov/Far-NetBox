@@ -19,7 +19,7 @@ class TFarMessageDialog;
 class TFarEditorInfo;
 class TFarPluginGuard;
 
-const int MaxMessageWidth = 64;
+constexpr const int MaxMessageWidth = 64;
 
 enum TFarShiftStatus
 {
@@ -183,9 +183,9 @@ public:
   const FarStandardFunctions &GetFarStandardFunctions() const { return FFarStandardFunctions; }
 
 protected:
-  PluginStartupInfo FStartupInfo;
-  FarStandardFunctions FFarStandardFunctions;
-  HINSTANCE FHandle;
+  PluginStartupInfo FStartupInfo{};
+  FarStandardFunctions FFarStandardFunctions{};
+  HINSTANCE FHandle{};
   TList *FOpenedPlugins{nullptr};
   TFarDialog *FTopDialog{nullptr};
   HANDLE FConsoleInput{};
@@ -228,10 +228,10 @@ private:
   void UpdateProgress(intptr_t State, intptr_t Progress) const;
 
 private:
-  PluginInfo FPluginInfo;
-  TStringList *FSavedTitles;
+  PluginInfo FPluginInfo{};
+  TStringList *FSavedTitles{nullptr};
   UnicodeString FCurrentTitle;
-  short FCurrentProgress;
+  short FCurrentProgress{0};
 
   void ClearPluginInfo(PluginInfo &Info) const;
   void UpdateCurrentConsoleTitle();
@@ -259,9 +259,9 @@ public:
   static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TCustomFarFileSystem); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TCustomFarFileSystem) || TObject::is(Kind); }
 public:
-  explicit TCustomFarFileSystem(TObjectClassId Kind, TCustomFarPlugin *APlugin);
+  explicit TCustomFarFileSystem(TObjectClassId Kind, TCustomFarPlugin *APlugin) noexcept;
   void Init();
-  virtual ~TCustomFarFileSystem();
+  virtual ~TCustomFarFileSystem() noexcept;
 
   void GetOpenPluginInfo(struct OpenPluginInfo *Info);
   intptr_t GetFindData(struct PluginPanelItem **PanelItem,
@@ -285,8 +285,8 @@ protected:
   virtual UnicodeString GetCurrDirectory() const = 0;
 
 protected:
-  TCustomFarPlugin *FPlugin;
-  bool FClosed;
+  TCustomFarPlugin *FPlugin{nullptr};
+  bool FClosed{false};
 
   virtual void GetOpenPluginInfoEx(DWORD &Flags,
     UnicodeString &HostFile, UnicodeString &CurDir, UnicodeString &Format,
@@ -335,10 +335,10 @@ protected:
 private:
   UnicodeString FNameStr;
   UnicodeString FDestPathStr;
-  OpenPluginInfo FOpenPluginInfo;
-  TCustomFarFileSystem *FOwnerFileSystem;
-  bool FOpenPluginInfoValid;
-  TFarPanelInfo *FPanelInfo[2];
+  OpenPluginInfo FOpenPluginInfo{};
+  TCustomFarFileSystem *FOwnerFileSystem{nullptr};
+  bool FOpenPluginInfoValid{false};
+  TFarPanelInfo *FPanelInfo[2]{};
   static uintptr_t FInstances;
 
   void ClearOpenPluginInfo(OpenPluginInfo &Info);
@@ -352,8 +352,8 @@ class TFarPanelModes : public TObject
 {
   friend class TCustomFarFileSystem;
 public:
-  TFarPanelModes();
-  virtual ~TFarPanelModes();
+  TFarPanelModes() noexcept;
+  virtual ~TFarPanelModes() noexcept;
 
   void SetPanelMode(size_t Mode, const UnicodeString ColumnTypes = UnicodeString(),
     const UnicodeString ColumnWidths = UnicodeString(), TStrings *ColumnTitles = nullptr,
@@ -362,8 +362,8 @@ public:
     const UnicodeString StatusColumnWidths = UnicodeString());
 
 private:
-  PanelMode FPanelModes[PANEL_MODES_COUNT];
-  bool FReferenced;
+  PanelMode FPanelModes[PANEL_MODES_COUNT]{};
+  bool FReferenced{false};
 
   void FillOpenPluginInfo(struct OpenPluginInfo *Info);
   static void ClearPanelMode(PanelMode &Mode);
@@ -374,8 +374,8 @@ class TFarKeyBarTitles : public TObject
 {
   friend class TCustomFarFileSystem;
 public:
-  TFarKeyBarTitles();
-  virtual ~TFarKeyBarTitles();
+  TFarKeyBarTitles() noexcept;
+  virtual ~TFarKeyBarTitles() noexcept;
 
   void ClearFileKeyBarTitles();
   void ClearKeyBarTitle(TFarShiftStatus ShiftStatus,
@@ -385,7 +385,7 @@ public:
 
 private:
   KeyBarTitles FKeyBarTitles;
-  bool FReferenced;
+  bool FReferenced{false};
 
   void FillOpenPluginInfo(struct OpenPluginInfo *Info);
   static void ClearKeyBarTitles(KeyBarTitles &Titles);
@@ -399,10 +399,8 @@ public:
   static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TCustomFarPanelItem); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TCustomFarPanelItem) || TObject::is(Kind); }
 protected:
-  explicit TCustomFarPanelItem(TObjectClassId Kind) : TObject(Kind) {}
-  virtual ~TCustomFarPanelItem()
-  {
-  }
+  explicit TCustomFarPanelItem(TObjectClassId Kind) noexcept : TObject(Kind) {}
+  virtual ~TCustomFarPanelItem() noexcept = default;
   virtual void GetData(
     DWORD &Flags, UnicodeString &AFileName, int64_t &Size,
     DWORD &FileAttributes,
@@ -422,8 +420,8 @@ public:
   static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TFarPanelItem); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TFarPanelItem) || TCustomFarPanelItem::is(Kind); }
 public:
-  explicit TFarPanelItem(PluginPanelItem *APanelItem, bool OwnsItem);
-  virtual ~TFarPanelItem();
+  explicit TFarPanelItem(PluginPanelItem *APanelItem, bool OwnsItem) noexcept;
+  virtual ~TFarPanelItem() noexcept;
 
   uintptr_t GetFlags() const;
   uintptr_t GetFileAttrs() const;
@@ -435,8 +433,8 @@ public:
   bool GetIsFile() const;
 
 protected:
-  PluginPanelItem *FPanelItem;
-  bool FOwnsItem;
+  PluginPanelItem *FPanelItem{nullptr};
+  bool FOwnsItem{false};
 
   virtual void GetData(
     DWORD &Flags, UnicodeString &AFileName, int64_t &Size,
@@ -451,8 +449,8 @@ NB_DEFINE_CLASS_ID(THintPanelItem);
 class THintPanelItem : public TCustomFarPanelItem
 {
 public:
-  explicit THintPanelItem(const UnicodeString AHint);
-  virtual ~THintPanelItem() {}
+  explicit THintPanelItem(const UnicodeString AHint) noexcept;
+  virtual ~THintPanelItem() noexcept = default;
 
 protected:
   virtual void GetData(
@@ -478,8 +476,8 @@ class TFarPanelInfo : public TObject
 {
   NB_DISABLE_COPY(TFarPanelInfo)
 public:
-  explicit TFarPanelInfo(PanelInfo *APanelInfo, TCustomFarFileSystem *AOwner);
-  virtual ~TFarPanelInfo();
+  explicit TFarPanelInfo(PanelInfo *APanelInfo, TCustomFarFileSystem *AOwner) noexcept;
+  virtual ~TFarPanelInfo() noexcept;
 
   const TObjectList *GetItems() const { return const_cast<TFarPanelInfo *>(this)->GetItems(); }
   TObjectList *GetItems();
@@ -500,9 +498,9 @@ public:
   TFarPanelItem *FindUserData(const void *UserData);
 
 private:
-  PanelInfo *FPanelInfo;
-  TObjectList *FItems;
-  TCustomFarFileSystem *FOwner;
+  PanelInfo *FPanelInfo{nullptr};
+  TObjectList *FItems{nullptr};
+  TCustomFarFileSystem *FOwner{nullptr};
 };
 
 NB_DEFINE_CLASS_ID(TFarMenuItems);
@@ -512,8 +510,8 @@ public:
   static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TFarMenuItems); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TFarMenuItems) || TStringList::is(Kind); }
 public:
-  explicit TFarMenuItems();
-  virtual ~TFarMenuItems() {}
+  explicit TFarMenuItems() noexcept;
+  virtual ~TFarMenuItems() noexcept = default;
   void AddSeparator(bool Visible = true);
   virtual intptr_t Add(const UnicodeString Text, bool Visible = true);
 
@@ -534,21 +532,21 @@ protected:
   virtual void SetObj(intptr_t Index, TObject *AObject) override;
 
 private:
-  intptr_t FItemFocused;
+  intptr_t FItemFocused{0};
 };
 
 class TFarEditorInfo : public TObject
 {
   NB_DISABLE_COPY(TFarEditorInfo)
 public:
-  explicit TFarEditorInfo(EditorInfo *Info);
-  ~TFarEditorInfo();
+  explicit TFarEditorInfo(EditorInfo *Info) noexcept;
+  ~TFarEditorInfo() noexcept;
 
   intptr_t GetEditorID() const;
   static UnicodeString GetFileName();
 
 private:
-  EditorInfo *FEditorInfo;
+  EditorInfo *FEditorInfo{nullptr};
 };
 
 class TFarEnvGuard // : public TObject
@@ -556,8 +554,8 @@ class TFarEnvGuard // : public TObject
   CUSTOM_MEM_ALLOCATION_IMPL
   NB_DISABLE_COPY(TFarEnvGuard)
 public:
-  TFarEnvGuard();
-  ~TFarEnvGuard();
+  TFarEnvGuard() noexcept;
+  ~TFarEnvGuard() noexcept;
 };
 
 class TFarPluginEnvGuard // : public TObject
@@ -565,8 +563,8 @@ class TFarPluginEnvGuard // : public TObject
   CUSTOM_MEM_ALLOCATION_IMPL
   NB_DISABLE_COPY(TFarPluginEnvGuard)
 public:
-  TFarPluginEnvGuard();
-  ~TFarPluginEnvGuard();
+  TFarPluginEnvGuard() noexcept;
+  ~TFarPluginEnvGuard() noexcept;
 };
 
 extern TCustomFarPlugin *FarPlugin;
