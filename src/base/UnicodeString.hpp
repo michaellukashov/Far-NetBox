@@ -7,14 +7,14 @@ void ThrowIfOutOfRange(intptr_t Idx, intptr_t Length);
 template<typename CharT>
 class NB_CORE_EXPORT BaseStringT : public CMStringT<CharT, NBChTraitsCRT<CharT>>
 {
-  typedef CMStringT<CharT, NBChTraitsCRT<CharT>> BaseT;
-  typedef typename BaseT::XCHAR XCHAR;
-  typedef typename BaseT::PXSTR PXSTR;
-  typedef typename BaseT::PCXSTR PCXSTR;
-  typedef typename BaseT::YCHAR YCHAR;
-  typedef typename BaseT::PYSTR PYSTR;
-  typedef typename BaseT::PCYSTR PCYSTR;
-  typedef CMStringT<YCHAR, NBChTraitsCRT<YCHAR>> BaseY;
+  using BaseT = CMStringT<CharT, NBChTraitsCRT<CharT>>;
+  using XCHAR = typename BaseT::XCHAR;
+  using PXSTR = typename BaseT::PXSTR;
+  using PCXSTR = typename BaseT::PCXSTR;
+  using YCHAR = typename BaseT::YCHAR;
+  using PYSTR = typename BaseT::PYSTR;
+  using PCYSTR = typename BaseT::PCYSTR;
+  using BaseY = CMStringT<YCHAR, NBChTraitsCRT<YCHAR>>;
 
 public:
   BaseStringT() noexcept = default;
@@ -368,13 +368,13 @@ inline intptr_t BaseStringT<CharT>::ToIntPtr() const
   return ::StrToIntDef(*this, 0);
 }
 
-typedef BaseStringT<wchar_t> UnicodeString;
-typedef BaseStringT<char> UTF8String;
-typedef BaseStringT<char> AnsiString;
+using UnicodeString = BaseStringT<wchar_t>;
+using UTF8String = BaseStringT<char>;
+using AnsiString = BaseStringT<char>;
 
 class NB_CORE_EXPORT RawByteString : public BaseStringT<char>
 {
-  typedef BaseStringT<char> BaseT;
+  using BaseT = BaseStringT<char>;
 public:
   RawByteString() noexcept = default;
   RawByteString(const BaseStringT<wchar_t> &Str) :
