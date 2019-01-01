@@ -7,9 +7,9 @@
 class TXmlStorage : public THierarchicalStorage
 {
 public:
-  explicit TXmlStorage(const UnicodeString AStorage, const UnicodeString StoredSessionsSubKey);
+  explicit TXmlStorage(const UnicodeString AStorage, const UnicodeString StoredSessionsSubKey) noexcept;
   virtual void Init() override;
-  virtual ~TXmlStorage();
+  virtual ~TXmlStorage() noexcept;
 
   bool Copy(TXmlStorage *Storage);
 
@@ -63,10 +63,10 @@ private:
   bool WriteXml();
 
 private:
-  tinyxml2::XMLDocument *FXmlDoc;
+  tinyxml2::XMLDocument *FXmlDoc{nullptr};
   rde::vector<tinyxml2::XMLElement *> FSubElements;
-  tinyxml2::XMLElement *FCurrentElement;
+  tinyxml2::XMLElement *FCurrentElement{nullptr};
   UnicodeString FStoredSessionsSubKey;
-  intptr_t FFailed;
-  bool FStoredSessionsOpened;
+  intptr_t FFailed{0};
+  bool FStoredSessionsOpened{false};
 };

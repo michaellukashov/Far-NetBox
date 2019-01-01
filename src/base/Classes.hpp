@@ -774,10 +774,10 @@ public:
 
 public:
   wchar_t Win32CSDVersion[128]{};
-  int Win32Platform{};
-  int Win32MajorVersion{};
-  int Win32MinorVersion{};
-  int Win32BuildNumber{};
+  int Win32Platform{0};
+  int Win32MajorVersion{0};
+  int Win32MinorVersion{0};
+  int Win32BuildNumber{0};
 
 private:
   void InitPlatformId();

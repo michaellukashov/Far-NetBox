@@ -11,7 +11,7 @@ static const char *CONST_VERSION_ATTR = "version";
 static const char *CONST_NAME_ATTR = "name";
 
 TXmlStorage::TXmlStorage(const UnicodeString AStorage,
-  const UnicodeString StoredSessionsSubKey) :
+  const UnicodeString StoredSessionsSubKey) noexcept :
   THierarchicalStorage(::ExcludeTrailingBackslash(AStorage)),
   FXmlDoc(nullptr),
   FCurrentElement(nullptr),
@@ -27,7 +27,7 @@ void TXmlStorage::Init()
   FXmlDoc = new tinyxml2::XMLDocument();
 }
 
-TXmlStorage::~TXmlStorage()
+TXmlStorage::~TXmlStorage() noexcept
 {
   if (GetAccessMode() == smReadWrite)
   {

@@ -80,7 +80,7 @@ class CNBFile : public TObject
   static DWORD LoadFile(const wchar_t * fileName, rde::vector<char> & fileContent);
 
 private:
-  HANDLE  m_File;          ///< File handle
-  mutable DWORD   m_LastError;     ///< Last errno
+  HANDLE  m_File{};          ///< File handle
+  mutable DWORD   m_LastError{0};     ///< Last errno
 };
 
