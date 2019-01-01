@@ -1022,14 +1022,16 @@ public:
     m_Closure.bindmemfunc(detail::implicit_cast<X*>(pthis), function_to_bind); }
   template < class X, class Y >
   inline void bind(Y *pthis, DesiredRetType (X::* function_to_bind)()) {
-    m_Closure.bindmemfunc(detail::implicit_cast<X*>(pthis), function_to_bind); }
+    m_Closure.bindmemfunc(detail::implicit_cast<X*>(pthis), function_to_bind);
+  }
   // Binding to const member functions.
   template < class X, class Y >
   FastDelegate0(const Y *pthis, DesiredRetType (X::* function_to_bind)() const) {
     m_Closure.bindconstmemfunc(detail::implicit_cast<const X*>(pthis), function_to_bind); }
   template < class X, class Y >
   inline void bind(const Y *pthis, DesiredRetType (X::* function_to_bind)() const) {
-    m_Closure.bindconstmemfunc(detail::implicit_cast<const X *>(pthis), function_to_bind); }
+    m_Closure.bindconstmemfunc(detail::implicit_cast<const X *>(pthis), function_to_bind);
+  }
   // Static functions. We convert them into a member function call.
   // This constructor also provides implicit conversion
   FastDelegate0(DesiredRetType (*function_to_bind)() ) {
@@ -1038,11 +1040,12 @@ public:
   FastDelegate0 & operator=(DesiredRetType (*function_to_bind)() ) {
     bind(function_to_bind); return *this; }
   inline void bind(DesiredRetType (*function_to_bind)()) {
-    m_Closure.bindstaticfunc(this, &FastDelegate0::InvokeStaticFunction,
-      function_to_bind); }
+    m_Closure.bindstaticfunc(this, &FastDelegate0::InvokeStaticFunction, function_to_bind);
+  }
   // Invoke the delegate
   RetType operator()() const {
-  return (m_Closure.GetClosureThis()->*(m_Closure.GetClosureMemPtr()))(); }
+    return (m_Closure.GetClosureThis()->*(m_Closure.GetClosureMemPtr()))();
+  }
   // Implicit conversion to "bool" using the safe_bool idiom
 private:
   typedef struct SafeBoolStruct {
@@ -1117,14 +1120,16 @@ public:
     m_Closure.bindmemfunc(detail::implicit_cast<X*>(pthis), function_to_bind); }
   template < class X, class Y >
   inline void bind(Y *pthis, DesiredRetType (X::* function_to_bind)(Param1 p1)) {
-    m_Closure.bindmemfunc(detail::implicit_cast<X*>(pthis), function_to_bind); }
+    m_Closure.bindmemfunc(detail::implicit_cast<X*>(pthis), function_to_bind);
+  }
   // Binding to const member functions.
   template < class X, class Y >
   FastDelegate1(const Y *pthis, DesiredRetType (X::* function_to_bind)(Param1 p1) const) {
     m_Closure.bindconstmemfunc(detail::implicit_cast<const X*>(pthis), function_to_bind); }
   template < class X, class Y >
   inline void bind(const Y *pthis, DesiredRetType (X::* function_to_bind)(Param1 p1) const) {
-    m_Closure.bindconstmemfunc(detail::implicit_cast<const X *>(pthis), function_to_bind); }
+    m_Closure.bindconstmemfunc(detail::implicit_cast<const X *>(pthis), function_to_bind);
+  }
   // Static functions. We convert them into a member function call.
   // This constructor also provides implicit conversion
   FastDelegate1(DesiredRetType (*function_to_bind)(Param1 p1) ) {
@@ -1133,8 +1138,8 @@ public:
   FastDelegate1 & operator=(DesiredRetType (*function_to_bind)(Param1 p1) ) {
     bind(function_to_bind); return *this; }
   inline void bind(DesiredRetType (*function_to_bind)(Param1 p1)) {
-    m_Closure.bindstaticfunc(this, &FastDelegate1::InvokeStaticFunction,
-      function_to_bind); }
+    m_Closure.bindstaticfunc(this, &FastDelegate1::InvokeStaticFunction, function_to_bind);
+  }
   // Invoke the delegate
   RetType operator()(Param1 p1) const {
   return (m_Closure.GetClosureThis()->*(m_Closure.GetClosureMemPtr()))(p1); }
@@ -1205,14 +1210,16 @@ public:
     m_Closure.bindmemfunc(detail::implicit_cast<X*>(pthis), function_to_bind); }
   template < class X, class Y >
   inline void bind(Y *pthis, DesiredRetType (X::* function_to_bind)(Param1 p1, Param2 p2)) {
-    m_Closure.bindmemfunc(detail::implicit_cast<X*>(pthis), function_to_bind); }
+    m_Closure.bindmemfunc(detail::implicit_cast<X*>(pthis), function_to_bind);
+  }
   // Binding to const member functions.
   template < class X, class Y >
   FastDelegate2(const Y *pthis, DesiredRetType (X::* function_to_bind)(Param1 p1, Param2 p2) const) noexcept {
     m_Closure.bindconstmemfunc(detail::implicit_cast<const X*>(pthis), function_to_bind); }
   template < class X, class Y >
   inline void bind(const Y *pthis, DesiredRetType (X::* function_to_bind)(Param1 p1, Param2 p2) const) {
-    m_Closure.bindconstmemfunc(detail::implicit_cast<const X *>(pthis), function_to_bind); }
+    m_Closure.bindconstmemfunc(detail::implicit_cast<const X *>(pthis), function_to_bind);
+  }
   // Static functions. We convert them into a member function call.
   // This constructor also provides implicit conversion
   FastDelegate2(DesiredRetType (*function_to_bind)(Param1 p1, Param2 p2) ) noexcept {
@@ -1221,8 +1228,8 @@ public:
   FastDelegate2 & operator=(DesiredRetType (*function_to_bind)(Param1 p1, Param2 p2) ) noexcept {
     bind(function_to_bind); return *this; }
   inline void bind(DesiredRetType (*function_to_bind)(Param1 p1, Param2 p2)) {
-    m_Closure.bindstaticfunc(this, &FastDelegate2::InvokeStaticFunction,
-      function_to_bind); }
+    m_Closure.bindstaticfunc(this, &FastDelegate2::InvokeStaticFunction, function_to_bind);
+  }
   // Invoke the delegate
   RetType operator()(Param1 p1, Param2 p2) const {
   return (m_Closure.GetClosureThis()->*(m_Closure.GetClosureMemPtr()))(p1, p2); }
@@ -1293,14 +1300,16 @@ public:
     m_Closure.bindmemfunc(detail::implicit_cast<X*>(pthis), function_to_bind); }
   template < class X, class Y >
   inline void bind(Y *pthis, DesiredRetType (X::* function_to_bind)(Param1 p1, Param2 p2, Param3 p3)) {
-    m_Closure.bindmemfunc(detail::implicit_cast<X*>(pthis), function_to_bind); }
+    m_Closure.bindmemfunc(detail::implicit_cast<X*>(pthis), function_to_bind);
+  }
   // Binding to const member functions.
   template < class X, class Y >
   FastDelegate3(const Y *pthis, DesiredRetType (X::* function_to_bind)(Param1 p1, Param2 p2, Param3 p3) const) {
     m_Closure.bindconstmemfunc(detail::implicit_cast<const X*>(pthis), function_to_bind); }
   template < class X, class Y >
   inline void bind(const Y *pthis, DesiredRetType (X::* function_to_bind)(Param1 p1, Param2 p2, Param3 p3) const) {
-    m_Closure.bindconstmemfunc(detail::implicit_cast<const X *>(pthis), function_to_bind); }
+    m_Closure.bindconstmemfunc(detail::implicit_cast<const X *>(pthis), function_to_bind);
+  }
   // Static functions. We convert them into a member function call.
   // This constructor also provides implicit conversion
   FastDelegate3(DesiredRetType (*function_to_bind)(Param1 p1, Param2 p2, Param3 p3) ) {
@@ -1309,8 +1318,8 @@ public:
   FastDelegate3 & operator=(DesiredRetType (*function_to_bind)(Param1 p1, Param2 p2, Param3 p3) ) {
     bind(function_to_bind); return *this; }
   inline void bind(DesiredRetType (*function_to_bind)(Param1 p1, Param2 p2, Param3 p3)) {
-    m_Closure.bindstaticfunc(this, &FastDelegate3::InvokeStaticFunction,
-      function_to_bind); }
+    m_Closure.bindstaticfunc(this, &FastDelegate3::InvokeStaticFunction, function_to_bind);
+  }
   // Invoke the delegate
   RetType operator()(Param1 p1, Param2 p2, Param3 p3) const {
   return (m_Closure.GetClosureThis()->*(m_Closure.GetClosureMemPtr()))(p1, p2, p3); }
@@ -1381,14 +1390,16 @@ public:
     m_Closure.bindmemfunc(detail::implicit_cast<X*>(pthis), function_to_bind); }
   template < class X, class Y >
   inline void bind(Y *pthis, DesiredRetType (X::* function_to_bind)(Param1 p1, Param2 p2, Param3 p3, Param4 p4)) {
-    m_Closure.bindmemfunc(detail::implicit_cast<X*>(pthis), function_to_bind); }
+    m_Closure.bindmemfunc(detail::implicit_cast<X*>(pthis), function_to_bind);
+  }
   // Binding to const member functions.
   template < class X, class Y >
   FastDelegate4(const Y *pthis, DesiredRetType (X::* function_to_bind)(Param1 p1, Param2 p2, Param3 p3, Param4 p4) const) {
     m_Closure.bindconstmemfunc(detail::implicit_cast<const X*>(pthis), function_to_bind); }
   template < class X, class Y >
   inline void bind(const Y *pthis, DesiredRetType (X::* function_to_bind)(Param1 p1, Param2 p2, Param3 p3, Param4 p4) const) {
-    m_Closure.bindconstmemfunc(detail::implicit_cast<const X *>(pthis), function_to_bind); }
+    m_Closure.bindconstmemfunc(detail::implicit_cast<const X *>(pthis), function_to_bind);
+  }
   // Static functions. We convert them into a member function call.
   // This constructor also provides implicit conversion
   FastDelegate4(DesiredRetType (*function_to_bind)(Param1 p1, Param2 p2, Param3 p3, Param4 p4) ) {
@@ -1397,8 +1408,8 @@ public:
   FastDelegate4 & operator=(DesiredRetType (*function_to_bind)(Param1 p1, Param2 p2, Param3 p3, Param4 p4) ) {
     bind(function_to_bind); return *this; }
   inline void bind(DesiredRetType (*function_to_bind)(Param1 p1, Param2 p2, Param3 p3, Param4 p4)) {
-    m_Closure.bindstaticfunc(this, &FastDelegate4::InvokeStaticFunction,
-      function_to_bind); }
+    m_Closure.bindstaticfunc(this, &FastDelegate4::InvokeStaticFunction, function_to_bind);
+  }
   // Invoke the delegate
   RetType operator()(Param1 p1, Param2 p2, Param3 p3, Param4 p4) const {
   return (m_Closure.GetClosureThis()->*(m_Closure.GetClosureMemPtr()))(p1, p2, p3, p4); }
@@ -1469,14 +1480,16 @@ public:
     m_Closure.bindmemfunc(detail::implicit_cast<X*>(pthis), function_to_bind); }
   template < class X, class Y >
   inline void bind(Y *pthis, DesiredRetType (X::* function_to_bind)(Param1 p1, Param2 p2, Param3 p3, Param4 p4, Param5 p5)) {
-    m_Closure.bindmemfunc(detail::implicit_cast<X*>(pthis), function_to_bind); }
+    m_Closure.bindmemfunc(detail::implicit_cast<X*>(pthis), function_to_bind);
+  }
   // Binding to const member functions.
   template < class X, class Y >
   FastDelegate5(const Y *pthis, DesiredRetType (X::* function_to_bind)(Param1 p1, Param2 p2, Param3 p3, Param4 p4, Param5 p5) const) {
     m_Closure.bindconstmemfunc(detail::implicit_cast<const X*>(pthis), function_to_bind); }
   template < class X, class Y >
   inline void bind(const Y *pthis, DesiredRetType (X::* function_to_bind)(Param1 p1, Param2 p2, Param3 p3, Param4 p4, Param5 p5) const) {
-    m_Closure.bindconstmemfunc(detail::implicit_cast<const X *>(pthis), function_to_bind); }
+    m_Closure.bindconstmemfunc(detail::implicit_cast<const X *>(pthis), function_to_bind);
+  }
   // Static functions. We convert them into a member function call.
   // This constructor also provides implicit conversion
   FastDelegate5(DesiredRetType (*function_to_bind)(Param1 p1, Param2 p2, Param3 p3, Param4 p4, Param5 p5) ) {
@@ -1485,8 +1498,8 @@ public:
   FastDelegate5 & operator=(DesiredRetType (*function_to_bind)(Param1 p1, Param2 p2, Param3 p3, Param4 p4, Param5 p5) ) {
     bind(function_to_bind); return *this; }
   inline void bind(DesiredRetType (*function_to_bind)(Param1 p1, Param2 p2, Param3 p3, Param4 p4, Param5 p5)) {
-    m_Closure.bindstaticfunc(this, &FastDelegate5::InvokeStaticFunction,
-      function_to_bind); }
+    m_Closure.bindstaticfunc(this, &FastDelegate5::InvokeStaticFunction, function_to_bind);
+  }
   // Invoke the delegate
   RetType operator()(Param1 p1, Param2 p2, Param3 p3, Param4 p4, Param5 p5) const {
   return (m_Closure.GetClosureThis()->*(m_Closure.GetClosureMemPtr()))(p1, p2, p3, p4, p5); }
@@ -1557,14 +1570,16 @@ public:
     m_Closure.bindmemfunc(detail::implicit_cast<X*>(pthis), function_to_bind); }
   template < class X, class Y >
   inline void bind(Y *pthis, DesiredRetType (X::* function_to_bind)(Param1 p1, Param2 p2, Param3 p3, Param4 p4, Param5 p5, Param6 p6)) {
-    m_Closure.bindmemfunc(detail::implicit_cast<X*>(pthis), function_to_bind); }
+    m_Closure.bindmemfunc(detail::implicit_cast<X*>(pthis), function_to_bind);
+  }
   // Binding to const member functions.
   template < class X, class Y >
   FastDelegate6(const Y *pthis, DesiredRetType (X::* function_to_bind)(Param1 p1, Param2 p2, Param3 p3, Param4 p4, Param5 p5, Param6 p6) const) {
     m_Closure.bindconstmemfunc(detail::implicit_cast<const X*>(pthis), function_to_bind); }
   template < class X, class Y >
   inline void bind(const Y *pthis, DesiredRetType (X::* function_to_bind)(Param1 p1, Param2 p2, Param3 p3, Param4 p4, Param5 p5, Param6 p6) const) {
-    m_Closure.bindconstmemfunc(detail::implicit_cast<const X *>(pthis), function_to_bind); }
+    m_Closure.bindconstmemfunc(detail::implicit_cast<const X *>(pthis), function_to_bind);
+  }
   // Static functions. We convert them into a member function call.
   // This constructor also provides implicit conversion
   FastDelegate6(DesiredRetType (*function_to_bind)(Param1 p1, Param2 p2, Param3 p3, Param4 p4, Param5 p5, Param6 p6) ) {
@@ -1573,8 +1588,8 @@ public:
   FastDelegate6 & operator=(DesiredRetType (*function_to_bind)(Param1 p1, Param2 p2, Param3 p3, Param4 p4, Param5 p5, Param6 p6) ) {
     bind(function_to_bind); return *this; }
   inline void bind(DesiredRetType (*function_to_bind)(Param1 p1, Param2 p2, Param3 p3, Param4 p4, Param5 p5, Param6 p6)) {
-    m_Closure.bindstaticfunc(this, &FastDelegate6::InvokeStaticFunction,
-      function_to_bind); }
+    m_Closure.bindstaticfunc(this, &FastDelegate6::InvokeStaticFunction, function_to_bind);
+  }
   // Invoke the delegate
   RetType operator()(Param1 p1, Param2 p2, Param3 p3, Param4 p4, Param5 p5, Param6 p6) const {
   return (m_Closure.GetClosureThis()->*(m_Closure.GetClosureMemPtr()))(p1, p2, p3, p4, p5, p6); }
@@ -1645,14 +1660,16 @@ public:
     m_Closure.bindmemfunc(detail::implicit_cast<X*>(pthis), function_to_bind); }
   template < class X, class Y >
   inline void bind(Y *pthis, DesiredRetType (X::* function_to_bind)(Param1 p1, Param2 p2, Param3 p3, Param4 p4, Param5 p5, Param6 p6, Param7 p7)) {
-    m_Closure.bindmemfunc(detail::implicit_cast<X*>(pthis), function_to_bind); }
+    m_Closure.bindmemfunc(detail::implicit_cast<X*>(pthis), function_to_bind);
+  }
   // Binding to const member functions.
   template < class X, class Y >
   FastDelegate7(const Y *pthis, DesiredRetType (X::* function_to_bind)(Param1 p1, Param2 p2, Param3 p3, Param4 p4, Param5 p5, Param6 p6, Param7 p7) const) {
     m_Closure.bindconstmemfunc(detail::implicit_cast<const X*>(pthis), function_to_bind); }
   template < class X, class Y >
   inline void bind(const Y *pthis, DesiredRetType (X::* function_to_bind)(Param1 p1, Param2 p2, Param3 p3, Param4 p4, Param5 p5, Param6 p6, Param7 p7) const) {
-    m_Closure.bindconstmemfunc(detail::implicit_cast<const X *>(pthis), function_to_bind); }
+    m_Closure.bindconstmemfunc(detail::implicit_cast<const X *>(pthis), function_to_bind);
+  }
   // Static functions. We convert them into a member function call.
   // This constructor also provides implicit conversion
   FastDelegate7(DesiredRetType (*function_to_bind)(Param1 p1, Param2 p2, Param3 p3, Param4 p4, Param5 p5, Param6 p6, Param7 p7) ) {
@@ -1661,8 +1678,8 @@ public:
   FastDelegate7 & operator=(DesiredRetType (*function_to_bind)(Param1 p1, Param2 p2, Param3 p3, Param4 p4, Param5 p5, Param6 p6, Param7 p7) ) {
     bind(function_to_bind); return *this; }
   inline void bind(DesiredRetType (*function_to_bind)(Param1 p1, Param2 p2, Param3 p3, Param4 p4, Param5 p5, Param6 p6, Param7 p7)) {
-    m_Closure.bindstaticfunc(this, &FastDelegate7::InvokeStaticFunction,
-      function_to_bind); }
+    m_Closure.bindstaticfunc(this, &FastDelegate7::InvokeStaticFunction, function_to_bind);
+  }
   // Invoke the delegate
   RetType operator()(Param1 p1, Param2 p2, Param3 p3, Param4 p4, Param5 p5, Param6 p6, Param7 p7) const {
   return (m_Closure.GetClosureThis()->*(m_Closure.GetClosureMemPtr()))(p1, p2, p3, p4, p5, p6, p7); }
@@ -1733,14 +1750,16 @@ public:
     m_Closure.bindmemfunc(detail::implicit_cast<X*>(pthis), function_to_bind); }
   template < class X, class Y >
   inline void bind(Y *pthis, DesiredRetType (X::* function_to_bind)(Param1 p1, Param2 p2, Param3 p3, Param4 p4, Param5 p5, Param6 p6, Param7 p7, Param8 p8)) {
-    m_Closure.bindmemfunc(detail::implicit_cast<X*>(pthis), function_to_bind); }
+    m_Closure.bindmemfunc(detail::implicit_cast<X*>(pthis), function_to_bind);
+  }
   // Binding to const member functions.
   template < class X, class Y >
   FastDelegate8(const Y *pthis, DesiredRetType (X::* function_to_bind)(Param1 p1, Param2 p2, Param3 p3, Param4 p4, Param5 p5, Param6 p6, Param7 p7, Param8 p8) const) {
     m_Closure.bindconstmemfunc(detail::implicit_cast<const X*>(pthis), function_to_bind); }
   template < class X, class Y >
   inline void bind(const Y *pthis, DesiredRetType (X::* function_to_bind)(Param1 p1, Param2 p2, Param3 p3, Param4 p4, Param5 p5, Param6 p6, Param7 p7, Param8 p8) const) {
-    m_Closure.bindconstmemfunc(detail::implicit_cast<const X *>(pthis), function_to_bind); }
+    m_Closure.bindconstmemfunc(detail::implicit_cast<const X *>(pthis), function_to_bind);
+  }
   // Static functions. We convert them into a member function call.
   // This constructor also provides implicit conversion
   FastDelegate8(DesiredRetType (*function_to_bind)(Param1 p1, Param2 p2, Param3 p3, Param4 p4, Param5 p5, Param6 p6, Param7 p7, Param8 p8) ) {
@@ -1749,8 +1768,8 @@ public:
   FastDelegate8 & operator=(DesiredRetType (*function_to_bind)(Param1 p1, Param2 p2, Param3 p3, Param4 p4, Param5 p5, Param6 p6, Param7 p7, Param8 p8) ) {
     bind(function_to_bind); return *this; }
   inline void bind(DesiredRetType (*function_to_bind)(Param1 p1, Param2 p2, Param3 p3, Param4 p4, Param5 p5, Param6 p6, Param7 p7, Param8 p8)) {
-    m_Closure.bindstaticfunc(this, &FastDelegate8::InvokeStaticFunction,
-      function_to_bind); }
+    m_Closure.bindstaticfunc(this, &FastDelegate8::InvokeStaticFunction, function_to_bind);
+  }
   // Invoke the delegate
   RetType operator()(Param1 p1, Param2 p2, Param3 p3, Param4 p4, Param5 p5, Param6 p6, Param7 p7, Param8 p8) const {
   return (m_Closure.GetClosureThis()->*(m_Closure.GetClosureMemPtr()))(p1, p2, p3, p4, p5, p6, p7, p8); }
