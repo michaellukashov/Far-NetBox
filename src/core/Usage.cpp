@@ -9,8 +9,8 @@ __removed #pragma hdrstop
 //---------------------------------------------------------------------------
 __removed #pragma package(smart_init)
 //---------------------------------------------------------------------------
-const UnicodeString LastInternalExceptionCounter(L"LastInternalException2");
-const UnicodeString LastUpdateExceptionCounter(L"LastUpdateException");
+const UnicodeString LastInternalExceptionCounter("LastInternalException2");
+const UnicodeString LastUpdateExceptionCounter("LastUpdateException");
 //---------------------------------------------------------------------------
 TUsage::TUsage(TConfiguration * Configuration) noexcept
 {
@@ -38,8 +38,8 @@ void TUsage::Default()
 
   if (FCollect) // optimization
   {
-    Set(L"FirstUse", StandardTimestamp());
-    Set(L"FirstVersion", IntToStr(FConfiguration->CompoundVersion));
+    Set("FirstUse", StandardTimestamp());
+    Set("FirstVersion", IntToStr(FConfiguration->CompoundVersion));
     UpdateLastReport();
   }
 }
@@ -49,13 +49,13 @@ void TUsage::Load(THierarchicalStorage * Storage)
   TGuard Guard(*FCriticalSection); nb::used(Guard);
   Default();
 
-  if (Storage->OpenSubKey(L"Values", false))
+  if (Storage->OpenSubKey("Values", false))
   {
     std::unique_ptr<TStrings> Names = std::make_unique<TStringList>();
     try__finally
     {
       Storage->GetValueNames(Names.get());
-      for (int Index = 0; Index < Names->Count; Index++)
+      for (intptr_t Index = 0; Index < Names->Count; Index++)
       {
         UnicodeString Name = Names->GetString(Index);
         Set(Name, Storage->ReadString(Name, L""));
@@ -68,8 +68,8 @@ void TUsage::Load(THierarchicalStorage * Storage)
     }) end_try__finally
   }
 
-  Load(Storage, L"PeriodCounters", FPeriodCounters);
-  Load(Storage, L"LifetimeCounters", FLifetimeCounters);
+  Load(Storage, "PeriodCounters", FPeriodCounters);
+  Load(Storage, "LifetimeCounters", FLifetimeCounters);
 }
 //---------------------------------------------------------------------------
 void TUsage::Load(THierarchicalStorage * Storage,
@@ -81,7 +81,7 @@ void TUsage::Load(THierarchicalStorage * Storage,
     try__finally
     {
       Storage->GetValueNames(Names.get());
-      for (int Index = 0; Index < Names->Count; Index++)
+      for (intptr_t Index = 0; Index < Names->Count; Index++)
       {
         UnicodeString Name = Names->GetString(Index);
         Counters[Name] = Storage->ReadInteger(Name, 0);
@@ -105,8 +105,8 @@ void TUsage::Save(THierarchicalStorage * Storage) const
     Storage->CloseSubKey();
   }
 
-  Save(Storage, L"PeriodCounters", FPeriodCounters);
-  Save(Storage, L"LifetimeCounters", FLifetimeCounters);
+  Save(Storage, "PeriodCounters", FPeriodCounters);
+  Save(Storage, "LifetimeCounters", FLifetimeCounters);
 }
 //---------------------------------------------------------------------------
 void TUsage::Save(THierarchicalStorage * Storage,
