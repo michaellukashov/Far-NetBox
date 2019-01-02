@@ -401,8 +401,6 @@ utf8_toUtf8(const ENCODING *UNUSED_P(enc),
             const char **fromP, const char *fromLim,
             char **toP, const char *toLim)
 {
-  const char * fromLimBefore;
-  ptrdiff_t bytesToCopy;
   bool input_incomplete = false;
   bool output_exhausted = false;
 
