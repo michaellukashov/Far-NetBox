@@ -119,8 +119,8 @@ public:
 
 public:
   CMSimpleStringT() noexcept;
-  CMSimpleStringT(CMSimpleStringT&&) = default;
-  CMSimpleStringT &operator=(CMSimpleStringT&&) = default;
+//  CMSimpleStringT(CMSimpleStringT&&) = default;
+//  CMSimpleStringT &operator=(CMSimpleStringT&&) = default;
 
   CMSimpleStringT(const CMSimpleStringT &strSrc);
   explicit CMSimpleStringT(PCXSTR pszSrc);
@@ -800,8 +800,8 @@ public:
 
   // Copy constructor
   CMStringT(const CMStringT& strSrc);
-  CMStringT(CMStringT&&) = default;
-  CMStringT& operator=(CMStringT&&) = default;
+//  CMStringT(CMStringT&&) = default;
+//  CMStringT& operator=(CMStringT&&) = default;
 
   CMStringT(const XCHAR *pszSrc);
   CMStringT(CMStringDataFormat, const XCHAR *pszFormat, ...);

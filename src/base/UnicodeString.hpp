@@ -18,7 +18,7 @@ class NB_CORE_EXPORT BaseStringT : public CMStringT<CharT, NBChTraitsCRT<CharT>>
 
 public:
   BaseStringT() noexcept = default;
-  BaseStringT(BaseStringT&&) = default;
+//  BaseStringT(BaseStringT&&) = default;
 
   BaseStringT(const BaseStringT &rhs) :
     BaseT(rhs.c_str(), nb::ToInt(rhs.GetLength()))
@@ -322,19 +322,23 @@ public:
   }
 
 public:
-  BaseStringT &operator=(BaseStringT&&) = default;
+//  BaseStringT &operator=(BaseStringT&&) = default;
   BaseStringT &operator=(const CharT *Str) { SetString(Str, nb::ToInt(BaseStringT::StringLength(Str))); return *this; }
   BaseStringT &operator=(const XCHAR Ch) { SetString(&Ch, 1); return *this; }
   BaseStringT &operator=(const BaseStringT &StrCopy) { SetString(StrCopy.c_str(), nb::ToInt(StrCopy.GetLength())); return *this; }
 
-  template<typename StringT>
-  BaseStringT operator+(const StringT &rhs) const
+  BaseStringT operator+(const BaseStringT &rhs) const
   {
     BaseStringT Result(*this);
-    Result += rhs;
+    Result.Append(rhs);
     return Result;
   }
-
+  BaseStringT operator+(char rhs) const
+  {
+    BaseStringT Result(*this);
+    Result.AppendChar(rhs);
+    return Result;
+  }
   BaseStringT &operator+=(const BaseStringT &rhs)
   {
     BaseT::Append(rhs.c_str(), nb::ToInt(rhs.Length()));
