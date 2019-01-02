@@ -620,13 +620,11 @@ void TGUIConfiguration::DefaultLocalized()
     // obsolete translations)
     if (!LoadStr(COPY_PARAM_PRESET_ASCII).IsEmpty())
     {
-      TCopyParamType *CopyParam = new TCopyParamType(FDefaultCopyParam);
-      CopyParam->SetTransferMode(tmAscii);
-      FCopyParamList->Add(LoadStr(COPY_PARAM_PRESET_ASCII), CopyParam, nullptr);
+      TCopyParamType *CopyParam;
 
       CopyParam = new TCopyParamType(FDefaultCopyParam);
-      CopyParam->SetTransferMode(tmBinary);
-      FCopyParamList->Add(LoadStr(COPY_PARAM_PRESET_BINARY), CopyParam, nullptr);
+      CopyParam->SetTransferMode(tmAscii);
+      FCopyParamList->Add(LoadStr(COPY_PARAM_PRESET_ASCII), CopyParam, nullptr);
 
       CopyParam = new TCopyParamType(FDefaultCopyParam);
       CopyParam->SetTransferMode(tmBinary);
@@ -637,7 +635,7 @@ void TGUIConfiguration::DefaultLocalized()
       FCopyParamList->Add(LoadStr(COPY_PARAM_NEWER_ONLY), CopyParam, nullptr);
 
       CopyParam = new TCopyParamType(FDefaultCopyParam);
-      CopyParam->IncludeFileMask = TFileMasks(FORMAT(L"%s */", IncludeExcludeFileMasksDelimiter));
+      CopyParam->IncludeFileMask = TFileMasks(FORMAT("%s */", IncludeExcludeFileMasksDelimiter));
       FCopyParamList->Add(LoadStr(COPY_PARAM_PRESET_EXCLUDE_ALL_DIR), CopyParam, nullptr);
     }
 

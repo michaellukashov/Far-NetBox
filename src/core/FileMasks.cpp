@@ -17,7 +17,7 @@ static UnicodeString FileMasksDelimiterStr = UnicodeString(FileMasksDelimiters[1
 UnicodeString AnyMask = L"*.*";
 //---------------------------------------------------------------------------
 EFileMasksException::EFileMasksException(
-  UnicodeString AMessage, intptr_t AErrorStart, intptr_t AErrorLen) :
+  UnicodeString AMessage, intptr_t AErrorStart, intptr_t AErrorLen) noexcept :
   Exception(AMessage),
   ErrorStart(AErrorStart),
   ErrorLen(AErrorLen)
@@ -135,7 +135,7 @@ UnicodeString DelimitFileNameMask(const UnicodeString AMask)
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-TFileMasks::TParams::TParams() :
+TFileMasks::TParams::TParams() noexcept :
   Size(0)
 {
 }

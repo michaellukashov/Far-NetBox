@@ -9,9 +9,9 @@
 class NB_CORE_EXPORT EFileMasksException : public Exception
 {
 public:
-  explicit EFileMasksException(const UnicodeString AMessage, intptr_t AErrorStart, intptr_t AErrorLen);
-  intptr_t ErrorStart;
-  intptr_t ErrorLen;
+  explicit EFileMasksException(const UnicodeString AMessage, intptr_t AErrorStart, intptr_t AErrorLen) noexcept;
+  intptr_t ErrorStart{0};
+  intptr_t ErrorLen{0};
 };
 //---------------------------------------------------------------------------
 extern const wchar_t IncludeExcludeFileMasksDelimiter;
@@ -22,7 +22,7 @@ class NB_CORE_EXPORT TFileMasks : public TObject
 public:
   struct NB_CORE_EXPORT TParams : public TObject
   {
-    TParams();
+    TParams() noexcept;
     int64_t Size{0};
     TDateTime Modification;
 
@@ -90,7 +90,7 @@ private:
       Any,
       NoExt,
       Regular,
-    } Kind;
+    } Kind{Any};
     Masks::TMask *Mask{nullptr};
   };
 
