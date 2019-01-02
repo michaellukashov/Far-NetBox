@@ -2060,30 +2060,30 @@ void TSFTPFileSystem::CollectUsage()
   switch (FVersion)
   {
   case 0:
-    VersionCounter = L"OpenedSessionsSFTP0";
+    VersionCounter = "OpenedSessionsSFTP0";
     break;
   case 1:
-    VersionCounter = L"OpenedSessionsSFTP1";
+    VersionCounter = "OpenedSessionsSFTP1";
     break;
   case 2:
-    VersionCounter = L"OpenedSessionsSFTP2";
+    VersionCounter = "OpenedSessionsSFTP2";
     break;
   case 3:
-    VersionCounter = L"OpenedSessionsSFTP3";
+    VersionCounter = "OpenedSessionsSFTP3";
     break;
   case 4:
-    VersionCounter = L"OpenedSessionsSFTP4";
+    VersionCounter = "OpenedSessionsSFTP4";
     break;
   case 5:
-    VersionCounter = L"OpenedSessionsSFTP5";
+    VersionCounter = "OpenedSessionsSFTP5";
     break;
   case 6:
-    VersionCounter = L"OpenedSessionsSFTP6";
+    VersionCounter = "OpenedSessionsSFTP6";
     break;
   default:
     DebugFail();
   }
-  __removed FTerminal->Configuration->Usage->Inc(VersionCounter);
+  FTerminal->Configuration->Usage->Inc(VersionCounter);
 }
 //---------------------------------------------------------------------------
 const TSessionInfo & TSFTPFileSystem::GetSessionInfo() const
