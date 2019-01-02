@@ -80,40 +80,40 @@ public:
   void SetBookmarks(const UnicodeString Key, TBookmarkList *Value);
 
 protected:
-  virtual bool GetConfirmOverwriting() const override;
-  virtual void SetConfirmOverwriting(bool Value) override;
+  bool GetConfirmOverwriting() const override;
+  void SetConfirmOverwriting(bool Value) override;
 
-  virtual void SaveData(THierarchicalStorage *Storage, bool All) override;
-  virtual void LoadData(THierarchicalStorage *Storage) override;
+  void SaveData(THierarchicalStorage *Storage, bool All) override;
+  void LoadData(THierarchicalStorage *Storage) override;
 
-  virtual UnicodeString ModuleFileName() const override;
-  virtual void Saved() override;
+  UnicodeString ModuleFileName() const override;
+  void Saved() override;
 
 private:
-  TCustomFarPlugin *FFarPlugin;
-  TBookmarks *FBookmarks;
-  intptr_t FFarConfirmations;
-  bool FConfirmOverwritingOverride;
-  bool FConfirmSynchronizedBrowsing;
-  bool FForceInheritance;
-  bool FDisksMenu;
-  intptr_t FDisksMenuHotKey;
-  bool FPluginsMenu;
-  bool FPluginsMenuCommands;
+  TCustomFarPlugin *FFarPlugin{nullptr};
+  std::unique_ptr<TBookmarks> FBookmarks;
+  intptr_t FFarConfirmations{0};
+  bool FConfirmOverwritingOverride{false};
+  bool FConfirmSynchronizedBrowsing{false};
+  bool FForceInheritance{false};
+  bool FDisksMenu{false};
+  intptr_t FDisksMenuHotKey{0};
+  bool FPluginsMenu{false};
+  bool FPluginsMenuCommands{false};
   UnicodeString FCommandPrefixes;
-  bool FSessionNameInTitle;
-  bool FEditorDownloadDefaultMode;
-  bool FEditorUploadSameOptions;
-  bool FEditorUploadOnSave;
-  bool FEditorMultiple;
-  bool FQueueBeep;
+  bool FSessionNameInTitle{false};
+  bool FEditorDownloadDefaultMode{false};
+  bool FEditorUploadSameOptions{false};
+  bool FEditorUploadOnSave{false};
+  bool FEditorMultiple{false};
+  bool FQueueBeep{false};
   UnicodeString FPageantPath;
   UnicodeString FPuttygenPath;
   UnicodeString FApplyCommandCommand;
-  intptr_t FApplyCommandParams;
+  intptr_t FApplyCommandParams{0};
 
-  bool FCustomPanelModeDetailed;
-  bool FFullScreenDetailed;
+  bool FCustomPanelModeDetailed{false};
+  bool FFullScreenDetailed{false};
   UnicodeString FColumnTypesDetailed;
   UnicodeString FColumnWidthsDetailed;
   UnicodeString FStatusColumnTypesDetailed;

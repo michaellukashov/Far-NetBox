@@ -12,7 +12,10 @@
 
 TConfiguration *CreateConfiguration()
 {
-  return new TFarConfiguration(FarPlugin);
+  TConfiguration *Result = new TFarConfiguration(FarPlugin);
+  Result->ConfigurationInit();
+  Result->Default();
+  return Result;
 }
 
 void ShowExtendedException(Exception *E)

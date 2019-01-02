@@ -11,16 +11,16 @@
 TFarConfiguration::TFarConfiguration(TCustomFarPlugin *APlugin) :
   TGUIConfiguration(OBJECT_CLASS_TFarConfiguration),
   FFarPlugin(APlugin),
-  FBookmarks(new TBookmarks()),
+  FBookmarks(std::make_unique<TBookmarks>()),
   FFarConfirmations(-1)
 {
-  TFarConfiguration::Default();
+//  TFarConfiguration::Default();
   CacheFarSettings();
 }
 
 TFarConfiguration::~TFarConfiguration()
 {
-  SAFE_DESTROY(FBookmarks);
+//  SAFE_DESTROY(FBookmarks);
 }
 
 void TFarConfiguration::Default()
