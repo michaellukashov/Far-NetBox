@@ -344,7 +344,7 @@ public:
     BaseT::Append(rhs.c_str(), nb::ToInt(rhs.Length()));
     return *this;
   }
-  BaseStringT &operator+=(const wchar_t Ch) { BaseT::Append(BaseStringT(&Ch, 1)); return *this; }
+  BaseStringT &operator+=(const wchar_t Ch) { BaseT::AppendChar(Ch); return *this; }
   BaseStringT &operator+=(const uint8_t Ch) { BaseT::AppendChar(static_cast<char>(Ch)); return *this; }
   BaseStringT &operator+=(const char Ch) { BaseT::AppendChar(Ch); return *this; }
 
