@@ -472,7 +472,7 @@ private:
 __removed #pragma warn .inl
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-TSessionAction::TSessionAction(TActionLog *Log, TLogAction Action)
+TSessionAction::TSessionAction(TActionLog *Log, TLogAction Action) noexcept
 {
   if (Log->FLogging)
   {
@@ -484,7 +484,7 @@ TSessionAction::TSessionAction(TActionLog *Log, TLogAction Action)
   }
 }
 //---------------------------------------------------------------------------
-TSessionAction::~TSessionAction()
+TSessionAction::~TSessionAction() noexcept
 {
   if (FRecord != nullptr)
   {
@@ -752,13 +752,13 @@ TDifferenceSessionAction::TDifferenceSessionAction(TActionLog * Log, const TChec
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-TSessionInfo::TSessionInfo()
+TSessionInfo::TSessionInfo() noexcept
 {
   LoginTime = Now();
   CertificateVerifiedManually = false;
 }
 //---------------------------------------------------------------------------
-TFileSystemInfo::TFileSystemInfo()
+TFileSystemInfo::TFileSystemInfo() noexcept
 {
   __removed memset(&IsCapable, false, sizeof(IsCapable));
   nb::ClearArray(IsCapable);
@@ -1483,7 +1483,7 @@ TActionLog::TActionLog(TSessionUI *UI, TDateTime Started, TSessionData *SessionD
   Init(UI, Started, SessionData, Configuration);
 }
 //---------------------------------------------------------------------------
-TActionLog::TActionLog(TDateTime Started, TConfiguration *Configuration)
+TActionLog::TActionLog(TDateTime Started, TConfiguration *Configuration) noexcept
 {
   Init(nullptr, Started, nullptr, Configuration);
   // not associated with session, so no need to waiting for anything
@@ -1509,7 +1509,7 @@ void TActionLog::Init(TSessionUI *UI, TDateTime Started, TSessionData *SessionDa
   FEnabled = true;
 }
 //---------------------------------------------------------------------------
-TActionLog::~TActionLog()
+TActionLog::~TActionLog() noexcept
 {
   DebugAssert(FPendingActions->GetCount() == 0);
 //  SAFE_DESTROY(FPendingActions);

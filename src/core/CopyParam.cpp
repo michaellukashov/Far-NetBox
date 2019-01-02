@@ -905,7 +905,7 @@ void TCopyParamType::Load(THierarchicalStorage *Storage)
   SetResumeSupport(static_cast<TResumeSupport>(Storage->ReadInteger("ResumeSupport", GetResumeSupport())));
   SetResumeThreshold(Storage->ReadInt64("ResumeThreshold", GetResumeThreshold()));
   SetInvalidCharsReplacement(static_cast<wchar_t>(Storage->ReadInteger("ReplaceInvalidChars",
-        nb::ToIntPtr(GetInvalidCharsReplacement()))));
+        nb::ToInt(GetInvalidCharsReplacement()))));
   SetLocalInvalidChars(Storage->ReadString("LocalInvalidChars", GetLocalInvalidChars()));
   SetCalculateSize(Storage->ReadBool("CalculateSize", GetCalculateSize()));
   if (Storage->ValueExists("IncludeFileMask"))
@@ -934,7 +934,7 @@ void TCopyParamType::Load(THierarchicalStorage *Storage)
   SetClearArchive(Storage->ReadBool("ClearArchive", GetClearArchive()));
   SetRemoveCtrlZ(Storage->ReadBool("RemoveCtrlZ", GetRemoveCtrlZ()));
   SetRemoveBOM(Storage->ReadBool("RemoveBOM", GetRemoveBOM()));
-  SetCPSLimit(Storage->ReadInteger("CPSLimit", GetCPSLimit()));
+  SetCPSLimit(Storage->ReadInteger("CPSLimit", (int)GetCPSLimit()));
   SetNewerOnly(Storage->ReadBool("NewerOnly", GetNewerOnly()));
   EncryptNewFiles = Storage->ReadBool(L"EncryptNewFiles", EncryptNewFiles);
   ExcludeHiddenFiles = Storage->ReadBool(L"ExcludeHiddenFiles", ExcludeHiddenFiles);
@@ -983,7 +983,7 @@ void TCopyParamType::Save(THierarchicalStorage * Storage, const TCopyParamType *
   WRITE_DATA(Bool, ClearArchive);
   WRITE_DATA(Bool, RemoveCtrlZ);
   WRITE_DATA(Bool, RemoveBOM);
-  WRITE_DATA(Integer, CPSLimit);
+  WRITE_DATA(IntPtr, CPSLimit);
   WRITE_DATA(Bool, NewerOnly);
   WRITE_DATA(Bool, EncryptNewFiles);
   WRITE_DATA(Bool, ExcludeHiddenFiles);

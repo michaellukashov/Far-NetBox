@@ -16,7 +16,7 @@ enum TSessionStatus
 struct NB_CORE_EXPORT TSessionInfo
 {
   CUSTOM_MEM_ALLOCATION_IMPL
-  TSessionInfo();
+  TSessionInfo() noexcept;
 
   TDateTime LoginTime;
   UnicodeString ProtocolBaseName;
@@ -35,7 +35,7 @@ struct NB_CORE_EXPORT TSessionInfo
 
   UnicodeString CertificateFingerprint;
   UnicodeString Certificate;
-  bool CertificateVerifiedManually;
+  bool CertificateVerifiedManually{false};
 };
 //---------------------------------------------------------------------------
 enum TFSCapability
@@ -60,13 +60,13 @@ enum TFSCapability
 struct NB_CORE_EXPORT TFileSystemInfo
 {
   CUSTOM_MEM_ALLOCATION_IMPL
-  TFileSystemInfo();
+  TFileSystemInfo() noexcept;
 
   UnicodeString ProtocolBaseName;
   UnicodeString ProtocolName;
   UnicodeString RemoteSystem;
   UnicodeString AdditionalInfo;
-  bool IsCapable[fcCount];
+  bool IsCapable[fcCount]{};
 };
 //---------------------------------------------------------------------------
 NB_DEFINE_CLASS_ID(TSessionUI);
@@ -132,8 +132,8 @@ class NB_CORE_EXPORT TSessionAction
   CUSTOM_MEM_ALLOCATION_IMPL
   NB_DISABLE_COPY(TSessionAction)
 public:
-  explicit TSessionAction(TActionLog *Log, TLogAction Action);
-  virtual ~TSessionAction();
+  explicit TSessionAction(TActionLog *Log, TLogAction Action) noexcept;
+  virtual ~TSessionAction() noexcept;
 
   void Restart();
 
@@ -355,8 +355,8 @@ public:
   explicit TActionLog(TSessionUI *UI, TDateTime Started, TSessionData *SessionData,
     TConfiguration *Configuration);
   // For fatal failures for .NET assembly
-  explicit TActionLog(TDateTime Started, TConfiguration *Configuration);
-  virtual ~TActionLog();
+  explicit TActionLog(TDateTime Started, TConfiguration *Configuration) noexcept;
+  virtual ~TActionLog() noexcept;
 
   void ReflectSettings();
   void AddFailure(Exception *E);

@@ -150,35 +150,35 @@ protected:
   void HttpAuthenticationFailed();
 
 private:
-  TFileSystemInfo FFileSystemInfo;
+  TFileSystemInfo FFileSystemInfo{};
   UnicodeString FCurrentDirectory;
   UnicodeString FCachedDirectoryChange;
   TSessionInfo FSessionInfo;
   UnicodeString FUserName;
-  bool FActive;
-  bool FHasTrailingSlash;
-  bool FSkipped;
-  bool FCancelled;
-  bool FStoredPasswordTried;
-  bool FUploading;
-  bool FDownloading;
+  bool FActive{false};
+  bool FHasTrailingSlash{false};
+  bool FSkipped{false};
+  bool FCancelled{false};
+  bool FStoredPasswordTried{false};
+  bool FUploading{false};
+  bool FDownloading{false};
   UnicodeString FUploadMimeType;
-  ne_session_s *FNeonSession;
-  ne_lock_store_s *FNeonLockStore;
+  ne_session_s *FNeonSession{nullptr};
+  ne_lock_store_s *FNeonLockStore{nullptr};
   TCriticalSection FNeonLockStoreSection;
-  bool FInitialHandshake;
-  bool FAuthenticationRequested;
+  bool FInitialHandshake{false};
+  bool FAuthenticationRequested{false};
   UnicodeString FResponse;
   RawByteString FPassword;
   UnicodeString FTlsVersionStr;
-  unsigned int FCapabilities;
+  unsigned int FCapabilities{0};
   UnicodeString FHostName;
-  int FPortNumber;
-  enum TIgnoreAuthenticationFailure { iafNo, iafWaiting, iafPasswordFailed } FIgnoreAuthenticationFailure;
+  int FPortNumber{0};
+  enum TIgnoreAuthenticationFailure { iafNo, iafWaiting, iafPasswordFailed } FIgnoreAuthenticationFailure{iafNo};
   UnicodeString FAuthorizationProtocol;
   UnicodeString FLastAuthorizationProtocol;
-  bool FAuthenticationRetry;
-  bool FNtlmAuthenticationFailed;
+  bool FAuthenticationRetry{false};
+  bool FNtlmAuthenticationFailed{false};
 
   void CustomReadFile(const UnicodeString AFileName,
     TRemoteFile *& AFile, TRemoteFile *ALinkedByFile);
