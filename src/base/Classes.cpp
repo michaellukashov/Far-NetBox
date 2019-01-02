@@ -1594,6 +1594,10 @@ TRegDataType DataTypeToRegData(DWORD Value)
   {
     Result = rdInteger;
   }
+  else if (Value == REG_QWORD)
+  {
+    Result = rdIntPtr;
+  }
   else if (Value == REG_BINARY)
   {
     Result = rdBinary;
@@ -1618,6 +1622,9 @@ DWORD RegDataToDataType(TRegDataType Value)
     break;
   case rdInteger:
     Result = REG_DWORD;
+    break;
+  case rdIntPtr:
+    Result = REG_QWORD;
     break;
   case rdBinary:
     Result = REG_BINARY;
@@ -1869,7 +1876,20 @@ double TRegistry::ReadFloat(const UnicodeString Name) const
   return Result;
 }
 
-intptr_t TRegistry::ReadInteger(const UnicodeString Name) const
+intptr_t TRegistry::ReadIntPtr(const UnicodeString Name) const
+{
+  intptr_t Result = 0;
+  TRegDataType RegData = rdUnknown;
+  const auto res = GetData(Name, &Result, sizeof(Result), RegData);
+  DebugAssert(res == sizeof(Result));
+  if (RegData != rdIntPtr)
+  {
+    ReadError(Name);
+  }
+  return Result;
+}
+
+int TRegistry::ReadInteger(const UnicodeString Name) const
 {
   DWORD Result = 0;
   TRegDataType RegData = rdUnknown;
@@ -1999,7 +2019,12 @@ void TRegistry::WriteStringRaw(const UnicodeString Name, const UnicodeString Val
   PutData(Name, Value.c_str(), Value.Length() * sizeof(wchar_t), rdString);
 }
 
-void TRegistry::WriteInteger(const UnicodeString Name, intptr_t Value)
+void TRegistry::WriteIntPtr(const UnicodeString Name, intptr_t Value)
+{
+  PutData(Name, &Value, sizeof(Value), rdIntPtr);
+}
+
+void TRegistry::WriteInteger(const UnicodeString Name, int Value)
 {
   DWORD Val = nb::ToDWord(Value);
   PutData(Name, &Val, sizeof(Val), rdInteger);

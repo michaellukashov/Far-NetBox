@@ -617,7 +617,7 @@ struct TRegKeyInfo
 
 enum TRegDataType
 {
-  rdUnknown, rdString, rdExpandString, rdInteger, rdBinary
+  rdUnknown, rdString, rdExpandString, rdInteger, rdIntPtr, rdBinary
 };
 
 struct TRegDataInfo
@@ -646,7 +646,8 @@ public:
   bool ReadBool(const UnicodeString Name) const;
   TDateTime ReadDateTime(const UnicodeString Name) const;
   double ReadFloat(const UnicodeString Name) const;
-  intptr_t ReadInteger(const UnicodeString Name) const;
+  intptr_t ReadIntPtr(const UnicodeString Name) const;
+  int ReadInteger(const UnicodeString Name) const;
   int64_t ReadInt64(const UnicodeString Name) const;
   UnicodeString ReadString(const UnicodeString Name) const;
   UnicodeString ReadStringRaw(const UnicodeString Name) const;
@@ -658,7 +659,8 @@ public:
   void WriteFloat(const UnicodeString Name, double Value);
   void WriteString(const UnicodeString Name, const UnicodeString Value);
   void WriteStringRaw(const UnicodeString Name, const UnicodeString Value);
-  void WriteInteger(const UnicodeString Name, intptr_t Value);
+  void WriteIntPtr(const UnicodeString Name, intptr_t Value);
+  void WriteInteger(const UnicodeString Name, int Value);
   void WriteInt64(const UnicodeString Name, int64_t Value);
   void WriteBinaryData(const UnicodeString Name,
     const void *Buffer, size_t BufSize);

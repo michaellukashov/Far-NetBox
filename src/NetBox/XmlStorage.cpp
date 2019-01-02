@@ -338,6 +338,11 @@ bool TXmlStorage::ReadBool(const UnicodeString Name, bool Default) const
   return AnsiCompareIC(Result, BooleanToEngStr(true)) == 0;
 }
 
+intptr_t TXmlStorage::ReadIntPtr(const UnicodeString Name, intptr_t Default) const
+{
+  return ::StrToIntDef(GetSubKeyText(Name), Default);
+}
+
 TDateTime TXmlStorage::ReadDateTime(const UnicodeString Name, const TDateTime &Default) const
 {
   double Result = ReadFloat(Name, Default.GetValue());
@@ -349,9 +354,9 @@ double TXmlStorage::ReadFloat(const UnicodeString Name, double Default) const
   return ::StrToFloatDef(GetSubKeyText(Name), Default);
 }
 
-intptr_t TXmlStorage::ReadInteger(const UnicodeString Name, intptr_t Default) const
+int TXmlStorage::ReadInteger(const UnicodeString Name, int Default) const
 {
-  return ::StrToIntDef(GetSubKeyText(Name), Default);
+  return (int)::StrToIntDef(GetSubKeyText(Name), Default);
 }
 
 int64_t TXmlStorage::ReadInt64(const UnicodeString Name, int64_t Default) const
@@ -378,6 +383,12 @@ void TXmlStorage::WriteBool(const UnicodeString Name, bool Value)
   WriteString(Name, ::BooleanToEngStr(Value));
 }
 
+void TXmlStorage::WriteIntPtr(const UnicodeString Name, intptr_t Value)
+{
+  RemoveIfExists(Name);
+  AddNewElement(Name, ::IntToStr(Value));
+}
+
 void TXmlStorage::WriteDateTime(const UnicodeString Name, const TDateTime &Value)
 {
   WriteFloat(Name, Value);
@@ -395,7 +406,7 @@ void TXmlStorage::WriteStringRaw(const UnicodeString Name, const UnicodeString V
   AddNewElement(Name, Value);
 }
 
-void TXmlStorage::WriteInteger(const UnicodeString Name, intptr_t Value)
+void TXmlStorage::WriteInteger(const UnicodeString Name, int Value)
 {
   RemoveIfExists(Name);
   AddNewElement(Name, ::IntToStr(Value));

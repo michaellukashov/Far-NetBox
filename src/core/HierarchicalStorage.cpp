@@ -609,7 +609,12 @@ double TRegistryStorage::ReadFloat(const UnicodeString Name, double Default) con
   READ_REGISTRY(ReadFloat);
 }
 //---------------------------------------------------------------------------
-intptr_t TRegistryStorage::ReadInteger(const UnicodeString Name, intptr_t Default) const
+intptr_t TRegistryStorage::ReadIntPtr(const UnicodeString Name, intptr_t Default) const
+{
+  READ_REGISTRY(ReadIntPtr);
+}
+//---------------------------------------------------------------------------
+int TRegistryStorage::ReadInteger(const UnicodeString Name, int Default) const
 {
   READ_REGISTRY(ReadInteger);
 }
@@ -679,7 +684,12 @@ void TRegistryStorage::WriteStringRaw(const UnicodeString Name, const UnicodeStr
   WRITE_REGISTRY(WriteString);
 }
 //---------------------------------------------------------------------------
-void TRegistryStorage::WriteInteger(const UnicodeString Name, intptr_t Value)
+void TRegistryStorage::WriteIntPtr(const UnicodeString Name, intptr_t Value)
+{
+  WRITE_REGISTRY(WriteIntPtr);
+}
+//---------------------------------------------------------------------------
+void TRegistryStorage::WriteInteger(const UnicodeString Name, int Value)
 {
   WRITE_REGISTRY(WriteInteger);
 }

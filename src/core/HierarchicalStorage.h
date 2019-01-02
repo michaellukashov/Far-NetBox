@@ -48,7 +48,8 @@ public:
   virtual size_t BinaryDataSize(const UnicodeString Name) const = 0;
 
   virtual bool ReadBool(const UnicodeString Name, bool Default) const = 0;
-  virtual intptr_t ReadInteger(const UnicodeString Name, intptr_t Default) const = 0;
+  virtual intptr_t ReadIntPtr(const UnicodeString Name, intptr_t Default) const = 0;
+  virtual int ReadInteger(const UnicodeString Name, int Default) const = 0;
   virtual int64_t ReadInt64(const UnicodeString Name, int64_t Default) const = 0;
   virtual TDateTime ReadDateTime(const UnicodeString Name, const TDateTime &Default) const = 0;
   virtual double ReadFloat(const UnicodeString Name, double Default) const = 0;
@@ -61,7 +62,8 @@ public:
 
   virtual void WriteBool(const UnicodeString Name, bool Value) = 0;
   virtual void WriteStringRaw(const UnicodeString Name, const UnicodeString Value) = 0;
-  virtual void WriteInteger(const UnicodeString Name, intptr_t Value) = 0;
+  virtual void WriteIntPtr(const UnicodeString Name, intptr_t Value) = 0;
+  virtual void WriteInteger(const UnicodeString Name, int Value) = 0;
   virtual void WriteInt64(const UnicodeString Name, int64_t Value) = 0;
   virtual void WriteDateTime(const UnicodeString Name, const TDateTime &Value) = 0;
   virtual void WriteFloat(const UnicodeString Name, double Value) = 0;
@@ -148,7 +150,8 @@ public:
   virtual size_t BinaryDataSize(const UnicodeString Name) const override;
 
   virtual bool ReadBool(const UnicodeString Name, bool Default) const override;
-  virtual intptr_t ReadInteger(const UnicodeString Name, intptr_t Default) const override;
+  virtual intptr_t ReadIntPtr(const UnicodeString Name, intptr_t Default) const override;
+  virtual int ReadInteger(const UnicodeString Name, int Default) const override;
   virtual int64_t ReadInt64(const UnicodeString Name, int64_t Default) const override;
   virtual TDateTime ReadDateTime(const UnicodeString Name, const TDateTime &Default) const override;
   virtual double ReadFloat(const UnicodeString Name, double Default) const override;
@@ -156,7 +159,8 @@ public:
   virtual size_t ReadBinaryData(const UnicodeString Name, void *Buffer, size_t Size) const override;
 
   virtual void WriteBool(const UnicodeString Name, bool Value) override;
-  virtual void WriteInteger(const UnicodeString Name, intptr_t Value) override;
+  virtual void WriteIntPtr(const UnicodeString Name, intptr_t Value) override;
+  virtual void WriteInteger(const UnicodeString Name, int Value) override;
   virtual void WriteInt64(const UnicodeString Name, int64_t Value) override;
   virtual void WriteDateTime(const UnicodeString Name, const TDateTime &Value) override;
   virtual void WriteFloat(const UnicodeString Name, double Value) override;
