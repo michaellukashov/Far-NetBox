@@ -130,7 +130,7 @@ int CmpName(const wchar_t * pattern, const wchar_t * str, bool CmpNameSearchMode
   return CmpName_Body(pattern, str, CmpNameSearchMode);
 }
 
-TMask::TMask(const UnicodeString Mask) :
+TMask::TMask(const UnicodeString Mask) noexcept :
   FMask(Mask)
 {
 }

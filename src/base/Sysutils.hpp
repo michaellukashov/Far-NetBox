@@ -98,7 +98,7 @@ public:
   virtual ~Exception() noexcept = default;
 
 private:
-  TObjectClassId FKind{};
+  TObjectClassId FKind{0};
 public:
   UnicodeString Message;
 };
@@ -110,10 +110,10 @@ public:
   static inline bool classof(const Exception *Obj) { return Obj->is(OBJECT_CLASS_EAbort); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_EAbort) || Exception::is(Kind); }
 public:
-  explicit EAbort(const UnicodeString What) : Exception(OBJECT_CLASS_EAbort, What)
+  explicit EAbort(const UnicodeString What) noexcept : Exception(OBJECT_CLASS_EAbort, What)
   {
   }
-  explicit EAbort(TObjectClassId Kind, const UnicodeString What) : Exception(Kind, What)
+  explicit EAbort(TObjectClassId Kind, const UnicodeString What) noexcept : Exception(Kind, What)
   {
   }
 };
@@ -125,7 +125,7 @@ public:
   static inline bool classof(const Exception *Obj) { return Obj->is(OBJECT_CLASS_EAccessViolation); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_EAccessViolation) || Exception::is(Kind); }
 public:
-  explicit EAccessViolation(const UnicodeString What) : Exception(OBJECT_CLASS_EAccessViolation, What)
+  explicit EAccessViolation(const UnicodeString What) noexcept : Exception(OBJECT_CLASS_EAccessViolation, What)
   {
   }
 };
@@ -164,7 +164,7 @@ public:
   static inline bool classof(const Exception *Obj) { return Obj->is(OBJECT_CLASS_EInvalidOperation); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_EInvalidOperation) || Exception::is(Kind); }
 public:
-  explicit EInvalidOperation(const UnicodeString Msg) :
+  explicit EInvalidOperation(const UnicodeString Msg) noexcept :
     Exception(OBJECT_CLASS_EInvalidOperation, Msg)
   {
   }
@@ -386,7 +386,7 @@ NB_DEFINE_CLASS_ID(EConvertError);
 class NB_CORE_EXPORT EConvertError : public Exception
 {
 public:
-  explicit EConvertError(const UnicodeString Msg) :
+  explicit EConvertError(const UnicodeString Msg) noexcept :
     Exception(OBJECT_CLASS_EConvertError, Msg)
   {
   }
