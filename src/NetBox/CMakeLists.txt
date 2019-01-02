@@ -1650,7 +1650,7 @@ add_custom_command(TARGET create_plugin_dir POST_BUILD
   WORKING_DIRECTORY ${BUILD_DIR}
   VERBATIM
 )
-
+if(FALSE)
 file(GLOB DIST_FILES
   ${NETBOX_DIR}/*.lng
 #  ${BUILD_DIR}/*.dll
@@ -1674,6 +1674,5 @@ add_custom_command(TARGET NetBox POST_BUILD
 
 add_dependencies(copy_to_plugin_dir create_plugin_dir )
 add_dependencies(NetBox copy_to_plugin_dir)
-
-
+endif(FALSE)
 #-------------------------------------------------------------------------------
