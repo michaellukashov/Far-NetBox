@@ -800,7 +800,7 @@ void TGUIConfiguration::LoadData(THierarchicalStorage * Storage)
   if (LoadCopyParam(Storage, &FDefaultCopyParam))
   try__finally
   {
-    intptr_t CopyParamListCount = Storage->ReadInteger("CopyParamList", -1);
+    int CopyParamListCount = Storage->ReadInteger("CopyParamList", -1);
     FCopyParamListDefaults = (CopyParamListCount < 0);
     if (!FCopyParamListDefaults)
     {
