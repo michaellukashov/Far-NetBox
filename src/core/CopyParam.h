@@ -89,8 +89,8 @@ public:
 
 public:
   explicit TCopyParamType(TObjectClassId Kind = OBJECT_CLASS_TCopyParamType);
-  TCopyParamType(const TCopyParamType &Source);
-  virtual ~TCopyParamType();
+  TCopyParamType(const TCopyParamType &Source) noexcept;
+  virtual ~TCopyParamType() noexcept;
   TCopyParamType &operator=(const TCopyParamType &rhs);
   virtual void Assign(const TCopyParamType *Source);
   virtual void Default();
