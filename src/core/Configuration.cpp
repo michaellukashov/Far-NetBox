@@ -86,7 +86,7 @@ TConfiguration::TConfiguration(TObjectClassId Kind) noexcept :
   FDontSave = false;
   FForceSave = false;
   FApplicationInfo = nullptr;
-  FUsage = std::make_unique<TUsage>(this);
+  __removed FUsage = std::make_unique<TUsage>(this);
   FDefaultCollectUsage = false;
   FScripting = false;
 
@@ -118,6 +118,7 @@ void TConfiguration::Default()
   FDisableAcceptingHostKeys = false;
 
   std::unique_ptr<TRegistryStorage> AdminStorage(std::make_unique<TRegistryStorage>(GetRegistryStorageKey(), HKEY_LOCAL_MACHINE));
+  AdminStorage->Init();
   try__finally
   {
     if (AdminStorage->OpenRootKey(false))
@@ -187,6 +188,11 @@ TConfiguration::~TConfiguration() noexcept
   }
   __removed delete FCriticalSection;
   __removed delete FUsage;
+}
+
+void TConfiguration::ConfigurationInit()
+{
+  FUsage = std::make_unique<TUsage>(this);
 }
 //---------------------------------------------------------------------------
 void TConfiguration::UpdateStaticUsage()
@@ -518,6 +524,7 @@ UnicodeString TConfiguration::LoadCustomIniFileStorageName()
 {
   UnicodeString Result;
   std::unique_ptr<TRegistryStorage> RegistryStorage(std::make_unique<TRegistryStorage>(GetRegistryStorageOverrideKey()));
+  RegistryStorage->Init();
   if (RegistryStorage->OpenRootKey(false))
   {
     Result = RegistryStorage->ReadString(L"IniFile", L"");
@@ -823,6 +830,7 @@ void TConfiguration::CleanupConfiguration()
 void TConfiguration::CleanupRegistry(const UnicodeString CleanupSubKey)
 {
   std::unique_ptr<TRegistryStorage> Registry(std::make_unique<TRegistryStorage>(GetRegistryStorageKey()));
+  Registry->Init();
   try__finally
   {
     Registry->RecursiveDeleteSubKey(CleanupSubKey);

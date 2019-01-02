@@ -115,7 +115,9 @@ void OpenSessionInPutty(const UnicodeString PuttyPath,
       {
         bool SessionList = false;
         std::unique_ptr<THierarchicalStorage> SourceHostKeyStorage(GetConfiguration()->CreateStorage(SessionList));
+        SourceHostKeyStorage->Init();
         std::unique_ptr<THierarchicalStorage> TargetHostKeyStorage(std::make_unique<TRegistryStorage>(GetConfiguration()->PuttyRegistryStorageKey()));
+        TargetHostKeyStorage->Init();
         TargetHostKeyStorage->SetExplicit(true);
         TargetHostKeyStorage->SetAccessMode(smReadWrite);
         std::unique_ptr<TStoredSessionList> HostKeySessionList(std::make_unique<TStoredSessionList>());
@@ -184,6 +186,7 @@ void OpenSessionInPutty(const UnicodeString PuttyPath,
         try__finally
         {
           Storage = std::make_unique<TRegistryStorage>(GetConfiguration()->GetPuttySessionsKey());
+          Storage->Init();
           Storage->SetAccessMode(smReadWrite);
           // make it compatible with putty
           Storage->SetMungeStringValues(false);
@@ -197,6 +200,7 @@ void OpenSessionInPutty(const UnicodeString PuttyPath,
             else
             {
               SourceStorage = std::make_unique<TRegistryStorage>(GetConfiguration()->PuttySessionsKey);
+              SourceStorage->Init();
               SourceStorage->MungeStringValues = false;
               SourceStorage->ForceAnsi = true;
               if (SourceStorage->OpenSubKey(StoredSessions->DefaultSettings->Name, false) &&

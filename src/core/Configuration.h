@@ -224,6 +224,7 @@ public:
 public:
   explicit TConfiguration(TObjectClassId Kind = OBJECT_CLASS_TConfiguration) noexcept;
   virtual ~TConfiguration() noexcept;
+  virtual void ConfigurationInit();
   virtual void Default();
   virtual void UpdateStaticUsage();
   void Load(THierarchicalStorage *Storage);

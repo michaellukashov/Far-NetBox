@@ -1755,6 +1755,7 @@ void TSessionData::CacheHostKeyIfNotCached()
   // Should allow importing to INI file as ImportHostKeys
   UnicodeString TargetKey = GetConfiguration()->GetRegistryStorageKey() + L"\\" + GetConfiguration()->GetSshHostKeysSubKey();
   std::unique_ptr<TRegistryStorage> Storage(std::make_unique<TRegistryStorage>(TargetKey));
+  Storage->Init();
   Storage->SetAccessMode(smReadWrite);
   if (Storage->OpenRootKey(true))
   {
@@ -5092,6 +5093,7 @@ void TStoredSessionList::Cleanup()
       Clear();
     }
     std::unique_ptr<TRegistryStorage> Storage(std::make_unique<TRegistryStorage>(GetConfiguration()->GetRegistryStorageKey()));
+    Storage->Init();
     try__finally
     {
       Storage->SetAccessMode(smReadWrite);
@@ -5358,7 +5360,9 @@ void TStoredSessionList::ImportHostKeys(
   const UnicodeString & SourceKey, TStoredSessionList * Sessions, bool OnlySelected)
 {
   std::unique_ptr<THierarchicalStorage> TargetStorage(CreateHostKeysStorageForWritting());
+  TargetStorage->Init();
   std::unique_ptr<THierarchicalStorage> SourceStorage(std::make_unique<TRegistryStorage>(SourceKey));
+  SourceStorage->Init();
 
   ImportHostKeys(SourceStorage.get(), TargetStorage.get(), Sessions, OnlySelected);
 }
@@ -5404,6 +5408,7 @@ const TSessionData *TStoredSessionList::GetSessionByName(const UnicodeString Ses
 void TStoredSessionList::Load(const UnicodeString AKey, bool UseDefaults)
 {
   std::unique_ptr<TRegistryStorage> Storage(std::make_unique<TRegistryStorage>(AKey));
+  Storage->Init();
   if (Storage->OpenRootKey(false))
   {
     Load(Storage.get(), false, UseDefaults);

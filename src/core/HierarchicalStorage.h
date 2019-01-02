@@ -180,7 +180,7 @@ public:
   void SetFailed(intptr_t Value) { FFailed = Value; }
 
 private:
-  std::unique_ptr<TRegistry> FRegistry{nullptr};
+  std::unique_ptr<TRegistry> FRegistry;
   mutable intptr_t FFailed{0};
   REGSAM FWowMode{0};
 };

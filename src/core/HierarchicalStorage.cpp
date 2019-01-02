@@ -417,14 +417,15 @@ bool THierarchicalStorage::GetTemporaryProtected() const
 }
 //===========================================================================
 TRegistryStorage::TRegistryStorage(const UnicodeString AStorage) noexcept :
-  THierarchicalStorage(IncludeTrailingBackslash(AStorage))
+  THierarchicalStorage(IncludeTrailingBackslash(AStorage)),
+  FRegistry(std::make_unique<TRegistry>())
 {
   FWowMode = 0;
 }
 //---------------------------------------------------------------------------
 TRegistryStorage::TRegistryStorage(const UnicodeString AStorage, HKEY ARootKey, REGSAM WowMode) noexcept :
   THierarchicalStorage(IncludeTrailingBackslash(AStorage)),
-  FRegistry(nullptr),
+  FRegistry(std::make_unique<TRegistry>()),
   FFailed(0)
 {
   FWowMode = WowMode;
@@ -434,7 +435,6 @@ TRegistryStorage::TRegistryStorage(const UnicodeString AStorage, HKEY ARootKey, 
 void TRegistryStorage::Init()
 {
   FFailed = 0;
-  FRegistry = std::make_unique<TRegistry>();
   FRegistry->SetAccess(KEY_READ | FWowMode);
 }
 //---------------------------------------------------------------------------

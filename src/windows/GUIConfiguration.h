@@ -224,7 +224,7 @@ private:
   UnicodeString FLocaleModuleName;
 
 protected:
-  LCID FLocale{};
+  LCID FLocale{0};
 
 public:
   virtual void SaveData(THierarchicalStorage * Storage, bool All) override;
@@ -273,6 +273,7 @@ public:
 public:
   TGUIConfiguration(TObjectClassId Kind) noexcept;
   virtual ~TGUIConfiguration() noexcept;
+  void ConfigurationInit() override;
   virtual void Default() override;
   virtual void UpdateStaticUsage() override;
   bool LoadCopyParam(THierarchicalStorage * Storage, TCopyParamType * CopyParam);

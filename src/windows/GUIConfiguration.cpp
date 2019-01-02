@@ -543,17 +543,24 @@ bool TCopyParamList::GetAnyRule() const
 TGUIConfiguration::TGUIConfiguration(TObjectClassId Kind) noexcept : TConfiguration(Kind)
 {
   FLocale = 0;
-  SetAppliedLocale(InternalLocale(), UnicodeString());
+  __removed SetAppliedLocale(InternalLocale(), UnicodeString());
   FLocales = std::make_unique<TObjectList>();
   FLastLocalesExts = L"*";
   FCopyParamList = std::make_unique<TCopyParamList>();
-  CoreSetResourceModule(GetResourceModule());
+  __removed CoreSetResourceModule(GetResourceModule());
 }
 //---------------------------------------------------------------------------
 TGUIConfiguration::~TGUIConfiguration() noexcept
 {
   __removed delete FLocales;
   __removed delete FCopyParamList;
+}
+//---------------------------------------------------------------------------
+void TGUIConfiguration::ConfigurationInit()
+{
+  SetAppliedLocale(InternalLocale(), UnicodeString());
+  CoreSetResourceModule(GetResourceModule());
+  TConfiguration::ConfigurationInit();
 }
 //---------------------------------------------------------------------------
 void TGUIConfiguration::Default()
