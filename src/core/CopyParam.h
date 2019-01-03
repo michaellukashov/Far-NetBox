@@ -39,7 +39,7 @@ NB_DEFINE_CLASS_ID(TCopyParamType);
 class NB_CORE_EXPORT TCopyParamType : public TObject
 {
 public:
-  static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TCopyParamType); }
+  static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TCopyParamType); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TCopyParamType) || TObject::is(Kind); }
 private:
   TFileMasks FAsciiFileMask;

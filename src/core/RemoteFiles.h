@@ -95,7 +95,7 @@ class NB_CORE_EXPORT TRemoteFile : public TPersistent
 {
   NB_DISABLE_COPY(TRemoteFile)
 public:
-  static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TRemoteFile); }
+  static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TRemoteFile); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TRemoteFile) || TPersistent::is(Kind); }
 private:
   TRemoteFileList *FDirectory{nullptr};
@@ -260,7 +260,7 @@ NB_DEFINE_CLASS_ID(TRemoteDirectoryFile);
 class NB_CORE_EXPORT TRemoteDirectoryFile : public TRemoteFile
 {
 public:
-  static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TRemoteDirectoryFile); }
+  static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TRemoteDirectoryFile); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TRemoteDirectoryFile) || TRemoteFile::is(Kind); }
 public:
   TRemoteDirectoryFile() noexcept;
@@ -273,7 +273,7 @@ NB_DEFINE_CLASS_ID(TRemoteParentDirectory);
 class NB_CORE_EXPORT TRemoteParentDirectory : public TRemoteDirectoryFile
 {
 public:
-  static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TRemoteParentDirectory); }
+  static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TRemoteParentDirectory); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TRemoteParentDirectory) || TRemoteDirectoryFile::is(Kind); }
 public:
   explicit TRemoteParentDirectory(TTerminal *ATerminal);
@@ -289,7 +289,7 @@ class NB_CORE_EXPORT TRemoteFileList : public TObjectList
   friend class TWebDAVFileSystem;
   friend class TS3FileSystem;
 public:
-  static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TRemoteFileList); }
+  static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TRemoteFileList); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TRemoteFileList) || TObjectList::is(Kind); }
 protected:
   UnicodeString FDirectory;
@@ -341,7 +341,7 @@ class NB_CORE_EXPORT TRemoteDirectory : public TRemoteFileList
   friend class TWebDAVFileSystem;
   NB_DISABLE_COPY(TRemoteDirectory)
 public:
-  static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TRemoteDirectory); }
+  static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TRemoteDirectory); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TRemoteDirectory) || TRemoteFileList::is(Kind); }
 private:
   TTerminal *FTerminal;
@@ -622,7 +622,7 @@ NB_DEFINE_CLASS_ID(TRemoteProperties);
 class TRemoteProperties : public TObject
 {
 public:
-  static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TRemoteProperties); }
+  static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TRemoteProperties); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TRemoteProperties) || TObject::is(Kind); }
 public:
   TValidProperties Valid;
@@ -670,7 +670,7 @@ class NB_CORE_EXPORT TChecklistItem : public TObject
   friend class TSynchronizeChecklist;
   NB_DISABLE_COPY(TChecklistItem)
 public:
-  static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TChecklistItem); }
+  static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TChecklistItem); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TChecklistItem) || TObject::is(Kind); }
 public:
 

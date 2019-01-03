@@ -40,7 +40,7 @@ NB_DEFINE_CLASS_ID(TSinkFileParams);
 struct NB_CORE_EXPORT TSinkFileParams : public TObject
 {
 public:
-  static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TSinkFileParams); }
+  static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TSinkFileParams); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TSinkFileParams) || TObject::is(Kind); }
 public:
   TSinkFileParams() noexcept : TObject(OBJECT_CLASS_TSinkFileParams), CopyParam(nullptr), OperationProgress(nullptr), Params(0), Flags(0), Skipped(false) {}
@@ -57,7 +57,7 @@ struct NB_CORE_EXPORT TFileTransferData : public TObject
 {
   NB_DISABLE_COPY(TFileTransferData)
 public:
-  static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TFileTransferData); }
+  static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TFileTransferData); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TFileTransferData) || TObject::is(Kind); }
 public:
   TFileTransferData() :
@@ -83,7 +83,7 @@ NB_DEFINE_CLASS_ID(TOverwriteFileParams);
 struct NB_CORE_EXPORT TOverwriteFileParams : public TObject
 {
 public:
-  static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TOverwriteFileParams); }
+  static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TOverwriteFileParams); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TOverwriteFileParams) || TObject::is(Kind); }
 public:
   TOverwriteFileParams() noexcept :
@@ -108,7 +108,7 @@ struct NB_CORE_EXPORT TOpenRemoteFileParams : public TObject
 {
   NB_DISABLE_COPY(TOpenRemoteFileParams)
 public:
-  static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TOpenRemoteFileParams); }
+  static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TOpenRemoteFileParams); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TOpenRemoteFileParams) || TObject::is(Kind); }
 public:
   TOpenRemoteFileParams() :
@@ -161,7 +161,7 @@ class NB_CORE_EXPORT TCustomFileSystem : public TObject, public TFileSystemIntf
 {
   NB_DISABLE_COPY(TCustomFileSystem)
 public:
-  static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TCustomFileSystem); }
+  static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TCustomFileSystem); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TCustomFileSystem) || TObject::is(Kind); }
 public:
   virtual ~TCustomFileSystem() noexcept;

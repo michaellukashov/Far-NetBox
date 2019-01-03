@@ -32,7 +32,7 @@ class NB_CORE_EXPORT TSFTPFileSystem : public TCustomFileSystem
   friend class TSFTPCalculateFilesChecksumQueue;
   friend class TSFTPBusy;
 public:
-  static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TSFTPFileSystem); }
+  static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TSFTPFileSystem); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TSFTPFileSystem) || TCustomFileSystem::is(Kind); }
 public:
   explicit TSFTPFileSystem(TTerminal *ATerminal);

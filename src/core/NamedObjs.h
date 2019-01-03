@@ -11,7 +11,7 @@ NB_DEFINE_CLASS_ID(TNamedObject);
 class NB_CORE_EXPORT TNamedObject : public TPersistent
 {
 public:
-  static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TNamedObject); }
+  static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TNamedObject); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TNamedObject) || TPersistent::is(Kind); }
 public:
   __property UnicodeString Name = { read = FName, write = SetName };
@@ -42,7 +42,7 @@ NB_DEFINE_CLASS_ID(TNamedObjectList);
 class NB_CORE_EXPORT TNamedObjectList : public TObjectList
 {
 public:
-  static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TNamedObjectList); }
+  static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TNamedObjectList); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TNamedObjectList) || TObjectList::is(Kind); }
 public:
   intptr_t GetCount() const;

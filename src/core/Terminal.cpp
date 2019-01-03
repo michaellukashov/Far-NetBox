@@ -117,7 +117,7 @@ NB_DEFINE_CLASS_ID(TMoveFileParams);
 struct TMoveFileParams : public TObject
 {
 public:
-  static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TMoveFileParams); }
+  static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TMoveFileParams); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TMoveFileParams) || TObject::is(Kind); }
 public:
   TMoveFileParams() : TObject(OBJECT_CLASS_TMoveFileParams)
@@ -131,7 +131,7 @@ NB_DEFINE_CLASS_ID(TFilesFindParams);
 struct TFilesFindParams : public TObject
 {
 public:
-  static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TFilesFindParams); }
+  static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TFilesFindParams); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TFilesFindParams) || TObject::is(Kind); }
 public:
   TFilesFindParams() :
@@ -213,7 +213,7 @@ class TTunnelThread : public TSimpleThread
 {
   NB_DISABLE_COPY(TTunnelThread)
 public:
-  static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TTunnelThread); }
+  static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TTunnelThread); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TTunnelThread) || TSimpleThread::is(Kind); }
 public:
   explicit TTunnelThread(TSecureShell *SecureShell);
@@ -5796,7 +5796,7 @@ NB_DEFINE_CLASS_ID(TSynchronizeFileData);
 struct TSynchronizeFileData : public TObject
 {
 public:
-  static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TSynchronizeFileData); }
+  static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TSynchronizeFileData); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TSynchronizeFileData) || TObject::is(Kind); }
 public:
   TSynchronizeFileData() :
@@ -5825,7 +5825,7 @@ NB_DEFINE_CLASS_ID(TSynchronizeData);
 struct TSynchronizeData : public TObject
 {
 public:
-  static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TSynchronizeData); }
+  static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TSynchronizeData); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TSynchronizeData) || TObject::is(Kind); }
 public:
   TSynchronizeData() : TObject(OBJECT_CLASS_TSynchronizeData)

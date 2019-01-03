@@ -24,7 +24,7 @@ NB_DEFINE_CLASS_ID(TGUICopyParamType);
 class NB_CORE_EXPORT TGUICopyParamType : public TCopyParamType
 {
 public:
-  static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TGUICopyParamType); }
+  static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TGUICopyParamType); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TGUICopyParamType) || TCopyParamType::is(Kind); }
 public:
   TGUICopyParamType() noexcept;
@@ -75,7 +75,7 @@ NB_DEFINE_CLASS_ID(TCopyParamRule);
 class NB_CORE_EXPORT TCopyParamRule : public TObject
 {
 public:
-  static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TCopyParamRule); }
+  static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TCopyParamRule); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TCopyParamRule) || TObject::is(Kind); }
 public:
   explicit TCopyParamRule() noexcept;
@@ -183,7 +183,7 @@ class NB_CORE_EXPORT TGUIConfiguration : public TConfiguration
 {
   NB_DISABLE_COPY(TGUIConfiguration)
 public:
-  static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TGUIConfiguration); }
+  static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TGUIConfiguration); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TGUIConfiguration) || TConfiguration::is(Kind); }
 private:
   std::unique_ptr<TObjectList> FLocales;
