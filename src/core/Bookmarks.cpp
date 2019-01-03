@@ -9,7 +9,7 @@
 //---------------------------------------------------------------------------
 __removed #pragma package(smart_init)
 //---------------------------------------------------------------------------
-TBookmarks::TBookmarks() noexcept : TObject(),
+TBookmarks::TBookmarks() noexcept : TObject(OBJECT_CLASS_TBookmarkList),
   FSharedKey(UnicodeString(CONST_HIDDEN_PREFIX) + "shared")
 {
   FBookmarkLists = CreateSortedStringList(false, dupError);
