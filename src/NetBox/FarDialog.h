@@ -49,7 +49,7 @@ class TFarDialog : public TObject
   friend class TFarListBox;
   NB_DISABLE_COPY(TFarDialog)
 public:
-  static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TFarDialog); }
+  static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TFarDialog); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TFarDialog) || TObject::is(Kind); }
 public:
   explicit TFarDialog(TCustomFarPlugin *AFarPlugin) noexcept;
@@ -171,7 +171,7 @@ class TFarDialogContainer : public TObject
   friend class TFarDialogItem;
   NB_DISABLE_COPY(TFarDialogContainer)
 public:
-  static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TFarDialogContainer); }
+  static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TFarDialogContainer); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TFarDialogContainer) || TObject::is(Kind); }
 public:
   intptr_t GetLeft() const { return FLeft; }
@@ -214,7 +214,7 @@ class TFarDialogItem : public TObject
   friend class TFarList;
   NB_DISABLE_COPY(TFarDialogItem)
 public:
-  static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TFarDialogItem); }
+  static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TFarDialogItem); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TFarDialogItem) || TObject::is(Kind); }
 public:
   TRect GetBounds() const { return FBounds; }
@@ -386,7 +386,7 @@ NB_DEFINE_CLASS_ID(TFarButton);
 class TFarButton : public TFarDialogItem
 {
 public:
-  static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TFarButton); }
+  static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TFarButton); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TFarButton) || TFarDialogItem::is(Kind); }
 public:
   explicit TFarButton(TFarDialog *ADialog) noexcept;
@@ -428,7 +428,7 @@ class TFarCheckBox : public TFarDialogItem
 {
   NB_DISABLE_COPY(TFarCheckBox)
 public:
-  static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TFarCheckBox); }
+  static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TFarCheckBox); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TFarCheckBox) || TFarDialogItem::is(Kind); }
 public:
   explicit TFarCheckBox(TFarDialog *ADialog) noexcept;
@@ -475,7 +475,7 @@ NB_DEFINE_CLASS_ID(TFarEdit);
 class TFarEdit : public TFarDialogItem
 {
 public:
-  static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TFarEdit); }
+  static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TFarEdit); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TFarEdit) || TFarDialogItem::is(Kind); }
 public:
   explicit TFarEdit(TFarDialog *ADialog) noexcept;
@@ -529,7 +529,7 @@ NB_DEFINE_CLASS_ID(TFarText);
 class TFarText : public TFarDialogItem
 {
 public:
-  static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TFarText); }
+  static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TFarText); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TFarText) || TFarDialogItem::is(Kind); }
 public:
   explicit TFarText(TFarDialog *ADialog) noexcept;
@@ -557,7 +557,7 @@ class TFarList : public TStringList
   friend class TFarComboBox;
   NB_DISABLE_COPY(TFarList)
 public:
-  static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TFarList); }
+  static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TFarList); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TFarList) || TStringList::is(Kind); }
 public:
   explicit TFarList(TFarDialogItem *ADialogItem = nullptr) noexcept;
@@ -614,7 +614,7 @@ class TFarListBox : public TFarDialogItem
 {
   NB_DISABLE_COPY(TFarListBox)
 public:
-  static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TFarListBox); }
+  static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TFarListBox); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TFarListBox) || TFarDialogItem::is(Kind); }
 public:
   explicit TFarListBox(TFarDialog *ADialog) noexcept;

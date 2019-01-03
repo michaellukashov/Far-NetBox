@@ -1448,7 +1448,7 @@ NB_DEFINE_CLASS_ID(TConsoleTitleParam);
 class TConsoleTitleParam : public TObject
 {
 public:
-  static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TConsoleTitleParam); }
+  static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TConsoleTitleParam); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TConsoleTitleParam) || TObject::is(Kind); }
 public:
   explicit TConsoleTitleParam() :
