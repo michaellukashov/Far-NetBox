@@ -81,7 +81,7 @@ void TFarConfiguration::Saved()
     BLOCK \
   }
 #define REGCONFIG(CANCREATE) \
-  BLOCK(L"Far", CANCREATE, \
+  BLOCK("Far", CANCREATE, \
     KEY(Bool,     DisksMenu); \
     KEY(Integer,  DisksMenuHotKey); \
     KEY(Bool,     PluginsMenu); \
