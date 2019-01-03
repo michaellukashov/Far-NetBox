@@ -134,7 +134,7 @@ class ROProperty
 CUSTOM_MEM_ALLOCATION_IMPL
 private:
 //  typedef fu2::function<T() const> TGetValueFunctor;
-  typedef fastdelegate::FastDelegate0<T> TGetValueFunctor;
+  using TGetValueFunctor = fastdelegate::FastDelegate0<T>;
   TGetValueFunctor _getter;
 public:
   ROProperty() = delete;
@@ -194,8 +194,8 @@ CUSTOM_MEM_ALLOCATION_IMPL
 private:
 //  typedef fu2::function<T() const> TGetValueFunctor;
 //  typedef fu2::function<void(T)> TSetValueFunctor;
-  typedef fastdelegate::FastDelegate0<T> TGetValueFunctor;
-  typedef fastdelegate::FastDelegate1<void, T> TSetValueFunctor;
+  using TGetValueFunctor = fastdelegate::FastDelegate0<T>;
+  using TSetValueFunctor = fastdelegate::FastDelegate1<void, T>;
   TGetValueFunctor _getter;
   TSetValueFunctor _setter;
 public:
