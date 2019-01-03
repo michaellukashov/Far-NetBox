@@ -222,7 +222,8 @@ public:
   static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TObjectList); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TObjectList) || TList::is(Kind); }
 public:
-  explicit TObjectList(TObjectClassId Kind = OBJECT_CLASS_TObjectList) noexcept;
+  TObjectList() noexcept;
+  explicit TObjectList(TObjectClassId Kind) noexcept;
   virtual ~TObjectList() noexcept;
 
   template<class T>
@@ -234,7 +235,7 @@ public:
   virtual void Notify(void *Ptr, TListNotification Action) override;
 
 private:
-  bool FOwnsObjects{false};
+  bool FOwnsObjects{true};
 };
 
 enum TDuplicatesEnum
