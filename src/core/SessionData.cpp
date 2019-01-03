@@ -1006,16 +1006,18 @@ void TSessionData::DoSave(THierarchicalStorage *Storage,
 #undef WRITE_DATA_CONV
 #define WRITE_DATA_CONV(TYPE, NAME, PROPERTY) WRITE_DATA_EX(TYPE, NAME, PROPERTY, WRITE_DATA_CONV_FUNC)
 #undef WRITE_DATA
+#undef WRITE_DATA2
 #define WRITE_DATA(TYPE, PROPERTY) WRITE_DATA_EX(TYPE, MB_TEXT(#PROPERTY), Get ## PROPERTY(), )
+#define WRITE_DATA2(TYPE, PROPERTY) WRITE_DATA_EX2(TYPE, MB_TEXT(#PROPERTY), Get ## PROPERTY(), nb::ToInt)
 
   Storage->WriteString("Version", ::VersionNumberToStr(::GetCurrentVersionNumber()));
   WRITE_DATA(String, HostName);
-  WRITE_DATA(Integer, PortNumber);
-  WRITE_DATA_EX(Integer, "PingInterval", GetPingInterval() / SecsPerMin, );
+  WRITE_DATA2(Integer, PortNumber);
+  WRITE_DATA_EX(Integer, "PingInterval", GetPingInterval() / SecsPerMin, nb::ToInt);
   WRITE_DATA_EX(Integer, "PingIntervalSecs", GetPingInterval() % SecsPerMin, );
   Storage->DeleteValue("PingIntervalSec"); // obsolete
   WRITE_DATA(Integer, PingType);
-  WRITE_DATA(Integer, Timeout);
+  WRITE_DATA2(Integer, Timeout);
   WRITE_DATA(Bool, TryAgent);
   WRITE_DATA(Bool, AgentFwd);
   WRITE_DATA(Bool, AuthTIS);
@@ -3191,14 +3193,14 @@ UnicodeString TSessionData::GetProtocolUrl(bool HttpForWebDAV) const
   return Url;
 }
 //---------------------------------------------------------------------
-bool IsIPv6Literal(const UnicodeString HostName)
+bool IsIPv6Literal(const UnicodeString AHostName)
 {
-  bool Result = (HostName.Pos(L":") > 0);
+  bool Result = (AHostName.Pos(L":") > 0);
   if (Result)
   {
-    for (intptr_t Index = 1; Result && (Index <= HostName.Length()); Index++)
+    for (intptr_t Index = 1; Result && (Index <= AHostName.Length()); Index++)
     {
-      wchar_t C = HostName[Index];
+      wchar_t C = AHostName[Index];
       Result = IsHex(C) || (C == L':');
     }
   }

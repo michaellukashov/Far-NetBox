@@ -1043,7 +1043,7 @@ public:
   const TSessionData *GetSessionByName(const UnicodeString SessionName) const;
 private:
   std::unique_ptr<TSessionData> FDefaultSettings;
-  bool FReadOnly;
+  bool FReadOnly{false};
   std::unique_ptr<TStrings> FPendingRemovals;
   void Load(const UnicodeString AKey, bool UseDefaults);
   __removed void SetDefaultSettings(TSessionData *Value);
@@ -1065,7 +1065,7 @@ private:
 NB_CORE_EXPORT UnicodeString GetExpandedLogFileName(const UnicodeString LogFileName, TDateTime Started, TSessionData *SessionData);
 NB_CORE_EXPORT bool GetIsSshProtocol(TFSProtocol FSProtocol);
 NB_CORE_EXPORT intptr_t GetDefaultPort(TFSProtocol FSProtocol, TFtps Ftps);
-NB_CORE_EXPORT bool IsIPv6Literal(const UnicodeString HostName);
+NB_CORE_EXPORT bool IsIPv6Literal(const UnicodeString AHostName);
 NB_CORE_EXPORT UnicodeString EscapeIPv6Literal(const UnicodeString IP);
 TFSProtocol NormalizeFSProtocol(TFSProtocol FSProtocol);
 
