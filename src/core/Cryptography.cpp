@@ -665,17 +665,8 @@ TEncryption::TEncryption(const RawByteString AKey) noexcept
   }
 }
 //---------------------------------------------------------------------------
-TEncryption::~TEncryption()
+TEncryption::~TEncryption() noexcept
 {
-  if (FContext != nullptr)
-  {
-    call_aes_free_context(FContext);
-  }
-  Shred(FKey);
-  if ((FInputHeader.Length() > 0) && (FInputHeader.Length() < GetOverhead()))
-  {
-    throw Exception(LoadStr(UNKNOWN_FILE_ENCRYPTION));
-  }
 }
 //---------------------------------------------------------------------------
 void TEncryption::SetSalt()
@@ -710,6 +701,19 @@ intptr_t TEncryption::RoundToBlock(intptr_t Size)
 intptr_t TEncryption::RoundToBlockDown(intptr_t Size)
 {
   return Size - (Size % BLOCK_SIZE);
+}
+
+void TEncryption::FreeContext()
+{
+  if (FContext != nullptr)
+  {
+    call_aes_free_context(FContext);
+  }
+  Shred(FKey);
+  if ((FInputHeader.Length() > 0) && (FInputHeader.Length() < GetOverhead()))
+  {
+    throw Exception(LoadStr(UNKNOWN_FILE_ENCRYPTION));
+  }
 }
 //---------------------------------------------------------------------------
 void TEncryption::Aes(char * Buffer, intptr_t Size)

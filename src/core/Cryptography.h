@@ -24,7 +24,7 @@ class TEncryption : public TObject
 {
 public:
   explicit TEncryption(const RawByteString AKey) noexcept;
-  ~TEncryption();
+  virtual ~TEncryption() noexcept;
 
   static bool IsEncryptedFileName(const UnicodeString AFileName);
 
@@ -38,6 +38,7 @@ public:
   static intptr_t RoundToBlock(intptr_t Size);
   static intptr_t RoundToBlockDown(intptr_t Size);
 
+  void FreeContext();
 private:
   RawByteString FKey;
   RawByteString FSalt;

@@ -4882,6 +4882,7 @@ void TSFTPFileSystem::Source(
       // Either queue is empty now (noop call then),
       // or some error occured (in that case, process remaining responses, ignoring other errors)
       Queue.DisposeSafe();
+      Encryption.FreeContext();
     } end_try__finally
 
     TransferFinished = true;
@@ -5704,6 +5705,7 @@ void TSFTPFileSystem::Sink(
             WriteLocalFile(FileStream, BlockBuf, LocalFileName, OperationProgress);
           }
         }
+        Encryption.FreeContext();
       },
       __finally
       {

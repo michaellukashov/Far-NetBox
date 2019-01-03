@@ -8396,6 +8396,7 @@ UnicodeString TTerminal::EncryptFileName(const UnicodeString APath, bool Encrypt
         TEncryption Encryption(FEncryptKey);
         FileName = Encryption.EncryptFileName(FileName);
         FEncryptedFileNames[APath] = FileName;
+        Encryption.FreeContext();
       }
     }
 
@@ -8422,6 +8423,7 @@ UnicodeString TTerminal::DecryptFileName(const UnicodeString Path)
       UnicodeString FileDir = base::UnixExtractFileDir(Path);
       FileDir = DecryptFileName(FileDir);
       Result = base::UnixCombinePaths(FileDir, FileName);
+      Encryption.FreeContext();
     }
 
     if (Encrypted || (FEncryptedFileNames.find(Result) == FEncryptedFileNames.end()))
