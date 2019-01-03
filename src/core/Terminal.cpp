@@ -4156,9 +4156,9 @@ void TTerminal::RecycleFile(UnicodeString AFileName,
       TDateTime DateTime = Now();
       DateTime.DecodeDate(Y, M, D);
       DateTime.DecodeTime(H, N, S, MS);
-      UnicodeString dt = FORMAT(L"%04d%02d%02d-%02d%02d%02d", Y, M, D, H, N, S);
-      // Params.FileMask = FORMAT(L"*-%s.*", FormatDateTime(L"yyyymmdd-hhnnss", Now()));
-      Params.FileMask = FORMAT(L"*-%s.*", dt);
+      UnicodeString dt = FORMAT("%04d%02d%02d-%02d%02d%02d", Y, M, D, H, N, S);
+      // Params.FileMask = FORMAT("*-%s.*", FormatDateTime(L"yyyymmdd-hhnnss", Now()));
+      Params.FileMask = FORMAT("*-%s.*", dt);
     }
 #endif
 
@@ -4587,7 +4587,7 @@ void TTerminal::CalculateFileSize(const UnicodeString AFileName,
         {
           if (FLAGCLEAR(Params->Params, csStopOnFirstFile))
           {
-            LogEvent(FORMAT(L"Getting size of directory \"%s\"", FileName));
+            LogEvent(FORMAT("Getting size of directory \"%s\"", FileName));
           }
 
           // pass in full path so we get it back in file list for AllowTransfer() exclusion
@@ -4628,7 +4628,7 @@ bool TTerminal::DoCalculateDirectorySize(const UnicodeString FileName, TCalculat
   bool Result = false;
   if (FLAGSET(Params->Params, csStopOnFirstFile) && (Configuration->ActualLogProtocol >= 1))
   {
-    LogEvent(FORMAT(L"Checking if remote directory \"%s\" is empty", FileName));
+    LogEvent(FORMAT("Checking if remote directory \"%s\" is empty", FileName));
   }
 
   TRetryOperationLoop RetryLoop(this);
@@ -4654,11 +4654,11 @@ bool TTerminal::DoCalculateDirectorySize(const UnicodeString FileName, TCalculat
   {
     if (Params->Stats->Files == 0)
     {
-      LogEvent(FORMAT(L"Remote directory \"%s\" is empty", FileName));
+      LogEvent(FORMAT("Remote directory \"%s\" is empty", FileName));
     }
     else
     {
-      LogEvent(FORMAT(L"Remote directory \"%s\" is not empty", FileName));
+      LogEvent(FORMAT("Remote directory \"%s\" is not empty", FileName));
     }
   }
 
@@ -5968,7 +5968,7 @@ bool TTerminal::IsEmptyLocalDirectory(
   UnicodeString Contents;
   if (Configuration->ActualLogProtocol >= 1)
   {
-    LogEvent(FORMAT(L"Checking if local directory \"%s\" is empty", Path));
+    LogEvent(FORMAT("Checking if local directory \"%s\" is empty", Path));
   }
 
   TSearchRecOwned SearchRec;
@@ -5994,11 +5994,11 @@ bool TTerminal::IsEmptyLocalDirectory(
   {
     if (Contents.IsEmpty())
     {
-      LogEvent(FORMAT(L"Local directory \"%s\" is empty", Path));
+      LogEvent(FORMAT("Local directory \"%s\" is empty", Path));
     }
     else
     {
-      LogEvent(FORMAT(L"Local directory \"%s\" is not empty, it contains \"%s\"", Path, Contents));
+      LogEvent(FORMAT("Local directory \"%s\" is not empty, it contains \"%s\"", Path, Contents));
     }
   }
 
@@ -6064,12 +6064,12 @@ void TTerminal::DoSynchronizeCollectDirectory(const UnicodeString ALocalDirector
           FileData->New = true;
           FileData->Modified = false;
           Data.LocalFileList->AddObject(FileName, reinterpret_cast<TObject*>(FileData));
-          LogEvent(0, FORMAT(L"Local file %s included to synchronization",
+          LogEvent(0, FORMAT("Local file %s included to synchronization",
             FormatFileDetailsForLog(FullLocalFileName, SearchRec.GetLastWriteTime(), SearchRec.Size)));
         }
         else
         {
-          LogEvent(0, FORMAT(L"Local file %s excluded from synchronization",
+          LogEvent(0, FORMAT("Local file %s excluded from synchronization",
             FormatFileDetailsForLog(FullLocalFileName, SearchRec.GetLastWriteTime(), SearchRec.Size)));
         }
 
@@ -6401,7 +6401,7 @@ void TTerminal::DoSynchronizeCollectFile(UnicodeString AFileName,
   }
   else
   {
-    LogEvent(0, FORMAT(L"Remote file %s excluded from synchronization",
+    LogEvent(0, FORMAT("Remote file %s excluded from synchronization",
       FormatFileDetailsForLog(FullRemoteFileName, AFile->Modification, AFile->Size)));
   }
 }
@@ -6475,7 +6475,7 @@ void TTerminal::SynchronizeApply(
           Data.RemoteDirectory = base::UnixIncludeTrailingBackslash(ChecklistItem->Remote.Directory);
 
           LogEvent(
-            FORMAT(L"Synchronizing local directory '%s' with remote directory '%s', params = 0x%x (%s)",
+            FORMAT("Synchronizing local directory '%s' with remote directory '%s', params = 0x%x (%s)",
               Data.LocalDirectory, Data.RemoteDirectory, int(Params), SynchronizeParamsStr(Params)));
 
           DoSynchronizeProgress(Data, false);
@@ -7472,7 +7472,7 @@ void TTerminal::SelectTransferMode(
   bool AsciiTransfer = GetIsCapable(fcTextMode) && CopyParam->UseAsciiTransfer(ABaseFileName, Side, MaskParams);
   OperationProgress->SetAsciiTransfer(AsciiTransfer);
   UnicodeString ModeName = (OperationProgress->AsciiTransfer ? L"Ascii" : L"Binary");
-  LogEvent(0, FORMAT(L"%s transfer mode selected.", ModeName));
+  LogEvent(0, FORMAT("%s transfer mode selected.", ModeName));
 }
 //---------------------------------------------------------------------------
 void TTerminal::SelectSourceTransferMode(const TLocalFileHandle &Handle, const TCopyParamType *CopyParam)

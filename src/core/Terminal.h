@@ -1047,7 +1047,7 @@ class NB_CORE_EXPORT TRobustOperationLoop : public TObject
   NB_DISABLE_COPY(TRobustOperationLoop)
 public:
   explicit TRobustOperationLoop(TTerminal *Terminal, TFileOperationProgressType *OperationProgress, bool *AnyTransfer = nullptr) noexcept;
-  ~TRobustOperationLoop() noexcept;
+  virtual ~TRobustOperationLoop() noexcept;
   bool TryReopen(Exception &E);
   bool ShouldRetry() const;
   bool Retry();
@@ -1096,7 +1096,7 @@ class TParallelOperation : public TObject
 {
 public:
   explicit TParallelOperation(TOperationSide Side) noexcept;
-  ~TParallelOperation() noexcept;
+  virtual ~TParallelOperation() noexcept;
 
   void Init(
     TStrings *AFiles, const UnicodeString ATargetDir, const TCopyParamType *CopyParam, intptr_t AParams,
@@ -1168,6 +1168,7 @@ struct TLocalFileHandle
   int64_t MTime{0};
   int64_t ATime{0};
   int64_t Size{0};
+  CUSTOM_MEM_ALLOCATION_IMPL
 };
 //---------------------------------------------------------------------------
 class TLocalFile : public TObject
