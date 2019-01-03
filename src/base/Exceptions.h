@@ -27,7 +27,7 @@ NB_DEFINE_CLASS_ID(ExtException);
 class NB_CORE_EXPORT ExtException : public Exception
 {
 public:
-  static inline bool classof(const Exception *Obj) { return Obj->is(OBJECT_CLASS_ExtException); }
+  static bool classof(const Exception *Obj) { return Obj->is(OBJECT_CLASS_ExtException); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_ExtException) || Exception::is(Kind); }
 public:
   ExtException() noexcept = default;
@@ -80,7 +80,7 @@ private:
 //---------------------------------------------------------------------------
 #define EXT_EXCEPTION_METHODS(NAME, BASE) \
   public: \
-    static inline bool classof(const Exception *Obj) { return Obj->is(OBJECT_CLASS_##NAME); } \
+    static bool classof(const Exception *Obj) { return Obj->is(OBJECT_CLASS_##NAME); } \
     virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_##NAME) || BASE::is(Kind); } \
   public: \
     explicit inline NAME(const Exception *E, const UnicodeString Msg, const UnicodeString HelpKeyword = L"") : \
@@ -137,7 +137,7 @@ NB_DEFINE_CLASS_ID(EOSExtException);
 class NB_CORE_EXPORT EOSExtException : public ExtException
 {
 public:
-  static inline bool classof(const Exception * Obj) { return Obj->is(OBJECT_CLASS_EOSExtException); }
+  static bool classof(const Exception * Obj) { return Obj->is(OBJECT_CLASS_EOSExtException); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_EOSExtException) || ExtException::is(Kind); }
 public:
   explicit EOSExtException();
@@ -150,7 +150,7 @@ NB_DEFINE_CLASS_ID(ECRTExtException);
 class NB_CORE_EXPORT ECRTExtException : public EOSExtException
 {
 public:
-  static inline bool classof(const Exception * Obj) { return Obj->is(OBJECT_CLASS_ECRTExtException); }
+  static bool classof(const Exception * Obj) { return Obj->is(OBJECT_CLASS_ECRTExtException); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_ECRTExtException) || EOSExtException::is(Kind); }
 public:
   ECRTExtException() = default;
@@ -161,7 +161,7 @@ NB_DEFINE_CLASS_ID(EFatal);
 class NB_CORE_EXPORT EFatal : public ExtException
 {
 public:
-  static inline bool classof(const Exception * Obj) { return Obj->is(OBJECT_CLASS_EFatal); }
+  static bool classof(const Exception * Obj) { return Obj->is(OBJECT_CLASS_EFatal); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_EFatal) || ExtException::is(Kind); }
 public:
   // fatal errors are always copied, new message is only appended
@@ -185,7 +185,7 @@ private:
   class NB_CORE_EXPORT NAME : public BASE \
   { \
   public: \
-    static inline bool classof(const Exception *Obj) { return Obj->is(OBJECT_CLASS_##NAME); } \
+    static bool classof(const Exception *Obj) { return Obj->is(OBJECT_CLASS_##NAME); } \
     virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_##NAME) || BASE::is(Kind); } \
   public: \
     explicit inline NAME(const Exception *E, const UnicodeString Msg, const UnicodeString HelpKeyword = L"") : BASE(OBJECT_CLASS_##NAME, E, Msg, HelpKeyword) {} \
@@ -200,7 +200,7 @@ NB_DEFINE_CLASS_ID(ESshTerminate);
 class NB_CORE_EXPORT ESshTerminate : public EFatal
 {
 public:
-  static inline bool classof(const Exception *Obj) { return Obj->is(OBJECT_CLASS_ESshTerminate); }
+  static bool classof(const Exception *Obj) { return Obj->is(OBJECT_CLASS_ESshTerminate); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_ESshTerminate) || EFatal::is(Kind); }
 public:
   explicit inline ESshTerminate(
@@ -225,7 +225,7 @@ NB_DEFINE_CLASS_ID(ECallbackGuardAbort);
 class NB_CORE_EXPORT ECallbackGuardAbort : public EAbort
 {
 public:
-  static inline bool classof(const Exception *Obj) { return Obj->is(OBJECT_CLASS_ECallbackGuardAbort); }
+  static bool classof(const Exception *Obj) { return Obj->is(OBJECT_CLASS_ECallbackGuardAbort); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_ECallbackGuardAbort) || EAbort::is(Kind); }
 public:
   ECallbackGuardAbort();

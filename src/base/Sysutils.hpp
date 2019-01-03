@@ -82,7 +82,7 @@ class NB_CORE_EXPORT Exception : public std::runtime_error
 {
   CUSTOM_MEM_ALLOCATION_IMPL
 public:
-  static inline bool classof(const Exception *Obj) { return Obj->is(OBJECT_CLASS_Exception); }
+  static bool classof(const Exception *Obj) { return Obj->is(OBJECT_CLASS_Exception); }
   virtual bool is(TObjectClassId Kind) const { return (Kind == FKind); }
 public:
   Exception() noexcept = default;
@@ -107,7 +107,7 @@ NB_DEFINE_CLASS_ID(EAbort);
 class NB_CORE_EXPORT EAbort : public Exception
 {
 public:
-  static inline bool classof(const Exception *Obj) { return Obj->is(OBJECT_CLASS_EAbort); }
+  static bool classof(const Exception *Obj) { return Obj->is(OBJECT_CLASS_EAbort); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_EAbort) || Exception::is(Kind); }
 public:
   explicit EAbort(const UnicodeString What) noexcept : Exception(OBJECT_CLASS_EAbort, What) {}
@@ -118,7 +118,7 @@ NB_DEFINE_CLASS_ID(EAccessViolation);
 class NB_CORE_EXPORT EAccessViolation : public Exception
 {
 public:
-  static inline bool classof(const Exception *Obj) { return Obj->is(OBJECT_CLASS_EAccessViolation); }
+  static bool classof(const Exception *Obj) { return Obj->is(OBJECT_CLASS_EAccessViolation); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_EAccessViolation) || Exception::is(Kind); }
 public:
   explicit EAccessViolation(const UnicodeString What) noexcept : Exception(OBJECT_CLASS_EAccessViolation, What) {}
@@ -128,7 +128,7 @@ NB_DEFINE_CLASS_ID(EFileNotFoundError);
 class NB_CORE_EXPORT EFileNotFoundError : public Exception
 {
 public:
-  static inline bool classof(const Exception *Obj) { return Obj->is(OBJECT_CLASS_EFileNotFoundError); }
+  static bool classof(const Exception *Obj) { return Obj->is(OBJECT_CLASS_EFileNotFoundError); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_EFileNotFoundError) || Exception::is(Kind); }
 public:
   EFileNotFoundError() noexcept : Exception(OBJECT_CLASS_EFileNotFoundError, L"") {}
@@ -138,7 +138,7 @@ NB_DEFINE_CLASS_ID(EOSError);
 class NB_CORE_EXPORT EOSError : public Exception
 {
 public:
-  static inline bool classof(const Exception *Obj) { return Obj->is(OBJECT_CLASS_EOSError); }
+  static bool classof(const Exception *Obj) { return Obj->is(OBJECT_CLASS_EOSError); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_EOSError) || Exception::is(Kind); }
 public:
   explicit EOSError(const UnicodeString Msg, DWORD Code) noexcept :
@@ -153,7 +153,7 @@ NB_DEFINE_CLASS_ID(EInvalidOperation);
 class NB_CORE_EXPORT EInvalidOperation : public Exception
 {
 public:
-  static inline bool classof(const Exception *Obj) { return Obj->is(OBJECT_CLASS_EInvalidOperation); }
+  static bool classof(const Exception *Obj) { return Obj->is(OBJECT_CLASS_EInvalidOperation); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_EInvalidOperation) || Exception::is(Kind); }
 public:
   explicit EInvalidOperation(const UnicodeString Msg) noexcept :
