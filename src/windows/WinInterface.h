@@ -192,13 +192,13 @@ bool InputDialog(UnicodeString ACaption,
 // forms\About.cpp
 struct TRegistration
 {
-  bool Registered;
+  bool Registered{false};
   UnicodeString Subject;
-  int Licenses;
+  int Licenses{0};
   UnicodeString ProductId;
-  bool NeverExpires;
+  bool NeverExpires{false};
   TDateTime Expiration;
-  bool EduLicense;
+  bool EduLicense{false};
   TNotifyEvent OnRegistrationLink;
 };
 void DoAboutDialog(TConfiguration * Configuration,
@@ -270,7 +270,7 @@ enum TPreferencesMode { pmDefault, pmEditor, pmCustomCommands,
 struct TCopyParamRuleData;
 struct TPreferencesDialogData
 {
-  TCopyParamRuleData * CopyParamRuleData;
+  TCopyParamRuleData * CopyParamRuleData{nullptr};
 };
 bool DoPreferencesDialog(TPreferencesMode APreferencesMode,
   TPreferencesDialogData * DialogData = nullptr);
@@ -634,10 +634,10 @@ void CheckConfigurationForceSave();
 struct TCopyDataMessage
 {
   enum { CommandCanCommandLine, CommandCommandLine, MainWindowCheck, RefreshPanel };
-  static const unsigned int Version1 = 1;
+  static const uintptr_t Version1 = 1;
 
-  uintptr_t Version{0};
-  uintptr_t Command{0};
+  uintptr_t Version{TCopyDataMessage::Version1};
+  uintptr_t Command{static_cast<uintptr_t>(-1)};
 
   union
   {
@@ -650,7 +650,7 @@ struct TCopyDataMessage
     } Refresh;
   };
 
-  TCopyDataMessage()
+  TCopyDataMessage() noexcept
   {
     Version = TCopyDataMessage::Version1;
     Command = static_cast<unsigned int>(-1);
@@ -664,11 +664,11 @@ public:
     TCustomCommand * ChildCustomCommand, const UnicodeString CustomCommandName, const UnicodeString HelpKeyword) noexcept;
 
 protected:
-  virtual void Prompt(intptr_t Index, const UnicodeString Prompt,
+  void Prompt(intptr_t Index, const UnicodeString Prompt,
     UnicodeString &Value) const override;
-  virtual void Execute(const UnicodeString Command,
+  void Execute(const UnicodeString Command,
     UnicodeString &Value) const override;
-  virtual void PatternHint(intptr_t Index, UnicodeString Pattern) override;
+  void PatternHint(intptr_t Index, UnicodeString Pattern) override;
 
 private:
   UnicodeString FCustomCommandName;
@@ -713,57 +713,31 @@ private:
   void SetHint(UnicodeString value);
   void BalloonCancelled();
 };
-//---------------------------------------------------------------------------
-class TConsole
-{
-public:
-  virtual ~TConsole() {};
-  virtual void Print(UnicodeString Str, bool FromBeginning = false, bool Error = false) = 0;
-  void PrintLine(const UnicodeString & Str = UnicodeString(), bool Error = false);
-  virtual bool Input(UnicodeString & Str, bool Echo, unsigned int Timer) = 0;
-  virtual int Choice(
-    UnicodeString Options, int Cancel, int Break, int Continue, int Timeouted, bool Timeouting, unsigned int Timer,
-    UnicodeString Message) = 0;
-  virtual bool PendingAbort() = 0;
-  virtual void SetTitle(UnicodeString Title) = 0;
-  virtual bool LimitedOutput() = 0;
-  virtual bool LiveOutput() = 0;
-  virtual bool NoInteractiveInput() = 0;
-  virtual void WaitBeforeExit() = 0;
-  virtual bool CommandLineOnly() = 0;
-  virtual bool WantsProgress() = 0;
-  virtual void Progress(TScriptProgress & Progress) = 0;
-  virtual UnicodeString FinalLogMessage() = 0;
-};
-//---------------------------------------------------------------------------
-int HandleException(TConsole * Console, Exception & E);
-//---------------------------------------------------------------------------
-enum { RESULT_SUCCESS = 0, RESULT_ANY_ERROR = 1 };
-//---------------------------------------------------------------------------
-class TConsole
-{
-public:
-  virtual ~TConsole() {};
-  virtual void Print(UnicodeString Str, bool FromBeginning = false, bool Error = false) = 0;
-  void PrintLine(const UnicodeString & Str = UnicodeString(), bool Error = false);
-  virtual bool Input(UnicodeString & Str, bool Echo, unsigned int Timer) = 0;
-  virtual int Choice(
-    UnicodeString Options, int Cancel, int Break, int Continue, int Timeouted, bool Timeouting, unsigned int Timer,
-    UnicodeString Message) = 0;
-  virtual bool PendingAbort() = 0;
-  virtual void SetTitle(UnicodeString Title) = 0;
-  virtual bool LimitedOutput() = 0;
-  virtual bool LiveOutput() = 0;
-  virtual bool NoInteractiveInput() = 0;
-  virtual void WaitBeforeExit() = 0;
-  virtual bool CommandLineOnly() = 0;
-  virtual bool WantsProgress() = 0;
-  virtual void Progress(TScriptProgress & Progress) = 0;
-  virtual UnicodeString FinalLogMessage() = 0;
-};
-//---------------------------------------------------------------------------
-int HandleException(TConsole * Console, Exception & E);
-//---------------------------------------------------------------------------
-enum { RESULT_SUCCESS = 0, RESULT_ANY_ERROR = 1 };
-//---------------------------------------------------------------------------
 #endif // #if 0
+//---------------------------------------------------------------------------
+class TConsole
+{
+public:
+  virtual ~TConsole() = default;
+  virtual void Print(UnicodeString Str, bool FromBeginning = false, bool Error = false) = 0;
+  void PrintLine(const UnicodeString & Str = UnicodeString(), bool Error = false);
+  virtual bool Input(UnicodeString & Str, bool Echo, unsigned int Timer) = 0;
+  virtual int Choice(
+    UnicodeString Options, int Cancel, int Break, int Continue, int Timeouted, bool Timeouting, unsigned int Timer,
+    UnicodeString Message) = 0;
+  virtual bool PendingAbort() = 0;
+  virtual void SetTitle(UnicodeString Title) = 0;
+  virtual bool LimitedOutput() = 0;
+  virtual bool LiveOutput() = 0;
+  virtual bool NoInteractiveInput() = 0;
+  virtual void WaitBeforeExit() = 0;
+  virtual bool CommandLineOnly() = 0;
+  virtual bool WantsProgress() = 0;
+//  virtual void Progress(TScriptProgress & Progress) = 0;
+  virtual UnicodeString FinalLogMessage() = 0;
+};
+//---------------------------------------------------------------------------
+int HandleException(TConsole * Console, Exception & E);
+//---------------------------------------------------------------------------
+enum { RESULT_SUCCESS = 0, RESULT_ANY_ERROR = 1 };
+//---------------------------------------------------------------------------

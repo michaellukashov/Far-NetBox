@@ -1,4 +1,4 @@
-
+//---------------------------------------------------------------------------
 #pragma once
 //---------------------------------------------------------------------------
 #include <rdestl/vector.h>
@@ -59,7 +59,7 @@ public:
     const TParams *Params, bool RecurseInclude, bool &ImplicitMatch) const;
 
   __property UnicodeString Masks = { read = FStr, write = SetMasks };
-  RWProperty<UnicodeString> Masks{nb::bind(&TFileMasks::GetMasks, this),nb::bind(&TFileMasks::SetMasks, this)};
+  RWProperty<UnicodeString> Masks{nb::bind(&TFileMasks::GetMasks, this), nb::bind(&TFileMasks::SetMasks, this)};
 
   __property TStrings *IncludeFileMasksStr = { read = GetMasksStr, index = MASK_INDEX(false, true) };
   __property TStrings *ExcludeFileMasksStr = { read = GetMasksStr, index = MASK_INDEX(false, false) };
@@ -115,9 +115,9 @@ private:
       Close,
     };
 
-    TMaskBoundary HighSizeMask;
+    TMaskBoundary HighSizeMask{None};
     int64_t HighSize{0};
-    TMaskBoundary LowSizeMask;
+    TMaskBoundary LowSizeMask{None};
     int64_t LowSize{0};
 
     TMaskBoundary HighModificationMask;
@@ -205,15 +205,15 @@ class NB_CORE_EXPORT TInteractiveCustomCommand : public TCustomCommand
 {
   NB_DISABLE_COPY(TInteractiveCustomCommand)
 public:
-  explicit TInteractiveCustomCommand(TCustomCommand *ChildCustomCommand);
+  explicit TInteractiveCustomCommand(TCustomCommand *ChildCustomCommand) noexcept;
 
 protected:
   virtual void Prompt(intptr_t Index, const UnicodeString Prompt,
     UnicodeString &Value) const;
   virtual void Execute(const UnicodeString Command,
     UnicodeString &Value) const;
-  virtual intptr_t PatternLen(const UnicodeString Command, intptr_t Index) const override;
-  virtual bool PatternReplacement(intptr_t Index, const UnicodeString Pattern,
+  intptr_t PatternLen(const UnicodeString Command, intptr_t Index) const override;
+  bool PatternReplacement(intptr_t Index, const UnicodeString Pattern,
     UnicodeString &Replacement, bool &Delimit) const override;
   void ParsePromptPattern(
     const UnicodeString Pattern, UnicodeString &Prompt, UnicodeString &Default, bool &Delimit) const;
@@ -227,12 +227,12 @@ class TTerminal;
 struct NB_CORE_EXPORT TCustomCommandData : public TObject
 {
 public:
-  TCustomCommandData();
-  explicit TCustomCommandData(const TCustomCommandData &Data);
-  explicit TCustomCommandData(TTerminal *Terminal);
+  TCustomCommandData() noexcept;
+  explicit TCustomCommandData(const TCustomCommandData &Data) noexcept;
+  explicit TCustomCommandData(TTerminal *Terminal) noexcept;
   explicit TCustomCommandData(
     TSessionData *SessionData, const UnicodeString AUserName,
-    const UnicodeString APassword);
+    const UnicodeString APassword) noexcept;
 
   __property TSessionData *SessionData = { read = GetSessionData };
   ROProperty<TSessionData *> SessionData{nb::bind(&TCustomCommandData::GetSessionData, this)};
@@ -258,9 +258,9 @@ public:
     const UnicodeString AFileName, const UnicodeString FileList) noexcept;
   virtual ~TFileCustomCommand() noexcept = default;
 
-  virtual void Validate(const UnicodeString Command) override;
-  virtual void ValidatePattern(const UnicodeString Command,
-    intptr_t Index, intptr_t Len, wchar_t PatternCmd, void *Arg);
+  void Validate(const UnicodeString Command) override;
+  void ValidatePattern(const UnicodeString Command,
+    intptr_t Index, intptr_t Len, wchar_t PatternCmd, void *Arg) override;
 
   bool IsFileListCommand(const UnicodeString Command) const;
   virtual bool IsFileCommand(const UnicodeString Command) const;
@@ -269,8 +269,8 @@ public:
   bool IsPasswordCommand(const UnicodeString Command) const;
 
 protected:
-  virtual intptr_t PatternLen(const UnicodeString Command, intptr_t Index) const override;
-  virtual bool PatternReplacement(intptr_t Index, const UnicodeString Pattern,
+  intptr_t PatternLen(const UnicodeString Command, intptr_t Index) const override;
+  bool PatternReplacement(intptr_t Index, const UnicodeString Pattern,
     UnicodeString &Replacement, bool &Delimit) const override;
 
 private:

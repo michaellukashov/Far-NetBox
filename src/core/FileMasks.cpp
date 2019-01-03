@@ -996,7 +996,7 @@ void TCustomCommand::ValidatePattern(const UnicodeString /*Command*/,
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 TInteractiveCustomCommand::TInteractiveCustomCommand(
-  TCustomCommand *ChildCustomCommand)
+  TCustomCommand *ChildCustomCommand) noexcept
 {
   FChildCustomCommand = ChildCustomCommand;
 }
@@ -1108,23 +1108,23 @@ bool TInteractiveCustomCommand::PatternReplacement(intptr_t Index, const Unicode
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-TCustomCommandData::TCustomCommandData()
+TCustomCommandData::TCustomCommandData() noexcept
 {
 }
 
-TCustomCommandData::TCustomCommandData(const TCustomCommandData &Data)
+TCustomCommandData::TCustomCommandData(const TCustomCommandData &Data) noexcept
 {
   this->operator=(Data);
 }
 //---------------------------------------------------------------------------
-TCustomCommandData::TCustomCommandData(TTerminal *Terminal)
+TCustomCommandData::TCustomCommandData(TTerminal *Terminal) noexcept
 {
   Init(Terminal->GetSessionData(), Terminal->TerminalGetUserName(), Terminal->GetPassword(),
   Terminal->GetSessionInfo().HostKeyFingerprintSHA256);
 }
 //---------------------------------------------------------------------------
 TCustomCommandData::TCustomCommandData(
-  TSessionData *SessionData, const UnicodeString AUserName, const UnicodeString APassword)
+  TSessionData *SessionData, const UnicodeString AUserName, const UnicodeString APassword) noexcept
 {
   Init(SessionData, AUserName, APassword, UnicodeString());
 }
