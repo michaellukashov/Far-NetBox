@@ -1645,10 +1645,10 @@ DWORD FindNext(TSearchRec &Rec)
 
 DWORD FindClose(TSearchRec &Rec)
 {
-  const DWORD Result = 0;
+  DWORD Result = 0;
   if (Rec.FindHandle != INVALID_HANDLE_VALUE)
   {
-    ::FindClose(Rec.FindHandle);
+    Result = FALSE != ::FindClose(Rec.FindHandle);
     Rec.FindHandle = INVALID_HANDLE_VALUE;
   }
   return Result;

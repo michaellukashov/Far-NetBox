@@ -110,12 +110,8 @@ public:
   static inline bool classof(const Exception *Obj) { return Obj->is(OBJECT_CLASS_EAbort); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_EAbort) || Exception::is(Kind); }
 public:
-  explicit EAbort(const UnicodeString What) noexcept : Exception(OBJECT_CLASS_EAbort, What)
-  {
-  }
-  explicit EAbort(TObjectClassId Kind, const UnicodeString What) noexcept : Exception(Kind, What)
-  {
-  }
+  explicit EAbort(const UnicodeString What) noexcept : Exception(OBJECT_CLASS_EAbort, What) {}
+  explicit EAbort(TObjectClassId Kind, const UnicodeString What) noexcept : Exception(Kind, What) {}
 };
 
 NB_DEFINE_CLASS_ID(EAccessViolation);
@@ -125,9 +121,7 @@ public:
   static inline bool classof(const Exception *Obj) { return Obj->is(OBJECT_CLASS_EAccessViolation); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_EAccessViolation) || Exception::is(Kind); }
 public:
-  explicit EAccessViolation(const UnicodeString What) noexcept : Exception(OBJECT_CLASS_EAccessViolation, What)
-  {
-  }
+  explicit EAccessViolation(const UnicodeString What) noexcept : Exception(OBJECT_CLASS_EAccessViolation, What) {}
 };
 
 NB_DEFINE_CLASS_ID(EFileNotFoundError);
@@ -137,9 +131,7 @@ public:
   static inline bool classof(const Exception *Obj) { return Obj->is(OBJECT_CLASS_EFileNotFoundError); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_EFileNotFoundError) || Exception::is(Kind); }
 public:
-  EFileNotFoundError() noexcept : Exception(OBJECT_CLASS_EFileNotFoundError, L"")
-  {
-  }
+  EFileNotFoundError() noexcept : Exception(OBJECT_CLASS_EFileNotFoundError, L"") {}
 };
 
 NB_DEFINE_CLASS_ID(EOSError);
@@ -149,7 +141,7 @@ public:
   static inline bool classof(const Exception *Obj) { return Obj->is(OBJECT_CLASS_EOSError); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_EOSError) || Exception::is(Kind); }
 public:
-  explicit EOSError(const UnicodeString Msg, DWORD Code) :
+  explicit EOSError(const UnicodeString Msg, DWORD Code) noexcept :
     Exception(OBJECT_CLASS_EOSError, Msg),
     ErrorCode(Code)
   {
@@ -334,25 +326,25 @@ NB_CORE_EXPORT UnicodeString ChangeFileExt(const UnicodeString AFileName, const 
 NB_CORE_EXPORT UnicodeString ExtractFileExt(const UnicodeString AFileName);
 NB_CORE_EXPORT UnicodeString ExpandUNCFileName(const UnicodeString AFileName);
 
-typedef WIN32_FIND_DATA TWin32FindData;
-typedef UnicodeString TFileName;
+using TWin32FindData = WIN32_FIND_DATA;
+using TFileName = UnicodeString;
 
 struct NB_CORE_EXPORT TSystemTime
 {
-  Word wYear;
-  Word wMonth;
-  Word wDayOfWeek;
-  Word wDay;
-  Word wHour;
-  Word wMinute;
-  Word wSecond;
-  Word wMilliseconds;
+  Word wYear{0};
+  Word wMonth{0};
+  Word wDayOfWeek{0};
+  Word wDay{0};
+  Word wHour{0};
+  Word wMinute{0};
+  Word wSecond{0};
+  Word wMilliseconds{0};
 };
 
 struct NB_CORE_EXPORT TFileTime
 {
-  Integer LowTime;
-  Integer HighTime;
+  Integer LowTime{0};
+  Integer HighTime{0};
 };
 
 struct NB_CORE_EXPORT TSearchRec : public TObject
@@ -386,10 +378,7 @@ NB_DEFINE_CLASS_ID(EConvertError);
 class NB_CORE_EXPORT EConvertError : public Exception
 {
 public:
-  explicit EConvertError(const UnicodeString Msg) noexcept :
-    Exception(OBJECT_CLASS_EConvertError, Msg)
-  {
-  }
+  explicit EConvertError(const UnicodeString Msg) noexcept : Exception(OBJECT_CLASS_EConvertError, Msg) {}
 };
 
 NB_CORE_EXPORT UnicodeString UnixExcludeLeadingBackslash(const UnicodeString APath);
@@ -464,14 +453,14 @@ private:
 template<typename F, typename P>
 class scope_guard1
 {
+  NB_DISABLE_COPY(scope_guard1)
 public:
-  explicit scope_guard1(F&& f, P p) : m_f(std::move(f)), m_p(p) {}
+  explicit scope_guard1(F&& f, P p) noexcept : m_f(std::move(f)), m_p(p) {}
   ~scope_guard1() { m_f(m_p); }
 
 private:
   const F m_f;
   P m_p;
-  NB_DISABLE_COPY(scope_guard1)
 };
 
 class make_scope_guard
@@ -587,13 +576,7 @@ public:
   int m_Count{std::uncaught_exceptions()}; // int... "a camel is a horse designed by a committee" :(
 };
 
-enum class scope_type
-{
-  exit,
-  fail,
-
-  success
-};
+enum class scope_type { exit, fail, success };
 
 template<typename F, scope_type Type>
 class scope_guard0
