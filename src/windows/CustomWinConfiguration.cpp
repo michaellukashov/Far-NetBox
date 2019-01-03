@@ -178,9 +178,9 @@ void __fastcall TCustomWinConfiguration::SaveData(
   TGUIConfiguration::SaveData(Storage, All);
 
   // duplicated from core\configuration.cpp
-  #define KEY(TYPE, VAR) Storage->Write ## TYPE(LASTELEM(UnicodeString(TEXT(#VAR))), VAR)
+#define KEY(TYPE, VAR) Storage->Write ## TYPE(LASTELEM(UnicodeString(TEXT(#VAR))), VAR)
   REGCONFIG(true);
-  #undef KEY
+#undef KEY
 
   if (FHistory->Count > 0)
   {

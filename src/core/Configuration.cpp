@@ -273,6 +273,10 @@ UnicodeString TConfiguration::PropertyToKey(const UnicodeString AProperty)
 #define BLOCK(KEY, CANCREATE, BLOCK) \
   if (Storage->OpenSubKey(KEY, CANCREATE, true)) \
     { SCOPE_EXIT { Storage->CloseSubKey(); }; { BLOCK } }
+#undef KEY4
+#undef KEY3
+#undef KEY2
+#undef KEY
 #define KEY(TYPE, VAR) KEYEX(TYPE, VAR, VAR)
 #define KEY2(TYPE, VAR) KEYEX2(TYPE, VAR, VAR)
 #define KEY3(TYPE, VAR) KEYEX3(TYPE, VAR, VAR)
