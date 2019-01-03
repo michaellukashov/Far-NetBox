@@ -229,9 +229,9 @@ protected:
 public:
   virtual void SaveData(THierarchicalStorage * Storage, bool All) override;
   virtual void LoadData(THierarchicalStorage * Storage) override;
-  virtual LCID GetLocale();
+  virtual LCID GetLocale() const;
   void SetLocale(LCID Value);
-  LCID GetLocaleSafe() { return GetLocale(); }
+  LCID GetLocaleSafe() const { return GetLocale(); }
   void SetLocaleSafe(LCID Value);
   UnicodeString GetAppliedLocaleHex() const;
   virtual HINSTANCE LoadNewResourceModule(LCID Locale,
@@ -271,7 +271,7 @@ public:
   bool DoSaveCopyParam(THierarchicalStorage * Storage, const TCopyParamType * CopyParam, const TCopyParamType * Defaults);
 
 public:
-  TGUIConfiguration(TObjectClassId Kind) noexcept;
+  explicit TGUIConfiguration(TObjectClassId Kind) noexcept;
   virtual ~TGUIConfiguration() noexcept;
   void ConfigurationInit() override;
   virtual void Default() override;

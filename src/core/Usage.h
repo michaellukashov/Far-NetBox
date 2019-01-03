@@ -32,7 +32,7 @@ public:
   __property bool Collect = { read = FCollect, write = SetCollect };
 
 private:
-  typedef rde::map<UnicodeString, intptr_t> TCounters;
+  typedef rde::map<UnicodeString, int> TCounters;
   std::unique_ptr<TCriticalSection> FCriticalSection;
   TConfiguration * FConfiguration{nullptr};
   TCounters FPeriodCounters;

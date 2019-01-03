@@ -494,8 +494,8 @@ void __fastcall MaintenanceTask()
   CoreMaintenanceTask();
 }
 //---------------------------------------------------------------------------
-typedef std::vector<HWND> THandles;
-typedef std::map<unsigned long, THandles> TProcesses;
+typedef rde::vector<HWND> THandles;
+typedef rde::map<unsigned long, THandles> TProcesses;
 //---------------------------------------------------------------------------
 BOOL __stdcall EnumOtherInstances(HWND Handle, LPARAM AParam)
 {

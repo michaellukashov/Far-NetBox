@@ -36,7 +36,7 @@ class TCallbackGuard;
 class TParallelOperation;
 class TCollectedFileList;
 struct TLocalFileHandle;
-typedef std::vector<int64_t> TCalculatedSizes;
+using TCalculatedSizes = rde::vector<int64_t>;
 //---------------------------------------------------------------------------
 #if 0
 typedef void __fastcall (__closure *TQueryUserEvent)
@@ -269,9 +269,9 @@ friend class TSecondaryTerminal;
 friend class TRetryOperationLoop;
 
 private:
-  std::unique_ptr<TSessionData> FSessionData{nullptr};
-  std::unique_ptr<TSessionLog> FLog{nullptr};
-  std::unique_ptr<TActionLog> FActionLog{nullptr};
+  std::unique_ptr<TSessionData> FSessionData;
+  std::unique_ptr<TSessionLog> FLog;
+  std::unique_ptr<TActionLog> FActionLog;
   TConfiguration *FConfiguration{nullptr};
   UnicodeString FCurrentDirectory;
   UnicodeString FLockDirectory;
@@ -308,7 +308,7 @@ private:
   bool FAutoReadDirectory{false};
   bool FReadingCurrentDirectory{false};
   bool *FClosedOnCompletion{nullptr};
-  TSessionStatus FStatus;
+  TSessionStatus FStatus{};
   intptr_t FOpening{0};
   RawByteString FRememberedPassword;
   TPromptKind FRememberedPasswordKind{};
@@ -1001,7 +1001,7 @@ struct TOverwriteFileParams
 };
 #endif
 //---------------------------------------------------------------------------
-typedef rde::vector<TDateTime> TDateTimes;
+using TDateTimes = rde::vector<TDateTime>;
 //---------------------------------------------------------------------------
 NB_DEFINE_CLASS_ID(TMakeLocalFileListParams);
 struct NB_CORE_EXPORT TMakeLocalFileListParams : public TObject
@@ -1088,7 +1088,7 @@ private:
     bool Dir{false};
     bool Recursed{false};
   };
-  typedef rde::vector<TFileData> TFileDataList;
+  using TFileDataList = rde::vector<TFileData>;
   TFileDataList FList;
 };
 //---------------------------------------------------------------------------

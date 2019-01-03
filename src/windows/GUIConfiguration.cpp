@@ -965,7 +965,7 @@ LCID TGUIConfiguration::InternalLocale() const
   return Result;
 }
 //---------------------------------------------------------------------------
-LCID TGUIConfiguration::GetLocale()
+LCID TGUIConfiguration::GetLocale() const
 {
   return FLocale;
 }

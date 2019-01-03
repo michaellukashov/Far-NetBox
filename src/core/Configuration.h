@@ -42,7 +42,7 @@ private:
   TNotifyEvent FOnChange;
 
   mutable void *FApplicationInfo{nullptr};
-  std::unique_ptr<TUsage> FUsage{nullptr};
+  std::unique_ptr<TUsage> FUsage;
   bool FLogging{false};
   bool FPermanentLogging{false};
   UnicodeString FLogFileName;
