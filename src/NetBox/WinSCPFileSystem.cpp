@@ -236,24 +236,22 @@ NB_DEFINE_CLASS_ID(TKeepAliveThread);
 class TKeepAliveThread : public TSimpleThread
 {
 public:
-  explicit TKeepAliveThread(TWinSCPFileSystem *FileSystem, const TDateTime &Interval);
+  explicit TKeepAliveThread(TWinSCPFileSystem *FileSystem, const TDateTime &Interval) noexcept;
 
-  virtual ~TKeepAliveThread()
-  {
-  }
+  virtual ~TKeepAliveThread() noexcept = default;
 
   void InitKeepaliveThread();
   virtual void Execute() override;
   virtual void Terminate() override;
 
 private:
-  TWinSCPFileSystem *FFileSystem;
+  TWinSCPFileSystem *FFileSystem{nullptr};
   TDateTime FInterval;
-  HANDLE FEvent;
+  HANDLE FEvent{};
 };
 
 TKeepAliveThread::TKeepAliveThread(TWinSCPFileSystem *FileSystem,
-  const TDateTime &Interval) :
+  const TDateTime &Interval) noexcept :
   TSimpleThread(OBJECT_CLASS_TKeepAliveThread),
   FFileSystem(FileSystem),
   FInterval(Interval),
