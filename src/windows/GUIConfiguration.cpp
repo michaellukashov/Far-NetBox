@@ -23,9 +23,9 @@ const intptr_t ccRemoteFiles = ccUser << 3;
 const intptr_t ccShowResultsInMsgBox = ccUser << 4;
 const intptr_t ccSet = 0x80000000;
 //---------------------------------------------------------------------------
-static const uintptr_t AdditionaLanguageMask = 0xFFFFFF00;
-static const UnicodeString AdditionaLanguagePrefix(L"XX");
-static const UnicodeString TranslationsSubFolder(L"Translations");
+constexpr const uintptr_t AdditionaLanguageMask = 0xFFFFFF00;
+static const UnicodeString AdditionaLanguagePrefix("XX");
+static const UnicodeString TranslationsSubFolder("Translations");
 //---------------------------------------------------------------------------
 __removed TGUIConfiguration * GUIConfiguration = NULL;
 //---------------------------------------------------------------------------
@@ -751,7 +751,7 @@ void TGUIConfiguration::SaveData(THierarchicalStorage * Storage, bool All)
     Storage->CloseSubKey();
   } end_try__finally
 
-  if (Storage->OpenSubKey(L"Interface\\NewDirectory2", true, true))
+  if (Storage->OpenSubKey("Interface\\NewDirectory2", true, true))
   try__finally
   {
     FNewDirectoryProperties.Save(Storage);
@@ -841,10 +841,10 @@ void TGUIConfiguration::LoadData(THierarchicalStorage * Storage)
       (IsPathToSameFile(ExpandEnvironmentVariables(FPuttyPath), FDefaultPuttyPathOnly) ||
        SysUtulsFileExists(ApiPath(ExpandEnvironmentVariables(FPuttyPath)))))
   {
-    FPuttyPath = FormatCommand(FPuttyPath, L"");
+    FPuttyPath = FormatCommand(FPuttyPath, "");
   }
 
-  if (Storage->OpenSubKey(L"Interface\\NewDirectory2", false, true))
+  if (Storage->OpenSubKey("Interface\\NewDirectory2", false, true))
   try__finally
   {
     FNewDirectoryProperties.Load(Storage);
@@ -911,7 +911,7 @@ HINSTANCE TGUIConfiguration::LoadNewResourceModule(LCID ALocale,
         char(ALocale & ~AdditionaLanguageMask);
     }
 
-    Module = ChangeFileExt(Module, UnicodeString(L".") + LocaleName);
+    Module = ChangeFileExt(Module, UnicodeString(".") + LocaleName);
     // Look for a potential language/country translation
     UnicodeString ModulePath = GetTranslationModule(Module);
     NewInstance = LoadLibraryEx(ModulePath.c_str(), nullptr, LOAD_LIBRARY_AS_DATAFILE);
@@ -1079,7 +1079,7 @@ UnicodeString TGUIConfiguration::AppliedLocaleCopyright() const
   else
   {
     DebugAssert(!FLocaleModuleName.IsEmpty());
-    Result = GetFileFileInfoString(L"LegalCopyright", FLocaleModuleName);
+    Result = GetFileFileInfoString("LegalCopyright", FLocaleModuleName);
   }
   return Result;
 }
@@ -1363,7 +1363,7 @@ void TGUIConfiguration::SetCopyParamIndex(intptr_t Value)
   UnicodeString Name;
   if (Value < 0)
   {
-    Name = L"";
+    Name = "";
   }
   else
   {

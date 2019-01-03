@@ -30,7 +30,7 @@ public:
   TGUICopyParamType() noexcept;
   TGUICopyParamType(const TCopyParamType & Source) noexcept;
   explicit TGUICopyParamType(const TGUICopyParamType &Source) noexcept;
-  virtual ~TGUICopyParamType() = default;
+  virtual ~TGUICopyParamType() noexcept = default;
 
   virtual void Load(THierarchicalStorage * Storage);
   virtual void Save(THierarchicalStorage * Storage, const TCopyParamType * Defaults = nullptr) const;
@@ -56,9 +56,9 @@ protected:
   void GUIAssign(const TGUICopyParamType * Source);
 
 private:
-  bool FQueue;
-  bool FQueueNoConfirmation;
-  bool FQueueParallel;
+  bool FQueue{false};
+  bool FQueueNoConfirmation{false};
+  bool FQueueParallel{false};
 };
 //---------------------------------------------------------------------------
 struct NB_CORE_EXPORT TCopyParamRuleData : public TObject
@@ -155,7 +155,7 @@ public:
 
 private:
   static UnicodeString FInvalidChars;
-  std::unique_ptr<TList> FRules{nullptr};
+  std::unique_ptr<TList> FRules;
   std::unique_ptr<TList> FCopyParams;
   std::unique_ptr<TStrings> FNames;
   mutable std::unique_ptr<TStrings> FNameList;
@@ -219,7 +219,7 @@ private:
   intptr_t FKeepUpToDateChangeDelay{0};
   UnicodeString FChecksumAlg;
   intptr_t FSessionReopenAutoIdle{0};
-  LCID FAppliedLocale;
+  LCID FAppliedLocale{0};
   // Corresponds to FAppliedLocale
   UnicodeString FLocaleModuleName;
 
