@@ -83,7 +83,7 @@ void TFarConfiguration::Saved()
 #define REGCONFIG(CANCREATE) \
   BLOCK("Far", CANCREATE, \
     KEY(Bool,     DisksMenu); \
-    KEY(Integer,  DisksMenuHotKey); \
+    KEY2(Integer,  DisksMenuHotKey); \
     KEY(Bool,     PluginsMenu); \
     KEY(Bool,     PluginsMenuCommands); \
     KEY(String,   CommandPrefixes); \
@@ -103,7 +103,7 @@ void TFarConfiguration::Saved()
     KEY(String,   PuttygenPath); \
     KEY(String,   PageantPath); \
     KEY(String,   ApplyCommandCommand); \
-    KEY(Integer,  ApplyCommandParams); \
+    KEY2(Integer,  ApplyCommandParams); \
     KEY(Bool,     ConfirmSynchronizedBrowsing); \
   )
 
@@ -112,8 +112,12 @@ void TFarConfiguration::SaveData(THierarchicalStorage *Storage, bool All)
   TGUIConfiguration::SaveData(Storage, All);
 
   // duplicated from core\configuration.cpp
+#undef KEY
+#undef KEY2
 #define KEY(TYPE, VAR) Storage->Write ## TYPE(LASTELEM(MB2W(#VAR)), Get##VAR())
+#define KEY2(TYPE, VAR) Storage->Write ## TYPE(LASTELEM(MB2W(#VAR)), nb::ToInt(Get##VAR()))
   REGCONFIG(true);
+#undef KEY2
 #undef KEY
 
   if (Storage->OpenSubKey(L"Bookmarks", /*CanCreate=*/true))
@@ -129,8 +133,12 @@ void TFarConfiguration::LoadData(THierarchicalStorage *Storage)
   TGUIConfiguration::LoadData(Storage);
 
   // duplicated from core\configuration.cpp
+#undef KEY2
+#undef KEY
 #define KEY(TYPE, VAR) Set##VAR(Storage->Read ## TYPE(LASTELEM(MB2W(#VAR)), Get##VAR()))
+#define KEY2(TYPE, VAR) Set##VAR(Storage->Read ## TYPE(LASTELEM(MB2W(#VAR)), nb::ToInt(Get##VAR())))
   REGCONFIG(false);
+#undef KEY2
 #undef KEY
 
   if (Storage->OpenSubKey(L"Bookmarks", false))
