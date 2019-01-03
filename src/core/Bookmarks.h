@@ -9,6 +9,7 @@ class THierarchicalStorage;
 class TBookmarkList;
 class TShortCuts;
 //---------------------------------------------------------------------------
+NB_DEFINE_CLASS_ID(TBookmarks);
 class NB_CORE_EXPORT TBookmarks : public TObject
 {
   NB_DISABLE_COPY(TBookmarks)
@@ -62,7 +63,7 @@ public:
   void Delete(TBookmark *&Bookmark);
   TBookmark *FindByName(const UnicodeString Node, const UnicodeString Name) const;
   TBookmark *FindByShortCut(const TShortCut &ShortCut);
-  virtual void Assign(const TPersistent *Source) override;
+  void Assign(const TPersistent *Source) override;
   void LoadOptions(THierarchicalStorage *Storage);
   void SaveOptions(THierarchicalStorage *Storage) const;
   void ShortCuts(TShortCuts &ShortCuts);
