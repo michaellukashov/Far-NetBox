@@ -8,7 +8,7 @@
 #include "FarPlugin.h"
 #include "CoreMain.h"
 
-TFarConfiguration::TFarConfiguration(TCustomFarPlugin *APlugin) :
+TFarConfiguration::TFarConfiguration(TCustomFarPlugin *APlugin) noexcept :
   TGUIConfiguration(OBJECT_CLASS_TFarConfiguration),
   FFarPlugin(APlugin),
   FBookmarks(std::make_unique<TBookmarks>()),
@@ -18,7 +18,7 @@ TFarConfiguration::TFarConfiguration(TCustomFarPlugin *APlugin) :
   CacheFarSettings();
 }
 
-TFarConfiguration::~TFarConfiguration()
+TFarConfiguration::~TFarConfiguration() noexcept
 {
 //  SAFE_DESTROY(FBookmarks);
 }

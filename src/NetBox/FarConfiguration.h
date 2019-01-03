@@ -14,8 +14,8 @@ public:
   static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TFarConfiguration); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TFarConfiguration) || TGUIConfiguration::is(Kind); }
 public:
-  explicit TFarConfiguration(TCustomFarPlugin *APlugin);
-  virtual ~TFarConfiguration();
+  explicit TFarConfiguration(TCustomFarPlugin *APlugin) noexcept;
+  virtual ~TFarConfiguration() noexcept;
 
   virtual void Load();
   virtual void Save(bool All, bool Explicit);
@@ -106,7 +106,7 @@ private:
   bool FEditorUploadSameOptions{false};
   bool FEditorUploadOnSave{false};
   bool FEditorMultiple{false};
-  bool FQueueBeep{false};
+  bool FQueueBeep{true};
   UnicodeString FPageantPath;
   UnicodeString FPuttygenPath;
   UnicodeString FApplyCommandCommand;
@@ -123,5 +123,4 @@ private:
   intptr_t FarConfirmations() const;
 };
 
-TFarConfiguration *GetFarConfiguration();
-
+NB_CORE_EXPORT TFarConfiguration *GetFarConfiguration();
