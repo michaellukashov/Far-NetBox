@@ -202,33 +202,33 @@ NB_CORE_EXPORT void FileOperationLoopCustom(TTerminal *Terminal,
 //---------------------------------------------------------------------------
 enum TCurrentFSProtocol { cfsUnknown, cfsSCP, cfsSFTP, cfsFTP, cfsFTPS, cfsWebDAV, cfsS3 };
 //---------------------------------------------------------------------------
-const int cpDelete = 0x01;
-const int cpTemporary = 0x04;
-const int cpNoConfirmation = 0x08;
-const int cpNewerOnly = 0x10;
-const int cpAppend = 0x20;
-const int cpResume = 0x40;
-const int cpNoRecurse = 0x80;
+constexpr const int cpDelete = 0x01;
+constexpr const int cpTemporary = 0x04;
+constexpr const int cpNoConfirmation = 0x08;
+constexpr const int cpNewerOnly = 0x10;
+constexpr const int cpAppend = 0x20;
+constexpr const int cpResume = 0x40;
+constexpr const int cpNoRecurse = 0x80;
 //---------------------------------------------------------------------------
-const int ccApplyToDirectories = 0x01;
-const int ccRecursive = 0x02;
-const int ccUser = 0x100;
+constexpr const int ccApplyToDirectories = 0x01;
+constexpr const int ccRecursive = 0x02;
+constexpr const int ccUser = 0x100;
 //---------------------------------------------------------------------------
-const int csIgnoreErrors = 0x01;
-const int csStopOnFirstFile = 0x02;
-const int csDisallowTemporaryTransferFiles = 0x04;
+constexpr const int csIgnoreErrors = 0x01;
+constexpr const int csStopOnFirstFile = 0x02;
+constexpr const int csDisallowTemporaryTransferFiles = 0x04;
 //---------------------------------------------------------------------------
-const int ropNoReadDirectory = 0x02;
+constexpr const int ropNoReadDirectory = 0x02;
 //---------------------------------------------------------------------------
-const int boDisableNeverShowAgain = 0x01;
-const int bpMonospacedFont = 0x01;
+constexpr const int boDisableNeverShowAgain = 0x01;
+constexpr const int bpMonospacedFont = 0x01;
 //---------------------------------------------------------------------------
-const int tfNone = 0x00;
-const int tfFirstLevel = 0x01;
-const int tfNewDirectory = 0x02;
-const int tfAutoResume = 0x04;
-const int tfPreCreateDir = 0x08;
-const int tfUseFileTransferAny = 0x10;
+constexpr const int tfNone = 0x00;
+constexpr const int tfFirstLevel = 0x01;
+constexpr const int tfNewDirectory = 0x02;
+constexpr const int tfAutoResume = 0x04;
+constexpr const int tfPreCreateDir = 0x08;
+constexpr const int tfUseFileTransferAny = 0x10;
 //---------------------------------------------------------------------------
 NB_DEFINE_CLASS_ID(TTerminal);
 class NB_CORE_EXPORT TTerminal : /*public TObject,*/ public TSessionUI
@@ -917,7 +917,7 @@ protected:
   virtual TTerminal *GetPasswordSource() override;
 
 private:
-  TTerminal *FMainTerminal;
+  TTerminal *FMainTerminal{nullptr};
 };
 //---------------------------------------------------------------------------
 NB_DEFINE_CLASS_ID(TTerminalList);
@@ -1010,7 +1010,7 @@ public:
   static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TMakeLocalFileListParams); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TMakeLocalFileListParams) || TObject::is(Kind); }
 public:
-  TMakeLocalFileListParams() : TObject(OBJECT_CLASS_TMakeLocalFileListParams), FileList(nullptr), FileTimes(nullptr), IncludeDirs(false), Recursive(false) {}
+  TMakeLocalFileListParams() : TObject(OBJECT_CLASS_TMakeLocalFileListParams) {}
   TStrings *FileList{nullptr};
   TDateTimes *FileTimes{nullptr};
   bool IncludeDirs{false};
@@ -1046,18 +1046,18 @@ class NB_CORE_EXPORT TRobustOperationLoop : public TObject
 {
   NB_DISABLE_COPY(TRobustOperationLoop)
 public:
-  explicit TRobustOperationLoop(TTerminal *Terminal, TFileOperationProgressType *OperationProgress, bool *AnyTransfer = nullptr);
-  ~TRobustOperationLoop();
+  explicit TRobustOperationLoop(TTerminal *Terminal, TFileOperationProgressType *OperationProgress, bool *AnyTransfer = nullptr) noexcept;
+  ~TRobustOperationLoop() noexcept;
   bool TryReopen(Exception &E);
   bool ShouldRetry() const;
   bool Retry();
 
 private:
-  TTerminal *FTerminal;
-  TFileOperationProgressType *FOperationProgress;
-  bool FRetry;
-  bool *FAnyTransfer;
-  bool FPrevAnyTransfer;
+  TTerminal *FTerminal{nullptr};
+  TFileOperationProgressType *FOperationProgress{nullptr};
+  bool FRetry{false};
+  bool *FAnyTransfer{nullptr};
+  bool FPrevAnyTransfer{false};
   TDateTime FStart;
 };
 //---------------------------------------------------------------------------
@@ -1068,7 +1068,7 @@ public:
   static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TCollectedFileList); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TCollectedFileList) || TObject::is(Kind); }
 public:
-  TCollectedFileList();
+  TCollectedFileList() noexcept;
   intptr_t Add(const UnicodeString AFileName, TObject *Object, bool Dir);
   void DidNotRecurse(intptr_t Index);
   void Delete(intptr_t Index);
@@ -1084,9 +1084,9 @@ private:
   {
   CUSTOM_MEM_ALLOCATION_IMPL
     UnicodeString FileName;
-    TObject *Object;
-    bool Dir;
-    bool Recursed;
+    TObject *Object{nullptr};
+    bool Dir{false};
+    bool Recursed{false};
   };
   typedef rde::vector<TFileData> TFileDataList;
   TFileDataList FList;
@@ -1095,8 +1095,8 @@ private:
 class TParallelOperation : public TObject
 {
 public:
-  explicit TParallelOperation(TOperationSide Side);
-  ~TParallelOperation();
+  explicit TParallelOperation(TOperationSide Side) noexcept;
+  ~TParallelOperation() noexcept;
 
   void Init(
     TStrings *AFiles, const UnicodeString ATargetDir, const TCopyParamType *CopyParam, intptr_t AParams,
@@ -1131,21 +1131,21 @@ private:
   {
     CUSTOM_MEM_ALLOCATION_IMPL
     UnicodeString OppositePath;
-    bool Exists;
+    bool Exists{false};
   };
 
   std::unique_ptr<TStrings> FFileList;
-  intptr_t FIndex;
+  intptr_t FIndex{0};
   typedef rde::map<UnicodeString, TDirectoryData> TDirectories;
   TDirectories FDirectories;
   UnicodeString FTargetDir;
-  const TCopyParamType *FCopyParam;
-  intptr_t FParams;
-  bool FProbablyEmpty;
-  intptr_t FClients;
+  const TCopyParamType *FCopyParam{nullptr};
+  intptr_t FParams{0};
+  bool FProbablyEmpty{false};
+  intptr_t FClients{0};
   std::unique_ptr<TCriticalSection> FSection;
-  TFileOperationProgressType *FMainOperationProgress;
-  TOperationSide FSide;
+  TFileOperationProgressType *FMainOperationProgress{nullptr};
+  TOperationSide FSide{osLocal};
   UnicodeString FMainName;
 
   bool CheckEnd(TCollectedFileList *Files);
@@ -1153,21 +1153,21 @@ private:
 //---------------------------------------------------------------------------
 struct TLocalFileHandle
 {
-  TLocalFileHandle();
-  ~TLocalFileHandle();
+  TLocalFileHandle() noexcept;
+  ~TLocalFileHandle() noexcept;
 
   void Dismiss();
   void Close();
   void Release();
 
   UnicodeString FileName;
-  HANDLE Handle;
-  DWORD Attrs;
-  bool Directory;
+  HANDLE Handle{0};
+  DWORD Attrs{0};
+  bool Directory{false};
   TDateTime Modification;
-  int64_t MTime;
-  int64_t ATime;
-  int64_t Size;
+  int64_t MTime{0};
+  int64_t ATime{0};
+  int64_t Size{0};
 };
 //---------------------------------------------------------------------------
 class TLocalFile : public TObject

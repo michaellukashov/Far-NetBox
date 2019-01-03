@@ -499,7 +499,7 @@ bool TCallbackGuard::Verify(Exception *E)
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-TRobustOperationLoop::TRobustOperationLoop(TTerminal *Terminal, TFileOperationProgressType *OperationProgress, bool *AnyTransfer) :
+TRobustOperationLoop::TRobustOperationLoop(TTerminal *Terminal, TFileOperationProgressType *OperationProgress, bool *AnyTransfer) noexcept :
   FTerminal(Terminal),
   FOperationProgress(OperationProgress),
   FRetry(false),
@@ -514,7 +514,7 @@ TRobustOperationLoop::TRobustOperationLoop(TTerminal *Terminal, TFileOperationPr
   }
 }
 //---------------------------------------------------------------------------
-TRobustOperationLoop::~TRobustOperationLoop()
+TRobustOperationLoop::~TRobustOperationLoop() noexcept
 {
   if (FAnyTransfer != nullptr)
   {
@@ -663,7 +663,7 @@ bool TRetryOperationLoop::Retry()
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-TCollectedFileList::TCollectedFileList() :
+TCollectedFileList::TCollectedFileList() noexcept :
   TObject(OBJECT_CLASS_TCollectedFileList)
 {
 }
@@ -715,7 +715,7 @@ bool TCollectedFileList::IsRecursed(intptr_t Index) const
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-TParallelOperation::TParallelOperation(TOperationSide Side) :
+TParallelOperation::TParallelOperation(TOperationSide Side) noexcept :
   FIndex(0),
   FCopyParam(nullptr),
   FParams(0),
@@ -745,7 +745,7 @@ void TParallelOperation::Init(
   FIndex = 0;
 }
 //---------------------------------------------------------------------------
-TParallelOperation::~TParallelOperation()
+TParallelOperation::~TParallelOperation() noexcept
 {
   WaitFor();
 }
@@ -8627,7 +8627,7 @@ void TTerminalList::RecryptPasswords()
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-TLocalFileHandle::TLocalFileHandle() :
+TLocalFileHandle::TLocalFileHandle() noexcept :
   Handle(0),
   Attrs(0),
   MTime(0),
@@ -8637,7 +8637,7 @@ TLocalFileHandle::TLocalFileHandle() :
 {
 }
 //---------------------------------------------------------------------------
-TLocalFileHandle::~TLocalFileHandle()
+TLocalFileHandle::~TLocalFileHandle() noexcept
 {
   Release();
 }
