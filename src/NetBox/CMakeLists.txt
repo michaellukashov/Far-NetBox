@@ -51,6 +51,7 @@ endif()
 #-------------------------------------------------------------------------------
 
 include(${CMAKE_ROOT}/Modules/CMakeDetermineSystem.cmake)
+include(${CMAKE_SOURCE_DIR}/cmake/ucm.cmake)
 #include(CMakeDetermineCXXCompiler)
 message("System: ${CMAKE_SYSTEM_NAME}, PROJECT_PLATFORM: ${PROJECT_PLATFORM}, BUILD_DIR: ${BUILD_DIR}, CMAKE_COMPILER_IS_MINGW = ${CMAKE_COMPILER_IS_MINGW}")
 message("MSVC_VERSION: ${MSVC_VERSION}")
@@ -96,8 +97,6 @@ if(MSVC)
 set(NETBOX_C_WARNING_FLAGS "")
 set(NETBOX_CXX_WARNING_FLAGS "")
 set(NETBOX_CXX_FLAGS "/std:c++17 /MP2 /Zi")
-set(NETBOX_FLAGS_RELEASE "${NETBOX_FLAGS_RELEASE} /Gm- /MT -Ox -Ob1 -Oi -Os -GF -GS- -Gy /fp:fast")
-set(NETBOX_FLAGS_DEBUG "${NETBOX_FLAGS_DEBUG} /Gm- /Od /MTd /GS /RTC1")
 
 elseif(CMAKE_COMPILER_IS_MINGW)
 
@@ -1675,3 +1674,19 @@ add_custom_command(TARGET NetBox POST_BUILD
 add_dependencies(copy_to_plugin_dir create_plugin_dir )
 add_dependencies(NetBox copy_to_plugin_dir)
 #-------------------------------------------------------------------------------
+ucm_set_runtime(STATIC)
+ucm_add_flags(CXX /EHsc /std:c++17)
+ucm_add_flags(CXX /Zi CONFIG Debug)
+ucm_add_flags(CXX C /MP /Gy /Zi CONFIG Release)
+#/Ob2 /GR
+ucm_add_flags(CXX C /GS- /fp:fast /O2 /Oy /GA /GF /Gw /GL CONFIG Release)
+#/Oy - omit frame pointers
+#/Oi - enable intrinsic functions
+ucm_add_flags(CXX C /Gm- -Ox -Ob1 -Oi -Os -GF CONFIG Release) # static runtime
+ucm_add_flags(CXX C /MT CONFIG Release) # static runtime
+ucm_add_linker_flags(MODULE SHARED EXE /DEBUG /OPT:REF /OPT:ICF=6 /NXCOMPAT /DYNAMICBASE /MANIFEST:NO CONFIG Release)
+ucm_add_linker_flags(MODULE STATIC SHARED EXE /LTCG CONFIG Release)
+ucm_print_flags()
+#-------------------------------------------------------------------------------
+#set(NETBOX_FLAGS_RELEASE "${NETBOX_FLAGS_RELEASE} /Gm- /MT -Ox -Ob1 -Oi -Os -GF -GS- -Gy /fp:fast")
+#set(NETBOX_FLAGS_DEBUG "${NETBOX_FLAGS_DEBUG} /Gm- /Od /MTd /GS /RTC1")
