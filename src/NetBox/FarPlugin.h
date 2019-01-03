@@ -515,8 +515,8 @@ public:
   void AddSeparator(bool Visible = true);
   virtual intptr_t Add(const UnicodeString Text, bool Visible = true);
 
-  virtual void Clear() override;
-  virtual void Delete(intptr_t Index) override;
+  void Clear() override;
+  void Delete(intptr_t Index) override;
 
   intptr_t GetItemFocused() const { return FItemFocused; }
   void SetItemFocused(intptr_t Value);
@@ -529,7 +529,7 @@ public:
   bool GetFlag(intptr_t Index, uintptr_t Flag) const;
 
 protected:
-  virtual void SetObj(intptr_t Index, TObject *AObject) override;
+  void SetObj(intptr_t Index, TObject *AObject) override;
 
 private:
   intptr_t FItemFocused{0};
@@ -572,15 +572,15 @@ extern TCustomFarPlugin *FarPlugin;
 class TGlobalFunctions : public TGlobals
 {
 public:
-  virtual HINSTANCE GetInstanceHandle() const override;
-  virtual UnicodeString GetMsg(intptr_t Id) const override;
-  virtual UnicodeString GetCurrDirectory() const override;
-  virtual UnicodeString GetStrVersionNumber() const override;
-  virtual bool InputDialog(const UnicodeString ACaption,
+  HINSTANCE GetInstanceHandle() const override;
+  UnicodeString GetMsg(intptr_t Id) const override;
+  UnicodeString GetCurrDirectory() const override;
+  UnicodeString GetStrVersionNumber() const override;
+  bool InputDialog(const UnicodeString ACaption,
     const UnicodeString APrompt, UnicodeString &Value, const UnicodeString HelpKeyword,
     TStrings *History, bool PathInput,
     TInputDialogInitializeEvent OnInitialize, bool Echo) override;
-  virtual uintptr_t MoreMessageDialog(const UnicodeString AMessage,
+  uintptr_t MoreMessageDialog(const UnicodeString AMessage,
     TStrings *MoreMessages, TQueryType Type, uintptr_t Answers,
     const TMessageParams *Params) override;
 };
