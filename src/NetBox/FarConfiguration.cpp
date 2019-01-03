@@ -71,6 +71,7 @@ void TFarConfiguration::Saved()
 }
 
 // duplicated from core\configuration.cpp
+#undef LASTELEM
 #define LASTELEM(ELEM) \
   ELEM.SubString(ELEM.LastDelimiter(L".>")+1, ELEM.Length() - ELEM.LastDelimiter(L".>"))
 #define BLOCK(KEY, CANCREATE, BLOCK) \

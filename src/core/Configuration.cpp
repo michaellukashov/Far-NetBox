@@ -266,6 +266,7 @@ UnicodeString TConfiguration::PropertyToKey(const UnicodeString AProperty)
   intptr_t P = AProperty.LastDelimiter(L".>");
   return AProperty.SubString(P + 1, AProperty.Length() - P);
 }
+#undef LASTELEM
 #define LASTELEM(ELEM) \
   ELEM.SubString(ELEM.LastDelimiter(L".>") + 1, ELEM.Length() - ELEM.LastDelimiter(L".>"))
 //---------------------------------------------------------------------------

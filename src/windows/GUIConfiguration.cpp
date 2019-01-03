@@ -707,10 +707,9 @@ void TGUIConfiguration::SaveData(THierarchicalStorage * Storage, bool All)
   TConfiguration::SaveData(Storage, All);
 
   // duplicated from core\configuration.cpp
-#ifndef LASTELEM
+#undef LASTELEM
 #define LASTELEM(ELEM) \
   ELEM.SubString(ELEM.LastDelimiter(L".>") + 1, ELEM.Length() - ELEM.LastDelimiter(L".>"))
-#endif
 #undef KEYEX
 #undef KEYEX2
 #define KEYEX(TYPE, NAME, VAR) Storage->Write ## TYPE(LASTELEM(UnicodeString(#NAME)), Get ## VAR())
