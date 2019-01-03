@@ -665,7 +665,7 @@ static UnicodeString PropertyToKey(UnicodeString Property)
 #undef REGCONFIG
 
 #define REGCONFIG(CANCREATE) \
-  BLOCK(L"Interface", CANCREATE, \
+  BLOCK("Interface", CANCREATE, \
     KEY(Bool,     ContinueOnError); \
     KEY(Bool,     ConfirmCommandSession); \
     KEY(Integer,  SynchronizeParams); \

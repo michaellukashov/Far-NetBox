@@ -147,7 +147,7 @@ void __fastcall TCustomWinConfiguration::Saved()
 #define BLOCK(KEY, CANCREATE, BLOCK) \
   if (Storage->OpenSubKey(KEY, CANCREATE, true)) try { BLOCK } __finally { Storage->CloseSubKey(); }
 #define REGCONFIG(CANCREATE) \
-  BLOCK(L"Interface", CANCREATE, \
+  BLOCK("Interface", CANCREATE, \
     KEY(Integer,  Interface); \
     KEY(Bool,     ConfirmExitOnCompletion); \
     KEY(Bool,     SynchronizeSummary); \
@@ -156,18 +156,18 @@ void __fastcall TCustomWinConfiguration::Saved()
     KEY(Bool,     CopyShortCutHintShown); \
     KEY(Bool,     HttpForWebDAV); \
   ) \
-  BLOCK(L"Interface\\SynchronizeChecklist", CANCREATE, \
+  BLOCK("Interface\\SynchronizeChecklist", CANCREATE, \
     KEY(String,   SynchronizeChecklist.WindowParams); \
     KEY(String,   SynchronizeChecklist.ListParams); \
   ); \
-  BLOCK(L"Interface\\FindFile", CANCREATE, \
+  BLOCK("Interface\\FindFile", CANCREATE, \
     KEY(String,   FindFile.WindowParams); \
     KEY(String,   FindFile.ListParams); \
   ); \
-  BLOCK(L"Interface\\ConsoleWin", CANCREATE, \
+  BLOCK("Interface\\ConsoleWin", CANCREATE, \
     KEY(String,   ConsoleWin.WindowSize); \
   ); \
-  BLOCK(L"Interface\\LoginDialog", CANCREATE, \
+  BLOCK("Interface\\LoginDialog", CANCREATE, \
     KEY(String,   LoginDialog.WindowSize); \
     KEY(Integer,  LoginDialog.SiteSearch); \
   ); \

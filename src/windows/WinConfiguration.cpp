@@ -941,10 +941,10 @@ THierarchicalStorage * TWinConfiguration::CreateScpStorage(bool & SessionList)
   if (Storage->OpenSubKey(KEY, CANCREATE, true)) try { BLOCK } __finally { Storage->CloseSubKey(); }
 #define KEY(TYPE, VAR) KEYEX(TYPE, VAR, PropertyToKey(TEXT(#VAR)))
 #define REGCONFIG(CANCREATE) \
-  BLOCK(L"Interface", CANCREATE, \
-    KEYEX(Integer,DoubleClickAction, L"CopyOnDoubleClick"); \
+  BLOCK("Interface", CANCREATE, \
+    KEYEX(Integer,DoubleClickAction, "CopyOnDoubleClick"); \
     KEY(Bool,     CopyOnDoubleClickConfirmation); \
-    KEYEX(Integer, DDTransferConfirmation, L"DDTransferConfirmation2"); \
+    KEYEX(Integer, DDTransferConfirmation, "DDTransferConfirmation2"); \
     KEY(String,   DDTemporaryDirectory); \
     KEY(String,   DDDrives); \
     KEY(Bool,     DDWarnLackOfTempSpace); \
@@ -991,10 +991,10 @@ THierarchicalStorage * TWinConfiguration::CreateScpStorage(bool & SessionList)
     KEY(Bool,     AutoOpenInPutty); \
     KEY(Bool,     RefreshRemotePanel); \
     KEY(DateTime, RefreshRemotePanelInterval); \
-    KEYEX(String, PanelFont.FontName, L"PanelFontName"); \
-    KEYEX(Integer,PanelFont.FontSize, L"PanelFontSize"); \
-    KEYEX(Integer,PanelFont.FontStyle, L"PanelFontStyle"); \
-    KEYEX(Integer,PanelFont.FontCharset, L"PanelFontCharset"); \
+    KEYEX(String, PanelFont.FontName, "PanelFontName"); \
+    KEYEX(Integer,PanelFont.FontSize, "PanelFontSize"); \
+    KEYEX(Integer,PanelFont.FontStyle, "PanelFontStyle"); \
+    KEYEX(Integer,PanelFont.FontCharset, "PanelFontCharset"); \
     KEY(Bool,     NaturalOrderNumericalSorting); \
     KEY(Bool,     FullRowSelect); \
     KEY(Bool,     OfferedEditorAutoConfig); \
@@ -1019,14 +1019,14 @@ THierarchicalStorage * TWinConfiguration::CreateScpStorage(bool & SessionList)
     KEY(Integer,  RunsSinceLastTip); \
     KEY(Bool,     HonorDrivePolicy); \
     KEY(Integer,  LastMachineInstallations); \
-    KEYEX(String, FExtensionsDeleted, L"ExtensionsDeleted"); \
-    KEYEX(String, FExtensionsOrder, L"ExtensionsOrder"); \
-    KEYEX(String, FExtensionsShortCuts, L"ExtensionsShortCuts"); \
+    KEYEX(String, FExtensionsDeleted, "ExtensionsDeleted"); \
+    KEYEX(String, FExtensionsOrder, "ExtensionsOrder"); \
+    KEYEX(String, FExtensionsShortCuts, "ExtensionsShortCuts"); \
     KEY(Bool,     TimeoutShellOperations); \
     KEY(Bool,     TimeoutShellIconRetrieval); \
   ); \
-  BLOCK(L"Interface\\Editor", CANCREATE, \
-    KEYEX(String,   Editor.Font.FontName, L"FontName2"); \
+  BLOCK("Interface\\Editor", CANCREATE, \
+    KEYEX(String,   Editor.Font.FontName, "FontName2"); \
     KEY(Integer,  Editor.Font.FontSize); \
     KEY(Integer,  Editor.Font.FontStyle); \
     KEY(Integer,  Editor.Font.FontCharset); \
@@ -1047,7 +1047,7 @@ THierarchicalStorage * TWinConfiguration::CreateScpStorage(bool & SessionList)
     KEY(Bool,     Editor.WarnOnEncodingFallback); \
     KEY(Bool,     Editor.WarnOrLargeFileSize); \
   ); \
-  BLOCK(L"Interface\\QueueView", CANCREATE, \
+  BLOCK("Interface\\QueueView", CANCREATE, \
     KEY(Integer,  QueueView.Height); \
     KEY(Integer,  QueueView.HeightPixelsPerInch); \
     KEY(String,   QueueView.Layout); \
@@ -1056,7 +1056,7 @@ THierarchicalStorage * TWinConfiguration::CreateScpStorage(bool & SessionList)
     KEY(Bool,     QueueView.ToolBar); \
     KEY(Bool,     QueueView.Label); \
   ); \
-  BLOCK(L"Interface\\Updates", CANCREATE, \
+  BLOCK("Interface\\Updates", CANCREATE, \
     KEY(Integer,  FUpdates.Period); \
     KEY(DateTime, FUpdates.LastCheck); \
     KEY(Integer,  FUpdates.HaveResults); \
@@ -1076,16 +1076,16 @@ THierarchicalStorage * TWinConfiguration::CreateScpStorage(bool & SessionList)
     KEY(String,   FUpdates.Results.Url); \
     KEY(String,   FUpdates.Results.UrlButton); \
     KEY(String,   FUpdates.Results.NewsUrl); \
-    KEYEX(Integer,FUpdates.Results.NewsSize.Width, L"NewsWidth"); \
-    KEYEX(Integer,FUpdates.Results.NewsSize.Height, L"NewsHeight"); \
+    KEYEX(Integer,FUpdates.Results.NewsSize.Width, "NewsWidth"); \
+    KEYEX(Integer,FUpdates.Results.NewsSize.Height, "NewsHeight"); \
     KEY(String,   FUpdates.Results.DownloadUrl); \
     KEY(Int64,    FUpdates.Results.DownloadSize); \
     KEY(String,   FUpdates.Results.DownloadSha256); \
     KEY(String,   FUpdates.Results.AuthenticationError); \
     KEY(Bool,     FUpdates.Results.OpenGettingStarted); \
     KEY(String,   FUpdates.Results.DownloadingUrl); \
-    KEYEX(Integer,FUpdates.Results.TipsSize.Width, L"TipsWidth"); \
-    KEYEX(Integer,FUpdates.Results.TipsSize.Height, L"TipsHeight"); \
+    KEYEX(Integer,FUpdates.Results.TipsSize.Width, "TipsWidth"); \
+    KEYEX(Integer,FUpdates.Results.TipsSize.Height, "TipsHeight"); \
     KEY(String,   FUpdates.Results.TipsUrl); \
     KEY(String,   FUpdates.Results.Tips); \
     KEY(Integer,  FUpdates.Results.TipsIntervalDays); \
@@ -1093,7 +1093,7 @@ THierarchicalStorage * TWinConfiguration::CreateScpStorage(bool & SessionList)
     KEY(String,   FUpdates.DotNetVersion); \
     KEY(String,   FUpdates.ConsoleVersion); \
   ); \
-  BLOCK(L"Interface\\Explorer", CANCREATE, \
+  BLOCK("Interface\\Explorer", CANCREATE, \
     KEYEX(String,  ScpExplorer.ToolbarsLayout, ToolbarsLayoutKey); \
     KEY(String,  ScpExplorer.ToolbarsButtons); \
     KEY(String,  ScpExplorer.DirViewParams); \
@@ -1107,7 +1107,7 @@ THierarchicalStorage * TWinConfiguration::CreateScpStorage(bool & SessionList)
     KEY(Integer, ScpExplorer.DriveViewWidth); \
     KEY(Integer, ScpExplorer.DriveViewWidthPixelsPerInch); \
   ); \
-  BLOCK(L"Interface\\Commander", CANCREATE, \
+  BLOCK("Interface\\Commander", CANCREATE, \
     KEYEX(String,  ScpCommander.ToolbarsLayout, ToolbarsLayoutKey); \
     KEY(String,  ScpCommander.ToolbarsButtons); \
     KEY(Integer, ScpCommander.CurrentPanel); \
@@ -1116,7 +1116,7 @@ THierarchicalStorage * TWinConfiguration::CreateScpStorage(bool & SessionList)
     KEY(Bool,    ScpCommander.SessionsTabs); \
     KEY(Bool,    ScpCommander.StatusBar); \
     KEY(String,  ScpCommander.WindowParams); \
-    KEYEX(Integer, ScpCommander.NortonLikeMode, L"ExplorerStyleSelection"); \
+    KEYEX(Integer, ScpCommander.NortonLikeMode, "ExplorerStyleSelection"); \
     KEY(Bool,    ScpCommander.PreserveLocalDirectory); \
     KEY(Bool,    ScpCommander.CompareByTime); \
     KEY(Bool,    ScpCommander.CompareBySize); \
@@ -1124,7 +1124,7 @@ THierarchicalStorage * TWinConfiguration::CreateScpStorage(bool & SessionList)
     KEY(Bool,    ScpCommander.ExplorerKeyboardShortcuts); \
     KEY(Bool,    ScpCommander.SystemContextMenu); \
   ); \
-  BLOCK(L"Interface\\Commander\\LocalPanel", CANCREATE, \
+  BLOCK("Interface\\Commander\\LocalPanel", CANCREATE, \
     KEY(String,  ScpCommander.LocalPanel.DirViewParams); \
     KEY(Bool,    ScpCommander.LocalPanel.StatusBar); \
     KEY(Bool,    ScpCommander.LocalPanel.DriveView); \
@@ -1133,7 +1133,7 @@ THierarchicalStorage * TWinConfiguration::CreateScpStorage(bool & SessionList)
     KEY(Integer, ScpCommander.LocalPanel.DriveViewWidth); \
     KEY(Integer, ScpCommander.LocalPanel.DriveViewWidthPixelsPerInch); \
   ); \
-  BLOCK(L"Interface\\Commander\\RemotePanel", CANCREATE, \
+  BLOCK("Interface\\Commander\\RemotePanel", CANCREATE, \
     KEY(String,  ScpCommander.RemotePanel.DirViewParams); \
     KEY(Bool,    ScpCommander.RemotePanel.StatusBar); \
     KEY(Bool,    ScpCommander.RemotePanel.DriveView); \
@@ -1142,9 +1142,9 @@ THierarchicalStorage * TWinConfiguration::CreateScpStorage(bool & SessionList)
     KEY(Integer, ScpCommander.RemotePanel.DriveViewWidth); \
     KEY(Integer, ScpCommander.RemotePanel.DriveViewWidthPixelsPerInch); \
   ); \
-  BLOCK(L"Security", CANCREATE, \
-    KEYEX(Bool,  FUseMasterPassword, L"UseMasterPassword"); \
-    KEYEX(String,FMasterPasswordVerifier, L"MasterPasswordVerifier"); \
+  BLOCK("Security", CANCREATE, \
+    KEYEX(Bool,  FUseMasterPassword, "UseMasterPassword"); \
+    KEYEX(String,FMasterPasswordVerifier, "MasterPasswordVerifier"); \
   );
 //---------------------------------------------------------------------------
 void TWinConfiguration::SaveData(THierarchicalStorage * Storage, bool All)
@@ -1152,9 +1152,9 @@ void TWinConfiguration::SaveData(THierarchicalStorage * Storage, bool All)
   TCustomWinConfiguration::SaveData(Storage, All);
 
   // duplicated from core\configuration.cpp
-  #define KEYEX(TYPE, VAR, NAME) Storage->Write ## TYPE(NAME, VAR)
+#define KEYEX(TYPE, VAR, NAME) Storage->Write ## TYPE(NAME, VAR)
   REGCONFIG(true);
-  #undef KEYEX
+#undef KEYEX
 
   if (Storage->OpenSubKey(L"Bookmarks", true))
   {
