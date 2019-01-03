@@ -50,11 +50,11 @@ void TFarConfiguration::Default()
   SetStatusColumnTypesDetailed("NR");
   SetStatusColumnWidthsDetailed("0");
 
-  SetApplyCommandCommand(L"");
+  SetApplyCommandCommand("");
   SetApplyCommandParams(0);
 
-  SetPuttygenPath(FormatCommand(::ExtractFilePath(ModuleFileName()) + "putty\\puttygen.exe", L""));
-  SetPageantPath(FormatCommand(::ExtractFilePath(ModuleFileName()) + "putty\\pageant.exe", L""));
+  SetPuttygenPath(FormatCommand(::ExtractFilePath(ModuleFileName()) + "putty\\puttygen.exe", ""));
+  SetPageantPath(FormatCommand(::ExtractFilePath(ModuleFileName()) + "putty\\pageant.exe", ""));
 
   FBookmarks->Clear();
 }
@@ -120,7 +120,7 @@ void TFarConfiguration::SaveData(THierarchicalStorage *Storage, bool All)
 #undef KEY2
 #undef KEY
 
-  if (Storage->OpenSubKey(L"Bookmarks", /*CanCreate=*/true))
+  if (Storage->OpenSubKey("Bookmarks", /*CanCreate=*/true))
   {
     FBookmarks->Save(Storage, All);
 
@@ -141,7 +141,7 @@ void TFarConfiguration::LoadData(THierarchicalStorage *Storage)
 #undef KEY2
 #undef KEY
 
-  if (Storage->OpenSubKey(L"Bookmarks", false))
+  if (Storage->OpenSubKey("Bookmarks", false))
   {
     FBookmarks->Load(Storage);
     Storage->CloseSubKey();
