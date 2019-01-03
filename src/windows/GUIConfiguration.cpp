@@ -709,7 +709,7 @@ void TGUIConfiguration::SaveData(THierarchicalStorage * Storage, bool All)
   // duplicated from core\configuration.cpp
 #ifndef LASTELEM
 #define LASTELEM(ELEM) \
-  ELEM.SubString(ELEM.LastDelimiter(L".>")+1, ELEM.Length() - ELEM.LastDelimiter(L".>"))
+  ELEM.SubString(ELEM.LastDelimiter(L".>") + 1, ELEM.Length() - ELEM.LastDelimiter(L".>"))
 #endif
 #undef KEYEX
 #undef KEYEX2

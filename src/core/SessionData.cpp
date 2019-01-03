@@ -78,7 +78,7 @@ static TDateTime SecToDateTime(intptr_t Sec)
   return TDateTime(double(Sec) / SecsPerDay);
 }
 //--- TSessionData ----------------------------------------------------
-TSessionData::TSessionData(const UnicodeString AName) :
+TSessionData::TSessionData(const UnicodeString AName) noexcept :
   TNamedObject(OBJECT_CLASS_TSessionData, AName),
   FIEProxyConfig(nullptr)
 {
@@ -86,7 +86,7 @@ TSessionData::TSessionData(const UnicodeString AName) :
   FModified = true;
 }
 //---------------------------------------------------------------------
-TSessionData::~TSessionData()
+TSessionData::~TSessionData() noexcept
 {
   if (nullptr != FIEProxyConfig)
   {
@@ -986,6 +986,7 @@ void TSessionData::Load(THierarchicalStorage *Storage, bool PuttyImport)
 void TSessionData::DoSave(THierarchicalStorage *Storage,
   bool PuttyExport, const TSessionData *Default, bool DoNotEncryptPasswords)
 {
+  nb::used(Default);
   // Same as in TCopyParamType::Save
 #undef WRITE_DATA_EX
 #define WRITE_DATA_EX(TYPE, NAME, PROPERTY, CONV) \

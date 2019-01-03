@@ -248,14 +248,14 @@ void TUsage::SetMax(const UnicodeString AKey, intptr_t Value,
   TCounters::iterator i = Counters.find(AKey);
   if (i != Counters.end())
   {
-    if (Value > i->second)
+    if ((int)Value > i->second)
     {
-      i->second = Value;
+      i->second = (int)Value;
     }
   }
   else
   {
-    Counters[AKey] = Value;
+    Counters[AKey] = (int)Value;
   }
 }
 //---------------------------------------------------------------------------

@@ -14,7 +14,7 @@ static intptr_t NamedObjectSortProc(const void *Item1, const void *Item2)
   return get_as<TNamedObject>(Item1)->Compare(get_as<TNamedObject>(Item2));
 }
 //--- TNamedObject ----------------------------------------------------------
-TNamedObject::TNamedObject(TObjectClassId Kind, const UnicodeString AName) :
+TNamedObject::TNamedObject(TObjectClassId Kind, const UnicodeString AName) noexcept :
   TPersistent(Kind),
   FHidden(false)
 {
@@ -81,7 +81,7 @@ void TNamedObject::MakeUniqueIn(TNamedObjectList *List)
 //--- TNamedObjectList ------------------------------------------------------
 const UnicodeString TNamedObjectList::HiddenPrefix = "_!_";
 //---------------------------------------------------------------------------
-TNamedObjectList::TNamedObjectList(TObjectClassId Kind) :
+TNamedObjectList::TNamedObjectList(TObjectClassId Kind) noexcept :
   TObjectList(Kind),
   FHiddenCount(0),
   FAutoSort(true),

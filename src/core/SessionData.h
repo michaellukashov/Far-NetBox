@@ -563,8 +563,8 @@ public:
   __property UnicodeString InternalStorageKey = { read = GetInternalStorageKey };
 
 public:
-  explicit TSessionData(const UnicodeString AName);
-  virtual ~TSessionData();
+  explicit TSessionData(const UnicodeString AName) noexcept;
+  virtual ~TSessionData() noexcept;
   TSessionData *Clone() const;
   void Default();
   void NonPersistant();
@@ -967,18 +967,18 @@ private:
   void AdjustHostName(UnicodeString &HostName, const UnicodeString Prefix) const;
 
 private:
-  intptr_t FSFTPMinPacketSize;
-  bool FFtpDupFF;
-  bool FFtpUndupFF;
-  bool FTunnelConfigured;
+  intptr_t FSFTPMinPacketSize{0};
+  bool FFtpDupFF{false};
+  bool FFtpUndupFF{false};
+  bool FTunnelConfigured{false};
   UnicodeString FCodePage;
-  mutable uintptr_t FCodePageAsNumber;
-  bool FFtpAllowEmptyPassword;
-  TLoginType FLoginType;
-  intptr_t FNumberOfRetries;
-  uintptr_t FSessionVersion;
+  mutable uintptr_t FCodePageAsNumber{0};
+  bool FFtpAllowEmptyPassword{false};
+  TLoginType FLoginType{};
+  intptr_t FNumberOfRetries{0};
+  uintptr_t FSessionVersion{0};
 
-  mutable TIEProxyConfig *FIEProxyConfig;
+  mutable TIEProxyConfig *FIEProxyConfig{nullptr};
 };
 //---------------------------------------------------------------------------
 NB_DEFINE_CLASS_ID(TStoredSessionList);

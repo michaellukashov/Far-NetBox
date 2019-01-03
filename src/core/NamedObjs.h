@@ -23,17 +23,17 @@ public:
   void SetName(const UnicodeString Value);
   bool GetHidden() const { return FHidden; }
 
-  explicit TNamedObject() : TPersistent(OBJECT_CLASS_TNamedObject), FHidden(false) {}
-  explicit TNamedObject(TObjectClassId Kind) : TPersistent(Kind), FHidden(false) {}
-  explicit TNamedObject(TObjectClassId Kind, const UnicodeString AName);
-  virtual ~TNamedObject() {}
+  explicit TNamedObject() noexcept : TPersistent(OBJECT_CLASS_TNamedObject), FHidden(false) {}
+  explicit TNamedObject(TObjectClassId Kind) noexcept : TPersistent(Kind), FHidden(false) {}
+  explicit TNamedObject(TObjectClassId Kind, const UnicodeString AName) noexcept;
+  virtual ~TNamedObject() noexcept = default;
 
   bool IsSameName(const UnicodeString AName) const;
   virtual intptr_t Compare(const TNamedObject *Other) const;
   void MakeUniqueIn(TNamedObjectList *List);
 private:
   UnicodeString FName;
-  bool FHidden;
+  bool FHidden{false};
 
   __removed void SetName(const UnicodeString value);
 };
@@ -50,9 +50,9 @@ public:
   virtual void Notify(void *Ptr, TListNotification Action) override;
   void SetCount(intptr_t Value);
 protected:
-  intptr_t FHiddenCount;
-  bool FAutoSort;
-  bool FControlledAdd;
+  intptr_t FHiddenCount{0};
+  bool FAutoSort{false};
+  bool FControlledAdd{false};
   void Recount();
 public:
   static const UnicodeString HiddenPrefix;
@@ -60,7 +60,7 @@ public:
   bool GetAutoSort() const { return FAutoSort; }
   void SetAutoSort(bool Value) { FAutoSort = Value; }
 
-  explicit TNamedObjectList(TObjectClassId Kind = OBJECT_CLASS_TNamedObjectList);
+  explicit TNamedObjectList(TObjectClassId Kind = OBJECT_CLASS_TNamedObjectList) noexcept;
   void AlphaSort();
   intptr_t Add(TObject *AObject);
   virtual const TNamedObject * AtObject(intptr_t Index) const;
