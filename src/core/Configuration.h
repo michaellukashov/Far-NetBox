@@ -170,7 +170,7 @@ public:
   void SetStorage(TStorage Value);
 
 protected:
-  mutable TStorage FStorage{};
+  mutable TStorage FStorage{stDetect};
   mutable TCriticalSection FCriticalSection;
 
 public:

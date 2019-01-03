@@ -23,19 +23,19 @@ const wchar_t * AutoSwitchNames = L"On;Off;Auto";
 const wchar_t * NotAutoSwitchNames = L"Off;On;Auto";
 //---------------------------------------------------------------------------
 // See https://www.iana.org/assignments/hash-function-text-names/hash-function-text-names.xhtml
-const UnicodeString Sha1ChecksumAlg(L"sha-1");
-const UnicodeString Sha224ChecksumAlg(L"sha-224");
-const UnicodeString Sha256ChecksumAlg(L"sha-256");
-const UnicodeString Sha384ChecksumAlg(L"sha-384");
-const UnicodeString Sha512ChecksumAlg(L"sha-512");
-const UnicodeString Md5ChecksumAlg(L"md5");
+const UnicodeString Sha1ChecksumAlg("sha-1");
+const UnicodeString Sha224ChecksumAlg("sha-224");
+const UnicodeString Sha256ChecksumAlg("sha-256");
+const UnicodeString Sha384ChecksumAlg("sha-384");
+const UnicodeString Sha512ChecksumAlg("sha-512");
+const UnicodeString Md5ChecksumAlg("md5");
 // Not defined by IANA
-const UnicodeString Crc32ChecksumAlg(L"crc32");
+const UnicodeString Crc32ChecksumAlg("crc32");
 //---------------------------------------------------------------------------
-const UnicodeString SshFingerprintType(L"ssh");
-const UnicodeString TlsFingerprintType(L"tls");
+const UnicodeString SshFingerprintType("ssh");
+const UnicodeString TlsFingerprintType("tls");
 //---------------------------------------------------------------------------
-const UnicodeString HttpsCertificateStorageKey(L"HttpsCertificates");
+const UnicodeString HttpsCertificateStorageKey("HttpsCertificates");
 //---------------------------------------------------------------------------
 TConfiguration::TConfiguration(TObjectClassId Kind) noexcept :
   TObject(Kind),
@@ -106,7 +106,7 @@ TConfiguration::TConfiguration(TObjectClassId Kind) noexcept :
 #endif // if defined(_MSC_VER) && !defined(__clang__)
   }
 
-  FDefaultRandomSeedFile = ::IncludeTrailingBackslash(RandomSeedPath) + L"winscp.rnd";
+  FDefaultRandomSeedFile = ::IncludeTrailingBackslash(RandomSeedPath) + "winscp.rnd";
 }
 //---------------------------------------------------------------------------
 void TConfiguration::Default()
@@ -277,7 +277,7 @@ UnicodeString TConfiguration::PropertyToKey(const UnicodeString AProperty)
 #define KEY2(TYPE, VAR) KEYEX2(TYPE, VAR, VAR)
 #undef REGCONFIG
 #define REGCONFIG(CANCREATE) \
-  BLOCK(L"Interface", CANCREATE, \
+  BLOCK("Interface", CANCREATE, \
     KEY(String,   RandomSeedFile); \
     KEY(String,   PuttyRegistryStorageKey); \
     KEY(Bool,     ConfirmOverwriting); \
@@ -300,7 +300,7 @@ UnicodeString TConfiguration::PropertyToKey(const UnicodeString AProperty)
     KEY(Bool,     CollectUsage); \
     KEY(Integer,  SessionReopenAutoMaximumNumberOfRetries); \
   ); \
-  BLOCK(L"Logging", CANCREATE, \
+  BLOCK("Logging", CANCREATE, \
     KEYEX(Bool,  PermanentLogging, Logging); \
     KEYEX(String,PermanentLogFileName, LogFileName); \
     KEY(Bool,    LogFileAppend); \
@@ -317,8 +317,8 @@ void TConfiguration::SaveData(THierarchicalStorage *Storage, bool /*All*/)
 #define KEYEX(TYPE, NAME, VAR) Storage->Write ## TYPE(LASTELEM(UnicodeString(#NAME)), Get ## VAR())
 #define KEYEX2(TYPE, NAME, VAR) Storage->Write ## TYPE(LASTELEM(UnicodeString(#NAME)), VAR)
   REGCONFIG(true);
-  #undef KEYEX2
-  #undef KEYEX
+#undef KEYEX2
+#undef KEYEX
 
   if (Storage->OpenSubKey("Usage", true))
   {
@@ -481,8 +481,8 @@ void TConfiguration::LoadData(THierarchicalStorage * Storage)
 #define KEYEX(TYPE, NAME, VAR) Set ## VAR(Storage->Read ## TYPE(LASTELEM(UnicodeString(#NAME)), Get ## VAR()))
 #define KEYEX2(TYPE, NAME, VAR) VAR = Storage->Read ## TYPE(LASTELEM(UnicodeString(#NAME)), VAR)
   REGCONFIG(false);
-  #undef KEYEX2
-  #undef KEYEX
+#undef KEYEX2
+#undef KEYEX
 
   if (Storage->OpenSubKey("Usage", false))
   {
@@ -493,8 +493,8 @@ void TConfiguration::LoadData(THierarchicalStorage * Storage)
   if (FPermanentLogActions && FPermanentActionsLogFileName.IsEmpty() &&
       FPermanentLogging && !FPermanentLogFileName.IsEmpty())
   {
-     FPermanentActionsLogFileName = FPermanentLogFileName;
-     FPermanentLogging = false;
+    FPermanentActionsLogFileName = FPermanentLogFileName;
+    FPermanentLogging = false;
     FPermanentLogFileName.Clear();
   }
 }
@@ -518,7 +518,7 @@ void TConfiguration::LoadFrom(THierarchicalStorage * Storage)
 //---------------------------------------------------------------------------
 UnicodeString TConfiguration::GetRegistryStorageOverrideKey() const
 {
-  return GetRegistryStorageKey() + L" Override";
+  return GetRegistryStorageKey() + " Override";
 }
 //---------------------------------------------------------------------------
 UnicodeString TConfiguration::LoadCustomIniFileStorageName()
@@ -528,7 +528,7 @@ UnicodeString TConfiguration::LoadCustomIniFileStorageName()
   RegistryStorage->Init();
   if (RegistryStorage->OpenRootKey(false))
   {
-    Result = RegistryStorage->ReadString(L"IniFile", L"");
+    Result = RegistryStorage->ReadString("IniFile", "");
     RegistryStorage->CloseSubKey();
   }
   RegistryStorage.reset(nullptr);
@@ -588,7 +588,7 @@ void TConfiguration::CopyData(THierarchicalStorage * Source,
             for (intptr_t Index = 0; Index < Names->GetCount(); ++Index)
             {
               Target->WriteString(Names->GetString(Index),
-                Source->ReadString(Names->GetString(Index), L""));
+                Source->ReadString(Names->GetString(Index), ""));
             }
 
             Target->CloseSubKey();
@@ -611,7 +611,7 @@ void TConfiguration::CopyData(THierarchicalStorage * Source,
         for (intptr_t Index = 0; Index < Names->GetCount(); ++Index)
         {
           Target->WriteStringRaw(Names->GetString(Index),
-            Source->ReadStringRaw(Names->GetString(Index), L""));
+            Source->ReadStringRaw(Names->GetString(Index), ""));
         }
 
         Target->CloseSubKey();
@@ -685,11 +685,11 @@ void TConfiguration::GetBannerData(
   std::unique_ptr<THierarchicalStorage> Storage(CreateConfigStorage());
   Storage->SetAccessMode(smRead);
   if (Storage->OpenSubKey(GetConfigurationSubKey(), false) &&
-      Storage->OpenSubKey(L"Banners", false))
+      Storage->OpenSubKey("Banners", false))
   {
-    UnicodeString S = Storage->ReadString(ASessionKey, L"");
+    UnicodeString S = Storage->ReadString(ASessionKey, "");
     ABannerHash = CutToChar(S, L',', true);
-    AParams = StrToIntDef(L"$" + CutToChar(S, L',', true), 0);
+    AParams = StrToIntDef("$" + CutToChar(S, L',', true), 0);
   }
 }
 //---------------------------------------------------------------------------
@@ -709,9 +709,9 @@ void TConfiguration::SetBannerData(
   Storage->SetAccessMode(smReadWrite);
 
   if (Storage->OpenSubKey(GetConfigurationSubKey(), true) &&
-      Storage->OpenSubKey(L"Banners", true))
+      Storage->OpenSubKey("Banners", true))
   {
-    Storage->WriteString(ASessionKey, ABannerHash + L"," + ::UIntToStr(Params));
+    Storage->WriteString(ASessionKey, ABannerHash + "," + ::UIntToStr(Params));
   }
 }
 //---------------------------------------------------------------------------
@@ -760,7 +760,7 @@ UnicodeString TConfiguration::GetLastFingerprint(const UnicodeString ASiteKey, c
     Storage->OpenSubKey("LastFingerprints", false))
   {
     UnicodeString FingerprintKey = FormatFingerprintKey(ASiteKey, AFingerprintType);
-    Result = Storage->ReadString(FingerprintKey, L"");
+    Result = Storage->ReadString(FingerprintKey, "");
   }
   return Result;
 }
@@ -942,7 +942,7 @@ intptr_t TConfiguration::GetCompoundVersion() const
 UnicodeString TConfiguration::ModuleFileName() const
 {
   ThrowNotImplemented(204);
-  return L"";
+  return "";
 }
 //---------------------------------------------------------------------------
 void * TConfiguration::GetFileApplicationInfo(const UnicodeString AFileName) const
@@ -970,38 +970,38 @@ void * TConfiguration::GetApplicationInfo() const
 //---------------------------------------------------------------------------
 UnicodeString TConfiguration::GetFileProductName(const UnicodeString AFileName) const
 {
-  return GetFileFileInfoString(L"ProductName", AFileName);
+  return GetFileFileInfoString("ProductName", AFileName);
 }
 //---------------------------------------------------------------------------
 UnicodeString TConfiguration::GetFileCompanyName(const UnicodeString AFileName) const
 {
   // particularly in IDE build, company name is empty
-  return GetFileFileInfoString(L"CompanyName", AFileName, true);
+  return GetFileFileInfoString("CompanyName", AFileName, true);
 }
 //---------------------------------------------------------------------------
 UnicodeString TConfiguration::GetProductName() const
 {
-  return GetFileProductName(L"");
+  return GetFileProductName("");
 }
 //---------------------------------------------------------------------------
 UnicodeString TConfiguration::GetCompanyName() const
 {
-  return GetFileCompanyName(L"");
+  return GetFileCompanyName("");
 }
 //---------------------------------------------------------------------------
 UnicodeString TConfiguration::GetFileProductVersion(const UnicodeString AFileName) const
 {
-  return TrimVersion(GetFileFileInfoString(L"ProductVersion", AFileName));
+  return TrimVersion(GetFileFileInfoString("ProductVersion", AFileName));
 }
 //---------------------------------------------------------------------------
 UnicodeString TConfiguration::GetFileDescription(const UnicodeString AFileName) const
 {
-  return GetFileFileInfoString(L"FileDescription", AFileName);
+  return GetFileFileInfoString("FileDescription", AFileName);
 }
 //---------------------------------------------------------------------------
 UnicodeString TConfiguration::GetFileProductVersion() const
 {
-  return GetFileProductVersion(L"");
+  return GetFileProductVersion("");
 }
 //---------------------------------------------------------------------------
 UnicodeString TConfiguration::GetReleaseType() const
@@ -1011,11 +1011,11 @@ UnicodeString TConfiguration::GetReleaseType() const
 //---------------------------------------------------------------------------
 bool TConfiguration::GetIsUnofficial() const
 {
-  #ifdef BUILD_OFFICIAL
+#ifdef BUILD_OFFICIAL
   return false;
-  #else
+#else
   return true;
-  #endif
+#endif
 }
 //---------------------------------------------------------------------------
 UnicodeString TConfiguration::GetVersionStr() const
@@ -1123,7 +1123,7 @@ UnicodeString TConfiguration::GetFileVersion(TVSFixedFileInfo * Info) const
   }
   catch (Exception &E)
   {
-    throw ExtException(&E, L"Can't get file version");
+    throw ExtException(&E, "Can't get file version");
   }
 }
 //---------------------------------------------------------------------------
@@ -1194,7 +1194,7 @@ UnicodeString TConfiguration::GetFileFileInfoString(const UnicodeString AKey,
 //---------------------------------------------------------------------------
 UnicodeString TConfiguration::GetFileInfoString(const UnicodeString Key) const
 {
-  return GetFileFileInfoString(Key, L"");
+  return GetFileFileInfoString(Key, "");
 }
 //---------------------------------------------------------------------------
 UnicodeString TConfiguration::GetFileMimeType(const UnicodeString AFileName) const
@@ -1479,9 +1479,9 @@ TStoredSessionList * TConfiguration::SelectFilezillaSessionsForImport(
   AppDataPath = GetShellFolderPath(CSIDL_APPDATA);
 #endif // if defined(_MSC_VER) && !defined(__clang__)
   UnicodeString FilezillaSiteManagerFile =
-    ::IncludeTrailingBackslash(AppDataPath) + L"FileZilla\\sitemanager.xml";
+    ::IncludeTrailingBackslash(AppDataPath) + "FileZilla\\sitemanager.xml";
   UnicodeString FilezillaConfigurationFile =
-    ::IncludeTrailingBackslash(AppDataPath) + L"FileZilla\\filezilla.xml";
+    ::IncludeTrailingBackslash(AppDataPath) + "FileZilla\\filezilla.xml";
 
   if (::SysUtulsFileExists(ApiPath(FilezillaSiteManagerFile)))
   {
@@ -1528,7 +1528,7 @@ TStoredSessionList * TConfiguration::SelectKnownHostsSessionsForImport(
 #if defined(_MSC_VER) && !defined(__clang__)
   ProfilePath = GetShellFolderPath(CSIDL_PROFILE);
 #endif // if defined(_MSC_VER) && !defined(__clang__)
-  UnicodeString KnownHostsFile = IncludeTrailingBackslash(ProfilePath) + L".ssh\\known_hosts";
+  UnicodeString KnownHostsFile = IncludeTrailingBackslash(ProfilePath) + ".ssh\\known_hosts";
 
   try
   {
@@ -1641,7 +1641,7 @@ void TConfiguration::SetCollectUsage(bool Value)
 //---------------------------------------------------------------------
 void TConfiguration::TemporaryLogging(const UnicodeString ALogFileName)
 {
-  if (SameText(ExtractFileExt(ALogFileName), L".xml"))
+  if (SameText(ExtractFileExt(ALogFileName), ".xml"))
   {
     TemporaryActionsLogging(ALogFileName);
   }
@@ -1879,7 +1879,7 @@ UnicodeString TConfiguration::GetPartialExt() const
 //---------------------------------------------------------------------------
 UnicodeString TConfiguration::GetDefaultKeyFile() const
 {
-  return L"";
+  return "";
 }
 //---------------------------------------------------------------------------
 bool TConfiguration::GetRememberPassword() const
