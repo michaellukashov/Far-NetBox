@@ -312,20 +312,6 @@ void TObjectList::Notify(void *Ptr, TListNotification Action)
   TList::Notify(Ptr, Action);
 }
 
-const intptr_t MonthsPerYear = 12;
-const intptr_t DaysPerWeek = 7;
-const intptr_t MinsPerHour = 60;
-const intptr_t SecsPerMin = 60;
-const intptr_t HoursPerDay = 24;
-const intptr_t MSecsPerSec = 1000;
-const intptr_t OneSecond = MSecsPerSec;
-const intptr_t SecsPerHour = MinsPerHour * SecsPerMin;
-const intptr_t MinsPerDay = HoursPerDay * MinsPerHour;
-const intptr_t SecsPerDay = MinsPerDay * SecsPerMin;
-const intptr_t MSecsPerDay = SecsPerDay * MSecsPerSec;
-// Days between 1/1/0001 and 12/31/1899
-const intptr_t DateDelta = 693594;
-const intptr_t UnixDateDelta = 25569;
 static const int MemoryDelta = 0x2000;
 
 TStrings::TStrings() noexcept :
@@ -1387,7 +1373,7 @@ void THandleStream::SetSize(const int64_t NewSize)
   ::Win32Check(::SetEndOfFile(FHandle) > 0);
 }
 
-TSafeHandleStream::TSafeHandleStream(THandle AHandle) :
+TSafeHandleStream::TSafeHandleStream(THandle AHandle) noexcept :
   THandleStream(AHandle)
 {
 }
@@ -1412,7 +1398,7 @@ int64_t TSafeHandleStream::Write(const void *Buffer, int64_t Count)
   return Result;
 }
 
-TMemoryStream::TMemoryStream() :
+TMemoryStream::TMemoryStream() noexcept :
   FMemory(nullptr),
   FSize(0),
   FPosition(0),
@@ -1420,7 +1406,7 @@ TMemoryStream::TMemoryStream() :
 {
 }
 
-TMemoryStream::~TMemoryStream()
+TMemoryStream::~TMemoryStream() noexcept
 {
   Clear();
 }
@@ -2080,11 +2066,7 @@ bool TRegistry::GetKeyInfo(TRegKeyInfo &Value) const
   return Result;
 }
 
-TShortCut::TShortCut() : FValue(0)
-{
-}
-
-TShortCut::TShortCut(intptr_t Value) :
+TShortCut::TShortCut(intptr_t Value) noexcept :
   FValue(Value)
 {
 }
@@ -2116,7 +2098,7 @@ void TGlobals::InitPlatformId()
 {
   OSVERSIONINFO OSVersionInfo;
   OSVersionInfo.dwOSVersionInfoSize = sizeof(OSVersionInfo);
-  if (::GetVersionEx(&OSVersionInfo) != 0)
+  if (::GetVersionEx(&OSVersionInfo) != FALSE)
   {
     Win32Platform = OSVersionInfo.dwPlatformId;
     Win32MajorVersion = OSVersionInfo.dwMajorVersion;

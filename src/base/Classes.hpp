@@ -39,19 +39,20 @@ using TThreadID = DWORD;
 
 class Exception;
 
-NB_CORE_EXPORT extern const intptr_t MonthsPerYear;
-NB_CORE_EXPORT extern const intptr_t DaysPerWeek;
-NB_CORE_EXPORT extern const intptr_t MinsPerHour;
-NB_CORE_EXPORT extern const intptr_t MinsPerDay;
-NB_CORE_EXPORT extern const intptr_t SecsPerMin;
-NB_CORE_EXPORT extern const intptr_t SecsPerHour;
-NB_CORE_EXPORT extern const intptr_t HoursPerDay;
-NB_CORE_EXPORT extern const intptr_t SecsPerDay;
-NB_CORE_EXPORT extern const intptr_t MSecsPerDay;
-NB_CORE_EXPORT extern const intptr_t MSecsPerSec;
-NB_CORE_EXPORT extern const intptr_t OneSecond;
-NB_CORE_EXPORT extern const intptr_t DateDelta;
-NB_CORE_EXPORT extern const intptr_t UnixDateDelta;
+constexpr const intptr_t MonthsPerYear = 12;
+constexpr const intptr_t DaysPerWeek = 7;
+constexpr const intptr_t MinsPerHour = 60;
+constexpr const intptr_t SecsPerMin = 60;
+constexpr const intptr_t HoursPerDay = 24;
+constexpr const intptr_t MSecsPerSec = 1000;
+constexpr const intptr_t SecsPerHour = MinsPerHour * SecsPerMin;
+constexpr const intptr_t MinsPerDay = HoursPerDay * MinsPerHour;
+constexpr const intptr_t SecsPerDay = MinsPerDay * SecsPerMin;
+constexpr const intptr_t MSecsPerDay = SecsPerDay * MSecsPerSec;
+constexpr const intptr_t OneSecond = MSecsPerSec;
+// Days between 1/1/0001 and 12/31/1899
+constexpr const intptr_t DateDelta = 693594;
+constexpr const intptr_t UnixDateDelta = 25569;
 
 class TObject;
 
@@ -116,12 +117,7 @@ struct TRect
   int Bottom{0};
   int Width() const { return Right - Left; }
   int Height() const { return Bottom - Top; }
-  TRect() noexcept :
-    Left(0),
-    Top(0),
-    Right(0),
-    Bottom(0)
-  {}
+  TRect() noexcept = default;
   TRect(int left, int top, int right, int bottom) noexcept :
     Left(left),
     Top(top),
@@ -530,15 +526,15 @@ class NB_CORE_EXPORT THandleStream : public TStream
 public:
   explicit THandleStream(HANDLE AHandle) noexcept;
   virtual ~THandleStream() noexcept = default;
-  virtual int64_t Read(void *Buffer, int64_t Count) override;
-  virtual int64_t Write(const void *Buffer, int64_t Count) override;
-  virtual int64_t Seek(int64_t Offset, int Origin) const override;
-  virtual int64_t Seek(const int64_t Offset, TSeekOrigin Origin) const override;
+  int64_t Read(void *Buffer, int64_t Count) override;
+  int64_t Write(const void *Buffer, int64_t Count) override;
+  int64_t Seek(int64_t Offset, int Origin) const override;
+  int64_t Seek(const int64_t Offset, TSeekOrigin Origin) const override;
 
-  HANDLE GetHandle() { return FHandle; }
+  HANDLE GetHandle() const { return FHandle; }
 
 protected:
-  virtual void SetSize(const int64_t NewSize) override;
+  void SetSize(const int64_t NewSize) override;
 
 protected:
   HANDLE FHandle{};
@@ -547,46 +543,42 @@ protected:
 class NB_CORE_EXPORT TSafeHandleStream : public THandleStream
 {
 public:
-  explicit TSafeHandleStream(THandle AHandle);
-  virtual ~TSafeHandleStream() {}
-  virtual int64_t Read(void *Buffer, int64_t Count) override;
-  virtual int64_t Write(const void *Buffer, int64_t Count) override;
+  explicit TSafeHandleStream(THandle AHandle) noexcept;
+  virtual ~TSafeHandleStream() noexcept = default;
+  int64_t Read(void *Buffer, int64_t Count) override;
+  int64_t Write(const void *Buffer, int64_t Count) override;
 };
 
 class NB_CORE_EXPORT EReadError : public std::runtime_error
 {
 public:
-  explicit EReadError(const char *Msg) :
-    std::runtime_error(Msg)
-  {}
+  explicit EReadError(const char *Msg) noexcept : std::runtime_error(Msg) {}
 };
 
 class NB_CORE_EXPORT EWriteError : public std::runtime_error
 {
 public:
-  explicit EWriteError(const char *Msg) :
-    std::runtime_error(Msg)
-  {}
+  explicit EWriteError(const char *Msg) noexcept : std::runtime_error(Msg) {}
 };
 
 class NB_CORE_EXPORT TMemoryStream : public TStream
 {
   NB_DISABLE_COPY(TMemoryStream)
 public:
-  TMemoryStream();
-  virtual ~TMemoryStream();
-  virtual int64_t Read(void *Buffer, int64_t Count) override;
-  virtual int64_t Seek(int64_t Offset, int Origin) const override;
-  virtual int64_t Seek(const int64_t Offset, TSeekOrigin Origin) const override;
+  TMemoryStream() noexcept;
+  virtual ~TMemoryStream() noexcept;
+  int64_t Read(void *Buffer, int64_t Count) override;
+  int64_t Seek(int64_t Offset, int Origin) const override;
+  int64_t Seek(const int64_t Offset, TSeekOrigin Origin) const override;
   void SaveToStream(TStream *Stream);
   void SaveToFile(const UnicodeString AFileName);
 
   void Clear();
   void LoadFromStream(TStream *Stream);
   __removed void LoadFromFile(const UnicodeString AFileName);
-  virtual int64_t GetSize() const override { return FSize; }
-  virtual void SetSize(const int64_t NewSize) override;
-  virtual int64_t Write(const void *Buffer, int64_t Count) override;
+  int64_t GetSize() const override { return FSize; }
+  void SetSize(const int64_t NewSize) override;
+  int64_t Write(const void *Buffer, int64_t Count) override;
 
   void *GetMemory() const { return FMemory; }
 
@@ -701,8 +693,8 @@ struct TTimeStamp
 class NB_CORE_EXPORT TShortCut : public TObject
 {
 public:
-  explicit TShortCut();
-  explicit TShortCut(intptr_t Value);
+  explicit TShortCut() noexcept = default;
+  explicit TShortCut(intptr_t Value) noexcept;
   operator intptr_t() const;
   bool operator<(const TShortCut &rhs) const;
   intptr_t Compare(const TShortCut &rhs) const { return FValue - rhs.FValue; }
