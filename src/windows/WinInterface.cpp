@@ -1081,7 +1081,7 @@ bool __fastcall TCustomCommandPromptsDialog::Execute(TUnicodeStringVector & Valu
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 TWinInteractiveCustomCommand::TWinInteractiveCustomCommand(
-  TCustomCommand * ChildCustomCommand, const UnicodeString CustomCommandName, const UnicodeString HelpKeyword) :
+  TCustomCommand * ChildCustomCommand, const UnicodeString CustomCommandName, const UnicodeString HelpKeyword) noexcept :
   TInteractiveCustomCommand(ChildCustomCommand)
 {
   FCustomCommandName = StripEllipsis(StripHotkey(CustomCommandName));

@@ -74,7 +74,7 @@ __fastcall TTerminalManager::TTerminalManager() :
   FTaskbarList = NULL;
   FAuthenticating = 0;
   FMainThread = GetCurrentThreadId();
-  FChangeSection = std::make_unique<TCriticalSection>());
+  FChangeSection = std::make_unique<TCriticalSection>();
   FPendingConfigurationChange = 0;
   FKeepAuthenticateForm = false;
 

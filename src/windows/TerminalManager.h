@@ -21,12 +21,12 @@ public:
   __fastcall TManagedTerminal(TSessionData * SessionData, TConfiguration * Configuration);
   virtual __fastcall ~TManagedTerminal();
 
-  TSessionData * StateData;
-  TObject * LocalExplorerState;
-  TObject * RemoteExplorerState;
+  TSessionData * StateData{nullptr};
+  TObject * LocalExplorerState{nullptr};
+  TObject * RemoteExplorerState{nullptr};
   TDateTime ReopenStart;
   TDateTime DirectoryLoaded;
-  TTerminalThread * TerminalThread;
+  TTerminalThread * TerminalThread{nullptr};
   TDateTime QueueOperationStart;
 };
 //---------------------------------------------------------------------------
@@ -80,32 +80,32 @@ protected:
 
 private:
   static TTerminalManager * FInstance;
-  TCustomScpExplorerForm * FScpExplorer;
-  TTerminal * FActiveTerminal;
-  TTerminal * FLocalTerminal;
-  bool FDestroying;
+  TCustomScpExplorerForm * FScpExplorer{nullptr};
+  TTerminal * FActiveTerminal{nullptr};
+  TTerminal * FLocalTerminal{nullptr};
+  bool FDestroying{false};
   TTerminalPendingAction FTerminalPendingAction;
   TNotifyEvent FOnLastTerminalClosed;
   TNotifyEvent FOnTerminalListChanged;
-  TStrings * FTerminalList;
-  TList * FQueues;
-  TStrings * FTerminationMessages;
+  TStrings * FTerminalList{nullptr};
+  TList * FQueues{nullptr};
+  TStrings * FTerminationMessages{nullptr};
   UnicodeString FProgressTitle;
   UnicodeString FForegroundProgressTitle;
   TDateTime FDirectoryReadingStart;
-  TAuthenticateForm * FAuthenticateForm;
-  TCriticalSection * FQueueSection;
-  DWORD FMainThread;
-  int FPendingConfigurationChange;
+  TAuthenticateForm * FAuthenticateForm{nullptr};
+  TCriticalSection * FQueueSection{nullptr};
+  DWORD FMainThread{0};
+  int FPendingConfigurationChange{0};
   std::unique_ptr<TCriticalSection> FChangeSection;
   std::vector<std::pair<TTerminalQueue *, TQueueEvent> > FQueueEvents;
-  unsigned int FTaskbarButtonCreatedMessage;
-  ITaskbarList3 * FTaskbarList;
-  int FAuthenticating;
-  void * FBusyToken;
-  bool FAuthenticationCancelled;
+  unsigned int FTaskbarButtonCreatedMessage{0};
+  ITaskbarList3 * FTaskbarList{nullptr};
+  int FAuthenticating{0};
+  void * FBusyToken{nullptr};
+  bool FAuthenticationCancelled{false};
   std::unique_ptr<TApplicationEvents> FApplicationsEvents;
-  bool FKeepAuthenticateForm;
+  bool FKeepAuthenticateForm{false};
 
   bool __fastcall ConnectActiveTerminalImpl(bool Reopen);
   bool __fastcall ConnectActiveTerminal();

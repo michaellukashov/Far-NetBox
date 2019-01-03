@@ -1380,11 +1380,6 @@ void TUpdateDownloadThread::DownloadNotVerified()
 //---------------------------------------------------------------------------
 void TUpdateDownloadThread::HttpDownload(THttp * /*Sender*/, int64_t Size, bool & Cancel)
 {
-
-}
-
-int64_t Size, bool & Cancel)
-{
   FDownloaded = Size;
   Synchronize(UpdateProgress);
 
@@ -1434,14 +1429,14 @@ void TUpdateDownloadThread::CancelClicked(TObject * /*Sender*/)
 class TUpdateDownloadData : public TComponent
 {
 public:
-  TUpdateDownloadThread * Thread;
+  TUpdateDownloadThread * Thread{nullptr};
 
-  TUpdateDownloadData() :
+  TUpdateDownloadData() noexcept :
     TComponent(nullptr)
   {
   }
 
-  virtual ~TUpdateDownloadData()
+  virtual ~TUpdateDownloadData() noexcept
   {
     // will stop the thread
     delete Thread;

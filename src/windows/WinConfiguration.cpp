@@ -1372,10 +1372,10 @@ void TWinConfiguration::ReleaseExtensionTranslations()
 void TWinConfiguration::LoadExtensionTranslations()
 {
   ReleaseExtensionTranslations();
-  FExtensionTranslations = std::make_unique<TStringList>());
+  FExtensionTranslations = std::make_unique<TStringList>();
   int Index = EXTENSION_STRINGS;
   UnicodeString S;
-  while (!((S = LoadStr(Index)).IsEmpty()))
+  while (!(S = LoadStr(Index)).IsEmpty())
   {
     UnicodeString ExtensionName = CutToChar(S, L'.', false);
     UnicodeString Original = CutToChar(S, L'=', false);
