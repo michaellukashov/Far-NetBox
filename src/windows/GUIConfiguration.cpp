@@ -668,15 +668,15 @@ static UnicodeString PropertyToKey(UnicodeString Property)
   BLOCK("Interface", CANCREATE, \
     KEY(Bool,     ContinueOnError); \
     KEY(Bool,     ConfirmCommandSession); \
-    KEY(Integer,  SynchronizeParams); \
-    KEY(Integer,  SynchronizeOptions); \
-    KEY(Integer,  SynchronizeModeAuto); \
-    KEY(Integer,  SynchronizeMode); \
-    KEY(Integer,  MaxWatchDirectories); \
-    KEY(Integer,  QueueTransfersLimit); \
+    KEY3(Integer,  SynchronizeParams); \
+    KEY3(Integer,  SynchronizeOptions); \
+    KEY3(Integer,  SynchronizeModeAuto); \
+    KEY3(Integer,  SynchronizeMode); \
+    KEY3(Integer,  MaxWatchDirectories); \
+    KEY3(Integer,  QueueTransfersLimit); \
     KEY(Bool,     QueueBootstrap); \
     KEY(Bool,     QueueKeepDoneItems); \
-    KEY(Integer,  QueueKeepDoneItemsFor); \
+    KEY3(Integer,  QueueKeepDoneItemsFor); \
     KEY(Bool,     QueueAutoPopup); \
     KEYEX2(Bool,   SessionRememberPassword, SessionRememberPassword); \
     KEY(String,   PuttySession); \
@@ -686,9 +686,9 @@ static UnicodeString PropertyToKey(UnicodeString Property)
     KEY(DateTime, IgnoreCancelBeforeFinish); \
     KEY(Bool,     BeepOnFinish); \
     KEY(DateTime, BeepOnFinishAfter); \
-    KEY(Integer,  KeepUpToDateChangeDelay); \
+    KEY3(Integer,  KeepUpToDateChangeDelay); \
     KEY(String,   ChecksumAlg); \
-    KEY(Integer,  SessionReopenAutoIdle); \
+    KEY3(Integer,  SessionReopenAutoIdle); \
   );
     __removed KEY(String,   BeepSound); \
 //---------------------------------------------------------------------------
@@ -716,10 +716,18 @@ void TGUIConfiguration::SaveData(THierarchicalStorage * Storage, bool All)
 #define KEYEX2(TYPE, NAME, VAR) Storage->Write ## TYPE(LASTELEM(UnicodeString(#NAME)), VAR)
 #undef KEY
 #undef KEY2
+#undef KEY3
+#undef KEY4
 #define KEY(TYPE, NAME) Storage->Write ## TYPE(PropertyToKey(#NAME), Get ## NAME())
 #define KEY2(TYPE, NAME) Storage->Write ## TYPE(PropertyToKey(#NAME), NAME)
+#define KEY3(TYPE, NAME) Storage->Write ## TYPE(PropertyToKey(#NAME), nb::ToInt(Get ## NAME()))
+#define KEY4(TYPE, NAME) Storage->Write ## TYPE(PropertyToKey(#NAME), nb::ToInt(NAME))
   REGCONFIG(true);
+#undef KEY4
+#undef KEY3
+#undef KEY2
 #undef KEY
+#undef KEYEX2
 #undef KEYEX
 
   if (DoSaveCopyParam(Storage, &FDefaultCopyParam, nullptr))
@@ -734,7 +742,7 @@ void TGUIConfiguration::SaveData(THierarchicalStorage * Storage, bool All)
     }
     else if (All || FCopyParamList->GetModified())
     {
-      Storage->WriteInteger("CopyParamList", FCopyParamList->GetCount());
+      Storage->WriteInteger("CopyParamList", (int)FCopyParamList->GetCount());
       FCopyParamList->Save(Storage);
     }
   },
@@ -789,8 +797,12 @@ void TGUIConfiguration::LoadData(THierarchicalStorage * Storage)
 #define KEYEX2(TYPE, NAME, VAR) VAR = Storage->Read ## TYPE(LASTELEM(UnicodeString(#NAME)), VAR)
 #undef KEY
 #undef KEY2
+#undef KEY3
+#undef KEY4
 #define KEY(TYPE, NAME) Set ## NAME(Storage->Read ## TYPE(PropertyToKey(#NAME), Get ## NAME()))
 #define KEY2(TYPE, NAME) NAME = Storage->Read ## TYPE(PropertyToKey(#NAME), NAME)
+#define KEY3(TYPE, NAME) Set ## NAME(Storage->Read ## TYPE(PropertyToKey(#NAME), nb::ToInt(Get ## NAME())))
+#define KEY4(TYPE, NAME) NAME = Storage->Read ## TYPE(PropertyToKey(#NAME), nb::ToInt(NAME))
   REGCONFIG(false);
 #undef KEY
 #undef KEYEX

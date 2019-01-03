@@ -275,6 +275,8 @@ UnicodeString TConfiguration::PropertyToKey(const UnicodeString AProperty)
     { SCOPE_EXIT { Storage->CloseSubKey(); }; { BLOCK } }
 #define KEY(TYPE, VAR) KEYEX(TYPE, VAR, VAR)
 #define KEY2(TYPE, VAR) KEYEX2(TYPE, VAR, VAR)
+#define KEY3(TYPE, VAR) KEYEX3(TYPE, VAR, VAR)
+#define KEY4(TYPE, VAR) KEYEX4(TYPE, VAR, VAR)
 #undef REGCONFIG
 #define REGCONFIG(CANCREATE) \
   BLOCK("Interface", CANCREATE, \
@@ -283,22 +285,22 @@ UnicodeString TConfiguration::PropertyToKey(const UnicodeString AProperty)
     KEY(Bool,     ConfirmOverwriting); \
     KEY(Bool,     ConfirmResume); \
     KEY(Bool,     AutoReadDirectoryAfterOp); \
-    KEY(Integer,  SessionReopenAuto); \
-    KEY(Integer,  SessionReopenBackground); \
-    KEY(Integer,  SessionReopenTimeout); \
-    KEY(Integer,  SessionReopenAutoStall); \
-    KEY(Integer,  TunnelLocalPortNumberLow); \
-    KEY(Integer,  TunnelLocalPortNumberHigh); \
-    KEY(Integer,  CacheDirectoryChangesMaxSize); \
+    KEY3(Integer,  SessionReopenAuto); \
+    KEY3(Integer,  SessionReopenBackground); \
+    KEY3(Integer,  SessionReopenTimeout); \
+    KEY3(Integer,  SessionReopenAutoStall); \
+    KEY3(Integer,  TunnelLocalPortNumberLow); \
+    KEY3(Integer,  TunnelLocalPortNumberHigh); \
+    KEY3(Integer,  CacheDirectoryChangesMaxSize); \
     KEY(Bool,     ShowFtpWelcomeMessage); \
     KEY(String,   ExternalIpAddress); \
     KEY(Bool,     TryFtpWhenSshFails); \
-    KEY(Integer,  ParallelDurationThreshold); \
+    KEY3(Integer,  ParallelDurationThreshold); \
     KEY(String,   MimeTypes); \
-    KEY2(Integer,  DontReloadMoreThanSessions); \
-    KEY2(Integer,  ScriptProgressFileNameLimit); \
+    KEY4(Integer,  DontReloadMoreThanSessions); \
+    KEY4(Integer,  ScriptProgressFileNameLimit); \
     KEY(Bool,     CollectUsage); \
-    KEY(Integer,  SessionReopenAutoMaximumNumberOfRetries); \
+    KEY3(Integer,  SessionReopenAutoMaximumNumberOfRetries); \
   ); \
   BLOCK("Logging", CANCREATE, \
     KEYEX(Bool,  PermanentLogging, Logging); \
@@ -306,8 +308,8 @@ UnicodeString TConfiguration::PropertyToKey(const UnicodeString AProperty)
     KEY(Bool,    LogFileAppend); \
     KEYEX(Bool,  PermanentLogSensitive, LogSensitive); \
     KEYEX(Int64, PermanentLogMaxSize, LogMaxSize); \
-    KEYEX(Integer, PermanentLogMaxCount, LogMaxCount); \
-    KEYEX(Integer,PermanentLogProtocol, LogProtocol); \
+    KEYEX3(Integer, PermanentLogMaxCount, LogMaxCount); \
+    KEYEX3(Integer,PermanentLogProtocol, LogProtocol); \
     KEYEX(Bool,  PermanentLogActions, LogActions); \
     KEYEX(String,PermanentActionsLogFileName, ActionsLogFileName); \
   )
@@ -316,7 +318,11 @@ void TConfiguration::SaveData(THierarchicalStorage *Storage, bool /*All*/)
 {
 #define KEYEX(TYPE, NAME, VAR) Storage->Write ## TYPE(LASTELEM(UnicodeString(#NAME)), Get ## VAR())
 #define KEYEX2(TYPE, NAME, VAR) Storage->Write ## TYPE(LASTELEM(UnicodeString(#NAME)), VAR)
+#define KEYEX3(TYPE, NAME, VAR) Storage->Write ## TYPE(LASTELEM(UnicodeString(#NAME)), nb::ToInt(Get ## VAR()))
+#define KEYEX4(TYPE, NAME, VAR) Storage->Write ## TYPE(LASTELEM(UnicodeString(#NAME)), nb::ToInt(VAR))
   REGCONFIG(true);
+#undef KEYEX4
+#undef KEYEX3
 #undef KEYEX2
 #undef KEYEX
 
@@ -480,7 +486,11 @@ void TConfiguration::LoadData(THierarchicalStorage * Storage)
 {
 #define KEYEX(TYPE, NAME, VAR) Set ## VAR(Storage->Read ## TYPE(LASTELEM(UnicodeString(#NAME)), Get ## VAR()))
 #define KEYEX2(TYPE, NAME, VAR) VAR = Storage->Read ## TYPE(LASTELEM(UnicodeString(#NAME)), VAR)
+#define KEYEX3(TYPE, NAME, VAR) Set ## VAR(Storage->Read ## TYPE(LASTELEM(UnicodeString(#NAME)), nb::ToInt(Get ## VAR())))
+#define KEYEX4(TYPE, NAME, VAR) VAR = Storage->Read ## TYPE(LASTELEM(UnicodeString(#NAME)), nb::ToInt(VAR))
   REGCONFIG(false);
+#undef KEYEX4
+#undef KEYEX3
 #undef KEYEX2
 #undef KEYEX
 

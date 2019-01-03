@@ -118,7 +118,7 @@ void TUsage::Save(THierarchicalStorage * Storage,
     TCounters::const_iterator i = Counters.begin();
     while (i != Counters.end())
     {
-      Storage->WriteInteger(i->first, i->second);
+      Storage->WriteInteger(i->first, (int)i->second);
       i++;
     }
     Storage->CloseSubKey();
@@ -248,14 +248,14 @@ void TUsage::SetMax(const UnicodeString AKey, intptr_t Value,
   TCounters::iterator i = Counters.find(AKey);
   if (i != Counters.end())
   {
-    if ((int)Value > i->second)
+    if (Value > i->second)
     {
-      i->second = (int)Value;
+      i->second = Value;
     }
   }
   else
   {
-    Counters[AKey] = (int)Value;
+    Counters[AKey] = Value;
   }
 }
 //---------------------------------------------------------------------------

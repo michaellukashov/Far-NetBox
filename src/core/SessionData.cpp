@@ -1054,7 +1054,7 @@ void TSessionData::DoSave(THierarchicalStorage *Storage,
   WRITE_DATA_EX(String, "GSSCustom", GetGssLibCustom(), );
   WRITE_DATA(Integer, AddressFamily);
   WRITE_DATA_EX(String, "RekeyBytes", GetRekeyData(), );
-  WRITE_DATA(Integer, RekeyTime);
+  WRITE_DATA2(Integer, RekeyTime);
 
   WRITE_DATA(Bool, TcpNoDelay);
 
@@ -1118,9 +1118,9 @@ void TSessionData::DoSave(THierarchicalStorage *Storage,
     WRITE_DATA(Bool, TrimVMSVersions);
     Storage->DeleteValue("SFTPUtfBug");
     WRITE_DATA_EX(Integer, "Utf", GetNotUtf(), );
-    WRITE_DATA(Integer, InternalEditorEncoding);
+    WRITE_DATA2(Integer, InternalEditorEncoding);
     WRITE_DATA(String, S3DefaultRegion);
-    WRITE_DATA(Integer, SendBuf);
+    WRITE_DATA2(Integer, SendBuf);
     WRITE_DATA(Bool, SshSimple);
   }
 
@@ -1128,7 +1128,7 @@ void TSessionData::DoSave(THierarchicalStorage *Storage,
   if (GetProxyMethod() != pmSystem)
   {
     WRITE_DATA(String, ProxyHost);
-    WRITE_DATA(Integer, ProxyPort);
+    WRITE_DATA2(Integer, ProxyPort);
   }
   WRITE_DATA(String, ProxyUsername);
   if (GetProxyMethod() == pmCmd)
@@ -1182,27 +1182,27 @@ void TSessionData::DoSave(THierarchicalStorage *Storage,
     WRITE_SFTP_BUG(SignedTS);
 #undef WRITE_SFTP_BUG
 
-    WRITE_DATA(Integer, SFTPMaxVersion);
-    WRITE_DATA(Integer, SFTPMaxPacketSize);
-    WRITE_DATA(Integer, SFTPMinPacketSize);
-    WRITE_DATA(Integer, SFTPDownloadQueue);
-    WRITE_DATA(Integer, SFTPUploadQueue);
-    WRITE_DATA(Integer, SFTPListingQueue);
+    WRITE_DATA2(Integer, SFTPMaxVersion);
+    WRITE_DATA2(Integer, SFTPMaxPacketSize);
+    WRITE_DATA2(Integer, SFTPMinPacketSize);
+    WRITE_DATA2(Integer, SFTPDownloadQueue);
+    WRITE_DATA2(Integer, SFTPUploadQueue);
+    WRITE_DATA2(Integer, SFTPListingQueue);
 
-    WRITE_DATA(Integer, Color);
+    WRITE_DATA2(Integer, Color);
 
     WRITE_DATA(Bool, Tunnel);
     WRITE_DATA(String, TunnelHostName);
-    WRITE_DATA(Integer, TunnelPortNumber);
+    WRITE_DATA2(Integer, TunnelPortNumber);
     WRITE_DATA(String, TunnelUserName);
     WRITE_DATA(String, TunnelPublicKeyFile);
-    WRITE_DATA(Integer, TunnelLocalPortNumber);
+    WRITE_DATA2(Integer, TunnelLocalPortNumber);
 
     WRITE_DATA(Bool, FtpPasvMode);
     WRITE_DATA_EX(Integer, "FtpForcePasvIp2", GetFtpForcePasvIp(), );
     WRITE_DATA(Integer, FtpUseMlsd);
     WRITE_DATA(String, FtpAccount);
-    WRITE_DATA(Integer, FtpPingInterval);
+    WRITE_DATA2(Integer, FtpPingInterval);
     WRITE_DATA(Integer, FtpPingType);
     WRITE_DATA_EX(Integer, "FtpTransferActiveImmediately2", GetFtpTransferActiveImmediately(), );
     WRITE_DATA(Integer, Ftps);
@@ -1214,7 +1214,7 @@ void TSessionData::DoSave(THierarchicalStorage *Storage,
     WRITE_DATA(Bool, SslSessionReuse);
     WRITE_DATA(String, TlsCertificateFile);
 
-    WRITE_DATA(Integer, FtpProxyLogonType);
+    WRITE_DATA2(Integer, FtpProxyLogonType);
 
     WRITE_DATA(Integer, MinTlsVersion);
     WRITE_DATA(Integer, MaxTlsVersion);
