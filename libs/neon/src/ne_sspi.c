@@ -335,7 +335,7 @@ static int freeBuffer(SecBufferDesc * secBufferDesc)
  * Canonicalize a server host name if possible.
  * The returned pointer must be freed after usage.
  */
-static char *canonical_hostname(const char *serverName)
+static const char *canonical_hostname(const char *serverName)
 {
     const char *hostname;
     ne_sock_addr *addr;
