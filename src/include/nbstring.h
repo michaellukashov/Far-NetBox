@@ -127,7 +127,7 @@ public:
   explicit CMSimpleStringT(const XCHAR *pchSrc, int nLength);
   ~CMSimpleStringT();
 
-  template <typename _BaseType>
+  template<typename _BaseType>
   __forceinline operator CMSimpleStringT<_BaseType> &()
   {
     return *static_cast<CMSimpleStringT<_BaseType> *>(this);
@@ -255,7 +255,7 @@ public:
   { SetString(reinterpret_cast<const char *>(pszSrc), nLength); }
 
 public:
-  template <typename T> friend CMSimpleStringT<T> operator+(const CMSimpleStringT<T>& str1, const CMSimpleStringT<T>& str2);
+  template<typename T> friend CMSimpleStringT<T> operator+(const CMSimpleStringT<T>& str1, const CMSimpleStringT<T>& str2);
   template<typename T> friend CMSimpleStringT<T> operator+(const CMSimpleStringT<T> &str1, PCXSTR psz2);
   template<typename T> friend CMSimpleStringT<T> operator+(PCXSTR psz1, const CMSimpleStringT<T> &str2);
 
@@ -291,7 +291,7 @@ private:
 
 
 template<typename CharType = char>
-class NBChTraitsCRT : public NBChTraitsBase <CharType>
+class NBChTraitsCRT : public NBChTraitsBase<CharType>
 {
 public:
 
