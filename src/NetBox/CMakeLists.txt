@@ -1795,10 +1795,7 @@ add_custom_command(TARGET create_plugin_dir POST_BUILD
 )
 
 file(GLOB DIST_FILES
-  ${NETBOX_DIR}/*.lng
-#  ${BUILD_DIR}/*.dll
-#  ${BUILD_DIR}/*.pdb
-#  ${BUILD_DIR}/*.map
+  ${NETBOX_DIR}\\*.lng
 )
 
 add_custom_target(copy_to_plugin_dir)
@@ -1810,9 +1807,9 @@ foreach(DIST_FILE ${DIST_FILES})
 endforeach()
 
 add_custom_command(TARGET NetBox POST_BUILD
-  COMMAND ${CMAKE_COMMAND} -E copy_if_different ${BUILD_DIR}/NetBox.dll ${NETBOX_PLUGIN_DIR}
-  COMMAND if exist ${BUILD_DIR}/NetBox.pdb ( ${CMAKE_COMMAND} -E copy_if_different ${BUILD_DIR}/NetBox.pdb ${NETBOX_PLUGIN_DIR} )
-  COMMAND if exist ${BUILD_DIR}/NetBox.map ( ${CMAKE_COMMAND} -E copy_if_different ${BUILD_DIR}/NetBox.map ${NETBOX_PLUGIN_DIR} )
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE_DIR:NetBox>\\NetBox.dll" ${NETBOX_PLUGIN_DIR}
+  COMMAND if exist "$<TARGET_FILE_DIR:NetBox>\\NetBox.pdb" ( ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE_DIR:NetBox>\\NetBox.pdb" ${NETBOX_PLUGIN_DIR} )
+  COMMAND if exist "$<TARGET_FILE_DIR:NetBox>\\NetBox.map" ( ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE_DIR:NetBox>\\NetBox.map" ${NETBOX_PLUGIN_DIR} )
 )
 
 add_dependencies(copy_to_plugin_dir create_plugin_dir )
