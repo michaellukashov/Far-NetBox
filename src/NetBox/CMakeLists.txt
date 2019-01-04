@@ -1330,8 +1330,7 @@ set(NETBOX_SOURCES
 
 else(OPT_USE_UNITY_BUILD)
 
-set(NETBOX_SOURCES
-#  UnityBuildCore.cpp
+set(Base_SOURCES
   ../nbcore/nbstring.cpp
   ../nbcore/nbmemory.cpp
   ../nbcore/nbutils.cpp
@@ -1349,7 +1348,88 @@ set(NETBOX_SOURCES
   ../base/Global.cpp
   ../base/System.SyncObjs.cpp
   ../base/FormatUtils.cpp
+)
 
+set(Base_HEADERS
+  ../nbcore/stdafx.h
+
+  ../base/Classes.hpp
+  ../base/Sysutils.hpp
+  ../base/Property.hpp
+  ../base/function2.hpp
+  ../base/UnicodeString.hpp
+  ../base/Masks.hpp
+  ../base/System.StrUtils.hpp
+  ../base/StrUtils.hpp
+  ../base/DirectoryMonitor.hpp
+  ../base/System.SyncObjs.hpp
+  ../base/Windows.hpp
+  ../base/Xml.XMLIntf.hpp
+  ../base/LibraryLoader.hpp
+  ../base/DynamicQueue.hpp
+  ../base/System.IOUtils.hpp
+  ../base/System.ShlObj.hpp
+  ../base/WideStrUtils.hpp
+  ../base/Math.hpp
+  ../base/PasTools.hpp
+  ../base/System.DateUtils.hpp
+  ../base/ComCtrls.hpp
+  ../base/registry.hpp
+  ../base/contnrs.hpp
+  ../base/SysInit.hpp
+  ../base/System.hpp
+  ../base/LanguagesDEPfix.hpp
+  ../base/FileCtrl.hpp
+  ../base/CompThread.hpp
+  ../base/DateUtils.hpp
+  ../base/DiscMon.hpp
+)
+
+set(Filezilla_HEADERS
+  ../filezilla/AsyncSslSocketLayer.h
+  ../filezilla/structures.h
+  ../filezilla/stdafx.h
+  ../filezilla/TransferSocket.h
+  ../filezilla/ServerPath.h
+  ../filezilla/MainThread.h
+  ../filezilla/MFC64bitFix.h
+  ../filezilla/FzApiStructures.h
+  ../filezilla/FtpListResult.h
+  ../filezilla/FtpControlSocket.h
+  ../filezilla/FilezillaTools.h
+  ../filezilla/FileZillaOpt.h
+  ../filezilla/FileZillaIntf.h
+  ../filezilla/FileZillaIntern.h
+  ../filezilla/FileZillaApi.h
+  ../filezilla/AsyncSocketExLayer.h
+  ../filezilla/AsyncSocketEx.h
+  ../filezilla/AsyncProxySocketLayer.h
+  ../filezilla/ApiLog.h
+  ../filezilla/afxdll.h
+)
+
+set(Filezilla_SOURCES
+  ../filezilla/afxdll.cpp
+  ../filezilla/FileZillaIntf.cpp
+  ../filezilla/FileZillaIntern.cpp
+  ../filezilla/ApiLog.cpp
+  ../filezilla/ServerPath.cpp
+  ../filezilla/AsyncSslSocketLayer.cpp
+  ../filezilla/AsyncSocketExLayer.cpp
+  ../filezilla/AsyncSocketEx.cpp
+  ../filezilla/FileZillaApi.cpp
+  ../filezilla/FzApiStructures.cpp
+  ../filezilla/FtpControlSocket.cpp
+  ../filezilla/MainThread.cpp
+  ../filezilla/TransferSocket.cpp
+  ../filezilla/FtpListResult.cpp
+  ../filezilla/AsyncProxySocketLayer.cpp
+  ../filezilla/structures.cpp
+  ../filezilla/MFC64bitFix.cpp
+  ../filezilla/misc/CBase64Coding.cpp
+)
+
+set(WinSCP_SOURCES
   ../core/RemoteFiles.cpp
   ../core/Terminal.cpp
   ../core/FileOperationProgress.cpp
@@ -1386,29 +1466,54 @@ set(NETBOX_SOURCES
   ../windows/ProgParams.cpp
   ../windows/UserInterface.cpp
   ../windows/WinInterface.cpp
+)
 
-#  UnityBuildFilezilla.cpp
-#  ../filezilla/stdafx.cpp
-  ../filezilla/afxdll.cpp
-  ../filezilla/FileZillaIntf.cpp
-  ../filezilla/FileZillaIntern.cpp
-  ../filezilla/ApiLog.cpp
-  ../filezilla/ServerPath.cpp
-  ../filezilla/AsyncSslSocketLayer.cpp
-  ../filezilla/AsyncSocketExLayer.cpp
-  ../filezilla/AsyncSocketEx.cpp
-  ../filezilla/FileZillaApi.cpp
-  ../filezilla/FzApiStructures.cpp
-  ../filezilla/FtpControlSocket.cpp
-  ../filezilla/MainThread.cpp
-  ../filezilla/TransferSocket.cpp
-  ../filezilla/FtpListResult.cpp
-  ../filezilla/AsyncProxySocketLayer.cpp
-  ../filezilla/structures.cpp
-  ../filezilla/MFC64bitFix.cpp
-  ../filezilla/misc/CBase64Coding.cpp
+set(WinSCP_HEADERS
+  ../core/FileMasks.h
+  ../core/Bookmarks.h
+  ../core/HierarchicalStorage.h
+  ../core/Configuration.h
+  ../core/Usage.h
+  ../core/Terminal.h
+  ../core/SessionData.h
+  ../core/NamedObjs.h
+  ../core/SessionInfo.h
+  ../core/ScpFileSystem.h
+  ../core/FileSystems.h
+  ../core/WebDAVFileSystem.h
+  ../core/SecureShell.h
+  ../core/SftpFileSystem.h
+  ../core/CopyParam.h
+  ../core/FtpFileSystem.h
+  ../core/S3FileSystem.h
+  ../core/Queue.h
+  ../core/RemoteFiles.h
+  ../core/Cryptography.h
+  ../core/Http.h
+  ../core/FileOperationProgress.h
+  ../core/Option.h
+  ../core/Interface.h
+  ../core/NeonIntf.h
+  ../core/Script.h
+  ../core/PuttyTools.h
+  ../core/WinSCPSecurity.h
+  ../core/PuttyIntf.h
+  ../core/FileInfo.h
+  ../core/CoreMain.h
+  ../windows/WinInterface.h
+  ../windows/GUIConfiguration.h
+  ../windows/TerminalManager.h
+  ../windows/Tools.h
+  ../windows/GUITools.h
+  ../windows/VCLCommon.h
+  ../windows/Setup.h
+  ../windows/ProgParams.h
+  ../windows/CustomWinConfiguration.h
+  ../windows/WinConfiguration.h
+  ../windows/SynchronizeController.h
+)
 
-#  UnityBuildMain.cpp
+set(NetBox_SOURCES
   NetBox.cpp
   FarDialog.cpp
   FarPlugin.cpp
@@ -1421,6 +1526,45 @@ set(NETBOX_SOURCES
   XmlStorage.cpp
   FarPluginStrings.cpp
 )
+
+set(NetBox_HEADERS
+  FarUtils.h
+  FarPlugin.h
+  FarConfiguration.h
+  WinSCPPlugin.h
+  WinSCPFileSystem.h
+  FarDialog.h
+  XmlStorage.h
+  FarInterface.h
+  resource.h
+  FarPluginStrings.h
+)
+
+set(NETBOX_SOURCES
+#  UnityBuildCore.cpp
+  ${Base_HEADERS}
+  ${Base_SOURCES}
+
+  ${WinSCP_HEADERS}
+  ${WinSCP_SOURCES}
+
+#  UnityBuildFilezilla.cpp
+  ${Filezilla_HEADERS}
+  ${Filezilla_SOURCES}
+
+#  UnityBuildMain.cpp
+  ${NetBox_HEADERS}
+  ${NetBox_SOURCES}
+)
+
+source_group("Filezilla headers" FILES ${Filezilla_HEADERS})
+source_group("Filezilla sources" FILES ${Filezilla_SOURCES})
+source_group("WinSCP headers" FILES ${WinSCP_HEADERS})
+source_group("WinSCP sources" FILES ${WinSCP_SOURCES})
+source_group("Base headers" FILES ${Base_HEADERS})
+source_group("Base sources" FILES ${Base_SOURCES})
+source_group("NetBox headers" FILES ${NetBox_HEADERS})
+source_group("NetBox sources" FILES ${NetBox_SOURCES})
 
 endif(OPT_USE_UNITY_BUILD)
 
