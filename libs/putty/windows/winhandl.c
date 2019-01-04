@@ -770,6 +770,7 @@ void handle_got_event(HANDLE event)
     break;
 #endif
   }
+  return 0;
 }
 
 void handle_unthrottle(struct handle* h, int backlog)
