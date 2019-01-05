@@ -84,12 +84,12 @@ TFileZillaIntf::TFileZillaIntf() noexcept :
 //---------------------------------------------------------------------------
 TFileZillaIntf::~TFileZillaIntf() noexcept
 {
-  DebugAssert(FFileZillaApi == NULL);
+  DebugAssert(FFileZillaApi == nullptr);
 
   delete FIntern;
-  FIntern = NULL;
+  FIntern = nullptr;
   delete FServer;
-  FServer = NULL;
+  FServer = nullptr;
 }
 
 bool TFileZillaIntf::Init()
