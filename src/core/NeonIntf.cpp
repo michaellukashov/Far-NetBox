@@ -453,7 +453,7 @@ void UnregisterFromNeonDebug(TTerminal *Terminal)
 void RetrieveNeonCertificateData(
   int Failures, const ne_ssl_certificate *Certificate, TNeonCertificateData &Data)
 {
-  char Fingerprint[NE_SSL_DIGESTLEN] = {0};
+  char Fingerprint[NE_SSL_DIGESTLEN]{0};
   if (ne_ssl_cert_digest(Certificate, Fingerprint) != 0)
   {
     strcpy(Fingerprint, "<unknown>");

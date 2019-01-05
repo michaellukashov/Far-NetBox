@@ -266,7 +266,7 @@ public:
   TRemoteDirectoryFile() noexcept;
   explicit TRemoteDirectoryFile(TObjectClassId Kind) noexcept;
   void Init();
-  virtual ~TRemoteDirectoryFile() = default;
+  virtual ~TRemoteDirectoryFile() noexcept = default;
 };
 //---------------------------------------------------------------------------
 NB_DEFINE_CLASS_ID(TRemoteParentDirectory);
@@ -276,8 +276,8 @@ public:
   static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TRemoteParentDirectory); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TRemoteParentDirectory) || TRemoteDirectoryFile::is(Kind); }
 public:
-  explicit TRemoteParentDirectory(TTerminal *ATerminal);
-  virtual ~TRemoteParentDirectory() {}
+  explicit TRemoteParentDirectory(TTerminal *ATerminal) noexcept;
+  virtual ~TRemoteParentDirectory() noexcept = default;
 };
 //---------------------------------------------------------------------------
 NB_DEFINE_CLASS_ID(TRemoteFileList);
@@ -344,11 +344,11 @@ public:
   static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TRemoteDirectory); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TRemoteDirectory) || TRemoteFileList::is(Kind); }
 private:
-  TTerminal *FTerminal;
-  TRemoteFile *FParentDirectory;
-  TRemoteFile *FThisDirectory;
-  Boolean FIncludeParentDirectory;
-  Boolean FIncludeThisDirectory;
+  TTerminal *FTerminal{nullptr};
+  TRemoteFile *FParentDirectory{nullptr};
+  TRemoteFile *FThisDirectory{nullptr};
+  Boolean FIncludeParentDirectory{false};
+  Boolean FIncludeThisDirectory{false};
 public:
   virtual void SetDirectory(const UnicodeString Value) override;
   Boolean GetLoaded() const;
@@ -356,11 +356,11 @@ public:
   void SetIncludeThisDirectory(Boolean Value);
   void ReleaseRelativeDirectories();
 public:
-  explicit TRemoteDirectory(TTerminal *ATerminal, TRemoteDirectory *Template = nullptr);
-  virtual ~TRemoteDirectory();
-  virtual void AddFile(TRemoteFile *AFile) override;
-  virtual void DuplicateTo(TRemoteFileList *Copy) const override;
-  virtual void Reset() override;
+  explicit TRemoteDirectory(TTerminal *ATerminal, TRemoteDirectory *Template = nullptr) noexcept;
+  virtual ~TRemoteDirectory() noexcept;
+  void AddFile(TRemoteFile *AFile) override;
+  void DuplicateTo(TRemoteFileList *Copy) const override;
+  void Reset() override;
 
   __property TTerminal * Terminal = { read = FTerminal, write = FTerminal };
   __property Boolean IncludeParentDirectory = { read = FIncludeParentDirectory, write = SetIncludeParentDirectory };
@@ -383,8 +383,8 @@ class TRemoteDirectoryCache : private TStringList
   CUSTOM_MEM_ALLOCATION_IMPL
   NB_DISABLE_COPY(TRemoteDirectoryCache)
 public:
-  TRemoteDirectoryCache();
-  virtual ~TRemoteDirectoryCache();
+  TRemoteDirectoryCache() noexcept;
+  virtual ~TRemoteDirectoryCache() noexcept;
   bool HasFileList(const UnicodeString Directory) const;
   bool HasNewerFileList(const UnicodeString Directory, const TDateTime &Timestamp) const;
   bool GetFileList(const UnicodeString Directory,
@@ -409,8 +409,8 @@ class TRemoteDirectoryChangesCache : private TStringList
 {
   CUSTOM_MEM_ALLOCATION_IMPL
 public:
-  explicit TRemoteDirectoryChangesCache(intptr_t MaxSize);
-  virtual ~TRemoteDirectoryChangesCache() {}
+  explicit TRemoteDirectoryChangesCache(intptr_t MaxSize) noexcept;
+  virtual ~TRemoteDirectoryChangesCache() noexcept = default;
 
   void AddDirectoryChange(const UnicodeString SourceDir,
     const UnicodeString Change, const UnicodeString TargetDir);
@@ -434,7 +434,7 @@ private:
   UnicodeString GetValue(const UnicodeString Name) const { return TStringList::GetValue(Name); }
   UnicodeString GetValue(const UnicodeString Name);
 
-  intptr_t FMaxSize;
+  intptr_t FMaxSize{0};
 };
 //---------------------------------------------------------------------------
 class NB_CORE_EXPORT TRights : public TObject
@@ -486,9 +486,9 @@ public:
 public:
   static TFlag RightToFlag(TRight Right);
 
-  TRights();
-  TRights(const TRights &Source);
-  explicit TRights(uint16_t ANumber);
+  TRights() noexcept;
+  TRights(const TRights &Source) noexcept;
+  explicit TRights(uint16_t ANumber) noexcept;
   void Assign(const TRights *Source);
   void AddExecute();
   void AllUndef();
@@ -534,10 +534,10 @@ public:
 
 private:
   UnicodeString FText;
-  uint16_t FSet;
-  uint16_t FUnset;
-  bool FAllowUndef;
-  bool FUnknown;
+  uint16_t FSet{0};
+  uint16_t FUnset{0};
+  bool FAllowUndef{false};
+  bool FUnknown{true};
 
 public:
   bool GetIsUndef() const;
@@ -803,16 +803,16 @@ class TFileOperationProgressType;
 class TSynchronizeProgress
 {
 public:
-  explicit TSynchronizeProgress(const TSynchronizeChecklist * Checklist);
+  explicit TSynchronizeProgress(const TSynchronizeChecklist * Checklist) noexcept;
 
   void ItemProcessed(const TChecklistItem* ChecklistItem);
   intptr_t Progress(const TFileOperationProgressType * CurrentItemOperationProgress) const;
   TDateTime TimeLeft(const TFileOperationProgressType * CurrentItemOperationProgress) const;
 
 private:
-  const TSynchronizeChecklist * FChecklist;
-  mutable int64_t FTotalSize;
-  int64_t FProcessedSize;
+  const TSynchronizeChecklist * FChecklist{nullptr};
+  mutable int64_t FTotalSize{-1};
+  int64_t FProcessedSize{0};
 
   int64_t ItemSize(const TChecklistItem* ChecklistItem) const;
   int64_t GetProcessed(const TFileOperationProgressType * CurrentItemOperationProgress) const;

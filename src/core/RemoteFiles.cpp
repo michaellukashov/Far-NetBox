@@ -1110,7 +1110,7 @@ void TRemoteDirectoryFile::Init()
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-TRemoteParentDirectory::TRemoteParentDirectory(TTerminal *ATerminal) :
+TRemoteParentDirectory::TRemoteParentDirectory(TTerminal *ATerminal) noexcept :
   TRemoteDirectoryFile(OBJECT_CLASS_TRemoteParentDirectory)
 {
   SetFileName(PARENTDIRECTORY);
@@ -1228,7 +1228,7 @@ TRemoteFile *TRemoteFileList::FindFile(const UnicodeString AFileName) const
   return nullptr;
 }
 //=== TRemoteDirectory ------------------------------------------------------
-TRemoteDirectory::TRemoteDirectory(TTerminal *ATerminal, TRemoteDirectory *Template) :
+TRemoteDirectory::TRemoteDirectory(TTerminal *ATerminal, TRemoteDirectory *Template) noexcept :
   TRemoteFileList(OBJECT_CLASS_TRemoteDirectory),
   FTerminal(ATerminal),
   FParentDirectory(nullptr),
@@ -1248,7 +1248,7 @@ TRemoteDirectory::TRemoteDirectory(TTerminal *ATerminal, TRemoteDirectory *Templ
   }
 }
 //---------------------------------------------------------------------------
-TRemoteDirectory::~TRemoteDirectory()
+TRemoteDirectory::~TRemoteDirectory() noexcept
 {
   ReleaseRelativeDirectories();
 }
@@ -1349,14 +1349,14 @@ void TRemoteDirectory::SetIncludeThisDirectory(Boolean Value)
   }
 }
 //===========================================================================
-TRemoteDirectoryCache::TRemoteDirectoryCache() : TStringList()
+TRemoteDirectoryCache::TRemoteDirectoryCache() noexcept : TStringList()
 {
   TStringList::SetSorted(true);
   SetDuplicates(dupError);
   TStringList::SetCaseSensitive(true);
 }
 //---------------------------------------------------------------------------
-TRemoteDirectoryCache::~TRemoteDirectoryCache()
+TRemoteDirectoryCache::~TRemoteDirectoryCache() noexcept
 {
   TRemoteDirectoryCache::Clear();
 }
@@ -1481,7 +1481,7 @@ void TRemoteDirectoryCache::Delete(intptr_t Index)
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-TRemoteDirectoryChangesCache::TRemoteDirectoryChangesCache(intptr_t MaxSize) :
+TRemoteDirectoryChangesCache::TRemoteDirectoryChangesCache(intptr_t MaxSize) noexcept :
   TStringList(),
   FMaxSize(MaxSize)
 {
@@ -1664,7 +1664,7 @@ const wchar_t TRights::CombinedSymbols[] = L"--s--s--t";
 const wchar_t TRights::ExtendedSymbols[] = L"--S--S--T";
 const wchar_t TRights::ModeGroups[] = L"ugo";
 //---------------------------------------------------------------------------
-TRights::TRights() :
+TRights::TRights() noexcept :
   FSet(0),
   FUnset(0),
   FAllowUndef(false),
@@ -1673,7 +1673,7 @@ TRights::TRights() :
   SetNumber(0);
 }
 //---------------------------------------------------------------------------
-TRights::TRights(uint16_t ANumber) :
+TRights::TRights(uint16_t ANumber) noexcept :
   FSet(0),
   FUnset(0),
   FAllowUndef(false),
@@ -1682,7 +1682,7 @@ TRights::TRights(uint16_t ANumber) :
   SetNumber(ANumber);
 }
 //---------------------------------------------------------------------------
-TRights::TRights(const TRights &Source)
+TRights::TRights(const TRights &Source) noexcept
 {
   Assign(&Source);
 }
@@ -2618,7 +2618,7 @@ bool TSynchronizeChecklist::IsItemSizeIrrelevant(TChecklistAction Action)
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-TSynchronizeProgress::TSynchronizeProgress(const TSynchronizeChecklist * Checklist)
+TSynchronizeProgress::TSynchronizeProgress(const TSynchronizeChecklist * Checklist) noexcept
 {
   FTotalSize = -1;
   FProcessedSize = 0;

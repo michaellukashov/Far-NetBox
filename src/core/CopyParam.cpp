@@ -11,7 +11,7 @@
 const wchar_t *TransferModeNames[] = { L"binary", L"ascii", L"automatic" };
 const int TransferModeNamesCount = _countof(TransferModeNames);
 //---------------------------------------------------------------------------
-TCopyParamType::TCopyParamType(TObjectClassId Kind) :
+TCopyParamType::TCopyParamType(TObjectClassId Kind) noexcept :
   TObject(Kind)
 {
   TCopyParamType::Default();
@@ -936,9 +936,9 @@ void TCopyParamType::Load(THierarchicalStorage *Storage)
   SetRemoveBOM(Storage->ReadBool("RemoveBOM", GetRemoveBOM()));
   SetCPSLimit(Storage->ReadInteger("CPSLimit", (int)GetCPSLimit()));
   SetNewerOnly(Storage->ReadBool("NewerOnly", GetNewerOnly()));
-  EncryptNewFiles = Storage->ReadBool(L"EncryptNewFiles", EncryptNewFiles);
-  ExcludeHiddenFiles = Storage->ReadBool(L"ExcludeHiddenFiles", ExcludeHiddenFiles);
-  ExcludeEmptyDirectories = Storage->ReadBool(L"ExcludeEmptyDirectories", ExcludeEmptyDirectories);
+  EncryptNewFiles = Storage->ReadBool("EncryptNewFiles", EncryptNewFiles);
+  ExcludeHiddenFiles = Storage->ReadBool("ExcludeHiddenFiles", ExcludeHiddenFiles);
+  ExcludeEmptyDirectories = Storage->ReadBool("ExcludeEmptyDirectories", ExcludeEmptyDirectories);
   Size = -1;
 }
 

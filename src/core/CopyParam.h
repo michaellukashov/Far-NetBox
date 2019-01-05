@@ -88,7 +88,7 @@ public:
   void SetTransferSkipList(TStrings *Value);
 
 public:
-  explicit TCopyParamType(TObjectClassId Kind = OBJECT_CLASS_TCopyParamType);
+  explicit TCopyParamType(TObjectClassId Kind = OBJECT_CLASS_TCopyParamType) noexcept;
   TCopyParamType(const TCopyParamType &Source) noexcept;
   virtual ~TCopyParamType() noexcept;
   TCopyParamType &operator=(const TCopyParamType &rhs);
