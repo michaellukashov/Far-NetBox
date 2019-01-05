@@ -29,7 +29,7 @@ extern "C"
 #define SESSION_TLS_INIT_DATA_KEY "tlsinitdata"
 #define SESSION_TERMINAL_KEY "terminal"
 //---------------------------------------------------------------------------
-void NeonParseUrl(const UnicodeString Url, ne_uri &uri)
+void NeonParseUrl(UnicodeString Url, ne_uri &uri)
 {
   if (ne_uri_parse(StrToNeon(Url), &uri) != 0)
   {
@@ -218,9 +218,9 @@ UnicodeString GetNeonRedirectUrl(ne_session *Session)
   return Result;
 }
 //---------------------------------------------------------------------------
-#define MAX_REDIRECT_ATTEMPTS 5
+constexpr intptr_t MAX_REDIRECT_ATTEMPTS = 5;
 //---------------------------------------------------------------------------
-void CheckRedirectLoop(const UnicodeString RedirectUrl, TStrings *AttemptedUrls)
+void CheckRedirectLoop(UnicodeString RedirectUrl, TStrings *AttemptedUrls)
 {
   if (AttemptedUrls->GetCount() > MAX_REDIRECT_ATTEMPTS)
   {
@@ -526,7 +526,7 @@ UnicodeString NeonTlsSessionInfo(
 void SetupSsl(ssl_st *Ssl, TTlsVersion MinTlsVersion, TTlsVersion MaxTlsVersion)
 {
 #define MASK_TLS_VERSION(VERSION, FLAG) ((MinTlsVersion > VERSION) || (MaxTlsVersion < VERSION) ? FLAG : 0)
-  int Options =
+  long Options =
     MASK_TLS_VERSION(ssl2, SSL_OP_NO_SSLv2) |
     MASK_TLS_VERSION(ssl3, SSL_OP_NO_SSLv3) |
     MASK_TLS_VERSION(tls10, SSL_OP_NO_TLSv1) |

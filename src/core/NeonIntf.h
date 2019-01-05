@@ -28,7 +28,7 @@ struct TNeonCertificateData
   int Failures{0};
 };
 //---------------------------------------------------------------------------
-void NeonParseUrl(const UnicodeString Url, ne_uri &uri);
+void NeonParseUrl(UnicodeString Url, ne_uri &uri);
 bool IsTlsUri(const ne_uri &uri);
 ne_session *CreateNeonSession(const ne_uri &uri);
 void InitNeonSession(ne_session *Session, TProxyMethod ProxyMethod, const UnicodeString AProxyHost,
@@ -38,7 +38,7 @@ UnicodeString GetNeonError(ne_session *Session);
 void CheckNeonStatus(ne_session *Session, intptr_t NeonStatus,
   const UnicodeString AHostName, const UnicodeString CustomError = L"");
 UnicodeString GetNeonRedirectUrl(ne_session *Session);
-void CheckRedirectLoop(const UnicodeString RedirectUrl, TStrings *AttemptedUrls);
+void CheckRedirectLoop(UnicodeString RedirectUrl, TStrings *AttemptedUrls);
 __removed typedef void (__closure *TNeonTlsInit)(struct ssl_st *Ssl, ne_session *Session);
 typedef void (*TNeonTlsInit)(struct ssl_st *Ssl, ne_session *Session);
 void SetNeonTlsInit(ne_session *Session, TNeonTlsInit OnNeonTlsInit);
