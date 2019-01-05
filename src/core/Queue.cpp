@@ -17,7 +17,7 @@ class TParallelTransferQueueItem : public TLocatedQueueItem
 {
 public:
   static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TParallelTransferQueueItem); }
-  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TParallelTransferQueueItem) || TLocatedQueueItem::is(Kind); }
+  bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TParallelTransferQueueItem) || TLocatedQueueItem::is(Kind); }
 public:
   TParallelTransferQueueItem(const TLocatedQueueItem *ParentItem, TParallelOperation *ParallelOperation) noexcept;
 
@@ -279,7 +279,7 @@ class TTerminalItem : public TSignalThread
   NB_DISABLE_COPY(TTerminalItem)
 public:
   static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TTerminalItem); }
-  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TTerminalItem) || TSignalThread::is(Kind); }
+  bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TTerminalItem) || TSignalThread::is(Kind); }
 public:
   explicit TTerminalItem(TTerminalQueue *Queue) noexcept;
   virtual ~TTerminalItem() noexcept;
@@ -1273,7 +1273,7 @@ class TBackgroundTerminal : public TSecondaryTerminal
   friend class TTerminalItem;
 public:
   static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TBackgroundTerminal); }
-  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TBackgroundTerminal) || TSecondaryTerminal::is(Kind); }
+  bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TBackgroundTerminal) || TSecondaryTerminal::is(Kind); }
 
 public:
   explicit TBackgroundTerminal(TTerminal *MainTerminal);

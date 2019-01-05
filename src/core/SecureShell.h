@@ -36,7 +36,7 @@ class TSecureShell : public TObject
   NB_DISABLE_COPY(TSecureShell)
 public:
   static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TSecureShell); }
-  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TSecureShell) || TObject::is(Kind); }
+  bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TSecureShell) || TObject::is(Kind); }
 private:
   SOCKET FSocket{};
   HANDLE FSocketEvent{};

@@ -74,7 +74,7 @@ class NB_CORE_EXPORT TSessionUI : public TObject
 {
 public:
   static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TSessionUI); }
-  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TSessionUI) || TObject::is(Kind); }
+  bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TSessionUI) || TObject::is(Kind); }
 public:
   explicit TSessionUI(TObjectClassId Kind) noexcept : TObject(Kind) {}
   virtual ~TSessionUI() noexcept = default;

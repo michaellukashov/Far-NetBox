@@ -35,7 +35,7 @@ class NB_CORE_EXPORT TS3FileSystem : public TCustomFileSystem
   NB_DISABLE_COPY(TS3FileSystem)
 public:
   static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TS3FileSystem); }
-  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TS3FileSystem) || TObject::is(Kind); }
+  bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TS3FileSystem) || TObject::is(Kind); }
 public:
   explicit TS3FileSystem(TTerminal *ATerminal) noexcept;
   virtual ~TS3FileSystem() noexcept;

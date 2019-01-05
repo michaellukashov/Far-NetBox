@@ -25,7 +25,7 @@ class NB_CORE_EXPORT TFTPFileSystem : public TCustomFileSystem
   NB_DISABLE_COPY(TFTPFileSystem)
 public:
   static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TFTPFileSystem); }
-  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TFTPFileSystem) || TCustomFileSystem::is(Kind); }
+  bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TFTPFileSystem) || TCustomFileSystem::is(Kind); }
 public:
   explicit TFTPFileSystem(TTerminal *ATerminal) noexcept;
   virtual ~TFTPFileSystem() noexcept;

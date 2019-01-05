@@ -203,7 +203,7 @@ class NB_CORE_EXPORT TSessionData : public TNamedObject
   NB_DISABLE_COPY(TSessionData)
 public:
   static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TSessionData); }
-  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TSessionData) || TNamedObject::is(Kind); }
+  bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TSessionData) || TNamedObject::is(Kind); }
 private:
   UnicodeString FHostName;
   intptr_t FPortNumber{0};
@@ -987,7 +987,7 @@ class NB_CORE_EXPORT TStoredSessionList : public TNamedObjectList
   NB_DISABLE_COPY(TStoredSessionList)
 public:
   static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TStoredSessionList); }
-  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TStoredSessionList) || TNamedObjectList::is(Kind); }
+  bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TStoredSessionList) || TNamedObjectList::is(Kind); }
 public:
   explicit TStoredSessionList(bool AReadOnly = false) noexcept;
   void Reload();

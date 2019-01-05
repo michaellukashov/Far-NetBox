@@ -22,7 +22,7 @@ class TWebDAVFileSystem : public TCustomFileSystem
   NB_DISABLE_COPY(TWebDAVFileSystem)
 public:
   static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TWebDAVFileSystem); }
-  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TWebDAVFileSystem) || TCustomFileSystem::is(Kind); }
+  bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TWebDAVFileSystem) || TCustomFileSystem::is(Kind); }
 public:
   explicit TWebDAVFileSystem(TTerminal *ATerminal);
   virtual ~TWebDAVFileSystem();
