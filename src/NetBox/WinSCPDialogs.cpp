@@ -1207,7 +1207,7 @@ TPasswordDialog::TPasswordDialog(TCustomFarPlugin *AFarPlugin,
   bool /*StoredCredentialsTried*/) :
   TFarDialog(AFarPlugin),
   FSessionData(nullptr),
-  FEdits(new TList()),
+  FEdits(std::make_unique<TList>()),
   SavePasswordCheck(nullptr)
 {
   bool ShowSavePassword = false;
@@ -1676,7 +1676,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin *AFarPlugin, TSessionActionEnum 
   FSessionData(nullptr),
   FTransferProtocolIndex(0),
   FFtpEncryptionComboIndex(0),
-  FTabs(new TObjectList()),
+  FTabs(std::make_unique<TObjectList>()),
   FFirstVisibleTabIndex(0)
 {
   TPoint S = TPoint(67, 23);
@@ -2838,7 +2838,7 @@ void TSessionDialog::SshProxyMethodComboAddNewItem(int ProxyTypeId, TProxyMethod
 
 TSessionDialog::~TSessionDialog()
 {
-  SAFE_DESTROY(FTabs);
+//  SAFE_DESTROY(FTabs);
 }
 
 void TSessionDialog::Change()

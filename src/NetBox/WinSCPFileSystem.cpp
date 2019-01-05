@@ -1286,7 +1286,7 @@ void TWinSCPFileSystem::ApplyCommand()
             {
               RecursiveDeleteFile(::ExcludeTrailingBackslash(TempDir), false);
             };
-            RemoteFileList.reset(new TStringList());
+            RemoteFileList = std::make_unique<TStringList>();
 
             TMakeLocalFileListParams MakeFileListParam;
             MakeFileListParam.FileList = RemoteFileList.get();
