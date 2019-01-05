@@ -7,7 +7,7 @@ set(OPT_USE_UNITY_BUILD ON CACHE STRING "Default use unity build")
 project(NetBox)
 
 if(NOT CMAKE_BUILD_TYPE)
-  set(CMAKE_BUILD_TYPE Debug CACHE STRING "Default build type to Debug" FORCE)
+  set(CMAKE_BUILD_TYPE Debug CACHE STRING "Default build type to Debug")
 endif()
 message("Build type: ${CMAKE_BUILD_TYPE}")
 message("CMAKE_CL_64: ${CMAKE_CL_64}")
@@ -137,11 +137,6 @@ function(nb_replace_compiler_option var old new)
 endfunction(nb_replace_compiler_option)
 
 if(MSVC)
-nb_replace_compiler_option(CMAKE_CXX_FLAGS "/GR-?" "/GR-")
-#nb_replace_compiler_option(CMAKE_CXX_FLAGS "/MD[d]?" "")
-nb_replace_compiler_option(CMAKE_CXX_FLAGS "/EH[-cs]+" "")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHsc")
-#string(REPLACE "/MD" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 
 add_definitions(-DWINSCP -DFARPLUGIN)
 add_definitions(-DFASTDELEGATE_ALLOW_FUNCTION_TYPE_SYNTAX)
@@ -150,7 +145,6 @@ add_definitions(-DHIDE_TODO)
 add_definitions(-DNEED_LIBS3)
 add_definitions(-DFARPLUGIN)
 add_definitions(${fmt_DEFINES})
-
 
 set(NETBOX_DLL_LINK_FLAGS
   "
@@ -1824,11 +1818,12 @@ ucm_add_flags(CXX C /MP /Gy /Zi CONFIG Release)
 ucm_add_flags(CXX C /GS- /fp:fast /O2 /Oy /GA /GF /Gw /GL CONFIG Release)
 #/Oy - omit frame pointers
 #/Oi - enable intrinsic functions
-ucm_add_flags(CXX C /Gm- -Ox -Ob1 -Oi -Os -GF CONFIG Release) # static runtime
-ucm_add_flags(CXX C /MT CONFIG Release) # static runtime
+ucm_add_flags(CXX C /Gm- -Ox -Ob1 -Oi -Os -GF CONFIG Release)
+# static runtime settings
+ucm_add_flags(CXX C /MT CONFIG Release)
+ucm_add_flags(CXX C /MTd CONFIG Debug) 
+# linker settings
 ucm_add_linker_flags(MODULE SHARED EXE /DEBUG /OPT:REF /OPT:ICF=6 /NXCOMPAT /DYNAMICBASE /MANIFEST:NO CONFIG Release)
 ucm_add_linker_flags(MODULE STATIC SHARED EXE /LTCG CONFIG Release)
 ucm_print_flags()
 #-------------------------------------------------------------------------------
-#set(NETBOX_FLAGS_RELEASE "${NETBOX_FLAGS_RELEASE} /Gm- /MT -Ox -Ob1 -Oi -Os -GF -GS- -Gy /fp:fast")
-#set(NETBOX_FLAGS_DEBUG "${NETBOX_FLAGS_DEBUG} /Gm- /Od /MTd /GS /RTC1")
