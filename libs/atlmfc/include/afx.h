@@ -22,29 +22,11 @@
 
 /////////////////////////////////////////////////////////////////////////////
 
-#ifdef _DLL
-#ifndef _AFXDLL
-#error Building MFC application with /MD[d] (CRT dll version) requires MFC shared dll version. Please #define _AFXDLL or do not use /MD[d]
-#endif
-#endif
-
-#if !defined(_M_IX86) && !defined(_M_AMD64) && !defined(_WIN64) && !defined(_WIN32)
-	#error Compiling for unsupported platform.  Only x86 and x64 platforms are supported by MFC.
-#endif
-
 // Since MFC itself is built with wchar_t as a native type, it will not have
 // the correct type info for types built with wchar_t typedef'd to unsigned
 // short.  Make sure that the user's app builds this type info in this case.
 #ifndef _NATIVE_WCHAR_T_DEFINED
 #define _AFX_FULLTYPEINFO
-#endif
-
-#ifdef _AFX_MINREBUILD
-#pragma component(minrebuild, off)
-#endif 
- 
-#ifdef __ATLDBGMEM_H__
-#error <atldbgmem.h> cannot be used in MFC projects. See AfxEnableMemoryTracking
 #endif
 
 #if defined(_MFC_DLL_BLD) && defined(_DEBUG)
