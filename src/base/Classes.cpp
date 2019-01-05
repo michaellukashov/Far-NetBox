@@ -1312,7 +1312,7 @@ void TStream::SetPosition(const int64_t Pos)
   DebugAssert(res == Pos);
 }
 
-static void ReadError(const UnicodeString Name)
+static void ReadError(UnicodeString Name)
 {
   throw Exception(FORMAT("InvalidRegType: %s", Name)); // FIXME ERegistryException.CreateResFmt(@SInvalidRegType, [Name]);
 }
@@ -1883,7 +1883,7 @@ int TRegistry::ReadInteger(const UnicodeString Name) const
 {
   DWORD Result = 0;
   TRegDataType RegData = rdUnknown;
-  const auto res = GetData(Name, &Result, sizeof(Result), RegData);
+  int res = GetData(Name, &Result, sizeof(Result), RegData);
   DebugAssert(res == sizeof(Result));
   if (RegData != rdInteger)
   {
@@ -1968,7 +1968,7 @@ int TRegistry::GetData(const UnicodeString Name, void *Buffer,
     throw Exception("RegQueryValueEx failed"); // FIXME ERegistryException.CreateResFmt(@SRegGetDataFailed, [Name]);
   }
   RegData = DataTypeToRegData(DataType);
-  const int Result = nb::ToInt(BufSize);
+  int Result = nb::ToInt(BufSize);
   return Result;
 }
 
