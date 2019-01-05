@@ -244,8 +244,8 @@ TCustomFarFileSystem *TCustomFarPlugin::GetPanelFileSystem(bool Another,
   RECT ActivePanelBounds = GetPanelBounds(PANEL_ACTIVE);
   RECT PassivePanelBounds = GetPanelBounds(PANEL_PASSIVE);
 
-  TCustomFarFileSystem *FarFileSystem;
-  intptr_t Index = 0;
+  TCustomFarFileSystem *FarFileSystem{nullptr};
+  intptr_t Index{0};
   while (!Result && (Index < FOpenedPlugins->GetCount()))
   {
     FarFileSystem = FOpenedPlugins->GetAs<TCustomFarFileSystem>(Index);

@@ -347,8 +347,8 @@ private:
   TFarPanelInfo **GetPanelInfo(int Another);
 };
 
-#define PANEL_MODES_COUNT 10
-class TFarPanelModes : public TObject
+constexpr int PANEL_MODES_COUNT = 10;
+class TFarPanelModes final : public TObject
 {
   friend class TCustomFarFileSystem;
 public:
@@ -370,7 +370,7 @@ private:
   static intptr_t CommaCount(const UnicodeString ColumnTypes);
 };
 
-class TFarKeyBarTitles : public TObject
+class TFarKeyBarTitles final : public TObject
 {
   friend class TCustomFarFileSystem;
 public:
@@ -436,24 +436,24 @@ protected:
   PluginPanelItem *FPanelItem{nullptr};
   bool FOwnsItem{false};
 
-  virtual void GetData(
+  void GetData(
     DWORD &Flags, UnicodeString &AFileName, int64_t &Size,
     DWORD &FileAttributes,
     TDateTime &LastWriteTime, TDateTime &LastAccess,
     DWORD &NumberOfLinks, UnicodeString &Description,
     UnicodeString &Owner, void *&UserData, int &CustomColumnNumber) override;
-  virtual UnicodeString GetCustomColumnData(size_t Column) override;
+  UnicodeString GetCustomColumnData(size_t Column) override;
 };
 
 NB_DEFINE_CLASS_ID(THintPanelItem);
-class THintPanelItem : public TCustomFarPanelItem
+class THintPanelItem final : public TCustomFarPanelItem
 {
 public:
   explicit THintPanelItem(const UnicodeString AHint) noexcept;
   virtual ~THintPanelItem() noexcept = default;
 
 protected:
-  virtual void GetData(
+  void GetData(
     DWORD &Flags, UnicodeString &AFileName, int64_t &Size,
     DWORD &FileAttributes,
     TDateTime &LastWriteTime, TDateTime &LastAccess,
@@ -513,7 +513,7 @@ public:
   explicit TFarMenuItems() noexcept;
   virtual ~TFarMenuItems() noexcept = default;
   void AddSeparator(bool Visible = true);
-  virtual intptr_t Add(const UnicodeString Text, bool Visible = true);
+  virtual intptr_t Add(UnicodeString Text, bool Visible = true);
 
   void Clear() override;
   void Delete(intptr_t Index) override;
