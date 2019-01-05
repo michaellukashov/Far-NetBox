@@ -37,8 +37,8 @@ void TCopyParamType::Default()
   FRights.SetNumber(TRights::rfDefault);
   SetPreserveRights(false); // Was True until #106
   SetIgnorePermErrors(false);
-  FAsciiFileMask.SetMasks(UnicodeString(L"*.*html; *.htm; *.txt; *.php; *.php3; *.cgi; *.c; *.cpp; *.h; *.pas; "
-      L"*.bas; *.tex; *.pl; *.js; .htaccess; *.xtml; *.css; *.cfg; *.ini; *.sh; *.xml"));
+  FAsciiFileMask.SetMasks(UnicodeString("*.*html; *.htm; *.txt; *.php; *.php3; *.cgi; *.c; *.cpp; *.h; *.pas; "
+      "*.bas; *.tex; *.pl; *.js; .htaccess; *.xtml; *.css; *.cfg; *.ini; *.sh; *.xml"));
   SetTransferMode(tmBinary);
   SetAddXToDirectories(true);
   SetResumeSupport(rsSmart);
@@ -47,9 +47,9 @@ void TCopyParamType::Default()
   SetLocalInvalidChars(::LocalInvalidChars);
   SetCalculateSize(true);
   SetFileMask(AnyMask);
-  GetIncludeFileMask().SetMasks(L"");
+  GetIncludeFileMask().SetMasks("");
   SetTransferSkipList(nullptr);
-  SetTransferResumeFile(L"");
+  SetTransferResumeFile("");
   SetClearArchive(false);
   SetRemoveCtrlZ(false);
   SetRemoveBOM(false);
@@ -106,7 +106,7 @@ UnicodeString __fastcall TCopyParamType::GenerateAssemblyCode(TAssemblyLanguage 
   bool SomeAttrIncluded;
   UnicodeString ScriptArgs;
   UnicodeString AssemblyCode;
-  DoGetInfoStr(L";", Attrs, Result, SomeAttrIncluded, UnicodeString(), ScriptArgs, Language, AssemblyCode);
+  DoGetInfoStr(";", Attrs, Result, SomeAttrIncluded, UnicodeString(), ScriptArgs, Language, AssemblyCode);
   return Result;
 }
 #endif // #if 0
@@ -273,7 +273,7 @@ void TCopyParamType::DoGetInfoStr(
       {
         AddPreserveTime = true;
       }
-      ADD(L"", Except);
+      ADD("", Except);
     }
 
     if (AddPreserveTime)
@@ -510,7 +510,7 @@ void TCopyParamType::DoGetInfoStr(
   {
     ScriptArgs +=
       RtfSwitch(RAWTRANSFERSETTINGS_SWITCH, ALink) +
-      FORMAT(L"[%d]", (RawOptions->Count)) +
+      FORMAT("[%d]", (RawOptions->Count)) +
       StringsToParams(RawOptions.get());
   }
 
@@ -930,7 +930,7 @@ void TCopyParamType::Load(THierarchicalStorage *Storage)
     }
   }
   SetTransferSkipList(nullptr);
-  SetTransferResumeFile(L"");
+  SetTransferResumeFile("");
   SetClearArchive(Storage->ReadBool("ClearArchive", GetClearArchive()));
   SetRemoveCtrlZ(Storage->ReadBool("RemoveCtrlZ", GetRemoveCtrlZ()));
   SetRemoveBOM(Storage->ReadBool("RemoveBOM", GetRemoveBOM()));

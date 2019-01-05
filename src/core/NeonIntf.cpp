@@ -328,34 +328,34 @@ UnicodeString NeonCertificateFailuresErrorStr(int Failures, const UnicodeString 
   UnicodeString Result;
   if (FLAGSET(FailuresToList, NE_SSL_NOTYETVALID))
   {
-    AddToList(Result, LoadStr(CERT_ERR_CERT_NOT_YET_VALID), L" ");
+    AddToList(Result, LoadStr(CERT_ERR_CERT_NOT_YET_VALID), " ");
     FailuresToList &= ~NE_SSL_NOTYETVALID;
   }
   if (FLAGSET(FailuresToList, NE_SSL_EXPIRED))
   {
-    AddToList(Result, LoadStr(CERT_ERR_CERT_HAS_EXPIRED), L" ");
+    AddToList(Result, LoadStr(CERT_ERR_CERT_HAS_EXPIRED), " ");
     FailuresToList &= ~NE_SSL_EXPIRED;
   }
   // NEON checks certificate host name on its own
   if (FLAGSET(FailuresToList, NE_SSL_IDMISMATCH))
   {
-    AddToList(Result, FMTLOAD(CERT_NAME_MISMATCH, AHostName), L" ");
+    AddToList(Result, FMTLOAD(CERT_NAME_MISMATCH, AHostName), " ");
     FailuresToList &= ~NE_SSL_IDMISMATCH;
   }
   if (FLAGSET(FailuresToList, NE_SSL_UNTRUSTED))
   {
-    AddToList(Result, LoadStr(CERT_ERR_CERT_UNTRUSTED), L" ");
+    AddToList(Result, LoadStr(CERT_ERR_CERT_UNTRUSTED), " ");
     FailuresToList &= ~NE_SSL_UNTRUSTED;
   }
   if (FLAGSET(FailuresToList, NE_SSL_BADCHAIN))
   {
-    AddToList(Result, LoadStr(CERT_ERR_BAD_CHAIN), L" ");
+    AddToList(Result, LoadStr(CERT_ERR_BAD_CHAIN), " ");
     FailuresToList &= ~NE_SSL_BADCHAIN;
   }
   // nb, NE_SSL_REVOKED is never used by OpenSSL implementation
   if (FailuresToList != 0)
   {
-    AddToList(Result, LoadStr(CERT_ERR_UNKNOWN), L" ");
+    AddToList(Result, LoadStr(CERT_ERR_UNKNOWN), " ");
   }
   return Result;
 }
@@ -511,7 +511,7 @@ UnicodeString NeonTlsSessionInfo(
   ne_session *Session, TSessionInfo &SessionInfo, UnicodeString &TlsVersionStr)
 {
   TlsVersionStr = StrFromNeon(ne_ssl_get_version(Session));
-  AddToList(SessionInfo.SecurityProtocolName, TlsVersionStr, L", ");
+  AddToList(SessionInfo.SecurityProtocolName, TlsVersionStr, ", ");
 
   char *Buf = ne_ssl_get_cipher(Session);
   UnicodeString Cipher = StrFromNeon(Buf);
