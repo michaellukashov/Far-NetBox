@@ -247,16 +247,13 @@ static int check_identity(const ne_uri *server, X509 *cert, char **identity)
 {
     STACK_OF(GENERAL_NAME) *names;
     int match = 0, found = 0;
-    const char *hostname;
-    
-    hostname = server ? server->host : "";
+
+    const char* hostname = server ? server->host : "";
 
     names = X509_get_ext_d2i(cert, NID_subject_alt_name, NULL, NULL);
     if (names) {
-	int n;
-
-        /* subjectAltName contains a sequence of GeneralNames */
-	for (n = 0; n < sk_GENERAL_NAME_num(names) && !match; n++) {
+      /* subjectAltName contains a sequence of GeneralNames */
+	    for (int n = 0; n < sk_GENERAL_NAME_num(names) && !match; n++) {
 	    GENERAL_NAME *nm = sk_GENERAL_NAME_value(names, n);
 	    
             /* handle dNSName and iPAddress name extensions only. */
@@ -324,8 +321,7 @@ static int check_identity(const ne_uri *server, X509 *cert, char **identity)
      * as per RFC3280. */
     if (!found) {
 	X509_NAME *subj = X509_get_subject_name(cert);
-	X509_NAME_ENTRY *entry;
-	ne_buffer *cname = ne_buffer_ncreate(30);
+  ne_buffer *cname = ne_buffer_ncreate(30);
 	int idx = -1, lastidx;
 
 	/* find the most specific commonName attribute. */
@@ -341,7 +337,7 @@ static int check_identity(const ne_uri *server, X509 *cert, char **identity)
         }
 
 	/* extract the string from the entry */
-        entry = X509_NAME_get_entry(subj, lastidx);
+        X509_NAME_ENTRY* entry = X509_NAME_get_entry(subj, lastidx);
         if (append_dirstring(cname, X509_NAME_ENTRY_get_data(entry))) {
             ne_buffer_destroy(cname);
             return -1;
@@ -429,12 +425,12 @@ static int verify_callback(int ok, X509_STORE_CTX *ctx)
 /* Return a linked list of certificate objects from an OpenSSL chain. */
 static ne_ssl_certificate *make_chain(STACK_OF(X509) *chain)
 {
-    int n, count = sk_X509_num(chain);
+    int count = sk_X509_num(chain);
     ne_ssl_certificate *top = NULL, *current = NULL;
     
     NE_DEBUG(NE_DBG_SSL, "Chain depth: %d\n", count);
 
-    for (n = 0; n < count; n++) {
+    for (int n = 0; n < count; n++) {
         ne_ssl_certificate *cert = ne_malloc(sizeof *cert);
         populate_cert(cert, X509_dup(sk_X509_value(chain, n)));
 #ifdef NE_DEBUGGING
