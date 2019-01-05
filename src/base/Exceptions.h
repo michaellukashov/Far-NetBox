@@ -28,7 +28,7 @@ class NB_CORE_EXPORT ExtException : public Exception
 {
 public:
   static bool classof(const Exception *Obj) { return Obj->is(OBJECT_CLASS_ExtException); }
-  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_ExtException) || Exception::is(Kind); }
+  bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_ExtException) || Exception::is(Kind); }
 public:
   ExtException() noexcept = default;
   virtual ~ExtException() noexcept;
@@ -81,7 +81,7 @@ private:
 #define EXT_EXCEPTION_METHODS(NAME, BASE) \
   public: \
     static bool classof(const Exception *Obj) { return Obj->is(OBJECT_CLASS_##NAME); } \
-    virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_##NAME) || BASE::is(Kind); } \
+    bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_##NAME) || BASE::is(Kind); } \
   public: \
     explicit inline NAME(const Exception *E, const UnicodeString Msg, const UnicodeString HelpKeyword = L"") : \
       BASE(OBJECT_CLASS_##NAME, E, Msg, HelpKeyword) \
@@ -138,7 +138,7 @@ class NB_CORE_EXPORT EOSExtException : public ExtException
 {
 public:
   static bool classof(const Exception * Obj) { return Obj->is(OBJECT_CLASS_EOSExtException); }
-  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_EOSExtException) || ExtException::is(Kind); }
+  bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_EOSExtException) || ExtException::is(Kind); }
 public:
   explicit EOSExtException();
   explicit EOSExtException(const UnicodeString Msg);
@@ -151,7 +151,7 @@ class NB_CORE_EXPORT ECRTExtException : public EOSExtException
 {
 public:
   static bool classof(const Exception * Obj) { return Obj->is(OBJECT_CLASS_ECRTExtException); }
-  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_ECRTExtException) || EOSExtException::is(Kind); }
+  bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_ECRTExtException) || EOSExtException::is(Kind); }
 public:
   ECRTExtException() = default;
   explicit ECRTExtException(const UnicodeString Msg);
@@ -162,7 +162,7 @@ class NB_CORE_EXPORT EFatal : public ExtException
 {
 public:
   static bool classof(const Exception * Obj) { return Obj->is(OBJECT_CLASS_EFatal); }
-  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_EFatal) || ExtException::is(Kind); }
+  bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_EFatal) || ExtException::is(Kind); }
 public:
   // fatal errors are always copied, new message is only appended
   explicit EFatal(const Exception *E, const UnicodeString Msg, const UnicodeString HelpKeyword = L"");
@@ -186,7 +186,7 @@ private:
   { \
   public: \
     static bool classof(const Exception *Obj) { return Obj->is(OBJECT_CLASS_##NAME); } \
-    virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_##NAME) || BASE::is(Kind); } \
+    bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_##NAME) || BASE::is(Kind); } \
   public: \
     explicit inline NAME(const Exception *E, const UnicodeString Msg, const UnicodeString HelpKeyword = L"") : BASE(OBJECT_CLASS_##NAME, E, Msg, HelpKeyword) {} \
     virtual ExtException *Clone() const override { return new NAME(this, L""); } \
@@ -201,7 +201,7 @@ class NB_CORE_EXPORT ESshTerminate : public EFatal
 {
 public:
   static bool classof(const Exception *Obj) { return Obj->is(OBJECT_CLASS_ESshTerminate); }
-  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_ESshTerminate) || EFatal::is(Kind); }
+  bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_ESshTerminate) || EFatal::is(Kind); }
 public:
   explicit inline ESshTerminate(
     const Exception *E, const UnicodeString Msg, TOnceDoneOperation AOperation,
@@ -226,7 +226,7 @@ class NB_CORE_EXPORT ECallbackGuardAbort : public EAbort
 {
 public:
   static bool classof(const Exception *Obj) { return Obj->is(OBJECT_CLASS_ECallbackGuardAbort); }
-  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_ECallbackGuardAbort) || EAbort::is(Kind); }
+  bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_ECallbackGuardAbort) || EAbort::is(Kind); }
 public:
   ECallbackGuardAbort();
 };

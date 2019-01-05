@@ -155,7 +155,7 @@ class NB_CORE_EXPORT TPersistent : public TObject
 {
 public:
   static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TPersistent); }
-  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TPersistent) || TObject::is(Kind); }
+  bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TPersistent) || TObject::is(Kind); }
 public:
   TPersistent() noexcept : TObject(OBJECT_CLASS_TPersistent) {}
   explicit TPersistent(TObjectClassId Kind) noexcept;
@@ -182,7 +182,7 @@ class NB_CORE_EXPORT TList : public TPersistent
 {
 public:
   static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TList); }
-  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TList) || TPersistent::is(Kind); }
+  bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TList) || TPersistent::is(Kind); }
 public:
   TList() noexcept;
   explicit TList(TObjectClassId Kind) noexcept;
@@ -220,7 +220,7 @@ class NB_CORE_EXPORT TObjectList : public TList
 {
 public:
   static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TObjectList); }
-  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TObjectList) || TList::is(Kind); }
+  bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TObjectList) || TList::is(Kind); }
 public:
   TObjectList() noexcept;
   explicit TObjectList(TObjectClassId Kind) noexcept;
@@ -252,7 +252,7 @@ class NB_CORE_EXPORT TStrings : public TObjectList
 {
 public:
   static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TStrings); }
-  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TStrings) || TObjectList::is(Kind); }
+  bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TStrings) || TObjectList::is(Kind); }
 public:
   TStrings() noexcept;
   explicit TStrings(TObjectClassId Kind) noexcept;
@@ -324,7 +324,7 @@ class NB_CORE_EXPORT TStringList : public TStrings
   friend intptr_t StringListCompareStrings(TStringList *List, intptr_t Index1, intptr_t Index2);
 public:
   static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TStringList); }
-  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TStringList) || TStrings::is(Kind); }
+  bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TStringList) || TStrings::is(Kind); }
 public:
   explicit TStringList(TObjectClassId Kind = OBJECT_CLASS_TStringList) noexcept;
   virtual ~TStringList() noexcept = default;

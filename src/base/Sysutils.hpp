@@ -108,7 +108,7 @@ class NB_CORE_EXPORT EAbort : public Exception
 {
 public:
   static bool classof(const Exception *Obj) { return Obj->is(OBJECT_CLASS_EAbort); }
-  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_EAbort) || Exception::is(Kind); }
+  bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_EAbort) || Exception::is(Kind); }
 public:
   explicit EAbort(const UnicodeString What) noexcept : Exception(OBJECT_CLASS_EAbort, What) {}
   explicit EAbort(TObjectClassId Kind, const UnicodeString What) noexcept : Exception(Kind, What) {}
@@ -119,7 +119,7 @@ class NB_CORE_EXPORT EAccessViolation : public Exception
 {
 public:
   static bool classof(const Exception *Obj) { return Obj->is(OBJECT_CLASS_EAccessViolation); }
-  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_EAccessViolation) || Exception::is(Kind); }
+  bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_EAccessViolation) || Exception::is(Kind); }
 public:
   explicit EAccessViolation(const UnicodeString What) noexcept : Exception(OBJECT_CLASS_EAccessViolation, What) {}
 };
@@ -129,7 +129,7 @@ class NB_CORE_EXPORT EFileNotFoundError : public Exception
 {
 public:
   static bool classof(const Exception *Obj) { return Obj->is(OBJECT_CLASS_EFileNotFoundError); }
-  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_EFileNotFoundError) || Exception::is(Kind); }
+  bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_EFileNotFoundError) || Exception::is(Kind); }
 public:
   EFileNotFoundError() noexcept : Exception(OBJECT_CLASS_EFileNotFoundError, L"") {}
 };
@@ -139,7 +139,7 @@ class NB_CORE_EXPORT EOSError : public Exception
 {
 public:
   static bool classof(const Exception *Obj) { return Obj->is(OBJECT_CLASS_EOSError); }
-  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_EOSError) || Exception::is(Kind); }
+  bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_EOSError) || Exception::is(Kind); }
 public:
   explicit EOSError(const UnicodeString Msg, DWORD Code) noexcept :
     Exception(OBJECT_CLASS_EOSError, Msg),
@@ -154,7 +154,7 @@ class NB_CORE_EXPORT EInvalidOperation : public Exception
 {
 public:
   static bool classof(const Exception *Obj) { return Obj->is(OBJECT_CLASS_EInvalidOperation); }
-  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_EInvalidOperation) || Exception::is(Kind); }
+  bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_EInvalidOperation) || Exception::is(Kind); }
 public:
   explicit EInvalidOperation(const UnicodeString Msg) noexcept :
     Exception(OBJECT_CLASS_EInvalidOperation, Msg)
