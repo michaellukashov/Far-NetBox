@@ -619,7 +619,7 @@ struct TRegDataInfo
   DWORD DataSize{0};
 };
 
-class NB_CORE_EXPORT TRegistry : public TObject
+class NB_CORE_EXPORT TRegistry final : public TObject
 {
   NB_DISABLE_COPY(TRegistry)
 public:
@@ -681,7 +681,7 @@ private:
   // bool FLazyWrite;
   UnicodeString FCurrentPath;
   bool FCloseRootKey{false};
-  mutable uint32_t FAccess{0};
+  mutable uint32_t FAccess{KEY_ALL_ACCESS};
 };
 
 struct TTimeStamp
