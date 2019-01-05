@@ -159,7 +159,7 @@ void CoreLoad()
 {
   bool SessionList = false;
   std::unique_ptr<THierarchicalStorage> SessionsStorage(GetConfiguration()->CreateStorage(SessionList));
-  THierarchicalStorage * ConfigStorage;
+  THierarchicalStorage * ConfigStorage{nullptr};
   std::unique_ptr<THierarchicalStorage> ConfigStorageAuto;
   if (!SessionList)
   {
