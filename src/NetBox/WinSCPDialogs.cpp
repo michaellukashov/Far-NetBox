@@ -131,7 +131,7 @@ class TTabButton : public TFarButton
 {
 public:
   static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TTabButton); }
-  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TTabButton) || TFarButton::is(Kind); }
+  bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TTabButton) || TFarButton::is(Kind); }
 public:
   explicit TTabButton(TTabbedDialog *Dialog);
 
@@ -4327,7 +4327,7 @@ class TRightsContainer : public TFarDialogContainer
   NB_DISABLE_COPY(TRightsContainer)
 public:
   static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TRightsContainer); }
-  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TRightsContainer) || TFarDialogContainer::is(Kind); }
+  bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TRightsContainer) || TFarDialogContainer::is(Kind); }
 public:
   explicit TRightsContainer(TFarDialog *ADialog, bool AAnyDirectories,
     bool ShowButtons, bool ShowSpecials,
@@ -4986,7 +4986,7 @@ class TCopyParamsContainer : public TFarDialogContainer
 {
 public:
   static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TCopyParamsContainer); }
-  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TCopyParamsContainer) || TFarDialogContainer::is(Kind); }
+  bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TCopyParamsContainer) || TFarDialogContainer::is(Kind); }
 public:
   explicit TCopyParamsContainer(TFarDialog *ADialog,
     intptr_t Options, intptr_t CopyParamAttrs);
@@ -5953,7 +5953,7 @@ class TLabelList : public TList
 {
 public:
   static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TLabelList); }
-  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TLabelList) || TList::is(Kind); }
+  bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TLabelList) || TList::is(Kind); }
 public:
   explicit TLabelList() :
     TList(OBJECT_CLASS_TLabelList),
