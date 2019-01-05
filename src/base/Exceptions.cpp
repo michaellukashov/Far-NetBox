@@ -13,7 +13,7 @@
 __removed #pragma package(smart_init)
 //---------------------------------------------------------------------------
 #if 0
-static std::unique_ptr<TCriticalSection> IgnoredExceptionsCriticalSection(new TCriticalSection());
+static std::unique_ptr<TCriticalSection> IgnoredExceptionsCriticalSection(std::make_unique<TCriticalSection>());
 typedef rde::set<UnicodeString> TIgnoredExceptions;
 static TIgnoredExceptions IgnoredExceptions;
 //---------------------------------------------------------------------------

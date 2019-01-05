@@ -2320,7 +2320,7 @@ bool AdjustClockForDSTEnabled()
   // Windows XP deletes the DisableAutoDaylightTimeSet value when it is off
   // (the later versions set it to DynamicDaylightTimeDisabled to 0)
   bool DynamicDaylightTimeDisabled = false;
-  std::unique_ptr<TRegistry> Registry(new TRegistry());
+  std::unique_ptr<TRegistry> Registry(std::make_unique<TRegistry>());
   Registry->SetAccess(KEY_READ);
   try
   {
@@ -3042,7 +3042,7 @@ bool GetWindowsProductType(DWORD &Type)
 UnicodeString WindowsProductName()
 {
   UnicodeString Result;
-  std::unique_ptr<TRegistry> Registry(new TRegistry());
+  std::unique_ptr<TRegistry> Registry(std::make_unique<TRegistry>());
   Registry->SetAccess(KEY_READ);
   try
   {
@@ -4008,7 +4008,7 @@ UnicodeString AssemblyNewClassInstanceEnd(TAssemblyLanguage Language, bool Inlin
 //---------------------------------------------------------------------------
 void LoadScriptFromFile(const UnicodeString FileName, TStrings * Lines)
 {
-  std::auto_ptr<TFileStream> Stream(new TFileStream(ApiPath(FileName), fmOpenRead | fmShareDenyWrite));
+  std::unique_ptr<TFileStream> Stream(std::make_unique<TFileStream>(ApiPath(FileName), fmOpenRead | fmShareDenyWrite));
   Lines->DefaultEncoding = TEncoding::UTF8;
   try
   {
