@@ -92,8 +92,8 @@ private:
   bool FPendingAbort;
 };
 //---------------------------------------------------------------------------
-TOwnConsole * TOwnConsole::FInstance = NULL;
-std::unique_ptr<TCriticalSection> TOwnConsole::FSection(TraceInitPtr(new TCriticalSection()));
+TOwnConsole * TOwnConsole::FInstance = nullptr;
+std::unique_ptr<TCriticalSection> TOwnConsole::FSection(TraceInitPtr(std::make_unique<TCriticalSection>()));
 //---------------------------------------------------------------------------
 __fastcall TOwnConsole::TOwnConsole()
 {

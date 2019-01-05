@@ -346,7 +346,7 @@ TObjectList * StartCreationDirectoryMonitorsOnEachDrive(uintptr_t Filter, TFileC
   for (int Index = 0; Index < Drives->Count; Index++)
   {
     UnicodeString Drive = Drives->Strings[Index];
-    std::unique_ptr<TDirectoryMonitor> Monitor(new TDirectoryMonitor(Application));
+    std::unique_ptr<TDirectoryMonitor> Monitor(std::make_unique<TDirectoryMonitor>(Application));
     try
     {
       Monitor->Path = DriveInfo->GetDriveRoot(Drive);
