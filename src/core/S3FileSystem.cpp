@@ -111,7 +111,7 @@ void TS3FileSystem::Open()
         LoadStr(S3_ACCESS_KEY_ID_PROMPT), true, 0, AccessKeyId))
     {
       // note that we never get here actually
-      throw Exception(L"");
+      throw Exception("");
     }
   }
   FAccessKeyId = UTF8String(AccessKeyId);
@@ -123,7 +123,7 @@ void TS3FileSystem::Open()
         LoadStr(S3_SECRET_ACCESS_KEY_PROMPT), false, 0, SecretAccessKey))
     {
       // note that we never get here actually
-      throw Exception(L"");
+      throw Exception("");
     }
   }
   FSecretAccessKey = UTF8String(SecretAccessKey);

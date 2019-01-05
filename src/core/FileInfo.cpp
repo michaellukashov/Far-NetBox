@@ -192,7 +192,7 @@ PVSFixedFileInfo GetFixedFileInfo(void *FileInfo)
   PVSFixedFileInfo Result = nullptr;
   if (FileInfo && !::VerQueryValue(FileInfo, L"\\", reinterpret_cast<void **>(&Result), &Len))
   {
-    throw Exception(L"Fixed file info not available");
+    throw Exception("Fixed file info not available");
   }
   return Result;
 }
@@ -203,7 +203,7 @@ uint32_t GetTranslationCount(void *FileInfo)
   PTranslations P;
   UINT Len;
   if (!::VerQueryValue(FileInfo, L"\\VarFileInfo\\Translation", reinterpret_cast<void **>(&P), &Len))
-    throw Exception(L"File info translations not available");
+    throw Exception("File info translations not available");
   return Len / 4;
 }
 //---------------------------------------------------------------------------
@@ -214,9 +214,9 @@ TTranslation GetTranslation(void *FileInfo, intptr_t I)
   UINT Len;
 
   if (!::VerQueryValue(FileInfo, L"\\VarFileInfo\\Translation", reinterpret_cast<void **>(&P), &Len))
-    throw Exception(L"File info translations not available");
+    throw Exception("File info translations not available");
   if (I * sizeof(TTranslation) >= Len)
-    throw Exception(L"Specified translation not available");
+    throw Exception("Specified translation not available");
   return P[I];
 }
 //---------------------------------------------------------------------------
@@ -227,7 +227,7 @@ UnicodeString GetLanguage(Word Language)
 
   uintptr_t Len = ::VerLanguageName(Language, P, _countof(P));
   if (Len > _countof(P))
-    throw Exception(L"Language not available");
+    throw Exception("Language not available");
   return UnicodeString(P, Len);
 }
 //---------------------------------------------------------------------------
@@ -247,7 +247,7 @@ UnicodeString GetFileInfoString(void *FileInfo,
   {
     if (!AllowEmpty)
     {
-      throw Exception(L"Specified file info string not available");
+      throw Exception("Specified file info string not available");
     }
   }
   else

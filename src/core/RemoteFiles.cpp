@@ -599,7 +599,7 @@ void TRemoteFile::SetListingStr(const UnicodeString Value)
     auto GetNCol = [&]()
     {
       if (Line.IsEmpty())
-        throw Exception(L"");
+        throw Exception("");
       intptr_t P = Line.Pos(L' ');
       if (P)
       {

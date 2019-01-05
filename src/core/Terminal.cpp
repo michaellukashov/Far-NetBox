@@ -940,8 +940,8 @@ intptr_t TParallelOperation::GetNext(TTerminal *Terminal, UnicodeString &FileNam
       if (DirectoryIterator == FDirectories.end())
       {
         DirectoryIterator = FDirectories.find(DirPath_nobs);
-		if (DirectoryIterator == FDirectories.end())
-			throw EInvalidOperation(L"Parent path not known");
+        if (DirectoryIterator == FDirectories.end())
+          throw EInvalidOperation(L"Parent path not known");
       }
       const TDirectoryData &DirectoryData = DirectoryIterator->second;
       if (!DirectoryData.Exists)
@@ -2262,7 +2262,7 @@ bool TTerminal::DoQueryReopen(Exception *E)
       Aliases[0].Default = true;
       Params.Aliases = Aliases;
       Params.AliasesCount = _countof(Aliases);
-      Result = (QueryUserException(L"", E, qaRetry | qaAbort, &Params, qtError) == qaRetry);
+      Result = (QueryUserException("", E, qaRetry | qaAbort, &Params, qtError) == qaRetry);
     }
 
     if (Fatal != nullptr)
@@ -2816,7 +2816,7 @@ void TTerminal::SetExceptionOnFail(bool Value)
   else
   {
     if (FExceptionOnFail == 0)
-      throw Exception(L"ExceptionOnFail is already zero.");
+      throw Exception("ExceptionOnFail is already zero.");
     FExceptionOnFail--;
   }
 

@@ -1382,7 +1382,7 @@ TOptionsIniFile::TOptionsIniFile(TStrings *Options, TWriteMode WriteMode, const 
 //---------------------------------------------------------------------------
 void TOptionsIniFile::NotImplemented()
 {
-  throw Exception(L"Not implemented");
+  throw Exception("Not implemented");
 }
 //---------------------------------------------------------------------------
 bool TOptionsIniFile::AllowWrite()

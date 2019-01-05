@@ -2591,7 +2591,7 @@ int __fastcall DumpCallstack(TConsole * Console, TProgramParams * Params)
       Timeout--;
       if (Timeout == 0)
       {
-        throw Exception(L"Timeout");
+        throw Exception("Timeout");
       }
     }
 

@@ -834,7 +834,7 @@ UnicodeString TEncryption::DecryptFileName(const UnicodeString AFileName)
 {
   if (!IsEncryptedFileName(AFileName))
   {
-    throw Exception(L"Not an encrypted file name");
+    throw Exception("Not an encrypted file name");
   }
   UnicodeString Base64 = ReplaceChar(LeftStr(AFileName, AFileName.Length() - AesCtrExt.Length()), L'_', L'/');
   intptr_t Padding = 4 - (Base64.Length() % 4);

@@ -894,7 +894,7 @@ UnicodeString ParseOpenSshPubLine(const UnicodeString ALine, const struct ssh_si
       void * Key = Algorithm->newkey(Algorithm, reinterpret_cast<const char*>(PubBlob), PubBlobLen);
       if (Key == nullptr)
       {
-        throw Exception(L"Invalid public key.");
+        throw Exception("Invalid public key.");
       }
       char * FmtKey = Algorithm->fmtkey(Key);
       Result = UnicodeString(FmtKey);

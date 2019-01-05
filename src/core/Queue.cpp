@@ -1427,7 +1427,7 @@ void TTerminalItem::ProcessEvent()
       // do not show error messages, if task was canceled anyway
       // (for example if transfer is canceled during reconnection attempts)
       if (!FCancel &&
-        (FTerminal->QueryUserException(L"", &E, qaOK | qaCancel, nullptr, qtError) == qaCancel))
+        (FTerminal->QueryUserException("", &E, qaOK | qaCancel, nullptr, qtError) == qaCancel))
       {
         FCancel = true;
       }
@@ -2689,7 +2689,7 @@ void TTerminalThread::RunAction(TNotifyEvent Action)
         break;
 
         default:
-          throw Exception(L"Error waiting for background session task to complete");
+          throw Exception("Error waiting for background session task to complete");
         }
 
         if (FAllowAbandon && !Done && FCancel && (Now() >= FCancelAfter))

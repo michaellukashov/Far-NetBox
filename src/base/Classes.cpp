@@ -75,7 +75,7 @@ TPersistent *TPersistent::GetOwner()
 void TPersistent::AssignError(const TPersistent *Source)
 {
   (void)Source;
-  throw Exception(L"Cannot assign");
+  throw Exception("Cannot assign");
 }
 
 TList::TList() noexcept :
@@ -1965,7 +1965,7 @@ int TRegistry::GetData(const UnicodeString Name, void *Buffer,
   if (::RegQueryValueEx(GetCurrentKey(), Name.c_str(), nullptr, &DataType,
       reinterpret_cast<BYTE *>(Buffer), &BufSize) != ERROR_SUCCESS)
   {
-    throw Exception(L"RegQueryValueEx failed"); // FIXME ERegistryException.CreateResFmt(@SRegGetDataFailed, [Name]);
+    throw Exception("RegQueryValueEx failed"); // FIXME ERegistryException.CreateResFmt(@SRegGetDataFailed, [Name]);
   }
   RegData = DataTypeToRegData(DataType);
   const int Result = nb::ToInt(BufSize);
@@ -1979,7 +1979,7 @@ void TRegistry::PutData(const UnicodeString Name, const void *Buffer,
   if (::RegSetValueEx(GetCurrentKey(), Name.c_str(), 0, DataType,
       reinterpret_cast<const BYTE *>(Buffer), nb::ToDWord(ABufSize)) != ERROR_SUCCESS)
   {
-    throw Exception(L"RegSetValueEx failed"); // ERegistryException(); // FIXME .CreateResFmt(SRegSetDataFailed, Name.c_str());
+    throw Exception("RegSetValueEx failed"); // ERegistryException(); // FIXME .CreateResFmt(SRegSetDataFailed, Name.c_str());
   }
 }
 

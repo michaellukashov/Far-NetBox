@@ -1538,13 +1538,13 @@ void TActionLog::Add(const UnicodeString Line)
           FLogger->Write(UtfLine.c_str(), UtfLine.Length());
         if (Written != nb::ToSizeT(UtfLine.Length()))
         {
-          throw ECRTExtException(L"");
+          throw ECRTExtException("");
         }
         Written =
           FLogger->Write("\n", 1);
         if (Written != 1)
         {
-          throw ECRTExtException(L"");
+          throw ECRTExtException("");
         }
       }
       catch (Exception &E)

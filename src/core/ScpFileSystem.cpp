@@ -1609,7 +1609,7 @@ void TSCPFileSystem::CopyToRemote(TStrings *AFilesToCopy,
       // It has never happened to me (return code is usually 127)
       if (GotLastLine)
       {
-        throw Exception(L"");
+        throw Exception("");
       }
     }
     catch (Exception &E)
@@ -2411,7 +2411,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString TargetDir,
             coOnlyReturnCode | coIgnoreWarnings);
           if (!Initialized)
           {
-            throw Exception(L"");
+            throw Exception("");
           }
         }
         catch (Exception &E)

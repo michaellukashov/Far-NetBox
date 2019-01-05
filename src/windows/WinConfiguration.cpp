@@ -1841,7 +1841,7 @@ void TWinConfiguration::AskForMasterPassword()
 
   if (FOnMasterPasswordPrompt == NULL)
   {
-    throw Exception(L"Master password handler not set");
+    throw Exception("Master password handler not set");
   }
   else
   {
