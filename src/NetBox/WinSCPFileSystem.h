@@ -23,33 +23,35 @@ class TTerminalQueueStatus;
 class TQueueItem;
 class TKeepAliveThread;
 struct TMessageParams;
-#define REMOTE_DIR_HISTORY L"WinscpRemoteDirectory"
-#define ASCII_MASK_HISTORY L"WinscpAsciiMask"
-#define LINK_FILENAME_HISTORY L"WinscpRemoteLink"
-#define LINK_POINT_TO_HISTORY L"WinscpRemoteLinkPointTo"
-#define APPLY_COMMAND_HISTORY L"WinscpApplyCmd"
-#define APPLY_COMMAND_PARAM_HISTORY L"WinscpApplyCmdParam"
-#define LOG_FILE_HISTORY L"WinscpLogFile"
-#define REMOTE_SYNC_HISTORY L"WinscpRemoteSync"
-#define LOCAL_SYNC_HISTORY L"WinscpLocalSync"
-#define MOVE_TO_HISTORY L"WinscpMoveTo"
-#define WINSCP_FILE_MASK_HISTORY L"WinscpFileMask"
-#define MAKE_SESSION_FOLDER_HISTORY L"WinscpSessionFolder"
+#define REMOTE_DIR_HISTORY "WinscpRemoteDirectory"
+#define ASCII_MASK_HISTORY "WinscpAsciiMask"
+#define LINK_FILENAME_HISTORY "WinscpRemoteLink"
+#define LINK_POINT_TO_HISTORY "WinscpRemoteLinkPointTo"
+#define APPLY_COMMAND_HISTORY "WinscpApplyCmd"
+#define APPLY_COMMAND_PARAM_HISTORY "WinscpApplyCmdParam"
+#define LOG_FILE_HISTORY "WinscpLogFile"
+#define REMOTE_SYNC_HISTORY "WinscpRemoteSync"
+#define LOCAL_SYNC_HISTORY "WinscpLocalSync"
+#define MOVE_TO_HISTORY "WinscpMoveTo"
+#define WINSCP_FILE_MASK_HISTORY "WinscpFileMask"
+#define MAKE_SESSION_FOLDER_HISTORY "WinscpSessionFolder"
 
+#if 0
 // for Properties dialog
-//const int cpMode  = 0x01;
-//const int cpOwner = 0x02;
-//const int cpGroup = 0x04;
+const int cpMode  = 0x01;
+const int cpOwner = 0x02;
+const int cpGroup = 0x04;
 // for Copy dialog
-//const int coTempTransfer        = 0x01;
-//const int coDisableNewerOnly    = 0x04;
-//// for Synchronize and FullSynchronize dialogs
-//const int spSelectedOnly = 0x800;
-//// for Synchronize dialogs
-//const int soAllowSelectedOnly = 0x01;
-//// for FullSynchronize dialog
-//const int fsoDisableTimestamp = 0x01;
-//const int fsoAllowSelectedOnly = 0x02;
+const int coTempTransfer        = 0x01;
+const int coDisableNewerOnly    = 0x04;
+// for Synchronize and FullSynchronize dialogs
+const int spSelectedOnly = 0x800;
+// for Synchronize dialogs
+const int soAllowSelectedOnly = 0x01;
+// for FullSynchronize dialog
+const int fsoDisableTimestamp = 0x01;
+const int fsoAllowSelectedOnly = 0x02;
+#endif //if 0
 enum TSessionActionEnum
 {
   saAdd,
@@ -63,7 +65,7 @@ struct TMultipleEdit : public TObject
   UnicodeString FileTitle;
   UnicodeString Directory;
   UnicodeString LocalFileName;
-  bool PendingSave;
+  bool PendingSave{false};
 };
 
 struct TEditHistory : public TObject
@@ -76,7 +78,7 @@ struct TEditHistory : public TObject
 #if 0
 typedef void (__closure *TProcessSessionEvent)(TSessionData *Data, void *Param);
 #endif // #if 0
-typedef nb::FastDelegate2<void, TSessionData * /*Data*/, void * /*Param*/> TProcessSessionEvent;
+using TProcessSessionEvent = nb::FastDelegate2<void, TSessionData * /*Data*/, void * /*Param*/>;
 
 NB_DEFINE_CLASS_ID(TWinSCPFileSystem);
 class TWinSCPFileSystem : public TCustomFarFileSystem

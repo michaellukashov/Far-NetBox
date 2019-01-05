@@ -1183,8 +1183,8 @@ public:
   explicit TPasswordDialog(TCustomFarPlugin *AFarPlugin,
     const UnicodeString SessionName, TPromptKind Kind, const UnicodeString Name,
     const UnicodeString Instructions, const TStrings *Prompts,
-    bool StoredCredentialsTried);
-  virtual ~TPasswordDialog();
+    bool StoredCredentialsTried) noexcept;
+  virtual ~TPasswordDialog() noexcept;
   bool Execute(TStrings *Results);
 
 private:
@@ -1197,14 +1197,14 @@ private:
 private:
   TSessionData *FSessionData{nullptr};
   UnicodeString FPrompt;
-  TList *FEdits{nullptr};
+  std::unique_ptr<TList> FEdits;
   TFarCheckBox *SavePasswordCheck{nullptr};
 };
 
 TPasswordDialog::TPasswordDialog(TCustomFarPlugin *AFarPlugin,
   const UnicodeString SessionName, TPromptKind Kind, const UnicodeString Name,
   const UnicodeString Instructions, const TStrings *Prompts,
-  bool /*StoredCredentialsTried*/) :
+  bool /*StoredCredentialsTried*/) noexcept :
   TFarDialog(AFarPlugin),
   FSessionData(nullptr),
   FEdits(std::make_unique<TList>()),
@@ -1262,7 +1262,7 @@ TPasswordDialog::TPasswordDialog(TCustomFarPlugin *AFarPlugin,
 
 TPasswordDialog::~TPasswordDialog()
 {
-  SAFE_DESTROY(FEdits);
+//  SAFE_DESTROY(FEdits);
 }
 
 void TPasswordDialog::GenerateLabel(const UnicodeString ACaption,
@@ -1463,8 +1463,8 @@ public:
     tabCount
   };
 
-  explicit TSessionDialog(TCustomFarPlugin *AFarPlugin, TSessionActionEnum Action);
-  virtual ~TSessionDialog();
+  explicit TSessionDialog(TCustomFarPlugin *AFarPlugin, TSessionActionEnum Action) noexcept;
+  virtual ~TSessionDialog() noexcept;
 
   bool Execute(TSessionData *SessionData, TSessionActionEnum &Action);
 
@@ -1517,139 +1517,139 @@ private:
   TProxyMethod ToProxyMethod(intptr_t Value) const { return static_cast<TProxyMethod>(Value); }
 private:
   TSessionActionEnum FAction;
-  TSessionData *FSessionData;
-  intptr_t FTransferProtocolIndex;
-  intptr_t FFtpEncryptionComboIndex;
+  TSessionData *FSessionData{nullptr};
+  intptr_t FTransferProtocolIndex{0};
+  intptr_t FFtpEncryptionComboIndex{0};
 
-  TTabButton *SshTab;
-  TTabButton *AuthenticationTab;
-  TTabButton *KexTab;
-  TTabButton *BugsTab;
-  TTabButton *WebDAVTab;
-  TTabButton *ScpTab;
-  TTabButton *SftpTab;
-  TTabButton *FtpTab;
-  TTabButton *TunnelTab;
-  TTabButton *PrevTab;
-  TTabButton *NextTab;
-  TFarButton *ConnectButton;
-  TFarEdit *HostNameEdit;
-  TFarEdit *PortNumberEdit;
-  TFarText *UserNameLabel;
-  TFarEdit *UserNameEdit;
-  TFarText *PasswordLabel;
-  TFarEdit *PasswordEdit;
-  TFarText *S3AccessKeyIDLabel;
-  TFarEdit *S3AccessKeyIDEdit;
-  TFarText *S3SecretAccessKeyLabel;
-  TFarEdit *S3SecretAccessKeyEdit;
-  TFarEdit *PrivateKeyEdit;
-  TFarComboBox *TransferProtocolCombo;
-  TFarCheckBox *AllowScpFallbackCheck;
-  TFarText *HostNameLabel;
-  TFarText *InsecureLabel;
-  TFarText *FtpEncryptionLabel;
-  TFarComboBox *FtpEncryptionCombo;
-  TFarCheckBox *UpdateDirectoriesCheck;
-  TFarCheckBox *CacheDirectoriesCheck;
-  TFarCheckBox *CacheDirectoryChangesCheck;
-  TFarCheckBox *PreserveDirectoryChangesCheck;
-  TFarCheckBox *ResolveSymlinksCheck;
-  TFarEdit *RemoteDirectoryEdit;
-  TFarComboBox *EOLTypeCombo;
-  TFarRadioButton *DSTModeWinCheck;
-  TFarRadioButton *DSTModeKeepCheck;
-  TFarRadioButton *DSTModeUnixCheck;
-  TFarCheckBox *CompressionCheck;
-  TFarRadioButton *SshProt1onlyButton;
-  TFarRadioButton *SshProt1Button;
-  TFarRadioButton *SshProt2Button;
-  TFarRadioButton *SshProt2onlyButton;
-  TFarListBox *CipherListBox;
-  TFarButton *CipherUpButton;
-  TFarButton *CipherDownButton;
-  TFarCheckBox *Ssh2DESCheck;
-  TFarComboBox *ShellEdit;
-  TFarComboBox *ReturnVarEdit;
-  TFarCheckBox *LookupUserGroupsCheck;
-  TFarCheckBox *ClearAliasesCheck;
-  TFarCheckBox *UnsetNationalVarsCheck;
-  TFarComboBox *ListingCommandEdit;
-  TFarCheckBox *IgnoreLsWarningsCheck;
-  TFarCheckBox *SCPLsFullTimeAutoCheck;
-  TFarCheckBox *Scp1CompatibilityCheck;
-  TFarEdit *PostLoginCommandsEdits[3];
-  TFarEdit *TimeDifferenceEdit;
-  TFarEdit *TimeDifferenceMinutesEdit;
-  TFarEdit *TimeoutEdit;
-  TFarRadioButton *PingOffButton;
-  TFarRadioButton *PingNullPacketButton;
-  TFarRadioButton *PingDummyCommandButton;
-  TFarEdit *PingIntervalSecEdit;
-  TFarComboBox *CodePageEdit;
-  TFarComboBox *SshProxyMethodCombo;
-  TFarComboBox *FtpProxyMethodCombo;
-  TFarEdit *ProxyHostEdit;
-  TFarEdit *ProxyPortEdit;
-  TFarEdit *ProxyUsernameEdit;
-  TFarEdit *ProxyPasswordEdit;
-  TFarText *ProxyLocalCommandLabel;
-  TFarEdit *ProxyLocalCommandEdit;
-  TFarText *ProxyTelnetCommandLabel;
-  TFarEdit *ProxyTelnetCommandEdit;
-  TFarCheckBox *ProxyLocalhostCheck;
-  TFarRadioButton *ProxyDNSOffButton;
-  TFarRadioButton *ProxyDNSAutoButton;
-  TFarRadioButton *ProxyDNSOnButton;
-  TFarCheckBox *TunnelCheck;
-  TFarEdit *TunnelHostNameEdit;
-  TFarEdit *TunnelPortNumberEdit;
-  TFarEdit *TunnelUserNameEdit;
-  TFarEdit *TunnelPasswordEdit;
-  TFarEdit *TunnelPrivateKeyEdit;
-  TFarComboBox *TunnelLocalPortNumberEdit;
-  TFarComboBox *BugIgnore1Combo;
-  TFarComboBox *BugPlainPW1Combo;
-  TFarComboBox *BugRSA1Combo;
-  TFarComboBox *BugHMAC2Combo;
-  TFarComboBox *BugDeriveKey2Combo;
-  TFarComboBox *BugRSAPad2Combo;
-  TFarComboBox *BugPKSessID2Combo;
-  TFarComboBox *BugRekey2Combo;
-  TFarCheckBox *SshNoUserAuthCheck;
-  TFarCheckBox *AuthTISCheck;
-  TFarCheckBox *TryAgentCheck;
-  TFarCheckBox *AuthKICheck;
-  TFarCheckBox *AuthKIPasswordCheck;
-  TFarCheckBox *AgentFwdCheck;
-  TFarCheckBox *AuthGSSAPICheck3;
-  TFarCheckBox *GSSAPIFwdTGTCheck;
-  TFarCheckBox *DeleteToRecycleBinCheck;
-  TFarCheckBox *OverwrittenToRecycleBinCheck;
-  TFarEdit *RecycleBinPathEdit;
-  TFarComboBox *SFTPMaxVersionCombo;
-  TFarComboBox *SftpServerEdit;
-  TFarComboBox *SFTPBugSymlinkCombo;
-  TFarComboBox *SFTPBugSignedTSCombo;
-  TFarListBox *KexListBox;
-  TFarButton *KexUpButton;
-  TFarButton *KexDownButton;
-  TFarEdit *SFTPMinPacketSizeEdit;
-  TFarEdit *SFTPMaxPacketSizeEdit;
-  TFarEdit *RekeyTimeEdit;
-  TFarEdit *RekeyDataEdit;
-  TFarRadioButton *IPAutoButton;
-  TFarRadioButton *IPv4Button;
-  TFarRadioButton *IPv6Button;
-  TFarCheckBox *SshBufferSizeCheck;
-  TFarComboBox *FtpUseMlsdCombo;
-  TFarCheckBox *FtpPasvModeCheck;
-  TFarCheckBox *FtpAllowEmptyPasswordCheck;
-  TFarCheckBox *FtpDupFFCheck;
-  TFarCheckBox *FtpUndupFFCheck;
-  TFarCheckBox *SslSessionReuseCheck;
-  TFarCheckBox *WebDAVCompressionCheck;
-  TObjectList *FTabs;
+  TTabButton *SshTab{nullptr};
+  TTabButton *AuthenticationTab{nullptr};
+  TTabButton *KexTab{nullptr};
+  TTabButton *BugsTab{nullptr};
+  TTabButton *WebDAVTab{nullptr};
+  TTabButton *ScpTab{nullptr};
+  TTabButton *SftpTab{nullptr};
+  TTabButton *FtpTab{nullptr};
+  TTabButton *TunnelTab{nullptr};
+  TTabButton *PrevTab{nullptr};
+  TTabButton *NextTab{nullptr};
+  TFarButton *ConnectButton{nullptr};
+  TFarEdit *HostNameEdit{nullptr};
+  TFarEdit *PortNumberEdit{nullptr};
+  TFarText *UserNameLabel{nullptr};
+  TFarEdit *UserNameEdit{nullptr};
+  TFarText *PasswordLabel{nullptr};
+  TFarEdit *PasswordEdit{nullptr};
+  TFarText *S3AccessKeyIDLabel{nullptr};
+  TFarEdit *S3AccessKeyIDEdit{nullptr};
+  TFarText *S3SecretAccessKeyLabel{nullptr};
+  TFarEdit *S3SecretAccessKeyEdit{nullptr};
+  TFarEdit *PrivateKeyEdit{nullptr};
+  TFarComboBox *TransferProtocolCombo{nullptr};
+  TFarCheckBox *AllowScpFallbackCheck{nullptr};
+  TFarText *HostNameLabel{nullptr};
+  TFarText *InsecureLabel{nullptr};
+  TFarText *FtpEncryptionLabel{nullptr};
+  TFarComboBox *FtpEncryptionCombo{nullptr};
+  TFarCheckBox *UpdateDirectoriesCheck{nullptr};
+  TFarCheckBox *CacheDirectoriesCheck{nullptr};
+  TFarCheckBox *CacheDirectoryChangesCheck{nullptr};
+  TFarCheckBox *PreserveDirectoryChangesCheck{nullptr};
+  TFarCheckBox *ResolveSymlinksCheck{nullptr};
+  TFarEdit *RemoteDirectoryEdit{nullptr};
+  TFarComboBox *EOLTypeCombo{nullptr};
+  TFarRadioButton *DSTModeWinCheck{nullptr};
+  TFarRadioButton *DSTModeKeepCheck{nullptr};
+  TFarRadioButton *DSTModeUnixCheck{nullptr};
+  TFarCheckBox *CompressionCheck{nullptr};
+  TFarRadioButton *SshProt1onlyButton{nullptr};
+  TFarRadioButton *SshProt1Button{nullptr};
+  TFarRadioButton *SshProt2Button{nullptr};
+  TFarRadioButton *SshProt2onlyButton{nullptr};
+  TFarListBox *CipherListBox{nullptr};
+  TFarButton *CipherUpButton{nullptr};
+  TFarButton *CipherDownButton{nullptr};
+  TFarCheckBox *Ssh2DESCheck{nullptr};
+  TFarComboBox *ShellEdit{nullptr};
+  TFarComboBox *ReturnVarEdit{nullptr};
+  TFarCheckBox *LookupUserGroupsCheck{nullptr};
+  TFarCheckBox *ClearAliasesCheck{nullptr};
+  TFarCheckBox *UnsetNationalVarsCheck{nullptr};
+  TFarComboBox *ListingCommandEdit{nullptr};
+  TFarCheckBox *IgnoreLsWarningsCheck{nullptr};
+  TFarCheckBox *SCPLsFullTimeAutoCheck{nullptr};
+  TFarCheckBox *Scp1CompatibilityCheck{nullptr};
+  TFarEdit *PostLoginCommandsEdits[3]{nullptr};
+  TFarEdit *TimeDifferenceEdit{nullptr};
+  TFarEdit *TimeDifferenceMinutesEdit{nullptr};
+  TFarEdit *TimeoutEdit{nullptr};
+  TFarRadioButton *PingOffButton{nullptr};
+  TFarRadioButton *PingNullPacketButton{nullptr};
+  TFarRadioButton *PingDummyCommandButton{nullptr};
+  TFarEdit *PingIntervalSecEdit{nullptr};
+  TFarComboBox *CodePageEdit{nullptr};
+  TFarComboBox *SshProxyMethodCombo{nullptr};
+  TFarComboBox *FtpProxyMethodCombo{nullptr};
+  TFarEdit *ProxyHostEdit{nullptr};
+  TFarEdit *ProxyPortEdit{nullptr};
+  TFarEdit *ProxyUsernameEdit{nullptr};
+  TFarEdit *ProxyPasswordEdit{nullptr};
+  TFarText *ProxyLocalCommandLabel{nullptr};
+  TFarEdit *ProxyLocalCommandEdit{nullptr};
+  TFarText *ProxyTelnetCommandLabel{nullptr};
+  TFarEdit *ProxyTelnetCommandEdit{nullptr};
+  TFarCheckBox *ProxyLocalhostCheck{nullptr};
+  TFarRadioButton *ProxyDNSOffButton{nullptr};
+  TFarRadioButton *ProxyDNSAutoButton{nullptr};
+  TFarRadioButton *ProxyDNSOnButton{nullptr};
+  TFarCheckBox *TunnelCheck{nullptr};
+  TFarEdit *TunnelHostNameEdit{nullptr};
+  TFarEdit *TunnelPortNumberEdit{nullptr};
+  TFarEdit *TunnelUserNameEdit{nullptr};
+  TFarEdit *TunnelPasswordEdit{nullptr};
+  TFarEdit *TunnelPrivateKeyEdit{nullptr};
+  TFarComboBox *TunnelLocalPortNumberEdit{nullptr};
+  TFarComboBox *BugIgnore1Combo{nullptr};
+  TFarComboBox *BugPlainPW1Combo{nullptr};
+  TFarComboBox *BugRSA1Combo{nullptr};
+  TFarComboBox *BugHMAC2Combo{nullptr};
+  TFarComboBox *BugDeriveKey2Combo{nullptr};
+  TFarComboBox *BugRSAPad2Combo{nullptr};
+  TFarComboBox *BugPKSessID2Combo{nullptr};
+  TFarComboBox *BugRekey2Combo{nullptr};
+  TFarCheckBox *SshNoUserAuthCheck{nullptr};
+  TFarCheckBox *AuthTISCheck{nullptr};
+  TFarCheckBox *TryAgentCheck{nullptr};
+  TFarCheckBox *AuthKICheck{nullptr};
+  TFarCheckBox *AuthKIPasswordCheck{nullptr};
+  TFarCheckBox *AgentFwdCheck{nullptr};
+  TFarCheckBox *AuthGSSAPICheck3{nullptr};
+  TFarCheckBox *GSSAPIFwdTGTCheck{nullptr};
+  TFarCheckBox *DeleteToRecycleBinCheck{nullptr};
+  TFarCheckBox *OverwrittenToRecycleBinCheck{nullptr};
+  TFarEdit *RecycleBinPathEdit{nullptr};
+  TFarComboBox *SFTPMaxVersionCombo{nullptr};
+  TFarComboBox *SftpServerEdit{nullptr};
+  TFarComboBox *SFTPBugSymlinkCombo{nullptr};
+  TFarComboBox *SFTPBugSignedTSCombo{nullptr};
+  TFarListBox *KexListBox{nullptr};
+  TFarButton *KexUpButton{nullptr};
+  TFarButton *KexDownButton{nullptr};
+  TFarEdit *SFTPMinPacketSizeEdit{nullptr};
+  TFarEdit *SFTPMaxPacketSizeEdit{nullptr};
+  TFarEdit *RekeyTimeEdit{nullptr};
+  TFarEdit *RekeyDataEdit{nullptr};
+  TFarRadioButton *IPAutoButton{nullptr};
+  TFarRadioButton *IPv4Button{nullptr};
+  TFarRadioButton *IPv6Button{nullptr};
+  TFarCheckBox *SshBufferSizeCheck{nullptr};
+  TFarComboBox *FtpUseMlsdCombo{nullptr};
+  TFarCheckBox *FtpPasvModeCheck{nullptr};
+  TFarCheckBox *FtpAllowEmptyPasswordCheck{nullptr};
+  TFarCheckBox *FtpDupFFCheck{nullptr};
+  TFarCheckBox *FtpUndupFFCheck{nullptr};
+  TFarCheckBox *SslSessionReuseCheck{nullptr};
+  TFarCheckBox *WebDAVCompressionCheck{nullptr};
+  std::unique_ptr<TObjectList> FTabs;
   intptr_t FFirstVisibleTabIndex;
 };
 
@@ -1670,7 +1670,7 @@ private:
 
 static const TFSProtocol FSOrder[] = { fsSFTPonly, fsSCPonly, fsFTP, fsWebDAV, fsS3 };
 
-TSessionDialog::TSessionDialog(TCustomFarPlugin *AFarPlugin, TSessionActionEnum Action) :
+TSessionDialog::TSessionDialog(TCustomFarPlugin *AFarPlugin, TSessionActionEnum Action) noexcept :
   TTabbedDialog(AFarPlugin, tabCount),
   FAction(Action),
   FSessionData(nullptr),
@@ -2836,7 +2836,7 @@ void TSessionDialog::SshProxyMethodComboAddNewItem(int ProxyTypeId, TProxyMethod
     as_object(nb::ToPtr(ProxyType)));
 }
 
-TSessionDialog::~TSessionDialog()
+TSessionDialog::~TSessionDialog() noexcept
 {
 //  SAFE_DESTROY(FTabs);
 }
@@ -4989,33 +4989,33 @@ public:
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TCopyParamsContainer) || TFarDialogContainer::is(Kind); }
 public:
   explicit TCopyParamsContainer(TFarDialog *ADialog,
-    intptr_t Options, intptr_t CopyParamAttrs);
+    intptr_t Options, intptr_t CopyParamAttrs) noexcept;
 
   void SetParams(const TCopyParamType &Value);
   TCopyParamType GetParams() const;
   intptr_t GetHeight() const;
 
 protected:
-  TFarRadioButton *TMTextButton;
-  TFarRadioButton *TMBinaryButton;
-  TFarRadioButton *TMAutomaticButton;
-  TFarEdit *AsciiFileMaskEdit;
-  TRightsContainer *RightsContainer;
-  TFarRadioButton *CCNoChangeButton;
-  TFarRadioButton *CCUpperCaseButton;
-  TFarRadioButton *CCLowerCaseButton;
-  TFarRadioButton *CCFirstUpperCaseButton;
-  TFarRadioButton *CCLowerCaseShortButton;
-  TFarCheckBox *ReplaceInvalidCharsCheck;
-  TFarCheckBox *PreserveRightsCheck;
-  TFarCheckBox *PreserveTimeCheck;
-  TFarCheckBox *PreserveReadOnlyCheck;
-  TFarCheckBox *IgnorePermErrorsCheck;
-  TFarCheckBox *ClearArchiveCheck;
-  TFarCheckBox *CalculateSizeCheck;
-  TFarText *FileMaskText;
-  TFarEdit *FileMaskEdit;
-  TFarComboBox *SpeedCombo;
+  TFarRadioButton *TMTextButton{nullptr};
+  TFarRadioButton *TMBinaryButton{nullptr};
+  TFarRadioButton *TMAutomaticButton{nullptr};
+  TFarEdit *AsciiFileMaskEdit{nullptr};
+  TRightsContainer *RightsContainer{nullptr};
+  TFarRadioButton *CCNoChangeButton{nullptr};
+  TFarRadioButton *CCUpperCaseButton{nullptr};
+  TFarRadioButton *CCLowerCaseButton{nullptr};
+  TFarRadioButton *CCFirstUpperCaseButton{nullptr};
+  TFarRadioButton *CCLowerCaseShortButton{nullptr};
+  TFarCheckBox *ReplaceInvalidCharsCheck{nullptr};
+  TFarCheckBox *PreserveRightsCheck{nullptr};
+  TFarCheckBox *PreserveTimeCheck{nullptr};
+  TFarCheckBox *PreserveReadOnlyCheck{nullptr};
+  TFarCheckBox *IgnorePermErrorsCheck{nullptr};
+  TFarCheckBox *ClearArchiveCheck{nullptr};
+  TFarCheckBox *CalculateSizeCheck{nullptr};
+  TFarText *FileMaskText{nullptr};
+  TFarEdit *FileMaskEdit{nullptr};
+  TFarComboBox *SpeedCombo{nullptr};
 
   void ValidateMaskComboExit(TObject *Sender);
   void ValidateSpeedComboExit(TObject *Sender);
@@ -5023,13 +5023,13 @@ protected:
   void UpdateControls();
 
 private:
-  intptr_t FOptions;
-  intptr_t FCopyParamAttrs;
+  intptr_t FOptions{0};
+  intptr_t FCopyParamAttrs{0};
   TCopyParamType FParams;
 };
 
 TCopyParamsContainer::TCopyParamsContainer(TFarDialog *ADialog,
-  intptr_t Options, intptr_t CopyParamAttrs) :
+  intptr_t Options, intptr_t CopyParamAttrs) noexcept :
   TFarDialogContainer(OBJECT_CLASS_TCopyParamsContainer, ADialog),
   TMTextButton(nullptr),
   TMBinaryButton(nullptr),
@@ -5452,12 +5452,12 @@ intptr_t TCopyParamsContainer::GetHeight() const
   return 16;
 }
 
-class TCopyDialog : TFarDialog
+class TCopyDialog final : TFarDialog
 {
   CUSTOM_MEM_ALLOCATION_IMPL
 public:
   explicit TCopyDialog(TCustomFarPlugin *AFarPlugin,
-    bool ToRemote, bool Move, const TStrings *AFileList, intptr_t Options, intptr_t CopyParamAttrs);
+    bool ToRemote, bool Move, const TStrings *AFileList, intptr_t Options, intptr_t CopyParamAttrs) noexcept;
 
   bool Execute(UnicodeString &TargetDirectory, TGUICopyParamType *Params);
 
@@ -5470,23 +5470,23 @@ protected:
   void TransferSettingsButtonClick(TFarButton *Sender, bool &Close);
 
 private:
-  TFarEdit *DirectoryEdit;
-  TFarLister *CopyParamLister;
-  TFarCheckBox *NewerOnlyCheck;
-  TFarCheckBox *SaveSettingsCheck;
-  TFarCheckBox *QueueCheck;
-  TFarCheckBox *QueueNoConfirmationCheck;
+  TFarEdit *DirectoryEdit{nullptr};
+  TFarLister *CopyParamLister{nullptr};
+  TFarCheckBox *NewerOnlyCheck{nullptr};
+  TFarCheckBox *SaveSettingsCheck{nullptr};
+  TFarCheckBox *QueueCheck{nullptr};
+  TFarCheckBox *QueueNoConfirmationCheck{nullptr};
 
-  const TStrings *FFileList;
-  intptr_t FOptions;
-  intptr_t FCopyParamAttrs;
+  const TStrings *FFileList{nullptr};
+  intptr_t FOptions{0};
+  intptr_t FCopyParamAttrs{0};
   TGUICopyParamType FCopyParams;
-  bool FToRemote;
+  bool FToRemote{false};
 };
 
 TCopyDialog::TCopyDialog(TCustomFarPlugin *AFarPlugin,
   bool ToRemote, bool Move, const TStrings *AFileList,
-  intptr_t Options, intptr_t CopyParamAttrs) :
+  intptr_t Options, intptr_t CopyParamAttrs) noexcept :
   TFarDialog(AFarPlugin),
   DirectoryEdit(nullptr),
   NewerOnlyCheck(nullptr),
@@ -5525,7 +5525,7 @@ TCopyDialog::TCopyDialog(TCustomFarPlugin *AFarPlugin,
     Text->SetCaption(Prompt);
 
     DirectoryEdit = new TFarEdit(this);
-    DirectoryEdit->SetHistory(ToRemote ? REMOTE_DIR_HISTORY : L"Copy");
+    DirectoryEdit->SetHistory(ToRemote ? REMOTE_DIR_HISTORY : "Copy");
   }
 
   TFarSeparator *Separator = new TFarSeparator(this);

@@ -234,7 +234,7 @@ RECT TCustomFarPlugin::GetPanelBounds(HANDLE PanelHandle)
 TCustomFarFileSystem *TCustomFarPlugin::GetPanelFileSystem(bool Another,
   HANDLE /*Plugin*/)
 {
-  TCustomFarFileSystem *Result = nullptr;
+  TCustomFarFileSystem *Result{nullptr};
   RECT ActivePanelBounds = GetPanelBounds(PANEL_ACTIVE);
   RECT PassivePanelBounds = GetPanelBounds(PANEL_PASSIVE);
 
