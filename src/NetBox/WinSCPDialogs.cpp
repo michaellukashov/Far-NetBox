@@ -138,7 +138,7 @@ public:
   intptr_t GetTab() const { return FTab; }
   void SetTab(intptr_t Value) { FTab = Value; }
   UnicodeString GetTabName() const { return FTabName; }
-  void SetTabName(const UnicodeString Value);
+  void SetTabName(UnicodeString Value);
 
 private:
   UnicodeString FTabName;
@@ -279,24 +279,23 @@ TTabButton::TTabButton(TTabbedDialog *Dialog) :
   SetOnClick(nb::bind(&TTabbedDialog::TabButtonClick, Dialog));
 }
 
-void TTabButton::SetTabName(const UnicodeString Value)
+void TTabButton::SetTabName(UnicodeString Value)
 {
-  UnicodeString Val = Value;
-  if (FTabName != Val)
+  if (FTabName != Value)
   {
     UnicodeString C;
-    intptr_t P = ::Pos(Val, L"|");
+    intptr_t P = ::Pos(Value, L"|");
     if (P > 0)
     {
-      C = Val.SubString(1, P - 1);
-      Val.Delete(1, P);
+      C = Value.SubString(1, P - 1);
+      Value.Delete(1, P);
     }
     else
     {
-      C = Val;
+      C = Value;
     }
     SetCaption(C);
-    FTabName = ::StripHotkey(Val);
+    FTabName = ::StripHotkey(Value);
   }
 }
 

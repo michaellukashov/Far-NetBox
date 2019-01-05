@@ -94,31 +94,31 @@ public:
   void Init(TSecureShell *SecureShell);
   virtual ~TWinSCPFileSystem() noexcept;
 
-  virtual void Close() override;
+  void Close() override;
 
 protected:
   bool Connect(TSessionData *Data);
   void Disconnect();
   void SaveSession();
 
-  virtual void GetOpenPluginInfoEx(DWORD &Flags,
+  void GetOpenPluginInfoEx(DWORD &Flags,
     UnicodeString &HostFile, UnicodeString &CurDir, UnicodeString &AFormat,
     UnicodeString &PanelTitle, TFarPanelModes *PanelModes, int &StartPanelMode,
     int &StartSortMode, bool &StartSortOrder, TFarKeyBarTitles *KeyBarTitles,
     UnicodeString &ShortcutData) override;
-  virtual bool GetFindDataEx(TObjectList *PanelItems, int OpMode) override;
-  virtual bool ProcessKeyEx(intptr_t Key, uintptr_t ControlState) override;
-  virtual bool SetDirectoryEx(const UnicodeString Dir, int OpMode) override;
-  virtual intptr_t MakeDirectoryEx(UnicodeString &Name, int OpMode) override;
-  virtual bool DeleteFilesEx(TObjectList *PanelItems, int OpMode) override;
-  virtual intptr_t GetFilesEx(TObjectList *PanelItems, bool Move,
+  bool GetFindDataEx(TObjectList *PanelItems, int OpMode) override;
+  bool ProcessKeyEx(intptr_t Key, uintptr_t ControlState) override;
+  bool SetDirectoryEx(UnicodeString Dir, int OpMode) override;
+  intptr_t MakeDirectoryEx(UnicodeString &Name, int OpMode) override;
+  bool DeleteFilesEx(TObjectList *PanelItems, int OpMode) override;
+  intptr_t GetFilesEx(TObjectList *PanelItems, bool Move,
     UnicodeString &DestPath, int OpMode) override;
-  virtual intptr_t PutFilesEx(TObjectList *PanelItems, bool Move, int OpMode) override;
-  virtual bool ProcessEventEx(intptr_t Event, void *Param) override;
+  intptr_t PutFilesEx(TObjectList *PanelItems, bool Move, int OpMode) override;
+  bool ProcessEventEx(intptr_t Event, void *Param) override;
 
   void ProcessEditorEvent(intptr_t Event, void *Param);
 
-  virtual void HandleException(Exception *E, int OpMode = 0) override;
+  void HandleException(Exception *E, int OpMode = 0) override;
   void KeepaliveThreadCallback();
 
   bool IsSessionList() const;
@@ -169,7 +169,7 @@ protected:
   bool LinkDialog(UnicodeString &AFileName, UnicodeString &PointTo, bool &Symbolic,
     bool Edit, bool AllowSymbolic);
   void FileSystemInfoDialog(const TSessionInfo &SessionInfo,
-    const TFileSystemInfo &FileSystemInfo, const UnicodeString SpaceAvailablePath,
+    const TFileSystemInfo &FileSystemInfo, UnicodeString SpaceAvailablePath,
     TGetSpaceAvailableEvent OnGetSpaceAvailable);
   bool OpenDirectoryDialog(bool Add, UnicodeString &Directory,
     TBookmarkList *BookmarkList);
@@ -230,12 +230,12 @@ protected:
   TSessionData *GetSessionData() { return FTerminal ? FTerminal->GetSessionData() : nullptr; }
 
 protected:
-  virtual UnicodeString GetCurrDirectory() const override { return FTerminal ? FTerminal->RemoteGetCurrentDirectory() : UnicodeString(); }
+  UnicodeString GetCurrDirectory() const override { return FTerminal ? FTerminal->RemoteGetCurrentDirectory() : UnicodeString(); }
 
 private:
   bool TerminalCheckForEsc();
   void TerminalClose(TObject *Sender);
-  void TerminalUpdateStatus(TTerminal *Terminal, bool Active);
+  // void TerminalUpdateStatus(TTerminal *Terminal, bool Active);
   void TerminalChangeDirectory(TObject *Sender);
   void TerminalReadDirectory(TObject *Sender, bool ReloadOnly);
   void TerminalStartReadDirectory(TObject *Sender);
@@ -314,7 +314,7 @@ private:
   TTerminalQueue *FQueue{nullptr};
   TTerminalQueueStatus *FQueueStatus{nullptr};
   TCriticalSection FQueueStatusSection;
-  TQueueEvent FQueueEvent;
+  TQueueEvent FQueueEvent{qeEmpty};
   HANDLE FProgressSaveScreenHandle{};
   HANDLE FSynchronizationSaveScreenHandle{};
   HANDLE FAuthenticationSaveScreenHandle{};
@@ -327,18 +327,18 @@ private:
   UnicodeString FLastMultipleEditFile;
   UnicodeString FLastMultipleEditFileTitle;
   UnicodeString FLastMultipleEditDirectory;
-  intptr_t FLastEditorID{0};
+  intptr_t FLastEditorID{-1};
   TGUICopyParamType FLastEditCopyParam;
   TKeepAliveThread *FKeepaliveThread{nullptr};
   TSynchronizeController *FSynchronizeController{nullptr};
-  TStrings *FCapturedLog{nullptr};
-  TStrings *FAuthenticationLog{nullptr};
+  std::unique_ptr<TStrings> FCapturedLog;
+  std::unique_ptr<TStrings> FAuthenticationLog;
   typedef rde::map<intptr_t, TMultipleEdit> TMultipleEdits;
   TMultipleEdits FMultipleEdits;
   typedef rde::vector<TEditHistory> TEditHistories;
   TEditHistories FEditHistories;
   UnicodeString FLastPath;
-  TStrings *FPathHistory{nullptr};
+  std::unique_ptr<TStrings> FPathHistory;
   UnicodeString FSessionsFolder;
   UnicodeString FNewSessionsFolder;
   UnicodeString FPrevSessionName;

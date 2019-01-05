@@ -144,8 +144,8 @@ public:
   void SaveScreen(HANDLE &Screen);
   void RestoreScreen(HANDLE &Screen);
   bool CheckForEsc() const;
-  bool Viewer(const UnicodeString AFileName, const UnicodeString Title, DWORD Flags);
-  bool Editor(const UnicodeString AFileName, const UnicodeString Title, DWORD Flags);
+  bool Viewer(UnicodeString AFileName, UnicodeString Title, DWORD Flags);
+  bool Editor(UnicodeString AFileName, UnicodeString Title, DWORD Flags);
 
   intptr_t FarControl(uintptr_t Command, intptr_t Param1, intptr_t Param2, HANDLE Plugin = INVALID_HANDLE_VALUE);
   intptr_t FarAdvControl(uintptr_t Command, void *Param = nullptr) const;
@@ -186,7 +186,7 @@ protected:
   PluginStartupInfo FStartupInfo{};
   FarStandardFunctions FFarStandardFunctions{};
   HINSTANCE FHandle{};
-  TList *FOpenedPlugins{nullptr};
+  std::unique_ptr<TList> FOpenedPlugins;
   TFarDialog *FTopDialog{nullptr};
   HANDLE FConsoleInput{};
   HANDLE FConsoleOutput{};
@@ -229,7 +229,7 @@ private:
 
 private:
   PluginInfo FPluginInfo{};
-  TStringList *FSavedTitles{nullptr};
+  std::unique_ptr<TStringList> FSavedTitles;
   UnicodeString FCurrentTitle;
   short FCurrentProgress{0};
 
@@ -297,7 +297,7 @@ protected:
   virtual bool ProcessHostFileEx(TObjectList *PanelItems, int OpMode);
   virtual bool ProcessKeyEx(intptr_t Key, uintptr_t ControlState);
   virtual bool ProcessEventEx(intptr_t Event, void *Param);
-  virtual bool SetDirectoryEx(const UnicodeString Dir, int OpMode);
+  virtual bool SetDirectoryEx(UnicodeString Dir, int OpMode);
   virtual intptr_t MakeDirectoryEx(UnicodeString &Name, int OpMode);
   virtual bool DeleteFilesEx(TObjectList *PanelItems, int OpMode);
   virtual intptr_t GetFilesEx(TObjectList *PanelItems, bool Move,

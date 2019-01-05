@@ -7,8 +7,6 @@
 #include "WinSCPPlugin.h"
 #include "FarPluginStrings.h"
 #include "FarDialog.h"
-#include "FileMasks.h"
-#include "RemoteFiles.h"
 extern "C" {
 #include <puttyexp.h>
 }
@@ -19,12 +17,8 @@ TCustomFarPlugin *FarPlugin = nullptr;
 #define FAR_TITLE_SUFFIX L" - Far"
 
 TFarMessageParams::TFarMessageParams() noexcept :
-  MoreMessages(nullptr),
-  CheckBox(false),
-  Timer(0),
   TimerAnswer(0),
   TimerEvent(nullptr),
-  Timeout(0),
   TimeoutButton(0),
   DefaultButton(0),
   ClickEvent(nullptr),
@@ -34,9 +28,9 @@ TFarMessageParams::TFarMessageParams() noexcept :
 
 TCustomFarPlugin::TCustomFarPlugin(TObjectClassId Kind, HINSTANCE HInst) noexcept :
   TObject(Kind),
-  FOpenedPlugins(new TList()),
+  FOpenedPlugins(std::make_unique<TList>()),
   FTopDialog(nullptr),
-  FSavedTitles(new TStringList())
+  FSavedTitles(std::make_unique<TStringList>())
 {
   FFarThreadId = GetCurrentThreadId();
   FHandle = HInst;
@@ -79,13 +73,13 @@ TCustomFarPlugin::~TCustomFarPlugin() noexcept
 
   ClearPluginInfo(FPluginInfo);
   DebugAssert(FOpenedPlugins->GetCount() == 0);
-  SAFE_DESTROY(FOpenedPlugins);
+  // SAFE_DESTROY(FOpenedPlugins);
   for (intptr_t Index = 0; Index < FSavedTitles->GetCount(); ++Index)
   {
     TObject *Object = FSavedTitles->GetObj(Index);
     SAFE_DESTROY(Object);
   }
-  SAFE_DESTROY(FSavedTitles);
+  // SAFE_DESTROY(FSavedTitles);
 }
 
 bool TCustomFarPlugin::HandlesFunction(THandlesFunction /*Function*/) const
@@ -1554,7 +1548,7 @@ void TCustomFarPlugin::UpdateCurrentConsoleTitle()
 {
   UnicodeString Title = FormatConsoleTitle();
   ::SetConsoleTitle(Title.c_str());
-  short progress = FCurrentProgress != -1 ? FCurrentProgress : 0;
+  intptr_t progress = FCurrentProgress != -1 ? FCurrentProgress : 0;
   UpdateProgress(progress != 0 ? PS_NORMAL : PS_NOPROGRESS, progress);
 }
 
@@ -1613,7 +1607,7 @@ bool TCustomFarPlugin::CheckForEsc() const
   return false;
 }
 
-bool TCustomFarPlugin::Viewer(const UnicodeString AFileName,
+bool TCustomFarPlugin::Viewer(UnicodeString AFileName,
   UnicodeString Title, DWORD Flags)
 {
   TFarEnvGuard Guard; nb::used(Guard);
@@ -1624,7 +1618,7 @@ bool TCustomFarPlugin::Viewer(const UnicodeString AFileName,
   return Result > 0;
 }
 
-bool TCustomFarPlugin::Editor(const UnicodeString AFileName,
+bool TCustomFarPlugin::Editor(UnicodeString AFileName,
   UnicodeString Title, DWORD Flags)
 {
   TFarEnvGuard Guard; nb::used(Guard);
@@ -1781,10 +1775,7 @@ uintptr_t TCustomFarFileSystem::FInstances = 0;
 
 TCustomFarFileSystem::TCustomFarFileSystem(TObjectClassId Kind, TCustomFarPlugin *APlugin) noexcept :
   TObject(Kind),
-  FPlugin(APlugin),
-  FClosed(false),
-  FOwnerFileSystem(nullptr),
-  FOpenPluginInfoValid(false)
+  FPlugin(APlugin)
 {
   nb::ClearArray(FPanelInfo);
   nb::ClearStruct(FOpenPluginInfo);
@@ -2138,7 +2129,7 @@ bool TCustomFarFileSystem::ProcessEventEx(intptr_t /*Event*/, void * /*Param*/)
   return false;
 }
 
-bool TCustomFarFileSystem::SetDirectoryEx(const UnicodeString /*Dir*/, int /*OpMode*/)
+bool TCustomFarFileSystem::SetDirectoryEx(UnicodeString /*Dir*/, int /*OpMode*/)
 {
   return false;
 }

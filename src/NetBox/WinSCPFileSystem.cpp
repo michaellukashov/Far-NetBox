@@ -301,9 +301,7 @@ TWinSCPFileSystem::TWinSCPFileSystem(TCustomFarPlugin *APlugin) noexcept :
   FLastEditorID(-1),
   FKeepaliveThread(nullptr),
   FSynchronizeController(nullptr),
-  FCapturedLog(nullptr),
-  FAuthenticationLog(nullptr),
-  FPathHistory(new TStringList()),
+  FPathHistory(std::make_unique<TStringList>()),
   FQueueStatusInvalidated(false),
   FQueueItemInvalidated(false),
   FRefreshLocalDirectory(false),
@@ -331,7 +329,7 @@ void TWinSCPFileSystem::Init(TSecureShell * /*SecureShell*/)
 TWinSCPFileSystem::~TWinSCPFileSystem() noexcept
 {
   Disconnect();
-  SAFE_DESTROY(FPathHistory);
+  // SAFE_DESTROY(FPathHistory);
 }
 
 void TWinSCPFileSystem::HandleException(Exception *E, int OpMode)
@@ -1208,8 +1206,8 @@ void TWinSCPFileSystem::ApplyCommand()
 
             if (FLAGSET(Params, ccCopyResults))
             {
-              DebugAssert(FCapturedLog == nullptr);
-              FCapturedLog = new TStringList();
+              DebugAssert(FCapturedLog.get() == nullptr);
+              FCapturedLog = std::make_unique<TStringList>();
               OutputEvent = nb::bind(&TWinSCPFileSystem::TerminalCaptureLog, this);
             }
             {
@@ -1224,8 +1222,8 @@ void TWinSCPFileSystem::ApplyCommand()
 
                 if (FLAGSET(Params, ccCopyResults))
                 {
-                  GetWinSCPPlugin()->FarCopyToClipboard(FCapturedLog);
-                  SAFE_DESTROY(FCapturedLog);
+                  GetWinSCPPlugin()->FarCopyToClipboard(FCapturedLog.get());
+                  FCapturedLog.reset();
                 }
               };
               if (FLAGSET(Params, ccShowResults))
@@ -3070,7 +3068,7 @@ void TWinSCPFileSystem::TerminalClose(TObject * /*Sender*/)
 void TWinSCPFileSystem::LogAuthentication(
   TTerminal *Terminal, const UnicodeString Msg)
 {
-  DebugAssert(FAuthenticationLog != nullptr);
+  DebugAssert(FAuthenticationLog.get() != nullptr);
   if (!FAuthenticationLog)
     return;
   FAuthenticationLog->Add(Msg);
@@ -3109,9 +3107,9 @@ void TWinSCPFileSystem::TerminalInformation(
   {
     if (GetTerminal() && (GetTerminal()->GetStatus() == ssOpening))
     {
-      if (FAuthenticationLog == nullptr)
+      if (FAuthenticationLog.get() == nullptr)
       {
-        FAuthenticationLog = new TStringList();
+        FAuthenticationLog = std::make_unique<TStringList>();
         GetWinSCPPlugin()->SaveScreen(FAuthenticationSaveScreenHandle);
         GetWinSCPPlugin()->ShowConsoleTitle(GetTerminal()->GetSessionData()->GetSessionName());
       }
@@ -3126,7 +3124,7 @@ void TWinSCPFileSystem::TerminalInformation(
     {
       GetWinSCPPlugin()->ClearConsoleTitle();
       GetWinSCPPlugin()->RestoreScreen(FAuthenticationSaveScreenHandle);
-      SAFE_DESTROY(FAuthenticationLog);
+      FAuthenticationLog.reset();
     }
   }
 }
