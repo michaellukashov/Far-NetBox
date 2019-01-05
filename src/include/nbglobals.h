@@ -193,45 +193,43 @@ template<>
 struct custom_nballocator_t<void>
 {
 public:
-  typedef void* pointer;
-  typedef const void* const_pointer;
+  using pointer = void*;
+  using const_pointer = const void*;
   // reference to void members are impossible.
-  typedef void value_type;
+  using value_type = void;
 
   template<class U>
   struct rebind
   {
-    typedef custom_nballocator_t<U> other;
+    using other = custom_nballocator_t<U>;
   };
 };
 
 template<typename T>
 struct custom_nballocator_t
 {
-  typedef size_t size_type;
-  typedef ptrdiff_t difference_type;
-  typedef T* pointer;
-  typedef const T* const_pointer;
-  typedef T& reference;
-  typedef const T& const_reference;
-  typedef T value_type;
+  using size_type = size_t;
+  using difference_type = ptrdiff_t;
+  using pointer = T*;
+  using const_pointer = const T*;
+  using reference = T&;
+  using const_reference = const T&;
+  using value_type = T;
 
   template<class U>
   struct rebind
   {
-    typedef custom_nballocator_t<U> other;
+    using other = custom_nballocator_t<U>;
   };
 
-  inline custom_nballocator_t() noexcept = default;
-  inline custom_nballocator_t(const custom_nballocator_t&) noexcept = default;
-  inline custom_nballocator_t& operator=(const custom_nballocator_t&) noexcept = default;
-  inline custom_nballocator_t(custom_nballocator_t&&) noexcept = default;
+  custom_nballocator_t() noexcept = default;
+  custom_nballocator_t(const custom_nballocator_t&) noexcept = default;
+  custom_nballocator_t& operator=(const custom_nballocator_t&) noexcept = default;
+  custom_nballocator_t(custom_nballocator_t&&) noexcept = default;
   custom_nballocator_t& operator=(custom_nballocator_t&&) noexcept = default;
 
   template<class U>
-  custom_nballocator_t(const custom_nballocator_t<U>&) noexcept
-  {
-  }
+  custom_nballocator_t(const custom_nballocator_t<U>&) noexcept {}
 
   ~custom_nballocator_t() noexcept = default;
 
