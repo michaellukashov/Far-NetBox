@@ -14,26 +14,26 @@ __removed #pragma package(smart_init)
 //---------------------------------------------------------------------------
 // TGuard
 //---------------------------------------------------------------------------
-TGuard::TGuard(const TCriticalSection &ACriticalSection) :
+TGuard::TGuard(const TCriticalSection &ACriticalSection) noexcept :
   FCriticalSection(ACriticalSection)
 {
   FCriticalSection.Enter();
 }
 //---------------------------------------------------------------------------
-TGuard::~TGuard()
+TGuard::~TGuard() noexcept
 {
   FCriticalSection.Leave();
 }
 //---------------------------------------------------------------------------
 // TUnguard
 //---------------------------------------------------------------------------
-TUnguard::TUnguard(TCriticalSection &ACriticalSection) :
+TUnguard::TUnguard(TCriticalSection &ACriticalSection) noexcept :
   FCriticalSection(ACriticalSection)
 {
   FCriticalSection.Leave();
 }
 //---------------------------------------------------------------------------
-TUnguard::~TUnguard()
+TUnguard::~TUnguard() noexcept
 {
   FCriticalSection.Enter();
 }
