@@ -242,7 +242,7 @@ void TWebDAVFileSystem::Open()
 UnicodeString TWebDAVFileSystem::ParsePathFromUrl(const UnicodeString Url) const
 {
   UnicodeString Result;
-  ne_uri ParsedUri;
+  ne_uri ParsedUri{};
   if (ne_uri_parse(StrToNeon(Url), &ParsedUri) == 0)
   {
     Result = StrFromNeon(PathUnescape(ParsedUri.path));
@@ -322,7 +322,7 @@ void TWebDAVFileSystem::InitSession(ne_session_s *Session)
 //---------------------------------------------------------------------------
 void TWebDAVFileSystem::NeonOpen(UnicodeString &CorrectedUrl, const UnicodeString Url)
 {
-  ne_uri uri;
+  ne_uri uri{};
   NeonParseUrl(Url, uri);
 
   FHostName = StrFromNeon(uri.host);
@@ -372,7 +372,7 @@ void TWebDAVFileSystem::NeonAuxRequestInit(ne_session *Session, ne_request * /*R
   TWebDAVFileSystem *FileSystem = static_cast<TWebDAVFileSystem *>(UserData);
   FileSystem->InitSession(Session);
 
-  ne_uri uri = {nullptr};
+  ne_uri uri{};
   ne_fill_server_uri(Session, &uri);
   bool Tls = IsTlsUri(uri);
   ne_uri_free(&uri);
@@ -478,34 +478,34 @@ void TWebDAVFileSystem::CollectUsage()
 
   if (!FTerminal->GetSessionData()->GetTlsCertificateFile().IsEmpty())
   {
-//    GetConfiguration()->GetUsage()->Inc(L"OpenedSessionsWebDAVSCertificate");
+//    GetConfiguration()->GetUsage()->Inc("OpenedSessionsWebDAVSCertificate");
   }
 
   // The Authorization header for passport method is included only in the first request,
   // so we have to use FLastAuthorizationProtocol
-  if (SameText(FLastAuthorizationProtocol, L"Passport1.4"))
+  if (SameText(FLastAuthorizationProtocol, "Passport1.4"))
   {
-//    Configuration->Usage->Inc(L"OpenedSessionsWebDAVSPassport");
+//    Configuration->Usage->Inc("OpenedSessionsWebDAVSPassport");
   }
 
   UnicodeString RemoteSystem = FFileSystemInfo.RemoteSystem;
-  if (ContainsText(RemoteSystem, L"Microsoft-IIS"))
+  if (ContainsText(RemoteSystem, "Microsoft-IIS"))
   {
-//    FTerminal->GetConfiguration()->GetUsage()->Inc(L"OpenedSessionsWebDAVIIS");
+//    FTerminal->GetConfiguration()->GetUsage()->Inc("OpenedSessionsWebDAVIIS");
   }
-  else if (ContainsText(RemoteSystem, L"IT Hit WebDAV Server"))
+  else if (ContainsText(RemoteSystem, "IT Hit WebDAV Server"))
   {
-//    FTerminal->GetConfiguration()->GetUsage()->Inc(L"OpenedSessionsWebDAVITHit");
+//    FTerminal->GetConfiguration()->GetUsage()->Inc("OpenedSessionsWebDAVITHit");
   }
   // e.g. brickftp.com
-  else if (ContainsText(RemoteSystem, L"nginx"))
+  else if (ContainsText(RemoteSystem, "nginx"))
   {
-//    FTerminal->GetConfiguration()->GetUsage()->Inc(L"OpenedSessionsWebDAVNginx");
+//    FTerminal->GetConfiguration()->GetUsage()->Inc("OpenedSessionsWebDAVNginx");
   }
   else
   {
     // We also know OpenDrive, Yandex, iFiles (iOS), Swapper (iOS), SafeSync
-//    FTerminal->GetConfiguration()->GetUsage()->Inc(L"OpenedSessionsWebDAVOther");
+//    FTerminal->GetConfiguration()->GetUsage()->Inc("OpenedSessionsWebDAVOther");
   }
 }
 //---------------------------------------------------------------------------
@@ -1507,8 +1507,8 @@ int TWebDAVFileSystem::NeonPostSend(ne_request * /*Req*/, void *UserData,
 bool TWebDAVFileSystem::IsNtlmAuthentication() const
 {
   return
-    SameText(FAuthorizationProtocol, L"NTLM") ||
-    SameText(FAuthorizationProtocol, L"Negotiate");
+    SameText(FAuthorizationProtocol, "NTLM") ||
+    SameText(FAuthorizationProtocol, "Negotiate");
 }
 //---------------------------------------------------------------------------
 void TWebDAVFileSystem::HttpAuthenticationFailed()
@@ -2090,7 +2090,7 @@ void TWebDAVFileSystem::LockResult(void *UserData, const struct ne_lock *Lock,
 //---------------------------------------------------------------------------
 struct ne_lock * TWebDAVFileSystem::FindLock(const RawByteString APath) const
 {
-  ne_uri Uri = {nullptr};
+  ne_uri Uri{};
   Uri.path = ToChar(APath);
   return ne_lockstore_findbyuri(FNeonLockStore, &Uri);
 }
