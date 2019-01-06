@@ -1998,7 +1998,7 @@ bool InputDialog(UnicodeString ACaption,
   TInputDialogInitializeEvent OnInitialize, bool Echo)
 {
   bool Result = GetGlobals()->InputDialog(ACaption, APrompt, Value, HelpKeyword,
-      History, PathInput, OnInitialize, Echo);
+    History, PathInput, OnInitialize, Echo);
   return Result;
 }
 

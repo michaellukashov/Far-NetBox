@@ -2328,8 +2328,8 @@ static void DoCollectComRegistration(TConsole * Console, TStrings * Keys)
 
   if (Storage->OpenRootKey(false))
   {
-    Console->PrintLine(FORMAT(L"Versions of type library %s:", (TypeLib)));
-    UnicodeString TypeLibKey = FORMAT(L"TypeLib\\%s", (TypeLib));
+    Console->PrintLine(FORMAT("Versions of type library %s:", TypeLib));
+    UnicodeString TypeLibKey = FORMAT("TypeLib\\%s", TypeLib);
     if (Storage->OpenSubKey(TypeLibKey, false, true))
     {
       Keys->Add(TypeLibKey);

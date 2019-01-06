@@ -22,8 +22,8 @@ __removed #include <typeinfo>
 #define TRANSFER_SWITCH "transfer"
 #define FILEMASK_SWITCH "filemask"
 #define RESUMESUPPORT_SWITCH "resumesupport"
-#define NEWERONLY_SWICH "neweronly"
-#define NONEWERONLY_SWICH "noneweronly"
+#define NEWERONLY_SWITCH "neweronly"
+#define NONEWERONLY_SWITCH "noneweronly"
 #define DELETE_SWITCH "delete"
 #define REFRESH_SWITCH "refresh"
 #define RAWTRANSFERSETTINGS_SWITCH L"rawtransfersettings"
@@ -52,7 +52,7 @@ NB_CORE_EXPORT void SetNoGUI();
 NB_CORE_EXPORT bool ProcessGUI(bool Force = false);
 NB_CORE_EXPORT UnicodeString GetAppNameString();
 NB_CORE_EXPORT UnicodeString GetSshVersionString();
-NB_CORE_EXPORT void CopyToClipboard(const UnicodeString Text);
+NB_CORE_EXPORT void CopyToClipboard(UnicodeString Text);
 NB_CORE_EXPORT HANDLE StartThread(void *SecurityAttributes, DWORD StackSize,
   /*TThreadFunc ThreadFunc,*/ void *Parameter, DWORD CreationFlags,
   TThreadID &ThreadId);
