@@ -286,7 +286,7 @@ void TScriptCommands::Execute(const UnicodeString & Command, const UnicodeString
   TScriptCommand * ScriptCommand = reinterpret_cast<TScriptCommand *>(Objects[Index]);
   UnicodeString FullCommand = Strings[Index];
 
-  std::unique_ptr<TScriptProcParams> Parameters(new TScriptProcParams(FullCommand, Params));
+  std::unique_ptr<TScriptProcParams> Parameters(std::make_unique<TScriptProcParams>(FullCommand, Params));
   if (Parameters->ParamCount < ScriptCommand->MinParams)
   {
     throw Exception(FMTLOAD(SCRIPT_MISSING_PARAMS, (FullCommand)));
@@ -1082,7 +1082,7 @@ void TScript::CopyParamParams(TCopyParamType & CopyParam, TScriptProcParams * Pa
   std::unique_ptr<TStrings> RawSettings(std::make_unique<TStringList>());
   if (Parameters->FindSwitch(RAWTRANSFERSETTINGS_SWITCH, RawSettings.get()))
   {
-    std::unique_ptr<TOptionsStorage> OptionsStorage(new TOptionsStorage(RawSettings.get(), false));
+    std::unique_ptr<TOptionsStorage> OptionsStorage(std::make_unique<TOptionsStorage>(RawSettings.get(), false));
     CopyParam.Load(OptionsStorage.get());
   }
 }

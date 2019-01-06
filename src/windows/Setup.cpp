@@ -2164,7 +2164,7 @@ UnicodeString GetNetVersionStr()
     std::unique_ptr<TRegistryStorage> Registry(new TRegistryStorage(L"SOFTWARE\\Microsoft\\NET Framework Setup\\NDP", HKEY_LOCAL_MACHINE));
     if (Registry->OpenRootKey(false))
     {
-      std::unique_ptr<TStringList> Keys(new TStringList());
+      std::unique_ptr<TStringList> Keys(std::make_unique<TStringList>());
       Registry->GetSubKeyNames(Keys.get());
       for (int Index = 0; Index < Keys->Count; Index++)
       {
@@ -2199,10 +2199,10 @@ UnicodeString GetPowerShellVersionStr()
   {
     PowerShellVersionStr = 0; // not to retry on failure
 
-    std::unique_ptr<TRegistryStorage> Registry(new TRegistryStorage(L"SOFTWARE\\Microsoft\\PowerShell", HKEY_LOCAL_MACHINE));
+    std::unique_ptr<TRegistryStorage> Registry(std::make_unique<TRegistryStorage>("SOFTWARE\\Microsoft\\PowerShell", HKEY_LOCAL_MACHINE));
     if (Registry->OpenRootKey(false))
     {
-      std::unique_ptr<TStringList> Keys(new TStringList());
+      std::unique_ptr<TStringList> Keys(std::make_unique<TStringList>());
       Registry->GetSubKeyNames(Keys.get());
       for (int Index = 0; Index < Keys->Count; Index++)
       {
@@ -2309,13 +2309,13 @@ static UnicodeString PlatformStr(int PlatformSet)
 static void DoCollectComRegistration(TConsole * Console, TStrings * Keys)
 {
   UnicodeString TypeLib = L"{A0B93468-D98A-4845-A234-8076229AD93F}"; // Duplicated in AssemblyInfo.cs
-  std::unique_ptr<TRegistryStorage> Storage(new TRegistryStorage(UnicodeString(), HKEY_CLASSES_ROOT));
+  std::unique_ptr<TRegistryStorage> Storage(std::make_unique<TRegistryStorage>(UnicodeString(), HKEY_CLASSES_ROOT));
   Storage->MungeStringValues = false;
   Storage->AccessMode = smRead;
   std::unique_ptr<TRegistryStorage> Storage64;
   if (IsWin64())
   {
-    Storage64.reset(new TRegistryStorage(UnicodeString(), HKEY_CLASSES_ROOT, KEY_WOW64_64KEY));
+    Storage64 = std::make_unique<TRegistryStorage>(UnicodeString(), HKEY_CLASSES_ROOT, KEY_WOW64_64KEY);
     Storage64->MungeStringValues = false;
     Storage64->AccessMode = smRead;
   }
@@ -2333,7 +2333,7 @@ static void DoCollectComRegistration(TConsole * Console, TStrings * Keys)
     if (Storage->OpenSubKey(TypeLibKey, false, true))
     {
       Keys->Add(TypeLibKey);
-      std::unique_ptr<TStringList> KeyNames(new TStringList());
+      std::unique_ptr<TStringList> KeyNames(std::make_unique<TStringList>());
       Storage->GetSubKeyNames(KeyNames.get());
       if (KeyNames->Count == 0)
       {

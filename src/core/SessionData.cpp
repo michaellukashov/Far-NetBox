@@ -1244,7 +1244,7 @@ TStrings *TSessionData::SaveToOptions(const TSessionData * /*Default*/)
   TODO("implement");
 #if 0
   std::unique_ptr<TStringList> Options(std::make_unique<TStringList>());
-  std::unique_ptr<TOptionsStorage> OptionsStorage(new TOptionsStorage(Options.get(), true, false));
+  std::unique_ptr<TOptionsStorage> OptionsStorage(std::make_unique<TOptionsStorage>(Options.get(), true, false));
   DoSave(OptionsStorage.get(), false, Default, true);
   return Options.release();
 #endif
@@ -2333,7 +2333,7 @@ bool TSessionData::ParseUrl(const UnicodeString AUrl, TOptions *Options,
 void TSessionData::ApplyRawSettings(TStrings * RawSettings)
 {
 #if 0
-  std::unique_ptr<TOptionsStorage> OptionsStorage(new TOptionsStorage(RawSettings, false));
+  std::unique_ptr<TOptionsStorage> OptionsStorage(std::make_unique<TOptionsStorage>(RawSettings, false));
   ApplyRawSettings(OptionsStorage.get());
 #endif // #if 0
 }
@@ -3349,8 +3349,8 @@ UnicodeString TSessionData::GenerateOpenCommandArgs(bool /*Rtf*/) const
 {
   UnicodeString Result;
 #if 0
-  std::unique_ptr<TSessionData> FactoryDefaults(new TSessionData(L""));
-  std::unique_ptr<TSessionData> SessionData(new TSessionData(L""));
+  std::unique_ptr<TSessionData> FactoryDefaults(std::make_unique<TSessionData>(L""));
+  std::unique_ptr<TSessionData> SessionData(std::make_unique<TSessionData>(L""));
 
   SessionData->Assign(this);
 
@@ -3453,7 +3453,7 @@ void TSessionData::AddAssemblyProperty(
 void TSessionData::GenerateAssemblyCode(
   TAssemblyLanguage Language, UnicodeString & Head, UnicodeString & Tail, int & Indent)
 {
-  std::unique_ptr<TSessionData> FactoryDefaults(new TSessionData(L""));
+  std::unique_ptr<TSessionData> FactoryDefaults(std::make_unique<TSessionData>(L""));
   std::unique_ptr<TSessionData> SessionData(Clone());
 
   switch (Language)
@@ -4816,7 +4816,7 @@ void TStoredSessionList::ImportLevelFromFilezilla(
     _di_IXMLNode ChildNode = Node->ChildNodes->Get(Index);
     if (ChildNode->NodeName == L"Server")
     {
-      std::unique_ptr<TSessionData> SessionData(new TSessionData(L""));
+      std::unique_ptr<TSessionData> SessionData(std::make_unique<TSessionData>(L""));
       SessionData->CopyData(DefaultSettings);
       SessionData->ImportFromFilezilla(ChildNode, Path, SettingsNode);
       Add(SessionData.release());
@@ -5032,7 +5032,7 @@ void TStoredSessionList::Export(const UnicodeString /*AFileName*/)
 #if 0
   try__finally
   {
-    std::unique_ptr<THierarchicalStorage> Storage(new TIniFileStorage(FileName));
+    std::unique_ptr<THierarchicalStorage> Storage(std::make_unique<TIniFileStorage>(FileName));
     Storage->SetAccessMode(smReadWrite);
     if (Storage->OpenSubKey(GetConfiguration()->GetStoredSessionsSubKey(), true))
     {
@@ -5132,7 +5132,7 @@ void TStoredSessionList::UpdateStaticUsage()
   intptr_t Tunnel = 0;
   bool Folders = false;
   bool Workspaces = false;
-  std::unique_ptr<TSessionData> FactoryDefaults(new TSessionData(L""));
+  std::unique_ptr<TSessionData> FactoryDefaults(std::make_unique<TSessionData>(L""));
   std::unique_ptr<TStringList> DifferentAdvancedProperties(CreateSortedStringList());
   for (intptr_t Index = 0; Index < Count; Index++)
   {

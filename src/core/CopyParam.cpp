@@ -499,13 +499,14 @@ void TCopyParamType::DoGetInfoStr(
 #endif // #if 0
   }
 
+#if 0
   std::unique_ptr<TStringList> RawOptions;
   __removed std::unique_ptr<TOptionsStorage> OptionsStorage;
 
   RawOptions = std::make_unique<TStringList>();
-  __removed OptionsStorage.reset(new TOptionsStorage(RawOptions.get(), true));
+  __removed OptionsStorage = std::make_unique<TOptionsStorage>(RawOptions.get(), true);
   __removed ScriptNonDefaults.Save(OptionsStorage.get(), &Defaults);
-#if 0
+
   if (RawOptions->Count > 0)
   {
     ScriptArgs +=

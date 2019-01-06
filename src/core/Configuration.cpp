@@ -398,7 +398,7 @@ void TConfiguration::SaveCustomIniFileStorageName()
   // Particularly, not to create an empty "Override" key, unless the custom INI file is ever set
   if (CustomIniFileStorageName != LoadCustomIniFileStorageName())
   {
-    std::unique_ptr<TRegistryStorage> RegistryStorage(new TRegistryStorage(GetRegistryStorageOverrideKey()));
+    std::unique_ptr<TRegistryStorage> RegistryStorage(std::make_unique<TRegistryStorage>(GetRegistryStorageOverrideKey()));
     RegistryStorage->AccessMode = smReadWrite;
     RegistryStorage->Explicit = true;
     if (RegistryStorage->OpenRootKey(true))

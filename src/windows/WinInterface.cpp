@@ -1698,7 +1698,7 @@ void WinInitialize()
   {
     JclStackTrackingOptions << stAllModules;
     JclAddExceptNotifier(DoExceptNotify, npFirstChain);
-    CallstackThread.reset(new TCallstackThread());
+    CallstackThread = std::make_unique<TCallstackThread>();
     CallstackThread->Start();
   }
 #endif // #if 0
