@@ -928,7 +928,7 @@ endif(CMAKE_COMPILER_IS_MINGW)
 add_library(atlmfc STATIC
   ../../libs/atlmfc/mfc1.cpp
   ../../libs/atlmfc/mfc2.cpp
-  ../../libs/atlmfc/mfc3.cpp
+#  ../../libs/atlmfc/mfc3.cpp
   ../../libs/atlmfc/mfc4.cpp
   ../../libs/atlmfc/mfc5.cpp
   ../../libs/atlmfc/src/mfc/thrdcore.cpp
@@ -1821,7 +1821,7 @@ ucm_add_flags(CXX C /GS- /fp:fast /O2 /Oy /GA /GF /Gw /GL CONFIG Release)
 ucm_add_flags(CXX C /Gm- -Ox -Ob1 -Oi -Os -GF CONFIG Release)
 # static runtime settings
 ucm_add_flags(CXX C /MT CONFIG Release)
-ucm_add_flags(CXX C /MTd CONFIG Debug) 
+ucm_add_flags(CXX C /MTd CONFIG Debug)
 # linker settings
 ucm_add_linker_flags(MODULE SHARED EXE /DEBUG /OPT:REF /OPT:ICF=6 /NXCOMPAT /DYNAMICBASE /MANIFEST:NO CONFIG Release)
 ucm_add_linker_flags(MODULE STATIC SHARED EXE /LTCG CONFIG Release)
