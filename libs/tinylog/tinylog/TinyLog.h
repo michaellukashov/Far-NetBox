@@ -19,8 +19,8 @@ class TINYLOG_API TinyLog
 {
   CUSTOM_MEM_ALLOCATION_IMPL
 public:
-  explicit TinyLog(FILE * file);
-  ~TinyLog();
+  explicit TinyLog(FILE * file) noexcept;
+  ~TinyLog() noexcept;
 
   void SetLogLevel(Utils::LogLevel e_log_level);
   Utils::LogLevel GetLogLevel() const;
@@ -32,11 +32,11 @@ public:
   void Close();
 
 private:
-  TinyLogImpl * impl_;
+  std::unique_ptr<TinyLogImpl> impl_;
 
 private:
-  TinyLog(TinyLog const &);
-  void operator=(TinyLog const &);
+  TinyLog(TinyLog const &) = delete;
+  void operator=(TinyLog const &) = delete;
 };
 
 } // namespace tinylog
