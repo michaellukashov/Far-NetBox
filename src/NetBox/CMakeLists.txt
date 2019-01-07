@@ -1047,7 +1047,7 @@ target_include_directories(tinyxml2 PRIVATE
 #-------------------------------------------------------------------------------
 #neon
 
-add_library(neon STATIC
+set(NEON_LIB_SOURCES
   ../../libs/neon/src/ne_alloc.c
   ../../libs/neon/src/ne_auth.c
   ../../libs/neon/src/ne_basic.c
@@ -1074,6 +1074,12 @@ add_library(neon STATIC
   ../../libs/neon/src/ne_locks.c
   ../../libs/neon/src/ne_openssl.c
 )
+
+add_library(neon STATIC
+  ${NEON_LIB_SOURCES}
+)
+
+#set_source_files_properties(${NEON_LIB_SOURCES} PROPERTIES LANGUAGE CXX)
 
 set(NEON_COMPILE_FLAGS ${LIBNEON_DEFS} ${LIBEXPAT_DEFS})
 if(MSVC)
