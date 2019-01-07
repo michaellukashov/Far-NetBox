@@ -1812,7 +1812,7 @@ add_dependencies(NetBox copy_to_plugin_dir)
 #-------------------------------------------------------------------------------
 ucm_set_runtime(STATIC)
 ucm_add_flags(CXX /EHsc)
-ucm_add_flags(CXX /Zi CONFIG Debug)
+ucm_add_flags(CXX C /Zi CONFIG Debug)
 ucm_add_flags(CXX C /MP /Gy /Zi CONFIG Release)
 #/Ob2 /GR
 ucm_add_flags(CXX C /GS- /fp:fast /O2 /Oy /GA /GF /Gw /GL CONFIG Release)
