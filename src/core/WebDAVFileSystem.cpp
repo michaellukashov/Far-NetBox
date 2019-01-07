@@ -150,7 +150,7 @@ UnicodeString ExpatVersion()
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-TWebDAVFileSystem::TWebDAVFileSystem(TTerminal *ATerminal) :
+TWebDAVFileSystem::TWebDAVFileSystem(TTerminal *ATerminal) noexcept :
   TCustomFileSystem(OBJECT_CLASS_TWebDAVFileSystem, ATerminal),
   FActive(false),
   FHasTrailingSlash(false),
@@ -182,7 +182,7 @@ void TWebDAVFileSystem::FileTransferProgress(int64_t /*TransferSize*/, int64_t /
   TODO("implement");
 }
 //---------------------------------------------------------------------------
-TWebDAVFileSystem::~TWebDAVFileSystem()
+TWebDAVFileSystem::~TWebDAVFileSystem() noexcept
 {
   UnregisterFromNeonDebug(FTerminal);
 
