@@ -1802,7 +1802,7 @@ foreach(DIST_FILE ${DIST_FILES})
 endforeach()
 
 add_custom_command(TARGET NetBox POST_BUILD
-  COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE_DIR:NetBox>\\NetBox.dll" ${NETBOX_PLUGIN_DIR}
+  COMMAND if exist "$<TARGET_FILE_DIR:NetBox>\\NetBox.dll" ( ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE_DIR:NetBox>\\NetBox.dll" ${NETBOX_PLUGIN_DIR} )
   COMMAND if exist "$<TARGET_FILE_DIR:NetBox>\\NetBox.pdb" ( ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE_DIR:NetBox>\\NetBox.pdb" ${NETBOX_PLUGIN_DIR} )
   COMMAND if exist "$<TARGET_FILE_DIR:NetBox>\\NetBox.map" ( ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE_DIR:NetBox>\\NetBox.map" ${NETBOX_PLUGIN_DIR} )
 )
