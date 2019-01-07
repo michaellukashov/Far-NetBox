@@ -74,6 +74,13 @@ which can potentially be used to mount a Bleichenbacher padding oracle
 attack. This is an inherent weakness in the PKCS #1 v1.5 padding
 design. Prefer RSA_PKCS1_OAEP_PADDING.
 
+=head1 WARNING
+
+Decryption failures in the RSA_PKCS1_PADDING mode leak information
+which can potentially be used to mount a Bleichenbacher padding oracle
+attack. This is an inherent weakness in the PKCS #1 v1.5 padding
+design. Prefer RSA_PKCS1_OAEP_PADDING.
+
 =head1 CONFORMING TO
 
 SSL, PKCS #1 v2.0

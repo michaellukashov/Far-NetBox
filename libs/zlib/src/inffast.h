@@ -10,6 +10,16 @@
    subject to change. Applications should only use zlib.h.
  */
 
-void ZLIB_INTERNAL inflate_fast(z_stream *strm, uint32_t start);
+void ZLIB_INTERNAL inflate_fast(PREFIX3(stream) *strm, unsigned long start);
+
+
+#if (defined(__GNUC__) || defined(__clang__)) && defined(__ARM_NEON__)
+#  include <arm_neon.h>
+typedef uint8x16_t inffast_chunk_t;
+#  define INFFAST_CHUNKSIZE sizeof(inffast_chunk_t)
+#endif
+
+#define INFLATE_FAST_MIN_HAVE 8
+#define INFLATE_FAST_MIN_LEFT 258
 
 #endif /* INFFAST_H_ */

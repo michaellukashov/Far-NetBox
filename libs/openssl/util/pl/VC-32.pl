@@ -46,9 +46,10 @@ if ($FLAVOR =~ /WIN64/)
     # 
     $base_cflags= " $mf_cflag";
     my $f = $shlib || $fips ?' /MD':' /MT';
-    $opt_cflags=$f.' /Ox';
+    $opt_cflags=$f.' /O2 /Gw /GL';
     $dbg_cflags=$f.'d /Od -DDEBUG -D_DEBUG';
     $lflags="/nologo /subsystem:console /opt:ref /opt:icf";
+    $opt_lflags=" /LTCG";
 
     *::perlasm_compile_target = sub {
 	my ($target,$source,$bname)=@_;
@@ -132,9 +133,10 @@ else	# Win32
     $base_cflags= " $mf_cflag";
     my $f = $shlib || $fips ?' /MD':' /MT';
     $ff = "/fixed";
-    $opt_cflags=$f.' /Ox /O2 /Ob1';
+    $opt_cflags=$f.' /O2 /Ob2 /Gw /GL';
     $dbg_cflags=$f.'d /Od -DDEBUG -D_DEBUG';
     $lflags="/nologo /subsystem:console /opt:ref /opt:icf";
+    $opt_lflags=" /LTCG";
     }
 $lib_cflag='/Zl' if (!$shlib);	# remove /DEFAULTLIBs from static lib
 $mlflags='';
@@ -152,11 +154,12 @@ if ($debug)
 else
 	{
 	$cflags=$opt_cflags.$base_cflags;
+	$lflags.=$opt_lflags;
 	}
 
 # generate symbols.pdb unconditionally
-$app_cflag.=" /Zi /Fd\$(TMP_D)/app";
-$lib_cflag.=" /Zi /Fd\$(TMP_D)/lib";
+$app_cflag.=" /Fd\$(TMP_D)/app"; #/Z7 
+$lib_cflag.=" /Fd\$(TMP_D)/lib"; #/Z7 
 $lflags.=" /debug";
 
 $obj='.obj';
@@ -214,7 +217,7 @@ if ($FLAVOR =~ /WIN64A/) {
 		$asm='nasm -f win64 -DNEAR -Ox -g';
 		$afile='-o ';
 	} else {
-		$asm='ml64 /c /Cp /Cx /Zi';
+		$asm='ml64 /c /Cp /Cx'; #/Z7
 		$afile='/Fo';
 	}
 } elsif ($FLAVOR =~ /WIN64I/) {
@@ -228,7 +231,7 @@ if ($FLAVOR =~ /WIN64A/) {
 	$asmtype="win32n";
 	$afile='-o ';
 } else {
-	$asm='ml /nologo /Cp /coff /c /Cx /Zi';
+	$asm='ml /nologo /Cp /coff /c /Cx'; #/Z7
 	$afile='/Fo';
 	$asmtype="win32";
 }

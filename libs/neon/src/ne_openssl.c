@@ -27,7 +27,7 @@
 #include <string.h>
 #endif
 
-#include <windows.h>
+#include <Windows.h>
 #include <stdio.h>
 
 #include <openssl/crypto.h>
