@@ -226,11 +226,11 @@ protected:
   virtual void Execute() override;
 
 private:
-  TSecureShell *FSecureShell;
-  bool FTerminated;
+  TSecureShell *FSecureShell{nullptr};
+  bool FTerminated{false};
 };
 //---------------------------------------------------------------------------
-TTunnelThread::TTunnelThread(TSecureShell *SecureShell) :
+TTunnelThread::TTunnelThread(TSecureShell *SecureShell) noexcept :
   TSimpleThread(OBJECT_CLASS_TTunnelThread),
   FSecureShell(SecureShell),
   FTerminated(false)
@@ -299,8 +299,8 @@ public:
   virtual void ProcessGUI() override;
 
 private:
-  TTerminal *FTerminal;
-  uint32_t FTerminalThreadID;
+  TTerminal *FTerminal{nullptr};
+  uint32_t FTerminalThreadID{0};
 };
 //---------------------------------------------------------------------------
 TTunnelUI::TTunnelUI(TTerminal *Terminal) noexcept :

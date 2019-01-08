@@ -1627,7 +1627,7 @@ public:
 
   virtual ~TSFTPUploadQueue() noexcept
   {
-    SAFE_DESTROY(FStream);
+//    SAFE_DESTROY(FStream);
   }
 
   bool Init(const UnicodeString AFileName,
@@ -1636,7 +1636,7 @@ public:
     intptr_t ConvertParams)
   {
     FFileName = AFileName;
-    FStream = new TSafeHandleStream(AFile);
+    FStream = std::make_unique<TSafeHandleStream>(AFile);
     OperationProgress = AOperationProgress;
     FHandle = AHandle;
     FTransferred = ATransferred;
@@ -1666,7 +1666,7 @@ protected:
         FMTLOAD(READ_ERROR, FFileName), "",
       [&]()
       {
-        BlockBuf.LoadStream(FStream, BlockSize, false);
+        BlockBuf.LoadStream(FStream.get(), BlockSize, false);
       });
       __removed FILE_OPERATION_LOOP_END(FMTLOAD(READ_ERROR, (FFileName)));
 
@@ -1763,7 +1763,7 @@ protected:
   }
 
 private:
-  TStream *FStream{nullptr};
+  std::unique_ptr<TStream> FStream;
   TTerminal *FTerminal{nullptr};
   TFileOperationProgressType *OperationProgress{nullptr};
   UnicodeString FFileName;
@@ -1968,7 +1968,7 @@ private:
   TSFTPFileSystem *FFileSystem{nullptr};
 };
 //===========================================================================
-TSFTPFileSystem::TSFTPFileSystem(TTerminal *ATerminal) :
+TSFTPFileSystem::TSFTPFileSystem(TTerminal *ATerminal) noexcept :
   TCustomFileSystem(OBJECT_CLASS_TSFTPFileSystem, ATerminal),
   FSecureShell(nullptr),
   FFileSystemInfoValid(false),
@@ -2025,7 +2025,7 @@ void TSFTPFileSystem::Init(void *Data)
   RegisterChecksumAlg(Crc32ChecksumAlg, L"crc32");
 }
 //---------------------------------------------------------------------------
-TSFTPFileSystem::~TSFTPFileSystem()
+TSFTPFileSystem::~TSFTPFileSystem() noexcept
 {
   SAFE_DESTROY(FSupport);
   ResetConnection();
