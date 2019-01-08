@@ -422,8 +422,8 @@ void TWebDAVFileSystem::ExchangeCapabilities(const char *APath, UnicodeString &C
     {
       UnicodeString Str;
       uint32_t Capability = 0x01;
-      uintptr_t Capabilities = FCapabilities;
-      while (Capabilities > 0)
+      uint32_t Capabilities = FCapabilities;
+      while (Capabilities != 0)
       {
         if (FLAGSET(Capabilities, Capability))
         {
