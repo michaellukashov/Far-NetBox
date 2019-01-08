@@ -3312,7 +3312,7 @@ void TTerminal::EnsureNonExistence(const UnicodeString AFileName)
   }
 }
 //---------------------------------------------------------------------------
-void TTerminal::LogEvent(const UnicodeString AStr)
+void TTerminal::LogEvent(UnicodeString AStr)
 {
   if (GetLog()->GetLogging())
   {
@@ -3320,7 +3320,7 @@ void TTerminal::LogEvent(const UnicodeString AStr)
   }
 }
 //---------------------------------------------------------------------------
-void TTerminal::LogEvent(int Level, const UnicodeString AStr)
+void TTerminal::LogEvent(intptr_t Level, UnicodeString AStr)
 {
   if (Log->Logging && (Configuration->ActualLogProtocol >= Level))
   {
@@ -3418,7 +3418,7 @@ void TTerminal::ReadCurrentDirectory()
         FDirectoryChangesCache->AddDirectoryChange(OldDirectory,
           FLastDirectoryChange, CurrentDirectory);
       }
-      // not to breake the cache, if the next directory change would not
+      // not to break the cache, if the next directory change would not
       // be initialized by ChangeDirectory(), which sets it
       // (HomeDirectory() particularly)
       FLastDirectoryChange.Clear();
