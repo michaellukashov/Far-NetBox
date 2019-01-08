@@ -276,7 +276,7 @@ private:
   UnicodeString FCurrentDirectory;
   UnicodeString FLockDirectory;
   intptr_t FExceptionOnFail{0};
-  TRemoteDirectory *FFiles{nullptr};
+  std::unique_ptr<TRemoteDirectory> FFiles;
   intptr_t FInTransaction{0};
   bool FSuspendTransaction{false};
   TNotifyEvent FOnChangeDirectory;
@@ -338,7 +338,7 @@ private:
   UnicodeString FFingerprintScannedSHA256;
   UnicodeString FFingerprintScannedMD5;
   DWORD FLastProgressLogged{0};
-  TRemoteDirectory *FOldFiles{nullptr};
+  std::unique_ptr<TRemoteDirectory> FOldFiles;
   UnicodeString FDestFileName;
   bool FMultipleDestinationFiles{false};
   bool FFileTransferAny{true};
@@ -815,7 +815,7 @@ public:
   const TConfiguration *GetConfigurationConst() const { return FConfiguration; }
   TConfiguration *GetConfiguration() { return FConfiguration; }
   TSessionStatus GetStatus() const { return FStatus; }
-  TRemoteDirectory *GetFiles() const { return FFiles; }
+  TRemoteDirectory *GetFiles() const { return FFiles.get(); }
   TNotifyEvent GetOnChangeDirectory() const { return FOnChangeDirectory; }
   void SetOnChangeDirectory(TNotifyEvent Value) { FOnChangeDirectory = Value; }
   TReadDirectoryEvent GetOnReadDirectory() const { return FOnReadDirectory; }

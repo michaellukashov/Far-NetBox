@@ -1049,7 +1049,7 @@ TTerminal::TTerminal(TObjectClassId Kind) noexcept :
   FTunnelOpening(false),
   FFileSystem(nullptr)
 {
-  FOldFiles = new TRemoteDirectory(this);
+  FOldFiles = std::make_unique<TRemoteDirectory>(this);
 }
 
 void TTerminal::Init(TSessionData *ASessionData,
@@ -1060,7 +1060,7 @@ void TTerminal::Init(TSessionData *ASessionData,
   TDateTime Started = Now(); // use the same time for session and XML log
   FLog = std::make_unique<TSessionLog>(this, Started, FSessionData.get(), FConfiguration);
   FActionLog = std::make_unique<TActionLog>(this, Started, FSessionData.get(), FConfiguration);
-  FFiles = new TRemoteDirectory(this);
+  FFiles = std::make_unique<TRemoteDirectory>(this);
   FExceptionOnFail = 0;
   FInTransaction = 0;
   FReadCurrentDirectoryPending = false;
@@ -1139,11 +1139,11 @@ TTerminal::~TTerminal() noexcept
 //  SAFE_DESTROY_EX(TCustomFileSystem, FFileSystem);
 //  SAFE_DESTROY_EX(TSessionLog, FLog);
 //  SAFE_DESTROY_EX(TActionLog, FActionLog);
-  SAFE_DESTROY(FFiles);
+//  SAFE_DESTROY(FFiles);
   SAFE_DESTROY_EX(TRemoteDirectoryCache, FDirectoryCache);
   SAFE_DESTROY_EX(TRemoteDirectoryChangesCache, FDirectoryChangesCache);
 //  SAFE_DESTROY(FSessionData);
-  SAFE_DESTROY(FOldFiles);
+//  SAFE_DESTROY(FOldFiles);
 }
 //---------------------------------------------------------------------------
 void TTerminal::Idle()
@@ -3455,7 +3455,7 @@ void TTerminal::ReadDirectory(bool ReloadOnly, bool ForceCache)
       DoStartReadDirectory();
       try__finally
       {
-        LoadedFromCache = FDirectoryCache->GetFileList(RemoteGetCurrentDirectory(), FFiles);
+        LoadedFromCache = FDirectoryCache->GetFileList(RemoteGetCurrentDirectory(), FFiles.get());
       },
       __finally
       {
@@ -3482,19 +3482,19 @@ void TTerminal::ReadDirectory(bool ReloadOnly, bool ForceCache)
 
     try
     {
-      TRemoteDirectory *Files = new TRemoteDirectory(this, FFiles);
+      std::unique_ptr<TRemoteDirectory> Files = std::make_unique<TRemoteDirectory>(this, FFiles.get());
       try__finally
       {
         Files->SetDirectory(RemoteGetCurrentDirectory());
-        CustomReadDirectory(Files);
+        CustomReadDirectory(Files.get());
       },
       __finally
       {
         DoReadDirectoryProgress(-1, 0, Cancel);
         FReadingCurrentDirectory = false;
         FOldFiles->Reset();
-        FOldFiles->AddFiles(FFiles);
-        FFiles = Files;
+        FOldFiles->AddFiles(FFiles.get());
+        FFiles = std::move(Files);
         try__finally
         {
           DoReadDirectory(ReloadOnly);
@@ -3511,7 +3511,7 @@ void TTerminal::ReadDirectory(bool ReloadOnly, bool ForceCache)
         {
           if (GetSessionData()->GetCacheDirectories())
           {
-            DirectoryLoaded(FFiles);
+            DirectoryLoaded(FFiles.get());
           }
         }
       } end_try__finally
@@ -4508,9 +4508,9 @@ bool TTerminal::LoadFilesProperties(TStrings *AFileList)
     FFileSystem->LoadFilesProperties(AFileList);
   if (Result && GetSessionData()->GetCacheDirectories() &&
       (AFileList->GetCount() > 0) &&
-      (AFileList->GetAs<TRemoteFile>(0)->GetDirectory() == FFiles))
+      (AFileList->GetAs<TRemoteFile>(0)->GetDirectory() == FFiles.get()))
   {
-    AddCachedFileList(FFiles);
+    AddCachedFileList(FFiles.get());
   }
   return Result;
 }
@@ -4699,7 +4699,7 @@ void TTerminal::CalculateFilesChecksum(const UnicodeString Alg,
 void TTerminal::TerminalRenameFile(const TRemoteFile *AFile,
   const UnicodeString ANewName, bool CheckExistence)
 {
-  DebugAssert(AFile && AFile->GetDirectory() == FFiles);
+  DebugAssert(AFile && AFile->GetDirectory() == FFiles.get());
   bool Proceed = true;
   // if filename doesn't contain path, we check for existence of file
   if ((AFile && AFile->GetFileName() != ANewName) && CheckExistence &&
