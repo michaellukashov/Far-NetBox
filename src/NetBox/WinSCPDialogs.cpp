@@ -103,11 +103,8 @@ class TTabbedDialog : public TWinSCPDialog
 {
   friend class TTabButton;
 public:
-  explicit TTabbedDialog(TCustomFarPlugin *AFarPlugin, int TabCount);
-
-  virtual ~TTabbedDialog()
-  {
-  }
+  explicit TTabbedDialog(TCustomFarPlugin *AFarPlugin, intptr_t TabCount) noexcept;
+  virtual ~TTabbedDialog() noexcept = default;
 
   intptr_t GetTab() const { return FTab; }
 
@@ -122,8 +119,8 @@ protected:
 
 private:
   UnicodeString FOrigCaption;
-  intptr_t FTab;
-  intptr_t FTabCount;
+  intptr_t FTab{0};
+  intptr_t FTabCount{0};
 };
 
 NB_DEFINE_CLASS_ID(TTabButton);
@@ -142,10 +139,10 @@ public:
 
 private:
   UnicodeString FTabName;
-  intptr_t FTab;
+  intptr_t FTab{0};
 };
 
-TTabbedDialog::TTabbedDialog(TCustomFarPlugin *AFarPlugin, int TabCount) :
+TTabbedDialog::TTabbedDialog(TCustomFarPlugin *AFarPlugin, intptr_t TabCount) noexcept :
   TWinSCPDialog(AFarPlugin),
   FTab(0),
   FTabCount(TabCount)
@@ -5899,8 +5896,8 @@ public:
   };
 
   explicit TFileSystemInfoDialog(TCustomFarPlugin *AFarPlugin,
-    TGetSpaceAvailableEvent OnGetSpaceAvailable);
-  virtual ~TFileSystemInfoDialog();
+    TGetSpaceAvailableEvent OnGetSpaceAvailable) noexcept;
+  virtual ~TFileSystemInfoDialog() noexcept;
   void Execute(const TSessionInfo &SessionInfo,
     const TFileSystemInfo &FileSystemInfo, const UnicodeString SpaceAvailablePath);
 
@@ -5929,10 +5926,10 @@ private:
   TGetSpaceAvailableEvent FOnGetSpaceAvailable;
   TFileSystemInfo FFileSystemInfo;
   TSessionInfo FSessionInfo;
-  bool FSpaceAvailableLoaded;
+  bool FSpaceAvailableLoaded{false};
   TSpaceAvailable FSpaceAvailable;
-  TObject *FLastFeededControl;
-  intptr_t FLastListItem;
+  TObject *FLastFeededControl{nullptr};
+  intptr_t FLastListItem{0};
   UnicodeString FClipboard;
 
   TLabelList *ServerLabels;
@@ -5955,17 +5952,17 @@ public:
   static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TLabelList); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TLabelList) || TList::is(Kind); }
 public:
-  explicit TLabelList() :
+  explicit TLabelList() noexcept :
     TList(OBJECT_CLASS_TLabelList),
     MaxLen(0)
   {
   }
 
-  intptr_t MaxLen;
+  intptr_t MaxLen{0};
 };
 
 TFileSystemInfoDialog::TFileSystemInfoDialog(TCustomFarPlugin *AFarPlugin,
-  TGetSpaceAvailableEvent OnGetSpaceAvailable) : TTabbedDialog(AFarPlugin, tabCount),
+  TGetSpaceAvailableEvent OnGetSpaceAvailable) noexcept : TTabbedDialog(AFarPlugin, tabCount),
   FSpaceAvailableLoaded(false),
   FLastFeededControl(nullptr),
   FLastListItem(0),
@@ -6074,7 +6071,7 @@ TFileSystemInfoDialog::TFileSystemInfoDialog(TCustomFarPlugin *AFarPlugin,
   OkButton->SetCenterGroup(true);
 }
 
-TFileSystemInfoDialog::~TFileSystemInfoDialog()
+TFileSystemInfoDialog::~TFileSystemInfoDialog() noexcept
 {
   SAFE_DESTROY(ServerLabels);
   SAFE_DESTROY(ProtocolLabels);
@@ -7789,7 +7786,7 @@ public:
   explicit TSynchronizeDialog(TCustomFarPlugin *AFarPlugin,
     TSynchronizeStartStopEvent OnStartStop,
     intptr_t Options, intptr_t CopyParamAttrs, TGetSynchronizeOptionsEvent OnGetOptions);
-  virtual ~TSynchronizeDialog();
+  virtual ~TSynchronizeDialog() noexcept;
 
   bool Execute(TSynchronizeParamType &Params,
     const TCopyParamType *CopyParams, bool &SaveSettings);
@@ -7952,7 +7949,7 @@ TSynchronizeDialog::TSynchronizeDialog(TCustomFarPlugin *AFarPlugin,
   CloseButton->SetCenterGroup(true);
 }
 
-TSynchronizeDialog::~TSynchronizeDialog()
+TSynchronizeDialog::~TSynchronizeDialog() noexcept
 {
   SAFE_DESTROY(FSynchronizeOptions);
 }
@@ -8267,11 +8264,8 @@ class TQueueDialog : TFarDialog
   NB_DISABLE_COPY(TQueueDialog)
 public:
   explicit TQueueDialog(TCustomFarPlugin *AFarPlugin,
-    TWinSCPFileSystem *AFileSystem, bool ClosingPlugin);
-
-  virtual ~TQueueDialog()
-  {
-  }
+    TWinSCPFileSystem *AFileSystem, bool ClosingPlugin) noexcept;
+  virtual ~TQueueDialog() noexcept = default;
 
   bool Execute(TTerminalQueueStatus *Status);
 
@@ -8294,9 +8288,9 @@ private:
   TFarList *GetQueueItems() { return QueueListBox->GetItems(); }
 
 private:
-  TTerminalQueueStatus *FStatus;
-  TWinSCPFileSystem *FFileSystem;
-  bool FClosingPlugin;
+  TTerminalQueueStatus *FStatus{nullptr};
+  TWinSCPFileSystem *FFileSystem{nullptr};
+  bool FClosingPlugin{false};
 
   TFarListBox *QueueListBox;
   TFarButton *ShowButton;
@@ -8308,7 +8302,7 @@ private:
 };
 
 TQueueDialog::TQueueDialog(TCustomFarPlugin *AFarPlugin,
-  TWinSCPFileSystem *AFileSystem, bool ClosingPlugin) :
+  TWinSCPFileSystem *AFileSystem, bool ClosingPlugin) noexcept :
   TFarDialog(AFarPlugin),
   FStatus(nullptr),
   FFileSystem(AFileSystem),

@@ -27,13 +27,13 @@ void DestroyFarPlugin(TCustomFarPlugin *& Plugin)
   SAFE_DESTROY(Plugin);
 }
 
-TWinSCPPlugin::TWinSCPPlugin(HINSTANCE HInst) :
+TWinSCPPlugin::TWinSCPPlugin(HINSTANCE HInst) noexcept :
   TCustomFarPlugin(OBJECT_CLASS_TWinSCPPlugin, HInst),
   FInitialized(false)
 {
 }
 
-TWinSCPPlugin::~TWinSCPPlugin()
+TWinSCPPlugin::~TWinSCPPlugin() noexcept
 {
   if (FInitialized)
   {
