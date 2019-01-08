@@ -25,15 +25,9 @@ else()
 endif()
 
 if(MSVC)
-  if(MSVC14)
-    set(OPENSSL_LIB_DIR "${PROJECT_PLATFORM}-${CMAKE_BUILD_TYPE}")
-  else()
-    set(OPENSSL_LIB_DIR "${PROJECT_PLATFORM}-${CMAKE_BUILD_TYPE}")
-  endif()
-else()
   set(OPENSSL_LIB_DIR "${PROJECT_PLATFORM}-${CMAKE_BUILD_TYPE}")
 endif(MSVC)
-#message("OPENSSL_LIB_DIR: ${OPENSSL_LIB_DIR}")
+message("OPENSSL_LIB_DIR: ${OPENSSL_LIB_DIR}")
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
   set(BUILD_DEBUG 1)
@@ -1316,9 +1310,10 @@ add_library(s3 STATIC
 target_include_directories(s3 PRIVATE
   ../../libs/libs3/inc
   ../../libs/libs3/inc/mingw
-  ../../libs/openssl/include
   ../../libs/expat/lib
   ../../libs/neon/src
+  ../../libs/openssl
+  ../../libs/openssl/${OPENSSL_LIB_DIR}
 )
 
 target_compile_options(s3 PRIVATE
