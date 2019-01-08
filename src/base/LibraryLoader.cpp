@@ -4,18 +4,18 @@
 #include "LibraryLoader.hpp"
 
 
-TLibraryLoader::TLibraryLoader(const UnicodeString LibraryName, bool AllowFailure) :
+TLibraryLoader::TLibraryLoader(const UnicodeString LibraryName, bool AllowFailure) noexcept :
   FHModule(nullptr)
 {
   Load(LibraryName, AllowFailure);
 }
 
-TLibraryLoader::TLibraryLoader() :
+TLibraryLoader::TLibraryLoader() noexcept :
   FHModule(nullptr)
 {
 }
 
-TLibraryLoader::~TLibraryLoader()
+TLibraryLoader::~TLibraryLoader() noexcept
 {
   Unload();
 }

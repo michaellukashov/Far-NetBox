@@ -76,7 +76,7 @@ public:
 public:
   TObject() noexcept : FKind(OBJECT_CLASS_TObject) {}
   explicit TObject(TObjectClassId Kind) noexcept : FKind(Kind) {}
-  virtual ~TObject() = default;
+  virtual ~TObject() noexcept = default;
   virtual void Changed() {}
 private:
   TObjectClassId FKind{};
@@ -475,8 +475,8 @@ class NB_CORE_EXPORT TSHFileInfo : public TObject
     UINT uFlags);
 
 public:
-  TSHFileInfo();
-  virtual ~TSHFileInfo();
+  TSHFileInfo() noexcept;
+  virtual ~TSHFileInfo() noexcept;
 
   //get the image's index in the system's image list
   int GetFileIconIndex(const UnicodeString StrFileName, BOOL bSmallIcon) const;
