@@ -1016,17 +1016,17 @@ public:
   void SetReservedBy(TSFTPFileSystem *Value) { FReservedBy = Value; }
 
 private:
-  uint8_t *FData;
-  uintptr_t FLength;
-  uintptr_t FCapacity;
-  mutable uintptr_t FPosition;
-  SSH_FXP_TYPE FType;
-  uint32_t FMessageNumber;
-  TSFTPFileSystem *FReservedBy;
+  uint8_t *FData{nullptr};
+  uintptr_t FLength{0};
+  uintptr_t FCapacity{0};
+  mutable uintptr_t FPosition{0};
+  SSH_FXP_TYPE FType{0};
+  uint32_t FMessageNumber{0};
+  TSFTPFileSystem *FReservedBy{nullptr};
 
   static uint32_t FMessageCounter;
   static const intptr_t FSendPrefixLen = 4;
-  uintptr_t FCodePage;
+  uintptr_t FCodePage{0};
 
   void Init(uintptr_t CodePage)
   {
@@ -1441,8 +1441,7 @@ class TSFTPFixedLenQueue : public TSFTPQueue
 {
 public:
   explicit TSFTPFixedLenQueue(TSFTPFileSystem *AFileSystem, uintptr_t CodePage) noexcept :
-    TSFTPQueue(AFileSystem, CodePage),
-    FMissedRequests(0)
+    TSFTPQueue(AFileSystem, CodePage)
   {
   }
 
@@ -1458,7 +1457,7 @@ protected:
   intptr_t FMissedRequests{0};
 
   // sends as many requests as allowed by implementation
-  virtual bool SendRequests() override
+  bool SendRequests() override
   {
     bool Result = false;
     FMissedRequests++;
@@ -1485,7 +1484,7 @@ public:
     UnregisterReceiveHandler();
   }
 
-  virtual void Dispose(SSH_FXP_TYPE ExpectedType = -1, SSH_FX_TYPE AllowStatus = -1) override
+  void Dispose(SSH_FXP_TYPE ExpectedType = -1, SSH_FX_TYPE AllowStatus = -1) override
   {
     // we do not want to receive asynchronous notifications anymore,
     // while waiting synchronously for pending responses
@@ -1522,7 +1521,7 @@ protected:
   virtual bool ReceivePacketAsynchronously() = 0;
 
   // sends as many requests as allowed by implementation
-  virtual bool SendRequests() override
+  bool SendRequests() override
   {
     // noop
     return true;
@@ -1579,7 +1578,7 @@ public:
   }
 
 protected:
-  virtual bool InitRequest(TSFTPQueuePacket *Request) override
+  bool InitRequest(TSFTPQueuePacket *Request) override
   {
     uint32_t BlockSize = FFileSystem->DownloadBlockSize(OperationProgress);
     InitRequest(Request, FTransferred, BlockSize);
@@ -1597,7 +1596,7 @@ protected:
     Request->AddCardinal(Size);
   }
 
-  virtual bool End(TSFTPPacket *Response) override
+  bool End(TSFTPPacket *Response) override
   {
     return (Response->GetType() != SSH_FXP_DATA);
   }
@@ -1614,14 +1613,7 @@ class TSFTPUploadQueue : public TSFTPAsynchronousQueue
 public:
   TSFTPUploadQueue(TSFTPFileSystem * AFileSystem, uintptr_t ACodePage, TEncryption * Encryption) noexcept :
     TSFTPAsynchronousQueue(AFileSystem, ACodePage),
-    FEncryption(Encryption),
-    FTerminal(nullptr),
-    OperationProgress(nullptr),
-    FLastBlockSize(0),
-    FEnd(false),
-    FTransferred(0),
-    FConvertToken(false),
-    FConvertParams(0)
+    FEncryption(Encryption)
   {
   }
 
@@ -1651,7 +1643,7 @@ public:
   }
 
 protected:
-  virtual bool InitRequest(TSFTPQueuePacket *Request) override
+  bool InitRequest(TSFTPQueuePacket *Request) override
   {
     FTerminal = FFileSystem->FTerminal;
     // Buffer for one block of data
@@ -1712,13 +1704,13 @@ protected:
     return Result;
   }
 
-  virtual void SendPacket(TSFTPQueuePacket *Packet) override
+  void SendPacket(TSFTPQueuePacket *Packet) override
   {
     TSFTPAsynchronousQueue::SendPacket(Packet);
     OperationProgress->AddTransferred(FLastBlockSize);
   }
 
-  virtual void ReceiveResponse(
+  void ReceiveResponse(
     const TSFTPPacket *Packet, TSFTPPacket *Response, SSH_FXP_TYPE ExpectedType = -1,
     SSH_FX_TYPE AllowStatus = -1, bool TryOnly = false) override
   {
@@ -1738,7 +1730,7 @@ protected:
     }
   }
 
-  virtual bool ReceivePacketAsynchronously() override
+  bool ReceivePacketAsynchronously() override
   {
     // do not read response to close request
     bool Result = (FRequests->GetCount() > 0);
@@ -1757,7 +1749,7 @@ protected:
     return FFileSystem->UploadBlockSize(FHandle, OperationProgress);
   }
 
-  virtual bool End(TSFTPPacket * /*Response*/) override
+  bool End(TSFTPPacket * /*Response*/) override
   {
     return FEnd;
   }
@@ -1805,7 +1797,7 @@ public:
   }
 
 protected:
-  virtual bool InitRequest(TSFTPQueuePacket *Request) override
+  bool InitRequest(TSFTPQueuePacket *Request) override
   {
     bool Result = false;
     while (!Result && (FIndex < FFileList->GetCount()))
@@ -1841,7 +1833,7 @@ protected:
     return Result;
   }
 
-  virtual bool SendRequest() override
+  bool SendRequest() override
   {
     bool Result =
       (FIndex < FFileList->GetCount()) &&
@@ -1849,7 +1841,7 @@ protected:
     return Result;
   }
 
-  virtual bool End(TSFTPPacket * /*Response*/) override
+  bool End(TSFTPPacket * /*Response*/) override
   {
     return (FRequests->GetCount() == 0);
   }
@@ -1864,9 +1856,7 @@ class TSFTPCalculateFilesChecksumQueue : public TSFTPFixedLenQueue
   NB_DISABLE_COPY(TSFTPCalculateFilesChecksumQueue)
 public:
   explicit TSFTPCalculateFilesChecksumQueue(TSFTPFileSystem *AFileSystem, uintptr_t CodePage) noexcept :
-    TSFTPFixedLenQueue(AFileSystem, CodePage),
-    FFileList(nullptr),
-    FIndex(0)
+    TSFTPFixedLenQueue(AFileSystem, CodePage)
   {
   }
 
@@ -1896,7 +1886,7 @@ public:
   }
 
 protected:
-  virtual bool InitRequest(TSFTPQueuePacket *Request) override
+  bool InitRequest(TSFTPQueuePacket *Request) override
   {
     bool Result = false;
     while (!Result && (FIndex < FFileList->GetCount()))
@@ -1927,7 +1917,7 @@ protected:
     return Result;
   }
 
-  virtual bool SendRequest() override
+  bool SendRequest() override
   {
     bool Result =
       (FIndex < FFileList->GetCount()) &&
@@ -1935,7 +1925,7 @@ protected:
     return Result;
   }
 
-  virtual bool End(TSFTPPacket * /*Response*/) override
+  bool End(TSFTPPacket * /*Response*/) override
   {
     return (FRequests->GetCount() == 0);
   }
