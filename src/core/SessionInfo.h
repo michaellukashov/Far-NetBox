@@ -115,14 +115,14 @@ enum TCaptureOutputType { cotOutput, cotError, cotExitCode };
 typedef void (__closure *TCaptureOutputEvent)(
   const UnicodeString Str, TCaptureOutputType OutputType);
 #endif // #if 0
-typedef nb::FastDelegate2<void,
-  UnicodeString /*Str*/, TCaptureOutputType /*OutputType*/> TCaptureOutputEvent;
+using TCaptureOutputEvent = nb::FastDelegate2<void,
+  UnicodeString /*Str*/, TCaptureOutputType /*OutputType*/>;
 #if 0
 typedef void (__closure *TCalculatedChecksumEvent)(
   const UnicodeString FileName, const UnicodeString Alg, const UnicodeString Hash);
 #endif // #if 0
-typedef nb::FastDelegate3<void,
-  UnicodeString /*FileName*/, UnicodeString /*Alg*/, UnicodeString /*Hash*/> TCalculatedChecksumEvent;
+using TCalculatedChecksumEvent = nb::FastDelegate3<void,
+  UnicodeString /*FileName*/, UnicodeString /*Alg*/, UnicodeString /*Hash*/>;
 //---------------------------------------------------------------------------
 class TSessionActionRecord;
 class TActionLog;
@@ -269,8 +269,8 @@ public:
   TDifferenceSessionAction(TActionLog * Log, const TChecklistItem* Item);
 };
 
-typedef nb::FastDelegate2<void,
-  TLogLineType /*Type*/, UnicodeString /*Line*/> TDoAddLogEvent;
+using TDoAddLogEvent = nb::FastDelegate2<void,
+  TLogLineType /*Type*/, UnicodeString /*Line*/>;
 //---------------------------------------------------------------------------
 class NB_CORE_EXPORT TSessionLog
 {

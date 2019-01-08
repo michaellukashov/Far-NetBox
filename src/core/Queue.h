@@ -70,15 +70,15 @@ class TTerminalQueueStatus;
 typedef void (__closure *TQueueListUpdate)
 (TTerminalQueue *Queue);
 #endif // #if 0
-typedef nb::FastDelegate1<void,
-  TTerminalQueue * /*Queue*/> TQueueListUpdateEvent;
+using TQueueListUpdateEvent = nb::FastDelegate1<void,
+  TTerminalQueue * /*Queue*/>;
 #if 0
 typedef void (__closure *TQueueItemUpdateEvent)
 (TTerminalQueue *Queue, TQueueItem *Item);
 enum TQueueEvent { qeEmpty, qeEmptyButMonitored, qePendingUserAction };
 #endif // #if 0
-typedef nb::FastDelegate2<void,
-  TTerminalQueue * /*Queue*/, TQueueItem * /*Item*/> TQueueItemUpdateEvent;
+using TQueueItemUpdateEvent = nb::FastDelegate2<void,
+  TTerminalQueue * /*Queue*/, TQueueItem * /*Item*/>;
 
 enum TQueueEvent
 {
@@ -91,8 +91,8 @@ enum TQueueEvent
 typedef void (__closure *TQueueEventEvent)
 (TTerminalQueue *Queue, TQueueEvent Event);
 #endif // #if 0
-typedef nb::FastDelegate2<void,
-  TTerminalQueue * /*Queue*/, TQueueEvent /*Event*/> TQueueEventEvent;
+using TQueueEventEvent = nb::FastDelegate2<void,
+  TTerminalQueue * /*Queue*/, TQueueEvent /*Event*/>;
 
 class TTerminalItem;
 //---------------------------------------------------------------------------

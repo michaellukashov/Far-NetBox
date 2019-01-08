@@ -202,9 +202,9 @@ private:
 typedef void (__closure* TProcessLocalFileEvent)
   (const UnicodeString & FileName, const TSearchRecSmart & Rec, void * Param);
 #endif // #if 0
-typedef nb::FastDelegate3<void,
+using TProcessLocalFileEvent = nb::FastDelegate3<void,
   UnicodeString /*FileName*/, const TSearchRecSmart & /*Rec*/,
-  void * /*Param*/> TProcessLocalFileEvent;
+  void * /*Param*/>;
 
 NB_CORE_EXPORT bool FileSearchRec(const UnicodeString FileName, TSearchRec & Rec);
 NB_CORE_EXPORT void CopySearchRec(const TSearchRec & Source, TSearchRec & Dest);

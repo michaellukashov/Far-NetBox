@@ -13,13 +13,13 @@ class THttp;
 #if 0
 typedef void (__closure *THttpDownloadEvent)(THttp *Sender, __int64 Size, bool &Cancel);
 #endif // #if 0
-typedef nb::FastDelegate3<void,
-  THttp * /*Sender*/, int64_t /*Size*/, bool & /*Cancel*/> THttpDownloadEvent;
+using THttpDownloadEvent = nb::FastDelegate3<void,
+  THttp * /*Sender*/, int64_t /*Size*/, bool & /*Cancel*/>;
 #if 0
 typedef void (__closure *THttpErrorEvent)(THttp *Sender, int Status, const UnicodeString &Message);
 #endif // #if 0
-typedef nb::FastDelegate3<void,
-  THttp * /*Sender*/, int /*Status*/, UnicodeString /*Message*/> THttpErrorEvent;
+using THttpErrorEvent = nb::FastDelegate3<void,
+  THttp * /*Sender*/, int /*Status*/, UnicodeString /*Message*/>;
 //---------------------------------------------------------------------------
 class THttp : public TObject
 {

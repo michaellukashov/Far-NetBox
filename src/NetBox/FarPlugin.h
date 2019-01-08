@@ -43,16 +43,16 @@ enum THandlesFunction
 typedef void (__closure *TFarInputBoxValidateEvent)
 (AnsiString &Text);
 #endif // #if 0
-typedef nb::FastDelegate1<void, UnicodeString & /*Text*/> TFarInputBoxValidateEvent;
+using TFarInputBoxValidateEvent = nb::FastDelegate1<void, UnicodeString & /*Text*/>;
 #if 0
 typedef void (__closure *TFarMessageTimerEvent)(unsigned int &Result);
 #endif // #if 0
-typedef nb::FastDelegate1<void, uint32_t & /*Result*/> TFarMessageTimerEvent;
+using TFarMessageTimerEvent = nb::FastDelegate1<void, uint32_t & /*Result*/>;
 #if 0
 typedef void (__closure *TFarMessageClickEvent)(void *Token, int Result, bool &Close);
 #endif // #if 0
-typedef nb::FastDelegate3<void, void * /*Token*/,
-        uintptr_t /*Result*/, bool & /*Close*/> TFarMessageClickEvent;
+using TFarMessageClickEvent = nb::FastDelegate3<void, void * /*Token*/,
+        uintptr_t /*Result*/, bool & /*Close*/>;
 
 struct TFarMessageParams : public TObject
 {

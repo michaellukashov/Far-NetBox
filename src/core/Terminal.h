@@ -109,10 +109,10 @@ typedef void __fastcall (__closure *TProcessedSynchronizationChecklistItem)(
 using TSynchronizeDirectoryEvent = nb::FastDelegate4<void,
   UnicodeString /*LocalDirectory*/, UnicodeString /*RemoteDirectory*/,
   bool & /*Continue*/, bool /*Collect*/>;
-typedef nb::FastDelegate1<void,
-  const TSynchronizeChecklist::TItemList & /*Items*/> TUpdatedSynchronizationChecklistItems;
-typedef nb::FastDelegate2<void,
-  void * /*Token*/, const TChecklistItem * /*Item*/> TProcessedSynchronizationChecklistItem;
+using TUpdatedSynchronizationChecklistItems = nb::FastDelegate1<void,
+  const TSynchronizeChecklist::TItemList & /*Items*/>;
+using TProcessedSynchronizationChecklistItem = nb::FastDelegate2<void,
+  void * /*Token*/, const TChecklistItem * /*Item*/>;
 #if 0
 typedef void __fastcall (__closure *TDeleteLocalFileEvent)(
   const UnicodeString FileName, bool Alternative, int & Deleted);

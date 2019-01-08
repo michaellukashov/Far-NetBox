@@ -12,7 +12,7 @@ enum TOptionType
 #if 0
 typedef void (__closure *TLogOptionEvent)(const UnicodeString LogStr);
 #endif // #if 0
-typedef nb::FastDelegate1<void, UnicodeString /*LogStr*/> TLogOptionEvent;
+using TLogOptionEvent = nb::FastDelegate1<void, UnicodeString /*LogStr*/>;
 //---------------------------------------------------------------------------
 class NB_CORE_EXPORT TOptions : public TObject
 {

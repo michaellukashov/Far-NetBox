@@ -5882,8 +5882,8 @@ bool TWinSCPFileSystem::LinkDialog(UnicodeString &AFileName,
 typedef void (__closure *TFeedFileSystemData)
 (TObject *Control, int Label, AnsiString Value);
 #endif // #if 0
-typedef nb::FastDelegate3<void,
-        TObject * /*Control*/, intptr_t /*Label*/, UnicodeString /*Value*/> TFeedFileSystemDataEvent;
+using TFeedFileSystemDataEvent = nb::FastDelegate3<void,
+  TObject * /*Control*/, intptr_t /*Label*/, UnicodeString /*Value*/>;
 
 class TLabelList;
 class TFileSystemInfoDialog : TTabbedDialog

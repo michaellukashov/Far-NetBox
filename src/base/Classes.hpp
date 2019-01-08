@@ -56,8 +56,8 @@ constexpr const intptr_t UnixDateDelta = 25569;
 
 class TObject;
 
-typedef nb::FastDelegate0<void> TThreadMethod;
-typedef nb::FastDelegate1<void, TObject * /*Sender*/> TNotifyEvent;
+using TThreadMethod = nb::FastDelegate0<void>;
+using TNotifyEvent = nb::FastDelegate1<void, TObject * /*Sender*/>;
 
 NB_CORE_EXPORT void Abort();
 NB_CORE_EXPORT void Error(intptr_t Id, intptr_t ErrorId);
@@ -730,8 +730,8 @@ struct TInputDialogData
 typedef void (__closure *TInputDialogInitialize)
 (TObject *Sender, TInputDialogData *Data);
 #endif // #if 0
-typedef nb::FastDelegate2<void,
-        TObject * /*Sender*/, TInputDialogData * /*Data*/> TInputDialogInitializeEvent;
+using TInputDialogInitializeEvent = nb::FastDelegate2<void,
+  TObject * /*Sender*/, TInputDialogData * /*Data*/>;
 
 enum TQueryType
 {

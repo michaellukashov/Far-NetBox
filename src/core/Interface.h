@@ -64,8 +64,8 @@ NB_CORE_EXPORT void WinFinalize();
 #if 0
 typedef void (__closure *TButtonSubmitEvent)(TObject *Sender, uint32_t &Answer);
 #endif // #if 0
-typedef nb::FastDelegate2<void,
-  TObject * /*Sender*/, uint32_t & /*Answer*/> TButtonSubmitEvent;
+using TButtonSubmitEvent = nb::FastDelegate2<void,
+  TObject * /*Sender*/, uint32_t & /*Answer*/>;
 
 struct NB_CORE_EXPORT TQueryButtonAlias : public TObject
 {
@@ -90,7 +90,7 @@ struct NB_CORE_EXPORT TQueryButtonAlias : public TObject
 #if 0
 typedef void (__closure *TQueryParamsTimerEvent)(uint32_t &Result);
 #endif // #if 0
-typedef nb::FastDelegate1<void, uint32_t & /*Result*/> TQueryParamsTimerEvent;
+using TQueryParamsTimerEvent = nb::FastDelegate1<void, uint32_t & /*Result*/>;
 
 struct NB_CORE_EXPORT TQueryParams : public TObject
 {
@@ -146,16 +146,16 @@ typedef void (__closure *TFileFoundEvent)
 (TTerminal *Terminal, const UnicodeString FileName, const TRemoteFile *File,
   bool &Cancel);
 #endif // #if 0
-typedef nb::FastDelegate4<void,
+using TFileFoundEvent = nb::FastDelegate4<void,
   TTerminal * /*Terminal*/, UnicodeString /*FileName*/,
   const TRemoteFile * /*File*/,
-  bool & /*Cancel*/> TFileFoundEvent;
+  bool & /*Cancel*/>;
 #if 0
 typedef void (__closure *TFindingFileEvent)
 (TTerminal *Terminal, const UnicodeString Directory, bool &Cancel);
 #endif // #if 0
-typedef nb::FastDelegate3<void,
-  TTerminal * /*Terminal*/, UnicodeString /*ADirectory*/, bool & /*Cancel*/> TFindingFileEvent;
+using TFindingFileEvent = nb::FastDelegate3<void,
+  TTerminal * /*Terminal*/, UnicodeString /*ADirectory*/, bool & /*Cancel*/>;
 //---------------------------------------------------------------------------
 class NB_CORE_EXPORT TOperationVisualizer
 {

@@ -21,12 +21,12 @@ typedef void (__closure *TFileOperationFinished)
   (TFileOperation Operation, TOperationSide Side, bool Temp,
     const UnicodeString & FileName, bool Success, TOnceDoneOperation & OnceDoneOperation);
 #endif // #if 0
-typedef nb::FastDelegate1<void,
-  TFileOperationProgressType & /*ProgressData*/> TFileOperationProgressEvent;
-typedef nb::FastDelegate6<void,
+using TFileOperationProgressEvent = nb::FastDelegate1<void,
+  TFileOperationProgressType & /*ProgressData*/>;
+using TFileOperationFinishedEvent = nb::FastDelegate6<void,
   TFileOperation /*Operation*/, TOperationSide /*Side*/, bool /*Temp*/,
   UnicodeString /*FileName*/, bool /*Success*/,
-  TOnceDoneOperation & /*OnceDoneOperation*/> TFileOperationFinishedEvent;
+  TOnceDoneOperation & /*OnceDoneOperation*/>;
 //---------------------------------------------------------------------------
 class TFileOperationStatistics : public TObject
 {
