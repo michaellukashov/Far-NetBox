@@ -286,8 +286,8 @@ constexpr const int ccoDisableRemoteFiles = 0x02;
 typedef void (__closure *TCustomCommandValidate)
   (const TCustomCommandType & Command);
 #endif // #if 0
-typedef nb::FastDelegate1<void,
-  const TCustomCommandType & /*Command*/> TCustomCommandValidateEvent;
+using TCustomCommandValidateEvent = nb::FastDelegate1<void,
+  const TCustomCommandType & /*Command*/>;
 
 bool DoCustomCommandDialog(TCustomCommandType & Command,
   const TCustomCommandList * CustomCommandList,
@@ -322,16 +322,16 @@ typedef void (__closure *TCalculateChecksumEvent)
   (const UnicodeString & Alg, TStrings * FileList,
    TCalculatedChecksumCallbackEvent OnCalculatedChecksum, bool & Close);
 #endif // #if 0
-typedef nb::FastDelegate4<void,
+using TCalculateSizeEvent = nb::FastDelegate4<void,
   TStrings * /*FileList*/, int64_t & /*Size*/, TCalculateSizeStats & /*Stats*/,
-  bool & /*Close*/> TCalculateSizeEvent;
-typedef nb::FastDelegate3<void,
+  bool & /*Close*/>;
+using TCalculatedChecksumCallbackEvent = nb::FastDelegate3<void,
   UnicodeString /*FileName*/, UnicodeString /*Alg*/,
-  UnicodeString /*Hash*/> TCalculatedChecksumCallbackEvent;
-typedef nb::FastDelegate4<void,
+  UnicodeString /*Hash*/>;
+using TCalculateChecksumEvent = nb::FastDelegate4<void,
   UnicodeString /*Alg*/, TStrings * /*FileList*/,
   TCalculatedChecksumCallbackEvent /*OnCalculatedChecksum*/,
-  bool & /*Close*/> TCalculateChecksumEvent;
+  bool & /*Close*/>;
 
 bool DoPropertiesDialog(TStrings * FileList,
     UnicodeString Directory, const TRemoteTokenList * GroupList,
@@ -364,9 +364,9 @@ constexpr const int soAllowSelectedOnly = 0x04;
 typedef void (__closure *TGetSynchronizeOptionsEvent)
   (int Params, TSynchronizeOptions & Options);
 #endif // #if 0
-typedef nb::FastDelegate2<void,
+using TGetSynchronizeOptionsEvent = nb::FastDelegate2<void,
   intptr_t /*Params*/,
-  TSynchronizeOptions & /*Options*/> TGetSynchronizeOptionsEvent;
+  TSynchronizeOptions & /*Options*/>;
 #if 0
 typedef void (__closure *TSynchronizeSessionLog)
   (const UnicodeString & Message);
@@ -376,13 +376,13 @@ typedef void (__closure *TFeedSynchronizeError)
 typedef void (__closure *TSynchronizeInNewWindow)
   (const TSynchronizeParamType & Params, const TCopyParamType * CopyParams);
 #endif // #if 0
-typedef nb::FastDelegate1<void,
-  UnicodeString /*Message*/> TSynchronizeSessionLogEvent;
-typedef nb::FastDelegate4<void,
+using TSynchronizeSessionLogEvent = nb::FastDelegate1<void,
+  UnicodeString /*Message*/>;
+using TFeedSynchronizeErrorEvent = nb::FastDelegate4<void,
   UnicodeString /*Message*/, TStrings * /*MoreMessages*/, TQueryType /*Type*/,
-  UnicodeString /*HelpKeyword*/> TFeedSynchronizeErrorEvent;
-typedef nb::FastDelegate4<void,
-  const TSynchronizeParamType & /*Params*/, const TCopyParamType * /*CopyParams*/> TSynchronizeInNewWindowEvent;
+  UnicodeString /*HelpKeyword*/>;
+using TSynchronizeInNewWindowEvent = nb::FastDelegate4<void,
+  const TSynchronizeParamType & /*Params*/, const TCopyParamType * /*CopyParams*/>;
 
 bool DoSynchronizeDialog(TSynchronizeParamType & Params,
   const TCopyParamType * CopyParams, TSynchronizeStartStopEvent OnStartStop,
@@ -404,9 +404,9 @@ typedef void (__closure *TFullSynchronizeInNewWindow)
   (TSynchronizeMode Mode, int Params, const UnicodeString & LocalDirectory, const UnicodeString & RemoteDirectory,
    const TCopyParamType * CopyParams);
 #endif // #if 0
-typedef nb::FastDelegate5<void,
+using TFullSynchronizeInNewWindowEvent = nb::FastDelegate5<void,
   TTerminal::TSynchronizeMode /*Mode*/, intptr_t /*Params*/, UnicodeString /*LocalDirectory*/, UnicodeString /*RemoteDirectory*/,
-   const TCopyParamType * /*CopyParams*/> TFullSynchronizeInNewWindowEvent;
+   const TCopyParamType * /*CopyParams*/>;
 
 bool DoFullSynchronizeDialog(TTerminal::TSynchronizeMode & Mode, intptr_t & Params,
   UnicodeString & LocalDirectory, UnicodeString & RemoteDirectory,
@@ -427,16 +427,16 @@ typedef void (__closure *TSynchronizeChecklistCalculateSize)
 typedef void (__closure *TSynchronizeMoveEvent)(
   TOperationSide Side, const UnicodeString & FileName, const UnicodeString & NewFileName, TRemoteFile * RemoteFile);
 #endif // #if 0
-typedef nb::FastDelegate3<void,
+using TCustomCommandMenuEvent = nb::FastDelegate3<void,
   void * /*Action*/, TStrings * /*LocalFileList*/,
-  TStrings * /*RemoteFileList*/> TCustomCommandMenuEvent;
-typedef nb::FastDelegate3<void,
+  TStrings * /*RemoteFileList*/>;
+using TFullSynchronizeEvent = nb::FastDelegate3<void,
   void * /*Token*/, TProcessedSynchronizationChecklistItem /*OnProcessedItem*/,
-  TUpdatedSynchronizationChecklistItems /*OnUpdatedSynchronizationChecklistItems*/> TFullSynchronizeEvent;
-typedef nb::FastDelegate3<void,
-  TSynchronizeChecklist * /*Checklist*/, const TSynchronizeChecklist::TItemList & /*Items*/, void * /*Token*/> TSynchronizeChecklistCalculateSizeEvent;
-typedef nb::FastDelegate4<void,
-  TOperationSide /*Side*/, UnicodeString /*FileName*/, UnicodeString /*NewFileName*/, TRemoteFile * /*RemoteFile*/> TSynchronizeMoveEvent;
+  TUpdatedSynchronizationChecklistItems /*OnUpdatedSynchronizationChecklistItems*/>;
+using TSynchronizeChecklistCalculateSizeEvent = nb::FastDelegate3<void,
+  TSynchronizeChecklist * /*Checklist*/, const TSynchronizeChecklist::TItemList & /*Items*/, void * /*Token*/>;
+using TSynchronizeMoveEvent = nb::FastDelegate4<void,
+  TOperationSide /*Side*/, UnicodeString /*FileName*/, UnicodeString /*NewFileName*/, TRemoteFile * /*RemoteFile*/>;
 
 bool DoSynchronizeChecklistDialog(TSynchronizeChecklist * Checklist,
   TTerminal::TSynchronizeMode Mode, int Params,
@@ -476,9 +476,9 @@ struct TSessionInfo;
 typedef void (__closure *TGetSpaceAvailable)
   (const UnicodeString Path, TSpaceAvailable & ASpaceAvailable, bool & Close);
 #endif // #if 0
-typedef nb::FastDelegate3<void,
+using TGetSpaceAvailableEvent = nb::FastDelegate3<void,
   UnicodeString /*Path*/, TSpaceAvailable & /*ASpaceAvailable*/,
-  bool & /*Close*/> TGetSpaceAvailableEvent;
+  bool & /*Close*/>;
 
 void DoFileSystemInfoDialog(
   const TSessionInfo & SessionInfo, const TFileSystemInfo & FileSystemInfo,
@@ -524,28 +524,28 @@ typedef void (__closure *TFindEvent)
   (TTerminal * Terminal, UnicodeString Directory, const TFileMasks & FileMask,
    TFileFoundEvent OnFileFound, TFindingFileEvent OnFindingFile);
 #endif // #if 0
-typedef nb::FastDelegate4<void,
+using TFindEvent = nb::FastDelegate4<void,
   UnicodeString /*Directory*/, const TFileMasks & /*FileMask*/,
   TFileFoundEvent /*OnFileFound*/,
-  TFindingFileEvent /*OnFindingFile*/> TFindEvent;
+  TFindingFileEvent /*OnFindingFile*/>;
 #if 0
 typedef void (__closure *TFocusFileEvent)
   (TTerminal * Terminal, const UnicodeString & Path);
 #endif // #if 0
-typedef nb::FastDelegate2<void,
-  TTerminal * /*Terminal*/, UnicodeString /*Path*/> TFocusFileEvent;
+using TFocusFileEvent = nb::FastDelegate2<void,
+  TTerminal * /*Terminal*/, UnicodeString /*Path*/>;
 #if 0
 typedef void (__closure *TFileOperationFinishedEvent)
   (const UnicodeString & FileName, bool Success);
 #endif // #if 0
-typedef nb::FastDelegate2<void,
-  UnicodeString /*FileName*/, bool /*Success*/> TFileOperationFinished2Event;
+using TFileOperationFinished2Event = nb::FastDelegate2<void,
+  UnicodeString /*FileName*/, bool /*Success*/>;
 #if 0
 typedef void (__closure *TFileListOperationEvent)
   (TTerminal * Terminal, TStrings * FileList, TFileOperationFinishedEvent OnFileOperationFinished);
 #endif // #if 0
-typedef nb::FastDelegate3<void,
-  TTerminal * /*Terminal*/, TStrings * /*FileList*/, TFileOperationFinished2Event /*OnFileOperationFinished*/> TFileListOperationEvent;
+using TFileListOperationEvent = nb::FastDelegate3<void,
+  TTerminal * /*Terminal*/, TStrings * /*FileList*/, TFileOperationFinished2Event /*OnFileOperationFinished*/>;
 
 #if 0
 void ShowFileFindDialog(
@@ -718,7 +718,7 @@ private:
 class TConsole
 {
 public:
-  virtual ~TConsole() = default;
+  virtual ~TConsole() noexcept = default;
   virtual void Print(UnicodeString Str, bool FromBeginning = false, bool Error = false) = 0;
   void PrintLine(const UnicodeString & Str = UnicodeString(), bool Error = false);
   virtual bool Input(UnicodeString & Str, bool Echo, unsigned int Timer) = 0;

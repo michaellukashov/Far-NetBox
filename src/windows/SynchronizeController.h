@@ -18,15 +18,15 @@ class TSynchronizeChecklist;
 typedef void (__closure * TSynchronizeAbortEvent)
   (System::TObject * Sender, bool Close);
 #endif // #if 0
-typedef nb::FastDelegate2<void,
-  TObject * /*Sender*/, bool /*Close*/> TSynchronizeAbortEvent;
+using TSynchronizeAbortEvent = nb::FastDelegate2<void,
+  TObject * /*Sender*/, bool /*Close*/>;
 #if 0
 typedef void (__closure * TSynchronizeThreadsEvent)
   (TObject* Sender, TThreadMethod Method);
 enum TSynchronizeLogEntry { slScan, slStart, slChange, slUpload, slDelete, slDirChange, slContinuedError };
 #endif // #if 0
-typedef nb::FastDelegate2<void,
-  TObject * /*Sender*/, TThreadMethod /*Method*/> TSynchronizeThreadsEvent;
+using TSynchronizeThreadsEvent = nb::FastDelegate2<void,
+  TObject * /*Sender*/, TThreadMethod /*Method*/>;
 
 enum TSynchronizeLogEntry
 {
@@ -43,9 +43,9 @@ enum TSynchronizeLogEntry
 typedef void (__closure * TSynchronizeLog)
   (TSynchronizeController * Controller, TSynchronizeLogEntry Entry, const UnicodeString Message);
 #endif // #if 0
-typedef nb::FastDelegate3<void,
+using TSynchronizeLogEvent = nb::FastDelegate3<void,
   TSynchronizeController * /*Controller*/, TSynchronizeLogEntry /*Entry*/,
-  UnicodeString /*Message*/> TSynchronizeLogEvent;
+  UnicodeString /*Message*/>;
 #if 0
 typedef void (__closure * TSynchronizeStartStopEvent)
   (System::TObject * Sender, bool Start, const TSynchronizeParamType & Params,
@@ -53,11 +53,11 @@ typedef void (__closure * TSynchronizeStartStopEvent)
    TSynchronizeAbortEvent OnAbort, TSynchronizeThreadsEvent OnSynchronizeThreads,
    TSynchronizeLog OnSynchronizeLog);
 #endif // #if 0
-typedef nb::FastDelegate8<void,
+using TSynchronizeStartStopEvent = nb::FastDelegate8<void,
   TObject * /*Sender*/, bool /*Start*/, const TSynchronizeParamType & /*Params*/,
   const TCopyParamType & /*CopyParam*/, TSynchronizeOptions * /*Options*/,
   TSynchronizeAbortEvent /*OnAbort*/, TSynchronizeThreadsEvent /*OnSynchronizeThreads*/,
-  TSynchronizeLogEvent /*OnSynchronizeLog*/> TSynchronizeStartStopEvent;
+  TSynchronizeLogEvent /*OnSynchronizeLog*/>;
 #if 0
 typedef void (__closure * TSynchronizeEvent)
   (TSynchronizeController * Sender, const UnicodeString LocalDirectory,
@@ -65,25 +65,25 @@ typedef void (__closure * TSynchronizeEvent)
    const TSynchronizeParamType & Params, TSynchronizeChecklist ** Checklist,
    TSynchronizeOptions * Options, bool Full);
 #endif // #if 0
-typedef nb::FastDelegate8<void,
+using TSynchronizeEvent = nb::FastDelegate8<void,
   TSynchronizeController * /*Sender*/, UnicodeString /*LocalDirectory*/,
   UnicodeString /*RemoteDirectory*/, const TCopyParamType & /*CopyParam*/,
   const TSynchronizeParamType & /*Params*/, TSynchronizeChecklist ** /*Checklist*/,
-  TSynchronizeOptions * /*Options*/, bool /*Full*/> TSynchronizeEvent;
+  TSynchronizeOptions * /*Options*/, bool /*Full*/>;
 #if 0
 typedef void (__closure * TSynchronizeInvalidEvent)
   (TSynchronizeController * Sender, const UnicodeString Directory, const UnicodeString ErrorStr);
 #endif // #if 0
-typedef nb::FastDelegate3<void,
+using TSynchronizeInvalidEvent = nb::FastDelegate3<void,
   TSynchronizeController * /*Sender*/, UnicodeString /*Directory*/,
-  UnicodeString /*ErrorStr*/> TSynchronizeInvalidEvent;
+  UnicodeString /*ErrorStr*/>;
 #if 0
 typedef void (__closure * TSynchronizeTooManyDirectories)
   (TSynchronizeController * Sender, int & MaxDirectories);
 #endif // #if 0
-typedef nb::FastDelegate2<void,
+using TSynchronizeTooManyDirectoriesEvent = nb::FastDelegate2<void,
   TSynchronizeController * /*Sender*/,
-  intptr_t & /*MaxDirectories*/> TSynchronizeTooManyDirectoriesEvent;
+  intptr_t & /*MaxDirectories*/>;
 //---------------------------------------------------------------------------
 namespace Discmon {
 class TDiscMonitor;

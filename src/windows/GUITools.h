@@ -10,7 +10,7 @@ class TSessionData;
 #if 0
 typedef void (__closure *TProcessMessagesEvent)();
 #endif // #if 0
-typedef nb::FastDelegate0<void> TProcessMessagesEvent;
+using TProcessMessagesEvent = nb::FastDelegate0<void>;
 //---------------------------------------------------------------------------
 NB_CORE_EXPORT bool FindFile(UnicodeString &APath);
 NB_CORE_EXPORT bool FindTool(const UnicodeString Name, UnicodeString &APath);
