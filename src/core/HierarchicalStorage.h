@@ -193,8 +193,8 @@ private:
 class TCustomIniFileStorage : public THierarchicalStorage
 {
 public:
-  TCustomIniFileStorage(const UnicodeString Storage, TCustomIniFile *IniFile);
-  virtual ~TCustomIniFileStorage();
+  TCustomIniFileStorage(const UnicodeString Storage, TCustomIniFile *IniFile) noexcept;
+  virtual ~TCustomIniFileStorage() noexcept;
 
   virtual bool OpenRootKey(bool CanCreate);
   virtual bool OpenSubKey(UnicodeString SubKey, bool CanCreate, bool Path = false);
@@ -252,7 +252,7 @@ class TIniFileStorage : public TCustomIniFileStorage
 {
 public:
   static TIniFileStorage *CreateFromPath(const UnicodeString AStorage);
-  virtual ~TIniFileStorage();
+  virtual ~TIniFileStorage() noexcept;
 
   virtual void Flush();
 

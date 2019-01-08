@@ -44,8 +44,8 @@ class TScriptCommands : TStringList
 public:
   typedef void (__closure *TCommandProc)(TScriptProcParams * Parameters);
 
-  TScriptCommands(TScript * Script);
-  virtual ~TScriptCommands();
+  TScriptCommands(TScript * Script) noexcept;
+  virtual ~TScriptCommands() noexcept;
 
   void Execute(const UnicodeString & Command, const UnicodeString & Params);
   UnicodeString ResolveCommand(const UnicodeString & Command);

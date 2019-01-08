@@ -133,8 +133,8 @@ protected:
 
 public:
   explicit TSecureShell(TSessionUI *UI, TSessionData *SessionData,
-    TSessionLog *Log, TConfiguration *Configuration);
-  virtual ~TSecureShell();
+    TSessionLog *Log, TConfiguration *Configuration) noexcept;
+  virtual ~TSecureShell() noexcept;
   void Open();
   void Close();
   void KeepAlive();

@@ -531,13 +531,13 @@ void TSessionAction::Cancel()
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-TFileSessionAction::TFileSessionAction(TActionLog *Log, TLogAction Action) :
+TFileSessionAction::TFileSessionAction(TActionLog *Log, TLogAction Action) noexcept :
   TSessionAction(Log, Action)
 {
 }
 //---------------------------------------------------------------------------
 TFileSessionAction::TFileSessionAction(
-  TActionLog *Log, TLogAction Action, const UnicodeString AFileName) :
+  TActionLog *Log, TLogAction Action, const UnicodeString AFileName) noexcept :
   TSessionAction(Log, Action)
 {
   SetFileName(AFileName);
@@ -553,13 +553,13 @@ void TFileSessionAction::SetFileName(const UnicodeString AFileName)
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 TFileLocationSessionAction::TFileLocationSessionAction(
-  TActionLog *Log, TLogAction Action) :
+  TActionLog *Log, TLogAction Action) noexcept :
   TFileSessionAction(Log, Action)
 {
 }
 //---------------------------------------------------------------------------
 TFileLocationSessionAction::TFileLocationSessionAction(
-  TActionLog *Log, TLogAction Action, const UnicodeString AFileName) :
+  TActionLog *Log, TLogAction Action, const UnicodeString AFileName) noexcept :
   TFileSessionAction(Log, Action, AFileName)
 {
 }
@@ -573,20 +573,20 @@ void TFileLocationSessionAction::Destination(const UnicodeString Destination)
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-TUploadSessionAction::TUploadSessionAction(TActionLog *Log) :
+TUploadSessionAction::TUploadSessionAction(TActionLog *Log) noexcept :
   TFileLocationSessionAction(Log, laUpload)
 {
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-TDownloadSessionAction::TDownloadSessionAction(TActionLog *Log) :
+TDownloadSessionAction::TDownloadSessionAction(TActionLog *Log) noexcept :
   TFileLocationSessionAction(Log, laDownload)
 {
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 TChmodSessionAction::TChmodSessionAction(
-  TActionLog *Log, const UnicodeString AFileName) :
+  TActionLog *Log, const UnicodeString AFileName) noexcept :
   TFileSessionAction(Log, laChmod, AFileName)
 {
 }
@@ -600,7 +600,7 @@ void TChmodSessionAction::Recursive()
 }
 //---------------------------------------------------------------------------
 TChmodSessionAction::TChmodSessionAction(
-  TActionLog *Log, const UnicodeString AFileName, const TRights &ARights) :
+  TActionLog *Log, const UnicodeString AFileName, const TRights &ARights) noexcept :
   TFileSessionAction(Log, laChmod, AFileName)
 {
   Rights(ARights);
@@ -615,7 +615,7 @@ void TChmodSessionAction::Rights(const TRights &Rights)
 }
 //---------------------------------------------------------------------------
 TTouchSessionAction::TTouchSessionAction(
-  TActionLog *Log, const UnicodeString AFileName, const TDateTime &Modification) :
+  TActionLog *Log, const UnicodeString AFileName, const TDateTime &Modification) noexcept :
   TFileSessionAction(Log, laTouch, AFileName)
 {
   if (FRecord != nullptr)
@@ -625,13 +625,13 @@ TTouchSessionAction::TTouchSessionAction(
 }
 //---------------------------------------------------------------------------
 TMkdirSessionAction::TMkdirSessionAction(
-  TActionLog *Log, const UnicodeString AFileName) :
+  TActionLog *Log, const UnicodeString AFileName) noexcept :
   TFileSessionAction(Log, laMkdir, AFileName)
 {
 }
 //---------------------------------------------------------------------------
 TRmSessionAction::TRmSessionAction(
-  TActionLog *Log, const UnicodeString AFileName) :
+  TActionLog *Log, const UnicodeString AFileName) noexcept :
   TFileSessionAction(Log, laRm, AFileName)
 {
 }
@@ -645,21 +645,21 @@ void TRmSessionAction::Recursive()
 }
 //---------------------------------------------------------------------------
 TMvSessionAction::TMvSessionAction(TActionLog *Log,
-  const UnicodeString AFileName, const UnicodeString ADestination) :
+  const UnicodeString AFileName, const UnicodeString ADestination) noexcept :
   TFileLocationSessionAction(Log, laMv, AFileName)
 {
   Destination(ADestination);
 }
 //---------------------------------------------------------------------------
 TCpSessionAction::TCpSessionAction(TActionLog * Log,
-  const UnicodeString AFileName, const UnicodeString ADestination) :
+  const UnicodeString AFileName, const UnicodeString ADestination) noexcept :
   TFileLocationSessionAction(Log, laCp, AFileName)
 {
   Destination(ADestination);
 }
 //---------------------------------------------------------------------------
 TCallSessionAction::TCallSessionAction(TActionLog *Log,
-  UnicodeString ACommand, const UnicodeString ADestination) :
+  UnicodeString ACommand, const UnicodeString ADestination) noexcept :
   TSessionAction(Log, laCall)
 {
   if (FRecord != nullptr)
@@ -686,7 +686,7 @@ void TCallSessionAction::ExitCode(int ExitCode)
 }
 //---------------------------------------------------------------------------
 TLsSessionAction::TLsSessionAction(TActionLog *Log,
-  const UnicodeString Destination) :
+  const UnicodeString Destination) noexcept :
   TSessionAction(Log, laLs)
 {
   if (FRecord != nullptr)
@@ -704,7 +704,7 @@ void TLsSessionAction::FileList(TRemoteFileList *FileList)
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-TStatSessionAction::TStatSessionAction(TActionLog *Log, const UnicodeString AFileName) :
+TStatSessionAction::TStatSessionAction(TActionLog *Log, const UnicodeString AFileName) noexcept :
   TFileSessionAction(Log, laStat, AFileName)
 {
 }
@@ -718,7 +718,7 @@ void TStatSessionAction::File(TRemoteFile *AFile)
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-TChecksumSessionAction::TChecksumSessionAction(TActionLog *Log) :
+TChecksumSessionAction::TChecksumSessionAction(TActionLog *Log) noexcept :
   TFileSessionAction(Log, laChecksum)
 {
 }
@@ -732,7 +732,7 @@ void TChecksumSessionAction::Checksum(const UnicodeString Alg, const UnicodeStri
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-TCwdSessionAction::TCwdSessionAction(TActionLog *Log, const UnicodeString Path) :
+TCwdSessionAction::TCwdSessionAction(TActionLog *Log, const UnicodeString Path) noexcept :
   TSessionAction(Log, laCwd)
 {
   if (FRecord != nullptr)
@@ -742,7 +742,7 @@ TCwdSessionAction::TCwdSessionAction(TActionLog *Log, const UnicodeString Path) 
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-TDifferenceSessionAction::TDifferenceSessionAction(TActionLog * Log, const TChecklistItem* Item) :
+TDifferenceSessionAction::TDifferenceSessionAction(TActionLog * Log, const TChecklistItem* Item) noexcept :
   TSessionAction(Log, laDifference)
 {
   if (FRecord != NULL)
@@ -783,9 +783,9 @@ static FILE *LocalOpenLogFile(const UnicodeString LogFileName, TDateTime Started
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-const wchar_t *LogLineMarks = L"<>!.*";
+constexpr const wchar_t *LogLineMarks = L"<>!.*";
 TSessionLog::TSessionLog(TSessionUI *UI, TDateTime Started, TSessionData *SessionData,
-  TConfiguration *Configuration) :
+  TConfiguration *Configuration) noexcept :
   FConfiguration(Configuration),
   FParent(nullptr),
   FLogging(false),
@@ -798,7 +798,7 @@ TSessionLog::TSessionLog(TSessionUI *UI, TDateTime Started, TSessionData *Sessio
 {
 }
 //---------------------------------------------------------------------------
-TSessionLog::~TSessionLog()
+TSessionLog::~TSessionLog() noexcept
 {
   FClosed = true;
   ReflectSettings();
@@ -996,8 +996,7 @@ void TSessionLog::CloseLogFile()
 {
   if (FLogger != nullptr)
   {
-    delete FLogger;
-    FLogger = nullptr;
+    FLogger.reset();
   }
   FCurrentLogFileName.Clear();
   FCurrentFileName.Clear();
@@ -1013,7 +1012,7 @@ void TSessionLog::OpenLogFile()
     DebugAssert(FLogger == nullptr);
     FCurrentLogFileName = FConfiguration->GetLogFileName();
     FILE *file = LocalOpenLogFile(FCurrentLogFileName, FStarted, FSessionData, FConfiguration->GetLogFileAppend(), FCurrentFileName);
-    FLogger = new tinylog::TinyLog(file);
+    FLogger = std::make_unique<tinylog::TinyLog>(file);
     TSearchRec SearchRec;
     if (FileSearchRec(FCurrentFileName, SearchRec))
     {
@@ -1465,7 +1464,7 @@ void TSessionLog::AddSeparator()
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 TActionLog::TActionLog(TSessionUI *UI, TDateTime Started, TSessionData *SessionData,
-  TConfiguration *Configuration) :
+  TConfiguration *Configuration) noexcept :
   FConfiguration(Configuration),
   FLogging(false),
   FLogger(nullptr),
@@ -1659,8 +1658,7 @@ void TActionLog::CloseLogFile()
 {
   if (FLogger != nullptr)
   {
-    delete FLogger;
-    FLogger = nullptr;
+    FLogger.reset();
   }
   FCurrentLogFileName.Clear();
   FCurrentFileName.Clear();
@@ -1676,7 +1674,7 @@ void TActionLog::OpenLogFile()
     DebugAssert(FLogger == nullptr);
     FCurrentLogFileName = FConfiguration->GetActionsLogFileName();
     FILE *file = LocalOpenLogFile(FCurrentLogFileName, FStarted, FSessionData, false, FCurrentFileName);
-    FLogger = new tinylog::TinyLog(file);
+    FLogger = std::make_unique<tinylog::TinyLog>(file);
   }
   catch (Exception &E)
   {

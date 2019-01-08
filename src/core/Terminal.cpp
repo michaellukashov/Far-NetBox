@@ -216,8 +216,8 @@ public:
   static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TTunnelThread); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TTunnelThread) || TSimpleThread::is(Kind); }
 public:
-  explicit TTunnelThread(TSecureShell *SecureShell);
-  virtual ~TTunnelThread();
+  explicit TTunnelThread(TSecureShell *SecureShell) noexcept;
+  virtual ~TTunnelThread() noexcept;
   virtual void InitTunnelThread();
 
   virtual void Terminate() override;
@@ -243,7 +243,7 @@ void TTunnelThread::InitTunnelThread()
   Start();
 }
 //---------------------------------------------------------------------------
-TTunnelThread::~TTunnelThread()
+TTunnelThread::~TTunnelThread() noexcept
 {
   // close before the class's virtual functions (Terminate particularly) are lost
   Close();
@@ -279,11 +279,8 @@ class TTunnelUI : public TSessionUI
 {
   NB_DISABLE_COPY(TTunnelUI)
 public:
-  explicit TTunnelUI(TTerminal *Terminal);
-
-  virtual ~TTunnelUI()
-  {
-  }
+  explicit TTunnelUI(TTerminal *Terminal) noexcept;
+  virtual ~TTunnelUI() noexcept = default;
 
   virtual void Information(const UnicodeString AStr, bool Status) override;
   virtual uintptr_t QueryUser(const UnicodeString AQuery,
@@ -306,7 +303,7 @@ private:
   uint32_t FTerminalThreadID;
 };
 //---------------------------------------------------------------------------
-TTunnelUI::TTunnelUI(TTerminal *Terminal) :
+TTunnelUI::TTunnelUI(TTerminal *Terminal) noexcept :
   TSessionUI(OBJECT_CLASS_TTunnelUI),
   FTerminal(Terminal)
 {

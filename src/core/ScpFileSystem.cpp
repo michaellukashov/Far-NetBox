@@ -317,7 +317,7 @@ TStrings * TCommandSet::CreateCommandList() const
   return CommandList;
 }
 //===========================================================================
-TSCPFileSystem::TSCPFileSystem(TTerminal *ATerminal) :
+TSCPFileSystem::TSCPFileSystem(TTerminal *ATerminal) noexcept :
   TCustomFileSystem(OBJECT_CLASS_TSCPFileSystem, ATerminal),
   FSecureShell(nullptr),
   FCommandSet(nullptr),
@@ -345,7 +345,7 @@ void TSCPFileSystem::Init(void *Data)
   FFileSystemInfo.ProtocolName = FFileSystemInfo.ProtocolBaseName;
 }
 //---------------------------------------------------------------------------
-TSCPFileSystem::~TSCPFileSystem()
+TSCPFileSystem::~TSCPFileSystem() noexcept
 {
   SAFE_DESTROY(FCommandSet);
   SAFE_DESTROY(FOutput);

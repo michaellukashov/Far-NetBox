@@ -68,7 +68,7 @@ TQueryButtonAlias TQueryButtonAlias::CreateIgnoreAsRenameGrouppedWithNo()
   return Result;
 }
 //---------------------------------------------------------------------------
-TQueryParams::TQueryParams(uintptr_t AParams, const UnicodeString AHelpKeyword) :
+TQueryParams::TQueryParams(uintptr_t AParams, const UnicodeString AHelpKeyword) noexcept :
   Aliases(nullptr),
   AliasesCount(0),
   Params(AParams),
@@ -84,7 +84,7 @@ TQueryParams::TQueryParams(uintptr_t AParams, const UnicodeString AHelpKeyword) 
 {
 }
 //---------------------------------------------------------------------------
-TQueryParams::TQueryParams(const TQueryParams & Source)
+TQueryParams::TQueryParams(const TQueryParams & Source) noexcept
 {
   Assign(Source);
 }

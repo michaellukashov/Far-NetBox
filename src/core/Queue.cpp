@@ -133,7 +133,7 @@ class TPromptUserAction : public TUserAction
 {
   NB_DISABLE_COPY(TPromptUserAction)
 public:
-  explicit TPromptUserAction(TPromptUserEvent AOnPromptUser) :
+  explicit TPromptUserAction(TPromptUserEvent AOnPromptUser) noexcept :
     OnPromptUser(AOnPromptUser),
     Terminal(nullptr),
     Kind(pkPrompt),
@@ -143,10 +143,7 @@ public:
   {
   }
 
-  virtual ~TPromptUserAction()
-  {
-//    SAFE_DESTROY(Results);
-  }
+  virtual ~TPromptUserAction() noexcept = default;
 
   virtual void Execute(void *Arg) override
   {
@@ -158,7 +155,7 @@ public:
 
   TPromptUserEvent OnPromptUser;
   TTerminal *Terminal{nullptr};
-  TPromptKind Kind{};
+  TPromptKind Kind{pkPrompt};
   UnicodeString Name;
   UnicodeString Instructions;
   TStrings* Prompts{nullptr};
@@ -1276,11 +1273,8 @@ public:
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TBackgroundTerminal) || TSecondaryTerminal::is(Kind); }
 
 public:
-  explicit TBackgroundTerminal(TTerminal *MainTerminal);
-
-  virtual ~TBackgroundTerminal()
-  {
-  }
+  explicit TBackgroundTerminal(TTerminal *MainTerminal) noexcept;
+  virtual ~TBackgroundTerminal() noexcept = default;
 
   void Init(
     TSessionData *SessionData, TConfiguration *Configuration,
@@ -1293,7 +1287,7 @@ private:
   TTerminalItem *FItem;
 };
 //---------------------------------------------------------------------------
-TBackgroundTerminal::TBackgroundTerminal(TTerminal *MainTerminal) :
+TBackgroundTerminal::TBackgroundTerminal(TTerminal *MainTerminal) noexcept :
   TSecondaryTerminal(OBJECT_CLASS_TBackgroundTerminal, MainTerminal),
   FItem(nullptr)
 {

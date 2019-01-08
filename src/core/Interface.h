@@ -94,8 +94,8 @@ using TQueryParamsTimerEvent = nb::FastDelegate1<void, uint32_t & /*Result*/>;
 
 struct NB_CORE_EXPORT TQueryParams : public TObject
 {
-  explicit TQueryParams(uintptr_t AParams = 0, const UnicodeString AHelpKeyword = HELP_NONE);
-  explicit TQueryParams(const TQueryParams &Source);
+  explicit TQueryParams(uintptr_t AParams = 0, const UnicodeString AHelpKeyword = HELP_NONE) noexcept;
+  explicit TQueryParams(const TQueryParams &Source) noexcept;
 
   void Assign(const TQueryParams &Source);
 

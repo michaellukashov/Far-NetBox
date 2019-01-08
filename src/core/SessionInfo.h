@@ -148,8 +148,8 @@ protected:
 class NB_CORE_EXPORT TFileSessionAction : public TSessionAction
 {
 public:
-  explicit TFileSessionAction(TActionLog *Log, TLogAction Action);
-  explicit TFileSessionAction(TActionLog *Log, TLogAction Action, const UnicodeString AFileName);
+  explicit TFileSessionAction(TActionLog *Log, TLogAction Action) noexcept;
+  explicit TFileSessionAction(TActionLog *Log, TLogAction Action, const UnicodeString AFileName) noexcept;
 
   void SetFileName(const UnicodeString AFileName);
 };
@@ -157,8 +157,8 @@ public:
 class NB_CORE_EXPORT TFileLocationSessionAction : public TFileSessionAction
 {
 public:
-  explicit TFileLocationSessionAction(TActionLog *Log, TLogAction Action);
-  explicit TFileLocationSessionAction(TActionLog *Log, TLogAction Action, const UnicodeString AFileName);
+  explicit TFileLocationSessionAction(TActionLog *Log, TLogAction Action) noexcept;
+  explicit TFileLocationSessionAction(TActionLog *Log, TLogAction Action, const UnicodeString AFileName) noexcept;
 
   void Destination(const UnicodeString Destination);
 };
@@ -166,13 +166,13 @@ public:
 class NB_CORE_EXPORT TUploadSessionAction : public TFileLocationSessionAction
 {
 public:
-  explicit TUploadSessionAction(TActionLog *Log);
+  explicit TUploadSessionAction(TActionLog *Log) noexcept;
 };
 //---------------------------------------------------------------------------
 class NB_CORE_EXPORT TDownloadSessionAction : public TFileLocationSessionAction
 {
 public:
-  explicit TDownloadSessionAction(TActionLog *Log);
+  explicit TDownloadSessionAction(TActionLog *Log) noexcept;
 };
 //---------------------------------------------------------------------------
 class TRights;
@@ -180,9 +180,9 @@ class TRights;
 class NB_CORE_EXPORT TChmodSessionAction : public TFileSessionAction
 {
 public:
-  explicit TChmodSessionAction(TActionLog *Log, const UnicodeString AFileName);
+  explicit TChmodSessionAction(TActionLog *Log, const UnicodeString AFileName) noexcept;
   explicit TChmodSessionAction(TActionLog *Log, const UnicodeString AFileName,
-    const TRights &ARights);
+    const TRights &ARights) noexcept;
 
   void Rights(const TRights &Rights);
   void Recursive();
@@ -192,19 +192,19 @@ class NB_CORE_EXPORT TTouchSessionAction : public TFileSessionAction
 {
 public:
   explicit TTouchSessionAction(TActionLog *Log, const UnicodeString AFileName,
-    const TDateTime &Modification);
+    const TDateTime &Modification) noexcept;
 };
 //---------------------------------------------------------------------------
 class NB_CORE_EXPORT TMkdirSessionAction : public TFileSessionAction
 {
 public:
-  explicit TMkdirSessionAction(TActionLog *Log, const UnicodeString AFileName);
+  explicit TMkdirSessionAction(TActionLog *Log, const UnicodeString AFileName) noexcept;
 };
 //---------------------------------------------------------------------------
 class NB_CORE_EXPORT TRmSessionAction : public TFileSessionAction
 {
 public:
-  explicit TRmSessionAction(TActionLog *Log, const UnicodeString AFileName);
+  explicit TRmSessionAction(TActionLog *Log, const UnicodeString AFileName) noexcept;
 
   void Recursive();
 };
@@ -213,21 +213,21 @@ class NB_CORE_EXPORT TMvSessionAction : public TFileLocationSessionAction
 {
 public:
   explicit TMvSessionAction(TActionLog *Log, const UnicodeString AFileName,
-    const UnicodeString ADestination);
+    const UnicodeString ADestination) noexcept;
 };
 //---------------------------------------------------------------------------
 class NB_CORE_EXPORT TCpSessionAction : public TFileLocationSessionAction
 {
 public:
   explicit TCpSessionAction(TActionLog * Log, const UnicodeString AFileName,
-    const UnicodeString ADestination);
+    const UnicodeString ADestination) noexcept;
 };
 //---------------------------------------------------------------------------
 class NB_CORE_EXPORT TCallSessionAction : public TSessionAction
 {
 public:
   explicit TCallSessionAction(TActionLog *Log, const UnicodeString Command,
-    const UnicodeString ADestination);
+    const UnicodeString ADestination) noexcept;
 
   void AddOutput(const UnicodeString Output, bool StdError);
   void ExitCode(int ExitCode);
@@ -236,7 +236,7 @@ public:
 class NB_CORE_EXPORT TLsSessionAction : public TSessionAction
 {
 public:
-  explicit TLsSessionAction(TActionLog *Log, const UnicodeString Destination);
+  explicit TLsSessionAction(TActionLog *Log, const UnicodeString Destination) noexcept;
 
   void FileList(TRemoteFileList *FileList);
 };
@@ -244,7 +244,7 @@ public:
 class NB_CORE_EXPORT TStatSessionAction : public TFileSessionAction
 {
 public:
-  explicit TStatSessionAction(TActionLog *Log, const UnicodeString AFileName);
+  explicit TStatSessionAction(TActionLog *Log, const UnicodeString AFileName) noexcept;
 
   void File(TRemoteFile *AFile);
 };
@@ -252,7 +252,7 @@ public:
 class NB_CORE_EXPORT TChecksumSessionAction : public TFileSessionAction
 {
 public:
-  explicit TChecksumSessionAction(TActionLog *Log);
+  explicit TChecksumSessionAction(TActionLog *Log) noexcept;
 
   void Checksum(const UnicodeString Alg, const UnicodeString Checksum);
 };
@@ -260,13 +260,13 @@ public:
 class NB_CORE_EXPORT TCwdSessionAction : public TSessionAction
 {
 public:
-  TCwdSessionAction(TActionLog *Log, const UnicodeString Path);
+  TCwdSessionAction(TActionLog *Log, const UnicodeString Path) noexcept;
 };
 //---------------------------------------------------------------------------
 class TDifferenceSessionAction : public TSessionAction
 {
 public:
-  TDifferenceSessionAction(TActionLog * Log, const TChecklistItem* Item);
+  explicit TDifferenceSessionAction(TActionLog * Log, const TChecklistItem* Item) noexcept;
 };
 
 using TDoAddLogEvent = nb::FastDelegate2<void,
@@ -280,8 +280,8 @@ class NB_CORE_EXPORT TSessionLog
   NB_DISABLE_COPY(TSessionLog)
 public:
   explicit TSessionLog(TSessionUI *UI, TDateTime Started, TSessionData *SessionData,
-    TConfiguration *Configuration);
-  virtual ~TSessionLog();
+    TConfiguration *Configuration) noexcept;
+  virtual ~TSessionLog() noexcept;
 
   void SetParent(TSessionLog *AParent, const UnicodeString AName);
 
@@ -294,9 +294,9 @@ public:
   void ReflectSettings();
 
   __property bool Logging = { read = FLogging };
+  const bool& Logging{FLogging};
   __property UnicodeString Name = { read = FName };
-
-  ROProperty<bool> Logging{nb::bind(&TSessionLog::GetLogging, this)};
+  const UnicodeString& Name{FName};
 
   bool GetLogging() const { return FLogging; }
   UnicodeString GetName() const { return FName; }
@@ -312,7 +312,7 @@ private:
   TSessionLog *FParent{nullptr};
   TCriticalSection FCriticalSection;
   bool FLogging{false};
-  tinylog::TinyLog *FLogger{nullptr};
+  std::unique_ptr<tinylog::TinyLog> FLogger;
   UnicodeString FCurrentLogFileName;
   UnicodeString FCurrentFileName;
   int64_t FCurrentFileSize{0};
@@ -353,7 +353,7 @@ friend class TSessionActionRecord;
   NB_DISABLE_COPY(TActionLog)
 public:
   explicit TActionLog(TSessionUI *UI, TDateTime Started, TSessionData *SessionData,
-    TConfiguration *Configuration);
+    TConfiguration *Configuration) noexcept;
   // For fatal failures for .NET assembly
   explicit TActionLog(TDateTime Started, TConfiguration *Configuration) noexcept;
   virtual ~TActionLog() noexcept;
@@ -365,7 +365,9 @@ public:
   void EndGroup();
 
   __property UnicodeString CurrentFileName = { read = FCurrentFileName };
+  const UnicodeString& CurrentFileName{FCurrentFileName};
   __property bool Enabled = { read = FEnabled, write = SetEnabled };
+  RWProperty<bool> Enabled{nb::bind(&TActionLog::GetEnabled, this), nb::bind(&TActionLog::SetEnabled, this)};
 
   UnicodeString GetCurrentFileName() const { return FCurrentFileName; }
   bool GetEnabled() const { return FEnabled; }
@@ -384,7 +386,7 @@ private:
   TConfiguration *FConfiguration{nullptr};
   TCriticalSection FCriticalSection;
   bool FLogging{false};
-  tinylog::TinyLog *FLogger{nullptr};
+  std::unique_ptr<tinylog::TinyLog> FLogger;
   UnicodeString FCurrentLogFileName;
   UnicodeString FCurrentFileName;
   TSessionUI *FUI{nullptr};

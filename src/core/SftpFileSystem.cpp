@@ -1440,7 +1440,7 @@ protected:
 class TSFTPFixedLenQueue : public TSFTPQueue
 {
 public:
-  explicit TSFTPFixedLenQueue(TSFTPFileSystem *AFileSystem, uintptr_t CodePage) :
+  explicit TSFTPFixedLenQueue(TSFTPFileSystem *AFileSystem, uintptr_t CodePage) noexcept :
     TSFTPQueue(AFileSystem, CodePage),
     FMissedRequests(0)
   {

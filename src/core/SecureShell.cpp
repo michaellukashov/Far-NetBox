@@ -32,7 +32,7 @@ struct TPuttyTranslation
 };
 //---------------------------------------------------------------------------
 TSecureShell::TSecureShell(TSessionUI *UI,
-  TSessionData *SessionData, TSessionLog *Log, TConfiguration *Configuration) :
+  TSessionData *SessionData, TSessionLog *Log, TConfiguration *Configuration) noexcept :
   TObject(OBJECT_CLASS_TSecureShell)
 {
   FUI = UI;
@@ -70,7 +70,7 @@ TSecureShell::TSecureShell(TSessionUI *UI,
   FWaitingForData = 0;
 }
 //---------------------------------------------------------------------------
-TSecureShell::~TSecureShell()
+TSecureShell::~TSecureShell() noexcept
 {
   DebugAssert(FWaiting == 0);
   SetActive(false);

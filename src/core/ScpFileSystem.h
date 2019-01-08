@@ -16,8 +16,8 @@ public:
   static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TSCPFileSystem); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TSCPFileSystem) || TCustomFileSystem::is(Kind); }
 public:
-  explicit TSCPFileSystem(TTerminal *ATerminal);
-  virtual ~TSCPFileSystem();
+  explicit TSCPFileSystem(TTerminal *ATerminal) noexcept;
+  virtual ~TSCPFileSystem() noexcept;
 
   virtual void Init(void * /*TSecureShell * */) override;
   virtual void FileTransferProgress(int64_t /*TransferSize*/, int64_t /*Bytes*/) override {}
@@ -103,17 +103,17 @@ protected:
   virtual UnicodeString RemoteGetCurrentDirectory() const override;
 
 private:
-  TSecureShell *FSecureShell;
-  TCommandSet *FCommandSet;
+  TSecureShell *FSecureShell{nullptr};
+  TCommandSet *FCommandSet{nullptr};
   TFileSystemInfo FFileSystemInfo;
   UnicodeString FCurrentDirectory;
-  TStrings *FOutput;
-  intptr_t FReturnCode;
+  TStrings *FOutput{nullptr};
+  intptr_t FReturnCode{0};
   UnicodeString FCachedDirectoryChange;
-  bool FProcessingCommand;
-  int FLsFullTime;
+  bool FProcessingCommand{false};
+  int FLsFullTime{0};
   TCaptureOutputEvent FOnCaptureOutput;
-  bool FScpFatalError;
+  bool FScpFatalError{false};
 
   void DetectUtf();
   void ClearAliases();

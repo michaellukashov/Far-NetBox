@@ -34,11 +34,8 @@ const int DummyDisconnectCode = 803;
 class TFileZillaImpl : public TFileZillaIntf
 {
 public:
-  explicit TFileZillaImpl(TFTPFileSystem *FileSystem);
-
-  virtual ~TFileZillaImpl()
-  {
-  }
+  explicit TFileZillaImpl(TFTPFileSystem *FileSystem) noexcept;
+  virtual ~TFileZillaImpl() noexcept = default;
 
   virtual const wchar_t *Option(intptr_t OptionID) const override;
   virtual intptr_t OptionVal(intptr_t OptionID) const override;
@@ -74,7 +71,7 @@ private:
   TFTPFileSystem *FFileSystem;
 };
 //---------------------------------------------------------------------------
-TFileZillaImpl::TFileZillaImpl(TFTPFileSystem *FileSystem) :
+TFileZillaImpl::TFileZillaImpl(TFTPFileSystem *FileSystem) noexcept :
   TFileZillaIntf(),
   FFileSystem(FileSystem)
 {

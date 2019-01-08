@@ -35,8 +35,8 @@ public:
   static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TSFTPFileSystem); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TSFTPFileSystem) || TCustomFileSystem::is(Kind); }
 public:
-  explicit TSFTPFileSystem(TTerminal *ATerminal);
-  virtual ~TSFTPFileSystem();
+  explicit TSFTPFileSystem(TTerminal *ATerminal) noexcept;
+  virtual ~TSFTPFileSystem() noexcept;
 
   virtual void Init(void *Data /*TSecureShell* */) override;
   virtual void FileTransferProgress(int64_t /*TransferSize*/, int64_t /*Bytes*/) override {}
