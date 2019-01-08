@@ -333,7 +333,7 @@ struct X11Display* x11_setup_display(const char* display, Conf* conf)
       /* Create trial connection to see if there is a useful Unix-domain
        * socket */
       const struct plug_function_table* dummy = &dummy_plug;
-      Socket s = sk_new(sk_addr_dup(ux), 0, 0, 0, 0, 0, (Plug)&dummy,
+      Socket s = putty_sk_new(sk_addr_dup(ux), 0, 0, 0, 0, 0, (Plug)&dummy,
 #ifdef MPEXT
           0, 0
 #endif

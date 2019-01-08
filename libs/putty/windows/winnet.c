@@ -1382,7 +1382,7 @@ ret:
   return err;
 }
 
-Socket sk_new(SockAddr addr, int port, int privport, int oobinline,
+Socket putty_sk_new(SockAddr addr, int port, int privport, int oobinline,
   int nodelay, int keepalive, Plug plug,
 #ifdef MPEXT
   int timeout,

@@ -573,7 +573,7 @@ Socket new_connection(SockAddr addr, const char* hostname,
     /* create the actual socket we will be using,
      * connected to our proxy server and port.
      */
-    ret->sub_socket = sk_new(proxy_addr,
+    ret->sub_socket = putty_sk_new(proxy_addr,
         conf_get_int(conf, CONF_proxy_port),
         privport, oobinline,
         nodelay, keepalive, (Plug) pplug,
@@ -592,7 +592,7 @@ Socket new_connection(SockAddr addr, const char* hostname,
   }
 
   /* no proxy, so just return the direct socket */
-  return sk_new(addr, port, privport, oobinline, nodelay, keepalive, plug,
+  return putty_sk_new(addr, port, privport, oobinline, nodelay, keepalive, plug,
 #ifdef MPEXT
       conf_get_int(conf, CONF_connect_timeout), conf_get_int(conf, CONF_sndbuf)
 #endif
