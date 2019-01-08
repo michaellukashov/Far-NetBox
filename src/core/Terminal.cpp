@@ -1090,8 +1090,8 @@ void TTerminal::Init(TSessionData *ASessionData,
 
   FUseBusyCursor = True;
   FLockDirectory.Clear();
-  FDirectoryCache = new TRemoteDirectoryCache();
-  FDirectoryChangesCache = nullptr;
+  FDirectoryCache = std::make_unique<TRemoteDirectoryCache>();
+//  FDirectoryChangesCache = nullptr;
   FFSProtocol = cfsUnknown;
   FCommandSession = nullptr;
   FAutoReadDirectory = true;
@@ -1130,18 +1130,18 @@ TTerminal::~TTerminal() noexcept
   SAFE_DESTROY(FCommandSession);
 
   if (GetSessionData()->GetCacheDirectoryChanges() && GetSessionData()->GetPreserveDirectoryChanges() &&
-    (FDirectoryChangesCache != nullptr))
+    (FDirectoryChangesCache.get() != nullptr))
   {
     FConfiguration->SaveDirectoryChangesCache(GetSessionData()->GetSessionKey(),
-      FDirectoryChangesCache);
+      FDirectoryChangesCache.get());
   }
 
 //  SAFE_DESTROY_EX(TCustomFileSystem, FFileSystem);
 //  SAFE_DESTROY_EX(TSessionLog, FLog);
 //  SAFE_DESTROY_EX(TActionLog, FActionLog);
 //  SAFE_DESTROY(FFiles);
-  SAFE_DESTROY_EX(TRemoteDirectoryCache, FDirectoryCache);
-  SAFE_DESTROY_EX(TRemoteDirectoryChangesCache, FDirectoryChangesCache);
+//  SAFE_DESTROY_EX(TRemoteDirectoryCache, FDirectoryCache);
+//  SAFE_DESTROY_EX(TRemoteDirectoryChangesCache, FDirectoryChangesCache);
 //  SAFE_DESTROY(FSessionData);
 //  SAFE_DESTROY(FOldFiles);
 }
@@ -1261,9 +1261,10 @@ void TTerminal::ResetConnection()
   FRememberedPasswordTried = false;
   FRememberedTunnelPasswordTried = false;
 
-  if (FDirectoryChangesCache != nullptr)
+  if (FDirectoryChangesCache.get() != nullptr)
   {
-    SAFE_DESTROY_EX(TRemoteDirectoryChangesCache, FDirectoryChangesCache);
+//    SAFE_DESTROY_EX(TRemoteDirectoryChangesCache, FDirectoryChangesCache);
+    FDirectoryChangesCache.reset();
   }
 
   FFiles->SetDirectory(L"");
@@ -1347,13 +1348,13 @@ void TTerminal::InternalTryOpen()
 
     if (GetSessionData()->GetCacheDirectoryChanges())
     {
-      DebugAssert(FDirectoryChangesCache == nullptr);
-      FDirectoryChangesCache = new TRemoteDirectoryChangesCache(
+      DebugAssert(FDirectoryChangesCache.get() == nullptr);
+      FDirectoryChangesCache = std::make_unique<TRemoteDirectoryChangesCache>(
         FConfiguration->GetCacheDirectoryChangesMaxSize());
       if (GetSessionData()->GetPreserveDirectoryChanges())
       {
         FConfiguration->LoadDirectoryChangesCache(GetSessionData()->GetSessionKey(),
-          FDirectoryChangesCache);
+          FDirectoryChangesCache.get());
       }
     }
 
@@ -1373,7 +1374,8 @@ void TTerminal::InternalTryOpen()
     // rollback
     if (FDirectoryChangesCache != nullptr)
     {
-      SAFE_DESTROY_EX(TRemoteDirectoryChangesCache, FDirectoryChangesCache);
+//      SAFE_DESTROY_EX(TRemoteDirectoryChangesCache, FDirectoryChangesCache);
+      FDirectoryChangesCache.reset();
     }
     if (GetSessionData()->GetFingerprintScan() && (FFileSystem != nullptr) &&
         DebugAlwaysTrue(GetSessionData()->GetFtps() != ftpsNone))
@@ -2502,43 +2504,43 @@ void TTerminal::AddCachedFileList(TRemoteFileList *FileList)
 //---------------------------------------------------------------------------
 TRemoteFileList * TTerminal::DirectoryFileList(const UnicodeString APath, TDateTime Timestamp, bool CanLoad)
 {
-  TRemoteFileList *Result = nullptr;
+  std::unique_ptr<TRemoteFileList> Result;
   if (base::UnixSamePath(FFiles->GetDirectory(), APath))
   {
     if (Timestamp < FFiles->GetTimestamp())
     {
-      Result = new TRemoteFileList();
-      FFiles->DuplicateTo(Result);
+      Result = std::make_unique<TRemoteFileList>();
+      FFiles->DuplicateTo(Result.get());
     }
   }
   else
   {
     if (FDirectoryCache->HasNewerFileList(APath, Timestamp))
     {
-      Result = new TRemoteFileList();
-      DebugAlwaysTrue(FDirectoryCache->GetFileList(APath, Result));
+      Result = std::make_unique<TRemoteFileList>();
+      DebugAlwaysTrue(FDirectoryCache->GetFileList(APath, Result.get()));
     }
     // do not attempt to load file list if there is cached version,
     // only absence of cached version indicates that we consider
     // the directory content obsolete
     else if (CanLoad && !FDirectoryCache->HasFileList(APath))
     {
-      Result = new TRemoteFileList();
+      Result = std::make_unique<TRemoteFileList>();
       Result->SetDirectory(APath);
 
       try
       {
-        ReadDirectory(Result);
+        ReadDirectory(Result.get());
       }
       catch (...)
       {
-        SAFE_DESTROY(Result);
+//        SAFE_DESTROY(Result);
         throw;
       }
     }
   }
 
-  return Result;
+  return Result.release();
 }
 //---------------------------------------------------------------------------
 void TTerminal::TerminalSetCurrentDirectory(const UnicodeString AValue)

@@ -1,4 +1,4 @@
-
+//---------------------------------------------------------------------------
 #pragma once
 
 #include <Common.h>
@@ -13,108 +13,30 @@
 #define SET_SESSION_PROPERTY(Property) \
   if (F##Property != Value) { F##Property = Value; Modify(); }
 //---------------------------------------------------------------------------
-enum TCipher
-{
-  cipWarn,
-  cip3DES,
-  cipBlowfish,
-  cipAES,
-  cipDES,
-  cipArcfour,
-  cipChaCha20,
-};
+enum TCipher { cipWarn, cip3DES, cipBlowfish, cipAES, cipDES, cipArcfour, cipChaCha20, };
 #define CIPHER_COUNT (cipChaCha20 + 1)
 // explicit values to skip obsoleted fsExternalSSH, fsExternalSFTP
-enum TFSProtocol_219
-{
-  fsFTPS_219 = 6,
-  fsHTTP_219 = 7,
-  fsHTTPS_219 = 8,
-};
-
-enum TFSProtocol
-{
-  fsSCPonly = 0,
-  fsSFTP = 1,
-  fsSFTPonly = 2,
-  fsFTP = 5,
-  fsWebDAV = 6,
-  fsS3 = 7,
-};
+enum TFSProtocol { fsSCPonly = 0, fsSFTP = 1, fsSFTPonly = 2, fsFTP = 5, fsWebDAV = 6, fsS3 = 7, };
 #define FSPROTOCOL_COUNT (fsS3+1)
-
-enum TLoginType
-{
-  ltAnonymous = 0,
-  ltNormal = 1,
-};
-
 extern const wchar_t *ProxyMethodNames;
-
-enum TProxyMethod
-{
-  pmNone, pmSocks4, pmSocks5, pmHTTP, pmTelnet, pmCmd, pmSystem,
-};
-
-enum TSshProt
-{
-  ssh1only, ssh1deprecated, ssh2deprecated, ssh2only,
-};
-
-enum TKex
-{
-  kexWarn, kexDHGroup1, kexDHGroup14, kexDHGEx, kexRSA, kexECDH,
-};
+enum TProxyMethod { pmNone, pmSocks4, pmSocks5, pmHTTP, pmTelnet, pmCmd, pmSystem = 100, };
+enum TSshProt { ssh1only, ssh1deprecated, ssh2deprecated, ssh2only, };
+enum TKex { kexWarn, kexDHGroup1, kexDHGroup14, kexDHGEx, kexRSA, kexECDH, };
 #define KEX_COUNT (kexECDH + 1)
-
-enum THostKey
-{
-  hkWarn,
-  hkRSA,
-  hkDSA,
-  hkECDSA,
-  hkED25519,
-  hkMax,
-};
+enum THostKey { hkWarn, hkRSA, hkDSA, hkECDSA, hkED25519, hkMax, };
 #define HOSTKEY_COUNT (hkMax)
-
-enum TGssLib
-{
-  gssGssApi32,
-  gssSspi,
-  gssCustom,
-};
+enum TGssLib { gssGssApi32, gssSspi, gssCustom, };
 #define GSSLIB_COUNT (gssCustom + 1)
 // names have to match PuTTY registry entries (see settings.c)
 enum TSshBug { sbIgnore1, sbPlainPW1, sbRSA1, sbHMAC2, sbDeriveKey2, sbRSAPad2,
-  sbPKSessID2, sbRekey2, sbMaxPkt2, sbIgnore2, sbOldGex2, sbWinAdj, sbChanReq,
-};
+  sbPKSessID2, sbRekey2, sbMaxPkt2, sbIgnore2, sbOldGex2, sbWinAdj, sbChanReq, };
 #define BUG_COUNT (sbChanReq + 1)
-
-
-enum TSftpBug
-{
-  sbSymlink,
-  sbSignedTS,
-};
+enum TSftpBug { sbSymlink, sbSignedTS, };
 #define SFTP_BUG_COUNT (sbSignedTS + 1)
-
 extern const wchar_t *PingTypeNames;
-
-enum TPingType
-{
-  ptOff, ptNullPacket, ptDummyCommand,
-};
-
-enum TAddressFamily
-{
-  afAuto, afIPv4, afIPv6,
-};
-
-enum TFtps
-{
-  ftpsNone, ftpsImplicit, ftpsExplicitSsl, ftpsExplicitTls,
-};
+enum TPingType { ptOff, ptNullPacket, ptDummyCommand, };
+enum TAddressFamily { afAuto, afIPv4, afIPv6, };
+enum TFtps { ftpsNone, ftpsImplicit, ftpsExplicitSsl, ftpsExplicitTls, };
 
 // has to match SSL_VERSION_XXX constants in AsyncSslSocketLayer.h
 enum TTlsVersion { ssl2 = 2, ssl3 = 3, tls10 = 10, tls11 = 11, tls12 = 12 };
@@ -129,10 +51,25 @@ enum TSessionUrlFlags
   sufHttpForWebDAV = 0x20,
   sufSession = sufUserName | sufPassword | sufHostKey,
   sufComplete = sufSession | sufRawSettings,
+  sufOpen = sufUserName | sufPassword,
 };
 enum TParseUrlFlags
 {
   pufAllowStoredSiteWithProtocol = 0x01,
+};
+
+enum TFSProtocol_219
+{
+  fsFTPS_219 = 6,
+  fsHTTP_219 = 7,
+  fsHTTPS_219 = 8,
+};
+
+
+enum TLoginType
+{
+  ltAnonymous = 0,
+  ltNormal = 1,
 };
 //---------------------------------------------------------------------------
 NB_CORE_EXPORT extern const UnicodeString CipherNames[CIPHER_COUNT];
@@ -249,7 +186,7 @@ private:
   bool FCacheDirectoryChanges{false};
   bool FPreserveDirectoryChanges{false};
   bool FSelected{false};
-  TAutoSwitch FLookupUserGroups{};
+  TAutoSwitch FLookupUserGroups{asOn};
   UnicodeString FReturnVar;
   bool FExitCode1IsError{false};
   bool FScp1Compatibility{false};
@@ -283,7 +220,7 @@ private:
   intptr_t FSFTPListingQueue{0};
   intptr_t FSFTPMaxVersion{0};
   intptr_t FSFTPMaxPacketSize{0};
-  TDSTMode FDSTMode{};
+  TDSTMode FDSTMode{dstmKeep};
   TAutoSwitch FSFTPBugs[SFTP_BUG_COUNT]{};
   bool FDeleteToRecycleBin{false};
   bool FOverwrittenToRecycleBin{false};
@@ -384,7 +321,6 @@ public:
   void SetTimeDifferenceAuto(bool Value);
   void SetPingType(TPingType Value);
   UnicodeString GetSessionName() const;
-  bool HasSessionName() const;
   UnicodeString GetDefaultSessionName() const;
   UnicodeString GetProtocolUrl(bool HttpForWebDAV) const;
   void SetFSProtocol(TFSProtocol Value);
@@ -533,9 +469,9 @@ public:
   static RawByteString StronglyRecryptPassword(const RawByteString Password, const UnicodeString Key);
   static bool DoIsProtocolUrl(const UnicodeString Url, const UnicodeString Protocol, intptr_t &ProtocolLen);
   static bool IsProtocolUrl(const UnicodeString Url, const UnicodeString Protocol, intptr_t &ProtocolLen);
-  static void AddSwitchValue(UnicodeString &Result, const UnicodeString Name, const UnicodeString Value);
   static void AddSwitch(UnicodeString &Result, const UnicodeString Switch);
-  static void AddSwitch(UnicodeString &Result, const UnicodeString AName, const UnicodeString Value);
+  static void AddSwitch(
+    UnicodeString &Result, const UnicodeString AName, const UnicodeString Value);
   static void AddSwitch(UnicodeString &Result, const UnicodeString AName, intptr_t Value);
 #if 0
   static void AddAssemblyProperty(
@@ -599,7 +535,7 @@ public:
   bool IsInFolderOrWorkspace(const UnicodeString AName) const;
   UnicodeString GenerateSessionUrl(uintptr_t Flags) const;
   bool HasRawSettingsForUrl();
-  bool HasSessionName();
+  bool HasSessionName() const;
 
   UnicodeString GenerateOpenCommandArgs(bool Rtf) const;
   __removed void GenerateAssemblyCode(TAssemblyLanguage Language, UnicodeString &Head, UnicodeString &Tail, int &Indent);
@@ -952,6 +888,7 @@ public:
   uintptr_t GetSessionVersion() const { return FSessionVersion; }
   void SetSessionVersion(uintptr_t Value) { FSessionVersion = Value; }
   void RemoveProtocolPrefix(UnicodeString &HostName) const;
+  static void AddSwitchValue(UnicodeString &Result, const UnicodeString Name, const UnicodeString Value);
 
 private:
   uintptr_t GetDefaultVersion() const { return ::GetCurrentVersionNumber(); }

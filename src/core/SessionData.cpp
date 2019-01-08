@@ -1,3 +1,4 @@
+//---------------------------------------------------------------------------
 #include <vcl.h>
 #pragma hdrstop
 
@@ -18,9 +19,9 @@
 #include "RemoteFiles.h"
 #include "SftpFileSystem.h"
 #include "S3FileSystem.h"
-//---------------------------------------------------------------------
+//---------------------------------------------------------------------------
 __removed #pragma package(smart_init)
-//---------------------------------------------------------------------
+//---------------------------------------------------------------------------
 const wchar_t *PingTypeNames = L"Off;Null;Dummy";
 const wchar_t *ProxyMethodNames = L"None;SOCKS4;SOCKS5;HTTP;Telnet;Cmd";
 const wchar_t *DefaultName = L"Default Settings";
@@ -454,6 +455,7 @@ void TSessionData::NonPersistant()
   PROPERTY(IsWorkspace); \
   PROPERTY(Link); \
   PROPERTY(NameOverride);
+//---------------------------------------------------------------------
 void TSessionData::Assign(const TPersistent *Source)
 {
   if (Source && isa<TSessionData>(Source))
@@ -470,7 +472,7 @@ void TSessionData::Assign(const TPersistent *Source)
 //---------------------------------------------------------------------
 void TSessionData::CopyData(TSessionData *SourceData)
 {
-#define PROPERTY(P) Set ## P(SourceData->Get ## P())
+  #define PROPERTY(P) Set ## P(SourceData->Get ## P())
   PROPERTY(Name);
   BASE_PROPERTIES;
   ADVANCED_PROPERTIES;
@@ -495,7 +497,8 @@ void TSessionData::CopyData(TSessionData *SourceData)
   {
     SetKex(Index, DefaultKexList[Index]);
   }
-#undef PROPERTY
+
+  #undef PROPERTY
   FOverrideCachedHostKey = SourceData->GetOverrideCachedHostKey();
   FModified = SourceData->GetModified();
   FSaveOnly = SourceData->GetSaveOnly();
@@ -2787,7 +2790,7 @@ UnicodeString TSessionData::GetCipherList() const
   UnicodeString Result;
   for (intptr_t Index = 0; Index < CIPHER_COUNT; ++Index)
   {
-    Result += UnicodeString(Index ? L"," : L"") + CipherNames[GetCipher(Index)];
+    Result += UnicodeString(Index ? "," : "") + CipherNames[GetCipher(Index)];
   }
   return Result;
 }
@@ -2814,7 +2817,7 @@ UnicodeString TSessionData::GetKexList() const
   UnicodeString Result;
   for (intptr_t Index = 0; Index < KEX_COUNT; ++Index)
   {
-    Result += UnicodeString(Index ? L"," : L"") + KexNames[GetKex(Index)];
+    Result += UnicodeString(Index ? "," : "") + KexNames[GetKex(Index)];
   }
   return Result;
 }
@@ -2841,7 +2844,7 @@ UnicodeString TSessionData::GetHostKeyList() const
   UnicodeString Result;
   for (intptr_t Index = 0; Index < HOSTKEY_COUNT; Index++)
   {
-    Result += UnicodeString(Index ? L"," : L"") + HostKeyNames[FHostKeys[Index]];
+    Result += UnicodeString(Index ? "," : "") + HostKeyNames[FHostKeys[Index]];
   }
   return Result;
 }
@@ -2873,7 +2876,7 @@ UnicodeString TSessionData::GetGssLibList() const
   UnicodeString Result;
   for (intptr_t Index = 0; Index < GSSLIB_COUNT; Index++)
   {
-    Result += UnicodeString(Index ? L"," : L"") + GssLibNames[GetGssLibs(Index)];
+    Result += UnicodeString(Index ? "," : "") + GssLibNames[GetGssLibs(Index)];
   }
   return Result;
 }
@@ -2968,7 +2971,7 @@ void TSessionData::SetDetectReturnVar(bool Value)
 {
   if (Value != GetDetectReturnVar())
   {
-    SetReturnVar(Value ? L"" : L"$?");
+    SetReturnVar(Value ? "" : "$?");
   }
 }
 //---------------------------------------------------------------------
@@ -2981,7 +2984,7 @@ void TSessionData::SetDefaultShell(bool Value)
 {
   if (Value != GetDefaultShell())
   {
-    SetShell(Value ? L"" : L"/bin/bash");
+    SetShell(Value ? "" : "/bin/bash");
   }
 }
 //---------------------------------------------------------------------
@@ -3042,7 +3045,7 @@ UnicodeString TSessionData::GetDefaultSessionName() const
   // remove path
   {
     intptr_t Pos = 1;
-    HostName = CopyToChars(HostName, Pos, L"/", true, nullptr, false);
+    HostName = CopyToChars(HostName, Pos, "/", true, nullptr, false);
   }
   if (!HostName.IsEmpty() && !UserName.IsEmpty())
   {
@@ -3056,7 +3059,7 @@ UnicodeString TSessionData::GetDefaultSessionName() const
   }
   else
   {
-    Result = L"session";
+    Result = "session";
   }
   return Result;
 }
@@ -3195,7 +3198,7 @@ UnicodeString TSessionData::GetProtocolUrl(bool HttpForWebDAV) const
 //---------------------------------------------------------------------
 bool IsIPv6Literal(const UnicodeString AHostName)
 {
-  bool Result = (AHostName.Pos(L":") > 0);
+  bool Result = (AHostName.Pos(":") > 0);
   if (Result)
   {
     for (intptr_t Index = 1; Result && (Index <= AHostName.Length()); Index++)
@@ -3214,7 +3217,7 @@ UnicodeString EscapeIPv6Literal(const UnicodeString IP)
 //---------------------------------------------------------------------
 TStrings * TSessionData::GetRawSettingsForUrl()
 {
-  std::unique_ptr<TSessionData> FactoryDefaults(std::make_unique<TSessionData>(L""));
+  std::unique_ptr<TSessionData> FactoryDefaults(std::make_unique<TSessionData>(""));
   std::unique_ptr<TSessionData> SessionData(Clone());
   SessionData->FSProtocol = FactoryDefaults->FSProtocol;
   SessionData->HostName = FactoryDefaults->HostName;
@@ -3257,7 +3260,7 @@ UnicodeString TSessionData::GenerateSessionUrl(uintptr_t Flags) const
     {
       // Many SHA-256 fingeprints end with an equal sign and we do not really need it to be encoded, so avoid that.
       // Also colons in TLS/SSL fingerprint do not really need encoding.
-      UnicodeString S = EncodeUrlString(NormalizeFingerprint(GetHostKey()), L"=:");
+      UnicodeString S = EncodeUrlString(NormalizeFingerprint(GetHostKey()), "=:");
 
       Url +=
         UnicodeString(UrlParamSeparator) + UrlHostKeyParamName +
@@ -3278,7 +3281,7 @@ UnicodeString TSessionData::GenerateSessionUrl(uintptr_t Flags) const
     }
 #endif // #if 0
 
-    Url += L"@";
+    Url += "@";
   }
 
   UnicodeString HostNameExpanded = GetHostNameExpanded();
@@ -3294,14 +3297,14 @@ UnicodeString TSessionData::GenerateSessionUrl(uintptr_t Flags) const
 
   if (GetPortNumber() != GetDefaultPort(GetFSProtocol(), GetFtps()))
   {
-    Url += L":" + ::Int64ToStr(GetPortNumber());
+    Url += ":" + ::Int64ToStr(GetPortNumber());
   }
-  Url += L"/";
+  Url += "/";
 
   return Url;
 }
 //---------------------------------------------------------------------
-__removed UnicodeString ScriptCommandOpenLink = ScriptCommandLink(L"open");
+__removed UnicodeString ScriptCommandOpenLink = ScriptCommandLink("open");
 
 void TSessionData::AddSwitchValue(
   UnicodeString &Result, const UnicodeString Name, const UnicodeString Value)
@@ -3349,8 +3352,8 @@ UnicodeString TSessionData::GenerateOpenCommandArgs(bool /*Rtf*/) const
 {
   UnicodeString Result;
 #if 0
-  std::unique_ptr<TSessionData> FactoryDefaults(std::make_unique<TSessionData>(L""));
-  std::unique_ptr<TSessionData> SessionData(std::make_unique<TSessionData>(L""));
+  std::unique_ptr<TSessionData> FactoryDefaults(std::make_unique<TSessionData>(""));
+  std::unique_ptr<TSessionData> SessionData(std::make_unique<TSessionData>(""));
 
   SessionData->Assign(this);
 
@@ -5279,12 +5282,12 @@ TSessionData *TStoredSessionList::NewSession(
   TSessionData *DuplicateSession = dyn_cast<TSessionData>(FindByName(SessionName));
   if (!DuplicateSession)
   {
-    DuplicateSession = new TSessionData(L"");
+    std::unique_ptr<TSessionData> DuplicateSession = std::make_unique<TSessionData>("");
     DuplicateSession->Assign(Session);
     DuplicateSession->SetName(SessionName);
     // make sure, that new stored session is saved to registry
     DuplicateSession->SetModified(true);
-    Add(DuplicateSession);
+    Add(DuplicateSession.release());
   }
   else
   {
@@ -5345,13 +5348,13 @@ void TStoredSessionList::ImportHostKeys(
       TSessionData * Session = Sessions->GetSession(Index);
       if (!OnlySelected || Session->Selected)
       {
-        UnicodeString HostKeyName = PuttyMungeStr(FORMAT(L"@%d:%s", Session->PortNumber, Session->HostNameExpanded));
+        UnicodeString HostKeyName = PuttyMungeStr(FORMAT("@%d:%s", Session->PortNumber, Session->HostNameExpanded));
         for (int KeyIndex = 0; KeyIndex < KeyList->Count; KeyIndex++)
         {
           UnicodeString KeyName = KeyList->GetString(KeyIndex);
           if (EndsText(HostKeyName, KeyName))
           {
-            TargetStorage->WriteStringRaw(KeyName, SourceStorage->ReadStringRaw(KeyName, L""));
+            TargetStorage->WriteStringRaw(KeyName, SourceStorage->ReadStringRaw(KeyName, ""));
           }
         }
       }
@@ -5477,7 +5480,7 @@ void TStoredSessionList::GetFolderOrWorkspace(const UnicodeString Name, TList *L
 
     if (Data != nullptr)
     {
-      TSessionData *Data2 = new TSessionData(L"");
+      std::unique_ptr<TSessionData> Data2 = std::make_unique<TSessionData>("");
       Data2->Assign(Data);
 
       if (!RawData->GetLink().IsEmpty() && (DebugAlwaysTrue(Data != RawData)) &&
@@ -5495,7 +5498,7 @@ void TStoredSessionList::GetFolderOrWorkspace(const UnicodeString Name, TList *L
         Data2->Name = RawData->NameOverride;
       }
 
-      List->Add(Data2);
+      List->Add(Data2.release());
     }
   }
 }
@@ -5562,12 +5565,12 @@ void TStoredSessionList::NewWorkspace(
   {
     TSessionData *Data = DataList->GetAs<TSessionData>(Index);
 
-    TSessionData *Data2 = new TSessionData(L"");
+    std::unique_ptr<TSessionData> Data2 = std::make_unique<TSessionData>("");
     Data2->Assign(Data);
     Data2->SetName(TSessionData::ComposePath(Name, Data->GetName()));
     // make sure, that new stored session is saved to registry
     Data2->SetModified(true);
-    Add(Data2);
+    Add(Data2.release());
   }
 }
 //---------------------------------------------------------------------------
@@ -5586,7 +5589,7 @@ TSessionData *TStoredSessionList::ParseUrl(const UnicodeString Url,
   TOptions *Options, bool &DefaultsOnly, UnicodeString *AFileName,
   bool * AProtocolDefined, UnicodeString * MaskedUrl, int Flags)
 {
-  std::unique_ptr<TSessionData> Data(std::make_unique<TSessionData>(L""));
+  std::unique_ptr<TSessionData> Data(std::make_unique<TSessionData>(""));
   try__catch
   {
     Data->ParseUrl(Url, Options, this, DefaultsOnly, AFileName, AProtocolDefined, MaskedUrl, Flags);
@@ -5623,7 +5626,7 @@ TSessionData *TStoredSessionList::ResolveWorkspaceData(TSessionData *Data)
 //---------------------------------------------------------------------------
 TSessionData * TStoredSessionList::SaveWorkspaceData(TSessionData * Data, int Index)
 {
-  std::unique_ptr<TSessionData> Result(std::make_unique<TSessionData>(L""));
+  std::unique_ptr<TSessionData> Result(std::make_unique<TSessionData>(""));
 
   const TSessionData *SameData = StoredSessions->FindSame(Data);
   if (SameData != nullptr)
@@ -5696,7 +5699,7 @@ UnicodeString GetExpandedLogFileName(const UnicodeString LogFileName, TDateTime 
         }
         else
         {
-          Replacement = L"nohost";
+          Replacement = "nohost";
         }
         break;
 
@@ -5707,20 +5710,20 @@ UnicodeString GetExpandedLogFileName(const UnicodeString LogFileName, TDateTime 
         }
         else
         {
-          Replacement = L"nosession";
+          Replacement = "nosession";
         }
         break;
 
       case L'&':
-        Replacement = L"&";
+        Replacement = "&";
         break;
 
       case L'!':
-        Replacement = L"!";
+        Replacement = "!";
         break;
 
       default:
-        Replacement = UnicodeString(L"&") + Result[Index + 1];
+        Replacement = UnicodeString("&") + Result[Index + 1];
         break;
       }
       Result.Delete(Index, 2);
