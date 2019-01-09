@@ -81,7 +81,7 @@ bool TCopyParamType::AnyUsableCopyParam(intptr_t Attrs) const
   UnicodeString ScriptArgs;
 //  UnicodeString AssemblyCode;
   DoGetInfoStr(
-    L";", Attrs, Result, SomeAttrIncluded,
+    ";", Attrs, Result, SomeAttrIncluded,
     UnicodeString(), ScriptArgs/*TAssemblyLanguage(0), AssemblyCode*/);
   return SomeAttrIncluded;
 }
@@ -93,7 +93,7 @@ UnicodeString TCopyParamType::GenerateTransferCommandArgs(int Attrs, const Unico
   UnicodeString ScriptArgs;
   UnicodeString AssemblyCode;
   DoGetInfoStr(
-    L";", Attrs, Result, SomeAttrIncluded,
+    ";", Attrs, Result, SomeAttrIncluded,
     Link, ScriptArgs); // , TAssemblyLanguage(0), AssemblyCode);
   return ScriptArgs;
 }
@@ -464,12 +464,12 @@ void TCopyParamType::DoGetInfoStr(
     {
     case rsOff:
       Value = ToggleNames[ToggleOff];
-      CodeState = L"Off";
+      CodeState = "Off";
       break;
 
     case rsOn:
       Value = ToggleNames[ToggleOn];
-      CodeState = L"On";
+      CodeState = "On";
       break;
 
     case rsSmart:
@@ -478,24 +478,24 @@ void TCopyParamType::DoGetInfoStr(
     }
 //    ScriptArgs += RtfSwitchValue(RESUMESUPPORT_SWITCH, Link, Value);
 
-    const UnicodeString ResumeSupportClassName = L"TransferResumeSupport";
 #if 0
+    const UnicodeString ResumeSupportClassName = "TransferResumeSupport";
     const bool Inline = true;
     UnicodeString ResumeSupportCode =
       AssemblyNewClassInstanceStart(Language, ResumeSupportClassName, Inline);
 #endif // #if 0
     if (GetResumeSupport() == rsSmart)
     {
-//      ResumeSupportCode += AssemblyProperty(Language, ResumeSupportClassName, L"Threshold", ResumeThresholdKB, Inline);
+//      ResumeSupportCode += AssemblyProperty(Language, ResumeSupportClassName, "Threshold", ResumeThresholdKB, Inline);
     }
     else
     {
-//      ResumeSupportCode += AssemblyProperty(Language, ResumeSupportClassName, L"State", L"TransferResumeSupportState", CodeState, Inline);
+//      ResumeSupportCode += AssemblyProperty(Language, ResumeSupportClassName, "State", "TransferResumeSupportState", CodeState, Inline);
     }
 #if 0
     ResumeSupportCode += AssemblyNewClassInstanceEnd(Language, Inline);
 
-    AssemblyCode += AssemblyPropertyRaw(Language, TransferOptionsClassName, L"ResumeSupport", ResumeSupportCode, false);
+    AssemblyCode += AssemblyPropertyRaw(Language, TransferOptionsClassName, "ResumeSupport", ResumeSupportCode, false);
 #endif // #if 0
   }
 
@@ -935,7 +935,7 @@ void TCopyParamType::Load(THierarchicalStorage *Storage)
   SetClearArchive(Storage->ReadBool("ClearArchive", GetClearArchive()));
   SetRemoveCtrlZ(Storage->ReadBool("RemoveCtrlZ", GetRemoveCtrlZ()));
   SetRemoveBOM(Storage->ReadBool("RemoveBOM", GetRemoveBOM()));
-  SetCPSLimit(Storage->ReadInteger("CPSLimit", (int)GetCPSLimit()));
+  SetCPSLimit(Storage->ReadIntPtr("CPSLimit", GetCPSLimit()));
   SetNewerOnly(Storage->ReadBool("NewerOnly", GetNewerOnly()));
   EncryptNewFiles = Storage->ReadBool("EncryptNewFiles", EncryptNewFiles);
   ExcludeHiddenFiles = Storage->ReadBool("ExcludeHiddenFiles", ExcludeHiddenFiles);
@@ -963,23 +963,23 @@ void TCopyParamType::Save(THierarchicalStorage * Storage, const TCopyParamType *
   #define WRITE_DATA(TYPE, PROPERTY) WRITE_DATA_EX(TYPE, TEXT(#PROPERTY), PROPERTY, )
 
   WRITE_DATA(Bool, AddXToDirectories);
-  WRITE_DATA_EX(String, L"Masks", AsciiFileMask.Masks, );
+  WRITE_DATA_EX(String, "Masks", AsciiFileMask.Masks, );
   WRITE_DATA(Integer, FileNameCase);
   WRITE_DATA(Bool, PreserveReadOnly);
   WRITE_DATA(Bool, PreserveTime);
   WRITE_DATA(Bool, PreserveTimeDirs);
   WRITE_DATA(Bool, PreserveRights);
   WRITE_DATA(Bool, IgnorePermErrors);
-  WRITE_DATA_EX(String, L"Text", Rights.Text, );
+  WRITE_DATA_EX(String, "Text", Rights.Text, );
   WRITE_DATA(Integer, TransferMode);
   WRITE_DATA(Integer, ResumeSupport);
   WRITE_DATA(Int64, ResumeThreshold);
   #undef WRITE_DATA_CONV_FUNC
   #define WRITE_DATA_CONV_FUNC(X) (uint32_t)(X)
-  WRITE_DATA_CONV(Integer, L"ReplaceInvalidChars", InvalidCharsReplacement);
+  WRITE_DATA_CONV(Integer, "ReplaceInvalidChars", InvalidCharsReplacement);
   WRITE_DATA(String, LocalInvalidChars);
   WRITE_DATA(Bool, CalculateSize);
-  WRITE_DATA_EX(String, L"IncludeFileMask", IncludeFileMask.Masks, );
+  WRITE_DATA_EX(String, "IncludeFileMask", IncludeFileMask.Masks, );
   DebugAssert(FTransferResumeFile.IsEmpty());
   WRITE_DATA(Bool, ClearArchive);
   WRITE_DATA(Bool, RemoveCtrlZ);
