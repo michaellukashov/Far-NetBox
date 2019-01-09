@@ -1961,7 +1961,7 @@ TSFTPFileSystem::TSFTPFileSystem(TTerminal *ATerminal) noexcept :
   FSecureShell(nullptr),
   FFileSystemInfoValid(false),
   FVersion(0),
-  FPacketReservations(nullptr),
+//  FPacketReservations(nullptr),
   FPreviousLoggedPacket(0),
   FNotLoggedPackets(0),
   FBusy(0),
@@ -1986,7 +1986,7 @@ void TSFTPFileSystem::Init(void *Data)
   DebugAssert(FSecureShell);
   FFileSystemInfoValid = false;
   FVersion = NPOS;
-  FPacketReservations = new TList();
+  FPacketReservations = std::make_unique<TList>();
   FPacketNumbers.clear();
   FPreviousLoggedPacket = 0;
   FNotLoggedPackets = 0;
@@ -2017,7 +2017,7 @@ TSFTPFileSystem::~TSFTPFileSystem() noexcept
 {
   SAFE_DESTROY(FSupport);
   ResetConnection();
-  SAFE_DESTROY(FPacketReservations);
+//  SAFE_DESTROY(FPacketReservations);
   SAFE_DESTROY(FExtensions);
   SAFE_DESTROY(FFixedPaths);
   SAFE_DESTROY(FSecureShell);
