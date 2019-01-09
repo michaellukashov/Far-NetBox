@@ -3942,7 +3942,7 @@ void TTerminal::OperationStart(
 //---------------------------------------------------------------------------
 void TTerminal::OperationStart(
   TFileOperationProgressType & Progress, TFileOperation Operation, TOperationSide Side, intptr_t Count,
-  bool Temp, const UnicodeString ADirectory, uint64_t CPSLimit)
+  bool Temp, const UnicodeString ADirectory, uintptr_t CPSLimit)
 {
   if (FOperationProgressPersistence != nullptr)
   {
