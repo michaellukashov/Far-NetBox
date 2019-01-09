@@ -321,7 +321,7 @@ private:
   HANDLE FSynchronizationSaveScreenHandle{};
   HANDLE FAuthenticationSaveScreenHandle{};
   TDateTime FSynchronizationStart;
-  TStrings *FFileList{nullptr};
+  std::unique_ptr<TStrings> FFileList;
   TList *FPanelItems{nullptr};
   UnicodeString FSavedFindFolder;
   UnicodeString FOriginalEditFile;

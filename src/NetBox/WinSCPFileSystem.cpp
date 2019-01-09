@@ -294,7 +294,7 @@ TWinSCPFileSystem::TWinSCPFileSystem(TCustomFarPlugin *APlugin) noexcept :
   FProgressSaveScreenHandle(nullptr),
   FSynchronizationSaveScreenHandle(nullptr),
   FAuthenticationSaveScreenHandle(nullptr),
-  FFileList(nullptr),
+//  FFileList(nullptr),
   FPanelItems(nullptr),
   FSavedFindFolder(L""),
   FLastEditorID(-1),
@@ -2441,12 +2441,12 @@ bool TWinSCPFileSystem::DeleteFilesEx(TObjectList *PanelItems, int OpMode)
 {
   if (Connected())
   {
-    FFileList = CreateFileList(PanelItems, osRemote);
+    FFileList.reset(CreateFileList(PanelItems, osRemote));
     FPanelItems = PanelItems;
     SCOPE_EXIT
     {
       FPanelItems = nullptr;
-      SAFE_DESTROY(FFileList);
+      FFileList.reset();
     };
     UnicodeString Query;
     bool Recycle = GetSessionData()->GetDeleteToRecycleBin() &&
@@ -2465,7 +2465,7 @@ bool TWinSCPFileSystem::DeleteFilesEx(TObjectList *PanelItems, int OpMode)
     if ((OpMode & OPM_SILENT) || !GetFarConfiguration()->GetConfirmDeleting() ||
       (MoreMessageDialog(Query, nullptr, qtConfirmation, qaOK | qaCancel) == qaOK))
     {
-      FTerminal->RemoteDeleteFiles(FFileList);
+      FTerminal->RemoteDeleteFiles(FFileList.get());
     }
     return true;
   }
@@ -2501,11 +2501,11 @@ intptr_t TWinSCPFileSystem::GetFilesEx(TObjectList *PanelItems, bool Move,
   intptr_t Result = -1;
   if (Connected())
   {
-    FFileList = CreateFileList(PanelItems, osRemote);
+    FFileList.reset(CreateFileList(PanelItems, osRemote));
     SCOPE_EXIT
     {
       FPanelItems = nullptr;
-      SAFE_DESTROY(FFileList);
+      FFileList.reset();
     };
     Result = GetFilesRemote(PanelItems, Move, DestPath, OpMode);
   }
@@ -2563,7 +2563,7 @@ intptr_t TWinSCPFileSystem::GetFilesRemote(TObjectList *PanelItems, bool Move,
 
     uintptr_t Options =
       FLAGMASK(EditView, coTempTransfer | coDisableNewerOnly);
-    Confirmed = CopyDialog(false, Move, FFileList,
+    Confirmed = CopyDialog(false, Move, FFileList.get(),
         Options, CopyParamAttrs,
         DestPath, &CopyParam);
 
@@ -2573,7 +2573,7 @@ intptr_t TWinSCPFileSystem::GetFilesRemote(TObjectList *PanelItems, bool Move,
       Params |=
         FLAGMASK(CopyParam.GetQueueNoConfirmation(), cpNoConfirmation) |
         FLAGMASK(CopyParam.GetNewerOnly(), cpNewerOnly);
-      QueueAddItem(new TDownloadQueueItem(FTerminal, FFileList,
+      QueueAddItem(new TDownloadQueueItem(FTerminal, FFileList.get(),
           DestPath, &CopyParam, Params, false, false));
       Confirmed = false;
     }
@@ -2601,7 +2601,7 @@ intptr_t TWinSCPFileSystem::GetFilesRemote(TObjectList *PanelItems, bool Move,
     Params |=
       FLAGMASK(EditView, cpTemporary) |
       FLAGMASK(CopyParam.GetNewerOnly(), cpNewerOnly);
-    FTerminal->CopyToLocal(FFileList, DestPath, &CopyParam, Params, nullptr);
+    FTerminal->CopyToLocal(FFileList.get(), DestPath, &CopyParam, Params, nullptr);
     Result = 1;
   }
   return Result;
@@ -2687,7 +2687,7 @@ intptr_t TWinSCPFileSystem::UploadFiles(bool Move, int OpMode, bool Edit,
     uintptr_t Options =
       FLAGMASK(Edit, coTempTransfer) |
       FLAGMASK(Edit || !GetTerminal()->GetIsCapable(fcNewerOnlyUpload), coDisableNewerOnly);
-    Confirmed = CopyDialog(true, Move, FFileList,
+    Confirmed = CopyDialog(true, Move, FFileList.get(),
         Options, CopyParamAttrs,
         DestPath, &CopyParam);
 
@@ -2697,7 +2697,7 @@ intptr_t TWinSCPFileSystem::UploadFiles(bool Move, int OpMode, bool Edit,
       Params |=
         FLAGMASK(CopyParam.GetQueueNoConfirmation(), cpNoConfirmation) |
         FLAGMASK(CopyParam.GetNewerOnly(), cpNewerOnly);
-      QueueAddItem(new TUploadQueueItem(FTerminal, FFileList,
+      QueueAddItem(new TUploadQueueItem(FTerminal, FFileList.get(),
           DestPath, &CopyParam, Params, false, false));
       Confirmed = false;
     }
@@ -2720,7 +2720,7 @@ intptr_t TWinSCPFileSystem::UploadFiles(bool Move, int OpMode, bool Edit,
         FLAGMASK(!Ask, cpNoConfirmation) |
         FLAGMASK(Edit, cpTemporary) |
         FLAGMASK(CopyParam.GetNewerOnly(), cpNewerOnly);
-      FTerminal->CopyToRemote(FFileList, DestPath, &CopyParam, Params, nullptr);
+      FTerminal->CopyToRemote(FFileList.get(), DestPath, &CopyParam, Params, nullptr);
     }
   }
   else
@@ -2735,11 +2735,11 @@ intptr_t TWinSCPFileSystem::PutFilesEx(TObjectList *PanelItems, bool Move, int O
   intptr_t Result;
   if (Connected())
   {
-    FFileList = CreateFileList(PanelItems, osLocal);
+    FFileList.reset(CreateFileList(PanelItems, osLocal));
     SCOPE_EXIT
     {
       FPanelItems = nullptr;
-      SAFE_DESTROY(FFileList);
+      FFileList.reset();
     };
     FPanelItems = PanelItems;
 
@@ -3722,8 +3722,8 @@ void TWinSCPFileSystem::UploadFromEditor(bool NoReload,
   const UnicodeString AFileName, const UnicodeString RealFileName,
   UnicodeString &DestPath)
 {
-  DebugAssert(FFileList == nullptr);
-  FFileList = new TStringList();
+  DebugAssert(FFileList.get() == nullptr);
+  FFileList = std::make_unique<TStringList>();
   DebugAssert(FTerminal->GetAutoReadDirectory());
   bool PrevAutoReadDirectory = FTerminal->GetAutoReadDirectory();
   if (NoReload)
@@ -3740,7 +3740,7 @@ void TWinSCPFileSystem::UploadFromEditor(bool NoReload,
   SCOPE_EXIT
   {
     FTerminal->SetAutoReadDirectory(PrevAutoReadDirectory);
-    SAFE_DESTROY(FFileList);
+    FFileList.reset();
   };
   FFileList->AddObject(AFileName, File.get()); //-V522
   UploadFiles(false, 0, true, DestPath);
