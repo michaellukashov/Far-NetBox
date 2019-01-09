@@ -1545,9 +1545,7 @@ class TSFTPDownloadQueue : public TSFTPFixedLenQueue
   NB_DISABLE_COPY(TSFTPDownloadQueue)
 public:
   explicit TSFTPDownloadQueue(TSFTPFileSystem *AFileSystem, uintptr_t CodePage) noexcept :
-    TSFTPFixedLenQueue(AFileSystem, CodePage),
-    OperationProgress(nullptr),
-    FTransferred(0)
+    TSFTPFixedLenQueue(AFileSystem, CodePage)
   {
   }
 
