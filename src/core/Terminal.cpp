@@ -81,7 +81,7 @@ __removed #define FILE_OPERATION_LOOP_TERMINAL this
 class TLoopDetector : public TObject
 {
 public:
-  TLoopDetector();
+  TLoopDetector() noexcept;
   void RecordVisitedDirectory(const UnicodeString Directory);
   bool IsUnvisitedDirectory(const UnicodeString Directory);
 
@@ -89,7 +89,7 @@ private:
   std::unique_ptr<TStringList> FVisitedDirectories;
 };
 //---------------------------------------------------------------------------
-TLoopDetector::TLoopDetector()
+TLoopDetector::TLoopDetector() noexcept
 {
   FVisitedDirectories.reset(CreateSortedStringList());
 }
@@ -220,10 +220,10 @@ public:
   virtual ~TTunnelThread() noexcept;
   virtual void InitTunnelThread();
 
-  virtual void Terminate() override;
+  void Terminate() override;
 
 protected:
-  virtual void Execute() override;
+  void Execute() override;
 
 private:
   TSecureShell *FSecureShell{nullptr};
@@ -282,19 +282,19 @@ public:
   explicit TTunnelUI(TTerminal *Terminal) noexcept;
   virtual ~TTunnelUI() noexcept = default;
 
-  virtual void Information(const UnicodeString AStr, bool Status) override;
-  virtual uintptr_t QueryUser(const UnicodeString AQuery,
+  void Information(const UnicodeString AStr, bool Status) override;
+  uintptr_t QueryUser(const UnicodeString AQuery,
     TStrings *MoreMessages, uintptr_t Answers, const TQueryParams *Params,
     TQueryType QueryType) override;
-  virtual uintptr_t QueryUserException(const UnicodeString AQuery,
+  uintptr_t QueryUserException(const UnicodeString AQuery,
     Exception *E, uintptr_t Answers, const TQueryParams *Params,
     TQueryType QueryType) override;
-  virtual bool PromptUser(TSessionData *Data, TPromptKind Kind,
+  bool PromptUser(TSessionData *Data, TPromptKind Kind,
     const UnicodeString AName, const UnicodeString AInstructions, TStrings *Prompts,
     TStrings *Results) override;
-  virtual void DisplayBanner(const UnicodeString Banner) override;
-  virtual void FatalError(Exception *E, const UnicodeString Msg, const UnicodeString HelpContext) override;
-  virtual void HandleExtendedException(Exception *E) override;
+  void DisplayBanner(const UnicodeString Banner) override;
+  void FatalError(Exception *E, const UnicodeString Msg, const UnicodeString HelpContext) override;
+  void HandleExtendedException(Exception *E) override;
   virtual void Closed() override;
   virtual void ProcessGUI() override;
 
@@ -563,7 +563,7 @@ bool TRobustOperationLoop::Retry()
 class TRetryOperationLoop
 {
 public:
-  explicit TRetryOperationLoop(TTerminal *Terminal);
+  explicit TRetryOperationLoop(TTerminal *Terminal) noexcept;
 
   void Error(Exception &E);
   void Error(Exception &E, TSessionAction &Action);
@@ -572,13 +572,13 @@ public:
   bool Retry();
 
 private:
-  TTerminal *FTerminal;
-  bool FRetry;
+  TTerminal *FTerminal{nullptr};
+  bool FRetry{false};
 
   void DoError(Exception &E, TSessionAction *Action, const UnicodeString Message);
 };
 //---------------------------------------------------------------------------
-TRetryOperationLoop::TRetryOperationLoop(TTerminal *Terminal)
+TRetryOperationLoop::TRetryOperationLoop(TTerminal *Terminal) noexcept
 {
   FTerminal = Terminal;
   FRetry = false;
@@ -5193,7 +5193,7 @@ TTerminal * TTerminal::GetCommandSession()
 class TOutputProxy : public TObject
 {
 public:
-  TOutputProxy(TCallSessionAction &Action, TCaptureOutputEvent OutputEvent) :
+  TOutputProxy(TCallSessionAction &Action, TCaptureOutputEvent OutputEvent) noexcept :
     FAction(Action),
     FOutputEvent(OutputEvent)
   {
