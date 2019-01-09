@@ -406,8 +406,8 @@ class TCallbackGuard : public TObject
 {
   NB_DISABLE_COPY(TCallbackGuard)
 public:
-  explicit TCallbackGuard(TTerminal *ATerminal);
-  ~TCallbackGuard();
+  explicit TCallbackGuard(TTerminal *ATerminal) noexcept;
+  virtual ~TCallbackGuard() noexcept;
 
   void FatalError(Exception *E, const UnicodeString Msg, const UnicodeString HelpKeyword);
   void Verify();
@@ -415,12 +415,12 @@ public:
   void Dismiss();
 
 private:
-  ExtException *FFatalError;
-  TTerminal *FTerminal;
-  bool FGuarding;
+  ExtException *FFatalError{nullptr};
+  TTerminal *FTerminal{nullptr};
+  bool FGuarding{false};
 };
 //---------------------------------------------------------------------------
-TCallbackGuard::TCallbackGuard(TTerminal *ATerminal) :
+TCallbackGuard::TCallbackGuard(TTerminal *ATerminal) noexcept :
   FFatalError(nullptr),
   FTerminal(ATerminal),
   FGuarding(FTerminal->FCallbackGuard == nullptr)
@@ -431,7 +431,7 @@ TCallbackGuard::TCallbackGuard(TTerminal *ATerminal) :
   }
 }
 //---------------------------------------------------------------------------
-TCallbackGuard::~TCallbackGuard()
+TCallbackGuard::~TCallbackGuard() noexcept
 {
   if (FGuarding)
   {
