@@ -320,19 +320,15 @@ static const int MemoryDelta = 0x2000;
 
 TStrings::TStrings() noexcept :
   TObjectList(OBJECT_CLASS_TStrings),
-  FDuplicates(dupAccept),
   FDelimiter(L','),
-  FQuoteChar(L'"'),
-  FUpdateCount(0)
+  FQuoteChar(L'"')
 {
 }
 
 TStrings::TStrings(TObjectClassId Kind) noexcept :
   TObjectList(Kind),
-  FDuplicates(dupAccept),
   FDelimiter(L','),
-  FQuoteChar(L'"'),
-  FUpdateCount(0)
+  FQuoteChar(L'"')
 {
 }
 

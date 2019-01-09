@@ -308,7 +308,7 @@ public:
   UnicodeString GetValueFromIndex(intptr_t Index) const;
 
 protected:
-  TDuplicatesEnum FDuplicates{};
+  TDuplicatesEnum FDuplicates{dupAccept};
   mutable wchar_t FDelimiter{};
   bool FStrictDelimiter{false};
   mutable wchar_t FQuoteChar{};
