@@ -1,12 +1,12 @@
-
+//------------------------------------------------------------------------------
 #pragma once
-//---------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #include <ne_uri.h>
 #include <ne_utils.h>
 #include <ne_string.h>
 #include <ne_request.h>
 #include <FileSystems.h>
-//---------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 struct TNeonCertificateData;
 struct ne_ssl_certificate_s;
 struct ne_session_s;
@@ -15,7 +15,7 @@ struct ne_lock_store_s;
 struct TOverwriteFileParams;
 struct ssl_st;
 struct ne_lock;
-//---------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 NB_DEFINE_CLASS_ID(TWebDAVFileSystem);
 class TWebDAVFileSystem final : public TCustomFileSystem
 {
@@ -34,7 +34,6 @@ public:
   void CollectUsage() override;
   void Idle() override;
   UnicodeString GetAbsolutePath(const UnicodeString APath, bool Local) override;
-  UnicodeString GetAbsolutePath(const UnicodeString APath, bool Local) const override;
   void AnyCommand(const UnicodeString ACommand,
     TCaptureOutputEvent OutputEvent) override;
   void ChangeDirectory(const UnicodeString ADirectory) override;
@@ -94,8 +93,8 @@ public:
   void UpdateFromMain(TCustomFileSystem *AMainFileSystem) override;
   void ClearCaches() override;
 
+  UnicodeString GetAbsolutePath(const UnicodeString APath, bool Local) const override;
   void FileTransferProgress(int64_t TransferSize, int64_t Bytes) override;
-
   void NeonDebug(const UnicodeString AMessage);
 
 protected:
@@ -111,8 +110,6 @@ protected:
     TFileOperationProgressType *OperationProgress,
     const TOverwriteFileParams *FileParams, const TCopyParamType *CopyParam,
     intptr_t Params);
-//    TOverwriteMode &OverwriteMode,
-//    uint32_t &Answer);
   void CheckStatus(intptr_t NeonStatus);
   void ClearNeonError();
   static void NeonPropsResult(
@@ -146,10 +143,10 @@ protected:
    const ne_uri *Uri, const ne_status *Status);
   void RequireLockStore();
   static void InitSslSession(ssl_st *Ssl, ne_session *Session);
-  void InitSslSessionImpl(ssl_st *Ssl) const;
   void NeonAddAuthentication(bool UseNegotiate);
   void HttpAuthenticationFailed();
 
+  void InitSslSessionImpl(ssl_st *Ssl) const;
 private:
   TFileSystemInfo FFileSystemInfo{};
   UnicodeString FCurrentDirectory;
@@ -203,4 +200,4 @@ private:
   void SetSessionTls(ne_session_s *Session, bool Aux);
   void InitSession(ne_session_s *Session);
 };
-//---------------------------------------------------------------------------
+//------------------------------------------------------------------------------
