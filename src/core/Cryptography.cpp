@@ -60,9 +60,9 @@ __removed #include <Soap.EncdDecd.hpp>
 #define sha1_hash(buf, len, ctx)  putty_SHA_Bytes(ctx, buf, len)
 #define sha1_end(dig, ctx)        putty_SHA_Final(ctx, dig)
 
-#define IN_BLOCK_LENGTH     64
-#define OUT_BLOCK_LENGTH    20
-#define HMAC_IN_DATA        0xffffffff
+constexpr int IN_BLOCK_LENGTH     = 64;
+constexpr int OUT_BLOCK_LENGTH    = 20;
+constexpr int HMAC_IN_DATA        = 0xffffffff;
 
 typedef struct
 {
@@ -136,7 +136,7 @@ static void hmac_sha1_data(const uint8_t data[], uint32_t data_len, hmac_ctx cx[
 /* compute and output the MAC value */
 static void hmac_sha1_end(uint8_t mac[], uint32_t mac_len, hmac_ctx cx[1])
 {
-  uint8_t dig[OUT_BLOCK_LENGTH];
+  uint8_t dig[OUT_BLOCK_LENGTH]{};
   uint32_t i;
 
   /* if no data has been entered perform a null data phase        */
@@ -160,7 +160,7 @@ static void hmac_sha1_end(uint8_t mac[], uint32_t mac_len, hmac_ctx cx[1])
     mac[i] = dig[i];
 }
 
-#define BLOCK_SIZE  16
+constexpr int BLOCK_SIZE  = 16;
 
 static void aes_set_encrypt_key(const uint8_t in_key[], uint32_t klen, void *cx)
 {
@@ -203,9 +203,9 @@ typedef struct
   uint32_t mode; /* File encryption mode   */
 } fcrypt_ctx;
 
-#define MAX_KEY_LENGTH        32
-#define KEYING_ITERATIONS   1000
-#define PWD_VER_LENGTH         2
+constexpr int MAX_KEY_LENGTH        = 32;
+constexpr int KEYING_ITERATIONS   = 1000;
+constexpr int PWD_VER_LENGTH         = 2;
 
 /*
     Field lengths (in bytes) versus File Encryption Mode (0 < mode < 4)
@@ -366,7 +366,7 @@ static int fcrypt_end(uint8_t mac[], fcrypt_ctx cx[1])
   return MAC_LENGTH(cx->mode); /* return MAC length in bytes   */
 }
 //---------------------------------------------------------------------------
-#define PASSWORD_MANAGER_AES_MODE 3
+constexpr int PASSWORD_MANAGER_AES_MODE = 3;
 //---------------------------------------------------------------------------
 static void AES256Salt(RawByteString & Salt)
 {
@@ -382,10 +382,10 @@ RawByteString GenerateEncryptKey()
   return Result;
 }
 //---------------------------------------------------------------------------
-void ValidateEncryptKey(const RawByteString & Key)
+void ValidateEncryptKey(const RawByteString AKey)
 {
   int Len = KEY_LENGTH(PASSWORD_MANAGER_AES_MODE);
-  if (Key.Length() != Len)
+  if (AKey.Length() != Len)
   {
     throw Exception(FMTLOAD(INVALID_ENCRYPT_KEY, L"AES-256", Len, Len * 2));
   }
@@ -411,7 +411,7 @@ void AES256EncryptWithMAC(const RawByteString Input, const UnicodeString Passwor
   fcrypt_end(reinterpret_cast<uint8_t *>(ToChar(Mac)), &aes);
 }
 //---------------------------------------------------------------------------
-void AES256EncryptWithMAC(const RawByteString Input, const UnicodeString Password,
+void AES256EncryptWithMAC(RawByteString Input, UnicodeString Password,
   RawByteString &Output)
 {
   RawByteString Salt;
@@ -440,7 +440,7 @@ bool AES256DecryptWithMAC(RawByteString Input, const UnicodeString Password,
   return (Mac2 == Mac);
 }
 //---------------------------------------------------------------------------
-bool AES256DecryptWithMAC(RawByteString Input, const UnicodeString Password,
+bool AES256DecryptWithMAC(RawByteString Input, UnicodeString Password,
   RawByteString &Output)
 {
   bool Result =
@@ -459,7 +459,7 @@ bool AES256DecryptWithMAC(RawByteString Input, const UnicodeString Password,
   return Result;
 }
 //---------------------------------------------------------------------------
-void AES256CreateVerifier(const UnicodeString Input, RawByteString &Verifier)
+void AES256CreateVerifier(UnicodeString Input, RawByteString &Verifier)
 {
   RawByteString Salt;
   RawByteString Dummy;
@@ -472,7 +472,7 @@ void AES256CreateVerifier(const UnicodeString Input, RawByteString &Verifier)
   Verifier = Salt + Dummy + Mac;
 }
 //---------------------------------------------------------------------------
-bool AES256Verify(const UnicodeString Input, RawByteString Verifier)
+bool AES256Verify(UnicodeString Input, RawByteString Verifier)
 {
   int SaltLength = SALT_LENGTH(PASSWORD_MANAGER_AES_MODE);
   RawByteString Salt = Verifier.SubString(1, SaltLength);
@@ -508,10 +508,10 @@ static uint8_t SScrambleTable[256] =
   206, 222, 188, 152, 210, 243, 96, 41, 86, 180, 101, 177, 166, 141, 212, 116
 };
 //---------------------------------------------------------------------------
-uint8_t *ScrambleTable;
-uint8_t *UnscrambleTable;
+uint8_t *ScrambleTable{nullptr};
+uint8_t *UnscrambleTable{nullptr};
 //---------------------------------------------------------------------------
-RawByteString ScramblePassword(const UnicodeString Password)
+RawByteString ScramblePassword(UnicodeString Password)
 {
 #define SCRAMBLE_LENGTH_EXTENSION 50
   UTF8String UtfPassword = UTF8String(Password);
@@ -545,7 +545,7 @@ RawByteString ScramblePassword(const UnicodeString Password)
   return Result;
 }
 //---------------------------------------------------------------------------
-bool UnscramblePassword(const RawByteString Scrambled, UnicodeString &Password)
+bool UnscramblePassword(RawByteString Scrambled, UnicodeString &Password)
 {
   RawByteString LocalScrambled = Scrambled;
   char *S = ToChar(LocalScrambled);
@@ -613,7 +613,7 @@ intptr_t PasswordMaxLength()
   return 128;
 }
 //---------------------------------------------------------------------------
-intptr_t IsValidPassword(const UnicodeString Password)
+intptr_t IsValidPassword(UnicodeString Password)
 {
   if (Password.IsEmpty() || (Password.Length() > PasswordMaxLength()))
   {

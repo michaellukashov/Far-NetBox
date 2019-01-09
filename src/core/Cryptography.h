@@ -5,18 +5,18 @@
 //---------------------------------------------------------------------------
 void CryptographyInitialize();
 void CryptographyFinalize();
-RawByteString ScramblePassword(const UnicodeString Password);
-bool UnscramblePassword(const RawByteString Scrambled, const UnicodeString Password);
-void AES256EncryptWithMAC(const RawByteString Input, const UnicodeString Password,
+RawByteString ScramblePassword(UnicodeString Password);
+bool UnscramblePassword(RawByteString Scrambled, UnicodeString Password);
+void AES256EncryptWithMAC(RawByteString Input, UnicodeString Password,
   RawByteString &Output);
-bool AES256DecryptWithMAC(const RawByteString Input, const UnicodeString Password,
+bool AES256DecryptWithMAC(RawByteString Input, UnicodeString Password,
   RawByteString &Output);
-void AES256CreateVerifier(const UnicodeString Input, RawByteString &Verifier);
-bool AES256Verify(const UnicodeString Input, const RawByteString Verifier);
-intptr_t IsValidPassword(const UnicodeString Password);
+void AES256CreateVerifier(UnicodeString Input, RawByteString &Verifier);
+bool AES256Verify(UnicodeString Input, RawByteString Verifier);
+intptr_t IsValidPassword(UnicodeString Password);
 intptr_t PasswordMaxLength();
 RawByteString GenerateEncryptKey();
-void ValidateEncryptKey(const RawByteString & Key);
+void ValidateEncryptKey(const RawByteString AKey);
 //---------------------------------------------------------------------------
 class TFileBuffer;
 //---------------------------------------------------------------------------
@@ -47,7 +47,7 @@ private:
   bool FOutputtedHeader{false};
   void * FContext{nullptr};
 
-  void Init(const RawByteString & Key, const RawByteString & Salt);
+  void Init(const RawByteString AKey, const RawByteString ASalt);
   void Aes(char * Buffer, intptr_t Size);
   void Aes(RawByteString & Buffer);
   void Aes(TFileBuffer & Buffer, bool Last);
