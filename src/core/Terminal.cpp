@@ -2726,7 +2726,7 @@ void TTerminal::DoReadDirectoryProgress(intptr_t Progress, intptr_t ResolvedLink
     TCallbackGuard Guard(this);
     try
     {
-      FOnFindingFile(this, L"", Cancel);
+      FOnFindingFile(this, "", Cancel);
       Guard.Verify();
     }
     catch (Exception &E)
