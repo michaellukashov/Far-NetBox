@@ -1461,11 +1461,11 @@ void TWinSCPFileSystem::GetSynchronizeOptions(
     TFarPanelInfo **PanelInfo = GetPanelInfo();
     if (PanelInfo && *PanelInfo && (*PanelInfo)->GetSelectedCount() > 0)
     {
-      CreateFileList((*PanelInfo)->GetItems(), osRemote, true, L"", true, Options.Filter);
+      CreateFileList((*PanelInfo)->GetItems(), osRemote, true, "", true, Options.Filter);
     }
     if ((*GetAnotherPanelInfo())->GetSelectedCount() > 0)
     {
-      CreateFileList((*GetAnotherPanelInfo())->GetItems(), osLocal, true, L"", true, Options.Filter);
+      CreateFileList((*GetAnotherPanelInfo())->GetItems(), osLocal, true, "", true, Options.Filter);
     }
     Options.Filter->Sort();
   }
@@ -2138,7 +2138,7 @@ bool TWinSCPFileSystem::SynchronizeBrowsing(const UnicodeString NewPath)
 {
   bool Result;
   TFarPanelInfo **AnotherPanel = GetAnotherPanelInfo();
-  UnicodeString OldPath = AnotherPanel && *AnotherPanel ? (*AnotherPanel)->GetCurrDirectory() : L"";
+  UnicodeString OldPath = AnotherPanel && *AnotherPanel ? (*AnotherPanel)->GetCurrDirectory() : "";
   // IncludeTrailingBackslash to expand C: to C:\.
   UnicodeString LocalPath = ::IncludeTrailingBackslash(NewPath);
   if (!FarControl(FCTL_SETPANELDIR,
@@ -2214,7 +2214,7 @@ bool TWinSCPFileSystem::SetDirectoryEx(const UnicodeString Dir, int OpMode)
   {
     DebugAssert(!FNoProgress);
     bool Normal = FLAGCLEAR(OpMode, OPM_FIND | OPM_SILENT);
-    UnicodeString PrevPath = FTerminal ? FTerminal->RemoteGetCurrentDirectory() : L"";
+    UnicodeString PrevPath = FTerminal ? FTerminal->RemoteGetCurrentDirectory() : "";
     FNoProgress = !Normal;
     if (!FNoProgress)
     {
@@ -2524,7 +2524,7 @@ intptr_t TWinSCPFileSystem::GetFilesEx(TObjectList *PanelItems, bool Move,
     }
 
     bool AResult = (OpMode & OPM_SILENT) ||
-      GetWinSCPPlugin()->InputBox(Title, Prompt, DestPath, 0, L"Copy");
+      GetWinSCPPlugin()->InputBox(Title, Prompt, DestPath, 0, "Copy");
     if (AResult)
     {
       TExportSessionParam Param;
@@ -2639,11 +2639,11 @@ void TWinSCPFileSystem::ExportSession(TSessionData *Data, void *AParam)
   TExportSessionParam &Param = *static_cast<TExportSessionParam *>(AParam);
 
   std::unique_ptr<TSessionData> ExportData(std::make_unique<TSessionData>(Data->GetName()));
-  std::unique_ptr<TSessionData> FactoryDefaults(std::make_unique<TSessionData>(L""));
+  std::unique_ptr<TSessionData> FactoryDefaults(std::make_unique<TSessionData>(""));
   ExportData->Assign(Data);
   ExportData->SetModified(true);
   UnicodeString XmlFileName = ::IncludeTrailingBackslash(Param.DestPath) +
-    ::ValidLocalFileName(::ExtractFilename(ExportData->GetName())) + L".netbox";
+    ::ValidLocalFileName(::ExtractFilename(ExportData->GetName())) + ".netbox";
   std::unique_ptr<THierarchicalStorage> ExportStorage(std::make_unique<TXmlStorage>(XmlFileName, GetConfiguration()->GetStoredSessionsSubKey()));
   ExportStorage->Init();
   ExportStorage->SetAccessMode(smReadWrite);
