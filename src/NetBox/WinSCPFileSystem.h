@@ -374,7 +374,7 @@ protected:
   UnicodeString FPath;
   const TSessionData *FSessionData;
 
-  virtual void GetData(
+  void GetData(
     DWORD &Flags, UnicodeString &AFileName, int64_t &Size,
     DWORD &FileAttributes,
     TDateTime &LastWriteTime, TDateTime &LastAccess,
@@ -391,7 +391,7 @@ public:
 protected:
   UnicodeString FFolder;
 
-  virtual void GetData(
+  void GetData(
     DWORD &Flags, UnicodeString &AFileName, int64_t &Size,
     DWORD &FileAttributes,
     TDateTime &LastWriteTime, TDateTime &LastAccess,
@@ -411,13 +411,13 @@ public:
 protected:
   TRemoteFile *FRemoteFile;
 
-  virtual void GetData(
+  void GetData(
     DWORD &Flags, UnicodeString &AFileName, int64_t &Size,
     DWORD &FileAttributes,
     TDateTime &LastWriteTime, TDateTime &LastAccess,
     DWORD &NumberOfLinks, UnicodeString &Description,
     UnicodeString &Owner, void *&UserData, int &CustomColumnNumber) override;
-  virtual UnicodeString GetCustomColumnData(size_t Column) override;
+  UnicodeString GetCustomColumnData(size_t Column) override;
   static void TranslateColumnTypes(UnicodeString &AColumnTypes,
     TStrings *ColumnTitles);
 };

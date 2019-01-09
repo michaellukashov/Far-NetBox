@@ -483,7 +483,7 @@ protected:
   TStrings * GetFixedPaths() const;
   void DoStartup();
   virtual bool DoQueryReopen(Exception *E);
-  virtual void FatalError(Exception *E, const UnicodeString AMsg, const UnicodeString AHelpKeyword = L"") override;
+  void FatalError(Exception *E, const UnicodeString AMsg, const UnicodeString AHelpKeyword = "") override;
   void ResetConnection();
   virtual bool DoPromptUser(TSessionData *Data, TPromptKind Kind,
     const UnicodeString AName, const UnicodeString AInstructions, TStrings *Prompts,
@@ -512,20 +512,20 @@ protected:
     TFileOperationProgressType & Progress, TFileOperation Operation, TOperationSide Side, intptr_t Count,
     bool Temp, const UnicodeString ADirectory, uint64_t CPSLimit);
   void OperationStop(TFileOperationProgressType & Progress);
-  virtual void Information(const UnicodeString AStr, bool Status) override;
-  virtual uintptr_t QueryUser(const UnicodeString AQuery,
+  void Information(const UnicodeString AStr, bool Status) override;
+  uintptr_t QueryUser(const UnicodeString AQuery,
     TStrings *MoreMessages, uintptr_t Answers, const TQueryParams *Params,
     TQueryType QueryType = qtConfirmation) override;
-  virtual uintptr_t QueryUserException(const UnicodeString AQuery,
+  uintptr_t QueryUserException(const UnicodeString AQuery,
     Exception *E, uintptr_t Answers, const TQueryParams *Params,
     TQueryType QueryType = qtConfirmation) override;
-  virtual bool PromptUser(TSessionData *Data, TPromptKind Kind,
+  bool PromptUser(TSessionData *Data, TPromptKind Kind,
     const UnicodeString AName, const UnicodeString AInstructions, TStrings *Prompts, TStrings *Results) override;
-  virtual void DisplayBanner(const UnicodeString ABanner) override;
-  virtual void Closed() override;
-  virtual void ProcessGUI() override;
+  void DisplayBanner(const UnicodeString ABanner) override;
+  void Closed() override;
+  void ProcessGUI() override;
   void Progress(TFileOperationProgressType *OperationProgress);
-  virtual void HandleExtendedException(Exception *E) override;
+  void HandleExtendedException(Exception *E) override;
   bool IsListenerFree(uintptr_t PortNumber) const;
   void DoProgress(TFileOperationProgressType &ProgressData);
   void DoFinished(TFileOperation Operation, TOperationSide Side, bool Temp,
@@ -910,11 +910,11 @@ public:
   TTerminal *GetMainTerminal() const { return FMainTerminal; }
 
 protected:
-  virtual void DirectoryLoaded(TRemoteFileList *FileList) override;
-  virtual void DirectoryModified(const UnicodeString APath,
+  void DirectoryLoaded(TRemoteFileList *FileList) override;
+  void DirectoryModified(const UnicodeString APath,
     bool SubDirs) override;
-  virtual const TTerminal *GetPasswordSource() const override { return FMainTerminal; }
-  virtual TTerminal *GetPasswordSource() override;
+  const TTerminal *GetPasswordSource() const override { return FMainTerminal; }
+  TTerminal *GetPasswordSource() override;
 
 private:
   TTerminal *FMainTerminal{nullptr};
