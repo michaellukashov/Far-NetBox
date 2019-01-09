@@ -2652,7 +2652,7 @@ bool TSFTPFileSystem::PeekPacket()
 SSH_FX_TYPE TSFTPFileSystem::ReceivePacket(TSFTPPacket *Packet,
   SSH_FXP_TYPE ExpectedType, SSH_FX_TYPE AllowStatus, bool TryOnly)
 {
-  TSFTPBusy Busy(this);
+  TSFTPBusy Busy(this); nb::used(Busy);
 
   SSH_FX_TYPE Result = SSH_FX_OK;
   intptr_t Reservation = FPacketReservations->IndexOf(Packet);
@@ -2848,7 +2848,7 @@ SSH_FX_TYPE TSFTPFileSystem::SendPacketAndReceiveResponse(
   const TSFTPPacket *Packet, TSFTPPacket *Response, SSH_FXP_TYPE ExpectedType,
   SSH_FX_TYPE AllowStatus)
 {
-  TSFTPBusy Busy(this);
+  TSFTPBusy Busy(this); nb::used(Busy);
   SendPacket(Packet);
   SSH_FX_TYPE Result = ReceiveResponse(Packet, Response, ExpectedType, AllowStatus);
   return Result;
