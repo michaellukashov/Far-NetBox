@@ -173,18 +173,11 @@ struct message_t
 {
   CUSTOM_MEM_ALLOCATION_IMPL
 
-  message_t() : wparam(0),
-    lparam(0)
-  {
-  }
+  message_t() noexcept : wparam(0), lparam(0) {}
+  message_t(WPARAM w, LPARAM l) noexcept : wparam(w), lparam(l) {}
 
-  message_t(WPARAM w, LPARAM l) : wparam(w),
-    lparam(l)
-  {
-  }
-
-  WPARAM wparam;
-  LPARAM lparam;
+  WPARAM wparam{0};
+  LPARAM lparam{0};
 };
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
