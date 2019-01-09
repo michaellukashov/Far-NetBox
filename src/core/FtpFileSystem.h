@@ -205,7 +205,7 @@ protected:
   void DummyReadDirectory(const UnicodeString ADirectory);
   bool IsEmptyFileList(TRemoteFileList *FileList) const;
   void CheckTimeDifference();
-  inline bool NeedAutoDetectTimeDifference() const;
+  bool NeedAutoDetectTimeDifference() const;
   bool LookupUploadModificationTime(
     const UnicodeString FileName, TDateTime &Modification, TModificationFmt ModificationFmt);
   UnicodeString DoCalculateFileChecksum(bool UsingHashCommand, const UnicodeString Alg, TRemoteFile *File);
@@ -242,7 +242,7 @@ private:
   bool FFileSystemInfoValid{false};
   uintptr_t FReply{0};
   uintptr_t FCommandReply{0};
-  TCommand FLastCommand;
+  TCommand FLastCommand{CMD_UNKNOWN};
   bool FPasswordFailed{false};
   bool FStoredPasswordTried{false};
   bool FMultineResponse{false};

@@ -26,49 +26,49 @@ __removed #pragma package(smart_init)
 //---------------------------------------------------------------------------
 #define FILE_OPERATION_LOOP_TERMINAL FTerminal
 //---------------------------------------------------------------------------
-const int DummyCodeClass = 8;
-const int DummyTimeoutCode = 801;
-const int DummyCancelCode = 802;
-const int DummyDisconnectCode = 803;
+constexpr int DummyCodeClass = 8;
+constexpr int DummyTimeoutCode = 801;
+constexpr int DummyCancelCode = 802;
+constexpr int DummyDisconnectCode = 803;
 //---------------------------------------------------------------------------
-class TFileZillaImpl : public TFileZillaIntf
+class TFileZillaImpl final : public TFileZillaIntf
 {
 public:
   explicit TFileZillaImpl(TFTPFileSystem *FileSystem) noexcept;
   virtual ~TFileZillaImpl() noexcept = default;
 
-  virtual const wchar_t *Option(intptr_t OptionID) const override;
-  virtual intptr_t OptionVal(intptr_t OptionID) const override;
+  const wchar_t *Option(intptr_t OptionID) const override;
+  intptr_t OptionVal(intptr_t OptionID) const override;
 
 protected:
-  virtual bool DoPostMessage(TMessageType Type, WPARAM wParam, LPARAM lParam) override;
+  bool DoPostMessage(TMessageType Type, WPARAM wParam, LPARAM lParam) override;
 
-  virtual bool HandleStatus(const wchar_t *Status, int Type) override;
-  virtual bool HandleAsynchRequestOverwrite(
+  bool HandleStatus(const wchar_t *Status, int Type) override;
+  bool HandleAsynchRequestOverwrite(
     wchar_t *FileName1, size_t FileName1Len, const wchar_t *FileName2,
     const wchar_t *Path1, const wchar_t *Path2,
     int64_t Size1, int64_t Size2, time_t LocalTime,
     bool HasLocalTime, const TRemoteFileTime &RemoteTime, void *UserData,
     HANDLE &LocalFileHandle, int &RequestResult) override;
-  virtual bool HandleAsynchRequestVerifyCertificate(
+  bool HandleAsynchRequestVerifyCertificate(
     const TFtpsCertificateData &Data, int &RequestResult) override;
-  virtual bool HandleAsynchRequestNeedPass(
+  bool HandleAsynchRequestNeedPass(
     struct TNeedPassRequestData &Data, int &RequestResult) override;
-  virtual bool HandleListData(const wchar_t *Path, const TListDataEntry *Entries,
+  bool HandleListData(const wchar_t *Path, const TListDataEntry *Entries,
     uintptr_t Count) override;
-  virtual bool HandleTransferStatus(bool Valid, int64_t TransferSize,
+  bool HandleTransferStatus(bool Valid, int64_t TransferSize,
     int64_t Bytes, bool FileTransfer) override;
-  virtual bool HandleReply(intptr_t Command, uintptr_t Reply) override;
-  virtual bool HandleCapabilities(TFTPServerCapabilities *ServerCapabilities) override;
-  virtual bool CheckError(intptr_t ReturnCode, const wchar_t *Context) override;
+  bool HandleReply(intptr_t Command, uintptr_t Reply) override;
+  bool HandleCapabilities(TFTPServerCapabilities *ServerCapabilities) override;
+  bool CheckError(intptr_t ReturnCode, const wchar_t *Context) override;
 
-  virtual void PreserveDownloadFileTime(HANDLE AHandle, void *UserData) override;
-  virtual bool GetFileModificationTimeInUtc(const wchar_t *FileName, struct tm &Time) override;
-  virtual wchar_t *LastSysErrorMessage() const override;
-  virtual std::wstring GetClientString() const override;
+  void PreserveDownloadFileTime(HANDLE AHandle, void *UserData) override;
+  bool GetFileModificationTimeInUtc(const wchar_t *FileName, struct tm &Time) override;
+  wchar_t *LastSysErrorMessage() const override;
+  std::wstring GetClientString() const override;
 
 private:
-  TFTPFileSystem *FFileSystem;
+  TFTPFileSystem *FFileSystem{nullptr};
 };
 //---------------------------------------------------------------------------
 TFileZillaImpl::TFileZillaImpl(TFTPFileSystem *FileSystem) noexcept :
@@ -188,28 +188,28 @@ struct message_t
 };
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-class TMessageQueue : public TObject, public rde::list<message_t>
+class TMessageQueue final : public TObject, public rde::list<message_t>
 {
 public:
-  typedef message_t value_type;
+  using value_type = message_t;
 };
 //---------------------------------------------------------------------------
-const UnicodeString CertificateStorageKey(L"FtpsCertificates");
+const UnicodeString CertificateStorageKey("FtpsCertificates");
 static const wchar_t FtpsCertificateStorageKey[] = L"FtpsCertificates";
-const UnicodeString SiteCommand(L"SITE");
-const UnicodeString SymlinkSiteCommand(L"SYMLINK");
-const UnicodeString CopySiteCommand(L"COPY");
-const UnicodeString HashCommand(L"HASH"); // Cerberos + FileZilla servers
-const UnicodeString AvblCommand(L"AVBL");
-const UnicodeString XQuotaCommand(L"XQUOTA");
-const UnicodeString DirectoryHasBytesPrefix(L"226-Directory has");
+const UnicodeString SiteCommand("SITE");
+const UnicodeString SymlinkSiteCommand("SYMLINK");
+const UnicodeString CopySiteCommand("COPY");
+const UnicodeString HashCommand("HASH"); // Cerberos + FileZilla servers
+const UnicodeString AvblCommand("AVBL");
+const UnicodeString XQuotaCommand("XQUOTA");
+const UnicodeString DirectoryHasBytesPrefix("226-Directory has");
 //---------------------------------------------------------------------------
-class TFTPFileListHelper : public TObject
+class TFTPFileListHelper final : public TObject
 {
   NB_DISABLE_COPY(TFTPFileListHelper)
 public:
   explicit TFTPFileListHelper(TFTPFileSystem *FileSystem, TRemoteFileList *FileList,
-    bool IgnoreFileList) :
+    bool IgnoreFileList) noexcept :
     FFileSystem(FileSystem),
     FFileList(FFileSystem->FFileList),
     FIgnoreFileList(FFileSystem->FIgnoreFileList)
@@ -218,16 +218,16 @@ public:
     FFileSystem->FIgnoreFileList = IgnoreFileList;
   }
 
-  ~TFTPFileListHelper()
+  virtual ~TFTPFileListHelper() noexcept
   {
     FFileSystem->FFileList = FFileList;
     FFileSystem->FIgnoreFileList = FIgnoreFileList;
   }
 
 private:
-  TFTPFileSystem *FFileSystem;
-  TRemoteFileList *FFileList;
-  bool FIgnoreFileList;
+  TFTPFileSystem *FFileSystem{nullptr};
+  TRemoteFileList *FFileList{nullptr};
+  bool FIgnoreFileList{false};
 };
 //---------------------------------------------------------------------------
 TFTPFileSystem::TFTPFileSystem(TTerminal *ATerminal) noexcept :
@@ -1614,7 +1614,7 @@ void TFTPFileSystem::Sink(
 
   {
     // ignore file list
-    TFTPFileListHelper Helper(this, nullptr, true); nb::used(Helper); nb::used(Helper);
+    TFTPFileListHelper Helper(this, nullptr, true); nb::used(Helper);
 
     SetCPSLimit(OperationProgress);
     FFileTransferPreserveTime = CopyParam->GetPreserveTime();
@@ -1930,12 +1930,12 @@ void TFTPFileSystem::ReadCurrentDirectory()
   // directory anyway, see comments in EnsureLocation
   if (FReadCurrentDirectory || DebugAlwaysFalse(FCurrentDirectory.IsEmpty()))
   {
-    UnicodeString Command = L"PWD";
+    UnicodeString Command = "PWD";
     SendCommand(Command);
 
     uintptr_t Code = 0;
     TStrings *Response = nullptr;
-    GotReply(WaitForCommandReply(), REPLY_2XX_CODE, L"", &Code, &Response);
+    GotReply(WaitForCommandReply(), REPLY_2XX_CODE, "", &Code, &Response);
 
     std::unique_ptr<TStrings> ResponsePtr(Response);
     try__finally
@@ -2663,7 +2663,7 @@ intptr_t TFTPFileSystem::GetOptionVal(intptr_t OptionID) const
   case OPTION_PROXYTYPE:
     switch (Data->GetActualProxyMethod())
     {
-    case ::pmNone:
+    case pmNone:
       Result = 0; // PROXYTYPE_NOPROXY;
       break;
 
@@ -2683,7 +2683,7 @@ intptr_t TFTPFileSystem::GetOptionVal(intptr_t OptionID) const
     case pmCmd:
     default:
       DebugFail();
-      Result = 0; // PROXYTYPE_NOPROXY;
+      Result = 0; // PROXYTYPE_NOPROXY
       break;
     }
     break;
@@ -4609,6 +4609,6 @@ void TFTPFileSystem::ClearCaches()
 //---------------------------------------------------------------------------
 UnicodeString GetOpenSSLVersionText()
 {
-  return OPENSSL_VERSION_TEXT;
+  return UnicodeString(OPENSSL_VERSION_TEXT);
 }
 //---------------------------------------------------------------------------
