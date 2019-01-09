@@ -1822,7 +1822,7 @@ class TPoolForDataEvent : public TObject
 {
   NB_DISABLE_COPY(TPoolForDataEvent)
 public:
-  TPoolForDataEvent(TSecureShell *SecureShell, WSANETWORKEVENTS &Events) :
+  TPoolForDataEvent(TSecureShell *SecureShell, WSANETWORKEVENTS &Events) noexcept :
     FSecureShell(SecureShell),
     FEvents(Events)
   {
@@ -1834,7 +1834,7 @@ public:
   }
 
 private:
-  TSecureShell *FSecureShell;
+  TSecureShell *FSecureShell{nullptr};
   WSANETWORKEVENTS &FEvents;
 };
 //---------------------------------------------------------------------------

@@ -64,7 +64,7 @@ private:
   bool FNoConnectionResponse{false};
   bool FCollectPrivateKeyUsage{false};
   intptr_t FWaitingForData{0};
-  TSshImplementation FSshImplementation{};
+  TSshImplementation FSshImplementation{sshiUnknown};
 
   intptr_t PendLen{0};
   intptr_t PendSize{0};
