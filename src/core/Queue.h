@@ -43,8 +43,8 @@ public:
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TSignalThread) || TSimpleThread::is(Kind); }
 public:
   void InitSignalThread(bool LowPriority, HANDLE Event = nullptr);
-  virtual void Start() override;
-  virtual void Terminate() override;
+  void Start() override;
+  void Terminate() override;
   void TriggerEvent() const;
 
 protected:
@@ -56,7 +56,7 @@ protected:
 
   virtual bool WaitForEvent();
   uintptr_t WaitForEvent(uint32_t Timeout) const;
-  virtual void Execute() override;
+  void Execute() override;
   virtual void ProcessEvent() = 0;
 };
 //---------------------------------------------------------------------------
@@ -251,7 +251,7 @@ public:
   void SetCompleteEvent(HANDLE Value) { FCompleteEvent = Value; }
 
 protected:
-  TStatus FStatus;
+  TStatus FStatus{qsPending};
   TCriticalSection FSection;
   TTerminalItem *FTerminalItem{nullptr};
   TFileOperationProgressType *FProgressData{nullptr};
@@ -414,8 +414,8 @@ protected:
   TLocatedQueueItem(const TLocatedQueueItem &Source) noexcept;
   virtual ~TLocatedQueueItem() noexcept = default;
 
-  virtual void DoExecute(TTerminal *Terminal) override;
-  virtual UnicodeString GetStartupDirectory() const override;
+  void DoExecute(TTerminal *Terminal) override;
+  UnicodeString GetStartupDirectory() const override;
 
 private:
   UnicodeString FCurrentDir;
@@ -444,11 +444,11 @@ protected:
   DWORD FLastParallelOperationAdded{false};
   TParallelOperation *FParallelOperation{nullptr};
 
-  virtual intptr_t DefaultCPSLimit() const override;
-  virtual void DoExecute(TTerminal *Terminal) override;
+  intptr_t DefaultCPSLimit() const override;
+  void DoExecute(TTerminal *Terminal) override;
   virtual void DoTransferExecute(TTerminal *Terminal, TParallelOperation *ParallelOperation) = 0;
-  virtual void ProgressUpdated() override;
-  virtual TQueueItem *CreateParallelOperation() override;
+  void ProgressUpdated() override;
+  TQueueItem *CreateParallelOperation() override;
 
 public:
   TParallelOperation *GetParallelOperation() const { return FParallelOperation; }
@@ -468,7 +468,7 @@ public:
   virtual ~TUploadQueueItem() noexcept = default;
 
 protected:
-  virtual void DoTransferExecute(TTerminal *Terminal, TParallelOperation *ParallelOperation) override;
+  void DoTransferExecute(TTerminal *Terminal, TParallelOperation *ParallelOperation) override;
 };
 //---------------------------------------------------------------------------
 NB_DEFINE_CLASS_ID(TDownloadQueueItem);
@@ -484,7 +484,7 @@ public:
   virtual ~TDownloadQueueItem() noexcept = default;
 
 protected:
-  virtual void DoTransferExecute(TTerminal *Terminal, TParallelOperation *ParallelOperation) override;
+  void DoTransferExecute(TTerminal *Terminal, TParallelOperation *ParallelOperation) override;
 };
 //---------------------------------------------------------------------------
 class TUserAction;
