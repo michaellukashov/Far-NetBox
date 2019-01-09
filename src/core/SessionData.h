@@ -198,7 +198,7 @@ private:
   bool FTcpNoDelay{false};
   intptr_t FSendBuf{0};
   bool FSshSimple{false};
-  TProxyMethod FProxyMethod{};
+  TProxyMethod FProxyMethod{pmNone};
   UnicodeString FProxyHost;
   intptr_t FProxyPort{0};
   UnicodeString FProxyUsername;
