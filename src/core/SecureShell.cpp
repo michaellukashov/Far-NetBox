@@ -527,20 +527,20 @@ void TSecureShell::Open()
     FSshImplementation = sshiProFTPD;
   }
   // e.g. "5.25 FlowSsh: Bitvise SSH Server (WinSSHD) 6.07: free only for personal non-commercial use"
-  else if (SshImplementation.Pos(L"FlowSsh") > 0)
+  else if (SshImplementation.Pos("FlowSsh") > 0)
   {
     FSshImplementation = sshiBitvise;
   }
   // e.g. "srtSSHServer_10.00"
-  else if (::ContainsText(SshImplementation, L"srtSSHServer"))
+  else if (::ContainsText(SshImplementation, "srtSSHServer"))
   {
     FSshImplementation = sshiTitan;
   }
-  else if (::ContainsText(FSessionInfo.SshImplementation, L"OpenVMS"))
+  else if (::ContainsText(FSessionInfo.SshImplementation, "OpenVMS"))
   {
     FSshImplementation = sshiOpenVMS;
   }
-  else if (::ContainsText(FSessionInfo.SshImplementation, L"CerberusFTPServer"))
+  else if (::ContainsText(FSessionInfo.SshImplementation, "CerberusFTPServer"))
   {
     FSshImplementation = sshiCerberus;
   }
@@ -663,7 +663,7 @@ void TSecureShell::Init()
     }
   }
 }
-
+//---------------------------------------------------------------------------
 UnicodeString TSecureShell::ConvertFromPutty(const char *Str, intptr_t Length) const
 {
   intptr_t BomLength = NBChTraitsCRT<char>::SafeStringLen(MPEXT_BOM);
@@ -762,6 +762,7 @@ TPromptKind TSecureShell::IdentifyPromptKind(UnicodeString &AName) const
 
   return PromptKind;
 }
+
 //---------------------------------------------------------------------------
 bool TSecureShell::PromptUser(bool /*ToServer*/,
   const UnicodeString AName, bool /*NameRequired*/,
@@ -1031,7 +1032,7 @@ void TSecureShell::CWrite(const char *Data, intptr_t Length)
     FUI->Information(Line, false);
   }
 }
-
+//---------------------------------------------------------------------------
 void TSecureShell::RegisterReceiveHandler(TNotifyEvent Handler)
 {
   DebugAssert(FOnReceive == nullptr);
@@ -1129,7 +1130,7 @@ void TSecureShell::FromBackend(bool IsStdErr, const uint8_t *Data, intptr_t Leng
     }
   }
 }
-
+//---------------------------------------------------------------------------
 bool TSecureShell::Peek(uint8_t *& Buf, intptr_t Length) const
 {
   bool Result = (PendLen >= Length);
@@ -1516,7 +1517,7 @@ void TSecureShell::AddStdError(const UnicodeString AStr)
     AddStdErrorLine(Line);
   }
 }
-
+//---------------------------------------------------------------------------
 void TSecureShell::AddStdErrorLine(const UnicodeString AStr)
 {
   UnicodeString Str = AStr.Trim();
@@ -1601,7 +1602,7 @@ void TSecureShell::FatalError(const UnicodeString Error, const UnicodeString Hel
 {
   FUI->FatalError(nullptr, Error, HelpKeyword);
 }
-
+//---------------------------------------------------------------------------
 void TSecureShell::LogEvent(const UnicodeString AStr)
 {
   if (FLog->GetLogging())
@@ -1965,7 +1966,9 @@ void TSecureShell::HandleNetworkEvents(SOCKET Socket, WSANETWORKEVENTS &Events)
         LogEvent(FORMAT("Handling network %s event on socket %d with error %d",
             EventTypes[Event].Desc, int(Socket), Err));
       }
+      __removed #pragma option push -w-prc
       LPARAM SelectEvent = WSAMAKESELECTREPLY(EventTypes[Event].Mask, Err);
+      __removed #pragma option pop
       select_result(static_cast<WPARAM>(Socket), SelectEvent);
       CheckConnection();
     }
@@ -2157,7 +2160,7 @@ void TSecureShell::KeepAlive()
   }
 }
 
-static uint32_t minPacketSize = 0;
+constexpr uint32_t minPacketSize = 0;
 
 uint32_t TSecureShell::MinPacketSize() const
 {
