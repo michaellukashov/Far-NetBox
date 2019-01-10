@@ -493,7 +493,7 @@ void TSecureShell::Open()
   {
     if (FNoConnectionResponse && TryFtp())
     {
-      // GetConfiguration()->Usage->Inc(L"ProtocolSuggestions");
+      // GetConfiguration()->Usage->Inc("ProtocolSuggestions");
       // HELP_FTP_SUGGESTION won't be used as all errors that set
       // FNoConnectionResponse have already their own help keyword
       FUI->FatalError(&E, LoadStr(FTP_SUGGESTION));
@@ -1492,7 +1492,7 @@ int TSecureShell::TranslateAuthenticationMessage(
 
   if ((Result == 2) || (Result == 3) || (Result == 4))
   {
-    // GetConfiguration()->GetUsage()->Inc(L"OpenedSessionsPrivateKey2");
+    // GetConfiguration()->GetUsage()->Inc("OpenedSessionsPrivateKey2");
     FCollectPrivateKeyUsage = true;
   }
 
@@ -2205,9 +2205,9 @@ UnicodeString TSecureShell::FuncToCompression(
   };
   if (SshVersion == 1)
   {
-    return get_ssh1_compressing(FBackendHandle) ? L"ZLib" : L"";
+    return get_ssh1_compressing(FBackendHandle) ? "ZLib" : "";
   }
-  return reinterpret_cast<ssh_compress *>(const_cast<void *>(Compress)) == &ssh_zlib ? L"ZLib" : L"";
+  return reinterpret_cast<ssh_compress *>(const_cast<void *>(Compress)) == &ssh_zlib ? "ZLib" : "";
 }
 //---------------------------------------------------------------------------
 TCipher TSecureShell::FuncToSsh1Cipher(const void *Cipher)
@@ -2550,7 +2550,7 @@ void TSecureShell::VerifyHostKey(
 
     if (!Verified)
     {
-      __removed Configuration->Usage->Inc(L"HostNotVerified");
+      __removed Configuration->Usage->Inc("HostNotVerified");
 
       UnicodeString Message;
       if (ConfiguredKeyNotMatch)
@@ -2660,85 +2660,85 @@ void TSecureShell::CollectUsage()
 #if 0
   if (FCollectPrivateKeyUsage)
   {
-    Configuration->Usage->Inc(L"OpenedSessionsPrivateKey2");
+    Configuration->Usage->Inc("OpenedSessionsPrivateKey2");
   }
 
   if (FSshVersion == 1)
   {
-    Configuration->Usage->Inc(L"OpenedSessionsSSH1");
+    Configuration->Usage->Inc("OpenedSessionsSSH1");
   }
   else if (FSshVersion == 2)
   {
-    Configuration->Usage->Inc(L"OpenedSessionsSSH2");
+    Configuration->Usage->Inc("OpenedSessionsSSH2");
   }
 
   if (SshImplementation == sshiOpenSSH)
   {
-    Configuration->Usage->Inc(L"OpenedSessionsSSHOpenSSH");
+    Configuration->Usage->Inc("OpenedSessionsSSHOpenSSH");
   }
   else if (SshImplementation == sshiProFTPD)
   {
-    Configuration->Usage->Inc(L"OpenedSessionsSSHProFTPD");
+    Configuration->Usage->Inc("OpenedSessionsSSHProFTPD");
   }
   else if (SshImplementation == sshiBitvise)
   {
-    Configuration->Usage->Inc(L"OpenedSessionsSSHBitvise");
+    Configuration->Usage->Inc("OpenedSessionsSSHBitvise");
   }
   else if (SshImplementation == sshiTitan)
   {
-    Configuration->Usage->Inc(L"OpenedSessionsSSHTitan");
+    Configuration->Usage->Inc("OpenedSessionsSSHTitan");
   }
   else if (SshImplementation == sshiOpenVMS)
   {
-    Configuration->Usage->Inc(L"OpenedSessionsSSHOpenVMS");
+    Configuration->Usage->Inc("OpenedSessionsSSHOpenVMS");
   }
-  else if (ContainsText(FSessionInfo.SshImplementation, L"Serv-U"))
+  else if (ContainsText(FSessionInfo.SshImplementation, "Serv-U"))
   {
-    Configuration->Usage->Inc(L"OpenedSessionsSSHServU");
+    Configuration->Usage->Inc("OpenedSessionsSSHServU");
   }
   else if (SshImplementation == sshiCerberus)
   {
     // Ntb, Cerberus can also be detected using vendor-id extension
     // Cerberus FTP Server 7.0.5.3 (70005003) by Cerberus, LLC
-    Configuration->Usage->Inc(L"OpenedSessionsSSHCerberus");
+    Configuration->Usage->Inc("OpenedSessionsSSHCerberus");
   }
-  else if (ContainsText(FSessionInfo.SshImplementation, L"WS_FTP"))
+  else if (ContainsText(FSessionInfo.SshImplementation, "WS_FTP"))
   {
-    Configuration->Usage->Inc(L"OpenedSessionsSSHWSFTP");
+    Configuration->Usage->Inc("OpenedSessionsSSHWSFTP");
   }
   // SSH-2.0-1.36_sshlib GlobalSCAPE
-  else if (ContainsText(FSessionInfo.SshImplementation, L"GlobalSCAPE"))
+  else if (ContainsText(FSessionInfo.SshImplementation, "GlobalSCAPE"))
   {
-    Configuration->Usage->Inc(L"OpenedSessionsSSHGlobalScape");
+    Configuration->Usage->Inc("OpenedSessionsSSHGlobalScape");
   }
   // SSH-2.0-CompleteFTP-8.1.3
-  else if (ContainsText(FSessionInfo.SshImplementation, L"CompleteFTP"))
+  else if (ContainsText(FSessionInfo.SshImplementation, "CompleteFTP"))
   {
-    Configuration->Usage->Inc(L"OpenedSessionsSSHComplete");
+    Configuration->Usage->Inc("OpenedSessionsSSHComplete");
   }
   // SSH-2.0-CoreFTP-0.3.3
-  else if (ContainsText(FSessionInfo.SshImplementation, L"CoreFTP"))
+  else if (ContainsText(FSessionInfo.SshImplementation, "CoreFTP"))
   {
-    Configuration->Usage->Inc(L"OpenedSessionsSSHCore");
+    Configuration->Usage->Inc("OpenedSessionsSSHCore");
   }
   // SSH-2.0-SSHD-CORE-0.11.0 (value is configurable, this is a default)
   // (Apache Mina SSHD, e.g. on brickftp.com)
-  else if (ContainsText(FSessionInfo.SshImplementation, L"SSHD-CORE"))
+  else if (ContainsText(FSessionInfo.SshImplementation, "SSHD-CORE"))
   {
-    Configuration->Usage->Inc(L"OpenedSessionsSSHApache");
+    Configuration->Usage->Inc("OpenedSessionsSSHApache");
   }
   // SSH-2.0-Syncplify_Me_Server
-  else if (ContainsText(FSessionInfo.SshImplementation, L"Syncplify"))
+  else if (ContainsText(FSessionInfo.SshImplementation, "Syncplify"))
   {
-    Configuration->Usage->Inc(L"OpenedSessionsSSHSyncplify");
+    Configuration->Usage->Inc("OpenedSessionsSSHSyncplify");
   }
-  else if (ContainsText(FSessionInfo.SshImplementation, L"zFTPServer"))
+  else if (ContainsText(FSessionInfo.SshImplementation, "zFTPServer"))
   {
-    Configuration->Usage->Inc(L"OpenedSessionsSSHzFTP");
+    Configuration->Usage->Inc("OpenedSessionsSSHzFTP");
   }
   else
   {
-    Configuration->Usage->Inc(L"OpenedSessionsSSHOther");
+    Configuration->Usage->Inc("OpenedSessionsSSHOther");
   }
 #endif // #if 0
 }
