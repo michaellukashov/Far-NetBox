@@ -34,6 +34,7 @@ constexpr int DummyDisconnectCode = 803;
 class TFileZillaImpl final : public TFileZillaIntf
 {
 public:
+  TFileZillaImpl() = delete;
   explicit TFileZillaImpl(TFTPFileSystem *FileSystem) noexcept;
   virtual ~TFileZillaImpl() noexcept = default;
 
