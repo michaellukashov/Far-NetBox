@@ -301,7 +301,7 @@ private:
   bool FUseBusyCursor{false};
   std::unique_ptr<TRemoteDirectoryCache> FDirectoryCache;
   std::unique_ptr<TRemoteDirectoryChangesCache> FDirectoryChangesCache;
-  std::unique_ptr<TSecureShell> FSecureShell{nullptr};
+  std::unique_ptr<TSecureShell> FSecureShell;
   UnicodeString FLastDirectoryChange;
   TCurrentFSProtocol FFSProtocol{cfsUnknown};
   TTerminal *FCommandSession{nullptr};

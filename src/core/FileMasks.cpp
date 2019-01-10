@@ -552,7 +552,7 @@ void TFileMasks::CreateMask(
   {
     wchar_t PartDelimiter = NextPartDelimiter;
     intptr_t PartFrom = NextPartFrom;
-    UnicodeString PartStr = CopyToChars(MaskStr, NextPartFrom, L"<>", false, &NextPartDelimiter, true);
+    UnicodeString PartStr = CopyToChars(MaskStr, NextPartFrom, "<>", false, &NextPartDelimiter, true);
 
     intptr_t PartStart = MaskStart + PartFrom - 1;
     intptr_t PartEnd = MaskStart + NextPartFrom - 1 - 2;
@@ -623,7 +623,7 @@ void TFileMasks::CreateMask(
           Mask.UserStr.Delete(PartStart - MaskStart + D, 1);
           D--;
         }
-        while (PartStr.IsDelimiter(DirectoryMaskDelimiters, PartStr.Length()));
+        while (!PartStr.IsEmpty() && PartStr.IsDelimiter(DirectoryMaskDelimiters, PartStr.Length()));
 
         D = PartStr.LastDelimiter(DirectoryMaskDelimiters);
 

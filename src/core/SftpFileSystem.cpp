@@ -196,7 +196,7 @@ struct TSFTPSupport : public TObject
 {
   NB_DISABLE_COPY(TSFTPSupport)
 public:
-  TSFTPSupport() :
+  TSFTPSupport() noexcept :
     AttributeMask(0),
     AttributeBits(0),
     OpenFlags(0),
@@ -211,7 +211,7 @@ public:
     Reset();
   }
 
-  ~TSFTPSupport()
+  ~TSFTPSupport() noexcept
   {
     __removed SAFE_DESTROY(AttribExtensions);
     __removed SAFE_DESTROY(Extensions);
@@ -1995,8 +1995,8 @@ void TSFTPFileSystem::Init(void *Data)
   FUtfStrings = asOff;
   FUtfDisablingAnnounced = true;
   FSignedTS = false;
-  FSupport = new TSFTPSupport();
-  FExtensions = new TStringList();
+  FSupport = std::make_unique<TSFTPSupport>();
+  FExtensions = std::make_unique<TStringList>();
   FFixedPaths = nullptr;
   FFileSystemInfoValid = false;
 
@@ -2004,21 +2004,21 @@ void TSFTPFileSystem::Init(void *Data)
   FChecksumSftpAlgs = std::make_unique<TStringList>();
   // List as defined by draft-ietf-secsh-filexfer-extensions-00
   // MD5 moved to the back
-  RegisterChecksumAlg(Sha1ChecksumAlg, L"sha1");
-  RegisterChecksumAlg(Sha224ChecksumAlg, L"sha224");
-  RegisterChecksumAlg(Sha256ChecksumAlg, L"sha256");
-  RegisterChecksumAlg(Sha384ChecksumAlg, L"sha384");
-  RegisterChecksumAlg(Sha512ChecksumAlg, L"sha512");
-  RegisterChecksumAlg(Md5ChecksumAlg, L"md5");
-  RegisterChecksumAlg(Crc32ChecksumAlg, L"crc32");
+  RegisterChecksumAlg(Sha1ChecksumAlg, "sha1");
+  RegisterChecksumAlg(Sha224ChecksumAlg, "sha224");
+  RegisterChecksumAlg(Sha256ChecksumAlg, "sha256");
+  RegisterChecksumAlg(Sha384ChecksumAlg, "sha384");
+  RegisterChecksumAlg(Sha512ChecksumAlg, "sha512");
+  RegisterChecksumAlg(Md5ChecksumAlg, "md5");
+  RegisterChecksumAlg(Crc32ChecksumAlg, "crc32");
 }
 //---------------------------------------------------------------------------
 TSFTPFileSystem::~TSFTPFileSystem() noexcept
 {
-  SAFE_DESTROY(FSupport);
+//  SAFE_DESTROY(FSupport);
   ResetConnection();
 //  SAFE_DESTROY(FPacketReservations);
-  SAFE_DESTROY(FExtensions);
+//  SAFE_DESTROY(FExtensions);
   SAFE_DESTROY(FFixedPaths);
   SAFE_DESTROY(FSecureShell);
 }

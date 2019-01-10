@@ -1868,8 +1868,8 @@ void TWebDAVFileSystem::NeonProvideClientCert(void *UserData, ne_session *Sess,
 
   FileSystem->FTerminal->LogEvent(LoadStr(NEED_CLIENT_CERTIFICATE));
 
-  X509 *Certificate;
-  EVP_PKEY *PrivateKey;
+  X509 *Certificate{nullptr};
+  EVP_PKEY *PrivateKey{nullptr};
   if (FileSystem->FTerminal->LoadTlsCertificate(Certificate, PrivateKey))
   {
     ne_ssl_client_cert *NeonCertificate = ne_ssl_clicert_create(Certificate, PrivateKey);
@@ -1899,7 +1899,7 @@ int TWebDAVFileSystem::NeonRequestAuth(
     }
     else
     {
-      Terminal->LogEvent(L"Username prompt");
+      Terminal->LogEvent("Username prompt");
       if (!Terminal->PromptUser(SessionData, pkUserName, LoadStr(USERNAME_TITLE), L"",
             LoadStr(USERNAME_PROMPT2), true, NE_ABUFSIZ, FileSystem->FUserName))
       {
@@ -1946,7 +1946,7 @@ int TWebDAVFileSystem::NeonRequestAuth(
         // Asking for password (or using configured password) the first time,
         // and asking for password.
         // Note that we never get false here actually
-        Terminal->LogEvent(L"Password prompt");
+        Terminal->LogEvent("Password prompt");
         Result =
           Terminal->PromptUser(
             SessionData, pkPassword, LoadStr(PASSWORD_TITLE), L"",

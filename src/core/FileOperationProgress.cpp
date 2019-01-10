@@ -175,9 +175,9 @@ void TFileOperationProgressType::AssignButKeepSuspendState(const TFileOperationP
 //---------------------------------------------------------------------------
 void TFileOperationProgressType::DoClear(bool Batch, bool Speed)
 {
-  FFileName = L"";
-  FFullFileName = L"";
-  FDirectory = L"";
+  FFileName = "";
+  FFullFileName = "";
+  FDirectory = "";
   FAsciiTransfer = false;
   FCount = -1;
   FFilesFinished = 0;
@@ -1037,14 +1037,14 @@ UnicodeString TFileOperationProgressType::GetLogStr(bool Done) const
   if (!Done && FTotalSizeSet)
   {
     Time = TotalTimeLeft();
-    TimeLabel = L"Left";
+    TimeLabel = "Left";
   }
   else
   {
     Time = TimeElapsed();
-    TimeLabel = L"Elapsed";
+    TimeLabel = "Elapsed";
   }
-  UnicodeString TimeStr = FormatDateTimeSpan(GetConfiguration()->GetTimeFormat(), Time);
+  UnicodeString TimeStr = FormatDateTimeSpan(GetConfiguration()->TimeFormat(), Time);
   UnicodeString CPSStr = FormatSize(CPS());
   return FORMAT("Transferred: %s, %s: %s, CPS: %s/s", Transferred, TimeLabel, TimeStr, CPSStr);
 }

@@ -131,9 +131,9 @@ protected:
   intptr_t FBusy{0};
   void *FBusyToken{nullptr};
   bool FAvoidBusy{false};
-  TStrings *FExtensions{nullptr};
-  TSFTPSupport *FSupport{nullptr};
-  TAutoSwitch FUtfStrings{};
+  std::unique_ptr<TStrings> FExtensions;
+  std::unique_ptr<TSFTPSupport> FSupport;
+  TAutoSwitch FUtfStrings{asAuto};
   bool FUtfDisablingAnnounced{false};
   bool FSignedTS{false};
   TStrings *FFixedPaths{nullptr};

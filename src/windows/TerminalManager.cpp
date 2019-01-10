@@ -1825,7 +1825,7 @@ bool __fastcall TTerminalManager::UploadPublicKey(
       CloseAutheticateForm(); // When uploading from Login dialog
     }
 
-    Terminal->LogEvent(L"Public key installation done.");
+    Terminal->LogEvent("Public key installation done.");
     if (AdHocTerminal)
     {
       TerminalOwner.reset(NULL);

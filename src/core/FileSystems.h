@@ -24,9 +24,9 @@ enum TFSCommand { fsNull = 0, fsVarValue, fsLastLine, fsFirstLine,
   fsAnyCommand, fsLang, fsReadSymlink, fsChangeProperties, fsMoveFile,
   fsLock };
 //---------------------------------------------------------------------------
-constexpr const intptr_t dfNoRecursive = 0x01;
-constexpr const intptr_t dfAlternative = 0x02;
-constexpr const intptr_t dfForceDelete = 0x04;
+constexpr intptr_t dfNoRecursive = 0x01;
+constexpr intptr_t dfAlternative = 0x02;
+constexpr intptr_t dfForceDelete = 0x04;
 //---------------------------------------------------------------------------
 __removed enum TOverwriteMode { omOverwrite, omResume, omComplete };
 enum TOverwriteMode
@@ -61,16 +61,7 @@ public:
   static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TFileTransferData); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TFileTransferData) || TObject::is(Kind); }
 public:
-  TFileTransferData() : TObject(OBJECT_CLASS_TFileTransferData),
-    FileName(),
-    CopyParam(nullptr),
-    Modification(),
-    Params(0),
-    OverwriteResult(-1),
-    AutoResume(false)
-  {
-  }
-
+  TFileTransferData() : TObject(OBJECT_CLASS_TFileTransferData) {}
   UnicodeString FileName;
   const TCopyParamType *CopyParam{nullptr};
   TDateTime Modification{};

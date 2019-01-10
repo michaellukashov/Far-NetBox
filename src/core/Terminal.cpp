@@ -1511,7 +1511,7 @@ void TTerminal::InitFileSystem()
       {
         FFSProtocol = cfsSCP;
         FFileSystem = std::make_unique<TSCPFileSystem>(this);
-        FFileSystem->Init(FSecureShell.get());
+        FFileSystem->Init(FSecureShell.release());
         FSecureShell = nullptr; // ownership passed
         LogEvent("Using SCP protocol.");
       }
@@ -1519,7 +1519,7 @@ void TTerminal::InitFileSystem()
       {
         FFSProtocol = cfsSFTP;
         FFileSystem = std::make_unique<TSFTPFileSystem>(this);
-        FFileSystem->Init(FSecureShell.get());
+        FFileSystem->Init(FSecureShell.release());
         FSecureShell = nullptr; // ownership passed
         LogEvent("Using SFTP protocol.");
       }
@@ -1527,7 +1527,7 @@ void TTerminal::InitFileSystem()
     __finally
     {
 //      SAFE_DESTROY(FSecureShell);
-//      FSecureShell = nullptr;
+      FSecureShell = nullptr;
       // This does not make it through, if terminal thread is abandonded,
       // see also TTerminalManager::DoConnectTerminal
       DoInformation(L"", true, 0);
@@ -2767,7 +2767,7 @@ void TTerminal::EndTransaction()
 void TTerminal::DoEndTransaction(bool Inform)
 {
   if (FInTransaction == 0)
-    TerminalError(L"Can't end transaction, not in transaction");
+    TerminalError("Can't end transaction, not in transaction");
   DebugAssert(FInTransaction > 0);
   FInTransaction--;
 
@@ -3362,14 +3362,14 @@ void TTerminal::DoStartup()
 
     LookupUsersGroups();
 
-    if (!GetSessionData()->GetRemoteDirectory().IsEmpty())
+    if (!GetSessionData()->RemoteDirectory().IsEmpty())
     {
       if (SessionData->UpdateDirectories)
       {
         ExceptionOnFail = true;
         try
         {
-          RemoteChangeDirectory(SessionData->RemoteDirectory);
+          RemoteChangeDirectory(SessionData->RemoteDirectory());
         }
         catch (...)
         {

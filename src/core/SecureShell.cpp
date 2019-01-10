@@ -463,7 +463,7 @@ void TSecureShell::Open()
   {
     char *RealHost = nullptr;
     FreeBackend(); // in case we are reconnecting
-    const char *InitError;
+    const char *InitError{nullptr};
     Conf *conf = StoreToConfig(FSessionData, GetSimple());
     FSendBuf = FSessionData->GetSendBuf();
     try__finally
@@ -522,7 +522,7 @@ void TSecureShell::Open()
     FSshImplementation = sshiOpenSSH;
   }
   // e.g. "mod_sftp/0.9.8"
-  else if (SshImplementation.Pos(L"mod_sftp") == 1)
+  else if (SshImplementation.Pos("mod_sftp") == 1)
   {
     FSshImplementation = sshiProFTPD;
   }
