@@ -2517,7 +2517,7 @@ void TSecureShell::VerifyHostKey(
       Params.AliasesCount = AliasesCount;
 
       UnicodeString KeyTypeHuman = GetKeyTypeHuman(AKeyType);
-      UnicodeString KeyDetails = FMTLOAD(KEY_DETAILS, (SignKeyType, SHA256, MD5));
+      UnicodeString KeyDetails = FMTLOAD(KEY_DETAILS, SignKeyType, SHA256, MD5);
       UnicodeString Message = FMTLOAD((Unknown ? UNKNOWN_KEY4 : DIFFERENT_KEY5), KeyTypeHuman, KeyDetails);
       {
         AddToList(Message, LoadStr(SCRIPTING_USE_HOSTKEY), L"\n");
@@ -2569,7 +2569,7 @@ void TSecureShell::VerifyHostKey(
       std::unique_ptr<Exception> E(std::make_unique<Exception>(MainInstructions(Message)));
       try__finally
       {
-        FUI->FatalError(E.get(), FMTLOAD(HOSTKEY, (FingerprintSHA256)));
+        FUI->FatalError(E.get(), FMTLOAD(HOSTKEY, FingerprintSHA256));
       },
       __finally__removed
       ({
