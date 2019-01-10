@@ -803,7 +803,7 @@ public:
 //  CMStringT(CMStringT&&) = default;
 //  CMStringT& operator=(CMStringT&&) = default;
 
-  CMStringT(const XCHAR *pszSrc);
+  explicit CMStringT(const XCHAR *pszSrc);
   CMStringT(CMStringDataFormat, const XCHAR *pszFormat, ...);
 
   CMStringT(const YCHAR *pszSrc);
@@ -1019,13 +1019,13 @@ NB_CORE_EXPORT CMStringT<BaseType, StringTraits> CALLBACK operator+(wchar_t ch1,
 template<typename BaseType, class StringTraits>
 NB_CORE_EXPORT CMStringT<BaseType, StringTraits> CALLBACK operator+(char ch1, const CMStringT<BaseType, StringTraits> &str2);
 
-typedef CMStringT<wchar_t, NBChTraitsCRT<wchar_t>> CMStringW;
-typedef CMStringT<char, NBChTraitsCRT<char>> CMStringA;
+using CMStringW = CMStringT<wchar_t, NBChTraitsCRT<wchar_t>>;
+using CMStringA = CMStringT<char, NBChTraitsCRT<char>>;
 
 #ifdef _UNICODE
-typedef CMStringW CMString;
+using CMString = CMStringW;
 #else
-typedef CMStringA CMString;
+using CMString = CMStringA;
 #endif
 
 #include "nbstring.inl"
