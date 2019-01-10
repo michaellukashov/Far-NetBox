@@ -199,7 +199,7 @@ public:
 
   bool IsDelimiter(const BaseStringT &Delimiters, intptr_t Pos) const
   {
-    if (Pos <= GetLength())
+    if (Pos > 0 && Pos <= GetLength())
     {
       CharT Ch = operator[](Pos);
       for (intptr_t Index = 1; Index <= Delimiters.GetLength(); ++Index)
@@ -409,7 +409,7 @@ public:
   unsigned char operator[](intptr_t Idx) const
   {
     ThrowIfOutOfRange(Idx, Length()); // Should Range-checking be optional to avoid overhead ??
-    return BaseT::operator[](nb::ToInt(Idx - 1));
+    return reinterpret_cast<const unsigned  char *>(this->c_str())[nb::ToInt(Idx - 1)];
   }
 
   unsigned char &operator[](intptr_t Idx)
