@@ -350,7 +350,7 @@ private:
   Boolean FIncludeParentDirectory{false};
   Boolean FIncludeThisDirectory{false};
 public:
-  virtual void SetDirectory(const UnicodeString Value) override;
+  void SetDirectory(const UnicodeString Value) override;
   Boolean GetLoaded() const;
   void SetIncludeParentDirectory(Boolean Value);
   void SetIncludeThisDirectory(Boolean Value);
