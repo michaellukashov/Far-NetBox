@@ -45,8 +45,8 @@ __removed #pragma package(smart_init)
 __removed #define FILE_OPERATION_LOOP_TERMINAL FTerminal
 //---------------------------------------------------------------------------
 __removed #define SESSION_FS_KEY "filesystem"
-static const UnicodeString CONST_WEBDAV_PROTOCOL_BASE_NAME = L"WebDAV";
-static const int HttpUnauthorized = 401;
+static const UnicodeString CONST_WEBDAV_PROTOCOL_BASE_NAME = "WebDAV";
+constexpr int HttpUnauthorized = 401;
 //---------------------------------------------------------------------------
 #define DAV_PROP_NAMESPACE "DAV:"
 #define MODDAV_PROP_NAMESPACE "http://apache.org/dav/props/"
