@@ -2827,11 +2827,11 @@ SSH_FX_TYPE TSFTPFileSystem::ReceiveResponse(
   TSFTPPacket *Response = (AResponse ? AResponse : new TSFTPPacket(FCodePage));
   try__finally
   {
-    Result = ReceivePacket(AResponse, ExpectedType, AllowStatus, TryOnly);
-    if (MessageNumber != AResponse->GetMessageNumber())
+    Result = ReceivePacket(Response, ExpectedType, AllowStatus, TryOnly);
+    if (MessageNumber != Response->GetMessageNumber())
     {
       FTerminal->FatalError(nullptr, FMTLOAD(SFTP_MESSAGE_NUMBER,
-        nb::ToInt(AResponse->GetMessageNumber()), nb::ToInt(MessageNumber)));
+        nb::ToInt(Response->GetMessageNumber()), nb::ToInt(MessageNumber)));
     }
   },
   __finally
