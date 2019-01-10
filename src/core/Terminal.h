@@ -383,7 +383,7 @@ protected:
   bool FReadCurrentDirectoryPending{false};
   bool FReadDirectoryPending{false};
   bool FTunnelOpening{false};
-  std::unique_ptr<TCustomFileSystem> FFileSystem{nullptr};
+  std::unique_ptr<TCustomFileSystem> FFileSystem;
 
   void DoStartReadDirectory();
   void DoReadDirectoryProgress(intptr_t Progress, intptr_t ResolvedLinks, bool &Cancel);
