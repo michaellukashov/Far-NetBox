@@ -116,19 +116,14 @@ NB_CORE_EXPORT extern const intptr_t SFTPMaxVersion;
 //---------------------------------------------------------------------------
 struct NB_CORE_EXPORT TIEProxyConfig : public TObject
 {
-  TIEProxyConfig() :
-    AutoDetect(false),
-    ProxyPort(0),
-    ProxyMethod(pmNone)
-  {
-  }
-  bool AutoDetect; // not used
+  TIEProxyConfig() = default;
+  bool AutoDetect{false}; // not used
   UnicodeString AutoConfigUrl; // not used
   UnicodeString Proxy; //< string in format "http=host:80;https=host:443;ftp=ftpproxy:20;socks=socksproxy:1080"
   UnicodeString ProxyBypass; //< string in format "*.local, foo.com, google.com"
   UnicodeString ProxyHost;
-  intptr_t ProxyPort;
-  TProxyMethod ProxyMethod;
+  intptr_t ProxyPort{0};
+  TProxyMethod ProxyMethod{pmNone};
 };
 //---------------------------------------------------------------------------
 class TStoredSessionList;
@@ -439,10 +434,10 @@ public:
   void SetHostKey(UnicodeString Value);
   void SetNote(UnicodeString Value);
   void SetWinTitle(UnicodeString Value);
-  TDateTime GetTimeoutDT() const;
   UnicodeString GetEncryptKey() const;
   void SetEncryptKey(UnicodeString value);
 
+  TDateTime GetTimeoutDT() const;
   void SavePasswords(THierarchicalStorage *Storage, bool PuttyExport, bool DoNotEncryptPasswords);
   UnicodeString GetLocalName() const;
   UnicodeString GetFolderName() const;
@@ -488,8 +483,8 @@ public:
     UnicodeString &Result, TAssemblyLanguage Language,
     const UnicodeString &Name, bool Value);
 #endif // #if 0
-  void ApplyRawSettings(TStrings * RawSettings);
   TStrings *SaveToOptions(const TSessionData *Default);
+  void ApplyRawSettings(TStrings * RawSettings);
   TStrings * GetRawSettingsForUrl();
   template<class AlgoT>
   void SetAlgoList(AlgoT *List, const AlgoT *DefaultList, const UnicodeString *Names,
@@ -968,7 +963,6 @@ public:
     THierarchicalStorage * SourceStorage, THierarchicalStorage * TargetStorage, TStoredSessionList * Sessions, bool OnlySelected);
   static void ImportHostKeys(
     const UnicodeString & SourceKey, TStoredSessionList * Sessions, bool OnlySelected);
-
   static void ImportSelectedKnownHosts(TStoredSessionList *Sessions);
   static bool OpenHostKeysSubKey(THierarchicalStorage *Storage, bool CanCreate);
 
@@ -1005,7 +999,7 @@ NB_CORE_EXPORT intptr_t GetDefaultPort(TFSProtocol FSProtocol, TFtps Ftps);
 NB_CORE_EXPORT bool IsIPv6Literal(const UnicodeString AHostName);
 NB_CORE_EXPORT UnicodeString EscapeIPv6Literal(const UnicodeString IP);
 TFSProtocol NormalizeFSProtocol(TFSProtocol FSProtocol);
-
+//---------------------------------------------------------------------------
 NB_CORE_EXPORT bool GetCodePageInfo(UINT CodePage, CPINFOEX &CodePageInfoEx);
 NB_CORE_EXPORT uintptr_t GetCodePageAsNumber(const UnicodeString CodePage);
 NB_CORE_EXPORT UnicodeString GetCodePageAsString(uintptr_t CodePage);
