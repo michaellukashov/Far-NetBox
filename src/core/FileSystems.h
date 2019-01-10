@@ -249,7 +249,8 @@ public:
 protected:
   TTerminal *FTerminal{nullptr};
 
-  explicit TCustomFileSystem(TObjectClassId Kind) noexcept : TObject(Kind), FTerminal(nullptr) {}
+  TCustomFileSystem() = delete;
+  explicit TCustomFileSystem(TObjectClassId Kind) noexcept : TObject(Kind) {}
   explicit TCustomFileSystem(TObjectClassId Kind, TTerminal *ATerminal) noexcept;
   virtual UnicodeString RemoteGetCurrentDirectory() const = 0;
 
