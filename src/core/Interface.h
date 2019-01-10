@@ -26,7 +26,7 @@ __removed #include <typeinfo>
 #define NONEWERONLY_SWITCH "noneweronly"
 #define DELETE_SWITCH "delete"
 #define REFRESH_SWITCH "refresh"
-#define RAWTRANSFERSETTINGS_SWITCH L"rawtransfersettings"
+#define RAWTRANSFERSETTINGS_SWITCH "rawtransfersettings"
 extern const wchar_t *TransferModeNames[];
 extern const int TransferModeNamesCount;
 extern const wchar_t *ToggleNames[];
