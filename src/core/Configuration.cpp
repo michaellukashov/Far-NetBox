@@ -1881,7 +1881,7 @@ bool TConfiguration::GetAutoReadDirectoryAfterOp() const
   return FAutoReadDirectoryAfterOp;
 }
 //---------------------------------------------------------------------------
-UnicodeString TConfiguration::GetTimeFormat() const
+UnicodeString TConfiguration::GetConfigurationTimeFormat() const
 {
   return "h:nn:ss";
 }

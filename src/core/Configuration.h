@@ -134,13 +134,11 @@ public:
   UnicodeString GetPermanentActionsLogFileName() const;
   UnicodeString GetActionsLogFileName() const;
   UnicodeString GetDefaultLogFileName() const;
-  UnicodeString GetTimeFormat() const;
+  UnicodeString GetConfigurationTimeFormat() const;
   UnicodeString GetRegistryStorageKey() const;
-#if 0
   UnicodeString GetIniFileStorageNameForReadingWriting() const;
   UnicodeString GetIniFileStorageNameForReading();
   UnicodeString GetIniFileStorageName(bool ReadingOnly);
-#endif // #if 0
   void SetIniFileStorageName(UnicodeString Value);
   void SetOptionsStorage(TStrings *Value);
   TStrings *GetOptionsStorage();
@@ -351,7 +349,7 @@ public:
   intptr_t& ScriptProgressFileNameLimit{FScriptProgressFileNameLimit};
 
   __property UnicodeString TimeFormat = { read = GetTimeFormat };
-  ROProperty<UnicodeString> TimeFormat{nb::bind(&TConfiguration::GetTimeFormat, this)};
+  ROProperty<UnicodeString> TimeFormat{nb::bind(&TConfiguration::GetConfigurationTimeFormat, this)};
   __property TStorage Storage  = { read = GetStorage };
   ROProperty<TStorage> Storage{nb::bind(&TConfiguration::GetStorage, this)};
   __property UnicodeString RegistryStorageKey  = { read = GetRegistryStorageKey };
