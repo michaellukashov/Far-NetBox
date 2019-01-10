@@ -132,8 +132,7 @@ inline T *DoCheckNotNull(T *p, const wchar_t *Message, const wchar_t *Filename, 
 
 #define MB_TEXT(x) ::MB2W(x)
 
-#define TShellExecuteInfoW _SHELLEXECUTEINFOW
-#define TSHFileInfoW SHFILEINFOW
-#define TVSFixedFileInfo VS_FIXEDFILEINFO
-#define PVSFixedFileInfo VS_FIXEDFILEINFO*
-
+using TShellExecuteInfoW = struct _SHELLEXECUTEINFOW;
+using TSHFileInfoW = struct _SHFILEINFOW;
+using TVSFixedFileInfo = VS_FIXEDFILEINFO;
+using PVSFixedFileInfo = VS_FIXEDFILEINFO*;
