@@ -747,9 +747,9 @@ void TWebDAVFileSystem::CachedChangeDirectory(const UnicodeString Directory)
 struct TReadFileData
 {
   CUSTOM_MEM_ALLOCATION_IMPL
-  TWebDAVFileSystem *FileSystem;
-  TRemoteFile *File;
-  TRemoteFileList *FileList;
+  TWebDAVFileSystem *FileSystem{nullptr};
+  TRemoteFile *File{nullptr};
+  TRemoteFileList *FileList{nullptr};
 };
 //---------------------------------------------------------------------------
 int TWebDAVFileSystem::ReadDirectoryInternal(
@@ -917,7 +917,7 @@ void TWebDAVFileSystem::ParsePropResultSet(TRemoteFile *AFile,
       // property has XML value
       UnicodeString AResourceType = ResourceType;
       // this is very poor parsing
-      if (ContainsText(ResourceType, L"<DAV:collection"))
+      if (ContainsText(ResourceType, "<DAV:collection"))
       {
         Collection = true;
       }
@@ -944,7 +944,7 @@ void TWebDAVFileSystem::ParsePropResultSet(TRemoteFile *AFile,
     AFile->SetDisplayName(StrFromNeon(DisplayName));
   }
 
-  const UnicodeString RightsDelimiter(L", ");
+  const UnicodeString RightsDelimiter(", ");
   UnicodeString HumanRights;
 
   // Proprietary property of mod_dav
