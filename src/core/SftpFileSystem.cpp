@@ -2593,7 +2593,7 @@ SSH_FX_TYPE TSFTPFileSystem::GotStatusPacket(TSFTPPacket *Packet,
   {
       if (FTerminal->Configuration->ActualLogProtocol >= 0)
       {
-        FTerminal->Log->Add(llOutput, FORMAT(L"Status code: %d", ((int)Code)));
+        FTerminal->Log->Add(llOutput, FORMAT("Status code: %d", (int)Code));
       }
     }
   return Code;
@@ -2858,7 +2858,7 @@ UnicodeString TSFTPFileSystem::GetRealPath(const UnicodeString APath)
 {
   try
   {
-    FTerminal->LogEvent(0, FORMAT(L"Getting real path for '%s'", APath));
+    FTerminal->LogEvent(0, FORMAT("Getting real path for '%s'", APath));
 
     TSFTPPacket Packet(SSH_FXP_REALPATH, FCodePage);
     AddPathString(Packet, APath);
@@ -2905,7 +2905,7 @@ UnicodeString TSFTPFileSystem::GetRealPath(const UnicodeString APath)
     RealDir = FTerminal->DecryptFileName(RealDir);
     // ignore rest of SSH_FXP_NAME packet
 
-    FTerminal->LogEvent(0, FORMAT(L"Real path is '%s'", (RealDir)));
+    FTerminal->LogEvent(0, FORMAT("Real path is '%s'", RealDir));
 
     return RealDir;
   }
@@ -3288,7 +3288,7 @@ void TSFTPFileSystem::DoStartup()
       }
       else
       {
-        FTerminal->LogEvent(0, FORMAT(L"Unknown server extension %s=%s", (ExtensionName, ExtensionDisplayData)));
+        FTerminal->LogEvent(0, FORMAT("Unknown server extension %s=%s", ExtensionName, ExtensionDisplayData));
       }
     }
 
