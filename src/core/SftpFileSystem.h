@@ -23,14 +23,14 @@ NB_DEFINE_CLASS_ID(TSFTPFileSystem);
 class NB_CORE_EXPORT TSFTPFileSystem final : public TCustomFileSystem
 {
   NB_DISABLE_COPY(TSFTPFileSystem)
-  friend class TSFTPPacket;
-  friend class TSFTPQueue;
-  friend class TSFTPAsynchronousQueue;
-  friend class TSFTPUploadQueue;
-  friend class TSFTPDownloadQueue;
-  friend class TSFTPLoadFilesPropertiesQueue;
-  friend class TSFTPCalculateFilesChecksumQueue;
-  friend class TSFTPBusy;
+friend class TSFTPPacket;
+friend class TSFTPQueue;
+friend class TSFTPAsynchronousQueue;
+friend class TSFTPUploadQueue;
+friend class TSFTPDownloadQueue;
+friend class TSFTPLoadFilesPropertiesQueue;
+friend class TSFTPCalculateFilesChecksumQueue;
+friend class TSFTPBusy;
 public:
   static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TSFTPFileSystem); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TSFTPFileSystem) || TCustomFileSystem::is(Kind); }
@@ -47,7 +47,6 @@ public:
   void CollectUsage() override;
   void Idle() override;
   UnicodeString GetAbsolutePath(const UnicodeString APath, bool Local) override;
-  UnicodeString GetAbsolutePath(const UnicodeString APath, bool Local) const override;
   void AnyCommand(const UnicodeString ACommand,
     TCaptureOutputEvent OutputEvent) override;
   void ChangeDirectory(const UnicodeString ADirectory) override;
@@ -84,11 +83,11 @@ public:
   void RemoteCreateLink(const UnicodeString AFileName, const UnicodeString APointTo, bool Symbolic) override;
   void RemoteDeleteFile(const UnicodeString AFileName,
     const TRemoteFile *AFile, intptr_t Params, TRmSessionAction &Action) override;
-  UnicodeString GetHomeDirectory() override;
   void CustomCommandOnFile(const UnicodeString AFileName,
     const TRemoteFile *AFile, UnicodeString ACommand, intptr_t AParams, TCaptureOutputEvent OutputEvent) override;
   void DoStartup() override;
   void HomeDirectory() override;
+  UnicodeString GetHomeDirectory() override;
   bool IsCapable(intptr_t Capability) const override;
   void LookupUsersGroups() override;
   void ReadCurrentDirectory() override;
@@ -115,6 +114,7 @@ public:
   void UpdateFromMain(TCustomFileSystem *MainFileSystem) override;
   void ClearCaches() override;
 
+  UnicodeString GetAbsolutePath(const UnicodeString APath, bool Local) const override;
 protected:
   TSecureShell *FSecureShell{nullptr};
   TFileSystemInfo FFileSystemInfo{};
