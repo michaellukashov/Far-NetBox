@@ -280,8 +280,7 @@ TObjectList::TObjectList() noexcept : TList(OBJECT_CLASS_TObjectList)
 }
 
 TObjectList::TObjectList(TObjectClassId Kind) noexcept :
-  TList(Kind),
-  FOwnsObjects(true)
+  TList(Kind)
 {
 }
 
@@ -316,7 +315,7 @@ void TObjectList::Notify(void *Ptr, TListNotification Action)
   TList::Notify(Ptr, Action);
 }
 
-static const int MemoryDelta = 0x2000;
+constexpr int MemoryDelta = 0x2000;
 
 TStrings::TStrings() noexcept :
   TObjectList(OBJECT_CLASS_TStrings),

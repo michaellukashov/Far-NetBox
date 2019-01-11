@@ -97,16 +97,8 @@ struct TPoint
 {
   int x{0};
   int y{0};
-  TPoint() noexcept :
-    x(0),
-    y(0)
-  {
-  }
-  TPoint(int ax, int ay) noexcept :
-    x(ax),
-    y(ay)
-  {
-  }
+  TPoint() noexcept = default;
+  TPoint(int ax, int ay) noexcept : x(ax), y(ay) {}
 };
 
 struct TRect
@@ -232,7 +224,7 @@ public:
   TObject *GetObj(intptr_t Index) const;
   bool GetOwnsObjects() const { return FOwnsObjects; }
   void SetOwnsObjects(bool Value) { FOwnsObjects = Value; }
-  virtual void Notify(void *Ptr, TListNotification Action) override;
+  void Notify(void *Ptr, TListNotification Action) override;
 
 private:
   bool FOwnsObjects{true};
@@ -265,14 +257,16 @@ public:
   virtual void SetUpdateState(bool Updating);
   virtual intptr_t AddObject(const UnicodeString S, TObject *AObject);
   virtual void InsertObject(intptr_t Index, const UnicodeString Key, TObject *AObject);
+  virtual intptr_t CompareStrings(const UnicodeString S1, const UnicodeString S2) const;
+  virtual intptr_t GetCount() const = 0;
+  virtual void Insert(intptr_t Index, const UnicodeString AString, TObject *AObject = nullptr) = 0;
   bool Equals(const TStrings *Value) const;
-  virtual void Move(intptr_t CurIndex, intptr_t NewIndex) override;
+  void Move(intptr_t CurIndex, intptr_t NewIndex) override;
   virtual intptr_t IndexOf(const UnicodeString S) const;
   virtual intptr_t IndexOfName(const UnicodeString Name) const;
   UnicodeString ExtractName(const UnicodeString S) const;
   void AddStrings(const TStrings *Strings);
   void Append(const UnicodeString Value);
-  virtual void Insert(intptr_t Index, const UnicodeString AString, TObject *AObject = nullptr) = 0;
   void SaveToStream(TStream *Stream) const;
   wchar_t GetDelimiter() const { return FDelimiter; }
   void SetDelimiter(wchar_t Value) { FDelimiter = Value; }
@@ -281,10 +275,8 @@ public:
   void SetQuoteChar(wchar_t Value) { FQuoteChar = Value; }
   UnicodeString GetDelimitedText() const;
   void SetDelimitedText(const UnicodeString Value);
-  virtual intptr_t CompareStrings(const UnicodeString S1, const UnicodeString S2) const;
   intptr_t GetUpdateCount() const { return FUpdateCount; }
-  virtual void Assign(const TPersistent *Source) override;
-  virtual intptr_t GetCount() const = 0;
+  void Assign(const TPersistent *Source) override;
 
 public:
   virtual void SetObj(intptr_t Index, TObject *AObject) = 0;
@@ -330,7 +322,7 @@ public:
   virtual ~TStringList() noexcept = default;
 
   intptr_t Add(const UnicodeString S);
-  virtual intptr_t AddObject(const UnicodeString S, TObject *AObject) override;
+  intptr_t AddObject(const UnicodeString S, TObject *AObject) override;
   void LoadFromFile(const UnicodeString AFileName);
   TNotifyEvent GetOnChange() const { return FOnChange; }
   void SetOnChange(TNotifyEvent OnChange) { FOnChange = OnChange; }
@@ -339,31 +331,31 @@ public:
   void InsertItem(intptr_t Index, const UnicodeString S, TObject *AObject);
   void QuickSort(intptr_t L, intptr_t R, TStringListSortCompare SCompare);
 
-  virtual void Assign(const TPersistent *Source) override;
+  void Assign(const TPersistent *Source) override;
   virtual bool Find(const UnicodeString S, intptr_t &Index) const;
-  virtual intptr_t IndexOf(const UnicodeString S) const override;
-  virtual void Delete(intptr_t Index) override;
-  virtual void InsertObject(intptr_t Index, const UnicodeString Key, TObject *AObject) override;
-  virtual void Sort() override;
+  intptr_t IndexOf(const UnicodeString S) const override;
+  void Delete(intptr_t Index) override;
+  void InsertObject(intptr_t Index, const UnicodeString Key, TObject *AObject) override;
+  void Sort() override;
   virtual void CustomSort(TStringListSortCompare ACompareFunc);
 
-  virtual void SetUpdateState(bool Updating) override;
+  void SetUpdateState(bool Updating) override;
   virtual void Changing();
-  virtual void Changed() override;
-  virtual void Insert(intptr_t Index, const UnicodeString S, TObject *AObject = nullptr) override;
-  virtual intptr_t CompareStrings(const UnicodeString S1, const UnicodeString S2) const override;
-  virtual intptr_t GetCount() const override;
+  void Changed() override;
+  void Insert(intptr_t Index, const UnicodeString S, TObject *AObject = nullptr) override;
+  intptr_t CompareStrings(const UnicodeString S1, const UnicodeString S2) const override;
+  intptr_t GetCount() const override;
 
 public:
-  virtual void SetObj(intptr_t Index, TObject *AObject) override;
-  virtual bool GetSorted() const override { return FSorted; }
-  virtual void SetSorted(bool Value) override;
-  virtual bool GetCaseSensitive() const override { return FCaseSensitive; }
-  virtual void SetCaseSensitive(bool Value) override;
-  virtual const UnicodeString &GetStringRef(intptr_t Index) const override;
-  virtual const UnicodeString &GetString(intptr_t Index) const override;
-  virtual UnicodeString GetString(intptr_t Index) override;
-  virtual void SetString(intptr_t Index, const UnicodeString S) override;
+  void SetObj(intptr_t Index, TObject *AObject) override;
+  bool GetSorted() const override { return FSorted; }
+  void SetSorted(bool Value) override;
+  bool GetCaseSensitive() const override { return FCaseSensitive; }
+  void SetCaseSensitive(bool Value) override;
+  const UnicodeString &GetStringRef(intptr_t Index) const override;
+  const UnicodeString &GetString(intptr_t Index) const override;
+  UnicodeString GetString(intptr_t Index) override;
+  void SetString(intptr_t Index, const UnicodeString S) override;
 
 private:
   TNotifyEvent FOnChange;
@@ -384,19 +376,11 @@ private:
 class NB_CORE_EXPORT TDateTime : public TObject
 {
 public:
-  TDateTime() noexcept :
-    FValue(0.0)
-  {}
-  explicit TDateTime(double Value) noexcept :
-    FValue(Value)
-  {
-  }
+  TDateTime() noexcept : FValue(0.0) {}
+  explicit TDateTime(double Value) noexcept : FValue(Value) {}
   explicit TDateTime(uint16_t Hour,
     uint16_t Min, uint16_t Sec, uint16_t MSec = 0);
-  TDateTime(const TDateTime &rhs) noexcept :
-    FValue(rhs.FValue)
-  {
-  }
+  TDateTime(const TDateTime &rhs) noexcept : FValue(rhs.FValue) {}
   double GetValue() const { return operator double(); }
   TDateTime &operator=(const TDateTime &rhs)
   {
