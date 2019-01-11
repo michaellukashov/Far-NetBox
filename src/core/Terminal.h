@@ -551,12 +551,12 @@ protected:
   bool VerifyCertificate(
     const UnicodeString CertificateStorageKey, const UnicodeString SiteKey,
     const UnicodeString Fingerprint,
-    const UnicodeString CertificateSubject, int Failures);
+    const UnicodeString CertificateSubject, intptr_t Failures);
   void CacheCertificate(const UnicodeString CertificateStorageKey,
     const UnicodeString SiteKey, const UnicodeString Fingerprint, intptr_t Failures);
   bool ConfirmCertificate(
-    TSessionInfo & SessionInfo, intptr_t AFailures, const UnicodeString ACertificateStorageKey, bool CanRemember);
-  void CollectTlsUsage(const UnicodeString TlsVersionStr);
+    TSessionInfo & SessionInfo, intptr_t AFailures, UnicodeString ACertificateStorageKey, bool CanRemember);
+  void CollectTlsUsage(UnicodeString TlsVersionStr);
   bool LoadTlsCertificate(X509 *& Certificate, EVP_PKEY *& PrivateKey);
   bool TryStartOperationWithFile(
     const UnicodeString AFileName, TFileOperation Operation1, TFileOperation Operation2 = foNone);
@@ -636,9 +636,9 @@ public:
   void BeginTransaction();
   void ReadCurrentDirectory();
   void ReadDirectory(bool ReloadOnly, bool ForceCache = false);
-  TRemoteFileList * ReadDirectoryListing(const UnicodeString Directory, const TFileMasks &Mask);
-  TRemoteFileList * CustomReadDirectoryListing(const UnicodeString Directory, bool UseCache);
-  TRemoteFile * ReadFileListing(const UnicodeString APath);
+  TRemoteFileList * ReadDirectoryListing(UnicodeString Directory, const TFileMasks &Mask);
+  TRemoteFileList * CustomReadDirectoryListing(UnicodeString Directory, bool UseCache);
+  TRemoteFile * ReadFileListing(UnicodeString APath);
   void ReadFile(const UnicodeString AFileName, TRemoteFile *&AFile);
   bool FileExists(const UnicodeString AFileName, TRemoteFile **AFile = nullptr);
   void ReadSymlink(TRemoteFile * SymlinkFile, TRemoteFile *& AFile);

@@ -2580,10 +2580,10 @@ SSH_FX_TYPE TSFTPFileSystem::GotStatusPacket(TSFTPPacket *Packet,
       break;
     }
     UnicodeString Error = FMTLOAD(SFTP_ERROR_FORMAT3, MessageStr,
-      int(Code), LanguageTag, ServerMessage);
+      Code, LanguageTag, ServerMessage);
     if (Code == SSH_FX_FAILURE)
     {
-      __removed FTerminal->Configuration->Usage->Inc(L"SftpFailureErrors");
+      __removed FTerminal->Configuration->Usage->Inc("SftpFailureErrors");
       Error += L"\n\n" + LoadStr(SFTP_STATUS_4);
     }
     FTerminal->TerminalError(nullptr, Error, HelpKeyword);
@@ -2593,9 +2593,9 @@ SSH_FX_TYPE TSFTPFileSystem::GotStatusPacket(TSFTPPacket *Packet,
   {
       if (FTerminal->Configuration->ActualLogProtocol >= 0)
       {
-        FTerminal->Log->Add(llOutput, FORMAT("Status code: %d", (int)Code));
+        FTerminal->Log->Add(llOutput, FORMAT("Status code: %d", Code));
       }
-    }
+  }
   return Code;
 }
 //---------------------------------------------------------------------------

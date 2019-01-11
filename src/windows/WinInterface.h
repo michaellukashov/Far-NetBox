@@ -214,19 +214,19 @@ void DoConsoleDialog(TTerminal * Terminal,
     const UnicodeString Command = L"", const TStrings * Log = nullptr);
 
 // forms\Copy.cpp
-constexpr const int coTemp                = 0x001;
-constexpr const int coDisableQueue        = 0x002;
-constexpr const int coDisableDirectory    = 0x008; // not used anymore
-constexpr const int coDoNotShowAgain      = 0x020;
-constexpr const int coDisableSaveSettings = 0x040; // not used anymore
-constexpr const int coDoNotUsePresets     = 0x080; // not used anymore
-constexpr const int coAllowRemoteTransfer = 0x100;
-constexpr const int coNoQueue             = 0x200;
-constexpr const int coShortCutHint        = 0x800;
-constexpr const int coAllFiles            = 0x1000;
-constexpr const int cooDoNotShowAgain     = 0x01;
-constexpr const int cooRemoteTransfer     = 0x02;
-constexpr const int cooSaveSettings       = 0x04;
+constexpr intptr_t coTemp                = 0x001;
+constexpr intptr_t coDisableQueue        = 0x002;
+constexpr intptr_t coDisableDirectory    = 0x008; // not used anymore
+constexpr intptr_t coDoNotShowAgain      = 0x020;
+constexpr intptr_t coDisableSaveSettings = 0x040; // not used anymore
+constexpr intptr_t coDoNotUsePresets     = 0x080; // not used anymore
+constexpr intptr_t coAllowRemoteTransfer = 0x100;
+constexpr intptr_t coNoQueue             = 0x200;
+constexpr intptr_t coShortCutHint        = 0x800;
+constexpr intptr_t coAllFiles            = 0x1000;
+constexpr intptr_t cooDoNotShowAgain     = 0x01;
+constexpr intptr_t cooRemoteTransfer     = 0x02;
+constexpr intptr_t cooSaveSettings       = 0x04;
 
 constexpr const int coTempTransfer        = 0x08;
 constexpr const int coDisableNewerOnly    = 0x10;

@@ -2963,7 +2963,7 @@ void TTerminal::CloseOnCompletion(
   }
   else
   {
-    Configuration->Usage()->Inc(L"ClosesOnCompletion");
+    Configuration->Usage()->Inc("ClosesOnCompletion");
     LogEvent(L"Closing session after completed operation (as requested by user)");
     Close();
     throw ESshTerminate(nullptr,
@@ -3242,7 +3242,7 @@ void TTerminal::FileModified(const TRemoteFile *AFile,
   }
 }
 //---------------------------------------------------------------------------
-void TTerminal::DirectoryModified(const UnicodeString APath, bool SubDirs)
+void TTerminal::DirectoryModified(UnicodeString APath, bool SubDirs)
 {
   if (APath.IsEmpty())
   {
@@ -3293,7 +3293,7 @@ void TTerminal::RefreshDirectory()
   }
 }
 //---------------------------------------------------------------------------
-void TTerminal::EnsureNonExistence(const UnicodeString AFileName)
+void TTerminal::EnsureNonExistence(UnicodeString AFileName)
 {
   // if filename doesn't contain path, we check for existence of file
   if ((base::UnixExtractFileDir(AFileName).IsEmpty()) &&
@@ -3598,6 +3598,7 @@ void TTerminal::CustomReadDirectory(TRemoteFileList *AFileList)
         FFoldersScannedForEncryptedFiles.insert(AFileList->Directory());
       }
 
+      FFileSystem->ReadDirectory(AFileList);
     }
     catch (Exception &E)
     {
@@ -3613,7 +3614,6 @@ void TTerminal::CustomReadDirectory(TRemoteFileList *AFileList)
   }
   while (RobustLoop.Retry());
 
-  if (GetLog()->GetLogging())
   if (Log->Logging && (Configuration->ActualLogProtocol >= 0))
   {
     for (intptr_t Index = 0; Index < AFileList->GetCount(); ++Index)
@@ -3625,18 +3625,18 @@ void TTerminal::CustomReadDirectory(TRemoteFileList *AFileList)
   ReactOnCommand(fsListDirectory);
 }
 //---------------------------------------------------------------------------
-TRemoteFileList * TTerminal::ReadDirectoryListing(const UnicodeString Directory, const TFileMasks &Mask)
+TRemoteFileList * TTerminal::ReadDirectoryListing(UnicodeString ADirectory, const TFileMasks &Mask)
 {
   TRemoteFileList *FileList;
   TRetryOperationLoop RetryLoop(this);
   do
   {
     FileList = nullptr;
-    TLsSessionAction Action(GetActionLog(), GetAbsolutePath(Directory, true));
+    TLsSessionAction Action(GetActionLog(), GetAbsolutePath(ADirectory, true));
 
     try
     {
-      FileList = DoReadDirectoryListing(Directory, false);
+      FileList = DoReadDirectoryListing(ADirectory, false);
       if (FileList != nullptr)
       {
         intptr_t Index = 0;
@@ -3670,7 +3670,7 @@ TRemoteFileList * TTerminal::ReadDirectoryListing(const UnicodeString Directory,
   return FileList;
 }
 //---------------------------------------------------------------------------
-TRemoteFile * TTerminal::ReadFileListing(const UnicodeString APath)
+TRemoteFile * TTerminal::ReadFileListing(UnicodeString APath)
 {
   TRemoteFile *File = nullptr;
   TRetryOperationLoop RetryLoop(this);
@@ -3694,7 +3694,7 @@ TRemoteFile * TTerminal::ReadFileListing(const UnicodeString APath)
   return File;
 }
 //---------------------------------------------------------------------------
-TRemoteFileList * TTerminal::CustomReadDirectoryListing(const UnicodeString Directory, bool UseCache)
+TRemoteFileList * TTerminal::CustomReadDirectoryListing(UnicodeString Directory, bool UseCache)
 {
   TRemoteFileList *FileList = nullptr;
   TRetryOperationLoop RetryLoop(this);
@@ -7176,8 +7176,8 @@ bool TTerminal::CopyToRemote(
         if (Configuration->Usage->Collect)
         {
           int CounterSize = TUsage::CalculateCounterSize(Size);
-          Configuration->Usage->Inc(L"Uploads");
-          Configuration->Usage->Inc(L"UploadedBytes", CounterSize);
+          Configuration->Usage->Inc("Uploads");
+          Configuration->Usage->Inc("UploadedBytes", CounterSize);
           Configuration->Usage->SetMax(L"MaxUploadSize", CounterSize);
           CollectingUsage = true;
         }
@@ -7226,7 +7226,7 @@ bool TTerminal::CopyToRemote(
       if (CollectingUsage)
       {
         int CounterTime = TimeToSeconds(OperationProgress.TimeElapsed());
-        Configuration->Usage->Inc(L"UploadTime", CounterTime);
+        Configuration->Usage->Inc("UploadTime", CounterTime);
         Configuration->Usage->SetMax(L"MaxUploadTime", CounterTime);
       }
 #endif //if 0
@@ -7645,8 +7645,8 @@ bool TTerminal::CopyToLocal(
         if (Configuration->Usage->Collect)
         {
           int CounterTotalSize = TUsage::CalculateCounterSize(TotalSize);
-          Configuration->Usage->Inc(L"Downloads");
-          Configuration->Usage->Inc(L"DownloadedBytes", CounterTotalSize);
+          Configuration->Usage->Inc("Downloads");
+          Configuration->Usage->Inc("DownloadedBytes", CounterTotalSize);
           Configuration->Usage->SetMax(L"MaxDownloadSize", CounterTotalSize);
           CollectingUsage = true;
         }
@@ -7703,7 +7703,7 @@ bool TTerminal::CopyToLocal(
       if (CollectingUsage)
       {
         int CounterTime = TimeToSeconds(OperationProgress.TimeElapsed());
-        Configuration->Usage->Inc(L"DownloadTime", CounterTime);
+        Configuration->Usage->Inc("DownloadTime", CounterTime);
         Configuration->Usage->SetMax(L"MaxDownloadTime", CounterTime);
       }
 #endif // #if 0
@@ -8037,68 +8037,68 @@ void TTerminal::CollectUsage()
   switch (GetSessionData()->GetFSProtocol())
   {
   case fsSCPonly:
-//      Configuration->Usage->Inc(L"OpenedSessionsSCP");
+//      Configuration->Usage->Inc("OpenedSessionsSCP");
     break;
 
   case fsSFTP:
   case fsSFTPonly:
-//      Configuration->Usage->Inc(L"OpenedSessionsSFTP");
+//      Configuration->Usage->Inc("OpenedSessionsSFTP");
     break;
 
   case fsFTP:
     if (GetSessionData()->GetFtps() == ftpsNone)
     {
-//        Configuration->Usage->Inc(L"OpenedSessionsFTP");
+//        Configuration->Usage->Inc("OpenedSessionsFTP");
     }
     else
     {
-//        Configuration->Usage->Inc(L"OpenedSessionsFTPS");
+//        Configuration->Usage->Inc("OpenedSessionsFTPS");
     }
     break;
 
   case fsWebDAV:
     if (GetSessionData()->GetFtps() == ftpsNone)
     {
-//        Configuration->Usage->Inc(L"OpenedSessionsWebDAV");
+//        Configuration->Usage->Inc("OpenedSessionsWebDAV");
     }
     else
     {
-//        Configuration->Usage->Inc(L"OpenedSessionsWebDAVS");
+//        Configuration->Usage->Inc("OpenedSessionsWebDAVS");
     }
     break;
 
   case fsS3:
-    // Configuration->Usage->Inc(L"OpenedSessionsS3");
+    // Configuration->Usage->Inc("OpenedSessionsS3");
     break;
   }
 
   if (GetConfiguration()->GetLogging() && GetConfiguration()->GetLogToFile())
   {
-//    Configuration->Usage->Inc(L"OpenedSessionsLogToFile2");
+//    Configuration->Usage->Inc("OpenedSessionsLogToFile2");
   }
 
   if (GetConfiguration()->GetLogActions())
   {
-//    Configuration->Usage->Inc(L"OpenedSessionsXmlLog");
+//    Configuration->Usage->Inc("OpenedSessionsXmlLog");
   }
 
   std::unique_ptr<TSessionData> FactoryDefaults(std::make_unique<TSessionData>(L""));
   if (!GetSessionData()->IsSame(FactoryDefaults.get(), true))
   {
-//    Configuration->Usage->Inc(L"OpenedSessionsAdvanced");
+//    Configuration->Usage->Inc("OpenedSessionsAdvanced");
   }
 
   if (GetSessionData()->GetProxyMethod() != ::pmNone)
   {
-//    Configuration->Usage->Inc(L"OpenedSessionsProxy");
+//    Configuration->Usage->Inc("OpenedSessionsProxy");
   }
   if (GetSessionData()->GetFtpProxyLogonType() > 0)
   {
-//    Configuration->Usage->Inc(L"OpenedSessionsFtpProxy");
+//    Configuration->Usage->Inc("OpenedSessionsFtpProxy");
   }
   if (IsEncryptingFiles())
   {
-    Configuration->Usage->Inc(L"OpenedSessionsEncrypted");
+    Configuration->Usage->Inc("OpenedSessionsEncrypted");
   }
 
   FCollectFileSystemUsage = true;
@@ -8121,7 +8121,7 @@ static UnicodeString FormatCertificateData(const UnicodeString Fingerprint, intp
 bool TTerminal::VerifyCertificate(
   const UnicodeString CertificateStorageKey, const UnicodeString SiteKey,
   const UnicodeString Fingerprint,
-  const UnicodeString CertificateSubject, int Failures)
+  const UnicodeString CertificateSubject, intptr_t Failures)
 {
   bool Result = false;
 
@@ -8173,7 +8173,7 @@ bool TTerminal::VerifyCertificate(
 }
 //---------------------------------------------------------------------------
 bool TTerminal::ConfirmCertificate(
-  TSessionInfo &SessionInfo, intptr_t Failures, const UnicodeString CertificateStorageKey, bool CanRemember)
+  TSessionInfo &SessionInfo, intptr_t Failures, UnicodeString CertificateStorageKey, bool CanRemember)
 {
   TClipboardHandler ClipboardHandler;
   ClipboardHandler.Text = SessionInfo.CertificateFingerprint;
@@ -8208,7 +8208,7 @@ bool TTerminal::ConfirmCertificate(
     break;
 
   case qaCancel:
-    // Configuration->Usage->Inc(L"HostNotVerified");
+    // Configuration->Usage->Inc("HostNotVerified");
     Result = false;
     break;
 
@@ -8241,35 +8241,33 @@ void TTerminal::CacheCertificate(const UnicodeString CertificateStorageKey,
   }
 }
 //---------------------------------------------------------------------------
-void TTerminal::CollectTlsUsage(const UnicodeString /*TlsVersionStr*/)
+void TTerminal::CollectTlsUsage(UnicodeString TlsVersionStr)
 {
   // see SSL_get_version() in OpenSSL ssl_lib.c
-#if 0
-  if (TlsVersionStr == L"TLSv1.2")
+  if (TlsVersionStr == "TLSv1.2")
   {
-    Configuration->Usage->Inc(L"OpenedSessionsTLS12");
+    Configuration->Usage->Inc("OpenedSessionsTLS12");
   }
-  else if (TlsVersionStr == L"TLSv1.1")
+  else if (TlsVersionStr == "TLSv1.1")
   {
-    Configuration->Usage->Inc(L"OpenedSessionsTLS11");
+    Configuration->Usage->Inc("OpenedSessionsTLS11");
   }
-  else if (TlsVersionStr == L"TLSv1")
+  else if (TlsVersionStr == "TLSv1")
   {
-    Configuration->Usage->Inc(L"OpenedSessionsTLS10");
+    Configuration->Usage->Inc("OpenedSessionsTLS10");
   }
-  else if (TlsVersionStr == L"SSLv3")
+  else if (TlsVersionStr == "SSLv3")
   {
-    Configuration->Usage->Inc(L"OpenedSessionsSSL30");
+    Configuration->Usage->Inc("OpenedSessionsSSL30");
   }
-  else if (TlsVersionStr == L"SSLv2")
+  else if (TlsVersionStr == "SSLv2")
   {
-    Configuration->Usage->Inc(L"OpenedSessionsSSL20");
+    Configuration->Usage->Inc("OpenedSessionsSSL20");
   }
   else
   {
     DebugFail();
   }
-#endif // #if 0
 }
 //---------------------------------------------------------------------------
 bool TTerminal::LoadTlsCertificate(X509 *&Certificate, EVP_PKEY *&PrivateKey)
