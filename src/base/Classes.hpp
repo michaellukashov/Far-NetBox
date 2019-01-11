@@ -368,8 +368,8 @@ private:
   void ExchangeItems(intptr_t Index1, intptr_t Index2);
 
 private:
-  TStringList(const TStringList &);
-  TStringList &operator=(const TStringList &);
+  TStringList(const TStringList &) = delete;
+  TStringList &operator=(const TStringList &) = delete;
 };
 
 /// TDateTime: number of days since 12/30/1899
