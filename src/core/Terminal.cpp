@@ -66,7 +66,7 @@ void FileOperationLoopCustom(TTerminal *Terminal,
     catch (Exception &E)
     {
       Terminal->FileOperationLoopQuery(
-        E, OperationProgress, Message, Flags & folAllowSkip, L"", HelpKeyword);
+        E, OperationProgress, Message, Flags & folAllowSkip, "", HelpKeyword);
       DoRepeat = true;
     }
   }
@@ -361,7 +361,7 @@ bool TTunnelUI::PromptUser(TSessionData *Data, TPromptKind Kind,
     {
       Instructions =
         FMTLOAD(TUNNEL_INSTRUCTION2, Data->GetHostName()) +
-        (AInstructions.IsEmpty() ? L"" : L"\n") +
+        (AInstructions.IsEmpty() ? "" : "\n") +
         AInstructions;
     }
 
@@ -478,7 +478,7 @@ void TCallbackGuard::Verify()
 
     if (FFatalError != nullptr)
     {
-      throw ESshFatal(FFatalError, L"");
+      throw ESshFatal(FFatalError, "");
     }
   }
 }
@@ -994,7 +994,7 @@ intptr_t TParallelOperation::GetNext(TTerminal *Terminal, UnicodeString &FileNam
 //---------------------------------------------------------------------------
 TTerminal::TTerminal(TObjectClassId Kind) noexcept :
   TSessionUI(Kind),
-  FSessionData(std::make_unique<TSessionData>(L"")),
+  FSessionData(std::make_unique<TSessionData>("")),
   FLog(nullptr),
   FActionLog(nullptr),
   FConfiguration(nullptr),
@@ -1264,7 +1264,7 @@ void TTerminal::ResetConnection()
     FDirectoryChangesCache.reset();
   }
 
-  FFiles->SetDirectory(L"");
+  FFiles->SetDirectory("");
   // note that we cannot clear contained files
   // as they can still be referenced in the GUI atm
 }
@@ -1301,14 +1301,14 @@ void TTerminal::Open()
   {
     FEncryptKey = HexToBytes(FSessionData->EncryptKey);
 
-    DoInformation(L"", true, 1);
+    DoInformation("", true, 1);
     try__finally
     {
       InternalTryOpen();
     },
     __finally
     {
-      DoInformation(L"", true, 0);
+      DoInformation("", true, 0);
     } end_try__finally
   }
   catch (EFatal &)
@@ -1319,7 +1319,7 @@ void TTerminal::Open()
   {
     LogEvent(FORMAT("Got error: \"%s\"", E.Message));
     // any exception while opening session is fatal
-    FatalError(&E, L"");
+    FatalError(&E, "");
   }
   FSessionData->SetNumberOfRetries(0);
 }
@@ -1526,11 +1526,10 @@ void TTerminal::InitFileSystem()
     },
     __finally
     {
-//      SAFE_DESTROY(FSecureShell);
       FSecureShell = nullptr;
       // This does not make it through, if terminal thread is abandonded,
       // see also TTerminalManager::DoConnectTerminal
-      DoInformation(L"", true, 0);
+      DoInformation("", true, 0);
     } end_try__finally
   }
 }
@@ -1541,7 +1540,7 @@ bool TTerminal::IsListenerFree(uintptr_t PortNumber) const
   bool Result = (Socket != INVALID_SOCKET);
   if (Result)
   {
-    SOCKADDR_IN Address;
+    SOCKADDR_IN Address{};
 
     nb::ClearStruct(Address);
     Address.sin_family = AF_INET;
@@ -1581,7 +1580,7 @@ void TTerminal::OpenTunnel()
 
   try
   {
-    FTunnelData = new TSessionData(L"");
+    FTunnelData = std::make_unique<TSessionData>("");
     FTunnelData->Assign(StoredSessions->GetDefaultSettings());
     FTunnelData->SetName(FMTLOAD(TUNNEL_SESSION_NAME, FSessionData->GetSessionName()));
     FTunnelData->SetTunnel(false);
@@ -1630,11 +1629,11 @@ void TTerminal::OpenTunnel()
     FTunnelData->SetAuthKIPassword(FSessionData->GetAuthKIPassword());
 
     // The Started argument is not used with Parent being set
-    FTunnelLog = new TSessionLog(this, TDateTime(), FTunnelData, FConfiguration);
-    FTunnelLog->SetParent(FLog.get(), L"Tunnel");
+    FTunnelLog = std::make_unique<TSessionLog>(this, TDateTime(), FTunnelData.get(), FConfiguration);
+    FTunnelLog->SetParent(FLog.get(), "Tunnel");
     FTunnelLog->ReflectSettings();
-    FTunnelUI = new TTunnelUI(this);
-    FTunnel = new TSecureShell(FTunnelUI, FTunnelData, FTunnelLog, FConfiguration);
+    FTunnelUI = std::make_unique<TTunnelUI>(this);
+    FTunnel = std::make_unique<TSecureShell>(FTunnelUI.get(), FTunnelData.get(), FTunnelLog.get(), FConfiguration);
 
     FTunnelOpening = true;
     try__finally
@@ -1646,7 +1645,7 @@ void TTerminal::OpenTunnel()
       FTunnelOpening = false;
     } end_try__finally
 
-    FTunnelThread = new TTunnelThread(FTunnel);
+    FTunnelThread = std::make_unique<TTunnelThread>(FTunnel.get());
     FTunnelThread->InitTunnelThread();
   }
   catch (...)
@@ -1658,12 +1657,12 @@ void TTerminal::OpenTunnel()
 //---------------------------------------------------------------------------
 void TTerminal::CloseTunnel()
 {
-  SAFE_DESTROY_EX(TTunnelThread, FTunnelThread);
+  FTunnelThread.reset();
   FTunnelError = FTunnel->GetLastTunnelError();
-  SAFE_DESTROY_EX(TSecureShell, FTunnel);
-  SAFE_DESTROY_EX(TTunnelUI, FTunnelUI);
-  SAFE_DESTROY_EX(TSessionLog, FTunnelLog);
-  SAFE_DESTROY(FTunnelData);
+  FTunnel.reset();
+  FTunnelUI.reset();
+  FTunnelLog.reset();
+  FTunnelData.reset();
 
   FTunnelLocalPortNumber = 0;
 }
@@ -1898,7 +1897,7 @@ uintptr_t TTerminal::QueryUser(const UnicodeString AQuery,
   TStrings *MoreMessages, uintptr_t Answers, const TQueryParams *Params,
   TQueryType QueryType)
 {
-  LogEvent(FORMAT("Asking user:\n%s (%s)", AQuery, UnicodeString(MoreMessages ? MoreMessages->GetCommaText() : L"")));
+  LogEvent(FORMAT("Asking user:\n%s (%s)", AQuery, UnicodeString(MoreMessages ? MoreMessages->GetCommaText() : "")));
   uintptr_t Answer = AbortAnswer(Answers);
   if (FOnQueryUser)
   {
@@ -2608,7 +2607,7 @@ UnicodeString TTerminal::TerminalGetUserName() const
 {
   // in future might also be implemented to detect username similar to GetUserGroups
   DebugAssert(FFileSystem != nullptr);
-  UnicodeString Result = FFileSystem ? FFileSystem->RemoteGetUserName() : L"";
+  UnicodeString Result = FFileSystem ? FFileSystem->RemoteGetUserName() : "";
   // Is empty also when stored username was used
   if (Result.IsEmpty())
   {
@@ -2832,7 +2831,7 @@ bool TTerminal::GetExceptionOnFail() const
 //---------------------------------------------------------------------------
 void TTerminal::FatalAbort()
 {
-  FatalError(nullptr, L"");
+  FatalError(nullptr, "");
 }
 //---------------------------------------------------------------------------
 void TTerminal::FatalError(Exception *E, const UnicodeString AMsg, const UnicodeString AHelpKeyword)
@@ -3164,7 +3163,7 @@ uintptr_t TTerminal::ConfirmFileOverwrite(
           LogEvent(FORMAT("Source file timestamp is [%s], destination timestamp is [%s], will%s overwrite",
             StandardTimestamp(ReducedSourceTimestamp),
             StandardTimestamp(ReducedDestTimestamp),
-            UnicodeString(Result == qaYes ? L"" : L" not")));
+            UnicodeString(Result == qaYes ? "" : " not")));
         }
       }
       break;
@@ -4389,7 +4388,7 @@ void TTerminal::CustomCommandOnFiles(const UnicodeString ACommand,
 
     TCustomCommandData Data(this);
     UnicodeString Cmd =
-      TRemoteCustomCommand(Data, RemoteGetCurrentDirectory(), L"", FileList).
+      TRemoteCustomCommand(Data, RemoteGetCurrentDirectory(), "", FileList).
       Complete(ACommand, true);
     if (!DoOnCustomCommand(Cmd))
     {
@@ -7589,7 +7588,7 @@ bool TTerminal::CopyToLocal(
   DebugAssert(AFilesToCopy != nullptr);
   TOnceDoneOperation OnceDoneOperation = odoIdle;
 
-  FDestFileName = L"";
+  FDestFileName = "";
   FMultipleDestinationFiles = false;
 
   BeginTransaction();
@@ -8082,7 +8081,7 @@ void TTerminal::CollectUsage()
 //    Configuration->Usage->Inc("OpenedSessionsXmlLog");
   }
 
-  std::unique_ptr<TSessionData> FactoryDefaults(std::make_unique<TSessionData>(L""));
+  std::unique_ptr<TSessionData> FactoryDefaults(std::make_unique<TSessionData>(""));
   if (!GetSessionData()->IsSame(FactoryDefaults.get(), true))
   {
 //    Configuration->Usage->Inc("OpenedSessionsAdvanced");
@@ -8134,7 +8133,7 @@ bool TTerminal::VerifyCertificate(
   {
     if (Storage->ValueExists(SiteKey))
     {
-      UnicodeString CachedCertificateData = Storage->ReadString(SiteKey, L"");
+      UnicodeString CachedCertificateData = Storage->ReadString(SiteKey, "");
       if (CertificateData == CachedCertificateData)
       {
         LogEvent(FORMAT("Certificate for \"%s\" matches cached fingerprint and failures", CertificateSubject));
@@ -8298,10 +8297,10 @@ bool TTerminal::LoadTlsCertificate(X509 *&Certificate, EVP_PKEY *&PrivateKey)
           Information(LoadStr(CERTIFICATE_DECODE_ERROR_INFO), false);
         }
 
-        Passphrase = L"";
+        Passphrase = "";
         if (PromptUser(
               GetSessionData(), pkPassphrase,
-              LoadStr(CERTIFICATE_PASSPHRASE_TITLE), L"",
+              LoadStr(CERTIFICATE_PASSPHRASE_TITLE), "",
               LoadStr(CERTIFICATE_PASSPHRASE_PROMPT), false, 0, Passphrase))
         {
           Retry = true;

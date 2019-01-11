@@ -313,11 +313,11 @@ private:
   RawByteString FRememberedPassword;
   TPromptKind FRememberedPasswordKind{};
   RawByteString FRememberedTunnelPassword;
-  TTunnelThread *FTunnelThread{nullptr};
-  TSecureShell *FTunnel{nullptr};
-  TSessionData *FTunnelData{nullptr};
-  TSessionLog *FTunnelLog{nullptr};
-  TTunnelUI *FTunnelUI{nullptr};
+  std::unique_ptr<TTunnelThread> FTunnelThread;
+  std::unique_ptr<TSecureShell> FTunnel;
+  std::unique_ptr<TSessionData> FTunnelData;
+  std::unique_ptr<TSessionLog> FTunnelLog;
+  std::unique_ptr<TTunnelUI> FTunnelUI;
   intptr_t FTunnelLocalPortNumber{0};
   UnicodeString FTunnelError;
   TQueryUserEvent FOnQueryUser{nullptr};
