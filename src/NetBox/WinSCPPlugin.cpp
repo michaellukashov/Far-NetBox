@@ -550,17 +550,14 @@ public:
   static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TFarMessageData); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TFarMessageData) || TObject::is(Kind); }
 public:
-  TFarMessageData() :
-    TObject(OBJECT_CLASS_TFarMessageData),
-    Params(nullptr),
-    ButtonCount(0)
+  TFarMessageData() noexcept : TObject(OBJECT_CLASS_TFarMessageData)
   {
     nb::ClearArray(Buttons);
   }
 
-  const TMessageParams *Params;
-  uint32_t Buttons[15 + 1];
-  uintptr_t ButtonCount;
+  const TMessageParams *Params{nullptr};
+  uint32_t Buttons[15 + 1]{};
+  uintptr_t ButtonCount{0};
 };
 
 void TWinSCPPlugin::MessageClick(void *Token, uintptr_t Result, bool &Close)
@@ -713,7 +710,7 @@ uintptr_t TWinSCPPlugin::MoreMessageDialog(const UnicodeString Str,
     }
   }
 
-#define MORE_BUTTON_ID -2
+//  constexpr int MORE_BUTTON_ID = -2;
   TFarMessageParams FarParams;
 
   if (NeverAskAgainCheck)
