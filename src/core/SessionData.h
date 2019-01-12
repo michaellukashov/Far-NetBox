@@ -669,6 +669,7 @@ public:
   __property TAutoSwitch FtpDeleteFromCwd = { read = FFtpDeleteFromCwd, write = SetFtpDeleteFromCwd };
   __property bool SslSessionReuse = { read = FSslSessionReuse, write = SetSslSessionReuse };
   __property UnicodeString TlsCertificateFile = { read = FTlsCertificateFile, write = SetTlsCertificateFile };
+  RWProperty<UnicodeString> TlsCertificateFile{nb::bind(&TSessionData::GetTlsCertificateFile, this), nb::bind(&TSessionData::SetTlsCertificateFile, this)};
   __property TDSTMode DSTMode = { read = FDSTMode, write = SetDSTMode };
   __property bool DeleteToRecycleBin = { read = FDeleteToRecycleBin, write = SetDeleteToRecycleBin };
   __property bool OverwrittenToRecycleBin = { read = FOverwrittenToRecycleBin, write = SetOverwrittenToRecycleBin };
