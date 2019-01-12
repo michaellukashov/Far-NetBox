@@ -85,7 +85,7 @@ TCustomScpExplorerForm * __fastcall CreateScpExplorer()
 //---------------------------------------------------------------------------
 UnicodeString __fastcall SshVersionString()
 {
-  return FORMAT(L"WinSCP-release-%s", (Configuration->Version));
+  return FORMAT("WinSCP-release-%s", Configuration->Version);
 }
 //---------------------------------------------------------------------------
 UnicodeString __fastcall AppNameString()

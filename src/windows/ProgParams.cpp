@@ -40,7 +40,7 @@ void TProgramParams::Init(const UnicodeString CmdLine)
   }
 }
 //---------------------------------------------------------------------------
-UnicodeString TProgramParams::FormatSwitch(const UnicodeString Switch)
+UnicodeString TProgramParams::FormatSwitch(UnicodeString Switch)
 {
-  return FORMAT(L"/%s", Switch);
+  return FORMAT("/%s", Switch);
 }

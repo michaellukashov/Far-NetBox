@@ -394,12 +394,12 @@ void __fastcall TQueueController::FillQueueViewItem(TListItem * Item,
             Values[3] = FormatDateTimeSpan(Configuration->TimeFormat, ProgressData->TimeElapsed());
           }
 
-          Values[4] = FORMAT(L"%s/s", (FormatBytes(ProgressData->CPS())));
+          Values[4] = FORMAT("%s/s", FormatBytes(ProgressData->CPS()));
         }
 
         if (ProgressStr.IsEmpty())
         {
-          ProgressStr = FORMAT(L"%d%%", (ProgressData->OverallProgress()));
+          ProgressStr = FORMAT("%d%%", ProgressData->OverallProgress());
         }
       }
       else if (ProgressData->Operation == foCalculateSize)
@@ -429,7 +429,7 @@ void __fastcall TQueueController::FillQueueViewItem(TListItem * Item,
 
         if (ProgressStr.IsEmpty())
         {
-          ProgressStr = FORMAT(L"%d%%", (ProgressData->TransferProgress()));
+          ProgressStr = FORMAT("%d%%", ProgressData->TransferProgress());
         }
       }
     }

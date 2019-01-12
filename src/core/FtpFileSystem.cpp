@@ -2206,8 +2206,8 @@ void TFTPFileSystem::AutoDetectTimeDifference(TRemoteFileList *FileList)
         else if (UtcModification == TDateTime())
         {
           FTerminal->LogEvent(
-            FORMAT(L"Not using file %s to detect timezone difference as its timestamp was not resolved",
-              (File->FullFileName)));
+            FORMAT("Not using file %s to detect timezone difference as its timestamp was not resolved",
+              File->FullFileName));
         }
         else
         {

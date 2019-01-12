@@ -138,18 +138,18 @@ void OpenSessionInPutty(const UnicodeString PuttyPath,
         AddToList(PuttyParams, EscapePuttyCommandParam(SessionData->HostName()), L" ");
         if (!SessionData->UserName().IsEmpty())
         {
-          AddToList(PuttyParams, FORMAT(L"-l %s", EscapePuttyCommandParam(SessionData->UserName())), L" ");
+          AddToList(PuttyParams, FORMAT("-l %s", EscapePuttyCommandParam(SessionData->UserName())), L" ");
         }
         if ((SessionData->FSProtocol() != fsFTP) && (SessionData->PortNumber() != SshPortNumber))
         {
-          AddToList(PuttyParams, FORMAT(L"-P %d", SessionData->PortNumber()), L" ");
+          AddToList(PuttyParams, FORMAT("-P %d", SessionData->PortNumber()), L" ");
         }
 
         if (!Telnet)
         {
           if (!SessionData->PublicKeyFile().IsEmpty())
           {
-            AddToList(PuttyParams, FORMAT(L"-i \"%s\"", SessionData->PublicKeyFile()), L" ");
+            AddToList(PuttyParams, FORMAT("-i \"%s\"", SessionData->PublicKeyFile()), L" ");
           }
           AddToList(PuttyParams, (SessionData->TryAgent() ? L"-agent" : L"-noagent"), L" ");
           if (SessionData->TryAgent())
@@ -164,7 +164,7 @@ void OpenSessionInPutty(const UnicodeString PuttyPath,
             ((SessionData->SshProt == ssh1only || SessionData->SshProt == ssh1deprecated) ? L"-1" : L"-2"), L" ");
           if (!SessionData->LogicalHostName().IsEmpty())
           {
-            AddToList(PuttyParams, FORMAT(L"-loghost \"%s\"", SessionData->LogicalHostName()), L" ");
+            AddToList(PuttyParams, FORMAT("-loghost \"%s\"", SessionData->LogicalHostName()), L" ");
           }
         }
 
@@ -249,7 +249,7 @@ void OpenSessionInPutty(const UnicodeString PuttyPath,
         intptr_t P = Params2.LowerCase().Pos(LoadSwitch + L" ");
         if ((P == 0) || ((P > 1) && (Params2[P - 1] != L' ')))
         {
-          AddToList(PuttyParams, FORMAT(L"%s %s", LoadSwitch, EscapePuttyCommandParam(SessionName)), L" ");
+          AddToList(PuttyParams, FORMAT("%s %s", LoadSwitch, EscapePuttyCommandParam(SessionName)), L" ");
         }
       }
     }
@@ -257,7 +257,7 @@ void OpenSessionInPutty(const UnicodeString PuttyPath,
     if (!Password.IsEmpty() && !RemoteCustomCommand.IsPasswordCommand(Params))
     {
       Password = NormalizeString(Password); // if password is empty, we should quote it always
-      AddToList(PuttyParams, FORMAT(L"-pw %s", EscapePuttyCommandParam(Password)), L" ");
+      AddToList(PuttyParams, FORMAT("-pw %s", EscapePuttyCommandParam(Password)), L" ");
     }
 
     AddToList(PuttyParams, Params2, L" ");

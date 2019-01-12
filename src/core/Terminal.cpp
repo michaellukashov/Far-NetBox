@@ -8366,7 +8366,7 @@ typename TTerminal::TEncryptedFileNames::const_iterator TTerminal::GetEncryptedF
       if (FEncryptedFileNames.find(APath) == FEncryptedFileNames.end())
       {
         FEncryptedFileNames[APath] = base::UnixExtractFileName(APath);
-        LogEvent(2, FORMAT(L"Name of file '%s' assumed not to be encrypted", APath));
+        LogEvent(2, FORMAT("Name of file '%s' assumed not to be encrypted", APath));
       }
     }
 
@@ -8441,7 +8441,7 @@ UnicodeString TTerminal::DecryptFileName(const UnicodeString Path)
     {
       if (Encrypted && (NotCached || (Iter->second != FileNameEncrypted)))
       {
-        LogEvent(2, FORMAT(L"Name of file '%s' decrypted from '%s'", (Result, FileNameEncrypted)));
+        LogEvent(2, FORMAT("Name of file '%s' decrypted from '%s'", Result, FileNameEncrypted));
       }
       // This may overwrite another variant of encryption
       FEncryptedFileNames[Result] = FileNameEncrypted;

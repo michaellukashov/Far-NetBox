@@ -12,7 +12,7 @@ public:
   explicit TProgramParams() noexcept;
   explicit TProgramParams(const UnicodeString CmdLine) noexcept;
 
-  static UnicodeString FormatSwitch(const UnicodeString Switch);
+  static UnicodeString FormatSwitch(UnicodeString Switch);
 
 private:
   void Init(const UnicodeString CmdLine);

@@ -55,7 +55,7 @@ void err_out(LPCTSTR err_msg)
 // identified by "sys_err".
 void err_out_sys(LPCTSTR base_err_msg, LONG sys_err)
 {
-  LastPathError = FORMAT(L"%s %s", (base_err_msg, SysErrorMessage(sys_err)));
+  LastPathError = FORMAT("%s %s", base_err_msg, SysErrorMessage(sys_err));
 }
 //---------------------------------------------------------------------------
 // Works as "strcmp" but the comparison is not case sensitive.
@@ -338,7 +338,7 @@ static void RegisterProtocol(TRegistry * Registry,
       Registry->WriteInteger(L"BrowserFlags", 0x08);
       if (Registry->OpenKey(L"DefaultIcon", true))
       {
-        Registry->WriteString(L"", FORMAT(L"\"%s\",0", (Application->ExeName)));
+        Registry->WriteString(L"", FORMAT("\"%s\",0", Application->ExeName));
         Registry->CloseKey();
       }
       else
@@ -381,7 +381,7 @@ static void RegisterAsUrlHandler(HKEY RootKey,
       Registry->OpenKey(L"open", true) &&
       Registry->OpenKey(L"command", true))
   {
-    Registry->WriteString(L"", FORMAT(L"\"%s\" %s \"%%1\"", (Application->ExeName, TProgramParams::FormatSwitch(UNSAFE_SWITCH))));
+    Registry->WriteString(L"", FORMAT("\"%s\" %s \"%%1\"", Application->ExeName, TProgramParams::FormatSwitch(UNSAFE_SWITCH)));
     Registry->CloseKey();
   }
   else
@@ -694,7 +694,7 @@ void LaunchAdvancedAssociationUI()
     if (SUCCEEDED(Result))
     {
       // This does not work anymore since April 2018 Update, it now has the same effect as mere "pageDefaultProgram".
-      UnicodeString Page = FORMAT(L"pageDefaultProgram\\pageAdvancedSettings?pszAppName=%s", (AppNameString()));
+      UnicodeString Page = FORMAT("pageDefaultProgram\\pageAdvancedSettings?pszAppName=%s", AppNameString());
       OpenControlPanel->Open(L"Microsoft.DefaultPrograms", Page.c_str(), nullptr);
       OpenControlPanel->Release();
     }
