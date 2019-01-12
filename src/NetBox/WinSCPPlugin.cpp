@@ -585,7 +585,7 @@ void TWinSCPPlugin::MessageClick(void *Token, uintptr_t Result, bool &Close)
 }
 
 uint32_t TWinSCPPlugin::MoreMessageDialog(const UnicodeString Str,
-  TStrings *MoreMessages, TQueryType Type, uintptr_t Answers,
+  TStrings *MoreMessages, TQueryType Type, uint32_t Answers,
   const TMessageParams *Params)
 {
   uint32_t Result;

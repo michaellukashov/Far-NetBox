@@ -187,7 +187,7 @@ protected:
     UnicodeString &FileMask, bool Move);
   bool RenameFileDialog(TRemoteFile *AFile, UnicodeString &NewName);
   uint32_t MoreMessageDialog(const UnicodeString Str, TStrings *MoreMessages,
-    TQueryType Type, uintptr_t Answers, const TMessageParams *AParams = nullptr);
+    TQueryType Type, uint32_t Answers, const TMessageParams *AParams = nullptr);
   bool PasswordDialog(TSessionData *SessionData,
     TPromptKind Kind, const UnicodeString Name, const UnicodeString Instructions, TStrings *Prompts,
     TStrings *Results, bool StoredCredentialsTried);
@@ -246,8 +246,8 @@ private:
   void TerminalInformation(TTerminal *Terminal,
     const UnicodeString AStr, bool Status, intptr_t Phase);
   void TerminalQueryUser(TObject *Sender,
-    const UnicodeString AQuery, TStrings *MoreMessages, uintptr_t Answers,
-    const TQueryParams *AParams, uintptr_t &Answer, TQueryType Type, void *Arg);
+    const UnicodeString AQuery, TStrings *MoreMessages, uint32_t Answers,
+    const TQueryParams *AParams, uint32_t &Answer, TQueryType Type, void *Arg);
   void TerminalPromptUser(TTerminal *Terminal,
     TPromptKind Kind, const UnicodeString AName, const UnicodeString AInstructions,
     TStrings *Prompts, TStrings *Results, bool &AResult,

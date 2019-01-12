@@ -3231,7 +3231,7 @@ bool TWinSCPFileSystem::TerminalCreateLocalDirectory(const UnicodeString ALocalD
 }
 
 uint32_t TWinSCPFileSystem::MoreMessageDialog(const UnicodeString Str,
-  TStrings *MoreMessages, TQueryType Type, uintptr_t Answers, const TMessageParams *AParams)
+  TStrings *MoreMessages, TQueryType Type, uint32_t Answers, const TMessageParams *AParams)
 {
   TMessageParams Params(0);
 
@@ -3251,8 +3251,8 @@ uint32_t TWinSCPFileSystem::MoreMessageDialog(const UnicodeString Str,
 }
 
 void TWinSCPFileSystem::TerminalQueryUser(TObject * /*Sender*/,
-  const UnicodeString AQuery, TStrings *MoreMessages, uintptr_t Answers,
-  const TQueryParams *AParams, uintptr_t &Answer, TQueryType Type, void * /*Arg*/)
+  const UnicodeString AQuery, TStrings *MoreMessages, uint32_t Answers,
+  const TQueryParams *AParams, uint32_t &Answer, TQueryType Type, void * /*Arg*/)
 {
   TMessageParams Params(0);
   UnicodeString Query = AQuery;
