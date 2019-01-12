@@ -3083,7 +3083,7 @@ int GetWindowsBuild()
 UnicodeString WindowsVersion()
 {
   OSVERSIONINFO OSVersionInfo = GetWindowsVersion();
-  UnicodeString Result = FORMAT(L"%d.%d.%d", int(OSVersionInfo.dwMajorVersion), int(OSVersionInfo.dwMinorVersion), int(OSVersionInfo.dwBuildNumber));
+  UnicodeString Result = FORMAT("%d.%d.%d", int(OSVersionInfo.dwMajorVersion), int(OSVersionInfo.dwMinorVersion), int(OSVersionInfo.dwBuildNumber));
   return Result;
 }
 //---------------------------------------------------------------------------
