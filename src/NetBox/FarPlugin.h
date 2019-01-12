@@ -414,13 +414,14 @@ protected:
 };
 
 NB_DEFINE_CLASS_ID(TFarPanelItem);
-class TFarPanelItem : public TCustomFarPanelItem
+class TFarPanelItem final : public TCustomFarPanelItem
 {
   NB_DISABLE_COPY(TFarPanelItem)
 public:
   static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TFarPanelItem); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TFarPanelItem) || TCustomFarPanelItem::is(Kind); }
 public:
+  TFarPanelItem() = delete;
   explicit TFarPanelItem(PluginPanelItem *APanelItem, bool OwnsItem) noexcept;
   virtual ~TFarPanelItem() noexcept;
 
