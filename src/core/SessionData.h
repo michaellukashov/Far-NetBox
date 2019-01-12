@@ -19,7 +19,7 @@ enum TCipher { cipWarn, cip3DES, cipBlowfish, cipAES, cipDES, cipArcfour, cipCha
 enum TFSProtocol { fsSCPonly = 0, fsSFTP = 1, fsSFTPonly = 2, fsFTP = 5, fsWebDAV = 6, fsS3 = 7, };
 #define FSPROTOCOL_COUNT (fsS3+1)
 extern const wchar_t *ProxyMethodNames;
-enum TProxyMethod { pmNone, pmSocks4, pmSocks5, pmHTTP, pmTelnet, pmCmd, pmSystem = 100, };
+enum TProxyMethod { pmNone, pmSocks4, pmSocks5, pmHTTP, pmTelnet, pmCmd, pmSystemOld, pmSystem = 100, };
 enum TSshProt { ssh1only, ssh1deprecated, ssh2deprecated, ssh2only, };
 enum TKex { kexWarn, kexDHGroup1, kexDHGroup14, kexDHGEx, kexRSA, kexECDH, };
 #define KEX_COUNT (kexECDH + 1)

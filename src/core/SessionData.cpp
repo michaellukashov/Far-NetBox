@@ -80,8 +80,7 @@ static TDateTime SecToDateTime(intptr_t Sec)
 }
 //--- TSessionData ----------------------------------------------------
 TSessionData::TSessionData(const UnicodeString AName) noexcept :
-  TNamedObject(OBJECT_CLASS_TSessionData, AName),
-  FIEProxyConfig(nullptr)
+  TNamedObject(OBJECT_CLASS_TSessionData, AName)
 {
   Default();
   FModified = true;
@@ -3803,8 +3802,10 @@ void TSessionData::SetSshSimple(bool Value)
   SET_SESSION_PROPERTY(SshSimple);
 }
 //---------------------------------------------------------------------
-void TSessionData::SetProxyMethod(TProxyMethod Value)
+void TSessionData::SetProxyMethod(TProxyMethod value)
 {
+  TProxyMethod Value = value == pmSystemOld ? pmSystem : value;
+  nb::used(Value);
   SET_SESSION_PROPERTY(ProxyMethod);
 }
 //---------------------------------------------------------------------
