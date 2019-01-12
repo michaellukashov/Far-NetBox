@@ -134,7 +134,7 @@ UnicodeString AnsiToString(const char *S, size_t Len)
 UnicodeString MakeValidFileName(UnicodeString AFileName)
 {
   // Note similar list in LocalInvalidChars
-  UnicodeString IllegalChars(L":;,=+<>|\"[] \\/?*");
+  UnicodeString IllegalChars(":;,=+<>|\"[] \\/?*");
   for (intptr_t Index = 0; Index < IllegalChars.Length(); ++Index)
   {
     AFileName = ReplaceChar(AFileName, IllegalChars[Index + 1], L'-');
@@ -331,7 +331,7 @@ UnicodeString MainInstructions(const UnicodeString S)
 //---------------------------------------------------------------------------
 bool HasParagraphs(const UnicodeString S)
 {
-  return (S.Pos(L"\n\n") > 0);
+  return (S.Pos("\n\n") > 0);
 }
 //---------------------------------------------------------------------------
 UnicodeString MainInstructionsFirstParagraph(const UnicodeString S)
@@ -339,7 +339,7 @@ UnicodeString MainInstructionsFirstParagraph(const UnicodeString S)
   // WORKAROUND, we consider it bad practice, the highlighting should better
   // be localized (but maybe we change our mind later)
   UnicodeString Result;
-  const intptr_t Pos = S.Pos(L"\n\n");
+  const intptr_t Pos = S.Pos("\n\n");
   // we would not be calling this on single paragraph message
   if (DebugAlwaysTrue(Pos > 0))
   {
@@ -560,7 +560,7 @@ UnicodeString StripPathQuotes(const UnicodeString APath)
 UnicodeString AddQuotes(const UnicodeString AStr)
 {
   UnicodeString Result = AStr;
-  if (Result.Pos(L" ") > 0)
+  if (Result.Pos(" ") > 0)
   {
     Result = L"\"" + Result + L"\"";
   }
@@ -643,7 +643,7 @@ UnicodeString ValidLocalFileName(
 
     if (IsReservedName(Result))
     {
-      intptr_t P = Result.Pos(L".");
+      intptr_t P = Result.Pos(".");
       if (P == 0)
       {
         P = Result.Length() + 1;
@@ -663,7 +663,7 @@ void SplitCommand(const UnicodeString ACommand, UnicodeString &Program,
   if (!Cmd.IsEmpty() && (Cmd[1] == L'\"'))
   {
     Cmd.Delete(1, 1);
-    const intptr_t P = Cmd.Pos(L'"');
+    const intptr_t P = Cmd.Pos('"');
     if (P > 0)
     {
       Program = Cmd.SubString(1, P - 1).Trim();
@@ -676,7 +676,7 @@ void SplitCommand(const UnicodeString ACommand, UnicodeString &Program,
   }
   else
   {
-    const intptr_t P = Cmd.Pos(L" ");
+    const intptr_t P = Cmd.Pos(" ");
     if (P > 0)
     {
       Program = Cmd.SubString(1, P).Trim();
@@ -902,7 +902,7 @@ bool IsReservedName(const UnicodeString AFileName)
 {
   UnicodeString FileName = AFileName;
 
-  const intptr_t P = FileName.Pos(L".");
+  const intptr_t P = FileName.Pos(".");
   const intptr_t Len = (P > 0) ? P - 1 : FileName.Length();
   if ((Len == 3) || (Len == 4))
   {
@@ -2801,7 +2801,7 @@ UnicodeString AppendUrlParams(const UnicodeString AURL, const UnicodeString Para
   const wchar_t FragmentSeparator = L'#';
   UnicodeString Result = ::CutToChar(URL, FragmentSeparator, false);
 
-  if (Result.Pos(L"?") == 0)
+  if (Result.Pos("?") == 0)
   {
     Result += L"?";
   }
@@ -2820,7 +2820,7 @@ UnicodeString AppendUrlParams(const UnicodeString AURL, const UnicodeString Para
 UnicodeString ExtractFileNameFromUrl(const UnicodeString Url)
 {
   UnicodeString Result = Url;
-  intptr_t P = Result.Pos(L"?");
+  intptr_t P = Result.Pos("?");
   if (P > 0)
   {
     Result.SetLength(P - 1);
@@ -3179,7 +3179,7 @@ UnicodeString TrimVersion(const UnicodeString Version)
 {
   UnicodeString Result = Version;
 
-  while ((Result.Pos(L".") != Result.LastDelimiter(L".")) &&
+  while ((Result.Pos(".") != Result.LastDelimiter(L".")) &&
     (Result.SubString(Result.Length() - 1, 2) == L".0"))
   {
     Result.SetLength(Result.Length() - 2);
@@ -3724,7 +3724,7 @@ UnicodeString AssemblyString(TAssemblyLanguage Language, UnicodeString S)
   switch (Language)
   {
     case alCSharp:
-      if (S.Pos(L"\\") > 0)
+      if (S.Pos("\\") > 0)
       {
         S = FORMAT(L"@\"%s\"", (ReplaceStr(S, L"\"", L"\"\"")));
       }
@@ -4296,7 +4296,7 @@ UnicodeString AbsolutePath(const UnicodeString Base, const UnicodeString APath)
     Result = base::UnixIncludeTrailingBackslash(
       base::UnixIncludeTrailingBackslash(Base) + APath);
     intptr_t P;
-    while ((P = Result.Pos(L"/../")) > 0)
+    while ((P = Result.Pos("/../")) > 0)
     {
       // special case, "/../" => "/"
       if (P == 1)
@@ -4310,7 +4310,7 @@ UnicodeString AbsolutePath(const UnicodeString Base, const UnicodeString APath)
         Result.Delete(P2, P - P2 + 3);
       }
     }
-    while ((P = Result.Pos(L"/./")) > 0)
+    while ((P = Result.Pos("/./")) > 0)
     {
       Result.Delete(P, 2);
     }
@@ -4608,11 +4608,7 @@ UnicodeString FormatMultiFilesToOneConfirmation(const UnicodeString ATarget, boo
   return FMTLOAD(MULTI_FILES_TO_ONE, Name, Dir, Path);
 }
 
-} // namespace base
-
 //---------------------------------------------------------------------------
-
-namespace base {
 
 UnicodeString FormatBytes(int64_t Bytes, bool UseOrders)
 {

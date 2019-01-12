@@ -185,7 +185,7 @@ NB_CORE_EXPORT bool IsRealFile(const UnicodeString AFileName);
 NB_CORE_EXPORT UnicodeString GetOSInfo();
 NB_CORE_EXPORT UnicodeString GetEnvironmentInfo();
 //---------------------------------------------------------------------------
-struct TSearchRecSmart : public TSearchRec
+struct NB_CORE_EXPORT TSearchRecSmart : public TSearchRec
 {
 public:
   TSearchRecSmart() noexcept;
@@ -203,17 +203,16 @@ typedef void (__closure* TProcessLocalFileEvent)
   (const UnicodeString & FileName, const TSearchRecSmart & Rec, void * Param);
 #endif // #if 0
 using TProcessLocalFileEvent = nb::FastDelegate3<void,
-  UnicodeString /*FileName*/, const TSearchRecSmart & /*Rec*/,
-  void * /*Param*/>;
+  UnicodeString /*FileName*/, const TSearchRecSmart & /*Rec*/, void * /*Param*/>;
 
 NB_CORE_EXPORT bool FileSearchRec(const UnicodeString FileName, TSearchRec & Rec);
 NB_CORE_EXPORT void CopySearchRec(const TSearchRec & Source, TSearchRec & Dest);
-struct TSearchRecChecked : public TSearchRecSmart
+struct NB_CORE_EXPORT TSearchRecChecked : public TSearchRecSmart
 {
   UnicodeString Path;
   bool Opened{false};
 };
-struct TSearchRecOwned : public TSearchRecChecked
+struct NB_CORE_EXPORT TSearchRecOwned : public TSearchRecChecked
 {
   ~TSearchRecOwned() noexcept;
   void Close();
@@ -340,17 +339,16 @@ template<class T>
 class TValueRestorer // : public TObject
 {
 public:
+  TValueRestorer() = delete;
   inline explicit TValueRestorer(T &Target, const T &Value) :
     FTarget(Target),
-    FValue(Value),
-    FArmed(true)
+    FValue(Value)
   {
   }
 
   inline explicit TValueRestorer(T &Target) :
     FTarget(Target),
-    FValue(Target),
-    FArmed(true)
+    FValue(Target)
   {
   }
 
@@ -371,12 +369,13 @@ public:
 protected:
   T &FTarget;
   T FValue;
-  bool FArmed;
+  bool FArmed{true};
 };
 //---------------------------------------------------------------------------
 class TAutoNestingCounter : public TValueRestorer<intptr_t>
 {
 public:
+  TAutoNestingCounter() = delete;
   inline explicit TAutoNestingCounter(intptr_t &Target) :
     TValueRestorer<intptr_t>(Target)
   {
@@ -384,7 +383,6 @@ public:
     ++Target;
   }
 
-  TAutoNestingCounter() = default;
   inline ~TAutoNestingCounter()
   {
     DebugAssert(!FArmed || (FTarget == (FValue + 1)));
@@ -454,7 +452,7 @@ private:
   TSecondToFirst FSecondToFirst;
 };
 //---------------------------------------------------------------------------
-typedef rde::vector<UnicodeString> TUnicodeStringVector;
+using TUnicodeStringVector = rde::vector<UnicodeString>;
 //---------------------------------------------------------------------------
 enum TModificationFmt
 {
@@ -508,12 +506,11 @@ namespace base {
 NB_CORE_EXPORT UnicodeString GetEnvVariable(const UnicodeString AEnvVarName);
 NB_CORE_EXPORT UnicodeString FormatBytes(int64_t Bytes, bool UseOrders = true);
 NB_CORE_EXPORT UnicodeString GetEnvVariable(const UnicodeString AEnvVarName);
-
 } // namespace base
 //---------------------------------------------------------------------------
-#define LOCAL_INVALID_CHARS "/\\:*?\"<>|"
-#define PASSWORD_MASK "***"
-#define sLineBreak L"\n"
+constexpr char * LOCAL_INVALID_CHARS = "/\\:*?\"<>|";
+constexpr char * PASSWORD_MASK = "***";
+constexpr char * sLineBreak = "\n";
 
 // Order of the values also define order of the buttons/answers on the prompts
 // MessageDlg relies on these to be <= 0x0000FFFF
