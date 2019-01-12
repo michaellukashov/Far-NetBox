@@ -1,4 +1,4 @@
-
+//---------------------------------------------------------------------------
 #pragma once
 //---------------------------------------------------------------------------
 #include <Classes.hpp>
@@ -91,6 +91,7 @@ struct NB_CORE_EXPORT TQueryButtonAlias : public TObject
 typedef void (__closure *TQueryParamsTimerEvent)(uint32_t &Result);
 #endif // #if 0
 using TQueryParamsTimerEvent = nb::FastDelegate1<void, uint32_t & /*Result*/>;
+__removed enum TQueryType { qtConfirmation, qtWarning, qtError, qtInformation };
 
 struct NB_CORE_EXPORT TQueryParams : public TObject
 {
@@ -129,11 +130,7 @@ enum TPromptKind
   pkNewPassword,
 };
 
-enum TPromptUserParam
-{
-  pupEcho = 0x01,
-  pupRemember = 0x02,
-};
+enum TPromptUserParam { pupEcho = 0x01, pupRemember = 0x02, };
 
 NB_CORE_EXPORT bool IsAuthenticationPrompt(TPromptKind Kind);
 NB_CORE_EXPORT bool IsPasswordOrPassphrasePrompt(TPromptKind Kind, TStrings *Prompts);
@@ -143,7 +140,7 @@ class TRemoteFile;
 //---------------------------------------------------------------------------
 #if 0
 typedef void (__closure *TFileFoundEvent)
-(TTerminal *Terminal, const UnicodeString FileName, const TRemoteFile *File,
+  (TTerminal *Terminal, const UnicodeString FileName, const TRemoteFile *File,
   bool &Cancel);
 #endif // #if 0
 using TFileFoundEvent = nb::FastDelegate4<void,
