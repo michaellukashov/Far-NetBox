@@ -95,6 +95,7 @@ __removed enum TQueryType { qtConfirmation, qtWarning, qtError, qtInformation };
 
 struct NB_CORE_EXPORT TQueryParams : public TObject
 {
+//  TQueryParams() noexcept = delete;
   explicit TQueryParams(uintptr_t AParams = 0, const UnicodeString AHelpKeyword = HELP_NONE) noexcept;
   explicit TQueryParams(const TQueryParams &Source) noexcept;
 
@@ -158,6 +159,7 @@ class NB_CORE_EXPORT TOperationVisualizer
 {
   NB_DISABLE_COPY(TOperationVisualizer)
 public:
+  TOperationVisualizer() = delete;
   explicit TOperationVisualizer(bool UseBusyCursor = true) noexcept;
   ~TOperationVisualizer() noexcept;
 
