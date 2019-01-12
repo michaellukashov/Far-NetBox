@@ -1212,7 +1212,7 @@ void TScript::ChecksumProc(TScriptProcParams * Parameters)
     if ((FileList->Count != 1) ||
         DebugNotNull(dynamic_cast<TRemoteFile *>(FileList->Objects[0]))->IsDirectory)
     {
-      throw Exception(FMTLOAD(NOT_FILE_ERROR, (FileList->Strings[0])));
+      throw Exception(FMTLOAD(NOT_FILE_ERROR, FileList->Strings[0]));
     }
 
     FTerminal->CalculateFilesChecksum(Alg, FileList, Checksums.get(), NULL);
