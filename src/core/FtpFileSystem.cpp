@@ -20,6 +20,7 @@
 #include "WinSCPSecurity.h"
 #include <StrUtils.hpp>
 #include <DateUtils.hpp>
+#include <SessionData.h>
 #include <openssl/x509_vfy.h>
 //---------------------------------------------------------------------------
 __removed #pragma package(smart_init)
@@ -188,6 +189,27 @@ public:
   using value_type = message_t;
 };
 //---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
+#if 0
+struct TFileTransferData
+{
+  TFileTransferData()
+  {
+    Params = 0;
+    AutoResume = false;
+    OverwriteResult = -1;
+    CopyParam = NULL;
+  }
+
+  UnicodeString FileName;
+  int Params;
+  bool AutoResume;
+  int OverwriteResult;
+  const TCopyParamType * CopyParam;
+  TDateTime Modification;
+};
+#endif // #if 0
+//---------------------------------------------------------------------------
 const UnicodeString CertificateStorageKey("FtpsCertificates");
 static const wchar_t FtpsCertificateStorageKey[] = L"FtpsCertificates";
 const UnicodeString SiteCommand("SITE");
@@ -227,6 +249,8 @@ private:
 TFTPFileSystem::TFTPFileSystem(TTerminal *ATerminal) noexcept :
   TCustomFileSystem(OBJECT_CLASS_TFTPFileSystem, ATerminal),
   FFileZillaIntf(nullptr),
+  __removed FQueueCriticalSection(new TCriticalSection),
+  __removed FTransferStatusCriticalSection(new TCriticalSection),
   FQueue(std::make_unique<TMessageQueue>()),
   FQueueEvent(::CreateEvent(nullptr, true, false, nullptr)),
   FFileSystemInfoValid(false),
@@ -283,7 +307,7 @@ void TFTPFileSystem::Init(void *)
   ResetReply();
 
   FListAll = FTerminal->GetSessionData()->GetFtpListAll();
-  FFileSystemInfo.ProtocolBaseName = L"FTP";
+  FFileSystemInfo.ProtocolBaseName = "FTP";
   FFileSystemInfo.ProtocolName = FFileSystemInfo.ProtocolBaseName;
   FTimeoutStatus = LoadStr(IDS_ERRORMSG_TIMEOUT);
   FDisconnectStatus = LoadStr(IDS_STATUSMSG_DISCONNECTED);
@@ -299,12 +323,12 @@ void TFTPFileSystem::Init(void *)
 
   FChecksumAlgs = std::make_unique<TStringList>();
   FChecksumCommands = std::make_unique<TStringList>();
-  RegisterChecksumAlgCommand(Sha1ChecksumAlg, L"XSHA1"); // e.g. Cerberos FTP
-  RegisterChecksumAlgCommand(Sha256ChecksumAlg, L"XSHA256"); // e.g. Cerberos FTP
-  RegisterChecksumAlgCommand(Sha512ChecksumAlg, L"XSHA512"); // e.g. Cerberos FTP
-  RegisterChecksumAlgCommand(Md5ChecksumAlg, L"XMD5"); // e.g. Cerberos FTP
-  RegisterChecksumAlgCommand(Md5ChecksumAlg, L"MD5"); // e.g. Apache FTP
-  RegisterChecksumAlgCommand(Crc32ChecksumAlg, L"XCRC"); // e.g. Cerberos FTP
+  RegisterChecksumAlgCommand(Sha1ChecksumAlg, "XSHA1"); // e.g. Cerberos FTP
+  RegisterChecksumAlgCommand(Sha256ChecksumAlg, "XSHA256"); // e.g. Cerberos FTP
+  RegisterChecksumAlgCommand(Sha512ChecksumAlg, "XSHA512"); // e.g. Cerberos FTP
+  RegisterChecksumAlgCommand(Md5ChecksumAlg, "XMD5"); // e.g. Cerberos FTP
+  RegisterChecksumAlgCommand(Md5ChecksumAlg, "MD5"); // e.g. Apache FTP
+  RegisterChecksumAlgCommand(Crc32ChecksumAlg, "XCRC"); // e.g. Cerberos FTP
 }
 //---------------------------------------------------------------------------
 TFTPFileSystem::~TFTPFileSystem() noexcept
@@ -320,14 +344,33 @@ TFTPFileSystem::~TFTPFileSystem() noexcept
 
   SAFE_DESTROY_EX(CFileZillaTools, FFileZillaIntf);
 
-//  SAFE_DESTROY(FQueue);
+#if 0
+  delete FFileZillaIntf;
+  FFileZillaIntf = NULL;
+
+  delete FQueue;
+  FQueue = NULL;
+#endif // #if 0
+
   SAFE_CLOSE_HANDLE(FQueueEvent);
 
-//  SAFE_DESTROY(FLastResponse);
-//  SAFE_DESTROY(FLastErrorResponse);
-//  SAFE_DESTROY(FLastError);
-//  SAFE_DESTROY(FFeatures);
-//  SAFE_DESTROY_EX(TFTPServerCapabilities, FServerCapabilities);
+#if 0
+  delete FQueueCriticalSection;
+  FQueueCriticalSection = NULL;
+  delete FTransferStatusCriticalSection;
+  FTransferStatusCriticalSection = NULL;
+
+  delete FLastResponse;
+  FLastResponse = NULL;
+  delete FLastErrorResponse;
+  FLastErrorResponse = NULL;
+  delete FLastError;
+  FLastError = NULL;
+  delete FFeatures;
+  FFeatures = NULL;
+  delete FServerCapabilities;
+  FServerCapabilities = NULL;
+#endif // #if 0
 
   ResetCaches();
 }
@@ -475,7 +518,7 @@ void TFTPFileSystem::Open()
         PromptedForCredentials = true;
       }
 
-      if (!FTerminal->PromptUser(Data, pkUserName, LoadStr(USERNAME_TITLE), L"",
+      if (!FTerminal->PromptUser(Data, pkUserName, LoadStr(USERNAME_TITLE), "",
           LoadStr(USERNAME_PROMPT2), true, 0, UserName))
       {
         FTerminal->FatalError(nullptr, LoadStr(AUTHENTICATION_FAILED));
@@ -494,7 +537,7 @@ void TFTPFileSystem::Open()
       FTerminal->LogEvent("Password prompt (last login attempt failed)");
 
       Password.Clear();
-      if (!FTerminal->PromptUser(Data, pkPassword, LoadStr(PASSWORD_TITLE), L"",
+      if (!FTerminal->PromptUser(Data, pkPassword, LoadStr(PASSWORD_TITLE), "",
           LoadStr(PASSWORD_PROMPT), false, 0, Password))
       {
         FTerminal->FatalError(nullptr, LoadStr(AUTHENTICATION_FAILED));
@@ -591,7 +634,6 @@ bool TFTPFileSystem::GetActive() const
 //---------------------------------------------------------------------------
 void TFTPFileSystem::CollectUsage()
 {
-#if 0
   switch (FTerminal->SessionData->Ftps)
   {
   case ftpsNone:
@@ -599,15 +641,15 @@ void TFTPFileSystem::CollectUsage()
     break;
 
   case ftpsImplicit:
-    FTerminal->Configuration->Usage->Inc(L"OpenedSessionsFTPSImplicit");
+    FTerminal->Configuration->Usage->Inc("OpenedSessionsFTPSImplicit");
     break;
 
   case ftpsExplicitSsl:
-    FTerminal->Configuration->Usage->Inc(L"OpenedSessionsFTPSExplicitSSL");
+    FTerminal->Configuration->Usage->Inc("OpenedSessionsFTPSExplicitSSL");
     break;
 
   case ftpsExplicitTls:
-    FTerminal->Configuration->Usage->Inc(L"OpenedSessionsFTPSExplicitTLS");
+    FTerminal->Configuration->Usage->Inc("OpenedSessionsFTPSExplicitTLS");
     break;
 
   default:
@@ -615,41 +657,41 @@ void TFTPFileSystem::CollectUsage()
     break;
   }
 
-  if (!FTerminal->SessionData->TlsCertificateFile.IsEmpty())
+  if (!FTerminal->SessionData->TlsCertificateFile().IsEmpty())
   {
-    FTerminal->Configuration->Usage->Inc(L"OpenedSessionsFTPSCertificate");
+    FTerminal->Configuration->Usage->Inc("OpenedSessionsFTPSCertificate");
   }
 
   if (FFileZillaIntf->UsingMlsd())
   {
-    FTerminal->Configuration->Usage->Inc(L"OpenedSessionsFTPMLSD");
+    FTerminal->Configuration->Usage->Inc("OpenedSessionsFTPMLSD");
   }
   else
   {
-    FTerminal->Configuration->Usage->Inc(L"OpenedSessionsFTPLIST");
+    FTerminal->Configuration->Usage->Inc("OpenedSessionsFTPLIST");
   }
 
   if (FFileZillaIntf->UsingUtf8())
   {
-    FTerminal->Configuration->Usage->Inc(L"OpenedSessionsFTPUTF8");
+    FTerminal->Configuration->Usage->Inc("OpenedSessionsFTPUTF8");
   }
   else
   {
-    FTerminal->Configuration->Usage->Inc(L"OpenedSessionsFTPNonUTF8");
+    FTerminal->Configuration->Usage->Inc("OpenedSessionsFTPNonUTF8");
   }
-  if (!GetCurrentDirectory().IsEmpty() && (GetCurrentDirectory()[1] != L'/'))
+  if (!RemoteGetCurrentDirectory().IsEmpty() && (RemoteGetCurrentDirectory()[1] != L'/'))
   {
-    if (::IsUnixStyleWindowsPath(GetCurrentDirectory()))
+    if (base::IsUnixStyleWindowsPath(RemoteGetCurrentDirectory()))
     {
-      FTerminal->Configuration->Usage->Inc(L"OpenedSessionsFTPWindowsPath");
+      FTerminal->Configuration->Usage->Inc("OpenedSessionsFTPWindowsPath");
     }
-    else if ((GetCurrentDirectory().Length() >= 3) && IsLetter(GetCurrentDirectory()[1]) && (GetCurrentDirectory()[2] == L':') && (CurrentDirectory[3] == L'/'))
+    else if ((RemoteGetCurrentDirectory().Length() >= 3) && IsLetter(RemoteGetCurrentDirectory()[1]) && (RemoteGetCurrentDirectory()[2] == L':') && (RemoteGetCurrentDirectory()[3] == L'/'))
     {
-      FTerminal->Configuration->Usage->Inc(L"OpenedSessionsFTPRealWindowsPath");
+      FTerminal->Configuration->Usage->Inc("OpenedSessionsFTPRealWindowsPath");
     }
     else
     {
-      FTerminal->Configuration->Usage->Inc(L"OpenedSessionsFTPOtherPath");
+      FTerminal->Configuration->Usage->Inc("OpenedSessionsFTPOtherPath");
     }
   }
 
@@ -665,107 +707,107 @@ void TFTPFileSystem::CollectUsage()
   // SYST
   // 215 UNIX emulated by FileZilla
   // (Welcome message is configurable)
-  if (ContainsText(FSystem, L"FileZilla"))
+  if (ContainsText(FSystem, "FileZilla"))
   {
-    FTerminal->Configuration->Usage->Inc(L"OpenedSessionsFTPFileZilla");
+    FTerminal->Configuration->Usage->Inc("OpenedSessionsFTPFileZilla");
   }
   // 220 ProFTPD 1.3.4a Server (Debian) [::ffff:192.168.179.137]
   // SYST
   // 215 UNIX Type: L8
-  else if (ContainsText(FWelcomeMessage, L"ProFTPD"))
+  else if (ContainsText(FWelcomeMessage, "ProFTPD"))
   {
-    FTerminal->Configuration->Usage->Inc(L"OpenedSessionsFTPProFTPD");
+    FTerminal->Configuration->Usage->Inc("OpenedSessionsFTPProFTPD");
   }
   // 220 Microsoft FTP Service
   // SYST
   // 215 Windows_NT
-  else if (ContainsText(FWelcomeMessage, L"Microsoft FTP Service") ||
-    ContainsText(FSystem, L"Windows_NT"))
+  else if (ContainsText(FWelcomeMessage, "Microsoft FTP Service") ||
+           ContainsText(FSystem, "Windows_NT"))
   {
-    FTerminal->Configuration->Usage->Inc(L"OpenedSessionsFTPIIS");
+    FTerminal->Configuration->Usage->Inc("OpenedSessionsFTPIIS");
   }
   // 220 (vsFTPd 3.0.2)
   // SYST
   // 215 UNIX Type: L8
   // (Welcome message is configurable)
-  else if (ContainsText(FWelcomeMessage, L"vsFTPd"))
+  else if (ContainsText(FWelcomeMessage, "vsFTPd"))
   {
-    FTerminal->Configuration->Usage->Inc(L"OpenedSessionsFTPvsFTPd");
+    FTerminal->Configuration->Usage->Inc("OpenedSessionsFTPvsFTPd");
   }
   // 220 Welcome to Pure-FTPd.
   // ...
   // SYST
   // 215 UNIX Type: L8
-  else if (ContainsText(FWelcomeMessage, L"Pure-FTPd"))
+  else if (ContainsText(FWelcomeMessage, "Pure-FTPd"))
   {
-    FTerminal->Configuration->Usage->Inc(L"OpenedSessionsFTPPureFTPd");
+    FTerminal->Configuration->Usage->Inc("OpenedSessionsFTPPureFTPd");
   }
   // 220 Titan FTP Server 10.47.1892 Ready.
   // ...
   // SYST
   // 215 UNIX Type: L8
-  else if (ContainsText(FWelcomeMessage, L"Titan FTP Server"))
+  else if (ContainsText(FWelcomeMessage, "Titan FTP Server"))
   {
-    FTerminal->Configuration->Usage->Inc(L"OpenedSessionsFTPTitan");
+    FTerminal->Configuration->Usage->Inc("OpenedSessionsFTPTitan");
   }
   // 220-Cerberus FTP Server - Home Edition
   // 220-This is the UNLICENSED Home Edition and may be used for home, personal use only
   // 220-Welcome to Cerberus FTP Server
   // 220 Created by Cerberus, LLC
-  else if (ContainsText(FWelcomeMessage, L"Cerberus FTP Server"))
+  else if (ContainsText(FWelcomeMessage, "Cerberus FTP Server"))
   {
-    FTerminal->Configuration->Usage->Inc(L"OpenedSessionsFTPCerberus");
+    FTerminal->Configuration->Usage->Inc("OpenedSessionsFTPCerberus");
   }
   // 220 Serv-U FTP Server v15.1 ready...
-  else if (ContainsText(FWelcomeMessage, L"Serv-U FTP Server"))
+  else if (ContainsText(FWelcomeMessage, "Serv-U FTP Server"))
   {
-    FTerminal->Configuration->Usage->Inc(L"OpenedSessionsFTPServU");
+    FTerminal->Configuration->Usage->Inc("OpenedSessionsFTPServU");
   }
-  else if (ContainsText(FWelcomeMessage, L"WS_FTP"))
+  else if (ContainsText(FWelcomeMessage, "WS_FTP"))
   {
-    FTerminal->Configuration->Usage->Inc(L"OpenedSessionsFTPWSFTP");
+    FTerminal->Configuration->Usage->Inc("OpenedSessionsFTPWSFTP");
   }
   // 220 Welcome to the most popular FTP hosting service! Save on hardware, software, hosting and admin. Share files/folders with read-write permission. Visit http://www.drivehq.com/ftp/
   // ...
   // SYST
   // 215 UNIX emulated by DriveHQ FTP Server.
-  else if (ContainsText(FSystem, L"DriveHQ"))
+  else if (ContainsText(FSystem, "DriveHQ"))
   {
-    FTerminal->Configuration->Usage->Inc(L"OpenedSessionsFTPDriveHQ");
+    FTerminal->Configuration->Usage->Inc("OpenedSessionsFTPDriveHQ");
   }
   // 220 GlobalSCAPE EFT Server (v. 6.0) * UNREGISTERED COPY *
   // ...
   // SYST
   // 215 UNIX Type: L8
-  else if (ContainsText(FWelcomeMessage, L"GlobalSCAPE"))
+  else if (ContainsText(FWelcomeMessage, "GlobalSCAPE"))
   {
-    FTerminal->Configuration->Usage->Inc(L"OpenedSessionsFTPGlobalScape");
+    FTerminal->Configuration->Usage->Inc("OpenedSessionsFTPGlobalScape");
   }
   // 220-<custom message>
   // 220 CompleteFTP v 8.1.3
   // ...
   // SYST
   // UNIX Type: L8
-  else if (ContainsText(FWelcomeMessage, L"CompleteFTP"))
+  else if (ContainsText(FWelcomeMessage, "CompleteFTP"))
   {
-    FTerminal->Configuration->Usage->Inc(L"OpenedSessionsFTPComplete");
+    FTerminal->Configuration->Usage->Inc("OpenedSessionsFTPComplete");
   }
   // 220 Core FTP Server Version 1.2, build 567, 64-bit, installed 8 days ago Unregistered
   // ...
   // SYST
   // 215 UNIX Type: L8
-  else if (ContainsText(FWelcomeMessage, L"Core FTP Server"))
+  else if (ContainsText(FWelcomeMessage, "Core FTP Server"))
   {
-    FTerminal->Configuration->Usage->Inc(L"OpenedSessionsFTPCore");
+    FTerminal->Configuration->Usage->Inc("OpenedSessionsFTPCore");
   }
   // 220 Service ready for new user.
   // ..
   // SYST
   // 215 UNIX Type: Apache FtpServer
   // (e.g. brickftp.com)
-  else if (ContainsText(FSystem, L"Apache FtpServer"))
+  else if (ContainsText(FSystem, "Apache FtpServer"))
   {
-    FTerminal->Configuration->Usage->Inc(L"OpenedSessionsFTPApache");
+    FTerminal->Configuration->Usage->Inc("OpenedSessionsFTPApache");
   }
   // 220 pos1 FTP server (GNU inetutils 1.3b) ready.
   // ...
@@ -774,24 +816,24 @@ void TFTPFileSystem::CollectUsage()
   // Displaying "(GNU inetutils 1.3b)" in a welcome message can be turned off (-q switch):
   // 220 pos1 FTP server ready.
   // (the same for "Version: Linux 2.6.15.7-ELinOS-314pm3" in SYST response)
-  else if (ContainsText(FWelcomeMessage, L"GNU inetutils"))
+  else if (ContainsText(FWelcomeMessage, "GNU inetutils"))
   {
-    FTerminal->Configuration->Usage->Inc(L"OpenedSessionsFTPInetutils");
+    FTerminal->Configuration->Usage->Inc("OpenedSessionsFTPInetutils");
   }
   // 220 Syncplify.me Server! FTP(S) Service Ready
   // Message is configurable
-  else if (ContainsText(FWelcomeMessage, L"Syncplify"))
+  else if (ContainsText(FWelcomeMessage, "Syncplify"))
   {
-    FTerminal->Configuration->Usage->Inc(L"OpenedSessionsFTPSyncplify");
+    FTerminal->Configuration->Usage->Inc("OpenedSessionsFTPSyncplify");
   }
   // 220-Idea FTP Server v0.80 (xxx.home.pl) [xxx.xxx.xxx.xxx]
   // 220 Ready
   // ...
   // SYST
   // UNIX Type: L8
-  else if (ContainsText(FWelcomeMessage, L"Idea FTP Server"))
+  else if (ContainsText(FWelcomeMessage, "Idea FTP Server"))
   {
-    FTerminal->Configuration->Usage->Inc(L"OpenedSessionsFTPIdea");
+    FTerminal->Configuration->Usage->Inc("OpenedSessionsFTPIdea");
   }
   // 220-FTPD1 IBM FTP CS V2R1 at name.test.com, 13:49:38 on 2016-01-28.
   // ...
@@ -799,7 +841,7 @@ void TFTPFileSystem::CollectUsage()
   // 215 MVS is the operating system of this server. FTP Server is running on z/OS.
   else if (FMVS)
   {
-    FTerminal->Configuration->Usage->Inc(L"OpenedSessionsFTPMVS");
+    FTerminal->Configuration->Usage->Inc("OpenedSessionsFTPMVS");
   }
   // 220 xxx.xxx.xxx (xxx.xxx.xxx) FTP-OpenVMS FTPD V5.3-3 (c) 1998 Process Software Corporation
   // ...
@@ -807,13 +849,12 @@ void TFTPFileSystem::CollectUsage()
   // 215 VMS system type. VMS V5.5-2.
   else if (FVMS)
   {
-    FTerminal->Configuration->Usage->Inc(L"OpenedSessionsFTPVMS");
+    FTerminal->Configuration->Usage->Inc("OpenedSessionsFTPVMS");
   }
   else
   {
-    FTerminal->Configuration->Usage->Inc(L"OpenedSessionsFTPOther");
+    FTerminal->Configuration->Usage->Inc("OpenedSessionsFTPOther");
   }
-#endif // #if 0
 }
 //---------------------------------------------------------------------------
 void TFTPFileSystem::DummyReadDirectory(const UnicodeString ADirectory)
@@ -2651,14 +2692,16 @@ intptr_t TFTPFileSystem::GetOptionVal(intptr_t OptionID) const
 {
   TSessionData *Data = FTerminal->GetSessionData();
   intptr_t Result;
+  TProxyMethod method;
 
   switch (OptionID)
   {
   case OPTION_PROXYTYPE:
-    switch (Data->GetActualProxyMethod())
+    method = Data->GetActualProxyMethod();
+    switch (method)
     {
     case pmNone:
-      Result = 0; // PROXYTYPE_NOPROXY;
+      Result = 0; // PROXYTYPE_NOPROXY
       break;
 
     case pmSocks4:
@@ -3893,7 +3936,7 @@ bool TFTPFileSystem::VerifyCertificateHostName(const TFtpsCertificateData &Data)
     {
       UnicodeString Entry = CutToChar(SubjectAltName, L',', true);
       UnicodeString EntryName = CutToChar(Entry, L':', true);
-      if (::SameText(EntryName, L"DNS"))
+      if (::SameText(EntryName, "DNS"))
       {
         NoMask = false;
         Result = VerifyNameMask(HostName, Entry);
@@ -4084,7 +4127,7 @@ bool TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
         else
         {
           FTerminal->LogEvent(
-            FORMAT("Certificate failed to verify against Windows certificate store: %s", DefaultStr(WindowsCertificateError, L"no details")));
+            FORMAT("Certificate failed to verify against Windows certificate store: %s", DefaultStr(WindowsCertificateError, "no details")));
         }
       }
 
@@ -4150,7 +4193,7 @@ bool TFTPFileSystem::HandleAsynchRequestNeedPass(
     if (FCertificate != nullptr)
     {
       FTerminal->LogEvent("Server asked for password, but we are using certificate, and no password was specified upfront, using fake password");
-      Password = L"USINGCERT";
+      Password = "USINGCERT";
       RequestResult = TFileZillaIntf::REPLY_OK;
     }
     else
@@ -4159,7 +4202,7 @@ bool TFTPFileSystem::HandleAsynchRequestNeedPass(
       {
         RequestResult = TFileZillaIntf::REPLY_OK;
       }
-      else if (FTerminal->PromptUser(FTerminal->GetSessionData(), pkPassword, LoadStr(PASSWORD_TITLE), L"",
+      else if (FTerminal->PromptUser(FTerminal->GetSessionData(), pkPassword, LoadStr(PASSWORD_TITLE), "",
           LoadStr(PASSWORD_PROMPT), false, 0, Password))
       {
         RequestResult = TFileZillaIntf::REPLY_OK;
