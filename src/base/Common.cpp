@@ -2574,9 +2574,9 @@ void DeleteFileChecked(const UnicodeString AFileName)
   }
 }
 //---------------------------------------------------------------------------
-uintptr_t CancelAnswer(uintptr_t Answers)
+uint32_t CancelAnswer(uint32_t Answers)
 {
-  uintptr_t Result;
+  uint32_t Result;
   if ((Answers & qaCancel) != 0)
   {
     Result = qaCancel;
@@ -2601,9 +2601,9 @@ uintptr_t CancelAnswer(uintptr_t Answers)
   return Result;
 }
 //---------------------------------------------------------------------------
-uintptr_t AbortAnswer(uintptr_t Answers)
+uint32_t AbortAnswer(uint32_t Answers)
 {
-  uintptr_t Result;
+  uint32_t Result;
   if (FLAGSET(Answers, qaAbort))
   {
     Result = qaAbort;
@@ -2615,9 +2615,9 @@ uintptr_t AbortAnswer(uintptr_t Answers)
   return Result;
 }
 //---------------------------------------------------------------------------
-uintptr_t ContinueAnswer(uintptr_t Answers)
+uint32_t ContinueAnswer(uint32_t Answers)
 {
-  uintptr_t Result;
+  uint32_t Result;
   if (FLAGSET(Answers, qaSkip))
   {
     Result = qaSkip;

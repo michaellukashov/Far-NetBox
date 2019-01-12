@@ -741,7 +741,7 @@ public:
     TStrings *History, bool PathInput,
     TInputDialogInitializeEvent OnInitialize, bool Echo) = 0;
   virtual uint32_t MoreMessageDialog(const UnicodeString AMessage,
-    TStrings *MoreMessages, TQueryType Type, uintptr_t Answers,
+    TStrings *MoreMessages, TQueryType Type, uint32_t Answers,
     const TMessageParams *Params) = 0;
 };
 

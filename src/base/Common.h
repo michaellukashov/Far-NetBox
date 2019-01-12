@@ -124,9 +124,9 @@ NB_CORE_EXPORT UnicodeString ExtractFileNameFromUrl(const UnicodeString Url);
 NB_CORE_EXPORT bool RecursiveDeleteFile(const UnicodeString AFileName, bool ToRecycleBin);
 NB_CORE_EXPORT intptr_t RecursiveDeleteFileChecked(const UnicodeString AFileName, bool ToRecycleBin);
 NB_CORE_EXPORT void DeleteFileChecked(const UnicodeString AFileName);
-NB_CORE_EXPORT uintptr_t CancelAnswer(uintptr_t Answers);
-NB_CORE_EXPORT uintptr_t AbortAnswer(uintptr_t Answers);
-NB_CORE_EXPORT uintptr_t ContinueAnswer(uintptr_t Answers);
+NB_CORE_EXPORT uint32_t CancelAnswer(uint32_t Answers);
+NB_CORE_EXPORT uint32_t AbortAnswer(uint32_t Answers);
+NB_CORE_EXPORT uint32_t ContinueAnswer(uint32_t Answers);
 NB_CORE_EXPORT UnicodeString LoadStr(intptr_t Ident, uintptr_t MaxLength = 0);
 NB_CORE_EXPORT UnicodeString LoadStrFrom(HINSTANCE Module, intptr_t Ident);
 NB_CORE_EXPORT UnicodeString LoadStrPart(intptr_t Ident, intptr_t Part);
@@ -517,31 +517,31 @@ NB_CORE_EXPORT UnicodeString GetEnvVariable(const UnicodeString AEnvVarName);
 
 // Order of the values also define order of the buttons/answers on the prompts
 // MessageDlg relies on these to be <= 0x0000FFFF
-const uint32_t qaYes      = 0x00000001;
+constexpr uint32_t qaYes      = 0x00000001;
 // MessageDlg relies that answer do not conflict with mrCancel (=0x2)
-const uint32_t qaNo       = 0x00000004;
-const uint32_t qaOK       = 0x00000008;
-const uint32_t qaCancel   = 0x00000010;
-const uint32_t qaYesToAll = 0x00000020;
-const uint32_t qaNoToAll  = 0x00000040;
-const uint32_t qaAbort    = 0x00000080;
-const uint32_t qaRetry    = 0x00000100;
-const uint32_t qaIgnore   = 0x00000200;
-const uint32_t qaSkip     = 0x00000400;
-const uint32_t qaAll      = 0x00000800;
-const uint32_t qaHelp     = 0x00001000;
-const uint32_t qaReport   = 0x00002000;
+constexpr uint32_t qaNo       = 0x00000004;
+constexpr uint32_t qaOK       = 0x00000008;
+constexpr uint32_t qaCancel   = 0x00000010;
+constexpr uint32_t qaYesToAll = 0x00000020;
+constexpr uint32_t qaNoToAll  = 0x00000040;
+constexpr uint32_t qaAbort    = 0x00000080;
+constexpr uint32_t qaRetry    = 0x00000100;
+constexpr uint32_t qaIgnore   = 0x00000200;
+constexpr uint32_t qaSkip     = 0x00000400;
+constexpr uint32_t qaAll      = 0x00000800;
+constexpr uint32_t qaHelp     = 0x00001000;
+constexpr uint32_t qaReport   = 0x00002000;
 
-const uint32_t qaFirst = qaYes;
-const uint32_t qaLast  = qaReport;
+constexpr uint32_t qaFirst = qaYes;
+constexpr uint32_t qaLast  = qaReport;
 
-const uint32_t qaNeverAskAgain = 0x00010000;
+constexpr uint32_t qaNeverAskAgain = 0x00010000;
 
-const intptr_t qpFatalAbort           = 0x01;
-const intptr_t qpNeverAskAgainCheck   = 0x02;
-const intptr_t qpAllowContinueOnError = 0x04;
-const intptr_t qpIgnoreAbort          = 0x08;
-const intptr_t qpWaitInBatch          = 0x10;
+constexpr intptr_t qpFatalAbort           = 0x01;
+constexpr intptr_t qpNeverAskAgainCheck   = 0x02;
+constexpr intptr_t qpAllowContinueOnError = 0x04;
+constexpr intptr_t qpIgnoreAbort          = 0x08;
+constexpr intptr_t qpWaitInBatch          = 0x10;
 
 inline void ThrowExtException() { throw ExtException(static_cast<Exception *>(nullptr), UnicodeString(L"")); }
 NB_CORE_EXPORT bool CompareFileName(const UnicodeString APath1, const UnicodeString APath2);
