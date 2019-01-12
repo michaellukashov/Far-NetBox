@@ -47,11 +47,11 @@ public:
 public:
   intptr_t GetCount() const;
   intptr_t GetCountIncludingHidden() const;
-  virtual void Notify(void *Ptr, TListNotification Action) override;
+  void Notify(void *Ptr, TListNotification Action) override;
   void SetCount(intptr_t Value);
 protected:
   intptr_t FHiddenCount{0};
-  bool FAutoSort{false};
+  bool FAutoSort{true};
   bool FControlledAdd{false};
   void Recount();
 public:
@@ -71,5 +71,5 @@ public:
   __property int CountIncludingHidden = { read = GetCountIncludingHidden };
 };
 //---------------------------------------------------------------------------
-int NamedObjectSortProc(void *Item1, void *Item2);
+intptr_t NamedObjectSortProc(const void *Item1, const void *Item2);
 //---------------------------------------------------------------------------
