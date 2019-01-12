@@ -7874,8 +7874,7 @@ void TTerminal::Sink(
     Action.Cancel();
     if (CanRecurseToDirectory(AFile))
     {
-      FileOperationLoopCustom(this, OperationProgress, Flags,
-        FMTLOAD(NOT_DIRECTORY_ERROR, DestFullName), "",
+      FileOperationLoopCustom(this, OperationProgress, Flags, FMTLOAD(NOT_DIRECTORY_ERROR, DestFullName), "",
       [&]()
       {
         int Attrs = ::FileGetAttrFix(ApiPath(DestFullName));
@@ -7886,8 +7885,7 @@ void TTerminal::Sink(
       });
       __removed FILE_OPERATION_LOOP_END(FMTLOAD(NOT_DIRECTORY_ERROR, (DestFullName)));
 
-      FileOperationLoopCustom(this, OperationProgress, Flags,
-        FMTLOAD(CREATE_DIR_ERROR, DestFullName), "",
+      FileOperationLoopCustom(this, OperationProgress, Flags, FMTLOAD(CREATE_DIR_ERROR, DestFullName), "",
       [&]()
       {
         THROWOSIFFALSE(::SysUtulsForceDirectories(ApiPath(DestFullName)));
@@ -7944,8 +7942,7 @@ void TTerminal::Sink(
     OperationProgress->SetTransferSize(TransferSize);
 
     intptr_t Attrs = 0;
-    FileOperationLoopCustom(this, OperationProgress, Flags,
-      FMTLOAD(NOT_FILE_ERROR, DestFullName), "",
+    FileOperationLoopCustom(this, OperationProgress, Flags, FMTLOAD(NOT_FILE_ERROR, DestFullName), "",
     [&]()
     {
       Attrs = ::FileGetAttrFix(ApiPath(DestFullName));
