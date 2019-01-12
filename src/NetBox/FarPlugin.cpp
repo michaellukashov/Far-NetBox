@@ -2704,8 +2704,7 @@ UnicodeString TFarPanelInfo::GetCurrDirectory() const
 }
 
 TFarMenuItems::TFarMenuItems() noexcept :
-  TStringList(OBJECT_CLASS_TFarMenuItems),
-  FItemFocused(NPOS)
+  TStringList(OBJECT_CLASS_TFarMenuItems)
 {
 }
 
@@ -2754,7 +2753,7 @@ intptr_t TFarMenuItems::Add(const UnicodeString Text, bool Visible)
 
 void TFarMenuItems::AddSeparator(bool Visible)
 {
-  Add(L"");
+  Add("");
   SetFlag(GetCount() - 1, MIF_SEPARATOR, true);
   if (!Visible)
   {
@@ -2896,7 +2895,7 @@ UnicodeString TGlobalFunctions::GetMsg(intptr_t Id) const
 UnicodeString TGlobalFunctions::GetCurrDirectory() const
 {
   UnicodeString Path(NB_MAX_PATH, 0);
-  int Length;
+  intptr_t Length;
   if (FarPlugin)
   {
     Length = FarPlugin->GetFarStandardFunctions().GetCurrentDirectory(nb::ToDWord(Path.Length()), ToWChar(Path)) - 1;
