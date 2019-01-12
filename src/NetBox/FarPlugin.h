@@ -19,7 +19,7 @@ class TFarMessageDialog;
 class TFarEditorInfo;
 class TFarPluginGuard;
 
-constexpr const int MaxMessageWidth = 64;
+constexpr int MaxMessageWidth = 64;
 
 enum TFarShiftStatus
 {
@@ -535,7 +535,7 @@ protected:
   void SetObj(intptr_t Index, TObject *AObject) override;
 
 private:
-  intptr_t FItemFocused{0};
+  intptr_t FItemFocused{NPOS};
 };
 
 class TFarEditorInfo : public TObject
