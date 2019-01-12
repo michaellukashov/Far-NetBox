@@ -584,11 +584,11 @@ void TWinSCPPlugin::MessageClick(void *Token, uintptr_t Result, bool &Close)
   }
 }
 
-uintptr_t TWinSCPPlugin::MoreMessageDialog(const UnicodeString Str,
+uint32_t TWinSCPPlugin::MoreMessageDialog(const UnicodeString Str,
   TStrings *MoreMessages, TQueryType Type, uintptr_t Answers,
   const TMessageParams *Params)
 {
-  uintptr_t Result;
+  uint32_t Result;
   UnicodeString DialogStr = Str;
   std::unique_ptr<TStrings> ButtonLabels(std::make_unique<TStringList>());
   uintptr_t Flags = 0;
@@ -754,13 +754,13 @@ uintptr_t TWinSCPPlugin::MoreMessageDialog(const UnicodeString Str,
   {
     Result = FarParams.TimerAnswer;
   }
-  else if (Result == static_cast<uintptr_t>(-1))
+  else if (Result == nb::ToUInt32(-1))
   {
     Result = CancelAnswer(Answers);
   }
   else
   {
-    DebugAssert(Result != nb::ToUIntPtr(-1) && Result < Data.ButtonCount);
+    DebugAssert(Result != nb::ToUInt32(-1) && Result < Data.ButtonCount);
     Result = Data.Buttons[Result];
   }
 

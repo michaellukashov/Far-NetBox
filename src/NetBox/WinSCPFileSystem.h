@@ -186,7 +186,7 @@ protected:
   bool RemoteTransferDialog(TStrings *AFileList, UnicodeString &Target,
     UnicodeString &FileMask, bool Move);
   bool RenameFileDialog(TRemoteFile *AFile, UnicodeString &NewName);
-  uintptr_t MoreMessageDialog(const UnicodeString Str, TStrings *MoreMessages,
+  uint32_t MoreMessageDialog(const UnicodeString Str, TStrings *MoreMessages,
     TQueryType Type, uintptr_t Answers, const TMessageParams *AParams = nullptr);
   bool PasswordDialog(TSessionData *SessionData,
     TPromptKind Kind, const UnicodeString Name, const UnicodeString Instructions, TStrings *Prompts,

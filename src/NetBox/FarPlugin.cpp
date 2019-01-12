@@ -2932,7 +2932,7 @@ bool TGlobalFunctions::InputDialog(const UnicodeString ACaption, const UnicodeSt
   return WinSCPPlugin->InputBox(ACaption, APrompt, Value, 0);
 }
 
-uintptr_t TGlobalFunctions::MoreMessageDialog(const UnicodeString AMessage, TStrings *MoreMessages, TQueryType Type, uintptr_t Answers, const TMessageParams *Params)
+uint32_t TGlobalFunctions::MoreMessageDialog(const UnicodeString AMessage, TStrings *MoreMessages, TQueryType Type, uintptr_t Answers, const TMessageParams *Params)
 {
   TWinSCPPlugin *WinSCPPlugin = dyn_cast<TWinSCPPlugin>(FarPlugin);
   return WinSCPPlugin->MoreMessageDialog(AMessage, MoreMessages, Type, Answers, Params);

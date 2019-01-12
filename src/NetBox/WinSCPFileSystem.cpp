@@ -3230,7 +3230,7 @@ bool TWinSCPFileSystem::TerminalCreateLocalDirectory(const UnicodeString ALocalD
   return ::CreateDirectory(ApiPath(ALocalDirName).c_str(), SecurityAttributes) != FALSE;
 }
 
-uintptr_t TWinSCPFileSystem::MoreMessageDialog(const UnicodeString Str,
+uint32_t TWinSCPFileSystem::MoreMessageDialog(const UnicodeString Str,
   TStrings *MoreMessages, TQueryType Type, uintptr_t Answers, const TMessageParams *AParams)
 {
   TMessageParams Params(0);

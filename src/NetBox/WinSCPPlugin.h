@@ -16,12 +16,13 @@ public:
   static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TWinSCPPlugin); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TWinSCPPlugin) || TCustomFarPlugin::is(Kind); }
 public:
+  TWinSCPPlugin() = delete;
   explicit TWinSCPPlugin(HINSTANCE HInst) noexcept;
   virtual ~TWinSCPPlugin() noexcept;
   intptr_t GetMinFarVersion() const override;
 
   void HandleException(Exception *E, int OpMode = 0) override;
-  uintptr_t MoreMessageDialog(const UnicodeString Str, TStrings *MoreMessages,
+  uint32_t MoreMessageDialog(const UnicodeString Str, TStrings *MoreMessages,
     TQueryType Type, uintptr_t Answers, const TMessageParams *Params = nullptr);
   void ShowExtendedException(Exception *E);
   bool CopyParamCustomDialog(TCopyParamType &CopyParam,
