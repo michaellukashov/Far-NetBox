@@ -3491,7 +3491,7 @@ void TTerminal::ReadDirectory(bool ReloadOnly, bool ForceCache)
         DoReadDirectoryProgress(-1, 0, Cancel);
         FReadingCurrentDirectory = false;
         FOldFiles->Reset();
-        FOldFiles->AddFiles(FFiles.get());
+        FOldFiles->AddFiles(FFiles.release());
         FFiles = std::move(Files);
         try__finally
         {
