@@ -2698,6 +2698,7 @@ intptr_t TFTPFileSystem::GetOptionVal(intptr_t OptionID) const
   {
   case OPTION_PROXYTYPE:
     method = Data->GetActualProxyMethod();
+    // DEBUG_PRINTF("method: %d", method);
     switch (method)
     {
     case pmNone:
