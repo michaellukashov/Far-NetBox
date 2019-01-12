@@ -652,8 +652,8 @@ bool AppendExceptionStackTraceAndForget(TStrings *& MoreMessages)
   return Result;
 }
 //---------------------------------------------------------------------------
-uintptr_t ExceptionMessageDialog(Exception * /*E*/, TQueryType /*Type*/,
-  const UnicodeString /*MessageFormat*/, uintptr_t /*Answers*/, UnicodeString /*HelpKeyword*/,
+uint32_t ExceptionMessageDialog(Exception * /*E*/, TQueryType /*Type*/,
+  const UnicodeString /*MessageFormat*/, uint32_t /*Answers*/, UnicodeString /*HelpKeyword*/,
   const TMessageParams * /*Params*/)
 {
 #if 0
@@ -684,8 +684,8 @@ uintptr_t ExceptionMessageDialog(Exception * /*E*/, TQueryType /*Type*/,
   return 0;
 }
 //---------------------------------------------------------------------------
-uintptr_t FatalExceptionMessageDialog(Exception * E, TQueryType Type,
-  int SessionReopenTimeout, const UnicodeString MessageFormat, uintptr_t Answers,
+uint32_t FatalExceptionMessageDialog(Exception * E, TQueryType Type,
+  int SessionReopenTimeout, const UnicodeString MessageFormat, uint32_t Answers,
   UnicodeString HelpKeyword, const TMessageParams * Params)
 {
 #if 0
@@ -2002,36 +2002,36 @@ bool InputDialog(UnicodeString ACaption,
   return Result;
 }
 
-uintptr_t MessageDialog(UnicodeString Msg, TQueryType Type,
-  uintptr_t Answers, UnicodeString HelpKeyword, const TMessageParams *Params)
+uint32_t MessageDialog(UnicodeString Msg, TQueryType Type,
+  uint32_t Answers, UnicodeString HelpKeyword, const TMessageParams *Params)
 {
   DebugUsedParam(HelpKeyword);
-  uintptr_t Result = GetGlobals()->MoreMessageDialog(Msg, nullptr, Type, Answers, Params);
+  uint32_t Result = GetGlobals()->MoreMessageDialog(Msg, nullptr, Type, Answers, Params);
   return Result;
 }
 
-uintptr_t MessageDialog(intptr_t Ident, TQueryType Type,
-  uintptr_t Answers, UnicodeString HelpKeyword, const TMessageParams *Params)
+uint32_t MessageDialog(intptr_t Ident, TQueryType Type,
+  uint32_t Answers, UnicodeString HelpKeyword, const TMessageParams *Params)
 {
   DebugUsedParam(HelpKeyword);
   UnicodeString Msg = LoadStr(Ident);
-  uintptr_t Result = GetGlobals()->MoreMessageDialog(Msg, nullptr, Type, Answers, Params);
+  uint32_t Result = GetGlobals()->MoreMessageDialog(Msg, nullptr, Type, Answers, Params);
   return Result;
 }
 
-uintptr_t SimpleErrorDialog(UnicodeString Msg, UnicodeString /*MoreMessages*/)
+uint32_t SimpleErrorDialog(UnicodeString Msg, UnicodeString /*MoreMessages*/)
 {
-  uintptr_t Answers = qaOK;
-  uintptr_t Result = GetGlobals()->MoreMessageDialog(Msg, nullptr, qtError, Answers, nullptr);
+  uint32_t Answers = qaOK;
+  uint32_t Result = GetGlobals()->MoreMessageDialog(Msg, nullptr, qtError, Answers, nullptr);
   return Result;
 }
 
-uintptr_t MoreMessageDialog(UnicodeString Message,
-  TStrings *MoreMessages, TQueryType Type, uintptr_t Answers,
+uint32_t MoreMessageDialog(UnicodeString Message,
+  TStrings *MoreMessages, TQueryType Type, uint32_t Answers,
   UnicodeString HelpKeyword, const TMessageParams *Params)
 {
   DebugUsedParam(HelpKeyword);
-  uintptr_t Result = GetGlobals()->MoreMessageDialog(Message, MoreMessages, Type, Answers, Params);
+  uint32_t Result = GetGlobals()->MoreMessageDialog(Message, MoreMessages, Type, Answers, Params);
   return Result;
 }
 //---------------------------------------------------------------------------

@@ -123,9 +123,9 @@ public:
   TObject *Sender{nullptr};
   UnicodeString Query;
   TStrings *MoreMessages{nullptr};
-  uintptr_t Answers{0};
+  uint32_t Answers{0};
   const TQueryParams *Params;
-  uintptr_t Answer{0};
+  uint32_t Answer{0};
   TQueryType Type{};
 };
 //---------------------------------------------------------------------------
@@ -304,8 +304,8 @@ protected:
   bool OverrideItemStatus(TQueueItem::TStatus &ItemStatus) const;
 
   void TerminalQueryUser(TObject *Sender,
-    const UnicodeString AQuery, TStrings *MoreMessages, uintptr_t Answers,
-    const TQueryParams *Params, uintptr_t &Answer, TQueryType Type, void *Arg);
+    const UnicodeString AQuery, TStrings *MoreMessages, uint32_t Answers,
+    const TQueryParams *Params, uint32_t &Answer, TQueryType Type, void *Arg);
   void TerminalPromptUser(TTerminal *Terminal, TPromptKind Kind,
     const UnicodeString AName, const UnicodeString AInstructions,
     TStrings *Prompts, TStrings *Results, bool &Result, void *Arg);
@@ -1565,8 +1565,8 @@ bool TTerminalItem::Finished()
 }
 //---------------------------------------------------------------------------
 void TTerminalItem::TerminalQueryUser(TObject *Sender,
-  const UnicodeString AQuery, TStrings *MoreMessages, uintptr_t Answers,
-  const TQueryParams *Params, uintptr_t &Answer, TQueryType Type, void *Arg)
+  const UnicodeString AQuery, TStrings *MoreMessages, uint32_t Answers,
+  const TQueryParams *Params, uint32_t &Answer, TQueryType Type, void *Arg)
 {
   // so far query without queue item can occur only for key confirmation
   // on re-key with non-cached host key. make it fail.
@@ -2914,8 +2914,8 @@ void TTerminalThread::TerminalInformation(
 }
 //---------------------------------------------------------------------------
 void TTerminalThread::TerminalQueryUser(TObject *Sender,
-  const UnicodeString AQuery, TStrings *MoreMessages, uintptr_t Answers,
-  const TQueryParams *Params, uintptr_t &Answer, TQueryType Type, void *Arg)
+  const UnicodeString AQuery, TStrings *MoreMessages, uint32_t Answers,
+  const TQueryParams *Params, uint32_t &Answer, TQueryType Type, void *Arg)
 {
   DebugUsedParam(Arg);
   DebugAssert(Arg == nullptr);

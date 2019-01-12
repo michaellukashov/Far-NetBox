@@ -1417,7 +1417,7 @@ bool TFTPFileSystem::ConfirmOverwrite(
     // retry = "resume"
     // all = "yes to newer"
     // ignore = "rename"
-    uintptr_t Answers = qaYes | qaNo | qaCancel | qaYesToAll | qaNoToAll | qaAll | qaIgnore;
+    uint32_t Answers = qaYes | qaNo | qaCancel | qaYesToAll | qaNoToAll | qaAll | qaIgnore;
     if (CanResume)
     {
       Answers |= qaRetry;

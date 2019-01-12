@@ -1299,7 +1299,7 @@ static void DoVerifyKey(
     if (!Message.IsEmpty())
     {
       GetConfiguration()->Usage->Inc(L"PrivateKeySelectErrors");
-      uintptr_t Answers = (CanIgnore ? (qaIgnore | qaAbort) : qaOK);
+      uint32_t Answers = (CanIgnore ? (qaIgnore | qaAbort) : qaOK);
       if (MoreMessageDialog(Message, MoreMessages.get(), qtWarning, Answers, HelpKeyword) != qaIgnore)
       {
         Abort();

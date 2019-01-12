@@ -44,8 +44,8 @@ typedef void __fastcall (__closure *TQueryUserEvent)
    const TQueryParams * Params, unsigned int & Answer, TQueryType QueryType, void * Arg);
 #endif // #if 0
 using TQueryUserEvent = nb::FastDelegate8<void,
-  TObject * /*Sender*/, UnicodeString /*AQuery*/, TStrings * /*MoreMessages*/, uintptr_t /*Answers*/,
-   const TQueryParams * /*Params*/, uintptr_t & /*Answer*/, TQueryType /*QueryType*/, void * /*Arg*/>;
+  TObject * /*Sender*/, UnicodeString /*AQuery*/, TStrings * /*MoreMessages*/, uint32_t /*Answers*/,
+   const TQueryParams * /*Params*/, uint32_t & /*Answer*/, TQueryType /*QueryType*/, void * /*Arg*/>;
 #if 0
 typedef void __fastcall (__closure *TPromptUserEvent)
   (TTerminal * Terminal, TPromptKind Kind, UnicodeString Name, UnicodeString Instructions,
@@ -352,7 +352,7 @@ private:
 public:
   void CommandError(Exception *E, const UnicodeString AMsg);
   uintptr_t CommandError(Exception *E, const UnicodeString AMsg,
-    uint32_t Answers, const UnicodeString HelpKeyword = L"");
+    uint32_t Answers, const UnicodeString HelpKeyword = "");
   UnicodeString RemoteGetCurrentDirectory();
   bool GetExceptionOnFail() const;
   const TRemoteTokenList * GetGroups() const { return const_cast<TTerminal *>(this)->GetGroups(); }
@@ -448,9 +448,9 @@ protected:
   bool CheckRemoteFile(
     const UnicodeString AFileName, const TCopyParamType *CopyParam,
     intptr_t Params, TFileOperationProgressType *OperationProgress) const;
-  uintptr_t ConfirmFileOverwrite(
+  uint32_t ConfirmFileOverwrite(
     const UnicodeString ASourceFullFileName, const UnicodeString ATargetFileName,
-    const TOverwriteFileParams *FileParams, uintptr_t Answers, TQueryParams *QueryParams,
+    const TOverwriteFileParams *FileParams, uint32_t Answers, TQueryParams *QueryParams,
     TOperationSide Side, const TCopyParamType *CopyParam, intptr_t Params,
     TFileOperationProgressType *OperationProgress, const UnicodeString AMessage = L"");
   void DoSynchronizeCollectDirectory(const UnicodeString ALocalDirectory,
@@ -513,11 +513,11 @@ protected:
     bool Temp, const UnicodeString ADirectory, uintptr_t CPSLimit);
   void OperationStop(TFileOperationProgressType & Progress);
   void Information(const UnicodeString AStr, bool Status) override;
-  uintptr_t QueryUser(const UnicodeString AQuery,
-    TStrings *MoreMessages, uintptr_t Answers, const TQueryParams *Params,
+  uint32_t QueryUser(const UnicodeString AQuery,
+    TStrings *MoreMessages, uint32_t Answers, const TQueryParams *Params,
     TQueryType QueryType = qtConfirmation) override;
-  uintptr_t QueryUserException(const UnicodeString AQuery,
-    Exception *E, uintptr_t Answers, const TQueryParams *Params,
+  uint32_t QueryUserException(const UnicodeString AQuery,
+    Exception *E, uint32_t Answers, const TQueryParams *Params,
     TQueryType QueryType = qtConfirmation) override;
   bool PromptUser(TSessionData *Data, TPromptKind Kind,
     const UnicodeString AName, const UnicodeString AInstructions, TStrings *Prompts, TStrings *Results) override;

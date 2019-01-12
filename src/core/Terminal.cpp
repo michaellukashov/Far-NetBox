@@ -279,15 +279,16 @@ class TTunnelUI : public TSessionUI
 {
   NB_DISABLE_COPY(TTunnelUI)
 public:
+  TTunnelUI() = delete;
   explicit TTunnelUI(TTerminal *Terminal) noexcept;
   virtual ~TTunnelUI() noexcept = default;
 
   void Information(const UnicodeString AStr, bool Status) override;
-  uintptr_t QueryUser(const UnicodeString AQuery,
-    TStrings *MoreMessages, uintptr_t Answers, const TQueryParams *Params,
+  uint32_t QueryUser(const UnicodeString AQuery,
+    TStrings *MoreMessages, uint32_t Answers, const TQueryParams *Params,
     TQueryType QueryType) override;
-  uintptr_t QueryUserException(const UnicodeString AQuery,
-    Exception *E, uintptr_t Answers, const TQueryParams *Params,
+  uint32_t QueryUserException(const UnicodeString AQuery,
+    Exception *E, uint32_t Answers, const TQueryParams *Params,
     TQueryType QueryType) override;
   bool PromptUser(TSessionData *Data, TPromptKind Kind,
     const UnicodeString AName, const UnicodeString AInstructions, TStrings *Prompts,
@@ -318,11 +319,11 @@ void TTunnelUI::Information(const UnicodeString AStr, bool Status)
   }
 }
 //---------------------------------------------------------------------------
-uintptr_t TTunnelUI::QueryUser(const UnicodeString AQuery,
-  TStrings *MoreMessages, uintptr_t Answers, const TQueryParams *Params,
+uint32_t TTunnelUI::QueryUser(const UnicodeString AQuery,
+  TStrings *MoreMessages, uint32_t Answers, const TQueryParams *Params,
   TQueryType QueryType)
 {
-  uintptr_t Result;
+  uint32_t Result;
   if (GetCurrentThreadId() == FTerminalThreadID)
   {
     Result = FTerminal->QueryUser(AQuery, MoreMessages, Answers, Params, QueryType);
@@ -334,11 +335,11 @@ uintptr_t TTunnelUI::QueryUser(const UnicodeString AQuery,
   return Result;
 }
 //---------------------------------------------------------------------------
-uintptr_t TTunnelUI::QueryUserException(const UnicodeString AQuery,
-  Exception *E, uintptr_t Answers, const TQueryParams *Params,
+uint32_t TTunnelUI::QueryUserException(const UnicodeString AQuery,
+  Exception *E, uint32_t Answers, const TQueryParams *Params,
   TQueryType QueryType)
 {
-  uintptr_t Result;
+  uint32_t Result;
   if (GetCurrentThreadId() == FTerminalThreadID)
   {
     Result = FTerminal->QueryUserException(AQuery, E, Answers, Params, QueryType);
@@ -1893,12 +1894,12 @@ bool TTerminal::DoPromptUser(TSessionData * /*Data*/, TPromptKind Kind,
   return Result;
 }
 //---------------------------------------------------------------------------
-uintptr_t TTerminal::QueryUser(const UnicodeString AQuery,
-  TStrings *MoreMessages, uintptr_t Answers, const TQueryParams *Params,
+uint32_t TTerminal::QueryUser(const UnicodeString AQuery,
+  TStrings *MoreMessages, uint32_t Answers, const TQueryParams *Params,
   TQueryType QueryType)
 {
   LogEvent(FORMAT("Asking user:\n%s (%s)", AQuery, UnicodeString(MoreMessages ? MoreMessages->GetCommaText() : "")));
-  uintptr_t Answer = AbortAnswer(Answers);
+  uint32_t Answer = AbortAnswer(Answers);
   if (FOnQueryUser)
   {
     TCallbackGuard Guard(this);
@@ -1918,11 +1919,11 @@ uintptr_t TTerminal::QueryUser(const UnicodeString AQuery,
   return Answer;
 }
 //---------------------------------------------------------------------------
-uintptr_t TTerminal::QueryUserException(const UnicodeString AQuery,
-  Exception *E, uintptr_t Answers, const TQueryParams *Params,
+uint32_t TTerminal::QueryUserException(const UnicodeString AQuery,
+  Exception *E, uint32_t Answers, const TQueryParams *Params,
   TQueryType QueryType)
 {
-  uintptr_t Result = 0;
+  uint32_t Result = 0;
   UnicodeString ExMessage;
   if (DebugAlwaysTrue(ExceptionMessage(E, ExMessage) || !AQuery.IsEmpty()))
   {
@@ -3025,13 +3026,13 @@ bool TTerminal::CheckRemoteFile(
   return Result;
 }
 //---------------------------------------------------------------------------
-uintptr_t TTerminal::ConfirmFileOverwrite(
+uint32_t TTerminal::ConfirmFileOverwrite(
   const UnicodeString ASourceFullFileName, const UnicodeString ATargetFileName,
-  const TOverwriteFileParams *FileParams, uintptr_t Answers, TQueryParams *QueryParams,
+  const TOverwriteFileParams *FileParams, uint32_t Answers, TQueryParams *QueryParams,
   TOperationSide Side, const TCopyParamType *CopyParam, intptr_t Params, TFileOperationProgressType *OperationProgress,
   UnicodeString AMessage)
 {
-  uintptr_t Result = 0;
+  uint32_t Result = 0;
   TBatchOverwrite BatchOverwrite;
   bool CanAlternateResume =
     (FileParams != nullptr) &&
