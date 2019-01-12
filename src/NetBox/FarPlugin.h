@@ -260,8 +260,8 @@ public:
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TCustomFarFileSystem) || TObject::is(Kind); }
 public:
   explicit TCustomFarFileSystem(TObjectClassId Kind, TCustomFarPlugin *APlugin) noexcept;
-  void Init();
   virtual ~TCustomFarFileSystem() noexcept;
+  void Init();
 
   void GetOpenPluginInfo(struct OpenPluginInfo *Info);
   intptr_t GetFindData(struct PluginPanelItem **PanelItem,
@@ -347,7 +347,7 @@ private:
   TFarPanelInfo **GetPanelInfo(int Another);
 };
 
-constexpr int PANEL_MODES_COUNT = 10;
+constexpr intptr_t PANEL_MODES_COUNT = 10;
 class TFarPanelModes final : public TObject
 {
   friend class TCustomFarFileSystem;
@@ -384,7 +384,7 @@ public:
     UnicodeString Title);
 
 private:
-  KeyBarTitles FKeyBarTitles;
+  KeyBarTitles FKeyBarTitles{};
   bool FReferenced{false};
 
   void FillOpenPluginInfo(struct OpenPluginInfo *Info);
@@ -399,6 +399,7 @@ public:
   static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TCustomFarPanelItem); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TCustomFarPanelItem) || TObject::is(Kind); }
 protected:
+  TCustomFarPanelItem() = delete;
   explicit TCustomFarPanelItem(TObjectClassId Kind) noexcept : TObject(Kind) {}
   virtual ~TCustomFarPanelItem() noexcept = default;
   virtual void GetData(
@@ -476,6 +477,7 @@ class TFarPanelInfo : public TObject
 {
   NB_DISABLE_COPY(TFarPanelInfo)
 public:
+  TFarPanelInfo() = delete;
   explicit TFarPanelInfo(PanelInfo *APanelInfo, TCustomFarFileSystem *AOwner) noexcept;
   virtual ~TFarPanelInfo() noexcept;
 
@@ -539,6 +541,7 @@ class TFarEditorInfo : public TObject
 {
   NB_DISABLE_COPY(TFarEditorInfo)
 public:
+  TFarEditorInfo() = delete;
   explicit TFarEditorInfo(EditorInfo *Info) noexcept;
   ~TFarEditorInfo() noexcept;
 

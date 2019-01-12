@@ -2029,11 +2029,11 @@ void TCustomFarFileSystem::ResetCachedInfo()
 {
   if (FPanelInfo[0])
   {
-    SAFE_DESTROY(FPanelInfo[false]);
+    SAFE_DESTROY(FPanelInfo[0]);
   }
   if (FPanelInfo[1])
   {
-    SAFE_DESTROY(FPanelInfo[true]);
+    SAFE_DESTROY(FPanelInfo[1]);
   }
 }
 
