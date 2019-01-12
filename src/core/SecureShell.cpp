@@ -278,7 +278,7 @@ Conf *TSecureShell::StoreToConfig(TSessionData *Data, bool Simple)
   for (int g = 0; g < GSSLIB_COUNT; g++)
   {
     int pgsslib = 0;
-    switch (Data->GetGssLibs(g))
+    switch (Data->GetGssLib(g))
     {
     case gssGssApi32:
       pgsslib = 0;

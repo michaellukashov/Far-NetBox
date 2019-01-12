@@ -84,6 +84,7 @@ typedef void __fastcall (*TRescaleEvent)(TComponent * Sender, TObject * Token);
 void __fastcall SetRescaleFunction(
   TComponent * Component, TRescaleEvent OnRescale, TObject * Token = NULL, bool OwnsToken = false);
 void __fastcall RecordFormImplicitRescale(TForm * Form);
+void __fastcall CountClicksForWindowPrint(TForm * Form);
 //---------------------------------------------------------------------------
 
 #endif // #if 0

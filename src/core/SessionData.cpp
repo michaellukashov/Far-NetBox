@@ -157,7 +157,7 @@ void TSessionData::Default()
   }
   for (intptr_t Index = 0; Index < GSSLIB_COUNT; ++Index)
   {
-    SetGssLibs(Index, DefaultGssLibList[Index]);
+    SetGssLib(Index, DefaultGssLibList[Index]);
   }
   SetGssLibCustom("");
   SetPublicKeyFile("");
@@ -469,7 +469,7 @@ void TSessionData::Assign(const TPersistent *Source)
   }
 }
 //---------------------------------------------------------------------
-void TSessionData::CopyData(TSessionData *SourceData)
+void TSessionData::CopyData(const TSessionData *SourceData)
 {
   #define PROPERTY(P) Set ## P(SourceData->Get ## P())
   PROPERTY(Name);
@@ -1730,7 +1730,7 @@ void TSessionData::SaveRecryptedPasswords(THierarchicalStorage *Storage)
   }
 }
 //---------------------------------------------------------------------
-void TSessionData::Remove(THierarchicalStorage * Storage, UnicodeString & Name)
+void TSessionData::Remove(THierarchicalStorage * Storage, UnicodeString Name)
 {
   Storage->RecursiveDeleteSubKey(Name);
 }
@@ -1868,18 +1868,17 @@ void TSessionData::MaskPasswords()
   }
 }
 //---------------------------------------------------------------------
-bool TSessionData::ParseUrl(UnicodeString AUrl, TOptions *Options,
+bool TSessionData::ParseUrl(UnicodeString Url, TOptions *Options,
   TStoredSessionList *AStoredSessions, bool &DefaultsOnly, UnicodeString *AFileName,
-  bool * AProtocolDefined, UnicodeString * MaskedUrl, int Flags)
+  bool * AProtocolDefined, UnicodeString * MaskedUrl, intptr_t Flags)
 {
-  UnicodeString Url = AUrl;
   bool ProtocolDefined = false;
   bool PortNumberDefined = false;
   TFSProtocol AFSProtocol = fsSCPonly;
   intptr_t APortNumber = 0;
   TFtps AFtps = ftpsNone;
   intptr_t ProtocolLen = 0;
-  if (Url.SubString(1, 7).LowerCase() == L"netbox:")
+  if (Url.SubString(1, 7).LowerCase() == "netbox:")
   {
     // Remove "netbox:" prefix
     Url.Delete(1, 7);
@@ -1889,7 +1888,7 @@ bool TSessionData::ParseUrl(UnicodeString AUrl, TOptions *Options,
       Url.Delete(1, 2);
     }
   }
-  if (Url.SubString(1, 7).LowerCase() == L"webdav:")
+  if (Url.SubString(1, 7).LowerCase() == "webdav:")
   {
     AFSProtocol = fsWebDAV;
     AFtps = ftpsNone;
@@ -1972,7 +1971,7 @@ bool TSessionData::ParseUrl(UnicodeString AUrl, TOptions *Options,
     ProtocolDefined = true;
   }
 
-  if (ProtocolDefined && (Url.SubString(1, 2) == L"//"))
+  if (ProtocolDefined && (Url.SubString(1, 2) == "//"))
   {
     MoveStr(Url, MaskedUrl, 2);
   }
@@ -2848,7 +2847,7 @@ UnicodeString TSessionData::GetHostKeyList() const
   return Result;
 }
 //---------------------------------------------------------------------
-void TSessionData::SetGssLibs(intptr_t Index, TGssLib Value)
+void TSessionData::SetGssLib(intptr_t Index, TGssLib Value)
 {
   DebugAssert(Index >= 0 && Index < GSSLIB_COUNT);
   // SET_SESSION_PROPERTY(FGssLib[Index]);
@@ -2859,7 +2858,7 @@ void TSessionData::SetGssLibs(intptr_t Index, TGssLib Value)
   Modify();
 }
 //---------------------------------------------------------------------
-TGssLib TSessionData::GetGssLibs(intptr_t Index) const
+TGssLib TSessionData::GetGssLib(intptr_t Index) const
 {
   DebugAssert(Index >= 0 && Index < GSSLIB_COUNT);
   return FGssLib[Index];
@@ -2875,7 +2874,7 @@ UnicodeString TSessionData::GetGssLibList() const
   UnicodeString Result;
   for (intptr_t Index = 0; Index < GSSLIB_COUNT; Index++)
   {
-    Result += UnicodeString(Index ? "," : "") + GssLibNames[GetGssLibs(Index)];
+    Result += UnicodeString(Index ? "," : "") + GssLibNames[GetGssLib(Index)];
   }
   return Result;
 }
@@ -3002,7 +3001,7 @@ UnicodeString TSessionData::GetNormalizedPuttyProtocol() const
   return DefaultStr(GetPuttyProtocol(), PuttySshProtocol);
 }
 //---------------------------------------------------------------------
-void TSessionData::SetPingIntervalDT(const TDateTime &Value)
+void TSessionData::SetPingIntervalDT(TDateTime Value)
 {
   uint16_t hour, min, sec, msec;
 
@@ -3692,7 +3691,7 @@ void TSessionData::GenerateAssemblyCode(
 }
 #endif // #if 0
 //---------------------------------------------------------------------
-void TSessionData::SetTimeDifference(const TDateTime &Value)
+void TSessionData::SetTimeDifference(TDateTime Value)
 {
   SET_SESSION_PROPERTY(TimeDifference);
 }
@@ -5588,7 +5587,7 @@ bool TStoredSessionList::HasAnyWorkspace() const
 //---------------------------------------------------------------------------
 TSessionData *TStoredSessionList::ParseUrl(UnicodeString Url,
   TOptions *Options, bool &DefaultsOnly, UnicodeString *AFileName,
-  bool * AProtocolDefined, UnicodeString * MaskedUrl, int Flags)
+  bool * AProtocolDefined, UnicodeString * MaskedUrl, intptr_t Flags)
 {
   std::unique_ptr<TSessionData> Data(std::make_unique<TSessionData>(""));
   try__catch

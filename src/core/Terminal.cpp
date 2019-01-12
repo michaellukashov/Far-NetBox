@@ -8362,6 +8362,12 @@ typename TTerminal::TEncryptedFileNames::const_iterator TTerminal::GetEncryptedF
       {
         throw;
       }
+
+      if (FEncryptedFileNames.find(APath) == FEncryptedFileNames.end())
+      {
+        FEncryptedFileNames[APath] = base::UnixExtractFileName(APath);
+        LogEvent(2, FORMAT(L"Name of file '%s' assumed not to be encrypted", APath));
+      }
     }
 
     FFoldersScannedForEncryptedFiles.insert(FileDir);
@@ -8399,6 +8405,7 @@ UnicodeString TTerminal::EncryptFileName(const UnicodeString APath, bool Encrypt
         FileName = Encryption.EncryptFileName(FileName);
         FEncryptedFileNames[APath] = FileName;
         Encryption.FreeContext();
+        LogEvent(2, FORMAT("Name of file '%s' encrypted as '%s'", APath, FileName));
       }
     }
 
@@ -8428,8 +8435,14 @@ UnicodeString TTerminal::DecryptFileName(const UnicodeString Path)
       Encryption.FreeContext();
     }
 
-    if (Encrypted || (FEncryptedFileNames.find(Result) == FEncryptedFileNames.end()))
+    TEncryptedFileNames::iterator Iter = FEncryptedFileNames.find(Result);
+    bool NotCached = (Iter == FEncryptedFileNames.end());
+    if (Encrypted || NotCached)
     {
+      if (Encrypted && (NotCached || (Iter->second != FileNameEncrypted)))
+      {
+        LogEvent(2, FORMAT(L"Name of file '%s' decrypted from '%s'", (Result, FileNameEncrypted)));
+      }
       // This may overwrite another variant of encryption
       FEncryptedFileNames[Result] = FileNameEncrypted;
     }

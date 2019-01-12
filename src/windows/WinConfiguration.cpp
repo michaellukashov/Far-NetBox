@@ -623,6 +623,7 @@ void TWinConfiguration::Default()
   HonorDrivePolicy = true;
   TimeoutShellOperations = true;
   TimeoutShellIconRetrieval = false;
+  AllowWindowPrint = false;
 
   FEditor.Font.FontName = DefaultFixedWidthFontName;
   FEditor.Font.FontSize = DefaultFixedWidthFontSize;
@@ -1024,6 +1025,7 @@ THierarchicalStorage * TWinConfiguration::CreateScpStorage(bool & SessionList)
     KEYEX(String, FExtensionsShortCuts, "ExtensionsShortCuts"); \
     KEY(Bool,     TimeoutShellOperations); \
     KEY(Bool,     TimeoutShellIconRetrieval); \
+    KEY(Bool,     AllowWindowPrint); \
   ); \
   BLOCK("Interface\\Editor", CANCREATE, \
     KEYEX(String,   Editor.Font.FontName, "FontName2"); \
@@ -1700,7 +1702,8 @@ bool TWinConfiguration::IsDDExtRunning()
 //---------------------------------------------------------------------------
 bool TWinConfiguration::IsDDExtBroken()
 {
-  return (GetWindowsBuild() >= 17134);
+  int Build = GetWindowsBuild();
+  return (Build >= 17134) && (Build < 17763);
 }
 //---------------------------------------------------------------------------
 RawByteString TWinConfiguration::StronglyRecryptPassword(RawByteString Password, UnicodeString Key)
@@ -2672,6 +2675,11 @@ void TWinConfiguration::SetTimeoutShellOperations(bool value)
 void TWinConfiguration::SetTimeoutShellIconRetrieval(bool value)
 {
   SET_CONFIG_PROPERTY(TimeoutShellIconRetrieval);
+}
+//---------------------------------------------------------------------------
+void __fastcall TWinConfiguration::SetAllowWindowPrint(bool value)
+{
+  SET_CONFIG_PROPERTY(AllowWindowPrint);
 }
 //---------------------------------------------------------------------------
 TStringList * TWinConfiguration::LoadJumpList(

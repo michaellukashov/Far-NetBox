@@ -2250,3 +2250,42 @@ UnicodeString FileNameFormatString(UnicodeString SingleFileFormat,
   return ItemsFormatString(SingleFileFormat, MultiFilesFormat,
       AFiles ? AFiles->GetCount() : 0, Item);
 }
+#if 0
+//---------------------------------------------------------------------------
+static int HideAccelFlag(TControl * Control)
+{
+  //ask the top level window about its UI state
+  while (Control->Parent != NULL)
+  {
+    Control = Control->Parent;
+  }
+  int Result;
+  if (FLAGSET(Control->Perform(WM_QUERYUISTATE, 0, 0), UISF_HIDEACCEL))
+  {
+    Result = DT_HIDEPREFIX;
+  }
+  else
+  {
+    Result = 0;
+  }
+  return Result;
+}
+//---------------------------------------------------------------------------
+void __fastcall TUIStateAwareLabel::DoDrawText(TRect & Rect, int Flags)
+{
+  if (ShowAccelChar)
+  {
+    Flags = Flags | HideAccelFlag(this);
+  }
+  TLabel::DoDrawText(Rect, Flags);
+}
+//---------------------------------------------------------------------------
+void __fastcall FindComponentClass(
+  void *, TReader *, const UnicodeString DebugUsedArg(ClassName), TComponentClass & ComponentClass)
+{
+  if (ComponentClass == __classid(TLabel))
+  {
+    ComponentClass = __classid(TUIStateAwareLabel);
+  }
+}
+#endif // #if 0

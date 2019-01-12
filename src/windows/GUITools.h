@@ -198,6 +198,30 @@ NB_CORE_EXPORT UnicodeString FileNameFormatString(const UnicodeString SingleFile
 NB_CORE_EXPORT UnicodeString FileNameFormatString(UnicodeString SingleFileFormat,
   UnicodeString MultiFilesFormat, const TStrings *AFiles, bool Remote);
 //---------------------------------------------------------------------------
+#if 0
+// Based on:
+// https://stackoverflow.com/q/6912424/850848
 NB_CORE_EXPORT extern const UnicodeString PageantTool;
 NB_CORE_EXPORT extern const UnicodeString PuttygenTool;
+// https://stackoverflow.com/q/4685863/850848
+class TUIStateAwareLabel : public TLabel
+{
+protected:
+  DYNAMIC void __fastcall DoDrawText(TRect & Rect, int Flags);
+};
+// FindComponentClass takes parameter by reference and as such it cannot be implemented in
+// an inline method without a compiler warning, which we cannot suppress in a macro.
+// And having the implementation in a real code (not macro) also allows us to debug the code.
+void __fastcall FindComponentClass(
+  void * Data, TReader * Reader, const UnicodeString ClassName, TComponentClass & ComponentClass);
+#define INTERFACE_HOOK_CUSTOM(PARENT) \
+  protected: \
+    virtual void __fastcall ReadState(TReader * Reader) \
+    { \
+      Reader->OnFindComponentClass = MakeMethod<TFindComponentClassEvent>(NULL, FindComponentClass); \
+      PARENT::ReadState(Reader); \
+    }
+#define INTERFACE_HOOK INTERFACE_HOOK_CUSTOM(TForm)
 //---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
+#endif // #if 0

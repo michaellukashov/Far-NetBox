@@ -144,7 +144,7 @@ private:
   RawByteString FNewPassword;
   bool FChangePassword{false};
   intptr_t FPingInterval{0};
-  TPingType FPingType{};
+  TPingType FPingType{ptOff};
   bool FTryAgent{false};
   bool FAgentFwd{false};
   UnicodeString FListingCommand;
@@ -265,208 +265,208 @@ private:
 
   UnicodeString FOrigHostName;
   intptr_t FOrigPortNumber{0};
-  TProxyMethod FOrigProxyMethod;
-  TSessionSource FSource{};
+  TProxyMethod FOrigProxyMethod{pmNone};
+  TSessionSource FSource{ssNone};
   bool FSaveOnly{false};
   UnicodeString FLogicalHostName;
 
 public:
-  void SetHostName(UnicodeString AValue);
+  void SetHostName(UnicodeString value);
   UnicodeString GetHostNameExpanded() const;
-  void SetPortNumber(intptr_t Value);
-  void SessionSetUserName(UnicodeString Value);
+  void SetPortNumber(intptr_t value);
+  void SessionSetUserName(UnicodeString value);
   UnicodeString GetUserNameExpanded() const;
-  void SetPassword(UnicodeString AValue);
+  void SetPassword(UnicodeString value);
   UnicodeString GetPassword() const;
-  void SetNewPassword(UnicodeString Value);
+  void SetNewPassword(UnicodeString value);
   UnicodeString GetNewPassword() const;
-  void SetChangePassword(bool Value);
-  void SetPingInterval(intptr_t Value);
-  void SetTryAgent(bool Value);
-  void SetAgentFwd(bool Value);
-  void SetAuthTIS(bool Value);
-  void SetAuthKI(bool Value);
-  void SetAuthKIPassword(bool Value);
-  void SetAuthGSSAPI(bool Value);
-  void SetGSSAPIFwdTGT(bool Value);
-  void SetChangeUsername(bool Value);
-  void SetCompression(bool Value);
-  void SetSshProt(TSshProt Value);
-  void SetSsh2DES(bool Value);
-  void SetSshNoUserAuth(bool Value);
-  void SetCipher(intptr_t Index, TCipher Value);
+  void SetChangePassword(bool value);
+  void SetPingInterval(intptr_t value);
+  void SetTryAgent(bool value);
+  void SetAgentFwd(bool value);
+  void SetAuthTIS(bool value);
+  void SetAuthKI(bool value);
+  void SetAuthKIPassword(bool value);
+  void SetAuthGSSAPI(bool value);
+  void SetGSSAPIFwdTGT(bool value);
+  void SetChangeUsername(bool value);
+  void SetCompression(bool value);
+  void SetSshProt(TSshProt value);
+  void SetSsh2DES(bool value);
+  void SetSshNoUserAuth(bool value);
+  void SetCipher(intptr_t Index, TCipher value);
   TCipher GetCipher(intptr_t Index) const;
-  void SetKex(intptr_t Index, TKex Value);
+  void SetKex(intptr_t Index, TKex value);
   TKex GetKex(intptr_t Index) const;
-  void SetHostKeys(intptr_t Index, THostKey Value);
+  void SetHostKeys(intptr_t Index, THostKey value);
   THostKey GetHostKeys(intptr_t Index) const;
-  void SetGssLibs(intptr_t Index, TGssLib Value);
-  TGssLib GetGssLibs(intptr_t Index) const;
-  void SetGssLibCustom(UnicodeString Value);
-  void SetPublicKeyFile(UnicodeString Value);
+  void SetGssLib(intptr_t Index, TGssLib value);
+  TGssLib GetGssLib(intptr_t Index) const;
+  void SetGssLibCustom(UnicodeString value);
+  void SetPublicKeyFile(UnicodeString value);
   UnicodeString GetPassphrase() const;
-  void SetPassphrase(UnicodeString AValue);
+  void SetPassphrase(UnicodeString value);
 
-  void SetPuttyProtocol(UnicodeString Value);
+  void SetPuttyProtocol(UnicodeString value);
   bool GetCanLogin() const;
-  void SetPingIntervalDT(const TDateTime &Value);
+  void SetPingIntervalDT(TDateTime value);
   TDateTime GetPingIntervalDT() const;
   TDateTime GetFtpPingIntervalDT() const;
-  void SetTimeDifference(const TDateTime &Value);
-  void SetTimeDifferenceAuto(bool Value);
-  void SetPingType(TPingType Value);
+  void SetTimeDifference(TDateTime value);
+  void SetTimeDifferenceAuto(bool value);
+  void SetPingType(TPingType value);
   UnicodeString GetSessionName() const;
   UnicodeString GetDefaultSessionName() const;
   UnicodeString GetProtocolUrl(bool HttpForWebDAV) const;
-  void SetFSProtocol(TFSProtocol Value);
+  void SetFSProtocol(TFSProtocol value);
   UnicodeString GetFSProtocolStr() const;
-  void SetLocalDirectory(UnicodeString Value);
-  void SetRemoteDirectory(UnicodeString Value);
-  void SetSynchronizeBrowsing(bool Value);
-  void SetUpdateDirectories(bool Value);
-  void SetCacheDirectories(bool Value);
-  void SetCacheDirectoryChanges(bool Value);
-  void SetPreserveDirectoryChanges(bool Value);
-  void SetLockInHome(bool Value);
-  void SetSpecial(bool Value);
+  void SetLocalDirectory(UnicodeString value);
+  void SetRemoteDirectory(UnicodeString value);
+  void SetSynchronizeBrowsing(bool value);
+  void SetUpdateDirectories(bool value);
+  void SetCacheDirectories(bool value);
+  void SetCacheDirectoryChanges(bool value);
+  void SetPreserveDirectoryChanges(bool value);
+  void SetLockInHome(bool value);
+  void SetSpecial(bool value);
   UnicodeString GetInfoTip() const;
   bool GetDefaultShell() const;
-  void SetDetectReturnVar(bool Value);
+  void SetDetectReturnVar(bool value);
   bool GetDetectReturnVar() const;
-  void SetListingCommand(UnicodeString Value);
-  void SetClearAliases(bool Value);
-  void SetDefaultShell(bool Value);
-  void SetEOLType(TEOLType Value);
-  void SetTrimVMSVersions(bool Value);
-  void SetLookupUserGroups(TAutoSwitch Value);
+  void SetListingCommand(UnicodeString value);
+  void SetClearAliases(bool value);
+  void SetDefaultShell(bool value);
+  void SetEOLType(TEOLType value);
+  void SetTrimVMSVersions(bool value);
+  void SetLookupUserGroups(TAutoSwitch value);
+  void SetReturnVar(UnicodeString value);
   void SetExitCode1IsError(bool value);
-  void SetReturnVar(UnicodeString Value);
-  void SetScp1Compatibility(bool Value);
-  void SetShell(UnicodeString Value);
-  void SetSftpServer(UnicodeString Value);
-  void SetTimeout(intptr_t Value);
-  void SetUnsetNationalVars(bool Value);
-  void SetIgnoreLsWarnings(bool Value);
-  void SetTcpNoDelay(bool Value);
-  void SetSendBuf(intptr_t Value);
-  void SetSshSimple(bool Value);
+  void SetScp1Compatibility(bool value);
+  void SetShell(UnicodeString value);
+  void SetSftpServer(UnicodeString value);
+  void SetTimeout(intptr_t value);
+  void SetUnsetNationalVars(bool value);
+  void SetIgnoreLsWarnings(bool value);
+  void SetTcpNoDelay(bool value);
+  void SetSendBuf(intptr_t value);
+  void SetSshSimple(bool value);
   UnicodeString GetSshProtStr() const;
   bool GetUsesSsh() const;
-  void SetCipherList(UnicodeString Value);
+  void SetCipherList(UnicodeString value);
   UnicodeString GetCipherList() const;
-  void SetKexList(UnicodeString Value);
+  void SetKexList(UnicodeString value);
   UnicodeString GetKexList() const;
   void SetHostKeyList(UnicodeString value);
   UnicodeString GetHostKeyList() const;
-  void SetGssLibList(UnicodeString Value);
+  void SetGssLibList(UnicodeString value);
   UnicodeString GetGssLibList() const;
-  void SetProxyMethod(TProxyMethod Value);
-  void SetProxyHost(UnicodeString Value);
-  void SetProxyPort(intptr_t Value);
-  void SetProxyUsername(UnicodeString Value);
-  void SetProxyPassword(UnicodeString AValue);
-  void SetProxyTelnetCommand(UnicodeString Value);
-  void SetProxyLocalCommand(UnicodeString Value);
-  void SetProxyDNS(TAutoSwitch Value);
-  void SetProxyLocalhost(bool Value);
+  void SetProxyMethod(TProxyMethod value);
+  void SetProxyHost(UnicodeString value);
+  void SetProxyPort(intptr_t value);
+  void SetProxyUsername(UnicodeString value);
+  void SetProxyPassword(UnicodeString value);
+  void SetProxyTelnetCommand(UnicodeString value);
+  void SetProxyLocalCommand(UnicodeString value);
+  void SetProxyDNS(TAutoSwitch value);
+  void SetProxyLocalhost(bool value);
   UnicodeString GetProxyPassword() const;
-  void SetFtpProxyLogonType(intptr_t Value);
-  void SetBug(TSshBug Bug, TAutoSwitch Value);
+  void SetFtpProxyLogonType(intptr_t value);
+  void SetBug(TSshBug Bug, TAutoSwitch value);
   TAutoSwitch GetBug(TSshBug Bug) const;
   UnicodeString GetSessionKey() const;
-  void SetCustomParam1(UnicodeString Value);
-  void SetCustomParam2(UnicodeString Value);
-  void SetResolveSymlinks(bool Value);
-  void SetFollowDirectorySymlinks(bool Value);
-  void SetSFTPDownloadQueue(intptr_t Value);
-  void SetSFTPUploadQueue(intptr_t Value);
-  void SetSFTPListingQueue(intptr_t Value);
-  void SetSFTPMaxVersion(intptr_t Value);
-  void SetSFTPMaxPacketSize(intptr_t Value);
-  void SetSFTPBug(TSftpBug Bug, TAutoSwitch Value);
+  void SetCustomParam1(UnicodeString value);
+  void SetCustomParam2(UnicodeString value);
+  void SetResolveSymlinks(bool value);
+  void SetFollowDirectorySymlinks(bool value);
+  void SetSFTPDownloadQueue(intptr_t value);
+  void SetSFTPUploadQueue(intptr_t value);
+  void SetSFTPListingQueue(intptr_t value);
+  void SetSFTPMaxVersion(intptr_t value);
+  void SetSFTPMaxPacketSize(intptr_t value);
+  void SetSFTPBug(TSftpBug Bug, TAutoSwitch value);
   TAutoSwitch GetSFTPBug(TSftpBug Bug) const;
-  void SetSCPLsFullTime(TAutoSwitch Value);
-  void SetFtpListAll(TAutoSwitch Value);
-  void SetFtpHost(TAutoSwitch Value);
-  void SetFtpDeleteFromCwd(TAutoSwitch Value);
-  void SetSslSessionReuse(bool Value);
-  void SetTlsCertificateFile(UnicodeString Value);
+  void SetSCPLsFullTime(TAutoSwitch value);
+  void SetFtpListAll(TAutoSwitch value);
+  void SetFtpHost(TAutoSwitch value);
+  void SetFtpDeleteFromCwd(TAutoSwitch value);
+  void SetSslSessionReuse(bool value);
+  void SetTlsCertificateFile(UnicodeString value);
   UnicodeString GetStorageKey() const;
   UnicodeString GetInternalStorageKey() const;
   UnicodeString GetSiteKey() const;
-  void SetDSTMode(TDSTMode Value);
-  void SetDeleteToRecycleBin(bool Value);
-  void SetOverwrittenToRecycleBin(bool Value);
-  void SetRecycleBinPath(UnicodeString Value);
-  void SetPostLoginCommands(UnicodeString Value);
-  void SetAddressFamily(TAddressFamily Value);
-  void SetRekeyData(UnicodeString Value);
-  void SetRekeyTime(uintptr_t Value);
-  void SetColor(intptr_t Value);
-  void SetTunnel(bool Value);
-  void SetTunnelHostName(UnicodeString Value);
-  void SetTunnelPortNumber(intptr_t Value);
-  void SetTunnelUserName(UnicodeString Value);
-  void SetTunnelPassword(UnicodeString AValue);
+  void SetDSTMode(TDSTMode value);
+  void SetDeleteToRecycleBin(bool value);
+  void SetOverwrittenToRecycleBin(bool value);
+  void SetRecycleBinPath(UnicodeString value);
+  void SetPostLoginCommands(UnicodeString value);
+  void SetAddressFamily(TAddressFamily value);
+  void SetRekeyData(UnicodeString value);
+  void SetRekeyTime(uintptr_t value);
+  void SetColor(intptr_t value);
+  void SetTunnel(bool value);
+  void SetTunnelHostName(UnicodeString value);
+  void SetTunnelPortNumber(intptr_t value);
+  void SetTunnelUserName(UnicodeString value);
+  void SetTunnelPassword(UnicodeString value);
   UnicodeString GetTunnelPassword() const;
-  void SetTunnelPublicKeyFile(UnicodeString Value);
-  void SetTunnelPortFwd(UnicodeString Value);
-  void SetTunnelLocalPortNumber(intptr_t Value);
+  void SetTunnelPublicKeyFile(UnicodeString value);
+  void SetTunnelPortFwd(UnicodeString value);
+  void SetTunnelLocalPortNumber(intptr_t value);
   bool GetTunnelAutoassignLocalPortNumber() const;
-  void SetTunnelHostKey(UnicodeString Value);
-  void SetFtpPasvMode(bool Value);
-  void SetFtpForcePasvIp(TAutoSwitch Value);
-  void SetFtpUseMlsd(TAutoSwitch Value);
-  void SetFtpAccount(UnicodeString Value);
-  void SetFtpPingInterval(intptr_t Value);
-  void SetFtpPingType(TPingType Value);
-  void SetFtpTransferActiveImmediately(TAutoSwitch Value);
-  void SetFtps(TFtps Value);
-  void SetMinTlsVersion(TTlsVersion Value);
-  void SetMaxTlsVersion(TTlsVersion Value);
-  void SetNotUtf(TAutoSwitch Value);
-  void SetInternalEditorEncoding(intptr_t Value);
-  void SetS3DefaultRegion(UnicodeString Value);
-  void SetLogicalHostName(UnicodeString Value);
-  void SetIsWorkspace(bool Value);
-  void SetLink(UnicodeString Value);
+  void SetTunnelHostKey(UnicodeString value);
+  void SetFtpPasvMode(bool value);
+  void SetFtpForcePasvIp(TAutoSwitch value);
+  void SetFtpUseMlsd(TAutoSwitch value);
+  void SetFtpAccount(UnicodeString value);
+  void SetFtpPingInterval(intptr_t value);
+  void SetFtpPingType(TPingType value);
+  void SetFtpTransferActiveImmediately(TAutoSwitch value);
+  void SetFtps(TFtps value);
+  void SetMinTlsVersion(TTlsVersion value);
+  void SetMaxTlsVersion(TTlsVersion value);
+  void SetNotUtf(TAutoSwitch value);
+  void SetInternalEditorEncoding(intptr_t value);
+  void SetS3DefaultRegion(UnicodeString value);
+  void SetLogicalHostName(UnicodeString value);
+  void SetIsWorkspace(bool value);
+  void SetLink(UnicodeString value);
   void SetNameOverride(UnicodeString value);
-  void SetHostKey(UnicodeString Value);
-  void SetNote(UnicodeString Value);
-  void SetWinTitle(UnicodeString Value);
+  void SetHostKey(UnicodeString value);
+  void SetNote(UnicodeString value);
+  void SetWinTitle(UnicodeString value);
   UnicodeString GetEncryptKey() const;
   void SetEncryptKey(UnicodeString value);
 
   TDateTime GetTimeoutDT() const;
-  void SavePasswords(THierarchicalStorage *Storage, bool PuttyExport, bool DoNotEncryptPasswords);
+  void SavePasswords(THierarchicalStorage * Storage, bool PuttyExport, bool DoNotEncryptPasswords);
   UnicodeString GetLocalName() const;
   UnicodeString GetFolderName() const;
   void Modify();
   UnicodeString GetSource() const;
-  void DoLoad(THierarchicalStorage *Storage, bool PuttyImport, bool &RewritePassword);
-  void DoSave(THierarchicalStorage *Storage,
+  void DoLoad(THierarchicalStorage * Storage, bool PuttyImport, bool & RewritePassword);
+  void DoSave(THierarchicalStorage * Storage,
     bool PuttyExport, const TSessionData *Default, bool DoNotEncryptPasswords);
 #if 0
-  UnicodeString ReadXmlNode(_di_IXMLNode Node, UnicodeString &Name, UnicodeString &Default);
-  int ReadXmlNode(_di_IXMLNode Node, UnicodeString &Name, int Default);
-  _di_IXMLNode FindSettingsNode(_di_IXMLNode Node, UnicodeString &Name);
-  UnicodeString ReadSettingsNode(_di_IXMLNode Node, UnicodeString &Name, UnicodeString &Default);
-  int ReadSettingsNode(_di_IXMLNode Node, UnicodeString &Name, int Default);
+  UnicodeString ReadXmlNode(_di_IXMLNode Node, UnicodeString Name, UnicodeString Default);
+  int ReadXmlNode(_di_IXMLNode Node, UnicodeString Name, int Default);
+  _di_IXMLNode FindSettingsNode(_di_IXMLNode Node, UnicodeString Name);
+  UnicodeString ReadSettingsNode(_di_IXMLNode Node, UnicodeString Name, UnicodeString Default);
+  int ReadSettingsNode(_di_IXMLNode Node, UnicodeString Name, int Default);
 #endif // #if 0
-  bool IsSame(const TSessionData *Default, bool AdvancedOnly, TStrings *DifferentProperties) const;
+  bool IsSame(const TSessionData * Default, bool AdvancedOnly, TStrings * DifferentProperties) const;
   UnicodeString GetNameWithoutHiddenPrefix() const;
   bool HasStateData() const;
-  void CopyStateData(TSessionData *SourceData);
-  void CopyNonCoreData(TSessionData *SourceData);
+  void CopyStateData(TSessionData * SourceData);
+  void CopyNonCoreData(TSessionData * SourceData);
   UnicodeString GetNormalizedPuttyProtocol() const;
   static RawByteString EncryptPassword(UnicodeString Password, UnicodeString Key);
   static UnicodeString DecryptPassword(RawByteString Password, UnicodeString Key);
   static RawByteString StronglyRecryptPassword(RawByteString Password, UnicodeString Key);
-  static bool DoIsProtocolUrl(UnicodeString Url, UnicodeString Protocol, intptr_t &ProtocolLen);
-  static bool IsProtocolUrl(UnicodeString Url, UnicodeString Protocol, intptr_t &ProtocolLen);
+  static bool DoIsProtocolUrl(UnicodeString AUrl, UnicodeString AProtocol, intptr_t& ProtocolLen);
+  static bool IsProtocolUrl(UnicodeString AUrl, UnicodeString Protocol, intptr_t& ProtocolLen);
+  static void AddSwitch(UnicodeString &Result, UnicodeString Name, UnicodeString Value);
   static void AddSwitch(UnicodeString &Result, UnicodeString Switch);
-  static void AddSwitch(
-    UnicodeString &Result, UnicodeString AName, UnicodeString Value);
+  static void AddSwitch(UnicodeString &Result, UnicodeString Name, intptr_t Value, bool Rtf);
   static void AddSwitch(UnicodeString &Result, UnicodeString AName, intptr_t Value);
 #if 0
   static void AddAssemblyProperty(
@@ -483,28 +483,28 @@ public:
     UnicodeString &Result, TAssemblyLanguage Language,
     UnicodeString &Name, bool Value);
 #endif // #if 0
-  TStrings *SaveToOptions(const TSessionData *Default);
+  TStrings * SaveToOptions(const TSessionData * Default);
   void ApplyRawSettings(TStrings * RawSettings);
   TStrings * GetRawSettingsForUrl();
   template<class AlgoT>
-  void SetAlgoList(AlgoT *List, const AlgoT *DefaultList, const UnicodeString *Names,
+  void SetAlgoList(AlgoT * List, const AlgoT * DefaultList, const UnicodeString * Names,
     intptr_t Count, AlgoT WarnAlgo, UnicodeString AValue);
-  static void Remove(THierarchicalStorage * Storage, UnicodeString & Name);
+  static void Remove(THierarchicalStorage * Storage, UnicodeString Name);
 
   __property UnicodeString InternalStorageKey = { read = GetInternalStorageKey };
 
 public:
-  explicit TSessionData(UnicodeString AName) noexcept;
+  explicit TSessionData(UnicodeString aName) noexcept;
   virtual ~TSessionData() noexcept;
-  TSessionData *Clone() const;
+  TSessionData * Clone() const;
   void Default();
   void NonPersistant();
-  void Load(THierarchicalStorage *Storage, bool PuttyImport);
-  void ApplyRawSettings(THierarchicalStorage *Storage);
-  __removed void ImportFromFilezilla(_di_IXMLNode Node, UnicodeString APath);
-  void Save(THierarchicalStorage *Storage, bool PuttyExport,
+  void Load(THierarchicalStorage * Storage, bool PuttyImport);
+  void ApplyRawSettings(THierarchicalStorage * Storage);
+  __removed void ImportFromFilezilla(_di_IXMLNode Node, UnicodeString Path, _di_IXMLNode SettingsNode);
+  void Save(THierarchicalStorage * Storage, bool PuttyExport,
     const TSessionData *Default = nullptr);
-  void SaveRecryptedPasswords(THierarchicalStorage *Storage);
+  void SaveRecryptedPasswords(THierarchicalStorage * Storage);
   void RecryptPasswords();
   bool HasPassword() const;
   bool HasAnySessionPassword() const;
@@ -513,38 +513,38 @@ public:
   void MaskPasswords();
   void Remove();
   void CacheHostKeyIfNotCached();
-  virtual void Assign(const TPersistent *Source) override;
-  virtual intptr_t Compare(const TNamedObject *Other) const override;
-  void CopyData(TSessionData *SourceData);
-  void CopyDirectoriesStateData(TSessionData *SourceData);
-  bool ParseUrl(UnicodeString AUrl, TOptions *Options,
+  virtual void Assign(const TPersistent * Source);
+  intptr_t Compare(const TNamedObject * Other) const override;
+  void CopyData(const TSessionData * Source);
+  void CopyDirectoriesStateData(TSessionData * SourceData);
+  bool ParseUrl(UnicodeString Url, TOptions * Options,
     TStoredSessionList *AStoredSessions, bool &DefaultsOnly,
-    UnicodeString *AFileName, bool *AProtocolDefined, UnicodeString *MaskedUrl, int Flags);
-  bool ParseOptions(TOptions *Options);
-  void ConfigureTunnel(intptr_t APortNumber);
+    UnicodeString *AFileName, bool *AProtocolDefined, UnicodeString *MaskedUrl, intptr_t Flags);
+  bool ParseOptions(TOptions * Options);
+  void ConfigureTunnel(intptr_t PortNumber);
   void RollbackTunnel();
   void ExpandEnvironmentVariables();
   void DisableAuthentationsExceptPassword();
-  bool IsSame(const TSessionData *Default, bool AdvancedOnly) const;
-  bool IsSameSite(const TSessionData *Default) const;
-  bool IsInFolderOrWorkspace(UnicodeString AName) const;
+  bool IsSame(const TSessionData * Default, bool AdvancedOnly) const;
+  bool IsSameSite(const TSessionData * Default) const;
+  bool IsInFolderOrWorkspace(UnicodeString Name) const;
   UnicodeString GenerateSessionUrl(uintptr_t Flags) const;
   bool HasRawSettingsForUrl();
   bool HasSessionName() const;
 
   UnicodeString GenerateOpenCommandArgs(bool Rtf) const;
-  __removed void GenerateAssemblyCode(TAssemblyLanguage Language, UnicodeString &Head, UnicodeString &Tail, int &Indent);
+  __removed void GenerateAssemblyCode(TAssemblyLanguage Language, UnicodeString & Head, UnicodeString & Tail, int & Indent);
   void LookupLastFingerprint();
   bool GetIsSecure() const;
-  static void ValidatePath(UnicodeString APath);
-  static void ValidateName(UnicodeString AName);
+  static void ValidatePath(const UnicodeString Path);
+  static void ValidateName(const UnicodeString Name);
   static UnicodeString MakeValidName(UnicodeString Name);
   static UnicodeString ExtractLocalName(UnicodeString Name);
   static UnicodeString ExtractFolderName(UnicodeString Name);
-  static UnicodeString ComposePath(UnicodeString APath, UnicodeString Name);
+  static UnicodeString ComposePath(UnicodeString Path, UnicodeString Name);
   static bool IsSensitiveOption(UnicodeString Option);
-  static bool IsOptionWithParameters(UnicodeString AOption);
-  static bool MaskPasswordInOptionParameter(UnicodeString AOption, UnicodeString &Param);
+  static bool IsOptionWithParameters(UnicodeString Option);
+  static bool MaskPasswordInOptionParameter(UnicodeString Option, UnicodeString & Param);
   static UnicodeString FormatSiteKey(UnicodeString HostName, intptr_t PortNumber);
 
   __property UnicodeString HostName  = { read = FHostName, write = SetHostName };
@@ -919,40 +919,38 @@ class NB_CORE_EXPORT TStoredSessionList : public TNamedObjectList
 {
   NB_DISABLE_COPY(TStoredSessionList)
 public:
-  static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TStoredSessionList); }
-  bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TStoredSessionList) || TNamedObjectList::is(Kind); }
-public:
-  explicit TStoredSessionList(bool AReadOnly = false) noexcept;
+  explicit TStoredSessionList(bool aReadOnly = false) noexcept;
   void Reload();
   void Save(bool All, bool Explicit);
   void Saved();
-  void ImportFromFilezilla(UnicodeString FileName, UnicodeString ConfigurationFileName);
-  void ImportFromKnownHosts(TStrings *Lines);
-  void Export(UnicodeString AFileName);
-  void Load(THierarchicalStorage *Storage, bool AsModified = false,
+  void ImportFromFilezilla(const UnicodeString FileName, const UnicodeString ConfigurationFileName);
+  void ImportFromKnownHosts(TStrings * Lines);
+  void Export(UnicodeString FileName);
+  void Load(UnicodeString AKey, bool UseDefaults);
+  void Load(THierarchicalStorage * Storage, bool AsModified = false,
     bool UseDefaults = false, bool PuttyImport = false);
-  void Save(THierarchicalStorage *Storage, bool All = false);
+  void Save(THierarchicalStorage * Storage, bool All = false);
   void SelectAll(bool Select);
-  void Import(TStoredSessionList *From, bool OnlySelected, TList *Imported);
-  void RecryptPasswords(TStrings *RecryptPasswordErrors);
-  TSessionData *AtSession(intptr_t Index)
+  void Import(TStoredSessionList * From, bool OnlySelected, TList * Imported);
+  void RecryptPasswords(TStrings * RecryptPasswordErrors);
+  TSessionData * AtSession(int Index)
   { return static_cast<TSessionData *>(AtObject(Index)); }
-  void SelectSessionsToImport(TStoredSessionList *Dest, bool SSHOnly);
+  void SelectSessionsToImport(TStoredSessionList * Dest, bool SSHOnly);
   void Cleanup();
   void UpdateStaticUsage();
-  intptr_t IndexOf(TSessionData *Data) const;
-  const TSessionData *FindSame(TSessionData *Data);
-  TSessionData *NewSession(UnicodeString SessionName, TSessionData *Session);
-  void NewWorkspace(UnicodeString Name, TList *DataList);
+  intptr_t IndexOf(TSessionData * Data) const;
+  const TSessionData * FindSame(TSessionData * Data);
+  TSessionData * NewSession(UnicodeString SessionName, TSessionData * Session);
+  void NewWorkspace(UnicodeString Name, TList * DataList);
   bool GetIsFolder(UnicodeString Name) const;
   bool GetIsWorkspace(UnicodeString Name) const;
-  TSessionData *ParseUrl(UnicodeString Url, TOptions *Options, bool &DefaultsOnly,
-    UnicodeString *AFileName = nullptr, bool *AProtocolDefined = nullptr, UnicodeString *MaskedUrl = nullptr, int Flags = 0);
+  TSessionData * ParseUrl(UnicodeString Url, TOptions * Options, bool & DefaultsOnly,
+    UnicodeString *AFileName = nullptr, bool *AProtocolDefined = nullptr, UnicodeString *MaskedUrl = nullptr, intptr_t Flags = 0);
   bool IsUrl(UnicodeString Url);
-  bool CanLogin(TSessionData *Data);
-  void GetFolderOrWorkspace(UnicodeString Name, TList *List);
-  TStrings *GetFolderOrWorkspaceList(UnicodeString Name);
-  TStrings *GetWorkspaces() const;
+  bool CanLogin(TSessionData * Data);
+  void GetFolderOrWorkspace(UnicodeString Name, TList * List);
+  TStrings * GetFolderOrWorkspaceList(UnicodeString Name);
+  TStrings * GetWorkspaces() const;
   bool HasAnyWorkspace() const;
   TSessionData * SaveWorkspaceData(TSessionData * Data, int Index);
   virtual ~TStoredSessionList() noexcept;
@@ -964,8 +962,8 @@ public:
     THierarchicalStorage * SourceStorage, THierarchicalStorage * TargetStorage, TStoredSessionList * Sessions, bool OnlySelected);
   static void ImportHostKeys(
     UnicodeString & SourceKey, TStoredSessionList * Sessions, bool OnlySelected);
-  static void ImportSelectedKnownHosts(TStoredSessionList *Sessions);
-  static bool OpenHostKeysSubKey(THierarchicalStorage *Storage, bool CanCreate);
+  static void ImportSelectedKnownHosts(TStoredSessionList * Sessions);
+  static bool OpenHostKeysSubKey(THierarchicalStorage * Storage, bool CanCreate);
 
   const TSessionData *GetSession(intptr_t Index) const { return dyn_cast<TSessionData>(AtObject(Index)); }
   TSessionData *GetSession(intptr_t Index) { return dyn_cast<TSessionData>(AtObject(Index)); }
@@ -977,29 +975,28 @@ private:
   std::unique_ptr<TSessionData> FDefaultSettings;
   bool FReadOnly{false};
   std::unique_ptr<TStrings> FPendingRemovals;
-  void Load(UnicodeString AKey, bool UseDefaults);
-  __removed void SetDefaultSettings(TSessionData *Value);
-  void DoSave(THierarchicalStorage *Storage, bool All,
+  __removed void SetDefaultSettings(TSessionData * value);
+  void DoSave(THierarchicalStorage * Storage, bool All,
     bool RecryptPasswordOnly, TStrings *RecryptPasswordErrors);
   void DoSave(bool All, bool Explicit, bool RecryptPasswordOnly,
     TStrings *RecryptPasswordErrors);
-  void DoSave(THierarchicalStorage *Storage,
+  void DoSave(THierarchicalStorage * Storage,
     TSessionData *Data, bool All, bool RecryptPasswordOnly,
     TSessionData *FactoryDefaults);
-  TSessionData *ResolveWorkspaceData(TSessionData *Data);
+  TSessionData * ResolveWorkspaceData(TSessionData * Data);
   bool IsFolderOrWorkspace(UnicodeString Name, bool Workspace) const;
-  TSessionData *CheckIsInFolderOrWorkspaceAndResolve(
+  TSessionData * CheckIsInFolderOrWorkspaceAndResolve(
     TSessionData *Data, UnicodeString Name);
-  __removed void ImportLevelFromFilezilla(_di_IXMLNode Node, UnicodeString Path);
-  static THierarchicalStorage *CreateHostKeysStorageForWritting();
+  __removed void ImportLevelFromFilezilla(_di_IXMLNode Node, UnicodeString Path, _di_IXMLNode SettingsNode);
+  static THierarchicalStorage * CreateHostKeysStorageForWritting();
 };
 //---------------------------------------------------------------------------
 NB_CORE_EXPORT UnicodeString GetExpandedLogFileName(UnicodeString LogFileName, TDateTime Started, TSessionData *SessionData);
 NB_CORE_EXPORT bool GetIsSshProtocol(TFSProtocol FSProtocol);
 NB_CORE_EXPORT intptr_t GetDefaultPort(TFSProtocol FSProtocol, TFtps Ftps);
-NB_CORE_EXPORT bool IsIPv6Literal(UnicodeString AHostName);
+NB_CORE_EXPORT bool IsIPv6Literal(UnicodeString HostName);
 NB_CORE_EXPORT UnicodeString EscapeIPv6Literal(UnicodeString IP);
-TFSProtocol NormalizeFSProtocol(TFSProtocol FSProtocol);
+NB_CORE_EXPORT TFSProtocol NormalizeFSProtocol(TFSProtocol FSProtocol);
 //---------------------------------------------------------------------------
 NB_CORE_EXPORT bool GetCodePageInfo(UINT CodePage, CPINFOEX &CodePageInfoEx);
 NB_CORE_EXPORT uintptr_t GetCodePageAsNumber(UnicodeString CodePage);

@@ -467,6 +467,7 @@ private:
   int FRunsSinceLastTip;
   bool FLockedInterface;
   bool FTimeoutShellIconRetrieval;
+  bool FAllowWindowPrint;
   int FDontDecryptPasswords;
   int FMasterPasswordSession;
   bool FMasterPasswordSessionAsked;
@@ -574,6 +575,7 @@ private:
   bool __fastcall GetTimeoutShellOperations();
   void __fastcall SetTimeoutShellOperations(bool value);
   void __fastcall SetTimeoutShellIconRetrieval(bool value);
+  void __fastcall SetAllowWindowPrint(bool value);
 
   bool __fastcall GetDDExtInstalled();
   void __fastcall AddVersionToHistory();
@@ -757,6 +759,7 @@ public:
   __property bool LockedInterface = { read = FLockedInterface, write = SetLockedInterface };
   __property bool TimeoutShellOperations = { read = GetTimeoutShellOperations, write = SetTimeoutShellOperations };
   __property bool TimeoutShellIconRetrieval = { read = FTimeoutShellIconRetrieval, write = SetTimeoutShellIconRetrieval };
+  __property bool AllowWindowPrint = { read = FAllowWindowPrint, write = SetAllowWindowPrint };
   __property LCID DefaultLocale = { read = FDefaultLocale };
   __property int LocaleCompletenessTreshold = { read = GetLocaleCompletenessTreshold };
 };
