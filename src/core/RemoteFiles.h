@@ -356,6 +356,7 @@ public:
   void SetIncludeThisDirectory(Boolean Value);
   void ReleaseRelativeDirectories();
 public:
+  TRemoteDirectory() = delete;
   explicit TRemoteDirectory(TTerminal *ATerminal, TRemoteDirectory *Template = nullptr) noexcept;
   virtual ~TRemoteDirectory() noexcept;
   void AddFile(TRemoteFile *AFile) override;
