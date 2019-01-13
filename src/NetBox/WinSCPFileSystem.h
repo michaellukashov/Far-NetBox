@@ -93,8 +93,8 @@ public:
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TWinSCPFileSystem) || TCustomFarFileSystem::is(Kind); }
 public:
   explicit TWinSCPFileSystem(TCustomFarPlugin *APlugin) noexcept;
-  void Init(TSecureShell *SecureShell);
   virtual ~TWinSCPFileSystem() noexcept;
+  void Init(TSecureShell *SecureShell);
 
   void Close() override;
 
@@ -372,7 +372,7 @@ public:
 
 protected:
   UnicodeString FPath;
-  const TSessionData *FSessionData;
+  const TSessionData *FSessionData{nullptr};
 
   void GetData(
     DWORD &Flags, UnicodeString &AFileName, int64_t &Size,
@@ -409,7 +409,7 @@ public:
   static void SetKeyBarTitles(TFarKeyBarTitles *KeyBarTitles);
 
 protected:
-  TRemoteFile *FRemoteFile;
+  TRemoteFile *FRemoteFile{nullptr};
 
   void GetData(
     DWORD &Flags, UnicodeString &AFileName, int64_t &Size,
