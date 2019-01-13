@@ -501,7 +501,7 @@ public:
   TFarPanelItem *FindUserData(const void *UserData);
 
 private:
-  PanelInfo *FPanelInfo{nullptr};
+  gsl::owner<PanelInfo *> FPanelInfo{nullptr};
   TObjectList *FItems{nullptr};
   TCustomFarFileSystem *FOwner{nullptr};
 };
