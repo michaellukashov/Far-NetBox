@@ -31,7 +31,7 @@ extern "C" {
 
 void Abort()
 {
-  throw EAbort(L"");
+  throw EAbort("");
 }
 
 void Error(intptr_t Id, intptr_t ErrorId)
@@ -675,7 +675,7 @@ void TStrings::SetValue(const UnicodeString Name, const UnicodeString Value)
   {
     if (Index < 0)
     {
-      Index = Add(L"");
+      Index = Add("");
     }
     SetString(Index, Name + L'=' + Value);
   }
