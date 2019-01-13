@@ -73,7 +73,7 @@ public:
   TQueryParamsTimerEvent TimerEvent;
   UnicodeString TimerMessage;
   uint32_t TimerAnswers{0};
-  TQueryType TimerQueryType;
+  TQueryType TimerQueryType{static_cast<TQueryType>(-1)};
   uintptr_t Timeout{0};
   uintptr_t TimeoutAnswer{0};
   UnicodeString NeverAskAgainTitle;
@@ -133,17 +133,17 @@ uint32_t MessageDialog(UnicodeString Msg, TQueryType Type,
   uint32_t Answers, UnicodeString HelpKeyword = HELP_NONE, const TMessageParams *Params = nullptr);
 uint32_t MessageDialog(intptr_t Ident, TQueryType Type,
   uint32_t Answers, UnicodeString HelpKeyword = HELP_NONE, const TMessageParams *Params = nullptr);
-uint32_t SimpleErrorDialog(UnicodeString Msg, UnicodeString MoreMessages = L"");
+uint32_t SimpleErrorDialog(UnicodeString Msg, UnicodeString MoreMessages = "");
 
 uint32_t MoreMessageDialog(UnicodeString Message,
   TStrings *MoreMessages, TQueryType Type, uint32_t Answers,
   UnicodeString HelpKeyword, const TMessageParams *Params = nullptr);
 
 uint32_t ExceptionMessageDialog(Exception *E, TQueryType Type,
-  UnicodeString MessageFormat = L"", uint32_t Answers = qaOK,
+  UnicodeString MessageFormat = "", uint32_t Answers = qaOK,
   UnicodeString HelpKeyword = HELP_NONE, const TMessageParams *Params = nullptr);
 uint32_t FatalExceptionMessageDialog(Exception *E, TQueryType Type,
-  intptr_t SessionReopenTimeout, UnicodeString MessageFormat = L"", uint32_t Answers = qaOK,
+  intptr_t SessionReopenTimeout, UnicodeString MessageFormat = "", uint32_t Answers = qaOK,
   UnicodeString HelpKeyword = HELP_NONE, const TMessageParams *Params = nullptr);
 
 // forms\Custom.cpp
@@ -211,7 +211,7 @@ bool DoCleanupDialog(TStoredSessionList *SessionList,
 
 // forms\Console.cpp
 void DoConsoleDialog(TTerminal * Terminal,
-    const UnicodeString Command = L"", const TStrings * Log = nullptr);
+    const UnicodeString Command = "", const TStrings * Log = nullptr);
 
 // forms\Copy.cpp
 constexpr intptr_t coTemp                = 0x001;
