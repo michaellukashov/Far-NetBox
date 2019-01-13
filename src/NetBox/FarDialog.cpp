@@ -1057,6 +1057,8 @@ void TFarDialogItem::ResetBounds()
 {
   TRect B = FBounds;
   FarDialogItem *DItem = GetDialogItem();
+  nb::used(B);
+  nb::used(DItem);
 #define BOUND(DIB, BB, DB, CB) DItem->DIB = B.BB >= 0 ? \
     (GetContainer() ? nb::ToInt(GetContainer()->CB) : 0) + B.BB : GetDialog()->GetSize().DB + B.BB
   BOUND(X1, Left, x, GetLeft());

@@ -184,6 +184,7 @@ public:
   intptr_t GetItemCount() const;
 
 protected:
+  TFarDialogContainer() = delete;
   explicit TFarDialogContainer(TObjectClassId Kind, TFarDialog *ADialog) noexcept;
   virtual ~TFarDialogContainer() noexcept;
 
@@ -203,7 +204,7 @@ private:
   bool FEnabled{false};
 };
 
-#define DIF_INVERSE 0x00000001UL
+constexpr intptr_t DIF_INVERSE = 0x00000001UL;
 
 NB_DEFINE_CLASS_ID(TFarDialogItem);
 class TFarDialogItem : public TObject
@@ -289,6 +290,7 @@ protected:
   TNotifyEvent FOnExit;
   TFarMouseClickEvent FOnMouseClick;
 
+  TFarDialogItem() = delete;
   explicit TFarDialogItem(TObjectClassId Kind, TFarDialog *ADialog, uintptr_t AType) noexcept;
   virtual ~TFarDialogItem() noexcept;
 
