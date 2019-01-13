@@ -550,7 +550,7 @@ public:
   static UnicodeString GetFileName();
 
 private:
-  EditorInfo *FEditorInfo{nullptr};
+  gsl::owner<EditorInfo*> FEditorInfo{nullptr};
 };
 
 class TFarEnvGuard // : public TObject
