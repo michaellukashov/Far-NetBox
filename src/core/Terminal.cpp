@@ -2320,9 +2320,9 @@ bool TTerminal::FileOperationLoopQuery(Exception &E,
   TFileOperationProgressType *OperationProgress, const UnicodeString Message,
   uintptr_t AFlags, const UnicodeString SpecialRetry, const UnicodeString HelpKeyword)
 {
-  bool Result = false;
+  bool Result{false};
   GetLog()->AddException(&E);
-  uintptr_t Answer;
+  uintptr_t Answer{0};
   bool AllowSkip = FLAGSET(AFlags, folAllowSkip);
   bool SkipToAllPossible = AllowSkip && (OperationProgress != nullptr);
 
@@ -2338,7 +2338,7 @@ bool TTerminal::FileOperationLoopQuery(Exception &E,
       FLAGMASK(!SpecialRetry.IsEmpty(), qaYes);
     TQueryParams Params(qpAllowContinueOnError | FLAGMASK(!AllowSkip, qpFatalAbort));
     Params.HelpKeyword = HelpKeyword;
-    TQueryButtonAlias Aliases[2];
+    TQueryButtonAlias Aliases[2]{};
     intptr_t AliasCount = 0;
 
     if (FLAGSET(Answers, qaAll))

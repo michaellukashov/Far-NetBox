@@ -19,7 +19,7 @@ __removed #pragma package(smart_init)
 __removed TConfiguration * Configuration = nullptr;
 TStoredSessionList *StoredSessions = nullptr;
 //---------------------------------------------------------------------------
-TQueryButtonAlias::TQueryButtonAlias() :
+TQueryButtonAlias::TQueryButtonAlias() noexcept :
   Button(0),
   OnSubmit(nullptr),
   GroupWith(-1),

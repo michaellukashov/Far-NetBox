@@ -69,14 +69,14 @@ using TButtonSubmitEvent = nb::FastDelegate2<void,
 
 struct NB_CORE_EXPORT TQueryButtonAlias : public TObject
 {
-  TQueryButtonAlias();
+  TQueryButtonAlias() noexcept;
 
   uintptr_t Button{0};
   UnicodeString Alias;
   TButtonSubmitEvent OnSubmit;
   int GroupWith{0};
   bool Default{false};
-  TShiftStateFlag GrouppedShiftState{};
+  TShiftStateFlag GrouppedShiftState{ssShift};
   bool ElevationRequired{false};
   bool MenuButton{false};
   UnicodeString ActionAlias;
