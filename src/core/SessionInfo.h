@@ -132,6 +132,7 @@ class NB_CORE_EXPORT TSessionAction
   CUSTOM_MEM_ALLOCATION_IMPL
   NB_DISABLE_COPY(TSessionAction)
 public:
+  TSessionAction() = delete;
   explicit TSessionAction(TActionLog *Log, TLogAction Action) noexcept;
   virtual ~TSessionAction() noexcept;
 
@@ -157,6 +158,7 @@ public:
 class NB_CORE_EXPORT TFileLocationSessionAction : public TFileSessionAction
 {
 public:
+  TFileLocationSessionAction() = delete;
   explicit TFileLocationSessionAction(TActionLog *Log, TLogAction Action) noexcept;
   explicit TFileLocationSessionAction(TActionLog *Log, TLogAction Action, const UnicodeString AFileName) noexcept;
 
@@ -166,12 +168,14 @@ public:
 class NB_CORE_EXPORT TUploadSessionAction : public TFileLocationSessionAction
 {
 public:
+  TUploadSessionAction() = delete;
   explicit TUploadSessionAction(TActionLog *Log) noexcept;
 };
 //---------------------------------------------------------------------------
 class NB_CORE_EXPORT TDownloadSessionAction : public TFileLocationSessionAction
 {
 public:
+  TDownloadSessionAction() = delete;
   explicit TDownloadSessionAction(TActionLog *Log) noexcept;
 };
 //---------------------------------------------------------------------------
