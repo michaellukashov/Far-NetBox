@@ -109,7 +109,7 @@ bool TWinSCPPlugin::ConfigureEx(intptr_t /*Item*/)
 
   do
   {
-    Result = Menu(FMENU_WRAPMODE, GetMsg(NB_PLUGIN_TITLE), L"", MenuItems.get());
+    Result = Menu(FMENU_WRAPMODE, GetMsg(NB_PLUGIN_TITLE), "", MenuItems.get());
 
     if (Result >= 0)
     {
@@ -305,7 +305,7 @@ TCustomFarFileSystem *TWinSCPPlugin::OpenPluginEx(intptr_t OpenFrom, intptr_t It
         DebugAssert(false);
         Abort();
       }
-      const UnicodeString SessionName = ::PuttyUnMungeStr(ImportStorage->ReadStringRaw("Session", L""));
+      const UnicodeString SessionName = ::PuttyUnMungeStr(ImportStorage->ReadStringRaw("Session", ""));
       std::unique_ptr<TSessionData> Session(std::make_unique<TSessionData>(SessionName));
       Session->Load(ImportStorage.get(), false);
       Session->SetModified(true);
@@ -403,7 +403,7 @@ void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
   MenuItems->SetDisabled(MPageant, !::SysUtulsFileExists(::ExpandEnvVars(ExtractProgram(GetFarConfiguration()->GetPageantPath()))));
   MenuItems->SetDisabled(MPuttygen, !::SysUtulsFileExists(::ExpandEnvVars(ExtractProgram(GetFarConfiguration()->GetPuttygenPath()))));
 
-  intptr_t Result = Menu(FMENU_WRAPMODE, GetMsg(NB_MENU_COMMANDS), L"", MenuItems.get());
+  intptr_t Result = Menu(FMENU_WRAPMODE, GetMsg(NB_MENU_COMMANDS), "", MenuItems.get());
 
   if (Result >= 0)
   {
@@ -786,7 +786,7 @@ void TWinSCPPlugin::CleanupConfiguration()
     }
     else
     {
-      const UnicodeString Version = Storage->ReadString("Version", L"");
+      const UnicodeString Version = Storage->ReadString("Version", "");
       if (::StrToVersionNumber(Version) < MAKEVERSIONNUMBER(2, 1, 19))
       {
         Storage->DeleteSubKey("CDCache");
