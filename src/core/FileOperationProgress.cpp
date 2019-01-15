@@ -117,9 +117,6 @@ TFileOperationProgressType&TFileOperationProgressType::operator=(const TFileOper
   FCounterSet = rhs.FCounterSet;
   FOperation = rhs.FOperation;
   FSide = rhs.FSide;
-  FFileName = rhs.FFileName;
-  FDirectory = rhs.FDirectory;
-  FAsciiTransfer = rhs.FAsciiTransfer;
   FLocalSize = rhs.FLocalSize;
   FLocallyUsed = rhs.FLocallyUsed;
   FOperation = rhs.FOperation;
@@ -134,11 +131,6 @@ TFileOperationProgressType&TFileOperationProgressType::operator=(const TFileOper
   FCPSLimit = rhs.FCPSLimit;
   FSuspended = rhs.FSuspended;
 
-  FLocalSize = rhs.FLocalSize;
-  FTransferSize = rhs.FTransferSize;
-  FLocallyUsed = rhs.FLocallyUsed;
-  FSkippedSize = rhs.FSkippedSize;
-  FTransferredSize = rhs.FTransferredSize;
   FTransferringFile = rhs.FTransferringFile;
   FLastSecond = rhs.FLastSecond;
 

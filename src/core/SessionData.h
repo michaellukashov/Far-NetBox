@@ -919,7 +919,8 @@ class NB_CORE_EXPORT TStoredSessionList : public TNamedObjectList
 {
   NB_DISABLE_COPY(TStoredSessionList)
 public:
-  explicit TStoredSessionList(bool aReadOnly = false) noexcept;
+  TStoredSessionList() noexcept;
+  explicit TStoredSessionList(bool aReadOnly) noexcept;
   void Reload();
   void Save(bool All, bool Explicit);
   void Saved();

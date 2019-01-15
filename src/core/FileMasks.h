@@ -205,6 +205,7 @@ class NB_CORE_EXPORT TInteractiveCustomCommand : public TCustomCommand
 {
   NB_DISABLE_COPY(TInteractiveCustomCommand)
 public:
+  TInteractiveCustomCommand() = delete;
   explicit TInteractiveCustomCommand(TCustomCommand *ChildCustomCommand) noexcept;
 
 protected:

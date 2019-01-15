@@ -234,7 +234,7 @@ void TSessionData::Default()
   SetSCPLsFullTime(asAuto);
   SetNotUtf(asOn); // asAuto
 
-  S3DefaultRegion = L"";
+  S3DefaultRegion = "";
 
   // SFTP
   SetSftpServer("");
@@ -282,7 +282,7 @@ void TSessionData::Default()
   SetFtpProxyLogonType(0); // none
 
   SetCustomParam1("");
-  SetCustomParam2(L"");
+  SetCustomParam2("");
 
 #if 0
   IsWorkspace = false;
@@ -605,7 +605,7 @@ bool TSessionData::IsInFolderOrWorkspace(UnicodeString AFolder) const
 //---------------------------------------------------------------------
 void TSessionData::DoLoad(THierarchicalStorage *Storage, bool PuttyImport, bool &RewritePassword)
 {
-  SetSessionVersion(::StrToVersionNumber(Storage->ReadString("Version", L"")));
+  SetSessionVersion(::StrToVersionNumber(Storage->ReadString("Version", "")));
   // Make sure we only ever use methods supported by TOptionsStorage
   // (implemented by TOptionsIniFile)
 
@@ -626,7 +626,7 @@ void TSessionData::DoLoad(THierarchicalStorage *Storage, bool PuttyImport, bool 
       FPassword = Storage->ReadStringAsBinaryData("Password", FPassword);
     }
   }
-  SetHostKey(Storage->ReadString(L"SshHostKey", GetHostKey())); // probably never used
+  SetHostKey(Storage->ReadString("SshHostKey", GetHostKey())); // probably never used
   SetNote(Storage->ReadString("Note", GetNote()));
   // Putty uses PingIntervalSecs
   intptr_t PingIntervalSecs = Storage->ReadInteger("PingIntervalSecs", -1);
@@ -659,7 +659,7 @@ void TSessionData::DoLoad(THierarchicalStorage *Storage, bool PuttyImport, bool 
   SetLogicalHostName(Storage->ReadString("LogicalHostName", Storage->ReadString("GSSAPIServerRealm", Storage->ReadString("KerbPrincipal", GetLogicalHostName()))));
   SetChangeUsername(Storage->ReadBool("ChangeUsername", GetChangeUsername()));
   SetCompression(Storage->ReadBool("Compression", GetCompression()));
-  TSshProt ASshProt = static_cast<TSshProt>(Storage->ReadInteger(L"SshProt", GetSshProt()));
+  TSshProt ASshProt = static_cast<TSshProt>(Storage->ReadInteger("SshProt", GetSshProt()));
   // Old sessions may contain the values correponding to the fallbacks we used to allow; migrate them
   if (ASshProt == ssh2deprecated)
   {
@@ -746,7 +746,7 @@ void TSessionData::DoLoad(THierarchicalStorage *Storage, bool PuttyImport, bool 
   if (Storage->ValueExists("ProxyPassword"))
   {
     // encrypt unencrypted password
-    SetProxyPassword(Storage->ReadString("ProxyPassword", L""));
+    SetProxyPassword(Storage->ReadString("ProxyPassword", ""));
   }
   else
   {
@@ -848,14 +848,14 @@ void TSessionData::DoLoad(THierarchicalStorage *Storage, bool PuttyImport, bool 
   SetMinTlsVersion(static_cast<TTlsVersion>(Storage->ReadInteger("MinTlsVersion", GetMinTlsVersion())));
   SetMaxTlsVersion(static_cast<TTlsVersion>(Storage->ReadInteger("MaxTlsVersion", GetMaxTlsVersion())));
 
-  if (Storage->ValueExists(L"EncryptKeyPlain"))
+  if (Storage->ValueExists("EncryptKeyPlain"))
   {
-    EncryptKey = Storage->ReadString(L"EncryptKeyPlain", EncryptKey);
+    EncryptKey = Storage->ReadString("EncryptKeyPlain", EncryptKey);
     RewritePassword = true;
   }
   else
   {
-    FEncryptKey = Storage->ReadStringAsBinaryData(L"EncryptKey", FEncryptKey);
+    FEncryptKey = Storage->ReadStringAsBinaryData("EncryptKey", FEncryptKey);
   }
 
 #if 0
@@ -938,7 +938,7 @@ void TSessionData::Load(THierarchicalStorage *Storage, bool PuttyImport)
     // this breaks sites reload and consequently an overall operation,
     // such as opening Sites menu
     ClearSessionPasswords();
-    SetProxyPassword(L"");
+    SetProxyPassword("");
 
     DoLoad(Storage, PuttyImport, RewritePassword);
 
@@ -964,10 +964,10 @@ void TSessionData::Load(THierarchicalStorage *Storage, bool PuttyImport)
         {
           Storage->WriteBinaryDataAsString("TunnelPassword", FTunnelPassword);
         }
-        Storage->DeleteValue(L"EncryptKeyPlain");
+        Storage->DeleteValue("EncryptKeyPlain");
         if (!EncryptKey().IsEmpty())
         {
-          Storage->WriteBinaryDataAsString(L"EncryptKey", FEncryptKey);
+          Storage->WriteBinaryDataAsString("EncryptKey", FEncryptKey);
         }
         Storage->CloseSubKey();
       }
@@ -1039,7 +1039,7 @@ void TSessionData::DoSave(THierarchicalStorage *Storage,
     // duplicate kerberos setting with keys of the vintela quest putty
     WRITE_DATA_EX(Bool, "AuthSSPI", GetAuthGSSAPI(), );
     WRITE_DATA_EX(Bool, "SSPIFwdTGT", GetGSSAPIFwdTGT(), );
-    WRITE_DATA_EX(String, L"KerbPrincipal", GetLogicalHostName(), );
+    WRITE_DATA_EX(String, "KerbPrincipal", GetLogicalHostName(), );
     // duplicate kerberos setting with keys of the official putty
     WRITE_DATA_EX(Bool, "GssapiFwd", GetGSSAPIFwdTGT(), );
   }
@@ -4584,6 +4584,13 @@ TFtps TSessionData::TranslateFtpEncryptionNumber(intptr_t FtpEncryption) const
 }
 
 //=== TStoredSessionList ----------------------------------------------
+TStoredSessionList::TStoredSessionList() noexcept :
+  TNamedObjectList(OBJECT_CLASS_TStoredSessionList),
+  FDefaultSettings(std::make_unique<TSessionData>(DefaultName)),
+  FReadOnly(false)
+{
+}
+
 TStoredSessionList::TStoredSessionList(bool AReadOnly) noexcept :
   TNamedObjectList(OBJECT_CLASS_TStoredSessionList),
   FDefaultSettings(std::make_unique<TSessionData>(DefaultName)),
@@ -4726,7 +4733,7 @@ void TStoredSessionList::DoSave(THierarchicalStorage *Storage,
 void TStoredSessionList::DoSave(THierarchicalStorage *Storage,
   bool All, bool RecryptPasswordOnly, TStrings *RecryptPasswordErrors)
 {
-  std::unique_ptr<TSessionData> FactoryDefaults(std::make_unique<TSessionData>(L""));
+  std::unique_ptr<TSessionData> FactoryDefaults(std::make_unique<TSessionData>(""));
   try__finally
   {
     while (FPendingRemovals->Count > 0)
@@ -4949,7 +4956,7 @@ void TStoredSessionList::ImportFromKnownHosts(TStrings *Lines)
               TSessionData * SessionData = dyn_cast<TSessionData>(FindByName(NameStr));
               if (SessionData == nullptr)
               {
-                SessionData = new TSessionData(L"");
+                SessionData = new TSessionData("");
                 SessionDataOwner.reset(SessionData);
                 SessionData->CopyData(GetDefaultSettings());
                 SessionData->SetName(NameStr);
@@ -5064,7 +5071,7 @@ void TStoredSessionList::Import(TStoredSessionList *From,
   {
     if (!OnlySelected || From->GetSession(Index)->GetSelected())
     {
-      TSessionData *Session = new TSessionData(L"");
+      TSessionData *Session = new TSessionData("");
       Session->Assign(From->GetSession(Index));
       Session->SetModified(true);
       Session->MakeUniqueIn(this);

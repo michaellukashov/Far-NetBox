@@ -569,7 +569,7 @@ void TCopyParamType::Assign(const TCopyParamType *Source)
 #undef COPY
 #undef COPY2
 #define COPY(Prop) Set ## Prop(Source->Get ## Prop())
-#define COPY2(Prop) Prop = (Source->##Prop)
+#define COPY2(Prop) Prop = Source->##Prop
   COPY(FileNameCase);
   COPY(PreserveReadOnly);
   COPY(PreserveTime);

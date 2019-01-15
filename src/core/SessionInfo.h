@@ -330,7 +330,7 @@ private:
   UnicodeString GetLogFileName();
   void DoAdd(TLogLineType AType, const UnicodeString ALine,
     TDoAddLogEvent Event);
-  __removed void (__closure *f)(TLogLineType Type, const UnicodeString &Line));
+  __removed void (__closure *f)(TLogLineType Type, const UnicodeString &Line);
   void DoAddToParent(TLogLineType AType, const UnicodeString ALine);
   void DoAddToSelf(TLogLineType AType, const UnicodeString ALine);
   void AddStartupInfo(bool System);
