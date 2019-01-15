@@ -72,14 +72,14 @@ public:
     propertyBase<T>(Value.obj)
   {}
 
-  explicit Property(T &Value):
+  explicit Property(T &Value) :
     propertyBase<T>(Value)
   {}
 
-  T &operator=(const Property &Value)
+  Property &operator=(const Property &Value)
   {
     this->obj = Value.obj;
-    return this->obj;
+    return this;
   }
 
   operator T() const
