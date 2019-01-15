@@ -691,6 +691,7 @@ class TFarLister : public TFarDialogItem
 {
   NB_DISABLE_COPY(TFarLister)
 public:
+  TFarLister() = delete;
   explicit TFarLister(TFarDialog *ADialog) noexcept;
   virtual ~TFarLister() noexcept;
 
