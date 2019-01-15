@@ -50,11 +50,11 @@ public:
 		{
 		}
 
-		node*		left;
-		node*		parent;
-		node*		right;
-		value_type	value;
-		color_e		color;
+		node*		left{nullptr};
+		node*		parent{nullptr};
+		node*		right{nullptr};
+		value_type	value{};
+		color_e		color{};
 	};
 
 	explicit rb_tree_base(const allocator_type& allocator = allocator_type())
@@ -111,7 +111,7 @@ public:
 		return new_node;
 	}
 
-	node* find_node(const key_type& key) 
+	node* find_node(const key_type& key)
 	{
 		node* iter(m_root);
 		while (iter != &ms_sentinel)
@@ -308,7 +308,7 @@ public:
 					grandparent->color = red;
 					iter = grandparent;
 				}
-				else 
+				else
 				{
 					if (iter == iter->parent->right)
 					{
@@ -520,10 +520,10 @@ private:
 	rb_tree_base(const rb_tree_base&);
 	rb_tree_base& operator=(const rb_tree_base&);
 
-	node*			m_root;
-	size_type		m_size;
+	node*			m_root{nullptr};
+	size_type		m_size{0};
 	allocator_type	m_allocator;
-    node		ms_sentinel;
+		node		ms_sentinel;
 };
 
 template<typename TKey, class TAllocator = rde::allocator>

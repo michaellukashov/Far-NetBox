@@ -78,7 +78,7 @@ class set : private rb_tree<T, TAllocator>
     }
 
     TNodePtr	m_node;
-    set*		m_set;
+    set*		m_set{nullptr};
   };
 
 public:
