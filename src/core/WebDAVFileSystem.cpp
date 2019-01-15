@@ -276,7 +276,7 @@ void TWebDAVFileSystem::NeonClientOpenSessionInternal(UnicodeString &CorrectedUr
   AttemptedUrls->Add(Url);
   while (true)
   {
-    CorrectedUrl = L"";
+    CorrectedUrl = "";
     NeonOpen(CorrectedUrl, Url);
     // No error and no corrected URL?  We're done here.
     if (CorrectedUrl.IsEmpty())
@@ -686,7 +686,7 @@ void TWebDAVFileSystem::ReadCurrentDirectory()
   else
   {
     FCurrentDirectory = FCachedDirectoryChange;
-    FCachedDirectoryChange = L"";
+    FCachedDirectoryChange = "";
   }
 }
 //---------------------------------------------------------------------------
@@ -1434,9 +1434,9 @@ void TWebDAVFileSystem::NeonPreSend(
 {
   TWebDAVFileSystem *FileSystem = static_cast<TWebDAVFileSystem *>(UserData);
 
-  FileSystem->FAuthorizationProtocol = L"";
+  FileSystem->FAuthorizationProtocol = "";
   UnicodeString HeaderBuf(StrFromNeon(UTF8String(Header->data, Header->used)));
-  const UnicodeString AuthorizationHeaderName(L"Authorization:");
+  const UnicodeString AuthorizationHeaderName("Authorization:");
   intptr_t P = HeaderBuf.Pos(AuthorizationHeaderName);
   if (P > 0)
   {
@@ -1465,7 +1465,7 @@ void TWebDAVFileSystem::NeonPreSend(
     ne_buffer_zappend(Header, "Translate: f\r\n");
   }
 
-  const UnicodeString ContentTypeHeaderPrefix(L"Content-Type: ");
+  const UnicodeString ContentTypeHeaderPrefix("Content-Type: ");
   if (FileSystem->FTerminal->GetLog()->GetLogging())
   {
     const char *Buffer;
@@ -1490,7 +1490,7 @@ void TWebDAVFileSystem::NeonPreSend(
     }
   }
 
-  FileSystem->FResponse = L"";
+  FileSystem->FResponse = "";
 }
 //---------------------------------------------------------------------------
 int TWebDAVFileSystem::NeonPostSend(ne_request * /*Req*/, void *UserData,
@@ -1900,7 +1900,7 @@ int TWebDAVFileSystem::NeonRequestAuth(
     else
     {
       Terminal->LogEvent("Username prompt");
-      if (!Terminal->PromptUser(SessionData, pkUserName, LoadStr(USERNAME_TITLE), L"",
+      if (!Terminal->PromptUser(SessionData, pkUserName, LoadStr(USERNAME_TITLE), "",
             LoadStr(USERNAME_PROMPT2), true, NE_ABUFSIZ, FileSystem->FUserName))
       {
         // note that we never get here actually
@@ -1949,7 +1949,7 @@ int TWebDAVFileSystem::NeonRequestAuth(
         Terminal->LogEvent("Password prompt");
         Result =
           Terminal->PromptUser(
-            SessionData, pkPassword, LoadStr(PASSWORD_TITLE), L"",
+            SessionData, pkPassword, LoadStr(PASSWORD_TITLE), "",
             LoadStr(PASSWORD_PROMPT), false, NE_ABUFSIZ, APassword);
       }
 

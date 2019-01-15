@@ -165,11 +165,11 @@ void CheckNeonStatus(ne_session *Session, intptr_t NeonStatus,
         // noop
         DebugAssert(!NeonError.IsEmpty());
         Error = NeonError;
-        NeonError = L"";
+        NeonError = "";
         break;
 
       case NE_LOOKUP:
-        Error = ReplaceStr(LoadStr(NET_TRANSL_HOST_NOT_EXIST2), L"%HOST%", AHostName);
+        Error = ReplaceStr(LoadStr(NET_TRANSL_HOST_NOT_EXIST2), "%HOST%", AHostName);
         break;
 
       case NE_AUTH:
@@ -185,7 +185,7 @@ void CheckNeonStatus(ne_session *Session, intptr_t NeonStatus,
         break;
 
       case NE_TIMEOUT:
-        Error = ReplaceStr(LoadStr(NET_TRANSL_TIMEOUT2), L"%HOST%", AHostName);
+        Error = ReplaceStr(LoadStr(NET_TRANSL_TIMEOUT2), "%HOST%", AHostName);
         break;
 
       case NE_REDIRECT:
@@ -496,7 +496,7 @@ UnicodeString CertificateSummary(const TNeonCertificateData &Data, const Unicode
     Summary = NeonCertificateFailuresErrorStr(Data.Failures, AHostName);
   }
 
-  UnicodeString ValidityTimeFormat = L"ddddd tt";
+  UnicodeString ValidityTimeFormat = "ddddd tt";
   return
     FMTLOAD(CERT_TEXT,
       Data.Issuer + L"\n",
