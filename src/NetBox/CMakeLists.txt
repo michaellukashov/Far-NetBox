@@ -1483,12 +1483,12 @@ set(WinSCP_HEADERS
   ../core/SessionData.h
   ../core/NamedObjs.h
   ../core/SessionInfo.h
-  ../core/ScpFileSystem.h
-  ../core/FileSystems.h
-  ../core/WebDAVFileSystem.h
-  ../core/SecureShell.h
-  ../core/SftpFileSystem.h
   ../core/CopyParam.h
+  ../core/SecureShell.h
+  ../core/FileSystems.h
+  ../core/ScpFileSystem.h
+  ../core/WebDAVFileSystem.h
+  ../core/SftpFileSystem.h
   ../core/FtpFileSystem.h
   ../core/S3FileSystem.h
   ../core/Queue.h
