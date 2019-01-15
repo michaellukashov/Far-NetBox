@@ -1853,6 +1853,7 @@ class TSFTPCalculateFilesChecksumQueue : public TSFTPFixedLenQueue
 {
   NB_DISABLE_COPY(TSFTPCalculateFilesChecksumQueue)
 public:
+  TSFTPCalculateFilesChecksumQueue() = delete;
   explicit TSFTPCalculateFilesChecksumQueue(TSFTPFileSystem *AFileSystem, uintptr_t CodePage) noexcept :
     TSFTPFixedLenQueue(AFileSystem, CodePage)
   {

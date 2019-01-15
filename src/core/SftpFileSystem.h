@@ -149,7 +149,7 @@ protected:
   void CustomReadFile(const UnicodeString AFileName,
     TRemoteFile *&AFile, SSH_FXP_TYPE Type, TRemoteFile *ALinkedByFile = nullptr,
     SSH_FX_TYPE AllowStatus = -1);
-  virtual UnicodeString RemoteGetCurrentDirectory() const override;
+  UnicodeString RemoteGetCurrentDirectory() const override;
 
   SSH_FX_TYPE GotStatusPacket(TSFTPPacket *Packet, SSH_FX_TYPE AllowStatus);
   bool RemoteFileExists(const UnicodeString AFullPath, TRemoteFile **AFile = nullptr);

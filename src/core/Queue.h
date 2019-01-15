@@ -190,8 +190,8 @@ protected:
   void RetryItem(TQueueItem *Item);
   void DeleteItem(TQueueItem *Item, bool CanKeep);
 
-  virtual bool WaitForEvent();
-  virtual void ProcessEvent();
+  bool WaitForEvent() override;
+  void ProcessEvent() override;
   void TerminalFinished(TTerminalItem *TerminalItem);
   bool TerminalFree(TTerminalItem *TerminalItem);
   intptr_t GetParallelDurationThreshold() const;
@@ -494,6 +494,7 @@ class NB_CORE_EXPORT TTerminalThread : public TSignalThread
 {
   NB_DISABLE_COPY(TTerminalThread)
 public:
+  TTerminalThread() = delete;
   explicit TTerminalThread(TTerminal *Terminal) noexcept;
   void InitTerminalThread();
   virtual ~TTerminalThread() noexcept;
@@ -514,8 +515,8 @@ public:
   bool GetCancelling() const { return FCancel; }
 
 protected:
-  virtual void ProcessEvent();
-  virtual bool Finished();
+  void ProcessEvent() override;
+  bool Finished() override;
 
 private:
   TTerminal *FTerminal{nullptr};

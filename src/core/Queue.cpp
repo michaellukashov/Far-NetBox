@@ -22,7 +22,7 @@ public:
   TParallelTransferQueueItem(const TLocatedQueueItem *ParentItem, TParallelOperation *ParallelOperation) noexcept;
 
 protected:
-  virtual void DoExecute(TTerminal *Terminal) override;
+  void DoExecute(TTerminal *Terminal) override;
 
 private:
   TParallelOperation *FParallelOperation{nullptr};
@@ -50,7 +50,7 @@ public:
   {
   }
 
-  virtual void Execute(void * /*Arg*/) override
+  void Execute(void * /*Arg*/) override
   {
     if (OnNotify != nullptr)
     {
@@ -74,7 +74,7 @@ public:
   {
   }
 
-  virtual void Execute(void * /*Arg*/) override
+  void Execute(void * /*Arg*/) override
   {
     if (OnInformation != nullptr)
     {
@@ -82,7 +82,7 @@ public:
     }
   }
 
-  virtual bool Force() const override
+  bool Force() const override
   {
     // we need to propagate mainly the end-phase event even, when user cancels
     // the connection, so that authentication window is closed
@@ -111,7 +111,7 @@ public:
   {
   }
 
-  virtual void Execute(void *Arg) override
+  void Execute(void *Arg) override
   {
     if (OnQueryUser != nullptr)
     {
@@ -145,7 +145,7 @@ public:
 
   virtual ~TPromptUserAction() noexcept = default;
 
-  virtual void Execute(void *Arg) override
+  void Execute(void *Arg) override
   {
     if (OnPromptUser != nullptr)
     {
@@ -174,7 +174,7 @@ public:
   {
   }
 
-  virtual void Execute(void *Arg) override
+  void Execute(void *Arg) override
   {
     if (OnShowExtendedException != nullptr)
     {
@@ -199,7 +199,7 @@ public:
   {
   }
 
-  virtual void Execute(void * /*Arg*/) override
+  void Execute(void * /*Arg*/) override
   {
     if (OnDisplayBanner != nullptr)
     {
@@ -227,7 +227,7 @@ public:
   {
   }
 
-  virtual void Execute(void * /*Arg*/) override
+  void Execute(void * /*Arg*/) override
   {
     if (OnReadDirectory != nullptr)
     {
@@ -253,7 +253,7 @@ public:
   {
   }
 
-  virtual void Execute(void * /*Arg*/) override
+  void Execute(void * /*Arg*/) override
   {
     if (OnReadDirectoryProgress != nullptr)
     {
@@ -278,6 +278,7 @@ public:
   static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TTerminalItem); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TTerminalItem) || TSignalThread::is(Kind); }
 public:
+  TTerminalItem() = delete;
   explicit TTerminalItem(TTerminalQueue *Queue) noexcept;
   virtual ~TTerminalItem() noexcept;
   void InitTerminalItem(intptr_t Index);
@@ -290,16 +291,16 @@ public:
   bool Resume();
 
 protected:
-  TTerminalQueue *FQueue;
-  TBackgroundTerminal *FTerminal;
-  TQueueItem *FItem;
+  TTerminalQueue *FQueue{nullptr};
+  TBackgroundTerminal *FTerminal{nullptr};
+  TQueueItem *FItem{nullptr};
   TCriticalSection FCriticalSection;
-  TUserAction *FUserAction;
-  bool FCancel;
-  bool FPause;
+  TUserAction *FUserAction{nullptr};
+  bool FCancel{false};
+  bool FPause{false};
 
-  virtual void ProcessEvent() override;
-  virtual bool Finished() override;
+  void ProcessEvent() override;
+  bool Finished() override;
   bool WaitForUserAction(TQueueItem::TStatus ItemStatus, TUserAction *UserAction);
   bool OverrideItemStatus(TQueueItem::TStatus &ItemStatus) const;
 
@@ -1281,7 +1282,7 @@ public:
     TTerminalItem *Item, const UnicodeString Name);
 
 protected:
-  virtual bool DoQueryReopen(Exception *E) override;
+  bool DoQueryReopen(Exception *E) override;
 
 private:
   TTerminalItem *FItem;

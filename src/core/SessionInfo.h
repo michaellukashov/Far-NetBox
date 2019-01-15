@@ -89,7 +89,7 @@ public:
     const UnicodeString AName, const UnicodeString AInstructions, TStrings *Prompts,
     TStrings *Results) = 0;
   virtual void DisplayBanner(const UnicodeString ABanner) = 0;
-  virtual void FatalError(Exception *E, const UnicodeString AMsg, const UnicodeString AHelpKeyword = L"") = 0;
+  virtual void FatalError(Exception *E, const UnicodeString AMsg, const UnicodeString AHelpKeyword = "") = 0;
   virtual void HandleExtendedException(Exception *E) = 0;
   virtual void Closed() = 0;
   virtual void ProcessGUI() = 0;
@@ -149,6 +149,7 @@ protected:
 class NB_CORE_EXPORT TFileSessionAction : public TSessionAction
 {
 public:
+  TFileSessionAction() = delete;
   explicit TFileSessionAction(TActionLog *Log, TLogAction Action) noexcept;
   explicit TFileSessionAction(TActionLog *Log, TLogAction Action, const UnicodeString AFileName) noexcept;
 
@@ -184,6 +185,7 @@ class TRights;
 class NB_CORE_EXPORT TChmodSessionAction : public TFileSessionAction
 {
 public:
+  TChmodSessionAction() = delete;
   explicit TChmodSessionAction(TActionLog *Log, const UnicodeString AFileName) noexcept;
   explicit TChmodSessionAction(TActionLog *Log, const UnicodeString AFileName,
     const TRights &ARights) noexcept;
@@ -195,6 +197,7 @@ public:
 class NB_CORE_EXPORT TTouchSessionAction : public TFileSessionAction
 {
 public:
+  TTouchSessionAction() = delete;
   explicit TTouchSessionAction(TActionLog *Log, const UnicodeString AFileName,
     const TDateTime &Modification) noexcept;
 };
@@ -202,12 +205,14 @@ public:
 class NB_CORE_EXPORT TMkdirSessionAction : public TFileSessionAction
 {
 public:
+  TMkdirSessionAction() = delete;
   explicit TMkdirSessionAction(TActionLog *Log, const UnicodeString AFileName) noexcept;
 };
 //---------------------------------------------------------------------------
 class NB_CORE_EXPORT TRmSessionAction : public TFileSessionAction
 {
 public:
+  TRmSessionAction() = delete;
   explicit TRmSessionAction(TActionLog *Log, const UnicodeString AFileName) noexcept;
 
   void Recursive();
@@ -216,6 +221,7 @@ public:
 class NB_CORE_EXPORT TMvSessionAction : public TFileLocationSessionAction
 {
 public:
+  TMvSessionAction() = delete;
   explicit TMvSessionAction(TActionLog *Log, const UnicodeString AFileName,
     const UnicodeString ADestination) noexcept;
 };
@@ -223,6 +229,7 @@ public:
 class NB_CORE_EXPORT TCpSessionAction : public TFileLocationSessionAction
 {
 public:
+  TCpSessionAction() = delete;
   explicit TCpSessionAction(TActionLog * Log, const UnicodeString AFileName,
     const UnicodeString ADestination) noexcept;
 };
@@ -230,6 +237,7 @@ public:
 class NB_CORE_EXPORT TCallSessionAction : public TSessionAction
 {
 public:
+  TCallSessionAction() = delete;
   explicit TCallSessionAction(TActionLog *Log, const UnicodeString Command,
     const UnicodeString ADestination) noexcept;
 
@@ -240,6 +248,7 @@ public:
 class NB_CORE_EXPORT TLsSessionAction : public TSessionAction
 {
 public:
+  TLsSessionAction() = delete;
   explicit TLsSessionAction(TActionLog *Log, const UnicodeString Destination) noexcept;
 
   void FileList(TRemoteFileList *FileList);
@@ -248,6 +257,7 @@ public:
 class NB_CORE_EXPORT TStatSessionAction : public TFileSessionAction
 {
 public:
+  TStatSessionAction() = delete;
   explicit TStatSessionAction(TActionLog *Log, const UnicodeString AFileName) noexcept;
 
   void File(TRemoteFile *AFile);
@@ -256,6 +266,7 @@ public:
 class NB_CORE_EXPORT TChecksumSessionAction : public TFileSessionAction
 {
 public:
+  TChecksumSessionAction() = delete;
   explicit TChecksumSessionAction(TActionLog *Log) noexcept;
 
   void Checksum(const UnicodeString Alg, const UnicodeString Checksum);
@@ -264,12 +275,14 @@ public:
 class NB_CORE_EXPORT TCwdSessionAction : public TSessionAction
 {
 public:
-  TCwdSessionAction(TActionLog *Log, const UnicodeString Path) noexcept;
+  TCwdSessionAction() = delete;
+  explicit TCwdSessionAction(TActionLog *Log, const UnicodeString Path) noexcept;
 };
 //---------------------------------------------------------------------------
 class TDifferenceSessionAction : public TSessionAction
 {
 public:
+  TDifferenceSessionAction() = delete;
   explicit TDifferenceSessionAction(TActionLog * Log, const TChecklistItem* Item) noexcept;
 };
 
@@ -283,6 +296,7 @@ class NB_CORE_EXPORT TSessionLog
   friend class TSessionActionRecord;
   NB_DISABLE_COPY(TSessionLog)
 public:
+  TSessionLog() = delete;
   explicit TSessionLog(TSessionUI *UI, TDateTime Started, TSessionData *SessionData,
     TConfiguration *Configuration) noexcept;
   virtual ~TSessionLog() noexcept;
@@ -356,6 +370,7 @@ friend class TSessionAction;
 friend class TSessionActionRecord;
   NB_DISABLE_COPY(TActionLog)
 public:
+  TActionLog() = delete;
   explicit TActionLog(TSessionUI *UI, TDateTime Started, TSessionData *SessionData,
     TConfiguration *Configuration) noexcept;
   // For fatal failures for .NET assembly
