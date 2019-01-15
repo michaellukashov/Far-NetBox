@@ -143,7 +143,7 @@ public:
   void Cancel();
 
 protected:
-  TSessionActionRecord *FRecord{nullptr};
+  gsl::owner<TSessionActionRecord *> FRecord{nullptr};
 };
 //---------------------------------------------------------------------------
 class NB_CORE_EXPORT TFileSessionAction : public TSessionAction
