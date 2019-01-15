@@ -2164,13 +2164,18 @@ TBootstrapQueueItem::TBootstrapQueueItem(TObjectClassId Kind) noexcept :
 {
   FInfo->SingleFile = true;
 }
+
+TBootstrapQueueItem::~TBootstrapQueueItem()
+{
+  TBootstrapQueueItem::Complete();
+}
 //---------------------------------------------------------------------------
 void TBootstrapQueueItem::DoExecute(TTerminal * DebugUsedArg(Terminal))
 {
   // noop
 }
 //---------------------------------------------------------------------------
-UnicodeString TBootstrapQueueItem::StartupDirectory() const
+UnicodeString TBootstrapQueueItem::GetStartupDirectory() const
 {
   return UnicodeString();
 }

@@ -254,10 +254,10 @@ protected:
   TStatus FStatus{qsPending};
   TCriticalSection FSection;
   TTerminalItem *FTerminalItem{nullptr};
-  TFileOperationProgressType *FProgressData{nullptr};
+  gsl::owner<TFileOperationProgressType*> FProgressData{nullptr};
   std::unique_ptr<TQueueItem::TInfo> FInfo;
   TTerminalQueue *FQueue{nullptr};
-  HANDLE FCompleteEvent{};
+  HANDLE FCompleteEvent{INVALID_HANDLE_VALUE};
   intptr_t FCPSLimit{0};
   TDateTime FDoneAt{};
 
@@ -396,11 +396,12 @@ public:
 public:
   TBootstrapQueueItem() noexcept;
   explicit TBootstrapQueueItem(TObjectClassId Kind) noexcept;
+  virtual ~TBootstrapQueueItem() noexcept;
 
 protected:
-  virtual void DoExecute(TTerminal * Terminal);
-  virtual UnicodeString StartupDirectory() const;
-  virtual bool Complete();
+  void DoExecute(TTerminal * Terminal) override;
+  UnicodeString GetStartupDirectory() const override;
+  bool Complete() override;
 };
 //---------------------------------------------------------------------------
 NB_DEFINE_CLASS_ID(TLocatedQueueItem);

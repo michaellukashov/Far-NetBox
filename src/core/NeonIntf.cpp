@@ -499,12 +499,12 @@ UnicodeString CertificateSummary(const TNeonCertificateData &Data, const Unicode
   UnicodeString ValidityTimeFormat = L"ddddd tt";
   return
     FMTLOAD(CERT_TEXT,
-        Data.Issuer + L"\n",
-        Data.Subject + L"\n",
-        FormatDateTime(ValidityTimeFormat, Data.ValidFrom),
-        FormatDateTime(ValidityTimeFormat, Data.ValidUntil),
-        Data.Fingerprint,
-        Summary);
+      Data.Issuer + L"\n",
+      Data.Subject + L"\n",
+      FormatDateTime(ValidityTimeFormat, Data.ValidFrom),
+      FormatDateTime(ValidityTimeFormat, Data.ValidUntil),
+      Data.Fingerprint,
+      Summary);
 }
 //---------------------------------------------------------------------------
 UnicodeString NeonTlsSessionInfo(

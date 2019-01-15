@@ -524,8 +524,8 @@ typedef void (__closure *TFindEvent)
   (TTerminal * Terminal, UnicodeString Directory, const TFileMasks & FileMask,
    TFileFoundEvent OnFileFound, TFindingFileEvent OnFindingFile);
 #endif // #if 0
-using TFindEvent = nb::FastDelegate4<void,
-  UnicodeString /*Directory*/, const TFileMasks & /*FileMask*/,
+using TFindEvent = nb::FastDelegate5<void,
+  TTerminal * /*Terminal*/, UnicodeString /*Directory*/, const TFileMasks & /*FileMask*/,
   TFileFoundEvent /*OnFileFound*/,
   TFindingFileEvent /*OnFindingFile*/>;
 #if 0
@@ -629,7 +629,7 @@ UnicodeString DumpCallstackFileName(int ProcessId);
 
 void CheckConfigurationForceSave();
 //---------------------------------------------------------------------------
-#define HIDDEN_WINDOW_NAME L"WinSCPHiddenWindow3"
+__removed #define HIDDEN_WINDOW_NAME L"WinSCPHiddenWindow3"
 //---------------------------------------------------------------------------
 struct TCopyDataMessage
 {
@@ -653,7 +653,7 @@ struct TCopyDataMessage
   TCopyDataMessage() noexcept
   {
     Version = TCopyDataMessage::Version1;
-    Command = static_cast<unsigned int>(-1);
+    // Command = static_cast<uintptr_t>(-1);
   }
 };
 //---------------------------------------------------------------------------

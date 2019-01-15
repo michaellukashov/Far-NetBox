@@ -58,13 +58,13 @@ public:
     void Clear(bool Batch, bool Speed);
 
     TDateTime StartTime;
-    TBatchOverwrite BatchOverwrite{};
+    TBatchOverwrite BatchOverwrite{boNo};
     bool SkipToAll{false};
     uint64_t CPSLimit{0};
     bool CounterSet{false};
     rde::vector<uint64_t> Ticks;
     rde::vector<int64_t> TotalTransferredThen;
-    TOperationSide Side{};
+    TOperationSide Side{osCurrent};
     int64_t TotalTransferred{0};
     TFileOperationStatistics * FStatistics{nullptr};
   };
