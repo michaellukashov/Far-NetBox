@@ -79,7 +79,7 @@ public:
   Property &operator=(const Property &Value)
   {
     this->obj = Value.obj;
-    return this;
+    return *this;
   }
 
   operator T() const
