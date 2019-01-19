@@ -25,7 +25,7 @@ public:
 protected:
   HANDLE FThread{};
   TThreadID FThreadId{};
-  bool FFinished{false};
+  bool FFinished{true};
 
   virtual void Execute() = 0;
   virtual bool Finished();
@@ -167,9 +167,9 @@ protected:
   std::unique_ptr<TList> FForcedItems;
   intptr_t FTemporaryTerminals{0};
   intptr_t FOverallTerminals{0};
-  intptr_t FTransfersLimit{0};
+  intptr_t FTransfersLimit{2};
   intptr_t FKeepDoneItemsFor{0};
-  bool FEnabled{false};
+  bool FEnabled{true};
   TDateTime FIdleInterval;
   TDateTime FLastIdle;
 
@@ -184,7 +184,7 @@ protected:
   bool ItemExecuteNow(TQueueItem *Item);
   bool ItemDelete(TQueueItem *Item);
   bool ItemPause(TQueueItem *Item, bool Pause);
-  bool ItemSetCPSLimit(TQueueItem *Item, intptr_t CPSLimit);
+  bool ItemSetCPSLimit(TQueueItem *Item, intptr_t CPSLimit) const;
   bool ItemGetCPSLimit(TQueueItem *Item, intptr_t &CPSLimit) const;
 
   void RetryItem(TQueueItem *Item);
@@ -258,7 +258,7 @@ protected:
   std::unique_ptr<TQueueItem::TInfo> FInfo;
   TTerminalQueue *FQueue{nullptr};
   HANDLE FCompleteEvent{INVALID_HANDLE_VALUE};
-  intptr_t FCPSLimit{0};
+  intptr_t FCPSLimit{nb::ToIntPtr(-1)};
   TDateTime FDoneAt{};
 
   explicit TQueueItem(TObjectClassId Kind) noexcept;
@@ -322,7 +322,7 @@ public:
 
 private:
   std::unique_ptr<TFileOperationProgressType> FProgressData;
-  TQueueItem::TStatus FStatus{};
+  TQueueItem::TStatus FStatus{TQueueItem::qsPending};
   TTerminalQueue *FQueue{nullptr};
   TQueueItem *FQueueItem{nullptr};
   TTerminalQueueStatus *FQueueStatus{nullptr};

@@ -19,7 +19,7 @@ public:
   static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TParallelTransferQueueItem); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TParallelTransferQueueItem) || TLocatedQueueItem::is(Kind); }
 public:
-  TParallelTransferQueueItem(const TLocatedQueueItem *ParentItem, TParallelOperation *ParallelOperation) noexcept;
+  explicit TParallelTransferQueueItem(const TLocatedQueueItem *ParentItem, TParallelOperation *ParallelOperation) noexcept;
 
 protected:
   void DoExecute(TTerminal *Terminal) override;
@@ -43,10 +43,8 @@ class TNotifyAction : public TUserAction
 {
   NB_DISABLE_COPY(TNotifyAction)
 public:
-  explicit TNotifyAction(TNotifyEvent AOnNotify) :
-    TUserAction(),
-    OnNotify(AOnNotify),
-    Sender(nullptr)
+  explicit TNotifyAction(TNotifyEvent AOnNotify) : TUserAction(),
+    OnNotify(AOnNotify)
   {
   }
 
@@ -67,10 +65,7 @@ class TInformationUserAction : public TUserAction
   NB_DISABLE_COPY(TInformationUserAction)
 public:
   explicit TInformationUserAction(TInformationEvent AOnInformation) :
-    OnInformation(AOnInformation),
-    Terminal(nullptr),
-    Status(false),
-    Phase(0)
+    OnInformation(AOnInformation)
   {
   }
 
@@ -101,13 +96,7 @@ class TQueryUserAction : public TUserAction
   NB_DISABLE_COPY(TQueryUserAction)
 public:
   explicit TQueryUserAction(TQueryUserEvent AOnQueryUser) :
-    OnQueryUser(AOnQueryUser),
-    Sender(nullptr),
-    MoreMessages(nullptr),
-    Answers(0),
-    Params(nullptr),
-    Answer(0),
-    Type(qtConfirmation)
+    OnQueryUser(AOnQueryUser)
   {
   }
 
@@ -124,9 +113,9 @@ public:
   UnicodeString Query;
   TStrings *MoreMessages{nullptr};
   uint32_t Answers{0};
-  const TQueryParams *Params;
+  const TQueryParams *Params{nullptr};
   uint32_t Answer{0};
-  TQueryType Type{};
+  TQueryType Type{qtConfirmation};
 };
 //---------------------------------------------------------------------------
 class TPromptUserAction : public TUserAction
@@ -134,12 +123,7 @@ class TPromptUserAction : public TUserAction
   NB_DISABLE_COPY(TPromptUserAction)
 public:
   explicit TPromptUserAction(TPromptUserEvent AOnPromptUser) noexcept :
-    OnPromptUser(AOnPromptUser),
-    Terminal(nullptr),
-    Kind(pkPrompt),
-    Prompts(nullptr),
-    Results(nullptr),
-    Result(false)
+    OnPromptUser(AOnPromptUser)
   {
   }
 
@@ -168,9 +152,7 @@ class TShowExtendedExceptionAction : public TUserAction
   NB_DISABLE_COPY(TShowExtendedExceptionAction)
 public:
   explicit TShowExtendedExceptionAction(TExtendedExceptionEvent AOnShowExtendedException) :
-    OnShowExtendedException(AOnShowExtendedException),
-    Terminal(nullptr),
-    E(nullptr)
+    OnShowExtendedException(AOnShowExtendedException)
   {
   }
 
@@ -183,8 +165,8 @@ public:
   }
 
   TExtendedExceptionEvent OnShowExtendedException;
-  TTerminal *Terminal;
-  Exception *E;
+  TTerminal *Terminal{nullptr};
+  Exception *E{nullptr};
 };
 //---------------------------------------------------------------------------
 class TDisplayBannerAction : public TUserAction
@@ -192,10 +174,7 @@ class TDisplayBannerAction : public TUserAction
   NB_DISABLE_COPY(TDisplayBannerAction)
 public:
   explicit TDisplayBannerAction(TDisplayBannerEvent AOnDisplayBanner) :
-    OnDisplayBanner(AOnDisplayBanner),
-    Terminal(nullptr),
-    NeverShowAgain(false),
-    Options(0)
+    OnDisplayBanner(AOnDisplayBanner)
   {
   }
 
@@ -208,12 +187,12 @@ public:
   }
 
   TDisplayBannerEvent OnDisplayBanner;
-  TTerminal *Terminal;
+  TTerminal *Terminal{nullptr};
   UnicodeString SessionName;
   UnicodeString Banner;
-  bool NeverShowAgain;
-  intptr_t Options;
-  uintptr_t Params;
+  bool NeverShowAgain{false};
+  intptr_t Options{0};
+  uintptr_t Params{0};
 };
 //---------------------------------------------------------------------------
 class TReadDirectoryAction : public TUserAction
@@ -221,9 +200,7 @@ class TReadDirectoryAction : public TUserAction
   NB_DISABLE_COPY(TReadDirectoryAction)
 public:
   explicit TReadDirectoryAction(TReadDirectoryEvent AOnReadDirectory) :
-    OnReadDirectory(AOnReadDirectory),
-    Sender(nullptr),
-    ReloadOnly(false)
+    OnReadDirectory(AOnReadDirectory)
   {
   }
 
@@ -236,8 +213,8 @@ public:
   }
 
   TReadDirectoryEvent OnReadDirectory;
-  TObject *Sender;
-  bool ReloadOnly;
+  TObject *Sender{nullptr};
+  bool ReloadOnly{false};
 };
 //---------------------------------------------------------------------------
 class TReadDirectoryProgressAction : public TUserAction
@@ -245,11 +222,7 @@ class TReadDirectoryProgressAction : public TUserAction
   NB_DISABLE_COPY(TReadDirectoryProgressAction)
 public:
   explicit TReadDirectoryProgressAction(TReadDirectoryProgressEvent AOnReadDirectoryProgress) :
-    OnReadDirectoryProgress(AOnReadDirectoryProgress),
-    Sender(nullptr),
-    Progress(0),
-    ResolvedLinks(0),
-    Cancel(false)
+    OnReadDirectoryProgress(AOnReadDirectoryProgress)
   {
   }
 
@@ -262,10 +235,10 @@ public:
   }
 
   TReadDirectoryProgressEvent OnReadDirectoryProgress;
-  TObject *Sender;
-  intptr_t Progress;
-  intptr_t ResolvedLinks;
-  bool Cancel;
+  TObject *Sender{nullptr};
+  intptr_t Progress{0};
+  intptr_t ResolvedLinks{0};
+  bool Cancel{false};
 };
 //---------------------------------------------------------------------------
 NB_DEFINE_CLASS_ID(TTerminalItem);
@@ -344,10 +317,7 @@ int TSimpleThread::ThreadProc(void *Thread)
 }
 //---------------------------------------------------------------------------
 TSimpleThread::TSimpleThread(TObjectClassId Kind) noexcept :
-  TObject(Kind),
-  FThread(nullptr),
-  FThreadId(0),
-  FFinished(true)
+  TObject(Kind)
 {
 }
 
@@ -402,7 +372,6 @@ void TSimpleThread::WaitFor(uintptr_t Milliseconds) const
 //---------------------------------------------------------------------------
 TSignalThread::TSignalThread(TObjectClassId Kind) noexcept :
   TSimpleThread(Kind),
-  FEvent(nullptr),
   FTerminated(true)
 {
 }
@@ -495,26 +464,13 @@ void TSignalThread::Terminate()
 TTerminalQueue::TTerminalQueue(TTerminal *ATerminal,
   TConfiguration *AConfiguration) noexcept :
   TSignalThread(OBJECT_CLASS_TTerminalQueue),
-  FOnQueryUser(nullptr),
-  FOnPromptUser(nullptr),
-  FOnShowExtendedException(nullptr),
-  FOnQueueItemUpdate(nullptr),
-  FOnListUpdate(nullptr),
-  FOnEvent(nullptr),
   FTerminal(ATerminal),
   FConfiguration(AConfiguration),
   FSessionData(std::make_unique<TSessionData>(L"")),
   FItems(std::make_unique<TList>()),
   FDoneItems(std::make_unique<TList>()),
-  FItemsInProcess(0),
-  FFreeTerminals(0),
   FTerminals(std::make_unique<TList>()),
-  FForcedItems(std::make_unique<TList>()),
-  FTemporaryTerminals(0),
-  FOverallTerminals(0),
-  FTransfersLimit(2),
-  FKeepDoneItemsFor(0),
-  FEnabled(true)
+  FForcedItems(std::make_unique<TList>())
 {
 }
 
@@ -1008,7 +964,7 @@ bool TTerminalQueue::ItemPause(TQueueItem *Item, bool Pause)
   return Result;
 }
 //---------------------------------------------------------------------------
-bool TTerminalQueue::ItemSetCPSLimit(TQueueItem *Item, intptr_t CPSLimit)
+bool TTerminalQueue::ItemSetCPSLimit(TQueueItem *Item, intptr_t CPSLimit) const
 {
   // to prevent deadlocks when closing queue from other thread
   bool Result = !FFinished;
@@ -1285,12 +1241,11 @@ protected:
   bool DoQueryReopen(Exception *E) override;
 
 private:
-  TTerminalItem *FItem;
+  TTerminalItem *FItem{nullptr};
 };
 //---------------------------------------------------------------------------
 TBackgroundTerminal::TBackgroundTerminal(TTerminal *MainTerminal) noexcept :
-  TSecondaryTerminal(OBJECT_CLASS_TBackgroundTerminal, MainTerminal),
-  FItem(nullptr)
+  TSecondaryTerminal(OBJECT_CLASS_TBackgroundTerminal, MainTerminal)
 {
 }
 
@@ -1322,12 +1277,7 @@ bool TBackgroundTerminal::DoQueryReopen(Exception * /*E*/)
 //---------------------------------------------------------------------------
 TTerminalItem::TTerminalItem(TTerminalQueue *Queue) noexcept :
   TSignalThread(OBJECT_CLASS_TTerminalItem),
-  FQueue(Queue),
-  FTerminal(nullptr),
-  FItem(nullptr),
-  FUserAction(nullptr),
-  FCancel(false),
-  FPause(false)
+  FQueue(Queue)
 {
 }
 
@@ -1711,13 +1661,7 @@ bool TTerminalItem::OverrideItemStatus(TQueueItem::TStatus &ItemStatus) const
 //---------------------------------------------------------------------------
 TQueueItem::TQueueItem(TObjectClassId Kind) noexcept :
   TObject(Kind),
-  FStatus(qsPending),
-  FTerminalItem(nullptr),
-  FProgressData(nullptr),
-  FInfo(std::make_unique<TInfo>()),
-  FQueue(nullptr),
-  FCompleteEvent(INVALID_HANDLE_VALUE),
-  FCPSLimit(nb::ToUIntPtr(-1))
+  FInfo(std::make_unique<TInfo>())
 {
   FInfo->SingleFile = false;
   FInfo->Primary = true;
@@ -1875,13 +1819,9 @@ TQueueItemProxy::TQueueItemProxy(TTerminalQueue *Queue,
   TQueueItem *QueueItem) noexcept :
   TObject(OBJECT_CLASS_TQueueItemProxy),
   FProgressData(std::make_unique<TFileOperationProgressType>()),
-  FStatus(TQueueItem::qsPending),
   FQueue(Queue),
   FQueueItem(QueueItem),
-  FQueueStatus(nullptr),
-  FInfo(std::make_unique<TQueueItem::TInfo>()),
-  FProcessingUserAction(false),
-  FUserData(nullptr)
+  FInfo(std::make_unique<TQueueItem::TInfo>())
 {
   Update();
 }
@@ -2006,11 +1946,7 @@ intptr_t TQueueItemProxy::GetIndex() const
 // TTerminalQueueStatus
 //---------------------------------------------------------------------------
 TTerminalQueueStatus::TTerminalQueueStatus() noexcept :
-  FList(std::make_unique<TList>()),
-  FDoneCount(0),
-  FActiveCount(0),
-  FActivePrimaryCount(0),
-  FActiveAndPendingPrimaryCount(0)
+  FList(std::make_unique<TList>())
 {
   ResetStats();
 }
@@ -2222,12 +2158,7 @@ TTransferQueueItem::TTransferQueueItem(TObjectClassId Kind, TTerminal *Terminal,
   const TCopyParamType *CopyParam, intptr_t Params, TOperationSide Side,
   bool SingleFile, bool Parallel) noexcept :
   TLocatedQueueItem(Kind, Terminal),
-  FFilesToCopy(std::unique_ptr<TStringList>()),
-  FCopyParam(nullptr),
-  FParams(0),
-  FParallel(false),
-  FLastParallelOperationAdded(0),
-  FParallelOperation(nullptr)
+  FFilesToCopy(std::unique_ptr<TStringList>())
 {
   FInfo->Operation = (Params & cpDelete) ? foMove : foCopy;
   FInfo->Side = Side;
@@ -2794,7 +2725,7 @@ void TTerminalThread::FatalAbort()
   {
     // We cannot use TTerminal::FatalError as the terminal still runs on a backgroud thread,
     // may have its TCallbackGuard armed right now.
-    throw ESshFatal(nullptr, L"");
+    throw ESshFatal(nullptr, "");
   }
   else
   {

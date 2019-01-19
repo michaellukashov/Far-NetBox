@@ -120,9 +120,7 @@ public:
   static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TMoveFileParams); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TMoveFileParams) || TObject::is(Kind); }
 public:
-  TMoveFileParams() : TObject(OBJECT_CLASS_TMoveFileParams)
-  {
-  }
+  TMoveFileParams() : TObject(OBJECT_CLASS_TMoveFileParams) {}
   UnicodeString Target;
   UnicodeString FileMask;
 };
@@ -134,27 +132,17 @@ public:
   static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TFilesFindParams); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TFilesFindParams) || TObject::is(Kind); }
 public:
-  TFilesFindParams() :
-    TObject(OBJECT_CLASS_TFilesFindParams),
-    OnFileFound(nullptr),
-    OnFindingFile(nullptr),
-    Cancel(false)
-  {
-  }
+  TFilesFindParams() : TObject(OBJECT_CLASS_TFilesFindParams) {}
 
   TFileMasks FileMask;
   TFileFoundEvent OnFileFound;
   TFindingFileEvent OnFindingFile;
-  bool Cancel;
+  bool Cancel{false};
   TLoopDetector LoopDetector;
   UnicodeString RealDirectory;
 };
-//---------------------------------------------------------------------------
-TCalculateSizeStats::TCalculateSizeStats() noexcept :
-  Files(0),
-  Directories(0),
-  SymLinks(0),
-  FoundFiles(nullptr)
+ //---------------------------------------------------------------------------
+TCalculateSizeStats::TCalculateSizeStats() noexcept
 {
 __removed memset(this, 0, sizeof(*this));
 }
