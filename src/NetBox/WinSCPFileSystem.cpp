@@ -246,15 +246,14 @@ public:
 private:
   TWinSCPFileSystem *FFileSystem{nullptr};
   TDateTime FInterval;
-  HANDLE FEvent{};
+  HANDLE FEvent{INVALID_HANDLE_VALUE};
 };
 
 TKeepAliveThread::TKeepAliveThread(TWinSCPFileSystem *FileSystem,
   const TDateTime &Interval) noexcept :
   TSimpleThread(OBJECT_CLASS_TKeepAliveThread),
   FFileSystem(FileSystem),
-  FInterval(Interval),
-  FEvent(nullptr)
+  FInterval(Interval)
 {
 }
 
@@ -287,36 +286,7 @@ void TKeepAliveThread::Execute()
 
 TWinSCPFileSystem::TWinSCPFileSystem(TCustomFarPlugin *APlugin) noexcept :
   TCustomFarFileSystem(OBJECT_CLASS_TWinSCPFileSystem, APlugin),
-  FTerminal(nullptr),
-  FQueue(nullptr),
-  FQueueStatus(nullptr),
-  FQueueEvent(qeEmpty),
-  FProgressSaveScreenHandle(nullptr),
-  FSynchronizationSaveScreenHandle(nullptr),
-  FAuthenticationSaveScreenHandle(nullptr),
-//  FFileList(nullptr),
-  FPanelItems(nullptr),
-  FSavedFindFolder(L""),
-  FLastEditorID(-1),
-  FKeepaliveThread(nullptr),
-  FSynchronizeController(nullptr),
-  FPathHistory(std::make_unique<TStringList>()),
-  FQueueStatusInvalidated(false),
-  FQueueItemInvalidated(false),
-  FRefreshLocalDirectory(false),
-  FRefreshRemoteDirectory(false),
-  FQueueEventPending(false),
-  FReloadDirectory(false),
-  FLastMultipleEditReadOnly(false),
-  FNoProgress(false),
-  FSynchronizationCompare(false),
-  FEditorPendingSave(false),
-
-  FNoProgressFinish(false),
-  FSynchronisingBrowse(false),
-  FOutputLog(false),
-  FLoadingSessionList(false),
-  FCurrentDirectoryWasChanged(false)
+  FPathHistory(std::make_unique<TStringList>())
 {
 }
 
@@ -439,7 +409,7 @@ void TWinSCPFileSystem::GetOpenPluginInfoEx(DWORD &Flags,
   else
   {
     CurDir = FSessionsFolder;
-    AFormat = L"netbox";
+    AFormat = "netbox";
     Flags = OPIF_USESORTGROUPS | OPIF_USEHIGHLIGHTING | OPIF_USEATTRHIGHLIGHTING |
       OPIF_ADDDOTS | OPIF_SHOWPRESERVECASE;
 
@@ -778,7 +748,7 @@ bool TWinSCPFileSystem::ProcessEventEx(intptr_t Event, void *Param)
     }
     else if ((Event == FE_GOTFOCUS) || (Event == FE_KILLFOCUS))
     {
-      DEBUG_PRINTF("Event = %d, Plugin = %p, Param = %p", Event, (void *)this, Param);
+      DEBUG_PRINTF("Event = %d, Plugin = %p, Param = %p", Event, static_cast<void *>(this), Param);
       Result = true;
     }
     else if (Event == FE_REDRAW)
@@ -1164,7 +1134,7 @@ void TWinSCPFileSystem::ApplyCommand()
   }
 
   std::unique_ptr<TStrings> FileList(CreateSelectedFileList(osRemote, PanelInfo));
-  if (FileList.get() != nullptr)
+  if (FileList != nullptr)
   {
     TFarConfiguration *FarConfiguration = GetFarConfiguration();
     intptr_t Params = FarConfiguration->GetApplyCommandParams();
@@ -1205,7 +1175,7 @@ void TWinSCPFileSystem::ApplyCommand()
 
             if (FLAGSET(Params, ccCopyResults))
             {
-              DebugAssert(FCapturedLog.get() == nullptr);
+              DebugAssert(FCapturedLog == nullptr);
               FCapturedLog = std::make_unique<TStringList>();
               OutputEvent = nb::bind(&TWinSCPFileSystem::TerminalCaptureLog, this);
             }
@@ -1259,14 +1229,14 @@ void TWinSCPFileSystem::ApplyCommand()
 
             if (FileListCommand)
             {
-              if ((LocalFileList.get() == nullptr) || (LocalFileList->GetCount() != 1))
+              if ((LocalFileList == nullptr) || (LocalFileList->GetCount() != 1))
               {
                 throw Exception(GetMsg(NB_CUSTOM_COMMAND_SELECTED_UNMATCH1));
               }
             }
             else
             {
-              if ((LocalFileList.get() == nullptr) ||
+              if ((LocalFileList == nullptr) ||
                 ((LocalFileList->GetCount() != 1) &&
                   (FileList->GetCount() != 1) &&
                   (LocalFileList->GetCount() != FileList->GetCount())))
@@ -1768,7 +1738,7 @@ void TWinSCPFileSystem::TransferFiles(bool Move)
   if (Move || EnsureCommandSessionFallback(fcRemoteCopy))
   {
     std::unique_ptr<TStrings> FileList(CreateSelectedFileList(osRemote));
-    if (FileList.get())
+    if (FileList)
     {
       DebugAssert(!FPanelItems);
       UnicodeString Target = FTerminal->RemoteGetCurrentDirectory();
@@ -1827,7 +1797,7 @@ void TWinSCPFileSystem::RenameFile()
 void TWinSCPFileSystem::FileProperties()
 {
   std::unique_ptr<TStrings> FileList(CreateSelectedFileList(osRemote));
-  if (FileList.get())
+  if (FileList)
   {
     DebugAssert(!FPanelItems);
 
@@ -1975,7 +1945,7 @@ void TWinSCPFileSystem::CopyFullFileNamesToClipboard()
 {
   std::unique_ptr<TStrings> FileList(CreateSelectedFileList(osRemote));
   std::unique_ptr<TStrings> FileNames(std::make_unique<TStringList>());
-  if (FileList.get() != nullptr)
+  if (FileList != nullptr)
   {
     for (intptr_t Index = 0; Index < FileList->GetCount(); ++Index)
     {
@@ -3067,7 +3037,7 @@ void TWinSCPFileSystem::TerminalClose(TObject * /*Sender*/)
 void TWinSCPFileSystem::LogAuthentication(
   TTerminal *Terminal, const UnicodeString Msg)
 {
-  DebugAssert(FAuthenticationLog.get() != nullptr);
+  DebugAssert(FAuthenticationLog != nullptr);
   if (!FAuthenticationLog)
     return;
   FAuthenticationLog->Add(Msg);
@@ -3106,7 +3076,7 @@ void TWinSCPFileSystem::TerminalInformation(
   {
     if (GetTerminal() && (GetTerminal()->GetStatus() == ssOpening))
     {
-      if (FAuthenticationLog.get() == nullptr)
+      if (FAuthenticationLog == nullptr)
       {
         FAuthenticationLog = std::make_unique<TStringList>();
         GetWinSCPPlugin()->SaveScreen(FAuthenticationSaveScreenHandle);
@@ -3722,7 +3692,7 @@ void TWinSCPFileSystem::UploadFromEditor(bool NoReload,
   const UnicodeString AFileName, const UnicodeString RealFileName,
   UnicodeString &DestPath)
 {
-  DebugAssert(FFileList.get() == nullptr);
+  DebugAssert(FFileList == nullptr);
   FFileList = std::make_unique<TStringList>();
   DebugAssert(FTerminal->GetAutoReadDirectory());
   bool PrevAutoReadDirectory = FTerminal->GetAutoReadDirectory();
@@ -3749,7 +3719,7 @@ void TWinSCPFileSystem::UploadFromEditor(bool NoReload,
 void TWinSCPFileSystem::UploadOnSave(bool NoReload)
 {
   std::unique_ptr<TFarEditorInfo> Info(GetWinSCPPlugin()->EditorInfo());
-  if (Info.get() != nullptr)
+  if (Info != nullptr)
   {
     bool NativeEdit =
       (FLastEditorID >= 0) &&
@@ -3802,7 +3772,7 @@ void TWinSCPFileSystem::ProcessEditorEvent(intptr_t Event, void * /*Param*/)
     {
       LastTicks = Ticks;
       std::unique_ptr<TFarEditorInfo> Info(GetWinSCPPlugin()->EditorInfo());
-      if (Info.get() != nullptr)
+      if (Info != nullptr)
       {
         TMultipleEdits::iterator it = FMultipleEdits.find(Info->GetEditorID());
         if (it != FMultipleEdits.end())
@@ -3823,7 +3793,7 @@ void TWinSCPFileSystem::ProcessEditorEvent(intptr_t Event, void * /*Param*/)
     if (IsActiveFileSystem())
     {
       std::unique_ptr<TFarEditorInfo> Info(GetWinSCPPlugin()->EditorInfo());
-      if (Info.get() != nullptr)
+      if (Info != nullptr)
       {
         if (!FLastEditFile.IsEmpty() &&
           ::AnsiSameText(FLastEditFile, Info->GetFileName()))
@@ -3869,7 +3839,7 @@ void TWinSCPFileSystem::ProcessEditorEvent(intptr_t Event, void * /*Param*/)
     }
 
     std::unique_ptr<TFarEditorInfo> Info(GetWinSCPPlugin()->EditorInfo());
-    if (Info.get() != nullptr)
+    if (Info != nullptr)
     {
       if (FLastEditorID == Info->GetEditorID())
       {
@@ -3902,7 +3872,7 @@ void TWinSCPFileSystem::ProcessEditorEvent(intptr_t Event, void * /*Param*/)
   else if (Event == EE_SAVE)
   {
     std::unique_ptr<TFarEditorInfo> Info(GetWinSCPPlugin()->EditorInfo());
-    if (Info.get() != nullptr)
+    if (Info != nullptr)
     {
       if ((FLastEditorID >= 0) && (FLastEditorID == Info->GetEditorID()))
       {
@@ -3962,9 +3932,9 @@ void TWinSCPFileSystem::MultipleEdit()
     (Focused->GetUserData() != nullptr))
   {
     std::unique_ptr<TStrings> FileList(CreateFocusedFileList(osRemote));
-    DebugAssert((FileList.get() == nullptr) || (FileList->GetCount() == 1));
+    DebugAssert((FileList == nullptr) || (FileList->GetCount() == 1));
 
-    if ((FileList.get() != nullptr) && (FileList->GetCount() == 1))
+    if ((FileList != nullptr) && (FileList->GetCount() == 1))
     {
       MultipleEdit(FTerminal->RemoteGetCurrentDirectory(), FileList->GetString(0),
         FileList->GetAs<TRemoteFile>(0));
