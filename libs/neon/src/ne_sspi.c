@@ -365,7 +365,7 @@ static const char *canonical_hostname(const char *serverName)
 int ne_sspi_create_context(void **context, char *serverName, int ntlm)
 {
     SSPIContext *sspiContext;
-    char *canonicalName;
+    const char *canonicalName;
 
     if (initialized <= 0) {
         return -1;
@@ -383,7 +383,7 @@ int ne_sspi_create_context(void **context, char *serverName, int ntlm)
         /* Canonicalize to conform to GSSAPI behavior */
         canonicalName = canonical_hostname(serverName);
         sspiContext->serverName = ne_concat("HTTP/", canonicalName, NULL);
-        ne_free(canonicalName);
+        ne_free((char*)canonicalName);
         NE_DEBUG(NE_DBG_HTTPAUTH, "sspi: Created context with SPN '%s'\n",
                  sspiContext->serverName);
         sspiContext->maxTokenSize = negotiateMaxTokenSize;
