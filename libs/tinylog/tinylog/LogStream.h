@@ -10,7 +10,7 @@ class LogStream
 {
   CUSTOM_MEM_ALLOCATION_IMPL
 public:
-
+  LogStream() = delete;
   explicit LogStream(FILE *file, pthread_mutex_t &mutex, pthread_cond_t &cond, bool &already_swap);
   ~LogStream();
 
@@ -38,14 +38,14 @@ private:
 
   std::unique_ptr<Buffer> pt_front_buff_;
   std::unique_ptr<Buffer> pt_back_buff_;
-  FILE *file_; // TODO: gsl::not_null
-  int i_line_;
-  const char *pt_func_;
+  FILE *file_{nullptr}; // TODO: gsl::not_null
+  int i_line_{0};
+  const char *pt_func_{nullptr};
 #if 0
   std::string str_log_level_;
 #endif // #if 0
-  struct timeval tv_base_;
-  struct tm *pt_tm_base_;
+  struct timeval tv_base_{};
+  struct tm *pt_tm_base_{nullptr};
   pthread_mutex_t &mutex_;
   pthread_cond_t &cond_;
   bool &already_swap_;

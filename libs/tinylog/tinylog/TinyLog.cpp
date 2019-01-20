@@ -10,6 +10,7 @@ class TinyLogImpl
 {
   CUSTOM_MEM_ALLOCATION_IMPL
 public:
+  TinyLogImpl() = delete;
   explicit TinyLogImpl(FILE * file) noexcept;
   ~TinyLogImpl() noexcept;
 
@@ -28,14 +29,14 @@ private:
   int32_t MainLoop();
 
   std::unique_ptr<LogStream> pt_logstream_;
-  Utils::LogLevel e_log_level_;
+  Utils::LogLevel e_log_level_{};
 
-  pthread_t thrd_;
-  DWORD ThreadId_;
+  pthread_t thrd_{INVALID_HANDLE_VALUE};
+  DWORD ThreadId_{0};
   pthread_mutex_t mutex_;
   pthread_cond_t cond_;
-  bool b_run_;
-  bool already_swap_;
+  bool b_run_{false};
+  bool already_swap_{false};
 };
 
 TinyLogImpl::TinyLogImpl(FILE *file) noexcept :

@@ -15,10 +15,11 @@ namespace tinylog {
 
 class TinyLogImpl;
 
-class TINYLOG_API TinyLog
+class TinyLog
 {
   CUSTOM_MEM_ALLOCATION_IMPL
 public:
+  TinyLog() = delete;
   explicit TinyLog(FILE * file) noexcept;
   ~TinyLog() noexcept;
 

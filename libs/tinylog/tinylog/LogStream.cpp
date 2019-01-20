@@ -13,9 +13,6 @@ LogStream::LogStream(FILE *file, pthread_mutex_t &mutex, pthread_cond_t &cond, b
   pt_front_buff_(std::make_unique<Buffer>(BUFFER_SIZE)),
   pt_back_buff_(std::make_unique<Buffer>(BUFFER_SIZE)),
   file_(file),
-  i_line_(0),
-  pt_func_(nullptr),
-  pt_tm_base_(nullptr),
   mutex_(mutex),
   cond_(cond),
   already_swap_(already_swap)

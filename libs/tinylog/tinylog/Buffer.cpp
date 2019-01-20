@@ -5,9 +5,7 @@
 
 namespace tinylog {
 
-Buffer::Buffer(uint32_t capacity) :
-  size_(0),
-  capacity_(capacity)
+Buffer::Buffer(uint32_t capacity)
 {
   pt_data_ = nb::chcalloc(capacity);
 }

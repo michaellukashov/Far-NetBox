@@ -10,6 +10,7 @@ class Buffer
 {
   CUSTOM_MEM_ALLOCATION_IMPL
 public:
+  Buffer() = delete;
   explicit Buffer(uint32_t capacity);
   ~Buffer();
 
@@ -24,9 +25,9 @@ private:
   Buffer(const Buffer &);
   Buffer &operator=(const Buffer &);
 
-  char *pt_data_;
-  size_t size_;
-  size_t capacity_;
+  char *pt_data_{nullptr};
+  size_t size_{0};
+  size_t capacity_{0};
 };
 
 } // namespace tinylog
