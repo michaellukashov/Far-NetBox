@@ -15,8 +15,7 @@ static intptr_t NamedObjectSortProc(const void *Item1, const void *Item2)
 }
 //--- TNamedObject ----------------------------------------------------------
 TNamedObject::TNamedObject(TObjectClassId Kind, const UnicodeString AName) noexcept :
-  TPersistent(Kind),
-  FHidden(false)
+  TPersistent(Kind)
 {
   SetName(AName);
 }
@@ -82,10 +81,7 @@ void TNamedObject::MakeUniqueIn(TNamedObjectList *List)
 const UnicodeString TNamedObjectList::HiddenPrefix = "_!_";
 //---------------------------------------------------------------------------
 TNamedObjectList::TNamedObjectList(TObjectClassId Kind) noexcept :
-  TObjectList(Kind),
-  FHiddenCount(0),
-  FAutoSort(true),
-  FControlledAdd(false)
+  TObjectList(Kind)
 {
 }
 //---------------------------------------------------------------------------

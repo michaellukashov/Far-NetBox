@@ -16,6 +16,7 @@ public:
   static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TSCPFileSystem); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TSCPFileSystem) || TCustomFileSystem::is(Kind); }
 public:
+  TSCPFileSystem() = delete;
   explicit TSCPFileSystem(TTerminal *ATerminal) noexcept;
   virtual ~TSCPFileSystem() noexcept;
 
@@ -94,24 +95,24 @@ public:
   void ClearCaches() override;
 
 protected:
-  __property TStrings * Output = { read = FOutput };
+  __property TStrings * Output = { read = FOutput.get() };
   __property int ReturnCode = { read = FReturnCode };
 
-  TStrings *GetOutput() const { return FOutput; }
+  TStrings *GetOutput() const { return FOutput.get(); }
   intptr_t GetReturnCode() const { return FReturnCode; }
 
   UnicodeString RemoteGetCurrentDirectory() const override;
 
 private:
-  TSecureShell *FSecureShell{nullptr};
-  TCommandSet *FCommandSet{nullptr};
+  gsl::owner<TSecureShell*> FSecureShell{nullptr};
+  std::unique_ptr<TCommandSet> FCommandSet;
   TFileSystemInfo FFileSystemInfo;
   UnicodeString FCurrentDirectory;
-  TStrings *FOutput{nullptr};
+  std::unique_ptr<TStrings> FOutput;
   intptr_t FReturnCode{0};
   UnicodeString FCachedDirectoryChange;
   bool FProcessingCommand{false};
-  int FLsFullTime{0};
+  int FLsFullTime{asAuto};
   TCaptureOutputEvent FOnCaptureOutput;
   bool FScpFatalError{false};
 

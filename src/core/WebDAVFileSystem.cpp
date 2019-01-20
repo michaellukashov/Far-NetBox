@@ -154,20 +154,11 @@ TWebDAVFileSystem::TWebDAVFileSystem(TTerminal *ATerminal) noexcept :
   TCustomFileSystem(OBJECT_CLASS_TWebDAVFileSystem, ATerminal),
   FActive(false),
   FHasTrailingSlash(false),
-  FSkipped(false),
-  FCancelled(false),
-  FStoredPasswordTried(false),
   FUploading(false),
   FDownloading(false),
   FNeonSession(nullptr),
   FNeonLockStore(nullptr),
-  FInitialHandshake(false),
-  FAuthenticationRequested(false),
-  FCapabilities(0),
-  FPortNumber(0),
-  FIgnoreAuthenticationFailure(iafNo),
-  FAuthenticationRetry(false),
-  FNtlmAuthenticationFailed(false)
+  FInitialHandshake(false)
 {
 }
 

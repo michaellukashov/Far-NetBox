@@ -38,47 +38,7 @@ const UnicodeString TlsFingerprintType("tls");
 const UnicodeString HttpsCertificateStorageKey("HttpsCertificates");
 //---------------------------------------------------------------------------
 TConfiguration::TConfiguration(TObjectClassId Kind) noexcept :
-  TObject(Kind),
-  FDontSave(false),
-  FChanged(false),
-  FUpdating(0),
-  FApplicationInfo(nullptr),
-  FLogging(false),
-  FPermanentLogging(false),
-  FLogWindowLines(0),
-  FLogFileAppend(false),
-  FLogSensitive(false),
-  FPermanentLogSensitive(false),
-  FLogMaxSize(0),
-  FPermanentLogMaxSize(0),
-  FLogMaxCount(0),
-  FPermanentLogMaxCount(0),
-  FLogProtocol(0),
-  FPermanentLogProtocol(0),
-  FActualLogProtocol(0),
-  FLogActions(false),
-  FPermanentLogActions(false),
-  FLogActionsRequired(false),
-  FConfirmOverwriting(false),
-  FConfirmResume(false),
-  FAutoReadDirectoryAfterOp(false),
-  FSessionReopenAuto(0),
-  FSessionReopenBackground(0),
-  FSessionReopenTimeout(0),
-  FSessionReopenAutoStall(0),
-  FProgramIniPathWritable(0),
-  FTunnelLocalPortNumberLow(0),
-  FTunnelLocalPortNumberHigh(0),
-  FCacheDirectoryChangesMaxSize(0),
-  FShowFtpWelcomeMessage(false),
-  FTryFtpWhenSshFails(false),
-  FParallelDurationThreshold(0),
-  FScripting(false),
-  FSessionReopenAutoMaximumNumberOfRetries(0),
-  FDisablePasswordStoring(false),
-  FForceBanners(false),
-  FDisableAcceptingHostKeys(false),
-  FDefaultCollectUsage(false)
+  TObject(Kind)
 {
   __removed FCriticalSection = new TCriticalSection();
   FUpdating = 0;
@@ -1065,7 +1025,7 @@ UnicodeString TConfiguration::GetProductVersionStr() const
       #endif
     }
 
-    int Build = LOWORD(FixedApplicationInfo->dwFileVersionLS);
+    WORD Build = LOWORD(FixedApplicationInfo->dwFileVersionLS);
     if (Build > 0)
     {
       BuildStr += L" " + ::IntToStr(Build);
@@ -1365,7 +1325,7 @@ UnicodeString TConfiguration::GetIniFileStorageName(bool ReadingOnly)
 void TConfiguration::SetOptionsStorage(TStrings * Value)
 {
   TGuard Guard(FCriticalSection); nb::used(Guard);
-  if (FOptionsStorage.get() == nullptr)
+  if (FOptionsStorage == nullptr)
   {
     FOptionsStorage = std::make_unique<TStringList>();
   }

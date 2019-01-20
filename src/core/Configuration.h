@@ -84,7 +84,7 @@ private:
   UnicodeString FPuttyRegistryStorageKey;
   UnicodeString FExternalIpAddress;
   bool FTryFtpWhenSshFails{false};
-  intptr_t FParallelDurationThreshold;
+  intptr_t FParallelDurationThreshold{0};
   bool FScripting{false};
   UnicodeString FMimeTypes;
   intptr_t FDontReloadMoreThanSessions{0};

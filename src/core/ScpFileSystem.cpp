@@ -13,40 +13,41 @@
 #include "HelpCore.h"
 #include "SecureShell.h"
 
-#include <stdio.h>
+//#include <stdio.h>
 //---------------------------------------------------------------------------
 __removed #pragma package(smart_init)
 //---------------------------------------------------------------------------
 __removed #define FILE_OPERATION_LOOP_TERMINAL FTerminal
 //---------------------------------------------------------------------------
-const int coRaiseExcept = 1;
-const int coExpectNoOutput = 2;
-const int coWaitForLastLine = 4;
-const int coOnlyReturnCode = 8;
-const int coIgnoreWarnings = 16;
-const int coReadProgress = 32;
-const int coIgnoreStdErr = 64;
+constexpr intptr_t coRaiseExcept = 1;
+constexpr intptr_t coExpectNoOutput = 2;
+constexpr intptr_t coWaitForLastLine = 4;
+constexpr intptr_t coOnlyReturnCode = 8;
+constexpr intptr_t coIgnoreWarnings = 16;
+constexpr intptr_t coReadProgress = 32;
+constexpr intptr_t coIgnoreStdErr = 64;
 
-const int ecRaiseExcept = 1;
-const int ecIgnoreWarnings = 2;
-const int ecReadProgress = 4;
-const int ecIgnoreStdErr = 8;
-const int ecDefault = ecRaiseExcept;
+constexpr intptr_t ecRaiseExcept = 1;
+constexpr intptr_t ecIgnoreWarnings = 2;
+constexpr intptr_t ecReadProgress = 4;
+constexpr intptr_t ecIgnoreStdErr = 8;
+constexpr intptr_t ecDefault = ecRaiseExcept;
 //---------------------------------------------------------------------------
 DERIVE_EXT_EXCEPTION(EScpFileSkipped, ESkipFile);
 //===========================================================================
-#define MaxShellCommand fsLang
-#define ShellCommandCount MaxShellCommand + 1
-#define MaxCommandLen 40
+constexpr TFSCommand MaxShellCommand = fsLang;
+constexpr intptr_t ShellCommandCount = MaxShellCommand + 1;
+constexpr intptr_t MaxCommandLen = 40;
 
 struct TCommandType
 {
-  int MinLines;
-  int MaxLines;
-  bool ModifiesFiles;
-  bool ChangesDirectory;
-  bool InteractiveCommand;
-  char Command[MaxCommandLen];
+  CUSTOM_MEM_ALLOCATION_IMPL
+  int MinLines{0};
+  int MaxLines{0};
+  bool ModifiesFiles{false};
+  bool ChangesDirectory{false};
+  bool InteractiveCommand{false};
+  char Command[MaxCommandLen]{};
 };
 
 // Only one character! See TSCPFileSystem::ReadCommandOutput()
@@ -66,8 +67,8 @@ class TCommandSet : public TObject
 {
   NB_DISABLE_COPY(TCommandSet)
 private:
-  TCommandType CommandSet[ShellCommandCount];
-  TSessionData *FSessionData;
+  TCommandType CommandSet[ShellCommandCount]{};
+  TSessionData *FSessionData{nullptr};
   UnicodeString FReturnVar;
 
 public:
@@ -84,6 +85,7 @@ public:
   UnicodeString GetReturnVar() const;
 
 public:
+  TCommandSet() = delete;
   explicit TCommandSet(TSessionData *ASessionData);
   void Default();
   void CopyFrom(TCommandSet *Source);
@@ -318,15 +320,7 @@ TStrings * TCommandSet::CreateCommandList() const
 }
 //===========================================================================
 TSCPFileSystem::TSCPFileSystem(TTerminal *ATerminal) noexcept :
-  TCustomFileSystem(OBJECT_CLASS_TSCPFileSystem, ATerminal),
-  FSecureShell(nullptr),
-  FCommandSet(nullptr),
-  FOutput(nullptr),
-  FReturnCode(0),
-  FProcessingCommand(false),
-  FLsFullTime(asAuto),
-  FOnCaptureOutput(nullptr),
-  FScpFatalError(false)
+  TCustomFileSystem(OBJECT_CLASS_TSCPFileSystem, ATerminal)
 {
 }
 
@@ -334,10 +328,10 @@ void TSCPFileSystem::Init(void *Data)
 {
   FSecureShell = get_as<TSecureShell>(Data);
   DebugAssert(FSecureShell);
-  FCommandSet = new TCommandSet(FTerminal->GetSessionData());
+  FCommandSet = std::make_unique<TCommandSet>(FTerminal->GetSessionData());
   FLsFullTime = FTerminal->GetSessionData()->GetSCPLsFullTime();
   FScpFatalError = false;
-  FOutput = new TStringList();
+  FOutput = std::make_unique<TStringList>();
   FProcessingCommand = false;
   FOnCaptureOutput = nullptr;
 
@@ -347,8 +341,8 @@ void TSCPFileSystem::Init(void *Data)
 //---------------------------------------------------------------------------
 TSCPFileSystem::~TSCPFileSystem() noexcept
 {
-  SAFE_DESTROY(FCommandSet);
-  SAFE_DESTROY(FOutput);
+  // SAFE_DESTROY(FCommandSet);
+  // SAFE_DESTROY(FOutput);
   SAFE_DESTROY(FSecureShell);
 }
 //---------------------------------------------------------------------------
@@ -1101,7 +1095,7 @@ void TSCPFileSystem::ReadDirectory(TRemoteFileList *FileList)
         std::unique_ptr<TStringList> OutputCopy(std::make_unique<TStringList>());
         try__finally
         {
-          OutputCopy->Assign(FOutput);
+          OutputCopy->Assign(FOutput.get());
 
           // delete leading "total xxx" line
           // On some hosts there is not "total" but "totalt". What's the reason??
@@ -1838,7 +1832,7 @@ void TSCPFileSystem::SCPSource(const UnicodeString AFileName,
     UnicodeString AbsoluteFileName = FTerminal->GetAbsolutePath(TargetDir + DestFileName, false);
     DebugAssert(LocalFileHandle.Handle != INVALID_HANDLE_VALUE);
     DebugAssert(LocalFileHandle.Handle);
-    std::unique_ptr<TStream> Stream(std::make_unique<TSafeHandleStream>((THandle)LocalFileHandle.Handle));
+    std::unique_ptr<TStream> Stream(std::make_unique<TSafeHandleStream>(static_cast<THandle>(LocalFileHandle.Handle)));
 
     // File is regular file (not directory)
     FTerminal->LogEvent(FORMAT("Copying \"%s\" to remote directory started.", AFileName));
@@ -2357,11 +2351,12 @@ void TSCPFileSystem::SCPSink(const UnicodeString TargetDir,
 {
   struct
   {
-    intptr_t SetTime;
+    CUSTOM_MEM_ALLOCATION_IMPL
+    intptr_t SetTime{0};
     TDateTime Modification;
     TRights RemoteRights;
-    DWORD LocalFileAttrs;
-    bool Exists;
+    DWORD LocalFileAttrs{0};
+    bool Exists{false};
   } FileData;
 
   bool SkipConfirmed = false;

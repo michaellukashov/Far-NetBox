@@ -192,7 +192,7 @@ void TBookmarks::Save(THierarchicalStorage *Storage, bool All)
 
                     case 2:
                       DebugAssert(Bookmark->GetShortCut() != 0);
-                      Storage->WriteInteger(Bookmark->GetName(), (int)Bookmark->GetShortCut());
+                      Storage->WriteInteger(Bookmark->GetName(), static_cast<int>(Bookmark->GetShortCut()));
                       break;
                     }
 
@@ -272,8 +272,7 @@ void TBookmarks::SetSharedBookmarks(TBookmarkList *Value)
 TBookmarkList::TBookmarkList() noexcept :
   TPersistent(OBJECT_CLASS_TBookmarkList),
   FBookmarks(std::make_unique<TStringList>()),
-  FOpenedNodes(CreateSortedStringList()),
-  FModified(false)
+  FOpenedNodes(CreateSortedStringList())
 {
   FBookmarks->SetCaseSensitive(false);
 }
