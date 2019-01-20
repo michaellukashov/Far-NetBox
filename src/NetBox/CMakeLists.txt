@@ -24,11 +24,6 @@ else()
   set(PROJECT_PLATFORM "x86")
 endif()
 
-if(MSVC)
-  set(OPENSSL_LIB_DIR "${PROJECT_PLATFORM}-${CMAKE_BUILD_TYPE}")
-endif(MSVC)
-message("OPENSSL_LIB_DIR: ${OPENSSL_LIB_DIR}")
-
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
   set(BUILD_DEBUG 1)
 else()
@@ -42,6 +37,16 @@ string(REPLACE "\\" "/" PROJECT_ROOT ${PROJECT_ROOT})
 if(NOT DEFINED BUILD_DIR OR BUILD_DIR STREQUAL "")
 string(REPLACE "/" "\\" BUILD_DIR ${CMAKE_CURRENT_BINARY_DIR})
 endif()
+
+if(MSVC)
+  set(OPENSSL_LIB_DIR "${PROJECT_PLATFORM}-${CMAKE_BUILD_TYPE}")
+endif(MSVC)
+
+if(NOT DEFINED OPENSSL_LIBRARYDIR)
+  set(OPENSSL_LIBRARYDIR ${PROJECT_ROOT}/libs/openssl/${OPENSSL_LIB_DIR})
+endif()
+
+message("OPENSSL_LIBRARYDIR: ${OPENSSL_LIBRARYDIR}")
 
 #-------------------------------------------------------------------------------
 
@@ -813,11 +818,11 @@ target_compile_options(libcrypto PRIVATE
 
 target_include_directories(libcrypto SYSTEM BEFORE PRIVATE
   ../../libs/openssl
-  ../../libs/openssl/${OPENSSL_LIB_DIR}
   ../../libs/openssl/crypto
   ../../libs/openssl/crypto/asn1
   ../../libs/openssl/crypto/modes
   ../../libs/openssl/crypto/evp
+  ${OPENSSL_LIBRARYDIR}
 )
 
 add_library(libssl STATIC
@@ -877,21 +882,21 @@ target_compile_options(libssl PRIVATE
 
 target_include_directories(libssl SYSTEM BEFORE PRIVATE
   ../../libs/openssl
-  ../../libs/openssl/${OPENSSL_LIB_DIR}
   ../../libs/openssl/crypto
   ../../libs/openssl/crypto/asn1
   ../../libs/openssl/crypto/modes
   ../../libs/openssl/crypto/evp
+  ${OPENSSL_LIBRARYDIR}
 )
 
 else(OPT_BUILD_OPENSSL)
 
 add_library (libcrypto STATIC IMPORTED)
 set_property(TARGET libcrypto
-    PROPERTY IMPORTED_LOCATION ${PROJECT_ROOT}/libs/openssl/${OPENSSL_LIB_DIR}/libcrypto.lib)
+    PROPERTY IMPORTED_LOCATION ${OPENSSL_LIBRARYDIR}/ssleay32.lib)
 add_library (libssl STATIC IMPORTED)
 set_property(TARGET libssl
-    PROPERTY IMPORTED_LOCATION ${PROJECT_ROOT}/libs/openssl/${OPENSSL_LIB_DIR}/libssl.lib)
+    PROPERTY IMPORTED_LOCATION ${OPENSSL_LIBRARYDIR}/libeay32.lib)
 
 endif(OPT_BUILD_OPENSSL)
 
@@ -1098,7 +1103,7 @@ target_include_directories(neon PRIVATE
   ../../libs/zlib/src
   ../../libs/expat/lib
   ../../libs/openssl
-  ../../libs/openssl/${OPENSSL_LIB_DIR}
+  ${OPENSSL_LIBRARYDIR}
 )
 
 #-------------------------------------------------------------------------------
@@ -1313,7 +1318,7 @@ target_include_directories(s3 PRIVATE
   ../../libs/expat/lib
   ../../libs/neon/src
   ../../libs/openssl
-  ../../libs/openssl/${OPENSSL_LIB_DIR}
+  ${OPENSSL_LIBRARYDIR}
 )
 
 target_compile_options(s3 PRIVATE
@@ -1743,7 +1748,7 @@ add_library(NetBox SHARED
 
 target_include_directories(NetBox PRIVATE
   ../../libs/openssl
-  ../../libs/openssl/${OPENSSL_LIB_DIR}
+  ${OPENSSL_LIBRARYDIR}
   ../../libs/putty
   ../../libs/putty/windows
   ../../libs/neon/src
