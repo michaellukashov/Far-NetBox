@@ -35,6 +35,7 @@ public:
   static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TSFTPFileSystem); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TSFTPFileSystem) || TCustomFileSystem::is(Kind); }
 public:
+  TSFTPFileSystem() = delete;
   explicit TSFTPFileSystem(TTerminal *ATerminal) noexcept;
   virtual ~TSFTPFileSystem() noexcept;
 

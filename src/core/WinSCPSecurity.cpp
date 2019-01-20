@@ -9,8 +9,8 @@
 //---------------------------------------------------------------------------
 __removed #pragma package(smart_init)
 //---------------------------------------------------------------------------
-#define PWALG_SIMPLE_INTERNAL 0x00
-#define PWALG_SIMPLE_EXTERNAL 0x01
+constexpr uint8_t PWALG_SIMPLE_INTERNAL = 0x00;
+constexpr uint8_t PWALG_SIMPLE_EXTERNAL = 0x01;
 //---------------------------------------------------------------------------
 RawByteString SimpleEncryptChar(uint8_t Ch)
 {

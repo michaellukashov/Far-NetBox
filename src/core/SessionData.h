@@ -111,8 +111,8 @@ NB_CORE_EXPORT extern const UnicodeString UrlSaveParamName;
 NB_CORE_EXPORT extern const UnicodeString PassphraseOption;
 NB_CORE_EXPORT extern const UnicodeString S3HostName;
 
-NB_CORE_EXPORT extern const intptr_t SFTPMinVersion;
-NB_CORE_EXPORT extern const intptr_t SFTPMaxVersion;
+constexpr intptr_t SFTPMinVersion = 0;
+constexpr intptr_t SFTPMaxVersion = 6;
 //---------------------------------------------------------------------------
 struct NB_CORE_EXPORT TIEProxyConfig : public TObject
 {

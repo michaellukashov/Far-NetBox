@@ -2,7 +2,7 @@
 #include <vcl.h>
 #pragma hdrstop
 
-#include <stdio.h>
+//#include <stdio.h>
 #include <io.h>
 #include <fcntl.h>
 
@@ -1299,7 +1299,7 @@ void TWebDAVFileSystem::Source(
       }
     }
 
-    if (RemoteFile.get() != nullptr)
+    if (RemoteFile != nullptr)
     {
       TOverwriteFileParams FileParams;
 
@@ -1379,7 +1379,7 @@ void TWebDAVFileSystem::Source(
           // The only server we found that supports this is TradeMicro SafeSync.
           // But it announces itself as "Server: Apache",
           // so it's not reliable to autodetect the support.
-          // Microsoft Office alegedly uses <Win32LastModifiedTime>
+          // Microsoft Office allegedly uses <Win32LastModifiedTime>
           // http://sabre.io/dav/clients/msoffice/
           // Carot DAV does that too. But we do not know what server does support this.
           TouchAction.Cancel();
@@ -1926,7 +1926,7 @@ int TWebDAVFileSystem::NeonRequestAuth(
     {
       if (FileSystem->FIgnoreAuthenticationFailure == iafPasswordFailed)
       {
-        // Fail PROPFIND /nonexising request...
+        // Fail PROPFIND /nonexisting request...
         Result = false;
       }
       else

@@ -1046,6 +1046,7 @@ class NB_CORE_EXPORT TRobustOperationLoop : public TObject
 {
   NB_DISABLE_COPY(TRobustOperationLoop)
 public:
+  TRobustOperationLoop() = delete;
   explicit TRobustOperationLoop(TTerminal *Terminal, TFileOperationProgressType *OperationProgress, bool *AnyTransfer = nullptr) noexcept;
   virtual ~TRobustOperationLoop() noexcept;
   bool TryReopen(Exception &E);
@@ -1082,7 +1083,7 @@ public:
 private:
   struct TFileData
   {
-  CUSTOM_MEM_ALLOCATION_IMPL
+    CUSTOM_MEM_ALLOCATION_IMPL
     UnicodeString FileName;
     TObject *Object{nullptr};
     bool Dir{false};
