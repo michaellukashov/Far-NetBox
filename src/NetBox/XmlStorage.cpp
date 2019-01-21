@@ -13,11 +13,7 @@ static const char *CONST_NAME_ATTR = "name";
 TXmlStorage::TXmlStorage(const UnicodeString AStorage,
   const UnicodeString StoredSessionsSubKey) noexcept :
   THierarchicalStorage(::ExcludeTrailingBackslash(AStorage)),
-  FXmlDoc(nullptr),
-  FCurrentElement(nullptr),
-  FStoredSessionsSubKey(StoredSessionsSubKey),
-  FFailed(0),
-  FStoredSessionsOpened(false)
+  FStoredSessionsSubKey(StoredSessionsSubKey)
 {
 }
 
@@ -425,7 +421,7 @@ void TXmlStorage::WriteBinaryData(const UnicodeString Name,
   AddNewElement(Name, ::StrToHex(UnicodeString(reinterpret_cast<const wchar_t *>(Buffer), Size), true));
 }
 
-intptr_t TXmlStorage::GetFailed()
+intptr_t TXmlStorage::GetFailed() const
 {
   intptr_t Result = FFailed;
   FFailed = 0;

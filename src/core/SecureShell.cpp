@@ -14,20 +14,21 @@
 #include "CoreMain.h"
 
 #ifndef AUTO_WINSOCK
-#include <winsock2.h>
+#include <WinSock2.h>
 #endif
 //#include <ws2ipdef.h>
 //---------------------------------------------------------------------------
 __removed #pragma package(smart_init)
 //---------------------------------------------------------------------------
-#define MAX_BUFSIZE 32 * 1024
+constexpr int MAX_BUFSIZE = 32 * 1024;
 //---------------------------------------------------------------------------
 const wchar_t HostKeyDelimiter = L';';
 //---------------------------------------------------------------------------
 struct TPuttyTranslation
 {
-  const wchar_t *Original;
-  int Translation;
+  CUSTOM_MEM_ALLOCATION_IMPL
+  const char *Original{nullptr};
+  int Translation{0};
   UnicodeString HelpKeyword;
 };
 //---------------------------------------------------------------------------
@@ -151,7 +152,7 @@ Conf *TSecureShell::StoreToConfig(TSessionData *Data, bool Simple)
 {
   Conf *conf = conf_new();
 
-  DebugAssert((asOn == (TAutoSwitch)FORCE_ON) && (asOff == (TAutoSwitch)FORCE_OFF) && (asAuto == (TAutoSwitch)AUTO));
+  DebugAssert((asOn == static_cast<TAutoSwitch>(FORCE_ON)) && (asOff == static_cast<TAutoSwitch>(FORCE_OFF)) && (asAuto == static_cast<TAutoSwitch>(AUTO)));
 
 #define CONF_ssh_cipherlist_MAX CIPHER_MAX
 #define CONF_DEF_INT_NONE(KEY) conf_set_int(conf, KEY, 0);
@@ -258,7 +259,7 @@ Conf *TSecureShell::StoreToConfig(TSessionData *Data, bool Simple)
     conf_set_int_int(conf, CONF_ssh_kexlist, k, pkex);
   }
 
-  DebugAssert((THostKey)HK_MAX == HOSTKEY_COUNT);
+  DebugAssert(static_cast<THostKey>(HK_MAX) == HOSTKEY_COUNT);
   for (int h = 0; h < HOSTKEY_COUNT; h++)
   {
     int phk = 0;
@@ -700,8 +701,8 @@ void TSecureShell::PuttyLogEvent(const char *AStr)
 
     static const TPuttyTranslation Translation[] =
     {
-      { L"Administratively prohibited [%]", PFWD_TRANSL_ADMIN },
-      { L"Connect failed [%]", PFWD_TRANSL_CONNECT },
+      { "Administratively prohibited [%]", PFWD_TRANSL_ADMIN },
+      { "Connect failed [%]", PFWD_TRANSL_CONNECT },
     };
     TranslatePuttyMessage(Translation, _countof(Translation), FLastTunnelError);
   }
@@ -713,14 +714,14 @@ TPromptKind TSecureShell::IdentifyPromptKind(UnicodeString &AName) const
   // beware of changing order
   static const TPuttyTranslation NameTranslation[] =
   {
-    { L"SSH login name", USERNAME_TITLE },
-    { L"SSH key passphrase", PASSPHRASE_TITLE },
-    { L"SSH TIS authentication", SERVER_PROMPT_TITLE },
-    { L"SSH CryptoCard authentication", SERVER_PROMPT_TITLE },
-    { L"SSH server: %", SERVER_PROMPT_TITLE2 },
-    { L"SSH server authentication", SERVER_PROMPT_TITLE },
-    { L"SSH password", PASSWORD_TITLE },
-    { L"New SSH password", NEW_PASSWORD_TITLE },
+    { "SSH login name", USERNAME_TITLE },
+    { "SSH key passphrase", PASSPHRASE_TITLE },
+    { "SSH TIS authentication", SERVER_PROMPT_TITLE },
+    { "SSH CryptoCard authentication", SERVER_PROMPT_TITLE },
+    { "SSH server: %", SERVER_PROMPT_TITLE2 },
+    { "SSH server authentication", SERVER_PROMPT_TITLE },
+    { "SSH password", PASSWORD_TITLE },
+    { "New SSH password", NEW_PASSWORD_TITLE },
   };
 
   int Index = TranslatePuttyMessage(NameTranslation, _countof(NameTranslation), AName);
@@ -785,99 +786,99 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
   {
     static const TPuttyTranslation UsernamePromptTranslation[] =
     {
-      { L"login as: ", USERNAME_PROMPT2 },
+      { "login as: ", USERNAME_PROMPT2 },
     };
 
     PromptTranslation = UsernamePromptTranslation;
-    PromptDesc = L"username";
+    PromptDesc = "username";
   }
   else if (PromptKind == pkPassphrase)
   {
     static const TPuttyTranslation PassphrasePromptTranslation[] =
     {
-      { L"Passphrase for key \"%\": ", PROMPT_KEY_PASSPHRASE },
+      { "Passphrase for key \"%\": ", PROMPT_KEY_PASSPHRASE },
     };
 
     PromptTranslation = PassphrasePromptTranslation;
-    PromptDesc = L"passphrase";
+    PromptDesc = "passphrase";
   }
   else if (PromptKind == pkTIS)
   {
     static const TPuttyTranslation TISInstructionTranslation[] =
     {
-      { L"Using TIS authentication.%", TIS_INSTRUCTION },
+      { "Using TIS authentication.%", TIS_INSTRUCTION },
     };
 
     static const TPuttyTranslation TISPromptTranslation[] =
     {
-      { L"Response: ", PROMPT_PROMPT },
+      { "Response: ", PROMPT_PROMPT },
     };
 
     InstructionTranslation = TISInstructionTranslation;
     PromptTranslation = TISPromptTranslation;
-    PromptDesc = L"tis";
+    PromptDesc = "tis";
   }
   else if (PromptKind == pkCryptoCard)
   {
     static const TPuttyTranslation CryptoCardInstructionTranslation[] =
     {
-      { L"Using CryptoCard authentication.%", CRYPTOCARD_INSTRUCTION },
+      { "Using CryptoCard authentication.%", CRYPTOCARD_INSTRUCTION },
     };
 
     static const TPuttyTranslation CryptoCardPromptTranslation[] =
     {
-      { L"Response: ", PROMPT_PROMPT },
+      { "Response: ", PROMPT_PROMPT },
     };
 
     InstructionTranslation = CryptoCardInstructionTranslation;
     PromptTranslation = CryptoCardPromptTranslation;
-    PromptDesc = L"cryptocard";
+    PromptDesc = "cryptocard";
   }
   else if (PromptKind == pkKeybInteractive)
   {
     static const TPuttyTranslation KeybInteractiveInstructionTranslation[] =
     {
-      { L"Using keyboard-interactive authentication.%", KEYBINTER_INSTRUCTION },
+      { "Using keyboard-interactive authentication.%", KEYBINTER_INSTRUCTION },
     };
 
     static const TPuttyTranslation KeybInteractivePromptTranslation[] =
     {
       // as used by Linux-PAM (pam_exec/pam_exec.c, libpam/pam_get_authtok.c,
       // pam_unix/pam_unix_auth.c, pam_userdb/pam_userdb.c)
-      { L"Password: ", PASSWORD_PROMPT },
+      { "Password: ", PASSWORD_PROMPT },
     };
 
     InstructionTranslation = KeybInteractiveInstructionTranslation;
     PromptTranslation = KeybInteractivePromptTranslation;
-    PromptDesc = L"keyboard interactive";
+    PromptDesc = "keyboard interactive";
   }
   else if (PromptKind == pkPassword)
   {
     DebugAssert(Prompts->GetCount() == 1);
     Prompts->SetString(0, LoadStr(PASSWORD_PROMPT));
-    PromptDesc = L"password";
+    PromptDesc = "password";
   }
   else if (PromptKind == pkNewPassword)
   {
     // Can be tested with WS_FTP server
     static const TPuttyTranslation NewPasswordPromptTranslation[] =
     {
-      { L"Current password (blank for previously entered password): ", NEW_PASSWORD_CURRENT_PROMPT },
-      { L"Enter new password: ", NEW_PASSWORD_NEW_PROMPT },
-      { L"Confirm new password: ", NEW_PASSWORD_CONFIRM_PROMPT },
+      { "Current password (blank for previously entered password): ", NEW_PASSWORD_CURRENT_PROMPT },
+      { "Enter new password: ", NEW_PASSWORD_NEW_PROMPT },
+      { "Confirm new password: ", NEW_PASSWORD_CONFIRM_PROMPT },
     };
     PromptTranslation = NewPasswordPromptTranslation;
     PromptTranslationCount = _countof(NewPasswordPromptTranslation);
-    PromptDesc = L"new password";
+    PromptDesc = "new password";
   }
   else
   {
-    PromptDesc = L"unknown";
+    PromptDesc = "unknown";
     DebugFail();
   }
 
   UnicodeString InstructionsLog =
-    (AInstructions.IsEmpty() ? UnicodeString(L"<no instructions>") : FORMAT("\"%s\"", AInstructions));
+    (AInstructions.IsEmpty() ? UnicodeString("<no instructions>") : FORMAT("\"%s\"", AInstructions));
   UnicodeString PromptsLog =
     (Prompts->GetCount() > 0 ? FORMAT("\"%s\"", Prompts->GetString(0)) : UnicodeString(L"<no prompt>")) +
     (Prompts->GetCount() > 1 ? FORMAT("%d more", Prompts->GetCount() - 1) : UnicodeString());
@@ -1435,11 +1436,12 @@ int TSecureShell::TranslatePuttyMessage(
   int Result = -1;
   for (intptr_t Index = 0; Index < Count; ++Index)
   {
-    const wchar_t *Original = Translation[Index].Original;
-    const wchar_t *Div = wcschr(Original, L'%');
+    const char *Original = Translation[Index].Original;
+    const char *Div = strchr(Original, '%');
+    AnsiString AnsiMessage = AnsiString(Message);
     if (Div == nullptr)
     {
-      if (wcscmp(Message.c_str(), Original) == 0)
+      if (strcmp(AnsiMessage.c_str(), Original) == 0)
       {
         Message = LoadStr(Translation[Index].Translation);
         Result = nb::ToInt(Index);
@@ -1452,8 +1454,8 @@ int TSecureShell::TranslatePuttyMessage(
       size_t PrefixLen = Div - Original;
       size_t SuffixLen = OriginalLen - PrefixLen - 1;
       if ((nb::ToSizeT(Message.Length()) >= OriginalLen - 1) &&
-        (wcsncmp(Message.c_str(), Original, PrefixLen) == 0) &&
-        (wcsncmp(Message.c_str() + Message.Length() - SuffixLen, Div + 1, SuffixLen) == 0))
+        (strncmp(AnsiMessage.c_str(), Original, PrefixLen) == 0) &&
+        (strncmp(AnsiMessage.c_str() + AnsiMessage.Length() - SuffixLen, Div + 1, SuffixLen) == 0))
       {
         Message = FMTLOAD(Translation[Index].Translation,
             Message.SubString(PrefixLen + 1, Message.Length() - PrefixLen - SuffixLen).TrimRight());
@@ -1476,17 +1478,17 @@ int TSecureShell::TranslateAuthenticationMessage(
 {
   static const TPuttyTranslation Translation[] =
   {
-    { L"Using username \"%\".", AUTH_TRANSL_USERNAME },
-    { L"Using keyboard-interactive authentication.", AUTH_TRANSL_KEYB_INTER }, // not used anymore
-    { L"Authenticating with public key \"%\" from agent", AUTH_TRANSL_PUBLIC_KEY_AGENT },
-    { L"Authenticating with public key \"%\"", AUTH_TRANSL_PUBLIC_KEY },
-    { L"Authenticated using RSA key \"%\" from agent", AUTH_TRANSL_PUBLIC_KEY_AGENT },
-    { L"Wrong passphrase", AUTH_TRANSL_WRONG_PASSPHRASE },
-    { L"Wrong passphrase.", AUTH_TRANSL_WRONG_PASSPHRASE },
-    { L"Access denied", AUTH_TRANSL_ACCESS_DENIED },
-    { L"Trying public key authentication.", AUTH_TRANSL_TRY_PUBLIC_KEY },
-    { L"Server refused our public key.", AUTH_TRANSL_KEY_REFUSED },
-    { L"Server refused our key", AUTH_TRANSL_KEY_REFUSED },
+    { "Using username \"%\".", AUTH_TRANSL_USERNAME },
+    { "Using keyboard-interactive authentication.", AUTH_TRANSL_KEYB_INTER }, // not used anymore
+    { "Authenticating with public key \"%\" from agent", AUTH_TRANSL_PUBLIC_KEY_AGENT },
+    { "Authenticating with public key \"%\"", AUTH_TRANSL_PUBLIC_KEY },
+    { "Authenticated using RSA key \"%\" from agent", AUTH_TRANSL_PUBLIC_KEY_AGENT },
+    { "Wrong passphrase", AUTH_TRANSL_WRONG_PASSPHRASE },
+    { "Wrong passphrase.", AUTH_TRANSL_WRONG_PASSPHRASE },
+    { "Access denied", AUTH_TRANSL_ACCESS_DENIED },
+    { "Trying public key authentication.", AUTH_TRANSL_TRY_PUBLIC_KEY },
+    { "Server refused our public key.", AUTH_TRANSL_KEY_REFUSED },
+    { "Server refused our key", AUTH_TRANSL_KEY_REFUSED },
   };
 
   int Result = TranslatePuttyMessage(Translation, _countof(Translation), Message, HelpKeyword);
@@ -1567,14 +1569,14 @@ int TSecureShell::TranslateErrorMessage(
 {
   static const TPuttyTranslation Translation[] =
   {
-    { L"Server unexpectedly closed network connection", UNEXPECTED_CLOSE_ERROR, HELP_UNEXPECTED_CLOSE_ERROR },
-    { L"Network error: Connection refused", NET_TRANSL_REFUSED2, HELP_NET_TRANSL_REFUSED },
-    { L"Network error: Connection reset by peer", NET_TRANSL_RESET, HELP_NET_TRANSL_RESET },
-    { L"Network error: Connection timed out", NET_TRANSL_TIMEOUT2, HELP_NET_TRANSL_TIMEOUT },
-    { L"Network error: No route to host", NET_TRANSL_NO_ROUTE2, HELP_NET_TRANSL_NO_ROUTE },
-    { L"Network error: Software caused connection abort", NET_TRANSL_CONN_ABORTED, HELP_NET_TRANSL_CONN_ABORTED },
-    { L"Host does not exist", NET_TRANSL_HOST_NOT_EXIST2, HELP_NET_TRANSL_HOST_NOT_EXIST },
-    { L"Incoming packet was garbled on decryption", NET_TRANSL_PACKET_GARBLED, HELP_NET_TRANSL_PACKET_GARBLED },
+    { "Server unexpectedly closed network connection", UNEXPECTED_CLOSE_ERROR, HELP_UNEXPECTED_CLOSE_ERROR },
+    { "Network error: Connection refused", NET_TRANSL_REFUSED2, HELP_NET_TRANSL_REFUSED },
+    { "Network error: Connection reset by peer", NET_TRANSL_RESET, HELP_NET_TRANSL_RESET },
+    { "Network error: Connection timed out", NET_TRANSL_TIMEOUT2, HELP_NET_TRANSL_TIMEOUT },
+    { "Network error: No route to host", NET_TRANSL_NO_ROUTE2, HELP_NET_TRANSL_NO_ROUTE },
+    { "Network error: Software caused connection abort", NET_TRANSL_CONN_ABORTED, HELP_NET_TRANSL_CONN_ABORTED },
+    { "Host does not exist", NET_TRANSL_HOST_NOT_EXIST2, HELP_NET_TRANSL_HOST_NOT_EXIST },
+    { "Incoming packet was garbled on decryption", NET_TRANSL_PACKET_GARBLED, HELP_NET_TRANSL_PACKET_GARBLED },
   };
 
   int Index = TranslatePuttyMessage(Translation, _countof(Translation), Message, HelpKeyword);
@@ -2618,11 +2620,11 @@ void TSecureShell::AskAlg(const UnicodeString AAlgType, const UnicodeString AlgN
   // beware of changing order
   static const TPuttyTranslation AlgTranslation[] =
   {
-    { L"cipher", CIPHER_TYPE_BOTH2 },
-    { L"client-to-server cipher", CIPHER_TYPE_CS2 },
-    { L"server-to-client cipher", CIPHER_TYPE_SC2 },
-    { L"key-exchange algorithm", KEY_EXCHANGE_ALG },
-    { L"hostkey type", KEYKEY_TYPE },
+    { "cipher", CIPHER_TYPE_BOTH2 },
+    { "client-to-server cipher", CIPHER_TYPE_CS2 },
+    { "server-to-client cipher", CIPHER_TYPE_SC2 },
+    { "key-exchange algorithm", KEY_EXCHANGE_ALG },
+    { "hostkey type", KEYKEY_TYPE },
   };
 
   UnicodeString AlgType = AAlgType;

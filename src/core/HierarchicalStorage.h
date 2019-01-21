@@ -24,6 +24,7 @@ class NB_CORE_EXPORT THierarchicalStorage : public TObject
   NB_DISABLE_COPY(THierarchicalStorage)
 
 public:
+  THierarchicalStorage() = delete;
   explicit THierarchicalStorage(const UnicodeString AStorage) noexcept;
   virtual ~THierarchicalStorage() noexcept;
   virtual void Init() {}
@@ -134,6 +135,7 @@ class NB_CORE_EXPORT TRegistryStorage : public THierarchicalStorage
 {
   NB_DISABLE_COPY(TRegistryStorage)
 public:
+  TRegistryStorage() = delete;
   explicit TRegistryStorage(const UnicodeString AStorage, HKEY ARootKey, REGSAM WowMode = 0) noexcept;
   explicit TRegistryStorage(const UnicodeString AStorage) noexcept;
   void Init() override;

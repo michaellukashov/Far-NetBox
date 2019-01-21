@@ -425,8 +425,7 @@ TRegistryStorage::TRegistryStorage(const UnicodeString AStorage) noexcept :
 //---------------------------------------------------------------------------
 TRegistryStorage::TRegistryStorage(const UnicodeString AStorage, HKEY ARootKey, REGSAM WowMode) noexcept :
   THierarchicalStorage(IncludeTrailingBackslash(AStorage)),
-  FRegistry(std::make_unique<TRegistry>()),
-  FFailed(0)
+  FRegistry(std::make_unique<TRegistry>())
 {
   FWowMode = WowMode;
   FRegistry->SetRootKey(ARootKey);

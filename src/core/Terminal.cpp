@@ -5818,9 +5818,7 @@ public:
   static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TSynchronizeData); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TSynchronizeData) || TObject::is(Kind); }
 public:
-  TSynchronizeData() : TObject(OBJECT_CLASS_TSynchronizeData)
-  {
-  }
+  TSynchronizeData() : TObject(OBJECT_CLASS_TSynchronizeData) {}
 
   UnicodeString LocalDirectory;
   UnicodeString RemoteDirectory;
