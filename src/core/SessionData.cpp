@@ -3,7 +3,7 @@
 #pragma hdrstop
 
 #include <rdestl/vector.h>
-#include <Winhttp.h>
+#include <winhttp.h>
 
 #include <Common.h>
 #include <Exceptions.h>
@@ -304,7 +304,7 @@ void TSessionData::Default()
   // add also to TSessionLog::AddStartupInfo()
 }
 //---------------------------------------------------------------------
-void TSessionData::NonPersistant()
+void TSessionData::NonPersistent()
 {
   SetUpdateDirectories(false);
   SetPreserveDirectoryChanges(false);
@@ -609,7 +609,7 @@ void TSessionData::DoLoad(THierarchicalStorage *Storage, bool PuttyImport, bool 
   // Make sure we only ever use methods supported by TOptionsStorage
   // (implemented by TOptionsIniFile)
 
-  SetPortNumber(Storage->ReadInteger("PortNumber", (int)GetPortNumber()));
+  SetPortNumber(Storage->ReadInteger("PortNumber", static_cast<int>(GetPortNumber())));
   SessionSetUserName(Storage->ReadString("UserName", SessionGetUserName()));
   // must be loaded after UserName, because HostName may be in format user@host
   SetHostName(Storage->ReadString("HostName", GetHostName()));
@@ -635,14 +635,14 @@ void TSessionData::DoLoad(THierarchicalStorage *Storage, bool PuttyImport, bool 
     PingIntervalSecs = Storage->ReadInteger("PingIntervalSec", GetPingInterval() % SecsPerMin);
   }
   SetPingInterval(
-    Storage->ReadInteger("PingInterval", (int)GetPingInterval() / SecsPerMin) * SecsPerMin +
+    Storage->ReadInteger("PingInterval", static_cast<int>(GetPingInterval()) / SecsPerMin) * SecsPerMin +
     PingIntervalSecs);
   if (GetPingInterval() == 0)
   {
     SetPingInterval(30);
   }
   SetPingType(static_cast<TPingType>(Storage->ReadInteger("PingType", GetPingType())));
-  SetTimeout(Storage->ReadInteger("Timeout", (int)GetTimeout()));
+  SetTimeout(Storage->ReadInteger("Timeout", static_cast<int>(GetTimeout())));
   SetTryAgent(Storage->ReadBool("TryAgent", GetTryAgent()));
   SetAgentFwd(Storage->ReadBool("AgentFwd", GetAgentFwd()));
   SetAuthTIS(Storage->ReadBool("AuthTIS", GetAuthTIS()));
@@ -681,7 +681,7 @@ void TSessionData::DoLoad(THierarchicalStorage *Storage, bool PuttyImport, bool 
   SetAddressFamily(static_cast<TAddressFamily>
     (Storage->ReadInteger("AddressFamily", GetAddressFamily())));
   SetRekeyData(Storage->ReadString("RekeyBytes", GetRekeyData()));
-  SetRekeyTime(Storage->ReadInteger("RekeyTime", (int)GetRekeyTime()));
+  SetRekeyTime(Storage->ReadInteger("RekeyTime", static_cast<int>(GetRekeyTime())));
 
   if (GetSessionVersion() < ::GetVersionNumber2121())
   {
@@ -724,7 +724,7 @@ void TSessionData::DoLoad(THierarchicalStorage *Storage, bool PuttyImport, bool 
   SetEOLType(static_cast<TEOLType>(Storage->ReadInteger("EOLType", GetEOLType())));
   SetTrimVMSVersions(Storage->ReadBool("TrimVMSVersions", GetTrimVMSVersions()));
   SetNotUtf(static_cast<TAutoSwitch>(Storage->ReadInteger("Utf", Storage->ReadInteger("SFTPUtfBug", GetNotUtf()))));
-  SetInternalEditorEncoding(Storage->ReadInteger("InternalEditorEncoding", (int)GetInternalEditorEncoding()));
+  SetInternalEditorEncoding(Storage->ReadInteger("InternalEditorEncoding", static_cast<int>(GetInternalEditorEncoding())));
 
   SetS3DefaultRegion(Storage->ReadString("S3DefaultRegion", GetS3DefaultRegion()));
 
@@ -733,14 +733,14 @@ void TSessionData::DoLoad(THierarchicalStorage *Storage, bool PuttyImport, bool 
   {
     SetTcpNoDelay(Storage->ReadBool("TcpNoDelay", GetTcpNoDelay()));
   }
-  SetSendBuf(Storage->ReadInteger("SendBuf", Storage->ReadInteger("SshSendBuf", (int)GetSendBuf())));
+  SetSendBuf(Storage->ReadInteger("SendBuf", Storage->ReadInteger("SshSendBuf", static_cast<int>(GetSendBuf()))));
   SetSshSimple(Storage->ReadBool("SshSimple", GetSshSimple()));
 
   SetProxyMethod(static_cast<TProxyMethod>(Storage->ReadInteger("ProxyMethod", ::pmNone)));
   if (GetProxyMethod() != pmSystem)
   {
     SetProxyHost(Storage->ReadString("ProxyHost", GetProxyHost()));
-    SetProxyPort(Storage->ReadInteger("ProxyPort", (int)GetProxyPort()));
+    SetProxyPort(Storage->ReadInteger("ProxyPort", static_cast<int>(GetProxyPort())));
   }
   SetProxyUsername(Storage->ReadString("ProxyUsername", GetProxyUsername()));
   if (Storage->ValueExists("ProxyPassword"))
@@ -795,19 +795,19 @@ void TSessionData::DoLoad(THierarchicalStorage *Storage, bool PuttyImport, bool 
   READ_SFTP_BUG(SignedTS);
 #undef READ_SFTP_BUG
 
-  SetSFTPMaxVersion(Storage->ReadInteger("SFTPMaxVersion", (int)GetSFTPMaxVersion()));
-  SetSFTPMinPacketSize(Storage->ReadInteger("SFTPMinPacketSize", (int)GetSFTPMinPacketSize()));
-  SetSFTPMaxPacketSize(Storage->ReadInteger("SFTPMaxPacketSize", (int)GetSFTPMaxPacketSize()));
-  SetSFTPDownloadQueue(Storage->ReadInteger("SFTPDownloadQueue", (int)GetSFTPDownloadQueue()));
-  SetSFTPUploadQueue(Storage->ReadInteger("SFTPUploadQueue", (int)GetSFTPUploadQueue()));
-  SetSFTPListingQueue(Storage->ReadInteger("SFTPListingQueue", (int)GetSFTPListingQueue()));
+  SetSFTPMaxVersion(Storage->ReadInteger("SFTPMaxVersion", static_cast<int>(GetSFTPMaxVersion())));
+  SetSFTPMinPacketSize(Storage->ReadInteger("SFTPMinPacketSize", static_cast<int>(GetSFTPMinPacketSize())));
+  SetSFTPMaxPacketSize(Storage->ReadInteger("SFTPMaxPacketSize", static_cast<int>(GetSFTPMaxPacketSize())));
+  SetSFTPDownloadQueue(Storage->ReadInteger("SFTPDownloadQueue", static_cast<int>(GetSFTPDownloadQueue())));
+  SetSFTPUploadQueue(Storage->ReadInteger("SFTPUploadQueue", static_cast<int>(GetSFTPUploadQueue())));
+  SetSFTPListingQueue(Storage->ReadInteger("SFTPListingQueue", static_cast<int>(GetSFTPListingQueue())));
 
-  SetColor(Storage->ReadInteger("Color", (int)GetColor()));
+  SetColor(Storage->ReadInteger("Color", static_cast<int>(GetColor())));
 
   SetPuttyProtocol(Storage->ReadString("Protocol", GetPuttyProtocol()));
 
   SetTunnel(Storage->ReadBool("Tunnel", GetTunnel()));
-  SetTunnelPortNumber(Storage->ReadInteger("TunnelPortNumber", (int)GetTunnelPortNumber()));
+  SetTunnelPortNumber(Storage->ReadInteger("TunnelPortNumber", static_cast<int>(GetTunnelPortNumber())));
   SetTunnelUserName(Storage->ReadString("TunnelUserName", GetTunnelUserName()));
   // must be loaded after TunnelUserName,
   // because TunnelHostName may be in format user@host
@@ -825,7 +825,7 @@ void TSessionData::DoLoad(THierarchicalStorage *Storage, bool PuttyImport, bool 
     }
   }
   SetTunnelPublicKeyFile(Storage->ReadString("TunnelPublicKeyFile", GetTunnelPublicKeyFile()));
-  SetTunnelLocalPortNumber(Storage->ReadInteger("TunnelLocalPortNumber", (int)GetTunnelLocalPortNumber()));
+  SetTunnelLocalPortNumber(Storage->ReadInteger("TunnelLocalPortNumber", static_cast<int>(GetTunnelLocalPortNumber())));
   SetTunnelHostKey(Storage->ReadString("TunnelHostKey", GetTunnelHostKey()));
 
   // Ftp prefix
@@ -833,7 +833,7 @@ void TSessionData::DoLoad(THierarchicalStorage *Storage, bool PuttyImport, bool 
   SetFtpForcePasvIp(static_cast<TAutoSwitch>(Storage->ReadInteger("FtpForcePasvIp2", GetFtpForcePasvIp())));
   SetFtpUseMlsd(static_cast<TAutoSwitch>(Storage->ReadInteger("FtpUseMlsd", GetFtpUseMlsd())));
   SetFtpAccount(Storage->ReadString("FtpAccount", GetFtpAccount()));
-  SetFtpPingInterval(Storage->ReadInteger("FtpPingInterval", (int)GetFtpPingInterval()));
+  SetFtpPingInterval(Storage->ReadInteger("FtpPingInterval", static_cast<int>(GetFtpPingInterval())));
   SetFtpPingType(static_cast<TPingType>(Storage->ReadInteger("FtpPingType", GetFtpPingType())));
   SetFtpTransferActiveImmediately(static_cast<TAutoSwitch>(Storage->ReadInteger("FtpTransferActiveImmediately2", GetFtpTransferActiveImmediately())));
   SetFtps(static_cast<TFtps>(Storage->ReadInteger("Ftps", GetFtps())));
@@ -843,7 +843,7 @@ void TSessionData::DoLoad(THierarchicalStorage *Storage, bool PuttyImport, bool 
   SetSslSessionReuse(Storage->ReadBool("SslSessionReuse", GetSslSessionReuse()));
   SetTlsCertificateFile(Storage->ReadString("TlsCertificateFile", GetTlsCertificateFile()));
 
-  SetFtpProxyLogonType(Storage->ReadInteger("FtpProxyLogonType", (int)GetFtpProxyLogonType()));
+  SetFtpProxyLogonType(Storage->ReadInteger("FtpProxyLogonType", static_cast<int>(GetFtpProxyLogonType())));
 
   SetMinTlsVersion(static_cast<TTlsVersion>(Storage->ReadInteger("MinTlsVersion", GetMinTlsVersion())));
   SetMaxTlsVersion(static_cast<TTlsVersion>(Storage->ReadInteger("MaxTlsVersion", GetMaxTlsVersion())));
@@ -2277,10 +2277,10 @@ bool TSessionData::ParseUrl(UnicodeString Url, TOptions *Options,
     }
     if (Options->FindSwitch("explicit", Value) ||
         // BACKWARD COMPATIBILITY with 5.5.x
-        Options->FindSwitch(L"explicittls", Value))
+        Options->FindSwitch("explicittls", Value))
     {
       UnicodeString SwitchName =
-        Options->FindSwitch(L"explicit", Value) ? L"explicit" : L"explicittls";
+        Options->FindSwitch(L"explicit", Value) ? "explicit" : "explicittls";
       bool Enabled = Options->SwitchValue(SwitchName, true);
       SetFtps(Enabled ? ftpsExplicitTls : ftpsNone);
       if (!PortNumberDefined && Enabled)
@@ -3256,7 +3256,7 @@ UnicodeString TSessionData::GenerateSessionUrl(uintptr_t Flags) const
 
     if (FLAGSET(Flags, sufHostKey) && !GetHostKey().IsEmpty())
     {
-      // Many SHA-256 fingeprints end with an equal sign and we do not really need it to be encoded, so avoid that.
+      // Many SHA-256 fingerprints end with an equal sign and we do not really need it to be encoded, so avoid that.
       // Also colons in TLS/SSL fingerprint do not really need encoding.
       UnicodeString S = EncodeUrlString(NormalizeFingerprint(GetHostKey()), "=:");
 
@@ -3295,7 +3295,7 @@ UnicodeString TSessionData::GenerateSessionUrl(uintptr_t Flags) const
 
   if (GetPortNumber() != GetDefaultPort(GetFSProtocol(), GetFtps()))
   {
-    Url += ":" + ::Int64ToStr(GetPortNumber());
+    Url += UnicodeString(":") + ::Int64ToStr(GetPortNumber());
   }
   Url += "/";
 
@@ -3885,7 +3885,7 @@ void TSessionData::PrepareProxyData() const
     FIEProxyConfig = new TIEProxyConfig;
     WINHTTP_CURRENT_USER_IE_PROXY_CONFIG IEProxyConfig;
     nb::ClearStruct(IEProxyConfig);
-    TLibraryLoader LibraryLoader(L"winhttp.dll", true);
+    TLibraryLoader LibraryLoader("winhttp.dll", true);
     if (LibraryLoader.Loaded())
     {
       typedef BOOL (WINAPI * FWinHttpGetIEProxyConfigForCurrentUser)(WINHTTP_CURRENT_USER_IE_PROXY_CONFIG *);
@@ -4441,7 +4441,7 @@ UnicodeString TSessionData::ComposePath(
   return base::UnixIncludeTrailingBackslash(APath) + Name;
 }
 //---------------------------------------------------------------------
-void TSessionData::DisableAuthentationsExceptPassword()
+void TSessionData::DisableAuthenticationsExceptPassword()
 {
   FSshNoUserAuth = false;
   FAuthTIS = false;
@@ -4586,8 +4586,7 @@ TFtps TSessionData::TranslateFtpEncryptionNumber(intptr_t FtpEncryption) const
 //=== TStoredSessionList ----------------------------------------------
 TStoredSessionList::TStoredSessionList() noexcept :
   TNamedObjectList(OBJECT_CLASS_TStoredSessionList),
-  FDefaultSettings(std::make_unique<TSessionData>(DefaultName)),
-  FReadOnly(false)
+  FDefaultSettings(std::make_unique<TSessionData>(DefaultName))
 {
 }
 
@@ -5000,7 +4999,7 @@ void TStoredSessionList::ImportFromKnownHosts(TStrings *Lines)
                 Algorithm->freekey(Key);
               } end_try__finally
 
-              if (SessionDataOwner.get() != nullptr)
+              if (SessionDataOwner != nullptr)
               {
                 Add(SessionDataOwner.release());
               }
@@ -5331,7 +5330,7 @@ bool TStoredSessionList::OpenHostKeysSubKey(THierarchicalStorage *Storage, bool 
     Storage->OpenSubKey(GetConfiguration()->GetSshHostKeysSubKey(), CanCreate);
 }
 //---------------------------------------------------------------------------
-THierarchicalStorage *TStoredSessionList::CreateHostKeysStorageForWritting()
+THierarchicalStorage *TStoredSessionList::CreateHostKeysStorageForWriting()
 {
   bool SessionList = false;
   std::unique_ptr<THierarchicalStorage> Storage(GetConfiguration()->CreateStorage(SessionList));
@@ -5372,7 +5371,7 @@ void TStoredSessionList::ImportHostKeys(
 void TStoredSessionList::ImportHostKeys(
   UnicodeString & SourceKey, TStoredSessionList * Sessions, bool OnlySelected)
 {
-  std::unique_ptr<THierarchicalStorage> TargetStorage(CreateHostKeysStorageForWritting());
+  std::unique_ptr<THierarchicalStorage> TargetStorage(CreateHostKeysStorageForWriting());
   TargetStorage->Init();
   std::unique_ptr<THierarchicalStorage> SourceStorage(std::make_unique<TRegistryStorage>(SourceKey));
   SourceStorage->Init();
@@ -5382,7 +5381,7 @@ void TStoredSessionList::ImportHostKeys(
 //---------------------------------------------------------------------------
 void TStoredSessionList::ImportSelectedKnownHosts(TStoredSessionList *Sessions)
 {
-  std::unique_ptr<THierarchicalStorage> Storage(CreateHostKeysStorageForWritting());
+  std::unique_ptr<THierarchicalStorage> Storage(CreateHostKeysStorageForWriting());
   if (OpenHostKeysSubKey(Storage.get(), true))
   {
     for (intptr_t Index = 0; Index < Sessions->GetCount(); ++Index)

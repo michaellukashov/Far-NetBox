@@ -8546,7 +8546,7 @@ void TSecondaryTerminal::Init(
   DebugAssert(FMainTerminal != nullptr);
   GetLog()->SetParent(FMainTerminal->GetLog(), AName);
   GetActionLog()->SetEnabled(false);
-  GetSessionData()->NonPersistant();
+  GetSessionData()->NonPersistent();
   if (!FMainTerminal->TerminalGetUserName().IsEmpty())
   {
     GetSessionData()->SessionSetUserName(FMainTerminal->TerminalGetUserName());

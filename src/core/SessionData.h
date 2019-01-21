@@ -227,7 +227,7 @@ private:
   TAutoSwitch FFtpDeleteFromCwd{};
   bool FSslSessionReuse{false};
   UnicodeString FTlsCertificateFile;
-  TAddressFamily FAddressFamily{};
+  TAddressFamily FAddressFamily{afAuto};
   UnicodeString FRekeyData;
   uintptr_t FRekeyTime{0};
   intptr_t FColor{0};
@@ -494,11 +494,12 @@ public:
   __property UnicodeString InternalStorageKey = { read = GetInternalStorageKey };
 
 public:
+  TSessionData() = delete;
   explicit TSessionData(UnicodeString aName) noexcept;
   virtual ~TSessionData() noexcept;
   TSessionData * Clone() const;
   void Default();
-  void NonPersistant();
+  void NonPersistent();
   void Load(THierarchicalStorage * Storage, bool PuttyImport);
   void ApplyRawSettings(THierarchicalStorage * Storage);
   __removed void ImportFromFilezilla(_di_IXMLNode Node, UnicodeString Path, _di_IXMLNode SettingsNode);
@@ -524,7 +525,7 @@ public:
   void ConfigureTunnel(intptr_t PortNumber);
   void RollbackTunnel();
   void ExpandEnvironmentVariables();
-  void DisableAuthentationsExceptPassword();
+  void DisableAuthenticationsExceptPassword();
   bool IsSame(const TSessionData * Default, bool AdvancedOnly) const;
   bool IsSameSite(const TSessionData * Default) const;
   bool IsInFolderOrWorkspace(UnicodeString Name) const;
@@ -989,7 +990,7 @@ private:
   TSessionData * CheckIsInFolderOrWorkspaceAndResolve(
     TSessionData *Data, UnicodeString Name);
   __removed void ImportLevelFromFilezilla(_di_IXMLNode Node, UnicodeString Path, _di_IXMLNode SettingsNode);
-  static THierarchicalStorage * CreateHostKeysStorageForWritting();
+  static THierarchicalStorage * CreateHostKeysStorageForWriting();
 };
 //---------------------------------------------------------------------------
 NB_CORE_EXPORT UnicodeString GetExpandedLogFileName(UnicodeString LogFileName, TDateTime Started, TSessionData *SessionData);

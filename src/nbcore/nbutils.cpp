@@ -5,6 +5,7 @@
 namespace nb {
 
 intptr_t __cdecl StrLength(const wchar_t *str) { return wcslen(NullToEmpty(str)); }
+intptr_t __cdecl StrLength(const char *str) { return strlen(NullToEmptyA(str)); }
 
 wchar_t __cdecl Upper(wchar_t Ch)
 {

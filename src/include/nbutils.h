@@ -5,6 +5,7 @@
 namespace nb {
 
 NB_CORE_EXPORT intptr_t __cdecl StrLength(const wchar_t* str);
+NB_CORE_EXPORT intptr_t __cdecl StrLength(const char* str);
 NB_CORE_EXPORT wchar_t __cdecl Upper(wchar_t Ch);
 NB_CORE_EXPORT wchar_t __cdecl Lower(wchar_t Ch);
 NB_CORE_EXPORT intptr_t __cdecl StrCmpNNI(const wchar_t* s1, intptr_t n1, const wchar_t* s2, intptr_t n2);
