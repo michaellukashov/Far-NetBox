@@ -175,12 +175,7 @@ bool TSynchronizeOptions::MatchesFilter(const UnicodeString AFileName) const
   return Result;
 }
 //---------------------------------------------------------------------------
-TSpaceAvailable::TSpaceAvailable() :
-  BytesOnDevice(0),
-  UnusedBytesOnDevice(0),
-  BytesAvailableToUser(0),
-  UnusedBytesAvailableToUser(0),
-  BytesPerAllocationUnit(0)
+TSpaceAvailable::TSpaceAvailable()
 {
 __removed memset(this, 0, sizeof(*this));
 }
@@ -204,6 +199,7 @@ public:
   static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TTunnelThread); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TTunnelThread) || TSimpleThread::is(Kind); }
 public:
+  TTunnelThread() = delete;
   explicit TTunnelThread(TSecureShell *SecureShell) noexcept;
   virtual ~TTunnelThread() noexcept;
   virtual void InitTunnelThread();
@@ -220,8 +216,7 @@ private:
 //---------------------------------------------------------------------------
 TTunnelThread::TTunnelThread(TSecureShell *SecureShell) noexcept :
   TSimpleThread(OBJECT_CLASS_TTunnelThread),
-  FSecureShell(SecureShell),
-  FTerminated(false)
+  FSecureShell(SecureShell)
 {
 }
 
@@ -410,7 +405,6 @@ private:
 };
 //---------------------------------------------------------------------------
 TCallbackGuard::TCallbackGuard(TTerminal *ATerminal) noexcept :
-  FFatalError(nullptr),
   FTerminal(ATerminal),
   FGuarding(FTerminal->FCallbackGuard == nullptr)
 {
@@ -488,9 +482,7 @@ bool TCallbackGuard::Verify(Exception *E)
 TRobustOperationLoop::TRobustOperationLoop(TTerminal *Terminal, TFileOperationProgressType *OperationProgress, bool *AnyTransfer) noexcept :
   FTerminal(Terminal),
   FOperationProgress(OperationProgress),
-  FRetry(false),
-  FAnyTransfer(AnyTransfer),
-  FPrevAnyTransfer(false)
+  FAnyTransfer(AnyTransfer)
 {
   if (FAnyTransfer != nullptr)
   {
@@ -702,12 +694,6 @@ bool TCollectedFileList::IsRecursed(intptr_t Index) const
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 TParallelOperation::TParallelOperation(TOperationSide Side) noexcept :
-  FIndex(0),
-  FCopyParam(nullptr),
-  FParams(0),
-  FProbablyEmpty(false),
-  FClients(0),
-  FMainOperationProgress(nullptr),
   FSide(Side)
 {
   DebugAssert((Side == osLocal) || (Side == osRemote));
@@ -717,7 +703,7 @@ void TParallelOperation::Init(
   TStrings *AFileList, const UnicodeString TargetDir, const TCopyParamType *CopyParam, intptr_t Params,
   TFileOperationProgressType *MainOperationProgress, const UnicodeString MainName)
 {
-  DebugAssert(FFileList.get() == nullptr);
+  DebugAssert(FFileList == nullptr);
   // More lists should really happen in scripting only, which does not support parallel transfers atm.
   // But in general the code should work with more lists anyway, it just was not tested for it.
   DebugAssert(AFileList->GetCount() == 1);
@@ -984,56 +970,8 @@ intptr_t TParallelOperation::GetNext(TTerminal *Terminal, UnicodeString &FileNam
 TTerminal::TTerminal(TObjectClassId Kind) noexcept :
   TSessionUI(Kind),
   FSessionData(std::make_unique<TSessionData>("")),
-  FLog(nullptr),
-  FActionLog(nullptr),
-  FConfiguration(nullptr),
-  FExceptionOnFail(0),
-  FFiles(nullptr),
-  FInTransaction(0),
-  FSuspendTransaction(false),
-  FOnChangeDirectory(nullptr),
-  FOnReadDirectory(nullptr),
-  FOnStartReadDirectory(nullptr),
-  FOnReadDirectoryProgress(nullptr),
-  FOnDeleteLocalFile(nullptr),
-  FOnCreateLocalFile(nullptr),
-  FOnGetLocalFileAttributes(nullptr),
-  FOnSetLocalFileAttributes(nullptr),
-  FOnMoveLocalFile(nullptr),
-  FOnRemoveLocalDirectory(nullptr),
-  FOnCreateLocalDirectory(nullptr),
-  FOnInitializeLog(nullptr),
-  FUsersGroupsLookedup(false),
-  FOperationProgress(nullptr),
-  FUseBusyCursor(false),
-  FDirectoryCache(nullptr),
-  FDirectoryChangesCache(nullptr),
-  FSecureShell(nullptr),
   FFSProtocol(cfsUnknown),
-  FCommandSession(nullptr),
-  FAutoReadDirectory(false),
-  FReadingCurrentDirectory(false),
-  FClosedOnCompletion(nullptr),
-  FStatus(ssClosed),
-  FOpening(0),
-  FTunnelThread(nullptr),
-  FTunnel(nullptr),
-  FTunnelData(nullptr),
-  FTunnelLog(nullptr),
-  FTunnelUI(nullptr),
-  FTunnelLocalPortNumber(0),
-  FCallbackGuard(nullptr),
-  FEnableSecureShellUsage(false),
-  FCollectFileSystemUsage(false),
-  FRememberedPasswordTried(false),
-  FRememberedTunnelPasswordTried(false),
-  FNesting(0),
-  FLastProgressLogged(0),
-  FMultipleDestinationFiles(false),
-  FReadCurrentDirectoryPending(false),
-  FReadDirectoryPending(false),
-  FTunnelOpening(false),
-  FFileSystem(nullptr)
+  FStatus(ssClosed)
 {
   FOldFiles = std::make_unique<TRemoteDirectory>(this);
 }
@@ -7450,7 +7388,7 @@ void TTerminal::DirectorySource(
           FMTLOAD(CANT_SET_ATTRS, ADirectoryName), "",
         [&]()
         {
-          THROWOSIFFALSE(::SysUtulsFileSetAttr(ApiPath(ADirectoryName), (DWORD)(Attrs & ~faArchive)) == 0);
+          THROWOSIFFALSE(::SysUtulsFileSetAttr(ApiPath(ADirectoryName), static_cast<DWORD>(Attrs & ~faArchive)) == 0);
         });
         __removed FILE_OPERATION_LOOP_END(FMTLOAD(CANT_SET_ATTRS, (DirectoryName)));
       }
@@ -7501,7 +7439,7 @@ void TTerminal::UpdateSource(const TLocalFileHandle &AHandle, const TCopyParamTy
       FMTLOAD(CANT_SET_ATTRS, AHandle.FileName), "",
     [&]()
     {
-      THROWOSIFFALSE(::SysUtulsFileSetAttr(ApiPath(AHandle.FileName), (DWORD)(AHandle.Attrs & ~faArchive)) == 0);
+      THROWOSIFFALSE(::SysUtulsFileSetAttr(ApiPath(AHandle.FileName), static_cast<DWORD>(AHandle.Attrs & ~faArchive)) == 0);
     });
     __removed FILE_OPERATION_LOOP_END(FMTLOAD(CANT_SET_ATTRS, (Handle.FileName)));
   }
@@ -7863,7 +7801,7 @@ void TTerminal::Sink(
       FileOperationLoopCustom(this, OperationProgress, Flags, FMTLOAD(NOT_DIRECTORY_ERROR, DestFullName), "",
       [&]()
       {
-        int Attrs = ::FileGetAttrFix(ApiPath(DestFullName));
+        DWORD Attrs = ::FileGetAttrFix(ApiPath(DestFullName));
         if (FLAGCLEAR(Attrs, faDirectory))
         {
           ThrowExtException();
@@ -7948,9 +7886,9 @@ void TTerminal::Sink(
 }
 //---------------------------------------------------------------------------
 void TTerminal::UpdateTargetAttrs(
-  const UnicodeString ADestFullName, const TRemoteFile *AFile, const TCopyParamType *CopyParam, uintptr_t Attrs)
+  const UnicodeString ADestFullName, const TRemoteFile *AFile, const TCopyParamType *CopyParam, intptr_t Attrs)
 {
-  if (Attrs == -1)
+  if (Attrs == static_cast<intptr_t>(-1))
   {
     Attrs = faArchive;
   }
@@ -7961,7 +7899,7 @@ void TTerminal::UpdateTargetAttrs(
       FMTLOAD(CANT_SET_ATTRS, ADestFullName), "",
     [&]()
     {
-      THROWOSIFFALSE(::SysUtulsFileSetAttr(ApiPath(ADestFullName), (DWORD)(Attrs | NewAttrs)) == 0);
+      THROWOSIFFALSE(::SysUtulsFileSetAttr(ApiPath(ADestFullName), static_cast<DWORD>(Attrs | NewAttrs)) == 0);
     });
     __removed FILE_OPERATION_LOOP_END(FMTLOAD(CANT_SET_ATTRS, (ADestFullName)));
   }
@@ -8008,9 +7946,9 @@ void TTerminal::SinkFile(const UnicodeString AFileName, const TRemoteFile *AFile
 //---------------------------------------------------------------------------
 void TTerminal::ReflectSettings() const
 {
-  DebugAssert(FLog.get() != nullptr);
+  DebugAssert(FLog != nullptr);
   FLog->ReflectSettings();
-  DebugAssert(FActionLog.get() != nullptr);
+  DebugAssert(FActionLog != nullptr);
   FActionLog->ReflectSettings();
   // also FTunnelLog ?
 }
@@ -8633,10 +8571,7 @@ void TTerminalList::RecryptPasswords()
 TLocalFileHandle::TLocalFileHandle() noexcept :
   Handle(0),
   Attrs(0),
-  MTime(0),
-  ATime(0),
-  Size(0),
-  Directory(false)
+  MTime(0)
 {
 }
 //---------------------------------------------------------------------------

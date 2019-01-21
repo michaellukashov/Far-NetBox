@@ -598,7 +598,7 @@ protected:
     TDownloadSessionAction &Action);
   void SinkFile(const UnicodeString AFileName, const TRemoteFile *AFile, void *Param);
   void UpdateTargetAttrs(
-    const UnicodeString ADestFullName, const TRemoteFile *AFile, const TCopyParamType *CopyParam, uintptr_t Attrs);
+    const UnicodeString ADestFullName, const TRemoteFile *AFile, const TCopyParamType *CopyParam, intptr_t Attrs);
   void UpdateTargetTime(HANDLE Handle, TDateTime Modification, TDSTMode DSTMode);
 
   UnicodeString EncryptFileName(const UnicodeString APath, bool EncryptNewFiles);
@@ -630,8 +630,8 @@ public:
   bool AllowedAnyCommand(const UnicodeString ACommand) const;
   void AnyCommand(const UnicodeString ACommand, TCaptureOutputEvent OutputEvent);
   void CloseOnCompletion(
-    TOnceDoneOperation Operation = odoDisconnect, const UnicodeString AMessage = L"",
-    const UnicodeString TargetLocalPath = L"", const UnicodeString ADestLocalFileName = L"");
+    TOnceDoneOperation Operation = odoDisconnect, const UnicodeString AMessage = "",
+    const UnicodeString TargetLocalPath = "", const UnicodeString ADestLocalFileName = "");
   UnicodeString GetAbsolutePath(const UnicodeString APath, bool Local) const;
   void BeginTransaction();
   void ReadCurrentDirectory();
@@ -714,7 +714,7 @@ public:
     UnicodeString AFileName, const TSearchRecSmart & Rec, void * Param);
   bool FileOperationLoopQuery(Exception &E,
     TFileOperationProgressType *OperationProgress, const UnicodeString Message,
-    uintptr_t AFlags, const UnicodeString SpecialRetry = L"", const UnicodeString HelpKeyword = L"");
+    uintptr_t AFlags, const UnicodeString SpecialRetry = "", const UnicodeString HelpKeyword = "");
   void FileOperationLoopEnd(Exception & E,
     TFileOperationProgressType * OperationProgress, const UnicodeString Message,
     uintptr_t AFlags, const UnicodeString SpecialRetry, const UnicodeString HelpKeyword);
@@ -897,7 +897,7 @@ public:
   static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TSecondaryTerminal); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TSecondaryTerminal) || TTerminal::is(Kind); }
 public:
-  TSecondaryTerminal() noexcept : TTerminal(OBJECT_CLASS_TSecondaryTerminal), FMainTerminal(nullptr) {}
+  TSecondaryTerminal() noexcept : TTerminal(OBJECT_CLASS_TSecondaryTerminal) {}
   explicit TSecondaryTerminal(TTerminal *MainTerminal) noexcept;
   explicit TSecondaryTerminal(TObjectClassId Kind, TTerminal *MainTerminal) noexcept;
   virtual ~TSecondaryTerminal() noexcept = default;
@@ -1096,6 +1096,7 @@ private:
 class TParallelOperation : public TObject
 {
 public:
+  TParallelOperation() = delete;
   explicit TParallelOperation(TOperationSide Side) noexcept;
   virtual ~TParallelOperation() noexcept;
 
