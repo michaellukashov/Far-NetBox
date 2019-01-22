@@ -19,7 +19,7 @@ __removed #pragma package(smart_init)
 #define WRITE_REGISTRY(Method) \
   try { FRegistry->Method(Name, Value); } catch (...) { FFailed++; }
 //---------------------------------------------------------------------------
-UnicodeString MungeStr(const UnicodeString Str, bool ForceAnsi, bool Value)
+UnicodeString MungeStr(UnicodeString Str, bool ForceAnsi, bool Value)
 {
   RawByteString Source;
   if (ForceAnsi)
@@ -47,7 +47,7 @@ UnicodeString MungeStr(const UnicodeString Str, bool ForceAnsi, bool Value)
   return UnicodeString(Dest.c_str(), Dest.Length());
 }
 //---------------------------------------------------------------------------
-UnicodeString UnMungeStr(const UnicodeString Str)
+UnicodeString UnMungeStr(UnicodeString Str)
 {
   // Str should contain ASCII characters only
   RawByteString Source = Str;
@@ -70,17 +70,17 @@ UnicodeString UnMungeStr(const UnicodeString Str)
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString PuttyMungeStr(const UnicodeString Str)
+UnicodeString PuttyMungeStr(UnicodeString Str)
 {
   return MungeStr(Str, false, false);
 }
 
-UnicodeString PuttyUnMungeStr(const UnicodeString Str)
+UnicodeString PuttyUnMungeStr(UnicodeString Str)
 {
   return UnMungeStr(Str);
 }
 //---------------------------------------------------------------------------
-UnicodeString MungeIniName(const UnicodeString Str)
+UnicodeString MungeIniName(UnicodeString Str)
 {
   intptr_t P = Str.Pos(L"=");
   // make this fast for now
@@ -91,7 +91,7 @@ UnicodeString MungeIniName(const UnicodeString Str)
   return Str;
 }
 //---------------------------------------------------------------------------
-UnicodeString UnMungeIniName(const UnicodeString Str)
+UnicodeString UnMungeIniName(UnicodeString Str)
 {
   intptr_t P = Str.Pos(L"%3D");
   // make this fast for now
@@ -102,7 +102,7 @@ UnicodeString UnMungeIniName(const UnicodeString Str)
   return Str;
 }
 //===========================================================================
-THierarchicalStorage::THierarchicalStorage(const UnicodeString AStorage) noexcept :
+THierarchicalStorage::THierarchicalStorage(UnicodeString AStorage) noexcept :
   FStorage(AStorage),
   FKeyHistory(std::make_unique<TStringList>())
 {
@@ -149,7 +149,7 @@ bool THierarchicalStorage::OpenRootKey(bool CanCreate)
   return OpenSubKey(L"", CanCreate);
 }
 //---------------------------------------------------------------------------
-UnicodeString THierarchicalStorage::MungeKeyName(const UnicodeString Key)
+UnicodeString THierarchicalStorage::MungeKeyName(UnicodeString Key)
 {
   UnicodeString Result = MungeStr(Key, GetForceAnsi(), false);
   // if there's already ANSI-munged subkey, keep ANSI munging
@@ -160,7 +160,7 @@ UnicodeString THierarchicalStorage::MungeKeyName(const UnicodeString Key)
   return Result;
 }
 //---------------------------------------------------------------------------
-bool THierarchicalStorage::OpenSubKey(const UnicodeString ASubKey, bool CanCreate, bool Path)
+bool THierarchicalStorage::OpenSubKey(UnicodeString ASubKey, bool CanCreate, bool Path)
 {
   UnicodeString MungedKey;
   UnicodeString Key = ASubKey;
@@ -224,7 +224,7 @@ void THierarchicalStorage::ClearSubKeys()
   }) end_try__finally
 }
 //---------------------------------------------------------------------------
-void THierarchicalStorage::RecursiveDeleteSubKey(const UnicodeString Key)
+void THierarchicalStorage::RecursiveDeleteSubKey(UnicodeString Key)
 {
   if (OpenSubKey(Key, false))
   {
@@ -250,7 +250,7 @@ bool THierarchicalStorage::HasSubKeys()
   return Result;
 }
 //---------------------------------------------------------------------------
-bool THierarchicalStorage::HasSubKey(const UnicodeString SubKey)
+bool THierarchicalStorage::HasSubKey(UnicodeString SubKey)
 {
   bool Result = OpenSubKey(SubKey, false);
   if (Result)
@@ -260,7 +260,7 @@ bool THierarchicalStorage::HasSubKey(const UnicodeString SubKey)
   return Result;
 }
 //---------------------------------------------------------------------------
-bool THierarchicalStorage::KeyExists(const UnicodeString SubKey)
+bool THierarchicalStorage::KeyExists(UnicodeString SubKey)
 {
   return DoKeyExists(SubKey, GetForceAnsi());
 }
@@ -330,7 +330,7 @@ void THierarchicalStorage::WriteValues(TStrings *Strings,
   }
 }
 //---------------------------------------------------------------------------
-UnicodeString THierarchicalStorage::ReadString(const UnicodeString Name, const UnicodeString Default) const
+UnicodeString THierarchicalStorage::ReadString(UnicodeString Name, UnicodeString Default) const
 {
   UnicodeString Result;
   if (GetMungeStringValues())
@@ -344,7 +344,7 @@ UnicodeString THierarchicalStorage::ReadString(const UnicodeString Name, const U
   return Result;
 }
 //---------------------------------------------------------------------------
-RawByteString THierarchicalStorage::ReadBinaryData(const UnicodeString Name) const
+RawByteString THierarchicalStorage::ReadBinaryData(UnicodeString Name) const
 {
   size_t Size = BinaryDataSize(Name);
   RawByteString Value;
@@ -353,7 +353,7 @@ RawByteString THierarchicalStorage::ReadBinaryData(const UnicodeString Name) con
   return Value;
 }
 //---------------------------------------------------------------------------
-RawByteString THierarchicalStorage::ReadStringAsBinaryData(const UnicodeString Name, RawByteString Default) const
+RawByteString THierarchicalStorage::ReadStringAsBinaryData(UnicodeString Name, RawByteString Default) const
 {
   UnicodeString UnicodeDefault = AnsiToString(Default);
   // This should be exactly the same operation as calling ReadString in
@@ -365,7 +365,7 @@ RawByteString THierarchicalStorage::ReadStringAsBinaryData(const UnicodeString N
   return Result;
 }
 //---------------------------------------------------------------------------
-void THierarchicalStorage::WriteString(const UnicodeString Name, const UnicodeString Value)
+void THierarchicalStorage::WriteString(UnicodeString Name, UnicodeString Value)
 {
   if (GetMungeStringValues())
   {
@@ -377,13 +377,13 @@ void THierarchicalStorage::WriteString(const UnicodeString Name, const UnicodeSt
   }
 }
 //---------------------------------------------------------------------------
-void THierarchicalStorage::WriteBinaryData(const UnicodeString Name,
+void THierarchicalStorage::WriteBinaryData(UnicodeString Name,
   const RawByteString Value)
 {
   WriteBinaryData(Name, Value.c_str(), Value.Length());
 }
 //---------------------------------------------------------------------------
-void THierarchicalStorage::WriteBinaryDataAsString(const UnicodeString Name, const RawByteString Value)
+void THierarchicalStorage::WriteBinaryDataAsString(UnicodeString Name, const RawByteString Value)
 {
   // This should be exactly the same operation as calling WriteString in
   // C++Builder 6 (non-Unicode) on Unicode-based OS
@@ -391,7 +391,7 @@ void THierarchicalStorage::WriteBinaryDataAsString(const UnicodeString Name, con
   WriteString(Name, AnsiToString(Value));
 }
 //---------------------------------------------------------------------------
-UnicodeString THierarchicalStorage::IncludeTrailingBackslash(const UnicodeString S)
+UnicodeString THierarchicalStorage::IncludeTrailingBackslash(UnicodeString S)
 {
   // expanded from ?: as it caused memory leaks
   if (S.IsEmpty())
@@ -401,7 +401,7 @@ UnicodeString THierarchicalStorage::IncludeTrailingBackslash(const UnicodeString
   return ::IncludeTrailingBackslash(S);
 }
 //---------------------------------------------------------------------------
-UnicodeString THierarchicalStorage::ExcludeTrailingBackslash(const UnicodeString S)
+UnicodeString THierarchicalStorage::ExcludeTrailingBackslash(UnicodeString S)
 {
   // expanded from ?: as it caused memory leaks
   if (S.IsEmpty())
@@ -416,14 +416,14 @@ bool THierarchicalStorage::GetTemporaryProtected() const
   return false;
 }
 //===========================================================================
-TRegistryStorage::TRegistryStorage(const UnicodeString AStorage) noexcept :
+TRegistryStorage::TRegistryStorage(UnicodeString AStorage) noexcept :
   THierarchicalStorage(IncludeTrailingBackslash(AStorage)),
   FRegistry(std::make_unique<TRegistry>())
 {
   FWowMode = 0;
 }
 //---------------------------------------------------------------------------
-TRegistryStorage::TRegistryStorage(const UnicodeString AStorage, HKEY ARootKey, REGSAM WowMode) noexcept :
+TRegistryStorage::TRegistryStorage(UnicodeString AStorage, HKEY ARootKey, REGSAM WowMode) noexcept :
   THierarchicalStorage(IncludeTrailingBackslash(AStorage)),
   FRegistry(std::make_unique<TRegistry>())
 {
@@ -515,7 +515,7 @@ void TRegistryStorage::SetAccessModeProtected(TStorageAccessMode Value)
   }
 }
 //---------------------------------------------------------------------------
-bool TRegistryStorage::DoOpenSubKey(const UnicodeString SubKey, bool CanCreate)
+bool TRegistryStorage::DoOpenSubKey(UnicodeString SubKey, bool CanCreate)
 {
   UnicodeString PrevPath;
   bool WasOpened = (FRegistry->GetCurrentKey() != nullptr);
@@ -544,7 +544,7 @@ void TRegistryStorage::CloseSubKey()
   }
 }
 //---------------------------------------------------------------------------
-bool TRegistryStorage::DeleteSubKey(const UnicodeString SubKey)
+bool TRegistryStorage::DeleteSubKey(UnicodeString SubKey)
 {
   UnicodeString Key;
   if (FKeyHistory->GetCount() == 0)
@@ -569,56 +569,56 @@ void TRegistryStorage::GetValueNames(TStrings *Strings) const
   FRegistry->GetValueNames(Strings);
 }
 //---------------------------------------------------------------------------
-bool TRegistryStorage::DeleteValue(const UnicodeString Name)
+bool TRegistryStorage::DeleteValue(UnicodeString Name)
 {
   return FRegistry->DeleteValue(Name);
 }
 //---------------------------------------------------------------------------
-bool TRegistryStorage::DoKeyExists(const UnicodeString SubKey, bool AForceAnsi)
+bool TRegistryStorage::DoKeyExists(UnicodeString SubKey, bool AForceAnsi)
 {
   UnicodeString Key = MungeStr(SubKey, AForceAnsi, false);
   bool Result = FRegistry->KeyExists(Key);
   return Result;
 }
 //---------------------------------------------------------------------------
-bool TRegistryStorage::ValueExists(const UnicodeString Value) const
+bool TRegistryStorage::ValueExists(UnicodeString Value) const
 {
   bool Result = FRegistry->ValueExists(Value);
   return Result;
 }
 //---------------------------------------------------------------------------
-size_t TRegistryStorage::BinaryDataSize(const UnicodeString Name) const
+size_t TRegistryStorage::BinaryDataSize(UnicodeString Name) const
 {
   size_t Result = FRegistry->GetDataSize(Name);
   return Result;
 }
 //---------------------------------------------------------------------------
-bool TRegistryStorage::ReadBool(const UnicodeString Name, bool Default) const
+bool TRegistryStorage::ReadBool(UnicodeString Name, bool Default) const
 {
   READ_REGISTRY(ReadBool);
 }
 //---------------------------------------------------------------------------
-TDateTime TRegistryStorage::ReadDateTime(const UnicodeString Name, const TDateTime &Default) const
+TDateTime TRegistryStorage::ReadDateTime(UnicodeString Name, const TDateTime &Default) const
 {
   READ_REGISTRY(ReadDateTime);
 }
 //---------------------------------------------------------------------------
-double TRegistryStorage::ReadFloat(const UnicodeString Name, double Default) const
+double TRegistryStorage::ReadFloat(UnicodeString Name, double Default) const
 {
   READ_REGISTRY(ReadFloat);
 }
 //---------------------------------------------------------------------------
-intptr_t TRegistryStorage::ReadIntPtr(const UnicodeString Name, intptr_t Default) const
+intptr_t TRegistryStorage::ReadIntPtr(UnicodeString Name, intptr_t Default) const
 {
   READ_REGISTRY(ReadIntPtr);
 }
 //---------------------------------------------------------------------------
-int TRegistryStorage::ReadInteger(const UnicodeString Name, int Default) const
+int TRegistryStorage::ReadInteger(UnicodeString Name, int Default) const
 {
   READ_REGISTRY(ReadInteger);
 }
 //---------------------------------------------------------------------------
-int64_t TRegistryStorage::ReadInt64(const UnicodeString Name, int64_t Default) const
+int64_t TRegistryStorage::ReadInt64(UnicodeString Name, int64_t Default) const
 {
   int64_t Result = Default;
   if (FRegistry->ValueExists(Name))
@@ -635,12 +635,12 @@ int64_t TRegistryStorage::ReadInt64(const UnicodeString Name, int64_t Default) c
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString TRegistryStorage::ReadStringRaw(const UnicodeString Name, const UnicodeString Default) const
+UnicodeString TRegistryStorage::ReadStringRaw(UnicodeString Name, UnicodeString Default) const
 {
   READ_REGISTRY(ReadString);
 }
 //---------------------------------------------------------------------------
-size_t TRegistryStorage::ReadBinaryData(const UnicodeString Name,
+size_t TRegistryStorage::ReadBinaryData(UnicodeString Name,
   void *Buffer, size_t Size) const
 {
   size_t Result;
@@ -663,37 +663,37 @@ size_t TRegistryStorage::ReadBinaryData(const UnicodeString Name,
   return Result;
 }
 //---------------------------------------------------------------------------
-void TRegistryStorage::WriteBool(const UnicodeString Name, bool Value)
+void TRegistryStorage::WriteBool(UnicodeString Name, bool Value)
 {
   WRITE_REGISTRY(WriteBool);
 }
 //---------------------------------------------------------------------------
-void TRegistryStorage::WriteDateTime(const UnicodeString Name, const TDateTime &Value)
+void TRegistryStorage::WriteDateTime(UnicodeString Name, const TDateTime &Value)
 {
   WRITE_REGISTRY(WriteDateTime);
 }
 //---------------------------------------------------------------------------
-void TRegistryStorage::WriteFloat(const UnicodeString Name, double Value)
+void TRegistryStorage::WriteFloat(UnicodeString Name, double Value)
 {
   WRITE_REGISTRY(WriteFloat);
 }
 //---------------------------------------------------------------------------
-void TRegistryStorage::WriteStringRaw(const UnicodeString Name, const UnicodeString Value)
+void TRegistryStorage::WriteStringRaw(UnicodeString Name, UnicodeString Value)
 {
   WRITE_REGISTRY(WriteString);
 }
 //---------------------------------------------------------------------------
-void TRegistryStorage::WriteIntPtr(const UnicodeString Name, intptr_t Value)
+void TRegistryStorage::WriteIntPtr(UnicodeString Name, intptr_t Value)
 {
   WRITE_REGISTRY(WriteIntPtr);
 }
 //---------------------------------------------------------------------------
-void TRegistryStorage::WriteInteger(const UnicodeString Name, int Value)
+void TRegistryStorage::WriteInteger(UnicodeString Name, int Value)
 {
   WRITE_REGISTRY(WriteInteger);
 }
 //---------------------------------------------------------------------------
-void TRegistryStorage::WriteInt64(const UnicodeString Name, int64_t Value)
+void TRegistryStorage::WriteInt64(UnicodeString Name, int64_t Value)
 {
   try
   {
@@ -705,7 +705,7 @@ void TRegistryStorage::WriteInt64(const UnicodeString Name, int64_t Value)
   }
 }
 //---------------------------------------------------------------------------
-void TRegistryStorage::WriteBinaryData(const UnicodeString AName,
+void TRegistryStorage::WriteBinaryData(UnicodeString AName,
   const void *ABuffer, size_t Size)
 {
   try
@@ -726,7 +726,7 @@ intptr_t TRegistryStorage::GetFailedProtected() const
 }
 //===========================================================================
 #if 0
-TCustomIniFileStorage::TCustomIniFileStorage(const UnicodeString Storage, TCustomIniFile *IniFile) :
+TCustomIniFileStorage::TCustomIniFileStorage(UnicodeString Storage, TCustomIniFile *IniFile) :
   THierarchicalStorage(Storage),
   FIniFile(IniFile),
   FMasterStorageOpenFailures(0),
@@ -773,7 +773,7 @@ void TCustomIniFileStorage::SetAccessMode(TStorageAccessMode value)
   THierarchicalStorage::SetAccessMode(value);
 }
 //---------------------------------------------------------------------------
-bool TCustomIniFileStorage::DoOpenSubKey(const UnicodeString SubKey, bool CanCreate)
+bool TCustomIniFileStorage::DoOpenSubKey(UnicodeString SubKey, bool CanCreate)
 {
   bool Result = CanCreate;
 
@@ -805,7 +805,7 @@ bool TCustomIniFileStorage::OpenRootKey(bool CanCreate)
   return THierarchicalStorage::OpenRootKey(CanCreate);
 }
 //---------------------------------------------------------------------------
-bool TCustomIniFileStorage::OpenSubKey(const UnicodeString Key, bool CanCreate, bool Path)
+bool TCustomIniFileStorage::OpenSubKey(UnicodeString Key, bool CanCreate, bool Path)
 {
   bool Result;
 
@@ -857,7 +857,7 @@ void TCustomIniFileStorage::CloseSubKey()
   }
 }
 //---------------------------------------------------------------------------
-bool TCustomIniFileStorage::DeleteSubKey(const UnicodeString SubKey)
+bool TCustomIniFileStorage::DeleteSubKey(UnicodeString SubKey)
 {
   bool Result;
   try
@@ -919,26 +919,26 @@ void TCustomIniFileStorage::GetValueNames(Classes::TStrings *Strings)
   }
 }
 //---------------------------------------------------------------------------
-bool TCustomIniFileStorage::DoKeyExists(const UnicodeString SubKey, bool AForceAnsi)
+bool TCustomIniFileStorage::DoKeyExists(UnicodeString SubKey, bool AForceAnsi)
 {
   return
     (HandleByMasterStorage() && FMasterStorage->DoKeyExists(SubKey, AForceAnsi)) ||
     FIniFile->SectionExists(CurrentSubKey + MungeStr(SubKey, AForceAnsi, false));
 }
 //---------------------------------------------------------------------------
-bool TCustomIniFileStorage::DoValueExists(const UnicodeString Value)
+bool TCustomIniFileStorage::DoValueExists(UnicodeString Value)
 {
   return FIniFile->ValueExists(CurrentSection, MungeIniName(Value));
 }
 //---------------------------------------------------------------------------
-bool TCustomIniFileStorage::ValueExists(const UnicodeString Value)
+bool TCustomIniFileStorage::ValueExists(UnicodeString Value)
 {
   return
     (HandleByMasterStorage() && FMasterStorage->ValueExists(Value)) ||
     DoValueExists(Value);
 }
 //---------------------------------------------------------------------------
-bool TCustomIniFileStorage::DeleteValue(const UnicodeString Name)
+bool TCustomIniFileStorage::DeleteValue(UnicodeString Name)
 {
   bool Result = true;
   if (HandleByMasterStorage())
@@ -957,12 +957,12 @@ bool TCustomIniFileStorage::HandleByMasterStorage()
     (FMasterStorageOpenFailures == 0);
 }
 //---------------------------------------------------------------------------
-bool TCustomIniFileStorage::HandleReadByMasterStorage(const UnicodeString Name)
+bool TCustomIniFileStorage::HandleReadByMasterStorage(UnicodeString Name)
 {
   return HandleByMasterStorage() && !DoValueExists(Name);
 }
 //---------------------------------------------------------------------------
-size_t TCustomIniFileStorage::BinaryDataSize(const UnicodeString Name)
+size_t TCustomIniFileStorage::BinaryDataSize(UnicodeString Name)
 {
   if (HandleReadByMasterStorage(Name))
   {
@@ -974,7 +974,7 @@ size_t TCustomIniFileStorage::BinaryDataSize(const UnicodeString Name)
   }
 }
 //---------------------------------------------------------------------------
-bool TCustomIniFileStorage::ReadBool(const UnicodeString Name, bool Default)
+bool TCustomIniFileStorage::ReadBool(UnicodeString Name, bool Default)
 {
   if (HandleReadByMasterStorage(Name))
   {
@@ -986,7 +986,7 @@ bool TCustomIniFileStorage::ReadBool(const UnicodeString Name, bool Default)
   }
 }
 //---------------------------------------------------------------------------
-int TCustomIniFileStorage::ReadInteger(const UnicodeString Name, int Default)
+int TCustomIniFileStorage::ReadInteger(UnicodeString Name, int Default)
 {
   int Result;
   if (HandleReadByMasterStorage(Name))
@@ -1000,7 +1000,7 @@ int TCustomIniFileStorage::ReadInteger(const UnicodeString Name, int Default)
   return Result;
 }
 //---------------------------------------------------------------------------
-__int64 TCustomIniFileStorage::ReadInt64(const UnicodeString Name, __int64 Default)
+__int64 TCustomIniFileStorage::ReadInt64(UnicodeString Name, __int64 Default)
 {
   __int64 Result;
   if (HandleReadByMasterStorage(Name))
@@ -1020,7 +1020,7 @@ __int64 TCustomIniFileStorage::ReadInt64(const UnicodeString Name, __int64 Defau
   return Result;
 }
 //---------------------------------------------------------------------------
-TDateTime TCustomIniFileStorage::ReadDateTime(const UnicodeString Name, TDateTime Default)
+TDateTime TCustomIniFileStorage::ReadDateTime(UnicodeString Name, TDateTime Default)
 {
   TDateTime Result;
   if (HandleReadByMasterStorage(Name))
@@ -1058,7 +1058,7 @@ TDateTime TCustomIniFileStorage::ReadDateTime(const UnicodeString Name, TDateTim
   return Result;
 }
 //---------------------------------------------------------------------------
-double TCustomIniFileStorage::ReadFloat(const UnicodeString Name, double Default)
+double TCustomIniFileStorage::ReadFloat(UnicodeString Name, double Default)
 {
   double Result;
   if (HandleReadByMasterStorage(Name))
@@ -1096,7 +1096,7 @@ double TCustomIniFileStorage::ReadFloat(const UnicodeString Name, double Default
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString TCustomIniFileStorage::ReadStringRaw(const UnicodeString Name, const UnicodeString Default)
+UnicodeString TCustomIniFileStorage::ReadStringRaw(UnicodeString Name, UnicodeString Default)
 {
   UnicodeString Result;
   if (HandleReadByMasterStorage(Name))
@@ -1110,7 +1110,7 @@ UnicodeString TCustomIniFileStorage::ReadStringRaw(const UnicodeString Name, con
   return Result;
 }
 //---------------------------------------------------------------------------
-size_t TCustomIniFileStorage::ReadBinaryData(const UnicodeString Name,
+size_t TCustomIniFileStorage::ReadBinaryData(UnicodeString Name,
   void *Buffer, size_t Size)
 {
   size_t Len;
@@ -1132,7 +1132,7 @@ size_t TCustomIniFileStorage::ReadBinaryData(const UnicodeString Name,
   return Size;
 }
 //---------------------------------------------------------------------------
-void TCustomIniFileStorage::WriteBool(const UnicodeString Name, bool Value)
+void TCustomIniFileStorage::WriteBool(UnicodeString Name, bool Value)
 {
   if (HandleByMasterStorage())
   {
@@ -1142,7 +1142,7 @@ void TCustomIniFileStorage::WriteBool(const UnicodeString Name, bool Value)
   FIniFile->WriteBool(CurrentSection, MungeIniName(Name), Value);
 }
 //---------------------------------------------------------------------------
-void TCustomIniFileStorage::WriteInteger(const UnicodeString Name, int Value)
+void TCustomIniFileStorage::WriteInteger(UnicodeString Name, int Value)
 {
   if (HandleByMasterStorage())
   {
@@ -1152,7 +1152,7 @@ void TCustomIniFileStorage::WriteInteger(const UnicodeString Name, int Value)
   FIniFile->WriteInteger(CurrentSection, MungeIniName(Name), Value);
 }
 //---------------------------------------------------------------------------
-void TCustomIniFileStorage::WriteInt64(const UnicodeString Name, __int64 Value)
+void TCustomIniFileStorage::WriteInt64(UnicodeString Name, __int64 Value)
 {
   if (HandleByMasterStorage())
   {
@@ -1161,7 +1161,7 @@ void TCustomIniFileStorage::WriteInt64(const UnicodeString Name, __int64 Value)
   DoWriteStringRaw(Name, IntToStr(Value));
 }
 //---------------------------------------------------------------------------
-void TCustomIniFileStorage::WriteDateTime(const UnicodeString Name, TDateTime Value)
+void TCustomIniFileStorage::WriteDateTime(UnicodeString Name, TDateTime Value)
 {
   if (HandleByMasterStorage())
   {
@@ -1170,7 +1170,7 @@ void TCustomIniFileStorage::WriteDateTime(const UnicodeString Name, TDateTime Va
   DoWriteBinaryData(Name, &Value, sizeof(Value));
 }
 //---------------------------------------------------------------------------
-void TCustomIniFileStorage::WriteFloat(const UnicodeString Name, double Value)
+void TCustomIniFileStorage::WriteFloat(UnicodeString Name, double Value)
 {
   if (HandleByMasterStorage())
   {
@@ -1179,13 +1179,13 @@ void TCustomIniFileStorage::WriteFloat(const UnicodeString Name, double Value)
   DoWriteBinaryData(Name, &Value, sizeof(Value));
 }
 //---------------------------------------------------------------------------
-void TCustomIniFileStorage::DoWriteStringRaw(const UnicodeString Name, const UnicodeString Value)
+void TCustomIniFileStorage::DoWriteStringRaw(UnicodeString Name, UnicodeString Value)
 {
   ResetCache();
   FIniFile->WriteString(CurrentSection, MungeIniName(Name), Value);
 }
 //---------------------------------------------------------------------------
-void TCustomIniFileStorage::WriteStringRaw(const UnicodeString Name, const UnicodeString Value)
+void TCustomIniFileStorage::WriteStringRaw(UnicodeString Name, UnicodeString Value)
 {
   if (HandleByMasterStorage())
   {
@@ -1194,13 +1194,13 @@ void TCustomIniFileStorage::WriteStringRaw(const UnicodeString Name, const Unico
   DoWriteStringRaw(Name, Value);
 }
 //---------------------------------------------------------------------------
-void TCustomIniFileStorage::DoWriteBinaryData(const UnicodeString Name,
+void TCustomIniFileStorage::DoWriteBinaryData(UnicodeString Name,
   const void *Buffer, int Size)
 {
   DoWriteStringRaw(Name, BytesToHex(RawByteString(static_cast<const char *>(Buffer), Size)));
 }
 //---------------------------------------------------------------------------
-void TCustomIniFileStorage::WriteBinaryData(const UnicodeString Name,
+void TCustomIniFileStorage::WriteBinaryData(UnicodeString Name,
   const void *Buffer, int Size)
 {
   if (HandleByMasterStorage())
@@ -1210,7 +1210,7 @@ void TCustomIniFileStorage::WriteBinaryData(const UnicodeString Name,
   DoWriteBinaryData(Name, Buffer, Size);
 }
 //===========================================================================
-TIniFileStorage *TIniFileStorage::CreateFromPath(const UnicodeString AStorage)
+TIniFileStorage *TIniFileStorage::CreateFromPath(UnicodeString AStorage)
 {
   // The code was originally inline in the parent contructor call in the TIniFileStorage::TIniFileStorage [public originally].
   // But if the TMemIniFile contructor throws (e.g. because the INI file is locked), the exception causes access violation.
@@ -1219,7 +1219,7 @@ TIniFileStorage *TIniFileStorage::CreateFromPath(const UnicodeString AStorage)
   return new TIniFileStorage(AStorage, IniFile);
 }
 //---------------------------------------------------------------------------
-TIniFileStorage::TIniFileStorage(const UnicodeString AStorage, TCustomIniFile *IniFile):
+TIniFileStorage::TIniFileStorage(UnicodeString AStorage, TCustomIniFile *IniFile):
   TCustomIniFileStorage(AStorage, IniFile)
 {
   FOriginal = new TStringList();
@@ -1342,18 +1342,18 @@ enum TWriteMode { wmAllow, wmFail, wmIgnore };
 class TOptionsIniFile : public TCustomIniFile
 {
 public:
-  TOptionsIniFile(TStrings *Options, TWriteMode WriteMode, const UnicodeString RootKey);
+  TOptionsIniFile(TStrings *Options, TWriteMode WriteMode, UnicodeString RootKey);
 
-  virtual UnicodeString ReadString(const UnicodeString Section, const UnicodeString Ident, const UnicodeString Default);
-  virtual void WriteString(const UnicodeString Section, const UnicodeString Ident, const UnicodeString Value);
-  virtual void ReadSection(const UnicodeString Section, TStrings *Strings);
+  virtual UnicodeString ReadString(UnicodeString Section, UnicodeString Ident, UnicodeString Default);
+  virtual void WriteString(UnicodeString Section, UnicodeString Ident, UnicodeString Value);
+  virtual void ReadSection(UnicodeString Section, TStrings *Strings);
   virtual void ReadSections(TStrings *Strings);
-  virtual void ReadSectionValues(const UnicodeString Section, TStrings *Strings);
-  virtual void EraseSection(const UnicodeString Section);
-  virtual void DeleteKey(const UnicodeString Section, const UnicodeString Ident);
+  virtual void ReadSectionValues(UnicodeString Section, TStrings *Strings);
+  virtual void EraseSection(UnicodeString Section);
+  virtual void DeleteKey(UnicodeString Section, UnicodeString Ident);
   virtual void UpdateFile();
   // Hoisted overload
-  void ReadSections(const UnicodeString Section, TStrings *Strings);
+  void ReadSections(UnicodeString Section, TStrings *Strings);
   // Ntb, we can implement ValueExists more efficiently than the TCustomIniFile.ValueExists
 
 private:
@@ -1363,11 +1363,11 @@ private:
 
   bool AllowWrite();
   void NotImplemented();
-  bool AllowSection(const UnicodeString & Section);
-  UnicodeString FormatKey(const UnicodeString & Section, const UnicodeString & Ident);
+  bool AllowSection(UnicodeString & Section);
+  UnicodeString FormatKey(UnicodeString & Section, UnicodeString & Ident);
 };
 //---------------------------------------------------------------------------
-TOptionsIniFile::TOptionsIniFile(TStrings *Options, TWriteMode WriteMode, const UnicodeString RootKey) :
+TOptionsIniFile::TOptionsIniFile(TStrings *Options, TWriteMode WriteMode, UnicodeString RootKey) :
   TCustomIniFile(UnicodeString())
 {
   FOptions = Options;
@@ -1404,7 +1404,7 @@ bool TOptionsIniFile::AllowWrite()
   }
 }
 //---------------------------------------------------------------------------
-bool TOptionsIniFile::AllowSection(const UnicodeString & Section)
+bool TOptionsIniFile::AllowSection(UnicodeString & Section)
 {
   UnicodeString Name = Section;
   if (!Name.IsEmpty())
@@ -1415,7 +1415,7 @@ bool TOptionsIniFile::AllowSection(const UnicodeString & Section)
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString TOptionsIniFile::FormatKey(const UnicodeString & Section, const UnicodeString & Ident)
+UnicodeString TOptionsIniFile::FormatKey(UnicodeString & Section, UnicodeString & Ident)
 {
   UnicodeString Result = Section;
   if (!Result.IsEmpty())
@@ -1430,7 +1430,7 @@ UnicodeString TOptionsIniFile::FormatKey(const UnicodeString & Section, const Un
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString TOptionsIniFile::ReadString(const UnicodeString Section, const UnicodeString Ident, const UnicodeString Default)
+UnicodeString TOptionsIniFile::ReadString(UnicodeString Section, UnicodeString Ident, UnicodeString Default)
 {
   UnicodeString Value;
   if (!AllowSection(Section))
@@ -1454,7 +1454,7 @@ UnicodeString TOptionsIniFile::ReadString(const UnicodeString Section, const Uni
   return Value;
 }
 //---------------------------------------------------------------------------
-void TOptionsIniFile::WriteString(const UnicodeString Section, const UnicodeString Ident, const UnicodeString Value)
+void TOptionsIniFile::WriteString(UnicodeString Section, UnicodeString Ident, UnicodeString Value)
 {
   if (AllowWrite() &&
       DebugAlwaysTrue(AllowSection(Section)))
@@ -1464,7 +1464,7 @@ void TOptionsIniFile::WriteString(const UnicodeString Section, const UnicodeStri
   }
 }
 //---------------------------------------------------------------------------
-void TOptionsIniFile::ReadSection(const UnicodeString Section, TStrings *Strings)
+void TOptionsIniFile::ReadSection(UnicodeString Section, TStrings *Strings)
 {
 
   if (AllowSection(Section))
@@ -1515,12 +1515,12 @@ void TOptionsIniFile::ReadSections(TStrings *Strings)
   }
 }
 //---------------------------------------------------------------------------
-void TOptionsIniFile::ReadSectionValues(const UnicodeString Section, TStrings * / *Strings * / )
+void TOptionsIniFile::ReadSectionValues(UnicodeString Section, TStrings * / *Strings * / )
 {
   NotImplemented();
 }
 //---------------------------------------------------------------------------
-void TOptionsIniFile::EraseSection(const UnicodeString Section)
+void TOptionsIniFile::EraseSection(UnicodeString Section)
 {
   if (AllowWrite())
   {
@@ -1528,7 +1528,7 @@ void TOptionsIniFile::EraseSection(const UnicodeString Section)
   }
 }
 //---------------------------------------------------------------------------
-void TOptionsIniFile::DeleteKey(const UnicodeString Section, const UnicodeString Ident)
+void TOptionsIniFile::DeleteKey(UnicodeString Section, UnicodeString Ident)
 {
   if (AllowWrite() &&
       DebugAlwaysTrue(AllowSection(Section)))
@@ -1551,7 +1551,7 @@ void TOptionsIniFile::UpdateFile()
   }
 }
 //---------------------------------------------------------------------------
-void TOptionsIniFile::ReadSections(const UnicodeString / *Section * /, TStrings * / * Strings * / )
+void TOptionsIniFile::ReadSections(UnicodeString / *Section * /, TStrings * / * Strings * / )
 {
   NotImplemented();
 }
@@ -1563,7 +1563,7 @@ TOptionsStorage::TOptionsStorage(TStrings *Options, bool AllowWrite):
 {
 }
 //---------------------------------------------------------------------------
-TOptionsStorage::TOptionsStorage(TStrings *Options, const UnicodeString RootKey, THierarchicalStorage *MasterStorage) :
+TOptionsStorage::TOptionsStorage(TStrings *Options, UnicodeString RootKey, THierarchicalStorage *MasterStorage) :
   TCustomIniFileStorage(
     UnicodeString(L"Command-line options overriding " + MasterStorage->Source),
     new TOptionsIniFile(Options, wmIgnore, RootKey))

@@ -151,7 +151,7 @@ bool GetFileVersionInfoFix(const wchar_t *FileName, uint32_t Handle,
 }
 //---------------------------------------------------------------------------
 // Return pointer to file version info block
-void *CreateFileInfo(const UnicodeString AFileName)
+void *CreateFileInfo(UnicodeString AFileName)
 {
   DWORD Handle;
   void *Result = nullptr;
@@ -234,7 +234,7 @@ UnicodeString GetLanguage(Word Language)
 // Return the value of the specified file version info string using the
 // specified translation
 UnicodeString GetFileInfoString(void *FileInfo,
-  TTranslation Translation, const UnicodeString StringName, bool AllowEmpty)
+  TTranslation Translation, UnicodeString StringName, bool AllowEmpty)
 {
   UnicodeString Result;
   wchar_t *P;
@@ -266,7 +266,7 @@ intptr_t CalculateCompoundVersion(intptr_t MajorVer,
   return CompoundVer;
 }
 //---------------------------------------------------------------------------
-intptr_t StrToCompoundVersion(const UnicodeString AStr)
+intptr_t StrToCompoundVersion(UnicodeString AStr)
 {
   UnicodeString S(AStr);
   int64_t MajorVer = ::StrToInt64(CutToChar(S, L'.', false));
@@ -276,7 +276,7 @@ intptr_t StrToCompoundVersion(const UnicodeString AStr)
   return CalculateCompoundVersion(nb::ToIntPtr(MajorVer), nb::ToIntPtr(MinorVer), nb::ToIntPtr(Release), nb::ToIntPtr(Build));
 }
 //---------------------------------------------------------------------------
-intptr_t CompareVersion(const UnicodeString V1, const UnicodeString V2)
+intptr_t CompareVersion(UnicodeString V1, UnicodeString V2)
 {
   intptr_t Result = 0;
   UnicodeString _V1(V1), _V2(V2);
