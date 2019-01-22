@@ -213,16 +213,16 @@ protected:
   virtual bool DoPostMessage(TMessageType Type, WPARAM wParam, LPARAM lParam) = 0;
 
   virtual bool HandleStatus(const wchar_t * Status, int Type) = 0;
-  virtual bool HandleAsynchRequestOverwrite(
+  virtual bool HandleAsyncRequestOverwrite(
     wchar_t * FileName1, size_t FileName1Len, const wchar_t * FileName2,
     const wchar_t * Path1, const wchar_t * Path2,
     int64_t Size1, int64_t Size2, time_t LocalTime,
     bool HasLocalTime1, const TRemoteFileTime & RemoteTime, void * UserData,
     HANDLE & LocalFileHandle,
     int & RequestResult) = 0;
-  virtual bool HandleAsynchRequestVerifyCertificate(
+  virtual bool HandleAsyncRequestVerifyCertificate(
     const TFtpsCertificateData & Data, int & RequestResult) = 0;
-  virtual bool HandleAsynchRequestNeedPass(
+  virtual bool HandleAsyncRequestNeedPass(
     struct TNeedPassRequestData & Data, int & RequestResult) = 0;
   virtual bool HandleListData(const wchar_t * Path, const TListDataEntry * Entries,
     uintptr_t Count) = 0;
