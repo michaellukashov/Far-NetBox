@@ -46,15 +46,15 @@ protected:
   bool DoPostMessage(TMessageType Type, WPARAM wParam, LPARAM lParam) override;
 
   bool HandleStatus(const wchar_t *Status, int Type) override;
-  bool HandleAsynchRequestOverwrite(
+  bool HandleAsyncRequestOverwrite(
     wchar_t *FileName1, size_t FileName1Len, const wchar_t *FileName2,
     const wchar_t *Path1, const wchar_t *Path2,
     int64_t Size1, int64_t Size2, time_t LocalTime,
     bool HasLocalTime, const TRemoteFileTime &RemoteTime, void *UserData,
     HANDLE &LocalFileHandle, int &RequestResult) override;
-  bool HandleAsynchRequestVerifyCertificate(
+  bool HandleAsyncRequestVerifyCertificate(
     const TFtpsCertificateData &Data, int &RequestResult) override;
-  bool HandleAsynchRequestNeedPass(
+  bool HandleAsyncRequestNeedPass(
     struct TNeedPassRequestData &Data, int &RequestResult) override;
   bool HandleListData(const wchar_t *Path, const TListDataEntry *Entries,
     uintptr_t Count) override;
@@ -99,7 +99,7 @@ bool TFileZillaImpl::HandleStatus(const wchar_t *Status, int Type)
   return FFileSystem->HandleStatus(Status, Type);
 }
 //---------------------------------------------------------------------------
-bool TFileZillaImpl::HandleAsynchRequestOverwrite(
+bool TFileZillaImpl::HandleAsyncRequestOverwrite(
   wchar_t *FileName1, size_t FileName1Len, const wchar_t *FileName2,
   const wchar_t *Path1, const wchar_t *Path2,
   int64_t Size1, int64_t Size2, time_t LocalTime,
@@ -107,21 +107,21 @@ bool TFileZillaImpl::HandleAsynchRequestOverwrite(
   HANDLE &LocalFileHandle,
   int &RequestResult)
 {
-  return FFileSystem->HandleAsynchRequestOverwrite(
+  return FFileSystem->HandleAsyncRequestOverwrite(
       FileName1, FileName1Len, FileName2, Path1, Path2, Size1, Size2, LocalTime,
       HasLocalTime, RemoteTime, UserData, LocalFileHandle, RequestResult);
 }
 //---------------------------------------------------------------------------
-bool TFileZillaImpl::HandleAsynchRequestVerifyCertificate(
+bool TFileZillaImpl::HandleAsyncRequestVerifyCertificate(
   const TFtpsCertificateData &Data, int &RequestResult)
 {
-  return FFileSystem->HandleAsynchRequestVerifyCertificate(Data, RequestResult);
+  return FFileSystem->HandleAsyncRequestVerifyCertificate(Data, RequestResult);
 }
 //---------------------------------------------------------------------------
-bool TFileZillaImpl::HandleAsynchRequestNeedPass(
+bool TFileZillaImpl::HandleAsyncRequestNeedPass(
   struct TNeedPassRequestData &Data, int &RequestResult)
 {
-  return FFileSystem->HandleAsynchRequestNeedPass(Data, RequestResult);
+  return FFileSystem->HandleAsyncRequestNeedPass(Data, RequestResult);
 }
 //---------------------------------------------------------------------------
 bool TFileZillaImpl::HandleListData(const wchar_t *Path,
@@ -259,7 +259,7 @@ TFTPFileSystem::TFTPFileSystem(TTerminal *ATerminal) noexcept :
   FLastCommand(CMD_UNKNOWN),
   FPasswordFailed(false),
   FStoredPasswordTried(false),
-  FMultineResponse(false),
+  FMultilineResponse(false),
   FLastCode(0),
   FLastCodeClass(0),
   FLastReadDirectoryProgress(0),
@@ -388,7 +388,7 @@ void TFTPFileSystem::Open()
 
   FLastDataSent = Now();
 
-  FMultineResponse = false;
+  FMultilineResponse = false;
 
   // initialize FZAPI on the first connect only
   if (FFileZillaIntf == nullptr)
@@ -2986,7 +2986,7 @@ void TFTPFileSystem::DoWaitForReply(uintptr_t &ReplyToAwait, bool WantLastCode)
       // i.e. in case two replies are posted get the first only.
       // e.g. when server closes the connection, but posts error message before,
       // sometime it happens that command (like download) fails because of the error
-      // and does not catch the disconnection. then asynchronous "disconnect reply"
+      // and does not catch the disconnection. then asyncronous "disconnect reply"
       // is posted immediately afterwards. leave detection of that to Idle()
       while (ProcessMessage() && KeepWaitingForReply(ReplyToAwait, WantLastCode));
     }
@@ -3338,9 +3338,9 @@ void TFTPFileSystem::HandleReplyStatus(const UnicodeString Response)
     (Code >= 100) && (Code <= 599) &&
     ((Response.Length() == 3) || (Response[4] == L' ') || (Response[4] == L'-'));
 
-  if (HasCodePrefix && !FMultineResponse)
+  if (HasCodePrefix && !FMultilineResponse)
   {
-    FMultineResponse = (Response.Length() >= 4) && (Response[4] == L'-');
+    FMultilineResponse = (Response.Length() >= 4) && (Response[4] == L'-');
     FLastResponse->Clear();
     FLastErrorResponse->Clear();
     SetLastCode(nb::ToIntPtr(Code));
@@ -3358,7 +3358,7 @@ void TFTPFileSystem::HandleReplyStatus(const UnicodeString Response)
       // End of multiline response?
       if ((Response.Length() <= 3) || (Response[4] == L' '))
       {
-        FMultineResponse = false;
+        FMultilineResponse = false;
       }
       Start = 5;
     }
@@ -3368,7 +3368,7 @@ void TFTPFileSystem::HandleReplyStatus(const UnicodeString Response)
     }
 
     // Intermediate empty lines are being added
-    if (FMultineResponse || (Response.Length() >= Start))
+    if (FMultilineResponse || (Response.Length() >= Start))
     {
       StoreLastResponse(Response.SubString(Start, Response.Length() - Start + 1));
     }
@@ -3389,7 +3389,7 @@ void TFTPFileSystem::HandleReplyStatus(const UnicodeString Response)
     }
   }
 
-  if (!FMultineResponse)
+  if (!FMultilineResponse)
   {
     if (FLastCode == 220)
     {
@@ -3675,7 +3675,7 @@ TDateTime TFTPFileSystem::ConvertLocalTimestamp(time_t Time)
   return ::UnixToDateTime(Timestamp, dstmUnix);
 }
 //---------------------------------------------------------------------------
-bool TFTPFileSystem::HandleAsynchRequestOverwrite(
+bool TFTPFileSystem::HandleAsyncRequestOverwrite(
   wchar_t *FileName1, size_t FileName1Len, const wchar_t *FileName2,
   const wchar_t *Path1, const wchar_t *Path2,
   int64_t Size1, int64_t Size2, time_t LocalTime,
@@ -3989,7 +3989,7 @@ static bool IsIPAddress(const UnicodeString AHostName)
   return IPv4 || (IPv6 && AnyColon);
 }
 //---------------------------------------------------------------------------
-bool TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
+bool TFTPFileSystem::HandleAsyncRequestVerifyCertificate(
   const TFtpsCertificateData &Data, int &RequestResult)
 {
   if (!FActive)
@@ -4181,7 +4181,7 @@ bool TFTPFileSystem::HandleAsynchRequestVerifyCertificate(
   }
 }
 //---------------------------------------------------------------------------
-bool TFTPFileSystem::HandleAsynchRequestNeedPass(
+bool TFTPFileSystem::HandleAsyncRequestNeedPass(
   struct TNeedPassRequestData &Data, int &RequestResult) const
 {
   if (!FActive)
@@ -4416,7 +4416,7 @@ bool TFTPFileSystem::HandleReply(intptr_t Command, uintptr_t Reply)
 
   // reply with Command 0 is not associated with current operation
   // so do not treat is as a reply
-  // (it is typically used asynchronously to notify about disconnects)
+  // (it is typically used asyncronously to notify about disconnects)
   if (Command != 0)
   {
     DebugAssert(FCommandReply == 0);

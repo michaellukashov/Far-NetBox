@@ -27,6 +27,7 @@ public:
   static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TFTPFileSystem); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TFTPFileSystem) || TCustomFileSystem::is(Kind); }
 public:
+  TFTPFileSystem() = delete;
   explicit TFTPFileSystem(TTerminal *ATerminal) noexcept;
   virtual ~TFTPFileSystem() noexcept;
   void Init(void *) override;
@@ -132,25 +133,25 @@ protected:
   void PoolForFatalNonCommandReply();
   void GotNonCommandReply(uintptr_t Reply);
   UnicodeString GotReply(uintptr_t Reply, uintptr_t Flags = 0,
-    const UnicodeString Error = L"", uintptr_t *Code = nullptr,
+    const UnicodeString Error = "", uintptr_t *Code = nullptr,
     TStrings **Response = nullptr);
   void ResetReply();
-  void HandleReplyStatus(const UnicodeString Response);
+  void HandleReplyStatus(UnicodeString Response);
   void DoWaitForReply(uintptr_t &ReplyToAwait, bool WantLastCode);
   bool KeepWaitingForReply(uintptr_t &ReplyToAwait, bool WantLastCode) const;
   inline bool NoFinalLastCode() const;
 
   bool HandleStatus(const wchar_t *AStatus, int Type);
-  bool HandleAsynchRequestOverwrite(
+  bool HandleAsyncRequestOverwrite(
     wchar_t *FileName1, size_t FileName1Len, const wchar_t *FileName2,
     const wchar_t *Path1, const wchar_t *Path2,
     int64_t Size1, int64_t Size2, time_t LocalTime,
     bool HasLocalTime, const TRemoteFileTime &RemoteTime, void *AUserData,
     HANDLE &ALocalFileHandle,
     int &RequestResult);
-  bool HandleAsynchRequestVerifyCertificate(
+  bool HandleAsyncRequestVerifyCertificate(
     const TFtpsCertificateData &Data, int &RequestResult);
-  bool HandleAsynchRequestNeedPass(
+  bool HandleAsyncRequestNeedPass(
     struct TNeedPassRequestData &Data, int &RequestResult) const;
   bool HandleListData(const wchar_t *Path, const TListDataEntry *Entries,
     uintptr_t Count);
@@ -161,64 +162,64 @@ protected:
   bool CheckError(intptr_t ReturnCode, const wchar_t *Context);
   void PreserveDownloadFileTime(HANDLE AHandle, void *UserData) const;
   bool GetFileModificationTimeInUtc(const wchar_t *AFileName, struct tm &Time);
-  void EnsureLocation(const UnicodeString ADirectory, bool Log);
+  void EnsureLocation(UnicodeString ADirectory, bool Log);
   void EnsureLocation();
   UnicodeString GetActualCurrentDirectory() const;
   void Discard();
-  void DoChangeDirectory(const UnicodeString ADirectory);
+  void DoChangeDirectory(UnicodeString ADirectory);
 
-  void Sink(const UnicodeString AFileName,
-    const TRemoteFile *AFile, const UnicodeString ATargetDir,
+  void Sink(UnicodeString AFileName,
+    const TRemoteFile *AFile, UnicodeString ATargetDir,
     const TCopyParamType *CopyParam, intptr_t AParams,
     TFileOperationProgressType *OperationProgress, uintptr_t AFlags,
     TDownloadSessionAction &Action);
-  bool ConfirmOverwrite(const UnicodeString ASourceFullFileName, UnicodeString &ATargetFileName,
+  bool ConfirmOverwrite(UnicodeString ASourceFullFileName, UnicodeString &ATargetFileName,
     intptr_t AParams, TFileOperationProgressType *OperationProgress,
     bool AutoResume,
     const TOverwriteFileParams *FileParams, const TCopyParamType *CopyParam,
     TOverwriteMode &OverwriteMode);
   void ReadDirectoryProgress(int64_t Bytes);
   void ResetFileTransfer();
-  virtual void DoFileTransferProgress(int64_t TransferSize, int64_t Bytes);
+  void DoFileTransferProgress(int64_t TransferSize, int64_t Bytes);
   void FileTransferProgress(int64_t TransferSize, int64_t Bytes) override;
   void ResetCaches();
-  void CaptureOutput(const UnicodeString AStr);
+  void CaptureOutput(UnicodeString AStr);
   void DoReadDirectory(TRemoteFileList *AFileList);
-  void DoReadFile(const UnicodeString AFileName, TRemoteFile *& AFile);
-  void FileTransfer(const UnicodeString AFileName, const UnicodeString LocalFile,
-    const UnicodeString RemoteFile, const UnicodeString RemotePath, bool Get,
+  void DoReadFile(UnicodeString AFileName, TRemoteFile *& AFile);
+  void FileTransfer(UnicodeString AFileName, UnicodeString LocalFile,
+    UnicodeString RemoteFile, UnicodeString RemotePath, bool Get,
     int64_t Size, intptr_t Type, TFileTransferData &UserData,
     TFileOperationProgressType *OperationProgress);
   TDateTime ConvertLocalTimestamp(time_t Time);
   void RemoteFileTimeToDateTimeAndPrecision(const TRemoteFileTime &Source,
     TDateTime &DateTime, TModificationFmt &ModificationFmt) const;
   void SetLastCode(intptr_t Code);
-  void StoreLastResponse(const UnicodeString Text);
+  void StoreLastResponse(UnicodeString Text);
   void SetCPSLimit(TFileOperationProgressType *OperationProgress);
   bool VerifyCertificateHostName(const TFtpsCertificateData &Data);
   bool SupportsReadingFile() const;
   void AutoDetectTimeDifference(TRemoteFileList *FileList);
-  void AutoDetectTimeDifference(const UnicodeString ADirectory, const TCopyParamType *CopyParam, intptr_t AParams);
+  void AutoDetectTimeDifference(UnicodeString ADirectory, const TCopyParamType *CopyParam, intptr_t AParams);
   void ApplyTimeDifference(TRemoteFile *File);
   void ApplyTimeDifference(
-    const UnicodeString FileName, TDateTime &Modification, TModificationFmt &ModificationFmt);
-  void DummyReadDirectory(const UnicodeString ADirectory);
+    UnicodeString FileName, TDateTime &Modification, TModificationFmt &ModificationFmt);
+  void DummyReadDirectory(UnicodeString ADirectory);
   bool IsEmptyFileList(TRemoteFileList *FileList) const;
   void CheckTimeDifference();
   bool NeedAutoDetectTimeDifference() const;
   bool LookupUploadModificationTime(
-    const UnicodeString FileName, TDateTime &Modification, TModificationFmt ModificationFmt);
-  UnicodeString DoCalculateFileChecksum(bool UsingHashCommand, const UnicodeString Alg, TRemoteFile *File);
-  void DoCalculateFilesChecksum(bool UsingHashCommand, const UnicodeString Alg,
+    UnicodeString FileName, TDateTime &Modification, TModificationFmt ModificationFmt);
+  UnicodeString DoCalculateFileChecksum(bool UsingHashCommand, UnicodeString Alg, TRemoteFile *File);
+  void DoCalculateFilesChecksum(bool UsingHashCommand, UnicodeString Alg,
     TStrings *FileList, TStrings *Checksums,
     TCalculatedChecksumEvent OnCalculatedChecksum,
     TFileOperationProgressType *OperationProgress, bool FirstLevel);
   void HandleFeatReply();
   void ResetFeatures();
-  bool SupportsSiteCommand(const UnicodeString ACommand) const;
-  bool SupportsCommand(const UnicodeString ACommand) const;
-  void RegisterChecksumAlgCommand(const UnicodeString Alg, const UnicodeString ACommand);
-  void SendCommand(const UnicodeString ACommand);
+  bool SupportsSiteCommand(UnicodeString ACommand) const;
+  bool SupportsCommand(UnicodeString ACommand) const;
+  void RegisterChecksumAlgCommand(UnicodeString Alg, UnicodeString ACommand);
+  void SendCommand(UnicodeString ACommand);
   bool CanTransferSkipList(intptr_t AParams, uintptr_t AFlags, const TCopyParamType *CopyParam) const;
 
   static bool Unquote(UnicodeString &Str);
@@ -245,7 +246,7 @@ private:
   TCommand FLastCommand{CMD_UNKNOWN};
   bool FPasswordFailed{false};
   bool FStoredPasswordTried{false};
-  bool FMultineResponse{false};
+  bool FMultilineResponse{false};
   intptr_t FLastCode{0};
   intptr_t FLastCodeClass{0};
   intptr_t FLastReadDirectoryProgress{0};
