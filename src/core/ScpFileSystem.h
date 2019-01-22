@@ -28,43 +28,43 @@ public:
   bool GetActive() const override;
   void CollectUsage() override;
   void Idle() override;
-  UnicodeString GetAbsolutePath(const UnicodeString APath, bool Local) override;
-  UnicodeString GetAbsolutePath(const UnicodeString APath, bool Local) const override;
-  void AnyCommand(const UnicodeString ACommand,
+  UnicodeString GetAbsolutePath(UnicodeString APath, bool Local) override;
+  UnicodeString GetAbsolutePath(UnicodeString APath, bool Local) const override;
+  void AnyCommand(UnicodeString ACommand,
     TCaptureOutputEvent OutputEvent) override;
-  void ChangeDirectory(const UnicodeString ADirectory) override;
-  void CachedChangeDirectory(const UnicodeString ADirectory) override;
+  void ChangeDirectory(UnicodeString ADirectory) override;
+  void CachedChangeDirectory(UnicodeString ADirectory) override;
   void AnnounceFileListOperation() override;
-  void ChangeFileProperties(const UnicodeString AFileName,
+  void ChangeFileProperties(UnicodeString AFileName,
     const TRemoteFile *AFile, const TRemoteProperties *Properties,
     TChmodSessionAction &Action) override;
   bool LoadFilesProperties(TStrings *AFileList) override;
-  void CalculateFilesChecksum(const UnicodeString Alg,
+  void CalculateFilesChecksum(UnicodeString Alg,
     TStrings *AFileList, TStrings *Checksums,
     TCalculatedChecksumEvent OnCalculatedChecksum) override;
   void CopyToLocal(TStrings *AFilesToCopy,
-    const UnicodeString ATargetDir, const TCopyParamType *ACopyParam,
+    UnicodeString ATargetDir, const TCopyParamType *ACopyParam,
     intptr_t AParams, TFileOperationProgressType *OperationProgress,
     TOnceDoneOperation &OnceDoneOperation) override;
   void CopyToRemote(TStrings *AFilesToCopy,
-    const UnicodeString ATargetDir, const TCopyParamType *CopyParam,
+    UnicodeString ATargetDir, const TCopyParamType *CopyParam,
     intptr_t AParams, TFileOperationProgressType *OperationProgress,
     TOnceDoneOperation &OnceDoneOperation) override;
   void Source(
-    TLocalFileHandle &AHandle, const UnicodeString ATargetDir, UnicodeString &ADestFileName,
+    TLocalFileHandle &AHandle, UnicodeString ATargetDir, UnicodeString &ADestFileName,
     const TCopyParamType *CopyParam, intptr_t AParams,
     TFileOperationProgressType *OperationProgress, uintptr_t AFlags,
     TUploadSessionAction &Action, bool &ChildError) override;
   void Sink(
-    const UnicodeString AFileName, const TRemoteFile *AFile,
-    const UnicodeString ATargetDir, UnicodeString &ADestFileName, intptr_t Attrs,
+    UnicodeString AFileName, const TRemoteFile *AFile,
+    UnicodeString ATargetDir, UnicodeString &ADestFileName, intptr_t Attrs,
     const TCopyParamType *CopyParam, intptr_t AParams, TFileOperationProgressType *OperationProgress,
     uintptr_t AFlags, TDownloadSessionAction &Action) override;
-  void RemoteCreateDirectory(const UnicodeString ADirName, bool Encrypt) override;
-  void RemoteCreateLink(const UnicodeString AFileName, const UnicodeString PointTo, bool Symbolic) override;
-  void RemoteDeleteFile(const UnicodeString AFileName,
+  void RemoteCreateDirectory(UnicodeString ADirName, bool Encrypt) override;
+  void RemoteCreateLink(UnicodeString AFileName, UnicodeString PointTo, bool Symbolic) override;
+  void RemoteDeleteFile(UnicodeString AFileName,
     const TRemoteFile *AFile, intptr_t AParams, TRmSessionAction & Action) override;
-  void CustomCommandOnFile(const UnicodeString FileName,
+  void CustomCommandOnFile(UnicodeString FileName,
     const TRemoteFile *AFile, UnicodeString ACommand, intptr_t AParams, TCaptureOutputEvent OutputEvent) override;
   void DoStartup() override;
   void HomeDirectory() override;
@@ -72,25 +72,25 @@ public:
   void LookupUsersGroups() override;
   void ReadCurrentDirectory() override;
   void ReadDirectory(TRemoteFileList *FileList) override;
-  void ReadFile(const UnicodeString AFileName,
+  void ReadFile(UnicodeString AFileName,
     TRemoteFile *& AFile) override;
   void ReadSymlink(TRemoteFile *ASymlinkFile,
     TRemoteFile *& AFile) override;
-  void RemoteRenameFile(const UnicodeString AFileName, const TRemoteFile *AFile,
-    const UnicodeString ANewName) override;
-  void RemoteCopyFile(const UnicodeString AFileName, const TRemoteFile *AFile,
-    const UnicodeString ANewName) override;
+  void RemoteRenameFile(UnicodeString AFileName, const TRemoteFile *AFile,
+    UnicodeString ANewName) override;
+  void RemoteCopyFile(UnicodeString AFileName, const TRemoteFile *AFile,
+    UnicodeString ANewName) override;
   TStrings * GetFixedPaths() const override;
-  void SpaceAvailable(const UnicodeString APath,
+  void SpaceAvailable(UnicodeString APath,
     TSpaceAvailable &ASpaceAvailable) override;
   const TSessionInfo & GetSessionInfo() const override;
   const TFileSystemInfo & GetFileSystemInfo(bool Retrieve) override;
-  bool TemporaryTransferFile(const UnicodeString AFileName) override;
+  bool TemporaryTransferFile(UnicodeString AFileName) override;
   bool GetStoredCredentialsTried() const override;
   UnicodeString RemoteGetUserName() const override;
   void GetSupportedChecksumAlgs(TStrings *Algs) override;
-  void LockFile(const UnicodeString AFileName, const TRemoteFile *AFile) override;
-  void UnlockFile(const UnicodeString AFileName, const TRemoteFile *AFile) override;
+  void LockFile(UnicodeString AFileName, const TRemoteFile *AFile) override;
+  void UnlockFile(UnicodeString AFileName, const TRemoteFile *AFile) override;
   void UpdateFromMain(TCustomFileSystem *MainFileSystem) override;
   void ClearCaches() override;
 
@@ -118,51 +118,51 @@ private:
 
   void DetectUtf();
   void ClearAliases();
-  void ClearAlias(const UnicodeString Alias);
-  void CustomReadFile(const UnicodeString AFileName,
+  void ClearAlias(UnicodeString Alias);
+  void CustomReadFile(UnicodeString AFileName,
     TRemoteFile *& AFile, TRemoteFile *ALinkedByFile);
-  static UnicodeString DelimitStr(const UnicodeString AStr);
+  static UnicodeString DelimitStr(UnicodeString AStr);
   void DetectReturnVar();
   bool IsLastLine(UnicodeString &Line);
-  static bool IsTotalListingLine(const UnicodeString ALine);
+  static bool IsTotalListingLine(UnicodeString ALine);
   void EnsureLocation();
-  void ExecCommand(const UnicodeString ACmd, intptr_t AParams,
-    const UnicodeString CmdString);
+  void ExecCommand(UnicodeString ACmd, intptr_t AParams,
+    UnicodeString CmdString);
   void ExecCommand(TFSCommand Cmd, intptr_t Params, fmt::ArgList args);
   FMT_VARIADIC_W(void, ExecCommand, TFSCommand, intptr_t)
 
   __removed void ExecCommand(TFSCommand Cmd, const TVarRec *args = nullptr, int size = 0, int Params = -1);
-  void ReadCommandOutput(intptr_t Params, const UnicodeString *Cmd = nullptr);
+  void ReadCommandOutput(intptr_t Params, UnicodeString *Cmd = nullptr);
   void SCPResponse(bool *GotLastLine = nullptr);
-  void SCPDirectorySource(const UnicodeString ADirectoryName,
-    const UnicodeString ATargetDir, const TCopyParamType *CopyParam, intptr_t Params,
+  void SCPDirectorySource(UnicodeString ADirectoryName,
+    UnicodeString ATargetDir, const TCopyParamType *CopyParam, intptr_t Params,
     TFileOperationProgressType *OperationProgress, intptr_t Level);
-  void SCPError(const UnicodeString Message, bool Fatal);
-  void SCPSendError(const UnicodeString Message, bool Fatal);
-  void SCPSink(const UnicodeString ATargetDir,
-    const UnicodeString AFileName, const UnicodeString ASourceDir,
+  void SCPError(UnicodeString Message, bool Fatal);
+  void SCPSendError(UnicodeString Message, bool Fatal);
+  void SCPSink(UnicodeString ATargetDir,
+    UnicodeString AFileName, UnicodeString ASourceDir,
     const TCopyParamType *CopyParam, bool &Success,
     TFileOperationProgressType *OperationProgress, intptr_t AParams, intptr_t Level);
-  void SCPSource(const UnicodeString AFileName,
-    const UnicodeString TargetDir, const TCopyParamType *CopyParam, intptr_t AParams,
+  void SCPSource(UnicodeString AFileName,
+    UnicodeString TargetDir, const TCopyParamType *CopyParam, intptr_t AParams,
     TFileOperationProgressType *OperationProgress, intptr_t Level);
-  void SendCommand(const UnicodeString Cmd);
+  void SendCommand(UnicodeString Cmd);
   void SkipFirstLine();
   void SkipStartupMessage();
   void UnsetNationalVars();
-  TRemoteFile *CreateRemoteFile(const UnicodeString ListingStr,
+  TRemoteFile *CreateRemoteFile(UnicodeString ListingStr,
     TRemoteFile *LinkedByFile = nullptr);
-  void CaptureOutput(const UnicodeString AddedLine, TCaptureOutputType OutputType);
-  void ChangeFileToken(const UnicodeString DelimitedName,
-    const TRemoteToken &Token, TFSCommand Cmd, const UnicodeString RecursiveStr);
+  void CaptureOutput(UnicodeString AddedLine, TCaptureOutputType OutputType);
+  void ChangeFileToken(UnicodeString DelimitedName,
+    const TRemoteToken &Token, TFSCommand Cmd, UnicodeString RecursiveStr);
   uintptr_t ConfirmOverwrite(
-    const UnicodeString ASourceFullFileName, const UnicodeString ATargetFileName,
+    UnicodeString ASourceFullFileName, UnicodeString ATargetFileName,
     TOperationSide Side,
     const TOverwriteFileParams *FileParams, const TCopyParamType *CopyParam,
     intptr_t Params, TFileOperationProgressType *OperationProgress);
 
   static bool RemoveLastLine(UnicodeString &Line,
-    intptr_t &ReturnCode, const UnicodeString ALastLine = L"");
+    intptr_t &ReturnCode, UnicodeString ALastLine = "");
 
   UnicodeString InitOptionsStr(const TCopyParamType *CopyParam) const;
 };
