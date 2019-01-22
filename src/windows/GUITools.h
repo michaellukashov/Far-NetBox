@@ -13,23 +13,23 @@ typedef void (__closure *TProcessMessagesEvent)();
 using TProcessMessagesEvent = nb::FastDelegate0<void>;
 //---------------------------------------------------------------------------
 NB_CORE_EXPORT bool FindFile(UnicodeString &APath);
-NB_CORE_EXPORT bool FindTool(const UnicodeString Name, UnicodeString &APath);
-void ExecuteTool(const UnicodeString & Name);
-NB_CORE_EXPORT void ExecuteShellChecked(const UnicodeString APath, const UnicodeString Params,
+NB_CORE_EXPORT bool FindTool(UnicodeString Name, UnicodeString &APath);
+NB_CORE_EXPORT void ExecuteTool(UnicodeString Name);
+NB_CORE_EXPORT void ExecuteShellChecked(UnicodeString APath, UnicodeString Params,
   bool ChangeWorkingDirectory = false);
-NB_CORE_EXPORT void ExecuteShellChecked(const UnicodeString Command);
-NB_CORE_EXPORT bool ExecuteShell(const UnicodeString Path, const UnicodeString Params,
+NB_CORE_EXPORT void ExecuteShellChecked(UnicodeString Command);
+NB_CORE_EXPORT bool ExecuteShell(UnicodeString Path, UnicodeString Params,
   HANDLE &Handle);
-NB_CORE_EXPORT void ExecuteShellCheckedAndWait(const UnicodeString Command, TProcessMessagesEvent ProcessMessages);
+NB_CORE_EXPORT void ExecuteShellCheckedAndWait(UnicodeString Command, TProcessMessagesEvent ProcessMessages);
 __removed TObjectList * StartCreationDirectoryMonitorsOnEachDrive(uintptr_t Filter, TFileChangedEvent OnChanged);
-NB_CORE_EXPORT bool CopyCommandToClipboard(const UnicodeString ACommand);
+NB_CORE_EXPORT bool CopyCommandToClipboard(UnicodeString ACommand);
 extern bool DontCopyCommandToClipboard;
-NB_CORE_EXPORT void OpenSessionInPutty(const UnicodeString PuttyPath,
+NB_CORE_EXPORT void OpenSessionInPutty(UnicodeString PuttyPath,
   TSessionData *SessionData);
 NB_CORE_EXPORT bool SpecialFolderLocation(intptr_t PathID, UnicodeString &APath);
-NB_CORE_EXPORT UnicodeString UniqTempDir(const UnicodeString BaseDir,
-  const UnicodeString Identity, bool Mask = false);
-NB_CORE_EXPORT bool DeleteDirectory(const UnicodeString ADirName);
+NB_CORE_EXPORT UnicodeString UniqTempDir(UnicodeString BaseDir,
+  UnicodeString Identity, bool Mask = false);
+NB_CORE_EXPORT bool DeleteDirectory(UnicodeString ADirName);
 
 #if 0
 int GetSessionColorImage(TCustomImageList * ImageList, TColor Color, int MaskIndex);
@@ -39,29 +39,29 @@ typedef int __fastcall (*TCalculateWidth)(UnicodeString Text, void * Arg);
 void __fastcall ApplyTabs(
   UnicodeString & Text, wchar_t Padding,
   TCalculateWidth CalculateWidth, void * CalculateWidthArg);
-TPanel * __fastcall CreateLabelPanel(TPanel * Parent, const UnicodeString & Label);
+TPanel * __fastcall CreateLabelPanel(TPanel * Parent, UnicodeString & Label);
 void __fastcall SelectScaledImageList(TImageList * ImageList);
 void __fastcall CopyImageList(TImageList * TargetList, TImageList * SourceList);
-void __fastcall LoadDialogImage(TImage * Image, const UnicodeString & ImageName);
+void __fastcall LoadDialogImage(TImage * Image, UnicodeString & ImageName);
 int __fastcall DialogImageSize(TForm * Form);
 int __fastcall NormalizePixelsPerInch(int PixelsPerInch);
 void __fastcall HideComponentsPanel(TForm * Form);
-UnicodeString FormatIncrementalSearchStatus(const UnicodeString & Text, bool HaveNext);
+UnicodeString FormatIncrementalSearchStatus(UnicodeString & Text, bool HaveNext);
 namespace Webbrowserex
 {
   class TWebBrowserEx;
 }
 using namespace Webbrowserex;
-TWebBrowserEx * __fastcall CreateBrowserViewer(TPanel * Parent, const UnicodeString & LoadingLabel);
+TWebBrowserEx * __fastcall CreateBrowserViewer(TPanel * Parent, UnicodeString & LoadingLabel);
 void __fastcall SetBrowserDesignModeOff(TWebBrowserEx * WebBrowser);
 void __fastcall AddBrowserLinkHandler(TWebBrowserEx * WebBrowser,
-  const UnicodeString & Url, TNotifyEvent Handler);
-void __fastcall NavigateBrowserToUrl(TWebBrowserEx * WebBrowser, const UnicodeString & Url);
+  UnicodeString & Url, TNotifyEvent Handler);
+void __fastcall NavigateBrowserToUrl(TWebBrowserEx * WebBrowser, UnicodeString & Url);
 void ReadyBrowserForStreaming(TWebBrowserEx * WebBrowser);
 void WaitBrowserToIdle(TWebBrowserEx * WebBrowser);
 void HideBrowserScrollbars(TWebBrowserEx * WebBrowser);
-UnicodeString GenerateAppHtmlPage(TFont * Font, TPanel * Parent, const UnicodeString & Body, bool Seamless);
-void LoadBrowserDocument(TWebBrowserEx * WebBrowser, const UnicodeString & Document);
+UnicodeString GenerateAppHtmlPage(TFont * Font, TPanel * Parent, UnicodeString & Body, bool Seamless);
+void LoadBrowserDocument(TWebBrowserEx * WebBrowser, UnicodeString & Document);
 void __fastcall GetInstrutionsTheme(
   TColor & MainInstructionColor, HFONT & MainInstructionFont, HFONT & InstructionFont);
   TColor & MainInstructionColor, HFONT & MainInstructionFont, HFONT & InstructionFont);
@@ -72,19 +72,19 @@ class NB_CORE_EXPORT TLocalCustomCommand : public TFileCustomCommand
 public:
   TLocalCustomCommand() noexcept;
   explicit TLocalCustomCommand(
-    const TCustomCommandData &Data, const UnicodeString RemotePath, const UnicodeString LocalPath) noexcept;
+    const TCustomCommandData &Data, UnicodeString RemotePath, UnicodeString LocalPath) noexcept;
   explicit TLocalCustomCommand(
-    const TCustomCommandData &Data, const UnicodeString RemotePath, const UnicodeString LocalPath,
-    const UnicodeString AFileName, const UnicodeString LocalFileName,
-    const UnicodeString FileList) noexcept;
+    const TCustomCommandData &Data, UnicodeString RemotePath, UnicodeString LocalPath,
+    UnicodeString AFileName, UnicodeString LocalFileName,
+    UnicodeString FileList) noexcept;
   virtual ~TLocalCustomCommand() noexcept = default;
 
-  virtual bool IsFileCommand(const UnicodeString Command) const;
-  bool HasLocalFileName(const UnicodeString Command) const;
+  virtual bool IsFileCommand(UnicodeString Command) const;
+  bool HasLocalFileName(UnicodeString Command) const;
 
 protected:
-  virtual intptr_t PatternLen(const UnicodeString Command, intptr_t Index) const;
-  virtual bool PatternReplacement(intptr_t Index, const UnicodeString Pattern,
+  virtual intptr_t PatternLen(UnicodeString Command, intptr_t Index) const;
+  virtual bool PatternReplacement(intptr_t Index, UnicodeString Pattern,
     UnicodeString &Replacement, bool &Delimit) const;
   virtual void DelimitReplacement(UnicodeString &Replacement, wchar_t Quote);
 
@@ -109,7 +109,7 @@ class TFrameAnimation
 {
 public:
   __fastcall TFrameAnimation();
-  void __fastcall Init(TPaintBox * PaintBox, const UnicodeString & Name);
+  void __fastcall Init(TPaintBox * PaintBox, UnicodeString & Name);
   void __fastcall Start();
   void __fastcall Stop();
 
@@ -140,10 +140,10 @@ class TScreenTipHintWindow : public THintWindow
 {
 public:
   __fastcall TScreenTipHintWindow(TComponent * Owner);
-  virtual TRect __fastcall CalcHintRect(int MaxWidth, const UnicodeString AHint, void * AData);
-  virtual void __fastcall ActivateHintData(const TRect & Rect, const UnicodeString AHint, void * AData);
+  virtual TRect __fastcall CalcHintRect(int MaxWidth, UnicodeString AHint, void * AData);
+  virtual void __fastcall ActivateHintData(const TRect & Rect, UnicodeString AHint, void * AData);
 
-  static void __fastcall CalcHintTextRect(TControl * Control, TCanvas * Canvas, TRect & Rect, const UnicodeString & Hint);
+  static void __fastcall CalcHintTextRect(TControl * Control, TCanvas * Canvas, TRect & Rect, UnicodeString & Hint);
 
 protected:
   virtual void __fastcall Paint();
@@ -158,17 +158,17 @@ private:
   bool FHintPopup;
   std::unique_ptr<TFont> FScaledHintFont;
 
-  UnicodeString __fastcall GetLongHintIfAny(const UnicodeString & AHint);
+  UnicodeString __fastcall GetLongHintIfAny(UnicodeString & AHint);
   static int __fastcall GetTextFlags(TControl * Control);
 
   bool __fastcall UseBoldShortHint(TControl * HintControl);
-  int __fastcall GetMargin(TControl * HintControl, const UnicodeString & Hint);
-  TFont * __fastcall GetFont(TControl * HintControl, const UnicodeString & Hint);
+  int __fastcall GetMargin(TControl * HintControl, UnicodeString & Hint);
+  TFont * __fastcall GetFont(TControl * HintControl, UnicodeString & Hint);
   TControl * __fastcall GetHintControl(void * Data);
   void __fastcall SplitHint(
-    TControl * HintControl, const UnicodeString & Hint, UnicodeString & ShortHint, UnicodeString & LongHint);
+    TControl * HintControl, UnicodeString & Hint, UnicodeString & ShortHint, UnicodeString & LongHint);
   void __fastcall SplitHint(
-    TControl * HintControl, const UnicodeString & Hint, UnicodeString & ShortHint, UnicodeString & LongHint);
+    TControl * HintControl, UnicodeString & Hint, UnicodeString & ShortHint, UnicodeString & LongHint);
 };
 //---------------------------------------------------------------------------
 // Newer version rich edit that supports "Friendly name hyperlinks" and
@@ -188,21 +188,21 @@ private:
 };
 #endif // #if 0
 
-NB_CORE_EXPORT UnicodeString ItemsFormatString(const UnicodeString SingleItemFormat,
-  const UnicodeString MultiItemsFormat, intptr_t Count, const UnicodeString FirstItem);
+NB_CORE_EXPORT UnicodeString ItemsFormatString(UnicodeString SingleItemFormat,
+  UnicodeString MultiItemsFormat, intptr_t Count, UnicodeString FirstItem);
 NB_CORE_EXPORT UnicodeString GetPersonalFolder();
-NB_CORE_EXPORT UnicodeString ItemsFormatString(const UnicodeString SingleItemFormat,
-  const UnicodeString MultiItemsFormat, const TStrings *Items);
-NB_CORE_EXPORT UnicodeString FileNameFormatString(const UnicodeString SingleFileFormat,
-  const UnicodeString MultiFilesFormat, const TStrings *AFiles, bool Remote);
+NB_CORE_EXPORT UnicodeString ItemsFormatString(UnicodeString SingleItemFormat,
+  UnicodeString MultiItemsFormat, const TStrings *Items);
+NB_CORE_EXPORT UnicodeString FileNameFormatString(UnicodeString SingleFileFormat,
+  UnicodeString MultiFilesFormat, const TStrings *AFiles, bool Remote);
 NB_CORE_EXPORT UnicodeString FileNameFormatString(UnicodeString SingleFileFormat,
   UnicodeString MultiFilesFormat, const TStrings *AFiles, bool Remote);
 //---------------------------------------------------------------------------
 #if 0
 // Based on:
 // https://stackoverflow.com/q/6912424/850848
-NB_CORE_EXPORT extern const UnicodeString PageantTool;
-NB_CORE_EXPORT extern const UnicodeString PuttygenTool;
+NB_CORE_EXPORT extern UnicodeString PageantTool;
+NB_CORE_EXPORT extern UnicodeString PuttygenTool;
 // https://stackoverflow.com/q/4685863/850848
 class TUIStateAwareLabel : public TLabel
 {
@@ -213,7 +213,7 @@ protected:
 // an inline method without a compiler warning, which we cannot suppress in a macro.
 // And having the implementation in a real code (not macro) also allows us to debug the code.
 void __fastcall FindComponentClass(
-  void * Data, TReader * Reader, const UnicodeString ClassName, TComponentClass & ComponentClass);
+  void * Data, TReader * Reader, UnicodeString ClassName, TComponentClass & ComponentClass);
 #define INTERFACE_HOOK_CUSTOM(PARENT) \
   protected: \
     virtual void __fastcall ReadState(TReader * Reader) \

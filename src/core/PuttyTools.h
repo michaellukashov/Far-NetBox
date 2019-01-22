@@ -36,11 +36,11 @@ NB_CORE_EXPORT UnicodeString Sha256(const char *Data, size_t Size);
 //---------------------------------------------------------------------------
 NB_CORE_EXPORT void DllHijackingProtection();
 //---------------------------------------------------------------------------
-UnicodeString ParseOpenSshPubLine(const UnicodeString ALine, const struct ssh_signkey *& Algorithm);
+UnicodeString ParseOpenSshPubLine(UnicodeString ALine, const struct ssh_signkey *& Algorithm);
 //---------------------------------------------------------------------------
-UnicodeString GetKeyTypeHuman(const UnicodeString AKeyType);
+UnicodeString GetKeyTypeHuman(UnicodeString AKeyType);
 //---------------------------------------------------------------------------
-bool IsOpenSSH(const UnicodeString & SshImplementation);
+bool IsOpenSSH(UnicodeString SshImplementation);
 //---------------------------------------------------------------------------
 TStrings * SshCipherList();
 TStrings * SshKexList();

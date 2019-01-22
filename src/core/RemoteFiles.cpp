@@ -15,16 +15,12 @@
 #include "Cryptography.h"
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-TRemoteToken::TRemoteToken() noexcept :
-  FID(0),
-  FIDValid(false)
+TRemoteToken::TRemoteToken() noexcept
 {
 }
 //---------------------------------------------------------------------------
 TRemoteToken::TRemoteToken(const UnicodeString Name) noexcept :
-  FName(Name),
-  FID(0),
-  FIDValid(false)
+  FName(Name)
 {
 }
 
@@ -282,19 +278,10 @@ const TRemoteToken *TRemoteTokenList::Token(intptr_t Index) const
 //---------------------------------------------------------------------------
 TRemoteFile::TRemoteFile(TObjectClassId Kind, TRemoteFile *ALinkedByFile) noexcept :
   TPersistent(Kind),
-  FDirectory(nullptr),
   FModificationFmt(mfFull),
-  FLinkedFile(nullptr),
   FLinkedByFile(ALinkedByFile),
-  FRights(nullptr),
-  FTerminal(nullptr),
-  FSize(0),
-  FINodeBlocks(0),
   FIconIndex(-1),
-  FIsHidden(-1),
-  FType(0),
-  FIsSymLink(false),
-  FCyclicLink(false)
+  FIsHidden(-1)
 {
   Init();
   FLinkedByFile = ALinkedByFile;
@@ -1230,11 +1217,7 @@ TRemoteFile *TRemoteFileList::FindFile(const UnicodeString AFileName) const
 //=== TRemoteDirectory ------------------------------------------------------
 TRemoteDirectory::TRemoteDirectory(TTerminal *ATerminal, TRemoteDirectory *Template) noexcept :
   TRemoteFileList(OBJECT_CLASS_TRemoteDirectory),
-  FTerminal(ATerminal),
-  FParentDirectory(nullptr),
-  FThisDirectory(nullptr),
-  FIncludeParentDirectory(false),
-  FIncludeThisDirectory(false)
+  FTerminal(ATerminal)
 {
   if (Template == nullptr)
   {
@@ -1349,7 +1332,7 @@ void TRemoteDirectory::SetIncludeThisDirectory(Boolean Value)
   }
 }
 //===========================================================================
-TRemoteDirectoryCache::TRemoteDirectoryCache() noexcept : TStringList()
+TRemoteDirectoryCache::TRemoteDirectoryCache() noexcept
 {
   TStringList::SetSorted(true);
   SetDuplicates(dupError);
@@ -1432,15 +1415,15 @@ void TRemoteDirectoryCache::AddFileList(TRemoteFileList *FileList)
   DebugAssert(FileList);
   if (FileList)
   {
-    TRemoteFileList *Copy = new TRemoteFileList();
-    FileList->DuplicateTo(Copy);
+    std::unique_ptr<TRemoteFileList> Copy = std::make_unique<TRemoteFileList>();
+    FileList->DuplicateTo(Copy.get());
 
     TGuard Guard(FSection); nb::used(Guard);
 
     // file list cannot be cached already with only one thread, but it can be
     // when directory is loaded by secondary terminal
     DoClearFileList(FileList->GetDirectory(), false);
-    AddObject(Copy->GetDirectory(), Copy);
+    AddObject(Copy->GetDirectory(), Copy.release());
   }
 }
 //---------------------------------------------------------------------------
@@ -1482,7 +1465,6 @@ void TRemoteDirectoryCache::Delete(intptr_t Index)
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 TRemoteDirectoryChangesCache::TRemoteDirectoryChangesCache(intptr_t MaxSize) noexcept :
-  TStringList(),
   FMaxSize(MaxSize)
 {
 }
@@ -1516,8 +1498,8 @@ UnicodeString TRemoteDirectoryChangesCache::GetValue(const UnicodeString Name)
 }
 //---------------------------------------------------------------------------
 void TRemoteDirectoryChangesCache::AddDirectoryChange(
-  const UnicodeString SourceDir, const UnicodeString Change,
-  const UnicodeString TargetDir)
+  UnicodeString SourceDir, UnicodeString Change,
+  UnicodeString TargetDir)
 {
   DebugAssert(!TargetDir.IsEmpty());
   SetValue(TargetDir, L"//");
@@ -1545,7 +1527,7 @@ void TRemoteDirectoryChangesCache::ClearDirectoryChange(
 }
 //---------------------------------------------------------------------------
 void TRemoteDirectoryChangesCache::ClearDirectoryChangeTarget(
-  const UnicodeString TargetDir)
+  UnicodeString TargetDir)
 {
   UnicodeString Key;
   // hack to clear at least local sym-link change in case symlink is deleted
@@ -1566,7 +1548,7 @@ void TRemoteDirectoryChangesCache::ClearDirectoryChangeTarget(
 }
 //---------------------------------------------------------------------------
 bool TRemoteDirectoryChangesCache::GetDirectoryChange(
-  const UnicodeString SourceDir, const UnicodeString Change, UnicodeString &TargetDir) const
+  UnicodeString SourceDir, UnicodeString Change, UnicodeString &TargetDir) const
 {
   UnicodeString Key = TTerminal::ExpandFileName(Change, SourceDir);
   bool Result = (IndexOfName(Key) >= 0);
@@ -1623,7 +1605,7 @@ void TRemoteDirectoryChangesCache::Serialize(UnicodeString &Data) const
   }
 }
 //---------------------------------------------------------------------------
-void TRemoteDirectoryChangesCache::Deserialize(const UnicodeString Data)
+void TRemoteDirectoryChangesCache::Deserialize(UnicodeString Data)
 {
   if (Data.IsEmpty())
   {
@@ -1636,7 +1618,7 @@ void TRemoteDirectoryChangesCache::Deserialize(const UnicodeString Data)
 }
 //---------------------------------------------------------------------------
 bool TRemoteDirectoryChangesCache::DirectoryChangeKey(
-  const UnicodeString SourceDir, const UnicodeString Change, UnicodeString &Key)
+  UnicodeString SourceDir, UnicodeString Change, UnicodeString &Key)
 {
   bool Result = !Change.IsEmpty();
   if (Result)
@@ -1664,20 +1646,12 @@ const wchar_t TRights::CombinedSymbols[] = L"--s--s--t";
 const wchar_t TRights::ExtendedSymbols[] = L"--S--S--T";
 const wchar_t TRights::ModeGroups[] = L"ugo";
 //---------------------------------------------------------------------------
-TRights::TRights() noexcept :
-  FSet(0),
-  FUnset(0),
-  FAllowUndef(false),
-  FUnknown(true)
+TRights::TRights() noexcept
 {
   SetNumber(0);
 }
 //---------------------------------------------------------------------------
-TRights::TRights(uint16_t ANumber) noexcept :
-  FSet(0),
-  FUnset(0),
-  FAllowUndef(false),
-  FUnknown(true)
+TRights::TRights(uint16_t ANumber) noexcept
 {
   SetNumber(ANumber);
 }

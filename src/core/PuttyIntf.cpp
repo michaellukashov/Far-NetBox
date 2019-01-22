@@ -15,12 +15,12 @@
 #include "TextsCore.h"
 __removed #include <Soap.EncdDecd.hpp>
 //---------------------------------------------------------------------------
-char sshver[50];
+char sshver[50]{};
 extern const char commitid[] = "";
 const int platform_uses_x11_unix_by_default = TRUE;
 CRITICAL_SECTION putty_section;
 bool SaveRandomSeed;
-char appname_[50];
+char appname_[50]{};
 const char *const appname = appname_;
 extern "C" const int share_can_be_downstream = FALSE;
 extern "C" const int share_can_be_upstream = FALSE;
@@ -30,10 +30,10 @@ extern "C"
 #include <winstuff.h>
 }
 const UnicodeString OriginalPuttyRegistryStorageKey(PUTTY_REG_POS);
-const UnicodeString KittyRegistryStorageKey(L"Software\\9bis.com\\KiTTY");
+const UnicodeString KittyRegistryStorageKey("Software\\9bis.com\\KiTTY");
 const UnicodeString OriginalPuttyExecutable("putty.exe");
 const UnicodeString KittyExecutable("kitty.exe");
-const UnicodeString PuttyKeyExt(L"ppk");
+const UnicodeString PuttyKeyExt("ppk");
 //---------------------------------------------------------------------------
 void PuttyInitialize()
 {
@@ -556,11 +556,11 @@ long reg_close_winscp_key(HKEY Key)
   return ERROR_SUCCESS;
 }
 //---------------------------------------------------------------------------
-TKeyType GetKeyType(const UnicodeString AFileName)
+TKeyType GetKeyType(UnicodeString AFileName)
 {
-  DebugAssert(ktUnopenable == (TKeyType)SSH_KEYTYPE_UNOPENABLE);
-  DebugAssert(ktSSHCom == (TKeyType)SSH_KEYTYPE_SSHCOM);
-  DebugAssert(ktSSH2PublicOpenSSH == (TKeyType)SSH_KEYTYPE_SSH2_PUBLIC_OPENSSH);
+  DebugAssert(ktUnopenable == static_cast<TKeyType>(SSH_KEYTYPE_UNOPENABLE));
+  DebugAssert(ktSSHCom == static_cast<TKeyType>(SSH_KEYTYPE_SSHCOM));
+  DebugAssert(ktSSH2PublicOpenSSH == static_cast<TKeyType>(SSH_KEYTYPE_SSH2_PUBLIC_OPENSSH));
   UTF8String UtfFileName = UTF8String(::ExpandEnvironmentVariables(AFileName));
   Filename *KeyFile = filename_from_str(UtfFileName.c_str());
   TKeyType Result = static_cast<TKeyType>(key_type(KeyFile));
@@ -568,7 +568,7 @@ TKeyType GetKeyType(const UnicodeString AFileName)
   return Result;
 }
 //---------------------------------------------------------------------------
-bool IsKeyEncrypted(TKeyType KeyType, const UnicodeString FileName, UnicodeString &Comment)
+bool IsKeyEncrypted(TKeyType KeyType, UnicodeString FileName, UnicodeString &Comment)
 {
   UTF8String UtfFileName = UTF8String(::ExpandEnvironmentVariables(FileName));
   bool Result;
@@ -613,7 +613,7 @@ bool IsKeyEncrypted(TKeyType KeyType, const UnicodeString FileName, UnicodeStrin
   return Result;
 }
 //---------------------------------------------------------------------------
-TPrivateKey *LoadKey(TKeyType KeyType, const UnicodeString FileName, const UnicodeString Passphrase)
+TPrivateKey *LoadKey(TKeyType KeyType, UnicodeString FileName, UnicodeString Passphrase)
 {
   UTF8String UtfFileName = UTF8String(::ExpandEnvironmentVariables(FileName));
   Filename *KeyFile = filename_from_str(UtfFileName.c_str());
@@ -650,7 +650,7 @@ TPrivateKey *LoadKey(TKeyType KeyType, const UnicodeString FileName, const Unico
     UnicodeString Error = UnicodeString(ErrorStr);
     // While theoretically we may get "unable to open key file" and
     // so we should check system error code,
-    // we actully never get here unless we call KeyType previously
+    // we actually never get here unless we call KeyType previously
     // and handle ktUnopenable accordingly.
     throw Exception(Error);
   }
@@ -662,7 +662,7 @@ TPrivateKey *LoadKey(TKeyType KeyType, const UnicodeString FileName, const Unico
   return reinterpret_cast<TPrivateKey *>(Ssh2Key);
 }
 //---------------------------------------------------------------------------
-void ChangeKeyComment(TPrivateKey *PrivateKey, const UnicodeString Comment)
+void ChangeKeyComment(TPrivateKey *PrivateKey, UnicodeString Comment)
 {
   AnsiString AnsiComment(Comment);
   struct ssh2_userkey *Ssh2Key = reinterpret_cast<struct ssh2_userkey *>(PrivateKey);
@@ -670,8 +670,8 @@ void ChangeKeyComment(TPrivateKey *PrivateKey, const UnicodeString Comment)
   Ssh2Key->comment = dupstr(AnsiComment.c_str());
 }
 //---------------------------------------------------------------------------
-void SaveKey(TKeyType KeyType, const UnicodeString FileName,
-  const UnicodeString Passphrase, TPrivateKey *PrivateKey)
+void SaveKey(TKeyType KeyType, UnicodeString FileName,
+  UnicodeString Passphrase, TPrivateKey *PrivateKey)
 {
   UTF8String UtfFileName = UTF8String(::ExpandEnvironmentVariables(FileName));
   Filename *KeyFile = filename_from_str(UtfFileName.c_str());
@@ -679,7 +679,7 @@ void SaveKey(TKeyType KeyType, const UnicodeString FileName,
   {
     struct ssh2_userkey * Ssh2Key = reinterpret_cast<struct ssh2_userkey *>(PrivateKey);
     AnsiString AnsiPassphrase = Passphrase;
-    char * PassphrasePtr = (char *)(AnsiPassphrase.IsEmpty() ? nullptr : AnsiPassphrase.c_str());
+    char * PassphrasePtr = const_cast<char *>(AnsiPassphrase.IsEmpty() ? nullptr : AnsiPassphrase.c_str());
     switch (KeyType)
     {
       case ktSSH2:
@@ -709,7 +709,7 @@ void FreeKey(TPrivateKey *PrivateKey)
   sfree(Ssh2Key);
 }
 //---------------------------------------------------------------------------
-RawByteString LoadPublicKey(const UnicodeString & FileName, UnicodeString & Algorithm, UnicodeString & Comment)
+RawByteString LoadPublicKey(UnicodeString & FileName, UnicodeString & Algorithm, UnicodeString & Comment)
 {
   RawByteString Result;
   UTF8String UtfFileName = UTF8String(FileName);
@@ -741,7 +741,7 @@ RawByteString LoadPublicKey(const UnicodeString & FileName, UnicodeString & Algo
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString GetPublicKeyLine(const UnicodeString & FileName, UnicodeString & Comment)
+UnicodeString GetPublicKeyLine(UnicodeString & FileName, UnicodeString & Comment)
 {
   UnicodeString Algorithm;
   RawByteString PublicKey = LoadPublicKey(FileName, Algorithm, Comment);
@@ -809,7 +809,7 @@ static void DoNormalizeFingerprint(UnicodeString &Fingerprint, UnicodeString &Ke
       Fingerprint[LenStart] = NormalizedSeparator;
       intptr_t Space = Fingerprint.Pos(L" ");
       // If not a number, it's an invalid input,
-      // either something completelly wrong, or it can be OpenSSH base64 public key,
+      // either something completely wrong, or it can be OpenSSH base64 public key,
       // that got here from TPasteKeyHandler::Paste
       if (IsNumber(Fingerprint.SubString(LenStart + 1, Space - LenStart - 1)))
       {
@@ -868,7 +868,7 @@ void DllHijackingProtection()
   dll_hijacking_protection();
 }
 //---------------------------------------------------------------------------
-UnicodeString ParseOpenSshPubLine(const UnicodeString ALine, const struct ssh_signkey *& Algorithm)
+UnicodeString ParseOpenSshPubLine(UnicodeString ALine, const struct ssh_signkey *& Algorithm)
 {
   UTF8String UtfLine = UTF8String(ALine);
   char * AlgorithmName = nullptr;
@@ -911,32 +911,32 @@ UnicodeString ParseOpenSshPubLine(const UnicodeString ALine, const struct ssh_si
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString GetKeyTypeHuman(const UnicodeString AKeyType)
+UnicodeString GetKeyTypeHuman(UnicodeString AKeyType)
 {
   UnicodeString Result;
   if (AKeyType == ssh_dss.keytype)
   {
-    Result = L"DSA";
+    Result = "DSA";
   }
   else if (AKeyType == ssh_rsa.keytype)
   {
-    Result = L"RSA";
+    Result = "RSA";
   }
   else if (AKeyType == ssh_ecdsa_ed25519.keytype)
   {
-    Result = L"Ed25519";
+    Result = "Ed25519";
   }
   else if (AKeyType == ssh_ecdsa_nistp256.keytype)
   {
-    Result = L"ECDSA/nistp256";
+    Result = "ECDSA/nistp256";
   }
   else if (AKeyType == ssh_ecdsa_nistp384.keytype)
   {
-    Result = L"ECDSA/nistp384";
+    Result = "ECDSA/nistp384";
   }
   else if (AKeyType == ssh_ecdsa_nistp521.keytype)
   {
-    Result = L"ECDSA/nistp521";
+    Result = "ECDSA/nistp521";
   }
   else
   {
@@ -946,7 +946,7 @@ UnicodeString GetKeyTypeHuman(const UnicodeString AKeyType)
   return Result;
 }
 //---------------------------------------------------------------------------
-bool IsOpenSSH(const UnicodeString & SshImplementation)
+bool IsOpenSSH(UnicodeString SshImplementation)
 {
   return
     // e.g. "OpenSSH_5.3"

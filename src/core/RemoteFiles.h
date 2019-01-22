@@ -73,9 +73,9 @@ public:
   void Clear();
   void Add(const TRemoteToken &Token);
   void AddUnique(const TRemoteToken &Token);
-  bool Exists(const UnicodeString Name) const;
+  bool Exists(UnicodeString Name) const;
   const TRemoteToken *Find(uintptr_t ID) const;
-  const TRemoteToken *Find(const UnicodeString Name) const;
+  const TRemoteToken *Find(UnicodeString Name) const;
   void Log(TTerminal *Terminal, const wchar_t *Title);
 
   intptr_t GetCount() const;
@@ -100,7 +100,7 @@ public:
 private:
   TRemoteFileList *FDirectory{nullptr};
   TRemoteToken FOwner;
-  TModificationFmt FModificationFmt{};
+  TModificationFmt FModificationFmt{mfFull};
   UnicodeString FFileName;
   UnicodeString FDisplayName;
   TDateTime FModification{};
@@ -119,7 +119,7 @@ private:
   int64_t FINodeBlocks{0};
   intptr_t FIconIndex{0};
   intptr_t FIsHidden{0};
-  wchar_t FType{};
+  wchar_t FType{0};
   bool FIsSymLink{false};
   bool FCyclicLink{false};
 
@@ -276,6 +276,7 @@ public:
   static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TRemoteParentDirectory); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TRemoteParentDirectory) || TRemoteDirectoryFile::is(Kind); }
 public:
+  TRemoteParentDirectory() = delete;
   explicit TRemoteParentDirectory(TTerminal *ATerminal) noexcept;
   virtual ~TRemoteParentDirectory() noexcept = default;
 };
@@ -296,7 +297,7 @@ protected:
   TDateTime FTimestamp;
 public:
   TRemoteFile * GetFile(Integer Index) const;
-  virtual void SetDirectory(const UnicodeString Value);
+  virtual void SetDirectory(UnicodeString Value);
   UnicodeString GetFullDirectory() const;
   Boolean GetIsRoot() const;
   TRemoteFile * GetParentDirectory();
@@ -309,7 +310,7 @@ public:
   explicit TRemoteFileList(TObjectClassId Kind) noexcept;
   virtual ~TRemoteFileList() noexcept { TRemoteFileList::Reset(); }
   virtual void Reset();
-  TRemoteFile *FindFile(const UnicodeString AFileName) const;
+  TRemoteFile *FindFile(UnicodeString AFileName) const;
   virtual void DuplicateTo(TRemoteFileList *Copy) const;
   virtual void AddFile(TRemoteFile *AFile);
 
@@ -386,52 +387,53 @@ class TRemoteDirectoryCache : private TStringList
 public:
   TRemoteDirectoryCache() noexcept;
   virtual ~TRemoteDirectoryCache() noexcept;
-  bool HasFileList(const UnicodeString Directory) const;
-  bool HasNewerFileList(const UnicodeString Directory, const TDateTime &Timestamp) const;
-  bool GetFileList(const UnicodeString Directory,
+  bool HasFileList(UnicodeString Directory) const;
+  bool HasNewerFileList(UnicodeString Directory, const TDateTime &Timestamp) const;
+  bool GetFileList(UnicodeString Directory,
     TRemoteFileList *FileList) const;
   void AddFileList(TRemoteFileList *FileList);
-  void ClearFileList(const UnicodeString Directory, bool SubDirs);
+  void ClearFileList(UnicodeString Directory, bool SubDirs);
   void Clear();
 
   __property bool IsEmpty = { read = GetIsEmpty };
   bool GetIsEmpty() const { return GetIsEmptyPrivate(); }
 
 protected:
-  virtual void Delete(intptr_t Index);
+  void Delete(intptr_t Index) override;
 
 private:
   TCriticalSection FSection;
   bool GetIsEmptyPrivate() const;
-  void DoClearFileList(const UnicodeString Directory, bool SubDirs);
+  void DoClearFileList(UnicodeString Directory, bool SubDirs);
 };
 //---------------------------------------------------------------------------
 class TRemoteDirectoryChangesCache : private TStringList
 {
   CUSTOM_MEM_ALLOCATION_IMPL
 public:
+  TRemoteDirectoryChangesCache() = delete;
   explicit TRemoteDirectoryChangesCache(intptr_t MaxSize) noexcept;
   virtual ~TRemoteDirectoryChangesCache() noexcept = default;
 
-  void AddDirectoryChange(const UnicodeString SourceDir,
-    const UnicodeString Change, const UnicodeString TargetDir);
-  void ClearDirectoryChange(const UnicodeString SourceDir);
-  void ClearDirectoryChangeTarget(const UnicodeString TargetDir);
-  bool GetDirectoryChange(const UnicodeString SourceDir,
-    const UnicodeString Change, UnicodeString &TargetDir) const;
+  void AddDirectoryChange(UnicodeString SourceDir,
+    UnicodeString Change, UnicodeString TargetDir);
+  void ClearDirectoryChange(UnicodeString SourceDir);
+  void ClearDirectoryChangeTarget(UnicodeString TargetDir);
+  bool GetDirectoryChange(UnicodeString SourceDir,
+    UnicodeString Change, UnicodeString &TargetDir) const;
   void Clear();
 
   void Serialize(UnicodeString &Data) const;
-  void Deserialize(const UnicodeString Data);
+  void Deserialize(UnicodeString Data);
 
   __property bool IsEmpty = { read = GetIsEmpty };
   bool GetIsEmpty() const { return GetIsEmptyPrivate(); }
 
 private:
-  static bool DirectoryChangeKey(const UnicodeString SourceDir,
-    const UnicodeString Change, UnicodeString &Key);
+  static bool DirectoryChangeKey(UnicodeString SourceDir,
+    UnicodeString Change, UnicodeString &Key);
   bool GetIsEmptyPrivate() const;
-  void SetValue(const UnicodeString Name, const UnicodeString Value);
+  void SetValue(UnicodeString Name, UnicodeString Value);
   UnicodeString GetValue(const UnicodeString Name) const { return TStringList::GetValue(Name); }
   UnicodeString GetValue(const UnicodeString Name);
 
