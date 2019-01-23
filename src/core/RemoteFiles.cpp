@@ -221,7 +221,7 @@ void TRemoteTokenList::AddUnique(const TRemoteToken &Token)
   }
 }
 //---------------------------------------------------------------------------
-bool TRemoteTokenList::Exists(const UnicodeString Name) const
+bool TRemoteTokenList::Exists(UnicodeString Name) const
 {
   // We should make use of SameUserName
   return (FNameMap.find(Name) != FNameMap.end());
@@ -238,7 +238,7 @@ const TRemoteToken *TRemoteTokenList::Find(uintptr_t ID) const
   return Result;
 }
 //---------------------------------------------------------------------------
-const TRemoteToken *TRemoteTokenList::Find(const UnicodeString Name) const
+const TRemoteToken *TRemoteTokenList::Find(UnicodeString Name) const
 {
   TNameMap::const_iterator it = FNameMap.find(Name);
   const TRemoteToken *Result = nullptr;
@@ -1490,7 +1490,7 @@ void TRemoteDirectoryChangesCache::SetValue(const UnicodeString Name,
   TStringList::SetValue(Name, Value);
 }
 //---------------------------------------------------------------------------
-UnicodeString TRemoteDirectoryChangesCache::GetValue(const UnicodeString Name)
+UnicodeString TRemoteDirectoryChangesCache::GetValue(UnicodeString Name)
 {
   UnicodeString Value = TStringList::GetValue(Name);
   TStringList::SetValue(Name, Value);

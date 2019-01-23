@@ -43,7 +43,7 @@ __removed typedef void (__closure *TNeonTlsInit)(struct ssl_st *Ssl, ne_session 
 typedef void (*TNeonTlsInit)(struct ssl_st *Ssl, ne_session *Session);
 void SetNeonTlsInit(ne_session *Session, TNeonTlsInit OnNeonTlsInit);
 AnsiString NeonExportCertificate(const ne_ssl_certificate *Certificate);
-bool NeonWindowsValidateCertificate(int &Failures, const AnsiString AsciiCert, UnicodeString &Error);
+bool NeonWindowsValidateCertificate(int &Failures, AnsiString AsciiCert, UnicodeString &Error);
 bool NeonWindowsValidateCertificateWithMessage(TNeonCertificateData &Data, UnicodeString &Message);
 UnicodeString NeonCertificateFailuresErrorStr(int Failures, UnicodeString HostName);
 void UpdateNeonDebugMask();

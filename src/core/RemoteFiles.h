@@ -24,7 +24,7 @@ class NB_CORE_EXPORT TRemoteToken : public TObject
 public:
   TRemoteToken() noexcept;
   TRemoteToken(const TRemoteToken &rhs) noexcept;
-  explicit TRemoteToken(const UnicodeString Name) noexcept;
+  explicit TRemoteToken(UnicodeString Name) noexcept;
 
   void Clear();
 
@@ -434,8 +434,8 @@ private:
     UnicodeString Change, UnicodeString &Key);
   bool GetIsEmptyPrivate() const;
   void SetValue(UnicodeString Name, UnicodeString Value);
-  UnicodeString GetValue(const UnicodeString Name) const { return TStringList::GetValue(Name); }
-  UnicodeString GetValue(const UnicodeString Name);
+  UnicodeString GetValue(UnicodeString Name) const { return TStringList::GetValue(Name); }
+  UnicodeString GetValue(UnicodeString Name);
 
   intptr_t FMaxSize{0};
 };

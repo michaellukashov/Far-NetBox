@@ -537,8 +537,8 @@ public:
   __removed void GenerateAssemblyCode(TAssemblyLanguage Language, UnicodeString & Head, UnicodeString & Tail, int & Indent);
   void LookupLastFingerprint();
   bool GetIsSecure() const;
-  static void ValidatePath(const UnicodeString Path);
-  static void ValidateName(const UnicodeString Name);
+  static void ValidatePath(UnicodeString Path);
+  static void ValidateName(UnicodeString Name);
   static UnicodeString MakeValidName(UnicodeString Name);
   static UnicodeString ExtractLocalName(UnicodeString Name);
   static UnicodeString ExtractFolderName(UnicodeString Name);
@@ -925,7 +925,7 @@ public:
   void Reload();
   void Save(bool All, bool Explicit);
   void Saved();
-  void ImportFromFilezilla(const UnicodeString FileName, const UnicodeString ConfigurationFileName);
+  void ImportFromFilezilla(UnicodeString FileName, UnicodeString ConfigurationFileName);
   void ImportFromKnownHosts(TStrings * Lines);
   void Export(UnicodeString FileName);
   void Load(UnicodeString AKey, bool UseDefaults);
