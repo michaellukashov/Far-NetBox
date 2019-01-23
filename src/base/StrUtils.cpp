@@ -5,29 +5,29 @@
 #include <StrUtils.hpp>
 #include <Sysutils.hpp>
 
-UnicodeString ReplaceStr(const UnicodeString Str, const UnicodeString What, const UnicodeString ByWhat)
+UnicodeString ReplaceStr(UnicodeString Str, UnicodeString What, UnicodeString ByWhat)
 {
   return ::StringReplaceAll(Str, What, ByWhat);
 }
 
-bool StartsStr(const UnicodeString SubStr, const UnicodeString Str)
+bool StartsStr(UnicodeString SubStr, UnicodeString Str)
 {
   return Str.Pos(SubStr) == 1;
 }
 
-bool EndsStr(const UnicodeString SubStr, const UnicodeString Str)
+bool EndsStr(UnicodeString SubStr, UnicodeString Str)
 {
   if (SubStr.Length() > Str.Length())
     return false;
   return Str.SubStr(Str.Length() - SubStr.Length() + 1, SubStr.Length()) == SubStr;
 }
 
-NB_CORE_EXPORT bool EndsText(const UnicodeString SubStr, const UnicodeString Str)
+NB_CORE_EXPORT bool EndsText(UnicodeString SubStr, UnicodeString Str)
 {
   return EndsStr(SubStr, Str);
 }
 
-NB_CORE_EXPORT UnicodeString LeftStr(const UnicodeString AStr, intptr_t Len)
+NB_CORE_EXPORT UnicodeString LeftStr(UnicodeString AStr, intptr_t Len)
 {
   return AStr.SubString(Len);
 }
