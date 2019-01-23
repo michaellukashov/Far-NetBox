@@ -84,8 +84,8 @@ ne_session *CreateNeonSession(const ne_uri &uri)
   return ne_session_create(uri.scheme, uri.host, uri.port);
 }
 //---------------------------------------------------------------------------
-void InitNeonSession(ne_session *Session, TProxyMethod ProxyMethod, const UnicodeString AProxyHost,
-  intptr_t ProxyPort, const UnicodeString AProxyUsername, const UnicodeString AProxyPassword, TTerminal *Terminal)
+void InitNeonSession(ne_session *Session, TProxyMethod ProxyMethod, UnicodeString AProxyHost,
+  intptr_t ProxyPort, UnicodeString AProxyUsername, UnicodeString AProxyPassword, TTerminal *Terminal)
 {
   if (ProxyMethod != ::pmNone)
   {
@@ -142,7 +142,7 @@ UnicodeString GetNeonError(ne_session *Session)
 }
 //---------------------------------------------------------------------------
 void CheckNeonStatus(ne_session *Session, intptr_t NeonStatus,
-  const UnicodeString AHostName, const UnicodeString CustomError)
+  UnicodeString AHostName, UnicodeString CustomError)
 {
   if (NeonStatus == NE_OK)
   {
@@ -321,7 +321,7 @@ bool NeonWindowsValidateCertificateWithMessage(TNeonCertificateData &Data, Unico
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString NeonCertificateFailuresErrorStr(int Failures, const UnicodeString AHostName)
+UnicodeString NeonCertificateFailuresErrorStr(int Failures, UnicodeString AHostName)
 {
   int FailuresToList = Failures;
 
@@ -484,7 +484,7 @@ UnicodeString CertificateVerificationMessage(const TNeonCertificateData &Data)
       Data.Subject, Data.Fingerprint, Data.Failures);
 }
 //---------------------------------------------------------------------------
-UnicodeString CertificateSummary(const TNeonCertificateData &Data, const UnicodeString AHostName)
+UnicodeString CertificateSummary(const TNeonCertificateData &Data, UnicodeString AHostName)
 {
   UnicodeString Summary;
   if (Data.Failures == 0)

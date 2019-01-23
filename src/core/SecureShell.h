@@ -96,8 +96,7 @@ public:
   void Discard();
   void FreeBackend();
   void PoolForData(WSANETWORKEVENTS &Events, uint32_t &Result);
-  void CaptureOutput(TLogLineType Type,
-    const UnicodeString Line);
+  void CaptureOutput(TLogLineType Type, UnicodeString Line);
   void ResetConnection();
   void ResetSessionInfo();
   void SocketEventSelect(SOCKET Socket, HANDLE Event, bool Startup);
@@ -114,7 +113,7 @@ public:
   bool TryFtp();
   UnicodeString ConvertInput(RawByteString Input, uintptr_t CodePage = CP_ACP) const;
   void GetRealHost(UnicodeString &Host, intptr_t &Port) const;
-  UnicodeString RetrieveHostKey(const UnicodeString Host, intptr_t Port, const UnicodeString KeyType) const;
+  UnicodeString RetrieveHostKey(UnicodeString Host, intptr_t Port, UnicodeString KeyType) const;
 
 protected:
   TCaptureOutputEvent FOnCaptureOutput;
@@ -124,11 +123,11 @@ protected:
     intptr_t Count, UnicodeString &Message, UnicodeString *HelpKeyword = nullptr) const;
   int TranslateAuthenticationMessage(UnicodeString &Message, UnicodeString *HelpKeyword = nullptr);
   int TranslateErrorMessage(UnicodeString &Message, UnicodeString *HelpKeyword = nullptr);
-  void AddStdError(const UnicodeString AStr);
-  void AddStdErrorLine(const UnicodeString AStr);
-  void LogEvent(const UnicodeString AStr);
-  void FatalError(const UnicodeString Error, const UnicodeString HelpKeyword = L"");
-  UnicodeString FormatKeyStr(const UnicodeString AKeyStr) const;
+  void AddStdError(UnicodeString AStr);
+  void AddStdErrorLine(UnicodeString AStr);
+  void LogEvent(UnicodeString AStr);
+  void FatalError(UnicodeString Error, UnicodeString HelpKeyword = "");
+  UnicodeString FormatKeyStr(UnicodeString AKeyStr) const;
   static Conf *StoreToConfig(TSessionData *Data, bool Simple);
 
 public:
@@ -145,7 +144,7 @@ public:
   void SendSpecial(intptr_t Code);
   void Idle(uintptr_t MSec = 0);
   void SendEOF();
-  void SendLine(const UnicodeString Line);
+  void SendLine(UnicodeString Line);
   void SendNull();
 
   const TSessionInfo &GetSessionInfo() const;
@@ -164,21 +163,21 @@ public:
   // interface to PuTTY core
   void UpdateSocket(SOCKET Value, bool Startup);
   void UpdatePortFwdSocket(SOCKET Value, bool Startup);
-  void PuttyFatalError(const UnicodeString AError);
+  void PuttyFatalError(UnicodeString AError);
   TPromptKind IdentifyPromptKind(UnicodeString &AName) const;
   bool PromptUser(bool ToServer,
-    const UnicodeString AName, bool NameRequired,
-    const UnicodeString AInstructions, bool InstructionsRequired,
+    UnicodeString AName, bool NameRequired,
+    UnicodeString AInstructions, bool InstructionsRequired,
     TStrings *Prompts, TStrings *Results);
   void FromBackend(bool IsStdErr, const uint8_t *Data, intptr_t Length);
   void CWrite(const char *Data, intptr_t Length);
   UnicodeString GetStdError() const;
   void VerifyHostKey(
-    const UnicodeString AHost, intptr_t Port, const UnicodeString AKeyType, const UnicodeString AKeyStr,
-    const UnicodeString AFingerprint);
-  bool HaveHostKey(const UnicodeString AHost, intptr_t Port, const UnicodeString KeyType);
-  void AskAlg(const UnicodeString AAlgType, const UnicodeString AlgName);
-  void DisplayBanner(const UnicodeString Banner);
+    UnicodeString AHost, intptr_t Port, UnicodeString AKeyType, UnicodeString AKeyStr,
+    UnicodeString AFingerprint);
+  bool HaveHostKey(UnicodeString AHost, intptr_t Port, UnicodeString KeyType);
+  void AskAlg(UnicodeString AAlgType, UnicodeString AlgName);
+  void DisplayBanner(UnicodeString Banner);
   void OldKeyfileWarning();
   void PuttyLogEvent(const char *AStr);
   UnicodeString ConvertFromPutty(const char *Str, intptr_t Length) const;

@@ -24,8 +24,8 @@ const intptr_t ccShowResultsInMsgBox = ccUser << 4;
 const intptr_t ccSet = 0x80000000;
 //---------------------------------------------------------------------------
 constexpr const uintptr_t AdditionaLanguageMask = 0xFFFFFF00;
-static const UnicodeString AdditionaLanguagePrefix("XX");
-static const UnicodeString TranslationsSubFolder("Translations");
+static UnicodeString AdditionaLanguagePrefix("XX");
+static UnicodeString TranslationsSubFolder("Translations");
 //---------------------------------------------------------------------------
 __removed TGUIConfiguration * GUIConfiguration = NULL;
 //---------------------------------------------------------------------------
@@ -156,8 +156,8 @@ bool TCopyParamRule::operator==(const TCopyParamRule & rhp) const
 }
 #undef C
 //---------------------------------------------------------------------------
-bool TCopyParamRule::Match(const UnicodeString Mask,
-  const UnicodeString Value, bool Path, bool Local, int ForceDirectoryMasks) const
+bool TCopyParamRule::Match(UnicodeString Mask,
+  UnicodeString Value, bool Path, bool Local, int ForceDirectoryMasks) const
 {
   bool Result;
   if (Mask.IsEmpty())
@@ -273,7 +273,7 @@ void TCopyParamList::Modify()
   FModified = true;
 }
 //---------------------------------------------------------------------
-void TCopyParamList::ValidateName(const UnicodeString Name)
+void TCopyParamList::ValidateName(UnicodeString Name)
 {
   if (Name.LastDelimiter(FInvalidChars) > 0)
   {
@@ -320,7 +320,7 @@ bool TCopyParamList::operator==(const TCopyParamList & rhl) const
   return Result;
 }
 //---------------------------------------------------------------------------
-intptr_t TCopyParamList::IndexOfName(const UnicodeString Name) const
+intptr_t TCopyParamList::IndexOfName(UnicodeString Name) const
 {
   return FNames->IndexOf(Name);
 }
@@ -347,13 +347,13 @@ void TCopyParamList::Clear()
   FNames->Clear();
 }
 //---------------------------------------------------------------------------
-void TCopyParamList::Add(const UnicodeString Name,
+void TCopyParamList::Add(UnicodeString Name,
   TCopyParamType * CopyParam, TCopyParamRule * Rule)
 {
   Insert(GetCount(), Name, CopyParam, Rule);
 }
 //---------------------------------------------------------------------------
-void TCopyParamList::Insert(intptr_t Index, const UnicodeString Name,
+void TCopyParamList::Insert(intptr_t Index, UnicodeString Name,
   TCopyParamType * CopyParam, TCopyParamRule * Rule)
 {
   DebugAssert(FNames->IndexOf(Name) < 0);
@@ -364,7 +364,7 @@ void TCopyParamList::Insert(intptr_t Index, const UnicodeString Name,
   Modify();
 }
 //---------------------------------------------------------------------------
-void TCopyParamList::Change(intptr_t Index, const UnicodeString Name,
+void TCopyParamList::Change(intptr_t Index, UnicodeString Name,
   TCopyParamType * CopyParam, TCopyParamRule * Rule)
 {
   if ((Name != GetName(Index)) || !CompareItem(Index, CopyParam, Rule))
@@ -863,7 +863,7 @@ void TGUIConfiguration::Saved()
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-UnicodeString TGUIConfiguration::GetTranslationModule(const UnicodeString Path) const
+UnicodeString TGUIConfiguration::GetTranslationModule(UnicodeString Path) const
 {
   UnicodeString SubPath = AddTranslationsSubFolder(Path);
   UnicodeString Result;
@@ -879,7 +879,7 @@ UnicodeString TGUIConfiguration::GetTranslationModule(const UnicodeString Path) 
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString TGUIConfiguration::AddTranslationsSubFolder(const UnicodeString Path) const
+UnicodeString TGUIConfiguration::AddTranslationsSubFolder(UnicodeString Path) const
 {
   return
     IncludeTrailingBackslash(IncludeTrailingBackslash(ExtractFilePath(Path)) + TranslationsSubFolder) +
@@ -1098,7 +1098,7 @@ UnicodeString TGUIConfiguration::AppliedLocaleVersion()
   return Result;
 }
 //---------------------------------------------------------------------------
-void TGUIConfiguration::SetAppliedLocale(LCID AppliedLocale, const UnicodeString LocaleModuleName)
+void TGUIConfiguration::SetAppliedLocale(LCID AppliedLocale, UnicodeString LocaleModuleName)
 {
   FAppliedLocale = AppliedLocale;
   FLocaleModuleName = LocaleModuleName;
@@ -1152,7 +1152,7 @@ void TGUIConfiguration::SetResourceModule(HINSTANCE Instance)
   DefaultLocalized();
 }
 //---------------------------------------------------------------------------
-void TGUIConfiguration::FindLocales(const UnicodeString LocalesMask, TStrings * Exts, UnicodeString & LocalesExts)
+void TGUIConfiguration::FindLocales(UnicodeString LocalesMask, TStrings * Exts, UnicodeString & LocalesExts)
 {
   int FindAttrs = faReadOnly | faArchive;
 
@@ -1173,7 +1173,7 @@ void TGUIConfiguration::FindLocales(const UnicodeString LocalesMask, TStrings * 
   }
 }
 //---------------------------------------------------------------------------
-void TGUIConfiguration::AddLocale(LCID Locale, const UnicodeString Name)
+void TGUIConfiguration::AddLocale(LCID Locale, UnicodeString Name)
 {
   std::unique_ptr<TLocaleInfo> LocaleInfo(std::make_unique<TLocaleInfo>());
   LocaleInfo->Locale = Locale;
