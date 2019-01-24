@@ -18,7 +18,7 @@
 //---------------------------------------------------------------------------
 __removed #pragma package(smart_init)
 //---------------------------------------------------------------------------
-static UnicodeString DoXmlEscape(const UnicodeString AStr, bool NewLine)
+static UnicodeString DoXmlEscape(UnicodeString AStr, bool NewLine)
 {
   UnicodeString Str = AStr;
   for (intptr_t Index = 1; Index <= Str.Length(); ++Index)
@@ -99,12 +99,12 @@ static UnicodeString DoXmlEscape(const UnicodeString AStr, bool NewLine)
   return Str;
 }
 //---------------------------------------------------------------------------
-static UnicodeString XmlEscape(const UnicodeString Str)
+static UnicodeString XmlEscape(UnicodeString Str)
 {
   return DoXmlEscape(Str, false);
 }
 //---------------------------------------------------------------------------
-static UnicodeString XmlAttributeEscape(const UnicodeString Str)
+static UnicodeString XmlAttributeEscape(UnicodeString Str)
 {
   return DoXmlEscape(Str, true);
 }
@@ -237,12 +237,12 @@ public:
     Close(Cancelled);
   }
 
-  void SetFileName(const UnicodeString AFileName)
+  void SetFileName(UnicodeString AFileName)
   {
     Parameter(L"filename", AFileName);
   }
 
-  void Destination(const UnicodeString Destination)
+  void Destination(UnicodeString Destination)
   {
     Parameter(L"destination", Destination);
   }
@@ -262,12 +262,12 @@ public:
     FRecursive = true;
   }
 
-  void Command(const UnicodeString Command)
+  void Command(UnicodeString Command)
   {
     Parameter(L"command", Command);
   }
 
-  void AddOutput(const UnicodeString Output, bool StdError)
+  void AddOutput(UnicodeString Output, bool StdError)
   {
     const wchar_t *Name = (StdError ? L"erroroutput" : L"output");
     intptr_t Index = FNames->IndexOf(Name);
@@ -286,13 +286,13 @@ public:
     Parameter(L"exitcode", ::IntToStr(ExitCode));
   }
 
-  void Checksum(const UnicodeString Alg, const UnicodeString Checksum)
+  void Checksum(UnicodeString Alg, UnicodeString Checksum)
   {
     Parameter(L"algorithm", Alg);
     Parameter(L"checksum", Checksum);
   }
 
-  void Cwd(const UnicodeString Path)
+  void Cwd(UnicodeString Path)
   {
     Parameter(L"cwd", Path);
   }
@@ -323,29 +323,29 @@ public:
     switch (Item->Action)
     {
       case TChecklistAction::saUploadNew:
-        Action = L"uploadnew";
+        Action = "uploadnew";
         RecordLocal = true;
         break;
       case TChecklistAction::saDownloadNew:
-        Action = L"downloadnew";
+        Action = "downloadnew";
         RecordRemote = true;
         break;
       case TChecklistAction::saUploadUpdate:
-        Action = L"uploadupdate";
+        Action = "uploadupdate";
         RecordLocal = true;
         RecordRemote = true;
         break;
       case TChecklistAction::saDownloadUpdate:
-        Action = L"downloadupdate";
+        Action = "downloadupdate";
         RecordLocal = true;
         RecordRemote = true;
         break;
       case TChecklistAction::saDeleteRemote:
-        Action = L"deleteremote";
+        Action = "deleteremote";
         RecordRemote = true;
         break;
       case TChecklistAction::saDeleteLocal:
-        Action = L"deletelocal";
+        Action = "deletelocal";
         RecordLocal = true;
         break;
       default:
@@ -407,7 +407,7 @@ protected:
     }
   }
 
-  void Parameter(const UnicodeString Name, const UnicodeString Value = L"")
+  void Parameter(UnicodeString Name, UnicodeString Value = "")
   {
     FNames->Add(Name);
     FValues->Add(Value);
