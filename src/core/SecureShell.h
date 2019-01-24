@@ -193,7 +193,7 @@ public:
   __property bool UtfStrings = { read = FUtfStrings, write = FUtfStrings };
 
   bool GetActive() const { return FActive; }
-  const TCaptureOutputEvent GetOnCaptureOutput() const { return FOnCaptureOutput; }
+  TCaptureOutputEvent GetOnCaptureOutput() const { return FOnCaptureOutput; }
   void SetOnCaptureOutput(TCaptureOutputEvent Value) { FOnCaptureOutput = Value; }
   TDateTime GetLastDataSent() const { return FLastDataSent; }
   UnicodeString GetLastTunnelError() const { return FLastTunnelError; }

@@ -4,7 +4,7 @@
 
 struct TTranslation
 {
-  Word Language, CharSet;
+  Word Language{0}, CharSet{0};
 };
 
 // Return pointer to file version info block

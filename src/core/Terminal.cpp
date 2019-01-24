@@ -279,8 +279,8 @@ public:
   void DisplayBanner(UnicodeString Banner) override;
   void FatalError(Exception *E, UnicodeString Msg, UnicodeString HelpContext) override;
   void HandleExtendedException(Exception *E) override;
-  virtual void Closed() override;
-  virtual void ProcessGUI() override;
+  void Closed() override;
+  void ProcessGUI() override;
 
 private:
   TTerminal *FTerminal{nullptr};

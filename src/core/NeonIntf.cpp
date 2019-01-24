@@ -525,7 +525,7 @@ UnicodeString NeonTlsSessionInfo(
 //---------------------------------------------------------------------------
 void SetupSsl(ssl_st *Ssl, TTlsVersion MinTlsVersion, TTlsVersion MaxTlsVersion)
 {
-#define MASK_TLS_VERSION(VERSION, FLAG) ((MinTlsVersion > VERSION) || (MaxTlsVersion < VERSION) ? FLAG : 0)
+#define MASK_TLS_VERSION(VERSION, FLAG) ((MinTlsVersion > (VERSION)) || (MaxTlsVersion < (VERSION)) ? (FLAG) : 0)
   long Options =
     MASK_TLS_VERSION(ssl2, SSL_OP_NO_SSLv2) |
     MASK_TLS_VERSION(ssl3, SSL_OP_NO_SSLv3) |
