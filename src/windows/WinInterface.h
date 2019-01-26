@@ -25,8 +25,8 @@ class TStoredSessionList;
 class TConfiguration;
 class TTerminal;
 
-constexpr const uintptr_t mpNeverAskAgainCheck =   0x01;
-constexpr const uintptr_t mpAllowContinueOnError = 0x02;
+constexpr uintptr_t mpNeverAskAgainCheck =   0x01;
+constexpr uintptr_t mpAllowContinueOnError = 0x02;
 
 extern HINSTANCE HInstance;
 
@@ -226,8 +226,8 @@ constexpr intptr_t cooDoNotShowAgain     = 0x01;
 constexpr intptr_t cooRemoteTransfer     = 0x02;
 constexpr intptr_t cooSaveSettings       = 0x04;
 
-constexpr const int coTempTransfer        = 0x08;
-constexpr const int coDisableNewerOnly    = 0x10;
+constexpr int coTempTransfer        = 0x08;
+constexpr int coDisableNewerOnly    = 0x10;
 
 bool DoCopyDialog(bool ToRemote,
   bool Move, TStrings * FileList, UnicodeString & TargetDirectory,
@@ -278,8 +278,8 @@ class TCustomCommandList;
 class TCustomCommandType;
 class TShortCuts;
 enum TCustomCommandsMode { ccmAdd, ccmEdit, ccmAdHoc };
-constexpr const int ccoDisableRemote = 0x01;
-constexpr const int ccoDisableRemoteFiles = 0x02;
+constexpr int ccoDisableRemote = 0x01;
+constexpr int ccoDisableRemoteFiles = 0x02;
 #if 0
 typedef void (__closure *TCustomCommandValidate)
   (const TCustomCommandType & Command);
@@ -307,9 +307,9 @@ bool DoCopyParamCustomDialog(TCopyParamType & CopyParam,
 class TRemoteProperties;
 class TRemoteTokenList;
 struct TCalculateSizeStats;
-constexpr const int cpMode =  0x01;
-constexpr const int cpOwner = 0x02;
-constexpr const int cpGroup = 0x04;
+constexpr int cpMode =  0x01;
+constexpr int cpOwner = 0x02;
+constexpr int cpGroup = 0x04;
 #if 0
 typedef void (__closure *TCalculateSizeEvent)
   (TStrings * FileList, __int64 & Size, TCalculateSizeStats & Stats,
@@ -355,9 +355,9 @@ bool DoEditMaskDialog(TFileMasks & Mask);
 #endif // #if 0
 
 // forms\Synchronize.cpp
-constexpr const int soDoNotUsePresets =  0x01;
-constexpr const int soNoMinimize =       0x02;
-constexpr const int soAllowSelectedOnly = 0x04;
+constexpr int soDoNotUsePresets =  0x01;
+constexpr int soNoMinimize =       0x02;
+constexpr int soAllowSelectedOnly = 0x04;
 #if 0
 typedef void (__closure *TGetSynchronizeOptionsEvent)
   (int Params, TSynchronizeOptions & Options);
@@ -394,9 +394,9 @@ bool DoSynchronizeDialog(TSynchronizeParamType & Params,
 // forms\FullSynchronize.cpp
 struct TUsableCopyParamAttrs;
 __removed enum TSynchronizeMode { smRemote, smLocal, smBoth };
-constexpr const intptr_t fsoDisableTimestamp = 0x01;
-constexpr const intptr_t fsoDoNotUsePresets =  0x02;
-constexpr const intptr_t fsoAllowSelectedOnly = 0x04;
+constexpr intptr_t fsoDisableTimestamp = 0x01;
+constexpr intptr_t fsoDoNotUsePresets =  0x02;
+constexpr intptr_t fsoAllowSelectedOnly = 0x04;
 #if 0
 typedef void (__closure *TFullSynchronizeInNewWindow)
   (TSynchronizeMode Mode, int Params, const UnicodeString & LocalDirectory, const UnicodeString & RemoteDirectory,

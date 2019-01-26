@@ -4077,7 +4077,7 @@ bool TSFTPFileSystem::LoadFilesProperties(TStrings *AFileList)
     TSFTPLoadFilesPropertiesQueue Queue(this, FCodePage);
     try__finally
     {
-      constexpr const intptr_t LoadFilesPropertiesQueueLen = 5;
+      constexpr intptr_t LoadFilesPropertiesQueueLen = 5;
       if (Queue.Init(LoadFilesPropertiesQueueLen, AFileList))
       {
         TRemoteFile *File = nullptr;

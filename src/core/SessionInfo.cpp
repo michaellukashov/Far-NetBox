@@ -783,7 +783,7 @@ static FILE *LocalOpenLogFile(const UnicodeString LogFileName, TDateTime Started
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-constexpr const wchar_t *LogLineMarks = L"<>!.*";
+constexpr wchar_t *LogLineMarks = L"<>!.*";
 TSessionLog::TSessionLog(TSessionUI *UI, TDateTime Started, TSessionData *SessionData,
   TConfiguration *Configuration) noexcept :
   FConfiguration(Configuration),

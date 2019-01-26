@@ -683,8 +683,8 @@ void TEncryption::NeedSalt()
   }
 }
 //---------------------------------------------------------------------------
-constexpr const int AesBlock = 16;
-constexpr const int AesBlockMask = 0x0F;
+constexpr int AesBlock = 16;
+constexpr int AesBlockMask = 0x0F;
 UnicodeString AesCtrExt(L".aesctr.enc");
 RawByteString AesCtrMagic("aesctr.........."); // 16 bytes fixed [to match AES block size], even for future algos
 //---------------------------------------------------------------------------

@@ -156,9 +156,9 @@ using TCreateLocalDirectoryEvent = nb::FastDelegate2<bool,
   LPSECURITY_ATTRIBUTES /*SecurityAttributes*/>;
 using TCheckForEscEvent = nb::FastDelegate0<bool>;
 //---------------------------------------------------------------------------
-constexpr const uintptr_t folNone = 0x00;
-constexpr const uintptr_t folAllowSkip = 0x01;
-constexpr const uintptr_t folRetryOnFatal = 0x02;
+constexpr uintptr_t folNone = 0x00;
+constexpr uintptr_t folAllowSkip = 0x01;
+constexpr uintptr_t folRetryOnFatal = 0x02;
 
 #if 0
 
@@ -201,34 +201,34 @@ NB_CORE_EXPORT void FileOperationLoopCustom(TTerminal *Terminal,
 //---------------------------------------------------------------------------
 enum TCurrentFSProtocol { cfsUnknown, cfsSCP, cfsSFTP, cfsFTP, cfsFTPS, cfsWebDAV, cfsS3 };
 //---------------------------------------------------------------------------
-constexpr const intptr_t cpDelete = 0x01;
-constexpr const intptr_t cpTemporary = 0x04;
-constexpr const intptr_t cpNoConfirmation = 0x08;
-constexpr const intptr_t cpNewerOnly = 0x10;
-constexpr const intptr_t cpAppend = 0x20;
-constexpr const intptr_t cpFirstLevel = 0x100;
-constexpr const intptr_t cpResume = 0x40;
-constexpr const intptr_t cpNoRecurse = 0x80;
+constexpr intptr_t cpDelete = 0x01;
+constexpr intptr_t cpTemporary = 0x04;
+constexpr intptr_t cpNoConfirmation = 0x08;
+constexpr intptr_t cpNewerOnly = 0x10;
+constexpr intptr_t cpAppend = 0x20;
+constexpr intptr_t cpFirstLevel = 0x100;
+constexpr intptr_t cpResume = 0x40;
+constexpr intptr_t cpNoRecurse = 0x80;
 //---------------------------------------------------------------------------
-constexpr const intptr_t ccApplyToDirectories = 0x01;
-constexpr const intptr_t ccRecursive = 0x02;
-constexpr const intptr_t ccUser = 0x100;
+constexpr intptr_t ccApplyToDirectories = 0x01;
+constexpr intptr_t ccRecursive = 0x02;
+constexpr intptr_t ccUser = 0x100;
 //---------------------------------------------------------------------------
-constexpr const intptr_t csIgnoreErrors = 0x01;
-constexpr const intptr_t csStopOnFirstFile = 0x02;
-constexpr const intptr_t csDisallowTemporaryTransferFiles = 0x04;
+constexpr intptr_t csIgnoreErrors = 0x01;
+constexpr intptr_t csStopOnFirstFile = 0x02;
+constexpr intptr_t csDisallowTemporaryTransferFiles = 0x04;
 //---------------------------------------------------------------------------
-constexpr const intptr_t ropNoReadDirectory = 0x02;
+constexpr intptr_t ropNoReadDirectory = 0x02;
 //---------------------------------------------------------------------------
-constexpr const intptr_t boDisableNeverShowAgain = 0x01;
-constexpr const intptr_t bpMonospacedFont = 0x01;
+constexpr intptr_t boDisableNeverShowAgain = 0x01;
+constexpr intptr_t bpMonospacedFont = 0x01;
 //---------------------------------------------------------------------------
-constexpr const intptr_t tfNone = 0x00;
-constexpr const intptr_t tfFirstLevel = 0x01;
-constexpr const intptr_t tfNewDirectory = 0x02;
-constexpr const intptr_t tfAutoResume = 0x04;
-constexpr const intptr_t tfPreCreateDir = 0x08;
-constexpr const intptr_t tfUseFileTransferAny = 0x10;
+constexpr intptr_t tfNone = 0x00;
+constexpr intptr_t tfFirstLevel = 0x01;
+constexpr intptr_t tfNewDirectory = 0x02;
+constexpr intptr_t tfAutoResume = 0x04;
+constexpr intptr_t tfPreCreateDir = 0x08;
+constexpr intptr_t tfUseFileTransferAny = 0x10;
 //---------------------------------------------------------------------------
 NB_DEFINE_CLASS_ID(TTerminal);
 class NB_CORE_EXPORT TTerminal : /*public TObject,*/ public TSessionUI
@@ -240,20 +240,20 @@ public:
 public:
   // TScript::SynchronizeProc relies on the order
   enum TSynchronizeMode { smRemote, smLocal, smBoth };
-  static constexpr const intptr_t spDelete = 0x01; // cannot be combined with spTimestamp
-  static constexpr const intptr_t spNoConfirmation = 0x02; // has no effect for spTimestamp
-  static constexpr const intptr_t spExistingOnly = 0x04; // is implicit for spTimestamp
-  static constexpr const intptr_t spNoRecurse = 0x08;
-  static constexpr const intptr_t spUseCache = 0x10; // cannot be combined with spTimestamp
-  static constexpr const intptr_t spDelayProgress = 0x20; // cannot be combined with spTimestamp
-  static constexpr const intptr_t spPreviewChanges = 0x40; // not used by core
-  static constexpr const intptr_t spSubDirs = 0x80; // cannot be combined with spTimestamp
-  static constexpr const intptr_t spTimestamp = 0x100;
-  static constexpr const intptr_t spNotByTime = 0x200; // cannot be combined with spTimestamp and smBoth
-  static constexpr const intptr_t spBySize = 0x400; // cannot be combined with smBoth, has opposite meaning for spTimestamp
-  static constexpr const intptr_t spSelectedOnly = 0x800; // not used by core
-  static constexpr const intptr_t spMirror = 0x1000;
-  static constexpr const intptr_t spDefault = TTerminal::spNoConfirmation | TTerminal::spPreviewChanges;
+  static constexpr intptr_t spDelete = 0x01; // cannot be combined with spTimestamp
+  static constexpr intptr_t spNoConfirmation = 0x02; // has no effect for spTimestamp
+  static constexpr intptr_t spExistingOnly = 0x04; // is implicit for spTimestamp
+  static constexpr intptr_t spNoRecurse = 0x08;
+  static constexpr intptr_t spUseCache = 0x10; // cannot be combined with spTimestamp
+  static constexpr intptr_t spDelayProgress = 0x20; // cannot be combined with spTimestamp
+  static constexpr intptr_t spPreviewChanges = 0x40; // not used by core
+  static constexpr intptr_t spSubDirs = 0x80; // cannot be combined with spTimestamp
+  static constexpr intptr_t spTimestamp = 0x100;
+  static constexpr intptr_t spNotByTime = 0x200; // cannot be combined with spTimestamp and smBoth
+  static constexpr intptr_t spBySize = 0x400; // cannot be combined with smBoth, has opposite meaning for spTimestamp
+  static constexpr intptr_t spSelectedOnly = 0x800; // not used by core
+  static constexpr intptr_t spMirror = 0x1000;
+  static constexpr intptr_t spDefault = TTerminal::spNoConfirmation | TTerminal::spPreviewChanges;
 
 // for TranslateLockedPath()
 friend class TRemoteFile;

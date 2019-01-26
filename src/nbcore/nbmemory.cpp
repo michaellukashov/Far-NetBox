@@ -1,7 +1,7 @@
 #include "stdafx.h"
 
-constexpr const uint32_t BLOCK_ALLOCATED = 0xABBABABA;
-constexpr const uint32_t BLOCK_FREED = 0xDEADBEEF;
+constexpr uint32_t BLOCK_ALLOCATED = 0xABBABABA;
+constexpr uint32_t BLOCK_FREED = 0xDEADBEEF;
 
 static int CheckBlock(void *blk)
 {

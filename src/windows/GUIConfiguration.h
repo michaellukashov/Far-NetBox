@@ -15,10 +15,10 @@ extern const intptr_t ccSet;
 extern const intptr_t ccRemoteFiles;
 extern const intptr_t ccShowResultsInMsgBox;
 //---------------------------------------------------------------------------
-constexpr const intptr_t soRecurse =         0x01;
-constexpr const intptr_t soSynchronize =     0x02;
-constexpr const intptr_t soSynchronizeAsk =  0x04;
-constexpr const intptr_t soContinueOnError = 0x08;
+constexpr intptr_t soRecurse =         0x01;
+constexpr intptr_t soSynchronize =     0x02;
+constexpr intptr_t soSynchronizeAsk =  0x04;
+constexpr intptr_t soContinueOnError = 0x08;
 //---------------------------------------------------------------------------
 NB_DEFINE_CLASS_ID(TGUICopyParamType);
 class NB_CORE_EXPORT TGUICopyParamType : public TCopyParamType

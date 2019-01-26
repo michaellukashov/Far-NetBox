@@ -23,7 +23,7 @@ const intptr_t ccRemoteFiles = ccUser << 3;
 const intptr_t ccShowResultsInMsgBox = ccUser << 4;
 const intptr_t ccSet = 0x80000000;
 //---------------------------------------------------------------------------
-constexpr const uintptr_t AdditionaLanguageMask = 0xFFFFFF00;
+constexpr uintptr_t AdditionaLanguageMask = 0xFFFFFF00;
 static UnicodeString AdditionaLanguagePrefix("XX");
 static UnicodeString TranslationsSubFolder("Translations");
 //---------------------------------------------------------------------------

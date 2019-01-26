@@ -12,21 +12,21 @@ enum TTransferMode { tmBinary, tmAscii, tmAutomatic, };
 enum TResumeSupport { rsOn, rsSmart, rsOff, };
 
 class THierarchicalStorage;
-constexpr const int cpaIncludeMaskOnly = 0x01;
-constexpr const int cpaNoTransferMode  = 0x02;
-constexpr const int cpaNoIncludeMask   = 0x04;
-constexpr const int cpaNoClearArchive  = 0x08;
-constexpr const int cpaNoPreserveTime  = 0x10;
-constexpr const int cpaNoRights        = 0x20;
-constexpr const int cpaNoPreserveReadOnly = 0x40;
-constexpr const int cpaNoIgnorePermErrors = 0x80;
-constexpr const int cpaNoNewerOnly        = 0x100;
-constexpr const int cpaNoRemoveCtrlZ      = 0x200;
-constexpr const int cpaNoRemoveBOM        = 0x400;
-constexpr const int cpaNoPreserveTimeDirs = 0x800;
-constexpr const int cpaNoResumeSupport    = 0x1000;
-constexpr const int cpaNoEncryptNewFiles  = 0x2000;
-constexpr const int cpaNoCalculateSize    = 0x4000;
+constexpr int cpaIncludeMaskOnly = 0x01;
+constexpr int cpaNoTransferMode  = 0x02;
+constexpr int cpaNoIncludeMask   = 0x04;
+constexpr int cpaNoClearArchive  = 0x08;
+constexpr int cpaNoPreserveTime  = 0x10;
+constexpr int cpaNoRights        = 0x20;
+constexpr int cpaNoPreserveReadOnly = 0x40;
+constexpr int cpaNoIgnorePermErrors = 0x80;
+constexpr int cpaNoNewerOnly        = 0x100;
+constexpr int cpaNoRemoveCtrlZ      = 0x200;
+constexpr int cpaNoRemoveBOM        = 0x400;
+constexpr int cpaNoPreserveTimeDirs = 0x800;
+constexpr int cpaNoResumeSupport    = 0x1000;
+constexpr int cpaNoEncryptNewFiles  = 0x2000;
+constexpr int cpaNoCalculateSize    = 0x4000;
 //---------------------------------------------------------------------------
 struct TUsableCopyParamAttrs
 {
