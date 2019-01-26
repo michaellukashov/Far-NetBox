@@ -67,6 +67,14 @@ void TMessageParams::Assign(const TMessageParams * AParams)
     TimerQueryType = AParams->TimerQueryType;
     Timeout = AParams->Timeout;
     TimeoutAnswer = AParams->TimeoutAnswer;
+    NeverAskAgainTitle = AParams->NeverAskAgainTitle;
+    NeverAskAgainAnswer = AParams->NeverAskAgainAnswer;
+    NeverAskAgainCheckedInitially = AParams->NeverAskAgainCheckedInitially;
+    AllowHelp = AParams->AllowHelp;
+    ImageName = AParams->ImageName;
+    MoreMessagesUrl = AParams->MoreMessagesUrl;
+    MoreMessagesSize = AParams->MoreMessagesSize;
+    CustomCaption = AParams->CustomCaption;
 
     if (FLAGSET(AParams->Params, qpNeverAskAgainCheck))
     {
