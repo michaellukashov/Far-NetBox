@@ -1,4 +1,4 @@
-
+//---------------------------------------------------------------------------
 #include <vcl.h>
 #pragma hdrstop
 
@@ -8568,11 +8568,16 @@ void TTerminalList::RecryptPasswords()
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-TLocalFileHandle::TLocalFileHandle() noexcept :
-  Handle(0),
-  Attrs(0),
-  MTime(0)
+TLocalFileHandle::TLocalFileHandle() noexcept
 {
+#if 0
+  Handle = 0;
+  Attrs = 0;
+  MTime = 0;
+  ATime = 0;
+  Size = 0;
+  Directory = false;
+#endif // #if 0
 }
 //---------------------------------------------------------------------------
 TLocalFileHandle::~TLocalFileHandle() noexcept

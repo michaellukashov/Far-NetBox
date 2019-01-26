@@ -62,7 +62,37 @@ NB_CORE_EXPORT void WinInitialize();
 NB_CORE_EXPORT void WinFinalize();
 
 #if 0
-typedef void (__closure *TButtonSubmitEvent)(TObject *Sender, uint32_t &Answer);
+// Order of the values also define order of the buttons/answers on the prompts
+// MessageDlg relies on these to be <= 0x0000FFFF
+const unsigned int qaYes =      0x00000001;
+// MessageDlg relies that answer do not conflict with mrCancel (=0x2)
+const unsigned int qaNo =       0x00000004;
+const unsigned int qaOK =       0x00000008;
+const unsigned int qaCancel =   0x00000010;
+const unsigned int qaYesToAll = 0x00000020;
+const unsigned int qaNoToAll =  0x00000040;
+const unsigned int qaAbort =    0x00000080;
+const unsigned int qaRetry =    0x00000100;
+const unsigned int qaIgnore =   0x00000200;
+const unsigned int qaSkip =     0x00000400;
+const unsigned int qaAll =      0x00000800;
+const unsigned int qaHelp =     0x00001000;
+const unsigned int qaReport =   0x00002000;
+
+const unsigned int qaFirst = qaYes;
+const unsigned int qaLast = qaReport;
+
+const unsigned int qaNeverAskAgain = 0x00010000;
+
+const int qpFatalAbort =           0x01;
+const int qpNeverAskAgainCheck =   0x02;
+const int qpAllowContinueOnError = 0x04;
+const int qpIgnoreAbort =          0x08;
+const int qpWaitInBatch =          0x10;
+#endif // #if 0
+
+#if 0
+typedef void (__closure *TButtonSubmitEvent)(TObject * Sender, unsigned int & Answer);
 #endif // #if 0
 using TButtonSubmitEvent = nb::FastDelegate2<void,
   TObject * /*Sender*/, uint32_t & /*Answer*/>;
@@ -88,7 +118,7 @@ struct NB_CORE_EXPORT TQueryButtonAlias : public TObject
 };
 
 #if 0
-typedef void (__closure *TQueryParamsTimerEvent)(uint32_t &Result);
+typedef void (__closure *TQueryParamsTimerEvent)(unsigned int & Result);
 #endif // #if 0
 using TQueryParamsTimerEvent = nb::FastDelegate1<void, uint32_t & /*Result*/>;
 __removed enum TQueryType { qtConfirmation, qtWarning, qtError, qtInformation };
@@ -141,8 +171,8 @@ class TRemoteFile;
 //---------------------------------------------------------------------------
 #if 0
 typedef void (__closure *TFileFoundEvent)
-  (TTerminal *Terminal, const UnicodeString FileName, const TRemoteFile *File,
-  bool &Cancel);
+  (TTerminal *Terminal, const UnicodeString FileName, const TRemoteFile * File,
+  bool & Cancel);
 #endif // #if 0
 using TFileFoundEvent = nb::FastDelegate4<void,
   TTerminal * /*Terminal*/, UnicodeString /*FileName*/,
