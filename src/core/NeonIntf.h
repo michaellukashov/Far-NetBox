@@ -9,7 +9,8 @@
 #include <SessionData.h>
 //---------------------------------------------------------------------------
 #define StrToNeon(S) UTF8String(S).c_str()
-#define StrFromNeon(S) UnicodeString(UTF8String(S))
+#define StrFromNeon(S) UnicodeString(S, NBChTraitsCRT<char>::GetBaseTypeLength(S), CP_UTF8)
+//#define StrFromNeon(S) UnicodeString(S)
 #define SESSION_FS_KEY "filesystem"
 //---------------------------------------------------------------------------
 struct TNeonCertificateData
