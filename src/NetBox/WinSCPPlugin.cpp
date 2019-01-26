@@ -591,6 +591,7 @@ uint32_t TWinSCPPlugin::MoreMessageDialog(const UnicodeString Str,
   uint32_t Result;
   UnicodeString DialogStr = Str;
   std::unique_ptr<TStrings> ButtonLabels(std::make_unique<TStringList>());
+  try__finally
   {
     uintptr_t Flags = 0;
 
@@ -770,7 +771,11 @@ uint32_t TWinSCPPlugin::MoreMessageDialog(const UnicodeString Str,
       DebugAssert(NeverAskAgainCheck);
       Result = qaNeverAskAgain;
     }
-  }
+  },
+  __finally__removed
+  ({
+    delete ButtonLabels;
+  }) end_try__finally
   return Result;
 }
 

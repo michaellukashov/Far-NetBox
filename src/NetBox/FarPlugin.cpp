@@ -16,16 +16,6 @@ TCustomFarPlugin *FarPlugin = nullptr;
 
 #define FAR_TITLE_SUFFIX L" - Far"
 
-TFarMessageParams::TFarMessageParams() noexcept :
-  TimerAnswer(0),
-  TimerEvent(nullptr),
-  TimeoutButton(0),
-  DefaultButton(0),
-  ClickEvent(nullptr),
-  Token(nullptr)
-{
-}
-
 TCustomFarPlugin::TCustomFarPlugin(TObjectClassId Kind, HINSTANCE HInst) noexcept :
   TObject(Kind),
   FOpenedPlugins(std::make_unique<TList>()),

@@ -58,7 +58,7 @@ struct TFarMessageParams : public TObject
 {
   NB_DISABLE_COPY(TFarMessageParams)
 public:
-  TFarMessageParams() noexcept;
+  TFarMessageParams() = default;
 
   TStrings *MoreMessages{nullptr};
   UnicodeString CheckBoxLabel;
@@ -88,6 +88,7 @@ public:
   static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TCustomFarPlugin); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TCustomFarPlugin) || TObject::is(Kind); }
 public:
+  TCustomFarPlugin() = delete;
   explicit TCustomFarPlugin(TObjectClassId Kind, HINSTANCE HInst) noexcept;
   virtual ~TCustomFarPlugin() noexcept;
   virtual void Initialize();
@@ -122,6 +123,8 @@ public:
   virtual intptr_t ProcessEditorInput(const INPUT_RECORD *Rec);
 
   virtual void HandleException(Exception *E, int OpMode = 0);
+  virtual UnicodeString GetMsg(intptr_t MsgId) const;
+  virtual UnicodeString GetModuleName() const;
 
   static wchar_t *DuplicateStr(const UnicodeString Str, bool AllowEmpty = false);
   uint32_t Message(DWORD Flags, const UnicodeString Title,
@@ -140,7 +143,6 @@ public:
   bool InputBox(const UnicodeString Title, const UnicodeString Prompt,
     UnicodeString &Text, DWORD Flags, const UnicodeString HistoryName = UnicodeString(),
     intptr_t MaxLen = 255, TFarInputBoxValidateEvent OnValidate = nullptr);
-  virtual UnicodeString GetMsg(intptr_t MsgId) const;
   void SaveScreen(HANDLE &Screen);
   void RestoreScreen(HANDLE &Screen);
   bool CheckForEsc() const;
@@ -176,7 +178,6 @@ public:
   TCustomFarFileSystem *GetPanelFileSystem(bool Another = false,
     HANDLE Plugin = INVALID_HANDLE_VALUE);
 
-  virtual UnicodeString GetModuleName() const;
   TFarDialog *GetTopDialog() const { return FTopDialog; }
   HINSTANCE GetHandle() const { return FHandle; }
   uintptr_t GetFarThreadId() const { return FFarThreadId; }
