@@ -120,7 +120,7 @@ void Shred(RawByteString &Str)
   DoShred(Str);
 }
 //---------------------------------------------------------------------------
-UnicodeString AnsiToString(const RawByteString S)
+UnicodeString AnsiToString(RawByteString S)
 {
   return UnicodeString(AnsiString(S));
 }
@@ -1210,7 +1210,7 @@ UnicodeString ApiPath(UnicodeString APath)
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString DisplayableStr(const RawByteString Str)
+UnicodeString DisplayableStr(RawByteString Str)
 {
   bool Displayable = true;
   intptr_t Index1 = 1;
@@ -1297,7 +1297,7 @@ UnicodeString BytesToHex(const uint8_t *B, uintptr_t Length, bool UpperCase, wch
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString BytesToHex(const RawByteString Str, bool UpperCase, wchar_t Separator)
+UnicodeString BytesToHex(RawByteString Str, bool UpperCase, wchar_t Separator)
 {
   return BytesToHex(reinterpret_cast<const uint8_t *>(Str.c_str()), Str.Length(), UpperCase, Separator);
 }

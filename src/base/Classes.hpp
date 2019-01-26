@@ -249,24 +249,24 @@ public:
   TStrings() noexcept;
   explicit TStrings(TObjectClassId Kind) noexcept;
   virtual ~TStrings() noexcept = default;
-  intptr_t Add(const UnicodeString S, TObject *AObject = nullptr);
+  intptr_t Add(UnicodeString S, TObject *AObject = nullptr);
   virtual UnicodeString GetTextStr() const;
-  virtual void SetTextStr(const UnicodeString Text);
+  virtual void SetTextStr(UnicodeString Text);
   virtual void BeginUpdate();
   virtual void EndUpdate();
   virtual void SetUpdateState(bool Updating);
-  virtual intptr_t AddObject(const UnicodeString S, TObject *AObject);
-  virtual void InsertObject(intptr_t Index, const UnicodeString Key, TObject *AObject);
-  virtual intptr_t CompareStrings(const UnicodeString S1, const UnicodeString S2) const;
+  virtual intptr_t AddObject(UnicodeString S, TObject *AObject);
+  virtual void InsertObject(intptr_t Index, UnicodeString Key, TObject *AObject);
+  virtual intptr_t CompareStrings(UnicodeString S1, UnicodeString S2) const;
   virtual intptr_t GetCount() const = 0;
-  virtual void Insert(intptr_t Index, const UnicodeString AString, TObject *AObject = nullptr) = 0;
+  virtual void Insert(intptr_t Index, UnicodeString AString, TObject *AObject = nullptr) = 0;
   bool Equals(const TStrings *Value) const;
   void Move(intptr_t CurIndex, intptr_t NewIndex) override;
-  virtual intptr_t IndexOf(const UnicodeString S) const;
-  virtual intptr_t IndexOfName(const UnicodeString Name) const;
-  UnicodeString ExtractName(const UnicodeString S) const;
+  virtual intptr_t IndexOf(UnicodeString S) const;
+  virtual intptr_t IndexOfName(UnicodeString Name) const;
+  UnicodeString ExtractName(UnicodeString S) const;
   void AddStrings(const TStrings *Strings);
-  void Append(const UnicodeString Value);
+  void Append(UnicodeString Value);
   void SaveToStream(TStream *Stream) const;
   wchar_t GetDelimiter() const { return FDelimiter; }
   void SetDelimiter(wchar_t Value) { FDelimiter = Value; }
@@ -274,7 +274,7 @@ public:
   wchar_t GetQuoteChar() const { return FQuoteChar; }
   void SetQuoteChar(wchar_t Value) { FQuoteChar = Value; }
   UnicodeString GetDelimitedText() const;
-  void SetDelimitedText(const UnicodeString Value);
+  void SetDelimitedText(UnicodeString Value);
   intptr_t GetUpdateCount() const { return FUpdateCount; }
   void Assign(const TPersistent *Source) override;
 
@@ -286,17 +286,17 @@ public:
   virtual void SetCaseSensitive(bool Value) = 0;
   void SetDuplicates(TDuplicatesEnum Value);
   UnicodeString GetCommaText() const;
-  void SetCommaText(const UnicodeString Value);
+  void SetCommaText(UnicodeString Value);
   virtual UnicodeString GetText() const;
-  virtual void SetText(const UnicodeString Text);
+  virtual void SetText(UnicodeString Text);
   virtual const UnicodeString &GetStringRef(intptr_t Index) const = 0;
   virtual const UnicodeString &GetString(intptr_t Index) const = 0;
   virtual UnicodeString GetString(intptr_t Index) = 0;
-  virtual void SetString(intptr_t Index, const UnicodeString S) = 0;
+  virtual void SetString(intptr_t Index, UnicodeString S) = 0;
   UnicodeString GetName(intptr_t Index) const;
-  void SetName(intptr_t Index, const UnicodeString Value);
-  UnicodeString GetValue(const UnicodeString Name) const;
-  void SetValue(const UnicodeString Name, const UnicodeString Value);
+  void SetName(intptr_t Index, UnicodeString Value);
+  UnicodeString GetValue(UnicodeString Name) const;
+  void SetValue(UnicodeString Name, UnicodeString Value);
   UnicodeString GetValueFromIndex(intptr_t Index) const;
 
 protected:
@@ -321,29 +321,29 @@ public:
   explicit TStringList(TObjectClassId Kind = OBJECT_CLASS_TStringList) noexcept;
   virtual ~TStringList() noexcept = default;
 
-  intptr_t Add(const UnicodeString S);
-  intptr_t AddObject(const UnicodeString S, TObject *AObject) override;
-  void LoadFromFile(const UnicodeString AFileName);
+  intptr_t Add(UnicodeString S);
+  intptr_t AddObject(UnicodeString S, TObject *AObject) override;
+  void LoadFromFile(UnicodeString AFileName);
   TNotifyEvent GetOnChange() const { return FOnChange; }
   void SetOnChange(TNotifyEvent OnChange) { FOnChange = OnChange; }
   TNotifyEvent GetOnChanging() const { return FOnChanging; }
   void SetOnChanging(TNotifyEvent OnChanging) { FOnChanging = OnChanging; }
-  void InsertItem(intptr_t Index, const UnicodeString S, TObject *AObject);
+  void InsertItem(intptr_t Index, UnicodeString S, TObject *AObject);
   void QuickSort(intptr_t L, intptr_t R, TStringListSortCompare SCompare);
 
   void Assign(const TPersistent *Source) override;
-  virtual bool Find(const UnicodeString S, intptr_t &Index) const;
-  intptr_t IndexOf(const UnicodeString S) const override;
+  virtual bool Find(UnicodeString S, intptr_t &Index) const;
+  intptr_t IndexOf(UnicodeString S) const override;
   void Delete(intptr_t Index) override;
-  void InsertObject(intptr_t Index, const UnicodeString Key, TObject *AObject) override;
+  void InsertObject(intptr_t Index, UnicodeString Key, TObject *AObject) override;
   void Sort() override;
   virtual void CustomSort(TStringListSortCompare ACompareFunc);
 
   void SetUpdateState(bool Updating) override;
   virtual void Changing();
   void Changed() override;
-  void Insert(intptr_t Index, const UnicodeString S, TObject *AObject = nullptr) override;
-  intptr_t CompareStrings(const UnicodeString S1, const UnicodeString S2) const override;
+  void Insert(intptr_t Index, UnicodeString S, TObject *AObject = nullptr) override;
+  intptr_t CompareStrings(UnicodeString S1, UnicodeString S2) const override;
   intptr_t GetCount() const override;
 
 public:
@@ -355,7 +355,7 @@ public:
   const UnicodeString &GetStringRef(intptr_t Index) const override;
   const UnicodeString &GetString(intptr_t Index) const override;
   UnicodeString GetString(intptr_t Index) override;
-  void SetString(intptr_t Index, const UnicodeString S) override;
+  void SetString(intptr_t Index, UnicodeString S) override;
 
 private:
   TNotifyEvent FOnChange;
@@ -463,11 +463,11 @@ public:
   virtual ~TSHFileInfo() noexcept;
 
   //get the image's index in the system's image list
-  int GetFileIconIndex(const UnicodeString StrFileName, BOOL bSmallIcon) const;
+  int GetFileIconIndex(UnicodeString StrFileName, BOOL bSmallIcon) const;
   int GetDirIconIndex(BOOL bSmallIcon);
 
   //get file type
-  UnicodeString GetFileType(const UnicodeString StrFileName);
+  UnicodeString GetFileType(UnicodeString StrFileName);
 
 private:
   TGetFileInfo FGetFileInfo;
@@ -556,11 +556,11 @@ public:
   int64_t Seek(int64_t Offset, int Origin) const override;
   int64_t Seek(const int64_t Offset, TSeekOrigin Origin) const override;
   void SaveToStream(TStream *Stream);
-  void SaveToFile(const UnicodeString AFileName);
+  void SaveToFile(UnicodeString AFileName);
 
   void Clear();
   void LoadFromStream(TStream *Stream);
-  __removed void LoadFromFile(const UnicodeString AFileName);
+  __removed void LoadFromFile(UnicodeString AFileName);
   int64_t GetSize() const override { return FSize; }
   void SetSize(const int64_t NewSize) override;
   int64_t Write(const void *Buffer, int64_t Count) override;
@@ -612,44 +612,44 @@ public:
   void GetValueNames(TStrings *Names) const;
   void GetKeyNames(TStrings *Names) const;
   void CloseKey();
-  bool OpenKey(const UnicodeString AKey, bool CanCreate);
-  bool DeleteKey(const UnicodeString AKey);
-  bool DeleteValue(const UnicodeString Value) const;
-  bool KeyExists(const UnicodeString SubKey) const;
-  bool ValueExists(const UnicodeString Value) const;
-  bool GetDataInfo(const UnicodeString ValueName, TRegDataInfo &Value) const;
-  TRegDataType GetDataType(const UnicodeString ValueName) const;
-  DWORD GetDataSize(const UnicodeString ValueName) const;
-  bool ReadBool(const UnicodeString Name) const;
-  TDateTime ReadDateTime(const UnicodeString Name) const;
-  double ReadFloat(const UnicodeString Name) const;
-  intptr_t ReadIntPtr(const UnicodeString Name) const;
-  int ReadInteger(const UnicodeString Name) const;
-  int64_t ReadInt64(const UnicodeString Name) const;
-  UnicodeString ReadString(const UnicodeString Name) const;
-  UnicodeString ReadStringRaw(const UnicodeString Name) const;
-  size_t ReadBinaryData(const UnicodeString Name,
+  bool OpenKey(UnicodeString AKey, bool CanCreate);
+  bool DeleteKey(UnicodeString AKey);
+  bool DeleteValue(UnicodeString Value) const;
+  bool KeyExists(UnicodeString SubKey) const;
+  bool ValueExists(UnicodeString Value) const;
+  bool GetDataInfo(UnicodeString ValueName, TRegDataInfo &Value) const;
+  TRegDataType GetDataType(UnicodeString ValueName) const;
+  DWORD GetDataSize(UnicodeString ValueName) const;
+  bool ReadBool(UnicodeString Name) const;
+  TDateTime ReadDateTime(UnicodeString Name) const;
+  double ReadFloat(UnicodeString Name) const;
+  intptr_t ReadIntPtr(UnicodeString Name) const;
+  int ReadInteger(UnicodeString Name) const;
+  int64_t ReadInt64(UnicodeString Name) const;
+  UnicodeString ReadString(UnicodeString Name) const;
+  UnicodeString ReadStringRaw(UnicodeString Name) const;
+  size_t ReadBinaryData(UnicodeString Name,
     void *Buffer, size_t BufSize) const;
 
-  void WriteBool(const UnicodeString Name, bool Value);
-  void WriteDateTime(const UnicodeString Name, const TDateTime &Value);
-  void WriteFloat(const UnicodeString Name, double Value);
-  void WriteString(const UnicodeString Name, const UnicodeString Value);
-  void WriteStringRaw(const UnicodeString Name, const UnicodeString Value);
-  void WriteIntPtr(const UnicodeString Name, intptr_t Value);
-  void WriteInteger(const UnicodeString Name, int Value);
-  void WriteInt64(const UnicodeString Name, int64_t Value);
-  void WriteBinaryData(const UnicodeString Name,
+  void WriteBool(UnicodeString Name, bool Value);
+  void WriteDateTime(UnicodeString Name, const TDateTime &Value);
+  void WriteFloat(UnicodeString Name, double Value);
+  void WriteString(UnicodeString Name, UnicodeString Value);
+  void WriteStringRaw(UnicodeString Name, UnicodeString Value);
+  void WriteIntPtr(UnicodeString Name, intptr_t Value);
+  void WriteInteger(UnicodeString Name, int Value);
+  void WriteInt64(UnicodeString Name, int64_t Value);
+  void WriteBinaryData(UnicodeString Name,
     const void *Buffer, size_t BufSize);
 private:
-  void ChangeKey(HKEY Value, const UnicodeString APath);
+  void ChangeKey(HKEY Value, UnicodeString APath);
   HKEY GetBaseKey(bool Relative) const;
-  HKEY GetKey(const UnicodeString AKey) const;
+  HKEY GetKey(UnicodeString AKey) const;
   void SetCurrentKey(HKEY Value) { FCurrentKey = Value; }
   bool GetKeyInfo(TRegKeyInfo &Value) const;
-  int GetData(const UnicodeString Name, void *Buffer,
+  int GetData(UnicodeString Name, void *Buffer,
     intptr_t ABufSize, TRegDataType &RegData) const;
-  void PutData(const UnicodeString Name, const void *Buffer,
+  void PutData(UnicodeString Name, const void *Buffer,
     intptr_t ABufSize, TRegDataType RegData);
 
 public:
@@ -736,11 +736,11 @@ public:
   virtual UnicodeString GetMsg(intptr_t Id) const = 0;
   virtual UnicodeString GetCurrDirectory() const = 0;
   virtual UnicodeString GetStrVersionNumber() const = 0;
-  virtual bool InputDialog(const UnicodeString ACaption,
-    const UnicodeString APrompt, UnicodeString &Value, const UnicodeString HelpKeyword,
+  virtual bool InputDialog(UnicodeString ACaption,
+    UnicodeString APrompt, UnicodeString &Value, UnicodeString HelpKeyword,
     TStrings *History, bool PathInput,
     TInputDialogInitializeEvent OnInitialize, bool Echo) = 0;
-  virtual uint32_t MoreMessageDialog(const UnicodeString AMessage,
+  virtual uint32_t MoreMessageDialog(UnicodeString AMessage,
     TStrings *MoreMessages, TQueryType Type, uint32_t Answers,
     const TMessageParams *Params) = 0;
 };
