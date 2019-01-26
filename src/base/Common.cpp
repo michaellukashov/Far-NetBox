@@ -1908,9 +1908,9 @@ bool TryStrToDateTimeStandard(UnicodeString S, TDateTime &Value)
   return TryStrToDateTime(S, Value, FormatSettings);
 }
 //---------------------------------------------------------------------------
-constexpr const wchar_t KiloSize = L'K';
-constexpr const wchar_t MegaSize = L'M';
-constexpr const wchar_t GigaSize = L'G';
+constexpr wchar_t KiloSize = L'K';
+constexpr wchar_t MegaSize = L'M';
+constexpr wchar_t GigaSize = L'G';
 //---------------------------------------------------------------------------
 // Keep consistent with parse_blocksize
 bool TryStrToSize(UnicodeString ASizeStr, int64_t &ASize)

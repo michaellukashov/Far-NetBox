@@ -39,20 +39,20 @@ using TThreadID = DWORD;
 
 class Exception;
 
-constexpr const intptr_t MonthsPerYear = 12;
-constexpr const intptr_t DaysPerWeek = 7;
-constexpr const intptr_t MinsPerHour = 60;
-constexpr const intptr_t SecsPerMin = 60;
-constexpr const intptr_t HoursPerDay = 24;
-constexpr const intptr_t MSecsPerSec = 1000;
-constexpr const intptr_t SecsPerHour = MinsPerHour * SecsPerMin;
-constexpr const intptr_t MinsPerDay = HoursPerDay * MinsPerHour;
-constexpr const intptr_t SecsPerDay = MinsPerDay * SecsPerMin;
-constexpr const intptr_t MSecsPerDay = SecsPerDay * MSecsPerSec;
-constexpr const intptr_t OneSecond = MSecsPerSec;
+constexpr intptr_t MonthsPerYear = 12;
+constexpr intptr_t DaysPerWeek = 7;
+constexpr intptr_t MinsPerHour = 60;
+constexpr intptr_t SecsPerMin = 60;
+constexpr intptr_t HoursPerDay = 24;
+constexpr intptr_t MSecsPerSec = 1000;
+constexpr intptr_t SecsPerHour = MinsPerHour * SecsPerMin;
+constexpr intptr_t MinsPerDay = HoursPerDay * MinsPerHour;
+constexpr intptr_t SecsPerDay = MinsPerDay * SecsPerMin;
+constexpr intptr_t MSecsPerDay = SecsPerDay * MSecsPerSec;
+constexpr intptr_t OneSecond = MSecsPerSec;
 // Days between 1/1/0001 and 12/31/1899
-constexpr const intptr_t DateDelta = 693594;
-constexpr const intptr_t UnixDateDelta = 25569;
+constexpr intptr_t DateDelta = 693594;
+constexpr intptr_t UnixDateDelta = 25569;
 
 class TObject;
 

@@ -11,8 +11,8 @@ enum TEOLType
   eolCR     // \r
 };
 
-constexpr const intptr_t cpRemoveCtrlZ = 0x01;
-constexpr const intptr_t cpRemoveBOM   = 0x02;
+constexpr intptr_t cpRemoveCtrlZ = 0x01;
+constexpr intptr_t cpRemoveBOM   = 0x02;
 //---------------------------------------------------------------------------
 class NB_CORE_EXPORT TFileBuffer : public TObject
 {
