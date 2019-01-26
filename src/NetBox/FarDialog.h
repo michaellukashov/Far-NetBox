@@ -2,7 +2,7 @@
 
 #include "FarPlugin.h"
 
-constexpr const int MAX_SIZE = -1;
+constexpr int MAX_SIZE = -1;
 
 class TFarDialogContainer;
 class TFarDialogItem;
