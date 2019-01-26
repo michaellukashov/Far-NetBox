@@ -647,7 +647,7 @@ uint32_t TWinSCPPlugin::MoreMessageDialog(const UnicodeString Str,
     }
 
     uintptr_t AAnswers = Answers;
-    bool NeverAskAgainCheck = (Params != nullptr) && FLAGSET(Params->Params, qpNeverAskAgainCheck);
+    bool NeverAskAgainCheck = (Params != nullptr) && FLAGSET(Params->Params, mpNeverAskAgainCheck);
     bool NeverAskAgainPending = NeverAskAgainCheck;
     uintptr_t TimeoutButton = 0;
 
