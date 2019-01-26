@@ -591,185 +591,186 @@ uint32_t TWinSCPPlugin::MoreMessageDialog(const UnicodeString Str,
   uint32_t Result;
   UnicodeString DialogStr = Str;
   std::unique_ptr<TStrings> ButtonLabels(std::make_unique<TStringList>());
-  uintptr_t Flags = 0;
-
-  if (Params != nullptr)
   {
-    Flags = Params->Flags;
-  }
+    uintptr_t Flags = 0;
 
-  intptr_t TitleId = 0;
-  switch (Type)
-  {
-  case qtConfirmation:
-    TitleId = MSG_TITLE_CONFIRMATION;
-    break;
-  case qtInformation:
-    TitleId = MSG_TITLE_INFORMATION;
-    break;
-  case qtError:
-    TitleId = MSG_TITLE_ERROR;
-    Flags |= FMSG_WARNING;
-    break;
-  case qtWarning:
-    TitleId = MSG_TITLE_WARNING;
-    Flags |= FMSG_WARNING;
-    break;
-  default:
-    DebugAssert(false);
-  }
-  TFarMessageData Data;
-  Data.Params = Params;
-
-  // make sure to do the check on full answers, not on reduced "timer answers"
-  if (((Answers & qaAbort) && (Answers & qaRetry)) ||
-    (GetTopDialog() != nullptr))
-  {
-    // use warning colors for abort/retry confirmation dialog
-    Flags |= FMSG_WARNING;
-  }
-
-  if (Params != nullptr)
-  {
-    if (Params->Timer > 0)
+    if (Params != nullptr)
     {
-      if (Params->TimerAnswers > 0)
+      Flags = Params->Flags;
+    }
+
+    intptr_t TitleId = 0;
+    switch (Type)
+    {
+    case qtConfirmation:
+      TitleId = MSG_TITLE_CONFIRMATION;
+      break;
+    case qtInformation:
+      TitleId = MSG_TITLE_INFORMATION;
+      break;
+    case qtError:
+      TitleId = MSG_TITLE_ERROR;
+      Flags |= FMSG_WARNING;
+      break;
+    case qtWarning:
+      TitleId = MSG_TITLE_WARNING;
+      Flags |= FMSG_WARNING;
+      break;
+    default:
+      DebugAssert(false);
+    }
+    TFarMessageData Data;
+    Data.Params = Params;
+
+    // make sure to do the check on full answers, not on reduced "timer answers"
+    if (((Answers & qaAbort) && (Answers & qaRetry)) ||
+        (GetTopDialog() != nullptr))
+    {
+      // use warning colors for abort/retry confirmation dialog
+      Flags |= FMSG_WARNING;
+    }
+
+    if (Params != nullptr)
+    {
+      if (Params->Timer > 0)
       {
-        Answers = Params->TimerAnswers;
-      }
-      if (!Params->TimerMessage.IsEmpty())
-      {
-        DialogStr = Params->TimerMessage;
+        if (Params->TimerAnswers > 0)
+        {
+          Answers = Params->TimerAnswers;
+        }
+        if (!Params->TimerMessage.IsEmpty())
+        {
+          DialogStr = Params->TimerMessage;
+        }
       }
     }
-  }
 
-  uintptr_t AAnswers = Answers;
-  bool NeverAskAgainCheck = (Params != nullptr) && FLAGSET(Params->Params, qpNeverAskAgainCheck);
-  bool NeverAskAgainPending = NeverAskAgainCheck;
-  uintptr_t TimeoutButton = 0;
+    uintptr_t AAnswers = Answers;
+    bool NeverAskAgainCheck = (Params != nullptr) && FLAGSET(Params->Params, qpNeverAskAgainCheck);
+    bool NeverAskAgainPending = NeverAskAgainCheck;
+    uintptr_t TimeoutButton = 0;
 
 #define ADD_BUTTON_EX(TYPE, CANNEVERASK) \
-    if (AAnswers & qa ## TYPE) \
-    { \
-      ButtonLabels->Add(GetMsg(MSG_BUTTON_ ## TYPE)); \
-      Data.Buttons[Data.ButtonCount] = qa ## TYPE; \
-      Data.ButtonCount++; \
-      AAnswers -= qa ## TYPE; \
-      if ((Params != nullptr) && (Params->Timeout != 0) && \
-          (Params->TimeoutAnswer == qa ## TYPE)) \
+      if (AAnswers & qa ## TYPE) \
       { \
-        TimeoutButton = ButtonLabels->GetCount() - 1; \
-      } \
-      if (NeverAskAgainPending && CANNEVERASK) \
-      { \
-        ButtonLabels->SetObj(ButtonLabels->GetCount() - 1, ToObj(true)); \
-        NeverAskAgainPending = false; \
-      } \
-    }
+        ButtonLabels->Add(GetMsg(MSG_BUTTON_ ## TYPE)); \
+        Data.Buttons[Data.ButtonCount] = qa ## TYPE; \
+        Data.ButtonCount++; \
+        AAnswers -= qa ## TYPE; \
+        if ((Params != nullptr) && (Params->Timeout != 0) && \
+            (Params->TimeoutAnswer == qa ## TYPE)) \
+        { \
+          TimeoutButton = ButtonLabels->GetCount() - 1; \
+        } \
+        if (NeverAskAgainPending && CANNEVERASK) \
+        { \
+          ButtonLabels->SetObj(ButtonLabels->GetCount() - 1, ToObj(true)); \
+          NeverAskAgainPending = false; \
+        } \
+      }
 #define ADD_BUTTON(TYPE) ADD_BUTTON_EX(TYPE, false)
 #pragma warning(push)
 #pragma warning(disable: 4127)
-  ADD_BUTTON_EX(Yes, true);
-  ADD_BUTTON(No);
-  ADD_BUTTON_EX(OK, true);
-  ADD_BUTTON(Cancel);
-  ADD_BUTTON(Abort);
-  ADD_BUTTON(Retry);
-  ADD_BUTTON(Ignore);
-  ADD_BUTTON(Skip);
-  ADD_BUTTON(All);
-  ADD_BUTTON(NoToAll);
-  ADD_BUTTON_EX(YesToAll, true);
-  ADD_BUTTON(Help);
+    ADD_BUTTON_EX(Yes, true);
+    ADD_BUTTON(No);
+    ADD_BUTTON_EX(OK, true);
+    ADD_BUTTON(Cancel);
+    ADD_BUTTON(Abort);
+    ADD_BUTTON(Retry);
+    ADD_BUTTON(Ignore);
+    ADD_BUTTON(Skip);
+    ADD_BUTTON(All);
+    ADD_BUTTON(NoToAll);
+    ADD_BUTTON_EX(YesToAll, true);
+    ADD_BUTTON(Help);
 #pragma warning(pop)
 #undef ADD_BUTTON
 #undef ADD_BUTTON_EX
 
-  DebugUsedParam(AAnswers);
-  DebugAssert(!AAnswers);
-  DebugUsedParam(NeverAskAgainPending);
-  DebugAssert(!NeverAskAgainPending);
+    DebugUsedParam(AAnswers);
+    DebugAssert(!AAnswers);
+    DebugUsedParam(NeverAskAgainPending);
+    DebugAssert(!NeverAskAgainPending);
 
-  uintptr_t DefaultButtonIndex = 0;
-  if ((Params != nullptr) && (Params->Aliases != nullptr))
-  {
-    for (uintptr_t bi = 0; bi < Data.ButtonCount; bi++)
+    uintptr_t DefaultButtonIndex = 0;
+    if ((Params != nullptr) && (Params->Aliases != nullptr))
     {
-      for (uintptr_t ai = 0; ai < Params->AliasesCount; ai++)
+      for (uintptr_t bi = 0; bi < Data.ButtonCount; bi++)
       {
-        if (Params->Aliases[ai].Button == Data.Buttons[bi] &&
-          !Params->Aliases[ai].Alias.IsEmpty())
+        for (uintptr_t ai = 0; ai < Params->AliasesCount; ai++)
         {
-          ButtonLabels->SetString(bi, Params->Aliases[ai].Alias);
-          if (Params->Aliases[ai].Default)
-            DefaultButtonIndex = bi;
-          break;
+          if (Params->Aliases[ai].Button == Data.Buttons[bi] &&
+              !Params->Aliases[ai].Alias.IsEmpty())
+          {
+            ButtonLabels->SetString(bi, Params->Aliases[ai].Alias);
+            if (Params->Aliases[ai].Default)
+              DefaultButtonIndex = bi;
+            break;
+          }
         }
       }
     }
-  }
 
-//  constexpr int MORE_BUTTON_ID = -2;
-  TFarMessageParams FarParams;
+    // constexpr int MORE_BUTTON_ID = -2;
+    TFarMessageParams FarParams;
 
-  if (NeverAskAgainCheck)
-  {
-    FarParams.CheckBoxLabel =
-      (Answers == qaOK) ? GetMsg(MSG_CHECK_NEVER_SHOW_AGAIN) :
-      GetMsg(MSG_CHECK_NEVER_ASK_AGAIN);
-  }
-
-  if (Params != nullptr)
-  {
-    if (Params->Timer > 0)
+    if (NeverAskAgainCheck)
     {
-      FarParams.Timer = Params->Timer;
-      FarParams.TimerEvent = Params->TimerEvent;
+      FarParams.CheckBoxLabel =
+        (Answers == qaOK) ? GetMsg(MSG_CHECK_NEVER_SHOW_AGAIN) :
+          GetMsg(MSG_CHECK_NEVER_ASK_AGAIN);
     }
 
-    if (Params->Timeout > 0)
+    if (Params != nullptr)
     {
-      FarParams.Timeout = Params->Timeout;
-      FarParams.TimeoutButton = TimeoutButton;
-      FarParams.TimeoutStr = GetMsg(MSG_BUTTON_TIMEOUT);
+      if (Params->Timer > 0)
+      {
+        FarParams.Timer = Params->Timer;
+        FarParams.TimerEvent = Params->TimerEvent;
+      }
+
+      if (Params->Timeout > 0)
+      {
+        FarParams.Timeout = Params->Timeout;
+        FarParams.TimeoutButton = TimeoutButton;
+        FarParams.TimeoutStr = GetMsg(MSG_BUTTON_TIMEOUT);
+      }
+    }
+
+    FarParams.Token = &Data;
+    FarParams.DefaultButton = DefaultButtonIndex;
+    FarParams.ClickEvent = nb::bind(&TWinSCPPlugin::MessageClick, this);
+
+    if (MoreMessages && (MoreMessages->GetCount() > 0))
+    {
+      FarParams.MoreMessages = MoreMessages;
+    }
+    else
+    {
+      FarParams.MoreMessages = nullptr;
+    }
+
+    Result = Message(nb::ToDWord(Flags), GetMsg(TitleId), DialogStr, ButtonLabels.get(), &FarParams);
+    if (FarParams.TimerAnswer > 0)
+    {
+      Result = FarParams.TimerAnswer;
+    }
+    else if (Result == nb::ToUInt32(-1))
+    {
+      Result = CancelAnswer(Answers);
+    }
+    else
+    {
+      DebugAssert(Result != nb::ToUInt32(-1) && Result < Data.ButtonCount);
+      Result = Data.Buttons[Result];
+    }
+
+    if (FarParams.CheckBox)
+    {
+      DebugAssert(NeverAskAgainCheck);
+      Result = qaNeverAskAgain;
     }
   }
-
-  FarParams.Token = &Data;
-  FarParams.DefaultButton = DefaultButtonIndex;
-  FarParams.ClickEvent = nb::bind(&TWinSCPPlugin::MessageClick, this);
-
-  if (MoreMessages && (MoreMessages->GetCount() > 0))
-  {
-    FarParams.MoreMessages = MoreMessages;
-  }
-  else
-  {
-    FarParams.MoreMessages = nullptr;
-  }
-
-  Result = Message(nb::ToDWord(Flags), GetMsg(TitleId), DialogStr, ButtonLabels.get(), &FarParams);
-  if (FarParams.TimerAnswer > 0)
-  {
-    Result = FarParams.TimerAnswer;
-  }
-  else if (Result == nb::ToUInt32(-1))
-  {
-    Result = CancelAnswer(Answers);
-  }
-  else
-  {
-    DebugAssert(Result != nb::ToUInt32(-1) && Result < Data.ButtonCount);
-    Result = Data.Buttons[Result];
-  }
-
-  if (FarParams.CheckBox)
-  {
-    DebugAssert(NeverAskAgainCheck);
-    Result = qaNeverAskAgain;
-  }
-
   return Result;
 }
 
