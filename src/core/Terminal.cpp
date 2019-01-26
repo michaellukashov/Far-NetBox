@@ -7560,21 +7560,19 @@ bool TTerminal::CopyToLocal(
     OperationStart(OperationProgress, (AParams & cpDelete ? foMove : foCopy), osRemote,
       AFilesToCopy ? AFilesToCopy->GetCount() : 0, (AParams & cpTemporary) != 0, ATargetDir, CopyParam->GetCPSLimit());
 
-    //bool CollectingUsage = false;
+    bool CollectingUsage = false;
     try__finally
     {
       if (TotalSizeKnown)
       {
-#if 0
         if (Configuration->Usage->Collect)
         {
-          int CounterTotalSize = TUsage::CalculateCounterSize(TotalSize);
+          intptr_t CounterTotalSize = TUsage::CalculateCounterSize(TotalSize);
           Configuration->Usage->Inc("Downloads");
           Configuration->Usage->Inc("DownloadedBytes", CounterTotalSize);
-          Configuration->Usage->SetMax(L"MaxDownloadSize", CounterTotalSize);
+          Configuration->Usage->SetMax("MaxDownloadSize", CounterTotalSize);
           CollectingUsage = true;
         }
-#endif // #if 0
         OperationProgress.SetTotalSize(TotalSize);
       }
 
@@ -7623,14 +7621,12 @@ bool TTerminal::CopyToLocal(
     },
     __finally
     {
-#if 0
       if (CollectingUsage)
       {
-        int CounterTime = TimeToSeconds(OperationProgress.TimeElapsed());
+        intptr_t CounterTime = TimeToSeconds(OperationProgress.TimeElapsed());
         Configuration->Usage->Inc("DownloadTime", CounterTime);
-        Configuration->Usage->SetMax(L"MaxDownloadTime", CounterTime);
+        Configuration->Usage->SetMax("MaxDownloadTime", CounterTime);
       }
-#endif // #if 0
       OperationStop(OperationProgress);
       FOperationProgress = nullptr;
     } end_try__finally
