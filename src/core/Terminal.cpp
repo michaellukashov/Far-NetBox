@@ -1821,7 +1821,7 @@ bool TTerminal::DoPromptUser(TSessionData * /*Data*/, TPromptKind Kind,
 }
 //---------------------------------------------------------------------------
 uint32_t TTerminal::QueryUser(UnicodeString AQuery,
-  TStrings *MoreMessages, uint32_t Answers, const TQueryParams *Params,
+  TStrings *MoreMessages, uint32_t Answers, const TQueryParams *AParams,
   TQueryType QueryType)
 {
   LogEvent(FORMAT("Asking user:\n%s (%s)", AQuery, UnicodeString(MoreMessages ? MoreMessages->GetCommaText() : "")));
@@ -1831,7 +1831,7 @@ uint32_t TTerminal::QueryUser(UnicodeString AQuery,
     TCallbackGuard Guard(this);
     try
     {
-      FOnQueryUser(this, AQuery, MoreMessages, Answers, Params, Answer, QueryType, nullptr);
+      FOnQueryUser(this, AQuery, MoreMessages, Answers, AParams, Answer, QueryType, nullptr);
       Guard.Verify();
     }
     catch (Exception &E)
@@ -7656,7 +7656,7 @@ bool TTerminal::CopyToLocal(
 }
 //---------------------------------------------------------------------------
 void TTerminal::DoCopyToLocal(
-  TStrings *AFilesToCopy, UnicodeString ATargetDir, const TCopyParamType *CopyParam, intptr_t Params,
+  TStrings *AFilesToCopy, UnicodeString ATargetDir, const TCopyParamType *CopyParam, intptr_t AParams,
   TFileOperationProgressType *OperationProgress, uintptr_t AFlags, TOnceDoneOperation &OnceDoneOperation)
 {
   DebugAssert((AFilesToCopy != nullptr) && (OperationProgress != nullptr));
@@ -7674,7 +7674,7 @@ void TTerminal::DoCopyToLocal(
       try
       {
         UnicodeString AbsoluteFileName = GetAbsolutePath(FileName, true);
-        SinkRobust(AbsoluteFileName, File, FullTargetDir, CopyParam, Params, OperationProgress, AFlags | tfFirstLevel);
+        SinkRobust(AbsoluteFileName, File, FullTargetDir, CopyParam, AParams, OperationProgress, AFlags | tfFirstLevel);
         Success = true;
       }
       catch (ESkipFile &E)
@@ -7767,7 +7767,7 @@ struct TSinkFileParams
 //---------------------------------------------------------------------------
 void TTerminal::Sink(
   UnicodeString AFileName, const TRemoteFile *AFile, UnicodeString ATargetDir,
-  const TCopyParamType *CopyParam, intptr_t AParams, TFileOperationProgressType *OperationProgress, uintptr_t Flags,
+  const TCopyParamType *CopyParam, intptr_t AParams, TFileOperationProgressType *OperationProgress, uintptr_t AFlags,
   TDownloadSessionAction &Action)
 {
   Action.SetFileName(AFileName);
@@ -7790,7 +7790,7 @@ void TTerminal::Sink(
   OperationProgress->SetFile(AFileName);
 
   UnicodeString OnlyFileName = base::UnixExtractFileName(AFileName);
-  UnicodeString DestFileName = ChangeFileName(CopyParam, OnlyFileName, osRemote, FLAGSET(Flags, tfFirstLevel));
+  UnicodeString DestFileName = ChangeFileName(CopyParam, OnlyFileName, osRemote, FLAGSET(AFlags, tfFirstLevel));
   UnicodeString DestFullName = ATargetDir + DestFileName;
 
   if (AFile->GetIsDirectory())
@@ -7798,7 +7798,7 @@ void TTerminal::Sink(
     Action.Cancel();
     if (CanRecurseToDirectory(AFile))
     {
-      FileOperationLoopCustom(this, OperationProgress, Flags, FMTLOAD(NOT_DIRECTORY_ERROR, DestFullName), "",
+      FileOperationLoopCustom(this, OperationProgress, AFlags, FMTLOAD(NOT_DIRECTORY_ERROR, DestFullName), "",
       [&]()
       {
         DWORD Attrs = ::FileGetAttrFix(ApiPath(DestFullName));
@@ -7809,7 +7809,7 @@ void TTerminal::Sink(
       });
       __removed FILE_OPERATION_LOOP_END(FMTLOAD(NOT_DIRECTORY_ERROR, (DestFullName)));
 
-      FileOperationLoopCustom(this, OperationProgress, Flags, FMTLOAD(CREATE_DIR_ERROR, DestFullName), "",
+      FileOperationLoopCustom(this, OperationProgress, AFlags, FMTLOAD(CREATE_DIR_ERROR, DestFullName), "",
       [&]()
       {
         THROWOSIFFALSE(::SysUtulsForceDirectories(ApiPath(DestFullName)));
@@ -7824,7 +7824,7 @@ void TTerminal::Sink(
         SinkFileParams.Params = AParams;
         SinkFileParams.OperationProgress = OperationProgress;
         SinkFileParams.Skipped = false;
-        SinkFileParams.Flags = Flags & ~(tfFirstLevel | tfAutoResume);
+        SinkFileParams.Flags = AFlags & ~(tfFirstLevel | tfAutoResume);
 
         ProcessDirectory(AFileName, nb::bind(&TTerminal::SinkFile, this), &SinkFileParams);
 
@@ -7866,7 +7866,7 @@ void TTerminal::Sink(
     OperationProgress->SetTransferSize(TransferSize);
 
     intptr_t Attrs = 0;
-    FileOperationLoopCustom(this, OperationProgress, Flags, FMTLOAD(NOT_FILE_ERROR, DestFullName), "",
+    FileOperationLoopCustom(this, OperationProgress, AFlags, FMTLOAD(NOT_FILE_ERROR, DestFullName), "",
     [&]()
     {
       Attrs = ::FileGetAttrFix(ApiPath(DestFullName));
@@ -7878,7 +7878,7 @@ void TTerminal::Sink(
    __removed FILE_OPERATION_LOOP_END(FMTLOAD(NOT_FILE_ERROR, (DestFullName)));
 
     FFileSystem->Sink(
-      AFileName, AFile, ATargetDir, DestFileName, Attrs, CopyParam, AParams, OperationProgress, Flags, Action);
+      AFileName, AFile, ATargetDir, DestFileName, Attrs, CopyParam, AParams, OperationProgress, AFlags, Action);
 
     LogFileDone(OperationProgress, ::ExpandUNCFileName(DestFullName));
     OperationProgress->Succeeded();

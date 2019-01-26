@@ -161,7 +161,6 @@ constexpr uintptr_t folAllowSkip = 0x01;
 constexpr uintptr_t folRetryOnFatal = 0x02;
 
 #if 0
-
 /* TODO : Better user interface (query to user) */
 #define FILE_OPERATION_LOOP_BEGIN \
   { \
