@@ -9,14 +9,14 @@ __removed #pragma hdrstop
 //---------------------------------------------------------------------------
 __removed #pragma package(smart_init)
 //---------------------------------------------------------------------------
-const UnicodeString LastInternalExceptionCounter("LastInternalException2");
-const UnicodeString LastUpdateExceptionCounter("LastUpdateException");
+UnicodeString LastInternalExceptionCounter("LastInternalException2");
+UnicodeString LastUpdateExceptionCounter("LastUpdateException");
 //---------------------------------------------------------------------------
-TUsage::TUsage(TConfiguration * Configuration) noexcept
+TUsage::TUsage(TConfiguration * Configuration) noexcept :
+  FCriticalSection(std::make_unique<TCriticalSection>()),
+  FConfiguration(Configuration),
+  FValues(std::make_unique<TStringList>())
 {
-  FCriticalSection = std::make_unique<TCriticalSection>();
-  FConfiguration = Configuration;
-  FValues = std::make_unique<TStringList>();
   FValues->SetDelimiter(L'&');
   FValues->SetStrictDelimiter(true);
   FCollect = true;
@@ -58,7 +58,7 @@ void TUsage::Load(THierarchicalStorage * Storage)
       for (intptr_t Index = 0; Index < Names->Count; Index++)
       {
         UnicodeString Name = Names->GetString(Index);
-        Set(Name, Storage->ReadString(Name, L""));
+        Set(Name, Storage->ReadString(Name, ""));
       }
       Storage->CloseSubKey();
     },
@@ -73,7 +73,7 @@ void TUsage::Load(THierarchicalStorage * Storage)
 }
 //---------------------------------------------------------------------------
 void TUsage::Load(THierarchicalStorage * Storage,
-  const UnicodeString AName, TCounters & Counters)
+  UnicodeString AName, TCounters & Counters)
 {
   if (Storage->OpenSubKey(AName, false))
   {
@@ -110,7 +110,7 @@ void TUsage::Save(THierarchicalStorage * Storage) const
 }
 //---------------------------------------------------------------------------
 void TUsage::Save(THierarchicalStorage * Storage,
-  const UnicodeString AName, const TCounters & Counters) const
+  UnicodeString AName, const TCounters & Counters) const
 {
   if (Storage->OpenSubKey(AName, true))
   {
@@ -125,7 +125,7 @@ void TUsage::Save(THierarchicalStorage * Storage,
   }
 }
 //---------------------------------------------------------------------------
-void TUsage::Set(const UnicodeString AKey, const UnicodeString AValue)
+void TUsage::Set(UnicodeString AKey, UnicodeString AValue)
 {
   if (FCollect)
   {
@@ -134,17 +134,17 @@ void TUsage::Set(const UnicodeString AKey, const UnicodeString AValue)
   }
 }
 //---------------------------------------------------------------------------
-void TUsage::Set(const UnicodeString AKey, intptr_t Value)
+void TUsage::Set(UnicodeString AKey, intptr_t Value)
 {
   Set(AKey, IntToStr(Value));
 }
 //---------------------------------------------------------------------------
-void TUsage::Set(const UnicodeString AKey, bool Value)
+void TUsage::Set(UnicodeString AKey, bool Value)
 {
   Set(AKey, intptr_t(Value ? 1 : 0));
 }
 //---------------------------------------------------------------------------
-UnicodeString TUsage::Get(const UnicodeString AKey) const
+UnicodeString TUsage::Get(UnicodeString AKey) const
 {
   TGuard Guard(*FCriticalSection); nb::used(Guard);
   UnicodeString Result = FValues->GetValue(AKey);
@@ -193,7 +193,7 @@ void TUsage::UpdateCurrentVersion()
   Set("CurrentVersion", CompoundVersion);
 }
 //---------------------------------------------------------------------------
-void TUsage::ResetValue(const UnicodeString AKey)
+void TUsage::ResetValue(UnicodeString AKey)
 {
   intptr_t Index = FValues->IndexOfName(AKey);
   if (Index >= 0)
@@ -209,7 +209,7 @@ void TUsage::ResetLastExceptions()
   ResetValue(LastUpdateExceptionCounter);
 }
 //---------------------------------------------------------------------------
-void TUsage::Inc(const UnicodeString AKey, intptr_t Increment)
+void TUsage::Inc(UnicodeString AKey, intptr_t Increment)
 {
   if (FCollect)
   {
@@ -219,7 +219,7 @@ void TUsage::Inc(const UnicodeString AKey, intptr_t Increment)
   }
 }
 //---------------------------------------------------------------------------
-void TUsage::Inc(const UnicodeString AKey, TCounters & Counters, intptr_t Increment)
+void TUsage::Inc(UnicodeString AKey, TCounters & Counters, intptr_t Increment)
 {
   TCounters::iterator i = Counters.find(AKey);
   if (i != Counters.end())
@@ -232,7 +232,7 @@ void TUsage::Inc(const UnicodeString AKey, TCounters & Counters, intptr_t Increm
   }
 }
 //---------------------------------------------------------------------------
-void TUsage::SetMax(const UnicodeString AKey, intptr_t Value)
+void TUsage::SetMax(UnicodeString AKey, intptr_t Value)
 {
   if (FCollect)
   {
@@ -242,7 +242,7 @@ void TUsage::SetMax(const UnicodeString AKey, intptr_t Value)
   }
 }
 //---------------------------------------------------------------------------
-void TUsage::SetMax(const UnicodeString AKey, intptr_t Value,
+void TUsage::SetMax(UnicodeString AKey, intptr_t Value,
   TCounters & Counters)
 {
   TCounters::iterator i = Counters.find(AKey);
@@ -278,7 +278,7 @@ void TUsage::SetCollect(bool Value)
   }
 }
 //---------------------------------------------------------------------------
-UnicodeString TUsage::Serialize(const UnicodeString ADelimiter, const UnicodeString AFilter) const
+UnicodeString TUsage::Serialize(UnicodeString ADelimiter, UnicodeString AFilter) const
 {
   TGuard Guard(*FCriticalSection); nb::used(Guard);
   UnicodeString Result;
@@ -296,8 +296,8 @@ UnicodeString TUsage::Serialize(const UnicodeString ADelimiter, const UnicodeStr
 }
 //---------------------------------------------------------------------------
 void TUsage::Serialize(
-  UnicodeString & List, const UnicodeString AName, const TCounters & Counters,
-  const UnicodeString ADelimiter, const UnicodeString AFilterUpper) const
+  UnicodeString & List, UnicodeString AName, const TCounters & Counters,
+  UnicodeString ADelimiter, UnicodeString AFilterUpper) const
 {
   TCounters::const_iterator i = Counters.begin();
   while (i != Counters.end())
@@ -308,8 +308,8 @@ void TUsage::Serialize(
 }
 //---------------------------------------------------------------------------
 void TUsage::Serialize(
-  UnicodeString & AList, const UnicodeString AName, const UnicodeString AValue,
-  const UnicodeString ADelimiter, const UnicodeString AFilterUpper) const
+  UnicodeString & AList, UnicodeString AName, UnicodeString AValue,
+  UnicodeString ADelimiter, UnicodeString AFilterUpper) const
 {
   if (AFilterUpper.IsEmpty() ||
       (UpperCase(AName).Pos(AFilterUpper) > 0) ||
@@ -319,8 +319,8 @@ void TUsage::Serialize(
   }
 }
 //---------------------------------------------------------------------------
-int TUsage::CalculateCounterSize(int64_t Size)
+intptr_t TUsage::CalculateCounterSize(int64_t Size)
 {
-  const int SizeCounterFactor = 10240;
-  return (int)((Size <= 0) ? 0 : (Size < SizeCounterFactor ? 1 : Size / SizeCounterFactor));
+  constexpr intptr_t SizeCounterFactor = 10 * 1024;
+  return (intptr_t)((Size <= 0) ? 0 : (Size < SizeCounterFactor ? 1 : Size / SizeCounterFactor));
 }
