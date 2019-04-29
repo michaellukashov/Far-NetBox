@@ -173,9 +173,9 @@ struct ssh_gss_liblist* ssh_gss_setup(Conf* conf, void* frontend) // MPEXT
     lib->gsslogmsg = "Using SSPI from SECUR32.DLL";
     lib->handle = (void*)module;
 
-#pragma option push -w-cpt
+//#pragma option push -w-cpt
     PUTTY_GET_WINDOWS_FUNCTION(module, AcquireCredentialsHandleA);
-#pragma option pop
+//#pragma option pop
     PUTTY_GET_WINDOWS_FUNCTION(module, InitializeSecurityContextA);
     PUTTY_GET_WINDOWS_FUNCTION(module, FreeContextBuffer);
     PUTTY_GET_WINDOWS_FUNCTION(module, FreeCredentialsHandle);
