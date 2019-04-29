@@ -34,9 +34,9 @@ public:
   __property char * Data = { read=GetData };
   ROProperty<char *> Data{nb::bind(&TFileBuffer::GetData, this)};
   __property int Size = { read=FSize, write=SetSize };
-  RWProperty<intptr_t> Size{nb::bind(&TFileBuffer::GetSize, this), nb::bind(&TFileBuffer::SetSize, this)};
+  RWProperty<int64_t> Size{nb::bind(&TFileBuffer::GetSize, this), nb::bind(&TFileBuffer::SetSize, this)};
   __property int Position = { read=GetPosition, write=SetPosition };
-  RWProperty<intptr_t> Position{nb::bind(&TFileBuffer::GetPosition, this), nb::bind(&TFileBuffer::SetPosition, this)};
+  RWProperty<int64_t> Position{nb::bind(&TFileBuffer::GetPosition, this), nb::bind(&TFileBuffer::SetPosition, this)};
 
 public:
   TMemoryStream * GetMemory() const { return FMemory.get(); }

@@ -7,7 +7,7 @@
 #include "FileOperationProgress.h"
 #include "CoreMain.h"
 //---------------------------------------------------------------------------
-constexpr int64_t TRANSFER_BUF_SIZE = (32 * 1024);
+constexpr uint64_t TRANSFER_BUF_SIZE = (32 * 1024);
 //---------------------------------------------------------------------------
 TFileOperationStatistics::TFileOperationStatistics() noexcept
 {
@@ -158,7 +158,7 @@ void TFileOperationProgressType::Assign(const TFileOperationProgressType &Other)
 void TFileOperationProgressType::AssignButKeepSuspendState(const TFileOperationProgressType &Other)
 {
   TGuard Guard(*FSection); nb::used(Guard);
-  TValueRestorer<uintptr_t> SuspendTimeRestorer(FSuspendTime); nb::used(SuspendTimeRestorer);
+  TValueRestorer<uint64_t> SuspendTimeRestorer(FSuspendTime); nb::used(SuspendTimeRestorer);
   TValueRestorer<bool> SuspendedRestorer(FSuspended); nb::used(SuspendedRestorer);
 
   Assign(Other);
@@ -879,7 +879,7 @@ void TFileOperationProgressType::AddSkippedFileSize(int64_t ASize)
 }
 //---------------------------------------------------------------------------
 // Use in SCP protocol only
-uintptr_t TFileOperationProgressType::TransferBlockSize()
+uint64_t TFileOperationProgressType::TransferBlockSize()
 {
   int64_t Result = TRANSFER_BUF_SIZE;
   if (FTransferredSize + Result > FTransferSize)
@@ -887,10 +887,10 @@ uintptr_t TFileOperationProgressType::TransferBlockSize()
     Result = FTransferSize - FTransferredSize;
   }
   Result = AdjustToCPSLimit(Result);
-  return nb::ToUIntPtr(Result);
+  return Result;
 }
 //---------------------------------------------------------------------------
-uintptr_t TFileOperationProgressType::StaticBlockSize()
+uint64_t TFileOperationProgressType::StaticBlockSize()
 {
   return TRANSFER_BUF_SIZE;
 }
