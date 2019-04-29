@@ -41,7 +41,7 @@ UnicodeString TCustomFileSystem::CreateTargetDirectory(
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall TCustomFileSystem::GetHomeDirectory()
+UnicodeString TCustomFileSystem::GetHomeDirectory()
 {
   throw Exception("Not implemented");
 }

@@ -171,7 +171,7 @@ public:
   __property bool ReopenQueried = { read = FReopenQueried, write = FReopenQueried };
 
   virtual ExtException *Clone() const override;
-  virtual void __fastcall Rethrow() override;
+  virtual void Rethrow() override;
 
   bool GetReopenQueried() const { return FReopenQueried; }
   void SetReopenQueried(bool Value) { FReopenQueried = Value; }
