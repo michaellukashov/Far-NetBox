@@ -7950,10 +7950,20 @@ matched:;
      */
     {
       int klen = ssh_rsakex_klen(s->rsakey);
-      int nbits = klen - (2 * ssh->kex->hash->hlen * 8 + 49);
+
+      int nbits;
       int i, byte = 0;
       unsigned char* kstr1, *kstr2, *outstr;
       int kstr1len, kstr2len, outstrlen;
+
+            const struct ssh_rsa_kex_extra *extra =
+                (const struct ssh_rsa_kex_extra *)ssh->kex->extra;
+            if (klen < extra->minklen) {
+                bombout(("Server sent RSA key with less bits than the minimum size for key exchange"));
+                crStopV;
+            }
+
+            nbits = klen - (2*ssh->kex->hash->hlen*8 + 49);
 
       s->K = bn_power_2(nbits - 1);
 
