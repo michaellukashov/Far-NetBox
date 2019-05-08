@@ -845,7 +845,7 @@ bool __fastcall TTerminalManager::HandleMouseWheel(WPARAM WParam, LPARAM LParam)
           // FindVCLWindow stops on window level, when the window is not active? or when there's a modal window over it?
           // (but in any case, when we have operation running on top of Synchronization checklist).
           // WORKAROUND: The while loop does what AllLevels parameter of ControlAtPos should do, but it's broken.
-          // See http://qc.embarcadero.com/wc/qcmain.aspx?d=82143
+          // Based on (now removed) Embarcadero QC 82143.
           while ((Control2 = dynamic_cast<TWinControl *>(Control->ControlAtPos(Control->ScreenToClient(Point), false, true))) != NULL)
           {
             Control = Control2;
@@ -1674,7 +1674,6 @@ bool __fastcall TTerminalManager::UploadPublicKey(
     bool ExceptionOnFail;
     UnicodeString TemporaryDir;
 
-    bool WrongRights = false;
     const UnicodeString SshFolder = L".ssh";
     const UnicodeString AuthorizedKeysFile = L"authorized_keys";
     UnicodeString AuthorizedKeysFilePath = FORMAT(L"%s/%s", (SshFolder, AuthorizedKeysFile));
@@ -1706,6 +1705,9 @@ bool __fastcall TTerminalManager::UploadPublicKey(
         throw;
       }
     }
+
+    bool Installed = false;
+    bool WrongRights = false;
 
     AutoReadDirectory = Terminal->AutoReadDirectory;
     ExceptionOnFail = Terminal->ExceptionOnFail;
@@ -1812,6 +1814,8 @@ bool __fastcall TTerminalManager::UploadPublicKey(
           Terminal->LogEvent(FORMAT(L"Uploading updated \"%s\" file...", AuthorizedKeysFile));
           Terminal->CopyToRemote(Files.get(), SshFolderAbsolutePath, &CopyParam, cpNoConfirmation, NULL);
         }
+
+        Installed = true;
       }
     }
     __finally
@@ -1825,23 +1829,26 @@ bool __fastcall TTerminalManager::UploadPublicKey(
       CloseAutheticateForm(); // When uploading from Login dialog
     }
 
-    Terminal->LogEvent("Public key installation done.");
-    if (AdHocTerminal)
+    if (Installed)
     {
-      TerminalOwner.reset(NULL);
-    }
-    else
-    {
-      Terminal->Log->AddSeparator();
-    }
+      Terminal->LogEvent("Public key installation done.");
+      if (AdHocTerminal)
+      {
+        TerminalOwner.reset(NULL);
+      }
+      else
+      {
+        Terminal->Log->AddSeparator();
+      }
 
-    UnicodeString Message = FMTLOAD(LOGIN_PUBLIC_KEY_UPLOADED, (Comment));
-    if (WrongRights)
-    {
-      Message += L"\n\n" + FMTLOAD(LOGIN_PUBLIC_KEY_PERMISSIONS, (AuthorizedKeysFilePath));
-    }
+      UnicodeString Message = FMTLOAD(LOGIN_PUBLIC_KEY_UPLOADED, (Comment));
+      if (WrongRights)
+      {
+        Message += L"\n\n" + FMTLOAD(LOGIN_PUBLIC_KEY_PERMISSIONS, (AuthorizedKeysFilePath));
+      }
 
-    MessageDialog(Message, qtInformation, qaOK, HELP_LOGIN_AUTHORIZED_KEYS);
+      MessageDialog(Message, qtInformation, qaOK, HELP_LOGIN_AUTHORIZED_KEYS);
+    }
   }
 
   return Result;

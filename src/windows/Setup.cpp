@@ -1193,7 +1193,7 @@ UnicodeString GetEnableAutomaticUpdatesUrl()
 //---------------------------------------------------------------------------
 void EnableAutomaticUpdates()
 {
-  OpenBrowser(GetEnableAutomaticUpdatesUrl());
+  ShowHelp(HELP_AUTOMATIC_UPDATE);
 }
 //---------------------------------------------------------------------------
 static void OpenHistory(void * /*Data*/, TObject * /*Sender*/, unsigned int & /*Answer*/)
@@ -1545,7 +1545,7 @@ static void InsertDonateLink(void * /*Data*/, TObject * Sender)
     InsertPanelToMessageDialog(Dialog, Panel);
 
     UnicodeString DocumentBody = LoadStr(UPDATES_DONATE_HTML);
-    DocumentBody = ReplaceStr(DocumentBody, L"%DONATE_URL%", GetEnableAutomaticUpdatesUrl());
+    DocumentBody = ReplaceStr(DocumentBody, L"%DONATE_URL%", AppendUrlParams(LoadStr(DONATE_URL), L"automaticupdates=1"));
     UnicodeString AboutStoreUrl = LoadStr(ABOUT_STORE_URL);
     DocumentBody = ReplaceStr(DocumentBody, L"%STORE_URL%", AboutStoreUrl);
     UnicodeString StoreButtonUrl = ProgramUrl(LoadStr(STORE_GET_IMG_URL));
