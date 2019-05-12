@@ -114,7 +114,7 @@ UnicodeString __fastcall TCopyParamType::GenerateAssemblyCode(TAssemblyLanguage 
 void TCopyParamType::DoGetInfoStr(
   UnicodeString Separator, intptr_t Options,
   UnicodeString &Result, bool &SomeAttrIncluded,
-  const UnicodeString ALink, UnicodeString &ScriptArgs) const //*TAssemblyLanguage Language, UnicodeString & AssemblyCode) const
+  const UnicodeString /*ALink*/, UnicodeString &/*ScriptArgs*/) const //*TAssemblyLanguage Language, UnicodeString & AssemblyCode) const
 {
   TCopyParamType Defaults;
   TCopyParamType ScriptNonDefaults;
@@ -569,7 +569,7 @@ void TCopyParamType::Assign(const TCopyParamType *Source)
 #undef COPY
 #undef COPY2
 #define COPY(Prop) Set ## Prop(Source->Get ## Prop())
-#define COPY2(Prop) Prop = Source->##Prop
+#define COPY2(Prop) F##Prop = Source->F##Prop
   COPY(FileNameCase);
   COPY(PreserveReadOnly);
   COPY(PreserveTime);
@@ -993,7 +993,7 @@ void TCopyParamType::Save(THierarchicalStorage * Storage, const TCopyParamType *
 }
 //---------------------------------------------------------------------------
 #define C(Property) (Get ## Property() == rhp.Get ## Property())
-#define C2(Property) (Property == rhp.## Property)
+#define C2(Property) (F##Property == rhp.F##Property)
 
 bool TCopyParamType::operator==(const TCopyParamType &rhp) const
 {

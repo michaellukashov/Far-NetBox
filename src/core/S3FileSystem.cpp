@@ -36,7 +36,7 @@ __removed #pragma package(smart_init)
 //---------------------------------------------------------------------------
 static std::unique_ptr<TCriticalSection> LibS3Section(TraceInitPtr(std::make_unique<TCriticalSection>()));
 //---------------------------------------------------------------------------
-UTF8String LibS3Delimiter(L"/");
+static UTF8String LibS3Delimiter(L"/");
 //---------------------------------------------------------------------------
 UnicodeString S3LibVersion()
 {
@@ -164,7 +164,7 @@ struct TLibS3CallbackData
 
   TLibS3CallbackData()
   {
-    Status = (S3Status) - 1;
+    Status = static_cast<S3Status>(-1);
     FileSystem = nullptr;
   }
 
@@ -290,7 +290,7 @@ void TS3FileSystem::LibS3ResponseDataCallback(const char *Data, size_t Size, voi
   TS3FileSystem *FileSystem = static_cast<TS3FileSystem *>(CallbackData);
   if (FileSystem->FTerminal->GetLog()->GetLogging() && !FileSystem->FResponseIgnore)
   {
-    UnicodeString Content = UnicodeString(UTF8String(Data, Size)).Trim();
+    UnicodeString Content = UnicodeString(UTF8String(Data, static_cast<intptr_t>(Size))).Trim();
     FileSystem->FResponse += Content;
   }
 }
@@ -814,7 +814,7 @@ S3Status TS3FileSystem::LibS3ListBucketCallback(
       File->SetFileName(FileName);
       File->SetType(FILETYPE_DEFAULT);
       File->SetModification(UnixToDateTime(Content->lastModified, dstmWin));
-      File->SetSize(Content->size);
+      File->SetSize(static_cast<int64_t>(Content->size));
       File->SetFileOwner(Data.FileSystem->MakeRemoteToken(Content->ownerId, Content->ownerDisplayName));
       Data.FileList->AddFile(File.release());
     }
@@ -886,8 +886,8 @@ void TS3FileSystem::ReadDirectoryInternal(
       Retry = false;
 
       S3_list_service(
-        FLibS3Protocol, FAccessKeyId.c_str(), FSecretAccessKey.c_str(), 0, FHostName.c_str(),
-        StrToS3(FAuthRegion), (int)MaxKeys, FRequestContext, FTimeout, &ListServiceHandler, &Data);
+        FLibS3Protocol, FAccessKeyId.c_str(), FSecretAccessKey.c_str(), nullptr, FHostName.c_str(),
+        StrToS3(FAuthRegion), static_cast<int>(MaxKeys), FRequestContext, FTimeout, &ListServiceHandler, &Data);
 
       HandleNonBucketStatus(Data, Retry);
     }
@@ -1109,7 +1109,7 @@ void TS3FileSystem::RemoteCreateDirectory(UnicodeString ADirName, bool /*Encrypt
       Retry = false;
 
       S3_create_bucket(
-        FLibS3Protocol, FAccessKeyId.c_str(), FSecretAccessKey.c_str(), NULL, FHostName.c_str(), StrToS3(BucketName),
+        FLibS3Protocol, FAccessKeyId.c_str(), FSecretAccessKey.c_str(), nullptr, FHostName.c_str(), StrToS3(BucketName),
         StrToS3(FAuthRegion), S3CannedAclPrivate, Region, FRequestContext, FTimeout, &ResponseHandler, &Data);
 
       HandleNonBucketStatus(Data, Retry);
@@ -1351,7 +1351,7 @@ int TS3FileSystem::LibS3MultipartCommitPutObjectDataCallback(int BufferSize, cha
   if (Data.Remaining > 0)
   {
     Result = std::min(BufferSize, Data.Remaining);
-    memcpy(Buffer, Data.Message.c_str() + Data.Message.Length() - Data.Remaining, Result);
+    memcpy(Buffer, Data.Message.c_str() + Data.Message.Length() - Data.Remaining, static_cast<size_t>(Result));
     Data.Remaining -= Result;
   }
   return Result;
@@ -1500,7 +1500,7 @@ void TS3FileSystem::Source(
         else
         {
           S3PutObjectHandler PutObjectHandler = { CreateResponseHandler(), LibS3PutObjectDataCallback };
-          S3_put_object(&BucketContext, StrToS3(Key), AHandle.Size, &PutProperties, FRequestContext, FTimeout, &PutObjectHandler, &Data);
+          S3_put_object(&BucketContext, StrToS3(Key), static_cast<uint64_t>(AHandle.Size), &PutProperties, FRequestContext, FTimeout, &PutObjectHandler, &Data);
         }
 
         // The "exception" was already seen by the user, its presence mean an accepted abort of the operation.
@@ -1514,7 +1514,7 @@ void TS3FileSystem::Source(
         if (Multipart)
         {
           RawByteString PartCommitTag =
-            FORMAT("  <Part><PartNumber>%d</PartNumber><ETag>%s</ETag></Part>\n", Part, Data.ETag);
+            FORMAT("  <Part><PartNumber>%d</PartNumber><ETag>%s</ETag></Part>\n", Part, Data.ETag.c_str());
           MultipartCommitPutObjectDataCallbackData.Message += PartCommitTag;
         }
       });
@@ -1700,7 +1700,7 @@ void TS3FileSystem::Sink(
         TAutoFlag ResponseIgnoreSwitch(FResponseIgnore); nb::used(ResponseIgnoreSwitch);
         S3GetObjectHandler GetObjectHandler = { CreateResponseHandler(), LibS3GetObjectDataCallback };
         S3_get_object(
-          &BucketContext, StrToS3(Key), nullptr, Stream->Position(), 0, FRequestContext, FTimeout, &GetObjectHandler, &Data);
+          &BucketContext, StrToS3(Key), nullptr, static_cast<uint64_t>(Stream->Position()), 0, FRequestContext, FTimeout, &GetObjectHandler, &Data);
 
         // The "exception" was already seen by the user, its presence mean an accepted abort of the operation.
         if (Data.Exception.get() == nullptr)
