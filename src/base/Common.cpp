@@ -1200,7 +1200,7 @@ UnicodeString ApiPath(UnicodeString APath)
   }*/
 
   // Max path for directories is 12 characters shorter than max path for files
-  if (Path.Length() >= MAX_PATH - 12)
+  if (APath.Length() >= MAX_PATH - 12)
   {
     __removed if (GetConfiguration() != nullptr)
     {
