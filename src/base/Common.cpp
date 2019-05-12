@@ -1199,7 +1199,8 @@ UnicodeString ApiPath(UnicodeString APath)
     Result = ExpandFileName(Result);
   }*/
 
-  if (IsWin7() || (Result.Length() >= MAX_PATH))
+  // Max path for directories is 12 characters shorter than max path for files
+  if (Path.Length() >= MAX_PATH - 12)
   {
     __removed if (GetConfiguration() != nullptr)
     {
