@@ -264,7 +264,7 @@ class TTunnelUI : public TSessionUI
 public:
   TTunnelUI() = delete;
   explicit TTunnelUI(TTerminal *Terminal) noexcept;
-  virtual ~TTunnelUI() noexcept = default;
+  virtual ~TTunnelUI() = default;
 
   void Information(UnicodeString AStr, bool Status) override;
   uint32_t QueryUser(UnicodeString AQuery,

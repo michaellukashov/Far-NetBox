@@ -104,7 +104,7 @@ class TTabbedDialog : public TWinSCPDialog
   friend class TTabButton;
 public:
   explicit TTabbedDialog(TCustomFarPlugin *AFarPlugin, intptr_t TabCount) noexcept;
-  virtual ~TTabbedDialog() noexcept = default;
+  virtual ~TTabbedDialog() = default;
 
   intptr_t GetTab() const { return FTab; }
 
@@ -8265,7 +8265,7 @@ class TQueueDialog : TFarDialog
 public:
   explicit TQueueDialog(TCustomFarPlugin *AFarPlugin,
     TWinSCPFileSystem *AFileSystem, bool ClosingPlugin) noexcept;
-  virtual ~TQueueDialog() noexcept = default;
+  virtual ~TQueueDialog() = default;
 
   bool Execute(TTerminalQueueStatus *Status);
 

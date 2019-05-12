@@ -870,7 +870,7 @@ class vtable<property<IsThrowing, HasStrongExceptGuarantee, FormalArgs...>> {
   }
 
 public:
-  vtable() noexcept = default;
+  vtable() = default;
 
   /// Initialize an object at the given position
   template <typename T>

@@ -30,7 +30,7 @@ public:
   static bool classof(const Exception *Obj) { return Obj->is(OBJECT_CLASS_ExtException); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_ExtException) || Exception::is(Kind); }
 public:
-  ExtException() noexcept = default;
+  ExtException() = default;
   virtual ~ExtException() noexcept;
   explicit ExtException(const Exception *E);
   explicit ExtException(TObjectClassId Kind, const Exception *E);

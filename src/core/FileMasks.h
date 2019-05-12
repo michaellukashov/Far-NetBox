@@ -80,7 +80,7 @@ private:
 
   struct TMaskMask : public TObject
   {
-    TMaskMask() noexcept = default;
+    TMaskMask() = default;
     enum
     {
       Any,
@@ -92,7 +92,7 @@ private:
 
   struct TMask : public TObject
   {
-    TMask() noexcept = default;
+    TMask() = default;
     TMaskMask FileNameMask;
     TMaskMask DirectoryMask;
 
@@ -163,7 +163,7 @@ class NB_CORE_EXPORT TCustomCommand : public TObject
 public:
   TCustomCommand() noexcept;
   // Needs an explicit virtual destructor, as is has virtual methods
-  virtual ~TCustomCommand() noexcept = default;
+  virtual ~TCustomCommand() = default;
 
   UnicodeString Complete(UnicodeString Command, bool LastPass);
   virtual void Validate(UnicodeString Command);
@@ -245,7 +245,7 @@ public:
   explicit TFileCustomCommand(const TCustomCommandData &Data, UnicodeString APath) noexcept;
   explicit TFileCustomCommand(const TCustomCommandData &Data, UnicodeString APath,
     UnicodeString AFileName, UnicodeString FileList) noexcept;
-  virtual ~TFileCustomCommand() noexcept = default;
+  virtual ~TFileCustomCommand() = default;
 
   void Validate(UnicodeString Command) override;
   void ValidatePattern(UnicodeString Command,

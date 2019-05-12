@@ -899,7 +899,7 @@ public:
   TSecondaryTerminal() noexcept : TTerminal(OBJECT_CLASS_TSecondaryTerminal) {}
   explicit TSecondaryTerminal(TTerminal *MainTerminal) noexcept;
   explicit TSecondaryTerminal(TObjectClassId Kind, TTerminal *MainTerminal) noexcept;
-  virtual ~TSecondaryTerminal() noexcept = default;
+  virtual ~TSecondaryTerminal() = default;
   void Init(TSessionData *ASessionData, TConfiguration *AConfiguration,
     UnicodeString Name);
 

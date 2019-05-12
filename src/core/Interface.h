@@ -212,7 +212,7 @@ struct TClipboardHandler
 {
   NB_DISABLE_COPY(TClipboardHandler)
 public:
-  TClipboardHandler() noexcept = default;
+  TClipboardHandler() = default;
 
   UnicodeString Text;
 

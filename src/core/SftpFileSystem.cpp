@@ -1441,7 +1441,7 @@ public:
   {
   }
 
-  virtual ~TSFTPFixedLenQueue() noexcept = default;
+  virtual ~TSFTPFixedLenQueue() = default;
 
   bool Init(intptr_t QueueLen)
   {
@@ -1547,7 +1547,7 @@ public:
   {
   }
 
-  virtual ~TSFTPDownloadQueue() noexcept = default;
+  virtual ~TSFTPDownloadQueue() = default;
 
   bool Init(intptr_t QueueLen, const RawByteString AHandle, int64_t ATransferred,
     TFileOperationProgressType *AOperationProgress)
@@ -1775,7 +1775,7 @@ public:
   {
   }
 
-  virtual ~TSFTPLoadFilesPropertiesQueue() noexcept = default;
+  virtual ~TSFTPLoadFilesPropertiesQueue() = default;
 
   bool Init(uintptr_t QueueLen, TStrings *AFileList)
   {
@@ -1857,7 +1857,7 @@ public:
   {
   }
 
-  virtual ~TSFTPCalculateFilesChecksumQueue() noexcept = default;
+  virtual ~TSFTPCalculateFilesChecksumQueue() = default;
 
   bool Init(intptr_t QueueLen, UnicodeString Alg, TStrings *AFileList)
   {

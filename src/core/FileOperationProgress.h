@@ -49,7 +49,7 @@ public:
   friend class TFileOperationProgressType;
   public:
     TPersistence() noexcept;
-    TPersistence(const TPersistence&) noexcept = default;
+    TPersistence(const TPersistence&) = default;
     TPersistence& operator=(const TPersistence&);
     __property TFileOperationStatistics * Statistics = { read = FStatistics, write = FStatistics };
     TFileOperationStatistics *& Statistics{FStatistics};
@@ -210,7 +210,7 @@ public:
     TFileOperationProgressEvent AOnProgress, TFileOperationFinishedEvent AOnFinished,
     TFileOperationProgressType *Parent = nullptr) noexcept;
   virtual ~TFileOperationProgressType() noexcept;
-  TFileOperationProgressType(const TFileOperationProgressType&) noexcept = default;
+  TFileOperationProgressType(const TFileOperationProgressType&) = default;
   TFileOperationProgressType& operator=(const TFileOperationProgressType&);
   void Assign(const TFileOperationProgressType &Other);
   void AssignButKeepSuspendState(const TFileOperationProgressType &Other);
@@ -303,7 +303,7 @@ class NB_CORE_EXPORT TSuspendFileOperationProgress : public TObject
 {
   NB_DISABLE_COPY(TSuspendFileOperationProgress)
 public:
-  TSuspendFileOperationProgress() noexcept = default;
+  TSuspendFileOperationProgress() = default;
   explicit TSuspendFileOperationProgress(TFileOperationProgressType *OperationProgress) noexcept :
     FOperationProgress(OperationProgress)
   {

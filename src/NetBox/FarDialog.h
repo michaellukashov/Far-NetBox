@@ -393,7 +393,7 @@ public:
 public:
   explicit TFarButton(TFarDialog *ADialog) noexcept;
   explicit TFarButton(TObjectClassId Kind, TFarDialog *ADialog) noexcept;
-  virtual ~TFarButton() noexcept = default;
+  virtual ~TFarButton() = default;
 
   virtual UnicodeString GetCaption() const { return GetData(); }
   virtual void SetCaption(const UnicodeString Value) { SetData(Value); }

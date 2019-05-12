@@ -77,7 +77,7 @@ public:
     const TCustomCommandData &Data, UnicodeString RemotePath, UnicodeString LocalPath,
     UnicodeString AFileName, UnicodeString LocalFileName,
     UnicodeString FileList) noexcept;
-  virtual ~TLocalCustomCommand() noexcept = default;
+  virtual ~TLocalCustomCommand() = default;
 
   virtual bool IsFileCommand(UnicodeString Command) const;
   bool HasLocalFileName(UnicodeString Command) const;

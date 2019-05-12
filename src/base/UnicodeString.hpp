@@ -17,7 +17,7 @@ class NB_CORE_EXPORT BaseStringT : public CMStringT<CharT, NBChTraitsCRT<CharT>>
   using BaseY = CMStringT<YCHAR, NBChTraitsCRT<YCHAR>>;
 
 public:
-  BaseStringT() noexcept = default;
+  BaseStringT() = default;
 //  BaseStringT(BaseStringT&&) = default;
 
   BaseStringT(const BaseStringT &rhs) :
@@ -57,7 +57,7 @@ public:
     BaseT(Str, nb::ToInt(Length))
   {}
   explicit BaseStringT(intptr_t Length, CharT Ch) noexcept : BaseT(Ch, nb::ToInt(Length)) {}
-  ~BaseStringT() noexcept = default;
+  ~BaseStringT() = default;
 
   const CharT *c_str() const { return reinterpret_cast<const CharT *>(BaseT::c_str()); }
   const CharT *data() const { return BaseT::c_str(); }
@@ -380,7 +380,7 @@ class NB_CORE_EXPORT RawByteString : public BaseStringT<char>
 {
   using BaseT = BaseStringT<char>;
 public:
-  RawByteString() noexcept = default;
+  RawByteString() = default;
   RawByteString(const BaseStringT<wchar_t> &Str) :
     BaseT(Str.c_str(), nb::ToInt(Str.GetLength()))
   {}
@@ -398,7 +398,7 @@ public:
   explicit RawByteString(const unsigned char *Str, intptr_t Length) :
     BaseT(reinterpret_cast<const char *>(Str), nb::ToInt(Length))
   {}
-  ~RawByteString() noexcept = default;
+  ~RawByteString() = default;
 
   // inline operator BaseT &() { return *static_cast<BaseT *>(this); }
 

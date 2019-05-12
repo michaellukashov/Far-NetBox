@@ -85,7 +85,7 @@ public:
   static bool classof(const Exception *Obj) { return Obj->is(OBJECT_CLASS_Exception); }
   virtual bool is(TObjectClassId Kind) const { return (Kind == FKind); }
 public:
-  Exception() noexcept = default;
+  Exception() = default;
   explicit Exception(TObjectClassId Kind, const wchar_t *Msg) noexcept;
   explicit Exception(const wchar_t *Msg) noexcept;
   explicit Exception(TObjectClassId Kind, const UnicodeString Msg) noexcept;
@@ -95,7 +95,7 @@ public:
   explicit Exception(TObjectClassId Kind, const UnicodeString Msg, intptr_t AHelpContext) noexcept;
   explicit Exception(TObjectClassId Kind, Exception *E, intptr_t Ident) noexcept;
   explicit Exception(TObjectClassId Kind, intptr_t Ident) noexcept;
-  virtual ~Exception() noexcept = default;
+  virtual ~Exception() = default;
 
 private:
   TObjectClassId FKind{0};
@@ -351,7 +351,7 @@ struct NB_CORE_EXPORT TSearchRec : public TObject
 {
   NB_DISABLE_COPY(TSearchRec)
 public:
-  TSearchRec() noexcept = default;
+  TSearchRec() = default;
   void Assign(const TSearchRec& rhs)
   {
     Time = rhs.Time;

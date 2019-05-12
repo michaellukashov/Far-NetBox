@@ -32,8 +32,8 @@ class TUserAction : public TObject
 {
   NB_DISABLE_COPY(TUserAction)
 public:
-  explicit TUserAction() noexcept = default;
-  virtual ~TUserAction() noexcept = default;
+  explicit TUserAction() = default;
+  virtual ~TUserAction() = default;
 
   virtual void Execute(void *Arg) = 0;
   virtual bool Force() const { return false; }
@@ -127,7 +127,7 @@ public:
   {
   }
 
-  virtual ~TPromptUserAction() noexcept = default;
+  virtual ~TPromptUserAction() = default;
 
   void Execute(void *Arg) override
   {
@@ -1231,7 +1231,7 @@ public:
 
 public:
   explicit TBackgroundTerminal(TTerminal *MainTerminal) noexcept;
-  virtual ~TBackgroundTerminal() noexcept = default;
+  virtual ~TBackgroundTerminal() = default;
 
   void Init(
     TSessionData *SessionData, TConfiguration *Configuration,

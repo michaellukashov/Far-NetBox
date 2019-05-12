@@ -26,7 +26,7 @@ public:
   explicit TNamedObject() noexcept : TPersistent(OBJECT_CLASS_TNamedObject), FHidden(false) {}
   explicit TNamedObject(TObjectClassId Kind) noexcept : TPersistent(Kind), FHidden(false) {}
   explicit TNamedObject(TObjectClassId Kind, const UnicodeString AName) noexcept;
-  virtual ~TNamedObject() noexcept = default;
+  virtual ~TNamedObject() = default;
 
   bool IsSameName(const UnicodeString AName) const;
   virtual intptr_t Compare(const TNamedObject *Other) const;

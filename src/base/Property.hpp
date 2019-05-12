@@ -143,10 +143,10 @@ public:
   {
     Expects(_getter != nullptr);
   }
-  ROProperty(const ROProperty&) noexcept = default;
-  ROProperty(ROProperty&&) noexcept = default;
-  ROProperty& operator=(const ROProperty&) noexcept = default;
-  ROProperty& operator=(ROProperty&&) noexcept = default;
+  ROProperty(const ROProperty&) = default;
+  ROProperty(ROProperty&&) = default;
+  ROProperty& operator=(const ROProperty&) = default;
+  ROProperty& operator=(ROProperty&&) = default;
 //  ROProperty(const T& in) : data(in) {}
 //  ROProperty(T&& in) : data(std::forward<T>(in)) {}
   constexpr T operator()() const
@@ -207,10 +207,10 @@ public:
     Expects(_getter != nullptr);
     Expects(_setter != nullptr);
   }
-  RWProperty(const RWProperty&) noexcept = default;
-  RWProperty(RWProperty&&) noexcept = default;
+  RWProperty(const RWProperty&) = default;
+  RWProperty(RWProperty&&) = default;
   RWProperty& operator=(const RWProperty&) = default;
-  RWProperty& operator=(RWProperty&&) noexcept = default;
+  RWProperty& operator=(RWProperty&&) = default;
 //  RWProperty(const T& in) : data(in) {}
 //  RWProperty(T&& in) : data(std::forward<T>(in)) {}
 //  T const& get() const {

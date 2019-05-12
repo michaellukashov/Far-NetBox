@@ -137,7 +137,7 @@ public:
 class NB_CORE_EXPORT TFileSystemIntf
 {
 public:
-  virtual ~TFileSystemIntf() noexcept = default;
+  virtual ~TFileSystemIntf() = default;
 
   virtual void Init(void *) = 0;
   virtual void FileTransferProgress(int64_t TransferSize, int64_t Bytes) = 0;

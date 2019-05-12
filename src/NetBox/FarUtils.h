@@ -11,7 +11,7 @@ class CNBFile : public TObject
 {
   NB_DISABLE_COPY(CNBFile)
   public:
-    CNBFile() noexcept = default;
+    CNBFile() = default;
     ~CNBFile() noexcept
     {
       Close();

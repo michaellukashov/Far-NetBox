@@ -402,7 +402,7 @@ public:
 protected:
   TCustomFarPanelItem() = delete;
   explicit TCustomFarPanelItem(TObjectClassId Kind) noexcept : TObject(Kind) {}
-  virtual ~TCustomFarPanelItem() noexcept = default;
+  virtual ~TCustomFarPanelItem() = default;
   virtual void GetData(
     DWORD &Flags, UnicodeString &AFileName, int64_t &Size,
     DWORD &FileAttributes,
@@ -453,7 +453,7 @@ class THintPanelItem final : public TCustomFarPanelItem
 {
 public:
   explicit THintPanelItem(const UnicodeString AHint) noexcept;
-  virtual ~THintPanelItem() noexcept = default;
+  virtual ~THintPanelItem() = default;
 
 protected:
   void GetData(
@@ -515,7 +515,7 @@ public:
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TFarMenuItems) || TStringList::is(Kind); }
 public:
   explicit TFarMenuItems() noexcept;
-  virtual ~TFarMenuItems() noexcept = default;
+  virtual ~TFarMenuItems() = default;
   void AddSeparator(bool Visible = true);
   virtual intptr_t Add(UnicodeString Text, bool Visible = true);
 

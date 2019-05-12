@@ -230,7 +230,7 @@ public:
 
   struct TInfo : public TObject
   {
-    TInfo() noexcept = default;
+    TInfo() = default;
     TFileOperation Operation{foNone};
     TOperationSide Side{osLocal};
     UnicodeString Source;
@@ -413,7 +413,7 @@ public:
 protected:
   explicit TLocatedQueueItem(TObjectClassId Kind, TTerminal *Terminal) noexcept;
   TLocatedQueueItem(const TLocatedQueueItem &Source) noexcept;
-  virtual ~TLocatedQueueItem() noexcept = default;
+  virtual ~TLocatedQueueItem() = default;
 
   void DoExecute(TTerminal *Terminal) override;
   UnicodeString GetStartupDirectory() const override;
@@ -466,7 +466,7 @@ public:
   explicit TUploadQueueItem(TTerminal *Terminal,
     const TStrings *AFilesToCopy, const UnicodeString ATargetDir,
     const TCopyParamType *CopyParam, intptr_t Params, bool SingleFile, bool Parallel) noexcept;
-  virtual ~TUploadQueueItem() noexcept = default;
+  virtual ~TUploadQueueItem() = default;
 
 protected:
   void DoTransferExecute(TTerminal *Terminal, TParallelOperation *ParallelOperation) override;
@@ -482,7 +482,7 @@ public:
   explicit TDownloadQueueItem(TTerminal *Terminal,
     const TStrings *AFilesToCopy, const UnicodeString ATargetDir,
     const TCopyParamType *CopyParam, intptr_t Params, bool SingleFile, bool Parallel) noexcept;
-  virtual ~TDownloadQueueItem() noexcept = default;
+  virtual ~TDownloadQueueItem() = default;
 
 protected:
   void DoTransferExecute(TTerminal *Terminal, TParallelOperation *ParallelOperation) override;

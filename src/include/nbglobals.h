@@ -222,16 +222,16 @@ struct custom_nballocator_t
     using other = custom_nballocator_t<U>;
   };
 
-  custom_nballocator_t() noexcept = default;
-  custom_nballocator_t(const custom_nballocator_t&) noexcept = default;
-  custom_nballocator_t& operator=(const custom_nballocator_t&) noexcept = default;
-  custom_nballocator_t(custom_nballocator_t&&) noexcept = default;
-  custom_nballocator_t& operator=(custom_nballocator_t&&) noexcept = default;
+  custom_nballocator_t() = default;
+  custom_nballocator_t(const custom_nballocator_t&) = default;
+  custom_nballocator_t& operator=(const custom_nballocator_t&) = default;
+  custom_nballocator_t(custom_nballocator_t&&) = default;
+  custom_nballocator_t& operator=(custom_nballocator_t&&) = default;
 
   template<class U>
   custom_nballocator_t(const custom_nballocator_t<U>&) noexcept {}
 
-  ~custom_nballocator_t() noexcept = default;
+  ~custom_nballocator_t() = default;
 
   static pointer address(reference x) { return &x; }
   static const_pointer address(const_reference x) { return &x; }

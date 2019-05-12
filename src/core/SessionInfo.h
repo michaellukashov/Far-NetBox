@@ -77,7 +77,7 @@ public:
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TSessionUI) || TObject::is(Kind); }
 public:
   explicit TSessionUI(TObjectClassId Kind) noexcept : TObject(Kind) {}
-  virtual ~TSessionUI() noexcept = default;
+  virtual ~TSessionUI() = default;
   virtual void Information(UnicodeString AStr, bool Status) = 0;
   virtual uint32_t QueryUser(UnicodeString AQuery,
     TStrings *MoreMessages, uint32_t Answers, const TQueryParams *Params,

@@ -266,7 +266,7 @@ public:
   TRemoteDirectoryFile() noexcept;
   explicit TRemoteDirectoryFile(TObjectClassId Kind) noexcept;
   void Init();
-  virtual ~TRemoteDirectoryFile() noexcept = default;
+  virtual ~TRemoteDirectoryFile() = default;
 };
 //---------------------------------------------------------------------------
 NB_DEFINE_CLASS_ID(TRemoteParentDirectory);
@@ -278,7 +278,7 @@ public:
 public:
   TRemoteParentDirectory() = delete;
   explicit TRemoteParentDirectory(TTerminal *ATerminal) noexcept;
-  virtual ~TRemoteParentDirectory() noexcept = default;
+  virtual ~TRemoteParentDirectory() = default;
 };
 //---------------------------------------------------------------------------
 NB_DEFINE_CLASS_ID(TRemoteFileList);
@@ -413,7 +413,7 @@ class TRemoteDirectoryChangesCache : private TStringList
 public:
   TRemoteDirectoryChangesCache() = delete;
   explicit TRemoteDirectoryChangesCache(intptr_t MaxSize) noexcept;
-  virtual ~TRemoteDirectoryChangesCache() noexcept = default;
+  virtual ~TRemoteDirectoryChangesCache() = default;
 
   void AddDirectoryChange(UnicodeString SourceDir,
     UnicodeString Change, UnicodeString TargetDir);
@@ -583,7 +583,7 @@ class NB_CORE_EXPORT TValidProperties // : public TObject
 {
   CUSTOM_MEM_ALLOCATION_IMPL
 public:
-  TValidProperties() noexcept = default;
+  TValidProperties() = default;
   void Clear()
   {
     FValue = 0;

@@ -76,7 +76,7 @@ public:
 public:
   TObject() noexcept : FKind(OBJECT_CLASS_TObject) {}
   explicit TObject(TObjectClassId Kind) noexcept : FKind(Kind) {}
-  virtual ~TObject() noexcept = default;
+  virtual ~TObject() = default;
   virtual void Changed() {}
 private:
   TObjectClassId FKind{};
@@ -97,7 +97,7 @@ struct TPoint
 {
   int x{0};
   int y{0};
-  TPoint() noexcept = default;
+  TPoint() = default;
   TPoint(int ax, int ay) noexcept : x(ax), y(ay) {}
 };
 
@@ -109,7 +109,7 @@ struct TRect
   int Bottom{0};
   int Width() const { return Right - Left; }
   int Height() const { return Bottom - Top; }
-  TRect() noexcept = default;
+  TRect() = default;
   TRect(int left, int top, int right, int bottom) noexcept :
     Left(left),
     Top(top),
@@ -151,7 +151,7 @@ public:
 public:
   TPersistent() noexcept : TObject(OBJECT_CLASS_TPersistent) {}
   explicit TPersistent(TObjectClassId Kind) noexcept;
-  virtual ~TPersistent() noexcept = default;
+  virtual ~TPersistent() = default;
   virtual void Assign(const TPersistent *Source);
   virtual TPersistent *GetOwner();
 protected:
@@ -248,7 +248,7 @@ public:
 public:
   TStrings() noexcept;
   explicit TStrings(TObjectClassId Kind) noexcept;
-  virtual ~TStrings() noexcept = default;
+  virtual ~TStrings() = default;
   intptr_t Add(UnicodeString S, TObject *AObject = nullptr);
   virtual UnicodeString GetTextStr() const;
   virtual void SetTextStr(UnicodeString Text);
@@ -319,7 +319,7 @@ public:
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TStringList) || TStrings::is(Kind); }
 public:
   explicit TStringList(TObjectClassId Kind = OBJECT_CLASS_TStringList) noexcept;
-  virtual ~TStringList() noexcept = default;
+  virtual ~TStringList() = default;
 
   intptr_t Add(UnicodeString S);
   intptr_t AddObject(UnicodeString S, TObject *AObject) override;
@@ -485,8 +485,8 @@ enum TSeekOrigin
 class NB_CORE_EXPORT TStream : public TObject
 {
 public:
-  TStream() noexcept = default;
-  virtual ~TStream() noexcept = default;
+  TStream() = default;
+  virtual ~TStream() = default;
   virtual int64_t Read(void *Buffer, int64_t Count) = 0;
   virtual int64_t Write(const void *Buffer, int64_t Count) = 0;
   virtual int64_t Seek(int64_t Offset, int Origin) const = 0;
@@ -510,7 +510,7 @@ class NB_CORE_EXPORT THandleStream : public TStream
   NB_DISABLE_COPY(THandleStream)
 public:
   explicit THandleStream(HANDLE AHandle) noexcept;
-  virtual ~THandleStream() noexcept = default;
+  virtual ~THandleStream() = default;
   int64_t Read(void *Buffer, int64_t Count) override;
   int64_t Write(const void *Buffer, int64_t Count) override;
   int64_t Seek(int64_t Offset, int Origin) const override;
@@ -529,7 +529,7 @@ class NB_CORE_EXPORT TSafeHandleStream : public THandleStream
 {
 public:
   explicit TSafeHandleStream(THandle AHandle) noexcept;
-  virtual ~TSafeHandleStream() noexcept = default;
+  virtual ~TSafeHandleStream() = default;
   int64_t Read(void *Buffer, int64_t Count) override;
   int64_t Write(const void *Buffer, int64_t Count) override;
 };
@@ -678,7 +678,7 @@ struct TTimeStamp
 class NB_CORE_EXPORT TShortCut : public TObject
 {
 public:
-  explicit TShortCut() noexcept = default;
+  explicit TShortCut() = default;
   explicit TShortCut(intptr_t Value) noexcept;
   operator intptr_t() const;
   bool operator<(const TShortCut &rhs) const;
@@ -730,7 +730,7 @@ struct TMessageParams;
 class NB_CORE_EXPORT TGlobalsIntf
 {
 public:
-  virtual ~TGlobalsIntf() noexcept = default;
+  virtual ~TGlobalsIntf() = default;
 
   virtual HINSTANCE GetInstanceHandle() const = 0;
   virtual UnicodeString GetMsg(intptr_t Id) const = 0;
@@ -749,7 +749,7 @@ class NB_CORE_EXPORT TGlobals : public TGlobalsIntf, public TObject
 {
 public:
   TGlobals() noexcept;
-  virtual ~TGlobals() noexcept = default;
+  virtual ~TGlobals() = default;
 
 public:
   wchar_t Win32CSDVersion[128]{};

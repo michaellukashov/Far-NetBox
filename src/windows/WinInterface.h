@@ -716,7 +716,7 @@ private:
 class TConsole
 {
 public:
-  virtual ~TConsole() noexcept = default;
+  virtual ~TConsole() = default;
   virtual void Print(UnicodeString Str, bool FromBeginning = false, bool Error = false) = 0;
   void PrintLine(const UnicodeString & Str = UnicodeString(), bool Error = false);
   virtual bool Input(UnicodeString & Str, bool Echo, unsigned int Timer) = 0;

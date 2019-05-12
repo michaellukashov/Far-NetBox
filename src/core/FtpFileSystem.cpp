@@ -37,7 +37,7 @@ class TFileZillaImpl final : public TFileZillaIntf
 public:
   TFileZillaImpl() = delete;
   explicit TFileZillaImpl(TFTPFileSystem *FileSystem) noexcept;
-  virtual ~TFileZillaImpl() noexcept = default;
+  virtual ~TFileZillaImpl() = default;
 
   const wchar_t *Option(intptr_t OptionID) const override;
   intptr_t OptionVal(intptr_t OptionID) const override;

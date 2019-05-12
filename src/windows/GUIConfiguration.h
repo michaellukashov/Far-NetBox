@@ -30,7 +30,7 @@ public:
   TGUICopyParamType() noexcept;
   TGUICopyParamType(const TCopyParamType & Source) noexcept;
   explicit TGUICopyParamType(const TGUICopyParamType &Source) noexcept;
-  virtual ~TGUICopyParamType() noexcept = default;
+  virtual ~TGUICopyParamType() = default;
 
   virtual void Load(THierarchicalStorage * Storage);
   virtual void Save(THierarchicalStorage * Storage, const TCopyParamType * Defaults = nullptr) const;

@@ -589,7 +589,7 @@ public:
     m_pthis = nullptr; m_pFunction = nullptr; m_pStaticFunction = nullptr;
   }
 #else
-  DelegateMemento() noexcept = default;
+  DelegateMemento() = default;
   void clear() { m_pthis = nullptr; m_pFunction = nullptr; }
 #endif
   DelegateMemento(DelegateMemento&&) = default;
@@ -1193,9 +1193,9 @@ public:
     m_Closure.CopyFrom(this, x.m_Closure); }
   FastDelegate2& operator=(const FastDelegate2& x) noexcept {
     m_Closure.CopyFrom(this, x.m_Closure); return *this; }
-  FastDelegate2(FastDelegate2&&) noexcept = default;
-  FastDelegate2& operator=(FastDelegate2&&) noexcept = default;
-  ~FastDelegate2() noexcept = default;
+  FastDelegate2(FastDelegate2&&) = default;
+  FastDelegate2& operator=(FastDelegate2&&) = default;
+  ~FastDelegate2() = default;
   bool operator==(const FastDelegate2 &x) const {
     return m_Closure.IsEqual(x.m_Closure); }
   bool operator!=(const FastDelegate2 &x) const {
