@@ -1300,7 +1300,7 @@ UnicodeString BytesToHex(const uint8_t *B, uintptr_t Length, bool UpperCase, wch
 //---------------------------------------------------------------------------
 UnicodeString BytesToHex(RawByteString Str, bool UpperCase, wchar_t Separator)
 {
-  return BytesToHex(reinterpret_cast<const uint8_t *>(Str.c_str()), Str.Length(), UpperCase, Separator);
+  return BytesToHex(reinterpret_cast<const uint8_t *>(Str.c_str()), static_cast<uintptr_t>(Str.Length()), UpperCase, Separator);
 }
 //---------------------------------------------------------------------------
 UnicodeString CharToHex(wchar_t Ch, bool UpperCase)
@@ -1526,7 +1526,7 @@ DWORD FileGetAttrFix(UnicodeString AFileName)
     FollowLink = false;
   }
   DWORD Result = SysUtulsFileGetAttr(FileName, FollowLink);
-  if ((long)Result < 0)
+  if (static_cast<long>(Result) < 0)
   {
     // When referring to files in some special symlinked locations
     // (like a deduplicated drive or a commvault archive), the first call to GetFileAttributes fails.
@@ -2531,7 +2531,7 @@ static bool DoRecursiveDeleteFile(
       {
         ErrorCode = 0;
       }
-      ::SetLastError(ErrorCode);
+      ::SetLastError(static_cast<DWORD>(ErrorCode));
     }
 
     if (Result)
@@ -2670,7 +2670,7 @@ TLibModule * FindModule(void * Instance)
 static UnicodeString DoLoadStrFrom(HINSTANCE Module, intptr_t Ident, uintptr_t MaxLength)
 {
   UnicodeString Result;
-  Result.SetLength(MaxLength);
+  Result.SetLength(static_cast<intptr_t>(MaxLength));
   const int Length = ::LoadStringW(Module, static_cast<UINT>(Ident), const_cast<LPWSTR>(Result.c_str()), nb::ToInt(MaxLength));
   Result.SetLength(Length);
 
@@ -3078,7 +3078,7 @@ static OSVERSIONINFO GetWindowsVersion()
 //---------------------------------------------------------------------------
 int GetWindowsBuild()
 {
-  return GetWindowsVersion().dwBuildNumber;
+  return static_cast<int>(GetWindowsVersion().dwBuildNumber);
 }
 //---------------------------------------------------------------------------
 UnicodeString WindowsVersion()
@@ -3290,7 +3290,7 @@ static int PemPasswordCallback(char *Buf, int ASize, int /*RWFlag*/, void *UserD
 {
   TPemPasswordCallbackData &Data = *reinterpret_cast<TPemPasswordCallbackData *>(UserData);
   UTF8String UtfPassphrase = UTF8String(*Data.Passphrase);
-  strncpy(Buf, UtfPassphrase.c_str(), ASize);
+  strncpy(Buf, UtfPassphrase.c_str(), static_cast<size_t>(ASize));
   Shred(UtfPassphrase);
   Buf[ASize - 1] = '\0';
   return nb::ToInt(NBChTraitsCRT<char>::SafeStringLen(Buf));
@@ -3314,7 +3314,7 @@ static bool IsTlsPassphraseError(int Error, bool HasPassphrase)
 //---------------------------------------------------------------------------
 static void ThrowTlsCertificateErrorIgnorePassphraseErrors(UnicodeString Path, bool HasPassphrase)
 {
-  int Error = ERR_get_error();
+  unsigned long Error = ERR_get_error();
   if (!IsTlsPassphraseError(Error, HasPassphrase))
   {
     throw ExtException(MainInstructions(FMTLOAD(CERTIFICATE_READ_ERROR, Path)), GetTlsErrorStr(Error));
@@ -3405,7 +3405,7 @@ void ParseCertificate(UnicodeString Path,
 
       if (Certificate == nullptr)
       {
-        int Error = ERR_get_error();
+        unsigned long Error = ERR_get_error();
         // unlikely
         if (IsTlsPassphraseError(Error, HasPassphrase))
         {
@@ -3434,7 +3434,7 @@ void ParseCertificate(UnicodeString Path,
 
             if (Certificate == nullptr)
             {
-              int Base64Error = ERR_get_error();
+              unsigned long Base64Error = ERR_get_error();
 
               File = OpenCertificate(CertificatePath);
               // Binary DER-encoded certificate
@@ -3445,7 +3445,7 @@ void ParseCertificate(UnicodeString Path,
 
               if (Certificate == nullptr)
               {
-                int DERError = ERR_get_error();
+                unsigned long DERError = ERR_get_error();
 
                 UnicodeString Message = MainInstructions(FMTLOAD(CERTIFICATE_READ_ERROR, CertificatePath));
                 UnicodeString MoreMessages =

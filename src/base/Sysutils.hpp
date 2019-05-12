@@ -175,8 +175,8 @@ namespace Sysutils {
 struct NB_CORE_EXPORT TFormatSettings : public TObject
 {
 public:
-  explicit TFormatSettings(int /*LCID*/) noexcept;
-  static TFormatSettings Create(int LCID ) { return TFormatSettings(LCID); }
+  explicit TFormatSettings(LCID /*LCID*/) noexcept;
+  static TFormatSettings Create(LCID LCID) { return TFormatSettings(LCID); }
   uint8_t CurrencyFormat{0};
   uint8_t NegCurrFormat{0};
   wchar_t ThousandSeparator{};

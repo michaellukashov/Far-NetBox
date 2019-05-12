@@ -64,7 +64,7 @@ NB_CORE_EXPORT void Error(intptr_t Id, intptr_t ErrorId);
 NB_CORE_EXPORT void ThrowNotImplemented(intptr_t ErrorId);
 
 enum class TObjectClassId {};
-#define NB_DEFINE_CLASS_ID(CLASS_ID) static constexpr TObjectClassId OBJECT_CLASS_ ## CLASS_ID = (TObjectClassId)nb::counter_id()
+#define NB_DEFINE_CLASS_ID(CLASS_ID) constexpr TObjectClassId OBJECT_CLASS_ ## CLASS_ID = static_cast<TObjectClassId>(nb::counter_id())
 
 NB_DEFINE_CLASS_ID(TObject);
 class NB_CORE_EXPORT TObject
