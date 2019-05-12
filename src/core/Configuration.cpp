@@ -57,13 +57,13 @@ TConfiguration::TConfiguration(TObjectClassId Kind) noexcept :
   }
   else
   {
-#if defined(_MSC_VER) && !defined(__clang__)
+#if defined(_MSC_VER)
     RandomSeedPath = ::GetShellFolderPath(CSIDL_LOCAL_APPDATA);
     if (RandomSeedPath.IsEmpty())
     {
       RandomSeedPath = ::GetShellFolderPath(CSIDL_APPDATA);
     }
-#endif // if defined(_MSC_VER) && !defined(__clang__)
+#endif // if defined(_MSC_VER)
   }
 
   FDefaultRandomSeedFile = ::IncludeTrailingBackslash(RandomSeedPath) + "winscp.rnd";
@@ -1449,9 +1449,9 @@ TStoredSessionList * TConfiguration::SelectFilezillaSessionsForImport(
   ImportSessionList->SetDefaultSettings(Sessions->GetDefaultSettings());
 
   UnicodeString AppDataPath;
-#if defined(_MSC_VER) && !defined(__clang__)
+#if defined(_MSC_VER)
   AppDataPath = GetShellFolderPath(CSIDL_APPDATA);
-#endif // if defined(_MSC_VER) && !defined(__clang__)
+#endif // if defined(_MSC_VER)
   UnicodeString FilezillaSiteManagerFile =
     ::IncludeTrailingBackslash(AppDataPath) + "FileZilla\\sitemanager.xml";
   UnicodeString FilezillaConfigurationFile =
@@ -1499,9 +1499,9 @@ TStoredSessionList * TConfiguration::SelectKnownHostsSessionsForImport(
   ImportSessionList->SetDefaultSettings(Sessions->GetDefaultSettings());
 
   UnicodeString ProfilePath;
-#if defined(_MSC_VER) && !defined(__clang__)
+#if defined(_MSC_VER)
   ProfilePath = GetShellFolderPath(CSIDL_PROFILE);
-#endif // if defined(_MSC_VER) && !defined(__clang__)
+#endif // if defined(_MSC_VER)
   UnicodeString KnownHostsFile = IncludeTrailingBackslash(ProfilePath) + ".ssh\\known_hosts";
 
   try

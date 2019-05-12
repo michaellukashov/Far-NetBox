@@ -481,7 +481,7 @@ void ExecuteShellCheckedAndWait(UnicodeString Command,
 //---------------------------------------------------------------------------
 bool SpecialFolderLocation(intptr_t PathID, UnicodeString &APath)
 {
-#if defined(_MSC_VER) && !defined(__clang__)
+#if defined(_MSC_VER)
   LPITEMIDLIST Pidl;
   wchar_t Buf[MAX_PATH];
   if (::SHGetSpecialFolderLocation(nullptr, nb::ToInt(PathID), &Pidl) == NO_ERROR &&
@@ -490,7 +490,7 @@ bool SpecialFolderLocation(intptr_t PathID, UnicodeString &APath)
     APath = UnicodeString(Buf);
     return true;
   }
-#endif // if defined(_MSC_VER) && !defined(__clang__)
+#endif // if defined(_MSC_VER)
   return false;
 }
 //---------------------------------------------------------------------------

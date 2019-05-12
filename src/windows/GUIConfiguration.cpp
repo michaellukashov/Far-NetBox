@@ -588,9 +588,9 @@ void TGUIConfiguration::Default()
   FQueueAutoPopup = true;
   FSessionRememberPassword = true;
   UnicodeString ProgramsFolder;
-#if defined(_MSC_VER) && !defined(__clang__)
+#if defined(_MSC_VER)
   SpecialFolderLocation(CSIDL_PROGRAM_FILES, ProgramsFolder);
-#endif // if defined(_MSC_VER) && !defined(__clang__)
+#endif // if defined(_MSC_VER)
   FDefaultPuttyPathOnly = IncludeTrailingBackslash(ProgramsFolder) + L"PuTTY\\" + OriginalPuttyExecutable;
   FDefaultPuttyPath = L"%ProgramFiles%\\PuTTY\\" + OriginalPuttyExecutable;
   FPuttyPath = FormatCommand(FDefaultPuttyPath, L"");
