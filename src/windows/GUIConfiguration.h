@@ -285,7 +285,7 @@ public:
   UnicodeString AppliedLocaleCopyright() const;
   UnicodeString AppliedLocaleVersion();
   TStoredSessionList * SelectPuttySessionsForImport(TStoredSessionList * Sessions, UnicodeString & Error);
-  bool AnyPuttySessionForImport(TStoredSessionList * Sessions);
+  bool AnyPuttySessionForImport(TStoredSessionList * ASessions);
 
   __property bool ContinueOnError = { read = FContinueOnError, write = FContinueOnError };
   __property bool ConfirmCommandSession = { read = FConfirmCommandSession, write = FConfirmCommandSession };

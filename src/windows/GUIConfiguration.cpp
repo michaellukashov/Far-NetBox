@@ -12,7 +12,7 @@
 #include <TextsWin.h>
 #include <Terminal.h>
 #include <CoreMain.h>
-#include <shlobj.h>
+#include <System.ShlObj.hpp>
 //---------------------------------------------------------------------------
 __removed #pragma package(smart_init)
 //---------------------------------------------------------------------------
@@ -650,12 +650,14 @@ void TGUIConfiguration::UpdateStaticUsage()
   Usage->Set("Putty", ExtractProgramName(PuttyPath));
 }
 //---------------------------------------------------------------------------
+#if 0
 static UnicodeString PropertyToKey(UnicodeString Property)
 {
   // no longer useful
   intptr_t P = Property.LastDelimiter(L".>");
   return Property.SubString(P + 1, Property.Length() - P);
 }
+#endif // if 0
 
 // duplicated from core\configuration.cpp
 #undef BLOCK
@@ -742,7 +744,7 @@ void TGUIConfiguration::SaveData(THierarchicalStorage * Storage, bool All)
     }
     else if (All || FCopyParamList->GetModified())
     {
-      Storage->WriteInteger("CopyParamList", (int)FCopyParamList->GetCount());
+      Storage->WriteInteger("CopyParamList", static_cast<int>(FCopyParamList->GetCount()));
       FCopyParamList->Save(Storage);
     }
   },
@@ -999,7 +1001,7 @@ void TGUIConfiguration::SetLocaleSafe(LCID Value)
 //---------------------------------------------------------------------------
 UnicodeString TGUIConfiguration::GetAppliedLocaleHex() const
 {
-  return IntToHex(int64_t(GetAppliedLocale()), 4);
+  return IntToHex(uint64_t(GetAppliedLocale()), 4);
 }
 //---------------------------------------------------------------------------
 int TGUIConfiguration::GetResourceModuleCompleteness(HINSTANCE /*Module*/)
@@ -1104,7 +1106,7 @@ void TGUIConfiguration::SetAppliedLocale(LCID AppliedLocale, UnicodeString Local
   FLocaleModuleName = LocaleModuleName;
 }
 //---------------------------------------------------------------------------
-void TGUIConfiguration::FreeResourceModule(HANDLE Instance)
+void TGUIConfiguration::FreeResourceModule(HANDLE /*Instance*/)
 {
 #if 0
   TLibModule * MainModule = FindModule(HInstance);
@@ -1157,7 +1159,7 @@ void TGUIConfiguration::FindLocales(UnicodeString LocalesMask, TStrings * Exts, 
   int FindAttrs = faReadOnly | faArchive;
 
   TSearchRecOwned SearchRec;
-  bool Found = (FindFirstUnchecked(LocalesMask, FindAttrs, SearchRec) == 0);
+  bool Found = (FindFirstUnchecked(LocalesMask, static_cast<DWORD>(FindAttrs), SearchRec) == 0);
   while (Found)
   {
     UnicodeString Ext = ExtractFileExt(SearchRec.Name).UpperCase();
@@ -1466,12 +1468,12 @@ TStoredSessionList * TGUIConfiguration::SelectPuttySessionsForImport(
   return ImportSessionList.release();
 }
 //---------------------------------------------------------------------
-bool TGUIConfiguration::AnyPuttySessionForImport(TStoredSessionList * Sessions)
+bool TGUIConfiguration::AnyPuttySessionForImport(TStoredSessionList * ASessions)
 {
   try
   {
     UnicodeString Error;
-    std::unique_ptr<TStoredSessionList> Sessions(SelectPuttySessionsForImport(Sessions, Error));
+    std::unique_ptr<TStoredSessionList> Sessions(SelectPuttySessionsForImport(ASessions, Error));
     return (Sessions->GetCount() > 0);
   }
   catch (...)
