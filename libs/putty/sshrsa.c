@@ -1099,7 +1099,6 @@ static const struct ssh_kex ssh_rsa_kex_sha1 = {
     "rsa1024-sha1", NULL, KEXTYPE_RSA, &ssh_sha1, &ssh_rsa_kex_extra_sha1,
 };
 
-static const struct ssh_kex ssh_rsa_kex_sha256 =
 static const struct ssh_kex ssh_rsa_kex_sha256 = {
     "rsa2048-sha256", NULL, KEXTYPE_RSA, &ssh_sha256, &ssh_rsa_kex_extra_sha256,
 };
