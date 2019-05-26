@@ -2652,6 +2652,13 @@ void TSCPFileSystem::SCPSink(const UnicodeString TargetDir,
             FTerminal->LogEvent(FORMAT("Warning: Remote host set a compound pathname '%s'", Line));
           }
 
+          // Security fix: CVE-2019-6111
+          // backport of https://winscp.net/tracker/1675
+          if ((Level == 0) && (OnlyFileName != base::UnixExtractFileName(AFileName)))
+          {
+            SCPError(LoadStr(UNREQUESTED_FILE), False);
+          }
+
           AbsoluteFileName = SourceDir + OnlyFileName;
           OperationProgress->SetFile(AbsoluteFileName);
           OperationProgress->SetTransferSize(TSize);
