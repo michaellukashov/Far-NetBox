@@ -1,17 +1,15 @@
 #include <vcl.h>
-#pragma hdrstop
 
 #include "System.SyncObjs.hpp"
 
 // TCriticalSection
 
-TCriticalSection::TCriticalSection() :
-  FAcquired(0)
+TCriticalSection::TCriticalSection() noexcept
 {
   InitializeCriticalSection(&FSection);
 }
 
-TCriticalSection::~TCriticalSection()
+TCriticalSection::~TCriticalSection() noexcept
 {
   DebugAssert(FAcquired == 0);
   DeleteCriticalSection(&FSection);

@@ -31,7 +31,8 @@
 */
 
 #include <stddef.h>
-#include <string.h>  // memcpy
+#include <string.h>  /* memcpy */
+
 #if defined(_MSC_VER) && (_MSC_VER <= 1700)
   /* for vs2012/11.0/1700 and earlier Visual Studio compilers */
 # define bool   int
@@ -412,8 +413,6 @@ utf8_toUtf8(const ENCODING *UNUSED_P(enc),
 {
   bool input_incomplete = false;
   bool output_exhausted = false;
-  const char * fromLimBefore;
-  ptrdiff_t bytesToCopy;
 
   /* Avoid copying partial characters (due to limited space). */
   const ptrdiff_t bytesAvailable = fromLim - *fromP;
@@ -421,12 +420,6 @@ utf8_toUtf8(const ENCODING *UNUSED_P(enc),
   if (bytesAvailable > bytesStorable) {
     fromLim = *fromP + bytesStorable;
     output_exhausted = true;
-  }
-
-  /* Avoid copying partial characters (from incomplete input). */
-  fromLimBefore = fromLim;
-  if (fromLim < fromLimBefore) {
-    input_incomplete = true;
   }
 
   /* Avoid copying partial characters (from incomplete input). */

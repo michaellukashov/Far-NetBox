@@ -1,27 +1,64 @@
-
+//---------------------------------------------------------------------------
 #pragma once
-
+//---------------------------------------------------------------------------
+#ifndef WINSCP
+#define WINSCP
+#endif
 #include <ne_uri.h>
 #include <ne_session.h>
 #include <SessionData.h>
-
+//---------------------------------------------------------------------------
 #define StrToNeon(S) UTF8String(S).c_str()
-#define StrFromNeon(S) UnicodeString(UTF8String(S))
+#define StrFromNeon(S) UnicodeString(S, NBChTraitsCRT<char>::GetBaseTypeLength(S), CP_UTF8)
+//#define StrFromNeon(S) UnicodeString(S)
+#define SESSION_FS_KEY "filesystem"
+//---------------------------------------------------------------------------
+struct TNeonCertificateData
+{
+  CUSTOM_MEM_ALLOCATION_IMPL
 
+  UnicodeString Subject;
+  UnicodeString Issuer;
+
+  TDateTime ValidFrom;
+  TDateTime ValidUntil;
+
+  UnicodeString Fingerprint;
+  AnsiString AsciiCert;
+
+  int Failures{0};
+};
+//---------------------------------------------------------------------------
 void NeonParseUrl(UnicodeString Url, ne_uri &uri);
 bool IsTlsUri(const ne_uri &uri);
 ne_session *CreateNeonSession(const ne_uri &uri);
-void InitNeonSession(ne_session *Session, TProxyMethod ProxyMethod, UnicodeString ProxyHost,
-  intptr_t ProxyPort, UnicodeString ProxyUsername, UnicodeString ProxyPassword);
+void InitNeonSession(ne_session *Session, TProxyMethod ProxyMethod, UnicodeString AProxyHost,
+  intptr_t ProxyPort, UnicodeString AProxyUsername, UnicodeString AProxyPassword, TTerminal * Terminal);
 void DestroyNeonSession(ne_session *Session);
 UnicodeString GetNeonError(ne_session *Session);
 void CheckNeonStatus(ne_session *Session, intptr_t NeonStatus,
   UnicodeString AHostName, UnicodeString CustomError = L"");
 UnicodeString GetNeonRedirectUrl(ne_session *Session);
 void CheckRedirectLoop(UnicodeString RedirectUrl, TStrings *AttemptedUrls);
+__removed typedef void (__closure *TNeonTlsInit)(struct ssl_st *Ssl, ne_session *Session);
 typedef void (*TNeonTlsInit)(struct ssl_st *Ssl, ne_session *Session);
 void SetNeonTlsInit(ne_session *Session, TNeonTlsInit OnNeonTlsInit);
 AnsiString NeonExportCertificate(const ne_ssl_certificate *Certificate);
 bool NeonWindowsValidateCertificate(int &Failures, AnsiString AsciiCert, UnicodeString &Error);
+bool NeonWindowsValidateCertificateWithMessage(TNeonCertificateData &Data, UnicodeString &Message);
 UnicodeString NeonCertificateFailuresErrorStr(int Failures, UnicodeString HostName);
-
+void UpdateNeonDebugMask();
+void RegisterForNeonDebug(TTerminal *Terminal);
+void UnregisterFromNeonDebug(TTerminal *Terminal);
+void NeonInitialize();
+void NeonFinalize();
+void RequireNeon(TTerminal *Terminal);
+void RetrieveNeonCertificateData(
+  int Failures, const ne_ssl_certificate *Certificate, TNeonCertificateData &Data);
+UnicodeString CertificateVerificationMessage(const TNeonCertificateData &Data);
+UnicodeString CertificateSummary(const TNeonCertificateData &Data, UnicodeString AHostName);
+struct TSessionInfo;
+UnicodeString NeonTlsSessionInfo(
+  ne_session *Session, TSessionInfo & FSessionInfo, UnicodeString &TlsVersionStr);
+void SetupSsl(ssl_st *Ssl, TTlsVersion MinTlsVersion, TTlsVersion MaxTlsVersion);
+//---------------------------------------------------------------------------

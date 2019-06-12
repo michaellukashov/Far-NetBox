@@ -7,11 +7,10 @@ set(OPT_USE_UNITY_BUILD ON CACHE STRING "Default use unity build")
 project(NetBox)
 
 if(NOT CMAKE_BUILD_TYPE)
-  set(CMAKE_BUILD_TYPE Debug CACHE STRING "Default build type to Debug" FORCE)
+  set(CMAKE_BUILD_TYPE Debug CACHE STRING "Default build type to Debug")
 endif()
 message("Build type: ${CMAKE_BUILD_TYPE}")
 message("CMAKE_CL_64: ${CMAKE_CL_64}")
-message("MSVC10: ${MSVC10}")
 
 if(NOT DEFINED FAR_VERSION OR FAR_VERSION STREQUAL "")
   set(FAR_VERSION Far2)
@@ -24,17 +23,6 @@ else()
   set(x64 0)
   set(PROJECT_PLATFORM "x86")
 endif()
-
-if(MSVC)
-  if(MSVC14)
-    set(OPENSSL_LIB_DIR "${PROJECT_PLATFORM}-${CMAKE_BUILD_TYPE}")
-  else()
-    set(OPENSSL_LIB_DIR "${PROJECT_PLATFORM}-${CMAKE_BUILD_TYPE}")
-  endif()
-else()
-  set(OPENSSL_LIB_DIR "${PROJECT_PLATFORM}-${CMAKE_BUILD_TYPE}")
-endif(MSVC)
-#message("OPENSSL_LIB_DIR: ${OPENSSL_LIB_DIR}")
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
   set(BUILD_DEBUG 1)
@@ -50,9 +38,20 @@ if(NOT DEFINED BUILD_DIR OR BUILD_DIR STREQUAL "")
 string(REPLACE "/" "\\" BUILD_DIR ${CMAKE_CURRENT_BINARY_DIR})
 endif()
 
+if(MSVC)
+  set(OPENSSL_LIB_DIR "${PROJECT_PLATFORM}-${CMAKE_BUILD_TYPE}")
+endif(MSVC)
+
+if(NOT DEFINED OPENSSL_LIBRARYDIR)
+  set(OPENSSL_LIBRARYDIR ${PROJECT_ROOT}/libs/openssl/${OPENSSL_LIB_DIR})
+endif()
+
+message("OPENSSL_LIBRARYDIR: ${OPENSSL_LIBRARYDIR}")
+
 #-------------------------------------------------------------------------------
 
 include(${CMAKE_ROOT}/Modules/CMakeDetermineSystem.cmake)
+include(${CMAKE_SOURCE_DIR}/cmake/ucm.cmake)
 #include(CMakeDetermineCXXCompiler)
 message("System: ${CMAKE_SYSTEM_NAME}, PROJECT_PLATFORM: ${PROJECT_PLATFORM}, BUILD_DIR: ${BUILD_DIR}, CMAKE_COMPILER_IS_MINGW = ${CMAKE_COMPILER_IS_MINGW}")
 message("MSVC_VERSION: ${MSVC_VERSION}")
@@ -60,15 +59,13 @@ message("CMAKE_CXX_COMPILER: ${CMAKE_CXX_COMPILER}")
 
 #-------------------------------------------------------------------------------
 
-set(LIBNEON_DEFS "-DNE_LFS -DNE_HAVE_SSL -DHAVE_OPENSSL -DHAVE_EXPAT -DHAVE_EXPAT_H -DNE_HAVE_DAV -DNE_HAVE_ZLIB") #" -DUSE_GETADDRINFO")
-set(LIBEXPAT_DEFS "-DCOMPILED_FROM_DSP -DXML_STATIC")
-set(DLMALLOC_DEFS "-DUSE_DLMALLOC -DUSE_DL_PREFIX -DNO_MALLINFO -DUSE_LOCKS=1")
-set(NETBOX_DEFS "-DMPEXT -DWINSCP -DFARPLUGIN")
+set(LIBNEON_DEFS -DNE_LFS -DNE_HAVE_SSL -DHAVE_OPENSSL -DHAVE_EXPAT -DHAVE_EXPAT_H -DNE_HAVE_DAV -DNE_HAVE_ZLIB) #" -DUSE_GETADDRINFO")
+set(LIBEXPAT_DEFS -DCOMPILED_FROM_DSP -DXML_STATIC)
+set(NETBOX_DEFS "-DNOMINMAX -DMPEXT -DWINSCP -DFARPLUGIN")
 set(NETBOX_DEFS "${NETBOX_DEFS} -DNO_GZIP -DSTRICT -DNOCRYPT -DOPENSSL_NO_LOCKING")
 set(NETBOX_DEFS "${NETBOX_DEFS} -D_CRTIMP= -D_LIB -D_WINDOWS -DWIN32 -D_WIN32_WINNT=0x0501")
 set(NETBOX_DEFS "${NETBOX_DEFS} -D_SCL_SECURE_NO_WARNINGS  -D_CRT_SECURE_NO_WARNINGS -D_WINSOCK_DEPRECATED_NO_WARNINGS")
 set(NETBOX_DEFS "${NETBOX_DEFS} -DCOM_NO_WINDOWS_H")
-set(NETBOX_DEFS "${NETBOX_DEFS} ${LIBEXPAT_DEFS} ${LIBNEON_DEFS} ${DLMALLOC_DEFS}")
 #-D_WINDLL -D_USRDLL
 if (MSVC_VERSION GREATER 1899)
 set(NETBOX_DEFS "${NETBOX_DEFS} /Zc:threadSafeInit- /bigobj")
@@ -99,15 +96,13 @@ if(MSVC)
 
 set(NETBOX_C_WARNING_FLAGS "")
 set(NETBOX_CXX_WARNING_FLAGS "")
-set(NETBOX_CXX_FLAGS "/MP2 /Zi")
-set(NETBOX_FLAGS_RELEASE "${NETBOX_FLAGS_RELEASE} /Gm- /MT -Ox -Ob1 -Oi -Os -GF -GS- -Gy /fp:fast")
-set(NETBOX_FLAGS_DEBUG "${NETBOX_FLAGS_DEBUG} /Gm- /Od /MTd /GS /RTC1")
+set(NETBOX_CXX_FLAGS "/std:c++17")
 
 elseif(CMAKE_COMPILER_IS_MINGW)
 
 set(NETBOX_C_WARNING_FLAGS "-Wno-unknown-pragmas")
 set(NETBOX_CXX_WARNING_FLAGS "${NETBOX_C_WARNING_FLAGS} -Wno-attributes -Wno-write-strings -Wno-old-style-cast -Wno-effc++ -Wno-unknown-pragmas -Wno-unused-value")
-set(NETBOX_CXX_FLAGS "${NETBOX_CXX_FLAGS} -std=c++11 -Woverloaded-virtual -Wnon-virtual-dtor")
+set(NETBOX_CXX_FLAGS "${NETBOX_CXX_FLAGS} -Woverloaded-virtual -Wnon-virtual-dtor")
 set(NETBOX_C_FLAGS "${NETBOX_C_FLAGS} -static -s -O2 -Wall -Wextra -pedantic -Wconversion -Wsign-conversion -Winit-self -Wunreachable-code")
 #-Weffc++
 set(NETBOX_FLAGS_RELEASE "${NETBOX_FLAGS_RELEASE}")
@@ -143,11 +138,13 @@ endfunction(nb_replace_compiler_option)
 
 if(MSVC)
 
-nb_replace_compiler_option(CMAKE_CXX_FLAGS "/GR-?" "/GR-")
-#nb_replace_compiler_option(CMAKE_CXX_FLAGS "/MD[d]?" "")
-nb_replace_compiler_option(CMAKE_CXX_FLAGS "/EH[-cs]+" "")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHsc")
-#string(REPLACE "/MD" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+add_definitions(-DWINSCP -DFARPLUGIN)
+add_definitions(-DFASTDELEGATE_ALLOW_FUNCTION_TYPE_SYNTAX)
+add_definitions(-DUSE_DLMALLOC -DUSE_DL_PREFIX -DNO_MALLINFO -DUSE_LOCKS=1)
+add_definitions(-DHIDE_TODO)
+add_definitions(-DNEED_LIBS3)
+add_definitions(-DFARPLUGIN)
+add_definitions(${fmt_DEFINES})
 
 set(NETBOX_DLL_LINK_FLAGS
   "
@@ -821,11 +818,11 @@ target_compile_options(libcrypto PRIVATE
 
 target_include_directories(libcrypto SYSTEM BEFORE PRIVATE
   ../../libs/openssl
-  ../../libs/openssl/${OPENSSL_LIB_DIR}
   ../../libs/openssl/crypto
   ../../libs/openssl/crypto/asn1
   ../../libs/openssl/crypto/modes
   ../../libs/openssl/crypto/evp
+  ${OPENSSL_LIBRARYDIR}
 )
 
 add_library(libssl STATIC
@@ -885,21 +882,21 @@ target_compile_options(libssl PRIVATE
 
 target_include_directories(libssl SYSTEM BEFORE PRIVATE
   ../../libs/openssl
-  ../../libs/openssl/${OPENSSL_LIB_DIR}
   ../../libs/openssl/crypto
   ../../libs/openssl/crypto/asn1
   ../../libs/openssl/crypto/modes
   ../../libs/openssl/crypto/evp
+  ${OPENSSL_LIBRARYDIR}
 )
 
 else(OPT_BUILD_OPENSSL)
 
 add_library (libcrypto STATIC IMPORTED)
 set_property(TARGET libcrypto
-    PROPERTY IMPORTED_LOCATION ${PROJECT_ROOT}/libs/openssl/${OPENSSL_LIB_DIR}/libcrypto.lib)
+    PROPERTY IMPORTED_LOCATION ${OPENSSL_LIBRARYDIR}/ssleay32.lib)
 add_library (libssl STATIC IMPORTED)
 set_property(TARGET libssl
-    PROPERTY IMPORTED_LOCATION ${PROJECT_ROOT}/libs/openssl/${OPENSSL_LIB_DIR}/libssl.lib)
+    PROPERTY IMPORTED_LOCATION ${OPENSSL_LIBRARYDIR}/libeay32.lib)
 
 endif(OPT_BUILD_OPENSSL)
 
@@ -910,12 +907,14 @@ set(ATLMFC_COMPILE_FLAGS
   -D_ATL_NO_DEBUG_CRT -D_ATL_NO_UUIDOF -D_ATL_NO_CONNECTION_POINTS -D_ATL_NO_DATETIME_RESOURCES_
   -D_ATL_NO_DEFAULT_LIBS -D_ATL_NO_PERF_SUPPORT -D_AFX_PORTABLE -D_ATL_NO_COMMODULE
   -D_AFX_NO_SOCKET_SUPPORT
+  -DNOMINMAX
+  -D_MFC_BLD -DAFX_DATA= -DAFX_DATA_IMPORT= -DAFX_CORE_DATA= -DAFX_CORE_DATADEF= -DAFX_CLASS_IMPORT= -DAFX_API_IMPORT=
+  -D_ATL_STATIC_REGISTRY -DAFXAPI= -DAFXOLEAPI=
 )
 
 if(CMAKE_COMPILER_IS_MINGW)
 
 set(ATLMFC_COMPILE_FLAGS ${ATLMFC_COMPILE_FLAGS}
-  -D_AFXDLL
   -fpermissive
   -Wno-int-to-pointer-cast
   -Wno-pragmas
@@ -935,7 +934,7 @@ endif(CMAKE_COMPILER_IS_MINGW)
 add_library(atlmfc STATIC
   ../../libs/atlmfc/mfc1.cpp
   ../../libs/atlmfc/mfc2.cpp
-  ../../libs/atlmfc/mfc3.cpp
+#  ../../libs/atlmfc/mfc3.cpp
   ../../libs/atlmfc/mfc4.cpp
   ../../libs/atlmfc/mfc5.cpp
   ../../libs/atlmfc/src/mfc/thrdcore.cpp
@@ -954,6 +953,7 @@ endif()
 target_include_directories(atlmfc PRIVATE
   ../../libs/atlmfc/include
   ../base
+  ../../libs/GSL/include
 )
 
 #-------------------------------------------------------------------------------
@@ -1043,12 +1043,17 @@ add_library(tinyxml2 STATIC
 )
 
 target_compile_options(tinyxml2 PRIVATE
+  -DTINYXML2_EXPORT
+)
+
+target_include_directories(tinyxml2 PRIVATE
+  ../../libs/GSL/include
 )
 
 #-------------------------------------------------------------------------------
 #neon
 
-add_library(neon STATIC
+set(NEON_LIB_SOURCES
   ../../libs/neon/src/ne_alloc.c
   ../../libs/neon/src/ne_auth.c
   ../../libs/neon/src/ne_basic.c
@@ -1076,7 +1081,13 @@ add_library(neon STATIC
   ../../libs/neon/src/ne_openssl.c
 )
 
-set(NEON_COMPILE_FLAGS )
+add_library(neon STATIC
+  ${NEON_LIB_SOURCES}
+)
+
+#set_source_files_properties(${NEON_LIB_SOURCES} PROPERTIES LANGUAGE CXX)
+
+set(NEON_COMPILE_FLAGS ${LIBNEON_DEFS} ${LIBEXPAT_DEFS})
 if(MSVC)
 set(NEON_COMPILE_FLAGS ${NEON_COMPILE_FLAGS}
   -wd4996
@@ -1092,7 +1103,7 @@ target_include_directories(neon PRIVATE
   ../../libs/zlib/src
   ../../libs/expat/lib
   ../../libs/openssl
-  ../../libs/openssl/${OPENSSL_LIB_DIR}
+  ${OPENSSL_LIBRARYDIR}
 )
 
 #-------------------------------------------------------------------------------
@@ -1109,6 +1120,7 @@ add_library(expat STATIC
 )
 
 target_compile_options(expat PRIVATE
+  ${LIBEXPAT_DEFS}
   ${NETBOX_UNICODE_FLAGS}
 )
 
@@ -1165,7 +1177,7 @@ target_compile_options(dlmalloc PRIVATE
 #rdestl
 
 add_library(rdestl STATIC
-  ../../libs/rdestl/allocator.cpp
+#  ../../libs/rdestl/allocator.cpp
   ../../libs/rdestl/intrusive_list.cpp
   ../../libs/rdestl/list.cpp
 #  ../../libs/rdestl/intrusive_slist.cpp
@@ -1212,6 +1224,7 @@ add_library(rdestl STATIC
 
 target_include_directories(rdestl PRIVATE
   ../base
+  ../../libs/GSL/include
 )
 
 target_compile_options(rdestl PRIVATE
@@ -1235,6 +1248,7 @@ add_library(tinylog STATIC
 
 target_include_directories(tinylog PRIVATE
   ../base
+  ../../libs/GSL/include
 )
 
 target_compile_options(tinylog PRIVATE
@@ -1244,7 +1258,7 @@ target_compile_options(tinylog PRIVATE
 
 #-------------------------------------------------------------------------------
 #fmt
-
+#if(FALSE)
 add_library(fmt STATIC
   ../../libs/fmt/fmt/format.cc
   ../../libs/fmt/fmt/format.h
@@ -1256,7 +1270,60 @@ add_library(fmt STATIC
 )
 
 target_compile_options(fmt PRIVATE
-  -DFMT_EXPORT
+  ${fmt_DEFINES}
+  ${NETBOX_UNICODE_FLAGS}
+)
+
+target_include_directories(fmt PRIVATE
+  ../../libs/GSL/include
+)
+#endif(FALSE)
+
+set(fmt_DEFINES
+  -DFMT_EXPORT #-DFMT_HEADER_ONLY
+)
+
+#-------------------------------------------------------------------------------
+#libs3
+
+add_library(s3 STATIC
+  ../../libs/libs3/src/bucket.c
+  ../../libs/libs3/src/bucket_metadata.c
+  ../../libs/libs3/src/error_parser.c
+  ../../libs/libs3/src/general.c
+  ../../libs/libs3/src/mingw_functions.c
+  ../../libs/libs3/src/multipart.c
+  ../../libs/libs3/src/object.c
+  ../../libs/libs3/src/request.c
+  ../../libs/libs3/src/request_context.c
+  ../../libs/libs3/src/response_headers_handler.c
+  ../../libs/libs3/src/service.c
+  ../../libs/libs3/src/service_access_logging.c
+  ../../libs/libs3/src/simplexml.c
+  ../../libs/libs3/src/util.c
+  ../../libs/libs3/inc/string_buffer.h
+  ../../libs/libs3/inc/util.h
+  ../../libs/libs3/inc/simplexml.h
+  ../../libs/libs3/inc/response_headers_handler.h
+  ../../libs/libs3/inc/request.h
+  ../../libs/libs3/inc/request_context.h
+  ../../libs/libs3/inc/libs3.h
+  ../../libs/libs3/inc/error_parser.h
+
+)
+
+target_include_directories(s3 PRIVATE
+  ../../libs/libs3/inc
+  ../../libs/libs3/inc/mingw
+  ../../libs/expat/lib
+  ../../libs/neon/src
+  ../../libs/openssl
+  ${OPENSSL_LIBRARYDIR}
+)
+
+target_compile_options(s3 PRIVATE
+  -DS3_EXPORT -DWIN32 -DWINSCP -DNE_LFS -DNEED_LIBS3
+  ${LIBEXPAT_DEFS}
   ${NETBOX_UNICODE_FLAGS}
 )
 
@@ -1273,8 +1340,7 @@ set(NETBOX_SOURCES
 
 else(OPT_USE_UNITY_BUILD)
 
-set(NETBOX_SOURCES
-#  UnityBuildCore.cpp
+set(Base_SOURCES
   ../nbcore/nbstring.cpp
   ../nbcore/nbmemory.cpp
   ../nbcore/nbutils.cpp
@@ -1292,44 +1358,67 @@ set(NETBOX_SOURCES
   ../base/Global.cpp
   ../base/System.SyncObjs.cpp
   ../base/FormatUtils.cpp
+)
 
-  ../core/RemoteFiles.cpp
-  ../core/Terminal.cpp
-  ../core/FileOperationProgress.cpp
-  ../core/Queue.cpp
-  ../core/SecureShell.cpp
-  ../core/SessionInfo.cpp
-  ../core/Script.cpp
-  ../core/CoreMain.cpp
-  ../core/FileMasks.cpp
-  ../core/CopyParam.cpp
-  ../core/SessionData.cpp
-  ../core/Configuration.cpp
-  ../core/ScpFileSystem.cpp
-  ../core/FtpFileSystem.cpp
-  ../core/SftpFileSystem.cpp
-  ../core/WebDAVFileSystem.cpp
-  ../core/PuttyIntf.cpp
-  ../core/Cryptography.cpp
-  ../core/NamedObjs.cpp
-  ../core/HierarchicalStorage.cpp
-  ../core/Option.cpp
-  ../core/FileInfo.cpp
-  ../core/FileSystems.cpp
-  ../core/Bookmarks.cpp
-  ../core/WinSCPSecurity.cpp
-  ../core/Http.cpp
-  ../core/NeonIntf.cpp
-  ../windows/SynchronizeController.cpp
-  ../windows/GUITools.cpp
-  ../windows/GUIConfiguration.cpp
-  ../windows/Tools.cpp
-  ../windows/ProgParams.cpp
-  ../windows/UserInterface.cpp
-  ../windows/WinInterface.cpp
+set(Base_HEADERS
+  ../nbcore/stdafx.h
 
-#  UnityBuildFilezilla.cpp
-#  ../filezilla/stdafx.cpp
+  ../base/Classes.hpp
+  ../base/Sysutils.hpp
+  ../base/Property.hpp
+  ../base/function2.hpp
+  ../base/UnicodeString.hpp
+  ../base/Masks.hpp
+  ../base/System.StrUtils.hpp
+  ../base/StrUtils.hpp
+  ../base/DirectoryMonitor.hpp
+  ../base/System.SyncObjs.hpp
+  ../base/Windows.hpp
+  ../base/Xml.XMLIntf.hpp
+  ../base/LibraryLoader.hpp
+  ../base/DynamicQueue.hpp
+  ../base/System.IOUtils.hpp
+  ../base/System.ShlObj.hpp
+  ../base/WideStrUtils.hpp
+  ../base/Math.hpp
+  ../base/PasTools.hpp
+  ../base/System.DateUtils.hpp
+  ../base/ComCtrls.hpp
+  ../base/registry.hpp
+  ../base/contnrs.hpp
+  ../base/SysInit.hpp
+  ../base/System.hpp
+  ../base/LanguagesDEPfix.hpp
+  ../base/FileCtrl.hpp
+  ../base/CompThread.hpp
+  ../base/DateUtils.hpp
+  ../base/DiscMon.hpp
+)
+
+set(Filezilla_HEADERS
+  ../filezilla/AsyncSslSocketLayer.h
+  ../filezilla/structures.h
+  ../filezilla/stdafx.h
+  ../filezilla/TransferSocket.h
+  ../filezilla/ServerPath.h
+  ../filezilla/MainThread.h
+  ../filezilla/MFC64bitFix.h
+  ../filezilla/FzApiStructures.h
+  ../filezilla/FtpListResult.h
+  ../filezilla/FtpControlSocket.h
+  ../filezilla/FilezillaTools.h
+  ../filezilla/FileZillaOpt.h
+  ../filezilla/FileZillaIntf.h
+  ../filezilla/FileZillaIntern.h
+  ../filezilla/FileZillaApi.h
+  ../filezilla/AsyncSocketExLayer.h
+  ../filezilla/AsyncSocketEx.h
+  ../filezilla/AsyncProxySocketLayer.h
+  ../filezilla/ApiLog.h
+  ../filezilla/afxdll.h
+)
+
+set(Filezilla_SOURCES
   ../filezilla/afxdll.cpp
   ../filezilla/FileZillaIntf.cpp
   ../filezilla/FileZillaIntern.cpp
@@ -1348,8 +1437,93 @@ set(NETBOX_SOURCES
   ../filezilla/structures.cpp
   ../filezilla/MFC64bitFix.cpp
   ../filezilla/misc/CBase64Coding.cpp
+)
 
-#  UnityBuildMain.cpp
+set(WinSCP_SOURCES
+  ../core/RemoteFiles.cpp
+  ../core/Terminal.cpp
+  ../core/FileOperationProgress.cpp
+  ../core/Queue.cpp
+  ../core/SecureShell.cpp
+  ../core/SessionInfo.cpp
+  ../core/Script.cpp
+  ../core/CoreMain.cpp
+  ../core/FileMasks.cpp
+  ../core/CopyParam.cpp
+  ../core/SessionData.cpp
+  ../core/Usage.cpp
+  ../core/Configuration.cpp
+  ../core/ScpFileSystem.cpp
+  ../core/FtpFileSystem.cpp
+  ../core/SftpFileSystem.cpp
+  ../core/WebDAVFileSystem.cpp
+  ../core/S3FileSystem.cpp
+  ../core/PuttyIntf.cpp
+  ../core/Cryptography.cpp
+  ../core/NamedObjs.cpp
+  ../core/HierarchicalStorage.cpp
+  ../core/Option.cpp
+  ../core/FileInfo.cpp
+  ../core/FileSystems.cpp
+  ../core/Bookmarks.cpp
+  ../core/WinSCPSecurity.cpp
+  ../core/Http.cpp
+  ../core/NeonIntf.cpp
+  ../windows/SynchronizeController.cpp
+  ../windows/GUITools.cpp
+  ../windows/GUIConfiguration.cpp
+  ../windows/Tools.cpp
+  ../windows/ProgParams.cpp
+  ../windows/UserInterface.cpp
+  ../windows/WinInterface.cpp
+)
+
+set(WinSCP_HEADERS
+  ../core/FileMasks.h
+  ../core/Bookmarks.h
+  ../core/HierarchicalStorage.h
+  ../core/Configuration.h
+  ../core/Usage.h
+  ../core/Terminal.h
+  ../core/SessionData.h
+  ../core/NamedObjs.h
+  ../core/SessionInfo.h
+  ../core/CopyParam.h
+  ../core/SecureShell.h
+  ../core/FileSystems.h
+  ../core/ScpFileSystem.h
+  ../core/WebDAVFileSystem.h
+  ../core/SftpFileSystem.h
+  ../core/FtpFileSystem.h
+  ../core/S3FileSystem.h
+  ../core/Queue.h
+  ../core/RemoteFiles.h
+  ../core/Cryptography.h
+  ../core/Http.h
+  ../core/FileOperationProgress.h
+  ../core/Option.h
+  ../core/Interface.h
+  ../core/NeonIntf.h
+  ../core/Script.h
+  ../core/PuttyTools.h
+  ../core/WinSCPSecurity.h
+  ../core/PuttyIntf.h
+  ../core/FileInfo.h
+  ../core/CoreMain.h
+  ../windows/WinInterface.h
+  ../windows/GUIConfiguration.h
+  ../windows/TerminalManager.h
+  ../windows/Tools.h
+  ../windows/GUITools.h
+  ../windows/VCLCommon.h
+  ../windows/Setup.h
+  ../windows/ProgParams.h
+  ../windows/CustomWinConfiguration.h
+  ../windows/WinConfiguration.h
+  ../windows/SynchronizeController.h
+)
+
+set(NetBox_SOURCES
   NetBox.cpp
   FarDialog.cpp
   FarPlugin.cpp
@@ -1362,6 +1536,45 @@ set(NETBOX_SOURCES
   XmlStorage.cpp
   FarPluginStrings.cpp
 )
+
+set(NetBox_HEADERS
+  FarUtils.h
+  FarPlugin.h
+  FarConfiguration.h
+  WinSCPPlugin.h
+  WinSCPFileSystem.h
+  FarDialog.h
+  XmlStorage.h
+  FarInterface.h
+  resource.h
+  FarPluginStrings.h
+)
+
+set(NETBOX_SOURCES
+#  UnityBuildCore.cpp
+  ${Base_HEADERS}
+  ${Base_SOURCES}
+
+  ${WinSCP_HEADERS}
+  ${WinSCP_SOURCES}
+
+#  UnityBuildFilezilla.cpp
+  ${Filezilla_HEADERS}
+  ${Filezilla_SOURCES}
+
+#  UnityBuildMain.cpp
+  ${NetBox_HEADERS}
+  ${NetBox_SOURCES}
+)
+
+source_group("Filezilla headers" FILES ${Filezilla_HEADERS})
+source_group("Filezilla sources" FILES ${Filezilla_SOURCES})
+source_group("WinSCP headers" FILES ${WinSCP_HEADERS})
+source_group("WinSCP sources" FILES ${WinSCP_SOURCES})
+source_group("Base headers" FILES ${Base_HEADERS})
+source_group("Base sources" FILES ${Base_SOURCES})
+source_group("NetBox headers" FILES ${NetBox_HEADERS})
+source_group("NetBox sources" FILES ${NetBox_SOURCES})
 
 endif(OPT_USE_UNITY_BUILD)
 
@@ -1383,14 +1596,15 @@ set(NETBOX_SOURCES
   ../include/FastDelegate.h
   ../include/type_traits.h
   ../include/rtti.hpp
-  ../include/nbglobals.h
-  ../include/headers.hpp
-  ../include/nbcore.h
   ../include/nbtypes.h
+  ../include/nbglobals.h
+  ../include/nbsystem.h
+  ../include/nbcore.h
   ../include/nbstring.h
   ../include/nbstring.inl
   ../include/nbutils.h
 
+  ../base/Property.hpp
   ../base/Global.h
   ../base/Common.h
   ../base/UnicodeString.hpp
@@ -1400,9 +1614,10 @@ set(NETBOX_SOURCES
   ../base/MsgIDs.h
   ../base/vcl.h
   ../base/FileBuffer.h
-  ../base/ObjIDs.h
+  ../base/FormatUtils.h
 
   ../core/WebDAVFileSystem.h
+  ../core/S3FileSystem.h
   ../core/Queue.h
   ../core/Terminal.h
   ../core/FileSystems.h
@@ -1442,7 +1657,6 @@ set(NETBOX_SOURCES
   ../resource/rtlconsts.h
   ../resource/HelpCore.h
   ../resource/TextsFileZilla.h
-
   ../PluginSDK/Far2/plugin.hpp
   ../PluginSDK/Far2/farcolor.hpp
   ../PluginSDK/Far2/farkeys.hpp
@@ -1496,6 +1710,7 @@ set(NETBOX_LIBRARIES
   dlmalloc
   rdestl
   fmt
+  s3
   tinylog
 
   Ws2_32.lib
@@ -1533,7 +1748,7 @@ add_library(NetBox SHARED
 
 target_include_directories(NetBox PRIVATE
   ../../libs/openssl
-  ../../libs/openssl/${OPENSSL_LIB_DIR}
+  ${OPENSSL_LIBRARYDIR}
   ../../libs/putty
   ../../libs/putty/windows
   ../../libs/neon/src
@@ -1543,6 +1758,8 @@ target_include_directories(NetBox PRIVATE
   ../../libs/atlmfc/include
   ../../libs/fmt
   ../../libs/tinylog
+  ../../libs/libs3/inc
+  ../../libs/GSL/include
   ../filezilla
   ../base
   ../core
@@ -1569,8 +1786,13 @@ target_link_libraries(NetBox PRIVATE
 target_compile_options(NetBox PRIVATE
   -DBUILD_OFFICIAL
   -wd4251 -wd4275 -wd4661
+  ${LIBNEON_DEFS}
+  ${LIBEXPAT_DEFS}
   ${ATLMFC_COMPILE_FLAGS}
   ${NETBOX_UNICODE_FLAGS}
+  ${PUTTY_COMPILE_FLAGS}
+  -DGSL_THROW_ON_CONTRACT_VIOLATION
+  -DNOMINMAX
 )
 
 set(NETBOX_PLUGIN_DIR ${PROJECT_ROOT}/${FAR_VERSION}_${PROJECT_PLATFORM}/Plugins/NetBox)
@@ -1584,10 +1806,7 @@ add_custom_command(TARGET create_plugin_dir POST_BUILD
 )
 
 file(GLOB DIST_FILES
-  ${NETBOX_DIR}/*.lng
-#  ${BUILD_DIR}/*.dll
-#  ${BUILD_DIR}/*.pdb
-#  ${BUILD_DIR}/*.map
+  ${NETBOX_DIR}\\*.lng
 )
 
 add_custom_target(copy_to_plugin_dir)
@@ -1599,12 +1818,28 @@ foreach(DIST_FILE ${DIST_FILES})
 endforeach()
 
 add_custom_command(TARGET NetBox POST_BUILD
-  COMMAND ${CMAKE_COMMAND} -E copy_if_different ${BUILD_DIR}/NetBox.dll ${NETBOX_PLUGIN_DIR}
-  COMMAND if exist ${BUILD_DIR}/NetBox.pdb ( ${CMAKE_COMMAND} -E copy_if_different ${BUILD_DIR}/NetBox.pdb ${NETBOX_PLUGIN_DIR} )
-  COMMAND if exist ${BUILD_DIR}/NetBox.map ( ${CMAKE_COMMAND} -E copy_if_different ${BUILD_DIR}/NetBox.map ${NETBOX_PLUGIN_DIR} )
+  COMMAND if exist "$<TARGET_FILE_DIR:NetBox>\\NetBox.dll" ( ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE_DIR:NetBox>\\NetBox.dll" ${NETBOX_PLUGIN_DIR} )
+  COMMAND if exist "$<TARGET_FILE_DIR:NetBox>\\NetBox.pdb" ( ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE_DIR:NetBox>\\NetBox.pdb" ${NETBOX_PLUGIN_DIR} )
+  COMMAND if exist "$<TARGET_FILE_DIR:NetBox>\\NetBox.map" ( ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE_DIR:NetBox>\\NetBox.map" ${NETBOX_PLUGIN_DIR} )
 )
 
 add_dependencies(copy_to_plugin_dir create_plugin_dir )
 add_dependencies(NetBox copy_to_plugin_dir)
-
+#-------------------------------------------------------------------------------
+ucm_set_runtime(STATIC)
+ucm_add_flags(CXX /EHsc)
+ucm_add_flags(CXX C /Zi CONFIG Debug)
+ucm_add_flags(CXX C /MP /Gy /Zi CONFIG Release)
+#/Ob2 /GR
+ucm_add_flags(CXX C /GS- /fp:fast /O2 /Oy /GA /GF /Gw /GL CONFIG Release)
+#/Oy - omit frame pointers
+#/Oi - enable intrinsic functions
+ucm_add_flags(CXX C /Gm- -Ox -Ob1 -Oi -Os -GF CONFIG Release)
+# static runtime settings
+ucm_add_flags(CXX C /MT CONFIG Release)
+ucm_add_flags(CXX C /MTd CONFIG Debug)
+# linker settings
+ucm_add_linker_flags(MODULE SHARED EXE /DEBUG /OPT:REF /OPT:ICF=6 /NXCOMPAT /DYNAMICBASE /MANIFEST:NO CONFIG Release)
+ucm_add_linker_flags(MODULE STATIC SHARED EXE /LTCG CONFIG Release)
+ucm_print_flags()
 #-------------------------------------------------------------------------------

@@ -4,5 +4,5 @@
 
 extern HINSTANCE HInst;
 
-void InitExtensionModule(HINSTANCE HInst);
+void InitExtensionModule(HINSTANCE HInstance);
 void TermExtensionModule();

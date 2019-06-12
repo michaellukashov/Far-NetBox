@@ -2,7 +2,7 @@
 
 #include <vcl.h>
 
-void FarWrapText(UnicodeString Text, TStrings * Result, intptr_t MaxWidth);
+void FarWrapText(const UnicodeString Text, TStrings * Result, intptr_t MaxWidth);
 
 /**
  * File read/write wrapper
@@ -11,8 +11,8 @@ class CNBFile : public TObject
 {
   NB_DISABLE_COPY(CNBFile)
   public:
-    CNBFile() : m_File(INVALID_HANDLE_VALUE), m_LastError(0) {}
-    ~CNBFile()
+    CNBFile() = default;
+    ~CNBFile() noexcept
     {
       Close();
     }
@@ -80,7 +80,7 @@ class CNBFile : public TObject
   static DWORD LoadFile(const wchar_t * fileName, rde::vector<char> & fileContent);
 
 private:
-  HANDLE  m_File;          ///< File handle
-  mutable DWORD   m_LastError;     ///< Last errno
+  HANDLE  m_File{INVALID_HANDLE_VALUE};          ///< File handle
+  mutable DWORD m_LastError{0};     ///< Last errno
 };
 

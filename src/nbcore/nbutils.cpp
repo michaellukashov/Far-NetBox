@@ -1,11 +1,11 @@
 #include "stdafx.h"
 
 #include <WinUser.h>
-#pragma hdrstop
 
 namespace nb {
 
 intptr_t __cdecl StrLength(const wchar_t *str) { return wcslen(NullToEmpty(str)); }
+intptr_t __cdecl StrLength(const char *str) { return strlen(NullToEmptyA(str)); }
 
 wchar_t __cdecl Upper(wchar_t Ch)
 {
@@ -49,24 +49,8 @@ TEncodeType DetectUTF8Encoding(const uint8_t *str, intptr_t len)
 
   while (buf != endbuf)
   {
-    uint8_t c = *buf++;
-    if (trailing)
-    {
-      if ((c & 0xC0) == 0x80) // Does trailing byte follow UTF-8 format?
-      {
-        if (byte2mask) // Need to check 2nd byte for proper range?
-        {
-          if (c & byte2mask) // Are appropriate bits set?
-            byte2mask = 0x00;
-          else
-            return etANSI;
-        }
-        trailing--;
-      }
-      else
-        return etANSI;
-    }
-    else
+    const uint8_t c = *buf++;
+    if (!trailing)
     {
       if ((c & 0x80) == 0x00)
         continue; // valid 1 byte UTF-8
@@ -112,6 +96,22 @@ TEncodeType DetectUTF8Encoding(const uint8_t *str, intptr_t len)
           byte2mask = 0x3C; // If not set mask
         // to check next byte
         trailing = 5;
+      }
+      else
+        return etANSI;
+    }
+    else
+    {
+      if ((c & 0xC0) == 0x80) // Does trailing byte follow UTF-8 format?
+      {
+        if (byte2mask) // Need to check 2nd byte for proper range?
+        {
+          if (c & byte2mask) // Are appropriate bits set?
+            byte2mask = 0x00;
+          else
+            return etANSI;
+        }
+        trailing--;
       }
       else
         return etANSI;

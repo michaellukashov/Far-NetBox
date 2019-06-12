@@ -1,16 +1,17 @@
+//---------------------------------------------------------------------------
 #pragma once
-
+//---------------------------------------------------------------------------
 #define _int64 int64_t
-
+//---------------------------------------------------------------------------
 #define MPEXT_NO_ZLIB
 #define MPEXT_NO_GSS
 #define _AFX_ENABLE_INLINES
 #define _AFX_NOFORCE_LIBS
-
+//---------------------------------------------------------------------------
 #ifndef LENOF
 #define LENOF(x) (_countof(x))
 #endif
-
+//---------------------------------------------------------------------------
 #define _ATL_MIN_CRT
 #ifndef _ATL_NO_DEFAULT_LIBS
 #define _ATL_NO_DEFAULT_LIBS
@@ -20,7 +21,7 @@
 #include "afxole.h"
 #include "../src/mfc/oleimpl2.h"
 #include "../src/mfc/afximpl.h"
-
+//---------------------------------------------------------------------------
 #include <afx.h>
 //#include <wtypes.h>
 #include <afxmt.h>
@@ -31,32 +32,34 @@
 #include <rdestl/vector.h>
 #include <rdestl/set.h>
 #include <algorithm>
-
+//---------------------------------------------------------------------------
 class CFileFix;
 #define CFile CFileFix
-
+//---------------------------------------------------------------------------
+// #pragma hdrstop
+//---------------------------------------------------------------------------
 #include <Global.h>
 // these create conflict with afxwin.h
 #undef BEGIN_MESSAGE_MAP
 #undef END_MESSAGE_MAP
-
+//---------------------------------------------------------------------------
 #include <FzApiStructures.h>
-
+//---------------------------------------------------------------------------
 #include <oleauto.h>
 #include <atlconv.h>
 #include <afxdisp.h>
 #include <afxconv.h>
-
-#include "FileZillaApi.h"
-
+//---------------------------------------------------------------------------
 #define _strlwr strlwr
-
-//const int FILEEXISTS_OVERWRITE = 0;
-//const int FILEEXISTS_RESUME = 1;
-//const int FILEEXISTS_RENAME = 2;
-//const int FILEEXISTS_SKIP = 3;
-//const int FILEEXISTS_COMPLETE = 4;
-
+//---------------------------------------------------------------------------
+#if 0
+const int FILEEXISTS_OVERWRITE = 0;
+const int FILEEXISTS_RESUME = 1;
+const int FILEEXISTS_RENAME = 2;
+const int FILEEXISTS_SKIP = 3;
+const int FILEEXISTS_COMPLETE = 4;
+#endif // if 0
+//---------------------------------------------------------------------------
 class t_ffam_statusmessage
 {
 CUSTOM_MEM_ALLOCATION_IMPL
@@ -65,7 +68,7 @@ public:
   int type;
   BOOL post;
 };
-
+//---------------------------------------------------------------------------
 struct t_ffam_transferstatus
 {
 CUSTOM_MEM_ALLOCATION_IMPL
@@ -73,9 +76,9 @@ CUSTOM_MEM_ALLOCATION_IMPL
   int64_t transfersize;
   BOOL bFileTransfer;
 };
-
+//---------------------------------------------------------------------------
 #undef CFile
-
+//---------------------------------------------------------------------------
 class CFileFix : public CFile
 {
 CUSTOM_MEM_ALLOCATION_IMPL
@@ -115,9 +118,9 @@ public:
     delete p;
   }*/
 };
-
+//---------------------------------------------------------------------------
 #define CFile CFileFix
-
+//---------------------------------------------------------------------------
 struct CStringDataA
 {
   long nRefs;             // reference count
@@ -130,11 +133,11 @@ struct CStringDataA
     return (CHAR *)(this + 1);
   }
 };
-
+//---------------------------------------------------------------------------
 extern LPCSTR _afxPchNilA;
 extern CStringDataA* _afxDataNilA;
 #define afxEmptyStringA ((CStringA&)*(CStringA*)&_afxPchNilA)
-
+//---------------------------------------------------------------------------
 #if 0
 class CStringA
 {
@@ -519,22 +522,22 @@ protected:
     return (lpsz == NULL) ? 0 : strlen(lpsz);
   }
 };
-
+//---------------------------------------------------------------------------
 inline bool AFXAPI operator==(const CStringA & s1, LPCSTR s2)
 {
   return s1.Compare(s2) == 0;
 }
-
+//---------------------------------------------------------------------------
 inline bool AFXAPI operator!=(const CStringA & s1, LPCSTR s2)
 {
   return s1.Compare(s2) != 0;
 }
-
+//---------------------------------------------------------------------------
 inline CStringA AFXAPI operator+(const CStringA & string1, char ch)
 {
   CStringA s;
   s.ConcatCopy(string1.GetData()->nDataLength, string1.m_pchData, 1, &ch);
   return s;
 }
-
+//---------------------------------------------------------------------------
 #endif

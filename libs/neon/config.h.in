@@ -82,9 +82,6 @@
 /* Define to 1 if you have the `gnutls_session_get_data2' function. */
 #undef HAVE_GNUTLS_SESSION_GET_DATA2
 
-/* Define to 1 if you have the `gnutls_sign_callback_set' function. */
-#undef HAVE_GNUTLS_SIGN_CALLBACK_SET
-
 /* Define to 1 if you have the `gnutls_x509_crt_sign2' function. */
 #undef HAVE_GNUTLS_X509_CRT_SIGN2
 

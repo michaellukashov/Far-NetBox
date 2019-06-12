@@ -1,6 +1,5 @@
 
 #include <vcl.h>
-#pragma hdrstop
 
 #include <Masks.hpp>
 #include <nbutils.h>
@@ -11,8 +10,8 @@ static int CmpName_Body(const wchar_t * pattern, const wchar_t * str, bool CmpNa
 {
   for (;; ++str)
   {
-    wchar_t stringc = nb::Upper(*str);
-    wchar_t patternc = nb::Upper(*pattern++);
+    const wchar_t stringc = nb::Upper(*str);
+    const wchar_t patternc = nb::Upper(*pattern++);
 
     switch (patternc)
     {
@@ -131,12 +130,12 @@ int CmpName(const wchar_t * pattern, const wchar_t * str, bool CmpNameSearchMode
   return CmpName_Body(pattern, str, CmpNameSearchMode);
 }
 
-TMask::TMask(UnicodeString Mask) :
+TMask::TMask(const UnicodeString Mask) noexcept :
   FMask(Mask)
 {
 }
 
-bool TMask::Matches(UnicodeString Str) const
+bool TMask::Matches(const UnicodeString Str) const
 {
   return CmpName(FMask.c_str(), Str.c_str()) != FALSE;
 }

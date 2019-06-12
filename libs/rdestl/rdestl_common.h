@@ -43,11 +43,11 @@
 		typedef unsigned short		uint16;
 		typedef signed long			int32;
 		typedef unsigned long		uint32;
-        #ifdef _MSC_VER
+#ifdef _MSC_VER
 		typedef unsigned __int64	uint64;
-        #else
-        typedef unsigned long long	uint64;
-        #endif
+#else
+		typedef unsigned long long	uint64;
+#endif
 		namespace Sys 
 		{
 			RDE_FORCEINLINE void MemCpy(void* to, const void* from, ::size_t bytes)

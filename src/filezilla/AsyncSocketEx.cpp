@@ -1,15 +1,16 @@
 // CAsyncSocketEx by Tim Kosse (Tim.Kosse@gmx.de)
 //                 Version 1.3 (2003-04-26)
-
+//---------------------------------------------------------------------------
 // Feel free to use this class, as long as you don't claim that you wrote it
 // and this copyright notice stays intact in the source files.
 // If you use this class in commercial applications, please send a short message
 // to tim.kosse@gmx.de
-
+//---------------------------------------------------------------------------
 #include "stdafx.h"
 #include "AsyncSocketEx.h"
 
 #include "AsyncSocketExLayer.h"
+#include "FileZillaApi.h"
 
 #ifndef GWL_USERDATA
 #define GWL_USERDATA        (-21)

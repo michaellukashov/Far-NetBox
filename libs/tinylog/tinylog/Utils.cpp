@@ -56,7 +56,7 @@ void Utils::CurrentTime(struct timeval *tv, struct tm **tm)
 //  *tm = localtime(&tv->tv_sec);
 //  time_t rawtime;
 //  time(&rawtime);
-  time_t time = (time_t)tv->tv_sec;
+  time_t time = static_cast<time_t>(tv->tv_sec);
   *tm = localtime(&time);
 }
 

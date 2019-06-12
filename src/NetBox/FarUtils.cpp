@@ -38,7 +38,7 @@ bool CNBFile::Read(void *buff, size_t &buffSize)
   DebugAssert(m_File != INVALID_HANDLE_VALUE);
   m_LastError = ERROR_SUCCESS;
 
-  DWORD bytesRead = ToDWord(buffSize);
+  DWORD bytesRead = nb::ToDWord(buffSize);
   if (!::ReadFile(m_File, buff, bytesRead, &bytesRead, nullptr))
   {
     m_LastError = ::GetLastError();
@@ -46,7 +46,7 @@ bool CNBFile::Read(void *buff, size_t &buffSize)
   }
   else
   {
-    buffSize = static_cast<size_t>(bytesRead);
+    buffSize = nb::ToSizeT(bytesRead);
   }
   return (m_LastError == ERROR_SUCCESS);
 }
@@ -57,7 +57,7 @@ bool CNBFile::Write(const void *buff, const size_t buffSize)
   m_LastError = ERROR_SUCCESS;
 
   DWORD bytesWritten;
-  if (!::WriteFile(m_File, buff, ToDWord(buffSize), &bytesWritten, nullptr))
+  if (!::WriteFile(m_File, buff, nb::ToDWord(buffSize), &bytesWritten, nullptr))
   {
     m_LastError = ::GetLastError();
   }
@@ -129,14 +129,14 @@ DWORD CNBFile::LoadFile(const wchar_t *fileName, rde::vector<char> &fileContent)
     {
       return ERROR_SUCCESS;
     }
-    size_t s = static_cast<size_t>(fs);
+    size_t s = nb::ToSizeT(fs);
     fileContent.resize(s);
     f.Read(&fileContent[0], s);
   }
   return f.LastError();
 }
 
-void FarWrapText(UnicodeString Text, TStrings *Result, intptr_t MaxWidth)
+void FarWrapText(const UnicodeString Text, TStrings *Result, intptr_t MaxWidth)
 {
   size_t TabSize = 8;
   TStringList Lines;

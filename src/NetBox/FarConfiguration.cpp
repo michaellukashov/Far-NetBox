@@ -8,19 +8,19 @@
 #include "FarPlugin.h"
 #include "CoreMain.h"
 
-TFarConfiguration::TFarConfiguration(TCustomFarPlugin *APlugin) :
+TFarConfiguration::TFarConfiguration(TCustomFarPlugin *APlugin) noexcept :
   TGUIConfiguration(OBJECT_CLASS_TFarConfiguration),
   FFarPlugin(APlugin),
-  FBookmarks(new TBookmarks()),
+  FBookmarks(std::make_unique<TBookmarks>()),
   FFarConfirmations(-1)
 {
-  TFarConfiguration::Default();
+//  TFarConfiguration::Default();
   CacheFarSettings();
 }
 
-TFarConfiguration::~TFarConfiguration()
+TFarConfiguration::~TFarConfiguration() noexcept
 {
-  SAFE_DESTROY(FBookmarks);
+//  SAFE_DESTROY(FBookmarks);
 }
 
 void TFarConfiguration::Default()
@@ -50,11 +50,11 @@ void TFarConfiguration::Default()
   SetStatusColumnTypesDetailed("NR");
   SetStatusColumnWidthsDetailed("0");
 
-  SetApplyCommandCommand(L"");
+  SetApplyCommandCommand("");
   SetApplyCommandParams(0);
 
-  SetPuttygenPath(FormatCommand(::ExtractFilePath(ModuleFileName()) + "putty\\puttygen.exe", L""));
-  SetPageantPath(FormatCommand(::ExtractFilePath(ModuleFileName()) + "putty\\pageant.exe", L""));
+  SetPuttygenPath(FormatCommand(::ExtractFilePath(ModuleFileName()) + "putty\\puttygen.exe", ""));
+  SetPageantPath(FormatCommand(::ExtractFilePath(ModuleFileName()) + "putty\\pageant.exe", ""));
 
   FBookmarks->Clear();
 }
@@ -71,6 +71,7 @@ void TFarConfiguration::Saved()
 }
 
 // duplicated from core\configuration.cpp
+#undef LASTELEM
 #define LASTELEM(ELEM) \
   ELEM.SubString(ELEM.LastDelimiter(L".>")+1, ELEM.Length() - ELEM.LastDelimiter(L".>"))
 #define BLOCK(KEY, CANCREATE, BLOCK) \
@@ -80,9 +81,9 @@ void TFarConfiguration::Saved()
     BLOCK \
   }
 #define REGCONFIG(CANCREATE) \
-  BLOCK(L"Far", CANCREATE, \
+  BLOCK("Far", CANCREATE, \
     KEY(Bool,     DisksMenu); \
-    KEY(Integer,  DisksMenuHotKey); \
+    KEY2(Integer,  DisksMenuHotKey); \
     KEY(Bool,     PluginsMenu); \
     KEY(Bool,     PluginsMenuCommands); \
     KEY(String,   CommandPrefixes); \
@@ -102,7 +103,7 @@ void TFarConfiguration::Saved()
     KEY(String,   PuttygenPath); \
     KEY(String,   PageantPath); \
     KEY(String,   ApplyCommandCommand); \
-    KEY(Integer,  ApplyCommandParams); \
+    KEY2(Integer,  ApplyCommandParams); \
     KEY(Bool,     ConfirmSynchronizedBrowsing); \
   )
 
@@ -111,11 +112,15 @@ void TFarConfiguration::SaveData(THierarchicalStorage *Storage, bool All)
   TGUIConfiguration::SaveData(Storage, All);
 
   // duplicated from core\configuration.cpp
+#undef KEY
+#undef KEY2
 #define KEY(TYPE, VAR) Storage->Write ## TYPE(LASTELEM(MB2W(#VAR)), Get##VAR())
+#define KEY2(TYPE, VAR) Storage->Write ## TYPE(LASTELEM(MB2W(#VAR)), nb::ToInt(Get##VAR()))
   REGCONFIG(true);
+#undef KEY2
 #undef KEY
 
-  if (Storage->OpenSubKey(L"Bookmarks", /*CanCreate=*/true))
+  if (Storage->OpenSubKey("Bookmarks", /*CanCreate=*/true))
   {
     FBookmarks->Save(Storage, All);
 
@@ -128,11 +133,15 @@ void TFarConfiguration::LoadData(THierarchicalStorage *Storage)
   TGUIConfiguration::LoadData(Storage);
 
   // duplicated from core\configuration.cpp
+#undef KEY2
+#undef KEY
 #define KEY(TYPE, VAR) Set##VAR(Storage->Read ## TYPE(LASTELEM(MB2W(#VAR)), Get##VAR()))
+#define KEY2(TYPE, VAR) Set##VAR(Storage->Read ## TYPE(LASTELEM(MB2W(#VAR)), nb::ToInt(Get##VAR())))
   REGCONFIG(false);
+#undef KEY2
 #undef KEY
 
-  if (Storage->OpenSubKey(L"Bookmarks", false))
+  if (Storage->OpenSubKey("Bookmarks", false))
   {
     FBookmarks->Load(Storage);
     Storage->CloseSubKey();

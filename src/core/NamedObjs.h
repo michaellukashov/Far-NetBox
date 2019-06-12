@@ -5,49 +5,54 @@
 #include <contnrs.hpp>
 
 #define CONST_HIDDEN_PREFIX L"_!_"
-
+//---------------------------------------------------------------------------
 class TNamedObjectList;
+NB_DEFINE_CLASS_ID(TNamedObject);
 class NB_CORE_EXPORT TNamedObject : public TPersistent
 {
 public:
-  static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TNamedObject); }
-  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TNamedObject) || TPersistent::is(Kind); }
+  static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TNamedObject); }
+  bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TNamedObject) || TPersistent::is(Kind); }
 public:
-#if 0
   __property UnicodeString Name = { read = FName, write = SetName };
+  RWProperty<UnicodeString> Name{nb::bind(&TNamedObject::GetName, this), nb::bind(&TNamedObject::SetName, this)};
   __property bool Hidden = { read = FHidden };
-#endif // #if 0
+  const bool& Hidden{FHidden};
+
   UnicodeString GetName() const { return FName; }
-  void SetName(UnicodeString Value);
+  void SetName(const UnicodeString Value);
   bool GetHidden() const { return FHidden; }
 
-  explicit TNamedObject() : TPersistent(OBJECT_CLASS_TNamedObject), FHidden(false) {}
-  explicit TNamedObject(TObjectClassId Kind) : TPersistent(Kind), FHidden(false) {}
-  explicit TNamedObject(TObjectClassId Kind, UnicodeString AName);
-  virtual ~TNamedObject() {}
+  explicit TNamedObject() noexcept : TPersistent(OBJECT_CLASS_TNamedObject), FHidden(false) {}
+  explicit TNamedObject(TObjectClassId Kind) noexcept : TPersistent(Kind), FHidden(false) {}
+  explicit TNamedObject(TObjectClassId Kind, const UnicodeString AName) noexcept;
+  virtual ~TNamedObject() = default;
 
-  bool IsSameName(UnicodeString AName) const;
+  bool IsSameName(const UnicodeString AName) const;
   virtual intptr_t Compare(const TNamedObject *Other) const;
   void MakeUniqueIn(TNamedObjectList *List);
 private:
   UnicodeString FName;
-  bool FHidden;
-};
+  bool FHidden{false};
 
+  __removed void SetName(const UnicodeString value);
+};
+//---------------------------------------------------------------------------
+NB_DEFINE_CLASS_ID(TNamedObjectList);
 class NB_CORE_EXPORT TNamedObjectList : public TObjectList
 {
 public:
-  static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TNamedObjectList); }
-  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TNamedObjectList) || TObjectList::is(Kind); }
+  static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TNamedObjectList); }
+  bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TNamedObjectList) || TObjectList::is(Kind); }
 public:
   intptr_t GetCount() const;
   intptr_t GetCountIncludingHidden() const;
-  virtual void Notify(void *Ptr, TListNotification Action) override;
+  void Notify(void *Ptr, TListNotification Action) override;
   void SetCount(intptr_t Value);
 protected:
-  intptr_t FHiddenCount;
-  bool FAutoSort;
-  bool FControlledAdd;
+  intptr_t FHiddenCount{0};
+  bool FAutoSort{true};
+  bool FControlledAdd{false};
   void Recount();
 public:
   static const UnicodeString HiddenPrefix;
@@ -55,18 +60,16 @@ public:
   bool GetAutoSort() const { return FAutoSort; }
   void SetAutoSort(bool Value) { FAutoSort = Value; }
 
-  explicit TNamedObjectList(TObjectClassId Kind = OBJECT_CLASS_TNamedObjectList);
+  explicit TNamedObjectList(TObjectClassId Kind = OBJECT_CLASS_TNamedObjectList) noexcept;
   void AlphaSort();
   intptr_t Add(TObject *AObject);
-  virtual const TNamedObject *AtObject(intptr_t Index) const;
-  virtual TNamedObject *AtObject(intptr_t Index);
-  const TNamedObject *FindByName(UnicodeString Name) const;
-  TNamedObject *FindByName(UnicodeString Name);
-#if 0
+  virtual const TNamedObject * AtObject(intptr_t Index) const;
+  virtual TNamedObject * AtObject(intptr_t Index);
+  const TNamedObject * FindByName(const UnicodeString AName) const;
+  TNamedObject * FindByName(const UnicodeString Name);
   __property int Count = { read = GetCount, write = SetCount };
   __property int CountIncludingHidden = { read = GetCountIncludingHidden };
-#endif // #if 0
 };
-
-int NamedObjectSortProc(void *Item1, void *Item2);
-
+//---------------------------------------------------------------------------
+intptr_t NamedObjectSortProc(const void *Item1, const void *Item2);
+//---------------------------------------------------------------------------

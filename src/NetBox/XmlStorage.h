@@ -7,54 +7,57 @@
 class TXmlStorage : public THierarchicalStorage
 {
 public:
-  explicit TXmlStorage(UnicodeString AStorage, UnicodeString StoredSessionsSubKey);
-  virtual void Init();
-  virtual ~TXmlStorage();
+  explicit TXmlStorage(const UnicodeString AStorage, const UnicodeString StoredSessionsSubKey) noexcept;
+  void Init() override;
+  virtual ~TXmlStorage() noexcept;
 
   bool Copy(TXmlStorage *Storage);
 
-  virtual void CloseSubKey();
-  virtual bool DeleteSubKey(UnicodeString SubKey);
-  virtual void GetSubKeyNames(TStrings *Strings);
-  virtual bool ValueExists(UnicodeString Value) const;
-  virtual bool DeleteValue(UnicodeString Name);
-  virtual size_t BinaryDataSize(UnicodeString Name) const;
-  virtual UnicodeString GetSource() const;
-  virtual UnicodeString GetSource();
+  void CloseSubKey() override;
+  bool DeleteSubKey(const UnicodeString SubKey) override;
+  void GetSubKeyNames(TStrings *Strings) override;
+  bool ValueExists(const UnicodeString Value) const override;
+  bool DeleteValue(const UnicodeString Name) override;
+  size_t BinaryDataSize(const UnicodeString Name) const override;
 
-  virtual bool ReadBool(UnicodeString Name, bool Default) const;
-  virtual intptr_t ReadInteger(UnicodeString Name, intptr_t Default) const;
-  virtual int64_t ReadInt64(UnicodeString Name, int64_t Default) const;
-  virtual TDateTime ReadDateTime(UnicodeString Name, const TDateTime &Default) const;
-  virtual double ReadFloat(UnicodeString Name, double Default) const;
-  virtual UnicodeString ReadStringRaw(UnicodeString Name, UnicodeString Default) const;
-  virtual size_t ReadBinaryData(UnicodeString Name, void *Buffer, size_t Size) const;
+  bool ReadBool(const UnicodeString Name, bool Default) const override;
+  intptr_t ReadIntPtr(const UnicodeString Name, intptr_t Default) const override;
+  int ReadInteger(const UnicodeString Name, int Default) const override;
+  int64_t ReadInt64(const UnicodeString Name, int64_t Default) const override;
+  TDateTime ReadDateTime(const UnicodeString Name, const TDateTime &Default) const override;
+  double ReadFloat(const UnicodeString Name, double Default) const override;
+  UnicodeString ReadStringRaw(const UnicodeString Name, const UnicodeString Default) const override;
+  size_t ReadBinaryData(const UnicodeString Name, void *Buffer, size_t Size) const override;
 
-  virtual void WriteBool(UnicodeString Name, bool Value);
-  virtual void WriteInteger(UnicodeString Name, intptr_t Value);
-  virtual void WriteInt64(UnicodeString Name, int64_t Value);
-  virtual void WriteDateTime(UnicodeString Name, const TDateTime &Value);
-  virtual void WriteFloat(UnicodeString Name, double Value);
-  virtual void WriteStringRaw(UnicodeString Name, UnicodeString Value);
-  virtual void WriteBinaryData(UnicodeString Name, const void *Buffer, size_t Size);
+  void WriteBool(const UnicodeString Name, bool Value) override;
+  void WriteIntPtr(const UnicodeString Name, intptr_t Value) override;
+  void WriteInteger(const UnicodeString Name, int Value) override;
+  void WriteInt64(const UnicodeString Name, int64_t Value) override;
+  void WriteDateTime(const UnicodeString Name, const TDateTime &Value) override;
+  void WriteFloat(const UnicodeString Name, double Value) override;
+  void WriteStringRaw(const UnicodeString Name, const UnicodeString Value) override;
+  void WriteBinaryData(const UnicodeString Name, const void *Buffer, size_t Size) override;
 
-  virtual void GetValueNames(TStrings *Strings) const;
-
-  virtual void SetAccessMode(TStorageAccessMode Value);
-  virtual bool DoKeyExists(UnicodeString SubKey, bool ForceAnsi);
-  virtual bool DoOpenSubKey(UnicodeString MungedSubKey, bool CanCreate);
+  void GetValueNames(TStrings *Strings) const override;
 
 protected:
-  intptr_t GetFailed();
+  void SetAccessModeProtected(TStorageAccessMode Value) override;
+  bool DoKeyExists(const UnicodeString SubKey, bool ForceAnsi) override;
+  bool DoOpenSubKey(const UnicodeString MungedSubKey, bool CanCreate) override;
+
+  UnicodeString GetSourceProtected() const override;
+  UnicodeString GetSourceProtected() override;
+protected:
+  intptr_t GetFailed() const;
   void SetFailed(intptr_t Value) { FFailed = Value; }
 
 private:
-  UnicodeString GetSubKeyText(UnicodeString Name) const;
-  tinyxml2::XMLElement *FindElement(UnicodeString Name) const;
-  //std::string ToStdString(UnicodeString String) const { return std::string(::W2MB(String.c_str()).c_str()); }
+  UnicodeString GetSubKeyText(const UnicodeString Name) const;
+  tinyxml2::XMLElement *FindElement(const UnicodeString Name) const;
+  //std::string ToStdString(const UnicodeString String) const { return std::string(::W2MB(String.c_str()).c_str()); }
   UnicodeString ToUnicodeString(const char *String) const { return ::MB2W(String ? String : ""); }
-  void RemoveIfExists(UnicodeString Name);
-  void AddNewElement(UnicodeString Name, UnicodeString Value);
+  void RemoveIfExists(const UnicodeString Name);
+  void AddNewElement(const UnicodeString Name, const UnicodeString Value);
   tinyxml2::XMLElement *FindChildElement(AnsiString SubKey) const;
   UnicodeString GetValue(tinyxml2::XMLElement *Element) const;
 
@@ -62,10 +65,10 @@ private:
   bool WriteXml();
 
 private:
-  tinyxml2::XMLDocument *FXmlDoc;
+  tinyxml2::XMLDocument *FXmlDoc{nullptr};
   rde::vector<tinyxml2::XMLElement *> FSubElements;
-  tinyxml2::XMLElement *FCurrentElement;
+  tinyxml2::XMLElement *FCurrentElement{nullptr};
   UnicodeString FStoredSessionsSubKey;
-  intptr_t FFailed;
-  bool FStoredSessionsOpened;
+  mutable intptr_t FFailed{0};
+  bool FStoredSessionsOpened{false};
 };

@@ -3,9 +3,9 @@
 
 HINSTANCE HInst = NULL;
 
-void InitExtensionModule(HINSTANCE HInst)
+void InitExtensionModule(HINSTANCE HInstance)
 {
-  ::HInst = HInst;
+  ::HInst = HInstance;
   AFX_MANAGE_STATE(AfxGetModuleState());
   afxCurrentResourceHandle = ::HInst;
 }

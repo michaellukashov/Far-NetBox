@@ -7,15 +7,15 @@ namespace tinylog {
 class Utils
 {
 public:
-  typedef uint32_t LogLevel;
+  using LogLevel = uint32_t;
 
   static const LogLevel
-  LEVEL_TRACE   = 0,
-  LEVEL_DEBUG   = 1,
-  LEVEL_INFO    = 2,
-  LEVEL_WARNING = 3,
-  LEVEL_ERROR   = 4,
-  LEVEL_FATAL   = 5;
+    LEVEL_TRACE   = 0,
+    LEVEL_DEBUG   = 1,
+    LEVEL_INFO    = 2,
+    LEVEL_WARNING = 3,
+    LEVEL_ERROR   = 4,
+    LEVEL_FATAL   = 5;
 
 //  static std::string CurrentTime();
 //  static void CurrentTime(std::string &ref_time);

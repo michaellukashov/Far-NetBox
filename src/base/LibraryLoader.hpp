@@ -10,11 +10,11 @@ class NB_CORE_EXPORT TLibraryLoader : public TObject
 {
 NB_DISABLE_COPY(TLibraryLoader)
 public:
-  explicit TLibraryLoader(UnicodeString libraryName, bool AllowFailure = false);
-  explicit TLibraryLoader();
-  virtual ~TLibraryLoader();
+  explicit TLibraryLoader(const UnicodeString libraryName, bool AllowFailure = false) noexcept;
+  explicit TLibraryLoader() noexcept;
+  virtual ~TLibraryLoader() noexcept;
 
-  void Load(UnicodeString LibraryName, bool AllowFailure = false);
+  void Load(const UnicodeString LibraryName, bool AllowFailure = false);
   void Unload();
   FARPROC GetProcAddress(AnsiString ProcedureName) const;
   FARPROC GetProcAddress(intptr_t ProcedureOrdinal) const;

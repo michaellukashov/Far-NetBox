@@ -5,11 +5,9 @@
 
 namespace tinylog {
 
-Buffer::Buffer(uint32_t l_capacity) :
-  l_size_(0),
-  l_capacity_(l_capacity)
+Buffer::Buffer(uint32_t capacity)
 {
-  pt_data_ = nb::chcalloc(l_capacity);
+  pt_data_ = nb::chcalloc(capacity);
 }
 
 Buffer::~Buffer()
@@ -34,16 +32,16 @@ int32_t Buffer::TryAppend(const void *pt_log, intptr_t ToWrite)
   */
   size_t append_len = ToWrite; // 24 + strlen(pt_file) + 5 + strlen(pt_func) + 9 + strlen(pt_log);
 
-  if (append_len + l_size_ > l_capacity_)
+  if (append_len + size_ > capacity_)
   {
     return -1;
   }
 
-  memmove(pt_data_ + l_size_, pt_log, ToWrite);
+  memmove(pt_data_ + size_, pt_log, ToWrite);
   intptr_t n_append = ToWrite;
   if (n_append > 0)
   {
-    l_size_ += n_append;
+    size_ += n_append;
   }
 
   return 0;
@@ -51,23 +49,23 @@ int32_t Buffer::TryAppend(const void *pt_log, intptr_t ToWrite)
 
 void Buffer::Clear()
 {
-  l_size_ = 0;
+  size_ = 0;
 }
 
 size_t Buffer::Size() const
 {
-  return l_size_;
+  return size_;
 }
 
 size_t Buffer::Capacity() const
 {
-  return l_capacity_;
+  return capacity_;
 }
 
 int32_t Buffer::Flush(FILE *file)
 {
-  size_t n_write = fwrite(pt_data_, 1, l_size_, file);
-  if (n_write != l_size_)
+  size_t n_write = fwrite(pt_data_, 1, size_, file);
+  if (n_write != size_)
   {
     // error
     return -1;

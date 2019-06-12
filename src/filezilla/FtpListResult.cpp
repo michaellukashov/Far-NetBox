@@ -1,4 +1,4 @@
-
+//---------------------------------------------------------------------------
 #include "stdafx.h"
 #include <nbutils.h>
 #include "FtpListResult.h"
@@ -1454,9 +1454,17 @@ BOOL CFtpListResult::parseAsMlsd(const char *line, const int linelen, t_director
   pos++;
   CString fileName;
   copyStr(fileName, 0, line + pos, linelen - pos, true);
-  CServerPath path(fileName, false); // do not trim
-  direntry.name = path.GetLastSegment();
-  if (direntry.name.IsEmpty())
+  if (mlst)
+  {
+    // do not try to detect path type, assume a standard *nix syntax + do not trim
+    CServerPath path(fileName, FZ_SERVERTYPE_FTP, false);
+    direntry.name = path.GetLastSegment();
+    if (direntry.name.IsEmpty())
+    {
+      direntry.name = fileName;
+    }
+  }
+  else
   {
     direntry.name = fileName;
   }
@@ -1473,6 +1481,7 @@ bool CFtpListResult::parseMlsdDateTime(const CString value, t_directory::t_diren
   bool result = FALSE;
   int Year, Month, Day, Hours, Minutes, Seconds;
   Year=Month=Day=Hours=Minutes=Seconds=0;
+  // Time can include a fraction after a dot, this will ignore the fraction part.
   if (swscanf((LPCWSTR)value, L"%4d%2d%2d%2d%2d%2d", &Year, &Month, &Day, &Hours, &Minutes, &Seconds) == 6)
   {
     date.hasdate = TRUE;

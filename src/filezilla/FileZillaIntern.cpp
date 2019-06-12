@@ -1,16 +1,19 @@
-
+//---------------------------------------------------------------------------
 #include "stdafx.h"
-
+//---------------------------------------------------------------------------
 #include "FileZillaIntern.h"
 #include "FileZillaIntf.h"
-
-TFileZillaIntern::TFileZillaIntern(TFileZillaIntf * AOwner) :
+#include "FileZillaApi.h"
+//---------------------------------------------------------------------------
+__removed #pragma package(smart_init)
+//---------------------------------------------------------------------------
+TFileZillaIntern::TFileZillaIntern(TFileZillaIntf * AOwner) noexcept :
   // TObject(OBJECT_CLASS_TFileZillaIntern),
   FOwner(AOwner)
 {
   FDebugLevel = 0;
 }
-
+//---------------------------------------------------------------------------
 bool TFileZillaIntern::FZPostMessage(WPARAM wParam, LPARAM lParam) const
 {
   bool Result;
@@ -35,24 +38,24 @@ bool TFileZillaIntern::FZPostMessage(WPARAM wParam, LPARAM lParam) const
 
   return Result;
 }
-
+//---------------------------------------------------------------------------
 CString TFileZillaIntern::GetOption(int OptionID) const
 {
   return FOwner->Option(OptionID);
 }
-
+//---------------------------------------------------------------------------
 int TFileZillaIntern::GetOptionVal(int OptionID) const
 {
-  return (int)FOwner->OptionVal(OptionID);
+  return nb::ToInt(FOwner->OptionVal(OptionID));
 }
-
+//---------------------------------------------------------------------------
 int TFileZillaIntern::GetDebugLevel() const
 {
   return FDebugLevel;
 }
-
+//---------------------------------------------------------------------------
 void TFileZillaIntern::SetDebugLevel(int DebugLevel)
 {
   FDebugLevel = DebugLevel;
 }
-
+//---------------------------------------------------------------------------

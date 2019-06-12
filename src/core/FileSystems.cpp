@@ -6,15 +6,23 @@
 #include "FileSystems.h"
 #include "RemoteFiles.h"
 #include "CopyParam.h"
-
-
-TCustomFileSystem::TCustomFileSystem(TObjectClassId Kind, TTerminal *ATerminal) :
+//---------------------------------------------------------------------------
+__removed #pragma package(smart_init)
+//---------------------------------------------------------------------------
+TCustomFileSystem::TCustomFileSystem(TObjectClassId Kind, TTerminal *ATerminal) noexcept :
   TObject(Kind),
   FTerminal(ATerminal)
 {
   DebugAssert(FTerminal);
 }
-
+//---------------------------------------------------------------------------
+TCustomFileSystem::~TCustomFileSystem() noexcept
+{
+#ifdef USE_DLMALLOC
+  dlmalloc_trim(0); // 64 * 1024);
+#endif
+}
+//---------------------------------------------------------------------------
 UnicodeString TCustomFileSystem::CreateTargetDirectory(
   IN UnicodeString AFileName,
   IN UnicodeString ADirectory,
@@ -27,16 +35,13 @@ UnicodeString TCustomFileSystem::CreateTargetDirectory(
   if (!FileNamePath.IsEmpty())
   {
     Result = ::IncludeTrailingBackslash(ADirectory + FileNamePath);
-    if (!::ForceDirectories(ApiPath(Result)))
+    if (!::SysUtulsForceDirectories(ApiPath(Result)))
       Result.Clear();
   }
   return Result;
 }
-
-TCustomFileSystem::~TCustomFileSystem()
+//---------------------------------------------------------------------------
+UnicodeString TCustomFileSystem::GetHomeDirectory()
 {
-#ifdef USE_DLMALLOC
-  dlmalloc_trim(0); // 64 * 1024);
-#endif
+  throw Exception("Not implemented");
 }
-

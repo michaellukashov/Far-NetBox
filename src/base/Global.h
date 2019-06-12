@@ -1,50 +1,52 @@
 
 #pragma once
 
-#include "FormatUtils.h"
-
 #include <nbcore.h>
 
 #include <tchar.h>
-#include <assert.h>
+#include <cassert>
 
-#define FORMAT(S, ...) nb::Sprintf(S, __VA_ARGS__)
-#define FMTLOAD(Id, ...) nb::FmtLoadStr(Id, __VA_ARGS__)
+#include <FormatUtils.h>
+//---------------------------------------------------------------------------
+#define FORMAT(S, ...) nb::Sprintf((S), __VA_ARGS__)
+#define FMTLOAD(Id, ...) nb::FmtLoadStr((Id), __VA_ARGS__)
 #ifndef LENOF
-#define LENOF(x) (_countof(X))
+#define LENOF(x) (_countof((x)))
 #endif
 #define FLAGSET(SET, FLAG) (((SET) & (FLAG)) == (FLAG))
 #define FLAGCLEAR(SET, FLAG) (((SET) & (FLAG)) == 0)
 #define FLAGMASK(ENABLE, FLAG) ((ENABLE) ? (FLAG) : 0)
-
+//---------------------------------------------------------------------------
 #include <System.SyncObjs.hpp>
-
+//---------------------------------------------------------------------------
 class NB_CORE_EXPORT TGuard
 {
   CUSTOM_MEM_ALLOCATION_IMPL
   NB_DISABLE_COPY(TGuard)
 public:
-  explicit TGuard(const TCriticalSection &ACriticalSection);
-  ~TGuard();
+  TGuard() = delete;
+  explicit TGuard(const TCriticalSection &ACriticalSection) noexcept;
+  ~TGuard() noexcept;
 
 private:
   const TCriticalSection &FCriticalSection;
 };
-
+//---------------------------------------------------------------------------
 class NB_CORE_EXPORT TUnguard
 {
   CUSTOM_MEM_ALLOCATION_IMPL
   NB_DISABLE_COPY(TUnguard)
 public:
-  explicit TUnguard(TCriticalSection &ACriticalSection);
-  ~TUnguard();
+  TUnguard() = delete;
+  explicit TUnguard(TCriticalSection &ACriticalSection) noexcept;
+  ~TUnguard() noexcept;
 
 private:
   TCriticalSection &FCriticalSection;
 };
-
-
-#include <assert.h>
+//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
+//#include <assert.h>
 #define ACCESS_VIOLATION_TEST { (*((int*)nullptr)) = 0; }
 #if !defined(_DEBUG) || defined(DESIGN_ONLY)
 #define DebugAssert(p)   (void)(p)
@@ -56,17 +58,15 @@ NB_CORE_EXPORT void DoAssert(const wchar_t *Message, const wchar_t *Filename, ui
 #define DebugCheck(p) { bool __CHECK_RESULT__ = (p); DebugAssert(__CHECK_RESULT__); }
 #define DebugFail() DebugAssert(false)
 #endif // if !defined(_DEBUG) || defined(DESIGN_ONLY)
-
+//---------------------------------------------------------------------------
 #define DebugAlwaysTrue(p) (p)
 #define DebugAlwaysFalse(p) (p)
 #define DebugNotNull(p) (p)
 #define TraceInitPtr(p) (p)
 #define TraceInitStr(p) (p)
 #define DebugUsedParam(p) (void)(p)
-#if 0
-#define DebugUsedParam(p) ((&p) == (&p))
-#endif // #if 0
-
+#define DebugUsedArg(p)
+//---------------------------------------------------------------------------
 #if defined(_DEBUG)
 NB_CORE_EXPORT void SetTraceFile(HANDLE ATraceFile);
 NB_CORE_EXPORT void CleanupTracing();
@@ -88,7 +88,6 @@ NB_CORE_EXPORT void TraceInMemoryCallback(const wchar_t *Msg);
 
 #define ACCESS_VIOLATION_TEST { (*((int*)nullptr)) = 0; }
 
-NB_CORE_EXPORT void DoAssert(const wchar_t *Message, const wchar_t *Filename, uintptr_t LineNumber);
 inline bool DoAlwaysTrue(bool Value, const wchar_t *Message, const wchar_t *Filename, uintptr_t LineNumber)
 {
   if (!Value)
@@ -133,8 +132,7 @@ inline T *DoCheckNotNull(T *p, const wchar_t *Message, const wchar_t *Filename, 
 
 #define MB_TEXT(x) ::MB2W(x)
 
-#define TShellExecuteInfoW _SHELLEXECUTEINFOW
-#define TSHFileInfoW SHFILEINFOW
-#define TVSFixedFileInfo VS_FIXEDFILEINFO
-#define PVSFixedFileInfo VS_FIXEDFILEINFO*
-
+using TShellExecuteInfoW = struct _SHELLEXECUTEINFOW;
+using TSHFileInfoW = struct _SHFILEINFOW;
+using TVSFixedFileInfo = VS_FIXEDFILEINFO;
+using PVSFixedFileInfo = VS_FIXEDFILEINFO*;

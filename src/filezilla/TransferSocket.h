@@ -1,21 +1,22 @@
+//---------------------------------------------------------------------------
 #pragma once
-
+//---------------------------------------------------------------------------
 #include "FtpListResult.h"
-
+//---------------------------------------------------------------------------
 #include "FtpControlSocket.h"
 #include "ApiLog.h"
-
+//---------------------------------------------------------------------------
 #ifndef MPEXT_NO_ZLIB
 #include <zlib.h>
 #endif
-
+//---------------------------------------------------------------------------
 class CFtpControlSocket;
 class CAsyncProxySocketLayer;
 class CAsyncSslSocketLayer;
 #ifndef MPEXT_NO_GSS
 class CAsyncGssSocketLayer;
 #endif
-
+//---------------------------------------------------------------------------
 class CTransferSocket : public CAsyncSocketEx, public CApiLog
 {
 public:
@@ -92,4 +93,4 @@ protected:
   bool m_useZlib;
 #endif
 };
-
+//---------------------------------------------------------------------------

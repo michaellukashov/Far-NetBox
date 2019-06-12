@@ -22,29 +22,11 @@
 
 /////////////////////////////////////////////////////////////////////////////
 
-#ifdef _DLL
-#ifndef _AFXDLL
-#error Building MFC application with /MD[d] (CRT dll version) requires MFC shared dll version. Please #define _AFXDLL or do not use /MD[d]
-#endif
-#endif
-
-#if !defined(_M_IX86) && !defined(_M_AMD64) && !defined(_WIN64) && !defined(_WIN32)
-	#error Compiling for unsupported platform.  Only x86 and x64 platforms are supported by MFC.
-#endif
-
 // Since MFC itself is built with wchar_t as a native type, it will not have
 // the correct type info for types built with wchar_t typedef'd to unsigned
 // short.  Make sure that the user's app builds this type info in this case.
 #ifndef _NATIVE_WCHAR_T_DEFINED
 #define _AFX_FULLTYPEINFO
-#endif
-
-#ifdef _AFX_MINREBUILD
-#pragma component(minrebuild, off)
-#endif 
- 
-#ifdef __ATLDBGMEM_H__
-#error <atldbgmem.h> cannot be used in MFC projects. See AfxEnableMemoryTracking
 #endif
 
 #if defined(_MFC_DLL_BLD) && defined(_DEBUG)
@@ -1099,17 +1081,20 @@ BOOL AFXAPI AfxIsValidString(LPCSTR lpsz, int nLength = -1);
 BOOL AfxIsValidAtom(ATOM nAtom);
 BOOL AfxIsValidAtom(LPCTSTR psz);
 
+#pragma warning(push)
+#pragma warning(disable: 4290) // C++ exception specification ignored except to indicate a function is not __declspec(nothrow)
+
 #if defined(_DEBUG) && !defined(_AFX_NO_DEBUG_CRT)
 
 // Memory tracking allocation
-void* AFX_CDECL operator new(size_t nSize, LPCSTR lpszFileName, int nLine) throw(std::bad_alloc);
+void* AFX_CDECL operator new(size_t nSize, LPCSTR lpszFileName, int nLine) noexcept(false);
 #define DEBUG_NEW new(THIS_FILE, __LINE__)
 void AFX_CDECL operator delete(void* p, LPCSTR lpszFileName, int nLine) throw();
 
 #if !defined(__MINGW32__)
-void* __cdecl operator new[](size_t nSize) throw(std::bad_alloc);
+void* __cdecl operator new[](size_t nSize) noexcept(false);
 #endif // #if !defined(__MINGW32__)
-void* __cdecl operator new[](size_t nSize, LPCSTR lpszFileName, int nLine) throw(std::bad_alloc);
+void* __cdecl operator new[](size_t nSize, LPCSTR lpszFileName, int nLine) noexcept(false);
 void __cdecl operator delete[](void* p, LPCSTR lpszFileName, int nLine) throw();
 #if defined(__MINGW32__)
 void operator delete(void*) _GLIBCXX_USE_NOEXCEPT
@@ -1117,6 +1102,8 @@ void operator delete(void*) _GLIBCXX_USE_NOEXCEPT
 #else
 void __cdecl operator delete[](void * p) throw();
 #endif
+
+#pragma warning(pop)
 
 void* AFXAPI AfxAllocMemoryDebug(size_t nSize, BOOL bIsObject,
 	LPCSTR lpszFileName, int nLine);
