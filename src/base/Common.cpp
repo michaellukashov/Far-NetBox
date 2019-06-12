@@ -221,7 +221,8 @@ UnicodeString CopyToChars(UnicodeString Str, intptr_t &From, UnicodeString Chs, 
     {
       if (DoubleDelimiterEscapes &&
           (P < Str.Length()) &&
-          ::IsDelimiter(Chs, Str, P + 1))
+          ::IsDelimiter(Chs, Str, P + 1) &&
+          (Str[P + 1] == Str[P]))
       {
         Result += Str[P];
         P++;
