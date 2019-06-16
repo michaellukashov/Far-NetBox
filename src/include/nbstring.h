@@ -231,33 +231,39 @@ public:
     SetLength(nNewLength);
   }
 
-  void   Append(PCXSTR pszSrc);
-  void   Append(PCXSTR pszSrc, int nLength);
-  void   AppendChar(XCHAR ch);
-  void   Append(const CMSimpleStringT &strSrc);
+  void Append(PCXSTR pszSrc);
+  void Append(PCXSTR pszSrc, int nLength);
+  void AppendChar(XCHAR ch);
+  void Append(const CMSimpleStringT& strSrc);
 
-  void   Empty();
-  void   FreeExtra();
+  void Empty();
+  void FreeExtra();
 
-  PXSTR  GetBuffer();
-  PXSTR  GetBufferSetLength(int nLength);
+  PXSTR GetBuffer();
+  PXSTR GetBufferSetLength(int nLength);
 
-  PXSTR  LockBuffer();
-  void   UnlockBuffer();
+  PXSTR LockBuffer();
+  void UnlockBuffer();
 
-  void   ReleaseBuffer(int nNewLength = -1);
+  void ReleaseBuffer(int nNewLength = -1);
 
-  void   Truncate(int nNewLength);
-  void   SetAt(int iChar, XCHAR ch);
-  void   SetString(PCXSTR pszSrc);
-  void   SetString(PCXSTR pszSrc, int nLength);
-  void   SetString(const unsigned char * pszSrc, int nLength)
-  { SetString(reinterpret_cast<const char *>(pszSrc), nLength); }
+  void Truncate(int nNewLength);
+  void SetAt(int iChar, XCHAR ch);
+  void SetString(PCXSTR pszSrc);
+  void SetString(PCXSTR pszSrc, int nLength);
+
+  void SetString(const unsigned char* pszSrc, int nLength)
+  {
+    SetString(reinterpret_cast<const char *>(pszSrc), nLength);
+  }
 
 public:
-  template<typename T> friend CMSimpleStringT<T> operator+(const CMSimpleStringT<T>& str1, const CMSimpleStringT<T>& str2);
-  template<typename T> friend CMSimpleStringT<T> operator+(const CMSimpleStringT<T> &str1, PCXSTR psz2);
-  template<typename T> friend CMSimpleStringT<T> operator+(PCXSTR psz1, const CMSimpleStringT<T> &str2);
+  template<typename T>
+  friend CMSimpleStringT<T> operator+(const CMSimpleStringT<T> &str1, const CMSimpleStringT<T> &str2);
+  template<typename T>
+  friend CMSimpleStringT<T> operator+(const CMSimpleStringT<T> &str1, PCXSTR psz2);
+  template<typename T>
+  friend CMSimpleStringT<T> operator+(PCXSTR psz1, const CMSimpleStringT<T> &str2);
 
   static void __stdcall CopyChars(XCHAR *pchDest, const XCHAR *pchSrc, int nChars);
   static void __stdcall CopyChars(XCHAR *pchDest, size_t nDestLen, const XCHAR *pchSrc, int nChars);
@@ -333,7 +339,7 @@ public:
   static LPCSTR __stdcall StringFindString(LPCSTR pszBlock, LPCSTR pszMatch)
   {
     return reinterpret_cast<LPCSTR>(_mbsstr(reinterpret_cast<const unsigned char *>(pszBlock),
-          reinterpret_cast<const unsigned char *>(pszMatch)));
+      reinterpret_cast<const unsigned char *>(pszMatch)));
   }
 
   static LPSTR __stdcall StringFindString(LPSTR pszBlock, LPCSTR pszMatch)
@@ -343,30 +349,32 @@ public:
 
   static LPCSTR __stdcall StringFindChar(LPCSTR pszBlock, char chMatch)
   {
-    return reinterpret_cast<LPCSTR>(_mbschr(reinterpret_cast<const unsigned char *>(pszBlock), static_cast<unsigned char>(chMatch)));
+    return reinterpret_cast<LPCSTR>(_mbschr(reinterpret_cast<const unsigned char *>(pszBlock),
+      static_cast<unsigned char>(chMatch)));
   }
 
   static LPCSTR __stdcall StringFindCharRev(LPCSTR psz, char ch)
   {
-    return reinterpret_cast<LPCSTR>(_mbsrchr(reinterpret_cast<const unsigned char *>(psz), static_cast<unsigned char>(ch)));
+    return reinterpret_cast<LPCSTR>(_mbsrchr(reinterpret_cast<const unsigned char *>(psz),
+      static_cast<unsigned char>(ch)));
   }
 
   static LPCSTR __stdcall StringScanSet(LPCSTR pszBlock, LPCSTR pszMatch)
   {
     return reinterpret_cast<LPCSTR>(_mbspbrk(reinterpret_cast<const unsigned char *>(pszBlock),
-          reinterpret_cast<const unsigned char *>(pszMatch)));
+      reinterpret_cast<const unsigned char *>(pszMatch)));
   }
 
   static int __stdcall StringSpanIncluding(LPCSTR pszBlock, LPCSTR pszSet)
   {
     return static_cast<int>(_mbsspn(reinterpret_cast<const unsigned char *>(pszBlock),
-                                    reinterpret_cast<const unsigned char *>(pszSet)));
+      reinterpret_cast<const unsigned char *>(pszSet)));
   }
 
   static int __stdcall StringSpanExcluding(LPCSTR pszBlock, LPCSTR pszSet)
   {
     return static_cast<int>(_mbscspn(reinterpret_cast<const unsigned char *>(pszBlock),
-                                     reinterpret_cast<const unsigned char *>(pszSet)));
+      reinterpret_cast<const unsigned char *>(pszSet)));
   }
 
   static LPSTR __stdcall StringUppercase(LPSTR psz)
@@ -716,7 +724,7 @@ public:
     }
     // nLen is in wchar_ts
 #if _MSC_VER >= 1400
-    wmemcpy_s(pszDest, nDestLength, pszSrc, nSrcLength);
+    wmemcpy_s(static_cast<void*>(pszDest), static_cast<const void*>(pszSrc), nDestLength);
 #else
     wmemcpy(pszDest, pszSrc, nDestLength);
 #endif
@@ -991,33 +999,54 @@ public:
   friend bool __forceinline operator>=(const CMStringT &str1, PCXSTR psz2) { return str1.Compare(psz2) >= 0; }
   friend bool __forceinline operator>=(PCXSTR psz1, const CMStringT &str2) { return str2.Compare(psz1) <= 0; }
 
-  friend bool __forceinline operator==(XCHAR ch1, const CMStringT &str2) { return (str2.GetLength() == 1) && (str2[0] == ch1); }
-  friend bool __forceinline operator==(const CMStringT &str1, XCHAR ch2) { return (str1.GetLength() == 1) && (str1[0] == ch2); }
+  friend bool __forceinline operator==(XCHAR ch1, const CMStringT &str2)
+  {
+    return (str2.GetLength() == 1) && (str2[0] == ch1);
+  }
 
-  friend bool __forceinline operator!=(XCHAR ch1, const CMStringT &str2) { return (str2.GetLength() != 1) || (str2[0] != ch1); }
-  friend bool __forceinline operator!=(const CMStringT &str1, XCHAR ch2) { return (str1.GetLength() != 1) || (str1[0] != ch2); }
+  friend bool __forceinline operator==(const CMStringT &str1, XCHAR ch2)
+  {
+    return (str1.GetLength() == 1) && (str1[0] == ch2);
+  }
+
+  friend bool __forceinline operator!=(XCHAR ch1, const CMStringT &str2)
+  {
+    return (str2.GetLength() != 1) || (str2[0] != ch1);
+  }
+
+  friend bool __forceinline operator!=(const CMStringT &str1, XCHAR ch2)
+  {
+    return (str1.GetLength() != 1) || (str1[0] != ch2);
+  }
 };
 
 template<typename BaseType, class StringTraits>
-NB_CORE_EXPORT CMStringT<BaseType, StringTraits> CALLBACK operator+(const CMStringT<BaseType, StringTraits> &str1, const CMStringT<BaseType, StringTraits> &str2);
+NB_CORE_EXPORT CMStringT<BaseType, StringTraits> CALLBACK operator+(const CMStringT<BaseType, StringTraits> &str1,
+  const CMStringT<BaseType, StringTraits>& str2);
 
 template<typename BaseType, class StringTraits>
-NB_CORE_EXPORT CMStringT<BaseType, StringTraits> CALLBACK operator+(const CMStringT<BaseType, StringTraits> &str1, typename CMStringT<BaseType, StringTraits>::PCXSTR psz2);
+NB_CORE_EXPORT CMStringT<BaseType, StringTraits> CALLBACK operator+(const CMStringT<BaseType, StringTraits> &str1,
+  typename CMStringT<BaseType, StringTraits>::PCXSTR psz2);
 
 template<typename BaseType, class StringTraits>
-NB_CORE_EXPORT CMStringT<BaseType, StringTraits> CALLBACK operator+(typename CMStringT<BaseType, StringTraits>::PCXSTR psz1, const CMStringT<BaseType, StringTraits> &str2);
+NB_CORE_EXPORT CMStringT<BaseType, StringTraits> CALLBACK operator+(
+  typename CMStringT<BaseType, StringTraits>::PCXSTR psz1, const CMStringT<BaseType, StringTraits> &str2);
 
 template<typename BaseType, class StringTraits>
-NB_CORE_EXPORT CMStringT<BaseType, StringTraits> CALLBACK operator+(const CMStringT<BaseType, StringTraits> &str1, wchar_t ch2);
+NB_CORE_EXPORT CMStringT<BaseType, StringTraits> CALLBACK operator+(const CMStringT<BaseType, StringTraits> &str1,
+  wchar_t ch2);
 
 template<typename BaseType, class StringTraits>
-NB_CORE_EXPORT CMStringT<BaseType, StringTraits> CALLBACK operator+(const CMStringT<BaseType, StringTraits> &str1, char ch2);
+NB_CORE_EXPORT CMStringT<BaseType, StringTraits> CALLBACK operator+(const CMStringT<BaseType, StringTraits> &str1,
+  char ch2);
 
 template<typename BaseType, class StringTraits>
-NB_CORE_EXPORT CMStringT<BaseType, StringTraits> CALLBACK operator+(wchar_t ch1, const CMStringT<BaseType, StringTraits> &str2);
+NB_CORE_EXPORT CMStringT<BaseType, StringTraits> CALLBACK operator+(wchar_t ch1,
+  const CMStringT<BaseType, StringTraits> &str2);
 
 template<typename BaseType, class StringTraits>
-NB_CORE_EXPORT CMStringT<BaseType, StringTraits> CALLBACK operator+(char ch1, const CMStringT<BaseType, StringTraits> &str2);
+NB_CORE_EXPORT CMStringT<BaseType, StringTraits> CALLBACK operator+(char ch1,
+  const CMStringT<BaseType, StringTraits> &str2);
 
 using CMStringW = CMStringT<wchar_t, NBChTraitsCRT<wchar_t>>;
 using CMStringA = CMStringT<char, NBChTraitsCRT<char>>;

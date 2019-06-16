@@ -10,7 +10,7 @@
 template<class T> class nb_ptr
 {
 protected:
-  T *data;
+  T *data{nullptr};
 
 public:
   __inline explicit nb_ptr() noexcept : data(nullptr) {}
@@ -24,8 +24,8 @@ public:
   __inline T *detach() { T *res = data; data = nullptr; return res; }
 };
 
-typedef nb_ptr<char>  ptrA;
-typedef nb_ptr<wchar_t> ptrW;
+using ptrA = nb_ptr<char>;
+using ptrW = nb_ptr<wchar_t>;
 
 ///////////////////////////////////////////////////////////////////////////////
 // nb_cs - simple wrapper for the critical sections
@@ -80,7 +80,7 @@ public:
   __inline wchar_t *operator = (wchar_t *_p) { zero(); return nb_ptr::operator=(_p); }
   __inline void zero()
   {
-    if (data) SecureZeroMemory(data, nbcore_wstrlen(data)*sizeof(wchar_t));
+    if (data) SecureZeroMemory(data, nbcore_wstrlen(data) * sizeof(wchar_t));
   }
 };
 

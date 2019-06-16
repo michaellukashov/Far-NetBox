@@ -10,11 +10,13 @@
 #endif
 #ifndef _WINSOCKAPI_
 #if !defined(__MINGW32__)
+#ifndef _WINSOCKAPI_
 #define _WINSOCKAPI_
+#endif
 #endif // defined(__MINGW32__)
 #endif
-#include <winsock2.h>
-#include <ws2tcpip.h>
+#include <WinSock2.h>
+#include <WS2tcpip.h>
 
 #ifdef _MSC_VER
 #define WIN32_LEAN_AND_MEAN
@@ -49,22 +51,22 @@
 #include "disable_warnings_in_std_end.hpp"
 
 #ifndef True
-#define True true
+constexpr bool True = true;
 #endif
 #ifndef False
-#define False false
+constexpr bool False = false;
 #endif
 #ifndef Integer
-typedef intptr_t Integer;
+using Integer = intptr_t;
 #endif
 #ifndef Int64
-typedef int64_t Int64;
+using Int64 = int64_t;
 #endif
 #ifndef Boolean
-typedef bool Boolean;
+using Boolean = bool;
 #endif
 #ifndef Word
-typedef WORD Word;
+using Word = WORD;
 #endif
 
 #define NullToEmptyA(s) ((s) ? (s) : "")

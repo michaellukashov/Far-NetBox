@@ -104,7 +104,7 @@ inline constexpr void *ToPtr(T a) { return reinterpret_cast<void *>((intptr_t)(a
 
 // MakeOtherType<T>::Type gives an other type corresponding to integer type T.
 template <typename T>
-struct MakeOtherType { typedef T Type; };
+struct MakeOtherType { using Type = T; };
 
 #define NB_SPECIALIZE_MAKE_T(T, U) \
   template <> \
