@@ -41,6 +41,7 @@ struct CMStringData;
 NB_CORE_DLL(CMStringData *) nbstr_allocate(int nChars, int nCharSize);
 NB_CORE_DLL(void)          nbstr_free(CMStringData *pData);
 NB_CORE_DLL(CMStringData *) nbstr_realloc(CMStringData *pData, int nChars, int nCharSize);
+NB_CORE_DLL(void *) nbstr_memcpy(void *pDst, void const *pSrc, int nSize);
 NB_CORE_DLL(CMStringData *) nbstr_getNil();
 
 NB_CORE_DLL(void) nbstr_lock(CMStringData *pThis);

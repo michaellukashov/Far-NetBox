@@ -61,6 +61,12 @@ NB_CORE_DLL(CMStringData *) nbstr_realloc(CMStringData *pData, int nChars, int n
   return pNewData;
 }
 
+NB_CORE_DLL(void *) nbstr_memcpy(void *pDst, void const *pSrc, int nSize)
+{
+  errno_t res = memcpy_s(pDst, (size_t)nSize, pSrc, (size_t)nSize);
+  return res == 0 ? pDst : nullptr;
+}
+
 NB_CORE_DLL(CMStringData *) nbstr_getNil()
 {
   if (m_nil == nullptr)
