@@ -724,11 +724,7 @@ public:
       nSrcLength = 1 + GetBaseTypeLength(pszSrc);
     }
     // nLen is in wchar_ts
-#if _MSC_VER >= 1400
-    wmemcpy_s(static_cast<void*>(pszDest), static_cast<const void*>(pszSrc), nDestLength);
-#else
-    wmemcpy(pszDest, pszSrc, nDestLength);
-#endif
+    nbstr_memcpy(static_cast<void*>(pszDest), static_cast<const void*>(pszSrc), nDestLength);
   }
 
   static void __stdcall FloodCharacters(wchar_t ch, int nLength, LPWSTR psz)
