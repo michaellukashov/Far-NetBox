@@ -22,7 +22,7 @@ __inline size_t wcsnlen(const wchar_t *string, size_t maxlen)
 }
 
 /* FIXME: This is unsafe */
-#define memcpy_s(dest,size,src,count) memcpy(dest,src,count)
+#define memcpy_s(dest,size,src,count) nbstr_memcpy(dest,src,count)
 /* FIXME: This is quite silly implementation of _mbsstr */
 #define _mbsstr(str,search) strstr((const char *)str,(const char *)search)
 #ifndef __max

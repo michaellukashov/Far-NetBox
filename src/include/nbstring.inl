@@ -298,14 +298,14 @@ void __stdcall CMSimpleStringT<BaseType>::CopyChars(XCHAR *pchDest, const XCHAR 
 {
 #pragma warning (push)
 #pragma warning(disable : 4996)
-  memcpy(pchDest, pchSrc, nChars * sizeof(XCHAR));
+  nbstr_memcpy(pchDest, pchSrc, nChars * sizeof(XCHAR));
 #pragma warning (pop)
 }
 
 template <typename BaseType>
 void __stdcall CMSimpleStringT<BaseType>::CopyChars(XCHAR *pchDest, size_t nDestLen, const XCHAR *pchSrc, int nChars)
 {
-  memcpy_s(pchDest, nDestLen * sizeof(XCHAR), pchSrc, nChars * sizeof(XCHAR));
+  nbstr_memcpy(pchDest, pchSrc, nChars * sizeof(XCHAR));
 }
 
 template <typename BaseType>
@@ -313,7 +313,7 @@ void __stdcall CMSimpleStringT<BaseType>::CopyCharsOverlapped(XCHAR *pchDest, co
 {
 #pragma warning (push)
 #pragma warning(disable : 4996)
-  memmove(pchDest, pchSrc, nChars * sizeof(XCHAR));
+  nbstr_memcpy(pchDest, pchSrc, nChars * sizeof(XCHAR));
 #pragma warning (pop)
 }
 
@@ -321,7 +321,8 @@ template <typename BaseType>
 void __stdcall CMSimpleStringT<BaseType>::CopyCharsOverlapped(XCHAR *pchDest, size_t nDestLen, const XCHAR *pchSrc,
   int nChars)
 {
-  memmove_s(pchDest, nDestLen * sizeof(XCHAR), pchSrc, nChars * sizeof(XCHAR));
+  (void)nDestLen;
+  nbstr_memcpy(pchDest, pchSrc, nChars * sizeof(XCHAR));
 }
 
 template <typename BaseType>
@@ -754,7 +755,7 @@ int CMStringT<BaseType, StringTraits>::Delete(int iIndex, int nCount)
     const int nXCHARsToCopy = nLength - (iIndex + nCount) + 1;
     PXSTR pszBuffer = this->GetBuffer();
 #if _MSC_VER >= 1400
-    memmove_s(pszBuffer + iIndex, nXCHARsToCopy * sizeof(XCHAR), pszBuffer + iIndex + nCount, nXCHARsToCopy * sizeof(XCHAR));
+    nbstr_memcpy(pszBuffer + iIndex, pszBuffer + iIndex + nCount, nXCHARsToCopy * sizeof(XCHAR));
 #else
     memmove(pszBuffer + iIndex, pszBuffer + iIndex + nCount, nXCHARsToCopy * sizeof(XCHAR));
 #endif
@@ -779,11 +780,7 @@ int CMStringT<BaseType, StringTraits>::Insert(int iIndex, XCHAR ch)
   PXSTR pszBuffer = this->GetBuffer(nNewLength);
 
   // move existing bytes down
-#if _MSC_VER >= 1400
-  memmove_s(pszBuffer + iIndex + 1, (nNewLength - iIndex)*sizeof(XCHAR), pszBuffer + iIndex, (nNewLength - iIndex)*sizeof(XCHAR));
-#else
-  memmove(pszBuffer + iIndex + 1, pszBuffer + iIndex, (nNewLength - iIndex)*sizeof(XCHAR));
-#endif
+  nbstr_memcpy(pszBuffer + iIndex + 1, pszBuffer + iIndex, (nNewLength - iIndex)*sizeof(XCHAR));
   pszBuffer[iIndex] = ch;
 
   this->ReleaseBufferSetLength(nNewLength);
@@ -809,13 +806,8 @@ int CMStringT<BaseType, StringTraits>::Insert(int iIndex, PCXSTR psz)
 
     PXSTR pszBuffer = this->GetBuffer(nNewLength);
     // move existing bytes down
-#if _MSC_VER >= 1400
-    memmove_s(pszBuffer + iIndex + nInsertLength, (nNewLength - iIndex - nInsertLength + 1)*sizeof(XCHAR), pszBuffer + iIndex, (nNewLength - iIndex - nInsertLength + 1)*sizeof(XCHAR));
-    memcpy_s(pszBuffer + iIndex, nInsertLength * sizeof(XCHAR), psz, nInsertLength * sizeof(XCHAR));
-#else
-    memmove(pszBuffer + iIndex + nInsertLength, pszBuffer + iIndex, (nNewLength - iIndex - nInsertLength + 1)*sizeof(XCHAR));
-    memcpy(pszBuffer + iIndex, psz, nInsertLength * sizeof(XCHAR));
-#endif
+    nbstr_memcpy(pszBuffer + iIndex + nInsertLength, pszBuffer + iIndex, (nNewLength - iIndex - nInsertLength + 1)*sizeof(XCHAR));
+    nbstr_memcpy(pszBuffer + iIndex, psz, nInsertLength * sizeof(XCHAR));
     this->ReleaseBufferSetLength(nNewLength);
   }
 
@@ -911,10 +903,8 @@ int CMStringT<BaseType, StringTraits>::Replace(PCXSTR pszOld, PCXSTR pszNew)
       while ((pszTarget = StringTraits::StringFindString(pszStart, pszOld)) != nullptr)
       {
         const int nBalance = nOldLength - int(pszTarget - pszBuffer + nSourceLen);
-        memmove_s(pszTarget + nReplacementLen, nBalance * sizeof(XCHAR),
-          pszTarget + nSourceLen, nBalance * sizeof(XCHAR));
-        memcpy_s(pszTarget, nReplacementLen * sizeof(XCHAR),
-          pszNew, nReplacementLen * sizeof(XCHAR));
+        nbstr_memcpy(pszTarget + nReplacementLen, pszTarget + nSourceLen, nBalance * sizeof(XCHAR));
+        nbstr_memcpy(pszTarget, pszNew, nReplacementLen * sizeof(XCHAR));
         pszStart = pszTarget + nReplacementLen;
         pszTarget[nReplacementLen + nBalance] = 0;
         nOldLength += (nReplacementLen - nSourceLen);
@@ -1151,8 +1141,7 @@ CMStringT<BaseType, StringTraits> &CMStringT<BaseType, StringTraits>::TrimLeft()
     PXSTR pszBuffer = this->GetBuffer(this->GetLength());
     psz = pszBuffer + iFirst;
     int nDataLength = this->GetLength() - iFirst;
-    memmove_s(pszBuffer, (this->GetLength() + 1)*sizeof(XCHAR),
-      psz, (nDataLength + 1)*sizeof(XCHAR));
+    nbstr_memcpy(pszBuffer, psz, (nDataLength + 1)*sizeof(XCHAR));
     this->ReleaseBufferSetLength(nDataLength);
   }
 
@@ -1280,8 +1269,7 @@ CMStringT<BaseType, StringTraits> &CMStringT<BaseType, StringTraits>::TrimLeft(X
     PXSTR pszBuffer = this->GetBuffer(this->GetLength());
     psz = pszBuffer + iFirst;
     int nDataLength = this->GetLength() - iFirst;
-    memmove_s(pszBuffer, (this->GetLength() + 1)*sizeof(XCHAR),
-      psz, (nDataLength + 1)*sizeof(XCHAR));
+    nbstr_memcpy(pszBuffer, psz, (nDataLength + 1) * sizeof(XCHAR));
     this->ReleaseBufferSetLength(nDataLength);
   }
 
@@ -1311,8 +1299,7 @@ CMStringT<BaseType, StringTraits> &CMStringT<BaseType, StringTraits>::TrimLeft(P
     PXSTR pszBuffer = this->GetBuffer(this->GetLength());
     psz = pszBuffer + iFirst;
     int nDataLength = this->GetLength() - iFirst;
-    memmove_s(pszBuffer, (this->GetLength() + 1)*sizeof(XCHAR),
-      psz, (nDataLength + 1)*sizeof(XCHAR));
+    nbstr_memcpy(pszBuffer, psz, (nDataLength + 1) * sizeof(XCHAR));
     this->ReleaseBufferSetLength(nDataLength);
   }
 
