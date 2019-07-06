@@ -295,7 +295,7 @@ const int SINGLE_MEMFUNCPTR_SIZE = sizeof(void (GenericClass::*)());
 //  depending on the class, we need to use	knowledge of the internal structure of a
 //  member function pointer, as used by the compiler. Template specialization is used
 //  to distinguish between the sizes. Because some compilers don't support partial
-//	template specialisation, I use full specialisation of a wrapper struct.
+//	template specialization, I use full specialization of a wrapper struct.
 
 // general case -- don't know how to convert it. Force a compile failure
 template <int N>

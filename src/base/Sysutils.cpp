@@ -843,8 +843,8 @@ void AppendPathDelimiterW(UnicodeString &Str)
 
 UnicodeString ExpandEnvVars(const UnicodeString Str)
 {
-  UnicodeString Buf(NB_MAX_PATH, 0);
-  const intptr_t Size = ::ExpandEnvironmentStringsW(Str.c_str(), ToWChar(Buf), nb::ToDWord(NB_MAX_PATH - 1));
+  UnicodeString Buf(nb::NB_MAX_PATH, 0);
+  const intptr_t Size = ::ExpandEnvironmentStringsW(Str.c_str(), ToWChar(Buf), nb::ToDWord(nb::NB_MAX_PATH - 1));
   UnicodeString Result = UnicodeString(Buf.c_str(), Size - 1);
   return Result;
 }
@@ -877,7 +877,7 @@ UnicodeString ExtractFileExt(const UnicodeString AFileName)
 
 UnicodeString ExpandFileName(const UnicodeString AFileName)
 {
-  UnicodeString Buf(NB_MAX_PATH + 1, 0);
+  UnicodeString Buf(nb::NB_MAX_PATH + 1, 0);
   intptr_t Size = ::GetFullPathNameW(ApiPath(AFileName).c_str(), nb::ToDWord(Buf.Length() - 1),
       reinterpret_cast<LPWSTR>(ToWChar(Buf)), nullptr);
   if (Size > Buf.Length())
@@ -1116,7 +1116,7 @@ UnicodeString HexToStr(const UnicodeString Hex)
     {
       const intptr_t P1 = Digits.FindFirstOf(::UpCase(Hex[Index]));
       const intptr_t P2 = Digits.FindFirstOf(::UpCase(Hex[Index + 1]));
-      if ((P1 == NPOS) || (P2 == NPOS))
+      if ((P1 == nb::NPOS) || (P2 == nb::NPOS))
       {
         Result.Clear();
         break;
@@ -1135,9 +1135,9 @@ uintptr_t HexToIntPtr(const UnicodeString Hex, uintptr_t MinChars)
   while (Index <= Hex.Length())
   {
     const intptr_t A = Digits.FindFirstOf(UpCase(Hex[Index]));
-    if (A == NPOS)
+    if (A == nb::NPOS)
     {
-      if ((nb::ToIntPtr(MinChars) == NPOS) || (Index <= nb::ToIntPtr(MinChars)))
+      if ((nb::ToIntPtr(MinChars) == nb::NPOS) || (Index <= nb::ToIntPtr(MinChars)))
       {
         Result = 0;
       }

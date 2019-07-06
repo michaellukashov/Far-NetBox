@@ -20,7 +20,7 @@
 template<typename T>
 void nb_free(const T* ptr) { ::dlfree(reinterpret_cast<void *>(const_cast<T *>(ptr))); }
 
-#else // #if defined(__cplusplus)
+#else //!defined(__cplusplus)
 
 #define nb_malloc(size) dlcalloc(1, size)
 #define nb_calloc(count, size) dlcalloc(count, size)
@@ -28,9 +28,9 @@ void nb_free(const T* ptr) { ::dlfree(reinterpret_cast<void *>(const_cast<T *>(p
 
 #define nb_free(ptr) dlfree((void *)(ptr))
 
-#endif // if defined(__cplusplus)
+#endif //defined(__cplusplus)
 
-#else // #ifdef USE_DLMALLOC
+#else //!USE_DLMALLOC
 
 #if defined(__cplusplus)
 
@@ -41,7 +41,7 @@ void nb_free(const T* ptr) { ::dlfree(reinterpret_cast<void *>(const_cast<T *>(p
 template<typename T>
 void nb_free(const T *ptr) { ::free(reinterpret_cast<void *>(const_cast<T *>(ptr))); }
 
-#else // #if defined(__cplusplus)
+#else //!defined(__cplusplus)
 
 #define nb_malloc(size) malloc(size)
 #define nb_calloc(count, size) calloc(count, size)
@@ -49,9 +49,9 @@ void nb_free(const T *ptr) { ::free(reinterpret_cast<void *>(const_cast<T *>(ptr
 
 #define nb_free(ptr) free((void *)(ptr))
 
-#endif // if defined(__cplusplus)
+#endif //defined(__cplusplus)
 
-#endif // ifdef USE_DLMALLOC
+#endif //!USE_DLMALLOC
 
 #if defined(_MSC_VER)
 #if (_MSC_VER < 1900)
@@ -101,7 +101,7 @@ inline void operator_delete(void* p)
 
 } // namespace nb
 
-#endif // if defined(__cplusplus)
+#endif //defined(__cplusplus)
 
 #ifdef USE_DLMALLOC
 /// custom memory allocation
@@ -111,6 +111,10 @@ inline void operator_delete(void* p)
   {                                               \
     return nb::operator_new(sz);                  \
   }                                               \
+  void operator delete(void * p)                  \
+  {                                               \
+    nb::operator_delete(p);                       \
+  }                                               \
   void operator delete(void * p, size_t)          \
   {                                               \
     nb::operator_delete(p);                       \
@@ -118,6 +122,10 @@ inline void operator_delete(void* p)
   void * operator new[](size_t sz)                \
   {                                               \
     return nb::operator_new(sz);                  \
+  }                                               \
+  void operator delete[](void * p)                \
+  {                                               \
+    nb::operator_delete(p);                       \
   }                                               \
   void operator delete[](void * p, size_t)        \
   {                                               \
@@ -156,19 +164,20 @@ inline void operator_delete(void* p)
   { \
     nb::operator_delete(p); \
   }
-#else
+#else //!_DEBUG
 #define CUSTOM_MEM_ALLOCATION_IMPL DEF_CUSTOM_MEM_ALLOCATION_IMPL
-#endif // ifdef _DEBUG
+#endif //_DEBUG
 
-#else
+#else //!USE_DLMALLOC
 #define CUSTOM_MEM_ALLOCATION_IMPL
-#endif // ifdef USE_DLMALLOC
+#endif //USE_DLMALLOC
 
 #if defined(__cplusplus)
 
 #pragma warning(push)
 #pragma warning(disable: 4100) // unreferenced formal parameter
 
+namespace nb {
 namespace nballoc {
 
 inline void destruct(char*)
@@ -312,8 +321,6 @@ private: \
 constexpr const intptr_t NB_MAX_PATH = (32 * 1024);
 constexpr const intptr_t NPOS  = static_cast<intptr_t>(-1);
 
-#endif // if defined(__cplusplus)
-
 #ifndef _WIN32_WINNT
 #define _WIN32_WINNT 0x0501
 #endif  //_WIN32_WINNT
@@ -361,44 +368,40 @@ constexpr const intptr_t NPOS  = static_cast<intptr_t>(-1);
 #define __property //
 #endif
 
-#if defined(__cplusplus)
-
-namespace nb {
-
-template<typename T1>
+template <typename T1>
 inline constexpr void used(const T1&)
 {
 }
 
-template<typename T1>
+template <typename T1>
 inline constexpr void unused(const T1&)
 {
 }
 
-template<typename T1>
+template <typename T1>
 inline constexpr void ignore(const T1&)
 {
 }
 
-template<typename T>
+template <typename T>
 inline constexpr void ignore_result(const T&)
 {
 }
 
-template<class T>
+template <class T>
 struct add_const
 {
   typedef T const type;
 };
 
-template<class T> struct
+template <class T> struct
 add_const<T&>
 {
   typedef T& type;
 };
 
-template<class T> using add_const_t = typename add_const<T>::type;
+template <class T> using add_const_t = typename add_const<T>::type;
 
 } // namespace nb
 
-#endif // if defined(__cplusplus)
+#endif //__cplusplus

@@ -619,7 +619,7 @@ TPrivateKey *LoadKey(TKeyType KeyType, UnicodeString FileName, UnicodeString Pas
   Filename *KeyFile = filename_from_str(UtfFileName.c_str());
   struct ssh2_userkey *Ssh2Key = nullptr;
   const char *ErrorStr = nullptr;
-  AnsiString AnsiPassphrase = Passphrase;
+  AnsiString AnsiPassphrase = AnsiString(Passphrase);
   try__finally
   {
     switch (KeyType)
@@ -678,7 +678,7 @@ void SaveKey(TKeyType KeyType, UnicodeString FileName,
   try__finally
   {
     struct ssh2_userkey * Ssh2Key = reinterpret_cast<struct ssh2_userkey *>(PrivateKey);
-    AnsiString AnsiPassphrase = Passphrase;
+    AnsiString AnsiPassphrase = AnsiString(Passphrase);
     char * PassphrasePtr = const_cast<char *>(AnsiPassphrase.IsEmpty() ? nullptr : AnsiPassphrase.c_str());
     switch (KeyType)
     {

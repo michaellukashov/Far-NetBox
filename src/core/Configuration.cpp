@@ -663,7 +663,7 @@ void TConfiguration::GetBannerData(
   {
     UnicodeString S = Storage->ReadString(ASessionKey, "");
     ABannerHash = CutToChar(S, L',', true);
-    AParams = StrToIntDef("$" + CutToChar(S, L',', true), 0);
+    AParams = StrToIntDef(UnicodeString("$") + CutToChar(S, L',', true), 0);
   }
 }
 //---------------------------------------------------------------------------

@@ -536,7 +536,7 @@ protected:
   void SetObj(intptr_t Index, TObject *AObject) override;
 
 private:
-  intptr_t FItemFocused{NPOS};
+  intptr_t FItemFocused{nb::NPOS};
 };
 
 class TFarEditorInfo : public TObject

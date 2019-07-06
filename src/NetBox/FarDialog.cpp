@@ -782,7 +782,7 @@ void TFarDialog::Change()
     {
       TFarDialogItem *DItem = GetItem(Index);
       DItem->Change();
-      if (DItem->GetContainer() && NotifiedContainers->IndexOf(DItem->GetContainer()) == NPOS)
+      if (DItem->GetContainer() && NotifiedContainers->IndexOf(DItem->GetContainer()) == nb::NPOS)
       {
         NotifiedContainers->Add(DItem->GetContainer());
       }
@@ -936,15 +936,15 @@ UnicodeString TFarDialogContainer::GetMsg(intptr_t MsgId) const
 
 void TFarDialogContainer::Add(TFarDialogItem *Item)
 {
-  DebugAssert(FItems->IndexOf(Item) == NPOS);
+  DebugAssert(FItems->IndexOf(Item) == nb::NPOS);
   Item->SetContainer(this);
-  if (FItems->IndexOf(Item) == NPOS)
+  if (FItems->IndexOf(Item) == nb::NPOS)
     FItems->Add(Item);
 }
 
 void TFarDialogContainer::Remove(TFarDialogItem *Item)
 {
-  DebugAssert(FItems->IndexOf(Item) != NPOS);
+  DebugAssert(FItems->IndexOf(Item) != nb::NPOS);
   Item->SetContainer(nullptr);
   FItems->Remove(Item);
   if (FItems->GetCount() == 0)
@@ -999,7 +999,7 @@ TFarDialogItem::TFarDialogItem(TObjectClassId Kind, TFarDialog *ADialog, uintptr
   FEnabledDependency(nullptr),
   FEnabledDependencyNegative(nullptr),
   FContainer(nullptr),
-  FItem(NPOS),
+  FItem(nb::NPOS),
   FColors(0),
   FColorMask(0),
   FEnabled(true),
@@ -2265,7 +2265,7 @@ void TFarList::SetTopIndex(intptr_t Value)
 {
   if (Value != GetTopIndex())
   {
-    SetCurPos(NPOS, Value);
+    SetCurPos(nb::NPOS, Value);
   }
 }
 
@@ -2313,12 +2313,12 @@ intptr_t TFarList::GetVisibleCount() const
 
 intptr_t TFarList::GetSelectedInt(bool Init) const
 {
-  intptr_t Result = NPOS;
+  intptr_t Result = nb::NPOS;
   TFarDialogItem *DialogItem = GetDialogItem();
   DebugAssert(DialogItem != nullptr);
   if (GetCount() == 0)
   {
-    Result = NPOS;
+    Result = nb::NPOS;
   }
   else if (DialogItem->GetDialog()->GetHandle() && !Init)
   {
@@ -2340,7 +2340,7 @@ intptr_t TFarList::GetSelected() const
 {
   intptr_t Result = GetSelectedInt(false);
 
-  if ((Result == NPOS) && (GetCount() > 0))
+  if ((Result == nb::NPOS) && (GetCount() > 0))
   {
     Result = 0;
   }

@@ -193,8 +193,8 @@ NB_CORE_DLL(int)    nbcore_writeLogVW(HANDLE hLogger, const wchar_t *format, va_
 typedef struct nbcore_md5_state_s
 {
   uint32_t count[2];  /* message length in bits, lsw first */
-  uint32_t abcd[4];    /* digest buffer */
-  uint8_t   buf[64];    /* accumulate block */
+  uint32_t abcd[4];   /* digest buffer */
+  uint8_t   buf[64];  /* accumulate block */
 } nbcore_md5_state_t;
 
 NB_CORE_DLL(void) nbcore_md5_init(nbcore_md5_state_t *pms);
@@ -385,7 +385,7 @@ NB_CORE_DLL(intptr_t) Thread_Push(HINSTANCE hInst, void *pOwner = nullptr);
 NB_CORE_DLL(intptr_t) Thread_Push(HINSTANCE hInst, void *pOwner);
 #endif
 NB_CORE_DLL(intptr_t) Thread_Pop();
-NB_CORE_DLL(void)    Thread_Wait();
+NB_CORE_DLL(void)     Thread_Wait();
 
 #if defined( __cplusplus )
 NB_CORE_DLL(HANDLE) nbcore_forkthread(pThreadFunc aFunc, void *arg = nullptr);

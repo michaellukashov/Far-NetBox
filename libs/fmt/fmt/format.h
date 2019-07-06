@@ -855,7 +855,7 @@ namespace internal {
 
 // A memory buffer for trivially copyable/constructible types with the first
 // SIZE elements stored in the object itself.
-template <typename T, std::size_t SIZE, typename Allocator = custom_nballocator_t<T> >
+template <typename T, std::size_t SIZE, typename Allocator = nb::custom_nballocator_t<T> >
 class MemoryBuffer : private Allocator, public Buffer<T> {
  private:
   T data_[SIZE];
@@ -1164,7 +1164,7 @@ inline void format_decimal(Char *buffer, UInt value, unsigned num_digits) {
 // It is only provided for Windows since other systems support UTF-8 natively.
 class UTF8ToUTF16 {
  private:
-  MemoryBuffer<wchar_t, INLINE_BUFFER_SIZE, custom_nballocator_t<wchar_t> > buffer_;
+  MemoryBuffer<wchar_t, INLINE_BUFFER_SIZE, nb::custom_nballocator_t<wchar_t> > buffer_;
 
  public:
   FMT_API explicit UTF8ToUTF16(StringRef s);
@@ -1178,7 +1178,7 @@ class UTF8ToUTF16 {
 // It is only provided for Windows since other systems support UTF-8 natively.
 class UTF16ToUTF8 {
  private:
-  MemoryBuffer<char, INLINE_BUFFER_SIZE, custom_nballocator_t<char> > buffer_;
+  MemoryBuffer<char, INLINE_BUFFER_SIZE, nb::custom_nballocator_t<char> > buffer_;
 
  public:
   UTF16ToUTF8() FMT_NOEXCEPT {}
@@ -2070,7 +2070,7 @@ template <typename Char>
 class ArgMap {
  private:
   typedef std::vector<
-    std::pair<fmt::BasicStringRef<Char>, internal::Arg>, custom_nballocator_t<std::pair<fmt::BasicStringRef<Char>, internal::Arg>> > MapType;
+    std::pair<fmt::BasicStringRef<Char>, internal::Arg>, nb::custom_nballocator_t<std::pair<fmt::BasicStringRef<Char>, internal::Arg>> > MapType;
   typedef typename MapType::value_type Pair;
 
   MapType map_;
@@ -3334,7 +3334,7 @@ void BasicWriter<Char>::write_double(T value, const Spec &spec) {
   accessed as a C string with ``out.c_str()``.
   \endrst
  */
-template <typename Char, typename Allocator = custom_nballocator_t<Char> >
+template <typename Char, typename Allocator = nb::custom_nballocator_t<Char> >
 class BasicMemoryWriter : public BasicWriter<Char> {
  private:
   internal::MemoryBuffer<Char, internal::INLINE_BUFFER_SIZE, Allocator> buffer_;
@@ -3366,8 +3366,8 @@ class BasicMemoryWriter : public BasicWriter<Char> {
 #endif
 };
 
-typedef BasicMemoryWriter<char, custom_nballocator_t<char> > MemoryWriter;
-typedef BasicMemoryWriter<wchar_t, custom_nballocator_t<wchar_t> > WMemoryWriter;
+typedef BasicMemoryWriter<char, nb::custom_nballocator_t<char> > MemoryWriter;
+typedef BasicMemoryWriter<wchar_t, nb::custom_nballocator_t<wchar_t> > WMemoryWriter;
 
 /**
   \rst

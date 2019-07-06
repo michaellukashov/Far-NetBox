@@ -1985,7 +1985,7 @@ void TSFTPFileSystem::Init(void *Data)
   FSecureShell = get_as<TSecureShell>(Data);
   DebugAssert(FSecureShell);
   FFileSystemInfoValid = false;
-  FVersion = NPOS;
+  FVersion = nb::NPOS;
   FPacketReservations = std::make_unique<TList>();
   FPacketNumbers.clear();
   FPreviousLoggedPacket = 0;

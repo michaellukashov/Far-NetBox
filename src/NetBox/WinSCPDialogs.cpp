@@ -3961,7 +3961,7 @@ intptr_t TSessionDialog::GetFtpProxyLogonType() const
 
 TFtps TSessionDialog::IndexToFtps(intptr_t Index) const
 {
-  bool InBounds = (Index != NPOS) && (Index < FtpEncryptionCombo->GetItems()->GetCount());
+  bool InBounds = (Index != nb::NPOS) && (Index < FtpEncryptionCombo->GetItems()->GetCount());
   DebugAssert(InBounds);
   TFtps Result = ftpsNone;
   if (InBounds)
@@ -4014,7 +4014,7 @@ TFSProtocol TSessionDialog::IndexToFSProtocol(intptr_t Index, bool AllowScpFallb
 
 TLoginType TSessionDialog::IndexToLoginType(intptr_t Index) const
 {
-  bool InBounds = (Index != NPOS) && (Index <= ltNormal);
+  bool InBounds = (Index != nb::NPOS) && (Index <= ltNormal);
   DebugAssert(InBounds);
   TLoginType Result = ltAnonymous;
   if (InBounds)
@@ -6461,7 +6461,7 @@ bool TWinSCPFileSystem::OpenDirectoryDialog(
     {
       TBookmark *Bookmark = BookmarkList->GetBookmarks(Index);
       UnicodeString RemoteDirectory = Bookmark->GetRemote();
-      if (!RemoteDirectory.IsEmpty() && (BookmarkDirectories->IndexOf(RemoteDirectory) == NPOS))
+      if (!RemoteDirectory.IsEmpty() && (BookmarkDirectories->IndexOf(RemoteDirectory) == nb::NPOS))
       {
         intptr_t Pos = BookmarkDirectories->Add(RemoteDirectory);
         if (RemoteDirectory == Directory)
@@ -7493,8 +7493,8 @@ UnicodeString TSynchronizeChecklistDialog::ItemLine(const TChecklistItem *Checkl
   }
 
   intptr_t Action = nb::ToIntPtr(ChecklistItem->Action - 1);
-  DebugAssert((Action != NPOS) && (Action < nb::ToIntPtr(_countof(FActions))));
-  if ((Action != NPOS) && (Action < nb::ToIntPtr(_countof(FActions))))
+  DebugAssert((Action != nb::NPOS) && (Action < nb::ToIntPtr(_countof(FActions))));
+  if ((Action != nb::NPOS) && (Action < nb::ToIntPtr(_countof(FActions))))
     AddColumn(Line, FActions[Action], 4);
 
   if (ChecklistItem->Action == saDeleteLocal)
@@ -8373,7 +8373,7 @@ TQueueDialog::TQueueDialog(TCustomFarPlugin *AFarPlugin,
 void TQueueDialog::OperationButtonClick(TFarButton *Sender,
   bool & /*Close*/)
 {
-  if (GetQueueItems()->GetSelected() != NPOS)
+  if (GetQueueItems()->GetSelected() != nb::NPOS)
   {
     TQueueItemProxy *QueueItem = dyn_cast<TQueueItemProxy>(
         GetQueueItems()->GetObj(GetQueueItems()->GetSelected()));

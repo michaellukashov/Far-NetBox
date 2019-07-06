@@ -100,14 +100,14 @@ intptr_t TList::GetCount() const
 
 void TList::SetCount(intptr_t NewCount)
 {
-  if (NewCount == NPOS)
+  if (NewCount == nb::NPOS)
   {
     Error(SListCountError, NewCount);
   }
   if (NewCount <= nb::ToIntPtr(FList.size()))
   {
     const intptr_t sz = FList.size();
-    for (intptr_t Index = sz - 1; (Index != NPOS) && (Index >= NewCount); Index--)
+    for (intptr_t Index = sz - 1; (Index != nb::NPOS) && (Index >= NewCount); Index--)
     {
       Delete(Index);
     }
@@ -122,7 +122,7 @@ void *TList::operator[](intptr_t Index) const
 
 void TList::SetItem(intptr_t Index, void *Item)
 {
-  if ((Index == NPOS) || (Index >= nb::ToIntPtr(FList.size())))
+  if ((Index == nb::NPOS) || (Index >= nb::ToIntPtr(FList.size())))
   {
     Error(SListIndexError, Index);
   }
@@ -138,7 +138,7 @@ intptr_t TList::Add(void *Value)
 
 void *TList::Extract(void *Item)
 {
-  if (Remove(Item) != NPOS)
+  if (Remove(Item) != nb::NPOS)
   {
     return Item;
   }
@@ -148,7 +148,7 @@ void *TList::Extract(void *Item)
 intptr_t TList::Remove(void *Item)
 {
   const intptr_t Result = IndexOf(Item);
-  if (Result != NPOS)
+  if (Result != nb::NPOS)
   {
     Delete(Result);
   }
@@ -159,7 +159,7 @@ void TList::Move(intptr_t CurIndex, intptr_t NewIndex)
 {
   if (CurIndex != NewIndex)
   {
-    if ((NewIndex == NPOS) || (NewIndex >= nb::ToIntPtr(FList.size())))
+    if ((NewIndex == nb::NPOS) || (NewIndex >= nb::ToIntPtr(FList.size())))
     {
       Error(SListIndexError, NewIndex);
     }
@@ -173,7 +173,7 @@ void TList::Move(intptr_t CurIndex, intptr_t NewIndex)
 
 void TList::Delete(intptr_t Index)
 {
-  if ((Index == NPOS) || (Index >= nb::ToIntPtr(FList.size())))
+  if ((Index == nb::NPOS) || (Index >= nb::ToIntPtr(FList.size())))
   {
     Error(SListIndexError, Index);
   }
@@ -187,7 +187,7 @@ void TList::Delete(intptr_t Index)
 
 void TList::Insert(intptr_t Index, void *Item)
 {
-  if ((Index == NPOS) || (Index > nb::ToIntPtr(FList.size())))
+  if ((Index == nb::NPOS) || (Index > nb::ToIntPtr(FList.size())))
   {
     Error(SListIndexError, Index);
   }
@@ -210,7 +210,7 @@ intptr_t TList::IndexOf(const void *Value) const
   }
   if (Result == nb::ToIntPtr(FList.size()))
   {
-    Result = NPOS;
+    Result = nb::NPOS;
   }
   return Result;
 }
@@ -296,7 +296,7 @@ TObject *TObjectList::operator[](intptr_t Index) const
 
 TObject *TObjectList::GetObj(intptr_t Index) const
 {
-  if ((Index == NPOS) || (Index >= GetCount()))
+  if ((Index == nb::NPOS) || (Index >= GetCount()))
   {
     Error(SListIndexError, Index);
   }
@@ -408,7 +408,7 @@ static void tokenize(UnicodeString str, rde::vector<UnicodeString> &tokens,
   while (true)
   {
     intptr_t pos = str.FindFirstOf(delimiters.c_str(), lastPos);
-    if (pos == NPOS)
+    if (pos == nb::NPOS)
     {
       pos = str.Length();
 
@@ -615,7 +615,7 @@ intptr_t TStrings::IndexOf(UnicodeString S) const
       return Result;
     }
   }
-  return NPOS;
+  return nb::NPOS;
 }
 
 intptr_t TStrings::IndexOfName(UnicodeString Name) const
@@ -629,7 +629,7 @@ intptr_t TStrings::IndexOfName(UnicodeString Name) const
       return Index;
     }
   }
-  return NPOS;
+  return nb::NPOS;
 }
 
 UnicodeString TStrings::GetName(intptr_t Index) const
@@ -786,7 +786,7 @@ bool TStringList::Find(UnicodeString S, intptr_t &Index) const
   bool Result = false;
   intptr_t L = 0;
   intptr_t H = GetCount() - 1;
-  while ((H != NPOS) && (L <= H))
+  while ((H != nb::NPOS) && (L <= H))
   {
     const intptr_t Idx = (L + H) >> 1;
     const intptr_t C = CompareStrings(FStrings[Idx], S);
@@ -813,7 +813,7 @@ bool TStringList::Find(UnicodeString S, intptr_t &Index) const
 
 intptr_t TStringList::IndexOf(UnicodeString S) const
 {
-  intptr_t Result = NPOS;
+  intptr_t Result = nb::NPOS;
   if (!GetSorted())
   {
     Result = TStrings::IndexOf(S);
@@ -822,7 +822,7 @@ intptr_t TStringList::IndexOf(UnicodeString S) const
   {
     if (!Find(S, Result))
     {
-      Result = NPOS;
+      Result = nb::NPOS;
     }
   }
   return Result;
@@ -834,7 +834,7 @@ void TStringList::SetString(intptr_t Index, UnicodeString S)
   {
     Error(SSortedListError, 0);
   }
-  if ((Index == NPOS) || (Index > nb::ToIntPtr(FStrings.size())))
+  if ((Index == nb::NPOS) || (Index > nb::ToIntPtr(FStrings.size())))
   {
     Error(SListIndexError, Index);
   }
@@ -852,7 +852,7 @@ void TStringList::SetString(intptr_t Index, UnicodeString S)
 
 void TStringList::Delete(intptr_t Index)
 {
-  if ((Index == NPOS) || (Index >= nb::ToIntPtr(FStrings.size())))
+  if ((Index == nb::NPOS) || (Index >= nb::ToIntPtr(FStrings.size())))
   {
     Error(SListIndexError, Index);
   }
@@ -868,7 +868,7 @@ void TStringList::InsertObject(intptr_t Index, UnicodeString Key, TObject *AObje
   {
     Error(SSortedListError, 0);
   }
-  if ((Index == NPOS) || (Index > GetCount()))
+  if ((Index == nb::NPOS) || (Index > GetCount()))
   {
     Error(SListIndexError, Index);
   }
@@ -877,7 +877,7 @@ void TStringList::InsertObject(intptr_t Index, UnicodeString Key, TObject *AObje
 
 void TStringList::InsertItem(intptr_t Index, UnicodeString S, TObject *AObject)
 {
-  if ((Index == NPOS) || (Index > GetCount()))
+  if ((Index == nb::NPOS) || (Index > GetCount()))
   {
     Error(SListIndexError, Index);
   }
@@ -897,7 +897,7 @@ void TStringList::InsertItem(intptr_t Index, UnicodeString S, TObject *AObject)
 
 const UnicodeString &TStringList::GetStringRef(intptr_t Index) const
 {
-  if ((Index == NPOS) || (Index > nb::ToIntPtr(FStrings.size())))
+  if ((Index == nb::NPOS) || (Index > nb::ToIntPtr(FStrings.size())))
   {
     Error(SListIndexError, Index);
   }
@@ -961,7 +961,7 @@ void TStringList::LoadFromFile(UnicodeString AFileName)
 
 void TStringList::SetObj(intptr_t Index, TObject *AObject)
 {
-  if ((Index == NPOS) || (Index >= TObjectList::GetCount()))
+  if ((Index == nb::NPOS) || (Index >= TObjectList::GetCount()))
   {
     Error(SListIndexError, Index);
   }

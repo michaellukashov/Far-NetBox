@@ -450,8 +450,8 @@ bool IsNumber(UnicodeString Str)
 UnicodeString GetSystemTemporaryDirectory()
 {
   UnicodeString TempDir;
-  TempDir.SetLength(NB_MAX_PATH);
-  TempDir.SetLength(::GetTempPath(NB_MAX_PATH, const_cast<LPWSTR>(TempDir.c_str())));
+  TempDir.SetLength(nb::NB_MAX_PATH);
+  TempDir.SetLength(::GetTempPath(nb::NB_MAX_PATH, const_cast<LPWSTR>(TempDir.c_str())));
   PackStr(TempDir);
   return TempDir;
 }
