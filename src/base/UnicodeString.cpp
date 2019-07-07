@@ -326,6 +326,24 @@ RawByteString RawByteString::SubString(intptr_t Pos, intptr_t Len) const
   return Result;
 }
 
+void RawByteString::ThrowIfOutOfRange(intptr_t Idx) const
+{
+  if (Idx < 1 || Idx > Length()) // NOTE: UnicodeString is 1-based !!
+    throw Exception("Index is out of range"); // ERangeError(Sysconst_SRangeError);
+}
+
+unsigned char RawByteString::operator[](intptr_t Idx) const
+{
+  ThrowIfOutOfRange(Idx); // Should Range-checking be optional to avoid overhead ??
+  return Data.operator[](nb::ToInt(Idx) - 1);
+}
+
+unsigned char &RawByteString::operator[](intptr_t Idx)
+{
+  ThrowIfOutOfRange(Idx); // Should Range-checking be optional to avoid overhead ??
+  return ((unsigned char*)Data.GetBuffer())[Idx - 1];
+}
+
 RawByteString &RawByteString::operator=(UnicodeString StrCopy)
 {
   Init(StrCopy.c_str(), StrCopy.Length());
@@ -848,6 +866,12 @@ UnicodeString &UnicodeString::operator+=(const RawByteString &rhs)
 UnicodeString &UnicodeString::operator+=(const char Ch)
 {
   Data.AppendChar(Ch);
+  return *this;
+}
+
+UnicodeString &UnicodeString::operator+=(const char *Ch)
+{
+  Data+=Ch;
   return *this;
 }
 

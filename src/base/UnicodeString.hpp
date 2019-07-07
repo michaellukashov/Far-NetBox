@@ -217,7 +217,7 @@ public:
   explicit AnsiString(UnicodeString Str);
   explicit AnsiString(const UTF8String &Str);
   explicit AnsiString(const RawByteString &Str);
-  inline ~AnsiString() {}
+  ~AnsiString() = default;
 
   const char *c_str() const { return Data.c_str(); }
   const char *data() const { return Data.c_str(); }
@@ -350,6 +350,7 @@ private:
   void Init(const wchar_t *Str, intptr_t Length);
   void Init(const char *Str, intptr_t Length);
   void Init(const unsigned char *Str, intptr_t Length);
+  void ThrowIfOutOfRange(intptr_t Idx) const;
 
   typedef CMStringT<unsigned char, NBChTraitsCRT<unsigned char>> rawstring_t;
   rawstring_t Data;
