@@ -110,10 +110,10 @@ void Shred(UTF8String &Str)
   DoShred(Str);
 }
 //---------------------------------------------------------------------------
-/*void Shred(AnsiString &Str)
+void Shred(AnsiString &Str)
 {
   DoShred(Str);
-}*/
+}
 //---------------------------------------------------------------------------
 void Shred(RawByteString &Str)
 {
