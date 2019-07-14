@@ -1,6 +1,5 @@
 #pragma once
 enum MsgIDs {
-
     NB_PLUGIN_NAME,
     NB_PLUGIN_TITLE,
 
