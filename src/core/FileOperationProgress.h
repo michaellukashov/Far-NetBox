@@ -245,7 +245,7 @@ public:
   void Start(TFileOperation AOperation, TOperationSide ASide, intptr_t ACount);
   void Start(TFileOperation AOperation,
     TOperationSide ASide, intptr_t ACount, bool ATemp, const UnicodeString ADirectory,
-    unsigned long ACPSLimit, TOnceDoneOperation InitialOnceDoneOperation);
+    uintptr_t ACPSLimit, TOnceDoneOperation InitialOnceDoneOperation);
   void Stop();
   void SetDone();
   void Suspend();

@@ -179,7 +179,9 @@ public:
   __property bool ExcludeEmptyDirectories = { read = FExcludeEmptyDirectories, write = FExcludeEmptyDirectories };
   bool& ExcludeEmptyDirectories{FExcludeEmptyDirectories};
   __property __int64 Size = { read = FSize, write = FSize };
+  int64_t& Size{FSize};
   __property TOnceDoneOperation OnceDoneOperation = { read = FOnceDoneOperation, write = FOnceDoneOperation };
+  TOnceDoneOperation& OnceDoneOperation{FOnceDoneOperation};
 
   const TFileMasks &GetAsciiFileMask() const { return FAsciiFileMask; }
   TFileMasks &GetAsciiFileMask() { return FAsciiFileMask; }

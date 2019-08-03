@@ -241,7 +241,7 @@ void TFileOperationProgressType::Start(TFileOperation AOperation,
 //---------------------------------------------------------------------------
 void TFileOperationProgressType::Start(TFileOperation AOperation,
   TOperationSide ASide, intptr_t ACount, bool ATemp,
-  const UnicodeString ADirectory, unsigned long ACPSLimit, TOnceDoneOperation InitialOnceDoneOperation)
+  const UnicodeString ADirectory, uintptr_t ACPSLimit, TOnceDoneOperation InitialOnceDoneOperation)
 {
 
   {

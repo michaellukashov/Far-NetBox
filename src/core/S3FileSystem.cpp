@@ -1426,9 +1426,9 @@ void TS3FileSystem::Source(
     0
   };
 
-  int Parts = std::min(S3MaxMultiPartChunks, std::max(1, static_cast<int>((Handle.Size + S3MinMultiPartChunkSize - 1) / S3MinMultiPartChunkSize)));
-  int ChunkSize = std::max(S3MinMultiPartChunkSize, static_cast<int>((Handle.Size + Parts - 1) / Parts));
-  DebugAssert((ChunkSize == S3MinMultiPartChunkSize) || (Handle.Size > static_cast<__int64>(S3MaxMultiPartChunks) * S3MinMultiPartChunkSize));
+  int Parts = std::min(S3MaxMultiPartChunks, std::max(1, static_cast<int>((AHandle.Size + S3MinMultiPartChunkSize - 1) / S3MinMultiPartChunkSize)));
+  int ChunkSize = std::max(S3MinMultiPartChunkSize, static_cast<int>((AHandle.Size + Parts - 1) / Parts));
+  DebugAssert((ChunkSize == S3MinMultiPartChunkSize) || (AHandle.Size > static_cast<__int64>(S3MaxMultiPartChunks) * S3MinMultiPartChunkSize));
   bool Multipart = (Parts > 1);
 
   RawByteString MultipartUploadId;

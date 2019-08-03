@@ -599,7 +599,7 @@ void TCopyParamType::Assign(const TCopyParamType *Source)
   COPY2(ExcludeHiddenFiles);
   COPY2(ExcludeEmptyDirectories);
   COPY2(Size);
-  COPY(OnceDoneOperation);
+  COPY2(OnceDoneOperation);
 #undef COPY
 }
 //---------------------------------------------------------------------------
@@ -1031,7 +1031,7 @@ bool TCopyParamType::operator==(const TCopyParamType &rhp) const
     C2(ExcludeHiddenFiles) &&
     C2(ExcludeEmptyDirectories) &&
     C2(Size) &&
-    C(OnceDoneOperation) &&
+    C2(OnceDoneOperation) &&
     true;
 }
 #undef C2
