@@ -62,10 +62,10 @@
 
 /* Win32 uses a underscore, so we use a macro to eliminate that. */
 #if (_MSC_VER < 1900)
-#define snprintf			_snprintf
 #endif
 /* VS2008 has this already defined */
 #if (_MSC_VER < 1500)
+#define snprintf			_snprintf
 #define vsnprintf			_vsnprintf
 #endif
 
