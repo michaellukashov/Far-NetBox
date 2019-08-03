@@ -107,6 +107,7 @@ private:
   bool FReset{false};
   uintptr_t FLastSecond{0};
   int64_t FRemainingCPS{0};
+  TOnceDoneOperation FInitialOnceDoneOperation;
   TPersistence FPersistence;
   TCriticalSection *FSection{nullptr};
   TCriticalSection *FUserSelectionsSection{nullptr};
@@ -190,7 +191,7 @@ public:
   __property __int64 TotalSize = { read = GetTotalSize };
   ROProperty<int64_t> TotalSize{nb::bind(&TFileOperationProgressType::GetTotalSize, this)};
   __property int FilesFinishedSuccessfully = { read = FFilesFinishedSuccessfully };
-  const intptr_t& FilesFinishedSuccessfully{FFilesFinishedSuccessfully};
+  __property TOnceDoneOperation InitialOnceDoneOperation = { read = FInitialOnceDoneOperation };
 
   __property TBatchOverwrite BatchOverwrite = { read = GetBatchOverwrite };
   ROProperty<TBatchOverwrite> BatchOverwrite{nb::bind(&TFileOperationProgressType::GetBatchOverwrite, this)};
@@ -244,7 +245,7 @@ public:
   void Start(TFileOperation AOperation, TOperationSide ASide, intptr_t ACount);
   void Start(TFileOperation AOperation,
     TOperationSide ASide, intptr_t ACount, bool ATemp, const UnicodeString ADirectory,
-    uintptr_t ACPSLimit);
+    unsigned long ACPSLimit, TOnceDoneOperation InitialOnceDoneOperation);
   void Stop();
   void SetDone();
   void Suspend();

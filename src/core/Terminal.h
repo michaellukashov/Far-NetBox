@@ -509,7 +509,7 @@ protected:
     TFileOperationProgressType & Progress, TFileOperation Operation, TOperationSide Side, intptr_t Count);
   void OperationStart(
     TFileOperationProgressType & Progress, TFileOperation Operation, TOperationSide Side, intptr_t Count,
-    bool Temp, UnicodeString ADirectory, uintptr_t CPSLimit);
+    bool Temp, UnicodeString ADirectory, uintptr_t CPSLimit, TOnceDoneOperation OnceDoneOperation);
   void OperationStop(TFileOperationProgressType & Progress);
   void Information(UnicodeString AStr, bool Status) override;
   uint32_t QueryUser(UnicodeString AQuery,

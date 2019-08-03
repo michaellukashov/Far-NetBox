@@ -236,12 +236,12 @@ void TFileOperationProgressType::ClearTransfer()
 void TFileOperationProgressType::Start(TFileOperation AOperation,
   TOperationSide ASide, intptr_t ACount)
 {
-  Start(AOperation, ASide, ACount, false, L"", 0);
+  Start(AOperation, ASide, ACount, false, L"", 0, odoIdle);
 }
 //---------------------------------------------------------------------------
 void TFileOperationProgressType::Start(TFileOperation AOperation,
   TOperationSide ASide, intptr_t ACount, bool ATemp,
-  const UnicodeString ADirectory, uintptr_t ACPSLimit)
+  const UnicodeString ADirectory, unsigned long ACPSLimit, TOnceDoneOperation InitialOnceDoneOperation)
 {
 
   {
@@ -255,6 +255,7 @@ void TFileOperationProgressType::Start(TFileOperation AOperation,
     FCancel = csContinue;
     FDirectory = ADirectory;
     FTemp = ATemp;
+    FInitialOnceDoneOperation = InitialOnceDoneOperation;
     FPersistence.CPSLimit = ACPSLimit;
   }
 
@@ -495,7 +496,7 @@ void TFileOperationProgressType::SetSpeedCounters()
   }
 }
 //---------------------------------------------------------------------------
-// Used in WebDAV protocol
+// Used in WebDAV and S3 protocols
 void TFileOperationProgressType::ThrottleToCPSLimit(
   int64_t Size)
 {
