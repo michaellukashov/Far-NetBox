@@ -214,7 +214,8 @@ public:
   static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TObjectList); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TObjectList) || TList::is(Kind); }
 public:
-  explicit TObjectList(TObjectClassId Kind = OBJECT_CLASS_TObjectList);
+  TObjectList();
+  explicit TObjectList(TObjectClassId Kind);
   ~TObjectList() override;
 
   template<class T>

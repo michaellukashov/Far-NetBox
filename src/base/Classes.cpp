@@ -45,7 +45,7 @@ void ThrowNotImplemented(intptr_t ErrorId)
   Error(SNotImplemented, ErrorId);
 }
 
-TPersistent::TPersistent(TObjectClassId Kind) noexcept :
+TPersistent::TPersistent(TObjectClassId Kind) :
   TObject(Kind)
 {
 }
@@ -78,12 +78,12 @@ void TPersistent::AssignError(const TPersistent *Source)
   throw Exception("Cannot assign");
 }
 
-TList::TList() noexcept :
+TList::TList() :
   TPersistent(OBJECT_CLASS_TList)
 {
 }
 
-TList::TList(TObjectClassId Kind) noexcept :
+TList::TList(TObjectClassId Kind) :
   TPersistent(Kind)
 {
 }
@@ -275,16 +275,16 @@ void TList::Sort()
 }
 
 
-TObjectList::TObjectList() noexcept : TList(OBJECT_CLASS_TObjectList)
+TObjectList::TObjectList() : TList(OBJECT_CLASS_TObjectList)
 {
 }
 
-TObjectList::TObjectList(TObjectClassId Kind) noexcept :
+TObjectList::TObjectList(TObjectClassId Kind) :
   TList(Kind)
 {
 }
 
-TObjectList::~TObjectList() noexcept
+TObjectList::~TObjectList()
 {
   TList::Clear();
 }
