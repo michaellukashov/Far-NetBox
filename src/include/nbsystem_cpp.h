@@ -183,9 +183,9 @@ template<class T> struct LIST
   __inline void put(int idx, T *p)   { items[idx] = p; }
 
 protected:
-  T        **items;
-  int        count, limit, increment;
-  FTSortFunc sortFunc;
+  T        **items{nullptr};
+  int        count{0}, limit{0}, increment{0};
+  FTSortFunc sortFunc{};
 };
 
 template<class T> struct OBJLIST : public LIST<T>
@@ -279,7 +279,7 @@ public:
 
 class NB_CORE_EXPORT MBinBuffer
 {
-  char *m_buf;
+  char *m_buf{nullptr};
   size_t m_len;
 
 public:
@@ -305,14 +305,14 @@ public:
 
 struct PARAM
 {
-  const char *szName;
+  const char *szName{nullptr};
   __forceinline PARAM(const char *_name) : szName(_name)
   {}
 };
 
 struct BOOL_PARAM : public PARAM
 {
-  bool bValue;
+  bool bValue{false};
   __forceinline BOOL_PARAM(const char *_name, bool _value) :
     PARAM(_name), bValue(_value)
   {}
@@ -320,7 +320,7 @@ struct BOOL_PARAM : public PARAM
 
 struct INT_PARAM : public PARAM
 {
-  int32_t iValue;
+  int32_t iValue{0};
   __forceinline INT_PARAM(const char *_name, int32_t _value) :
     PARAM(_name), iValue(_value)
   {}
@@ -328,7 +328,7 @@ struct INT_PARAM : public PARAM
 
 struct INT64_PARAM : public PARAM
 {
-  int64_t iValue;
+  int64_t iValue{0};
   __forceinline INT64_PARAM(const char *_name, int64_t _value) :
     PARAM(_name), iValue(_value)
   {}
@@ -336,7 +336,7 @@ struct INT64_PARAM : public PARAM
 
 struct CHAR_PARAM : public PARAM
 {
-  const char *szValue;
+  const char *szValue{nullptr};
   __forceinline CHAR_PARAM(const char *_name, const char *_value) :
     PARAM(_name), szValue(_value)
   {}
@@ -344,7 +344,7 @@ struct CHAR_PARAM : public PARAM
 
 struct WCHAR_PARAM : public PARAM
 {
-  const wchar_t *wszValue;
+  const wchar_t *wszValue{nullptr};
   __forceinline WCHAR_PARAM(const char *_name, const wchar_t *_value) :
     PARAM(_name), wszValue(_value)
   {}

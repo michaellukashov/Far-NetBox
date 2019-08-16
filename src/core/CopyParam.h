@@ -3,6 +3,7 @@
 
 #include "FileMasks.h"
 #include "RemoteFiles.h"
+#include "Exceptions.h"
 //---------------------------------------------------------------------------
 // When adding new options, mind TCopyParamType::GetLogStr()
 enum TOperationSide { osLocal, osRemote, osCurrent, };
@@ -72,6 +73,7 @@ private:
   bool FExcludeHiddenFiles{false};
   bool FExcludeEmptyDirectories{false};
   int64_t FSize{0};
+  TOnceDoneOperation FOnceDoneOperation;
   static const wchar_t TokenPrefix = L'%';
   static const wchar_t NoReplacement = wchar_t(0);
   static const wchar_t TokenReplacement = wchar_t(1);
@@ -178,6 +180,8 @@ public:
   bool& ExcludeEmptyDirectories{FExcludeEmptyDirectories};
   __property __int64 Size = { read = FSize, write = FSize };
   int64_t& Size{FSize};
+  __property TOnceDoneOperation OnceDoneOperation = { read = FOnceDoneOperation, write = FOnceDoneOperation };
+  TOnceDoneOperation& OnceDoneOperation{FOnceDoneOperation};
 
   const TFileMasks &GetAsciiFileMask() const { return FAsciiFileMask; }
   TFileMasks &GetAsciiFileMask() { return FAsciiFileMask; }

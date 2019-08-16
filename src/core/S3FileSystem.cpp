@@ -54,7 +54,8 @@ UnicodeString S3LibDefaultRegion()
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-const int TS3FileSystem::S3MultiPartChunkSize = 5 * 1024 * 1024;
+const int TS3FileSystem::S3MinMultiPartChunkSize = 5 * 1024 * 1024;
+const int TS3FileSystem::S3MaxMultiPartChunks = 10000;
 //---------------------------------------------------------------------------
 TS3FileSystem::TS3FileSystem(TTerminal *ATerminal) noexcept :
   TCustomFileSystem(OBJECT_CLASS_TS3FileSystem, ATerminal),
@@ -1299,6 +1300,7 @@ int TS3FileSystem::PutObjectData(int BufferSize, char *Buffer, TLibS3PutObjectDa
       });
       __removed FILE_OPERATION_LOOP_END(FMTLOAD(READ_ERROR, Data.FileName));
 
+      OperationProgress->ThrottleToCPSLimit(Result);
       OperationProgress->AddTransferred(Result);
     }
     catch (Exception &E)
@@ -1424,7 +1426,9 @@ void TS3FileSystem::Source(
     0
   };
 
-  int Parts = std::max(1, nb::ToInt((AHandle.Size + S3MultiPartChunkSize - 1) / S3MultiPartChunkSize));
+  int Parts = std::min(S3MaxMultiPartChunks, std::max(1, static_cast<int>((AHandle.Size + S3MinMultiPartChunkSize - 1) / S3MinMultiPartChunkSize)));
+  int ChunkSize = std::max(S3MinMultiPartChunkSize, static_cast<int>((AHandle.Size + Parts - 1) / Parts));
+  DebugAssert((ChunkSize == S3MinMultiPartChunkSize) || (AHandle.Size > static_cast<__int64>(S3MaxMultiPartChunks) * S3MinMultiPartChunkSize));
   bool Multipart = (Parts > 1);
 
   RawByteString MultipartUploadId;
@@ -1432,7 +1436,7 @@ void TS3FileSystem::Source(
 
   if (Multipart)
   {
-    FTerminal->LogEvent(FORMAT("Initiating multipart upload (%d parts)", Parts));
+    FTerminal->LogEvent(FORMAT("Initiating multipart upload (%d parts - chunk size %s)", Parts, IntToStr(ChunkSize)));
 
     FileOperationLoopCustom(FTerminal, OperationProgress, folAllowSkip,
       FMTLOAD(TRANSFER_ERROR, AHandle.FileName), "",
@@ -1491,7 +1495,7 @@ void TS3FileSystem::Source(
           { CreateResponseHandlerCustom(LibS3MultipartResponsePropertiesCallback), LibS3PutObjectDataCallback };
           int64_t Remaining = Stream->Size() - Stream->Position();
           int RemainingInt = static_cast<int>(std::min(static_cast<int64_t>(std::numeric_limits<int>::max()), Remaining));
-          int PartLength = std::min(S3MultiPartChunkSize, RemainingInt);
+          int PartLength = std::min(ChunkSize, RemainingInt);
           FTerminal->LogEvent(FORMAT("Uploading part %d [%s]", Part, IntToStr(PartLength)));
           S3_upload_part(
             &BucketContext, StrToS3(Key), &PutProperties, &UploadPartHandler, nb::ToInt(Part), MultipartUploadId.c_str(),
@@ -1627,6 +1631,7 @@ S3Status TS3FileSystem::GetObjectData(int BufferSize, const char *Buffer, TLibS3
       });
       __removed FILE_OPERATION_LOOP_END(FMTLOAD(WRITE_ERROR, Data.FileName));
 
+      OperationProgress->ThrottleToCPSLimit(BufferSize);
       OperationProgress->AddTransferred(BufferSize);
     }
     catch (Exception &E)

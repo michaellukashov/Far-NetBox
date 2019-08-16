@@ -1675,7 +1675,7 @@ bool TSessionData::HasAnyPassword() const
     HasAnySessionPassword() ||
     !FProxyPassword.IsEmpty() ||
     // will probably be never used
-    FNewPassword.IsEmpty();
+    !FNewPassword.IsEmpty();
 }
 //---------------------------------------------------------------------
 void TSessionData::ClearSessionPasswords()
@@ -5489,7 +5489,7 @@ void TStoredSessionList::GetFolderOrWorkspace(UnicodeString Name, TList *List)
       {
         Data2->Name = RawData->NameOverride;
       }
-      else if (RawData->GetLink().IsEmpty())
+      else if (RawData->GetLink().IsEmpty() && RawData->GetIsWorkspace())
       {
         // Newly opened ad-hoc session has no name, so restore the workspace that way too.
         // Otherwise we would persist the generated internal workspace name as a real name.
