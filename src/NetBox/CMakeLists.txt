@@ -901,6 +901,22 @@ set_property(TARGET libssl
 endif(OPT_BUILD_OPENSSL)
 
 #-------------------------------------------------------------------------------
+#libmemcpy
+
+#add_subdirectory(libs/libmemcpy)
+
+set(LIBMEMCPY_LIB "libmemcpy")
+
+set(LIBMEMCPY_LIB_SOURCES
+  ../../libs/libmemcpy/memcpy.c
+)
+
+add_library(${LIBMEMCPY_LIB}
+  ${LIBMEMCPY_LIB_SOURCES}
+)
+
+set_source_files_properties(${LIBMEMCPY_LIB_SOURCES} PROPERTIES LANGUAGE C)
+#-------------------------------------------------------------------------------
 #atlmfc
 
 set(ATLMFC_COMPILE_FLAGS
