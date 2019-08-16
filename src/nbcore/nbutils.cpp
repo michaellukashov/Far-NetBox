@@ -1,6 +1,8 @@
 #include "stdafx.h"
 
+#ifdef _MSC_VER
 #include <WinUser.h>
+#endif
 
 namespace nb {
 

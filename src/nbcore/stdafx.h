@@ -2,10 +2,7 @@
 
 #include <nbglobals.h>
 #include <nbstring.h>
-
+#include <nbstring.inl>
 #include <nbsystem.h>
 
-#include <nbstring.inl>
 #include <nbutils.h>
-
-//void GetDefaultLang();

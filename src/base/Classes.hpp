@@ -64,7 +64,7 @@ NB_CORE_EXPORT void Error(intptr_t Id, intptr_t ErrorId);
 NB_CORE_EXPORT void ThrowNotImplemented(intptr_t ErrorId);
 
 enum class TObjectClassId {};
-#define NB_DEFINE_CLASS_ID(CLASS_ID) constexpr TObjectClassId OBJECT_CLASS_ ## CLASS_ID = static_cast<TObjectClassId>(nb::counter_id())
+#define NB_DEFINE_CLASS_ID(CLASS_ID) static constexpr TObjectClassId OBJECT_CLASS_ ## CLASS_ID = static_cast<TObjectClassId>(nb::counter_id())
 
 NB_DEFINE_CLASS_ID(TObject);
 class NB_CORE_EXPORT TObject
@@ -150,8 +150,8 @@ public:
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TPersistent) || TObject::is(Kind); }
 public:
   TPersistent() noexcept : TObject(OBJECT_CLASS_TPersistent) {}
-  explicit TPersistent(TObjectClassId Kind) noexcept;
-  virtual ~TPersistent() = default;
+  explicit TPersistent(TObjectClassId Kind);
+  ~TPersistent() override = default;
   virtual void Assign(const TPersistent *Source);
   virtual TPersistent *GetOwner();
 protected:
@@ -176,9 +176,9 @@ public:
   static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TList); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TList) || TPersistent::is(Kind); }
 public:
-  TList() noexcept;
-  explicit TList(TObjectClassId Kind) noexcept;
-  virtual ~TList() noexcept;
+  TList();
+  explicit TList(TObjectClassId Kind);
+  ~TList() override;
 
   template<class T>
   T *GetAs(intptr_t Index) const { return get_as<T>(GetItem(Index)); }
@@ -214,9 +214,8 @@ public:
   static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TObjectList); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TObjectList) || TList::is(Kind); }
 public:
-  TObjectList() noexcept;
-  explicit TObjectList(TObjectClassId Kind) noexcept;
-  virtual ~TObjectList() noexcept;
+  explicit TObjectList(TObjectClassId Kind = OBJECT_CLASS_TObjectList);
+  ~TObjectList() override;
 
   template<class T>
   T *GetAs(intptr_t Index) const { return dyn_cast<T>(GetObj(Index)); }
