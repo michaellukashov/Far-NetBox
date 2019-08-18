@@ -1728,6 +1728,7 @@ set(NETBOX_LIBRARIES
   fmt
   s3
   tinylog
+  ${LIBMEMCPY_LIB}
 
   Ws2_32.lib
   kernel32.lib
