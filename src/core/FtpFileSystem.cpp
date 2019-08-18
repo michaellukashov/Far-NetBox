@@ -183,7 +183,7 @@ struct message_t
 };
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-class TMessageQueue final : public TObject, public rde::list<message_t>
+class TMessageQueue final : public TObject, public nb::list_t<message_t>
 {
 public:
   using value_type = message_t;

@@ -119,7 +119,7 @@ protected:
   void CheckForTimeout();
   void SendKeepAliveCommand();
 
-  virtual int OnLayerCallback(rde::list<t_callbackMsg> & callbacks);
+  virtual int OnLayerCallback(nb::list_t<t_callbackMsg> & callbacks);
   void SetFileExistsAction(int nAction, COverwriteRequestData * pData);
   void SetVerifyCertResult(int nResult, t_SslCertData * pData);
   void ResetOperation(int nSuccessful = -1);
@@ -166,11 +166,11 @@ protected:
     int64_t nBytesAvailable;
     int64_t nBytesTransferred;
   };
-  static rde::list<t_ActiveList> m_InstanceList[2];
+  static nb::list_t<t_ActiveList> m_InstanceList[2];
   static CTime m_CurrentTransferTime[2];
   static _int64 m_CurrentTransferLimit[2];
   static CCriticalSection m_SpeedLimitSync;
-  _int64 GetAbleToUDSize(bool & beenWaiting, CTime & curTime, _int64 & curLimit, rde::list<t_ActiveList>::iterator & iter, enum transferDirection direction, int nBufSize);
+  _int64 GetAbleToUDSize(bool & beenWaiting, CTime & curTime, _int64 & curLimit, nb::list_t<t_ActiveList>::iterator & iter, enum transferDirection direction, int nBufSize);
   _int64 GetSpeedLimit(CTime & time, int valType, int valValue);
 
   void SetDirectoryListing(t_directory * pDirectory, bool bSetWorkingDir = true);
@@ -185,7 +185,7 @@ protected:
   CTime m_LastSendTime;
 
   CString m_ServerName;
-  rde::list<CStringA> m_RecvBuffer;
+  nb::list_t<CStringA> m_RecvBuffer;
   CTime m_LastRecvTime;
   class CLogonData;
   class CListData;

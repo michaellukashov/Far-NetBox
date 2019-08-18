@@ -2,6 +2,8 @@
 
 #include <rdestl/vector.h>
 #include <rdestl/map.h>
+#include <rdestl/list.h>
+#include <rdestl/set.h>
 #include <rdestl/pair.h>
 
 #include <nbcore.h>
@@ -12,6 +14,8 @@
 namespace nb {
 
 template<typename T> using vector_t = rde::vector<T>;
+template<typename T> using set_t = rde::set<T>;
+template<typename T> using list_t = rde::list<T>;
 template<typename Tk, typename Tv> using map_t = rde::map<Tk, Tv>;
 
 } // namespace nb

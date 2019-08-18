@@ -944,9 +944,9 @@ void CTransferSocket::Close()
   CAsyncSocketEx::Close();
 }
 
-int CTransferSocket::OnLayerCallback(rde::list<t_callbackMsg>& callbacks)
+int CTransferSocket::OnLayerCallback(nb::list_t<t_callbackMsg>& callbacks)
 {
-  for (rde::list<t_callbackMsg>::iterator iter = callbacks.begin(); iter != callbacks.end(); ++iter)
+  for (nb::list_t<t_callbackMsg>::iterator iter = callbacks.begin(); iter != callbacks.end(); ++iter)
   {
     if (iter->nType == LAYERCALLBACK_STATECHANGE)
     {

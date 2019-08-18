@@ -160,7 +160,7 @@ public:
   void RemoveLayers(CAsyncSocketEx *pOrigSocket)
   {
     // Remove all layer messages from old socket
-    rde::list<MSG> msgList;
+    nb::list_t<MSG> msgList;
     MSG msg;
     while (PeekMessage(&msg, m_hWnd, WM_USER, WM_USER, PM_REMOVE))
     {
@@ -180,7 +180,7 @@ public:
       msgList.push_back(msg);
     }
 
-    for (rde::list<MSG>::iterator iter = msgList.begin(); iter != msgList.end(); iter++)
+    for (nb::list_t<MSG>::iterator iter = msgList.begin(); iter != msgList.end(); iter++)
     {
       ::PostMessage(m_hWnd, iter->message, iter->wParam, iter->lParam);
     }
@@ -577,7 +577,7 @@ public:
         return 0;
 
       // Process pending callbacks
-      rde::list<t_callbackMsg> tmp;
+      nb::list_t<t_callbackMsg> tmp;
       rde::swap(tmp, pSocket->m_pendingCallbacks);
       pSocket->OnLayerCallback(tmp);
     }
@@ -956,7 +956,7 @@ void CAsyncSocketEx::FreeAsyncSocketExInstance()
   if (!m_pLocalAsyncSocketExThreadData)
     return;
 
-  for (rde::list<CAsyncSocketEx*>::iterator iter = m_pLocalAsyncSocketExThreadData->layerCloseNotify.begin(); iter != m_pLocalAsyncSocketExThreadData->layerCloseNotify.end(); iter++)
+  for (nb::list_t<CAsyncSocketEx*>::iterator iter = m_pLocalAsyncSocketExThreadData->layerCloseNotify.begin(); iter != m_pLocalAsyncSocketExThreadData->layerCloseNotify.end(); iter++)
   {
     if (*iter != this)
       continue;
@@ -1525,7 +1525,7 @@ BOOL CAsyncSocketEx::AddLayer(CAsyncSocketExLayer *pLayer)
 
 void CAsyncSocketEx::RemoveAllLayers()
 {
-  for (rde::list<t_callbackMsg>::iterator iter = m_pendingCallbacks.begin(); iter != m_pendingCallbacks.end(); iter++)
+  for (nb::list_t<t_callbackMsg>::iterator iter = m_pendingCallbacks.begin(); iter != m_pendingCallbacks.end(); iter++)
     nb_free(iter->str);
   m_pendingCallbacks.clear();
 
@@ -1539,9 +1539,9 @@ void CAsyncSocketEx::RemoveAllLayers()
   m_pLocalAsyncSocketExThreadData->m_pHelperWindow->RemoveLayers(this);
 }
 
-int CAsyncSocketEx::OnLayerCallback(rde::list<t_callbackMsg>& callbacks)
+int CAsyncSocketEx::OnLayerCallback(nb::list_t<t_callbackMsg>& callbacks)
 {
-  for (rde::list<t_callbackMsg>::iterator iter = callbacks.begin(); iter != callbacks.end(); iter++)
+  for (nb::list_t<t_callbackMsg>::iterator iter = callbacks.begin(); iter != callbacks.end(); iter++)
   {
     nb_free(iter->str);
   }
@@ -1701,7 +1701,7 @@ void CAsyncSocketEx::AddCallbackNotification(const t_callbackMsg& msg)
 
 void CAsyncSocketEx::ResendCloseNotify()
 {
-  for (rde::list<CAsyncSocketEx*>::iterator iter = m_pLocalAsyncSocketExThreadData->layerCloseNotify.begin(); iter != m_pLocalAsyncSocketExThreadData->layerCloseNotify.end(); iter++)
+  for (nb::list_t<CAsyncSocketEx*>::iterator iter = m_pLocalAsyncSocketExThreadData->layerCloseNotify.begin(); iter != m_pLocalAsyncSocketExThreadData->layerCloseNotify.end(); iter++)
   {
     if (*iter == this)
       return;

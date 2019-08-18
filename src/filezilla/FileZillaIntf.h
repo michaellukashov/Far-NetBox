@@ -281,7 +281,7 @@ public:
     FCapabilityMap.clear();
     if (Source != NULL)
     {
-      for (rde::map<ftp_capability_names_t, t_cap>::iterator it = Source->FCapabilityMap.begin();
+      for (nb::map_t<ftp_capability_names_t, t_cap>::iterator it = Source->FCapabilityMap.begin();
         it != Source->FCapabilityMap.end(); ++it)
       {
         FCapabilityMap.insert(*it);
@@ -303,7 +303,7 @@ protected:
     int number;
   };
 
-  mutable rde::map<ftp_capability_names_t, t_cap> FCapabilityMap;
+  mutable nb::map_t<ftp_capability_names_t, t_cap> FCapabilityMap;
 };
 //---------------------------------------------------------------------------
 

@@ -361,7 +361,7 @@ UnicodeString NeonCertificateFailuresErrorStr(int Failures, UnicodeString AHostN
 }
 //---------------------------------------------------------------------------
 static std::unique_ptr<TCriticalSection> DebugSection(TraceInitPtr(std::make_unique<TCriticalSection>()));
-static rde::set<TTerminal *> NeonTerminals;
+static nb::set_t<TTerminal *> NeonTerminals;
 //---------------------------------------------------------------------------
 extern "C"
 {

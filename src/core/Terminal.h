@@ -343,7 +343,7 @@ private:
   bool FFileTransferAny{true};
   using TEncryptedFileNames = nb::map_t<UnicodeString, UnicodeString>;
   TEncryptedFileNames FEncryptedFileNames;
-  rde::set<UnicodeString> FFoldersScannedForEncryptedFiles;
+  nb::set_t<UnicodeString> FFoldersScannedForEncryptedFiles;
   RawByteString FEncryptKey;
   TFileOperationProgressType::TPersistence * FOperationProgressPersistence{nullptr};
   TOnceDoneOperation FOperationProgressOnceDoneOperation{odoIdle};

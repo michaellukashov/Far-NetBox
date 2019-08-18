@@ -14,7 +14,7 @@ __removed #pragma package(smart_init)
 //---------------------------------------------------------------------------
 #if 0
 static std::unique_ptr<TCriticalSection> IgnoredExceptionsCriticalSection(std::make_unique<TCriticalSection>());
-typedef rde::set<UnicodeString> TIgnoredExceptions;
+typedef nb::set_t<UnicodeString> TIgnoredExceptions;
 static TIgnoredExceptions IgnoredExceptions;
 //---------------------------------------------------------------------------
 static UnicodeString NormalizeClassName(const UnicodeString ClassName)
