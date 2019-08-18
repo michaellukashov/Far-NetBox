@@ -729,7 +729,7 @@ char * CFtpListResult::GetLine()
     int copylen=startptr->len-startpos;
     if (copylen>reslen)
       copylen=reslen;
-    memcpy(&res[respos],&startptr->buffer[startpos], copylen);
+    libmemcpy_memcpy(&res[respos],&startptr->buffer[startpos], copylen);
     reslen-=copylen;
     respos+=startptr->len-startpos;
     startpos=0;
@@ -740,7 +740,7 @@ char * CFtpListResult::GetLine()
     int copylen=pos-startpos;
     if (copylen>reslen)
       copylen=reslen;
-    memcpy(&res[respos], &curpos->buffer[startpos], copylen);
+    libmemcpy_memcpy(&res[respos], &curpos->buffer[startpos], copylen);
   }
 
   return res;
@@ -1119,7 +1119,7 @@ BOOL CFtpListResult::parseAsVMS(const char *line, const int linelen, t_directory
   if ((p - pMonth) >= 15)
     return FALSE;
   char buffer[15] = {0};
-  memcpy(buffer, pMonth, p-pMonth);
+  libmemcpy_memcpy(buffer, pMonth, p-pMonth);
   strlwr(buffer);
   rde::map<CString, int>::const_iterator iter = m_MonthNamesMap.find(A2T(buffer));
   if (iter == m_MonthNamesMap.end())
@@ -1246,7 +1246,7 @@ BOOL CFtpListResult::parseAsEPLF(const char *line, const int linelen, t_director
       else if (len == 5 && *fact=='u' && *(fact+1)=='p')
       {
         char buffer[4] = {0};
-        memcpy(buffer, fact+2, len-2);
+        libmemcpy_memcpy(buffer, fact+2, len-2);
         direntry.permissionstr = buffer;
       }
       if (!nextfact || nextfact>=(str-2))
@@ -1978,7 +1978,7 @@ BOOL CFtpListResult::parseAsUnix(const char *line, const int linelen, t_director
   }
 
   char *lwr = nb::chcalloc(smonthlen + 1);
-  memcpy(lwr, smonth, smonthlen);
+  libmemcpy_memcpy(lwr, smonth, smonthlen);
   lwr[smonthlen] = 0;
   _strlwr(lwr);
 
@@ -2333,7 +2333,7 @@ BOOL CFtpListResult::parseAsOther(const char *line, const int linelen, t_directo
       return FALSE;
 
     char buffer[15] = {0};
-    memcpy(buffer, str, tokenlen);
+    libmemcpy_memcpy(buffer, str, tokenlen);
     strlwr(buffer);
 
     USES_CONVERSION;
@@ -2587,7 +2587,7 @@ void CFtpListResult::copyStr(CString &target, int pos, const char *source, int l
   USES_CONVERSION;
 
   char *p = nb::chcalloc(len + 1);
-  memcpy(p, source, len);
+  libmemcpy_memcpy(p, source, len);
   p[len] = '\0';
   if (m_bUTF8 && *m_bUTF8)
   {

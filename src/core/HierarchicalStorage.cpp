@@ -1041,7 +1041,7 @@ TDateTime TCustomIniFileStorage::ReadDateTime(UnicodeString Name, TDateTime Defa
         RawByteString Raw = HexToBytes(Value);
         if (ToSizeT(Raw.Length()) == sizeof(Result))
         {
-          memcpy(&Result, Raw.c_str(), sizeof(Result));
+          libmemcpy_memcpy(&Result, Raw.c_str(), sizeof(Result));
         }
         else
         {
@@ -1079,7 +1079,7 @@ double TCustomIniFileStorage::ReadFloat(UnicodeString Name, double Default)
         RawByteString Raw = HexToBytes(Value);
         if (ToSizeT(Raw.Length()) == sizeof(Result))
         {
-          memcpy(&Result, Raw.c_str(), sizeof(Result));
+          libmemcpy_memcpy(&Result, Raw.c_str(), sizeof(Result));
         }
         else
         {
@@ -1127,7 +1127,7 @@ size_t TCustomIniFileStorage::ReadBinaryData(UnicodeString Name,
       Size = Len;
     }
     DebugAssert(Buffer);
-    memcpy(Buffer, Value.c_str(), Size);
+    libmemcpy_memcpy(Buffer, Value.c_str(), Size);
   }
   return Size;
 }

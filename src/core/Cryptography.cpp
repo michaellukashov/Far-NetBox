@@ -92,7 +92,7 @@ static void hmac_sha1_key(const uint8_t key[], uint32_t key_len, hmac_ctx cx[1])
     sha1_hash(const_cast<uint8_t *>(key), key_len, cx->ctx); /* hash long key data into hash */
   }
   else /* otherwise store key data     */
-    memcpy(cx->key + cx->klen, key, key_len);
+    libmemcpy_memcpy(cx->key + cx->klen, key, key_len);
 
   cx->klen += key_len; /* update the key length count  */
 }

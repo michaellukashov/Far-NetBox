@@ -1253,7 +1253,7 @@ void CFtpControlSocket::OnReceive(int nErrorCode)
     buffer = NULL;
     numread = Buf.GetLength();
     buffer = nb::chcalloc(numread);
-    memcpy(buffer, Buf.GetBuffer(), numread);
+    libmemcpy_memcpy(buffer, Buf.GetBuffer(), numread);
   }
 
   for (int i=0; i < numread; i++)
@@ -1515,14 +1515,14 @@ BOOL CFtpControlSocket::Send(CString str)
       if (!m_sendBuffer)
       {
         m_sendBuffer = nb::chcalloc(sendLen - res);
-        memcpy(m_sendBuffer, utf8 + res, sendLen - res);
+        libmemcpy_memcpy(m_sendBuffer, utf8 + res, sendLen - res);
         m_sendBufferLen = sendLen - res;
       }
       else
       {
         char *tmp = nb::chcalloc(m_sendBufferLen + sendLen - res);
-        memcpy(tmp, m_sendBuffer, m_sendBufferLen);
-        memcpy(tmp + m_sendBufferLen, utf8 + res, sendLen - res);
+        libmemcpy_memcpy(tmp, m_sendBuffer, m_sendBufferLen);
+        libmemcpy_memcpy(tmp + m_sendBufferLen, utf8 + res, sendLen - res);
         nb_free(m_sendBuffer);
         m_sendBuffer = tmp;
         m_sendBufferLen += sendLen - res;
@@ -1562,14 +1562,14 @@ BOOL CFtpControlSocket::Send(CString str)
       if (!m_sendBuffer)
       {
         m_sendBuffer = nb::chcalloc(sendLen - res);
-        memcpy(m_sendBuffer, utf8 + res, sendLen - res);
+        libmemcpy_memcpy(m_sendBuffer, utf8 + res, sendLen - res);
         m_sendBufferLen = sendLen - res;
       }
       else
       {
         char *tmp = nb::chcalloc(m_sendBufferLen + sendLen - res);
-        memcpy(tmp, m_sendBuffer, m_sendBufferLen);
-        memcpy(tmp + m_sendBufferLen, utf8 + res, sendLen - res);
+        libmemcpy_memcpy(tmp, m_sendBuffer, m_sendBufferLen);
+        libmemcpy_memcpy(tmp + m_sendBufferLen, utf8 + res, sendLen - res);
         nb_free(m_sendBuffer);
         m_sendBuffer = tmp;
         m_sendBufferLen += sendLen - res;
@@ -1599,14 +1599,14 @@ BOOL CFtpControlSocket::Send(CString str)
       if (!m_sendBuffer)
       {
         m_sendBuffer = nb::chcalloc(sendLen - res);
-        memcpy(m_sendBuffer, lpszAsciiSend, sendLen - res);
+        libmemcpy_memcpy(m_sendBuffer, lpszAsciiSend, sendLen - res);
         m_sendBufferLen = sendLen - res;
       }
       else
       {
         char *tmp = nb::chcalloc(m_sendBufferLen + sendLen - res);
-        memcpy(tmp, m_sendBuffer, m_sendBufferLen);
-        memcpy(tmp + m_sendBufferLen, lpszAsciiSend + res, sendLen - res);
+        libmemcpy_memcpy(tmp, m_sendBuffer, m_sendBufferLen);
+        libmemcpy_memcpy(tmp + m_sendBufferLen, lpszAsciiSend + res, sendLen - res);
         nb_free(m_sendBuffer);
         m_sendBuffer = tmp;
         m_sendBufferLen += sendLen - res;
@@ -6412,7 +6412,7 @@ void CFtpControlSocket::OnSend(int nErrorCode)
   else
   {
     char *tmp = nb::chcalloc(m_sendBufferLen - res);
-    memcpy(tmp, m_sendBuffer + res, m_sendBufferLen - res);
+    libmemcpy_memcpy(tmp, m_sendBuffer + res, m_sendBufferLen - res);
     nb_free(m_sendBuffer);
     m_sendBuffer = tmp;
     m_sendBufferLen -= res;

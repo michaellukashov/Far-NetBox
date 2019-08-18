@@ -1095,7 +1095,7 @@ void CopyToClipboard(UnicodeString Text)
         DataPtr = GlobalLock(Data);
         try
         {
-          memcpy(DataPtr, Text.c_str(), Size);
+          libmemcpy_memcpy(DataPtr, Text.c_str(), Size);
           EmptyClipboard();
           SetClipboardData(CF_UNICODETEXT, Data);
         }
