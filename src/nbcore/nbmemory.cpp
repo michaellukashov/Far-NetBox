@@ -155,7 +155,7 @@ NB_CORE_DLL(char *) nbcore_strndup(const char *str, size_t len)
   char *p = static_cast<char *>(nbcore_alloc(len + 1));
   if (p)
   {
-    memcpy(p, str, len);
+    libmemcpy_memcpy(p, str, len);
     p[len] = 0;
   }
   return p;
@@ -169,7 +169,7 @@ NB_CORE_DLL(wchar_t *) nbcore_wstrndup(const wchar_t *str, size_t len)
   wchar_t *p = static_cast<wchar_t *>(nbcore_alloc(sizeof(wchar_t) * (len + 1)));
   if (p)
   {
-    memcpy(p, str, sizeof(wchar_t) * len);
+    libmemcpy_memcpy(p, str, sizeof(wchar_t) * len);
     p[len] = 0;
   }
   return p;
