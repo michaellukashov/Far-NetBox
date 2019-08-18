@@ -151,36 +151,46 @@ public:
 //  ROProperty(T&& in) : data(std::forward<T>(in)) {}
   constexpr T operator()() const
   {
+    Expects(_getter);
     return _getter();
   }
   constexpr operator T() const
   {
+    Expects(_getter);
     return _getter();
   }
   constexpr const T operator->() const
   {
+    Expects(_getter);
     return _getter();
   }
   constexpr T operator->()
   {
+    Expects(_getter);
     return _getter();
   }
   constexpr decltype(auto) operator*() const { return *_getter(); }
 
   friend bool constexpr inline operator==(const ROProperty &lhs, const ROProperty &rhs)
   {
+    Expects(lhs._getter);
+    Expects(rhs._getter);
     return lhs._getter() == rhs._getter();
   }
   friend bool constexpr inline operator==(const ROProperty &lhs, const T &rhs)
   {
+    Expects(lhs._getter);
     return lhs._getter() == rhs;
   }
   friend bool constexpr inline operator!=(const ROProperty &lhs, const ROProperty &rhs)
   {
+    Expects(lhs._getter);
+    Expects(rhs._getter);
     return lhs._getter() != rhs._getter();
   }
   friend bool constexpr inline operator!=(ROProperty &lhs, const T &rhs)
   {
+    Expects(lhs._getter);
     return lhs._getter() != rhs;
   }
 };
@@ -222,10 +232,12 @@ public:
 //  }
   constexpr T operator()() const
   {
+    Expects(_getter);
     return _getter();
   }
   constexpr operator T() const
   {
+    Expects(_getter);
     return _getter();
   }
   /*operator T&() const
@@ -240,22 +252,27 @@ public:
   constexpr decltype(auto) operator*() const { return *_getter(); }
   void operator()(const T &Value)
   {
+    Expects(_setter);
     _setter(Value);
   }
   void operator=(T Value)
   {
+    Expects(_setter);
     _setter(Value);
   }
   constexpr bool operator==(T Value) const
   {
+    Expects(_getter);
     return _getter() == Value;
   }
   friend bool inline operator==(const RWProperty &lhs, const RWProperty &rhs)
   {
+    Expects(lhs._getter);
     return lhs._getter == rhs._getter && lhs._setter == rhs._setter;
   }
   friend bool inline operator!=(RWProperty &lhs, const T &rhs)
   {
+    Expects(lhs._getter);
     return lhs._getter() != rhs;
   }
 };

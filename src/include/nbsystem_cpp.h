@@ -280,7 +280,7 @@ public:
 class NB_CORE_EXPORT MBinBuffer
 {
   char *m_buf{nullptr};
-  size_t m_len;
+  size_t m_len{0};
 
 public:
   MBinBuffer();

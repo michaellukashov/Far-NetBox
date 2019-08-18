@@ -319,7 +319,7 @@ public:
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TStringList) || TStrings::is(Kind); }
 public:
   explicit TStringList(TObjectClassId Kind = OBJECT_CLASS_TStringList) noexcept;
-  virtual ~TStringList() = default;
+  ~TStringList() override = default;
 
   intptr_t Add(UnicodeString S);
   intptr_t AddObject(UnicodeString S, TObject *AObject) override;
@@ -360,7 +360,7 @@ public:
 private:
   TNotifyEvent FOnChange;
   TNotifyEvent FOnChanging;
-  rde::vector<UnicodeString> FStrings;
+  rde::vector<UnicodeString, nb::custom_nballocator_t<UnicodeString>> FStrings;
   bool FSorted{false};
   bool FCaseSensitive{false};
 
