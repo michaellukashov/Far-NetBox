@@ -130,7 +130,7 @@ protected:
   UnicodeString FTlsVersionStr;
   UnicodeString FResponse;
   bool FResponseIgnore{false};
-  typedef rde::map<UnicodeString, UnicodeString> TRegions;
+  using TRegions = nb::map_t<UnicodeString, UnicodeString>;
   TRegions FRegions;
   TRegions FHostNames;
   UnicodeString FAuthRegion;

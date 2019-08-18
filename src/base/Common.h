@@ -413,8 +413,8 @@ template<class T1, class T2>
 class BiDiMap
 {
 public:
-  typedef rde::map<T1, T2> TFirstToSecond;
-  typedef typename TFirstToSecond::const_iterator const_iterator;
+  using TFirstToSecond = nb::map_t<T1, T2>;
+  using const_iterator = typename TFirstToSecond::const_iterator;
 
   void Add(const T1 &Value1, const T2 &Value2)
   {
@@ -448,11 +448,11 @@ public:
 
 private:
   TFirstToSecond FFirstToSecond;
-  typedef rde::map<T2, T1> TSecondToFirst;
+  using TSecondToFirst = nb::map_t<T2, T1>;
   TSecondToFirst FSecondToFirst;
 };
 //---------------------------------------------------------------------------
-using TUnicodeStringVector = rde::vector<UnicodeString>;
+using TUnicodeStringVector = nb::vector_t<UnicodeString>;
 //---------------------------------------------------------------------------
 enum TModificationFmt
 {

@@ -295,7 +295,7 @@ private:
   std::unique_ptr<TStrings> FSupportedCommands;
   std::unique_ptr<TStrings> FSupportedSiteCommands;
   std::unique_ptr<TStrings> FHashAlgs;
-  typedef rde::map<UnicodeString, TDateTime> TUploadedTimes;
+  using TUploadedTimes = nb::map_t<UnicodeString, TDateTime>;
   TUploadedTimes FUploadedTimes{};
   bool FSupportsAnyChecksumFeature{false};
   UnicodeString FLastCommandSent;

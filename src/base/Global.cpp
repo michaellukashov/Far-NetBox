@@ -49,8 +49,8 @@ TCriticalSection *TracingCriticalSection = nullptr;
 bool TracingInMemory = false;
 HANDLE TracingThread = nullptr;
 
-typedef rde::vector<UTF8String> TTracesInMemory;
-typedef rde::vector<TTracesInMemory *> TTracesInMemoryList;
+typedef nb::vector_t<UTF8String> TTracesInMemory;
+typedef nb::vector_t<TTracesInMemory *> TTracesInMemoryList;
 TTracesInMemory *CurrentTracesInMemory = nullptr;
 TTracesInMemoryList WriteTracesInMemory;
 TTracesInMemoryList ReadTracesInMemory;
@@ -126,7 +126,7 @@ struct TTraceInMemory
   UTF8String Message;
 #endif // TRACE_IN_MEMORY_NO_FORMATTING
 };
-typedef rde::vector<TTraceInMemory> TTracesInMemory;
+typedef nb::vector_t<TTraceInMemory> TTracesInMemory;
 TTracesInMemory TracesInMemory;
 
 int TraceThreadProc(void *)

@@ -38,8 +38,8 @@ NB_CORE_EXPORT UnicodeString EncodeBase64(const char* AStr, intptr_t Len)
   return Result;
 }
 
-NB_CORE_EXPORT rde::vector<uint8_t> DecodeBase64(UnicodeString AStr)
+NB_CORE_EXPORT nb::vector_t<uint8_t> DecodeBase64(UnicodeString AStr)
 {
-  rde::vector<uint8_t> Result;
+  nb::vector_t<uint8_t> Result;
   return Result;
 }

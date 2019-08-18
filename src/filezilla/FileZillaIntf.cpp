@@ -487,7 +487,7 @@ bool TFileZillaIntf::HandleMessage(WPARAM wParam, LPARAM lParam)
         DebugAssert(FZ_MSG_PARAM(wParam) == 0);
         t_directory * Directory = reinterpret_cast<t_directory *>(lParam);
         CString Path = Directory->path.GetPath();
-        rde::vector<TListDataEntry> Entries(Directory->num);
+        nb::vector_t<TListDataEntry> Entries(Directory->num);
 
         for (intptr_t Index = 0; Index < Directory->num; ++Index)
         {

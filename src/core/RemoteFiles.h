@@ -82,9 +82,9 @@ public:
   const TRemoteToken *Token(intptr_t Index) const;
 
 private:
-  typedef rde::vector<TRemoteToken> TTokens;
-  typedef rde::map<UnicodeString, size_t> TNameMap;
-  typedef rde::map<intptr_t, size_t> TIDMap;
+  using TTokens = nb::vector_t<TRemoteToken>;
+  using TNameMap = nb::map_t<UnicodeString, size_t>;
+  using TIDMap = nb::map_t<intptr_t, size_t>;
   TTokens FTokens;
   mutable TNameMap FNameMap;
   mutable TIDMap FIDMap;
@@ -764,7 +764,7 @@ public:
   };
 #endif // #if 0
 
-  typedef rde::vector<const TChecklistItem*> TItemList;
+  typedef nb::vector_t<const TChecklistItem*> TItemList;
 
   TSynchronizeChecklist() noexcept;
   ~TSynchronizeChecklist() noexcept;

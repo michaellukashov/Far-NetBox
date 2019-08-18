@@ -20,7 +20,7 @@ CCriticalSectionWrapper CAsyncSslSocketLayer::m_sCriticalSection;
 
 CAsyncSslSocketLayer::t_SslLayerList* CAsyncSslSocketLayer::m_pSslLayerList = 0;
 int CAsyncSslSocketLayer::m_nSslRefCount = 0;
-rde::map<SSL_CTX *, int> CAsyncSslSocketLayer::m_contextRefCount;
+nb::map_t<SSL_CTX *, int> CAsyncSslSocketLayer::m_contextRefCount;
 
 CAsyncSslSocketLayer::CAsyncSslSocketLayer()
 {
@@ -660,7 +660,7 @@ int CAsyncSslSocketLayer::InitSSLConnection(bool clientMode,
       return SSL_FAILURE_INITSSL;
     }
 
-    rde::map<SSL_CTX *, int>::iterator iter = m_contextRefCount.find(ssl_ctx);
+    nb::map_t<SSL_CTX *, int>::iterator iter = m_contextRefCount.find(ssl_ctx);
     if (iter == m_contextRefCount.end() || iter->second < 1)
     {
       m_sCriticalSection.Unlock();
@@ -847,7 +847,7 @@ void CAsyncSslSocketLayer::ResetSslSession()
 
   if (m_ssl_ctx)
   {
-    rde::map<SSL_CTX *, int>::iterator iter = m_contextRefCount.find(m_ssl_ctx);
+    nb::map_t<SSL_CTX *, int>::iterator iter = m_contextRefCount.find(m_ssl_ctx);
     if (iter != m_contextRefCount.end())
     {
       if (iter->second <= 1)

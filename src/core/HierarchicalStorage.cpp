@@ -449,7 +449,7 @@ bool TRegistryStorage::Copy(TRegistryStorage *Storage)
   std::unique_ptr<TStrings> Names(std::make_unique<TStringList>());
   try__finally
   {
-    rde::vector<uint8_t> Buffer(1024);
+    nb::vector_t<uint8_t> Buffer(1024);
     Registry->GetValueNames(Names.get());
     intptr_t Index = 0;
     while ((Index < Names->GetCount()) && Result)

@@ -126,7 +126,7 @@ protected:
   UnicodeString FHomeDirectory;
   AnsiString FEOL;
   std::unique_ptr<TList> FPacketReservations;
-  rde::vector<uintptr_t> FPacketNumbers;
+  nb::vector_t<uintptr_t> FPacketNumbers;
   SSH_FXP_TYPE FPreviousLoggedPacket{0};
   intptr_t FNotLoggedPackets{0};
   intptr_t FBusy{0};

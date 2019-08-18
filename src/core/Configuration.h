@@ -413,7 +413,7 @@ public:
   bool Has(const TShortCut &ShortCut) const;
 
 private:
-  rde::vector<TShortCut> FShortCuts;
+  nb::vector_t<TShortCut> FShortCuts;
 };
 //---------------------------------------------------------------------------
 NB_CORE_EXPORT extern const UnicodeString OriginalPuttyRegistryStorageKey;

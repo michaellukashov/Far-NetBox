@@ -33,7 +33,7 @@ public:
   RWProperty<bool> Collect{nb::bind(&TUsage::GetCollect, this), nb::bind(&TUsage::SetCollect, this)};
 
 private:
-  typedef rde::map<UnicodeString, intptr_t> TCounters;
+  using TCounters = nb::map_t<UnicodeString, intptr_t>;
   std::unique_ptr<TCriticalSection> FCriticalSection;
   gsl::not_null<TConfiguration *> FConfiguration;
   TCounters FPeriodCounters;

@@ -333,7 +333,7 @@ LONG_PTR WINAPI TFarDialog::DialogProcGeneral(HANDLE Handle, int Msg, int Param1
 {
   TFarPluginEnvGuard Guard; nb::used(Guard);
 
-  static rde::map<HANDLE, LONG_PTR> Dialogs;
+  static nb::map_t<HANDLE, LONG_PTR> Dialogs;
   TFarDialog *Dialog = nullptr;
   LONG_PTR Result = 0;
   if (Msg == DN_INITDIALOG)

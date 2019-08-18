@@ -1919,6 +1919,6 @@ void TShortCuts::Add(const TShortCut &ShortCut)
 //---------------------------------------------------------------------------
 bool TShortCuts::Has(const TShortCut &ShortCut) const
 {
-  rde::vector<TShortCut>::iterator it = const_cast<TShortCuts *>(this)->FShortCuts.find(ShortCut);
+  nb::vector_t<TShortCut>::iterator it = const_cast<TShortCuts *>(this)->FShortCuts.find(ShortCut);
   return (it != FShortCuts.end());
 }

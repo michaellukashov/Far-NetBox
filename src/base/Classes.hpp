@@ -6,8 +6,6 @@
 #include <limits>
 #include <stdarg.h>
 #include <math.h>
-#include <rdestl/vector.h>
-#include <rdestl/pair.h>
 
 #include <FastDelegate.h>
 #include <FastDelegateBind.h>
@@ -204,7 +202,7 @@ public:
   ROProperty<intptr_t> Count{nb::bind(&TList::GetCount, this)};
 
 private:
-  rde::vector<void *> FList;
+  nb::vector_t<void *> FList;
 };
 
 NB_DEFINE_CLASS_ID(TObjectList);
@@ -360,7 +358,7 @@ public:
 private:
   TNotifyEvent FOnChange;
   TNotifyEvent FOnChanging;
-  rde::vector<UnicodeString, nb::custom_nballocator_t<UnicodeString>> FStrings;
+  nb::vector_t<UnicodeString> FStrings;
   bool FSorted{false};
   bool FCaseSensitive{false};
 

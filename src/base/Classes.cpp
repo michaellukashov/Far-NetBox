@@ -220,7 +220,7 @@ void TList::Clear()
   SetCount(0);
 }
 
-void QuickSort(rde::vector<void *> &SortList, intptr_t L, intptr_t R,
+void QuickSort(nb::vector_t<void *> &SortList, intptr_t L, intptr_t R,
   CompareFunc SCompare)
 {
   intptr_t Index;
@@ -401,7 +401,7 @@ UnicodeString TStrings::GetDelimitedText() const
   return Result;
 }
 
-static void tokenize(UnicodeString str, rde::vector<UnicodeString> &tokens,
+static void tokenize(UnicodeString str, nb::vector_t<UnicodeString> &tokens,
   UnicodeString delimiters = L" ", const bool trimEmpty = false)
 {
   intptr_t lastPos = 0;
@@ -437,7 +437,7 @@ void TStrings::SetDelimitedText(UnicodeString Value)
     EndUpdate();
   };
   Clear();
-  rde::vector<UnicodeString> Lines;
+  nb::vector_t<UnicodeString> Lines;
   UnicodeString Delimiter(UnicodeString(GetDelimiter()) + L'\n');
   tokenize(Value, Lines, Delimiter, true);
   for (const auto& Line: Lines)

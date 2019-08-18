@@ -843,7 +843,7 @@ UnicodeString TEncryption::DecryptFileName(const UnicodeString AFileName)
     Base64 += ::StringOfChar(L'=', Padding);
   }
 //  DynamicArray<Byte> BufferBytes = DecodeBase64(Base64);
-  rde::vector<uint8_t> BufferBytes = DecodeBase64(Base64);
+  nb::vector_t<uint8_t> BufferBytes = DecodeBase64(Base64);
   RawByteString Buffer(reinterpret_cast<const char *>(&BufferBytes[0]), nb::ToIntPtr(BufferBytes.size()));
   FSalt = Buffer.SubString(1, SALT_LENGTH(PASSWORD_MANAGER_AES_MODE));
   SetSalt();

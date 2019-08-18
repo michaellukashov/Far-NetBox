@@ -213,7 +213,7 @@ private:
 
   // SSL data
   SSL_CTX* m_ssl_ctx;  // SSL context
-  static rde::map<SSL_CTX *, int> m_contextRefCount;
+  static nb::map_t<SSL_CTX *, int> m_contextRefCount;
   SSL* m_ssl;      // current session handle
   SSL_SESSION * m_sessionid;
   bool m_sessionreuse;

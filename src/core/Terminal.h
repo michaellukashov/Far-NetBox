@@ -36,7 +36,7 @@ class TCallbackGuard;
 class TParallelOperation;
 class TCollectedFileList;
 struct TLocalFileHandle;
-using TCalculatedSizes = rde::vector<int64_t>;
+using TCalculatedSizes = nb::vector_t<int64_t>;
 //---------------------------------------------------------------------------
 #if 0
 typedef void __fastcall (__closure *TQueryUserEvent)
@@ -341,7 +341,7 @@ private:
   UnicodeString FDestFileName;
   bool FMultipleDestinationFiles{false};
   bool FFileTransferAny{true};
-  typedef rde::map<UnicodeString, UnicodeString> TEncryptedFileNames;
+  using TEncryptedFileNames = nb::map_t<UnicodeString, UnicodeString>;
   TEncryptedFileNames FEncryptedFileNames;
   rde::set<UnicodeString> FFoldersScannedForEncryptedFiles;
   RawByteString FEncryptKey;
@@ -1000,7 +1000,7 @@ struct TOverwriteFileParams
 };
 #endif
 //---------------------------------------------------------------------------
-using TDateTimes = rde::vector<TDateTime>;
+using TDateTimes = nb::vector_t<TDateTime>;
 //---------------------------------------------------------------------------
 NB_DEFINE_CLASS_ID(TMakeLocalFileListParams);
 struct NB_CORE_EXPORT TMakeLocalFileListParams : public TObject
@@ -1088,7 +1088,7 @@ private:
     bool Dir{false};
     bool Recursed{false};
   };
-  using TFileDataList = rde::vector<TFileData>;
+  using TFileDataList = nb::vector_t<TFileData>;
   TFileDataList FList;
 };
 //---------------------------------------------------------------------------
@@ -1137,7 +1137,7 @@ private:
 
   std::unique_ptr<TStrings> FFileList;
   intptr_t FIndex{0};
-  typedef rde::map<UnicodeString, TDirectoryData> TDirectories;
+  using TDirectories = nb::map_t<UnicodeString, TDirectoryData>;
   TDirectories FDirectories;
   UnicodeString FTargetDir;
   const TCopyParamType *FCopyParam{nullptr};

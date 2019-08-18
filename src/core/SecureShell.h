@@ -15,7 +15,7 @@ __removed struct Conf;
 struct _WSANETWORKEVENTS;
 typedef struct _WSANETWORKEVENTS WSANETWORKEVENTS;
 using SOCKET = UINT_PTR;
-using TSockets = rde::vector<SOCKET>;
+using TSockets = nb::vector_t<SOCKET>;
 struct TPuttyTranslation;
 
 enum TSshImplementation

@@ -1637,7 +1637,7 @@ struct TDateTimeParams : public TObject
   }
 };
 
-typedef rde::map<int, TDateTimeParams> TYearlyDateTimeParams;
+using TYearlyDateTimeParams = nb::map_t<int, TDateTimeParams>;
 static TYearlyDateTimeParams YearlyDateTimeParams;
 static TCriticalSection DateTimeParamsSection;
 static void EncodeDSTMargin(const SYSTEMTIME &Date, uint16_t Year,
@@ -3342,7 +3342,7 @@ void ParseCertificate(UnicodeString Path,
   if (Pkcs12 != nullptr)
   {
     // Modeled after OPENSSL_asc2uni (reversed bitness to what UnicodeString/wchar_t use)
-    rde::vector<char> Buf;
+    nb::vector_t<char> Buf;
     Buf.resize(Passphrase.Length() * sizeof(wchar_t) + sizeof(wchar_t));
     for (intptr_t Index = 0; Index <= Passphrase.Length(); Index++)
     {

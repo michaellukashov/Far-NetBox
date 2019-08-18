@@ -335,9 +335,9 @@ private:
   TSynchronizeController *FSynchronizeController{nullptr};
   std::unique_ptr<TStrings> FCapturedLog;
   std::unique_ptr<TStrings> FAuthenticationLog;
-  typedef rde::map<intptr_t, TMultipleEdit> TMultipleEdits;
+  typedef nb::map_t<intptr_t, TMultipleEdit> TMultipleEdits;
   TMultipleEdits FMultipleEdits;
-  typedef rde::vector<TEditHistory> TEditHistories;
+  typedef nb::vector_t<TEditHistory> TEditHistories;
   TEditHistories FEditHistories;
   UnicodeString FLastPath;
   std::unique_ptr<TStrings> FPathHistory;

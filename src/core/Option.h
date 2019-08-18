@@ -69,7 +69,7 @@ private:
     wchar_t SwitchMark{};
   };
 
-  typedef rde::vector<TOption> TOptionsVector;
+  typedef nb::vector_t<TOption> TOptionsVector;
   mutable TOptionsVector FOptions;
   TOptionsVector FOriginalOptions;
   intptr_t FParamCount{0};

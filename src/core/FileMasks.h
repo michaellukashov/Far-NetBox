@@ -117,7 +117,7 @@ private:
     UnicodeString UserStr;
   };
 
-  typedef rde::vector<TMask> TMasks;
+  typedef nb::vector_t<TMask> TMasks;
   TMasks FMasks[4];
   mutable TStrings *FMasksStr[4];
 

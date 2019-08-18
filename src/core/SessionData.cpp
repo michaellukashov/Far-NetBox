@@ -2683,8 +2683,8 @@ void TSessionData::SetAlgoList(AlgoT *List, const AlgoT *DefaultList, const Unic
 {
   UnicodeString Value = AValue;
 
-  rde::vector<bool> Used(Count); // initialized to false
-  rde::vector<AlgoT> NewList(Count);
+  nb::vector_t<bool> Used(Count); // initialized to false
+  nb::vector_t<AlgoT> NewList(Count);
 
   bool HasWarnAlgo = (WarnAlgo >= AlgoT());
   intptr_t WarnDefaultIndex;

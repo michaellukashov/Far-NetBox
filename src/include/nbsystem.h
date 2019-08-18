@@ -1,9 +1,20 @@
 #pragma once
 
+#include <rdestl/vector.h>
+#include <rdestl/map.h>
+#include <rdestl/pair.h>
+
 #include <nbcore.h>
 #include <nbsystem_cpp.h>
 
 #if defined(__cplusplus)
+
+namespace nb {
+
+template<typename T> using vector_t = rde::vector<T>;
+template<typename Tk, typename Tv> using map_t = rde::map<Tk, Tv>;
+
+} // namespace nb
 
 namespace nb {
 

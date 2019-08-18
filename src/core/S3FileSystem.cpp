@@ -1200,7 +1200,7 @@ void TS3FileSystem::ConfirmOverwrite(
   const TCopyParamType *CopyParam, intptr_t AParams)
 {
   uint32_t Answers = qaYes | qaNo | qaCancel | qaYesToAll | qaNoToAll;
-  rde::vector<TQueryButtonAlias> Aliases;
+  nb::vector_t<TQueryButtonAlias> Aliases;
   Aliases.push_back(TQueryButtonAlias::CreateYesToAllGrouppedWithYes());
   Aliases.push_back(TQueryButtonAlias::CreateNoToAllGrouppedWithNo());
 

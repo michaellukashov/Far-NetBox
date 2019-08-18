@@ -63,7 +63,7 @@ class CNBFile : public TObject
      * \param fileContent file content
      * \return error code
      */
-  static DWORD SaveFile(const wchar_t * fileName, const rde::vector<char> & fileContent);
+  static DWORD SaveFile(const wchar_t * fileName, const nb::vector_t<char> & fileContent);
   /**
      * Save file
      * \param fileName file name
@@ -77,7 +77,7 @@ class CNBFile : public TObject
      * \param fileContent file content
      * \return error code
      */
-  static DWORD LoadFile(const wchar_t * fileName, rde::vector<char> & fileContent);
+  static DWORD LoadFile(const wchar_t * fileName, nb::vector_t<char> & fileContent);
 
 private:
   HANDLE  m_File{INVALID_HANDLE_VALUE};          ///< File handle

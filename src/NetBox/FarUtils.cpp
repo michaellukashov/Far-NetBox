@@ -92,7 +92,7 @@ DWORD CNBFile::LastError() const
   return m_LastError;
 }
 
-DWORD CNBFile::SaveFile(const wchar_t *fileName, const rde::vector<char> &fileContent)
+DWORD CNBFile::SaveFile(const wchar_t *fileName, const nb::vector_t<char> &fileContent)
 {
   CNBFile f;
   if (f.OpenWrite(fileName) && !fileContent.empty())
@@ -113,7 +113,7 @@ DWORD CNBFile::SaveFile(const wchar_t *fileName, const char *fileContent)
   return f.LastError();
 }
 
-DWORD CNBFile::LoadFile(const wchar_t *fileName, rde::vector<char> &fileContent)
+DWORD CNBFile::LoadFile(const wchar_t *fileName, nb::vector_t<char> &fileContent)
 {
   fileContent.clear();
 
