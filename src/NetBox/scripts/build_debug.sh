@@ -2,12 +2,19 @@
 
 set -eo pipefail
 
-setup_netbox() {
+setup_netbox()
+{
   if [ -z "$NETBOX_ROOT_DIR" ] ; then
     NETBOX_ROOT_DIR=$(readlink -f "$PWD/..")
   fi
   if [ -z "$NETBOX_BUILD_DIR" ] ; then
-    NETBOX_BUILD_DIR="$NETBOX_ROOT_DIR/../../../NetBox-VS2017x64-$BUILD_TYPE"
+    NETBOX_BUILD_DIR="$NETBOX_ROOT_DIR/../../../NetBox-VS2019x64-$BUILD_TYPE"
+  fi
+  if [ -z "$OPENSSL_ROOT_DIR" ] ; then
+    OPENSSL_ROOT_DIR="$NETBOX_ROOT_DIR/../../libs/openssl"
+  fi
+  if [ -z "$OPENSSL_LIBRARY_DIR" ] ; then
+    OPENSSL_LIBRARY_DIR="$OPENSSL_ROOT_DIR/x64-$BUILD_TYPE"
   fi
 
   local BUILD_DIR="$NETBOX_BUILD_DIR"
@@ -21,7 +28,7 @@ setup_netbox() {
     -DCMAKE_INSTALL_PREFIX="$NETBOX_INSTALL_DIR" \
     -DOPT_USE_UNITY_BUILD=OFF \
     -DOPT_BUILD_OPENSSL=OFF \
-    -G "Visual Studio 15 2017 Win64" \
+    -G "Visual Studio 16 2019" -A x64 \
     "$NETBOX_ROOT_DIR"
 
   #cmake --build . --target install
@@ -30,8 +37,10 @@ setup_netbox() {
   popd
 }
 
-main() {
+main()
+{
   setup_netbox
 }
 
 #main
+setup_netbox
