@@ -529,16 +529,16 @@ namespace rde
 						return (n->hash == hash && m_keyEqualFunc(key, n->data.first));
 					}
 
-					node*			m_nodes;
-					int				m_size;
-					int				m_capacity;
-					uint32			m_capacityMask;
-					int				m_numUsed;
-					THashFunc       m_hashFunc;
-					TKeyEqualFunc	m_keyEqualFunc;
-					TAllocator      m_allocator;
+					node*           m_nodes{nullptr};
+					int				m_size{0};
+					int				m_capacity{0};
+					uint32			m_capacityMask{0};
+					int				m_numUsed{0};
+					THashFunc       m_hashFunc{};
+					TKeyEqualFunc	m_keyEqualFunc{};
+					TAllocator      m_allocator{};
 
-					static node		ms_emptyNode;
+					static node		ms_emptyNode{};
 			};
 
 
