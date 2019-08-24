@@ -4507,7 +4507,7 @@ void TTerminal::CalculateFileSize(UnicodeString AFileName,
         {
           Params->Result = false;
         }
-        else if (FLAGSET(Params->Params, csStopOnFirstFile) && (Params->Stats->Files > 0))
+        else if (FLAGSET(Params->Params, csStopOnFirstFile) && Params->Stats && (Params->Stats->Files > 0))
         {
           // do not waste time recursing into a folder, if we already found some files
         }

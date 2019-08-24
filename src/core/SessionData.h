@@ -169,7 +169,7 @@ private:
   UnicodeString FPublicKeyFile;
   UnicodeString FPassphrase;
   UnicodeString FPuttyProtocol;
-  TFSProtocol FFSProtocol;
+  TFSProtocol FFSProtocol{};
   bool FModified{false};
   UnicodeString FLocalDirectory;
   UnicodeString FRemoteDirectory;

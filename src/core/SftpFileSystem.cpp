@@ -695,7 +695,6 @@ public:
   void GetFile(TRemoteFile *AFile, intptr_t Version, TDSTMode DSTMode, TAutoSwitch &Utf, bool SignedTS, bool Complete)
   {
     DebugAssert(AFile);
-    SSH_FILEXFER_ATTR_TYPE Flags;
     UnicodeString ListingStr;
     uint32_t Permissions = 0;
     bool ParsingFailed = false;
@@ -707,7 +706,7 @@ public:
         ListingStr = GetString(Utf);
       }
     }
-    Flags = GetCardinal();
+    SSH_FILEXFER_ATTR_TYPE Flags = GetCardinal();
     if (Version >= 4)
     {
       uint8_t FXType = GetByte();
@@ -1741,7 +1740,7 @@ protected:
     return Result;
   }
 
-  inline intptr_t GetBlockSize() const
+  intptr_t GetBlockSize() const
   {
     return FFileSystem->UploadBlockSize(FHandle, OperationProgress);
   }

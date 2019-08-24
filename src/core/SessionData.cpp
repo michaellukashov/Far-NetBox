@@ -3219,7 +3219,7 @@ TStrings * TSessionData::GetRawSettingsForUrl()
 bool TSessionData::HasRawSettingsForUrl()
 {
   std::unique_ptr<TStrings> RawSettings(GetRawSettingsForUrl());
-  return (RawSettings->Count > 0);
+  return RawSettings.get() && (RawSettings->Count > 0);
 }
 //---------------------------------------------------------------------
 UnicodeString TSessionData::GenerateSessionUrl(uintptr_t Flags) const
