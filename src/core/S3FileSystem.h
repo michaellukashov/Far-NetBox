@@ -38,7 +38,7 @@ public:
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TS3FileSystem) || TObject::is(Kind); }
 public:
   explicit TS3FileSystem(TTerminal *ATerminal) noexcept;
-  virtual ~TS3FileSystem() noexcept;
+  ~TS3FileSystem() noexcept override;
 
   void Open() override;
   void Close() override;
@@ -125,7 +125,7 @@ protected:
   UTF8String FHostName;
   int FTimeout{0};
   S3RequestContext *FRequestContext{nullptr};
-  _S3Protocol FLibS3Protocol;
+  _S3Protocol FLibS3Protocol{};
   ne_session_s *FNeonSession{nullptr};
   UnicodeString FTlsVersionStr;
   UnicodeString FResponse;

@@ -193,7 +193,7 @@ void TS3FileSystem::LibS3SessionCallback(ne_session_s *Session, void *CallbackDa
 
   ne_set_session_private(Session, SESSION_FS_KEY, FileSystem);
 
-  SetNeonTlsInit(Session, FileSystem->InitSslSession);
+  SetNeonTlsInit(Session, TS3FileSystem::InitSslSession);
 
   // Data->Timeout is propagated via timeoutMs parameter of functions like S3_list_service
 
@@ -569,8 +569,8 @@ TLibS3BucketContext TS3FileSystem::GetBucketContext(UnicodeString ABucketName, U
   return Result;
 }
 //---------------------------------------------------------------------------
-#define CreateResponseHandlerCustom(PropertiesCallback) { &PropertiesCallback, &LibS3ResponseCompleteCallback }
-#define CreateResponseHandler() CreateResponseHandlerCustom(LibS3ResponsePropertiesCallback)
+#define CREATE_RESPONSE_HANDLER_CUSTOM(PropertiesCallback) { &PropertiesCallback, &LibS3ResponseCompleteCallback }
+#define CREATE_RESPONSE_HANDLER() CREATE_RESPONSE_HANDLER_CUSTOM(LibS3ResponsePropertiesCallback)
 //---------------------------------------------------------------------------
 void TS3FileSystem::Close()
 {
@@ -843,7 +843,7 @@ void TS3FileSystem::DoListBucket(
   UnicodeString APrefix, TRemoteFileList *FileList, intptr_t MaxKeys, const TLibS3BucketContext &BucketContext,
   TLibS3ListBucketCallbackData &Data)
 {
-  S3ListBucketHandler ListBucketHandler = { CreateResponseHandler(), &LibS3ListBucketCallback };
+  S3ListBucketHandler ListBucketHandler = { CREATE_RESPONSE_HANDLER(), &LibS3ListBucketCallback };
   RequestInit(Data);
   Data.KeyCount = 0;
   Data.FileList = FileList;
@@ -882,7 +882,7 @@ void TS3FileSystem::ReadDirectoryInternal(
     {
       RequestInit(Data);
 
-      S3ListServiceHandler ListServiceHandler = { CreateResponseHandler(), &LibS3ListServiceCallback };
+      S3ListServiceHandler ListServiceHandler = { CREATE_RESPONSE_HANDLER(), &LibS3ListServiceCallback };
 
       Retry = false;
 
@@ -1005,7 +1005,7 @@ void TS3FileSystem::RemoteDeleteFile(UnicodeString AFileName,
 
   TLibS3BucketContext BucketContext = GetBucketContext(BucketName, Key);
 
-  S3ResponseHandler ResponseHandler = CreateResponseHandler();
+  S3ResponseHandler ResponseHandler = CREATE_RESPONSE_HANDLER();
 
   TLibS3CallbackData Data;
   RequestInit(Data);
@@ -1065,7 +1065,7 @@ void TS3FileSystem::RemoteCopyFile(UnicodeString AFileName, const TRemoteFile *A
   BucketContext.BucketNameBuf = SourceBucketName;
   BucketContext.bucketName = BucketContext.BucketNameBuf.c_str();
 
-  S3ResponseHandler ResponseHandler = CreateResponseHandler();
+  S3ResponseHandler ResponseHandler = CREATE_RESPONSE_HANDLER();
 
   TLibS3CallbackData Data;
   RequestInit(Data);
@@ -1087,7 +1087,7 @@ void TS3FileSystem::RemoteCreateDirectory(UnicodeString ADirName, bool /*Encrypt
 
   if (Key.IsEmpty())
   {
-    S3ResponseHandler ResponseHandler = CreateResponseHandler();
+    S3ResponseHandler ResponseHandler = CREATE_RESPONSE_HANDLER();
 
     // Not using GetBucketContext here, as the bucket does not exist
 
@@ -1128,7 +1128,7 @@ void TS3FileSystem::RemoteCreateDirectory(UnicodeString ADirName, bool /*Encrypt
 
     TLibS3BucketContext BucketContext = GetBucketContext(BucketName, Key);
 
-    S3PutObjectHandler PutObjectHandler = { CreateResponseHandler(), nullptr };
+    S3PutObjectHandler PutObjectHandler = { CREATE_RESPONSE_HANDLER(), nullptr };
 
     S3_put_object(&BucketContext, StrToS3(Key), 0, nullptr, FRequestContext, FTimeout, &PutObjectHandler, &Data);
 
@@ -1445,7 +1445,7 @@ void TS3FileSystem::Source(
       TLibS3MultipartInitialCallbackData Data;
       RequestInit(Data);
 
-      S3MultipartInitialHandler Handler = { CreateResponseHandler(), &LibS3MultipartInitialCallback };
+      S3MultipartInitialHandler Handler = { CREATE_RESPONSE_HANDLER(), &LibS3MultipartInitialCallback };
 
       S3_initiate_multipart(&BucketContext, StrToS3(Key), &PutProperties, &Handler, FRequestContext, FTimeout, &Data);
 
@@ -1492,7 +1492,7 @@ void TS3FileSystem::Source(
         if (Multipart)
         {
           S3PutObjectHandler UploadPartHandler =
-          { CreateResponseHandlerCustom(LibS3MultipartResponsePropertiesCallback), LibS3PutObjectDataCallback };
+          { CREATE_RESPONSE_HANDLER_CUSTOM(LibS3MultipartResponsePropertiesCallback), LibS3PutObjectDataCallback };
           int64_t Remaining = Stream->Size() - Stream->Position();
           int RemainingInt = static_cast<int>(std::min(static_cast<int64_t>(std::numeric_limits<int>::max()), Remaining));
           int PartLength = std::min(ChunkSize, RemainingInt);
@@ -1503,7 +1503,7 @@ void TS3FileSystem::Source(
         }
         else
         {
-          S3PutObjectHandler PutObjectHandler = { CreateResponseHandler(), LibS3PutObjectDataCallback };
+          S3PutObjectHandler PutObjectHandler = { CREATE_RESPONSE_HANDLER(), LibS3PutObjectDataCallback };
           S3_put_object(&BucketContext, StrToS3(Key), static_cast<uint64_t>(AHandle.Size), &PutProperties, FRequestContext, FTimeout, &PutObjectHandler, &Data);
         }
 
@@ -1548,7 +1548,7 @@ void TS3FileSystem::Source(
         MultipartCommitPutObjectDataCallbackData.Remaining = nb::ToInt(MultipartCommitPutObjectDataCallbackData.Message.Length());
 
         S3MultipartCommitHandler MultipartCommitHandler =
-        { CreateResponseHandler(), &LibS3MultipartCommitPutObjectDataCallback, nullptr };
+        { CREATE_RESPONSE_HANDLER(), &LibS3MultipartCommitPutObjectDataCallback, nullptr };
 
         S3_complete_multipart_upload(
           &BucketContext, StrToS3(Key), &MultipartCommitHandler, MultipartUploadId.c_str(),
@@ -1574,7 +1574,7 @@ void TS3FileSystem::Source(
         TLibS3CallbackData Data;
         RequestInit(Data);
 
-        S3AbortMultipartUploadHandler AbortMultipartUploadHandler = { CreateResponseHandler() };
+        S3AbortMultipartUploadHandler AbortMultipartUploadHandler = { CREATE_RESPONSE_HANDLER() };
 
         S3_abort_multipart_upload(
           &BucketContext, StrToS3(Key), MultipartUploadId.c_str(),
@@ -1703,7 +1703,7 @@ void TS3FileSystem::Sink(
         Data.Exception.reset(nullptr);
 
         TAutoFlag ResponseIgnoreSwitch(FResponseIgnore); nb::used(ResponseIgnoreSwitch);
-        S3GetObjectHandler GetObjectHandler = { CreateResponseHandler(), LibS3GetObjectDataCallback };
+        S3GetObjectHandler GetObjectHandler = { CREATE_RESPONSE_HANDLER(), LibS3GetObjectDataCallback };
         S3_get_object(
           &BucketContext, StrToS3(Key), nullptr, static_cast<uint64_t>(Stream->Position()), 0, FRequestContext, FTimeout, &GetObjectHandler, &Data);
 
