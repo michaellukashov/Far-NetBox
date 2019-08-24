@@ -10,7 +10,7 @@ class NB_CORE_EXPORT UTF8String
 {
   CUSTOM_MEM_ALLOCATION_IMPL
 public:
-  UTF8String() {}
+  UTF8String() = default;
   UTF8String(const UTF8String &rhs);
   explicit UTF8String(UnicodeString Str);
   UTF8String(const wchar_t *Str);
@@ -18,7 +18,7 @@ public:
   explicit UTF8String(const char *Str, intptr_t Length);
   explicit UTF8String(const char *Str);
 
-  ~UTF8String() {}
+  ~UTF8String() = default;
 
   operator const char *() const { return this->c_str(); }
   const char *c_str() const { return Data.c_str(); }
@@ -52,7 +52,7 @@ public:
   UTF8String operator+(const char *rhs) const;
   UTF8String &operator+=(const UTF8String &rhs);
   UTF8String &operator+=(const RawByteString &rhs);
-  UTF8String &operator+=(const char Ch);
+  UTF8String &operator+=(char Ch);
   UTF8String &operator+=(const char *rhs);
 
   NB_CORE_EXPORT friend bool operator==(const UTF8String &lhs, const UTF8String &rhs);
@@ -70,20 +70,20 @@ class NB_CORE_EXPORT UnicodeString
 {
   CUSTOM_MEM_ALLOCATION_IMPL
 public:
-  UnicodeString() {}
+  UnicodeString() = default;
   UnicodeString(const wchar_t *Str);
   UnicodeString(const wchar_t *Str, intptr_t Length);
-  UnicodeString(const wchar_t Src);
+  UnicodeString(wchar_t Src);
   UnicodeString(const char *Str, intptr_t Length);
   UnicodeString(const char *Str, intptr_t Length, int CodePage);
   UnicodeString(const char *Str);
-  UnicodeString(intptr_t Length, wchar_t Ch) : Data(Ch, (int)Length) {}
+  UnicodeString(intptr_t Length, wchar_t Ch) : Data(Ch, static_cast<int>(Length)) {}
 
   UnicodeString(const UnicodeString &Str);
   explicit UnicodeString(const UTF8String &Str);
   explicit UnicodeString(const AnsiString &Str);
 
-  ~UnicodeString() {}
+  ~UnicodeString() = default;
 
   const wchar_t *c_str() const { return Data.c_str(); }
   const wchar_t *data() const { return Data.c_str(); }
@@ -108,7 +108,7 @@ public:
   intptr_t Compare(UnicodeString Str) const;
   intptr_t CompareIC(UnicodeString Str) const;
   intptr_t ToIntPtr() const;
-  intptr_t FindFirstOf(const wchar_t Ch) const;
+  intptr_t FindFirstOf(wchar_t Ch) const;
   intptr_t FindFirstOf(const wchar_t *Str, size_t Offset = 0) const;
 //  intptr_t FindFirstNotOf(const wchar_t * Str) const { return (intptr_t)Data.find_first_not_of(Str); }
 
@@ -133,7 +133,7 @@ public:
   intptr_t Pos(wchar_t Ch) const;
   intptr_t Pos(UnicodeString Str) const;
 
-  intptr_t RPos(wchar_t Ch) const { return (intptr_t)Data.ReverseFind(Ch) + 1; }
+  intptr_t RPos(wchar_t Ch) const { return static_cast<intptr_t>(Data.ReverseFind(Ch)) + 1; }
   bool RPos(intptr_t &nPos, wchar_t Ch, intptr_t nStartPos = 0) const;
 
   UnicodeString SubStr(intptr_t Pos, intptr_t Len) const;
@@ -157,14 +157,14 @@ public:
   UnicodeString &operator=(const UTF8String &StrCopy);
   UnicodeString &operator=(const wchar_t *Str);
   UnicodeString &operator=(const char *lpszData);
-  UnicodeString &operator=(const wchar_t Ch);
+  UnicodeString &operator=(wchar_t Ch);
 
   UnicodeString operator+(UnicodeString rhs) const;
   UnicodeString operator+(const RawByteString &rhs) const;
   UnicodeString operator+(const AnsiString &rhs) const;
   UnicodeString operator+(const UTF8String &rhs) const;
 
-  NB_CORE_EXPORT friend UnicodeString operator+(const wchar_t lhs, UnicodeString rhs);
+  NB_CORE_EXPORT friend UnicodeString operator+(wchar_t lhs, UnicodeString rhs);
   NB_CORE_EXPORT friend UnicodeString operator+(UnicodeString lhs, wchar_t rhs);
   NB_CORE_EXPORT friend UnicodeString operator+(const wchar_t *lhs, UnicodeString rhs);
   NB_CORE_EXPORT friend UnicodeString operator+(UnicodeString lhs, const wchar_t *rhs);
@@ -174,9 +174,9 @@ public:
   UnicodeString &operator+=(const wchar_t *rhs);
   UnicodeString &operator+=(const UTF8String &rhs);
   UnicodeString &operator+=(const RawByteString &rhs);
-  UnicodeString &operator+=(const char Ch);
+  UnicodeString &operator+=(char Ch);
   UnicodeString &operator+=(const char *Ch);
-  UnicodeString &operator+=(const wchar_t Ch);
+  UnicodeString &operator+=(wchar_t Ch);
 
   bool operator==(UnicodeString Str) const { return Data == Str.Data; }
   bool operator!=(UnicodeString Str) const { return Data != Str.Data; }
@@ -204,9 +204,9 @@ class NB_CORE_EXPORT AnsiString
 {
   CUSTOM_MEM_ALLOCATION_IMPL
 public:
-  AnsiString() {}
+  AnsiString() = default;
   AnsiString(const AnsiString &rhs);
-  AnsiString(intptr_t Length, char Ch) : Data(Ch, (int)Length) {}
+  AnsiString(intptr_t Length, char Ch) : Data(Ch, static_cast<int>(Length)) {}
   explicit AnsiString(const wchar_t *Str);
   explicit AnsiString(const wchar_t *Str, intptr_t Length);
   explicit AnsiString(const wchar_t *Str, intptr_t Length, int CodePage);
@@ -240,7 +240,7 @@ public:
   AnsiString &Append(const char *Str, intptr_t StrLen);
   AnsiString &Append(const AnsiString &Str);
   AnsiString &Append(const char *Str);
-  AnsiString &Append(const char Ch);
+  AnsiString &Append(char Ch);
 
   void Unique() {}
 
@@ -257,7 +257,7 @@ public:
   AnsiString operator+(const AnsiString &rhs) const;
 
   AnsiString &operator+=(const AnsiString &rhs);
-  AnsiString &operator+=(const char Ch);
+  AnsiString &operator+=(char Ch);
   AnsiString &operator+=(const char *rhs);
 
   inline friend bool operator==(const AnsiString &lhs, const AnsiString &rhs)
@@ -288,7 +288,7 @@ class NB_CORE_EXPORT RawByteString
 {
   CUSTOM_MEM_ALLOCATION_IMPL
 public:
-  RawByteString() {}
+  RawByteString() = default;
   explicit RawByteString(const wchar_t *Str);
   explicit RawByteString(const wchar_t *Str, intptr_t Length);
   RawByteString(const char *Str);
@@ -299,7 +299,7 @@ public:
   RawByteString(const RawByteString &Str);
   RawByteString(const AnsiString &Str);
   RawByteString(const UTF8String &Str);
-  ~RawByteString() {}
+  ~RawByteString() = default;
 
   operator const char *() const { return this->c_str(); }
   operator UnicodeString() const;
@@ -317,7 +317,7 @@ public:
 
   intptr_t Pos(wchar_t Ch) const;
   intptr_t Pos(const wchar_t *Str) const;
-  intptr_t Pos(const char Ch) const;
+  intptr_t Pos(char Ch) const;
   intptr_t Pos(const char *Str) const;
 
   unsigned char operator[](intptr_t Idx) const;

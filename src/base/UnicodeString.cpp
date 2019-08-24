@@ -341,7 +341,7 @@ unsigned char RawByteString::operator[](intptr_t Idx) const
 unsigned char &RawByteString::operator[](intptr_t Idx)
 {
   ThrowIfOutOfRange(Idx); // Should Range-checking be optional to avoid overhead ??
-  return ((unsigned char*)Data.GetBuffer())[Idx - 1];
+  return reinterpret_cast<unsigned char*>(Data.GetBuffer())[Idx - 1];
 }
 
 RawByteString &RawByteString::operator=(UnicodeString StrCopy)
