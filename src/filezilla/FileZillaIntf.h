@@ -1,16 +1,15 @@
-
-#ifndef FileZillaIntfH
-#define FileZillaIntfH
-
+//---------------------------------------------------------------------------
+#pragma once
+//---------------------------------------------------------------------------
 #include <rdestl/map.h>
 
 #include <time.h>
 #include <FileZillaOpt.h>
 #include <FilezillaTools.h>
-
+//---------------------------------------------------------------------------
 class CFileZillaApi;
 class TFileZillaIntern;
-
+//---------------------------------------------------------------------------
 struct TRemoteFileTime
 {
 CUSTOM_MEM_ALLOCATION_IMPL
@@ -25,7 +24,7 @@ CUSTOM_MEM_ALLOCATION_IMPL
   bool HasDate;
   bool Utc;
 };
-
+//---------------------------------------------------------------------------
 struct TListDataEntry
 {
 CUSTOM_MEM_ALLOCATION_IMPL
@@ -41,7 +40,7 @@ CUSTOM_MEM_ALLOCATION_IMPL
   bool Dir;
   bool Link;
 };
-
+//---------------------------------------------------------------------------
 struct TFtpsCertificateData
 {
 CUSTOM_MEM_ALLOCATION_IMPL
@@ -86,18 +85,18 @@ CUSTOM_MEM_ALLOCATION_IMPL
   int VerificationResult;
   int VerificationDepth;
 };
-
+//---------------------------------------------------------------------------
 struct TNeedPassRequestData
 {
 CUSTOM_MEM_ALLOCATION_IMPL
   wchar_t * Password;
 };
-
+//---------------------------------------------------------------------------
 class t_server;
 class TFTPServerCapabilities;
 typedef struct x509_st X509;
 typedef struct evp_pkey_st EVP_PKEY;
-
+//---------------------------------------------------------------------------
 class TFileZillaIntf : public CFileZillaTools
 {
 NB_DISABLE_COPY(TFileZillaIntf)
@@ -164,8 +163,8 @@ public:
   static void Finalize();
   static void SetResourceModule(void * ResourceHandle);
 
-  explicit TFileZillaIntf();
-  virtual ~TFileZillaIntf();
+  explicit TFileZillaIntf() noexcept;
+  virtual ~TFileZillaIntf() noexcept;
 
   bool Init();
   void Destroying();
@@ -214,16 +213,16 @@ protected:
   virtual bool DoPostMessage(TMessageType Type, WPARAM wParam, LPARAM lParam) = 0;
 
   virtual bool HandleStatus(const wchar_t * Status, int Type) = 0;
-  virtual bool HandleAsynchRequestOverwrite(
+  virtual bool HandleAsyncRequestOverwrite(
     wchar_t * FileName1, size_t FileName1Len, const wchar_t * FileName2,
     const wchar_t * Path1, const wchar_t * Path2,
     int64_t Size1, int64_t Size2, time_t LocalTime,
     bool HasLocalTime1, const TRemoteFileTime & RemoteTime, void * UserData,
     HANDLE & LocalFileHandle,
     int & RequestResult) = 0;
-  virtual bool HandleAsynchRequestVerifyCertificate(
+  virtual bool HandleAsyncRequestVerifyCertificate(
     const TFtpsCertificateData & Data, int & RequestResult) = 0;
-  virtual bool HandleAsynchRequestNeedPass(
+  virtual bool HandleAsyncRequestNeedPass(
     struct TNeedPassRequestData & Data, int & RequestResult) = 0;
   virtual bool HandleListData(const wchar_t * Path, const TListDataEntry * Entries,
     uintptr_t Count) = 0;
@@ -236,18 +235,18 @@ protected:
   inline bool Check(intptr_t ReturnCode, const wchar_t * Context, intptr_t Expected = -1);
 
 private:
-  CFileZillaApi * FFileZillaApi;
-  TFileZillaIntern * FIntern;
-  t_server * FServer;
+  CFileZillaApi * FFileZillaApi{nullptr};
+  TFileZillaIntern * FIntern{nullptr};
+  t_server * FServer{nullptr};
 };
-
+//---------------------------------------------------------------------------
 enum ftp_capabilities_t
 {
   unknown,
   yes,
   no
 };
-
+//---------------------------------------------------------------------------
 enum ftp_capability_names_t
 {
   syst_command = 1, // reply of SYST command as option
@@ -265,7 +264,7 @@ enum ftp_capability_names_t
   list_hidden_support, // LIST -a command
   rest_stream, // supports REST+STOR in addition to APPE
 };
-
+//---------------------------------------------------------------------------
 class TFTPServerCapabilities //: public TObject
 {
 CUSTOM_MEM_ALLOCATION_IMPL
@@ -282,7 +281,7 @@ public:
     FCapabilityMap.clear();
     if (Source != NULL)
     {
-      for (rde::map<ftp_capability_names_t, t_cap>::iterator it = Source->FCapabilityMap.begin();
+      for (nb::map_t<ftp_capability_names_t, t_cap>::iterator it = Source->FCapabilityMap.begin();
         it != Source->FCapabilityMap.end(); ++it)
       {
         FCapabilityMap.insert(*it);
@@ -304,7 +303,7 @@ protected:
     int number;
   };
 
-  mutable rde::map<ftp_capability_names_t, t_cap> FCapabilityMap;
+  mutable nb::map_t<ftp_capability_names_t, t_cap> FCapabilityMap;
 };
+//---------------------------------------------------------------------------
 
-#endif // FileZillaIntfH

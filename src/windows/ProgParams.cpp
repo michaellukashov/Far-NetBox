@@ -1,55 +1,34 @@
+//---------------------------------------------------------------------------
 #include <vcl.h>
 #pragma hdrstop
 
 #include <Common.h>
 #include "ProgParams.h"
-
-// unique_ptr-like class
-class TProgramParamsOwner : public TObject
+//---------------------------------------------------------------------------
+__removed #pragma package(smart_init)
+//---------------------------------------------------------------------------
+std::unique_ptr<TProgramParams> ProgramParamsOwner;
+//---------------------------------------------------------------------------
+TProgramParams * TProgramParams::Instance()
 {
-  NB_DISABLE_COPY(TProgramParamsOwner)
-public:
-  TProgramParamsOwner() :
-    FProgramParams(nullptr)
+  if (ProgramParamsOwner.get() == nullptr)
   {
+    ProgramParamsOwner = std::make_unique<TProgramParams>();
   }
-
-  ~TProgramParamsOwner()
-  {
-    SAFE_DESTROY(FProgramParams);
-  }
-
-  TProgramParams *Get()
-  {
-    if (FProgramParams == nullptr)
-    {
-      FProgramParams = new TProgramParams();
-    }
-    return FProgramParams;
-  }
-
-private:
-  TProgramParams *FProgramParams;
-};
-
-// TProgramParamsOwner ProgramParamsOwner;
-
-// TProgramParams * TProgramParams::Instance()
-// {
-// return ProgramParamsOwner.Get();
-// }
-
-TProgramParams::TProgramParams()
+  return ProgramParamsOwner.get();
+}
+//---------------------------------------------------------------------------
+TProgramParams::TProgramParams() noexcept
 {
   Init(L"");
 }
-
-TProgramParams::TProgramParams(UnicodeString CmdLine)
+//---------------------------------------------------------------------------
+TProgramParams::TProgramParams(const UnicodeString CmdLine) noexcept
 {
   Init(CmdLine);
 }
-
-void TProgramParams::Init(UnicodeString CmdLine)
+//---------------------------------------------------------------------------
+void TProgramParams::Init(const UnicodeString CmdLine)
 {
   UnicodeString CommandLine = CmdLine;
 
@@ -59,4 +38,9 @@ void TProgramParams::Init(UnicodeString CmdLine)
   {
     Add(Param);
   }
+}
+//---------------------------------------------------------------------------
+UnicodeString TProgramParams::FormatSwitch(UnicodeString Switch)
+{
+  return FORMAT("/%s", Switch);
 }

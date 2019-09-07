@@ -1,7 +1,7 @@
-
+//---------------------------------------------------------------------------
 #ifndef FileZillaOptH
 #define FileZillaOptH
-
+//---------------------------------------------------------------------------
 #define OPTION_LOGONTYPE 1
 #define OPTION_PASV 2
 #define OPTION_FWHOST 3
@@ -52,5 +52,5 @@
 #define OPTION_MPEXT_HOST 1009
 #define OPTION_MPEXT_NODELAY 1010
 #define OPTION_MPEXT_NOLIST 1011
-
+//---------------------------------------------------------------------------
 #endif // FileZillaOptH

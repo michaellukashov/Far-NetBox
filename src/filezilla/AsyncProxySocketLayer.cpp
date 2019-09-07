@@ -1,15 +1,17 @@
 // CAsyncProxySocketLayer by Tim Kosse (Tim.Kosse@gmx.de)
 //                 Version 1.6 (2003-03-26)
-
+//---------------------------------------------------------------------------
 // Feel free to use this class, as long as you don't claim that you wrote it
 // and this copyright notice stays intact in the source files.
 // If you use this class in commercial applications, please send a short message
 // to tim.kosse@gmx.de
-
+//---------------------------------------------------------------------------
 #include "stdafx.h"
 #include "AsyncProxySocketLayer.h"
 #include "atlconv.h" //Unicode<->Ascii conversion macros declared here
+
 #include "misc/CBase64Coding.hpp"
+#include "FileZillaApi.h"
 
 //////////////////////////////////////////////////////////////////////
 // Konstruktion/Destruktion
@@ -131,7 +133,7 @@ void CAsyncProxySocketLayer::OnReceive(int nErrorCode)
           m_nProxyOpState++;
           unsigned long ip;
           int port = 0;
-          memcpy(&ip,&m_pRecvBuffer[4],4);
+          libmemcpy_memcpy(&ip,&m_pRecvBuffer[4],4);
           if (!ip)
           {
             //No IP return, use the IP of the proxy server
@@ -148,11 +150,11 @@ void CAsyncProxySocketLayer::OnReceive(int nErrorCode)
               return;
             }
           }
-          memcpy(&port,&m_pRecvBuffer[2],2);
+          libmemcpy_memcpy(&port,&m_pRecvBuffer[2],2);
           t_ListenSocketCreatedStruct data;
           data.ip=ip;
           data.nPort=port;
-          DoLayerCallback(LAYERCALLBACK_LAYERSPECIFIC, PROXYSTATUS_LISTENSOCKETCREATED, (intptr_t)&data);
+          DoLayerCallback(LAYERCALLBACK_LAYERSPECIFIC, PROXYSTATUS_LISTENSOCKETCREATED, nb::ToIntPtr(&data));
         }
         ClearBuffer();
       }
@@ -271,7 +273,7 @@ void CAsyncProxySocketLayer::OnReceive(int nErrorCode)
       int len=4;
       if (m_nProxyPeerIp)
       {
-        memcpy(&command[len],&m_nProxyPeerIp,4);
+        libmemcpy_memcpy(&command[len],&m_nProxyPeerIp,4);
         len+=4;
       }
       else
@@ -280,7 +282,7 @@ void CAsyncProxySocketLayer::OnReceive(int nErrorCode)
         strcpy(&command[len+1], lpszAsciiHost);
         len += (int)strlen(lpszAsciiHost) + 1;
       }
-      memcpy(&command[len], &m_nProxyPeerPort, 2);
+      libmemcpy_memcpy(&command[len], &m_nProxyPeerPort, 2);
       len+=2;
       int res=SendNext(command,len);
       nb_free(command);
@@ -334,7 +336,7 @@ void CAsyncProxySocketLayer::OnReceive(int nErrorCode)
         int len=4;
         if (m_nProxyPeerIp)
         {
-          memcpy(&command[len],&m_nProxyPeerIp,4);
+          libmemcpy_memcpy(&command[len],&m_nProxyPeerIp,4);
           len+=4;
         }
         else
@@ -343,7 +345,7 @@ void CAsyncProxySocketLayer::OnReceive(int nErrorCode)
           strcpy(&command[len+1],lpszAsciiHost);
           len+=(int)strlen(lpszAsciiHost)+1;
         }
-        memcpy(&command[len],&m_nProxyPeerPort,2);
+        libmemcpy_memcpy(&command[len],&m_nProxyPeerPort,2);
         len+=2;
         int res=SendNext(command,len);
         nb_free(command);
@@ -394,7 +396,7 @@ void CAsyncProxySocketLayer::OnReceive(int nErrorCode)
           else
           {
             char *tmp=nb::chcalloc(m_nRecvBufferLen+=m_pRecvBuffer[4]+2);
-            memcpy(tmp,m_pRecvBuffer,5);
+            libmemcpy_memcpy(tmp,m_pRecvBuffer,5);
             nb_free(m_pRecvBuffer);
             m_pRecvBuffer=tmp;
             m_nRecvBufferLen+=m_pRecvBuffer[4]+2;
@@ -414,12 +416,12 @@ void CAsyncProxySocketLayer::OnReceive(int nErrorCode)
           unsigned long ip;
           unsigned short port;
           DebugAssert(m_pRecvBuffer[3]==1);
-          memcpy(&ip, &m_pRecvBuffer[4], 4);
-          memcpy(&port, &m_pRecvBuffer[8], 2);
+          libmemcpy_memcpy(&ip, &m_pRecvBuffer[4], 4);
+          libmemcpy_memcpy(&port, &m_pRecvBuffer[8], 2);
           t_ListenSocketCreatedStruct data;
           data.ip=ip;
           data.nPort=port;
-          DoLayerCallback(LAYERCALLBACK_LAYERSPECIFIC, PROXYSTATUS_LISTENSOCKETCREATED, (intptr_t)&data);
+          DoLayerCallback(LAYERCALLBACK_LAYERSPECIFIC, PROXYSTATUS_LISTENSOCKETCREATED, nb::ToIntPtr(&data));
         }
         ClearBuffer();
       }
@@ -454,8 +456,8 @@ void CAsyncProxySocketLayer::OnReceive(int nErrorCode)
   else if (m_ProxyData.nProxyType==PROXYTYPE_HTTP11)
   {
     DebugAssert(m_nProxyOpID==PROXYOP_CONNECT);
-    char buffer[9];
-    memset(buffer, 0, sizeof(buffer));
+    char buffer[9]{0};
+    bool responseLogged = false;
     for(;;)
     {
       int numread = ReceiveNext(buffer, m_pStrBuffer?1:8);
@@ -494,9 +496,13 @@ void CAsyncProxySocketLayer::OnReceive(int nErrorCode)
       char *pos = strstr(m_pStrBuffer, "\r\n");
       if (pos)
       {
-        CString status;
-        status.Format(L"HTTP proxy response: %s", (LPCWSTR)CString(m_pStrBuffer));
-        LogSocketMessageRaw(FZ_LOG_PROGRESS, status);
+        if (!responseLogged)
+        {
+          CString status;
+          status.Format(L"HTTP proxy response: %s", UnicodeString(m_pStrBuffer, pos - m_pStrBuffer).c_str());
+          LogSocketMessageRaw(FZ_LOG_PROGRESS, status);
+          responseLogged = true;
+        }
         char *pos2 = strstr(m_pStrBuffer, " ");
         if (!pos2 || *(pos2+1)!='2' || pos2>pos)
         {
@@ -509,6 +515,9 @@ void CAsyncProxySocketLayer::OnReceive(int nErrorCode)
       }
       if (strlen(m_pStrBuffer)>3 && !memcmp(m_pStrBuffer+strlen(m_pStrBuffer)-4, "\r\n\r\n", 4)) //End of the HTTP header
       {
+        CString status;
+        status.Format(L"HTTP proxy headers: %s", UnicodeString(pos).c_str());
+        LogSocketMessageRaw(FZ_LOG_PROGRESS, status);
         ConnectionEstablished();
         return;
       }
@@ -686,7 +695,7 @@ void CAsyncProxySocketLayer::OnConnect(int nErrorCode)
       int len=9;
       command[0]=4;
       command[1]=(m_nProxyOpID==PROXYOP_CONNECT)?1:2; //CONNECT or BIND request
-      memcpy(&command[2],&m_nProxyPeerPort,2); //Copy target address
+      libmemcpy_memcpy(&command[2],&m_nProxyPeerPort,2); //Copy target address
       if (!m_nProxyPeerIp || m_ProxyData.nProxyType==PROXYTYPE_SOCKS4A)
       {
         DebugAssert(m_ProxyData.nProxyType==PROXYTYPE_SOCKS4A);
@@ -701,7 +710,7 @@ void CAsyncProxySocketLayer::OnConnect(int nErrorCode)
         len+=(int)strlen(lpszAscii)+1;
       }
       else
-        memcpy(&command[4],&m_nProxyPeerIp,4);
+        libmemcpy_memcpy(&command[4],&m_nProxyPeerIp,4);
       int res=SendNext(command,len); //Send command
       nb_free(command);
       int nErrorCode=::WSAGetLastError();
@@ -782,9 +791,9 @@ void CAsyncProxySocketLayer::OnConnect(int nErrorCode)
       USES_CONVERSION;
       CString status;
       status.Format(L"HTTP proxy command: %s", (LPCWSTR)CString(str));
+      LogSocketMessageRaw(FZ_LOG_PROGRESS, status);
       int numsent=SendNext(str, (int)strlen(str) );
       int nErrorCode=::WSAGetLastError();
-      LogSocketMessageRaw(FZ_LOG_PROGRESS, status);
       if (numsent==SOCKET_ERROR)//nErrorCode!=WSAEWOULDBLOCK)
       {
         ConnectionFailed((m_nProxyOpID == PROXYOP_CONNECT) && (nErrorCode == WSAEWOULDBLOCK) ? WSAECONNABORTED : nErrorCode);

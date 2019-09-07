@@ -10,8 +10,9 @@ class TinyLogImpl
 {
   CUSTOM_MEM_ALLOCATION_IMPL
 public:
-  explicit TinyLogImpl(FILE * file);
-  ~TinyLogImpl();
+  TinyLogImpl() = delete;
+  explicit TinyLogImpl(FILE * file) noexcept;
+  ~TinyLogImpl() noexcept;
 
   void SetLogLevel(Utils::LogLevel e_log_level);
   Utils::LogLevel GetLogLevel() const;
@@ -20,26 +21,25 @@ public:
   void Close();
 
 private:
-  TinyLogImpl(TinyLogImpl const &);
-  void operator=(TinyLogImpl const &);
+  TinyLogImpl(TinyLogImpl const &) = delete;
+  void operator=(TinyLogImpl const &) = delete;
 
 private:
   static DWORD WINAPI ThreadFunc(void *pt_arg);
   int32_t MainLoop();
 
-  LogStream *pt_logstream_;
-  Utils::LogLevel e_log_level_;
+  std::unique_ptr<LogStream> pt_logstream_;
+  Utils::LogLevel e_log_level_{};
 
-  pthread_t thrd_;
-  DWORD ThreadId_;
+  pthread_t thrd_{INVALID_HANDLE_VALUE};
+  DWORD ThreadId_{0};
   pthread_mutex_t mutex_;
   pthread_cond_t cond_;
-  bool b_run_;
-  bool already_swap_;
+  bool b_run_{false};
+  bool already_swap_{false};
 };
 
-TinyLogImpl::TinyLogImpl(FILE *file) :
-  pt_logstream_(nullptr),
+TinyLogImpl::TinyLogImpl(FILE *file) noexcept :
   e_log_level_(Utils::LEVEL_INFO),
   thrd_(INVALID_HANDLE_VALUE),
   ThreadId_(0),
@@ -48,7 +48,7 @@ TinyLogImpl::TinyLogImpl(FILE *file) :
 {
   pthread_mutex_init(&mutex_, nullptr);
   pthread_cond_init(&cond_, nullptr);
-  pt_logstream_ = new LogStream(file, mutex_, cond_, already_swap_);
+  pt_logstream_ = std::make_unique<LogStream>(file, mutex_, cond_, already_swap_);
   void *Parameter = this;
 
   thrd_ = ::CreateThread(nullptr,
@@ -58,7 +58,7 @@ TinyLogImpl::TinyLogImpl(FILE *file) :
   0, &ThreadId_);
 }
 
-TinyLogImpl::~TinyLogImpl()
+TinyLogImpl::~TinyLogImpl() noexcept
 {
   Close();
   pthread_cond_destroy(&cond_);
@@ -86,8 +86,7 @@ void TinyLogImpl::Close()
   {
     b_run_ = false;
     pthread_join(thrd_, nullptr);
-    delete pt_logstream_;
-    pt_logstream_ = nullptr;
+    pt_logstream_.reset();
   }
 }
 
@@ -131,14 +130,14 @@ int32_t TinyLogImpl::MainLoop()
 }
 
 
-TinyLog::TinyLog(FILE *file) :
-  impl_(new TinyLogImpl(file))
+TinyLog::TinyLog(FILE *file) noexcept :
+  impl_(std::make_unique<TinyLogImpl>(file))
 {
+  assert(file != nullptr);
 }
 
-TinyLog::~TinyLog()
+TinyLog::~TinyLog() noexcept
 {
-  delete impl_;
 }
 
 void TinyLog::SetLogLevel(Utils::LogLevel e_log_level)

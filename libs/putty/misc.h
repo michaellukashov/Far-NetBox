@@ -5,11 +5,16 @@
 #ifndef PUTTY_MISC_H
 #define PUTTY_MISC_H
 
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
 #include "puttymem.h"
 
-#include <stdint.h>		       /* for int64_t * */
-#include <stdio.h>		       /* for FILE * */
-#include <stdarg.h>		       /* for va_list */
+#include <stdio.h>           /* for FILE * */
+#include <stdarg.h>          /* for va_list */
 #include <time.h>                      /* for struct tm */
 
 #ifndef FALSE
@@ -22,33 +27,30 @@
 typedef struct Filename Filename;
 typedef struct FontSpec FontSpec;
 
-#ifdef MPEXT
-int64_t parse_blocksize64(const char *bs);
-#endif
-unsigned long parse_blocksize(const char *bs);
-char ctrlparse(char *s, char **next);
+unsigned long parse_blocksize(const char* bs);
+char ctrlparse(char* s, char** next);
 
-size_t host_strcspn(const char *s, const char *set);
-char *host_strchr(const char *s, int c);
-char *host_strrchr(const char *s, int c);
-char *host_strduptrim(const char *s);
+size_t host_strcspn(const char* s, const char* set);
+char* host_strchr(const char* s, int c);
+char* host_strrchr(const char* s, int c);
+char* host_strduptrim(const char* s);
 
-char *dupstr(const char *s);
-char *dupcat(const char *s1, ...);
-char *dupprintf(const char *fmt, ...)
+char* dupstr(const char* s);
+char* dupcat(const char* s1, ...);
+char* dupprintf(const char* fmt, ...)
 #ifdef __GNUC__
-    __attribute__ ((format (printf, 1, 2)))
+__attribute__ ((format (printf, 1, 2)))
 #endif
-    ;
-char *dupvprintf(const char *fmt, va_list ap);
-void burnstr(char *string);
+;
+char* dupvprintf(const char* fmt, va_list ap);
+void burnstr(char* string);
 typedef struct strbuf strbuf;
-strbuf *strbuf_new(void);
-void strbuf_free(strbuf *buf);
-char *strbuf_str(strbuf *buf);         /* does not free buf */
-char *strbuf_to_str(strbuf *buf); /* does free buf, but you must free result */
-void strbuf_catf(strbuf *buf, const char *fmt, ...);
-void strbuf_catfv(strbuf *buf, const char *fmt, va_list ap);
+strbuf* strbuf_new(void);
+void strbuf_free(strbuf* buf);
+char* strbuf_str(strbuf* buf);         /* does not free buf */
+char* strbuf_to_str(strbuf* buf); /* does free buf, but you must free result */
+void strbuf_catf(strbuf* buf, const char* fmt, ...);
+void strbuf_catfv(strbuf* buf, const char* fmt, va_list ap);
 
 /* String-to-Unicode converters that auto-allocate the destination and
  * work around the rather deficient interface of mb_to_wc.
@@ -56,38 +58,39 @@ void strbuf_catfv(strbuf *buf, const char *fmt, va_list ap);
  * These actually live in miscucs.c, not misc.c (the distinction being
  * that the former is only linked into tools that also have the main
  * Unicode support). */
-wchar_t *dup_mb_to_wc_c(int codepage, int flags, const char *string, int len);
-wchar_t *dup_mb_to_wc(int codepage, int flags, const char *string);
+wchar_t* dup_mb_to_wc_c(int codepage, int flags, const char* string, int len);
+wchar_t* dup_mb_to_wc(int codepage, int flags, const char* string);
 
 int toint(unsigned);
 
-char *fgetline(FILE *fp);
-char *chomp(char *str);
-int strstartswith(const char *s, const char *t);
-int strendswith(const char *s, const char *t);
+char* fgetline(FILE* fp);
+char* chomp(char* str);
+int strstartswith(const char* s, const char* t);
+int strendswith(const char* s, const char* t);
 
-void base64_encode_atom(const unsigned char *data, int n, char *out);
-int base64_decode_atom(const char *atom, unsigned char *out);
+void base64_encode_atom(const unsigned char* data, int n, char* out);
+int base64_decode_atom(const char* atom, unsigned char* out);
 
 struct bufchain_granule;
-typedef struct bufchain_tag {
-    struct bufchain_granule *head, *tail;
-    int buffersize;		       /* current amount of buffered data */
-} bufchain;
+struct bufchain_tag
+{
+  struct bufchain_granule* head, *tail;
+  int buffersize;          /* current amount of buffered data */
+};
 #ifndef BUFCHAIN_TYPEDEF
 typedef struct bufchain_tag bufchain;  /* rest of declaration in misc.c */
 #define BUFCHAIN_TYPEDEF
 #endif
 
-void bufchain_init(bufchain *ch);
-void bufchain_clear(bufchain *ch);
-int bufchain_size(bufchain *ch);
-void bufchain_add(bufchain *ch, const void *data, size_t len);
-void bufchain_prefix(bufchain *ch, void **data, int *len);
-void bufchain_consume(bufchain *ch, int len);
-void bufchain_fetch(bufchain *ch, void *data, int len);
+void bufchain_init(bufchain* ch);
+void bufchain_clear(bufchain* ch);
+int bufchain_size(bufchain* ch);
+void bufchain_add(bufchain* ch, const void* data, int len);
+void bufchain_prefix(bufchain* ch, void** data, int* len);
+void bufchain_consume(bufchain* ch, int len);
+void bufchain_fetch(bufchain* ch, void* data, int len);
 
-int validate_manual_hostkey(char *key);
+int validate_manual_hostkey(char* key);
 
 struct tm ltime(void);
 
@@ -96,14 +99,14 @@ struct tm ltime(void);
  * attempts (by fiddly use of volatile) to inhibit the compiler from
  * over-cleverly trying to optimise the memset away because it knows
  * the variable is going out of scope. */
-void smemclr(void *b, size_t len);
+void smemclr(void* b, size_t len);
 
 /* Compare two fixed-length chunks of memory for equality, without
  * data-dependent control flow (so an attacker with a very accurate
  * stopwatch can't try to guess where the first mismatching byte was).
  * Returns 0 for mismatch or 1 for equality (unlike memcmp), hinted at
  * by the 'eq' in the name. */
-int smemeq(const void *av, const void *bv, size_t len);
+int smemeq(const void* av, const void* bv, size_t len);
 
 /* Extracts an SSH-marshalled string from the start of *data. If
  * successful (*datalen is not too small), advances data/datalen past
@@ -114,15 +117,15 @@ int smemeq(const void *av, const void *bv, size_t len);
  * Treat it as if it was a family of two functions, one returning a
  * non-const string given a non-const pointer, and one taking and
  * returning const. */
-void *get_ssh_string(int *datalen, const void **data, int *stringlen);
+void* get_ssh_string(int* datalen, const void** data, int* stringlen);
 /* Extracts an SSH uint32, similarly. Returns TRUE on success, and
  * leaves the extracted value in *ret. */
-int get_ssh_uint32(int *datalen, const void **data, unsigned *ret);
+int get_ssh_uint32(int* datalen, const void** data, unsigned* ret);
 /* Given a not-necessarily-zero-terminated string in (length,data)
  * form, check if it equals an ordinary C zero-terminated string. */
-int match_ssh_id(int stringlen, const void *string, const char *id);
+int match_ssh_id(int stringlen, const void* string, const char* id);
 
-char *buildinfo(const char *newline);
+char* buildinfo(const char* newline);
 
 /*
  * Debugging functions.
@@ -138,8 +141,8 @@ char *buildinfo(const char *newline);
  */
 
 #ifdef DEBUG
-void debug_printf(const char *fmt, ...);
-void debug_memdump(const void *buf, int len, int L);
+void debug_printf(const char* fmt, ...);
+void debug_memdump(const void* buf, int len, int L);
 #define debug(x) (debug_printf x)
 #define dmemdump(buf,len) debug_memdump (buf, len, 0);
 #define dmemdumpl(buf,len) debug_memdump (buf, len, 1);
@@ -153,13 +156,11 @@ void debug_memdump(const void *buf, int len, int L);
 #define lenof(x) ( (sizeof((x))) / (sizeof(*(x))))
 #endif
 
-#ifndef MPEXT
 #ifndef min
 #define min(x,y) ( (x) < (y) ? (x) : (y) )
 #endif
 #ifndef max
 #define max(x,y) ( (x) > (y) ? (x) : (y) )
-#endif
 #endif
 
 #define GET_32BIT_LSB_FIRST(cp) \

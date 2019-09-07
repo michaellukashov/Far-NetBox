@@ -1356,11 +1356,8 @@ static SOCKET do_bind(SOCKET fd, int peer_family,
 #if defined(HAVE_SETSOCKOPT) && defined(SO_REUSEADDR) && defined(SOL_SOCKET)
     {
         int flag = 1;
-        int value = NE_BUFSIZ;
 
-        (void) setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, (const char *)&flag, sizeof(flag));
-        (void) setsockopt(fd, SOL_SOCKET, SO_SNDBUF, (const char *)&value, sizeof(value));
-        (void) setsockopt(fd, SOL_SOCKET, SO_KEEPALIVE, (void *)&flag, sizeof(flag));
+        (void) setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, (const char*)&flag, sizeof flag);
         /* An error here is not fatal, so ignore it. */
     }
 #endif        
@@ -1480,7 +1477,7 @@ int ne_sock_connect(ne_socket *sock,
 #if defined(HAVE_SETSOCKOPT) && (defined(TCP_NODELAY) || defined(WIN32))
     { /* Disable the Nagle algorithm. */
         int flag = 1;
-        setsockopt(fd, IPPROTO_TCP, TCP_NODELAY, (const char *)&flag, sizeof(flag));
+        setsockopt(fd, IPPROTO_TCP, TCP_NODELAY, (const char*)&flag, sizeof flag);
     }
 #endif
     
@@ -1709,10 +1706,7 @@ int ne_sock_accept_ssl(ne_socket *sock, ne_ssl_context *ctx)
 
 #if defined(HAVE_OPENSSL)
     ssl = SSL_new(ctx->ctx);
-    if (!ssl) {
-        return error_ossl(sock, -1);
-    }
-
+    
     SSL_set_fd(ssl, (int)sock->fd);
 
     sock->ssl = ssl;
@@ -1809,11 +1803,6 @@ int ne_sock_connect_ssl(ne_socket *sock, ne_ssl_context *ctx, void *userdata)
     gnutls_set_default_priority(sock->ssl);
     gnutls_session_set_ptr(sock->ssl, userdata);
     gnutls_credentials_set(sock->ssl, GNUTLS_CRD_CERTIFICATE, ctx->cred);
-
-#ifdef HAVE_GNUTLS_SIGN_CALLBACK_SET
-    if (ctx->sign_func)
-        gnutls_sign_callback_set(sock->ssl, ctx->sign_func, ctx->sign_data);    
-#endif
 
     if (ctx->hostname) {
         gnutls_server_name_set(sock->ssl, GNUTLS_NAME_DNS, ctx->hostname,

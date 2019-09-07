@@ -1,6 +1,6 @@
-
+//---------------------------------------------------------------------------
 #pragma once
-
+//---------------------------------------------------------------------------
 /*This class parses the directory listing returned from the server. These formats are supported:
 -rw-r--r--   1 root     other        531 Jan 29 03:26 README\r\n
 dr-xr-xr-x   2 root     other        512 Apr  8  1994 etc\r\n
@@ -23,10 +23,11 @@ CII-MANUAL.TEX;1  213/216  29-JAN-1996 03:33:12  [ANONYMOU,ANONYMOUS]   (RWED,RW
 Multiple spaces are ignored (except within filenames), a single LF character at the end is also supported as well as multiple
 CRLF pairs and other variants.
 */
-
+//---------------------------------------------------------------------------
 #include "ApiLog.h"
 #include "FzApiStructures.h"
-
+#include "FileZillaApi.h"
+//---------------------------------------------------------------------------
 class CFtpListResult : public CApiLog
 {
 public:
@@ -38,7 +39,7 @@ public:
   t_directory::t_direntry * getList(int & num, bool mlst);
 
 private:
-  typedef rde::list<t_directory::t_direntry> tEntryList;
+  typedef nb::list_t<t_directory::t_direntry> tEntryList;
   tEntryList m_EntryList;
 
   BOOL parseLine(const char * lineToParse, const int linelen, t_directory::t_direntry & direntry, int & nFTPServerType, bool mlst);
@@ -72,15 +73,15 @@ private:
     t_list * next;
   } * listhead, * curpos, * m_curlistaddpos;
 
-  typedef rde::list<int> tTempData;
+  typedef nb::list_t<int> tTempData;
   tTempData m_TempData;
 
   // Month names map
   rde::map<CString, int> m_MonthNamesMap;
 
 protected:
-  bool * m_bUTF8;
-  int * m_nCodePage;
+  bool * m_bUTF8{nullptr};
+  int * m_nCodePage{nullptr};
   void copyStr(CString & target, int pos, const char * source, int len, bool mayInvalidateUTF8 = false);
   const char * strnchr(const char * str, int len, char c) const;
   const char * strnstr(const char * str, int len, const char * c) const;
@@ -88,6 +89,7 @@ protected:
   void AddLine(t_directory::t_direntry & direntry);
   char * GetLine();
   bool IsNumeric(const char * str, int len) const;
-  char * m_prevline;
-  char * m_curline;
+  char * m_prevline{nullptr};
+  char * m_curline{nullptr};
 };
+//---------------------------------------------------------------------------

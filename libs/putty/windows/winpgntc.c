@@ -17,106 +17,124 @@
 
 int agent_exists(void)
 {
-    HWND hwnd;
-    hwnd = FindWindow("Pageant", "Pageant");
-    if (!hwnd)
-	return FALSE;
-    else
-	return TRUE;
+  HWND hwnd;
+  hwnd = FindWindow("Pageant", "Pageant");
+  if (!hwnd)
+    return FALSE;
+  else
+    return TRUE;
 }
 
-void agent_cancel_query(agent_pending_query *q)
+void agent_cancel_query(agent_pending_query* q)
 {
-    assert(0 && "Windows agent queries are never asynchronous!");
+  assert(0 && "Windows agent queries are never asynchronous!");
 }
 
-agent_pending_query *agent_query(
-    void *in, int inlen, void **out, int *outlen,
-    void (*callback)(void *, void *, int), void *callback_ctx)
+agent_pending_query* agent_query(
+  void* in, int inlen, void** out, int* outlen,
+  void (*callback)(void*, void*, int), void* callback_ctx)
 {
-    HWND hwnd;
-    char *mapname;
-    HANDLE filemap;
-    unsigned char *p, *ret;
-    int id, retlen;
-    COPYDATASTRUCT cds;
-    SECURITY_ATTRIBUTES sa, *psa;
-    PSECURITY_DESCRIPTOR psd = NULL;
-    PSID usersid = NULL;
+  HWND hwnd;
+  char* mapname;
+  HANDLE filemap;
+  unsigned char* p, *ret;
+  int id, retlen;
+  COPYDATASTRUCT cds;
+  SECURITY_ATTRIBUTES sa, *psa;
+  PSECURITY_DESCRIPTOR psd = NULL;
+  PSID usersid = NULL;
 
-    *out = NULL;
-    *outlen = 0;
+  *out = NULL;
+  *outlen = 0;
 
-    hwnd = FindWindow("Pageant", "Pageant");
-    if (!hwnd)
-	return NULL;		       /* *out == NULL, so failure */
-    mapname = dupprintf("PageantRequest%08x", (unsigned)GetCurrentThreadId());
+  hwnd = FindWindow("Pageant", "Pageant");
+  if (!hwnd)
+    return NULL;           /* *out == NULL, so failure */
+  mapname = dupprintf("PageantRequest%08x", (unsigned)GetCurrentThreadId());
 
-    psa = NULL;
+  psa = NULL;
 #ifndef NO_SECURITY
-    if (got_advapi()) {
-        /*
-         * Make the file mapping we create for communication with
-         * Pageant owned by the user SID rather than the default. This
-         * should make communication between processes with slightly
-         * different contexts more reliable: in particular, command
-         * prompts launched as administrator should still be able to
-         * run PSFTPs which refer back to the owning user's
-         * unprivileged Pageant.
-         */
-        usersid = get_user_sid();
+  if (got_advapi())
+  {
+    /*
+     * Make the file mapping we create for communication with
+     * Pageant owned by the user SID rather than the default. This
+     * should make communication between processes with slightly
+     * different contexts more reliable: in particular, command
+     * prompts launched as administrator should still be able to
+     * run PSFTPs which refer back to the owning user's
+     * unprivileged Pageant.
+     */
+    usersid = get_user_sid();
 
-        if (usersid) {
-            psd = (PSECURITY_DESCRIPTOR)
-                LocalAlloc(LPTR, SECURITY_DESCRIPTOR_MIN_LENGTH);
-            if (psd) {
-                if (p_InitializeSecurityDescriptor
-                    (psd, SECURITY_DESCRIPTOR_REVISION) &&
-                    p_SetSecurityDescriptorOwner(psd, usersid, FALSE)) {
-                    sa.nLength = sizeof(sa);
-                    sa.bInheritHandle = TRUE;
-                    sa.lpSecurityDescriptor = psd;
-                    psa = &sa;
-                } else {
-                    LocalFree(psd);
-                    psd = NULL;
-                }
-            }
+    if (usersid)
+    {
+      psd = (PSECURITY_DESCRIPTOR)
+        LocalAlloc(LPTR, SECURITY_DESCRIPTOR_MIN_LENGTH);
+      if (psd)
+      {
+        if (p_InitializeSecurityDescriptor
+          (psd, SECURITY_DESCRIPTOR_REVISION) &&
+          p_SetSecurityDescriptorOwner(psd, usersid, FALSE))
+        {
+          sa.nLength = sizeof(sa);
+          sa.bInheritHandle = TRUE;
+          sa.lpSecurityDescriptor = psd;
+          psa = &sa;
         }
+        else
+        {
+          LocalFree(psd);
+          psd = NULL;
+        }
+      }
     }
+  }
 #endif /* NO_SECURITY */
 
-    filemap = CreateFileMapping(INVALID_HANDLE_VALUE, psa, PAGE_READWRITE,
-				0, AGENT_MAX_MSGLEN, mapname);
-    if (filemap == NULL || filemap == INVALID_HANDLE_VALUE) {
-        sfree(mapname);
-	return NULL;		       /* *out == NULL, so failure */
-    }
-    p = MapViewOfFile(filemap, FILE_MAP_WRITE, 0, 0, 0);
-    memcpy(p, in, inlen);
-    cds.dwData = AGENT_COPYDATA_ID;
-    cds.cbData = 1 + (DWORD)strlen(mapname);
-    cds.lpData = mapname;
-
-    /*
-     * The user either passed a null callback (indicating that the
-     * query is required to be synchronous) or CreateThread failed.
-     * Either way, we need a synchronous request.
-     */
-    id = (int)SendMessage(hwnd, WM_COPYDATA, (WPARAM) NULL, (LPARAM) &cds);
-    if (id > 0) {
-	retlen = 4 + GET_32BIT(p);
-	ret = snewn(retlen, unsigned char);
-	if (ret) {
-	    memcpy(ret, p, retlen);
-	    *out = ret;
-	    *outlen = retlen;
-	}
-    }
-    UnmapViewOfFile(p);
-    CloseHandle(filemap);
+  filemap = CreateFileMapping(INVALID_HANDLE_VALUE, psa, PAGE_READWRITE,
+      0, AGENT_MAX_MSGLEN, mapname);
+  if (filemap == NULL || filemap == INVALID_HANDLE_VALUE)
+  {
     sfree(mapname);
-    if (psd)
-        LocalFree(psd);
-    return NULL;
+    return NULL;           /* *out == NULL, so failure */
+  }
+  p = MapViewOfFile(filemap, FILE_MAP_WRITE, 0, 0, 0);
+  memcpy(p, in, inlen);
+  cds.dwData = AGENT_COPYDATA_ID;
+  cds.cbData = 1 + strlen(mapname);
+  cds.lpData = mapname;
+
+  /*
+   * The user either passed a null callback (indicating that the
+   * query is required to be synchronous) or CreateThread failed.
+   * Either way, we need a synchronous request.
+   */
+  id = SendMessage(hwnd, WM_COPYDATA, (WPARAM) NULL, (LPARAM) &cds);
+  if (id > 0) {
+        unsigned int length_field = GET_32BIT(p);
+        if (length_field > 0 && length_field <= AGENT_MAX_MSGLEN - 4) {
+	    retlen = length_field + 4;
+	    ret = snewn(retlen, unsigned char);
+      memcpy(ret, p, retlen);
+      *out = ret;
+      *outlen = retlen;
+        } else {
+            /*
+             * If we get here, we received an out-of-range length
+             * field, either without space for a message type code or
+             * overflowing the FileMapping.
+             *
+             * Treat this as if Pageant didn't answer at all - which
+             * actually means we do nothing, and just don't fill in
+             * out and outlen.
+             */
+        }
+  }
+  UnmapViewOfFile(p);
+  CloseHandle(filemap);
+  sfree(mapname);
+  if (psd)
+    LocalFree(psd);
+  return NULL;
 }

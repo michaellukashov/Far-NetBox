@@ -875,10 +875,6 @@ public:
 
 }	// namespace ATL
 
-// Forward declare
-template< typename _CharType = char, class StringIterator = ATL::ChTraitsCRT< _CharType > >
-class StrTraitMFC_DLL;
-
 namespace ATL
 {
 
@@ -888,12 +884,6 @@ template <typename _CharType, class StringTraits>
 struct _MFCDLLTraitsCheck
 {
 	const static bool c_bIsMFCDLLTraits = false;
-};
-
-template<typename _CharType>
-struct _MFCDLLTraitsCheck<_CharType, StrTraitMFC_DLL<_CharType, ATL::ChTraitsCRT< _CharType > > >
-{
-	const static bool c_bIsMFCDLLTraits = true;
 };
 
 }

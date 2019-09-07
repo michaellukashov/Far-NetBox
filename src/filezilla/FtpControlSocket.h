@@ -1,17 +1,17 @@
-
+//---------------------------------------------------------------------------
 #pragma once
-
+//---------------------------------------------------------------------------
 #include "structures.h"
 #include "stdafx.h"
 #include "FileZillaApi.h"
 #include "FileZillaIntf.h"
-
+//---------------------------------------------------------------------------
 class CTransferSocket;
 class CMainThread;
-
+//---------------------------------------------------------------------------
 class CAsyncProxySocketLayer;
 class CMainThread;
-
+//---------------------------------------------------------------------------
 #define CSMODE_NONE             0x0000
 #define CSMODE_CONNECT          0x0001
 #define CSMODE_COMMAND          0x0002
@@ -28,7 +28,7 @@ class CMainThread;
 #define CSMODE_RENAME           0x1000
 #define CSMODE_CHMOD            0x2000
 #define CSMODE_LISTFILE         0x4000
-
+//---------------------------------------------------------------------------
 struct t_transferdata
 {
 CUSTOM_MEM_ALLOCATION_IMPL
@@ -42,7 +42,7 @@ CUSTOM_MEM_ALLOCATION_IMPL
   HANDLE localFileHandle;
   BOOL bResume, bResumeAppend, bType;
 };
-
+//---------------------------------------------------------------------------
 class CFtpControlSocket : public CAsyncSocketEx, public CApiLog
 {
   friend class CTransferSocket;
@@ -119,7 +119,7 @@ protected:
   void CheckForTimeout();
   void SendKeepAliveCommand();
 
-  virtual int OnLayerCallback(rde::list<t_callbackMsg> & callbacks);
+  virtual int OnLayerCallback(nb::list_t<t_callbackMsg> & callbacks);
   void SetFileExistsAction(int nAction, COverwriteRequestData * pData);
   void SetVerifyCertResult(int nResult, t_SslCertData * pData);
   void ResetOperation(int nSuccessful = -1);
@@ -166,11 +166,11 @@ protected:
     int64_t nBytesAvailable;
     int64_t nBytesTransferred;
   };
-  static rde::list<t_ActiveList> m_InstanceList[2];
+  static nb::list_t<t_ActiveList> m_InstanceList[2];
   static CTime m_CurrentTransferTime[2];
   static _int64 m_CurrentTransferLimit[2];
   static CCriticalSection m_SpeedLimitSync;
-  _int64 GetAbleToUDSize(bool & beenWaiting, CTime & curTime, _int64 & curLimit, rde::list<t_ActiveList>::iterator & iter, enum transferDirection direction, int nBufSize);
+  _int64 GetAbleToUDSize(bool & beenWaiting, CTime & curTime, _int64 & curLimit, nb::list_t<t_ActiveList>::iterator & iter, enum transferDirection direction, int nBufSize);
   _int64 GetSpeedLimit(CTime & time, int valType, int valValue);
 
   void SetDirectoryListing(t_directory * pDirectory, bool bSetWorkingDir = true);
@@ -185,7 +185,7 @@ protected:
   CTime m_LastSendTime;
 
   CString m_ServerName;
-  rde::list<CStringA> m_RecvBuffer;
+  nb::list_t<CStringA> m_RecvBuffer;
   CTime m_LastRecvTime;
   class CLogonData;
   class CListData;

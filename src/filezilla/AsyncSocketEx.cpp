@@ -1,15 +1,16 @@
 // CAsyncSocketEx by Tim Kosse (Tim.Kosse@gmx.de)
 //                 Version 1.3 (2003-04-26)
-
+//---------------------------------------------------------------------------
 // Feel free to use this class, as long as you don't claim that you wrote it
 // and this copyright notice stays intact in the source files.
 // If you use this class in commercial applications, please send a short message
 // to tim.kosse@gmx.de
-
+//---------------------------------------------------------------------------
 #include "stdafx.h"
 #include "AsyncSocketEx.h"
 
 #include "AsyncSocketExLayer.h"
+#include "FileZillaApi.h"
 
 #ifndef GWL_USERDATA
 #define GWL_USERDATA        (-21)
@@ -112,7 +113,7 @@ public:
         m_nWindowDataSize=MAX_SOCKETS;
       t_AsyncSocketExWindowData *tmp=m_pAsyncSocketExWindowData;
       m_pAsyncSocketExWindowData = nb::calloc<t_AsyncSocketExWindowData*>(m_nWindowDataSize, sizeof(t_AsyncSocketExWindowData));
-      memcpy(m_pAsyncSocketExWindowData, tmp, nOldWindowDataSize * sizeof(t_AsyncSocketExWindowData));
+      libmemcpy_memcpy(m_pAsyncSocketExWindowData, tmp, nOldWindowDataSize * sizeof(t_AsyncSocketExWindowData));
       memset(m_pAsyncSocketExWindowData+nOldWindowDataSize, 0, (m_nWindowDataSize-nOldWindowDataSize)*sizeof(t_AsyncSocketExWindowData));
       nb_free(tmp);
     }
@@ -159,7 +160,7 @@ public:
   void RemoveLayers(CAsyncSocketEx *pOrigSocket)
   {
     // Remove all layer messages from old socket
-    rde::list<MSG> msgList;
+    nb::list_t<MSG> msgList;
     MSG msg;
     while (PeekMessage(&msg, m_hWnd, WM_USER, WM_USER, PM_REMOVE))
     {
@@ -179,7 +180,7 @@ public:
       msgList.push_back(msg);
     }
 
-    for (rde::list<MSG>::iterator iter = msgList.begin(); iter != msgList.end(); iter++)
+    for (nb::list_t<MSG>::iterator iter = msgList.begin(); iter != msgList.end(); iter++)
     {
       ::PostMessage(m_hWnd, iter->message, iter->wParam, iter->lParam);
     }
@@ -576,7 +577,7 @@ public:
         return 0;
 
       // Process pending callbacks
-      rde::list<t_callbackMsg> tmp;
+      nb::list_t<t_callbackMsg> tmp;
       rde::swap(tmp, pSocket->m_pendingCallbacks);
       pSocket->OnLayerCallback(tmp);
     }
@@ -955,7 +956,7 @@ void CAsyncSocketEx::FreeAsyncSocketExInstance()
   if (!m_pLocalAsyncSocketExThreadData)
     return;
 
-  for (rde::list<CAsyncSocketEx*>::iterator iter = m_pLocalAsyncSocketExThreadData->layerCloseNotify.begin(); iter != m_pLocalAsyncSocketExThreadData->layerCloseNotify.end(); iter++)
+  for (nb::list_t<CAsyncSocketEx*>::iterator iter = m_pLocalAsyncSocketExThreadData->layerCloseNotify.begin(); iter != m_pLocalAsyncSocketExThreadData->layerCloseNotify.end(); iter++)
   {
     if (*iter != this)
       continue;
@@ -1524,7 +1525,7 @@ BOOL CAsyncSocketEx::AddLayer(CAsyncSocketExLayer *pLayer)
 
 void CAsyncSocketEx::RemoveAllLayers()
 {
-  for (rde::list<t_callbackMsg>::iterator iter = m_pendingCallbacks.begin(); iter != m_pendingCallbacks.end(); iter++)
+  for (nb::list_t<t_callbackMsg>::iterator iter = m_pendingCallbacks.begin(); iter != m_pendingCallbacks.end(); iter++)
     nb_free(iter->str);
   m_pendingCallbacks.clear();
 
@@ -1538,9 +1539,9 @@ void CAsyncSocketEx::RemoveAllLayers()
   m_pLocalAsyncSocketExThreadData->m_pHelperWindow->RemoveLayers(this);
 }
 
-int CAsyncSocketEx::OnLayerCallback(rde::list<t_callbackMsg>& callbacks)
+int CAsyncSocketEx::OnLayerCallback(nb::list_t<t_callbackMsg>& callbacks)
 {
-  for (rde::list<t_callbackMsg>::iterator iter = callbacks.begin(); iter != callbacks.end(); iter++)
+  for (nb::list_t<t_callbackMsg>::iterator iter = callbacks.begin(); iter != callbacks.end(); iter++)
   {
     nb_free(iter->str);
   }
@@ -1700,7 +1701,7 @@ void CAsyncSocketEx::AddCallbackNotification(const t_callbackMsg& msg)
 
 void CAsyncSocketEx::ResendCloseNotify()
 {
-  for (rde::list<CAsyncSocketEx*>::iterator iter = m_pLocalAsyncSocketExThreadData->layerCloseNotify.begin(); iter != m_pLocalAsyncSocketExThreadData->layerCloseNotify.end(); iter++)
+  for (nb::list_t<CAsyncSocketEx*>::iterator iter = m_pLocalAsyncSocketExThreadData->layerCloseNotify.begin(); iter != m_pLocalAsyncSocketExThreadData->layerCloseNotify.end(); iter++)
   {
     if (*iter == this)
       return;

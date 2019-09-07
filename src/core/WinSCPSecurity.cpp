@@ -6,10 +6,12 @@
 #include <WinCrypt.h>
 
 #include "WinSCPSecurity.h"
-
-#define PWALG_SIMPLE_INTERNAL 0x00
-#define PWALG_SIMPLE_EXTERNAL 0x01
-
+//---------------------------------------------------------------------------
+__removed #pragma package(smart_init)
+//---------------------------------------------------------------------------
+constexpr uint8_t PWALG_SIMPLE_INTERNAL = 0x00;
+constexpr uint8_t PWALG_SIMPLE_EXTERNAL = 0x01;
+//---------------------------------------------------------------------------
 RawByteString SimpleEncryptChar(uint8_t Ch)
 {
   Ch = static_cast<uint8_t>((~Ch) ^ PWALG_SIMPLE_MAGIC);
@@ -17,21 +19,21 @@ RawByteString SimpleEncryptChar(uint8_t Ch)
     PWALG_SIMPLE_STRING.SubString(((Ch & 0xF0) >> 4) + 1, 1) +
     PWALG_SIMPLE_STRING.SubString(((Ch & 0x0F) >> 0) + 1, 1);
 }
-
+//---------------------------------------------------------------------------
 uint8_t SimpleDecryptNextChar(RawByteString &Str)
 {
   if (Str.Length() > 0)
   {
     uint8_t Result = static_cast<uint8_t>(
-        ~((((PWALG_SIMPLE_STRING.Pos(Str.c_str()[0]) - 1) << 4) +
-            ((PWALG_SIMPLE_STRING.Pos(Str.c_str()[1]) - 1) << 0)) ^ PWALG_SIMPLE_MAGIC));
+      ~((((PWALG_SIMPLE_STRING.Pos(Str.c_str()[0]) - 1) << 4) +
+         ((PWALG_SIMPLE_STRING.Pos(Str.c_str()[1]) - 1) << 0)) ^ PWALG_SIMPLE_MAGIC));
     Str.Delete(1, 2);
     return Result;
   }
   return 0x00;
 }
-
-RawByteString EncryptPassword(UnicodeString UnicodePassword, UnicodeString UnicodeKey, Integer /* Algorithm */)
+//---------------------------------------------------------------------------
+RawByteString EncryptPassword(const UnicodeString UnicodePassword, const UnicodeString UnicodeKey, Integer /* Algorithm */)
 {
   UTF8String Password = UTF8String(UnicodePassword);
   UTF8String Key = UTF8String(UnicodeKey);
@@ -45,7 +47,7 @@ RawByteString EncryptPassword(UnicodeString UnicodePassword, UnicodeString Unico
   }
   Password = Key + Password;
   intptr_t Shift = (Password.Length() < PWALG_SIMPLE_MAXLEN) ?
-    static_cast<uint8_t>(random(PWALG_SIMPLE_MAXLEN - ToInt(Password.Length()))) : 0;
+    static_cast<uint8_t>(random(PWALG_SIMPLE_MAXLEN - nb::ToInt(Password.Length()))) : 0;
   Result += SimpleEncryptChar(static_cast<uint8_t>(PWALG_SIMPLE_FLAG)); // Flag
   Result += SimpleEncryptChar(static_cast<uint8_t>(PWALG_SIMPLE_INTERNAL)); // Dummy
   Result += SimpleEncryptChar(static_cast<uint8_t>(Password.Length()));
@@ -58,8 +60,8 @@ RawByteString EncryptPassword(UnicodeString UnicodePassword, UnicodeString Unico
     Result += SimpleEncryptChar(static_cast<uint8_t>(random(256)));
   return Result;
 }
-
-UnicodeString DecryptPassword(RawByteString Password, UnicodeString UnicodeKey, Integer /*Algorithm*/)
+//---------------------------------------------------------------------------
+UnicodeString DecryptPassword(RawByteString Password, const UnicodeString UnicodeKey, Integer /*Algorithm*/)
 {
   UTF8String Key = UTF8String(UnicodeKey);
   UTF8String Result("");
@@ -74,7 +76,7 @@ UnicodeString DecryptPassword(RawByteString Password, UnicodeString UnicodeKey, 
   }
   else
     Length = Flag;
-  Password.Delete(1, (static_cast<Integer>(SimpleDecryptNextChar(Password)) * 2));
+  Password.Delete(1, nb::ToIntPtr(SimpleDecryptNextChar(Password)) * 2);
   for (uint8_t Index = 0; Index < Length; ++Index)
     Result += static_cast<char>(SimpleDecryptNextChar(Password));
   if (Flag == PWALG_SIMPLE_FLAG)
@@ -86,7 +88,7 @@ UnicodeString DecryptPassword(RawByteString Password, UnicodeString UnicodeKey, 
   }
   return UnicodeString(Result);
 }
-
+//---------------------------------------------------------------------------
 RawByteString SetExternalEncryptedPassword(RawByteString Password)
 {
   RawByteString Result;
@@ -95,7 +97,7 @@ RawByteString SetExternalEncryptedPassword(RawByteString Password)
   Result += UTF8String(BytesToHex(reinterpret_cast<const uint8_t *>(Password.c_str()), Password.Length()));
   return Result;
 }
-
+//---------------------------------------------------------------------------
 bool GetExternalEncryptedPassword(RawByteString Encrypted, RawByteString &Password)
 {
   bool Result =
@@ -107,7 +109,7 @@ bool GetExternalEncryptedPassword(RawByteString Encrypted, RawByteString &Passwo
   }
   return Result;
 }
-
+//---------------------------------------------------------------------------
 bool WindowsValidateCertificate(const uint8_t *Certificate, size_t Len, UnicodeString &Error)
 {
   bool Result = false;
@@ -115,19 +117,19 @@ bool WindowsValidateCertificate(const uint8_t *Certificate, size_t Len, UnicodeS
   // Parse the certificate into a context.
   const CERT_CONTEXT *CertContext =
     CertCreateCertificateContext(
-      X509_ASN_ENCODING | PKCS_7_ASN_ENCODING, Certificate, ToDWord(Len));
+      X509_ASN_ENCODING | PKCS_7_ASN_ENCODING, Certificate, nb::ToDWord(Len));
 
   if (CertContext != nullptr)
   {
     CERT_CHAIN_PARA ChainPara;
     // Retrieve the certificate chain of the certificate
     // (a certificate without a valid root does not have a chain).
-    ClearStruct(ChainPara);
+    nb::ClearStruct(ChainPara);
     ChainPara.cbSize = sizeof(ChainPara);
 
     CERT_CHAIN_ENGINE_CONFIG ChainConfig;
 
-    ClearStruct(ChainConfig);
+    nb::ClearStruct(ChainConfig);
     /*const size_t ChainConfigSize =
       reinterpret_cast<const char *>(&ChainConfig.CycleDetectionModulus) + sizeof(ChainConfig.CycleDetectionModulus) -
       reinterpret_cast<const char *>(&ChainConfig);
@@ -153,9 +155,9 @@ bool WindowsValidateCertificate(const uint8_t *Certificate, size_t Len, UnicodeS
     {
       const CERT_CHAIN_CONTEXT *ChainContext = nullptr;
       if (CertGetCertificateChain(ChainEngine, CertContext, nullptr, nullptr, &ChainPara,
-          CERT_CHAIN_CACHE_END_CERT |
-          CERT_CHAIN_REVOCATION_CHECK_CHAIN_EXCLUDE_ROOT,
-          nullptr, &ChainContext))
+            CERT_CHAIN_CACHE_END_CERT |
+            CERT_CHAIN_REVOCATION_CHECK_CHAIN_EXCLUDE_ROOT,
+            nullptr, &ChainContext))
       {
         CERT_CHAIN_POLICY_PARA PolicyPara;
 
@@ -167,13 +169,14 @@ bool WindowsValidateCertificate(const uint8_t *Certificate, size_t Len, UnicodeS
         PolicyStatus.cbSize = sizeof(PolicyStatus);
 
         if (CertVerifyCertificateChainPolicy(CERT_CHAIN_POLICY_SSL,
-            ChainContext, &PolicyPara, &PolicyStatus))
+              ChainContext, &PolicyPara, &PolicyStatus))
         {
           // Windows thinks the certificate is valid.
           Result = (PolicyStatus.dwError == S_OK);
           if (!Result)
           {
-            Error = FORMAT("Error: %x, Chain index: %d, Element index: %d", PolicyStatus.dwError, PolicyStatus.lChainIndex, PolicyStatus.lElementIndex);
+            Error = FORMAT("Error: %x, Chain index: %d, Element index: %d",
+               PolicyStatus.dwError, PolicyStatus.lChainIndex, PolicyStatus.lElementIndex);
           }
         }
 
@@ -185,4 +188,4 @@ bool WindowsValidateCertificate(const uint8_t *Certificate, size_t Len, UnicodeS
   }
   return Result;
 }
-
+//---------------------------------------------------------------------------

@@ -6,55 +6,41 @@
 #include <Global.h>
 #include <Exceptions.h>
 
+//---------------------------------------------------------------------------
+#if 0
+#define EXCEPTION throw ExtException(nullptr, L"")
+#define THROWOSIFFALSE(C) { if (!(C)) RaiseLastOSError(); }
+#define SAFE_DESTROY_EX(CLASS, OBJ) { CLASS * PObj = OBJ; OBJ = nullptr; delete PObj; }
+#define SAFE_DESTROY(OBJ) SAFE_DESTROY_EX(TObject, OBJ)
+#define NULL_TERMINATE(S) S[LENOF(S) - 1] = L'\0'
+#define ASCOPY(dest, source) \
+  { \
+    AnsiString CopyBuf = source; \
+    strncpy(dest, CopyBuf.c_str(), LENOF(dest)); \
+    dest[LENOF(dest)-1] = '\0'; \
+  }
+#define SWAP(TYPE, FIRST, SECOND) \
+  { TYPE __Backup = FIRST; FIRST = SECOND; SECOND = __Backup; }
+#endif // if 0
+//---------------------------------------------------------------------------
+#define PARENTDIRECTORY L".."
+#define THISDIRECTORY L"."
+//---------------------------------------------------------------------------
 extern const wchar_t EngShortMonthNames[12][4];
+__removed extern const char Bom[3];
 #define CONST_BOM "\xEF\xBB\xBF"
 extern const wchar_t TokenPrefix;
 extern const wchar_t NoReplacement;
 extern const wchar_t TokenReplacement;
-extern const UnicodeString LocalInvalidChars;
-extern const UnicodeString PasswordMask;
-extern const UnicodeString Ellipsis;
-
-#define LOCAL_INVALID_CHARS "/\\:*?\"<>|"
-#define PASSWORD_MASK "***"
-#define sLineBreak L"\n"
-
-#if 1
-// Order of the values also define order of the buttons/answers on the prompts
-// MessageDlg relies on these to be <= 0x0000FFFF
-const uint32_t qaYes      = 0x00000001;
-// MessageDlg relies that answer do not conflict with mrCancel (=0x2)
-const uint32_t qaNo       = 0x00000004;
-const uint32_t qaOK       = 0x00000008;
-const uint32_t qaCancel   = 0x00000010;
-const uint32_t qaYesToAll = 0x00000020;
-const uint32_t qaNoToAll  = 0x00000040;
-const uint32_t qaAbort    = 0x00000080;
-const uint32_t qaRetry    = 0x00000100;
-const uint32_t qaIgnore   = 0x00000200;
-const uint32_t qaSkip     = 0x00000400;
-const uint32_t qaAll      = 0x00000800;
-const uint32_t qaHelp     = 0x00001000;
-const uint32_t qaReport   = 0x00002000;
-
-const uint32_t qaFirst = qaYes;
-const uint32_t qaLast  = qaReport;
-
-const uint32_t qaNeverAskAgain = 0x00010000;
-
-const intptr_t qpFatalAbort           = 0x01;
-const intptr_t qpNeverAskAgainCheck   = 0x02;
-const intptr_t qpAllowContinueOnError = 0x04;
-const intptr_t qpIgnoreAbort          = 0x08;
-const intptr_t qpWaitInBatch          = 0x10;
-#endif // #if 1
-
-inline void ThrowExtException() { throw ExtException(static_cast<Exception *>(nullptr), UnicodeString(L"")); }
-
-extern const UnicodeString HttpProtocol;
-extern const UnicodeString HttpsProtocol;
-extern const UnicodeString ProtocolSeparator;
-
+extern UnicodeString LocalInvalidChars;
+extern UnicodeString PasswordMask;
+extern UnicodeString Ellipsis;
+extern UnicodeString EmptyString;
+//---------------------------------------------------------------------------
+extern UnicodeString HttpProtocol;
+extern UnicodeString HttpsProtocol;
+extern UnicodeString ProtocolSeparator;
+//---------------------------------------------------------------------------
 NB_CORE_EXPORT UnicodeString ReplaceChar(UnicodeString Str, wchar_t A, wchar_t B);
 NB_CORE_EXPORT UnicodeString DeleteChar(UnicodeString Str, wchar_t C);
 NB_CORE_EXPORT void PackStr(UnicodeString &Str);
@@ -63,6 +49,7 @@ NB_CORE_EXPORT void PackStr(AnsiString &Str);
 NB_CORE_EXPORT void Shred(UnicodeString &Str);
 NB_CORE_EXPORT void Shred(UTF8String &Str);
 NB_CORE_EXPORT void Shred(AnsiString &Str);
+NB_CORE_EXPORT void Shred(RawByteString &Str);
 NB_CORE_EXPORT UnicodeString AnsiToString(RawByteString S);
 NB_CORE_EXPORT UnicodeString AnsiToString(const char *S, size_t Len);
 NB_CORE_EXPORT UnicodeString MakeValidFileName(UnicodeString AFileName);
@@ -85,6 +72,7 @@ NB_CORE_EXPORT UnicodeString RemoveMainInstructionsTag(UnicodeString S);
 NB_CORE_EXPORT UnicodeString UnformatMessage(UnicodeString S);
 NB_CORE_EXPORT UnicodeString RemoveInteractiveMsgTag(UnicodeString S);
 NB_CORE_EXPORT UnicodeString RemoveEmptyLines(UnicodeString S);
+NB_CORE_EXPORT UnicodeString NormalizeString(UnicodeString S);
 NB_CORE_EXPORT bool IsNumber(UnicodeString Str);
 NB_CORE_EXPORT UnicodeString GetSystemTemporaryDirectory();
 NB_CORE_EXPORT UnicodeString GetShellFolderPath(intptr_t CSIdl);
@@ -93,26 +81,27 @@ NB_CORE_EXPORT UnicodeString GetDesktopFolder();
 NB_CORE_EXPORT UnicodeString StripPathQuotes(UnicodeString APath);
 NB_CORE_EXPORT UnicodeString AddQuotes(UnicodeString AStr);
 NB_CORE_EXPORT UnicodeString AddPathQuotes(UnicodeString APath);
-NB_CORE_EXPORT void SplitCommand(UnicodeString Command, UnicodeString &Program,
+NB_CORE_EXPORT void SplitCommand(UnicodeString ACommand, UnicodeString &Program,
   UnicodeString &Params, UnicodeString &Dir);
 NB_CORE_EXPORT UnicodeString ValidLocalFileName(UnicodeString AFileName);
 NB_CORE_EXPORT UnicodeString ValidLocalFileName(
   UnicodeString AFileName, wchar_t AInvalidCharsReplacement,
   UnicodeString ATokenizibleChars, UnicodeString ALocalInvalidChars);
-NB_CORE_EXPORT UnicodeString ExtractProgram(UnicodeString Command);
-NB_CORE_EXPORT UnicodeString ExtractProgramName(UnicodeString Command);
-NB_CORE_EXPORT UnicodeString FormatCommand(UnicodeString Program, UnicodeString AParams);
-NB_CORE_EXPORT UnicodeString ExpandFileNameCommand(UnicodeString Command,
+NB_CORE_EXPORT UnicodeString ExtractProgram(UnicodeString ACommand);
+NB_CORE_EXPORT UnicodeString ExtractProgramName(UnicodeString ACommand);
+NB_CORE_EXPORT UnicodeString FormatCommand(UnicodeString AProgram, UnicodeString AParams);
+NB_CORE_EXPORT UnicodeString ExpandFileNameCommand(UnicodeString ACommand,
   UnicodeString AFileName);
-NB_CORE_EXPORT bool CompareFileName(UnicodeString Path1, UnicodeString Path2);
-NB_CORE_EXPORT bool ComparePaths(UnicodeString APath1, UnicodeString APath2);
-NB_CORE_EXPORT void ReformatFileNameCommand(UnicodeString &Command);
+NB_CORE_EXPORT void ReformatFileNameCommand(UnicodeString &ACommand);
 NB_CORE_EXPORT UnicodeString EscapeParam(UnicodeString AParam);
 NB_CORE_EXPORT UnicodeString EscapePuttyCommandParam(UnicodeString AParam);
+NB_CORE_EXPORT UnicodeString StringsToParams(TStrings * Strings);
 NB_CORE_EXPORT UnicodeString ExpandEnvironmentVariables(UnicodeString Str);
 NB_CORE_EXPORT bool SamePaths(UnicodeString APath1, UnicodeString APath2);
 NB_CORE_EXPORT bool IsPathToSameFile(UnicodeString APath1, UnicodeString APath2);
-NB_CORE_EXPORT intptr_t CompareLogicalText(UnicodeString S1, UnicodeString S2);
+NB_CORE_EXPORT intptr_t CompareLogicalText(
+  UnicodeString S1, UnicodeString S2, bool NaturalOrderNumericalSorting);
+NB_CORE_EXPORT bool ContainsTextSemiCaseSensitive(UnicodeString Text, UnicodeString SubText);
 NB_CORE_EXPORT bool IsReservedName(UnicodeString AFileName);
 NB_CORE_EXPORT UnicodeString ApiPath(UnicodeString APath);
 NB_CORE_EXPORT UnicodeString DisplayableStr(RawByteString Str);
@@ -128,16 +117,16 @@ NB_CORE_EXPORT bool IsLetter(wchar_t Ch);
 NB_CORE_EXPORT bool IsDigit(wchar_t Ch);
 NB_CORE_EXPORT bool IsHex(wchar_t Ch);
 NB_CORE_EXPORT UnicodeString DecodeUrlChars(UnicodeString S);
-NB_CORE_EXPORT UnicodeString EncodeUrlString(UnicodeString S);
+NB_CORE_EXPORT UnicodeString EncodeUrlString(UnicodeString S, UnicodeString DoNotEncode = UnicodeString());
 NB_CORE_EXPORT UnicodeString EncodeUrlPath(UnicodeString S);
 NB_CORE_EXPORT UnicodeString AppendUrlParams(UnicodeString AURL, UnicodeString Params);
 NB_CORE_EXPORT UnicodeString ExtractFileNameFromUrl(UnicodeString Url);
 NB_CORE_EXPORT bool RecursiveDeleteFile(UnicodeString AFileName, bool ToRecycleBin);
-NB_CORE_EXPORT void RecursiveDeleteFileChecked(UnicodeString AFileName, bool ToRecycleBin);
+NB_CORE_EXPORT intptr_t RecursiveDeleteFileChecked(UnicodeString AFileName, bool ToRecycleBin);
 NB_CORE_EXPORT void DeleteFileChecked(UnicodeString AFileName);
-NB_CORE_EXPORT uintptr_t CancelAnswer(uintptr_t Answers);
-NB_CORE_EXPORT uintptr_t AbortAnswer(uintptr_t Answers);
-NB_CORE_EXPORT uintptr_t ContinueAnswer(uintptr_t Answers);
+NB_CORE_EXPORT uint32_t CancelAnswer(uint32_t Answers);
+NB_CORE_EXPORT uint32_t AbortAnswer(uint32_t Answers);
+NB_CORE_EXPORT uint32_t ContinueAnswer(uint32_t Answers);
 NB_CORE_EXPORT UnicodeString LoadStr(intptr_t Ident, uintptr_t MaxLength = 0);
 NB_CORE_EXPORT UnicodeString LoadStrFrom(HINSTANCE Module, intptr_t Ident);
 NB_CORE_EXPORT UnicodeString LoadStrPart(intptr_t Ident, intptr_t Part);
@@ -152,19 +141,23 @@ NB_CORE_EXPORT bool IsWin7();
 NB_CORE_EXPORT bool IsWin8();
 NB_CORE_EXPORT bool IsWin10();
 NB_CORE_EXPORT bool IsWine();
+NB_CORE_EXPORT bool IsUWP();
+__removed TLibModule * FindModule(void * Instance);
 NB_CORE_EXPORT int64_t Round(double Number);
 NB_CORE_EXPORT bool TryRelativeStrToDateTime(UnicodeString AStr, TDateTime &DateTime, bool Add);
-NB_CORE_EXPORT bool TryStrToSize(UnicodeString SizeStr, int64_t &Size);
-NB_CORE_EXPORT UnicodeString SizeToStr(int64_t Size);
+NB_CORE_EXPORT bool TryStrToDateTimeStandard(UnicodeString S, TDateTime &Value);
+NB_CORE_EXPORT bool TryStrToSize(UnicodeString ASizeStr, int64_t &ASize);
+NB_CORE_EXPORT UnicodeString SizeToStr(int64_t ASize);
 NB_CORE_EXPORT LCID GetDefaultLCID();
 NB_CORE_EXPORT UnicodeString DefaultEncodingName();
 NB_CORE_EXPORT UnicodeString WindowsProductName();
 NB_CORE_EXPORT bool GetWindowsProductType(DWORD &Type);
+NB_CORE_EXPORT int GetWindowsBuild();
 NB_CORE_EXPORT UnicodeString WindowsVersion();
 NB_CORE_EXPORT UnicodeString WindowsVersionLong();
 NB_CORE_EXPORT bool IsDirectoryWriteable(UnicodeString APath);
 NB_CORE_EXPORT UnicodeString FormatNumber(int64_t Number);
-NB_CORE_EXPORT UnicodeString FormatSize(int64_t Size);
+NB_CORE_EXPORT UnicodeString FormatSize(int64_t ASize);
 NB_CORE_EXPORT UnicodeString ExtractFileBaseName(UnicodeString APath);
 NB_CORE_EXPORT TStringList *TextToStringList(UnicodeString Text);
 NB_CORE_EXPORT UnicodeString StringsToText(TStrings *Strings);
@@ -179,30 +172,51 @@ NB_CORE_EXPORT UnicodeString FindIdent(UnicodeString Ident, TStrings *Idents);
 NB_CORE_EXPORT void CheckCertificate(UnicodeString Path);
 typedef struct x509_st X509;
 typedef struct evp_pkey_st EVP_PKEY;
-NB_CORE_EXPORT void ParseCertificate(const UnicodeString Path,
-  const UnicodeString Passphrase, X509 *&Certificate, EVP_PKEY *&PrivateKey,
+NB_CORE_EXPORT void ParseCertificate(UnicodeString Path,
+  UnicodeString Passphrase, X509 *&Certificate, EVP_PKEY *&PrivateKey,
   bool &WrongPassphrase);
 NB_CORE_EXPORT bool IsHttpUrl(UnicodeString S);
 NB_CORE_EXPORT bool IsHttpOrHttpsUrl(UnicodeString S);
 NB_CORE_EXPORT UnicodeString ChangeUrlProtocol(UnicodeString S, UnicodeString Protocol);
-NB_CORE_EXPORT void LoadScriptFromFile(UnicodeString FileName, TStrings *Lines);
+NB_CORE_EXPORT void LoadScriptFromFile(UnicodeString AFileName, TStrings *Lines);
 NB_CORE_EXPORT UnicodeString StripEllipsis(UnicodeString S);
-
+NB_CORE_EXPORT UnicodeString GetFileMimeType(UnicodeString AFileName);
+NB_CORE_EXPORT bool IsRealFile(UnicodeString AFileName);
+NB_CORE_EXPORT UnicodeString GetOSInfo();
+NB_CORE_EXPORT UnicodeString GetEnvironmentInfo();
+//---------------------------------------------------------------------------
+struct NB_CORE_EXPORT TSearchRecSmart : public TSearchRec
+{
+public:
+  TSearchRecSmart() noexcept;
+  TDateTime GetLastWriteTime() const;
+  bool IsRealFile() const;
+  bool IsDirectory() const;
+  bool IsHidden() const;
+private:
+  mutable FILETIME FLastWriteTimeSource{};
+  mutable TDateTime FLastWriteTime{};
+};
+//---------------------------------------------------------------------------
 #if 0
-typedef void (__closure *TProcessLocalFileEvent)
-(const UnicodeString FileName, const TSearchRec Rec, void *Param);
+typedef void (__closure* TProcessLocalFileEvent)
+  (UnicodeString & FileName, const TSearchRecSmart & Rec, void * Param);
 #endif // #if 0
-typedef nb::FastDelegate3<void,
-        UnicodeString /*FileName*/, const TSearchRec & /*Rec*/,
-        void * /*Param*/> TProcessLocalFileEvent;
+using TProcessLocalFileEvent = nb::FastDelegate3<void,
+  UnicodeString /*FileName*/, const TSearchRecSmart & /*Rec*/, void * /*Param*/>;
 
-NB_CORE_EXPORT bool FileSearchRec(UnicodeString AFileName, TSearchRec &Rec);
-
-struct TSearchRecChecked : public TSearchRec
+NB_CORE_EXPORT bool FileSearchRec(UnicodeString FileName, TSearchRec & Rec);
+NB_CORE_EXPORT void CopySearchRec(const TSearchRec & Source, TSearchRec & Dest);
+struct NB_CORE_EXPORT TSearchRecChecked : public TSearchRecSmart
 {
   UnicodeString Path;
+  bool Opened{false};
 };
-
+struct NB_CORE_EXPORT TSearchRecOwned : public TSearchRecChecked
+{
+  ~TSearchRecOwned() noexcept;
+  void Close();
+};
 NB_CORE_EXPORT DWORD FindCheck(DWORD Result, UnicodeString APath);
 NB_CORE_EXPORT DWORD FindFirstUnchecked(UnicodeString APath, DWORD LocalFileAttrs, TSearchRecChecked &F);
 NB_CORE_EXPORT DWORD FindFirstChecked(UnicodeString APath, DWORD LocalFileAttrs, TSearchRecChecked &F);
@@ -210,7 +224,7 @@ NB_CORE_EXPORT DWORD FindNextChecked(TSearchRecChecked &F);
 NB_CORE_EXPORT void ProcessLocalDirectory(UnicodeString ADirName,
   TProcessLocalFileEvent CallBackFunc, void *Param = nullptr, DWORD FindAttrs = INVALID_FILE_ATTRIBUTES);
 NB_CORE_EXPORT DWORD FileGetAttrFix(UnicodeString AFileName);
-
+//---------------------------------------------------------------------------
 extern const wchar_t *DSTModeNames;
 enum TDSTMode
 {
@@ -246,28 +260,95 @@ NB_CORE_EXPORT intptr_t CompareFileTime(const TDateTime &T1, const TDateTime &T2
 NB_CORE_EXPORT intptr_t TimeToMSec(const TDateTime &T);
 NB_CORE_EXPORT intptr_t TimeToSeconds(const TDateTime &T);
 NB_CORE_EXPORT intptr_t TimeToMinutes(const TDateTime &T);
-UnicodeString FormatDateTimeSpan(const UnicodeString TimeFormat, TDateTime DateTime);
-
+NB_CORE_EXPORT UnicodeString FormatDateTimeSpan(UnicodeString TimeFormat, TDateTime DateTime);
+NB_CORE_EXPORT TStrings * TlsCipherList();
+//---------------------------------------------------------------------------
+#if 0
+template<class MethodT>
+MethodT MakeMethod(void * Data, void * Code)
+{
+  MethodT Method;
+  ((TMethod*)&Method)->Data = Data;
+  ((TMethod*)&Method)->Code = Code;
+  return Method;
+}
+//---------------------------------------------------------------------------
 enum TAssemblyLanguage { alCSharp, alVBNET, alPowerShell };
+extern UnicodeString RtfPara;
+extern UnicodeString AssemblyNamespace;
+extern UnicodeString SessionClassName;
+extern UnicodeString TransferOptionsClassName;
+//---------------------------------------------------------------------
+UnicodeString RtfText(UnicodeString & Text, bool Rtf = true);
+UnicodeString RtfColor(int Index);
+UnicodeString RtfOverrideColorText(UnicodeString & Text);
+UnicodeString RtfColorItalicText(int Color, UnicodeString & Text);
+UnicodeString RtfColorText(int Color, UnicodeString & Text);
+UnicodeString RtfKeyword(UnicodeString & Text);
+UnicodeString RtfParameter(UnicodeString & Text);
+UnicodeString RtfString(UnicodeString & Text);
+UnicodeString RtfLink(UnicodeString & Link, UnicodeString & RtfText);
+UnicodeString RtfSwitch(
+  UnicodeString & Name, UnicodeString & Link, bool Rtf = true);
+UnicodeString RtfSwitchValue(
+  UnicodeString & Name, UnicodeString & Link, UnicodeString & Value, bool Rtf = true);
+UnicodeString RtfSwitch(
+  UnicodeString & Name, UnicodeString & Link, UnicodeString & Value, bool Rtf = true);
+UnicodeString RtfSwitch(
+  UnicodeString & Name, UnicodeString & Link, int Value, bool Rtf = true);
+UnicodeString RtfEscapeParam(UnicodeString Param, bool PowerShellEscape);
+UnicodeString RtfRemoveHyperlinks(UnicodeString Text);
+UnicodeString ScriptCommandLink(UnicodeString & Command);
+UnicodeString AssemblyBoolean(TAssemblyLanguage Language, bool Value);
+UnicodeString AssemblyString(TAssemblyLanguage Language, UnicodeString S);
+UnicodeString AssemblyCommentLine(TAssemblyLanguage Language, UnicodeString & Text);
+UnicodeString AssemblyPropertyRaw(
+  TAssemblyLanguage Language, UnicodeString & ClassName, UnicodeString & Name,
+  UnicodeString & Value, bool Inline);
+UnicodeString AssemblyProperty(
+  TAssemblyLanguage Language, UnicodeString & ClassName, UnicodeString & Name,
+  UnicodeString & Type, UnicodeString & Member, bool Inline);
+UnicodeString AssemblyProperty(
+  TAssemblyLanguage Language, UnicodeString & ClassName, UnicodeString & Name,
+  UnicodeString & Value, bool Inline);
+UnicodeString AssemblyProperty(
+  TAssemblyLanguage Language, UnicodeString & ClassName, UnicodeString & Name, int Value, bool Inline);
+UnicodeString AssemblyProperty(
+  TAssemblyLanguage Language, UnicodeString & ClassName, UnicodeString & Name, bool Value, bool Inline);
+UnicodeString RtfLibraryMethod(UnicodeString & ClassName, UnicodeString & MethodName, bool Inpage);
+UnicodeString RtfLibraryClass(UnicodeString & ClassName);
+UnicodeString AssemblyVariableName(TAssemblyLanguage Language, UnicodeString & ClassName);
+UnicodeString AssemblyStatementSeparator(TAssemblyLanguage Language);
+UnicodeString AssemblyVariableDeclaration(TAssemblyLanguage Language);
+UnicodeString AssemblyNewClassInstance(
+  TAssemblyLanguage Language, UnicodeString & ClassName, bool Inline);
+UnicodeString AssemblyNewClassInstanceStart(
+  TAssemblyLanguage Language, UnicodeString & ClassName, bool Inline);
+UnicodeString AssemblyNewClassInstanceEnd(TAssemblyLanguage Language, bool Inline);
+UnicodeString AssemblyAddRawSettings(
+  TAssemblyLanguage Language, TStrings * RawSettings, UnicodeString & ClassName,
+  UnicodeString & MethodName);
+#endif // if 0
 
 #pragma warning(push)
 #pragma warning(disable: 4512) // assignment operator could not be generated
-
+//---------------------------------------------------------------------------
+__removed #include "Global.h"
+//---------------------------------------------------------------------------
 template<class T>
 class TValueRestorer // : public TObject
 {
 public:
+  TValueRestorer() = delete;
   inline explicit TValueRestorer(T &Target, const T &Value) :
     FTarget(Target),
-    FValue(Value),
-    FArmed(true)
+    FValue(Value)
   {
   }
 
   inline explicit TValueRestorer(T &Target) :
     FTarget(Target),
-    FValue(Target),
-    FArmed(true)
+    FValue(Target)
   {
   }
 
@@ -288,12 +369,13 @@ public:
 protected:
   T &FTarget;
   T FValue;
-  bool FArmed;
+  bool FArmed{true};
 };
-
-class TAutoNestingCounter : TValueRestorer<intptr_t>
+//---------------------------------------------------------------------------
+class TAutoNestingCounter : public TValueRestorer<intptr_t>
 {
 public:
+  TAutoNestingCounter() = delete;
   inline explicit TAutoNestingCounter(intptr_t &Target) :
     TValueRestorer<intptr_t>(Target)
   {
@@ -306,7 +388,7 @@ public:
     DebugAssert(!FArmed || (FTarget == (FValue + 1)));
   }
 };
-
+//---------------------------------------------------------------------------
 class TAutoFlag : public TValueRestorer<bool>
 {
 public:
@@ -317,19 +399,22 @@ public:
     Target = true;
   }
 
+  TAutoFlag() = default;
   ~TAutoFlag()
   {
     DebugAssert(!FArmed || FTarget);
   }
 };
 #pragma warning(pop)
-
+//---------------------------------------------------------------------------
+__removed #include <map>
+//---------------------------------------------------------------------------
 template<class T1, class T2>
 class BiDiMap
 {
 public:
-  typedef rde::map<T1, T2> TFirstToSecond;
-  typedef typename TFirstToSecond::const_iterator const_iterator;
+  using TFirstToSecond = nb::map_t<T1, T2>;
+  using const_iterator = typename TFirstToSecond::const_iterator;
 
   void Add(const T1 &Value1, const T2 &Value2)
   {
@@ -363,22 +448,12 @@ public:
 
 private:
   TFirstToSecond FFirstToSecond;
-  typedef rde::map<T2, T1> TSecondToFirst;
+  using TSecondToFirst = nb::map_t<T2, T1>;
   TSecondToFirst FSecondToFirst;
 };
-
-typedef rde::vector<UnicodeString> TUnicodeStringVector;
-
-
-namespace base {
-//TODO: move to Sysutils.hpp
-NB_CORE_EXPORT UnicodeString FormatBytes(int64_t Bytes, bool UseOrders = true);
-NB_CORE_EXPORT UnicodeString GetEnvVariable(UnicodeString AEnvVarName);
-
-} // namespace base
-
-// from  RemoteFiles.h
-
+//---------------------------------------------------------------------------
+using TUnicodeStringVector = nb::vector_t<UnicodeString>;
+//---------------------------------------------------------------------------
 enum TModificationFmt
 {
   mfNone,
@@ -386,7 +461,7 @@ enum TModificationFmt
   mfMDY,
   mfFull,
 };
-
+//---------------------------------------------------------------------------
 namespace base {
 
 NB_CORE_EXPORT bool IsUnixStyleWindowsPath(UnicodeString APath);
@@ -405,8 +480,7 @@ NB_CORE_EXPORT bool ExtractCommonPath(const TStrings *AFiles, UnicodeString &APa
 NB_CORE_EXPORT bool UnixExtractCommonPath(const TStrings *AFiles, UnicodeString &APath);
 NB_CORE_EXPORT UnicodeString ExtractFileName(UnicodeString APath, bool Unix);
 NB_CORE_EXPORT bool IsUnixRootPath(UnicodeString APath);
-NB_CORE_EXPORT UnicodeString GetEnvVariable(UnicodeString AEnvVarName);
-NB_CORE_EXPORT bool IsUnixHiddenFile(UnicodeString APath);
+NB_CORE_EXPORT bool IsUnixHiddenFile(UnicodeString AFileName);
 NB_CORE_EXPORT UnicodeString AbsolutePath(UnicodeString Base, UnicodeString APath);
 NB_CORE_EXPORT UnicodeString FromUnixPath(UnicodeString APath);
 NB_CORE_EXPORT UnicodeString ToUnixPath(UnicodeString APath);
@@ -426,3 +500,47 @@ NB_CORE_EXPORT bool SameUserName(UnicodeString UserName1, UnicodeString UserName
 NB_CORE_EXPORT UnicodeString FormatMultiFilesToOneConfirmation(UnicodeString ATarget, bool Unix);
 
 } // namespace base
+
+namespace base {
+//TODO: move to Sysutils.hpp
+NB_CORE_EXPORT UnicodeString GetEnvVariable(UnicodeString AEnvVarName);
+NB_CORE_EXPORT UnicodeString FormatBytes(int64_t Bytes, bool UseOrders = true);
+NB_CORE_EXPORT UnicodeString GetEnvVariable(UnicodeString AEnvVarName);
+} // namespace base
+//---------------------------------------------------------------------------
+constexpr char * LOCAL_INVALID_CHARS = "/\\:*?\"<>|";
+constexpr char * PASSWORD_MASK = "***";
+constexpr char * sLineBreak = "\n";
+
+// Order of the values also define order of the buttons/answers on the prompts
+// MessageDlg relies on these to be <= 0x0000FFFF
+constexpr uint32_t qaYes      = 0x00000001;
+// MessageDlg relies that answer do not conflict with mrCancel (=0x2)
+constexpr uint32_t qaNo       = 0x00000004;
+constexpr uint32_t qaOK       = 0x00000008;
+constexpr uint32_t qaCancel   = 0x00000010;
+constexpr uint32_t qaYesToAll = 0x00000020;
+constexpr uint32_t qaNoToAll  = 0x00000040;
+constexpr uint32_t qaAbort    = 0x00000080;
+constexpr uint32_t qaRetry    = 0x00000100;
+constexpr uint32_t qaIgnore   = 0x00000200;
+constexpr uint32_t qaSkip     = 0x00000400;
+constexpr uint32_t qaAll      = 0x00000800;
+constexpr uint32_t qaHelp     = 0x00001000;
+constexpr uint32_t qaReport   = 0x00002000;
+
+constexpr uint32_t qaFirst = qaYes;
+constexpr uint32_t qaLast  = qaReport;
+
+constexpr uint32_t qaNeverAskAgain = 0x00010000;
+
+constexpr intptr_t qpFatalAbort           = 0x01;
+constexpr intptr_t qpNeverAskAgainCheck   = 0x02;
+constexpr intptr_t qpAllowContinueOnError = 0x04;
+constexpr intptr_t qpIgnoreAbort          = 0x08;
+constexpr intptr_t qpWaitInBatch          = 0x10;
+
+inline void ThrowExtException() { throw ExtException(static_cast<Exception *>(nullptr), UnicodeString(L"")); }
+NB_CORE_EXPORT bool CompareFileName(UnicodeString APath1, UnicodeString APath2);
+NB_CORE_EXPORT bool ComparePaths(UnicodeString APath1, UnicodeString APath2);
+//---------------------------------------------------------------------------

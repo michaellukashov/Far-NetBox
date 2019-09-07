@@ -1,9 +1,9 @@
-
+//---------------------------------------------------------------------------
 #pragma once
-
-#include <headers.hpp>
+//---------------------------------------------------------------------------
+#include <nbsystem.h>
 #include <openssl/pkcs12.h>
-
+//---------------------------------------------------------------------------
 class t_server
 {
 CUSTOM_MEM_ALLOCATION_IMPL
@@ -27,12 +27,12 @@ public:
   X509 * Certificate;
   EVP_PKEY * PrivateKey;
 };
-
+//---------------------------------------------------------------------------
 const bool operator==(const t_server &a,const t_server &b);
 const bool operator!=(const t_server &a,const t_server &b);
 
 #include "ServerPath.h"
-
+//---------------------------------------------------------------------------
 struct t_transferfile
 {
 CUSTOM_MEM_ALLOCATION_IMPL
@@ -46,5 +46,4 @@ CUSTOM_MEM_ALLOCATION_IMPL
   int nType;
   void * nUserData;
 };
-
-
+//---------------------------------------------------------------------------

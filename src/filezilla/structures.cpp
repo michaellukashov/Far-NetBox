@@ -1,5 +1,6 @@
-
+//---------------------------------------------------------------------------
 #include "stdafx.h"
+#include "structures.h"
 
 
 #if defined(__BORLANDC__)

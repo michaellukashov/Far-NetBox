@@ -103,7 +103,7 @@ private:
     using TStorage::m_allocator;
     using TStorage::invariant;
     using TStorage::reallocate;
-    
+
 public:
 	typedef T				value_type;
 	typedef T*				iterator;
@@ -205,28 +205,28 @@ public:
 		return *(end() - 1);
 	}
 
-	T& operator[](size_type i) 
+  T& operator[](size_type i)
     {
-		return at(i);
-	}
+    return at(i);
+  }
 
-	const T& operator[](size_type i) const 
+  const T& operator[](size_type i) const
     {
         return at(i);
-	}
+  }
 
-    T& at(size_type i) 
+    T& at(size_type i)
     {
         RDE_ASSERT(i < size());
-		return m_begin[i];
+    return m_begin[i];
     }
 
     const T& at(size_type i) const
     {
         RDE_ASSERT(i < size());
-		return m_begin[i];
+    return m_begin[i];
     }
-    
+
 	void push_back(const T& v)
 	{
 		if (m_end < m_capacityEnd)
@@ -306,7 +306,7 @@ public:
 			for (size_type i = 0; i < n; ++i)
 				insertPos[i] = val;
 		}
-		m_end += n; 
+		m_end += n;
 		TStorage::record_high_watermark();
 	}
 	// @pre validate_iterator(it)
@@ -382,7 +382,7 @@ public:
 		RDE_ASSERT(invariant());
 		if (last <= first)
 			return end();
-		
+
 		const size_type indexFirst = size_type(first - m_begin);
 		const size_type toRemove = size_type(last - first);
 		if (toRemove > 0)
@@ -417,7 +417,7 @@ public:
 	}
 	void reserve(size_type n)
 	{
-		if (n > capacity())			
+		if (n > capacity())
 			reallocate(n, size());
 	}
 

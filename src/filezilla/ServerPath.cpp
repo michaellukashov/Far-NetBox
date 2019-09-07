@@ -1,7 +1,8 @@
-
+//---------------------------------------------------------------------------
 #include "stdafx.h"
 #include "ServerPath.h"
 #include "structures.h"
+#include "FileZillaApi.h"
 
 #define FTP_MVS_DOUBLE_QUOTA (TCHAR)0xDC
 

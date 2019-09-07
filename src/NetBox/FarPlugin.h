@@ -19,7 +19,7 @@ class TFarMessageDialog;
 class TFarEditorInfo;
 class TFarPluginGuard;
 
-const int MaxMessageWidth = 64;
+constexpr int MaxMessageWidth = 64;
 
 enum TFarShiftStatus
 {
@@ -31,6 +31,7 @@ enum TFarShiftStatus
   fsAltShift,
   fsCtrlAlt
 };
+
 enum THandlesFunction
 {
   hfProcessKey,
@@ -39,42 +40,41 @@ enum THandlesFunction
 };
 
 #if 0
-typedef void __fastcall (__closure *TFarInputBoxValidateEvent)
+typedef void (__closure *TFarInputBoxValidateEvent)
 (AnsiString &Text);
 #endif // #if 0
-typedef nb::FastDelegate1<void, UnicodeString & /*Text*/> TFarInputBoxValidateEvent;
+using TFarInputBoxValidateEvent = nb::FastDelegate1<void, UnicodeString & /*Text*/>;
 #if 0
-typedef void __fastcall (__closure *TFarMessageTimerEvent)(unsigned int &Result);
+typedef void (__closure *TFarMessageTimerEvent)(unsigned int &Result);
 #endif // #if 0
-typedef nb::FastDelegate1<void, intptr_t & /*Result*/> TFarMessageTimerEvent;
+using TFarMessageTimerEvent = nb::FastDelegate1<void, uint32_t & /*Result*/>;
 #if 0
-typedef void __fastcall (__closure *TFarMessageClickEvent)(void *Token, int Result, bool &Close);
+typedef void (__closure *TFarMessageClickEvent)(void *Token, int Result, bool &Close);
 #endif // #if 0
-typedef nb::FastDelegate3<void, void * /*Token*/,
-        uintptr_t /*Result*/, bool & /*Close*/> TFarMessageClickEvent;
+using TFarMessageClickEvent = nb::FastDelegate3<void, void * /*Token*/,
+        uintptr_t /*Result*/, bool & /*Close*/>;
 
 struct TFarMessageParams : public TObject
 {
   NB_DISABLE_COPY(TFarMessageParams)
 public:
-  TFarMessageParams();
+  TFarMessageParams() = default;
 
-  TStrings *MoreMessages;
+  TStrings *MoreMessages{nullptr};
   UnicodeString CheckBoxLabel;
-  bool CheckBox;
-  uintptr_t Timer;
-  intptr_t TimerAnswer;
+  bool CheckBox{false};
+  uintptr_t Timer{0};
+  uint32_t TimerAnswer{0};
   TFarMessageTimerEvent TimerEvent;
-  uintptr_t Timeout;
-  uintptr_t TimeoutButton;
-  uintptr_t DefaultButton;
+  uintptr_t Timeout{0};
+  uintptr_t TimeoutButton{0};
+  uintptr_t DefaultButton{0};
   UnicodeString TimeoutStr;
   TFarMessageClickEvent ClickEvent;
-  void *Token;
+  void *Token{nullptr};
 };
 
-class TGlobalFunctions;
-
+NB_DEFINE_CLASS_ID(TCustomFarPlugin);
 class TCustomFarPlugin : public TObject
 {
   friend class TCustomFarFileSystem;
@@ -85,11 +85,15 @@ class TCustomFarPlugin : public TObject
   friend class TFarPluginGuard;
   NB_DISABLE_COPY(TCustomFarPlugin)
 public:
-  static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TCustomFarPlugin); }
-  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TCustomFarPlugin) || TObject::is(Kind); }
+  static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TCustomFarPlugin); }
+  bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TCustomFarPlugin) || TObject::is(Kind); }
 public:
-  explicit TCustomFarPlugin(TObjectClassId Kind, HINSTANCE HInst);
-  virtual ~TCustomFarPlugin();
+  TCustomFarPlugin() = delete;
+  explicit TCustomFarPlugin(TObjectClassId Kind, HINSTANCE HInst) noexcept;
+  virtual ~TCustomFarPlugin() noexcept;
+  virtual void Initialize();
+  virtual void Finalize();
+
   virtual intptr_t GetMinFarVersion() const;
   virtual void SetStartupInfo(const struct PluginStartupInfo *Info);
   virtual const struct PluginStartupInfo *GetPluginStartupInfo() const { return &FStartupInfo; }
@@ -119,25 +123,26 @@ public:
   virtual intptr_t ProcessEditorInput(const INPUT_RECORD *Rec);
 
   virtual void HandleException(Exception *E, int OpMode = 0);
+  virtual UnicodeString GetMsg(intptr_t MsgId) const;
+  virtual UnicodeString GetModuleName() const;
 
-  static wchar_t *DuplicateStr(UnicodeString Str, bool AllowEmpty = false);
-  intptr_t Message(DWORD Flags, UnicodeString Title,
-    UnicodeString Message, TStrings *Buttons = nullptr,
+  static wchar_t *DuplicateStr(const UnicodeString Str, bool AllowEmpty = false);
+  uint32_t Message(DWORD Flags, const UnicodeString Title,
+    const UnicodeString Message, TStrings *Buttons = nullptr,
     TFarMessageParams *Params = nullptr);
   intptr_t MaxMessageLines() const;
   intptr_t MaxMenuItemLength() const;
-  intptr_t Menu(DWORD Flags, UnicodeString Title,
+  intptr_t Menu(DWORD Flags, const UnicodeString Title,
     UnicodeString Bottom, TStrings *Items, const int *BreakKeys,
     int &BreakCode);
-  intptr_t Menu(DWORD Flags, UnicodeString Title,
+  intptr_t Menu(DWORD Flags, const UnicodeString Title,
     UnicodeString Bottom, TStrings *Items);
-  intptr_t Menu(DWORD Flags, UnicodeString Title,
+  intptr_t Menu(DWORD Flags, const UnicodeString Title,
     UnicodeString Bottom, const FarMenuItem *Items, intptr_t Count,
     const int *BreakKeys, int &BreakCode);
-  bool InputBox(UnicodeString Title, UnicodeString Prompt,
-    UnicodeString &Text, DWORD Flags, UnicodeString HistoryName = UnicodeString(),
+  bool InputBox(const UnicodeString Title, const UnicodeString Prompt,
+    UnicodeString &Text, DWORD Flags, const UnicodeString HistoryName = UnicodeString(),
     intptr_t MaxLen = 255, TFarInputBoxValidateEvent OnValidate = nullptr);
-  virtual UnicodeString GetMsg(intptr_t MsgId) const;
   void SaveScreen(HANDLE &Screen);
   void RestoreScreen(HANDLE &Screen);
   bool CheckForEsc() const;
@@ -148,10 +153,10 @@ public:
   intptr_t FarAdvControl(uintptr_t Command, void *Param = nullptr) const;
   intptr_t FarEditorControl(uintptr_t Command, void *Param);
   intptr_t GetFarSystemSettings() const;
-  void Text(int X, int Y, int Color, UnicodeString Str);
+  void Text(int X, int Y, int Color, const UnicodeString Str);
   void FlushText();
-  void FarWriteConsole(UnicodeString Str);
-  void FarCopyToClipboard(UnicodeString Str);
+  void FarWriteConsole(const UnicodeString Str);
+  void FarCopyToClipboard(const UnicodeString Str);
   void FarCopyToClipboard(const TStrings *Strings);
   intptr_t GetFarVersion() const;
   UnicodeString FormatFarVersion(intptr_t Version) const;
@@ -159,9 +164,9 @@ public:
   intptr_t InputRecordToKey(const INPUT_RECORD *Rec) const;
   TFarEditorInfo *EditorInfo();
 
-  void ShowConsoleTitle(UnicodeString Title);
+  void ShowConsoleTitle(const UnicodeString Title);
   void ClearConsoleTitle();
-  void UpdateConsoleTitle(UnicodeString Title);
+  void UpdateConsoleTitle(const UnicodeString Title);
   void UpdateConsoleTitleProgress(short Progress);
   void ShowTerminalScreen();
   void SaveTerminalScreen();
@@ -173,27 +178,25 @@ public:
   TCustomFarFileSystem *GetPanelFileSystem(bool Another = false,
     HANDLE Plugin = INVALID_HANDLE_VALUE);
 
-  virtual UnicodeString GetModuleName() const;
   TFarDialog *GetTopDialog() const { return FTopDialog; }
   HINSTANCE GetHandle() const { return FHandle; }
   uintptr_t GetFarThreadId() const { return FFarThreadId; }
-  FarStandardFunctions &GetFarStandardFunctions() { return FFarStandardFunctions; }
+  const FarStandardFunctions &GetFarStandardFunctions() const { return FFarStandardFunctions; }
 
 protected:
-  TGlobalsIntfInitializer<TGlobalFunctions> FGlobalsIntfInitializer;
-  PluginStartupInfo FStartupInfo;
-  FarStandardFunctions FFarStandardFunctions;
-  HINSTANCE FHandle;
-  TList *FOpenedPlugins;
-  TFarDialog *FTopDialog;
-  HANDLE FConsoleInput;
-  HANDLE FConsoleOutput;
-  mutable intptr_t FFarVersion;
-  bool FTerminalScreenShowing;
+  PluginStartupInfo FStartupInfo{};
+  FarStandardFunctions FFarStandardFunctions{};
+  HINSTANCE FHandle{};
+  std::unique_ptr<TList> FOpenedPlugins;
+  TFarDialog *FTopDialog{nullptr};
+  HANDLE FConsoleInput{};
+  HANDLE FConsoleOutput{};
+  mutable intptr_t FFarVersion{0};
+  bool FTerminalScreenShowing{false};
   TCriticalSection FCriticalSection;
-  uintptr_t FFarThreadId;
-  mutable bool FValidFarSystemSettings;
-  mutable intptr_t FFarSystemSettings;
+  uintptr_t FFarThreadId{0};
+  mutable bool FValidFarSystemSettings{false};
+  mutable intptr_t FFarSystemSettings{0};
   TPoint FNormalConsoleSize;
 
   virtual bool HandlesFunction(THandlesFunction Function) const;
@@ -208,11 +211,11 @@ protected:
     Exception *E, int OpMode = 0);
   void ResetCachedInfo();
   intptr_t MaxLength(TStrings *Strings) const;
-  intptr_t FarMessage(DWORD Flags,
-    UnicodeString Title, UnicodeString Message, TStrings *Buttons,
+  uint32_t FarMessage(DWORD Flags,
+    const UnicodeString Title, const UnicodeString Message, TStrings *Buttons,
     TFarMessageParams *Params);
-  intptr_t DialogMessage(DWORD Flags,
-    UnicodeString Title, UnicodeString Message, TStrings *Buttons,
+  uint32_t DialogMessage(DWORD Flags,
+    const UnicodeString Title, const UnicodeString Message, TStrings *Buttons,
     TFarMessageParams *Params);
   void InvalidateOpenPluginInfo();
 
@@ -226,10 +229,10 @@ private:
   void UpdateProgress(intptr_t State, intptr_t Progress) const;
 
 private:
-  PluginInfo FPluginInfo;
-  TStringList *FSavedTitles;
+  PluginInfo FPluginInfo{};
+  std::unique_ptr<TStringList> FSavedTitles;
   UnicodeString FCurrentTitle;
-  short FCurrentProgress;
+  short FCurrentProgress{0};
 
   void ClearPluginInfo(PluginInfo &Info) const;
   void UpdateCurrentConsoleTitle();
@@ -247,18 +250,19 @@ private:
   void CloseFileSystem(TCustomFarFileSystem *FileSystem);
 };
 
+NB_DEFINE_CLASS_ID(TCustomFarFileSystem);
 class TCustomFarFileSystem : public TObject
 {
   friend class TFarPanelInfo;
   friend class TCustomFarPlugin;
   NB_DISABLE_COPY(TCustomFarFileSystem)
 public:
-  static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TCustomFarFileSystem); }
-  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TCustomFarFileSystem) || TObject::is(Kind); }
+  static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TCustomFarFileSystem); }
+  bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TCustomFarFileSystem) || TObject::is(Kind); }
 public:
-  explicit TCustomFarFileSystem(TObjectClassId Kind, TCustomFarPlugin *APlugin);
+  explicit TCustomFarFileSystem(TObjectClassId Kind, TCustomFarPlugin *APlugin) noexcept;
+  virtual ~TCustomFarFileSystem() noexcept;
   void Init();
-  virtual ~TCustomFarFileSystem();
 
   void GetOpenPluginInfo(struct OpenPluginInfo *Info);
   intptr_t GetFindData(struct PluginPanelItem **PanelItem,
@@ -282,8 +286,8 @@ protected:
   virtual UnicodeString GetCurrDirectory() const = 0;
 
 protected:
-  TCustomFarPlugin *FPlugin;
-  bool FClosed;
+  TCustomFarPlugin *FPlugin{nullptr};
+  bool FClosed{false};
 
   virtual void GetOpenPluginInfoEx(DWORD &Flags,
     UnicodeString &HostFile, UnicodeString &CurDir, UnicodeString &Format,
@@ -332,10 +336,10 @@ protected:
 private:
   UnicodeString FNameStr;
   UnicodeString FDestPathStr;
-  OpenPluginInfo FOpenPluginInfo;
-  TCustomFarFileSystem *FOwnerFileSystem;
-  bool FOpenPluginInfoValid;
-  TFarPanelInfo *FPanelInfo[2];
+  OpenPluginInfo FOpenPluginInfo{};
+  TCustomFarFileSystem *FOwnerFileSystem{nullptr};
+  bool FOpenPluginInfoValid{false};
+  TFarPanelInfo *FPanelInfo[2]{};
   static uintptr_t FInstances;
 
   void ClearOpenPluginInfo(OpenPluginInfo &Info);
@@ -344,35 +348,35 @@ private:
   TFarPanelInfo **GetPanelInfo(int Another);
 };
 
-#define PANEL_MODES_COUNT 10
-class TFarPanelModes : public TObject
+constexpr intptr_t PANEL_MODES_COUNT = 10;
+class TFarPanelModes final : public TObject
 {
   friend class TCustomFarFileSystem;
 public:
-  TFarPanelModes();
-  virtual ~TFarPanelModes();
+  TFarPanelModes() noexcept;
+  virtual ~TFarPanelModes() noexcept;
 
-  void SetPanelMode(size_t Mode, UnicodeString ColumnTypes = UnicodeString(),
-    UnicodeString ColumnWidths = UnicodeString(), TStrings *ColumnTitles = nullptr,
+  void SetPanelMode(size_t Mode, const UnicodeString ColumnTypes = UnicodeString(),
+    const UnicodeString ColumnWidths = UnicodeString(), TStrings *ColumnTitles = nullptr,
     bool FullScreen = false, bool DetailedStatus = true, bool AlignExtensions = true,
-    bool CaseConversion = true, UnicodeString StatusColumnTypes = UnicodeString(),
-    UnicodeString StatusColumnWidths = UnicodeString());
+    bool CaseConversion = true, const UnicodeString StatusColumnTypes = UnicodeString(),
+    const UnicodeString StatusColumnWidths = UnicodeString());
 
 private:
-  PanelMode FPanelModes[PANEL_MODES_COUNT];
-  bool FReferenced;
+  PanelMode FPanelModes[PANEL_MODES_COUNT]{};
+  bool FReferenced{false};
 
   void FillOpenPluginInfo(struct OpenPluginInfo *Info);
   static void ClearPanelMode(PanelMode &Mode);
-  static intptr_t CommaCount(UnicodeString ColumnTypes);
+  static intptr_t CommaCount(const UnicodeString ColumnTypes);
 };
 
-class TFarKeyBarTitles : public TObject
+class TFarKeyBarTitles final : public TObject
 {
   friend class TCustomFarFileSystem;
 public:
-  TFarKeyBarTitles();
-  virtual ~TFarKeyBarTitles();
+  TFarKeyBarTitles() noexcept;
+  virtual ~TFarKeyBarTitles() noexcept;
 
   void ClearFileKeyBarTitles();
   void ClearKeyBarTitle(TFarShiftStatus ShiftStatus,
@@ -381,24 +385,24 @@ public:
     UnicodeString Title);
 
 private:
-  KeyBarTitles FKeyBarTitles;
-  bool FReferenced;
+  KeyBarTitles FKeyBarTitles{};
+  bool FReferenced{false};
 
   void FillOpenPluginInfo(struct OpenPluginInfo *Info);
   static void ClearKeyBarTitles(KeyBarTitles &Titles);
 };
 
+NB_DEFINE_CLASS_ID(TCustomFarPanelItem);
 class TCustomFarPanelItem : public TObject
 {
   friend class TCustomFarFileSystem;
 public:
-  static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TCustomFarPanelItem); }
-  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TCustomFarPanelItem) || TObject::is(Kind); }
+  static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TCustomFarPanelItem); }
+  bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TCustomFarPanelItem) || TObject::is(Kind); }
 protected:
-  explicit TCustomFarPanelItem(TObjectClassId Kind) : TObject(Kind) {}
-  virtual ~TCustomFarPanelItem()
-  {
-  }
+  TCustomFarPanelItem() = delete;
+  explicit TCustomFarPanelItem(TObjectClassId Kind) noexcept : TObject(Kind) {}
+  virtual ~TCustomFarPanelItem() = default;
   virtual void GetData(
     DWORD &Flags, UnicodeString &AFileName, int64_t &Size,
     DWORD &FileAttributes,
@@ -410,15 +414,17 @@ protected:
   void FillPanelItem(struct PluginPanelItem *PanelItem);
 };
 
-class TFarPanelItem : public TCustomFarPanelItem
+NB_DEFINE_CLASS_ID(TFarPanelItem);
+class TFarPanelItem final : public TCustomFarPanelItem
 {
   NB_DISABLE_COPY(TFarPanelItem)
 public:
-  static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TFarPanelItem); }
-  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TFarPanelItem) || TCustomFarPanelItem::is(Kind); }
+  static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TFarPanelItem); }
+  bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TFarPanelItem) || TCustomFarPanelItem::is(Kind); }
 public:
-  explicit TFarPanelItem(PluginPanelItem *APanelItem, bool OwnsItem);
-  virtual ~TFarPanelItem();
+  TFarPanelItem() = delete;
+  explicit TFarPanelItem(PluginPanelItem *APanelItem, bool OwnsItem) noexcept;
+  virtual ~TFarPanelItem() noexcept;
 
   uintptr_t GetFlags() const;
   uintptr_t GetFileAttrs() const;
@@ -430,31 +436,32 @@ public:
   bool GetIsFile() const;
 
 protected:
-  PluginPanelItem *FPanelItem;
-  bool FOwnsItem;
+  PluginPanelItem *FPanelItem{nullptr};
+  bool FOwnsItem{false};
 
-  virtual void GetData(
+  void GetData(
     DWORD &Flags, UnicodeString &AFileName, int64_t &Size,
     DWORD &FileAttributes,
     TDateTime &LastWriteTime, TDateTime &LastAccess,
     DWORD &NumberOfLinks, UnicodeString &Description,
     UnicodeString &Owner, void *&UserData, int &CustomColumnNumber) override;
-  virtual UnicodeString GetCustomColumnData(size_t Column) override;
+  UnicodeString GetCustomColumnData(size_t Column) override;
 };
 
-class THintPanelItem : public TCustomFarPanelItem
+NB_DEFINE_CLASS_ID(THintPanelItem);
+class THintPanelItem final : public TCustomFarPanelItem
 {
 public:
-  explicit THintPanelItem(UnicodeString AHint);
-  virtual ~THintPanelItem() {}
+  explicit THintPanelItem(const UnicodeString AHint) noexcept;
+  virtual ~THintPanelItem() = default;
 
 protected:
-  virtual void GetData(
+  void GetData(
     DWORD &Flags, UnicodeString &AFileName, int64_t &Size,
     DWORD &FileAttributes,
     TDateTime &LastWriteTime, TDateTime &LastAccess,
     DWORD &NumberOfLinks, UnicodeString &Description,
-    UnicodeString &Owner, void *&UserData, int &CustomColumnNumber);
+    UnicodeString &Owner, void *&UserData, int &CustomColumnNumber) override;
 
 private:
   UnicodeString FHint;
@@ -472,8 +479,9 @@ class TFarPanelInfo : public TObject
 {
   NB_DISABLE_COPY(TFarPanelInfo)
 public:
-  explicit TFarPanelInfo(PanelInfo *APanelInfo, TCustomFarFileSystem *AOwner);
-  virtual ~TFarPanelInfo();
+  TFarPanelInfo() = delete;
+  explicit TFarPanelInfo(PanelInfo *APanelInfo, TCustomFarFileSystem *AOwner) noexcept;
+  virtual ~TFarPanelInfo() noexcept;
 
   const TObjectList *GetItems() const { return const_cast<TFarPanelInfo *>(this)->GetItems(); }
   TObjectList *GetItems();
@@ -489,29 +497,30 @@ public:
   UnicodeString GetCurrDirectory() const;
 
   void ApplySelection();
-  TFarPanelItem *FindFileName(UnicodeString AFileName) const;
+  TFarPanelItem *FindFileName(const UnicodeString AFileName) const;
   const TFarPanelItem *FindUserData(const void *UserData) const;
   TFarPanelItem *FindUserData(const void *UserData);
 
 private:
-  PanelInfo *FPanelInfo;
-  TObjectList *FItems;
-  TCustomFarFileSystem *FOwner;
+  gsl::owner<PanelInfo *> FPanelInfo{nullptr};
+  TObjectList *FItems{nullptr};
+  TCustomFarFileSystem *FOwner{nullptr};
 };
 
+NB_DEFINE_CLASS_ID(TFarMenuItems);
 class TFarMenuItems : public TStringList
 {
 public:
-  static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TFarMenuItems); }
-  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TFarMenuItems) || TStringList::is(Kind); }
+  static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TFarMenuItems); }
+  bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TFarMenuItems) || TStringList::is(Kind); }
 public:
-  explicit TFarMenuItems();
-  virtual ~TFarMenuItems() {}
+  explicit TFarMenuItems() noexcept;
+  virtual ~TFarMenuItems() = default;
   void AddSeparator(bool Visible = true);
   virtual intptr_t Add(UnicodeString Text, bool Visible = true);
 
-  virtual void Clear() override;
-  virtual void Delete(intptr_t Index) override;
+  void Clear() override;
+  void Delete(intptr_t Index) override;
 
   intptr_t GetItemFocused() const { return FItemFocused; }
   void SetItemFocused(intptr_t Value);
@@ -524,24 +533,25 @@ public:
   bool GetFlag(intptr_t Index, uintptr_t Flag) const;
 
 protected:
-  virtual void SetObj(intptr_t Index, TObject *AObject) override;
+  void SetObj(intptr_t Index, TObject *AObject) override;
 
 private:
-  intptr_t FItemFocused;
+  intptr_t FItemFocused{nb::NPOS};
 };
 
 class TFarEditorInfo : public TObject
 {
   NB_DISABLE_COPY(TFarEditorInfo)
 public:
-  explicit TFarEditorInfo(EditorInfo *Info);
-  ~TFarEditorInfo();
+  TFarEditorInfo() = delete;
+  explicit TFarEditorInfo(EditorInfo *Info) noexcept;
+  ~TFarEditorInfo() noexcept;
 
   intptr_t GetEditorID() const;
   static UnicodeString GetFileName();
 
 private:
-  EditorInfo *FEditorInfo;
+  gsl::owner<EditorInfo*> FEditorInfo{nullptr};
 };
 
 class TFarEnvGuard // : public TObject
@@ -549,8 +559,8 @@ class TFarEnvGuard // : public TObject
   CUSTOM_MEM_ALLOCATION_IMPL
   NB_DISABLE_COPY(TFarEnvGuard)
 public:
-  TFarEnvGuard();
-  ~TFarEnvGuard();
+  TFarEnvGuard() noexcept;
+  ~TFarEnvGuard() noexcept;
 };
 
 class TFarPluginEnvGuard // : public TObject
@@ -558,8 +568,8 @@ class TFarPluginEnvGuard // : public TObject
   CUSTOM_MEM_ALLOCATION_IMPL
   NB_DISABLE_COPY(TFarPluginEnvGuard)
 public:
-  TFarPluginEnvGuard();
-  ~TFarPluginEnvGuard();
+  TFarPluginEnvGuard() noexcept;
+  ~TFarPluginEnvGuard() noexcept;
 };
 
 extern TCustomFarPlugin *FarPlugin;
@@ -567,16 +577,16 @@ extern TCustomFarPlugin *FarPlugin;
 class TGlobalFunctions : public TGlobals
 {
 public:
-  virtual HINSTANCE GetInstanceHandle() const override;
-  virtual UnicodeString GetMsg(intptr_t Id) const override;
-  virtual UnicodeString GetCurrDirectory() const override;
-  virtual UnicodeString GetStrVersionNumber() const override;
-  virtual bool InputDialog(UnicodeString ACaption,
-    UnicodeString APrompt, UnicodeString &Value, UnicodeString HelpKeyword,
+  HINSTANCE GetInstanceHandle() const override;
+  UnicodeString GetMsg(intptr_t Id) const override;
+  UnicodeString GetCurrDirectory() const override;
+  UnicodeString GetStrVersionNumber() const override;
+  bool InputDialog(const UnicodeString ACaption,
+    const UnicodeString APrompt, UnicodeString &Value, const UnicodeString HelpKeyword,
     TStrings *History, bool PathInput,
     TInputDialogInitializeEvent OnInitialize, bool Echo) override;
-  virtual uintptr_t MoreMessageDialog(UnicodeString Message,
-    TStrings *MoreMessages, TQueryType Type, uintptr_t Answers,
+  uint32_t MoreMessageDialog(const UnicodeString AMessage,
+    TStrings *MoreMessages, TQueryType Type, uint32_t Answers,
     const TMessageParams *Params) override;
 };
 

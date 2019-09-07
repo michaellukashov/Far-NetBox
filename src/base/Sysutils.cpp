@@ -1,47 +1,14 @@
 
 #include <vcl.h>
-#pragma hdrstop
 
 #include <iomanip>
-#include <time.h>
+#include <ctime>
 
 #include <Classes.hpp>
 #include <Common.h>
 #include <rtlconsts.h>
 #include <Sysutils.hpp>
 #include <nbutils.h>
-
-#if 0
-intptr_t __cdecl debug_printf(const wchar_t *format, ...)
-{
-  (void)format;
-#ifndef NDEBUG
-  va_list args;
-  va_start(args, format);
-  intptr_t Len = _vscwprintf(format, args);
-  UnicodeString Buf(Len + 1, 0);
-  vswprintf(ToWChar(Buf), Buf.GetLength(), format, args);
-  va_end(args);
-  OutputDebugStringW(Buf.c_str());
-#endif
-  return Len;
-}
-
-intptr_t __cdecl debug_printf2(const char *format, ...)
-{
-  (void)format;
-#ifndef NDEBUG
-  va_list args;
-  va_start(args, format);
-  intptr_t Len = _vscprintf(format, args);
-  AnsiString Buf(Len + sizeof(char), 0);
-  vsprintf_s(&Buf[0], Buf.GetLength(), format, args);
-  va_end(args);
-  OutputDebugStringA(Buf.c_str());
-#endif
-  return Len;
-}
-#endif // #if 0
 
 UnicodeString MB2W(const char *src, const UINT cp)
 {
@@ -61,48 +28,48 @@ const TDayTable MonthDays[] =
   {31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31}
 };
 
-Exception::Exception(TObjectClassId Kind, Exception *E) :
+Exception::Exception(TObjectClassId Kind, Exception *E) noexcept :
   std::runtime_error(E ? E->what() : ""),
   FKind(Kind),
   Message(E ? E->Message : L"")
 {
 }
 
-Exception::Exception(UnicodeString Msg) :
+Exception::Exception(const UnicodeString Msg) noexcept :
   std::runtime_error(""),
   FKind(OBJECT_CLASS_Exception),
   Message(Msg)
 {
 }
 
-Exception::Exception(TObjectClassId Kind, const wchar_t *Msg) :
+Exception::Exception(TObjectClassId Kind, const wchar_t *Msg) noexcept :
   std::runtime_error(""),
   FKind(Kind),
   Message(Msg)
 {
 }
 
-Exception::Exception(const wchar_t *Msg) :
+Exception::Exception(const wchar_t *Msg) noexcept :
   std::runtime_error(""),
   FKind(OBJECT_CLASS_Exception),
   Message(Msg)
 {
 }
 
-Exception::Exception(TObjectClassId Kind, UnicodeString Msg) :
+Exception::Exception(TObjectClassId Kind, const UnicodeString Msg) noexcept :
   std::runtime_error(""),
   FKind(Kind),
   Message(Msg)
 {
 }
 
-Exception::Exception(TObjectClassId Kind, std::exception *E) :
+Exception::Exception(TObjectClassId Kind, std::exception *E) noexcept :
   std::runtime_error(E ? E->what() : ""),
   FKind(Kind)
 {
 }
 
-Exception::Exception(TObjectClassId Kind, UnicodeString Msg, intptr_t AHelpContext) :
+Exception::Exception(TObjectClassId Kind, const UnicodeString Msg, intptr_t AHelpContext) noexcept :
   std::runtime_error(""),
   FKind(Kind),
   Message(Msg)
@@ -111,14 +78,14 @@ Exception::Exception(TObjectClassId Kind, UnicodeString Msg, intptr_t AHelpConte
   (void)AHelpContext;
 }
 
-Exception::Exception(TObjectClassId Kind, Exception *E, intptr_t Ident) :
+Exception::Exception(TObjectClassId Kind, Exception *E, intptr_t Ident) noexcept :
   std::runtime_error(E ? E->what() : ""),
   FKind(Kind)
 {
   Message = FMTLOAD(Ident);
 }
 
-Exception::Exception(TObjectClassId Kind, intptr_t Ident) :
+Exception::Exception(TObjectClassId Kind, intptr_t Ident) noexcept :
   std::runtime_error(""),
   FKind(Kind)
 {
@@ -145,12 +112,12 @@ int RandSeed = 0;
 
 int random(int range)
 {
-  return ToInt(ToDouble(rand()) / (ToDouble(RAND_MAX) / range));
+  return nb::ToInt(nb::ToDouble(rand()) / (nb::ToDouble(RAND_MAX) / range));
 }
 
 void Randomize()
 {
-  srand(static_cast<uint32_t>(time(nullptr)));
+  srand(nb::ToUInt32(time(nullptr)));
 }
 
 
@@ -162,23 +129,29 @@ UnicodeString IntToStr(intptr_t Value)
   return Result;
 }
 
-UnicodeString Int64ToStr(int64_t Value)
+UnicodeString UIntToStr(uintptr_t Value)
 {
-  UnicodeString Result = FORMAT(L"%lld", Value);
+  UnicodeString Result = FORMAT("%u", Value);
   return Result;
 }
 
-intptr_t StrToIntPtr(UnicodeString Value)
+UnicodeString Int64ToStr(int64_t Value)
+{
+  UnicodeString Result = FORMAT("%lld", Value);
+  return Result;
+}
+
+intptr_t StrToIntPtr(const UnicodeString Value)
 {
   int64_t Result = 0;
   if (TryStrToInt64(Value, Result))
   {
-    return static_cast<intptr_t>(Result);
+    return nb::ToIntPtr(Result);
   }
   return 0;
 }
 
-int64_t ToInt64(UnicodeString Value)
+int64_t StrToInt64(const UnicodeString Value)
 {
   int64_t Result = 0;
   if (TryStrToInt64(Value, Result))
@@ -188,22 +161,17 @@ int64_t ToInt64(UnicodeString Value)
   return 0;
 }
 
-intptr_t StrToIntDef(UnicodeString Value, intptr_t DefVal)
+intptr_t StrToIntDef(const UnicodeString Value, intptr_t DefVal)
 {
   int64_t Result = DefVal;
   if (TryStrToInt64(Value, Result))
   {
-    return static_cast<intptr_t>(Result);
+    return nb::ToIntPtr(Result);
   }
   return DefVal;
 }
 
-int64_t StrToInt64(UnicodeString Value)
-{
-  return ToInt64(Value);
-}
-
-int64_t StrToInt64Def(UnicodeString Value, int64_t DefVal)
+int64_t StrToInt64Def(const UnicodeString Value, int64_t DefVal)
 {
   int64_t Result = DefVal;
   if (TryStrToInt64(Value, Result))
@@ -213,7 +181,7 @@ int64_t StrToInt64Def(UnicodeString Value, int64_t DefVal)
   return DefVal;
 }
 
-bool TryStrToInt64(UnicodeString StrValue, int64_t &Value)
+bool TryStrToInt64(const UnicodeString StrValue, int64_t &Value)
 {
   bool Result = !StrValue.IsEmpty(); // && (StrValue.FindFirstNotOf(L"+-0123456789") == -1);
   if (Result)
@@ -227,16 +195,24 @@ bool TryStrToInt64(UnicodeString StrValue, int64_t &Value)
   return Result;
 }
 
-UnicodeString Trim(UnicodeString Str)
+bool TryStrToInt(const UnicodeString StrValue, intptr_t &Value)
+{
+  int64_t Val{0};
+  bool res = TryStrToInt64(StrValue, Val);
+  Value = nb::ToIntPtr(Val);
+  return res;
+}
+
+UnicodeString Trim(const UnicodeString Str)
 {
   UnicodeString Result = TrimRight(TrimLeft(Str));
   return Result;
 }
 
-UnicodeString TrimLeft(UnicodeString Str)
+UnicodeString TrimLeft(const UnicodeString Str)
 {
   UnicodeString Result = Str;
-  intptr_t Len = Result.Length();
+  const intptr_t Len = Result.Length();
   intptr_t Pos = 1;
   while ((Pos <= Len) && (Result[Pos] == L' '))
     Pos++;
@@ -245,7 +221,7 @@ UnicodeString TrimLeft(UnicodeString Str)
   return Result;
 }
 
-UnicodeString TrimRight(UnicodeString Str)
+UnicodeString TrimRight(const UnicodeString Str)
 {
   UnicodeString Result = Str;
   intptr_t Len = Result.Length();
@@ -258,13 +234,13 @@ UnicodeString TrimRight(UnicodeString Str)
   return Result;
 }
 
-UnicodeString UpperCase(UnicodeString Str)
+UnicodeString UpperCase(const UnicodeString Str)
 {
   UnicodeString Result(Str);
   return Result.MakeUpper();
 }
 
-UnicodeString LowerCase(UnicodeString Str)
+UnicodeString LowerCase(const UnicodeString Str)
 {
   UnicodeString Result(Str);
   return Result.MakeLower();
@@ -280,8 +256,8 @@ wchar_t LowCase(const wchar_t Ch)
   return static_cast<wchar_t>(::towlower(Ch));
 }
 
-UnicodeString AnsiReplaceStr(UnicodeString Str, UnicodeString From,
-  UnicodeString To)
+UnicodeString AnsiReplaceStr(const UnicodeString Str, const UnicodeString From,
+  const UnicodeString To)
 {
   UnicodeString Result = Str;
   intptr_t Pos;
@@ -292,28 +268,28 @@ UnicodeString AnsiReplaceStr(UnicodeString Str, UnicodeString From,
   return Result;
 }
 
-intptr_t AnsiPos(UnicodeString Str, wchar_t Ch)
+intptr_t AnsiPos(const UnicodeString Str, wchar_t Ch)
 {
-  intptr_t Result = Str.Pos(Ch);
+  const intptr_t Result = Str.Pos(Ch);
   return Result;
 }
 
-intptr_t Pos(UnicodeString Str, UnicodeString Substr)
+intptr_t Pos(const UnicodeString Str, const UnicodeString Substr)
 {
-  intptr_t Result = Str.Pos(Substr.c_str());
+  const intptr_t Result = Str.Pos(Substr.c_str());
   return Result;
 }
 
-UnicodeString StringReplaceAll(UnicodeString Str, UnicodeString From, UnicodeString To)
+UnicodeString StringReplaceAll(const UnicodeString Str, const UnicodeString From, const UnicodeString To)
 {
   return AnsiReplaceStr(Str, From, To);
 }
 
-bool IsDelimiter(UnicodeString Delimiters, UnicodeString Str, intptr_t AIndex)
+bool IsDelimiter(const UnicodeString Delimiters, const UnicodeString Str, intptr_t AIndex)
 {
   if (AIndex <= Str.Length())
   {
-    wchar_t Ch = Str[AIndex];
+    const wchar_t Ch = Str[AIndex];
     for (intptr_t Index = 1; Index <= Delimiters.Length(); ++Index)
     {
       if (Delimiters[Index] == Ch)
@@ -325,7 +301,7 @@ bool IsDelimiter(UnicodeString Delimiters, UnicodeString Str, intptr_t AIndex)
   return false;
 }
 
-intptr_t FirstDelimiter(UnicodeString Delimiters, UnicodeString Str)
+intptr_t FirstDelimiter(const UnicodeString Delimiters, const UnicodeString Str)
 {
   if (Str.Length())
   {
@@ -340,7 +316,7 @@ intptr_t FirstDelimiter(UnicodeString Delimiters, UnicodeString Str)
   return 0;
 }
 
-intptr_t LastDelimiter(UnicodeString Delimiters, UnicodeString Str)
+intptr_t LastDelimiter(const UnicodeString Delimiters, const UnicodeString Str)
 {
   if (Str.Length())
   {
@@ -365,76 +341,81 @@ int StringCmpI(const wchar_t *S1, const wchar_t *S2)
   return ::CompareString(0, NORM_IGNORECASE | SORT_STRINGSORT, S1, -1, S2, -1) - 2;
 }
 
-intptr_t CompareText(UnicodeString Str1, UnicodeString Str2)
+intptr_t CompareText(const UnicodeString Str1, const UnicodeString Str2)
 {
   return StringCmp(Str1.c_str(), Str2.c_str());
 }
 
-intptr_t AnsiCompare(UnicodeString Str1, UnicodeString Str2)
+intptr_t AnsiCompare(const UnicodeString Str1, const UnicodeString Str2)
 {
   return StringCmp(Str1.c_str(), Str2.c_str());
 }
 
 // Case-sensitive compare
-intptr_t AnsiCompareStr(UnicodeString Str1, UnicodeString Str2)
+intptr_t AnsiCompareStr(const UnicodeString Str1, const UnicodeString Str2)
 {
   return StringCmp(Str1.c_str(), Str2.c_str());
 }
 
-bool AnsiSameText(UnicodeString Str1, UnicodeString Str2)
+bool AnsiSameText(const UnicodeString Str1, const UnicodeString Str2)
 {
   return StringCmpI(Str1.c_str(), Str2.c_str()) == 0;
 }
 
-bool SameText(UnicodeString Str1, UnicodeString Str2)
+bool SameText(const UnicodeString Str1, const UnicodeString Str2)
 {
   return AnsiSameText(Str1, Str2);
 }
 
-intptr_t AnsiCompareText(UnicodeString Str1, UnicodeString Str2)
+intptr_t AnsiCompareText(const UnicodeString Str1, const UnicodeString Str2)
 {
   return StringCmpI(Str1.c_str(), Str2.c_str());
 }
 
-intptr_t AnsiCompareIC(UnicodeString Str1, UnicodeString Str2)
+intptr_t AnsiCompareIC(const UnicodeString Str1, const UnicodeString Str2)
 {
   return AnsiCompareText(Str1, Str2);
 }
 
-bool AnsiSameStr(UnicodeString Str1, UnicodeString Str2)
+bool AnsiSameStr(const UnicodeString Str1, const UnicodeString Str2)
 {
   return AnsiCompareIC(Str1, Str2) == 0;
 }
 
-bool AnsiContainsText(UnicodeString Str1, UnicodeString Str2)
+bool AnsiContainsText(const UnicodeString Str1, const UnicodeString Str2)
 {
   return ::Pos(Str1, Str2) > 0;
 }
 
-bool ContainsStr(AnsiString Str1, AnsiString Str2)
+bool ContainsStr(const AnsiString Str1, const AnsiString Str2)
 {
   return Str1.Pos(Str2) > 0;
 }
 
-bool ContainsText(UnicodeString Str1, UnicodeString Str2)
+bool ContainsStr(const UnicodeString Str1, const UnicodeString Str2)
+{
+  return Str1.Pos(Str2) > 0;
+}
+
+bool ContainsText(const UnicodeString Str1, const UnicodeString Str2)
 {
   return AnsiContainsText(Str1, Str2);
 }
 
-UnicodeString RightStr(UnicodeString Str, intptr_t ACount)
+UnicodeString RightStr(const UnicodeString Str, intptr_t ACount)
 {
   UnicodeString Result = Str.SubString(Str.Length() - ACount, ACount);
   return Result;
 }
 
-intptr_t PosEx(UnicodeString SubStr, UnicodeString Str, intptr_t Offset)
+intptr_t PosEx(const UnicodeString SubStr, const UnicodeString Str, intptr_t Offset)
 {
   UnicodeString S = Str.SubString(Offset);
-  intptr_t Result = S.Pos(SubStr) + Offset;
+  const intptr_t Result = S.Pos(SubStr) + Offset;
   return Result;
 }
 
-UnicodeString UTF8ToString(RawByteString Str)
+UnicodeString UTF8ToString(const RawByteString Str)
 {
   return UnicodeString(Str.c_str(), Str.GetLength(), CP_UTF8);
 }
@@ -446,23 +427,23 @@ UnicodeString UTF8ToString(const char *Str, intptr_t Len)
     return UnicodeString(L"");
   }
 
-  intptr_t reqLength = ::MultiByteToWideChar(CP_UTF8, 0, Str, ToInt(Len), nullptr, 0);
+  const intptr_t reqLength = ::MultiByteToWideChar(CP_UTF8, 0, Str, nb::ToInt(Len), nullptr, 0);
   UnicodeString Result;
   if (reqLength)
   {
     Result.SetLength(reqLength);
-    ::MultiByteToWideChar(CP_UTF8, 0, Str, ToInt(Len), const_cast<LPWSTR>(Result.c_str()), ToInt(reqLength));
+    ::MultiByteToWideChar(CP_UTF8, 0, Str, nb::ToInt(Len), const_cast<LPWSTR>(Result.c_str()), nb::ToInt(reqLength));
     Result.SetLength(Result.Length() - 1); //remove NULL character
   }
   return Result;
 }
 
-double StrToFloat(UnicodeString Value)
+double StrToFloat(const UnicodeString Value)
 {
   return StrToFloatDef(Value, 0.0);
 }
 
-double StrToFloatDef(UnicodeString Value, double DefVal)
+double StrToFloatDef(const UnicodeString Value, double DefVal)
 {
   double Result;
   try
@@ -476,7 +457,7 @@ double StrToFloatDef(UnicodeString Value, double DefVal)
   return Result;
 }
 
-UnicodeString FormatFloat(UnicodeString /*Format*/, double Value)
+UnicodeString FormatFloat(const UnicodeString /*Format*/, double Value)
 {
   UnicodeString Result(20, L'\0');
   swprintf_s(&Result[1], Result.Length(), L"%.2f", Value);
@@ -491,11 +472,11 @@ bool IsZero(double Value)
 
 TTimeStamp DateTimeToTimeStamp(const TDateTime &DateTime)
 {
-  TTimeStamp Result;
+  TTimeStamp Result{};
   double intpart;
-  double fractpart = modf(DateTime, &intpart);
-  Result.Time = ToInt(fractpart * MSecsPerDay + 0.5);
-  Result.Date = ToInt(intpart + DateDelta);
+  const double fractpart = modf(DateTime, &intpart);
+  Result.Time = nb::ToInt(fractpart * MSecsPerDay + 0.5);
+  Result.Date = nb::ToInt(intpart + DateDelta);
   return Result;
 }
 
@@ -503,7 +484,7 @@ int64_t FileRead(HANDLE AHandle, void *Buffer, int64_t Count)
 {
   int64_t Result;
   DWORD Res = 0;
-  if (::ReadFile(AHandle, reinterpret_cast<LPVOID>(Buffer), ToDWord(Count), &Res, nullptr))
+  if (::ReadFile(AHandle, reinterpret_cast<LPVOID>(Buffer), nb::ToDWord(Count), &Res, nullptr))
   {
     Result = Res;
   }
@@ -518,7 +499,7 @@ int64_t FileWrite(HANDLE AHandle, const void *Buffer, int64_t Count)
 {
   int64_t Result;
   DWORD Res = 0;
-  if (::WriteFile(AHandle, Buffer, ToDWord(Count), &Res, nullptr))
+  if (::WriteFile(AHandle, Buffer, nb::ToDWord(Count), &Res, nullptr))
   {
     Result = Res;
   }
@@ -534,28 +515,28 @@ int64_t FileSeek(HANDLE AHandle, int64_t Offset, DWORD Origin)
   LONG low = Offset & 0xFFFFFFFF;
   LONG high = Offset >> 32;
   low = ::SetFilePointer(AHandle, low, &high, Origin);
-  return (static_cast<int64_t>(high) << 32) + low;
+  return (nb::ToInt64(high) << 32) + low;
 }
 
-bool FileExists(UnicodeString AFileName)
+bool SysUtulsFileExists(const UnicodeString AFileName)
 {
-  return FileGetAttr(AFileName) != INVALID_FILE_ATTRIBUTES;
+  return SysUtulsFileGetAttr(AFileName) != INVALID_FILE_ATTRIBUTES;
 }
 
-bool RenameFile(UnicodeString From, UnicodeString To)
+bool SysUtulsRenameFile(const UnicodeString From, const UnicodeString To)
 {
-  bool Result = ::MoveFile(ApiPath(From).c_str(), ApiPath(To).c_str()) != FALSE;
+  const bool Result = ::MoveFileW(ApiPath(From).c_str(), ApiPath(To).c_str()) != FALSE;
   return Result;
 }
 
-bool DirectoryExists(UnicodeString ADir)
+bool SysUtulsDirectoryExists(const UnicodeString ADir)
 {
   if ((ADir == THISDIRECTORY) || (ADir == PARENTDIRECTORY))
   {
     return true;
   }
 
-  DWORD LocalFileAttrs = FileGetAttr(ADir);
+  const DWORD LocalFileAttrs = SysUtulsFileGetAttr(ADir);
 
   if ((LocalFileAttrs != INVALID_FILE_ATTRIBUTES) && FLAGSET(LocalFileAttrs, FILE_ATTRIBUTE_DIRECTORY))
   {
@@ -564,11 +545,11 @@ bool DirectoryExists(UnicodeString ADir)
   return false;
 }
 
-UnicodeString FileSearch(UnicodeString AFileName, UnicodeString DirectoryList)
+UnicodeString SysUtulsFileSearch(const UnicodeString AFileName, const UnicodeString DirectoryList)
 {
   UnicodeString Result;
   UnicodeString Temp = DirectoryList;
-  UnicodeString PathSeparators = L"/\\";
+  const UnicodeString PathSeparators = L"/\\";
   do
   {
     intptr_t Index = ::Pos(Temp, PathSeparators);
@@ -590,7 +571,7 @@ UnicodeString FileSearch(UnicodeString AFileName, UnicodeString DirectoryList)
     }
     Result = ::IncludeTrailingBackslash(Result);
     Result = Result + AFileName;
-    if (!::FileExists(Result))
+    if (!::SysUtulsFileExists(Result))
     {
       Result.Clear();
     }
@@ -599,10 +580,10 @@ UnicodeString FileSearch(UnicodeString AFileName, UnicodeString DirectoryList)
   return Result;
 }
 
-void FileAge(UnicodeString AFileName, TDateTime &ATimestamp)
+void SysUtulsFileAge(const UnicodeString AFileName, TDateTime &ATimestamp)
 {
   WIN32_FIND_DATA FindData;
-  HANDLE LocalFileHandle = ::FindFirstFileW(ApiPath(AFileName).c_str(), &FindData);
+  const HANDLE LocalFileHandle = ::FindFirstFileW(ApiPath(AFileName).c_str(), &FindData);
   if (LocalFileHandle != INVALID_HANDLE_VALUE)
   {
     ATimestamp =
@@ -613,30 +594,35 @@ void FileAge(UnicodeString AFileName, TDateTime &ATimestamp)
   }
 }
 
-DWORD FileGetAttr(UnicodeString AFileName, bool /*FollowLink*/)
+DWORD SysUtulsFileGetAttr(const UnicodeString AFileName, bool /*FollowLink*/)
 {
   TODO("FollowLink");
-  DWORD LocalFileAttrs = ::GetFileAttributesW(ApiPath(AFileName).c_str());
+  const DWORD LocalFileAttrs = ::GetFileAttributesW(ApiPath(AFileName).c_str());
   return LocalFileAttrs;
 }
 
-bool FileSetAttr(UnicodeString AFileName, DWORD LocalFileAttrs)
+bool SysUtulsFileSetAttr(const UnicodeString AFileName, DWORD LocalFileAttrs)
 {
-  bool Result = ::SetFileAttributesW(ApiPath(AFileName).c_str(), LocalFileAttrs) != FALSE;
+  const bool Result = ::SetFileAttributesW(ApiPath(AFileName).c_str(), LocalFileAttrs) != FALSE;
   return Result;
 }
 
-bool CreateDir(UnicodeString ADir, LPSECURITY_ATTRIBUTES SecurityAttributes)
+bool SysUtulsCreateDir(const UnicodeString ADir, LPSECURITY_ATTRIBUTES SecurityAttributes)
 {
   return ::CreateDirectoryW(ApiPath(ADir).c_str(), SecurityAttributes) != FALSE;
 }
 
-bool RemoveDir(UnicodeString ADir)
+bool SysUtulsRemoveDir(const UnicodeString ADir)
 {
   return ::RemoveDirectoryW(ApiPath(ADir).c_str()) != FALSE;
 }
 
-bool ForceDirectories(UnicodeString ADir)
+bool SysUtulsMoveFile(const UnicodeString LocalFileName, const UnicodeString NewLocalFileName, DWORD AFlags)
+{
+  return ::MoveFileExW(ApiPath(LocalFileName).c_str(), ApiPath(NewLocalFileName).c_str(), AFlags) != FALSE;
+}
+
+bool SysUtulsForceDirectories(const UnicodeString ADir)
 {
   bool Result = true;
   if (ADir.IsEmpty())
@@ -644,87 +630,23 @@ bool ForceDirectories(UnicodeString ADir)
     return false;
   }
   UnicodeString Dir = ::ExcludeTrailingBackslash(ADir);
-  if ((Dir.Length() < 3 + 4) || ::DirectoryExists(Dir)) // \\?\C:
+  if ((Dir.Length() < 3 + 4) || ::SysUtulsDirectoryExists(Dir)) // \\?\C:
   {
     return Result;
   }
   if (::ExtractFilePath(Dir).IsEmpty())
   {
-    return ::CreateDir(Dir);
+    return ::SysUtulsCreateDir(Dir);
   }
-  Result = ::ForceDirectories(::ExtractFilePath(Dir)) && ::CreateDir(Dir);
+  Result = ::SysUtulsForceDirectories(::ExtractFilePath(Dir)) && ::SysUtulsCreateDir(Dir);
   return Result;
 }
 
-bool RemoveFile(UnicodeString AFileName)
+bool SysUtulsRemoveFile(const UnicodeString AFileName)
 {
-  ::DeleteFile(ApiPath(AFileName).c_str());
-  return !::FileExists(AFileName);
+  ::DeleteFileW(ApiPath(AFileName).c_str());
+  return !::SysUtulsFileExists(AFileName);
 }
-
-#if 0
-UnicodeString Format(const wchar_t *Format, ...)
-{
-  va_list Args;
-  va_start(Args, Format);
-  UnicodeString Result = ::FormatV(Format, Args);
-  va_end(Args);
-  PackStr(Result);
-  return Result;
-}
-
-UnicodeString FormatV(const wchar_t *Format, va_list Args)
-{
-  UnicodeString Result;
-  if (Format && *Format)
-  {
-    intptr_t Len = _vscwprintf(Format, Args);
-    wchar_t *Buffer = Result.SetLength(Len + 1);
-    vswprintf(Buffer, Len + 1, Format, Args);
-  }
-  PackStr(Result);
-  return Result;
-}
-
-AnsiString FormatA(const char *Format, ...)
-{
-  va_list Args;
-  va_start(Args, Format);
-  AnsiString Result = ::FormatA(Format, Args);
-  va_end(Args);
-  return Result;
-}
-
-AnsiString FormatA(const char *Format, va_list Args)
-{
-  if (Format && *Format)
-  {
-    intptr_t Len = _vscprintf(Format, Args);
-    AnsiString Result(Len + 1, 0);
-    vsprintf_s(&Result[1], Len + 1, Format, Args);
-    PackStr(Result);
-    return Result;
-  }
-  return AnsiString();
-}
-
-UnicodeString FmtLoadStr(intptr_t Id, ...)
-{
-  UnicodeString Fmt = GetGlobals()->GetMsg(Id);
-  if (!Fmt.IsEmpty())
-  {
-    va_list Args;
-    va_start(Args, Id);
-    intptr_t Len = _vscwprintf(Fmt.c_str(), Args) + 1; // _vscprintf doesn't count terminating '\0'
-    UnicodeString Result(Len, 0);
-    vswprintf_s(&Result[1], Result.Length(), Fmt.c_str(), Args);
-    va_end(Args);
-    return Result;
-  }
-  DEBUG_PRINTF("Unknown resource string id: %d\n", Id);
-  return UnicodeString();
-}
-#endif // #if 0
 
 // Returns the next available word, ignoring whitespace
 static const wchar_t *
@@ -761,7 +683,7 @@ NextWord(const wchar_t *Input)
   return Buffer.c_str();
 }
 
-UnicodeString WrapText(UnicodeString Line, intptr_t MaxWidth)
+UnicodeString WrapText(const UnicodeString Line, intptr_t MaxWidth)
 {
   UnicodeString Result;
 
@@ -919,10 +841,10 @@ void AppendPathDelimiterW(UnicodeString &Str)
   }
 }
 
-UnicodeString ExpandEnvVars(UnicodeString Str)
+UnicodeString ExpandEnvVars(const UnicodeString Str)
 {
-  UnicodeString Buf(NB_MAX_PATH, 0);
-  intptr_t Size = ::ExpandEnvironmentStringsW(Str.c_str(), ToWChar(Buf), ToDWord(NB_MAX_PATH - 1));
+  UnicodeString Buf(nb::NB_MAX_PATH, 0);
+  const intptr_t Size = ::ExpandEnvironmentStringsW(Str.c_str(), ToWChar(Buf), nb::ToDWord(nb::NB_MAX_PATH - 1));
   UnicodeString Result = UnicodeString(Buf.c_str(), Size - 1);
   return Result;
 }
@@ -940,41 +862,41 @@ UnicodeString StringOfChar(const wchar_t Ch, intptr_t Len)
   return Result;
 }
 
-UnicodeString ChangeFileExt(UnicodeString AFileName, UnicodeString AExt,
+UnicodeString ChangeFileExt(const UnicodeString AFileName, const UnicodeString AExt,
   wchar_t Delimiter)
 {
   UnicodeString Result = ::ChangeFileExtension(AFileName, AExt, Delimiter);
   return Result;
 }
 
-UnicodeString ExtractFileExt(UnicodeString AFileName)
+UnicodeString ExtractFileExt(const UnicodeString AFileName)
 {
   UnicodeString Result = ::ExtractFileExtension(AFileName, L'.');
   return Result;
 }
 
-static UnicodeString ExpandFileName(UnicodeString AFileName)
+UnicodeString ExpandFileName(const UnicodeString AFileName)
 {
-  UnicodeString Buf(NB_MAX_PATH + 1, 0);
-  intptr_t Size = ::GetFullPathNameW(ApiPath(AFileName).c_str(), ToDWord(Buf.Length() - 1),
+  UnicodeString Buf(nb::NB_MAX_PATH + 1, 0);
+  intptr_t Size = ::GetFullPathNameW(ApiPath(AFileName).c_str(), nb::ToDWord(Buf.Length() - 1),
       reinterpret_cast<LPWSTR>(ToWChar(Buf)), nullptr);
   if (Size > Buf.Length())
   {
     Buf.SetLength(Size);
-    Size = ::GetFullPathNameW(ApiPath(AFileName).c_str(), ToDWord(Buf.Length() - 1),
+    Size = ::GetFullPathNameW(ApiPath(AFileName).c_str(), nb::ToDWord(Buf.Length() - 1),
         reinterpret_cast<LPWSTR>(ToWChar(Buf)), nullptr);
   }
   UnicodeString Result = UnicodeString(Buf.c_str(), Size);
   return Result;
 }
 
-static UnicodeString GetUniversalName(UnicodeString AFileName)
+static UnicodeString GetUniversalName(const UnicodeString AFileName)
 {
   UnicodeString Result = AFileName;
   return Result;
 }
 
-UnicodeString ExpandUNCFileName(UnicodeString AFileName)
+UnicodeString ExpandUNCFileName(const UnicodeString AFileName)
 {
   UnicodeString Result = ExpandFileName(AFileName);
   if ((Result.Length() >= 3) && (Result[1] == L':') && (::UpCase(Result[1]) >= L'A') &&
@@ -987,7 +909,7 @@ UnicodeString ExpandUNCFileName(UnicodeString AFileName)
 
 static DWORD FindMatchingFile(TSearchRec &Rec)
 {
-  TFileTime LocalFileTime = {0};
+  TFileTime LocalFileTime{};
   DWORD Result;
   while ((Rec.FindData.dwFileAttributes && Rec.ExcludeAttr) != 0)
   {
@@ -1001,8 +923,8 @@ static DWORD FindMatchingFile(TSearchRec &Rec)
   WORD Hi = (Rec.Time & 0xFFFF0000) >> 16;
   WORD Lo = Rec.Time & 0xFFFF;
   FileTimeToDosDateTime(reinterpret_cast<LPFILETIME>(&LocalFileTime), &Hi, &Lo);
-  Rec.Time = (static_cast<Integer>(Hi) << 16) + Lo;
-  Rec.Size = Rec.FindData.nFileSizeLow || static_cast<Int64>(Rec.FindData.nFileSizeHigh) << 32;
+  Rec.Time = (nb::ToIntPtr(Hi) << 16) + Lo;
+  Rec.Size = Rec.FindData.nFileSizeLow || nb::ToInt64(Rec.FindData.nFileSizeHigh) << 32;
   Rec.Attr = Rec.FindData.dwFileAttributes;
   Rec.Name = Rec.FindData.cFileName;
   Result = ERROR_SUCCESS;
@@ -1022,7 +944,7 @@ UnicodeString SysErrorMessage(intptr_t ErrorCode)
 {
   wchar_t Buffer[255];
   intptr_t Len = ::FormatMessageW(FORMAT_MESSAGE_FROM_SYSTEM |
-      FORMAT_MESSAGE_ARGUMENT_ARRAY, nullptr, ToInt(ErrorCode), 0,
+      FORMAT_MESSAGE_ARGUMENT_ARRAY, nullptr, nb::ToInt(ErrorCode), 0,
       static_cast<LPTSTR>(Buffer),
       _countof(Buffer), nullptr);
   while ((Len > 0) && ((Buffer[Len - 1] != 0) &&
@@ -1034,19 +956,22 @@ UnicodeString SysErrorMessage(intptr_t ErrorCode)
   return Result;
 }
 
-UnicodeString ReplaceStrAll(UnicodeString Str, UnicodeString What, UnicodeString ByWhat)
+UnicodeString ReplaceStrAll(const UnicodeString Str, const UnicodeString What, const UnicodeString ByWhat)
 {
   UnicodeString Result = Str;
-  intptr_t Pos = Result.Pos(What);
-  while (Pos > 0)
+  if (What != ByWhat)
   {
-    Result.Replace(Pos, What.Length(), ByWhat.c_str(), ByWhat.Length());
-    Pos = Result.Pos(What);
+    intptr_t Pos = Result.Pos(What);
+    while (Pos > 0)
+    {
+      Result.Replace(Pos, What.Length(), ByWhat.c_str(), ByWhat.Length());
+      Pos = Result.Pos(What);
+    }
   }
   return Result;
 }
 
-UnicodeString ExtractShortPathName(UnicodeString APath)
+UnicodeString ExtractShortPathName(const UnicodeString APath)
 {
   // FIXME
   return APath;
@@ -1057,7 +982,7 @@ UnicodeString ExtractShortPathName(UnicodeString APath)
 // part of the Path.
 //
 // "/foo/bar/baz.txt" --> "/foo/bar/"
-UnicodeString ExtractDirectory(UnicodeString APath, wchar_t Delimiter)
+UnicodeString ExtractDirectory(const UnicodeString APath, wchar_t Delimiter)
 {
   UnicodeString Result = APath.SubString(1, APath.RPos(Delimiter));
   return Result;
@@ -1067,7 +992,7 @@ UnicodeString ExtractDirectory(UnicodeString APath, wchar_t Delimiter)
 // Returns only the Filename part of the Path.
 //
 // "/foo/bar/baz.txt" --> "baz.txt"
-UnicodeString ExtractFilename(UnicodeString APath, wchar_t Delimiter)
+UnicodeString ExtractFilename(const UnicodeString APath, wchar_t Delimiter)
 {
   return APath.SubString(APath.RPos(Delimiter) + 1);
 }
@@ -1078,10 +1003,10 @@ UnicodeString ExtractFilename(UnicodeString APath, wchar_t Delimiter)
 //
 // "/foo/bar/baz.txt" --> ".txt"
 // "/foo/bar/baz" --> ""
-UnicodeString ExtractFileExtension(UnicodeString APath, wchar_t Delimiter)
+UnicodeString ExtractFileExtension(const UnicodeString APath, wchar_t Delimiter)
 {
   UnicodeString FileName = ::ExtractFilename(APath, Delimiter);
-  intptr_t N = FileName.RPos(L'.');
+  const intptr_t N = FileName.RPos(L'.');
   if (N > 0)
   {
     return FileName.SubString(N);
@@ -1097,7 +1022,7 @@ UnicodeString ExtractFileExtension(UnicodeString APath, wchar_t Delimiter)
 // "/foo/bar/baz.txt", "" --> "/foo/bar/baz"
 // "/foo/bar/baz", ".txt" --> "/foo/bar/baz.txt"
 //
-UnicodeString ChangeFileExtension(UnicodeString APath, UnicodeString Ext, wchar_t Delimiter)
+UnicodeString ChangeFileExtension(const UnicodeString APath, const UnicodeString Ext, wchar_t Delimiter)
 {
   UnicodeString FileName = ::ExtractFilename(APath, Delimiter);
   if (FileName.RPos(L'.') > 1)
@@ -1111,7 +1036,7 @@ UnicodeString ChangeFileExtension(UnicodeString APath, UnicodeString Ext, wchar_
     Ext;
 }
 
-UnicodeString ExcludeTrailingBackslash(UnicodeString Str)
+UnicodeString ExcludeTrailingBackslash(const UnicodeString Str)
 {
   UnicodeString Result = Str;
   if ((Result.Length() > 0) && ((Result[Result.Length()] == L'/') ||
@@ -1122,10 +1047,10 @@ UnicodeString ExcludeTrailingBackslash(UnicodeString Str)
   return Result;
 }
 
-UnicodeString IncludeTrailingBackslash(UnicodeString Str)
+UnicodeString IncludeTrailingBackslash(const UnicodeString Str)
 {
   UnicodeString Result = Str;
-  intptr_t L = Result.Length();
+  const intptr_t L = Result.Length();
   if ((L == 0) || ((Result[L] != L'/') && (Result[L] != L'\\')))
   {
     Result += L'\\';
@@ -1133,15 +1058,15 @@ UnicodeString IncludeTrailingBackslash(UnicodeString Str)
   return Result;
 }
 
-UnicodeString IncludeTrailingPathDelimiter(UnicodeString Str)
+UnicodeString IncludeTrailingPathDelimiter(const UnicodeString Str)
 {
   return ::IncludeTrailingBackslash(Str);
 }
 
-UnicodeString ExtractFileDir(UnicodeString Str)
+UnicodeString ExtractFileDir(const UnicodeString Str)
 {
   UnicodeString Result;
-  intptr_t Pos = Str.LastDelimiter(L"/\\");
+  const intptr_t Pos = Str.LastDelimiter(L"/\\");
   // it used to return Path when no slash was found
   if (Pos > 1)
   {
@@ -1154,7 +1079,7 @@ UnicodeString ExtractFileDir(UnicodeString Str)
   return Result;
 }
 
-UnicodeString ExtractFilePath(UnicodeString Str)
+UnicodeString ExtractFilePath(const UnicodeString Str)
 {
   UnicodeString Result = ::ExtractFileDir(Str);
   return Result;
@@ -1166,7 +1091,7 @@ UnicodeString GetCurrentDir()
   return Result;
 }
 
-UnicodeString StrToHex(UnicodeString Str, bool UpperCase, wchar_t Separator)
+UnicodeString StrToHex(const UnicodeString Str, bool UpperCase, wchar_t Separator)
 {
   UnicodeString Result;
   for (intptr_t Index = 1; Index <= Str.Length(); ++Index)
@@ -1180,18 +1105,18 @@ UnicodeString StrToHex(UnicodeString Str, bool UpperCase, wchar_t Separator)
   return Result;
 }
 
-UnicodeString HexToStr(UnicodeString Hex)
+UnicodeString HexToStr(const UnicodeString Hex)
 {
   UnicodeString Digits = "0123456789ABCDEF";
   UnicodeString Result;
-  intptr_t L = Hex.Length() - 1;
+  const intptr_t L = Hex.Length() - 1;
   if (L % 2 == 0)
   {
     for (intptr_t Index = 1; Index <= Hex.Length(); Index += 2)
     {
-      intptr_t P1 = Digits.FindFirstOf(::UpCase(Hex[Index]));
-      intptr_t P2 = Digits.FindFirstOf(::UpCase(Hex[Index + 1]));
-      if ((P1 == NPOS) || (P2 == NPOS))
+      const intptr_t P1 = Digits.FindFirstOf(::UpCase(Hex[Index]));
+      const intptr_t P2 = Digits.FindFirstOf(::UpCase(Hex[Index + 1]));
+      if ((P1 == nb::NPOS) || (P2 == nb::NPOS))
       {
         Result.Clear();
         break;
@@ -1202,24 +1127,24 @@ UnicodeString HexToStr(UnicodeString Hex)
   return Result;
 }
 
-uintptr_t HexToIntPtr(UnicodeString Hex, uintptr_t MinChars)
+uintptr_t HexToIntPtr(const UnicodeString Hex, uintptr_t MinChars)
 {
   UnicodeString Digits = "0123456789ABCDEF";
   uintptr_t Result = 0;
   intptr_t Index = 1;
   while (Index <= Hex.Length())
   {
-    intptr_t A = Digits.FindFirstOf(UpCase(Hex[Index]));
-    if (A == NPOS)
+    const intptr_t A = Digits.FindFirstOf(UpCase(Hex[Index]));
+    if (A == nb::NPOS)
     {
-      if ((static_cast<intptr_t>(MinChars) == NPOS) || (Index <= static_cast<intptr_t>(MinChars)))
+      if ((nb::ToIntPtr(MinChars) == nb::NPOS) || (Index <= nb::ToIntPtr(MinChars)))
       {
         Result = 0;
       }
       break;
     }
 
-    Result = (Result * 16) + (ToInt(A) - 1);
+    Result = (Result * 16) + (nb::ToInt(A) - 1);
 
     ++Index;
   }
@@ -1229,7 +1154,7 @@ uintptr_t HexToIntPtr(UnicodeString Hex, uintptr_t MinChars)
 UnicodeString IntToHex(uintptr_t Int, uintptr_t MinChars)
 {
   UnicodeString Result = FORMAT("%X", Int);
-  intptr_t Pad = MinChars - Result.Length();
+  const intptr_t Pad = MinChars - Result.Length();
   if (Pad > 0)
   {
     for (intptr_t Index = 0; Index < Pad; ++Index)
@@ -1240,14 +1165,14 @@ UnicodeString IntToHex(uintptr_t Int, uintptr_t MinChars)
   return Result;
 }
 
-char HexToChar(UnicodeString Hex, uintptr_t MinChars)
+char HexToChar(const UnicodeString Hex, uintptr_t MinChars)
 {
   return static_cast<char>(HexToIntPtr(Hex, MinChars));
 }
 
 static void ConvertError(intptr_t ErrorID)
 {
-  UnicodeString Msg = FMTLOAD(ErrorID, 0);
+  const UnicodeString Msg = FMTLOAD(ErrorID, 0);
   throw EConvertError(Msg);
 }
 
@@ -1298,10 +1223,10 @@ static bool DecodeDateFully(const TDateTime &DateTime,
   if (I == 4)
   {
     I--;
-    D += ToWord(D1);
+    D += nb::ToWord(D1);
   }
   Y += I;
-  bool Result = IsLeapYear(ToWord(Y));
+  const bool Result = IsLeapYear(nb::ToWord(Y));
   const TDayTable *DayTable = &MonthDays[Result];
   uintptr_t M = 1;
   while (true)
@@ -1343,7 +1268,7 @@ void DecodeTime(const TDateTime &DateTime, uint16_t &Hour,
 
 static bool TryEncodeDate(int Year, int Month, int Day, TDateTime &Date)
 {
-  const TDayTable *DayTable = &MonthDays[IsLeapYear(ToWord(Year))];
+  const TDayTable *DayTable = &MonthDays[IsLeapYear(nb::ToWord(Year))];
   if ((Year >= 1) && (Year <= 9999) && (Month >= 1) && (Month <= 12) &&
     (Day >= 1) && (Day <= (*DayTable)[Month - 1]))
   {
@@ -1351,8 +1276,8 @@ static bool TryEncodeDate(int Year, int Month, int Day, TDateTime &Date)
     {
       Day += (*DayTable)[Index - 1];
     }
-    int Idx = Year - 1;
-    Date = TDateTime(ToDouble(Idx * 365 + Idx / 4 - Idx / 100 + Idx / 400 + Day - DateDelta));
+    const int Idx = Year - 1;
+    Date = TDateTime(nb::ToDouble(Idx * 365 + Idx / 4 - Idx / 100 + Idx / 400 + Day - DateDelta));
     return true;
   }
   return false;
@@ -1374,7 +1299,7 @@ static bool TryEncodeTime(uint32_t Hour, uint32_t Min, uint32_t Sec, uint32_t MS
   bool Result = false;
   if ((Hour < 24) && (Min < 60) && (Sec < 60) && (MSec < 1000))
   {
-    Time = (Hour * 3600000 + Min * 60000 + Sec * 1000 + MSec) / ToDouble(MSecsPerDay);
+    Time = (Hour * 3600000 + Min * 60000 + Sec * 1000 + MSec) / nb::ToDouble(MSecsPerDay);
     Result = true;
   }
   return Result;
@@ -1390,14 +1315,14 @@ TDateTime EncodeTime(uint32_t Hour, uint32_t Min, uint32_t Sec, uint32_t MSec)
   return Result;
 }
 
-TDateTime StrToDateTime(UnicodeString Value)
+TDateTime StrToDateTime(const UnicodeString Value)
 {
   (void)Value;
   ThrowNotImplemented(145);
   return TDateTime();
 }
 
-bool TryStrToDateTime(UnicodeString StrValue, TDateTime &Value,
+bool TryStrToDateTime(const UnicodeString StrValue, TDateTime &Value,
   TFormatSettings &FormatSettings)
 {
   (void)StrValue;
@@ -1407,7 +1332,7 @@ bool TryStrToDateTime(UnicodeString StrValue, TDateTime &Value,
   return false;
 }
 
-UnicodeString DateTimeToStr(UnicodeString &Result, UnicodeString Format,
+UnicodeString DateTimeToStr(UnicodeString &Result, const UnicodeString Format,
   const TDateTime &DateTime)
 {
   (void)Result;
@@ -1436,7 +1361,7 @@ TDateTime Date()
   return Result;
 }
 
-UnicodeString FormatDateTime(UnicodeString Fmt, const TDateTime &ADateTime)
+UnicodeString FormatDateTime(const UnicodeString Fmt, const TDateTime &ADateTime)
 {
   (void)Fmt;
   UnicodeString Result;
@@ -1472,15 +1397,15 @@ UnicodeString FormatDateTime(UnicodeString Fmt, const TDateTime &ADateTime)
   }
   else if (Fmt == L"nnzzz")
   {
-    Result = FORMAT(L"%02d%03d ", Seconds, Milliseconds);
+    Result = FORMAT("%02d%03d ", Seconds, Milliseconds);
   }
   else if (Fmt == L" yyyy-mm-dd hh:nn:ss.zzz ")
   {
-    Result = FORMAT(L" %04d-%02d-%02d %02d:%02d:%02d.%03d ", Year, Month, Day, Hour, Minutes, Seconds, Milliseconds);
+    Result = FORMAT(" %04d-%02d-%02d %02d:%02d:%02d.%03d ", Year, Month, Day, Hour, Minutes, Seconds, Milliseconds);
   }
   else if (Fmt == L"h:nn:ss")
   {
-    Result = FORMAT(L"%02d:%02d:%02d", Hour, Minutes, Seconds);
+    Result = FORMAT("%02d:%02d:%02d", Hour, Minutes, Seconds);
   }
   else
   {
@@ -1503,7 +1428,7 @@ TDateTime SystemTimeToDateTime(const SYSTEMTIME &SystemTime)
   return Result;
 }
 
-UnicodeString UnixExcludeLeadingBackslash(UnicodeString APath)
+UnicodeString UnixExcludeLeadingBackslash(const UnicodeString APath)
 {
   UnicodeString Result = APath;
   while (!Result.IsEmpty() && Result[1] == L'/')
@@ -1522,15 +1447,15 @@ static void IncAMonth(Word &Year, Word &Month, Word &Day, Int64 NumberOfMonths =
     Sign = -1;
   Year = Year + (NumberOfMonths % 12);
   NumberOfMonths = NumberOfMonths / 12;
-  Month += ToWord(NumberOfMonths);
-  if (ToWord(Month - 1) > 11) // if Month <= 0, word(Month-1) > 11)
+  Month += nb::ToWord(NumberOfMonths);
+  if (nb::ToWord(Month - 1) > 11) // if Month <= 0, word(Month-1) > 11)
   {
-    Year += ToWord(Sign);
-    Month += -12 * ToWord(Sign);
+    Year += nb::ToWord(Sign);
+    Month += -12 * nb::ToWord(Sign);
   }
   const TDayTable *DayTable = &MonthDays[IsLeapYear(Year)];
   if (Day > (*DayTable)[Month])
-    Day = ToWord(*DayTable[Month]);
+    Day = nb::ToWord(*DayTable[Month]);
 }
 
 static void ReplaceTime(TDateTime &DateTime, const TDateTime &NewTime)
@@ -1615,7 +1540,7 @@ Boolean IsLeapYear(Word Year)
   return (Year % 4 == 0) && ((Year % 100 != 0) || (Year % 400 == 0));
 }
 
-UnicodeString StripHotkey(UnicodeString AText)
+UnicodeString StripHotkey(const UnicodeString AText)
 {
   UnicodeString Result = AText;
   intptr_t Len = Result.Length();
@@ -1635,12 +1560,12 @@ UnicodeString StripHotkey(UnicodeString AText)
   return Result;
 }
 
-bool StartsText(UnicodeString ASubText, UnicodeString AText)
+bool StartsText(const UnicodeString ASubText, const UnicodeString AText)
 {
   return AText.Pos(ASubText) == 1;
 }
 
-uintptr_t StrToVersionNumber(UnicodeString VersionMumberStr)
+uintptr_t StrToVersionNumber(const UnicodeString VersionMumberStr)
 {
   uintptr_t Result = 0;
   UnicodeString Version = VersionMumberStr;
@@ -1648,7 +1573,7 @@ uintptr_t StrToVersionNumber(UnicodeString VersionMumberStr)
   while (!Version.IsEmpty())
   {
     UnicodeString Num = CutToChar(Version, L'.', true);
-    Result += static_cast<uintptr_t>(Num.ToIntPtr()) << Shift;
+    Result += nb::ToUIntPtr(Num.ToIntPtr()) << Shift;
     if (Shift >= 8)
       Shift -= 8;
   }
@@ -1657,14 +1582,14 @@ uintptr_t StrToVersionNumber(UnicodeString VersionMumberStr)
 
 UnicodeString VersionNumberToStr(uintptr_t VersionNumber)
 {
-  DWORD Major = (VersionNumber >> 16) & 0xFF;
-  DWORD Minor = (VersionNumber >> 8) & 0xFF;
-  DWORD Revision = (VersionNumber & 0xFF);
+  const DWORD Major = (VersionNumber >> 16) & 0xFF;
+  const DWORD Minor = (VersionNumber >> 8) & 0xFF;
+  const DWORD Revision = (VersionNumber & 0xFF);
   UnicodeString Result = FORMAT("%d.%d.%d", Major, Minor, Revision);
   return Result;
 }
 
-TFormatSettings::TFormatSettings(int) :
+TFormatSettings::TFormatSettings(LCID /*LCID*/) noexcept :
   CurrencyFormat(0),
   NegCurrFormat(0),
   ThousandSeparator(0),
@@ -1677,9 +1602,9 @@ TFormatSettings::TFormatSettings(int) :
 {
 }
 
-UnicodeString TPath::Combine(UnicodeString APath, UnicodeString FileName)
+UnicodeString TPath::Combine(const UnicodeString APath, const UnicodeString AFileName)
 {
-  UnicodeString Result = ::IncludeTrailingBackslash(APath) + FileName;
+  UnicodeString Result = ::IncludeTrailingBackslash(APath) + AFileName;
   return Result;
 }
 
@@ -1687,7 +1612,7 @@ UnicodeString TPath::Combine(UnicodeString APath, UnicodeString FileName)
 
 namespace base {
 
-DWORD FindFirst(UnicodeString AFileName, DWORD LocalFileAttrs, TSearchRec &Rec)
+DWORD FindFirst(const UnicodeString AFileName, DWORD LocalFileAttrs, TSearchRec &Rec)
 {
   const DWORD faSpecial = faHidden | faSysFile | faDirectory;
   Rec.ExcludeAttr = (~LocalFileAttrs) & faSpecial;
@@ -1723,7 +1648,7 @@ DWORD FindClose(TSearchRec &Rec)
   DWORD Result = 0;
   if (Rec.FindHandle != INVALID_HANDLE_VALUE)
   {
-    ::FindClose(Rec.FindHandle);
+    Result = FALSE != ::FindClose(Rec.FindHandle);
     Rec.FindHandle = INVALID_HANDLE_VALUE;
   }
   return Result;

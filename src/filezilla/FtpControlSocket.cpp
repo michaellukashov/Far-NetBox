@@ -1,4 +1,4 @@
-
+//---------------------------------------------------------------------------
 #include "stdafx.h"
 #include "FtpControlSocket.h"
 #include "MainThread.h"
@@ -52,7 +52,7 @@ public:
   t_directory *pDirectoryListing;
   int nWaitNextOpState;
   CServerPath MKDCurrent;
-  rde::list<CString> MKDSegments;
+  nb::list_t<CString> MKDSegments;
   int nMKDOpState;
   bool hasRemoteDate;
   t_directory::t_direntry::t_date remoteDate;
@@ -142,7 +142,7 @@ public:
   virtual ~CMakeDirData() {}
   CServerPath path;
   CServerPath Current;
-  rde::list<CString> Segments;
+  nb::list_t<CString> Segments;
 };
 
 #define MKD_INIT -1
@@ -153,7 +153,7 @@ public:
 /////////////////////////////////////////////////////////////////////////////
 // CFtpControlSocket
 
-rde::list<CFtpControlSocket::t_ActiveList> CFtpControlSocket::m_InstanceList[2];
+nb::list_t<CFtpControlSocket::t_ActiveList> CFtpControlSocket::m_InstanceList[2];
 
 CTime CFtpControlSocket::m_CurrentTransferTime[2] = { CTime::GetCurrentTime(), CTime::GetCurrentTime() };
 _int64 CFtpControlSocket::m_CurrentTransferLimit[2] = {0, 0};
@@ -1253,7 +1253,7 @@ void CFtpControlSocket::OnReceive(int nErrorCode)
     buffer = NULL;
     numread = Buf.GetLength();
     buffer = nb::chcalloc(numread);
-    memcpy(buffer, Buf.GetBuffer(), numread);
+    libmemcpy_memcpy(buffer, Buf.GetBuffer(), numread);
   }
 
   for (int i=0; i < numread; i++)
@@ -1515,14 +1515,14 @@ BOOL CFtpControlSocket::Send(CString str)
       if (!m_sendBuffer)
       {
         m_sendBuffer = nb::chcalloc(sendLen - res);
-        memcpy(m_sendBuffer, utf8 + res, sendLen - res);
+        libmemcpy_memcpy(m_sendBuffer, utf8 + res, sendLen - res);
         m_sendBufferLen = sendLen - res;
       }
       else
       {
         char *tmp = nb::chcalloc(m_sendBufferLen + sendLen - res);
-        memcpy(tmp, m_sendBuffer, m_sendBufferLen);
-        memcpy(tmp + m_sendBufferLen, utf8 + res, sendLen - res);
+        libmemcpy_memcpy(tmp, m_sendBuffer, m_sendBufferLen);
+        libmemcpy_memcpy(tmp + m_sendBufferLen, utf8 + res, sendLen - res);
         nb_free(m_sendBuffer);
         m_sendBuffer = tmp;
         m_sendBufferLen += sendLen - res;
@@ -1562,14 +1562,14 @@ BOOL CFtpControlSocket::Send(CString str)
       if (!m_sendBuffer)
       {
         m_sendBuffer = nb::chcalloc(sendLen - res);
-        memcpy(m_sendBuffer, utf8 + res, sendLen - res);
+        libmemcpy_memcpy(m_sendBuffer, utf8 + res, sendLen - res);
         m_sendBufferLen = sendLen - res;
       }
       else
       {
         char *tmp = nb::chcalloc(m_sendBufferLen + sendLen - res);
-        memcpy(tmp, m_sendBuffer, m_sendBufferLen);
-        memcpy(tmp + m_sendBufferLen, utf8 + res, sendLen - res);
+        libmemcpy_memcpy(tmp, m_sendBuffer, m_sendBufferLen);
+        libmemcpy_memcpy(tmp + m_sendBufferLen, utf8 + res, sendLen - res);
         nb_free(m_sendBuffer);
         m_sendBuffer = tmp;
         m_sendBufferLen += sendLen - res;
@@ -1599,14 +1599,14 @@ BOOL CFtpControlSocket::Send(CString str)
       if (!m_sendBuffer)
       {
         m_sendBuffer = nb::chcalloc(sendLen - res);
-        memcpy(m_sendBuffer, lpszAsciiSend, sendLen - res);
+        libmemcpy_memcpy(m_sendBuffer, lpszAsciiSend, sendLen - res);
         m_sendBufferLen = sendLen - res;
       }
       else
       {
         char *tmp = nb::chcalloc(m_sendBufferLen + sendLen - res);
-        memcpy(tmp, m_sendBuffer, m_sendBufferLen);
-        memcpy(tmp + m_sendBufferLen, lpszAsciiSend + res, sendLen - res);
+        libmemcpy_memcpy(tmp, m_sendBuffer, m_sendBufferLen);
+        libmemcpy_memcpy(tmp + m_sendBufferLen, lpszAsciiSend + res, sendLen - res);
         nb_free(m_sendBuffer);
         m_sendBuffer = tmp;
         m_sendBufferLen += sendLen - res;
@@ -5776,9 +5776,9 @@ void CFtpControlSocket::SetAsyncRequestResult(int nAction, CAsyncRequestData *pD
   }
 }
 
-int CFtpControlSocket::OnLayerCallback(rde::list<t_callbackMsg>& callbacks)
+int CFtpControlSocket::OnLayerCallback(nb::list_t<t_callbackMsg>& callbacks)
 {
-  for (rde::list<t_callbackMsg>::iterator iter = callbacks.begin(); iter != callbacks.end(); iter++)
+  for (nb::list_t<t_callbackMsg>::iterator iter = callbacks.begin(); iter != callbacks.end(); iter++)
   {
     if (iter->nType == LAYERCALLBACK_STATECHANGE)
     {
@@ -5971,7 +5971,7 @@ _int64 CFtpControlSocket::GetSpeedLimit(enum transferDirection direction, CTime 
   return ( _int64)1000000000000;
 }
 
-_int64 CFtpControlSocket::GetAbleToUDSize( bool & beenWaiting, CTime & curTime, _int64 & curLimit, rde::list<CFtpControlSocket::t_ActiveList>::iterator & iter, enum transferDirection direction, int nBufSize)
+_int64 CFtpControlSocket::GetAbleToUDSize( bool & beenWaiting, CTime & curTime, _int64 & curLimit, nb::list_t<CFtpControlSocket::t_ActiveList>::iterator & iter, enum transferDirection direction, int nBufSize)
 {
   beenWaiting = false;
 
@@ -6026,7 +6026,7 @@ _int64 CFtpControlSocket::GetAbleToUDSize( bool & beenWaiting, CTime & curTime, 
     int64_t nMax = curLimit / (sz ? sz : 1);
     _int64 nLeft = 0;
     int nCount = 0;
-    rde::list<t_ActiveList>::iterator iter2;
+    nb::list_t<t_ActiveList>::iterator iter2;
     for (iter2 = m_InstanceList[direction].begin(); iter2 != m_InstanceList[direction].end(); iter2++)
     {
       if (iter2->nBytesAvailable>0)
@@ -6068,7 +6068,7 @@ _int64 CFtpControlSocket::GetAbleToUDSize( bool & beenWaiting, CTime & curTime, 
 _int64 CFtpControlSocket::GetAbleToTransferSize(enum transferDirection direction, bool &beenWaiting, int nBufSize)
 {
   m_SpeedLimitSync.Lock();
-  rde::list<t_ActiveList>::iterator iter;
+  nb::list_t<t_ActiveList>::iterator iter;
   for (iter = m_InstanceList[direction].begin(); iter != m_InstanceList[direction].end(); iter++)
     if (iter->pOwner == this)
       break;
@@ -6092,7 +6092,7 @@ BOOL CFtpControlSocket::RemoveActiveTransfer()
 {
   BOOL bFound = FALSE;
   m_SpeedLimitSync.Lock();
-  rde::list<t_ActiveList>::iterator iter;
+  nb::list_t<t_ActiveList>::iterator iter;
   for (int i = 0; i < 2; i++)
   {
     for (iter = m_InstanceList[i].begin(); iter != m_InstanceList[i].end(); iter++)
@@ -6110,7 +6110,7 @@ BOOL CFtpControlSocket::RemoveActiveTransfer()
 BOOL CFtpControlSocket::SpeedLimitAddTransferredBytes(enum transferDirection direction, _int64 nBytesTransferred)
 {
   m_SpeedLimitSync.Lock();
-  rde::list<t_ActiveList>::iterator iter;
+  nb::list_t<t_ActiveList>::iterator iter;
   for (iter = m_InstanceList[direction].begin(); iter != m_InstanceList[direction].end(); iter++)
     if (iter->pOwner == this)
     {
@@ -6412,7 +6412,7 @@ void CFtpControlSocket::OnSend(int nErrorCode)
   else
   {
     char *tmp = nb::chcalloc(m_sendBufferLen - res);
-    memcpy(tmp, m_sendBuffer + res, m_sendBufferLen - res);
+    libmemcpy_memcpy(tmp, m_sendBuffer + res, m_sendBufferLen - res);
     nb_free(m_sendBuffer);
     m_sendBuffer = tmp;
     m_sendBufferLen -= res;
@@ -6509,7 +6509,7 @@ bool CFtpControlSocket::CheckForcePasvIp(CString & host)
   return result;
 }
 
-
+//---------------------------------------------------------------------------
 ftp_capabilities_t TFTPServerCapabilities::GetCapability(ftp_capability_names_t Name) const
 {
   t_cap tcap = FCapabilityMap[Name];

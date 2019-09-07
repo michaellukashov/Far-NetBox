@@ -15,16 +15,25 @@
 
 TCustomFarPlugin *CreateFarPlugin(HINSTANCE HInst)
 {
-  return new TWinSCPPlugin(HInst);
+  TCustomFarPlugin *Result = new TWinSCPPlugin(HInst);
+  Result->Initialize();
+  return Result;
 }
 
-TWinSCPPlugin::TWinSCPPlugin(HINSTANCE HInst) :
+void DestroyFarPlugin(TCustomFarPlugin *& Plugin)
+{
+  DebugAssert(FarPlugin);
+  Plugin->Finalize();
+  SAFE_DESTROY(Plugin);
+}
+
+TWinSCPPlugin::TWinSCPPlugin(HINSTANCE HInst) noexcept :
   TCustomFarPlugin(OBJECT_CLASS_TWinSCPPlugin, HInst),
   FInitialized(false)
 {
 }
 
-TWinSCPPlugin::~TWinSCPPlugin()
+TWinSCPPlugin::~TWinSCPPlugin() noexcept
 {
   if (FInitialized)
   {
@@ -83,7 +92,7 @@ bool TWinSCPPlugin::ConfigureEx(intptr_t /*Item*/)
 {
   bool Change = false;
 
-  std::unique_ptr<TFarMenuItems> MenuItems(new TFarMenuItems());
+  std::unique_ptr<TFarMenuItems> MenuItems(std::make_unique<TFarMenuItems>());
   intptr_t MInterface = MenuItems->Add(GetMsg(NB_CONFIG_INTERFACE));
   intptr_t MConfirmations = MenuItems->Add(GetMsg(NB_CONFIG_CONFIRMATIONS));
   intptr_t MPanel = MenuItems->Add(GetMsg(NB_CONFIG_PANEL));
@@ -100,7 +109,7 @@ bool TWinSCPPlugin::ConfigureEx(intptr_t /*Item*/)
 
   do
   {
-    Result = Menu(FMENU_WRAPMODE, GetMsg(NB_PLUGIN_TITLE), L"", MenuItems.get());
+    Result = Menu(FMENU_WRAPMODE, GetMsg(NB_PLUGIN_TITLE), "", MenuItems.get());
 
     if (Result >= 0)
     {
@@ -229,7 +238,7 @@ TCustomFarFileSystem *TWinSCPPlugin::OpenPluginEx(intptr_t OpenFrom, intptr_t It
   }
   else
   {
-    FileSystem.reset(new TWinSCPFileSystem(this));
+    FileSystem = std::make_unique<TWinSCPFileSystem>(this);
     FileSystem->Init(nullptr);
 
     if (OpenFrom == OPEN_DISKMENU || OpenFrom == OPEN_PLUGINSMENU ||
@@ -243,7 +252,7 @@ TCustomFarFileSystem *TWinSCPPlugin::OpenPluginEx(intptr_t OpenFrom, intptr_t It
       UnicodeString CommandLine = reinterpret_cast<wchar_t *>(Item);
       if (OpenFrom == OPEN_SHORTCUT)
       {
-        intptr_t P = CommandLine.Pos(L"\1");
+        const intptr_t P = CommandLine.Pos(L"\1");
         if (P > 0)
         {
           Directory = CommandLine.SubString(P + 1, CommandLine.Length() - P);
@@ -266,7 +275,7 @@ TCustomFarFileSystem *TWinSCPPlugin::OpenPluginEx(intptr_t OpenFrom, intptr_t It
       }
       DebugAssert(StoredSessions);
       bool DefaultsOnly = false;
-      std::unique_ptr<TOptions> Options(new TProgramParams());
+      std::unique_ptr<TOptions> Options(std::make_unique<TProgramParams>());
       ParseCommandLine(CommandLine, Options.get());
       std::unique_ptr<TSessionData> Session(StoredSessions->ParseUrl(CommandLine, Options.get(), DefaultsOnly));
       if (DefaultsOnly)
@@ -287,7 +296,7 @@ TCustomFarFileSystem *TWinSCPPlugin::OpenPluginEx(intptr_t OpenFrom, intptr_t It
     else if (OpenFrom == OPEN_ANALYSE)
     {
       const wchar_t *XmlFileName = reinterpret_cast<const wchar_t *>(Item);
-      std::unique_ptr<THierarchicalStorage> ImportStorage(new TXmlStorage(XmlFileName, GetConfiguration()->GetStoredSessionsSubKey()));
+      std::unique_ptr<THierarchicalStorage> ImportStorage(std::make_unique<TXmlStorage>(XmlFileName, GetConfiguration()->GetStoredSessionsSubKey()));
       ImportStorage->Init();
       ImportStorage->SetAccessMode(smRead);
       if (!(ImportStorage->OpenSubKey(GetConfiguration()->GetStoredSessionsSubKey(), false) &&
@@ -296,8 +305,8 @@ TCustomFarFileSystem *TWinSCPPlugin::OpenPluginEx(intptr_t OpenFrom, intptr_t It
         DebugAssert(false);
         Abort();
       }
-      UnicodeString SessionName = ::PuttyUnMungeStr(ImportStorage->ReadStringRaw("Session", L""));
-      std::unique_ptr<TSessionData> Session(new TSessionData(SessionName));
+      const UnicodeString SessionName = ::PuttyUnMungeStr(ImportStorage->ReadStringRaw("Session", ""));
+      std::unique_ptr<TSessionData> Session(std::make_unique<TSessionData>(SessionName));
       Session->Load(ImportStorage.get(), false);
       Session->SetModified(true);
       if (!Session->GetCanLogin())
@@ -353,12 +362,12 @@ void TWinSCPPlugin::ParseCommandLine(UnicodeString &CommandLine,
 
 void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
 {
-  std::unique_ptr<TFarMenuItems> MenuItems(new TFarMenuItems());
-  TWinSCPFileSystem *FileSystem;
+  std::unique_ptr<TFarMenuItems> MenuItems(std::make_unique<TFarMenuItems>());
+  TWinSCPFileSystem *WinSCPFileSystem;
   TWinSCPFileSystem *AnotherFileSystem;
-  FileSystem = dyn_cast<TWinSCPFileSystem>(GetPanelFileSystem());
+  WinSCPFileSystem = dyn_cast<TWinSCPFileSystem>(GetPanelFileSystem());
   AnotherFileSystem = dyn_cast<TWinSCPFileSystem>(GetPanelFileSystem(true));
-  bool FSConnected = (FileSystem != nullptr) && FileSystem->Connected();
+  bool FSConnected = (WinSCPFileSystem != nullptr) && WinSCPFileSystem->Connected();
   bool AnotherFSConnected = (AnotherFileSystem != nullptr) && AnotherFileSystem->Connected();
   bool FSVisible = FSConnected && FromFileSystem;
   bool AnyFSVisible = (FSConnected || AnotherFSConnected) && FromFileSystem;
@@ -386,43 +395,43 @@ void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
   intptr_t MConfigure = MenuItems->Add(GetMsg(NB_MENU_COMMANDS_CONFIGURE));
   intptr_t MAbout = MenuItems->Add(GetMsg(NB_CONFIG_ABOUT));
 
-  MenuItems->SetDisabled(MLog, !FSVisible || (FileSystem && !FileSystem->IsLogging()));
-  MenuItems->SetDisabled(MClearCaches, !FSVisible || (FileSystem && FileSystem->AreCachesEmpty()));
-  MenuItems->SetDisabled(MPutty, !FSVisible || !::FileExists(::ExpandEnvVars(ExtractProgram(GetFarConfiguration()->GetPuttyPath()))));
-  MenuItems->SetDisabled(MEditHistory, !FSConnected || (FileSystem && FileSystem->IsEditHistoryEmpty()));
-  MenuItems->SetChecked(MSynchronizeBrowsing, FSVisible && (FileSystem && FileSystem->IsSynchronizedBrowsing()));
-  MenuItems->SetDisabled(MPageant, !::FileExists(::ExpandEnvVars(ExtractProgram(GetFarConfiguration()->GetPageantPath()))));
-  MenuItems->SetDisabled(MPuttygen, !::FileExists(::ExpandEnvVars(ExtractProgram(GetFarConfiguration()->GetPuttygenPath()))));
+  MenuItems->SetDisabled(MLog, !FSVisible || (WinSCPFileSystem && !WinSCPFileSystem->IsLogging()));
+  MenuItems->SetDisabled(MClearCaches, !FSVisible || (WinSCPFileSystem && WinSCPFileSystem->AreCachesEmpty()));
+  MenuItems->SetDisabled(MPutty, !FSVisible || !::SysUtulsFileExists(::ExpandEnvVars(ExtractProgram(GetFarConfiguration()->GetPuttyPath()))));
+  MenuItems->SetDisabled(MEditHistory, !FSConnected || (WinSCPFileSystem && WinSCPFileSystem->IsEditHistoryEmpty()));
+  MenuItems->SetChecked(MSynchronizeBrowsing, FSVisible && (WinSCPFileSystem && WinSCPFileSystem->IsSynchronizedBrowsing()));
+  MenuItems->SetDisabled(MPageant, !::SysUtulsFileExists(::ExpandEnvVars(ExtractProgram(GetFarConfiguration()->GetPageantPath()))));
+  MenuItems->SetDisabled(MPuttygen, !::SysUtulsFileExists(::ExpandEnvVars(ExtractProgram(GetFarConfiguration()->GetPuttygenPath()))));
 
-  intptr_t Result = Menu(FMENU_WRAPMODE, GetMsg(NB_MENU_COMMANDS), L"", MenuItems.get());
+  intptr_t Result = Menu(FMENU_WRAPMODE, GetMsg(NB_MENU_COMMANDS), "", MenuItems.get());
 
   if (Result >= 0)
   {
-    if ((Result == MLog) && FileSystem)
+    if ((Result == MLog) && WinSCPFileSystem)
     {
-      DebugAssert(FileSystem);
-      FileSystem->ShowLog();
+      DebugAssert(WinSCPFileSystem);
+      WinSCPFileSystem->ShowLog();
     }
-    else if ((Result == MAttributes) && FileSystem)
+    else if ((Result == MAttributes) && WinSCPFileSystem)
     {
-      DebugAssert(FileSystem);
-      FileSystem->FileProperties();
+      DebugAssert(WinSCPFileSystem);
+      WinSCPFileSystem->FileProperties();
     }
-    else if ((Result == MLink) && FileSystem)
+    else if ((Result == MLink) && WinSCPFileSystem)
     {
-      DebugAssert(FileSystem);
-      FileSystem->CreateLink();
+      DebugAssert(WinSCPFileSystem);
+      WinSCPFileSystem->RemoteCreateLink();
     }
-    else if ((Result == MApplyCommand) && FileSystem)
+    else if ((Result == MApplyCommand) && WinSCPFileSystem)
     {
-      DebugAssert(FileSystem);
-      FileSystem->ApplyCommand();
+      DebugAssert(WinSCPFileSystem);
+      WinSCPFileSystem->ApplyCommand();
     }
     else if (Result == MFullSynchronize)
     {
-      if (FileSystem != nullptr)
+      if (WinSCPFileSystem != nullptr)
       {
-        FileSystem->FullSynchronize(true);
+        WinSCPFileSystem->FullSynchronize(true);
       }
       else
       {
@@ -433,9 +442,9 @@ void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
     }
     else if (Result == MSynchronize)
     {
-      if (FileSystem != nullptr)
+      if (WinSCPFileSystem != nullptr)
       {
-        FileSystem->Synchronize();
+        WinSCPFileSystem->Synchronize();
       }
       else
       {
@@ -444,19 +453,19 @@ void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
           AnotherFileSystem->Synchronize();
       }
     }
-    else if ((Result == MQueue) && FileSystem)
+    else if ((Result == MQueue) && WinSCPFileSystem)
     {
-      DebugAssert(FileSystem);
-      FileSystem->QueueShow(false);
+      DebugAssert(WinSCPFileSystem);
+      WinSCPFileSystem->QueueShow(false);
     }
-    else if ((Result == MAddBookmark || Result == MOpenDirectory) && FileSystem)
+    else if ((Result == MAddBookmark || Result == MOpenDirectory) && WinSCPFileSystem)
     {
-      DebugAssert(FileSystem);
-      FileSystem->OpenDirectory(Result == MAddBookmark);
+      DebugAssert(WinSCPFileSystem);
+      WinSCPFileSystem->OpenDirectory(Result == MAddBookmark);
     }
-    else if (Result == MHomeDirectory && FileSystem)
+    else if (Result == MHomeDirectory && WinSCPFileSystem)
     {
-      FileSystem->HomeDirectory();
+      WinSCPFileSystem->HomeDirectory();
     }
     else if (Result == MConfigure)
     {
@@ -466,15 +475,15 @@ void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
     {
       AboutDialog();
     }
-    else if ((Result == MPutty) && FileSystem)
+    else if ((Result == MPutty) && WinSCPFileSystem)
     {
-      DebugAssert(FileSystem);
-      FileSystem->OpenSessionInPutty();
+      DebugAssert(WinSCPFileSystem);
+      WinSCPFileSystem->OpenSessionInPutty();
     }
-    else if ((Result == MEditHistory) && FileSystem)
+    else if ((Result == MEditHistory) && WinSCPFileSystem)
     {
-      DebugAssert(FileSystem);
-      FileSystem->EditHistory();
+      DebugAssert(WinSCPFileSystem);
+      WinSCPFileSystem->EditHistory();
     }
     else if (Result == MPageant || Result == MPuttygen)
     {
@@ -484,20 +493,20 @@ void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
       SplitCommand(::ExpandEnvVars(Path), Program, Params, Dir);
       ::ExecuteShellChecked(Program, Params);
     }
-    else if ((Result == MClearCaches) && FileSystem)
+    else if ((Result == MClearCaches) && WinSCPFileSystem)
     {
-      DebugAssert(FileSystem);
-      FileSystem->ClearCaches();
+      DebugAssert(WinSCPFileSystem);
+      WinSCPFileSystem->ClearCaches();
     }
-    else if ((Result == MSynchronizeBrowsing) && FileSystem)
+    else if ((Result == MSynchronizeBrowsing) && WinSCPFileSystem)
     {
-      DebugAssert(FileSystem != nullptr);
-      FileSystem->ToggleSynchronizeBrowsing();
+      DebugAssert(WinSCPFileSystem != nullptr);
+      WinSCPFileSystem->ToggleSynchronizeBrowsing();
     }
-    else if (Result == MInformation && FileSystem)
+    else if (Result == MInformation && WinSCPFileSystem)
     {
-      DebugAssert(FileSystem);
-      FileSystem->ShowInformation();
+      DebugAssert(WinSCPFileSystem);
+      WinSCPFileSystem->ShowInformation();
     }
     else
     {
@@ -533,24 +542,22 @@ void TWinSCPPlugin::HandleException(Exception *E, int OpMode)
   }
 }
 
+NB_DEFINE_CLASS_ID(TFarMessageData);
 struct TFarMessageData : public TObject
 {
   NB_DISABLE_COPY(TFarMessageData)
 public:
-  static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TFarMessageData); }
-  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TFarMessageData) || TObject::is(Kind); }
+  static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TFarMessageData); }
+  bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TFarMessageData) || TObject::is(Kind); }
 public:
-  TFarMessageData() :
-    TObject(OBJECT_CLASS_TFarMessageData),
-    Params(nullptr),
-    ButtonCount(0)
+  TFarMessageData() noexcept : TObject(OBJECT_CLASS_TFarMessageData)
   {
-    ClearArray(Buttons);
+    nb::ClearArray(Buttons);
   }
 
-  const TMessageParams *Params;
-  uintptr_t Buttons[15 + 1];
-  uintptr_t ButtonCount;
+  const TMessageParams *Params{nullptr};
+  uint32_t Buttons[15 + 1]{};
+  uintptr_t ButtonCount{0};
 };
 
 void TWinSCPPlugin::MessageClick(void *Token, uintptr_t Result, bool &Close)
@@ -558,7 +565,7 @@ void TWinSCPPlugin::MessageClick(void *Token, uintptr_t Result, bool &Close)
   DebugAssert(Token);
   TFarMessageData &Data = *get_as<TFarMessageData>(Token);
 
-  DebugAssert(Result != static_cast<uintptr_t>(-1) && Result < Data.ButtonCount);
+  DebugAssert(Result != nb::ToUIntPtr(-1) && Result < Data.ButtonCount);
 
   if ((Data.Params != nullptr) && (Data.Params->Aliases != nullptr))
   {
@@ -566,9 +573,10 @@ void TWinSCPPlugin::MessageClick(void *Token, uintptr_t Result, bool &Close)
     {
       const TQueryButtonAlias &Alias = Data.Params->Aliases[Index];
       if ((Alias.Button == Data.Buttons[Result]) &&
-        (Alias.OnClick))
+        (Alias.OnSubmit))
       {
-        Alias.OnClick(nullptr);
+        uint32_t Answer = 0;
+        Alias.OnSubmit(nullptr, Answer);
         Close = false;
         break;
       }
@@ -576,192 +584,198 @@ void TWinSCPPlugin::MessageClick(void *Token, uintptr_t Result, bool &Close)
   }
 }
 
-uintptr_t TWinSCPPlugin::MoreMessageDialog(UnicodeString Str,
-  TStrings *MoreMessages, TQueryType Type, uintptr_t Answers,
+uint32_t TWinSCPPlugin::MoreMessageDialog(const UnicodeString Str,
+  TStrings *MoreMessages, TQueryType Type, uint32_t Answers,
   const TMessageParams *Params)
 {
-  uintptr_t Result;
+  uint32_t Result;
   UnicodeString DialogStr = Str;
-  std::unique_ptr<TStrings> ButtonLabels(new TStringList());
-  uintptr_t Flags = 0;
-
-  if (Params != nullptr)
+  std::unique_ptr<TStrings> ButtonLabels(std::make_unique<TStringList>());
+  try__finally
   {
-    Flags = Params->Flags;
-  }
+    uintptr_t Flags = 0;
 
-  intptr_t TitleId = 0;
-  switch (Type)
-  {
-  case qtConfirmation:
-    TitleId = MSG_TITLE_CONFIRMATION;
-    break;
-  case qtInformation:
-    TitleId = MSG_TITLE_INFORMATION;
-    break;
-  case qtError:
-    TitleId = MSG_TITLE_ERROR;
-    Flags |= FMSG_WARNING;
-    break;
-  case qtWarning:
-    TitleId = MSG_TITLE_WARNING;
-    Flags |= FMSG_WARNING;
-    break;
-  default:
-    DebugAssert(false);
-  }
-  TFarMessageData Data;
-  Data.Params = Params;
-
-  // make sure to do the check on full answers, not on reduced "timer answers"
-  if (((Answers & qaAbort) && (Answers & qaRetry)) ||
-    (GetTopDialog() != nullptr))
-  {
-    // use warning colors for abort/retry confirmation dialog
-    Flags |= FMSG_WARNING;
-  }
-
-  if (Params != nullptr)
-  {
-    if (Params->Timer > 0)
+    if (Params != nullptr)
     {
-      if (Params->TimerAnswers > 0)
+      Flags = Params->Flags;
+    }
+
+    intptr_t TitleId = 0;
+    switch (Type)
+    {
+    case qtConfirmation:
+      TitleId = MSG_TITLE_CONFIRMATION;
+      break;
+    case qtInformation:
+      TitleId = MSG_TITLE_INFORMATION;
+      break;
+    case qtError:
+      TitleId = MSG_TITLE_ERROR;
+      Flags |= FMSG_WARNING;
+      break;
+    case qtWarning:
+      TitleId = MSG_TITLE_WARNING;
+      Flags |= FMSG_WARNING;
+      break;
+    default:
+      DebugAssert(false);
+    }
+    TFarMessageData Data;
+    Data.Params = Params;
+
+    // make sure to do the check on full answers, not on reduced "timer answers"
+    if (((Answers & qaAbort) && (Answers & qaRetry)) ||
+        (GetTopDialog() != nullptr))
+    {
+      // use warning colors for abort/retry confirmation dialog
+      Flags |= FMSG_WARNING;
+    }
+
+    if (Params != nullptr)
+    {
+      if (Params->Timer > 0)
       {
-        Answers = Params->TimerAnswers;
-      }
-      if (!Params->TimerMessage.IsEmpty())
-      {
-        DialogStr = Params->TimerMessage;
+        if (Params->TimerAnswers > 0)
+        {
+          Answers = Params->TimerAnswers;
+        }
+        if (!Params->TimerMessage.IsEmpty())
+        {
+          DialogStr = Params->TimerMessage;
+        }
       }
     }
-  }
 
-  uintptr_t AAnswers = Answers;
-  bool NeverAskAgainCheck = (Params != nullptr) && FLAGSET(Params->Params, qpNeverAskAgainCheck);
-  bool NeverAskAgainPending = NeverAskAgainCheck;
-  uintptr_t TimeoutButton = 0;
+    uintptr_t AAnswers = Answers;
+    bool NeverAskAgainCheck = (Params != nullptr) && FLAGSET(Params->Params, mpNeverAskAgainCheck);
+    bool NeverAskAgainPending = NeverAskAgainCheck;
+    uintptr_t TimeoutButton = 0;
 
 #define ADD_BUTTON_EX(TYPE, CANNEVERASK) \
-    if (AAnswers & qa ## TYPE) \
-    { \
-      ButtonLabels->Add(GetMsg(MSG_BUTTON_ ## TYPE)); \
-      Data.Buttons[Data.ButtonCount] = qa ## TYPE; \
-      Data.ButtonCount++; \
-      AAnswers -= qa ## TYPE; \
-      if ((Params != nullptr) && (Params->Timeout != 0) && \
-          (Params->TimeoutAnswer == qa ## TYPE)) \
+      if (AAnswers & qa ## TYPE) \
       { \
-        TimeoutButton = ButtonLabels->GetCount() - 1; \
-      } \
-      if (NeverAskAgainPending && CANNEVERASK) \
-      { \
-        ButtonLabels->SetObj(ButtonLabels->GetCount() - 1, ToObj(true)); \
-        NeverAskAgainPending = false; \
-      } \
-    }
+        ButtonLabels->Add(GetMsg(MSG_BUTTON_ ## TYPE)); \
+        Data.Buttons[Data.ButtonCount] = qa ## TYPE; \
+        Data.ButtonCount++; \
+        AAnswers -= qa ## TYPE; \
+        if ((Params != nullptr) && (Params->Timeout != 0) && \
+            (Params->TimeoutAnswer == qa ## TYPE)) \
+        { \
+          TimeoutButton = ButtonLabels->GetCount() - 1; \
+        } \
+        if (NeverAskAgainPending && CANNEVERASK) \
+        { \
+          ButtonLabels->SetObj(ButtonLabels->GetCount() - 1, ToObj(true)); \
+          NeverAskAgainPending = false; \
+        } \
+      }
 #define ADD_BUTTON(TYPE) ADD_BUTTON_EX(TYPE, false)
 #pragma warning(push)
 #pragma warning(disable: 4127)
-  ADD_BUTTON_EX(Yes, true);
-  ADD_BUTTON(No);
-  ADD_BUTTON_EX(OK, true);
-  ADD_BUTTON(Cancel);
-  ADD_BUTTON(Abort);
-  ADD_BUTTON(Retry);
-  ADD_BUTTON(Ignore);
-  ADD_BUTTON(Skip);
-  ADD_BUTTON(All);
-  ADD_BUTTON(NoToAll);
-  ADD_BUTTON_EX(YesToAll, true);
-  ADD_BUTTON(Help);
+    ADD_BUTTON_EX(Yes, true);
+    ADD_BUTTON(No);
+    ADD_BUTTON_EX(OK, true);
+    ADD_BUTTON(Cancel);
+    ADD_BUTTON(Abort);
+    ADD_BUTTON(Retry);
+    ADD_BUTTON(Ignore);
+    ADD_BUTTON(Skip);
+    ADD_BUTTON(All);
+    ADD_BUTTON(NoToAll);
+    ADD_BUTTON_EX(YesToAll, true);
+    ADD_BUTTON(Help);
 #pragma warning(pop)
 #undef ADD_BUTTON
 #undef ADD_BUTTON_EX
 
-  DebugUsedParam(AAnswers);
-  DebugAssert(!AAnswers);
-  DebugUsedParam(NeverAskAgainPending);
-  DebugAssert(!NeverAskAgainPending);
+    DebugUsedParam(AAnswers);
+    DebugAssert(!AAnswers);
+    DebugUsedParam(NeverAskAgainPending);
+    DebugAssert(!NeverAskAgainPending);
 
-  uintptr_t DefaultButtonIndex = 0;
-  if ((Params != nullptr) && (Params->Aliases != nullptr))
-  {
-    for (uintptr_t bi = 0; bi < Data.ButtonCount; bi++)
+    uintptr_t DefaultButtonIndex = 0;
+    if ((Params != nullptr) && (Params->Aliases != nullptr))
     {
-      for (uintptr_t ai = 0; ai < Params->AliasesCount; ai++)
+      for (uintptr_t bi = 0; bi < Data.ButtonCount; bi++)
       {
-        if (Params->Aliases[ai].Button == Data.Buttons[bi] &&
-          !Params->Aliases[ai].Alias.IsEmpty())
+        for (uintptr_t ai = 0; ai < Params->AliasesCount; ai++)
         {
-          ButtonLabels->SetString(bi, Params->Aliases[ai].Alias);
-          if (Params->Aliases[ai].Default)
-            DefaultButtonIndex = bi;
-          break;
+          if (Params->Aliases[ai].Button == Data.Buttons[bi] &&
+              !Params->Aliases[ai].Alias.IsEmpty())
+          {
+            ButtonLabels->SetString(bi, Params->Aliases[ai].Alias);
+            if (Params->Aliases[ai].Default)
+              DefaultButtonIndex = bi;
+            break;
+          }
         }
       }
     }
-  }
 
-#define MORE_BUTTON_ID -2
-  TFarMessageParams FarParams;
+    // constexpr int MORE_BUTTON_ID = -2;
+    TFarMessageParams FarParams;
 
-  if (NeverAskAgainCheck)
-  {
-    FarParams.CheckBoxLabel =
-      (Answers == qaOK) ? GetMsg(MSG_CHECK_NEVER_SHOW_AGAIN) :
-      GetMsg(MSG_CHECK_NEVER_ASK_AGAIN);
-  }
-
-  if (Params != nullptr)
-  {
-    if (Params->Timer > 0)
+    if (NeverAskAgainCheck)
     {
-      FarParams.Timer = Params->Timer;
-      FarParams.TimerEvent = Params->TimerEvent;
+      FarParams.CheckBoxLabel =
+        (Answers == qaOK) ? GetMsg(MSG_CHECK_NEVER_SHOW_AGAIN) :
+          GetMsg(MSG_CHECK_NEVER_ASK_AGAIN);
     }
 
-    if (Params->Timeout > 0)
+    if (Params != nullptr)
     {
-      FarParams.Timeout = Params->Timeout;
-      FarParams.TimeoutButton = TimeoutButton;
-      FarParams.TimeoutStr = GetMsg(MSG_BUTTON_TIMEOUT);
+      if (Params->Timer > 0)
+      {
+        FarParams.Timer = Params->Timer;
+        FarParams.TimerEvent = Params->TimerEvent;
+      }
+
+      if (Params->Timeout > 0)
+      {
+        FarParams.Timeout = Params->Timeout;
+        FarParams.TimeoutButton = TimeoutButton;
+        FarParams.TimeoutStr = GetMsg(MSG_BUTTON_TIMEOUT);
+      }
     }
-  }
 
-  FarParams.Token = &Data;
-  FarParams.DefaultButton = DefaultButtonIndex;
-  FarParams.ClickEvent = nb::bind(&TWinSCPPlugin::MessageClick, this);
+    FarParams.Token = &Data;
+    FarParams.DefaultButton = DefaultButtonIndex;
+    FarParams.ClickEvent = nb::bind(&TWinSCPPlugin::MessageClick, this);
 
-  if (MoreMessages && (MoreMessages->GetCount() > 0))
-  {
-    FarParams.MoreMessages = MoreMessages;
-  }
-  else
-  {
-    FarParams.MoreMessages = nullptr;
-  }
+    if (MoreMessages && (MoreMessages->GetCount() > 0))
+    {
+      FarParams.MoreMessages = MoreMessages;
+    }
+    else
+    {
+      FarParams.MoreMessages = nullptr;
+    }
 
-  Result = Message(ToDWord(Flags), GetMsg(TitleId), DialogStr, ButtonLabels.get(), &FarParams);
-  if (FarParams.TimerAnswer > 0)
-  {
-    Result = FarParams.TimerAnswer;
-  }
-  else if (Result == NPOS)
-  {
-    Result = CancelAnswer(Answers);
-  }
-  else
-  {
-    DebugAssert(Result != static_cast<uintptr_t>(-1) && Result < Data.ButtonCount);
-    Result = Data.Buttons[Result];
-  }
+    Result = Message(nb::ToDWord(Flags), GetMsg(TitleId), DialogStr, ButtonLabels.get(), &FarParams);
+    if (FarParams.TimerAnswer > 0)
+    {
+      Result = FarParams.TimerAnswer;
+    }
+    else if (Result == nb::ToUInt32(-1))
+    {
+      Result = CancelAnswer(Answers);
+    }
+    else
+    {
+      DebugAssert(Result != nb::ToUInt32(-1) && Result < Data.ButtonCount);
+      Result = Data.Buttons[Result];
+    }
 
-  if (FarParams.CheckBox)
-  {
-    DebugAssert(NeverAskAgainCheck);
-    Result = qaNeverAskAgain;
-  }
-
+    if (FarParams.CheckBox)
+    {
+      DebugAssert(NeverAskAgainCheck);
+      Result = qaNeverAskAgain;
+    }
+  },
+  __finally__removed
+  ({
+    delete ButtonLabels;
+  }) end_try__finally
   return Result;
 }
 
@@ -778,7 +792,7 @@ void TWinSCPPlugin::CleanupConfiguration()
     }
     else
     {
-      UnicodeString Version = Storage->ReadString("Version", L"");
+      const UnicodeString Version = Storage->ReadString("Version", "");
       if (::StrToVersionNumber(Version) < MAKEVERSIONNUMBER(2, 1, 19))
       {
         Storage->DeleteSubKey("CDCache");

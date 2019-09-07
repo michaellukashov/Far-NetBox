@@ -1,7 +1,7 @@
-
+//---------------------------------------------------------------------------
 #pragma once
-
-#include <headers.hpp>
+//---------------------------------------------------------------------------
+#include <nbsystem.h>
 
 #include "FzApiStructures.h"
 #include "structures.h"
@@ -30,11 +30,12 @@ DECL_WINDOWS_FUNCTION(static, int, getnameinfo,
    char FAR * host, size_t hostlen, char FAR * serv,
    size_t servlen, int flags));
 #endif
-
+//---------------------------------------------------------------------------
 // This structure holds the commands which will be processed by the api.
 // You don't have to fill this struct, you may use the command specific
 // functions which is easier.
 // See below for a list of supported commands and their parameters.
+//---------------------------------------------------------------------------
 struct t_command //: public TObject
 {
 CUSTOM_MEM_ALLOCATION_IMPL
@@ -45,18 +46,18 @@ CUSTOM_MEM_ALLOCATION_IMPL
   int  param4;
   CServerPath path;
   CServerPath newPath; // Used for rename
-  t_transferfile transferfile;
+  t_transferfile transferfile{};
   t_server server;
 };
-
+//---------------------------------------------------------------------------
 //Description of all api commands
-
+//---------------------------------------------------------------------------
 #define FZ_COMMAND_CONNECT 0x0001
 // Connects to the server passed in t_command::server
 // Possible return values:
 // FZ_REPLY_BUSY, FZ_REPLY_ERROR, FZ_REPLY_INVALIDPARAM,
 // FZ_REPLY_NOTINITIALIZED, FZ_REPLY_OK, FZ_REPLY_WOULDBLOCK
-
+//---------------------------------------------------------------------------
 #define FZ_COMMAND_LIST 0x0002
 // Lists the contents of a directory. If no parameter is given, the current
 // directory will be listed, else t_command::path specifies the directory
@@ -69,7 +70,7 @@ CUSTOM_MEM_ALLOCATION_IMPL
 // FZ_REPLY_BUSY, FZ_REPLY_ERROR, FZ_REPLY_INVALIDPARAM,
 // FZ_REPLY_NOTCONNECTED, FZ_REPLY_NOTINITIALIZED, FZ_REPLY_OK,
 // FZ_REPLY_WOULDBLOCK
-
+//---------------------------------------------------------------------------
 #define FZ_COMMAND_FILETRANSFER 0x0004
 // Transfers the file specified with t_command::transferfile, see
 // t_transferfile for detailed information
@@ -77,7 +78,7 @@ CUSTOM_MEM_ALLOCATION_IMPL
 // FZ_REPLY_BUSY, FZ_REPLY_ERROR, FZ_REPLY_INVALIDPARAM,
 // FZ_REPLY_NOTCONNECTED, FZ_REPLY_NOTINITIALIZED, FZ_REPLY_OK,
 // FZ_REPLY_WOULDBLOCK
-
+//---------------------------------------------------------------------------
 #define FZ_COMMAND_DISCONNECT 0x0008
 #define FZ_COMMAND_CUSTOMCOMMAND 0x0010
 #define FZ_COMMAND_DELETE    0x0020
@@ -86,20 +87,20 @@ CUSTOM_MEM_ALLOCATION_IMPL
 #define FZ_COMMAND_MAKEDIR    0x0100
 #define FZ_COMMAND_CHMOD    0x0200
 #define FZ_COMMAND_LISTFILE    0x0400
-
+//---------------------------------------------------------------------------
 #define FZ_MSG_OFFSET 16
 #define FZ_MSG_OFFSETMASK 0xFFFF
 #define FZ_MSG_ID(x) ((x >> FZ_MSG_OFFSET) & FZ_MSG_OFFSETMASK)
 #define FZ_MSG_PARAM(x) ( x & FZ_MSG_OFFSETMASK)
 #define FZ_MSG_MAKEMSG(id, param) ((((DWORD)(id & FZ_MSG_OFFSETMASK)) << FZ_MSG_OFFSET) + (param & FZ_MSG_OFFSETMASK) )
-
+//---------------------------------------------------------------------------
 #define FZ_MSG_REPLY      0
 #define FZ_MSG_LISTDATA      1
 #define FZ_MSG_ASYNCREQUEST    5
 #define FZ_MSG_STATUS      6
 #define FZ_MSG_TRANSFERSTATUS  7
 #define FZ_MSG_CAPABILITIES    9
-
+//---------------------------------------------------------------------------
 #define FZ_ASYNCREQUEST_OVERWRITE 1
 #define FZ_ASYNCREQUEST_VERIFYCERT 2
 #ifndef MPEXT_NO_GSS
@@ -110,7 +111,7 @@ CUSTOM_MEM_ALLOCATION_IMPL
 #define FZ_ASYNCREQUEST_GSS_NEEDUSER 8
 #endif
 #define FZ_ASYNCREQUEST_NEEDPASS 10
-
+//---------------------------------------------------------------------------
 class CAsyncRequestData // : public TObject
 {
 CUSTOM_MEM_ALLOCATION_IMPL
@@ -121,7 +122,7 @@ public:
   int64_t nRequestID; //Unique for every request sent
   int nRequestResult;
 };
-
+//---------------------------------------------------------------------------
 class COverwriteRequestData : public CAsyncRequestData
 {
 public:
@@ -137,7 +138,7 @@ public:
   t_directory::t_direntry::t_date remotetime;
   const t_transferfile * pTransferFile;
 };
-
+//---------------------------------------------------------------------------
 class CVerifyCertRequestData : public CAsyncRequestData
 {
 public:
@@ -145,7 +146,7 @@ public:
   virtual ~CVerifyCertRequestData();
   t_SslCertData * pCertData;
 };
-
+//---------------------------------------------------------------------------
 class CNeedPassRequestData : public CAsyncRequestData
 {
 public:
@@ -154,7 +155,7 @@ public:
   CString Password;
   int nOldOpState;
 };
-
+//---------------------------------------------------------------------------
 #ifndef MPEXT_NO_GSS
 class CGssNeedPassRequestData : public CAsyncRequestData
 {
@@ -164,7 +165,7 @@ public:
   CString pass;
   int nOldOpState;
 };
-
+//---------------------------------------------------------------------------
 class CGssNeedUserRequestData : public CAsyncRequestData
 {
 public:
@@ -174,9 +175,9 @@ public:
   int nOldOpState;
 };
 #endif
-
+//---------------------------------------------------------------------------
 #define FZAPI_OPTION_SHOWHIDDEN 1
-
+//---------------------------------------------------------------------------
 #define FTP_CONNECT 0 // SERVER USER PASS PORT
 #define FTP_COMMAND 1 // COMMAND - - -
 #define FTP_LIST 2 // - - - -
@@ -185,7 +186,7 @@ public:
 #define FTP_RECONNECT 5 // - - - -
 #define FTP_DELETE 7 // FILENAME
 #define FTP_REMOVEDIR 8 // DIRNAME
-
+//---------------------------------------------------------------------------
 #define FZ_REPLY_OK                 0x0001
 #define FZ_REPLY_WOULDBLOCK         0x0002
 #define FZ_REPLY_ERROR              0x0004
@@ -202,10 +203,10 @@ public:
 #define FZ_REPLY_CRITICALERROR      0x2000 // Used for FileTransfers only
 #define FZ_REPLY_ABORTED            0x4000 // Used for FileTransfers only
 #define FZ_REPLY_NOTSUPPORTED       0x8000 // Command is not supported for the current server
-
+//---------------------------------------------------------------------------
 // Additional replies
 #define FZ_REPLY_NOTBUSY FZ_REPLY_IDLE
-
+//---------------------------------------------------------------------------
 // Servertypes
 // General types
 #define FZ_SERVERTYPE_HIGHMASK  0xF000
@@ -223,7 +224,7 @@ public:
 #define FZ_SERVERTYPE_SUB_FTP_WINDOWS  0x0004
 #define FZ_SERVERTYPE_SUB_FTP_MVS    0x0010
 #define FZ_SERVERTYPE_SUB_FTP_BS2000  0x0020
-
+//---------------------------------------------------------------------------
 // Log messages
 #define FZ_LOG_STATUS 0
 #define FZ_LOG_ERROR 1
@@ -235,10 +236,10 @@ public:
 #define FZ_LOG_PROGRESS 7
 #define FZ_LOG_INFO 8
 #define FZ_LOG_DEBUG 9
-
+//---------------------------------------------------------------------------
 class CMainThread;
 class CFileZillaTools;
-
+//---------------------------------------------------------------------------
 class CFileZillaApi //: public TObject
 {
 CUSTOM_MEM_ALLOCATION_IMPL
@@ -290,3 +291,4 @@ protected:
   int IsBusy();
   int IsConnected() const;
 };
+//---------------------------------------------------------------------------

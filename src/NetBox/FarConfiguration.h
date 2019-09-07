@@ -6,15 +6,16 @@ class TCustomFarPlugin;
 class TBookmarks;
 class TBookmarkList;
 
+NB_DEFINE_CLASS_ID(TFarConfiguration);
 class TFarConfiguration : public TGUIConfiguration
 {
   NB_DISABLE_COPY(TFarConfiguration)
 public:
-  static inline bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TFarConfiguration); }
-  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TFarConfiguration) || TGUIConfiguration::is(Kind); }
+  static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TFarConfiguration); }
+  bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TFarConfiguration) || TGUIConfiguration::is(Kind); }
 public:
-  explicit TFarConfiguration(TCustomFarPlugin *APlugin);
-  virtual ~TFarConfiguration();
+  explicit TFarConfiguration(TCustomFarPlugin *APlugin) noexcept;
+  virtual ~TFarConfiguration() noexcept;
 
   virtual void Load();
   virtual void Save(bool All, bool Explicit);
@@ -79,40 +80,40 @@ public:
   void SetBookmarks(UnicodeString Key, TBookmarkList *Value);
 
 protected:
-  virtual bool GetConfirmOverwriting() const override;
-  virtual void SetConfirmOverwriting(bool Value) override;
+  bool GetConfirmOverwriting() const override;
+  void SetConfirmOverwriting(bool Value) override;
 
-  virtual void SaveData(THierarchicalStorage *Storage, bool All) override;
-  virtual void LoadData(THierarchicalStorage *Storage) override;
+  void SaveData(THierarchicalStorage *Storage, bool All) override;
+  void LoadData(THierarchicalStorage *Storage) override;
 
-  virtual UnicodeString ModuleFileName() const override;
-  virtual void Saved() override;
+  UnicodeString ModuleFileName() const override;
+  void Saved() override;
 
 private:
-  TCustomFarPlugin *FFarPlugin;
-  TBookmarks *FBookmarks;
-  intptr_t FFarConfirmations;
-  bool FConfirmOverwritingOverride;
-  bool FConfirmSynchronizedBrowsing;
-  bool FForceInheritance;
-  bool FDisksMenu;
-  intptr_t FDisksMenuHotKey;
-  bool FPluginsMenu;
-  bool FPluginsMenuCommands;
+  TCustomFarPlugin *FFarPlugin{nullptr};
+  std::unique_ptr<TBookmarks> FBookmarks;
+  intptr_t FFarConfirmations{0};
+  bool FConfirmOverwritingOverride{false};
+  bool FConfirmSynchronizedBrowsing{false};
+  bool FForceInheritance{false};
+  bool FDisksMenu{false};
+  intptr_t FDisksMenuHotKey{0};
+  bool FPluginsMenu{false};
+  bool FPluginsMenuCommands{false};
   UnicodeString FCommandPrefixes;
-  bool FSessionNameInTitle;
-  bool FEditorDownloadDefaultMode;
-  bool FEditorUploadSameOptions;
-  bool FEditorUploadOnSave;
-  bool FEditorMultiple;
-  bool FQueueBeep;
+  bool FSessionNameInTitle{false};
+  bool FEditorDownloadDefaultMode{false};
+  bool FEditorUploadSameOptions{false};
+  bool FEditorUploadOnSave{false};
+  bool FEditorMultiple{false};
+  bool FQueueBeep{true};
   UnicodeString FPageantPath;
   UnicodeString FPuttygenPath;
   UnicodeString FApplyCommandCommand;
-  intptr_t FApplyCommandParams;
+  intptr_t FApplyCommandParams{0};
 
-  bool FCustomPanelModeDetailed;
-  bool FFullScreenDetailed;
+  bool FCustomPanelModeDetailed{false};
+  bool FFullScreenDetailed{false};
   UnicodeString FColumnTypesDetailed;
   UnicodeString FColumnWidthsDetailed;
   UnicodeString FStatusColumnTypesDetailed;
@@ -122,5 +123,4 @@ private:
   intptr_t FarConfirmations() const;
 };
 
-TFarConfiguration *GetFarConfiguration();
-
+NB_CORE_EXPORT TFarConfiguration *GetFarConfiguration();

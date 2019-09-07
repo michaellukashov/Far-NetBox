@@ -1,18 +1,31 @@
+//---------------------------------------------------------------------------
 #include <vcl.h>
 #pragma hdrstop
 
+__removed #include <Consts.hpp>
+#include <shlobj.h>
+#include <stdio.h>
 #include <winhttp.h>
+#define INITGUID
+#include <propkey.h>
+#include <powrprof.h>
+
 #include <Common.h>
+#include <TextsWin.h>
 #include <TextsCore.h>
+#include <HelpWin.h>
 #include <Exceptions.h>
-//#include <FileMasks.h>
-//#include <CoreMain.h>
+#include <CoreMain.h>
 #include <RemoteFiles.h>
+#include <PuttyTools.h>
 #include <Interface.h>
 #include <LibraryLoader.hpp>
 
 #include "WinInterface.h"
-//#include "GUITools.h"
+#include "GUITools.h"
+#include "VCLCommon.h"
+#include "Setup.h"
+#include "Tools.h"
 #include "PuttyTools.h"
 #include "Tools.h"
 #include "WinConfiguration.h"
@@ -23,7 +36,7 @@
 #include <StrUtils.hpp>
 #include <WinConfiguration.h>
 #include <ProgParams.h>
-
+//---------------------------------------------------------------------------
 // WORKAROUND
 // VCL includes wininet.h (even with NO_WIN32_LEAN_AND_MEAN)
 // and it cannot be combined with winhttp.h as of current Windows SDK.
@@ -62,10 +75,10 @@
 
 #undef HTTP_VERSION_INFO
 #undef LPHTTP_VERSION_INFO
-
-#pragma package(smart_init)
-
-TFontStyles IntToFontStyles(intptr_t Value)
+//---------------------------------------------------------------------------
+__removed #pragma package(smart_init)
+//---------------------------------------------------------------------------
+TFontStyles IntToFontStyles(int value)
 {
   TFontStyles Result;
   for (int i = fsBold; i <= fsStrikeOut; i++)
@@ -78,7 +91,7 @@ TFontStyles IntToFontStyles(intptr_t Value)
   }
   return Result;
 }
-
+//---------------------------------------------------------------------------
 int FontStylesToInt(const TFontStyles value)
 {
   int Result = 0;
@@ -92,25 +105,46 @@ int FontStylesToInt(const TFontStyles value)
   }
   return Result;
 }
-
-bool SameFont(TFont *Font1, TFont *Font2)
+//---------------------------------------------------------------------------
+bool SameFont(TFont * Font1, TFont * Font2)
 {
-  // keep in sync with TFontConfiguration::operator!=
+  // keep in sync with TFontConfiguration::operator !=
   return
     SameText(Font1->Name, Font2->Name) && (Font1->Height == Font2->Height) &&
     (Font1->Charset == Font2->Charset) && (Font1->Style == Font2->Style);
 }
-
-TColor GetWindowTextColor(TColor Color)
+//---------------------------------------------------------------------------
+TColor GetWindowTextColor(TColor BackgroundColor, TColor Color)
 {
-  return (Color == TColor(0)) ? clWindowText : Color;
+  if (Color == TColor(0))
+  {
+    Color = (IsDarkColor(BackgroundColor) ? clWhite : clWindowText);
+    SetContrast(Color, BackgroundColor, 180);
+  }
+  return Color;
 }
-
+//---------------------------------------------------------------------------
 TColor GetWindowColor(TColor Color)
 {
-  return (Color == TColor(0)) ? clWindow : Color;
+  if (Color == TColor(0))
+  {
+    Color = (WinConfiguration->UseDarkTheme() ? static_cast<TColor>(RGB(0x20, 0x20, 0x20)) : clWindow);
+  }
+  return Color;
 }
-
+//---------------------------------------------------------------------------
+TColor GetBtnFaceColor()
+{
+  return WinConfiguration->UseDarkTheme() ? TColor(RGB(43, 43, 43)) : clBtnFace;
+  }
+  return Color;
+}
+//---------------------------------------------------------------------------
+TColor GetBtnFaceColor()
+{
+  return WinConfiguration->UseDarkTheme() ? TColor(RGB(43, 43, 43)) : clBtnFace;
+}
+//---------------------------------------------------------------------------
 TColor GetNonZeroColor(TColor Color)
 {
   // 0,0,0 is "default color"
@@ -121,15 +155,15 @@ TColor GetNonZeroColor(TColor Color)
   }
   return Color;
 }
-
-void CenterFormOn(TForm *Form, TControl *CenterOn)
+//---------------------------------------------------------------------------
+void CenterFormOn(TForm * Form, TControl * CenterOn)
 {
   TPoint ScreenPoint = CenterOn->ClientToScreen(TPoint(0, 0));
   Form->Left = ScreenPoint.x + (CenterOn->Width / 2) - (Form->Width / 2);
   Form->Top = ScreenPoint.y + (CenterOn->Height / 2) - (Form->Height / 2);
 }
-
-UnicodeString GetListViewStr(TListView *ListView)
+//---------------------------------------------------------------------------
+UnicodeString GetListViewStr(TListView * ListView)
 {
   UnicodeString Result;
   for (int Index = 0; Index < ListView->Columns->Count; Index++)
@@ -145,8 +179,8 @@ UnicodeString GetListViewStr(TListView *ListView)
   Result += L",;" + SavePixelsPerInch(ListView);
   return Result;
 }
-
-void LoadListViewStr(TListView *ListView, UnicodeString ALayoutStr)
+//---------------------------------------------------------------------------
+void LoadListViewStr(TListView * ListView, UnicodeString ALayoutStr)
 {
   UnicodeString LayoutStr = CutToChar(ALayoutStr, L';', true);
   int PixelsPerInch = LoadPixelsPerInch(CutToChar(ALayoutStr, L';', true), ListView);
@@ -154,20 +188,55 @@ void LoadListViewStr(TListView *ListView, UnicodeString ALayoutStr)
   while (!LayoutStr.IsEmpty() && (Index < ListView->Columns->Count))
   {
     int Width;
-    if (TryStrToInt64(CutToChar(LayoutStr, L',', true), Width))
+    if (TryStrToInt(CutToChar(LayoutStr, L',', true), Width))
     {
       ListView->Column[Index]->Width = LoadDimension(Width, PixelsPerInch, ListView);
     }
     Index++;
   }
 }
+//---------------------------------------------------------------------------
+void LoadFormDimensions(
+  const UnicodeString & LeftStr, const UnicodeString & TopStr, const UnicodeString & RightStr, const UnicodeString & BottomStr,
+  int PixelsPerInch, Forms::TMonitor * Monitor, TForm * Form, TRect & Bounds, bool & DefaultPos)
+{
+  int Left = StrToDimensionDef(LeftStr, PixelsPerInch, Form, Bounds.Left);
+  int Top = StrToDimensionDef(TopStr, PixelsPerInch, Form, Bounds.Top);
+  DefaultPos = (Left == -1) && (Top == -1);
+  if (!DefaultPos)
+  {
+    Bounds.Left = Left;
+    Bounds.Top = Top;
+  }
+  else
+  {
+    Bounds.Left = 0;
+    Bounds.Top = 0;
+  }
+  Bounds.Right = StrToDimensionDef(RightStr, PixelsPerInch, Form, Bounds.Right);
+  Bounds.Bottom = StrToDimensionDef(BottomStr, PixelsPerInch, Form, Bounds.Bottom);
 
-void __fastcall RestoreForm(UnicodeString Data, TForm *Form, bool PositionOnly)
+  // move to the target monitor
+  OffsetRect(Bounds, Monitor->Left, Monitor->Top);
+
+  // reduce window size to that of monitor size
+  // (this does not cut window into monitor!)
+  if (Bounds.Width() > Monitor->WorkareaRect.Width())
+  {
+    Bounds.Right -= (Bounds.Width() - Monitor->WorkareaRect.Width());
+  }
+  if (Bounds.Height() > Monitor->WorkareaRect.Height())
+  {
+    Bounds.Bottom -= (Bounds.Height() - Monitor->WorkareaRect.Height());
+  }
+}
+//---------------------------------------------------------------------------
+void __fastcall RestoreForm(UnicodeString Data, TForm * Form, bool PositionOnly)
 {
   DebugAssert(Form);
   if (!Data.IsEmpty())
   {
-    Forms::TMonitor *Monitor = FormMonitor(Form);
+    Forms::TMonitor * Monitor = FormMonitor(Form);
 
     UnicodeString LeftStr = CutToChar(Data, L';', true);
     UnicodeString TopStr = CutToChar(Data, L';', true);
@@ -176,59 +245,47 @@ void __fastcall RestoreForm(UnicodeString Data, TForm *Form, bool PositionOnly)
     TWindowState State = (TWindowState)StrToIntDef(CutToChar(Data, L';', true), (int)wsNormal);
     int PixelsPerInch = LoadPixelsPerInch(CutToChar(Data, L';', true), Form);
 
-    TRect Bounds = Form->BoundsRect;
-    int Left = StrToDimensionDef(LeftStr, PixelsPerInch, Form, Bounds.Left);
-    int Top = StrToDimensionDef(TopStr, PixelsPerInch, Form, Bounds.Top);
-    bool DefaultPos = (Left == -1) && (Top == -1);
-    if (!DefaultPos)
-    {
-      Bounds.Left = Left;
-      Bounds.Top = Top;
-    }
-    else
-    {
-      Bounds.Left = 0;
-      Bounds.Top = 0;
-    }
-    Bounds.Right = StrToDimensionDef(RightStr, PixelsPerInch, Form, Bounds.Right);
-    Bounds.Bottom = StrToDimensionDef(BottomStr, PixelsPerInch, Form, Bounds.Bottom);
+    TRect OriginalBounds = Form->BoundsRect;
+    int OriginalPixelsPerInch = Form->PixelsPerInch;
     Form->WindowState = State;
     if (State == wsNormal)
     {
-      // move to the target monitor
-      OffsetRect(Bounds, Monitor->Left, Monitor->Top);
-
-      // reduce window size to that of monitor size
-      // (this does not cut window into monitor!)
-      if (Bounds.Width() > Monitor->WorkareaRect.Width())
-      {
-        Bounds.Right -= (Bounds.Width() - Monitor->WorkareaRect.Width());
-      }
-      if (Bounds.Height() > Monitor->WorkareaRect.Height())
-      {
-        Bounds.Bottom -= (Bounds.Height() - Monitor->WorkareaRect.Height());
-      }
+      bool DefaultPos;
+      TRect Bounds = OriginalBounds;
+      LoadFormDimensions(LeftStr, TopStr, RightStr, BottomStr, PixelsPerInch, Monitor, Form, Bounds, DefaultPos);
 
       if (DefaultPos ||
-        ((Bounds.Left < Monitor->Left) ||
-          (Bounds.Left > Monitor->Left + Monitor->WorkareaRect.Width() - 20) ||
-          (Bounds.Top < Monitor->Top) ||
-          (Bounds.Top > Monitor->Top + Monitor->WorkareaRect.Height() - 20)))
+          ((Bounds.Left < Monitor->Left) ||
+           (Bounds.Left > Monitor->Left + Monitor->WorkareaRect.Width() - 20) ||
+           (Bounds.Top < Monitor->Top) ||
+           (Bounds.Top > Monitor->Top + Monitor->WorkareaRect.Height() - 20)))
       {
-        if (Monitor->Primary)
+        bool ExplicitPlacing = !Monitor->Primary;
+        if (!ExplicitPlacing)
         {
+          TPosition Position;
           if ((Application->MainForm == NULL) || (Application->MainForm == Form))
           {
-            Form->Position = poDefaultPosOnly;
+            Position = poDefaultPosOnly;
           }
           else
           {
-            Form->Position = poOwnerFormCenter;
+            Position = poOwnerFormCenter;
           }
-          Form->Width = Bounds.Width();
-          Form->Height = Bounds.Height();
+
+          // If handle is allocated already, changing Position reallocates it, what brings lot of nasty side effects.
+          if (Form->HandleAllocated() && (Form->Position != Position))
+          {
+            ExplicitPlacing = true;
+          }
+          else
+          {
+            Form->Width = Bounds.Width();
+            Form->Height = Bounds.Height();
+          }
         }
-        else
+
+        if (ExplicitPlacing)
         {
           // when positioning on non-primary monitor, we need
           // to handle that ourselves, so place window to center
@@ -238,7 +295,10 @@ void __fastcall RestoreForm(UnicodeString Data, TForm *Form, bool PositionOnly)
               Monitor->Top + ((Monitor->Height - Bounds.Height()) / 2),
               Bounds.Width(), Bounds.Height());
           }
-          Form->Position = poDesigned;
+          if (!Form->HandleAllocated())
+          {
+            Form->Position = poDesigned;
+          }
         }
       }
       else
@@ -247,6 +307,17 @@ void __fastcall RestoreForm(UnicodeString Data, TForm *Form, bool PositionOnly)
         if (!PositionOnly)
         {
           Form->BoundsRect = Bounds;
+          // If setting bounds moved the form to another monitor with non-default DPI,
+          // recalculate the size to avoid rounding issues
+          // (as the form was very likely moved to the monitor, where the sizes were saved)
+          // See also TCustomScpExplorerForm::DoShow()
+          if (OriginalPixelsPerInch != Form->PixelsPerInch)
+          {
+            TRect Bounds2 = OriginalBounds;
+            LoadFormDimensions(LeftStr, TopStr, RightStr, BottomStr, PixelsPerInch, Monitor, Form, Bounds2, DefaultPos);
+            DebugAssert(!DefaultPos);
+            Form->BoundsRect = Bounds2;
+          }
         }
       }
     }
@@ -256,9 +327,9 @@ void __fastcall RestoreForm(UnicodeString Data, TForm *Form, bool PositionOnly)
 
       if (!PositionOnly)
       {
-        Bounds = Form->BoundsRect;
-        OffsetRect(Bounds, Monitor->Left, Monitor->Top);
-        Form->BoundsRect = Bounds;
+        TRect Bounds2 = Form->BoundsRect;
+        OffsetRect(Bounds2, Monitor->Left, Monitor->Top);
+        Form->BoundsRect = Bounds2;
       }
     }
   }
@@ -267,22 +338,24 @@ void __fastcall RestoreForm(UnicodeString Data, TForm *Form, bool PositionOnly)
     Form->Position = poDefaultPosOnly;
   }
 }
-
-UnicodeString StoreForm(TCustomForm *Form)
+//---------------------------------------------------------------------------
+UnicodeString StoreForm(TCustomForm * Form)
 {
   DebugAssert(Form);
   TRect Bounds = Form->BoundsRect;
   OffsetRect(Bounds, -Form->Monitor->Left, -Form->Monitor->Top);
-  return FORMAT(L"%d;%d;%d;%d;%d;%s", (SaveDimension(Bounds.Left), SaveDimension(Bounds.Top),
-        SaveDimension(Bounds.Right), SaveDimension(Bounds.Bottom),
-        // we do not want WinSCP to start minimized next time (we cannot handle that anyway).
-        // note that WindowState is wsNormal when window in minimized for some reason.
-        // actually it is wsMinimized only when minimized by MSVDM
-        (int)(Form->WindowState == wsMinimized ? wsNormal : Form->WindowState),
-        SavePixelsPerInch(Form)));
+  UnicodeString Result =
+    FORMAT(L"%d;%d;%d;%d;%d;%s", SaveDimension(Bounds.Left), SaveDimension(Bounds.Top),
+      SaveDimension(Bounds.Right), SaveDimension(Bounds.Bottom),
+      // we do not want WinSCP to start minimized next time (we cannot handle that anyway).
+      // note that WindowState is wsNormal when window in minimized for some reason.
+      // actually it is wsMinimized only when minimized by MSVDM
+      (int)(Form->WindowState == wsMinimized ? wsNormal : Form->WindowState),
+      SavePixelsPerInch(Form));
+  return Result;
 }
-
-void RestoreFormSize(UnicodeString Data, TForm *Form)
+//---------------------------------------------------------------------------
+void RestoreFormSize(UnicodeString Data, TForm * Form)
 {
   // This has to be called only after DoFormWindowProc(CM_SHOWINGCHANGED).
   // See comment in ResizeForm.
@@ -294,14 +367,14 @@ void RestoreFormSize(UnicodeString Data, TForm *Form)
   int Height = StrToDimensionDef(HeightStr, PixelsPerInch, Form, Form->Height);
   ResizeForm(Form, Width, Height);
 }
-
-UnicodeString StoreFormSize(TForm *Form)
+//---------------------------------------------------------------------------
+UnicodeString StoreFormSize(TForm * Form)
 {
-  return FORMAT(L"%d,%d,%s", (Form->Width, Form->Height, SavePixelsPerInch(Form)));
+  return FORMAT(L"%d,%d,%s", Form->Width, Form->Height, SavePixelsPerInch(Form));
 }
-
+//---------------------------------------------------------------------------
 static void ExecuteProcessAndReadOutput(const
-  UnicodeString &Command, UnicodeString HelpKeyword, UnicodeString &Output)
+  UnicodeString & Command, const UnicodeString & HelpKeyword, UnicodeString & Output)
 {
   if (!CopyCommandToClipboard(Command))
   {
@@ -315,7 +388,7 @@ static void ExecuteProcessAndReadOutput(const
     HANDLE PipeWrite = INVALID_HANDLE_VALUE;
 
     if (!CreatePipe(&PipeRead, &PipeWrite, &SecurityAttributes, 0) ||
-      !SetHandleInformation(PipeRead, HANDLE_FLAG_INHERIT, 0))
+        !SetHandleInformation(PipeRead, HANDLE_FLAG_INHERIT, 0))
     {
       throw EOSExtException(FMTLOAD(EXECUTE_APP_ERROR, Command));
     }
@@ -347,19 +420,27 @@ static void ExecuteProcessAndReadOutput(const
         CloseHandle(PipeWrite);
       }
 
-      char Buffer[4096];
-      DWORD BytesRead;
-      while (ReadFile(PipeRead, Buffer, sizeof(Buffer), &BytesRead, NULL))
+      DWORD BytesAvail;
+      while (PeekNamedPipe(PipeRead, NULL, 0, nullptr, &BytesAvail, nullptr))
       {
-        Output += UnicodeString(UTF8String(Buffer, BytesRead));
+        if (BytesAvail > 0)
+        {
+          char Buffer[4096]{};
+          DWORD BytesToRead = std::min<DWORD>(BytesAvail, static_cast<unsigned long>(sizeof(Buffer)));
+          DWORD BytesRead;
+          if (ReadFile(PipeRead, Buffer, BytesToRead, &BytesRead, NULL))
+          {
+            Output += UnicodeString(UTF8String(Buffer, BytesRead));
+          }
+        }
         // Same as in ExecuteShellCheckedAndWait
-        Sleep(200);
+        Sleep(50);
         Application->ProcessMessages();
       }
 
       DWORD ExitCode;
       if (DebugAlwaysTrue(GetExitCodeProcess(ProcessInformation.hProcess, &ExitCode)) &&
-        (ExitCode != 0))
+          (ExitCode != 0))
       {
         UnicodeString Buf = Output;
         UnicodeString Buf2;
@@ -369,7 +450,7 @@ static void ExecuteProcessAndReadOutput(const
         }
         else
         {
-          throw ExtException(MainInstructions(FMTLOAD(COMMAND_FAILED_CODEONLY, (ToInt(ExitCode)))), Output, HelpKeyword);
+          throw ExtException(MainInstructions(FMTLOAD(COMMAND_FAILED_CODEONLY, static_cast<int>(ExitCode))), Output, HelpKeyword);
         }
       }
     }
@@ -380,9 +461,9 @@ static void ExecuteProcessAndReadOutput(const
     }
   }
 }
-
+//---------------------------------------------------------------------------
 void ExecuteProcessChecked(
-  UnicodeString Command, UnicodeString HelpKeyword, UnicodeString *Output)
+  const UnicodeString Command, const UnicodeString HelpKeyword, UnicodeString * Output)
 {
   if (Output == NULL)
   {
@@ -393,9 +474,9 @@ void ExecuteProcessChecked(
     ExecuteProcessAndReadOutput(Command, HelpKeyword, *Output);
   }
 }
-
+//---------------------------------------------------------------------------
 void ExecuteProcessCheckedAndWait(
-  UnicodeString Command, UnicodeString HelpKeyword, UnicodeString *Output)
+  const UnicodeString Command, const UnicodeString HelpKeyword, UnicodeString * Output)
 {
   if (Output == NULL)
   {
@@ -406,38 +487,42 @@ void ExecuteProcessCheckedAndWait(
     ExecuteProcessAndReadOutput(Command, HelpKeyword, *Output);
   }
 }
-
+//---------------------------------------------------------------------------
 bool IsKeyPressed(int VirtualKey)
 {
   return FLAGSET(GetAsyncKeyState(VirtualKey), 0x8000);
 }
-
+//---------------------------------------------------------------------------
 bool UseAlternativeFunction()
 {
   return IsKeyPressed(VK_SHIFT);
 }
-
+//---------------------------------------------------------------------------
 bool OpenInNewWindow()
 {
   return UseAlternativeFunction();
 }
-
-void ExecuteNewInstance(UnicodeString Param)
+//---------------------------------------------------------------------------
+void ExecuteNewInstance(const UnicodeString Param, const UnicodeString AdditionalParams)
 {
   UnicodeString Arg = Param;
   if (!Arg.IsEmpty())
   {
     Arg = FORMAT(L"\"%s\" %s", Arg, TProgramParams::FormatSwitch(NEWINSTANCE_SWICH));
+    if (!AdditionalParams.IsEmpty())
+    {
+      Arg += L" " + AdditionalParams;
+    }
   }
 
   ExecuteShellChecked(Application->ExeName, Arg);
 }
-
-IShellLink *CreateDesktopShortCut(UnicodeString Name,
-  UnicodeString File, UnicodeString Params, UnicodeString Description,
+//---------------------------------------------------------------------------
+IShellLink * CreateDesktopShortCut(const UnicodeString & Name,
+  const UnicodeString &File, const UnicodeString & Params, const UnicodeString & Description,
   int SpecialFolder, int IconIndex, bool Return)
 {
-  IShellLink *pLink = NULL;
+  IShellLink* pLink = NULL;
 
   if (SpecialFolder < 0)
   {
@@ -447,7 +532,7 @@ IShellLink *CreateDesktopShortCut(UnicodeString Name,
   try
   {
     if (SUCCEEDED(CoCreateInstance(CLSID_ShellLink, NULL, CLSCTX_INPROC_SERVER,
-          IID_IShellLink, (void **) &pLink)))
+         IID_IShellLink, (void **) &pLink)))
     {
       try
       {
@@ -459,9 +544,9 @@ IShellLink *CreateDesktopShortCut(UnicodeString Name,
         // without this icons are not shown at least in Windows 7 jumplist
         pLink->SetIconLocation(File.c_str(), IconIndex);
 
-        IPersistFile *pPersistFile;
+        IPersistFile* pPersistFile;
         if (!Return &&
-          SUCCEEDED(pLink->QueryInterface(IID_IPersistFile, (void **)&pPersistFile)))
+            SUCCEEDED(pLink->QueryInterface(IID_IPersistFile, (void **)&pPersistFile)))
         {
           try
           {
@@ -495,8 +580,8 @@ IShellLink *CreateDesktopShortCut(UnicodeString Name,
         }
 
         // this is necessary for Windows 7 taskbar jump list links
-        IPropertyStore *PropertyStore;
-        if (SUCCEEDED(pLink->QueryInterface(IID_IPropertyStore, (void **)&PropertyStore)))
+        IPropertyStore * PropertyStore;
+        if (SUCCEEDED(pLink->QueryInterface(IID_IPropertyStore, (void**)&PropertyStore)))
         {
           PROPVARIANT Prop;
           Prop.vt = VT_LPWSTR;
@@ -519,17 +604,17 @@ IShellLink *CreateDesktopShortCut(UnicodeString Name,
       }
     }
   }
-  catch(Exception &E)
+  catch(Exception & E)
   {
     throw ExtException(&E, LoadStr(CREATE_SHORTCUT_ERROR));
   }
 
   return pLink;
 }
-
-IShellLink *CreateDesktopSessionShortCut(
-  UnicodeString SessionName, UnicodeString Name,
-  UnicodeString AdditionalParams, int SpecialFolder, int IconIndex,
+//---------------------------------------------------------------------------
+IShellLink * CreateDesktopSessionShortCut(
+  const UnicodeString & SessionName, UnicodeString Name,
+  const UnicodeString & AdditionalParams, int SpecialFolder, int IconIndex,
   bool Return)
 {
   bool DefaultsOnly;
@@ -541,8 +626,8 @@ IShellLink *CreateDesktopSessionShortCut(
   if (IsFolder || IsWorkspace)
   {
     InfoTip = FMTLOAD(
-        (IsFolder ? SHORTCUT_INFO_TIP_FOLDER : SHORTCUT_INFO_TIP_WORKSPACE),
-        SessionName);
+      (IsFolder ? SHORTCUT_INFO_TIP_FOLDER : SHORTCUT_INFO_TIP_WORKSPACE),
+      (SessionName));
 
     if (Name.IsEmpty())
     {
@@ -553,10 +638,10 @@ IShellLink *CreateDesktopSessionShortCut(
   else
   {
     // this should not be done for workspaces and folders
-    TSessionData *SessionData =
+    TSessionData * SessionData =
       StoredSessions->ParseUrl(EncodeUrlString(SessionName), NULL, DefaultsOnly);
     InfoTip =
-      FMTLOAD(SHORTCUT_INFO_TIP, SessionName, SessionData->InfoTip);
+      FMTLOAD(SHORTCUT_INFO_TIP, (SessionName, SessionData->InfoTip));
     if (Name.IsEmpty())
     {
       // no slashes in filename
@@ -570,9 +655,9 @@ IShellLink *CreateDesktopSessionShortCut(
       FORMAT(L"\"%s\"%s%s", EncodeUrlString(SessionName), (AdditionalParams.IsEmpty() ? L"" : L" "), AdditionalParams),
       InfoTip, SpecialFolder, IconIndex, Return);
 }
-
+//---------------------------------------------------------------------------
 template<class TEditControl>
-void ValidateMaskEditT(UnicodeString Mask, TEditControl *Edit, int ForceDirectoryMasks)
+void ValidateMaskEditT(const UnicodeString & Mask, TEditControl * Edit, int ForceDirectoryMasks)
 {
   DebugAssert(Edit != NULL);
   TFileMasks Masks(ForceDirectoryMasks);
@@ -580,7 +665,7 @@ void ValidateMaskEditT(UnicodeString Mask, TEditControl *Edit, int ForceDirector
   {
     Masks = Mask;
   }
-  catch(EFileMasksException &E)
+  catch(EFileMasksException & E)
   {
     ShowExtendedException(&E);
     Edit->SetFocus();
@@ -591,43 +676,43 @@ void ValidateMaskEditT(UnicodeString Mask, TEditControl *Edit, int ForceDirector
     Abort();
   }
 }
-
-void ValidateMaskEdit(TComboBox *Edit)
+//---------------------------------------------------------------------------
+void ValidateMaskEdit(TComboBox * Edit)
 {
   ValidateMaskEditT(Edit->Text, Edit, -1);
 }
-
-void ValidateMaskEdit(TEdit *Edit)
+//---------------------------------------------------------------------------
+void ValidateMaskEdit(TEdit * Edit)
 {
   ValidateMaskEditT(Edit->Text, Edit, -1);
 }
-
-void ValidateMaskEdit(TMemo *Edit, bool Directory)
+//---------------------------------------------------------------------------
+void ValidateMaskEdit(TMemo * Edit, bool Directory)
 {
   UnicodeString Mask = TFileMasks::ComposeMaskStr(GetUnwrappedMemoLines(Edit), Directory);
   ValidateMaskEditT(Mask, Edit, Directory ? 1 : 0);
 }
-
-TStrings *GetUnwrappedMemoLines(TMemo *Memo)
+//---------------------------------------------------------------------------
+TStrings * GetUnwrappedMemoLines(TMemo * Memo)
 {
-  // This removes soft linebreakes when text in memo wraps
+  // This removes soft linebreaks when text in memo wraps
   // (Memo->Lines includes soft linebreaks, while Memo->Text does not)
   return TextToStringList(Memo->Text);
 }
-
-void ExitActiveControl(TForm *Form)
+//---------------------------------------------------------------------------
+void ExitActiveControl(TForm * Form)
 {
   if (Form->ActiveControl != NULL)
   {
-    TNotifyEvent OnExit = ((TEdit *)Form->ActiveControl)->OnExit;
+    TNotifyEvent OnExit = ((TEdit*)Form->ActiveControl)->OnExit;
     if (OnExit != NULL)
     {
       OnExit(Form->ActiveControl);
     }
   }
 }
-
-bool IsWinSCPUrl(UnicodeString Url)
+//---------------------------------------------------------------------------
+bool IsWinSCPUrl(const UnicodeString & Url)
 {
   UnicodeString HomePageUrl = LoadStr(HOMEPAGE_URL);
   UnicodeString HttpHomePageUrl = ChangeUrlProtocol(HomePageUrl, HttpProtocol);
@@ -636,8 +721,8 @@ bool IsWinSCPUrl(UnicodeString Url)
     StartsText(HomePageUrl, Url) ||
     StartsText(HttpHomePageUrl, Url);
 }
-
-UnicodeString SecureUrl(UnicodeString Url)
+//---------------------------------------------------------------------------
+UnicodeString SecureUrl(const UnicodeString & Url)
 {
   UnicodeString Result = Url;
   if (IsWinSCPUrl(Url) && IsHttpUrl(Url))
@@ -646,7 +731,7 @@ UnicodeString SecureUrl(UnicodeString Url)
   }
   return Result;
 }
-
+//---------------------------------------------------------------------------
 void OpenBrowser(UnicodeString URL)
 {
   if (IsWinSCPUrl(URL))
@@ -656,23 +741,23 @@ void OpenBrowser(UnicodeString URL)
   }
   ShellExecute(Application->Handle, L"open", URL.c_str(), NULL, NULL, SW_SHOWNORMAL);
 }
-
-void OpenFolderInExplorer(UnicodeString Path)
+//---------------------------------------------------------------------------
+void OpenFolderInExplorer(const UnicodeString Path)
 {
   if ((int)ShellExecute(Application->Handle, L"explore",
-      (wchar_t *)Path.data(), NULL, NULL, SW_SHOWNORMAL) <= 32)
+      (wchar_t*)Path.data(), NULL, NULL, SW_SHOWNORMAL) <= 32)
   {
     throw Exception(FMTLOAD(EXPLORE_LOCAL_DIR_ERROR, Path));
   }
 }
-
-void OpenFileInExplorer(UnicodeString Path)
+//---------------------------------------------------------------------------
+void OpenFileInExplorer(const UnicodeString Path)
 {
   PCIDLIST_ABSOLUTE Folder = ILCreateFromPathW(ApiPath(Path).c_str());
   SHOpenFolderAndSelectItems(Folder, 0, NULL, 0);
 }
-
-void ShowHelp(UnicodeString AHelpKeyword)
+//---------------------------------------------------------------------------
+void ShowHelp(const UnicodeString & AHelpKeyword)
 {
   // see also AppendUrlParams
   UnicodeString HelpKeyword = AHelpKeyword;
@@ -682,7 +767,8 @@ void ShowHelp(UnicodeString AHelpKeyword)
   AddToList(HelpUrl, HelpKeyword, FragmentSeparator);
   OpenBrowser(HelpUrl);
 }
-
+#endif // #if 0
+//---------------------------------------------------------------------------
 bool IsFormatInClipboard(unsigned int Format)
 {
   bool Result = OpenClipboard(0);
@@ -693,8 +779,8 @@ bool IsFormatInClipboard(unsigned int Format)
   }
   return Result;
 }
-
-HANDLE OpenTextFromClipboard(const wchar_t *&Text)
+//---------------------------------------------------------------------------
+HANDLE OpenTextFromClipboard(const wchar_t *& Text)
 {
   HANDLE Result = NULL;
   if (OpenClipboard(0))
@@ -703,7 +789,7 @@ HANDLE OpenTextFromClipboard(const wchar_t *&Text)
     Result = GetClipboardData(CF_UNICODETEXT);
     if (Result != NULL)
     {
-      Text = static_cast<const wchar_t *>(GlobalLock(Result));
+      Text = static_cast<const wchar_t*>(GlobalLock(Result));
     }
     else
     {
@@ -712,7 +798,7 @@ HANDLE OpenTextFromClipboard(const wchar_t *&Text)
   }
   return Result;
 }
-
+//---------------------------------------------------------------------------
 void CloseTextFromClipboard(HANDLE Handle)
 {
   if (Handle != NULL)
@@ -721,15 +807,26 @@ void CloseTextFromClipboard(HANDLE Handle)
   }
   CloseClipboard();
 }
-
-bool TextFromClipboard(UnicodeString &Text, bool Trim)
+//---------------------------------------------------------------------------
+bool TextFromClipboard(UnicodeString & Text, bool Trim)
 {
-  const wchar_t *AText = NULL;
+  const wchar_t * AText = NULL;
   HANDLE Handle = OpenTextFromClipboard(AText);
   bool Result = (Handle != NULL);
   if (Result)
   {
-    Text = AText;
+    // For all current uses (URL pasting, key/fingerprint pasting, known_hosts pasting, "more messages" copying,
+    // permissions pasting), 64KB is large enough.
+    const size_t Limit = 64*1024;
+    size_t Size = GlobalSize(Handle);
+    if (Size > Limit)
+    {
+      Text = UnicodeString(AText, Limit);
+    }
+    else
+    {
+      Text = AText;
+    }
     if (Trim)
     {
       Text = Text.Trim();
@@ -738,19 +835,19 @@ bool TextFromClipboard(UnicodeString &Text, bool Trim)
   }
   return Result;
 }
-
-bool NonEmptyTextFromClipboard(UnicodeString &Text)
+//---------------------------------------------------------------------------
+bool NonEmptyTextFromClipboard(UnicodeString & Text)
 {
   return
     TextFromClipboard(Text, true) &&
     !Text.IsEmpty();
 }
-
+//---------------------------------------------------------------------------
 static bool GetResource(
-  const UnicodeString ResName, void *&Content, unsigned long &Size)
+  const UnicodeString ResName, void *& Content, unsigned long & Size)
 {
   HRSRC Resource = FindResourceEx(HInstance, RT_RCDATA, ResName.c_str(),
-      MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL));
+    MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL));
   bool Result = (Resource != NULL);
   if (Result)
   {
@@ -775,17 +872,17 @@ static bool GetResource(
 
   return Result;
 }
-
+//---------------------------------------------------------------------------
 bool DumpResourceToFile(const UnicodeString ResName,
   const UnicodeString FileName)
 {
-  void *Content;
+  void * Content;
   unsigned long Size;
   bool Result = GetResource(ResName, Content, Size);
 
   if (Result)
   {
-    FILE *f = _wfopen(ApiPath(FileName).c_str(), L"wb");
+    FILE * f = _wfopen(ApiPath(FileName).c_str(), L"wb");
     if (!f)
     {
       throw Exception(FORMAT(L"Cannot create file %s", FileName));
@@ -799,23 +896,24 @@ bool DumpResourceToFile(const UnicodeString ResName,
 
   return Result;
 }
-
+//---------------------------------------------------------------------------
 UnicodeString ReadResource(const UnicodeString ResName)
 {
-  void *Content;
+  void * Content;
   unsigned long Size;
   UnicodeString Result;
 
   if (GetResource(ResName, Content, Size))
   {
-    Result = UnicodeString(UTF8String(static_cast<char *>(Content), Size));
+    Result = UnicodeString(UTF8String(static_cast<char*>(Content), Size));
   }
 
   return Result;
 }
-
+#if 0
+//---------------------------------------------------------------------------
 template <class T>
-void BrowseForExecutableT(T *Control, UnicodeString Title,
+void BrowseForExecutableT(T * Control, UnicodeString Title,
   UnicodeString Filter, bool FileNameCommand, bool Escape)
 {
   UnicodeString Executable, Program, Params, Dir;
@@ -826,7 +924,7 @@ void BrowseForExecutableT(T *Control, UnicodeString Title,
   }
   SplitCommand(Executable, Program, Params, Dir);
 
-  TOpenDialog *FileDialog = new TOpenDialog(Application);
+  TOpenDialog * FileDialog = new TOpenDialog(Application);
   try
   {
     if (Escape)
@@ -835,7 +933,7 @@ void BrowseForExecutableT(T *Control, UnicodeString Title,
     }
     UnicodeString ExpandedProgram = ExpandEnvironmentVariables(Program);
     FileDialog->FileName = ExpandedProgram;
-    UnicodeString InitialDir = ::ExtractFilePath(ExpandedProgram);
+    UnicodeString InitialDir = ExtractFilePath(ExpandedProgram);
     if (!InitialDir.IsEmpty())
     {
       FileDialog->InitialDir = InitialDir;
@@ -876,23 +974,23 @@ void BrowseForExecutableT(T *Control, UnicodeString Title,
     delete FileDialog;
   }
 }
-
-void BrowseForExecutable(TEdit *Control, UnicodeString Title,
+//---------------------------------------------------------------------------
+void BrowseForExecutable(TEdit * Control, UnicodeString Title,
   UnicodeString Filter, bool FileNameCommand, bool Escape)
 {
   BrowseForExecutableT(Control, Title, Filter, FileNameCommand, Escape);
 }
-
-void BrowseForExecutable(TComboBox *Control, UnicodeString Title,
+//---------------------------------------------------------------------------
+void BrowseForExecutable(TComboBox * Control, UnicodeString Title,
   UnicodeString Filter, bool FileNameCommand, bool Escape)
 {
   BrowseForExecutableT(Control, Title, Filter, FileNameCommand, Escape);
 }
-
-bool FontDialog(TFont *Font)
+//---------------------------------------------------------------------------
+bool FontDialog(TFont * Font)
 {
   bool Result;
-  TFontDialog *Dialog = new TFontDialog(Application);
+  TFontDialog * Dialog = new TFontDialog(Application);
   try
   {
     Dialog->Device = fdScreen;
@@ -910,20 +1008,20 @@ bool FontDialog(TFont *Font)
   }
   return Result;
 }
-
+//---------------------------------------------------------------------------
 bool SaveDialog(UnicodeString Title, UnicodeString Filter,
-  UnicodeString DefaultExt, UnicodeString &FileName)
+  UnicodeString DefaultExt, UnicodeString & FileName)
 {
   bool Result;
 #if 0
-  TFileSaveDialog *Dialog = new TFileSaveDialog(Application);
+  TFileSaveDialog * Dialog = new TFileSaveDialog(Application);
   try
   {
     Dialog->Title = Title;
     FilterToFileTypes(Filter, Dialog->FileTypes);
     Dialog->DefaultExtension = DefaultExt;
     Dialog->FileName = FileName;
-    UnicodeString DefaultFolder = ::ExtractFilePath(FileName);
+    UnicodeString DefaultFolder = ExtractFilePath(FileName);
     if (!DefaultFolder.IsEmpty())
     {
       Dialog->DefaultFolder = DefaultFolder;
@@ -940,15 +1038,15 @@ bool SaveDialog(UnicodeString Title, UnicodeString Filter,
   {
     delete Dialog;
   }
-#else
-  TSaveDialog *Dialog = new TSaveDialog(Application);
+  #else
+  TSaveDialog * Dialog = new TSaveDialog(Application);
   try
   {
     Dialog->Title = Title;
     Dialog->Filter = Filter;
     Dialog->DefaultExt = DefaultExt;
     Dialog->FileName = FileName;
-    UnicodeString InitialDir = ::ExtractFilePath(FileName);
+    UnicodeString InitialDir = ExtractFilePath(FileName);
     if (!InitialDir.IsEmpty())
     {
       Dialog->InitialDir = InitialDir;
@@ -965,11 +1063,10 @@ bool SaveDialog(UnicodeString Title, UnicodeString Filter,
   {
     delete Dialog;
   }
+#endif // #if 0
   return Result;
-#endif // #if 0
 }
-#endif // #if 0
-
+#endif //if 0
 bool SaveDialog(UnicodeString ATitle, UnicodeString Filter,
   UnicodeString ADefaultExt, UnicodeString &AFileName)
 {
@@ -980,47 +1077,34 @@ bool SaveDialog(UnicodeString ATitle, UnicodeString Filter,
   Result = InputDialog(ATitle, L""/*LoadStr(LOGIN_PRIVATE_KEY)*/, AFileName, L"", nullptr, true, nullptr, true);
   return Result;
 }
-
 #if 0
-// implemented in FarInterface.cpp
+//---------------------------------------------------------------------------
 void CopyToClipboard(UnicodeString Text)
 {
   HANDLE Data;
-  void *DataPtr;
+  void * DataPtr;
 
   if (OpenClipboard(0))
   {
-    try__finally
+    try
     {
-      SCOPE_EXIT
-      {
-        CloseClipboard();
-      };
       size_t Size = (Text.Length() + 1) * sizeof(wchar_t);
       Data = GlobalAlloc(GMEM_MOVEABLE + GMEM_DDESHARE, Size);
       try
       {
-        SCOPE_EXIT
-        {
-          GlobalUnlock(Data);
-        };
         DataPtr = GlobalLock(Data);
-        try__finally
+        try
         {
-          SCOPE_EXIT
-          {
-            GlobalUnlock(Data);
-          };
-          memcpy(DataPtr, Text.c_str(), Size);
+          libmemcpy_memcpy(DataPtr, Text.c_str(), Size);
           EmptyClipboard();
           SetClipboardData(CF_UNICODETEXT, Data);
         }
         __finally
         {
           GlobalUnlock(Data);
-        };
+        }
       }
-      catch (...)
+      catch(...)
       {
         GlobalFree(Data);
         throw;
@@ -1029,23 +1113,23 @@ void CopyToClipboard(UnicodeString Text)
     __finally
     {
       CloseClipboard();
-    };
+    }
   }
   else
   {
-    throw Exception(SCannotOpenClipboard);
+    throw Exception(Vcl_Consts_SCannotOpenClipboard);
   }
 }
 #endif // #if 0
-
-void CopyToClipboard(TStrings *Strings)
+//---------------------------------------------------------------------------
+void CopyToClipboard(TStrings * Strings)
 {
-  if (Strings->GetCount() > 0)
+  if (Strings->Count > 0)
   {
     CopyToClipboard(StringsToText(Strings));
   }
 }
-
+//---------------------------------------------------------------------------
 bool IsWin64()
 {
   static int Result = -1;
@@ -1053,7 +1137,7 @@ bool IsWin64()
   {
     Result = 0;
     BOOL Wow64Process = FALSE;
-    if (::IsWow64Process(::GetCurrentProcess(), &Wow64Process))
+    if (IsWow64Process(GetCurrentProcess(), &Wow64Process))
     {
       if (Wow64Process)
       {
@@ -1064,46 +1148,45 @@ bool IsWin64()
 
   return (Result > 0);
 }
-
+//---------------------------------------------------------------------------
 static void AcquireShutDownPrivileges()
 {
   HANDLE Token;
   // Get a token for this process.
-  Win32Check(FALSE != ::OpenProcessToken(GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, &Token));
+  Win32Check(FALSE != OpenProcessToken(GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, &Token));
 
   TOKEN_PRIVILEGES Priv;
   ZeroMemory(&Priv, sizeof(Priv));
   // Get the LUID for the shutdown privilege.
   // For hibernate/suspend, you need the same:
   // https://stackoverflow.com/q/959589/850848
-  Win32Check(FALSE != ::LookupPrivilegeValue(nullptr, SE_SHUTDOWN_NAME, &Priv.Privileges[0].Luid));
+  Win32Check(FALSE != LookupPrivilegeValue(nullptr, SE_SHUTDOWN_NAME, &Priv.Privileges[0].Luid));
 
   Priv.PrivilegeCount = 1;  // one privilege to set
   Priv.Privileges[0].Attributes = SE_PRIVILEGE_ENABLED;
 
   // Get the shutdown privilege for this process.
-  Win32Check(FALSE != ::AdjustTokenPrivileges(Token, FALSE, &Priv, 0, static_cast<PTOKEN_PRIVILEGES>(nullptr), nullptr));
+  Win32Check(FALSE != AdjustTokenPrivileges(Token, FALSE, &Priv, 0, (PTOKEN_PRIVILEGES)NULL, 0));
 }
-
+//---------------------------------------------------------------------------
 void ShutDownWindows()
 {
   AcquireShutDownPrivileges();
 
   // Shut down the system and force all applications to close.
   Win32Check(FALSE != ExitWindowsEx(EWX_SHUTDOWN | EWX_POWEROFF,
-      SHTDN_REASON_MAJOR_OTHER | SHTDN_REASON_MINOR_OTHER | SHTDN_REASON_FLAG_PLANNED));
+    SHTDN_REASON_MAJOR_OTHER | SHTDN_REASON_MINOR_OTHER | SHTDN_REASON_FLAG_PLANNED));
 }
-
 #if 0
-
+//---------------------------------------------------------------------------
 void SuspendWindows()
 {
   AcquireShutDownPrivileges();
 
-  // https://msdn.microsoft.com/en-us/library/windows/desktop/aa373201.aspx
+  // https://docs.microsoft.com/en-us/windows/win32/api/powrprof/nf-powrprof-setsuspendstate
   Win32Check(FALSE != SetSuspendState(false, false, false));
 }
-
+//---------------------------------------------------------------------------
 void EditSelectBaseName(HWND Edit)
 {
   UnicodeString Text;
@@ -1118,10 +1201,9 @@ void EditSelectBaseName(HWND Edit)
     PostMessage(Edit, EM_SETSEL, 0, P - 1);
   }
 }
-
 #endif // #if 0
-
-static void ConvertKey(UnicodeString &FileName, TKeyType Type)
+//---------------------------------------------------------------------------
+static void ConvertKey(UnicodeString & FileName, TKeyType Type)
 {
   UnicodeString Passphrase;
 
@@ -1129,25 +1211,21 @@ static void ConvertKey(UnicodeString &FileName, TKeyType Type)
   if (IsKeyEncrypted(Type, FileName, Comment))
   {
     if (!InputDialog(
-        LoadStr(PASSPHRASE_TITLE),
-        FORMAT(LoadStr(PROMPT_KEY_PASSPHRASE), Comment),
-        Passphrase, HELP_NONE, nullptr, false, nullptr, false))
+          LoadStr(PASSPHRASE_TITLE),
+          FORMAT(LoadStr(PROMPT_KEY_PASSPHRASE), (Comment)),
+          Passphrase, HELP_NONE, NULL, false, NULL, false))
     {
       Abort();
     }
   }
 
-  TPrivateKey *PrivateKey = LoadKey(Type, FileName, Passphrase);
+  TPrivateKey * PrivateKey = LoadKey(Type, FileName, Passphrase);
 
   try__finally
   {
-    SCOPE_EXIT
-    {
-      FreeKey(PrivateKey);
-    };
-    FileName = ::ChangeFileExt(FileName, ".ppk", L'\\');
+    FileName = ::ChangeFileExt(FileName, FORMAT(".%s", PuttyKeyExt));
 
-    if (!SaveDialog(LoadStr(CONVERTKEY_SAVE_TITLE), LoadStr(CONVERTKEY_SAVE_FILTER), L"ppk", FileName))
+    if (!SaveDialog(LoadStr(CONVERTKEY_SAVE_TITLE), LoadStr(CONVERTKEY_SAVE_FILTER), PuttyKeyExt, FileName))
     {
       Abort();
     }
@@ -1155,115 +1233,114 @@ static void ConvertKey(UnicodeString &FileName, TKeyType Type)
     SaveKey(ktSSH2, FileName, Passphrase, PrivateKey);
 
     MessageDialog(MainInstructions(FMTLOAD(CONVERTKEY_SAVED, FileName)), qtInformation, qaOK);
-  }
+  },
   __finally
   {
-#if 0
     FreeKey(PrivateKey);
-#endif // #if 0
-  };
+  } end_try__finally
 }
-
+//---------------------------------------------------------------------------
 static void DoVerifyKey(
-  UnicodeString AFileName, TSshProt SshProt, bool Convert)
+  UnicodeString & FileName, TSshProt SshProt, bool Convert, bool CanIgnore)
 {
-  if (!AFileName.Trim().IsEmpty())
+  if (!FileName.Trim().IsEmpty())
   {
-    UnicodeString FileName = ::ExpandEnvironmentVariables(AFileName);
+    FileName = ExpandEnvironmentVariables(FileName);
     TKeyType Type = GetKeyType(FileName);
     // reason _wfopen failed
     int Error = errno;
     UnicodeString Message;
-    UnicodeString HelpKeyword; // = HELP_LOGIN_KEY_TYPE;
+    UnicodeString HelpKeyword = HELP_LOGIN_KEY_TYPE;
     UnicodeString PuttygenPath;
     std::unique_ptr<TStrings> MoreMessages;
     switch (Type)
     {
-    case ktOpenSSHPEM:
-    case ktOpenSSHNew:
-    case ktSSHCom:
-    {
-      UnicodeString TypeName = ((Type == ktOpenSSHPEM) || (Type == ktOpenSSHNew)) ? L"OpenSSH" : L"ssh.com";
-      Message = FMTLOAD(KEY_TYPE_UNSUPPORTED2, AFileName, TypeName);
-
-      if (Convert)
-      {
-        // Configuration->Usage->Inc(L"PrivateKeyConvertSuggestionsNative");
-        UnicodeString ConvertMessage = FMTLOAD(KEY_TYPE_CONVERT3, TypeName, RemoveMainInstructionsTag(Message));
-        Message = UnicodeString();
-        if (MoreMessageDialog(ConvertMessage, nullptr, qtConfirmation, qaOK | qaCancel, HelpKeyword) == qaOK)
+      case ktOpenSSHPEM:
+      case ktOpenSSHNew:
+      case ktSSHCom:
         {
-          ConvertKey(FileName, Type);
-          // Configuration->Usage->Inc(L"PrivateKeyConverted");
+          UnicodeString TypeName = ((Type == ktOpenSSHPEM) || (Type == ktOpenSSHNew)) ? L"OpenSSH" : L"ssh.com";
+          Message = FMTLOAD(KEY_TYPE_UNSUPPORTED2, FileName, TypeName);
+
+          if (Convert)
+          {
+            GetConfiguration()->Usage->Inc(L"PrivateKeyConvertSuggestionsNative");
+            UnicodeString ConvertMessage = FMTLOAD(KEY_TYPE_CONVERT3, TypeName, RemoveMainInstructionsTag(Message));
+            Message = UnicodeString();
+            if (MoreMessageDialog(ConvertMessage, nullptr, qtConfirmation, qaOK | qaCancel, HelpKeyword) == qaOK)
+            {
+              ConvertKey(FileName, Type);
+              GetConfiguration()->Usage->Inc(L"PrivateKeyConverted");
+            }
+            else
+            {
+              Abort();
+            }
+          }
+          else
+          {
+            HelpKeyword = HELP_KEY_TYPE_UNSUPPORTED;
+          }
         }
-        else
+        break;
+
+      case ktSSH1:
+      case ktSSH2:
+        if ((Type == ktSSH1) != (SshProt == ssh1only))
         {
-          Abort();
+          Message =
+            MainInstructions(
+              FMTLOAD(KEY_TYPE_DIFFERENT_SSH,
+                FileName, (Type == ktSSH1 ? L"SSH-1" : L"PuTTY SSH-2")));
         }
-      }
-      else
-      {
-        HelpKeyword = ""; // HELP_KEY_TYPE_UNSUPPORTED;
-      }
-    }
-    break;
+        break;
 
-    case ktSSH1:
-    case ktSSH2:
-      if ((Type == ktSSH1) != (SshProt == ssh1only))
-      {
-        Message =
-          MainInstructions(
-            FMTLOAD(KEY_TYPE_DIFFERENT_SSH,
-              AFileName, Type == ktSSH1 ? L"SSH-1" : L"PuTTY SSH-2"));
-      }
-      break;
+      case ktSSH1Public:
+      case ktSSH2PublicRFC4716:
+      case ktSSH2PublicOpenSSH:
+        // noop
+        // Do not even bother checking SSH protocol version
+        break;
 
-    case ktSSH1Public:
-    case ktSSH2PublicRFC4716:
-    case ktSSH2PublicOpenSSH:
-      // noop
-      // Do not even bother checking SSH protocol version
-      break;
+      case ktUnopenable:
+        Message = MainInstructions(FMTLOAD(KEY_TYPE_UNOPENABLE, FileName));
+        if (Error != ERROR_SUCCESS)
+        {
+          MoreMessages.reset(TextToStringList(SysErrorMessageForError(Error)));
+        }
+        break;
 
-    case ktUnopenable:
-      Message = MainInstructions(FMTLOAD(KEY_TYPE_UNOPENABLE, AFileName));
-      if (Error != ERROR_SUCCESS)
-      {
-        MoreMessages.reset(TextToStringList(SysErrorMessageForError(Error)));
-      }
-      break;
-
-    default:
-      DebugFail();
-    // fallthru
-    case ktUnknown:
-      Message = MainInstructions(FMTLOAD(KEY_TYPE_UNKNOWN2, AFileName));
-      break;
+      default:
+        DebugFail();
+        // fallthru
+      case ktUnknown:
+        Message = MainInstructions(FMTLOAD(KEY_TYPE_UNKNOWN2, FileName));
+        break;
     }
 
     if (!Message.IsEmpty())
     {
-      // Configuration->Usage->Inc(L"PrivateKeySelectErrors");
-      if (MoreMessageDialog(Message, MoreMessages.get(), qtWarning, qaIgnore | qaAbort, HelpKeyword) == qaAbort)
+      GetConfiguration()->Usage->Inc(L"PrivateKeySelectErrors");
+      uint32_t Answers = (CanIgnore ? (qaIgnore | qaAbort) : qaOK);
+      if (MoreMessageDialog(Message, MoreMessages.get(), qtWarning, Answers, HelpKeyword) != qaIgnore)
       {
         Abort();
       }
     }
   }
 }
-
-void VerifyAndConvertKey(UnicodeString FileName, TSshProt SshProt)
+//---------------------------------------------------------------------------
+void VerifyAndConvertKey(UnicodeString& FileName, TSshProt SshProt, bool CanIgnore)
 {
-  DoVerifyKey(FileName, SshProt, true);
+  DoVerifyKey(FileName, SshProt, true, CanIgnore);
 }
-
+//---------------------------------------------------------------------------
 void VerifyKey(UnicodeString FileName, TSshProt SshProt)
 {
-  DoVerifyKey(FileName, SshProt, false);
+  DoVerifyKey(FileName, SshProt, false, true);
 }
-
-void VerifyCertificate(UnicodeString FileName)
+//---------------------------------------------------------------------------
+void VerifyCertificate(const UnicodeString FileName)
 {
   if (!FileName.Trim().IsEmpty())
   {
@@ -1271,7 +1348,7 @@ void VerifyCertificate(UnicodeString FileName)
     {
       CheckCertificate(FileName);
     }
-    catch (Exception &E)
+    catch (Exception & E)
     {
       if (ExceptionMessageDialog(&E, qtWarning, L"", qaIgnore | qaAbort) == qaAbort)
       {
@@ -1280,15 +1357,15 @@ void VerifyCertificate(UnicodeString FileName)
     }
   }
 }
-
+//---------------------------------------------------------------------------
 bool DetectSystemExternalEditor(
-  bool /*AllowDefaultEditor*/,
-  UnicodeString & /*Executable*/, UnicodeString & /*ExecutableDescription*/,
-  UnicodeString & /*UsageState*/, bool & /*TryNextTime*/)
+  bool AllowDefaultEditor,
+  UnicodeString & Executable, UnicodeString & ExecutableDescription,
+  UnicodeString & UsageState, bool & TryNextTime)
 {
   bool Result = false;
 #if 0
-  UnicodeString TempName = ::ExcludeTrailingBackslash(WinConfiguration->TemporaryDir()) + L".txt";
+  UnicodeString TempName = ExcludeTrailingBackslash(WinConfiguration->TemporaryDir()) + L".txt";
   if (FileExists(ApiPath(TempName)))
   {
     TryNextTime = true;
@@ -1317,7 +1394,7 @@ bool DetectSystemExternalEditor(
         {
           Executable = ExecutableBuf;
           if (Executable.IsEmpty() ||
-            !FileExists(ApiPath(Executable)))
+              !FileExists(ApiPath(Executable)))
           {
             UsageState = "N";
           }
@@ -1325,7 +1402,7 @@ bool DetectSystemExternalEditor(
           {
             UnicodeString ExecutableName = ExtractFileName(Executable);
             if (!AllowDefaultEditor &&
-              SameText(ExecutableName, TEditorPreferences::GetDefaultExternalEditor()))
+                SameText(ExecutableName, TEditorPreferences::GetDefaultExternalEditor()))
             {
               UsageState = "P";
               Executable = L"";
@@ -1364,59 +1441,54 @@ bool DetectSystemExternalEditor(
 #endif // #if 0
   return Result;
 }
-
-static bool GetProxyUrlFromIE(UnicodeString &Proxy)
+//---------------------------------------------------------------------------
+// this was moved to global scope in past in some attempt to fix crashes,
+// not sure it really helped
+WINHTTP_CURRENT_USER_IE_PROXY_CONFIG IEProxyInfo;
+//---------------------------------------------------------------------------
+static bool GetProxyUrlFromIE(UnicodeString & Proxy)
 {
   bool Result = false;
-  // Code from http://gentoo.osuosl.org/distfiles/cl331.zip/io/
-  WINHTTP_CURRENT_USER_IE_PROXY_CONFIG IEProxyInfo;
-  ClearStruct(IEProxyInfo);
-  TLibraryLoader LibraryLoader(L"winhttp.dll", true);
-  if (LibraryLoader.Loaded())
+  memset(&IEProxyInfo, 0, sizeof(IEProxyInfo));
+  if (WinHttpGetIEProxyConfigForCurrentUser(&IEProxyInfo))
   {
-    typedef BOOL (WINAPI * FWinHttpGetIEProxyConfigForCurrentUser)(WINHTTP_CURRENT_USER_IE_PROXY_CONFIG *);
-    FWinHttpGetIEProxyConfigForCurrentUser GetIEProxyConfig = reinterpret_cast<FWinHttpGetIEProxyConfigForCurrentUser>(
-        LibraryLoader.GetProcAddress("WinHttpGetIEProxyConfigForCurrentUser"));
-    if (GetIEProxyConfig && GetIEProxyConfig(&IEProxyInfo))
+    if (IEProxyInfo.lpszProxy != NULL)
     {
-      if (IEProxyInfo.lpszProxy != nullptr)
+      UnicodeString IEProxy = IEProxyInfo.lpszProxy;
+      Proxy = L"";
+      while (Proxy.IsEmpty() && !IEProxy.IsEmpty())
       {
-        UnicodeString IEProxy = IEProxyInfo.lpszProxy;
-        Proxy = L"";
-        while (Proxy.IsEmpty() && !IEProxy.IsEmpty())
+        UnicodeString Str = CutToChar(IEProxy, L';', true);
+        if (Str.Pos(L"=") == 0)
         {
-          UnicodeString Str = CutToChar(IEProxy, L';', true);
-          if (Str.Pos(L"=") == 0)
+          Proxy = Str;
+        }
+        else
+        {
+          UnicodeString Protocol = CutToChar(Str, L'=', true);
+          if (SameText(Protocol, L"http"))
           {
             Proxy = Str;
           }
-          else
-          {
-            UnicodeString Protocol = CutToChar(Str, L'=', true);
-            if (SameText(Protocol, L"http"))
-            {
-              Proxy = Str;
-            }
-          }
         }
+      }
 
-        GlobalFree(IEProxyInfo.lpszProxy);
-        Result = true;
-      }
-      if (IEProxyInfo.lpszAutoConfigUrl != nullptr)
-      {
-        GlobalFree(IEProxyInfo.lpszAutoConfigUrl);
-      }
-      if (IEProxyInfo.lpszProxyBypass != nullptr)
-      {
-        GlobalFree(IEProxyInfo.lpszProxyBypass);
-      }
+      GlobalFree(IEProxyInfo.lpszProxy);
+      Result = true;
+    }
+    if (IEProxyInfo.lpszAutoConfigUrl != nullptr)
+    {
+      GlobalFree(IEProxyInfo.lpszAutoConfigUrl);
+    }
+    if (IEProxyInfo.lpszProxyBypass != nullptr)
+    {
+      GlobalFree(IEProxyInfo.lpszProxyBypass);
     }
   }
   return Result;
 }
-
-bool AutodetectProxy(UnicodeString &AHostName, intptr_t &APortNumber)
+//---------------------------------------------------------------------------
+bool AutodetectProxy(UnicodeString & HostName, intptr_t& PortNumber)
 {
   bool Result = false;
 
@@ -1424,30 +1496,18 @@ bool AutodetectProxy(UnicodeString &AHostName, intptr_t &APortNumber)
      it's available. */
   UnicodeString Proxy;
   WINHTTP_PROXY_INFO ProxyInfo;
-  //memset(&ProxyInfo, 0, sizeof(ProxyInfo));
-  ClearStruct(ProxyInfo);
-  // if (WinHttpGetDefaultProxyConfiguration(&ProxyInfo))
-  TLibraryLoader LibraryLoader(L"winhttp.dll", true);
-  if (LibraryLoader.Loaded())
+  memset(&ProxyInfo, 0, sizeof(ProxyInfo));
+  if (WinHttpGetDefaultProxyConfiguration(&ProxyInfo))
   {
-    typedef BOOL (WINAPI * FWinHttpGetDefaultProxyConfiguration)(WINHTTP_PROXY_INFO *);
-    FWinHttpGetDefaultProxyConfiguration GetDefaultProxyConfiguration = reinterpret_cast<FWinHttpGetDefaultProxyConfiguration>(
-        LibraryLoader.GetProcAddress("WinHttpGetDefaultProxyConfiguration"));
-    if (GetDefaultProxyConfiguration)
+    if (ProxyInfo.lpszProxy != NULL)
     {
-      if (GetDefaultProxyConfiguration(&ProxyInfo))
-      {
-        if (ProxyInfo.lpszProxy != nullptr)
-        {
-          Proxy = ProxyInfo.lpszProxy;
-          GlobalFree(ProxyInfo.lpszProxy);
-          Result = true;
-        }
-        if (ProxyInfo.lpszProxyBypass != nullptr)
-        {
-          GlobalFree(ProxyInfo.lpszProxyBypass);
-        }
-      }
+      Proxy = ProxyInfo.lpszProxy;
+      GlobalFree(ProxyInfo.lpszProxy);
+      Result = true;
+    }
+    if (ProxyInfo.lpszProxyBypass != NULL)
+    {
+      GlobalFree(ProxyInfo.lpszProxyBypass);
     }
   }
 
@@ -1471,8 +1531,8 @@ bool AutodetectProxy(UnicodeString &AHostName, intptr_t &APortNumber)
     }
     else
     {
-      AHostName = CutToChar(Proxy, L':', true);
-      APortNumber = StrToIntDef(Proxy, ProxyPortNumber);
+      HostName = CutToChar(Proxy, L':', true);
+      PortNumber = StrToIntDef(Proxy, ProxyPortNumber);
     }
   }
 
@@ -1481,37 +1541,37 @@ bool AutodetectProxy(UnicodeString &AHostName, intptr_t &APortNumber)
 
   return Result;
 }
-
-
 #if 0
+//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
 class TWinHelpTester : public TInterfacedObject, public IWinHelpTester
 {
 public:
   virtual bool CanShowALink(const UnicodeString ALink, const UnicodeString FileName);
   virtual bool CanShowTopic(const UnicodeString Topic, const UnicodeString FileName);
   virtual bool CanShowContext(const int Context, const UnicodeString FileName);
-  virtual TStringList *GetHelpStrings(const UnicodeString ALink);
+  virtual TStringList * GetHelpStrings(const UnicodeString ALink);
   virtual UnicodeString GetHelpPath();
   virtual UnicodeString GetDefaultHelpFile();
 
   IUNKNOWN
 };
-
+//---------------------------------------------------------------------------
 class TCustomHelpSelector : public TInterfacedObject, public IHelpSelector
 {
 public:
-  TCustomHelpSelector(UnicodeString Name);
+  TCustomHelpSelector(const UnicodeString & Name);
 
-  virtual int SelectKeyword(TStrings *Keywords);
-  virtual int TableOfContents(TStrings *Contents);
+  virtual int SelectKeyword(TStrings * Keywords);
+  virtual int TableOfContents(TStrings * Contents);
 
   IUNKNOWN
 
 private:
   UnicodeString FName;
 };
-
-void AssignHelpSelector(IHelpSelector *HelpSelector)
+//---------------------------------------------------------------------------
+void AssignHelpSelector(IHelpSelector * HelpSelector)
 {
   _di_IHelpSystem HelpSystem;
   if (GetHelpSystem(HelpSystem))
@@ -1519,8 +1579,8 @@ void AssignHelpSelector(IHelpSelector *HelpSelector)
     HelpSystem->AssignHelpSelector(HelpSelector);
   }
 }
-
-void InitializeCustomHelp(ICustomHelpViewer *HelpViewer)
+//---------------------------------------------------------------------------
+void InitializeCustomHelp(ICustomHelpViewer * HelpViewer)
 {
   _di_IHelpManager HelpManager;
   RegisterViewer(HelpViewer, HelpManager);
@@ -1530,65 +1590,65 @@ void InitializeCustomHelp(ICustomHelpViewer *HelpViewer)
 
   AssignHelpSelector(new TCustomHelpSelector(HelpViewer->GetViewerName()));
 }
-
+//---------------------------------------------------------------------------
 void FinalizeCustomHelp()
 {
   AssignHelpSelector(NULL);
 }
-
-
+//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
 bool TWinHelpTester::CanShowALink(const UnicodeString ALink,
   const UnicodeString FileName)
 {
   return !Application->HelpFile.IsEmpty();
 }
-
+//---------------------------------------------------------------------------
 bool TWinHelpTester::CanShowTopic(const UnicodeString Topic,
   const UnicodeString FileName)
 {
   DebugFail();
   return !Application->HelpFile.IsEmpty();
 }
-
+//---------------------------------------------------------------------------
 bool TWinHelpTester::CanShowContext(const int /*Context*/,
   const UnicodeString FileName)
 {
   DebugFail();
   return !Application->HelpFile.IsEmpty();
 }
-
-TStringList *TWinHelpTester::GetHelpStrings(const UnicodeString ALink)
+//---------------------------------------------------------------------------
+TStringList * TWinHelpTester::GetHelpStrings(const UnicodeString ALink)
 {
   DebugFail();
-  TStringList *Result = new TStringList();
+  TStringList * Result = new TStringList();
   Result->Add(ViewerName + L": " + ALink);
   return Result;
 }
-
+//---------------------------------------------------------------------------
 UnicodeString TWinHelpTester::GetHelpPath()
 {
   // never called on windows anyway
-  return ::ExtractFilePath(Application->HelpFile);
+  return ExtractFilePath(Application->HelpFile);
 }
-
+//---------------------------------------------------------------------------
 UnicodeString TWinHelpTester::GetDefaultHelpFile()
 {
   return Application->HelpFile;
 }
-
-
-TCustomHelpSelector::TCustomHelpSelector(UnicodeString Name) :
+//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
+TCustomHelpSelector::TCustomHelpSelector(const UnicodeString & Name) :
   FName(Name)
 {
 }
-
+//---------------------------------------------------------------------------
 int TCustomHelpSelector::SelectKeyword(TStrings * /*Keywords*/)
 {
   DebugFail();
   return 0;
 }
-
-int TCustomHelpSelector::TableOfContents(TStrings *Contents)
+//---------------------------------------------------------------------------
+int TCustomHelpSelector::TableOfContents(TStrings * Contents)
 {
   return Contents->IndexOf(FName);
 }

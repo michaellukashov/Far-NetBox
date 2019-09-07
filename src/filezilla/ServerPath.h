@@ -1,7 +1,7 @@
-
+//---------------------------------------------------------------------------
 #pragma once
 #include "stdafx.h"
-
+//---------------------------------------------------------------------------
 class CServerPath
 {
 CUSTOM_MEM_ALLOCATION_IMPL
@@ -34,16 +34,15 @@ public:
 
 protected:
   BOOL m_bEmpty;
-  rde::list<CString> m_Segments;
-  typedef rde::list<CString>::iterator tIter;
-  typedef rde::list<CString>::const_iterator tConstIter;
+  nb::list_t<CString> m_Segments;
+  typedef nb::list_t<CString>::iterator tIter;
+  typedef nb::list_t<CString>::const_iterator tConstIter;
   CString m_Prefix;
   int m_nServerType;
 
 private:
   const CString DoGetPath(bool unterminated) const;
 };
-
+//---------------------------------------------------------------------------
 const BOOL operator==(const CServerPath & a, const CString & b);
-
 
