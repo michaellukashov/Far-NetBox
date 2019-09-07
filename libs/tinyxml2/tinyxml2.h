@@ -100,12 +100,12 @@ distribution.
 /* Versioning, past 1.0.14:
 	http://semver.org/
 */
-static const int TIXML2_MAJOR_VERSION = 6;
-static const int TIXML2_MINOR_VERSION = 2;
+static const int TIXML2_MAJOR_VERSION = 7;
+static const int TIXML2_MINOR_VERSION = 1;
 static const int TIXML2_PATCH_VERSION = 0;
 
-#define TINYXML2_MAJOR_VERSION 6
-#define TINYXML2_MINOR_VERSION 2
+#define TINYXML2_MAJOR_VERSION 7
+#define TINYXML2_MINOR_VERSION 1
 #define TINYXML2_PATCH_VERSION 0
 
 // A fixed element depth limit is problematic. There needs to be a
@@ -131,8 +131,10 @@ class XMLPrinter;
 	pointers into the XML file itself, and will apply normalization
 	and entity translation if actually read. Can also store (and memory
 	manage) a traditional char[]
+
+    Isn't clear why TINYXML2_LIB is needed; but seems to fix #719
 */
-class StrPair
+class TINYXML2_LIB StrPair
 {
 public:
     enum {
@@ -192,7 +194,7 @@ private:
     char*   _end;
 
     StrPair( const StrPair& other );	// not supported
-    void operator=( StrPair& other );	// not supported, use TransferTo()
+    void operator=( const StrPair& other );	// not supported, use TransferTo()
 };
 
 
@@ -304,7 +306,7 @@ private:
         TIXMLASSERT( cap > 0 );
         if ( cap > _allocated ) {
             TIXMLASSERT( cap <= INT_MAX / 2 );
-            int newAllocated = cap * 2;
+            const int newAllocated = cap * 2;
             T* newMem = nb::calloc<T*>(newAllocated, sizeof(T));
             TIXMLASSERT( newAllocated >= _size );
             memcpy( newMem, _mem, sizeof(T)*_size );	// warning: not using constructors, only works for PODs
@@ -620,6 +622,7 @@ public:
     static void ToStr( float v, char* buffer, int bufferSize );
     static void ToStr( double v, char* buffer, int bufferSize );
     static void ToStr(int64_t v, char* buffer, int bufferSize);
+    static void ToStr(uint64_t v, char* buffer, int bufferSize);
 
     // converts strings to primitive types
     static bool	ToInt( const char* str, int* value );
@@ -628,7 +631,7 @@ public:
     static bool	ToFloat( const char* str, float* value );
     static bool ToDouble( const char* str, double* value );
 	static bool ToInt64(const char* str, int64_t* value);
-
+    static bool ToUnsigned64(const char* str, uint64_t* value);
 	// Changes what is serialized for a boolean value.
 	// Default to "true" and "false". Shouldn't be changed
 	// unless you have a special testing or compatibility need.
@@ -1169,6 +1172,12 @@ public:
 		return i;
 	}
 
+    uint64_t Unsigned64Value() const {
+        uint64_t i = 0;
+        QueryUnsigned64Value(&i);
+        return i;
+    }
+
     /// Query as an unsigned integer. See IntValue()
     unsigned UnsignedValue() const			{
         unsigned i=0;
@@ -1203,6 +1212,8 @@ public:
     XMLError QueryUnsignedValue( unsigned int* value ) const;
 	/// See QueryIntValue
 	XMLError QueryInt64Value(int64_t* value) const;
+    /// See QueryIntValue
+    XMLError QueryUnsigned64Value(uint64_t* value) const;
 	/// See QueryIntValue
     XMLError QueryBoolValue( bool* value ) const;
     /// See QueryIntValue
@@ -1218,7 +1229,9 @@ public:
     void SetAttribute( unsigned value );
 	/// Set the attribute to value.
 	void SetAttribute(int64_t value);
-	/// Set the attribute to value.
+    /// Set the attribute to value.
+    void SetAttribute(uint64_t value);
+    /// Set the attribute to value.
     void SetAttribute( bool value );
     /// Set the attribute to value.
     void SetAttribute( double value );
@@ -1306,6 +1319,8 @@ public:
 	unsigned UnsignedAttribute(const char* name, unsigned defaultValue = 0) const;
 	/// See IntAttribute()
 	int64_t Int64Attribute(const char* name, int64_t defaultValue = 0) const;
+    /// See IntAttribute()
+    uint64_t Unsigned64Attribute(const char* name, uint64_t defaultValue = 0) const;
 	/// See IntAttribute()
 	bool BoolAttribute(const char* name, bool defaultValue = false) const;
     /// See IntAttribute()
@@ -1351,6 +1366,15 @@ public:
 		}
 		return a->QueryInt64Value(value);
 	}
+
+    /// See QueryIntAttribute()
+    XMLError QueryUnsigned64Attribute(const char* name, uint64_t* value) const {
+        const XMLAttribute* a = FindAttribute(name);
+        if(!a) {
+            return XML_NO_ATTRIBUTE;
+        }
+        return a->QueryUnsigned64Value(value);
+    }
 
 	/// See QueryIntAttribute()
     XMLError QueryBoolAttribute( const char* name, bool* value ) const				{
@@ -1418,7 +1442,11 @@ public:
 		return QueryInt64Attribute(name, value);
 	}
 
-	XMLError QueryAttribute( const char* name, bool* value ) const {
+    XMLError QueryAttribute(const char* name, uint64_t* value) const {
+        return QueryUnsigned64Attribute(name, value);
+    }
+
+    XMLError QueryAttribute( const char* name, bool* value ) const {
 		return QueryBoolAttribute( name, value );
 	}
 
@@ -1452,7 +1480,13 @@ public:
 		a->SetAttribute(value);
 	}
 
-	/// Sets the named attribute to value.
+    /// Sets the named attribute to value.
+    void SetAttribute(const char* name, uint64_t value) {
+        XMLAttribute* a = FindOrCreateAttribute(name);
+        a->SetAttribute(value);
+    }
+    
+    /// Sets the named attribute to value.
     void SetAttribute( const char* name, bool value )			{
         XMLAttribute* a = FindOrCreateAttribute( name );
         a->SetAttribute( value );
@@ -1551,6 +1585,8 @@ public:
     void SetText( unsigned value );
 	/// Convenience method for setting text inside an element. See SetText() for important limitations.
 	void SetText(int64_t value);
+    /// Convenience method for setting text inside an element. See SetText() for important limitations.
+    void SetText(uint64_t value);
 	/// Convenience method for setting text inside an element. See SetText() for important limitations.
     void SetText( bool value );
     /// Convenience method for setting text inside an element. See SetText() for important limitations.
@@ -1590,6 +1626,8 @@ public:
 	/// See QueryIntText()
 	XMLError QueryInt64Text(int64_t* uval) const;
 	/// See QueryIntText()
+	XMLError QueryUnsigned64Text(uint64_t* uval) const;
+	/// See QueryIntText()
     XMLError QueryBoolText( bool* bval ) const;
     /// See QueryIntText()
     XMLError QueryDoubleText( double* dval ) const;
@@ -1602,6 +1640,8 @@ public:
 	unsigned UnsignedText(unsigned defaultValue = 0) const;
 	/// See QueryIntText()
 	int64_t Int64Text(int64_t defaultValue = 0) const;
+    /// See QueryIntText()
+    uint64_t Unsigned64Text(uint64_t defaultValue = 0) const;
 	/// See QueryIntText()
 	bool BoolText(bool defaultValue = false) const;
 	/// See QueryIntText()
@@ -1689,7 +1729,7 @@ public:
     	specified, TinyXML-2 will assume 'xml' points to a
     	null terminated string.
     */
-    XMLError Parse( const char* xml, ::size_t nBytes=(::size_t)(-1) );
+    XMLError Parse( const char* xml, size_t nBytes=static_cast<size_t>(-1) );
 
     /**
     	Load an XML file from disk.
@@ -2203,6 +2243,7 @@ public:
     void PushAttribute( const char* name, int value );
     void PushAttribute( const char* name, unsigned value );
     void PushAttribute( const char* name, int64_t value );
+    void PushAttribute( const char* name, uint64_t value );
     void PushAttribute( const char* name, bool value );
     void PushAttribute( const char* name, double value );
     /// If streaming, close the Element.
@@ -2214,8 +2255,10 @@ public:
     void PushText( int value );
     /// Add a text node from an unsigned.
     void PushText( unsigned value );
-    /// Add a text node from an unsigned.
-    void PushText(int64_t value);
+    /// Add a text node from a signed 64bit integer.
+    void PushText( int64_t value );
+    /// Add a text node from an unsigned 64bit integer.
+    void PushText( uint64_t value );
     /// Add a text node from a bool.
     void PushText( bool value );
     /// Add a text node from a float.
@@ -2261,10 +2304,10 @@ public:
     	If in print to memory mode, reset the buffer to the
     	beginning.
     */
-    void ClearBuffer() {
+    void ClearBuffer( bool resetToFirstElement = true ) {
         _buffer.Clear();
         _buffer.Push(0);
-		_firstElement = true;
+		_firstElement = resetToFirstElement;
     }
 
 protected:
