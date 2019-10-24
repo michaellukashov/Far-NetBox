@@ -151,7 +151,7 @@ public:
   static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TCustomFileSystem); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TCustomFileSystem) || TObject::is(Kind); }
 public:
-  virtual ~TCustomFileSystem() noexcept;
+  ~TCustomFileSystem() noexcept override;
 
   virtual void Open() = 0;
   virtual void Close() = 0;
