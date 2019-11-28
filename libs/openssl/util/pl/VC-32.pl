@@ -46,10 +46,9 @@ if ($FLAVOR =~ /WIN64/)
     # 
     $base_cflags= " $mf_cflag";
     my $f = $shlib || $fips ?' /MD':' /MT';
-    $opt_cflags=$f.' /O2 /Gw /GL';
+    $opt_cflags=$f.' /Ox';
     $dbg_cflags=$f.'d /Od -DDEBUG -D_DEBUG';
-    $lflags="/nologo /subsystem:console /opt:ref /opt:icf";
-    $opt_lflags=" /LTCG";
+    $lflags="/nologo /subsystem:console /opt:ref";
 
     *::perlasm_compile_target = sub {
 	my ($target,$source,$bname)=@_;
@@ -115,7 +114,7 @@ elsif ($FLAVOR =~ /CE/)
     }
 
     $cc=($ENV{CC} or "cl");
-    $base_cflags=' /W3 /GF /Gy /nologo -DUNICODE -D_UNICODE -DOPENSSL_SYSNAME_WINCE -DWIN32_LEAN_AND_MEAN -DL_ENDIAN -DDSO_WIN32 -DNO_CHMOD -DOPENSSL_SMALL_FOOTPRINT';
+    $base_cflags=' /W3 /WX /GF /Gy /nologo -DUNICODE -D_UNICODE -DOPENSSL_SYSNAME_WINCE -DWIN32_LEAN_AND_MEAN -DL_ENDIAN -DDSO_WIN32 -DNO_CHMOD -DOPENSSL_SMALL_FOOTPRINT';
     $base_cflags.=" $wcecdefs";
     $base_cflags.=' -I$(WCECOMPAT)/include'		if (defined($ENV{'WCECOMPAT'}));
     $base_cflags.=' -I$(PORTSDK_LIBPATH)/../../include'	if (defined($ENV{'PORTSDK_LIBPATH'}));
@@ -133,10 +132,9 @@ else	# Win32
     $base_cflags= " $mf_cflag";
     my $f = $shlib || $fips ?' /MD':' /MT';
     $ff = "/fixed";
-    $opt_cflags=$f.' /O2 /Ob2 /Gw /GL';
+    $opt_cflags=$f.' /Ox /O2 /Ob2';
     $dbg_cflags=$f.'d /Od -DDEBUG -D_DEBUG';
-    $lflags="/nologo /subsystem:console /opt:ref /opt:icf";
-    $opt_lflags=" /LTCG";
+    $lflags="/nologo /subsystem:console /opt:ref";
     }
 $lib_cflag='/Zl' if (!$shlib);	# remove /DEFAULTLIBs from static lib
 $mlflags='';
@@ -154,12 +152,11 @@ if ($debug)
 else
 	{
 	$cflags=$opt_cflags.$base_cflags;
-	$lflags.=$opt_lflags;
 	}
 
 # generate symbols.pdb unconditionally
-$app_cflag.=" /Fd\$(TMP_D)/app"; #/Z7 
-$lib_cflag.=" /Fd\$(TMP_D)/lib"; #/Z7 
+$app_cflag.=" /Zi /Fd\$(TMP_D)/app";
+$lib_cflag.=" /Zi /Fd\$(TMP_D)/lib";
 $lflags.=" /debug";
 
 $obj='.obj';
@@ -191,7 +188,7 @@ if ($FLAVOR =~ /CE/)
 			}
 		}
 	$ex_libs.=' $(PORTSDK_LIBPATH)/portlib.lib'	if (defined($ENV{'PORTSDK_LIBPATH'}));
-	$ex_libs.=' /nodefaultlib:oldnames.lib coredll.lib corelibc.lib' if ($ENV{'TARGETCPU'} eq "X86");
+	$ex_libs.=' /nodefaultlib coredll.lib corelibc.lib' if ($ENV{'TARGETCPU'} eq "X86");
 	}
 else
 	{
@@ -217,7 +214,7 @@ if ($FLAVOR =~ /WIN64A/) {
 		$asm='nasm -f win64 -DNEAR -Ox -g';
 		$afile='-o ';
 	} else {
-		$asm='ml64 /c /Cp /Cx'; #/Z7
+		$asm='ml64 /c /Cp /Cx /Zi';
 		$afile='/Fo';
 	}
 } elsif ($FLAVOR =~ /WIN64I/) {
@@ -231,7 +228,7 @@ if ($FLAVOR =~ /WIN64A/) {
 	$asmtype="win32n";
 	$afile='-o ';
 } else {
-	$asm='ml /nologo /Cp /coff /c /Cx'; #/Z7
+	$asm='ml /nologo /Cp /coff /c /Cx /Zi';
 	$afile='/Fo';
 	$asmtype="win32";
 }
