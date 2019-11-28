@@ -25,7 +25,7 @@
 #include <openssl/err.h>
 
 #ifndef AUTO_WINSOCK
-#include <winsock2.h>
+#include <WinSock2.h>
 #endif
 
 ///* TODO : Better user interface (query to user) */
