@@ -818,6 +818,7 @@ target_compile_options(libcrypto PRIVATE
 
 target_include_directories(libcrypto SYSTEM BEFORE PRIVATE
   ../../libs/openssl
+  ../../libs/openssl/include
   ../../libs/openssl/crypto
   ../../libs/openssl/crypto/asn1
   ../../libs/openssl/crypto/modes
@@ -882,6 +883,7 @@ target_compile_options(libssl PRIVATE
 
 target_include_directories(libssl SYSTEM BEFORE PRIVATE
   ../../libs/openssl
+  ../../libs/openssl/include
   ../../libs/openssl/crypto
   ../../libs/openssl/crypto/asn1
   ../../libs/openssl/crypto/modes
@@ -1118,7 +1120,7 @@ target_compile_options(neon PRIVATE
 target_include_directories(neon PRIVATE
   ../../libs/zlib/src
   ../../libs/expat/lib
-  ../../libs/openssl
+  ../../libs/openssl/include
   ${OPENSSL_LIBRARYDIR}
 )
 
@@ -1333,7 +1335,7 @@ target_include_directories(s3 PRIVATE
   ../../libs/libs3/inc/mingw
   ../../libs/expat/lib
   ../../libs/neon/src
-  ../../libs/openssl
+  ../../libs/openssl/include
   ${OPENSSL_LIBRARYDIR}
 )
 
@@ -1764,7 +1766,7 @@ add_library(NetBox SHARED
 )
 
 target_include_directories(NetBox PRIVATE
-  ../../libs/openssl
+  ../../libs/openssl/include
   ${OPENSSL_LIBRARYDIR}
   ../../libs/putty
   ../../libs/putty/windows
