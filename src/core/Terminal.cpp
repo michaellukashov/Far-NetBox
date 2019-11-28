@@ -33,7 +33,7 @@ void FileOperationLoopCustom(TTerminal *Terminal,
   TFileOperationProgressType *OperationProgress,
   uintptr_t Flags, UnicodeString Message,
   UnicodeString HelpKeyword,
-  fu2::function<void()> Operation)
+  std::function<void()> Operation)
 {
   bool DoRepeat;
   do
