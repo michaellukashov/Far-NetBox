@@ -309,6 +309,8 @@ void *TCustomFarPlugin::OpenPlugin(const struct OpenInfo *Info)
 
   try
   {
+    if (Info->OpenFrom == OPEN_FROMMACRO)
+      return nullptr;
     ResetCachedInfo();
     intptr_t Item = 0;
     if (*Info->Guid == MenuCommandsGuid)
