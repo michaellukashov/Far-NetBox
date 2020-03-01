@@ -5161,7 +5161,7 @@ TTerminal *TTerminal::CreateSecondarySession(UnicodeString Name, TSessionData *S
 
   Result->SetAutoReadDirectory(false);
 
-  Result->SetExceptionOnFail(FExceptionOnFail > 0);
+  Result->FExceptionOnFail=FExceptionOnFail;
 
   Result->SetOnQueryUser(GetOnQueryUser());
   Result->SetOnPromptUser(GetOnPromptUser());
@@ -5205,7 +5205,7 @@ TTerminal *TTerminal::GetCommandSession()
     {
       CommandSession->SetAutoReadDirectory(false);
 
-      CommandSession->SetExceptionOnFail(FExceptionOnFail > 0);
+      CommandSession->FExceptionOnFail=FExceptionOnFail;
 
       CommandSession->SetOnQueryUser(GetOnQueryUser());
       CommandSession->SetOnPromptUser(GetOnPromptUser());
