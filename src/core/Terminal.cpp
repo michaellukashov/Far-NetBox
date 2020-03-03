@@ -5251,7 +5251,7 @@ public:
       break;
     case cotExitCode:
       FAction.ExitCode(ToInt(::StrToInt64(Str)));
-      break;
+      return;
     }
 
     if (FOutputEvent != nullptr)
