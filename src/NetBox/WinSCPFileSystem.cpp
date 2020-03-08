@@ -793,8 +793,10 @@ bool TWinSCPFileSystem::ProcessEventEx(intptr_t Event, void *Param)
 }
 
 void TWinSCPFileSystem::TerminalCaptureLog(
-  UnicodeString AddedLine, TCaptureOutputType /*OutputEvent*/)
+  UnicodeString AddedLine, TCaptureOutputType OutputEvent)
 {
+  if (OutputEvent == cotExitCode)
+    return;
   if (FOutputLog)
   {
     GetWinSCPPlugin()->FarWriteConsole(AddedLine + L"\n");
