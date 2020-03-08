@@ -3099,7 +3099,7 @@ void TWinSCPFileSystem::TerminalInformation(
   if (Phase != 0)
   {
     TSessionStatus sts = GetTerminal() ? GetTerminal()->GetStatus() : ssClosed;
-    if (sts == ssOpening || (sts == ssOpened && Phase > 0))
+    if (sts == ssOpening || sts == ssOpened)
     {
       if (FAuthenticationLog == nullptr)
       {
