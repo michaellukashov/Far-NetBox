@@ -793,8 +793,10 @@ bool TWinSCPFileSystem::ProcessEventEx(intptr_t Event, void *Param)
 }
 
 void TWinSCPFileSystem::TerminalCaptureLog(
-  UnicodeString AddedLine, TCaptureOutputType /*OutputEvent*/)
+  UnicodeString AddedLine, TCaptureOutputType OutputEvent)
 {
+  if (OutputEvent == cotExitCode)
+    return;
   if (FOutputLog)
   {
     GetWinSCPPlugin()->FarWriteConsole(AddedLine + L"\n");
@@ -3099,7 +3101,7 @@ void TWinSCPFileSystem::TerminalInformation(
   if (Phase != 0)
   {
     TSessionStatus sts = GetTerminal() ? GetTerminal()->GetStatus() : ssClosed;
-    if (sts == ssOpening || (sts == ssOpened && Phase > 0))
+    if (sts == ssOpening || sts == ssOpened)
     {
       if (FAuthenticationLog == nullptr)
       {
