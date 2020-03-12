@@ -53,6 +53,7 @@ cmake-build-*/
 cov-int/
 /src/NetBox/My */
 .idea/
+*.iml
 #Verone/
 
 .vs/
