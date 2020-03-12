@@ -1429,11 +1429,28 @@ void TCustomFarPlugin::ShowTerminalScreen()
   if (Size.y >= 2)
   {
     // clean menu keybar area before command output
+    int Y = Size.y - 2;
+    // if any panel is visible -- clear all screen (don't scroll panel)
+    {
+      PanelInfo Info;
+      ClearStruct(Info);
+      FarControl(FCTL_GETPANELINFO, 0, ToIntPtr(&Info), PANEL_ACTIVE);
+      if(Info.Visible) 
+        goto clearall;
+      ClearStruct(Info);
+      FarControl(FCTL_GETPANELINFO, 0, ToIntPtr(&Info), PANEL_PASSIVE);
+      if(Info.Visible)
+      {
+clearall:
+        Y = 0;
+      }
+    }
     UnicodeString Blank = ::StringOfChar(L' ', static_cast<intptr_t>(Size.x));
-    for (int Y = Size.y - 2; Y < Size.y; Y++)
+    do
     {
       Text(0, Y, 7 /*LIGHTGRAY*/, Blank);
     }
+    while(++Y < Size.y);
   }
   FlushText();
 

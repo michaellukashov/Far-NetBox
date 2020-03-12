@@ -53,8 +53,10 @@ cmake-build-*/
 cov-int/
 /src/NetBox/My */
 .idea/
+*.iml
 #Verone/
 
 .vs/
 *.VC.db
 *.VC.opendb
+ReSharper.DotSettings
