@@ -3103,7 +3103,8 @@ void TWinSCPFileSystem::TerminalInformation(
     TSessionStatus sts = GetTerminal() ? GetTerminal()->GetStatus() : ssClosed;
     if (sts == ssOpening || sts == ssOpened)
     {
-      if (FAuthenticationLog == nullptr)
+      bool new_log = FAuthenticationLog == nullptr;
+      if (new_log)
       {
         FAuthenticationLog = new TStringList();
         GetWinSCPPlugin()->SaveScreen(FAuthenticationSaveScreenHandle);
@@ -3111,6 +3112,7 @@ void TWinSCPFileSystem::TerminalInformation(
       }
 
       LogAuthentication(Terminal, Str);
+      if (new_log && sts == ssOpened) goto do_restore;
       GetWinSCPPlugin()->UpdateConsoleTitle(Str);
     }
   }
@@ -3118,6 +3120,7 @@ void TWinSCPFileSystem::TerminalInformation(
   {
     if (FAuthenticationLog != nullptr)
     {
+do_restore:
       GetWinSCPPlugin()->ClearConsoleTitle();
       GetWinSCPPlugin()->RestoreScreen(FAuthenticationSaveScreenHandle);
       SAFE_DESTROY(FAuthenticationLog);
