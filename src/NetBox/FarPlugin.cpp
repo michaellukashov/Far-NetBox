@@ -1420,7 +1420,7 @@ void TCustomFarPlugin::ScrollTerminalScreen(int Rows)
   ::ScrollConsoleScreenBuffer(FConsoleOutput, &Source, nullptr, Dest, &Fill);
 }
 
-void TCustomFarPlugin::ShowTerminalScreen()
+void TCustomFarPlugin::ShowTerminalScreen(UnicodeString Command)
 {
   DebugAssert(!FTerminalScreenShowing);
   TPoint Size, Cursor;
@@ -1453,6 +1453,15 @@ clearall:
       Text(0, Y, 7 /*LIGHTGRAY*/, Blank);
     }
     while(++Y < Size.y);
+    if(Command.Length() && Size.x > 2)
+    {
+      Blank = Command;
+      Blank.Insert(0, L"$ ", 2);
+      if(Blank.Length() > Size.x) Blank.SetLength(Size.x);
+      if(Cursor.y == Y-1) --Cursor.y; // !'Show key bar'
+      Text(0, Cursor.y, 7 /*LIGHTGRAY*/, Blank);
+      ++Cursor.y;
+    }
   }
   FlushText();
 

@@ -913,7 +913,7 @@ bool TWinSCPFileSystem::ExecuteCommand(UnicodeString Command)
           WinSCPPlugin->SaveTerminalScreen();
           WinSCPPlugin->ClearConsoleTitle();
         };
-        WinSCPPlugin->ShowTerminalScreen();
+        WinSCPPlugin->ShowTerminalScreen(Command);
 
         FOutputLog = true;
         FTerminal->AnyCommand(Command, nb::bind(&TWinSCPFileSystem::TerminalCaptureLog, this));
@@ -1244,7 +1244,7 @@ void TWinSCPFileSystem::ApplyCommand()
               };
               if (FLAGSET(Params, ccShowResults))
               {
-                GetWinSCPPlugin()->ShowTerminalScreen();
+                GetWinSCPPlugin()->ShowTerminalScreen(Command);
               }
 
               FTerminal->CustomCommandOnFiles(Command, Params, FileList.get(), OutputEvent);

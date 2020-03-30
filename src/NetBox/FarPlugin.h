@@ -174,7 +174,7 @@ public:
   void ClearConsoleTitle();
   void UpdateConsoleTitle(UnicodeString Title);
   void UpdateConsoleTitleProgress(short Progress);
-  void ShowTerminalScreen();
+  void ShowTerminalScreen(UnicodeString Command);
   void SaveTerminalScreen();
   void ScrollTerminalScreen(int Rows);
   TPoint TerminalInfo(TPoint *Size = nullptr, TPoint *Cursor = nullptr) const;
