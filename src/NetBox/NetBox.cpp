@@ -1,10 +1,13 @@
 #include "afxdll.h"
 #include <vcl.h>
 
+#include <plugin.hpp>
 #include <Sysutils.hpp>
 #include <nbutils.h>
 
+#include "resource.h"
 #include "FarDialog.h"
+#include "plugin_version.hpp"
 
 extern void InitExtensionModule(HINSTANCE HInst);
 extern void TermExtensionModule();
@@ -21,43 +24,49 @@ public:
 
 extern "C" {
 
-int WINAPI GetMinFarVersionW()
+void WINAPI GetGlobalInfoW(struct GlobalInfo * Info)
 {
-  DebugAssert(FarPlugin);
-  TFarPluginGuard Guard;
-  return ToInt(FarPlugin->GetMinFarVersion());
+  if (Info->StructSize < sizeof(GlobalInfo))
+    return;
+  Info->StructSize = sizeof(*Info);
+  Info->MinFarVersion = MAKEFARVERSION(FARMANAGERVERSION_MAJOR, FARMANAGERVERSION_MINOR, FARMANAGERVERSION_REVISION, FARMANAGERVERSION_BUILD, FARMANAGERVERSION_STAGE);
+  Info->Version = MAKEFARVERSION(NETBOX_VERSION_MAJOR, NETBOX_VERSION_MINOR, NETBOX_VERSION_PATCH, NETBOX_VERSION_BUILD, VS_RELEASE);
+  Info->Guid = MainGuid;
+  Info->Title = L"NetBox";
+  Info->Description = PLUGIN_DESCR;
+  Info->Author = PLUGIN_AUTHOR;
+  Info->Instance = FarPlugin;
 }
 
-void WINAPI SetStartupInfoW(const struct PluginStartupInfo * psi)
+void WINAPI SetStartupInfoW(const struct PluginStartupInfo * Info)
 {
-  DebugAssert(FarPlugin);
+  if (Info->StructSize < sizeof(PluginStartupInfo))
+    return;
   TFarPluginGuard Guard;
-  FarPlugin->SetStartupInfo(psi);
+  FarPlugin->SetStartupInfo(Info);
 }
 
-void WINAPI ExitFARW()
+void WINAPI ExitFARW(const struct ExitInfo * Info)
 {
-  DebugAssert(FarPlugin);
+  if (Info->StructSize < sizeof(ExitInfo))
+    return;
   TFarPluginGuard Guard;
   FarPlugin->ExitFAR();
 }
 
-void WINAPI GetPluginInfoW(PluginInfo * pi)
+void WINAPI GetPluginInfoW(PluginInfo * Info)
 {
+  if (Info->StructSize < sizeof(PluginInfo))
+    return;
   DebugAssert(FarPlugin);
   TFarPluginGuard Guard;
-  FarPlugin->GetPluginInfo(pi);
+  FarPlugin->GetPluginInfo(Info);
 }
 
-int WINAPI ConfigureW(int item)
+intptr_t WINAPI ConfigureW(const struct ConfigureInfo * Info)
 {
-  DebugAssert(FarPlugin);
-  TFarPluginGuard Guard;
-  return ToInt(FarPlugin->Configure(static_cast<intptr_t>(item)));
-}
-
-HANDLE WINAPI OpenPluginW(int openFrom, intptr_t item)
-{
+  if (Info->StructSize < sizeof(ConfigureInfo))
+    return FALSE;
   SELF_TEST(
     UnicodeString Text = L"text, text text, text text1\ntext text text, text text2\n";
     TStringList Lines;
@@ -72,136 +81,153 @@ HANDLE WINAPI OpenPluginW(int openFrom, intptr_t item)
     Instructions2 = ReplaceStrAll(Instructions2, L"\x01", L"\x0D\x0A");
     assert(wcscmp(Instructions2.c_str(), UnicodeString(L"Using keyboard authentication.\x0D\x0A\x0D\x0A\x0D\x0APlease enter your password.").c_str()) == 0);
   )
-  DebugAssert(FarPlugin);
   TFarPluginGuard Guard;
-  return FarPlugin->OpenPlugin(openFrom, item);
+  return FarPlugin->Configure(Info);
 }
 
-void WINAPI ClosePluginW(HANDLE Plugin)
+void WINAPI ClosePanelW(const struct ClosePanelInfo * Info)
+{
+  if (Info->StructSize < sizeof(ClosePanelInfo))
+    return;
+  TFarPluginGuard Guard;
+  FarPlugin->ClosePanel(Info->hPanel);
+}
+
+void WINAPI GetOpenPanelInfoW(struct OpenPanelInfo * Info)
+{
+  if (Info->StructSize < sizeof(OpenPanelInfo))
+    return;
+  TFarPluginGuard Guard;
+  FarPlugin->GetOpenPanelInfo(Info);
+}
+
+intptr_t WINAPI GetFindDataW(struct GetFindDataInfo * Info)
+{
+  if (Info->StructSize < sizeof(GetFindDataInfo))
+    return FALSE;
+  TFarPluginGuard Guard;
+  return FarPlugin->GetFindData(Info);
+}
+
+void WINAPI FreeFindDataW(const struct FreeFindDataInfo * Info)
+{
+  if (Info->StructSize < sizeof(FreeFindDataInfo))
+    return;
+  TFarPluginGuard Guard;
+  FarPlugin->FreeFindData(Info);
+}
+
+intptr_t WINAPI ProcessHostFileW(const struct ProcessHostFileInfo * Info)
+{
+  if (Info->StructSize < sizeof(ProcessHostFileInfo))
+    return FALSE;
+  TFarPluginGuard Guard;
+  return FarPlugin->ProcessHostFile(Info);
+}
+
+intptr_t WINAPI ProcessPanelInputW(const struct ProcessPanelInputInfo * Info)
 {
   DebugAssert(FarPlugin);
   TFarPluginGuard Guard;
-  FarPlugin->ClosePlugin(Plugin);
+  return FarPlugin->ProcessPanelInput(Info);
 }
 
-void WINAPI GetOpenPluginInfoW(HANDLE Plugin, OpenPluginInfo * pluginInfo)
+intptr_t WINAPI ProcessPanelEventW(const struct ProcessPanelEventInfo * Info)
 {
-  DebugAssert(FarPlugin);
+  if (Info->StructSize < sizeof(ProcessPanelEventInfo))
+    return FALSE;
   TFarPluginGuard Guard;
-  FarPlugin->GetOpenPluginInfo(Plugin, pluginInfo);
+  return FarPlugin->ProcessPanelEvent(Info);
 }
 
-int WINAPI GetFindDataW(HANDLE Plugin, PluginPanelItem ** PanelItem, int * itemsNumber, int OpMode)
+intptr_t WINAPI SetDirectoryW(const struct SetDirectoryInfo * Info)
 {
-  DebugAssert(FarPlugin);
+  if (Info->StructSize < sizeof(SetDirectoryInfo))
+    return FALSE;
   TFarPluginGuard Guard;
-  return ToInt(FarPlugin->GetFindData(Plugin, PanelItem, itemsNumber, OpMode));
-}
-
-void WINAPI FreeFindDataW(HANDLE Plugin, PluginPanelItem * PanelItem, int itemsNumber)
-{
-  DebugAssert(FarPlugin);
-  TFarPluginGuard Guard;
-  FarPlugin->FreeFindData(Plugin, PanelItem, itemsNumber);
-}
-
-int WINAPI ProcessHostFileW(HANDLE Plugin,
-  struct PluginPanelItem * PanelItem, int ItemsNumber, int OpMode)
-{
-  DebugAssert(FarPlugin);
-  TFarPluginGuard Guard;
-  return ToInt(FarPlugin->ProcessHostFile(Plugin, PanelItem, ItemsNumber, OpMode));
-}
-
-int WINAPI ProcessKeyW(HANDLE Plugin, int key, unsigned int controlState)
-{
-  DebugAssert(FarPlugin);
-  TFarPluginGuard Guard;
-  return ToInt(FarPlugin->ProcessKey(Plugin, key, controlState));
-}
-
-int WINAPI ProcessEventW(HANDLE Plugin, int Event, void * Param)
-{
-  DebugAssert(FarPlugin);
-  TFarPluginGuard Guard;
-  return ToInt(FarPlugin->ProcessEvent(Plugin, Event, Param));
-}
-
-int WINAPI SetDirectoryW(HANDLE Plugin, const wchar_t * Dir, int OpMode)
-{
-  DebugAssert(FarPlugin);
-  TFarPluginGuard Guard;
-  int Result = ToInt(FarPlugin->SetDirectory(Plugin, Dir, OpMode));
+  intptr_t Result = FarPlugin->SetDirectory(Info);
   return Result;
 }
 
-int WINAPI MakeDirectoryW(HANDLE Plugin, const wchar_t ** Name, int OpMode)
+intptr_t WINAPI MakeDirectoryW(struct MakeDirectoryInfo * Info)
 {
-  DebugAssert(FarPlugin);
+  if (Info->StructSize < sizeof(MakeDirectoryInfo))
+    return FALSE;
   TFarPluginGuard Guard;
-  int Result = ToInt(FarPlugin->MakeDirectory(Plugin, Name, OpMode));
+  intptr_t Result = FarPlugin->MakeDirectory(Info);
   return Result;
 }
 
-int WINAPI DeleteFilesW(HANDLE Plugin, PluginPanelItem * PanelItem, int itemsNumber, int OpMode)
+intptr_t WINAPI DeleteFilesW(const struct DeleteFilesInfo * Info)
 {
-  DebugAssert(FarPlugin);
+  if (Info->StructSize < sizeof(DeleteFilesInfo))
+    return FALSE;
   TFarPluginGuard Guard;
-  return ToInt(FarPlugin->DeleteFiles(Plugin, PanelItem, itemsNumber, OpMode));
+  return FarPlugin->DeleteFiles(Info);
 }
 
-int WINAPI GetFilesW(HANDLE Plugin, PluginPanelItem * PanelItem, int itemsNumber,
-  int Move, const wchar_t ** destPath, int OpMode)
+intptr_t WINAPI GetFilesW(struct GetFilesInfo * Info)
 {
-  DebugAssert(FarPlugin);
+  if (Info->StructSize < sizeof(GetFilesInfo))
+    return FALSE;
   TFarPluginGuard Guard;
-  return ToInt(FarPlugin->GetFiles(Plugin, PanelItem, itemsNumber,
-    Move, destPath, OpMode));
+  return FarPlugin->GetFiles(Info);
 }
 
-int WINAPI PutFilesW(HANDLE Plugin, PluginPanelItem * PanelItem, int itemsNumber, int Move, const wchar_t * SrcPath, int OpMode)
+intptr_t WINAPI PutFilesW(const struct PutFilesInfo * Info)
 {
-  DebugAssert(FarPlugin);
+  if (Info->StructSize < sizeof(PutFilesInfo))
+    return FALSE;
   TFarPluginGuard Guard;
-  int Result = ToInt(FarPlugin->PutFiles(Plugin, PanelItem, itemsNumber,
-    Move, SrcPath, OpMode));
+  intptr_t Result = FarPlugin->PutFiles(Info);
   return Result;
 }
 
-int WINAPI ProcessEditorEventW(int Event, void * Param)
+intptr_t WINAPI ProcessEditorEventW(const struct ProcessEditorEventInfo * Info)
 {
-  DebugAssert(FarPlugin);
+  if (Info->StructSize < sizeof(ProcessEditorEventInfo))
+    return FALSE;
   TFarPluginGuard Guard;
-  return ToInt(FarPlugin->ProcessEditorEvent(Event, Param));
+  return FarPlugin->ProcessEditorEvent(Info);
 }
 
-int WINAPI ProcessEditorInputW(const INPUT_RECORD * Rec)
+intptr_t WINAPI ProcessEditorInputW(const struct ProcessEditorInputInfo * Info)
 {
-  DebugAssert(FarPlugin);
+  if (Info->StructSize < sizeof(ProcessEditorInputInfo))
+    return FALSE;
   TFarPluginGuard Guard;
-  return ToInt(FarPlugin->ProcessEditorInput(Rec));
+  return FarPlugin->ProcessEditorInput(Info);
 }
 
-HANDLE WINAPI OpenFilePluginW(const wchar_t * fileName, const uint8_t * fileHeader, int fileHeaderSize, int /*OpMode*/)
+HANDLE WINAPI AnalyseW(const struct AnalyseInfo * Info)
 {
-  DebugAssert(FarPlugin);
+  if (Info->StructSize < sizeof(AnalyseInfo))
+    return nullptr;
   TFarPluginGuard Guard;
-  if (!fileName)
+  if (!Info->FileName)
   {
-    return INVALID_HANDLE_VALUE;
+    return nullptr;
   }
 
-  const size_t fileNameLen = nb::StrLength(fileName);
-  if (fileNameLen < 8 || _wcsicmp(fileName + fileNameLen - 7, L".netbox") != 0)
+  const size_t fileNameLen = nb::StrLength(Info->FileName);
+  if (fileNameLen < 8 || _wcsicmp(Info->FileName + fileNameLen - 7, L".netbox") != 0)
   {
-    return INVALID_HANDLE_VALUE;
+    return nullptr;
   }
-  if (fileHeaderSize > 4 && strncmp(reinterpret_cast<const char *>(fileHeader), "<?xml", 5) != 0)
+  if (Info->BufferSize > 4 && strncmp(reinterpret_cast<const char *>(Info->Buffer), "<?xml", 5) != 0)
   {
-    return INVALID_HANDLE_VALUE;
+    return nullptr;
   }
-  HANDLE Handle = static_cast<HANDLE>(FarPlugin->OpenPlugin(OPEN_ANALYSE,
-    ToIntPtr(fileName)));
+  return HANDLE(1);
+}
+
+HANDLE WINAPI OpenW(const struct OpenInfo * Info)
+{
+  if (Info->StructSize < sizeof(OpenInfo))
+    return nullptr;
+  DebugAssert(FarPlugin);
+  TFarPluginGuard Guard;
+  HANDLE Handle = static_cast<HANDLE>(FarPlugin->OpenPlugin(Info));
   return Handle;
 }
 

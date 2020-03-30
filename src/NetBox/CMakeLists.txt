@@ -14,7 +14,7 @@ message("CMAKE_CL_64: ${CMAKE_CL_64}")
 message("MSVC10: ${MSVC10}")
 
 if(NOT DEFINED FAR_VERSION OR FAR_VERSION STREQUAL "")
-  set(FAR_VERSION Far2)
+  set(FAR_VERSION Far3)
 endif()
 
 if(CMAKE_SIZEOF_VOID_P EQUAL 8)
@@ -899,6 +899,7 @@ endif(OPT_COMPILE_OPENSSL)
 #-------------------------------------------------------------------------------
 #atlmfc
 
+
 set(ATLMFC_COMPILE_FLAGS
   -D_ATL_NO_DEBUG_CRT -D_ATL_NO_UUIDOF -D_ATL_NO_CONNECTION_POINTS -D_ATL_NO_DATETIME_RESOURCES_
   -D_ATL_NO_DEFAULT_LIBS -D_ATL_NO_PERF_SUPPORT -D_AFX_PORTABLE -D_ATL_NO_COMMODULE
@@ -1351,6 +1352,7 @@ set(NETBOX_SOURCES
   FarConfiguration.cpp
   FarInterface.cpp
   XmlStorage.cpp
+  Far3Storage.cpp
   FarPluginStrings.cpp
 )
 
@@ -1367,6 +1369,7 @@ set(NETBOX_SOURCES
   FarInterface.h
   FarConfiguration.h
   XmlStorage.h
+  Far3Storage.h
   FarUtils.h
   FarPluginStrings.h
 
@@ -1434,9 +1437,9 @@ set(NETBOX_SOURCES
   ../resource/HelpCore.h
   ../resource/TextsFileZilla.h
 
-  ../PluginSDK/Far2/plugin.hpp
-  ../PluginSDK/Far2/farcolor.hpp
-  ../PluginSDK/Far2/farkeys.hpp
+  ../PluginSDK/${FAR_VERSION}/plugin.hpp
+  ../PluginSDK/${FAR_VERSION}/farcolor.hpp
+  ../PluginSDK/${FAR_VERSION}/PluginSettings.hpp
 
   ../resource/TextsFileZilla.rc
   NetBox.rc

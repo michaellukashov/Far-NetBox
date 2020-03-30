@@ -17,9 +17,9 @@ public:
 public:
   explicit TWinSCPPlugin(HINSTANCE HInst);
   virtual ~TWinSCPPlugin();
-  virtual intptr_t GetMinFarVersion() const override;
+  virtual VersionInfo GetMinFarVersion() const override;
 
-  virtual void HandleException(Exception *E, int OpMode = 0) override;
+  virtual void HandleException(Exception *E, OPERATION_MODES OpMode = 0) override;
   uintptr_t MoreMessageDialog(UnicodeString Str, TStrings *MoreMessages,
     TQueryType Type, uintptr_t Answers, const TMessageParams *Params = nullptr);
   void ShowExtendedException(Exception *E);
@@ -29,12 +29,12 @@ public:
 
 protected:
   virtual bool HandlesFunction(THandlesFunction Function) const override;
-  virtual void GetPluginInfoEx(DWORD &Flags, TStrings *DiskMenuStrings,
+  virtual void GetPluginInfoEx(PLUGIN_FLAGS &Flags, TStrings *DiskMenuStrings,
     TStrings *PluginMenuStrings, TStrings *PluginConfigStrings,
     TStrings *CommandPrefixes) override;
-  virtual TCustomFarFileSystem *OpenPluginEx(intptr_t OpenFrom, intptr_t Item) override;
-  virtual bool ConfigureEx(intptr_t Item) override;
-  virtual intptr_t ProcessEditorEventEx(intptr_t Event, void *Param) override;
+  virtual TCustomFarFileSystem *OpenPluginEx(OPENFROM OpenFrom, intptr_t Item) override;
+  virtual bool ConfigureEx(const GUID *Guid) override;
+  virtual intptr_t ProcessEditorEventEx(const struct ProcessEditorEventInfo *Info) override;
   virtual intptr_t ProcessEditorInputEx(const INPUT_RECORD *Rec) override;
   bool CopyParamDialog(UnicodeString Caption, TCopyParamType &CopyParam,
     intptr_t CopyParamAttrs);
@@ -51,6 +51,18 @@ protected:
   bool ConfirmationsConfigurationDialog();
   bool IntegrationConfigurationDialog();
   void AboutDialog();
+
+protected:
+  const NetBoxPrivateInfo *GetSystemFunctions() const { return static_cast<const NetBoxPrivateInfo *>(FStartupInfo.Private); }
+  NetBoxPrivateInfo *GetSystemFunctions() { return static_cast<NetBoxPrivateInfo *>(FStartupInfo.Private); }
+  void DeleteLocalFile(UnicodeString LocalFileName);
+  HANDLE CreateLocalFile(UnicodeString LocalFileName,
+    DWORD DesiredAccess, DWORD ShareMode, DWORD CreationDisposition, DWORD FlagsAndAttributes);
+  DWORD GetLocalFileAttributes(UnicodeString LocalFileName) const;
+  bool SetLocalFileAttributes(UnicodeString LocalFileName, DWORD FileAttributes);
+  bool MoveLocalFile(UnicodeString LocalFileName, UnicodeString NewLocalFileName, DWORD Flags);
+  bool RemoveLocalDirectory(UnicodeString LocalDirName);
+  bool CreateLocalDirectory(UnicodeString LocalDirName, LPSECURITY_ATTRIBUTES SecurityAttributes);
 
 private:
   void CleanupConfiguration();

@@ -20,7 +20,6 @@
 #include <Bookmarks.h>
 #include <Queue.h>
 #include <MsgIDs.h>
-#include <farkeys.hpp>
 //#include <farcolor.hpp>
 #include "plugin_version.hpp"
 
@@ -219,10 +218,6 @@ TTabButton *TTabbedDialog::GetTabButton(intptr_t Tab) const
     }
   }
 
-  if (!Result)
-  {
-    DEBUG_PRINTF("Tab = %d", Tab);
-  }
   DebugAssert(Result != nullptr);
 
   return Result;
@@ -248,13 +243,15 @@ void TTabbedDialog::TabButtonClick(TFarButton *Sender, bool &Close)
 bool TTabbedDialog::Key(TFarDialogItem * /*Item*/, LONG_PTR KeyCode)
 {
   bool Result = false;
-  if ((KeyCode == KEY_CTRLPGDN) || (KeyCode == KEY_CTRLPGUP) ||
-    (KeyCode == KEY_CTRLNUMPAD3) || (KeyCode == KEY_CTRLNUMPAD9))
+  WORD Key = KeyCode & 0xFFFF;
+  LONG_PTR ControlState = KeyCode >> 16;
+  if ((((Key == VK_NEXT) || (Key == VK_NUMPAD3)) && (ControlState & CTRLMASK) != 0) ||
+    (((Key == VK_PRIOR) || (Key == VK_NUMPAD9)) && (ControlState & CTRLMASK) != 0))
   {
     intptr_t NewTab = FTab;
     do
     {
-      if ((KeyCode == KEY_CTRLPGDN) || (KeyCode == KEY_CTRLNUMPAD3))
+      if ((Key == VK_NEXT) || (Key == VK_NUMPAD3))
       {
         NewTab = NewTab == FTabCount - 1 ? 1 : NewTab + 1;
       }
@@ -1496,7 +1493,7 @@ private:
   void NextTabClick(TFarButton * /*Sender*/, bool &Close);
   void CipherButtonClick(TFarButton *Sender, bool &Close);
   void KexButtonClick(TFarButton *Sender, bool &Close);
-  void AuthGSSAPICheckAllowChange(TFarDialogItem *Sender, intptr_t NewState, bool &Allow);
+  void AuthGSSAPICheckAllowChange(TFarDialogItem *Sender, void *NewState, bool &Allow);
   void UnixEnvironmentButtonClick(TFarButton *Sender, bool &Close);
   void WindowsEnvironmentButtonClick(TFarButton *Sender, bool &Close);
   void UpdateControls();
@@ -4078,13 +4075,13 @@ void TSessionDialog::SelectTab(intptr_t Tab)
 
 void TSessionDialog::PrevTabClick(TFarButton * /*Sender*/, bool &Close)
 {
-  Key(nullptr, KEY_CTRLPGUP);
+  Key(nullptr, VK_PRIOR | (CTRLMASK << 16));
   Close = false;
 }
 
 void TSessionDialog::NextTabClick(TFarButton * /*Sender*/, bool &Close)
 {
-  Key(nullptr, KEY_CTRLPGDN);
+  Key(nullptr, VK_NEXT | (CTRLMASK << 16));
   Close = false;
 }
 
@@ -4181,9 +4178,9 @@ void TSessionDialog::KexButtonClick(TFarButton *Sender, bool &Close)
 }
 
 void TSessionDialog::AuthGSSAPICheckAllowChange(TFarDialogItem * /*Sender*/,
-  intptr_t NewState, bool &Allow)
+  void *NewState, bool &Allow)
 {
-  if ((NewState == BSTATE_CHECKED) && !HasGSSAPI(L""))
+  if ((reinterpret_cast<size_t>(NewState) == BSTATE_CHECKED) && !HasGSSAPI(L""))
   {
     Allow = false;
     TWinSCPPlugin *WinSCPPlugin = dyn_cast<TWinSCPPlugin>(FarPlugin);
@@ -6267,8 +6264,10 @@ void TFileSystemInfoDialog::Execute(
 
 bool TFileSystemInfoDialog::Key(TFarDialogItem *Item, LONG_PTR KeyCode)
 {
-  bool Result = false;
-  if ((Item == SpaceAvailablePathEdit) && (KeyCode == KEY_ENTER))
+  bool Result;
+  WORD Key = KeyCode & 0xFFFF;
+  // LONG_PTR ControlState = KeyCode >> 16;
+  if ((Item == SpaceAvailablePathEdit) && (Key == VK_RETURN))
   {
     CheckSpaceAvailable();
     Result = true;
@@ -6355,8 +6354,8 @@ void TWinSCPFileSystem::FileSystemInfoDialog(
 bool TWinSCPFileSystem::OpenDirectoryDialog(
   bool Add, UnicodeString &Directory, TBookmarkList *BookmarkList)
 {
-  bool Result = false;
-  bool Repeat = false;
+  bool Result;
+  bool Repeat;
 
   intptr_t ItemFocused = -1;
 
@@ -6365,7 +6364,7 @@ bool TWinSCPFileSystem::OpenDirectoryDialog(
     std::unique_ptr<TStrings> BookmarkPaths(new TStringList());
     std::unique_ptr<TFarMenuItems> BookmarkItems(new TFarMenuItems());
     std::unique_ptr<TList> Bookmarks(new TList());
-    intptr_t BookmarksOffset = -1;
+    intptr_t BookmarksOffset;
 
     intptr_t MaxLength = FPlugin->MaxMenuItemLength();
     intptr_t MaxHistory = 40;
@@ -6451,19 +6450,19 @@ bool TWinSCPFileSystem::OpenDirectoryDialog(
       BookmarkItems->SetItemFocused(BookmarkItems->GetCount() - 1);
     }
 
-    int BreakCode;
+    intptr_t BreakCode;
 
     Repeat = false;
     UnicodeString Caption = GetMsg(Add ? NB_OPEN_DIRECTORY_ADD_BOOMARK_ACTION :
         NB_OPEN_DIRECTORY_BROWSE_CAPTION);
-    const int BreakKeys[] =
+    const FarKey BreakKeys[] =
     {
-      VK_DELETE,
-      VK_F8,
-      VK_RETURN + (PKF_CONTROL << 16),
-      'C' + (PKF_CONTROL << 16),
-      VK_INSERT + (PKF_CONTROL << 16),
-      0
+      { VK_DELETE, 0 },
+      { VK_F8, 0 },
+      { VK_RETURN, CTRLMASK },
+      { 'C', CTRLMASK},
+      { VK_INSERT, CTRLMASK },
+      { 0, 0 }
     };
 
     ItemFocused = FPlugin->Menu(FMENU_REVERSEAUTOHIGHLIGHT | FMENU_SHOWAMPERSAND | FMENU_WRAPMODE,
@@ -6488,7 +6487,7 @@ bool TWinSCPFileSystem::OpenDirectoryDialog(
       }
       else if (BreakCode == 2)
       {
-        FarControl(FCTL_INSERTCMDLINE, 0, ToIntPtr(BookmarkPaths->GetStringRef(ItemFocused).c_str()));
+        FarControl(FCTL_INSERTCMDLINE, 0, ToPtr(ToWChar(BookmarkPaths->GetString(ItemFocused))));
       }
       else if (BreakCode == 3 || BreakCode == 4)
       {
@@ -6693,7 +6692,7 @@ public:
 protected:
   virtual bool CloseQuery() override;
   virtual void Change() override;
-  virtual LONG_PTR DialogProc(int Msg, intptr_t Param1, LONG_PTR Param2) override;
+  virtual intptr_t DialogProc(intptr_t Msg, intptr_t Param1, void *Param2) override;
 
   void TransferSettingsButtonClick(TFarButton *Sender, bool &Close);
   void CopyParamListerClick(TFarDialogItem *Item, MOUSE_EVENT_RECORD *Event);
@@ -6969,7 +6968,7 @@ void TFullSynchronizeDialog::Change()
 
 intptr_t TFullSynchronizeDialog::ActualCopyParamAttrs() const
 {
-  intptr_t Result = -1;
+  intptr_t Result;
   if (SynchronizeTimestampsButton->GetChecked())
   {
     Result = cpaIncludeMaskOnly;
@@ -7022,7 +7021,7 @@ bool TFullSynchronizeDialog::CloseQuery()
   return CanClose;
 }
 
-LONG_PTR TFullSynchronizeDialog::DialogProc(int Msg, intptr_t Param1, LONG_PTR Param2)
+intptr_t TFullSynchronizeDialog::DialogProc(intptr_t Msg, intptr_t Param1, void *Param2)
 {
   if (Msg == DN_RESIZECONSOLE)
   {
@@ -7118,7 +7117,7 @@ public:
   virtual bool Execute(TSynchronizeChecklist *Checklist);
 
 protected:
-  virtual LONG_PTR DialogProc(int Msg, intptr_t Param1, LONG_PTR Param2) override;
+  virtual intptr_t DialogProc(intptr_t Msg, intptr_t Param1, void *Param2) override;
   virtual bool Key(TFarDialogItem *Item, LONG_PTR KeyCode) override;
   void CheckAllButtonClick(TFarButton *Sender, bool &Close);
   void VideoModeButtonClick(TFarButton *Sender, bool &Close);
@@ -7538,7 +7537,7 @@ void TSynchronizeChecklistDialog::UpdateControls()
   UncheckAllButton->SetEnabled(FChecked > 0);
 }
 
-LONG_PTR TSynchronizeChecklistDialog::DialogProc(int Msg, intptr_t Param1, LONG_PTR Param2)
+intptr_t TSynchronizeChecklistDialog::DialogProc(intptr_t Msg, intptr_t Param1, void *Param2)
 {
   if (Msg == DN_RESIZECONSOLE)
   {
@@ -7610,25 +7609,28 @@ void TSynchronizeChecklistDialog::ListBoxClick(
 bool TSynchronizeChecklistDialog::Key(TFarDialogItem *Item, LONG_PTR KeyCode)
 {
   bool Result = false;
+  WORD Key = KeyCode & 0xFFFF;
+  LONG_PTR ControlState = KeyCode >> 16;
   if (ListBox->Focused())
   {
-    if ((KeyCode == KEY_SHIFTADD) || (KeyCode == KEY_SHIFTSUBTRACT))
+    if (((Key == VK_ADD) && (ControlState & SHIFTMASK) != 0) ||
+      ((Key == VK_SUBTRACT) && (ControlState & SHIFTMASK) != 0))
     {
-      CheckAll(KeyCode == KEY_SHIFTADD);
+      CheckAll((Key == VK_ADD) && (ControlState & SHIFTMASK) != 0);
       Result = true;
     }
-    else if ((KeyCode == KEY_SPACE) || (KeyCode == KEY_INS) ||
-      (KeyCode == KEY_ADD) || (KeyCode == KEY_SUBTRACT))
+    else if ((Key == VK_SPACE) || (Key == VK_INSERT) ||
+      (Key == VK_ADD) || (Key == VK_SUBTRACT))
     {
       intptr_t Index = ListBox->GetItems()->GetSelected();
       if (Index >= 0)
       {
-        if (ListBox->GetItems()->GetChecked(Index) && (KeyCode != KEY_ADD))
+        if (ListBox->GetItems()->GetChecked(Index) && (Key != VK_ADD))
         {
           ListBox->GetItems()->SetChecked(Index, false);
           FChecked--;
         }
-        else if (!ListBox->GetItems()->GetChecked(Index) && (KeyCode != KEY_SUBTRACT))
+        else if (!ListBox->GetItems()->GetChecked(Index) && (Key != VK_SUBTRACT))
         {
           ListBox->GetItems()->SetChecked(Index, true);
           FChecked++;
@@ -7638,7 +7640,7 @@ bool TSynchronizeChecklistDialog::Key(TFarDialogItem *Item, LONG_PTR KeyCode)
         // Changing "checked" state is not always drawn.
         Redraw();
         UpdateControls();
-        if ((KeyCode == KEY_INS) &&
+        if ((Key == VK_INSERT) &&
           (Index < ListBox->GetItems()->GetCount() - 1))
         {
           ListBox->GetItems()->SetSelected(Index + 1);
@@ -7650,7 +7652,7 @@ bool TSynchronizeChecklistDialog::Key(TFarDialogItem *Item, LONG_PTR KeyCode)
       }
       Result = true;
     }
-    else if (KeyCode == KEY_ALTLEFT)
+    else if ((Key == VK_LEFT) && (ControlState & ALTMASK) != 0)
     {
       if (FScroll > 0)
       {
@@ -7659,7 +7661,7 @@ bool TSynchronizeChecklistDialog::Key(TFarDialogItem *Item, LONG_PTR KeyCode)
       }
       Result = true;
     }
-    else if (KeyCode == KEY_ALTRIGHT)
+    else if (Key == VK_RIGHT)
     {
       if (FCanScrollRight)
       {
@@ -7734,7 +7736,7 @@ protected:
   void DoLog(TSynchronizeController *Controller,
     TSynchronizeLogEntry Entry, UnicodeString Message);
   void DoSynchronizeThreads(TObject *Sender, TThreadMethod Slot);
-  virtual LONG_PTR DialogProc(int Msg, intptr_t Param1, LONG_PTR Param2) override;
+  virtual intptr_t DialogProc(intptr_t Msg, intptr_t Param1, void *Param2) override;
   virtual bool CloseQuery() override;
   virtual bool Key(TFarDialogItem *Item, LONG_PTR KeyCode) override;
   TCopyParamType GetCopyParams() const;
@@ -7986,7 +7988,7 @@ void TSynchronizeDialog::DoSynchronizeThreads(TObject * /*Sender*/,
   }
 }
 
-LONG_PTR TSynchronizeDialog::DialogProc(int Msg, intptr_t Param1, LONG_PTR Param2)
+intptr_t TSynchronizeDialog::DialogProc(intptr_t Msg, intptr_t Param1, void *Param2)
 {
   if (FAbort)
   {
@@ -8119,7 +8121,9 @@ void TSynchronizeDialog::Change()
 bool TSynchronizeDialog::Key(TFarDialogItem * /*Item*/, LONG_PTR KeyCode)
 {
   bool Result = false;
-  if ((KeyCode == KEY_ESC) && FSynchronizing)
+  WORD Key = KeyCode & 0xFFFF;
+  // LONG_PTR ControlState = KeyCode >> 16;
+  if ((Key == VK_ESCAPE) && FSynchronizing)
   {
     Stop();
     Result = true;
@@ -8247,19 +8251,16 @@ TQueueDialog::TQueueDialog(TCustomFarPlugin *AFarPlugin,
   MoveDownButton(nullptr),
   CloseButton(nullptr)
 {
-  TFarSeparator *Separator = nullptr;
-  TFarText *Text = nullptr;
-
   SetSize(TPoint(80, 23));
   // TRect CRect = GetClientRect();
   intptr_t ListHeight = GetClientSize().y - 4;
 
   SetCaption(GetMsg(NB_QUEUE_TITLE));
 
-  Text = new TFarText(this);
+  TFarText *Text = new TFarText(this);
   Text->SetCaption(GetMsg(NB_QUEUE_HEADER));
 
-  Separator = new TFarSeparator(this);
+  TFarSeparator *Separator = new TFarSeparator(this);
   intptr_t ListTop = Separator->GetBottom();
 
   Separator = new TFarSeparator(this);
@@ -8347,10 +8348,12 @@ void TQueueDialog::OperationButtonClick(TFarButton *Sender,
 bool TQueueDialog::Key(TFarDialogItem * /*Item*/, LONG_PTR KeyCode)
 {
   bool Result = false;
+  WORD Key = KeyCode & 0xFFFF;
+  LONG_PTR ControlState = KeyCode >> 16;
   if (QueueListBox->Focused())
   {
     TFarButton *DoButton = nullptr;
-    if (KeyCode == KEY_ENTER)
+    if (Key == VK_RETURN)
     {
       if (ExecuteButton->GetEnabled())
       {
@@ -8358,7 +8361,7 @@ bool TQueueDialog::Key(TFarDialogItem * /*Item*/, LONG_PTR KeyCode)
       }
       Result = true;
     }
-    else if (KeyCode == KEY_DEL)
+    else if (Key == VK_DELETE)
     {
       if (DeleteButton->GetEnabled())
       {
@@ -8366,7 +8369,7 @@ bool TQueueDialog::Key(TFarDialogItem * /*Item*/, LONG_PTR KeyCode)
       }
       Result = true;
     }
-    else if (KeyCode == KEY_CTRLUP)
+    else if ((Key == VK_UP) && (ControlState & CTRLMASK) != 0)
     {
       if (MoveUpButton->GetEnabled())
       {
@@ -8374,7 +8377,7 @@ bool TQueueDialog::Key(TFarDialogItem * /*Item*/, LONG_PTR KeyCode)
       }
       Result = true;
     }
-    else if (KeyCode == KEY_CTRLDOWN)
+    else if ((Key == VK_DOWN) && (ControlState & CTRLMASK) != 0)
     {
       if (MoveDownButton->GetEnabled())
       {
@@ -8499,7 +8502,7 @@ void TQueueDialog::RefreshQueue()
     }
 
     TQueueItemProxy *PrevQueueItem = nullptr;
-    TQueueItemProxy *QueueItem = nullptr;
+    TQueueItemProxy *QueueItem;
     UnicodeString Line;
     while ((Index < GetQueueItems()->GetCount()) &&
       (Index < TopIndex + QueueListBox->GetHeight()))
