@@ -1,21 +1,13 @@
-NetBox: SFTP/FTP/FTP(S)/SCP/WebDAV client for Far Manager 2.0/3.0 x86/x64
+NetBox: SFTP/FTP/FTP(S)/SCP/WebDAV client for Far Manager 3.0 x86/x64
 ==============
 
-[![Build status](https://ci.appveyor.com/api/projects/status/91lhdjygkenumcmv?svg=true)](https://ci.appveyor.com/project/michaellukashov/far-netbox)
+[![Build status](https://ci.appveyor.com/api/projects/status/rc32omfcxkhn7kfk?svg=true)](https://ci.appveyor.com/project/FarGroup/far-netbox)
 
 
 Based on [WinSCP](http://winscp.net/eng/index.php) version 5.11.2 Copyright (c) 2000-2017 Martin Prikryl  
 Based on [WinSCP as FAR Plugin: SFTP/FTP/SCP client for FAR version 1.6.2](http://winscp.net/download/winscpfar162setup.exe) Copyright (c) 2000-2009 Martin Prikryl  
 SSH and SCP code based on PuTTY 0.70 Copyright (c) 1997-2017 Simon Tatham  
 FTP code based on FileZilla 2.2.32 Copyright (c) 2001-2007 Tim Kosse  
-
-How to install
-==============
-
-You can either download an appropriate binary package for your  
-platform or build from source. Binaries can be obtained from [here](http://plugring.farmanager.com/plugin.php?pid=859&l=en). 
-
-Unpack the archive in the plugin directory Far (... Far \ Plugins).
 
 How to build from source
 ========================
@@ -38,7 +30,7 @@ and unpack it in your source directory, say C:/src,
 or from git repository:
 
     cd C:/src
-    git clone git://github.com/michaellukashov/Far-NetBox.git
+    git clone https://github.com/FarGroup/Far-NetBox.git
 
 From now on, we assume that your source tree is C:/src/Far-NetBox
 
@@ -54,15 +46,13 @@ Either open src/NetBox/NetBox.sln in Visual Studio, or compile NetBox plugin on 
     cmd /c "%VS100COMNTOOLS%\..\..\VC\vcvarsall.bat" x86 && devenv NetBox.sln /Build "Release|Win32" /USEENV /Project "NetBox"
     cmd /c "%VS100COMNTOOLS%\..\..\VC\vcvarsall.bat" x86_amd64 && devenv NetBox.sln /Build "Release|x64" /USEENV /Project "NetBox"
 
-Replace Release with Debug to build in Debug mode. The built binaries will be in Far2_x86/Plugins/NetBox/ (or Far2_x64/Plugins/NetBox/) directory.
+Replace Release with Debug to build in Debug mode. The built binaries will be in build/Release/x86 (or build/Release/x84) directory.
 
 
 Links
 ========================
 
-* Project main page: [https://github.com/michaellukashov/Far-NetBox/](https://github.com/michaellukashov/Far-NetBox/)
-* Download page:
-[https://github.com/michaellukashov/Far-NetBox/releases](https://github.com/michaellukashov/Far-NetBox/releases) [http://plugring.farmanager.com/plugin.php?pid=859&l=en](http://plugring.farmanager.com/plugin.php?pid=859&l=en)
+* Project main page: [https://github.com/FarGroup/Far-NetBox](https://github.com/FarGroup/Far-NetBox)
 * Far Manager forum: [http://forum.farmanager.com/](http://forum.farmanager.com/)
 * NetBox discussions (in Russian): [http://forum.farmanager.com/viewtopic.php?f=5&t=6317](http://forum.farmanager.com/viewtopic.php?f=5&t=6317)
 * NetBox discussions (in English): [http://forum.farmanager.com/viewtopic.php?f=39&t=6638](http://forum.farmanager.com/viewtopic.php?f=39&t=6638)
