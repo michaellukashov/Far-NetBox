@@ -3100,11 +3100,19 @@ void TWinSCPFileSystem::TerminalInformation(
 {
   if (Phase != 0)
   {
-    TSessionStatus sts = GetTerminal() ? GetTerminal()->GetStatus() : ssClosed;
-    if (sts == ssOpening || sts == ssOpened)
+    bool mustLog = false;
     {
-      bool new_log = FAuthenticationLog == nullptr;
-      if (new_log)
+      TTerminal *term = GetTerminal();
+      if (term)
+      {
+        mustLog =    term->GetStatus() == ssOpening
+                 || (   term->GetStatus() == ssOpened 
+                     && term->GetSessionInfo().ProtocolBaseName == L"SSH");
+      }
+    }
+    if (mustLog)
+    {
+      if (FAuthenticationLog == nullptr)
       {
         FAuthenticationLog = new TStringList();
         GetWinSCPPlugin()->SaveScreen(FAuthenticationSaveScreenHandle);
@@ -3112,7 +3120,6 @@ void TWinSCPFileSystem::TerminalInformation(
       }
 
       LogAuthentication(Terminal, Str);
-      if (new_log && sts == ssOpened) goto do_restore;
       GetWinSCPPlugin()->UpdateConsoleTitle(Str);
     }
   }
@@ -3120,7 +3127,6 @@ void TWinSCPFileSystem::TerminalInformation(
   {
     if (FAuthenticationLog != nullptr)
     {
-do_restore:
       GetWinSCPPlugin()->ClearConsoleTitle();
       GetWinSCPPlugin()->RestoreScreen(FAuthenticationSaveScreenHandle);
       SAFE_DESTROY(FAuthenticationLog);
