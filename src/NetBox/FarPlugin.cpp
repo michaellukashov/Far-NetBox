@@ -2102,8 +2102,14 @@ void TCustomFarFileSystem::RedrawPanel(bool Another)
 
 void TCustomFarFileSystem::ClosePlugin()
 {
-  FClosed = true;
-  FarControl(FCTL_CLOSEPLUGIN, 0, 0);
+  static bool InsideClose=false;
+  if (!InsideClose)
+  {
+    InsideClose = true;
+    FClosed = true;
+    FarControl(FCTL_CLOSEPLUGIN, 0, 0);
+    InsideClose = false;
+  }
 }
 
 UnicodeString TCustomFarFileSystem::GetMsg(intptr_t MsgId) const
