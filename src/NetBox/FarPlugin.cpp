@@ -15,6 +15,8 @@
 
 TCustomFarPlugin *FarPlugin = nullptr;
 
+static bool MustSkipClose = false;
+
 #define FAR_TITLE_SUFFIX L" - Far"
 
 TFarMessageParams::TFarMessageParams() :
@@ -545,8 +547,20 @@ intptr_t TCustomFarPlugin::ProcessPanelEvent(const struct ProcessPanelEventInfo 
         Param = ToPtr(Buf.c_str());
       }
 
-      TGuard Guard(FarFileSystem->GetCriticalSection());
-      return FarFileSystem->ProcessPanelEvent(Info->Event, Param);
+      // don't destory plugin on locked CriticalSection
+      bool onClose = (Info->Event == FE_CLOSE && !FarFileSystem->FClosed);
+      MustSkipClose = onClose;
+
+      int rc;
+      { 
+        TGuard Guard(FarFileSystem->GetCriticalSection());
+        rc = FarFileSystem->ProcessPanelEvent(Info->Event, Param);
+      }
+      if (MustSkipClose)
+        MustSkipClose = false;
+      else if (onClose)
+        FarFileSystem->ClosePanel();
+      return rc;
     }
     return 0;
   }
@@ -2153,7 +2167,9 @@ void TCustomFarFileSystem::RedrawPanel(bool Another)
 void TCustomFarFileSystem::ClosePanel()
 {
   static bool InsideClose=false;
-  if (!InsideClose)
+  if (MustSkipClose)
+     MustSkipClose = false;
+  else if (!InsideClose)
   {
     InsideClose = true;
     FClosed = true;
