@@ -1449,6 +1449,7 @@ set(NETBOX_SOURCES
 add_custom_target(NETBOX_SOURCES SOURCES
   NetBoxEng.lng
   NetBoxRus.lng
+  NetBoxPol.lng
   resource.h.template
   NetBox.rc.template
 )
