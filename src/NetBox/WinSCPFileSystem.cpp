@@ -496,10 +496,12 @@ bool TWinSCPFileSystem::GetFindDataEx(TObjectList *PanelItems, OPERATION_MODES O
           if (FarPlugin->CheckForEsc())
             break;
           // Check what kind of symlink this is
+          auto LinkFile = File->GetLinkedFile();
+          if (!LinkFile)
+          {
           const UnicodeString LinkFileName = File->GetLinkTo();
           if (!LinkFileName.IsEmpty())
           {
-            TRemoteFile *LinkFile = nullptr;
             try
             {
               FileSystem->ReadFile(LinkFileName, LinkFile);
@@ -508,9 +510,11 @@ bool TWinSCPFileSystem::GetFindDataEx(TObjectList *PanelItems, OPERATION_MODES O
             {
               LinkFile = nullptr;
             }
+            }
             if ((LinkFile != nullptr) && LinkFile->GetIsDirectory())
             {
               File->SetType(FILETYPE_DIRECTORY);
+              File->SetIsSymLink(true);
             }
             SAFE_DESTROY(LinkFile);
           }
