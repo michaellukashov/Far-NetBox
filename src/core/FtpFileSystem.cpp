@@ -3104,7 +3104,7 @@ void TFTPFileSystem::ReadSymlink(TRemoteFile *SymlinkFile,
     File->SetTerminal(FTerminal);
     File->SetFileName(base::UnixExtractFileName(SymlinkFile->GetLinkTo()));
     // FZAPI treats all symlink target as directories
-    File->SetType(FILETYPE_SYMLINK);
+    File->SetType(FILETYPE_DIRECTORY);
     AFile = File.release();
   }
 #if 0
@@ -5023,17 +5023,18 @@ bool TFTPFileSystem::HandleListData(const wchar_t *Path,
 
         File->SetSize(Entry->Size);
 
-        if (Entry->Link)
-        {
-          File->SetType(FILETYPE_SYMLINK);
-        }
-        else if (Entry->Dir)
+        if (Entry->Dir)
         {
           File->SetType(FILETYPE_DIRECTORY);
         }
         else
         {
           File->SetType(FILETYPE_DEFAULT);
+        }
+
+        if (Entry->Link)
+        {
+          File->SetIsSymLink(true);
         }
 
         TDateTime Modification;

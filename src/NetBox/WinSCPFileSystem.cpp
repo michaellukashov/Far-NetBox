@@ -493,30 +493,36 @@ bool TWinSCPFileSystem::GetFindDataEx(TObjectList *PanelItems, OPERATION_MODES O
         DebugAssert(File);
         if (ResolveSymlinks && File->GetIsSymLink())
         {
-          if (FarPlugin->CheckForEsc())
-            break;
-          // Check what kind of symlink this is
-          auto LinkFile = File->GetLinkedFile();
-          if (!LinkFile)
+          bool IsDirectorySymlink = false;
+          if (auto LinkFile = File->GetLinkedFile())
           {
-          const UnicodeString LinkFileName = File->GetLinkTo();
-          if (!LinkFileName.IsEmpty())
+            IsDirectorySymlink = LinkFile->GetIsDirectory();
+          }
+          else
           {
-            try
+            if (FarPlugin->CheckForEsc())
+              break;
+            // Check what kind of symlink this is
+            const UnicodeString LinkFileName = File->GetLinkTo();
+            if (!LinkFileName.IsEmpty())
             {
-              FileSystem->ReadFile(LinkFileName, LinkFile);
+              TRemoteFile *LinkFile = nullptr;
+              try
+              {
+                FileSystem->ReadFile(LinkFileName, LinkFile);
+                IsDirectorySymlink = LinkFile && LinkFile->GetIsDirectory();
+              }
+              catch (const Exception & /*E*/)
+              {
+                LinkFile = nullptr;
+              }
+              SAFE_DESTROY(LinkFile);
             }
-            catch (const Exception & /*E*/)
-            {
-              LinkFile = nullptr;
-            }
-            }
-            if ((LinkFile != nullptr) && LinkFile->GetIsDirectory())
-            {
-              File->SetType(FILETYPE_DIRECTORY);
-              File->SetIsSymLink(true);
-            }
-            SAFE_DESTROY(LinkFile);
+          }
+          if (IsDirectorySymlink)
+          {
+            File->SetType(FILETYPE_DIRECTORY);
+            File->SetIsSymLink(true);
           }
         }
         PanelItems->Add(new TRemoteFilePanelItem(File));
@@ -3128,7 +3134,7 @@ void TWinSCPFileSystem::TerminalInformation(
       if (term)
       {
         mustLog =    term->GetStatus() == ssOpening
-                 || (   term->GetStatus() == ssOpened 
+                 || (   term->GetStatus() == ssOpened
                      && term->GetSessionInfo().ProtocolBaseName == L"SSH");
       }
     }
