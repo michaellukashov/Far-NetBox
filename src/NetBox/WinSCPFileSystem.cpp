@@ -493,36 +493,34 @@ bool TWinSCPFileSystem::GetFindDataEx(TObjectList *PanelItems, OPERATION_MODES O
         DebugAssert(File);
         if (ResolveSymlinks && File->GetIsSymLink())
         {
-          bool IsDirectorySymlink = false;
-          if (auto LinkFile = File->GetLinkedFile())
+          if (FarPlugin->CheckForEsc())
           {
-            IsDirectorySymlink = LinkFile->GetIsDirectory();
-          }
-          else
+            ResolveSymlinks = false;
+            continue;
+          };
+          // Check what kind of symlink this is
+          const UnicodeString LinkFileName = File->GetLinkTo();
+          if (!LinkFileName.IsEmpty())
           {
-            if (FarPlugin->CheckForEsc())
-              break;
-            // Check what kind of symlink this is
-            const UnicodeString LinkFileName = File->GetLinkTo();
-            if (!LinkFileName.IsEmpty())
+            TRemoteFile *LinkFile = nullptr;
+            try
             {
-              TRemoteFile *LinkFile = nullptr;
-              try
-              {
-                FileSystem->ReadFile(LinkFileName, LinkFile);
-                IsDirectorySymlink = LinkFile && LinkFile->GetIsDirectory();
-              }
-              catch (const Exception & /*E*/)
-              {
-                LinkFile = nullptr;
-              }
-              SAFE_DESTROY(LinkFile);
+              FileSystem->ReadFile(LinkFileName, LinkFile);
             }
-          }
-          if (IsDirectorySymlink)
-          {
-            File->SetType(FILETYPE_DIRECTORY);
-            File->SetIsSymLink(true);
+            catch (const Exception & /*E*/)
+            {
+              LinkFile = nullptr;
+            }
+            if ((LinkFile != nullptr) && LinkFile->GetIsDirectory())
+            {
+              File->SetType(FILETYPE_DIRECTORY);
+              File->SetIsSymLink(true);
+              if (const auto LinkedFile = File->GetLinkedFile())
+              {
+                LinkedFile->SetType(FILETYPE_DIRECTORY);
+              }
+            }
+            SAFE_DESTROY(LinkFile);
           }
         }
         PanelItems->Add(new TRemoteFilePanelItem(File));

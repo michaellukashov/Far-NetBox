@@ -3104,7 +3104,7 @@ void TFTPFileSystem::ReadSymlink(TRemoteFile *SymlinkFile,
     File->SetTerminal(FTerminal);
     File->SetFileName(base::UnixExtractFileName(SymlinkFile->GetLinkTo()));
     // FZAPI treats all symlink target as directories
-    File->SetType(FILETYPE_DIRECTORY);
+    File->SetType(FILETYPE_SYMLINK);
     AFile = File.release();
   }
 #if 0
