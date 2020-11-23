@@ -800,10 +800,6 @@ intptr_t TStringList::AddObject(UnicodeString S, TObject *AObject)
         break;
       }
     }
-    else
-    {
-      Result = GetCount();
-    }
   }
   InsertItem(Result, S, AObject);
   return Result;
