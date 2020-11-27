@@ -913,7 +913,8 @@ void TStringList::InsertItem(intptr_t Index, UnicodeString S, TObject *AObject)
   }
   else
   {
-    FStrings.insert(FStrings.begin() + Index, S);
+    FStrings.insert(FStrings.begin() + Index, 1, S);
+
     TObjectList::Insert(Index, AObject);
   }
   Changed();
