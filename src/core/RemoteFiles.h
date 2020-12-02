@@ -230,6 +230,7 @@ public:
   TDateTime GetLastAccess() const { return FLastAccess; }
   void SetLastAccess(const TDateTime &Value) { FLastAccess = Value; }
   bool GetIsSymLink() const { return FIsSymLink; }
+  void SetIsSymLink(bool const Value) { FIsSymLink = Value; }
   UnicodeString GetLinkTo() const { return FLinkTo; }
   void SetLinkTo(UnicodeString Value) { FLinkTo = Value; }
   TRights *GetRights() const { return FRights; }

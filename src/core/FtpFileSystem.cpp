@@ -5023,17 +5023,18 @@ bool TFTPFileSystem::HandleListData(const wchar_t *Path,
 
         File->SetSize(Entry->Size);
 
-        if (Entry->Link)
-        {
-          File->SetType(FILETYPE_SYMLINK);
-        }
-        else if (Entry->Dir)
+        if (Entry->Dir)
         {
           File->SetType(FILETYPE_DIRECTORY);
         }
         else
         {
           File->SetType(FILETYPE_DEFAULT);
+        }
+
+        if (Entry->Link)
+        {
+          File->SetIsSymLink(true);
         }
 
         TDateTime Modification;
