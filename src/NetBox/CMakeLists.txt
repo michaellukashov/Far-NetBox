@@ -1,5 +1,5 @@
 message(STATUS "CMake version: ${CMAKE_VERSION}")
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.15)
 
 set(OPT_BUILD_OPENSSL ON CACHE STRING "Default build openSSL")
 set(OPT_USE_UNITY_BUILD ON CACHE STRING "Default use unity build")
@@ -96,7 +96,9 @@ if(MSVC)
 
 set(NETBOX_C_WARNING_FLAGS "")
 set(NETBOX_CXX_WARNING_FLAGS "")
-set(NETBOX_CXX_FLAGS "/std:c++17")
+set(CMAKE_CXX_STANDARD 17)
+#set(NETBOX_CXX_FLAGS "/std:c++17")
+set(CMAKE_MSVC_RUNTIME_LIBRARY MultiThreaded$<$<CONFIG:Debug>:Debug>)
 
 elseif(CMAKE_COMPILER_IS_MINGW)
 
