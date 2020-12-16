@@ -1463,6 +1463,10 @@ public:
 		return QueryFloatAttribute( name, value );
 	}
 
+	XMLError QueryAttribute(const char* name, const char** value) const {
+		return QueryStringAttribute(name, value);
+	}
+
 	/// Sets the named attribute to value.
     void SetAttribute( const char* name, const char* value )	{
         XMLAttribute* a = FindOrCreateAttribute( name );
