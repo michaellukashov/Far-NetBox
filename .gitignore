@@ -19,6 +19,7 @@ ipch/
 *.sdf
 *.suo
 *.pdb
+*.tds
 *.exp
 *.dll
 *.lib

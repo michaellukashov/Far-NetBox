@@ -823,7 +823,7 @@ TDateTime TFileOperationProgressType::TotalTimeLeft() const
   // sanity check
   if ((CurCps > 0) && (FTotalSize > FTotalSkipped + FTotalTransferred))
   {
-    return TDateTime(ToDouble(ToDouble(FTotalSize - FTotalSkipped) / CurCps) /
+    return TDateTime(ToDouble(ToDouble(FTotalSize - FTotalSkipped - FTotalTransferred) / CurCps) /
         SecsPerDay);
   }
   return TDateTime(0.0);

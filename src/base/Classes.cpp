@@ -800,10 +800,6 @@ intptr_t TStringList::AddObject(UnicodeString S, TObject *AObject)
         break;
       }
     }
-    else
-    {
-      Result = GetCount();
-    }
   }
   InsertItem(Result, S, AObject);
   return Result;
@@ -917,7 +913,8 @@ void TStringList::InsertItem(intptr_t Index, UnicodeString S, TObject *AObject)
   }
   else
   {
-    FStrings.insert(FStrings.begin() + Index, S);
+    FStrings.insert(FStrings.begin() + Index, 1, S);
+
     TObjectList::Insert(Index, AObject);
   }
   Changed();
