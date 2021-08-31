@@ -1836,20 +1836,8 @@ void TWinSCPFileSystem::FileProperties()
   {
     DebugAssert(!FPanelItems);
 
-    bool Cont = true;
-    if (!GetTerminal()->LoadFilesProperties(FileList.get()))
-    {
-      if (UpdatePanel())
-      {
-        RedrawPanel();
-      }
-      else
-      {
-        Cont = false;
-      }
-    }
+    GetTerminal()->LoadFilesProperties(FileList.get());
 
-    if (Cont)
     {
       TRemoteProperties CurrentProperties = TRemoteProperties::CommonProperties(FileList.get());
 
