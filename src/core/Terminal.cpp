@@ -1227,9 +1227,15 @@ void TTerminal::Init(TSessionData *SessionData,
 
 TTerminal::~TTerminal()
 {
-  if (GetActive())
+  try
   {
-    Close();
+    if (GetActive())
+    {
+      Close();
+    }
+  }
+  catch (...)
+  {
   }
 
   if (FCallbackGuard != nullptr)
