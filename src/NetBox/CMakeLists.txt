@@ -1,5 +1,5 @@
 message(STATUS "CMake version: ${CMAKE_VERSION}")
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.10)
 
 set(OPT_COMPILE_OPENSSL ON CACHE STRING "Default build openSSL")
 set(OPT_USE_UNITY_BUILD ON CACHE STRING "Default use unity build")
@@ -191,7 +191,7 @@ set(NETBOX_DLL_LINK_FLAGS
 )
 #/DELAYLOAD:gdi32.dll
 
-set(NETBOX_DLL_LINK_FLAGS_RELEASE "/OPT:REF")
+set(NETBOX_DLL_LINK_FLAGS_RELEASE "/OPT:REF /MAP /debug /ltcg")
 set(NETBOX_DLL_LINK_FLAGS_DEBUG "/DEBUG")
 
 elseif(CMAKE_COMPILER_IS_MINGW)
