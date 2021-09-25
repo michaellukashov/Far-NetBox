@@ -1,0 +1,99 @@
+name: Release
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+
+jobs:
+
+  build:
+    strategy:
+      fail-fast: true
+      matrix:
+        arch: [ x64, x86 ]
+
+    env:
+      BUILD_TYPE: Release
+
+    runs-on: windows-2019
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v2
+
+      - name: Get version
+        shell: bash
+        run: |
+          export VERSION_MAJOR=$(grep "NETBOX_VERSION_MAJOR" src/NetBox/plugin_version.hpp | sed -e "s/^.* NETBOX_VERSION_MAJOR\s*\([0-9]\+\)/\1/g")
+          export VERSION_MINOR=$(grep "NETBOX_VERSION_MINOR" src/NetBox/plugin_version.hpp | sed -e "s/^.* NETBOX_VERSION_MINOR\s*\([0-9]\+\)/\1/g")
+          export VERSION_PATCH=$(grep "NETBOX_VERSION_PATCH" src/NetBox/plugin_version.hpp | sed -e "s/^.* NETBOX_VERSION_PATCH\s*\([0-9]\+\)/\1/g")
+          export VERSION_BUILD=$(grep "NETBOX_VERSION_BUILD" src/NetBox/plugin_version.hpp | sed -e "s/^.* NETBOX_VERSION_BUILD\s*\([0-9]\+\)/\1/g")
+          echo "VERSION=$VERSION_MAJOR.$VERSION_MINOR.$VERSION_PATCH.$VERSION_BUILD.$GITHUB_RUN_NUMBER">> $GITHUB_ENV
+
+      - name: Set the pack file name
+        shell: bash
+        run: |
+          echo "netbox_name=NetBox.${{ matrix.arch }}.${{ env.version }}.7z" >> $GITHUB_ENV
+          echo "netbox_pdb_name=NetBox.${{ matrix.arch }}.${{ env.version }}.pdb.7z" >> $GITHUB_ENV
+
+      - name: Add C++ build tools to PATH
+        uses: ilammy/msvc-dev-cmd@v1.9.0
+        with:
+          arch: ${{ matrix.arch }}
+
+      - name: Create Build forlder
+        run: cmake -E make_directory build
+
+      - name: Configure CMake
+        shell: bash
+        working-directory: build
+        run: >
+          cmake -G "NMake Makefiles" -DCMAKE_BUILD_TYPE=$BUILD_TYPE $GITHUB_WORKSPACE/src/NetBox
+
+      - name: Build
+        working-directory: build
+        shell: bash
+        run: cmake --build . --config $BUILD_TYPE
+
+      - name: pack plugin
+        shell: bash
+        run: |
+          cp LICENSE.txt README.md README.RU.md README.PL.md ./Far3_${{ matrix.arch }}/Plugins/NetBox/
+          7z a ${{ env.netbox_name }} ./Far3_${{ matrix.arch }}/Plugins/* -xr!*.pdb
+          7z a ${{ env.netbox_pdb_name }} ./Far3_${{ matrix.arch }}/Plugins/NetBox/NetBox.pdb
+
+      - name: Upload result
+        uses: actions/upload-artifact@v2
+        with:
+          name: result
+          path: ./*.7z
+          retention-days: 1
+
+  create-release:
+    needs: [build]
+    runs-on: windows-2019
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v2
+
+      - name: Get version
+        shell: bash
+        run: |
+          export VERSION_MAJOR=$(grep "NETBOX_VERSION_MAJOR" src/NetBox/plugin_version.hpp | sed -e "s/^.* NETBOX_VERSION_MAJOR\s*\([0-9]\+\)/\1/g")
+          export VERSION_MINOR=$(grep "NETBOX_VERSION_MINOR" src/NetBox/plugin_version.hpp | sed -e "s/^.* NETBOX_VERSION_MINOR\s*\([0-9]\+\)/\1/g")
+          export VERSION_PATCH=$(grep "NETBOX_VERSION_PATCH" src/NetBox/plugin_version.hpp | sed -e "s/^.* NETBOX_VERSION_PATCH\s*\([0-9]\+\)/\1/g")
+          export VERSION_BUILD=$(grep "NETBOX_VERSION_BUILD" src/NetBox/plugin_version.hpp | sed -e "s/^.* NETBOX_VERSION_BUILD\s*\([0-9]\+\)/\1/g")
+          echo "VERSION=$VERSION_MAJOR.$VERSION_MINOR.$VERSION_PATCH.$VERSION_BUILD.$GITHUB_RUN_NUMBER">> $GITHUB_ENV
+
+      - name: Download result
+        uses: actions/download-artifact@v2
+        with:
+          name: result
+
+      - name: Create release
+        shell: bash
+        run: gh release create v${{ env.version }} -t "v${{ env.version }}" -n "NetBox ${{ env.version }}" ./*.7z
+        env:
+          GITHUB_TOKEN: ${{secrets.PACKAGES_GITHUB_TOKEN}}
