@@ -1578,7 +1578,7 @@ add_custom_command(TARGET create_plugin_dir POST_BUILD
 )
 
 file(GLOB DIST_FILES
-  ${NETBOX_DIR}/*.lng
+  ${NETBOX_DIR}/*.lng ${PROJECT_ROOT}/ChangeLog
 #  ${BUILD_DIR}/*.dll
 #  ${BUILD_DIR}/*.pdb
 #  ${BUILD_DIR}/*.map
