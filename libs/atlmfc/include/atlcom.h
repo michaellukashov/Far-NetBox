@@ -1198,9 +1198,7 @@ public:
 
 #if defined(_M_IX86)
 #define OBJECT_ENTRY_PRAGMA(class) __pragma(comment(linker, "/include:___pobjMap_" #class));
-#elif defined(_M_IA64)
-#define OBJECT_ENTRY_PRAGMA(class) __pragma(comment(linker, "/include:__pobjMap_" #class));
-#elif defined(_M_AMD64)
+#elif defined(_M_IA64) || defined(_M_X64) || defined(_M_ARM) || defined(_M_ARM64)
 #define OBJECT_ENTRY_PRAGMA(class) __pragma(comment(linker, "/include:__pobjMap_" #class));
 #else
 #error Unknown Platform. define OBJECT_ENTRY_PRAGMA
@@ -2509,7 +2507,7 @@ public:
 	}
 };
 
-#elif defined ( _M_IX86 ) || defined ( _M_AMD64 )
+#elif defined ( _M_IX86 ) || defined ( _M_AMD64 ) || defined( _M_ARM64 )
 
 extern "C"
 {

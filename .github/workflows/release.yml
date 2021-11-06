@@ -12,7 +12,16 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        arch: [ x64, x86 ]
+        build: [
+                 nmake_cl_x64_release,
+                 nmake_cl_x86_release,
+                 nmake_cl_ARM64_release,
+               ]
+
+        include:
+          - { build: nmake_cl_x64_release,    arch: amd64,       platform: x64,   }
+          - { build: nmake_cl_x86_release,    arch: amd64_x86,   platform: x86,   }
+          - { build: nmake_cl_ARM64_release,  arch: amd64_arm64, platform: ARM64, }
 
     env:
       BUILD_TYPE: Release
@@ -34,11 +43,11 @@ jobs:
       - name: Set the pack file name
         shell: bash
         run: |
-          echo "netbox_name=NetBox.${{ matrix.arch }}.${{ env.version }}.7z" >> $GITHUB_ENV
-          echo "netbox_pdb_name=NetBox.${{ matrix.arch }}.${{ env.version }}.pdb.7z" >> $GITHUB_ENV
+          echo "netbox_name=NetBox.${{ matrix.platform }}.${{ env.version }}.7z" >> $GITHUB_ENV
+          echo "netbox_pdb_name=NetBox.${{ matrix.platform }}.${{ env.version }}.pdb.7z" >> $GITHUB_ENV
 
       - name: Add C++ build tools to PATH
-        uses: ilammy/msvc-dev-cmd@v1.9.0
+        uses: ilammy/msvc-dev-cmd@v1
         with:
           arch: ${{ matrix.arch }}
 
@@ -49,7 +58,7 @@ jobs:
         shell: bash
         working-directory: build
         run: >
-          cmake -G "NMake Makefiles" -DCMAKE_BUILD_TYPE=$BUILD_TYPE $GITHUB_WORKSPACE/src/NetBox
+          cmake -G "NMake Makefiles" -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DPROJECT_PLATFORM=${{ matrix.platform }} $GITHUB_WORKSPACE/src/NetBox
 
       - name: Build
         working-directory: build
@@ -59,9 +68,9 @@ jobs:
       - name: pack plugin
         shell: bash
         run: |
-          cp LICENSE.txt README.md README.RU.md README.PL.md ./Far3_${{ matrix.arch }}/Plugins/NetBox/
-          7z a ${{ env.netbox_name }} ./Far3_${{ matrix.arch }}/Plugins/* -xr!*.pdb
-          7z a ${{ env.netbox_pdb_name }} ./Far3_${{ matrix.arch }}/Plugins/NetBox/NetBox.pdb
+          cp LICENSE.txt README.md README.RU.md README.PL.md ./Far3_${{ matrix.platform }}/Plugins/NetBox/
+          7z a ${{ env.netbox_name }} ./Far3_${{ matrix.platform }}/Plugins/* -xr!*.pdb
+          7z a ${{ env.netbox_pdb_name }} ./Far3_${{ matrix.platform }}/Plugins/NetBox/NetBox.pdb
 
       - name: Upload result
         uses: actions/upload-artifact@v2
