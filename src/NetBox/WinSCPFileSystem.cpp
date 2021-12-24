@@ -1080,6 +1080,28 @@ bool TWinSCPFileSystem::ProcessKeyEx(intptr_t Key, uintptr_t ControlState)
       MultipleEdit();
       Handled = true;
     }
+    // correct returning Session Panel
+    if ((Key == VK_RETURN) && (!Handled))
+    {
+        TFarPanelInfo* const* PanelInfo = GetPanelInfo();
+        const TFarPanelItem* Focused = PanelInfo && *PanelInfo ? (*PanelInfo)->GetFocusedItem() : nullptr;
+        if (Focused && Focused->GetUserData())
+        {
+            TRemoteFile* File = nullptr;
+            File = get_as<TRemoteFile>(Focused->GetUserData());
+            if (File)
+            {
+                if ((File->GetDirectory()->GetDirectory() == ROOTDIRECTORY) && (File->GetFileName() == PARENTDIRECTORY)) {
+                    SetDirectoryEx(PARENTDIRECTORY, 0);
+                    if (UpdatePanel())
+                    {
+                        RedrawPanel();
+                    }
+                    Handled = true;
+                };
+            }
+        }
+    }
   }
   return Handled;
 }
