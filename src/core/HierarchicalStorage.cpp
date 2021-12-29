@@ -180,8 +180,12 @@ bool THierarchicalStorage::OpenSubKey(UnicodeString ASubKey, bool CanCreate, boo
   }
   else
   {
-    MungedKey = MungeKeyName(Key);
+    MungedKey = MungeStr(Key, GetForceAnsi());
     Result = DoOpenSubKey(MungedKey, CanCreate);
+    if (!Result) {
+        MungedKey = MungeStr(Key, !GetForceAnsi());
+        Result = DoOpenSubKey(MungedKey, CanCreate);
+    }
   }
 
   if (Result)
