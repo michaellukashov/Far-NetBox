@@ -225,46 +225,11 @@ void TList::Clear()
   SetCount(0);
 }
 
-void QuickSort(rde::vector<void *> &SortList, intptr_t L, intptr_t R,
-  CompareFunc SCompare)
-{
-  intptr_t Index;
-  do
-  {
-    Index = L;
-    intptr_t J = R;
-    void *P = SortList[(L + R) >> 1];
-    do
-    {
-      while (SCompare(SortList[Index], P) < 0)
-        Index++;
-      while (SCompare(SortList[J], P) > 0)
-        J--;
-      if (Index <= J)
-      {
-        if (Index != J)
-        {
-          void *T = SortList[Index];
-          SortList[Index] = SortList[J];
-          SortList[J] = T;
-        }
-        Index--;
-        J--;
-      }
-    }
-    while (Index > J);
-    if (L < J)
-      QuickSort(SortList, L, J, SCompare);
-    L = Index;
-  }
-  while (Index >= R);
-}
-
 void TList::Sort(CompareFunc Func)
 {
   if (GetCount() > 1)
   {
-    QuickSort(FList, 0, GetCount() - 1, Func);
+    std::sort(FList.begin(), FList.end(), [&](void* a, void* b) { return Func(a, b) < 0; });
   }
 }
 

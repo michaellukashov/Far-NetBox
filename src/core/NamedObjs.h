@@ -42,6 +42,7 @@ public:
 public:
   intptr_t GetCount() const;
   intptr_t GetCountIncludingHidden() const;
+  TNamedObject* GetSortObject(UnicodeString Name, intptr_t &outPosition);
   virtual void Notify(void *Ptr, TListNotification Action) override;
   void SetCount(intptr_t Value);
 protected:

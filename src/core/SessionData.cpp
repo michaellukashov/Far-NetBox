@@ -4477,14 +4477,7 @@ void TStoredSessionList::Load(THierarchicalStorage *Storage,
   std::unique_ptr<TList> Loaded(new TList());
   try__finally
   {
-    SCOPE_EXIT
-    {
-      FAutoSort = true;
-      AlphaSort();
-    };
-
     DebugAssert(FAutoSort);
-    FAutoSort = false;
     bool WasEmpty = (GetCount() == 0);
 
     Storage->GetSubKeyNames(SubKeys.get());
@@ -4532,9 +4525,9 @@ void TStoredSessionList::Load(THierarchicalStorage *Storage,
             }
             SessionData->SetName(SessionName);
             Add(SessionData);
+            SessionData->Load(Storage, PuttyImport);
           }
           Loaded->Add(SessionData);
-          SessionData->Load(Storage, PuttyImport);
           if (AsModified)
           {
             SessionData->SetModified(true);
