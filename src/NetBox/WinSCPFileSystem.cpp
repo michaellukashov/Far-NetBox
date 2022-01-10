@@ -1065,28 +1065,28 @@ bool TWinSCPFileSystem::ProcessKeyEx(intptr_t Key, uintptr_t ControlState)
       Handled = true;
     }
 
-    // correct returning in session panel
-    if ((Key == VK_RETURN) && (!Handled))
+// Disabled for now, see https://forum.farmanager.com/viewtopic.php?p=169625#p169625
+/*
+    // Return to session panel
+    if (Key == VK_RETURN && !Handled && Focused)
     {
-        TFarPanelInfo* const* PanelInfo = GetPanelInfo();
-        const TFarPanelItem* Focused = PanelInfo && *PanelInfo ? (*PanelInfo)->GetFocusedItem() : nullptr;
-        if (Focused && Focused->GetUserData())
+      if (const auto File = get_as<TRemoteFile>(Focused->GetUserData()))
+      {
+        if (const auto Directory = File->GetDirectory())
         {
-            TRemoteFile* File = nullptr;
-            File = get_as<TRemoteFile>(Focused->GetUserData());
-            if (File)
+          if (Directory->GetIsRoot() && File->GetIsParentDirectory())
+          {
+            SetDirectoryEx(PARENTDIRECTORY, 0);
+            if (UpdatePanel())
             {
-                if ((File->GetDirectory()->GetDirectory() == ROOTDIRECTORY) && (File->GetFileName() == PARENTDIRECTORY)) {
-                    SetDirectoryEx(PARENTDIRECTORY, 0);
-                    if (UpdatePanel())
-                    {
-                        RedrawPanel();
-                    }
-                    Handled = true;
-                };
+              RedrawPanel();
             }
+            Handled = true;
+          }
         }
+      }
     }
+*/
   }
   return Handled;
 }
