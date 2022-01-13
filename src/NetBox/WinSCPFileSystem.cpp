@@ -1081,29 +1081,18 @@ bool TWinSCPFileSystem::ProcessKeyEx(intptr_t Key, uintptr_t ControlState)
       Handled = true;
     }
 
-// Disabled for now, see https://forum.farmanager.com/viewtopic.php?p=169625#p169625
-/*
     // Return to session panel
-    if (Key == VK_RETURN && !Handled && Focused)
+    if (Key == VK_RETURN && !Handled && Focused && FLastPath == ROOTDIRECTORY && Focused->GetFileName() == PARENTDIRECTORY)
     {
-      if (const auto File = get_as<TRemoteFile>(Focused->GetUserData()))
+      SetDirectoryEx(PARENTDIRECTORY, 0);
+      if (UpdatePanel())
       {
-        if (const auto Directory = File->GetDirectory())
-        {
-          if (Directory->GetIsRoot() && File->GetIsParentDirectory())
-          {
-            SetDirectoryEx(PARENTDIRECTORY, 0);
-            if (UpdatePanel())
-            {
-              RedrawPanel();
-            }
-            Handled = true;
-          }
-        }
+        RedrawPanel();
       }
+      Handled = true;
     }
-*/
   }
+
   return Handled;
 }
 
