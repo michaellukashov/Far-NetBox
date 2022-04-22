@@ -462,7 +462,7 @@
 "Rename file '%s' to:"
 
 "&Hide typing"
-"Note: This prompt is issued by the server. It is part of
+"Note: This prompt is issued by the server. It is part of"
 "either keyboard-interactive, TIS or Cryptocard authentication."
 "&Full prompt"
 "&Change stored password to this one"
