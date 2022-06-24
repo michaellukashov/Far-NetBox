@@ -103,9 +103,17 @@ distribution.
 #if defined(_WIN64)
 	#define TIXML_FSEEK _fseeki64
 	#define TIXML_FTELL _ftelli64
-#elif defined(__APPLE__) || (__FreeBSD__)
+#elif defined(__APPLE__) || defined(__FreeBSD__) || defined(__OpenBSD__) || defined(__NetBSD__) || defined(__DragonFly__) || (__CYGWIN__)
 	#define TIXML_FSEEK fseeko
 	#define TIXML_FTELL ftello
+#elif defined(__ANDROID__) 
+    #if __ANDROID_API__ > 24
+        #define TIXML_FSEEK fseeko64
+        #define TIXML_FTELL ftello64
+    #else
+        #define TIXML_FSEEK fseeko
+        #define TIXML_FTELL ftello
+    #endif
 #elif defined(__unix__) && defined(__x86_64__)
 	#define TIXML_FSEEK fseeko64
 	#define TIXML_FTELL ftello64
@@ -610,8 +618,17 @@ void XMLUtil::ToStr( uint64_t v, char* buffer, int bufferSize )
 
 bool XMLUtil::ToInt(const char* str, int* value)
 {
-    if (TIXML_SSCANF(str, IsPrefixHex(str) ? "%x" : "%d", value) == 1) {
-        return true;
+    if (IsPrefixHex(str)) {
+        unsigned v;
+        if (TIXML_SSCANF(str, "%x", &v) == 1) {
+            *value = static_cast<int>(v);
+            return true;
+        }
+    }
+    else {
+        if (TIXML_SSCANF(str, "%d", value) == 1) {
+            return true;
+        }
     }
     return false;
 }
@@ -670,11 +687,20 @@ bool XMLUtil::ToDouble( const char* str, double* value )
 
 bool XMLUtil::ToInt64(const char* str, int64_t* value)
 {
-	long long v = 0;	// horrible syntax trick to make the compiler happy about %lld
-	if (TIXML_SSCANF(str, IsPrefixHex(str) ? "%llx" : "%lld", &v) == 1) {
-		*value = static_cast<int64_t>(v);
-		return true;
-	}
+    if (IsPrefixHex(str)) {
+        unsigned long long v = 0;	// horrible syntax trick to make the compiler happy about %llx
+        if (TIXML_SSCANF(str, "%llx", &v) == 1) {
+            *value = static_cast<int64_t>(v);
+            return true;
+        }
+    }
+    else {
+        long long v = 0;	// horrible syntax trick to make the compiler happy about %lld
+        if (TIXML_SSCANF(str, "%lld", &v) == 1) {
+            *value = static_cast<int64_t>(v);
+            return true;
+        }
+    }
 	return false;
 }
 
@@ -1637,8 +1663,18 @@ float XMLElement::FloatAttribute(const char* name, float defaultValue) const
 
 const char* XMLElement::GetText() const
 {
-    if ( FirstChild() && FirstChild()->ToText() ) {
-        return FirstChild()->Value();
+    /* skip comment node */
+    const XMLNode* node = FirstChild();
+    while (node) {
+        if (node->ToComment()) {
+            node = node->NextSibling();
+            continue;
+        }
+        break;
+    }
+
+    if ( node && node->ToText() ) {
+        return node->Value();
     }
     return 0;
 }
@@ -1748,11 +1784,11 @@ XMLError XMLElement::QueryInt64Text(int64_t* ival) const
 }
 
 
-XMLError XMLElement::QueryUnsigned64Text(uint64_t* ival) const
+XMLError XMLElement::QueryUnsigned64Text(uint64_t* uval) const
 {
     if(FirstChild() && FirstChild()->ToText()) {
         const char* t = FirstChild()->Value();
-        if(XMLUtil::ToUnsigned64(t, ival)) {
+        if(XMLUtil::ToUnsigned64(t, uval)) {
             return XML_SUCCESS;
         }
         return XML_CAN_NOT_CONVERT_TEXT;
@@ -2384,21 +2420,21 @@ XMLError XMLDocument::SaveFile( FILE* fp, bool compact )
 }
 
 
-XMLError XMLDocument::Parse( const char* p, ::size_t len )
+XMLError XMLDocument::Parse( const char* xml, ::size_t nBytes )
 {
     Clear();
 
-    if ( len == 0 || !p || !*p ) {
+    if ( nBytes == 0 || !xml || !*xml ) {
         SetError( XML_ERROR_EMPTY_DOCUMENT, 0, 0 );
         return _errorID;
     }
-    if ( len == static_cast<::size_t>(-1) ) {
-        len = strlen( p );
+    if ( nBytes == static_cast<::size_t>(-1) ) {
+        nBytes = strlen( xml );
     }
     TIXMLASSERT( _charBuffer == 0 );
-    _charBuffer = nb::chcalloc(len+1);
-    memcpy( _charBuffer, p, len );
-    _charBuffer[len] = 0;
+    _charBuffer = nb::chcalloc(nBytes+1);
+    memcpy( _charBuffer, xml, nBytes );
+    _charBuffer[nBytes] = 0;
 
     Parse();
     if ( Error() ) {
@@ -2424,6 +2460,13 @@ void XMLDocument::Print( XMLPrinter* streamer ) const
         XMLPrinter stdoutStreamer( stdout );
         Accept( &stdoutStreamer );
     }
+}
+
+
+void XMLDocument::ClearError() {
+    _errorID = XML_SUCCESS;
+    _errorLineNum = 0;
+    _errorStr.Reset();
 }
 
 

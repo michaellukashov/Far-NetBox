@@ -81,30 +81,31 @@ distribution.
 #endif
 
 
+#if !defined(TIXMLASSERT)
 #if defined(TINYXML2_DEBUG)
 #   if defined(_MSC_VER)
 #       // "(void)0," is for suppressing C4127 warning in "assert(false)", "assert(true)" and the like
-#       define TIXMLASSERT( x )           if ( !((void)0,(x))) { __debugbreak(); }
+#       define TIXMLASSERT( x )           do { if ( !((void)0,(x))) { __debugbreak(); } } while(false)
 #   elif defined (ANDROID_NDK)
 #       include <android/log.h>
-#       define TIXMLASSERT( x )           if ( !(x)) { __android_log_assert( "assert", "grinliz", "ASSERT in '%s' at %d.", __FILE__, __LINE__ ); }
+#       define TIXMLASSERT( x )           do { if ( !(x)) { __android_log_assert( "assert", "grinliz", "ASSERT in '%s' at %d.", __FILE__, __LINE__ ); } } while(false)
 #   else
 #       include <assert.h>
 #       define TIXMLASSERT                assert
 #   endif
 #else
-#   define TIXMLASSERT( x )               {}
+#   define TIXMLASSERT( x )               do {} while(false)
 #endif
-
+#endif
 
 /* Versioning, past 1.0.14:
 	http://semver.org/
 */
-static const int TIXML2_MAJOR_VERSION = 8;
+static const int TIXML2_MAJOR_VERSION = 9;
 static const int TIXML2_MINOR_VERSION = 0;
 static const int TIXML2_PATCH_VERSION = 0;
 
-#define TINYXML2_MAJOR_VERSION 8
+#define TINYXML2_MAJOR_VERSION 9
 #define TINYXML2_MINOR_VERSION 0
 #define TINYXML2_PATCH_VERSION 0
 
@@ -137,7 +138,7 @@ class XMLPrinter;
 class TINYXML2_LIB StrPair
 {
 public:
-    enum {
+    enum Mode {
         NEEDS_ENTITY_PROCESSING			= 0x01,
         NEEDS_NEWLINE_NORMALIZATION		= 0x02,
         NEEDS_WHITESPACE_COLLAPSING     = 0x04,
@@ -1880,9 +1881,8 @@ public:
     */
     void DeleteNode( XMLNode* node );
 
-    void ClearError() {
-        SetError(XML_SUCCESS, 0, 0);
-    }
+    /// Clears the error flags.
+    void ClearError();
 
     /// Return true if there was an error parsing the document.
     bool Error() const {
