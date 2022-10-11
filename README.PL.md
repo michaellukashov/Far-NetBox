@@ -56,5 +56,5 @@ Linki
 Licencja
 ========================
 
-NetBox is [free](http://www.gnu.org/philosophy/free-sw.html) software: you can use it, redistribute it and/or modify it under the terms of the [GNU General Public License](http://www.gnu.org/licenses/gpl.html) as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
-NetBox is distributed in the hope that it will be useful, but without any warranty; without even the implied warranty of merchantability or fitness for a particular purpose. See the [GNU General Public License](http://www.gnu.org/licenses/gpl.html) for more details.
+NetBox jest [wolnym](http://www.gnu.org/philosophy/free-sw.html) oprogramowaniem: możesz używać, rozpowszechniać i/lub modyfikować zgodnie z warunkami [GNU General Public License](http://www.gnu.org/licenses/gpl.html) opublikowanej przez Free Software Foundation, aktualnie wersja 3 Licencji, lub (jak wolisz) dowolnej kolejnej wersji.
+NetBox jest rozpowszechnianiy w nadzi że będzie użyteczny, ale bez jakiejkolwiek gwarancji; nawet bez dorozumianej gwarancji przydatności handlowej lub przydatności do określonego celu. Więcej szczegółów w [GNU General Public License](http://www.gnu.org/licenses/gpl.html).
