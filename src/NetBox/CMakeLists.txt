@@ -1144,6 +1144,10 @@ target_compile_options(expat PRIVATE
   ${NETBOX_UNICODE_FLAGS}
 )
 
+target_include_directories(expat PRIVATE
+  ../../libs/expat
+)
+
 #-------------------------------------------------------------------------------
 #zlib
 
