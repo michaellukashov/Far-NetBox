@@ -214,8 +214,8 @@ void DoAboutDialog(TConfiguration * Configuration,
 void DoAboutDialog(TConfiguration *Configuration);
 
 // forms\Cleanup.cpp
-bool __fastcall DoCleanupDialog();
-void __fastcall DoCleanupDialogIfAnyDataAndWanted();
+bool DoCleanupDialog();
+void DoCleanupDialogIfAnyDataAndWanted();
 
 // forms\Console.cpp
 void DoConsoleDialog(TTerminal * Terminal,
@@ -762,8 +762,8 @@ public:
   virtual bool WantsProgress() = 0;
 //  virtual void Progress(TScriptProgress & Progress) = 0;
   virtual UnicodeString FinalLogMessage() = 0;
-  virtual void __fastcall TransferOut(const unsigned char * Data, size_t Len) = 0;
-  virtual size_t __fastcall TransferIn(unsigned char * Data, size_t Len) = 0;
+  virtual void TransferOut(const unsigned char * Data, size_t Len) = 0;
+  virtual size_t TransferIn(unsigned char * Data, size_t Len) = 0;
 };
 
 int HandleException(TConsole * Console, Exception & E);

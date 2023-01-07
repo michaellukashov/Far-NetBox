@@ -231,7 +231,7 @@ void LoadFormDimensions(
   }
 }
 
-void __fastcall RestoreForm(UnicodeString Data, TForm * Form, bool PositionOnly)
+void RestoreForm(UnicodeString Data, TForm * Form, bool PositionOnly)
 {
   DebugAssert(Form);
   if (!Data.IsEmpty())
@@ -1393,7 +1393,7 @@ static void DoVerifyKey(
 }
 
 
-static void __fastcall DoVerifyKey(UnicodeString & FileName, bool Convert, bool CanIgnore)
+static void DoVerifyKey(UnicodeString & FileName, bool Convert, bool CanIgnore)
 {
   TStrings * AMoreMessages;
   UnicodeString Message;

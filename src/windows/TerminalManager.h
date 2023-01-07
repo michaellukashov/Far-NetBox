@@ -18,7 +18,7 @@ enum TTerminalPendingAction { tpNull, tpNone, tpReconnect, tpFree };
 class TManagedTerminal : public TTerminal
 {
 public:
-  __fastcall TManagedTerminal(TSessionData * SessionData, TConfiguration * Configuration);
+  TManagedTerminal(TSessionData * SessionData, TConfiguration * Configuration);
   virtual ~TManagedTerminal();
 
   TSessionData * StateData{nullptr};
@@ -40,40 +40,40 @@ public:
 class TTerminalManager : public TTerminalList
 {
 public:
-  static TTerminalManager * __fastcall Instance(bool ForceCreation = true);
-  static void __fastcall DestroyInstance();
+  static TTerminalManager * Instance(bool ForceCreation = true);
+  static void DestroyInstance();
 
-  __fastcall TTerminalManager();
+  TTerminalManager();
   ~TTerminalManager();
 
-  TManagedTerminal * __fastcall NewManagedTerminal(TSessionData * Data);
-  TManagedTerminal * __fastcall NewTerminals(TList * DataList);
-  virtual void __fastcall FreeTerminal(TTerminal * Terminal);
-  void __fastcall Move(TTerminal * Source, TTerminal * Target);
-  void __fastcall DisconnectActiveTerminalIfPermanentFreeOtherwise();
-  void __fastcall DisconnectActiveTerminal();
-  void __fastcall ReconnectActiveTerminal();
-  void __fastcall FreeActiveTerminal();
-  void __fastcall CycleTerminals(bool Forward);
-  bool __fastcall ConnectTerminal(TTerminal * Terminal);
-  void __fastcall SetActiveTerminalWithAutoReconnect(TManagedTerminal * value);
-  void __fastcall UpdateAppTitle();
-  bool __fastcall CanOpenInPutty();
-  void __fastcall OpenInPutty();
-  void __fastcall NewSession(const UnicodeString & SessionUrl, bool ReloadSessions = true, TForm * LinkedForm = NULL);
-  void __fastcall Idle(bool SkipCurrentTerminal);
-  UnicodeString __fastcall GetTerminalShortPath(TTerminal * Terminal);
-  UnicodeString __fastcall GetTerminalTitle(TTerminal * Terminal, bool Unique);
-  UnicodeString __fastcall GetActiveTerminalTitle(bool Unique);
-  UnicodeString __fastcall GetAppProgressTitle();
-  UnicodeString __fastcall FormatFormCaptionWithSession(TCustomForm * Form, const UnicodeString & Caption);
-  void __fastcall HandleException(Exception * E);
-  void __fastcall SaveWorkspace(TList * DataList);
-  void __fastcall QueueStatusUpdated();
-  bool __fastcall IsActiveTerminalForSite(TTerminal * Terminal, TSessionData * Data);
-  TManagedTerminal * __fastcall FindActiveTerminalForSite(TSessionData * Data);
-  TTerminalQueue * __fastcall FindQueueForTerminal(TTerminal * Terminal);
-  bool __fastcall UploadPublicKey(TTerminal * Terminal, TSessionData * Data, UnicodeString & FileName);
+  TManagedTerminal * NewManagedTerminal(TSessionData * Data);
+  TManagedTerminal * NewTerminals(TList * DataList);
+  virtual void FreeTerminal(TTerminal * Terminal);
+  void Move(TTerminal * Source, TTerminal * Target);
+  void DisconnectActiveTerminalIfPermanentFreeOtherwise();
+  void DisconnectActiveTerminal();
+  void ReconnectActiveTerminal();
+  void FreeActiveTerminal();
+  void CycleTerminals(bool Forward);
+  bool ConnectTerminal(TTerminal * Terminal);
+  void SetActiveTerminalWithAutoReconnect(TManagedTerminal * value);
+  void UpdateAppTitle();
+  bool CanOpenInPutty();
+  void OpenInPutty();
+  void NewSession(const UnicodeString & SessionUrl, bool ReloadSessions = true, TForm * LinkedForm = NULL);
+  void Idle(bool SkipCurrentTerminal);
+  UnicodeString GetTerminalShortPath(TTerminal * Terminal);
+  UnicodeString GetTerminalTitle(TTerminal * Terminal, bool Unique);
+  UnicodeString GetActiveTerminalTitle(bool Unique);
+  UnicodeString GetAppProgressTitle();
+  UnicodeString FormatFormCaptionWithSession(TCustomForm * Form, const UnicodeString & Caption);
+  void HandleException(Exception * E);
+  void SaveWorkspace(TList * DataList);
+  void QueueStatusUpdated();
+  bool IsActiveTerminalForSite(TTerminal * Terminal, TSessionData * Data);
+  TManagedTerminal * FindActiveTerminalForSite(TSessionData * Data);
+  TTerminalQueue * FindQueueForTerminal(TTerminal * Terminal);
+  bool UploadPublicKey(TTerminal * Terminal, TSessionData * Data, UnicodeString & FileName);
 
   __property TCustomScpExplorerForm * ScpExplorer = { read = FScpExplorer, write = SetScpExplorer };
   __property TManagedTerminal * ActiveTerminal = { read = FActiveTerminal, write = SetActiveTerminal };
@@ -86,9 +86,9 @@ public:
   __property TManagedTerminal * Terminals[int Index]  = { read=GetTerminal };
 
 protected:
-  virtual TTerminal * __fastcall CreateTerminal(TSessionData * Data);
-  void __fastcall DoConnectTerminal(TTerminal * Terminal, bool Reopen, bool AdHoc);
-  virtual TTerminal * __fastcall NewTerminal(TSessionData * Data);
+  virtual TTerminal * CreateTerminal(TSessionData * Data);
+  void DoConnectTerminal(TTerminal * Terminal, bool Reopen, bool AdHoc);
+  virtual TTerminal * NewTerminal(TSessionData * Data);
 
 private:
   static TTerminalManager * FInstance;
@@ -120,71 +120,71 @@ private:
   bool FKeepAuthenticateForm{false};
   int FMaxSessions;
 
-  bool __fastcall ConnectActiveTerminalImpl(bool Reopen);
-  bool __fastcall ConnectActiveTerminal();
-  TTerminalQueue * __fastcall NewQueue(TTerminal * Terminal);
-  void __fastcall SetScpExplorer(TCustomScpExplorerForm * value);
-  void __fastcall DoSetActiveTerminal(TManagedTerminal * value, bool AutoReconnect);
-  void __fastcall SetActiveTerminal(TManagedTerminal * value);
-  void __fastcall UpdateAll();
-  void __fastcall ApplicationException(TObject * Sender, Exception * E);
-  void __fastcall ApplicationShowHint(UnicodeString & HintStr, bool & CanShow,
+  bool ConnectActiveTerminalImpl(bool Reopen);
+  bool ConnectActiveTerminal();
+  TTerminalQueue * NewQueue(TTerminal * Terminal);
+  void SetScpExplorer(TCustomScpExplorerForm * value);
+  void DoSetActiveTerminal(TManagedTerminal * value, bool AutoReconnect);
+  void SetActiveTerminal(TManagedTerminal * value);
+  void UpdateAll();
+  void ApplicationException(TObject * Sender, Exception * E);
+  void ApplicationShowHint(UnicodeString & HintStr, bool & CanShow,
     THintInfo & HintInfo);
-  void __fastcall ApplicationMessage(TMsg & Msg, bool & Handled);
-  void __fastcall ConfigurationChange(TObject * Sender);
-  void __fastcall TerminalUpdateStatus(TTerminal * Terminal, bool Active);
-  void __fastcall TerminalQueryUser(TObject * Sender,
+  void ApplicationMessage(TMsg & Msg, bool & Handled);
+  void ConfigurationChange(TObject * Sender);
+  void TerminalUpdateStatus(TTerminal * Terminal, bool Active);
+  void TerminalQueryUser(TObject * Sender,
     const UnicodeString Query, TStrings * MoreMessages, unsigned int Answers,
     const TQueryParams * Params, unsigned int & Answer, TQueryType Type, void * Arg);
-  void __fastcall TerminalPromptUser(TTerminal * Terminal,
+  void TerminalPromptUser(TTerminal * Terminal,
     TPromptKind Kind, UnicodeString Name, UnicodeString Instructions, TStrings * Prompt,
     TStrings * Results, bool & Result, void * Arg);
-  void __fastcall TerminalDisplayBanner(TTerminal * Terminal,
+  void TerminalDisplayBanner(TTerminal * Terminal,
     UnicodeString SessionName, const UnicodeString & Banner, bool & NeverShowAgain,
     int Options, unsigned int & Params);
-  void __fastcall TerminalShowExtendedException(TTerminal * Terminal,
+  void TerminalShowExtendedException(TTerminal * Terminal,
     Exception * E, void * Arg);
-  void __fastcall TerminalReadDirectoryProgress(TObject * Sender, int Progress,
+  void TerminalReadDirectoryProgress(TObject * Sender, int Progress,
     int ResolvedLinks, bool & Cancel);
-  void __fastcall TerminalInformation(
+  void TerminalInformation(
     TTerminal * Terminal, const UnicodeString & Str, bool Status, int Phase, const UnicodeString & Additional);
-  void __fastcall TerminalCustomCommand(TTerminal * Terminal, const UnicodeString & Command, bool & Handled);
-  void __fastcall FreeAll();
-  void __fastcall TerminalReady();
-  TStrings * __fastcall GetTerminalList();
-  int __fastcall GetActiveTerminalIndex();
-  TTerminalQueue * __fastcall GetActiveQueue();
-  void __fastcall SaveTerminal(TTerminal * Terminal);
-  void __fastcall SetActiveTerminalIndex(int value);
-  void __fastcall OperationFinished(::TFileOperation Operation, TOperationSide Side,
+  void TerminalCustomCommand(TTerminal * Terminal, const UnicodeString & Command, bool & Handled);
+  void FreeAll();
+  void TerminalReady();
+  TStrings * GetTerminalList();
+  int GetActiveTerminalIndex();
+  TTerminalQueue * GetActiveQueue();
+  void SaveTerminal(TTerminal * Terminal);
+  void SetActiveTerminalIndex(int value);
+  void OperationFinished(::TFileOperation Operation, TOperationSide Side,
     bool Temp, const UnicodeString & FileName, bool Success,
     TOnceDoneOperation & OnceDoneOperation);
-  void __fastcall OperationProgress(TFileOperationProgressType & ProgressData);
-  void __fastcall DeleteLocalFile(const UnicodeString FileName, bool Alternative, int & Deleted);
-  void __fastcall QueueEvent(TTerminalQueue * Queue, TQueueEvent Event);
-  TAuthenticateForm * __fastcall MakeAuthenticateForm(TTerminal * Terminal);
-  void __fastcall MasterPasswordPrompt();
-  void __fastcall FileNameInputDialogInitializeRenameBaseName(
+  void OperationProgress(TFileOperationProgressType & ProgressData);
+  void DeleteLocalFile(const UnicodeString FileName, bool Alternative, int & Deleted);
+  void QueueEvent(TTerminalQueue * Queue, TQueueEvent Event);
+  TAuthenticateForm * MakeAuthenticateForm(TTerminal * Terminal);
+  void MasterPasswordPrompt();
+  void FileNameInputDialogInitializeRenameBaseName(
     TObject * Sender, TInputDialogData * Data);
-  void __fastcall InitTaskbarButtonCreatedMessage();
-  void __fastcall ReleaseTaskbarList();
-  void __fastcall CreateTaskbarList();
-  void __fastcall UpdateTaskbarList();
-  void __fastcall AuthenticateFormCancel(TObject * Sender);
-  void __fastcall DoTerminalListChanged();
-  TManagedTerminal * __fastcall DoNewTerminal(TSessionData * Data);
-  static void __fastcall TerminalThreadIdle(void * Data, TObject * Sender);
-  void __fastcall SetQueueConfiguration(TTerminalQueue * Queue);
-  void __fastcall ApplicationModalBegin(TObject * Sender);
-  void __fastcall ApplicationModalEnd(TObject * Sender);
-  bool __fastcall HandleMouseWheel(WPARAM WParam, LPARAM LParam);
-  void __fastcall DoConfigurationChange();
-  bool __fastcall ShouldDisplayQueueStatusOnAppTitle();
-  void __fastcall SetupTerminal(TTerminal * Terminal);
-  void __fastcall CloseAutheticateForm();
-  void __fastcall AuthenticatingDone();
-  TManagedTerminal * __fastcall CreateManagedTerminal(TSessionData * Data);
-  TManagedTerminal * __fastcall GetTerminal(int Index);
+  void InitTaskbarButtonCreatedMessage();
+  void ReleaseTaskbarList();
+  void CreateTaskbarList();
+  void UpdateTaskbarList();
+  void AuthenticateFormCancel(TObject * Sender);
+  void DoTerminalListChanged();
+  TManagedTerminal * DoNewTerminal(TSessionData * Data);
+  static void TerminalThreadIdle(void * Data, TObject * Sender);
+  void SetQueueConfiguration(TTerminalQueue * Queue);
+  void ApplicationModalBegin(TObject * Sender);
+  void ApplicationModalEnd(TObject * Sender);
+  bool HandleMouseWheel(WPARAM WParam, LPARAM LParam);
+  void DoConfigurationChange();
+  bool ShouldDisplayQueueStatusOnAppTitle();
+  void SetupTerminal(TTerminal * Terminal);
+  void CloseAutheticateForm();
+  void AuthenticatingDone();
+  TManagedTerminal * CreateManagedTerminal(TSessionData * Data);
+  TManagedTerminal * GetTerminal(int Index);
 };
 
 #endif

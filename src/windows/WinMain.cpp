@@ -23,7 +23,7 @@
 
 #pragma package(smart_init)
 
-void __fastcall GetLoginData(UnicodeString SessionName, TOptions * Options,
+void GetLoginData(UnicodeString SessionName, TOptions * Options,
   TObjectList * DataList, UnicodeString & DownloadFile, bool NeedSession, TForm * LinkedForm, int Flags)
 {
   bool DefaultsOnly = false;
@@ -100,7 +100,7 @@ int GetCommandLineParseUrlFlags(TProgramParams * Params)
     FLAGMASK(!CheckSafe(Params), pufUnsafe);
 }
 
-void __fastcall Upload(TTerminal * Terminal, TStrings * FileList, int UseDefaults)
+void Upload(TTerminal * Terminal, TStrings * FileList, int UseDefaults)
 {
   UnicodeString TargetDirectory;
   TGUICopyParamType CopyParam = GUIConfiguration->DefaultCopyParam;
@@ -124,7 +124,7 @@ void __fastcall Upload(TTerminal * Terminal, TStrings * FileList, int UseDefault
   }
 }
 
-void __fastcall Download(TTerminal * Terminal, const UnicodeString FileName, int UseDefaults)
+void Download(TTerminal * Terminal, const UnicodeString FileName, int UseDefaults)
 {
   TRemoteFile * File = NULL;
 
@@ -196,13 +196,13 @@ void __fastcall Download(TTerminal * Terminal, const UnicodeString FileName, int
   }
 }
 
-void __fastcall Edit(TCustomScpExplorerForm * ScpExplorer, TStrings * FileList)
+void Edit(TCustomScpExplorerForm * ScpExplorer, TStrings * FileList)
 {
   ScpExplorer->StandaloneEdit(FileList->Strings[0]);
   Abort();
 }
 
-void __fastcall SynchronizeDirectories(
+void SynchronizeDirectories(
   TTerminal * Terminal, TCustomScpExplorerForm * ScpExplorer, TStrings * CommandParams,
   UnicodeString & LocalDirectory, UnicodeString & RemoteDirectory)
 {
@@ -229,7 +229,7 @@ void __fastcall SynchronizeDirectories(
   }
 }
 
-void __fastcall FullSynchronize(
+void FullSynchronize(
   TTerminal * Terminal, TCustomScpExplorerForm * ScpExplorer, TStrings * CommandParams, int UseDefaults)
 {
   UnicodeString LocalDirectory;
@@ -259,7 +259,7 @@ void __fastcall FullSynchronize(
   Abort();
 }
 
-void __fastcall Synchronize(
+void Synchronize(
   TTerminal * Terminal, TCustomScpExplorerForm * ScpExplorer, TStrings * CommandParams, int UseDefaults)
 {
   UnicodeString LocalDirectory;
@@ -280,7 +280,7 @@ void __fastcall Synchronize(
   Abort();
 }
 
-void __fastcall ImportSitesIfAny()
+void ImportSitesIfAny()
 {
   if (!WinConfiguration->AutoImportedFromPuttyOrFilezilla)
   {
@@ -322,7 +322,7 @@ void __fastcall ImportSitesIfAny()
   }
 }
 
-void __fastcall Usage(UnicodeString Param)
+void Usage(UnicodeString Param)
 {
   while (!Param.IsEmpty())
   {
@@ -358,7 +358,7 @@ void __fastcall Usage(UnicodeString Param)
   }
 }
 
-void __fastcall RecordWrapperVersions(UnicodeString ConsoleVersion, UnicodeString DotNetVersion)
+void RecordWrapperVersions(UnicodeString ConsoleVersion, UnicodeString DotNetVersion)
 {
   TUpdatesConfiguration Updates = WinConfiguration->Updates;
   if (!DotNetVersion.IsEmpty())
@@ -452,7 +452,7 @@ void InterfaceStarted()
   }
 }
 
-void __fastcall UpdateStaticUsage()
+void UpdateStaticUsage()
 {
   Configuration->Usage->Inc(L"Runs");
 
@@ -573,12 +573,12 @@ void __fastcall UpdateStaticUsage()
 
 }
 
-void __fastcall UpdateFinalStaticUsage()
+void UpdateFinalStaticUsage()
 {
   CoreUpdateFinalStaticUsage();
 }
 
-void __fastcall MaintenanceTask()
+void MaintenanceTask()
 {
   CoreMaintenanceTask();
 }
@@ -599,7 +599,7 @@ BOOL __stdcall EnumOtherInstances(HWND Handle, LPARAM AParam)
   return TRUE;
 }
 
-static bool __fastcall SendCopyDataMessage(HWND Window, TCopyDataMessage & Message)
+static bool SendCopyDataMessage(HWND Window, TCopyDataMessage & Message)
 {
   COPYDATASTRUCT CopyData;
   CopyData.cbData = sizeof(Message);
@@ -612,7 +612,7 @@ static bool __fastcall SendCopyDataMessage(HWND Window, TCopyDataMessage & Messa
   return Result;
 }
 
-static void __fastcall FindOtherInstances(THandles & OtherInstances)
+static void FindOtherInstances(THandles & OtherInstances)
 {
   TProcesses Processes;
 
@@ -668,7 +668,7 @@ static void __fastcall FindOtherInstances(THandles & OtherInstances)
   }
 }
 
-bool __fastcall SendToAnotherInstance()
+bool SendToAnotherInstance()
 {
   THandles OtherInstances;
   FindOtherInstances(OtherInstances);
@@ -702,7 +702,7 @@ bool __fastcall SendToAnotherInstance()
   return Result;
 }
 
-void __fastcall Refresh(const UnicodeString & Session, const UnicodeString & Path)
+void Refresh(const UnicodeString & Session, const UnicodeString & Path)
 {
   THandles OtherInstances;
   FindOtherInstances(OtherInstances);
@@ -725,7 +725,7 @@ void __fastcall Refresh(const UnicodeString & Session, const UnicodeString & Pat
   }
 }
 
-bool __fastcall ShowUpdatesIfAvailable()
+bool ShowUpdatesIfAvailable()
 {
   TUpdatesConfiguration Updates = WinConfiguration->Updates;
   int CurrentCompoundVer = Configuration->CompoundVersion;
@@ -773,7 +773,7 @@ bool __fastcall ShowUpdatesIfAvailable()
   return Result;
 }
 
-int __fastcall Execute()
+int Execute()
 {
   AddStartupSequence(L"E");
   DebugAssert(StoredSessions);

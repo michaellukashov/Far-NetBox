@@ -30,7 +30,7 @@ const UnicodeString LinkAppLabelMark(TraceInitStr(L" \x00BB"));
 
 #pragma package(smart_init)
 
-void __fastcall FixListColumnWidth(TListView * TListView, int Index)
+void FixListColumnWidth(TListView * TListView, int Index)
 {
   if (Index < 0)
   {
@@ -39,14 +39,14 @@ void __fastcall FixListColumnWidth(TListView * TListView, int Index)
   TListView->Column[Index]->Tag = 1;
 }
 
-static int __fastcall GetColumnTextWidth(TListView * ListView, int ColumnPadding, const UnicodeString & Text)
+static int GetColumnTextWidth(TListView * ListView, int ColumnPadding, const UnicodeString & Text)
 {
   return
     ColumnPadding +
     ListView->Canvas->TextExtent(Text).Width;
 }
 
-void __fastcall AutoSizeListColumnsWidth(TListView * ListView, int ColumnToShrinkIndex)
+void AutoSizeListColumnsWidth(TListView * ListView, int ColumnToShrinkIndex)
 {
   // Preallocate handle to precreate columns, otherwise our changes may get
   // overwritten once the handle is created.
@@ -204,7 +204,7 @@ void __fastcall AutoSizeListColumnsWidth(TListView * ListView, int ColumnToShrin
   }
 }
 
-static void __fastcall SetParentColor(TControl * Control)
+static void SetParentColor(TControl * Control)
 {
   TColor Color = clBtnFace;
   if (UseThemes)
@@ -244,7 +244,7 @@ static void __fastcall SetParentColor(TControl * Control)
   ((TEdit*)Control)->Color = Color;
 }
 
-void __fastcall EnableControl(TControl * Control, bool Enable)
+void EnableControl(TControl * Control, bool Enable)
 {
   if (Control->Enabled != Enable)
   {
@@ -281,9 +281,9 @@ void __fastcall EnableControl(TControl * Control, bool Enable)
   }
 };
 
-void __fastcall DoReadOnlyControl(TControl * Control, bool ReadOnly, bool Color);
+void DoReadOnlyControl(TControl * Control, bool ReadOnly, bool Color);
 
-void __fastcall ReadOnlyAndEnabledControl(TControl * Control, bool ReadOnly, bool Enabled)
+void ReadOnlyAndEnabledControl(TControl * Control, bool ReadOnly, bool Enabled)
 {
   // Change color only in only one of EnableControl and DoReadOnlyControl to prevent flicker
   if (ReadOnly)
@@ -300,7 +300,7 @@ void __fastcall ReadOnlyAndEnabledControl(TControl * Control, bool ReadOnly, boo
   }
 }
 
-static void __fastcall ReadOnlyEditContextPopup(void * /*Data*/, TObject * Sender, const TPoint & MousePos, bool & Handled)
+static void ReadOnlyEditContextPopup(void * /*Data*/, TObject * Sender, const TPoint & MousePos, bool & Handled)
 {
   TEdit * Edit = static_cast<TEdit *>(Sender);
   if (Edit->ReadOnly)
@@ -309,7 +309,7 @@ static void __fastcall ReadOnlyEditContextPopup(void * /*Data*/, TObject * Sende
   }
 }
 
-void __fastcall DoReadOnlyControl(TControl * Control, bool ReadOnly, bool Color)
+void DoReadOnlyControl(TControl * Control, bool ReadOnly, bool Color)
 {
   if (dynamic_cast<TCustomEdit *>(Control) != NULL)
   {
@@ -376,7 +376,7 @@ void __fastcall DoReadOnlyControl(TControl * Control, bool ReadOnly, bool Color)
   }
 }
 
-void __fastcall ReadOnlyControl(TControl * Control, bool ReadOnly)
+void ReadOnlyControl(TControl * Control, bool ReadOnly)
 {
   DoReadOnlyControl(Control, ReadOnly, true);
 }
@@ -384,7 +384,7 @@ void __fastcall ReadOnlyControl(TControl * Control, bool ReadOnly)
 // Some of MainFormLike code can now be obsolete, thanks to Application->OnGetMainFormHandle.
 static TForm * MainLikeForm = NULL;
 
-TForm * __fastcall GetMainForm()
+TForm * GetMainForm()
 {
   TForm * Result;
   if (MainLikeForm != NULL)
@@ -398,7 +398,7 @@ TForm * __fastcall GetMainForm()
   return Result;
 }
 
-bool __fastcall IsMainFormHidden()
+bool IsMainFormHidden()
 {
   bool Result = (GetMainForm() != NULL) && !GetMainForm()->Visible;
   // we do not expect this to return true when MainLikeForm is set
@@ -406,7 +406,7 @@ bool __fastcall IsMainFormHidden()
   return Result;
 }
 
-bool __fastcall IsMainFormLike(TCustomForm * Form)
+bool IsMainFormLike(TCustomForm * Form)
 {
   return
     (GetMainForm() == Form) ||
@@ -416,7 +416,7 @@ bool __fastcall IsMainFormLike(TCustomForm * Form)
     IsMainFormHidden();
 }
 
-UnicodeString __fastcall FormatMainFormCaption(const UnicodeString & Caption, const UnicodeString & SessionName)
+UnicodeString FormatMainFormCaption(const UnicodeString & Caption, const UnicodeString & SessionName)
 {
   UnicodeString Suffix = AppName;
   if (!SessionName.IsEmpty())
@@ -439,7 +439,7 @@ UnicodeString __fastcall FormatMainFormCaption(const UnicodeString & Caption, co
   return Result;
 }
 
-UnicodeString __fastcall FormatFormCaption(
+UnicodeString FormatFormCaption(
   TCustomForm * Form, const UnicodeString & Caption, const UnicodeString & SessionName)
 {
   UnicodeString Result = Caption;
@@ -452,11 +452,11 @@ UnicodeString __fastcall FormatFormCaption(
 
 class TPublicWinControl : public TWinControl
 {
-friend TWndMethod __fastcall ControlWndProc(TWinControl * Control);
-friend void __fastcall InstallPathWordBreakProc(TWinControl * Control);
+friend TWndMethod ControlWndProc(TWinControl * Control);
+friend void InstallPathWordBreakProc(TWinControl * Control);
 };
 
-TWndMethod __fastcall ControlWndProc(TWinControl * Control)
+TWndMethod ControlWndProc(TWinControl * Control)
 {
   TPublicWinControl * PublicWinControl = static_cast<TPublicWinControl *>(Control);
   return &PublicWinControl->WndProc;
@@ -464,20 +464,20 @@ TWndMethod __fastcall ControlWndProc(TWinControl * Control)
 //---------------------------------------------------------------------
 class TPublicControl : public TControl
 {
-friend void __fastcall RealignControl(TControl * Control);
-friend void __fastcall DoFormWindowProc(TCustomForm * Form, TWndMethod WndProc, TMessage & Message);
+friend void RealignControl(TControl * Control);
+friend void DoFormWindowProc(TCustomForm * Form, TWndMethod WndProc, TMessage & Message);
 friend TCanvas * CreateControlCanvas(TControl * Control);
 };
 //---------------------------------------------------------------------
 class TPublicForm : public TForm
 {
-friend void __fastcall ChangeFormPixelsPerInch(TForm * Form, int PixelsPerInch);
-friend void __fastcall ShowAsModal(TForm * Form, void *& Storage, bool BringToFront);
-friend void __fastcall HideAsModal(TForm * Form, void *& Storage);
-friend void __fastcall ShowFormNoActivate(TForm * Form);
+friend void ChangeFormPixelsPerInch(TForm * Form, int PixelsPerInch);
+friend void ShowAsModal(TForm * Form, void *& Storage, bool BringToFront);
+friend void HideAsModal(TForm * Form, void *& Storage);
+friend void ShowFormNoActivate(TForm * Form);
 };
 
-void __fastcall RealignControl(TControl * Control)
+void RealignControl(TControl * Control)
 {
   TPublicControl * PublicControl = static_cast<TPublicControl *>(Control);
   PublicControl->RequestAlign();
@@ -485,7 +485,7 @@ void __fastcall RealignControl(TControl * Control)
 
 static Forms::TMonitor * LastMonitor = NULL;
 
-static int __fastcall GetTextHeightAtPixelsPerInch(TForm * Form, int PixelsPerInch)
+static int GetTextHeightAtPixelsPerInch(TForm * Form, int PixelsPerInch)
 {
   std::unique_ptr<TCanvas> Canvas(new TCanvas());
   Canvas->Handle = GetDC(0);
@@ -499,7 +499,7 @@ static int __fastcall GetTextHeightAtPixelsPerInch(TForm * Form, int PixelsPerIn
 class TRescaleComponent : public TComponent
 {
 public:
-  __fastcall TRescaleComponent(TRescaleEvent AOnRescale, TObject * AToken, bool AOwnsToken) :
+  TRescaleComponent(TRescaleEvent AOnRescale, TObject * AToken, bool AOwnsToken) :
     TComponent(NULL)
   {
     OnRescale = AOnRescale;
@@ -520,7 +520,7 @@ public:
   bool OwnsToken;
 };
 
-void __fastcall SetRescaleFunction(
+void SetRescaleFunction(
   TComponent * Component, TRescaleEvent OnRescale, TObject * Token, bool OwnsToken)
 {
   TRescaleComponent * RescaleComponent = new TRescaleComponent(OnRescale, Token, OwnsToken);
@@ -528,7 +528,7 @@ void __fastcall SetRescaleFunction(
   Component->InsertComponent(RescaleComponent);
 }
 
-static void __fastcall ChangeControlScale(TControl * Control, int M, int D)
+static void ChangeControlScale(TControl * Control, int M, int D)
 {
   // VCLCOPY This is what TCustomListView.ChangeScale does,
   // but it does that for initial loading only, when ScalingFlags includes sfWidth.
@@ -586,7 +586,7 @@ typedef std::map<TRatio, TRatio > TRatioMap;
 class TFormRescaleComponent : public TComponent
 {
 public:
-  __fastcall TFormRescaleComponent() :
+  TFormRescaleComponent() :
     TComponent(NULL)
   {
     ImplicitRescaleAdded = false;
@@ -611,7 +611,7 @@ static TFormRescaleComponent * GetFormRescaleComponent(TForm * Form)
   return FormRescaleComponent;
 }
 
-void __fastcall RecordFormImplicitRescale(TForm * Form)
+void RecordFormImplicitRescale(TForm * Form)
 {
   if (Form->Scaled)
   {
@@ -647,7 +647,7 @@ static void GetFormRescaleRatio(TForm * Form, int PixelsPerInch, int & M, int & 
   FormRescaleComponent->RatioMap[RescaleKeyRatio] = TRatio(M, D);
 }
 
-static void __fastcall ChangeFormPixelsPerInch(TForm * Form, int PixelsPerInch)
+static void ChangeFormPixelsPerInch(TForm * Form, int PixelsPerInch)
 {
   RecordFormImplicitRescale(Form);
 
@@ -698,7 +698,7 @@ static void __fastcall ChangeFormPixelsPerInch(TForm * Form, int PixelsPerInch)
   }
 }
 
-static void __fastcall FormShowingChanged(TForm * Form, TWndMethod WndProc, TMessage & Message)
+static void FormShowingChanged(TForm * Form, TWndMethod WndProc, TMessage & Message)
 {
   if (IsMainFormLike(Form))
   {
@@ -857,7 +857,7 @@ static TCustomForm * WindowPrintForm = NULL;
 static DWORD WindowPrintPrevClick = 0;
 static unsigned int WindowPrintClickCount = 0;
 
-void __fastcall CountClicksForWindowPrint(TForm * Form)
+void CountClicksForWindowPrint(TForm * Form)
 {
   if ((WinConfiguration != NULL) && WinConfiguration->AllowWindowPrint)
   {
@@ -926,7 +926,7 @@ void __fastcall CountClicksForWindowPrint(TForm * Form)
   }
 }
 
-inline void __fastcall DoFormWindowProc(TCustomForm * Form, TWndMethod WndProc,
+inline void DoFormWindowProc(TCustomForm * Form, TWndMethod WndProc,
   TMessage & Message)
 {
   TForm * AForm = dynamic_cast<TForm *>(Form);
@@ -978,22 +978,22 @@ inline void __fastcall DoFormWindowProc(TCustomForm * Form, TWndMethod WndProc,
   }
 }
 
-static void __fastcall FormWindowProc(void * Data, TMessage & Message)
+static void FormWindowProc(void * Data, TMessage & Message)
 {
   TCustomForm * Form = static_cast<TCustomForm *>(Data);
   DoFormWindowProc(Form, ControlWndProc(Form), Message);
 }
 
-void __fastcall InitializeSystemSettings()
+void InitializeSystemSettings()
 {
 }
 
-void __fastcall FinalizeSystemSettings()
+void FinalizeSystemSettings()
 {
 }
 
 #ifdef _DEBUG
-void __fastcall VerifyControl(TControl * Control)
+void VerifyControl(TControl * Control)
 {
   // If at this time the control has allocated persistence data that are used
   // for delayed handle recreation, we are at potential risk, as the future
@@ -1031,7 +1031,7 @@ void __fastcall VerifyControl(TControl * Control)
 }
 #endif
 
-void __fastcall ApplySystemSettingsOnControl(TControl * Control)
+void ApplySystemSettingsOnControl(TControl * Control)
 {
   #ifdef _DEBUG
   VerifyControl(Control);
@@ -1111,7 +1111,7 @@ void __fastcall ApplySystemSettingsOnControl(TControl * Control)
 }
 
 // Settings that must be set as soon as possible.
-void __fastcall UseSystemSettingsPre(TCustomForm * Control)
+void UseSystemSettingsPre(TCustomForm * Control)
 {
   LocalSystemSettings(Control);
 
@@ -1159,7 +1159,7 @@ static void FlipAnchors(TControl * Control)
 }
 
 // Settings that must be set only after whole form is constructed
-void __fastcall UseSystemSettingsPost(TCustomForm * Control)
+void UseSystemSettingsPost(TCustomForm * Control)
 {
   // When showing an early error message
   if (WinConfiguration != NULL)
@@ -1177,13 +1177,13 @@ void __fastcall UseSystemSettingsPost(TCustomForm * Control)
   ResetSystemSettings(Control);
 };
 
-void __fastcall UseSystemSettings(TCustomForm * Control)
+void UseSystemSettings(TCustomForm * Control)
 {
   UseSystemSettingsPre(Control);
   UseSystemSettingsPost(Control);
 };
 
-void __fastcall ResetSystemSettings(TCustomForm * /*Control*/)
+void ResetSystemSettings(TCustomForm * /*Control*/)
 {
   // noop
 }
@@ -1197,7 +1197,7 @@ struct TShowAsModalStorage
   int SaveCount;
 };
 
-void __fastcall ShowAsModal(TForm * Form, void *& Storage, bool BringToFront)
+void ShowAsModal(TForm * Form, void *& Storage, bool BringToFront)
 {
   SetCorrectFormParent(Form);
   CancelDrag();
@@ -1234,7 +1234,7 @@ void __fastcall ShowAsModal(TForm * Form, void *& Storage, bool BringToFront)
   Storage = AStorage;
 }
 
-void __fastcall HideAsModal(TForm * Form, void *& Storage)
+void HideAsModal(TForm * Form, void *& Storage)
 {
   DebugAssert((static_cast<TPublicForm*>(Form))->FFormState.Contains(fsModal));
   TShowAsModalStorage * AStorage = static_cast<TShowAsModalStorage *>(Storage);
@@ -1280,7 +1280,7 @@ void __fastcall HideAsModal(TForm * Form, void *& Storage)
   delete AStorage;
 }
 
-bool __fastcall ReleaseAsModal(TForm * Form, void *& Storage)
+bool ReleaseAsModal(TForm * Form, void *& Storage)
 {
   bool Result = (Storage != NULL);
   if (Result)
@@ -1290,7 +1290,7 @@ bool __fastcall ReleaseAsModal(TForm * Form, void *& Storage)
   return Result;
 }
 
-bool __fastcall SelectDirectory(UnicodeString & Path, const UnicodeString Prompt,
+bool SelectDirectory(UnicodeString & Path, const UnicodeString Prompt,
   bool PreserveFileName)
 {
   bool Result;
@@ -1343,7 +1343,7 @@ void SelectDirectoryForEdit(THistoryComboBox * Edit)
   }
 }
 
-bool __fastcall ListViewAnyChecked(TListView * ListView, bool Checked)
+bool ListViewAnyChecked(TListView * ListView, bool Checked)
 {
   bool AnyChecked = false;
   for (int Index = 0; Index < ListView->Items->Count; Index++)
@@ -1357,7 +1357,7 @@ bool __fastcall ListViewAnyChecked(TListView * ListView, bool Checked)
   return AnyChecked;
 }
 
-void __fastcall ListViewCheckAll(TListView * ListView,
+void ListViewCheckAll(TListView * ListView,
   TListViewCheckAll CheckAll)
 {
   bool Check;
@@ -1377,7 +1377,7 @@ void __fastcall ListViewCheckAll(TListView * ListView,
   }
 }
 
-void __fastcall ComboAutoSwitchInitialize(TComboBox * ComboBox)
+void ComboAutoSwitchInitialize(TComboBox * ComboBox)
 {
   int PrevIndex = ComboBox->ItemIndex;
   ComboBox->Items->BeginUpdate();
@@ -1396,7 +1396,7 @@ void __fastcall ComboAutoSwitchInitialize(TComboBox * ComboBox)
   ComboBox->ItemIndex = PrevIndex;
 }
 
-void __fastcall ComboAutoSwitchLoad(TComboBox * ComboBox, TAutoSwitch Value)
+void ComboAutoSwitchLoad(TComboBox * ComboBox, TAutoSwitch Value)
 {
   ComboBox->ItemIndex = 2 - Value;
   if (ComboBox->ItemIndex < 0)
@@ -1405,12 +1405,12 @@ void __fastcall ComboAutoSwitchLoad(TComboBox * ComboBox, TAutoSwitch Value)
   }
 }
 
-TAutoSwitch __fastcall ComboAutoSwitchSave(TComboBox * ComboBox)
+TAutoSwitch ComboAutoSwitchSave(TComboBox * ComboBox)
 {
   return (TAutoSwitch)(2 - ComboBox->ItemIndex);
 }
 
-void __fastcall CheckBoxAutoSwitchLoad(TCheckBox * CheckBox, TAutoSwitch Value)
+void CheckBoxAutoSwitchLoad(TCheckBox * CheckBox, TAutoSwitch Value)
 {
   switch (Value)
   {
@@ -1426,7 +1426,7 @@ void __fastcall CheckBoxAutoSwitchLoad(TCheckBox * CheckBox, TAutoSwitch Value)
   }
 }
 
-TAutoSwitch __fastcall CheckBoxAutoSwitchSave(TCheckBox * CheckBox)
+TAutoSwitch CheckBoxAutoSwitchSave(TCheckBox * CheckBox)
 {
   switch (CheckBox->State)
   {
@@ -1511,18 +1511,18 @@ int CALLBACK PathWordBreakProc(wchar_t * Ch, int Current, int Len, int Code)
 class TPathWordBreakProcComponent : public TComponent
 {
 public:
-  __fastcall TPathWordBreakProcComponent() :
+  TPathWordBreakProcComponent() :
     TComponent(NULL)
   {
   }
 
-  void __fastcall PathWordBreakEditWindowProc(TMessage & Message);
+  void PathWordBreakEditWindowProc(TMessage & Message);
 
   TWinControl * WinControl;
   TWndMethod PrevWindowProc;
 };
 
-void __fastcall TPathWordBreakProcComponent::PathWordBreakEditWindowProc(TMessage & Message)
+void TPathWordBreakProcComponent::PathWordBreakEditWindowProc(TMessage & Message)
 {
   bool Handled = false;
   if (Message.Msg == WM_CHAR)
@@ -1576,10 +1576,10 @@ void __fastcall TPathWordBreakProcComponent::PathWordBreakEditWindowProc(TMessag
 
 class TPublicCustomCombo : public TCustomCombo
 {
-friend void __fastcall InstallPathWordBreakProc(TWinControl * Control);
+friend void InstallPathWordBreakProc(TWinControl * Control);
 };
 
-void __fastcall InstallPathWordBreakProc(TWinControl * Control)
+void InstallPathWordBreakProc(TWinControl * Control)
 {
   // Since we are setting Application->ModalPopupMode = pmAuto,
   // this has to be called from OnShow, not from constructor anymore,
@@ -1611,7 +1611,7 @@ void __fastcall InstallPathWordBreakProc(TWinControl * Control)
   Control->WindowProc = PathWordBreakProcComponent->PathWordBreakEditWindowProc;
 }
 
-static void __fastcall RemoveHiddenControlsFromOrder(TControl ** ControlsOrder, int & Count)
+static void RemoveHiddenControlsFromOrder(TControl ** ControlsOrder, int & Count)
 {
   int Shift = 0;
   for (int Index = 0; Index < Count; Index++)
@@ -1628,7 +1628,7 @@ static void __fastcall RemoveHiddenControlsFromOrder(TControl ** ControlsOrder, 
   Count -= Shift;
 }
 
-void __fastcall SetVerticalControlsOrder(TControl ** ControlsOrder, int Count)
+void SetVerticalControlsOrder(TControl ** ControlsOrder, int Count)
 {
   RemoveHiddenControlsFromOrder(ControlsOrder, Count);
 
@@ -1666,7 +1666,7 @@ void __fastcall SetVerticalControlsOrder(TControl ** ControlsOrder, int Count)
   }
 }
 
-void __fastcall SetHorizontalControlsOrder(TControl ** ControlsOrder, int Count)
+void SetHorizontalControlsOrder(TControl ** ControlsOrder, int Count)
 {
   RemoveHiddenControlsFromOrder(ControlsOrder, Count);
 
@@ -1712,7 +1712,7 @@ void __fastcall SetHorizontalControlsOrder(TControl ** ControlsOrder, int Count)
   }
 }
 
-void __fastcall MakeNextInTabOrder(TWinControl * Control, TWinControl * After)
+void MakeNextInTabOrder(TWinControl * Control, TWinControl * After)
 {
   if (After->TabOrder > Control->TabOrder)
   {
@@ -1724,7 +1724,7 @@ void __fastcall MakeNextInTabOrder(TWinControl * Control, TWinControl * After)
   }
 }
 
-void __fastcall CutFormToDesktop(TForm * Form)
+void CutFormToDesktop(TForm * Form)
 {
   DebugAssert(Form->Monitor != NULL);
   TRect Workarea = Form->Monitor->WorkareaRect;
@@ -1738,7 +1738,7 @@ void __fastcall CutFormToDesktop(TForm * Form)
   }
 }
 
-void __fastcall UpdateFormPosition(TCustomForm * Form, TPosition Position)
+void UpdateFormPosition(TCustomForm * Form, TPosition Position)
 {
   if ((Position == poScreenCenter) ||
       (Position == poOwnerFormCenter) ||
@@ -1784,7 +1784,7 @@ void __fastcall UpdateFormPosition(TCustomForm * Form, TPosition Position)
   }
 }
 
-void __fastcall ResizeForm(TCustomForm * Form, int Width, int Height)
+void ResizeForm(TCustomForm * Form, int Width, int Height)
 {
   // This has to be called only after DoFormWindowProc(CM_SHOWINGCHANGED),
   // so that a correct monitor is considered.
@@ -1838,7 +1838,7 @@ void __fastcall ResizeForm(TCustomForm * Form, int Width, int Height)
   Form->SetBounds(Left, Top, Width, Height);
 }
 
-TComponent * __fastcall GetFormOwner()
+TComponent * GetFormOwner()
 {
   if (Screen->ActiveForm != NULL)
   {
@@ -1850,13 +1850,13 @@ TComponent * __fastcall GetFormOwner()
   }
 }
 
-void __fastcall SetCorrectFormParent(TForm * /*Form*/)
+void SetCorrectFormParent(TForm * /*Form*/)
 {
   // noop
   // remove
 }
 
-void __fastcall InvokeHelp(TWinControl * Control)
+void InvokeHelp(TWinControl * Control)
 {
   DebugAssert(Control != NULL);
 
@@ -1872,7 +1872,7 @@ void __fastcall InvokeHelp(TWinControl * Control)
 }
 
 
-static void __fastcall FocusableLabelCanvas(TStaticText * StaticText,
+static void FocusableLabelCanvas(TStaticText * StaticText,
   TCanvas ** ACanvas, TRect & R)
 {
   TCanvas * Canvas = CreateControlCanvas(StaticText);
@@ -1948,7 +1948,7 @@ static void __fastcall FocusableLabelCanvas(TStaticText * StaticText,
   }
 }
 
-static void __fastcall FocusableLabelWindowProc(void * Data, TMessage & Message,
+static void FocusableLabelWindowProc(void * Data, TMessage & Message,
   bool & Clicked)
 {
   Clicked = false;
@@ -2041,7 +2041,7 @@ static void __fastcall FocusableLabelWindowProc(void * Data, TMessage & Message,
 static THintWindow * PersistentHintWindow = NULL;
 static TControl * PersistentHintControl = NULL;
 
-void __fastcall CancelPersistentHint()
+void CancelPersistentHint()
 {
   if (PersistentHintWindow != NULL)
   {
@@ -2050,7 +2050,7 @@ void __fastcall CancelPersistentHint()
   }
 }
 
-void __fastcall ShowPersistentHint(TControl * Control, TPoint HintPos)
+void ShowPersistentHint(TControl * Control, TPoint HintPos)
 {
   CancelPersistentHint();
 
@@ -2090,7 +2090,7 @@ void __fastcall ShowPersistentHint(TControl * Control, TPoint HintPos)
   }
 }
 
-static void __fastcall HintLabelWindowProc(void * Data, TMessage & Message)
+static void HintLabelWindowProc(void * Data, TMessage & Message)
 {
   bool Clicked = false;
   bool Cancel = false;
@@ -2161,7 +2161,7 @@ static void __fastcall HintLabelWindowProc(void * Data, TMessage & Message)
   }
 }
 
-void __fastcall HintLabel(TStaticText * StaticText, UnicodeString Hint)
+void HintLabel(TStaticText * StaticText, UnicodeString Hint)
 {
   // Currently all are right-justified, when other alignment is used,
   // test respective branches in FocusableLabelCanvas.
@@ -2183,7 +2183,7 @@ void __fastcall HintLabel(TStaticText * StaticText, UnicodeString Hint)
   StaticText->WindowProc = WindowProc;
 }
 
-static void __fastcall ComboBoxFixWindowProc(void * Data, TMessage & Message)
+static void ComboBoxFixWindowProc(void * Data, TMessage & Message)
 {
   // it is TCustomComboxBox, but the properties are published only by TComboBox
   TComboBox * ComboBox = static_cast<TComboBox *>(Data);
@@ -2213,7 +2213,7 @@ static void __fastcall ComboBoxFixWindowProc(void * Data, TMessage & Message)
   }
 }
 
-void __fastcall FixComboBoxResizeBug(TCustomComboBox * ComboBox)
+void FixComboBoxResizeBug(TCustomComboBox * ComboBox)
 {
   TWndMethod WindowProc;
   ((TMethod*)&WindowProc)->Data = ComboBox;
@@ -2221,7 +2221,7 @@ void __fastcall FixComboBoxResizeBug(TCustomComboBox * ComboBox)
   ComboBox->WindowProc = WindowProc;
 }
 
-static void __fastcall LinkLabelClick(TStaticText * StaticText)
+static void LinkLabelClick(TStaticText * StaticText)
 {
   if (StaticText->OnClick != NULL)
   {
@@ -2233,7 +2233,7 @@ static void __fastcall LinkLabelClick(TStaticText * StaticText)
   }
 }
 
-static void __fastcall LinkLabelWindowProc(void * Data, TMessage & Message)
+static void LinkLabelWindowProc(void * Data, TMessage & Message)
 {
   bool Clicked = false;
 
@@ -2280,7 +2280,7 @@ static void __fastcall LinkLabelWindowProc(void * Data, TMessage & Message)
   }
 }
 
-static void __fastcall LinkLabelContextMenuClick(void * Data, TObject * Sender)
+static void LinkLabelContextMenuClick(void * Data, TObject * Sender)
 {
   TStaticText * StaticText = static_cast<TStaticText *>(Data);
   TMenuItem * MenuItem = dynamic_cast<TMenuItem *>(Sender);
@@ -2297,7 +2297,7 @@ static void __fastcall LinkLabelContextMenuClick(void * Data, TObject * Sender)
   }
 }
 
-static void __fastcall DoLinkLabel(TStaticText * StaticText)
+static void DoLinkLabel(TStaticText * StaticText)
 {
   StaticText->Transparent = false;
   StaticText->ParentFont = true;
@@ -2309,7 +2309,7 @@ static void __fastcall DoLinkLabel(TStaticText * StaticText)
   StaticText->WindowProc = WindowProc;
 }
 
-void __fastcall LinkLabel(TStaticText * StaticText, UnicodeString Url,
+void LinkLabel(TStaticText * StaticText, UnicodeString Url,
   TNotifyEvent OnEnter)
 {
   DoLinkLabel(StaticText);
@@ -2361,31 +2361,31 @@ void __fastcall LinkLabel(TStaticText * StaticText, UnicodeString Url,
   StaticText->Font->Color = LinkColor;
 }
 
-void __fastcall LinkActionLabel(TStaticText * StaticText)
+void LinkActionLabel(TStaticText * StaticText)
 {
   DoLinkLabel(StaticText);
 
   StaticText->Font->Color = LinkColor;
 }
 
-void __fastcall LinkAppLabel(TStaticText * StaticText)
+void LinkAppLabel(TStaticText * StaticText)
 {
   DoLinkLabel(StaticText);
 
   StaticText->Caption = StaticText->Caption + LinkAppLabelMark;
 }
 
-static void __fastcall HotTrackLabelMouseEnter(void * /*Data*/, TObject * Sender)
+static void HotTrackLabelMouseEnter(void * /*Data*/, TObject * Sender)
 {
   reinterpret_cast<TLabel *>(Sender)->Font->Color = clBlue;
 }
 
-static void __fastcall HotTrackLabelMouseLeave(void * /*Data*/, TObject * Sender)
+static void HotTrackLabelMouseLeave(void * /*Data*/, TObject * Sender)
 {
   reinterpret_cast<TLabel *>(Sender)->ParentFont = true;
 }
 
-void __fastcall HotTrackLabel(TLabel * Label)
+void HotTrackLabel(TLabel * Label)
 {
   DebugAssert(Label->OnMouseEnter == NULL);
   DebugAssert(Label->OnMouseLeave == NULL);
@@ -2394,7 +2394,7 @@ void __fastcall HotTrackLabel(TLabel * Label)
   Label->OnMouseLeave = MakeMethod<TNotifyEvent>(NULL, HotTrackLabelMouseLeave);
 }
 
-void __fastcall SetLabelHintPopup(TLabel * Label, const UnicodeString & Hint)
+void SetLabelHintPopup(TLabel * Label, const UnicodeString & Hint)
 {
   Label->Caption = Hint;
   Label->Hint = Hint;
@@ -2403,13 +2403,13 @@ void __fastcall SetLabelHintPopup(TLabel * Label, const UnicodeString & Hint)
   Label->ShowHint = (Rect.Bottom > Label->Height);
 }
 
-bool __fastcall HasLabelHintPopup(TControl * Control, const UnicodeString & HintStr)
+bool HasLabelHintPopup(TControl * Control, const UnicodeString & HintStr)
 {
   TLabel * HintLabel = dynamic_cast<TLabel *>(Control);
   return (HintLabel != NULL) && (GetShortHint(HintLabel->Caption) == HintStr);
 }
 
-Forms::TMonitor *  __fastcall FormMonitor(TCustomForm * Form)
+Forms::TMonitor *  FormMonitor(TCustomForm * Form)
 {
   Forms::TMonitor * Result;
   if ((Application->MainForm != NULL) && (Application->MainForm != Form))
@@ -2433,7 +2433,7 @@ Forms::TMonitor *  __fastcall FormMonitor(TCustomForm * Form)
   return Result;
 }
 
-int __fastcall GetLastMonitor()
+int GetLastMonitor()
 {
   if (LastMonitor != NULL)
   {
@@ -2445,7 +2445,7 @@ int __fastcall GetLastMonitor()
   }
 }
 
-void __fastcall SetLastMonitor(int MonitorNum)
+void SetLastMonitor(int MonitorNum)
 {
   if ((MonitorNum >= 0) && (MonitorNum < Screen->MonitorCount))
   {
@@ -2457,7 +2457,7 @@ void __fastcall SetLastMonitor(int MonitorNum)
   }
 }
 
-TForm * __fastcall _SafeFormCreate(TMetaClass * FormClass, TComponent * Owner)
+TForm * _SafeFormCreate(TMetaClass * FormClass, TComponent * Owner)
 {
   TForm * Form;
 
@@ -2487,12 +2487,12 @@ TForm * __fastcall _SafeFormCreate(TMetaClass * FormClass, TComponent * Owner)
   return Form;
 }
 
-bool __fastcall SupportsSplitButton()
+bool SupportsSplitButton()
 {
   return (Win32MajorVersion >= 6);
 }
 
-static TButton * __fastcall FindStandardButton(TWinControl * Control, bool Default)
+static TButton * FindStandardButton(TWinControl * Control, bool Default)
 {
   TButton * Result = NULL;
   int Index = 0;
@@ -2517,7 +2517,7 @@ static TButton * __fastcall FindStandardButton(TWinControl * Control, bool Defau
   return Result;
 }
 
-TModalResult __fastcall DefaultResult(TCustomForm * Form, TButton * DefaultButton)
+TModalResult DefaultResult(TCustomForm * Form, TButton * DefaultButton)
 {
   // The point of this is to avoid hardcoding mrOk when checking dialog results.
   // Previously we used != mrCancel instead, as mrCancel is more reliable,
@@ -2545,7 +2545,7 @@ TModalResult __fastcall DefaultResult(TCustomForm * Form, TButton * DefaultButto
   return Result;
 }
 
-void __fastcall DefaultButton(TButton * Button, bool Default)
+void DefaultButton(TButton * Button, bool Default)
 {
   // default property setter does not have guard for "the same value"
   if (Button->Default != Default)
@@ -2554,7 +2554,7 @@ void __fastcall DefaultButton(TButton * Button, bool Default)
   }
 }
 
-void __fastcall MemoKeyDown(TObject * Sender, WORD & Key, TShiftState Shift)
+void MemoKeyDown(TObject * Sender, WORD & Key, TShiftState Shift)
 {
   // Sender can be Form or Memo itself
   TControl * Control = dynamic_cast<TControl *>(Sender);
@@ -2580,7 +2580,7 @@ void __fastcall MemoKeyDown(TObject * Sender, WORD & Key, TShiftState Shift)
 class TIconOwnerComponent : public TComponent
 {
 public:
-  __fastcall TIconOwnerComponent(TIcon * Icon) :
+  TIconOwnerComponent(TIcon * Icon) :
     TComponent(NULL),
     FIcon(Icon)
   {
@@ -2590,7 +2590,7 @@ private:
   std::unique_ptr<TIcon> FIcon;
 };
 
-static void __fastcall FixFormIcon(TForm * Form, int Size, int WidthMetric, int HeightMetric)
+static void FixFormIcon(TForm * Form, int Size, int WidthMetric, int HeightMetric)
 {
   // Whole this code is to call ReadIcon from Vcl.Graphics.pas with correct size
 
@@ -2617,7 +2617,7 @@ static void __fastcall FixFormIcon(TForm * Form, int Size, int WidthMetric, int 
   Form->InsertComponent(IconOwnerComponent);
 }
 
-void __fastcall FixFormIcons(TForm * Form)
+void FixFormIcons(TForm * Form)
 {
   // VCL sets only ICON_BIG (so small icon is scaled down by OS from big icon),
   // and it uses a random (first?) size from the resource,
@@ -2641,14 +2641,14 @@ public:
   void Update();
 
 protected:
-  virtual void __fastcall Notification(TComponent * AComponent, TOperation Operation);
+  virtual void Notification(TComponent * AComponent, TOperation Operation);
 
 private:
   HWND FWindowHandle;
   typedef std::set<TControl *> TControlSet;
   TControlSet FControls;
 
-  void __fastcall WndProc(TMessage & Message);
+  void WndProc(TMessage & Message);
   void UpdateControl(TControl * Control);
 };
 
@@ -2658,12 +2658,12 @@ TDesktopFontManager::TDesktopFontManager() : TComponent(NULL)
   FWindowHandle = AllocateHWnd(WndProc);
 }
 
-__fastcall TDesktopFontManager::~TDesktopFontManager()
+TDesktopFontManager::~TDesktopFontManager()
 {
   DeallocateHWnd(FWindowHandle);
 }
 
-void __fastcall TDesktopFontManager::Notification(TComponent * AComponent, TOperation Operation)
+void TDesktopFontManager::Notification(TComponent * AComponent, TOperation Operation)
 {
   if (DebugAlwaysTrue(Operation == opRemove))
   {
@@ -2725,7 +2725,7 @@ void TDesktopFontManager::Update()
   }
 }
 
-void __fastcall TDesktopFontManager::WndProc(TMessage & Message)
+void TDesktopFontManager::WndProc(TMessage & Message)
 {
   if (Message.Msg == WM_WININICHANGE)
   {
@@ -2736,7 +2736,7 @@ void __fastcall TDesktopFontManager::WndProc(TMessage & Message)
 
 std::unique_ptr<TDesktopFontManager> DesktopFontManager(new TDesktopFontManager());
 
-void __fastcall UseDesktopFont(TControl * Control)
+void UseDesktopFont(TControl * Control)
 {
   TCustomStatusBar * StatusBar = dynamic_cast<TCustomStatusBar *>(Control);
   if (StatusBar != NULL)
@@ -2748,17 +2748,17 @@ void __fastcall UseDesktopFont(TControl * Control)
   DesktopFontManager->AddControl(Control);
 }
 
-void __fastcall UpdateDesktopFont()
+void UpdateDesktopFont()
 {
   DesktopFontManager->Update();
 }
 
-TShiftState __fastcall AllKeyShiftStates()
+TShiftState AllKeyShiftStates()
 {
   return TShiftState() << ssShift << ssAlt << ssCtrl;
 }
 
-static bool __fastcall FormActivationHook(void * Data, TMessage & Message)
+static bool FormActivationHook(void * Data, TMessage & Message)
 {
   bool Result = false;
   // Some dialogs, when application is restored from minimization,
@@ -2783,17 +2783,17 @@ static bool __fastcall FormActivationHook(void * Data, TMessage & Message)
   return Result;
 }
 
-void __fastcall HookFormActivation(TCustomForm * Form)
+void HookFormActivation(TCustomForm * Form)
 {
   Application->HookMainWindow(MakeMethod<TWindowHook>(Form, FormActivationHook));
 }
 
-void __fastcall UnhookFormActivation(TCustomForm * Form)
+void UnhookFormActivation(TCustomForm * Form)
 {
   Application->UnhookMainWindow(MakeMethod<TWindowHook>(Form, FormActivationHook));
 }
 
-void __fastcall ShowFormNoActivate(TForm * Form)
+void ShowFormNoActivate(TForm * Form)
 {
   TPublicForm * PublicForm = static_cast<TPublicForm *>(Form);
 
@@ -2849,7 +2849,7 @@ void __fastcall ShowFormNoActivate(TForm * Form)
   }
 }
 
-TPanel * __fastcall CreateBlankPanel(TComponent * Owner)
+TPanel * CreateBlankPanel(TComponent * Owner)
 {
   TPanel * Panel = new TPanel(Owner);
   Panel->BevelOuter = bvNone;

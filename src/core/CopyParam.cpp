@@ -103,7 +103,7 @@ UnicodeString TCopyParamType::GenerateTransferCommandArgs(int Attrs, const Unico
 
 #if 0
 //---------------------------------------------------------------------------
-UnicodeString __fastcall TCopyParamType::GenerateAssemblyCode(TAssemblyLanguage Language, int Attrs) const
+UnicodeString TCopyParamType::GenerateAssemblyCode(TAssemblyLanguage Language, int Attrs) const
 {
   UnicodeString Result;
   bool SomeAttrIncluded;

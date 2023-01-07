@@ -37,7 +37,7 @@ struct TLocalFileHandle;
 using TCalculatedSizes = nb::vector_t<int64_t>;
 //---------------------------------------------------------------------------
 #if 0
-typedef void __fastcall (__closure *TQueryUserEvent)
+typedef void (__closure *TQueryUserEvent)
   (TObject * Sender, const UnicodeString Query, TStrings * MoreMessages, uint32_t Answers,
    const TQueryParams * Params, unsigned int & Answer, TQueryType QueryType, void * Arg);
 #endif // #if 0
@@ -45,7 +45,7 @@ using TQueryUserEvent = nb::FastDelegate8<void,
   TObject * /*Sender*/, UnicodeString /*AQuery*/, TStrings * /*MoreMessages*/, uint32_t /*Answers*/,
    const TQueryParams * /*Params*/, uint32_t & /*Answer*/, TQueryType /*QueryType*/, void * /*Arg*/>;
 #if 0
-typedef void __fastcall (__closure *TPromptUserEvent)
+typedef void (__closure *TPromptUserEvent)
   (TTerminal * Terminal, TPromptKind Kind, UnicodeString Name, UnicodeString Instructions,
    TStrings * Prompts, TStrings * Results, bool & Result, void * Arg);
 #endif // #if 0
@@ -53,7 +53,7 @@ using TPromptUserEvent = nb::FastDelegate8<void,
   TTerminal * /*Terminal*/, TPromptKind /*Kind*/, UnicodeString /*AName*/, UnicodeString /*AInstructions*/,
   TStrings * /*Prompts*/, TStrings * /*Results*/, bool & /*Result*/, void * /*Arg*/>;
 #if 0
-typedef void __fastcall (__closure *TDisplayBannerEvent)
+typedef void (__closure *TDisplayBannerEvent)
   (TTerminal * Terminal, UnicodeString SessionName, const UnicodeString & Banner,
    bool & NeverShowAgain, int Options, unsigned int & Params);
 #endif // #if 0
@@ -61,47 +61,47 @@ using TDisplayBannerEvent = nb::FastDelegate6<void,
   TTerminal * /*Terminal*/, UnicodeString /*ASessionName*/, UnicodeString /*ABanner*/,
   bool & /*NeverShowAgain*/, intptr_t /*Options*/, uintptr_t & /*Params*/>;
 #if 0
-typedef void __fastcall (__closure *TExtendedExceptionEvent)
+typedef void (__closure *TExtendedExceptionEvent)
   (TTerminal * Terminal, Exception * E, void * Arg);
 #endif // #if 0
 using TExtendedExceptionEvent = nb::FastDelegate3<void,
   TTerminal * /*Terminal*/, Exception * /*E*/, void * /*Arg*/ >;
 #if 0
-typedef void __fastcall (__closure *TReadDirectoryEvent)(System::TObject * Sender, Boolean ReloadOnly);
+typedef void (__closure *TReadDirectoryEvent)(System::TObject * Sender, Boolean ReloadOnly);
 #endif // #if 0
 using TReadDirectoryEvent = nb::FastDelegate2<void, TObject * /*Sender*/, Boolean /*ReloadOnly*/>;
 #if 0
-typedef void __fastcall (__closure *TReadDirectoryProgressEvent)(
+typedef void (__closure *TReadDirectoryProgressEvent)(
   System::TObject* Sender, int Progress, int ResolvedLinks, bool & Cancel);
 #endif // #if 0
 using TReadDirectoryProgressEvent = nb::FastDelegate4<void,
   TObject * /*Sender*/, intptr_t /*Progress*/, intptr_t /*ResolvedLinks*/, bool & /*Cancel*/>;
 #if 0
-typedef void __fastcall (__closure *TProcessFileEvent)
+typedef void (__closure *TProcessFileEvent)
   (const UnicodeString FileName, const TRemoteFile * File, void * Param);
 #endif // #if 0
 using TProcessFileEvent = nb::FastDelegate3<void,
   UnicodeString /*AFileName*/, const TRemoteFile * /*AFile*/, void * /*AParam*/>;
 #if 0
-typedef void __fastcall (__closure *TProcessFileEventEx)
+typedef void (__closure *TProcessFileEventEx)
   (const UnicodeString FileName, const TRemoteFile * File, void * Param, int Index);
 #endif // #if 0
 using TProcessFileEventEx = nb::FastDelegate4<void,
   const UnicodeString /*AFileName*/, const TRemoteFile * /*File*/,
   void * /*Param*/, intptr_t /*Index*/>;
 #if 0
-typedef int __fastcall (__closure *TFileOperationEvent)
+typedef int (__closure *TFileOperationEvent)
   (void * Param1, void * Param2);
 #endif // #if 0
 using TFileOperationEvent = nb::FastDelegate2<intptr_t,
   void * /*Param1*/, void * /*Param2*/>;
 #if 0
-typedef void __fastcall (__closure *TSynchronizeDirectory)
+typedef void (__closure *TSynchronizeDirectory)
   (const UnicodeString LocalDirectory, const UnicodeString RemoteDirectory,
    bool & Continue, bool Collect);
-typedef void __fastcall (__closure *TUpdatedSynchronizationChecklistItems)(
+typedef void (__closure *TUpdatedSynchronizationChecklistItems)(
   const TSynchronizeChecklist::TItemList & Items);
-typedef void __fastcall (__closure *TProcessedSynchronizationChecklistItem)(
+typedef void (__closure *TProcessedSynchronizationChecklistItem)(
   void * Token, const TSynchronizeChecklist::TItem * Item);
 #endif // #if 0
 using TSynchronizeDirectoryEvent = nb::FastDelegate4<void,
@@ -112,25 +112,25 @@ using TUpdatedSynchronizationChecklistItems = nb::FastDelegate1<void,
 using TProcessedSynchronizationChecklistItem = nb::FastDelegate2<void,
   void * /*Token*/, const TChecklistItem * /*Item*/>;
 #if 0
-typedef void __fastcall (__closure *TDeleteLocalFileEvent)(
+typedef void (__closure *TDeleteLocalFileEvent)(
   const UnicodeString FileName, bool Alternative, int & Deleted);
 #endif // #if 0
 using TDeleteLocalFileEvent = nb::FastDelegate3<void,
   UnicodeString /*FileName*/, bool /*Alternative*/, intptr_t & /*Deleted*/>;
 #if 0
-typedef int __fastcall (__closure *TDirectoryModifiedEvent)
+typedef int (__closure *TDirectoryModifiedEvent)
   (TTerminal * Terminal, const UnicodeString Directory, bool SubDirs);
 #endif // #if 0
 using TDirectoryModifiedEvent = nb::FastDelegate3<int,
   TTerminal * /*Terminal*/, UnicodeString /*Directory*/, bool /*SubDirs*/>;
 #if 0
-typedef void __fastcall (__closure *TInformationEvent)
+typedef void (__closure *TInformationEvent)
   (TTerminal * Terminal, const UnicodeString & Str, bool Status, int Phase);
 #endif // #if 0
 using TInformationEvent = nb::FastDelegate4<void,
   TTerminal * /*Terminal*/, UnicodeString /*Str*/, bool /*Status*/, intptr_t /*Phase*/>;
 #if 0
-typedef void __fastcall (__closure *TCustomCommandEvent)
+typedef void (__closure *TCustomCommandEvent)
   (TTerminal * Terminal, const UnicodeString & Command, bool & Handled);
 #endif // #if 0
 using TCustomCommandEvent = nb::FastDelegate3<void,

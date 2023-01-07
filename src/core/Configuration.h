@@ -192,7 +192,7 @@ public:
   virtual void DoSave(bool All, bool Explicit);
   UnicodeString FormatFingerprintKey(const UnicodeString ASiteKey, const UnicodeString AFingerprintType) const;
   THierarchicalStorage * OpenDirectoryStatisticsCache(bool CanCreate);
-  UnicodeString __fastcall GetDirectoryStatisticsCacheKey(
+  UnicodeString GetDirectoryStatisticsCacheKey(
     const UnicodeString & SessionKey, const UnicodeString & Path, const TCopyParamType & CopyParam);
 
   virtual bool GetConfirmOverwriting() const;

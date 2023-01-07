@@ -751,8 +751,8 @@ public:
     bool IsRemoteOnly() const { return (Action == saDownloadNew) || (Action == saDeleteRemote); }
     bool IsLocalOnly() const { return (Action == saUploadNew) || (Action == saDeleteLocal); }
     bool HasSize() const { return !IsDirectory || FDirectoryHasSize; }
-    __int64 __fastcall GetSize() const;
-    __int64 __fastcall GetSize(TAction AAction) const;
+    __int64 GetSize() const;
+    __int64 GetSize(TAction AAction) const;
 
     ~TItem();
 

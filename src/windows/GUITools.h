@@ -34,35 +34,35 @@ NB_CORE_EXPORT bool DeleteDirectory(UnicodeString ADirName);
 #if 0
 int GetSessionColorImage(TCustomImageList * ImageList, TColor Color, int MaskIndex);
 void RegenerateSessionColorsImageList(TCustomImageList * ImageList, int MaskIndex);
-void __fastcall SetSubmenu(TTBXCustomItem * Item);
+void SetSubmenu(TTBXCustomItem * Item);
 typedef int (*TCalculateWidth)(UnicodeString Text, void * Arg);
-void __fastcall ApplyTabs(
+void ApplyTabs(
   UnicodeString & Text, wchar_t Padding,
   TCalculateWidth CalculateWidth, void * CalculateWidthArg);
-TPanel * __fastcall CreateLabelPanel(TPanel * Parent, UnicodeString & Label);
-void __fastcall SelectScaledImageList(TImageList * ImageList);
-void __fastcall CopyImageList(TImageList * TargetList, TImageList * SourceList);
-void __fastcall LoadDialogImage(TImage * Image, UnicodeString & ImageName);
-int __fastcall DialogImageSize(TForm * Form);
-int __fastcall NormalizePixelsPerInch(int PixelsPerInch);
-void __fastcall HideComponentsPanel(TForm * Form);
+TPanel * CreateLabelPanel(TPanel * Parent, UnicodeString & Label);
+void SelectScaledImageList(TImageList * ImageList);
+void CopyImageList(TImageList * TargetList, TImageList * SourceList);
+void LoadDialogImage(TImage * Image, UnicodeString & ImageName);
+int DialogImageSize(TForm * Form);
+int NormalizePixelsPerInch(int PixelsPerInch);
+void HideComponentsPanel(TForm * Form);
 UnicodeString FormatIncrementalSearchStatus(UnicodeString & Text, bool HaveNext);
 namespace Webbrowserex
 {
   class TWebBrowserEx;
 }
 using namespace Webbrowserex;
-TWebBrowserEx * __fastcall CreateBrowserViewer(TPanel * Parent, UnicodeString & LoadingLabel);
-void __fastcall SetBrowserDesignModeOff(TWebBrowserEx * WebBrowser);
-void __fastcall AddBrowserLinkHandler(TWebBrowserEx * WebBrowser,
+TWebBrowserEx * CreateBrowserViewer(TPanel * Parent, UnicodeString & LoadingLabel);
+void SetBrowserDesignModeOff(TWebBrowserEx * WebBrowser);
+void AddBrowserLinkHandler(TWebBrowserEx * WebBrowser,
   UnicodeString & Url, TNotifyEvent Handler);
-void __fastcall NavigateBrowserToUrl(TWebBrowserEx * WebBrowser, UnicodeString & Url);
+void NavigateBrowserToUrl(TWebBrowserEx * WebBrowser, UnicodeString & Url);
 void ReadyBrowserForStreaming(TWebBrowserEx * WebBrowser);
 void WaitBrowserToIdle(TWebBrowserEx * WebBrowser);
 void HideBrowserScrollbars(TWebBrowserEx * WebBrowser);
 UnicodeString GenerateAppHtmlPage(TFont * Font, TPanel * Parent, UnicodeString & Body, bool Seamless);
 void LoadBrowserDocument(TWebBrowserEx * WebBrowser, UnicodeString & Document);
-void __fastcall GetInstrutionsTheme(
+void GetInstrutionsTheme(
   TColor & MainInstructionColor, HFONT & MainInstructionFont, HFONT & InstructionFont);
   TColor & MainInstructionColor, HFONT & MainInstructionFont, HFONT & InstructionFont);
 #endif // #if 0
@@ -100,18 +100,18 @@ class TPngImageCollectionItem;
 }
 using namespace Pngimagelist;
 
-TPngImageList * __fastcall GetAnimationsImages(TControl * Control);
-TImageList * __fastcall GetButtonImages(TControl * Control);
-TPngImageList * __fastcall GetDialogImages(TControl * Control);
-void __fastcall ReleaseImagesModules();
+TPngImageList * GetAnimationsImages(TControl * Control);
+TImageList * GetButtonImages(TControl * Control);
+TPngImageList * GetDialogImages(TControl * Control);
+void ReleaseImagesModules();
 
 class TFrameAnimation
 {
 public:
-  __fastcall TFrameAnimation();
-  void __fastcall Init(TPaintBox * PaintBox, UnicodeString & Name);
-  void __fastcall Start();
-  void __fastcall Stop();
+  TFrameAnimation();
+  void Init(TPaintBox * PaintBox, UnicodeString & Name);
+  void Start();
+  void Stop();
 
 private:
   UnicodeString FName;
@@ -125,29 +125,29 @@ private:
   TTimer * FTimer;
   bool FPainted;
 
-  void __fastcall DoInit();
-  void __fastcall PaintBoxPaint(TObject * Sender);
-  void __fastcall CalculateNextFrameTick();
-  TPngImageCollectionItem * __fastcall GetCurrentImage();
-  void __fastcall Animate();
-  void __fastcall Timer(TObject * Sender);
-  void __fastcall Repaint();
-  void __fastcall Rescale();
-  static void __fastcall PaintBoxRescale(TComponent * Sender, TObject * Token);
+  void DoInit();
+  void PaintBoxPaint(TObject * Sender);
+  void CalculateNextFrameTick();
+  TPngImageCollectionItem * GetCurrentImage();
+  void Animate();
+  void Timer(TObject * Sender);
+  void Repaint();
+  void Rescale();
+  static void PaintBoxRescale(TComponent * Sender, TObject * Token);
 };
 
 class TScreenTipHintWindow : public THintWindow
 {
 public:
-  __fastcall TScreenTipHintWindow(TComponent * Owner);
-  virtual TRect __fastcall CalcHintRect(int MaxWidth, UnicodeString AHint, void * AData);
-  virtual void __fastcall ActivateHintData(const TRect & Rect, UnicodeString AHint, void * AData);
+  TScreenTipHintWindow(TComponent * Owner);
+  virtual TRect CalcHintRect(int MaxWidth, UnicodeString AHint, void * AData);
+  virtual void ActivateHintData(const TRect & Rect, UnicodeString AHint, void * AData);
 
-  static void __fastcall CalcHintTextRect(TControl * Control, TCanvas * Canvas, TRect & Rect, UnicodeString & Hint);
+  static void CalcHintTextRect(TControl * Control, TCanvas * Canvas, TRect & Rect, UnicodeString & Hint);
 
 protected:
-  virtual void __fastcall Paint();
-  virtual void __fastcall Dispatch(void * AMessage);
+  virtual void Paint();
+  virtual void Dispatch(void * AMessage);
 
 private:
   bool FParentPainting;
@@ -158,16 +158,16 @@ private:
   bool FHintPopup;
   std::unique_ptr<TFont> FScaledHintFont;
 
-  UnicodeString __fastcall GetLongHintIfAny(UnicodeString & AHint);
-  static int __fastcall GetTextFlags(TControl * Control);
+  UnicodeString GetLongHintIfAny(UnicodeString & AHint);
+  static int GetTextFlags(TControl * Control);
 
-  bool __fastcall UseBoldShortHint(TControl * HintControl);
-  int __fastcall GetMargin(TControl * HintControl, UnicodeString & Hint);
-  TFont * __fastcall GetFont(TControl * HintControl, UnicodeString & Hint);
-  TControl * __fastcall GetHintControl(void * Data);
-  void __fastcall SplitHint(
+  bool UseBoldShortHint(TControl * HintControl);
+  int GetMargin(TControl * HintControl, UnicodeString & Hint);
+  TFont * GetFont(TControl * HintControl, UnicodeString & Hint);
+  TControl * GetHintControl(void * Data);
+  void SplitHint(
     TControl * HintControl, UnicodeString & Hint, UnicodeString & ShortHint, UnicodeString & LongHint);
-  void __fastcall SplitHint(
+  void SplitHint(
     TControl * HintControl, UnicodeString & Hint, UnicodeString & ShortHint, UnicodeString & LongHint);
 };
 
@@ -176,12 +176,12 @@ private:
 class TNewRichEdit : public TRichEdit
 {
 public:
-  virtual __fastcall TNewRichEdit(TComponent * AOwner);
+  virtual TNewRichEdit(TComponent * AOwner);
 
 protected:
-  virtual void __fastcall CreateParams(TCreateParams & Params);
-  virtual void __fastcall CreateWnd();
-  virtual void __fastcall DestroyWnd();
+  virtual void CreateParams(TCreateParams & Params);
+  virtual void CreateWnd();
+  virtual void DestroyWnd();
 
 private:
   HINSTANCE FLibrary;
@@ -207,16 +207,16 @@ NB_CORE_EXPORT extern UnicodeString PuttygenTool;
 class TUIStateAwareLabel : public TLabel
 {
 protected:
-  DYNAMIC void __fastcall DoDrawText(TRect & Rect, int Flags);
+  DYNAMIC void DoDrawText(TRect & Rect, int Flags);
 };
 // FindComponentClass takes parameter by reference and as such it cannot be implemented in
 // an inline method without a compiler warning, which we cannot suppress in a macro.
 // And having the implementation in a real code (not macro) also allows us to debug the code.
-void __fastcall FindComponentClass(
+void FindComponentClass(
   void * Data, TReader * Reader, UnicodeString ClassName, TComponentClass & ComponentClass);
 #define INTERFACE_HOOK_CUSTOM(PARENT) \
   protected: \
-    virtual void __fastcall ReadState(TReader * Reader) \
+    virtual void ReadState(TReader * Reader) \
     { \
       Reader->OnFindComponentClass = MakeMethod<TFindComponentClassEvent>(NULL, FindComponentClass); \
       PARENT::ReadState(Reader); \

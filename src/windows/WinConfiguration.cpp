@@ -2396,7 +2396,7 @@ void TWinConfiguration::SetCustomCommandList(TCustomCommandList * value)
   return DriveInfo->UseABDrives;
 }
 
-void __fastcall TWinConfiguration::SetUseABDrives(bool value)
+void TWinConfiguration::SetUseABDrives(bool value)
 {
   if (UseABDrives != value)
   {
@@ -2556,12 +2556,12 @@ TStrings * TWinConfiguration::FindTemporaryFolders()
   return Result.release();
 }
 
-TStrings * __fastcall TWinConfiguration::FindTemporaryFolders()
+TStrings * TWinConfiguration::FindTemporaryFolders()
 {
   return DoFindTemporaryFolders(false);
 }
 
-bool __fastcall TWinConfiguration::AnyTemporaryFolders()
+bool TWinConfiguration::AnyTemporaryFolders()
 {
   std::unique_ptr<TStrings> Folders(DoFindTemporaryFolders(true));
   return (Folders.get() != NULL);
@@ -2576,7 +2576,7 @@ void TWinConfiguration::CleanupTemporaryFolders(TStrings * Folders)
   }
 }
 
-void __fastcall TWinConfiguration::CleanupTemporaryFolders(TStrings * Folders)
+void TWinConfiguration::CleanupTemporaryFolders(TStrings * Folders)
 {
   if (DebugAlwaysTrue(Folders->Count > 0))
   {
@@ -2725,12 +2725,12 @@ void TWinConfiguration::SetTimeoutShellIconRetrieval(bool value)
   SET_CONFIG_PROPERTY(TimeoutShellIconRetrieval);
 }
 
-void __fastcall TWinConfiguration::SetUseIconUpdateThread(bool value)
+void TWinConfiguration::SetUseIconUpdateThread(bool value)
 {
   SET_CONFIG_PROPERTY(UseIconUpdateThread);
 }
 
-void __fastcall TWinConfiguration::SetAllowWindowPrint(bool value)
+void TWinConfiguration::SetAllowWindowPrint(bool value)
 {
   SET_CONFIG_PROPERTY(AllowWindowPrint);
 }

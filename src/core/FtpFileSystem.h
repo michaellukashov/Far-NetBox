@@ -72,7 +72,7 @@ public:
     const TCopyParamType *CopyParam, intptr_t AParams, TFileOperationProgressType *OperationProgress,
     uintptr_t AFlags, TDownloadSessionAction &Action);
   void RemoteCreateDirectory(UnicodeString ADirName, bool Encrypt) override;
-  // virtual void __fastcall CreateDirectory(const UnicodeString & DirName, bool Encrypt);
+  // virtual void CreateDirectory(const UnicodeString & DirName, bool Encrypt);
   void RemoteCreateLink(UnicodeString AFileName, UnicodeString APointTo, bool Symbolic) override;
   void RemoteDeleteFile(UnicodeString AFileName,
     const TRemoteFile *AFile, intptr_t Params, TRmSessionAction &Action) override;

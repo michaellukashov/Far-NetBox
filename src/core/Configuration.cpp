@@ -593,7 +593,7 @@ void TConfiguration::CopyData(THierarchicalStorage * Source,
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TConfiguration::CopyData(THierarchicalStorage * Source,
+void TConfiguration::CopyData(THierarchicalStorage * Source,
   THierarchicalStorage * Target)
     if (Source->OpenSubKey(GetSshHostKeysSubKey(), false))
 {
@@ -839,7 +839,7 @@ void TConfiguration::CleanupRegistry(const UnicodeString CleanupSubKey)
     Registry->KeyExists(SubKey);
 }
 //---------------------------------------------------------------------------
-void __fastcall TConfiguration::CleanupRegistry(const UnicodeString & RegistryPath)
+void TConfiguration::CleanupRegistry(const UnicodeString & RegistryPath)
 {
   std::unique_ptr<TRegistryStorage> Registry(new TRegistryStorage(RegistryStorageKey));
   },
@@ -862,7 +862,7 @@ TStrings * TConfiguration::GetCaches()
   return Result.release();
 }
 //---------------------------------------------------------------------------
-bool __fastcall TConfiguration::HasAnyCache()
+bool TConfiguration::HasAnyCache()
 {
   bool Result = false;
   std::unique_ptr<TStrings> Caches(GetCaches());
@@ -1691,7 +1691,7 @@ void TConfiguration::SetRandomSeedFile(const UnicodeString Value)
   }
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall TConfiguration::GetDirectoryStatisticsCacheKey(
+UnicodeString TConfiguration::GetDirectoryStatisticsCacheKey(
   const UnicodeString & SessionKey, const UnicodeString & Path, const TCopyParamType & CopyParam)
 {
   std::unique_ptr<TStringList> RawOptions(new TStringList());
@@ -1723,7 +1723,7 @@ THierarchicalStorage * TConfiguration::OpenDirectoryStatisticsCache(bool CanCrea
   return Storage.release();
 }
 //---------------------------------------------------------------------------
-TStrings * __fastcall TConfiguration::LoadDirectoryStatisticsCache(
+TStrings * TConfiguration::LoadDirectoryStatisticsCache(
   const UnicodeString & SessionKey, const UnicodeString & Path, const TCopyParamType & CopyParam)
 {
   std::unique_ptr<THierarchicalStorage> Storage(OpenDirectoryStatisticsCache(false));
@@ -1737,7 +1737,7 @@ TStrings * __fastcall TConfiguration::LoadDirectoryStatisticsCache(
   return Result.release();
 }
 //---------------------------------------------------------------------------
-void __fastcall TConfiguration::SaveDirectoryStatisticsCache(
+void TConfiguration::SaveDirectoryStatisticsCache(
   const UnicodeString & SessionKey, const UnicodeString & Path, const TCopyParamType & CopyParam, TStrings * DataList)
 {
   std::unique_ptr<THierarchicalStorage> Storage(OpenDirectoryStatisticsCache(true));
