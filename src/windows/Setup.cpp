@@ -749,8 +749,8 @@ void TemporaryDirectoryCleanup()
       {
         for (int Index = 0; Index < Folders->Count; Index++)
         {
-            ShellExecute(Application->Handle, nullptr,
-              Folders->Strings[Index].c_str(), nullptr, nullptr, SW_SHOWNORMAL);
+          ShellExecute(Application->Handle, nullptr,
+            Folders->Strings[Index].c_str(), nullptr, nullptr, SW_SHOWNORMAL);
         }
       }
       Continue = (Answer == qaYes);
@@ -1125,7 +1125,7 @@ static void DoQueryUpdates(bool CollectUsage)
   }
 }
 
-UnicodeString FormatUpdatesMessage(UnicodeString Message)
+UnicodeString FormatUpdatesMessage(
   UnicodeString & UpdatesMessage, const UnicodeString & AMessage, const TUpdatesConfiguration & Updates)
 {
   UnicodeString Message = AMessage;
@@ -2175,11 +2175,12 @@ void AutoShowNewTip()
   ShowTip(true);
 }
 
-void ShowTips()
+bool AnyTips()
 {
   return !WinConfiguration->Updates.Results.Tips.IsEmpty();
 }
 
+void ShowTips()
 {
   {
     TOperationVisualizer Visualizer;

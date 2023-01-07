@@ -12,6 +12,7 @@ typedef void (__closure *TProcessMessagesEvent)();
 #endif // #if 0
 using TProcessMessagesEvent = nb::FastDelegate0<void>;
 
+void GUIFinalize();
 NB_CORE_EXPORT bool FindFile(UnicodeString &APath);
 NB_CORE_EXPORT bool FindTool(UnicodeString Name, UnicodeString &APath);
 NB_CORE_EXPORT void ExecuteTool(UnicodeString Name);
@@ -24,6 +25,9 @@ NB_CORE_EXPORT void ExecuteShellCheckedAndWait(UnicodeString Command, TProcessMe
 __removed TObjectList * StartCreationDirectoryMonitorsOnEachDrive(uintptr_t Filter, TFileChangedEvent OnChanged);
 NB_CORE_EXPORT bool CopyCommandToClipboard(UnicodeString ACommand);
 extern bool DontCopyCommandToClipboard;
+bool CopyCommandToClipboard(const UnicodeString & Command);
+bool DoesSessionExistInPutty(TSessionData * SessionData);
+bool ExportSessionToPutty(TSessionData * SessionData, bool ReuseExisting, const UnicodeString & SessionName);
 NB_CORE_EXPORT void OpenSessionInPutty(UnicodeString PuttyPath,
   TSessionData *SessionData);
 NB_CORE_EXPORT bool SpecialFolderLocation(intptr_t PathID, UnicodeString &APath);
@@ -39,32 +43,33 @@ typedef int (*TCalculateWidth)(UnicodeString Text, void * Arg);
 void ApplyTabs(
   UnicodeString & Text, wchar_t Padding,
   TCalculateWidth CalculateWidth, void * CalculateWidthArg);
-TPanel * CreateLabelPanel(TPanel * Parent, UnicodeString & Label);
+TPanel * CreateLabelPanel(TPanel * Parent, const UnicodeString & Label);
 void SelectScaledImageList(TImageList * ImageList);
 void CopyImageList(TImageList * TargetList, TImageList * SourceList);
-void LoadDialogImage(TImage * Image, UnicodeString & ImageName);
+void LoadDialogImage(TImage * Image, const UnicodeString & ImageName);
 int DialogImageSize(TForm * Form);
 int NormalizePixelsPerInch(int PixelsPerInch);
 void HideComponentsPanel(TForm * Form);
-UnicodeString FormatIncrementalSearchStatus(UnicodeString & Text, bool HaveNext);
+UnicodeString FormatIncrementalSearchStatus(const UnicodeString & Text, bool HaveNext);
 namespace Webbrowserex
 {
   class TWebBrowserEx;
 }
 using namespace Webbrowserex;
-TWebBrowserEx * CreateBrowserViewer(TPanel * Parent, UnicodeString & LoadingLabel);
+TWebBrowserEx * CreateBrowserViewer(TPanel * Parent, const UnicodeString & LoadingLabel);
 void SetBrowserDesignModeOff(TWebBrowserEx * WebBrowser);
 void AddBrowserLinkHandler(TWebBrowserEx * WebBrowser,
-  UnicodeString & Url, TNotifyEvent Handler);
-void NavigateBrowserToUrl(TWebBrowserEx * WebBrowser, UnicodeString & Url);
+  const UnicodeString & Url, TNotifyEvent Handler);
+void NavigateBrowserToUrl(TWebBrowserEx * WebBrowser, const UnicodeString & Url);
 void ReadyBrowserForStreaming(TWebBrowserEx * WebBrowser);
 void WaitBrowserToIdle(TWebBrowserEx * WebBrowser);
 void HideBrowserScrollbars(TWebBrowserEx * WebBrowser);
-UnicodeString GenerateAppHtmlPage(TFont * Font, TPanel * Parent, UnicodeString & Body, bool Seamless);
-void LoadBrowserDocument(TWebBrowserEx * WebBrowser, UnicodeString & Document);
+UnicodeString GenerateAppHtmlPage(TFont * Font, TPanel * Parent, const UnicodeString & Body, bool Seamless);
+void LoadBrowserDocument(TWebBrowserEx * WebBrowser, const UnicodeString & Document);
+TComponent * FindComponentRecursively(TComponent * Root, const UnicodeString & Name);
 void GetInstrutionsTheme(
   TColor & MainInstructionColor, HFONT & MainInstructionFont, HFONT & InstructionFont);
-  TColor & MainInstructionColor, HFONT & MainInstructionFont, HFONT & InstructionFont);
+bool CanShowTimeEstimate(TDateTime StartTime);
 #endif // #if 0
 
 class NB_CORE_EXPORT TLocalCustomCommand : public TFileCustomCommand
@@ -83,7 +88,7 @@ public:
   bool HasLocalFileName(UnicodeString Command) const;
 
 protected:
-  virtual intptr_t PatternLen(UnicodeString Command, intptr_t Index) const;
+  virtual int32_t PatternLen(UnicodeString Command, int32_t Index) const;
   virtual bool PatternReplacement(intptr_t Index, UnicodeString Pattern,
     UnicodeString &Replacement, bool &Delimit) const;
   virtual void DelimitReplacement(UnicodeString &Replacement, wchar_t Quote);
@@ -94,9 +99,10 @@ private:
 };
 
 #if 0
-namespace Pngimagelist {
-class TPngImageList;
-class TPngImageCollectionItem;
+namespace Pngimagelist
+{
+  class TPngImageList;
+  class TPngImageCollectionItem;
 }
 using namespace Pngimagelist;
 
@@ -109,7 +115,7 @@ class TFrameAnimation
 {
 public:
   TFrameAnimation();
-  void Init(TPaintBox * PaintBox, UnicodeString & Name);
+  void Init(TPaintBox * PaintBox, const UnicodeString & Name);
   void Start();
   void Stop();
 
@@ -140,10 +146,10 @@ class TScreenTipHintWindow : public THintWindow
 {
 public:
   TScreenTipHintWindow(TComponent * Owner);
-  virtual TRect CalcHintRect(int MaxWidth, UnicodeString AHint, void * AData);
-  virtual void ActivateHintData(const TRect & Rect, UnicodeString AHint, void * AData);
+  virtual TRect CalcHintRect(int MaxWidth, const UnicodeString AHint, void * AData);
+  virtual void ActivateHintData(const TRect & Rect, const UnicodeString AHint, void * AData);
 
-  static void CalcHintTextRect(TControl * Control, TCanvas * Canvas, TRect & Rect, UnicodeString & Hint);
+  static void CalcHintTextRect(TControl * Control, TCanvas * Canvas, TRect & Rect, const UnicodeString & Hint);
 
 protected:
   virtual void Paint();
@@ -158,12 +164,12 @@ private:
   bool FHintPopup;
   std::unique_ptr<TFont> FScaledHintFont;
 
-  UnicodeString GetLongHintIfAny(UnicodeString & AHint);
+  UnicodeString GetLongHintIfAny(const UnicodeString & AHint);
   static int GetTextFlags(TControl * Control);
-
+  bool IsPathLabel(TControl * HintControl);
   bool UseBoldShortHint(TControl * HintControl);
-  int GetMargin(TControl * HintControl, UnicodeString & Hint);
-  TFont * GetFont(TControl * HintControl, UnicodeString & Hint);
+  int GetMargin(TControl * HintControl, const UnicodeString & Hint);
+  TFont * GetFont(TControl * HintControl, const UnicodeString & Hint);
   TControl * GetHintControl(void * Data);
   void SplitHint(
     TControl * HintControl, UnicodeString & Hint, UnicodeString & ShortHint, UnicodeString & LongHint);
@@ -201,8 +207,6 @@ NB_CORE_EXPORT UnicodeString FileNameFormatString(UnicodeString SingleFileFormat
 #if 0
 // Based on:
 // https://stackoverflow.com/q/6912424/850848
-NB_CORE_EXPORT extern UnicodeString PageantTool;
-NB_CORE_EXPORT extern UnicodeString PuttygenTool;
 // https://stackoverflow.com/q/4685863/850848
 class TUIStateAwareLabel : public TLabel
 {
@@ -213,7 +217,7 @@ protected:
 // an inline method without a compiler warning, which we cannot suppress in a macro.
 // And having the implementation in a real code (not macro) also allows us to debug the code.
 void FindComponentClass(
-  void * Data, TReader * Reader, UnicodeString ClassName, TComponentClass & ComponentClass);
+  void * Data, TReader * Reader, const UnicodeString ClassName, TComponentClass & ComponentClass);
 #define INTERFACE_HOOK_CUSTOM(PARENT) \
   protected: \
     virtual void ReadState(TReader * Reader) \
@@ -225,3 +229,6 @@ void FindComponentClass(
 
 
 #endif // #if 0
+
+NB_CORE_EXPORT extern UnicodeString PageantTool;
+NB_CORE_EXPORT extern UnicodeString PuttygenTool;
