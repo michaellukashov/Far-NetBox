@@ -83,7 +83,7 @@ void __fastcall HookFormActivation(TCustomForm * Form);
 void __fastcall UnhookFormActivation(TCustomForm * Form);
 void __fastcall ShowFormNoActivate(TForm * Form);
 TPanel * __fastcall CreateBlankPanel(TComponent * Owner);
-typedef void __fastcall (*TRescaleEvent)(TComponent * Sender, TObject * Token);
+typedef void (*TRescaleEvent)(TComponent * Sender, TObject * Token);
 void __fastcall SetRescaleFunction(
   TComponent * Component, TRescaleEvent OnRescale, TObject * Token = NULL, bool OwnsToken = false);
 void __fastcall RecordFormImplicitRescale(TForm * Form);

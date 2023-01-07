@@ -448,7 +448,7 @@ using TSynchronizeChecklistCalculateSizeEvent = nb::FastDelegate3<void,
   TSynchronizeChecklist * /*Checklist*/, const TSynchronizeChecklist::TItemList & /*Items*/, void * /*Token*/>;
 using TSynchronizeMoveEvent = nb::FastDelegate4<void,
   TOperationSide /*Side*/, UnicodeString /*FileName*/, UnicodeString /*NewFileName*/, TRemoteFile * /*RemoteFile*/>;
-typedef void __fastcall (__closure *TSynchronizeBrowseEvent)(
+typedef void (__closure *TSynchronizeBrowseEvent)(
   TOperationSide Side, TSynchronizeChecklist::TAction Action, const TSynchronizeChecklist::TItem * Item);
 
 bool DoSynchronizeChecklistDialog(TSynchronizeChecklist * Checklist,

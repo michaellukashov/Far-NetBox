@@ -19,7 +19,7 @@ class TManagedTerminal : public TTerminal
 {
 public:
   __fastcall TManagedTerminal(TSessionData * SessionData, TConfiguration * Configuration);
-  virtual __fastcall ~TManagedTerminal();
+  virtual ~TManagedTerminal();
 
   TSessionData * StateData{nullptr};
   TObject * LocalExplorerState{nullptr};
@@ -44,7 +44,7 @@ public:
   static void __fastcall DestroyInstance();
 
   __fastcall TTerminalManager();
-  __fastcall ~TTerminalManager();
+  ~TTerminalManager();
 
   TManagedTerminal * __fastcall NewManagedTerminal(TSessionData * Data);
   TManagedTerminal * __fastcall NewTerminals(TList * DataList);

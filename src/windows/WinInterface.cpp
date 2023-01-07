@@ -546,7 +546,7 @@ static TStrings * __fastcall StackInfoListToStrings(
   {
     UnicodeString Frame = StackTrace->Strings[Index];
     // get rid of declarations "flags" that are included in .map
-    Frame = ReplaceStr(Frame, L"__fastcall ", L"");
+    Frame = ReplaceStr(Frame, L"", L"");
     Frame = ReplaceStr(Frame, L"__linkproc__ ", L"");
     if (DebugAlwaysTrue(!Frame.IsEmpty() && (Frame[1] == L'(')))
     {
@@ -1724,7 +1724,7 @@ void WinFinalize()
 }
 #if 0
 
-__fastcall ::TTrayIcon::TTrayIcon(unsigned int Id)
+::TTrayIcon::TTrayIcon(unsigned int Id)
 {
   FVisible = false;
   FOnClick = NULL;
@@ -1761,7 +1761,7 @@ __fastcall ::TTrayIcon::TTrayIcon(unsigned int Id)
   FTaskbarCreatedMsg = RegisterWindowMessage(L"TaskbarCreated");
 }
 
-__fastcall ::TTrayIcon::~TTrayIcon()
+::TTrayIcon::~TTrayIcon()
 {
   // make sure we hide icon even in case it was shown just to pop up the balloon
   // (in which case Visible == false)
@@ -1771,7 +1771,7 @@ __fastcall ::TTrayIcon::~TTrayIcon()
   delete FTrayIcon;
 }
 
-void __fastcall ::TTrayIcon::PopupBalloon(UnicodeString Title,
+void ::TTrayIcon::PopupBalloon(UnicodeString Title,
   const UnicodeString & Str, TQueryType QueryType, unsigned int Timeout,
   TNotifyEvent OnBalloonClick, TObject * BalloonUserData)
 {
@@ -1829,14 +1829,14 @@ void __fastcall ::TTrayIcon::PopupBalloon(UnicodeString Title,
   FTrayIcon->uFlags = FTrayIcon->uFlags & ~NIF_INFO;
 }
 
-void __fastcall ::TTrayIcon::BalloonCancelled()
+void ::TTrayIcon::BalloonCancelled()
 {
   FOnBalloonClick = NULL;
   delete FBalloonUserData;
   FBalloonUserData = NULL;
 }
 
-void __fastcall ::TTrayIcon::CancelBalloon()
+void ::TTrayIcon::CancelBalloon()
 {
   KillTimer(FTrayIcon->hWnd, 1);
   if (Visible)
@@ -1854,7 +1854,7 @@ void __fastcall ::TTrayIcon::CancelBalloon()
   BalloonCancelled();
 }
 
-bool __fastcall ::TTrayIcon::Notify(unsigned int Message)
+bool ::TTrayIcon::Notify(unsigned int Message)
 {
   bool Result = SUCCEEDED(Shell_NotifyIcon(Message, (NOTIFYICONDATA*)FTrayIcon));
   if (Result && (Message == NIM_ADD))
@@ -1873,7 +1873,7 @@ bool __fastcall ::TTrayIcon::Notify(unsigned int Message)
   return Result;
 }
 
-void __fastcall ::TTrayIcon::Update()
+void ::TTrayIcon::Update()
 {
   if (Visible)
   {
@@ -1881,7 +1881,7 @@ void __fastcall ::TTrayIcon::Update()
   }
 }
 
-void __fastcall ::TTrayIcon::SetVisible(bool value)
+void ::TTrayIcon::SetVisible(bool value)
 {
   if (Visible != value)
   {
@@ -1899,7 +1899,7 @@ void __fastcall ::TTrayIcon::SetVisible(bool value)
   }
 }
 
-void __fastcall ::TTrayIcon::WndProc(TMessage & Message)
+void ::TTrayIcon::WndProc(TMessage & Message)
 {
   try
   {
@@ -1978,12 +1978,12 @@ void __fastcall ::TTrayIcon::WndProc(TMessage & Message)
   }
 }
 
-UnicodeString __fastcall ::TTrayIcon::GetHint()
+UnicodeString ::TTrayIcon::GetHint()
 {
   return FTrayIcon->szTip;
 }
 
-void __fastcall ::TTrayIcon::SetHint(UnicodeString value)
+void ::TTrayIcon::SetHint(UnicodeString value)
 {
   if (Hint != value)
   {

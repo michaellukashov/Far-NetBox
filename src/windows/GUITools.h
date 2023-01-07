@@ -35,7 +35,7 @@ NB_CORE_EXPORT bool DeleteDirectory(UnicodeString ADirName);
 int GetSessionColorImage(TCustomImageList * ImageList, TColor Color, int MaskIndex);
 void RegenerateSessionColorsImageList(TCustomImageList * ImageList, int MaskIndex);
 void __fastcall SetSubmenu(TTBXCustomItem * Item);
-typedef int __fastcall (*TCalculateWidth)(UnicodeString Text, void * Arg);
+typedef int (*TCalculateWidth)(UnicodeString Text, void * Arg);
 void __fastcall ApplyTabs(
   UnicodeString & Text, wchar_t Padding,
   TCalculateWidth CalculateWidth, void * CalculateWidthArg);

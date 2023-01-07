@@ -507,7 +507,7 @@ public:
     OwnsToken = AOwnsToken;
   }
 
-  virtual __fastcall ~TRescaleComponent()
+  virtual ~TRescaleComponent()
   {
     if (OwnsToken)
     {
@@ -2635,7 +2635,7 @@ class TDesktopFontManager : public TComponent
 {
 public:
   TDesktopFontManager();
-  virtual __fastcall ~TDesktopFontManager();
+  virtual ~TDesktopFontManager();
 
   void AddControl(TControl * Control);
   void Update();

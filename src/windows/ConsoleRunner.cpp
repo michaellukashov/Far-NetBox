@@ -71,7 +71,7 @@ protected:
   friend class TConsoleInputThread;
 
   __fastcall TOwnConsole();
-  virtual __fastcall ~TOwnConsole();
+  virtual ~TOwnConsole();
 
   void __fastcall BreakInput();
   void __fastcall CancelInput();
@@ -283,7 +283,7 @@ public:
   {
   }
 
-  virtual __fastcall ~TConsoleInputThread()
+  virtual ~TConsoleInputThread()
   {
     Close();
   }
@@ -521,7 +521,7 @@ class TExternalConsole : public TConsole
 {
 public:
   __fastcall TExternalConsole(const UnicodeString Instance, bool NoInteractiveInput);
-  virtual __fastcall ~TExternalConsole();
+  virtual ~TExternalConsole();
 
   virtual void __fastcall Print(UnicodeString Str, bool FromBeginning = false, bool Error = false);
   virtual bool __fastcall Input(UnicodeString & Str, bool Echo, unsigned int Timer);

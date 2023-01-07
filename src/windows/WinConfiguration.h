@@ -319,7 +319,7 @@ class TEditorList
 {
 public:
   __fastcall TEditorList();
-  virtual __fastcall ~TEditorList();
+  virtual ~TEditorList();
 
   const TEditorPreferences * __fastcall Find(const UnicodeString FileName,
     bool Local, const TFileMasks::TParams & Params) const;
@@ -364,7 +364,7 @@ enum TSessionTabNameFormat { stnfNone, stnfShortPath, stnfShortPathTrunc };
 enum TDoubleClickAction { dcaOpen = 0, dcaCopy = 1, dcaEdit = 2 };
 enum TStoreTransition { stInit, stStandard, stStoreFresh, stStoreMigrated, stStoreAcknowledged };
 
-typedef void __fastcall (__closure *TMasterPasswordPromptEvent)();
+typedef void (__closure *TMasterPasswordPromptEvent)();
 
 class TWinConfiguration : public TCustomWinConfiguration
 {
@@ -645,7 +645,7 @@ protected:
 
 public:
   __fastcall TWinConfiguration();
-  virtual __fastcall ~TWinConfiguration();
+  virtual ~TWinConfiguration();
   virtual void __fastcall Default();
   void __fastcall ClearTemporaryLoginData();
   virtual THierarchicalStorage * CreateScpStorage(bool & SessionList);
@@ -880,7 +880,7 @@ class TCustomCommandList
 {
 public:
   __fastcall TCustomCommandList();
-  __fastcall ~TCustomCommandList();
+  ~TCustomCommandList();
 
   void __fastcall Load(THierarchicalStorage * Storage);
   void __fastcall Save(THierarchicalStorage * Storage);
