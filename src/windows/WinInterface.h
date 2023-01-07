@@ -29,6 +29,30 @@ constexpr uintptr_t mpNeverAskAgainCheck =   0x01;
 constexpr uintptr_t mpAllowContinueOnError = 0x02;
 
 extern HINSTANCE HInstance;
+
+#define UPLOAD_IF_ANY_SWITCH L"UploadIfAny"
+#define UPLOAD_SWITCH L"Upload"
+#define SYNCHRONIZE_SWITCH L"Synchronize"
+#define KEEP_UP_TO_DATE_SWITCH L"KeepUpToDate"
+#define JUMPLIST_SWITCH L"JumpList"
+#define DESKTOP_SWITCH L"Desktop"
+#define SEND_TO_HOOK_SWITCH L"SendToHook"
+#define UNSAFE_SWITCH L"Unsafe"
+#define DEFAULTS_SWITCH L"Defaults"
+#define NEWINSTANCE_SWICH L"NewInstance"
+#define KEYGEN_SWITCH L"KeyGen"
+#define KEYGEN_OUTPUT_SWITCH L"Output"
+#define KEYGEN_COMMENT_SWITCH L"Comment"
+#define KEYGEN_CHANGE_PASSPHRASE_SWITCH L"ChangePassphrase"
+#define LOG_SWITCH L"Log"
+#define LOGSIZE_SWITCH L"LogSize"
+#define LOGSIZE_SEPARATOR L"*"
+#define INI_SWITCH L"Ini"
+#define RAW_CONFIG_SWITCH L"RawConfig"
+#define FINGERPRINTSCAN_SWITCH L"FingerprintScan"
+#define DUMPCALLSTACK_SWITCH L"DumpCallstack"
+#define INFO_SWITCH L"Info"
+#define COMREGISTRATION_SWITCH L"ComRegistration"
 #define BROWSE_SWITCH L"Browse"
 #define NOINTERACTIVEINPUT_SWITCH L"NoInteractiveInput"
 #define STDOUT_SWITCH L"StdOut"
@@ -36,58 +60,34 @@ extern HINSTANCE HInstance;
 #define STDINOUT_BINARY_VALUE L"binary"
 #define STDINOUT_CHUNKED_VALUE L"chunked"
 
-#define UPLOAD_IF_ANY_SWITCH "UploadIfAny"
-#define UPLOAD_SWITCH "Upload"
-#define SYNCHRONIZE_SWITCH "Synchronize"
-#define KEEP_UP_TO_DATE_SWITCH "KeepUpToDate"
-#define JUMPLIST_SWITCH "JumpList"
-#define DESKTOP_SWITCH "Desktop"
-#define SEND_TO_HOOK_SWITCH "SendToHook"
-#define UNSAFE_SWITCH "Unsafe"
-#define DEFAULTS_SWITCH "Defaults"
-#define NEWINSTANCE_SWICH "NewInstance"
-#define KEYGEN_SWITCH "KeyGen"
-#define KEYGEN_OUTPUT_SWITCH "Output"
-#define KEYGEN_COMMENT_SWITCH "Comment"
-#define KEYGEN_CHANGE_PASSPHRASE_SWITCH "ChangePassphrase"
-#define LOG_SWITCH "Log"
-#define LOGSIZE_SWITCH "LogSize"
-#define LOGSIZE_SEPARATOR "*"
-#define INI_SWITCH "Ini"
-#define RAW_CONFIG_SWITCH "RawConfig"
-#define FINGERPRINTSCAN_SWITCH "FingerprintScan"
-#define DUMPCALLSTACK_SWITCH "DumpCallstack"
-#define INFO_SWITCH "Info"
-#define COMREGISTRATION_SWITCH "ComRegistration"
-
-#define DUMPCALLSTACK_EVENT "WinSCPCallstack%d"
+#define DUMPCALLSTACK_EVENT L"WinSCPCallstack%d"
 
 struct NB_CORE_EXPORT TMessageParams : public TObject
 {
   NB_DISABLE_COPY(TMessageParams)
 public:
   explicit TMessageParams(uintptr_t AParams) noexcept;
+  explicit TMessageParams(const TQueryParams * AParams);
   void Assign(const TMessageParams *AParams);
 
   const TQueryButtonAlias *Aliases{nullptr};
-  uintptr_t AliasesCount{0};
-  uintptr_t Flags{0};
-  uintptr_t Params{0};
-  uintptr_t Timer{0};
+  uint32_t AliasesCount{0};
+  uint32_t Params{0};
+  uint32_t Timer{0};
   TQueryParamsTimerEvent TimerEvent;
   UnicodeString TimerMessage;
   uint32_t TimerAnswers{0};
   TQueryType TimerQueryType{static_cast<TQueryType>(-1)};
-  uintptr_t Timeout{0};
-  uintptr_t TimeoutAnswer{0};
-  unsigned int TimeoutResponse;
+  uint32_t Timeout{0};
+  uint32_t TimeoutAnswer{0};
+  uint32_t TimeoutResponse;
   UnicodeString NeverAskAgainTitle;
-  uintptr_t NeverAskAgainAnswer{0};
+  uint32_t NeverAskAgainAnswer{0};
   bool NeverAskAgainCheckedInitially{false};
   bool AllowHelp{false};
   UnicodeString ImageName;
   UnicodeString MoreMessagesUrl;
-  intptr_t MoreMessagesSize{0};
+  TSize MoreMessagesSize{0};
   UnicodeString CustomCaption;
 
 private:
@@ -110,7 +110,7 @@ void TerminateApplication();
 void ShowExtendedExceptionEx(TTerminal * Terminal, Exception * E);
 __removed void FormHelp(TCustomForm * Form);
 void SearchHelp(const UnicodeString & Message);
-void MessageWithNoHelp(UnicodeString Message);
+void MessageWithNoHelp(const UnicodeString & Message);
 
 class TProgramParams;
 bool CheckSafe(TProgramParams * Params);
@@ -129,7 +129,7 @@ void AddMenuLabel(Tb2item::TTBCustomItem * Menu, const UnicodeString & Label);
 void ClickToolbarItem(Tb2item::TTBCustomItem * Item, bool PositionCursor);
 #endif // #if 0
 
-void InitiateDialogTimeout(TForm * Dialog, unsigned int Timeout, TButton * Button, unsigned int Answer = 0);
+void InitiateDialogTimeout(TForm * Dialog, uint32_t Timeout, TButton * Button, unsigned int Answer = 0);
 
 // windows\WinHelp.cpp
 void InitializeWinHelp();
@@ -138,7 +138,7 @@ void FinalizeWinHelp();
 // windows\WinInterface.cpp
 uint32_t MessageDialog(UnicodeString Msg, TQueryType Type,
   uint32_t Answers, UnicodeString HelpKeyword = HELP_NONE, const TMessageParams *Params = nullptr);
-uint32_t MessageDialog(intptr_t Ident, TQueryType Type,
+uint32_t MessageDialog(int32_t Ident, TQueryType Type,
   uint32_t Answers, UnicodeString HelpKeyword = HELP_NONE, const TMessageParams *Params = nullptr);
 uint32_t SimpleErrorDialog(UnicodeString Msg, UnicodeString MoreMessages = "");
 
