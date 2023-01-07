@@ -1,9 +1,9 @@
-//---------------------------------------------------------------------------
+
 #pragma once
-//---------------------------------------------------------------------------
+
 int64_t GetLength64(CFile & file);
 BOOL GetLength64(CString filename, _int64 & size);
-//---------------------------------------------------------------------------
+
 struct CFileStatus64
 {
   bool m_has_ctime;
@@ -16,6 +16,6 @@ struct CFileStatus64
   BYTE m_attribute; // logical OR of CFile::Attribute enum values
   BYTE _m_padding;  // pad the structure to a WORD
 };
-//---------------------------------------------------------------------------
+
 BOOL PASCAL GetStatus64(LPCTSTR lpszFileName, CFileStatus64 & rStatus);
-//---------------------------------------------------------------------------
+

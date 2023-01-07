@@ -3,7 +3,7 @@
 
 #include <registry.hpp>
 #include <memory>
-//---------------------------------------------------------------------------
+
 enum TStorage
 {
   stDetect,
@@ -18,7 +18,7 @@ enum TStorageAccessMode
   smRead,
   smReadWrite,
 };
-//---------------------------------------------------------------------------
+
 class NB_CORE_EXPORT THierarchicalStorage : public TObject
 {
   NB_DISABLE_COPY(THierarchicalStorage)
@@ -130,7 +130,7 @@ protected:
   virtual UnicodeString GetSourceProtected() = 0;
   virtual bool GetTemporaryProtected() const;
 };
-//---------------------------------------------------------------------------
+
 class NB_CORE_EXPORT TRegistryStorage : public THierarchicalStorage
 {
   NB_DISABLE_COPY(TRegistryStorage)
@@ -190,7 +190,7 @@ private:
   mutable intptr_t FFailed{0};
   REGSAM FWowMode{0};
 };
-//---------------------------------------------------------------------------
+
 #if 0
 class TCustomIniFileStorage : public THierarchicalStorage
 {
@@ -249,7 +249,7 @@ protected:
   void CacheSections();
   void ResetCache();
 };
-//---------------------------------------------------------------------------
+
 class TIniFileStorage : public TCustomIniFileStorage
 {
 public:
@@ -263,7 +263,7 @@ private:
   TStrings *FOriginal;
   void ApplyOverrides();
 };
-//---------------------------------------------------------------------------
+
 class TOptionsStorage : public TCustomIniFileStorage
 {
 public:
@@ -274,7 +274,7 @@ protected:
   virtual bool GetTemporary();
 };
 #endif // #if 0
-//---------------------------------------------------------------------------
+
 NB_CORE_EXPORT UnicodeString PuttyMungeStr(UnicodeString Str);
 NB_CORE_EXPORT UnicodeString PuttyUnMungeStr(UnicodeString Str);
-//---------------------------------------------------------------------------
+

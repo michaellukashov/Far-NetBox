@@ -79,11 +79,11 @@ and this copyright notice stays intact in the source files.
 If you use this class in commercial applications, please send a short message
 to tim.kosse@gmx.de
 */
-//---------------------------------------------------------------------------
+
 #pragma once
-//---------------------------------------------------------------------------
+
 #include "AsyncSocketExLayer.h"
-//---------------------------------------------------------------------------
+
 class CAsyncProxySocketLayer : public CAsyncSocketExLayer
 {
 public:
@@ -143,7 +143,7 @@ private:
   t_proxydata m_ProxyData; // Structure to hold the data set by SetProxy
   char * m_pProxyPeerHost; // The host connected to
 };
-//---------------------------------------------------------------------------
+
 // Errorcodes
 #define PROXYERROR_NOERROR 0
 #define PROXYERROR_NOCONN 1 //Can't connect to proxy server, use GetLastError for more information
@@ -153,7 +153,7 @@ private:
 #define PROXYERROR_AUTHFAILED 5  //Authentication failed
 #define PROXYERROR_AUTHNOLOGON 6
 #define PROXYERROR_CANTRESOLVEHOST 7
-//---------------------------------------------------------------------------
+
 // Status messages
 // Called when a listen socket was created successfully. Unlike the normal listen function,
 // a socksified socket has to connect to the proxy to negotiate the details with the server
@@ -165,15 +165,15 @@ struct t_ListenSocketCreatedStruct
   unsigned long ip;
   UINT nPort;
 };
-//---------------------------------------------------------------------------
+
 // Proxytypes
 #define PROXYTYPE_NOPROXY 0
 #define PROXYTYPE_SOCKS4 1
 #define PROXYTYPE_SOCKS4A 2
 #define PROXYTYPE_SOCKS5 3
 #define PROXYTYPE_HTTP11 4
-//---------------------------------------------------------------------------
+
 #define PROXYOP_CONNECT 1
 #define PROXYOP_LISTEN 2
-//---------------------------------------------------------------------------
+
 

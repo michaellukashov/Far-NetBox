@@ -1,11 +1,11 @@
-﻿//---------------------------------------------------------------------------
+﻿
 #pragma once
-//---------------------------------------------------------------------------
+
 #include <rdestl/vector.h>
 #include <Masks.hpp>
 #include <Exceptions.h>
 #include "SessionData.h"
-//---------------------------------------------------------------------------
+
 class NB_CORE_EXPORT EFileMasksException : public Exception
 {
 public:
@@ -13,10 +13,10 @@ public:
   intptr_t ErrorStart{0};
   intptr_t ErrorLen{0};
 };
-//---------------------------------------------------------------------------
+
 extern const wchar_t IncludeExcludeFileMasksDelimiter;
 #define MASK_INDEX(DIRECTORY, INCLUDE) ((DIRECTORY ? 2 : 0) + (INCLUDE ? 0 : 1))
-//---------------------------------------------------------------------------
+
 class NB_CORE_EXPORT TFileMasks : public TObject
 {
 public:
@@ -141,12 +141,12 @@ private:
   static inline bool MatchesMaskMask(const TMaskMask &MaskMask, UnicodeString Str);
   void ThrowError(intptr_t Start, intptr_t End) const;
 };
-//---------------------------------------------------------------------------
+
 UnicodeString MaskFileName(UnicodeString AFileName, UnicodeString Mask);
 bool IsFileNameMask(UnicodeString AMask);
 bool IsEffectiveFileNameMask(UnicodeString AMask);
 UnicodeString DelimitFileNameMask(UnicodeString AMask);
-//---------------------------------------------------------------------------
+
 #if 0
 typedef void (__closure *TCustomCommandPatternEvent)
 (int Index, UnicodeString Pattern, void *Arg, UnicodeString &Replacement,
@@ -155,7 +155,7 @@ typedef void (__closure *TCustomCommandPatternEvent)
 using TCustomCommandPatternEvent = nb::FastDelegate5<void,
         intptr_t /*Index*/, UnicodeString /*Pattern*/, void * /*Arg*/, UnicodeString & /*Replacement*/,
         bool & /*LastPass*/>;
-//---------------------------------------------------------------------------
+
 class NB_CORE_EXPORT TCustomCommand : public TObject
 {
   friend class TInteractiveCustomCommand;
@@ -188,7 +188,7 @@ protected:
     UnicodeString &Replacement, bool &Delimit) const = 0;
   virtual void DelimitReplacement(UnicodeString &Replacement, wchar_t Quote);
 };
-//---------------------------------------------------------------------------
+
 class NB_CORE_EXPORT TInteractiveCustomCommand : public TCustomCommand
 {
   NB_DISABLE_COPY(TInteractiveCustomCommand)
@@ -211,7 +211,7 @@ protected:
 private:
   TCustomCommand *FChildCustomCommand{nullptr};
 };
-//---------------------------------------------------------------------------
+
 class TTerminal;
 struct NB_CORE_EXPORT TCustomCommandData : public TObject
 {
@@ -237,7 +237,7 @@ private:
 
   TSessionData *GetSessionDataPrivate() const;
 };
-//---------------------------------------------------------------------------
+
 class NB_CORE_EXPORT TFileCustomCommand : public TCustomCommand
 {
 public:
@@ -268,8 +268,8 @@ private:
   UnicodeString FFileName;
   UnicodeString FFileList;
 };
-//---------------------------------------------------------------------------
+
 typedef TFileCustomCommand TRemoteCustomCommand;
 extern UnicodeString FileMasksDelimiters;
 extern UnicodeString AnyMask;
-//---------------------------------------------------------------------------
+

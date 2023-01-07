@@ -1,12 +1,12 @@
-﻿//---------------------------------------------------------------------------
+﻿
 #pragma once
-//---------------------------------------------------------------------------
+
 #include <Common.h>
 #include <Exceptions.h>
 
 #include "Configuration.h"
 #include "CopyParam.h"
-//---------------------------------------------------------------------------
+
 class TFileOperationProgressType;
 enum TFileOperation { foNone, foCopy, foMove, foDelete, foSetProperties,
   foRename, foCustomCommand, foCalculateSize, foRemoteMove, foRemoteCopy,
@@ -27,7 +27,7 @@ using TFileOperationFinishedEvent = nb::FastDelegate6<void,
   TFileOperation /*Operation*/, TOperationSide /*Side*/, bool /*Temp*/,
   UnicodeString /*FileName*/, bool /*Success*/,
   TOnceDoneOperation & /*OnceDoneOperation*/>;
-//---------------------------------------------------------------------------
+
 class TFileOperationStatistics : public TObject
 {
 public:
@@ -40,7 +40,7 @@ public:
   int64_t TotalUploaded{0};
   int64_t TotalDownloaded{0};
 };
-//---------------------------------------------------------------------------
+
 class NB_CORE_EXPORT TFileOperationProgressType : public TObject
 {
 public:
@@ -301,7 +301,7 @@ public:
   bool GetTotalSizeSet() const { return FTotalSizeSet; }
   bool GetSuspended() const { return FSuspended; }
 };
-//---------------------------------------------------------------------------
+
 class NB_CORE_EXPORT TSuspendFileOperationProgress : public TObject
 {
   NB_DISABLE_COPY(TSuspendFileOperationProgress)
@@ -327,4 +327,4 @@ public:
 private:
   TFileOperationProgressType *FOperationProgress{nullptr};
 };
-//---------------------------------------------------------------------------
+

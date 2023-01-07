@@ -2,23 +2,23 @@
 #pragma once
 
 #include <FileSystems.h>
-//---------------------------------------------------------------------------
+
 using SSH_FX_TYPE = int32_t;
 using SSH_FXP_TYPE = int32_t;
 using SSH_FILEXFER_ATTR_TYPE = uint32_t;
 using SSH_FILEXFER_TYPE = uint8_t;
 using SSH_FXF_TYPE = uint32_t;
 using ACE4_TYPE = uint32_t;
-//---------------------------------------------------------------------------
+
 class TSFTPPacket;
 struct TOverwriteFileParams;
 struct TSFTPSupport;
 class TSecureShell;
 class TEncryption;
-//---------------------------------------------------------------------------
+
 __removed enum TSFTPOverwriteMode { omOverwrite, omAppend, omResume };
 __removed extern const int SFTPMaxVersion;
-//---------------------------------------------------------------------------
+
 NB_DEFINE_CLASS_ID(TSFTPFileSystem);
 class NB_CORE_EXPORT TSFTPFileSystem final : public TCustomFileSystem
 {
@@ -226,4 +226,4 @@ protected:
 private:
   const TSessionData *GetSessionData() const;
 };
-//---------------------------------------------------------------------------
+

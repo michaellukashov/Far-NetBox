@@ -15,9 +15,9 @@
 #include "TextsCore.h"
 #include "Script.h"
 #include <System.IOUtils.hpp>
-//---------------------------------------------------------------------------
+
 __removed #pragma package(smart_init)
-//---------------------------------------------------------------------------
+
 static UnicodeString DoXmlEscape(UnicodeString AStr, bool NewLine)
 {
   UnicodeString Str = AStr;
@@ -98,18 +98,18 @@ static UnicodeString DoXmlEscape(UnicodeString AStr, bool NewLine)
   }
   return Str;
 }
-//---------------------------------------------------------------------------
+
 static UnicodeString XmlEscape(UnicodeString Str)
 {
   return DoXmlEscape(Str, false);
 }
-//---------------------------------------------------------------------------
+
 static UnicodeString XmlAttributeEscape(UnicodeString Str)
 {
   return DoXmlEscape(Str, true);
 }
-//---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
+
+
 __removed #pragma warn -inl
 NB_DEFINE_CLASS_ID(TSessionActionRecord);
 class TSessionActionRecord : public TObject
@@ -470,8 +470,8 @@ private:
   TRemoteFile *FFile{nullptr};
 };
 __removed #pragma warn .inl
-//---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
+
+
 TSessionAction::TSessionAction(TActionLog *Log, TLogAction Action) noexcept
 {
   if (Log->FLogging)
@@ -483,7 +483,7 @@ TSessionAction::TSessionAction(TActionLog *Log, TLogAction Action) noexcept
     FRecord = nullptr;
   }
 }
-//---------------------------------------------------------------------------
+
 TSessionAction::~TSessionAction() noexcept
 {
   if (FRecord != nullptr)
@@ -491,7 +491,7 @@ TSessionAction::~TSessionAction() noexcept
     Commit();
   }
 }
-//---------------------------------------------------------------------------
+
 void TSessionAction::Restart()
 {
   if (FRecord != nullptr)
@@ -499,7 +499,7 @@ void TSessionAction::Restart()
     FRecord->Restart();
   }
 }
-//---------------------------------------------------------------------------
+
 void TSessionAction::Commit()
 {
   if (FRecord != nullptr)
@@ -509,7 +509,7 @@ void TSessionAction::Commit()
     Record->Commit();
   }
 }
-//---------------------------------------------------------------------------
+
 void TSessionAction::Rollback(Exception *E)
 {
   if (FRecord != nullptr)
@@ -519,7 +519,7 @@ void TSessionAction::Rollback(Exception *E)
     Record->Rollback(E);
   }
 }
-//---------------------------------------------------------------------------
+
 void TSessionAction::Cancel()
 {
   if (FRecord != nullptr)
@@ -529,20 +529,20 @@ void TSessionAction::Cancel()
     Record->Cancel();
   }
 }
-//---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
+
+
 TFileSessionAction::TFileSessionAction(TActionLog *Log, TLogAction Action) noexcept :
   TSessionAction(Log, Action)
 {
 }
-//---------------------------------------------------------------------------
+
 TFileSessionAction::TFileSessionAction(
   TActionLog *Log, TLogAction Action, const UnicodeString AFileName) noexcept :
   TSessionAction(Log, Action)
 {
   SetFileName(AFileName);
 }
-//---------------------------------------------------------------------------
+
 void TFileSessionAction::SetFileName(const UnicodeString AFileName)
 {
   if (FRecord != nullptr)
@@ -550,20 +550,20 @@ void TFileSessionAction::SetFileName(const UnicodeString AFileName)
     FRecord->SetFileName(AFileName);
   }
 }
-//---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
+
+
 TFileLocationSessionAction::TFileLocationSessionAction(
   TActionLog *Log, TLogAction Action) noexcept :
   TFileSessionAction(Log, Action)
 {
 }
-//---------------------------------------------------------------------------
+
 TFileLocationSessionAction::TFileLocationSessionAction(
   TActionLog *Log, TLogAction Action, const UnicodeString AFileName) noexcept :
   TFileSessionAction(Log, Action, AFileName)
 {
 }
-//---------------------------------------------------------------------------
+
 void TFileLocationSessionAction::Destination(const UnicodeString Destination)
 {
   if (FRecord != nullptr)
@@ -571,26 +571,26 @@ void TFileLocationSessionAction::Destination(const UnicodeString Destination)
     FRecord->Destination(Destination);
   }
 }
-//---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
+
+
 TUploadSessionAction::TUploadSessionAction(TActionLog *Log) noexcept :
   TFileLocationSessionAction(Log, laUpload)
 {
 }
-//---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
+
+
 TDownloadSessionAction::TDownloadSessionAction(TActionLog *Log) noexcept :
   TFileLocationSessionAction(Log, laDownload)
 {
 }
-//---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
+
+
 TChmodSessionAction::TChmodSessionAction(
   TActionLog *Log, const UnicodeString AFileName) noexcept :
   TFileSessionAction(Log, laChmod, AFileName)
 {
 }
-//---------------------------------------------------------------------------
+
 void TChmodSessionAction::Recursive()
 {
   if (FRecord != nullptr)
@@ -598,14 +598,14 @@ void TChmodSessionAction::Recursive()
     FRecord->Recursive();
   }
 }
-//---------------------------------------------------------------------------
+
 TChmodSessionAction::TChmodSessionAction(
   TActionLog *Log, const UnicodeString AFileName, const TRights &ARights) noexcept :
   TFileSessionAction(Log, laChmod, AFileName)
 {
   Rights(ARights);
 }
-//---------------------------------------------------------------------------
+
 void TChmodSessionAction::Rights(const TRights &Rights)
 {
   if (FRecord != nullptr)
@@ -613,7 +613,7 @@ void TChmodSessionAction::Rights(const TRights &Rights)
     FRecord->Rights(Rights);
   }
 }
-//---------------------------------------------------------------------------
+
 TTouchSessionAction::TTouchSessionAction(
   TActionLog *Log, const UnicodeString AFileName, const TDateTime &Modification) noexcept :
   TFileSessionAction(Log, laTouch, AFileName)
@@ -623,19 +623,19 @@ TTouchSessionAction::TTouchSessionAction(
     FRecord->Modification(Modification);
   }
 }
-//---------------------------------------------------------------------------
+
 TMkdirSessionAction::TMkdirSessionAction(
   TActionLog *Log, const UnicodeString AFileName) noexcept :
   TFileSessionAction(Log, laMkdir, AFileName)
 {
 }
-//---------------------------------------------------------------------------
+
 TRmSessionAction::TRmSessionAction(
   TActionLog *Log, const UnicodeString AFileName) noexcept :
   TFileSessionAction(Log, laRm, AFileName)
 {
 }
-//---------------------------------------------------------------------------
+
 void TRmSessionAction::Recursive()
 {
   if (FRecord != nullptr)
@@ -643,21 +643,21 @@ void TRmSessionAction::Recursive()
     FRecord->Recursive();
   }
 }
-//---------------------------------------------------------------------------
+
 TMvSessionAction::TMvSessionAction(TActionLog *Log,
   const UnicodeString AFileName, const UnicodeString ADestination) noexcept :
   TFileLocationSessionAction(Log, laMv, AFileName)
 {
   Destination(ADestination);
 }
-//---------------------------------------------------------------------------
+
 TCpSessionAction::TCpSessionAction(TActionLog * Log,
   const UnicodeString AFileName, const UnicodeString ADestination) noexcept :
   TFileLocationSessionAction(Log, laCp, AFileName)
 {
   Destination(ADestination);
 }
-//---------------------------------------------------------------------------
+
 TCallSessionAction::TCallSessionAction(TActionLog *Log,
   UnicodeString ACommand, const UnicodeString ADestination) noexcept :
   TSessionAction(Log, laCall)
@@ -668,7 +668,7 @@ TCallSessionAction::TCallSessionAction(TActionLog *Log,
     FRecord->Destination(ADestination);
   }
 }
-//---------------------------------------------------------------------------
+
 void TCallSessionAction::AddOutput(const UnicodeString Output, bool StdError)
 {
   if (FRecord != nullptr)
@@ -676,7 +676,7 @@ void TCallSessionAction::AddOutput(const UnicodeString Output, bool StdError)
     FRecord->AddOutput(Output, StdError);
   }
 }
-//---------------------------------------------------------------------------
+
 void TCallSessionAction::ExitCode(int ExitCode)
 {
   if (FRecord != nullptr)
@@ -684,7 +684,7 @@ void TCallSessionAction::ExitCode(int ExitCode)
     FRecord->ExitCode(ExitCode);
   }
 }
-//---------------------------------------------------------------------------
+
 TLsSessionAction::TLsSessionAction(TActionLog *Log,
   const UnicodeString Destination) noexcept :
   TSessionAction(Log, laLs)
@@ -694,7 +694,7 @@ TLsSessionAction::TLsSessionAction(TActionLog *Log,
     FRecord->Destination(Destination);
   }
 }
-//---------------------------------------------------------------------------
+
 void TLsSessionAction::FileList(TRemoteFileList *FileList)
 {
   if (FRecord != nullptr)
@@ -702,13 +702,13 @@ void TLsSessionAction::FileList(TRemoteFileList *FileList)
     FRecord->FileList(FileList);
   }
 }
-//---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
+
+
 TStatSessionAction::TStatSessionAction(TActionLog *Log, const UnicodeString AFileName) noexcept :
   TFileSessionAction(Log, laStat, AFileName)
 {
 }
-//---------------------------------------------------------------------------
+
 void TStatSessionAction::File(TRemoteFile *AFile)
 {
   if (FRecord != nullptr)
@@ -716,13 +716,13 @@ void TStatSessionAction::File(TRemoteFile *AFile)
     FRecord->File(AFile);
   }
 }
-//---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
+
+
 TChecksumSessionAction::TChecksumSessionAction(TActionLog *Log) noexcept :
   TFileSessionAction(Log, laChecksum)
 {
 }
-//---------------------------------------------------------------------------
+
 void TChecksumSessionAction::Checksum(const UnicodeString Alg, const UnicodeString Checksum)
 {
   if (FRecord != nullptr)
@@ -730,8 +730,8 @@ void TChecksumSessionAction::Checksum(const UnicodeString Alg, const UnicodeStri
     FRecord->Checksum(Alg, Checksum);
   }
 }
-//---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
+
+
 TCwdSessionAction::TCwdSessionAction(TActionLog *Log, const UnicodeString Path) noexcept :
   TSessionAction(Log, laCwd)
 {
@@ -740,8 +740,8 @@ TCwdSessionAction::TCwdSessionAction(TActionLog *Log, const UnicodeString Path) 
     FRecord->Cwd(Path);
   }
 }
-//---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
+
+
 TDifferenceSessionAction::TDifferenceSessionAction(TActionLog * Log, const TChecklistItem* Item) noexcept :
   TSessionAction(Log, laDifference)
 {
@@ -750,21 +750,21 @@ TDifferenceSessionAction::TDifferenceSessionAction(TActionLog * Log, const TChec
     FRecord->SynchronizeChecklistItem(Item);
   }
 }
-//---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
+
+
 TSessionInfo::TSessionInfo() noexcept
 {
   LoginTime = Now();
   CertificateVerifiedManually = false;
 }
-//---------------------------------------------------------------------------
+
 TFileSystemInfo::TFileSystemInfo() noexcept
 {
   __removed memset(&IsCapable, false, sizeof(IsCapable));
   nb::ClearArray(IsCapable);
 }
-//---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
+
+
 static FILE *LocalOpenLogFile(const UnicodeString LogFileName, TDateTime Started, TSessionData *SessionData, bool Append, UnicodeString &ANewFileName)
 {
   UnicodeString NewFileName = StripPathQuotes(GetExpandedLogFileName(LogFileName, Started, SessionData));
@@ -781,8 +781,8 @@ static FILE *LocalOpenLogFile(const UnicodeString LogFileName, TDateTime Started
   }
   return Result;
 }
-//---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
+
+
 constexpr wchar_t *LogLineMarks = L"<>!.*";
 TSessionLog::TSessionLog(TSessionUI *UI, TDateTime Started, TSessionData *SessionData,
   TConfiguration *Configuration) noexcept :
@@ -797,7 +797,7 @@ TSessionLog::TSessionLog(TSessionUI *UI, TDateTime Started, TSessionData *Sessio
   FClosed(false)
 {
 }
-//---------------------------------------------------------------------------
+
 TSessionLog::~TSessionLog() noexcept
 {
   FClosed = true;
@@ -805,19 +805,19 @@ TSessionLog::~TSessionLog() noexcept
   DebugAssert(FLogger == nullptr);
   __removed delete FCriticalSection;
 }
-//---------------------------------------------------------------------------
+
 void TSessionLog::SetParent(TSessionLog *AParent, const UnicodeString AName)
 {
   FParent = AParent;
   FName = AName;
 }
-//---------------------------------------------------------------------------
+
 void TSessionLog::DoAddToParent(TLogLineType Type, const UnicodeString ALine)
 {
   DebugAssert(FParent != nullptr);
   FParent->Add(Type, ALine);
 }
-//---------------------------------------------------------------------------
+
 void TSessionLog::DoAddToSelf(TLogLineType Type, const UnicodeString ALine)
 {
   if (LogToFile()) { try
@@ -852,7 +852,7 @@ void TSessionLog::DoAddToSelf(TLogLineType Type, const UnicodeString ALine)
     }
   }
 }
-//---------------------------------------------------------------------------
+
 UnicodeString TSessionLog::LogPartFileName(const UnicodeString BaseName, intptr_t Index)
 {
   UnicodeString Result;
@@ -866,7 +866,7 @@ UnicodeString TSessionLog::LogPartFileName(const UnicodeString BaseName, intptr_
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 void TSessionLog::CheckSize(int64_t Addition)
 {
   int64_t MaxSize = FConfiguration->GetLogMaxSize();
@@ -904,7 +904,7 @@ void TSessionLog::CheckSize(int64_t Addition)
     OpenLogFile();
   }
 }
-//---------------------------------------------------------------------------
+
 void TSessionLog::DoAdd(TLogLineType AType, const UnicodeString ALine,
   TDoAddLogEvent Event)
 {
@@ -921,7 +921,7 @@ void TSessionLog::DoAdd(TLogLineType AType, const UnicodeString ALine,
     Event(AType, Prefix + CutToChar(Line, L'\n', false));
   }
 }
-//---------------------------------------------------------------------------
+
 void TSessionLog::Add(TLogLineType Type, const UnicodeString ALine)
 {
   DebugAssert(FConfiguration);
@@ -956,7 +956,7 @@ void TSessionLog::Add(TLogLineType Type, const UnicodeString ALine)
     }
   }
 }
-//---------------------------------------------------------------------------
+
 void TSessionLog::AddException(Exception *E)
 {
   if (E != nullptr)
@@ -964,7 +964,7 @@ void TSessionLog::AddException(Exception *E)
     Add(llException, ExceptionLogString(E));
   }
 }
-//---------------------------------------------------------------------------
+
 void TSessionLog::ReflectSettings()
 {
   TGuard Guard(FCriticalSection); nb::used(Guard);
@@ -986,12 +986,12 @@ void TSessionLog::ReflectSettings()
   }
 
 }
-//---------------------------------------------------------------------------
+
 bool TSessionLog::LogToFileProtected() const
 {
   return GetLogging() && FConfiguration->GetLogToFile() && (FParent == nullptr);
 }
-//---------------------------------------------------------------------------
+
 void TSessionLog::CloseLogFile()
 {
   if (FLogger != nullptr)
@@ -1001,7 +1001,7 @@ void TSessionLog::CloseLogFile()
   FCurrentLogFileName.Clear();
   FCurrentFileName.Clear();
 }
-//---------------------------------------------------------------------------
+
 void TSessionLog::OpenLogFile()
 {
   DebugAssert(FConfiguration != nullptr);
@@ -1048,17 +1048,17 @@ void TSessionLog::OpenLogFile()
     CheckSize(0);
   }
 }
-//---------------------------------------------------------------------------
+
 void TSessionLog::AddSystemInfo()
 {
   AddStartupInfo(true);
 }
-//---------------------------------------------------------------------------
+
 void TSessionLog::AddStartupInfo()
 {
   AddStartupInfo(false);
 }
-//---------------------------------------------------------------------------
+
 void TSessionLog::AddStartupInfo(bool System)
 {
   TSessionData *Data = (System ? nullptr : FSessionData);
@@ -1075,7 +1075,7 @@ void TSessionLog::AddStartupInfo(bool System)
     }
   }
 }
-//---------------------------------------------------------------------------
+
 UnicodeString TSessionLog::GetTlsVersionName(TTlsVersion TlsVersion) const
 {
   switch (TlsVersion)
@@ -1094,7 +1094,7 @@ UnicodeString TSessionLog::GetTlsVersionName(TTlsVersion TlsVersion) const
     return "TLSv1.2";
   }
 }
-//---------------------------------------------------------------------------
+
 UnicodeString TSessionLog::LogSensitive(const UnicodeString Str)
 {
   if (FConfiguration->GetLogSensitive() && !Str.IsEmpty())
@@ -1103,7 +1103,7 @@ UnicodeString TSessionLog::LogSensitive(const UnicodeString Str)
   }
   return BooleanToEngStr(!Str.IsEmpty());
 }
-//---------------------------------------------------------------------------
+
 UnicodeString TSessionLog::GetCmdLineLog() const
 {
   TODO("GetCmdLine()");
@@ -1119,7 +1119,7 @@ UnicodeString TSessionLog::GetCmdLineLog() const
 
   return Result;
 }
-//---------------------------------------------------------------------------
+
 template <typename T>
 UnicodeString EnumName(T Value, const UnicodeString ANames)
 {
@@ -1138,10 +1138,10 @@ UnicodeString EnumName(T Value, const UnicodeString ANames)
 
   return L"(unknown)";
 }
-//---------------------------------------------------------------------------
+
 #define ADSTR(S) DoAdd(llMessage, S, nb::bind(&TSessionLog::DoAddToSelf, this));
 #define ADF(S, ...) DoAdd(llMessage, FORMAT(S, __VA_ARGS__), nb::bind(&TSessionLog::DoAddToSelf, this));
-//---------------------------------------------------------------------------
+
 void TSessionLog::DoAddStartupInfo(TSessionData *Data)
 {
   if (Data == nullptr)
@@ -1443,26 +1443,26 @@ void TSessionLog::DoAddStartupInfo(TSessionData *Data)
     AddSeparator();
   }
 }
-//---------------------------------------------------------------------------
+
 void TSessionLog::AddOption(const UnicodeString LogStr)
 {
   ADSTR(LogStr);
 }
-//---------------------------------------------------------------------------
+
 void TSessionLog::AddOptions(TOptions *Options)
 {
   Options->LogOptions(nb::bind(&TSessionLog::AddOption, this));
 }
-//---------------------------------------------------------------------------
+
 #undef ADF
 #undef ADSTR
-//---------------------------------------------------------------------------
+
 void TSessionLog::AddSeparator()
 {
   Add(llMessage, L"--------------------------------------------------------------------------");
 }
-//---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
+
+
 TActionLog::TActionLog(TSessionUI *UI, TDateTime Started, TSessionData *SessionData,
   TConfiguration *Configuration) noexcept :
   FConfiguration(Configuration),
@@ -1481,14 +1481,14 @@ TActionLog::TActionLog(TSessionUI *UI, TDateTime Started, TSessionData *SessionD
   DebugAssert(SessionData != nullptr);
   Init(UI, Started, SessionData, Configuration);
 }
-//---------------------------------------------------------------------------
+
 TActionLog::TActionLog(TDateTime Started, TConfiguration *Configuration) noexcept
 {
   Init(nullptr, Started, nullptr, Configuration);
   // not associated with session, so no need to waiting for anything
   ReflectSettings();
 }
-//---------------------------------------------------------------------------
+
 void TActionLog::Init(TSessionUI *UI, TDateTime Started, TSessionData *SessionData,
   TConfiguration *Configuration)
 {
@@ -1507,7 +1507,7 @@ void TActionLog::Init(TSessionUI *UI, TDateTime Started, TSessionData *SessionDa
   FInGroup = false;
   FEnabled = true;
 }
-//---------------------------------------------------------------------------
+
 TActionLog::~TActionLog() noexcept
 {
   DebugAssert(FPendingActions->GetCount() == 0);
@@ -1516,7 +1516,7 @@ TActionLog::~TActionLog() noexcept
   ReflectSettings();
   DebugAssert(FLogger == nullptr);
 }
-//---------------------------------------------------------------------------
+
 void TActionLog::Add(const UnicodeString Line)
 {
   DebugAssert(FConfiguration);
@@ -1579,19 +1579,19 @@ void TActionLog::Add(const UnicodeString Line)
     }
   }
 }
-//---------------------------------------------------------------------------
+
 void TActionLog::AddIndented(const UnicodeString ALine)
 {
   Add(FIndent + ALine);
 }
-//---------------------------------------------------------------------------
+
 void TActionLog::AddFailure(TStrings *Messages)
 {
   AddIndented(L"<failure>");
   AddMessages(L"  ", Messages);
   AddIndented(L"</failure>");
 }
-//---------------------------------------------------------------------------
+
 void TActionLog::AddFailure(Exception *E)
 {
   std::unique_ptr<TStrings> Messages(ExceptionToMoreMessages(E));
@@ -1607,7 +1607,7 @@ void TActionLog::AddFailure(Exception *E)
     }) end_try__finally
   }
 }
-//---------------------------------------------------------------------------
+
 void TActionLog::AddMessages(const UnicodeString Indent, TStrings *Messages)
 {
   for (intptr_t Index = 0; Index < Messages->GetCount(); ++Index)
@@ -1616,7 +1616,7 @@ void TActionLog::AddMessages(const UnicodeString Indent, TStrings *Messages)
       FORMAT((Indent + L"<message>%s</message>"), XmlEscape(Messages->GetString(Index))));
   }
 }
-//---------------------------------------------------------------------------
+
 void TActionLog::ReflectSettings()
 {
   TGuard Guard(FCriticalSection); nb::used(Guard);
@@ -1653,7 +1653,7 @@ void TActionLog::ReflectSettings()
   }
 
 }
-//---------------------------------------------------------------------------
+
 void TActionLog::CloseLogFile()
 {
   if (FLogger != nullptr)
@@ -1663,7 +1663,7 @@ void TActionLog::CloseLogFile()
   FCurrentLogFileName.Clear();
   FCurrentFileName.Clear();
 }
-//---------------------------------------------------------------------------
+
 void TActionLog::OpenLogFile()
 {
   DebugAssert(FConfiguration != nullptr);
@@ -1704,12 +1704,12 @@ void TActionLog::OpenLogFile()
     }
   }
 }
-//---------------------------------------------------------------------------
+
 void TActionLog::AddPendingAction(TSessionActionRecord *Action)
 {
   FPendingActions->Add(Action);
 }
-//---------------------------------------------------------------------------
+
 void TActionLog::RecordPendingActions()
 {
   while ((FPendingActions->GetCount() > 0) &&
@@ -1718,7 +1718,7 @@ void TActionLog::RecordPendingActions()
     FPendingActions->Delete(0);
   }
 }
-//---------------------------------------------------------------------------
+
 void TActionLog::BeginGroup(const UnicodeString Name)
 {
   DebugAssert(!FInGroup);
@@ -1728,7 +1728,7 @@ void TActionLog::BeginGroup(const UnicodeString Name)
       XmlAttributeEscape(Name), StandardTimestamp()));
   FIndent = L"    ";
 }
-//---------------------------------------------------------------------------
+
 void TActionLog::EndGroup()
 {
   DebugAssert(FInGroup);
@@ -1742,7 +1742,7 @@ void TActionLog::EndGroup()
     AddIndented("</group>");
   }
 }
-//---------------------------------------------------------------------------
+
 void TActionLog::SetEnabled(bool Value)
 {
   if (GetEnabled() != Value)

@@ -2,13 +2,13 @@
 
 #include <string_view>
 #include <Classes.hpp>
-//---------------------------------------------------------------------------
+
 #include <CopyParam.h>
-//---------------------------------------------------------------------------
+
 class THierarchicalStorage;
 class TBookmarkList;
 class TShortCuts;
-//---------------------------------------------------------------------------
+
 NB_DEFINE_CLASS_ID(TBookmarks);
 class NB_CORE_EXPORT TBookmarks : public TObject
 {
@@ -40,7 +40,7 @@ private:
   void LoadLevel(THierarchicalStorage *Storage, UnicodeString Key,
     intptr_t AIndex, TBookmarkList *BookmarkList);
 };
-//---------------------------------------------------------------------------
+
 class TBookmark;
 NB_DEFINE_CLASS_ID(TBookmarkList);
 class NB_CORE_EXPORT TBookmarkList : public TPersistent
@@ -93,7 +93,7 @@ public:
   bool GetNodeOpened(UnicodeString AIndex) const;
   void SetNodeOpened(UnicodeString AIndex, bool Value);
 };
-//---------------------------------------------------------------------------
+
 NB_DEFINE_CLASS_ID(TBookmark);
 class NB_CORE_EXPORT TBookmark : public TPersistent
 {
@@ -146,4 +146,4 @@ public:
 private:
   void Modify(intptr_t OldIndex);
 };
-//---------------------------------------------------------------------------
+

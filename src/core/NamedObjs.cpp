@@ -6,9 +6,9 @@
 #include <Sysutils.hpp>
 
 #include "NamedObjs.h"
-//---------------------------------------------------------------------------
+
 __removed #pragma package(smart_init)
-//---------------------------------------------------------------------------
+
 static intptr_t NamedObjectSortProc(const void *Item1, const void *Item2)
 {
   return get_as<TNamedObject>(Item1)->Compare(get_as<TNamedObject>(Item2));
@@ -19,13 +19,13 @@ TNamedObject::TNamedObject(TObjectClassId Kind, const UnicodeString AName) noexc
 {
   SetName(AName);
 }
-//---------------------------------------------------------------------------
+
 void TNamedObject::SetName(const UnicodeString Value)
 {
   FHidden = (Value.SubString(1, TNamedObjectList::HiddenPrefix.Length()) == TNamedObjectList::HiddenPrefix);
   FName = Value;
 }
-//---------------------------------------------------------------------------
+
 intptr_t TNamedObject::Compare(const TNamedObject *Other) const
 {
   intptr_t Result;
@@ -43,12 +43,12 @@ intptr_t TNamedObject::Compare(const TNamedObject *Other) const
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 bool TNamedObject::IsSameName(const UnicodeString AName) const
 {
   return (GetName().CompareIC(AName) == 0);
 }
-//---------------------------------------------------------------------------
+
 void TNamedObject::MakeUniqueIn(TNamedObjectList *List)
 {
   // This object can't be item of list, it would create infinite loop
@@ -79,12 +79,12 @@ void TNamedObject::MakeUniqueIn(TNamedObjectList *List)
 }
 //--- TNamedObjectList ------------------------------------------------------
 const UnicodeString TNamedObjectList::HiddenPrefix = "_!_";
-//---------------------------------------------------------------------------
+
 TNamedObjectList::TNamedObjectList(TObjectClassId Kind) noexcept :
   TObjectList(Kind)
 {
 }
-//---------------------------------------------------------------------------
+
 const TNamedObject * TNamedObjectList::AtObject(intptr_t Index) const
 {
   return const_cast<TNamedObjectList *>(this)->AtObject(Index);
@@ -94,7 +94,7 @@ TNamedObject * TNamedObjectList::AtObject(intptr_t Index)
 {
   return GetAs<TNamedObject>(Index + FHiddenCount);
 }
-//---------------------------------------------------------------------------
+
 void TNamedObjectList::Recount()
 {
   intptr_t Index = 0;
@@ -104,13 +104,13 @@ void TNamedObjectList::Recount()
   }
   FHiddenCount = Index;
 }
-//---------------------------------------------------------------------------
+
 void TNamedObjectList::AlphaSort()
 {
   Sort(NamedObjectSortProc);
   Recount();
 }
-//---------------------------------------------------------------------------
+
 intptr_t TNamedObjectList::Add(TObject *AObject)
 {
   intptr_t Result;
@@ -130,7 +130,7 @@ intptr_t TNamedObjectList::Add(TObject *AObject)
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 void TNamedObjectList::Notify(void *Ptr, TListNotification Action)
 {
   if (Action == lnDeleted)
@@ -159,7 +159,7 @@ const TNamedObject * TNamedObjectList::FindByName(const UnicodeString AName) con
 {
   return const_cast<TNamedObjectList *>(this)->FindByName(AName);
 }
-//---------------------------------------------------------------------------
+
 TNamedObject * TNamedObjectList::FindByName(const UnicodeString AName)
 {
   // This should/can be optimized when list is sorted
@@ -174,18 +174,18 @@ TNamedObject * TNamedObjectList::FindByName(const UnicodeString AName)
   }
   return nullptr;
 }
-//---------------------------------------------------------------------------
+
 void TNamedObjectList::SetCount(intptr_t Value)
 {
   TObjectList::SetCount(Value/*+HiddenCount*/);
 }
-//---------------------------------------------------------------------------
+
 intptr_t TNamedObjectList::GetCount() const
 {
   DebugAssert(FHiddenCount >= 0);
   return TObjectList::GetCount() - FHiddenCount;
 }
-//---------------------------------------------------------------------------
+
 intptr_t TNamedObjectList::GetCountIncludingHidden() const
 {
   DebugAssert(FHiddenCount >= 0);

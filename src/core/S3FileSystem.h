@@ -1,8 +1,8 @@
 ﻿#pragma once
-//------------------------------------------------------------------------------
+---
 #include <FileSystems.h>
 #include <rdestl/map.h>
-//------------------------------------------------------------------------------
+---
 struct TNeonCertificateData;
 struct TOverwriteFileParams;
 struct TLibS3CallbackData;
@@ -28,7 +28,7 @@ struct S3ResponseHandler;
 enum S3Status { };
 enum _S3Protocol { };
 #endif
-//------------------------------------------------------------------------------
+---
 NB_DEFINE_CLASS_ID(TS3FileSystem);
 class NB_CORE_EXPORT TS3FileSystem final : public TCustomFileSystem
 {
@@ -185,8 +185,8 @@ protected:
 private:
   void InitSslSessionImpl(ssl_st *Ssl) const;
 };
-//------------------------------------------------------------------------------
+---
 UnicodeString S3LibVersion();
 UnicodeString S3LibDefaultHostName();
 UnicodeString S3LibDefaultRegion();
-//------------------------------------------------------------------------------
+---

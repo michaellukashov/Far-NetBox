@@ -6,19 +6,19 @@
 
 #include <Sysutils.hpp>
 #include <Common.h>
-//---------------------------------------------------------------------------
+
 #define SYMLINKSTR L" -> "
 #define ROOTDIRECTORY L"/"
 #define FILETYPE_DEFAULT L'-'
 #define FILETYPE_SYMLINK L'L'
 #define FILETYPE_DIRECTORY L'D'
 #define PARTIAL_EXT L".filepart"
-//---------------------------------------------------------------------------
+
 class TTerminal;
 class TRights;
 class TRemoteFileList;
 class THierarchicalStorage;
-//---------------------------------------------------------------------------
+
 class NB_CORE_EXPORT TRemoteToken : public TObject
 {
 public:
@@ -65,7 +65,7 @@ public:
   UnicodeString GetDisplayText() const;
   UnicodeString GetLogText() const;
 };
-//---------------------------------------------------------------------------
+
 class NB_CORE_EXPORT TRemoteTokenList : public TObject
 {
 public:
@@ -89,7 +89,7 @@ private:
   mutable TNameMap FNameMap;
   mutable TIDMap FIDMap;
 };
-//---------------------------------------------------------------------------
+
 NB_DEFINE_CLASS_ID(TRemoteFile);
 class NB_CORE_EXPORT TRemoteFile : public TPersistent
 {
@@ -255,7 +255,7 @@ public:
 private:
   void Init();
 };
-//---------------------------------------------------------------------------
+
 NB_DEFINE_CLASS_ID(TRemoteDirectoryFile);
 class NB_CORE_EXPORT TRemoteDirectoryFile : public TRemoteFile
 {
@@ -268,7 +268,7 @@ public:
   void Init();
   virtual ~TRemoteDirectoryFile() = default;
 };
-//---------------------------------------------------------------------------
+
 NB_DEFINE_CLASS_ID(TRemoteParentDirectory);
 class NB_CORE_EXPORT TRemoteParentDirectory : public TRemoteDirectoryFile
 {
@@ -280,7 +280,7 @@ public:
   explicit TRemoteParentDirectory(TTerminal *ATerminal) noexcept;
   virtual ~TRemoteParentDirectory() = default;
 };
-//---------------------------------------------------------------------------
+
 NB_DEFINE_CLASS_ID(TRemoteFileList);
 class NB_CORE_EXPORT TRemoteFileList : public TObjectList
 {
@@ -333,7 +333,7 @@ public:
   UnicodeString GetDirectory() const { return FDirectory; }
   TDateTime GetTimestamp() const { return FTimestamp; }
 };
-//---------------------------------------------------------------------------
+
 NB_DEFINE_CLASS_ID(TRemoteDirectory);
 class NB_CORE_EXPORT TRemoteDirectory : public TRemoteFileList
 {
@@ -379,7 +379,7 @@ public:
   TRemoteFile *GetThisDirectory() const { return FThisDirectory; }
   TStrings *GetSelectedFiles() const;
 };
-//---------------------------------------------------------------------------
+
 class TRemoteDirectoryCache : private TStringList
 {
   CUSTOM_MEM_ALLOCATION_IMPL
@@ -406,7 +406,7 @@ private:
   bool GetIsEmptyPrivate() const;
   void DoClearFileList(UnicodeString Directory, bool SubDirs);
 };
-//---------------------------------------------------------------------------
+
 class TRemoteDirectoryChangesCache : private TStringList
 {
   CUSTOM_MEM_ALLOCATION_IMPL
@@ -439,7 +439,7 @@ private:
 
   intptr_t FMaxSize{0};
 };
-//---------------------------------------------------------------------------
+
 class NB_CORE_EXPORT TRights : public TObject
 {
 public:
@@ -565,7 +565,7 @@ public:
   bool GetAllowUndef() const { return FAllowUndef; }
   bool GetUnknown() const { return FUnknown; }
 };
-//---------------------------------------------------------------------------
+
 //enum TValidProperty { vpRights, vpGroup, vpOwner, vpModification, vpLastAccess, vpEncrypt };
 //typedef Set<TValidProperty, vpRights, vpEncrypt> TValidProperties;
 enum TValidProperty
@@ -618,7 +618,7 @@ public:
 private:
   int64_t FValue{0};
 };
-//---------------------------------------------------------------------------
+
 #if 0
 #endif // #if 0
 NB_DEFINE_CLASS_ID(TRemoteProperties);
@@ -653,7 +653,7 @@ public:
 public:
   TRemoteProperties &operator=(const TRemoteProperties &other);
 };
-//---------------------------------------------------------------------------
+
 enum TChecklistAction
 {
   saNone,
@@ -664,7 +664,7 @@ enum TChecklistAction
   saDeleteRemote,
   saDeleteLocal,
 };
-//---------------------------------------------------------------------------
+
 class TSynchronizeChecklist;
 NB_DEFINE_CLASS_ID(TChecklistItem);
 class NB_CORE_EXPORT TChecklistItem : public TObject
@@ -710,7 +710,7 @@ private:
 
 //  TChecklistItem() noexcept;
 };
-//---------------------------------------------------------------------------
+
 class NB_CORE_EXPORT TSynchronizeChecklist : public TObject
 {
   NB_DISABLE_COPY(TSynchronizeChecklist)
@@ -800,9 +800,9 @@ private:
 
   static intptr_t Compare(const void *AItem1, const void *AItem2);
 };
-//---------------------------------------------------------------------------
+
 class TFileOperationProgressType;
-//---------------------------------------------------------------------------
+
 class TSynchronizeProgress
 {
 public:
@@ -820,5 +820,5 @@ private:
   int64_t ItemSize(const TChecklistItem* ChecklistItem) const;
   int64_t GetProcessed(const TFileOperationProgressType * CurrentItemOperationProgress) const;
 };
-//---------------------------------------------------------------------------
+
 

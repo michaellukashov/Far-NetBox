@@ -1,6 +1,6 @@
-﻿//---------------------------------------------------------------------------
+﻿
 #pragma once
-//---------------------------------------------------------------------------
+
 /*This class parses the directory listing returned from the server. These formats are supported:
 -rw-r--r--   1 root     other        531 Jan 29 03:26 README\r\n
 dr-xr-xr-x   2 root     other        512 Apr  8  1994 etc\r\n
@@ -23,11 +23,11 @@ CII-MANUAL.TEX;1  213/216  29-JAN-1996 03:33:12  [ANONYMOU,ANONYMOUS]   (RWED,RW
 Multiple spaces are ignored (except within filenames), a single LF character at the end is also supported as well as multiple
 CRLF pairs and other variants.
 */
-//---------------------------------------------------------------------------
+
 #include "ApiLog.h"
 #include "FzApiStructures.h"
 #include "FileZillaApi.h"
-//---------------------------------------------------------------------------
+
 class CFtpListResult : public CApiLog
 {
 public:
@@ -92,4 +92,4 @@ protected:
   char * m_prevline{nullptr};
   char * m_curline{nullptr};
 };
-//---------------------------------------------------------------------------
+

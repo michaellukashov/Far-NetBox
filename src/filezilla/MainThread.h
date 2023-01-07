@@ -1,11 +1,11 @@
-//---------------------------------------------------------------------------
+
 #pragma once
-//---------------------------------------------------------------------------
+
 #include "FtpControlSocket.h"
 #include "structures.h"
 #include "FileZillaApi.h"
 #include "ApiLog.h"
-//---------------------------------------------------------------------------
+
 #define FZAPI_THREADMSG_PROCESSREPLY 0
 #define FZAPI_THREADMSG_COMMAND 1
 #define FZAPI_THREADMSG_TRANSFEREND 2
@@ -13,7 +13,7 @@
 #define FZAPI_THREADMSG_DISCONNECT 4
 #define FZAPI_THREADMSG_ASYNCREQUESTREPLY 5
 #define FZAPI_THREADMSG_POSTKEEPALIVE 6
-//---------------------------------------------------------------------------
+
 class CMainThread : public CApiLog
 {
 protected:
@@ -74,4 +74,4 @@ protected:
   virtual ~CMainThread();
   bool m_Started;
 };
-//---------------------------------------------------------------------------
+

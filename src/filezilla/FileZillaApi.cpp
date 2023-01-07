@@ -1,4 +1,4 @@
-//---------------------------------------------------------------------------
+
 #include "stdafx.h"
 #include "FileZillaApi.h"
 #include "MainThread.h"

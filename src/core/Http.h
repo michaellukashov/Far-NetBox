@@ -1,14 +1,14 @@
-//---------------------------------------------------------------------------
+
 #pragma once
-//---------------------------------------------------------------------------
+
 #include <Classes.hpp>
 #include <memory>
-//---------------------------------------------------------------------------
+
 struct ne_session_s;
 struct ne_request_s;
 struct ne_ssl_certificate_s;
 struct ssl_st;
-//---------------------------------------------------------------------------
+
 class THttp;
 #if 0
 typedef void (__closure *THttpDownloadEvent)(THttp *Sender, __int64 Size, bool &Cancel);
@@ -20,7 +20,7 @@ typedef void (__closure *THttpErrorEvent)(THttp *Sender, int Status, const Unico
 #endif // #if 0
 using THttpErrorEvent = nb::FastDelegate3<void,
   THttp * /*Sender*/, int /*Status*/, UnicodeString /*Message*/>;
-//---------------------------------------------------------------------------
+
 class THttp : public TObject
 {
 public:
@@ -83,4 +83,4 @@ private:
   static int NeonServerSSLCallback(void *UserData, int Failures, const ne_ssl_certificate_s *Certificate);
   int NeonServerSSLCallbackImpl(int Failures, const ne_ssl_certificate_s *Certificate);
 };
-//---------------------------------------------------------------------------
+

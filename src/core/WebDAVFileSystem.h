@@ -1,12 +1,12 @@
-﻿//------------------------------------------------------------------------------
+﻿---
 #pragma once
-//------------------------------------------------------------------------------
+---
 #include <ne_uri.h>
 #include <ne_utils.h>
 #include <ne_string.h>
 #include <ne_request.h>
 #include <FileSystems.h>
-//------------------------------------------------------------------------------
+---
 struct TNeonCertificateData;
 struct ne_ssl_certificate_s;
 struct ne_session_s;
@@ -15,7 +15,7 @@ struct ne_lock_store_s;
 struct TOverwriteFileParams;
 struct ssl_st;
 struct ne_lock;
-//------------------------------------------------------------------------------
+---
 NB_DEFINE_CLASS_ID(TWebDAVFileSystem);
 class TWebDAVFileSystem final : public TCustomFileSystem
 {
@@ -201,4 +201,4 @@ private:
   void SetSessionTls(ne_session_s *Session, bool Aux);
   void InitSession(ne_session_s *Session);
 };
-//------------------------------------------------------------------------------
+---

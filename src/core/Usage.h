@@ -1,11 +1,11 @@
-﻿//---------------------------------------------------------------------------
+﻿
 #pragma once
 
 #include <rdestl/map.h>
 #include "HierarchicalStorage.h"
-//---------------------------------------------------------------------------
+
 class TConfiguration;
-//---------------------------------------------------------------------------
+
 class TUsage : public TObject
 {
 public:
@@ -60,7 +60,7 @@ public:
   void ResetLastExceptions();
   void ResetValue(UnicodeString AKey);
 };
-//---------------------------------------------------------------------------
+
 extern UnicodeString LastInternalExceptionCounter;
 extern UnicodeString LastUpdateExceptionCounter;
-//---------------------------------------------------------------------------
+

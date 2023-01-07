@@ -1,4 +1,4 @@
-﻿//---------------------------------------------------------------------------
+﻿
 #pragma once
 
 #include <Common.h>
@@ -9,10 +9,10 @@
 #include "HierarchicalStorage.h"
 #include "Configuration.h"
 #include <Xml.XMLIntf.hpp>
-//---------------------------------------------------------------------------
+
 #define SET_SESSION_PROPERTY(Property) \
   if (F##Property != Value) { F##Property = Value; Modify(); }
-//---------------------------------------------------------------------------
+
 enum TCipher { cipWarn, cip3DES, cipBlowfish, cipAES, cipDES, cipArcfour, cipChaCha20, };
 #define CIPHER_COUNT (cipChaCha20 + 1)
 // explicit values to skip obsoleted fsExternalSSH, fsExternalSFTP
@@ -71,7 +71,7 @@ enum TLoginType
   ltAnonymous = 0,
   ltNormal = 1,
 };
-//---------------------------------------------------------------------------
+
 NB_CORE_EXPORT extern const UnicodeString CipherNames[CIPHER_COUNT];
 NB_CORE_EXPORT extern const UnicodeString KexNames[KEX_COUNT];
 NB_CORE_EXPORT extern const UnicodeString HostKeyNames[HOSTKEY_COUNT];
@@ -113,7 +113,7 @@ NB_CORE_EXPORT extern const UnicodeString S3HostName;
 
 constexpr intptr_t SFTPMinVersion = 0;
 constexpr intptr_t SFTPMaxVersion = 6;
-//---------------------------------------------------------------------------
+
 struct NB_CORE_EXPORT TIEProxyConfig : public TObject
 {
   TIEProxyConfig() = default;
@@ -125,9 +125,9 @@ struct NB_CORE_EXPORT TIEProxyConfig : public TObject
   intptr_t ProxyPort{0};
   TProxyMethod ProxyMethod{pmNone};
 };
-//---------------------------------------------------------------------------
+
 class TStoredSessionList;
-//---------------------------------------------------------------------------
+
 NB_DEFINE_CLASS_ID(TSessionData);
 class NB_CORE_EXPORT TSessionData : public TNamedObject
 {
@@ -914,7 +914,7 @@ private:
 
   mutable TIEProxyConfig *FIEProxyConfig{nullptr};
 };
-//---------------------------------------------------------------------------
+
 NB_DEFINE_CLASS_ID(TStoredSessionList);
 class NB_CORE_EXPORT TStoredSessionList : public TNamedObjectList
 {
@@ -992,15 +992,15 @@ private:
   __removed void ImportLevelFromFilezilla(_di_IXMLNode Node, UnicodeString Path, _di_IXMLNode SettingsNode);
   static THierarchicalStorage * CreateHostKeysStorageForWriting();
 };
-//---------------------------------------------------------------------------
+
 NB_CORE_EXPORT UnicodeString GetExpandedLogFileName(UnicodeString LogFileName, TDateTime Started, TSessionData *SessionData);
 NB_CORE_EXPORT bool GetIsSshProtocol(TFSProtocol FSProtocol);
 NB_CORE_EXPORT intptr_t GetDefaultPort(TFSProtocol FSProtocol, TFtps Ftps);
 NB_CORE_EXPORT bool IsIPv6Literal(UnicodeString HostName);
 NB_CORE_EXPORT UnicodeString EscapeIPv6Literal(UnicodeString IP);
 NB_CORE_EXPORT TFSProtocol NormalizeFSProtocol(TFSProtocol FSProtocol);
-//---------------------------------------------------------------------------
+
 NB_CORE_EXPORT bool GetCodePageInfo(UINT CodePage, CPINFOEX &CodePageInfoEx);
 NB_CORE_EXPORT uintptr_t GetCodePageAsNumber(UnicodeString CodePage);
 NB_CORE_EXPORT UnicodeString GetCodePageAsString(uintptr_t CodePage);
-//---------------------------------------------------------------------------
+

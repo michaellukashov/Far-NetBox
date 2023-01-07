@@ -1,11 +1,11 @@
 // CAsyncSocketEx by Tim Kosse (Tim.Kosse@gmx.de)
 //            Version 1.1 (2002-11-01)
-//---------------------------------------------------------------------------
+
 // Feel free to use this class, as long as you don't claim that you wrote it
 // and this copyright notice stays intact in the source files.
 // If you use this class in commercial applications, please send a short message
 // to tim.kosse@gmx.de
-//---------------------------------------------------------------------------
+
 #include "stdafx.h"
 #include "AsyncSocketExLayer.h"
 

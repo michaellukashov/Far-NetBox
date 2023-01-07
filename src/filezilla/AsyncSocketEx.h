@@ -60,19 +60,19 @@ and this copyright notice stays intact in the source files.
 If you use this class in commercial applications, please send a short message
 to tim.kosse@gmx.de
 */
-//---------------------------------------------------------------------------
+
 #pragma once
-//---------------------------------------------------------------------------
+
 #define FD_FORCEREAD (1<<15)
-//---------------------------------------------------------------------------
+
 #include <winsock2.h>
 #include <Ws2tcpip.h>
 #include <nbsystem.h>
-//---------------------------------------------------------------------------
+
 class CAsyncSocketExHelperWindow;
 class CAsyncSocketExLayer;
 class CCriticalSectionWrapper;
-//---------------------------------------------------------------------------
+
 struct t_callbackMsg
 {
 CUSTOM_MEM_ALLOCATION_IMPL
@@ -82,7 +82,7 @@ CUSTOM_MEM_ALLOCATION_IMPL
   intptr_t nParam2;
   char *str;
 };
-//---------------------------------------------------------------------------
+
 class CAsyncSocketEx
 {
 public:
@@ -289,10 +289,10 @@ protected:
   virtual bool LoggingSocketMessage(int nMessageType) { return true; }
   virtual void ConfigureSocket() {}
 };
-//---------------------------------------------------------------------------
+
 #define LAYERCALLBACK_STATECHANGE 0
 #define LAYERCALLBACK_LAYERSPECIFIC 1
-//---------------------------------------------------------------------------
+
 enum SocketState
 {
   notsock,
@@ -304,7 +304,7 @@ enum SocketState
   aborted,
   attached
 };
-//---------------------------------------------------------------------------
+
 inline TCHAR * Inet6AddrToString(in6_addr & addr)
 {
   LPTSTR buf = nb::wchcalloc(512);
@@ -317,7 +317,7 @@ inline TCHAR * Inet6AddrToString(in6_addr & addr)
 
   return buf;
 }
-//---------------------------------------------------------------------------
+
 class CCriticalSectionWrapper
 {
 CUSTOM_MEM_ALLOCATION_IMPL
@@ -349,4 +349,4 @@ protected:
   CRITICAL_SECTION m_criticalSection;
   BOOL m_bInitialized;
 };
-//---------------------------------------------------------------------------
+

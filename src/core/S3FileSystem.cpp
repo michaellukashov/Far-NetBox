@@ -1,4 +1,4 @@
-﻿//---------------------------------------------------------------------------
+﻿
 #include <vcl.h>
 #pragma hdrstop
 
@@ -26,37 +26,37 @@
 #include "HelpCore.h"
 #include <ne_request.h>
 #include <limits>
-//---------------------------------------------------------------------------
+
 __removed #pragma package(smart_init)
-//---------------------------------------------------------------------------
+
 #define StrFromS3(S) StrFromNeon(S)
 #define StrToS3(S) StrToNeon(S)
-//---------------------------------------------------------------------------
+
 #define FILE_OPERATION_LOOP_TERMINAL FTerminal
-//---------------------------------------------------------------------------
+
 static std::unique_ptr<TCriticalSection> LibS3Section(TraceInitPtr(std::make_unique<TCriticalSection>()));
-//---------------------------------------------------------------------------
+
 static UTF8String LibS3Delimiter(L"/");
-//---------------------------------------------------------------------------
+
 UnicodeString S3LibVersion()
 {
   return FORMAT("%s.%s", LIBS3_VER_MAJOR, LIBS3_VER_MINOR);
 }
-//---------------------------------------------------------------------------
+
 UnicodeString S3LibDefaultHostName()
 {
   return UnicodeString(S3_DEFAULT_HOSTNAME);
 }
-//---------------------------------------------------------------------------
+
 UnicodeString S3LibDefaultRegion()
 {
   return StrFromS3(S3_DEFAULT_REGION);
 }
-//---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
+
+
 const int TS3FileSystem::S3MinMultiPartChunkSize = 5 * 1024 * 1024;
 const int TS3FileSystem::S3MaxMultiPartChunks = 10000;
-//---------------------------------------------------------------------------
+
 TS3FileSystem::TS3FileSystem(TTerminal *ATerminal) noexcept :
   TCustomFileSystem(OBJECT_CLASS_TS3FileSystem, ATerminal),
   FActive(false),
@@ -69,7 +69,7 @@ TS3FileSystem::TS3FileSystem(TTerminal *ATerminal) noexcept :
   S3_set_request_context_ssl_callback(FRequestContext, LibS3SslCallback, this);
   S3_set_request_context_response_data_callback(FRequestContext, LibS3ResponseDataCallback, this);
 }
-//---------------------------------------------------------------------------
+
 TS3FileSystem::~TS3FileSystem() noexcept
 {
   S3_destroy_request_context(FRequestContext);
@@ -85,7 +85,7 @@ void TS3FileSystem::Init(void *)
 void TS3FileSystem::FileTransferProgress(int64_t /*TransferSize*/, int64_t /*Bytes*/)
 {
 }
-//---------------------------------------------------------------------------
+
 void TS3FileSystem::Open()
 {
 
@@ -158,7 +158,7 @@ void TS3FileSystem::Open()
   }
   FActive = true;
 }
-//---------------------------------------------------------------------------
+
 struct TLibS3CallbackData
 {
   CUSTOM_MEM_ALLOCATION_IMPL
@@ -176,12 +176,12 @@ struct TLibS3CallbackData
   UnicodeString ErrorMessage;
   UnicodeString ErrorDetails;
 };
-//---------------------------------------------------------------------------
+
 TS3FileSystem *TS3FileSystem::GetFileSystem(void *CallbackData)
 {
   return static_cast<TLibS3CallbackData *>(CallbackData)->FileSystem;
 }
-//---------------------------------------------------------------------------
+
 void TS3FileSystem::LibS3SessionCallback(ne_session_s *Session, void *CallbackData)
 {
   TS3FileSystem *FileSystem = static_cast<TS3FileSystem *>(CallbackData);
@@ -199,7 +199,7 @@ void TS3FileSystem::LibS3SessionCallback(ne_session_s *Session, void *CallbackDa
 
   FileSystem->FNeonSession = Session;
 }
-//------------------------------------------------------------------------------
+---
 void TS3FileSystem::InitSslSession(ssl_st *Ssl, ne_session *Session)
 {
   TS3FileSystem *FileSystem =
@@ -212,7 +212,7 @@ void TS3FileSystem::InitSslSessionImpl(ssl_st *Ssl) const
   // See also CAsyncSslSocketLayer::InitSSLConnection
   SetupSsl(Ssl, FTerminal->GetSessionData()->GetMinTlsVersion(), FTerminal->GetSessionData()->GetMaxTlsVersion());
 }
-//---------------------------------------------------------------------------
+
 int TS3FileSystem::LibS3SslCallback(int Failures, const ne_ssl_certificate_s *Certificate, void *CallbackData)
 {
   TNeonCertificateData Data;
@@ -220,7 +220,7 @@ int TS3FileSystem::LibS3SslCallback(int Failures, const ne_ssl_certificate_s *Ce
   TS3FileSystem *FileSystem = static_cast<TS3FileSystem *>(CallbackData);
   return FileSystem->VerifyCertificate(Data) ? NE_OK : NE_ERROR;
 }
-//---------------------------------------------------------------------------
+
 // Similar to TWebDAVFileSystem::VerifyCertificate
 bool TS3FileSystem::VerifyCertificate(TNeonCertificateData &Data)
 {
@@ -269,7 +269,7 @@ bool TS3FileSystem::VerifyCertificate(TNeonCertificateData &Data)
 
   return Result;
 }
-//------------------------------------------------------------------------------
+---
 void TS3FileSystem::CollectTLSSessionInfo()
 {
   // See also TFTPFileSystem::Open().
@@ -278,14 +278,14 @@ void TS3FileSystem::CollectTLSSessionInfo()
   UnicodeString Message = NeonTlsSessionInfo(FNeonSession, FSessionInfo, FTlsVersionStr);
   FTerminal->LogEvent(0, Message);
 }
-//---------------------------------------------------------------------------
+
 S3Status TS3FileSystem::LibS3ResponsePropertiesCallback(const S3ResponseProperties * /*Properties*/, void * /*CallbackData*/)
 {
 
   // TODO
   return S3StatusOK;
 }
-//---------------------------------------------------------------------------
+
 void TS3FileSystem::LibS3ResponseDataCallback(const char *Data, size_t Size, void *CallbackData)
 {
   TS3FileSystem *FileSystem = static_cast<TS3FileSystem *>(CallbackData);
@@ -295,7 +295,7 @@ void TS3FileSystem::LibS3ResponseDataCallback(const char *Data, size_t Size, voi
     FileSystem->FResponse += Content;
   }
 }
-//---------------------------------------------------------------------------
+
 void TS3FileSystem::LibS3ResponseCompleteCallback(S3Status Status, const S3ErrorDetails *Error, void *CallbackData)
 {
   TLibS3CallbackData &Data = *static_cast<TLibS3CallbackData *>(CallbackData);
@@ -356,13 +356,13 @@ void TS3FileSystem::LibS3ResponseCompleteCallback(S3Status Status, const S3Error
     FileSystem->FTerminal->GetLog()->Add(llOutput, FileSystem->FResponse);
   }
 }
-//---------------------------------------------------------------------------
+
 void TS3FileSystem::RequestInit(TLibS3CallbackData &Data)
 {
   Data.FileSystem = this;
   FResponse = L"";
 }
-//---------------------------------------------------------------------------
+
 void TS3FileSystem::CheckLibS3Error(const TLibS3CallbackData &Data, bool FatalOnConnectError)
 {
   if (Data.Status != S3StatusOK)
@@ -431,18 +431,18 @@ void TS3FileSystem::CheckLibS3Error(const TLibS3CallbackData &Data, bool FatalOn
     }
   }
 }
-//---------------------------------------------------------------------------
+
 void TS3FileSystem::LibS3Deinitialize()
 {
   TGuard Guard(*LibS3Section.get()); nb::used(Guard);
   S3_deinitialize();
 }
-//---------------------------------------------------------------------------
+
 UnicodeString TS3FileSystem::GetFolderKey(UnicodeString AKey)
 {
   return AKey + L"/";
 }
-//---------------------------------------------------------------------------
+
 void TS3FileSystem::ParsePath(UnicodeString APath, UnicodeString &BucketName, UnicodeString &AKey)
 {
   UnicodeString Path = APath;
@@ -462,7 +462,7 @@ void TS3FileSystem::ParsePath(UnicodeString APath, UnicodeString &BucketName, Un
     AKey = Path.SubString(P + 1, Path.Length() - P);
   }
 }
-//---------------------------------------------------------------------------
+
 struct TLibS3BucketContext : S3BucketContext
 {
   CUSTOM_MEM_ALLOCATION_IMPL
@@ -471,7 +471,7 @@ struct TLibS3BucketContext : S3BucketContext
   UTF8String BucketNameBuf;
   UTF8String AuthRegionBuf;
 };
-//---------------------------------------------------------------------------
+
 struct TLibS3ListBucketCallbackData : TLibS3CallbackData
 {
   TRemoteFileList *FileList;
@@ -479,7 +479,7 @@ struct TLibS3ListBucketCallbackData : TLibS3CallbackData
   UTF8String NextMarker;
   bool IsTruncated;
 };
-//---------------------------------------------------------------------------
+
 TLibS3BucketContext TS3FileSystem::GetBucketContext(UnicodeString ABucketName, UnicodeString Prefix)
 {
   TLibS3BucketContext Result;
@@ -568,10 +568,10 @@ TLibS3BucketContext TS3FileSystem::GetBucketContext(UnicodeString ABucketName, U
 
   return Result;
 }
-//---------------------------------------------------------------------------
+
 #define CREATE_RESPONSE_HANDLER_CUSTOM(PropertiesCallback) { &PropertiesCallback, &LibS3ResponseCompleteCallback }
 #define CREATE_RESPONSE_HANDLER() CREATE_RESPONSE_HANDLER_CUSTOM(LibS3ResponsePropertiesCallback)
-//---------------------------------------------------------------------------
+
 void TS3FileSystem::Close()
 {
   DebugAssert(FActive);
@@ -580,48 +580,48 @@ void TS3FileSystem::Close()
   FActive = false;
   UnregisterFromNeonDebug(FTerminal);
 }
-//---------------------------------------------------------------------------
+
 bool TS3FileSystem::GetActive() const
 {
   return FActive;
 }
-//---------------------------------------------------------------------------
+
 void TS3FileSystem::CollectUsage()
 {
   // noop
 }
-//---------------------------------------------------------------------------
+
 const TSessionInfo &TS3FileSystem::GetSessionInfo() const
 {
   return FSessionInfo;
 }
-//---------------------------------------------------------------------------
+
 const TFileSystemInfo &TS3FileSystem::GetFileSystemInfo(bool /*Retrieve*/)
 {
   return FFileSystemInfo;
 }
-//---------------------------------------------------------------------------
+
 bool TS3FileSystem::TemporaryTransferFile(UnicodeString /*AFileName*/)
 {
   return false;
 }
-//---------------------------------------------------------------------------
+
 bool TS3FileSystem::GetStoredCredentialsTried() const
 {
   // if we have one, we always try it
   return !FTerminal->GetSessionData()->GetPassword().IsEmpty();
 }
-//---------------------------------------------------------------------------
+
 UnicodeString TS3FileSystem::RemoteGetUserName() const
 {
   return UnicodeString(FAccessKeyId);
 }
-//---------------------------------------------------------------------------
+
 void TS3FileSystem::Idle()
 {
   // noop
 }
-//---------------------------------------------------------------------------
+
 UnicodeString TS3FileSystem::GetAbsolutePath(UnicodeString APath, bool Local)
 {
   return static_cast<const TS3FileSystem *>(this)->GetAbsolutePath(APath, Local);
@@ -638,7 +638,7 @@ UnicodeString TS3FileSystem::GetAbsolutePath(UnicodeString Path, bool /*Local*/)
     return base::AbsolutePath(FCurrentDirectory, Path);
   }
 }
-//---------------------------------------------------------------------------
+
 bool TS3FileSystem::IsCapable(intptr_t Capability) const
 {
   DebugAssert(FTerminal);
@@ -688,12 +688,12 @@ bool TS3FileSystem::IsCapable(intptr_t Capability) const
     return false;
   }
 }
-//---------------------------------------------------------------------------
+
 UnicodeString TS3FileSystem::RemoteGetCurrentDirectory() const
 {
   return FCurrentDirectory;
 }
-//---------------------------------------------------------------------------
+
 void TS3FileSystem::DoStartup()
 {
   FTerminal->SetExceptionOnFail(true);
@@ -701,12 +701,12 @@ void TS3FileSystem::DoStartup()
   ReadCurrentDirectory();
   FTerminal->SetExceptionOnFail(false);
 }
-//---------------------------------------------------------------------------
+
 void TS3FileSystem::LookupUsersGroups()
 {
   DebugFail();
 }
-//---------------------------------------------------------------------------
+
 void TS3FileSystem::ReadCurrentDirectory()
 {
   if (FCachedDirectoryChange.IsEmpty())
@@ -719,24 +719,24 @@ void TS3FileSystem::ReadCurrentDirectory()
     FCachedDirectoryChange = L"";
   }
 }
-//---------------------------------------------------------------------------
+
 void TS3FileSystem::HomeDirectory()
 {
   ChangeDirectory(L"/");
 }
-//---------------------------------------------------------------------------
+
 void TS3FileSystem::AnnounceFileListOperation()
 {
   // noop
 }
-//---------------------------------------------------------------------------
+
 void TS3FileSystem::TryOpenDirectory(UnicodeString ADirectory)
 {
   FTerminal->LogEvent(FORMAT("Trying to open directory \"%s\".", ADirectory));
   std::unique_ptr<TRemoteFileList> FileList(std::make_unique<TRemoteFileList>());
   ReadDirectoryInternal(ADirectory, FileList.get(), 1, UnicodeString());
 }
-//---------------------------------------------------------------------------
+
 void TS3FileSystem::ChangeDirectory(UnicodeString ADirectory)
 {
   UnicodeString Path = GetAbsolutePath(ADirectory, false);
@@ -747,12 +747,12 @@ void TS3FileSystem::ChangeDirectory(UnicodeString ADirectory)
   // if open dir did not fail, directory exists -> success.
   FCachedDirectoryChange = Path;
 }
-//---------------------------------------------------------------------------
+
 void TS3FileSystem::CachedChangeDirectory(UnicodeString Directory)
 {
   FCachedDirectoryChange = base::UnixExcludeTrailingBackslash(Directory);
 }
-//---------------------------------------------------------------------------
+
 TRemoteToken TS3FileSystem::MakeRemoteToken(const char *OwnerId, const char *OwnerDisplayName)
 {
   TRemoteToken Result;
@@ -763,7 +763,7 @@ TRemoteToken TS3FileSystem::MakeRemoteToken(const char *OwnerId, const char *Own
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 struct TLibS3ListServiceCallbackData : TLibS3CallbackData
 {
   CUSTOM_MEM_ALLOCATION_IMPL
@@ -771,7 +771,7 @@ struct TLibS3ListServiceCallbackData : TLibS3CallbackData
   TRemoteFileList *FileList{nullptr};
   UnicodeString FileName; // filter for buckets
 };
-//---------------------------------------------------------------------------
+
 S3Status TS3FileSystem::LibS3ListServiceCallback(
   const char *OwnerId, const char *OwnerDisplayName, const char *BucketName,
   int64_t /*CreationDate*/, void *CallbackData)
@@ -792,7 +792,7 @@ S3Status TS3FileSystem::LibS3ListServiceCallback(
 
   return S3StatusOK;
 }
-//---------------------------------------------------------------------------
+
 S3Status TS3FileSystem::LibS3ListBucketCallback(
   int IsTruncated, const char *NextMarker, int ContentsCount, const S3ListBucketContent *Contents,
   int CommonPrefixesCount, const char **CommonPrefixes, void *CallbackData)
@@ -838,7 +838,7 @@ S3Status TS3FileSystem::LibS3ListBucketCallback(
 
   return S3StatusOK;
 }
-//---------------------------------------------------------------------------
+
 void TS3FileSystem::DoListBucket(
   UnicodeString APrefix, TRemoteFileList *FileList, intptr_t MaxKeys, const TLibS3BucketContext &BucketContext,
   TLibS3ListBucketCallbackData &Data)
@@ -853,7 +853,7 @@ void TS3FileSystem::DoListBucket(
     &BucketContext, StrToS3(APrefix), StrToS3(Data.NextMarker),
     LibS3Delimiter.c_str(), nb::ToInt(MaxKeys), FRequestContext, FTimeout, &ListBucketHandler, &Data);
 }
-//---------------------------------------------------------------------------
+
 void TS3FileSystem::HandleNonBucketStatus(TLibS3CallbackData & Data, bool & Retry)
 {
   if ((Data.Status == S3StatusErrorAuthorizationHeaderMalformed) &&
@@ -864,7 +864,7 @@ void TS3FileSystem::HandleNonBucketStatus(TLibS3CallbackData & Data, bool & Retr
     Retry = true;
   }
 }
-//---------------------------------------------------------------------------
+
 void TS3FileSystem::ReadDirectoryInternal(
   UnicodeString APath, TRemoteFileList *FileList, intptr_t MaxKeys, UnicodeString AFileName)
 {
@@ -947,20 +947,20 @@ void TS3FileSystem::ReadDirectoryInternal(
     }
   }
 }
-//---------------------------------------------------------------------------
+
 void TS3FileSystem::ReadDirectory(TRemoteFileList *FileList)
 {
   TOperationVisualizer Visualizer(FTerminal->GetUseBusyCursor()); nb::used(Visualizer);
   ReadDirectoryInternal(FileList->GetDirectory(), FileList, 0, UnicodeString());
 }
-//---------------------------------------------------------------------------
+
 void TS3FileSystem::ReadSymlink(TRemoteFile * /*SymlinkFile*/,
   TRemoteFile *& /*File*/)
 {
   // we never set SymLink flag, so we should never get here
   DebugFail();
 }
-//---------------------------------------------------------------------------
+
 void TS3FileSystem::DoReadFile(UnicodeString AFileName, TRemoteFile *&AFile)
 {
   UnicodeString FileNameOnly = base::UnixExtractFileName(AFileName);
@@ -976,7 +976,7 @@ void TS3FileSystem::DoReadFile(UnicodeString AFileName, TRemoteFile *&AFile)
     AFile = nullptr;
   }
 }
-//---------------------------------------------------------------------------
+
 void TS3FileSystem::ReadFile(UnicodeString AFileName,
   TRemoteFile *&File)
 {
@@ -987,7 +987,7 @@ void TS3FileSystem::ReadFile(UnicodeString AFileName,
     throw Exception(FMTLOAD(FILE_NOT_EXISTS, AFileName));
   }
 }
-//---------------------------------------------------------------------------
+
 void TS3FileSystem::RemoteDeleteFile(UnicodeString AFileName,
   const TRemoteFile *AFile, intptr_t AParams, TRmSessionAction &Action)
 {
@@ -1024,7 +1024,7 @@ void TS3FileSystem::RemoteDeleteFile(UnicodeString AFileName,
 
   CheckLibS3Error(Data);
 }
-//---------------------------------------------------------------------------
+
 void TS3FileSystem::RemoteRenameFile(UnicodeString AFileName, const TRemoteFile *AFile,
   UnicodeString ANewName)
 {
@@ -1037,7 +1037,7 @@ void TS3FileSystem::RemoteRenameFile(UnicodeString AFileName, const TRemoteFile 
   RemoteDeleteFile(AFileName, AFile, dfForceDelete, DummyAction);
   DummyAction.Cancel();
 }
-//---------------------------------------------------------------------------
+
 void TS3FileSystem::RemoteCopyFile(UnicodeString AFileName, const TRemoteFile *AFile,
   UnicodeString ANewName)
 {
@@ -1076,7 +1076,7 @@ void TS3FileSystem::RemoteCopyFile(UnicodeString AFileName, const TRemoteFile *A
 
   CheckLibS3Error(Data);
 }
-//---------------------------------------------------------------------------
+
 void TS3FileSystem::RemoteCreateDirectory(UnicodeString ADirName, bool /*Encrypt*/)
 {
   TOperationVisualizer Visualizer(FTerminal->GetUseBusyCursor()); nb::used(Visualizer);
@@ -1135,56 +1135,56 @@ void TS3FileSystem::RemoteCreateDirectory(UnicodeString ADirName, bool /*Encrypt
     CheckLibS3Error(Data);
   }
 }
-//---------------------------------------------------------------------------
+
 void TS3FileSystem::RemoteCreateLink(UnicodeString /*AFileName*/,
   UnicodeString /*PointTo*/, bool /*Symbolic*/)
 {
   DebugFail();
 }
-//---------------------------------------------------------------------------
+
 void TS3FileSystem::ChangeFileProperties(UnicodeString /*AFileName*/,
   const TRemoteFile * /*File*/, const TRemoteProperties * /*Properties*/,
   TChmodSessionAction & /*Action*/)
 {
   DebugFail();
 }
-//---------------------------------------------------------------------------
+
 bool TS3FileSystem::LoadFilesProperties(TStrings * /*FileList*/)
 {
   DebugFail();
   return false;
 }
-//---------------------------------------------------------------------------
+
 void TS3FileSystem::CalculateFilesChecksum(UnicodeString /*Alg*/,
   TStrings * /*FileList*/, TStrings * /*Checksums*/,
   TCalculatedChecksumEvent /*OnCalculatedChecksum*/)
 {
   DebugFail();
 }
-//---------------------------------------------------------------------------
+
 void TS3FileSystem::CustomCommandOnFile(UnicodeString /*AFileName*/,
   const TRemoteFile * /*AFile*/, UnicodeString /*ACommand*/, intptr_t /*AParams*/, TCaptureOutputEvent /*OutputEvent*/)
 {
   DebugFail();
 }
-//---------------------------------------------------------------------------
+
 void TS3FileSystem::AnyCommand(UnicodeString /*ACommand*/,
   TCaptureOutputEvent /*OutputEvent*/)
 {
   DebugFail();
 }
-//---------------------------------------------------------------------------
+
 TStrings *TS3FileSystem::GetFixedPaths() const
 {
   return nullptr;
 }
-//---------------------------------------------------------------------------
+
 void TS3FileSystem::SpaceAvailable(UnicodeString /*APath*/,
   TSpaceAvailable & /*ASpaceAvailable*/)
 {
   DebugFail();
 }
-//---------------------------------------------------------------------------
+
 void TS3FileSystem::CopyToRemote(
   TStrings *AFilesToCopy, UnicodeString ATargetDir, const TCopyParamType *CopyParam,
   intptr_t AParams, TFileOperationProgressType *OperationProgress, TOnceDoneOperation &OnceDoneOperation)
@@ -1193,7 +1193,7 @@ void TS3FileSystem::CopyToRemote(
 
   FTerminal->DoCopyToRemote(AFilesToCopy, ATargetDir, CopyParam, AParams, OperationProgress, tfPreCreateDir, OnceDoneOperation);
 }
-//---------------------------------------------------------------------------
+
 void TS3FileSystem::ConfirmOverwrite(
   UnicodeString ASourceFullFileName, UnicodeString &ATargetFileName,
   TFileOperationProgressType *OperationProgress, const TOverwriteFileParams *FileParams,
@@ -1237,7 +1237,7 @@ void TS3FileSystem::ConfirmOverwrite(
     break;
   }
 }
-//---------------------------------------------------------------------------
+
 struct TLibS3TransferObjectDataCallbackData : TLibS3CallbackData
 {
   CUSTOM_MEM_ALLOCATION_IMPL
@@ -1247,21 +1247,21 @@ struct TLibS3TransferObjectDataCallbackData : TLibS3CallbackData
   TFileOperationProgressType *OperationProgress;
   std::unique_ptr<Exception> Exception;
 };
-//---------------------------------------------------------------------------
+
 struct TLibS3PutObjectDataCallbackData : TLibS3TransferObjectDataCallbackData
 {
   CUSTOM_MEM_ALLOCATION_IMPL
 
   RawByteString ETag;
 };
-//---------------------------------------------------------------------------
+
 int TS3FileSystem::LibS3PutObjectDataCallback(int BufferSize, char *Buffer, void *CallbackData)
 {
   TLibS3PutObjectDataCallbackData &Data = *static_cast<TLibS3PutObjectDataCallbackData *>(CallbackData);
 
   return Data.FileSystem->PutObjectData(BufferSize, Buffer, Data);
 }
-//---------------------------------------------------------------------------
+
 bool TS3FileSystem::ShouldCancelTransfer(TLibS3TransferObjectDataCallbackData &Data)
 {
   bool Result = (Data.OperationProgress->GetCancel() != csContinue);
@@ -1278,7 +1278,7 @@ bool TS3FileSystem::ShouldCancelTransfer(TLibS3TransferObjectDataCallbackData &D
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 int TS3FileSystem::PutObjectData(int BufferSize, char *Buffer, TLibS3PutObjectDataCallbackData &Data)
 {
   int Result;
@@ -1312,12 +1312,12 @@ int TS3FileSystem::PutObjectData(int BufferSize, char *Buffer, TLibS3PutObjectDa
 
   return Result;
 }
-//---------------------------------------------------------------------------
+
 struct TLibS3MultipartInitialCallbackData : TLibS3CallbackData
 {
   RawByteString UploadId;
 };
-//---------------------------------------------------------------------------
+
 S3Status TS3FileSystem::LibS3MultipartInitialCallback(const char *UploadId, void *CallbackData)
 {
   TLibS3MultipartInitialCallbackData &Data = *static_cast<TLibS3MultipartInitialCallbackData *>(CallbackData);
@@ -1326,13 +1326,13 @@ S3Status TS3FileSystem::LibS3MultipartInitialCallback(const char *UploadId, void
 
   return S3StatusOK;
 }
-//---------------------------------------------------------------------------
+
 struct TLibS3MultipartCommitPutObjectDataCallbackData : TLibS3CallbackData
 {
   RawByteString Message;
   int Remaining;
 };
-//---------------------------------------------------------------------------
+
 S3Status TS3FileSystem::LibS3MultipartResponsePropertiesCallback(
   const S3ResponseProperties *Properties, void *CallbackData)
 {
@@ -1344,7 +1344,7 @@ S3Status TS3FileSystem::LibS3MultipartResponsePropertiesCallback(
 
   return Result;
 }
-//---------------------------------------------------------------------------
+
 int TS3FileSystem::LibS3MultipartCommitPutObjectDataCallback(int BufferSize, char *Buffer, void *CallbackData)
 {
   TLibS3MultipartCommitPutObjectDataCallbackData &Data =
@@ -1358,7 +1358,7 @@ int TS3FileSystem::LibS3MultipartCommitPutObjectDataCallback(int BufferSize, cha
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 void TS3FileSystem::Source(
   TLocalFileHandle &AHandle, UnicodeString TargetDir, UnicodeString &ADestFileName,
   const TCopyParamType *CopyParam, intptr_t Params,
@@ -1589,7 +1589,7 @@ void TS3FileSystem::Source(
     throw;
   }
 }
-//---------------------------------------------------------------------------
+
 void TS3FileSystem::CopyToLocal(
   TStrings *FilesToCopy, UnicodeString ATargetDir, const TCopyParamType *CopyParam,
   intptr_t AParams, TFileOperationProgressType *OperationProgress, TOnceDoneOperation &OnceDoneOperation)
@@ -1598,18 +1598,18 @@ void TS3FileSystem::CopyToLocal(
 
   FTerminal->DoCopyToLocal(FilesToCopy, ATargetDir, CopyParam, AParams, OperationProgress, tfNone, OnceDoneOperation);
 }
-//---------------------------------------------------------------------------
+
 struct TLibS3GetObjectDataCallbackData : TLibS3TransferObjectDataCallbackData
 {
 };
-//---------------------------------------------------------------------------
+
 S3Status TS3FileSystem::LibS3GetObjectDataCallback(int BufferSize, const char *Buffer, void *CallbackData)
 {
   TLibS3GetObjectDataCallbackData &Data = *static_cast<TLibS3GetObjectDataCallbackData *>(CallbackData);
 
   return Data.FileSystem->GetObjectData(BufferSize, Buffer, Data);
 }
-//---------------------------------------------------------------------------
+
 S3Status TS3FileSystem::GetObjectData(int BufferSize, const char *Buffer, TLibS3GetObjectDataCallbackData &Data)
 {
   S3Status Result = S3StatusOK;
@@ -1643,7 +1643,7 @@ S3Status TS3FileSystem::GetObjectData(int BufferSize, const char *Buffer, TLibS3
 
   return Result;
 }
-//---------------------------------------------------------------------------
+
 void TS3FileSystem::Sink(
   UnicodeString AFileName, const TRemoteFile *AFile,
   UnicodeString ATargetDir, UnicodeString &ADestFileName, intptr_t Attrs,
@@ -1747,30 +1747,30 @@ void TS3FileSystem::Sink(
 
   FTerminal->UpdateTargetAttrs(DestFullName, AFile, CopyParam, Attrs);
 }
-//---------------------------------------------------------------------------
+
 void TS3FileSystem::GetSupportedChecksumAlgs(TStrings * /*Algs*/)
 {
   // NOOP
 }
-//---------------------------------------------------------------------------
+
 void TS3FileSystem::LockFile(UnicodeString /*AFileName*/, const TRemoteFile * /*AFile*/)
 {
   DebugFail();
 }
-//---------------------------------------------------------------------------
+
 void TS3FileSystem::UnlockFile(UnicodeString /*AFileName*/, const TRemoteFile * /*AFile*/)
 {
   DebugFail();
 }
-//---------------------------------------------------------------------------
+
 void TS3FileSystem::UpdateFromMain(TCustomFileSystem * /*AMainFileSystem*/)
 {
   // noop
 }
-//------------------------------------------------------------------------------
+---
 void TS3FileSystem::ClearCaches()
 {
   FRegions.clear();
   FHostNames.clear();
 }
-//------------------------------------------------------------------------------
+---

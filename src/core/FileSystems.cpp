@@ -6,23 +6,23 @@
 #include "FileSystems.h"
 #include "RemoteFiles.h"
 #include "CopyParam.h"
-//---------------------------------------------------------------------------
+
 __removed #pragma package(smart_init)
-//---------------------------------------------------------------------------
+
 TCustomFileSystem::TCustomFileSystem(TObjectClassId Kind, TTerminal *ATerminal) noexcept :
   TObject(Kind),
   FTerminal(ATerminal)
 {
   DebugAssert(FTerminal);
 }
-//---------------------------------------------------------------------------
+
 TCustomFileSystem::~TCustomFileSystem() noexcept
 {
 #ifdef USE_DLMALLOC
   dlmalloc_trim(0); // 64 * 1024);
 #endif
 }
-//---------------------------------------------------------------------------
+
 UnicodeString TCustomFileSystem::CreateTargetDirectory(
   IN UnicodeString AFileName,
   IN UnicodeString ADirectory,
@@ -40,7 +40,7 @@ UnicodeString TCustomFileSystem::CreateTargetDirectory(
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 UnicodeString TCustomFileSystem::GetHomeDirectory()
 {
   throw Exception("Not implemented");

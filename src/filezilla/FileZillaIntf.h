@@ -1,15 +1,15 @@
-﻿//---------------------------------------------------------------------------
+﻿
 #pragma once
-//---------------------------------------------------------------------------
+
 #include <rdestl/map.h>
 
 #include <time.h>
 #include <FileZillaOpt.h>
 #include <FilezillaTools.h>
-//---------------------------------------------------------------------------
+
 class CFileZillaApi;
 class TFileZillaIntern;
-//---------------------------------------------------------------------------
+
 struct TRemoteFileTime
 {
 CUSTOM_MEM_ALLOCATION_IMPL
@@ -25,7 +25,7 @@ CUSTOM_MEM_ALLOCATION_IMPL
   bool HasDate;
   bool Utc;
 };
-//---------------------------------------------------------------------------
+
 struct TListDataEntry
 {
 CUSTOM_MEM_ALLOCATION_IMPL
@@ -41,7 +41,7 @@ CUSTOM_MEM_ALLOCATION_IMPL
   bool Dir;
   bool Link;
 };
-//---------------------------------------------------------------------------
+
 struct TFtpsCertificateData
 {
 CUSTOM_MEM_ALLOCATION_IMPL
@@ -88,18 +88,18 @@ CUSTOM_MEM_ALLOCATION_IMPL
   int VerificationResult;
   int VerificationDepth;
 };
-//---------------------------------------------------------------------------
+
 struct TNeedPassRequestData
 {
 CUSTOM_MEM_ALLOCATION_IMPL
   wchar_t * Password;
 };
-//---------------------------------------------------------------------------
+
 class t_server;
 class TFTPServerCapabilities;
 typedef struct x509_st X509;
 typedef struct evp_pkey_st EVP_PKEY;
-//---------------------------------------------------------------------------
+
 class TFileZillaIntf : public CFileZillaTools
 {
 NB_DISABLE_COPY(TFileZillaIntf)
@@ -244,14 +244,14 @@ private:
   TFileZillaIntern * FIntern{nullptr};
   t_server * FServer{nullptr};
 };
-//---------------------------------------------------------------------------
+
 enum ftp_capabilities_t
 {
   unknown,
   yes,
   no
 };
-//---------------------------------------------------------------------------
+
 enum ftp_capability_names_t
 {
   syst_command = 1, // reply of SYST command as option
@@ -268,7 +268,7 @@ enum ftp_capability_names_t
   list_hidden_support, // LIST -a command
   rest_stream, // supports REST+STOR in addition to APPE
 };
-//---------------------------------------------------------------------------
+
 class TFTPServerCapabilities //: public TObject
 {
 CUSTOM_MEM_ALLOCATION_IMPL
@@ -309,5 +309,5 @@ protected:
 
   mutable nb::map_t<ftp_capability_names_t, t_cap> FCapabilityMap;
 };
-//---------------------------------------------------------------------------
+
 

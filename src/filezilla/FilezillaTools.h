@@ -1,9 +1,9 @@
-﻿//---------------------------------------------------------------------------
+﻿
 #pragma once
-//---------------------------------------------------------------------------
+
 #include <ctime>
 #include <nbsystem.h>
-//---------------------------------------------------------------------------
+
 class CFileZillaTools //: public TObject
 {
 CUSTOM_MEM_ALLOCATION_IMPL
@@ -15,4 +15,4 @@ public:
   virtual std::wstring GetClientString() const = 0;
   virtual void SetupSsl(ssl_st * Ssl) = 0;
 };
-//---------------------------------------------------------------------------
+

@@ -13,14 +13,14 @@
 #include "NeonIntf.h"
 #include "TextsCore.h"
 // #include "WebDAVFileSystem.h"
-//---------------------------------------------------------------------------
+
 __removed #pragma package(smart_init)
-//---------------------------------------------------------------------------
+
 __removed TConfiguration * Configuration = nullptr;
 TStoredSessionList *StoredSessions = nullptr;
 TApplicationLog * ApplicationLog = NULL;
 bool AnySession = false;
-//---------------------------------------------------------------------------
+
 TQueryButtonAlias::TQueryButtonAlias() noexcept :
   Button(0),
   OnSubmit(nullptr),
@@ -31,7 +31,7 @@ TQueryButtonAlias::TQueryButtonAlias() noexcept :
 {
   MenuButton = false;
 }
-//---------------------------------------------------------------------------
+
 TQueryButtonAlias TQueryButtonAlias::CreateYesToAllGrouppedWithYes()
 {
   TQueryButtonAlias Result;
@@ -40,7 +40,7 @@ TQueryButtonAlias TQueryButtonAlias::CreateYesToAllGrouppedWithYes()
   Result.GrouppedShiftState = ssShift;
   return Result;
 }
-//---------------------------------------------------------------------------
+
 TQueryButtonAlias TQueryButtonAlias::CreateNoToAllGrouppedWithNo()
 {
   TQueryButtonAlias Result;
@@ -49,7 +49,7 @@ TQueryButtonAlias TQueryButtonAlias::CreateNoToAllGrouppedWithNo()
   Result.GrouppedShiftState = ssShift;
   return Result;
 }
-//---------------------------------------------------------------------------
+
 TQueryButtonAlias TQueryButtonAlias::CreateAllAsYesToNewerGrouppedWithYes()
 {
   TQueryButtonAlias Result;
@@ -59,7 +59,7 @@ TQueryButtonAlias TQueryButtonAlias::CreateAllAsYesToNewerGrouppedWithYes()
   Result.GrouppedShiftState = ssCtrl;
   return Result;
 }
-//---------------------------------------------------------------------------
+
 TQueryButtonAlias TQueryButtonAlias::CreateIgnoreAsRenameGrouppedWithNo()
 {
   TQueryButtonAlias Result;
@@ -69,7 +69,7 @@ TQueryButtonAlias TQueryButtonAlias::CreateIgnoreAsRenameGrouppedWithNo()
   Result.GrouppedShiftState = ssCtrl;
   return Result;
 }
-//---------------------------------------------------------------------------
+
 TQueryParams::TQueryParams(uintptr_t AParams, const UnicodeString AHelpKeyword) noexcept :
   Aliases(nullptr),
   AliasesCount(0),
@@ -86,12 +86,12 @@ TQueryParams::TQueryParams(uintptr_t AParams, const UnicodeString AHelpKeyword) 
 {
   TimeoutResponse = 0;
 }
-//---------------------------------------------------------------------------
+
 TQueryParams::TQueryParams(const TQueryParams & Source) noexcept
 {
   Assign(Source);
 }
-//---------------------------------------------------------------------------
+
 void TQueryParams::Assign(const TQueryParams & Source)
 {
   *this = Source;
@@ -113,7 +113,7 @@ TQueryParams &TQueryParams::operator=(const TQueryParams &other)
   HelpKeyword = other.HelpKeyword;
   return *this;
 }
-//---------------------------------------------------------------------------
+
 bool IsAuthenticationPrompt(TPromptKind Kind)
 {
   return
@@ -121,7 +121,7 @@ bool IsAuthenticationPrompt(TPromptKind Kind)
     (Kind == pkCryptoCard) || (Kind == pkKeybInteractive) ||
     (Kind == pkPassword) || (Kind == pkNewPassword);
 }
-//---------------------------------------------------------------------------
+
 bool IsPasswordOrPassphrasePrompt(TPromptKind Kind, TStrings * Prompts)
 {
   return
@@ -129,14 +129,14 @@ bool IsPasswordOrPassphrasePrompt(TPromptKind Kind, TStrings * Prompts)
     ((Kind == pkPassword) || (Kind == pkPassphrase) || (Kind == pkKeybInteractive) ||
      (Kind == pkTIS) || (Kind == pkCryptoCard));
 }
-//---------------------------------------------------------------------------
+
 bool IsPasswordPrompt(TPromptKind Kind, TStrings * Prompts)
 {
   return
     IsPasswordOrPassphrasePrompt(Kind, Prompts) &&
     (Kind != pkPassphrase);
 }
-//---------------------------------------------------------------------------
+
 TConfiguration *GetConfiguration()
 {
   static TConfiguration *Configuration = nullptr;
@@ -157,7 +157,7 @@ void DeleteConfiguration()
     ConfigurationDeleted = true;
   }
 }
-//---------------------------------------------------------------------------
+
 void CoreLoad()
 {
   bool SessionList = false;
@@ -203,7 +203,7 @@ void CoreLoad()
     ShowExtendedException(&E);
   }
 }
-//---------------------------------------------------------------------------
+
 void CoreInitialize()
 {
   WinInitialize();
@@ -223,7 +223,7 @@ void CoreInitialize()
 
   CoreLoad();
 }
-//---------------------------------------------------------------------------
+
 void CoreFinalize()
 {
   try
@@ -245,17 +245,17 @@ void CoreFinalize()
   CryptographyFinalize();
   WinFinalize();
 }
-//---------------------------------------------------------------------------
+
 void CoreSetResourceModule(void * ResourceHandle)
 {
   TFileZillaIntf::SetResourceModule(ResourceHandle);
 }
-//---------------------------------------------------------------------------
+
 void CoreMaintenanceTask()
 {
   DontSaveRandomSeed();
 }
-//---------------------------------------------------------------------------
+
 void CoreUpdateFinalStaticUsage()
 {
   if (!AnySession)
@@ -263,8 +263,8 @@ void CoreUpdateFinalStaticUsage()
     Configuration->Usage->Inc(L"RunsWithoutSession");
   }
 }
-//---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
+
+
 TOperationVisualizer::TOperationVisualizer(bool UseBusyCursor) noexcept :
   FUseBusyCursor(UseBusyCursor),
   FToken(nullptr)
@@ -274,7 +274,7 @@ TOperationVisualizer::TOperationVisualizer(bool UseBusyCursor) noexcept :
     FToken = BusyStart();
   }
 }
-//---------------------------------------------------------------------------
+
 TOperationVisualizer::~TOperationVisualizer() noexcept
 {
   if (FUseBusyCursor)
@@ -282,14 +282,14 @@ TOperationVisualizer::~TOperationVisualizer() noexcept
     BusyEnd(FToken);
   }
 }
-//---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
+
+
 TInstantOperationVisualizer::TInstantOperationVisualizer() noexcept :
   TOperationVisualizer(true),
   FStart(Now())
 {
 }
-//---------------------------------------------------------------------------
+
 TInstantOperationVisualizer::~TInstantOperationVisualizer() noexcept
 {
   TDateTime Time = Now();
@@ -300,4 +300,4 @@ TInstantOperationVisualizer::~TInstantOperationVisualizer() noexcept
     Sleep(static_cast<uint32_t>(MinDuration - Duration));
   }
 }
-//---------------------------------------------------------------------------
+

@@ -13,12 +13,12 @@
 #include "TextsCore.h"
 #include "HelpCore.h"
 #include "Cryptography.h"
-//---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
+
+
 TRemoteToken::TRemoteToken() noexcept
 {
 }
-//---------------------------------------------------------------------------
+
 TRemoteToken::TRemoteToken(const UnicodeString Name) noexcept :
   FName(Name)
 {
@@ -30,13 +30,13 @@ TRemoteToken::TRemoteToken(const TRemoteToken &rhs) noexcept :
   FIDValid(rhs.FIDValid)
 {
 }
-//---------------------------------------------------------------------------
+
 void TRemoteToken::Clear()
 {
   FID = 0;
   FIDValid = false;
 }
-//---------------------------------------------------------------------------
+
 bool TRemoteToken::operator==(const TRemoteToken &rhs) const
 {
   return
@@ -44,12 +44,12 @@ bool TRemoteToken::operator==(const TRemoteToken &rhs) const
     (FIDValid == rhs.FIDValid) &&
     (!FIDValid || (FID == rhs.FID));
 }
-//---------------------------------------------------------------------------
+
 bool TRemoteToken::operator!=(const TRemoteToken &rhs) const
 {
   return !(*this == rhs);
 }
-//---------------------------------------------------------------------------
+
 TRemoteToken &TRemoteToken::operator=(const TRemoteToken &rhs)
 {
   if (this != &rhs)
@@ -60,7 +60,7 @@ TRemoteToken &TRemoteToken::operator=(const TRemoteToken &rhs)
   }
   return *this;
 }
-//---------------------------------------------------------------------------
+
 intptr_t TRemoteToken::Compare(const TRemoteToken &rhs) const
 {
   intptr_t Result;
@@ -109,23 +109,23 @@ intptr_t TRemoteToken::Compare(const TRemoteToken &rhs) const
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 void TRemoteToken::SetID(intptr_t Value)
 {
   FID = Value;
   FIDValid = Value != 0;
 }
-//---------------------------------------------------------------------------
+
 bool TRemoteToken::GetNameValid() const
 {
   return !FName.IsEmpty();
 }
-//---------------------------------------------------------------------------
+
 bool TRemoteToken::GetIsSet() const
 {
   return !FName.IsEmpty() || FIDValid;
 }
-//---------------------------------------------------------------------------
+
 UnicodeString TRemoteToken::GetDisplayText() const
 {
   if (!FName.IsEmpty())
@@ -138,13 +138,13 @@ UnicodeString TRemoteToken::GetDisplayText() const
   }
   return UnicodeString();
 }
-//---------------------------------------------------------------------------
+
 UnicodeString TRemoteToken::GetLogText() const
 {
   return FORMAT("\"%s\" [%d]", FName, nb::ToInt(FID));
 }
-//---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
+
+
 TRemoteTokenList *TRemoteTokenList::Duplicate() const
 {
   std::unique_ptr<TRemoteTokenList> Result(std::make_unique<TRemoteTokenList>());
@@ -164,14 +164,14 @@ TRemoteTokenList *TRemoteTokenList::Duplicate() const
   })
   return Result.release();
 }
-//---------------------------------------------------------------------------
+
 void TRemoteTokenList::Clear()
 {
   FTokens.clear();
   FNameMap.clear();
   FIDMap.clear();
 }
-//---------------------------------------------------------------------------
+
 void TRemoteTokenList::Add(const TRemoteToken &Token)
 {
   FTokens.push_back(Token);
@@ -186,7 +186,7 @@ void TRemoteTokenList::Add(const TRemoteToken &Token)
     FNameMap.insert(TNameMap::value_type(Token.GetName(), FTokens.size() - 1));
   }
 }
-//---------------------------------------------------------------------------
+
 void TRemoteTokenList::AddUnique(const TRemoteToken &Token)
 {
   if (Token.GetIDValid())
@@ -220,13 +220,13 @@ void TRemoteTokenList::AddUnique(const TRemoteToken &Token)
     // can happen, e.g. with winsshd/SFTP
   }
 }
-//---------------------------------------------------------------------------
+
 bool TRemoteTokenList::Exists(UnicodeString Name) const
 {
   // We should make use of SameUserName
   return (FNameMap.find(Name) != FNameMap.end());
 }
-//---------------------------------------------------------------------------
+
 const TRemoteToken *TRemoteTokenList::Find(uintptr_t ID) const
 {
   TIDMap::const_iterator it = FIDMap.find(ID);
@@ -237,7 +237,7 @@ const TRemoteToken *TRemoteTokenList::Find(uintptr_t ID) const
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 const TRemoteToken *TRemoteTokenList::Find(UnicodeString Name) const
 {
   TNameMap::const_iterator it = FNameMap.find(Name);
@@ -248,7 +248,7 @@ const TRemoteToken *TRemoteTokenList::Find(UnicodeString Name) const
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 void TRemoteTokenList::Log(TTerminal *Terminal, const wchar_t *Title)
 {
   if (!FTokens.empty())
@@ -264,18 +264,18 @@ void TRemoteTokenList::Log(TTerminal *Terminal, const wchar_t *Title)
     Terminal->LogEvent(FORMAT("No %s found.", Title));
   }
 }
-//---------------------------------------------------------------------------
+
 intptr_t TRemoteTokenList::GetCount() const
 {
   return nb::ToIntPtr(FTokens.size());
 }
-//---------------------------------------------------------------------------
+
 const TRemoteToken *TRemoteTokenList::Token(intptr_t Index) const
 {
   return &FTokens[Index];
 }
-//---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
+
+
 TRemoteFile::TRemoteFile(TObjectClassId Kind, TRemoteFile *ALinkedByFile) noexcept :
   TPersistent(Kind),
   FModificationFmt(mfFull),
@@ -294,13 +294,13 @@ TRemoteFile::TRemoteFile(TRemoteFile *ALinkedByFile) noexcept :
   FLinkedByFile = ALinkedByFile;
   FIsEncrypted = false;
 }
-//---------------------------------------------------------------------------
+
 TRemoteFile::~TRemoteFile() noexcept
 {
   SAFE_DESTROY(FRights);
   SAFE_DESTROY(FLinkedFile);
 }
-//---------------------------------------------------------------------------
+
 TRemoteFile *TRemoteFile::Duplicate(bool Standalone) const
 {
   std::unique_ptr<TRemoteFile> Result(std::make_unique<TRemoteFile>());
@@ -344,7 +344,7 @@ TRemoteFile *TRemoteFile::Duplicate(bool Standalone) const
   })
   return Result.release();
 }
-//---------------------------------------------------------------------------
+
 void TRemoteFile::LoadTypeInfo() const
 {
   /* TODO : If file is link: Should be attributes taken from linked file? */
@@ -382,12 +382,12 @@ void TRemoteFile::Init()
   FIsSymLink = false;
   FCyclicLink = false;
 }
-//---------------------------------------------------------------------------
+
 int64_t TRemoteFile::GetSize() const
 {
   return GetIsDirectory() ? 0 : FSize;
 }
-//---------------------------------------------------------------------------
+
 intptr_t TRemoteFile::GetIconIndex() const
 {
   if (FIconIndex == -1)
@@ -396,7 +396,7 @@ intptr_t TRemoteFile::GetIconIndex() const
   }
   return FIconIndex;
 }
-//---------------------------------------------------------------------------
+
 UnicodeString TRemoteFile::GetTypeName() const
 {
   // check availability of type info by icon index, because type name can be empty
@@ -406,7 +406,7 @@ UnicodeString TRemoteFile::GetTypeName() const
   }
   return FTypeName;
 }
-//---------------------------------------------------------------------------
+
 Boolean TRemoteFile::GetIsHidden() const
 {
   bool Result;
@@ -427,27 +427,27 @@ Boolean TRemoteFile::GetIsHidden() const
 
   return Result;
 }
-//---------------------------------------------------------------------------
+
 void TRemoteFile::SetIsHidden(bool Value)
 {
   FIsHidden = Value ? 1 : 0;
 }
-//---------------------------------------------------------------------------
+
 Boolean TRemoteFile::GetIsDirectory() const
 {
   return (::UpCase(GetType()) == FILETYPE_DIRECTORY);
 }
-//---------------------------------------------------------------------------
+
 Boolean TRemoteFile::GetIsParentDirectory() const
 {
   return wcscmp(FFileName.c_str(), PARENTDIRECTORY) == 0;
 }
-//---------------------------------------------------------------------------
+
 Boolean TRemoteFile::GetIsThisDirectory() const
 {
   return wcscmp(FFileName.c_str(), THISDIRECTORY) == 0;
 }
-//---------------------------------------------------------------------------
+
 Boolean TRemoteFile::GetIsInaccesibleDirectory() const
 {
   Boolean Result = False;
@@ -464,7 +464,7 @@ Boolean TRemoteFile::GetIsInaccesibleDirectory() const
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 wchar_t TRemoteFile::GetType() const
 {
   if (GetIsSymLink() && FLinkedFile)
@@ -473,19 +473,19 @@ wchar_t TRemoteFile::GetType() const
   }
   return FType;
 }
-//---------------------------------------------------------------------------
+
 void TRemoteFile::SetType(wchar_t AType)
 {
   FType = AType;
   FIsSymLink = (::UpCase(FType) == FILETYPE_SYMLINK);
 }
-//---------------------------------------------------------------------------
+
 TRemoteFile *TRemoteFile::GetLinkedFile() const
 {
   // do not call FindLinkedFile as it would be called repeatedly for broken symlinks
   return FLinkedFile;
 }
-//---------------------------------------------------------------------------
+
 void TRemoteFile::SetLinkedFile(TRemoteFile *Value)
 {
   if (FLinkedFile != Value)
@@ -497,7 +497,7 @@ void TRemoteFile::SetLinkedFile(TRemoteFile *Value)
     FLinkedFile = Value;
   }
 }
-//---------------------------------------------------------------------------
+
 bool TRemoteFile::GetBrokenLink() const
 {
   DebugAssert(GetTerminal());
@@ -506,23 +506,23 @@ bool TRemoteFile::GetBrokenLink() const
       GetTerminal()->GetResolvingSymlinks());
   // "!FLinkTo.IsEmpty()" removed because it does not work with SFTP
 }
-//---------------------------------------------------------------------------
+
 bool TRemoteFile::GetIsTimeShiftingApplicable() const
 {
   return GetIsTimeShiftingApplicable(GetModificationFmt());
 }
-//---------------------------------------------------------------------------
+
 bool TRemoteFile::GetIsTimeShiftingApplicable(TModificationFmt ModificationFmt)
 {
   return (ModificationFmt == mfMDHM) || (ModificationFmt == mfFull);
 }
-//---------------------------------------------------------------------------
+
 void TRemoteFile::ShiftTimeInSeconds(int64_t Seconds)
 {
   ShiftTimeInSeconds(FModification, GetModificationFmt(), Seconds);
   ShiftTimeInSeconds(FLastAccess, GetModificationFmt(), Seconds);
 }
-//---------------------------------------------------------------------------
+
 void TRemoteFile::ShiftTimeInSeconds(TDateTime &DateTime, TModificationFmt ModificationFmt, int64_t Seconds)
 {
   if ((Seconds != 0) && GetIsTimeShiftingApplicable(ModificationFmt))
@@ -531,7 +531,7 @@ void TRemoteFile::ShiftTimeInSeconds(TDateTime &DateTime, TModificationFmt Modif
     DateTime = IncSecond(DateTime, Seconds);
   }
 }
-//---------------------------------------------------------------------------
+
 void TRemoteFile::SetModification(const TDateTime Value)
 {
   if (FModification != Value)
@@ -540,34 +540,34 @@ void TRemoteFile::SetModification(const TDateTime Value)
     FModification = Value;
   }
 }
-//---------------------------------------------------------------------------
+
 UnicodeString TRemoteFile::GetUserModificationStr() const
 {
   return base::UserModificationStr(GetModification(), FModificationFmt);
 }
-//---------------------------------------------------------------------------
+
 UnicodeString TRemoteFile::GetModificationStr() const
 {
   return base::ModificationStr(GetModification(), FModificationFmt);
 }
-//---------------------------------------------------------------------------
+
 UnicodeString TRemoteFile::GetExtension() const
 {
   return base::UnixExtractFileExt(FFileName);
 }
-//---------------------------------------------------------------------------
+
 void TRemoteFile::SetRights(TRights *Value)
 {
   FRights->Assign(Value);
 }
-//---------------------------------------------------------------------------
+
 UnicodeString TRemoteFile::GetRightsStr() const
 {
   // note that HumanRights is typically an empty string
   // (with an exception of Perm-fact-only MLSD FTP listing)
   return FRights->GetUnknown() ? GetHumanRights() : FRights->GetText();
 }
-//---------------------------------------------------------------------------
+
 void TRemoteFile::SetListingStr(const UnicodeString Value)
 {
   // Value stored in 'Value' can be used for error message
@@ -923,7 +923,7 @@ void TRemoteFile::SetListingStr(const UnicodeString Value)
     throw ETerminal(&E, FMTLOAD(LIST_LINE_ERROR, Value), HELP_LIST_LINE_ERROR);
   }
 }
-//---------------------------------------------------------------------------
+
 void TRemoteFile::Complete()
 {
   DebugAssert(GetTerminal() != nullptr);
@@ -932,7 +932,7 @@ void TRemoteFile::Complete()
     FindLinkedFile();
   }
 }
-//---------------------------------------------------------------------------
+
 void TRemoteFile::SetEncrypted()
 {
   FIsEncrypted = true;
@@ -941,7 +941,7 @@ void TRemoteFile::SetEncrypted()
     SetSize(GetSize() - TEncryption::GetOverhead());
   }
 }
-//---------------------------------------------------------------------------
+
 void TRemoteFile::FindLinkedFile()
 {
   DebugAssert(GetTerminal() && GetIsSymLink());
@@ -1005,7 +1005,7 @@ void TRemoteFile::FindLinkedFile()
     }
   }
 }
-//---------------------------------------------------------------------------
+
 UnicodeString TRemoteFile::GetListingStr() const
 {
   // note that ModificationStr is longer than 12 for mfFull
@@ -1021,7 +1021,7 @@ UnicodeString TRemoteFile::GetListingStr() const
       GetModificationStr(), GetFileName(),
       LinkPart);
 }
-//---------------------------------------------------------------------------
+
 UnicodeString TRemoteFile::GetFullFileName() const
 {
   if (FFullFileName.IsEmpty())
@@ -1045,12 +1045,12 @@ UnicodeString TRemoteFile::GetFullFileName() const
   }
   return FFullFileName;
 }
-//---------------------------------------------------------------------------
+
 bool TRemoteFile::GetHaveFullFileName() const
 {
   return !FFullFileName.IsEmpty() || (GetDirectory() != nullptr);
 }
-//---------------------------------------------------------------------------
+
 intptr_t TRemoteFile::GetAttr() const
 {
   intptr_t Result = 0;
@@ -1064,7 +1064,7 @@ intptr_t TRemoteFile::GetAttr() const
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 void TRemoteFile::SetTerminal(TTerminal *Value)
 {
   FTerminal = Value;
@@ -1073,8 +1073,8 @@ void TRemoteFile::SetTerminal(TTerminal *Value)
     FLinkedFile->SetTerminal(Value);
   }
 }
-//---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
+
+
 TRemoteDirectoryFile::TRemoteDirectoryFile() noexcept :
   TRemoteFile(OBJECT_CLASS_TRemoteDirectoryFile)
 {
@@ -1095,8 +1095,8 @@ void TRemoteDirectoryFile::Init()
   SetType(L'D');
   SetSize(0);
 }
-//---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
+
+
 TRemoteParentDirectory::TRemoteParentDirectory(TTerminal *ATerminal) noexcept :
   TRemoteDirectoryFile(OBJECT_CLASS_TRemoteParentDirectory)
 {
@@ -1118,7 +1118,7 @@ TRemoteFileList::TRemoteFileList(TObjectClassId Kind) noexcept :
 {
   SetOwnsObjects(true);
 }
-//---------------------------------------------------------------------------
+
 void TRemoteFileList::AddFile(TRemoteFile *AFile)
 {
   if (AFile)
@@ -1127,7 +1127,7 @@ void TRemoteFileList::AddFile(TRemoteFile *AFile)
     AFile->SetDirectory(this);
   }
 }
-//---------------------------------------------------------------------------
+
 void TRemoteFileList::AddFiles(const TRemoteFileList *AFileList)
 {
   if (!AFileList)
@@ -1137,7 +1137,7 @@ void TRemoteFileList::AddFiles(const TRemoteFileList *AFileList)
     AddFile(AFileList->GetFile(Index));
   }
 }
-//---------------------------------------------------------------------------
+
 TStrings *TRemoteFileList::CloneStrings(TStrings *List)
 {
   std::unique_ptr<TStringList> Result(std::make_unique<TStringList>());
@@ -1149,7 +1149,7 @@ TStrings *TRemoteFileList::CloneStrings(TStrings *List)
   }
   return Result.release();
 }
-//---------------------------------------------------------------------------
+
 void TRemoteFileList::DuplicateTo(TRemoteFileList *Copy) const
 {
   Copy->Reset();
@@ -1161,38 +1161,38 @@ void TRemoteFileList::DuplicateTo(TRemoteFileList *Copy) const
   Copy->FDirectory = GetDirectory();
   Copy->FTimestamp = FTimestamp;
 }
-//---------------------------------------------------------------------------
+
 void TRemoteFileList::Reset()
 {
   FTimestamp = Now();
   TObjectList::Clear();
 }
-//---------------------------------------------------------------------------
+
 void TRemoteFileList::SetDirectory(const UnicodeString Value)
 {
   FDirectory = base::UnixExcludeTrailingBackslash(Value);
 }
-//---------------------------------------------------------------------------
+
 UnicodeString TRemoteFileList::GetFullDirectory() const
 {
   return base::UnixIncludeTrailingBackslash(GetDirectory());
 }
-//---------------------------------------------------------------------------
+
 TRemoteFile *TRemoteFileList::GetFile(Integer Index) const
 {
   return GetAs<TRemoteFile>(Index);
 }
-//---------------------------------------------------------------------------
+
 Boolean TRemoteFileList::GetIsRoot() const
 {
   return (GetDirectory() == ROOTDIRECTORY);
 }
-//---------------------------------------------------------------------------
+
 UnicodeString TRemoteFileList::GetParentPath() const
 {
   return base::UnixExtractFilePath(GetDirectory());
 }
-//---------------------------------------------------------------------------
+
 int64_t TRemoteFileList::GetTotalSize() const
 {
   int64_t Result = 0;
@@ -1202,7 +1202,7 @@ int64_t TRemoteFileList::GetTotalSize() const
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 TRemoteFile *TRemoteFileList::FindFile(const UnicodeString AFileName) const
 {
   for (intptr_t Index = 0; Index < GetCount(); ++Index)
@@ -1230,12 +1230,12 @@ TRemoteDirectory::TRemoteDirectory(TTerminal *ATerminal, TRemoteDirectory *Templ
     FIncludeParentDirectory = Template->FIncludeParentDirectory;
   }
 }
-//---------------------------------------------------------------------------
+
 TRemoteDirectory::~TRemoteDirectory() noexcept
 {
   ReleaseRelativeDirectories();
 }
-//---------------------------------------------------------------------------
+
 void TRemoteDirectory::ReleaseRelativeDirectories()
 {
   if ((GetThisDirectory() != nullptr) && !GetIncludeThisDirectory())
@@ -1247,18 +1247,18 @@ void TRemoteDirectory::ReleaseRelativeDirectories()
     SAFE_DESTROY(FParentDirectory);
   }
 }
-//---------------------------------------------------------------------------
+
 void TRemoteDirectory::Reset()
 {
   ReleaseRelativeDirectories();
   TRemoteFileList::Reset();
 }
-//---------------------------------------------------------------------------
+
 void TRemoteDirectory::SetDirectory(const UnicodeString Value)
 {
   TRemoteFileList::SetDirectory(Value);
 }
-//---------------------------------------------------------------------------
+
 void TRemoteDirectory::AddFile(TRemoteFile *AFile)
 {
   if (AFile->GetIsThisDirectory())
@@ -1277,7 +1277,7 @@ void TRemoteDirectory::AddFile(TRemoteFile *AFile)
   }
   AFile->SetTerminal(GetTerminal());
 }
-//---------------------------------------------------------------------------
+
 void TRemoteDirectory::DuplicateTo(TRemoteFileList *Copy) const
 {
   TRemoteFileList::DuplicateTo(Copy);
@@ -1290,12 +1290,12 @@ void TRemoteDirectory::DuplicateTo(TRemoteFileList *Copy) const
     Copy->AddFile(GetParentDirectory()->Duplicate(false));
   }
 }
-//---------------------------------------------------------------------------
+
 bool TRemoteDirectory::GetLoaded() const
 {
   return ((GetTerminal() != nullptr) && GetTerminal()->GetActive() && !GetDirectory().IsEmpty());
 }
-//---------------------------------------------------------------------------
+
 void TRemoteDirectory::SetIncludeParentDirectory(Boolean Value)
 {
   if (GetIncludeParentDirectory() != Value)
@@ -1313,7 +1313,7 @@ void TRemoteDirectory::SetIncludeParentDirectory(Boolean Value)
     }
   }
 }
-//---------------------------------------------------------------------------
+
 void TRemoteDirectory::SetIncludeThisDirectory(Boolean Value)
 {
   if (GetIncludeThisDirectory() != Value)
@@ -1338,12 +1338,12 @@ TRemoteDirectoryCache::TRemoteDirectoryCache() noexcept
   SetDuplicates(dupError);
   TStringList::SetCaseSensitive(true);
 }
-//---------------------------------------------------------------------------
+
 TRemoteDirectoryCache::~TRemoteDirectoryCache() noexcept
 {
   TRemoteDirectoryCache::Clear();
 }
-//---------------------------------------------------------------------------
+
 void TRemoteDirectoryCache::Clear()
 {
   TGuard Guard(FSection); nb::used(Guard);
@@ -1362,14 +1362,14 @@ void TRemoteDirectoryCache::Clear()
     TStringList::Clear();
   } end_try__finally
 }
-//---------------------------------------------------------------------------
+
 bool TRemoteDirectoryCache::GetIsEmptyPrivate() const
 {
   TGuard Guard(FSection); nb::used(Guard);
 
   return (const_cast<TRemoteDirectoryCache *>(this)->GetCount() == 0);
 }
-//---------------------------------------------------------------------------
+
 bool TRemoteDirectoryCache::HasFileList(const UnicodeString Directory) const
 {
   TGuard Guard(FSection); nb::used(Guard);
@@ -1377,7 +1377,7 @@ bool TRemoteDirectoryCache::HasFileList(const UnicodeString Directory) const
   intptr_t Index = IndexOf(base::UnixExcludeTrailingBackslash(Directory));
   return (Index >= 0);
 }
-//---------------------------------------------------------------------------
+
 bool TRemoteDirectoryCache::HasNewerFileList(const UnicodeString Directory,
   const TDateTime &Timestamp) const
 {
@@ -1394,7 +1394,7 @@ bool TRemoteDirectoryCache::HasNewerFileList(const UnicodeString Directory,
   }
   return (Index >= 0);
 }
-//---------------------------------------------------------------------------
+
 bool TRemoteDirectoryCache::GetFileList(const UnicodeString Directory,
   TRemoteFileList *FileList) const
 {
@@ -1409,7 +1409,7 @@ bool TRemoteDirectoryCache::GetFileList(const UnicodeString Directory,
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 void TRemoteDirectoryCache::AddFileList(TRemoteFileList *FileList)
 {
   DebugAssert(FileList);
@@ -1426,13 +1426,13 @@ void TRemoteDirectoryCache::AddFileList(TRemoteFileList *FileList)
     AddObject(Copy->GetDirectory(), Copy.release());
   }
 }
-//---------------------------------------------------------------------------
+
 void TRemoteDirectoryCache::ClearFileList(const UnicodeString ADirectory, bool SubDirs)
 {
   TGuard Guard(FSection); nb::used(Guard);
   DoClearFileList(ADirectory, SubDirs);
 }
-//---------------------------------------------------------------------------
+
 void TRemoteDirectoryCache::DoClearFileList(const UnicodeString ADirectory, bool SubDirs)
 {
   UnicodeString Directory = base::UnixExcludeTrailingBackslash(ADirectory);
@@ -1455,30 +1455,30 @@ void TRemoteDirectoryCache::DoClearFileList(const UnicodeString ADirectory, bool
     }
   }
 }
-//---------------------------------------------------------------------------
+
 void TRemoteDirectoryCache::Delete(intptr_t Index)
 {
   TRemoteFileList *List = GetAs<TRemoteFileList>(Index);
   SAFE_DESTROY(List);
   TStringList::Delete(Index);
 }
-//---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
+
+
 TRemoteDirectoryChangesCache::TRemoteDirectoryChangesCache(intptr_t MaxSize) noexcept :
   FMaxSize(MaxSize)
 {
 }
-//---------------------------------------------------------------------------
+
 void TRemoteDirectoryChangesCache::Clear()
 {
   TStringList::Clear();
 }
-//---------------------------------------------------------------------------
+
 bool TRemoteDirectoryChangesCache::GetIsEmptyPrivate() const
 {
   return (const_cast<TRemoteDirectoryChangesCache *>(this)->GetCount() == 0);
 }
-//---------------------------------------------------------------------------
+
 void TRemoteDirectoryChangesCache::SetValue(const UnicodeString Name,
   const UnicodeString Value)
 {
@@ -1489,14 +1489,14 @@ void TRemoteDirectoryChangesCache::SetValue(const UnicodeString Name,
   }
   TStringList::SetValue(Name, Value);
 }
-//---------------------------------------------------------------------------
+
 UnicodeString TRemoteDirectoryChangesCache::GetValue(UnicodeString Name)
 {
   UnicodeString Value = TStringList::GetValue(Name);
   TStringList::SetValue(Name, Value);
   return Value;
 }
-//---------------------------------------------------------------------------
+
 void TRemoteDirectoryChangesCache::AddDirectoryChange(
   UnicodeString SourceDir, UnicodeString Change,
   UnicodeString TargetDir)
@@ -1512,7 +1512,7 @@ void TRemoteDirectoryChangesCache::AddDirectoryChange(
     }
   }
 }
-//---------------------------------------------------------------------------
+
 void TRemoteDirectoryChangesCache::ClearDirectoryChange(
   UnicodeString SourceDir)
 {
@@ -1525,7 +1525,7 @@ void TRemoteDirectoryChangesCache::ClearDirectoryChange(
     }
   }
 }
-//---------------------------------------------------------------------------
+
 void TRemoteDirectoryChangesCache::ClearDirectoryChangeTarget(
   UnicodeString TargetDir)
 {
@@ -1546,7 +1546,7 @@ void TRemoteDirectoryChangesCache::ClearDirectoryChangeTarget(
     }
   }
 }
-//---------------------------------------------------------------------------
+
 bool TRemoteDirectoryChangesCache::GetDirectoryChange(
   UnicodeString SourceDir, UnicodeString Change, UnicodeString &TargetDir) const
 {
@@ -1576,7 +1576,7 @@ bool TRemoteDirectoryChangesCache::GetDirectoryChange(
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 void TRemoteDirectoryChangesCache::Serialize(UnicodeString &Data) const
 {
   Data = L"A";
@@ -1604,7 +1604,7 @@ void TRemoteDirectoryChangesCache::Serialize(UnicodeString &Data) const
     Data += GetText();
   }
 }
-//---------------------------------------------------------------------------
+
 void TRemoteDirectoryChangesCache::Deserialize(UnicodeString Data)
 {
   if (Data.IsEmpty())
@@ -1616,7 +1616,7 @@ void TRemoteDirectoryChangesCache::Deserialize(UnicodeString Data)
     SetText(Data.c_str() + 1);
   }
 }
-//---------------------------------------------------------------------------
+
 bool TRemoteDirectoryChangesCache::DirectoryChangeKey(
   UnicodeString SourceDir, UnicodeString Change, UnicodeString &Key)
 {
@@ -1645,23 +1645,23 @@ const wchar_t TRights::BasicSymbols[] = L"rwxrwxrwx";
 const wchar_t TRights::CombinedSymbols[] = L"--s--s--t";
 const wchar_t TRights::ExtendedSymbols[] = L"--S--S--T";
 const wchar_t TRights::ModeGroups[] = L"ugo";
-//---------------------------------------------------------------------------
+
 TRights::TRights() noexcept
 {
   SetNumber(0);
 }
-//---------------------------------------------------------------------------
+
 TRights::TRights(uint16_t ANumber) noexcept
 {
   SetNumber(ANumber);
 }
-//---------------------------------------------------------------------------
+
 TRights::TRights(const TRights &Source) noexcept
 {
   Assign(&Source);
 }
-//---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
+
+
 void TRights::Assign(const TRights *Source)
 {
   FAllowUndef = Source->GetAllowUndef();
@@ -1670,12 +1670,12 @@ void TRights::Assign(const TRights *Source)
   FText = Source->FText;
   FUnknown = Source->FUnknown;
 }
-//---------------------------------------------------------------------------
+
 TRights::TFlag TRights::RightToFlag(TRight Right)
 {
   return static_cast<TFlag>(1 << (rrLast - Right));
 }
-//---------------------------------------------------------------------------
+
 bool TRights::operator==(const TRights &rhr) const
 {
   if (GetAllowUndef() || rhr.GetAllowUndef())
@@ -1702,42 +1702,42 @@ bool TRights::operator==(TFlag rhr) const
 {
   return (GetNumber() == static_cast<uint16_t>(rhr));
 }
-//---------------------------------------------------------------------------
+
 bool TRights::operator!=(const TRights &rhr) const
 {
   return !(*this == rhr);
 }
-//---------------------------------------------------------------------------
+
 bool TRights::operator!=(TFlag rhr) const
 {
   return !(*this == rhr);
 }
-//---------------------------------------------------------------------------
+
 TRights &TRights::operator=(uint16_t rhr)
 {
   SetNumber(rhr);
   return *this;
 }
-//---------------------------------------------------------------------------
+
 TRights &TRights::operator=(const TRights &rhr)
 {
   Assign(&rhr);
   return *this;
 }
-//---------------------------------------------------------------------------
+
 TRights TRights::operator~() const
 {
   TRights Result(static_cast<uint16_t>(~GetNumber()));
   return Result;
 }
-//---------------------------------------------------------------------------
+
 TRights TRights::operator&(uint16_t rhr) const
 {
   TRights Result(*this);
   Result &= rhr;
   return Result;
 }
-//---------------------------------------------------------------------------
+
 TRights TRights::operator&(const TRights &rhr) const
 {
   TRights Result(*this);
@@ -1751,7 +1751,7 @@ TRights TRights::operator&(TFlag rhr) const
   Result &= static_cast<uint16_t>(rhr);
   return Result;
 }
-//---------------------------------------------------------------------------
+
 TRights &TRights::operator&=(const TRights &rhr)
 {
   if (GetAllowUndef() || rhr.GetAllowUndef())
@@ -1771,7 +1771,7 @@ TRights &TRights::operator&=(const TRights &rhr)
   }
   return *this;
 }
-//---------------------------------------------------------------------------
+
 TRights &TRights::operator&=(uint16_t rhr)
 {
   SetNumber(GetNumber() & rhr);
@@ -1783,33 +1783,33 @@ TRights &TRights::operator&=(TFlag rhr)
   SetNumber(GetNumber() & static_cast<uint16_t>(rhr));
   return *this;
 }
-//---------------------------------------------------------------------------
+
 TRights TRights::operator|(const TRights &rhr) const
 {
   TRights Result(*this);
   Result |= rhr;
   return Result;
 }
-//---------------------------------------------------------------------------
+
 TRights TRights::operator|(uint16_t rhr) const
 {
   TRights Result(*this);
   Result |= rhr;
   return Result;
 }
-//---------------------------------------------------------------------------
+
 TRights &TRights::operator|=(const TRights &rhr)
 {
   SetNumber(GetNumber() | rhr.GetNumber());
   return *this;
 }
-//---------------------------------------------------------------------------
+
 TRights &TRights::operator|=(uint16_t rhr)
 {
   SetNumber(GetNumber() | rhr);
   return *this;
 }
-//---------------------------------------------------------------------------
+
 void TRights::SetAllowUndef(bool Value)
 {
   if (FAllowUndef != Value)
@@ -1818,7 +1818,7 @@ void TRights::SetAllowUndef(bool Value)
     FAllowUndef = Value;
   }
 }
-//---------------------------------------------------------------------------
+
 void TRights::SetText(const UnicodeString Value)
 {
   if (Value != GetText())
@@ -1878,7 +1878,7 @@ void TRights::SetText(const UnicodeString Value)
   }
   FUnknown = false;
 }
-//---------------------------------------------------------------------------
+
 UnicodeString TRights::GetText() const
 {
   if (!FText.IsEmpty())
@@ -1932,7 +1932,7 @@ UnicodeString TRights::GetText() const
     return Result;
   }
 }
-//---------------------------------------------------------------------------
+
 void TRights::SetOctal(const UnicodeString AValue)
 {
   UnicodeString Value(AValue);
@@ -1965,7 +1965,7 @@ void TRights::SetOctal(const UnicodeString AValue)
   }
   FUnknown = false;
 }
-//---------------------------------------------------------------------------
+
 uint32_t TRights::GetNumberDecadic() const
 {
   uint32_t N = GetNumberSet(); // used to be "Number"
@@ -1977,7 +1977,7 @@ uint32_t TRights::GetNumberDecadic() const
 
   return Result;
 }
-//---------------------------------------------------------------------------
+
 UnicodeString TRights::GetOctal() const
 {
   UnicodeString Result;
@@ -1990,7 +1990,7 @@ UnicodeString TRights::GetOctal() const
 
   return Result;
 }
-//---------------------------------------------------------------------------
+
 void TRights::SetNumber(uint16_t Value)
 {
   if ((FSet != Value) || ((FSet | FUnset) != rfAllSpecials))
@@ -2001,25 +2001,25 @@ void TRights::SetNumber(uint16_t Value)
   }
   FUnknown = false;
 }
-//---------------------------------------------------------------------------
+
 uint16_t TRights::GetNumber() const
 {
   DebugAssert(!GetIsUndef());
   return FSet;
 }
-//---------------------------------------------------------------------------
+
 void TRights::SetRight(TRight Right, bool Value)
 {
   SetRightUndef(Right, (Value ? rsYes : rsNo));
 }
-//---------------------------------------------------------------------------
+
 bool TRights::GetRight(TRight Right) const
 {
   TState State = GetRightUndef(Right);
   DebugAssert(State != rsUndef);
   return (State == rsYes);
 }
-//---------------------------------------------------------------------------
+
 void TRights::SetRightUndef(TRight Right, TState Value)
 {
   if (Value != GetRightUndef(Right))
@@ -2051,7 +2051,7 @@ void TRights::SetRightUndef(TRight Right, TState Value)
   }
   FUnknown = false;
 }
-//---------------------------------------------------------------------------
+
 TRights::TState TRights::GetRightUndef(TRight Right) const
 {
   TFlag Flag = RightToFlag(Right);
@@ -2071,19 +2071,19 @@ TRights::TState TRights::GetRightUndef(TRight Right) const
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 void TRights::SetReadOnly(bool Value)
 {
   SetRight(rrUserWrite, !Value);
   SetRight(rrGroupWrite, !Value);
   SetRight(rrOtherWrite, !Value);
 }
-//---------------------------------------------------------------------------
+
 bool TRights::GetReadOnly() const
 {
   return GetRight(rrUserWrite) && GetRight(rrGroupWrite) && GetRight(rrOtherWrite);
 }
-//---------------------------------------------------------------------------
+
 UnicodeString TRights::GetSimplestStr() const
 {
   if (GetIsUndef())
@@ -2092,7 +2092,7 @@ UnicodeString TRights::GetSimplestStr() const
   }
   return GetOctal();
 }
-//---------------------------------------------------------------------------
+
 UnicodeString TRights::GetModeStr() const
 {
   UnicodeString Result;
@@ -2158,7 +2158,7 @@ UnicodeString TRights::GetModeStr() const
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 void TRights::AddExecute()
 {
   for (int Group = 0; Group < 3; Group++)
@@ -2171,7 +2171,7 @@ void TRights::AddExecute()
   }
   FUnknown = false;
 }
-//---------------------------------------------------------------------------
+
 void TRights::AllUndef()
 {
   if ((FSet != 0) || (FUnset != 0))
@@ -2182,17 +2182,17 @@ void TRights::AllUndef()
   }
   FUnknown = false;
 }
-//---------------------------------------------------------------------------
+
 bool TRights::GetIsUndef() const
 {
   return ((FSet | FUnset) != rfAllSpecials);
 }
-//---------------------------------------------------------------------------
+
 TRights::operator uint16_t() const
 {
   return GetNumber();
 }
-//---------------------------------------------------------------------------
+
 TRights::operator uint32_t() const
 {
   return GetNumber();
@@ -2203,7 +2203,7 @@ TRemoteProperties::TRemoteProperties() :
 {
   Default();
 }
-//---------------------------------------------------------------------------
+
 TRemoteProperties::TRemoteProperties(const TRemoteProperties &rhp) :
   TObject(OBJECT_CLASS_TRemoteProperties),
   Valid(rhp.Valid),
@@ -2217,7 +2217,7 @@ TRemoteProperties::TRemoteProperties(const TRemoteProperties &rhp) :
   AddXToDirectories(rhp.AddXToDirectories)
 {
 }
-//---------------------------------------------------------------------------
+
 void TRemoteProperties::Default()
 {
   Valid.Clear();
@@ -2231,7 +2231,7 @@ void TRemoteProperties::Default()
   Recursive = false;
   Encrypt = false;
 }
-//---------------------------------------------------------------------------
+
 bool TRemoteProperties::operator==(const TRemoteProperties &rhp) const
 {
   bool Result = (Valid == rhp.Valid && Recursive == rhp.Recursive);
@@ -2251,12 +2251,12 @@ bool TRemoteProperties::operator==(const TRemoteProperties &rhp) const
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 bool TRemoteProperties::operator!=(const TRemoteProperties &rhp) const
 {
   return !(*this == rhp);
 }
-//---------------------------------------------------------------------------
+
 TRemoteProperties TRemoteProperties::CommonProperties(TStrings *AFileList)
 {
   TODO("Modification and LastAccess");
@@ -2302,7 +2302,7 @@ TRemoteProperties TRemoteProperties::CommonProperties(TStrings *AFileList)
   }
   return CommonProperties;
 }
-//---------------------------------------------------------------------------
+
 TRemoteProperties TRemoteProperties::ChangedProperties(
   const TRemoteProperties &OriginalProperties, TRemoteProperties &NewProperties)
 {
@@ -2340,7 +2340,7 @@ TRemoteProperties &TRemoteProperties::operator=(const TRemoteProperties &other)
   AddXToDirectories = other.AddXToDirectories;
   return *this;
 }
-//---------------------------------------------------------------------------
+
 void TRemoteProperties::Load(THierarchicalStorage *Storage)
 {
   uint8_t Buf[sizeof(Valid)];
@@ -2356,7 +2356,7 @@ void TRemoteProperties::Load(THierarchicalStorage *Storage)
 
   // TODO
 }
-//---------------------------------------------------------------------------
+
 void TRemoteProperties::Save(THierarchicalStorage *Storage) const
 {
   Storage->WriteBinaryData(UnicodeString(L"Valid"),
@@ -2369,8 +2369,8 @@ void TRemoteProperties::Save(THierarchicalStorage *Storage) const
 
   // TODO
 }
-//---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
+
+
 TChecklistItem::TChecklistItem() noexcept :
   Action(saNone), IsDirectory(false), RemoteFile(nullptr), Checked(true), ImageIndex(-1), FDirectoryHasSize(false)
 {
@@ -2383,12 +2383,12 @@ TChecklistItem::TChecklistItem() noexcept :
   FLocalLastWriteTime.dwHighDateTime = 0;
   FLocalLastWriteTime.dwLowDateTime = 0;
 }
-//---------------------------------------------------------------------------
+
 TChecklistItem::~TChecklistItem() noexcept
 {
   SAFE_DESTROY(RemoteFile);
 }
-//---------------------------------------------------------------------------
+
 const UnicodeString& TChecklistItem::GetFileName() const
 {
   if (!Remote.FileName.IsEmpty())
@@ -2401,12 +2401,12 @@ const UnicodeString& TChecklistItem::GetFileName() const
     return Local.FileName;
   }
 }
-//---------------------------------------------------------------------------
+
 int64_t TChecklistItem::GetSize() const
 {
   return GetSize(Action);
 }
-//---------------------------------------------------------------------------
+
 int64_t TChecklistItem::GetSize(TChecklistAction AAction) const
 {
   if (TSynchronizeChecklist::IsItemSizeIrrelevant(AAction))
@@ -2431,13 +2431,13 @@ int64_t TChecklistItem::GetSize(TChecklistAction AAction) const
     }
   }
 }
-//---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
+
+
 TSynchronizeChecklist::TSynchronizeChecklist() noexcept :
   FList(std::make_unique<TList>())
 {
 }
-//---------------------------------------------------------------------------
+
 TSynchronizeChecklist::~TSynchronizeChecklist() noexcept
 {
   for (int Index = 0; Index < FList->Count; Index++)
@@ -2447,12 +2447,12 @@ TSynchronizeChecklist::~TSynchronizeChecklist() noexcept
   }
 //  delete FList;
 }
-//---------------------------------------------------------------------------
+
 void TSynchronizeChecklist::Add(TChecklistItem* Item)
 {
   FList->Add(Item);
 }
-//---------------------------------------------------------------------------
+
 intptr_t TSynchronizeChecklist::Compare(const void * AItem1, const void * AItem2)
 {
   const TChecklistItem *Item1 = get_as<TChecklistItem>(AItem1);
@@ -2476,17 +2476,17 @@ intptr_t TSynchronizeChecklist::Compare(const void * AItem1, const void * AItem2
 
   return Result;
 }
-//---------------------------------------------------------------------------
+
 void TSynchronizeChecklist::Sort()
 {
   FList->Sort(Compare);
 }
-//---------------------------------------------------------------------------
+
 intptr_t TSynchronizeChecklist::GetCount() const
 {
   return FList->Count;
 }
-//---------------------------------------------------------------------------
+
 intptr_t TSynchronizeChecklist::GetCheckedCount() const
 {
   intptr_t Result = 0;
@@ -2499,12 +2499,12 @@ intptr_t TSynchronizeChecklist::GetCheckedCount() const
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 const TChecklistItem * TSynchronizeChecklist::GetItem(intptr_t Index) const
 {
   return FList->GetAs<TChecklistItem>(Index);
 }
-//---------------------------------------------------------------------------
+
 void TSynchronizeChecklist::Update(const TChecklistItem *Item, bool Check, TChecklistAction Action)
 {
   // TSynchronizeChecklist owns non-const items so it can manipulate them freely,
@@ -2514,7 +2514,7 @@ void TSynchronizeChecklist::Update(const TChecklistItem *Item, bool Check, TChec
   MutableItem->Checked = Check;
   MutableItem->Action = Action;
 }
-//---------------------------------------------------------------------------
+
 void TSynchronizeChecklist::Delete(const TChecklistItem * Item)
 {
   // See comment in Update()
@@ -2522,7 +2522,7 @@ void TSynchronizeChecklist::Delete(const TChecklistItem * Item)
   FList->Extract(MutableItem);
   SAFE_DESTROY(MutableItem);
 }
-//---------------------------------------------------------------------------
+
 void TSynchronizeChecklist::UpdateDirectorySize(const TChecklistItem* Item, int64_t Size)
 {
   // See comment in Update
@@ -2547,7 +2547,7 @@ void TSynchronizeChecklist::UpdateDirectorySize(const TChecklistItem* Item, int6
     }
   }
 }
-//---------------------------------------------------------------------------
+
 TChecklistAction TSynchronizeChecklist::Reverse(TChecklistAction Action)
 {
   switch (Action)
@@ -2576,7 +2576,7 @@ TChecklistAction TSynchronizeChecklist::Reverse(TChecklistAction Action)
       return saNone;
   }
 }
-//---------------------------------------------------------------------------
+
 bool TSynchronizeChecklist::IsItemSizeIrrelevant(TChecklistAction Action)
 {
   switch (Action)
@@ -2590,15 +2590,15 @@ bool TSynchronizeChecklist::IsItemSizeIrrelevant(TChecklistAction Action)
       return false;
   }
 }
-//---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
+
+
 TSynchronizeProgress::TSynchronizeProgress(const TSynchronizeChecklist * Checklist) noexcept
 {
   FTotalSize = -1;
   FProcessedSize = 0;
   FChecklist = Checklist;
 }
-//---------------------------------------------------------------------------
+
 int64_t TSynchronizeProgress::ItemSize(const TChecklistItem * ChecklistItem) const
 {
   int64_t Result;
@@ -2623,12 +2623,12 @@ int64_t TSynchronizeProgress::ItemSize(const TChecklistItem * ChecklistItem) con
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 void TSynchronizeProgress::ItemProcessed(const TChecklistItem * ChecklistItem)
 {
   FProcessedSize += ItemSize(ChecklistItem);
 }
-//---------------------------------------------------------------------------
+
 int64_t TSynchronizeProgress::GetProcessed(const TFileOperationProgressType * CurrentItemOperationProgress) const
 {
   DebugAssert(!TFileOperationProgressType::IsIndeterminateOperation(CurrentItemOperationProgress->Operation()));
@@ -2653,7 +2653,7 @@ int64_t TSynchronizeProgress::GetProcessed(const TFileOperationProgressType * Cu
   int64_t CurrentItemProcessedSize = CurrentItemOperationProgress->GetOperationTransferred();
   return (FProcessedSize + CurrentItemProcessedSize);
 }
-//---------------------------------------------------------------------------
+
 intptr_t TSynchronizeProgress::Progress(const TFileOperationProgressType * CurrentItemOperationProgress) const
 {
   int64_t Processed = GetProcessed(CurrentItemOperationProgress);
@@ -2668,7 +2668,7 @@ intptr_t TSynchronizeProgress::Progress(const TFileOperationProgressType * Curre
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 TDateTime TSynchronizeProgress::TimeLeft(const TFileOperationProgressType * CurrentItemOperationProgress) const
 {
   TDateTime Result;

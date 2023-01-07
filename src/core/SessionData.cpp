@@ -1,4 +1,4 @@
-﻿//---------------------------------------------------------------------------
+﻿
 #include <vcl.h>
 #pragma hdrstop
 
@@ -19,9 +19,9 @@
 #include "RemoteFiles.h"
 #include "SftpFileSystem.h"
 #include "S3FileSystem.h"
-//---------------------------------------------------------------------------
+
 __removed #pragma package(smart_init)
-//---------------------------------------------------------------------------
+
 const wchar_t *PingTypeNames = L"Off;Null;Dummy";
 const wchar_t *ProxyMethodNames = L"None;SOCKS4;SOCKS5;HTTP;Telnet;Cmd";
 const wchar_t *DefaultName = L"Default Settings";
@@ -576,7 +576,7 @@ bool TSessionData::IsSame(const TSessionData *Default, bool AdvancedOnly) const
 {
   return IsSame(Default, AdvancedOnly, nullptr);
 }
-//---------------------------------------------------------------------------
+
 TFSProtocol NormalizeFSProtocol(TFSProtocol FSProtocol)
 {
   if ((FSProtocol == fsSCPonly) || (FSProtocol == fsSFTPonly))
@@ -984,7 +984,7 @@ void TSessionData::Load(THierarchicalStorage *Storage, bool PuttyImport)
   FModified = false;
   FSource = ssStored;
 }
-//---------------------------------------------------------------------------
+
 void TSessionData::DoSave(THierarchicalStorage *Storage,
   bool PuttyExport, const TSessionData *Default, bool DoNotEncryptPasswords)
 {
@@ -2920,7 +2920,7 @@ void TSessionData::SetExitCode1IsError(bool Value)
 {
   SET_SESSION_PROPERTY(ExitCode1IsError);
 }
-//---------------------------------------------------------------------------
+
 void TSessionData::SetLookupUserGroups(TAutoSwitch Value)
 {
   SET_SESSION_PROPERTY(LookupUserGroups);
@@ -5255,7 +5255,7 @@ const TSessionData *TStoredSessionList::FindSame(TSessionData *Data)
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 intptr_t TStoredSessionList::IndexOf(TSessionData *Data) const
 {
   for (intptr_t Index = 0; Index < GetCount(); ++Index)
@@ -5267,7 +5267,7 @@ intptr_t TStoredSessionList::IndexOf(TSessionData *Data) const
   }
   return -1;
 }
-//---------------------------------------------------------------------------
+
 TSessionData *TStoredSessionList::NewSession(
   UnicodeString SessionName, TSessionData *Session)
 {
@@ -5291,7 +5291,7 @@ TSessionData *TStoredSessionList::NewSession(
   // to work with special lists (export/import) not using default storage
   return DuplicateSession;
 }
-//---------------------------------------------------------------------------
+
 void TStoredSessionList::SetDefaultSettings(const TSessionData *Value)
 {
   DebugAssert(FDefaultSettings);
@@ -5315,7 +5315,7 @@ bool TStoredSessionList::OpenHostKeysSubKey(THierarchicalStorage *Storage, bool 
     Storage->OpenRootKey(CanCreate) &&
     Storage->OpenSubKey(GetConfiguration()->GetSshHostKeysSubKey(), CanCreate);
 }
-//---------------------------------------------------------------------------
+
 THierarchicalStorage *TStoredSessionList::CreateHostKeysStorageForWriting()
 {
   bool SessionList = false;
@@ -5324,7 +5324,7 @@ THierarchicalStorage *TStoredSessionList::CreateHostKeysStorageForWriting()
   Storage->SetAccessMode(smReadWrite);
   return Storage.release();
 }
-//---------------------------------------------------------------------------
+
 void TStoredSessionList::ImportHostKeys(
   THierarchicalStorage * SourceStorage, THierarchicalStorage * TargetStorage, TStoredSessionList * Sessions, bool OnlySelected)
 {
@@ -5353,7 +5353,7 @@ void TStoredSessionList::ImportHostKeys(
     }
   }
 }
-//---------------------------------------------------------------------------
+
 void TStoredSessionList::ImportHostKeys(
   UnicodeString & SourceKey, TStoredSessionList * Sessions, bool OnlySelected)
 {
@@ -5364,7 +5364,7 @@ void TStoredSessionList::ImportHostKeys(
 
   ImportHostKeys(SourceStorage.get(), TargetStorage.get(), Sessions, OnlySelected);
 }
-//---------------------------------------------------------------------------
+
 void TStoredSessionList::ImportSelectedKnownHosts(TStoredSessionList *Sessions)
 {
   std::unique_ptr<THierarchicalStorage> Storage(CreateHostKeysStorageForWriting());
@@ -5435,17 +5435,17 @@ bool TStoredSessionList::IsFolderOrWorkspace(
     DebugAlwaysTrue(FirstData != nullptr) &&
     (FirstData->GetIsWorkspace() == Workspace);
 }
-//---------------------------------------------------------------------------
+
 bool TStoredSessionList::GetIsFolder(UnicodeString Name) const
 {
   return IsFolderOrWorkspace(Name, false);
 }
-//---------------------------------------------------------------------------
+
 bool TStoredSessionList::GetIsWorkspace(UnicodeString Name) const
 {
   return IsFolderOrWorkspace(Name, true);
 }
-//---------------------------------------------------------------------------
+
 TSessionData *TStoredSessionList::CheckIsInFolderOrWorkspaceAndResolve(
   TSessionData *Data, UnicodeString Name)
 {
@@ -5500,7 +5500,7 @@ void TStoredSessionList::GetFolderOrWorkspace(UnicodeString Name, TList *List)
     }
   }
 }
-//---------------------------------------------------------------------------
+
 TStrings *TStoredSessionList::GetFolderOrWorkspaceList(
   UnicodeString Name)
 {
@@ -5515,7 +5515,7 @@ TStrings *TStoredSessionList::GetFolderOrWorkspaceList(
 
   return Result.release();
 }
-//---------------------------------------------------------------------------
+
 TStrings *TStoredSessionList::GetWorkspaces() const
 {
   std::unique_ptr<TStringList> Result(CreateSortedStringList());
@@ -5531,7 +5531,7 @@ TStrings *TStoredSessionList::GetWorkspaces() const
 
   return Result.release();
 }
-//---------------------------------------------------------------------------
+
 void TStoredSessionList::NewWorkspace(
   UnicodeString Name, TList *DataList)
 {
@@ -5558,7 +5558,7 @@ void TStoredSessionList::NewWorkspace(
     Add(Data2.release());
   }
 }
-//---------------------------------------------------------------------------
+
 bool TStoredSessionList::HasAnyWorkspace() const
 {
   bool Result = false;
@@ -5569,7 +5569,7 @@ bool TStoredSessionList::HasAnyWorkspace() const
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 TSessionData *TStoredSessionList::ParseUrl(UnicodeString Url,
   TOptions *Options, bool &DefaultsOnly, UnicodeString *AFileName,
   bool * AProtocolDefined, UnicodeString * MaskedUrl, intptr_t Flags)
@@ -5586,7 +5586,7 @@ TSessionData *TStoredSessionList::ParseUrl(UnicodeString Url,
   })
   return Data.release();
 }
-//---------------------------------------------------------------------------
+
 bool TStoredSessionList::IsUrl(UnicodeString Url)
 {
   bool DefaultsOnly;
@@ -5595,7 +5595,7 @@ bool TStoredSessionList::IsUrl(UnicodeString Url)
   bool Result = ProtocolDefined;
   return Result;
 }
-//---------------------------------------------------------------------------
+
 TSessionData *TStoredSessionList::ResolveWorkspaceData(TSessionData *Data)
 {
   if (!Data->GetLink().IsEmpty())
@@ -5608,7 +5608,7 @@ TSessionData *TStoredSessionList::ResolveWorkspaceData(TSessionData *Data)
   }
   return Data;
 }
-//---------------------------------------------------------------------------
+
 TSessionData * TStoredSessionList::SaveWorkspaceData(TSessionData * Data, int Index)
 {
   std::unique_ptr<TSessionData> Result(std::make_unique<TSessionData>(""));
@@ -5630,13 +5630,13 @@ TSessionData * TStoredSessionList::SaveWorkspaceData(TSessionData * Data, int In
 
   return Result.release();
 }
-//---------------------------------------------------------------------------
+
 bool TStoredSessionList::CanLogin(TSessionData *Data)
 {
   Data = ResolveWorkspaceData(Data);
   return (Data != nullptr) && Data->GetCanLogin();
 }
-//---------------------------------------------------------------------------
+
 UnicodeString GetExpandedLogFileName(UnicodeString LogFileName, TDateTime Started, TSessionData *SessionData)
 {
   // StripPathQuotes should not be needed as we do not feed quotes anymore
@@ -5718,14 +5718,14 @@ UnicodeString GetExpandedLogFileName(UnicodeString LogFileName, TDateTime Starte
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 bool GetIsSshProtocol(TFSProtocol FSProtocol)
 {
   return
     (FSProtocol == fsSFTPonly) || (FSProtocol == fsSFTP) ||
     (FSProtocol == fsSCPonly);
 }
-//---------------------------------------------------------------------------
+
 intptr_t GetDefaultPort(TFSProtocol FSProtocol, TFtps Ftps)
 {
   intptr_t Result;

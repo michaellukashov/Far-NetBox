@@ -2,11 +2,11 @@
 #pragma once
 
 
-//---------------------------------------------------------------------------
+
 #include <time.h>
 #include <rdestl/map.h>
 #include <FileSystems.h>
-//---------------------------------------------------------------------------
+
 class TFileZillaIntf;
 class TFileZillaImpl;
 class TMessageQueue;
@@ -16,7 +16,7 @@ struct TListDataEntry;
 struct TFileTransferData;
 struct TFtpsCertificateData;
 struct TRemoteFileTime;
-//---------------------------------------------------------------------------
+
 NB_DEFINE_CLASS_ID(TFTPFileSystem);
 class NB_CORE_EXPORT TFTPFileSystem final : public TCustomFileSystem
 {
@@ -313,6 +313,6 @@ private:
 private:
   bool DoQuit();
 };
-//---------------------------------------------------------------------------
+
 UnicodeString GetOpenSSLVersionText();
-//---------------------------------------------------------------------------
+

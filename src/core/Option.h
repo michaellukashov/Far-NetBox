@@ -2,18 +2,18 @@
 #pragma once
 
 #include <Classes.hpp>
-//---------------------------------------------------------------------------
+
 enum TOptionType
 {
   otParam,
   otSwitch
 };
-//---------------------------------------------------------------------------
+
 #if 0
 typedef void (__closure *TLogOptionEvent)(const UnicodeString LogStr);
 #endif // #if 0
 using TLogOptionEvent = nb::FastDelegate1<void, UnicodeString /*LogStr*/>;
-//---------------------------------------------------------------------------
+
 class NB_CORE_EXPORT TOptions : public TObject
 {
 public:
@@ -79,4 +79,4 @@ public:
   UnicodeString GetParam(intptr_t AIndex) const;
   bool GetEmpty() const;
 };
-//---------------------------------------------------------------------------
+

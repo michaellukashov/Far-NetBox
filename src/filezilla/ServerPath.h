@@ -1,7 +1,7 @@
-//---------------------------------------------------------------------------
+
 #pragma once
 #include "stdafx.h"
-//---------------------------------------------------------------------------
+
 class CServerPath
 {
 CUSTOM_MEM_ALLOCATION_IMPL
@@ -43,6 +43,6 @@ protected:
 private:
   const CString DoGetPath(bool unterminated) const;
 };
-//---------------------------------------------------------------------------
+
 const BOOL operator==(const CServerPath & a, const CString & b);
 

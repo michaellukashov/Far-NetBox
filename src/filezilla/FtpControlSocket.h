@@ -1,17 +1,17 @@
-﻿//---------------------------------------------------------------------------
+﻿
 #pragma once
-//---------------------------------------------------------------------------
+
 #include "structures.h"
 #include "stdafx.h"
 #include "FileZillaApi.h"
 #include "FileZillaIntf.h"
-//---------------------------------------------------------------------------
+
 class CTransferSocket;
 class CMainThread;
-//---------------------------------------------------------------------------
+
 class CAsyncProxySocketLayer;
 class CFtpListResult;
-//---------------------------------------------------------------------------
+
 #define CSMODE_NONE             0x0000
 #define CSMODE_CONNECT          0x0001
 #define CSMODE_COMMAND          0x0002
@@ -28,7 +28,7 @@ class CFtpListResult;
 #define CSMODE_RENAME           0x1000
 #define CSMODE_CHMOD            0x2000
 #define CSMODE_LISTFILE         0x4000
-//---------------------------------------------------------------------------
+
 struct t_transferdata
 {
 CUSTOM_MEM_ALLOCATION_IMPL
@@ -42,7 +42,7 @@ CUSTOM_MEM_ALLOCATION_IMPL
   HANDLE localFileHandle;
   BOOL bResume, bResumeAppend, bType;
 };
-//---------------------------------------------------------------------------
+
 class CFtpControlSocket : public CAsyncSocketEx, public CApiLog
 {
   friend class CTransferSocket;

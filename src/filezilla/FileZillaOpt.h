@@ -1,7 +1,7 @@
-//---------------------------------------------------------------------------
+
 #ifndef FileZillaOptH
 #define FileZillaOptH
-//---------------------------------------------------------------------------
+
 #define OPTION_LOGONTYPE 1
 #define OPTION_PASV 2
 #define OPTION_FWHOST 3
@@ -53,5 +53,5 @@
 #define OPTION_MPEXT_COMPLETE_TLS_SHUTDOWN 1012
 #define OPTION_MPEXT_CERT_STORAGE 1013
 #define OPTION_MPEXT_WORK_FROM_CWD 1014
-//---------------------------------------------------------------------------
+
 #endif // FileZillaOptH

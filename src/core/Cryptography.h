@@ -1,8 +1,8 @@
-﻿//---------------------------------------------------------------------------
+﻿
 #pragma once
-//---------------------------------------------------------------------------
+
 #include <Classes.hpp>
-//---------------------------------------------------------------------------
+
 void CryptographyInitialize();
 void CryptographyFinalize();
 RawByteString ScramblePassword(UnicodeString Password);
@@ -17,10 +17,10 @@ intptr_t IsValidPassword(UnicodeString Password);
 intptr_t PasswordMaxLength();
 RawByteString GenerateEncryptKey();
 void ValidateEncryptKey(const RawByteString AKey);
-//---------------------------------------------------------------------------
+
 class TFileBuffer;
 typedef void AESContext;
-//---------------------------------------------------------------------------
+
 class TEncryption : public TObject
 {
 public:
@@ -55,4 +55,4 @@ private:
   void NeedSalt();
   void SetSalt();
 };
-//---------------------------------------------------------------------------
+

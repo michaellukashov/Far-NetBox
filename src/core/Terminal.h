@@ -1,4 +1,4 @@
-﻿//---------------------------------------------------------------------------
+﻿
 #pragma once
 
 #include <rdestl/map.h>
@@ -14,7 +14,7 @@
 #include "FileOperationProgress.h"
 #include "FileMasks.h"
 #include "RemoteFiles.h"
-//---------------------------------------------------------------------------
+
 class TCopyParamType;
 class TFileOperationProgressType;
 class TCustomFileSystem;
@@ -35,7 +35,7 @@ class TParallelOperation;
 class TCollectedFileList;
 struct TLocalFileHandle;
 using TCalculatedSizes = nb::vector_t<int64_t>;
-//---------------------------------------------------------------------------
+
 #if 0
 typedef void (__closure *TQueryUserEvent)
   (TObject * Sender, const UnicodeString Query, TStrings * MoreMessages, uint32_t Answers,
@@ -153,7 +153,7 @@ using TCreateLocalDirectoryEvent = nb::FastDelegate2<bool,
   UnicodeString /*ALocalDirName*/,
   LPSECURITY_ATTRIBUTES /*SecurityAttributes*/>;
 using TCheckForEscEvent = nb::FastDelegate0<bool>;
-//---------------------------------------------------------------------------
+
 constexpr uintptr_t folNone = 0x00;
 constexpr uintptr_t folAllowSkip = 0x01;
 constexpr uintptr_t folRetryOnFatal = 0x02;
@@ -182,7 +182,7 @@ constexpr uintptr_t folRetryOnFatal = 0x02;
 #define FILE_OPERATION_LOOP_END(MESSAGE) \
   FILE_OPERATION_LOOP_END_EX(MESSAGE, folAllowSkip)
 #endif // #if 0
-//---------------------------------------------------------------------------
+
 inline void ThrowSkipFile(Exception *Exception, UnicodeString Message)
 {
   throw ESkipFile(Exception, Message);
@@ -195,9 +195,9 @@ NB_CORE_EXPORT void FileOperationLoopCustom(TTerminal *Terminal,
   UnicodeString HelpKeyword,
   std::function<void()> Operation);
 
-//---------------------------------------------------------------------------
+
 enum TCurrentFSProtocol { cfsUnknown, cfsSCP, cfsSFTP, cfsFTP, cfsFTPS, cfsWebDAV, cfsS3 };
-//---------------------------------------------------------------------------
+
 constexpr intptr_t cpDelete = 0x01;
 constexpr intptr_t cpTemporary = 0x04;
 constexpr intptr_t cpNoConfirmation = 0x08;
@@ -206,27 +206,27 @@ constexpr intptr_t cpAppend = 0x20;
 constexpr intptr_t cpFirstLevel = 0x100;
 constexpr intptr_t cpResume = 0x40;
 constexpr intptr_t cpNoRecurse = 0x80;
-//---------------------------------------------------------------------------
+
 constexpr intptr_t ccApplyToDirectories = 0x01;
 constexpr intptr_t ccRecursive = 0x02;
 constexpr intptr_t ccUser = 0x100;
-//---------------------------------------------------------------------------
+
 constexpr intptr_t csIgnoreErrors = 0x01;
 constexpr intptr_t csStopOnFirstFile = 0x02;
 constexpr intptr_t csDisallowTemporaryTransferFiles = 0x04;
-//---------------------------------------------------------------------------
+
 constexpr intptr_t ropNoReadDirectory = 0x02;
-//---------------------------------------------------------------------------
+
 constexpr intptr_t boDisableNeverShowAgain = 0x01;
 constexpr intptr_t bpMonospacedFont = 0x01;
-//---------------------------------------------------------------------------
+
 constexpr intptr_t tfNone = 0x00;
 constexpr intptr_t tfFirstLevel = 0x01;
 constexpr intptr_t tfNewDirectory = 0x02;
 constexpr intptr_t tfAutoResume = 0x04;
 constexpr intptr_t tfPreCreateDir = 0x08;
 constexpr intptr_t tfUseFileTransferAny = 0x10;
-//---------------------------------------------------------------------------
+
 NB_DEFINE_CLASS_ID(TTerminal);
 class NB_CORE_EXPORT TTerminal : /*public TObject,*/ public TSessionUI
 {
@@ -885,7 +885,7 @@ private:
 
   void AfterMoveFiles(TStrings *AFileList);
 };
-//---------------------------------------------------------------------------
+
 NB_DEFINE_CLASS_ID(TSecondaryTerminal);
 class NB_CORE_EXPORT TSecondaryTerminal : public TTerminal
 {
@@ -916,7 +916,7 @@ protected:
 private:
   TTerminal *FMainTerminal{nullptr};
 };
-//---------------------------------------------------------------------------
+
 NB_DEFINE_CLASS_ID(TTerminalList);
 class NB_CORE_EXPORT TTerminalList : public TObjectList
 {
@@ -941,7 +941,7 @@ private:
 public:
   TTerminal * GetTerminal(intptr_t Index);
 };
-//---------------------------------------------------------------------------
+
 NB_DEFINE_CLASS_ID(TCustomCommandParams);
 struct NB_CORE_EXPORT TCustomCommandParams : public TObject
 {
@@ -954,7 +954,7 @@ public:
   intptr_t Params{0};
   TCaptureOutputEvent OutputEvent;
 };
-//---------------------------------------------------------------------------
+
 struct NB_CORE_EXPORT TCalculateSizeStats : public TObject
 {
   TCalculateSizeStats() noexcept;
@@ -965,7 +965,7 @@ struct NB_CORE_EXPORT TCalculateSizeStats : public TObject
   TStrings *FoundFiles{nullptr};
   TCalculatedSizes * CalculatedSizes{nullptr};
 };
-//---------------------------------------------------------------------------
+
 NB_DEFINE_CLASS_ID(TCalculateSizeParams);
 struct NB_CORE_EXPORT TCalculateSizeParams : public TObject
 {
@@ -983,7 +983,7 @@ public:
   bool AllowDirs{true};
   bool Result{true};
 };
-//---------------------------------------------------------------------------
+
 #if 0
 struct TOverwriteFileParams
 {
@@ -997,9 +997,9 @@ struct TOverwriteFileParams
   TModificationFmt DestPrecision;
 };
 #endif
-//---------------------------------------------------------------------------
+
 using TDateTimes = nb::vector_t<TDateTime>;
-//---------------------------------------------------------------------------
+
 NB_DEFINE_CLASS_ID(TMakeLocalFileListParams);
 struct NB_CORE_EXPORT TMakeLocalFileListParams : public TObject
 {
@@ -1013,7 +1013,7 @@ public:
   bool IncludeDirs{false};
   bool Recursive{false};
 };
-//---------------------------------------------------------------------------
+
 struct NB_CORE_EXPORT TSynchronizeOptions : public TObject
 {
   NB_DISABLE_COPY(TSynchronizeOptions)
@@ -1026,7 +1026,7 @@ public:
   bool FilterFind(UnicodeString AFileName) const;
   bool MatchesFilter(UnicodeString AFileName) const;
 };
-//---------------------------------------------------------------------------
+
 struct NB_CORE_EXPORT TSpaceAvailable
 {
   CUSTOM_MEM_ALLOCATION_IMPL
@@ -1038,7 +1038,7 @@ struct NB_CORE_EXPORT TSpaceAvailable
   int64_t UnusedBytesAvailableToUser{0};
   uintptr_t BytesPerAllocationUnit{0};
 };
-//---------------------------------------------------------------------------
+
 class NB_CORE_EXPORT TRobustOperationLoop : public TObject
 {
   NB_DISABLE_COPY(TRobustOperationLoop)
@@ -1058,7 +1058,7 @@ private:
   bool FPrevAnyTransfer{false};
   TDateTime FStart;
 };
-//---------------------------------------------------------------------------
+
 NB_DEFINE_CLASS_ID(TCollectedFileList);
 class TCollectedFileList : public TObject
 {
@@ -1089,7 +1089,7 @@ private:
   using TFileDataList = nb::vector_t<TFileData>;
   TFileDataList FList;
 };
-//---------------------------------------------------------------------------
+
 class TParallelOperation : public TObject
 {
 public:
@@ -1149,7 +1149,7 @@ private:
 
   bool CheckEnd(TCollectedFileList *Files);
 };
-//---------------------------------------------------------------------------
+
 struct TLocalFileHandle
 {
   TLocalFileHandle() noexcept;
@@ -1169,12 +1169,12 @@ struct TLocalFileHandle
   int64_t Size{0};
   CUSTOM_MEM_ALLOCATION_IMPL
 };
-//---------------------------------------------------------------------------
+
 class TLocalFile : public TObject
 {
 public:
   TSearchRecSmart SearchRec;
 };
-//---------------------------------------------------------------------------
+
 NB_CORE_EXPORT UnicodeString GetSessionUrl(const TTerminal *Terminal, bool WithUserName = false);
-//---------------------------------------------------------------------------
+

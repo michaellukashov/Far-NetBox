@@ -3,11 +3,11 @@
 
 #include <FileSystems.h>
 #include <CopyParam.h>
-//---------------------------------------------------------------------------
+
 class TCommandSet;
 class TSecureShell;
 struct TOverwriteFileParams;
-//---------------------------------------------------------------------------
+
 NB_DEFINE_CLASS_ID(TSCPFileSystem);
 class NB_CORE_EXPORT TSCPFileSystem final : public TCustomFileSystem
 {
@@ -166,4 +166,4 @@ private:
 
   UnicodeString InitOptionsStr(const TCopyParamType *CopyParam) const;
 };
-//---------------------------------------------------------------------------
+

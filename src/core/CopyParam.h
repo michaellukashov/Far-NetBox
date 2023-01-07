@@ -1,11 +1,11 @@
-﻿//---------------------------------------------------------------------------
+﻿
 #pragma once
 
 #include "FileMasks.h"
 #include "FileBuffer.h"
 #include "RemoteFiles.h"
 #include "Exceptions.h"
-//---------------------------------------------------------------------------
+
 // When adding new options, mind TCopyParamType::GetLogStr()
 enum TOperationSide { osLocal, osRemote, osCurrent, };
 enum TFileNameCase { ncNoChange, ncUpperCase, ncLowerCase, ncFirstUpperCase, ncLowerCaseShort, };
@@ -29,14 +29,14 @@ constexpr int cpaNoPreserveTimeDirs = 0x800;
 constexpr int cpaNoResumeSupport    = 0x1000;
 constexpr int cpaNoEncryptNewFiles  = 0x2000;
 constexpr int cpaNoCalculateSize    = 0x4000;
-//---------------------------------------------------------------------------
+
 struct TUsableCopyParamAttrs
 {
   int General{0};
   int Upload{0};
   int Download{0};
 };
-//---------------------------------------------------------------------------
+
 NB_DEFINE_CLASS_ID(TCopyParamType);
 class NB_CORE_EXPORT TCopyParamType : public TObject
 {
@@ -235,11 +235,11 @@ public:
   void SetNewerOnly(bool Value) { FNewerOnly = Value; }
 
 };
-//---------------------------------------------------------------------------
+
 NB_CORE_EXPORT uintptr_t GetSpeedLimit(const UnicodeString Text);
 NB_CORE_EXPORT UnicodeString SetSpeedLimit(uintptr_t Limit);
 NB_CORE_EXPORT void CopySpeedLimits(TStrings *Source, TStrings *Dest);
 NB_CORE_EXPORT TOperationSide ReverseOperationSide(TOperationSide Side);
 extern const unsigned long MinSpeed;
 extern const unsigned long MaxSpeed;
-//---------------------------------------------------------------------------
+

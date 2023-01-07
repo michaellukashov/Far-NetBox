@@ -17,13 +17,13 @@
 #include <WinSock2.h>
 #endif
 //#include <ws2ipdef.h>
-//---------------------------------------------------------------------------
+
 __removed #pragma package(smart_init)
-//---------------------------------------------------------------------------
+
 constexpr int MAX_BUFSIZE = 32 * 1024;
-//---------------------------------------------------------------------------
+
 const wchar_t HostKeyDelimiter = L';';
-//---------------------------------------------------------------------------
+
 struct TPuttyTranslation
 {
   CUSTOM_MEM_ALLOCATION_IMPL
@@ -31,7 +31,7 @@ struct TPuttyTranslation
   int Translation{0};
   UnicodeString HelpKeyword;
 };
-//---------------------------------------------------------------------------
+
 TSecureShell::TSecureShell(TSessionUI *UI,
   TSessionData *SessionData, TSessionLog *Log, TConfiguration *Configuration) noexcept :
   TObject(OBJECT_CLASS_TSecureShell)
@@ -70,7 +70,7 @@ TSecureShell::TSecureShell(TSessionUI *UI,
   FCollectPrivateKeyUsage = false;
   FWaitingForData = 0;
 }
-//---------------------------------------------------------------------------
+
 TSecureShell::~TSecureShell() noexcept
 {
   DebugAssert(FWaiting == 0);
@@ -78,7 +78,7 @@ TSecureShell::~TSecureShell() noexcept
   ResetConnection();
   SAFE_CLOSE_HANDLE(FSocketEvent);
 }
-//---------------------------------------------------------------------------
+
 void TSecureShell::ResetConnection()
 {
   FreeBackend();
@@ -95,14 +95,14 @@ void TSecureShell::ResetConnection()
   FStoredPasswordTriedForKI = false;
   FStoredPassphraseTried = false;
 }
-//---------------------------------------------------------------------------
+
 void TSecureShell::ResetSessionInfo()
 {
   FSessionInfoValid = false;
   FMinPacketSize = nullptr;
   FMaxPacketSize = nullptr;
 }
-//---------------------------------------------------------------------------
+
 void TSecureShell::UpdateSessionInfo() const
 {
   if (!FSessionInfoValid)
@@ -132,7 +132,7 @@ void TSecureShell::UpdateSessionInfo() const
     FSessionInfoValid = true;
   }
 }
-//---------------------------------------------------------------------------
+
 const TSessionInfo &TSecureShell::GetSessionInfo() const
 {
   if (!FSessionInfoValid)
@@ -141,13 +141,13 @@ const TSessionInfo &TSecureShell::GetSessionInfo() const
   }
   return FSessionInfo;
 }
-//---------------------------------------------------------------------------
+
 void TSecureShell::GetHostKeyFingerprint(UnicodeString &SHA256, UnicodeString &MD5) const
 {
   SHA256 = FSessionInfo.HostKeyFingerprintSHA256;
   MD5 = FSessionInfo.HostKeyFingerprintMD5;
 }
-//---------------------------------------------------------------------------
+
 Conf *TSecureShell::StoreToConfig(TSessionData *Data, bool Simple)
 {
   Conf *conf = conf_new();
@@ -440,7 +440,7 @@ Conf *TSecureShell::StoreToConfig(TSessionData *Data, bool Simple)
 
   return conf;
 }
-//---------------------------------------------------------------------------
+
 void TSecureShell::Open()
 {
   FBackend = &ssh_backend;
@@ -550,7 +550,7 @@ void TSecureShell::Open()
     FSshImplementation = sshiUnknown;
   }
 }
-//---------------------------------------------------------------------------
+
 bool TSecureShell::TryFtp()
 {
   bool Result;
@@ -617,7 +617,7 @@ bool TSecureShell::TryFtp()
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 void TSecureShell::Init()
 {
   try
@@ -664,7 +664,7 @@ void TSecureShell::Init()
     }
   }
 }
-//---------------------------------------------------------------------------
+
 UnicodeString TSecureShell::ConvertFromPutty(const char *Str, intptr_t Length) const
 {
   intptr_t BomLength = NBChTraitsCRT<char>::SafeStringLen(MPEXT_BOM);
@@ -675,7 +675,7 @@ UnicodeString TSecureShell::ConvertFromPutty(const char *Str, intptr_t Length) c
   }
   return AnsiToString(Str, Length);
 }
-//---------------------------------------------------------------------------
+
 void TSecureShell::PuttyLogEvent(const char *AStr)
 {
   UnicodeString Str = ConvertFromPutty(AStr, nb::ToIntPtr(NBChTraitsCRT<char>::SafeStringLen(AStr)));
@@ -708,7 +708,7 @@ void TSecureShell::PuttyLogEvent(const char *AStr)
   }
   LogEvent(Str);
 }
-//---------------------------------------------------------------------------
+
 TPromptKind TSecureShell::IdentifyPromptKind(UnicodeString &AName) const
 {
   // beware of changing order
@@ -764,7 +764,7 @@ TPromptKind TSecureShell::IdentifyPromptKind(UnicodeString &AName) const
   return PromptKind;
 }
 
-//---------------------------------------------------------------------------
+
 bool TSecureShell::PromptUser(bool /*ToServer*/,
   UnicodeString AName, bool /*NameRequired*/,
   UnicodeString AInstructions, bool InstructionsRequired,
@@ -994,7 +994,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
 
   return Result;
 }
-//---------------------------------------------------------------------------
+
 void TSecureShell::GotHostKey()
 {
   // due to re-key GotHostKey() may be called again later during session
@@ -1007,7 +1007,7 @@ void TSecureShell::GotHostKey()
     }
   }
 }
-//---------------------------------------------------------------------------
+
 void TSecureShell::CWrite(const char *Data, intptr_t Length)
 {
   // some messages to stderr may indicate that something has changed with the
@@ -1033,20 +1033,20 @@ void TSecureShell::CWrite(const char *Data, intptr_t Length)
     FUI->Information(Line, false);
   }
 }
-//---------------------------------------------------------------------------
+
 void TSecureShell::RegisterReceiveHandler(TNotifyEvent Handler)
 {
   DebugAssert(FOnReceive == nullptr);
   FOnReceive = Handler;
 }
-//---------------------------------------------------------------------------
+
 void TSecureShell::UnregisterReceiveHandler(TNotifyEvent Handler)
 {
   DebugAssert(FOnReceive == Handler);
   DebugUsedParam(Handler);
   FOnReceive = nullptr;
 }
-//---------------------------------------------------------------------------
+
 void TSecureShell::FromBackend(bool IsStdErr, const uint8_t *Data, intptr_t Length)
 {
   // Note that we do not apply ConvertFromPutty to Data yet (as opposite to CWrite).
@@ -1131,7 +1131,7 @@ void TSecureShell::FromBackend(bool IsStdErr, const uint8_t *Data, intptr_t Leng
     }
   }
 }
-//---------------------------------------------------------------------------
+
 bool TSecureShell::Peek(uint8_t *& Buf, intptr_t Length) const
 {
   bool Result = (PendLen >= Length);
@@ -1143,7 +1143,7 @@ bool TSecureShell::Peek(uint8_t *& Buf, intptr_t Length) const
 
   return Result;
 }
-//---------------------------------------------------------------------------
+
 intptr_t TSecureShell::Receive(uint8_t *Buf, intptr_t Length)
 {
   CheckConnection();
@@ -1210,7 +1210,7 @@ intptr_t TSecureShell::Receive(uint8_t *Buf, intptr_t Length)
   }
   return Length;
 }
-//---------------------------------------------------------------------------
+
 UnicodeString TSecureShell::ReceiveLine()
 {
   RawByteString Line;
@@ -1253,7 +1253,7 @@ UnicodeString TSecureShell::ReceiveLine()
 
   return Result;
 }
-//---------------------------------------------------------------------------
+
 UnicodeString TSecureShell::ConvertInput(RawByteString Input, uintptr_t CodePage) const
 {
   UnicodeString Result;
@@ -1268,7 +1268,7 @@ UnicodeString TSecureShell::ConvertInput(RawByteString Input, uintptr_t CodePage
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 void TSecureShell::SendSpecial(intptr_t Code)
 {
   if (GetConfiguration()->ActualLogProtocol >= 0)
@@ -1280,12 +1280,12 @@ void TSecureShell::SendSpecial(intptr_t Code)
   CheckConnection();
   FLastDataSent = Now();
 }
-//---------------------------------------------------------------------------
+
 void TSecureShell::SendEOF()
 {
   SendSpecial(TS_EOF);
 }
-//---------------------------------------------------------------------------
+
 uintptr_t TSecureShell::TimeoutPrompt(TQueryParamsTimerEvent PoolEvent)
 {
   ++FWaiting;
@@ -1314,7 +1314,7 @@ uintptr_t TSecureShell::TimeoutPrompt(TQueryParamsTimerEvent PoolEvent)
   } end_try__finally
   return Answer;
 }
-//---------------------------------------------------------------------------
+
 void TSecureShell::SendBuffer(uint32_t &Result)
 {
   // for comments see PoolForData
@@ -1337,7 +1337,7 @@ void TSecureShell::SendBuffer(uint32_t &Result)
     }
   }
 }
-//---------------------------------------------------------------------------
+
 void TSecureShell::DispatchSendBuffer(intptr_t BufSize)
 {
   TDateTime Start = Now();
@@ -1383,7 +1383,7 @@ void TSecureShell::DispatchSendBuffer(intptr_t BufSize)
   }
   while (BufSize > MAX_BUFSIZE);
 }
-//---------------------------------------------------------------------------
+
 void TSecureShell::Send(const uint8_t *Buf, intptr_t Length)
 {
   CheckConnection();
@@ -1403,14 +1403,14 @@ void TSecureShell::Send(const uint8_t *Buf, intptr_t Length)
   }
   CheckConnection();
 }
-//---------------------------------------------------------------------------
+
 void TSecureShell::SendNull()
 {
   LogEvent("Sending nullptr.");
   uint8_t Null = 0;
   Send(&Null, 1);
 }
-//---------------------------------------------------------------------------
+
 void TSecureShell::SendLine(UnicodeString Line)
 {
   CheckConnection();
@@ -1428,7 +1428,7 @@ void TSecureShell::SendLine(UnicodeString Line)
   // FLog->Add(llInput, Line);
   Send(reinterpret_cast<const uint8_t *>(Str.c_str()), Str.Length());
 }
-//---------------------------------------------------------------------------
+
 int TSecureShell::TranslatePuttyMessage(
   const TPuttyTranslation *Translation, intptr_t Count, UnicodeString &Message,
   UnicodeString *HelpKeyword) const
@@ -1472,7 +1472,7 @@ int TSecureShell::TranslatePuttyMessage(
 
   return Result;
 }
-//---------------------------------------------------------------------------
+
 int TSecureShell::TranslateAuthenticationMessage(
   UnicodeString &Message, UnicodeString *HelpKeyword)
 {
@@ -1501,7 +1501,7 @@ int TSecureShell::TranslateAuthenticationMessage(
 
   return Result;
 }
-//---------------------------------------------------------------------------
+
 void TSecureShell::AddStdError(UnicodeString AStr)
 {
   FStdError += AStr;
@@ -1519,7 +1519,7 @@ void TSecureShell::AddStdError(UnicodeString AStr)
     AddStdErrorLine(Line);
   }
 }
-//---------------------------------------------------------------------------
+
 void TSecureShell::AddStdErrorLine(UnicodeString AStr)
 {
   UnicodeString Str = AStr.Trim();
@@ -1532,12 +1532,12 @@ void TSecureShell::AddStdErrorLine(UnicodeString AStr)
     CaptureOutput(llStdError, Str);
   }
 }
-//---------------------------------------------------------------------------
+
 UnicodeString TSecureShell::GetStdError() const
 {
   return FStdError;
 }
-//---------------------------------------------------------------------------
+
 void TSecureShell::ClearStdError()
 {
   // Flush std error cache
@@ -1553,7 +1553,7 @@ void TSecureShell::ClearStdError()
   }
   FStdError.Clear();
 }
-//---------------------------------------------------------------------------
+
 void TSecureShell::CaptureOutput(TLogLineType Type,
   UnicodeString Line)
 {
@@ -1563,7 +1563,7 @@ void TSecureShell::CaptureOutput(TLogLineType Type,
   }
   FLog->Add(Type, Line);
 }
-//---------------------------------------------------------------------------
+
 int TSecureShell::TranslateErrorMessage(
   UnicodeString &Message, UnicodeString *HelpKeyword)
 {
@@ -1590,7 +1590,7 @@ int TSecureShell::TranslateErrorMessage(
 
   return Index;
 }
-//---------------------------------------------------------------------------
+
 void TSecureShell::PuttyFatalError(UnicodeString AError)
 {
   UnicodeString Error = AError;
@@ -1599,12 +1599,12 @@ void TSecureShell::PuttyFatalError(UnicodeString AError)
 
   FatalError(Error, HelpKeyword);
 }
-//---------------------------------------------------------------------------
+
 void TSecureShell::FatalError(UnicodeString Error, UnicodeString HelpKeyword)
 {
   FUI->FatalError(nullptr, Error, HelpKeyword);
 }
-//---------------------------------------------------------------------------
+
 void TSecureShell::LogEvent(UnicodeString AStr)
 {
   if (FLog->GetLogging())
@@ -1612,7 +1612,7 @@ void TSecureShell::LogEvent(UnicodeString AStr)
     FLog->Add(llMessage, AStr);
   }
 }
-//---------------------------------------------------------------------------
+
 void TSecureShell::SocketEventSelect(SOCKET Socket, HANDLE Event, bool Startup)
 {
   int Events;
@@ -1644,7 +1644,7 @@ void TSecureShell::SocketEventSelect(SOCKET Socket, HANDLE Event, bool Startup)
     }
   }
 }
-//---------------------------------------------------------------------------
+
 void TSecureShell::UpdateSocket(SOCKET Value, bool Startup)
 {
   if (!FActive && !Startup)
@@ -1683,7 +1683,7 @@ void TSecureShell::UpdateSocket(SOCKET Value, bool Startup)
     }
   }
 }
-//---------------------------------------------------------------------------
+
 void TSecureShell::UpdatePortFwdSocket(SOCKET Value, bool Startup)
 {
   if (GetConfiguration()->GetActualLogProtocol() >= 2)
@@ -1704,7 +1704,7 @@ void TSecureShell::UpdatePortFwdSocket(SOCKET Value, bool Startup)
       FPortFwdSockets.erase(it);
   }
 }
-//---------------------------------------------------------------------------
+
 void TSecureShell::SetActive(bool Value)
 {
   if (FActive != Value)
@@ -1719,7 +1719,7 @@ void TSecureShell::SetActive(bool Value)
     }
   }
 }
-//---------------------------------------------------------------------------
+
 void TSecureShell::FreeBackend()
 {
   if (FBackendHandle != nullptr)
@@ -1728,7 +1728,7 @@ void TSecureShell::FreeBackend()
     FBackendHandle = nullptr;
   }
 }
-//---------------------------------------------------------------------------
+
 void TSecureShell::Discard()
 {
   bool WasActive = FActive;
@@ -1740,7 +1740,7 @@ void TSecureShell::Discard()
     FUI->Closed();
   }
 }
-//---------------------------------------------------------------------------
+
 void TSecureShell::Close()
 {
   LogEvent("Closing connection.");
@@ -1754,7 +1754,7 @@ void TSecureShell::Close()
 
   Discard();
 }
-//---------------------------------------------------------------------------
+
 void inline TSecureShell::CheckConnection(int Message)
 {
   if (!FActive || get_ssh_state_closed(FBackendHandle))
@@ -1782,7 +1782,7 @@ void inline TSecureShell::CheckConnection(int Message)
     FatalError(Str, HelpKeyword);
   }
 }
-//---------------------------------------------------------------------------
+
 void TSecureShell::PoolForData(WSANETWORKEVENTS &Events, uint32_t &Result)
 {
   if (!GetActive())
@@ -1820,7 +1820,7 @@ void TSecureShell::PoolForData(WSANETWORKEVENTS &Events, uint32_t &Result)
     }
   }
 }
-//---------------------------------------------------------------------------
+
 class TPoolForDataEvent : public TObject
 {
   NB_DISABLE_COPY(TPoolForDataEvent)
@@ -1840,7 +1840,7 @@ private:
   TSecureShell *FSecureShell{nullptr};
   WSANETWORKEVENTS &FEvents;
 };
-//---------------------------------------------------------------------------
+
 void TSecureShell::WaitForData()
 {
   // see winsftp.c
@@ -1891,12 +1891,12 @@ void TSecureShell::WaitForData()
   }
   while (!IncomingData);
 }
-//---------------------------------------------------------------------------
+
 bool TSecureShell::SshFallbackCmd() const
 {
   return ssh_fallback_cmd(FBackendHandle) != 0;
 }
-//---------------------------------------------------------------------------
+
 bool TSecureShell::EnumNetworkEvents(SOCKET Socket, WSANETWORKEVENTS &Events)
 {
   if (GetConfiguration()->GetActualLogProtocol() >= 2)
@@ -1938,7 +1938,7 @@ bool TSecureShell::EnumNetworkEvents(SOCKET Socket, WSANETWORKEVENTS &Events)
     FLAGSET(Events.lNetworkEvents, FD_READ) ||
     FLAGSET(Events.lNetworkEvents, FD_CLOSE);
 }
-//---------------------------------------------------------------------------
+
 void TSecureShell::HandleNetworkEvents(SOCKET Socket, WSANETWORKEVENTS &Events)
 {
   static const struct
@@ -1976,7 +1976,7 @@ void TSecureShell::HandleNetworkEvents(SOCKET Socket, WSANETWORKEVENTS &Events)
     }
   }
 }
-//---------------------------------------------------------------------------
+
 bool TSecureShell::ProcessNetworkEvents(SOCKET Socket)
 {
   WSANETWORKEVENTS Events;
@@ -1990,7 +1990,7 @@ bool TSecureShell::ProcessNetworkEvents(SOCKET Socket)
 #define SIO_IDEAL_SEND_BACKLOG_QUERY   _IOR('t', 123, ULONG)
 #define SIO_IDEAL_SEND_BACKLOG_CHANGE   _IO('t', 122)
 #endif
-//---------------------------------------------------------------------------
+
 bool TSecureShell::EventSelectLoop(uintptr_t MSec, bool ReadEventRequired,
   WSANETWORKEVENTS *Events)
 {
@@ -2133,7 +2133,7 @@ bool TSecureShell::EventSelectLoop(uintptr_t MSec, bool ReadEventRequired,
 
   return Result;
 }
-//---------------------------------------------------------------------------
+
 void TSecureShell::Idle(uintptr_t MSec)
 {
   noise_regular();
@@ -2147,7 +2147,7 @@ void TSecureShell::Idle(uintptr_t MSec)
     EventSelectLoop(MSec, false, nullptr);
   }
 }
-//---------------------------------------------------------------------------
+
 void TSecureShell::KeepAlive()
 {
   if (FActive && (FWaiting == 0))
@@ -2181,7 +2181,7 @@ uint32_t TSecureShell::MinPacketSize() const
   }
   return *FMinPacketSize;
 }
-//---------------------------------------------------------------------------
+
 uint32_t TSecureShell::MaxPacketSize() const
 {
   if (!FSessionInfoValid)
@@ -2199,7 +2199,7 @@ uint32_t TSecureShell::MaxPacketSize() const
   }
   return *FMaxPacketSize;
 }
-//---------------------------------------------------------------------------
+
 UnicodeString TSecureShell::FuncToCompression(
   int SshVersion, const void *Compress) const
 {
@@ -2214,7 +2214,7 @@ UnicodeString TSecureShell::FuncToCompression(
   }
   return reinterpret_cast<ssh_compress *>(const_cast<void *>(Compress)) == &ssh_zlib ? "ZLib" : "";
 }
-//---------------------------------------------------------------------------
+
 TCipher TSecureShell::FuncToSsh1Cipher(const void *Cipher)
 {
   const ssh_cipher *CipherFuncs[] =
@@ -2234,7 +2234,7 @@ TCipher TSecureShell::FuncToSsh1Cipher(const void *Cipher)
   DebugAssert(Result != cipWarn);
   return Result;
 }
-//---------------------------------------------------------------------------
+
 TCipher TSecureShell::FuncToSsh2Cipher(const void *Cipher)
 {
   const ssh2_ciphers *CipherFuncs[] =
@@ -2257,7 +2257,7 @@ TCipher TSecureShell::FuncToSsh2Cipher(const void *Cipher)
   DebugAssert(Result != cipWarn);
   return Result;
 }
-//---------------------------------------------------------------------------
+
 UnicodeString TSecureShell::FormatKeyStr(UnicodeString AKeyStr) const
 {
   UnicodeString KeyStr = AKeyStr;
@@ -2283,7 +2283,7 @@ UnicodeString TSecureShell::FormatKeyStr(UnicodeString AKeyStr) const
   }
   return KeyStr;
 }
-//---------------------------------------------------------------------------
+
 void TSecureShell::GetRealHost(UnicodeString &Host, intptr_t &Port) const
 {
   if (FSessionData->GetTunnel())
@@ -2293,7 +2293,7 @@ void TSecureShell::GetRealHost(UnicodeString &Host, intptr_t &Port) const
     Port = FSessionData->GetOrigPortNumber();
   }
 }
-//---------------------------------------------------------------------------
+
 UnicodeString TSecureShell::RetrieveHostKey(UnicodeString Host, intptr_t Port, UnicodeString KeyType) const
 {
   AnsiString AnsiStoredKeys;
@@ -2307,7 +2307,7 @@ UnicodeString TSecureShell::RetrieveHostKey(UnicodeString Host, intptr_t Port, U
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 struct TPasteKeyHandler
 {
   UnicodeString KeyStr;
@@ -2317,7 +2317,7 @@ struct TPasteKeyHandler
 
   void Paste(TObject * Sender, uint32_t &Answer);
 };
-//---------------------------------------------------------------------------
+
 void TPasteKeyHandler::Paste(TObject * /*Sender*/, uint32_t &Answer)
 {
   UnicodeString ClipboardText;
@@ -2354,7 +2354,7 @@ void TPasteKeyHandler::Paste(TObject * /*Sender*/, uint32_t &Answer)
     UI->QueryUser(LoadStr(HOSTKEY_NOT_MATCH_CLIPBOARD), nullptr, qaOK, nullptr, qtError);
   }
 }
-//---------------------------------------------------------------------------
+
 void TSecureShell::VerifyHostKey(
   UnicodeString AHost, intptr_t Port, UnicodeString AKeyType, UnicodeString AKeyStr,
   UnicodeString AFingerprint)
@@ -2585,7 +2585,7 @@ void TSecureShell::VerifyHostKey(
 
   GetConfiguration()->RememberLastFingerprint(FSessionData->GetSiteKey(), SshFingerprintType, FingerprintSHA256);
 }
-//---------------------------------------------------------------------------
+
 bool TSecureShell::HaveHostKey(UnicodeString AHost, intptr_t Port, UnicodeString KeyType)
 {
   // Return true, if we have any host key fingerprint of a particular type
@@ -2614,7 +2614,7 @@ bool TSecureShell::HaveHostKey(UnicodeString AHost, intptr_t Port, UnicodeString
 
   return Result;
 }
-//---------------------------------------------------------------------------
+
 void TSecureShell::AskAlg(UnicodeString AAlgType, UnicodeString AlgName)
 {
   // beware of changing order
@@ -2638,28 +2638,28 @@ void TSecureShell::AskAlg(UnicodeString AAlgType, UnicodeString AlgName)
     FUI->FatalError(nullptr, Error);
   }
 }
-//---------------------------------------------------------------------------
+
 void TSecureShell::DisplayBanner(UnicodeString Banner)
 {
   FUI->DisplayBanner(Banner);
 }
-//---------------------------------------------------------------------------
+
 void TSecureShell::OldKeyfileWarning()
 {
   // actually never called, see Net.cpp
   FUI->QueryUser(LoadStr(OLD_KEY), nullptr, qaOK, nullptr, qtWarning);
 }
-//---------------------------------------------------------------------------
+
 bool TSecureShell::GetStoredCredentialsTried() const
 {
   return FStoredPasswordTried || FStoredPasswordTriedForKI || FStoredPassphraseTried;
 }
-//---------------------------------------------------------------------------
+
 bool TSecureShell::GetReady() const
 {
   return FOpened && (FWaiting == 0);
 }
-//---------------------------------------------------------------------------
+
 void TSecureShell::CollectUsage()
 {
 #if 0
@@ -2747,7 +2747,7 @@ void TSecureShell::CollectUsage()
   }
 #endif // #if 0
 }
-//---------------------------------------------------------------------------
+
 bool TSecureShell::CanChangePassword() const
 {
   return
@@ -2755,4 +2755,4 @@ bool TSecureShell::CanChangePassword() const
     (GetSshImplementation() != sshiOpenSSH) && // See userauth_passwd
     (GetSshImplementation() != sshiProFTPD); // See sftp_auth_password
 }
-//---------------------------------------------------------------------------
+

@@ -6,12 +6,12 @@
 #include "Configuration.h"
 #include "SessionData.h"
 #include "SessionInfo.h"
-//---------------------------------------------------------------------------
+
 #ifndef PuttyIntfH
 __removed struct Backend;
 __removed struct Conf;
 #endif
-//---------------------------------------------------------------------------
+
 struct _WSANETWORKEVENTS;
 typedef struct _WSANETWORKEVENTS WSANETWORKEVENTS;
 using SOCKET = UINT_PTR;
@@ -28,7 +28,7 @@ enum TSshImplementation
   sshiOpenVMS,
   sshiCerberus,
 };
-//---------------------------------------------------------------------------
+
 NB_DEFINE_CLASS_ID(TSecureShell);
 class TSecureShell : public TObject
 {
@@ -204,4 +204,4 @@ public:
   bool GetUtfStrings() const { return FUtfStrings; }
   void SetUtfStrings(bool Value) { FUtfStrings = Value; }
 };
-//---------------------------------------------------------------------------
+

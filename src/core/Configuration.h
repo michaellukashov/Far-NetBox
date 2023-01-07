@@ -5,12 +5,12 @@
 #include "RemoteFiles.h"
 #include "HierarchicalStorage.h"
 #include "Usage.h"
-//---------------------------------------------------------------------------
+
 #define SET_CONFIG_PROPERTY_EX(PROPERTY, APPLY) \
   if (Get ## PROPERTY() != Value) { F ## PROPERTY = Value; Changed(); APPLY; }
 #define SET_CONFIG_PROPERTY(PROPERTY) \
   SET_CONFIG_PROPERTY_EX(PROPERTY, )
-//---------------------------------------------------------------------------
+
 #define CONST_DEFAULT_NUMBER_OF_RETRIES 2
 
 extern const wchar_t *AutoSwitchNames;
@@ -24,10 +24,10 @@ enum TFtpEncryptionSwitch_219
   fesImplicit,
   fesExplicitTLS,
 };
-//---------------------------------------------------------------------------
+
 class TStoredSessionList;
 class TCopyParamType;
-//---------------------------------------------------------------------------
+
 NB_DEFINE_CLASS_ID(TConfiguration);
 class NB_CORE_EXPORT TConfiguration : public TObject
 {
@@ -421,7 +421,7 @@ public:
   intptr_t GetSessionReopenAutoMaximumNumberOfRetries() const { return FSessionReopenAutoMaximumNumberOfRetries; }
   void SetSessionReopenAutoMaximumNumberOfRetries(intptr_t Value);
 };
-//---------------------------------------------------------------------------
+
 class NB_CORE_EXPORT TShortCuts : public TObject
 {
 public:
@@ -431,12 +431,12 @@ public:
 private:
   nb::vector_t<TShortCut> FShortCuts;
 };
-//---------------------------------------------------------------------------
+
 NB_CORE_EXPORT extern const UnicodeString OriginalPuttyRegistryStorageKey;
 NB_CORE_EXPORT extern const UnicodeString KittyRegistryStorageKey;
 NB_CORE_EXPORT extern const UnicodeString OriginalPuttyExecutable;
 NB_CORE_EXPORT extern const UnicodeString KittyExecutable;
-//---------------------------------------------------------------------------
+
 NB_CORE_EXPORT extern const UnicodeString Sha1ChecksumAlg;
 NB_CORE_EXPORT extern const UnicodeString Sha224ChecksumAlg;
 NB_CORE_EXPORT extern const UnicodeString Sha256ChecksumAlg;
@@ -444,14 +444,14 @@ NB_CORE_EXPORT extern const UnicodeString Sha384ChecksumAlg;
 NB_CORE_EXPORT extern const UnicodeString Sha512ChecksumAlg;
 NB_CORE_EXPORT extern const UnicodeString Md5ChecksumAlg;
 NB_CORE_EXPORT extern const UnicodeString Crc32ChecksumAlg;
-//---------------------------------------------------------------------------
+
 NB_CORE_EXPORT extern const UnicodeString SshFingerprintType;
 NB_CORE_EXPORT extern const UnicodeString TlsFingerprintType;
-//---------------------------------------------------------------------------
+
 NB_CORE_EXPORT extern const UnicodeString HttpsCertificateStorageKey;
-//---------------------------------------------------------------------------
+
 extern const int BelowNormalLogLevels;
-//---------------------------------------------------------------------------
+
 extern const UnicodeString OpensshFolderName;
 extern const UnicodeString OpensshAuthorizedKeysFileName;
-//---------------------------------------------------------------------------
+

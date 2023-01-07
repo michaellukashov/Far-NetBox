@@ -1,4 +1,4 @@
-﻿//---------------------------------------------------------------------------
+﻿
 #include <vcl.h>
 __removed #pragma hdrstop
 
@@ -6,12 +6,12 @@ __removed #pragma hdrstop
 #include <CoreMain.h>
 #include <Common.h>
 #include <Usage.h>
-//---------------------------------------------------------------------------
+
 __removed #pragma package(smart_init)
-//---------------------------------------------------------------------------
+
 UnicodeString LastInternalExceptionCounter("LastInternalException2");
 UnicodeString LastUpdateExceptionCounter("LastUpdateException");
-//---------------------------------------------------------------------------
+
 TUsage::TUsage(TConfiguration * Configuration) noexcept :
   FCriticalSection(std::make_unique<TCriticalSection>()),
   FConfiguration(Configuration),
@@ -22,13 +22,13 @@ TUsage::TUsage(TConfiguration * Configuration) noexcept :
   FCollect = true;
   Default();
 }
-//---------------------------------------------------------------------------
+
 TUsage::~TUsage() noexcept
 {
   __removed delete FValues;
   __removed delete FCriticalSection;
 }
-//---------------------------------------------------------------------------
+
 void TUsage::Default()
 {
   TGuard Guard(*FCriticalSection); nb::used(Guard);
@@ -43,7 +43,7 @@ void TUsage::Default()
     UpdateLastReport();
   }
 }
-//---------------------------------------------------------------------------
+
 void TUsage::Load(THierarchicalStorage * Storage)
 {
   TGuard Guard(*FCriticalSection); nb::used(Guard);
@@ -71,7 +71,7 @@ void TUsage::Load(THierarchicalStorage * Storage)
   Load(Storage, "PeriodCounters", FPeriodCounters);
   Load(Storage, "LifetimeCounters", FLifetimeCounters);
 }
-//---------------------------------------------------------------------------
+
 void TUsage::Load(THierarchicalStorage * Storage,
   UnicodeString AName, TCounters & Counters)
 {
@@ -94,7 +94,7 @@ void TUsage::Load(THierarchicalStorage * Storage,
     }) end_try__finally
   }
 }
-//---------------------------------------------------------------------------
+
 void TUsage::Save(THierarchicalStorage * Storage) const
 {
   TGuard Guard(*FCriticalSection); nb::used(Guard);
@@ -108,7 +108,7 @@ void TUsage::Save(THierarchicalStorage * Storage) const
   Save(Storage, "PeriodCounters", FPeriodCounters);
   Save(Storage, "LifetimeCounters", FLifetimeCounters);
 }
-//---------------------------------------------------------------------------
+
 void TUsage::Save(THierarchicalStorage * Storage,
   UnicodeString AName, const TCounters & Counters) const
 {
@@ -124,7 +124,7 @@ void TUsage::Save(THierarchicalStorage * Storage,
     Storage->CloseSubKey();
   }
 }
-//---------------------------------------------------------------------------
+
 void TUsage::Set(UnicodeString AKey, UnicodeString AValue)
 {
   if (FCollect)
@@ -133,17 +133,17 @@ void TUsage::Set(UnicodeString AKey, UnicodeString AValue)
     FValues->SetValue(AKey, AValue);
   }
 }
-//---------------------------------------------------------------------------
+
 void TUsage::Set(UnicodeString AKey, intptr_t Value)
 {
   Set(AKey, IntToStr(Value));
 }
-//---------------------------------------------------------------------------
+
 void TUsage::Set(UnicodeString AKey, bool Value)
 {
   Set(AKey, intptr_t(Value ? 1 : 0));
 }
-//---------------------------------------------------------------------------
+
 UnicodeString TUsage::Get(UnicodeString AKey) const
 {
   TGuard Guard(*FCriticalSection); nb::used(Guard);
@@ -151,12 +151,12 @@ UnicodeString TUsage::Get(UnicodeString AKey) const
   Result.Unique();
   return Result;
 }
-//---------------------------------------------------------------------------
+
 void TUsage::UpdateLastReport()
 {
   Set("LastReport", StandardTimestamp());
 }
-//---------------------------------------------------------------------------
+
 void TUsage::Reset()
 {
   TGuard Guard(*FCriticalSection); nb::used(Guard);
@@ -164,7 +164,7 @@ void TUsage::Reset()
   FPeriodCounters.clear();
   ResetLastExceptions();
 }
-//---------------------------------------------------------------------------
+
 void TUsage::UpdateCurrentVersion()
 {
   TGuard Guard(*FCriticalSection); nb::used(Guard);
@@ -192,7 +192,7 @@ void TUsage::UpdateCurrentVersion()
   }
   Set("CurrentVersion", CompoundVersion);
 }
-//---------------------------------------------------------------------------
+
 void TUsage::ResetValue(UnicodeString AKey)
 {
   intptr_t Index = FValues->IndexOfName(AKey);
@@ -201,14 +201,14 @@ void TUsage::ResetValue(UnicodeString AKey)
     FValues->Delete(Index);
   }
 }
-//---------------------------------------------------------------------------
+
 void TUsage::ResetLastExceptions()
 {
   TGuard Guard(*FCriticalSection); nb::used(Guard);
   ResetValue(LastInternalExceptionCounter);
   ResetValue(LastUpdateExceptionCounter);
 }
-//---------------------------------------------------------------------------
+
 void TUsage::Inc(UnicodeString AKey, intptr_t Increment)
 {
   if (FCollect)
@@ -218,7 +218,7 @@ void TUsage::Inc(UnicodeString AKey, intptr_t Increment)
     Inc(AKey, FLifetimeCounters, Increment);
   }
 }
-//---------------------------------------------------------------------------
+
 void TUsage::Inc(UnicodeString AKey, TCounters & Counters, intptr_t Increment)
 {
   TCounters::iterator i = Counters.find(AKey);
@@ -231,7 +231,7 @@ void TUsage::Inc(UnicodeString AKey, TCounters & Counters, intptr_t Increment)
     Counters[AKey] = Increment;
   }
 }
-//---------------------------------------------------------------------------
+
 void TUsage::SetMax(UnicodeString AKey, intptr_t Value)
 {
   if (FCollect)
@@ -241,7 +241,7 @@ void TUsage::SetMax(UnicodeString AKey, intptr_t Value)
     SetMax(AKey, Value, FLifetimeCounters);
   }
 }
-//---------------------------------------------------------------------------
+
 void TUsage::SetMax(UnicodeString AKey, intptr_t Value,
   TCounters & Counters)
 {
@@ -258,7 +258,7 @@ void TUsage::SetMax(UnicodeString AKey, intptr_t Value,
     Counters[AKey] = Value;
   }
 }
-//---------------------------------------------------------------------------
+
 void TUsage::SetCollect(bool Value)
 {
   TGuard Guard(*FCriticalSection); nb::used(Guard);
@@ -277,7 +277,7 @@ void TUsage::SetCollect(bool Value)
     }
   }
 }
-//---------------------------------------------------------------------------
+
 UnicodeString TUsage::Serialize(UnicodeString ADelimiter, UnicodeString AFilter) const
 {
   TGuard Guard(*FCriticalSection); nb::used(Guard);
@@ -294,7 +294,7 @@ UnicodeString TUsage::Serialize(UnicodeString ADelimiter, UnicodeString AFilter)
 
   return Result;
 }
-//---------------------------------------------------------------------------
+
 void TUsage::Serialize(
   UnicodeString & List, UnicodeString AName, const TCounters & Counters,
   UnicodeString ADelimiter, UnicodeString AFilterUpper) const
@@ -306,7 +306,7 @@ void TUsage::Serialize(
     i++;
   }
 }
-//---------------------------------------------------------------------------
+
 void TUsage::Serialize(
   UnicodeString & AList, UnicodeString AName, UnicodeString AValue,
   UnicodeString ADelimiter, UnicodeString AFilterUpper) const
@@ -318,7 +318,7 @@ void TUsage::Serialize(
     AddToList(AList, FORMAT("%s=%s", AName, AValue), ADelimiter);
   }
 }
-//---------------------------------------------------------------------------
+
 intptr_t TUsage::CalculateCounterSize(int64_t Size)
 {
   constexpr intptr_t SizeCounterFactor = 10 * 1024;

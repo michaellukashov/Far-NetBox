@@ -1,6 +1,6 @@
-﻿//---------------------------------------------------------------------------
+﻿
 #pragma once
-//---------------------------------------------------------------------------
+
 #include <Classes.hpp>
 #if defined(FARPLUGIN)
 #include "Configuration.h"
@@ -31,7 +31,7 @@ extern const wchar_t *TransferModeNames[];
 extern const int TransferModeNamesCount;
 extern const wchar_t *ToggleNames[];
 enum TToggle { ToggleOff, ToggleOn };
-//---------------------------------------------------------------------------
+
 #if defined(FARPLUGIN)
 NB_CORE_EXPORT TConfiguration *CreateConfiguration();
 class TOptions;
@@ -168,7 +168,7 @@ NB_CORE_EXPORT bool IsPasswordOrPassphrasePrompt(TPromptKind Kind, TStrings *Pro
 NB_CORE_EXPORT bool IsPasswordPrompt(TPromptKind Kind, TStrings *Prompts);
 class TTerminal;
 class TRemoteFile;
-//---------------------------------------------------------------------------
+
 #if 0
 typedef void (__closure *TFileFoundEvent)
   (TTerminal *Terminal, const UnicodeString FileName, const TRemoteFile * File,
@@ -184,7 +184,7 @@ typedef void (__closure *TFindingFileEvent)
 #endif // #if 0
 using TFindingFileEvent = nb::FastDelegate3<void,
   TTerminal * /*Terminal*/, UnicodeString /*ADirectory*/, bool & /*Cancel*/>;
-//---------------------------------------------------------------------------
+
 class NB_CORE_EXPORT TOperationVisualizer
 {
   NB_DISABLE_COPY(TOperationVisualizer)
@@ -197,7 +197,7 @@ private:
   bool FUseBusyCursor{false};
   void *FToken{nullptr};
 };
-//---------------------------------------------------------------------------
+
 class NB_CORE_EXPORT TInstantOperationVisualizer : public TOperationVisualizer
 {
 public:
@@ -207,7 +207,7 @@ public:
 private:
   TDateTime FStart;
 };
-//---------------------------------------------------------------------------
+
 struct TClipboardHandler
 {
   NB_DISABLE_COPY(TClipboardHandler)
@@ -222,4 +222,4 @@ public:
     CopyToClipboard(Text);
   }
 };
-//---------------------------------------------------------------------------
+

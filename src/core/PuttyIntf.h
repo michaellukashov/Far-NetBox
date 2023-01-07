@@ -1,11 +1,11 @@
 ﻿#pragma once
 #include "PuttyTools.h"
-//---------------------------------------------------------------------------
+
 NB_CORE_EXPORT void PuttyInitialize();
 NB_CORE_EXPORT void PuttyFinalize();
-//---------------------------------------------------------------------------
+
 NB_CORE_EXPORT void DontSaveRandomSeed();
-//---------------------------------------------------------------------------
+
 #ifndef MPEXT
 #define MPEXT
 #endif
@@ -25,12 +25,12 @@ extern "C"
 
   extern CRITICAL_SECTION noise_section;
 }
-//---------------------------------------------------------------------------
+
 UnicodeString GetCipherName(const ssh_cipher * Cipher);
 UnicodeString GetCompressorName(const ssh_compressor * Compressor);
 UnicodeString GetDecompressorName(const ssh_decompressor * Decompressor);
 void PuttyDefaults(Conf * conf);
-//---------------------------------------------------------------------------
+
 class TSecureShell;
 struct ScpSeat : public Seat
 {
@@ -38,7 +38,7 @@ struct ScpSeat : public Seat
 
   ScpSeat(TSecureShell * SecureShell);
 };
-//---------------------------------------------------------------------------
+
 extern THierarchicalStorage * PuttyStorage;
-//---------------------------------------------------------------------------
+
 

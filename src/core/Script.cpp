@@ -1,4 +1,4 @@
-﻿//---------------------------------------------------------------------------
+﻿
 #include <vcl.h>
 #pragma hdrstop
 #if 0
@@ -12,12 +12,12 @@
 #include "Terminal.h"
 #include "SessionData.h"
 #include "CoreMain.h"
-//---------------------------------------------------------------------------
+
 #pragma package(smart_init)
 #endif //if 0
-//---------------------------------------------------------------------------
+
 const wchar_t * ToggleNames[] = { L"off", L"on" };
-//---------------------------------------------------------------------------
+
 #if 0
 TScriptProcParams::TScriptProcParams(const UnicodeString & FullCommand, const UnicodeString & ParamsStr)
 {
@@ -37,8 +37,8 @@ TScriptProcParams::TScriptProcParams(const UnicodeString & FullCommand, const Un
     Add(Param);
   }
 }
-//---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
+
+
 class TScriptCommands : TStringList
 {
 public:
@@ -81,14 +81,14 @@ protected:
 
   TScript * FScript;
 };
-//---------------------------------------------------------------------------
+
 TScriptCommands::TScriptCommands(TScript * Script)
 {
   FScript = Script;
   Sorted = true;
   CaseSensitive = false;
 }
-//---------------------------------------------------------------------------
+
 TScriptCommands::~TScriptCommands()
 {
   for (int Index = 0; Index < Count; Index++)
@@ -96,7 +96,7 @@ TScriptCommands::~TScriptCommands()
     delete reinterpret_cast<TScriptCommand *>(Objects[Index]);
   }
 }
-//---------------------------------------------------------------------------
+
 void TScriptCommands::Register(const wchar_t * Command,
   const UnicodeString Description, const UnicodeString Help, TCommandProc Proc,
   int MinParams, int MaxParams, bool Switches)
@@ -111,7 +111,7 @@ void TScriptCommands::Register(const wchar_t * Command,
 
   AddObject(Command, reinterpret_cast<TObject *>(ScriptCommand));
 }
-//---------------------------------------------------------------------------
+
 void TScriptCommands::Register(const wchar_t * Command,
   int Description, int Help, TCommandProc Proc,
   int MinParams, int MaxParams, bool Switches)
@@ -129,7 +129,7 @@ void TScriptCommands::Register(const wchar_t * Command,
 
   Register(Command, ADescription, AHelp, Proc, MinParams, MaxParams, Switches);
 }
-//---------------------------------------------------------------------------
+
 bool TScriptCommands::Info(const UnicodeString Command,
   UnicodeString * Description, UnicodeString * Help)
 {
@@ -152,7 +152,7 @@ bool TScriptCommands::Info(const UnicodeString Command,
 
   return Result;
 }
-//---------------------------------------------------------------------------
+
 bool TScriptCommands::Enumerate(int Index,
   UnicodeString * Command, UnicodeString * Description, UnicodeString * Help)
 {
@@ -178,7 +178,7 @@ bool TScriptCommands::Enumerate(int Index,
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 int TScriptCommands::FindCommand(TStrings * Commands,
   const UnicodeString Command, UnicodeString * Matches)
 {
@@ -218,7 +218,7 @@ int TScriptCommands::FindCommand(TStrings * Commands,
 
   return Result;
 }
-//---------------------------------------------------------------------------
+
 int TScriptCommands::FindCommand(const wchar_t ** Commands, size_t Count,
   const UnicodeString Command, UnicodeString * Matches)
 {
@@ -241,7 +241,7 @@ int TScriptCommands::FindCommand(const wchar_t ** Commands, size_t Count,
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 void TScriptCommands::CheckParams(TOptions * Parameters,
   bool Switches)
 {
@@ -251,7 +251,7 @@ void TScriptCommands::CheckParams(TOptions * Parameters,
     throw Exception(FMTLOAD(SCRIPT_UNKNOWN_SWITCH, (Switch)));
   }
 }
-//---------------------------------------------------------------------------
+
 UnicodeString TScriptCommands::ResolveCommand(const UnicodeString & Command)
 {
   UnicodeString Matches;
@@ -265,7 +265,7 @@ UnicodeString TScriptCommands::ResolveCommand(const UnicodeString & Command)
     return UnicodeString();
   }
 }
-//---------------------------------------------------------------------------
+
 // parameters are by purpose passed by (constant) reference.
 // because if passed by value (copy), UnicodeString reference is not for some reason
 // decreased on exit by exception, leading to memory leak
@@ -302,11 +302,11 @@ void TScriptCommands::Execute(const UnicodeString & Command, const UnicodeString
     ScriptCommand->Proc(Parameters.get());
   }
 }
-//---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
+
+
 // keep in sync with Session constructor in .NET
 const int BatchSessionReopenTimeout = 2 * MSecsPerSec * SecsPerMin; // 2 mins
-//---------------------------------------------------------------------------
+
 TScript::TScript(bool LimitedOutput)
 {
   FLimitedOutput = LimitedOutput;
@@ -318,13 +318,13 @@ TScript::TScript(bool LimitedOutput)
 
   Init();
 }
-//---------------------------------------------------------------------------
+
 TScript::~TScript()
 {
   delete FCommands;
   delete FPendingLogLines;
 }
-//---------------------------------------------------------------------------
+
 void TScript::Init()
 {
   FBatch = BatchAbort;
@@ -384,7 +384,7 @@ void TScript::Init()
   FCommands->Register(L"stat", SCRIPT_STAT_DESC, SCRIPT_STAT_HELP, &StatProc, 1, 1, false);
   FCommands->Register(L"checksum", SCRIPT_CHECKSUM_DESC, SCRIPT_CHECKSUM_HELP, &ChecksumProc, 2, 2, false);
 }
-//---------------------------------------------------------------------------
+
 void TScript::RequireParams(TScriptProcParams * Parameters, int MinParams)
 {
   if (Parameters->ParamCount < MinParams)
@@ -392,7 +392,7 @@ void TScript::RequireParams(TScriptProcParams * Parameters, int MinParams)
     throw Exception(FMTLOAD(SCRIPT_MISSING_PARAMS, (Parameters->FullCommand)));
   }
 }
-//---------------------------------------------------------------------------
+
 void TScript::CheckDefaultCopyParam()
 {
   if (FWarnNonDefaultCopyParam)
@@ -405,18 +405,18 @@ void TScript::CheckDefaultCopyParam()
     FWarnNonDefaultCopyParam = false;
   }
 }
-//---------------------------------------------------------------------------
+
 bool TScript::HasNonDefaultCopyParams()
 {
   return !(FCopyParam == TCopyParamType());
 }
-//---------------------------------------------------------------------------
+
 void TScript::SetCopyParam(const TCopyParamType & value)
 {
   FCopyParam.Assign(&value);
   FWarnNonDefaultCopyParam = HasNonDefaultCopyParams();
 }
-//---------------------------------------------------------------------------
+
 void TScript::CheckDefaultSynchronizeParams()
 {
   if (FWarnNonDefaultSynchronizeParams)
@@ -427,7 +427,7 @@ void TScript::CheckDefaultSynchronizeParams()
     FWarnNonDefaultSynchronizeParams = false;
   }
 }
-//---------------------------------------------------------------------------
+
 void TScript::SetSynchronizeParams(int value)
 {
   const int AcceptedParams =
@@ -437,12 +437,12 @@ void TScript::SetSynchronizeParams(int value)
   FWarnNonDefaultSynchronizeParams =
     (FSynchronizeParams != (TTerminal::spDefault & AcceptedParams));
 }
-//---------------------------------------------------------------------------
+
 bool TScript::IsTerminalLogging(TTerminal * ATerminal)
 {
   return (ATerminal != NULL) && ATerminal->Log->Logging;
 }
-//---------------------------------------------------------------------------
+
 const static UnicodeString ScriptLogFormat(L"Script: %s");
 void TScript::Log(TLogLineType Type, UnicodeString Str)
 {
@@ -456,12 +456,12 @@ void TScript::Log(TLogLineType Type, UnicodeString Str)
     FPendingLogLines->AddObject(Str, reinterpret_cast<TObject *>(Type));
   }
 }
-//---------------------------------------------------------------------------
+
 void TScript::LogOption(const UnicodeString & LogStr)
 {
   Log(llInput, LogStr);
 }
-//---------------------------------------------------------------------------
+
 void TScript::LogPendingLines(TTerminal * ATerminal)
 {
   if (IsTerminalLogging(ATerminal) && (FPendingLogLines->Count > 0))
@@ -480,20 +480,20 @@ void TScript::LogPendingLines(TTerminal * ATerminal)
     ATerminal->Log->AddSeparator();
   }
 }
-//---------------------------------------------------------------------------
+
 UnicodeString TScript::GetLogCmd(const UnicodeString & FullCommand,
   const UnicodeString & /*Command*/, const UnicodeString & /*Params*/)
 {
   return FullCommand;
 }
-//---------------------------------------------------------------------------
+
 void TScript::StartInteractive()
 {
   FBatch = FInteractiveBatch;
   FConfirm = FInteractiveConfirm;
   FSessionReopenTimeout = FInteractiveSessionReopenTimeout;
 }
-//---------------------------------------------------------------------------
+
 void TScript::Command(UnicodeString Cmd)
 {
   try
@@ -571,7 +571,7 @@ void TScript::Command(UnicodeString Cmd)
     }
   }
 }
-//---------------------------------------------------------------------------
+
 TStrings * TScript::CreateFileList(TScriptProcParams * Parameters, int Start,
   int End, TFileListType ListType)
 {
@@ -718,7 +718,7 @@ TStrings * TScript::CreateFileList(TScriptProcParams * Parameters, int Start,
 
   return Result;
 }
-//---------------------------------------------------------------------------
+
 TStrings * TScript::CreateLocalFileList(TScriptProcParams * Parameters,
   int Start, int End, TFileListType ListType)
 {
@@ -818,7 +818,7 @@ TStrings * TScript::CreateLocalFileList(TScriptProcParams * Parameters,
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 UnicodeString TScript::ListingSysErrorMessage()
 {
   UnicodeString Result;
@@ -832,7 +832,7 @@ UnicodeString TScript::ListingSysErrorMessage()
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 void TScript::NoMatch(const UnicodeString & Message)
 {
   if (FFailOnNoMatch)
@@ -844,7 +844,7 @@ void TScript::NoMatch(const UnicodeString & Message)
     PrintLine(Message);
   }
 }
-//---------------------------------------------------------------------------
+
 void TScript::NoMatch(const UnicodeString & Mask, const UnicodeString & Error)
 {
   UnicodeString Message = FMTLOAD(SCRIPT_MATCH_NO_MATCH, (Mask));
@@ -855,7 +855,7 @@ void TScript::NoMatch(const UnicodeString & Mask, const UnicodeString & Error)
 
   NoMatch(Message);
 }
-//---------------------------------------------------------------------------
+
 void TScript::FreeFiles(TStrings * FileList)
 {
   for (int i = 0; i < FileList->Count; i++)
@@ -867,18 +867,18 @@ void TScript::FreeFiles(TStrings * FileList)
     }
   }
 }
-//---------------------------------------------------------------------------
+
 void TScript::FreeFileList(TStrings * FileList)
 {
   FreeFiles(FileList);
   delete FileList;
 }
-//---------------------------------------------------------------------------
+
 void TScript::ConnectTerminal(TTerminal * ATerminal)
 {
   ATerminal->Open();
 }
-//---------------------------------------------------------------------------
+
 void TScript::Print(const UnicodeString Str, bool Error)
 {
   if (FOnPrint != NULL)
@@ -886,13 +886,13 @@ void TScript::Print(const UnicodeString Str, bool Error)
     FOnPrint(this, Str, Error);
   }
 }
-//---------------------------------------------------------------------------
+
 void TScript::PrintLine(const UnicodeString Str, bool Error)
 {
   Log(llOutput, Str);
   Print(Str + L"\n", Error);
 }
-//---------------------------------------------------------------------------
+
 bool TScript::HandleExtendedException(Exception * E, TTerminal * ATerminal)
 {
   bool Result = (OnShowExtendedException != NULL);
@@ -909,7 +909,7 @@ bool TScript::HandleExtendedException(Exception * E, TTerminal * ATerminal)
 
   return Result;
 }
-//---------------------------------------------------------------------------
+
 void TScript::CheckSession()
 {
   if (FTerminal == NULL)
@@ -917,12 +917,12 @@ void TScript::CheckSession()
     throw Exception(LoadStr(SCRIPT_NO_SESSION));
   }
 }
-//---------------------------------------------------------------------------
+
 void TScript::NotSupported()
 {
   throw Exception(LoadStr(NOTSUPPORTED));
 }
-//---------------------------------------------------------------------------
+
 void TScript::CheckMultiFilesToOne(TStrings * FileList, const UnicodeString & Target, bool Unix)
 {
   UnicodeString Name;
@@ -942,12 +942,12 @@ void TScript::CheckMultiFilesToOne(TStrings * FileList, const UnicodeString & Ta
     PrintLine(Message);
   }
 }
-//---------------------------------------------------------------------------
+
 void TScript::CheckParams(TScriptProcParams * Parameters)
 {
   TScriptCommands::CheckParams(Parameters, false);
 }
-//---------------------------------------------------------------------------
+
 void TScript::TransferParamParams(int & Params, TScriptProcParams * Parameters)
 {
   Params |= FLAGMASK(!FConfirm, cpNoConfirmation);
@@ -966,7 +966,7 @@ void TScript::TransferParamParams(int & Params, TScriptProcParams * Parameters)
     Params |= cpAppend;
   }
 }
-//---------------------------------------------------------------------------
+
 void TScript::CopyParamParams(TCopyParamType & CopyParam, TScriptProcParams * Parameters)
 {
   UnicodeString Value;
@@ -1086,11 +1086,11 @@ void TScript::CopyParamParams(TCopyParamType & CopyParam, TScriptProcParams * Pa
     CopyParam.Load(OptionsStorage.get());
   }
 }
-//---------------------------------------------------------------------------
+
 void TScript::ResetTransfer()
 {
 }
-//---------------------------------------------------------------------------
+
 bool TScript::EnsureCommandSessionFallback(
   TFSCapability Capability, TSessionAction & Action)
 {
@@ -1113,7 +1113,7 @@ bool TScript::EnsureCommandSessionFallback(
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 void TScript::HelpProc(TScriptProcParams * Parameters)
 {
   UnicodeString Output;
@@ -1150,7 +1150,7 @@ void TScript::HelpProc(TScriptProcParams * Parameters)
 
   Print(Output);
 }
-//---------------------------------------------------------------------------
+
 void TScript::CallProc(TScriptProcParams * Parameters)
 {
   CheckSession();
@@ -1170,12 +1170,12 @@ void TScript::CallProc(TScriptProcParams * Parameters)
     FTerminal->AnyCommand(Parameters->ParamsStr, TerminalCaptureLog);
   }
 }
-//---------------------------------------------------------------------------
+
 void TScript::EchoProc(TScriptProcParams * Parameters)
 {
   PrintLine(Parameters->ParamsStr);
 }
-//---------------------------------------------------------------------------
+
 void TScript::StatProc(TScriptProcParams * Parameters)
 {
   CheckSession();
@@ -1194,7 +1194,7 @@ void TScript::StatProc(TScriptProcParams * Parameters)
     delete File;
   }
 }
-//---------------------------------------------------------------------------
+
 void TScript::ChecksumProc(TScriptProcParams * Parameters)
 {
   CheckSession();
@@ -1228,7 +1228,7 @@ void TScript::ChecksumProc(TScriptProcParams * Parameters)
     FreeFileList(FileList);
   }
 }
-//---------------------------------------------------------------------------
+
 void TScript::TerminalCaptureLog(const UnicodeString & AddedLine,
   TCaptureOutputType OutputType)
 {
@@ -1237,7 +1237,7 @@ void TScript::TerminalCaptureLog(const UnicodeString & AddedLine,
     PrintLine(AddedLine);
   }
 }
-//---------------------------------------------------------------------------
+
 void TScript::PwdProc(TScriptProcParams * /*Parameters*/)
 {
   CheckSession();
@@ -1245,7 +1245,7 @@ void TScript::PwdProc(TScriptProcParams * /*Parameters*/)
   PrintLine(FTerminal->CurrentDirectory);
   TCwdSessionAction Action(FTerminal->ActionLog, FTerminal->CurrentDirectory);
 }
-//---------------------------------------------------------------------------
+
 void TScript::CdProc(TScriptProcParams * Parameters)
 {
   CheckSession();
@@ -1261,7 +1261,7 @@ void TScript::CdProc(TScriptProcParams * Parameters)
 
   PrintLine(FTerminal->CurrentDirectory);
 }
-//---------------------------------------------------------------------------
+
 void TScript::LsProc(TScriptProcParams * Parameters)
 {
   CheckSession();
@@ -1313,7 +1313,7 @@ void TScript::LsProc(TScriptProcParams * Parameters)
     }
   }
 }
-//---------------------------------------------------------------------------
+
 void TScript::RmProc(TScriptProcParams * Parameters)
 {
   CheckSession();
@@ -1330,7 +1330,7 @@ void TScript::RmProc(TScriptProcParams * Parameters)
     FreeFileList(FileList);
   }
 }
-//---------------------------------------------------------------------------
+
 void TScript::RmDirProc(TScriptProcParams * Parameters)
 {
   CheckSession();
@@ -1345,7 +1345,7 @@ void TScript::RmDirProc(TScriptProcParams * Parameters)
     FreeFileList(FileList);
   }
 }
-//---------------------------------------------------------------------------
+
 void TScript::DoMvOrCp(TScriptProcParams * Parameters, TFSCapability Capability, bool Cp)
 {
   CheckSession();
@@ -1380,17 +1380,17 @@ void TScript::DoMvOrCp(TScriptProcParams * Parameters, TFSCapability Capability,
     FreeFileList(FileList);
   }
 }
-//---------------------------------------------------------------------------
+
 void TScript::MvProc(TScriptProcParams * Parameters)
 {
   DoMvOrCp(Parameters, fcRemoteMove, false);
 }
-//---------------------------------------------------------------------------
+
 void TScript::CpProc(TScriptProcParams * Parameters)
 {
   DoMvOrCp(Parameters, fcRemoteCopy, true);
 }
-//---------------------------------------------------------------------------
+
 void TScript::ChModProc(TScriptProcParams * Parameters)
 {
   CheckSession();
@@ -1414,7 +1414,7 @@ void TScript::ChModProc(TScriptProcParams * Parameters)
     FreeFileList(FileList);
   }
 }
-//---------------------------------------------------------------------------
+
 void TScript::LnProc(TScriptProcParams * Parameters)
 {
   CheckSession();
@@ -1427,7 +1427,7 @@ void TScript::LnProc(TScriptProcParams * Parameters)
 
   FTerminal->CreateLink(Parameters->Param[2], Parameters->Param[1], true);
 }
-//---------------------------------------------------------------------------
+
 void TScript::MkDirProc(TScriptProcParams * Parameters)
 {
   CheckSession();
@@ -1437,7 +1437,7 @@ void TScript::MkDirProc(TScriptProcParams * Parameters)
   Properties.Encrypt = FCopyParam.EncryptNewFiles;
   FTerminal->CreateDirectory(Parameters->Param[1], &Properties);
 }
-//---------------------------------------------------------------------------
+
 void TScript::GetProc(TScriptProcParams * Parameters)
 {
   CheckSession();
@@ -1485,7 +1485,7 @@ void TScript::GetProc(TScriptProcParams * Parameters)
     FreeFileList(FileList);
   }
 }
-//---------------------------------------------------------------------------
+
 void TScript::PutProc(TScriptProcParams * Parameters)
 {
   CheckSession();
@@ -1533,7 +1533,7 @@ void TScript::PutProc(TScriptProcParams * Parameters)
     FreeFileList(FileList);
   }
 }
-//---------------------------------------------------------------------------
+
 TTransferMode TScript::ParseTransferModeName(UnicodeString Name)
 {
   DebugAssert((tmBinary == 0) && (tmAscii == 1) && (tmAutomatic == 2));
@@ -1547,7 +1547,7 @@ TTransferMode TScript::ParseTransferModeName(UnicodeString Name)
 
   return (TTransferMode)Value;
 }
-//---------------------------------------------------------------------------
+
 void TScript::OptionImpl(UnicodeString OptionName, UnicodeString ValueName)
 {
   enum { Echo, Batch, Confirm, Transfer, SynchDelete, Exclude, Include, ReconnectTime, FailOnNoMatch };
@@ -1743,7 +1743,7 @@ void TScript::OptionImpl(UnicodeString OptionName, UnicodeString ValueName)
 
   #undef OPT
 }
-//---------------------------------------------------------------------------
+
 void TScript::OptionProc(TScriptProcParams * Parameters)
 {
   UnicodeString OptionName;
@@ -1761,17 +1761,17 @@ void TScript::OptionProc(TScriptProcParams * Parameters)
 
   OptionImpl(OptionName, ValueName);
 }
-//---------------------------------------------------------------------------
+
 void TScript::AsciiProc(TScriptProcParams * /*Parameters*/)
 {
   OptionImpl(L"transfer", L"ascii");
 }
-//---------------------------------------------------------------------------
+
 void TScript::BinaryProc(TScriptProcParams * /*Parameters*/)
 {
   OptionImpl(L"transfer", L"binary");
 }
-//---------------------------------------------------------------------------
+
 void TScript::SynchronizeDirectories(TScriptProcParams * Parameters,
   UnicodeString & LocalDirectory, UnicodeString & RemoteDirectory, int FirstParam)
 {
@@ -1793,7 +1793,7 @@ void TScript::SynchronizeDirectories(TScriptProcParams * Parameters,
     RemoteDirectory = FTerminal->CurrentDirectory;
   }
 }
-//---------------------------------------------------------------------------
+
 UnicodeString TScript::SynchronizeFileRecord(
   const UnicodeString & RootDirectory, const TSynchronizeChecklist::TItem * Item, bool Local)
 {
@@ -1836,7 +1836,7 @@ UnicodeString TScript::SynchronizeFileRecord(
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 void TScript::SynchronizePreview(
   UnicodeString LocalDirectory, UnicodeString RemoteDirectory,
   TSynchronizeChecklist * Checklist)
@@ -1897,7 +1897,7 @@ void TScript::SynchronizePreview(
     }
   }
 }
-//---------------------------------------------------------------------------
+
 void TScript::SynchronizeProc(TScriptProcParams * Parameters)
 {
   CheckSession();
@@ -2023,7 +2023,7 @@ void TScript::SynchronizeProc(TScriptProcParams * Parameters)
     FSynchronizeMode = -1;
   }
 }
-//---------------------------------------------------------------------------
+
 void TScript::Synchronize(const UnicodeString LocalDirectory,
   const UnicodeString RemoteDirectory, const TCopyParamType & CopyParam,
   int SynchronizeParams, TSynchronizeChecklist ** Checklist)
@@ -2068,7 +2068,7 @@ void TScript::Synchronize(const UnicodeString LocalDirectory,
     throw;
   }
 }
-//---------------------------------------------------------------------------
+
 void TScript::KeepUpToDateProc(TScriptProcParams * Parameters)
 {
   if (OnSynchronizeStartStop == NULL)
@@ -2104,8 +2104,8 @@ void TScript::KeepUpToDateProc(TScriptProcParams * Parameters)
 
   OnSynchronizeStartStop(this, LocalDirectory, RemoteDirectory, CopyParam, SynchronizeParams);
 }
-//---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
+
+
 TManagementScript::TManagementScript(TStoredSessionList * StoredSessions,
   bool LimitedOutput) :
   TScript(LimitedOutput)
@@ -2131,7 +2131,7 @@ TManagementScript::TManagementScript(TStoredSessionList * StoredSessions,
   FCommands->Register(L"lcd", SCRIPT_LCD_DESC, SCRIPT_LCD_HELP, &LCdProc, 1, 1, false);
   FCommands->Register(L"lls", SCRIPT_LLS_DESC, SCRIPT_LLS_HELP2, &LLsProc, 0, 1, false);
 }
-//---------------------------------------------------------------------------
+
 TManagementScript::~TManagementScript()
 {
   while (FTerminalList->Count > 0)
@@ -2141,7 +2141,7 @@ TManagementScript::~TManagementScript()
 
   delete FTerminalList;
 }
-//---------------------------------------------------------------------------
+
 void TManagementScript::FreeTerminal(TTerminal * ATerminal)
 {
   TSessionData * Data = StoredSessions->FindSame(ATerminal->SessionData);
@@ -2165,7 +2165,7 @@ void TManagementScript::FreeTerminal(TTerminal * ATerminal)
 
   FTerminalList->FreeTerminal(ATerminal);
 }
-//---------------------------------------------------------------------------
+
 void TManagementScript::Input(const UnicodeString Prompt,
   UnicodeString & Str, bool AllowEmpty)
 {
@@ -2183,7 +2183,7 @@ void TManagementScript::Input(const UnicodeString Prompt,
   }
   while (Str.Trim().IsEmpty() && !AllowEmpty);
 }
-//---------------------------------------------------------------------------
+
 void TManagementScript::PrintProgress(bool First, const UnicodeString Str)
 {
   if (FOnPrintProgress != NULL)
@@ -2191,7 +2191,7 @@ void TManagementScript::PrintProgress(bool First, const UnicodeString Str)
     FOnPrintProgress(this, First, Str);
   }
 }
-//---------------------------------------------------------------------------
+
 void TManagementScript::ResetTransfer()
 {
   TScript::ResetTransfer();
@@ -2200,7 +2200,7 @@ void TManagementScript::ResetTransfer()
   FLastProgressEventTime = 0;
   FLastProgressMessage = L"";
 }
-//---------------------------------------------------------------------------
+
 bool TManagementScript::QueryCancel()
 {
   bool Result = false;
@@ -2212,7 +2212,7 @@ bool TManagementScript::QueryCancel()
 
   return Result;
 }
-//---------------------------------------------------------------------------
+
 void TManagementScript::TerminalInformation(TTerminal * ATerminal,
   const UnicodeString & Str, bool /*Status*/, int Phase)
 {
@@ -2222,7 +2222,7 @@ void TManagementScript::TerminalInformation(TTerminal * ATerminal,
     PrintLine(Str);
   }
 }
-//---------------------------------------------------------------------------
+
 void TManagementScript::TerminalPromptUser(TTerminal * ATerminal,
   TPromptKind Kind, UnicodeString Name, UnicodeString Instructions, TStrings * Prompts,
   TStrings * Results, bool & Result, void * Arg)
@@ -2237,12 +2237,12 @@ void TManagementScript::TerminalPromptUser(TTerminal * ATerminal,
     OnTerminalPromptUser(ATerminal, Kind, Name, Instructions, Prompts, Results, Result, Arg);
   }
 }
-//---------------------------------------------------------------------------
+
 bool TManagementScript::Synchronizing()
 {
   return (FKeepingUpToDate || (FSynchronizeMode >= 0));
 }
-//---------------------------------------------------------------------------
+
 void TManagementScript::ShowPendingProgress()
 {
   if (!FSynchronizeIntro.IsEmpty())
@@ -2254,7 +2254,7 @@ void TManagementScript::ShowPendingProgress()
     FSynchronizeIntro = L"";
   }
 }
-//---------------------------------------------------------------------------
+
 void TManagementScript::TerminalOperationProgress(
   TFileOperationProgressType & ProgressData)
 {
@@ -2360,7 +2360,7 @@ void TManagementScript::TerminalOperationProgress(
     ProgressData.SetCancel(csCancel);
   }
 }
-//---------------------------------------------------------------------------
+
 void TManagementScript::TerminalOperationFinished(
   TFileOperation Operation, TOperationSide /*Side*/,
   bool /*Temp*/, const UnicodeString & FileName, Boolean Success,
@@ -2383,7 +2383,7 @@ void TManagementScript::TerminalOperationFinished(
     }
   }
 }
-//---------------------------------------------------------------------------
+
 void TManagementScript::TerminalSynchronizeDirectory(
   const UnicodeString LocalDirectory, const UnicodeString RemoteDirectory,
   bool & Continue, bool Collect)
@@ -2427,7 +2427,7 @@ void TManagementScript::TerminalSynchronizeDirectory(
     Continue = false;
   }
 }
-//---------------------------------------------------------------------------
+
 void TManagementScript::TerminalInitializeLog(TObject * Sender)
 {
   TTerminal * ATerminal = dynamic_cast<TTerminal *>(Sender);
@@ -2436,7 +2436,7 @@ void TManagementScript::TerminalInitializeLog(TObject * Sender)
     LogPendingLines(ATerminal);
   }
 }
-//---------------------------------------------------------------------------
+
 TTerminal * TManagementScript::FindSession(const UnicodeString Index)
 {
   int i = StrToIntDef(Index, -1);
@@ -2450,14 +2450,14 @@ TTerminal * TManagementScript::FindSession(const UnicodeString Index)
     return FTerminalList->Terminals[i - 1];
   }
 }
-//---------------------------------------------------------------------------
+
 void TManagementScript::PrintActiveSession()
 {
   DebugAssert(FTerminal != NULL);
   PrintLine(FMTLOAD(SCRIPT_ACTIVE_SESSION,
     (FTerminalList->IndexOf(FTerminal) + 1, FTerminal->SessionData->SessionName)));
 }
-//---------------------------------------------------------------------------
+
 bool TManagementScript::HandleExtendedException(Exception * E,
   TTerminal * ATerminal)
 {
@@ -2482,7 +2482,7 @@ bool TManagementScript::HandleExtendedException(Exception * E,
 
   return Result;
 }
-//---------------------------------------------------------------------------
+
 void TManagementScript::MaskPasswordInCommandLine(UnicodeString & Command, bool Recurse)
 {
   UnicodeString Url;
@@ -2584,7 +2584,7 @@ void TManagementScript::MaskPasswordInCommandLine(UnicodeString & Command, bool 
     }
   }
 }
-//---------------------------------------------------------------------------
+
 UnicodeString TManagementScript::MaskPasswordInCommand(const UnicodeString & FullCommand,
   const UnicodeString & Command)
 {
@@ -2597,7 +2597,7 @@ UnicodeString TManagementScript::MaskPasswordInCommand(const UnicodeString & Ful
 
   return Result;
 }
-//---------------------------------------------------------------------------
+
 UnicodeString TManagementScript::GetLogCmd(const UnicodeString & FullCommand,
   const UnicodeString & Command, const UnicodeString & Params)
 {
@@ -2605,7 +2605,7 @@ UnicodeString TManagementScript::GetLogCmd(const UnicodeString & FullCommand,
 
   return TScript::GetLogCmd(Result, Command, Params);
 }
-//---------------------------------------------------------------------------
+
 void TManagementScript::Connect(const UnicodeString Session,
   TOptions * Options, bool CheckParams)
 {
@@ -2753,7 +2753,7 @@ void TManagementScript::Connect(const UnicodeString Session,
     }
   }
 }
-//---------------------------------------------------------------------------
+
 void TManagementScript::DoClose(TTerminal * ATerminal)
 {
   int Index = FTerminalList->IndexOf(ATerminal);
@@ -2800,7 +2800,7 @@ void TManagementScript::DoClose(TTerminal * ATerminal)
     }
   }
 }
-//---------------------------------------------------------------------------
+
 void TManagementScript::DoChangeLocalDirectory(UnicodeString Directory)
 {
   if (!SetCurrentDir(ApiPath(Directory)))
@@ -2808,18 +2808,18 @@ void TManagementScript::DoChangeLocalDirectory(UnicodeString Directory)
     throw EOSExtException(FMTLOAD(CHANGE_DIR_ERROR, (Directory)));
   }
 }
-//---------------------------------------------------------------------------
+
 void TManagementScript::ExitProc(TScriptProcParams * /*Parameters*/)
 {
   FContinue = false;
 }
-//---------------------------------------------------------------------------
+
 void TManagementScript::OpenProc(TScriptProcParams * Parameters)
 {
   Connect(Parameters->ParamCount > 0 ? Parameters->Param[1] : UnicodeString(),
     Parameters, true);
 }
-//---------------------------------------------------------------------------
+
 void TManagementScript::CloseProc(TScriptProcParams * Parameters)
 {
   CheckSession();
@@ -2837,7 +2837,7 @@ void TManagementScript::CloseProc(TScriptProcParams * Parameters)
 
   DoClose(ATerminal);
 }
-//---------------------------------------------------------------------------
+
 void TManagementScript::SessionProc(TScriptProcParams * Parameters)
 {
   CheckSession();
@@ -2859,12 +2859,12 @@ void TManagementScript::SessionProc(TScriptProcParams * Parameters)
     PrintActiveSession();
   }
 }
-//---------------------------------------------------------------------------
+
 void TManagementScript::LPwdProc(TScriptProcParams * /*Parameters*/)
 {
   PrintLine(GetCurrentDir());
 }
-//---------------------------------------------------------------------------
+
 void TManagementScript::LCdProc(TScriptProcParams * Parameters)
 {
   DebugAssert(Parameters->ParamCount == 1);
@@ -2872,7 +2872,7 @@ void TManagementScript::LCdProc(TScriptProcParams * Parameters)
   DoChangeLocalDirectory(Parameters->Param[1]);
   PrintLine(GetCurrentDir());
 }
-//---------------------------------------------------------------------------
+
 void TManagementScript::LLsProc(TScriptProcParams * Parameters)
 {
   UnicodeString Directory;
@@ -2950,7 +2950,7 @@ void TManagementScript::LLsProc(TScriptProcParams * Parameters)
     while (FindNextChecked(SearchRec) == 0);
   }
 }
-//---------------------------------------------------------------------------
+
 void TManagementScript::ReflectSettings()
 {
   for (int i = 0; i < FTerminalList->Count; i++)
@@ -2958,5 +2958,5 @@ void TManagementScript::ReflectSettings()
     FTerminalList->Terminals[i]->ReflectSettings();
   }
 }
-//---------------------------------------------------------------------------
+
 #endif //if 0

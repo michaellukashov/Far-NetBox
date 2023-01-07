@@ -1,11 +1,11 @@
-//---------------------------------------------------------------------------
+
 #pragma once
 
 #include <Common.h>
 #include <Exceptions.h>
 
 #include "SessionInfo.h"
-//---------------------------------------------------------------------------
+
 class TTerminal;
 class TRights;
 class TRemoteFile;
@@ -15,7 +15,7 @@ struct TSpaceAvailable;
 class TFileOperationProgressType;
 class TRemoteProperties;
 struct TLocalFileHandle;
-//---------------------------------------------------------------------------
+
 enum TFSCommand { fsNull = 0, fsVarValue, fsLastLine, fsFirstLine,
   fsCurrentDirectory, fsChangeDirectory, fsListDirectory, fsListCurrentDirectory,
   fsListFile, fsLookupUsersGroups, fsCopyToRemote, fsCopyToLocal, fsDeleteFile,
@@ -23,11 +23,11 @@ enum TFSCommand { fsNull = 0, fsVarValue, fsLastLine, fsFirstLine,
   fsHomeDirectory, fsUnset, fsUnalias, fsCreateLink, fsCopyFile,
   fsAnyCommand, fsLang, fsReadSymlink, fsChangeProperties, fsMoveFile,
   fsLock };
-//---------------------------------------------------------------------------
+
 constexpr intptr_t dfNoRecursive = 0x01;
 constexpr intptr_t dfAlternative = 0x02;
 constexpr intptr_t dfForceDelete = 0x04;
-//---------------------------------------------------------------------------
+
 __removed enum TOverwriteMode { omOverwrite, omResume, omComplete };
 enum TOverwriteMode
 {
@@ -36,7 +36,7 @@ enum TOverwriteMode
   omResume,
   omComplete,
 };
-//---------------------------------------------------------------------------
+
 NB_DEFINE_CLASS_ID(TSinkFileParams);
 struct NB_CORE_EXPORT TSinkFileParams : public TObject
 {
@@ -52,7 +52,7 @@ public:
   uintptr_t Flags{0};
   bool Skipped{false};
 };
-//---------------------------------------------------------------------------
+
 NB_DEFINE_CLASS_ID(TFileTransferData);
 struct NB_CORE_EXPORT TFileTransferData : public TObject
 {
@@ -69,7 +69,7 @@ public:
   intptr_t OverwriteResult{-1};
   bool AutoResume{false};
 };
-//---------------------------------------------------------------------------
+
 NB_DEFINE_CLASS_ID(TOverwriteFileParams);
 struct NB_CORE_EXPORT TOverwriteFileParams : public TObject
 {
@@ -93,7 +93,7 @@ public:
   TModificationFmt SourcePrecision{mfFull};
   TModificationFmt DestPrecision{mfFull};
 };
-//---------------------------------------------------------------------------
+
 NB_DEFINE_CLASS_ID(TOpenRemoteFileParams);
 struct NB_CORE_EXPORT TOpenRemoteFileParams : public TObject
 {
@@ -142,7 +142,7 @@ public:
   virtual void Init(void *) = 0;
   virtual void FileTransferProgress(int64_t TransferSize, int64_t Bytes) = 0;
 };
-//---------------------------------------------------------------------------
+
 NB_DEFINE_CLASS_ID(TCustomFileSystem);
 class NB_CORE_EXPORT TCustomFileSystem : public TObject, public TFileSystemIntf
 {
@@ -246,4 +246,4 @@ protected:
     IN UnicodeString ADirectory,
     IN const TCopyParamType *CopyParam);
 };
-//---------------------------------------------------------------------------
+

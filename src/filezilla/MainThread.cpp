@@ -1,4 +1,4 @@
-//---------------------------------------------------------------------------
+
 #include "stdafx.h"
 #include "afxdll.h"
 #include "MainThread.h"

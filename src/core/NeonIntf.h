@@ -1,18 +1,18 @@
-//---------------------------------------------------------------------------
+
 #pragma once
-//---------------------------------------------------------------------------
+
 #ifndef WINSCP
 #define WINSCP
 #endif
 #include <ne_uri.h>
 #include <ne_session.h>
 #include <SessionData.h>
-//---------------------------------------------------------------------------
+
 #define StrToNeon(S) UTF8String(S).c_str()
 #define StrFromNeon(S) UnicodeString(S, NBChTraitsCRT<char>::GetBaseTypeLength(S), CP_UTF8)
 //#define StrFromNeon(S) UnicodeString(S)
 #define SESSION_FS_KEY "filesystem"
-//---------------------------------------------------------------------------
+
 struct TNeonCertificateData
 {
   CUSTOM_MEM_ALLOCATION_IMPL
@@ -29,7 +29,7 @@ struct TNeonCertificateData
 
   int Failures{0};
 };
-//---------------------------------------------------------------------------
+
 void NeonParseUrl(UnicodeString Url, ne_uri &uri);
 bool IsTlsUri(const ne_uri &uri);
 ne_session *CreateNeonSession(const ne_uri &uri);
@@ -62,4 +62,4 @@ struct TSessionInfo;
 UnicodeString NeonTlsSessionInfo(
   ne_session *Session, TSessionInfo & FSessionInfo, UnicodeString &TlsVersionStr);
 void SetupSsl(ssl_st *Ssl, TTlsVersion MinTlsVersion, TTlsVersion MaxTlsVersion);
-//---------------------------------------------------------------------------
+

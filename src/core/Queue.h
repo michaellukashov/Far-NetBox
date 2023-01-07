@@ -1,9 +1,9 @@
-﻿//---------------------------------------------------------------------------
+﻿
 #pragma once
-//---------------------------------------------------------------------------
+
 #include "Terminal.h"
 #include "FileOperationProgress.h"
-//---------------------------------------------------------------------------
+
 NB_DEFINE_CLASS_ID(TSimpleThread);
 class NB_CORE_EXPORT TSimpleThread : public TObject
 {
@@ -33,7 +33,7 @@ protected:
 public:
   static int ThreadProc(void *Thread);
 };
-//---------------------------------------------------------------------------
+
 NB_DEFINE_CLASS_ID(TSignalThread);
 class NB_CORE_EXPORT TSignalThread : public TSimpleThread
 {
@@ -59,13 +59,13 @@ protected:
   void Execute() override;
   virtual void ProcessEvent() = 0;
 };
-//---------------------------------------------------------------------------
+
 class TTerminal;
 class TQueueItem;
 class TTerminalQueue;
 class TQueueItemProxy;
 class TTerminalQueueStatus;
-//---------------------------------------------------------------------------
+
 #if 0
 typedef void (__closure *TQueueListUpdate)
 (TTerminalQueue *Queue);
@@ -95,7 +95,7 @@ using TQueueEventEvent = nb::FastDelegate2<void,
   TTerminalQueue * /*Queue*/, TQueueEvent /*Event*/>;
 
 class TTerminalItem;
-//---------------------------------------------------------------------------
+
 NB_DEFINE_CLASS_ID(TTerminalQueue);
 class NB_CORE_EXPORT TTerminalQueue : public TSignalThread
 {
@@ -209,7 +209,7 @@ public:
   bool TryAddParallelOperation(TQueueItem *Item, bool Force);
   bool ContinueParallelOperation() const;
 };
-//---------------------------------------------------------------------------
+
 NB_DEFINE_CLASS_ID(TQueueItem);
 class NB_CORE_EXPORT TQueueItem : public TObject
 {
@@ -281,7 +281,7 @@ public:
   virtual TQueueItem *CreateParallelOperation();
   virtual bool Complete();
 };
-//---------------------------------------------------------------------------
+
 NB_DEFINE_CLASS_ID(TQueueItemProxy);
 class NB_CORE_EXPORT TQueueItemProxy : public TObject
 {
@@ -338,7 +338,7 @@ public:
   TFileOperationProgressType *GetProgressData() const;
   int64_t GetTotalTransferred() const;
 };
-//---------------------------------------------------------------------------
+
 class NB_CORE_EXPORT TTerminalQueueStatus : public TObject
 {
   friend class TTerminalQueue;
@@ -386,7 +386,7 @@ public:
   TQueueItemProxy * GetItem(intptr_t Index);
   TQueueItemProxy * GetItem(intptr_t Index) const;
 };
-//---------------------------------------------------------------------------
+
 NB_DEFINE_CLASS_ID(TBootstrapQueueItem);
 class TBootstrapQueueItem : public TQueueItem
 {
@@ -403,7 +403,7 @@ protected:
   UnicodeString GetStartupDirectory() const override;
   bool Complete() override;
 };
-//---------------------------------------------------------------------------
+
 NB_DEFINE_CLASS_ID(TLocatedQueueItem);
 class NB_CORE_EXPORT TLocatedQueueItem : public TQueueItem
 {
@@ -421,7 +421,7 @@ protected:
 private:
   UnicodeString FCurrentDir;
 };
-//---------------------------------------------------------------------------
+
 NB_DEFINE_CLASS_ID(TTransferQueueItem);
 class NB_CORE_EXPORT TTransferQueueItem : public TLocatedQueueItem
 {
@@ -455,7 +455,7 @@ public:
   TParallelOperation *GetParallelOperation() const { return FParallelOperation; }
   TParallelOperation *GetParallelOperation() { return FParallelOperation; }
 };
-//---------------------------------------------------------------------------
+
 NB_DEFINE_CLASS_ID(TUploadQueueItem);
 class NB_CORE_EXPORT TUploadQueueItem : public TTransferQueueItem
 {
@@ -471,7 +471,7 @@ public:
 protected:
   void DoTransferExecute(TTerminal *Terminal, TParallelOperation *ParallelOperation) override;
 };
-//---------------------------------------------------------------------------
+
 NB_DEFINE_CLASS_ID(TDownloadQueueItem);
 class NB_CORE_EXPORT TDownloadQueueItem : public TTransferQueueItem
 {
@@ -487,7 +487,7 @@ public:
 protected:
   void DoTransferExecute(TTerminal *Terminal, TParallelOperation *ParallelOperation) override;
 };
-//---------------------------------------------------------------------------
+
 class TUserAction;
 NB_DEFINE_CLASS_ID(TTerminalThread);
 class NB_CORE_EXPORT TTerminalThread : public TSignalThread
@@ -580,4 +580,4 @@ private:
   void TerminalReadDirectoryProgress(TObject *Sender, intptr_t Progress, intptr_t ResolvedLinks, bool &Cancel);
   void TerminalInitializeLog(TObject *Sender);
 };
-//---------------------------------------------------------------------------
+

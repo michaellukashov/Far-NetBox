@@ -23,12 +23,12 @@ extern "C"
 #include <StrUtils.hpp>
 #include <openssl/ssl.h>
 #include <rdestl/set.h>
-//---------------------------------------------------------------------------
+
 #define SESSION_PROXY_AUTH_KEY "proxyauth"
 #define SESSION_TLS_INIT_KEY "tlsinit"
 #define SESSION_TLS_INIT_DATA_KEY "tlsinitdata"
 #define SESSION_TERMINAL_KEY "terminal"
-//---------------------------------------------------------------------------
+
 void NeonParseUrl(UnicodeString Url, ne_uri &uri)
 {
   if (ne_uri_parse(StrToNeon(Url), &uri) != 0)
@@ -43,12 +43,12 @@ void NeonParseUrl(UnicodeString Url, ne_uri &uri)
     uri.port = ne_uri_defaultport(uri.scheme);
   }
 }
-//---------------------------------------------------------------------------
+
 bool IsTlsUri(const ne_uri &uri)
 {
   return SameText(StrFromNeon(uri.scheme), HttpsProtocol);
 }
-//---------------------------------------------------------------------------
+
 struct TProxyAuthData
 {
   CUSTOM_MEM_ALLOCATION_IMPL
@@ -56,7 +56,7 @@ struct TProxyAuthData
   UnicodeString UserName;
   UnicodeString Password;
 };
-//------------------------------------------------------------------------------
+---
 static int NeonProxyAuth(
   void *UserData, const char * /*Realm*/, int Attempt, char *UserName, char *Password)
 {
@@ -78,12 +78,12 @@ static int NeonProxyAuth(
 
   return Result;
 }
-//---------------------------------------------------------------------------
+
 ne_session *CreateNeonSession(const ne_uri &uri)
 {
   return ne_session_create(uri.scheme, uri.host, uri.port);
 }
-//---------------------------------------------------------------------------
+
 void InitNeonSession(ne_session *Session, TProxyMethod ProxyMethod, UnicodeString AProxyHost,
   intptr_t ProxyPort, UnicodeString AProxyUsername, UnicodeString AProxyPassword, TTerminal *Terminal)
 {
@@ -124,7 +124,7 @@ void InitNeonSession(ne_session *Session, TProxyMethod ProxyMethod, UnicodeStrin
     ne_set_session_private(Session, SESSION_TERMINAL_KEY, Terminal);
   }
 }
-//---------------------------------------------------------------------------
+
 void DestroyNeonSession(ne_session *Session)
 {
   TProxyAuthData *ProxyAuthData =
@@ -135,12 +135,12 @@ void DestroyNeonSession(ne_session *Session)
   }
   ne_session_destroy(Session);
 }
-//---------------------------------------------------------------------------
+
 UnicodeString GetNeonError(ne_session *Session)
 {
   return StrFromNeon(ne_get_error(Session));
 }
-//---------------------------------------------------------------------------
+
 void CheckNeonStatus(ne_session *Session, intptr_t NeonStatus,
   UnicodeString AHostName, UnicodeString CustomError)
 {
@@ -208,7 +208,7 @@ void CheckNeonStatus(ne_session *Session, intptr_t NeonStatus,
     throw ExtException(Error, NeonError);
   }
 }
-//---------------------------------------------------------------------------
+
 UnicodeString GetNeonRedirectUrl(ne_session *Session)
 {
   const ne_uri *RedirectUri = ne_redirect_location(Session);
@@ -217,9 +217,9 @@ UnicodeString GetNeonRedirectUrl(ne_session *Session)
   ne_free(RedirectUriStr);
   return Result;
 }
-//---------------------------------------------------------------------------
+
 constexpr intptr_t MAX_REDIRECT_ATTEMPTS = 5;
-//---------------------------------------------------------------------------
+
 void CheckRedirectLoop(UnicodeString RedirectUrl, TStrings *AttemptedUrls)
 {
   if (AttemptedUrls->GetCount() > MAX_REDIRECT_ATTEMPTS)
@@ -236,7 +236,7 @@ void CheckRedirectLoop(UnicodeString RedirectUrl, TStrings *AttemptedUrls)
     AttemptedUrls->Add(RedirectUrl);
   }
 }
-//---------------------------------------------------------------------------
+
 extern "C"
 {
 
@@ -257,7 +257,7 @@ void ne_init_ssl_session(struct ssl_st * Ssl, ne_session * Session)
 }
 
 } // extern "C"
-//---------------------------------------------------------------------------
+
 void SetNeonTlsInit(ne_session *Session, TNeonTlsInit OnNeonTlsInit)
 {
   ne_set_session_private(Session, SESSION_TLS_INIT_KEY, nb::ToPtr(OnNeonTlsInit));
@@ -267,7 +267,7 @@ void SetNeonTlsInit(ne_session *Session, TNeonTlsInit OnNeonTlsInit)
   ne_set_session_private(Session, SESSION_TLS_INIT_DATA_KEY, Method.Data);
 #endif // if 0
 }
-//---------------------------------------------------------------------------
+
 AnsiString NeonExportCertificate(const ne_ssl_certificate *Certificate)
 {
   char *AsciiCert = ne_ssl_cert_export(Certificate);
@@ -275,7 +275,7 @@ AnsiString NeonExportCertificate(const ne_ssl_certificate *Certificate)
   ne_free(AsciiCert);
   return Result;
 }
-//---------------------------------------------------------------------------
+
 bool NeonWindowsValidateCertificate(int &Failures, AnsiString AsciiCert, UnicodeString &Error)
 {
   bool Result = false;
@@ -300,7 +300,7 @@ bool NeonWindowsValidateCertificate(int &Failures, AnsiString AsciiCert, Unicode
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 bool NeonWindowsValidateCertificateWithMessage(TNeonCertificateData &Data, UnicodeString &AMessage)
 {
   bool Result;
@@ -320,7 +320,7 @@ bool NeonWindowsValidateCertificateWithMessage(TNeonCertificateData &Data, Unico
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 UnicodeString NeonCertificateFailuresErrorStr(int Failures, UnicodeString AHostName)
 {
   int FailuresToList = Failures;
@@ -359,10 +359,10 @@ UnicodeString NeonCertificateFailuresErrorStr(int Failures, UnicodeString AHostN
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 static std::unique_ptr<TCriticalSection> DebugSection(TraceInitPtr(std::make_unique<TCriticalSection>()));
 static nb::set_t<TTerminal *> NeonTerminals;
-//---------------------------------------------------------------------------
+
 extern "C"
 {
 
@@ -437,19 +437,19 @@ void ne_debug(void *Context, int Channel, const char *Format, ...)
 }
 
 } // extern "C"
-//---------------------------------------------------------------------------
+
 void RegisterForNeonDebug(TTerminal *Terminal)
 {
   TGuard Guard(*DebugSection.get()); nb::used(Guard);
   NeonTerminals.insert(Terminal);
 }
-//---------------------------------------------------------------------------
+
 void UnregisterFromNeonDebug(TTerminal *Terminal)
 {
   TGuard Guard(*DebugSection.get()); nb::used(Guard);
   NeonTerminals.erase(Terminal);
 }
-//---------------------------------------------------------------------------
+
 void RetrieveNeonCertificateData(
   int Failures, const ne_ssl_certificate *Certificate, TNeonCertificateData &Data)
 {
@@ -476,14 +476,14 @@ void RetrieveNeonCertificateData(
   Data.ValidFrom = UnixToDateTime(ValidFrom, dstmWin);
   Data.ValidUntil = UnixToDateTime(ValidUntil, dstmWin);
 }
-//---------------------------------------------------------------------------
+
 UnicodeString CertificateVerificationMessage(const TNeonCertificateData &Data)
 {
   return
     FORMAT("Verifying certificate for \"%s\" with fingerprint %s and %2.2X failures",
       Data.Subject, Data.Fingerprint, Data.Failures);
 }
-//---------------------------------------------------------------------------
+
 UnicodeString CertificateSummary(const TNeonCertificateData &Data, UnicodeString AHostName)
 {
   UnicodeString Summary;
@@ -506,7 +506,7 @@ UnicodeString CertificateSummary(const TNeonCertificateData &Data, UnicodeString
       Data.Fingerprint,
       Summary);
 }
-//---------------------------------------------------------------------------
+
 UnicodeString NeonTlsSessionInfo(
   ne_session *Session, TSessionInfo &SessionInfo, UnicodeString &TlsVersionStr)
 {
@@ -522,7 +522,7 @@ UnicodeString NeonTlsSessionInfo(
   // see CAsyncSslSocketLayer::PrintSessionInfo()
   return FORMAT("Using %s, cipher %s", TlsVersionStr, Cipher);
 }
-//---------------------------------------------------------------------------
+
 void SetupSsl(ssl_st *Ssl, TTlsVersion MinTlsVersion, TTlsVersion MaxTlsVersion)
 {
 #define MASK_TLS_VERSION(VERSION, FLAG) ((MinTlsVersion > (VERSION)) || (MaxTlsVersion < (VERSION)) ? (FLAG) : 0)
@@ -535,7 +535,7 @@ void SetupSsl(ssl_st *Ssl, TTlsVersion MinTlsVersion, TTlsVersion MaxTlsVersion)
   // SSL_ctrl() with SSL_CTRL_OPTIONS adds flags (not sets)
   SSL_ctrl(Ssl, SSL_CTRL_OPTIONS, Options, nullptr);
 }
-//---------------------------------------------------------------------------
+
 void UpdateNeonDebugMask()
 {
   // Other flags:

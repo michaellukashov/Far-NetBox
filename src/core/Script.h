@@ -1,20 +1,20 @@
-﻿//---------------------------------------------------------------------------
+﻿
 #pragma once
 #if 0
 #ifndef ScriptH
 #define ScriptH
-//---------------------------------------------------------------------------
+
 #include <time.h>
 #include "Option.h"
 #include "Terminal.h"
 #include "FileOperationProgress.h"
-//---------------------------------------------------------------------------
+
 class TTerminal;
 class TScript;
 class TScriptCommands;
 class TStoredSessionList;
 class TTerminalList;
-//---------------------------------------------------------------------------
+
 class TScriptProgress
 {
 public:
@@ -27,13 +27,13 @@ public:
   unsigned int CPS;
   bool Cancel;
 };
-//---------------------------------------------------------------------------
+
 typedef void (__closure *TScriptPrintEvent)(TScript * Script, const UnicodeString Str, bool Error);
 typedef void (__closure *TScriptSynchronizeStartStop)(TScript * Script,
   const UnicodeString LocalDirectory, const UnicodeString RemoteDirectory,
   const TCopyParamType & CopyParam, int SynchronizeParams);
 typedef void (__closure *TScriptProgressEvent)(TScript * Script, TScriptProgress & Progress);
-//---------------------------------------------------------------------------
+
 class TScriptProcParams : public TOptions
 {
 public:
@@ -46,7 +46,7 @@ private:
   UnicodeString FParamsStr;
   UnicodeString FFullCommand;
 };
-//---------------------------------------------------------------------------
+
 class TScript
 {
 public:
@@ -187,11 +187,11 @@ private:
   void LogOption(const UnicodeString & LogStr);
   void DoMvOrCp(TScriptProcParams * Parameters, TFSCapability Capability, bool Cp);
 };
-//---------------------------------------------------------------------------
+
 typedef void (__closure *TScriptInputEvent)(TScript * Script, const UnicodeString Prompt, UnicodeString & Str);
 typedef void (__closure *TScriptQueryCancelEvent)(TScript * Script, bool & Cancel);
 typedef void (__closure *TScriptPrintProgressEvent)(TScript * Script, bool First, const UnicodeString Str);
-//---------------------------------------------------------------------------
+
 class TManagementScript : public TScript
 {
 public:
@@ -263,6 +263,6 @@ protected:
   void LCdProc(TScriptProcParams * Parameters);
   void LLsProc(TScriptProcParams * Parameters);
 };
-//---------------------------------------------------------------------------
+
 #endif
 #endif //if 0
