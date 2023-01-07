@@ -1,4 +1,4 @@
-//------------------------------------------------------------------------------
+﻿//------------------------------------------------------------------------------
 #pragma once
 //------------------------------------------------------------------------------
 #include <ne_uri.h>
@@ -177,6 +177,7 @@ private:
   UnicodeString FLastAuthorizationProtocol;
   bool FAuthenticationRetry{false};
   bool FNtlmAuthenticationFailed{false};
+  bool FOneDrive;
 
   void CustomReadFile(UnicodeString AFileName,
     TRemoteFile *& AFile, TRemoteFile *ALinkedByFile);

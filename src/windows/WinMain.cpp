@@ -19,6 +19,7 @@
 #include "Tools.h"
 #include "WinApi.h"
 #include <DateUtils.hpp>
+#include <StrUtils.hpp>
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 //---------------------------------------------------------------------------
@@ -76,7 +77,7 @@ void __fastcall GetLoginData(UnicodeString SessionName, TOptions * Options,
       DefaultsOnly)
   {
     // Note that GetFolderOrWorkspace never returns sites that !CanLogin,
-    // so we should not get here with more then one site.
+    // so we should not get here with more than one site.
     // Though we should be good, if we ever do.
 
     // We get here when:
@@ -85,14 +86,21 @@ void __fastcall GetLoginData(UnicodeString SessionName, TOptions * Options,
     // - the specified session does not contain enough information to login [= not even hostname]
 
     DebugAssert(DataList->Count <= 1);
-    if (!DoLoginDialog(StoredSessions, DataList, LinkedForm))
+    if (!DoLoginDialog(DataList, LinkedForm))
     {
       Abort();
     }
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall Upload(TTerminal * Terminal, TStrings * FileList, bool UseDefaults)
+int GetCommandLineParseUrlFlags(TProgramParams * Params)
+{
+  return
+    pufAllowStoredSiteWithProtocol |
+    FLAGMASK(!CheckSafe(Params), pufUnsafe);
+}
+//---------------------------------------------------------------------------
+void __fastcall Upload(TTerminal * Terminal, TStrings * FileList, int UseDefaults)
 {
   UnicodeString TargetDirectory;
   TGUICopyParamType CopyParam = GUIConfiguration->DefaultCopyParam;
@@ -104,19 +112,19 @@ void __fastcall Upload(TTerminal * Terminal, TStrings * FileList, bool UseDefaul
 
   int Options = coDisableQueue;
   int CopyParamAttrs = Terminal->UsableCopyParamAttrs(0).Upload;
-  if (UseDefaults ||
+  if ((UseDefaults == 0) ||
       DoCopyDialog(true, false, FileList, TargetDirectory, &CopyParam, Options,
-        CopyParamAttrs, Data.get(), NULL))
+        CopyParamAttrs, Data.get(), NULL, UseDefaults))
   {
     // Setting parameter overrides only now, otherwise the dialog would present the parametes as non-default
     CopyParam.OnceDoneOperation = odoDisconnect;
+    CopyParam.IncludeFileMask.SetRoots(FileList, TargetDirectory);
 
     Terminal->CopyToRemote(FileList, TargetDirectory, &CopyParam, 0, NULL);
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall Download(TTerminal * Terminal, const UnicodeString FileName,
-  bool UseDefaults)
+void __fastcall Download(TTerminal * Terminal, const UnicodeString FileName, int UseDefaults)
 {
   TRemoteFile * File = NULL;
 
@@ -132,7 +140,7 @@ void __fastcall Download(TTerminal * Terminal, const UnicodeString FileName,
       Terminal->ExceptionOnFail = false;
     }
     File->FullFileName = FileName;
-    UnicodeString LocalDirectory = ExpandFileName(Terminal->SessionData->LocalDirectory);
+    UnicodeString LocalDirectory = Terminal->SessionData->LocalDirectoryExpanded;
     if (LocalDirectory.IsEmpty())
     {
       LocalDirectory = GetPersonalFolder();
@@ -156,9 +164,9 @@ void __fastcall Download(TTerminal * Terminal, const UnicodeString FileName,
 
     int Options = coDisableQueue;
     int CopyParamAttrs = Terminal->UsableCopyParamAttrs(0).Download;
-    if (UseDefaults ||
+    if ((UseDefaults == 0) ||
         DoCopyDialog(false, false, FileListFriendly.get(), TargetDirectory, &CopyParam,
-          Options, CopyParamAttrs, NULL, NULL))
+          Options, CopyParamAttrs, NULL, NULL, UseDefaults))
     {
       // Setting parameter overrides only now, otherwise the dialog would present the parametes as non-default
 
@@ -173,6 +181,8 @@ void __fastcall Download(TTerminal * Terminal, const UnicodeString FileName,
 
       std::unique_ptr<TStrings> FileList(std::make_unique<TStringList>());
       FileList->AddObject(FileName, File);
+      CopyParam.IncludeFileMask.SetRoots(TargetDirectory, FileList.get());
+
       Terminal->CopyToLocal(FileList.get(), TargetDirectory, &CopyParam, 0, NULL);
     }
 
@@ -192,8 +202,8 @@ void __fastcall Edit(TCustomScpExplorerForm * ScpExplorer, TStrings * FileList)
   Abort();
 }
 //---------------------------------------------------------------------------
-void __fastcall SynchronizeDirectories(TTerminal * Terminal,
-  TStrings * CommandParams,
+void __fastcall SynchronizeDirectories(
+  TTerminal * Terminal, TCustomScpExplorerForm * ScpExplorer, TStrings * CommandParams,
   UnicodeString & LocalDirectory, UnicodeString & RemoteDirectory)
 {
   if (CommandParams->Count >= 1)
@@ -202,11 +212,11 @@ void __fastcall SynchronizeDirectories(TTerminal * Terminal,
   }
   else if (!Terminal->SessionData->LocalDirectory.IsEmpty())
   {
-    LocalDirectory = ExpandFileName(Terminal->SessionData->LocalDirectory);
+    LocalDirectory = Terminal->SessionData->LocalDirectoryExpanded;
   }
   else
   {
-    LocalDirectory = WinConfiguration->ScpExplorer.LastLocalTargetDirectory;
+    LocalDirectory = ScpExplorer->DefaultDownloadTargetDirectory();
   }
 
   if (CommandParams->Count >= 2)
@@ -219,13 +229,13 @@ void __fastcall SynchronizeDirectories(TTerminal * Terminal,
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall FullSynchronize(TTerminal * Terminal, TCustomScpExplorerForm * ScpExplorer,
-  TStrings * CommandParams, bool UseDefaults)
+void __fastcall FullSynchronize(
+  TTerminal * Terminal, TCustomScpExplorerForm * ScpExplorer, TStrings * CommandParams, int UseDefaults)
 {
   UnicodeString LocalDirectory;
   UnicodeString RemoteDirectory;
 
-  SynchronizeDirectories(Terminal, CommandParams, LocalDirectory, RemoteDirectory);
+  SynchronizeDirectories(Terminal, ScpExplorer, CommandParams, LocalDirectory, RemoteDirectory);
 
   bool SaveMode = true;
   // bit ugly
@@ -249,13 +259,13 @@ void __fastcall FullSynchronize(TTerminal * Terminal, TCustomScpExplorerForm * S
   Abort();
 }
 //---------------------------------------------------------------------------
-void __fastcall Synchronize(TTerminal * Terminal, TCustomScpExplorerForm * ScpExplorer,
-  TStrings * CommandParams, bool UseDefaults)
+void __fastcall Synchronize(
+  TTerminal * Terminal, TCustomScpExplorerForm * ScpExplorer, TStrings * CommandParams, int UseDefaults)
 {
   UnicodeString LocalDirectory;
   UnicodeString RemoteDirectory;
 
-  SynchronizeDirectories(Terminal, CommandParams, LocalDirectory, RemoteDirectory);
+  SynchronizeDirectories(Terminal, ScpExplorer, CommandParams, LocalDirectory, RemoteDirectory);
 
   // Undocumented syntax for "Start in New Window"
   if (CommandParams->Count >= 4)
@@ -324,10 +334,25 @@ void __fastcall Usage(UnicodeString Param)
         UnicodeString Key = Pair.SubString(1, Pair.Length() - 1).Trim();
         Configuration->Usage->Inc(Key);
       }
+      else if (Pair[Pair.Length()] == L'@')
+      {
+        UnicodeString Key = Pair.SubString(1, Pair.Length() - 1).Trim();
+        UnicodeString Value;
+        if (SameText(Key, L"InstallationParentProcess"))
+        {
+          Value = GetAncestorProcessName(3).LowerCase();
+        }
+        else
+        {
+          Value = L"err-unknown-key";
+        }
+        Configuration->Usage->Set(Key, Value);
+      }
       else
       {
         UnicodeString Key = CutToChar(Pair, L':', true);
-        Configuration->Usage->Set(Key, Pair.Trim());
+        UnicodeString Value = Pair.Trim();
+        Configuration->Usage->Set(Key, Value);
       }
     }
   }
@@ -346,17 +371,17 @@ void __fastcall RecordWrapperVersions(UnicodeString ConsoleVersion, UnicodeStrin
   }
   WinConfiguration->Updates = Updates;
 
-  if (Configuration->Storage == stNul)
+  if ((WinConfiguration->Storage == stNul) &&
+      WinConfiguration->TrySetSafeStorage())
   {
-    Configuration->SetDefaultStorage();
     try
     {
-      THierarchicalStorage * Storage = Configuration->CreateConfigStorage();
+      THierarchicalStorage * Storage = WinConfiguration->CreateConfigStorage();
       try
       {
         Storage->AccessMode = smReadWrite;
         if (Storage->OpenSubKey(Configuration->ConfigurationSubKey, true) &&
-            Storage->OpenSubKey(L"Interface\\Updates", true, true))
+            Storage->OpenSubKeyPath(L"Interface\\Updates", true))
         {
           if (!DotNetVersion.IsEmpty())
           {
@@ -390,6 +415,43 @@ static UnicodeString ColorToRGBStr(TColor Color)
   return Result;
 }
 //---------------------------------------------------------------------------
+TDateTime Started(Now());
+TDateTime LastStartupStartupSequence(Now());
+UnicodeString StartupSequence;
+int LifetimeRuns = -1;
+//---------------------------------------------------------------------------
+void InterfaceStartDontMeasure()
+{
+  Started = TDateTime();
+}
+//---------------------------------------------------------------------------
+void AddStartupSequence(const UnicodeString & Tag)
+{
+  int SequenceTensOfSecond = static_cast<int>(MilliSecondsBetween(Now(), LastStartupStartupSequence) / 100);
+  LastStartupStartupSequence = Now();
+  AddToList(StartupSequence, FORMAT(L"%s:%d", (Tag, SequenceTensOfSecond)), L",");
+}
+//---------------------------------------------------------------------------
+void InterfaceStarted()
+{
+  if ((Started != TDateTime()) && (LifetimeRuns > 0))
+  {
+    // deliberate downcast
+    int StartupSeconds = static_cast<int>(SecondsBetween(Now(), Started));
+    if (LifetimeRuns == 1)
+    {
+      Configuration->Usage->Set(L"StartupSeconds1", StartupSeconds);
+    }
+    else if (LifetimeRuns == 2)
+    {
+      Configuration->Usage->Set(L"StartupSeconds2", StartupSeconds);
+    }
+    Configuration->Usage->Set(L"StartupSecondsLast", StartupSeconds);
+    AddStartupSequence(L"I");
+    Configuration->Usage->Set(L"StartupSequenceLast", StartupSequence);
+  }
+}
+//---------------------------------------------------------------------------
 void __fastcall UpdateStaticUsage()
 {
   Configuration->Usage->Inc(L"Runs");
@@ -403,6 +465,7 @@ void __fastcall UpdateStaticUsage()
   Configuration->Usage->Set(L"WindowsProductType", (static_cast<int>(Type)));
   Configuration->Usage->Set(L"Windows64", IsWin64());
   Configuration->Usage->Set(L"UWP", IsUWP());
+  Configuration->Usage->Set(L"PackageName", GetPackageName());
   Configuration->Usage->Set(L"DefaultLocale",
     // See TGUIConfiguration::GetAppliedLocaleHex()
     IntToHex(static_cast<int>(GetDefaultLCID()), 4));
@@ -490,10 +553,29 @@ void __fastcall UpdateStaticUsage()
   Configuration->Usage->Set(L"IsInstalled", IsInstalled());
   Configuration->Usage->Set(L"Wine", IsWine());
   Configuration->Usage->Set(L"NetFrameworkVersion", GetNetVersionStr());
+  Configuration->Usage->Set(L"NetCoreVersion", GetNetCoreVersionStr());
   Configuration->Usage->Set(L"PowerShellVersion", GetPowerShellVersionStr());
+  Configuration->Usage->Set(L"PwshVersion", GetPowerShellCoreVersionStr());
+
+  UnicodeString ParentProcess = GetAncestorProcessName();
+  // do not record the installer as a parent process
+  if (!ParentProcess.IsEmpty() &&
+      (!StartsText(L"winscp-", ParentProcess) || !ContainsText(ParentProcess, L"-setup")))
+  {
+    UnicodeString ParentProcesses = Configuration->Usage->Get(L"ParentProcesses");
+    std::unique_ptr<TStringList> ParentProcessesList(CreateSortedStringList());
+    ParentProcessesList->CommaText = ParentProcesses;
+    ParentProcessesList->Add(ParentProcess.LowerCase());
+    Configuration->Usage->Set(L"ParentProcesses", ParentProcessesList->CommaText);
+  }
 
   WinConfiguration->UpdateStaticUsage();
 
+}
+//---------------------------------------------------------------------------
+void __fastcall UpdateFinalStaticUsage()
+{
+  CoreUpdateFinalStaticUsage();
 }
 //---------------------------------------------------------------------------
 void __fastcall MaintenanceTask()
@@ -693,6 +775,7 @@ bool __fastcall ShowUpdatesIfAvailable()
 //---------------------------------------------------------------------------
 int __fastcall Execute()
 {
+  AddStartupSequence(L"E");
   DebugAssert(StoredSessions);
   TProgramParams * Params = TProgramParams::Instance();
   DebugAssert(Params);
@@ -707,7 +790,7 @@ int __fastcall Execute()
   UpdateStaticUsage();
 
   UnicodeString KeyFile;
-  if (Params->FindSwitch(L"PrivateKey", KeyFile))
+  if (Params->FindSwitch(PRIVATEKEY_SWITCH, KeyFile))
   {
     WinConfiguration->DefaultKeyFile = KeyFile;
   }
@@ -830,6 +913,7 @@ int __fastcall Execute()
   GlyphsModule = NULL;
   NonVisualDataModule = NULL;
   TStrings * CommandParams = new TStringList;
+  AddStartupSequence(L"C");
   try
   {
     TerminalManager = TTerminalManager::Instance();
@@ -842,7 +926,9 @@ int __fastcall Execute()
     {
       GUIConfiguration->ChangeResourceModule(ResourceModule);
     }
+    AddStartupSequence(L"G");
     NonVisualDataModule = new TNonVisualDataModule(Application);
+    AddStartupSequence(L"N");
 
     // The default is 2.5s.
     // 20s is used by Office 2010 and Windows 10 Explorer.
@@ -866,14 +952,13 @@ int __fastcall Execute()
     if (Params->FindSwitch(L"UninstallCleanup"))
     {
       MaintenanceTask();
+      Configuration->DontSave();
       // The innosetup cannot skip UninstallCleanup run task for silent uninstalls,
       // workaround is that we create mutex in uninstaller, if it runs silent, and
       // ignore the UninstallCleanup, when the mutex exists.
-      if ((OpenMutex(SYNCHRONIZE, false, L"WinSCPSilentUninstall") == NULL) &&
-          (MessageDialog(LoadStr(UNINSTALL_CLEANUP), qtConfirmation,
-            qaYes | qaNo, HELP_UNINSTALL_CLEANUP) == qaYes))
+      if (OpenMutex(SYNCHRONIZE, false, L"WinSCPSilentUninstall") == NULL)
       {
-        DoCleanupDialog(StoredSessions, Configuration);
+        DoCleanupDialogIfAnyDataAndWanted();
       }
     }
     else if (Params->FindSwitch(L"RegisterForDefaultProtocols") ||
@@ -961,7 +1046,7 @@ int __fastcall Execute()
       ParamCommand = pcNone;
       UnicodeString AutoStartSession;
       UnicodeString DownloadFile;
-      bool UseDefaults = false;
+      int UseDefaults = -1;
 
       // do not check for temp dirs for service tasks (like RegisterAsUrlHandler)
       if (OnlyInstance &&
@@ -978,9 +1063,10 @@ int __fastcall Execute()
 
       if (!Params->Empty)
       {
-        if (Params->FindSwitch(DEFAULTS_SWITCH) && CheckSafe(Params))
+        UnicodeString Value;
+        if (Params->FindSwitch(DEFAULTS_SWITCH, Value) && CheckSafe(Params))
         {
-          UseDefaults = true;
+          UseDefaults = StrToIntDef(Value, 0);
         }
 
         if (Params->FindSwitch(UPLOAD_SWITCH, CommandParams))
@@ -1076,7 +1162,9 @@ int __fastcall Execute()
         std::unique_ptr<TObjectList> DataList(std::make_unique<TObjectList>());
         try
         {
-          GetLoginData(AutoStartSession, Params, DataList.get(), DownloadFile, NeedSession, NULL, pufAllowStoredSiteWithProtocol);
+          int Flags = GetCommandLineParseUrlFlags(Params);
+          AddStartupSequence(L"B");
+          GetLoginData(AutoStartSession, Params, DataList.get(), DownloadFile, NeedSession, NULL, Flags);
           // GetLoginData now Aborts when session is needed and none is selected
           if (DebugAlwaysTrue(!NeedSession || (DataList->Count > 0)))
           {
@@ -1098,16 +1186,31 @@ int __fastcall Execute()
               DebugAssert(!TerminalManager->ActiveTerminal);
 
               bool CanStart;
+              bool Browse = false;
               if (DataList->Count > 0)
               {
-                TTerminal * Terminal = TerminalManager->NewTerminals(DataList.get());
+                TManagedTerminal * Terminal = TerminalManager->NewTerminals(DataList.get());
+                UnicodeString BrowseFile;
+                if (Params->FindSwitch(BROWSE_SWITCH, BrowseFile) &&
+                    (!BrowseFile.IsEmpty() || !DownloadFile.IsEmpty()))
+                {
+                  if (BrowseFile.IsEmpty())
+                  {
+                    BrowseFile = DownloadFile;
+                  }
+                  DebugAssert(Terminal->RemoteExplorerState == NULL);
+                  Terminal->RemoteExplorerState = CreateDirViewStateForFocusedItem(BrowseFile);
+                  DebugAssert(Terminal->LocalExplorerState == NULL);
+                  Terminal->LocalExplorerState = CreateDirViewStateForFocusedItem(BrowseFile);
+                  DownloadFile = UnicodeString();
+                  Browse = true;
+                }
                 if (!DownloadFile.IsEmpty())
                 {
                   Terminal->AutoReadDirectory = false;
                   DownloadFile = UnixIncludeTrailingBackslash(Terminal->SessionData->RemoteDirectory) + DownloadFile;
                   Terminal->SessionData->RemoteDirectory = L"";
-                  TManagedTerminal * ManagedTerminal = DebugNotNull(dynamic_cast<TManagedTerminal *>(Terminal));
-                  ManagedTerminal->StateData->RemoteDirectory = Terminal->SessionData->RemoteDirectory;
+                  Terminal->StateData->RemoteDirectory = Terminal->SessionData->RemoteDirectory;
                 }
                 TerminalManager->ActiveTerminal = Terminal;
                 CanStart = (TerminalManager->Count > 0);
@@ -1131,7 +1234,9 @@ int __fastcall Execute()
               {
                 // from now on, we do not support runtime interface change
                 CustomWinConfiguration->CanApplyInterfaceImmediately = false;
+                AddStartupSequence(L"A");
                 TCustomScpExplorerForm * ScpExplorer = CreateScpExplorer();
+                AddStartupSequence(L"E");
                 CustomWinConfiguration->AppliedInterface = CustomWinConfiguration->Interface;
                 try
                 {
@@ -1141,6 +1246,7 @@ int __fastcall Execute()
                   if ((ParamCommand != pcNone) || !DownloadFile.IsEmpty())
                   {
                     Configuration->Usage->Inc(L"CommandLineOperation");
+                    ScpExplorer->StandaloneOperation = true;
                   }
 
                   if (ParamCommand == pcUpload)
@@ -1166,7 +1272,22 @@ int __fastcall Execute()
                     Download(TerminalManager->ActiveTerminal, DownloadFile,
                       UseDefaults);
                   }
+                  else
+                  {
+                    if (DataList->Count == 0)
+                    {
+                      LifetimeRuns = Configuration->Usage->Inc(L"RunsNormal");
+                    }
+                  }
 
+                  ScpExplorer->StandaloneOperation = false;
+
+                  if (Browse)
+                  {
+                    ScpExplorer->BrowseFile();
+                  }
+
+                  AddStartupSequence(L"R");
                   Application->Run();
                   // to allow dialog boxes show later (like from CheckConfigurationForceSave)
                   SetAppTerminated(False);
@@ -1195,6 +1316,8 @@ int __fastcall Execute()
 
     // In GUI mode only
     CheckConfigurationForceSave();
+
+    UpdateFinalStaticUsage();
   }
   __finally
   {

@@ -1,4 +1,4 @@
-#include <vcl.h>
+﻿#include <vcl.h>
 #pragma hdrstop
 
 #include <Common.h>
@@ -43,15 +43,9 @@ static uintptr_t VERSION_GetFileVersionInfo_PE(const wchar_t *FileName, uintptr_
       HRSRC Rsrc = ::FindResource(Module, MAKEINTRESOURCE(VS_VERSION_INFO), VS_FILE_INFO);
       if (Rsrc == nullptr)
       {
-      }
-      else
-      {
         Len = ::SizeofResource(Module, static_cast<HRSRC>(Rsrc));
         HANDLE Mem = ::LoadResource(Module, static_cast<HRSRC>(Rsrc));
         if (Mem == nullptr)
-        {
-        }
-        else
         {
           try__finally
           {
@@ -155,7 +149,6 @@ void *CreateFileInfo(UnicodeString AFileName)
 {
   DWORD Handle;
   void *Result = nullptr;
-
   // Get file version info block size
   uintptr_t Size = GetFileVersionInfoSizeFix(AFileName.c_str(), &Handle);
   // If size is valid
@@ -168,9 +161,6 @@ void *CreateFileInfo(UnicodeString AFileName)
       nb_free(Result);
       Result = nullptr;
     }
-  }
-  else
-  {
   }
   return Result;
 }
@@ -204,6 +194,7 @@ uint32_t GetTranslationCount(void *FileInfo)
   UINT Len;
   if (!::VerQueryValue(FileInfo, L"\\VarFileInfo\\Translation", reinterpret_cast<void **>(&P), &Len))
     throw Exception("File info translations not available");
+  }
   return Len / 4;
 }
 //---------------------------------------------------------------------------
@@ -218,6 +209,8 @@ TTranslation GetTranslation(void *FileInfo, intptr_t I)
   if (I * sizeof(TTranslation) >= Len)
     throw Exception("Specified translation not available");
   return P[I];
+  {
+  }
 }
 //---------------------------------------------------------------------------
 // Return the name of the specified language
@@ -228,6 +221,7 @@ UnicodeString GetLanguage(Word Language)
   uintptr_t Len = ::VerLanguageName(Language, P, _countof(P));
   if (Len > _countof(P))
     throw Exception("Language not available");
+  }
   return UnicodeString(P, Len);
 }
 //---------------------------------------------------------------------------
@@ -267,6 +261,10 @@ intptr_t CalculateCompoundVersion(intptr_t MajorVer,
 }
 //---------------------------------------------------------------------------
 intptr_t StrToCompoundVersion(UnicodeString AStr)
+{
+  return (CompoundVersion / 10000 * 10000);
+}
+//---------------------------------------------------------------------------
 {
   UnicodeString S(AStr);
   int64_t MajorVer = ::StrToInt64(CutToChar(S, L'.', false));

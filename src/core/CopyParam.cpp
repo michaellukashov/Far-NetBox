@@ -1,4 +1,4 @@
-#include <vcl.h>
+﻿#include <vcl.h>
 #pragma hdrstop
 
 #include <Common.h>
@@ -60,6 +60,8 @@ void TCopyParamType::Default()
   ExcludeEmptyDirectories = false;
   Size = -1;
   OnceDoneOperation = odoIdle;
+  OnTransferOut = NULL;
+  OnTransferIn = NULL;
 }
 //---------------------------------------------------------------------------
 UnicodeString TCopyParamType::GetInfoStr(
@@ -293,7 +295,6 @@ void TCopyParamType::DoGetInfoStr(
         }
         else
         {
-          DebugFail(); // should never get here
           //ScriptArgs += RtfSwitch(PRESERVETIME_SWITCH, Link);
         }
       }
@@ -600,6 +601,8 @@ void TCopyParamType::Assign(const TCopyParamType *Source)
   COPY2(ExcludeEmptyDirectories);
   COPY2(Size);
   COPY2(OnceDoneOperation);
+  COPY(OnTransferOut);
+  COPY(OnTransferIn);
 #undef COPY
 }
 //---------------------------------------------------------------------------
@@ -813,8 +816,15 @@ DWORD TCopyParamType::LocalFileAttrs(const TRights &Rights) const
 
 bool TCopyParamType::AllowResume(int64_t Size) const
 {
-  switch (GetResumeSupport())
+  bool Result;
+  if (FileName.Length() + UnicodeString(PARTIAL_EXT).Length() > 255) // it's a different limit than MAX_PATH
   {
+    Result = false;
+  }
+  else
+  {
+  switch (GetResumeSupport())
+    {
   case rsOn:
     return true;
   case rsOff:
@@ -824,7 +834,9 @@ bool TCopyParamType::AllowResume(int64_t Size) const
   default:
     DebugFail();
     return false;
+    }
   }
+  return Result;
 }
 //---------------------------------------------------------------------------
 bool TCopyParamType::AllowAnyTransfer() const
@@ -944,6 +956,8 @@ void TCopyParamType::Load(THierarchicalStorage *Storage)
   ExcludeEmptyDirectories = Storage->ReadBool("ExcludeEmptyDirectories", ExcludeEmptyDirectories);
   Size = -1;
   OnceDoneOperation = odoIdle;
+  OnTransferOut = NULL;
+  OnTransferIn = NULL;
 }
 
 void TCopyParamType::Save(THierarchicalStorage * Storage, const TCopyParamType * Defaults) const
@@ -994,6 +1008,8 @@ void TCopyParamType::Save(THierarchicalStorage * Storage, const TCopyParamType *
   WRITE_DATA(Bool, ExcludeEmptyDirectories);
   DebugAssert(Size < 0);
   DebugAssert(OnceDoneOperation == odoIdle);
+  DebugAssert(OnTransferOut == NULL);
+  DebugAssert(OnTransferIn == NULL);
 }
 //---------------------------------------------------------------------------
 #define C(Property) (Get ## Property() == rhp.Get ## Property())
@@ -1004,7 +1020,10 @@ bool TCopyParamType::operator==(const TCopyParamType &rhp) const
   DebugAssert(FTransferSkipList.get() == nullptr);
   DebugAssert(FTransferResumeFile.IsEmpty());
   DebugAssert(rhp.FTransferSkipList.get() == nullptr);
+  DebugAssert(OnTransferIn == NULL);
   DebugAssert(rhp.FTransferResumeFile.IsEmpty());
+  DebugAssert(rhp.OnTransferOut == NULL);
+  DebugAssert(rhp.OnTransferIn == NULL);
   return
     C(AddXToDirectories) &&
     C(AsciiFileMask) &&
@@ -1036,6 +1055,9 @@ bool TCopyParamType::operator==(const TCopyParamType &rhp) const
 }
 #undef C2
 #undef C
+//---------------------------------------------------------------------------
+const unsigned long MinSpeed = 8 * 1024;
+const unsigned long MaxSpeed = 8 * 1024 * 1024;
 //---------------------------------------------------------------------------
 static bool TryGetSpeedLimit(const UnicodeString Text, uintptr_t &Speed)
 {

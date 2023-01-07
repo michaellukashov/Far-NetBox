@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 //------------------------------------------------------------------------------
 #include <FileSystems.h>
 #include <rdestl/map.h>

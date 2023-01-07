@@ -1,4 +1,4 @@
-//---------------------------------------------------------------------------
+﻿//---------------------------------------------------------------------------
 #pragma once
 //---------------------------------------------------------------------------
 #include "Common.h"
@@ -36,6 +36,7 @@ bool __fastcall ReleaseAsModal(TForm * Form, void *& Storage);
 bool __fastcall IsMainFormLike(TCustomForm * Form);
 bool __fastcall SelectDirectory(UnicodeString & Path, const UnicodeString Prompt,
   bool PreserveFileName);
+void SelectDirectoryForEdit(THistoryComboBox * Edit);
 enum TListViewCheckAll { caCheck, caUncheck, caToggle };
 bool __fastcall ListViewAnyChecked(TListView * ListView, bool Checked = true);
 void __fastcall ListViewCheckAll(TListView * ListView,
@@ -72,8 +73,10 @@ void __fastcall DefaultButton(TButton * Button, bool Default);
 void __fastcall MemoKeyDown(TObject * Sender, WORD & Key, TShiftState Shift);
 void __fastcall UseDesktopFont(TControl * Control);
 void __fastcall UpdateDesktopFont();
-UnicodeString __fastcall FormatFormCaption(TCustomForm * Form, const UnicodeString & Caption);
-UnicodeString __fastcall FormatMainFormCaption(const UnicodeString & Caption);
+UnicodeString __fastcall FormatFormCaption(
+  TCustomForm * Form, const UnicodeString & Caption, const UnicodeString & SessionName = UnicodeString());
+UnicodeString __fastcall FormatMainFormCaption(
+  const UnicodeString & Caption, const UnicodeString & SessionName = UnicodeString());
 TShiftState __fastcall AllKeyShiftStates();
 void __fastcall RealignControl(TControl * Control);
 void __fastcall HookFormActivation(TCustomForm * Form);
@@ -85,6 +88,12 @@ void __fastcall SetRescaleFunction(
   TComponent * Component, TRescaleEvent OnRescale, TObject * Token = NULL, bool OwnsToken = false);
 void __fastcall RecordFormImplicitRescale(TForm * Form);
 void __fastcall CountClicksForWindowPrint(TForm * Form);
+bool IsButtonBeingClicked(TButtonControl * Button);
+bool IsCancelButtonBeingClicked(TControl * Control);
+TCanvas * CreateControlCanvas(TControl * Control);
+void AutoSizeButton(TButton * Button);
+namespace Tb2item { class TTBCustomItem; }
+void GiveTBItemPriority(Tb2item::TTBCustomItem * Item);
 //---------------------------------------------------------------------------
 
 #endif // #if 0

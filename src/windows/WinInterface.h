@@ -1,4 +1,4 @@
-//---------------------------------------------------------------------------
+﻿//---------------------------------------------------------------------------
 #pragma once
 //---------------------------------------------------------------------------
 #include <Classes.hpp>
@@ -29,6 +29,12 @@ constexpr uintptr_t mpNeverAskAgainCheck =   0x01;
 constexpr uintptr_t mpAllowContinueOnError = 0x02;
 
 extern HINSTANCE HInstance;
+#define BROWSE_SWITCH L"Browse"
+#define NOINTERACTIVEINPUT_SWITCH L"NoInteractiveInput"
+#define STDOUT_SWITCH L"StdOut"
+#define STDIN_SWITCH L"StdIn"
+#define STDINOUT_BINARY_VALUE L"binary"
+#define STDINOUT_CHUNKED_VALUE L"chunked"
 
 #define UPLOAD_IF_ANY_SWITCH "UploadIfAny"
 #define UPLOAD_SWITCH "Upload"
@@ -74,6 +80,7 @@ public:
   TQueryType TimerQueryType{static_cast<TQueryType>(-1)};
   uintptr_t Timeout{0};
   uintptr_t TimeoutAnswer{0};
+  unsigned int TimeoutResponse;
   UnicodeString NeverAskAgainTitle;
   uintptr_t NeverAskAgainAnswer{0};
   bool NeverAskAgainCheckedInitially{false};
@@ -122,6 +129,8 @@ void AddMenuLabel(Tb2item::TTBCustomItem * Menu, const UnicodeString & Label);
 void ClickToolbarItem(Tb2item::TTBCustomItem * Item, bool PositionCursor);
 #endif // #if 0
 
+void InitiateDialogTimeout(TForm * Dialog, unsigned int Timeout, TButton * Button, unsigned int Answer = 0);
+
 // windows\WinHelp.cpp
 void InitializeWinHelp();
 void FinalizeWinHelp();
@@ -162,6 +171,7 @@ bool DoCustomCommandOptionsDialog(
   TCustomCommand * CustomCommandForOptions, const UnicodeString & Site, const TShortCuts * ShortCuts);
 #endif // #if 0
 void DoUsageStatisticsDialog();
+void DoSiteRawDialog(TSessionData * Data);
 
 // windows\UserInterface.cpp
 bool DoMasterPasswordDialog();
@@ -172,6 +182,7 @@ int Execute();
 void GetLoginData(UnicodeString SessionName, TOptions * Options,
   TObjectList * DataList, UnicodeString & DownloadFile, bool NeedSession, // TForm * LinkedForm,
   int Flags = 0);
+int GetCommandLineParseUrlFlags(TProgramParams * Params);
 
 #if 0
 // forms\InputDlg.cpp
@@ -185,7 +196,7 @@ typedef void (__closure *TInputDialogInitialize)
 bool InputDialog(UnicodeString ACaption,
   UnicodeString APrompt, UnicodeString & Value, UnicodeString HelpKeyword = HELP_NONE,
   TStrings * History = nullptr, bool PathInput = false,
-  TInputDialogInitializeEvent OnInitialize = nullptr, bool Echo = true);
+  TInputDialogInitializeEvent OnInitialize = nullptr, bool Echo = true, int Width = 275);
 
 // forms\About.cpp
 struct TRegistration
@@ -204,8 +215,8 @@ void DoAboutDialog(TConfiguration * Configuration,
 void DoAboutDialog(TConfiguration *Configuration);
 
 // forms\Cleanup.cpp
-bool DoCleanupDialog(TStoredSessionList *SessionList,
-    TConfiguration *Configuration);
+bool __fastcall DoCleanupDialog();
+void __fastcall DoCleanupDialogIfAnyDataAndWanted();
 
 // forms\Console.cpp
 void DoConsoleDialog(TTerminal * Terminal,
@@ -229,10 +240,10 @@ constexpr intptr_t cooSaveSettings       = 0x04;
 constexpr int coTempTransfer        = 0x08;
 constexpr int coDisableNewerOnly    = 0x10;
 
-bool DoCopyDialog(bool ToRemote,
-  bool Move, TStrings * FileList, UnicodeString & TargetDirectory,
+bool DoCopyDialog(
+  bool ToRemote, bool Move, TStrings * FileList, UnicodeString & TargetDirectory,
   TGUICopyParamType * Params, int Options, int CopyParamAttrs,
-  TSessionData * SessionData, int * OutputOptions);
+  TSessionData * SessionData, int * OutputOptions, int AutoSubmit);
 
 // forms\CreateDirectory.cpp
 bool DoCreateDirectoryDialog(UnicodeString & Directory,
@@ -245,7 +256,7 @@ bool DoImportSessionsDialog(TList * Imported);
 enum TLicense { lcNoLicense = -1, lcWinScp, lcExpat };
 void DoLicenseDialog(TLicense License);
 
-bool DoLoginDialog(TStoredSessionList * SessionList, TList * DataList); // , TForm * LinkedForm);
+bool DoLoginDialog(TList * DataList); //, TForm * LinkedForm);
 
   // forms\SiteAdvanced.cpp
 bool DoSiteAdvancedDialog(TSessionData * SessionData);
@@ -310,6 +321,7 @@ struct TCalculateSizeStats;
 constexpr int cpMode =  0x01;
 constexpr int cpOwner = 0x02;
 constexpr int cpGroup = 0x04;
+const cpAcl =   0x08;
 #if 0
 typedef void (__closure *TCalculateSizeEvent)
   (TStrings * FileList, __int64 & Size, TCalculateSizeStats & Stats,
@@ -388,8 +400,9 @@ bool DoSynchronizeDialog(TSynchronizeParamType & Params,
   TGetSynchronizeOptionsEvent OnGetOptions,
   TSynchronizeSessionLogEvent OnSynchronizeSessionLog,
   TFeedSynchronizeErrorEvent & OnFeedSynchronizeError,
+  TNotifyEvent & OnSynchronizeAbort,
   TSynchronizeInNewWindowEvent OnSynchronizeInNewWindow,
-  bool Start);
+  int AutoSubmit);
 
 // forms\FullSynchronize.cpp
 struct TUsableCopyParamAttrs;
@@ -410,7 +423,7 @@ bool DoFullSynchronizeDialog(TTerminal::TSynchronizeMode & Mode, intptr_t & Para
   UnicodeString & LocalDirectory, UnicodeString & RemoteDirectory,
   TCopyParamType * CopyParams, bool & SaveSettings, bool & SaveMode,
   intptr_t Options, const TUsableCopyParamAttrs & CopyParamAttrs,
-  TFullSynchronizeInNewWindowEvent OnFullSynchronizeInNewWindow);
+  TFullSynchronizeInNewWindowEvent OnFullSynchronizeInNewWindow, int AutoSubmit);
 
 // forms\SynchronizeChecklist.cpp
 class TSynchronizeChecklist;
@@ -435,13 +448,15 @@ using TSynchronizeChecklistCalculateSizeEvent = nb::FastDelegate3<void,
   TSynchronizeChecklist * /*Checklist*/, const TSynchronizeChecklist::TItemList & /*Items*/, void * /*Token*/>;
 using TSynchronizeMoveEvent = nb::FastDelegate4<void,
   TOperationSide /*Side*/, UnicodeString /*FileName*/, UnicodeString /*NewFileName*/, TRemoteFile * /*RemoteFile*/>;
+typedef void __fastcall (__closure *TSynchronizeBrowseEvent)(
+  TOperationSide Side, TSynchronizeChecklist::TAction Action, const TSynchronizeChecklist::TItem * Item);
 
 bool DoSynchronizeChecklistDialog(TSynchronizeChecklist * Checklist,
   TTerminal::TSynchronizeMode Mode, int Params,
   const UnicodeString LocalDirectory, const UnicodeString RemoteDirectory,
   TCustomCommandMenuEvent OnCustomCommandMenu, TFullSynchronizeEvent OnSynchronize,
   TSynchronizeChecklistCalculateSizeEvent OnSynchronizeChecklistCalculateSize, TSynchronizeMoveEvent OnSynchronizeMove,
-  void * Token);
+  TSynchronizeBrowseEvent OnSynchronizeBrowse, void * Token);
 
 // forms\Editor.cpp
 #if 0
@@ -456,7 +471,8 @@ typedef nb::FastDelegate2<void,
 TForm * ShowEditorForm(const UnicodeString FileName, TForm * ParentForm,
   TNotifyEvent OnFileChanged, TNotifyEvent OnFileReload, TFileClosedEvent OnClose,
   TNotifyEvent OnSaveAll, TAnyModifiedEvent OnAnyModified,
-  const UnicodeString Caption, bool StandaloneEditor, TColor Color, int InternalEditorEncodingOverride);
+  const UnicodeString Caption, bool StandaloneEditor, TColor Color, int InternalEditorEncodingOverride,
+  bool NewFile);
 void ReconfigureEditorForm(TForm * Form);
 void EditorFormFileUploadComplete(TForm * Form);
 void EditorFormFileSave(TForm * Form);
@@ -486,7 +502,6 @@ void DoFileSystemInfoDialog(
 #if 0
 // forms\MessageDlg.cpp
 void AnswerNameAndCaption(
-  unsigned int Answer, UnicodeString & Name, UnicodeString & Caption);
 TForm * CreateMoreMessageDialog(const UnicodeString & Msg,
   TStrings * MoreMessages, TMsgDlgType DlgType, unsigned int Answers,
   const TQueryButtonAlias * Aliases, unsigned int AliasesCount,
@@ -626,6 +641,9 @@ UnicodeString DumpCallstackEventName(int ProcessId);
 UnicodeString DumpCallstackFileName(int ProcessId);
 
 void CheckConfigurationForceSave();
+void InterfaceStarted();
+void InterfaceStartDontMeasure();
+void AddStartupSequence(const UnicodeString & Tag);
 //---------------------------------------------------------------------------
 __removed #define HIDDEN_WINDOW_NAME L"WinSCPHiddenWindow3"
 //---------------------------------------------------------------------------
@@ -713,6 +731,18 @@ private:
 };
 #endif // #if 0
 //---------------------------------------------------------------------------
+enum TConsoleFlag
+{
+  cfLimitedOutput,
+  cfLiveOutput,
+  cfNoInteractiveInput,
+  cfInteractive,
+  cfCommandLineOnly,
+  cfWantsProgress,
+  cfStdOut,
+  cfStdIn
+};
+//---------------------------------------------------------------------------
 class TConsole
 {
 public:
@@ -733,6 +763,8 @@ public:
   virtual bool WantsProgress() = 0;
 //  virtual void Progress(TScriptProgress & Progress) = 0;
   virtual UnicodeString FinalLogMessage() = 0;
+  virtual void __fastcall TransferOut(const unsigned char * Data, size_t Len) = 0;
+  virtual size_t __fastcall TransferIn(unsigned char * Data, size_t Len) = 0;
 };
 //---------------------------------------------------------------------------
 int HandleException(TConsole * Console, Exception & E);

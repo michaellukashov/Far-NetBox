@@ -1,4 +1,4 @@
-//---------------------------------------------------------------------------
+﻿//---------------------------------------------------------------------------
 #include "stdafx.h"
 #include "ApiLog.h"
 #include "FileZillaApi.h"
@@ -87,3 +87,17 @@ int CApiLog::GetOptionVal(int OptionID) const
   return FIntern->GetOptionVal(OptionID);
 }
 
+void CApiLog::LogError(int Error)
+{
+  wchar_t * Buffer;
+  int Len = FormatMessage(
+    FORMAT_MESSAGE_FROM_SYSTEM |
+    FORMAT_MESSAGE_IGNORE_INSERTS |
+    FORMAT_MESSAGE_ARGUMENT_ARRAY |
+    FORMAT_MESSAGE_ALLOCATE_BUFFER, NULL, Error, 0, (LPTSTR)&Buffer, 0, NULL);
+  if (Len > 0)
+  {
+    LogMessageRaw(FZ_LOG_ERROR, Buffer);
+    LocalFree(Buffer);
+  }
+}

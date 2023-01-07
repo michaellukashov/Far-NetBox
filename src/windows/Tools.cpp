@@ -1,4 +1,4 @@
-//---------------------------------------------------------------------------
+﻿//---------------------------------------------------------------------------
 #include <vcl.h>
 #pragma hdrstop
 
@@ -118,6 +118,7 @@ TColor GetWindowTextColor(TColor BackgroundColor, TColor Color)
 {
   if (Color == TColor(0))
   {
+    // Could use current theme TMT_TEXTCOLOR - see https://github.com/ysc3839/win32-darkmode
     Color = (IsDarkColor(BackgroundColor) ? clWhite : clWindowText);
     SetContrast(Color, BackgroundColor, 180);
   }
@@ -128,6 +129,7 @@ TColor GetWindowColor(TColor Color)
 {
   if (Color == TColor(0))
   {
+    // Could use current theme TMT_FILLCOLOR - see https://github.com/ysc3839/win32-darkmode
     Color = (WinConfiguration->UseDarkTheme() ? static_cast<TColor>(RGB(0x20, 0x20, 0x20)) : clWindow);
   }
   return Color;
@@ -200,13 +202,11 @@ void LoadFormDimensions(
   const UnicodeString & LeftStr, const UnicodeString & TopStr, const UnicodeString & RightStr, const UnicodeString & BottomStr,
   int PixelsPerInch, Forms::TMonitor * Monitor, TForm * Form, TRect & Bounds, bool & DefaultPos)
 {
-  int Left = StrToDimensionDef(LeftStr, PixelsPerInch, Form, Bounds.Left);
-  int Top = StrToDimensionDef(TopStr, PixelsPerInch, Form, Bounds.Top);
-  DefaultPos = (Left == -1) && (Top == -1);
+  DefaultPos = (StrToIntDef(LeftStr, 0) == -1) && (StrToIntDef(TopStr, 0) == -1);
   if (!DefaultPos)
   {
-    Bounds.Left = Left;
-    Bounds.Top = Top;
+    Bounds.Left = StrToDimensionDef(LeftStr, PixelsPerInch, Form, Bounds.Left);
+    Bounds.Top = StrToDimensionDef(TopStr, PixelsPerInch, Form, Bounds.Top);
   }
   else
   {
@@ -254,11 +254,12 @@ void __fastcall RestoreForm(UnicodeString Data, TForm * Form, bool PositionOnly)
       TRect Bounds = OriginalBounds;
       LoadFormDimensions(LeftStr, TopStr, RightStr, BottomStr, PixelsPerInch, Monitor, Form, Bounds, DefaultPos);
 
+      int Padding = ScaleByPixelsPerInch(20, Monitor);
       if (DefaultPos ||
-          ((Bounds.Left < Monitor->Left) ||
-           (Bounds.Left > Monitor->Left + Monitor->WorkareaRect.Width() - 20) ||
-           (Bounds.Top < Monitor->Top) ||
-           (Bounds.Top > Monitor->Top + Monitor->WorkareaRect.Height() - 20)))
+          ((Bounds.Left < Monitor->Left - Padding) ||
+           (Bounds.Left > Monitor->Left + Monitor->WorkareaRect.Width() - Padding) ||
+           (Bounds.Top < Monitor->Top - Padding) ||
+           (Bounds.Top > Monitor->Top + Monitor->WorkareaRect.Height() - Padding)))
       {
         bool ExplicitPlacing = !Monitor->Primary;
         if (!ExplicitPlacing)
@@ -531,77 +532,75 @@ IShellLink * CreateDesktopShortCut(const UnicodeString & Name,
 
   try
   {
-    if (SUCCEEDED(CoCreateInstance(CLSID_ShellLink, NULL, CLSCTX_INPROC_SERVER,
-         IID_IShellLink, (void **) &pLink)))
-    {
-      try
-      {
-        pLink->SetPath(File.c_str());
-        pLink->SetDescription(Description.c_str());
-        pLink->SetArguments(Params.c_str());
-        pLink->SetShowCmd(SW_SHOW);
-        // Explicitly setting icon file,
-        // without this icons are not shown at least in Windows 7 jumplist
-        pLink->SetIconLocation(File.c_str(), IconIndex);
+    OleCheck(CoCreateInstance(CLSID_ShellLink, NULL, CLSCTX_INPROC_SERVER, IID_IShellLink, (void **) &pLink));
 
-        IPersistFile* pPersistFile;
-        if (!Return &&
-            SUCCEEDED(pLink->QueryInterface(IID_IPersistFile, (void **)&pPersistFile)))
+    try
+    {
+      pLink->SetPath(File.c_str());
+      pLink->SetDescription(Description.c_str());
+      pLink->SetArguments(Params.c_str());
+      pLink->SetShowCmd(SW_SHOW);
+      // Explicitly setting icon file,
+      // without this icons are not shown at least in Windows 7 jumplist
+      pLink->SetIconLocation(File.c_str(), IconIndex);
+
+      IPersistFile* pPersistFile;
+      if (!Return &&
+          SUCCEEDED(pLink->QueryInterface(IID_IPersistFile, (void **)&pPersistFile)))
+      {
+        try
         {
+          LPMALLOC      ShellMalloc;
+          LPITEMIDLIST  DesktopPidl;
+          wchar_t DesktopDir[MAX_PATH];
+
+          OleCheck(SHGetMalloc(&ShellMalloc));
+
           try
           {
-            LPMALLOC      ShellMalloc;
-            LPITEMIDLIST  DesktopPidl;
-            wchar_t DesktopDir[MAX_PATH];
+            OleCheck(SHGetSpecialFolderLocation(NULL, SpecialFolder, &DesktopPidl));
 
-            OleCheck(SHGetMalloc(&ShellMalloc));
-
-            try
-            {
-              OleCheck(SHGetSpecialFolderLocation(NULL, SpecialFolder, &DesktopPidl));
-
-              OleCheck(SHGetPathFromIDList(DesktopPidl, DesktopDir));
-            }
-            __finally
-            {
-              ShellMalloc->Free(DesktopPidl);
-              ShellMalloc->Release();
-            }
-
-            WideString strShortCutLocation(DesktopDir);
-            // Name can contain even path (e.g. to create quick launch icon)
-            strShortCutLocation += UnicodeString(L"\\") + Name + L".lnk";
-            OleCheck(pPersistFile->Save(strShortCutLocation.c_bstr(), TRUE));
+            OleCheck(SHGetPathFromIDList(DesktopPidl, DesktopDir));
           }
           __finally
           {
-            pPersistFile->Release();
+            ShellMalloc->Free(DesktopPidl);
+            ShellMalloc->Release();
           }
-        }
 
-        // this is necessary for Windows 7 taskbar jump list links
-        IPropertyStore * PropertyStore;
-        if (SUCCEEDED(pLink->QueryInterface(IID_IPropertyStore, (void**)&PropertyStore)))
+          WideString strShortCutLocation(DesktopDir);
+          // Name can contain even path (e.g. to create quick launch icon)
+          strShortCutLocation += UnicodeString(L"\\") + Name + L".lnk";
+          OleCheck(pPersistFile->Save(strShortCutLocation.c_bstr(), TRUE));
+        }
+        __finally
         {
-          PROPVARIANT Prop;
-          Prop.vt = VT_LPWSTR;
-          Prop.pwszVal = Name.c_str();
-          PropertyStore->SetValue(PKEY_Title, Prop);
-          PropertyStore->Commit();
-          PropertyStore->Release();
+          pPersistFile->Release();
         }
       }
-      catch(...)
-      {
-        pLink->Release();
-        throw;
-      }
 
-      if (!Return)
+      // this is necessary for Windows 7 taskbar jump list links
+      IPropertyStore * PropertyStore;
+      if (SUCCEEDED(pLink->QueryInterface(IID_IPropertyStore, (void**)&PropertyStore)))
       {
-        pLink->Release();
-        pLink = NULL;
+        PROPVARIANT Prop;
+        Prop.vt = VT_LPWSTR;
+        Prop.pwszVal = Name.c_str();
+        PropertyStore->SetValue(PKEY_Title, Prop);
+        PropertyStore->Commit();
+        PropertyStore->Release();
       }
+    }
+    catch(...)
+    {
+      pLink->Release();
+      throw;
+    }
+
+    if (!Return)
+    {
+      pLink->Release();
+      pLink = NULL;
     }
   }
   catch(Exception & E)
@@ -613,6 +612,22 @@ IShellLink * CreateDesktopShortCut(const UnicodeString & Name,
 }
 //---------------------------------------------------------------------------
 IShellLink * CreateDesktopSessionShortCut(
+  const UnicodeString & Name, const UnicodeString & AParams, const UnicodeString & Description,
+  int SpecialFolder, int IconIndex, bool Return)
+{
+  UnicodeString ParamValue = Configuration->GetIniFileParamValue();
+
+  UnicodeString Params;
+  if (!ParamValue.IsEmpty())
+  {
+    Params = TProgramParams::FormatSwitch(INI_SWITCH) + L"=" + AddQuotes(ParamValue);
+  }
+
+  AddToList(Params, AParams, L" ");
+
+  return CreateDesktopShortCut(Name, Application->ExeName, Params, Description, SpecialFolder, IconIndex, Return);
+}
+//---------------------------------------------------------------------------
   const UnicodeString & SessionName, UnicodeString Name,
   const UnicodeString & AdditionalParams, int SpecialFolder, int IconIndex,
   bool Return)
@@ -651,29 +666,37 @@ IShellLink * CreateDesktopSessionShortCut(
   }
 
   return
-    CreateDesktopShortCut(ValidLocalFileName(Name), Application->ExeName,
+    CreateAppDesktopShortCut(ValidLocalFileName(Name),
       FORMAT(L"\"%s\"%s%s", EncodeUrlString(SessionName), (AdditionalParams.IsEmpty() ? L"" : L" "), AdditionalParams),
       InfoTip, SpecialFolder, IconIndex, Return);
+}
+//---------------------------------------------------------------------------
+void ValidateMask(const UnicodeString & Mask, int ForceDirectoryMasks)
+{
+  TFileMasks Masks(ForceDirectoryMasks);
+  Masks = Mask;
 }
 //---------------------------------------------------------------------------
 template<class TEditControl>
 void ValidateMaskEditT(const UnicodeString & Mask, TEditControl * Edit, int ForceDirectoryMasks)
 {
   DebugAssert(Edit != NULL);
-  TFileMasks Masks(ForceDirectoryMasks);
-  try
+  if (!IsCancelButtonBeingClicked(Edit))
   {
-    Masks = Mask;
-  }
-  catch(EFileMasksException & E)
-  {
-    ShowExtendedException(&E);
-    Edit->SetFocus();
-    // This does not work for TEdit and TMemo (descendants of TCustomEdit) anymore,
-    // as it re-selects whole text on exception in TCustomEdit.CMExit
-    Edit->SelStart = E.ErrorStart - 1;
-    Edit->SelLength = E.ErrorLen;
-    Abort();
+    try
+    {
+      ValidateMask(Mask, ForceDirectoryMasks);
+    }
+    catch(EFileMasksException & E)
+    {
+      ShowExtendedException(&E);
+      Edit->SetFocus();
+      // This does not work for TEdit and TMemo (descendants of TCustomEdit) anymore,
+      // as it re-selects whole text on exception in TCustomEdit.CMExit
+      Edit->SelStart = E.ErrorStart - 1;
+      Edit->SelLength = E.ErrorLen;
+      Abort();
+    }
   }
 }
 //---------------------------------------------------------------------------
@@ -689,8 +712,11 @@ void ValidateMaskEdit(TEdit * Edit)
 //---------------------------------------------------------------------------
 void ValidateMaskEdit(TMemo * Edit, bool Directory)
 {
-  UnicodeString Mask = TFileMasks::ComposeMaskStr(GetUnwrappedMemoLines(Edit), Directory);
-  ValidateMaskEditT(Mask, Edit, Directory ? 1 : 0);
+  if (!IsCancelButtonBeingClicked(Edit))
+  {
+    UnicodeString Mask = TFileMasks::ComposeMaskStr(GetUnwrappedMemoLines(Edit), Directory);
+    ValidateMaskEditT(Mask, Edit, Directory ? 1 : 0);
+  }
 }
 //---------------------------------------------------------------------------
 TStrings * GetUnwrappedMemoLines(TMemo * Memo)
@@ -739,7 +765,16 @@ void OpenBrowser(UnicodeString URL)
     DebugAssert(!IsHttpUrl(URL));
     URL = CampaignUrl(URL);
   }
-  ShellExecute(Application->Handle, L"open", URL.c_str(), NULL, NULL, SW_SHOWNORMAL);
+  if (!CopyCommandToClipboard(URL))
+  {
+    // Rather arbitrary limit. Opening a URL over approx. 5 KB fails in Chrome, Firefox and Edge.
+    const int URLLimit = 4*1024;
+    if (URL.Length() > URLLimit)
+    {
+      URL.SetLength(URLLimit);
+    }
+    ShellExecute(Application->Handle, L"open", URL.c_str(), NULL, NULL, SW_SHOWNORMAL);
+  }
 }
 //---------------------------------------------------------------------------
 void OpenFolderInExplorer(const UnicodeString Path)
@@ -782,58 +817,95 @@ bool IsFormatInClipboard(unsigned int Format)
 //---------------------------------------------------------------------------
 HANDLE OpenTextFromClipboard(const wchar_t *& Text)
 {
-  HANDLE Result = NULL;
-  if (OpenClipboard(0))
+  UnicodeString ErrorContext;
+  try
   {
-    // Check also for CF_TEXT?
-    Result = GetClipboardData(CF_UNICODETEXT);
-    if (Result != NULL)
+    HANDLE Result = NULL;
+    ErrorContext = L"open";
+    if (OpenClipboard(0))
     {
-      Text = static_cast<const wchar_t*>(GlobalLock(Result));
+      // Check also for CF_TEXT?
+      ErrorContext = L"getdata";
+      Result = GetClipboardData(CF_UNICODETEXT);
+      if (Result != NULL)
+      {
+        ErrorContext = L"lock";
+        Text = static_cast<const wchar_t*>(GlobalLock(Result));
+      }
+      else
+      {
+        ErrorContext = L"close";
+        CloseClipboard();
+      }
     }
-    else
-    {
-      CloseClipboard();
-    }
+    return Result;
   }
-  return Result;
+  catch (EAccessViolation & E)
+  {
+    throw EAccessViolation(AddContextToExceptionMessage(E, ErrorContext));
+  }
 }
 //---------------------------------------------------------------------------
 void CloseTextFromClipboard(HANDLE Handle)
 {
-  if (Handle != NULL)
+  UnicodeString ErrorContext;
+  try
   {
-    GlobalUnlock(Handle);
+    if (Handle != NULL)
+    {
+      ErrorContext = "unlock";
+      GlobalUnlock(Handle);
+    }
+    ErrorContext = "close";
+    CloseClipboard();
   }
-  CloseClipboard();
+  catch (EAccessViolation & E)
+  {
+    throw EAccessViolation(AddContextToExceptionMessage(E, ErrorContext));
+  }
 }
 //---------------------------------------------------------------------------
 bool TextFromClipboard(UnicodeString & Text, bool Trim)
 {
-  const wchar_t * AText = NULL;
-  HANDLE Handle = OpenTextFromClipboard(AText);
-  bool Result = (Handle != NULL);
-  if (Result)
+  UnicodeString ErrorContext;
+  try
   {
-    // For all current uses (URL pasting, key/fingerprint pasting, known_hosts pasting, "more messages" copying,
-    // permissions pasting), 64KB is large enough.
-    const size_t Limit = 64*1024;
-    size_t Size = GlobalSize(Handle);
-    if (Size > Limit)
+    const wchar_t * AText = NULL;
+    ErrorContext = L"open";
+    HANDLE Handle = OpenTextFromClipboard(AText);
+    bool Result = (Handle != NULL);
+    if (Result)
     {
-      Text = UnicodeString(AText, Limit);
+      // For all current uses (URL pasting, key/fingerprint pasting, known_hosts pasting, "more messages" copying,
+      // permissions pasting), 64KB is large enough.
+      const int Limit = 64*1024;
+      ErrorContext = L"size";
+      size_t Size = GlobalSize(Handle);
+      int Len = (Size / sizeof(*AText)) - 1;
+      if (Len > Limit)
+      {
+        ErrorContext = FORMAT(L"substring(%d,%d)", (int(Size), Len));
+        Text = UnicodeString(AText, Limit);
+      }
+      else
+      {
+        ErrorContext = FORMAT(L"string(%d,%d)", (int(Size), Len));
+        Text = AText;
+      }
+      if (Trim)
+      {
+        ErrorContext = L"trim";
+        Text = Text.Trim();
+      }
+      ErrorContext = L"close";
+      CloseTextFromClipboard(Handle);
     }
-    else
-    {
-      Text = AText;
-    }
-    if (Trim)
-    {
-      Text = Text.Trim();
-    }
-    CloseTextFromClipboard(Handle);
+    return Result;
   }
-  return Result;
+  catch (EAccessViolation & E)
+  {
+    throw EAccessViolation(AddContextToExceptionMessage(E, ErrorContext));
+  }
 }
 //---------------------------------------------------------------------------
 bool NonEmptyTextFromClipboard(UnicodeString & Text)
@@ -1183,7 +1255,7 @@ void SuspendWindows()
 {
   AcquireShutDownPrivileges();
 
-  // https://docs.microsoft.com/en-us/windows/win32/api/powrprof/nf-powrprof-setsuspendstate
+  // https://learn.microsoft.com/en-us/windows/win32/api/powrprof/nf-powrprof-setsuspendstate
   Win32Check(FALSE != SetSuspendState(false, false, false));
 }
 //---------------------------------------------------------------------------
@@ -1204,6 +1276,10 @@ void EditSelectBaseName(HWND Edit)
 #endif // #if 0
 //---------------------------------------------------------------------------
 static void ConvertKey(UnicodeString & FileName, TKeyType Type)
+{
+  return ChangeFileExt(FileName, FORMAT(L".%s", (PuttyKeyExt)));
+}
+//---------------------------------------------------------------------------
 {
   UnicodeString Passphrase;
 
@@ -1241,18 +1317,16 @@ static void ConvertKey(UnicodeString & FileName, TKeyType Type)
 }
 //---------------------------------------------------------------------------
 static void DoVerifyKey(
-  UnicodeString & FileName, TSshProt SshProt, bool Convert, bool CanIgnore)
 {
+  std::unique_ptr<TStrings> AMoreMessages;
   if (!FileName.Trim().IsEmpty())
   {
     FileName = ExpandEnvironmentVariables(FileName);
     TKeyType Type = GetKeyType(FileName);
     // reason _wfopen failed
     int Error = errno;
-    UnicodeString Message;
-    UnicodeString HelpKeyword = HELP_LOGIN_KEY_TYPE;
+    HelpKeyword = HELP_LOGIN_KEY_TYPE;
     UnicodeString PuttygenPath;
-    std::unique_ptr<TStrings> MoreMessages;
     switch (Type)
     {
       case ktOpenSSHPEM:
@@ -1266,7 +1340,7 @@ static void DoVerifyKey(
           {
             GetConfiguration()->Usage->Inc(L"PrivateKeyConvertSuggestionsNative");
             UnicodeString ConvertMessage = FMTLOAD(KEY_TYPE_CONVERT3, TypeName, RemoveMainInstructionsTag(Message));
-            Message = UnicodeString();
+            Message = EmptyStr;
             if (MoreMessageDialog(ConvertMessage, nullptr, qtConfirmation, qaOK | qaCancel, HelpKeyword) == qaOK)
             {
               ConvertKey(FileName, Type);
@@ -1285,28 +1359,25 @@ static void DoVerifyKey(
         break;
 
       case ktSSH1:
+        Message = MainInstructions(FMTLOAD(KEY_TYPE_SSH1, (FileName)));
+        break;
+
       case ktSSH2:
-        if ((Type == ktSSH1) != (SshProt == ssh1only))
-        {
-          Message =
-            MainInstructions(
-              FMTLOAD(KEY_TYPE_DIFFERENT_SSH,
+        Message = TestKey(Type, FileName);
                 FileName, (Type == ktSSH1 ? L"SSH-1" : L"PuTTY SSH-2")));
-        }
         break;
 
       case ktSSH1Public:
       case ktSSH2PublicRFC4716:
       case ktSSH2PublicOpenSSH:
         // noop
-        // Do not even bother checking SSH protocol version
         break;
 
       case ktUnopenable:
         Message = MainInstructions(FMTLOAD(KEY_TYPE_UNOPENABLE, FileName));
         if (Error != ERROR_SUCCESS)
         {
-          MoreMessages.reset(TextToStringList(SysErrorMessageForError(Error)));
+          AMoreMessages.reset(TextToStringList(SysErrorMessageForError(Error)));
         }
         break;
 
@@ -1317,27 +1388,38 @@ static void DoVerifyKey(
         Message = MainInstructions(FMTLOAD(KEY_TYPE_UNKNOWN2, FileName));
         break;
     }
+  }
+  MoreMessages = AMoreMessages.release();
+}
 
-    if (!Message.IsEmpty())
-    {
+//---------------------------------------------------------------------------
+static void __fastcall DoVerifyKey(UnicodeString & FileName, bool Convert, bool CanIgnore)
+{
+  TStrings * AMoreMessages;
+  UnicodeString Message;
+  UnicodeString HelpKeyword;
+  DoVerifyKey(FileName, Convert, Message, AMoreMessages, HelpKeyword);
+  std::unique_ptr<TStrings> MoreMessages(AMoreMessages);
+  if (!Message.IsEmpty())
+  {
       GetConfiguration()->Usage->Inc(L"PrivateKeySelectErrors");
       uint32_t Answers = (CanIgnore ? (qaIgnore | qaAbort) : qaOK);
-      if (MoreMessageDialog(Message, MoreMessages.get(), qtWarning, Answers, HelpKeyword) != qaIgnore)
-      {
-        Abort();
-      }
+    if (MoreMessageDialog(Message, MoreMessages.get(), qtWarning, Answers, HelpKeyword) != qaIgnore)
+    {
+      Abort();
     }
   }
 }
 //---------------------------------------------------------------------------
 void VerifyAndConvertKey(UnicodeString& FileName, TSshProt SshProt, bool CanIgnore)
 {
-  DoVerifyKey(FileName, SshProt, true, CanIgnore);
+  DoVerifyKey(FileName, true, CanIgnore);
 }
 //---------------------------------------------------------------------------
 void VerifyKey(UnicodeString FileName, TSshProt SshProt)
 {
-  DoVerifyKey(FileName, SshProt, false, true);
+  UnicodeString AFileName(FileName);
+  DoVerifyKey(AFileName, false, true);
 }
 //---------------------------------------------------------------------------
 void VerifyCertificate(const UnicodeString FileName)

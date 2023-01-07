@@ -1,4 +1,4 @@
-//---------------------------------------------------------------------------
+﻿//---------------------------------------------------------------------------
 #include <vcl.h>
 #pragma hdrstop
 #include "Common.h"
@@ -30,6 +30,7 @@ TWinConfiguration * WinConfiguration = NULL;
 static UnicodeString NotepadName(L"notepad.exe");
 static UnicodeString ToolbarsLayoutKey(L"ToolbarsLayout2");
 static UnicodeString ToolbarsLayoutOldKey(L"ToolbarsLayout");
+TDateTime DefaultUpdatesPeriod(7);
 //---------------------------------------------------------------------------
 static const wchar_t FileColorDataSeparator = L':';
 TFileColorData::TFileColorData() :
@@ -111,29 +112,23 @@ bool TEditorData::operator==(const TEditorData & rhd) const
 //---------------------------------------------------------------------------
 bool TEditorData::DecideExternalEditorText(UnicodeString ExternalEditor)
 {
-  bool Result = false;
   // By default we use default transfer mode (binary),
   // as all reasonable 3rd party editors support all EOL styles.
   // A notable exception is Windows Notepad, so here's an exception for it.
+  // Notepad support unix line endings since Windows 10 1809. Once that's widespread, remove this.
 
-  ReformatFileNameCommand(ExternalEditor);
-  UnicodeString ProgramName = ExtractProgramName(ExternalEditor);
+  UnicodeString Command = ExternalEditor;
+  ReformatFileNameCommand(Command);
+  UnicodeString ProgramName = ExtractProgramName(Command);
   // We explicitly do not use TEditorPreferences::GetDefaultExternalEditor(),
   // as we need to explicitly refer to the Notepad, even if the default external
   // editor ever changes
   UnicodeString NotepadProgramName = ExtractProgramName(NotepadName);
   if (SameText(ProgramName, NotepadProgramName))
   {
-    Result = true;
-  }
-  return Result;
-}
-//---------------------------------------------------------------------------
 void TEditorData::DecideExternalEditorText()
-{
-  if (DecideExternalEditorText(ExternalEditor))
-  {
     ExternalEditorText = true;
+    SDIExternalEditor = true;
   }
 }
 //---------------------------------------------------------------------------
@@ -166,7 +161,7 @@ UnicodeString TEditorPreferences::GetDefaultExternalEditor()
 void TEditorPreferences::LegacyDefaults()
 {
   FData.ExternalEditor = GetDefaultExternalEditor();
-  FData.DecideExternalEditorText();
+  FData.ExternalEditorOptionsAutodetect();
 }
 //---------------------------------------------------------------------------
 UnicodeString TEditorPreferences::ExtractExternalEditorName() const
@@ -479,7 +474,6 @@ bool TEditorList::IsDefaultList() const
 //---------------------------------------------------------------------------
 TWinConfiguration::TWinConfiguration(): TCustomWinConfiguration()
 {
-  ResetSysDarkTheme();
   FInvalidDefaultTranslationMessage = L"";
   FDDExtInstalled = -1;
   FBookmarks = new TBookmarks();
@@ -534,6 +528,7 @@ void TWinConfiguration::Default()
   int WorkAreaHeightScaled = DimensionToDefaultPixelsPerInch(Screen->WorkAreaHeight);
   UnicodeString PixelsPerInchToolbarValue = "PixelsPerInch=" + SaveDefaultPixelsPerInch();
 
+  FDDDisableMove = false;
   FDDTransferConfirmation = asAuto;
   FDDTemporaryDirectory = L"";
   FDDDrives = L"";
@@ -577,8 +572,8 @@ void TWinConfiguration::Default()
   FAutoSaveWorkspacePasswords = false;
   FAutoWorkspace = L"";
   FPathInCaption = picShort;
+  FSessionTabNameFormat = stnfShortPathTrunc;
   FMinimizeToTray = false;
-  FMinimizeToTrayOnce = false;
   FBalloonNotifications = true;
   FNotificationsTimeout = 10;
   FNotificationsStickTime = 2;
@@ -608,8 +603,11 @@ void TWinConfiguration::Default()
   FGenerateUrlScriptFormat = sfScriptFile;
   FGenerateUrlAssemblyLanguage = alCSharp;
   FExternalSessionInExistingInstance = true;
-  FKeepOpenWhenNoSession = false;
+  FShowLoginWhenNoSession = true;
+  FKeepOpenWhenNoSession = true;
   FLocalIconsByExt = false;
+  FFlashTaskbar = true;
+  FMaxSessions = 100;
   FBidiModeOverride = lfoLanguageIfRecommended;
   FFlipChildrenOverride = lfoLanguageIfRecommended;
   FShowTips = true;
@@ -621,9 +619,13 @@ void TWinConfiguration::Default()
   FLockedInterface = false;
 
   HonorDrivePolicy = true;
+  UseABDrives = true;
   TimeoutShellOperations = true;
   TimeoutShellIconRetrieval = false;
+  UseIconUpdateThread = true;
   AllowWindowPrint = false;
+  StoreTransition = stInit;
+  FirstRun = StandardDatestamp();
 
   FEditor.Font.FontName = DefaultFixedWidthFontName;
   FEditor.Font.FontSize = DefaultFixedWidthFontSize;
@@ -657,6 +659,9 @@ void TWinConfiguration::Default()
   FQueueView.LastHideShow = qvHideWhenEmpty;
   FQueueView.ToolBar = true;
   FQueueView.Label = true;
+  FQueueView.FileList = false;
+  FQueueView.FileListHeight = 90;
+  FQueueView.FileListHeightPixelsPerInch = USER_DEFAULT_SCREEN_DPI;
 
   FEnableQueueByDefault = true;
 
@@ -841,6 +846,47 @@ bool TWinConfiguration::CanWriteToStorage()
 //---------------------------------------------------------------------------
 TStorage TWinConfiguration::GetStorage()
 {
+  bool Result;
+  if (FileExists(ApiPath(IniFileStorageNameForReading)))
+  {
+    Result = !SafeOnly;
+    if (Result)
+    {
+      FStorage = stIniFile;
+    }
+  }
+  else
+  {
+    if (DetectRegistryStorage(HKEY_CURRENT_USER) ||
+        DetectRegistryStorage(HKEY_LOCAL_MACHINE))
+    {
+      FStorage = stRegistry;
+      Result = true;
+    }
+    else
+    {
+      if (SafeOnly)
+      {
+        Result = false;
+      }
+      else
+      {
+        FStorage = stIniFile;
+        // As we fall back to user profile folder, when application folder
+        // is not writtable, it is actually unlikely that the below test ever fails.
+        if (!CanWriteToStorage())
+        {
+          FStorage = stRegistry;
+        }
+        // With !SafeOnly we always return true, so this result is actually never considered
+        Result = true;
+      }
+    }
+  }
+  return Result;
+}
+//---------------------------------------------------------------------------
+{
   if (FStorage == stDetect)
   {
     if (FindResourceEx(NULL, RT_RCDATA, L"WINSCP_SESSION",
@@ -858,25 +904,19 @@ TStorage TWinConfiguration::GetStorage()
       }
     }
 
-    FStorage = stIniFile;
-    if (!FileExists(ApiPath(IniFileStorageNameForReading)))
-    {
-      if (DetectRegistryStorage(HKEY_CURRENT_USER) ||
-          DetectRegistryStorage(HKEY_LOCAL_MACHINE) ||
-          // FStorage is now stIniFile, so this tests writing to an INI file.
-          // As we fall back to user profile folder, when application folder
-          // is not writtable, it is actually unlikely that the below test ever fails.
-          !CanWriteToStorage())
-      {
-        FStorage = stRegistry;
-      }
-    }
+    DebugCheck(DetectStorage(false));
   }
+  // Meaning any inherited autodetection basically does not happen, so the below call returns FStorage
+  DebugAssert(FStorage != stDetect);
   TStorage Result = TCustomWinConfiguration::GetStorage();
   return Result;
 }
 //---------------------------------------------------------------------------
 void TWinConfiguration::Saved()
+{
+  return DetectStorage(true);
+}
+//---------------------------------------------------------------------------
 {
   TCustomWinConfiguration::Saved();
   FBookmarks->ModifyAll(false);
@@ -936,10 +976,8 @@ THierarchicalStorage * TWinConfiguration::CreateScpStorage(bool & SessionList)
 //---------------------------------------------------------------------------
 // duplicated from core\configuration.cpp
 #undef LASTELEM
-#define LASTELEM(ELEM) \
-  ELEM.SubString(ELEM.LastDelimiter(L".>")+1, ELEM.Length() - ELEM.LastDelimiter(L".>"))
 #define BLOCK(KEY, CANCREATE, BLOCK) \
-  if (Storage->OpenSubKey(KEY, CANCREATE, true)) try { BLOCK } __finally { Storage->CloseSubKey(); }
+  if (Storage->OpenSubKeyPath(KEY, CANCREATE)) try { BLOCK } __finally { Storage->CloseSubKeyPath(); }
 #define KEY(TYPE, VAR) KEYEX(TYPE, VAR, PropertyToKey(TEXT(#VAR)))
 #define REGCONFIG(CANCREATE) \
   BLOCK("Interface", CANCREATE, \
@@ -982,6 +1020,7 @@ THierarchicalStorage * TWinConfiguration::CreateScpStorage(bool & SessionList)
     KEY(Bool,     AutoSaveWorkspacePasswords); \
     KEY(String,   AutoWorkspace); \
     KEY(Integer,  PathInCaption); \
+    KEY(Integer,  SessionTabNameFormat); \
     KEY(Bool,     MinimizeToTray); \
     KEY(Bool,     BalloonNotifications); \
     KEY(Integer,  NotificationsTimeout); \
@@ -1009,8 +1048,11 @@ THierarchicalStorage * TWinConfiguration::CreateScpStorage(bool & SessionList)
     KEY(Integer,  GenerateUrlScriptFormat); \
     KEY(Integer,  GenerateUrlAssemblyLanguage); \
     KEY(Bool,     ExternalSessionInExistingInstance); \
+    KEY(Bool,     ShowLoginWhenNoSession); \
     KEY(Bool,     KeepOpenWhenNoSession); \
     KEY(Bool,     LocalIconsByExt); \
+    KEY(Bool,     FlashTaskbar); \
+    KEY(Integer,  MaxSessions); \
     KEY(Integer,  BidiModeOverride); \
     KEY(Integer,  FlipChildrenOverride); \
     KEY(Bool,     ShowTips); \
@@ -1019,13 +1061,17 @@ THierarchicalStorage * TWinConfiguration::CreateScpStorage(bool & SessionList)
     KEY(String,   FileColors); \
     KEY(Integer,  RunsSinceLastTip); \
     KEY(Bool,     HonorDrivePolicy); \
+    KEY(Bool,     UseABDrives); \
     KEY(Integer,  LastMachineInstallations); \
     KEYEX(String, FExtensionsDeleted, "ExtensionsDeleted"); \
     KEYEX(String, FExtensionsOrder, "ExtensionsOrder"); \
     KEYEX(String, FExtensionsShortCuts, "ExtensionsShortCuts"); \
     KEY(Bool,     TimeoutShellOperations); \
     KEY(Bool,     TimeoutShellIconRetrieval); \
+    KEY(Bool,     UseIconUpdateThread); \
     KEY(Bool,     AllowWindowPrint); \
+    KEY(Integer,  StoreTransition); \
+    KEY(String,   FirstRun); \
   ); \
   BLOCK("Interface\\Editor", CANCREATE, \
     KEYEX(String,   Editor.Font.FontName, "FontName2"); \
@@ -1057,6 +1103,9 @@ THierarchicalStorage * TWinConfiguration::CreateScpStorage(bool & SessionList)
     KEY(Integer,  QueueView.LastHideShow); \
     KEY(Bool,     QueueView.ToolBar); \
     KEY(Bool,     QueueView.Label); \
+    KEY(Bool,     QueueView.FileList); \
+    KEY(Integer,  QueueView.FileListHeight); \
+    KEY(Integer,  QueueView.FileListHeightPixelsPerInch); \
   ); \
   BLOCK("Interface\\Updates", CANCREATE, \
     KEY(Integer,  FUpdates.Period); \
@@ -1167,6 +1216,15 @@ void TWinConfiguration::SaveData(THierarchicalStorage * Storage, bool All)
   if ((All && !FCustomCommandsDefaults) || FCustomCommandList->Modified)
   {
     FCustomCommandList->Save(Storage);
+
+    if (FCustomCommandList->Count == 0)
+    {
+      Storage->WriteBool(L"CustomCommandsNone", true);
+    }
+    else
+    {
+      Storage->DeleteValue(L"CustomCommandsNone");
+    }
   }
 
   if ((All || FCustomCommandOptionsModified) &&
@@ -1179,14 +1237,14 @@ void TWinConfiguration::SaveData(THierarchicalStorage * Storage, bool All)
   }
 
   if ((All || FEditorList->Modified) &&
-      Storage->OpenSubKey(L"Interface\\Editor", true, true))
+      Storage->OpenSubKeyPath(L"Interface\\Editor", true))
   try
   {
     FEditorList->Save(Storage);
   }
   __finally
   {
-    Storage->CloseSubKey();
+    Storage->CloseSubKeyPath();
   }
 }
 //---------------------------------------------------------------------------
@@ -1499,7 +1557,8 @@ void TWinConfiguration::LoadData(THierarchicalStorage * Storage)
     Storage->CloseSubKey();
   }
 
-  if (Storage->HasSubKey(L"CustomCommands"))
+  if (Storage->KeyExists(L"CustomCommands") ||
+      Storage->ReadBool(L"CustomCommandsNone", false))
   {
     FCustomCommandList->Load(Storage);
     FCustomCommandsDefaults = false;
@@ -1521,7 +1580,7 @@ void TWinConfiguration::LoadData(THierarchicalStorage * Storage)
     FCustomCommandOptionsModified = false;
   }
 
-  if (Storage->OpenSubKey(L"Interface\\Editor", false, true))
+  if (Storage->OpenSubKeyPath(L"Interface\\Editor", false))
   try
   {
     FEditorList->Clear();
@@ -1529,12 +1588,12 @@ void TWinConfiguration::LoadData(THierarchicalStorage * Storage)
   }
   __finally
   {
-    Storage->CloseSubKey();
+    Storage->CloseSubKeyPath();
   }
 
   // load legacy editor configuration
   DebugAssert(FLegacyEditor != NULL);
-  if (Storage->OpenSubKey(L"Interface\\Editor", false, true))
+  if (Storage->OpenSubKeyPath(L"Interface\\Editor", false))
   {
     try
     {
@@ -1542,7 +1601,7 @@ void TWinConfiguration::LoadData(THierarchicalStorage * Storage)
     }
     __finally
     {
-      Storage->CloseSubKey();
+      Storage->CloseSubKeyPath();
     }
   }
 }
@@ -1559,14 +1618,12 @@ void TWinConfiguration::CopyData(THierarchicalStorage * Source, THierarchicalSto
 {
   TCustomWinConfiguration::CopyData(Source, Target);
 
-  if (Source->OpenSubKey(ConfigurationSubKey, false))
+  if (CopySubKey(Source, Target, ConfigurationSubKey))
   {
-    if (Target->OpenSubKey(ConfigurationSubKey, true))
-    {
-      Target->WriteString(L"JumpList", Source->ReadString(L"JumpList", L""));
-      Target->WriteString(L"JumpListWorkspaces", Source->ReadString(L"JumpListWorkspaces", L""));
-      Target->CloseSubKey();
-    }
+    Target->WriteString(L"JumpList", Source->ReadString(L"JumpList", L""));
+    Target->WriteString(L"JumpListWorkspaces", Source->ReadString(L"JumpListWorkspaces", L""));
+
+    Target->CloseSubKey();
     Source->CloseSubKey();
   }
 }
@@ -1583,6 +1640,7 @@ void TWinConfiguration::ClearTemporaryLoginData()
 void TWinConfiguration::AddVersionToHistory()
 {
   int CurrentVersion = CompoundVersion;
+  DebugAssert(ZeroBuildNumber(CurrentVersion) == CurrentVersion);
 
   int From = 1;
   bool CurrentVersionPresent = false;
@@ -1592,10 +1650,13 @@ void TWinConfiguration::AddVersionToHistory()
     UnicodeString VersionStr = CutToChar(VersionInfo, L',', true);
     int Version;
 
-    if (TryStrToInt(VersionStr, Version) &&
-        (Version == CurrentVersion))
+    if (TryStrToInt(VersionStr, Version))
     {
-      CurrentVersionPresent = true;
+      Version = ZeroBuildNumber(Version);
+      if (Version == CurrentVersion)
+      {
+        CurrentVersionPresent = true;
+      }
     }
   }
 
@@ -1723,7 +1784,8 @@ RawByteString TWinConfiguration::StronglyRecryptPassword(RawByteString Password,
       TCustomWinConfiguration::DecryptPassword(Password, Key);
     if (!PasswordText.IsEmpty())
     {
-      // can be not set for instance, when editing=>saving site with no prior password
+      // Can be not set for instance, when editing=>saving site with no prior password.
+      // Though it should not actually happen, as we call AskForMasterPasswordIfNotSetAndNeededToPersistSessionData in DoSaveSession.
       AskForMasterPasswordIfNotSet();
       Password = ScramblePassword(PasswordText);
       AES256EncyptWithMAC(Password, FPlainMasterPasswordEncrypt, Result);
@@ -1881,6 +1943,10 @@ void TWinConfiguration::EndMasterPasswordSession()
 }
 //---------------------------------------------------------------------------
 void TWinConfiguration::SetDDTransferConfirmation(TAutoSwitch value)
+{
+  SET_CONFIG_PROPERTY(DDDisableMove);
+}
+//---------------------------------------------------------------------------
 {
   SET_CONFIG_PROPERTY(DDTransferConfirmation);
 }
@@ -2108,25 +2174,8 @@ static int SysDarkTheme(HKEY RootKey)
 }
 //---------------------------------------------------------------------------
 void TWinConfiguration::ResetSysDarkTheme()
-{
-  FSysDarkTheme = -1;
-}
-//---------------------------------------------------------------------------
 bool TWinConfiguration::UseDarkTheme()
 {
-  if (FSysDarkTheme < 0)
-  {
-    FSysDarkTheme = SysDarkTheme(HKEY_CURRENT_USER);
-    if (FSysDarkTheme < 0)
-    {
-      FSysDarkTheme = SysDarkTheme(HKEY_LOCAL_MACHINE);
-      if (FSysDarkTheme < 0)
-      {
-        FSysDarkTheme = 0;
-      }
-    }
-  }
-
   switch (WinConfiguration->DarkTheme)
   {
     case asOn:
@@ -2134,7 +2183,7 @@ bool TWinConfiguration::UseDarkTheme()
     case asOff:
       return false;
     default:
-      return (FSysDarkTheme > 0);
+      return (GetSysDarkTheme() > 0);
   }
 }
 //---------------------------------------------------------------------------
@@ -2169,17 +2218,7 @@ void TWinConfiguration::SetMinimizeToTray(bool value)
 }
 //---------------------------------------------------------------------------
 void TWinConfiguration::MinimizeToTrayOnce()
-{
-  FMinimizeToTrayOnce = true;
-}
-//---------------------------------------------------------------------------
 bool TWinConfiguration::GetMinimizeToTray()
-{
-  bool Result = FMinimizeToTrayOnce || FMinimizeToTray;
-  FMinimizeToTrayOnce = false;
-  return Result;
-}
-//---------------------------------------------------------------------------
 void TWinConfiguration::SetBalloonNotifications(bool value)
 {
   SET_CONFIG_PROPERTY(BalloonNotifications);
@@ -2287,6 +2326,10 @@ void TWinConfiguration::SetExternalSessionInExistingInstance(bool value)
 //---------------------------------------------------------------------------
 void TWinConfiguration::SetKeepOpenWhenNoSession(bool value)
 {
+  SET_CONFIG_PROPERTY(ShowLoginWhenNoSession);
+}
+//---------------------------------------------------------------------------
+{
   SET_CONFIG_PROPERTY(KeepOpenWhenNoSession);
 }
 //---------------------------------------------------------------------------
@@ -2296,6 +2339,10 @@ void TWinConfiguration::SetLocalIconsByExt(bool value)
 }
 //---------------------------------------------------------------------------
 void TWinConfiguration::SetBidiModeOverride(TLocaleFlagOverride value)
+{
+  SET_CONFIG_PROPERTY(FlashTaskbar);
+}
+//---------------------------------------------------------------------------
 {
   SET_CONFIG_PROPERTY(BidiModeOverride);
 }
@@ -2345,6 +2392,19 @@ void TWinConfiguration::SetHonorDrivePolicy(bool value)
 }
 //---------------------------------------------------------------------------
 void TWinConfiguration::SetCustomCommandList(TCustomCommandList * value)
+{
+  return DriveInfo->UseABDrives;
+}
+//---------------------------------------------------------------------------
+void __fastcall TWinConfiguration::SetUseABDrives(bool value)
+{
+  if (UseABDrives != value)
+  {
+    DriveInfo->UseABDrives = value;
+    Changed();
+  }
+}
+//---------------------------------------------------------------------------
 {
   DebugAssert(FCustomCommandList);
   if (!FCustomCommandList->Equals(value))
@@ -2472,85 +2532,73 @@ UnicodeString TWinConfiguration::TemporaryDir(bool Mask)
 //---------------------------------------------------------------------------
 TStrings * TWinConfiguration::FindTemporaryFolders()
 {
-  TStrings * Result = new TStringList();
-  try
+  std::unique_ptr<TStrings> Result(new TStringList());
+  TSearchRecOwned SRec;
+  UnicodeString Mask = TemporaryDir(true);
+  UnicodeString Directory = ExtractFilePath(Mask);
+  if (FindFirstUnchecked(Mask, faDirectory | faHidden, SRec) == 0)
   {
-    TSearchRecOwned SRec;
-    UnicodeString Mask = TemporaryDir(true);
-    UnicodeString Directory = ExtractFilePath(Mask);
-    if (FindFirstUnchecked(Mask, faDirectory | faHidden, SRec) == 0)
+    do
     {
-      do
+      if (SRec.IsDirectory())
       {
-        if (SRec.IsDirectory())
-        {
-          Result->Add(Directory + SRec.Name);
-        }
+        Result->Add(Directory + SRec.Name);
       }
-      while (FindNextChecked(SRec) == 0);
     }
-
-    if (Result->Count == 0)
-    {
-      delete Result;
-      Result = NULL;
-    }
+    while ((FindNextChecked(SRec) == 0) && (!OnlyFirst || Result->Count == 0));
   }
-  catch(...)
+
+  if (Result->Count == 0)
   {
-    delete Result;
-    throw;
+    Result.reset(NULL);
   }
 
-  return Result;
+  return Result.release();
+}
+//---------------------------------------------------------------------------
+TStrings * __fastcall TWinConfiguration::FindTemporaryFolders()
+{
+  return DoFindTemporaryFolders(false);
+}
+//---------------------------------------------------------------------------
+bool __fastcall TWinConfiguration::AnyTemporaryFolders()
+{
+  std::unique_ptr<TStrings> Folders(DoFindTemporaryFolders(true));
+  return (Folders.get() != NULL);
 }
 //---------------------------------------------------------------------------
 void TWinConfiguration::CleanupTemporaryFolders(TStrings * Folders)
 {
+  std::unique_ptr<TStrings> Folders(FindTemporaryFolders());
+  if (Folders.get() != NULL)
+  {
+    CleanupTemporaryFolders(Folders.get());
+  }
+}
+//---------------------------------------------------------------------------
+void __fastcall TWinConfiguration::CleanupTemporaryFolders(TStrings * Folders)
+{
+  if (DebugAlwaysTrue(Folders->Count > 0))
+  {
+    Usage->Inc(L"TemporaryDirectoryCleanups");
+  }
+
   UnicodeString ErrorList;
-  TStrings * F;
-  if (Folders == NULL)
+  for (int i = 0; i < Folders->Count; i++)
   {
-    F = FindTemporaryFolders();
+    if (!DeleteDirectory(Folders->Strings[i]))
+    {
+      if (!ErrorList.IsEmpty())
+      {
+        ErrorList += L"\n";
+      }
+      ErrorList += Folders->Strings[i];
+    }
   }
-  else
+
+  if (!ErrorList.IsEmpty())
   {
-    F = Folders;
-  }
-
-  if (F != NULL)
-  {
-    try
-    {
-      if (DebugAlwaysTrue(F->Count > 0))
-      {
-        Usage->Inc(L"TemporaryDirectoryCleanups");
-      }
-
-      for (int i = 0; i < F->Count; i++)
-      {
-        if (!DeleteDirectory(F->Strings[i]))
-        {
-          if (!ErrorList.IsEmpty())
-          {
-            ErrorList += L"\n";
-          }
-          ErrorList += F->Strings[i];
-        }
-      }
-    }
-    __finally
-    {
-      if (Folders == NULL)
-      {
-        delete F;
-      }
-    }
-
-    if (!ErrorList.IsEmpty())
-    {
-      throw ExtException(LoadStr(CLEANUP_TEMP_ERROR), ErrorList);
-    }
+    throw ExtException(LoadStr(CLEANUP_TEMP_ERROR), ErrorList);
   }
 }
 //---------------------------------------------------------------------------
@@ -2677,12 +2725,26 @@ void TWinConfiguration::SetTimeoutShellIconRetrieval(bool value)
   SET_CONFIG_PROPERTY(TimeoutShellIconRetrieval);
 }
 //---------------------------------------------------------------------------
+void __fastcall TWinConfiguration::SetUseIconUpdateThread(bool value)
+{
+  SET_CONFIG_PROPERTY(UseIconUpdateThread);
+}
+//---------------------------------------------------------------------------
 void __fastcall TWinConfiguration::SetAllowWindowPrint(bool value)
 {
   SET_CONFIG_PROPERTY(AllowWindowPrint);
 }
 //---------------------------------------------------------------------------
 TStringList * TWinConfiguration::LoadJumpList(
+{
+  SET_CONFIG_PROPERTY(StoreTransition);
+}
+//---------------------------------------------------------------------------
+void TWinConfiguration::SetFirstRun(const UnicodeString & value)
+{
+  SET_CONFIG_PROPERTY(FirstRun);
+}
+//---------------------------------------------------------------------------
   THierarchicalStorage * Storage, UnicodeString Name)
 {
   UnicodeString JumpList = Storage->ReadString(Name, L"");
@@ -2716,16 +2778,19 @@ void TWinConfiguration::TrimJumpList(TStringList * List)
 void TWinConfiguration::UpdateEntryInJumpList(
   bool Session, const UnicodeString & Name, bool Add)
 {
-  THierarchicalStorage * Storage = CreateConfigStorage();
   try
   {
-    FDontDecryptPasswords++;
+    std::auto_ptr<THierarchicalStorage> Storage(CreateConfigStorage());
+    TAutoNestingCounter DontDecryptPasswordsCounter(FDontDecryptPasswords);
+
     Storage->AccessMode = smReadWrite;
 
-    if (Storage->OpenSubKey(ConfigurationSubKey, true))
+    // For initial call from UpdateJumpList, do not create the key if it does ot exist yet.
+    // To avoid creating the key if we are being started just for a maintenance task.
+    if (Storage->OpenSubKey(ConfigurationSubKey, !Name.IsEmpty()))
     {
-      std::unique_ptr<TStringList> ListSessions(LoadJumpList(Storage, L"JumpList"));
-      std::unique_ptr<TStringList> ListWorkspaces(LoadJumpList(Storage, L"JumpListWorkspaces"));
+      std::unique_ptr<TStringList> ListSessions(LoadJumpList(Storage.get(), L"JumpList"));
+      std::unique_ptr<TStringList> ListWorkspaces(LoadJumpList(Storage.get(), L"JumpListWorkspaces"));
 
       if (!Name.IsEmpty())
       {
@@ -2747,14 +2812,13 @@ void TWinConfiguration::UpdateEntryInJumpList(
 
       ::UpdateJumpList(ListSessions.get(), ListWorkspaces.get());
 
-      SaveJumpList(Storage, L"JumpList", ListSessions.get());
-      SaveJumpList(Storage, L"JumpListWorkspaces", ListWorkspaces.get());
+      SaveJumpList(Storage.get(), L"JumpList", ListSessions.get());
+      SaveJumpList(Storage.get(), L"JumpListWorkspaces", ListWorkspaces.get());
     }
   }
-  __finally
+  catch (Exception & E)
   {
-    FDontDecryptPasswords--;
-    delete Storage;
+    throw ExtException(&E, MainInstructions(LoadStr(JUMPLIST_ERROR)));
   }
 }
 //---------------------------------------------------------------------------
@@ -2808,6 +2872,8 @@ void TWinConfiguration::UpdateStaticUsage()
   Usage->Set(L"FileColors", !FileColors.IsEmpty());
   Usage->Set(L"DragDropDrives", !DDDrives.IsEmpty());
   Usage->Set(L"ShowingTips", ShowTips);
+  Usage->Set(L"KeepingOpenWhenNoSession", KeepOpenWhenNoSession);
+  Usage->Set(L"ShowingLoginWhenNoSession", ShowLoginWhenNoSession);
   TipsUpdateStaticUsage();
 
   Usage->Set(L"CommanderNortonLikeMode", int(ScpCommander.NortonLikeMode));
@@ -3051,9 +3117,17 @@ void TCustomCommandType::LoadExtension(TStrings * Lines, const UnicodeString & P
           {
             Failed = (CompareVersion(Value, GetNetVersionStr()) > 0);
           }
+          else if (Dependency == L".netcore")
+          {
+            Failed = (CompareVersion(Value, GetNetCoreVersionStr()) > 0);
+          }
           else if (Dependency == L"powershell")
           {
             Failed = (CompareVersion(Value, GetPowerShellVersionStr()) > 0);
+          }
+          else if (Dependency == L"pwsh")
+          {
+            Failed = (CompareVersion(Value, GetPowerShellCoreVersionStr()) > 0);
           }
           else if (Dependency == L"windows")
           {

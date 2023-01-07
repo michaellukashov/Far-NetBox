@@ -1,4 +1,4 @@
-#include <vcl.h>
+﻿#include <vcl.h>
 #pragma hdrstop
 
 #include <Common.h>
@@ -18,6 +18,8 @@ __removed #pragma package(smart_init)
 //---------------------------------------------------------------------------
 __removed TConfiguration * Configuration = nullptr;
 TStoredSessionList *StoredSessions = nullptr;
+TApplicationLog * ApplicationLog = NULL;
+bool AnySession = false;
 //---------------------------------------------------------------------------
 TQueryButtonAlias::TQueryButtonAlias() noexcept :
   Button(0),
@@ -82,6 +84,7 @@ TQueryParams::TQueryParams(uintptr_t AParams, const UnicodeString AHelpKeyword) 
   NoBatchAnswers(0),
   HelpKeyword(AHelpKeyword)
 {
+  TimeoutResponse = 0;
 }
 //---------------------------------------------------------------------------
 TQueryParams::TQueryParams(const TQueryParams & Source) noexcept
@@ -251,6 +254,14 @@ void CoreSetResourceModule(void * ResourceHandle)
 void CoreMaintenanceTask()
 {
   DontSaveRandomSeed();
+}
+//---------------------------------------------------------------------------
+void CoreUpdateFinalStaticUsage()
+{
+  if (!AnySession)
+  {
+    Configuration->Usage->Inc(L"RunsWithoutSession");
+  }
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------

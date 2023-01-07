@@ -1,4 +1,4 @@
-/*           CAsyncSslSocketLayer by Tim Kosse
+﻿/*           CAsyncSslSocketLayer by Tim Kosse
           mailto: tim.kosse@filezilla-project.org)
                  Version 2.0 (2005-02-27)
 -------------------------------------------------------------
@@ -42,12 +42,11 @@ Valid notification IDs are:
 - SSL_FAILURE 1
   This notification is sent if the SSL connection could not be established or if an existing
   connection failed. Valid values for param2 are:
-  - SSL_FAILURE_NONE 0 - Everything OK
-  - SSL_FAILURE_UNKNOWN 1 - Details may have been sent with a SSL_VERBOSE_* notification.
-  - SSL_FAILURE_ESTABLISH 2 - Problem during SSL negotiation
-  - SSL_FAILURE_INITSSL 8
-  - SSL_FAILURE_VERIFYCERT 16 - The remote SSL certificate was invalid
-  - SSL_FAILURE_CERTREJECTED 32 - The remote SSL certificate was rejected by user
+  - SSL_FAILURE_UNKNOWN 0 - Details may have been sent with a SSL_VERBOSE_* notification.
+  - SSL_FAILURE_ESTABLISH 1 - Problem during SSL negotiation
+  - SSL_FAILURE_INITSSL 4
+  - SSL_FAILURE_VERIFYCERT 8 - The remote SSL certificate was invalid
+  - SSL_FAILURE_CERTREJECTED 16 - The remote SSL certificate was rejected by user
 - SSL_VERIFY_CERT 2
   This notification is sent each time a remote certificate has to be verified.
   param2 is a pointer to a t_SslCertData structure which contains some information
@@ -121,6 +120,7 @@ CUSTOM_MEM_ALLOCATION_IMPL
   TCHAR subjectAltName[10240];
 
   uint8_t hash[20];
+  unsigned char hashSha256[32];
 
   uint8_t * certificate;
   size_t certificateLen;
@@ -132,6 +132,7 @@ CUSTOM_MEM_ALLOCATION_IMPL
 };
 //---------------------------------------------------------------------------
 class CCriticalSectionWrapper;
+class CFileZillaTools;
 //---------------------------------------------------------------------------
 class CAsyncSslSocketLayer : public CAsyncSocketExLayer
 {
@@ -149,7 +150,7 @@ public:
   bool IsUsingSSL();
   int InitSSLConnection(bool clientMode,
     CAsyncSslSocketLayer * main,
-    bool sessionreuse, int minTlsVersion, int maxTlsVersion,
+    bool sessionreuse, const CString & host, CFileZillaTools * tools,
     void * pContext = 0);
 
   // Send raw text, useful to send a confirmation after the ssl connection
@@ -176,6 +177,7 @@ private:
   int InitSSL();
   void UnloadSSL();
   void PrintLastErrorMsg();
+  bool HandleSession(SSL_SESSION * Session);
 
   void TriggerEvents();
 
@@ -184,6 +186,7 @@ private:
   static int verify_callback(int preverify_ok, X509_STORE_CTX * ctx);
   static int ProvideClientCert(
     SSL * Ssl, X509 ** Certificate, EVP_PKEY ** PrivateKey);
+  static int NewSessionCallback(struct ssl_st * Ssl, SSL_SESSION * Session);
   static CAsyncSslSocketLayer * LookupLayer(SSL * Ssl);
 
   bool m_bUseSSL;
@@ -217,6 +220,7 @@ private:
   SSL* m_ssl;      // current session handle
   SSL_SESSION * m_sessionid;
   bool m_sessionreuse;
+  bool m_sessionreuse_failed;
   CAsyncSslSocketLayer * m_Main;
 
   // Data channels for encrypted/unencrypted data
@@ -257,12 +261,6 @@ private:
 #define SSL_FAILURE_ESTABLISH 1
 #define SSL_FAILURE_INITSSL 4
 #define SSL_FAILURE_VERIFYCERT 8
-#define SSL_FAILURE_CERTREJECTED 0x10
-//---------------------------------------------------------------------------
-#define SSL_VERSION_SSL2 2
-#define SSL_VERSION_SSL3 3
-#define SSL_VERSION_TLS10 10
-#define SSL_VERSION_TLS11 11
-#define SSL_VERSION_TLS12 12
+#define SSL_FAILURE_CERTREJECTED 16
 //---------------------------------------------------------------------------
 

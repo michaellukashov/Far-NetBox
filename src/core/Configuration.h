@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <FileBuffer.h>
 
@@ -26,6 +26,7 @@ enum TFtpEncryptionSwitch_219
 };
 //---------------------------------------------------------------------------
 class TStoredSessionList;
+class TCopyParamType;
 //---------------------------------------------------------------------------
 NB_DEFINE_CLASS_ID(TConfiguration);
 class NB_CORE_EXPORT TConfiguration : public TObject
@@ -90,6 +91,8 @@ private:
   intptr_t FDontReloadMoreThanSessions{0};
   intptr_t FScriptProgressFileNameLimit{0};
   intptr_t FSessionReopenAutoMaximumNumberOfRetries{0};
+  UnicodeString FCertificateStorage;
+  bool FExperimentalFeatures;
 
   bool FDisablePasswordStoring{false};
   bool FForceBanners{false};
@@ -188,6 +191,9 @@ public:
   static UnicodeString PropertyToKey(const UnicodeString Property);
   virtual void DoSave(bool All, bool Explicit);
   UnicodeString FormatFingerprintKey(const UnicodeString ASiteKey, const UnicodeString AFingerprintType) const;
+  THierarchicalStorage * OpenDirectoryStatisticsCache(bool CanCreate);
+  UnicodeString __fastcall GetDirectoryStatisticsCacheKey(
+    const UnicodeString & SessionKey, const UnicodeString & Path, const TCopyParamType & CopyParam);
 
   virtual bool GetConfirmOverwriting() const;
   virtual void SetConfirmOverwriting(bool Value);
@@ -200,6 +206,7 @@ public:
   UnicodeString LoadCustomIniFileStorageName();
   void SaveCustomIniFileStorageName();
   UnicodeString GetRegistryStorageOverrideKey() const;
+  TStrings * GetCaches();
 
   virtual UnicodeString ModuleFileName() const;
 
@@ -266,6 +273,9 @@ public:
   UnicodeString GetFileDescription(const UnicodeString AFileName) const;
   UnicodeString GetFileVersion(const UnicodeString AFileName) const;
   UnicodeString GetFileMimeType(const UnicodeString AFileName) const;
+  bool RegistryPathExists(const UnicodeString & RegistryPath);
+  bool HasLocalPortNumberLimits();
+  virtual UnicodeString TemporaryDir(bool Mask = false) = 0;
 
   TStoredSessionList *SelectFilezillaSessionsForImport(
     TStoredSessionList *Sessions, UnicodeString &Error);
@@ -274,6 +284,7 @@ public:
     TStoredSessionList *Sessions, UnicodeString &Error);
   TStoredSessionList *SelectKnownHostsSessionsForImport(
     TStrings *Lines, TStoredSessionList *Sessions, UnicodeString &Error);
+  TStoredSessionList * SelectOpensshSessionsForImport(TStoredSessionList * Sessions, UnicodeString & Error);
 
   __property TVSFixedFileInfo *FixedApplicationInfo  = { read = GetFixedApplicationInfo };
   __property void *ApplicationInfo  = { read = GetApplicationInfo };
@@ -340,6 +351,10 @@ public:
   __property int CacheDirectoryChangesMaxSize = { read = FCacheDirectoryChangesMaxSize, write = SetCacheDirectoryChangesMaxSize };
   __property bool ShowFtpWelcomeMessage = { read = FShowFtpWelcomeMessage, write = SetShowFtpWelcomeMessage };
   __property UnicodeString ExternalIpAddress = { read = FExternalIpAddress, write = SetExternalIpAddress };
+  __property UnicodeString CertificateStorage = { read = FCertificateStorage, write = SetCertificateStorage };
+  __property UnicodeString CertificateStorageExpanded = { read = GetCertificateStorageExpanded };
+  __property int LocalPortNumberMin = { read = FLocalPortNumberMin, write = SetLocalPortNumberMin };
+  __property int LocalPortNumberMax = { read = FLocalPortNumberMax, write = SetLocalPortNumberMax };
   __property bool TryFtpWhenSshFails = { read = FTryFtpWhenSshFails, write = SetTryFtpWhenSshFails };
   __property int ParallelDurationThreshold = { read = FParallelDurationThreshold, write = SetParallelDurationThreshold };
   __property UnicodeString MimeTypes = { read = FMimeTypes, write = SetMimeTypes };
@@ -356,6 +371,7 @@ public:
   ROProperty<UnicodeString> RegistryStorageKey{nb::bind(&TConfiguration::GetRegistryStorageKey, this)};
   __property UnicodeString CustomIniFileStorageName  = { read = FCustomIniFileStorageName };
   __property UnicodeString IniFileStorageName  = { read = GetIniFileStorageNameForReadingWriting, write = SetIniFileStorageName };
+  __property UnicodeString IniFileStorageName  = { read=GetIniFileStorageNameForReadingWriting };
   __property UnicodeString IniFileStorageNameForReading  = { read = GetIniFileStorageNameForReading };
   __property TStrings *OptionsStorage = { read = GetOptionsStorage, write = SetOptionsStorage };
   RWProperty<TStrings*> OptionsStorage{nb::bind(&TConfiguration::GetOptionsStorage, this), nb::bind(&TConfiguration::SetOptionsStorage, this)};
@@ -433,4 +449,9 @@ NB_CORE_EXPORT extern const UnicodeString SshFingerprintType;
 NB_CORE_EXPORT extern const UnicodeString TlsFingerprintType;
 //---------------------------------------------------------------------------
 NB_CORE_EXPORT extern const UnicodeString HttpsCertificateStorageKey;
+//---------------------------------------------------------------------------
+extern const int BelowNormalLogLevels;
+//---------------------------------------------------------------------------
+extern const UnicodeString OpensshFolderName;
+extern const UnicodeString OpensshAuthorizedKeysFileName;
 //---------------------------------------------------------------------------

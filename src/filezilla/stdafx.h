@@ -1,4 +1,4 @@
-//---------------------------------------------------------------------------
+﻿//---------------------------------------------------------------------------
 #pragma once
 //---------------------------------------------------------------------------
 #define _int64 int64_t
@@ -24,7 +24,6 @@
 //---------------------------------------------------------------------------
 #include <afx.h>
 //#include <wtypes.h>
-#include <afxmt.h>
 
 // STL includes
 #include <rdestl/list.h>
@@ -47,7 +46,6 @@ class CFileFix;
 //---------------------------------------------------------------------------
 #include <oleauto.h>
 #include <atlconv.h>
-#include <afxdisp.h>
 #include <afxconv.h>
 //---------------------------------------------------------------------------
 #define _strlwr strlwr
@@ -539,5 +537,8 @@ inline CStringA AFXAPI operator+(const CStringA & string1, char ch)
   s.ConcatCopy(string1.GetData()->nDataLength, string1.m_pchData, 1, &ch);
   return s;
 }
+//---------------------------------------------------------------------------
+#include <FileZillaApi.h>
+#include <FileZillaOpt.h>
 //---------------------------------------------------------------------------
 #endif

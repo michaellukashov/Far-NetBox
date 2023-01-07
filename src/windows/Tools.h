@@ -1,4 +1,4 @@
-//---------------------------------------------------------------------------
+﻿//---------------------------------------------------------------------------
 #pragma once
 
 #include <comctrls.hpp>
@@ -19,7 +19,7 @@ bool UseAlternativeFunction();
 bool OpenInNewWindow();
 void ExecuteNewInstance(const UnicodeString & Param, const UnicodeString & AdditionalParams = UnicodeString());
 IShellLink * CreateDesktopShortCut(const UnicodeString &Name,
-  const UnicodeString &File, const UnicodeString & Params, const UnicodeString & Description,
+  const UnicodeString & Name, const UnicodeString & Params, const UnicodeString & Description,
   int SpecialFolder = -1, int IconIndex = 0, bool Return = false);
 IShellLink * CreateDesktopSessionShortCut(
   const UnicodeString & SessionName, UnicodeString Name,

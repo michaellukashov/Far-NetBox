@@ -1,4 +1,4 @@
-//---------------------------------------------------------------------------
+﻿//---------------------------------------------------------------------------
 #include <vcl.h>
 #pragma hdrstop
 
@@ -30,6 +30,9 @@
 #include <Vcl.ScreenTips.hpp>
 #include <HistoryComboBox.hpp>
 #include <vssym32.h>
+#include <DateUtils.hpp>
+#include <IOUtils.hpp>
+#include <Queue.h>
 
 #include "Animations96.h"
 #include "Animations120.h"
@@ -63,7 +66,7 @@ bool FindFile(UnicodeString &APath)
     }
   }
 
-  if (!Result)
+  if (!Result && SameText(ExtractFileName(Path), Path))
   {
     UnicodeString Paths = base::GetEnvVariable("PATH");
     if (Paths.Length() > 0)
@@ -74,6 +77,76 @@ bool FindFile(UnicodeString &APath)
       {
         APath = NewPath;
       }
+      else
+      {
+        // Basically the same what FileSearch does, except for FileExistsFix.
+        // Once this proves working, we can ged rid of the FileSearch call.
+        while (!Result && !Paths.IsEmpty())
+        {
+          UnicodeString P = CutToChar(Paths, L';', false);
+          // Not using TPath::Combine as it throws on an invalid path and PATH is not under our control
+          NewPath = IncludeTrailingBackslash(P) + Path;
+          Result = FileExistsFix(NewPath);
+          if (Result)
+          {
+            Path = NewPath;
+          }
+        }
+      }
+    }
+  }
+  return Result;
+}
+//---------------------------------------------------------------------------
+bool DoesSessionExistInPutty(TSessionData * SessionData)
+{
+  std::unique_ptr<TRegistryStorage> Storage(new TRegistryStorage(Configuration->PuttySessionsKey));
+  Storage->ConfigureForPutty();
+  return Storage->OpenRootKey(true) && Storage->KeyExists(SessionData->StorageKey);
+}
+//---------------------------------------------------------------------------
+bool __fastcall ExportSessionToPutty(TSessionData * SessionData, bool ReuseExisting, const UnicodeString & SessionName)
+{
+  bool Result = true;
+  std::unique_ptr<TRegistryStorage> Storage(new TRegistryStorage(Configuration->PuttySessionsKey));
+  Storage->AccessMode = smReadWrite;
+  Storage->ConfigureForPutty();
+  if (Storage->OpenRootKey(true))
+  {
+    Result = ReuseExisting && Storage->KeyExists(SessionData->StorageKey);
+    if (!Result)
+    {
+      std::unique_ptr<TRegistryStorage> SourceStorage(new TRegistryStorage(Configuration->PuttySessionsKey));
+      SourceStorage->ConfigureForPutty();
+      if (SourceStorage->OpenSubKey(StoredSessions->DefaultSettings->Name, false) &&
+          Storage->OpenSubKey(SessionName, true))
+      {
+        Storage->Copy(SourceStorage.get());
+        Storage->CloseSubKey();
+      }
+
+      std::unique_ptr<TSessionData> ExportData(new TSessionData(L""));
+      ExportData->Assign(SessionData);
+      ExportData->Modified = true;
+      ExportData->Name = SessionName;
+      ExportData->WinTitle = SessionData->SessionName;
+      ExportData->Password = L"";
+
+      if (SessionData->FSProtocol == fsFTP)
+      {
+        if (GUIConfiguration->TelnetForFtpInPutty)
+        {
+          ExportData->PuttyProtocol = PuttyTelnetProtocol;
+          ExportData->PortNumber = TelnetPortNumber;
+        }
+        else
+        {
+          ExportData->PuttyProtocol = PuttySshProtocol;
+          ExportData->PortNumber = SshPortNumber;
+        }
+      }
+
+      ExportData->Save(Storage.get(), true);
     }
   }
   return Result;
@@ -103,9 +176,9 @@ void OpenSessionInPutty(UnicodeString PuttyPath,
       }
     }
     TCustomCommandData Data(SessionData, SessionData->UserName, Password);
-    TRemoteCustomCommand RemoteCustomCommand(Data, SessionData->RemoteDirectory);
+    TLocalCustomCommand LocalCustomCommand(Data, SessionData->RemoteDirectory, SessionData->LocalDirectory);
     TWinInteractiveCustomCommand InteractiveCustomCommand(
-      &RemoteCustomCommand, L"PuTTY", UnicodeString());
+      &LocalCustomCommand, L"PuTTY", UnicodeString());
 
     UnicodeString Params2 =
       RemoteCustomCommand.Complete(InteractiveCustomCommand.Complete(Params, false), true);
@@ -161,8 +234,7 @@ void OpenSessionInPutty(UnicodeString PuttyPath,
           {
             AddToList(PuttyParams, L"-C", L" ");
           }
-          AddToList(PuttyParams,
-            ((SessionData->SshProt == ssh1only || SessionData->SshProt == ssh1deprecated) ? L"-1" : L"-2"), L" ");
+          AddToList(PuttyParams, L"-2", L" ");
           if (!SessionData->LogicalHostName().IsEmpty())
           {
             AddToList(PuttyParams, FORMAT("-loghost \"%s\"", SessionData->LogicalHostName()), L" ");
@@ -185,55 +257,34 @@ void OpenSessionInPutty(UnicodeString PuttyPath,
         std::unique_ptr<TSessionData> ExportData = nullptr;
         std::unique_ptr<TRegistryStorage> SourceStorage = nullptr;
         try__finally
-        {
           Storage = std::make_unique<TRegistryStorage>(GetConfiguration()->GetPuttySessionsKey());
           Storage->Init();
           Storage->SetAccessMode(smReadWrite);
-          // make it compatible with putty
           Storage->SetMungeStringValues(false);
           Storage->SetForceAnsi(true);
-          if (Storage->OpenRootKey(true))
-          {
-            if (Storage->KeyExists(SessionData->StorageKey))
-            {
-              SessionName = SessionData->SessionName;
-            }
-            else
-            {
+        {
+          SessionName = SessionData->SessionName;
+        }
+        else
+        {
               SourceStorage = std::make_unique<TRegistryStorage>(GetConfiguration()->PuttySessionsKey);
               SourceStorage->Init();
-              SourceStorage->MungeStringValues = false;
-              SourceStorage->ForceAnsi = true;
-              if (SourceStorage->OpenSubKey(StoredSessions->DefaultSettings->Name, false) &&
+              GUIConfiguration->TelnetForFtpInPutty)
                   Storage->OpenSubKey(GetGUIConfiguration()->PuttySession, true))
-              {
                 Storage->Copy(SourceStorage.get());
-                Storage->CloseSubKey();
-              }
-
               ExportData = std::make_unique<TSessionData>(L"");
-              ExportData->Assign(SessionData);
               ExportData->SetModified(true);
               ExportData->SetName(GetGUIConfiguration()->PuttySession);
               ExportData->SetWinTitle(SessionData->SessionName);
               ExportData->SetPassword(L"");
-
               if (SessionData->FSProtocol() == fsFTP)
-              {
                 if (GetGUIConfiguration()->TelnetForFtpInPutty)
-                {
+          {
                   ExportData->SetPuttyProtocol(PuttyTelnetProtocol);
-                  ExportData->PortNumber = TelnetPortNumber;
-                  // PuTTY  does not allow -pw for telnet
-                  Password = L"";
-                }
-                else
-                {
+            // PuTTY  does not allow -pw for telnet
+            Password = L"";
+          }
                   ExportData->SetPuttyProtocol(PuttySshProtocol);
-                  ExportData->PortNumber = SshPortNumber;
-                }
-              }
-
               ExportData->Save(Storage.get(), true);
               SessionName = GetGUIConfiguration()->PuttySession;
             }
@@ -241,9 +292,6 @@ void OpenSessionInPutty(UnicodeString PuttyPath,
         },
         __finally__removed
         ({
-          delete Storage;
-          delete ExportData;
-          delete SourceStorage;
         }) end_try__finally
 
         UnicodeString LoadSwitch = L"-load";
@@ -333,10 +381,11 @@ TObjectList * StartCreationDirectoryMonitorsOnEachDrive(uintptr_t Filter, TFileC
   {
     if (ExcludedDrives.Pos(Drive) == 0)
     {
+      // Not calling ReadDriveStatus(... dsSize), relying on drive ready status cached by the background thread
       TDriveInfoRec * DriveInfoRec = DriveInfo->Get(Drive);
-      if (DriveInfoRec->Valid &&
+      if (DriveInfoRec->Valid && DriveInfoRec->DriveReady &&
           (DriveInfoRec->DriveType != DRIVE_CDROM) &&
-          ((DriveInfoRec->DriveType != DRIVE_REMOVABLE) || (Drive >= FirstFixedDrive)))
+          ((DriveInfoRec->DriveType != DRIVE_REMOVABLE) || (Drive >= DriveInfo->FirstFixedDrive)))
       {
         Drives->Add(Drive);
       }
@@ -1570,7 +1619,7 @@ bool TLocalCustomCommand::PatternReplacement(
   bool Result;
   if (Pattern == L"!\\")
   {
-    // When used as "!\" in an argument to PowerShell, the trailing \ would escpae the ",
+    // When used as "!\" in an argument to PowerShell, the trailing \ would escape the ",
     // so we exclude it
     Replacement = ::ExcludeTrailingBackslash(FLocalPath);
     Result = true;
@@ -1917,7 +1966,7 @@ void __fastcall TFrameAnimation::CalculateNextFrameTick()
 // - Cleanup list tooltip (multi line)
 // - Combo edit button
 // - Transfer settings label (multi line, follows label size and font)
-// - HintLabel (hint and persistent hint, multipline)
+// - HintLabel (hint and persistent hint, multi line)
 // - status bar hints
 //---------------------------------------------------------------------------
 __fastcall TScreenTipHintWindow::TScreenTipHintWindow(TComponent * Owner) :
@@ -1935,7 +1984,8 @@ bool __fastcall TScreenTipHintWindow::UseBoldShortHint(TControl * HintControl)
 {
   return
     (dynamic_cast<TTBCustomDockableWindow *>(HintControl) != NULL) ||
-    (dynamic_cast<TTBPopupWindow *>(HintControl) != NULL);
+    (dynamic_cast<TTBPopupWindow *>(HintControl) != NULL) ||
+    (HintControl->Perform(WM_WANTS_SCREEN_TIPS, 0, 0) == 1);
 }
 //---------------------------------------------------------------------------
 bool __fastcall TScreenTipHintWindow::IsPathLabel(TControl * HintControl)
@@ -1996,10 +2046,13 @@ TRect __fastcall TScreenTipHintWindow::CalcHintRect(int MaxWidth, UnicodeString 
 
   const int ScreenTipTextOnlyWidth = ScaleByTextHeight(HintControl, cScreenTipTextOnlyWidth);
 
-  if (!LongHint.IsEmpty())
+  int LongHintMargin = 0; // shut up
+  bool HasLongHint = !LongHint.IsEmpty();
+  if (HasLongHint)
   {
     // double-margin on the right
-    MaxWidth = ScreenTipTextOnlyWidth - (3 * Margin);
+    LongHintMargin = (3 * Margin);
+    MaxWidth = ScreenTipTextOnlyWidth - LongHintMargin;
   }
 
   // Multi line short hints can be twice as wide, to not break the individual lines unless really necessary.
@@ -2026,7 +2079,7 @@ TRect __fastcall TScreenTipHintWindow::CalcHintRect(int MaxWidth, UnicodeString 
 
   TRect Result;
 
-  if (LongHint.IsEmpty())
+  if (!HasLongHint)
   {
     Result = ShortRect;
 
@@ -2047,7 +2100,7 @@ TRect __fastcall TScreenTipHintWindow::CalcHintRect(int MaxWidth, UnicodeString 
     TRect LongRect(0, 0, MaxWidth - LongIndentation, 0);
     CalcHintTextRect(this, Canvas, LongRect, LongHint);
 
-    Result.Right = ScreenTipTextOnlyWidth;
+    Result.Right = Max(ScreenTipTextOnlyWidth, LongRect.Right + LongIndentation + LongHintMargin);
     Result.Bottom = Margin + ShortRect.Height() + (Margin / 3 * 5) + LongRect.Height() + Margin;
   }
 
@@ -2184,7 +2237,7 @@ void __fastcall TNewRichEdit::CreateParams(TCreateParams & Params)
   SetErrorMode(OldError);
 
   // No fallback, MSFTEDIT.DLL is available since Windows XP
-  // https://blogs.msdn.microsoft.com/murrays/2006/10/13/richedit-versions/
+  // https://learn.microsoft.com/en-us/archive/blogs/murrays/richedit-versions
   if (FLibrary == 0)
   {
     throw Exception(FORMAT(L"Cannot load %s", (RichEditModuleName)));
@@ -2192,7 +2245,7 @@ void __fastcall TNewRichEdit::CreateParams(TCreateParams & Params)
 
   TCustomMemo::CreateParams(Params);
   // MSDN says that we should use MSFTEDIT_CLASS to load Rich Edit 4.1:
-  // https://docs.microsoft.com/en-us/windows/win32/controls/about-rich-edit-controls
+  // https://learn.microsoft.com/en-us/windows/win32/controls/about-rich-edit-controls
   // But MSFTEDIT_CLASS is defined as "RICHEDIT50W",
   // so not sure what version we are loading.
   // Seem to work on Windows XP SP3.
@@ -2291,6 +2344,106 @@ void __fastcall FindComponentClass(
   else if (ComponentClass == __classid(TComboBox))
   {
     ComponentClass = __classid(TUIStateAwareComboBox);
+  }
+}
+//---------------------------------------------------------------------------
+bool CanShowTimeEstimate(TDateTime StartTime)
+{
+  return (SecondsBetween(StartTime, Now()) >= 3);
+}
+class TSystemRequiredThread : public TSignalThread
+{
+public:
+  TSystemRequiredThread();
+  void Required();
+protected:
+  virtual bool __fastcall WaitForEvent();
+  virtual void __fastcall ProcessEvent();
+private:
+  bool FRequired;
+  TDateTime FLastRequired;
+};
+//---------------------------------------------------------------------------
+std::unique_ptr<TCriticalSection> SystemRequiredThreadSection(TraceInitPtr(new TCriticalSection()));
+TSystemRequiredThread * SystemRequiredThread = NULL;
+//---------------------------------------------------------------------------
+TSystemRequiredThread::TSystemRequiredThread() :
+  TSignalThread(true), FRequired(false)
+{
+}
+//---------------------------------------------------------------------------
+void TSystemRequiredThread::Required()
+{
+  // guarded in SystemRequired()
+  FLastRequired = Now();
+  TriggerEvent();
+}
+//---------------------------------------------------------------------------
+bool __fastcall TSystemRequiredThread::WaitForEvent()
+{
+  const int ExpireInterval = 5000;
+  bool Result = (TSignalThread::WaitForEvent(ExpireInterval) > 0);
+  if (!Result && !FTerminated)
+  {
+    TGuard Guard(SystemRequiredThreadSection.get());
+    if (!FTerminated && FRequired &&
+        (MilliSecondsBetween(Now(), FLastRequired) > ExpireInterval))
+    {
+      AppLog("System is not required");
+      SetThreadExecutionState(ES_CONTINUOUS);
+      FLastRequired = TDateTime();
+      FRequired = false;
+    }
+  }
+  return Result;
+}
+//---------------------------------------------------------------------------
+void __fastcall TSystemRequiredThread::ProcessEvent()
+{
+  TGuard Guard(SystemRequiredThreadSection.get());
+  if (!FRequired &&
+      (FLastRequired != TDateTime()))
+  {
+    AppLog("System is required");
+    SetThreadExecutionState(ES_SYSTEM_REQUIRED | ES_CONTINUOUS);
+    FRequired = true;
+  }
+}
+//---------------------------------------------------------------------------
+void SystemRequired()
+{
+  if (IsWin11())
+  {
+    TGuard Guard(SystemRequiredThreadSection.get());
+    if (SystemRequiredThread == NULL)
+    {
+      AppLog("Starting system required thread");
+      SystemRequiredThread = new TSystemRequiredThread();
+      SystemRequiredThread->Start();
+    }
+    SystemRequiredThread->Required();
+  }
+  else
+  {
+    SetThreadExecutionState(ES_SYSTEM_REQUIRED);
+  }
+}
+//---------------------------------------------------------------------------
+void GUIFinalize()
+{
+  TSystemRequiredThread * Thread;
+  {
+    TGuard Guard(SystemRequiredThreadSection.get());
+    Thread = SystemRequiredThread;
+    SystemRequiredThread = NULL;
+  }
+
+  if (Thread != NULL)
+  {
+    AppLog("Stopping system required thread");
+    Thread->Terminate();
+    Thread->WaitFor();
+    delete Thread;
   }
 }
 #endif // #if 0

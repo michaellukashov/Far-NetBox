@@ -1,7 +1,8 @@
-//---------------------------------------------------------------------------
+﻿//---------------------------------------------------------------------------
 #pragma once
 
 #include "FileMasks.h"
+#include "FileBuffer.h"
 #include "RemoteFiles.h"
 #include "Exceptions.h"
 //---------------------------------------------------------------------------
@@ -74,7 +75,7 @@ private:
   bool FExcludeEmptyDirectories{false};
   int64_t FSize{0};
   TOnceDoneOperation FOnceDoneOperation;
-  static const wchar_t TokenPrefix = L'%';
+  TTransferOutEvent FOnTransferOut;
   static const wchar_t NoReplacement = wchar_t(0);
   static const wchar_t TokenReplacement = wchar_t(1);
 
@@ -239,4 +240,6 @@ NB_CORE_EXPORT uintptr_t GetSpeedLimit(const UnicodeString Text);
 NB_CORE_EXPORT UnicodeString SetSpeedLimit(uintptr_t Limit);
 NB_CORE_EXPORT void CopySpeedLimits(TStrings *Source, TStrings *Dest);
 NB_CORE_EXPORT TOperationSide ReverseOperationSide(TOperationSide Side);
+extern const unsigned long MinSpeed;
+extern const unsigned long MaxSpeed;
 //---------------------------------------------------------------------------

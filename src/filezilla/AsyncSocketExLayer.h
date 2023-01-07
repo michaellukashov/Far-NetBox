@@ -118,6 +118,7 @@ protected:
   int SendNext(const void * lpBuf, int nBufLen, int nFlags = 0);
 
   CAsyncSocketEx *m_pOwnerSocket;
+  int m_nCriticalError;
 
   // Calls OnLayerCallback on owner socket
   int DoLayerCallback(int nType, intptr_t nParam1, intptr_t nParam2, char * str = 0);
@@ -136,6 +137,7 @@ protected:
 
   void LogSocketMessageRaw(int nMessageType, LPCTSTR pMsg);
   bool LoggingSocketMessage(int nMessageType);
+  int GetSocketOptionVal(int OptionID) const;
 
 private:
   // Layer state can't be set directly from derived classes
@@ -153,7 +155,6 @@ private:
   void CallEvent(int nEvent, int nErrorCode);
 
   int m_nPendingEvents;
-  int m_nCriticalError;
 
   void Init(CAsyncSocketExLayer * pPrevLayer, CAsyncSocketEx * pOwnerSocket);
   CAsyncSocketExLayer * AddLayer(CAsyncSocketExLayer * pLayer, CAsyncSocketEx * pOwnerSocket);

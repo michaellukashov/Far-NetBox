@@ -727,7 +727,7 @@ BOOL CAsyncSocketExLayer::Create(UINT nSocketPort, int nSocketType,
 
 BOOL CAsyncSocketExLayer::CreateNext(UINT nSocketPort, int nSocketType, long lEvent, LPCTSTR lpszSocketAddress, int nFamily /*=AF_INET*/)
 {
-  DebugAssert(GetLayerState()==notsock);
+  DebugAssert((GetLayerState() == notsock) || (GetLayerState() == unconnected));
   BOOL res = FALSE;
 
   m_nFamily = nFamily;
@@ -986,4 +986,12 @@ bool CAsyncSocketExLayer::LoggingSocketMessage(int nMessageType)
     return m_pPrevLayer->LoggingSocketMessage(nMessageType);
   else
     return m_pOwnerSocket->LoggingSocketMessage(nMessageType);
+}
+
+int CAsyncSocketExLayer::GetSocketOptionVal(int OptionID) const
+{
+  if (m_pPrevLayer)
+    return m_pPrevLayer->GetSocketOptionVal(OptionID);
+  else
+    return m_pOwnerSocket->GetSocketOptionVal(OptionID);
 }

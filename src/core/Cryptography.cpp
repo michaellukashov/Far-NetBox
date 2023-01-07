@@ -1,4 +1,4 @@
-
+﻿
 #include <vcl.h>
 #pragma hdrstop
 
@@ -55,21 +55,40 @@ __removed #include <Soap.EncdDecd.hpp>
 
 #include <memory.h>
 
-#define sha1_ctx                  SHA_State
-#define sha1_begin(ctx)           putty_SHA_Init(ctx)
+#define sha1_begin(ctx)           ctx = (&ssh_sha1)->_new_(&ssh_sha1)
+#define sha1_hash(buf, len, ctx)  put_data(ctx, buf, len)
 #define sha1_hash(buf, len, ctx)  putty_SHA_Bytes(ctx, buf, len)
-#define sha1_end(dig, ctx)        putty_SHA_Final(ctx, dig)
 
 constexpr int IN_BLOCK_LENGTH     = 64;
 constexpr int OUT_BLOCK_LENGTH    = 20;
 constexpr int HMAC_IN_DATA        = 0xffffffff;
 
-typedef struct
+struct hmac_ctx
 {
   uint8_t key[IN_BLOCK_LENGTH];
   sha1_ctx ctx[1];
   uint32_t klen;
-} hmac_ctx;
+    hmac_ctx()
+    {
+        memset(this, 0, sizeof(*this));
+    }
+    ~hmac_ctx()
+    {
+        if (ctx != NULL) ssh_hash_free(ctx);
+    }
+    void CopyFrom(hmac_ctx * Source)
+    {
+        if (ctx != NULL)
+        {
+            ssh_hash_free(ctx);
+        }
+        memmove(this, Source, sizeof(*this));
+        if (Source->ctx != NULL)
+        {
+            ctx = ssh_hash_copy(Source->ctx);
+        }
+    }
+};
 
 /* initialise the HMAC context to zero */
 static void hmac_sha1_begin(hmac_ctx cx[1])
@@ -656,7 +675,7 @@ TEncryption::TEncryption(const RawByteString AKey) noexcept
   if (!FKey.IsEmpty())
   {
     DebugAssert(FKey.Length() == KEY_LENGTH(PASSWORD_MANAGER_AES_MODE));
-    FContext = call_aes_make_context();
+    FContext = aes_make_context();
     aes_set_encrypt_key(reinterpret_cast<unsigned char *>(&FKey[0]), (int)FKey.Length(), FContext);
   }
   else

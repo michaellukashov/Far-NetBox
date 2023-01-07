@@ -1,4 +1,4 @@
-//---------------------------------------------------------------------------
+﻿//---------------------------------------------------------------------------
 #pragma once
 //---------------------------------------------------------------------------
 #include "structures.h"
@@ -10,7 +10,7 @@ class CTransferSocket;
 class CMainThread;
 //---------------------------------------------------------------------------
 class CAsyncProxySocketLayer;
-class CMainThread;
+class CFtpListResult;
 //---------------------------------------------------------------------------
 #define CSMODE_NONE             0x0000
 #define CSMODE_CONNECT          0x0001
@@ -72,7 +72,6 @@ public:
 
   virtual void SetAsyncRequestResult(int nAction, CAsyncRequestData * pData);
   
-  int CheckOverwriteFile();
   virtual BOOL Create();
   void TransfersocketListenFinished(unsigned int ip, unsigned short port);
 
@@ -106,6 +105,7 @@ public:
   _int64 GetAbleToTransferSize(enum transferDirection direction, bool &beenWaiting, int nBufSize = 0);
 
   t_server GetCurrentServer();
+  CFtpListResult * CreateListResult(bool mlst);
 
 public:
   virtual void OnReceive(int nErrorCode);
@@ -123,8 +123,10 @@ protected:
   void SetFileExistsAction(int nAction, COverwriteRequestData * pData);
   void SetVerifyCertResult(int nResult, t_SslCertData * pData);
   void ResetOperation(int nSuccessful = -1);
+  void ResetTransferSocket(int Error);
 
   virtual void DoClose(int nError = 0);
+  int TryGetReplyCode();
   int GetReplyCode();
   CString GetReply();
   void LogOnToServer(BOOL bSkipReply = FALSE);
@@ -149,6 +151,7 @@ protected:
 
   virtual void LogSocketMessageRaw(int nMessageType, LPCTSTR pMsg);
   virtual bool LoggingSocketMessage(int nMessageType);
+  virtual int GetSocketOptionVal(int OptionID) const;
 
   void ShowStatus(UINT nID, int type) const;
   void ShowStatus(CString status,int type) const;
@@ -169,11 +172,14 @@ protected:
   static nb::list_t<t_ActiveList> m_InstanceList[2];
   static CTime m_CurrentTransferTime[2];
   static _int64 m_CurrentTransferLimit[2];
-  static CCriticalSection m_SpeedLimitSync;
+  static CCriticalSectionWrapper m_SpeedLimitSync;
   _int64 GetAbleToUDSize(bool & beenWaiting, CTime & curTime, _int64 & curLimit, nb::list_t<t_ActiveList>::iterator & iter, enum transferDirection direction, int nBufSize);
   _int64 GetSpeedLimit(CTime & time, int valType, int valValue);
 
   void SetDirectoryListing(t_directory * pDirectory, bool bSetWorkingDir = true);
+  int CheckOverwriteFile();
+  int CheckOverwriteFileAndCreateTarget();
+  int FileTransferHandleDirectoryListing(t_directory * pDirectory);
   t_directory * m_pDirectoryListing;
 
   CMainThread * m_pOwner;

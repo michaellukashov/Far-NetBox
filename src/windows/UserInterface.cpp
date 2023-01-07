@@ -1,4 +1,4 @@
-//---------------------------------------------------------------------------
+﻿//---------------------------------------------------------------------------
 #include <vcl.h>
 #pragma hdrstop
 
@@ -46,7 +46,7 @@ TConfiguration * __fastcall CreateConfiguration()
     else if (CheckSafe(Params))
     {
       IniFileName = ExpandFileName(ExpandEnvironmentVariables(IniFileName));
-      WinConfiguration->IniFileStorageName = IniFileName;
+      WinConfiguration->SetExplicitIniFileStorageName(IniFileName);
     }
   }
 
@@ -112,7 +112,7 @@ void __fastcall SetOnForeground(bool OnForeground)
 void __fastcall FlashOnBackground()
 {
   DebugAssert(Application);
-  if (!ForcedOnForeground && !ForegroundTask())
+  if (WinConfiguration->FlashTaskbar && !ForcedOnForeground && !ForegroundTask())
   {
     FlashWindow(Application->MainFormHandle, true);
   }
@@ -231,6 +231,7 @@ void __fastcall ShowExtendedExceptionEx(TTerminal * Terminal,
     {
       if (ForActiveTerminal)
       {
+        DebugAssert(!Terminal->Active);
         Manager->DisconnectActiveTerminal();
       }
 
@@ -269,9 +270,12 @@ void __fastcall ShowExtendedExceptionEx(TTerminal * Terminal,
         if (ForActiveTerminal)
         {
           UnicodeString MessageFormat =
-            MainInstructions((Manager->Count > 1) ?
+            (Manager->Count > 1) ?
               FMTLOAD(DISCONNECT_ON_COMPLETION, (Manager->Count - 1)) :
-              LoadStr(EXIT_ON_COMPLETION));
+              LoadStr(EXIT_ON_COMPLETION);
+          // Remove the leading "%s\n\n" (not to change the translation originals - previously the error message was prepended)
+          MessageFormat = FORMAT(MessageFormat, (UnicodeString())).Trim();
+          MessageFormat = MainInstructions(MessageFormat) + L"\n\n%s";
           Result = FatalExceptionMessageDialog(E, qtInformation, 0,
             MessageFormat,
             Answers | qaYes | qaNo, HELP_NONE, &Params);
@@ -294,11 +298,10 @@ void __fastcall ShowExtendedExceptionEx(TTerminal * Terminal,
         if (ForActiveTerminal)
         {
           int SessionReopenTimeout = 0;
-          TManagedTerminal * ManagedTerminal = dynamic_cast<TManagedTerminal *>(Manager->ActiveTerminal);
-          if ((ManagedTerminal != NULL) &&
+          if (DebugAlwaysTrue(Manager->ActiveTerminal != NULL) &&
               ((Configuration->SessionReopenTimeout == 0) ||
-               ((double)ManagedTerminal->ReopenStart == 0) ||
-               (int(double(Now() - ManagedTerminal->ReopenStart) * MSecsPerDay) < Configuration->SessionReopenTimeout)))
+               ((double)Manager->ActiveTerminal->ReopenStart == 0) ||
+               (int(double(Now() - Manager->ActiveTerminal->ReopenStart) * MSecsPerDay) < Configuration->SessionReopenTimeout)))
           {
             SessionReopenTimeout = GUIConfiguration->SessionReopenAutoIdle;
           }
@@ -358,7 +361,7 @@ void __fastcall ShowExtendedExceptionEx(TTerminal * Terminal,
     {
       if (ForActiveTerminal)
       {
-        Manager->FreeActiveTerminal();
+        Manager->DisconnectActiveTerminalIfPermanentFreeOtherwise();
       }
     }
   }

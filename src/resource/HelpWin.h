@@ -65,5 +65,11 @@
 #define HELP_DD_TARGET_UNKNOWN       "ui_pref_dragdrop#fake_file"
 #define HELP_FILE_COLORS             "ui_file_color"
 #define HELP_AUTOMATIC_UPDATE        "updates#automatic_upgrade"
+#define HELP_SITE_RAW                "ui_login_raw"
+#define HELP_PUTTY_SETTINGS          "ui_login_environment#putty"
+#define HELP_CLOSE_SESSION_WORKSPACE "workspace"
+#define HELP_ADD_EXTENSION           "ui_pref_commands#extensions"
+#define HELP_TOO_MANY_SESSIONS       "ui_sessiontabs"
+#define HELP_STORE_TRANSITION        "microsoft_store#transitioning"
 
 #endif // TextsWin

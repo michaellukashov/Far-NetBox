@@ -1,4 +1,4 @@
-//---------------------------------------------------------------------------
+﻿//---------------------------------------------------------------------------
 #include <vcl.h>
 #pragma hdrstop
 
@@ -63,6 +63,7 @@ void TSynchronizeController::StartStop(TObject * /*Sender*/,
       }
 
       FCopyParam = CopyParam;
+      FCopyParam.IncludeFileMask.SetRoots(Params.LocalDirectory, Params.RemoteDirectory);
       FSynchronizeParams = Params;
 
       DebugAssert(OnAbort);
@@ -136,6 +137,7 @@ void TSynchronizeController::SynchronizeChange(
 
     if (FOnSynchronize != nullptr)
     {
+      TSynchronizeOptions DefaultOptions; // Just as a container for the Files field
       // this is completelly wrong as the options structure
       // can contain non-root specific options in future
       TSynchronizeOptions * Options =

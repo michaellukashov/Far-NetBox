@@ -1,4 +1,4 @@
-//---------------------------------------------------------------------------
+﻿//---------------------------------------------------------------------------
 #pragma once
 //---------------------------------------------------------------------------
 #include <Common.h>
@@ -271,6 +271,8 @@ public:
   UnicodeString GetLogStr(bool Done) const;
   void Store(TPersistence & Persistence);
   void Restore(TPersistence & Persistence);
+  bool IsIndeterminate() const;
+  bool IsTransfer() const;
 
   static bool IsIndeterminateOperation(TFileOperation Operation);
 

@@ -1,4 +1,4 @@
-//---------------------------------------------------------------------------
+﻿//---------------------------------------------------------------------------
 #pragma once
 //---------------------------------------------------------------------------
 #include <rdestl/map.h>
@@ -20,6 +20,7 @@ CUSTOM_MEM_ALLOCATION_IMPL
   WORD Minute;
   WORD Second;
   bool HasTime;
+  bool HasYear;
   bool HasSeconds;
   bool HasDate;
   bool Utc;
@@ -77,7 +78,9 @@ CUSTOM_MEM_ALLOCATION_IMPL
   const wchar_t * SubjectAltName;
 
   const uint8_t * Hash;
-  static const size_t HashLen = 20;
+  static const size_t HashSha1Len = 20;
+  const unsigned char * HashSha256;
+  static const size_t HashSha256Len = 32;
 
   const uint8_t * Certificate;
   size_t CertificateLen;
@@ -201,6 +204,8 @@ public:
 
   bool FileTransfer(const wchar_t * LocalFile, const wchar_t * RemoteFile,
     const wchar_t * RemotePath, bool Get, int64_t Size, int Type, void * UserData);
+    const wchar_t * RemotePath, bool Get, __int64 Size, int Type, void * UserData,
+    TTransferOutEvent OnTransferOut, TTransferInEvent OnTransferIn);
 
   virtual const wchar_t * Option(intptr_t OptionID) const = 0;
   virtual intptr_t OptionVal(intptr_t OptionID) const = 0;
@@ -258,7 +263,6 @@ enum ftp_capability_names_t
   mfmt_command,
   pret_command,
   mdtm_command,
-  size_command,
   mode_z_support,
   tvfs_support, // Trivial virtual file store (RFC 3659)
   list_hidden_support, // LIST -a command

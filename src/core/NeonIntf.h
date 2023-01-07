@@ -23,7 +23,8 @@ struct TNeonCertificateData
   TDateTime ValidFrom;
   TDateTime ValidUntil;
 
-  UnicodeString Fingerprint;
+  UnicodeString FingerprintSHA1;
+  UnicodeString FingerprintSHA256;
   AnsiString AsciiCert;
 
   int Failures{0};

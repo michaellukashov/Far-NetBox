@@ -416,16 +416,21 @@ bool __fastcall IsMainFormLike(TCustomForm * Form)
     IsMainFormHidden();
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall FormatMainFormCaption(const UnicodeString & Caption)
+UnicodeString __fastcall FormatMainFormCaption(const UnicodeString & Caption, const UnicodeString & SessionName)
 {
+  UnicodeString Suffix = AppName;
+  if (!SessionName.IsEmpty())
+  {
+    Suffix = SessionName + L" - " + Suffix;
+  }
   UnicodeString Result = Caption;
   if (Result.IsEmpty())
   {
-    Result = AppName;
+    Result = Suffix;
   }
   else
   {
-    UnicodeString Suffix = L" - " + AppName;
+    Suffix = L" - " + Suffix;
     if (!EndsStr(Suffix, Result))
     {
       Result += Suffix;
@@ -434,12 +439,13 @@ UnicodeString __fastcall FormatMainFormCaption(const UnicodeString & Caption)
   return Result;
 }
 //---------------------------------------------------------------------------
-UnicodeString __fastcall FormatFormCaption(TCustomForm * Form, const UnicodeString & Caption)
+UnicodeString __fastcall FormatFormCaption(
+  TCustomForm * Form, const UnicodeString & Caption, const UnicodeString & SessionName)
 {
   UnicodeString Result = Caption;
   if (IsMainFormLike(Form))
   {
-    Result = FormatMainFormCaption(Result);
+    Result = FormatMainFormCaption(Result, SessionName);
   }
   return Result;
 }
@@ -460,6 +466,7 @@ class TPublicControl : public TControl
 {
 friend void __fastcall RealignControl(TControl * Control);
 friend void __fastcall DoFormWindowProc(TCustomForm * Form, TWndMethod WndProc, TMessage & Message);
+friend TCanvas * CreateControlCanvas(TControl * Control);
 };
 //---------------------------------------------------------------------
 class TPublicForm : public TForm
@@ -1081,10 +1088,14 @@ void __fastcall ApplySystemSettingsOnControl(TControl * Control)
     {
       IListView_Win7 * ListViewIntf = NULL;
       SendMessage(IEListView->Handle, LVM_QUERYINTERFACE, reinterpret_cast<WPARAM>(&IID_IListView_Win7), reinterpret_cast<LPARAM>(&ListViewIntf));
-      if (DebugAlwaysTrue(ListViewIntf != NULL))
+      if (ListViewIntf != NULL)
       {
         ListViewIntf->SetSelectionFlags(1, 1);
         ListViewIntf->Release();
+      }
+      else
+      {
+        DebugAssert(IsWine());
       }
     }
   }
@@ -1317,6 +1328,21 @@ bool __fastcall SelectDirectory(UnicodeString & Path, const UnicodeString Prompt
   return Result;
 }
 //---------------------------------------------------------------------------
+void SelectDirectoryForEdit(THistoryComboBox * Edit)
+{
+  UnicodeString OriginalDirectory = ExpandEnvironmentVariables(Edit->Text);
+  UnicodeString Directory = OriginalDirectory;
+  if (SelectDirectory(Directory, LoadStr(SELECT_LOCAL_DIRECTORY), true) &&
+      !SamePaths(OriginalDirectory, Directory))
+  {
+    Edit->Text = Directory;
+    if (Edit->OnChange != NULL)
+    {
+      Edit->OnChange(Edit);
+    }
+  }
+}
+//---------------------------------------------------------------------------
 bool __fastcall ListViewAnyChecked(TListView * ListView, bool Checked)
 {
   bool AnyChecked = false;
@@ -1413,7 +1439,7 @@ TAutoSwitch __fastcall CheckBoxAutoSwitchSave(TCheckBox * CheckBox)
   }
 }
 //---------------------------------------------------------------------------
-static const wchar_t PathWordDelimiters[] = L"\\/ ;,.";
+static const wchar_t PathWordDelimiters[] = L"\\/ ;,.\r\n=";
 //---------------------------------------------------------------------------
 static bool IsPathWordDelimiter(wchar_t Ch)
 {
@@ -1482,38 +1508,68 @@ int CALLBACK PathWordBreakProc(wchar_t * Ch, int Current, int Len, int Code)
   return Result;
 }
 //---------------------------------------------------------------------------
-static void __fastcall PathEditKeyPress(void * /*Data*/, TObject * Sender, char & Key)
+class TPathWordBreakProcComponent : public TComponent
 {
-  // Ctrl+Backspace
-  // Have to use OnKeyPress as the Ctrl+Backspace is handled in WM_CHAR as any other char,
-  // so we have to swallow it here to prevent it getting inserted to the text
-  if (Key == '\x7F')
+public:
+  __fastcall TPathWordBreakProcComponent() :
+    TComponent(NULL)
   {
-    Key = '\0';
+  }
 
-    TCustomEdit * Edit = dynamic_cast<TCustomEdit *>(Sender);
-    TCustomComboBox * ComboBox = dynamic_cast<TCustomComboBox *>(Sender);
-    TWinControl * WinControl = DebugNotNull(dynamic_cast<TWinControl *>(Sender));
+  void __fastcall PathWordBreakEditWindowProc(TMessage & Message);
 
-    if (((Edit != NULL) && (Edit->SelLength == 0)) ||
-        ((ComboBox != NULL) && (ComboBox->SelLength == 0)))
+  TWinControl * WinControl;
+  TWndMethod PrevWindowProc;
+};
+//---------------------------------------------------------------------------
+void __fastcall TPathWordBreakProcComponent::PathWordBreakEditWindowProc(TMessage & Message)
+{
+  bool Handled = false;
+  if (Message.Msg == WM_CHAR)
+  {
+    // Ctrl+Backspace
+    // Ctrl+Backspace is handled in WM_CHAR as any other char,
+    // so we have to swallow it here to prevent it getting inserted to the text
+    TWMChar & CharMessage = *reinterpret_cast<TWMChar *>(&Message);
+    if (CharMessage.CharCode == '\x7F')
     {
-      // See TCustomMaskEdit.SetCursor
-      TKeyboardState KeyState;
-      GetKeyboardState(KeyState);
-      TKeyboardState NewKeyState;
-      memset(NewKeyState, 0, sizeof(NewKeyState));
-      NewKeyState[VK_CONTROL] = 0x81;
-      NewKeyState[VK_SHIFT] = 0x81;
-      SetKeyboardState(NewKeyState);
+      TCustomEdit * Edit = dynamic_cast<TCustomEdit *>(WinControl);
+      TCustomComboBox * ComboBox = dynamic_cast<TCustomComboBox *>(WinControl);
 
-      SendMessage(WinControl->Handle, WM_KEYDOWN, VK_LEFT, 1);
-      NewKeyState[VK_SHIFT] = 0;
-      NewKeyState[VK_CONTROL] = 0;
-      SetKeyboardState(NewKeyState);
+      if (((Edit != NULL) && (Edit->SelLength == 0)) ||
+          ((ComboBox != NULL) && (ComboBox->SelLength == 0)))
+      {
+        // See TCustomMaskEdit.SetCursor
+        TKeyboardState KeyState;
+        GetKeyboardState(KeyState);
+        TKeyboardState NewKeyState;
+        memset(NewKeyState, 0, sizeof(NewKeyState));
+        NewKeyState[VK_CONTROL] = 0x81;
+        NewKeyState[VK_SHIFT] = 0x81;
+        SetKeyboardState(NewKeyState);
 
-      SendMessage(WinControl->Handle, WM_KEYDOWN, VK_DELETE, 1);
-      SetKeyboardState(KeyState);
+        SendMessage(WinControl->Handle, WM_KEYDOWN, VK_LEFT, 1);
+        NewKeyState[VK_SHIFT] = 0;
+        NewKeyState[VK_CONTROL] = 0;
+        SetKeyboardState(NewKeyState);
+
+        SendMessage(WinControl->Handle, WM_KEYDOWN, VK_DELETE, 1);
+        SetKeyboardState(KeyState);
+      }
+      Message.Result = 1;
+      Handled = true;
+    }
+  }
+
+  if (!Handled)
+  {
+    if (PrevWindowProc != NULL)
+    {
+      PrevWindowProc(Message);
+    }
+    else
+    {
+      ControlWndProc(WinControl)(Message);
     }
   }
 }
@@ -1543,11 +1599,16 @@ void __fastcall InstallPathWordBreakProc(TWinControl * Control)
   }
   SendMessage(Wnd, EM_SETWORDBREAKPROC, 0, (LPARAM)(EDITWORDBREAKPROC)PathWordBreakProc);
 
-  TPublicWinControl * PublicWinControl = static_cast<TPublicWinControl *>(Control);
-  if (DebugAlwaysTrue(PublicWinControl->OnKeyDown == NULL))
-  {
-    PublicWinControl->OnKeyPress = MakeMethod<TKeyPressEvent>(NULL, PathEditKeyPress);
-  }
+  TPathWordBreakProcComponent * PathWordBreakProcComponent = new TPathWordBreakProcComponent();
+  PathWordBreakProcComponent->Name = TPathWordBreakProcComponent::QualifiedClassName();
+  Control->InsertComponent(PathWordBreakProcComponent);
+  PathWordBreakProcComponent->WinControl = Control;
+  // Have to remember the proc because of TTBEditItemViewer.EditWndProc
+  PathWordBreakProcComponent->PrevWindowProc =
+    // Test is probably redundant, it's there to limit impact of the change.
+    ((Control->WindowProc != ControlWndProc(Control)) ? Control->WindowProc : TWndMethod());
+
+  Control->WindowProc = PathWordBreakProcComponent->PathWordBreakEditWindowProc;
 }
 //---------------------------------------------------------------------------
 static void __fastcall RemoveHiddenControlsFromOrder(TControl ** ControlsOrder, int & Count)
@@ -1812,14 +1873,11 @@ void __fastcall InvokeHelp(TWinControl * Control)
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 static void __fastcall FocusableLabelCanvas(TStaticText * StaticText,
-  TControlCanvas ** ACanvas, TRect & R)
+  TCanvas ** ACanvas, TRect & R)
 {
-  TControlCanvas * Canvas = new TControlCanvas();
+  TCanvas * Canvas = CreateControlCanvas(StaticText);
   try
   {
-    Canvas->Control = StaticText;
-    Canvas->Font = StaticText->Font;
-
     R = StaticText->ClientRect;
 
     TSize TextSize;
@@ -1944,7 +2002,7 @@ static void __fastcall FocusableLabelWindowProc(void * Data, TMessage & Message,
   if (Message.Msg == WM_PAINT)
   {
     TRect R;
-    TControlCanvas * Canvas;
+    TCanvas * Canvas;
     FocusableLabelCanvas(StaticText, &Canvas, R);
     try
     {
@@ -2434,7 +2492,7 @@ bool __fastcall SupportsSplitButton()
   return (Win32MajorVersion >= 6);
 }
 //---------------------------------------------------------------------------
-static TButton * __fastcall FindDefaultButton(TWinControl * Control)
+static TButton * __fastcall FindStandardButton(TWinControl * Control, bool Default)
 {
   TButton * Result = NULL;
   int Index = 0;
@@ -2442,7 +2500,7 @@ static TButton * __fastcall FindDefaultButton(TWinControl * Control)
   {
     TControl * ChildControl = Control->Controls[Index];
     TButton * Button = dynamic_cast<TButton *>(ChildControl);
-    if ((Button != NULL) && Button->Default)
+    if ((Button != NULL) && (Default ? Button->Default : Button->Cancel))
     {
       Result = Button;
     }
@@ -2451,7 +2509,7 @@ static TButton * __fastcall FindDefaultButton(TWinControl * Control)
       TWinControl * WinControl = dynamic_cast<TWinControl *>(ChildControl);
       if (WinControl != NULL)
       {
-        Result = FindDefaultButton(WinControl);
+        Result = FindStandardButton(WinControl, Default);
       }
     }
     Index++;
@@ -2468,7 +2526,7 @@ TModalResult __fastcall DefaultResult(TCustomForm * Form, TButton * DefaultButto
   // ModalResult being mrNone, when Windows session is being logged off.
   // We interpreted mrNone as OK, causing lots of troubles.
   TModalResult Result = mrNone;
-  TButton * Button = FindDefaultButton(Form);
+  TButton * Button = FindStandardButton(Form, true);
   if (DebugAlwaysTrue(Button != NULL))
   {
     Result = Button->ModalResult;
@@ -2644,7 +2702,7 @@ void TDesktopFontManager::UpdateControl(TControl * Control)
 
   // Neither CreateFontIndirect nor RestoreFont set  color, so we should should have the default set by TFont constructor here.
   DebugAssert(DesktopFont->Color == clWindowText);
-  // Preserve color (particularly whice color of file panel font in dark mode)
+  // Preserve color (particularly white color of file panel font in dark mode)
   DesktopFont->Color = PublicControl->Font->Color;
 
   PublicControl->Font->Assign(DesktopFont.get());
@@ -2798,4 +2856,64 @@ TPanel * __fastcall CreateBlankPanel(TComponent * Owner)
   Panel->BevelInner = bvNone; // default
   Panel->BevelKind = bkNone;
   return Panel;
+}
+//---------------------------------------------------------------------------
+bool IsButtonBeingClicked(TButtonControl * Button)
+{
+  class TPublicButtonControl : public TButtonControl
+  {
+  public:
+    __property ClicksDisabled;
+  };
+  TPublicButtonControl * PublicButton = reinterpret_cast<TPublicButtonControl *>(Button);
+  // HACK ClicksDisabled is set in TButtonControl.WndProc while changing focus as response to WM_LBUTTONDOWN.
+  return PublicButton->ClicksDisabled;
+}
+//---------------------------------------------------------------------------
+// When using this in OnExit handers, it's still possible that the user does not actually click the
+// CanceButton (for example, when the button is released out of the button).
+// Then the validation is bypassed. Consequently, all dialogs that uses this must still
+// gracefully handle submission with non-validated data.
+bool IsCancelButtonBeingClicked(TControl * Control)
+{
+  TCustomForm * Form = GetParentForm(Control);
+  TButtonControl * CancelButton = FindStandardButton(Form, false);
+  // Find dialog has no Cancel button
+  return (CancelButton != NULL) && IsButtonBeingClicked(CancelButton);
+}
+//---------------------------------------------------------------------------
+TCanvas * CreateControlCanvas(TControl * Control)
+{
+  std::unique_ptr<TControlCanvas> Canvas(new TControlCanvas());
+  Canvas->Control = Control;
+  TPublicControl * PublicControl = static_cast<TPublicControl *>(Control);
+  Canvas->Font = PublicControl->Font;
+  return Canvas.release();
+}
+//---------------------------------------------------------------------------
+void AutoSizeButton(TButton * Button)
+{
+  std::unique_ptr<TCanvas> Canvas(CreateControlCanvas(Button));
+  int MinWidth = Canvas->TextWidth(Button->Caption) + ScaleByTextHeight(Button, (2 * 8));
+  if (Button->Width < MinWidth)
+  {
+    if (Button->Anchors.Contains(akRight))
+    {
+      Button->Left = Button->Left - (MinWidth - Button->Width);
+    }
+    Button->Width = MinWidth;
+  }
+}
+//---------------------------------------------------------------------------
+void GiveTBItemPriority(TTBCustomItem * Item)
+{
+  DebugAssert(Item->GetTopComponent() != NULL);
+  TTBCustomToolbar * ToolbarComponent = dynamic_cast<TTBCustomToolbar *>(Item->GetTopComponent());
+  if ((ToolbarComponent != NULL) &&
+      // Only for top-level buttons on custom command toolbar, not for submenus of the custom commands menu in the main menu
+      (Item->Parent == ToolbarComponent->Items))
+  {
+    TTBItemViewer * Viewer = ToolbarComponent->View->Find(Item);
+    ToolbarComponent->View->GivePriority(Viewer);
+  }
 }
