@@ -653,7 +653,7 @@ public:
   TStrings * FindTemporaryFolders();
   bool AnyTemporaryFolders();
   void CleanupTemporaryFolders();
-  void CleanupTemporaryFolders(TStrings * Folders = NULL);
+  void CleanupTemporaryFolders(TStrings * Folders = nullptr);
   UnicodeString ExpandedTemporaryDirectory();
   void CheckDefaultTranslation();
   const TEditorPreferences * DefaultEditorForFile(

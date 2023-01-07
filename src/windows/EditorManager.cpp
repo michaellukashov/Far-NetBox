@@ -16,9 +16,9 @@
 TEditedFileData::TEditedFileData()
 {
   ForceText = false;
-  Terminal = NULL;
-  SessionData = NULL;
-  Queue = NULL;
+  Terminal = nullptr;
+  SessionData = nullptr;
+  Queue = nullptr;
 }
 
 TEditedFileData::~TEditedFileData()
@@ -28,10 +28,10 @@ TEditedFileData::~TEditedFileData()
 
 TEditorManager::TEditorManager()
 {
-  FOnFileChange = NULL;
-  FOnFileReload = NULL;
-  FOnFileEarlyClosed = NULL;
-  FOnFileUploadComplete = NULL;
+  FOnFileChange = nullptr;
+  FOnFileReload = nullptr;
+  FOnFileEarlyClosed = nullptr;
+  FOnFileUploadComplete = nullptr;
 }
 
 TEditorManager::~TEditorManager()
@@ -85,7 +85,7 @@ bool TEditorManager::CanAddFile(const UnicodeString RemoteDirectory,
 {
   bool Result = true;
 
-  Token = NULL;
+  Token = nullptr;
   for (unsigned int i = 0; i < FFiles.size(); i++)
   {
     TFileData * FileData = &FFiles[i];
@@ -99,7 +99,7 @@ bool TEditorManager::CanAddFile(const UnicodeString RemoteDirectory,
       if (!FileData->External)
       {
         Result = false;
-        if (!FileData->Closed && (FileData->Token != NULL))
+        if (!FileData->Closed && (FileData->Token != nullptr))
         {
           Token = FileData->Token;
         }
@@ -154,7 +154,7 @@ void TEditorManager::ProcessFiles(TEditedFileProcessEvent Callback, void * Arg)
   {
     TFileData * FileData = &FFiles[i];
     Callback(FileData->FileName, FileData->Data,
-      (FileData->Closed ? NULL : FileData->Token), Arg);
+      (FileData->Closed ? nullptr : FileData->Token), Arg);
   }
 }
 
@@ -162,7 +162,7 @@ bool TEditorManager::CloseInternalEditors(TNotifyEvent CloseCallback)
 {
   // Traverse from end, as closing internal editor causes deletion of
   // respective file vector element.
-  TObject * PrevToken = NULL;
+  TObject * PrevToken = nullptr;
   for (unsigned int i = FFiles.size(); i > 0; i--)
   {
     // Note that element may be deleted by external cause (like if external editor
@@ -172,7 +172,7 @@ bool TEditorManager::CloseInternalEditors(TNotifyEvent CloseCallback)
       TFileData * FileData = &FFiles[i - 1];
       // PrevToken is simple check not to ask same editor twice, however
       // it does not solve all posibilities
-      if (!FileData->Closed && (FileData->Token != NULL) &&
+      if (!FileData->Closed && (FileData->Token != nullptr) &&
           (FileData->Token != PrevToken))
       {
         CloseCallback(FileData->Token);
@@ -185,7 +185,7 @@ bool TEditorManager::CloseInternalEditors(TNotifyEvent CloseCallback)
   {
     TFileData * FileData = &FFiles[i];
 
-    if (!FileData->Closed && (FileData->Token != NULL))
+    if (!FileData->Closed && (FileData->Token != nullptr))
     {
       Result = false;
       break;
@@ -231,7 +231,7 @@ void TEditorManager::AddFileExternal(const UnicodeString FileName,
   FileData.FileName = FileName;
   FileData.External = true;
   FileData.Process = Process;
-  FileData.Token = NULL;
+  FileData.Token = nullptr;
   UnicodeString FilePath = ExtractFilePath(FileData.FileName);
   if (Process != INVALID_HANDLE_VALUE)
   {
@@ -312,7 +312,7 @@ bool TEditorManager::EarlyClose(int Index)
     (FileData->Process != INVALID_HANDLE_VALUE) &&
     (Now() - FileData->Opened <=
       TDateTime(0, 0, static_cast<unsigned short>(WinConfiguration->Editor.EarlyClose), 0)) &&
-    (FOnFileEarlyClosed != NULL);
+    (FOnFileEarlyClosed != nullptr);
 
   if (Result)
   {
@@ -401,7 +401,7 @@ void TEditorManager::UploadComplete(int Index)
       FileData->Reupload = false;
       CheckFileChange(Index, true);
     }
-    else if ((FileData->Token != NULL) && (FOnFileUploadComplete != NULL))
+    else if ((FileData->Token != nullptr) && (FOnFileUploadComplete != nullptr))
     {
       FOnFileUploadComplete(FileData->Token);
     }
@@ -421,7 +421,7 @@ void TEditorManager::ReleaseFile(int Index)
 {
   TFileData * FileData = &FFiles[Index];
   delete FileData->Data;
-  FileData->Data = NULL;
+  FileData->Data = nullptr;
 }
 
 bool TEditorManager::CloseFile(int Index, bool IgnoreErrors, bool Delete)
@@ -508,7 +508,7 @@ void TEditorManager::CheckFileChange(int Index, bool Force)
       bool Upload = true;
       if (!Force)
       {
-        HANDLE Handle = CreateFile(ApiPath(FileData->FileName).c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, 0);
+        HANDLE Handle = CreateFile(ApiPath(FileData->FileName).c_str(), GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, 0, 0);
         if (Handle == INVALID_HANDLE_VALUE)
         {
           int Error = GetLastError();
@@ -524,7 +524,7 @@ void TEditorManager::CheckFileChange(int Index, bool Force)
       }
       if (Upload)
       {
-        FileData->UploadCompleteEvent = CreateEvent(NULL, false, false, NULL);
+        FileData->UploadCompleteEvent = CreateEvent(nullptr, false, false, nullptr);
         FUploadCompleteEvents.push_back(FileData->UploadCompleteEvent);
 
         TDateTime PrevTimestamp = FileData->Timestamp;
@@ -538,7 +538,7 @@ void TEditorManager::CheckFileChange(int Index, bool Force)
 
         try
         {
-          DebugAssert(OnFileChange != NULL);
+          DebugAssert(OnFileChange != nullptr);
           bool Retry = false;
           OnFileChange(FileData->FileName, FileData->Data, FileData->UploadCompleteEvent, Retry);
           if (Retry)

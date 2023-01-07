@@ -616,7 +616,7 @@ public:
   static TSessionColors * Retrieve(TComponent * Component)
   {
     TSessionColors * SessionColors = dynamic_cast<TSessionColors *>(Component->FindComponent(QualifiedClassName()));
-    if (SessionColors == NULL)
+    if (SessionColors == nullptr)
     {
       SessionColors = new TSessionColors(Component);
     }
@@ -762,7 +762,7 @@ void SetSubmenu(TTBXCustomItem * Item)
     __property ItemStyle;
   };
   TTBXPublicItem * PublicItem = reinterpret_cast<TTBXPublicItem *>(Item);
-  DebugAssert(PublicItem != NULL);
+  DebugAssert(PublicItem != nullptr);
   // See TTBItemViewer.IsPtInButtonPart (called from TTBItemViewer.MouseDown)
   PublicItem->ItemStyle = PublicItem->ItemStyle << tbisSubmenu;
 }
@@ -808,9 +808,9 @@ void ApplyTabs(
   UnicodeString & Text, wchar_t Padding,
   TCalculateWidth CalculateWidth, void * CalculateWidthArg)
 {
-  if (CalculateWidth == NULL)
+  if (CalculateWidth == nullptr)
   {
-    DebugAssert(CalculateWidthArg == NULL);
+    DebugAssert(CalculateWidthArg == nullptr);
     CalculateWidth = CalculateWidthByLength;
   }
 
@@ -872,7 +872,7 @@ void ApplyTabs(
 
 static void DoSelectScaledImageList(TImageList * ImageList)
 {
-  TImageList * MatchingList = NULL;
+  TImageList * MatchingList = nullptr;
   int MachingPixelsPerInch = 0;
   int PixelsPerInch = GetComponentPixelsPerInch(ImageList);
 
@@ -880,7 +880,7 @@ static void DoSelectScaledImageList(TImageList * ImageList)
   {
     TImageList * OtherList = dynamic_cast<TImageList *>(ImageList->Owner->Components[Index]);
 
-    if ((OtherList != NULL) &&
+    if ((OtherList != nullptr) &&
         (OtherList != ImageList) &&
         StartsStr(ImageList->Name, OtherList->Name))
     {
@@ -889,7 +889,7 @@ static void DoSelectScaledImageList(TImageList * ImageList)
           ImageList->Name.Length() + 1, OtherList->Name.Length() - ImageList->Name.Length());
       int OtherListPixelsPerInch = StrToInt(OtherListPixelsPerInchStr);
       if ((OtherListPixelsPerInch <= PixelsPerInch) &&
-          ((MatchingList == NULL) ||
+          ((MatchingList == nullptr) ||
            (MachingPixelsPerInch < OtherListPixelsPerInch)))
       {
         MatchingList = OtherList;
@@ -898,15 +898,15 @@ static void DoSelectScaledImageList(TImageList * ImageList)
     }
   }
 
-  if (MatchingList != NULL)
+  if (MatchingList != nullptr)
   {
     UnicodeString ImageListBackupName = ImageList->Name + IntToStr(USER_DEFAULT_SCREEN_DPI);
 
-    if (ImageList->Owner->FindComponent(ImageListBackupName) == NULL)
+    if (ImageList->Owner->FindComponent(ImageListBackupName) == nullptr)
     {
       TImageList * ImageListBackup;
       TPngImageList * PngImageList = dynamic_cast<TPngImageList *>(ImageList);
-      if (PngImageList != NULL)
+      if (PngImageList != nullptr)
       {
         ImageListBackup = new TPngImageList(ImageList->Owner);
       }
@@ -947,7 +947,7 @@ void CopyImageList(TImageList * TargetList, TImageList * SourceList)
   TargetList->Height = SourceList->Height;
   TargetList->Width = SourceList->Width;
 
-  if ((PngTargetList != NULL) && (PngSourceList != NULL))
+  if ((PngTargetList != nullptr) && (PngSourceList != nullptr))
   {
     // AddImages won't copy the names and we need them for
     // LoadDialogImage and TFrameAnimation
@@ -962,7 +962,7 @@ void CopyImageList(TImageList * TargetList, TImageList * SourceList)
 static bool DoLoadDialogImage(TImage * Image, UnicodeString & ImageName)
 {
   bool Result = false;
-  if (GlyphsModule != NULL)
+  if (GlyphsModule != nullptr)
   {
     TPngImageList * DialogImages = GetDialogImages(Image);
 
@@ -1218,7 +1218,7 @@ TBrowserViewer::TBrowserViewer(TComponent* AOwner) :
 
   OnDocumentComplete = DocumentComplete;
   OnBeforeNavigate2 = BeforeNavigate2;
-  LoadingPanel = NULL;
+  LoadingPanel = nullptr;
 }
 
 void TBrowserViewer::AddLinkHandler(
@@ -1242,7 +1242,7 @@ void TBrowserViewer::DocumentComplete(
 
   FComplete = true;
 
-  if (LoadingPanel != NULL)
+  if (LoadingPanel != nullptr)
   {
     LoadingPanel->Visible = false;
   }
@@ -1306,7 +1306,7 @@ TWebBrowserEx * CreateBrowserViewer(TPanel * Parent, UnicodeString & LoadingLabe
 
 void SetBrowserDesignModeOff(TWebBrowserEx * WebBrowser)
 {
-  if (DebugAlwaysTrue(WebBrowser->Document2 != NULL))
+  if (DebugAlwaysTrue(WebBrowser->Document2 != nullptr))
   {
     WebBrowser->Document2->designMode = L"Off";
   }
@@ -1316,7 +1316,7 @@ void AddBrowserLinkHandler(TWebBrowserEx * WebBrowser,
   UnicodeString & Url, TNotifyEvent Handler)
 {
   TBrowserViewer * BrowserViewer = dynamic_cast<TBrowserViewer *>(WebBrowser);
-  if (DebugAlwaysTrue(BrowserViewer != NULL))
+  if (DebugAlwaysTrue(BrowserViewer != nullptr))
   {
     BrowserViewer->AddLinkHandler(Url, Handler);
   }
@@ -1325,7 +1325,7 @@ void AddBrowserLinkHandler(TWebBrowserEx * WebBrowser,
 void NavigateBrowserToUrl(TWebBrowserEx * WebBrowser, UnicodeString & Url)
 {
   TBrowserViewer * BrowserViewer = dynamic_cast<TBrowserViewer *>(WebBrowser);
-  if (DebugAlwaysTrue(BrowserViewer != NULL))
+  if (DebugAlwaysTrue(BrowserViewer != nullptr))
   {
     BrowserViewer->NavigateToUrl(Url);
   }
@@ -1348,10 +1348,10 @@ void WaitBrowserToIdle(TWebBrowserEx * WebBrowser)
 
 void HideBrowserScrollbars(TWebBrowserEx * WebBrowser)
 {
-  ICustomDoc * CustomDoc = NULL;
-  if (DebugAlwaysTrue(WebBrowser->Document != NULL) &&
+  ICustomDoc * CustomDoc = nullptr;
+  if (DebugAlwaysTrue(WebBrowser->Document != nullptr) &&
       SUCCEEDED(WebBrowser->Document->QueryInterface(&CustomDoc)) &&
-      DebugAlwaysTrue(CustomDoc != NULL))
+      DebugAlwaysTrue(CustomDoc != nullptr))
   {
     TCustomDocHandler * Handler = new TCustomDocHandler(WebBrowser);
     CustomDoc->SetUIHandler(Handler);
@@ -1411,10 +1411,10 @@ void LoadBrowserDocument(TWebBrowserEx * WebBrowser, UnicodeString & Document)
   SetBrowserDesignModeOff(WebBrowser);
 
   TStreamAdapter * DocumentStreamAdapter = new TStreamAdapter(DocumentStream.get(), soReference);
-  IPersistStreamInit * PersistStreamInit = NULL;
-  if (DebugAlwaysTrue(WebBrowser->Document != NULL) &&
+  IPersistStreamInit * PersistStreamInit = nullptr;
+  if (DebugAlwaysTrue(WebBrowser->Document != nullptr) &&
       SUCCEEDED(WebBrowser->Document->QueryInterface(IID_IPersistStreamInit, (void **)&PersistStreamInit)) &&
-      DebugAlwaysTrue(PersistStreamInit != NULL))
+      DebugAlwaysTrue(PersistStreamInit != nullptr))
   {
     PersistStreamInit->Load(static_cast<_di_IStream>(*DocumentStreamAdapter));
   }
@@ -1436,10 +1436,10 @@ void WaitBrowserToIdle(TWebBrowserEx * WebBrowser)
 
 void HideBrowserScrollbars(TWebBrowserEx * WebBrowser)
 {
-  ICustomDoc * CustomDoc = NULL;
-  if (DebugAlwaysTrue(WebBrowser->Document != NULL) &&
+  ICustomDoc * CustomDoc = nullptr;
+  if (DebugAlwaysTrue(WebBrowser->Document != nullptr) &&
       SUCCEEDED(WebBrowser->Document->QueryInterface(&CustomDoc)) &&
-      DebugAlwaysTrue(CustomDoc != NULL))
+      DebugAlwaysTrue(CustomDoc != nullptr))
   {
     TCustomDocHandler * Handler = new TCustomDocHandler(WebBrowser);
     CustomDoc->SetUIHandler(Handler);
@@ -1499,10 +1499,10 @@ void LoadBrowserDocument(TWebBrowserEx * WebBrowser, UnicodeString & Document)
   SetBrowserDesignModeOff(WebBrowser);
 
   TStreamAdapter * DocumentStreamAdapter = new TStreamAdapter(DocumentStream.get(), soReference);
-  IPersistStreamInit * PersistStreamInit = NULL;
-  if (DebugAlwaysTrue(WebBrowser->Document != NULL) &&
+  IPersistStreamInit * PersistStreamInit = nullptr;
+  if (DebugAlwaysTrue(WebBrowser->Document != nullptr) &&
       SUCCEEDED(WebBrowser->Document->QueryInterface(IID_IPersistStreamInit, (void **)&PersistStreamInit)) &&
-      DebugAlwaysTrue(PersistStreamInit != NULL))
+      DebugAlwaysTrue(PersistStreamInit != nullptr))
   {
     PersistStreamInit->Load(static_cast<_di_IStream>(*DocumentStreamAdapter));
   }
@@ -1519,12 +1519,12 @@ TComponent * FindComponentRecursively(TComponent * Root, UnicodeString & Name)
     }
 
     Component = FindComponentRecursively(Component, Name);
-    if (Component != NULL)
+    if (Component != nullptr)
     {
       return Component;
     }
   }
-  return NULL;
+  return nullptr;
 }
 
 void GetInstrutionsTheme(
@@ -1534,7 +1534,7 @@ void GetInstrutionsTheme(
   MainInstructionFont = 0;
   InstructionFont = 0;
   HTHEME Theme = OpenThemeData(0, L"TEXTSTYLE");
-  if (Theme != NULL)
+  if (Theme != nullptr)
   {
     LOGFONT AFont;
     COLORREF AColor;
@@ -1546,7 +1546,7 @@ void GetInstrutionsTheme(
   MainInstructionFont = 0;
   InstructionFont = 0;
   HTHEME Theme = OpenThemeData(0, L"TEXTSTYLE");
-  if (Theme != NULL)
+  if (Theme != nullptr)
   {
     LOGFONT AFont;
     COLORREF AColor;
@@ -1555,7 +1555,7 @@ void GetInstrutionsTheme(
     // Using Canvas->Handle in the 2nd argument we can get scaled font,
     // but at this point the form is sometime not scaled yet (difference is particularly for standalone messages like
     // /UninstallCleanup), so the results are inconsistent.
-    if (GetThemeFont(Theme, NULL, TEXT_MAININSTRUCTION, 0, TMT_FONT, &AFont) == S_OK)
+    if (GetThemeFont(Theme, nullptr, TEXT_MAININSTRUCTION, 0, TMT_FONT, &AFont) == S_OK)
     {
       MainInstructionFont = CreateFontIndirect(&AFont);
     }
@@ -1565,7 +1565,7 @@ void GetInstrutionsTheme(
     }
 
     memset(&AFont, 0, sizeof(AFont));
-    if (GetThemeFont(Theme, NULL, TEXT_INSTRUCTION, 0, TMT_FONT, &AFont) == S_OK)
+    if (GetThemeFont(Theme, nullptr, TEXT_INSTRUCTION, 0, TMT_FONT, &AFont) == S_OK)
     {
       InstructionFont = CreateFontIndirect(&AFont);
     }
@@ -1773,7 +1773,7 @@ void TFrameAnimation::Init(TPaintBox * PaintBox, UnicodeString & Name)
   FPaintBox = PaintBox;
 
   FPaintBox->ControlStyle = FPaintBox->ControlStyle << csOpaque;
-  DebugAssert((FPaintBox->OnPaint == NULL) || (FPaintBox->OnPaint == PaintBoxPaint));
+  DebugAssert((FPaintBox->OnPaint == nullptr) || (FPaintBox->OnPaint == PaintBoxPaint));
   FPaintBox->OnPaint = PaintBoxPaint;
   SetRescaleFunction(FPaintBox, PaintBoxRescale, reinterpret_cast<TObject *>(this));
 
@@ -1836,7 +1836,7 @@ void TFrameAnimation::PaintBoxRescale(TComponent * /*Sender*/, TObject * Token)
 
 void TFrameAnimation::Rescale()
 {
-  bool Started = (FTimer != NULL) && FTimer->Enabled;
+  bool Started = (FTimer != nullptr) && FTimer->Enabled;
   DoInit();
   if (Started)
   {
@@ -1851,7 +1851,7 @@ void TFrameAnimation::Start()
     FNextFrameTick = GetTickCount();
     CalculateNextFrameTick();
 
-    if (FTimer == NULL)
+    if (FTimer == nullptr)
     {
       FTimer = new TTimer(GetParentForm(FPaintBox));
       FTimer->Interval = static_cast<int>(GUIUpdateInterval);
@@ -1912,7 +1912,7 @@ void TFrameAnimation::Stop()
   FCurrentFrame = FFirstFrame;
   Repaint();
 
-  if (FTimer != NULL)
+  if (FTimer != nullptr)
   {
     FTimer->Enabled = false;
   }
@@ -1983,14 +1983,14 @@ int TScreenTipHintWindow::GetTextFlags(TControl * Control)
 bool TScreenTipHintWindow::UseBoldShortHint(TControl * HintControl)
 {
   return
-    (dynamic_cast<TTBCustomDockableWindow *>(HintControl) != NULL) ||
-    (dynamic_cast<TTBPopupWindow *>(HintControl) != NULL) ||
+    (dynamic_cast<TTBCustomDockableWindow *>(HintControl) != nullptr) ||
+    (dynamic_cast<TTBPopupWindow *>(HintControl) != nullptr) ||
     (HintControl->Perform(WM_WANTS_SCREEN_TIPS, 0, 0) == 1);
 }
 
 bool TScreenTipHintWindow::IsPathLabel(TControl * HintControl)
 {
-  return (dynamic_cast<TPathLabel *>(HintControl) != NULL);
+  return (dynamic_cast<TPathLabel *>(HintControl) != nullptr);
 }
 
 intptr_t TScreenTipHintWindow::GetMargin(TControl *HintControl, UnicodeString Hint)
@@ -2309,7 +2309,7 @@ UnicodeString FileNameFormatString(UnicodeString SingleFileFormat,
 static int HideAccelFlag(TControl * Control)
 {
   //ask the top level window about its UI state
-  while (Control->Parent != NULL)
+  while (Control->Parent != nullptr)
   {
     Control = Control->Parent;
   }
@@ -2365,7 +2365,7 @@ private:
 };
 
 std::unique_ptr<TCriticalSection> SystemRequiredThreadSection(TraceInitPtr(new TCriticalSection()));
-TSystemRequiredThread * SystemRequiredThread = NULL;
+TSystemRequiredThread * SystemRequiredThread = nullptr;
 
 TSystemRequiredThread::TSystemRequiredThread() :
   TSignalThread(true), FRequired(false)
@@ -2415,7 +2415,7 @@ void SystemRequired()
   if (IsWin11())
   {
     TGuard Guard(SystemRequiredThreadSection.get());
-    if (SystemRequiredThread == NULL)
+    if (SystemRequiredThread == nullptr)
     {
       AppLog("Starting system required thread");
       SystemRequiredThread = new TSystemRequiredThread();
@@ -2435,10 +2435,10 @@ void GUIFinalize()
   {
     TGuard Guard(SystemRequiredThreadSection.get());
     Thread = SystemRequiredThread;
-    SystemRequiredThread = NULL;
+    SystemRequiredThread = nullptr;
   }
 
-  if (Thread != NULL)
+  if (Thread != nullptr)
   {
     AppLog("Stopping system required thread");
     Thread->Terminate();

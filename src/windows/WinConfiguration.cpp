@@ -25,7 +25,7 @@
 
 #pragma package(smart_init)
 
-TWinConfiguration * WinConfiguration = NULL;
+TWinConfiguration * WinConfiguration = nullptr;
 
 static UnicodeString NotepadName(L"notepad.exe");
 static UnicodeString ToolbarsLayoutKey(L"ToolbarsLayout2");
@@ -360,14 +360,14 @@ void TEditorList::Delete(int Index)
 const TEditorPreferences * TEditorList::Find(
   const UnicodeString FileName, bool Local, const TFileMasks::TParams & Params) const
 {
-  const TEditorPreferences * Result = NULL;
+  const TEditorPreferences * Result = nullptr;
   int i = 0;
-  while ((i < FEditors->Count) && (Result == NULL))
+  while ((i < FEditors->Count) && (Result == nullptr))
   {
     Result = Editors[i];
     if (!Result->Matches(FileName, Local, Params))
     {
-      Result = NULL;
+      Result = nullptr;
     }
     i++;
   }
@@ -382,7 +382,7 @@ void TEditorList::Load(THierarchicalStorage * Storage)
   do
   {
     UnicodeString Name = IntToStr(Index);
-    TEditorPreferences * Editor = NULL;
+    TEditorPreferences * Editor = nullptr;
     try
     {
       Next = Storage->OpenSubKey(Name, false);
@@ -405,7 +405,7 @@ void TEditorList::Load(THierarchicalStorage * Storage)
       throw;
     }
 
-    if (Editor != NULL)
+    if (Editor != nullptr)
     {
       FEditors->Add(reinterpret_cast<TObject *>(Editor));
     }
@@ -501,7 +501,7 @@ TWinConfiguration::TWinConfiguration(): TCustomWinConfiguration()
   }
 
   // Load complete locale according to the UI language
-  SetLocaleInternal(NULL, true, true);
+  SetLocaleInternal(nullptr, true, true);
   FDefaultLocale = AppliedLocale;
 }
 
@@ -889,7 +889,7 @@ TStorage TWinConfiguration::GetStorage()
 {
   if (FStorage == stDetect)
   {
-    if (FindResourceEx(NULL, RT_RCDATA, L"WINSCP_SESSION",
+    if (FindResourceEx(nullptr, RT_RCDATA, L"WINSCP_SESSION",
       MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL)))
     {
       FTemporarySessionFile =
@@ -931,8 +931,8 @@ void TWinConfiguration::RecryptPasswords(TStrings * RecryptPasswordErrors)
   try
   {
     TTerminalManager * Manager = TTerminalManager::Instance(false);
-    DebugAssert(Manager != NULL);
-    if (Manager != NULL)
+    DebugAssert(Manager != nullptr);
+    if (Manager != nullptr)
     {
       Manager->RecryptPasswords();
     }
@@ -1263,7 +1263,7 @@ void TWinConfiguration::LoadFrom(THierarchicalStorage * Storage)
     int EditorCount = FEditorList->Count;
     if (EditorCount == 0)
     {
-      TEditorPreferences * AlternativeEditor = NULL;
+      TEditorPreferences * AlternativeEditor = nullptr;
       try
       {
         if (FLegacyEditor->Data->Editor == edInternal)
@@ -1295,8 +1295,8 @@ void TWinConfiguration::LoadFrom(THierarchicalStorage * Storage)
       }
 
       FEditorList->Add(FLegacyEditor);
-      FLegacyEditor = NULL;
-      if (AlternativeEditor != NULL)
+      FLegacyEditor = nullptr;
+      if (AlternativeEditor != nullptr)
       {
         FEditorList->Add(AlternativeEditor);
       }
@@ -1310,7 +1310,7 @@ void TWinConfiguration::LoadFrom(THierarchicalStorage * Storage)
   __finally
   {
     delete FLegacyEditor;
-    FLegacyEditor = NULL;
+    FLegacyEditor = nullptr;
   }
 
   if (FUpdates.ConnectionType == -1)
@@ -1592,7 +1592,7 @@ void TWinConfiguration::LoadData(THierarchicalStorage * Storage)
   }
 
   // load legacy editor configuration
-  DebugAssert(FLegacyEditor != NULL);
+  DebugAssert(FLegacyEditor != nullptr);
   if (Storage->OpenSubKeyPath(L"Interface\\Editor", false))
   {
     try
@@ -1729,7 +1729,7 @@ bool TWinConfiguration::GetDDExtInstalled()
     {
       void * DragExtRef;
       int CreateResult =
-        CoCreateInstance(CLSID_ShellExtension, NULL,
+        CoCreateInstance(CLSID_ShellExtension, nullptr,
           CLSCTX_INPROC_SERVER | CLSCTX_LOCAL_SERVER, IID_IUnknown,
           &DragExtRef);
       bool Result = (CreateResult == S_OK);
@@ -1754,7 +1754,7 @@ bool TWinConfiguration::IsDDExtRunning()
   else
   {
     HANDLE H = OpenMutex(SYNCHRONIZE, False, DRAG_EXT_RUNNING_MUTEX);
-    Result = (H != NULL);
+    Result = (H != nullptr);
     CloseHandle(H);
   }
 
@@ -1904,7 +1904,7 @@ void TWinConfiguration::AskForMasterPassword()
     FMasterPasswordSessionAsked = true;
   }
 
-  if (FOnMasterPasswordPrompt == NULL)
+  if (FOnMasterPasswordPrompt == nullptr)
   {
     throw Exception("Master password handler not set");
   }
@@ -2550,7 +2550,7 @@ TStrings * TWinConfiguration::FindTemporaryFolders()
 
   if (Result->Count == 0)
   {
-    Result.reset(NULL);
+    Result.reset(nullptr);
   }
 
   return Result.release();
@@ -2564,13 +2564,13 @@ TStrings * TWinConfiguration::FindTemporaryFolders()
 bool TWinConfiguration::AnyTemporaryFolders()
 {
   std::unique_ptr<TStrings> Folders(DoFindTemporaryFolders(true));
-  return (Folders.get() != NULL);
+  return (Folders.get() != nullptr);
 }
 
 void TWinConfiguration::CleanupTemporaryFolders(TStrings * Folders)
 {
   std::unique_ptr<TStrings> Folders(FindTemporaryFolders());
-  if (Folders.get() != NULL)
+  if (Folders.get() != nullptr)
   {
     CleanupTemporaryFolders(Folders.get());
   }
@@ -2622,7 +2622,7 @@ HINSTANCE TWinConfiguration::LoadNewResourceModule(LCID ALocale,
   UnicodeString & FileName)
 {
   HINSTANCE Instance = TCustomWinConfiguration::LoadNewResourceModule(ALocale, FileName);
-  if (Instance != NULL)
+  if (Instance != nullptr)
   {
     try
     {
@@ -2667,7 +2667,7 @@ void TWinConfiguration::CheckDefaultTranslation()
   if (!FInvalidDefaultTranslationMessage.IsEmpty())
   {
     MoreMessageDialog(FMTLOAD(INVALID_DEFAULT_TRANSLATION,
-      (FInvalidDefaultTranslationMessage)), NULL, qtWarning, qaOK, HELP_NONE);
+      (FInvalidDefaultTranslationMessage)), nullptr, qtWarning, qaOK, HELP_NONE);
   }
 }
 
@@ -3829,7 +3829,7 @@ const TCustomCommandType * TCustomCommandList::Find(const UnicodeString Name) co
       return Commands[Index];
     }
   }
-  return NULL;
+  return nullptr;
 }
 
 const TCustomCommandType * TCustomCommandList::Find(TShortCut ShortCut) const
@@ -3841,7 +3841,7 @@ const TCustomCommandType * TCustomCommandList::Find(TShortCut ShortCut) const
       return Commands[Index];
     }
   }
-  return NULL;
+  return nullptr;
 }
 
 int TCustomCommandList::FindIndexByFileName(const UnicodeString & FileName) const

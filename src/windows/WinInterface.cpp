@@ -34,13 +34,13 @@ __removed #include <WinApi.h>
 
 #define WM_TRAY_ICON (WM_WINSCP_USER + 5)
 //---------------------------------------------------------------------
-TNotifyEvent GlobalOnMinimize = NULL;
+TNotifyEvent GlobalOnMinimize = nullptr;
 //---------------------------------------------------------------------
 const IID IID_IListView_Win7 = {0xE5B16AF2, 0x3990, 0x4681, {0xA6, 0x09, 0x1F, 0x06, 0x0C, 0xD1, 0x42, 0x69}};
 //---------------------------------------------------------------------
 void FormHelp(TCustomForm * Form)
 {
-  InvokeHelp(Form->ActiveControl != NULL ? Form->ActiveControl : Form);
+  InvokeHelp(Form->ActiveControl != nullptr ? Form->ActiveControl : Form);
 }
 #endif // #if 0
 
@@ -119,9 +119,9 @@ static bool IsPositiveAnswer(uintptr_t Answer)
 static void NeverAskAgainCheckClick(void * /*Data*/, TObject * Sender)
 {
   TCheckBox * CheckBox = dynamic_cast<TCheckBox *>(Sender);
-  DebugAssert(CheckBox != NULL);
+  DebugAssert(CheckBox != nullptr);
   TForm * Dialog = dynamic_cast<TForm *>(CheckBox->Owner);
-  DebugAssert(Dialog != NULL);
+  DebugAssert(Dialog != nullptr);
 
   unsigned int PositiveAnswer = 0;
 
@@ -136,7 +136,7 @@ static void NeverAskAgainCheckClick(void * /*Data*/, TObject * Sender)
       for (int ii = 0; ii < Dialog->ControlCount; ii++)
       {
         TButton * Button = dynamic_cast<TButton *>(Dialog->Controls[ii]);
-        if (Button != NULL)
+        if (Button != nullptr)
         {
           if (IsPositiveAnswer(Button->ModalResult))
           {
@@ -153,14 +153,14 @@ static void NeverAskAgainCheckClick(void * /*Data*/, TObject * Sender)
   for (int ii = 0; ii < Dialog->ControlCount; ii++)
   {
     TButton * Button = dynamic_cast<TButton *>(Dialog->Controls[ii]);
-    if (Button != NULL)
+    if (Button != nullptr)
     {
       if ((Button->ModalResult != 0) && (Button->ModalResult != static_cast<int>(qaCancel)))
       {
         Button->Enabled = !CheckBox->Checked || (Button->ModalResult == static_cast<int>(PositiveAnswer));
       }
 
-      if (Button->DropDownMenu != NULL)
+      if (Button->DropDownMenu != nullptr)
       {
         for (int iii = 0; iii < Button->DropDownMenu->Items->Count; iii++)
         {
@@ -190,10 +190,10 @@ TForm * CreateMessageDialogEx(const UnicodeString Msg,
     default: DebugFail();
   }
 
-  unsigned int TimeoutAnswer = (Params != NULL) ? Params->TimeoutAnswer : 0;
+  unsigned int TimeoutAnswer = (Params != nullptr) ? Params->TimeoutAnswer : 0;
 
   unsigned int ActualAnswers = Answers;
-  if ((Params == NULL) || Params->AllowHelp)
+  if ((Params == nullptr) || Params->AllowHelp)
   {
     Answers = Answers | qaHelp;
   }
@@ -203,16 +203,16 @@ TForm * CreateMessageDialogEx(const UnicodeString Msg,
     Answers = Answers | qaReport;
   }
 
-  if ((MoreMessages != NULL) && (MoreMessages->Count == 0))
+  if ((MoreMessages != nullptr) && (MoreMessages->Count == 0))
   {
-    MoreMessages = NULL;
+    MoreMessages = nullptr;
   }
 
   UnicodeString ImageName;
   UnicodeString MoreMessagesUrl;
   TSize MoreMessagesSize;
   UnicodeString CustomCaption;
-  if (Params != NULL)
+  if (Params != nullptr)
   {
     ImageName = Params->ImageName;
     MoreMessagesUrl = Params->MoreMessagesUrl;
@@ -220,11 +220,11 @@ TForm * CreateMessageDialogEx(const UnicodeString Msg,
     CustomCaption = Params->CustomCaption;
   }
 
-  const TQueryButtonAlias * Aliases = (Params != NULL) ? Params->Aliases : NULL;
-  unsigned int AliasesCount = (Params != NULL) ? Params->AliasesCount : 0;
+  const TQueryButtonAlias * Aliases = (Params != nullptr) ? Params->Aliases : nullptr;
+  unsigned int AliasesCount = (Params != nullptr) ? Params->AliasesCount : 0;
 
   UnicodeString NeverAskAgainCaption;
-  bool HasNeverAskAgain = (Params != NULL) && FLAGSET(Params->Params, mpNeverAskAgainCheck);
+  bool HasNeverAskAgain = (Params != nullptr) && FLAGSET(Params->Params, mpNeverAskAgainCheck);
   if (HasNeverAskAgain)
   {
     NeverAskAgainCaption =
@@ -241,7 +241,7 @@ TForm * CreateMessageDialogEx(const UnicodeString Msg,
 
   try
   {
-    if (HasNeverAskAgain && DebugAlwaysTrue(Params != NULL))
+    if (HasNeverAskAgain && DebugAlwaysTrue(Params != nullptr))
     {
       TCheckBox * NeverAskAgainCheck = FindNeverAskAgainCheck(Dialog);
       NeverAskAgainCheck->Checked = Params->NeverAskAgainCheckedInitially;
@@ -281,7 +281,7 @@ unsigned int ExecuteMessageDialog(TForm * Dialog, unsigned int Answers, const TM
     Answer = CancelAnswer(Answers);
   }
 
-  if ((Params != NULL) && (Params->Params & mpNeverAskAgainCheck))
+  if ((Params != nullptr) && (Params->Params & mpNeverAskAgainCheck))
   {
     TCheckBox * NeverAskAgainCheck = FindNeverAskAgainCheck(Dialog);
 
@@ -315,14 +315,14 @@ protected:
 
 TMessageTimer::TMessageTimer(TComponent * AOwner) : TTimer(AOwner)
 {
-  Event = NULL;
+  Event = nullptr;
   OnTimer = DoTimer;
-  Dialog = NULL;
+  Dialog = nullptr;
 }
 
 void TMessageTimer::DoTimer(TObject * /*Sender*/)
 {
-  if (Event != NULL)
+  if (Event != nullptr)
   {
     unsigned int Result = 0;
     Event(Result);
@@ -386,7 +386,7 @@ void TMessageTimeout::MouseMove()
   int Delta = std::max(std::abs(FOrigCursorPos.X - CursorPos.X), std::abs(FOrigCursorPos.Y - CursorPos.Y));
 
   int Threshold = 8;
-  if (DebugAlwaysTrue(FButton != NULL))
+  if (DebugAlwaysTrue(FButton != nullptr))
   {
     Threshold = ScaleByTextHeight(FButton, Threshold);
   }
@@ -408,7 +408,7 @@ void TMessageTimeout::Cancel()
 
 void TMessageTimeout::UpdateButton()
 {
-  DebugAssert(FButton != NULL);
+  DebugAssert(FButton != nullptr);
   FButton->Caption =
     !Enabled ? FOrigCaption : FMTLOAD(TIMEOUT_BUTTON, (FOrigCaption, int(FTimeout / MSecsPerSec)));
 }
@@ -417,7 +417,7 @@ void TMessageTimeout::DoTimer(TObject * /*Sender*/)
 {
   if (FTimeout <= Interval)
   {
-    DebugAssert(FButton != NULL);
+    DebugAssert(FButton != nullptr);
 
     // Needed particularly for "keep up to date" dialog, which does not close on the button click
     Enabled = false;
@@ -460,9 +460,9 @@ TForm * CreateMoreMessageDialogEx(const UnicodeString Message, TStrings * MoreMe
 {
   std::unique_ptr<TForm> Dialog;
   UnicodeString AMessage = Message;
-  TMessageTimer * Timer = NULL;
+  TMessageTimer * Timer = nullptr;
 
-  if ((Params != NULL) && (Params->Timer > 0))
+  if ((Params != nullptr) && (Params->Timer > 0))
   {
     Timer = new TMessageTimer(Application);
     Timer->Interval = Params->Timer;
@@ -482,18 +482,18 @@ TForm * CreateMoreMessageDialogEx(const UnicodeString Message, TStrings * MoreMe
     Timer->Name = L"MessageTimer";
   }
 
-  TButton * TimeoutButton = NULL;
+  TButton * TimeoutButton = nullptr;
   Dialog.reset(
     CreateMessageDialogEx(
       AMessage, MoreMessages, Type, Answers, HelpKeyword, Params, TimeoutButton));
 
-  if (Timer != NULL)
+  if (Timer != nullptr)
   {
     Timer->Dialog = Dialog.get();
     Dialog->InsertComponent(Timer);
   }
 
-  if (Params != NULL)
+  if (Params != nullptr)
   {
     if (Params->Timeout > 0)
     {
@@ -515,13 +515,13 @@ unsigned int MoreMessageDialog(const UnicodeString Message, TStrings * MoreMessa
 unsigned int MessageDialog(const UnicodeString Msg, TQueryType Type,
   unsigned int Answers, UnicodeString HelpKeyword, const TMessageParams * Params)
 {
-  return MoreMessageDialog(Msg, NULL, Type, Answers, HelpKeyword, Params);
+  return MoreMessageDialog(Msg, nullptr, Type, Answers, HelpKeyword, Params);
 }
 
 unsigned int SimpleErrorDialog(const UnicodeString Msg, const UnicodeString MoreMessages)
 {
   unsigned int Result;
-  TStrings * More = NULL;
+  TStrings * More = nullptr;
   try
   {
     if (!MoreMessages.IsEmpty())
@@ -699,7 +699,7 @@ uint32_t FatalExceptionMessageDialog(Exception * E, TQueryType Type,
     AParams.TimeoutAnswer = qaRetry;
     AParams.TimeoutResponse = AParams.TimeoutAnswer;
   }
-  DebugAssert(AParams.Aliases == NULL);
+  DebugAssert(AParams.Aliases == nullptr);
   AParams.Aliases = Aliases;
   AParams.AliasesCount = LENOF(Aliases);
 
@@ -714,16 +714,16 @@ static void DoExceptNotify(TObject * ExceptObj, void * ExceptAddr,
   bool OSException, void * BaseOfStack)
 {
 #if 0
-  if (ExceptObj != NULL)
+  if (ExceptObj != nullptr)
   {
     Exception * E = dynamic_cast<Exception *>(ExceptObj);
-    if ((E != NULL) && IsInternalException(E))
+    if ((E != nullptr) && IsInternalException(E))
     {
       DoExceptionStackTrace(ExceptObj, ExceptAddr, OSException, BaseOfStack);
 
       TJclStackInfoList * StackInfoList = JclLastExceptStackList();
 
-      if (DebugAlwaysTrue(StackInfoList != NULL))
+      if (DebugAlwaysTrue(StackInfoList != nullptr))
       {
         std::unique_ptr<TStrings> StackTrace(StackInfoListToStrings(StackInfoList));
 
@@ -742,7 +742,7 @@ static void DoExceptNotify(TObject * ExceptObj, void * ExceptAddr,
           StackTraceMap.insert(std::make_pair(ThreadID, StackTrace.release()));
         }
 
-        // this chains so that JclLastExceptStackList() returns NULL the next time
+        // this chains so that JclLastExceptStackList() returns nullptr the next time
         // for the current thread
         delete StackInfoList;
       }
@@ -911,7 +911,7 @@ void CopyParamListPopup(TRect Rect, TPopupMenu * Menu,
   }
 
 
-  MenuPopup(Menu, Rect, NULL);
+  MenuPopup(Menu, Rect, nullptr);
 }
 
 int CopyParamListPopupClick(TObject * Sender,
@@ -919,7 +919,7 @@ int CopyParamListPopupClick(TObject * Sender,
   bool * SaveSettings)
 {
   TComponent * Item = dynamic_cast<TComponent *>(Sender);
-  DebugAssert(Item != NULL);
+  DebugAssert(Item != nullptr);
   DebugAssert((Item->Tag >= cpiSavePreset) && (Item->Tag < GUIConfiguration->CopyParamList->Count));
 
   int Result;
@@ -940,7 +940,7 @@ int CopyParamListPopupClick(TObject * Sender,
   }
   else if (Item->Tag == cpiSaveSettings)
   {
-    if (DebugAlwaysTrue(SaveSettings != NULL))
+    if (DebugAlwaysTrue(SaveSettings != nullptr))
     {
       *SaveSettings = !*SaveSettings;
     }
@@ -951,7 +951,7 @@ int CopyParamListPopupClick(TObject * Sender,
     std::unique_ptr<TCopyParamList> CopyParamList(new TCopyParamList());
     *CopyParamList = *GUIConfiguration->CopyParamList;
     int Index = -1;
-    if (DoCopyParamPresetDialog(CopyParamList.get(), Index, cpmAdd, NULL, Param))
+    if (DoCopyParamPresetDialog(CopyParamList.get(), Index, cpmAdd, nullptr, Param))
     {
       GUIConfiguration->CopyParamList = CopyParamList.get();
       // If saved unmodified, then make this the selected preset
@@ -971,7 +971,7 @@ int CopyParamListPopupClick(TObject * Sender,
     std::unique_ptr<TCopyParamList> CopyParamList(new TCopyParamList());
     *CopyParamList = *GUIConfiguration->CopyParamList;
     int Index = -1;
-    if (DoCopyParamPresetDialog(CopyParamList.get(), Index, cpmAdd, NULL, Param))
+    if (DoCopyParamPresetDialog(CopyParamList.get(), Index, cpmAdd, nullptr, Param))
     {
       GUIConfiguration->CopyParamList = CopyParamList.get();
       // If saved unmodified, then make this the selected preset
@@ -1136,7 +1136,7 @@ void TWinInteractiveCustomCommand::Execute(
   HANDLE StdInInput;
   SECURITY_ATTRIBUTES SecurityAttributes;
   SecurityAttributes.nLength = sizeof(SecurityAttributes);
-  SecurityAttributes.lpSecurityDescriptor = NULL;
+  SecurityAttributes.lpSecurityDescriptor = nullptr;
   SecurityAttributes.bInheritHandle = TRUE;
   try
   {
@@ -1160,8 +1160,8 @@ void TWinInteractiveCustomCommand::Execute(
       StartupInfo.hStdOutput = StdOutInput;
       StartupInfo.dwFlags = STARTF_USESTDHANDLES | STARTF_USESHOWWINDOW;
 
-      if (!CreateProcess(NULL, Command.c_str(), &SecurityAttributes, &SecurityAttributes,
-            TRUE, NORMAL_PRIORITY_CLASS, NULL, NULL, &StartupInfo, &ProcessInformation))
+      if (!CreateProcess(nullptr, Command.c_str(), &SecurityAttributes, &SecurityAttributes,
+            TRUE, NORMAL_PRIORITY_CLASS, nullptr, nullptr, &StartupInfo, &ProcessInformation))
       {
         throw Exception(FMTLOAD(SHELL_PATTERN_ERROR, (Command, L"process")));
       }
@@ -1190,11 +1190,11 @@ void TWinInteractiveCustomCommand::Execute(
 
           char Buffer[1024];
           unsigned long Read;
-          while (PeekNamedPipe(StdOutOutput, NULL, 0, NULL, &Read, NULL) &&
+          while (PeekNamedPipe(StdOutOutput, nullptr, 0, nullptr, &Read, nullptr) &&
                  (Read > 0))
 
           {
-            if (!ReadFile(StdOutOutput, &Buffer, Read, &Read, NULL))
+            if (!ReadFile(StdOutOutput, &Buffer, Read, &Read, nullptr))
             {
               throw Exception(FMTLOAD(SHELL_PATTERN_ERROR, (Command, L"read")));
             }
@@ -1247,7 +1247,7 @@ void MenuPopup(TPopupMenu * Menu, TButton * Button)
 void MenuPopup(TObject * Sender, const TPoint & MousePos, bool & Handled)
 {
   TControl * Control = dynamic_cast<TControl *>(Sender);
-  DebugAssert(Control != NULL);
+  DebugAssert(Control != nullptr);
   TPoint Point;
   if ((MousePos.x == -1) && (MousePos.y == -1))
   {
@@ -1258,7 +1258,7 @@ void MenuPopup(TObject * Sender, const TPoint & MousePos, bool & Handled)
     Point = Control->ClientToScreen(MousePos);
   }
   TPopupMenu * PopupMenu = (reinterpret_cast<TPublicControl *>(Control))->PopupMenu;
-  DebugAssert(PopupMenu != NULL);
+  DebugAssert(PopupMenu != nullptr);
   TRect Rect(Point, Point);
   MenuPopup(PopupMenu, Rect, Control);
   Handled = true;
@@ -1267,10 +1267,10 @@ void MenuPopup(TObject * Sender, const TPoint & MousePos, bool & Handled)
 TComponent * GetPopupComponent(TObject * Sender)
 {
   TComponent * Item = dynamic_cast<TComponent *>(Sender);
-  DebugAssert(Item != NULL);
+  DebugAssert(Item != nullptr);
   TPopupMenu * PopupMenu = dynamic_cast<TPopupMenu *>(Item->Owner);
-  DebugAssert(PopupMenu != NULL);
-  DebugAssert(PopupMenu->PopupComponent != NULL);
+  DebugAssert(PopupMenu != nullptr);
+  DebugAssert(PopupMenu->PopupComponent != nullptr);
   return PopupMenu->PopupComponent;
 }
 
@@ -1396,7 +1396,7 @@ int AdjustLocaleFlag(const UnicodeString & S, TLocaleFlagOverride LocaleFlagOver
 
 void SetGlobalMinimizeHandler(TCustomForm * /*Form*/, TNotifyEvent OnMinimize)
 {
-  if (GlobalOnMinimize == NULL)
+  if (GlobalOnMinimize == nullptr)
   {
     GlobalOnMinimize = OnMinimize;
   }
@@ -1406,14 +1406,14 @@ void ClearGlobalMinimizeHandler(TNotifyEvent OnMinimize)
 {
   if (GlobalOnMinimize == OnMinimize)
   {
-    GlobalOnMinimize = NULL;
+    GlobalOnMinimize = nullptr;
   }
 }
 
 void CallGlobalMinimizeHandler(TObject * Sender)
 {
   Configuration->Usage->Inc(L"OperationMinimizations");
-  if (DebugAlwaysTrue(GlobalOnMinimize != NULL))
+  if (DebugAlwaysTrue(GlobalOnMinimize != nullptr))
   {
     GlobalOnMinimize(Sender);
   }
@@ -1477,10 +1477,10 @@ static void DoApplicationMinimizeRestore(bool Minimize)
     // Probably not really necessary for minimizing phase,
     // but we do it for consistency anyway.
     bool RestoreMainForm = false;
-    if (DebugAlwaysTrue(MainForm != NULL) &&
+    if (DebugAlwaysTrue(MainForm != nullptr) &&
         !MainForm->Visible)
     {
-      SetAppMainForm(NULL);
+      SetAppMainForm(nullptr);
       RestoreMainForm = true;
     }
     try
@@ -1541,14 +1541,14 @@ bool HandleMinimizeSysCommand(TMessage & Message)
 void ClickToolbarItem(TTBCustomItem * Item, bool PositionCursor)
 {
   TTBCustomItem * TopItem = Item;
-  while (TopItem->Parent != NULL)
+  while (TopItem->Parent != nullptr)
   {
     TopItem = TopItem->Parent;
   }
   TTBCustomToolbar * Toolbar = dynamic_cast<TTBCustomToolbar *>(TopItem->ParentComponent);
-  DebugAssert(Toolbar != NULL);
+  DebugAssert(Toolbar != nullptr);
   TTBItemViewer * Viewer = Toolbar->View->Find(Item);
-  DebugAssert(Viewer != NULL);
+  DebugAssert(Viewer != nullptr);
 
   int X = Viewer->BoundsRect.Left + (Viewer->BoundsRect.Width() / 2);
   int Y = Viewer->BoundsRect.Top + (Viewer->BoundsRect.Height() / 2);
@@ -1653,7 +1653,7 @@ void TCallstackThread::ProcessEvent()
     try
     {
       TJclStackInfoList * StackInfoList = JclCreateThreadStackTraceFromID(true, MainThreadID);
-      if (StackInfoList == NULL)
+      if (StackInfoList == nullptr)
       {
         RaiseLastOSError();
       }
@@ -1674,7 +1674,7 @@ void TCallstackThread::ProcessEvent()
 HANDLE TCallstackThread::DoCreateEvent()
 {
   UnicodeString Name = DumpCallstackEventName(GetCurrentProcessId());
-  return CreateEvent(NULL, false, false, Name.c_str());
+  return CreateEvent(nullptr, false, false, Name.c_str());
 }
 
 
@@ -1686,7 +1686,7 @@ static void AppGetMainFormHandle(void * /*Data*/, HWND & Handle)
   // This, among other, causes minimizing of the top-level non-MainForm minimize other child windows.
   // Like clicking "Minimize" on Progress window over Synchronization progress window over Synchronization checklist window.
   // Would also have a lot of other effects (hopefully possitive) and may render lot of existing MainFormLike code obsolete.
-  if ((MainForm != NULL) && IsMainFormLike(MainForm) && MainForm->HandleAllocated())
+  if ((MainForm != nullptr) && IsMainFormLike(MainForm) && MainForm->HandleAllocated())
   {
     Handle = MainForm->Handle;
   }
@@ -1708,7 +1708,7 @@ void WinInitialize()
   __removed SetErrorMode(SEM_FAILCRITICALERRORS);
   __removed OnApiPath = ApiPath;
   MainThread = GetCurrentThreadId();
-  __removed Application->OnGetMainFormHandle = MakeMethod<TGetHandleEvent>(NULL, AppGetMainFormHandle);
+  __removed Application->OnGetMainFormHandle = MakeMethod<TGetHandleEvent>(nullptr, AppGetMainFormHandle);
 
 __removed #pragma warn -8111
 __removed #pragma warn .8111
@@ -1718,7 +1718,7 @@ __removed #pragma warn .8111
 void WinFinalize()
 {
 #if 0
-  CallstackThread.reset(NULL);
+  CallstackThread.reset(nullptr);
   JclRemoveExceptNotifier(DoExceptNotify);
 #endif // #if 0
 }
@@ -1727,9 +1727,9 @@ void WinFinalize()
 ::TTrayIcon::TTrayIcon(unsigned int Id)
 {
   FVisible = false;
-  FOnClick = NULL;
-  FOnBalloonClick = NULL;
-  FBalloonUserData = NULL;
+  FOnClick = nullptr;
+  FOnBalloonClick = nullptr;
+  FBalloonUserData = nullptr;
 
   FTrayIcon = new NOTIFYICONDATA;
   memset(FTrayIcon, 0, sizeof(*FTrayIcon));
@@ -1742,7 +1742,7 @@ void WinFinalize()
   {
     typedef HRESULT WINAPI (* TLoadIconMetric)(HINSTANCE hinst, PCWSTR pszName, int lims, __out HICON *phico);
     TLoadIconMetric LoadIconMetric = (TLoadIconMetric)GetProcAddress(ComCtl32Dll, "LoadIconMetric");
-    if (LoadIconMetric != NULL)
+    if (LoadIconMetric != nullptr)
     {
       // Prefer not to use Application->Icon->Handle as that shows 32x32 scaled down to 16x16 for some reason
       LoadIconMetric(MainInstance, L"MAINICON", LIM_SMALL, &FTrayIcon->hIcon);
@@ -1831,9 +1831,9 @@ void ::TTrayIcon::PopupBalloon(UnicodeString Title,
 
 void ::TTrayIcon::BalloonCancelled()
 {
-  FOnBalloonClick = NULL;
+  FOnBalloonClick = nullptr;
   delete FBalloonUserData;
-  FBalloonUserData = NULL;
+  FBalloonUserData = nullptr;
 }
 
 void ::TTrayIcon::CancelBalloon()
@@ -1913,9 +1913,9 @@ void ::TTrayIcon::WndProc(TMessage & Message)
         case WM_RBUTTONUP:
         // new shell32:
         case WM_CONTEXTMENU:
-          if (OnClick != NULL)
+          if (OnClick != nullptr)
           {
-            OnClick(NULL);
+            OnClick(nullptr);
           }
           Message.Result = true;
           break;
@@ -1923,17 +1923,17 @@ void ::TTrayIcon::WndProc(TMessage & Message)
 
       if (Message.LParam == NIN_BALLOONUSERCLICK)
       {
-        if (FOnBalloonClick != NULL)
+        if (FOnBalloonClick != nullptr)
         {
           // prevent the user data from being freed by possible call
           // to CancelBalloon or PopupBalloon during call to OnBalloonClick
           std::unique_ptr<TObject> UserData(FBalloonUserData);
-          FBalloonUserData = NULL;
+          FBalloonUserData = nullptr;
           FOnBalloonClick(UserData.get());
         }
-        else if (OnClick != NULL)
+        else if (OnClick != nullptr)
         {
-          OnClick(NULL);
+          OnClick(nullptr);
         }
       }
 

@@ -97,7 +97,7 @@ std::unique_ptr<TCriticalSection> TOwnConsole::FSection(TraceInitPtr(std::make_u
 
 TOwnConsole::TOwnConsole()
 {
-  DebugAssert(FInstance == NULL);
+  DebugAssert(FInstance == nullptr);
   FInstance = this;
 
   AllocConsole();
@@ -106,8 +106,8 @@ TOwnConsole::TOwnConsole()
   FInput = GetStdHandle(STD_INPUT_HANDLE);
   FOutput = GetStdHandle(STD_OUTPUT_HANDLE);
   FPendingAbort = false;
-  FConsoleWindow = NULL;
-  FWindowStateTimer = NULL;
+  FConsoleWindow = nullptr;
+  FWindowStateTimer = nullptr;
   FMinimized = false;
   FTrayIcon = new ::TTrayIcon(0);
   FTrayIcon->OnClick = TrayIconClick;
@@ -115,7 +115,7 @@ TOwnConsole::TOwnConsole()
   if (WinConfiguration->MinimizeToTray)
   {
     FConsoleWindow = GetConsoleWindow();
-    if (DebugAlwaysTrue(FConsoleWindow != NULL))
+    if (DebugAlwaysTrue(FConsoleWindow != nullptr))
     {
       FWindowStateTimer = new TTimer(Application);
       FWindowStateTimer->OnTimer = WindowStateTimer;
@@ -138,7 +138,7 @@ TOwnConsole::~TOwnConsole()
   FreeConsole();
 
   DebugAssert(FInstance == this);
-  FInstance = NULL;
+  FInstance = nullptr;
 }
 
 TOwnConsole * TOwnConsole::Instance()
@@ -148,7 +148,7 @@ TOwnConsole * TOwnConsole::Instance()
 
 void TOwnConsole::WindowStateTimer(TObject * /*Sender*/)
 {
-  DebugAssert(FConsoleWindow != NULL);
+  DebugAssert(FConsoleWindow != nullptr);
   WINDOWPLACEMENT Placement;
   memset(&Placement, 0, sizeof(Placement));
   Placement.length = sizeof(Placement);
@@ -181,7 +181,7 @@ void TOwnConsole::ProcessMessages()
 {
   // as of now, there's no point doing this unless we have icon tray
   // (i.e. we need to monitor window state and eventually process tray icon messages)
-  if (FWindowStateTimer != NULL)
+  if (FWindowStateTimer != nullptr)
   {
     DebugAssert(WinConfiguration->MinimizeToTray);
 
@@ -191,7 +191,7 @@ void TOwnConsole::ProcessMessages()
 
 void TOwnConsole::TrayIconClick(TObject * /*Sender*/)
 {
-  DebugAssert(FConsoleWindow != NULL);
+  DebugAssert(FConsoleWindow != nullptr);
   SetForegroundWindow(FConsoleWindow);
   ShowWindow(FConsoleWindow, SW_RESTORE);
 }
@@ -229,7 +229,7 @@ BOOL WINAPI TOwnConsole::HandlerRoutine(DWORD CtrlType)
       TGuard Guard(FSection.get()); nb::used(Guard);
 
       // just to be real thread-safe
-      if (FInstance != NULL)
+      if (FInstance != nullptr)
       {
         FInstance->CancelInput();
       }
@@ -266,7 +266,7 @@ void TOwnConsole::Print(UnicodeString Str, bool FromBeginning, bool /*Error*/)
     SetConsoleCursorPosition(FOutput, BufferInfo.dwCursorPosition);
   }
   unsigned long Written;
-  bool Result = WriteConsole(FOutput, Str.c_str(), Str.Length(), &Written, NULL);
+  bool Result = WriteConsole(FOutput, Str.c_str(), Str.Length(), &Written, nullptr);
   DebugAssert(Result);
   DebugUsedParam(Result);
   DebugAssert(Str.Length() == static_cast<long>(Written));
@@ -293,7 +293,7 @@ protected:
   {
     unsigned long Read;
     FStr.SetLength(10240);
-    FResult = ReadConsole(FInput, FStr.c_str(), FStr.Length(), &Read, NULL);
+    FResult = ReadConsole(FInput, FStr.c_str(), FStr.Length(), &Read, nullptr);
     DebugAssert(FResult);
     FStr.SetLength(Read);
     TrimNewLine(FStr);
@@ -574,7 +574,7 @@ TExternalConsole::TExternalConsole(
 
   HANDLE Job = OpenJobObject(JOB_OBJECT_ASSIGN_PROCESS, FALSE,
     FORMAT(L"%s%s", (CONSOLE_JOB, Instance)).c_str());
-  if (DebugAlwaysTrue(Job != NULL))
+  if (DebugAlwaysTrue(Job != nullptr))
   {
     AssignProcessToJobObject(Job, GetCurrentProcess());
     // winscp.com/winscp.dll keeps the only reference to the job.
@@ -600,7 +600,7 @@ TExternalConsole::TExternalConsole(
 
   // to break application event loop regularly during "watching for changes"
   // to allow user to abort it
-  SetTimer(Application->Handle, 1, 500, NULL);
+  SetTimer(Application->Handle, 1, 500, nullptr);
 
   FNoInteractiveInput = NoInteractiveInput;
   FMaxSend = 0;
@@ -619,7 +619,7 @@ TExternalConsole::~TExternalConsole()
 
 void TExternalConsole::CheckHandle(HANDLE Handle, const UnicodeString & Desc)
 {
-  if (Handle == NULL)
+  if (Handle == nullptr)
   {
     throw ExtException(LoadStr(EXTERNAL_CONSOLE_INIT_ERROR), FORMAT(L"%s\n%s", (Desc, LastSysErrorMessage())));
   }
@@ -630,7 +630,7 @@ TConsoleCommStruct * TExternalConsole::GetCommStruct()
   TConsoleCommStruct * Result;
   Result = static_cast<TConsoleCommStruct*>(MapViewOfFile(FFileMapping,
     FILE_MAP_ALL_ACCESS, 0, 0, 0));
-  if (Result == NULL)
+  if (Result == nullptr)
   {
     throw Exception(LoadStr(CONSOLE_COMM_ERROR));
   }
@@ -1122,16 +1122,16 @@ TConsoleRunner::TConsoleRunner(TConsole * Console) :
 {
   FConsole = Console;
   FLastProgressLen = 0;
-  FScript = NULL;
+  FScript = nullptr;
   FAborted = false;
   FBatchScript = false;
   Timer = new TTimer(Application);
   Timer->OnTimer = TimerTimer;
   Timer->Interval = MSecsPerSec;
   Timer->Enabled = true;
-  DebugAssert(WinConfiguration->OnMasterPasswordPrompt == NULL);
+  DebugAssert(WinConfiguration->OnMasterPasswordPrompt == nullptr);
   WinConfiguration->OnMasterPasswordPrompt = MasterPasswordPrompt;
-  DebugAssert(Configuration->OnChange == NULL);
+  DebugAssert(Configuration->OnChange == nullptr);
   FExternalTimestampVar = !GetEnvironmentVariable(TimestampVarName).IsEmpty();
   Configuration->OnChange = ConfigurationChange;
   Configuration->Scripting = true;
@@ -1140,9 +1140,9 @@ TConsoleRunner::TConsoleRunner(TConsole * Console) :
 TConsoleRunner::~TConsoleRunner()
 {
   DebugAssert(WinConfiguration->OnMasterPasswordPrompt == MasterPasswordPrompt);
-  WinConfiguration->OnMasterPasswordPrompt = NULL;
+  WinConfiguration->OnMasterPasswordPrompt = nullptr;
   DebugAssert(Configuration->OnChange == ConfigurationChange);
-  Configuration->OnChange = NULL;
+  Configuration->OnChange = nullptr;
   delete Timer;
 }
 
@@ -1154,7 +1154,7 @@ void TConsoleRunner::TimerTimer(TObject * /*Sender*/)
 
 unsigned int TConsoleRunner::InputTimeout()
 {
-  return ((FScript != NULL) && (FScript->Batch != TScript::BatchOff) ? BATCH_INPUT_TIMEOUT : 0);
+  return ((FScript != nullptr) && (FScript->Batch != TScript::BatchOff) ? BATCH_INPUT_TIMEOUT : 0);
 }
 
 void TConsoleRunner::Input(
@@ -1191,7 +1191,7 @@ void TConsoleRunner::PrintMessage(const UnicodeString & Str, bool Error)
 {
   UnicodeString Line = RemoveEmptyLines(Str);
 
-  if (FScript != NULL)
+  if (FScript != nullptr)
   {
     // this also logs the message
     FScript->PrintLine(Line, Error);
@@ -1228,7 +1228,7 @@ bool TConsoleRunner::Aborted(bool AllowCompleteAbort)
 
       if (AllowCompleteAbort && NotifyAbort())
       {
-        if (FScript->Terminal != NULL)
+        if (FScript->Terminal != nullptr)
         {
           std::unique_ptr<TStringList> Failure(TextToStringList(LoadStr(USER_TERMINATED)));
           FScript->Terminal->ActionLog->AddFailure(Failure.get());
@@ -1313,7 +1313,7 @@ void TConsoleRunner::ScriptTerminalQueryUser(TObject * /*Sender*/,
   unsigned int TimeoutA = 0;
   unsigned int NoBatchA = 0;
 
-  if (Params != NULL)
+  if (Params != nullptr)
   {
     if (Params->Timeout > 0)
     {
@@ -1357,13 +1357,13 @@ void TConsoleRunner::ScriptTerminalQueryUser(TObject * /*Sender*/,
   AQuery = UnformatMessage(AQuery);
   AQuery = RemoveInteractiveMsgTag(AQuery);
 
-  ApplyTabs(AQuery, L' ', NULL, NULL);
+  ApplyTabs(AQuery, L' ', nullptr, nullptr);
 
   unsigned int AAnswers = Answers;
 
   UnicodeString Message = AQuery;
   PrintMessage(AQuery);
-  if ((MoreMessages != NULL) && (MoreMessages->Count > 0))
+  if ((MoreMessages != nullptr) && (MoreMessages->Count > 0))
   {
     PrintMessage(MoreMessages->Text);
     Message += L"\n" + MoreMessages->Text;
@@ -1382,7 +1382,7 @@ void TConsoleRunner::ScriptTerminalQueryUser(TObject * /*Sender*/,
       AnswerNameAndCaption(Answer, Name, Caption);
       Captions.push_back(Caption);
       Buttons.push_back(Answer);
-      OnSubmits.push_back(NULL);
+      OnSubmits.push_back(nullptr);
       AAnswers -= Answer;
     }
   }
@@ -1391,7 +1391,7 @@ void TConsoleRunner::ScriptTerminalQueryUser(TObject * /*Sender*/,
   DebugAssert(AAnswers == 0);
   DebugAssert(!Buttons.empty());
 
-  if ((Params != NULL) && (Params->Aliases != NULL))
+  if ((Params != nullptr) && (Params->Aliases != nullptr))
   {
     for (unsigned int bi = 0; bi < Buttons.size(); bi++)
     {
@@ -1631,8 +1631,8 @@ void TConsoleRunner::ScriptTerminalQueryUser(TObject * /*Sender*/,
           // where Timer is less than MSecsPerSec
           if (Timer > 0)
           {
-            DebugAssert((Params != NULL) && (Params->TimerEvent != NULL));
-            if ((Params != NULL) && (Params->TimerEvent != NULL))
+            DebugAssert((Params != nullptr) && (Params->TimerEvent != nullptr));
+            if ((Params != nullptr) && (Params->TimerEvent != nullptr))
             {
               unsigned int AAnswer = 0;
               Params->TimerEvent(AAnswer);
@@ -1662,9 +1662,9 @@ void TConsoleRunner::ScriptTerminalQueryUser(TObject * /*Sender*/,
       FConsole->PrintLine(AnswerCaption);
       FirstOutput = true;
 
-      if (OnSubmits[AnswerIndex - 1] != NULL)
+      if (OnSubmits[AnswerIndex - 1] != nullptr)
       {
-        OnSubmits[AnswerIndex - 1](NULL, Answer);
+        OnSubmits[AnswerIndex - 1](nullptr, Answer);
       }
       else
       {
@@ -1679,15 +1679,15 @@ void TConsoleRunner::ScriptTerminalQueryUser(TObject * /*Sender*/,
   while (Answer == 0);
 
   if ((Answer == AbortA) &&
-      ((Params == NULL) || FLAGCLEAR(Params->Params, qpIgnoreAbort)))
+      ((Params == nullptr) || FLAGCLEAR(Params->Params, qpIgnoreAbort)))
   {
-    if (FScript->Terminal != NULL)
+    if (FScript->Terminal != nullptr)
     {
       TStrings * Messages = new TStringList();
       try
       {
         Messages->Add(Query);
-        if (MoreMessages != NULL)
+        if (MoreMessages != nullptr)
         {
           Messages->AddStrings(MoreMessages);
         }
@@ -1722,7 +1722,7 @@ void TConsoleRunner::ScriptSynchronizeStartStop(TScript * /*Script*/,
   Params.Options = soRecurse;
 
   FSynchronizeController.StartStop(Application, true, Params,
-    CopyParam, NULL, SynchronizeControllerAbort, NULL,
+    CopyParam, nullptr, SynchronizeControllerAbort, nullptr,
     SynchronizeControllerLog);
 
   try
@@ -1738,7 +1738,7 @@ void TConsoleRunner::ScriptSynchronizeStartStop(TScript * /*Script*/,
   __finally
   {
     FSynchronizeController.StartStop(Application, false, Params,
-      CopyParam, NULL, SynchronizeControllerAbort, NULL,
+      CopyParam, nullptr, SynchronizeControllerAbort, nullptr,
       SynchronizeControllerLog);
   }
 }
@@ -1829,12 +1829,12 @@ void TConsoleRunner::SynchronizeControllerTooManyDirectories(
 
 void TConsoleRunner::ShowException(Exception * E)
 {
-  DoShowException(NULL, E);
+  DoShowException(nullptr, E);
 }
 
 void TConsoleRunner::DoShowException(TTerminal * Terminal, Exception * E)
 {
-  if ((Terminal == NULL) && (FScript != NULL))
+  if ((Terminal == nullptr) && (FScript != nullptr))
   {
     Terminal = FScript->Terminal;
   }
@@ -1848,12 +1848,12 @@ void TConsoleRunner::DoShowException(TTerminal * Terminal, Exception * E)
 
   TTerminal * LoggingTerminal = Terminal;
   TSecondaryTerminal * SecondaryTerminal = dynamic_cast<TSecondaryTerminal *>(LoggingTerminal);
-  if (SecondaryTerminal != NULL)
+  if (SecondaryTerminal != nullptr)
   {
     LoggingTerminal = SecondaryTerminal->MainTerminal;
   }
 
-  if (LoggingTerminal != NULL)
+  if (LoggingTerminal != nullptr)
   {
     LoggingTerminal->ActionLog->AddFailure(E);
   }
@@ -1903,7 +1903,7 @@ void TConsoleRunner::MasterPasswordPrompt()
 
 UnicodeString TConsoleRunner::ExpandCommand(UnicodeString Command, TStrings * ScriptParameters)
 {
-  DebugAssert(ScriptParameters != NULL);
+  DebugAssert(ScriptParameters != nullptr);
   for (int Index = 0; Index < ScriptParameters->Count; Index++)
   {
     Command = ReplaceStr(Command, FORMAT(L"%%%d%%", (Index+1)),
@@ -1963,7 +1963,7 @@ UnicodeString TConsoleRunner::ExpandCommand(UnicodeString Command, TStrings * Sc
 
 void TConsoleRunner::Failed(bool & AnyError)
 {
-  if (FScript != NULL)
+  if (FScript != nullptr)
   {
     FScript->Log(llMessage, L"Failed");
   }
@@ -2021,7 +2021,7 @@ int TConsoleRunner::Run(const UnicodeString Session, TOptions * Options,
         UpdateTitle();
 
         UnicodeString Command;
-        if ((ScriptCommands != NULL) && (ScriptPos < ScriptCommands->Count))
+        if ((ScriptCommands != nullptr) && (ScriptPos < ScriptCommands->Count))
         {
           Result = true;
           Command = ScriptCommands->Strings[ScriptPos];
@@ -2053,7 +2053,7 @@ int TConsoleRunner::Run(const UnicodeString Session, TOptions * Options,
             }
           }
 
-          if (FScript->Terminal != NULL)
+          if (FScript->Terminal != nullptr)
           {
             FScript->Terminal->Idle();
           }
@@ -2075,7 +2075,7 @@ int TConsoleRunner::Run(const UnicodeString Session, TOptions * Options,
 
     ExitCode = (AnyError || FAborted) ? RESULT_ANY_ERROR : RESULT_SUCCESS;
 
-    if (FScript != NULL)
+    if (FScript != nullptr)
     {
       UnicodeString ExitCodeMessage = FORMAT(L"Exit code: %d", (ExitCode));
       FScript->Log(llMessage, ExitCodeMessage);
@@ -2094,7 +2094,7 @@ int TConsoleRunner::Run(const UnicodeString Session, TOptions * Options,
   __finally
   {
     delete FScript;
-    FScript = NULL;
+    FScript = nullptr;
   }
 
   return ExitCode;
@@ -2103,7 +2103,7 @@ int TConsoleRunner::Run(const UnicodeString Session, TOptions * Options,
 void TConsoleRunner::UpdateTitle()
 {
   UnicodeString NewTitle;
-  if (FScript->Terminal != NULL)
+  if (FScript->Terminal != nullptr)
   {
     NewTitle = FormatMainFormCaption(FScript->Terminal->SessionData->SessionName);
   }
@@ -2116,7 +2116,7 @@ void TConsoleRunner::UpdateTitle()
 
 void TConsoleRunner::ConfigurationChange(TObject * /*Sender*/)
 {
-  if (FScript != NULL)
+  if (FScript != nullptr)
   {
     FScript->ReflectSettings();
   }
@@ -2529,7 +2529,7 @@ int FingerprintScan(TConsole * Console, TProgramParams * Params)
       if (DefaultsOnly || !SessionData->CanLogin ||
           (!SessionData->UsesSsh && (SessionData->Ftps == ftpsNone)))
       {
-        SessionData.reset(NULL);
+        SessionData.reset(nullptr);
       }
     }
 
@@ -2574,7 +2574,7 @@ int DumpCallstack(TConsole * Console, TProgramParams * Params)
     }
 
     HANDLE Event = OpenEvent(EVENT_ALL_ACCESS, false, EventName.c_str());
-    if (Event == NULL)
+    if (Event == nullptr)
     {
       throw ExtException(FORMAT(L"Error communicating with process %d.", (ProcessId)), LastSysErrorMessage());
     }
@@ -2647,8 +2647,8 @@ int Console(TConsoleMode Mode)
   DebugAssert(Mode != cmNone);
   TProgramParams * Params = TProgramParams::Instance();
   int Result = RESULT_SUCCESS;
-  TConsole * Console = NULL;
-  TConsoleRunner * Runner = NULL;
+  TConsole * Console = nullptr;
+  TConsoleRunner * Runner = nullptr;
   TStrings * ScriptCommands = new TStringList();
   TStrings * ScriptParameters = new TStringList();
   try
@@ -2757,7 +2757,7 @@ int Console(TConsoleMode Mode)
         CheckXmlLogParam(Params);
 
         Result = Runner->Run(Session, Params,
-          (ScriptCommands->Count > 0 ? ScriptCommands : NULL),
+          (ScriptCommands->Count > 0 ? ScriptCommands : nullptr),
           ScriptParameters);
       }
       catch(Exception & E)

@@ -218,7 +218,7 @@ void FindComponentClass(
   protected: \
     virtual void ReadState(TReader * Reader) \
     { \
-      Reader->OnFindComponentClass = MakeMethod<TFindComponentClassEvent>(NULL, FindComponentClass); \
+      Reader->OnFindComponentClass = MakeMethod<TFindComponentClassEvent>(nullptr, FindComponentClass); \
       PARENT::ReadState(Reader); \
     }
 #define INTERFACE_HOOK INTERFACE_HOOK_CUSTOM(TForm)

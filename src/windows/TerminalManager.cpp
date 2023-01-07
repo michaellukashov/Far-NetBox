@@ -25,13 +25,13 @@
 
 #pragma package(smart_init)
 
-TTerminalManager * TTerminalManager::FInstance = NULL;
+TTerminalManager * TTerminalManager::FInstance = nullptr;
 
 TManagedTerminal::TManagedTerminal(TSessionData * SessionData,
   TConfiguration * Configuration) :
   TTerminal(SessionData, Configuration),
-  LocalExplorerState(NULL), RemoteExplorerState(NULL),
-  ReopenStart(0), DirectoryLoaded(Now()), TerminalThread(NULL), Disconnected(false), DisconnectedTemporarily(false)
+  LocalExplorerState(nullptr), RemoteExplorerState(nullptr),
+  ReopenStart(0), DirectoryLoaded(Now()), TerminalThread(nullptr), Disconnected(false), DisconnectedTemporarily(false)
 {
   StateData = new TSessionData(L"");
   StateData->Assign(SessionData);
@@ -65,13 +65,13 @@ TTerminalManager::TTerminalManager() :
   TTerminalList(Configuration)
 {
   FQueueSection = new TCriticalSection();
-  FActiveTerminal = NULL;
-  FScpExplorer = NULL;
+  FActiveTerminal = nullptr;
+  FScpExplorer = nullptr;
   FDestroying = false;
   FTerminalPendingAction = tpNull;
   FDirectoryReadingStart = 0;
-  FAuthenticateForm = NULL;
-  FTaskbarList = NULL;
+  FAuthenticateForm = nullptr;
+  FTaskbarList = nullptr;
   FAuthenticating = 0;
   FMainThread = GetCurrentThreadId();
   FChangeSection = std::make_unique<TCriticalSection>();
@@ -85,15 +85,15 @@ TTerminalManager::TTerminalManager() :
   FApplicationsEvents->OnModalBegin = ApplicationModalBegin;
   FApplicationsEvents->OnModalEnd = ApplicationModalEnd;
 
-  DebugAssert(WinConfiguration->OnMasterPasswordPrompt == NULL);
+  DebugAssert(WinConfiguration->OnMasterPasswordPrompt == nullptr);
   WinConfiguration->OnMasterPasswordPrompt = MasterPasswordPrompt;
 
   InitTaskbarButtonCreatedMessage();
 
   DebugAssert(Configuration && !Configuration->OnChange);
   Configuration->OnChange = ConfigurationChange;
-  FOnLastTerminalClosed = NULL;
-  FOnTerminalListChanged = NULL;
+  FOnLastTerminalClosed = nullptr;
+  FOnTerminalListChanged = nullptr;
 
   FTerminalList = new TStringList();
   FMaxSessions = WinConfiguration->MaxSessions;
@@ -112,12 +112,12 @@ TTerminalManager::~TTerminalManager()
   DebugAssert(!ScpExplorer);
 
   DebugAssert(Configuration->OnChange == ConfigurationChange);
-  Configuration->OnChange = NULL;
+  Configuration->OnChange = nullptr;
 
-  FApplicationsEvents.reset(NULL);
+  FApplicationsEvents.reset(nullptr);
 
   DebugAssert(WinConfiguration->OnMasterPasswordPrompt == MasterPasswordPrompt);
-  WinConfiguration->OnMasterPasswordPrompt = NULL;
+  WinConfiguration->OnMasterPasswordPrompt = nullptr;
 
   delete FLocalTerminal;
   delete FQueues;
@@ -197,7 +197,7 @@ TManagedTerminal * TTerminalManager::DoNewTerminal(TSessionData * Data)
   }
   catch(...)
   {
-    if (Terminal != NULL)
+    if (Terminal != nullptr)
     {
       FreeTerminal(Terminal);
     }
@@ -221,7 +221,7 @@ TManagedTerminal * TTerminalManager::NewManagedTerminal(TSessionData * Data)
 
 TManagedTerminal * TTerminalManager::NewTerminals(TList * DataList)
 {
-  TManagedTerminal * Result = NULL;
+  TManagedTerminal * Result = nullptr;
   for (int Index = 0; Index < DataList->Count; Index++)
   {
     TSessionData * Data = reinterpret_cast<TSessionData *>(DataList->Items[Index]);
@@ -261,7 +261,7 @@ void TTerminalManager::DoConnectTerminal(TTerminal * Terminal, bool Reopen, bool
 {
   TManagedTerminal * ManagedTerminal = dynamic_cast<TManagedTerminal *>(Terminal);
   // it must be managed terminal, unless it is secondary terminal (of managed terminal)
-  DebugAssert((ManagedTerminal != NULL) || (dynamic_cast<TSecondaryTerminal *>(Terminal) != NULL));
+  DebugAssert((ManagedTerminal != nullptr) || (dynamic_cast<TSecondaryTerminal *>(Terminal) != nullptr));
 
   // particularly when we are reconnecting RemoteDirectory of managed terminal
   // hold the last used remote directory as opposite to session data, which holds
@@ -274,7 +274,7 @@ void TTerminalManager::DoConnectTerminal(TTerminal * Terminal, bool Reopen, bool
     TerminalThread->AllowAbandon = (Terminal == FActiveTerminal);
     try
     {
-      if (ManagedTerminal != NULL)
+      if (ManagedTerminal != nullptr)
       {
         Terminal->SessionData->RemoteDirectory = ManagedTerminal->StateData->RemoteDirectory;
 
@@ -285,7 +285,7 @@ void TTerminalManager::DoConnectTerminal(TTerminal * Terminal, bool Reopen, bool
 
         ManagedTerminal->Disconnected = false;
         ManagedTerminal->DisconnectedTemporarily = false;
-        DebugAssert(ManagedTerminal->TerminalThread == NULL);
+        DebugAssert(ManagedTerminal->TerminalThread == nullptr);
         ManagedTerminal->TerminalThread = TerminalThread;
       }
 
@@ -303,7 +303,7 @@ void TTerminalManager::DoConnectTerminal(TTerminal * Terminal, bool Reopen, bool
     }
     __finally
     {
-      TerminalThread->OnIdle = NULL;
+      TerminalThread->OnIdle = nullptr;
       if (!TerminalThread->Release())
       {
         if (!AdHoc && (DebugAlwaysTrue(Terminal == FActiveTerminal)))
@@ -315,8 +315,8 @@ void TTerminalManager::DoConnectTerminal(TTerminal * Terminal, bool Reopen, bool
           Items[ActiveTerminalIndex] = Terminal;
           OwnsObjects = true;
           FActiveTerminal = ManagedTerminal;
-          // Can be NULL, when opening the first session from command-line
-          if (FScpExplorer != NULL)
+          // Can be nullptr, when opening the first session from command-line
+          if (FScpExplorer != nullptr)
           {
             FScpExplorer->ReplaceTerminal(ManagedTerminal);
           }
@@ -334,9 +334,9 @@ void TTerminalManager::DoConnectTerminal(TTerminal * Terminal, bool Reopen, bool
       }
       else
       {
-        if (ManagedTerminal != NULL)
+        if (ManagedTerminal != nullptr)
         {
-          ManagedTerminal->TerminalThread = NULL;
+          ManagedTerminal->TerminalThread = nullptr;
         }
       }
     }
@@ -344,7 +344,7 @@ void TTerminalManager::DoConnectTerminal(TTerminal * Terminal, bool Reopen, bool
   __finally
   {
     Terminal->SessionData->RemoteDirectory = OrigRemoteDirectory;
-    if (Terminal->Active && (ManagedTerminal != NULL))
+    if (Terminal->Active && (ManagedTerminal != nullptr))
     {
       ManagedTerminal->ReopenStart = 0;
       ManagedTerminal->Permanent = true;
@@ -414,7 +414,7 @@ bool TTerminalManager::ConnectActiveTerminalImpl(bool Reopen)
       FTerminalPendingAction = ::tpNone;
       try
       {
-        DebugAssert(ActiveTerminal != NULL);
+        DebugAssert(ActiveTerminal != nullptr);
         ActiveTerminal->ShowExtendedException(&E);
         Action = FTerminalPendingAction;
       }
@@ -452,7 +452,7 @@ bool TTerminalManager::ConnectActiveTerminal()
 
   // add only stored sessions to the jump list,
   // ad-hoc session cannot be reproduced from just a session name
-  if (StoredSessions->FindSame(ActiveTerminal->SessionData) != NULL)
+  if (StoredSessions->FindSame(ActiveTerminal->SessionData) != nullptr)
   {
     try
     {
@@ -493,7 +493,7 @@ bool TTerminalManager::ConnectActiveTerminal()
     }
     catch(Exception & E)
     {
-      ShowExtendedExceptionEx(NULL, &E);
+      ShowExtendedExceptionEx(nullptr, &E);
     }
   }
 
@@ -515,14 +515,14 @@ void TTerminalManager::DisconnectActiveTerminal()
   OldQueue = reinterpret_cast<TTerminalQueue *>(FQueues->Items[Index]);
   NewQueue = this->NewQueue(ActiveTerminal);
   FQueues->Items[Index] = NewQueue;
-  if (ScpExplorer != NULL)
+  if (ScpExplorer != nullptr)
   {
     ScpExplorer->Queue = NewQueue;
   }
   delete OldQueue;
 
   ActiveTerminal->Disconnected = true;
-  if (ScpExplorer != NULL)
+  if (ScpExplorer != nullptr)
   {
     TerminalReady(); // in case it was never connected
     ScpExplorer->TerminalDisconnected();
@@ -585,13 +585,13 @@ void TTerminalManager::FreeTerminal(TTerminal * Terminal)
     // as set in TCustomScpExplorerForm::FormClose
     if (!FDestroying || !WinConfiguration->AutoSaveWorkspace)
     {
-      if (StoredSessions->FindSame(Terminal->SessionData) != NULL)
+      if (StoredSessions->FindSame(Terminal->SessionData) != nullptr)
       {
         WinConfiguration->LastStoredSession = Terminal->SessionData->Name;
       }
     }
 
-    if (ScpExplorer != NULL)
+    if (ScpExplorer != nullptr)
     {
       ScpExplorer->TerminalRemoved(Terminal);
     }
@@ -625,7 +625,7 @@ void TTerminalManager::FreeTerminal(TTerminal * Terminal)
       }
       else
       {
-        ActiveTerminal = NULL;
+        ActiveTerminal = nullptr;
       }
     }
     else
@@ -659,8 +659,8 @@ void TTerminalManager::SetScpExplorer(TCustomScpExplorerForm * value)
     }
     else
     {
-      FOnLastTerminalClosed = NULL;
-      FOnTerminalListChanged = NULL;
+      FOnLastTerminalClosed = nullptr;
+      FOnTerminalListChanged = nullptr;
     }
   }
 }
@@ -679,7 +679,7 @@ void TTerminalManager::DoSetActiveTerminal(TManagedTerminal * value, bool AutoRe
 {
   if (ActiveTerminal != value)
   {
-    if (NonVisualDataModule != NULL)
+    if (NonVisualDataModule != nullptr)
     {
       NonVisualDataModule->StartBusy();
     }
@@ -701,12 +701,12 @@ void TTerminalManager::DoSetActiveTerminal(TManagedTerminal * value, bool AutoRe
         }
         else
         {
-          ScpExplorer->Terminal = NULL;
-          ScpExplorer->Queue = NULL;
+          ScpExplorer->Terminal = nullptr;
+          ScpExplorer->Queue = nullptr;
         }
       }
 
-      if (PActiveTerminal != NULL)
+      if (PActiveTerminal != nullptr)
       {
         if (PActiveTerminal->DisconnectedTemporarily && DebugAlwaysTrue(PActiveTerminal->Disconnected))
         {
@@ -733,7 +733,7 @@ void TTerminalManager::DoSetActiveTerminal(TManagedTerminal * value, bool AutoRe
           }
           else
           {
-            Exception * E = new ESshFatal(NULL, Message);
+            Exception * E = new ESshFatal(nullptr, Message);
             try
             {
               // finally show pending terminal message,
@@ -756,7 +756,7 @@ void TTerminalManager::DoSetActiveTerminal(TManagedTerminal * value, bool AutoRe
       }
 
 
-      if ((ActiveTerminal != NULL) && !ActiveTerminal->Active &&
+      if ((ActiveTerminal != nullptr) && !ActiveTerminal->Active &&
           !ActiveTerminal->Disconnected)
       {
         ConnectActiveTerminal();
@@ -764,7 +764,7 @@ void TTerminalManager::DoSetActiveTerminal(TManagedTerminal * value, bool AutoRe
     }
     __finally
     {
-      if (NonVisualDataModule != NULL)
+      if (NonVisualDataModule != nullptr)
       {
         NonVisualDataModule->EndBusy();
       }
@@ -780,7 +780,7 @@ void TTerminalManager::QueueStatusUpdated()
 bool TTerminalManager::ShouldDisplayQueueStatusOnAppTitle()
 {
   bool Result = IsApplicationMinimized();
-  if (!Result && (ScpExplorer != NULL))
+  if (!Result && (ScpExplorer != nullptr))
   {
     HWND Window = GetActiveWindow();
     Window = GetAncestor(Window, GA_ROOTOWNER);
@@ -834,7 +834,7 @@ void TTerminalManager::UpdateAppTitle()
     {
       NewTitle = ProgressTitle + L" - " + NewTitle;
     }
-    else if (ActiveTerminal && (ScpExplorer != NULL))
+    else if (ActiveTerminal && (ScpExplorer != nullptr))
     {
       UnicodeString Path = ScpExplorer->PathForCaption();
       if (!Path.IsEmpty())
@@ -853,10 +853,10 @@ void TTerminalManager::UpdateAppTitle()
 void TTerminalManager::SaveTerminal(TTerminal * Terminal)
 {
   TSessionData * Data = StoredSessions->FindSame(Terminal->SessionData);
-  if (Data != NULL)
+  if (Data != nullptr)
   {
     TManagedTerminal * ManagedTerminal = dynamic_cast<TManagedTerminal *>(Terminal);
-    DebugAssert(ManagedTerminal != NULL);
+    DebugAssert(ManagedTerminal != nullptr);
 
     bool Changed = false;
     if (Terminal->SessionData->UpdateDirectories)
@@ -876,7 +876,7 @@ void TTerminalManager::SaveTerminal(TTerminal * Terminal)
 void TTerminalManager::HandleException(Exception * E)
 {
   // can be null for example when exception is thrown on login dialog
-  if (ActiveTerminal != NULL)
+  if (ActiveTerminal != nullptr)
   {
     ActiveTerminal->ShowExtendedException(E);
   }
@@ -902,7 +902,7 @@ void TTerminalManager::ApplicationShowHint(UnicodeString & HintStr,
     // Should be converted to something like HintLabel()
     HintInfo.HideTimeout = 100000; // "almost" never
   }
-  else if (dynamic_cast<TProgressBar *>(HintInfo.HintControl) != NULL)
+  else if (dynamic_cast<TProgressBar *>(HintInfo.HintControl) != nullptr)
   {
     // Hint is forcibly hidden in TProgressForm::FormHide
     HintInfo.HideTimeout = 100000; // "almost" never
@@ -913,8 +913,8 @@ void TTerminalManager::ApplicationShowHint(UnicodeString & HintStr,
     int HintMaxWidth = 300;
 
     TControl * ScaleControl = HintInfo.HintControl;
-    if (DebugAlwaysFalse(HintInfo.HintControl == NULL) ||
-        (GetParentForm(HintInfo.HintControl) == NULL))
+    if (DebugAlwaysFalse(HintInfo.HintControl == nullptr) ||
+        (GetParentForm(HintInfo.HintControl) == nullptr))
     {
       ScaleControl = ScpExplorer;
     }
@@ -932,13 +932,13 @@ bool TTerminalManager::HandleMouseWheel(WPARAM WParam, LPARAM LParam)
   {
     TPoint Point(LOWORD(LParam), HIWORD(LParam));
     TWinControl * Control = FindVCLWindow(Point);
-    if (Control != NULL)
+    if (Control != nullptr)
     {
       TCustomForm * Form = GetParentForm(Control);
-      // Only case we expect the parent form to be NULL is on the Find/Replace dialog,
+      // Only case we expect the parent form to be nullptr is on the Find/Replace dialog,
       // which is owned by VCL's internal TRedirectorWindow.
-      DebugAssert((Form != NULL) || (Control->ClassName() == L"TRedirectorWindow"));
-      if (Form != NULL)
+      DebugAssert((Form != nullptr) || (Control->ClassName() == L"TRedirectorWindow"));
+      if (Form != nullptr)
       {
         // Send it only to windows we tested it with.
         // Though we should sooner or later remove this test and pass it to all our windows.
@@ -954,7 +954,7 @@ bool TTerminalManager::HandleMouseWheel(WPARAM WParam, LPARAM LParam)
           // (but in any case, when we have operation running on top of Synchronization checklist).
           // WORKAROUND: The while loop does what AllLevels parameter of ControlAtPos should do, but it's broken.
           // Based on (now removed) Embarcadero QC 82143.
-          while ((Control2 = dynamic_cast<TWinControl *>(Control->ControlAtPos(Control->ScreenToClient(Point), false, true))) != NULL)
+          while ((Control2 = dynamic_cast<TWinControl *>(Control->ControlAtPos(Control->ScreenToClient(Point), false, true))) != nullptr)
           {
             Control = Control2;
           }
@@ -983,7 +983,7 @@ void TTerminalManager::ApplicationModalBegin(TObject * /*Sender*/)
 {
   InterfaceStartDontMeasure();
   NonVisualDataModule->StartBusy();
-  if (ScpExplorer != NULL)
+  if (ScpExplorer != nullptr)
   {
     ScpExplorer->SuspendWindowLock();
   }
@@ -992,7 +992,7 @@ void TTerminalManager::ApplicationModalBegin(TObject * /*Sender*/)
 void TTerminalManager::ApplicationModalEnd(TObject * /*Sender*/)
 {
   NonVisualDataModule->EndBusy();
-  if (ScpExplorer != NULL)
+  if (ScpExplorer != nullptr)
   {
     ScpExplorer->ResumeWindowLock();
   }
@@ -1009,11 +1009,11 @@ void TTerminalManager::InitTaskbarButtonCreatedMessage()
   ChangeWindowMessageFilterExProc ChangeWindowMessageFilterEx =
     (ChangeWindowMessageFilterExProc)GetProcAddress(User32Library, "ChangeWindowMessageFilterEx");
 
-  if (ChangeWindowMessageFilterEx != NULL)
+  if (ChangeWindowMessageFilterEx != nullptr)
   {
     // without this we won't get TaskbarButtonCreated, when app is running elevated
     ChangeWindowMessageFilterEx(
-      Application->Handle, FTaskbarButtonCreatedMessage, MSGFLT_ALLOW, NULL);
+      Application->Handle, FTaskbarButtonCreatedMessage, MSGFLT_ALLOW, nullptr);
   }
 }
 
@@ -1022,10 +1022,10 @@ void TTerminalManager::CreateTaskbarList()
 
   ReleaseTaskbarList();
 
-  if(SUCCEEDED(CoCreateInstance(CLSID_TaskbarList, NULL, CLSCTX_ALL,
+  if(SUCCEEDED(CoCreateInstance(CLSID_TaskbarList, nullptr, CLSCTX_ALL,
         IID_ITaskbarList3, (void **) &FTaskbarList)))
   {
-    if (ScpExplorer != NULL)
+    if (ScpExplorer != nullptr)
     {
       UpdateTaskbarList();
     }
@@ -1034,7 +1034,7 @@ void TTerminalManager::CreateTaskbarList()
 
 void TTerminalManager::ReleaseTaskbarList()
 {
-  if (FTaskbarList != NULL)
+  if (FTaskbarList != nullptr)
   {
     FTaskbarList->Release();
   }
@@ -1058,7 +1058,7 @@ void TTerminalManager::TerminalQueryUser(TObject * Sender,
   TMessageParams MessageParams(Params);
   UnicodeString AQuery = Query;
 
-  if (Params != NULL)
+  if (Params != nullptr)
   {
     HelpKeyword = Params->HelpKeyword;
 
@@ -1088,14 +1088,14 @@ void TTerminalManager::TerminalQueryUser(TObject * Sender,
 void TTerminalManager::AuthenticateFormCancel(TObject * Sender)
 {
   TAuthenticateForm * Form = dynamic_cast<TAuthenticateForm *>(Sender);
-  DebugAssert(Form != NULL);
+  DebugAssert(Form != nullptr);
   TManagedTerminal * ManagedTerminal = dynamic_cast<TManagedTerminal *>(Form->Terminal);
   // will be null e.g. for background transfers
-  if (ManagedTerminal != NULL)
+  if (ManagedTerminal != nullptr)
   {
     TTerminalThread * TerminalThread = ManagedTerminal->TerminalThread;
-    // can be NULL for reconnects from transfers
-    if ((TerminalThread != NULL) && !TerminalThread->Cancelling)
+    // can be nullptr for reconnects from transfers
+    if ((TerminalThread != nullptr) && !TerminalThread->Cancelling)
     {
       Form->Log(LoadStr(AUTH_CANCELLING));
       TerminalThread->Cancel();
@@ -1109,7 +1109,7 @@ TAuthenticateForm * TTerminalManager::MakeAuthenticateForm(
 {
   TAuthenticateForm * Dialog = SafeFormCreate<TAuthenticateForm>();
   Dialog->Init(Terminal);
-  DebugAssert(Dialog->OnCancel == NULL);
+  DebugAssert(Dialog->OnCancel == nullptr);
   Dialog->OnCancel = AuthenticateFormCancel;
   return Dialog;
 }
@@ -1124,7 +1124,7 @@ void TTerminalManager::TerminalPromptUser(
   TTerminal * Terminal, TPromptKind Kind, UnicodeString Name, UnicodeString Instructions,
   TStrings * Prompts, TStrings * Results, bool & Result, void * /*Arg*/)
 {
-  if (((Kind == pkPrompt) || (Kind == pkFileName)) && (FAuthenticateForm == NULL) &&
+  if (((Kind == pkPrompt) || (Kind == pkFileName)) && (FAuthenticateForm == nullptr) &&
       (Terminal->Status != ssOpening))
   {
     DebugAssert(Instructions.IsEmpty());
@@ -1132,13 +1132,13 @@ void TTerminalManager::TerminalPromptUser(
     DebugAssert(FLAGSET(int(Prompts->Objects[0]), pupEcho));
     UnicodeString AResult = Results->Strings[0];
 
-    TInputDialogInitialize InputDialogInitialize = NULL;
+    TInputDialogInitialize InputDialogInitialize = nullptr;
     if ((Kind == pkFileName) && !WinConfiguration->RenameWholeName)
     {
       InputDialogInitialize = FileNameInputDialogInitializeRenameBaseName;
     }
 
-    Result = InputDialog(Name, Prompts->Strings[0], AResult, L"", NULL, false, InputDialogInitialize);
+    Result = InputDialog(Name, Prompts->Strings[0], AResult, L"", nullptr, false, InputDialogInitialize);
     if (Result)
     {
       Results->Strings[0] = AResult;
@@ -1147,7 +1147,7 @@ void TTerminalManager::TerminalPromptUser(
   else
   {
     TAuthenticateForm * AuthenticateForm = FAuthenticateForm;
-    if (AuthenticateForm == NULL)
+    if (AuthenticateForm == nullptr)
     {
       AuthenticateForm = MakeAuthenticateForm(Terminal);
     }
@@ -1155,11 +1155,11 @@ void TTerminalManager::TerminalPromptUser(
     try
     {
       Result = AuthenticateForm->PromptUser(Kind, Name, Instructions, Prompts, Results,
-        (FAuthenticateForm != NULL), Terminal->StoredCredentialsTried);
+        (FAuthenticateForm != nullptr), Terminal->StoredCredentialsTried);
     }
     __finally
     {
-      if (FAuthenticateForm == NULL)
+      if (FAuthenticateForm == nullptr)
       {
         delete AuthenticateForm;
       }
@@ -1171,9 +1171,9 @@ void TTerminalManager::TerminalDisplayBanner(
   TTerminal * Terminal, UnicodeString SessionName,
   const UnicodeString & Banner, bool & NeverShowAgain, int Options, unsigned int & Params)
 {
-  DebugAssert(FAuthenticateForm != NULL);
+  DebugAssert(FAuthenticateForm != nullptr);
   TAuthenticateForm * AuthenticateForm = FAuthenticateForm;
-  if (AuthenticateForm == NULL)
+  if (AuthenticateForm == nullptr)
   {
     AuthenticateForm = MakeAuthenticateForm(Terminal);
   }
@@ -1184,7 +1184,7 @@ void TTerminalManager::TerminalDisplayBanner(
   }
   __finally
   {
-    if (FAuthenticateForm == NULL)
+    if (FAuthenticateForm == nullptr)
     {
       delete AuthenticateForm;
     }
@@ -1211,7 +1211,7 @@ void TTerminalManager::TerminalReadDirectoryProgress(
 {
   if (Progress == 0)
   {
-    if (ScpExplorer != NULL)
+    if (ScpExplorer != nullptr)
     {
       // See also TCustomScpExplorerForm::RemoteDirViewBusy
       ScpExplorer->LockWindow();
@@ -1232,14 +1232,14 @@ void TTerminalManager::TerminalReadDirectoryProgress(
     if (Progress == -2)
     {
       // cancelled
-      if (ScpExplorer != NULL)
+      if (ScpExplorer != nullptr)
       {
         ScpExplorer->ReadDirectoryCancelled();
       }
     }
     else
     {
-      if (ScpExplorer != NULL)
+      if (ScpExplorer != nullptr)
       {
         ScpExplorer->UnlockWindow();
       }
@@ -1283,7 +1283,7 @@ void TTerminalManager::AuthenticatingDone()
   if (FAuthenticating == 0)
   {
     BusyEnd(FBusyToken);
-    FBusyToken = NULL;
+    FBusyToken = nullptr;
   }
   if (!FKeepAuthenticateForm)
   {
@@ -1313,7 +1313,7 @@ void TTerminalManager::TerminalInformation(
     if (FAuthenticating > 0)
     {
       bool ShowPending = false;
-      if (FAuthenticateForm == NULL)
+      if (FAuthenticateForm == nullptr)
       {
         FAuthenticateForm = MakeAuthenticateForm(Terminal);
         ShowPending = true;
@@ -1462,7 +1462,7 @@ UnicodeString TTerminalManager::GetTerminalTitle(TTerminal * Terminal, bool Uniq
 UnicodeString TTerminalManager::GetActiveTerminalTitle(bool Unique)
 {
   UnicodeString Result;
-  if (ActiveTerminal != NULL)
+  if (ActiveTerminal != nullptr)
   {
     Result = GetTerminalTitle(ActiveTerminal, Unique);
   }
@@ -1471,8 +1471,8 @@ UnicodeString TTerminalManager::GetActiveTerminalTitle(bool Unique)
 
 TTerminalQueue * TTerminalManager::GetActiveQueue()
 {
-  TTerminalQueue * Result = NULL;
-  if (ActiveTerminal != NULL)
+  TTerminalQueue * Result = nullptr;
+  if (ActiveTerminal != nullptr)
   {
     Result = reinterpret_cast<TTerminalQueue *>(FQueues->Items[ActiveTerminalIndex]);
   }
@@ -1499,26 +1499,26 @@ void TTerminalManager::CycleTerminals(bool Forward)
 
 bool TTerminalManager::CanOpenInPutty()
 {
-  return (ActiveTerminal != NULL) && !GUIConfiguration->PuttyPath.Trim().IsEmpty();
+  return (ActiveTerminal != nullptr) && !GUIConfiguration->PuttyPath.Trim().IsEmpty();
 }
 
 void TTerminalManager::OpenInPutty()
 {
   Configuration->Usage->Inc(L"OpenInPutty");
 
-  TSessionData * Data = NULL;
+  TSessionData * Data = nullptr;
   try
   {
-    // Is NULL on the first session when called from ConnectActiveTerminal()
+    // Is nullptr on the first session when called from ConnectActiveTerminal()
     // due to WinConfiguration->AutoOpenInPutty
-    if (ScpExplorer != NULL)
+    if (ScpExplorer != nullptr)
     {
       Data = ScpExplorer->CloneCurrentSessionData();
     }
     else
     {
       Data = new TSessionData(L"");
-      DebugAssert(ActiveTerminal != NULL);
+      DebugAssert(ActiveTerminal != nullptr);
       Data->Assign(ActiveTerminal->SessionData);
       ActiveTerminal->UpdateSessionCredentials(Data);
     }
@@ -1557,7 +1557,7 @@ void TTerminalManager::NewSession(const UnicodeString & SessionUrl, bool ReloadS
     {
       DataList.reset(new TObjectList());
       UnicodeString DownloadFile; // unused
-      GetLoginData(SessionUrl, NULL, DataList.get(), DownloadFile, true, LinkedForm);
+      GetLoginData(SessionUrl, nullptr, DataList.get(), DownloadFile, true, LinkedForm);
     }
     else
     {
@@ -1570,7 +1570,7 @@ void TTerminalManager::NewSession(const UnicodeString & SessionUrl, bool ReloadS
     if (DataList->Count > 0)
     {
       TManagedTerminal * ANewTerminal = NewTerminals(DataList.get());
-      bool AdHoc = (DataList->Count == 1) && (StoredSessions->FindSame(reinterpret_cast<TSessionData *>(DataList->Items[0])) == NULL);
+      bool AdHoc = (DataList->Count == 1) && (StoredSessions->FindSame(reinterpret_cast<TSessionData *>(DataList->Items[0])) == nullptr);
       bool CanRetry = SessionUrl.IsEmpty() && AdHoc;
       bool ShowLoginWhenNoSession = WinConfiguration->ShowLoginWhenNoSession;
       if (CanRetry)
@@ -1625,7 +1625,7 @@ void TTerminalManager::Idle(bool SkipCurrentTerminal)
       if (!SkipCurrentTerminal || (Terminal != ActiveTerminal))
       {
         // make sure Idle is called on the thread that runs the terminal
-        if (Terminal->TerminalThread != NULL)
+        if (Terminal->TerminalThread != nullptr)
         {
           Terminal->TerminalThread->Idle();
         }
@@ -1659,8 +1659,8 @@ void TTerminalManager::Idle(bool SkipCurrentTerminal)
       {
         // we may not have inactive terminal, unless there is a explorer,
         // also Idle is called from explorer anyway
-        DebugAssert(ScpExplorer != NULL);
-        if (ScpExplorer != NULL)
+        DebugAssert(ScpExplorer != nullptr);
+        if (ScpExplorer != nullptr)
         {
           ScpExplorer->InactiveTerminalException(Terminal, &E);
         }
@@ -1693,7 +1693,7 @@ void TTerminalManager::Idle(bool SkipCurrentTerminal)
       }
     }
 
-    if (QueueWithEvent != NULL)
+    if (QueueWithEvent != nullptr)
     {
       int Index = FQueues->IndexOf(QueueWithEvent);
       // the session may not exist anymore
@@ -1701,15 +1701,15 @@ void TTerminalManager::Idle(bool SkipCurrentTerminal)
       {
         TManagedTerminal * Terminal = Terminals[Index];
         // we can hardly have a queue event without explorer
-        DebugAssert(ScpExplorer != NULL);
-        if (ScpExplorer != NULL)
+        DebugAssert(ScpExplorer != nullptr);
+        if (ScpExplorer != nullptr)
         {
           ScpExplorer->QueueEvent(Terminal, QueueWithEvent, QueueEvent);
         }
       }
     }
   }
-  while (QueueWithEvent != NULL);
+  while (QueueWithEvent != nullptr);
 }
 
 void TTerminalManager::MasterPasswordPrompt()
@@ -1774,8 +1774,8 @@ bool TTerminalManager::IsActiveTerminalForSite(TTerminal * Terminal, TSessionDat
 
 TManagedTerminal * TTerminalManager::FindActiveTerminalForSite(TSessionData * Data)
 {
-  TManagedTerminal * Result = NULL;
-  for (int Index = 0; (Result == NULL) && (Index < Count); Index++)
+  TManagedTerminal * Result = nullptr;
+  for (int Index = 0; (Result == nullptr) && (Index < Count); Index++)
   {
     TManagedTerminal * Terminal = Terminals[Index];
     if (IsActiveTerminalForSite(Terminal, Data))
@@ -1812,11 +1812,11 @@ bool TTerminalManager::UploadPublicKey(
 
     VerifyAndConvertKey(FileName, false);
 
-    bool AdHocTerminal = (Terminal == NULL);
+    bool AdHocTerminal = (Terminal == nullptr);
     std::unique_ptr<TTerminal> TerminalOwner;
     if (AdHocTerminal)
     {
-      DebugAssert(Data != NULL);
+      DebugAssert(Data != nullptr);
 
       TAutoFlag KeepAuthenticateFormFlag(FKeepAuthenticateForm);
       try
@@ -1824,8 +1824,8 @@ bool TTerminalManager::UploadPublicKey(
         TerminalOwner.reset(CreateTerminal(Data));
         Terminal = TerminalOwner.get();
         SetupTerminal(Terminal);
-        Terminal->OnProgress = NULL;
-        Terminal->OnFinished = NULL;
+        Terminal->OnProgress = nullptr;
+        Terminal->OnFinished = nullptr;
         DoConnectTerminal(Terminal, false, true);
       }
       catch (Exception & E)
@@ -1845,7 +1845,7 @@ bool TTerminalManager::UploadPublicKey(
       {
         Terminal->LogEvent(FORMAT(L"Adding public key line to \"%s\" file:\n%s", AuthorizedKeysFilePath, Line));
         // Ad-hoc terminal
-        if (FAuthenticateForm != NULL)
+        if (FAuthenticateForm != nullptr)
         {
           UnicodeString Comment;
           GetPublicKeyLine(FileName, Comment);
@@ -1874,7 +1874,7 @@ bool TTerminalManager::UploadPublicKey(
       Terminal->LogEvent("Public key installation done.");
       if (AdHocTerminal)
       {
-        TerminalOwner.reset(NULL);
+        TerminalOwner.reset(nullptr);
       }
       else
       {

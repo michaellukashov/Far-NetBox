@@ -16,16 +16,16 @@
 TQueueController::TQueueController(TListView * ListView)
 {
   FListView = ListView;
-  DebugAssert(FListView != NULL);
-  DebugAssert(FListView->OnDblClick == NULL);
+  DebugAssert(FListView != nullptr);
+  DebugAssert(FListView->OnDblClick == nullptr);
   FListView->OnDblClick = QueueViewDblClick;
-  DebugAssert(FListView->OnKeyDown == NULL);
+  DebugAssert(FListView->OnKeyDown == nullptr);
   FListView->OnKeyDown = QueueViewKeyDown;
-  DebugAssert(FListView->OnCustomDrawItem == NULL);
+  DebugAssert(FListView->OnCustomDrawItem == nullptr);
   FListView->OnCustomDrawItem = QueueViewCustomDrawItem;
 
-  FQueueStatus = NULL;
-  FOnChange = NULL;
+  FQueueStatus = nullptr;
+  FOnChange = nullptr;
 
   RememberConfiguration();
 }
@@ -33,11 +33,11 @@ TQueueController::TQueueController(TListView * ListView)
 TQueueController::~TQueueController()
 {
   DebugAssert(FListView->OnDblClick == QueueViewDblClick);
-  FListView->OnDblClick = NULL;
+  FListView->OnDblClick = nullptr;
   DebugAssert(FListView->OnKeyDown == QueueViewKeyDown);
-  FListView->OnKeyDown = NULL;
+  FListView->OnKeyDown = nullptr;
   DebugAssert(FListView->OnCustomDrawItem == QueueViewCustomDrawItem);
-  FListView->OnCustomDrawItem = NULL;
+  FListView->OnCustomDrawItem = nullptr;
 }
 
 TQueueItemProxy * TQueueController::QueueViewItemToQueueItem(TListItem * Item)
@@ -52,7 +52,7 @@ TQueueOperation TQueueController::DefaultOperation()
 {
   TQueueItemProxy * QueueItem;
 
-  if (FListView->ItemFocused != NULL)
+  if (FListView->ItemFocused != nullptr)
   {
     QueueItem = QueueViewItemToQueueItem(FListView->ItemFocused);
 
@@ -84,9 +84,9 @@ TQueueOperation TQueueController::DefaultOperation()
 bool TQueueController::AllowOperation(
   TQueueOperation Operation, void ** Param)
 {
-  TQueueItemProxy * QueueItem = NULL;
+  TQueueItemProxy * QueueItem = nullptr;
 
-  if (FListView->ItemFocused != NULL)
+  if (FListView->ItemFocused != nullptr)
   {
     QueueItem = QueueViewItemToQueueItem(FListView->ItemFocused);
   }
@@ -94,25 +94,25 @@ bool TQueueController::AllowOperation(
   switch (Operation)
   {
     case qoItemUserAction:
-      return (QueueItem != NULL) && TQueueItem::IsUserActionStatus(QueueItem->Status);
+      return (QueueItem != nullptr) && TQueueItem::IsUserActionStatus(QueueItem->Status);
 
     case qoItemQuery:
-      return (QueueItem != NULL) && (QueueItem->Status == TQueueItem::qsQuery);
+      return (QueueItem != nullptr) && (QueueItem->Status == TQueueItem::qsQuery);
 
     case qoItemError:
-      return (QueueItem != NULL) && (QueueItem->Status == TQueueItem::qsError);
+      return (QueueItem != nullptr) && (QueueItem->Status == TQueueItem::qsError);
 
     case qoItemPrompt:
-      return (QueueItem != NULL) && (QueueItem->Status == TQueueItem::qsPrompt);
+      return (QueueItem != nullptr) && (QueueItem->Status == TQueueItem::qsPrompt);
 
     case qoItemDelete:
-      return (QueueItem != NULL);
+      return (QueueItem != nullptr);
 
     case qoItemExecute:
-      return (QueueItem != NULL) && (QueueItem->Status == TQueueItem::qsPending);
+      return (QueueItem != nullptr) && (QueueItem->Status == TQueueItem::qsPending);
 
     case qoItemUp:
-      return (QueueItem != NULL) &&
+      return (QueueItem != nullptr) &&
         (QueueItem->Status == TQueueItem::qsPending) &&
         // it's not first pending item,
         // this is based on assumption that pending items occupy single line always
@@ -120,22 +120,22 @@ bool TQueueController::AllowOperation(
         (QueueViewItemToQueueItem(FListView->Items->Item[FListView->ItemFocused->Index - 1])->Status == TQueueItem::qsPending);
 
     case qoItemDown:
-      return (QueueItem != NULL) &&
+      return (QueueItem != nullptr) &&
         (QueueItem->Status == TQueueItem::qsPending) &&
         (FListView->ItemFocused->Index < (FListView->Items->Count - 1));
 
     case qoItemPause:
-      return (QueueItem != NULL) &&
+      return (QueueItem != nullptr) &&
         (QueueItem->Status == TQueueItem::qsProcessing);
 
     case qoItemResume:
-      return (QueueItem != NULL) &&
+      return (QueueItem != nullptr) &&
         (QueueItem->Status == TQueueItem::qsPaused);
 
     case qoItemSpeed:
       {
-        bool Result = (QueueItem != NULL) && (QueueItem->Status != TQueueItem::qsDone);
-        if (Result && (Param != NULL))
+        bool Result = (QueueItem != nullptr) && (QueueItem->Status != TQueueItem::qsDone);
+        if (Result && (Param != nullptr))
         {
           Result = QueueItem->GetCPSLimit(*reinterpret_cast<unsigned long *>(Param));
         }
@@ -148,8 +148,8 @@ bool TQueueController::AllowOperation(
         TQueueItem::TStatus Status =
           (Operation == qoPauseAll) ? TQueueItem::qsProcessing : TQueueItem::qsPaused;
         bool Result = false;
-        // can be NULL when action update is triggered while disconnecting
-        if (FQueueStatus != NULL)
+        // can be nullptr when action update is triggered while disconnecting
+        if (FQueueStatus != nullptr)
         {
           for (int i = FQueueStatus->DoneCount; !Result && (i < FQueueStatus->DoneAndActiveCount); i++)
           {
@@ -161,10 +161,10 @@ bool TQueueController::AllowOperation(
       }
 
     case qoDeleteAllDone:
-      return (FQueueStatus != NULL) && (FQueueStatus->DoneCount > 0);
+      return (FQueueStatus != nullptr) && (FQueueStatus->DoneCount > 0);
 
     case qoDeleteAll:
-      return (FQueueStatus != NULL) && (FQueueStatus->Count > 0);
+      return (FQueueStatus != nullptr) && (FQueueStatus->Count > 0);
 
     default:
       DebugFail();
@@ -175,9 +175,9 @@ bool TQueueController::AllowOperation(
 void TQueueController::ExecuteOperation(TQueueOperation Operation,
   void * Param)
 {
-  TQueueItemProxy * QueueItem = NULL;
+  TQueueItemProxy * QueueItem = nullptr;
 
-  if (FListView->ItemFocused != NULL)
+  if (FListView->ItemFocused != nullptr)
   {
     QueueItem = QueueViewItemToQueueItem(FListView->ItemFocused);
   }
@@ -188,14 +188,14 @@ void TQueueController::ExecuteOperation(TQueueOperation Operation,
     case qoItemQuery:
     case qoItemError:
     case qoItemPrompt:
-      if (QueueItem != NULL)
+      if (QueueItem != nullptr)
       {
         QueueItem->ProcessUserAction();
       }
       break;
 
     case qoItemExecute:
-      if (QueueItem != NULL)
+      if (QueueItem != nullptr)
       {
         QueueItem->ExecuteNow();
       }
@@ -203,35 +203,35 @@ void TQueueController::ExecuteOperation(TQueueOperation Operation,
 
     case qoItemUp:
     case qoItemDown:
-      if (QueueItem != NULL)
+      if (QueueItem != nullptr)
       {
         QueueItem->Move(Operation == qoItemUp);
       }
       break;
 
     case qoItemDelete:
-      if (QueueItem != NULL)
+      if (QueueItem != nullptr)
       {
         QueueItem->Delete();
       }
       break;
 
     case qoItemPause:
-      if (QueueItem != NULL)
+      if (QueueItem != nullptr)
       {
         QueueItem->Pause();
       }
       break;
 
     case qoItemResume:
-      if (QueueItem != NULL)
+      if (QueueItem != nullptr)
       {
         QueueItem->Resume();
       }
       break;
 
     case qoItemSpeed:
-      if (QueueItem != NULL)
+      if (QueueItem != nullptr)
       {
         QueueItem->SetCPSLimit(reinterpret_cast<unsigned long>(Param));
       }
@@ -278,7 +278,7 @@ void TQueueController::FillQueueViewItem(TListItem * Item,
 {
   DebugAssert(!Detail || (QueueItem->Status != TQueueItem::qsPending));
 
-  DebugAssert((Item->Data == NULL) || (Item->Data == QueueItem));
+  DebugAssert((Item->Data == nullptr) || (Item->Data == QueueItem));
   Item->Data = QueueItem;
 
   UnicodeString ProgressStr;
@@ -362,7 +362,7 @@ void TQueueController::FillQueueViewItem(TListItem * Item,
         FormatPanelBytes(TotalTransferred, WinConfiguration->FormatSizeBytes);
     }
 
-    if (ProgressData != NULL)
+    if (ProgressData != nullptr)
     {
       if (ProgressData->Operation == Info->Operation)
       {
@@ -394,7 +394,7 @@ void TQueueController::FillQueueViewItem(TListItem * Item,
   }
   else
   {
-    if (ProgressData != NULL)
+    if (ProgressData != nullptr)
     {
       if ((Info->Side == osRemote) || !ProgressData->Temp)
       {
@@ -458,7 +458,7 @@ void TQueueController::UpdateQueueStatus(
 {
   FQueueStatus = QueueStatus;
 
-  if (FQueueStatus != NULL)
+  if (FQueueStatus != nullptr)
   {
     TQueueItemProxy * QueueItem;
     TListItem * Item;
@@ -519,16 +519,16 @@ bool TQueueController::UseDetailsLine(int ItemIndex, TQueueItemProxy * QueueItem
     (ItemIndex < FQueueStatus->DoneAndActiveCount) &&
     QueueItem->Info->Primary &&
     !QueueItem->Info->SingleFile &&
-    ((QueueItem->ProgressData == NULL) || !QueueItem->ProgressData->Done);
+    ((QueueItem->ProgressData == nullptr) || !QueueItem->ProgressData->Done);
 }
 
 void TQueueController::RefreshQueueItem(TQueueItemProxy * QueueItem)
 {
-  TListItem * NextListItem = NULL;
+  TListItem * NextListItem = nullptr;
   TListItem * ListItem;
 
   ListItem = FListView->FindData(0, QueueItem, true, false);
-  DebugAssert(ListItem != NULL);
+  DebugAssert(ListItem != nullptr);
 
   int Index = ListItem->Index;
   if (Index + 1 < FListView->Items->Count)
@@ -536,7 +536,7 @@ void TQueueController::RefreshQueueItem(TQueueItemProxy * QueueItem)
     NextListItem = FListView->Items->Item[Index + 1];
     if (NextListItem->Data != QueueItem)
     {
-      NextListItem = NULL;
+      NextListItem = nullptr;
     }
   }
 
@@ -545,7 +545,7 @@ void TQueueController::RefreshQueueItem(TQueueItemProxy * QueueItem)
 
   if (HasDetailsLine)
   {
-    if (NextListItem == NULL)
+    if (NextListItem == nullptr)
     {
       NextListItem = FListView->Items->Insert(Index + 1);
     }
@@ -553,7 +553,7 @@ void TQueueController::RefreshQueueItem(TQueueItemProxy * QueueItem)
   }
   else
   {
-    if (NextListItem != NULL)
+    if (NextListItem != nullptr)
     {
       NextListItem->Delete();
     }
@@ -572,9 +572,9 @@ bool TQueueController::QueueItemNeedsFrequentRefresh(
 
 void TQueueController::DoChange()
 {
-  if (FOnChange != NULL)
+  if (FOnChange != nullptr)
   {
-    FOnChange(NULL);
+    FOnChange(nullptr);
   }
 }
 
@@ -620,7 +620,7 @@ void TQueueController::QueueViewCustomDrawItem(TCustomListView * Sender,
 
 bool TQueueController::GetEmpty()
 {
-  return (FQueueStatus == NULL) || (FQueueStatus->Count == 0);
+  return (FQueueStatus == nullptr) || (FQueueStatus->Count == 0);
 }
 
 void TQueueController::RememberConfiguration()
@@ -637,9 +637,9 @@ bool TQueueController::NeedRefresh()
 
 TQueueItemProxy * TQueueController::GetFocusedPrimaryItem()
 {
-  TQueueItemProxy * Result = NULL;
+  TQueueItemProxy * Result = nullptr;
   TListItem * PrimaryItemOfFocused = FListView->ItemFocused;
-  if (PrimaryItemOfFocused != NULL)
+  if (PrimaryItemOfFocused != nullptr)
   {
     while (!QueueViewItemToQueueItem(PrimaryItemOfFocused)->Info->Primary &&
            DebugAlwaysTrue(PrimaryItemOfFocused->Index > 0))

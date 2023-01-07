@@ -89,9 +89,9 @@ LPTSTR unquote(LPCTSTR str){
 }
 
 // Find "what" in the ";" separated string "str" and returns a pointer to
-// the first letter of "what" in the string. If "next" is not "NULL" it
+// the first letter of "what" in the string. If "next" is not "nullptr" it
 // points to the first letter after "what" (excluding the trailing ";").
-// If "what" isn't find the functions returns "NULL".
+// If "what" isn't find the functions returns "nullptr".
 LPTSTR find_reg_str(LPTSTR str, LPCTSTR what, LPTSTR * next){
     LPTSTR tok_buff;
     LPTSTR curr_tok;
@@ -1535,8 +1535,8 @@ static void DownloadUpdate(void * /*Data*/, TObject * Sender, unsigned int & /*A
     NavigateMessageDialogToUrl(Form, DownloadingUrl);
   }
 
-  DebugAssert(Form->OnClose == NULL);
-  Form->OnClose = MakeMethod<TCloseEvent>(NULL, DownloadClose);
+  DebugAssert(Form->OnClose == nullptr);
+  Form->OnClose = MakeMethod<TCloseEvent>(nullptr, DownloadClose);
 
   Thread->Resume();
 }
@@ -1551,7 +1551,7 @@ static void InsertDonateLink(void * /*Data*/, TObject * Sender)
   const UnicodeString DonatePanelName = L"DonatePanel";
   TForm * Dialog = DebugNotNull(dynamic_cast<TForm *>(Sender));
   // OnShow can happen multiple times, for example when showing dialog on start up (being main window)
-  if (FindComponentRecursively(Dialog, DonatePanelName) == NULL)
+  if (FindComponentRecursively(Dialog, DonatePanelName) == nullptr)
   {
     UnicodeString DocumentBody = LoadStr(UPDATES_DONATE_HTML);
     DocumentBody = ReplaceStr(DocumentBody, L"%DONATE_URL%", AppendUrlParams(LoadStr(DONATE_URL), L"automaticupdates=1"));
@@ -1680,7 +1680,7 @@ bool CheckForUpdates(bool CachedResults)
     }
     Aliases[1].Button = qaAll;
     Aliases[1].Alias = LoadStr(WHATS_NEW_BUTTON);
-    Aliases[1].OnSubmit = MakeMethod<TButtonSubmitEvent>(NULL, OpenHistory);
+    Aliases[1].OnSubmit = MakeMethod<TButtonSubmitEvent>(nullptr, OpenHistory);
     Aliases[2].Button = qaCancel;
     Aliases[2].Alias = Vcl_Consts_SMsgDlgClose;
     // Used only when New == true, see AliasesCount below
@@ -1688,7 +1688,7 @@ bool CheckForUpdates(bool CachedResults)
     Aliases[3].Alias = LoadStr(UPGRADE_BUTTON);
     if (!Updates.Results.DownloadUrl.IsEmpty())
     {
-      Aliases[3].OnSubmit = MakeMethod<TButtonSubmitEvent>(NULL, DownloadUpdate);
+      Aliases[3].OnSubmit = MakeMethod<TButtonSubmitEvent>(nullptr, DownloadUpdate);
       Aliases[3].ElevationRequired = true;
     }
 
@@ -1706,7 +1706,7 @@ bool CheckForUpdates(bool CachedResults)
     }
 
     std::unique_ptr<TForm> Dialog(
-      CreateMoreMessageDialogEx(Message, NULL, Type, Answers, HELP_UPDATES, &Params));
+      CreateMoreMessageDialogEx(Message, nullptr, Type, Answers, HELP_UPDATES, &Params));
 
     if (New)
     {
@@ -1714,9 +1714,9 @@ bool CheckForUpdates(bool CachedResults)
       // As a simple solution, we just do not display the donation panel on Windows XP.
       if (Updates.Results.DownloadUrl.IsEmpty() && IsInstalled() && IsWinVista())
       {
-        DebugAssert(Dialog->OnShow == NULL);
+        DebugAssert(Dialog->OnShow == nullptr);
         // InsertDonateLink need to be called only after MessageBrowser is created
-        Dialog->OnShow = MakeMethod<TNotifyEvent>(NULL, InsertDonateLink);
+        Dialog->OnShow = MakeMethod<TNotifyEvent>(nullptr, InsertDonateLink);
       }
     }
 

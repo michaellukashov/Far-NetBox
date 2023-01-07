@@ -27,7 +27,7 @@ constexpr uintptr_t AdditionaLanguageMask = 0xFFFFFF00;
 static UnicodeString AdditionaLanguagePrefix("XX");
 static UnicodeString TranslationsSubFolder("Translations");
 
-__removed TGUIConfiguration * GUIConfiguration = NULL;
+__removed TGUIConfiguration * GUIConfiguration = nullptr;
 
 TGUICopyParamType::TGUICopyParamType() noexcept
   : TCopyParamType(OBJECT_CLASS_TGUICopyParamType)

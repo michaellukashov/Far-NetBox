@@ -125,7 +125,7 @@ void LocalSystemSettings(TCustomForm * /*Control*/)
 
 void ShowExtendedException(Exception * E)
 {
-  ShowExtendedExceptionEx(NULL, E);
+  ShowExtendedExceptionEx(nullptr, E);
 }
 
 void TerminateApplication()
@@ -206,7 +206,7 @@ void ShowExtendedExceptionEx(TTerminal * Terminal,
         std::unique_ptr<TActionLog> ActionLog(std::make_unique<TActionLog>(Now(), Configuration));
         ActionLog->AddFailure(E);
         // unnecessary explicit release
-        ActionLog.reset(NULL);
+        ActionLog.reset(nullptr);
       }
     }
   }
@@ -220,11 +220,11 @@ void ShowExtendedExceptionEx(TTerminal * Terminal,
     TTerminalManager * Manager = TTerminalManager::Instance(false);
 
     ESshTerminate * Terminate = dynamic_cast<ESshTerminate*>(E);
-    bool CloseOnCompletion = (Terminate != NULL);
+    bool CloseOnCompletion = (Terminate != nullptr);
 
     bool ForActiveTerminal =
-      E->InheritsFrom(__classid(EFatal)) && (Terminal != NULL) &&
-      (Manager != NULL) && (Manager->ActiveTerminal == Terminal);
+      E->InheritsFrom(__classid(EFatal)) && (Terminal != nullptr) &&
+      (Manager != nullptr) && (Manager->ActiveTerminal == Terminal);
 
     unsigned int Result;
     if (CloseOnCompletion)
@@ -298,7 +298,7 @@ void ShowExtendedExceptionEx(TTerminal * Terminal,
         if (ForActiveTerminal)
         {
           int SessionReopenTimeout = 0;
-          if (DebugAlwaysTrue(Manager->ActiveTerminal != NULL) &&
+          if (DebugAlwaysTrue(Manager->ActiveTerminal != nullptr) &&
               ((Configuration->SessionReopenTimeout == 0) ||
                ((double)Manager->ActiveTerminal->ReopenStart == 0) ||
                (int(double(Now() - Manager->ActiveTerminal->ReopenStart) * MSecsPerDay) < Configuration->SessionReopenTimeout)))
@@ -328,7 +328,7 @@ void ShowExtendedExceptionEx(TTerminal * Terminal,
     if (Result == qaYes)
     {
       DebugAssert(CloseOnCompletion);
-      DebugAssert(Terminate != NULL);
+      DebugAssert(Terminate != nullptr);
       DebugAssert(Terminate->Operation != odoIdle);
       TerminateApplication();
 
@@ -371,7 +371,7 @@ void ShowNotification(TTerminal * Terminal, const UnicodeString & Str,
   TQueryType Type)
 {
   TTerminalManager * Manager = TTerminalManager::Instance(false);
-  DebugAssert(Manager != NULL);
+  DebugAssert(Manager != nullptr);
 
   Manager->ScpExplorer->PopupTrayBalloon(Terminal, Str, Type);
 }
@@ -382,7 +382,7 @@ void ConfigureInterface()
     AdjustLocaleFlag(LoadStr(BIDI_MODE), WinConfiguration->BidiModeOverride, false, bdRightToLeft, bdLeftToRight);
   Application->BiDiMode = static_cast<TBiDiMode>(BidiModeFlag);
   SetTBXSysParam(TSP_XPVISUALSTYLE, XPVS_AUTOMATIC);
-  if (WinConfiguration != NULL)
+  if (WinConfiguration != nullptr)
   {
     UnicodeString Theme = WinConfiguration->UseDarkTheme() ? L"DarkOfficeXP" : L"OfficeXP";
     if (!SameText(TBXCurrentTheme(), Theme))
@@ -397,7 +397,7 @@ void ConfigureInterface()
 
 void DoAboutDialog(TConfiguration *Configuration)
 {
-  DoAboutDialog(Configuration, true, NULL);
+  DoAboutDialog(Configuration, true, nullptr);
 }
 //---------------------------------------------------------------------
 void DoProductLicense()
@@ -562,27 +562,27 @@ void LoadToolbarsLayoutStr(TControl * OwnerControl, UnicodeString LayoutStr)
       {
         TTBXToolbar * Toolbar =
           dynamic_cast<TTBXToolbar *>(OwnerControl->Components[Index]);
-        if ((Toolbar != NULL) && Toolbar->Stretch &&
-            (Toolbar->OnGetBaseSize != NULL) &&
+        if ((Toolbar != nullptr) && Toolbar->Stretch &&
+            (Toolbar->OnGetBaseSize != nullptr) &&
             // we do not support floating of stretched toolbars
             DebugAlwaysTrue(!Toolbar->Floating))
         {
-          TTBXToolbar * FollowingToolbar = NULL;
+          TTBXToolbar * FollowingToolbar = nullptr;
           for (int Index2 = 0; Index2 < OwnerControl->ComponentCount; Index2++)
           {
             TTBXToolbar * Toolbar2 =
               dynamic_cast<TTBXToolbar *>(OwnerControl->Components[Index2]);
-            if ((Toolbar2 != NULL) && !Toolbar2->Floating &&
+            if ((Toolbar2 != nullptr) && !Toolbar2->Floating &&
                 (Toolbar2->Parent == Toolbar->Parent) &&
                 (Toolbar2->DockRow == Toolbar->DockRow) &&
                 (Toolbar2->DockPos > Toolbar->DockPos) &&
-                ((FollowingToolbar == NULL) || (FollowingToolbar->DockPos > Toolbar2->DockPos)))
+                ((FollowingToolbar == nullptr) || (FollowingToolbar->DockPos > Toolbar2->DockPos)))
             {
               FollowingToolbar = Toolbar2;
             }
           }
 
-          if (FollowingToolbar != NULL)
+          if (FollowingToolbar != nullptr)
           {
             int NewWidth = LoadDimension(Toolbar->Width, PixelsPerInch, Toolbar);
             FollowingToolbar->DockPos += NewWidth - Toolbar->Width;
@@ -604,7 +604,7 @@ TTBXSeparatorItem * AddMenuSeparator(TTBCustomItem * Menu)
   return Item;
 }
 
-static TComponent * LastPopupComponent = NULL;
+static TComponent * LastPopupComponent = nullptr;
 static TRect LastPopupRect(-1, -1, -1, -1);
 static TDateTime LastCloseUp;
 
@@ -615,8 +615,8 @@ static void ConvertMenu(TMenuItem * AItems, TTBCustomItem * Items)
     TMenuItem * AItem = AItems->Items[Index];
     TTBCustomItem * Item;
 
-    if (!AItem->Enabled && !AItem->Visible && (AItem->Action == NULL) &&
-        (AItem->OnClick == NULL) && DebugAlwaysTrue(AItem->Count == 0))
+    if (!AItem->Enabled && !AItem->Visible && (AItem->Action == nullptr) &&
+        (AItem->OnClick == nullptr) && DebugAlwaysTrue(AItem->Count == 0))
     {
       TTBXLabelItem * LabelItem = new TTBXLabelItem(Items->Owner);
       // TTBXLabelItem has it's own Caption
@@ -690,12 +690,12 @@ void MenuPopup(TPopupMenu * AMenu, TRect Rect,
       (Rect == LastPopupRect) &&
       (Diff < TDateTime(0, 0, 0, 200)))
   {
-    LastPopupComponent = NULL;
+    LastPopupComponent = nullptr;
   }
   else
   {
     TTBXPopupMenu * Menu = dynamic_cast<TTBXPopupMenu *>(AMenu);
-    if (Menu == NULL)
+    if (Menu == nullptr)
     {
       Menu = CreateTBXPopupMenu(AMenu->Owner);
       Menu->OnPopup = AMenu->OnPopup;
@@ -792,7 +792,7 @@ static bool IsStandardColor(bool SessionColors, TColor Color)
   }
   else
   {
-    std::unique_ptr<TTBXColorPalette> DefaultColorPalette(new TTBXColorPalette(NULL));
+    std::unique_ptr<TTBXColorPalette> DefaultColorPalette(new TTBXColorPalette(nullptr));
     return (DefaultColorPalette->FindCell(Color).X >= 0);
   }
 }
@@ -818,7 +818,7 @@ private:
 
 TColorChangeData::TColorChangeData(
     TColorChangeEvent OnColorChange, TColor Color, bool SessionColors) :
-  TComponent(NULL)
+  TComponent(nullptr)
 {
   Name = QualifiedClassName();
   FOnColorChange = OnColorChange;
@@ -1005,7 +1005,7 @@ void CreateColorPalette(TTBCustomItem * Owner, TColor Color, int Rows,
 {
   TTBXColorPalette * ColorPalette = new TTBXColorPalette(Owner);
 
-  if (OnGetColorInfo != NULL)
+  if (OnGetColorInfo != nullptr)
   {
     TTBXCustomColorSet * ColorSet = new TTBXCustomColorSet(Owner);
     ColorPalette->InsertComponent(ColorSet);
@@ -1020,7 +1020,7 @@ void CreateColorPalette(TTBCustomItem * Owner, TColor Color, int Rows,
 
   // clNone = no selection, see also ColorChange
   ColorPalette->Color = (Color != 0) ? Color : Vcl::Graphics::clNone;
-  ColorPalette->OnChange = MakeMethod<TNotifyEvent>(NULL, ColorPaletteChange);
+  ColorPalette->OnChange = MakeMethod<TNotifyEvent>(nullptr, ColorPaletteChange);
   ColorPalette->InsertComponent(new TColorChangeData(OnColorChange, Color, SessionColors));
   Owner->Add(ColorPalette);
 
@@ -1034,7 +1034,7 @@ static void CreateColorMenu(TComponent * AOwner, TColor Color,
   const UnicodeString & ColorPickHint)
 {
   TTBCustomItem * Owner = dynamic_cast<TTBCustomItem *>(AOwner);
-  if (DebugAlwaysTrue(Owner != NULL))
+  if (DebugAlwaysTrue(Owner != nullptr))
   {
     Owner->Clear();
 
@@ -1044,7 +1044,7 @@ static void CreateColorMenu(TComponent * AOwner, TColor Color,
     Item->Caption = DefaultColorCaption;
     Item->Hint = DefaultColorHint;
     Item->HelpKeyword = HelpKeyword;
-    Item->OnClick = MakeMethod<TNotifyEvent>(NULL, ColorDefaultClick);
+    Item->OnClick = MakeMethod<TNotifyEvent>(nullptr, ColorDefaultClick);
     Item->Checked = (Color == TColor(0));
     Item->InsertComponent(new TColorChangeData(OnColorChange, Color, SessionColors));
     Owner->Add(Item);
@@ -1066,19 +1066,19 @@ static void CreateColorMenu(TComponent * AOwner, TColor Color,
       DebugAssert(RowCount <= UserColorRows);
 
       CreateColorPalette(Owner, Color, RowCount,
-        MakeMethod<TCSGetColorInfo>(NULL, UserCustomColorSetGetColorInfo),
+        MakeMethod<TCSGetColorInfo>(nullptr, UserCustomColorSetGetColorInfo),
         OnColorChange, SessionColors);
     }
 
     if (SessionColors)
     {
       CreateColorPalette(Owner, Color, StandardColorRows,
-        MakeMethod<TCSGetColorInfo>(NULL, SessionColorSetGetColorInfo),
+        MakeMethod<TCSGetColorInfo>(nullptr, SessionColorSetGetColorInfo),
         OnColorChange, SessionColors);
     }
     else
     {
-      CreateColorPalette(Owner, Color, -1, NULL, OnColorChange, SessionColors);
+      CreateColorPalette(Owner, Color, -1, nullptr, OnColorChange, SessionColors);
     }
 
     Owner->Add(new TTBXSeparatorItem(Owner));
@@ -1087,7 +1087,7 @@ static void CreateColorMenu(TComponent * AOwner, TColor Color,
     Item->Caption = LoadStr(COLOR_PICK_CAPTION);
     Item->Hint = ColorPickHint;
     Item->HelpKeyword = HelpKeyword;
-    Item->OnClick = MakeMethod<TNotifyEvent>(NULL, ColorPickClick);
+    Item->OnClick = MakeMethod<TNotifyEvent>(nullptr, ColorPickClick);
     Item->InsertComponent(new TColorChangeData(OnColorChange, Color, SessionColors));
     Owner->Add(Item);
   }
@@ -1283,8 +1283,8 @@ TMasterPasswordDialog::TMasterPasswordDialog(bool Current) :
   }
   else
   {
-    NewEdit = NULL;
-    ConfirmEdit = NULL;
+    NewEdit = nullptr;
+    ConfirmEdit = nullptr;
   }
 }
 
@@ -1298,7 +1298,7 @@ bool TMasterPasswordDialog::Execute(
     {
       CurrentPassword = CurrentEdit->Text;
     }
-    if (NewEdit != NULL)
+    if (NewEdit != nullptr)
     {
       NewPassword = NewEdit->Text;
     }
@@ -1310,8 +1310,8 @@ void TMasterPasswordDialog::DoChange(bool & CanSubmit)
 {
   CanSubmit =
     (!WinConfiguration->UseMasterPassword || (IsValidPassword(CurrentEdit->Text) >= 0)) &&
-    ((NewEdit == NULL) || (IsValidPassword(NewEdit->Text) >= 0)) &&
-    ((ConfirmEdit == NULL) || (IsValidPassword(ConfirmEdit->Text) >= 0));
+    ((NewEdit == nullptr) || (IsValidPassword(NewEdit->Text) >= 0)) &&
+    ((ConfirmEdit == nullptr) || (IsValidPassword(ConfirmEdit->Text) >= 0));
   TCustomDialog::DoChange(CanSubmit);
 }
 
@@ -1327,7 +1327,7 @@ void TMasterPasswordDialog::DoValidate()
     throw Exception(MainInstructions(LoadStr(MASTER_PASSWORD_INCORRECT)));
   }
 
-  if (NewEdit != NULL)
+  if (NewEdit != nullptr)
   {
     if (NewEdit->Text != ConfirmEdit->Text)
     {

@@ -343,7 +343,7 @@ using TCalculateChecksumEvent = nb::FastDelegate4<void,
   bool & /*Close*/>;
 
 bool DoPropertiesDialog(TStrings * FileList,
-    UnicodeString Directory, const TRemoteTokenList * GroupList,
+    const UnicodeString Directory, const TRemoteTokenList * GroupList,
     const TRemoteTokenList * UserList, TStrings * ChecksumAlgs,
     TRemoteProperties * Properties,
     int AllowedChanges, bool UserGroupByID, TCalculateSizeEvent OnCalculateSize,
@@ -500,18 +500,18 @@ void DoFileSystemInfoDialog(
 //moved to FarInterface.h
 #if 0
 // forms\MessageDlg.cpp
-void AnswerNameAndCaption(
 TForm * CreateMoreMessageDialog(const UnicodeString & Msg,
-  TStrings * MoreMessages, TMsgDlgType DlgType, unsigned int Answers,
-  const TQueryButtonAlias * Aliases, unsigned int AliasesCount,
-  unsigned int TimeoutAnswer, TButton ** TimeoutButton,
+  TStrings * MoreMessages, TMsgDlgType DlgType, uint32_t Answers,
+  const TQueryButtonAlias * Aliases, uint32_t AliasesCount,
+  uint32_t TimeoutAnswer, TButton ** TimeoutButton,
   const UnicodeString & ImageName, const UnicodeString & NeverAskAgainCaption,
   const UnicodeString & MoreMessagesUrl, TSize MoreMessagesSize,
   const UnicodeString & CustomCaption);
 TForm * CreateMoreMessageDialogEx(const UnicodeString Message, TStrings * MoreMessages,
-  TQueryType Type, unsigned int Answers, UnicodeString HelpKeyword, const TMessageParams * Params);
-unsigned int ExecuteMessageDialog(TForm * Dialog, unsigned int Answers, const TMessageParams * Params);
+  TQueryType Type, uint32_t Answers, UnicodeString HelpKeyword, const TMessageParams * Params);
+uint32_t ExecuteMessageDialog(TForm * Dialog, uint32_t Answers, const TMessageParams * Params);
 void InsertPanelToMessageDialog(TCustomForm * Form, TPanel * Panel);
+int GetMessageDialogContentWidth(TCustomForm * Form);
 void NavigateMessageDialogToUrl(TCustomForm * Form, const UnicodeString & Url);
 extern const UnicodeString MessagePanelName;
 extern const UnicodeString MainMessageLabelName;
@@ -521,7 +521,10 @@ extern const UnicodeString OKButtonName;
 #endif // #if 0
 
 // windows\Console.cpp
-enum TConsoleMode { cmNone, cmScripting, cmHelp, cmBatchSettings, cmKeyGen, cmFingerprintScan };
+enum TConsoleMode
+{
+  cmNone, cmScripting, cmHelp, cmBatchSettings, cmKeyGen, cmFingerprintScan, cmDumpCallstack, cmInfo, cmComRegistration,
+};
 int Console(TConsoleMode Mode);
 
 // forms\EditorPreferences.cpp
@@ -583,7 +586,7 @@ void CopyParamListPopup(TRect R, TPopupMenu * Menu,
   int Options, int CopyParamAttrs, bool SaveSettings = false);
 int CopyParamListPopupClick(TObject * Sender,
   TCopyParamType & Param, UnicodeString & Preset, int CopyParamAttrs,
-  bool * SaveSettings = NULL);
+  bool * SaveSettings = nullptr);
 
 void MenuPopup(TPopupMenu * Menu, TRect Rect, TComponent * PopupComponent);
 void MenuPopup(TPopupMenu * Menu, TButton * Button);
@@ -649,10 +652,10 @@ __removed #define HIDDEN_WINDOW_NAME L"WinSCPHiddenWindow3"
 struct TCopyDataMessage
 {
   enum { CommandCanCommandLine, CommandCommandLine, MainWindowCheck, RefreshPanel };
-  static const uintptr_t Version1 = 1;
+  static const uint32_t Version1 = 1;
 
-  uintptr_t Version{TCopyDataMessage::Version1};
-  uintptr_t Command{static_cast<uintptr_t>(-1)};
+  uint32_t Version{TCopyDataMessage::Version1};
+  uint32_t Command{static_cast<uint32_t>(-1)};
 
   union
   {
@@ -668,7 +671,7 @@ struct TCopyDataMessage
   TCopyDataMessage() noexcept
   {
     Version = TCopyDataMessage::Version1;
-    // Command = static_cast<uintptr_t>(-1);
+    // Command = static_cast<uint32_t>(-1);
   }
 };
 
@@ -679,11 +682,11 @@ public:
     TCustomCommand * ChildCustomCommand, const UnicodeString CustomCommandName, const UnicodeString HelpKeyword) noexcept;
 
 protected:
-  void Prompt(intptr_t Index, const UnicodeString Prompt,
+  void Prompt(int32_t Index, const UnicodeString Prompt,
     UnicodeString &Value) const override;
   void Execute(const UnicodeString Command,
     UnicodeString &Value) const override;
-  void PatternHint(intptr_t Index, UnicodeString Pattern) override;
+  void PatternHint(int32_t Index, UnicodeString Pattern) override;
 
 private:
   UnicodeString FCustomCommandName;
@@ -698,11 +701,11 @@ private:
 class TTrayIcon
 {
 public:
-  TTrayIcon(unsigned int Id);
+  TTrayIcon(uint32_t Id);
   ~TTrayIcon();
 
   void PopupBalloon(UnicodeString Title, const UnicodeString & Str,
-    TQueryType QueryType, unsigned int Timeout, TNotifyEvent OnBalloonClick,
+    TQueryType QueryType, uint32_t Timeout, TNotifyEvent OnBalloonClick,
     TObject * BalloonUserData);
   void CancelBalloon();
 
@@ -712,7 +715,7 @@ public:
 
 protected:
   void Update();
-  bool Notify(unsigned int Message);
+  bool Notify(uint32_t Message);
 
 private:
   bool FVisible;
@@ -748,22 +751,24 @@ public:
   virtual ~TConsole() = default;
   virtual void Print(UnicodeString Str, bool FromBeginning = false, bool Error = false) = 0;
   void PrintLine(const UnicodeString & Str = UnicodeString(), bool Error = false);
-  virtual bool Input(UnicodeString & Str, bool Echo, unsigned int Timer) = 0;
+  virtual bool Input(UnicodeString & Str, bool Echo, uint32_t Timer) = 0;
   virtual int Choice(
     UnicodeString Options, int Cancel, int Break, int Continue, int Timeouted, bool Timeouting, unsigned int Timer,
     UnicodeString Message) = 0;
+  virtual bool HasFlag(TConsoleFlag Flag) const = 0;
   virtual bool PendingAbort() = 0;
   virtual void SetTitle(UnicodeString Title) = 0;
   virtual bool LimitedOutput() = 0;
   virtual bool LiveOutput() = 0;
   virtual bool NoInteractiveInput() = 0;
   virtual void WaitBeforeExit() = 0;
+  virtual void Progress(TScriptProgress & Progress) = 0;
   virtual bool CommandLineOnly() = 0;
   virtual bool WantsProgress() = 0;
-//  virtual void Progress(TScriptProgress & Progress) = 0;
   virtual UnicodeString FinalLogMessage() = 0;
   virtual void TransferOut(const unsigned char * Data, size_t Len) = 0;
   virtual size_t TransferIn(unsigned char * Data, size_t Len) = 0;
+  virtual UnicodeString FinalLogMessage() = 0;
 };
 
 int HandleException(TConsole * Console, Exception & E);

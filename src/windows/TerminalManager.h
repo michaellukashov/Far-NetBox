@@ -60,7 +60,7 @@ public:
   void UpdateAppTitle();
   bool CanOpenInPutty();
   void OpenInPutty();
-  void NewSession(const UnicodeString & SessionUrl, bool ReloadSessions = true, TForm * LinkedForm = NULL);
+  void NewSession(const UnicodeString & SessionUrl, bool ReloadSessions = true, TForm * LinkedForm = nullptr);
   void Idle(bool SkipCurrentTerminal);
   UnicodeString GetTerminalShortPath(TTerminal * Terminal);
   UnicodeString GetTerminalTitle(TTerminal * Terminal, bool Unique);

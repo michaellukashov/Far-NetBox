@@ -14,7 +14,7 @@
 
 #pragma package(smart_init)
 
-TCustomWinConfiguration * CustomWinConfiguration = NULL;
+TCustomWinConfiguration * CustomWinConfiguration = nullptr;
 
 class THistoryStrings : public TStringList
 {
@@ -48,13 +48,13 @@ TCustomWinConfiguration::~TCustomWinConfiguration()
 
 void TCustomWinConfiguration::ClearHistory()
 {
-  DebugAssert(FHistory != NULL);
+  DebugAssert(FHistory != nullptr);
 
   THistoryStrings * HistoryStrings;
   for (int Index = 0; Index < FHistory->Count; Index++)
   {
     HistoryStrings = dynamic_cast<THistoryStrings *>(FHistory->Objects[Index]);
-    FHistory->Objects[Index] = NULL;
+    FHistory->Objects[Index] = nullptr;
     delete HistoryStrings;
   }
   FHistory->Clear();
@@ -135,7 +135,7 @@ void TCustomWinConfiguration::Saved()
   for (int Index = 0; Index < FHistory->Count; Index++)
   {
     HistoryStrings = dynamic_cast<THistoryStrings *>(FHistory->Objects[Index]);
-    DebugAssert(HistoryStrings != NULL);
+    DebugAssert(HistoryStrings != nullptr);
     HistoryStrings->Modified = false;
   }
 }
@@ -192,7 +192,7 @@ void TCustomWinConfiguration::SaveData(
         for (int Index = 0; Index < FHistory->Count; Index++)
         {
           HistoryStrings = dynamic_cast<THistoryStrings *>(FHistory->Objects[Index]);
-          DebugAssert(HistoryStrings != NULL);
+          DebugAssert(HistoryStrings != nullptr);
           if (All || HistoryStrings->Modified)
           {
             if (Storage->OpenSubKey(FHistory->Strings[Index], true))
@@ -223,13 +223,13 @@ void TCustomWinConfiguration::SaveData(
         for (int Index = 0; Index < FHistory->Count; Index++)
         {
           HistoryStrings = dynamic_cast<THistoryStrings *>(FHistory->Objects[Index]);
-          DebugAssert(HistoryStrings != NULL);
+          DebugAssert(HistoryStrings != nullptr);
           if (All || HistoryStrings->Modified)
           {
             bool HasData = false;
             for (int VIndex = 0; !HasData && (VIndex < HistoryStrings->Count); VIndex++)
             {
-              HasData = (HistoryStrings->Objects[VIndex] != NULL);
+              HasData = (HistoryStrings->Objects[VIndex] != nullptr);
             }
 
             if (!HasData)
@@ -280,7 +280,7 @@ void TCustomWinConfiguration::LoadData(
   DefaultHistory();
   if (Storage->OpenSubKey(L"History", false))
   {
-    TStrings * Names = NULL;
+    TStrings * Names = nullptr;
     try
     {
       Names = new TStringList();
@@ -289,7 +289,7 @@ void TCustomWinConfiguration::LoadData(
       {
         if (Storage->OpenSubKey(Names->Strings[Index], false))
         {
-          THistoryStrings * HistoryStrings = NULL;
+          THistoryStrings * HistoryStrings = nullptr;
           try
           {
             // remove defaults, if any
@@ -304,7 +304,7 @@ void TCustomWinConfiguration::LoadData(
             HistoryStrings = new THistoryStrings();
             Storage->ReadValues(HistoryStrings);
             FHistory->AddObject(Names->Strings[Index], HistoryStrings);
-            HistoryStrings = NULL;
+            HistoryStrings = nullptr;
           }
           __finally
           {
@@ -369,11 +369,11 @@ void TCustomWinConfiguration::RecryptPasswords(TStrings * RecryptPasswordErrors)
 
   StoredSessions->RecryptPasswords(RecryptPasswordErrors);
 
-  if (OnMasterPasswordRecrypt != NULL)
+  if (OnMasterPasswordRecrypt != nullptr)
   {
     try
     {
-      OnMasterPasswordRecrypt(NULL);
+      OnMasterPasswordRecrypt(nullptr);
     }
     catch (Exception & E)
     {
@@ -408,14 +408,14 @@ void TCustomWinConfiguration::SetHistory(const UnicodeString Index,
   TStrings * value)
 {
   int I = FHistory->IndexOf(Index);
-  bool NonEmpty = (value != NULL) && (value->Count > 0);
-  THistoryStrings * HistoryStrings = NULL;
+  bool NonEmpty = (value != nullptr) && (value->Count > 0);
+  THistoryStrings * HistoryStrings = nullptr;
   if (I >= 0)
   {
     HistoryStrings = dynamic_cast<THistoryStrings *>(FHistory->Objects[I]);
     if (HistoryStrings->Equals(value))
     {
-      HistoryStrings = NULL;
+      HistoryStrings = nullptr;
     }
   }
   else if (NonEmpty)
@@ -424,7 +424,7 @@ void TCustomWinConfiguration::SetHistory(const UnicodeString Index,
     FHistory->AddObject(Index, HistoryStrings);
   }
 
-  if (HistoryStrings != NULL)
+  if (HistoryStrings != nullptr)
   {
     if (NonEmpty)
     {

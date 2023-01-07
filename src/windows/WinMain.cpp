@@ -37,7 +37,7 @@ void GetLoginData(UnicodeString SessionName, TOptions * Options,
   else
   {
     TSessionData * SessionData =
-      StoredSessions->ParseUrl(SessionName, Options, DefaultsOnly, &DownloadFile, NULL, NULL, Flags);
+      StoredSessions->ParseUrl(SessionName, Options, DefaultsOnly, &DownloadFile, nullptr, nullptr, Flags);
     DataList->Add(SessionData);
 
     if (DataList->Count == 1)
@@ -46,8 +46,8 @@ void GetLoginData(UnicodeString SessionName, TOptions * Options,
       if (SessionData->SaveOnly)
       {
         Configuration->Usage->Inc(L"CommandLineSessionSave");
-        TSessionData * SavedSession = DoSaveSession(SessionData, NULL, true, NULL);
-        if (SavedSession == NULL)
+        TSessionData * SavedSession = DoSaveSession(SessionData, nullptr, true, nullptr);
+        if (SavedSession == nullptr)
         {
           Abort();
         }
@@ -114,19 +114,19 @@ void Upload(TTerminal * Terminal, TStrings * FileList, int UseDefaults)
   int CopyParamAttrs = Terminal->UsableCopyParamAttrs(0).Upload;
   if ((UseDefaults == 0) ||
       DoCopyDialog(true, false, FileList, TargetDirectory, &CopyParam, Options,
-        CopyParamAttrs, Data.get(), NULL, UseDefaults))
+        CopyParamAttrs, Data.get(), nullptr, UseDefaults))
   {
     // Setting parameter overrides only now, otherwise the dialog would present the parametes as non-default
     CopyParam.OnceDoneOperation = odoDisconnect;
     CopyParam.IncludeFileMask.SetRoots(FileList, TargetDirectory);
 
-    Terminal->CopyToRemote(FileList, TargetDirectory, &CopyParam, 0, NULL);
+    Terminal->CopyToRemote(FileList, TargetDirectory, &CopyParam, 0, nullptr);
   }
 }
 
 void Download(TTerminal * Terminal, const UnicodeString FileName, int UseDefaults)
 {
-  TRemoteFile * File = NULL;
+  TRemoteFile * File = nullptr;
 
   try
   {
@@ -166,7 +166,7 @@ void Download(TTerminal * Terminal, const UnicodeString FileName, int UseDefault
     int CopyParamAttrs = Terminal->UsableCopyParamAttrs(0).Download;
     if ((UseDefaults == 0) ||
         DoCopyDialog(false, false, FileListFriendly.get(), TargetDirectory, &CopyParam,
-          Options, CopyParamAttrs, NULL, NULL, UseDefaults))
+          Options, CopyParamAttrs, nullptr, nullptr, UseDefaults))
     {
       // Setting parameter overrides only now, otherwise the dialog would present the parametes as non-default
 
@@ -183,7 +183,7 @@ void Download(TTerminal * Terminal, const UnicodeString FileName, int UseDefault
       FileList->AddObject(FileName, File);
       CopyParam.IncludeFileMask.SetRoots(TargetDirectory, FileList.get());
 
-      Terminal->CopyToLocal(FileList.get(), TargetDirectory, &CopyParam, 0, NULL);
+      Terminal->CopyToLocal(FileList.get(), TargetDirectory, &CopyParam, 0, nullptr);
     }
 
     UnicodeString Directory = UnixExtractFilePath(FileName);
@@ -314,7 +314,7 @@ void ImportSitesIfAny()
       if (MessageDialog(Message, qtConfirmation,
             qaYes | qaNo, HELP_IMPORT_SESSIONS) == qaYes)
       {
-        DoImportSessionsDialog(NULL);
+        DoImportSessionsDialog(nullptr);
       }
 
       WinConfiguration->AutoImportedFromPuttyOrFilezilla = true;
@@ -478,12 +478,12 @@ void UpdateStaticUsage()
   bool PixelsPerInchAxesDiffer = false;
 
   HINSTANCE ShCoreLibrary = LoadLibrary(L"shcore.dll");
-  if (ShCoreLibrary != NULL)
+  if (ShCoreLibrary != nullptr)
   {
     GetDpiForMonitorProc GetDpiForMonitor =
       (GetDpiForMonitorProc)GetProcAddress(ShCoreLibrary, "GetDpiForMonitor");
 
-    if (GetDpiForMonitor != NULL)
+    if (GetDpiForMonitor != nullptr)
     {
       unsigned int PrimaryDpiX;
       unsigned int PrimaryDpiY;
@@ -531,7 +531,7 @@ void UpdateStaticUsage()
 
   Configuration->Usage->Set(L"WorkAreaWidth", Screen->WorkAreaWidth);
   Configuration->Usage->Set(L"WorkAreaHeight", Screen->WorkAreaHeight);
-  HDC DC = GetDC(NULL);
+  HDC DC = GetDC(nullptr);
   int Planes = GetDeviceCaps(DC, PLANES);
   int BitsPixel = GetDeviceCaps(DC, BITSPIXEL);
   Configuration->Usage->Set(L"ColorDepth", Planes * BitsPixel);
@@ -617,7 +617,7 @@ static void FindOtherInstances(THandles & OtherInstances)
   TProcesses Processes;
 
   // FindWindow is optimization (if there's no hidden window, no point enumerating all windows to find some)
-  if ((FindWindow(HIDDEN_WINDOW_NAME, NULL) != NULL) &&
+  if ((FindWindow(HIDDEN_WINDOW_NAME, nullptr) != nullptr) &&
       EnumWindows(EnumOtherInstances, reinterpret_cast<LPARAM>(&Processes)))
   {
     TCopyDataMessage Message;
@@ -627,10 +627,10 @@ static void FindOtherInstances(THandles & OtherInstances)
     TProcesses::const_iterator ProcessI = Processes.begin();
     while (ProcessI != Processes.end())
     {
-      HWND HiddenWindow = NULL;
+      HWND HiddenWindow = nullptr;
       THandles::const_iterator WindowI = ProcessI->second.begin();
 
-      while ((HiddenWindow == NULL) && (WindowI != ProcessI->second.end()))
+      while ((HiddenWindow == nullptr) && (WindowI != ProcessI->second.end()))
       {
         wchar_t ClassName[1024];
         if (GetClassName(*WindowI, ClassName, LENOF(ClassName)) != 0)
@@ -645,7 +645,7 @@ static void FindOtherInstances(THandles & OtherInstances)
         WindowI++;
       }
 
-      if (HiddenWindow != NULL)
+      if (HiddenWindow != nullptr)
       {
         WindowI = ProcessI->second.begin();
 
@@ -784,7 +784,7 @@ int Execute()
   SetOnForeground(true);
 
   // let installer know, that some instance of application is running
-  CreateMutex(NULL, False, AppName.c_str());
+  CreateMutex(nullptr, False, AppName.c_str());
   bool OnlyInstance = (GetLastError() == 0);
 
   UpdateStaticUsage();
@@ -909,9 +909,9 @@ int Execute()
     return Console(Mode);
   }
 
-  TTerminalManager * TerminalManager = NULL;
-  GlyphsModule = NULL;
-  NonVisualDataModule = NULL;
+  TTerminalManager * TerminalManager = nullptr;
+  GlyphsModule = nullptr;
+  NonVisualDataModule = nullptr;
   TStrings * CommandParams = new TStringList;
   AddStartupSequence(L"C");
   try
@@ -956,7 +956,7 @@ int Execute()
       // The innosetup cannot skip UninstallCleanup run task for silent uninstalls,
       // workaround is that we create mutex in uninstaller, if it runs silent, and
       // ignore the UninstallCleanup, when the mutex exists.
-      if (OpenMutex(SYNCHRONIZE, false, L"WinSCPSilentUninstall") == NULL)
+      if (OpenMutex(SYNCHRONIZE, false, L"WinSCPSilentUninstall") == nullptr)
       {
         DoCleanupDialogIfAnyDataAndWanted();
       }
@@ -1164,7 +1164,7 @@ int Execute()
         {
           int Flags = GetCommandLineParseUrlFlags(Params);
           AddStartupSequence(L"B");
-          GetLoginData(AutoStartSession, Params, DataList.get(), DownloadFile, NeedSession, NULL, Flags);
+          GetLoginData(AutoStartSession, Params, DataList.get(), DownloadFile, NeedSession, nullptr, Flags);
           // GetLoginData now Aborts when session is needed and none is selected
           if (DebugAlwaysTrue(!NeedSession || (DataList->Count > 0)))
           {
@@ -1198,9 +1198,9 @@ int Execute()
                   {
                     BrowseFile = DownloadFile;
                   }
-                  DebugAssert(Terminal->RemoteExplorerState == NULL);
+                  DebugAssert(Terminal->RemoteExplorerState == nullptr);
                   Terminal->RemoteExplorerState = CreateDirViewStateForFocusedItem(BrowseFile);
-                  DebugAssert(Terminal->LocalExplorerState == NULL);
+                  DebugAssert(Terminal->LocalExplorerState == nullptr);
                   Terminal->LocalExplorerState = CreateDirViewStateForFocusedItem(BrowseFile);
                   DownloadFile = UnicodeString();
                   Browse = true;
@@ -1294,7 +1294,7 @@ int Execute()
                 }
                 __finally
                 {
-                  TerminalManager->ScpExplorer = NULL;
+                  TerminalManager->ScpExplorer = nullptr;
                   SAFE_DESTROY(ScpExplorer);
                 }
               }
@@ -1322,10 +1322,10 @@ int Execute()
   __finally
   {
     delete NonVisualDataModule;
-    NonVisualDataModule = NULL;
+    NonVisualDataModule = nullptr;
     ReleaseImagesModules();
     delete GlyphsModule;
-    GlyphsModule = NULL;
+    GlyphsModule = nullptr;
     TTerminalManager::DestroyInstance();
     delete CommandParams;
   }
