@@ -1,4 +1,4 @@
-//---------------------------------------------------------------------------
+
 #include <vcl.h>
 #pragma hdrstop
 
@@ -10,9 +10,9 @@
 #include <WinConfiguration.h>
 #include "QueueController.h"
 #include <BaseUtils.hpp>
-//---------------------------------------------------------------------------
+
 #pragma package(smart_init)
-//---------------------------------------------------------------------------
+
 __fastcall TQueueController::TQueueController(TListView * ListView)
 {
   FListView = ListView;
@@ -29,7 +29,7 @@ __fastcall TQueueController::TQueueController(TListView * ListView)
 
   RememberConfiguration();
 }
-//---------------------------------------------------------------------------
+
 __fastcall TQueueController::~TQueueController()
 {
   DebugAssert(FListView->OnDblClick == QueueViewDblClick);
@@ -39,7 +39,7 @@ __fastcall TQueueController::~TQueueController()
   DebugAssert(FListView->OnCustomDrawItem == QueueViewCustomDrawItem);
   FListView->OnCustomDrawItem = NULL;
 }
-//---------------------------------------------------------------------------
+
 TQueueItemProxy * __fastcall TQueueController::QueueViewItemToQueueItem(TListItem * Item)
 {
   // previously this method was based on ActiveCount and DoneCount,
@@ -47,7 +47,7 @@ TQueueItemProxy * __fastcall TQueueController::QueueViewItemToQueueItem(TListIte
   // not sure why
   return static_cast<TQueueItemProxy *>(Item->Data);
 }
-//---------------------------------------------------------------------------
+
 TQueueOperation __fastcall TQueueController::DefaultOperation()
 {
   TQueueItemProxy * QueueItem;
@@ -80,7 +80,7 @@ TQueueOperation __fastcall TQueueController::DefaultOperation()
 
   return qoNone;
 }
-//---------------------------------------------------------------------------
+
 bool __fastcall TQueueController::AllowOperation(
   TQueueOperation Operation, void ** Param)
 {
@@ -171,7 +171,7 @@ bool __fastcall TQueueController::AllowOperation(
       return false;
   }
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TQueueController::ExecuteOperation(TQueueOperation Operation,
   void * Param)
 {
@@ -272,7 +272,7 @@ void __fastcall TQueueController::ExecuteOperation(TQueueOperation Operation,
       break;
   }
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TQueueController::FillQueueViewItem(TListItem * Item,
   TQueueItemProxy * QueueItem, bool Detail, bool OnlyLine)
 {
@@ -433,7 +433,7 @@ void __fastcall TQueueController::FillQueueViewItem(TListItem * Item,
     }
   }
 }
-//---------------------------------------------------------------------------
+
 TListItem * __fastcall TQueueController::InsertItemFor(TQueueItemProxy * QueueItem, int Index)
 {
   TListItem * Item;
@@ -452,7 +452,7 @@ TListItem * __fastcall TQueueController::InsertItemFor(TQueueItemProxy * QueueIt
   }
   return Item;
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TQueueController::UpdateQueueStatus(
   TTerminalQueueStatus * QueueStatus)
 {
@@ -511,7 +511,7 @@ void __fastcall TQueueController::UpdateQueueStatus(
 
   DoChange();
 }
-//---------------------------------------------------------------------------
+
 bool __fastcall TQueueController::UseDetailsLine(int ItemIndex, TQueueItemProxy * QueueItem)
 {
   return
@@ -521,7 +521,7 @@ bool __fastcall TQueueController::UseDetailsLine(int ItemIndex, TQueueItemProxy 
     !QueueItem->Info->SingleFile &&
     ((QueueItem->ProgressData == NULL) || !QueueItem->ProgressData->Done);
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TQueueController::RefreshQueueItem(TQueueItemProxy * QueueItem)
 {
   TListItem * NextListItem = NULL;
@@ -561,7 +561,7 @@ void __fastcall TQueueController::RefreshQueueItem(TQueueItemProxy * QueueItem)
 
   DoChange();
 }
-//---------------------------------------------------------------------------
+
 bool __fastcall TQueueController::QueueItemNeedsFrequentRefresh(
   TQueueItemProxy * QueueItem)
 {
@@ -569,7 +569,7 @@ bool __fastcall TQueueController::QueueItemNeedsFrequentRefresh(
     (TQueueItem::IsUserActionStatus(QueueItem->Status) ||
      (QueueItem->Status == TQueueItem::qsPaused));
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TQueueController::DoChange()
 {
   if (FOnChange != NULL)
@@ -577,7 +577,7 @@ void __fastcall TQueueController::DoChange()
     FOnChange(NULL);
   }
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TQueueController::QueueViewDblClick(TObject * /*Sender*/)
 {
   TQueueOperation Operation = DefaultOperation();
@@ -587,7 +587,7 @@ void __fastcall TQueueController::QueueViewDblClick(TObject * /*Sender*/)
     ExecuteOperation(Operation);
   }
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TQueueController::QueueViewKeyDown(TObject * /*Sender*/,
   WORD & Key, TShiftState /*Shift*/)
 {
@@ -607,7 +607,7 @@ void __fastcall TQueueController::QueueViewKeyDown(TObject * /*Sender*/,
     Key = 0;
   }
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TQueueController::QueueViewCustomDrawItem(TCustomListView * Sender,
   TListItem * Item, TCustomDrawState /*State*/, bool & /*DefaultDraw*/)
 {
@@ -617,24 +617,24 @@ void __fastcall TQueueController::QueueViewCustomDrawItem(TCustomListView * Send
     Sender->Canvas->Font->Color = clGrayText;
   }
 }
-//---------------------------------------------------------------------------
+
 bool __fastcall TQueueController::GetEmpty()
 {
   return (FQueueStatus == NULL) || (FQueueStatus->Count == 0);
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TQueueController::RememberConfiguration()
 {
   FFormatSizeBytes = WinConfiguration->FormatSizeBytes;
 }
-//---------------------------------------------------------------------------
+
 bool __fastcall TQueueController::NeedRefresh()
 {
   bool Result = (WinConfiguration->FormatSizeBytes != FFormatSizeBytes);
   RememberConfiguration();
   return Result;
 }
-//---------------------------------------------------------------------------
+
 TQueueItemProxy * __fastcall TQueueController::GetFocusedPrimaryItem()
 {
   TQueueItemProxy * Result = NULL;

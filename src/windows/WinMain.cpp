@@ -1,4 +1,4 @@
-//---------------------------------------------------------------------------
+
 #include <vcl.h>
 #pragma hdrstop
 
@@ -20,9 +20,9 @@
 #include "WinApi.h"
 #include <DateUtils.hpp>
 #include <StrUtils.hpp>
-//---------------------------------------------------------------------------
+
 #pragma package(smart_init)
-//---------------------------------------------------------------------------
+
 void __fastcall GetLoginData(UnicodeString SessionName, TOptions * Options,
   TObjectList * DataList, UnicodeString & DownloadFile, bool NeedSession, TForm * LinkedForm, int Flags)
 {
@@ -92,14 +92,14 @@ void __fastcall GetLoginData(UnicodeString SessionName, TOptions * Options,
     }
   }
 }
-//---------------------------------------------------------------------------
+
 int GetCommandLineParseUrlFlags(TProgramParams * Params)
 {
   return
     pufAllowStoredSiteWithProtocol |
     FLAGMASK(!CheckSafe(Params), pufUnsafe);
 }
-//---------------------------------------------------------------------------
+
 void __fastcall Upload(TTerminal * Terminal, TStrings * FileList, int UseDefaults)
 {
   UnicodeString TargetDirectory;
@@ -123,7 +123,7 @@ void __fastcall Upload(TTerminal * Terminal, TStrings * FileList, int UseDefault
     Terminal->CopyToRemote(FileList, TargetDirectory, &CopyParam, 0, NULL);
   }
 }
-//---------------------------------------------------------------------------
+
 void __fastcall Download(TTerminal * Terminal, const UnicodeString FileName, int UseDefaults)
 {
   TRemoteFile * File = NULL;
@@ -195,13 +195,13 @@ void __fastcall Download(TTerminal * Terminal, const UnicodeString FileName, int
     delete File;
   }
 }
-//---------------------------------------------------------------------------
+
 void __fastcall Edit(TCustomScpExplorerForm * ScpExplorer, TStrings * FileList)
 {
   ScpExplorer->StandaloneEdit(FileList->Strings[0]);
   Abort();
 }
-//---------------------------------------------------------------------------
+
 void __fastcall SynchronizeDirectories(
   TTerminal * Terminal, TCustomScpExplorerForm * ScpExplorer, TStrings * CommandParams,
   UnicodeString & LocalDirectory, UnicodeString & RemoteDirectory)
@@ -228,7 +228,7 @@ void __fastcall SynchronizeDirectories(
     RemoteDirectory = Terminal->CurrentDirectory;
   }
 }
-//---------------------------------------------------------------------------
+
 void __fastcall FullSynchronize(
   TTerminal * Terminal, TCustomScpExplorerForm * ScpExplorer, TStrings * CommandParams, int UseDefaults)
 {
@@ -258,7 +258,7 @@ void __fastcall FullSynchronize(
 
   Abort();
 }
-//---------------------------------------------------------------------------
+
 void __fastcall Synchronize(
   TTerminal * Terminal, TCustomScpExplorerForm * ScpExplorer, TStrings * CommandParams, int UseDefaults)
 {
@@ -279,7 +279,7 @@ void __fastcall Synchronize(
   ScpExplorer->DoSynchronizeDirectories(LocalDirectory, RemoteDirectory, UseDefaults);
   Abort();
 }
-//---------------------------------------------------------------------------
+
 void __fastcall ImportSitesIfAny()
 {
   if (!WinConfiguration->AutoImportedFromPuttyOrFilezilla)
@@ -321,7 +321,7 @@ void __fastcall ImportSitesIfAny()
     }
   }
 }
-//---------------------------------------------------------------------------
+
 void __fastcall Usage(UnicodeString Param)
 {
   while (!Param.IsEmpty())
@@ -357,7 +357,7 @@ void __fastcall Usage(UnicodeString Param)
     }
   }
 }
-//---------------------------------------------------------------------------
+
 void __fastcall RecordWrapperVersions(UnicodeString ConsoleVersion, UnicodeString DotNetVersion)
 {
   TUpdatesConfiguration Updates = WinConfiguration->Updates;
@@ -404,7 +404,7 @@ void __fastcall RecordWrapperVersions(UnicodeString ConsoleVersion, UnicodeStrin
     }
   }
 }
-//---------------------------------------------------------------------------
+
 static UnicodeString ColorToRGBStr(TColor Color)
 {
   int RGB = ColorToRGB(Color);
@@ -414,24 +414,24 @@ static UnicodeString ColorToRGBStr(TColor Color)
   UnicodeString Result = FORMAT(L"%.2x%.2x%.2x", (R, G, B));
   return Result;
 }
-//---------------------------------------------------------------------------
+
 TDateTime Started(Now());
 TDateTime LastStartupStartupSequence(Now());
 UnicodeString StartupSequence;
 int LifetimeRuns = -1;
-//---------------------------------------------------------------------------
+
 void InterfaceStartDontMeasure()
 {
   Started = TDateTime();
 }
-//---------------------------------------------------------------------------
+
 void AddStartupSequence(const UnicodeString & Tag)
 {
   int SequenceTensOfSecond = static_cast<int>(MilliSecondsBetween(Now(), LastStartupStartupSequence) / 100);
   LastStartupStartupSequence = Now();
   AddToList(StartupSequence, FORMAT(L"%s:%d", (Tag, SequenceTensOfSecond)), L",");
 }
-//---------------------------------------------------------------------------
+
 void InterfaceStarted()
 {
   if ((Started != TDateTime()) && (LifetimeRuns > 0))
@@ -451,7 +451,7 @@ void InterfaceStarted()
     Configuration->Usage->Set(L"StartupSequenceLast", StartupSequence);
   }
 }
-//---------------------------------------------------------------------------
+
 void __fastcall UpdateStaticUsage()
 {
   Configuration->Usage->Inc(L"Runs");
@@ -572,20 +572,20 @@ void __fastcall UpdateStaticUsage()
   WinConfiguration->UpdateStaticUsage();
 
 }
-//---------------------------------------------------------------------------
+
 void __fastcall UpdateFinalStaticUsage()
 {
   CoreUpdateFinalStaticUsage();
 }
-//---------------------------------------------------------------------------
+
 void __fastcall MaintenanceTask()
 {
   CoreMaintenanceTask();
 }
-//---------------------------------------------------------------------------
+
 typedef nb::vector_t<HWND> THandles;
 typedef rde::map<unsigned long, THandles> TProcesses;
-//---------------------------------------------------------------------------
+
 BOOL __stdcall EnumOtherInstances(HWND Handle, LPARAM AParam)
 {
   TProcesses & Processes = *reinterpret_cast<TProcesses *>(AParam);
@@ -598,7 +598,7 @@ BOOL __stdcall EnumOtherInstances(HWND Handle, LPARAM AParam)
 
   return TRUE;
 }
-//---------------------------------------------------------------------------
+
 static bool __fastcall SendCopyDataMessage(HWND Window, TCopyDataMessage & Message)
 {
   COPYDATASTRUCT CopyData;
@@ -611,7 +611,7 @@ static bool __fastcall SendCopyDataMessage(HWND Window, TCopyDataMessage & Messa
   bool Result = (SendResult > 0);
   return Result;
 }
-//---------------------------------------------------------------------------
+
 static void __fastcall FindOtherInstances(THandles & OtherInstances)
 {
   TProcesses Processes;
@@ -667,7 +667,7 @@ static void __fastcall FindOtherInstances(THandles & OtherInstances)
     }
   }
 }
-//---------------------------------------------------------------------------
+
 bool __fastcall SendToAnotherInstance()
 {
   THandles OtherInstances;
@@ -701,7 +701,7 @@ bool __fastcall SendToAnotherInstance()
 
   return Result;
 }
-//---------------------------------------------------------------------------
+
 void __fastcall Refresh(const UnicodeString & Session, const UnicodeString & Path)
 {
   THandles OtherInstances;
@@ -724,7 +724,7 @@ void __fastcall Refresh(const UnicodeString & Session, const UnicodeString & Pat
     I++;
   }
 }
-//---------------------------------------------------------------------------
+
 bool __fastcall ShowUpdatesIfAvailable()
 {
   TUpdatesConfiguration Updates = WinConfiguration->Updates;
@@ -772,7 +772,7 @@ bool __fastcall ShowUpdatesIfAvailable()
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 int __fastcall Execute()
 {
   AddStartupSequence(L"E");

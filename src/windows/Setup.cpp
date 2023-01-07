@@ -1,7 +1,7 @@
-﻿//---------------------------------------------------------------------------
+﻿
 // Part of this code is
 // Copyright (C) 2002-2004, Marco Barisione <marco.bari@vene.ws>
-//---------------------------------------------------------------------------
+
 #include <vcl.h>
 #pragma hdrstop
 
@@ -34,7 +34,7 @@
 #include <Soap.HTTPUtil.hpp>
 #include <Web.HTTPApp.hpp>
 #include <System.IOUtils.hpp>
-//---------------------------------------------------------------------------
+
 #define KEY _T("SYSTEM\\CurrentControlSet\\Control\\") \
             _T("Session Manager\\Environment")
 // when the PATH registry key is over aprox 2048 characters,
@@ -43,25 +43,25 @@
 
 /* Command line options. */
 UnicodeString LastPathError;
-//---------------------------------------------------------------------------
+
 UnicodeString NetVersionStr;
 UnicodeString NetCoreVersionStr;
 UnicodeString PowerShellVersionStr;
 UnicodeString PowerShellCoreVersionStr;
-//---------------------------------------------------------------------------
+
 // Display the error "err_msg".
 void err_out(LPCTSTR err_msg)
 {
   LastPathError = err_msg;
 }
-//---------------------------------------------------------------------------
+
 // Display "base_err_msg" followed by the description of the system error
 // identified by "sys_err".
 void err_out_sys(LPCTSTR base_err_msg, LONG sys_err)
 {
   LastPathError = FORMAT("%s %s", base_err_msg, SysErrorMessage(sys_err));
 }
-//---------------------------------------------------------------------------
+
 // Works as "strcmp" but the comparison is not case sensitive.
 int tcharicmp(LPCTSTR str1, LPCTSTR str2){
     for (; tolower(*str1) == tolower(*str2); ++str1, ++str2)
@@ -69,7 +69,7 @@ int tcharicmp(LPCTSTR str1, LPCTSTR str2){
             return 0;
     return tolower(*str1) - tolower(*str2);
 }
-//---------------------------------------------------------------------------
+
 // Returns un unquoted copy of "str" (or a copy of "str" if the quotes are
 // not present). The returned value must be freed with "free".
 LPTSTR unquote(LPCTSTR str){
@@ -87,7 +87,7 @@ LPTSTR unquote(LPCTSTR str){
         ret = _tcsdup(str);
     return ret;
 }
-//---------------------------------------------------------------------------
+
 // Find "what" in the ";" separated string "str" and returns a pointer to
 // the first letter of "what" in the string. If "next" is not "NULL" it
 // points to the first letter after "what" (excluding the trailing ";").
@@ -128,7 +128,7 @@ LPTSTR find_reg_str(LPTSTR str, LPCTSTR what, LPTSTR * next){
         ret = nullptr;
     return ret;
 }
-//---------------------------------------------------------------------------
+
 void path_reg_propagate()
 {
   DWORD send_message_result;
@@ -144,7 +144,7 @@ void path_reg_propagate()
     LastPathError = L"";
   }
 }
-//---------------------------------------------------------------------------
+
 // Add "path" to the registry. Return "TRUE" if the path has been added or
 // was already in the registry, "FALSE" otherwise.
 BOOL add_path_reg(LPCTSTR path){
@@ -202,7 +202,7 @@ BOOL add_path_reg(LPCTSTR path){
     free(reg_str);
     return func_ret;
 }
-//---------------------------------------------------------------------------
+
 // Removes "path" from the registry. Return "TRUE" if the path has been
 // removed or it wasn't in the registry, "FALSE" otherwise.
 BOOL remove_path_reg(LPCTSTR path){
@@ -260,8 +260,8 @@ BOOL remove_path_reg(LPCTSTR path){
     free(reg_str);
     return func_ret;
 }
-//---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
+
+
 void AddSearchPath(const UnicodeString Path)
 {
   if (!add_path_reg(Path.c_str()))
@@ -269,7 +269,7 @@ void AddSearchPath(const UnicodeString Path)
     throw ExtException(FMTLOAD(ADD_PATH_ERROR, (Path)), LastPathError);
   }
 }
-//---------------------------------------------------------------------------
+
 void RemoveSearchPath(const UnicodeString Path)
 {
   if (!remove_path_reg(Path.c_str()))
@@ -277,9 +277,9 @@ void RemoveSearchPath(const UnicodeString Path)
     throw ExtException(FMTLOAD(REMOVE_PATH_ERROR, (Path)), LastPathError);
   }
 }
-//---------------------------------------------------------------------------
+
 static const UnicodeString SoftwareClassesBaseKey = L"Software\\Classes\\";
-//---------------------------------------------------------------------------
+
 static void DeleteKeyIfEmpty(TRegistry * Registry, const UnicodeString & Key, bool AllowRootValues)
 {
   if (Registry->OpenKey(Key, false))
@@ -321,7 +321,7 @@ static void DeleteKeyIfEmpty(TRegistry * Registry, const UnicodeString & Key, bo
     }
   }
 }
-//---------------------------------------------------------------------------
+
 static void RegisterProtocol(TRegistry * Registry,
   const UnicodeString & Protocol, UnicodeString Description, bool Force)
 {
@@ -356,13 +356,13 @@ static void RegisterProtocol(TRegistry * Registry,
     }
   }
 }
-//---------------------------------------------------------------------------
+
 static void UnregisterProtocol(TRegistry * Registry,
   const UnicodeString & Protocol)
 {
   DeleteKeyIfEmpty(Registry, SoftwareClassesBaseKey + Protocol, true);
 }
-//---------------------------------------------------------------------------
+
 static TRegistry * CreateRegistry(HKEY RootKey)
 {
   std::unique_ptr<TRegistry> Registry(std::make_unique<TRegistry>());
@@ -372,7 +372,7 @@ static TRegistry * CreateRegistry(HKEY RootKey)
 
   return Registry.release();
 }
-//---------------------------------------------------------------------------
+
 static void RegisterAsUrlHandler(HKEY RootKey,
   const UnicodeString & Protocol, UnicodeString Description = L"")
 {
@@ -393,7 +393,7 @@ static void RegisterAsUrlHandler(HKEY RootKey,
     Abort();
   }
 }
-//---------------------------------------------------------------------------
+
 static void RegisterAsUrlHandler(const UnicodeString & Protocol, UnicodeString Description = L"")
 {
 
@@ -420,7 +420,7 @@ static void RegisterAsUrlHandler(const UnicodeString & Protocol, UnicodeString D
     }
   }
 }
-//---------------------------------------------------------------------------
+
 static void UnregisterAsUrlHandler(HKEY RootKey,
   const UnicodeString & Protocol, bool UnregisterProtocol, bool ForceHandlerUnregistration)
 {
@@ -460,13 +460,13 @@ static void UnregisterAsUrlHandler(HKEY RootKey,
     ::UnregisterProtocol(Registry.get(), Protocol);
   }
 }
-//---------------------------------------------------------------------------
+
 static void UnregisterAsUrlHandler(const UnicodeString & Protocol, bool UnregisterProtocol)
 {
   UnregisterAsUrlHandler(HKEY_LOCAL_MACHINE, Protocol, UnregisterProtocol, false);
   UnregisterAsUrlHandler(HKEY_CURRENT_USER, Protocol, UnregisterProtocol, false);
 }
-//---------------------------------------------------------------------------
+
 static void RegisterAsNonBrowserUrlHandler(const UnicodeString & Prefix)
 {
   RegisterAsUrlHandler(Prefix + SftpProtocol.UpperCase());
@@ -475,7 +475,7 @@ static void RegisterAsNonBrowserUrlHandler(const UnicodeString & Prefix)
   RegisterAsUrlHandler(Prefix + WebDAVSProtocol.UpperCase());
   RegisterAsUrlHandler(Prefix + S3Protocol.UpperCase());
 }
-//---------------------------------------------------------------------------
+
 static void UnregisterAsUrlHandlers(const UnicodeString & Prefix, bool UnregisterProtocol)
 {
   UnregisterAsUrlHandler(Prefix + SftpProtocol, UnregisterProtocol);
@@ -484,9 +484,9 @@ static void UnregisterAsUrlHandlers(const UnicodeString & Prefix, bool Unregiste
   UnregisterAsUrlHandler(Prefix + WebDAVSProtocol, UnregisterProtocol);
   UnregisterAsUrlHandler(Prefix + S3Protocol, UnregisterProtocol);
 }
-//---------------------------------------------------------------------------
+
 static const UnicodeString GenericUrlHandler(L"WinSCP.Url");
-//---------------------------------------------------------------------------
+
 static void RegisterProtocolForDefaultPrograms(HKEY RootKey, const UnicodeString & Protocol)
 {
   // Register protocol, if it does not exist yet.
@@ -530,7 +530,7 @@ static void RegisterProtocolForDefaultPrograms(HKEY RootKey, const UnicodeString
   Registry->WriteString(AppNameString(), CapabilitiesKey);
   Registry->CloseKey();
 }
-//---------------------------------------------------------------------------
+
 static void UnregisterProtocolForDefaultPrograms(HKEY RootKey,
   const UnicodeString & Protocol, bool ForceHandlerUnregistration)
 {
@@ -574,7 +574,7 @@ static void UnregisterProtocolForDefaultPrograms(HKEY RootKey,
     }
   }
 }
-//---------------------------------------------------------------------------
+
 static void RegisterProtocolsForDefaultPrograms(HKEY RootKey)
 {
   // register URL handler, if it does not exist yet
@@ -593,7 +593,7 @@ static void RegisterProtocolsForDefaultPrograms(HKEY RootKey)
   // it's unlikely that anyone would like to change http handler
   // to non-browser application
 }
-//---------------------------------------------------------------------------
+
 static void UnregisterProtocolsForDefaultPrograms(HKEY RootKey, bool ForceHandlerUnregistration)
 {
   UnregisterProtocolForDefaultPrograms(RootKey, FtpProtocol, ForceHandlerUnregistration);
@@ -608,7 +608,7 @@ static void UnregisterProtocolsForDefaultPrograms(HKEY RootKey, bool ForceHandle
   // we should not really need the "force" flag here, but why not
   UnregisterAsUrlHandler(RootKey, GenericUrlHandler, true, true);
 }
-//---------------------------------------------------------------------------
+
 static void RegisterForDefaultPrograms()
 {
   try
@@ -631,12 +631,12 @@ static void RegisterForDefaultPrograms()
     }
   }
 }
-//---------------------------------------------------------------------------
+
 static void NotifyChangedAssociations()
 {
   SHChangeNotify(SHCNE_ASSOCCHANGED, 0, 0, 0);
 }
-//---------------------------------------------------------------------------
+
 void RegisterForDefaultProtocols()
 {
   if (IsWinVista())
@@ -658,7 +658,7 @@ void RegisterForDefaultProtocols()
 
   NotifyChangedAssociations();
 }
-//---------------------------------------------------------------------------
+
 void UnregisterForProtocols()
 {
   UnregisterAsUrlHandlers(UnicodeString(), false);
@@ -675,7 +675,7 @@ void UnregisterForProtocols()
 
   NotifyChangedAssociations();
 }
-//---------------------------------------------------------------------------
+
 void LaunchAdvancedAssociationUI()
 {
   DebugAssert(IsWinVista());
@@ -717,7 +717,7 @@ void LaunchAdvancedAssociationUI()
     }
   }
 }
-//---------------------------------------------------------------------------
+
 void TemporaryDirectoryCleanup()
 {
   std::unique_ptr<TStrings> Folders(WinConfiguration->FindTemporaryFolders());
@@ -786,7 +786,7 @@ UnicodeString VersionStrFromCompoundVersion(int Version)
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 UnicodeString CampaignUrl(UnicodeString URL)
 {
   int CurrentCompoundVer = Configuration->CompoundVersion;
@@ -798,7 +798,7 @@ UnicodeString CampaignUrl(UnicodeString URL)
 
   return AppendUrlParams(URL, Params);
 }
-//---------------------------------------------------------------------------
+
 UnicodeString ProgramUrl(UnicodeString URL)
 {
   TVSFixedFileInfo * FileInfo = Configuration->FixedApplicationInfo;
@@ -819,7 +819,7 @@ UnicodeString ProgramUrl(UnicodeString URL)
 
   return AppendUrlParams(URL, Params);
 }
-//---------------------------------------------------------------------------
+
 static UnicodeString WantBetaUrl(UnicodeString URL, bool Force)
 {
   bool Beta;
@@ -850,7 +850,7 @@ static UnicodeString WantBetaUrl(UnicodeString URL, bool Force)
   }
   return URL;
 }
-//---------------------------------------------------------------------------
+
 static THttp * CreateHttp(const TUpdatesConfiguration & Updates)
 {
   std::unique_ptr<THttp> Http(std::make_unique<THttp>());
@@ -879,12 +879,12 @@ static THttp * CreateHttp(const TUpdatesConfiguration & Updates)
 
   return Http.release();
 }
-//---------------------------------------------------------------------------
+
 THttp * CreateHttp()
 {
   return CreateHttp(WinConfiguration->Updates);
 }
-//---------------------------------------------------------------------------
+
 static bool DoQueryUpdates(TUpdatesConfiguration & Updates, bool CollectUsage)
 {
   bool Complete = false;
@@ -1089,12 +1089,12 @@ static bool DoQueryUpdates(TUpdatesConfiguration & Updates, bool CollectUsage)
 
   return Complete;
 }
-//---------------------------------------------------------------------------
+
 bool QueryUpdates(TUpdatesConfiguration & Updates)
 {
   return DoQueryUpdates(Updates, false);
 }
-//---------------------------------------------------------------------------
+
 static void DoQueryUpdates(bool CollectUsage)
 {
   try
@@ -1124,7 +1124,7 @@ static void DoQueryUpdates(bool CollectUsage)
     throw ExtException(&E, MainInstructions(LoadStr(CHECK_FOR_UPDATES_ERROR)));
   }
 }
-//---------------------------------------------------------------------------
+
 UnicodeString FormatUpdatesMessage(UnicodeString Message)
   UnicodeString & UpdatesMessage, const UnicodeString & AMessage, const TUpdatesConfiguration & Updates)
 {
@@ -1151,7 +1151,7 @@ UnicodeString FormatUpdatesMessage(UnicodeString Message)
     UpdatesMessage += Message;
   }
 }
-//---------------------------------------------------------------------------
+
 void GetUpdatesMessage(UnicodeString & Message, bool & New,
   TQueryType & Type, bool Force)
 {
@@ -1213,28 +1213,28 @@ void GetUpdatesMessage(UnicodeString & Message, bool & New,
     New = false;
   }
 }
-//---------------------------------------------------------------------------
+
 UnicodeString GetEnableAutomaticUpdatesUrl()
 {
   return AppendUrlParams(LoadStr(DONATE_URL), L"automaticupdates=1");
 }
-//---------------------------------------------------------------------------
+
 void EnableAutomaticUpdates()
 {
   ShowHelp(HELP_AUTOMATIC_UPDATE);
 }
-//---------------------------------------------------------------------------
+
 static void OpenHistory(void * /*Data*/, TObject * /*Sender*/, unsigned int & /*Answer*/)
 {
   Configuration->Usage->Inc(L"UpdateHistoryOpens");
   OpenBrowser(LoadStr(HISTORY_URL));
 }
-//---------------------------------------------------------------------------
+
 static int DownloadSizeToProgress(int64_t Size)
 {
   return static_cast<int>(Size / 1024);
 }
-//---------------------------------------------------------------------------
+
 class TUpdateDownloadThread : public TCompThread
 {
 public:
@@ -1265,7 +1265,7 @@ private:
   TUpdatesConfiguration FUpdates;
   bool FDone{false};
 };
-//---------------------------------------------------------------------------
+
 TUpdateDownloadThread::TUpdateDownloadThread(TProgressBar * ProgressBar) :
   TCompThread(true)
 {
@@ -1277,11 +1277,11 @@ TUpdateDownloadThread::TUpdateDownloadThread(TProgressBar * ProgressBar) :
   FUpdates = WinConfiguration->Updates;
   FDone = false;
 }
-//---------------------------------------------------------------------------
+
 TUpdateDownloadThread::~TUpdateDownloadThread()
 {
 }
-//---------------------------------------------------------------------------
+
 void TUpdateDownloadThread::Execute()
 {
   try
@@ -1350,12 +1350,12 @@ void TUpdateDownloadThread::Execute()
   FDone = true;
   Synchronize(CancelForm);
 }
-//---------------------------------------------------------------------------
+
 void TUpdateDownloadThread::CancelForm()
 {
   FForm->ModalResult = mrCancel;
 }
-//---------------------------------------------------------------------------
+
 void TUpdateDownloadThread::UpdateDownloaded()
 {
   size_t Size = static_cast<size_t>(FHttp->ResponseLength);
@@ -1401,12 +1401,12 @@ void TUpdateDownloadThread::UpdateDownloaded()
   Configuration->Usage->Inc(L"UpdateRuns");
   TerminateApplication();
 }
-//---------------------------------------------------------------------------
+
 void TUpdateDownloadThread::DownloadNotVerified()
 {
   throw Exception(MainInstructions(LoadStr(UPDATE_VERIFY_ERROR)));
 }
-//---------------------------------------------------------------------------
+
 void TUpdateDownloadThread::HttpDownload(THttp * /*Sender*/, int64_t Size, bool & Cancel)
 {
   FDownloaded = Size;
@@ -1423,18 +1423,18 @@ void TUpdateDownloadThread::HttpDownload(THttp * /*Sender*/, int64_t Size, bool 
     Cancel = true;
   }
 }
-//---------------------------------------------------------------------------
+
 void TUpdateDownloadThread::UpdateProgress()
 {
   FProgressBar->Position = DownloadSizeToProgress(FDownloaded);
 }
-//---------------------------------------------------------------------------
+
 void TUpdateDownloadThread::ShowException()
 {
   DebugAssert(FException.get() != nullptr);
   ShowExtendedException(FException.get());
 }
-//---------------------------------------------------------------------------
+
 bool TUpdateDownloadThread::CancelDownload()
 {
   bool Result = !Terminated;
@@ -1445,7 +1445,7 @@ bool TUpdateDownloadThread::CancelDownload()
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 void TUpdateDownloadThread::CancelClicked(TObject * /*Sender*/)
 {
   if (CancelDownload())
@@ -1453,8 +1453,8 @@ void TUpdateDownloadThread::CancelClicked(TObject * /*Sender*/)
     WaitFor();
   }
 }
-//---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
+
+
 class TUpdateDownloadData : public TComponent
 {
 public:
@@ -1478,7 +1478,7 @@ public:
     return DebugNotNull(dynamic_cast<TUpdateDownloadData *>(UpdateDownloadDataComponent));
   }
 };
-//---------------------------------------------------------------------------
+
 static void DownloadClose(void * /*Data*/, TObject * Sender, TCloseAction & Action)
 {
   TUpdateDownloadData * UpdateDownloadData = TUpdateDownloadData::Retrieve(Sender);
@@ -1493,7 +1493,7 @@ static void DownloadClose(void * /*Data*/, TObject * Sender, TCloseAction & Acti
     }
   }
 }
-//---------------------------------------------------------------------------
+
 static void DownloadUpdate(void * /*Data*/, TObject * Sender, unsigned int & /*Answer*/)
 {
   Configuration->Usage->Inc(L"UpdateDownloadStarts");
@@ -1540,12 +1540,12 @@ static void DownloadUpdate(void * /*Data*/, TObject * Sender, unsigned int & /*A
 
   Thread->Resume();
 }
-//---------------------------------------------------------------------------
+
 static void UpdatesDonateClick(void * /*Data*/, TObject * /*Sender*/)
 {
   EnableAutomaticUpdates();
 }
-//---------------------------------------------------------------------------
+
 static void InsertDonateLink(void * /*Data*/, TObject * Sender)
 {
   const UnicodeString DonatePanelName = L"DonatePanel";
@@ -1609,7 +1609,7 @@ static void InsertDonateLink(void * /*Data*/, TObject * Sender)
     HideBrowserScrollbars(DonateBrowser);
   }
 }
-//---------------------------------------------------------------------------
+
 bool CheckForUpdates(bool CachedResults)
 {
   TCustomForm * ActiveForm = Screen->ActiveCustomForm;
@@ -1753,7 +1753,7 @@ bool CheckForUpdates(bool CachedResults)
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 class TUpdateThread : public TCompThread
 {
 public:
@@ -1762,15 +1762,15 @@ protected:
   virtual void Execute();
   TThreadMethod FOnUpdatesChecked;
 };
-//---------------------------------------------------------------------------
+
 TUpdateThread * UpdateThread = nullptr;
-//---------------------------------------------------------------------------
+
 TUpdateThread::TUpdateThread(TThreadMethod OnUpdatesChecked) :
   TCompThread(false),
   FOnUpdatesChecked(OnUpdatesChecked)
 {
 }
-//---------------------------------------------------------------------------
+
 void TUpdateThread::Execute()
 {
   try
@@ -1786,13 +1786,13 @@ void TUpdateThread::Execute()
     // ignore errors
   }
 }
-//---------------------------------------------------------------------------
+
 void StartUpdateThread(TThreadMethod OnUpdatesChecked)
 {
   DebugAssert(UpdateThread == nullptr);
   UpdateThread = new TUpdateThread(OnUpdatesChecked);
 }
-//---------------------------------------------------------------------------
+
 void StopUpdateThread()
 {
   if (UpdateThread != nullptr)
@@ -1800,7 +1800,7 @@ void StopUpdateThread()
     SAFE_DESTROY(UpdateThread);
   }
 }
-//---------------------------------------------------------------------------
+
 void SetupInitialize()
 {
   try
@@ -1812,7 +1812,7 @@ void SetupInitialize()
     ShowExtendedException(&E);
   }
 }
-//---------------------------------------------------------------------------
+
 static bool AddJumpListCategory(TStrings * Names,
   UnicodeString AdditionalParams, TStringList * Removed,
   ICustomDestinationList * DestinationList, UnicodeString CategoryName,
@@ -1881,7 +1881,7 @@ static bool AddJumpListCategory(TStrings * Names,
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 void UpdateJumpList(TStrings * SessionNames, TStrings * WorkspaceNames)
 {
   ICustomDestinationList * DestinationList = nullptr;
@@ -1943,7 +1943,7 @@ void UpdateJumpList(TStrings * SessionNames, TStrings * WorkspaceNames)
     delete Removed;
   }
 }
-//---------------------------------------------------------------------------
+
 bool AnyOtherInstanceOfSelf()
 {
 
@@ -1980,7 +1980,7 @@ bool AnyOtherInstanceOfSelf()
 
   return Result;
 }
-//---------------------------------------------------------------------------
+
 static bool DoIsInstalled(HKEY RootKey)
 {
   std::unique_ptr<TRegistry> Registry(std::make_unique<TRegistry>(KEY_READ));
@@ -1997,21 +1997,21 @@ static bool DoIsInstalled(HKEY RootKey)
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 bool IsInstalled()
 {
   return
     DoIsInstalled(HKEY_LOCAL_MACHINE) ||
     DoIsInstalled(HKEY_CURRENT_USER);
 }
-//---------------------------------------------------------------------------
+
 static TStringList * TextToTipList(const UnicodeString & Text)
 {
   std::unique_ptr<TStringList> List(std::make_unique<TStringList>());
   List->CommaText = Text;
   return List.release();
 }
-//---------------------------------------------------------------------------
+
 UnicodeString FirstUnshownTip()
 {
   TUpdatesConfiguration Updates = WinConfiguration->Updates;
@@ -2037,7 +2037,7 @@ UnicodeString FirstUnshownTip()
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 class TTipsData : public TComponent
 {
 public:
@@ -2056,12 +2056,12 @@ public:
     return DebugNotNull(dynamic_cast<TTipsData *>(TipsDataComponent));
   }
 };
-//---------------------------------------------------------------------------
+
 static UnicodeString TipsMessage(TTipsData * TipsData)
 {
   return FMTLOAD(TIPS_MESSAGE, (TipsData->Index + 1, TipsData->Tips->Count));
 }
-//---------------------------------------------------------------------------
+
 static void UpdateTipsForm(TCustomForm * Form)
 {
   TTipsData * TipsData = TTipsData::Retrieve(Form);
@@ -2074,14 +2074,14 @@ static void UpdateTipsForm(TCustomForm * Form)
   TLabel * MessageLabel = DebugNotNull(dynamic_cast<TLabel *>(FindComponentRecursively(Form, MainMessageLabelName)));
   MessageLabel->Caption = TipsMessage(TipsData);
 }
-//---------------------------------------------------------------------------
+
 static UnicodeString TipUrl(TTipsData * TipsData)
 {
   UnicodeString Tip = TipsData->Tips->Strings[TipsData->Index];
   UnicodeString TipParams = FORMAT(L"tip=%s", (Tip));
   return AppendUrlParams(WinConfiguration->Updates.Results.TipsUrl, TipParams);
 }
-//---------------------------------------------------------------------------
+
 static void TipSeen(const UnicodeString & Tip)
 {
   std::unique_ptr<TStringList> TipsSeen(TextToTipList(WinConfiguration->TipsSeen));
@@ -2092,7 +2092,7 @@ static void TipSeen(const UnicodeString & Tip)
   // prevent parallel app instances showing the same tip
   WinConfiguration->Save();
 }
-//---------------------------------------------------------------------------
+
 static void PrevNextTipClick(void * Data, TObject * Sender, unsigned int & /*Answer*/)
 {
   TCustomForm * Form = GetParentForm(dynamic_cast<TControl *>(Sender));
@@ -2103,7 +2103,7 @@ static void PrevNextTipClick(void * Data, TObject * Sender, unsigned int & /*Ans
   UnicodeString Url = TipUrl(TipsData);
   NavigateMessageDialogToUrl(Form, Url);
 }
-//---------------------------------------------------------------------------
+
 static void ShowTip(bool AutoShow)
 {
   TUpdatesConfiguration Updates = WinConfiguration->Updates;
@@ -2168,18 +2168,18 @@ static void ShowTip(bool AutoShow)
 
   WinConfiguration->Updates = Updates;
 }
-//---------------------------------------------------------------------------
+
 void AutoShowNewTip()
 {
   Configuration->Usage->Inc(L"TipsShownAuto");
   ShowTip(true);
 }
-//---------------------------------------------------------------------------
+
 void ShowTips()
 {
   return !WinConfiguration->Updates.Results.Tips.IsEmpty();
 }
-//---------------------------------------------------------------------------
+
 {
   {
     TOperationVisualizer Visualizer;
@@ -2194,7 +2194,7 @@ void ShowTips()
   Configuration->Usage->Inc(L"TipsShownCommand");
   ShowTip(false);
 }
-//---------------------------------------------------------------------------
+
 void TipsUpdateStaticUsage()
 {
   TUpdatesConfiguration Updates = WinConfiguration->Updates;
@@ -2203,7 +2203,7 @@ void TipsUpdateStaticUsage()
   std::unique_ptr<TStringList> TipsSeen(TextToTipList(WinConfiguration->TipsSeen));
   Configuration->Usage->Set(L"TipsSeen", TipsSeen->Count);
 }
-//---------------------------------------------------------------------------
+
 static void ReadNetVersion(TRegistryStorage * Registry)
 {
   UnicodeString VersionStr = Registry->ReadString(L"Version", L"");
@@ -2212,7 +2212,7 @@ static void ReadNetVersion(TRegistryStorage * Registry)
     NetVersionStr = VersionStr;
   }
 }
-//---------------------------------------------------------------------------
+
 UnicodeString GetNetVersionStr()
 {
   if (NetVersionStr.IsEmpty())
@@ -2250,7 +2250,7 @@ UnicodeString GetNetVersionStr()
 
   return NetVersionStr;
 }
-//---------------------------------------------------------------------------
+
 UnicodeString GetPowerShellVersionStr()
 {
   if (NetCoreVersionStr.IsEmpty())
@@ -2309,7 +2309,7 @@ UnicodeString GetPowerShellVersionStr()
 
   return NetCoreVersionStr;
 }
-//---------------------------------------------------------------------------
+
 UnicodeString GetPowerShellVersionStr()
 {
   if (PowerShellVersionStr.IsEmpty())
@@ -2340,7 +2340,7 @@ UnicodeString GetPowerShellVersionStr()
 
   return PowerShellVersionStr;
 }
-//---------------------------------------------------------------------------
+
 UnicodeString GetPowerShellCoreVersionStr()
 {
   if (PowerShellCoreVersionStr.IsEmpty())
@@ -2375,8 +2375,8 @@ UnicodeString GetPowerShellCoreVersionStr()
 
   return PowerShellCoreVersionStr;
 }
-//---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
+
+
 static void CollectCLSIDKey(
   TConsole * Console, TStrings * Keys, int PlatformSet, TRegistryStorage * Storage, const UnicodeString & CLSID,
   UnicodeString & CommonCodeBase, const UnicodeString & Platform, UnicodeString & Platforms)
@@ -2436,7 +2436,7 @@ static void CollectCLSIDKey(
     AddToList(Platforms, Buf, ", ");
   }
 }
-//---------------------------------------------------------------------------
+
 static UnicodeString PlatformStr(int PlatformSet)
 {
   UnicodeString Result;
@@ -2457,7 +2457,7 @@ static UnicodeString PlatformStr(int PlatformSet)
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 static void DoCollectComRegistration(TConsole * Console, TStrings * Keys)
 {
   UnicodeString TypeLib = L"{A0B93468-D98A-4845-A234-8076229AD93F}"; // Duplicated in AssemblyInfo.cs
@@ -2706,15 +2706,15 @@ static void DoCollectComRegistration(TConsole * Console, TStrings * Keys)
     }
   }
 }
-//---------------------------------------------------------------------------
+
 bool DoUnregisterChoice(TConsole * Console)
 {
   return (Console->Choice(L"U", -1, -1, -1, 0, 0, 0, UnicodeString()) == 1);
 }
-//---------------------------------------------------------------------------
+
 typedef HRESULT WINAPI (* RegDeleteTreeProc)(HKEY Key, LPCWSTR SubKey);
 static RegDeleteTreeProc ARegDeleteTree = nullptr;
-//---------------------------------------------------------------------------
+
 void DoDeleteKey(TConsole * Console, TRegistry * Registry, const UnicodeString & Key, int Platform, bool & AnyDeleted, bool & AllDeleted)
 {
   UnicodeString ParentKey = ExtractFileDir(Key);
@@ -2746,7 +2746,7 @@ void DoDeleteKey(TConsole * Console, TRegistry * Registry, const UnicodeString &
   }
   Console->PrintLine(FORMAT(L"%s [%s] - %s", (Key, PlatformStr(Platform), Status)));
 }
-//---------------------------------------------------------------------------
+
 int ComRegistration(TConsole * Console)
 {
   int Result = RESULT_SUCCESS;

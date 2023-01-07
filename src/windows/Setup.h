@@ -1,12 +1,12 @@
-//---------------------------------------------------------------------------
+
 #ifndef SetupH
 #define SetupH
 #if 0
-//---------------------------------------------------------------------------
+
 #include <Interface.h>
 #include <WinConfiguration.h>
 #include <WinInterface.h>
-//---------------------------------------------------------------------------
+
 void __fastcall SetupInitialize();
 void __fastcall AddSearchPath(const UnicodeString Path);
 void __fastcall RemoveSearchPath(const UnicodeString Path);
@@ -39,6 +39,6 @@ UnicodeString GetNetCoreVersionStr();
 UnicodeString GetPowerShellVersionStr();
 UnicodeString GetPowerShellCoreVersionStr();
 int ComRegistration(TConsole * Console);
-//---------------------------------------------------------------------------
+
 #endif // #if 0
 #endif

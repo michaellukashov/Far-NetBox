@@ -1,20 +1,20 @@
-﻿//---------------------------------------------------------------------------
+﻿
 #ifndef TerminalManagerH
 #define TerminalManagerH
-//---------------------------------------------------------------------------
+
 #include <Terminal.h>
 #include <Queue.h>
 #include <FileOperationProgress.h>
 #include <WinInterface.h>
 #include <Vcl.AppEvnts.hpp>
-//---------------------------------------------------------------------------
+
 class TCustomScpExplorerForm;
 class TTerminalQueue;
 class TAuthenticateForm;
 class ITaskbarList3;
-//---------------------------------------------------------------------------
+
 enum TTerminalPendingAction { tpNull, tpNone, tpReconnect, tpFree };
-//---------------------------------------------------------------------------
+
 class TManagedTerminal : public TTerminal
 {
 public:
@@ -36,7 +36,7 @@ public:
   // (i.e. those that were ever connected or were opened as a part of a workspace)
   bool Permanent;
 };
-//---------------------------------------------------------------------------
+
 class TTerminalManager : public TTerminalList
 {
 public:
@@ -186,5 +186,5 @@ private:
   TManagedTerminal * __fastcall CreateManagedTerminal(TSessionData * Data);
   TManagedTerminal * __fastcall GetTerminal(int Index);
 };
-//---------------------------------------------------------------------------
+
 #endif

@@ -1,7 +1,7 @@
 #pragma once
-//---------------------------------------------------------------------------
+
 #include <CopyParam.h>
-//---------------------------------------------------------------------------
+
 struct NB_CORE_EXPORT TSynchronizeParamType : public TObject
 {
   UnicodeString LocalDirectory;
@@ -9,7 +9,7 @@ struct NB_CORE_EXPORT TSynchronizeParamType : public TObject
   intptr_t Params{0};
   intptr_t Options{0};
 };
-//---------------------------------------------------------------------------
+
 class TSynchronizeController;
 struct TSynchronizeOptions;
 class TSynchronizeChecklist;
@@ -84,17 +84,17 @@ typedef void (__closure * TSynchronizeTooManyDirectories)
 using TSynchronizeTooManyDirectoriesEvent = nb::FastDelegate2<void,
   TSynchronizeController * /*Sender*/,
   intptr_t & /*MaxDirectories*/>;
-//---------------------------------------------------------------------------
+
 namespace Discmon {
 class TDiscMonitor;
 }
-//---------------------------------------------------------------------------
+
 enum TSynchronizeOperation
 {
   soUpload,
   soDelete
 };
-//---------------------------------------------------------------------------
+
 class NB_CORE_EXPORT TSynchronizeController : public TObject
 {
   NB_DISABLE_COPY(TSynchronizeController)
@@ -134,6 +134,6 @@ private:
   void SynchronizeTooManyDirectories(TObject *Sender, intptr_t &MaxDirectories);
   void SynchronizeDirectoriesChange(TObject *Sender, intptr_t Directories);
 };
-//---------------------------------------------------------------------------
+
 void LogSynchronizeEvent(TTerminal * Terminal, const UnicodeString Message);
-//---------------------------------------------------------------------------
+

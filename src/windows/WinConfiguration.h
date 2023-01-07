@@ -1,18 +1,18 @@
 ﻿
-//---------------------------------------------------------------------------
+
 #ifndef WinConfigurationH
 #define WinConfigurationH
-//---------------------------------------------------------------------------
+
 #include "CustomWinConfiguration.h"
 #if 0
 #include "CustomDirView.hpp"
 #include "FileInfo.h"
-//---------------------------------------------------------------------------
+
 enum TEditor { edInternal, edExternal, edOpen };
 enum TGenerateUrlCodeTarget { guctUrl, guctScript, guctAssembly };
 enum TScriptFormat { sfScriptFile, sfBatchFile, sfCommandLine, sfPowerShell };
 enum TLocaleFlagOverride { lfoLanguageIfRecommended, lfoLanguage, lfoAlways, lfoNever };
-//---------------------------------------------------------------------------
+
 #define C(Property) (Property != rhc.Property) ||
 struct TScpExplorerConfiguration {
   UnicodeString WindowParams;
@@ -33,7 +33,7 @@ struct TScpExplorerConfiguration {
         C(LastLocalTargetDirectory) C(ViewStyle) C(ShowFullAddress)
         C(DriveView) C(DriveViewWidth) C(DriveViewWidthPixelsPerInch) 0; };
 };
-//---------------------------------------------------------------------------
+
 struct TScpCommanderPanelConfiguration {
   UnicodeString DirViewParams;
   bool StatusBar;
@@ -47,7 +47,7 @@ struct TScpCommanderPanelConfiguration {
         C(DriveView) C(DriveViewHeight) C(DriveViewHeightPixelsPerInch)
         C(DriveViewWidth) C(DriveViewWidthPixelsPerInch) 0; };
 };
-//---------------------------------------------------------------------------
+
 struct TScpCommanderConfiguration {
   UnicodeString WindowParams;
   double LocalPanelWidth;
@@ -88,7 +88,7 @@ struct TScpCommanderConfiguration {
     return Criterias;
   }
 };
-//---------------------------------------------------------------------------
+
 struct TFontConfiguration
 {
   UnicodeString FontName;
@@ -108,7 +108,7 @@ struct TFontConfiguration
     { return !SameText(FontName, rhc.FontName) || C(FontSize)
       C(FontCharset) C(FontStyle) 0; };
 };
-//---------------------------------------------------------------------------
+
 struct TEditorConfiguration {
   TFontConfiguration Font;
   TColor FontColor;
@@ -133,7 +133,7 @@ struct TEditorConfiguration {
       C(MaxEditors) C(EarlyClose) C(SDIShellEditor) C(WindowParams)
       C(Encoding) C(WarnOnEncodingFallback) C(WarnOrLargeFileSize) 0; };
 };
-//---------------------------------------------------------------------------
+
 enum TQueueViewShow { qvShow, qvHideWhenEmpty, qvHide };
 struct TQueueViewConfiguration {
   int Height;
@@ -150,7 +150,7 @@ struct TQueueViewConfiguration {
     { return C(Height) C(HeightPixelsPerInch) C(Layout) C(Show) C(LastHideShow) C(ToolBar) C(Label)
         C(FileList) C(FileListHeight) C(FileListHeightPixelsPerInch) 0; };
 };
-//---------------------------------------------------------------------------
+
 struct TUpdatesData
 {
   int ForVersion;
@@ -205,10 +205,10 @@ struct TUpdatesData
     TipsIntervalRuns = 5;
   }
 };
-//---------------------------------------------------------------------------
+
 enum TConnectionType { ctDirect, ctAuto, ctProxy };
 extern TDateTime DefaultUpdatesPeriod;
-//---------------------------------------------------------------------------
+
 struct TUpdatesConfiguration
 {
   TDateTime Period;
@@ -239,7 +239,7 @@ struct TUpdatesConfiguration
       (ZeroBuildNumber(Results.ForVersion) == CompoundVersion);
   }
 };
-//---------------------------------------------------------------------------
+
 struct TEditorData
 {
   __fastcall TEditorData();
@@ -255,7 +255,7 @@ struct TEditorData
   bool __fastcall operator ==(const TEditorData & rhd) const;
   void __fastcall ExternalEditorOptionsAutodetect();
 };
-//---------------------------------------------------------------------------
+
 struct TFileColorData
 {
   TFileColorData();
@@ -269,7 +269,7 @@ struct TFileColorData
   static void LoadList(const UnicodeString & S, TList & List);
   static UnicodeString SaveList(const TList & List);
 };
-//---------------------------------------------------------------------------
+
 struct TFileColorData
 {
   TFileColorData();
@@ -283,9 +283,9 @@ struct TFileColorData
   static void LoadList(const UnicodeString & S, TList & List);
   static UnicodeString SaveList(const TList & List);
 };
-//---------------------------------------------------------------------------
+
 #undef C
-//---------------------------------------------------------------------------
+
 class TEditorPreferences
 {
 public:
@@ -314,7 +314,7 @@ private:
   UnicodeString __fastcall GetName() const;
   const TEditorData * __fastcall GetConstData() const { return &FData; };
 };
-//---------------------------------------------------------------------------
+
 class TEditorList
 {
 public:
@@ -354,7 +354,7 @@ private:
   void __fastcall Modify();
   const TEditorPreferences * __fastcall GetEditor(int Index) const;
 };
-//---------------------------------------------------------------------------
+
 class TBookmarks;
 class TBookmarkList;
 class TCustomCommandList;
@@ -363,9 +363,9 @@ enum TSessionTabNameFormat { stnfNone, stnfShortPath, stnfShortPathTrunc };
 // constants must be compatible with legacy CopyOnDoubleClick
 enum TDoubleClickAction { dcaOpen = 0, dcaCopy = 1, dcaEdit = 2 };
 enum TStoreTransition { stInit, stStandard, stStoreFresh, stStoreMigrated, stStoreAcknowledged };
-//---------------------------------------------------------------------------
+
 typedef void __fastcall (__closure *TMasterPasswordPromptEvent)();
-//---------------------------------------------------------------------------
+
 class TWinConfiguration : public TCustomWinConfiguration
 {
 private:
@@ -797,7 +797,7 @@ public:
   __property LCID DefaultLocale = { read = FDefaultLocale };
   __property int LocaleCompletenessTreshold = { read = GetLocaleCompletenessTreshold };
 };
-//---------------------------------------------------------------------------
+
 class TCustomCommandType
 {
 public:
@@ -875,7 +875,7 @@ private:
   UnicodeString FOptionsPage;
   std::vector<TOption> FOptions;
 };
-//---------------------------------------------------------------------------
+
 class TCustomCommandList
 {
 public:
@@ -916,9 +916,9 @@ private:
   const TCustomCommandType * __fastcall GetConstCommand(int Index) const;
   TCustomCommandType * __fastcall GetCommand(int Index);
 };
-//---------------------------------------------------------------------------
+
 extern TWinConfiguration * WinConfiguration;
 extern const UnicodeString WinSCPExtensionExt;
-//---------------------------------------------------------------------------
+
 #endif // #if 0
 #endif

@@ -1,14 +1,14 @@
-﻿//---------------------------------------------------------------------------
+﻿
 #pragma once
-//---------------------------------------------------------------------------
+
 #include "Common.h"
 #include "Configuration.h"
 #include "Exceptions.h"
 #include <ComCtrls.hpp>
 #if 0
-//---------------------------------------------------------------------------
+
 const TColor LinkColor = clBlue;
-//---------------------------------------------------------------------------
+
 void __fastcall FixListColumnWidth(TListView * TListView, int Index);
 void __fastcall AutoSizeListColumnsWidth(TListView * ListView, int ColumnToShrinkIndex = -1);
 void __fastcall EnableControl(TControl* Control, bool Enable);
@@ -94,7 +94,7 @@ TCanvas * CreateControlCanvas(TControl * Control);
 void AutoSizeButton(TButton * Button);
 namespace Tb2item { class TTBCustomItem; }
 void GiveTBItemPriority(Tb2item::TTBCustomItem * Item);
-//---------------------------------------------------------------------------
+
 
 #endif // #if 0
 

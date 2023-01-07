@@ -1,4 +1,4 @@
-﻿//---------------------------------------------------------------------------
+﻿
 #pragma once
 
 #include <comctrls.hpp>
@@ -7,7 +7,7 @@ __removed #include <HelpIntfs.hpp>
 #include <stdio.h>
 #include <SessionData.h>
 __removed #include <Vcl.Graphics.hpp>
-//---------------------------------------------------------------------------
+
 #if 0
 void CenterFormOn(TForm * Form, TControl * CenterOn);
 void ExecuteProcessChecked(
@@ -82,7 +82,7 @@ NB_CORE_EXPORT bool DetectSystemExternalEditor(
   bool AllowDefaultEditor,
   UnicodeString & Executable, UnicodeString & ExecutableDescription,
   UnicodeString & UsageState, bool & TryNextTime);
-//---------------------------------------------------------------------------
+
 #define IUNKNOWN \
   virtual HRESULT __stdcall QueryInterface(const GUID& IID, void **Obj) \
   { \
@@ -98,8 +98,8 @@ NB_CORE_EXPORT bool DetectSystemExternalEditor(
   { \
     return TInterfacedObject::_Release(); \
   }
-//---------------------------------------------------------------------------
+
 void InitializeCustomHelp(ICustomHelpViewer * HelpViewer);
 void FinalizeCustomHelp();
-//---------------------------------------------------------------------------
+
 #endif // #if 0

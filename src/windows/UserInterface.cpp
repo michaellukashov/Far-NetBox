@@ -1,4 +1,4 @@
-﻿//---------------------------------------------------------------------------
+﻿
 #include <vcl.h>
 #pragma hdrstop
 
@@ -23,12 +23,12 @@ __removed #include "Custom.h"
 #include <Math.hpp>
 #include <PasTools.hpp>
 #include <GUITools.h>
-//---------------------------------------------------------------------------
+
 #if 0
 #pragma package(smart_init)
-//---------------------------------------------------------------------------
+
 const UnicodeString AppName = L"WinSCP";
-//---------------------------------------------------------------------------
+
 TConfiguration * __fastcall CreateConfiguration()
 {
   WinConfiguration = new TWinConfiguration();
@@ -62,13 +62,13 @@ TConfiguration * __fastcall CreateConfiguration()
   return WinConfiguration;
 }
 #endif // #if 0
-//---------------------------------------------------------------------------
+
 TOptions * GetGlobalOptions()
 {
   return nullptr; // TProgramParams::Instance();
 }
 #if 0
-//---------------------------------------------------------------------------
+
 TCustomScpExplorerForm * __fastcall CreateScpExplorer()
 {
   TCustomScpExplorerForm * ScpExplorer;
@@ -82,33 +82,33 @@ TCustomScpExplorerForm * __fastcall CreateScpExplorer()
   }
   return ScpExplorer;
 }
-//---------------------------------------------------------------------------
+
 UnicodeString __fastcall SshVersionString()
 {
   return FORMAT("WinSCP-release-%s", Configuration->Version);
 }
-//---------------------------------------------------------------------------
+
 UnicodeString __fastcall AppNameString()
 {
   return L"WinSCP";
 }
-//---------------------------------------------------------------------------
+
 UnicodeString __fastcall GetCompanyRegistryKey()
 {
   return L"Software\\Martin Prikryl";
 }
-//---------------------------------------------------------------------------
+
 UnicodeString __fastcall GetRegistryKey()
 {
   return GetCompanyRegistryKey() + L"\\WinSCP 2";
 }
-//---------------------------------------------------------------------------
+
 static bool ForcedOnForeground = false;
 void __fastcall SetOnForeground(bool OnForeground)
 {
   ForcedOnForeground = OnForeground;
 }
-//---------------------------------------------------------------------------
+
 void __fastcall FlashOnBackground()
 {
   DebugAssert(Application);
@@ -117,22 +117,22 @@ void __fastcall FlashOnBackground()
     FlashWindow(Application->MainFormHandle, true);
   }
 }
-//---------------------------------------------------------------------------
+
 void __fastcall LocalSystemSettings(TCustomForm * /*Control*/)
 {
   // noop
 }
-//---------------------------------------------------------------------------
+
 void __fastcall ShowExtendedException(Exception * E)
 {
   ShowExtendedExceptionEx(NULL, E);
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TerminateApplication()
 {
   Application->Terminate();
 }
-//---------------------------------------------------------------------------
+
 struct TOpenLocalPathHandler
 {
   UnicodeString LocalPath;
@@ -183,7 +183,7 @@ private:
     ExecuteShellChecked(LocalFileName, L"");
   }
 };
-//---------------------------------------------------------------------------
+
 void __fastcall ShowExtendedExceptionEx(TTerminal * Terminal,
   Exception * E)
 {
@@ -366,7 +366,7 @@ void __fastcall ShowExtendedExceptionEx(TTerminal * Terminal,
     }
   }
 }
-//---------------------------------------------------------------------------
+
 void __fastcall ShowNotification(TTerminal * Terminal, const UnicodeString & Str,
   TQueryType Type)
 {
@@ -375,7 +375,7 @@ void __fastcall ShowNotification(TTerminal * Terminal, const UnicodeString & Str
 
   Manager->ScpExplorer->PopupTrayBalloon(Terminal, Str, Type);
 }
-//---------------------------------------------------------------------------
+
 void __fastcall ConfigureInterface()
 {
   int BidiModeFlag =
@@ -394,7 +394,7 @@ void __fastcall ConfigureInterface()
   // (otherwise initial UserDocumentDirectory is equivalent to GetPersonalFolder())
   UserDocumentDirectory = GetPersonalFolder();
 }
-//---------------------------------------------------------------------------
+
 void DoAboutDialog(TConfiguration *Configuration)
 {
   DoAboutDialog(Configuration, true, NULL);
@@ -404,7 +404,7 @@ void __fastcall DoProductLicense()
 {
   DoLicenseDialog(lcWinScp);
 }
-//---------------------------------------------------------------------------
+
 const UnicodeString PixelsPerInchKey = L"PixelsPerInch";
 //---------------------------------------------------------------------
 int __fastcall GetToolbarLayoutPixelsPerInch(TStrings * Storage, TControl * Control)
@@ -437,7 +437,7 @@ static inline void __fastcall GetToolbarKey(const UnicodeString & ToolbarName,
     ToolbarKey += L"_" + Value;
   }
 }
-//---------------------------------------------------------------------------
+
 static int __fastcall ToolbarReadInt(const UnicodeString ToolbarName,
   const UnicodeString Value, const int Default, const void * ExtraData)
 {
@@ -484,7 +484,7 @@ static int __fastcall ToolbarReadInt(const UnicodeString ToolbarName,
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 static UnicodeString __fastcall ToolbarReadString(const UnicodeString ToolbarName,
   const UnicodeString Value, const UnicodeString Default, const void * ExtraData)
 {
@@ -502,7 +502,7 @@ static UnicodeString __fastcall ToolbarReadString(const UnicodeString ToolbarNam
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 static void __fastcall ToolbarWriteInt(const UnicodeString ToolbarName,
   const UnicodeString Value, const int Data, const void * ExtraData)
 {
@@ -516,7 +516,7 @@ static void __fastcall ToolbarWriteInt(const UnicodeString ToolbarName,
     Storage->Values[ToolbarKey] = IntToStr(Data);
   }
 }
-//---------------------------------------------------------------------------
+
 static void __fastcall ToolbarWriteString(const UnicodeString ToolbarName,
   const UnicodeString Value, const UnicodeString Data, const void * ExtraData)
 {
@@ -527,7 +527,7 @@ static void __fastcall ToolbarWriteString(const UnicodeString ToolbarName,
   DebugAssert(Storage->IndexOfName(ToolbarKey) < 0);
   Storage->Values[ToolbarKey] = Data;
 }
-//---------------------------------------------------------------------------
+
 UnicodeString __fastcall GetToolbarsLayoutStr(TControl * OwnerControl)
 {
   UnicodeString Result;
@@ -545,7 +545,7 @@ UnicodeString __fastcall GetToolbarsLayoutStr(TControl * OwnerControl)
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 void __fastcall LoadToolbarsLayoutStr(TControl * OwnerControl, UnicodeString LayoutStr)
 {
   TStrings * Storage = new TStringList();
@@ -596,18 +596,18 @@ void __fastcall LoadToolbarsLayoutStr(TControl * OwnerControl, UnicodeString Lay
     delete Storage;
   }
 }
-//---------------------------------------------------------------------------
+
 TTBXSeparatorItem * __fastcall AddMenuSeparator(TTBCustomItem * Menu)
 {
   TTBXSeparatorItem * Item = new TTBXSeparatorItem(Menu);
   Menu->Add(Item);
   return Item;
 }
-//---------------------------------------------------------------------------
+
 static TComponent * LastPopupComponent = NULL;
 static TRect LastPopupRect(-1, -1, -1, -1);
 static TDateTime LastCloseUp;
-//---------------------------------------------------------------------------
+
 static void __fastcall ConvertMenu(TMenuItem * AItems, TTBCustomItem * Items)
 {
   for (int Index = 0; Index < AItems->Count; Index++)
@@ -672,7 +672,7 @@ static void __fastcall ConvertMenu(TMenuItem * AItems, TTBCustomItem * Items)
     Items->Add(Item);
   }
 }
-//---------------------------------------------------------------------------
+
 void __fastcall MenuPopup(TPopupMenu * AMenu, TRect Rect,
   TComponent * PopupComponent)
 {
@@ -712,14 +712,14 @@ void __fastcall MenuPopup(TPopupMenu * AMenu, TRect Rect,
     LastCloseUp = Now();
   }
 }
-//---------------------------------------------------------------------------
+
 const int ColorCols = 8;
 const int StandardColorRows = 2;
 const int StandardColorCount = ColorCols * StandardColorRows;
 const int UserColorRows = 1;
 const int UserColorCount = UserColorRows * ColorCols;
 const wchar_t ColorSeparator = L',';
-//---------------------------------------------------------------------------
+
 static void __fastcall GetStandardSessionColorInfo(
   int Col, int Row, TColor & Color, UnicodeString & Name)
 {
@@ -749,28 +749,28 @@ static void __fastcall GetStandardSessionColorInfo(
   DebugFail();
   #undef COLOR_INFO
 }
-//---------------------------------------------------------------------------
+
 static void __fastcall SessionColorSetGetColorInfo(
   void * /*Data*/, TTBXCustomColorSet * /*Sender*/, int Col, int Row, TColor & Color, UnicodeString & Name)
 {
   GetStandardSessionColorInfo(Col, Row, Color, Name);
 }
-//---------------------------------------------------------------------------
+
 TColor __fastcall RestoreColor(const UnicodeString & CStr)
 {
   return TColor(StrToInt(UnicodeString(L"$") + CStr));
 }
-//---------------------------------------------------------------------------
+
 UnicodeString __fastcall StoreColor(TColor Color)
 {
   return IntToHex(Color, 6);
 }
-//---------------------------------------------------------------------------
+
 static UnicodeString __fastcall ExtractColorStr(UnicodeString & Colors)
 {
   return CutToChar(Colors, ColorSeparator, true);
 }
-//---------------------------------------------------------------------------
+
 static bool __fastcall IsStandardColor(bool SessionColors, TColor Color)
 {
   if (SessionColors)
@@ -796,7 +796,7 @@ static bool __fastcall IsStandardColor(bool SessionColors, TColor Color)
     return (DefaultColorPalette->FindCell(Color).X >= 0);
   }
 }
-//---------------------------------------------------------------------------
+
 class TColorChangeData : public TComponent
 {
 public:
@@ -815,7 +815,7 @@ private:
   TColor FColor;
   bool FSessionColors;
 };
-//---------------------------------------------------------------------------
+
 __fastcall TColorChangeData::TColorChangeData(
     TColorChangeEvent OnColorChange, TColor Color, bool SessionColors) :
   TComponent(NULL)
@@ -825,14 +825,14 @@ __fastcall TColorChangeData::TColorChangeData(
   FColor = Color;
   FSessionColors = SessionColors;
 }
-//---------------------------------------------------------------------------
+
 TColorChangeData * __fastcall TColorChangeData::Retrieve(TObject * Object)
 {
   TComponent * Component = DebugNotNull(dynamic_cast<TComponent *>(Object));
   TComponent * ColorChangeDataComponent = Component->FindComponent(QualifiedClassName());
   return DebugNotNull(dynamic_cast<TColorChangeData *>(ColorChangeDataComponent));
 }
-//---------------------------------------------------------------------------
+
 static void SaveCustomColors(bool SessionColors, const UnicodeString & Colors)
 {
   if (SessionColors)
@@ -844,12 +844,12 @@ static void SaveCustomColors(bool SessionColors, const UnicodeString & Colors)
     CustomWinConfiguration->FontColors = Colors;
   }
 }
-//---------------------------------------------------------------------------
+
 static UnicodeString LoadCustomColors(bool SessionColors)
 {
   return SessionColors ? CustomWinConfiguration->SessionColors : CustomWinConfiguration->FontColors;
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TColorChangeData::ColorChange(TColor Color)
 {
   // Color palette returns clNone when no color is selected,
@@ -878,23 +878,23 @@ void __fastcall TColorChangeData::ColorChange(TColor Color)
 
   FOnColorChange(Color);
 }
-//---------------------------------------------------------------------------
+
 static void __fastcall ColorDefaultClick(void * /*Data*/, TObject * Sender)
 {
   TColorChangeData::Retrieve(Sender)->ColorChange(TColor(0));
 }
-//---------------------------------------------------------------------------
+
 static void __fastcall ColorPaletteChange(void * /*Data*/, TObject * Sender)
 {
   TTBXColorPalette * ColorPalette = DebugNotNull(dynamic_cast<TTBXColorPalette *>(Sender));
   TColorChangeData::Retrieve(Sender)->ColorChange(GetNonZeroColor(ColorPalette->Color));
 }
-//---------------------------------------------------------------------------
+
 static UnicodeString __fastcall CustomColorName(int Index)
 {
   return UnicodeString(L"Color") + wchar_t(L'A' + Index);
 }
-//---------------------------------------------------------------------------
+
 static void __fastcall ColorPickClick(void * /*Data*/, TObject * Sender)
 {
   TColorChangeData * ColorChangeData = TColorChangeData::Retrieve(Sender);
@@ -968,7 +968,7 @@ static void __fastcall ColorPickClick(void * /*Data*/, TObject * Sender)
     ColorChangeData->ColorChange(GetNonZeroColor(Dialog->Color));
   }
 }
-//---------------------------------------------------------------------------
+
 TPopupMenu * __fastcall CreateSessionColorPopupMenu(TColor Color,
   TColorChangeEvent OnColorChange)
 {
@@ -976,7 +976,7 @@ TPopupMenu * __fastcall CreateSessionColorPopupMenu(TColor Color,
   CreateSessionColorMenu(PopupMenu->Items, Color, OnColorChange);
   return PopupMenu.release();
 }
-//---------------------------------------------------------------------------
+
 static void __fastcall UserCustomColorSetGetColorInfo(
   void * /*Data*/, TTBXCustomColorSet * Sender, int Col, int Row, TColor & Color, UnicodeString & /*Name*/)
 {
@@ -999,7 +999,7 @@ static void __fastcall UserCustomColorSetGetColorInfo(
     Color = Vcl::Graphics::clNone;
   }
 }
-//---------------------------------------------------------------------------
+
 void __fastcall CreateColorPalette(TTBCustomItem * Owner, TColor Color, int Rows,
   TCSGetColorInfo OnGetColorInfo, TColorChangeEvent OnColorChange, bool SessionColors)
 {
@@ -1026,7 +1026,7 @@ void __fastcall CreateColorPalette(TTBCustomItem * Owner, TColor Color, int Rows
 
   Owner->Add(new TTBXSeparatorItem(Owner));
 }
-//---------------------------------------------------------------------------
+
 static void __fastcall CreateColorMenu(TComponent * AOwner, TColor Color,
   TColorChangeEvent OnColorChange, bool SessionColors,
   const UnicodeString & DefaultColorCaption, const UnicodeString & DefaultColorHint,
@@ -1092,7 +1092,7 @@ static void __fastcall CreateColorMenu(TComponent * AOwner, TColor Color,
     Owner->Add(Item);
   }
 }
-//---------------------------------------------------------------------------
+
 void __fastcall CreateSessionColorMenu(TComponent * AOwner, TColor Color,
   TColorChangeEvent OnColorChange)
 {
@@ -1101,7 +1101,7 @@ void __fastcall CreateSessionColorMenu(TComponent * AOwner, TColor Color,
     LoadStr(COLOR_TRUE_DEFAULT_CAPTION), LoadStr(EDITOR_BACKGROUND_COLOR_HINT),
     HELP_COLOR, LoadStr(COLOR_PICK_HINT));
 }
-//---------------------------------------------------------------------------
+
 void __fastcall CreateEditorBackgroundColorMenu(TComponent * AOwner, TColor Color,
   TColorChangeEvent OnColorChange)
 {
@@ -1110,7 +1110,7 @@ void __fastcall CreateEditorBackgroundColorMenu(TComponent * AOwner, TColor Colo
     LoadStr(COLOR_TRUE_DEFAULT_CAPTION), LoadStr(EDITOR_BACKGROUND_COLOR_HINT),
     HELP_COLOR, LoadStr(EDITOR_BACKGROUND_COLOR_PICK_HINT));
 }
-//---------------------------------------------------------------------------
+
 TPopupMenu * __fastcall CreateColorPopupMenu(TColor Color,
   TColorChangeEvent OnColorChange)
 {
@@ -1121,18 +1121,18 @@ TPopupMenu * __fastcall CreateColorPopupMenu(TColor Color,
     HELP_NONE, UnicodeString());
   return PopupMenu.release();
 }
-//---------------------------------------------------------------------------
+
 void __fastcall UpgradeSpeedButton(TSpeedButton * /*Button*/)
 {
   // no-op yet
 }
-//---------------------------------------------------------------------------
+
 struct TThreadParam
 {
   TThreadFunc ThreadFunc;
   void * Parameter;
 };
-//---------------------------------------------------------------------------
+
 static int __fastcall ThreadProc(void * AParam)
 {
   TThreadParam * Param = reinterpret_cast<TThreadParam *>(AParam);
@@ -1141,7 +1141,7 @@ static int __fastcall ThreadProc(void * AParam)
   EndThread(Result);
   return Result;
 }
-//---------------------------------------------------------------------------
+
 int __fastcall StartThread(void * SecurityAttributes, unsigned StackSize,
   TThreadFunc ThreadFunc, void * Parameter, unsigned CreationFlags,
   TThreadID & ThreadId)
@@ -1152,14 +1152,14 @@ int __fastcall StartThread(void * SecurityAttributes, unsigned StackSize,
   return BeginThread(SecurityAttributes, StackSize, ThreadProc, Param,
     CreationFlags, ThreadId);
 }
-//---------------------------------------------------------------------------
+
 static TShortCut FirstCtrlNumberShortCut = ShortCut(L'0', TShiftState() << ssCtrl);
 static TShortCut LastCtrlNumberShortCut = ShortCut(L'9', TShiftState() << ssCtrl);
 static TShortCut FirstCtrlKeyPadShortCut = ShortCut(VK_NUMPAD0, TShiftState() << ssCtrl);
 static TShortCut LastCtrlKeyPadShortCut = ShortCut(VK_NUMPAD9, TShiftState() << ssCtrl);
 static TShortCut FirstShiftCtrlAltLetterShortCut = ShortCut(L'A', TShiftState() << ssShift << ssCtrl << ssAlt);
 static TShortCut LastShiftCtrlAltLetterShortCut = ShortCut(L'Z', TShiftState() << ssShift << ssCtrl << ssAlt);
-//---------------------------------------------------------------------------
+
 void __fastcall InitializeShortCutCombo(TComboBox * ComboBox,
   const TShortCuts & ShortCuts)
 {
@@ -1194,7 +1194,7 @@ void __fastcall InitializeShortCutCombo(TComboBox * ComboBox,
   ComboBox->Style = csDropDownList;
   ComboBox->DropDownCount = Max(ComboBox->DropDownCount, 16);
 }
-//---------------------------------------------------------------------------
+
 void __fastcall SetShortCutCombo(TComboBox * ComboBox, TShortCut Value)
 {
   for (int Index = ComboBox->Items->Count - 1; Index >= 0; Index--)
@@ -1216,12 +1216,12 @@ void __fastcall SetShortCutCombo(TComboBox * ComboBox, TShortCut Value)
     DebugAssert(Index > 0);
   }
 }
-//---------------------------------------------------------------------------
+
 TShortCut __fastcall GetShortCutCombo(TComboBox * ComboBox)
 {
   return TShortCut(ComboBox->Items->Objects[ComboBox->ItemIndex]);
 }
-//---------------------------------------------------------------------------
+
 TShortCut __fastcall NormalizeCustomShortCut(TShortCut ShortCut)
 {
   if ((FirstCtrlKeyPadShortCut <= ShortCut) && (ShortCut <= LastCtrlKeyPadShortCut))
@@ -1230,15 +1230,15 @@ TShortCut __fastcall NormalizeCustomShortCut(TShortCut ShortCut)
   }
   return ShortCut;
 }
-//---------------------------------------------------------------------------
+
 bool __fastcall IsCustomShortCut(TShortCut ShortCut)
 {
   return
     ((FirstCtrlNumberShortCut <= ShortCut) && (ShortCut <= LastCtrlNumberShortCut)) ||
     ((FirstShiftCtrlAltLetterShortCut <= ShortCut) && (ShortCut <= LastShiftCtrlAltLetterShortCut));
 }
-//---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
+
+
 class TMasterPasswordDialog : public TCustomDialog
 {
 public:
@@ -1255,7 +1255,7 @@ private:
   TPasswordEdit * NewEdit;
   TPasswordEdit * ConfirmEdit;
 };
-//---------------------------------------------------------------------------
+
 __fastcall TMasterPasswordDialog::TMasterPasswordDialog(bool Current) :
   TCustomDialog(Current ? HELP_MASTER_PASSWORD_CURRENT : HELP_MASTER_PASSWORD_CHANGE)
 {
@@ -1287,7 +1287,7 @@ __fastcall TMasterPasswordDialog::TMasterPasswordDialog(bool Current) :
     ConfirmEdit = NULL;
   }
 }
-//---------------------------------------------------------------------------
+
 bool __fastcall TMasterPasswordDialog::Execute(
   UnicodeString & CurrentPassword, UnicodeString & NewPassword)
 {
@@ -1305,7 +1305,7 @@ bool __fastcall TMasterPasswordDialog::Execute(
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TMasterPasswordDialog::DoChange(bool & CanSubmit)
 {
   CanSubmit =
@@ -1314,7 +1314,7 @@ void __fastcall TMasterPasswordDialog::DoChange(bool & CanSubmit)
     ((ConfirmEdit == NULL) || (IsValidPassword(ConfirmEdit->Text) >= 0));
   TCustomDialog::DoChange(CanSubmit);
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TMasterPasswordDialog::DoValidate()
 {
   TCustomDialog::DoValidate();
@@ -1350,7 +1350,7 @@ void __fastcall TMasterPasswordDialog::DoValidate()
     }
   }
 }
-//---------------------------------------------------------------------------
+
 static bool __fastcall DoMasterPasswordDialog(bool Current,
   UnicodeString & NewPassword)
 {
@@ -1375,7 +1375,7 @@ static bool __fastcall DoMasterPasswordDialog(bool Current,
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 bool __fastcall DoMasterPasswordDialog()
 {
   UnicodeString NewPassword;
@@ -1383,13 +1383,13 @@ bool __fastcall DoMasterPasswordDialog()
   DebugAssert(NewPassword.IsEmpty());
   return Result;
 }
-//---------------------------------------------------------------------------
+
 bool __fastcall DoChangeMasterPasswordDialog(UnicodeString & NewPassword)
 {
   bool Result = DoMasterPasswordDialog(false, NewPassword);
   return Result;
 }
-//---------------------------------------------------------------------------
+
 void __fastcall MessageWithNoHelp(const UnicodeString & Message)
 {
   TMessageParams Params;
@@ -1400,7 +1400,7 @@ void __fastcall MessageWithNoHelp(const UnicodeString & Message)
     SearchHelp(Message);
   }
 }
-//---------------------------------------------------------------------------
+
 void __fastcall CheckLogParam(TProgramParams * Params)
 {
   UnicodeString LogFile;
@@ -1410,7 +1410,7 @@ void __fastcall CheckLogParam(TProgramParams * Params)
     Configuration->TemporaryLogging(LogFile);
   }
 }
-//---------------------------------------------------------------------------
+
 bool __fastcall CheckXmlLogParam(TProgramParams * Params)
 {
   UnicodeString LogFile;
@@ -1429,7 +1429,7 @@ bool __fastcall CheckXmlLogParam(TProgramParams * Params)
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 bool __fastcall CheckSafe(TProgramParams * Params)
 {
   // Originally we warned when the test didn't pass,

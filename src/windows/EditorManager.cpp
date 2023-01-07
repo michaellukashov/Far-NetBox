@@ -1,4 +1,4 @@
-//---------------------------------------------------------------------------
+
 #include <vcl.h>
 #pragma hdrstop
 
@@ -10,9 +10,9 @@
 #include "EditorManager.h"
 #include <algorithm>
 #include <DateUtils.hpp>
-//---------------------------------------------------------------------------
+
 #pragma package(smart_init)
-//---------------------------------------------------------------------------
+
 TEditedFileData::TEditedFileData()
 {
   ForceText = false;
@@ -20,12 +20,12 @@ TEditedFileData::TEditedFileData()
   SessionData = NULL;
   Queue = NULL;
 }
-//---------------------------------------------------------------------------
+
 TEditedFileData::~TEditedFileData()
 {
   delete SessionData;
 }
-//---------------------------------------------------------------------------
+
 __fastcall TEditorManager::TEditorManager()
 {
   FOnFileChange = NULL;
@@ -33,7 +33,7 @@ __fastcall TEditorManager::TEditorManager()
   FOnFileEarlyClosed = NULL;
   FOnFileUploadComplete = NULL;
 }
-//---------------------------------------------------------------------------
+
 __fastcall TEditorManager::~TEditorManager()
 {
   for (unsigned int i = FFiles.size(); i > 0; i--)
@@ -53,7 +53,7 @@ __fastcall TEditorManager::~TEditorManager()
     }
   }
 }
-//---------------------------------------------------------------------------
+
 bool __fastcall TEditorManager::Empty(bool IgnoreClosed)
 {
   bool Result;
@@ -77,7 +77,7 @@ bool __fastcall TEditorManager::Empty(bool IgnoreClosed)
 
   return Result;
 }
-//---------------------------------------------------------------------------
+
 bool __fastcall TEditorManager::CanAddFile(const UnicodeString RemoteDirectory,
   const UnicodeString OriginalFileName, const UnicodeString SessionName,
   TObject *& Token, UnicodeString & ExistingLocalRootDirectory,
@@ -147,7 +147,7 @@ bool __fastcall TEditorManager::CanAddFile(const UnicodeString RemoteDirectory,
 
   return Result;
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TEditorManager::ProcessFiles(TEditedFileProcessEvent Callback, void * Arg)
 {
   for (unsigned int i = 0; i < FFiles.size(); i++)
@@ -157,7 +157,7 @@ void __fastcall TEditorManager::ProcessFiles(TEditedFileProcessEvent Callback, v
       (FileData->Closed ? NULL : FileData->Token), Arg);
   }
 }
-//---------------------------------------------------------------------------
+
 bool __fastcall TEditorManager::CloseInternalEditors(TNotifyEvent CloseCallback)
 {
   // Traverse from end, as closing internal editor causes deletion of
@@ -194,7 +194,7 @@ bool __fastcall TEditorManager::CloseInternalEditors(TNotifyEvent CloseCallback)
 
   return Result;
 }
-//---------------------------------------------------------------------------
+
 bool __fastcall TEditorManager::CloseExternalFilesWithoutProcess()
 {
   for (unsigned int i = FFiles.size(); i > 0; i--)
@@ -209,7 +209,7 @@ bool __fastcall TEditorManager::CloseExternalFilesWithoutProcess()
   }
   return true;
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TEditorManager::AddFileInternal(const UnicodeString FileName,
   TEditedFileData * AData, TObject * Token)
 {
@@ -222,7 +222,7 @@ void __fastcall TEditorManager::AddFileInternal(const UnicodeString FileName,
 
   AddFile(FileData, Data.release());
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TEditorManager::AddFileExternal(const UnicodeString FileName,
   TEditedFileData * AData, HANDLE Process)
 {
@@ -239,7 +239,7 @@ void __fastcall TEditorManager::AddFileExternal(const UnicodeString FileName,
   }
   AddFile(FileData, Data.release());
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TEditorManager::Check()
 {
   int Index;
@@ -303,7 +303,7 @@ void __fastcall TEditorManager::Check()
     while ((Index >= 0) && (FUploadCompleteEvents.size() > 0));
   }
 }
-//---------------------------------------------------------------------------
+
 bool __fastcall TEditorManager::EarlyClose(int Index)
 {
   TFileData * FileData = &FFiles[Index];
@@ -326,7 +326,7 @@ bool __fastcall TEditorManager::EarlyClose(int Index)
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TEditorManager::FileChanged(TObject * Token)
 {
   int Index = FindFile(Token);
@@ -336,7 +336,7 @@ void __fastcall TEditorManager::FileChanged(TObject * Token)
 
   CheckFileChange(Index, true);
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TEditorManager::FileReload(TObject * Token)
 {
   int Index = FindFile(Token);
@@ -349,7 +349,7 @@ void __fastcall TEditorManager::FileReload(TObject * Token)
   OnFileReload(FileData->FileName, FileData->Data);
   GetFileTimestamp(FileData->FileName, FileData->Timestamp);
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TEditorManager::FileClosed(TObject * Token, bool Forced)
 {
   int Index = FindFile(Token);
@@ -360,7 +360,7 @@ void __fastcall TEditorManager::FileClosed(TObject * Token, bool Forced)
   CheckFileChange(Index, false);
   CloseFile(Index, false, !Forced);
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TEditorManager::AddFile(TFileData & FileData, TEditedFileData * AData)
 {
   std::unique_ptr<TEditedFileData> Data(AData);
@@ -378,7 +378,7 @@ void __fastcall TEditorManager::AddFile(TFileData & FileData, TEditedFileData * 
 
   Data.release(); // ownership passed
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TEditorManager::UploadComplete(int Index)
 {
   TFileData * FileData = &FFiles[Index];
@@ -407,7 +407,7 @@ void __fastcall TEditorManager::UploadComplete(int Index)
     }
   }
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TEditorManager::CloseProcess(int Index)
 {
   TFileData * FileData = &FFiles[Index];
@@ -416,14 +416,14 @@ void __fastcall TEditorManager::CloseProcess(int Index)
   DebugCheck(CloseHandle(FileData->Process));
   FileData->Process = INVALID_HANDLE_VALUE;
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TEditorManager::ReleaseFile(int Index)
 {
   TFileData * FileData = &FFiles[Index];
   delete FileData->Data;
   FileData->Data = NULL;
 }
-//---------------------------------------------------------------------------
+
 bool __fastcall TEditorManager::CloseFile(int Index, bool IgnoreErrors, bool Delete)
 {
   bool Result = false;
@@ -458,12 +458,12 @@ bool __fastcall TEditorManager::CloseFile(int Index, bool IgnoreErrors, bool Del
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 TDateTime TEditorManager::NormalizeTimestamp(const TDateTime & Timestamp)
 {
   return TTimeZone::Local->ToUniversalTime(Timestamp);
 }
-//---------------------------------------------------------------------------
+
 bool TEditorManager::GetFileTimestamp(const UnicodeString & FileName, TDateTime & Timestamp)
 {
   TSearchRecSmart ASearchRec;
@@ -474,7 +474,7 @@ bool TEditorManager::GetFileTimestamp(const UnicodeString & FileName, TDateTime 
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 bool __fastcall TEditorManager::HasFileChanged(int Index, TDateTime & NewTimestamp)
 {
   TFileData * FileData = &FFiles[Index];
@@ -491,7 +491,7 @@ bool __fastcall TEditorManager::HasFileChanged(int Index, TDateTime & NewTimesta
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TEditorManager::CheckFileChange(int Index, bool Force)
 {
   TDateTime NewTimestamp;
@@ -560,7 +560,7 @@ void __fastcall TEditorManager::CheckFileChange(int Index, bool Force)
     }
   }
 }
-//---------------------------------------------------------------------------
+
 int __fastcall TEditorManager::FindFile(const TObject * Token)
 {
   int Index = -1;
@@ -575,7 +575,7 @@ int __fastcall TEditorManager::FindFile(const TObject * Token)
 
   return Index;
 }
-//---------------------------------------------------------------------------
+
 int __fastcall TEditorManager::WaitFor(unsigned int Count, const HANDLE * Handles,
   TWaitHandle WaitFor)
 {
@@ -627,4 +627,4 @@ int __fastcall TEditorManager::WaitFor(unsigned int Count, const HANDLE * Handle
 
   return Result;
 }
-//---------------------------------------------------------------------------
+

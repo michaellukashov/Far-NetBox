@@ -1,25 +1,25 @@
-﻿//---------------------------------------------------------------------------
+﻿
 #pragma once
-//---------------------------------------------------------------------------
+
 #include "Configuration.h"
 #include "CopyParam.h"
-//---------------------------------------------------------------------------
+
 class TGUIConfiguration;
 class TStoredSessionList;
 enum TInterface { ifCommander, ifExplorer };
-//---------------------------------------------------------------------------
+
 extern const intptr_t ccLocal;
 extern const intptr_t ccShowResults;
 extern const intptr_t ccCopyResults;
 extern const intptr_t ccSet;
 extern const intptr_t ccRemoteFiles;
 extern const intptr_t ccShowResultsInMsgBox;
-//---------------------------------------------------------------------------
+
 constexpr intptr_t soRecurse =         0x01;
 constexpr intptr_t soSynchronize =     0x02;
 constexpr intptr_t soSynchronizeAsk =  0x04;
 constexpr intptr_t soContinueOnError = 0x08;
-//---------------------------------------------------------------------------
+
 NB_DEFINE_CLASS_ID(TGUICopyParamType);
 class NB_CORE_EXPORT TGUICopyParamType : public TCopyParamType
 {
@@ -60,7 +60,7 @@ private:
   bool FQueueNoConfirmation{false};
   bool FQueueParallel{false};
 };
-//---------------------------------------------------------------------------
+
 struct NB_CORE_EXPORT TCopyParamRuleData : public TObject
 {
   UnicodeString HostName;
@@ -70,7 +70,7 @@ struct NB_CORE_EXPORT TCopyParamRuleData : public TObject
 
   void Default();
 };
-//---------------------------------------------------------------------------
+
 NB_DEFINE_CLASS_ID(TCopyParamRule);
 class NB_CORE_EXPORT TCopyParamRule : public TObject
 {
@@ -106,7 +106,7 @@ private:
 public:
   bool GetEmpty() const;
 };
-//---------------------------------------------------------------------------
+
 class NB_CORE_EXPORT TLocaleInfo : public TObject
 {
 public:
@@ -114,7 +114,7 @@ public:
   UnicodeString Name;
   int Completeness{0};
 };
-//---------------------------------------------------------------------------
+
 class NB_CORE_EXPORT TCopyParamList : public TObject
 {
 friend class TGUIConfiguration;
@@ -177,7 +177,7 @@ private:
   bool CompareItem(intptr_t Index, const TCopyParamType * CopyParam,
     const TCopyParamRule * Rule) const;
 };
-//---------------------------------------------------------------------------
+
 NB_DEFINE_CLASS_ID(TGUIConfiguration);
 class NB_CORE_EXPORT TGUIConfiguration : public TConfiguration
 {
@@ -386,7 +386,7 @@ public:
   void SetSessionReopenAutoIdle(intptr_t Value) { FSessionReopenAutoIdle = Value; }
   LCID GetAppliedLocale() const { return FAppliedLocale; }
 };
-//---------------------------------------------------------------------------
+
 NB_CORE_EXPORT TGUIConfiguration *GetGUIConfiguration();
-//---------------------------------------------------------------------------
+
 

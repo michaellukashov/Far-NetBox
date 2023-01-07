@@ -1,4 +1,4 @@
-﻿//---------------------------------------------------------------------------
+﻿
 #include <vcl.h>
 #pragma hdrstop
 
@@ -11,9 +11,9 @@
 #include "CoreMain.h"
 #include "TextsCore.h"
 #include "SynchronizeController.h"
-//---------------------------------------------------------------------------
+
 __removed #pragma package(smart_init)
-//---------------------------------------------------------------------------
+
 TSynchronizeController::TSynchronizeController(
   TSynchronizeEvent AOnSynchronize, TSynchronizeInvalidEvent AOnSynchronizeInvalid,
   TSynchronizeTooManyDirectoriesEvent AOnTooManyDirectories) noexcept :
@@ -32,12 +32,12 @@ TSynchronizeController::TSynchronizeController(
   FSynchronizeLog = nullptr;
   FOptions = nullptr;
 }
-//---------------------------------------------------------------------------
+
 TSynchronizeController::~TSynchronizeController() noexcept
 {
   DebugAssert(FSynchronizeMonitor == nullptr);
 }
-//---------------------------------------------------------------------------
+
 void TSynchronizeController::StartStop(TObject * /*Sender*/,
   bool Start, const TSynchronizeParamType &Params, const TCopyParamType &CopyParam,
   TSynchronizeOptions *Options,
@@ -115,7 +115,7 @@ void TSynchronizeController::StartStop(TObject * /*Sender*/,
     // SAFE_DESTROY(FSynchronizeMonitor);
   }
 }
-//---------------------------------------------------------------------------
+
 void TSynchronizeController::SynchronizeChange(
   TObject * /*Sender*/, UnicodeString Directory, bool &SubdirsChanged)
 {
@@ -182,7 +182,7 @@ void TSynchronizeController::SynchronizeChange(
     SynchronizeAbort(isa<EFatal>(&E));
   }
 }
-//---------------------------------------------------------------------------
+
 void TSynchronizeController::SynchronizeAbort(bool Close)
 {
   if (FSynchronizeMonitor != nullptr)
@@ -193,7 +193,7 @@ void TSynchronizeController::SynchronizeAbort(bool Close)
   DebugAssert(FSynchronizeAbort);
   FSynchronizeAbort(nullptr, Close);
 }
-//---------------------------------------------------------------------------
+
 void TSynchronizeController::LogOperation(TSynchronizeOperation Operation,
   const UnicodeString AFileName)
 {
@@ -217,7 +217,7 @@ void TSynchronizeController::LogOperation(TSynchronizeOperation Operation,
   }
   SynchronizeLog(Entry, Message);
 }
-//---------------------------------------------------------------------------
+
 void TSynchronizeController::SynchronizeLog(TSynchronizeLogEntry Entry,
   const UnicodeString Message)
 {
@@ -226,7 +226,7 @@ void TSynchronizeController::SynchronizeLog(TSynchronizeLogEntry Entry,
     FSynchronizeLog(this, Entry, Message);
   }
 }
-//---------------------------------------------------------------------------
+
 void TSynchronizeController::SynchronizeFilter(TObject * /*Sender*/,
   const UnicodeString DirectoryName, bool &Add)
 {
@@ -248,7 +248,7 @@ void TSynchronizeController::SynchronizeFilter(TObject * /*Sender*/,
     Add = FCopyParam.AllowTransfer(DirectoryName, osLocal, true, MaskParams, Hidden);
   }
 }
-//---------------------------------------------------------------------------
+
 void TSynchronizeController::SynchronizeInvalid(
   TObject * /*Sender*/, const UnicodeString Directory, UnicodeString ErrorStr)
 {
@@ -259,7 +259,7 @@ void TSynchronizeController::SynchronizeInvalid(
 
   SynchronizeAbort(false);
 }
-//---------------------------------------------------------------------------
+
 void TSynchronizeController::SynchronizeTooManyDirectories(
   TObject * /*Sender*/, intptr_t &MaxDirectories)
 {
@@ -268,13 +268,13 @@ void TSynchronizeController::SynchronizeTooManyDirectories(
     FOnTooManyDirectories(this, MaxDirectories);
   }
 }
-//---------------------------------------------------------------------------
+
 void TSynchronizeController::SynchronizeDirectoriesChange(
   TObject * /*Sender*/, intptr_t Directories)
 {
   SynchronizeLog(slDirChange, FMTLOAD(SYNCHRONIZE_START, Directories));
 }
-//---------------------------------------------------------------------------
+
 void LogSynchronizeEvent(TTerminal *Terminal, const UnicodeString Message)
 {
   if (Terminal != nullptr)

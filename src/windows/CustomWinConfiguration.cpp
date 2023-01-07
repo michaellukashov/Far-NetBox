@@ -1,4 +1,4 @@
-﻿//---------------------------------------------------------------------------
+﻿
 #include <vcl.h>
 #pragma hdrstop
 
@@ -11,11 +11,11 @@
 #include <Exceptions.h>
 #include <PasTools.hpp>
 #include <Math.hpp>
-//---------------------------------------------------------------------------
+
 #pragma package(smart_init)
-//---------------------------------------------------------------------------
+
 TCustomWinConfiguration * CustomWinConfiguration = NULL;
-//---------------------------------------------------------------------------
+
 class THistoryStrings : public TStringList
 {
 public:
@@ -29,7 +29,7 @@ public:
 private:
   bool FModified;
 };
-//---------------------------------------------------------------------------
+
 __fastcall TCustomWinConfiguration::TCustomWinConfiguration():
   TGUIConfiguration()
 {
@@ -38,14 +38,14 @@ __fastcall TCustomWinConfiguration::TCustomWinConfiguration():
   FDefaultInterface = ifCommander;
   FCanApplyInterfaceImmediately = true;
 }
-//---------------------------------------------------------------------------
+
 __fastcall TCustomWinConfiguration::~TCustomWinConfiguration()
 {
   ClearHistory();
   delete FHistory;
   delete FEmptyHistory;
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TCustomWinConfiguration::ClearHistory()
 {
   DebugAssert(FHistory != NULL);
@@ -59,7 +59,7 @@ void __fastcall TCustomWinConfiguration::ClearHistory()
   }
   FHistory->Clear();
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TCustomWinConfiguration::DefaultHistory()
 {
   ClearHistory();
@@ -88,17 +88,17 @@ void __fastcall TCustomWinConfiguration::DefaultHistory()
   Strings->Add(FORMAT(L"%s -cmd \"cd '!/'\" !U@!@ -P !# -title \"!N\"", (KittyExecutable)));
   FHistory->AddObject(L"PuttyPath", Strings.release());
 }
-//---------------------------------------------------------------------------
+
 UnicodeString __fastcall TCustomWinConfiguration::FormatDefaultWindowSize(int Width, int Height)
 {
   return FORMAT(L"%d,%d,%s", (Width, Height, SaveDefaultPixelsPerInch()));
 }
-//---------------------------------------------------------------------------
+
 UnicodeString __fastcall TCustomWinConfiguration::FormatDefaultWindowParams(int Width, int Height)
 {
   return FORMAT(L"-1;-1;%d;%d;%d;%s", (Width, Height, int(wsNormal), SaveDefaultPixelsPerInch()));
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TCustomWinConfiguration::Default()
 {
   TGUIConfiguration::Default();
@@ -126,7 +126,7 @@ void __fastcall TCustomWinConfiguration::Default()
 
   DefaultHistory();
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TCustomWinConfiguration::Saved()
 {
   TGUIConfiguration::Saved();
@@ -139,7 +139,7 @@ void __fastcall TCustomWinConfiguration::Saved()
     HistoryStrings->Modified = false;
   }
 }
-//---------------------------------------------------------------------------
+
 // duplicated from core\configuration.cpp
 #undef LASTELEM
 #define LASTELEM(ELEM) \
@@ -171,7 +171,7 @@ void __fastcall TCustomWinConfiguration::Saved()
     KEY(String,   LoginDialog.WindowSize); \
     KEY(Integer,  LoginDialog.SiteSearch); \
   ); \
-//---------------------------------------------------------------------------
+
 void __fastcall TCustomWinConfiguration::SaveData(
   THierarchicalStorage * Storage, bool All)
 {
@@ -262,7 +262,7 @@ void __fastcall TCustomWinConfiguration::SaveData(
     }
   }
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TCustomWinConfiguration::LoadData(
   THierarchicalStorage * Storage)
 {
@@ -356,13 +356,13 @@ void __fastcall TCustomWinConfiguration::LoadData(
     }
   }
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TCustomWinConfiguration::LoadAdmin(THierarchicalStorage * Storage)
 {
   TGUIConfiguration::LoadAdmin(Storage);
   FDefaultInterface = TInterface(Storage->ReadInteger(L"DefaultInterfaceInterface", FDefaultInterface));
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TCustomWinConfiguration::RecryptPasswords(TStrings * RecryptPasswordErrors)
 {
   TOperationVisualizer Visualizer;
@@ -398,12 +398,12 @@ void __fastcall TCustomWinConfiguration::AskForMasterPasswordIfNotSetAndNeededTo
     AskForMasterPasswordIfNotSet();
   }
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TCustomWinConfiguration::SetInterface(TInterface value)
 {
   SET_CONFIG_PROPERTY(Interface);
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TCustomWinConfiguration::SetHistory(const UnicodeString Index,
   TStrings * value)
 {
@@ -441,13 +441,13 @@ void __fastcall TCustomWinConfiguration::SetHistory(const UnicodeString Index,
     HistoryStrings->Modified = true;
   }
 }
-//---------------------------------------------------------------------------
+
 TStrings * __fastcall TCustomWinConfiguration::GetHistory(const UnicodeString Index)
 {
   int I = FHistory->IndexOf(Index);
   return I >= 0 ? dynamic_cast<TStrings *>(FHistory->Objects[I]) : FEmptyHistory;
 }
-//---------------------------------------------------------------------------
+
 UnicodeString __fastcall TCustomWinConfiguration::GetValidHistoryKey(UnicodeString Key)
 {
   for (int Index = 1; Index <= Key.Length(); Index++)
@@ -476,37 +476,37 @@ UnicodeString __fastcall TCustomWinConfiguration::GetValidHistoryKey(UnicodeStri
 
   return Key;
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TCustomWinConfiguration::SetSynchronizeChecklist(TSynchronizeChecklistConfiguration value)
 {
   SET_CONFIG_PROPERTY(SynchronizeChecklist);
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TCustomWinConfiguration::SetFindFile(TFindFileConfiguration value)
 {
   SET_CONFIG_PROPERTY(FindFile);
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TCustomWinConfiguration::SetConsoleWin(TConsoleWinConfiguration value)
 {
   SET_CONFIG_PROPERTY(ConsoleWin);
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TCustomWinConfiguration::SetLoginDialog(TLoginDialogConfiguration value)
 {
   SET_CONFIG_PROPERTY(LoginDialog);
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TCustomWinConfiguration::SetConfirmExitOnCompletion(bool value)
 {
   SET_CONFIG_PROPERTY(ConfirmExitOnCompletion);
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TCustomWinConfiguration::SetSynchronizeSummary(bool value)
 {
   SET_CONFIG_PROPERTY(SynchronizeSummary);
 }
-//---------------------------------------------------------------------------
+
 UnicodeString __fastcall TCustomWinConfiguration::GetDefaultFixedWidthFontName()
 {
   // These are defaults for respective version of Windows Notepad
@@ -521,7 +521,7 @@ UnicodeString __fastcall TCustomWinConfiguration::GetDefaultFixedWidthFontName()
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 int __fastcall TCustomWinConfiguration::GetDefaultFixedWidthFontSize()
 {
   // These are defaults for respective version of Windows Notepad

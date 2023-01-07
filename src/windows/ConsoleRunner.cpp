@@ -1,4 +1,4 @@
-﻿//---------------------------------------------------------------------------
+﻿
 #include <vcl.h>
 #pragma hdrstop
 
@@ -25,12 +25,12 @@
 #include "GUITools.h"
 #include "VCLCommon.h"
 #include "Setup.h"
-//---------------------------------------------------------------------------
+
 #define WM_INTERUPT_IDLE (WM_WINSCP_USER + 3)
 #define BATCH_INPUT_TIMEOUT 10000
-//---------------------------------------------------------------------------
+
 #pragma package(smart_init)
-//---------------------------------------------------------------------------
+
 void TrimNewLine(UnicodeString & Str)
 {
   while (!Str.IsEmpty() &&
@@ -39,12 +39,12 @@ void TrimNewLine(UnicodeString & Str)
     Str.SetLength(Str.Length() - 1);
   }
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TConsole::PrintLine(const UnicodeString & Str, bool Error)
 {
   Print(Str + L"\n", false, Error);
 };
-//---------------------------------------------------------------------------
+
 class TOwnConsole : public TConsole
 {
 public:
@@ -91,10 +91,10 @@ private:
 
   bool FPendingAbort;
 };
-//---------------------------------------------------------------------------
+
 TOwnConsole * TOwnConsole::FInstance = nullptr;
 std::unique_ptr<TCriticalSection> TOwnConsole::FSection(TraceInitPtr(std::make_unique<TCriticalSection>()));
-//---------------------------------------------------------------------------
+
 __fastcall TOwnConsole::TOwnConsole()
 {
   DebugAssert(FInstance == NULL);
@@ -124,7 +124,7 @@ __fastcall TOwnConsole::TOwnConsole()
     }
   }
 }
-//---------------------------------------------------------------------------
+
 __fastcall TOwnConsole::~TOwnConsole()
 {
   TGuard Guard(FSection.get()); nb::used(Guard);
@@ -140,12 +140,12 @@ __fastcall TOwnConsole::~TOwnConsole()
   DebugAssert(FInstance == this);
   FInstance = NULL;
 }
-//---------------------------------------------------------------------------
+
 TOwnConsole * __fastcall TOwnConsole::Instance()
 {
   return new TOwnConsole();
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TOwnConsole::WindowStateTimer(TObject * /*Sender*/)
 {
   DebugAssert(FConsoleWindow != NULL);
@@ -176,7 +176,7 @@ void __fastcall TOwnConsole::WindowStateTimer(TObject * /*Sender*/)
     DebugFail();
   }
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TOwnConsole::ProcessMessages()
 {
   // as of now, there's no point doing this unless we have icon tray
@@ -188,14 +188,14 @@ void __fastcall TOwnConsole::ProcessMessages()
     Application->ProcessMessages();
   }
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TOwnConsole::TrayIconClick(TObject * /*Sender*/)
 {
   DebugAssert(FConsoleWindow != NULL);
   SetForegroundWindow(FConsoleWindow);
   ShowWindow(FConsoleWindow, SW_RESTORE);
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TOwnConsole::BreakInput()
 {
   FlushConsoleInputBuffer(FInput);
@@ -213,14 +213,14 @@ void __fastcall TOwnConsole::BreakInput()
 
   CancelInput();
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TOwnConsole::CancelInput()
 {
   FPendingAbort = true;
 
   PostMessage(Application->Handle, WM_INTERUPT_IDLE, 0, 0);
 }
-//---------------------------------------------------------------------------
+
 BOOL WINAPI TOwnConsole::HandlerRoutine(DWORD CtrlType)
 {
   if ((CtrlType == CTRL_C_EVENT) || (CtrlType == CTRL_BREAK_EVENT))
@@ -242,7 +242,7 @@ BOOL WINAPI TOwnConsole::HandlerRoutine(DWORD CtrlType)
     return false;
   }
 }
-//---------------------------------------------------------------------------
+
 bool __fastcall TOwnConsole::PendingAbort()
 {
   if (FPendingAbort)
@@ -255,7 +255,7 @@ bool __fastcall TOwnConsole::PendingAbort()
     return FPendingAbort;
   }
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TOwnConsole::Print(UnicodeString Str, bool FromBeginning, bool /*Error*/)
 {
   if (FromBeginning)
@@ -272,7 +272,7 @@ void __fastcall TOwnConsole::Print(UnicodeString Str, bool FromBeginning, bool /
   DebugAssert(Str.Length() == static_cast<long>(Written));
   ProcessMessages();
 }
-//---------------------------------------------------------------------------
+
 class TConsoleInputThread : public TSimpleThread
 {
 public:
@@ -309,7 +309,7 @@ private:
   UnicodeString & FStr;
   bool & FResult;
 };
-//---------------------------------------------------------------------------
+
 bool __fastcall TOwnConsole::Input(UnicodeString & Str, bool Echo, unsigned int Timer)
 {
   unsigned long PrevMode, NewMode;
@@ -380,7 +380,7 @@ bool __fastcall TOwnConsole::Input(UnicodeString & Str, bool Echo, unsigned int 
 
   return Result;
 }
-//---------------------------------------------------------------------------
+
 int __fastcall TOwnConsole::Choice(
   UnicodeString Options, int Cancel, int Break, int /*Continue*/, int Timeouted, bool /*Timeouting*/, unsigned int Timer,
   UnicodeString Message)
@@ -456,28 +456,28 @@ int __fastcall TOwnConsole::Choice(
 
   return Result;
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TOwnConsole::SetTitle(UnicodeString Title)
 {
   FTrayIcon->Hint = Title;
   SetConsoleTitle(Title.c_str());
 }
-//---------------------------------------------------------------------------
+
 bool __fastcall TOwnConsole::LimitedOutput()
 {
   return true;
 }
-//---------------------------------------------------------------------------
+
 bool __fastcall TOwnConsole::LiveOutput()
 {
   return true;
 }
-//---------------------------------------------------------------------------
+
 bool __fastcall TOwnConsole::NoInteractiveInput()
 {
   return false;
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TOwnConsole::WaitBeforeExit()
 {
   unsigned long Read;
@@ -496,27 +496,27 @@ void __fastcall TOwnConsole::WaitBeforeExit()
     ProcessMessages();
   }
 }
-//---------------------------------------------------------------------------
+
 bool __fastcall TOwnConsole::CommandLineOnly()
 {
   return false;
 }
-//---------------------------------------------------------------------------
+
 bool __fastcall TOwnConsole::WantsProgress()
 {
   return false;
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TOwnConsole::Progress(TScriptProgress & /*Progress*/)
 {
   DebugFail();
 }
-//---------------------------------------------------------------------------
+
 UnicodeString __fastcall TOwnConsole::FinalLogMessage()
 {
   return UnicodeString();
 }
-//---------------------------------------------------------------------------
+
 class TExternalConsole : public TConsole
 {
 public:
@@ -558,7 +558,7 @@ private:
   void __fastcall Init();
   void __fastcall CheckHandle(HANDLE Handle, const UnicodeString & Desc);
 };
-//---------------------------------------------------------------------------
+
 __fastcall TExternalConsole::TExternalConsole(
   const UnicodeString Instance, bool NoInteractiveInput)
 {
@@ -607,7 +607,7 @@ __fastcall TExternalConsole::TExternalConsole(
 
   Init();
 }
-//---------------------------------------------------------------------------
+
 __fastcall TExternalConsole::~TExternalConsole()
 {
   CloseHandle(FRequestEvent);
@@ -616,7 +616,7 @@ __fastcall TExternalConsole::~TExternalConsole()
   CloseHandle(FFileMapping);
   KillTimer(Application->Handle, 1);
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TExternalConsole::CheckHandle(HANDLE Handle, const UnicodeString & Desc)
 {
   if (Handle == NULL)
@@ -624,7 +624,7 @@ void __fastcall TExternalConsole::CheckHandle(HANDLE Handle, const UnicodeString
     throw ExtException(LoadStr(EXTERNAL_CONSOLE_INIT_ERROR), FORMAT(L"%s\n%s", (Desc, LastSysErrorMessage())));
   }
 }
-//---------------------------------------------------------------------------
+
 TConsoleCommStruct * __fastcall TExternalConsole::GetCommStruct()
 {
   TConsoleCommStruct * Result;
@@ -636,12 +636,12 @@ TConsoleCommStruct * __fastcall TExternalConsole::GetCommStruct()
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TExternalConsole::FreeCommStruct(TConsoleCommStruct * CommStruct)
 {
   UnmapViewOfFile(CommStruct);
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TExternalConsole::SendEvent(int Timeout)
 {
   SetEvent(FRequestEvent);
@@ -667,12 +667,12 @@ void __fastcall TExternalConsole::SendEvent(int Timeout)
     throw Exception(Message);
   }
 }
-//---------------------------------------------------------------------------
+
 UnicodeString __fastcall TExternalConsole::FinalLogMessage()
 {
   return FORMAT(L"Max roundtrip: %d", (static_cast<int>(FMaxSend)));
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TExternalConsole::Print(UnicodeString Str, bool FromBeginning, bool Error)
 {
   // need to do at least one iteration, even when Str is empty (new line)
@@ -707,7 +707,7 @@ void __fastcall TExternalConsole::Print(UnicodeString Str, bool FromBeginning, b
   }
   while (!Str.IsEmpty());
 }
-//---------------------------------------------------------------------------
+
 bool __fastcall TExternalConsole::Input(UnicodeString & Str, bool Echo, unsigned int Timer)
 {
   TConsoleCommStruct * CommStruct = GetCommStruct();
@@ -741,7 +741,7 @@ bool __fastcall TExternalConsole::Input(UnicodeString & Str, bool Echo, unsigned
 
   return Result;
 }
-//---------------------------------------------------------------------------
+
 int __fastcall TExternalConsole::Choice(
   UnicodeString Options, int Cancel, int Break, int Continue, int Timeouted, bool Timeouting, unsigned int Timer,
   UnicodeString Message)
@@ -784,12 +784,12 @@ int __fastcall TExternalConsole::Choice(
 
   return Result;
 }
-//---------------------------------------------------------------------------
+
 bool __fastcall TExternalConsole::PendingAbort()
 {
   return (WaitForSingleObject(FCancelEvent, 0) == WAIT_OBJECT_0);
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TExternalConsole::SetTitle(UnicodeString Title)
 {
   TConsoleCommStruct * CommStruct = GetCommStruct();
@@ -808,7 +808,7 @@ void __fastcall TExternalConsole::SetTitle(UnicodeString Title)
 
   SendEvent(INFINITE);
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TExternalConsole::Init()
 {
   TConsoleCommStruct * CommStruct = GetCommStruct();
@@ -838,37 +838,37 @@ void __fastcall TExternalConsole::Init()
     FreeCommStruct(CommStruct);
   }
 }
-//---------------------------------------------------------------------------
+
 bool __fastcall TExternalConsole::LimitedOutput()
 {
   return FLimitedOutput;
 }
-//---------------------------------------------------------------------------
+
 bool __fastcall TExternalConsole::LiveOutput()
 {
   return FLiveOutput;
 }
-//---------------------------------------------------------------------------
+
 bool __fastcall TExternalConsole::NoInteractiveInput()
 {
   return FNoInteractiveInput;
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TExternalConsole::WaitBeforeExit()
 {
   // noop
 }
-//---------------------------------------------------------------------------
+
 bool __fastcall TExternalConsole::CommandLineOnly()
 {
   return true;
 }
-//---------------------------------------------------------------------------
+
 bool __fastcall TExternalConsole::WantsProgress()
 {
   return FWantsProgress;
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TExternalConsole::Progress(TScriptProgress & Progress)
 {
   TConsoleCommStruct * CommStruct = GetCommStruct();
@@ -934,7 +934,7 @@ void __fastcall TExternalConsole::Progress(TScriptProgress & Progress)
     FreeCommStruct(CommStruct);
   }
 }
-//---------------------------------------------------------------------------
+
 class TNullConsole : public TConsole
 {
 public:
@@ -957,22 +957,22 @@ public:
   virtual void __fastcall Progress(TScriptProgress & Progress);
   virtual UnicodeString __fastcall FinalLogMessage();
 };
-//---------------------------------------------------------------------------
+
 __fastcall TNullConsole::TNullConsole()
 {
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TNullConsole::Print(UnicodeString /*Str*/, bool /*FromBeginning*/, bool /*Error*/)
 {
   // noop
 }
-//---------------------------------------------------------------------------
+
 bool __fastcall TNullConsole::Input(UnicodeString & /*Str*/, bool /*Echo*/,
   unsigned int /*Timer*/)
 {
   return false;
 }
-//---------------------------------------------------------------------------
+
 int __fastcall TNullConsole::Choice(
   UnicodeString /*Options*/, int /*Cancel*/, int Break, int /*Continue*/, int Timeouted, bool Timeouting,
   unsigned int Timer, UnicodeString /*Message*/)
@@ -989,63 +989,63 @@ int __fastcall TNullConsole::Choice(
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 bool __fastcall TNullConsole::PendingAbort()
 {
   return false;
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TNullConsole::SetTitle(UnicodeString /*Title*/)
 {
   // noop
 }
-//---------------------------------------------------------------------------
+
 bool __fastcall TNullConsole::LimitedOutput()
 {
   return false;
 }
-//---------------------------------------------------------------------------
+
 bool __fastcall TNullConsole::LiveOutput()
 {
   return false;
 }
-//---------------------------------------------------------------------------
+
 bool __fastcall TNullConsole::NoInteractiveInput()
 {
   // do not matter, even if we return false,
   // it fails immediately afterwards in TNullConsole::Input
   return true;
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TNullConsole::WaitBeforeExit()
 {
   DebugFail();
   // noop
 }
-//---------------------------------------------------------------------------
+
 bool __fastcall TNullConsole::CommandLineOnly()
 {
   DebugFail();
   return false;
 }
-//---------------------------------------------------------------------------
+
 bool __fastcall TNullConsole::WantsProgress()
 {
   return false;
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TNullConsole::Progress(TScriptProgress & /*Progress*/)
 {
   DebugFail();
 }
-//---------------------------------------------------------------------------
+
 UnicodeString __fastcall TNullConsole::FinalLogMessage()
 {
   return UnicodeString();
 }
-//---------------------------------------------------------------------------
+
 static UnicodeString TimestampVarName(L"TIMESTAMP");
-//---------------------------------------------------------------------------
+
 class TConsoleRunner
 {
 public:
@@ -1114,7 +1114,7 @@ private:
   void __fastcall ScriptProgress(TScript * Script, TScriptProgress & Progress);
   void __fastcall ConfigurationChange(TObject * Sender);
 };
-//---------------------------------------------------------------------------
+
 TConsoleRunner::TConsoleRunner(TConsole * Console) :
   FSynchronizeController(&SynchronizeControllerSynchronize,
     &SynchronizeControllerSynchronizeInvalid,
@@ -1136,7 +1136,7 @@ TConsoleRunner::TConsoleRunner(TConsole * Console) :
   Configuration->OnChange = ConfigurationChange;
   Configuration->Scripting = true;
 }
-//---------------------------------------------------------------------------
+
 TConsoleRunner::~TConsoleRunner()
 {
   DebugAssert(WinConfiguration->OnMasterPasswordPrompt == MasterPasswordPrompt);
@@ -1145,18 +1145,18 @@ TConsoleRunner::~TConsoleRunner()
   Configuration->OnChange = NULL;
   delete Timer;
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TConsoleRunner::TimerTimer(TObject * /*Sender*/)
 {
   // sole presence of timer causes message to be dispatched,
   // hence breaks the loops
 }
-//---------------------------------------------------------------------------
+
 unsigned int TConsoleRunner::InputTimeout()
 {
   return ((FScript != NULL) && (FScript->Batch != TScript::BatchOff) ? BATCH_INPUT_TIMEOUT : 0);
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TConsoleRunner::Input(
   const UnicodeString Prompt, UnicodeString & Str, bool Echo, bool Interactive)
 {
@@ -1167,13 +1167,13 @@ void __fastcall TConsoleRunner::Input(
     Abort();
   }
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TConsoleRunner::ScriptInput(TScript * /*Script*/,
   const UnicodeString Prompt, UnicodeString & Str)
 {
   Input(Prompt, Str, true, true);
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TConsoleRunner::Print(const UnicodeString & Str, bool FromBeginning, bool Error)
 {
   if (FLastProgressLen > 0)
@@ -1186,7 +1186,7 @@ void __fastcall TConsoleRunner::Print(const UnicodeString & Str, bool FromBeginn
     FConsole->Print(Str, FromBeginning, Error);
   }
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TConsoleRunner::PrintMessage(const UnicodeString & Str, bool Error)
 {
   UnicodeString Line = RemoveEmptyLines(Str);
@@ -1201,7 +1201,7 @@ void __fastcall TConsoleRunner::PrintMessage(const UnicodeString & Str, bool Err
     FConsole->PrintLine(Line, Error);
   }
 }
-//---------------------------------------------------------------------------
+
 bool __fastcall TConsoleRunner::NotifyAbort()
 {
   bool Result = FBatchScript;
@@ -1211,7 +1211,7 @@ bool __fastcall TConsoleRunner::NotifyAbort()
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 bool __fastcall TConsoleRunner::Aborted(bool AllowCompleteAbort)
 {
   bool Result;
@@ -1238,13 +1238,13 @@ bool __fastcall TConsoleRunner::Aborted(bool AllowCompleteAbort)
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TConsoleRunner::ScriptPrint(TScript * /*Script*/,
   const UnicodeString Str, bool Error)
 {
   Print(Str, false, Error);
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TConsoleRunner::ScriptPrintProgress(TScript * /*Script*/,
   bool First, const UnicodeString Str)
 {
@@ -1262,7 +1262,7 @@ void __fastcall TConsoleRunner::ScriptPrintProgress(TScript * /*Script*/,
   FConsole->Print(S, true);
   FLastProgressLen = Str.Length();
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TConsoleRunner::ScriptTerminalPromptUser(TTerminal * /*Terminal*/,
   TPromptKind /*Kind*/, UnicodeString Name, UnicodeString Instructions, TStrings * Prompts,
   TStrings * Results, bool & Result, void * /*Arg*/)
@@ -1295,13 +1295,13 @@ void __fastcall TConsoleRunner::ScriptTerminalPromptUser(TTerminal * /*Terminal*
     Results->Strings[Index] = AResult;
   }
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TConsoleRunner::ScriptShowExtendedException(
   TTerminal * Terminal, Exception * E, void * /*Arg*/)
 {
   DoShowException(Terminal, E);
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TConsoleRunner::ScriptTerminalQueryUser(TObject * /*Sender*/,
   const UnicodeString Query, TStrings * MoreMessages, unsigned int Answers,
   const TQueryParams * Params, unsigned int & Answer, TQueryType /*QueryType*/,
@@ -1702,7 +1702,7 @@ void __fastcall TConsoleRunner::ScriptTerminalQueryUser(TObject * /*Sender*/,
     FCommandError = true;
   }
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TConsoleRunner::ScriptQueryCancel(TScript * /*Script*/, bool & Cancel)
 {
   if (Aborted())
@@ -1710,7 +1710,7 @@ void __fastcall TConsoleRunner::ScriptQueryCancel(TScript * /*Script*/, bool & C
     Cancel = true;
   }
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TConsoleRunner::ScriptSynchronizeStartStop(TScript * /*Script*/,
   const UnicodeString LocalDirectory, const UnicodeString RemoteDirectory,
   const TCopyParamType & CopyParam, int SynchronizeParams)
@@ -1742,12 +1742,12 @@ void __fastcall TConsoleRunner::ScriptSynchronizeStartStop(TScript * /*Script*/,
       SynchronizeControllerLog);
   }
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TConsoleRunner::ScriptProgress(TScript * /*Script*/, TScriptProgress & Progress)
 {
   FConsole->Progress(Progress);
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TConsoleRunner::SynchronizeControllerLog(
   TSynchronizeController * /*Controller*/, TSynchronizeLogEntry /*Entry*/,
   const UnicodeString Message)
@@ -1755,14 +1755,14 @@ void __fastcall TConsoleRunner::SynchronizeControllerLog(
   PrintMessage(Message);
   LogSynchronizeEvent(FScript->Terminal, Message);
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TConsoleRunner::SynchronizeControllerAbort(TObject * /*Sender*/,
   bool /*Close*/)
 {
   FSynchronizeAborted = true;
   NotifyAbort();
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TConsoleRunner::SynchronizeControllerSynchronize(
   TSynchronizeController * /*Sender*/, const UnicodeString LocalDirectory,
   const UnicodeString RemoteDirectory, const TCopyParamType & CopyParam,
@@ -1790,7 +1790,7 @@ void __fastcall TConsoleRunner::SynchronizeControllerSynchronize(
     }
   }
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TConsoleRunner::SynchronizeControllerSynchronizeInvalid(
   TSynchronizeController * /*Sender*/, const UnicodeString Directory, const UnicodeString ErrorStr)
 {
@@ -1808,7 +1808,7 @@ void __fastcall TConsoleRunner::SynchronizeControllerSynchronizeInvalid(
     PrintMessage(ErrorStr, true);
   }
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TConsoleRunner::SynchronizeControllerTooManyDirectories(
   TSynchronizeController * /*Sender*/, int & MaxDirectories)
 {
@@ -1826,12 +1826,12 @@ void __fastcall TConsoleRunner::SynchronizeControllerTooManyDirectories(
     MaxDirectories *= 2;
   }
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TConsoleRunner::ShowException(Exception * E)
 {
   DoShowException(NULL, E);
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TConsoleRunner::DoShowException(TTerminal * Terminal, Exception * E)
 {
   if ((Terminal == NULL) && (FScript != NULL))
@@ -1858,7 +1858,7 @@ void __fastcall TConsoleRunner::DoShowException(TTerminal * Terminal, Exception 
     LoggingTerminal->ActionLog->AddFailure(E);
   }
 }
-//---------------------------------------------------------------------------
+
 bool __fastcall TConsoleRunner::DoInput(UnicodeString & Str, bool Echo,
   unsigned int Timeout, bool Interactive)
 {
@@ -1879,7 +1879,7 @@ bool __fastcall TConsoleRunner::DoInput(UnicodeString & Str, bool Echo,
 
   return Result;
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TConsoleRunner::MasterPasswordPrompt()
 {
   bool Retry;
@@ -1900,7 +1900,7 @@ void __fastcall TConsoleRunner::MasterPasswordPrompt()
   while (Retry);
 
 }
-//---------------------------------------------------------------------------
+
 UnicodeString TConsoleRunner::ExpandCommand(UnicodeString Command, TStrings * ScriptParameters)
 {
   DebugAssert(ScriptParameters != NULL);
@@ -1960,7 +1960,7 @@ UnicodeString TConsoleRunner::ExpandCommand(UnicodeString Command, TStrings * Sc
   Command = ExpandEnvironmentVariables(Command);
   return Command;
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TConsoleRunner::Failed(bool & AnyError)
 {
   if (FScript != NULL)
@@ -1969,7 +1969,7 @@ void __fastcall TConsoleRunner::Failed(bool & AnyError)
   }
   AnyError = true;
 }
-//---------------------------------------------------------------------------
+
 int __fastcall TConsoleRunner::Run(const UnicodeString Session, TOptions * Options,
   TStrings * ScriptCommands, TStrings * ScriptParameters)
 {
@@ -2099,7 +2099,7 @@ int __fastcall TConsoleRunner::Run(const UnicodeString Session, TOptions * Optio
 
   return ExitCode;
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TConsoleRunner::UpdateTitle()
 {
   UnicodeString NewTitle;
@@ -2113,7 +2113,7 @@ void __fastcall TConsoleRunner::UpdateTitle()
   }
   FConsole->SetTitle(NewTitle);
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TConsoleRunner::ConfigurationChange(TObject * /*Sender*/)
 {
   if (FScript != NULL)
@@ -2121,25 +2121,25 @@ void __fastcall TConsoleRunner::ConfigurationChange(TObject * /*Sender*/)
     FScript->ReflectSettings();
   }
 }
-//---------------------------------------------------------------------------
+
 static UnicodeString __fastcall GetExeBaseName()
 {
   return ExtractFileBaseName(Application->ExeName);
 }
-//---------------------------------------------------------------------------
+
 static void __fastcall PrintUsageSyntax(TConsole * Console, const UnicodeString & Str)
 {
   Console->PrintLine(GetExeBaseName() + L" " + Str);
 }
-//---------------------------------------------------------------------------
+
 typedef std::vector<std::pair<UnicodeString, UnicodeString> > TSwitchesUsage;
-//---------------------------------------------------------------------------
+
 static void __fastcall RegisterSwitch(
   TSwitchesUsage & SwitchesUsage, const UnicodeString & Name, const UnicodeString & Desc)
 {
   SwitchesUsage.push_back(std::make_pair(LowerCase(Name), Desc));
 }
-//---------------------------------------------------------------------------
+
 static void __fastcall RegisterSwitch(
   TSwitchesUsage & SwitchesUsage, const UnicodeString & Name, int DescID)
 {
@@ -2147,7 +2147,7 @@ static void __fastcall RegisterSwitch(
   Desc = ReplaceText(Desc, L"%APP%", GetExeBaseName());
   RegisterSwitch(SwitchesUsage, Name, Desc);
 }
-//---------------------------------------------------------------------------
+
 void __fastcall Usage(TConsole * Console)
 {
   Console->PrintLine(FORMAT(L"WinSCP, %s", (Configuration->VersionStr)));
@@ -2287,7 +2287,7 @@ void __fastcall Usage(TConsole * Console)
 
   Console->WaitBeforeExit();
 }
-//---------------------------------------------------------------------------
+
 void __fastcall BatchSettings(TConsole * Console, TProgramParams * Params)
 {
   std::unique_ptr<TStrings> Arguments(std::make_unique<TStringList>());
@@ -2338,7 +2338,7 @@ void __fastcall BatchSettings(TConsole * Console, TProgramParams * Params)
     Console->WaitBeforeExit();
   }
 }
-//---------------------------------------------------------------------------
+
 int __fastcall HandleException(TConsole * Console, Exception & E)
 {
   UnicodeString Message;
@@ -2348,7 +2348,7 @@ int __fastcall HandleException(TConsole * Console, Exception & E)
   }
   return RESULT_ANY_ERROR;
 }
-//---------------------------------------------------------------------------
+
 bool __fastcall FindPuttygenCompatibleSwitch(
   TProgramParams * Params, const UnicodeString & Name, const UnicodeString & PuttygenName, UnicodeString & Value, bool & Set)
 {
@@ -2365,7 +2365,7 @@ bool __fastcall FindPuttygenCompatibleSwitch(
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 int __fastcall KeyGen(TConsole * Console, TProgramParams * Params)
 {
   int Result = RESULT_SUCCESS;
@@ -2511,7 +2511,7 @@ int __fastcall KeyGen(TConsole * Console, TProgramParams * Params)
   Console->WaitBeforeExit();
   return Result;
 }
-//---------------------------------------------------------------------------
+
 int __fastcall FingerprintScan(TConsole * Console, TProgramParams * Params)
 {
   int Result = RESULT_SUCCESS;
@@ -2559,7 +2559,7 @@ int __fastcall FingerprintScan(TConsole * Console, TProgramParams * Params)
   Console->WaitBeforeExit();
   return Result;
 }
-//---------------------------------------------------------------------------
+
 int __fastcall DumpCallstack(TConsole * Console, TProgramParams * Params)
 {
   int Result = RESULT_SUCCESS;
@@ -2605,7 +2605,7 @@ int __fastcall DumpCallstack(TConsole * Console, TProgramParams * Params)
   Console->WaitBeforeExit();
   return Result;
 }
-//---------------------------------------------------------------------------
+
 void static PrintList(TConsole * Console, const UnicodeString & Caption, TStrings * List)
 {
   Console->PrintLine(Caption);
@@ -2615,13 +2615,13 @@ void static PrintList(TConsole * Console, const UnicodeString & Caption, TString
   }
   Console->PrintLine();
 }
-//---------------------------------------------------------------------------
+
 void static PrintListAndFree(TConsole * Console, const UnicodeString & Caption, TStrings * List)
 {
   std::unique_ptr<TStrings> Owner(List);
   PrintList(Console, Caption, List);
 }
-//---------------------------------------------------------------------------
+
 int Info(TConsole * Console)
 {
   int Result = RESULT_SUCCESS;
@@ -2641,7 +2641,7 @@ int Info(TConsole * Console)
   Console->WaitBeforeExit();
   return Result;
 }
-//---------------------------------------------------------------------------
+
 int __fastcall Console(TConsoleMode Mode)
 {
   DebugAssert(Mode != cmNone);

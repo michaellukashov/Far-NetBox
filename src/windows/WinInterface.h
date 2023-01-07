@@ -1,6 +1,6 @@
-﻿//---------------------------------------------------------------------------
+﻿
 #pragma once
-//---------------------------------------------------------------------------
+
 #include <Classes.hpp>
 __removed #include <Buttons.hpp>
 #include <Interface.h>
@@ -644,9 +644,9 @@ void CheckConfigurationForceSave();
 void InterfaceStarted();
 void InterfaceStartDontMeasure();
 void AddStartupSequence(const UnicodeString & Tag);
-//---------------------------------------------------------------------------
+
 __removed #define HIDDEN_WINDOW_NAME L"WinSCPHiddenWindow3"
-//---------------------------------------------------------------------------
+
 struct TCopyDataMessage
 {
   enum { CommandCanCommandLine, CommandCommandLine, MainWindowCheck, RefreshPanel };
@@ -672,7 +672,7 @@ struct TCopyDataMessage
     // Command = static_cast<uintptr_t>(-1);
   }
 };
-//---------------------------------------------------------------------------
+
 class TWinInteractiveCustomCommand : public TInteractiveCustomCommand
 {
 public:
@@ -695,7 +695,7 @@ private:
   UnicodeString FHelpKeyword;
 };
 #if 0
-//---------------------------------------------------------------------------
+
 class TTrayIcon
 {
 public:
@@ -730,7 +730,7 @@ private:
   void BalloonCancelled();
 };
 #endif // #if 0
-//---------------------------------------------------------------------------
+
 enum TConsoleFlag
 {
   cfLimitedOutput,
@@ -742,7 +742,7 @@ enum TConsoleFlag
   cfStdOut,
   cfStdIn
 };
-//---------------------------------------------------------------------------
+
 class TConsole
 {
 public:
@@ -766,8 +766,8 @@ public:
   virtual void __fastcall TransferOut(const unsigned char * Data, size_t Len) = 0;
   virtual size_t __fastcall TransferIn(unsigned char * Data, size_t Len) = 0;
 };
-//---------------------------------------------------------------------------
+
 int HandleException(TConsole * Console, Exception & E);
-//---------------------------------------------------------------------------
+
 enum { RESULT_SUCCESS = 0, RESULT_ANY_ERROR = 1 };
-//---------------------------------------------------------------------------
+

@@ -4,14 +4,14 @@
 #include <Classes.hpp>
 #include <FileMasks.h>
 #include <DirectoryMonitor.hpp>
-//---------------------------------------------------------------------------
+
 class TSessionData;
-//---------------------------------------------------------------------------
+
 #if 0
 typedef void (__closure *TProcessMessagesEvent)();
 #endif // #if 0
 using TProcessMessagesEvent = nb::FastDelegate0<void>;
-//---------------------------------------------------------------------------
+
 NB_CORE_EXPORT bool FindFile(UnicodeString &APath);
 NB_CORE_EXPORT bool FindTool(UnicodeString Name, UnicodeString &APath);
 NB_CORE_EXPORT void ExecuteTool(UnicodeString Name);
@@ -66,7 +66,7 @@ void __fastcall GetInstrutionsTheme(
   TColor & MainInstructionColor, HFONT & MainInstructionFont, HFONT & InstructionFont);
   TColor & MainInstructionColor, HFONT & MainInstructionFont, HFONT & InstructionFont);
 #endif // #if 0
-//---------------------------------------------------------------------------
+
 class NB_CORE_EXPORT TLocalCustomCommand : public TFileCustomCommand
 {
 public:
@@ -92,19 +92,19 @@ private:
   UnicodeString FLocalPath;
   UnicodeString FLocalFileName;
 };
-//---------------------------------------------------------------------------
+
 #if 0
 namespace Pngimagelist {
 class TPngImageList;
 class TPngImageCollectionItem;
 }
 using namespace Pngimagelist;
-//---------------------------------------------------------------------------
+
 TPngImageList * __fastcall GetAnimationsImages(TControl * Control);
 TImageList * __fastcall GetButtonImages(TControl * Control);
 TPngImageList * __fastcall GetDialogImages(TControl * Control);
 void __fastcall ReleaseImagesModules();
-//---------------------------------------------------------------------------
+
 class TFrameAnimation
 {
 public:
@@ -135,7 +135,7 @@ private:
   void __fastcall Rescale();
   static void __fastcall PaintBoxRescale(TComponent * Sender, TObject * Token);
 };
-//---------------------------------------------------------------------------
+
 class TScreenTipHintWindow : public THintWindow
 {
 public:
@@ -170,7 +170,7 @@ private:
   void __fastcall SplitHint(
     TControl * HintControl, UnicodeString & Hint, UnicodeString & ShortHint, UnicodeString & LongHint);
 };
-//---------------------------------------------------------------------------
+
 // Newer version rich edit that supports "Friendly name hyperlinks" and
 // allows wider range of Unicode characters: https://stackoverflow.com/q/47433656/850848
 class TNewRichEdit : public TRichEdit
@@ -197,7 +197,7 @@ NB_CORE_EXPORT UnicodeString FileNameFormatString(UnicodeString SingleFileFormat
   UnicodeString MultiFilesFormat, const TStrings *AFiles, bool Remote);
 NB_CORE_EXPORT UnicodeString FileNameFormatString(UnicodeString SingleFileFormat,
   UnicodeString MultiFilesFormat, const TStrings *AFiles, bool Remote);
-//---------------------------------------------------------------------------
+
 #if 0
 // Based on:
 // https://stackoverflow.com/q/6912424/850848
@@ -222,6 +222,6 @@ void __fastcall FindComponentClass(
       PARENT::ReadState(Reader); \
     }
 #define INTERFACE_HOOK INTERFACE_HOOK_CUSTOM(TForm)
-//---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
+
+
 #endif // #if 0

@@ -1,4 +1,4 @@
-﻿//---------------------------------------------------------------------------
+﻿
 #define NO_WIN32_LEAN_AND_MEAN
 #include <vcl.h>
 #pragma hdrstop
@@ -22,11 +22,11 @@
 #include <HelpWin.h>
 #include <System.IOUtils.hpp>
 #include <StrUtils.hpp>
-//---------------------------------------------------------------------------
+
 #pragma package(smart_init)
-//---------------------------------------------------------------------------
+
 TTerminalManager * TTerminalManager::FInstance = NULL;
-//---------------------------------------------------------------------------
+
 __fastcall TManagedTerminal::TManagedTerminal(TSessionData * SessionData,
   TConfiguration * Configuration) :
   TTerminal(SessionData, Configuration),
@@ -37,15 +37,15 @@ __fastcall TManagedTerminal::TManagedTerminal(TSessionData * SessionData,
   StateData->Assign(SessionData);
   StateData->LocalDirectory = StateData->LocalDirectoryExpanded;
 }
-//---------------------------------------------------------------------------
+
 __fastcall TManagedTerminal::~TManagedTerminal()
 {
   delete StateData;
   delete LocalExplorerState;
   delete RemoteExplorerState;
 }
-//---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
+
+
 TTerminalManager * __fastcall TTerminalManager::Instance(bool ForceCreation)
 {
   if (!FInstance && ForceCreation)
@@ -54,13 +54,13 @@ TTerminalManager * __fastcall TTerminalManager::Instance(bool ForceCreation)
   }
   return FInstance;
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TTerminalManager::DestroyInstance()
 {
   DebugAssert(FInstance);
   SAFE_DESTROY(FInstance);
 }
-//---------------------------------------------------------------------------
+
 __fastcall TTerminalManager::TTerminalManager() :
   TTerminalList(Configuration)
 {
@@ -104,7 +104,7 @@ __fastcall TTerminalManager::TTerminalManager() :
   FLocalTerminal = CreateTerminal(DummyData.get());
   SetupTerminal(FLocalTerminal);
 }
-//---------------------------------------------------------------------------
+
 __fastcall TTerminalManager::~TTerminalManager()
 {
   FreeAll();
@@ -127,14 +127,14 @@ __fastcall TTerminalManager::~TTerminalManager()
   delete FQueueSection;
   ReleaseTaskbarList();
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TTerminalManager::SetQueueConfiguration(TTerminalQueue * Queue)
 {
   Queue->TransfersLimit = GUIConfiguration->QueueTransfersLimit;
   Queue->KeepDoneItemsFor =
     (GUIConfiguration->QueueKeepDoneItems ? GUIConfiguration->QueueKeepDoneItemsFor : 0);
 }
-//---------------------------------------------------------------------------
+
 TTerminalQueue * __fastcall TTerminalManager::NewQueue(TTerminal * Terminal)
 {
   TTerminalQueue * Queue = new TTerminalQueue(Terminal, Configuration);
@@ -146,22 +146,22 @@ TTerminalQueue * __fastcall TTerminalManager::NewQueue(TTerminal * Terminal)
   Queue->OnEvent = QueueEvent;
   return Queue;
 }
-//---------------------------------------------------------------------------
+
 TManagedTerminal * __fastcall TTerminalManager::CreateManagedTerminal(TSessionData * Data)
 {
   return new TManagedTerminal(Data, Configuration);
 }
-//---------------------------------------------------------------------------
+
 TTerminal * __fastcall TTerminalManager::CreateTerminal(TSessionData * Data)
 {
   return CreateManagedTerminal(Data);
 }
-//---------------------------------------------------------------------------
+
 TManagedTerminal * __fastcall TTerminalManager::GetTerminal(int Index)
 {
   return DebugNotNull(dynamic_cast<TManagedTerminal *>(TTerminalList::Terminals[Index]));
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TTerminalManager::SetupTerminal(TTerminal * Terminal)
 {
   Terminal->OnQueryUser = TerminalQueryUser;
@@ -175,7 +175,7 @@ void __fastcall TTerminalManager::SetupTerminal(TTerminal * Terminal)
   Terminal->OnInformation = TerminalInformation;
   Terminal->OnCustomCommand = TerminalCustomCommand;
 }
-//---------------------------------------------------------------------------
+
 TManagedTerminal * __fastcall TTerminalManager::DoNewTerminal(TSessionData * Data)
 {
   if (Count >= FMaxSessions)
@@ -206,19 +206,19 @@ TManagedTerminal * __fastcall TTerminalManager::DoNewTerminal(TSessionData * Dat
 
   return Terminal;
 }
-//---------------------------------------------------------------------------
+
 TTerminal * __fastcall TTerminalManager::NewTerminal(TSessionData * Data)
 {
   TTerminal * Terminal = DoNewTerminal(Data);
   DoTerminalListChanged();
   return Terminal;
 }
-//---------------------------------------------------------------------------
+
 TManagedTerminal * __fastcall TTerminalManager::NewManagedTerminal(TSessionData * Data)
 {
   return DebugNotNull(dynamic_cast<TManagedTerminal *>(NewTerminal(Data)));
 }
-//---------------------------------------------------------------------------
+
 TManagedTerminal * __fastcall TTerminalManager::NewTerminals(TList * DataList)
 {
   TManagedTerminal * Result = NULL;
@@ -242,7 +242,7 @@ TManagedTerminal * __fastcall TTerminalManager::NewTerminals(TList * DataList)
   DoTerminalListChanged();
   return Result;
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TTerminalManager::FreeActiveTerminal()
 {
   if (FTerminalPendingAction == tpNull)
@@ -256,7 +256,7 @@ void __fastcall TTerminalManager::FreeActiveTerminal()
     FTerminalPendingAction = tpFree;
   }
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TTerminalManager::DoConnectTerminal(TTerminal * Terminal, bool Reopen, bool AdHoc)
 {
   TManagedTerminal * ManagedTerminal = dynamic_cast<TManagedTerminal *>(Terminal);
@@ -356,12 +356,12 @@ void __fastcall TTerminalManager::DoConnectTerminal(TTerminal * Terminal, bool R
     FindQueueForTerminal(Terminal)->AddItem(new TBootstrapQueueItem());
   }
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TTerminalManager::CloseAutheticateForm()
 {
   SAFE_DESTROY(FAuthenticateForm);
 }
-//---------------------------------------------------------------------------
+
 bool __fastcall TTerminalManager::ConnectTerminal(TTerminal * Terminal)
 {
   bool Result = true;
@@ -378,12 +378,12 @@ bool __fastcall TTerminalManager::ConnectTerminal(TTerminal * Terminal)
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TTerminalManager::TerminalThreadIdle(void * /*Data*/, TObject * /*Sender*/)
 {
   Application->ProcessMessages();
 }
-//---------------------------------------------------------------------------
+
 bool __fastcall TTerminalManager::ConnectActiveTerminalImpl(bool Reopen)
 {
   TTerminalPendingAction Action;
@@ -433,7 +433,7 @@ bool __fastcall TTerminalManager::ConnectActiveTerminalImpl(bool Reopen)
 
   return Result;
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TTerminalManager::DisconnectActiveTerminalIfPermanentFreeOtherwise()
 {
   if (ActiveTerminal->Permanent)
@@ -445,7 +445,7 @@ void __fastcall TTerminalManager::DisconnectActiveTerminalIfPermanentFreeOtherwi
     FreeActiveTerminal();
   }
 }
-//---------------------------------------------------------------------------
+
 bool __fastcall TTerminalManager::ConnectActiveTerminal()
 {
   ActiveTerminal->CollectUsage();
@@ -499,7 +499,7 @@ bool __fastcall TTerminalManager::ConnectActiveTerminal()
 
   return Result;
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TTerminalManager::DisconnectActiveTerminal()
 {
   DebugAssert(ActiveTerminal);
@@ -530,7 +530,7 @@ void __fastcall TTerminalManager::DisconnectActiveTerminal()
   // disconnecting duplidate session removes need to distinguish the only connected session with short path
   DoTerminalListChanged();
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TTerminalManager::ReconnectActiveTerminal()
 {
   DebugAssert(ActiveTerminal);
@@ -560,7 +560,7 @@ void __fastcall TTerminalManager::ReconnectActiveTerminal()
     throw;
   }
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TTerminalManager::FreeAll()
 {
   FDestroying = true;
@@ -576,7 +576,7 @@ void __fastcall TTerminalManager::FreeAll()
     FDestroying = false;
   }
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TTerminalManager::FreeTerminal(TTerminal * Terminal)
 {
   try
@@ -641,7 +641,7 @@ void __fastcall TTerminalManager::FreeTerminal(TTerminal * Terminal)
     DoTerminalListChanged();
   }
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TTerminalManager::SetScpExplorer(TCustomScpExplorerForm * value)
 {
   if (ScpExplorer != value)
@@ -664,17 +664,17 @@ void __fastcall TTerminalManager::SetScpExplorer(TCustomScpExplorerForm * value)
     }
   }
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TTerminalManager::SetActiveTerminal(TManagedTerminal * value)
 {
   DoSetActiveTerminal(value, false);
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TTerminalManager::SetActiveTerminalWithAutoReconnect(TManagedTerminal * value)
 {
   DoSetActiveTerminal(value, true);
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TTerminalManager::DoSetActiveTerminal(TManagedTerminal * value, bool AutoReconnect)
 {
   if (ActiveTerminal != value)
@@ -771,12 +771,12 @@ void __fastcall TTerminalManager::DoSetActiveTerminal(TManagedTerminal * value, 
     }
   }
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TTerminalManager::QueueStatusUpdated()
 {
   UpdateAppTitle();
 }
-//---------------------------------------------------------------------------
+
 bool __fastcall TTerminalManager::ShouldDisplayQueueStatusOnAppTitle()
 {
   bool Result = IsApplicationMinimized();
@@ -788,12 +788,12 @@ bool __fastcall TTerminalManager::ShouldDisplayQueueStatusOnAppTitle()
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 UnicodeString __fastcall TTerminalManager::FormatFormCaptionWithSession(TCustomForm * Form, const UnicodeString & Caption)
 {
   return FormatFormCaption(Form, Caption, GetActiveTerminalTitle(false));
 }
-//---------------------------------------------------------------------------
+
 UnicodeString __fastcall TTerminalManager::GetAppProgressTitle()
 {
   UnicodeString Result;
@@ -815,7 +815,7 @@ UnicodeString __fastcall TTerminalManager::GetAppProgressTitle()
 
   return Result;
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TTerminalManager::UpdateAppTitle()
 {
   if (ScpExplorer)
@@ -849,7 +849,7 @@ void __fastcall TTerminalManager::UpdateAppTitle()
     ScpExplorer->ApplicationTitleChanged();
   }
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TTerminalManager::SaveTerminal(TTerminal * Terminal)
 {
   TSessionData * Data = StoredSessions->FindSame(Terminal->SessionData);
@@ -872,7 +872,7 @@ void __fastcall TTerminalManager::SaveTerminal(TTerminal * Terminal)
     }
   }
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TTerminalManager::HandleException(Exception * E)
 {
   // can be null for example when exception is thrown on login dialog
@@ -885,13 +885,13 @@ void __fastcall TTerminalManager::HandleException(Exception * E)
     ShowExtendedException(E);
   }
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TTerminalManager::ApplicationException(TObject * /*Sender*/,
   Exception * E)
 {
   HandleException(E);
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TTerminalManager::ApplicationShowHint(UnicodeString & HintStr,
   bool & /*CanShow*/, THintInfo & HintInfo)
 {
@@ -923,7 +923,7 @@ void __fastcall TTerminalManager::ApplicationShowHint(UnicodeString & HintStr,
     HintInfo.HintMaxWidth = HintMaxWidth;
   }
 }
-//---------------------------------------------------------------------------
+
 bool __fastcall TTerminalManager::HandleMouseWheel(WPARAM WParam, LPARAM LParam)
 {
   // WORKAROUND This is no longer necessary on Windows 10 (except for WM_WANTS_MOUSEWHEEL_INACTIVE part)
@@ -966,7 +966,7 @@ bool __fastcall TTerminalManager::HandleMouseWheel(WPARAM WParam, LPARAM LParam)
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TTerminalManager::ApplicationMessage(TMsg & Msg, bool & Handled)
 {
   if (Msg.message == FTaskbarButtonCreatedMessage)
@@ -978,7 +978,7 @@ void __fastcall TTerminalManager::ApplicationMessage(TMsg & Msg, bool & Handled)
     Handled = HandleMouseWheel(Msg.wParam, Msg.lParam);
   }
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TTerminalManager::ApplicationModalBegin(TObject * /*Sender*/)
 {
   InterfaceStartDontMeasure();
@@ -988,7 +988,7 @@ void __fastcall TTerminalManager::ApplicationModalBegin(TObject * /*Sender*/)
     ScpExplorer->SuspendWindowLock();
   }
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TTerminalManager::ApplicationModalEnd(TObject * /*Sender*/)
 {
   NonVisualDataModule->EndBusy();
@@ -997,7 +997,7 @@ void __fastcall TTerminalManager::ApplicationModalEnd(TObject * /*Sender*/)
     ScpExplorer->ResumeWindowLock();
   }
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TTerminalManager::InitTaskbarButtonCreatedMessage()
 {
   // XE6 VCL already handles TaskbarButtonCreated, but does not call ChangeWindowMessageFilterEx.
@@ -1016,7 +1016,7 @@ void __fastcall TTerminalManager::InitTaskbarButtonCreatedMessage()
       Application->Handle, FTaskbarButtonCreatedMessage, MSGFLT_ALLOW, NULL);
   }
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TTerminalManager::CreateTaskbarList()
 {
 
@@ -1031,7 +1031,7 @@ void __fastcall TTerminalManager::CreateTaskbarList()
     }
   }
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TTerminalManager::ReleaseTaskbarList()
 {
   if (FTaskbarList != NULL)
@@ -1039,17 +1039,17 @@ void __fastcall TTerminalManager::ReleaseTaskbarList()
     FTaskbarList->Release();
   }
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TTerminalManager::UpdateTaskbarList()
 {
   ScpExplorer->UpdateTaskbarList(FTaskbarList);
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TTerminalManager::DeleteLocalFile(const UnicodeString FileName, bool Alternative, int & Deleted)
 {
   Deleted = RecursiveDeleteFileChecked(FileName, (WinConfiguration->DeleteToRecycleBin != Alternative));
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TTerminalManager::TerminalQueryUser(TObject * Sender,
   const UnicodeString Query, TStrings * MoreMessages, unsigned int Answers,
   const TQueryParams * Params, unsigned int & Answer, TQueryType Type, void * /*Arg*/)
@@ -1084,7 +1084,7 @@ void __fastcall TTerminalManager::TerminalQueryUser(TObject * Sender,
       &MessageParams);
   }
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TTerminalManager::AuthenticateFormCancel(TObject * Sender)
 {
   TAuthenticateForm * Form = dynamic_cast<TAuthenticateForm *>(Sender);
@@ -1103,7 +1103,7 @@ void __fastcall TTerminalManager::AuthenticateFormCancel(TObject * Sender)
   }
   FAuthenticationCancelled = true;
 }
-//---------------------------------------------------------------------------
+
 TAuthenticateForm * __fastcall TTerminalManager::MakeAuthenticateForm(
   TTerminal * Terminal)
 {
@@ -1113,13 +1113,13 @@ TAuthenticateForm * __fastcall TTerminalManager::MakeAuthenticateForm(
   Dialog->OnCancel = AuthenticateFormCancel;
   return Dialog;
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TTerminalManager::FileNameInputDialogInitializeRenameBaseName(
   TObject * /*Sender*/, TInputDialogData * Data)
 {
   EditSelectBaseName(Data->Edit->Handle);
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TTerminalManager::TerminalPromptUser(
   TTerminal * Terminal, TPromptKind Kind, UnicodeString Name, UnicodeString Instructions,
   TStrings * Prompts, TStrings * Results, bool & Result, void * /*Arg*/)
@@ -1166,7 +1166,7 @@ void __fastcall TTerminalManager::TerminalPromptUser(
     }
   }
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TTerminalManager::TerminalDisplayBanner(
   TTerminal * Terminal, UnicodeString SessionName,
   const UnicodeString & Banner, bool & NeverShowAgain, int Options, unsigned int & Params)
@@ -1190,7 +1190,7 @@ void __fastcall TTerminalManager::TerminalDisplayBanner(
     }
   }
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TTerminalManager::TerminalShowExtendedException(
   TTerminal * Terminal, Exception * E, void * /*Arg*/)
 {
@@ -1203,9 +1203,9 @@ void __fastcall TTerminalManager::TerminalShowExtendedException(
     ShowExtendedExceptionEx(Terminal, E);
   }
 }
-//---------------------------------------------------------------------------
+
 static TDateTime DirectoryReadingProgressDelay(0, 0, 1, 500);
-//---------------------------------------------------------------------------
+
 void __fastcall TTerminalManager::TerminalReadDirectoryProgress(
   TObject * /*Sender*/, int Progress, int ResolvedLinks, bool & Cancel)
 {
@@ -1269,14 +1269,14 @@ void __fastcall TTerminalManager::TerminalReadDirectoryProgress(
     }
   }
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TTerminalManager::TerminalCustomCommand(
   TTerminal * /*Terminal*/, const UnicodeString & Command, bool & Handled)
 {
   // Implementation has to be thread-safe
   Handled = CopyCommandToClipboard(Command);
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TTerminalManager::AuthenticatingDone()
 {
   FAuthenticating--;
@@ -1290,7 +1290,7 @@ void __fastcall TTerminalManager::AuthenticatingDone()
     CloseAutheticateForm();
   }
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TTerminalManager::TerminalInformation(
   TTerminal * Terminal, const UnicodeString & Str, bool DebugUsedArg(Status), int Phase, const UnicodeString & Additional)
 {
@@ -1326,7 +1326,7 @@ void __fastcall TTerminalManager::TerminalInformation(
     }
   }
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TTerminalManager::OperationFinished(::TFileOperation Operation,
   TOperationSide Side, bool Temp, const UnicodeString & FileName, bool Success,
   TOnceDoneOperation & OnceDoneOperation)
@@ -1335,7 +1335,7 @@ void __fastcall TTerminalManager::OperationFinished(::TFileOperation Operation,
   ScpExplorer->OperationFinished(Operation, Side, Temp, FileName, Success,
     OnceDoneOperation);
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TTerminalManager::OperationProgress(
   TFileOperationProgressType & ProgressData)
 {
@@ -1343,13 +1343,13 @@ void __fastcall TTerminalManager::OperationProgress(
   DebugAssert(ScpExplorer);
   ScpExplorer->OperationProgress(ProgressData);
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TTerminalManager::QueueEvent(TTerminalQueue * Queue, TQueueEvent Event)
 {
   TGuard Guard(FQueueSection); nb::used(Guard);
   FQueueEvents.push_back(std::make_pair(Queue, Event));
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TTerminalManager::DoConfigurationChange()
 {
   DebugAssert(Configuration);
@@ -1370,7 +1370,7 @@ void __fastcall TTerminalManager::DoConfigurationChange()
     ScpExplorer->ConfigurationChanged();
   }
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TTerminalManager::ConfigurationChange(TObject * /*Sender*/)
 {
   if (FMainThread == GetCurrentThreadId())
@@ -1383,14 +1383,14 @@ void __fastcall TTerminalManager::ConfigurationChange(TObject * /*Sender*/)
     FPendingConfigurationChange++;
   }
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TTerminalManager::TerminalReady()
 {
   ScpExplorer->Terminal = ActiveTerminal;
   ScpExplorer->Queue = ActiveQueue;
   ScpExplorer->TerminalReady();
 }
-//---------------------------------------------------------------------------
+
 TStrings * __fastcall TTerminalManager::GetTerminalList()
 {
   FTerminalList->Clear();
@@ -1402,17 +1402,17 @@ TStrings * __fastcall TTerminalManager::GetTerminalList()
   }
   return FTerminalList;
 }
-//---------------------------------------------------------------------------
+
 int __fastcall TTerminalManager::GetActiveTerminalIndex()
 {
   return ActiveTerminal ? IndexOf(ActiveTerminal) : -1;
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TTerminalManager::SetActiveTerminalIndex(int value)
 {
   ActiveTerminal = Terminals[value];
 }
-//---------------------------------------------------------------------------
+
 UnicodeString __fastcall TTerminalManager::GetTerminalShortPath(TTerminal * Terminal)
 {
   UnicodeString Result = UnixExtractFileName(Terminal->CurrentDirectory);
@@ -1422,7 +1422,7 @@ UnicodeString __fastcall TTerminalManager::GetTerminalShortPath(TTerminal * Term
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 UnicodeString __fastcall TTerminalManager::GetTerminalTitle(TTerminal * Terminal, bool Unique)
 {
   UnicodeString Result = Terminal->SessionData->SessionName;
@@ -1458,7 +1458,7 @@ UnicodeString __fastcall TTerminalManager::GetTerminalTitle(TTerminal * Terminal
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 UnicodeString __fastcall TTerminalManager::GetActiveTerminalTitle(bool Unique)
 {
   UnicodeString Result;
@@ -1468,7 +1468,7 @@ UnicodeString __fastcall TTerminalManager::GetActiveTerminalTitle(bool Unique)
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 TTerminalQueue * __fastcall TTerminalManager::GetActiveQueue()
 {
   TTerminalQueue * Result = NULL;
@@ -1478,7 +1478,7 @@ TTerminalQueue * __fastcall TTerminalManager::GetActiveQueue()
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TTerminalManager::CycleTerminals(bool Forward)
 {
   if (Count > 0)
@@ -1496,12 +1496,12 @@ void __fastcall TTerminalManager::CycleTerminals(bool Forward)
     ActiveTerminalIndex = Index;
   }
 }
-//---------------------------------------------------------------------------
+
 bool __fastcall TTerminalManager::CanOpenInPutty()
 {
   return (ActiveTerminal != NULL) && !GUIConfiguration->PuttyPath.Trim().IsEmpty();
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TTerminalManager::OpenInPutty()
 {
   Configuration->Usage->Inc(L"OpenInPutty");
@@ -1538,7 +1538,7 @@ void __fastcall TTerminalManager::OpenInPutty()
     delete Data;
   }
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TTerminalManager::NewSession(const UnicodeString & SessionUrl, bool ReloadSessions, TForm * LinkedForm)
 {
   if (ReloadSessions)
@@ -1594,7 +1594,7 @@ void __fastcall TTerminalManager::NewSession(const UnicodeString & SessionUrl, b
   }
   while (Retry);
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TTerminalManager::Idle(bool SkipCurrentTerminal)
 {
 
@@ -1711,7 +1711,7 @@ void __fastcall TTerminalManager::Idle(bool SkipCurrentTerminal)
   }
   while (QueueWithEvent != NULL);
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TTerminalManager::MasterPasswordPrompt()
 {
   if (GetCurrentThreadId() == MainThreadID)
@@ -1729,7 +1729,7 @@ void __fastcall TTerminalManager::MasterPasswordPrompt()
     Abort();
   }
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TTerminalManager::Move(TTerminal * Source, TTerminal * Target)
 {
   int SourceIndex = IndexOf(Source);
@@ -1741,7 +1741,7 @@ void __fastcall TTerminalManager::Move(TTerminal * Source, TTerminal * Target)
   // the index may change when reordering the sessions
   UpdateAppTitle();
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TTerminalManager::DoTerminalListChanged()
 {
   if (OnTerminalListChanged)
@@ -1749,7 +1749,7 @@ void __fastcall TTerminalManager::DoTerminalListChanged()
     OnTerminalListChanged(this);
   }
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TTerminalManager::SaveWorkspace(TList * DataList)
 {
   for (int Index = 0; Index < Count; Index++)
@@ -1759,7 +1759,7 @@ void __fastcall TTerminalManager::SaveWorkspace(TList * DataList)
     DataList->Add(Data);
   }
 }
-//---------------------------------------------------------------------------
+
 bool __fastcall TTerminalManager::IsActiveTerminalForSite(TTerminal * Terminal, TSessionData * Data)
 {
   bool Result = Terminal->Active;
@@ -1771,7 +1771,7 @@ bool __fastcall TTerminalManager::IsActiveTerminalForSite(TTerminal * Terminal, 
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 TManagedTerminal * __fastcall TTerminalManager::FindActiveTerminalForSite(TSessionData * Data)
 {
   TManagedTerminal * Result = NULL;
@@ -1785,13 +1785,13 @@ TManagedTerminal * __fastcall TTerminalManager::FindActiveTerminalForSite(TSessi
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 TTerminalQueue * __fastcall TTerminalManager::FindQueueForTerminal(TTerminal * Terminal)
 {
   int Index = IndexOf(Terminal);
   return reinterpret_cast<TTerminalQueue *>(FQueues->Items[Index]);
 }
-//---------------------------------------------------------------------------
+
     Terminal->LogEvent(FORMAT(L"Checking %s \"%s\"...", LowerCase(EntryType), FileName));
       Terminal->LogEvent(FORMAT(L"%s \"%s\" exists, but has incorrect permissions %s.", EntryType, FileName, File->Rights->Octal));
       Terminal->LogEvent(FORMAT(L"%s \"%s\" exists and has correct permissions %s.", EntryType, FileName, File->Rights->Octal));

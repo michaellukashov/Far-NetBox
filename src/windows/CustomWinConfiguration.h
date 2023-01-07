@@ -1,7 +1,7 @@
-//---------------------------------------------------------------------------
+
 #ifndef CustomWinConfigurationH
 #define CustomWinConfigurationH
-//---------------------------------------------------------------------------
+
 #include "GUIConfiguration.h"
 #define WM_WINSCP_USER   (WM_USER + 0x2000)
 // WM_USER_STOP = WM_WINSCP_USER + 2 (in forms/Synchronize.cpp)
@@ -16,7 +16,7 @@
 #define WM_WANTS_MOUSEWHEEL_INACTIVE (WM_WINSCP_USER + 11)
 #define WM_WANTS_SCREEN_TIPS (WM_WINSCP_USER + 12)
 // WM_USER_SHCHANGENOTIFY + 13 (packages/filemng/DriveView.pas)
-//---------------------------------------------------------------------------
+
 #if 0
 #define C(Property) (Property != rhc.Property) ||
 struct TSynchronizeChecklistConfiguration
@@ -27,16 +27,16 @@ struct TSynchronizeChecklistConfiguration
     { return C(WindowParams) C(ListParams) 0; };
 };
 typedef TSynchronizeChecklistConfiguration TFindFileConfiguration;
-//---------------------------------------------------------------------------
+
 struct TConsoleWinConfiguration
 {
   UnicodeString WindowSize;
   bool operator !=(TConsoleWinConfiguration & rhc)
     { return C(WindowSize) 0; };
 };
-//---------------------------------------------------------------------------
+
 enum TIncrementalSearch { isOff = -1, isNameStartOnly, isName, isAll };
-//---------------------------------------------------------------------------
+
 struct TLoginDialogConfiguration : public TConsoleWinConfiguration
 {
   TIncrementalSearch SiteSearch;
@@ -44,7 +44,7 @@ struct TLoginDialogConfiguration : public TConsoleWinConfiguration
     { return (TConsoleWinConfiguration::operator !=(rhc)) || C(SiteSearch) 0; };
 };
 #undef C
-//---------------------------------------------------------------------------
+
 class TCustomWinConfiguration : public TGUIConfiguration
 {
 static const int MaxHistoryCount = 50;
@@ -120,9 +120,9 @@ public:
   __property UnicodeString DefaultFixedWidthFontName = { read = GetDefaultFixedWidthFontName };
   __property int DefaultFixedWidthFontSize = { read = GetDefaultFixedWidthFontSize };
 };
-//---------------------------------------------------------------------------
+
 extern TCustomWinConfiguration * CustomWinConfiguration;
-//---------------------------------------------------------------------------
+
 #endif // #if 0
 
 #endif

@@ -1,4 +1,4 @@
-﻿//---------------------------------------------------------------------------
+﻿
 #include <vcl.h>
 #pragma hdrstop
 
@@ -36,7 +36,7 @@ __removed #include <Consts.hpp>
 #include <StrUtils.hpp>
 #include <WinConfiguration.h>
 #include <ProgParams.h>
-//---------------------------------------------------------------------------
+
 // WORKAROUND
 // VCL includes wininet.h (even with NO_WIN32_LEAN_AND_MEAN)
 // and it cannot be combined with winhttp.h as of current Windows SDK.
@@ -75,9 +75,9 @@ __removed #include <Consts.hpp>
 
 #undef HTTP_VERSION_INFO
 #undef LPHTTP_VERSION_INFO
-//---------------------------------------------------------------------------
+
 __removed #pragma package(smart_init)
-//---------------------------------------------------------------------------
+
 TFontStyles IntToFontStyles(int value)
 {
   TFontStyles Result;
@@ -91,7 +91,7 @@ TFontStyles IntToFontStyles(int value)
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 int FontStylesToInt(const TFontStyles value)
 {
   int Result = 0;
@@ -105,7 +105,7 @@ int FontStylesToInt(const TFontStyles value)
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 bool SameFont(TFont * Font1, TFont * Font2)
 {
   // keep in sync with TFontConfiguration::operator !=
@@ -113,7 +113,7 @@ bool SameFont(TFont * Font1, TFont * Font2)
     SameText(Font1->Name, Font2->Name) && (Font1->Height == Font2->Height) &&
     (Font1->Charset == Font2->Charset) && (Font1->Style == Font2->Style);
 }
-//---------------------------------------------------------------------------
+
 TColor GetWindowTextColor(TColor BackgroundColor, TColor Color)
 {
   if (Color == TColor(0))
@@ -124,7 +124,7 @@ TColor GetWindowTextColor(TColor BackgroundColor, TColor Color)
   }
   return Color;
 }
-//---------------------------------------------------------------------------
+
 TColor GetWindowColor(TColor Color)
 {
   if (Color == TColor(0))
@@ -134,19 +134,19 @@ TColor GetWindowColor(TColor Color)
   }
   return Color;
 }
-//---------------------------------------------------------------------------
+
 TColor GetBtnFaceColor()
 {
   return WinConfiguration->UseDarkTheme() ? TColor(RGB(43, 43, 43)) : clBtnFace;
   }
   return Color;
 }
-//---------------------------------------------------------------------------
+
 TColor GetBtnFaceColor()
 {
   return WinConfiguration->UseDarkTheme() ? TColor(RGB(43, 43, 43)) : clBtnFace;
 }
-//---------------------------------------------------------------------------
+
 TColor GetNonZeroColor(TColor Color)
 {
   // 0,0,0 is "default color"
@@ -157,14 +157,14 @@ TColor GetNonZeroColor(TColor Color)
   }
   return Color;
 }
-//---------------------------------------------------------------------------
+
 void CenterFormOn(TForm * Form, TControl * CenterOn)
 {
   TPoint ScreenPoint = CenterOn->ClientToScreen(TPoint(0, 0));
   Form->Left = ScreenPoint.x + (CenterOn->Width / 2) - (Form->Width / 2);
   Form->Top = ScreenPoint.y + (CenterOn->Height / 2) - (Form->Height / 2);
 }
-//---------------------------------------------------------------------------
+
 UnicodeString GetListViewStr(TListView * ListView)
 {
   UnicodeString Result;
@@ -181,7 +181,7 @@ UnicodeString GetListViewStr(TListView * ListView)
   Result += L",;" + SavePixelsPerInch(ListView);
   return Result;
 }
-//---------------------------------------------------------------------------
+
 void LoadListViewStr(TListView * ListView, UnicodeString ALayoutStr)
 {
   UnicodeString LayoutStr = CutToChar(ALayoutStr, L';', true);
@@ -197,7 +197,7 @@ void LoadListViewStr(TListView * ListView, UnicodeString ALayoutStr)
     Index++;
   }
 }
-//---------------------------------------------------------------------------
+
 void LoadFormDimensions(
   const UnicodeString & LeftStr, const UnicodeString & TopStr, const UnicodeString & RightStr, const UnicodeString & BottomStr,
   int PixelsPerInch, Forms::TMonitor * Monitor, TForm * Form, TRect & Bounds, bool & DefaultPos)
@@ -230,7 +230,7 @@ void LoadFormDimensions(
     Bounds.Bottom -= (Bounds.Height() - Monitor->WorkareaRect.Height());
   }
 }
-//---------------------------------------------------------------------------
+
 void __fastcall RestoreForm(UnicodeString Data, TForm * Form, bool PositionOnly)
 {
   DebugAssert(Form);
@@ -339,7 +339,7 @@ void __fastcall RestoreForm(UnicodeString Data, TForm * Form, bool PositionOnly)
     Form->Position = poDefaultPosOnly;
   }
 }
-//---------------------------------------------------------------------------
+
 UnicodeString StoreForm(TCustomForm * Form)
 {
   DebugAssert(Form);
@@ -355,7 +355,7 @@ UnicodeString StoreForm(TCustomForm * Form)
       SavePixelsPerInch(Form));
   return Result;
 }
-//---------------------------------------------------------------------------
+
 void RestoreFormSize(UnicodeString Data, TForm * Form)
 {
   // This has to be called only after DoFormWindowProc(CM_SHOWINGCHANGED).
@@ -368,12 +368,12 @@ void RestoreFormSize(UnicodeString Data, TForm * Form)
   int Height = StrToDimensionDef(HeightStr, PixelsPerInch, Form, Form->Height);
   ResizeForm(Form, Width, Height);
 }
-//---------------------------------------------------------------------------
+
 UnicodeString StoreFormSize(TForm * Form)
 {
   return FORMAT(L"%d,%d,%s", Form->Width, Form->Height, SavePixelsPerInch(Form));
 }
-//---------------------------------------------------------------------------
+
 static void ExecuteProcessAndReadOutput(const
   UnicodeString & Command, const UnicodeString & HelpKeyword, UnicodeString & Output)
 {
@@ -462,7 +462,7 @@ static void ExecuteProcessAndReadOutput(const
     }
   }
 }
-//---------------------------------------------------------------------------
+
 void ExecuteProcessChecked(
   const UnicodeString Command, const UnicodeString HelpKeyword, UnicodeString * Output)
 {
@@ -475,7 +475,7 @@ void ExecuteProcessChecked(
     ExecuteProcessAndReadOutput(Command, HelpKeyword, *Output);
   }
 }
-//---------------------------------------------------------------------------
+
 void ExecuteProcessCheckedAndWait(
   const UnicodeString Command, const UnicodeString HelpKeyword, UnicodeString * Output)
 {
@@ -488,22 +488,22 @@ void ExecuteProcessCheckedAndWait(
     ExecuteProcessAndReadOutput(Command, HelpKeyword, *Output);
   }
 }
-//---------------------------------------------------------------------------
+
 bool IsKeyPressed(int VirtualKey)
 {
   return FLAGSET(GetAsyncKeyState(VirtualKey), 0x8000);
 }
-//---------------------------------------------------------------------------
+
 bool UseAlternativeFunction()
 {
   return IsKeyPressed(VK_SHIFT);
 }
-//---------------------------------------------------------------------------
+
 bool OpenInNewWindow()
 {
   return UseAlternativeFunction();
 }
-//---------------------------------------------------------------------------
+
 void ExecuteNewInstance(const UnicodeString Param, const UnicodeString AdditionalParams)
 {
   UnicodeString Arg = Param;
@@ -518,7 +518,7 @@ void ExecuteNewInstance(const UnicodeString Param, const UnicodeString Additiona
 
   ExecuteShellChecked(Application->ExeName, Arg);
 }
-//---------------------------------------------------------------------------
+
 IShellLink * CreateDesktopShortCut(const UnicodeString & Name,
   const UnicodeString &File, const UnicodeString & Params, const UnicodeString & Description,
   int SpecialFolder, int IconIndex, bool Return)
@@ -610,7 +610,7 @@ IShellLink * CreateDesktopShortCut(const UnicodeString & Name,
 
   return pLink;
 }
-//---------------------------------------------------------------------------
+
 IShellLink * CreateDesktopSessionShortCut(
   const UnicodeString & Name, const UnicodeString & AParams, const UnicodeString & Description,
   int SpecialFolder, int IconIndex, bool Return)
@@ -627,7 +627,7 @@ IShellLink * CreateDesktopSessionShortCut(
 
   return CreateDesktopShortCut(Name, Application->ExeName, Params, Description, SpecialFolder, IconIndex, Return);
 }
-//---------------------------------------------------------------------------
+
   const UnicodeString & SessionName, UnicodeString Name,
   const UnicodeString & AdditionalParams, int SpecialFolder, int IconIndex,
   bool Return)
@@ -670,13 +670,13 @@ IShellLink * CreateDesktopSessionShortCut(
       FORMAT(L"\"%s\"%s%s", EncodeUrlString(SessionName), (AdditionalParams.IsEmpty() ? L"" : L" "), AdditionalParams),
       InfoTip, SpecialFolder, IconIndex, Return);
 }
-//---------------------------------------------------------------------------
+
 void ValidateMask(const UnicodeString & Mask, int ForceDirectoryMasks)
 {
   TFileMasks Masks(ForceDirectoryMasks);
   Masks = Mask;
 }
-//---------------------------------------------------------------------------
+
 template<class TEditControl>
 void ValidateMaskEditT(const UnicodeString & Mask, TEditControl * Edit, int ForceDirectoryMasks)
 {
@@ -699,17 +699,17 @@ void ValidateMaskEditT(const UnicodeString & Mask, TEditControl * Edit, int Forc
     }
   }
 }
-//---------------------------------------------------------------------------
+
 void ValidateMaskEdit(TComboBox * Edit)
 {
   ValidateMaskEditT(Edit->Text, Edit, -1);
 }
-//---------------------------------------------------------------------------
+
 void ValidateMaskEdit(TEdit * Edit)
 {
   ValidateMaskEditT(Edit->Text, Edit, -1);
 }
-//---------------------------------------------------------------------------
+
 void ValidateMaskEdit(TMemo * Edit, bool Directory)
 {
   if (!IsCancelButtonBeingClicked(Edit))
@@ -718,14 +718,14 @@ void ValidateMaskEdit(TMemo * Edit, bool Directory)
     ValidateMaskEditT(Mask, Edit, Directory ? 1 : 0);
   }
 }
-//---------------------------------------------------------------------------
+
 TStrings * GetUnwrappedMemoLines(TMemo * Memo)
 {
   // This removes soft linebreaks when text in memo wraps
   // (Memo->Lines includes soft linebreaks, while Memo->Text does not)
   return TextToStringList(Memo->Text);
 }
-//---------------------------------------------------------------------------
+
 void ExitActiveControl(TForm * Form)
 {
   if (Form->ActiveControl != NULL)
@@ -737,7 +737,7 @@ void ExitActiveControl(TForm * Form)
     }
   }
 }
-//---------------------------------------------------------------------------
+
 bool IsWinSCPUrl(const UnicodeString & Url)
 {
   UnicodeString HomePageUrl = LoadStr(HOMEPAGE_URL);
@@ -747,7 +747,7 @@ bool IsWinSCPUrl(const UnicodeString & Url)
     StartsText(HomePageUrl, Url) ||
     StartsText(HttpHomePageUrl, Url);
 }
-//---------------------------------------------------------------------------
+
 UnicodeString SecureUrl(const UnicodeString & Url)
 {
   UnicodeString Result = Url;
@@ -757,7 +757,7 @@ UnicodeString SecureUrl(const UnicodeString & Url)
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 void OpenBrowser(UnicodeString URL)
 {
   if (IsWinSCPUrl(URL))
@@ -776,7 +776,7 @@ void OpenBrowser(UnicodeString URL)
     ShellExecute(Application->Handle, L"open", URL.c_str(), NULL, NULL, SW_SHOWNORMAL);
   }
 }
-//---------------------------------------------------------------------------
+
 void OpenFolderInExplorer(const UnicodeString Path)
 {
   if ((int)ShellExecute(Application->Handle, L"explore",
@@ -785,13 +785,13 @@ void OpenFolderInExplorer(const UnicodeString Path)
     throw Exception(FMTLOAD(EXPLORE_LOCAL_DIR_ERROR, Path));
   }
 }
-//---------------------------------------------------------------------------
+
 void OpenFileInExplorer(const UnicodeString Path)
 {
   PCIDLIST_ABSOLUTE Folder = ILCreateFromPathW(ApiPath(Path).c_str());
   SHOpenFolderAndSelectItems(Folder, 0, NULL, 0);
 }
-//---------------------------------------------------------------------------
+
 void ShowHelp(const UnicodeString & AHelpKeyword)
 {
   // see also AppendUrlParams
@@ -803,7 +803,7 @@ void ShowHelp(const UnicodeString & AHelpKeyword)
   OpenBrowser(HelpUrl);
 }
 #endif // #if 0
-//---------------------------------------------------------------------------
+
 bool IsFormatInClipboard(unsigned int Format)
 {
   bool Result = OpenClipboard(0);
@@ -814,7 +814,7 @@ bool IsFormatInClipboard(unsigned int Format)
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 HANDLE OpenTextFromClipboard(const wchar_t *& Text)
 {
   UnicodeString ErrorContext;
@@ -845,7 +845,7 @@ HANDLE OpenTextFromClipboard(const wchar_t *& Text)
     throw EAccessViolation(AddContextToExceptionMessage(E, ErrorContext));
   }
 }
-//---------------------------------------------------------------------------
+
 void CloseTextFromClipboard(HANDLE Handle)
 {
   UnicodeString ErrorContext;
@@ -864,7 +864,7 @@ void CloseTextFromClipboard(HANDLE Handle)
     throw EAccessViolation(AddContextToExceptionMessage(E, ErrorContext));
   }
 }
-//---------------------------------------------------------------------------
+
 bool TextFromClipboard(UnicodeString & Text, bool Trim)
 {
   UnicodeString ErrorContext;
@@ -907,14 +907,14 @@ bool TextFromClipboard(UnicodeString & Text, bool Trim)
     throw EAccessViolation(AddContextToExceptionMessage(E, ErrorContext));
   }
 }
-//---------------------------------------------------------------------------
+
 bool NonEmptyTextFromClipboard(UnicodeString & Text)
 {
   return
     TextFromClipboard(Text, true) &&
     !Text.IsEmpty();
 }
-//---------------------------------------------------------------------------
+
 static bool GetResource(
   const UnicodeString ResName, void *& Content, unsigned long & Size)
 {
@@ -944,7 +944,7 @@ static bool GetResource(
 
   return Result;
 }
-//---------------------------------------------------------------------------
+
 bool DumpResourceToFile(const UnicodeString ResName,
   const UnicodeString FileName)
 {
@@ -968,7 +968,7 @@ bool DumpResourceToFile(const UnicodeString ResName,
 
   return Result;
 }
-//---------------------------------------------------------------------------
+
 UnicodeString ReadResource(const UnicodeString ResName)
 {
   void * Content;
@@ -983,7 +983,7 @@ UnicodeString ReadResource(const UnicodeString ResName)
   return Result;
 }
 #if 0
-//---------------------------------------------------------------------------
+
 template <class T>
 void BrowseForExecutableT(T * Control, UnicodeString Title,
   UnicodeString Filter, bool FileNameCommand, bool Escape)
@@ -1046,19 +1046,19 @@ void BrowseForExecutableT(T * Control, UnicodeString Title,
     delete FileDialog;
   }
 }
-//---------------------------------------------------------------------------
+
 void BrowseForExecutable(TEdit * Control, UnicodeString Title,
   UnicodeString Filter, bool FileNameCommand, bool Escape)
 {
   BrowseForExecutableT(Control, Title, Filter, FileNameCommand, Escape);
 }
-//---------------------------------------------------------------------------
+
 void BrowseForExecutable(TComboBox * Control, UnicodeString Title,
   UnicodeString Filter, bool FileNameCommand, bool Escape)
 {
   BrowseForExecutableT(Control, Title, Filter, FileNameCommand, Escape);
 }
-//---------------------------------------------------------------------------
+
 bool FontDialog(TFont * Font)
 {
   bool Result;
@@ -1080,7 +1080,7 @@ bool FontDialog(TFont * Font)
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 bool SaveDialog(UnicodeString Title, UnicodeString Filter,
   UnicodeString DefaultExt, UnicodeString & FileName)
 {
@@ -1150,7 +1150,7 @@ bool SaveDialog(UnicodeString ATitle, UnicodeString Filter,
   return Result;
 }
 #if 0
-//---------------------------------------------------------------------------
+
 void CopyToClipboard(UnicodeString Text)
 {
   HANDLE Data;
@@ -1193,7 +1193,7 @@ void CopyToClipboard(UnicodeString Text)
   }
 }
 #endif // #if 0
-//---------------------------------------------------------------------------
+
 void CopyToClipboard(TStrings * Strings)
 {
   if (Strings->Count > 0)
@@ -1201,7 +1201,7 @@ void CopyToClipboard(TStrings * Strings)
     CopyToClipboard(StringsToText(Strings));
   }
 }
-//---------------------------------------------------------------------------
+
 bool IsWin64()
 {
   static int Result = -1;
@@ -1220,7 +1220,7 @@ bool IsWin64()
 
   return (Result > 0);
 }
-//---------------------------------------------------------------------------
+
 static void AcquireShutDownPrivileges()
 {
   HANDLE Token;
@@ -1240,7 +1240,7 @@ static void AcquireShutDownPrivileges()
   // Get the shutdown privilege for this process.
   Win32Check(FALSE != AdjustTokenPrivileges(Token, FALSE, &Priv, 0, (PTOKEN_PRIVILEGES)NULL, 0));
 }
-//---------------------------------------------------------------------------
+
 void ShutDownWindows()
 {
   AcquireShutDownPrivileges();
@@ -1250,7 +1250,7 @@ void ShutDownWindows()
     SHTDN_REASON_MAJOR_OTHER | SHTDN_REASON_MINOR_OTHER | SHTDN_REASON_FLAG_PLANNED));
 }
 #if 0
-//---------------------------------------------------------------------------
+
 void SuspendWindows()
 {
   AcquireShutDownPrivileges();
@@ -1258,7 +1258,7 @@ void SuspendWindows()
   // https://learn.microsoft.com/en-us/windows/win32/api/powrprof/nf-powrprof-setsuspendstate
   Win32Check(FALSE != SetSuspendState(false, false, false));
 }
-//---------------------------------------------------------------------------
+
 void EditSelectBaseName(HWND Edit)
 {
   UnicodeString Text;
@@ -1274,12 +1274,12 @@ void EditSelectBaseName(HWND Edit)
   }
 }
 #endif // #if 0
-//---------------------------------------------------------------------------
+
 static void ConvertKey(UnicodeString & FileName, TKeyType Type)
 {
   return ChangeFileExt(FileName, FORMAT(L".%s", (PuttyKeyExt)));
 }
-//---------------------------------------------------------------------------
+
 {
   UnicodeString Passphrase;
 
@@ -1315,7 +1315,7 @@ static void ConvertKey(UnicodeString & FileName, TKeyType Type)
     FreeKey(PrivateKey);
   } end_try__finally
 }
-//---------------------------------------------------------------------------
+
 static void DoVerifyKey(
 {
   std::unique_ptr<TStrings> AMoreMessages;
@@ -1392,7 +1392,7 @@ static void DoVerifyKey(
   MoreMessages = AMoreMessages.release();
 }
 
-//---------------------------------------------------------------------------
+
 static void __fastcall DoVerifyKey(UnicodeString & FileName, bool Convert, bool CanIgnore)
 {
   TStrings * AMoreMessages;
@@ -1410,18 +1410,18 @@ static void __fastcall DoVerifyKey(UnicodeString & FileName, bool Convert, bool 
     }
   }
 }
-//---------------------------------------------------------------------------
+
 void VerifyAndConvertKey(UnicodeString& FileName, TSshProt SshProt, bool CanIgnore)
 {
   DoVerifyKey(FileName, true, CanIgnore);
 }
-//---------------------------------------------------------------------------
+
 void VerifyKey(UnicodeString FileName, TSshProt SshProt)
 {
   UnicodeString AFileName(FileName);
   DoVerifyKey(AFileName, false, true);
 }
-//---------------------------------------------------------------------------
+
 void VerifyCertificate(const UnicodeString FileName)
 {
   if (!FileName.Trim().IsEmpty())
@@ -1439,7 +1439,7 @@ void VerifyCertificate(const UnicodeString FileName)
     }
   }
 }
-//---------------------------------------------------------------------------
+
 bool DetectSystemExternalEditor(
   bool AllowDefaultEditor,
   UnicodeString & Executable, UnicodeString & ExecutableDescription,
@@ -1523,11 +1523,11 @@ bool DetectSystemExternalEditor(
 #endif // #if 0
   return Result;
 }
-//---------------------------------------------------------------------------
+
 // this was moved to global scope in past in some attempt to fix crashes,
 // not sure it really helped
 WINHTTP_CURRENT_USER_IE_PROXY_CONFIG IEProxyInfo;
-//---------------------------------------------------------------------------
+
 static bool GetProxyUrlFromIE(UnicodeString & Proxy)
 {
   bool Result = false;
@@ -1569,7 +1569,7 @@ static bool GetProxyUrlFromIE(UnicodeString & Proxy)
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 bool AutodetectProxy(UnicodeString & HostName, intptr_t& PortNumber)
 {
   bool Result = false;
@@ -1624,8 +1624,8 @@ bool AutodetectProxy(UnicodeString & HostName, intptr_t& PortNumber)
   return Result;
 }
 #if 0
-//---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
+
+
 class TWinHelpTester : public TInterfacedObject, public IWinHelpTester
 {
 public:
@@ -1638,7 +1638,7 @@ public:
 
   IUNKNOWN
 };
-//---------------------------------------------------------------------------
+
 class TCustomHelpSelector : public TInterfacedObject, public IHelpSelector
 {
 public:
@@ -1652,7 +1652,7 @@ public:
 private:
   UnicodeString FName;
 };
-//---------------------------------------------------------------------------
+
 void AssignHelpSelector(IHelpSelector * HelpSelector)
 {
   _di_IHelpSystem HelpSystem;
@@ -1661,7 +1661,7 @@ void AssignHelpSelector(IHelpSelector * HelpSelector)
     HelpSystem->AssignHelpSelector(HelpSelector);
   }
 }
-//---------------------------------------------------------------------------
+
 void InitializeCustomHelp(ICustomHelpViewer * HelpViewer)
 {
   _di_IHelpManager HelpManager;
@@ -1672,33 +1672,33 @@ void InitializeCustomHelp(ICustomHelpViewer * HelpViewer)
 
   AssignHelpSelector(new TCustomHelpSelector(HelpViewer->GetViewerName()));
 }
-//---------------------------------------------------------------------------
+
 void FinalizeCustomHelp()
 {
   AssignHelpSelector(NULL);
 }
-//---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
+
+
 bool TWinHelpTester::CanShowALink(const UnicodeString ALink,
   const UnicodeString FileName)
 {
   return !Application->HelpFile.IsEmpty();
 }
-//---------------------------------------------------------------------------
+
 bool TWinHelpTester::CanShowTopic(const UnicodeString Topic,
   const UnicodeString FileName)
 {
   DebugFail();
   return !Application->HelpFile.IsEmpty();
 }
-//---------------------------------------------------------------------------
+
 bool TWinHelpTester::CanShowContext(const int /*Context*/,
   const UnicodeString FileName)
 {
   DebugFail();
   return !Application->HelpFile.IsEmpty();
 }
-//---------------------------------------------------------------------------
+
 TStringList * TWinHelpTester::GetHelpStrings(const UnicodeString ALink)
 {
   DebugFail();
@@ -1706,30 +1706,30 @@ TStringList * TWinHelpTester::GetHelpStrings(const UnicodeString ALink)
   Result->Add(ViewerName + L": " + ALink);
   return Result;
 }
-//---------------------------------------------------------------------------
+
 UnicodeString TWinHelpTester::GetHelpPath()
 {
   // never called on windows anyway
   return ExtractFilePath(Application->HelpFile);
 }
-//---------------------------------------------------------------------------
+
 UnicodeString TWinHelpTester::GetDefaultHelpFile()
 {
   return Application->HelpFile;
 }
-//---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
+
+
 TCustomHelpSelector::TCustomHelpSelector(const UnicodeString & Name) :
   FName(Name)
 {
 }
-//---------------------------------------------------------------------------
+
 int TCustomHelpSelector::SelectKeyword(TStrings * /*Keywords*/)
 {
   DebugFail();
   return 0;
 }
-//---------------------------------------------------------------------------
+
 int TCustomHelpSelector::TableOfContents(TStrings * Contents)
 {
   return Contents->IndexOf(FName);
