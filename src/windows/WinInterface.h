@@ -95,7 +95,7 @@ private:
 };
 
 class TCustomScpExplorerForm;
-TCustomScpExplorerForm *CreateScpExplorer();
+TCustomScpExplorerForm * CreateScpExplorer();
 
 void ConfigureInterface();
 
@@ -129,29 +129,29 @@ void AddMenuLabel(Tb2item::TTBCustomItem * Menu, const UnicodeString & Label);
 void ClickToolbarItem(Tb2item::TTBCustomItem * Item, bool PositionCursor);
 #endif // #if 0
 
-void InitiateDialogTimeout(TForm * Dialog, uint32_t Timeout, TButton * Button, unsigned int Answer = 0);
+void InitiateDialogTimeout(TForm * Dialog, uint32_t Timeout, TButton * Button, uint32_t Answer = 0);
 
 // windows\WinHelp.cpp
 void InitializeWinHelp();
 void FinalizeWinHelp();
 
 // windows\WinInterface.cpp
-uint32_t MessageDialog(UnicodeString Msg, TQueryType Type,
-  uint32_t Answers, UnicodeString HelpKeyword = HELP_NONE, const TMessageParams *Params = nullptr);
+uint32_t MessageDialog(const UnicodeString Msg, TQueryType Type,
+  uint32_t Answers, UnicodeString HelpKeyword = HELP_NONE, const TMessageParams * Params = nullptr);
 uint32_t MessageDialog(int32_t Ident, TQueryType Type,
-  uint32_t Answers, UnicodeString HelpKeyword = HELP_NONE, const TMessageParams *Params = nullptr);
-uint32_t SimpleErrorDialog(UnicodeString Msg, UnicodeString MoreMessages = "");
+  uint32_t Answers, UnicodeString HelpKeyword = HELP_NONE, const TMessageParams * Params = nullptr);
+uint32_t SimpleErrorDialog(const UnicodeString Msg, const UnicodeString MoreMessages = L"");
 
-uint32_t MoreMessageDialog(UnicodeString Message,
-  TStrings *MoreMessages, TQueryType Type, uint32_t Answers,
-  UnicodeString HelpKeyword, const TMessageParams *Params = nullptr);
+uint32_t MoreMessageDialog(const UnicodeString Message,
+  TStrings * MoreMessages, TQueryType Type, uint32_t Answers,
+    UnicodeString HelpKeyword, const TMessageParams * Params = nullptr);
 
-uint32_t ExceptionMessageDialog(Exception *E, TQueryType Type,
-  UnicodeString MessageFormat = "", uint32_t Answers = qaOK,
-  UnicodeString HelpKeyword = HELP_NONE, const TMessageParams *Params = nullptr);
-uint32_t FatalExceptionMessageDialog(Exception *E, TQueryType Type,
-  intptr_t SessionReopenTimeout, UnicodeString MessageFormat = "", uint32_t Answers = qaOK,
-  UnicodeString HelpKeyword = HELP_NONE, const TMessageParams *Params = nullptr);
+uint32_t ExceptionMessageDialog(Exception * E, TQueryType Type,
+  const UnicodeString MessageFormat = L"", uint32_t Answers = qaOK,
+  UnicodeString HelpKeyword = HELP_NONE, const TMessageParams * Params = nullptr);
+uint32_t FatalExceptionMessageDialog(Exception * E, TQueryType Type,
+  int SessionReopenTimeout, const UnicodeString MessageFormat = L"", uint32_t Answers = qaOK,
+  UnicodeString HelpKeyword = HELP_NONE, const TMessageParams * Params = nullptr);
 
 // forms\Custom.cpp
 TSessionData * DoSaveSession(TSessionData * SessionData,
@@ -180,8 +180,7 @@ bool DoChangeMasterPasswordDialog(UnicodeString & NewPassword);
 // windows\WinMain.cpp
 int Execute();
 void GetLoginData(UnicodeString SessionName, TOptions * Options,
-  TObjectList * DataList, UnicodeString & DownloadFile, bool NeedSession, // TForm * LinkedForm,
-  int Flags = 0);
+  TObjectList * DataList, UnicodeString & DownloadFile, bool NeedSession, TForm * LinkedForm, int Flags = 0);
 int GetCommandLineParseUrlFlags(TProgramParams * Params);
 
 #if 0
@@ -193,8 +192,8 @@ struct TInputDialogData
 typedef void (__closure *TInputDialogInitialize)
   (TObject * Sender, TInputDialogData * Data);
 #endif // #if 0
-bool InputDialog(UnicodeString ACaption,
-  UnicodeString APrompt, UnicodeString & Value, UnicodeString HelpKeyword = HELP_NONE,
+bool InputDialog(const UnicodeString ACaption,
+  const UnicodeString APrompt, UnicodeString & Value, UnicodeString HelpKeyword = HELP_NONE,
   TStrings * History = nullptr, bool PathInput = false,
   TInputDialogInitializeEvent OnInitialize = nullptr, bool Echo = true, int Width = 275);
 
