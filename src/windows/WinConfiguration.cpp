@@ -110,7 +110,7 @@ bool TEditorData::operator==(const TEditorData & rhd) const
 }
 #undef C
 
-bool TEditorData::DecideExternalEditorText(UnicodeString ExternalEditor)
+void TEditorData::ExternalEditorOptionsAutodetect()
 {
   // By default we use default transfer mode (binary),
   // as all reasonable 3rd party editors support all EOL styles.
@@ -126,7 +126,6 @@ bool TEditorData::DecideExternalEditorText(UnicodeString ExternalEditor)
   UnicodeString NotepadProgramName = ExtractProgramName(NotepadName);
   if (SameText(ProgramName, NotepadProgramName))
   {
-void TEditorData::DecideExternalEditorText()
     ExternalEditorText = true;
     SDIExternalEditor = true;
   }
@@ -758,6 +757,7 @@ void TWinConfiguration::Default()
   FScpCommander.RemotePanel.DriveViewHeightPixelsPerInch = USER_DEFAULT_SCREEN_DPI;
   FScpCommander.RemotePanel.DriveViewWidth = 100;
   FScpCommander.RemotePanel.DriveViewWidthPixelsPerInch = USER_DEFAULT_SCREEN_DPI;
+  FScpCommander.RemotePanel.LastPath = UnicodeString();
   FScpCommander.LocalPanel.DirViewParams = L"0;1;0|150,1;70,1;120,1;150,1;55,0;55,0;@" + SaveDefaultPixelsPerInch() + L"|5;0;1;2;3;4";
   FScpCommander.LocalPanel.StatusBar = true;
   FScpCommander.LocalPanel.DriveView = false;
@@ -765,6 +765,7 @@ void TWinConfiguration::Default()
   FScpCommander.LocalPanel.DriveViewHeightPixelsPerInch = USER_DEFAULT_SCREEN_DPI;
   FScpCommander.LocalPanel.DriveViewWidth = 100;
   FScpCommander.LocalPanel.DriveViewWidthPixelsPerInch = USER_DEFAULT_SCREEN_DPI;
+  FScpCommander.LocalPanel.LastPath = UnicodeString();
 
   FBookmarks->Clear();
 }
@@ -844,7 +845,7 @@ bool TWinConfiguration::CanWriteToStorage()
   return Result;
 }
 
-TStorage TWinConfiguration::GetStorage()
+bool TWinConfiguration::DetectStorage(bool SafeOnly)
 {
   bool Result;
   if (FileExists(ApiPath(IniFileStorageNameForReading)))
@@ -886,6 +887,7 @@ TStorage TWinConfiguration::GetStorage()
   return Result;
 }
 
+TStorage TWinConfiguration::GetStorage()
 {
   if (FStorage == stDetect)
   {
@@ -912,11 +914,12 @@ TStorage TWinConfiguration::GetStorage()
   return Result;
 }
 
-void TWinConfiguration::Saved()
+bool TWinConfiguration::TrySetSafeStorage()
 {
   return DetectStorage(true);
 }
 
+void TWinConfiguration::Saved()
 {
   TCustomWinConfiguration::Saved();
   FBookmarks->ModifyAll(false);
@@ -983,6 +986,7 @@ THierarchicalStorage * TWinConfiguration::CreateScpStorage(bool & SessionList)
   BLOCK("Interface", CANCREATE, \
     KEYEX(Integer,DoubleClickAction, "CopyOnDoubleClick"); \
     KEY(Bool,     CopyOnDoubleClickConfirmation); \
+    KEY(Bool,     DDDisableMove); \
     KEYEX(Integer, DDTransferConfirmation, "DDTransferConfirmation2"); \
     KEY(String,   DDTemporaryDirectory); \
     KEY(String,   DDDrives); \
@@ -1194,8 +1198,8 @@ THierarchicalStorage * TWinConfiguration::CreateScpStorage(bool & SessionList)
     KEY(Integer, ScpCommander.RemotePanel.DriveViewWidthPixelsPerInch); \
   ); \
   BLOCK("Security", CANCREATE, \
-    KEYEX(Bool,  FUseMasterPassword, "UseMasterPassword"); \
-    KEYEX(String,FMasterPasswordVerifier, "MasterPasswordVerifier"); \
+    KEY(Bool,    FUseMasterPassword); \
+    KEY(String,  FMasterPasswordVerifier); \
   );
 
 void TWinConfiguration::SaveData(THierarchicalStorage * Storage, bool All)
@@ -1906,7 +1910,7 @@ void TWinConfiguration::AskForMasterPassword()
 
   if (FOnMasterPasswordPrompt == nullptr)
   {
-    throw Exception("Master password handler not set");
+    throw Exception(L"Master password handler not set");
   }
   else
   {
@@ -1942,11 +1946,12 @@ void TWinConfiguration::EndMasterPasswordSession()
   FMasterPasswordSessionAsked = false;
 }
 
-void TWinConfiguration::SetDDTransferConfirmation(TAutoSwitch value)
+void TWinConfiguration::SetDDDisableMove(bool value)
 {
   SET_CONFIG_PROPERTY(DDDisableMove);
 }
 
+void TWinConfiguration::SetDDTransferConfirmation(TAutoSwitch value)
 {
   SET_CONFIG_PROPERTY(DDTransferConfirmation);
 }
@@ -2173,7 +2178,6 @@ static int SysDarkTheme(HKEY RootKey)
   return Result;
 }
 
-void TWinConfiguration::ResetSysDarkTheme()
 bool TWinConfiguration::UseDarkTheme()
 {
   switch (WinConfiguration->DarkTheme)
@@ -2217,8 +2221,6 @@ void TWinConfiguration::SetMinimizeToTray(bool value)
   SET_CONFIG_PROPERTY(MinimizeToTray);
 }
 
-void TWinConfiguration::MinimizeToTrayOnce()
-bool TWinConfiguration::GetMinimizeToTray()
 void TWinConfiguration::SetBalloonNotifications(bool value)
 {
   SET_CONFIG_PROPERTY(BalloonNotifications);
@@ -2324,11 +2326,12 @@ void TWinConfiguration::SetExternalSessionInExistingInstance(bool value)
   SET_CONFIG_PROPERTY(ExternalSessionInExistingInstance);
 }
 
-void TWinConfiguration::SetKeepOpenWhenNoSession(bool value)
+void TWinConfiguration::SetShowLoginWhenNoSession(bool value)
 {
   SET_CONFIG_PROPERTY(ShowLoginWhenNoSession);
 }
 
+void TWinConfiguration::SetKeepOpenWhenNoSession(bool value)
 {
   SET_CONFIG_PROPERTY(KeepOpenWhenNoSession);
 }
@@ -2338,11 +2341,12 @@ void TWinConfiguration::SetLocalIconsByExt(bool value)
   SET_CONFIG_PROPERTY(LocalIconsByExt);
 }
 
-void TWinConfiguration::SetBidiModeOverride(TLocaleFlagOverride value)
+void TWinConfiguration::SetFlashTaskbar(bool value)
 {
   SET_CONFIG_PROPERTY(FlashTaskbar);
 }
 
+void TWinConfiguration::SetBidiModeOverride(TLocaleFlagOverride value)
 {
   SET_CONFIG_PROPERTY(BidiModeOverride);
 }
@@ -2391,7 +2395,7 @@ void TWinConfiguration::SetHonorDrivePolicy(bool value)
   }
 }
 
-void TWinConfiguration::SetCustomCommandList(TCustomCommandList * value)
+bool TWinConfiguration::GetUseABDrives()
 {
   return DriveInfo->UseABDrives;
 }
@@ -2405,6 +2409,7 @@ void TWinConfiguration::SetUseABDrives(bool value)
   }
 }
 
+void TWinConfiguration::SetCustomCommandList(TCustomCommandList * value)
 {
   DebugAssert(FCustomCommandList);
   if (!FCustomCommandList->Equals(value))
@@ -2530,7 +2535,7 @@ UnicodeString TWinConfiguration::TemporaryDir(bool Mask)
   return UniqTempDir(ExpandedTemporaryDirectory(), L"scp", Mask);
 }
 
-TStrings * TWinConfiguration::FindTemporaryFolders()
+TStrings * TWinConfiguration::DoFindTemporaryFolders(bool OnlyFirst)
 {
   std::unique_ptr<TStrings> Result(new TStringList());
   TSearchRecOwned SRec;
@@ -2567,7 +2572,7 @@ bool TWinConfiguration::AnyTemporaryFolders()
   return (Folders.get() != nullptr);
 }
 
-void TWinConfiguration::CleanupTemporaryFolders(TStrings * Folders)
+void TWinConfiguration::CleanupTemporaryFolders()
 {
   std::unique_ptr<TStrings> Folders(FindTemporaryFolders());
   if (Folders.get() != nullptr)
@@ -2735,7 +2740,7 @@ void TWinConfiguration::SetAllowWindowPrint(bool value)
   SET_CONFIG_PROPERTY(AllowWindowPrint);
 }
 
-TStringList * TWinConfiguration::LoadJumpList(
+void TWinConfiguration::SetStoreTransition(TStoreTransition value)
 {
   SET_CONFIG_PROPERTY(StoreTransition);
 }
@@ -2745,6 +2750,7 @@ void TWinConfiguration::SetFirstRun(const UnicodeString & value)
   SET_CONFIG_PROPERTY(FirstRun);
 }
 
+TStringList * TWinConfiguration::LoadJumpList(
   THierarchicalStorage * Storage, UnicodeString Name)
 {
   UnicodeString JumpList = Storage->ReadString(Name, L"");

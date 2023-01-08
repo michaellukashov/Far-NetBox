@@ -42,10 +42,11 @@ struct TScpCommanderPanelConfiguration {
   int DriveViewHeightPixelsPerInch;
   int DriveViewWidth;
   int DriveViewWidthPixelsPerInch;
+  UnicodeString LastPath;
   bool operator !=(TScpCommanderPanelConfiguration & rhc)
     { return C(DirViewParams) C(StatusBar)
         C(DriveView) C(DriveViewHeight) C(DriveViewHeightPixelsPerInch)
-        C(DriveViewWidth) C(DriveViewWidthPixelsPerInch) 0; };
+        C(DriveViewWidth) C(DriveViewWidthPixelsPerInch) C(LastPath) 0; };
 };
 
 struct TScpCommanderConfiguration {
@@ -254,20 +255,6 @@ struct TEditorData
 
   bool operator ==(const TEditorData & rhd) const;
   void ExternalEditorOptionsAutodetect();
-};
-
-struct TFileColorData
-{
-  TFileColorData();
-
-  TFileMasks FileMask;
-  TColor Color;
-
-  void Load(const UnicodeString & S);
-  UnicodeString Save() const;
-  typedef std::vector<TFileColorData> TList;
-  static void LoadList(const UnicodeString & S, TList & List);
-  static UnicodeString SaveList(const TList & List);
 };
 
 struct TFileColorData
@@ -496,6 +483,8 @@ private:
   void SetDoubleClickAction(TDoubleClickAction value);
   void SetCopyOnDoubleClickConfirmation(bool value);
   void SetDDDisableMove(bool value);
+  void SetDDTransferConfirmation(TAutoSwitch value);
+  void SetDeleteToRecycleBin(bool value);
   void SetDimmHiddenFiles(bool value);
   void SetRenameWholeName(bool value);
   void SetScpCommander(TScpCommanderConfiguration value);
@@ -505,7 +494,7 @@ private:
   void SetFormatSizeBytes(TFormatBytesStyle value);
   void SetPanelSearch(TIncrementalSearch value);
   void SetShowInaccesibleDirectories(bool value);
-  void SetPanelSearch(TIncrementalSearch value);
+  void SetConfirmTransferring(bool value);
   void SetConfirmDeleting(bool value);
   void SetConfirmRecycling(bool value);
   void SetUseLocationProfiles(bool value);
@@ -514,8 +503,8 @@ private:
   void SetDDDrives(UnicodeString value);
   void SetDDWarnLackOfTempSpace(bool value);
   void SetDDFakeFile(bool value);
-  void SetDDDrives(UnicodeString value);
-  void SetDDFakeFile(bool value);
+  void SetDDExtTimeout(int value);
+  void SetConfirmClosingSession(bool value);
   void SetDDWarnLackOfTempSpaceRatio(double value);
   void SetBookmarks(UnicodeString Key, TBookmarkList * value);
   TBookmarkList * GetBookmarks(UnicodeString Key);
@@ -537,7 +526,7 @@ private:
   void SetPreservePanelState(bool value);
   void SetDarkTheme(TAutoSwitch value);
   void SetLastStoredSession(UnicodeString value);
-  void SetDarkTheme(TAutoSwitch value);
+  void SetAutoSaveWorkspace(bool value);
   void SetAutoSaveWorkspacePasswords(bool value);
   void SetAutoWorkspace(UnicodeString value);
   void SetPathInCaption(TPathInCaption value);
@@ -582,7 +571,7 @@ private:
   void SetFileColors(UnicodeString value);
   void SetRunsSinceLastTip(int value);
   bool GetHonorDrivePolicy();
-  void SetFileColors(UnicodeString value);
+  void SetHonorDrivePolicy(bool value);
   bool GetUseABDrives();
   void SetUseABDrives(bool value);
   bool GetIsBeta();
@@ -591,13 +580,12 @@ private:
   void SetLockedInterface(bool value);
   bool GetTimeoutShellOperations();
   void SetTimeoutShellOperations(bool value);
-  bool GetTimeoutShellOperations();
-  void SetTimeoutShellOperations(bool value);
   void SetTimeoutShellIconRetrieval(bool value);
   void SetUseIconUpdateThread(bool value);
   void SetAllowWindowPrint(bool value);
   void SetStoreTransition(TStoreTransition value);
   void SetFirstRun(const UnicodeString & value);
+  int GetLocaleCompletenessTreshold();
 
   bool GetDDExtInstalled();
   void AddVersionToHistory();
