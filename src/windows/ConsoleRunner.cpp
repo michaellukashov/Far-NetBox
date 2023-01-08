@@ -55,15 +55,13 @@ public:
   virtual int Choice(
     UnicodeString Options, int Cancel, int Break, int Continue, int Timeouted, bool Timeouting, unsigned int Timer,
     UnicodeString Message);
+  virtual bool HasFlag(TConsoleFlag Flag) const;
   virtual bool PendingAbort();
   virtual void SetTitle(UnicodeString Title);
-  virtual bool LimitedOutput();
-  virtual bool LiveOutput();
-  virtual bool NoInteractiveInput();
   virtual void WaitBeforeExit();
-  virtual bool CommandLineOnly();
-  virtual bool WantsProgress();
   virtual void Progress(TScriptProgress & Progress);
+  virtual void TransferOut(const unsigned char * Data, size_t Len);
+  virtual size_t TransferIn(unsigned char * Data, size_t Len);
   virtual UnicodeString FinalLogMessage();
 
 protected:
@@ -463,19 +461,26 @@ void TOwnConsole::SetTitle(UnicodeString Title)
   SetConsoleTitle(Title.c_str());
 }
 
-bool TOwnConsole::LimitedOutput()
+bool TOwnConsole::HasFlag(TConsoleFlag Flag) const
 {
-  return true;
-}
+  switch (Flag)
+  {
+    case cfLimitedOutput:
+    case cfLiveOutput:
+    case cfInteractive:
+      return true;
 
-bool TOwnConsole::LiveOutput()
-{
-  return true;
-}
+    case cfNoInteractiveInput:
+    case cfCommandLineOnly:
+    case cfWantsProgress:
+    case cfStdOut:
+    case cfStdIn:
+      return false;
 
-bool TOwnConsole::NoInteractiveInput()
-{
-  return false;
+    default:
+      DebugFail();
+      return false;
+  }
 }
 
 void TOwnConsole::WaitBeforeExit()
@@ -497,19 +502,20 @@ void TOwnConsole::WaitBeforeExit()
   }
 }
 
-bool TOwnConsole::CommandLineOnly()
-{
-  return false;
-}
-
-bool TOwnConsole::WantsProgress()
-{
-  return false;
-}
-
 void TOwnConsole::Progress(TScriptProgress & /*Progress*/)
 {
   DebugFail();
+}
+
+void TOwnConsole::TransferOut(const unsigned char * DebugUsedArg(Data), size_t DebugUsedArg(Len))
+{
+  DebugFail();
+}
+
+size_t TOwnConsole::TransferIn(unsigned char * DebugUsedArg(Data), size_t DebugUsedArg(Len))
+{
+  DebugFail();
+  return 0;
 }
 
 UnicodeString TOwnConsole::FinalLogMessage()
@@ -517,10 +523,12 @@ UnicodeString TOwnConsole::FinalLogMessage()
   return UnicodeString();
 }
 
+typedef TConsoleCommStruct::TInitEvent::STDINOUT TStdInOutMode;
+
 class TExternalConsole : public TConsole
 {
 public:
-  TExternalConsole(const UnicodeString Instance, bool NoInteractiveInput);
+  TExternalConsole(const UnicodeString Instance, bool NoInteractiveInput, TStdInOutMode StdOut, TStdInOutMode StdIn);
   virtual ~TExternalConsole();
 
   virtual void Print(UnicodeString Str, bool FromBeginning = false, bool Error = false);
@@ -528,15 +536,13 @@ public:
   virtual int Choice(
     UnicodeString Options, int Cancel, int Break, int Continue, int Timeouted, bool Timeouting, unsigned int Timer,
     UnicodeString Message);
+  virtual bool HasFlag(TConsoleFlag Flag) const;
   virtual bool PendingAbort();
   virtual void SetTitle(UnicodeString Title);
-  virtual bool LimitedOutput();
-  virtual bool LiveOutput();
-  virtual bool NoInteractiveInput();
   virtual void WaitBeforeExit();
-  virtual bool CommandLineOnly();
-  virtual bool WantsProgress();
   virtual void Progress(TScriptProgress & Progress);
+  virtual void TransferOut(const unsigned char * Data, size_t Len);
+  virtual size_t TransferIn(unsigned char * Data, size_t Len);
   virtual UnicodeString FinalLogMessage();
 
 private:
@@ -549,8 +555,13 @@ private:
   bool FLiveOutput;
   bool FPipeOutput;
   bool FNoInteractiveInput;
+  TStdInOutMode FStdOut;
+  TStdInOutMode FStdIn;
   bool FWantsProgress;
+  bool FInteractive;
   unsigned int FMaxSend;
+  // Particularly FTP calls TransferOut/In from other thread
+  std::unique_ptr<TCriticalSection> FSection;
 
   inline TConsoleCommStruct * GetCommStruct();
   inline void FreeCommStruct(TConsoleCommStruct * CommStruct);
@@ -560,7 +571,7 @@ private:
 };
 
 TExternalConsole::TExternalConsole(
-  const UnicodeString Instance, bool NoInteractiveInput)
+  const UnicodeString Instance, bool NoInteractiveInput, TStdInOutMode StdOut, TStdInOutMode StdIn)
 {
   UnicodeString Name;
   Name = FORMAT(L"%s%s", (CONSOLE_EVENT_REQUEST, (Instance)));
@@ -583,6 +594,8 @@ TExternalConsole::TExternalConsole(
     CloseHandle(Job);
   }
 
+  FSection.reset(new TCriticalSection());
+
   TConsoleCommStruct * CommStruct = GetCommStruct();
   try
   {
@@ -603,6 +616,8 @@ TExternalConsole::TExternalConsole(
   SetTimer(Application->Handle, 1, 500, nullptr);
 
   FNoInteractiveInput = NoInteractiveInput;
+  FStdOut = StdOut;
+  FStdIn = StdIn;
   FMaxSend = 0;
 
   Init();
@@ -646,12 +661,12 @@ void TExternalConsole::SendEvent(int Timeout)
 {
   SetEvent(FRequestEvent);
   unsigned int Start = 0; // shut up
-  if (Configuration->LogProtocol >= 1)
+  if (Configuration->ActualLogProtocol >= 1)
   {
     Start = GetTickCount();
   }
   unsigned int Result = WaitForSingleObject(FResponseEvent, Timeout);
-  if (Configuration->LogProtocol >= 1)
+  if (Configuration->ActualLogProtocol >= 1)
   {
     unsigned int End = GetTickCount();
     unsigned int Duration = End - Start;
@@ -675,6 +690,7 @@ UnicodeString TExternalConsole::FinalLogMessage()
 
 void TExternalConsole::Print(UnicodeString Str, bool FromBeginning, bool Error)
 {
+  TGuard Guard(FSection.get());
   // need to do at least one iteration, even when Str is empty (new line)
   do
   {
@@ -710,6 +726,7 @@ void TExternalConsole::Print(UnicodeString Str, bool FromBeginning, bool Error)
 
 bool TExternalConsole::Input(UnicodeString & Str, bool Echo, unsigned int Timer)
 {
+  TGuard Guard(FSection.get());
   TConsoleCommStruct * CommStruct = GetCommStruct();
   try
   {
@@ -746,6 +763,7 @@ int TExternalConsole::Choice(
   UnicodeString Options, int Cancel, int Break, int Continue, int Timeouted, bool Timeouting, unsigned int Timer,
   UnicodeString Message)
 {
+  TGuard Guard(FSection.get());
   TConsoleCommStruct * CommStruct = GetCommStruct();
   try
   {
@@ -792,6 +810,7 @@ bool TExternalConsole::PendingAbort()
 
 void TExternalConsole::SetTitle(UnicodeString Title)
 {
+  TGuard Guard(FSection.get());
   TConsoleCommStruct * CommStruct = GetCommStruct();
   try
   {
@@ -811,11 +830,15 @@ void TExternalConsole::SetTitle(UnicodeString Title)
 
 void TExternalConsole::Init()
 {
+  TGuard Guard(FSection.get());
   TConsoleCommStruct * CommStruct = GetCommStruct();
   try
   {
     CommStruct->Event = TConsoleCommStruct::INIT;
     CommStruct->InitEvent.WantsProgress = false;
+    CommStruct->InitEvent.UseStdErr = (FStdOut != TConsoleCommStruct::TInitEvent::OFF);
+    CommStruct->InitEvent.OutputFormat = FStdOut;
+    CommStruct->InitEvent.InputFormat = FStdIn;
   }
   __finally
   {
@@ -831,6 +854,9 @@ void TExternalConsole::Init()
       (CommStruct->InitEvent.OutputType != FILE_TYPE_DISK) &&
       (CommStruct->InitEvent.OutputType != FILE_TYPE_PIPE);
     FPipeOutput = (CommStruct->InitEvent.OutputType != FILE_TYPE_PIPE);
+    FInteractive =
+      (CommStruct->InitEvent.InputType != FILE_TYPE_DISK) &&
+      (CommStruct->InitEvent.InputType != FILE_TYPE_PIPE);
     FWantsProgress = CommStruct->InitEvent.WantsProgress;
   }
   __finally
@@ -839,19 +865,38 @@ void TExternalConsole::Init()
   }
 }
 
-bool TExternalConsole::LimitedOutput()
+bool TExternalConsole::HasFlag(TConsoleFlag Flag) const
 {
-  return FLimitedOutput;
-}
+  switch (Flag)
+  {
+    case cfLimitedOutput:
+      return FLimitedOutput;
 
-bool TExternalConsole::LiveOutput()
-{
-  return FLiveOutput;
-}
+    case cfLiveOutput:
+      return FLiveOutput;
 
-bool TExternalConsole::NoInteractiveInput()
-{
-  return FNoInteractiveInput;
+    case cfNoInteractiveInput:
+      return FNoInteractiveInput;
+
+    case cfInteractive:
+      return FInteractive;
+
+    case cfCommandLineOnly:
+      return true;
+
+    case cfWantsProgress:
+      return FWantsProgress;
+
+    case cfStdOut:
+      return (FStdOut != TConsoleCommStruct::TInitEvent::OFF);
+
+    case cfStdIn:
+      return (FStdIn != TConsoleCommStruct::TInitEvent::OFF);
+
+    default:
+      DebugFail();
+      return false;
+  }
 }
 
 void TExternalConsole::WaitBeforeExit()
@@ -859,18 +904,9 @@ void TExternalConsole::WaitBeforeExit()
   // noop
 }
 
-bool TExternalConsole::CommandLineOnly()
-{
-  return true;
-}
-
-bool TExternalConsole::WantsProgress()
-{
-  return FWantsProgress;
-}
-
 void TExternalConsole::Progress(TScriptProgress & Progress)
 {
+  TGuard Guard(FSection.get());
   TConsoleCommStruct * CommStruct = GetCommStruct();
 
   typedef TConsoleCommStruct::TProgressEvent TProgressEvent;
@@ -881,15 +917,9 @@ void TExternalConsole::Progress(TScriptProgress & Progress)
 
     CommStruct->Event = TConsoleCommStruct::PROGRESS;
 
-    switch (Progress.Operation)
+    if (DebugAlwaysTrue(TFileOperationProgressType::IsTransferOperation(Progress.Operation)))
     {
-      case foCopy:
-      case foMove:
-        ProgressEvent.Operation = TProgressEvent::COPY;
-        break;
-
-      default:
-        DebugFail();
+      ProgressEvent.Operation = TProgressEvent::COPY;
     }
 
     switch (Progress.Side)
@@ -935,6 +965,75 @@ void TExternalConsole::Progress(TScriptProgress & Progress)
   }
 }
 
+void TExternalConsole::TransferOut(const unsigned char * Data, size_t Len)
+{
+  TGuard Guard(FSection.get());
+  DebugAssert((Data == nullptr) == (Len == 0));
+  size_t Offset = 0;
+  do
+  {
+    TConsoleCommStruct * CommStruct = GetCommStruct();
+    try
+    {
+      CommStruct->Event = TConsoleCommStruct::TRANSFEROUT;
+      size_t BlockLen = std::min(Len - Offset, sizeof(CommStruct->TransferEvent.Data));
+      memcpy(CommStruct->TransferEvent.Data, Data + Offset, BlockLen);
+      CommStruct->TransferEvent.Len = BlockLen;
+      Offset += BlockLen;
+    }
+    __finally
+    {
+      FreeCommStruct(CommStruct);
+    }
+    SendEvent(INFINITE);
+  }
+  while (Offset < Len);
+}
+
+size_t TExternalConsole::TransferIn(unsigned char * Data, size_t Len)
+{
+  TGuard Guard(FSection.get());
+  size_t Offset = 0;
+  size_t Result = 0;
+  while ((Result == Offset) && (Offset < Len))
+  {
+    TConsoleCommStruct * CommStruct;
+    size_t BlockLen = std::min(Len - Offset, sizeof(CommStruct->TransferEvent.Data));
+
+    CommStruct = GetCommStruct();
+    try
+    {
+      CommStruct->Event = TConsoleCommStruct::TRANSFERIN;
+      CommStruct->TransferEvent.Len = BlockLen;
+      CommStruct->TransferEvent.Error = false;
+    }
+    __finally
+    {
+      FreeCommStruct(CommStruct);
+    }
+
+    SendEvent(INFINITE);
+
+    CommStruct = GetCommStruct();
+    try
+    {
+      if (CommStruct->TransferEvent.Error)
+      {
+        throw Exception(LoadStr(STREAM_READ_ERROR));
+      }
+      DebugAssert(CommStruct->TransferEvent.Len <= BlockLen);
+      Result += CommStruct->TransferEvent.Len;
+      memcpy(Data + Offset, CommStruct->TransferEvent.Data, CommStruct->TransferEvent.Len);
+      Offset += BlockLen;
+    }
+    __finally
+    {
+      FreeCommStruct(CommStruct);
+    }
+  }
+  return Result;
+}
+
 class TNullConsole : public TConsole
 {
 public:
@@ -945,16 +1044,14 @@ public:
   virtual int Choice(
     UnicodeString Options, int Cancel, int Break, int Continue, int Timeouted, bool Timeouting, unsigned int Timer,
     UnicodeString Message);
+  virtual bool HasFlag(TConsoleFlag Flag) const;
   virtual bool PendingAbort();
   virtual void SetTitle(UnicodeString Title);
-  virtual bool LimitedOutput();
-  virtual bool LiveOutput();
-  virtual bool NoInteractiveInput();
   virtual void WaitBeforeExit();
-  virtual bool CommandLineOnly();
 
-  virtual bool WantsProgress();
   virtual void Progress(TScriptProgress & Progress);
+  virtual void TransferOut(const unsigned char * Data, size_t Len);
+  virtual size_t TransferIn(unsigned char * Data, size_t Len);
   virtual UnicodeString FinalLogMessage();
 };
 
@@ -1000,21 +1097,29 @@ void TNullConsole::SetTitle(UnicodeString /*Title*/)
   // noop
 }
 
-bool TNullConsole::LimitedOutput()
+bool TNullConsole::HasFlag(TConsoleFlag Flag) const
 {
-  return false;
-}
+  switch (Flag)
+  {
+    // do not matter, even if we return false,
+    // it fails immediately afterwards in TNullConsole::Input
+    case cfNoInteractiveInput:
+      return true;
 
-bool TNullConsole::LiveOutput()
-{
-  return false;
-}
+    case cfLimitedOutput:
+    case cfLiveOutput:
+    case cfInteractive:
+    case cfCommandLineOnly:
+    case cfWantsProgress:
+    case cfStdOut:
+    case cfStdIn:
+      return false;
 
-bool TNullConsole::NoInteractiveInput()
-{
-  // do not matter, even if we return false,
-  // it fails immediately afterwards in TNullConsole::Input
-  return true;
+    default:
+      DebugFail();
+      return false;
+  }
+
 }
 
 void TNullConsole::WaitBeforeExit()
@@ -1023,20 +1128,20 @@ void TNullConsole::WaitBeforeExit()
   // noop
 }
 
-bool TNullConsole::CommandLineOnly()
-{
-  DebugFail();
-  return false;
-}
-
-bool TNullConsole::WantsProgress()
-{
-  return false;
-}
-
 void TNullConsole::Progress(TScriptProgress & /*Progress*/)
 {
   DebugFail();
+}
+
+void TNullConsole::TransferOut(const unsigned char * DebugUsedArg(Data), size_t DebugUsedArg(Len))
+{
+  DebugFail();
+}
+
+size_t TNullConsole::TransferIn(unsigned char * DebugUsedArg(Data), size_t DebugUsedArg(Len))
+{
+  DebugFail();
+  return 0;
 }
 
 UnicodeString TNullConsole::FinalLogMessage()
@@ -1112,6 +1217,8 @@ private:
   UnicodeString ExpandCommand(UnicodeString Command, TStrings * ScriptParameters);
   void Failed(bool & AnyError);
   void ScriptProgress(TScript * Script, TScriptProgress & Progress);
+  void ScriptTransferOut(TObject *, const unsigned char * Data, size_t Len);
+  size_t ScriptTransferIn(TObject *, unsigned char * Data, size_t Len);
   void ConfigurationChange(TObject * Sender);
 };
 
@@ -1311,6 +1418,7 @@ void TConsoleRunner::ScriptTerminalQueryUser(TObject * /*Sender*/,
   unsigned int Timer = 0;
   unsigned int Timeout = 0;
   unsigned int TimeoutA = 0;
+  unsigned int TimeoutR = 0;
   unsigned int NoBatchA = 0;
 
   if (Params != nullptr)
@@ -1319,6 +1427,8 @@ void TConsoleRunner::ScriptTerminalQueryUser(TObject * /*Sender*/,
     {
       Timeout = Params->Timeout;
       TimeoutA = Params->TimeoutAnswer;
+      TimeoutR = Params->TimeoutResponse;
+      DebugAssert((TimeoutA != 0) && (TimeoutR != 0));
     }
 
     if (Params->Timer > 0)
@@ -1348,8 +1458,10 @@ void TConsoleRunner::ScriptTerminalQueryUser(TObject * /*Sender*/,
       Timeout = InputTimeout();
       if (Timeout != 0)
       {
+        DebugAssert((TimeoutA == 0) && (TimeoutR == 0));
         // See a duplicate AbortAnswer call below
         TimeoutA = AbortAnswer(Answers & ~NoBatchA);
+        TimeoutR = TimeoutA;
       }
     }
   }
@@ -1518,7 +1630,7 @@ void TConsoleRunner::ScriptTerminalQueryUser(TObject * /*Sender*/,
     {
       Retry = false;
 
-      if (FirstOutput || FConsole->LiveOutput())
+      if (FirstOutput || FConsole->HasFlag(cfLiveOutput))
       {
         UnicodeString Output;
         for (unsigned int i = 0; i < Buttons.size(); i++)
@@ -1568,6 +1680,7 @@ void TConsoleRunner::ScriptTerminalQueryUser(TObject * /*Sender*/,
       else if (Timeouting && (Timeout < MSecsPerSec))
       {
         AnswerIndex = TimeoutIndex;
+        Answer = TimeoutR;
       }
       else
       {
@@ -1576,7 +1689,7 @@ void TConsoleRunner::ScriptTerminalQueryUser(TObject * /*Sender*/,
         {
           if (Timer == 0)
           {
-            if (FConsole->NoInteractiveInput())
+            if (FConsole->HasFlag(cfNoInteractiveInput))
             {
               ActualTimer = Timeout;
             }
@@ -1602,7 +1715,7 @@ void TConsoleRunner::ScriptTerminalQueryUser(TObject * /*Sender*/,
           ActualTimer = Timer;
         }
         // Not to get preliminary "host is not responding" messages to .NET assembly
-        if (FConsole->NoInteractiveInput() && (Timer > 0))
+        if (FConsole->HasFlag(cfNoInteractiveInput) && (Timer > 0))
         {
           Sleep(Timer);
           AnswerIndex = -2;
@@ -1748,6 +1861,16 @@ void TConsoleRunner::ScriptProgress(TScript * /*Script*/, TScriptProgress & Prog
   FConsole->Progress(Progress);
 }
 
+void TConsoleRunner::ScriptTransferOut(TObject *, const unsigned char * Data, size_t Len)
+{
+  FConsole->TransferOut(Data, Len);
+}
+
+size_t TConsoleRunner::ScriptTransferIn(TObject *, unsigned char * Data, size_t Len)
+{
+  return FConsole->TransferIn(Data, Len);
+}
+
 void TConsoleRunner::SynchronizeControllerLog(
   TSynchronizeController * /*Controller*/, TSynchronizeLogEntry /*Entry*/,
   const UnicodeString Message)
@@ -1863,7 +1986,7 @@ bool TConsoleRunner::DoInput(UnicodeString & Str, bool Echo,
   unsigned int Timeout, bool Interactive)
 {
   bool Result;
-  if (Interactive && FConsole->NoInteractiveInput())
+  if (Interactive && FConsole->HasFlag(cfNoInteractiveInput))
   {
     Result = false;
   }
@@ -1980,11 +2103,11 @@ int TConsoleRunner::Run(const UnicodeString Session, TOptions * Options,
 
     try
     {
-      FScript = new TManagementScript(StoredSessions, FConsole->LimitedOutput());
+      FScript = new TManagementScript(StoredSessions, FConsole->HasFlag(cfLimitedOutput));
 
       FScript->CopyParam = GUIConfiguration->DefaultCopyParam;
       FScript->SynchronizeParams = GUIConfiguration->SynchronizeParams;
-      FScript->WantsProgress = FConsole->WantsProgress();
+      FScript->WantsProgress = FConsole->HasFlag(cfWantsProgress);
       FScript->OnPrint = ScriptPrint;
       FScript->OnPrintProgress = ScriptPrintProgress;
       FScript->OnInput = ScriptInput;
@@ -1994,6 +2117,15 @@ int TConsoleRunner::Run(const UnicodeString Session, TOptions * Options,
       FScript->OnQueryCancel = ScriptQueryCancel;
       FScript->OnSynchronizeStartStop = ScriptSynchronizeStartStop;
       FScript->OnProgress = ScriptProgress;
+      FScript->Interactive = (ScriptCommands == nullptr) && FConsole->HasFlag(cfInteractive);
+      if (FConsole->HasFlag(cfStdOut))
+      {
+        FScript->OnTransferOut = ScriptTransferOut;
+      }
+      if (FConsole->HasFlag(cfStdIn))
+      {
+        FScript->OnTransferIn = ScriptTransferIn;
+      }
 
       UpdateTitle();
 
@@ -2003,7 +2135,10 @@ int TConsoleRunner::Run(const UnicodeString Session, TOptions * Options,
 
       if (!Session.IsEmpty())
       {
-        PrintMessage(LoadStr(SCRIPT_CMDLINE_SESSION));
+        if (!FScript->Interactive)
+        {
+          PrintMessage(LoadStr(SCRIPT_CMDLINE_SESSION));
+        }
         FCommandError = false;
         FScript->Connect(Session, Options, false);
         if (FCommandError)
@@ -2079,7 +2214,7 @@ int TConsoleRunner::Run(const UnicodeString Session, TOptions * Options,
     {
       UnicodeString ExitCodeMessage = FORMAT(L"Exit code: %d", (ExitCode));
       FScript->Log(llMessage, ExitCodeMessage);
-      if (Configuration->LogProtocol >= 1)
+      if (Configuration->ActualLogProtocol >= 1)
       {
         FConsole->Print(ExitCodeMessage + L"\n");
         UnicodeString LogMessage = FConsole->FinalLogMessage();
@@ -2157,36 +2292,54 @@ void Usage(TConsole * Console)
   Console->PrintLine();
   Console->PrintLine(LoadStr(USAGE_SYNTAX_LABEL));
 
-  if (!Console->CommandLineOnly())
+  bool CommandLineOnly = Console->HasFlag(cfCommandLineOnly);
+  if (!CommandLineOnly)
   {
     PrintUsageSyntax(Console, L"site|workspace|folder");
     PrintUsageSyntax(Console, L"(sftp|scp|ftp[es]|dav[s]|s3)://[user[:password]@]host[:port][/path/[file]]");
     PrintUsageSyntax(Console, FORMAT(L"[mysession] /%s=<name>", (LowerCase(SESSIONNAME_SWICH))));
     PrintUsageSyntax(Console, L"[mysession] /newinstance");
     PrintUsageSyntax(Console, L"[mysession] /edit <path>");
+    PrintUsageSyntax(Console, FORMAT(L"[mysession] /%s[=<file>]", (LowerCase(BROWSE_SWITCH))));
     PrintUsageSyntax(Console, FORMAT(L"[mysession] /%s [local_dir] [remote_dir] [/%s]", (LowerCase(SYNCHRONIZE_SWITCH), LowerCase(DEFAULTS_SWITCH))));
     PrintUsageSyntax(Console, FORMAT(L"[mysession] /%s [local_dir] [remote_dir] [/%s]", (LowerCase(KEEP_UP_TO_DATE_SWITCH), LowerCase(DEFAULTS_SWITCH))));
     PrintUsageSyntax(Console, FORMAT(L"[mysession] /%s [path]", (LowerCase(REFRESH_SWITCH))));
-    PrintUsageSyntax(Console, L"[mysession] [/privatekey=<file>] [/hostkey=<fingerprint>]");
-    PrintUsageSyntax(Console, L"[mysession] [/clientcert=<file>] [/certificate=<fingerprint>]");
+    PrintUsageSyntax(Console, FORMAT(L"[mysession] [/%s=<file> [/%s=<passphrase>]]", (LowerCase(PRIVATEKEY_SWITCH), PassphraseOption)));
+    PrintUsageSyntax(Console, L"[mysession] [/hostkey=<fingerprint>]");
+    PrintUsageSyntax(Console, FORMAT(L"[mysession] [/%s=<user> [/%s=<password>]]", (LowerCase(USERNAME_SWITCH), LowerCase(PASSWORD_SWITCH))));
+    PrintUsageSyntax(Console, FORMAT(L"[mysession] [/clientcert=<file> [/%s=<passphrase>]]", (PassphraseOption)));
+    PrintUsageSyntax(Console, L"[mysession] [/certificate=<fingerprint>]");
     PrintUsageSyntax(Console, L"[mysession] [/passive[=on|off]] [/implicit|explicit]");
     PrintUsageSyntax(Console, L"[mysession] [/timeout=<sec>]");
     PrintUsageSyntax(Console, L"[mysession] [/rawsettings setting1=value1 setting2=value2 ...]");
   }
   PrintUsageSyntax(Console,
-    UnicodeString(!Console->CommandLineOnly() ? L"[/console] " : L"") +
-    FORMAT(L"[/script=file] [/%s cmd1...] [/parameter // param1...]", (LowerCase(COMMAND_SWITCH))));
+    UnicodeString(!CommandLineOnly ? L"[/console] " : L"") +
+    FORMAT(L"[/script=<file>] [/%s cmd1...] [/parameter // param1...]", (LowerCase(COMMAND_SWITCH))));
+  if (CommandLineOnly)
+  {
+    PrintUsageSyntax(
+      Console, FORMAT(L"[/%s[=%s|%s]] [/%s]",
+      (LowerCase(STDOUT_SWITCH), STDINOUT_BINARY_VALUE, STDINOUT_CHUNKED_VALUE, LowerCase(STDIN_SWITCH))));
+  }
   PrintUsageSyntax(Console,
     FORMAT(L"[/%s=<logfile> [/loglevel=<level>]] [/%s=[<count>%s]<size>]", (LowerCase(LOG_SWITCH), LowerCase(LOGSIZE_SWITCH), LOGSIZE_SEPARATOR)));
-  PrintUsageSyntax(Console, L"[/xmllog=<logfile> [/xmlgroups]]");
+  if (!CommandLineOnly)
+  {
+    PrintUsageSyntax(Console, L"[/xmllog=<logfile> [/xmlgroups]]");
+  }
+  else
+  {
+    PrintUsageSyntax(Console, FORMAT(L"[/xmllog=<logfile> [/xmlgroups]] [/%s]", (LowerCase(NOINTERACTIVEINPUT_SWITCH))));
+  }
   PrintUsageSyntax(Console,
     FORMAT(L"[/%s=<inifile>]", (LowerCase(INI_SWITCH))));
   PrintUsageSyntax(Console, FORMAT(L"[/%s config1=value1 config2=value2 ...]", (LowerCase(RAW_CONFIG_SWITCH))));
   PrintUsageSyntax(Console, FORMAT(L"[/%s setting1=value1 setting2=value2 ...]", (LowerCase(RAWTRANSFERSETTINGS_SWITCH))));
   PrintUsageSyntax(Console, L"/batchsettings <site_mask> setting1=value1 setting2=value2 ...");
-  PrintUsageSyntax(Console, FORMAT(L"/%s keyfile [/%s=output] [/%s] [/%s=comment]",
+  PrintUsageSyntax(Console, FORMAT(L"/%s keyfile [/%s=<file>] [/%s] [/%s=<text>]",
     (LowerCase(KEYGEN_SWITCH), LowerCase(KEYGEN_OUTPUT_SWITCH), LowerCase(KEYGEN_CHANGE_PASSPHRASE_SWITCH), LowerCase(KEYGEN_COMMENT_SWITCH))));
-  if (!Console->CommandLineOnly())
+  if (!CommandLineOnly)
   {
     PrintUsageSyntax(Console, L"/update");
   }
@@ -2196,20 +2349,24 @@ void Usage(TConsole * Console)
   Console->PrintLine();
 
   TSwitchesUsage SwitchesUsage;
-  if (!Console->CommandLineOnly())
+  if (!CommandLineOnly)
   {
     RegisterSwitch(SwitchesUsage, L"session", USAGE_SESSION);
     RegisterSwitch(SwitchesUsage, TProgramParams::FormatSwitch(SESSIONNAME_SWICH) + L"=", USAGE_SESSIONNAME);
     RegisterSwitch(SwitchesUsage, L"/newinstance", USAGE_NEWINSTANCE);
     RegisterSwitch(SwitchesUsage, L"/edit", USAGE_EDIT);
+    RegisterSwitch(SwitchesUsage, TProgramParams::FormatSwitch(BROWSE_SWITCH), USAGE_BROWSE);
     RegisterSwitch(SwitchesUsage, TProgramParams::FormatSwitch(SYNCHRONIZE_SWITCH), USAGE_SYNCHRONIZE);
     RegisterSwitch(SwitchesUsage, TProgramParams::FormatSwitch(KEEP_UP_TO_DATE_SWITCH), USAGE_KEEPUPTODATE);
     RegisterSwitch(SwitchesUsage, TProgramParams::FormatSwitch(REFRESH_SWITCH), USAGE_REFRESH);
     RegisterSwitch(SwitchesUsage, TProgramParams::FormatSwitch(DEFAULTS_SWITCH), USAGE_DEFAULTS);
-    RegisterSwitch(SwitchesUsage, L"/privatekey=", USAGE_PRIVATEKEY);
+    RegisterSwitch(SwitchesUsage, TProgramParams::FormatSwitch(PRIVATEKEY_SWITCH) + L"=", USAGE_PRIVATEKEY);
     RegisterSwitch(SwitchesUsage, L"/hostkey=", USAGE_HOSTKEY);
+    RegisterSwitch(SwitchesUsage, TProgramParams::FormatSwitch(USERNAME_SWITCH), USAGE_USERNAME);
+    RegisterSwitch(SwitchesUsage, TProgramParams::FormatSwitch(PASSWORD_SWITCH), USAGE_PASSWORD);
     RegisterSwitch(SwitchesUsage, L"/clientcert=", USAGE_CLIENTCERT);
     RegisterSwitch(SwitchesUsage, L"/certificate=", USAGE_CERTIFICATE);
+    RegisterSwitch(SwitchesUsage, TProgramParams::FormatSwitch(PassphraseOption) + L"=", USAGE_PASSPHRASE);
     RegisterSwitch(SwitchesUsage, L"/passive=", USAGE_PASSIVE);
     RegisterSwitch(SwitchesUsage, L"/implicit", USAGE_IMPLICIT);
     RegisterSwitch(SwitchesUsage, L"/explicit", USAGE_EXPLICIT);
@@ -2220,11 +2377,20 @@ void Usage(TConsole * Console)
   RegisterSwitch(SwitchesUsage, L"/script=", USAGE_SCRIPT);
   RegisterSwitch(SwitchesUsage, TProgramParams::FormatSwitch(COMMAND_SWITCH), USAGE_COMMAND);
   RegisterSwitch(SwitchesUsage, L"/parameter", USAGE_PARAMETER);
+  if (CommandLineOnly)
+  {
+    RegisterSwitch(SwitchesUsage, TProgramParams::FormatSwitch(STDOUT_SWITCH), USAGE_STDOUT);
+    RegisterSwitch(SwitchesUsage, TProgramParams::FormatSwitch(STDIN_SWITCH), USAGE_STDIN);
+  }
   RegisterSwitch(SwitchesUsage, TProgramParams::FormatSwitch(LOG_SWITCH) + L"=", USAGE_LOG);
   RegisterSwitch(SwitchesUsage, L"/loglevel=", USAGE_LOGLEVEL);
   RegisterSwitch(SwitchesUsage, TProgramParams::FormatSwitch(LOGSIZE_SWITCH) + L"=", USAGE_LOGSIZE);
   RegisterSwitch(SwitchesUsage, L"/xmllog=", USAGE_XMLLOG);
   RegisterSwitch(SwitchesUsage, L"/xmlgroups", USAGE_XMLGROUPS);
+  if (CommandLineOnly)
+  {
+    RegisterSwitch(SwitchesUsage, TProgramParams::FormatSwitch(NOINTERACTIVEINPUT_SWITCH), USAGE_INTERACTIVEINPUT);
+  }
   RegisterSwitch(SwitchesUsage, TProgramParams::FormatSwitch(INI_SWITCH) + L"=", USAGE_INI);
   RegisterSwitch(SwitchesUsage, TProgramParams::FormatSwitch(RAW_CONFIG_SWITCH), USAGE_RAWCONFIG);
   RegisterSwitch(SwitchesUsage, TProgramParams::FormatSwitch(RAWTRANSFERSETTINGS_SWITCH), USAGE_RAWTRANSFERSETTINGS);
@@ -2235,7 +2401,7 @@ void Usage(TConsole * Console)
       TProgramParams::FormatSwitch(LowerCase(KEYGEN_CHANGE_PASSPHRASE_SWITCH)),
       TProgramParams::FormatSwitch(LowerCase(KEYGEN_COMMENT_SWITCH)) + L"="));
   RegisterSwitch(SwitchesUsage, TProgramParams::FormatSwitch(KEYGEN_SWITCH), KeyGenDesc);
-  if (!Console->CommandLineOnly())
+  if (!CommandLineOnly)
   {
     RegisterSwitch(SwitchesUsage, L"/update", USAGE_UPDATE);
   }
@@ -2288,57 +2454,6 @@ void Usage(TConsole * Console)
   Console->WaitBeforeExit();
 }
 
-void BatchSettings(TConsole * Console, TProgramParams * Params)
-{
-  std::unique_ptr<TStrings> Arguments(std::make_unique<TStringList>());
-  if (DebugAlwaysTrue(Params->FindSwitch(L"batchsettings", Arguments.get())))
-  {
-    if (Arguments->Count < 1)
-    {
-      Console->PrintLine(LoadStr(BATCH_SET_NO_MASK));
-    }
-    else if (Arguments->Count < 2)
-    {
-      Console->PrintLine(LoadStr(BATCH_SET_NO_SETTINGS));
-    }
-    else
-    {
-      TFileMasks Mask(Arguments->Strings[0]);
-      Arguments->Delete(0);
-
-      std::unique_ptr<TOptionsStorage> OptionsStorage(std::make_unique<TOptionsStorage>(Arguments.get(), false));
-
-      int Matches = 0;
-      int Changes = 0;
-
-      for (int Index = 0; Index < StoredSessions->Count; Index++)
-      {
-        TSessionData * Data = StoredSessions->Sessions[Index];
-        if (!Data->IsWorkspace &&
-            Mask.Matches(Data->Name, false, false))
-        {
-          Matches++;
-          std::unique_ptr<TSessionData> OriginalData(std::make_unique<TSessionData>(L""));
-          OriginalData->Assign(Data);
-          Data->ApplyRawSettings(OptionsStorage.get());
-          bool Changed = !OriginalData->IsSame(Data, false);
-          if (Changed)
-          {
-            Changes++;
-          }
-          UnicodeString StateStr = LoadStr(Changed ? BATCH_SET_CHANGED : BATCH_SET_NOT_CHANGED);
-          Console->PrintLine(FORMAT(L"%s - %s", (Data->Name, StateStr)));
-        }
-      }
-
-      StoredSessions->Save(false, true); // explicit
-      Console->PrintLine(FMTLOAD(BATCH_SET_SUMMARY, (Matches, Changes)));
-    }
-
-    Console->WaitBeforeExit();
-  }
-}
-
 int HandleException(TConsole * Console, Exception & E)
 {
   UnicodeString Message;
@@ -2347,6 +2462,70 @@ int HandleException(TConsole * Console, Exception & E)
     Console->Print(Message);
   }
   return RESULT_ANY_ERROR;
+}
+
+int BatchSettings(TConsole * Console, TProgramParams * Params)
+{
+  int Result = RESULT_SUCCESS;
+  try
+  {
+    std::unique_ptr<TStrings> Arguments(new TStringList());
+    if (!DebugAlwaysTrue(Params->FindSwitch(L"batchsettings", Arguments.get())))
+    {
+      Abort();
+    }
+    else
+    {
+      if (Arguments->Count < 1)
+      {
+        throw Exception(LoadStr(BATCH_SET_NO_MASK));
+      }
+      else if (Arguments->Count < 2)
+      {
+        throw Exception(LoadStr(BATCH_SET_NO_SETTINGS));
+      }
+      else
+      {
+        TFileMasks Mask(Arguments->Strings[0]);
+        Arguments->Delete(0);
+
+        std::unique_ptr<TOptionsStorage> OptionsStorage(new TOptionsStorage(Arguments.get(), false));
+
+        int Matches = 0;
+        int Changes = 0;
+
+        for (int Index = 0; Index < StoredSessions->Count; Index++)
+        {
+          TSessionData * Data = StoredSessions->Sessions[Index];
+          if (!Data->IsWorkspace &&
+              Mask.Matches(Data->Name, false, false))
+          {
+            Matches++;
+            std::unique_ptr<TSessionData> OriginalData(new TSessionData(L""));
+            OriginalData->CopyDataNoRecrypt(Data);
+            Data->ApplyRawSettings(OptionsStorage.get(), false);
+            bool Changed = !OriginalData->IsSame(Data, false);
+            if (Changed)
+            {
+              Changes++;
+            }
+            UnicodeString StateStr = LoadStr(Changed ? BATCH_SET_CHANGED : BATCH_SET_NOT_CHANGED);
+            Console->PrintLine(FORMAT(L"%s - %s", (Data->Name, StateStr)));
+          }
+        }
+
+        StoredSessions->Save(false, true); // explicit
+        Console->PrintLine(FMTLOAD(BATCH_SET_SUMMARY, (Matches, Changes)));
+      }
+    }
+  }
+  catch (Exception & E)
+  {
+    Result = HandleException(Console, E);
+  }
+
+  Console->WaitBeforeExit();
+  return Result;
 }
 
 bool FindPuttygenCompatibleSwitch(
@@ -2394,6 +2573,11 @@ int KeyGen(TConsole * Console, TProgramParams * Params)
     bool ChangePassphrase =
       FindPuttygenCompatibleSwitch(Params, KEYGEN_CHANGE_PASSPHRASE_SWITCH, L"P", NewPassphrase, NewPassphraseSet);
 
+    if (Params->ParamCount > 0)
+    {
+      throw Exception(LoadStr(TOO_MANY_PARAMS_ERROR));
+    }
+
     TKeyType Type = KeyType(InputFileName);
     int Error = errno;
     switch (Type)
@@ -2402,7 +2586,8 @@ int KeyGen(TConsole * Console, TProgramParams * Params)
         throw Exception(LoadStr(KEYGEN_SSH1));
 
       case ktSSH2:
-        if (NewComment.IsEmpty() && !ChangePassphrase)
+        if (NewComment.IsEmpty() && !ChangePassphrase &&
+            (Configuration->KeyVersion == 0)) // We should better check for version change
         {
           throw Exception(LoadStr(KEYGEN_NO_ACTION));
         }
@@ -2540,11 +2725,16 @@ int FingerprintScan(TConsole * Console, TProgramParams * Params)
 
     std::unique_ptr<TTerminal> Terminal(std::make_unique<TTerminal>(SessionData.get(), Configuration));
     UnicodeString SHA256;
+    UnicodeString SHA1;
     UnicodeString MD5;
-    Terminal->FingerprintScan(SHA256, MD5);
+    Terminal->FingerprintScan(SHA256, SHA1, MD5);
     if (!SHA256.IsEmpty())
     {
       Console->PrintLine(FORMAT(L"SHA-256: %s", (SHA256)));
+    }
+    if (!SHA1.IsEmpty())
+    {
+      Console->PrintLine(FORMAT(L"SHA-1: %s", (SHA1)));
     }
     if (!MD5.IsEmpty())
     {
@@ -2591,7 +2781,7 @@ int DumpCallstack(TConsole * Console, TProgramParams * Params)
       Timeout--;
       if (Timeout == 0)
       {
-        throw Exception("Timeout");
+        throw Exception(L"Timeout");
       }
     }
 
@@ -2628,9 +2818,9 @@ int Info(TConsole * Console)
   try
   {
     PrintListAndFree(Console, L"SSH encryption ciphers:", SshCipherList());
-    PrintListAndFree(Console, L"SSH key exchange algoritms:", SshKexList());
-    PrintListAndFree(Console, L"SSH host key algoritms:", SshHostKeyList());
-    PrintListAndFree(Console, L"SSH MAC algoritms:", SshMacList());
+    PrintListAndFree(Console, L"SSH key exchange algorithms:", SshKexList());
+    PrintListAndFree(Console, L"SSH host key algorithms:", SshHostKeyList());
+    PrintListAndFree(Console, L"SSH MAC algorithms:", SshMacList());
     PrintListAndFree(Console, L"TLS/SSL cipher suites:", TlsCipherList());
   }
   catch (Exception & E)
@@ -2639,6 +2829,32 @@ int Info(TConsole * Console)
   }
 
   Console->WaitBeforeExit();
+  return Result;
+}
+
+TStdInOutMode ParseStdInOutMode(TProgramParams * Params, const UnicodeString & Switch, bool AllowChunked)
+{
+  TStdInOutMode Result;
+  UnicodeString Value;
+  if (!Params->FindSwitch(Switch, Value))
+  {
+    Result = TConsoleCommStruct::TInitEvent::OFF;
+  }
+  else
+  {
+    if (Value.IsEmpty() || SameText(Value, STDINOUT_BINARY_VALUE))
+    {
+      Result = TConsoleCommStruct::TInitEvent::BINARY;
+    }
+    else if (SameText(Value, STDINOUT_CHUNKED_VALUE) && AllowChunked)
+    {
+      Result = TConsoleCommStruct::TInitEvent::CHUNKED;
+    }
+    else
+    {
+      throw Exception(FORMAT(SCRIPT_VALUE_UNKNOWN, (Value, Switch))); // abuse of the string
+    }
+  }
   return Result;
 }
 
@@ -2658,7 +2874,10 @@ int Console(TConsoleMode Mode)
     if (Params->FindSwitch(L"consoleinstance", ConsoleInstance))
     {
       Configuration->Usage->Inc(L"ConsoleExternal");
-      Console = new TExternalConsole(ConsoleInstance, Params->FindSwitch(L"nointeractiveinput"));
+      TStdInOutMode StdOut = ParseStdInOutMode(Params, STDOUT_SWITCH, true);
+      TStdInOutMode StdIn = ParseStdInOutMode(Params, STDIN_SWITCH, false);
+      bool NoInteractiveInput = Params->FindSwitch(NOINTERACTIVEINPUT_SWITCH) || (StdIn != TConsoleCommStruct::TInitEvent::OFF);
+      Console = new TExternalConsole(ConsoleInstance, NoInteractiveInput, StdOut, StdIn);
     }
     else if (Params->FindSwitch(L"Console") || (Mode != cmScripting))
     {
@@ -2683,7 +2902,7 @@ int Console(TConsoleMode Mode)
       if (CheckSafe(Params))
       {
         Configuration->Usage->Inc(L"BatchSettings");
-        BatchSettings(Console, Params);
+        Result = BatchSettings(Console, Params);
       }
     }
     else if (Mode == cmKeyGen)
@@ -2749,7 +2968,15 @@ int Console(TConsoleMode Mode)
           Session = Params->Param[1];
           if (Params->ParamCount > 1)
           {
-            Runner->PrintMessage(LoadStr(SCRIPT_CMDLINE_PARAMETERS));
+            // Check if the pending parameters will be consumed by ParseUrl (/rawsettings) in TManagementScript::Connect.
+            // This way we parse the options twice, but we do not want to refactor the code just for nicer test for this minor warning.
+            TOptions OptionsCopy(*Params);
+            bool DefaultsOnly = false;
+            StoredSessions->ParseUrl(Session, &OptionsCopy, DefaultsOnly);
+            if (OptionsCopy.ParamCount > 1)
+            {
+              Runner->PrintMessage(LoadStr(SCRIPT_CMDLINE_PARAMETERS));
+            }
           }
         }
 
