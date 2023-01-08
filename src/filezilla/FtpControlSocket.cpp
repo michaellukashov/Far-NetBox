@@ -158,7 +158,7 @@ nb::list_t<CFtpControlSocket::t_ActiveList> CFtpControlSocket::m_InstanceList[2]
 CTime CFtpControlSocket::m_CurrentTransferTime[2] = { CTime::GetCurrentTime(), CTime::GetCurrentTime() };
 _int64 CFtpControlSocket::m_CurrentTransferLimit[2] = {0, 0};
 
-CCriticalSection CFtpControlSocket::m_SpeedLimitSync;
+CCriticalSectionWrapper CFtpControlSocket::m_SpeedLimitSync;
 
 #define BUFSIZE 16384
 
@@ -267,7 +267,7 @@ void CFtpControlSocket::ShowTimeoutError(UINT nID) const
   CString str2;
   str2.LoadString(nID);
   CString message;
-  message.Format(L"%s (%s)", (LPCTSTR)str1, (LPCTSTR)str2);
+  message.Format(L"%s (%s)", str1, str2);
   ShowStatus(message, FZ_LOG_ERROR);
 }
 
@@ -416,17 +416,7 @@ bool CFtpControlSocket::InitConnect()
 
     m_pSslLayer->SetClientCertificate(m_CurrentServer.Certificate, m_CurrentServer.PrivateKey);
 
-    TCHAR buffer[1000];
-    GetModuleFileName(NULL, buffer, 1000);
-    CString filename = buffer;
-    int pos = filename.ReverseFind(L'\\');
-    if (pos != -1)
-    {
-      filename = filename.Left(pos + 1);
-      filename += L"cacert.pem";
-    }
-    else
-      filename = L"cacert.pem";
+    CString filename = GetOption(OPTION_MPEXT_CERT_STORAGE);
     m_pSslLayer->SetCertStorage(filename);
   }
 
@@ -536,9 +526,8 @@ void CFtpControlSocket::Connect(t_server &server)
       return;
     }
     int res = m_pSslLayer->InitSSLConnection(true, NULL,
-      GetOptionVal(OPTION_MPEXT_SSLSESSIONREUSE) != FALSE,
-      GetOptionVal(OPTION_MPEXT_MIN_TLS_VERSION),
-      GetOptionVal(OPTION_MPEXT_MAX_TLS_VERSION));
+      GetOptionVal(OPTION_MPEXT_SSLSESSIONREUSE), server.host,
+      m_pTools);
     if (res == SSL_FAILURE_INITSSL)
       ShowStatus(IDS_ERRORMSG_CANTINITSSL, FZ_LOG_ERROR);
     if (res)
@@ -550,7 +539,7 @@ void CFtpControlSocket::Connect(t_server &server)
 
   int logontype = GetOptionVal(OPTION_LOGONTYPE);
   int port;
-  CString temp;
+  CString buf,temp;
   // are we connecting directly to the host (logon type 0) or via a firewall? (logon type>0)
   CString fwhost;
   int fwport;
@@ -583,11 +572,24 @@ void CFtpControlSocket::Connect(t_server &server)
       DoClose();
       return;
     }
+    else
+    {
+      LogMessage(FZ_LOG_INFO, L"Connection pending");
+    }
+  }
+  else
+  {
+    LogMessage(FZ_LOG_INFO, L"Connected");
   }
   m_ServerName = logontype?fwhost:hostname;
   m_LastRecvTime = m_LastSendTime = CTime::GetCurrentTime();
 
   m_Operation.pData = new CLogonData();
+}
+
+static CString NormalizePass(const CString & pass)
+{
+  return CString(NormalizeString(UnicodeString(T2CW(pass))).c_str());
 }
 
 void CFtpControlSocket::LogOnToServer(BOOL bSkipReply /*=FALSE*/)
@@ -662,9 +664,8 @@ void CFtpControlSocket::LogOnToServer(BOOL bSkipReply /*=FALSE*/)
         return;
       }
       int res = m_pSslLayer->InitSSLConnection(true, NULL,
-        GetOptionVal(OPTION_MPEXT_SSLSESSIONREUSE) != FALSE,
-        GetOptionVal(OPTION_MPEXT_MIN_TLS_VERSION),
-        GetOptionVal(OPTION_MPEXT_MAX_TLS_VERSION));
+        GetOptionVal(OPTION_MPEXT_SSLSESSIONREUSE), m_CurrentServer.host,
+        m_pTools);
       if (res == SSL_FAILURE_INITSSL)
         ShowStatus(IDS_ERRORMSG_CANTINITSSL, FZ_LOG_ERROR);
       if (res)
@@ -822,7 +823,7 @@ void CFtpControlSocket::LogOnToServer(BOOL bSkipReply /*=FALSE*/)
       // Handle servers that disobey RFC 2640 that have UTF8 in the FEAT
       // response but do not use UTF8 unless OPTS UTF8 ON gets send.
       // However these servers obey a conflicting ietf draft:
-      // https://tools.ietf.org/html/draft-ietf-ftpext-utf-8-option-00
+      // https://datatracker.ietf.org/doc/html/draft-ietf-ftpext-utf-8-option-00
       // servers are, amongst others, G6 FTP Server and RaidenFTPd.
       if (Send(L"OPTS UTF8 ON"))
         m_Operation.nOpState = CONNECT_OPTSUTF8;
@@ -885,6 +886,11 @@ void CFtpControlSocket::LogOnToServer(BOOL bSkipReply /*=FALSE*/)
       else if (reply.GetLength() >= 11 && reply.Mid(3, 8) == " BS-2000")
         m_mayBeBS2000Filesystem = true;
 
+      if (reply.Left(4) == "VMS ")
+      {
+        m_CurrentServer.nServerType |= FZ_SERVERTYPE_SUB_FTP_VMS;
+      }
+
       if (reply.Find("FileZilla") != -1)
         m_isFileZilla = true;
     }
@@ -905,13 +911,14 @@ void CFtpControlSocket::LogOnToServer(BOOL bSkipReply /*=FALSE*/)
         // support UTF8 and the login data contains non-ascii characters.
         bool asciiOnly = true;
         for (int i = 0; i < m_CurrentServer.user.GetLength(); i++)
-          if (static_cast<unsigned int>(m_CurrentServer.user.GetAt(i)) > 127)
+          if (m_CurrentServer.user.GetAt(i) > 127)
             asciiOnly = false;
-        for (int i = 0; i < m_CurrentServer.pass.GetLength(); i++)
-          if (static_cast<unsigned int>(m_CurrentServer.pass.GetAt(i)) > 127)
+        CString pass = NormalizePass(m_CurrentServer.pass);
+        for (int i = 0; i < pass.GetLength(); i++)
+          if (pass.GetAt(i) > 127)
             asciiOnly = false;
         for (int i = 0; i < m_CurrentServer.account.GetLength(); i++)
-          if (static_cast<unsigned int>(m_CurrentServer.account.GetAt(i)) > 127)
+          if (m_CurrentServer.account.GetAt(i) > 127)
             asciiOnly = false;
         if (!asciiOnly)
         {
@@ -1113,7 +1120,7 @@ void CFtpControlSocket::LogOnToServer(BOOL bSkipReply /*=FALSE*/)
       }
       else if (!needpass || pData->gotPassword)
       {
-        temp=L"PASS "+m_CurrentServer.pass;
+        temp=L"PASS "+NormalizePass(m_CurrentServer.pass);
       }
       else
       {
@@ -1168,7 +1175,7 @@ void CFtpControlSocket::LogOnToServer(BOOL bSkipReply /*=FALSE*/)
       }
       else if (!needpass || pData->gotPassword)
       {
-        temp=L"PASS "+m_CurrentServer.pass+L"@"+GetOption(OPTION_FWPASS);
+        temp=L"PASS "+NormalizePass(m_CurrentServer.pass)+L"@"+GetOption(OPTION_FWPASS);
       }
       else
       {
@@ -1209,7 +1216,7 @@ void CFtpControlSocket::OnReceive(int nErrorCode)
     }
     m_MultiLine = "";
     CString str;
-    str.Format(IDS_STATUSMSG_CONNECTEDWITH, (LPCTSTR)m_ServerName);
+    str.Format(IDS_STATUSMSG_CONNECTEDWITH, m_ServerName);
     ShowStatus(str, FZ_LOG_PROGRESS);
     m_pOwner->SetConnected(TRUE);
   }
@@ -1220,10 +1227,16 @@ void CFtpControlSocket::OnReceive(int nErrorCode)
   {
     nb_free(buffer);
     buffer = NULL;
-    if (GetLastError() != WSAEWOULDBLOCK)
+    int Error = GetLastError();
+    if (Error != WSAEWOULDBLOCK)
     {
+      LogError(Error);
       ShowStatus(IDS_STATUSMSG_DISCONNECTED, FZ_LOG_ERROR);
       DoClose();
+    }
+    else
+    {
+      LogSocketMessageRaw(FZ_LOG_INFO, L"No data to read");
     }
     return;
   }
@@ -1234,26 +1247,11 @@ void CFtpControlSocket::OnReceive(int nErrorCode)
     ShowStatus(IDS_STATUSMSG_DISCONNECTED, FZ_LOG_ERROR);
     DoClose();
   }
-
-  if (!m_bUTF8 && m_CurrentServer.iUndupFF)
+  if (LoggingMessageType(FZ_LOG_INFO))
   {
-    CStringA Buf;
-    LPSTR strBuf = (LPSTR)buffer;
-    for (int n = 0; n < numread; n++, strBuf++)
-    {
-      if ((strBuf[0] == (char)0xFF) && (strBuf[1] == (char)0xFF))
-      {
-        Buf.AppendChar((char)0xFF);
-        strBuf++;
-      }
-      else
-        Buf.AppendChar(*strBuf);
-    }
-    nb_free(buffer);
-    buffer = NULL;
-    numread = Buf.GetLength();
-    buffer = nb::chcalloc(numread);
-    libmemcpy_memcpy(buffer, Buf.GetBuffer(), numread);
+    CString str;
+    str.Format(L"Read %d bytes", numread);
+    LogSocketMessageRaw(FZ_LOG_INFO, str);
   }
 
   for (int i=0; i < numread; i++)
@@ -1267,7 +1265,7 @@ void CFtpControlSocket::OnReceive(int nErrorCode)
         {
           // convert from UTF-8 to ANSI
           LPCSTR utf8 = (LPCSTR)m_RecvBuffer.back();
-          if (nb::DetectUTF8Encoding((const uint8_t *)utf8, strlen(utf8)) == nb::etANSI)
+          if (DetectUTF8Encoding(RawByteString(utf8)) == etANSI)
           {
             if (m_CurrentServer.nUTF8 != 1)
             {
@@ -1288,20 +1286,6 @@ void CFtpControlSocket::OnReceive(int nErrorCode)
               ShowStatus(W2CT(p1), FZ_LOG_REPLY);
               nb_free(p1);
             }
-          }
-        }
-        else if (m_nCodePage)
-        {
-          LPCSTR str = (LPCSTR)m_RecvBuffer.back();
-          int len = MultiByteToWideChar(m_nCodePage, 0, str, -1, NULL, 0);
-          if (!len)
-            m_RecvBuffer.back() = "";
-          else
-          {
-            LPWSTR p1 = nb::wchcalloc(len + 1);
-            MultiByteToWideChar(m_nCodePage, 0, str, -1 , (LPWSTR)p1, len + 1);
-            ShowStatus(W2CT(p1), FZ_LOG_REPLY);
-            nb_free(p1);
           }
         }
         else
@@ -1448,7 +1432,7 @@ void CFtpControlSocket::OnConnect(int nErrorCode)
       CString str;
       str.Format(
         m_pSslLayer ? IDS_STATUSMSG_CONNECTEDWITHSSL : IDS_STATUSMSG_CONNECTEDWITH,
-        (LPCTSTR)m_ServerName);
+        m_ServerName);
       ShowStatus(str,FZ_LOG_PROGRESS);
     }
   }
@@ -1457,7 +1441,7 @@ void CFtpControlSocket::OnConnect(int nErrorCode)
     if (nErrorCode == WSAHOST_NOT_FOUND)
     {
       CString str;
-      str.Format(IDS_ERRORMSG_CANTRESOLVEHOST2, (LPCTSTR)m_ServerName);
+      str.Format(IDS_ERRORMSG_CANTRESOLVEHOST2, m_ServerName);
       ShowStatus(str, FZ_LOG_ERROR);
     }
     else
@@ -1528,54 +1512,7 @@ BOOL CFtpControlSocket::Send(CString str)
         m_sendBufferLen += sendLen - res;
       }
     }
-    nb_free(utf8);
-  }
-  else if (m_nCodePage)
-  {
-    LPCWSTR unicode = T2CW(str);
-    int len = WideCharToMultiByte(m_nCodePage, 0, unicode, -1, 0, 0, 0, 0);
-    if (!len)
-    {
-      ShowStatus(IDS_ERRORMSG_CANTSENDCOMMAND, FZ_LOG_ERROR);
-      DoClose();
-      return FALSE;
-    }
-    char *utf8 = nb::chcalloc(len + 1);
-    WideCharToMultiByte(m_nCodePage, 0, unicode, -1, utf8, len + 1, 0, 0);
-
-    size_t sendLen = strlen(utf8);
-    if (!m_awaitsReply && !m_sendBuffer)
-      res = CAsyncSocketEx::Send(utf8, (int)strlen(utf8));
-    else
-      res = -2;
-    if ((res == SOCKET_ERROR && GetLastError() != WSAEWOULDBLOCK) || !res)
-    {
-      nb_free(utf8);
-      ShowStatus(IDS_ERRORMSG_CANTSENDCOMMAND, FZ_LOG_ERROR);
-      DoClose();
-      return FALSE;
-    }
-    if (res != sendLen)
-    {
-      if (res < 0)
-        res = 0;
-      if (!m_sendBuffer)
-      {
-        m_sendBuffer = nb::chcalloc(sendLen - res);
-        libmemcpy_memcpy(m_sendBuffer, utf8 + res, sendLen - res);
-        m_sendBufferLen = sendLen - res;
-      }
-      else
-      {
-        char *tmp = nb::chcalloc(m_sendBufferLen + sendLen - res);
-        libmemcpy_memcpy(tmp, m_sendBuffer, m_sendBufferLen);
-        libmemcpy_memcpy(tmp + m_sendBufferLen, utf8 + res, sendLen - res);
-        nb_free(m_sendBuffer);
-        m_sendBuffer = tmp;
-        m_sendBufferLen += sendLen - res;
-      }
-    }
-    nb_free(utf8);
+    delete [] utf8;
   }
   else
   {
@@ -1631,13 +1568,36 @@ int CFtpControlSocket::GetReplyCode()
     return 0;
   CStringA str = m_RecvBuffer.front();
   if (str == "")
+  {
+    return -1;
+  }
+  else if ((str[0] < '1') || (str[0] > '9'))
+  {
+    UnicodeString Error = FMTLOAD(FTP_MALFORMED_RESPONSE, (UnicodeString(str)));
+    LogMessageRaw(FZ_LOG_WARNING, Error.c_str());
     return 0;
+  }
   else
+  {
     return str[0]-'0';
+  }
+}
+
+int CFtpControlSocket::GetReplyCode()
+{
+  int Result = TryGetReplyCode();
+  if (Result < 0)
+  {
+    UnicodeString Error = FMTLOAD(FTP_MALFORMED_RESPONSE, (UnicodeString()));
+    LogMessageRaw(FZ_LOG_WARNING, Error.c_str());
+    Result = 0;
+  }
+  return Result;
 }
 
 void CFtpControlSocket::DoClose(int nError /*=0*/)
 {
+  LogMessage(FZ_LOG_INFO, L"Connection closed");
   m_bCheckForTimeout=TRUE;
   m_pOwner->SetConnected(FALSE);
   m_bKeepAliveActive=FALSE;
@@ -1693,9 +1653,16 @@ void CFtpControlSocket::CheckForTimeout()
   int delay=GetOptionVal(OPTION_TIMEOUTLENGTH);
   if (m_pTransferSocket)
   {
-    int res=m_pTransferSocket->CheckForTimeout(delay);
-    if (res)
+    int res = m_pTransferSocket->CheckForTimeout(delay);
+    if (res != 0)
+    {
+      if (res == 1)
+      {
+        // avoid trying to set keepalive command right after the transfer finishes
+        m_LastSendTime = CTime::GetCurrentTime();
+      }
       return;
+    }
   }
   CTimeSpan span=CTime::GetCurrentTime()-m_LastRecvTime;
   if ((delay > 0) && (span.GetTotalSeconds()>=delay))
@@ -1765,7 +1732,7 @@ CString CFtpControlSocket::GetListingCmd()
   return cmd;
 }
 
-void CFtpControlSocket::List(BOOL bFinish, int nError /*=FALSE*/, CServerPath path /*=CServerPath()*/, CString subdir /*=L""*/,int nListMode/*=0*/)
+void CFtpControlSocket::List(BOOL bFinish, int nError /*=FALSE*/, CServerPath path /*=CServerPath()*/, CString subdir /*=L""*/)
 {
   USES_CONVERSION;
 
@@ -1822,10 +1789,8 @@ void CFtpControlSocket::List(BOOL bFinish, int nError /*=FALSE*/, CServerPath pa
     }
 
     int num = 0;
-    pData->pDirectoryListing = new t_directory();
-    if (GetOptionVal(OPTION_DEBUGSHOWLISTING))
-      m_pTransferSocket->m_pListResult->SendToMessageLog();
-    pData->pDirectoryListing->direntry = m_pTransferSocket->m_pListResult->getList(num, false);
+    pData->pDirectoryListing = new t_directory;
+    pData->pDirectoryListing->direntry = m_pTransferSocket->m_pListResult->getList(num);
     pData->pDirectoryListing->num = num;
     if (m_pTransferSocket->m_pListResult->m_server.nServerType & FZ_SERVERTYPE_SUB_FTP_VMS && m_CurrentServer.nServerType & FZ_SERVERTYPE_FTP)
       m_CurrentServer.nServerType |= FZ_SERVERTYPE_SUB_FTP_VMS;
@@ -2066,13 +2031,7 @@ void CFtpControlSocket::List(BOOL bFinish, int nError /*=FALSE*/, CServerPath pa
             break;
           }
 
-          unsigned int tmpPort;
-          if (!GetPeerName(pData->host, tmpPort))
-          {
-            LogMessage(FZ_LOG_WARNING, L"GetPeerName failed");
-            error = TRUE;
-            break;
-          }
+          pData->host = m_CurrentServer.host;
         }
         else
         {
@@ -2342,10 +2301,10 @@ void CFtpControlSocket::List(BOOL bFinish, int nError /*=FALSE*/, CServerPath pa
             memset(&hints, 0, sizeof(addrinfo));
             hints.ai_family = AF_INET6;
             hints.ai_socktype = SOCK_STREAM;
-            if (p_getaddrinfo && !p_getaddrinfo(T2CA(host), "1024", &hints, &res))
+            if (!getaddrinfo(T2CA(host), "1024", &hints, &res))
             {
               host = Inet6AddrToString(((SOCKADDR_IN6 *)res->ai_addr)->sin6_addr);
-              if (p_freeaddrinfo) p_freeaddrinfo(res);
+              freeaddrinfo(res);
             }
             else
               host = L"";
@@ -2414,9 +2373,9 @@ void CFtpControlSocket::List(BOOL bFinish, int nError /*=FALSE*/, CServerPath pa
 bool CFtpControlSocket::ConnectTransferSocket(const CString & host, UINT port)
 {
   CString hostname;
-  hostname.Format(L"%s:%d", (LPCTSTR)host, port);
+  hostname.Format(L"%s:%d", host, port);
   CString str;
-  str.Format(IDS_STATUSMSG_CONNECTING, (LPCTSTR)hostname);
+  str.Format(IDS_STATUSMSG_CONNECTING, hostname);
   ShowStatus(str, FZ_LOG_PROGRESS);
 
   bool result = true;
@@ -2426,11 +2385,19 @@ bool CFtpControlSocket::ConnectTransferSocket(const CString & host, UINT port)
     {
       result = false;
     }
+    else
+    {
+      LogMessage(FZ_LOG_INFO, L"Connection pending");
+    }
+  }
+  else
+  {
+    LogMessage(FZ_LOG_INFO, L"Connected");
   }
   return result;
 }
 
-void CFtpControlSocket::ListFile(const CString & filename, const CServerPath & path)
+void CFtpControlSocket::ListFile(CString filename, const CServerPath &path)
 {
   USES_CONVERSION;
 
@@ -2501,15 +2468,11 @@ void CFtpControlSocket::ListFile(const CString & filename, const CServerPath & p
     else
     {
       USES_CONVERSION;
-      int size = m_ListFile.GetLength();
-      char *buffer = nb::chcalloc(size + 1);
-      memmove(buffer, (LPCSTR)m_ListFile, m_ListFile.GetLength());
-      CFtpListResult * pListResult = new CFtpListResult(m_CurrentServer, &m_bUTF8, &m_nCodePage);
-      pListResult->InitIntern(GetIntern());
-      pListResult->AddData(buffer, size);
-      if (GetOptionVal(OPTION_DEBUGSHOWLISTING))
-        pListResult->SendToMessageLog();
-      pData->direntry = pListResult->getList(num, true);
+      CStringA Buf = m_ListFile + '\n';
+      const bool mlst = true;
+      CFtpListResult * pListResult = CreateListResult(mlst);
+      pListResult->AddData(static_cast<const char *>(Buf), Buf.GetLength());
+      pData->direntry = pListResult->getList(num);
       if (pListResult->m_server.nServerType & FZ_SERVERTYPE_SUB_FTP_VMS && m_CurrentServer.nServerType & FZ_SERVERTYPE_FTP)
         m_CurrentServer.nServerType |= FZ_SERVERTYPE_SUB_FTP_VMS;
       delete pListResult;
@@ -2670,14 +2633,29 @@ void CFtpControlSocket::OnClose(int nErrorCode)
     DoClose();
 }
 
-static CString StripFileName(CString fn)
+void CFtpControlSocket::ResetTransferSocket(int Error)
 {
-  CString Result(fn);
-  if (Result.Find(L"\\\\?\\") == 0)
+  if (Error)
   {
-    Result = Result.Mid(4);
+    LogMessage(FZ_LOG_INFO, L"Destroying data socket on error");
   }
-  return Result;
+  else
+  {
+    LogMessage(FZ_LOG_INFO, L"Destroying data socket after transfer completed");
+  }
+  bool Close =
+    (Error != 0) &&
+    DebugAlwaysTrue(m_pTransferSocket != NULL) &&
+    (m_pTransferSocket->m_uploaded > 0) &&
+    FLAGCLEAR(Error, FZ_REPLY_CANCEL);
+  delete m_pTransferSocket;
+  m_pTransferSocket = NULL;
+  if (Close)
+  {
+    // close the control connection too to allow reconnect => transfer resume
+    LogMessage(FZ_LOG_WARNING, L"Transfer connection failed, closing");
+    DoClose();
+  }
 }
 
 void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFinish/*=FALSE*/,int nError/*=0*/)
@@ -2805,7 +2783,7 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
   DebugAssert(!m_Operation.nOpMode || m_Operation.nOpMode&CSMODE_TRANSFER);
   if (!m_pOwner->IsConnected())
   {
-    m_Operation.nOpMode=CSMODE_TRANSFER|(transferfile && transferfile->get?CSMODE_DOWNLOAD:CSMODE_UPLOAD);
+    m_Operation.nOpMode=CSMODE_TRANSFER|(transferfile->get?CSMODE_DOWNLOAD:CSMODE_UPLOAD);
     ResetOperation(FZ_REPLY_ERROR|FZ_REPLY_DISCONNECTED);
     return;
   }
@@ -2836,11 +2814,14 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
       else if (nError&CSMODE_TRANSFERTIMEOUT)
         DoClose();
       else
+      {
         // we may get here when connection was closed, when the closure
         // was first detected while reading/writing,
         // when we abort file transfer with regular error,
         // possibly preventing automatic reconnect
+        LogMessage(FZ_LOG_INFO, L"Transfer error (%x)", nError);
         ResetOperation(FZ_REPLY_ERROR);
+      }
       return;
     }
     if (m_Operation.nOpState <= FILETRANSFER_LIST_PORTPASV)
@@ -2860,9 +2841,7 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
 
       int num=0;
       pData->pDirectoryListing=new t_directory;
-      if (GetOptionVal(OPTION_DEBUGSHOWLISTING))
-        m_pTransferSocket->m_pListResult->SendToMessageLog();
-      pData->pDirectoryListing->direntry=m_pTransferSocket->m_pListResult->getList(num, false);
+      pData->pDirectoryListing->direntry=m_pTransferSocket->m_pListResult->getList(num);
       pData->pDirectoryListing->num=num;
       if (m_pTransferSocket->m_pListResult->m_server.nServerType&FZ_SERVERTYPE_SUB_FTP_VMS && m_CurrentServer.nServerType&FZ_SERVERTYPE_FTP)
         m_CurrentServer.nServerType |= FZ_SERVERTYPE_SUB_FTP_VMS;
@@ -2904,8 +2883,7 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
         return;
       else
       {
-        delete m_pTransferSocket;
-        m_pTransferSocket=0;
+        ResetTransferSocket(nError);
       }
     }
   }
@@ -2920,10 +2898,14 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
     DebugAssert(!m_Operation.nOpMode);
     DebugAssert(!m_Operation.pData);
 
-    CString str;
-    str.Format(transferfile->get?IDS_STATUSMSG_DOWNLOADSTART:IDS_STATUSMSG_UPLOADSTART,
-          transferfile->get ? (LPCTSTR)transferfile->remotepath.FormatFilename(transferfile->remotefile) : (LPCTSTR)StripFileName(transferfile->localfile));
-    ShowStatus(str,FZ_LOG_STATUS);
+    if ((transferfile->OnTransferOut == NULL) &&
+        (transferfile->OnTransferIn == NULL))
+    {
+      CString str;
+      str.Format(transferfile->get?IDS_STATUSMSG_DOWNLOADSTART:IDS_STATUSMSG_UPLOADSTART,
+            transferfile->get ? transferfile->remotepath.FormatFilename(transferfile->remotefile) : transferfile->localfile);
+      ShowStatus(str,FZ_LOG_STATUS);
+    }
 
     m_Operation.nOpMode=CSMODE_TRANSFER|(transferfile->get?CSMODE_DOWNLOAD:CSMODE_UPLOAD);
 
@@ -2964,47 +2946,30 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
         t_directory::t_direntry * entry = m_pDirectoryListing->direntry;
         for (i=0; i<m_pDirectoryListing->num; i++)
         {
-          if (entry->name==remotefile &&
-            ( entry->bUnsure || entry->size==-1 ))
+          if (m_pDirectoryListing->direntry[i].name==remotefile &&
+            ( m_pDirectoryListing->direntry[i].bUnsure || m_pDirectoryListing->direntry[i].size==-1 ))
           {
             delete m_pDirectoryListing;
             m_pDirectoryListing=0;
-            m_Operation.nOpState = NeedModeCommand() ? FILETRANSFER_LIST_MODE : (NeedOptsCommand() ? FILETRANSFER_LIST_OPTS : FILETRANSFER_LIST_TYPE);
+            m_Operation.nOpState = FileTransferListState(transferfile->get);
             break;
           }
-          ++entry;
         }
         if (m_pDirectoryListing && i==m_pDirectoryListing->num)
         {
-          nReplyError = CheckOverwriteFile();
-          if (!nReplyError)
-          {
-            if (pData->transferfile.get)
-            {
-              CString path=pData->transferfile.localfile;
-              if (path.ReverseFind(L'\\')!=-1)
-              {
-                path=path.Left(path.ReverseFind(L'\\')+1);
-                CString path2;
-                while (path!=L"")
-                {
-                  path2+=path.Left(path.Find( L"\\" )+1);
-                  path=path.Mid(path.Find( L"\\" )+1);
-                  CreateDirectory(path2, 0);
-                }
-              }
-            }
-          }
+          nReplyError = CheckOverwriteFileAndCreateTarget();
         }
       }
       else
       {
-        m_Operation.nOpState = NeedModeCommand() ? FILETRANSFER_LIST_MODE : (NeedOptsCommand() ? FILETRANSFER_LIST_OPTS : FILETRANSFER_LIST_TYPE);
+        m_Operation.nOpState = FileTransferListState(transferfile->get);
       }
     }
     else
     {
-      if (path.IsEmpty())
+      if (pData->transferfile.remotepath.IsEmpty() && GetOptionVal(OPTION_MPEXT_WORK_FROM_CWD))
+        m_Operation.nOpState = FileTransferListState(pData->transferfile.get);
+      else if (path.IsEmpty())
         m_Operation.nOpState = FILETRANSFER_PWD;
       else
         m_Operation.nOpState = FILETRANSFER_CWD;
@@ -3015,7 +2980,13 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
     ///////////
     //Replies//
     ///////////
-    int code = GetReplyCode();
+    int code = TryGetReplyCode();
+    // We do not always expect a response here, particularly when closing transfer connection (FILETRANSFER_WAITFINISH).
+    // The normalization to 0 is probably not needed.
+    if (code < 0)
+    {
+      code = 0;
+    }
     switch(m_Operation.nOpState)
     {
     case FILETRANSFER_PWD:
@@ -3044,7 +3015,7 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
 
       if (m_pOwner->GetCurrentPath() == pData->transferfile.remotepath)
       {
-        m_Operation.nOpState = NeedModeCommand() ? FILETRANSFER_LIST_MODE : (NeedOptsCommand() ? FILETRANSFER_LIST_OPTS : FILETRANSFER_LIST_TYPE);
+        m_Operation.nOpState = FileTransferListState(pData->transferfile.get);
       }
       else
         m_Operation.nOpState = LIST_CWD;
@@ -3213,7 +3184,7 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
         if (!ParsePwdReply(pData->rawpwd))
           return;
 
-          m_Operation.nOpState = NeedModeCommand() ? FILETRANSFER_LIST_MODE : (NeedOptsCommand() ? FILETRANSFER_LIST_OPTS : FILETRANSFER_LIST_TYPE);
+        m_Operation.nOpState = FileTransferListState(pData->transferfile.get);
       }
       break;
     case FILETRANSFER_LIST_MODE:
@@ -3337,13 +3308,7 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
             break;
           }
 
-          unsigned int tmpPort;
-          if (!GetPeerName(pData->host, tmpPort))
-          {
-            LogMessage(FZ_LOG_WARNING, L"GetPeerName failed");
-            nReplyError = FZ_REPLY_ERROR;
-            break;
-          }
+          pData->host = m_CurrentServer.host;
         }
 
         m_pTransferSocket = new CTransferSocket(this, CSMODE_LIST);
@@ -3397,31 +3362,7 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
         else
           listing.path = pData->transferfile.remotepath;
 
-        SetDirectoryListing(&listing);
-
-        m_Operation.nOpState = FILETRANSFER_TYPE;
-        delete m_pTransferSocket;
-        m_pTransferSocket = 0;
-
-        nReplyError = CheckOverwriteFile();
-        if (!nReplyError)
-        {
-          if (pData->transferfile.get)
-          {
-            CString path=pData->transferfile.localfile;
-            if (path.ReverseFind(L'\\')!=-1)
-            {
-              path=path.Left(path.ReverseFind(L'\\')+1);
-              CString path2;
-              while (path!=L"")
-              {
-                path2+=path.Left(path.Find( L"\\" )+1);
-                path=path.Mid(path.Find( L"\\" )+1);
-                CreateDirectory(path2, 0);
-              }
-            }
-          }
-        }
+        nReplyError = FileTransferHandleDirectoryListing(&listing);
       }
       else if (code==4 || code==5) //LIST failed, try getting file information using SIZE and MDTM
       {
@@ -3447,43 +3388,21 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
           }
         }
         else
-          pData->nGotTransferEndReply = 1;
+        pData->nGotTransferEndReply = 1;
       }
       if (pData->nGotTransferEndReply && pData->pDirectoryListing)
       {
-        SetDirectoryListing(pData->pDirectoryListing);
-        delete m_pTransferSocket;
-        m_pTransferSocket=0;
-        m_Operation.nOpState=FILETRANSFER_TYPE;
-        nReplyError = CheckOverwriteFile();
-        if (!nReplyError)
-        {
-          if (pData->transferfile.get)
-          {
-            CString path=pData->transferfile.localfile;
-            if (path.ReverseFind(L'\\')!=-1)
-            {
-              path=path.Left(path.ReverseFind(L'\\')+1);
-              CString path2;
-              while (path!=L"")
-              {
-                path2+=path.Left(path.Find( L"\\" )+1);
-                path=path.Mid(path.Find( L"\\" )+1);
-                CreateDirectory(path2, 0);
-              }
-            }
-          }
-        }
+        nReplyError = FileTransferHandleDirectoryListing(pData->pDirectoryListing);
         pData->nGotTransferEndReply=0;
       }
       break;
     case FILETRANSFER_NOLIST_SIZE:
       {
-        int64_t size;
+        __int64 size;
         if (HandleSize(code, size))
         {
           DebugAssert(!pData->pFileSize);
-          pData->pFileSize=nb::calloc<_int64*>(1, sizeof(_int64));
+          pData->pFileSize=new _int64;
           *pData->pFileSize=size;
         }
       }
@@ -3613,13 +3532,7 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
               break;
             }
 
-            unsigned int tmpPort;
-            if (!GetPeerName(pData->host, tmpPort))
-            {
-              LogMessage(FZ_LOG_WARNING, L"GetPeerName failed");
-              nReplyError = FZ_REPLY_ERROR;
-              break;
-            }
+            pData->host = m_CurrentServer.host;
           }
           else
           {
@@ -3650,43 +3563,52 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
             break;
           }
 
-          DebugCheck(m_pTransferSocket->AsyncSelect() != FALSE);
+          DebugCheck(m_pTransferSocket->AsyncSelect());
         }
 
         if (pData->transferdata.bResume)
           m_Operation.nOpState = FILETRANSFER_REST;
         else
           m_Operation.nOpState = FILETRANSFER_RETRSTOR;
-        BOOL res = FALSE;
-        if (!m_pDataFile)
+        BOOL res;
+        if (m_pDataFile != NULL)
         {
-          if (pData->transferdata.localFileHandle!=INVALID_HANDLE_VALUE)
-          {
-            m_pDataFile = new CFile(pData->transferdata.localFileHandle);
-            m_pDataFile->SetCloseOnDelete(TRUE);
-          }
-          else
-          {
-            m_pDataFile = new CFile();
-          }
+          delete m_pDataFile;
+          m_pDataFile = NULL;
         }
         if (pData->transferfile.get)
         {
-          if (pData->transferdata.bResume && pData->transferdata.localFileHandle==INVALID_HANDLE_VALUE)
-            res = m_pDataFile->Open(pData->transferfile.localfile,CFile::modeCreate|CFile::modeWrite|CFile::modeNoTruncate|CFile::shareDenyWrite);
-          else if (pData->transferdata.localFileHandle==INVALID_HANDLE_VALUE)
-            res = m_pDataFile->Open(pData->transferfile.localfile,CFile::modeWrite|CFile::modeCreate|CFile::shareDenyWrite);
+          if (pData->transferfile.OnTransferOut == NULL)
+          {
+            m_pDataFile = new CFile();
+            if (pData->transferdata.bResume)
+              res = m_pDataFile->Open(pData->transferfile.localfile,CFile::modeCreate|CFile::modeWrite|CFile::modeNoTruncate|CFile::shareDenyWrite);
+            else
+              res = m_pDataFile->Open(pData->transferfile.localfile,CFile::modeWrite|CFile::modeCreate|CFile::shareDenyWrite);
+          }
           else
+          {
             res = TRUE;
+          }
         }
         else
-          res = m_pDataFile->Open(pData->transferfile.localfile,CFile::modeRead|CFile::shareDenyNone);
+        {
+          if (pData->transferfile.OnTransferIn == NULL)
+          {
+            m_pDataFile = new CFile();
+            res = m_pDataFile->Open(pData->transferfile.localfile,CFile::modeRead|CFile::shareDenyNone);
+          }
+          else
+          {
+            res = TRUE;
+          }
+        }
         if (!res)
         {
           wchar_t * Error = m_pTools->LastSysErrorMessage();
           //Error opening the file
           CString str;
-          str.Format(IDS_ERRORMSG_FILEOPENFAILED, (LPCTSTR)pData->transferfile.localfile);
+          str.Format(IDS_ERRORMSG_FILEOPENFAILED,pData->transferfile.localfile);
           str += L"\n";
           str += Error;
           free(Error);
@@ -3702,11 +3624,16 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
         }
 
         m_pTransferSocket->m_pFile = m_pDataFile;
+        m_pTransferSocket->m_OnTransferOut = pData->transferfile.OnTransferOut;
+        m_pTransferSocket->m_OnTransferIn = pData->transferfile.OnTransferIn;
         if (!pData->transferfile.get)
         {
-          // See comment in !get branch below
-          pData->transferdata.transfersize=GetLength64(*m_pDataFile);
-          pData->transferdata.transferleft=pData->transferdata.transfersize;
+          if (m_pDataFile != NULL)
+          {
+            // See comment in !get branch below
+            pData->transferdata.transfersize=GetLength64(*m_pDataFile);
+            pData->transferdata.transferleft=pData->transferdata.transfersize;
+          }
           if (pData->transferdata.bResume)
           {
             CString remotefile=pData->transferfile.remotefile;
@@ -3731,25 +3658,17 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
         }
         else
         {
-          // Resetting transfersize here is pointless as we
-          // always provide valid size in call to FileTransfer.
-          // We unnecessary reply on the file being in the directory listing.
-          pData->transferdata.transfersize=-1;
           CString remotefile=pData->transferfile.remotefile;
           if (m_pDirectoryListing)
-          {
-            t_directory::t_direntry * entry = m_pDirectoryListing->direntry;
             for (int i=0; i<m_pDirectoryListing->num; i++)
             {
-              if (entry->name==remotefile)
+              if (m_pDirectoryListing->direntry[i].name==remotefile)
               {
-                pData->hasRemoteDate = true;
-                pData->remoteDate = entry->date;
-                pData->transferdata.transfersize=entry->size;
+                  pData->hasRemoteDate = true;
+                  pData->remoteDate = m_pDirectoryListing->direntry[i].date;
+                pData->transferdata.transfersize=m_pDirectoryListing->direntry[i].size;
               }
-              ++entry;
             }
-          }
           else if (pData->pFileSize)
             pData->transferdata.transfersize=*pData->pFileSize;
           pData->transferdata.transferleft=pData->transferdata.transfersize;
@@ -3909,6 +3828,17 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
       }
       break;
     case FILETRANSFER_WAITFINISH:
+      if (bFinish)
+      {
+        if (nError)
+        {
+          LogMessage(FZ_LOG_INFO, L"Transfer failed");
+        }
+        else
+        {
+          LogMessage(FZ_LOG_INFO, L"Transfer completed");
+        }
+      }
       if (!bFinish)
       {
         if (code == 1)
@@ -3928,8 +3858,8 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
       }
       if (pData->nGotTransferEndReply==3)
       {
-          // Not really sure about a reason for the m_pDataFile condition here
-          TransferFinished(m_pDataFile != NULL);
+        // Not really sure about a reason for the m_pDataFile condition here
+        TransferFinished(m_pDataFile != NULL);
         return;
       }
       break;
@@ -3940,6 +3870,7 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
     }
     if (nReplyError)
     { //Error transferring the file
+      LogMessage(FZ_LOG_INFO, L"Transfer response error (%x)", nReplyError);
       ResetOperation(nReplyError);
       return;
     }
@@ -4129,10 +4060,10 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
             memset(&hints, 0, sizeof(addrinfo));
             hints.ai_family = AF_INET6;
             hints.ai_socktype = SOCK_STREAM;
-            if (p_getaddrinfo && !p_getaddrinfo(T2CA(host), "1024", &hints, &res))
+            if (!getaddrinfo(T2CA(host), "1024", &hints, &res))
             {
               host = Inet6AddrToString(((SOCKADDR_IN6 *)res->ai_addr)->sin6_addr);
-              if (p_freeaddrinfo) p_freeaddrinfo(res);
+              freeaddrinfo(res);
             }
             else
               host = L"";
@@ -4358,10 +4289,10 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
             memset(&hints, 0, sizeof(addrinfo));
             hints.ai_family = AF_INET6;
             hints.ai_socktype = SOCK_STREAM;
-            if (p_getaddrinfo && !p_getaddrinfo(T2CA(host), "1024", &hints, &res))
+            if (!getaddrinfo(T2CA(host), "1024", &hints, &res))
             {
               host = Inet6AddrToString(((SOCKADDR_IN6 *)res->ai_addr)->sin6_addr);
-              if (p_freeaddrinfo) p_freeaddrinfo(res);
+              freeaddrinfo(res);
             }
             else
               host = L"";
@@ -4442,6 +4373,7 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
   }
   if (bError)
   { //Error transferring the file
+    LogMessage(FZ_LOG_INFO, L"Transfer error");
     ResetOperation(FZ_REPLY_ERROR);
     return;
   }
@@ -4512,6 +4444,7 @@ bool CFtpControlSocket::HandleMdtm(int code, t_directory::t_direntry::t_date & d
             date.minute = m;
             date.second = s;
             date.hastime = true;
+            date.hasyear = true;
             date.hasseconds = hasseconds;
             date.hasdate = true;
             date.utc = true;
@@ -4523,7 +4456,7 @@ bool CFtpControlSocket::HandleMdtm(int code, t_directory::t_direntry::t_date & d
   return result;
 }
 
-bool CFtpControlSocket::HandleSize(int code, int64_t & size)
+bool CFtpControlSocket::HandleSize(int code, __int64 & size)
 {
   bool result = false;
   if (code == 2)
@@ -4542,8 +4475,10 @@ void CFtpControlSocket::TransferFinished(bool preserveFileTimeForUploads)
 {
   CFileTransferData *pData=static_cast<CFileTransferData *>(m_Operation.pData);
 
-  if (GetOptionVal(OPTION_PRESERVEDOWNLOADFILETIME) && m_pDataFile &&
-        pData->transferfile.get)
+  if (GetOptionVal(OPTION_PRESERVEDOWNLOADFILETIME) &&
+      m_pDataFile &&
+      pData->transferfile.get &&
+      DebugAlwaysTrue(pData->transferfile.OnTransferOut == NULL))
   {
     m_pTools->PreserveDownloadFileTime(
       (HANDLE)m_pDataFile->m_hFile, reinterpret_cast<void *>(pData->transferfile.nUserData));
@@ -4551,7 +4486,8 @@ void CFtpControlSocket::TransferFinished(bool preserveFileTimeForUploads)
   if (!pData->transferfile.get &&
       GetOptionVal(OPTION_MPEXT_PRESERVEUPLOADFILETIME) && preserveFileTimeForUploads &&
       ((m_serverCapabilities.GetCapability(mfmt_command) == yes) ||
-       (m_serverCapabilities.GetCapability(mdtm_command) == yes)))
+       (m_serverCapabilities.GetCapability(mdtm_command) == yes)) &&
+      DebugAlwaysTrue(pData->transferfile.OnTransferIn == NULL))
   {
     CString filename =
       pData->transferfile.remotepath.FormatFilename(pData->transferfile.remotefile, !pData->bUseAbsolutePaths);
@@ -4634,38 +4570,8 @@ void CFtpControlSocket::ResumeTransfer()
 
 BOOL CFtpControlSocket::Create()
 {
-  if (!GetOptionVal(OPTION_LIMITPORTRANGE))
-    return CAsyncSocketEx::Create(0, SOCK_STREAM, FD_READ | FD_WRITE | FD_OOB | FD_ACCEPT |  FD_CONNECT | FD_CLOSE, 0, GetOptionVal(OPTION_ENABLE_IPV6) ? AF_UNSPEC : AF_INET);
-  else
-  {
-    int min=GetOptionVal(OPTION_PORTRANGELOW);
-    int max=GetOptionVal(OPTION_PORTRANGEHIGH);
-    if (min>=max)
-    {
-      ShowStatus(IDS_ERRORMSG_CANTCREATEDUETOPORTRANGE,FZ_LOG_ERROR);
-      return FALSE;
-    }
-    int startport = static_cast<int>(min+((double)rand()*(max-min))/(RAND_MAX+1));
-    int port = startport;
-
-    while (!CAsyncSocketEx::Create(port, SOCK_STREAM, FD_READ | FD_WRITE | FD_OOB | FD_ACCEPT |  FD_CONNECT | FD_CLOSE, 0, GetOptionVal(OPTION_ENABLE_IPV6) ? AF_UNSPEC : AF_INET))
-    {
-      port++;
-      if (port>max)
-        port=min;
-      if (port==startport)
-      {
-        ShowStatus(IDS_ERRORMSG_CANTCREATEDUETOPORTRANGE,FZ_LOG_ERROR);
-        return FALSE;
-      }
-
-      if (!InitConnect())
-        return FALSE;
-    }
-  }
-  return TRUE;
+  return CAsyncSocketEx::Create(0, SOCK_STREAM, FD_READ | FD_WRITE | FD_OOB | FD_ACCEPT |  FD_CONNECT | FD_CLOSE, 0, GetOptionVal(OPTION_ENABLE_IPV6) ? AF_UNSPEC : AF_INET);
 }
-
 
 void CFtpControlSocket::ResetOperation(int nSuccessful /*=FALSE*/)
 {
@@ -4673,8 +4579,9 @@ void CFtpControlSocket::ResetOperation(int nSuccessful /*=FALSE*/)
     nSuccessful |= FZ_REPLY_ERROR;
 
   if (m_pTransferSocket)
-    delete m_pTransferSocket;
-  m_pTransferSocket=0;
+  {
+    ResetTransferSocket(nSuccessful & (FZ_REPLY_ERROR | FZ_REPLY_CANCEL));
+  }
 
   if (m_pDataFile)
     delete m_pDataFile;
@@ -4802,8 +4709,6 @@ void CFtpControlSocket::ResetOperation(int nSuccessful /*=FALSE*/)
     m_pOwner->SetBusy(FALSE);
     //No operation in progress
     nSuccessful&=FZ_REPLY_DISCONNECTED|FZ_REPLY_CANCEL;
-    if (!nSuccessful)
-      DebugFail();
   }
 
   if (nSuccessful&FZ_REPLY_DISCONNECTED)
@@ -4822,11 +4727,11 @@ void CFtpControlSocket::ResetOperation(int nSuccessful /*=FALSE*/)
   m_Operation.pData=0;
 }
 
-void CFtpControlSocket::Delete(const CString & filename, const CServerPath & path, bool filenameOnly)
+void CFtpControlSocket::Delete(CString filename, const CServerPath &path, bool filenameOnly)
 {
   class CDeleteData : public CFtpControlSocket::t_operation::COpData
   {
-  public:
+public:
     CDeleteData() {}
     virtual ~CDeleteData() {}
     CString m_FileName;
@@ -4930,12 +4835,12 @@ void CFtpControlSocket::Delete(const CString & filename, const CServerPath & pat
   }
 }
 
-void CFtpControlSocket::RemoveDir(const CString & dirname, const CServerPath & path)
+void CFtpControlSocket::RemoveDir(CString dirname, const CServerPath &path)
 {
 
   class CRemoveDirData : public CFtpControlSocket::t_operation::COpData
   {
-  public:
+public:
     CRemoveDirData() {}
     virtual ~CRemoveDirData() {}
     CString m_DirName;
@@ -4956,7 +4861,7 @@ void CFtpControlSocket::RemoveDir(const CString & dirname, const CServerPath & p
     }
     if (!Send(L"RMD "+ newPath.GetPathUnterminated()))
       return;
-    CRemoveDirData *data = new CRemoveDirData();
+    CRemoveDirData *data = new CRemoveDirData;
     data->m_DirName = dirname;
     data->path = path;
     m_Operation.pData = data;
@@ -5013,7 +4918,7 @@ void CFtpControlSocket::RemoveDir(const CString & dirname, const CServerPath & p
             direntry[j] = dir.direntry[i];
             j++;
           }
-          nb_free(dir.direntry);
+          delete [] dir.direntry;
           dir.direntry = direntry;
           dir.num--;
           BOOL updated = FALSE;
@@ -5038,6 +4943,42 @@ void CFtpControlSocket::RemoveDir(const CString & dirname, const CServerPath & p
   }
 }
 
+int CFtpControlSocket::FileTransferHandleDirectoryListing(t_directory * pDirectory)
+{
+  SetDirectoryListing(pDirectory);
+
+  m_Operation.nOpState = FILETRANSFER_TYPE;
+  delete m_pTransferSocket;
+  m_pTransferSocket = 0;
+
+  return CheckOverwriteFileAndCreateTarget();
+}
+
+int CFtpControlSocket::CheckOverwriteFileAndCreateTarget()
+{
+  int nReplyError = CheckOverwriteFile();
+  if (!nReplyError)
+  {
+    CFileTransferData * pData = static_cast<CFileTransferData *>(m_Operation.pData);
+    if (pData->transferfile.get && (pData->transferfile.OnTransferOut == NULL))
+    {
+      CString path = pData->transferfile.localfile;
+      if (path.ReverseFind(L'\\') != -1)
+      {
+        path = path.Left(path.ReverseFind(L'\\')+1);
+        CString path2;
+        while (path != L"")
+        {
+          path2 += path.Left(path.Find(L"\\") + 1);
+          path = path.Mid(path.Find(L"\\") + 1);
+          CreateDirectory(path2, 0);
+        }
+      }
+    }
+  }
+  return nReplyError;
+}
+
 int CFtpControlSocket::CheckOverwriteFile()
 {
   if (!m_Operation.pData)
@@ -5049,12 +4990,12 @@ int CFtpControlSocket::CheckOverwriteFile()
 
   int nReplyError = 0;
   CFileStatus64 status;
-  BOOL res = FALSE;
-  if (pData->transferdata.localFileHandle == INVALID_HANDLE_VALUE)
+  if ((pData->transferfile.OnTransferOut != NULL) ||
+      (pData->transferfile.OnTransferIn != NULL))
   {
-    res = GetStatus64(pData->transferfile.localfile, status);
+    m_Operation.nOpState = FILETRANSFER_TYPE;
   }
-  if (!res)
+  else if (!GetStatus64(pData->transferfile.localfile, status))
   {
     if (!pData->transferfile.get)
     {
@@ -5076,12 +5017,11 @@ int CFtpControlSocket::CheckOverwriteFile()
     {
       _int64 localsize;
       if (!GetLength64(pData->transferfile.localfile, localsize))
-      {
         if (!pData->transferfile.get)
           nReplyError = FZ_REPLY_CRITICALERROR;
         else
           m_Operation.nOpState = FILETRANSFER_TYPE;
-      }
+
 
       CTime *localtime = NULL;
       TRY
@@ -5102,14 +5042,14 @@ int CFtpControlSocket::CheckOverwriteFile()
       }
       END_CATCH_ALL;
       BOOL bRemoteFileExists = FALSE;
-      int64_t remotesize = -1;
+      __int64 remotesize = -1;
       t_directory::t_direntry::t_date remotetime;
       if (m_pDirectoryListing)
       {
         for (int i=0; i<m_pDirectoryListing->num; i++)
         {
           CString remotefile = pData->transferfile.remotefile;
-          if (m_pDirectoryListing->direntry[i].name == remotefile && pData->transferdata.localFileHandle == INVALID_HANDLE_VALUE)
+          if (m_pDirectoryListing->direntry[i].name == remotefile)
           {
             remotesize = m_pDirectoryListing->direntry[i].size;
             remotetime = m_pDirectoryListing->direntry[i].date;
@@ -5131,7 +5071,7 @@ int CFtpControlSocket::CheckOverwriteFile()
 
       if (bRemoteFileExists || pData->transferfile.get )
       {
-        COverwriteRequestData *pOverwriteData = new COverwriteRequestData();
+        COverwriteRequestData *pOverwriteData = new COverwriteRequestData;
         t_transferfile *pTransferFile = new t_transferfile;
         *pTransferFile = pData->transferfile;
         pOverwriteData->pTransferFile = pTransferFile;
@@ -5160,7 +5100,7 @@ int CFtpControlSocket::CheckOverwriteFile()
         pOverwriteData->localtime = localtime;
         pOverwriteData->remotetime = remotetime;
         pOverwriteData->nRequestID = m_pOwner->GetNextAsyncRequestID();
-        if (!GetIntern()->FZPostMessage(FZ_MSG_MAKEMSG(FZ_MSG_ASYNCREQUEST, FZ_ASYNCREQUEST_OVERWRITE), (LPARAM)pOverwriteData))
+        if (!GetIntern()->PostMessage(FZ_MSG_MAKEMSG(FZ_MSG_ASYNCREQUEST, FZ_ASYNCREQUEST_OVERWRITE), (LPARAM)pOverwriteData))
         {
           delete pOverwriteData;
           nReplyError = FZ_REPLY_ERROR;
@@ -5200,14 +5140,13 @@ void CFtpControlSocket::SetFileExistsAction(int nAction, COverwriteRequestData *
   int nReplyError = 0;
   switch (nAction)
   {
-  case TFileZillaIntf::FILEEXISTS_SKIP:
+  case FILEEXISTS_SKIP:
     nReplyError = FZ_REPLY_OK;
     break;
-  case TFileZillaIntf::FILEEXISTS_OVERWRITE:
+  case FILEEXISTS_OVERWRITE:
     pTransferData->nWaitNextOpState = FILETRANSFER_TYPE;
-    pTransferData->transferdata.localFileHandle = pData->localFileHandle;
     break;
-  case TFileZillaIntf::FILEEXISTS_RENAME:
+  case FILEEXISTS_RENAME:
     if (pTransferData->transferfile.get)
     {
       CFileStatus64 status;
@@ -5226,7 +5165,6 @@ void CFtpControlSocket::SetFileExistsAction(int nAction, COverwriteRequestData *
             pTransferData->transferfile.localfile.SetAt(i, L'_');
 
         pTransferData->nWaitNextOpState=  FILETRANSFER_TYPE;
-        pTransferData->transferdata.localFileHandle = pData->localFileHandle;
       }
     }
     else
@@ -5255,7 +5193,6 @@ void CFtpControlSocket::SetFileExistsAction(int nAction, COverwriteRequestData *
       pTransferData->transferdata.bResume = TRUE;
     }
     pTransferData->nWaitNextOpState = FILETRANSFER_TYPE;
-    pTransferData->transferdata.localFileHandle = pData->localFileHandle;
     break;
   case TFileZillaIntf::FILEEXISTS_COMPLETE:
     // Simulating transfer finish
@@ -5444,7 +5381,7 @@ void CFtpControlSocket::MakeDir(const CServerPath &path)
     DebugFail();
 }
 
-void CFtpControlSocket::Rename(const CString & oldName, const CString & newName, const CServerPath & path, const CServerPath & newPath)
+void CFtpControlSocket::Rename(CString oldName, CString newName, const CServerPath &path, const CServerPath &newPath)
 {
   class CRenameData : public CFtpControlSocket::t_operation::COpData
   {
@@ -5660,11 +5597,11 @@ BOOL CFtpControlSocket::IsReady()
   return !m_bKeepAliveActive;
 }
 
-void CFtpControlSocket::Chmod(const CString & filename, const CServerPath & path, int nValue)
+void CFtpControlSocket::Chmod(CString filename, const CServerPath &path, int nValue)
 {
   m_Operation.nOpMode=CSMODE_CHMOD;
   CString str;
-  str.Format( L"SITE CHMOD %03d %s", nValue, (LPCTSTR)path.FormatFilename(filename));
+  str.Format( L"SITE CHMOD %03d %s", nValue, path.FormatFilename(filename));
   Send(str);
 }
 
@@ -5877,6 +5814,8 @@ int CFtpControlSocket::OnLayerCallback(nb::list_t<t_callbackMsg>& callbacks)
           switch (iter->nParam2)
           {
           case SSL_FAILURE_UNKNOWN:
+            // CTransferSocket has a special treatment of SSL_FAILURE_UNKNOWN,
+            // as an indication of a re-key failure.
             ShowStatus(IDS_ERRORMSG_UNKNOWNSSLERROR, FZ_LOG_ERROR);
             break;
           case SSL_FAILURE_ESTABLISH:
@@ -5971,7 +5910,7 @@ _int64 CFtpControlSocket::GetSpeedLimit(enum transferDirection direction, CTime 
   return ( _int64)1000000000000;
 }
 
-_int64 CFtpControlSocket::GetAbleToUDSize( bool & beenWaiting, CTime & curTime, _int64 & curLimit, nb::list_t<CFtpControlSocket::t_ActiveList>::iterator & iter, enum transferDirection direction, int nBufSize)
+_int64 CFtpControlSocket::GetAbleToUDSize( bool &beenWaiting, CTime &curTime, _int64 &curLimit, std::list<CFtpControlSocket::t_ActiveList>::iterator &iter, enum transferDirection direction, int nBufSize)
 {
   beenWaiting = false;
 
@@ -6022,8 +5961,7 @@ _int64 CFtpControlSocket::GetAbleToUDSize( bool & beenWaiting, CTime & curTime, 
       ableToRead = 0;
 
     curLimit = GetSpeedLimit(direction, curTime);
-    size_t sz = m_InstanceList[direction].size();
-    int64_t nMax = curLimit / (sz ? sz : 1);
+    __int64 nMax = curLimit / m_InstanceList[direction].size();
     _int64 nLeft = 0;
     int nCount = 0;
     nb::list_t<t_ActiveList>::iterator iter2;
@@ -6159,6 +6097,11 @@ bool CFtpControlSocket::LoggingSocketMessage(int nMessageType)
   return LoggingMessageType(nMessageType);
 }
 
+int CFtpControlSocket::GetSocketOptionVal(int OptionID) const
+{
+  return GetOptionVal(OptionID);
+}
+
 BOOL CFtpControlSocket::ParsePwdReply(CString& rawpwd)
 {
   CServerPath realPath;
@@ -6235,10 +6178,6 @@ void CFtpControlSocket::DiscardLine(CStringA line)
     {
       m_serverCapabilities.SetCapability(mdtm_command, yes);
     }
-    else if (line == "SIZE")
-    {
-      m_serverCapabilities.SetCapability(size_command, yes);
-    }
     else if (line.Left(4) == "MLST")
     {
       USES_CONVERSION;
@@ -6263,7 +6202,7 @@ void CFtpControlSocket::DiscardLine(CStringA line)
 int CFtpControlSocket::FileTransferListState(bool get)
 {
   int Result;
-  if (GetOptionVal(OPTION_MPEXT_NOLIST) && !get)
+  if (GetOptionVal(OPTION_MPEXT_NOLIST))
   {
     Result = FILETRANSFER_TYPE;
   }
@@ -6327,7 +6266,7 @@ CString CFtpControlSocket::GetReply()
   if (m_bUTF8)
   {
     // convert from UTF-8 to ANSI
-    if (nb::DetectUTF8Encoding((const uint8_t *)line, strlen(line)) == nb::etANSI)
+    if (DetectUTF8Encoding(RawByteString(line)) == etANSI)
     {
       if (m_CurrentServer.nUTF8 != 1)
       {
@@ -6351,27 +6290,7 @@ CString CFtpControlSocket::GetReply()
       LPWSTR p1 = nb::wchcalloc(len + 1);
       MultiByteToWideChar(CP_UTF8, 0, line, -1 , (LPWSTR)p1, len + 1);
       CString reply = W2CT(p1);
-      nb_free(p1);
-      return reply;
-    }
-  }
-  else if (m_nCodePage)
-  {
-    // convert from UTF-8 to ANSI
-    int len = MultiByteToWideChar(m_nCodePage, 0, line, -1, NULL, 0);
-    if (!len)
-    {
-      m_RecvBuffer.pop_front();
-      if (m_RecvBuffer.empty())
-        m_RecvBuffer.push_back("");
-      return L"";
-    }
-    else
-    {
-      LPWSTR p1 = nb::wchcalloc(len + 1);
-      MultiByteToWideChar(m_nCodePage, 0, line, -1 , (LPWSTR)p1, len + 1);
-      CString reply = W2CT(p1);
-      nb_free(p1);
+      delete [] p1;
       return reply;
     }
   }
@@ -6387,8 +6306,10 @@ void CFtpControlSocket::OnSend(int nErrorCode)
   int res = CAsyncSocketEx::Send(m_sendBuffer, (int)m_sendBufferLen, 0, m_bUTF8 ? 0 : m_CurrentServer.iDupFF);
   if (res == -1)
   {
-    if (GetLastError() != WSAEWOULDBLOCK)
+    int Error = GetLastError();
+    if (Error != WSAEWOULDBLOCK)
     {
+      LogError(Error);
       ShowStatus(IDS_ERRORMSG_CANTSENDCOMMAND, FZ_LOG_ERROR);
       DoClose();
     }
@@ -6484,7 +6405,7 @@ bool CFtpControlSocket::CheckForcePasvIp(CString & host)
 
       if (ahost != host)
       {
-        LogMessage(FZ_LOG_WARNING, L"Using host address %s instead of the one suggested by the server: %s", (LPCTSTR)ahost, (LPCTSTR)host);
+        LogMessage(FZ_LOG_WARNING, L"Using host address %s instead of the one suggested by the server: %s", ahost, host);
         host = ahost;
       }
       break;
@@ -6500,13 +6421,22 @@ bool CFtpControlSocket::CheckForcePasvIp(CString & host)
       }
       else if (!IsRoutableAddress(host) && IsRoutableAddress(ahost))
       {
-        LogMessage(FZ_LOG_WARNING, L"Server sent passive reply with unroutable address %s, using host address %s instead.", (LPCTSTR)host, (LPCTSTR)ahost);
+        LogMessage(FZ_LOG_WARNING, L"Server sent passive reply with unroutable address %s, using host address instead.", host, ahost);
         host = ahost;
       }
       break;
   }
 
   return result;
+}
+
+CFtpListResult * CFtpControlSocket::CreateListResult(bool mlst)
+{
+  CFtpListResult * Result =
+    new CFtpListResult(
+      m_CurrentServer, mlst, &m_bUTF8, GetOptionVal(OPTION_VMSALLREVISIONS), GetOptionVal(OPTION_DEBUGSHOWLISTING));
+  Result->InitIntern(GetIntern());
+  return Result;
 }
 
 

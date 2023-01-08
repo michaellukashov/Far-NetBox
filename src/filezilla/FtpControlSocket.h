@@ -52,27 +52,27 @@ public:
   virtual ~CFtpControlSocket();
 
 public:
-  virtual void Connect(t_server & server);
+  void Connect(t_server & server);
   virtual void OnTimer();
-  virtual BOOL IsReady();
-  virtual void List(BOOL bFinish, int nError = 0, CServerPath path = CServerPath(), CString subdir = L"", int nListMode = 0);
-  virtual void ListFile(const CString & filename, const CServerPath & path);
-  virtual void FtpCommand(LPCTSTR pCommand);
-  virtual void Disconnect();
-  virtual void FileTransfer(t_transferfile * transferfile = 0, BOOL bFinish = FALSE, int nError = 0);
-  virtual void Delete(const CString & filename, const CServerPath & path, bool filenameOnly);
-  virtual void Rename(const CString & oldName, const CString & newName, const CServerPath & path, const CServerPath & newPath);
-  virtual void MakeDir(const CServerPath & path);
-  virtual void RemoveDir(const CString & dirname, const CServerPath & path);
-  virtual void Chmod(const CString & filename, const CServerPath & path, int nValue);
+  BOOL IsReady();
+  void List(BOOL bFinish, int nError = 0, CServerPath path = CServerPath(), CString subdir = L"");
+  void ListFile(CString filename, const CServerPath & path);
+  void FtpCommand(LPCTSTR pCommand);
+  void Disconnect();
+  void FileTransfer(t_transferfile * transferfile = 0, BOOL bFinish = FALSE, int nError = 0);
+  void Delete(CString filename, const CServerPath & path, bool filenameOnly);
+  void Rename(CString oldName, CString newName, const CServerPath & path, const CServerPath & newPath);
+  void MakeDir(const CServerPath & path);
+  void RemoveDir(CString dirname, const CServerPath & path);
+  void Chmod(CString filename, const CServerPath & path, int nValue);
 
-  virtual void ProcessReply();
-  virtual void TransferEnd(int nMode);
-  virtual void Cancel(BOOL bQuit = FALSE);
+  void ProcessReply();
+  void TransferEnd(int nMode);
+  void Cancel(BOOL bQuit = FALSE);
 
-  virtual void SetAsyncRequestResult(int nAction, CAsyncRequestData * pData);
-  
-  virtual BOOL Create();
+  void SetAsyncRequestResult(int nAction, CAsyncRequestData * pData);
+
+  BOOL Create();
   void TransfersocketListenFinished(unsigned int ip, unsigned short port);
 
   BOOL m_bKeepAliveActive;
@@ -83,10 +83,10 @@ public:
   // Other servers return "550 No files found."
   bool IsMisleadingListResponse();
 
-  virtual bool UsingMlsd();
-  virtual bool UsingUtf8();
-  virtual std::string GetTlsVersionStr();
-  virtual std::string GetCipherName();
+  bool UsingMlsd();
+  bool UsingUtf8();
+  std::string GetTlsVersionStr();
+  std::string GetCipherName();
   bool HandleSize(int code, int64_t & size);
   bool HandleMdtm(int code, t_directory::t_direntry::t_date & date);
   void TransferHandleListError();
@@ -238,6 +238,7 @@ protected:
       virtual ~COpData() {}
     };
     COpData * pData;
+  public:
   };
 
   t_operation m_Operation;
