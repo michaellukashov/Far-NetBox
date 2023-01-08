@@ -174,7 +174,7 @@ bool TCopyParamRule::Match(UnicodeString Mask,
     }
     else
     {
-      Result = M.Matches(Value, false);
+      Result = M.MatchesFileName(Value);
     }
   }
   return Result;
@@ -662,8 +662,8 @@ static UnicodeString PropertyToKey(UnicodeString Property)
 // duplicated from core\configuration.cpp
 #undef BLOCK
 #define BLOCK(KEY, CANCREATE, BLOCK) \
-  if (Storage->OpenSubKey(KEY, CANCREATE, true)) \
-    { SCOPE_EXIT { Storage->CloseSubKey(); }; { BLOCK } }
+  if (Storage->OpenSubKeyPath(KEY, CANCREATE)) \
+    { SCOPE_EXIT { Storage->CloseSubKeyPath(); }; { BLOCK } }
 #undef REGCONFIG
 
 #define REGCONFIG(CANCREATE) \
@@ -696,7 +696,7 @@ static UnicodeString PropertyToKey(UnicodeString Property)
 
 bool TGUIConfiguration::DoSaveCopyParam(THierarchicalStorage * Storage, const TCopyParamType * CopyParam, const TCopyParamType * Defaults)
 {
-  bool Result = Storage->OpenSubKey("Interface\\CopyParam", true, true);
+  bool Result = Storage->OpenSubKeyPath(L"Interface\\CopyParam", true);
   if (Result)
   {
     CopyParam->Save(Storage, Defaults);
@@ -750,24 +750,24 @@ void TGUIConfiguration::SaveData(THierarchicalStorage * Storage, bool All)
   },
   __finally
   {
-    Storage->CloseSubKey();
+    Storage->CloseSubKeyPath();
   } end_try__finally
 
-  if (Storage->OpenSubKey("Interface\\NewDirectory2", true, true))
+  if (Storage->OpenSubKeyPath("Interface\\NewDirectory2", true))
   try__finally
   {
     FNewDirectoryProperties.Save(Storage);
   },
   __finally
   {
-    Storage->CloseSubKey();
+    Storage->CloseSubKeyPath();
   } end_try__finally
 }
 
 bool TGUIConfiguration::LoadCopyParam(THierarchicalStorage * Storage, TCopyParamType * CopyParam)
 {
   bool Result =
-    Storage->OpenSubKey("Interface\\CopyParam", false, true);
+    Storage->OpenSubKeyPath(L"Interface\\CopyParam", false);
   if (Result)
   {
     try
@@ -776,7 +776,7 @@ bool TGUIConfiguration::LoadCopyParam(THierarchicalStorage * Storage, TCopyParam
     }
     catch (...)
     {
-      Storage->CloseSubKey();
+      Storage->CloseSubKeyPath();
       throw;
     }
   }
@@ -813,7 +813,7 @@ void TGUIConfiguration::LoadData(THierarchicalStorage * Storage)
   if (LoadCopyParam(Storage, &FDefaultCopyParam))
   try__finally
   {
-    int CopyParamListCount = Storage->ReadInteger("CopyParamList", -1);
+    int CopyParamListCount = Storage->ReadInteger(L"CopyParamList", -1);
     FCopyParamListDefaults = (CopyParamListCount < 0);
     if (!FCopyParamListDefaults)
     {
@@ -829,7 +829,7 @@ void TGUIConfiguration::LoadData(THierarchicalStorage * Storage)
   },
   __finally
   {
-    Storage->CloseSubKey();
+    Storage->CloseSubKeyPath();
   } end_try__finally
 
   // Make it compatible with versions prior to 3.7.1 that have not saved PuttyPath
@@ -843,17 +843,17 @@ void TGUIConfiguration::LoadData(THierarchicalStorage * Storage)
       (IsPathToSameFile(ExpandEnvironmentVariables(FPuttyPath), FDefaultPuttyPathOnly) ||
        SysUtulsFileExists(ApiPath(ExpandEnvironmentVariables(FPuttyPath)))))
   {
-    FPuttyPath = FormatCommand(FPuttyPath, "");
+    FPuttyPath = FormatCommand(FPuttyPath, L"");
   }
 
-  if (Storage->OpenSubKey("Interface\\NewDirectory2", false, true))
+  if (Storage->OpenSubKeyPath("Interface\\NewDirectory2", false))
   try__finally
   {
     FNewDirectoryProperties.Load(Storage);
   },
   __finally
   {
-    Storage->CloseSubKey();
+    Storage->CloseSubKeyPath();
   } end_try__finally
 }
 
@@ -893,7 +893,9 @@ HINSTANCE TGUIConfiguration::LoadNewResourceModule(LCID ALocale,
 {
   UnicodeString LibraryFileName;
   HINSTANCE NewInstance = nullptr;
-  bool Internal = (ALocale == InternalLocale());
+  LCID AInternalLocale = InternalLocale();
+  bool Internal = (ALocale == AInternalLocale);
+  DWORD PrimaryLang = PRIMARYLANGID(ALocale);
   if (!Internal)
   {
     __removed UnicodeString Module;
@@ -923,7 +925,6 @@ HINSTANCE TGUIConfiguration::LoadNewResourceModule(LCID ALocale,
     }
     else
     {
-      DWORD PrimaryLang = PRIMARYLANGID(ALocale);
       DWORD SubLang = SUBLANGID(ALocale);
       DebugAssert(SUBLANG_DEFAULT == SUBLANG_CHINESE_TRADITIONAL);
       // Finally look for a language-only translation.
@@ -941,6 +942,13 @@ HINSTANCE TGUIConfiguration::LoadNewResourceModule(LCID ALocale,
         }
       }
     }
+  }
+
+  // If the locale is non-US English and we do not have that translation (and it's unlikely we ever have),
+  // treat it as if it were US English.
+  if (!NewInstance && !Internal && (PrimaryLang == static_cast<DWORD>(PRIMARYLANGID(AInternalLocale))))
+  {
+    Internal = true;
   }
 
   if (!NewInstance && !Internal)
@@ -1070,18 +1078,22 @@ bool TGUIConfiguration::GetCanApplyLocaleImmediately() const
     __removed (Screen->DataModuleCount == 0);
 }
 
+bool TGUIConfiguration::UsingInternalTranslation()
+{
+  return FLocaleModuleName.IsEmpty();
+}
+
 UnicodeString TGUIConfiguration::AppliedLocaleCopyright() const
 {
   UnicodeString Result;
-  if ((FAppliedLocale == 0) || (FAppliedLocale == InternalLocale()))
+  if (UsingInternalTranslation())
   {
     DebugFail(); // we do not expect to get called with internal locale
     Result = UnicodeString();
   }
   else
   {
-    DebugAssert(!FLocaleModuleName.IsEmpty());
-    Result = GetFileFileInfoString("LegalCopyright", FLocaleModuleName);
+    Result = GetFileFileInfoString(L"LegalCopyright", FLocaleModuleName);
   }
   return Result;
 }
@@ -1089,7 +1101,7 @@ UnicodeString TGUIConfiguration::AppliedLocaleCopyright() const
 UnicodeString TGUIConfiguration::AppliedLocaleVersion()
 {
   UnicodeString Result;
-  if ((FAppliedLocale == 0) || (FAppliedLocale == InternalLocale()))
+  if (UsingInternalTranslation())
   {
     // noop
   }
@@ -1444,7 +1456,7 @@ TStoredSessionList * TGUIConfiguration::SelectPuttySessionsForImport(
   ImportSessionList->SetDefaultSettings(Sessions->GetDefaultSettings());
 
   std::unique_ptr<TRegistryStorage> Storage(std::make_unique<TRegistryStorage>(GetPuttySessionsKey()));
-  Storage->SetForceAnsi(true);
+  Storage->ConfigureForPutty();
   if (Storage->OpenRootKey(false))
   {
     ImportSessionList->Load(Storage.get(), false, true, true);

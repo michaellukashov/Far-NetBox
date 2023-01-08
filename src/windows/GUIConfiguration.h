@@ -267,7 +267,8 @@ public:
   void FindLocales(UnicodeString LocalesMask, TStrings * Exts, UnicodeString & LocalesExts);
   virtual int GetResourceModuleCompleteness(HINSTANCE Module);
   virtual bool IsTranslationComplete(HINSTANCE Module);
-  static intptr_t LocalesCompare(void * Item1, void * Item2);
+  static int32_t LocalesCompare(void * Item1, void * Item2);
+  LCID InternalLocale();
   bool DoSaveCopyParam(THierarchicalStorage * Storage, const TCopyParamType * CopyParam, const TCopyParamType * Defaults);
 
 public:
@@ -281,7 +282,7 @@ public:
 
   HANDLE ChangeToDefaultResourceModule();
   HANDLE ChangeResourceModule(HANDLE Instance);
-  LCID InternalLocale() const;
+  bool UsingInternalTranslation() const;
   UnicodeString AppliedLocaleCopyright() const;
   UnicodeString AppliedLocaleVersion();
   TStoredSessionList * SelectPuttySessionsForImport(TStoredSessionList * Sessions, UnicodeString & Error);
@@ -387,6 +388,6 @@ public:
   LCID GetAppliedLocale() const { return FAppliedLocale; }
 };
 
-NB_CORE_EXPORT TGUIConfiguration *GetGUIConfiguration();
+NB_CORE_EXPORT TGUIConfiguration * GetGUIConfiguration();
 
 
