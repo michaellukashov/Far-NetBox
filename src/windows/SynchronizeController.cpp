@@ -27,6 +27,9 @@ TSynchronizeController::TSynchronizeController(
   FSynchronizeLog(nullptr),
   FCopyParam(OBJECT_CLASS_TCopyParamType)
 {
+  FOnSynchronize = AOnSynchronize;
+  FOnSynchronizeInvalid = AOnSynchronizeInvalid;
+  FOnTooManyDirectories = AOnTooManyDirectories;
   FSynchronizeMonitor = nullptr;
   FSynchronizeAbort = nullptr;
   FSynchronizeLog = nullptr;
@@ -55,7 +58,7 @@ void TSynchronizeController::StartStop(TObject * /*Sender*/,
 
       FOptions = Options;
       if (FLAGSET(Params.Options, soSynchronize) &&
-        (FOnSynchronize != nullptr))
+          (FOnSynchronize != nullptr))
       {
         FOnSynchronize(this, Params.LocalDirectory,
           Params.RemoteDirectory, CopyParam,
@@ -141,7 +144,7 @@ void TSynchronizeController::SynchronizeChange(
       // this is completelly wrong as the options structure
       // can contain non-root specific options in future
       TSynchronizeOptions * Options =
-        ((LocalDirectory == RootLocalDirectory) ? FOptions : nullptr);
+        ((LocalDirectory == RootLocalDirectory) ? FOptions : &DefaultOptions);
       TSynchronizeChecklist * Checklist = nullptr;
       FOnSynchronize(this, LocalDirectory, RemoteDirectory, FCopyParam,
         FSynchronizeParams, &Checklist, Options, false);
@@ -201,19 +204,19 @@ void TSynchronizeController::LogOperation(TSynchronizeOperation Operation,
   UnicodeString Message;
   switch (Operation)
   {
-  case soDelete:
-    Entry = slDelete;
-    Message = FMTLOAD(SYNCHRONIZE_DELETED, AFileName);
-    break;
+    case soDelete:
+      Entry = slDelete;
+      Message = FMTLOAD(SYNCHRONIZE_DELETED, AFileName);
+      break;
 
-  default:
-    DebugAssert(false);
-  // fallthru
+    default:
+      DebugFail();
+      // fallthru
 
-  case soUpload:
-    Entry = slUpload;
-    Message = FMTLOAD(SYNCHRONIZE_UPLOADED, AFileName);
-    break;
+    case soUpload:
+      Entry = slUpload;
+      Message = FMTLOAD(SYNCHRONIZE_UPLOADED, AFileName);
+      break;
   }
   SynchronizeLog(Entry, Message);
 }
@@ -228,7 +231,7 @@ void TSynchronizeController::SynchronizeLog(TSynchronizeLogEntry Entry,
 }
 
 void TSynchronizeController::SynchronizeFilter(TObject * /*Sender*/,
-  const UnicodeString DirectoryName, bool &Add)
+  const UnicodeString DirectoryName, bool & Add)
 {
   if ((FOptions != nullptr) && (FOptions->Filter != nullptr))
   {
