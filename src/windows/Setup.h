@@ -1,6 +1,7 @@
 
 #ifndef SetupH
 #define SetupH
+
 #if 0
 
 #include <Interface.h>
@@ -41,4 +42,5 @@ UnicodeString GetPowerShellCoreVersionStr();
 int ComRegistration(TConsole * Console);
 
 #endif // #if 0
+
 #endif

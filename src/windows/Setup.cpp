@@ -1125,7 +1125,7 @@ static void DoQueryUpdates(bool CollectUsage)
   }
 }
 
-UnicodeString FormatUpdatesMessage(
+void FormatUpdatesMessage(
   UnicodeString & UpdatesMessage, const UnicodeString & AMessage, const TUpdatesConfiguration & Updates)
 {
   UnicodeString Message = AMessage;
@@ -1212,11 +1212,6 @@ void GetUpdatesMessage(UnicodeString & Message, bool & New,
   {
     New = false;
   }
-}
-
-UnicodeString GetEnableAutomaticUpdatesUrl()
-{
-  return AppendUrlParams(LoadStr(DONATE_URL), L"automaticupdates=1");
 }
 
 void EnableAutomaticUpdates()
@@ -2252,7 +2247,7 @@ UnicodeString GetNetVersionStr()
   return NetVersionStr;
 }
 
-UnicodeString GetPowerShellVersionStr()
+UnicodeString GetNetCoreVersionStr()
 {
   if (NetCoreVersionStr.IsEmpty())
   {
