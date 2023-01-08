@@ -138,13 +138,6 @@ TColor GetWindowColor(TColor Color)
 TColor GetBtnFaceColor()
 {
   return WinConfiguration->UseDarkTheme() ? TColor(RGB(43, 43, 43)) : clBtnFace;
-  }
-  return Color;
-}
-
-TColor GetBtnFaceColor()
-{
-  return WinConfiguration->UseDarkTheme() ? TColor(RGB(43, 43, 43)) : clBtnFace;
 }
 
 TColor GetNonZeroColor(TColor Color)
@@ -611,7 +604,7 @@ IShellLink * CreateDesktopShortCut(const UnicodeString & Name,
   return pLink;
 }
 
-IShellLink * CreateDesktopSessionShortCut(
+IShellLink * CreateAppDesktopShortCut(
   const UnicodeString & Name, const UnicodeString & AParams, const UnicodeString & Description,
   int SpecialFolder, int IconIndex, bool Return)
 {
@@ -628,6 +621,7 @@ IShellLink * CreateDesktopSessionShortCut(
   return CreateDesktopShortCut(Name, Application->ExeName, Params, Description, SpecialFolder, IconIndex, Return);
 }
 
+IShellLink * CreateDesktopSessionShortCut(
   const UnicodeString & SessionName, UnicodeString Name,
   const UnicodeString & AdditionalParams, int SpecialFolder, int IconIndex,
   bool Return)
@@ -777,7 +771,7 @@ void OpenBrowser(UnicodeString URL)
   }
 }
 
-void OpenFolderInExplorer(const UnicodeString Path)
+void OpenFolderInExplorer(const UnicodeString & Path)
 {
   if ((int)ShellExecute(Application->Handle, L"explore",
       (wchar_t*)Path.data(), nullptr, nullptr, SW_SHOWNORMAL) <= 32)
@@ -982,6 +976,7 @@ UnicodeString ReadResource(const UnicodeString ResName)
 
   return Result;
 }
+
 #if 0
 
 template <class T>
@@ -1085,7 +1080,7 @@ bool SaveDialog(UnicodeString Title, UnicodeString Filter,
   UnicodeString DefaultExt, UnicodeString & FileName)
 {
   bool Result;
-#if 0
+  #if 0
   TFileSaveDialog * Dialog = new TFileSaveDialog(Application);
   try
   {
@@ -1135,20 +1130,11 @@ bool SaveDialog(UnicodeString Title, UnicodeString Filter,
   {
     delete Dialog;
   }
-#endif // #if 0
+  #endif // #if 0
   return Result;
 }
-#endif //if 0
-bool SaveDialog(UnicodeString ATitle, UnicodeString Filter,
-  UnicodeString ADefaultExt, UnicodeString &AFileName)
-{
-  bool Result = false;
-  DebugUsedParam(Filter);
-  DebugUsedParam(ADefaultExt);
 
-  Result = InputDialog(ATitle, L""/*LoadStr(LOGIN_PRIVATE_KEY)*/, AFileName, L"", nullptr, true, nullptr, true);
-  return Result;
-}
+#endif //if 0
 #if 0
 
 void CopyToClipboard(UnicodeString Text)
@@ -1192,6 +1178,7 @@ void CopyToClipboard(UnicodeString Text)
     throw Exception(Vcl_Consts_SCannotOpenClipboard);
   }
 }
+
 #endif // #if 0
 
 void CopyToClipboard(TStrings * Strings)
@@ -1249,6 +1236,7 @@ void ShutDownWindows()
   Win32Check(FALSE != ExitWindowsEx(EWX_SHUTDOWN | EWX_POWEROFF,
     SHTDN_REASON_MAJOR_OTHER | SHTDN_REASON_MINOR_OTHER | SHTDN_REASON_FLAG_PLANNED));
 }
+
 #if 0
 
 void SuspendWindows()
@@ -1273,13 +1261,15 @@ void EditSelectBaseName(HWND Edit)
     PostMessage(Edit, EM_SETSEL, 0, P - 1);
   }
 }
+
 #endif // #if 0
 
-static void ConvertKey(UnicodeString & FileName, TKeyType Type)
+UnicodeString GetConvertedKeyFileName(const UnicodeString & FileName)
 {
-  return ChangeFileExt(FileName, FORMAT(L".%s", (PuttyKeyExt)));
+  return ChangeFileExt(FileName, FORMAT(L".%s", PuttyKeyExt));
 }
 
+static void ConvertKey(UnicodeString & FileName, TKeyType Type)
 {
   UnicodeString Passphrase;
 
@@ -1299,7 +1289,7 @@ static void ConvertKey(UnicodeString & FileName, TKeyType Type)
 
   try__finally
   {
-    FileName = ::ChangeFileExt(FileName, FORMAT(".%s", PuttyKeyExt));
+    FileName = GetConvertedKeyFileName(FileName);
 
     if (!SaveDialog(LoadStr(CONVERTKEY_SAVE_TITLE), LoadStr(CONVERTKEY_SAVE_FILTER), PuttyKeyExt, FileName))
     {
@@ -1316,7 +1306,7 @@ static void ConvertKey(UnicodeString & FileName, TKeyType Type)
   } end_try__finally
 }
 
-static void DoVerifyKey(
+void DoVerifyKey(UnicodeString & FileName, bool Convert, UnicodeString & Message, TStrings *& MoreMessages, UnicodeString & HelpKeyword)
 {
   std::unique_ptr<TStrings> AMoreMessages;
   if (!FileName.Trim().IsEmpty())
@@ -1359,12 +1349,11 @@ static void DoVerifyKey(
         break;
 
       case ktSSH1:
-        Message = MainInstructions(FMTLOAD(KEY_TYPE_SSH1, (FileName)));
+        Message = MainInstructions(FMTLOAD(KEY_TYPE_SSH1, FileName));
         break;
 
       case ktSSH2:
         Message = TestKey(Type, FileName);
-                FileName, (Type == ktSSH1 ? L"SSH-1" : L"PuTTY SSH-2")));
         break;
 
       case ktSSH1Public:
@@ -1402,8 +1391,8 @@ static void DoVerifyKey(UnicodeString & FileName, bool Convert, bool CanIgnore)
   std::unique_ptr<TStrings> MoreMessages(AMoreMessages);
   if (!Message.IsEmpty())
   {
-      GetConfiguration()->Usage->Inc(L"PrivateKeySelectErrors");
-      uint32_t Answers = (CanIgnore ? (qaIgnore | qaAbort) : qaOK);
+    GetConfiguration()->Usage->Inc(L"PrivateKeySelectErrors");
+    uint32_t Answers = (CanIgnore ? (qaIgnore | qaAbort) : qaOK);
     if (MoreMessageDialog(Message, MoreMessages.get(), qtWarning, Answers, HelpKeyword) != qaIgnore)
     {
       Abort();
@@ -1411,18 +1400,18 @@ static void DoVerifyKey(UnicodeString & FileName, bool Convert, bool CanIgnore)
   }
 }
 
-void VerifyAndConvertKey(UnicodeString& FileName, TSshProt SshProt, bool CanIgnore)
+void VerifyAndConvertKey(UnicodeString & FileName, bool CanIgnore)
 {
   DoVerifyKey(FileName, true, CanIgnore);
 }
 
-void VerifyKey(UnicodeString FileName, TSshProt SshProt)
+void VerifyKey(const UnicodeString & FileName)
 {
   UnicodeString AFileName(FileName);
   DoVerifyKey(AFileName, false, true);
 }
 
-void VerifyCertificate(const UnicodeString FileName)
+void VerifyCertificate(const UnicodeString & FileName)
 {
   if (!FileName.Trim().IsEmpty())
   {

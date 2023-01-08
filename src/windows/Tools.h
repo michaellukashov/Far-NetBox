@@ -18,15 +18,15 @@ bool IsKeyPressed(int VirtualKey);
 bool UseAlternativeFunction();
 bool OpenInNewWindow();
 void ExecuteNewInstance(const UnicodeString & Param, const UnicodeString & AdditionalParams = UnicodeString());
-IShellLink * CreateDesktopShortCut(const UnicodeString &Name,
+IShellLink * CreateAppDesktopShortCut(
   const UnicodeString & Name, const UnicodeString & Params, const UnicodeString & Description,
   int SpecialFolder = -1, int IconIndex = 0, bool Return = false);
 IShellLink * CreateDesktopSessionShortCut(
   const UnicodeString & SessionName, UnicodeString Name,
-TColor GetWindowTextColor(TColor BackgroundColor, TColor Color = static_cast<TColor>(0));
-TColor GetWindowColor(TColor Color = static_cast<TColor>(0));
-TColor GetBtnFaceColor();
-void VerifyAndConvertKey(UnicodeString & FileName, TSshProt SshProt, bool CanIgnore);
+  const UnicodeString & AdditionalParams,
+  int SpecialFolder = -1, int IconIndex = SITE_ICON, bool Return = false);
+UnicodeString GetListViewStr(TListView * ListView);
+void LoadListViewStr(TListView * ListView, UnicodeString LayoutStr);
 void RestoreForm(UnicodeString Data, TForm * Form, bool PositionOnly = false);
 UnicodeString StoreForm(TCustomForm * Form);
 void RestoreFormSize(UnicodeString Data, TForm * Form);
@@ -38,6 +38,7 @@ TColor GetWindowTextColor(TColor BackgroundColor, TColor Color = static_cast<TCo
 TColor GetWindowColor(TColor Color = static_cast<TColor>(0));
 TColor GetBtnFaceColor();
 TColor GetNonZeroColor(TColor Color);
+void ValidateMask(const UnicodeString & Mask, int ForceDirectoryMasks = -1);
 void ValidateMaskEdit(TComboBox * Edit);
 void ValidateMaskEdit(TEdit * Edit);
 void ValidateMaskEdit(TMemo * Edit, bool Directory);
@@ -73,8 +74,9 @@ NB_CORE_EXPORT void CopyToClipboard(TStrings * Strings);
 NB_CORE_EXPORT void ShutDownWindows();
 NB_CORE_EXPORT void SuspendWindows();
 NB_CORE_EXPORT void EditSelectBaseName(HWND Edit);
-NB_CORE_EXPORT void VerifyAndConvertKey(UnicodeString & FileName, TSshProt SshProt, bool CanIgnore);
-NB_CORE_EXPORT void VerifyKey(UnicodeString FileName, TSshProt SshProt);
+NB_CORE_EXPORT UnicodeString GetConvertedKeyFileName(const UnicodeString & FileName);
+NB_CORE_EXPORT void VerifyAndConvertKey(UnicodeString & FileName, bool CanIgnore);
+NB_CORE_EXPORT void VerifyKey(const UnicodeString & FileName);
 NB_CORE_EXPORT void VerifyCertificate(const UnicodeString & FileName);
 #if 0
 NB_CORE_EXPORT TStrings * GetUnwrappedMemoLines(TMemo * Memo);
