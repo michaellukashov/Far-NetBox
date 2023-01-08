@@ -196,7 +196,7 @@ void ShowExtendedExceptionEx(TTerminal * Terminal,
     // (which always uses /nointeractiveinput),
     // but can be useful for other console runs too
     TProgramParams * Params = TProgramParams::Instance();
-    if (Params->FindSwitch("nointeractiveinput"))
+    if (Params->FindSwitch(NOINTERACTIVEINPUT_SWITCH))
     {
       DoNotDisplay = true;
       if (Show && CheckXmlLogParam(Params))
@@ -454,7 +454,7 @@ static int ToolbarReadInt(const UnicodeString ToolbarName,
     if (Storage->IndexOfName(ToolbarKey) >= 0)
     {
       Result = StrToIntDef(Storage->Values[ToolbarKey], Default);
-#if 0
+      #if 0
       // this does not work well, as it scales down the stretched
       // toolbars (path toolbars) too much, it has to be reimplemented smarter
       if (Value == L"DockPos")
@@ -928,11 +928,6 @@ static void ColorPickClick(void * /*Data*/, TObject * Sender)
         {
           break;
         }
-      }
-      else
-      {
-        // no standard font colors
-        break;
       }
       else
       {
