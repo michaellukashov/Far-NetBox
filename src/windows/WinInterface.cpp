@@ -28,6 +28,7 @@ __removed #include "JclHookExcept.hpp"
 #include <StrUtils.hpp>
 __removed #include <WinApi.h>
 #include "Tools.h"
+#include <Vcl.AppEvnts.hpp>
 #if 0
 
 #pragma package(smart_init)
@@ -46,13 +47,19 @@ void FormHelp(TCustomForm * Form)
 
 HINSTANCE HInstance = 0;
 
-TMessageParams::TMessageParams(uintptr_t AParams) noexcept
+TMessageParams::TMessageParams(uint32_t AParams) noexcept
 {
   Reset();
   Params = AParams;
 }
 
-void TMessageParams::Assign(const TMessageParams * AParams)
+void TMessageParams::TMessageParams(const TQueryParams * AParams)
+{
+  Reset();
+  Assign(AParams)
+}
+
+void TMessageParams::Assign(const TQueryParams * AParams)
 {
   Reset();
 
@@ -67,6 +74,7 @@ void TMessageParams::Assign(const TMessageParams * AParams)
     TimerQueryType = AParams->TimerQueryType;
     Timeout = AParams->Timeout;
     TimeoutAnswer = AParams->TimeoutAnswer;
+    TimeoutResponse = AParams->TimeoutResponse;
     NeverAskAgainTitle = AParams->NeverAskAgainTitle;
     NeverAskAgainAnswer = AParams->NeverAskAgainAnswer;
     NeverAskAgainCheckedInitially = AParams->NeverAskAgainCheckedInitially;
@@ -336,7 +344,7 @@ void TMessageTimer::DoTimer(TObject * /*Sender*/)
 class TMessageTimeout : public TTimer
 {
 public:
-  TMessageTimeout(TComponent * AOwner, unsigned int Timeout, TButton * Button, unsigned int Answer);
+  TMessageTimeout(TComponent * AOwner, uint32_t Timeout, TButton * Button, uint32_t Answer);
 
 protected:
   unsigned int FOrigTimeout;
@@ -345,7 +353,7 @@ protected:
   UnicodeString FOrigCaption;
   TPoint FOrigCursorPos;
   std::unique_ptr<TApplicationEvents> FApplicationEvents;
-  unsigned int FAnswer;
+  uint32_t FAnswer;
 
   void DoTimer(TObject * Sender);
   void UpdateButton();
@@ -355,14 +363,14 @@ protected:
 };
 
 TMessageTimeout::TMessageTimeout(TComponent * AOwner,
-  unsigned int Timeout, TButton * Button, unsigned int Answer) :
+  uint32_t Timeout, TButton * Button, uint32_t Answer) :
   TTimer(AOwner), FOrigTimeout(Timeout), FTimeout(Timeout), FButton(Button), FAnswer(Answer)
 {
   OnTimer = DoTimer;
   Interval = MSecsPerSec;
   FOrigCaption = FButton->Caption;
   FOrigCursorPos = Mouse->CursorPos;
-  FApplicationEvents.reset(new TApplicationEvents(Application));
+  FApplicationEvents.reset(std::make_unique<TApplicationEvents>(Application));
   FApplicationEvents->OnMessage = ApplicationMessage;
   UpdateButton();
 }
@@ -1457,19 +1465,6 @@ static void DoApplicationMinimizeRestore(bool Minimize)
     // as we capture command-line operation above.
     // Had we called TApplication::Minimize, it would hide all non-MainForm windows, including MainLineForm,
     // so it actually also hides taskbar button, what we do not want.
-      MainLikeForm->WindowState = wsMinimized;
-    }
-    else
-    {
-      MainLikeForm->WindowState = PreviousWindowState;
-    }
-  }
-  else
-  {
-    // What is described below should not ever happen, except when minimizing to tray,
-    // as we capture command-line operation above.
-    // Had we called TApplication::Minimize, it would hide all non-MainForm windows, including MainLineForm,
-    // so it actually also hides taskbar button, what we do not want.
     // WORKAROUND
     // When main window is hidden (command-line operation),
     // we do not want it to be shown by TApplication.Restore,
@@ -1592,36 +1587,6 @@ void CheckConfigurationForceSave()
   }
 }
 
-UnicodeString DumpCallstackEventName(int ProcessId)
-{
-  return FORMAT(DUMPCALLSTACK_EVENT, (ProcessId));
-}
-
-UnicodeString DumpCallstackFileName(int ProcessId)
-{
-  UnicodeString FileName = FORMAT(L"%s.txt", (DumpCallstackEventName(ProcessId)));
-  UnicodeString Result = TPath::Combine(SystemTemporaryDirectory(), FileName);
-  return Result;
-}
-
-void CheckConfigurationForceSave()
-{
-  if (UseAlternativeFunction() && Configuration->Persistent &&
-      (Configuration->Storage == stIniFile) && Sysutils::FileExists(ApiPath(Configuration->IniFileStorageName)) &&
-      !Configuration->ForceSave)
-  {
-    int Attr = GetFileAttributes(ApiPath(Configuration->IniFileStorageName).c_str());
-    if (FLAGSET(Attr, FILE_ATTRIBUTE_READONLY))
-    {
-      UnicodeString Message = FMTLOAD(READONLY_INI_FILE_OVERWRITE, (Configuration->IniFileStorageName));
-      if (MessageDialog(Message, qtConfirmation, qaOK | qaCancel, HELP_READONLY_INI_FILE) == qaOK)
-      {
-        Configuration->ForceSave = true;
-      }
-    }
-  }
-}
-
 class TCallstackThread : public TSignalThread
 {
 public:
@@ -1671,6 +1636,8 @@ void TCallstackThread::ProcessEvent()
   catch (...)
   {
   }
+}
+
 HANDLE TCallstackThread::DoCreateEvent()
 {
   UnicodeString Name = DumpCallstackEventName(GetCurrentProcessId());

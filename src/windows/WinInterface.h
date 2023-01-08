@@ -66,8 +66,8 @@ struct NB_CORE_EXPORT TMessageParams : public TObject
 {
   NB_DISABLE_COPY(TMessageParams)
 public:
-  explicit TMessageParams(uintptr_t AParams) noexcept;
-  explicit TMessageParams(const TQueryParams * AParams);
+  explicit TMessageParams(uint32_t AParams) noexcept;
+  explicit TMessageParams(const TQueryParams * AParams) noexcept;
   void Assign(const TMessageParams *AParams);
 
   const TQueryButtonAlias *Aliases{nullptr};
@@ -80,14 +80,14 @@ public:
   TQueryType TimerQueryType{static_cast<TQueryType>(-1)};
   uint32_t Timeout{0};
   uint32_t TimeoutAnswer{0};
-  uint32_t TimeoutResponse;
+  uint32_t TimeoutResponse{0};
   UnicodeString NeverAskAgainTitle;
   uint32_t NeverAskAgainAnswer{0};
   bool NeverAskAgainCheckedInitially{false};
   bool AllowHelp{false};
   UnicodeString ImageName;
   UnicodeString MoreMessagesUrl;
-  TSize MoreMessagesSize{0};
+  TSize MoreMessagesSize{};
   UnicodeString CustomCaption;
 
 private:
@@ -167,7 +167,7 @@ bool DoShortCutDialog(TShortCut & ShortCut,
   const TShortCuts & ShortCuts, UnicodeString HelpKeyword);
 #if 0
 bool DoCustomCommandOptionsDialog(
-  const TCustomCommandType * Command, TStrings * CustomCommandOptions, TShortCut * ShortCut, unsigned int Flags,
+  const TCustomCommandType * Command, TStrings * CustomCommandOptions, TShortCut * ShortCut, uint32_t Flags,
   TCustomCommand * CustomCommandForOptions, const UnicodeString & Site, const TShortCuts * ShortCuts);
 #endif // #if 0
 void DoUsageStatisticsDialog();
@@ -320,7 +320,7 @@ struct TCalculateSizeStats;
 constexpr int cpMode =  0x01;
 constexpr int cpOwner = 0x02;
 constexpr int cpGroup = 0x04;
-const cpAcl =   0x08;
+constexpr int cpAcl =   0x08;
 #if 0
 typedef void (__closure *TCalculateSizeEvent)
   (TStrings * FileList, __int64 & Size, TCalculateSizeStats & Stats,
@@ -376,15 +376,6 @@ typedef void (__closure *TGetSynchronizeOptionsEvent)
 using TGetSynchronizeOptionsEvent = nb::FastDelegate2<void,
   intptr_t /*Params*/,
   TSynchronizeOptions & /*Options*/>;
-#if 0
-typedef void (__closure *TSynchronizeSessionLog)
-  (const UnicodeString & Message);
-typedef void (__closure *TFeedSynchronizeError)
-  (const UnicodeString & Message, TStrings * MoreMessages, TQueryType Type,
-   const UnicodeString & HelpKeyword);
-typedef void (__closure *TSynchronizeInNewWindow)
-  (const TSynchronizeParamType & Params, const TCopyParamType * CopyParams);
-#endif // #if 0
 using TSynchronizeSessionLogEvent = nb::FastDelegate1<void,
   UnicodeString /*Message*/>;
 using TFeedSynchronizeErrorEvent = nb::FastDelegate4<void,
@@ -395,7 +386,7 @@ using TSynchronizeInNewWindowEvent = nb::FastDelegate4<void,
 
 bool DoSynchronizeDialog(TSynchronizeParamType & Params,
   const TCopyParamType * CopyParams, TSynchronizeStartStopEvent OnStartStop,
-  bool & SaveSettings, intptr_t Options, intptr_t CopyParamAttrs,
+  bool & SaveSettings, int32_t Options, int32_t CopyParamAttrs,
   TGetSynchronizeOptionsEvent OnGetOptions,
   TSynchronizeSessionLogEvent OnSynchronizeSessionLog,
   TFeedSynchronizeErrorEvent & OnFeedSynchronizeError,
@@ -409,19 +400,13 @@ __removed enum TSynchronizeMode { smRemote, smLocal, smBoth };
 constexpr intptr_t fsoDisableTimestamp = 0x01;
 constexpr intptr_t fsoDoNotUsePresets =  0x02;
 constexpr intptr_t fsoAllowSelectedOnly = 0x04;
-#if 0
-typedef void (__closure *TFullSynchronizeInNewWindow)
-  (TSynchronizeMode Mode, int Params, const UnicodeString & LocalDirectory, const UnicodeString & RemoteDirectory,
-   const TCopyParamType * CopyParams);
-#endif // #if 0
 using TFullSynchronizeInNewWindowEvent = nb::FastDelegate5<void,
-  TTerminal::TSynchronizeMode /*Mode*/, intptr_t /*Params*/, UnicodeString /*LocalDirectory*/, UnicodeString /*RemoteDirectory*/,
+  TTerminal::TSynchronizeMode /*Mode*/, int32_t /*Params*/, UnicodeString /*LocalDirectory*/, UnicodeString /*RemoteDirectory*/,
    const TCopyParamType * /*CopyParams*/>;
-
-bool DoFullSynchronizeDialog(TTerminal::TSynchronizeMode & Mode, intptr_t & Params,
+bool DoFullSynchronizeDialog(TTerminal::TSynchronizeMode & Mode, int32_t & Params,
   UnicodeString & LocalDirectory, UnicodeString & RemoteDirectory,
   TCopyParamType * CopyParams, bool & SaveSettings, bool & SaveMode,
-  intptr_t Options, const TUsableCopyParamAttrs & CopyParamAttrs,
+  int32_t Options, const TUsableCopyParamAttrs & CopyParamAttrs,
   TFullSynchronizeInNewWindowEvent OnFullSynchronizeInNewWindow, int AutoSubmit);
 
 // forms\SynchronizeChecklist.cpp
@@ -449,9 +434,8 @@ using TSynchronizeMoveEvent = nb::FastDelegate4<void,
   TOperationSide /*Side*/, UnicodeString /*FileName*/, UnicodeString /*NewFileName*/, TRemoteFile * /*RemoteFile*/>;
 typedef void (__closure *TSynchronizeBrowseEvent)(
   TOperationSide Side, TSynchronizeChecklist::TAction Action, const TSynchronizeChecklist::TItem * Item);
-
 bool DoSynchronizeChecklistDialog(TSynchronizeChecklist * Checklist,
-  TTerminal::TSynchronizeMode Mode, int Params,
+  TTerminal::TSynchronizeMode Mode, int32_t Params,
   const UnicodeString LocalDirectory, const UnicodeString RemoteDirectory,
   TCustomCommandMenuEvent OnCustomCommandMenu, TFullSynchronizeEvent OnSynchronize,
   TSynchronizeChecklistCalculateSizeEvent OnSynchronizeChecklistCalculateSize, TSynchronizeMoveEvent OnSynchronizeMove,
@@ -470,7 +454,7 @@ typedef nb::FastDelegate2<void,
 TForm * ShowEditorForm(const UnicodeString FileName, TForm * ParentForm,
   TNotifyEvent OnFileChanged, TNotifyEvent OnFileReload, TFileClosedEvent OnClose,
   TNotifyEvent OnSaveAll, TAnyModifiedEvent OnAnyModified,
-  const UnicodeString Caption, bool StandaloneEditor, TColor Color, int InternalEditorEncodingOverride,
+  const UnicodeString Caption, bool StandaloneEditor, TColor Color, int32_t InternalEditorEncodingOverride,
   bool NewFile);
 void ReconfigureEditorForm(TForm * Form);
 void EditorFormFileUploadComplete(TForm * Form);
@@ -628,7 +612,7 @@ void WinInitialize();
 void WinFinalize();
 #endif // #if 0
 
-void ShowNotification(TTerminal *Terminal, UnicodeString Str,
+void ShowNotification(TTerminal * Terminal, const UnicodeString & Str,
   TQueryType Type);
 #if 0
 void InitializeShortCutCombo(TComboBox * ComboBox,
@@ -682,11 +666,11 @@ public:
     TCustomCommand * ChildCustomCommand, const UnicodeString CustomCommandName, const UnicodeString HelpKeyword) noexcept;
 
 protected:
-  void Prompt(int32_t Index, const UnicodeString Prompt,
+  virtual void Prompt(int32_t Index, const UnicodeString Prompt,
     UnicodeString &Value) const override;
-  void Execute(const UnicodeString Command,
+  virtual void Execute(const UnicodeString Command,
     UnicodeString &Value) const override;
-  void PatternHint(int32_t Index, UnicodeString Pattern) override;
+  virtual void PatternHint(int32_t Index, UnicodeString Pattern) override;
 
 private:
   UnicodeString FCustomCommandName;
@@ -753,19 +737,13 @@ public:
   void PrintLine(const UnicodeString & Str = UnicodeString(), bool Error = false);
   virtual bool Input(UnicodeString & Str, bool Echo, uint32_t Timer) = 0;
   virtual int Choice(
-    UnicodeString Options, int Cancel, int Break, int Continue, int Timeouted, bool Timeouting, unsigned int Timer,
+    UnicodeString Options, int32_t Cancel, int32_t Break, int32_t Continue, int32_t Timeouted, bool Timeouting, uint32_t Timer,
     UnicodeString Message) = 0;
   virtual bool HasFlag(TConsoleFlag Flag) const = 0;
   virtual bool PendingAbort() = 0;
   virtual void SetTitle(UnicodeString Title) = 0;
-  virtual bool LimitedOutput() = 0;
-  virtual bool LiveOutput() = 0;
-  virtual bool NoInteractiveInput() = 0;
   virtual void WaitBeforeExit() = 0;
   virtual void Progress(TScriptProgress & Progress) = 0;
-  virtual bool CommandLineOnly() = 0;
-  virtual bool WantsProgress() = 0;
-  virtual UnicodeString FinalLogMessage() = 0;
   virtual void TransferOut(const unsigned char * Data, size_t Len) = 0;
   virtual size_t TransferIn(unsigned char * Data, size_t Len) = 0;
   virtual UnicodeString FinalLogMessage() = 0;
