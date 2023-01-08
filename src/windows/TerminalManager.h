@@ -30,11 +30,11 @@ public:
   TDateTime QueueOperationStart;
   // To distinguish sessions that were explicitly disconnected and
   // should not be reconnected when their tab is activated.
-  bool Disconnected;
-  bool DisconnectedTemporarily;
+  bool Disconnected{true};
+  bool DisconnectedTemporarily{true};
   // Sessions that should not close when they fail to connect
   // (i.e. those that were ever connected or were opened as a part of a workspace)
-  bool Permanent;
+  bool Permanent{false};
 };
 
 class TTerminalManager : public TTerminalList
@@ -93,7 +93,7 @@ protected:
 private:
   static TTerminalManager * FInstance;
   TCustomScpExplorerForm * FScpExplorer{nullptr};
-  TTerminal * FActiveTerminal{nullptr};
+  TManagedTerminal * FActiveTerminal{nullptr};
   TTerminal * FLocalTerminal{nullptr};
   bool FDestroying{false};
   TTerminalPendingAction FTerminalPendingAction;
@@ -118,7 +118,7 @@ private:
   bool FAuthenticationCancelled{false};
   std::unique_ptr<TApplicationEvents> FApplicationsEvents;
   bool FKeepAuthenticateForm{false};
-  int FMaxSessions;
+  int FMaxSessions{0};
 
   bool ConnectActiveTerminalImpl(bool Reopen);
   bool ConnectActiveTerminal();

@@ -1792,9 +1792,6 @@ TTerminalQueue * TTerminalManager::FindQueueForTerminal(TTerminal * Terminal)
   return reinterpret_cast<TTerminalQueue *>(FQueues->Items[Index]);
 }
 
-    Terminal->LogEvent(FORMAT(L"Checking %s \"%s\"...", LowerCase(EntryType), FileName));
-      Terminal->LogEvent(FORMAT(L"%s \"%s\" exists, but has incorrect permissions %s.", EntryType, FileName, File->Rights->Octal));
-      Terminal->LogEvent(FORMAT(L"%s \"%s\" exists and has correct permissions %s.", EntryType, FileName, File->Rights->Octal));
 bool TTerminalManager::UploadPublicKey(
   TTerminal * Terminal, TSessionData * Data, UnicodeString & FileName)
 {
@@ -1843,7 +1840,6 @@ bool TTerminalManager::UploadPublicKey(
       if (IsOpenSSH(SshImplementation) ||
           (MessageDialog(NotOpenSSHMessage, qtConfirmation, qaOK | qaCancel, HELP_LOGIN_AUTHORIZED_KEYS) == qaOK))
       {
-        Terminal->LogEvent(FORMAT(L"Adding public key line to \"%s\" file:\n%s", AuthorizedKeysFilePath, Line));
         // Ad-hoc terminal
         if (FAuthenticateForm != nullptr)
         {
@@ -1853,15 +1849,6 @@ bool TTerminalManager::UploadPublicKey(
         }
 
         Installed = Terminal->UploadPublicKey(FileName);
-          Terminal->LogEvent(FORMAT(L"Trying to create \"%s\" folder with permissions %s...", SshFolder, SshFolderRights.Octal));
-          std::unique_ptr<TStrings> Files(std::make_unique<TStringList>());
-          Terminal->LogEvent(FORMAT(L"Downloading current \"%s\" file...", AuthorizedKeysFile));
-              Terminal->LogEvent(FORMAT(L"\"%s\" file already contains public key line:\n%s", AuthorizedKeysFile, AuthorizedKeysLines->Strings[Index]));
-            Terminal->LogEvent(FORMAT(L"\"%s\" file does not contain the public key line yet.", AuthorizedKeysFile));
-              Terminal->LogEvent(FORMAT(L"Adding missing trailing new line to \"%s\" file...", AuthorizedKeysFile));
-          Terminal->LogEvent(FORMAT(L"Creating new \"%s\" file...", AuthorizedKeysFile));
-          std::unique_ptr<TStrings> Files(std::make_unique<TStringList>());
-          Terminal->LogEvent(FORMAT(L"Uploading updated \"%s\" file...", AuthorizedKeysFile));
       }
     }
     __finally
