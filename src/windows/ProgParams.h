@@ -10,11 +10,11 @@ public:
   static TProgramParams * Instance();
 
   explicit TProgramParams() noexcept;
-  explicit TProgramParams(const UnicodeString CmdLine) noexcept;
+  explicit TProgramParams(const UnicodeString & CmdLine) noexcept;
 
-  static UnicodeString FormatSwitch(UnicodeString Switch);
+  static UnicodeString FormatSwitch(const UnicodeString & Switch);
 
 private:
-  void Init(const UnicodeString CmdLine);
+  void Init(const UnicodeString & CmdLine);
 };
 

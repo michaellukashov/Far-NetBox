@@ -20,15 +20,15 @@ TProgramParams * TProgramParams::Instance()
 
 TProgramParams::TProgramParams() noexcept
 {
-  Init(L"");
+  Init(CmdLine);
 }
 
-TProgramParams::TProgramParams(const UnicodeString CmdLine) noexcept
+TProgramParams::TProgramParams(const UnicodeString & CmdLine)
 {
   Init(CmdLine);
 }
 
-void TProgramParams::Init(const UnicodeString CmdLine)
+void TProgramParams::Init(const UnicodeString & CmdLine)
 {
   UnicodeString CommandLine = CmdLine;
 
@@ -37,7 +37,7 @@ void TProgramParams::Init(const UnicodeString CmdLine)
   Parse(CommandLine);
 }
 
-UnicodeString TProgramParams::FormatSwitch(UnicodeString Switch)
+UnicodeString TProgramParams::FormatSwitch(const UnicodeString & Switch)
 {
   return FORMAT("/%s", Switch);
 }
