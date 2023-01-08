@@ -3,6 +3,7 @@
 
 #include <nbsystem.h>
 #include <openssl/pkcs12.h>
+#include <FileBuffer.h>
 
 class t_server
 {
@@ -37,13 +38,15 @@ struct t_transferfile
 {
 CUSTOM_MEM_ALLOCATION_IMPL
 
-  CString localfile;
-  CString remotefile;
-  CServerPath remotepath;
-  BOOL get;
-  int64_t size;
-  t_server server;
-  int nType;
-  void * nUserData;
+    CString localfile;
+    CString remotefile;
+    CServerPath remotepath;
+    BOOL get;
+    int64_t size;
+    t_server server;
+    int nType;
+    void * nUserData;
+    TTransferOutEvent OnTransferOut;
+    TTransferInEvent OnTransferIn;
 };
 

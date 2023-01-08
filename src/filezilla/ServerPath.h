@@ -14,7 +14,7 @@ public:
   CServerPath();
   explicit CServerPath(CString path, bool trim = true);
   CServerPath(CString path, int nServerType, bool trim = true);
-  CServerPath(const CServerPath &path);
+  CServerPath(const CServerPath & path);
 
   virtual ~CServerPath();
 
