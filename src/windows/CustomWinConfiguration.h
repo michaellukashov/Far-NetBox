@@ -18,6 +18,7 @@
 // WM_USER_SHCHANGENOTIFY + 13 (packages/filemng/DriveView.pas)
 
 #if 0
+
 #define C(Property) (Property != rhc.Property) ||
 struct TSynchronizeChecklistConfiguration
 {
@@ -43,6 +44,7 @@ struct TLoginDialogConfiguration : public TConsoleWinConfiguration
   bool operator !=(TLoginDialogConfiguration & rhc)
     { return (TConsoleWinConfiguration::operator !=(rhc)) || C(SiteSearch) 0; };
 };
+
 #undef C
 
 class TCustomWinConfiguration : public TGUIConfiguration
