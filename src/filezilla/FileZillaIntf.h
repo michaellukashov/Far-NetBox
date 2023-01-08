@@ -29,17 +29,17 @@ CUSTOM_MEM_ALLOCATION_IMPL
 struct TListDataEntry
 {
 CUSTOM_MEM_ALLOCATION_IMPL
-  TRemoteFileTime Time;
-  int64_t Size;
-  const wchar_t * LinkTarget;
   const wchar_t * Name;
   const wchar_t * Permissions;
   const wchar_t * HumanPerm;
   const wchar_t * OwnerGroup; // deprecated, to be replaced with Owner/Group
   const wchar_t * Owner;
   const wchar_t * Group;
+  int64_t Size;
   bool Dir;
   bool Link;
+  TRemoteFileTime Time;
+  const wchar_t * LinkTarget;
 };
 
 struct TFtpsCertificateData
@@ -92,7 +92,7 @@ CUSTOM_MEM_ALLOCATION_IMPL
 struct TNeedPassRequestData
 {
 CUSTOM_MEM_ALLOCATION_IMPL
-  wchar_t * Password;
+    wchar_t * Password;
 };
 
 class t_server;
@@ -202,8 +202,8 @@ public:
   bool Rename(const wchar_t* OldName, const wchar_t* NewName,
     const wchar_t* APath, const wchar_t* ANewPath);
 
-  bool FileTransfer(const wchar_t * LocalFile, const wchar_t * RemoteFile,
-    const wchar_t * RemotePath, bool Get, int64_t Size, int Type, void * UserData);
+  bool FileTransfer(
+    const wchar_t * LocalFile, const wchar_t * RemoteFile,
     const wchar_t * RemotePath, bool Get, __int64 Size, int Type, void * UserData,
     TTransferOutEvent OnTransferOut, TTransferInEvent OnTransferIn);
 

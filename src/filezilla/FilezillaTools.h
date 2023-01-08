@@ -3,6 +3,7 @@
 
 #include <ctime>
 #include <nbsystem.h>
+#include <openssl/ssl.h>
 
 class CFileZillaTools //: public TObject
 {
