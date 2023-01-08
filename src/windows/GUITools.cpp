@@ -16,6 +16,7 @@
 #include <Interface.h>
 
 #if 0
+
 #include <TbxUtils.hpp>
 #include <Math.hpp>
 #include <WebBrowserEx.hpp>
@@ -38,23 +39,24 @@
 #include "Animations120.h"
 #include "Animations144.h"
 #include "Animations192.h"
+
 #endif // #if 0
 
 __removed #pragma package(smart_init)
 
-extern UnicodeString PageantTool = "pageant.exe";
-extern UnicodeString PuttygenTool = "puttygen.exe";
+extern const UnicodeString PageantTool = L"pageant.exe";
+extern const UnicodeString PuttygenTool = L"puttygen.exe";
 
 bool FindFile(UnicodeString &APath)
 {
-  bool Result = ::SysUtulsFileExists(ApiPath(APath));
+  bool Result = ::SysUtulsFileExists(FileExistsFix(APath));
   if (!Result)
   {
-    UnicodeString ProgramFiles32 = ::IncludeTrailingBackslash(base::GetEnvVariable(L"ProgramFiles"));
-    UnicodeString ProgramFiles64 = ::IncludeTrailingBackslash(base::GetEnvVariable(L"ProgramW6432"));
+    UnicodeString ProgramFiles32 = ::IncludeTrailingBackslash(base::GetEnvironmentVariable(L"ProgramFiles"));
+    UnicodeString ProgramFiles64 = ::IncludeTrailingBackslash(base::GetEnvironmentVariable(L"ProgramW6432"));
     if (!ProgramFiles32.IsEmpty() &&
-      SameText(APath.SubString(1, ProgramFiles32.Length()), ProgramFiles32) &&
-      !ProgramFiles64.IsEmpty())
+        SameText(APath.SubString(1, ProgramFiles32.Length()), ProgramFiles32) &&
+        !ProgramFiles64.IsEmpty())
     {
       UnicodeString Path64 =
         ProgramFiles64 + APath.SubString(ProgramFiles32.Length() + 1, APath.Length() - ProgramFiles32.Length());
@@ -68,8 +70,8 @@ bool FindFile(UnicodeString &APath)
 
   if (!Result && SameText(ExtractFileName(Path), Path))
   {
-    UnicodeString Paths = base::GetEnvVariable("PATH");
-    if (Paths.Length() > 0)
+    UnicodeString Paths = base::GetEnvironmentVariable("PATH");
+    if (!Paths.IsEmpty())
     {
       UnicodeString NewPath = ::SysUtulsFileSearch(base::ExtractFileName(APath, false), Paths);
       Result = !NewPath.IsEmpty();
@@ -152,11 +154,12 @@ bool ExportSessionToPutty(TSessionData * SessionData, bool ReuseExisting, const 
   return Result;
 }
 
-void OpenSessionInPutty(UnicodeString PuttyPath,
-  TSessionData *SessionData)
+void OpenSessionInPutty(const UnicodeString PuttyPath,
+  TSessionData * SessionData)
 {
-  UnicodeString Program, Params, Dir;
-  SplitCommand(PuttyPath, Program, Params, Dir);
+  // See also TSiteAdvancedDialog::PuttySettingsButtonClick
+  UnicodeString Program, AParams, Dir;
+  SplitCommand(PuttyPath, Program, AParams, Dir);
   Program = ::ExpandEnvironmentVariables(Program);
   if (FindFile(Program))
   {
@@ -180,11 +183,11 @@ void OpenSessionInPutty(UnicodeString PuttyPath,
     TWinInteractiveCustomCommand InteractiveCustomCommand(
       &LocalCustomCommand, L"PuTTY", UnicodeString());
 
-    UnicodeString Params2 =
-      RemoteCustomCommand.Complete(InteractiveCustomCommand.Complete(Params, false), true);
+    UnicodeString Params =
+      LocalCustomCommand.Complete(InteractiveCustomCommand.Complete(AParams, false), true);
     UnicodeString PuttyParams;
 
-    if (!RemoteCustomCommand.IsSiteCommand(Params))
+    if (!LocalCustomCommand.IsSiteCommand(AParams))
     {
       {
         bool SessionList = false;
@@ -253,63 +256,37 @@ void OpenSessionInPutty(UnicodeString PuttyPath,
       else
       {
         UnicodeString SessionName;
-        std::unique_ptr<TRegistryStorage> Storage = nullptr;
-        std::unique_ptr<TSessionData> ExportData = nullptr;
-        std::unique_ptr<TRegistryStorage> SourceStorage = nullptr;
-        try__finally
-          Storage = std::make_unique<TRegistryStorage>(GetConfiguration()->GetPuttySessionsKey());
-          Storage->Init();
-          Storage->SetAccessMode(smReadWrite);
-          Storage->SetMungeStringValues(false);
-          Storage->SetForceAnsi(true);
+        if (ExportSessionToPutty(SessionData, true, GUIConfiguration->PuttySession))
         {
           SessionName = SessionData->SessionName;
         }
         else
         {
-              SourceStorage = std::make_unique<TRegistryStorage>(GetConfiguration()->PuttySessionsKey);
-              SourceStorage->Init();
+          SessionName = GUIConfiguration->PuttySession;
+          if ((SessionData->FSProtocol == fsFTP) &&
               GUIConfiguration->TelnetForFtpInPutty)
-                  Storage->OpenSubKey(GetGUIConfiguration()->PuttySession, true))
-                Storage->Copy(SourceStorage.get());
-              ExportData = std::make_unique<TSessionData>(L"");
-              ExportData->SetModified(true);
-              ExportData->SetName(GetGUIConfiguration()->PuttySession);
-              ExportData->SetWinTitle(SessionData->SessionName);
-              ExportData->SetPassword(L"");
-              if (SessionData->FSProtocol() == fsFTP)
-                if (GetGUIConfiguration()->TelnetForFtpInPutty)
           {
-                  ExportData->SetPuttyProtocol(PuttyTelnetProtocol);
             // PuTTY  does not allow -pw for telnet
             Password = L"";
           }
-                  ExportData->SetPuttyProtocol(PuttySshProtocol);
-              ExportData->Save(Storage.get(), true);
-              SessionName = GetGUIConfiguration()->PuttySession;
-            }
-          }
-        },
-        __finally__removed
-        ({
-        }) end_try__finally
+        }
 
         UnicodeString LoadSwitch = L"-load";
-        intptr_t P = Params2.LowerCase().Pos(LoadSwitch + L" ");
-        if ((P == 0) || ((P > 1) && (Params2[P - 1] != L' ')))
+        int32_t P = Params.LowerCase().Pos(LoadSwitch + L" ");
+        if ((P == 0) || ((P > 1) && (Params[P - 1] != L' ')))
         {
           AddToList(PuttyParams, FORMAT("%s %s", LoadSwitch, EscapePuttyCommandParam(SessionName)), L" ");
         }
       }
     }
 
-    if (!Password.IsEmpty() && !RemoteCustomCommand.IsPasswordCommand(Params))
+    if (!Password.IsEmpty() && !LocalCustomCommand.IsPasswordCommand(AParams))
     {
       Password = NormalizeString(Password); // if password is empty, we should quote it always
-      AddToList(PuttyParams, FORMAT("-pw %s", EscapePuttyCommandParam(Password)), L" ");
+      AddToList(PuttyParams, FORMAT(L"-pw %s", EscapePuttyCommandParam(Password)), L" ");
     }
 
-    AddToList(PuttyParams, Params2, L" ");
+    AddToList(PuttyParams, Params, L" ");
 
     // PuTTY is started in its binary directory to allow relative paths in private key,
     // when opening PuTTY's own stored session.
@@ -321,7 +298,7 @@ void OpenSessionInPutty(UnicodeString PuttyPath,
   }
 }
 
-bool FindTool(UnicodeString Name, UnicodeString &APath)
+bool FindTool(const UnicodeString & Name, UnicodeString & APath)
 {
   UnicodeString AppPath = ::IncludeTrailingBackslash(::ExtractFilePath(GetConfiguration()->ModuleFileName()));
   APath = AppPath + Name;
@@ -418,7 +395,7 @@ TObjectList * StartCreationDirectoryMonitorsOnEachDrive(uintptr_t Filter, TFileC
 
 bool DontCopyCommandToClipboard = false;
 
-bool CopyCommandToClipboard(UnicodeString ACommand)
+bool CopyCommandToClipboard(const UnicodeString & ACommand)
 {
   bool Result = !DontCopyCommandToClipboard; // && UseAlternativeFunction && IsKeyPressed(VK_CONTROL);
   if (Result)
@@ -429,8 +406,8 @@ bool CopyCommandToClipboard(UnicodeString ACommand)
   return Result;
 }
 
-static bool DoExecuteShell(UnicodeString APath, UnicodeString Params,
-  bool ChangeWorkingDirectory, HANDLE *Handle)
+static bool DoExecuteShell(const UnicodeString & APath, const UnicodeString Params,
+  bool ChangeWorkingDirectory, HANDLE * Handle)
 {
   bool Result = CopyCommandToClipboard(FormatCommand(APath, Params));
 
@@ -469,7 +446,7 @@ static bool DoExecuteShell(UnicodeString APath, UnicodeString Params,
   return Result;
 }
 
-void ExecuteShellChecked(UnicodeString APath, UnicodeString Params, bool ChangeWorkingDirectory)
+void ExecuteShellChecked(const UnicodeString APath, const UnicodeString Params, bool ChangeWorkingDirectory)
 {
   if (!DoExecuteShell(APath, Params, ChangeWorkingDirectory, nullptr))
   {
@@ -477,20 +454,20 @@ void ExecuteShellChecked(UnicodeString APath, UnicodeString Params, bool ChangeW
   }
 }
 
-void ExecuteShellChecked(UnicodeString Command)
+void ExecuteShellChecked(const UnicodeString Command)
 {
   UnicodeString Program, Params, Dir;
   SplitCommand(Command, Program, Params, Dir);
   ExecuteShellChecked(Program, Params);
 }
 
-bool ExecuteShell(UnicodeString Path, UnicodeString Params,
+bool ExecuteShell(const UnicodeString Path, const UnicodeString Params,
   HANDLE &Handle)
 {
   return DoExecuteShell(Path, Params, false, &Handle);
 }
 
-void ExecuteShellCheckedAndWait(UnicodeString Command,
+void ExecuteShellCheckedAndWait(const UnicodeString Command,
   TProcessMessagesEvent ProcessMessages)
 {
   UnicodeString Program, Params, Dir;
@@ -528,7 +505,7 @@ void ExecuteShellCheckedAndWait(UnicodeString Command,
   }
 }
 
-bool SpecialFolderLocation(intptr_t PathID, UnicodeString &APath)
+bool SpecialFolderLocation(int32_t PathID, UnicodeString & APath)
 {
 #if defined(_MSC_VER)
   LPITEMIDLIST Pidl;
@@ -543,7 +520,7 @@ bool SpecialFolderLocation(intptr_t PathID, UnicodeString &APath)
   return false;
 }
 
-UnicodeString UniqTempDir(UnicodeString BaseDir, UnicodeString Identity,
+UnicodeString UniqTempDir(const UnicodeString BaseDir, const UnicodeString Identity,
   bool Mask)
 {
   DebugAssert(!BaseDir.IsEmpty());
@@ -565,7 +542,7 @@ UnicodeString UniqTempDir(UnicodeString BaseDir, UnicodeString Identity,
   return TempDir;
 }
 
-bool DeleteDirectory(UnicodeString ADirName)
+bool DeleteDirectory(const UnicodeString ADirName)
 {
   TSearchRecOwned sr;
   bool retval = true;
@@ -584,7 +561,7 @@ bool DeleteDirectory(UnicodeString ADirName)
     if (retval)
     {
       while (FindNextChecked(sr) == 0)
-      {
+      { // VCL Function
         if (sr.IsDirectory())
         {
           if (sr.IsRealFile())
@@ -603,6 +580,7 @@ bool DeleteDirectory(UnicodeString ADirName)
   if (retval) retval = ::SysUtulsRemoveDir(ApiPath(ADirName)); // VCL function
   return retval;
 }
+
 #if 0
 
 class TSessionColors : public TComponent
@@ -628,6 +606,7 @@ public:
 };
 
 int GetSessionColorImage(
+  TCustomImageList * ImageList, TColor Color, int MaskIndex)
 {
 
   TSessionColors * SessionColors = TSessionColors::Retrieve(ImageList);
@@ -690,37 +669,6 @@ int GetSessionColorImage(
     SessionColors->ColorMap.insert(std::make_pair(Color, Result));
   }
   return Result;
-}
-
-void RegenerateSessionColorsImageList(TCustomImageList * ImageList, int MaskIndex)
-{
-  TSessionColors * SessionColors = TSessionColors::Retrieve(ImageList);
-
-  std::vector<TColor> Colors;
-  size_t FixedImages = static_cast<size_t>(ImageList->Count);
-  Colors.resize(FixedImages + SessionColors->ColorMap.size());
-  TSessionColors::TColorMap::const_iterator I = SessionColors->ColorMap.begin();
-  while (I != SessionColors->ColorMap.end())
-  {
-    DebugAssert(Colors[I->second] == TColor());
-    Colors[I->second] = I->first;
-    I++;
-  }
-
-  TSessionColors::TColorMap ColorMap = SessionColors->ColorMap;
-  SessionColors->ColorMap.clear();
-
-  for (size_t Index = 0; Index < Colors.size(); Index++)
-  {
-    bool IsFixedImageIndex = (Index < FixedImages);
-    DebugAssert((Colors[Index] == TColor()) == IsFixedImageIndex);
-    if (!IsFixedImageIndex)
-    {
-      GetSessionColorImage(ImageList, Colors[Index], MaskIndex);
-    }
-  }
-
-  DebugAssert(SessionColors->ColorMap == ColorMap);
 }
 
 void RegenerateSessionColorsImageList(TCustomImageList * ImageList, int MaskIndex)
@@ -959,7 +907,7 @@ void CopyImageList(TImageList * TargetList, TImageList * SourceList)
   }
 }
 
-static bool DoLoadDialogImage(TImage * Image, UnicodeString & ImageName)
+static bool DoLoadDialogImage(TImage * Image, const UnicodeString & ImageName)
 {
   bool Result = false;
   if (GlyphsModule != nullptr)
@@ -1008,7 +956,7 @@ static void DialogImageRescale(TComponent * Sender, TObject * Token)
   DoLoadDialogImage(Image, DialogImageName->ImageName);
 }
 
-void LoadDialogImage(TImage * Image, UnicodeString & ImageName)
+void LoadDialogImage(TImage * Image, const UnicodeString & ImageName)
 {
   if (DoLoadDialogImage(Image, ImageName))
   {
@@ -1056,14 +1004,13 @@ void HideComponentsPanel(TForm * Form)
   }
 }
 
-UnicodeString FormatIncrementalSearchStatus(UnicodeString AText, bool HaveNext)
+UnicodeString FormatIncrementalSearchStatus(const UnicodeString & Text, bool HaveNext)
 {
   UnicodeString Result =
     L" " + FMTLOAD(INC_SEARCH, AText) +
     (HaveNext ? L" " + LoadStr(INC_NEXT_SEARCH) : UnicodeString());
   return Result;
 }
-
 
 class TCustomDocHandler : public TComponent, public ::IDocHostUIHandler
 {
@@ -1193,8 +1140,8 @@ public:
   virtual TBrowserViewer(TComponent* AOwner);
 
   void AddLinkHandler(
-    UnicodeString & Url, TNotifyEvent Handler);
-  void NavigateToUrl(UnicodeString & Url);
+    const UnicodeString & Url, TNotifyEvent Handler);
+  void NavigateToUrl(const UnicodeString & Url);
 
   TControl * LoadingPanel;
 
@@ -1222,7 +1169,7 @@ TBrowserViewer::TBrowserViewer(TComponent* AOwner) :
 }
 
 void TBrowserViewer::AddLinkHandler(
-  UnicodeString & Url, TNotifyEvent Handler)
+  const UnicodeString & Url, TNotifyEvent Handler)
 {
   FHandlers.insert(std::make_pair(Url, Handler));
 }
@@ -1273,13 +1220,13 @@ void TBrowserViewer::BeforeNavigate2(
   }
 }
 
-void TBrowserViewer::NavigateToUrl(UnicodeString & Url)
+void TBrowserViewer::NavigateToUrl(const UnicodeString & Url)
 {
   FComplete = false;
   Navigate(Url.c_str());
 }
 
-TPanel * CreateLabelPanel(TPanel * Parent, UnicodeString & Label)
+TPanel * CreateLabelPanel(TPanel * Parent, const UnicodeString & Label)
 {
   TPanel * Result = CreateBlankPanel(Parent);
   Result->Parent = Parent;
@@ -1288,7 +1235,7 @@ TPanel * CreateLabelPanel(TPanel * Parent, UnicodeString & Label)
   return Result;
 }
 
-TWebBrowserEx * CreateBrowserViewer(TPanel * Parent, UnicodeString & LoadingLabel)
+TWebBrowserEx * CreateBrowserViewer(TPanel * Parent, const UnicodeString & LoadingLabel)
 {
   TBrowserViewer * Result = new TBrowserViewer(Parent);
   // TWebBrowserEx has its own unrelated Name and Parent properties.
@@ -1313,7 +1260,7 @@ void SetBrowserDesignModeOff(TWebBrowserEx * WebBrowser)
 }
 
 void AddBrowserLinkHandler(TWebBrowserEx * WebBrowser,
-  UnicodeString & Url, TNotifyEvent Handler)
+  const UnicodeString & Url, TNotifyEvent Handler)
 {
   TBrowserViewer * BrowserViewer = dynamic_cast<TBrowserViewer *>(WebBrowser);
   if (DebugAlwaysTrue(BrowserViewer != nullptr))
@@ -1322,7 +1269,7 @@ void AddBrowserLinkHandler(TWebBrowserEx * WebBrowser,
   }
 }
 
-void NavigateBrowserToUrl(TWebBrowserEx * WebBrowser, UnicodeString & Url)
+void NavigateBrowserToUrl(TWebBrowserEx * WebBrowser, const UnicodeString & Url)
 {
   TBrowserViewer * BrowserViewer = dynamic_cast<TBrowserViewer *>(WebBrowser);
   if (DebugAlwaysTrue(BrowserViewer != nullptr))
@@ -1358,7 +1305,7 @@ void HideBrowserScrollbars(TWebBrowserEx * WebBrowser)
   }
 }
 
-UnicodeString GenerateAppHtmlPage(TFont * Font, TPanel * Parent, UnicodeString & Body, bool Seamless)
+UnicodeString GenerateAppHtmlPage(TFont * Font, TPanel * Parent, const UnicodeString & Body, bool Seamless)
 {
   UnicodeString Result =
     L"<!DOCTYPE html>\n"
@@ -1399,7 +1346,7 @@ UnicodeString GenerateAppHtmlPage(TFont * Font, TPanel * Parent, UnicodeString &
   return Result;
 }
 
-void LoadBrowserDocument(TWebBrowserEx * WebBrowser, UnicodeString & Document)
+void LoadBrowserDocument(TWebBrowserEx * WebBrowser, const UnicodeString & Document)
 {
   std::unique_ptr<TMemoryStream> DocumentStream(new TMemoryStream());
   UTF8String DocumentUTF8 = UTF8String(Document);
@@ -1420,95 +1367,7 @@ void LoadBrowserDocument(TWebBrowserEx * WebBrowser, UnicodeString & Document)
   }
 }
 
-{
-  // This creates TWebBrowserEx::Document, which we need to stream in an in-memory document
-  NavigateBrowserToUrl(WebBrowser, L"about:blank");
-  // Needs to be followed by WaitBrowserToIdle
-}
-
-void WaitBrowserToIdle(TWebBrowserEx * WebBrowser)
-{
-  while (WebBrowser->ReadyState < ::READYSTATE_INTERACTIVE)
-  {
-    Application->ProcessMessages();
-  }
-}
-
-void HideBrowserScrollbars(TWebBrowserEx * WebBrowser)
-{
-  ICustomDoc * CustomDoc = nullptr;
-  if (DebugAlwaysTrue(WebBrowser->Document != nullptr) &&
-      SUCCEEDED(WebBrowser->Document->QueryInterface(&CustomDoc)) &&
-      DebugAlwaysTrue(CustomDoc != nullptr))
-  {
-    TCustomDocHandler * Handler = new TCustomDocHandler(WebBrowser);
-    CustomDoc->SetUIHandler(Handler);
-  }
-}
-
-UnicodeString GenerateAppHtmlPage(TFont * Font, TPanel * Parent, UnicodeString & Body, bool Seamless)
-{
-  UnicodeString Result =
-    L"<!DOCTYPE html>\n"
-    L"<meta charset=\"utf-8\">\n"
-    L"<html>\n"
-    L"<head>\n"
-    L"<style>\n"
-    L"\n"
-    L"body\n"
-    L"{\n"
-    L"    font-family: '" + Font->Name + L"';\n"
-    L"    margin: " + UnicodeString(Seamless ? L"0" : L"0.5em") + L";\n"
-    L"    background-color: " + ColorToWebColorStr(Parent->Color) + L";\n" +
-    UnicodeString(Seamless ? L"    overflow: hidden;\n" : L"") +
-    L"}\n"
-    L"\n"
-    L"body\n"
-    L"{\n"
-    L"    font-size: " + IntToStr(Font->Size) + L"pt;\n"
-    L"}\n"
-    L"\n"
-    L"p\n"
-    L"{\n"
-    L"    margin-top: 0;\n"
-    L"    margin-bottom: 1em;\n"
-    L"}\n"
-    L"\n"
-    L"a, a:visited, a:hover, a:visited, a:current\n"
-    L"{\n"
-    L"    color: " + ColorToWebColorStr(LinkColor) + L";\n"
-    L"}\n"
-    L"</style>\n"
-    L"</head>\n"
-    L"<body>\n" +
-    Body +
-    L"</body>\n"
-    L"</html>\n";
-  return Result;
-}
-
-void LoadBrowserDocument(TWebBrowserEx * WebBrowser, UnicodeString & Document)
-{
-  std::unique_ptr<TMemoryStream> DocumentStream(new TMemoryStream());
-  UTF8String DocumentUTF8 = UTF8String(Document);
-  DocumentStream->Write(DocumentUTF8.c_str(), DocumentUTF8.Length());
-  DocumentStream->Seek(0, 0);
-
-  // For stream-loaded document, when set only after loading from OnDocumentComplete,
-  // browser stops working
-  SetBrowserDesignModeOff(WebBrowser);
-
-  TStreamAdapter * DocumentStreamAdapter = new TStreamAdapter(DocumentStream.get(), soReference);
-  IPersistStreamInit * PersistStreamInit = nullptr;
-  if (DebugAlwaysTrue(WebBrowser->Document != nullptr) &&
-      SUCCEEDED(WebBrowser->Document->QueryInterface(IID_IPersistStreamInit, (void **)&PersistStreamInit)) &&
-      DebugAlwaysTrue(PersistStreamInit != nullptr))
-  {
-    PersistStreamInit->Load(static_cast<_di_IStream>(*DocumentStreamAdapter));
-  }
-}
-
-TComponent * FindComponentRecursively(TComponent * Root, UnicodeString & Name)
+TComponent * FindComponentRecursively(TComponent * Root, const UnicodeString & Name)
 {
   for (int Index = 0; Index < Root->ComponentCount; Index++)
   {
@@ -1526,18 +1385,6 @@ TComponent * FindComponentRecursively(TComponent * Root, UnicodeString & Name)
   }
   return nullptr;
 }
-
-void GetInstrutionsTheme(
-  TColor & MainInstructionColor, HFONT & MainInstructionFont, HFONT & InstructionFont)
-{
-  MainInstructionColor = Graphics::clNone;
-  MainInstructionFont = 0;
-  InstructionFont = 0;
-  HTHEME Theme = OpenThemeData(0, L"TEXTSTYLE");
-  if (Theme != nullptr)
-  {
-    LOGFONT AFont;
-    COLORREF AColor;
 
 void GetInstrutionsTheme(
   TColor & MainInstructionColor, HFONT & MainInstructionFont, HFONT & InstructionFont)
@@ -1573,6 +1420,7 @@ void GetInstrutionsTheme(
     CloseThemeData(Theme);
   }
 }
+
 #endif // #if 0
 
 TLocalCustomCommand::TLocalCustomCommand() noexcept
@@ -1580,24 +1428,24 @@ TLocalCustomCommand::TLocalCustomCommand() noexcept
 }
 
 TLocalCustomCommand::TLocalCustomCommand(
-  const TCustomCommandData &Data, UnicodeString RemotePath, UnicodeString LocalPath) noexcept :
+    const TCustomCommandData & Data, const UnicodeString & RemotePath, const UnicodeString & LocalPath) noexcept :
   TFileCustomCommand(Data, RemotePath)
 {
   FLocalPath = LocalPath;
 }
 
-TLocalCustomCommand::TLocalCustomCommand(const TCustomCommandData &Data,
-  UnicodeString RemotePath, UnicodeString LocalPath, UnicodeString FileName,
-  UnicodeString LocalFileName, UnicodeString FileList) noexcept :
+TLocalCustomCommand::TLocalCustomCommand(const TCustomCommandData & Data,
+  const UnicodeString & RemotePath, const UnicodeString & LocalPath, const UnicodeString & FileName,
+  const UnicodeString & LocalFileName, const UnicodeString & FileList) noexcept :
   TFileCustomCommand(Data, RemotePath, FileName, FileList)
 {
   FLocalPath = LocalPath;
   FLocalFileName = LocalFileName;
 }
 
-intptr_t TLocalCustomCommand::PatternLen(UnicodeString Command, intptr_t Index) const
+int32_t TLocalCustomCommand::PatternLen(const UnicodeString & Command, int32_t Index) const
 {
-  intptr_t Len;
+  int32_t Len;
   if ((Index < Command.Length()) && (Command[Index + 1] == L'\\'))
   {
     Len = 2;
@@ -1614,7 +1462,7 @@ intptr_t TLocalCustomCommand::PatternLen(UnicodeString Command, intptr_t Index) 
 }
 
 bool TLocalCustomCommand::PatternReplacement(
-  intptr_t Index, UnicodeString Pattern, UnicodeString &Replacement, bool &Delimit) const
+  int32_t Index, const UnicodeString & Pattern, const UnicodeString & Replacement, bool & Delimit) const
 {
   bool Result;
   if (Pattern == L"!\\")
@@ -1642,18 +1490,19 @@ void TLocalCustomCommand::DelimitReplacement(
   // never delimit local commands
 }
 
-bool TLocalCustomCommand::HasLocalFileName(UnicodeString Command) const
+bool TLocalCustomCommand::HasLocalFileName(const UnicodeString & Command) const
 {
   return FindPattern(Command, L'^');
 }
 
-bool TLocalCustomCommand::IsFileCommand(UnicodeString Command) const
+bool TLocalCustomCommand::IsFileCommand(const UnicodeString & Command) const
 {
   return TFileCustomCommand::IsFileCommand(Command) || HasLocalFileName(Command);
 }
 
 
 #if 0
+
 typedef std::set<TDataModule *> TImagesModules;
 static TImagesModules ImagesModules;
 static std::map<int, TPngImageList *> AnimationsImages;
@@ -1767,7 +1616,7 @@ TFrameAnimation::TFrameAnimation()
   FFirstFrame = -1;
 }
 
-void TFrameAnimation::Init(TPaintBox * PaintBox, UnicodeString & Name)
+void TFrameAnimation::Init(TPaintBox * PaintBox, const UnicodeString & Name)
 {
   FName = Name;
   FPaintBox = PaintBox;
@@ -1993,7 +1842,7 @@ bool TScreenTipHintWindow::IsPathLabel(TControl * HintControl)
   return (dynamic_cast<TPathLabel *>(HintControl) != nullptr);
 }
 
-intptr_t TScreenTipHintWindow::GetMargin(TControl *HintControl, UnicodeString Hint)
+int32_t TScreenTipHintWindow::GetMargin(TControl * HintControl, const UnicodeString & Hint)
 {
   int Result;
 
@@ -2011,7 +1860,7 @@ intptr_t TScreenTipHintWindow::GetMargin(TControl *HintControl, UnicodeString Hi
   return Result;
 }
 
-TFont * TScreenTipHintWindow::GetFont(TControl * HintControl, UnicodeString & Hint)
+TFont * TScreenTipHintWindow::GetFont(TControl * HintControl, const UnicodeString & Hint)
 {
   TFont * Result;
   if (HasLabelHintPopup(HintControl, Hint) || IsPathLabel(HintControl))
@@ -2028,13 +1877,13 @@ TFont * TScreenTipHintWindow::GetFont(TControl * HintControl, UnicodeString & Hi
   return Result;
 }
 
-void TScreenTipHintWindow::CalcHintTextRect(TControl * Control, TCanvas * Canvas, TRect & Rect, UnicodeString & Hint)
+void TScreenTipHintWindow::CalcHintTextRect(TControl * Control, TCanvas * Canvas, TRect & Rect, const UnicodeString & Hint)
 {
   const int Flags = DT_CALCRECT | GetTextFlags(Control);
   DrawText(Canvas->Handle, Hint.c_str(), -1, &Rect, Flags);
 }
 
-TRect TScreenTipHintWindow::CalcHintRect(int MaxWidth, UnicodeString AHint, void * AData)
+TRect TScreenTipHintWindow::CalcHintRect(int MaxWidth, const UnicodeString AHint, void * AData)
 {
   TControl * HintControl = GetHintControl(AData);
   int Margin = GetMargin(HintControl, AHint);
@@ -2111,7 +1960,7 @@ TRect TScreenTipHintWindow::CalcHintRect(int MaxWidth, UnicodeString AHint, void
 }
 
 void TScreenTipHintWindow::SplitHint(
-  TControl * HintControl, UnicodeString & Hint, UnicodeString & ShortHint, UnicodeString & LongHint)
+  TControl * HintControl, const UnicodeString & Hint, UnicodeString & ShortHint, UnicodeString & LongHint)
 {
   if (HasLabelHintPopup(HintControl, Hint))
   {
@@ -2124,7 +1973,7 @@ void TScreenTipHintWindow::SplitHint(
   }
 }
 
-void TScreenTipHintWindow::ActivateHintData(const TRect & ARect, UnicodeString AHint, void * AData)
+void TScreenTipHintWindow::ActivateHintData(const TRect & ARect, const UnicodeString AHint, void * AData)
 {
   FHintControl = GetHintControl(AData);
   SplitHint(FHintControl, AHint, FShortHint, FLongHint);
@@ -2267,43 +2116,7 @@ void TNewRichEdit::DestroyWnd()
     FreeLibrary(FLibrary);
   }
 }
-#endif // #if 0
 
-UnicodeString ItemsFormatString(UnicodeString SingleItemFormat,
-  UnicodeString MultiItemsFormat, intptr_t Count, UnicodeString FirstItem)
-{
-  UnicodeString Result;
-  if (Count == 1)
-  {
-    Result = FORMAT(SingleItemFormat, FirstItem);
-  }
-  else
-  {
-    Result = FORMAT(MultiItemsFormat, Count);
-  }
-  return Result;
-}
-
-UnicodeString ItemsFormatString(UnicodeString SingleItemFormat,
-  UnicodeString MultiItemsFormat, const TStrings *Items)
-{
-  return ItemsFormatString(SingleItemFormat, MultiItemsFormat,
-      Items->GetCount(), (Items->GetCount() > 0 ? Items->GetString(0) : UnicodeString()));
-}
-
-UnicodeString FileNameFormatString(UnicodeString SingleFileFormat,
-  UnicodeString MultiFilesFormat, const TStrings *AFiles, bool Remote)
-{
-  DebugAssert(AFiles != nullptr);
-  UnicodeString Item;
-  if (AFiles && (AFiles->GetCount() > 0))
-  {
-    Item = Remote ? base::UnixExtractFileName(AFiles->GetString(0)) :
-      base::ExtractFileName(AFiles->GetString(0), true);
-  }
-  return ItemsFormatString(SingleFileFormat, MultiFilesFormat,
-      AFiles ? AFiles->GetCount() : 0, Item);
-}
 #if 0
 
 static int HideAccelFlag(TControl * Control)
@@ -2335,7 +2148,7 @@ void TUIStateAwareLabel::DoDrawText(TRect & Rect, int Flags)
 }
 
 void FindComponentClass(
-  void *, TReader *, UnicodeString DebugUsedArg(ClassName), TComponentClass & ComponentClass)
+  void *, TReader *, const UnicodeString DebugUsedArg(ClassName), TComponentClass & ComponentClass)
 {
   if (ComponentClass == __classid(TLabel))
   {
@@ -2446,4 +2259,5 @@ void GUIFinalize()
     delete Thread;
   }
 }
+
 #endif // #if 0
