@@ -355,7 +355,7 @@ void TQueueController::FillQueueViewItem(TListItem * Item,
       Values[1] = Info->Destination.IsEmpty() ? LoadStr(PROGRESS_TEMP_DIR) : Info->Destination;
     }
 
-    __int64 TotalTransferred = QueueItem->TotalTransferred;
+    int64_t TotalTransferred = QueueItem->TotalTransferred;
     if (TotalTransferred >= 0)
     {
       Values[2] =
