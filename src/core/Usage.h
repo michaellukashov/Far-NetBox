@@ -12,12 +12,12 @@ public:
   explicit TUsage(TConfiguration * Configuration) noexcept;
   virtual ~TUsage() noexcept;
 
-  void Set(UnicodeString AKey, UnicodeString AValue);
-  void Set(UnicodeString AKey, intptr_t Value);
-  void Set(UnicodeString AKey, bool Value);
-  void Inc(UnicodeString AKey, intptr_t Increment = 1);
-  void SetMax(UnicodeString AKey, intptr_t Value);
-  UnicodeString Get(UnicodeString AKey) const;
+  void Set(const UnicodeString & AKey, const UnicodeString & AValue);
+  void Set(const UnicodeString & AKey, int32_t Value);
+  void Set(const UnicodeString & AKey, bool Value);
+  int Inc(const UnicodeString & AKey, int32_t Increment = 1);
+  void SetMax(const UnicodeString & AKey, int32_t Value);
+  UnicodeString Get(const UnicodeString & AKey) const;
 
   void UpdateCurrentVersion();
   void Reset();
@@ -25,7 +25,7 @@ public:
   void Default();
   void Load(THierarchicalStorage * Storage);
   void Save(THierarchicalStorage * Storage) const;
-  UnicodeString Serialize(UnicodeString ADelimiter = "&", UnicodeString AFilter = "") const;
+  UnicodeString Serialize(const UnicodeString & ADelimiter = "&", const UnicodeString & AFilter = "") const;
 
   static intptr_t CalculateCounterSize(int64_t Size);
 
@@ -46,21 +46,21 @@ public:
   void SetCollect(bool value);
   void UpdateLastReport();
   void Load(THierarchicalStorage * Storage,
-    UnicodeString AName, TCounters & Counters);
+    const UnicodeString & AName, TCounters & Counters);
   void Save(THierarchicalStorage * Storage,
-    UnicodeString AName, const TCounters & Counters) const;
-  void Inc(UnicodeString AKey, TCounters & Counters, intptr_t Increment);
-  void SetMax(UnicodeString AKey, intptr_t Value, TCounters & Counters);
+    const UnicodeString & AName, const TCounters & Counters) const;
+  int Inc(const UnicodeString & AKey, TCounters & Counters, int32_t Increment);
+  void SetMax(const UnicodeString & AKey, int32_t Value, TCounters & Counters);
   void Serialize(
-    UnicodeString& AList, UnicodeString AName, const TCounters & Counters,
-    UnicodeString ADelimiter, UnicodeString AFilterUpper) const;
+    UnicodeString& AList, const UnicodeString & AName, const TCounters & Counters,
+    const UnicodeString & ADelimiter, const UnicodeString & AFilterUpper) const;
   void Serialize(
-    UnicodeString & List, UnicodeString AName, UnicodeString AValue,
-    UnicodeString ADelimiter, UnicodeString AFilterUpper) const;
+    UnicodeString & List, const UnicodeString & AName, const UnicodeString & AValue,
+    const UnicodeString & ADelimiter, const UnicodeString & AFilterUpper) const;
   void ResetLastExceptions();
-  void ResetValue(UnicodeString AKey);
+  void ResetValue(const UnicodeString & AKey);
 };
 
-extern UnicodeString LastInternalExceptionCounter;
-extern UnicodeString LastUpdateExceptionCounter;
+extern const UnicodeString LastInternalExceptionCounter;
+extern const UnicodeString LastUpdateExceptionCounter;
 

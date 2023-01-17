@@ -9,8 +9,8 @@ __removed #pragma hdrstop
 
 __removed #pragma package(smart_init)
 
-UnicodeString LastInternalExceptionCounter("LastInternalException2");
-UnicodeString LastUpdateExceptionCounter("LastUpdateException");
+const UnicodeString LastInternalExceptionCounter("LastInternalException2");
+const UnicodeString LastUpdateExceptionCounter("LastUpdateException");
 
 TUsage::TUsage(TConfiguration * Configuration) noexcept :
   FCriticalSection(std::make_unique<TCriticalSection>()),
@@ -168,8 +168,10 @@ void TUsage::Reset()
 void TUsage::UpdateCurrentVersion()
 {
   TGuard Guard(*FCriticalSection); nb::used(Guard);
-  intptr_t CompoundVersion = FConfiguration->CompoundVersion;
-  intptr_t PrevVersion = StrToIntDef(Get("CurrentVersion"), 0);
+  int32_t CompoundVersion = FConfiguration->CompoundVersion;
+  DebugAssert(ZeroBuildNumber(CompoundVersion) == CompoundVersion);
+  // ZeroBuildNumber for compatibility with versions that stored build number into the compound version
+  int32_t PrevVersion = ZeroBuildNumber(StrToIntDef(Get("CurrentVersion"), 0));
   if (PrevVersion != CompoundVersion)
   {
     Set("Installed", StandardTimestamp());
@@ -209,30 +211,40 @@ void TUsage::ResetLastExceptions()
   ResetValue(LastUpdateExceptionCounter);
 }
 
-void TUsage::Inc(UnicodeString AKey, intptr_t Increment)
+int TUsage::Inc(UnicodeString AKey, intptr_t Increment)
 {
+  int Result;
   if (FCollect)
   {
     TGuard Guard(*FCriticalSection); nb::used(Guard);
     Inc(AKey, FPeriodCounters, Increment);
-    Inc(AKey, FLifetimeCounters, Increment);
+    Result = Inc(AKey, FLifetimeCounters, Increment);
   }
+  else
+  {
+    Result = -1;
+  }
+  return Result;
 }
 
-void TUsage::Inc(UnicodeString AKey, TCounters & Counters, intptr_t Increment)
+int TUsage::Inc(const UnicodeString & AKey, TCounters & Counters, intptr_t Increment)
 {
+  int Result;
   TCounters::iterator i = Counters.find(AKey);
   if (i != Counters.end())
   {
     i->second += Increment;
+    Result = i->second;
   }
   else
   {
     Counters[AKey] = Increment;
+    Result = Increment;
   }
+  return Result;
 }
 
-void TUsage::SetMax(UnicodeString AKey, intptr_t Value)
+void TUsage::SetMax(const UnicodeString & AKey, int32_t Value)
 {
   if (FCollect)
   {
