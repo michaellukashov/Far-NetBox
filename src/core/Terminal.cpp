@@ -82,8 +82,8 @@ class TLoopDetector : public TObject
 {
 public:
   TLoopDetector() noexcept;
-  void RecordVisitedDirectory(UnicodeString Directory);
-  bool IsUnvisitedDirectory(UnicodeString Directory);
+  void RecordVisitedDirectory(const UnicodeString Directory);
+  bool IsUnvisitedDirectory(const UnicodeString Directory);
 
 private:
   std::unique_ptr<TStringList> FVisitedDirectories;
@@ -94,13 +94,13 @@ TLoopDetector::TLoopDetector() noexcept
   FVisitedDirectories.reset(CreateSortedStringList());
 }
 
-void TLoopDetector::RecordVisitedDirectory(UnicodeString ADirectory)
+void TLoopDetector::RecordVisitedDirectory(const UnicodeString ADirectory)
 {
   UnicodeString VisitedDirectory = ::ExcludeTrailingBackslash(ADirectory);
   FVisitedDirectories->Add(VisitedDirectory);
 }
 
-bool TLoopDetector::IsUnvisitedDirectory(UnicodeString Directory)
+bool TLoopDetector::IsUnvisitedDirectory(const UnicodeString Directory)
 {
   bool Result = (FVisitedDirectories->IndexOf(Directory) < 0);
 
@@ -479,10 +479,13 @@ bool TCallbackGuard::Verify(Exception *E)
 }
 
 
-TRobustOperationLoop::TRobustOperationLoop(TTerminal *Terminal, TFileOperationProgressType *OperationProgress, bool *AnyTransfer) noexcept :
+TRobustOperationLoop::TRobustOperationLoop(
+  TTerminal * Terminal, TFileOperationProgressType * OperationProgress, bool * AnyTransfer, bool CanRetry) noexcept :
   FTerminal(Terminal),
   FOperationProgress(OperationProgress),
-  FAnyTransfer(AnyTransfer)
+  FRetry(false),
+  FAnyTransfer(AnyTransfer),
+  FCanRetry(CanRetry)
 {
   if (FAnyTransfer != nullptr)
   {
@@ -500,11 +503,24 @@ TRobustOperationLoop::~TRobustOperationLoop() noexcept
   }
 }
 
-bool TRobustOperationLoop::TryReopen(Exception &E)
+bool TRobustOperationLoop::TryReopen(Exception & E)
 {
-  FRetry = FTerminal && !FTerminal->GetActive();
-  if (FRetry)
+  if (!FCanRetry)
   {
+    FRetry = false;
+  }
+  else if (dyn_cast<ESkipFile *>(&E) != nullptr)
+  {
+    FRetry = false;
+  }
+  else if (FTerminal->Active)
+  {
+    FTerminal->LogEvent(1, L"Session is open, will not retry transfer");
+    FRetry = false;
+  }
+  else
+  {
+    FRetry = true;
     if (FAnyTransfer != nullptr)
     {
       // if there was any transfer, reset the global timestamp
@@ -517,6 +533,10 @@ bool TRobustOperationLoop::TryReopen(Exception &E)
       else
       {
         FRetry = FTerminal->ContinueReopen(FStart);
+        if (!FRetry)
+        {
+          FTerminal->LogEvent(L"Retry interval expired, will not retry transfer");
+        }
       }
     }
 
@@ -546,27 +566,31 @@ class TRetryOperationLoop
 public:
   explicit TRetryOperationLoop(TTerminal *Terminal) noexcept;
 
-  void Error(Exception &E);
-  void Error(Exception &E, TSessionAction &Action);
-  void Error(Exception &E, UnicodeString Message);
-  void Error(Exception &E, TSessionAction &Action, UnicodeString Message);
+  void Error(Exception & E);
+  void Error(Exception & E, TSessionAction & Action);
+  void Error(Exception & E, const UnicodeString Message);
+  void Error(Exception & E, TSessionAction & Action, const UnicodeString Message);
   bool Retry();
+  bool Succeeded();
 
 private:
-  TTerminal *FTerminal{nullptr};
+  TTerminal * FTerminal{nullptr};
   bool FRetry{false};
+  bool FSucceeded{false};
 
-  void DoError(Exception &E, TSessionAction *Action, UnicodeString Message);
+  void DoError(Exception & E, TSessionAction * Action, const UnicodeString Message);
 };
 
 TRetryOperationLoop::TRetryOperationLoop(TTerminal *Terminal) noexcept
 {
   FTerminal = Terminal;
   FRetry = false;
+  FSucceeded = true;
 }
 
-void TRetryOperationLoop::DoError(Exception &E, TSessionAction *Action, UnicodeString Message)
+void TRetryOperationLoop::DoError(Exception & E, TSessionAction * Action, const UnicodeString Message)
 {
+  FSucceeded = false;
   // Note that the action may already be canceled when RollbackAction is called
   uintptr_t Result;
   try
@@ -584,51 +608,51 @@ void TRetryOperationLoop::DoError(Exception &E, TSessionAction *Action, UnicodeS
 
   switch (Result)
   {
-  case qaRetry:
-    FRetry = true;
-    if (Action != nullptr)
-    {
-      Action->Cancel();
-    }
-    break;
+    case qaRetry:
+      FRetry = true;
+      if (Action != nullptr)
+      {
+        Action->Cancel();
+      }
+      break;
 
-  case qaAbort:
-    if (Action != nullptr)
-    {
-      FTerminal->RollbackAction(*Action, nullptr, &E);
-    }
-    Abort();
-    break;
+    case qaAbort:
+      if (Action != nullptr)
+      {
+        FTerminal->RollbackAction(*Action, nullptr, &E);
+      }
+      Abort();
+      break;
 
-  case qaSkip:
-    if (Action != nullptr)
-    {
-      Action->Cancel();
-    }
-    break;
+    case qaSkip:
+      if (Action != nullptr)
+      {
+        Action->Cancel();
+      }
+      break;
 
-  default:
-    DebugFail();
-    break;
+    default:
+      DebugFail();
+      break;
   }
 }
 
-void TRetryOperationLoop::Error(Exception &E)
+void TRetryOperationLoop::Error(Exception & E)
 {
   DoError(E, nullptr, UnicodeString());
 }
 
-void TRetryOperationLoop::Error(Exception &E, TSessionAction &Action)
+void TRetryOperationLoop::Error(Exception & E, TSessionAction & Action)
 {
   DoError(E, &Action, UnicodeString());
 }
 
-void TRetryOperationLoop::Error(Exception &E, UnicodeString Message)
+void TRetryOperationLoop::Error(Exception & E, const UnicodeString Message)
 {
   DoError(E, nullptr, Message);
 }
 
-void TRetryOperationLoop::Error(Exception &E, TSessionAction &Action, UnicodeString Message)
+void TRetryOperationLoop::Error(Exception & E, TSessionAction & Action, const UnicodeString Message)
 {
   DoError(E, &Action, Message);
 }
@@ -637,22 +661,31 @@ bool TRetryOperationLoop::Retry()
 {
   bool Result = FRetry;
   FRetry = false;
+  if (Result)
+  {
+    FSucceeded = true;
+  }
   return Result;
 }
 
+bool TRetryOperationLoop::Succeeded() const
+{
+  return FSucceeded;
+}
 
 TCollectedFileList::TCollectedFileList() noexcept :
   TObject(OBJECT_CLASS_TCollectedFileList)
 {
 }
 
-intptr_t TCollectedFileList::Add(UnicodeString FileName, TObject *Object, bool Dir)
+intptr_t TCollectedFileList::Add(const UnicodeString FileName, TObject * Object, bool Dir)
 {
   TFileData Data;
   Data.FileName = FileName;
   Data.Object = Object;
   Data.Dir = Dir;
   Data.Recursed = true;
+  Data.State = 0;
   FList.push_back(Data);
   return GetCount() - 1;
 }
@@ -692,16 +725,32 @@ bool TCollectedFileList::IsRecursed(intptr_t Index) const
   return FList[Index].Recursed;
 }
 
-
-TParallelOperation::TParallelOperation(TOperationSide Side) noexcept :
-  FSide(Side)
+int TCollectedFileList::GetState(int Index) const
 {
+  return FList[Index].State;
+}
+
+void TCollectedFileList::SetState(int Index, int State)
+{
+  FList[Index].State = State;
+}
+
+
+TParallelOperation::TParallelOperation(TOperationSide Side) noexcept
+{
+  FCopyParam = nullptr;
+  FParams = 0;
+  FProbablyEmpty = false;
+  FClients = 0;
+  FMainOperationProgress = nullptr;
   DebugAssert((Side == osLocal) || (Side == osRemote));
+  FSide = Side;
+  FVersion = 0;
 }
 
 void TParallelOperation::Init(
-  TStrings *AFileList, UnicodeString TargetDir, const TCopyParamType *CopyParam, intptr_t Params,
-  TFileOperationProgressType *MainOperationProgress, UnicodeString MainName)
+  TStrings * AFileList, const UnicodeString TargetDir, const TCopyParamType * CopyParam, int32_t Params,
+  TFileOperationProgressType * MainOperationProgress, const UnicodeString MainName)
 {
   DebugAssert(FFileList == nullptr);
   // More lists should really happen in scripting only, which does not support parallel transfers atm.
@@ -714,6 +763,7 @@ void TParallelOperation::Init(
   FParams = Params;
   FMainOperationProgress = MainOperationProgress;
   FMainName = MainName;
+  FListIndex = 0;
   FIndex = 0;
 }
 
@@ -787,7 +837,7 @@ void TParallelOperation::WaitFor()
 
 }
 
-void TParallelOperation::Done(UnicodeString FileName, bool Dir, bool Success)
+void TParallelOperation::Done(const UnicodeString FileName, bool Dir, bool Success)
 {
   if (Dir)
   {
@@ -806,7 +856,7 @@ void TParallelOperation::Done(UnicodeString FileName, bool Dir, bool Success)
         // This is actually not useful at the moment, as when creating directory fails and "Skip" is pressed,
         // the current code in CopyToRemote/CreateDirectory will behave as, if it succedded, so Successs will be true here.
         FDirectories.erase(DirectoryIterator->first);
-        if (FFileList->GetCount() > 0)
+        if (FFileList->GetCount() > FListIndex
         {
           UnicodeString FileNameWithSlash;
           if (FSide == osLocal)
@@ -820,8 +870,8 @@ void TParallelOperation::Done(UnicodeString FileName, bool Dir, bool Success)
 
           // It can actually be a different list than the one the directory was taken from,
           // but that does not matter that much. It should not happen anyway, as more lists should be in scripting only.
-          TCollectedFileList *Files = DebugNotNull(dyn_cast<TCollectedFileList>(FFileList->GetObj(0)));
-          intptr_t Index = 0;
+          TCollectedFileList * Files = GetFileList(FListIndex);
+          int32_t Index = 0;
           while (Index < Files->GetCount())
           {
             if (StartsText(FileNameWithSlash, Files->GetFileName(Index)))
@@ -829,6 +879,8 @@ void TParallelOperation::Done(UnicodeString FileName, bool Dir, bool Success)
               // We should add the file to "skip" counters in the OperationProgress,
               // but an interactive foreground transfer is not doing that either yet.
               Files->Delete(Index);
+              // Force re-update
+              FVersion++;
               if (Index < FIndex)
               {
                 FIndex--;
@@ -850,23 +902,27 @@ bool TParallelOperation::CheckEnd(TCollectedFileList *Files)
   bool Result = (FIndex >= Files->GetCount());
   if (Result)
   {
-    FFileList->Delete(0);
+    FListIndex++;
     FIndex = 0;
   }
   return Result;
 }
 
-intptr_t TParallelOperation::GetNext(TTerminal *Terminal, UnicodeString &FileName, TObject *&Object, UnicodeString &TargetDir, bool &Dir, bool &Recursed, bool &FirstLevel)
+TCollectedFileList * TParallelOperation::GetFileList(int Index)
+{
+  return DebugNotNull(dyn_cast<TCollectedFileList>(FFileList->GetObj(Index)));
+}
+
+intptr_t TParallelOperation::GetNext(TTerminal * Terminal, UnicodeString & FileName, TObject *&Object, UnicodeString &TargetDir, bool & Dir, bool & Recursed)
 {
   TGuard Guard(*FSection.get()); nb::used(Guard);
   intptr_t Result = 1;
-  TCollectedFileList *Files;
-  FirstLevel = false;
+  TCollectedFileList * Files;
   do
   {
-    if (FFileList->GetCount() > 0)
+    if (FFileList->GetCount() > FListIndex)
     {
-      Files = DebugNotNull(dyn_cast<TCollectedFileList>(FFileList->GetObj(0)));
+      Files = GetFileList(FListIndex);
       // can happen if the file was excluded by file mask
       if (CheckEnd(Files))
       {
@@ -883,13 +939,14 @@ intptr_t TParallelOperation::GetNext(TTerminal *Terminal, UnicodeString &FileNam
 
   if (Files != nullptr)
   {
-    UnicodeString RootPath = FFileList->GetString(0);
+    UnicodeString RootPath = FFileList->GetString(FListIndex);
 
     FileName = Files->GetFileName(FIndex);
     Object = Files->GetObj(FIndex);
     Dir = Files->IsDir(FIndex);
     Recursed = Files->IsRecursed(FIndex);
     UnicodeString DirPath;
+    bool FirstLevel;
     if (FSide == osLocal)
     {
       DirPath = ::ExtractFileDir(FileName);
@@ -956,6 +1013,9 @@ intptr_t TParallelOperation::GetNext(TTerminal *Terminal, UnicodeString &FileNam
         FDirectories.insert(TDirectories::value_type(FileName, DirectoryData));
       }
 
+      // The current implementation of UpdateFileList relies on this specific way of changing state
+      // (all files before FIndex one-by-one)
+      Files->SetState(FIndex, qfsProcessed);
       FIndex++;
       CheckEnd(Files);
     }
@@ -966,6 +1026,47 @@ intptr_t TParallelOperation::GetNext(TTerminal *Terminal, UnicodeString &FileNam
   return Result;
 }
 
+bool TParallelOperation::UpdateFileList(TQueueFileList * UpdateFileList)
+{
+  TGuard Guard(FSection.get());
+
+  bool Result =
+    (UpdateFileList->FLastParallelOperation != this) ||
+    (UpdateFileList->FLastParallelOperationVersion != FVersion);
+
+  DebugAssert(FFileList->Count == 1);
+  TCollectedFileList * Files = GetFileList(0);
+
+  if (!Result && (UpdateFileList->GetCount() != Files->Count()))
+  {
+    DebugAssert(false);
+    Result = true;
+  }
+
+  if (Result)
+  {
+    UpdateFileList->Clear();
+    for (int Index = 0; Index < Files->Count(); Index++)
+    {
+      UpdateFileList->Add(Files->GetFileName(Index), Files->GetState(Index));
+    }
+  }
+  else
+  {
+    int Index = ((FListIndex == 0) ? FIndex : Files->Count()) - 1;
+    while ((Index >= 0) && (UpdateFileList->GetState(Index) != Files->GetState(Index)))
+    {
+      UpdateFileList->SetState(Index, Files->GetState(Index));
+      Index--;
+      Result = true;
+    }
+  }
+
+  UpdateFileList->FLastParallelOperation = this;
+  UpdateFileList->FLastParallelOperationVersion = FVersion;
+
+  return Result;
+}
 
 TTerminal::TTerminal(TObjectClassId Kind) noexcept :
   TSessionUI(Kind),
@@ -1005,15 +1106,18 @@ void TTerminal::Init(TSessionData *ASessionData,
   FOnReadDirectoryProgress = nullptr;
   FOnQueryUser = nullptr;
   FOnPromptUser = nullptr;
+  FOnDisplayBanner = nullptr;
+  FOnShowExtendedException = nullptr;
   FOperationProgressPersistence = nullptr;
   FOperationProgressOnceDoneOperation = odoIdle;
   FOnInformation = nullptr;
   FOnCustomCommand = nullptr;
   FOnClose = nullptr;
   FOnFindingFile = nullptr;
+  FOperationProgressPersistence = nullptr;
+  FOperationProgressOnceDoneOperation = odoIdle;
 
   FUseBusyCursor = True;
-  FLockDirectory.Clear();
   FDirectoryCache = std::make_unique<TRemoteDirectoryCache>();
 //  FDirectoryChangesCache = nullptr;
   FFSProtocol = cfsUnknown;
@@ -1031,6 +1135,7 @@ void TTerminal::Init(TSessionData *ASessionData,
   FCallbackGuard = nullptr;
   FNesting = 0;
   FRememberedPasswordKind = TPromptKind(-1);
+  FSecondaryTerminals = 0;
   FCollectFileSystemUsage = false;
   FSuspendTransaction = false;
   FOperationProgress = nullptr;
@@ -1196,7 +1301,7 @@ void TTerminal::ResetConnection()
   // as they can still be referenced in the GUI atm
 }
 
-void TTerminal::FingerprintScan(UnicodeString &SHA256, UnicodeString &MD5)
+void TTerminal::FingerprintScan(UnicodeString & SHA256, UnicodeString & SHA1 UnicodeString & MD5)
 {
   GetSessionData()->SetFingerprintScan(true);
   try
@@ -1208,9 +1313,12 @@ void TTerminal::FingerprintScan(UnicodeString &SHA256, UnicodeString &MD5)
   }
   catch (...)
   {
-    if (!FFingerprintScannedSHA256.IsEmpty() || !FFingerprintScannedMD5.IsEmpty())
+    if (!FFingerprintScannedSHA256.IsEmpty() ||
+        !FFingerprintScannedSHA1.IsEmpty() ||
+        !FFingerprintScannedMD5.IsEmpty())
     {
       SHA256 = FFingerprintScannedSHA256;
+      SHA1 = FFingerprintScannedSHA1;
       MD5 = FFingerprintScannedMD5;
     }
     else
@@ -1222,15 +1330,22 @@ void TTerminal::FingerprintScan(UnicodeString &SHA256, UnicodeString &MD5)
 
 void TTerminal::Open()
 {
+  AnySession = true;
+  Configuration->Usage->Inc(L"SessionOpens");
   TAutoNestingCounter OpeningCounter(FOpening);
   ReflectSettings();
   try
   {
     FEncryptKey = HexToBytes(FSessionData->EncryptKey);
+    if (IsEncryptingFiles())
+    {
+      ValidateEncryptKey(FEncryptKey);
+    }
 
     DoInformation("", true, 1);
     try__finally
     {
+      FRememberedPasswordUsed = false;
       InternalTryOpen();
     },
     __finally
@@ -1304,14 +1419,19 @@ void TTerminal::InternalTryOpen()
     if (GetSessionData()->GetFingerprintScan() && (FFileSystem != nullptr) &&
         DebugAlwaysTrue(GetSessionData()->GetFtps() != ftpsNone))
     {
-      FFingerprintScannedSHA256 = UnicodeString();
-      FFingerprintScannedMD5 = FFileSystem->GetSessionInfo().CertificateFingerprint;
+      const TSessionInfo & SessionInfo = FFileSystem->GetSessionInfo();
+      FFingerprintScannedSHA256 = SessionInfo.CertificateFingerprintSHA256;
+      FFingerprintScannedSHA1 = SessionInfo.CertificateFingerprintSHA1;
+      FFingerprintScannedMD5 = UnicodeString();
     }
-    // Particularly to prevent reusing a wrong client certificate passphrase
-    // in the next login attempt
-    FRememberedPassword = UnicodeString();
-    FRememberedPasswordKind = TPromptKind(-1);
-    FRememberedTunnelPassword = UnicodeString();
+    if (FRememberedPasswordUsed)
+    {
+      // Particularly to prevent reusing a wrong client certificate passphrase
+      // in the next login attempt
+      FRememberedPassword = UnicodeString();
+      FRememberedPasswordKind = TPromptKind(-1);
+      FRememberedTunnelPassword = UnicodeString();
+    }
     throw;
   }
 }
@@ -1417,12 +1537,14 @@ void TTerminal::InitFileSystem()
         if (FSessionData->GetFingerprintScan())
         {
           FSecureShell->GetHostKeyFingerprint(FFingerprintScannedSHA256, FFingerprintScannedMD5);
+          FFingerprintScannedSHA1 = UnicodeString();
         }
+        // Tunnel errors that happens only once we connect to the local port (server-side forwarding problems).
+        // Contrary to local side problems handled already in OpenTunnel.
         if (!FSecureShell->GetActive() && !FTunnelError.IsEmpty())
         {
-          // the only case where we expect this to happen
-          UnicodeString ErrorMessage = LoadStr(UNEXPECTED_CLOSE_ERROR);
-          DebugAssert(E.Message == ErrorMessage);
+          // the only case where we expect this to happen (first in GUI, the latter in scripting)
+          DebugAssert((E.Message == LoadStr(UNEXPECTED_CLOSE_ERROR)) || (E.Message == LoadStr(NET_TRANSL_CONN_ABORTED)) || (E.Message.Pos(LoadStr(NOT_CONNECTED)) > 0));
           FatalError(&E, FMTLOAD(TUNNEL_ERROR, FTunnelError));
         }
         else
@@ -1486,18 +1608,30 @@ void TTerminal::SetupTunnelLocalPortNumber()
   FTunnelLocalPortNumber = FSessionData->GetTunnelLocalPortNumber();
   if (FTunnelLocalPortNumber == 0)
   {
-    FTunnelLocalPortNumber = FConfiguration->GetTunnelLocalPortNumberLow();
-    while (!IsListenerFree(FTunnelLocalPortNumber))
+    // Randomizing the port selection to reduce a chance of conflicts.
+    std::vector<int> Ports;
+    for (int Port = Configuration->TunnelLocalPortNumberLow; Port <= Configuration->TunnelLocalPortNumberHigh; Port++)
     {
-      FTunnelLocalPortNumber++;
-      if (FTunnelLocalPortNumber > FConfiguration->GetTunnelLocalPortNumberHigh())
+      Ports.push_back(Port);
+    }
+
+    do
+    {
+      if (Ports.empty())
       {
-        FTunnelLocalPortNumber = 0;
         FatalError(nullptr, FMTLOAD(TUNNEL_NO_FREE_PORT,
           FConfiguration->GetTunnelLocalPortNumberLow(), FConfiguration->GetTunnelLocalPortNumberHigh()));
       }
+      int Index = Random(Ports.size());
+      int Port = Ports[Index];
+      Ports.erase(&Ports.at(Index));
+      if (IsListenerFree(Port))
+      {
+        FTunnelLocalPortNumber = Port;
+        LogEvent(FORMAT(L"Autoselected tunnel local port number %d", (FTunnelLocalPortNumber)));
+      }
     }
-    LogEvent(FORMAT("Autoselected tunnel local port number %d", FTunnelLocalPortNumber));
+    while (FTunnelLocalPortNumber == 0);
   }
 }
 
@@ -1507,7 +1641,7 @@ void TTerminal::OpenTunnel()
 
   try
   {
-    FTunnelData = std::make_unique<TSessionData>("");
+    FTunnelData = std::make_unique<TSessionData>(FSessionData->CreateTunnelData(FTunnelLocalPortNumber);
     FTunnelData->Assign(StoredSessions->GetDefaultSettings());
     FTunnelData->SetName(FMTLOAD(TUNNEL_SESSION_NAME, FSessionData->GetSessionName()));
     FTunnelData->SetTunnel(false);
@@ -1572,13 +1706,32 @@ void TTerminal::OpenTunnel()
       FTunnelOpening = false;
     } end_try__finally
 
+    // When forwarding fails due to a local problem (e.g. port in use), we get the error already here, so abort asap.
+    // If we won't abort, particularly in case of "port in use", we may not even detect the problem,
+    // as the connection to the port may succeed.
+    // Remote-side tunnel problems are handled in TTerminal::Open().
+    if (!FTunnel->LastTunnelError.IsEmpty())
+    {
+      // Throw and handle with any other theoretical forwarding errors that may cause tunnel connection close
+      // (probably cannot happen)
+      EXCEPTION;
+    }
+
     FTunnelThread = std::make_unique<TTunnelThread>(FTunnel.get());
     FTunnelThread->InitTunnelThread();
   }
-  catch (...)
+  catch (Exception & E)
   {
+    LogEvent(L"Error opening tunnel.");
     CloseTunnel();
-    throw;
+    if (!FTunnelError.IsEmpty())
+    {
+      FatalError(&E, FMTLOAD(TUNNEL_ERROR, (FTunnelError)));
+    }
+    else
+    {
+      throw;
+    }
   }
 }
 
@@ -1659,10 +1812,14 @@ void TTerminal::Reopen(intptr_t Params)
   {
     FReadCurrentDirectoryPending = false;
     FReadDirectoryPending = false;
-    // reset transactions
-    if (InTransaction())
+    // Not sure why we are suspeding the transaction in the first place,
+    // but definitelly when set while connecting auto loaded workspace session, it causes loading the directory twice.
+    // (when reconnecting lost connection, it's usually prevented by cached directory)
+    // Preventing that by suspeding transaction only when there is one.
+    FSuspendTransaction = (FInTransaction > 0);
+    /*if (InTransaction())
       EndTransaction();
-    FSuspendTransaction = true;
+    FSuspendTransaction = true;*/
     FExceptionOnFail = 0;
     // typically, we avoid reading directory, when there is operation ongoing,
     // for file list which may reference files from current directory
@@ -1767,6 +1924,7 @@ bool TTerminal::DoPromptUser(TSessionData * /*Data*/, TPromptKind Kind,
       {
         Password = GetPasswordSource()->GetRememberedPassword();
       }
+      FRememberedPasswordUsed = true;
       Response->SetString(0, Password);
       if (!Response->GetString(0).IsEmpty())
       {
@@ -1792,7 +1950,7 @@ bool TTerminal::DoPromptUser(TSessionData * /*Data*/, TPromptKind Kind,
         GetOnPromptUser()(this, Kind, AName, AInstructions, Prompts, Response, Result, nullptr);
         Guard.Verify();
       }
-      catch (Exception &E)
+      catch (Exception & E)
       {
         if (!Guard.Verify(&E))
         {
@@ -1842,16 +2000,27 @@ uint32_t TTerminal::QueryUser(UnicodeString AQuery,
       }
     }
   }
+  UnicodeString Name;
+  if (Answer == qaNeverAskAgain)
+  {
+    Name = L"NeverAskAgain";
+  }
+  else
+  {
+    UnicodeString Caption;
+    AnswerNameAndCaption(Answer, Name, Caption);
+  }
+  LogEvent(FORMAT(L"Answer: %s", (Name)));
   return Answer;
 }
 
-uint32_t TTerminal::QueryUserException(UnicodeString AQuery,
-  Exception *E, uint32_t Answers, const TQueryParams *Params,
+uint32_t TTerminal::QueryUserException(const UnicodeString AQuery,
+  Exception * E, uint32_t Answers, const TQueryParams * Params,
   TQueryType QueryType)
 {
   uint32_t Result = 0;
   UnicodeString ExMessage;
-  if (DebugAlwaysTrue(ExceptionMessage(E, ExMessage) || !AQuery.IsEmpty()))
+  if (DebugAlwaysTrue(ExceptionMessageFormatted(E, ExMessage) || !AQuery.IsEmpty()))
   {
     std::unique_ptr<TStrings> MoreMessages(std::make_unique<TStringList>());
     try__finally
@@ -1965,15 +2134,15 @@ void TTerminal::ShowExtendedException(Exception *E)
   }
 }
 
-void TTerminal::DoInformation(UnicodeString AStr, bool Status,
-  intptr_t Phase)
+void TTerminal::DoInformation(
+  const UnicodeString AStr, bool Status, int32_t Phase, const UnicodeString Additional)
 {
   if (GetOnInformation())
   {
     TCallbackGuard Guard(this);
     try
     {
-      GetOnInformation()(this, AStr, Status, Phase);
+      GetOnInformation()(this, AStr, Status, Phase, Additional);
       Guard.Verify();
     }
     catch (Exception &E)
@@ -1994,7 +2163,7 @@ void TTerminal::Information(UnicodeString AStr, bool Status)
 void TTerminal::DoProgress(TFileOperationProgressType &ProgressData)
 {
   if ((FConfiguration->GetActualLogProtocol() >= 1) &&
-      ((ProgressData.GetOperation() == foCopy) || (ProgressData.GetOperation() == foMove)))
+      ProgressData.IsTransfer())
   {
     DWORD Now = GetTickCount();
     if (Now - FLastProgressLogged >= 1000)
@@ -2062,7 +2231,7 @@ bool TTerminal::GetIsCapableProtected(TFSCapability Capability) const
   {
     switch (Capability)
     {
-      case fsBackgroundTransfers:
+      case fcBackgroundTransfers:
         return !IsEncryptingFiles();
 
       default:
@@ -2085,31 +2254,30 @@ void TTerminal::ReactOnCommand(intptr_t ACmd)
   bool ChangesDirectory = false;
   bool ModifiesFiles = false;
 
-  switch (static_cast<TFSCommand>(ACmd))
-  {
-  case fsChangeDirectory:
-  case fsHomeDirectory:
-    ChangesDirectory = true;
-    break;
+  switch (static_cast<TFSCommand>(ACmd)) {
+    case fsChangeDirectory:
+    case fsHomeDirectory:
+      ChangesDirectory = true;
+      break;
 
-  case fsCopyToRemote:
-  case fsDeleteFile:
-  case fsRenameFile:
-  case fsMoveFile:
-  case fsCopyFile:
-  case fsCreateDirectory:
-  case fsChangeMode:
-  case fsChangeGroup:
-  case fsChangeOwner:
-  case fsChangeProperties:
-  case fsLock:
-    ModifiesFiles = true;
-    break;
+    case fsCopyToRemote:
+    case fsDeleteFile:
+    case fsRenameFile:
+    case fsMoveFile:
+    case fsCopyFile:
+    case fsCreateDirectory:
+    case fsChangeMode:
+    case fsChangeGroup:
+    case fsChangeOwner:
+    case fsChangeProperties:
+    case fsLock:
+      ModifiesFiles = true;
+      break;
 
-  case fsAnyCommand:
-    ChangesDirectory = true;
-    ModifiesFiles = true;
-    break;
+    case fsAnyCommand:
+      ChangesDirectory = true;
+      ModifiesFiles = true;
+      break;
   }
 
   if (ChangesDirectory)
@@ -2181,6 +2349,7 @@ bool TTerminal::DoQueryReopen(Exception *E)
       TQueryParams Params(qpAllowContinueOnError);
       Params.Timeout = FConfiguration->GetSessionReopenAuto();
       Params.TimeoutAnswer = qaRetry;
+      Params.TimeoutResponse = Params.TimeoutAnswer;
       TQueryButtonAlias Aliases[1];
       Aliases[0].Button = qaRetry;
       Aliases[0].Alias = LoadStr(RECONNECT_BUTTON);
@@ -2374,30 +2543,6 @@ intptr_t TTerminal::FileOperationLoop(TFileOperationEvent CallBackFunc,
   return Result;
 }
 
-UnicodeString TTerminal::TranslateLockedPath(UnicodeString APath, bool Lock)
-{
-  UnicodeString Path = APath;
-  if (GetSessionData()->GetLockInHome() && !Path.IsEmpty() && (Path[1] == L'/'))
-  {
-    if (Lock)
-    {
-      if (Path.SubString(1, FLockDirectory.Length()) == FLockDirectory)
-      {
-        Path.Delete(1, FLockDirectory.Length());
-        if (Path.IsEmpty())
-        {
-          Path = ROOTDIRECTORY;
-        }
-      }
-    }
-    else
-    {
-      Path = base::UnixExcludeTrailingBackslash(FLockDirectory + Path);
-    }
-  }
-  return Path;
-}
-
 void TTerminal::ClearCaches()
 {
   FDirectoryCache->Clear();
@@ -2469,7 +2614,6 @@ TRemoteFileList * TTerminal::DirectoryFileList(UnicodeString APath, TDateTime Ti
 void TTerminal::TerminalSetCurrentDirectory(UnicodeString AValue)
 {
   DebugAssert(FFileSystem);
-  UnicodeString Value = TranslateLockedPath(AValue, false);
   if (AValue != FFileSystem->RemoteCurrentDirectory)
   {
     RemoteChangeDirectory(Value);
@@ -2484,18 +2628,14 @@ UnicodeString TTerminal::RemoteGetCurrentDirectory()
     // to FCurrentDirectory, splitting the assignment to two statements
     // to locate the crash more closely
     UnicodeString CurrentDirectory = FFileSystem->RemoteCurrentDirectory();
-    if (FCurrentDirectory != CurrentDirectory)
+    FCurrentDirectory = CurrentDirectory;
+    if (FCurrentDirectory.IsEmpty())
     {
-      FCurrentDirectory = CurrentDirectory;
-      if (FCurrentDirectory.IsEmpty())
-      {
-        ReadCurrentDirectory();
-      }
+      ReadCurrentDirectory();
     }
   }
 
-  UnicodeString Result = TranslateLockedPath(FCurrentDirectory, true);
-  return Result;
+  return FCurrentDirectory;
 }
 
 UnicodeString TTerminal::PeekCurrentDirectory()
@@ -2505,25 +2645,24 @@ UnicodeString TTerminal::PeekCurrentDirectory()
     FCurrentDirectory = FFileSystem->RemoteCurrentDirectory();
   }
 
-  UnicodeString Result = TranslateLockedPath(FCurrentDirectory, true);
-  return Result;
+  return FCurrentDirectory;
 }
 
-TRemoteTokenList * TTerminal::GetGroups()
+const TRemoteTokenList * TTerminal::GetGroups()
 {
   DebugAssert(FFileSystem);
   LookupUsersGroups();
   return &FGroups;
 }
 
-TRemoteTokenList * TTerminal::GetUsers()
+const TRemoteTokenList * TTerminal::GetUsers()
 {
   DebugAssert(FFileSystem);
   LookupUsersGroups();
   return &FUsers;
 }
 
-TRemoteTokenList * TTerminal::GetMembership()
+const TRemoteTokenList * TTerminal::GetMembership()
 {
   DebugAssert(FFileSystem);
   LookupUsersGroups();
@@ -2713,7 +2852,7 @@ void TTerminal::DoEndTransaction(bool Inform)
         {
           if (Inform)
           {
-            DoInformation(LoadStr(STATUS_OPEN_DIRECTORY), true);
+            DoInformation(LoadStr(STATUS_OPEN_DIRECTORY), true, -1, CurrentDirectory);
           }
           ReadDirectory(!FReadCurrentDirectoryPending);
         }
@@ -2879,8 +3018,8 @@ bool TTerminal::HandleException(Exception *E)
 }
 
 void TTerminal::CloseOnCompletion(
-  TOnceDoneOperation Operation, UnicodeString AMessage,
-  UnicodeString ATargetLocalPath, UnicodeString ADestLocalFileName)
+  TOnceDoneOperation Operation, const UnicodeString AMessage,
+  const UnicodeString ATargetLocalPath, const UnicodeString ADestLocalFileName)
 {
   if (FOperationProgressPersistence != nullptr)
   {
@@ -2893,8 +3032,8 @@ void TTerminal::CloseOnCompletion(
     LogEvent(L"Closing session after completed operation (as requested by user)");
     Close();
     throw ESshTerminate(nullptr,
-      AMessage.IsEmpty() ? UnicodeString(LoadStr(CLOSED_ON_COMPLETION)) : AMessage,
-      Operation, ATargetLocalPath, ADestLocalFileName);
+      MainInstructions(Message.IsEmpty() ? LoadStr(CLOSED_ON_COMPLETION) : Message),
+      Operation, TargetLocalPath, DestLocalFileName);
   }
 }
 
@@ -3259,7 +3398,7 @@ void TTerminal::RollbackAction(TSessionAction &Action,
   // ESkipFile without "cancel" is file skip,
   // and we do not want to record skipped actions.
   // But ESkipFile with "cancel" is abort and we want to record that.
-  // Note that TSCPFileSystem modifies the logic of RollbackAction little bit.
+  // Note that TScpFileSystem modifies the logic of RollbackAction little bit.
   if (isa<ESkipFile>(E) &&
       ((OperationProgress == nullptr) ||
        (OperationProgress->GetCancel() == csContinue)))
@@ -3299,10 +3438,13 @@ void TTerminal::DoStartup()
         }
         catch (...)
         {
-          if (!Active)
+          if (!Active || SessionData->RequireDirectories)
+          {
+            throw;
+          }
+          else
           {
             LogEvent(L"Configured initial remote directory cannot be opened, staying in the home directory.");
-            throw;
           }
         }
         ExceptionOnFail = false;
@@ -3349,15 +3491,7 @@ void TTerminal::ReadCurrentDirectory()
       FLastDirectoryChange.Clear();
     }
 
-    if (OldDirectory.IsEmpty())
-    {
-      FLockDirectory = (GetSessionData()->GetLockInHome() ?
-        FFileSystem->RemoteCurrentDirectory() : UnicodeString(""));
-    }
-    // if (OldDirectory != FFileSystem->GetCurrDirectory())
-    {
-      DoChangeDirectory();
-    }
+    if (OldDirectory != FFileSystem->CurrentDirectory) DoChangeDirectory();
   }
   catch (Exception &E)
   {
@@ -3466,27 +3600,35 @@ void TTerminal::LogRemoteFile(TRemoteFile *AFile)
   }
 }
 
-UnicodeString TTerminal::FormatFileDetailsForLog(UnicodeString AFileName, const TDateTime &AModification, int64_t Size) const
+UnicodeString TTerminal::FormatFileDetailsForLog(
+  const UnicodeString AFileName, TDateTime AModification, int64_t Size, const TRemoteFile * LinkedFile) const
 {
   UnicodeString Result;
   // optimization
   if (GetLogConst()->GetLogging())
   {
     Result = FORMAT("'%s' [%s] [%s]", AFileName, UnicodeString(AModification != TDateTime() ? StandardTimestamp(AModification) : UnicodeString(L"n/a")), ::Int64ToStr(Size));
+    if (LinkedFile != nullptr)
+    {
+      LinkedFile = LinkedFile->Resolve(); // in case it's symlink to symlink
+      Result += FORMAT(L" - Link to: %s", (FormatFileDetailsForLog(LinkedFile->FileName, LinkedFile->Modification, LinkedFile->Size, nullptr)));
+    }
   }
   return Result;
 }
 
-void TTerminal::LogFileDetails(UnicodeString AFileName, const TDateTime &AModification, int64_t Size)
+void TTerminal::LogFileDetails(const UnicodeString AFileName, TDateTime AModification, int64_t Size, const TRemoteFile * LinkedFile)
 {
   // optimization
   if (GetLog()->GetLogging())
   {
-    LogEvent(FORMAT("File: %s", FormatFileDetailsForLog(AFileName, AModification, Size)));
+    LogEvent(FORMAT("File: %s", FormatFileDetailsForLog(AFileName, AModification, Size, LinkedFile)));
   }
 }
 
-void TTerminal::LogFileDone(TFileOperationProgressType *OperationProgress, UnicodeString DestFileName)
+void TTerminal::LogFileDone(
+  TFileOperationProgressType * OperationProgress, const UnicodeString DestFileName,
+  TTransferSessionAction & Action)
 {
   if (FDestFileName.IsEmpty())
   {
@@ -3497,14 +3639,17 @@ void TTerminal::LogFileDone(TFileOperationProgressType *OperationProgress, Unico
     FMultipleDestinationFiles = true;
   }
 
+  __int64 Size = OperationProgress->TransferredSize;
   // optimization
   if (GetLog()->GetLogging())
   {
     LogEvent(FORMAT("Transfer done: '%s' => '%s' [%s]", OperationProgress->GetFullFileName(), DestFileName, Int64ToStr(OperationProgress->GetTransferredSize())));
   }
+
+  Action.Size(Size);
 }
 
-void TTerminal::CustomReadDirectory(TRemoteFileList *AFileList)
+void TTerminal::CustomReadDirectory(TRemoteFileList * AFileList)
 {
   DebugAssert(AFileList);
   DebugAssert(FFileSystem);
