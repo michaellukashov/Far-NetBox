@@ -305,6 +305,7 @@
     <None Include="NetBoxEng.lng" />
     <None Include="NetBoxRus.lng" />
     <None Include="NetBoxPol.lng" />
+    <None Include="NetBoxSpa.lng" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="NetBox.rc" />
