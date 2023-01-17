@@ -531,7 +531,7 @@ public:
       CAsyncSocketExHelperWindow *pWnd = (CAsyncSocketExHelperWindow *)GetWindowLongPtr(hWnd, GWL_USERDATA);
       DebugAssert(pWnd);
 
-      CAsyncSocketEx *pSocket = NULL;
+      CAsyncSocketEx *pSocket = nullptr;
       for (int i = 0; i < pWnd->m_nWindowDataSize; i++)
       {
         pSocket = pWnd->m_pAsyncSocketExWindowData[i].m_pSocket;
@@ -639,8 +639,8 @@ CAsyncSocketEx::CAsyncSocketEx()
   m_pFirstLayer = 0;
   m_pLastLayer = 0;
   m_lEvent = 0;
-  m_pAsyncGetHostByNameBuffer = NULL;
-  m_hAsyncGetHostByNameHandle = NULL;
+  m_pAsyncGetHostByNameBuffer = nullptr;
+  m_hAsyncGetHostByNameHandle = nullptr;
   m_nAsyncGetHostByNamePort = 0;
 
   m_nSocketPort = 0;
@@ -656,7 +656,7 @@ CAsyncSocketEx::~CAsyncSocketEx()
   FreeAsyncSocketExInstance();
 }
 
-BOOL CAsyncSocketEx::Create(UINT nSocketPort /*=0*/, int nSocketType /*=SOCK_STREAM*/, long lEvent /*=FD_READ | FD_WRITE | FD_OOB | FD_ACCEPT | FD_CONNECT | FD_CLOSE*/, LPCTSTR lpszSocketAddress /*=NULL*/, int nFamily /*=AF_INET*/)
+BOOL CAsyncSocketEx::Create(UINT nSocketPort /*=0*/, int nSocketType /*=SOCK_STREAM*/, long lEvent /*=FD_READ | FD_WRITE | FD_OOB | FD_ACCEPT | FD_CONNECT | FD_CLOSE*/, LPCTSTR lpszSocketAddress /*=nullptr*/, int nFamily /*=AF_INET*/)
 {
   DebugAssert(GetSocketHandle() == INVALID_SOCKET);
 
@@ -800,7 +800,7 @@ BOOL CAsyncSocketEx::Bind(UINT nSocketPort, LPCTSTR lpszSocketAddress)
       return FALSE;
 
     for (res = res0; res; res = res->ai_next)
-      if (Bind(res->ai_addr, (int)res->ai_addrlen))
+      if (BindToAddr(res->ai_addr, (int)res->ai_addrlen))
       {
         ret = TRUE;
         break;
@@ -888,10 +888,10 @@ void CAsyncSocketEx::Close()
   m_nSocketPort = 0;
   RemoveAllLayers();
   nb_free(m_pAsyncGetHostByNameBuffer);
-  m_pAsyncGetHostByNameBuffer = NULL;
+  m_pAsyncGetHostByNameBuffer = nullptr;
   if (m_hAsyncGetHostByNameHandle)
     ::WSACancelAsyncRequest(m_hAsyncGetHostByNameHandle);
-  m_hAsyncGetHostByNameHandle = NULL;
+  m_hAsyncGetHostByNameHandle = nullptr;
   m_SocketData.onCloseCalled = false;
 }
 
@@ -1064,7 +1064,7 @@ BOOL CAsyncSocketEx::Connect(LPCTSTR lpszHostAddress, UINT nHostPort)
   {
     USES_CONVERSION;
 
-    DebugAssert(lpszHostAddress != NULL);
+    DebugAssert(lpszHostAddress != nullptr);
 
     SOCKADDR_IN sockAddr;
     memset(&sockAddr,0,sizeof(sockAddr));
@@ -1098,7 +1098,7 @@ BOOL CAsyncSocketEx::Connect(LPCTSTR lpszHostAddress, UINT nHostPort)
   {
     USES_CONVERSION;
 
-    DebugAssert( lpszHostAddress != NULL );
+    DebugAssert( lpszHostAddress != nullptr );
 
     if (m_SocketData.addrInfo)
     {
@@ -1230,7 +1230,7 @@ BOOL CAsyncSocketEx::GetPeerName( CString& rPeerAddress, UINT& rPeerPort )
   if (m_pFirstLayer)
     return m_pFirstLayer->GetPeerName(rPeerAddress, rPeerPort);
 
-  SOCKADDR* sockAddr = NULL;
+  SOCKADDR* sockAddr = nullptr;
   int nSockAddrLen = 0;
 
   if (m_SocketData.nFamily == AF_INET6)
@@ -1294,7 +1294,7 @@ BOOL CAsyncSocketEx::GetPeerName( SOCKADDR* lpSockAddr, int* lpSockAddrLen )
 
 BOOL CAsyncSocketEx::GetSockName(CString& rSocketAddress, UINT& rSocketPort)
 {
-  SOCKADDR* sockAddr = NULL;
+  SOCKADDR* sockAddr = nullptr;
   int nSockAddrLen = 0;
 
   if (m_SocketData.nFamily == AF_INET6)
@@ -1426,7 +1426,7 @@ BOOL CAsyncSocketEx::Listen( int nConnectionBacklog /*=5*/ )
     return FALSE;
 }
 
-BOOL CAsyncSocketEx::Accept( CAsyncSocketEx& rConnectedSocket, SOCKADDR* lpSockAddr /*=NULL*/, int* lpSockAddrLen /*=NULL*/ )
+BOOL CAsyncSocketEx::Accept( CAsyncSocketEx& rConnectedSocket, SOCKADDR* lpSockAddr /*=nullptr*/, int* lpSockAddrLen /*=nullptr*/ )
 {
   DebugAssert(rConnectedSocket.m_SocketData.hSocket == INVALID_SOCKET);
   if (m_pFirstLayer)

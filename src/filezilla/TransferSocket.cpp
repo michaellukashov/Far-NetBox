@@ -31,8 +31,8 @@ CTransferSocket::CTransferSocket(CFtpControlSocket *pOwner, int nMode)
 #endif
   m_bufferpos = 0;
   m_pFile = 0;
-  m_OnTransferOut = NULL;
-  m_OnTransferIn = NULL;
+  m_OnTransferOut = nullptr;
+  m_OnTransferIn = nullptr;
   m_bListening = FALSE;
   m_bSentClose = FALSE;
   m_nInternalMessageID = 0;
@@ -45,10 +45,10 @@ CTransferSocket::CTransferSocket(CFtpControlSocket *pOwner, int nMode)
 
   UpdateStatusBar(true);
 
-  m_pProxyLayer = NULL;
-  m_pSslLayer = NULL;
+  m_pProxyLayer = nullptr;
+  m_pSslLayer = nullptr;
 #ifndef MPEXT_NO_GSS
-  m_pGssLayer = NULL;
+  m_pGssLayer = nullptr;
 #endif
 
   if (m_nMode & CSMODE_LIST)
@@ -489,7 +489,7 @@ bool CTransferSocket::Activate()
   // scenario only. So for a safety, we use it for the scenario only.
   bool Result =
     (GetState() == connected) || (GetState() == attached) ||
-    (m_pSslLayer == NULL) || (m_pProxyLayer == NULL);
+    (m_pSslLayer == nullptr) || (m_pProxyLayer == nullptr);
   if (Result)
   {
     if (m_nTransferState == STATE_WAITING)
@@ -549,7 +549,7 @@ void CTransferSocket::OnSend(int nErrorCode)
     {
       DWORD BufferLen = 0;
       DWORD OutLen = 0;
-      if (::WSAIoctl(m_SocketData.hSocket, SIO_IDEAL_SEND_BACKLOG_QUERY, NULL, 0, &BufferLen, sizeof(BufferLen), &OutLen, 0, 0) == 0)
+      if (::WSAIoctl(m_SocketData.hSocket, SIO_IDEAL_SEND_BACKLOG_QUERY, nullptr, 0, &BufferLen, sizeof(BufferLen), &OutLen, 0, 0) == 0)
       {
         DebugAssert(OutLen == sizeof(BufferLen));
         if (m_SendBuf < BufferLen)
@@ -696,7 +696,7 @@ void CTransferSocket::OnSend(int nErrorCode)
   else
 #endif
   {
-    if (!m_pFile && (m_OnTransferIn == NULL))
+    if (!m_pFile && (m_OnTransferIn == nullptr))
     {
       return;
     }
@@ -1044,7 +1044,7 @@ int CTransferSocket::OnLayerCallback(nb::list_t<t_callbackMsg>& callbacks)
           break;
         case SSL_VERIFY_CERT:
           t_SslCertData data;
-          LPTSTR CertError = NULL;
+          LPTSTR CertError = nullptr;
           if (m_pSslLayer->GetPeerCertificateData(data, CertError))
             m_pSslLayer->SetNotifyReply(data.priv_data, SSL_VERIFY_CERT, 1);
           else
@@ -1107,9 +1107,9 @@ bool CTransferSocket::InitZlib(int level)
 
 void CTransferSocket::WriteData(const char * buffer, int len)
 {
-  if (m_OnTransferOut != NULL)
+  if (m_OnTransferOut != nullptr)
   {
-    m_OnTransferOut(NULL, m_pBuffer, len);
+    m_OnTransferOut(nullptr, m_pBuffer, len);
   }
   else
   {
@@ -1120,9 +1120,9 @@ void CTransferSocket::WriteData(const char * buffer, int len)
 int CTransferSocket::ReadData(char * buffer, int len)
 {
   int result;
-  if (m_OnTransferIn != NULL)
+  if (m_OnTransferIn != nullptr)
   {
-    result = m_OnTransferIn(NULL, buffer, len);
+    result = m_OnTransferIn(nullptr, buffer, len);
   }
   else
   {
@@ -1227,7 +1227,7 @@ void CTransferSocket::LogError(int Error)
     FORMAT_MESSAGE_FROM_SYSTEM |
     FORMAT_MESSAGE_IGNORE_INSERTS |
     FORMAT_MESSAGE_ARGUMENT_ARRAY |
-    FORMAT_MESSAGE_ALLOCATE_BUFFER, NULL, Error, 0, (LPTSTR)&Buffer, 0, NULL);
+    FORMAT_MESSAGE_ALLOCATE_BUFFER, nullptr, Error, 0, (LPTSTR)&Buffer, 0, nullptr);
   if (Len > 0)
   {
     m_pOwner->ShowStatus(Buffer, FZ_LOG_ERROR);

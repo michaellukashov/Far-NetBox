@@ -122,7 +122,7 @@ class CFtpControlSocket::CListFileData:public CFtpControlSocket::t_operation::CO
 public:
   CListFileData()
   {
-    direntry = NULL;
+    direntry = nullptr;
   }
   ~CListFileData()
   {
@@ -172,17 +172,17 @@ CFtpControlSocket::CFtpControlSocket(CMainThread *pMainThread, CFileZillaTools *
   m_Operation.nOpState=-1;
   m_Operation.pData=0;
 
-  m_pProxyLayer = NULL;
-  m_pSslLayer = NULL;
+  m_pProxyLayer = nullptr;
+  m_pSslLayer = nullptr;
 #ifndef MPEXT_NO_GSS
-  m_pGssLayer = NULL;
+  m_pGssLayer = nullptr;
 #endif
 
   m_pDirectoryListing=0;
 
   m_pTransferSocket=0;
   m_pDataFile=0;
-  srand( (unsigned)time( NULL ) );
+  srand( (unsigned)time( nullptr ) );
   m_bKeepAliveActive=FALSE;
   m_bCheckForTimeout=TRUE;
   m_bDidRejectCertificate = FALSE;
@@ -286,14 +286,14 @@ void CFtpControlSocket::Close()
   CAsyncSocketEx::Close();
 
   delete m_pProxyLayer;
-  m_pProxyLayer = NULL;
+  m_pProxyLayer = nullptr;
 
   delete m_pSslLayer;
-  m_pSslLayer = NULL;
+  m_pSslLayer = nullptr;
 
 #ifndef MPEXT_NO_GSS
   delete m_pGssLayer;
-  m_pGssLayer = NULL;
+  m_pGssLayer = nullptr;
 #endif
 
   RemoveActiveTransfer();
@@ -525,7 +525,7 @@ void CFtpControlSocket::Connect(t_server &server)
       DoClose(FZ_REPLY_CRITICALERROR);
       return;
     }
-    int res = m_pSslLayer->InitSSLConnection(true, NULL,
+    int res = m_pSslLayer->InitSSLConnection(true, nullptr,
       GetOptionVal(OPTION_MPEXT_SSLSESSIONREUSE), server.host,
       m_pTools);
     if (res == SSL_FAILURE_INITSSL)
@@ -663,7 +663,7 @@ void CFtpControlSocket::LogOnToServer(BOOL bSkipReply /*=FALSE*/)
         DoClose(FZ_REPLY_CRITICALERROR);
         return;
       }
-      int res = m_pSslLayer->InitSSLConnection(true, NULL,
+      int res = m_pSslLayer->InitSSLConnection(true, nullptr,
         GetOptionVal(OPTION_MPEXT_SSLSESSIONREUSE), m_CurrentServer.host,
         m_pTools);
       if (res == SSL_FAILURE_INITSSL)
@@ -1226,7 +1226,7 @@ void CFtpControlSocket::OnReceive(int nErrorCode)
   if (numread == SOCKET_ERROR)
   {
     nb_free(buffer);
-    buffer = NULL;
+    buffer = nullptr;
     int Error = GetLastError();
     if (Error != WSAEWOULDBLOCK)
     {
@@ -1243,7 +1243,7 @@ void CFtpControlSocket::OnReceive(int nErrorCode)
   if (!numread)
   {
     nb_free(buffer);
-    buffer = NULL;
+    buffer = nullptr;
     ShowStatus(IDS_STATUSMSG_DISCONNECTED, FZ_LOG_ERROR);
     DoClose();
   }
@@ -1276,7 +1276,7 @@ void CFtpControlSocket::OnReceive(int nErrorCode)
           }
           else
           {
-            int len = MultiByteToWideChar(CP_UTF8, 0, utf8, -1, NULL, 0);
+            int len = MultiByteToWideChar(CP_UTF8, 0, utf8, -1, nullptr, 0);
             if (!len)
               m_RecvBuffer.back() = "";
             else
@@ -1449,7 +1449,7 @@ void CFtpControlSocket::OnConnect(int nErrorCode)
       TCHAR Buffer[255];
       int Len = FormatMessage(
         FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ARGUMENT_ARRAY,
-        NULL, nErrorCode, 0, Buffer, _countof(Buffer), NULL);
+        nullptr, nErrorCode, 0, Buffer, _countof(Buffer), nullptr);
       while ((Len > 0) && ((Buffer[Len - 1] >= 0) && (Buffer[Len - 1] <= 32)))
       {
         --Len;
@@ -1694,7 +1694,7 @@ bool CFtpControlSocket::UsingUtf8()
 
 std::string CFtpControlSocket::GetTlsVersionStr()
 {
-  if (m_pSslLayer != NULL)
+  if (m_pSslLayer != nullptr)
   {
     return m_pSslLayer->GetTlsVersionStr();
   }
@@ -1706,7 +1706,7 @@ std::string CFtpControlSocket::GetTlsVersionStr()
 
 std::string CFtpControlSocket::GetCipherName()
 {
-  if (m_pSslLayer != NULL)
+  if (m_pSslLayer != nullptr)
   {
     return m_pSslLayer->GetCipherName();
   }
@@ -2343,7 +2343,7 @@ void CFtpControlSocket::List(BOOL bFinish, int nError /*=FALSE*/, CServerPath pa
   {
     if (!m_pTransferSocket)
     {
-      LogMessage(FZ_LOG_APIERROR, L"Error: m_pTransferSocket==NULL" );
+      LogMessage(FZ_LOG_APIERROR, L"Error: m_pTransferSocket==nullptr" );
       ResetOperation(FZ_REPLY_ERROR);
       return;
     }
@@ -2588,7 +2588,7 @@ void CFtpControlSocket::ListFile(CString filename, const CServerPath &path)
   {
     t_directory * pDirectoryListing = new t_directory();
     pDirectoryListing->direntry = pData->direntry;
-    pData->direntry = NULL;
+    pData->direntry = nullptr;
     pDirectoryListing->num = num;
     pDirectoryListing->server = m_CurrentServer;
     pDirectoryListing->path.SetServer(pDirectoryListing->server);
@@ -2645,11 +2645,11 @@ void CFtpControlSocket::ResetTransferSocket(int Error)
   }
   bool Close =
     (Error != 0) &&
-    DebugAlwaysTrue(m_pTransferSocket != NULL) &&
+    DebugAlwaysTrue(m_pTransferSocket != nullptr) &&
     (m_pTransferSocket->m_uploaded > 0) &&
     FLAGCLEAR(Error, FZ_REPLY_CANCEL);
   delete m_pTransferSocket;
-  m_pTransferSocket = NULL;
+  m_pTransferSocket = nullptr;
   if (Close)
   {
     // close the control connection too to allow reconnect => transfer resume
@@ -2898,8 +2898,8 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
     DebugAssert(!m_Operation.nOpMode);
     DebugAssert(!m_Operation.pData);
 
-    if ((transferfile->OnTransferOut == NULL) &&
-        (transferfile->OnTransferIn == NULL))
+    if ((transferfile->OnTransferOut == nullptr) &&
+        (transferfile->OnTransferIn == nullptr))
     {
       CString str;
       str.Format(transferfile->get?IDS_STATUSMSG_DOWNLOADSTART:IDS_STATUSMSG_UPLOADSTART,
@@ -3571,14 +3571,14 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
         else
           m_Operation.nOpState = FILETRANSFER_RETRSTOR;
         BOOL res;
-        if (m_pDataFile != NULL)
+        if (m_pDataFile != nullptr)
         {
           delete m_pDataFile;
-          m_pDataFile = NULL;
+          m_pDataFile = nullptr;
         }
         if (pData->transferfile.get)
         {
-          if (pData->transferfile.OnTransferOut == NULL)
+          if (pData->transferfile.OnTransferOut == nullptr)
           {
             m_pDataFile = new CFile();
             if (pData->transferdata.bResume)
@@ -3593,7 +3593,7 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
         }
         else
         {
-          if (pData->transferfile.OnTransferIn == NULL)
+          if (pData->transferfile.OnTransferIn == nullptr)
           {
             m_pDataFile = new CFile();
             res = m_pDataFile->Open(pData->transferfile.localfile,CFile::modeRead|CFile::shareDenyNone);
@@ -3628,7 +3628,7 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
         m_pTransferSocket->m_OnTransferIn = pData->transferfile.OnTransferIn;
         if (!pData->transferfile.get)
         {
-          if (m_pDataFile != NULL)
+          if (m_pDataFile != nullptr)
           {
             // See comment in !get branch below
             pData->transferdata.transfersize=GetLength64(*m_pDataFile);
@@ -3859,7 +3859,7 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
       if (pData->nGotTransferEndReply==3)
       {
         // Not really sure about a reason for the m_pDataFile condition here
-        TransferFinished(m_pDataFile != NULL);
+        TransferFinished(m_pDataFile != nullptr);
         return;
       }
       break;
@@ -4478,7 +4478,7 @@ void CFtpControlSocket::TransferFinished(bool preserveFileTimeForUploads)
   if (GetOptionVal(OPTION_PRESERVEDOWNLOADFILETIME) &&
       m_pDataFile &&
       pData->transferfile.get &&
-      DebugAlwaysTrue(pData->transferfile.OnTransferOut == NULL))
+      DebugAlwaysTrue(pData->transferfile.OnTransferOut == nullptr))
   {
     m_pTools->PreserveDownloadFileTime(
       (HANDLE)m_pDataFile->m_hFile, reinterpret_cast<void *>(pData->transferfile.nUserData));
@@ -4487,7 +4487,7 @@ void CFtpControlSocket::TransferFinished(bool preserveFileTimeForUploads)
       GetOptionVal(OPTION_MPEXT_PRESERVEUPLOADFILETIME) && preserveFileTimeForUploads &&
       ((m_serverCapabilities.GetCapability(mfmt_command) == yes) ||
        (m_serverCapabilities.GetCapability(mdtm_command) == yes)) &&
-      DebugAlwaysTrue(pData->transferfile.OnTransferIn == NULL))
+      DebugAlwaysTrue(pData->transferfile.OnTransferIn == nullptr))
   {
     CString filename =
       pData->transferfile.remotepath.FormatFilename(pData->transferfile.remotefile, !pData->bUseAbsolutePaths);
@@ -4960,7 +4960,7 @@ int CFtpControlSocket::CheckOverwriteFileAndCreateTarget()
   if (!nReplyError)
   {
     CFileTransferData * pData = static_cast<CFileTransferData *>(m_Operation.pData);
-    if (pData->transferfile.get && (pData->transferfile.OnTransferOut == NULL))
+    if (pData->transferfile.get && (pData->transferfile.OnTransferOut == nullptr))
     {
       CString path = pData->transferfile.localfile;
       if (path.ReverseFind(L'\\') != -1)
@@ -4990,8 +4990,8 @@ int CFtpControlSocket::CheckOverwriteFile()
 
   int nReplyError = 0;
   CFileStatus64 status;
-  if ((pData->transferfile.OnTransferOut != NULL) ||
-      (pData->transferfile.OnTransferIn != NULL))
+  if ((pData->transferfile.OnTransferOut != nullptr) ||
+      (pData->transferfile.OnTransferIn != nullptr))
   {
     m_Operation.nOpState = FILETRANSFER_TYPE;
   }
@@ -5023,7 +5023,7 @@ int CFtpControlSocket::CheckOverwriteFile()
           m_Operation.nOpState = FILETRANSFER_TYPE;
 
 
-      CTime *localtime = NULL;
+      CTime *localtime = nullptr;
       TRY
       {
         if (status.m_has_mtime && status.m_mtime != -1)
@@ -5033,12 +5033,12 @@ int CFtpControlSocket::CheckOverwriteFile()
       {
         TCHAR buffer[1024];
         CString str =L"Exception creating CTime object: ";
-        if (e->GetErrorMessage(buffer, 1024, NULL))
+        if (e->GetErrorMessage(buffer, 1024, nullptr))
           str += buffer;
         else
           str += L"Unknown exception";
         LogMessageRaw(FZ_LOG_WARNING, str);
-        localtime = NULL;
+        localtime = nullptr;
       }
       END_CATCH_ALL;
       BOOL bRemoteFileExists = FALSE;
@@ -5836,7 +5836,7 @@ int CFtpControlSocket::OnLayerCallback(nb::list_t<t_callbackMsg>& callbacks)
           break;
         case SSL_VERIFY_CERT:
           t_SslCertData *pData = new t_SslCertData();
-          LPCTSTR CertError = NULL;
+          LPCTSTR CertError = nullptr;
           if (m_pSslLayer->GetPeerCertificateData(*pData, CertError))
           {
             CVerifyCertRequestData *pRequestData = new CVerifyCertRequestData;
@@ -6277,7 +6277,7 @@ CString CFtpControlSocket::GetReply()
     }
 
     // convert from UTF-8 to ANSI
-    int len = MultiByteToWideChar(CP_UTF8, 0, line, -1, NULL, 0);
+    int len = MultiByteToWideChar(CP_UTF8, 0, line, -1, nullptr, 0);
     if (!len)
     {
       m_RecvBuffer.pop_front();

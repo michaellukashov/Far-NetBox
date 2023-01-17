@@ -28,13 +28,13 @@ CAsyncProxySocketLayer::CAsyncProxySocketLayer()
   m_ProxyData.nProxyPort=0;
   m_nProxyPeerIp=0;
   m_nProxyPeerPort=0;
-  m_pProxyPeerHost = NULL;
-  m_pStrBuffer = NULL;
-  m_ProxyData.pProxyHost = NULL;
-  m_ProxyData.pProxyUser = NULL;
-  m_ProxyData.pProxyPass = NULL;
+  m_pProxyPeerHost = nullptr;
+  m_pStrBuffer = nullptr;
+  m_ProxyData.pProxyHost = nullptr;
+  m_ProxyData.pProxyUser = nullptr;
+  m_ProxyData.pProxyPass = nullptr;
   m_ProxyData.bUseLogon = FALSE;
-  m_pProxyPeerHost = NULL;
+  m_pProxyPeerHost = nullptr;
 }
 
 CAsyncProxySocketLayer::~CAsyncProxySocketLayer()
@@ -61,8 +61,8 @@ void CAsyncProxySocketLayer::SetProxy(int nProxyType, const char * pProxyHost, i
   nb_free(m_ProxyData.pProxyHost);
   nb_free(m_ProxyData.pProxyUser);
   nb_free(m_ProxyData.pProxyPass);
-  m_ProxyData.pProxyUser = NULL;
-  m_ProxyData.pProxyPass = NULL;
+  m_ProxyData.pProxyUser = nullptr;
+  m_ProxyData.pProxyPass = nullptr;
 
   m_ProxyData.nProxyType = nProxyType;
   m_ProxyData.pProxyHost = nb::chcalloc(strlen(pProxyHost)+1);
@@ -560,7 +560,7 @@ BOOL CAsyncProxySocketLayer::Connect( LPCTSTR lpszHostAddress, UINT nHostPort )
   USES_CONVERSION;
 
   //Translate the host address
-  DebugAssert(lpszHostAddress != NULL);
+  DebugAssert(lpszHostAddress != nullptr);
 
   if (m_ProxyData.nProxyType != PROXYTYPE_SOCKS4)
   {
@@ -596,7 +596,7 @@ BOOL CAsyncProxySocketLayer::Connect( LPCTSTR lpszHostAddress, UINT nHostPort )
   {
     LPHOSTENT lphost;
     lphost = gethostbyname(lpszAscii);
-    if (lphost != NULL)
+    if (lphost != nullptr)
       sockAddr.sin_addr.s_addr = ((LPIN_ADDR)lphost->h_addr)->s_addr;
     else
     {
@@ -633,7 +633,7 @@ BOOL CAsyncProxySocketLayer::Connect( const SOCKADDR* lpSockAddr, int nSockAddrL
   m_nProxyPeerIp=sockAddr->sin_addr.S_un.S_addr;
   m_nProxyPeerPort=sockAddr->sin_port;
   nb_free(m_pProxyPeerHost);
-  m_pProxyPeerHost = NULL;
+  m_pProxyPeerHost = nullptr;
 
   m_nProxyOpID=PROXYOP_CONNECT;
 
@@ -754,7 +754,7 @@ void CAsyncProxySocketLayer::OnConnect(int nErrorCode)
     {
       char str[4096]; //This should be large enough
 
-      char * pHost = NULL;
+      char * pHost = nullptr;
       if (m_pProxyPeerHost && *m_pProxyPeerHost)
       {
         pHost = nb::chcalloc(strlen(m_pProxyPeerHost)+1);
@@ -817,7 +817,7 @@ void CAsyncProxySocketLayer::OnConnect(int nErrorCode)
 void CAsyncProxySocketLayer::ClearBuffer()
 {
   nb_free(m_pStrBuffer);
-  m_pStrBuffer = NULL;
+  m_pStrBuffer = nullptr;
   if (m_pRecvBuffer)
   {
     nb_free(m_pRecvBuffer);
@@ -924,10 +924,10 @@ void CAsyncProxySocketLayer::Close()
   nb_free(m_ProxyData.pProxyUser);
   nb_free(m_ProxyData.pProxyPass);
   nb_free(m_pProxyPeerHost);
-  m_ProxyData.pProxyHost = NULL;
-  m_ProxyData.pProxyUser = NULL;
-  m_ProxyData.pProxyPass = NULL;
-  m_pProxyPeerHost = NULL;
+  m_ProxyData.pProxyHost = nullptr;
+  m_ProxyData.pProxyUser = nullptr;
+  m_ProxyData.pProxyPass = nullptr;
+  m_pProxyPeerHost = nullptr;
   ClearBuffer();
   Reset();
   CloseNext();
@@ -961,7 +961,7 @@ int CAsyncProxySocketLayer::Receive(void * lpBuf, int nBufLen, int nFlags)
   return ReceiveNext(lpBuf, nBufLen, nFlags);
 }
 
-BOOL CAsyncProxySocketLayer::Accept( CAsyncSocketEx& rConnectedSocket, SOCKADDR* lpSockAddr /*=NULL*/, int* lpSockAddrLen /*=NULL*/ )
+BOOL CAsyncProxySocketLayer::Accept( CAsyncSocketEx& rConnectedSocket, SOCKADDR* lpSockAddr /*=nullptr*/, int* lpSockAddrLen /*=nullptr*/ )
 {
   if (!m_ProxyData.nProxyType)
     return AcceptNext(rConnectedSocket, lpSockAddr, lpSockAddrLen);

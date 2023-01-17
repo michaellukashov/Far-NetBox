@@ -85,13 +85,13 @@ protected:
   virtual void OnSend(int nErrorCode);
 
   // Operations
-  virtual BOOL Accept(CAsyncSocketEx & rConnectedSocket, SOCKADDR * lpSockAddr = NULL, int * lpSockAddrLen = NULL);
+  virtual BOOL Accept(CAsyncSocketEx & rConnectedSocket, SOCKADDR * lpSockAddr = nullptr, int * lpSockAddrLen = nullptr);
   virtual void Close();
   virtual BOOL Connect(LPCTSTR lpszHostAddress, UINT nHostPort);
   virtual BOOL Connect(const SOCKADDR * lpSockAddr, int nSockAddrLen);
   virtual BOOL Create(UINT nSocketPort = 0, int nSocketType = SOCK_STREAM,
      long lEvent = FD_READ | FD_WRITE | FD_OOB | FD_ACCEPT | FD_CONNECT | FD_CLOSE,
-     LPCTSTR lpszSocketAddress = NULL, int nFamily = AF_INET);
+     LPCTSTR lpszSocketAddress = nullptr, int nFamily = AF_INET);
   virtual BOOL GetPeerName(SOCKADDR * lpSockAddr, int * lpSockAddrLen);
   virtual BOOL GetSockName(SOCKADDR * lpSockAddr, int * lpSockAddrLen);
   virtual BOOL GetPeerName(CString& rPeerAddress, UINT& rPeerPort);
@@ -104,7 +104,7 @@ protected:
 
   // Functions that will call next layer
   BOOL ShutDownNext(int nHow = sends);
-  BOOL AcceptNext(CAsyncSocketEx& rConnectedSocket, SOCKADDR * lpSockAddr = NULL, int * lpSockAddrLen = NULL);
+  BOOL AcceptNext(CAsyncSocketEx& rConnectedSocket, SOCKADDR * lpSockAddr = nullptr, int * lpSockAddrLen = nullptr);
   void CloseNext();
   BOOL ConnectNext(LPCTSTR lpszHostAddress, UINT nHostPort);
   BOOL ConnectNext( const SOCKADDR * lpSockAddr, int nSockAddrLen);
@@ -114,14 +114,14 @@ protected:
   BOOL GetPeerNameNext(CString & rPeerAddress, UINT& rPeerPort);
   BOOL GetSockNameNext(CString & rPeerAddress, UINT& rPeerPort);
   BOOL ListenNext(int nConnectionBacklog);
-  int ReceiveNext(void * lpBuf, int nBufLen, int nFlags = 0);
-  int SendNext(const void * lpBuf, int nBufLen, int nFlags = 0);
+  int32_t ReceiveNext(void * lpBuf, int nBufLen, int nFlags = 0);
+  int32_t SendNext(const void * lpBuf, int nBufLen, int nFlags = 0);
 
   CAsyncSocketEx *m_pOwnerSocket;
-  int m_nCriticalError;
+  int32_t m_nCriticalError;
 
   // Calls OnLayerCallback on owner socket
-  int DoLayerCallback(int nType, intptr_t nParam1, intptr_t nParam2, char * str = 0);
+  int DoLayerCallback(int nType, int32_t nParam1, int32_t nParam2, char * str = 0);
 
   int GetLayerState();
   BOOL TriggerEvent(long lEvent, int nErrorCode, BOOL bPassThrough = FALSE);

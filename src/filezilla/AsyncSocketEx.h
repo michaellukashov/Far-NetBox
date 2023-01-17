@@ -77,10 +77,10 @@ struct t_callbackMsg
 {
 CUSTOM_MEM_ALLOCATION_IMPL
   CAsyncSocketExLayer* pLayer;
-  int nType;
-  intptr_t nParam1;
-  intptr_t nParam2;
-  char *str;
+  int32_t nType;
+  int32_t nParam1;
+  int32_t nParam2;
+  char* str;
 };
 
 class CAsyncSocketEx
@@ -91,7 +91,7 @@ public:
 
   BOOL Create(UINT nSocketPort = 0, int nSocketType = SOCK_STREAM,
      long lEvent = FD_READ | FD_WRITE | FD_OOB | FD_ACCEPT |  FD_CONNECT | FD_CLOSE,
-     LPCTSTR lpszSocketAddress = NULL, int nFamily = AF_INET);
+     LPCTSTR lpszSocketAddress = nullptr, int nFamily = AF_INET);
 
   // Attaches a socket handle to a CAsyncSocketEx object.
   BOOL Attach(SOCKET hSocket,
@@ -112,10 +112,10 @@ public:
   BOOL GetSockName(SOCKADDR* lpSockAddr, int* lpSockAddrLen);
 
   // Retrieves a socket option.
-  BOOL GetSockOpt(int nOptionName, void * lpOptionValue, int* lpOptionLen, int nLevel = SOL_SOCKET);
+  BOOL GetSockOpt(int nOptionName, void* lpOptionValue, int* lpOptionLen, int nLevel = SOL_SOCKET);
 
   // Sets a socket option.
-  BOOL SetSockOpt(int nOptionName, const void * lpOptionValue, int nOptionLen, int nLevel = SOL_SOCKET);
+  BOOL SetSockOpt(int nOptionName, const void* lpOptionValue, int nOptionLen, int nLevel = SOL_SOCKET);
 
   // Gets the socket family
   int GetFamily() const;
@@ -126,7 +126,7 @@ public:
   // Operations
 
   // Accepts a connection on the socket.
-  virtual BOOL Accept(CAsyncSocketEx& rConnectedSocket, SOCKADDR * lpSockAddr = NULL, int * lpSockAddrLen = NULL);
+  virtual BOOL Accept(CAsyncSocketEx& rConnectedSocket, SOCKADDR * lpSockAddr = nullptr, int * lpSockAddrLen = nullptr);
 
   // Requests event notification for the socket.
   BOOL AsyncSelect(long lEvent = FD_READ | FD_WRITE | FD_OOB | FD_ACCEPT | FD_CONNECT | FD_CLOSE);
@@ -287,6 +287,7 @@ protected:
 
   virtual void LogSocketMessageRaw(int nMessageType, LPCTSTR pMsg) {}
   virtual bool LoggingSocketMessage(int nMessageType) { return true; }
+  virtual int GetSocketOptionVal(int OptionID) const { DebugFail(); return 0; };
   virtual void ConfigureSocket() {}
 };
 

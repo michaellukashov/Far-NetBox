@@ -119,8 +119,8 @@ CUSTOM_MEM_ALLOCATION_IMPL
 
   TCHAR subjectAltName[10240];
 
-  uint8_t hash[20];
-  unsigned char hashSha256[32];
+  uint8_t hashSha1[20];
+  uint8_t hashSha256[32];
 
   uint8_t * certificate;
   size_t certificateLen;
@@ -151,13 +151,13 @@ public:
   int InitSSLConnection(bool clientMode,
     CAsyncSslSocketLayer * main,
     bool sessionreuse, const CString & host, CFileZillaTools * tools,
-    void * pContext = 0);
+    void* pContext = 0);
 
   // Send raw text, useful to send a confirmation after the ssl connection
   // has been initialized
   int SendRaw(const void * lpBuf, int nBufLen, int nFlags = 0);
 
-  void * GetContext() { return m_ssl_ctx; }
+  void* GetContext() { return m_ssl_ctx; }
 
 private:
   virtual void Close();
@@ -229,11 +229,11 @@ private:
   BIO* m_sslbio; // The data to encrypt / the decrypted data has to go though this bio
 
   // Send buffer
-  char *m_pNetworkSendBuffer;
+  char* m_pNetworkSendBuffer;
   int m_nNetworkSendBufferLen;
   int m_nNetworkSendBufferMaxLen;
 
-  char *m_pRetrySendBuffer;
+  char* m_pRetrySendBuffer;
   int m_nRetrySendBufferLen;
 
   bool m_mayTriggerRead;

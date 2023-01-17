@@ -95,11 +95,11 @@ public:
       return 0;   // avoid Win32 "null-read"
     }
 
-    DebugAssert(lpBuf != NULL);
+    DebugAssert(lpBuf != nullptr);
     DebugAssert(AfxIsValidAddress(lpBuf, nCount));
 
     DWORD dwRead;
-    if (!::ReadFile(static_cast<HANDLE>(m_hFile), lpBuf, nCount, &dwRead, NULL))
+    if (!::ReadFile(static_cast<HANDLE>(m_hFile), lpBuf, nCount, &dwRead, nullptr))
     {
       // The only change from MFC CFile::Read is m_strFileName
       CFileException::ThrowOsError(static_cast<LONG>(::GetLastError()), m_strFileName);
@@ -164,7 +164,7 @@ public:
   CStringA(LPCSTR lpsz)
   {
     Init();
-    if (lpsz != NULL && HIWORD(lpsz) == NULL)
+    if (lpsz != nullptr && HIWORD(lpsz) == nullptr)
     {
       DebugFail();
     }
@@ -228,7 +228,7 @@ public:
 
   const CStringA & operator=(LPCSTR lpsz)
   {
-    DebugAssert(lpsz == NULL || AfxIsValidString(lpsz));
+    DebugAssert(lpsz == nullptr || AfxIsValidString(lpsz));
     AssignCopy(SafeStrlen(lpsz), lpsz);
     return *this;
   }
@@ -320,7 +320,7 @@ public:
     LPSTR lpsz = strchr(m_pchData + nStart, (unsigned char)ch);
 
     // return -1 if not found and index otherwise
-    return (lpsz == NULL) ? -1 : (int)(lpsz - m_pchData);
+    return (lpsz == nullptr) ? -1 : (int)(lpsz - m_pchData);
   }
 
   // find a sub-string (like strstr)
@@ -343,7 +343,7 @@ public:
     LPSTR lpsz = strstr(m_pchData + nStart, lpszSub);
 
     // return -1 for not found, distance from beginning otherwise
-    return (lpsz == NULL) ? -1 : (int)(lpsz - m_pchData);
+    return (lpsz == nullptr) ? -1 : (int)(lpsz - m_pchData);
   }
 
   void MakeUpper()
@@ -357,7 +357,7 @@ protected:
 
   CStringDataA * GetData() const
   {
-    DebugAssert(m_pchData != NULL); return ((CStringDataA*)m_pchData)-1;
+    DebugAssert(m_pchData != nullptr); return ((CStringDataA*)m_pchData)-1;
   }
 
   void Init()
@@ -480,7 +480,7 @@ protected:
       // we have to grow the buffer, use the ConcatCopy routine
       CStringDataA* pOldData = GetData();
       ConcatCopy(GetData()->nDataLength, m_pchData, nSrcLen, lpszSrcData);
-      DebugAssert(pOldData != NULL);
+      DebugAssert(pOldData != nullptr);
       CStringA::Release(pOldData);
     }
     else
@@ -517,7 +517,7 @@ protected:
 
   static int PASCAL SafeStrlen(LPCSTR lpsz)
   {
-    return (lpsz == NULL) ? 0 : strlen(lpsz);
+    return (lpsz == nullptr) ? 0 : strlen(lpsz);
   }
 };
 

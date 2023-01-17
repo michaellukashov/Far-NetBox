@@ -111,7 +111,7 @@ public:
   virtual BOOL GetPeerName(SOCKADDR * lpSockAddr, int * lpSockAddrLen);
 
 protected:
-  virtual BOOL Accept(CAsyncSocketEx & rConnectedSocket, SOCKADDR * lpSockAddr = NULL, int * lpSockAddrLen = NULL);
+  virtual BOOL Accept(CAsyncSocketEx & rConnectedSocket, SOCKADDR * lpSockAddr = nullptr, int * lpSockAddrLen = nullptr);
   virtual void OnReceive(int nErrorCode);
   virtual void OnConnect(int nErrorCode);
   virtual int Send(const void * lpBuf, int nBufLen, int nFlags = 0);
@@ -121,7 +121,7 @@ private:
   void Reset();
   void ClearBuffer();    // Clears the receive buffer
   void ConnectionEstablished();
-  void ConnectionFailed(int nErrorCode, char * Str = NULL);
+  void ConnectionFailed(int nErrorCode, char * Str = nullptr);
   char *m_pRecvBuffer;  // The receive buffer
   int m_nRecvBufferLen;  // Length of the RecvBuffer
   int m_nRecvBufferPos;  // Position within the receive buffer

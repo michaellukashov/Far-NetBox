@@ -16,9 +16,9 @@
 #define STR1(x) #x
 #define STR(x) STR1(x)
 #define GET_WINDOWS_FUNCTION_PP(module, name) \
-  (p_##name = module ? (t_##name) GetProcAddress(module, STR(name)) : NULL)
+  (p_##name = module ? (t_##name) GetProcAddress(module, STR(name)) : nullptr)
 #define GET_WINDOWS_FUNCTION(module, name) \
-  (p_##name = module ? (t_##name) GetProcAddress(module, #name) : NULL)
+  (p_##name = module ? (t_##name) GetProcAddress(module, #name) : nullptr)
 
 #ifndef NO_IPV6
 DECL_WINDOWS_FUNCTION(static, int, getaddrinfo,
@@ -260,7 +260,7 @@ public:
 
   int Disconnect();
   int Cancel();
-  int Chmod(int nValue, const CString & FileName, const CServerPath & path = CServerPath());
+  int Chmod(int nValue, CString FileName, const CServerPath & path = CServerPath());
 
   //Initialization
   int Init(TFileZillaIntern * Intern, CFileZillaTools * pTools);
@@ -270,7 +270,7 @@ public:
 
   int List(const CServerPath & path);
 
-  int ListFile(const CString & FileName, const CServerPath & path); //Get info about specified file
+  int ListFile(CString FileName, const CServerPath & path); //Get info about specified file
 
   int FileTransfer(const t_transferfile & TransferFile);
   int GetCurrentServer(t_server & server);

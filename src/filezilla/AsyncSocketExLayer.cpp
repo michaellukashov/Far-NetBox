@@ -21,9 +21,9 @@
 
 CAsyncSocketExLayer::CAsyncSocketExLayer()
 {
-  m_pOwnerSocket = NULL;
-  m_pNextLayer = NULL;
-  m_pPrevLayer = NULL;
+  m_pOwnerSocket = nullptr;
+  m_pNextLayer = nullptr;
+  m_pPrevLayer = nullptr;
 
   m_nLayerState = notsock;
   m_nCriticalError=0;
@@ -286,7 +286,7 @@ BOOL CAsyncSocketExLayer::ConnectNext(LPCTSTR lpszHostAddress, UINT nHostPort)
   {
     USES_CONVERSION;
 
-    DebugAssert(lpszHostAddress != NULL);
+    DebugAssert(lpszHostAddress != nullptr);
 
     SOCKADDR_IN sockAddr;
     memset(&sockAddr,0,sizeof(sockAddr));
@@ -299,7 +299,7 @@ BOOL CAsyncSocketExLayer::ConnectNext(LPCTSTR lpszHostAddress, UINT nHostPort)
     {
       LPHOSTENT lphost;
       lphost = gethostbyname(lpszAscii);
-      if (lphost != NULL)
+      if (lphost != nullptr)
         sockAddr.sin_addr.s_addr = ((LPIN_ADDR)lphost->h_addr)->s_addr;
       else
       {
@@ -316,7 +316,7 @@ BOOL CAsyncSocketExLayer::ConnectNext(LPCTSTR lpszHostAddress, UINT nHostPort)
   {
     USES_CONVERSION;
 
-    DebugAssert(lpszHostAddress != NULL);
+    DebugAssert(lpszHostAddress != nullptr);
 
     addrinfo hints, *res0 = 0, *res1;
     SOCKET hSocket;
@@ -453,7 +453,7 @@ BOOL CAsyncSocketExLayer::GetPeerNameNext( CString& rPeerAddress, UINT& rPeerPor
   }
   else
   {
-    SOCKADDR* sockAddr = NULL;
+    SOCKADDR* sockAddr = nullptr;
     int nSockAddrLen = 0;
 
     if (m_nFamily == AF_INET6)
@@ -534,7 +534,7 @@ BOOL CAsyncSocketExLayer::GetSockNameNext( CString& rSockAddress, UINT& rSockPor
     return m_pNextLayer->GetSockName(rSockAddress, rSockPort);
   else
   {
-    SOCKADDR* sockAddr = NULL;
+    SOCKADDR* sockAddr = nullptr;
     int nSockAddrLen = 0;
 
     if (m_nFamily == AF_INET6)
@@ -824,12 +824,12 @@ BOOL CAsyncSocketExLayer::ListenNext( int nConnectionBacklog)
   return res!=SOCKET_ERROR;
 }
 
-BOOL CAsyncSocketExLayer::Accept( CAsyncSocketEx& rConnectedSocket, SOCKADDR* lpSockAddr /*=NULL*/, int* lpSockAddrLen /*=NULL*/ )
+BOOL CAsyncSocketExLayer::Accept( CAsyncSocketEx& rConnectedSocket, SOCKADDR* lpSockAddr /*=nullptr*/, int* lpSockAddrLen /*=nullptr*/ )
 {
   return AcceptNext(rConnectedSocket, lpSockAddr, lpSockAddrLen);
 }
 
-BOOL CAsyncSocketExLayer::AcceptNext( CAsyncSocketEx& rConnectedSocket, SOCKADDR* lpSockAddr /*=NULL*/, int* lpSockAddrLen /*=NULL*/ )
+BOOL CAsyncSocketExLayer::AcceptNext( CAsyncSocketEx& rConnectedSocket, SOCKADDR* lpSockAddr /*=nullptr*/, int* lpSockAddrLen /*=nullptr*/ )
 {
   DebugAssert(GetLayerState()==listening);
   BOOL res;

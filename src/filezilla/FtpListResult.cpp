@@ -240,7 +240,7 @@ t_directory::t_direntry * CFtpListResult::getList(int & Num)
   if (Num == 0)
   {
     SendLineToMessageLog("<Empty directory listing>");
-    Result = NULL;
+    Result = nullptr;
   }
   else
   {
@@ -1759,7 +1759,7 @@ BOOL CFtpListResult::parseAsUnix(const char *line, const int linelen, t_director
     direntry.date.hour = static_cast<int>(strntoi64(stimeyear, (int)(strpos - stimeyear)));
     int stimeyearrem = (int)(stimeyearlen - (strpos - stimeyear) - 1);
     const char *strpos2 = strnchr(strpos + 1, stimeyearrem, ':');
-    if (strpos2 == NULL)
+    if (strpos2 == nullptr)
     {
       direntry.date.minute = static_cast<int>(strntoi64(strpos + 1, stimeyearrem));
     }
@@ -2192,12 +2192,12 @@ const char *CFtpListResult::GetNextToken(const char *line, const int linelen, in
 {
   const char *p = line + pos;
   if ((p - line) >= linelen)
-    return NULL;
+    return nullptr;
   while ((p - line) < linelen && (!p || *p==' ' || *p=='\t'))
     p++;
 
   if ((p - line) >= linelen)
-    return NULL;
+    return nullptr;
 
   const char *res = p;
 
@@ -2221,34 +2221,34 @@ const char *CFtpListResult::GetNextToken(const char *line, const int linelen, in
 const char * CFtpListResult::strnchr(const char *str, int len, char c) const
 {
   if (!str)
-    return NULL;
+    return nullptr;
 
   const char *p = str;
   while (len > 0)
   {
     if (!*p)
-      return NULL;
+      return nullptr;
     if (*p == c)
       return p;
     p++;
     len--;
   }
-  return NULL;
+  return nullptr;
 }
 
 const char * CFtpListResult::strnstr(const char *str, int len, const char *c) const
 {
   if (!str)
-    return NULL;
+    return nullptr;
   if (!c)
-    return NULL;
+    return nullptr;
   size_t clen = strlen(c);
 
   const char *p = str;
   while (len > 0)
   {
     if (!*p)
-      return NULL;
+      return nullptr;
     if (*p == *c)
     {
       if (clen == 1)
@@ -2259,12 +2259,12 @@ const char * CFtpListResult::strnstr(const char *str, int len, const char *c) co
           return p;
       }
       else
-        return NULL;
+        return nullptr;
     }
     p++;
     len--;
   }
-  return NULL;
+  return nullptr;
 }
 
 void CFtpListResult::copyStr(CString &target, int pos, const char *source, int len, bool mayInvalidateUTF8 /*=false*/)
@@ -2289,7 +2289,7 @@ void CFtpListResult::copyStr(CString &target, int pos, const char *source, int l
     else
     {
       // convert from UTF-8 to ANSI
-      int len = MultiByteToWideChar(CP_UTF8, 0, (LPCSTR)p, -1, NULL, 0);
+      int len = MultiByteToWideChar(CP_UTF8, 0, (LPCSTR)p, -1, nullptr, 0);
       if (len != 0)
       {
         LPWSTR p1 = nb::wchcalloc(len + 1);
@@ -2304,7 +2304,7 @@ void CFtpListResult::copyStr(CString &target, int pos, const char *source, int l
   else if (m_nCodePage && *m_nCodePage)
   {
     // convert to ANSI
-    int len = MultiByteToWideChar(*m_nCodePage, 0, (LPCSTR)p, -1, NULL, 0);
+    int len = MultiByteToWideChar(*m_nCodePage, 0, (LPCSTR)p, -1, nullptr, 0);
     if (len != 0)
     {
       LPWSTR p1 = nb::wchcalloc(len + 1);

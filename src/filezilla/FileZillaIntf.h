@@ -77,9 +77,9 @@ CUSTOM_MEM_ALLOCATION_IMPL
 
   const wchar_t * SubjectAltName;
 
-  const uint8_t * Hash;
+  const uint8_t * HashSha1;
   static const size_t HashSha1Len = 20;
-  const unsigned char * HashSha256;
+  const uint8_t * HashSha256;
   static const size_t HashSha256Len = 32;
 
   const uint8_t * Certificate;
@@ -204,11 +204,11 @@ public:
 
   bool FileTransfer(
     const wchar_t * LocalFile, const wchar_t * RemoteFile,
-    const wchar_t * RemotePath, bool Get, __int64 Size, int Type, void * UserData,
+    const wchar_t * RemotePath, bool Get, int64_t Size, int Type, void * UserData,
     TTransferOutEvent OnTransferOut, TTransferInEvent OnTransferIn);
 
-  virtual const wchar_t * Option(intptr_t OptionID) const = 0;
-  virtual intptr_t OptionVal(intptr_t OptionID) const = 0;
+  virtual const wchar_t * Option(int32_t OptionID) const = 0;
+  virtual int32_t OptionVal(int32_t OptionID) const = 0;
 
   void SetDebugLevel(TLogLevel Level);
   bool HandleMessage(WPARAM wParam, LPARAM lParam);
@@ -218,19 +218,19 @@ protected:
   virtual bool DoPostMessage(TMessageType Type, WPARAM wParam, LPARAM lParam) = 0;
 
   virtual bool HandleStatus(const wchar_t * Status, int Type) = 0;
-  virtual bool HandleAsyncRequestOverwrite(
+  virtual bool HandleAsynchRequestOverwrite(
     wchar_t * FileName1, size_t FileName1Len, const wchar_t * FileName2,
     const wchar_t * Path1, const wchar_t * Path2,
     int64_t Size1, int64_t Size2, time_t LocalTime,
     bool HasLocalTime1, const TRemoteFileTime & RemoteTime, void * UserData,
     HANDLE & LocalFileHandle,
     int & RequestResult) = 0;
-  virtual bool HandleAsyncRequestVerifyCertificate(
+  virtual bool HandleAsynchRequestVerifyCertificate(
     const TFtpsCertificateData & Data, int & RequestResult) = 0;
-  virtual bool HandleAsyncRequestNeedPass(
+  virtual bool HandleAsynchRequestNeedPass(
     struct TNeedPassRequestData & Data, int & RequestResult) = 0;
   virtual bool HandleListData(const wchar_t * Path, const TListDataEntry * Entries,
-    uintptr_t Count) = 0;
+    uint32_t Count) = 0;
   virtual bool HandleTransferStatus(bool Valid, int64_t TransferSize,
     int64_t Bytes, bool FileTransfer) = 0;
   virtual bool HandleReply(intptr_t Command, uintptr_t Reply) = 0;
@@ -276,14 +276,14 @@ NB_DISABLE_COPY(TFTPServerCapabilities)
 public:
   TFTPServerCapabilities(){}
   ftp_capabilities_t GetCapability(ftp_capability_names_t Name) const;
-  ftp_capabilities_t GetCapabilityString(ftp_capability_names_t Name, std::string * Option = NULL) const;
+  ftp_capabilities_t GetCapabilityString(ftp_capability_names_t Name, std::string * Option = nullptr) const;
   void SetCapability(ftp_capability_names_t Name, ftp_capabilities_t Cap);
   void SetCapability(ftp_capability_names_t Name, ftp_capabilities_t Cap, const std::string & Option);
   void Clear() { FCapabilityMap.clear(); }
   void Assign(TFTPServerCapabilities * Source)
   {
     FCapabilityMap.clear();
-    if (Source != NULL)
+    if (Source != nullptr)
     {
       for (nb::map_t<ftp_capability_names_t, t_cap>::iterator it = Source->FCapabilityMap.begin();
         it != Source->FCapabilityMap.end(); ++it)

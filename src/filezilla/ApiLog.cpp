@@ -9,7 +9,7 @@
 
 CApiLog::CApiLog()
 {
-  FIntern = NULL;
+  FIntern = nullptr;
 }
 
 CApiLog::~CApiLog()
@@ -77,13 +77,13 @@ void CApiLog::SendLogMessage(int nMessageType, LPCTSTR pMsg) const
 
 CString CApiLog::GetOption(int OptionID) const
 {
-  DebugAssert(FIntern != NULL);
+  DebugAssert(FIntern != nullptr);
   return FIntern->GetOption(OptionID);
 }
 
 int CApiLog::GetOptionVal(int OptionID) const
 {
-  DebugAssert(FIntern != NULL);
+  DebugAssert(FIntern != nullptr);
   return FIntern->GetOptionVal(OptionID);
 }
 
@@ -94,7 +94,7 @@ void CApiLog::LogError(int Error)
     FORMAT_MESSAGE_FROM_SYSTEM |
     FORMAT_MESSAGE_IGNORE_INSERTS |
     FORMAT_MESSAGE_ARGUMENT_ARRAY |
-    FORMAT_MESSAGE_ALLOCATE_BUFFER, NULL, Error, 0, (LPTSTR)&Buffer, 0, NULL);
+    FORMAT_MESSAGE_ALLOCATE_BUFFER, nullptr, Error, 0, (LPTSTR)&Buffer, 0, nullptr);
   if (Len > 0)
   {
     LogMessageRaw(FZ_LOG_ERROR, Buffer);
