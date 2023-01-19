@@ -129,6 +129,9 @@ public:
   RawByteString RemoteFileHandle; // output
   TOverwriteFileParams *FileParams{nullptr};
   bool Confirmed{false};
+  bool DontRecycle{false};
+  bool Recycled{false};
+  TRights RecycledRights{};
 };
 
 /** @brief Interface for custom filesystems
