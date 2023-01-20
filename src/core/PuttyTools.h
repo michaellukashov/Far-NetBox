@@ -15,6 +15,7 @@ NB_CORE_EXPORT UnicodeString GetKeyTypeName(TKeyType KeyType);
 NB_CORE_EXPORT bool IsKeyEncrypted(TKeyType KeyType, const UnicodeString FileName, UnicodeString &Comment);
 struct TPrivateKey;
 NB_CORE_EXPORT TPrivateKey *LoadKey(TKeyType KeyType, const UnicodeString FileName, const UnicodeString Passphrase);
+UnicodeString TestKey(TKeyType KeyType, const UnicodeString & FileName);
 NB_CORE_EXPORT void ChangeKeyComment(TPrivateKey *PrivateKey, const UnicodeString Comment);
 NB_CORE_EXPORT void SaveKey(TKeyType KeyType, const UnicodeString FileName,
   const UnicodeString Passphrase, TPrivateKey *PrivateKey);
@@ -27,7 +28,7 @@ NB_CORE_EXPORT bool HasGSSAPI(const UnicodeString CustomPath);
 NB_CORE_EXPORT void AES256EncodeWithMAC(char *Data, size_t Len, const char *Password,
   size_t PasswordLen, const char *Salt);
 
-NB_CORE_EXPORT UnicodeString NormalizeFingerprint(const UnicodeString AFingerprint);
+NB_CORE_EXPORT UnicodeString NormalizeFingerprint(const UnicodeString AFingerprint, UnicodeString & KeyName);
 NB_CORE_EXPORT UnicodeString GetKeyTypeFromFingerprint(const UnicodeString AFingerprint);
 
 NB_CORE_EXPORT UnicodeString GetPuTTYVersion();
@@ -36,14 +37,22 @@ NB_CORE_EXPORT UnicodeString Sha256(const char *Data, size_t Size);
 
 NB_CORE_EXPORT void DllHijackingProtection();
 
-UnicodeString ParseOpenSshPubLine(UnicodeString ALine, const struct ssh_signkey *& Algorithm);
+UnicodeString ParseOpenSshPubLine(const UnicodeString ALine, const struct ssh_keyalg *& Algorithm);
 
-UnicodeString GetKeyTypeHuman(UnicodeString AKeyType);
+UnicodeString GetKeyTypeHuman(const UnicodeString AKeyType);
 
-bool IsOpenSSH(UnicodeString SshImplementation);
+bool IsOpenSSH(const UnicodeString SshImplementation);
 
 TStrings * SshCipherList();
 TStrings * SshKexList();
 TStrings * SshHostKeyList();
 TStrings * SshMacList();
+
+class TSessionData;
+void SaveAsPutty(const UnicodeString & Name, TSessionData * Data);
+class THierarchicalStorage;
+void WritePuttySettings(THierarchicalStorage * Storage, const UnicodeString & Settings);
+void SavePuttyDefaults(const UnicodeString & Name);
+
+bool RandomSeedExists();
 

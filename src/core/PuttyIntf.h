@@ -1,10 +1,11 @@
 ﻿#pragma once
-#include "PuttyTools.h"
 
 NB_CORE_EXPORT void PuttyInitialize();
 NB_CORE_EXPORT void PuttyFinalize();
 
 NB_CORE_EXPORT void DontSaveRandomSeed();
+
+#include "PuttyTools.h"
 
 #ifndef MPEXT
 #define MPEXT
@@ -22,6 +23,8 @@ extern "C"
 // Defined in misc.h - Conflicts with std::min/max
 #undef min
 #undef max
+// Defined in marshal.h - Conflicts with xml.xmldom.hpp
+#undef get_data
 
   extern CRITICAL_SECTION noise_section;
 }
