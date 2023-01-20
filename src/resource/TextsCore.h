@@ -520,5 +520,3 @@
 #define S3_LICENSE_URL          636
 
 // 7xxx used by errors as secondary sequence
-
-#endif // TextsCore
