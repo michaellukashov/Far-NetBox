@@ -56,8 +56,8 @@ public:
   virtual ~TScript();
 
   void Command(UnicodeString Cmd);
-  void Log(TLogLineType Type, UnicodeString Str);
-  void PrintLine(const UnicodeString Str, bool Error = false);
+  void Log(TLogLineType Type, const UnicodeString & Str, TTerminal * ATerminal = nullptr);
+  void PrintLine(const UnicodeString Str, bool Error = false, TTerminal * ATerminal = nullptr);
   void StartInteractive();
 
   void Synchronize(const UnicodeString LocalDirectory,
@@ -77,9 +77,13 @@ public:
   __property TTerminal * Terminal = { read = FTerminal };
   __property bool Groups = { read = FGroups, write = FGroups };
   __property bool WantsProgress = { read = FWantsProgress, write = FWantsProgress };
+  __property bool Interactive = { read = FInteractive, write = FInteractive };
+  __property TTransferOutEvent OnTransferOut = { read = FOnTransferOut, write = FOnTransferOut };
+  __property TTransferInEvent OnTransferIn = { read = FOnTransferIn, write = FOnTransferIn };
 
 protected:
   TTerminal * FTerminal;
+  TTerminal * FLoggingTerminal;
   TScriptCommands * FCommands;
   TScriptPrintEvent FOnPrint;
   TExtendedExceptionEvent FOnShowExtendedException;
@@ -103,6 +107,9 @@ protected:
   int FInteractiveSessionReopenTimeout;
   bool FGroups;
   bool FWantsProgress;
+  bool FInteractive;
+  TTransferOutEvent FOnTransferOut;
+  TTransferInEvent FOnTransferIn;
   TStrings * FPendingLogLines;
   bool FWarnNonDefaultCopyParam;
   bool FWarnNonDefaultSynchronizeParams;
@@ -122,7 +129,8 @@ protected:
     fltDirectories = 0x01,
     fltQueryServer = 0x02,
     fltMask =        0x04,
-    fltLatest =      0x08
+    fltLatest =      0x08,
+    fltOnlyFile =    0x10,
   };
   TStrings * CreateFileList(TScriptProcParams * Parameters, int Start,
     int End, TFileListType ListType = fltDefault);
@@ -159,7 +167,7 @@ protected:
   void SynchronizeDirectories(TScriptProcParams * Parameters,
     UnicodeString & LocalDirectory, UnicodeString & RemoteDirectory, int FirstParam);
   virtual bool HandleExtendedException(Exception * E,
-    TTerminal * Terminal = NULL);
+    TTerminal * Terminal = nullptr);
   void TerminalCaptureLog(const UnicodeString & AddedLine, TCaptureOutputType OutputType);
   virtual UnicodeString GetLogCmd(const UnicodeString & FullCommand,
     const UnicodeString & Command, const UnicodeString & Params);
@@ -222,12 +230,14 @@ protected:
   UnicodeString FLastProgressMessage;
   time_t FLastProgressTime;
   time_t FLastProgressEventTime;
+  UnicodeString FLastProgressEventDoneFileName;
+  bool FLastProgressOverallDone;
   bool FContinue;
 
   virtual void ResetTransfer();
   void Input(const UnicodeString Prompt, UnicodeString & Str, bool AllowEmpty);
-  void TerminalInformation(TTerminal * Terminal, const UnicodeString & Str,
-    bool Status, int Phase);
+  void TerminalInformation(
+    TTerminal * Terminal, const UnicodeString & Str, bool Status, int Phase, const UnicodeString & Additional);
   void TerminalOperationProgress(TFileOperationProgressType & ProgressData);
   void TerminalOperationFinished(TFileOperation Operation, TOperationSide Side,
     bool Temp, const UnicodeString & FileName, Boolean Success,
@@ -238,12 +248,13 @@ protected:
   void FreeTerminal(TTerminal * Terminal);
   void PrintProgress(bool First, const UnicodeString Str);
   bool QueryCancel();
-  void TerminalSynchronizeDirectory(const UnicodeString LocalDirectory,
-    const UnicodeString RemoteDirectory, bool & Continue, bool Collect);
+  void TerminalSynchronizeDirectory(
+    const UnicodeString & LocalDirectory, const UnicodeString & RemoteDirectory,
+    bool & Continue, bool Collect, const TSynchronizeOptions * Options);
   void DoChangeLocalDirectory(UnicodeString Directory);
   void DoClose(TTerminal * Terminal);
   virtual bool HandleExtendedException(Exception * E,
-    TTerminal * Terminal = NULL);
+    TTerminal * Terminal = nullptr);
   void TerminalPromptUser(TTerminal * Terminal, TPromptKind Kind,
     UnicodeString Name, UnicodeString Instructions, TStrings * Prompts,
     TStrings * Results, bool & Result, void * Arg);

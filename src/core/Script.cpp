@@ -17,6 +17,7 @@
 #endif //if 0
 
 const wchar_t * ToggleNames[] = { L"off", L"on" };
+const UnicodeString InOutParam(TraceInitStr(L"-"));
 
 #if 0
 TScriptProcParams::TScriptProcParams(const UnicodeString & FullCommand, const UnicodeString & ParamsStr)
@@ -30,12 +31,7 @@ TScriptProcParams::TScriptProcParams(const UnicodeString & FullCommand, const Un
 
   FFullCommand = FullCommand;
   FParamsStr = ParamsStr;
-  UnicodeString Param;
-  UnicodeString AParamsStr = ParamsStr;
-  while (CutToken(AParamsStr, Param))
-  {
-    Add(Param);
-  }
+  Parse(ParamsStr);
 }
 
 
@@ -62,9 +58,9 @@ public:
   bool Enumerate(int Index,
     UnicodeString * Command, UnicodeString * Description, UnicodeString * Help);
   static int FindCommand(TStrings * Commands, const UnicodeString Command,
-    UnicodeString * Matches = NULL);
+    UnicodeString * Matches = nullptr);
   static int FindCommand(const wchar_t ** Commands, size_t Count,
-    const UnicodeString Command, UnicodeString * Matches = NULL);
+    const UnicodeString Command, UnicodeString * Matches = nullptr);
 
   static void CheckParams(TOptions * Parameters, bool Switches);
 
@@ -139,12 +135,12 @@ bool TScriptCommands::Info(const UnicodeString Command,
   if (Result)
   {
     TScriptCommand * ScriptCommand = reinterpret_cast<TScriptCommand *>(Objects[Index]);
-    if (Description != NULL)
+    if (Description != nullptr)
     {
       *Description = ScriptCommand->Description;
     }
 
-    if (Help != NULL)
+    if (Help != nullptr)
     {
       *Help = ScriptCommand->Help;
     }
@@ -161,17 +157,17 @@ bool TScriptCommands::Enumerate(int Index,
   if (Result)
   {
     TScriptCommand * ScriptCommand = reinterpret_cast<TScriptCommand *>(Objects[Index]);
-    if (Command != NULL)
+    if (Command != nullptr)
     {
       *Command = Strings[Index];
     }
 
-    if (Description != NULL)
+    if (Description != nullptr)
     {
       *Description = ScriptCommand->Description;
     }
 
-    if (Help != NULL)
+    if (Help != nullptr)
     {
       *Help = ScriptCommand->Help;
     }
@@ -193,7 +189,7 @@ int TScriptCommands::FindCommand(TStrings * Commands,
       if ((Command.Length() <= Commands->Strings[i].Length()) &&
           SameText(Command, Commands->Strings[i].SubString(1, Command.Length())))
       {
-        if (Matches != NULL)
+        if (Matches != nullptr)
         {
           if (!Matches->IsEmpty())
           {
@@ -310,7 +306,8 @@ const int BatchSessionReopenTimeout = 2 * MSecsPerSec * SecsPerMin; // 2 mins
 TScript::TScript(bool LimitedOutput)
 {
   FLimitedOutput = LimitedOutput;
-  FTerminal = NULL;
+  FTerminal = nullptr;
+  FLoggingTerminal = nullptr;
   FGroups = false;
   FWantsProgress = false;
   FIncludeFileMaskOptionUsed = false;
@@ -341,9 +338,9 @@ void TScript::Init()
   FEcho = false;
   FFailOnNoMatch = false;
   FSynchronizeParams = 0;
-  FOnPrint = NULL;
-  FOnTerminalSynchronizeDirectory = NULL;
-  FOnSynchronizeStartStop = NULL;
+  FOnPrint = nullptr;
+  FOnTerminalSynchronizeDirectory = nullptr;
+  FOnSynchronizeStartStop = nullptr;
   FSynchronizeMode = -1;
   FKeepingUpToDate = false;
   FWarnNonDefaultCopyParam = false;
@@ -359,7 +356,7 @@ void TScript::Init()
   FCommands->Register(L"cd", SCRIPT_CD_DESC, SCRIPT_CD_HELP, &CdProc, 0, 1, false);
   FCommands->Register(L"ls", SCRIPT_LS_DESC, SCRIPT_LS_HELP2, &LsProc, 0, 1, false);
   FCommands->Register(L"dir", 0, SCRIPT_LS_HELP2, &LsProc, 0, 1, false);
-  FCommands->Register(L"rm", SCRIPT_RM_DESC, SCRIPT_RM_HELP2, &RmProc, 1, -1, false);
+  FCommands->Register(L"rm", SCRIPT_RM_DESC, SCRIPT_RM_HELP2, &RmProc, 1, -1, true);
   FCommands->Register(L"rmdir", SCRIPT_RMDIR_DESC, SCRIPT_RMDIR_HELP, &RmDirProc, 1, -1, false);
   FCommands->Register(L"mv", SCRIPT_MV_DESC, SCRIPT_MV_HELP2, &MvProc, 2, -1, false);
   FCommands->Register(L"rename", 0, SCRIPT_MV_HELP2, &MvProc, 2, -1, false);
@@ -432,7 +429,7 @@ void TScript::SetSynchronizeParams(int value)
 {
   const int AcceptedParams =
     TTerminal::spExistingOnly | TTerminal::spTimestamp |
-    TTerminal::spNotByTime | TTerminal::spBySize;
+    TTerminal::spNotByTime | TTerminal::spBySize | TTerminal::spCaseSensitive;
   FSynchronizeParams = (value & AcceptedParams);
   FWarnNonDefaultSynchronizeParams =
     (FSynchronizeParams != (TTerminal::spDefault & AcceptedParams));
@@ -440,16 +437,17 @@ void TScript::SetSynchronizeParams(int value)
 
 bool TScript::IsTerminalLogging(TTerminal * ATerminal)
 {
-  return (ATerminal != NULL) && ATerminal->Log->Logging;
+  return (ATerminal != nullptr) && ATerminal->Log->Logging;
 }
 
 const static UnicodeString ScriptLogFormat(L"Script: %s");
-void TScript::Log(TLogLineType Type, UnicodeString Str)
+void TScript::Log(TLogLineType Type, const UnicodeString & AStr, TTerminal * ATerminal)
 {
-  Str = FORMAT(ScriptLogFormat, (Str));
-  if (IsTerminalLogging(Terminal))
+  UnicodeString Str = FORMAT(ScriptLogFormat, (AStr));
+  TTerminal * LoggingTerminal = (ATerminal != nullptr ? ATerminal : (FLoggingTerminal != nullptr ? FLoggingTerminal : Terminal));
+  if (IsTerminalLogging(LoggingTerminal))
   {
-    Terminal->Log->Add(Type, Str);
+    LoggingTerminal->Log->Add(Type, Str);
   }
   else if (Configuration->Logging)
   {
@@ -507,7 +505,7 @@ void TScript::Command(UnicodeString Cmd)
         UnicodeString LogCmd = GetLogCmd(FullCmd, Command, Cmd);
         Log(llInput, LogCmd);
 
-        if (Configuration->LogProtocol >= 1)
+        if (Configuration->ActualLogProtocol >= 1)
         {
           UnicodeString DummyLogCmd;
           if (DebugAlwaysTrue(CutToken(LogCmd, DummyLogCmd)))
@@ -522,8 +520,8 @@ void TScript::Command(UnicodeString Cmd)
           PrintLine(LogCmd);
         }
 
-        TTerminal * BeforeGroupTerminal = FGroups ? Terminal : NULL;
-        if (BeforeGroupTerminal != NULL)
+        TTerminal * BeforeGroupTerminal = FGroups ? Terminal : nullptr;
+        if (BeforeGroupTerminal != nullptr)
         {
           BeforeGroupTerminal->ActionLog->BeginGroup(LogCmd);
         }
@@ -549,8 +547,8 @@ void TScript::Command(UnicodeString Cmd)
         {
           Configuration->SessionReopenTimeout = ASessionReopenTimeout;
 
-          TTerminal * AfterGroupTerminal = FGroups ? Terminal : NULL;
-          if (AfterGroupTerminal != NULL)
+          TTerminal * AfterGroupTerminal = FGroups ? Terminal : nullptr;
+          if (AfterGroupTerminal != nullptr)
           {
             // this happens for "open" command
             if (AfterGroupTerminal != BeforeGroupTerminal)
@@ -576,9 +574,9 @@ TStrings * TScript::CreateFileList(TScriptProcParams * Parameters, int Start,
   int End, TFileListType ListType)
 {
   TStrings * Result = new TStringList();
-  TStrings * FileLists = NULL;
   try
   {
+    TStrings * FileLists = nullptr;
     try
     {
       for (int i = Start; i <= End; i++)
@@ -605,8 +603,8 @@ TStrings * TScript::CreateFileList(TScriptProcParams * Parameters, int Start,
           {
             Directory = UnixIncludeTrailingBackslash(FTerminal->CurrentDirectory);
           }
-          TRemoteFileList * FileList = NULL;
-          if (FileLists != NULL)
+          TRemoteFileList * FileList = nullptr;
+          if (FileLists != nullptr)
           {
             int Index = FileLists->IndexOf(Directory);
             if (Index > 0)
@@ -614,10 +612,10 @@ TStrings * TScript::CreateFileList(TScriptProcParams * Parameters, int Start,
               FileList = dynamic_cast<TRemoteFileList *>(FileLists->Objects[Index]);
             }
           }
-          if (FileList == NULL)
+          if (FileList == nullptr)
           {
             FileList = FTerminal->CustomReadDirectoryListing(Directory, false);
-            if (FileLists == NULL)
+            if (FileLists == nullptr)
             {
               FileLists = new TStringList();
             }
@@ -629,7 +627,7 @@ TStrings * TScript::CreateFileList(TScriptProcParams * Parameters, int Start,
           bool AnyFound = false;
 
           // Can happen in "batch continue" mode
-          if (FileList != NULL)
+          if (FileList != nullptr)
           {
             for (int i = 0; i < FileList->Count; i++)
             {
@@ -638,10 +636,10 @@ TStrings * TScript::CreateFileList(TScriptProcParams * Parameters, int Start,
               Params.Size = File->Size;
               Params.Modification = File->Modification;
               if (IsRealFile(File->FileName) &&
-                  Mask.Matches(File->FileName, false, UnicodeString(), &Params))
+                  Mask.MatchesFileName(File->FileName, false, &Params))
               {
                 Result->AddObject(FileDirectory + File->FileName,
-                  FLAGSET(ListType, fltQueryServer) ? File->Duplicate() : NULL);
+                  FLAGSET(ListType, fltQueryServer) ? File->Duplicate() : nullptr);
                 AnyFound = true;
               }
             }
@@ -654,7 +652,7 @@ TStrings * TScript::CreateFileList(TScriptProcParams * Parameters, int Start,
         }
         else
         {
-          TRemoteFile * File = NULL;
+          TRemoteFile * File = nullptr;
           if (FLAGSET(ListType, fltQueryServer))
           {
             FTerminal->ExceptionOnFail = true;
@@ -675,45 +673,57 @@ TStrings * TScript::CreateFileList(TScriptProcParams * Parameters, int Start,
         }
       }
     }
-    catch(...)
+    __finally
     {
-      FreeFileList(Result);
-      throw;
-    }
-  }
-  __finally
-  {
-    if (FileLists != NULL)
-    {
-      for (int i = 0; i < FileLists->Count; i++)
+      if (FileLists != nullptr)
       {
-        delete FileLists->Objects[i];
-      }
-      delete FileLists;
-    }
-  }
-
-  if (FLAGSET(ListType, fltLatest) && (Result->Count > 1))
-  {
-    // otherwise we do not have TRemoteFile's
-    DebugAssert(FLAGSET(ListType, fltQueryServer));
-    int LatestIndex = 0;
-
-    for (int Index = 1; Index < Result->Count; Index++)
-    {
-      TRemoteFile * File = dynamic_cast<TRemoteFile *>(Result->Objects[Index]);
-      if (dynamic_cast<TRemoteFile *>(Result->Objects[LatestIndex])->Modification < File->Modification)
-      {
-        LatestIndex = Index;
+        for (int i = 0; i < FileLists->Count; i++)
+        {
+          delete FileLists->Objects[i];
+        }
+        delete FileLists;
       }
     }
 
-    TRemoteFile * File = dynamic_cast<TRemoteFile *>(Result->Objects[LatestIndex]);
-    UnicodeString Path = Result->Strings[LatestIndex];
-    Result->Delete(LatestIndex);
-    FreeFiles(Result);
-    Result->Clear();
-    Result->AddObject(Path, File);
+    if (FLAGSET(ListType, fltLatest) && (Result->Count > 1))
+    {
+      // otherwise we do not have TRemoteFile's
+      DebugAssert(FLAGSET(ListType, fltQueryServer));
+      int LatestIndex = 0;
+
+      for (int Index = 1; Index < Result->Count; Index++)
+      {
+        TRemoteFile * File = dynamic_cast<TRemoteFile *>(Result->Objects[Index]);
+        if (dynamic_cast<TRemoteFile *>(Result->Objects[LatestIndex])->Modification < File->Modification)
+        {
+          LatestIndex = Index;
+        }
+      }
+
+      TRemoteFile * File = dynamic_cast<TRemoteFile *>(Result->Objects[LatestIndex]);
+      UnicodeString Path = Result->Strings[LatestIndex];
+      Result->Delete(LatestIndex);
+      FreeFiles(Result);
+      Result->Clear();
+      Result->AddObject(Path, File);
+    }
+
+    if (FLAGSET(ListType, fltOnlyFile))
+    {
+      for (int Index = 0; Index < Result->Count; Index++)
+      {
+        TRemoteFile * File = dynamic_cast<TRemoteFile *>(Result->Objects[Index]);
+        if (File->IsDirectory)
+        {
+          throw Exception(FMTLOAD(NOT_FILE_ERROR, (File->FileName)));
+        }
+      }
+    }
+  }
+  catch (...)
+  {
+    FreeFileList(Result);
+    throw;
   }
 
   return Result;
@@ -860,7 +870,7 @@ void TScript::FreeFiles(TStrings * FileList)
 {
   for (int i = 0; i < FileList->Count; i++)
   {
-    if (FileList->Objects[i] != NULL)
+    if (FileList->Objects[i] != nullptr)
     {
       TRemoteFile * File = dynamic_cast<TRemoteFile *>(FileList->Objects[i]);
       delete File;
@@ -881,30 +891,30 @@ void TScript::ConnectTerminal(TTerminal * ATerminal)
 
 void TScript::Print(const UnicodeString Str, bool Error)
 {
-  if (FOnPrint != NULL)
+  if (FOnPrint != nullptr)
   {
     FOnPrint(this, Str, Error);
   }
 }
 
-void TScript::PrintLine(const UnicodeString Str, bool Error)
+void TScript::PrintLine(const UnicodeString Str, bool Error, TTerminal * ATerminal)
 {
-  Log(llOutput, Str);
+  Log(llOutput, Str, ATerminal);
   Print(Str + L"\n", Error);
 }
 
 bool TScript::HandleExtendedException(Exception * E, TTerminal * ATerminal)
 {
-  bool Result = (OnShowExtendedException != NULL);
+  bool Result = (OnShowExtendedException != nullptr);
 
   if (Result)
   {
-    if (ATerminal == NULL)
+    if (ATerminal == nullptr)
     {
       ATerminal = FTerminal;
     }
 
-    OnShowExtendedException(ATerminal, E, NULL);
+    OnShowExtendedException(ATerminal, E, nullptr);
   }
 
   return Result;
@@ -912,7 +922,7 @@ bool TScript::HandleExtendedException(Exception * E, TTerminal * ATerminal)
 
 void TScript::CheckSession()
 {
-  if (FTerminal == NULL)
+  if (FTerminal == nullptr)
   {
     throw Exception(LoadStr(SCRIPT_NO_SESSION));
   }
@@ -1123,7 +1133,7 @@ void TScript::HelpProc(TScriptProcParams * Parameters)
     UnicodeString Command;
     UnicodeString Description;
     int Index = 0;
-    while (FCommands->Enumerate(Index, &Command, &Description, NULL))
+    while (FCommands->Enumerate(Index, &Command, &Description, nullptr))
     {
       if (!Description.IsEmpty())
       {
@@ -1137,7 +1147,7 @@ void TScript::HelpProc(TScriptProcParams * Parameters)
     for (int i = 1; i <= Parameters->ParamCount; i++)
     {
       UnicodeString Help;
-      if (FCommands->Info(Parameters->Param[i], NULL, &Help))
+      if (FCommands->Info(Parameters->Param[i], nullptr, &Help))
       {
         Output += Help;
       }
@@ -1182,7 +1192,7 @@ void TScript::StatProc(TScriptProcParams * Parameters)
 
   UnicodeString Path = UnixExcludeTrailingBackslash(Parameters->Param[1]);
   FTerminal->ExceptionOnFail = true;
-  TRemoteFile * File = NULL;
+  TRemoteFile * File = nullptr;
   try
   {
     File = FTerminal->ReadFileListing(Path);
@@ -1215,7 +1225,7 @@ void TScript::ChecksumProc(TScriptProcParams * Parameters)
       throw Exception(FMTLOAD(NOT_FILE_ERROR, FileList->Strings[0]));
     }
 
-    FTerminal->CalculateFilesChecksum(Alg, FileList, Checksums.get(), NULL);
+    FTerminal->CalculateFilesChecksum(Alg, FileList, Checksums.get(), nullptr);
 
     if (DebugAlwaysTrue(Checksums->Count == 1))
     {
@@ -1287,8 +1297,8 @@ void TScript::LsProc(TScriptProcParams * Parameters)
   }
 
   TRemoteFileList * FileList = FTerminal->ReadDirectoryListing(Directory, Mask);
-  // on error user may select "skip", then we get NULL
-  if (FileList != NULL)
+  // on error user may select "skip", then we get nullptr
+  if (FileList != nullptr)
   {
     try
     {
@@ -1318,11 +1328,13 @@ void TScript::RmProc(TScriptProcParams * Parameters)
 {
   CheckSession();
 
+  bool OnlyFile = Parameters->FindSwitch(L"onlyfile");
   TStrings * FileList = CreateFileList(
     Parameters, 1, Parameters->ParamCount,
-    (TFileListType)(fltQueryServer | fltMask));
+    (TFileListType)(fltQueryServer | fltMask| FLAGMASK(OnlyFile, fltOnlyFile)));
   try
   {
+    CheckParams(Parameters);
     FTerminal->DeleteFiles(FileList);
   }
   __finally
@@ -1444,6 +1456,7 @@ void TScript::GetProc(TScriptProcParams * Parameters)
   ResetTransfer();
 
   bool Latest = Parameters->FindSwitch(L"latest");
+  bool OnlyFile = Parameters->FindSwitch(L"onlyfile");
   CheckDefaultCopyParam();
   TCopyParamType CopyParam = FCopyParam;
   CopyParamParams(CopyParam, Parameters);
@@ -1452,33 +1465,42 @@ void TScript::GetProc(TScriptProcParams * Parameters)
 
   RequireParams(Parameters, 1);
   int LastFileParam = (Parameters->ParamCount == 1 ? 1 : Parameters->ParamCount - 1);
+  DebugAssert(CopyParam.OnTransferOut == nullptr);
+  if ((OnTransferOut != nullptr) && (Parameters->ParamCount > 1) && SameText(Parameters->Param[Parameters->ParamCount], InOutParam))
+  {
+    CopyParam.OnTransferOut = OnTransferOut;
+    OnlyFile = true;
+  }
   TStrings * FileList = CreateFileList(Parameters, 1, LastFileParam,
-    (TFileListType)(fltQueryServer | fltMask | FLAGMASK(Latest, fltLatest)));
+    (TFileListType)(fltQueryServer | fltMask | FLAGMASK(Latest, fltLatest) | FLAGMASK(OnlyFile, fltOnlyFile)));
   try
   {
-
     UnicodeString TargetDirectory;
-    if (Parameters->ParamCount == 1)
+    if (CopyParam.OnTransferOut == nullptr)
     {
-      TargetDirectory = GetCurrentDir();
-      CopyParam.FileMask = L"";
-    }
-    else
-    {
-      UnicodeString Target = Parameters->Param[Parameters->ParamCount];
-      TargetDirectory = ExtractFilePath(Target);
-      if (TargetDirectory.IsEmpty())
+      if (Parameters->ParamCount == 1)
       {
         TargetDirectory = GetCurrentDir();
+        CopyParam.FileMask = L"";
       }
-      CopyParam.FileMask = ExtractFileName(Target);
-      Target = IncludeTrailingBackslash(TargetDirectory) + CopyParam.FileMask;
-      CheckMultiFilesToOne(FileList, Target, false);
+      else
+      {
+        UnicodeString Target = Parameters->Param[Parameters->ParamCount];
+        TargetDirectory = ExtractFilePath(Target);
+        if (TargetDirectory.IsEmpty())
+        {
+          TargetDirectory = GetCurrentDir();
+        }
+        CopyParam.FileMask = ExtractFileName(Target);
+        Target = IncludeTrailingBackslash(TargetDirectory) + CopyParam.FileMask;
+        CheckMultiFilesToOne(FileList, Target, false);
+      }
     }
 
     CheckParams(Parameters);
+    CopyParam.IncludeFileMask.SetRoots(TargetDirectory, FileList);
 
-    FTerminal->CopyToLocal(FileList, TargetDirectory, &CopyParam, Params, NULL);
+    FTerminal->CopyToLocal(FileList, TargetDirectory, &CopyParam, Params, nullptr);
   }
   __finally
   {
@@ -1500,9 +1522,23 @@ void TScript::PutProc(TScriptProcParams * Parameters)
 
   RequireParams(Parameters, 1);
   int LastFileParam = (Parameters->ParamCount == 1 ? 1 : Parameters->ParamCount - 1);
-  TStrings * FileList =
-    CreateLocalFileList(
-      Parameters, 1, LastFileParam, (TFileListType)(fltMask | FLAGMASK(Latest, fltLatest)));
+  DebugAssert(CopyParam.OnTransferIn == nullptr);
+  TStrings * FileList;
+  // We use stdin only if - is the very first parameter
+  if ((OnTransferIn != nullptr) && SameText(Parameters->Param[1], InOutParam))
+  {
+    if (Parameters->ParamCount > 2)
+    {
+      throw Exception(LoadStr(STREAM_IN_SCRIPT_ERROR));
+    }
+
+    CopyParam.OnTransferIn = OnTransferIn;
+    FileList = new TStringList();
+  }
+  else
+  {
+    FileList = CreateLocalFileList(Parameters, 1, LastFileParam, (TFileListType)(fltMask | FLAGMASK(Latest, fltLatest)));
+  }
   try
   {
     UnicodeString TargetDirectory;
@@ -1524,13 +1560,23 @@ void TScript::PutProc(TScriptProcParams * Parameters)
       CheckMultiFilesToOne(FileList, Target, true);
     }
 
-    CheckParams(Parameters);
+    if (CopyParam.OnTransferIn != nullptr)
+    {
+      if (IsFileNameMask(CopyParam.FileMask))
+      {
+        throw Exception(LoadStr(STREAM_IN_SCRIPT_ERROR));
+      }
+      FileList->Add(CopyParam.FileMask);
+    }
 
-    FTerminal->CopyToRemote(FileList, TargetDirectory, &CopyParam, Params, NULL);
+    CheckParams(Parameters);
+    CopyParam.IncludeFileMask.SetRoots(FileList, TargetDirectory);
+
+    FTerminal->CopyToRemote(FileList, TargetDirectory, &CopyParam, Params, nullptr);
   }
   __finally
   {
-    FreeFileList(FileList);
+    delete FileList;
   }
 }
 
@@ -1929,6 +1975,7 @@ void TScript::SynchronizeProc(TScriptProcParams * Parameters)
     UnicodeString RemoteDirectory;
 
     SynchronizeDirectories(Parameters, LocalDirectory, RemoteDirectory, 2);
+    CopyParam.IncludeFileMask.SetRoots(LocalDirectory, RemoteDirectory);
 
     CheckDefaultSynchronizeParams();
     int SynchronizeParams = FSynchronizeParams | TTerminal::spNoConfirmation;
@@ -1985,7 +2032,7 @@ void TScript::SynchronizeProc(TScriptProcParams * Parameters)
     TSynchronizeChecklist * Checklist =
       FTerminal->SynchronizeCollect(LocalDirectory, RemoteDirectory,
         static_cast<TTerminal::TSynchronizeMode>(FSynchronizeMode),
-        &CopyParam, SynchronizeParams, OnTerminalSynchronizeDirectory, NULL);
+        &CopyParam, SynchronizeParams, OnTerminalSynchronizeDirectory, nullptr);
     try
     {
       bool AnyChecked = false;
@@ -2005,7 +2052,7 @@ void TScript::SynchronizeProc(TScriptProcParams * Parameters)
         {
           PrintLine(LoadStr(SCRIPT_SYNCHRONIZE_SYNCHRONIZING));
           FTerminal->SynchronizeApply(
-            Checklist, &CopyParam, SynchronizeParams, OnTerminalSynchronizeDirectory, NULL, NULL, NULL, NULL);
+            Checklist, &CopyParam, SynchronizeParams, OnTerminalSynchronizeDirectory, nullptr, nullptr, nullptr, nullptr);
         }
       }
       else
@@ -2034,18 +2081,18 @@ void TScript::Synchronize(const UnicodeString LocalDirectory,
 
     TSynchronizeChecklist * AChecklist =
       FTerminal->SynchronizeCollect(LocalDirectory, RemoteDirectory, TTerminal::smRemote,
-        &CopyParam, SynchronizeParams, NULL, NULL);
+        &CopyParam, SynchronizeParams, nullptr, nullptr);
     try
     {
       if (AChecklist->Count > 0)
       {
         FTerminal->SynchronizeApply(
-          AChecklist, &CopyParam, SynchronizeParams, OnTerminalSynchronizeDirectory, NULL, NULL, NULL, NULL);
+          AChecklist, &CopyParam, SynchronizeParams, OnTerminalSynchronizeDirectory, nullptr, nullptr, nullptr, nullptr);
       }
     }
     __finally
     {
-      if (Checklist == NULL)
+      if (Checklist == nullptr)
       {
         delete AChecklist;
       }
@@ -2071,7 +2118,7 @@ void TScript::Synchronize(const UnicodeString LocalDirectory,
 
 void TScript::KeepUpToDateProc(TScriptProcParams * Parameters)
 {
-  if (OnSynchronizeStartStop == NULL)
+  if (OnSynchronizeStartStop == nullptr)
   {
     Abort();
   }
@@ -2110,14 +2157,14 @@ TManagementScript::TManagementScript(TStoredSessionList * StoredSessions,
   bool LimitedOutput) :
   TScript(LimitedOutput)
 {
-  DebugAssert(StoredSessions != NULL);
-  FOnInput = NULL;
-  FOnTerminalPromptUser = NULL;
-  FOnShowExtendedException = NULL;
-  FOnTerminalQueryUser = NULL;
+  DebugAssert(StoredSessions != nullptr);
+  FOnInput = nullptr;
+  FOnTerminalPromptUser = nullptr;
+  FOnShowExtendedException = nullptr;
+  FOnTerminalQueryUser = nullptr;
   FStoredSessions = StoredSessions;
   FTerminalList = new TTerminalList(Configuration);
-  FOnQueryCancel = NULL;
+  FOnQueryCancel = nullptr;
   FContinue = true;
 
   OnTerminalSynchronizeDirectory = TerminalSynchronizeDirectory;
@@ -2145,7 +2192,7 @@ TManagementScript::~TManagementScript()
 void TManagementScript::FreeTerminal(TTerminal * ATerminal)
 {
   TSessionData * Data = StoredSessions->FindSame(ATerminal->SessionData);
-  if (Data != NULL)
+  if (Data != nullptr)
   {
     ATerminal->SessionData->RemoteDirectory = ATerminal->CurrentDirectory;
 
@@ -2172,7 +2219,7 @@ void TManagementScript::Input(const UnicodeString Prompt,
   do
   {
     Str = L"";
-    if (FOnInput != NULL)
+    if (FOnInput != nullptr)
     {
       FOnInput(this, Prompt, Str);
     }
@@ -2186,7 +2233,7 @@ void TManagementScript::Input(const UnicodeString Prompt,
 
 void TManagementScript::PrintProgress(bool First, const UnicodeString Str)
 {
-  if (FOnPrintProgress != NULL)
+  if (FOnPrintProgress != nullptr)
   {
     FOnPrintProgress(this, First, Str);
   }
@@ -2195,17 +2242,19 @@ void TManagementScript::PrintProgress(bool First, const UnicodeString Str)
 void TManagementScript::ResetTransfer()
 {
   TScript::ResetTransfer();
-  FLastProgressFile = L"";
+  FLastProgressFile = EmptyStr;
   FLastProgressTime = 0;
   FLastProgressEventTime = 0;
-  FLastProgressMessage = L"";
+  FLastProgressEventDoneFileName = EmptyStr;
+  FLastProgressOverallDone = false;
+  FLastProgressMessage = EmptyStr;
 }
 
 bool TManagementScript::QueryCancel()
 {
   bool Result = false;
 
-  if (OnQueryCancel != NULL)
+  if (OnQueryCancel != nullptr)
   {
     OnQueryCancel(this, Result);
   }
@@ -2213,13 +2262,13 @@ bool TManagementScript::QueryCancel()
   return Result;
 }
 
-void TManagementScript::TerminalInformation(TTerminal * ATerminal,
-  const UnicodeString & Str, bool /*Status*/, int Phase)
+void TManagementScript::TerminalInformation(
+  TTerminal * ATerminal, const UnicodeString & Str, bool DebugUsedArg(Status), int Phase, const UnicodeString & DebugUsedArg(Additional))
 {
-  DebugAssert(ATerminal != NULL);
+  DebugAssert(ATerminal != nullptr);
   if ((Phase < 0) && (ATerminal->Status == ssOpening))
   {
-    PrintLine(Str);
+    PrintLine(Str, false, ATerminal);
   }
 }
 
@@ -2232,7 +2281,7 @@ void TManagementScript::TerminalPromptUser(TTerminal * ATerminal,
   if ((!ATerminal->StoredCredentialsTried ||
        !IsAuthenticationPrompt(Kind) ||
        (Prompts->Count == 0)) && // allow instructions-only prompts
-      (OnTerminalPromptUser != NULL))
+      (OnTerminalPromptUser != nullptr))
   {
     OnTerminalPromptUser(ATerminal, Kind, Name, Instructions, Prompts, Results, Result, Arg);
   }
@@ -2258,8 +2307,7 @@ void TManagementScript::ShowPendingProgress()
 void TManagementScript::TerminalOperationProgress(
   TFileOperationProgressType & ProgressData)
 {
-  if ((ProgressData.Operation == foCopy) ||
-      (ProgressData.Operation == foMove))
+  if (ProgressData.IsTransfer())
   {
     if (ProgressData.InProgress  && ProgressData.FileInProgress &&
         !ProgressData.FileName.IsEmpty())
@@ -2283,27 +2331,38 @@ void TManagementScript::TerminalOperationProgress(
         ShowPendingProgress();
       }
 
-      time_t Time = time(NULL);
+      time_t Time = time(nullptr);
 
-      if ((OnProgress != NULL) && WantsProgress &&
-          (DoPrint || (FLastProgressEventTime != Time) || ProgressData.IsTransferDone()))
+      if ((OnProgress != nullptr) && WantsProgress)
       {
-        FLastProgressEventTime = Time;
+        int OverallProgress = ProgressData.OverallProgress();
+        bool OverallDone = (OverallProgress == 100);
 
-        TScriptProgress Progress;
-        Progress.Operation = ProgressData.Operation;
-        Progress.Side = ProgressData.Side;
-        Progress.FileName = ProgressData.FullFileName;
-        Progress.Directory = ProgressData.Directory;
-        Progress.OverallProgress = ProgressData.OverallProgress();
-        Progress.FileProgress = ProgressData.TransferProgress();
-        Progress.CPS = ProgressData.CPS();
-        Progress.Cancel = false;
-        OnProgress(this, Progress);
-
-        if (Progress.Cancel)
+        if (DoPrint ||
+            (FLastProgressEventTime != Time) ||
+            (ProgressData.IsTransferDone() && (FLastProgressEventDoneFileName != ProgressData.FullFileName)) ||
+            (OverallDone && !FLastProgressOverallDone))
         {
-          ProgressData.SetCancel(csCancel);
+          FLastProgressEventTime = Time;
+          // When transferring a growing file, we would report the progress constantly
+          FLastProgressEventDoneFileName = ProgressData.IsTransferDone() ? ProgressData.FullFileName : EmptyStr;
+          FLastProgressOverallDone = OverallDone;
+
+          TScriptProgress Progress;
+          Progress.Operation = ProgressData.Operation;
+          Progress.Side = ProgressData.Side;
+          Progress.FileName = ProgressData.FullFileName;
+          Progress.Directory = ProgressData.Directory;
+          Progress.OverallProgress = OverallProgress;
+          Progress.FileProgress = ProgressData.TransferProgress();
+          Progress.CPS = ProgressData.CPS();
+          Progress.Cancel = false;
+          OnProgress(this, Progress);
+
+          if (Progress.Cancel)
+          {
+            ProgressData.SetCancel(csCancel);
+          }
         }
       }
 
@@ -2368,7 +2427,7 @@ void TManagementScript::TerminalOperationFinished(
 {
   if (Success &&
       (Operation != foCalculateSize) && (Operation != foCalculateChecksum) &&
-      (Operation != foCopy) && (Operation != foMove))
+      !TFileOperationProgressType::IsTransferOperation(Operation))
   {
     ShowPendingProgress();
     // For FKeepingUpToDate we should send events to synchronize controller eventually.
@@ -2385,8 +2444,8 @@ void TManagementScript::TerminalOperationFinished(
 }
 
 void TManagementScript::TerminalSynchronizeDirectory(
-  const UnicodeString LocalDirectory, const UnicodeString RemoteDirectory,
-  bool & Continue, bool Collect)
+  const UnicodeString & LocalDirectory, const UnicodeString & RemoteDirectory,
+  bool & Continue, bool Collect, const TSynchronizeOptions *)
 {
   int SynchronizeMode = FSynchronizeMode;
   if (FKeepingUpToDate)
@@ -2431,7 +2490,7 @@ void TManagementScript::TerminalSynchronizeDirectory(
 void TManagementScript::TerminalInitializeLog(TObject * Sender)
 {
   TTerminal * ATerminal = dynamic_cast<TTerminal *>(Sender);
-  if (DebugAlwaysTrue(ATerminal != NULL))
+  if (DebugAlwaysTrue(ATerminal != nullptr))
   {
     LogPendingLines(ATerminal);
   }
@@ -2453,7 +2512,7 @@ TTerminal * TManagementScript::FindSession(const UnicodeString Index)
 
 void TManagementScript::PrintActiveSession()
 {
-  DebugAssert(FTerminal != NULL);
+  DebugAssert(FTerminal != nullptr);
   PrintLine(FMTLOAD(SCRIPT_ACTIVE_SESSION,
     (FTerminalList->IndexOf(FTerminal) + 1, FTerminal->SessionData->SessionName)));
 }
@@ -2463,12 +2522,12 @@ bool TManagementScript::HandleExtendedException(Exception * E,
 {
   bool Result = TScript::HandleExtendedException(E, ATerminal);
 
-  if (ATerminal == NULL)
+  if (ATerminal == nullptr)
   {
     ATerminal = FTerminal;
   }
 
-  if ((ATerminal != NULL) && (ATerminal == FTerminal) && (dynamic_cast<EFatal*>(E) != NULL))
+  if ((ATerminal != nullptr) && (ATerminal == FTerminal) && (dynamic_cast<EFatal*>(E) != nullptr))
   {
     try
     {
@@ -2513,12 +2572,12 @@ void TManagementScript::MaskPasswordInCommandLine(UnicodeString & Command, bool 
     {
       UnicodeString & MaskedParams = Url.IsEmpty() ? MaskedParamsPre : MaskedParamsPost;
 
-      UnicodeString Switch;
+      UnicodeString Switch, Value;
       wchar_t SwitchMark;
-      if (Options.WasSwitchAdded(Switch, SwitchMark))
+      if (Options.WasSwitchAdded(Switch, Value, SwitchMark))
       {
         OptionWithParameters = L"";
-        if (TSessionData::IsSensitiveOption(Switch))
+        if (TSessionData::IsSensitiveOption(Switch, Value))
         {
           // We should use something like TProgramParams::FormatSwitch here
           RawParam = FORMAT(L"%s%s=%s", (SwitchMark, Switch, PasswordMask));
@@ -2572,7 +2631,7 @@ void TManagementScript::MaskPasswordInCommandLine(UnicodeString & Command, bool 
     {
       bool DefaultsOnly;
       std::unique_ptr<TSessionData> Data(
-        StoredSessions->ParseUrl(Url, &Options, DefaultsOnly, NULL, NULL, &MaskedUrl));
+        StoredSessions->ParseUrl(Url, &Options, DefaultsOnly, nullptr, nullptr, &MaskedUrl));
     }
 
     if ((Url != MaskedUrl) || AnyMaskedParam)
@@ -2625,7 +2684,7 @@ void TManagementScript::Connect(const UnicodeString Session,
       }
 
       Data = dynamic_cast<TSessionData *>(FilezillaSessionList->FindByName(Session));
-      if (Data == NULL)
+      if (Data == nullptr)
       {
         throw Exception(FMTLOAD(FILEZILLA_SITE_NOT_EXIST, (Session)));
       }
@@ -2657,7 +2716,7 @@ void TManagementScript::Connect(const UnicodeString Session,
         TScriptCommands::CheckParams(Options, false);
       }
 
-      if (!Session.IsEmpty() && !Data->Name.IsEmpty() && (Batch != TScript::BatchOff))
+      if (!Session.IsEmpty() && !Data->Name.IsEmpty() && (Batch != TScript::BatchOff) && !Interactive)
       {
         std::unique_ptr<TSessionData> DataWithFingerprint(Data->Clone());
         DataWithFingerprint->LookupLastFingerprint();
@@ -2667,7 +2726,7 @@ void TManagementScript::Connect(const UnicodeString Session,
         PrintLine(L"open " + DataWithFingerprint->GenerateOpenCommandArgs(false));
       }
 
-      DebugAssert(Data != NULL);
+      DebugAssert(Data != nullptr);
 
       if (!Data->CanLogin || DefaultsOnly)
       {
@@ -2683,42 +2742,51 @@ void TManagementScript::Connect(const UnicodeString Session,
 
       bool WasLogActions = Configuration->LogActions;
       TTerminal * ATerminal = FTerminalList->NewTerminal(Data);
+      DebugAssert(FLoggingTerminal == nullptr);
+      FLoggingTerminal = ATerminal;
       try
       {
-        ATerminal->AutoReadDirectory = false;
+        try
+        {
+          ATerminal->AutoReadDirectory = false;
 
-        ATerminal->OnInformation = TerminalInformation;
-        ATerminal->OnPromptUser = TerminalPromptUser;
-        ATerminal->OnShowExtendedException = OnShowExtendedException;
-        ATerminal->OnQueryUser = OnTerminalQueryUser;
-        ATerminal->OnProgress = TerminalOperationProgress;
-        ATerminal->OnFinished = TerminalOperationFinished;
-        ATerminal->OnInitializeLog = TerminalInitializeLog;
+          ATerminal->OnInformation = TerminalInformation;
+          ATerminal->OnPromptUser = TerminalPromptUser;
+          ATerminal->OnShowExtendedException = OnShowExtendedException;
+          ATerminal->OnQueryUser = OnTerminalQueryUser;
+          ATerminal->OnProgress = TerminalOperationProgress;
+          ATerminal->OnFinished = TerminalOperationFinished;
+          ATerminal->OnInitializeLog = TerminalInitializeLog;
 
-        ConnectTerminal(ATerminal);
+          ConnectTerminal(ATerminal);
+        }
+        catch(Exception & E)
+        {
+          // fatal error, most probably caused by XML logging failure (as it has been turned off),
+          // and XML log is required => abort
+          if ((dynamic_cast<EFatal *>(&E) != nullptr) &&
+              WasLogActions && !Configuration->LogActions &&
+              Configuration->LogActionsRequired)
+          {
+            FContinue = false;
+          }
+          // make sure errors (mainly fatal ones) are associated
+          // with this terminal, not the last active one
+          bool Handled = HandleExtendedException(&E, ATerminal);
+          FTerminalList->FreeTerminal(ATerminal);
+          ATerminal = nullptr;
+          if (!Handled)
+          {
+            throw;
+          }
+        }
       }
-      catch(Exception & E)
+      __finally
       {
-        // fatal error, most probably caused by XML logging failure (as it has been turned off),
-        // and XML log is required => abort
-        if ((dynamic_cast<EFatal *>(&E) != NULL) &&
-            WasLogActions && !Configuration->LogActions &&
-            Configuration->LogActionsRequired)
-        {
-          FContinue = false;
-        }
-        // make sure errors (mainly fatal ones) are associated
-        // with this terminal, not the last active one
-        bool Handled = HandleExtendedException(&E, ATerminal);
-        FTerminalList->FreeTerminal(ATerminal);
-        ATerminal = NULL;
-        if (!Handled)
-        {
-          throw;
-        }
+        FLoggingTerminal = nullptr;
       }
 
-      if (ATerminal != NULL)
+      if (ATerminal != nullptr)
       {
         FTerminal = ATerminal;
 
@@ -2726,7 +2794,7 @@ void TManagementScript::Connect(const UnicodeString Session,
         {
           try
           {
-            DoChangeLocalDirectory(ExpandFileName(Data->LocalDirectory));
+            DoChangeLocalDirectory(Data->LocalDirectoryExpanded);
           }
           catch(Exception & E)
           {
@@ -2772,7 +2840,7 @@ void TManagementScript::DoClose(TTerminal * ATerminal)
     FreeTerminal(ATerminal);
     if (WasActiveTerminal)
     {
-      FTerminal = NULL;
+      FTerminal = nullptr;
     }
 
     PrintLine(FMTLOAD(SCRIPT_SESSION_CLOSED, (SessionName)));
