@@ -22,9 +22,16 @@
 
 #include "S3FileSystem.h"
 
+#include "SessionData.h"
+#include "Interface.h"
+#include "Common.h"
+#include "Exceptions.h"
+#include "Terminal.h"
 #include "TextsCore.h"
 #include "HelpCore.h"
+#include "NeonIntf.h"
 #include <ne_request.h>
+#include <StrUtils.hpp>
 #include <limits>
 
 __removed #pragma package(smart_init)
@@ -33,6 +40,13 @@ __removed #pragma package(smart_init)
 #define StrToS3(S) StrToNeon(S)
 
 #define FILE_OPERATION_LOOP_TERMINAL FTerminal
+
+#define AWS_ACCESS_KEY_ID L"AWS_ACCESS_KEY_ID"
+#define AWS_SECRET_ACCESS_KEY L"AWS_SECRET_ACCESS_KEY"
+#define AWS_SESSION_TOKEN L"AWS_SESSION_TOKEN"
+#define AWS_CONFIG_FILE L"AWS_CONFIG_FILE"
+#define AWS_PROFILE L"AWS_PROFILE"
+#define AWS_PROFILE_DEFAULT L"default"
 
 static std::unique_ptr<TCriticalSection> LibS3Section(TraceInitPtr(std::make_unique<TCriticalSection>()));
 
@@ -51,6 +65,84 @@ UnicodeString S3LibDefaultHostName()
 UnicodeString S3LibDefaultRegion()
 {
   return StrFromS3(S3_DEFAULT_REGION);
+}
+
+bool S3ConfigFileTried = false;
+std::unique_ptr<TCustomIniFile> S3ConfigFile;
+UnicodeString S3Profile;
+
+UnicodeString GetS3ConfigValue(const UnicodeString & Name, UnicodeString * Source)
+{
+  UnicodeString Result;
+  UnicodeString ASource;
+  TGuard Guard(LibS3Section.get());
+  try
+  {
+    Result = GetEnvironmentVariable(Name);
+    if (!Result.IsEmpty())
+    {
+      ASource = FORMAT(L"%%%s%%", (Name));
+    }
+    else
+    {
+      if (!S3ConfigFileTried)
+      {
+        S3ConfigFileTried = true;
+
+        S3Profile = GetEnvironmentVariable(AWS_PROFILE);
+        if (S3Profile.IsEmpty())
+        {
+          S3Profile = AWS_PROFILE_DEFAULT;
+        }
+
+        UnicodeString ConfigFileName = GetEnvironmentVariable(AWS_CONFIG_FILE);
+        if (Result.IsEmpty())
+        {
+          UnicodeString ProfilePath = GetShellFolderPath(CSIDL_PROFILE);
+          UnicodeString DefaultConfigFileName = IncludeTrailingBackslash(ProfilePath) + L".aws\\credentials";
+          if (FileExists(DefaultConfigFileName))
+          {
+            ConfigFileName = DefaultConfigFileName;
+          }
+        }
+
+        S3ConfigFile.reset(new TMemIniFile(ConfigFileName));
+      }
+
+      if (S3ConfigFile.get() != nullptr)
+      {
+        Result = S3ConfigFile->ReadString(S3Profile, Name, UnicodeString());
+        if (!Result.IsEmpty())
+        {
+          ASource = FORMAT(L"%s/%s", (ExtractFileName(S3ConfigFile->FileName), S3Profile));
+        }
+      }
+    }
+  }
+  catch (Exception & E)
+  {
+    throw ExtException(&E, MainInstructions(LoadStr(S3_CONFIG_ERROR)));
+  }
+  if (Source != nullptr)
+  {
+    *Source = ASource;
+  }
+  return Result;
+}
+
+UnicodeString S3EnvUserName(UnicodeString * Source)
+{
+  return GetS3ConfigValue(AWS_ACCESS_KEY_ID, Source);
+}
+
+UnicodeString S3EnvPassword(UnicodeString * Source)
+{
+  return GetS3ConfigValue(AWS_SECRET_ACCESS_KEY, Source);
+}
+
+UnicodeString S3EnvSessionToken(UnicodeString * Source)
+{
+  return GetS3ConfigValue(AWS_SESSION_TOKEN, Source);
 }
 
 
@@ -106,22 +198,36 @@ void TS3FileSystem::Open()
   FLibS3Protocol = (Data->GetFtps() != ftpsNone) ? S3ProtocolHTTPS : S3ProtocolHTTP;
 
   UnicodeString AccessKeyId = Data->GetUserNameExpanded();
-  if (AccessKeyId.IsEmpty())
+  if (AccessKeyId.IsEmpty() && !FTerminal->SessionData->FingerprintScan)
   {
     if (!FTerminal->PromptUser(Data, pkUserName, LoadStr(S3_ACCESS_KEY_ID_TITLE), L"",
-        LoadStr(S3_ACCESS_KEY_ID_PROMPT), true, 0, AccessKeyId))
+          LoadStr(S3_ACCESS_KEY_ID_PROMPT), true, 0, AccessKeyId))
     {
       // note that we never get here actually
       throw Exception("");
     }
   }
   FAccessKeyId = UTF8String(AccessKeyId);
+  if (FAccessKeyId.Length() > S3_MAX_ACCESS_KEY_ID_LENGTH)
+  {
+    FAccessKeyId.SetLength(S3_MAX_ACCESS_KEY_ID_LENGTH);
+  }
 
-  UnicodeString SecretAccessKey = UTF8String(NormalizeString(Data->GetPassword()));
-  if (SecretAccessKey.IsEmpty())
+  UnicodeString Password = Data->Password;
+  if (Password.IsEmpty() && Data->S3CredentialsEnv)
+  {
+    UnicodeString PasswordSource;
+    Password = S3EnvPassword(&PasswordSource);
+    if (!Password.IsEmpty())
+    {
+      FTerminal->LogEvent(FORMAT(L"Password (secret access key) read from %s", (PasswordSource)));
+    }
+  }
+  UnicodeString SecretAccessKey = UTF8String(NormalizeString(Password));
+  if (SecretAccessKey.IsEmpty() && !FTerminal->SessionData->FingerprintScan)
   {
     if (!FTerminal->PromptUser(Data, pkPassword, LoadStr(S3_SECRET_ACCESS_KEY_TITLE), L"",
-        LoadStr(S3_SECRET_ACCESS_KEY_PROMPT), false, 0, SecretAccessKey))
+          LoadStr(S3_SECRET_ACCESS_KEY_PROMPT), false, 0, SecretAccessKey))
     {
       // note that we never get here actually
       throw Exception("");
@@ -129,8 +235,28 @@ void TS3FileSystem::Open()
   }
   FSecretAccessKey = UTF8String(SecretAccessKey);
 
-  FHostName = UTF8String(Data->GetHostNameExpanded());
-  FTimeout = nb::ToInt(Data->GetTimeout());
+  UnicodeString SessionToken = Data->S3SessionToken;
+  if (SessionToken.IsEmpty() && Data->S3CredentialsEnv)
+  {
+    UnicodeString SessionTokenSource;
+    SessionToken = S3EnvSessionToken(&SessionTokenSource);
+    if (!SessionToken.IsEmpty())
+    {
+      FTerminal->LogEvent(FORMAT(L"Session token read from %s", (SessionTokenSource)));
+    }
+  }
+  FSecurityTokenBuf = UTF8String(SessionToken);
+  FSecurityToken = static_cast<const char *>(FSecurityTokenBuf.data());
+
+  FHostName = UTF8String(Data->HostNameExpanded);
+  FPortSuffix = UTF8String();
+  int ADefaultPort = FTerminal->SessionData->GetDefaultPort();
+  DebugAssert(ADefaultPort == HTTPSPortNumber);
+  if (FTerminal->SessionData->PortNumber != ADefaultPort)
+  {
+    FPortSuffix = UTF8String(FORMAT(L":%d", (FTerminal->SessionData->PortNumber)));
+  }
+  FTimeout = Data->Timeout;
 
   RegisterForNeonDebug(FTerminal);
   UpdateNeonDebugMask();
@@ -138,6 +264,11 @@ void TS3FileSystem::Open()
   {
     TGuard Guard(*LibS3Section.get()); nb::used(Guard);
     S3_initialize(nullptr, S3_INIT_ALL, nullptr);
+  }
+
+  if (IsGoogleCloud())
+  {
+    FTerminal->LogEvent(L"Google Cloud detected.");
   }
 
   FActive = false;
@@ -169,7 +300,7 @@ struct TLibS3CallbackData
     FileSystem = nullptr;
   }
 
-  TS3FileSystem *FileSystem;
+  TS3FileSystem * FileSystem;
   S3Status Status;
   UnicodeString RegionDetail;
   UnicodeString EndpointDetail;
@@ -177,29 +308,29 @@ struct TLibS3CallbackData
   UnicodeString ErrorDetails;
 };
 
-TS3FileSystem *TS3FileSystem::GetFileSystem(void *CallbackData)
+TS3FileSystem * TS3FileSystem::GetFileSystem(void *CallbackData)
 {
   return static_cast<TLibS3CallbackData *>(CallbackData)->FileSystem;
 }
 
 void TS3FileSystem::LibS3SessionCallback(ne_session_s *Session, void *CallbackData)
 {
-  TS3FileSystem *FileSystem = static_cast<TS3FileSystem *>(CallbackData);
-  TSessionData *Data = FileSystem->FTerminal->GetSessionData();
+  TS3FileSystem * FileSystem = static_cast<TS3FileSystem *>(CallbackData);
+  TSessionData * Data = FileSystem->FTerminal->GetSessionData();
 
   InitNeonSession(
     Session, Data->GetProxyMethod(), Data->GetProxyHost(), Data->GetProxyPort(),
     Data->GetProxyUsername(), Data->GetProxyPassword(), FileSystem->FTerminal);
 
-  ne_set_session_private(Session, SESSION_FS_KEY, FileSystem);
+  SetNeonTlsInit(Session, FileSystem->InitSslSession);
 
-  SetNeonTlsInit(Session, TS3FileSystem::InitSslSession);
+  ne_set_session_flag(Session, SE_SESSFLAG_SNDBUF, Data->SendBuf);
 
   // Data->Timeout is propagated via timeoutMs parameter of functions like S3_list_service
 
   FileSystem->FNeonSession = Session;
 }
----
+
 void TS3FileSystem::InitSslSession(ssl_st *Ssl, ne_session *Session)
 {
   TS3FileSystem *FileSystem =
@@ -207,9 +338,8 @@ void TS3FileSystem::InitSslSession(ssl_st *Ssl, ne_session *Session)
   FileSystem->InitSslSessionImpl(Ssl);
 }
 
-void TS3FileSystem::InitSslSessionImpl(ssl_st *Ssl) const
+void TS3FileSystem::InitSslSessionImpl(ssl_st * Ssl, ne_session * /*Session*/) const
 {
-  // See also CAsyncSslSocketLayer::InitSSLConnection
   SetupSsl(Ssl, FTerminal->GetSessionData()->GetMinTlsVersion(), FTerminal->GetSessionData()->GetMaxTlsVersion());
 }
 
@@ -224,7 +354,8 @@ int TS3FileSystem::LibS3SslCallback(int Failures, const ne_ssl_certificate_s *Ce
 // Similar to TWebDAVFileSystem::VerifyCertificate
 bool TS3FileSystem::VerifyCertificate(TNeonCertificateData &Data)
 {
-  FSessionInfo.CertificateFingerprint = Data.Fingerprint;
+  FSessionInfo.CertificateFingerprintSHA1 = Data.FingerprintSHA1;
+  FSessionInfo.CertificateFingerprintSHA256 = Data.FingerprintSHA256;
 
   bool Result;
   if (FTerminal->GetSessionData()->GetFingerprintScan())
@@ -237,7 +368,8 @@ bool TS3FileSystem::VerifyCertificate(TNeonCertificateData &Data)
 
     UnicodeString SiteKey = TSessionData::FormatSiteKey(FTerminal->GetSessionData()->GetHostNameExpanded(), FTerminal->GetSessionData()->GetPortNumber());
     Result =
-      FTerminal->VerifyCertificate(HttpsCertificateStorageKey, SiteKey, Data.Fingerprint, Data.Subject, Data.Failures);
+      FTerminal->VerifyCertificate(
+        HttpsCertificateStorageKey, SiteKey, Data.FingerprintSHA1, Data.FingerprintSHA256, Data.Subject, Data.Failures);
 
     if (Result)
     {
@@ -269,7 +401,7 @@ bool TS3FileSystem::VerifyCertificate(TNeonCertificateData &Data)
 
   return Result;
 }
----
+
 void TS3FileSystem::CollectTLSSessionInfo()
 {
   // See also TFTPFileSystem::Open().
@@ -371,32 +503,33 @@ void TS3FileSystem::CheckLibS3Error(const TLibS3CallbackData &Data, bool FatalOn
     bool FatalCandidate = false;
     switch (Data.Status)
     {
-    case S3StatusAbortedByCallback:
-      Error = LoadStr(USER_TERMINATED);
-      break;
+      case S3StatusAbortedByCallback:
+        Error = LoadStr(USER_TERMINATED);
+        break;
 
-    case S3StatusErrorAccessDenied:
-      Error = LoadStr(S3_STATUS_ACCESS_DENIED);
-      break;
+      case S3StatusErrorAccessDenied:
+        Error = LoadStr(S3_STATUS_ACCESS_DENIED);
+        break;
 
-    case S3StatusErrorSignatureDoesNotMatch: // While it can mean an implementation fault, it will typically mean a wrong secure key.
-    case S3StatusErrorInvalidAccessKeyId:
-      Error = LoadStr(AUTHENTICATION_FAILED);
-      break;
+      case S3StatusErrorSignatureDoesNotMatch: // While it can mean an implementation fault, it will typically mean a wrong secure key.
+      case S3StatusErrorInvalidAccessKeyId:
+        Error = LoadStr(AUTHENTICATION_FAILED);
+        break;
 
-    case S3StatusNameLookupError:
-      Error = ReplaceStr(LoadStr(NET_TRANSL_HOST_NOT_EXIST2), L"%HOST%", FTerminal->GetSessionData()->GetHostNameExpanded());
-      FatalCandidate = true;
-      break;
+      case S3StatusNameLookupError:
+        Error = ReplaceStr(LoadStr(NET_TRANSL_HOST_NOT_EXIST2), L"%HOST%", FTerminal->GetSessionData()->GetHostNameExpanded());
+        FatalCandidate = true;
+        break;
 
-    case S3StatusFailedToConnect:
-      Error = LoadStr(CONNECTION_FAILED);
-      FatalCandidate = true;
-      break;
+      case S3StatusFailedToConnect:
+        Error = LoadStr(CONNECTION_FAILED);
+        FatalCandidate = true;
+        break;
 
-    case S3StatusConnectionFailed:
-      FatalCandidate = true;
-      break;
+      case S3StatusConnectionFailed:
+      case S3StatusErrorSlowDown:
+        FatalCandidate = true;
+        break;
     }
 
     if (!Error.IsEmpty())
@@ -423,7 +556,8 @@ void TS3FileSystem::CheckLibS3Error(const TLibS3CallbackData &Data, bool FatalOn
 
     if (FatalCandidate && FatalOnConnectError)
     {
-      throw EFatal(nullptr, Error, Details);
+      std::unique_ptr<Exception> E(new Exception(Error));
+      throw EFatal(E.get(), Details);
     }
     else
     {
@@ -438,7 +572,7 @@ void TS3FileSystem::LibS3Deinitialize()
   S3_deinitialize();
 }
 
-UnicodeString TS3FileSystem::GetFolderKey(UnicodeString AKey)
+UnicodeString TS3FileSystem::GetFolderKey(const UnicodeString AKey)
 {
   return AKey + L"/";
 }
@@ -450,7 +584,7 @@ void TS3FileSystem::ParsePath(UnicodeString APath, UnicodeString &BucketName, Un
   {
     Path.Delete(1, 1);
   }
-  intptr_t P = Path.Pos(L"/");
+  int32_t P = Path.Pos(L"/");
   if (P == 0)
   {
     BucketName = Path;
@@ -474,13 +608,14 @@ struct TLibS3BucketContext : S3BucketContext
 
 struct TLibS3ListBucketCallbackData : TLibS3CallbackData
 {
-  TRemoteFileList *FileList;
+  TRemoteFileList * FileList;
+  bool Any;
   int KeyCount;
   UTF8String NextMarker;
   bool IsTruncated;
 };
 
-TLibS3BucketContext TS3FileSystem::GetBucketContext(UnicodeString ABucketName, UnicodeString Prefix)
+TLibS3BucketContext TS3FileSystem::GetBucketContext(const UnicodeString ABucketName, const UnicodeString Prefix)
 {
   TLibS3BucketContext Result;
 
@@ -505,27 +640,40 @@ TLibS3BucketContext TS3FileSystem::GetBucketContext(UnicodeString ABucketName, U
       Retry = true;
     }
 
+    S3UriStyle UriStyle = S3UriStyle(FTerminal->SessionData->S3UrlStyle);
+
     I = FHostNames.find(ABucketName);
     UnicodeString HostName;
     if (I != FHostNames.end())
     {
       HostName = I->second;
+      if (SameText(HostName.SubString(1, BucketName.Length() + 1), BucketName + L"."))
+      {
+        HostName.Delete(1, BucketName.Length() + 1);
+        // Even when using path-style URL Amazon seems to redirect us to bucket hostname and
+        // we need to switch to virtual host style URL (without bucket name in the path)
+        UriStyle = S3UriStyleVirtualHost;
+      }
     }
     else
     {
       HostName = UnicodeString(FHostName);
     }
 
-    Result.HostNameBuf = UTF8String(HostName);
+    Result.HostNameBuf = UTF8String(HostName + UnicodeString(FPortSuffix));
     Result.hostName = Result.HostNameBuf.c_str();
     Result.BucketNameBuf = UTF8String(ABucketName);
     Result.bucketName = Result.BucketNameBuf.c_str();
     Result.protocol = FLibS3Protocol;
-    Result.uriStyle = S3UriStyleVirtualHost;
+    Result.uriStyle = UriStyle;
     Result.accessKeyId = FAccessKeyId.c_str();
     Result.secretAccessKey = FSecretAccessKey.c_str();
-    Result.securityToken = nullptr;
+    Result.securityToken = FSecurityToken;
     Result.AuthRegionBuf = UTF8String(Region);
+    if (Result.AuthRegionBuf.Length() > S3_MAX_REGION_LENGTH)
+    {
+      Result.AuthRegionBuf.SetLength(S3_MAX_REGION_LENGTH);
+    }
     Result.authRegion = Result.AuthRegionBuf.c_str();
 
     if (Retry)
@@ -538,7 +686,7 @@ TLibS3BucketContext TS3FileSystem::GetBucketContext(UnicodeString ABucketName, U
       Retry = false;
       UnicodeString EndpointDetail = Data.EndpointDetail;
       if ((Data.Status == S3StatusErrorAuthorizationHeaderMalformed) &&
-        (Region != Data.RegionDetail))
+          (Region != Data.RegionDetail))
       {
         FTerminal->LogEvent(FORMAT("Will use region \"%s\" for bucket \"%s\" from now on.", Data.RegionDetail, ABucketName));
         FRegions.insert(TRegions::value_type(ABucketName, Data.RegionDetail));
@@ -551,16 +699,18 @@ TLibS3BucketContext TS3FileSystem::GetBucketContext(UnicodeString ABucketName, U
                !Data.EndpointDetail.IsEmpty())
       {
         UnicodeString Endpoint = Data.EndpointDetail;
-        if (SameText(Endpoint.SubString(1, ABucketName.Length() + 1), ABucketName + L"."))
-        {
-          Endpoint.Delete(1, ABucketName.Length() + 1);
-        }
         if (HostName != Endpoint)
         {
           FTerminal->LogEvent(FORMAT("Will use endpoint \"%s\" for bucket \"%s\" from now on.", Endpoint, ABucketName));
           FHostNames.insert(TRegions::value_type(ABucketName, Endpoint));
           Retry = true;
         }
+      }
+      // Minio
+      else if (Data.Status == S3StatusOK)
+      {
+        FTerminal->LogEvent(FORMAT("Will keep using region \"%s\" for bucket \"%s\" from now on.", (FAuthRegion, BucketName)));
+        FRegions.insert(std::make_pair(BucketName, FAuthRegion));
       }
     }
   }
@@ -601,7 +751,7 @@ const TFileSystemInfo &TS3FileSystem::GetFileSystemInfo(bool /*Retrieve*/)
   return FFileSystemInfo;
 }
 
-bool TS3FileSystem::TemporaryTransferFile(UnicodeString /*AFileName*/)
+bool TS3FileSystem::TemporaryTransferFile(const UnicodeString /*AFileName*/)
 {
   return false;
 }
@@ -622,7 +772,7 @@ void TS3FileSystem::Idle()
   // noop
 }
 
-UnicodeString TS3FileSystem::GetAbsolutePath(UnicodeString APath, bool Local)
+UnicodeString TS3FileSystem::GetAbsolutePath(const UnicodeString APath, bool /*Local*/)
 {
   return static_cast<const TS3FileSystem *>(this)->GetAbsolutePath(APath, Local);
 }
@@ -639,53 +789,56 @@ UnicodeString TS3FileSystem::GetAbsolutePath(UnicodeString Path, bool /*Local*/)
   }
 }
 
-bool TS3FileSystem::IsCapable(intptr_t Capability) const
+bool TS3FileSystem::IsCapable(int32_t Capability) const
 {
   DebugAssert(FTerminal);
   switch (Capability)
   {
-  // Only to make double-click on file edit/open the file,
-  // instead of trying to open it as directory
-  case fcResolveSymlink:
-  case fcRemoteCopy:
-  case fcRename:
-  case fcRemoteMove:
-  case fcMoveToQueue:
-  case fsSkipTransfer:
-  case fsParallelTransfers:
-    return true;
+    // Only to make double-click on file edit/open the file,
+    // instead of trying to open it as directory
+    case fcResolveSymlink:
+    case fcRemoteCopy:
+    case fcRename:
+    case fcRemoteMove:
+    case fcMoveToQueue:
+    case fcSkipTransfer:
+    case fcParallelTransfers:
+    case fcLoadingAdditionalProperties:
+    case fcAclChangingFiles:
+      return true;
 
-  case fcPreservingTimestampUpload:
-  case fcCheckingSpaceAvailable:
-  case fcUserGroupListing:
-  case fcModeChanging:
-  case fcModeChangingUpload:
-  case fcGroupChanging:
-  case fcOwnerChanging:
-  case fcAnyCommand:
-  case fcShellAnyCommand:
-  case fcHardLink:
-  case fcSymbolicLink:
-  case fcTextMode:
-  case fcNativeTextMode:
-  case fcNewerOnlyUpload:
-  case fcTimestampChanging:
-  case fcLoadingAdditionalProperties:
-  case fcIgnorePermErrors:
-  case fcCalculatingChecksum:
-  case fcSecondaryShell:
-  case fcGroupOwnerChangingByID:
-  case fcRemoveCtrlZUpload:
-  case fcRemoveBOMUpload:
-  case fcPreservingTimestampDirs:
-  case fcResumeSupport:
-  case fcChangePassword:
-  case fcLocking:
-    return false;
+    case fcPreservingTimestampUpload:
+    case fcCheckingSpaceAvailable:
+    case fcUserGroupListing:
+    case fcModeChanging:
+    case fcModeChangingUpload:
+    case fcGroupChanging:
+    case fcOwnerChanging:
+    case fcAnyCommand:
+    case fcShellAnyCommand:
+    case fcHardLink:
+    case fcSymbolicLink:
+    case fcTextMode:
+    case fcNativeTextMode:
+    case fcNewerOnlyUpload:
+    case fcTimestampChanging:
+    case fcIgnorePermErrors:
+    case fcCalculatingChecksum:
+    case fcSecondaryShell:
+    case fcGroupOwnerChangingByID:
+    case fcRemoveCtrlZUpload:
+    case fcRemoveBOMUpload:
+    case fcPreservingTimestampDirs:
+    case fcResumeSupport:
+    case fcChangePassword:
+    case fcLocking:
+    case fcTransferOut:
+    case fcTransferIn:
+      return false;
 
-  default:
-    DebugFail();
-    return false;
+    default:
+      DebugFail();
+      return false;
   }
 }
 
@@ -696,6 +849,8 @@ UnicodeString TS3FileSystem::RemoteGetCurrentDirectory() const
 
 void TS3FileSystem::DoStartup()
 {
+  // Capabilities of S3 protocol are fixed
+  FTerminal->SaveCapabilities(FFileSystemInfo);
   FTerminal->SetExceptionOnFail(true);
   // retrieve initialize working directory to save it as home directory
   ReadCurrentDirectory();
@@ -730,14 +885,14 @@ void TS3FileSystem::AnnounceFileListOperation()
   // noop
 }
 
-void TS3FileSystem::TryOpenDirectory(UnicodeString ADirectory)
+void TS3FileSystem::TryOpenDirectory(const UnicodeString ADirectory)
 {
   FTerminal->LogEvent(FORMAT("Trying to open directory \"%s\".", ADirectory));
   std::unique_ptr<TRemoteFileList> FileList(std::make_unique<TRemoteFileList>());
   ReadDirectoryInternal(ADirectory, FileList.get(), 1, UnicodeString());
 }
 
-void TS3FileSystem::ChangeDirectory(UnicodeString ADirectory)
+void TS3FileSystem::ChangeDirectory(const UnicodeString ADirectory)
 {
   UnicodeString Path = GetAbsolutePath(ADirectory, false);
 
@@ -748,7 +903,7 @@ void TS3FileSystem::ChangeDirectory(UnicodeString ADirectory)
   FCachedDirectoryChange = Path;
 }
 
-void TS3FileSystem::CachedChangeDirectory(UnicodeString Directory)
+void TS3FileSystem::CachedChangeDirectory(const UnicodeString Directory)
 {
   FCachedDirectoryChange = base::UnixExcludeTrailingBackslash(Directory);
 }
@@ -782,12 +937,16 @@ S3Status TS3FileSystem::LibS3ListServiceCallback(
   if (Data.FileName.IsEmpty() || (Data.FileName == FileName))
   {
     std::unique_ptr<TRemoteFile> File(std::make_unique<TRemoteFile>(nullptr));
-    File->SetTerminal(Data.FileSystem->FTerminal);
+    TTerminal * Terminal = Data.FileSystem->FTerminal;
+    File->SetTerminal(Terminal);
     File->SetFileName(StrFromS3(BucketName));
     File->SetType(FILETYPE_DIRECTORY);
     File->SetFileOwner(Data.FileSystem->MakeRemoteToken(OwnerId, OwnerDisplayName));
     File->SetModificationFmt(mfNone);
-    Data.FileList->AddFile(File.release());
+    if (Terminal->IsValidFile(File.get()))
+    {
+      Data.FileList->AddFile(File.release());
+    }
   }
 
   return S3StatusOK;
@@ -803,48 +962,84 @@ S3Status TS3FileSystem::LibS3ListBucketCallback(
   // This is being called in chunks, not once for all data in a response.
   Data.KeyCount += ContentsCount;
   Data.NextMarker = StrFromS3(NextMarker);
+  TTerminal * Terminal = Data.FileSystem->FTerminal;
 
   for (int Index = 0; Index < ContentsCount; Index++)
   {
-    const S3ListBucketContent *Content = &Contents[Index];
+    Data.Any = true;
+    const S3ListBucketContent * Content = &Contents[Index];
     UnicodeString FileName = base::UnixExtractFileName(StrFromS3(Content->key));
     if (!FileName.IsEmpty())
     {
       std::unique_ptr<TRemoteFile> File(std::make_unique<TRemoteFile>(nullptr));
-      File->SetTerminal(Data.FileSystem->FTerminal);
+      File->SetTerminal(Terminal);
       File->SetFileName(FileName);
       File->SetType(FILETYPE_DEFAULT);
-      File->SetModification(UnixToDateTime(Content->lastModified, dstmWin));
+      // File->SetModification(UnixToDateTime(Content->lastModified, dstmWin));
+      #define ISO8601_FORMAT "%04d-%02d-%02dT%02d:%02d:%02d"
+      int Year = 0;
+      int Month = 0;
+      int Day = 0;
+      int Hour = 0;
+      int Min = 0;
+      int Sec = 0;
+      // The libs3's parseIso8601Time uses mktime, so returns a local time, which we would have to complicatedly restore,
+      // Doing own parting instead as it's easier.
+      // Keep is sync with WebDAV
+      int Filled =
+        sscanf(Content->lastModifiedStr, ISO8601_FORMAT, &Year, &Month, &Day, &Hour, &Min, &Sec);
+      if (Filled == 6)
+      {
+        TDateTime Modification =
+          EncodeDateVerbose((unsigned short)Year, (unsigned short)Month, (unsigned short)Day) +
+          EncodeTimeVerbose((unsigned short)Hour, (unsigned short)Min, (unsigned short)Sec, 0);
+        File->Modification = ConvertTimestampFromUTC(Modification);
+        File->ModificationFmt = mfFull;
+      }
+      else
+      {
+        File->ModificationFmt = mfNone;
+      }
+
       File->SetSize(static_cast<int64_t>(Content->size));
       File->SetFileOwner(Data.FileSystem->MakeRemoteToken(Content->ownerId, Content->ownerDisplayName));
-      Data.FileList->AddFile(File.release());
-    }
-    else
-    {
-      // We needs this to distinguish empty and non-existing folders, see comments in ReadDirectoryInternal.
-      Data.FileList->AddFile(new TRemoteParentDirectory(Data.FileSystem->FTerminal));
+      if (Terminal->IsValidFile(File.get()))
+      {
+        Data.FileList->AddFile(File.release());
+      }
     }
   }
 
   for (int Index = 0; Index < CommonPrefixesCount; Index++)
   {
-    std::unique_ptr<TRemoteFile> File(std::make_unique<TRemoteFile>(nullptr));
-    File->SetTerminal(Data.FileSystem->FTerminal);
-    File->SetFileName(base::UnixExtractFileName(base::UnixExcludeTrailingBackslash(StrFromS3(CommonPrefixes[Index]))));
-    File->SetType(FILETYPE_DIRECTORY);
-    File->SetModificationFmt(mfNone);
-    Data.FileList->AddFile(File.release());
+    Data.Any = true;
+    UnicodeString CommonPrefix = StrFromS3(CommonPrefixes[Index]);
+    UnicodeString FileName = UnixExtractFileName(UnixExcludeTrailingBackslash(CommonPrefix));
+    // Have seen prefixes like "/" or "path/subpath//"
+    if (!FileName.IsEmpty())
+    {
+      std::unique_ptr<TRemoteFile> File(std::make_unique<TRemoteFile>(nullptr));
+      File->SetTerminal(Data.FileSystem->FTerminal);
+      File->SetFileName(base::UnixExtractFileName(base::UnixExcludeTrailingBackslash(StrFromS3(CommonPrefixes[Index]))));
+      File->SetType(FILETYPE_DIRECTORY);
+      File->SetModificationFmt(mfNone);
+      if (Terminal->IsValidFile(File.get()))
+      {
+        Data.FileList->AddFile(File.release());
+      }
+    }
   }
 
   return S3StatusOK;
 }
 
 void TS3FileSystem::DoListBucket(
-  UnicodeString APrefix, TRemoteFileList *FileList, intptr_t MaxKeys, const TLibS3BucketContext &BucketContext,
-  TLibS3ListBucketCallbackData &Data)
+  const UnicodeString APrefix, TRemoteFileList * FileList, int32_t MaxKeys, const TLibS3BucketContext & BucketContext,
+  TLibS3ListBucketCallbackData & Data)
 {
   S3ListBucketHandler ListBucketHandler = { CREATE_RESPONSE_HANDLER(), &LibS3ListBucketCallback };
   RequestInit(Data);
+  Data.Any = false;
   Data.KeyCount = 0;
   Data.FileList = FileList;
   Data.IsTruncated = false;
@@ -865,10 +1060,16 @@ void TS3FileSystem::HandleNonBucketStatus(TLibS3CallbackData & Data, bool & Retr
   }
 }
 
+bool TS3FileSystem::IsGoogleCloud() const
+{
+  return SameText(L"storage.googleapis.com", FTerminal->SessionData->HostNameExpanded);
+}
+
 void TS3FileSystem::ReadDirectoryInternal(
-  UnicodeString APath, TRemoteFileList *FileList, intptr_t MaxKeys, UnicodeString AFileName)
+  const UnicodeString APath, TRemoteFileList *FileList, int32_t MaxKeys, const UnicodeString AFileName)
 {
   UnicodeString Path = base::UnixExcludeTrailingBackslash(GetAbsolutePath(APath, false));
+  int32_t AMaxKeys = (MaxKeys == -1) ? 1 : MaxKeys;
   if (base::IsUnixRootPath(Path))
   {
     DebugAssert(FileList != nullptr);
@@ -882,13 +1083,23 @@ void TS3FileSystem::ReadDirectoryInternal(
     {
       RequestInit(Data);
 
-      S3ListServiceHandler ListServiceHandler = { CREATE_RESPONSE_HANDLER(), &LibS3ListServiceCallback };
+      S3ListServiceHandler ListServiceHandler = { CreateResponseHandler(), &LibS3ListServiceCallback };
 
       Retry = false;
 
+      if ((FTerminal->SessionData->S3MaxKeys == asOff) ||
+          ((FTerminal->SessionData->S3MaxKeys == asAuto) && IsGoogleCloud()))
+      {
+        if (AMaxKeys != 0)
+        {
+          FTerminal->LogEvent(1, L"Not limiting keys.");
+          AMaxKeys = 0;
+        }
+      }
+
       S3_list_service(
-        FLibS3Protocol, FAccessKeyId.c_str(), FSecretAccessKey.c_str(), nullptr, FHostName.c_str(),
-        StrToS3(FAuthRegion), static_cast<int>(MaxKeys), FRequestContext, FTimeout, &ListServiceHandler, &Data);
+        FLibS3Protocol, FAccessKeyId.c_str(), FSecretAccessKey.c_str(), FSecurityToken, (FHostName + FPortSuffix).c_str(),
+        StrToS3(FAuthRegion), static_cast<int>(AMaxKeys), FRequestContext, FTimeout, &ListServiceHandler, &Data);
 
       HandleNonBucketStatus(Data, Retry);
     }
@@ -912,35 +1123,42 @@ void TS3FileSystem::ReadDirectoryInternal(
 
     do
     {
-      DoListBucket(Prefix, FileList, MaxKeys, BucketContext, Data);
+      DoListBucket(Prefix, FileList, AMaxKeys, BucketContext, Data);
       CheckLibS3Error(Data);
 
       Continue = false;
 
-      if (Data.IsTruncated && ((MaxKeys == 0) || (Data.KeyCount < MaxKeys)))
+      if (Data.IsTruncated)
       {
-        bool Cancel = false;
-        FTerminal->DoReadDirectoryProgress(FileList->GetCount(), 0, Cancel);
-        if (!Cancel)
+        // We have report that with max-keys=1, server can return IsTruncated response with no keys,
+        // so we would loop infinitelly. For now, if we do GET request only to check for bucket/folder existence (MaxKeys == -1),
+        // we are happy with a successfull response and never loop, even if IsTruncated.
+        if ((MaxKeys == 0) ||
+            ((MaxKeys > 0) && (Data.KeyCount < MaxKeys)))
         {
-          Continue = true;
+          bool Cancel = false;
+          FTerminal->DoReadDirectoryProgress(FileList->Count, false, Cancel);
+          if (!Cancel)
+          {
+            Continue = true;
+          }
         }
       }
-    }
-    while (Continue);
+    } while (Continue);
 
     // Listing bucket root directory will report an error if the bucket does not exist.
-    // But there won't be any prefix/ entry, so no ".." entry is created, so we have to add it explicitly
-    if (Prefix.IsEmpty())
+    // But there won't be any prefix/ entry, so if the bucket is ampty, the Data.Any is false.
+    // But when listing a prefix, we do not get any error, when the "prefix" does not exist.
+    // But when the prefix does exist, there's at least the prefix/ entry. If there's none, it means that the path does not exist.
+    // Even an empty-named entry/subprefix (which are ignored for other purposes) still indicate that the prefix exists.
+    if (Prefix.IsEmpty() || Data.Any)
     {
       FileList->AddFile(new TRemoteParentDirectory(FTerminal));
     }
     else
     {
-      // We do not get any error, when the "prefix" does not exist. But when prefix does exist, there's at least
-      // prefix/ entry (translated to ..). If there's none, it means that the path does not exist.
       // When called from DoReadFile (FileName is set), leaving error handling to the caller.
-      if ((FileList->GetCount() == 0) && AFileName.IsEmpty())
+      if (AFileName.IsEmpty())
       {
         throw Exception(FMTLOAD(FILE_NOT_EXISTS, APath));
       }
@@ -948,7 +1166,7 @@ void TS3FileSystem::ReadDirectoryInternal(
   }
 }
 
-void TS3FileSystem::ReadDirectory(TRemoteFileList *FileList)
+void TS3FileSystem::ReadDirectory(TRemoteFileList * FileList)
 {
   TOperationVisualizer Visualizer(FTerminal->GetUseBusyCursor()); nb::used(Visualizer);
   ReadDirectoryInternal(FileList->GetDirectory(), FileList, 0, UnicodeString());
@@ -961,7 +1179,7 @@ void TS3FileSystem::ReadSymlink(TRemoteFile * /*SymlinkFile*/,
   DebugFail();
 }
 
-void TS3FileSystem::DoReadFile(UnicodeString AFileName, TRemoteFile *&AFile)
+void TS3FileSystem::DoReadFile(const UnicodeString AFileName, TRemoteFile *&AFile)
 {
   UnicodeString FileNameOnly = base::UnixExtractFileName(AFileName);
   std::unique_ptr<TRemoteFileList> FileList(std::make_unique<TRemoteFileList>());
@@ -977,8 +1195,8 @@ void TS3FileSystem::DoReadFile(UnicodeString AFileName, TRemoteFile *&AFile)
   }
 }
 
-void TS3FileSystem::ReadFile(UnicodeString AFileName,
-  TRemoteFile *&File)
+void TS3FileSystem::ReadFile(const UnicodeString AFileName,
+  TRemoteFile *& File)
 {
   TOperationVisualizer Visualizer(FTerminal->GetUseBusyCursor()); nb::used(Visualizer);
   DoReadFile(AFileName, File);
@@ -988,8 +1206,8 @@ void TS3FileSystem::ReadFile(UnicodeString AFileName,
   }
 }
 
-void TS3FileSystem::RemoteDeleteFile(UnicodeString AFileName,
-  const TRemoteFile *AFile, intptr_t AParams, TRmSessionAction &Action)
+void TS3FileSystem::RemoteDeleteFile(const UnicodeString AFileName,
+  const TRemoteFile * AFile, int32_t AParams, TRmSessionAction & Action)
 {
   UnicodeString FileName = GetAbsolutePath(AFileName, false);
 
@@ -1005,7 +1223,7 @@ void TS3FileSystem::RemoteDeleteFile(UnicodeString AFileName,
 
   TLibS3BucketContext BucketContext = GetBucketContext(BucketName, Key);
 
-  S3ResponseHandler ResponseHandler = CREATE_RESPONSE_HANDLER();
+  S3ResponseHandler ResponseHandler = CreateResponseHandler();
 
   TLibS3CallbackData Data;
   RequestInit(Data);
@@ -1016,17 +1234,33 @@ void TS3FileSystem::RemoteDeleteFile(UnicodeString AFileName,
       BucketContext.protocol, BucketContext.uriStyle, BucketContext.accessKeyId, BucketContext.secretAccessKey,
       BucketContext.securityToken, BucketContext.hostName, BucketContext.bucketName, BucketContext.authRegion,
       FRequestContext, FTimeout, &ResponseHandler, &Data);
+    CheckLibS3Error(Data);
   }
   else
   {
     S3_delete_object(&BucketContext, StrToS3(Key), FRequestContext, FTimeout, &ResponseHandler, &Data);
+    try
+    {
+      CheckLibS3Error(Data);
+    }
+    catch (...)
+    {
+      if (FTerminal->Active && Dir && !FTerminal->FileExists(AFileName))
+      {
+        // Amazon silently ignores attampts to delete non existing folders,
+        // But Google Cloud fails that.
+        FTerminal->LogEvent(L"Folder does not exist anymore, it was probably only virtual");
+      }
+      else
+      {
+        throw;
+      }
+    }
   }
-
-  CheckLibS3Error(Data);
 }
 
-void TS3FileSystem::RemoteRenameFile(UnicodeString AFileName, const TRemoteFile *AFile,
-  UnicodeString ANewName)
+void TS3FileSystem::RemoteRenameFile(const UnicodeString AFileName, const TRemoteFile * AFile,
+  const UnicodeString ANewName)
 {
   if (DebugAlwaysTrue(AFile != nullptr) && AFile->GetIsDirectory())
   {
@@ -1038,8 +1272,8 @@ void TS3FileSystem::RemoteRenameFile(UnicodeString AFileName, const TRemoteFile 
   DummyAction.Cancel();
 }
 
-void TS3FileSystem::RemoteCopyFile(UnicodeString AFileName, const TRemoteFile *AFile,
-  UnicodeString ANewName)
+void TS3FileSystem::RemoteCopyFile(const UnicodeString AFileName, const TRemoteFile * AFile,
+  const UnicodeString ANewName)
 {
   if (DebugAlwaysTrue(AFile != nullptr) && AFile->GetIsDirectory())
   {
@@ -1065,7 +1299,7 @@ void TS3FileSystem::RemoteCopyFile(UnicodeString AFileName, const TRemoteFile *A
   BucketContext.BucketNameBuf = SourceBucketName;
   BucketContext.bucketName = BucketContext.BucketNameBuf.c_str();
 
-  S3ResponseHandler ResponseHandler = CREATE_RESPONSE_HANDLER();
+  S3ResponseHandler ResponseHandler = CreateResponseHandler();
 
   TLibS3CallbackData Data;
   RequestInit(Data);
@@ -1077,7 +1311,7 @@ void TS3FileSystem::RemoteCopyFile(UnicodeString AFileName, const TRemoteFile *A
   CheckLibS3Error(Data);
 }
 
-void TS3FileSystem::RemoteCreateDirectory(UnicodeString ADirName, bool /*Encrypt*/)
+void TS3FileSystem::RemoteCreateDirectory(const UnicodeString ADirName, bool /*Encrypt*/)
 {
   TOperationVisualizer Visualizer(FTerminal->GetUseBusyCursor()); nb::used(Visualizer);
   UnicodeString DirName = base::UnixExcludeTrailingBackslash(GetAbsolutePath(ADirName, false));
@@ -1087,12 +1321,12 @@ void TS3FileSystem::RemoteCreateDirectory(UnicodeString ADirName, bool /*Encrypt
 
   if (Key.IsEmpty())
   {
-    S3ResponseHandler ResponseHandler = CREATE_RESPONSE_HANDLER();
+    S3ResponseHandler ResponseHandler = CreateResponseHandler();
 
     // Not using GetBucketContext here, as the bucket does not exist
 
     UTF8String RegionBuf;
-    const char *Region = nullptr;
+    const char * Region = nullptr;
     if (!FTerminal->SessionData->S3DefaultRegion().IsEmpty() &&
         (FTerminal->SessionData->S3DefaultRegion() != S3LibDefaultRegion()))
     {
@@ -1110,7 +1344,8 @@ void TS3FileSystem::RemoteCreateDirectory(UnicodeString ADirName, bool /*Encrypt
       Retry = false;
 
       S3_create_bucket(
-        FLibS3Protocol, FAccessKeyId.c_str(), FSecretAccessKey.c_str(), nullptr, FHostName.c_str(), StrToS3(BucketName),
+        FLibS3Protocol, FAccessKeyId.c_str(), FSecretAccessKey.c_str(), FSecurityToken,
+        (FHostName + FPortSuffix).c_str(), StrToS3(BucketName),
         StrToS3(FAuthRegion), S3CannedAclPrivate, Region, FRequestContext, FTimeout, &ResponseHandler, &Data);
 
       HandleNonBucketStatus(Data, Retry);
@@ -1121,14 +1356,14 @@ void TS3FileSystem::RemoteCreateDirectory(UnicodeString ADirName, bool /*Encrypt
   }
   else
   {
-    TLibS3CallbackData Data;
-    RequestInit(Data);
-
     Key = GetFolderKey(Key);
 
     TLibS3BucketContext BucketContext = GetBucketContext(BucketName, Key);
 
-    S3PutObjectHandler PutObjectHandler = { CREATE_RESPONSE_HANDLER(), nullptr };
+    S3PutObjectHandler PutObjectHandler = { CreateResponseHandler(), nullptr };
+
+    TLibS3CallbackData Data;
+    RequestInit(Data);
 
     S3_put_object(&BucketContext, StrToS3(Key), 0, nullptr, FRequestContext, FTimeout, &PutObjectHandler, &Data);
 
@@ -1136,39 +1371,336 @@ void TS3FileSystem::RemoteCreateDirectory(UnicodeString ADirName, bool /*Encrypt
   }
 }
 
-void TS3FileSystem::RemoteCreateLink(UnicodeString /*AFileName*/,
-  UnicodeString /*PointTo*/, bool /*Symbolic*/)
+void TS3FileSystem::CreateLink(const UnicodeString FileName,
+  const UnicodeString PointTo, bool /*Symbolic*/)
 {
   DebugFail();
 }
 
-void TS3FileSystem::ChangeFileProperties(UnicodeString /*AFileName*/,
-  const TRemoteFile * /*File*/, const TRemoteProperties * /*Properties*/,
+struct TS3FileProperties
+{
+  char OwnerId[S3_MAX_GRANTEE_USER_ID_SIZE];
+  char OwnerDisplayName[S3_MAX_GRANTEE_DISPLAY_NAME_SIZE];
+  int AclGrantCount;
+  S3AclGrant AclGrants[S3_MAX_ACL_GRANT_COUNT];
+};
+
+static TRights::TRightLevel S3PermissionToRightLevel(S3Permission Permission)
+{
+  TRights::TRightLevel Result;
+  switch (Permission)
+  {
+    case S3PermissionRead: Result = TRights::rlS3Read; break;
+    case S3PermissionWrite: Result = TRights::rlS3Write; break;
+    case S3PermissionReadACP: Result = TRights::rlS3ReadACP; break;
+    case S3PermissionWriteACP: Result = TRights::rlS3WriteACP; break;
+    default: DebugFail(); Result = TRights::rlNone; break;
+  }
+  return Result;
+}
+
+bool TS3FileSystem::ParsePathForPropertiesRequests(
+  const UnicodeString & Path, const TRemoteFile * File, UnicodeString & BucketName, UnicodeString & Key)
+{
+  UnicodeString FileName = AbsolutePath(Path, false);
+
+  ParsePath(FileName, BucketName, Key);
+
+  bool Result = !Key.IsEmpty();
+  if (Result && File->IsDirectory)
+  {
+    Key = GetFolderKey(Key);
+  }
+  return Result;
+}
+
+bool TS3FileSystem::DoLoadFileProperties(
+  const UnicodeString & AFileName, const TRemoteFile * File, TS3FileProperties & Properties)
+{
+  UnicodeString BucketName, Key;
+  bool Result = ParsePathForPropertiesRequests(AFileName, File, BucketName, Key);
+  if (Result)
+  {
+    TLibS3BucketContext BucketContext = GetBucketContext(BucketName, Key);
+
+    S3ResponseHandler ResponseHandler = CreateResponseHandler();
+
+    TLibS3CallbackData Data;
+    RequestInit(Data);
+
+    S3_get_acl(
+      &BucketContext, StrToS3(Key), Properties.OwnerId, Properties.OwnerDisplayName,
+      &Properties.AclGrantCount, Properties.AclGrants,
+      FRequestContext, FTimeout, &ResponseHandler, &Data);
+
+    CheckLibS3Error(Data);
+  }
+  return Result;
+}
+
+typedef std::vector<S3AclGrant> TAclGrantsVector;
+static void AddAclGrant(
+  TRights::TRightGroup Group, unsigned short & Permissions, TAclGrantsVector & AclGrants,
+  const S3AclGrant & AclGrantTemplate, S3Permission Permission)
+{
+  TRights::TRightLevel Level = S3PermissionToRightLevel(Permission);
+  TRights::TFlag Flag = TRights::CalculateFlag(Group, Level);
+  if (FLAGSET(Permissions, Flag))
+  {
+    S3AclGrant AclGrant(AclGrantTemplate);
+    AclGrant.permission = Permission;
+    AclGrants.push_back(AclGrant);
+    Permissions -= static_cast<short int>(Flag);
+  }
+}
+
+void TS3FileSystem::ChangeFileProperties(const UnicodeString FileName,
+  const TRemoteFile * File, const TRemoteProperties * Properties,
   TChmodSessionAction & /*Action*/)
 {
-  DebugFail();
+  TValidProperties ValidProperties = Properties->Valid;
+  if (DebugAlwaysTrue(ValidProperties.Contains(vpRights)))
+  {
+    ValidProperties >> vpRights;
+
+    DebugAssert(!Properties->AddXToDirectories);
+
+    TS3FileProperties FileProperties;
+    if (DebugAlwaysTrue(!File->IsDirectory) &&
+        DebugAlwaysTrue(DoLoadFileProperties(FileName, File, FileProperties)))
+    {
+      TAclGrantsVector NewAclGrants;
+
+      unsigned short Permissions = File->Rights->Combine(Properties->Rights);
+      for (int GroupI = TRights::rgFirst; GroupI <= TRights::rgLast; GroupI++)
+      {
+        TRights::TRightGroup Group = static_cast<TRights::TRightGroup>(GroupI);
+        S3AclGrant NewAclGrant;
+        memset(&NewAclGrant, 0, sizeof(NewAclGrant));
+        if (Group == TRights::rgUser)
+        {
+          NewAclGrant.granteeType = S3GranteeTypeCanonicalUser;
+          DebugAssert(sizeof(NewAclGrant.grantee.canonicalUser.id) == sizeof(FileProperties.OwnerId));
+          strcpy(NewAclGrant.grantee.canonicalUser.id, FileProperties.OwnerId);
+        }
+        else if (Group == TRights::rgS3AllAwsUsers)
+        {
+          NewAclGrant.granteeType = S3GranteeTypeAllAwsUsers;
+        }
+        else if (DebugAlwaysTrue(Group == TRights::rgS3AllUsers))
+        {
+          NewAclGrant.granteeType = S3GranteeTypeAllUsers;
+        }
+        unsigned short AllGroupPermissions =
+          TRights::CalculatePermissions(Group, TRights::rlS3Read, TRights::rlS3ReadACP, TRights::rlS3WriteACP);
+        if (FLAGSET(Permissions, AllGroupPermissions))
+        {
+          NewAclGrant.permission = S3PermissionFullControl;
+          NewAclGrants.push_back(NewAclGrant);
+          Permissions -= AllGroupPermissions;
+        }
+        else
+        {
+          #define ADD_ACL_GRANT(PERM) AddAclGrant(Group, Permissions, NewAclGrants, NewAclGrant, PERM)
+          ADD_ACL_GRANT(S3PermissionRead);
+          ADD_ACL_GRANT(S3PermissionWrite);
+          ADD_ACL_GRANT(S3PermissionReadACP);
+          ADD_ACL_GRANT(S3PermissionWriteACP);
+        }
+      }
+
+      DebugAssert(Permissions == 0);
+
+      // Preserve unrecognized permissions
+      for (int Index = 0; Index < FileProperties.AclGrantCount; Index++)
+      {
+        S3AclGrant & AclGrant = FileProperties.AclGrants[Index];
+        unsigned short Permission = AclGrantToPermissions(AclGrant, FileProperties);
+        if (Permission == 0)
+        {
+          NewAclGrants.push_back(AclGrant);
+        }
+      }
+
+      UnicodeString BucketName, Key;
+      if (DebugAlwaysTrue(ParsePathForPropertiesRequests(FileName, File, BucketName, Key)))
+      {
+        TLibS3BucketContext BucketContext = GetBucketContext(BucketName, Key);
+
+        S3ResponseHandler ResponseHandler = CreateResponseHandler();
+
+        TLibS3CallbackData Data;
+        RequestInit(Data);
+
+        S3_set_acl(
+          &BucketContext, StrToS3(Key), FileProperties.OwnerId, FileProperties.OwnerDisplayName,
+          NewAclGrants.size(), &NewAclGrants[0],
+          FRequestContext, FTimeout, &ResponseHandler, &Data);
+
+        CheckLibS3Error(Data);
+      }
+    }
+  }
+
+  DebugAssert(ValidProperties.Empty());
+}
+
+unsigned short TS3FileSystem::AclGrantToPermissions(S3AclGrant & AclGrant, const TS3FileProperties & Properties)
+{
+  TRights::TRightGroup RightGroup = static_cast<TRights::TRightGroup>(-1);
+  if (AclGrant.granteeType == S3GranteeTypeCanonicalUser)
+  {
+    if (strcmp(Properties.OwnerId, AclGrant.grantee.canonicalUser.id) == 0)
+    {
+      RightGroup = TRights::rgUser;
+    }
+    else
+    {
+      FTerminal->LogEvent(1, FORMAT(L"Unspported permission for canonical user %s", (StrFromS3(Properties.OwnerId))));
+    }
+  }
+  else if (AclGrant.granteeType == S3GranteeTypeAllAwsUsers)
+  {
+    RightGroup = TRights::rgS3AllAwsUsers;
+  }
+  else if (AclGrant.granteeType == S3GranteeTypeAllUsers)
+  {
+    RightGroup = TRights::rgS3AllUsers;
+  }
+  unsigned short Result;
+  if (RightGroup < 0)
+  {
+    Result = 0;
+  }
+  else
+  {
+    if (AclGrant.permission == S3PermissionFullControl)
+    {
+      Result = TRights::CalculatePermissions(RightGroup, TRights::rlS3Read, TRights::rlS3ReadACP, TRights::rlS3WriteACP);
+    }
+    else
+    {
+      DebugAssert(AclGrant.permission != S3PermissionWrite);
+      TRights::TRightLevel RightLevel = S3PermissionToRightLevel(AclGrant.permission);
+      if (RightLevel == TRights::rlNone)
+      {
+        Result = 0;
+      }
+      else
+      {
+        Result = TRights::CalculateFlag(RightGroup, RightLevel);
+      }
+    }
+  }
+  return Result;
+}
+
+void TS3FileSystem::LoadFileProperties(const UnicodeString AFileName, const TRemoteFile * File, void * Param)
+{
+  bool & Result = *static_cast<bool *>(Param);
+  TS3FileProperties Properties;
+  Result = DoLoadFileProperties(AFileName, File, Properties);
+  if (Result)
+  {
+    bool AdditionalRights;
+    unsigned short Permissions = 0;
+    for (int Index = 0; Index < Properties.AclGrantCount; Index++)
+    {
+      S3AclGrant & AclGrant = Properties.AclGrants[Index];
+      unsigned short Permission = AclGrantToPermissions(AclGrant, Properties);
+      if (Permission == 0)
+      {
+        AdditionalRights = true;
+      }
+      else
+      {
+        Permissions |= Permission;
+      }
+    }
+
+    UnicodeString Delimiter(L",");
+    UnicodeString HumanRights;
+    for (int GroupI = TRights::rgFirst; GroupI <= TRights::rgLast; GroupI++)
+    {
+      TRights::TRightGroup Group = static_cast<TRights::TRightGroup>(GroupI);
+      #define RIGHT_LEVEL_SET(LEVEL) FLAGSET(Permissions, TRights::CalculateFlag(Group, TRights::LEVEL))
+      bool ReadRight = RIGHT_LEVEL_SET(rlS3Read);
+      bool WriteRight = DebugAlwaysFalse(RIGHT_LEVEL_SET(rlS3Write));
+      bool ReadACPRight = RIGHT_LEVEL_SET(rlS3ReadACP);
+      bool WriteACPRight = RIGHT_LEVEL_SET(rlS3WriteACP);
+      UnicodeString Desc;
+      if (ReadRight && ReadACPRight && WriteACPRight)
+      {
+        Desc = L"F";
+      }
+      else if (ReadRight)
+      {
+        Desc = L"R";
+        if (ReadACPRight || WriteACPRight || WriteRight)
+        {
+          Desc += L"+";
+        }
+      }
+
+      if (!Desc.IsEmpty())
+      {
+        UnicodeString GroupDesc;
+        switch (Group)
+        {
+          case TRights::rgUser: GroupDesc = L"O"; break;
+          case TRights::rgS3AllAwsUsers: GroupDesc = L"U"; break;
+          case TRights::rgS3AllUsers: GroupDesc = L"E"; break;
+          default: DebugFail(); break;
+        }
+
+        if (!GroupDesc.IsEmpty())
+        {
+          Desc = GroupDesc + L":" + Desc;
+          AddToList(HumanRights, Desc, Delimiter);
+        }
+      }
+    }
+
+    if (AdditionalRights)
+    {
+      AddToList(HumanRights, L"+", Delimiter);
+    }
+
+    File->Rights->Number = Permissions;
+    File->Rights->SetTextOverride(HumanRights);
+    Result = true;
+  }
 }
 
 bool TS3FileSystem::LoadFilesProperties(TStrings * /*FileList*/)
 {
-  DebugFail();
-  return false;
+  bool Result = false;
+  FTerminal->BeginTransaction();
+  try
+  {
+    FTerminal->ProcessFiles(FileList, foGetProperties, LoadFileProperties, &Result);
+  }
+  __finally
+  {
+    FTerminal->EndTransaction();
+  }
+  return Result;
 }
 
-void TS3FileSystem::CalculateFilesChecksum(UnicodeString /*Alg*/,
-  TStrings * /*FileList*/, TStrings * /*Checksums*/,
-  TCalculatedChecksumEvent /*OnCalculatedChecksum*/)
+void TS3FileSystem::CalculateFilesChecksum(const UnicodeString /*Alg*/,
+    TStrings * /*FileList*/, TStrings * /*Checksums*/,
+    TCalculatedChecksumEvent /*OnCalculatedChecksum*/)
 {
   DebugFail();
 }
 
-void TS3FileSystem::CustomCommandOnFile(UnicodeString /*AFileName*/,
-  const TRemoteFile * /*AFile*/, UnicodeString /*ACommand*/, intptr_t /*AParams*/, TCaptureOutputEvent /*OutputEvent*/)
+void TS3FileSystem::CustomCommandOnFile(const UnicodeString /*AFileName*/,
+  const TRemoteFile * /*AFile*/, UnicodeString /*ACommand*/, int32_t /*AParams*/, TCaptureOutputEvent /*OutputEvent*/)
 {
   DebugFail();
 }
 
-void TS3FileSystem::AnyCommand(UnicodeString /*ACommand*/,
+void TS3FileSystem::AnyCommand(const UnicodeString /*ACommand*/,
   TCaptureOutputEvent /*OutputEvent*/)
 {
   DebugFail();
@@ -1179,15 +1711,15 @@ TStrings *TS3FileSystem::GetFixedPaths() const
   return nullptr;
 }
 
-void TS3FileSystem::SpaceAvailable(UnicodeString /*APath*/,
+void TS3FileSystem::SpaceAvailable(const UnicodeString /*APath*/,
   TSpaceAvailable & /*ASpaceAvailable*/)
 {
   DebugFail();
 }
 
 void TS3FileSystem::CopyToRemote(
-  TStrings *AFilesToCopy, UnicodeString ATargetDir, const TCopyParamType *CopyParam,
-  intptr_t AParams, TFileOperationProgressType *OperationProgress, TOnceDoneOperation &OnceDoneOperation)
+  TStrings * AFilesToCopy, const UnicodeString ATargetDir, const TCopyParamType * CopyParam,
+  int32_t AParams, TFileOperationProgressType * OperationProgress, TOnceDoneOperation & OnceDoneOperation)
 {
   AParams &= ~cpAppend;
 
@@ -1195,9 +1727,9 @@ void TS3FileSystem::CopyToRemote(
 }
 
 void TS3FileSystem::ConfirmOverwrite(
-  UnicodeString ASourceFullFileName, UnicodeString &ATargetFileName,
-  TFileOperationProgressType *OperationProgress, const TOverwriteFileParams *FileParams,
-  const TCopyParamType *CopyParam, intptr_t AParams)
+  const UnicodeString ASourceFullFileName, UnicodeString & ATargetFileName,
+  TFileOperationProgressType * OperationProgress, const TOverwriteFileParams *FileParams,
+  const TCopyParamType * CopyParam, int32_t AParams)
 {
   uint32_t Answers = qaYes | qaNo | qaCancel | qaYesToAll | qaNoToAll;
   nb::vector_t<TQueryButtonAlias> Aliases;
@@ -1208,7 +1740,7 @@ void TS3FileSystem::ConfirmOverwrite(
   QueryParams.Aliases = &Aliases[0];
   QueryParams.AliasesCount = Aliases.size();
 
-  uintptr_t Answer;
+  uint32_t Answer;
 
   {
     TSuspendFileOperationProgress Suspend(OperationProgress); nb::used(Suspend);
@@ -1221,20 +1753,20 @@ void TS3FileSystem::ConfirmOverwrite(
 
   switch (Answer)
   {
-  case qaYes:
-    // noop
-    break;
+    case qaYes:
+      // noop
+      break;
 
-  case qaNo:
-    throw ESkipFile();
+    case qaNo:
+      throw ESkipFile();
 
-  default:
-    DebugFail();
-    break;
-  case qaCancel:
-    OperationProgress->SetCancelAtLeast(csCancel);
-    Abort();
-    break;
+    default:
+      DebugFail();
+      break;
+    case qaCancel:
+      OperationProgress->SetCancelAtLeast(csCancel);
+      Abort();
+      break;
   }
 }
 
@@ -1243,7 +1775,7 @@ struct TLibS3TransferObjectDataCallbackData : TLibS3CallbackData
   CUSTOM_MEM_ALLOCATION_IMPL
 
   UnicodeString FileName;
-  TStream *Stream;
+  TStream * Stream;
   TFileOperationProgressType *OperationProgress;
   std::unique_ptr<Exception> Exception;
 };
@@ -1257,7 +1789,7 @@ struct TLibS3PutObjectDataCallbackData : TLibS3TransferObjectDataCallbackData
 
 int TS3FileSystem::LibS3PutObjectDataCallback(int BufferSize, char *Buffer, void *CallbackData)
 {
-  TLibS3PutObjectDataCallbackData &Data = *static_cast<TLibS3PutObjectDataCallbackData *>(CallbackData);
+  TLibS3PutObjectDataCallbackData & Data = *static_cast<TLibS3PutObjectDataCallbackData *>(CallbackData);
 
   return Data.FileSystem->PutObjectData(BufferSize, Buffer, Data);
 }
@@ -1360,9 +1892,9 @@ int TS3FileSystem::LibS3MultipartCommitPutObjectDataCallback(int BufferSize, cha
 }
 
 void TS3FileSystem::Source(
-  TLocalFileHandle &AHandle, UnicodeString TargetDir, UnicodeString &ADestFileName,
-  const TCopyParamType *CopyParam, intptr_t Params,
-  TFileOperationProgressType *OperationProgress, uintptr_t /*Flags*/,
+  TLocalFileHandle &AHandle, const UnicodeString TargetDir, UnicodeString &ADestFileName,
+  const TCopyParamType *CopyParam, int32_t Params,
+  TFileOperationProgressType *OperationProgress, uint32_t /*Flags*/,
   TUploadSessionAction &Action, bool & /*ChildError*/)
 {
   UnicodeString DestFullName = TargetDir + ADestFileName;
@@ -1413,22 +1945,23 @@ void TS3FileSystem::Source(
 
   UTF8String ContentType = UTF8String(FTerminal->Configuration->GetFileMimeType(AHandle.FileName));
   S3PutProperties PutProperties =
-  {
-    (ContentType.IsEmpty() ? nullptr : ContentType.c_str()),
-    nullptr,
-    nullptr,
-    nullptr,
-    nullptr,
-    -1,
-    S3CannedAclPrivate,
-    0,
-    nullptr,
-    0
-  };
+    {
+      (ContentType.IsEmpty() ? nullptr : ContentType.c_str()),
+      nullptr,
+      nullptr,
+      nullptr,
+      nullptr,
+      -1,
+      S3CannedAclPrivate,
+      0,
+      nullptr,
+      0
+    };
 
   int Parts = std::min(S3MaxMultiPartChunks, std::max(1, static_cast<int>((AHandle.Size + S3MinMultiPartChunkSize - 1) / S3MinMultiPartChunkSize)));
   int ChunkSize = std::max(S3MinMultiPartChunkSize, static_cast<int>((AHandle.Size + Parts - 1) / Parts));
   DebugAssert((ChunkSize == S3MinMultiPartChunkSize) || (AHandle.Size > static_cast<__int64>(S3MaxMultiPartChunks) * S3MinMultiPartChunkSize));
+
   bool Multipart = (Parts > 1);
 
   RawByteString MultipartUploadId;
@@ -1468,7 +2001,7 @@ void TS3FileSystem::Source(
 
     std::unique_ptr<TStream> Stream(std::make_unique<TSafeHandleStream>(reinterpret_cast<THandle>(AHandle.Handle)));
 
-    for (intptr_t Part = 1; Part <= Parts; Part++)
+    for (int32_t Part = 1; Part <= Parts; Part++)
     {
       FileOperationLoopCustom(FTerminal, OperationProgress, folAllowSkip,
         FMTLOAD(TRANSFER_ERROR, AHandle.FileName), "",
@@ -1492,8 +2025,8 @@ void TS3FileSystem::Source(
         if (Multipart)
         {
           S3PutObjectHandler UploadPartHandler =
-          { CREATE_RESPONSE_HANDLER_CUSTOM(LibS3MultipartResponsePropertiesCallback), LibS3PutObjectDataCallback };
-          int64_t Remaining = Stream->Size() - Stream->Position();
+            { CREATE_RESPONSE_HANDLER_CUSTOM(LibS3MultipartResponsePropertiesCallback), LibS3PutObjectDataCallback };
+            int64_t Remaining = Stream->Size() - Stream->Position();
           int RemainingInt = static_cast<int>(std::min(static_cast<int64_t>(std::numeric_limits<int>::max()), Remaining));
           int PartLength = std::min(ChunkSize, RemainingInt);
           FTerminal->LogEvent(FORMAT("Uploading part %d [%s]", Part, IntToStr(PartLength)));
@@ -1503,7 +2036,7 @@ void TS3FileSystem::Source(
         }
         else
         {
-          S3PutObjectHandler PutObjectHandler = { CREATE_RESPONSE_HANDLER(), LibS3PutObjectDataCallback };
+          S3PutObjectHandler PutObjectHandler = { CreateResponseHandler(), LibS3PutObjectDataCallback };
           S3_put_object(&BucketContext, StrToS3(Key), static_cast<uint64_t>(AHandle.Size), &PutProperties, FRequestContext, FTimeout, &PutObjectHandler, &Data);
         }
 
@@ -1548,7 +2081,7 @@ void TS3FileSystem::Source(
         MultipartCommitPutObjectDataCallbackData.Remaining = nb::ToInt(MultipartCommitPutObjectDataCallbackData.Message.Length());
 
         S3MultipartCommitHandler MultipartCommitHandler =
-        { CREATE_RESPONSE_HANDLER(), &LibS3MultipartCommitPutObjectDataCallback, nullptr };
+          { CreateResponseHandler(), &LibS3MultipartCommitPutObjectDataCallback, nullptr };
 
         S3_complete_multipart_upload(
           &BucketContext, StrToS3(Key), &MultipartCommitHandler, MultipartUploadId.c_str(),
@@ -1591,8 +2124,8 @@ void TS3FileSystem::Source(
 }
 
 void TS3FileSystem::CopyToLocal(
-  TStrings *FilesToCopy, UnicodeString ATargetDir, const TCopyParamType *CopyParam,
-  intptr_t AParams, TFileOperationProgressType *OperationProgress, TOnceDoneOperation &OnceDoneOperation)
+  TStrings *FilesToCopy, const UnicodeString ATargetDir, const TCopyParamType *CopyParam,
+  int32_t AParams, TFileOperationProgressType *OperationProgress, TOnceDoneOperation &OnceDoneOperation)
 {
   AParams &= ~cpAppend;
 
@@ -1645,10 +2178,10 @@ S3Status TS3FileSystem::GetObjectData(int BufferSize, const char *Buffer, TLibS3
 }
 
 void TS3FileSystem::Sink(
-  UnicodeString AFileName, const TRemoteFile *AFile,
-  UnicodeString ATargetDir, UnicodeString &ADestFileName, intptr_t Attrs,
-  const TCopyParamType *CopyParam, intptr_t Params, TFileOperationProgressType *OperationProgress,
-  uintptr_t /*AFlags*/, TDownloadSessionAction &Action)
+  const UnicodeString AFileName, const TRemoteFile *AFile,
+  const UnicodeString ATargetDir, UnicodeString &ADestFileName, int32_t Attrs,
+  const TCopyParamType *CopyParam, int32_t Params, TFileOperationProgressType *OperationProgress,
+  uint32_t /*AFlags*/, TDownloadSessionAction &Action)
 {
   UnicodeString DestFullName = ATargetDir + ADestFileName;
   if (::SysUtulsFileExists(ApiPath(DestFullName)))
@@ -1753,12 +2286,12 @@ void TS3FileSystem::GetSupportedChecksumAlgs(TStrings * /*Algs*/)
   // NOOP
 }
 
-void TS3FileSystem::LockFile(UnicodeString /*AFileName*/, const TRemoteFile * /*AFile*/)
+void TS3FileSystem::LockFile(const UnicodeString /*AFileName*/, const TRemoteFile * /*AFile*/)
 {
   DebugFail();
 }
 
-void TS3FileSystem::UnlockFile(UnicodeString /*AFileName*/, const TRemoteFile * /*AFile*/)
+void TS3FileSystem::UnlockFile(const UnicodeString /*AFileName*/, const TRemoteFile * /*AFile*/)
 {
   DebugFail();
 }
@@ -1767,10 +2300,10 @@ void TS3FileSystem::UpdateFromMain(TCustomFileSystem * /*AMainFileSystem*/)
 {
   // noop
 }
----
+
 void TS3FileSystem::ClearCaches()
 {
   FRegions.clear();
   FHostNames.clear();
 }
----
+
