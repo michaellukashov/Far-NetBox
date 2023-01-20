@@ -8,8 +8,9 @@
 #include "SessionInfo.h"
 
 #ifndef PuttyIntfH
-__removed struct Backend;
+__removed struct Backend_vtable;
 __removed struct Conf;
+struct Backend;
 #endif
 
 struct _WSANETWORKEVENTS;
@@ -17,6 +18,11 @@ typedef struct _WSANETWORKEVENTS WSANETWORKEVENTS;
 using SOCKET = UINT_PTR;
 using TSockets = nb::vector_t<SOCKET>;
 struct TPuttyTranslation;
+struct callback_set;
+enum TSshImplementation { sshiUnknown, sshiOpenSSH, sshiProFTPD, sshiBitvise, sshiTitan, sshiOpenVMS, sshiCerberus };
+struct ScpLogPolicy;
+struct LogContext;
+struct ScpSeat;
 
 enum TSshImplementation
 {
@@ -41,13 +47,13 @@ private:
   SOCKET FSocket{INVALID_SOCKET};
   HANDLE FSocketEvent{};
   TSockets FPortFwdSockets;
-  TSessionUI *FUI{nullptr};
-  TSessionData *FSessionData{nullptr};
+  TSessionUI * FUI{nullptr};
+  TSessionData * FSessionData{nullptr};
   bool FActive{false};
   mutable TSessionInfo FSessionInfo{};
   mutable bool FSessionInfoValid{false};
   TDateTime FLastDataSent{};
-  Backend *FBackend{nullptr};
+  Backend * FBackendHandle{nullptr};
   void *FBackendHandle{nullptr};
   mutable const uint32_t *FMinPacketSize{nullptr};
   mutable const uint32_t *FMaxPacketSize{nullptr};
@@ -57,22 +63,22 @@ private:
   bool FStoredPasswordTried{false};
   bool FStoredPasswordTriedForKI{false};
   bool FStoredPassphraseTried{false};
-  mutable int FSshVersion{0};
   bool FOpened{false};
-  intptr_t FWaiting{0};
+  bool FClosed{false};
+  int32_t FWaiting{0};
   bool FSimple{false};
   bool FNoConnectionResponse{false};
   bool FCollectPrivateKeyUsage{false};
   intptr_t FWaitingForData{0};
   TSshImplementation FSshImplementation{sshiUnknown};
 
-  intptr_t PendLen{0};
-  intptr_t PendSize{0};
-  intptr_t OutLen{0};
-  uint8_t *OutPtr{nullptr};
-  uint8_t *Pending{nullptr};
-  TSessionLog *FLog{nullptr};
-  TConfiguration *FConfiguration{nullptr};
+  int32_t PendLen{0};
+  int32_t PendSize{0};
+  int32_t OutLen{0};
+  uint8_t * OutPtr{nullptr};
+  uint8_t * Pending{nullptr};
+  TSessionLog * FLog{nullptr};
+  TConfiguration * FConfiguration{nullptr};
   bool FAuthenticating{false};
   bool FAuthenticated{false};
   UnicodeString FStdErrorTemp;
@@ -83,37 +89,48 @@ private:
   UnicodeString FUserName;
   bool FUtfStrings{false};
   DWORD FLastSendBufferUpdate{0};
-  intptr_t FSendBuf{0};
+  int32_t FSendBuf{0};
+  std::auto_ptr<callback_set> FCallbackSet;
+  ScpLogPolicy * FLogPolicy;
+  ScpSeat * FSeat;
+  LogContext * FLogCtx;
+  std::set<UnicodeString> FLoggedKnownHostKeys;
 
 public:
-  static TCipher FuncToSsh1Cipher(const void *Cipher);
-  static TCipher FuncToSsh2Cipher(const void *Cipher);
-  UnicodeString FuncToCompression(int SshVersion, const void *Compress) const;
   void Init();
   void SetActive(bool Value);
   void inline CheckConnection(int Message = -1);
   void WaitForData();
   void Discard();
   void FreeBackend();
-  void PoolForData(WSANETWORKEVENTS &Events, uint32_t &Result);
-  void CaptureOutput(TLogLineType Type, UnicodeString Line);
+  void PoolForData(WSANETWORKEVENTS & Events, uint32_t & Result);
+  void CaptureOutput(TLogLineType Type,
+    const UnicodeString & Line);
   void ResetConnection();
   void ResetSessionInfo();
-  void SocketEventSelect(SOCKET Socket, HANDLE Event, bool Startup);
-  bool EnumNetworkEvents(SOCKET Socket, WSANETWORKEVENTS &Events);
-  void HandleNetworkEvents(SOCKET Socket, WSANETWORKEVENTS &Events);
+  void SocketEventSelect(SOCKET Socket, HANDLE Event, bool Enable);
+  bool EnumNetworkEvents(SOCKET Socket, WSANETWORKEVENTS & Events);
+  void HandleNetworkEvents(SOCKET Socket, WSANETWORKEVENTS & Events);
   bool ProcessNetworkEvents(SOCKET Socket);
-  bool EventSelectLoop(uintptr_t MSec, bool ReadEventRequired,
+  bool EventSelectLoop(uint32_t MSec, bool ReadEventRequired,
     WSANETWORKEVENTS *Events);
   void UpdateSessionInfo() const;
   bool GetReady() const;
   void DispatchSendBuffer(intptr_t BufSize);
   void SendBuffer(uint32_t &Result);
-  uintptr_t TimeoutPrompt(TQueryParamsTimerEvent PoolEvent);
+  uint32_t TimeoutPrompt(TQueryParamsTimerEvent PoolEvent);
+  void TimeoutAbort(unsigned int Answer);
   bool TryFtp();
   UnicodeString ConvertInput(RawByteString Input, uintptr_t CodePage = CP_ACP) const;
   void GetRealHost(UnicodeString &Host, intptr_t &Port) const;
-  UnicodeString RetrieveHostKey(UnicodeString Host, intptr_t Port, UnicodeString KeyType) const;
+  UnicodeString RetrieveHostKey(const UnicodeString & Host, int32_t Port, const UnicodeString & KeyType) const;
+  bool HaveAcceptNewHostKeyPolicy() const;
+  THierarchicalStorage * GetHostKeyStorage();
+  bool VerifyCachedHostKey(
+    const UnicodeString & StoredKeys, const UnicodeString & KeyStr, const UnicodeString & FingerprintMD5, const UnicodeString & FingerprintSHA256);
+  UnicodeString StoreHostKey(
+    const UnicodeString & Host, int Port, const UnicodeString & KeyType, const UnicodeString & KeyStr);
+  bool HasLocalProxy() const;
 
 protected:
   TCaptureOutputEvent FOnCaptureOutput;
@@ -123,32 +140,31 @@ protected:
     intptr_t Count, UnicodeString &Message, UnicodeString *HelpKeyword = nullptr) const;
   int TranslateAuthenticationMessage(UnicodeString &Message, UnicodeString *HelpKeyword = nullptr);
   int TranslateErrorMessage(UnicodeString &Message, UnicodeString *HelpKeyword = nullptr);
-  void AddStdError(UnicodeString AStr);
-  void AddStdErrorLine(UnicodeString AStr);
-  void LogEvent(UnicodeString AStr);
+  void AddStdErrorLine(const UnicodeString & AStr);
+  void LogEvent(const UnicodeString & AStr);
   void FatalError(UnicodeString Error, UnicodeString HelpKeyword = "");
   UnicodeString FormatKeyStr(UnicodeString AKeyStr) const;
+  void ParseFingerprint(const UnicodeString & Fingerprint, UnicodeString & SignKeyType, UnicodeString & Hash);
   static Conf *StoreToConfig(TSessionData *Data, bool Simple);
 
 public:
-  explicit TSecureShell(TSessionUI *UI, TSessionData *SessionData,
+  explicit TSecureShell(TSessionUI * UI, TSessionData * SessionData,
     TSessionLog *Log, TConfiguration *Configuration) noexcept;
   virtual ~TSecureShell() noexcept;
   void Open();
   void Close();
   void KeepAlive();
-  intptr_t Receive(uint8_t *Buf, intptr_t Length);
-  bool Peek(uint8_t *& Buf, intptr_t Length) const;
+  intptr_t Receive(uint8_t *Buf, int32_t Length);
+  bool Peek(uint8_t *& Buf, int32_t Length) const;
   UnicodeString ReceiveLine();
   void Send(const uint8_t *Buf, intptr_t Length);
-  void SendSpecial(intptr_t Code);
-  void Idle(uintptr_t MSec = 0);
-  void SendEOF();
-  void SendLine(UnicodeString Line);
+  void SendSpecial(int32_t Code);
+  void Idle(uint32_t MSec = 0);
+  void SendLine(const UnicodeString & Line);
   void SendNull();
 
   const TSessionInfo &GetSessionInfo() const;
-  void GetHostKeyFingerprint(UnicodeString &SHA256, UnicodeString &MD5) const;
+  void GetHostKeyFingerprint(UnicodeString & SHA256, UnicodeString & MD5) const;
   bool SshFallbackCmd() const;
   uint32_t MinPacketSize() const;
   uint32_t MaxPacketSize() const;
@@ -161,28 +177,30 @@ public:
   void UnregisterReceiveHandler(TNotifyEvent Handler);
 
   // interface to PuTTY core
-  void UpdateSocket(SOCKET Value, bool Startup);
-  void UpdatePortFwdSocket(SOCKET Value, bool Startup);
+  void UpdateSocket(SOCKET Value, bool Enable);
+  void UpdatePortFwdSocket(SOCKET Value, bool Enable);
   void PuttyFatalError(UnicodeString AError);
-  TPromptKind IdentifyPromptKind(UnicodeString &AName) const;
+  TPromptKind IdentifyPromptKind(UnicodeString & AName) const;
   bool PromptUser(bool ToServer,
     UnicodeString AName, bool NameRequired,
     UnicodeString AInstructions, bool InstructionsRequired,
-    TStrings *Prompts, TStrings *Results);
-  void FromBackend(bool IsStdErr, const uint8_t *Data, intptr_t Length);
-  void CWrite(const char *Data, intptr_t Length);
-  UnicodeString GetStdError() const;
+    TStrings * Prompts, TStrings *Results);
+  void FromBackend(const uint8_t * Data, size_t Length);
+  void CWrite(const char * Data, size_t Length);
+  void AddStdError(const uint8_t * Data, size_t Length);
+  const UnicodeString & GetStdError() const;
   void VerifyHostKey(
-    UnicodeString AHost, intptr_t Port, UnicodeString AKeyType, UnicodeString AKeyStr,
-    UnicodeString AFingerprint);
-  bool HaveHostKey(UnicodeString AHost, intptr_t Port, UnicodeString KeyType);
+    const UnicodeString AHost, int32_t Port, const UnicodeString AKeyType, const UnicodeString AKeyStr,
+    const UnicodeString & FingerprintSHA256, const UnicodeString & FingerprintMD5);
+  bool HaveHostKey(UnicodeString AHost, int32_t Port, const UnicodeString KeyType);
   void AskAlg(UnicodeString AAlgType, UnicodeString AlgName);
-  void DisplayBanner(UnicodeString Banner);
+  void DisplayBanner(const UnicodeString Banner);
   void OldKeyfileWarning();
-  void PuttyLogEvent(const char *AStr);
-  UnicodeString ConvertFromPutty(const char *Str, intptr_t Length) const;
+  void PuttyLogEvent(const char * AStr);
+  UnicodeString ConvertFromPutty(const char * Str, int32_t Length) const;
+  struct callback_set * GetCallbackSet();
 
-  __property bool Active = { read = FActive, write = SetActive };
+  __property bool Active = { read = FActive };
   __property bool Ready = { read = GetReady };
   __property TCaptureOutputEvent OnCaptureOutput = { read = FOnCaptureOutput, write = FOnCaptureOutput };
   __property TDateTime LastDataSent = { read = FLastDataSent };
