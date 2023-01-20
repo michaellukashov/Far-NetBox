@@ -454,13 +454,7 @@ private:
 //---------------------------------------------------------------------------
 using TUnicodeStringVector = nb::vector_t<UnicodeString>;
 //---------------------------------------------------------------------------
-enum TModificationFmt
-{
-  mfNone,
-  mfMDHM,
-  mfMDY,
-  mfFull,
-};
+enum TModificationFmt { mfNone, mfMDHM, mfYMDHM, mfMDY, mfFull };
 //---------------------------------------------------------------------------
 namespace base {
 

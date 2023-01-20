@@ -7,6 +7,9 @@
 #include <Sysutils.hpp>
 #include <Common.h>
 
+// moved to Common.h
+// enum TModificationFmt { mfNone, mfMDHM, mfYMDHM, mfMDY, mfFull };
+
 #define SYMLINKSTR L" -> "
 #define ROOTDIRECTORY L"/"
 #define FILETYPE_DEFAULT L'-'
@@ -24,7 +27,7 @@ class NB_CORE_EXPORT TRemoteToken : public TObject
 public:
   TRemoteToken() noexcept;
   TRemoteToken(const TRemoteToken &rhs) noexcept;
-  explicit TRemoteToken(UnicodeString Name) noexcept;
+  explicit TRemoteToken(const UnicodeString Name) noexcept;
 
   void Clear();
 
@@ -32,13 +35,13 @@ public:
   bool operator!=(const TRemoteToken &rhs) const;
   TRemoteToken &operator=(const TRemoteToken &rhs);
 
-  intptr_t Compare(const TRemoteToken &rhs) const;
+  int32_t Compare(const TRemoteToken &rhs) const;
 
   __property UnicodeString Name = { read = FName, write = FName };
   UnicodeString& Name{FName};
   __property bool NameValid = { read = GetNameValid };
   ROProperty<bool> NameValid{nb::bind(&TRemoteToken::GetNameValid, this)};
-  __property uintptr_t ID = { read = FID, write = SetID };
+  __property uint32_t ID = { read = FID, write = SetID };
   __property bool IDValid = { read = FIDValid };
   ROProperty<bool> IDValid{nb::bind(&TRemoteToken::GetIDValid, this)};
   __property bool IsSet  = { read = GetIsSet };
@@ -50,16 +53,16 @@ public:
 
   UnicodeString GetName() const { return FName; }
   void SetName(const UnicodeString Value) { FName = Value; }
-  intptr_t GetID() const { return FID; }
+  int32_t GetID() const { return FID; }
   bool GetIDValid() const { return FIDValid; }
 
 private:
   UnicodeString FName;
-  intptr_t FID{0};
+  int32_t FID{0};
   bool FIDValid{false};
 
 public:
-  void SetID(intptr_t Value);
+  void SetID(int32_t Value);
   bool GetNameValid() const;
   bool GetIsSet() const;
   UnicodeString GetDisplayText() const;
@@ -74,12 +77,12 @@ public:
   void Add(const TRemoteToken &Token);
   void AddUnique(const TRemoteToken &Token);
   bool Exists(UnicodeString Name) const;
-  const TRemoteToken *Find(uintptr_t ID) const;
+  const TRemoteToken *Find(uint32_t ID) const;
   const TRemoteToken *Find(UnicodeString Name) const;
   void Log(TTerminal *Terminal, const wchar_t *Title);
 
-  intptr_t GetCount() const;
-  const TRemoteToken *Token(intptr_t Index) const;
+  int32_t GetCount() const;
+  const TRemoteToken *Token(int32_t Index) const;
 
 private:
   using TTokens = nb::vector_t<TRemoteToken>;
@@ -117,18 +120,17 @@ private:
   bool FIsEncrypted{false};
   int64_t FSize{0};
   int64_t FINodeBlocks{0};
-  intptr_t FIconIndex{0};
-  intptr_t FIsHidden{0};
+  int32_t FIconIndex{0};
+  int32_t FIsHidden{0};
   wchar_t FType{0};
   bool FIsSymLink{false};
   bool FCyclicLink{false};
 
 public:
-  intptr_t GetAttr() const;
+  int32_t GetAttr() const;
   bool GetBrokenLink() const;
   bool GetIsDirectory() const;
-  TRemoteFile *GetLinkedFile() const;
-  void SetLinkedFile(TRemoteFile *Value);
+  const TRemoteFile *GetLinkedFile() const;
   UnicodeString GetModificationStr() const;
   void SetModification(const TDateTime Value);
   void SetListingStr(UnicodeString Value);
@@ -141,8 +143,9 @@ public:
   void SetRights(TRights *Value);
   UnicodeString GetFullFileName() const;
   bool GetHaveFullFileName() const;
-  intptr_t GetIconIndex() const;
+  int32_t GetIconIndex() const;
   UnicodeString GetTypeName() const;
+  bool GetIsHidden() const;
   void SetIsHidden(bool Value);
   bool GetIsParentDirectory() const;
   bool GetIsThisDirectory() const;
@@ -166,6 +169,7 @@ public:
   bool GetIsTimeShiftingApplicable() const;
   void Complete();
   void SetEncrypted();
+  const TRemoteFile * Resolve() const;
 
   static bool GetIsTimeShiftingApplicable(TModificationFmt ModificationFmt);
   static void ShiftTimeInSeconds(TDateTime &DateTime, TModificationFmt ModificationFmt, int64_t Seconds);
@@ -194,8 +198,8 @@ public:
   ROProperty<bool> IsSymLink{nb::bind(&TRemoteFile::GetIsSymLink, this)};
   __property bool IsDirectory = { read = GetIsDirectory };
   ROProperty<bool> IsDirectory{nb::bind(&TRemoteFile::GetIsDirectory, this)};
-  __property TRemoteFile * LinkedFile = { read = GetLinkedFile, write = SetLinkedFile };
-  RWProperty<TRemoteFile *> LinkedFile{nb::bind(&TRemoteFile::GetLinkedFile, this), nb::bind(&TRemoteFile::SetLinkedFile, this)};
+  __property const TRemoteFile * LinkedFile = { read = GetLinkedFile };
+  ROProperty<TRemoteFile *> LinkedFile{nb::bind(&TRemoteFile::GetLinkedFile, this), this)};
   __property UnicodeString LinkTo = { read = FLinkTo, write = FLinkTo };
   UnicodeString& LinkTo{FLinkTo};
   __property UnicodeString ListingStr = { read = GetListingStr, write = SetListingStr };
@@ -203,7 +207,7 @@ public:
   __property TRights *Rights = { read = FRights, write = SetRights };
   RWProperty<TRights *> Rights{nb::bind(&TRemoteFile::GetRights, this), nb::bind(&TRemoteFile::SetRights, this)};
   __property UnicodeString HumanRights = { read = FHumanRights, write = FHumanRights };
-  __property TTerminal *Terminal = { read = FTerminal, write = SetTerminal };
+  __property TTerminal * Terminal = { read = FTerminal, write = SetTerminal };
   RWProperty<TTerminal *> Terminal{nb::bind(&TRemoteFile::GetTerminal, this), nb::bind(&TRemoteFile::SetTerminal, this)};
   __property wchar_t Type = { read = GetType, write = SetType };
   RWProperty<wchar_t> Type{nb::bind(&TRemoteFile::GetType, this), nb::bind(&TRemoteFile::SetType, this)};
@@ -310,11 +314,11 @@ public:
   explicit TRemoteFileList(TObjectClassId Kind) noexcept;
   virtual ~TRemoteFileList() noexcept { TRemoteFileList::Reset(); }
   virtual void Reset();
-  TRemoteFile *FindFile(UnicodeString AFileName) const;
-  virtual void DuplicateTo(TRemoteFileList *Copy) const;
-  virtual void AddFile(TRemoteFile *AFile);
+  TRemoteFile *FindFile(const UnicodeString AFileName) const;
+  virtual void DuplicateTo(TRemoteFileList * Copy) const;
+  virtual void AddFile(TRemoteFile * AFile);
 
-  static TStrings * CloneStrings(TStrings *List);
+  static TStrings * CloneStrings(TStrings * List);
 
   __property UnicodeString Directory = { read = FDirectory, write = SetDirectory };
   RWProperty<UnicodeString> Directory{nb::bind(&TRemoteFileList::GetDirectory, this), nb::bind(&TRemoteFileList::SetDirectory, this)};
@@ -345,13 +349,13 @@ public:
   static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TRemoteDirectory); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TRemoteDirectory) || TRemoteFileList::is(Kind); }
 private:
+  Boolean FIncludeParentDirectory{false};
+  Boolean FIncludeThisDirectory{false};
   TTerminal *FTerminal{nullptr};
   TRemoteFile *FParentDirectory{nullptr};
   TRemoteFile *FThisDirectory{nullptr};
-  Boolean FIncludeParentDirectory{false};
-  Boolean FIncludeThisDirectory{false};
 public:
-  void SetDirectory(const UnicodeString Value) override;
+  virtual void SetDirectory(const UnicodeString Value) override;
   Boolean GetLoaded() const;
   void SetIncludeParentDirectory(Boolean Value);
   void SetIncludeThisDirectory(Boolean Value);
@@ -360,9 +364,9 @@ public:
   TRemoteDirectory() = delete;
   explicit TRemoteDirectory(TTerminal *ATerminal, TRemoteDirectory *Template = nullptr) noexcept;
   virtual ~TRemoteDirectory() noexcept;
-  void AddFile(TRemoteFile *AFile) override;
-  void DuplicateTo(TRemoteFileList *Copy) const override;
-  void Reset() override;
+  virtual void AddFile(TRemoteFile *AFile) override;
+  virtual void DuplicateTo(TRemoteFileList *Copy) const override;
+  virtual void Reset() override;
 
   __property TTerminal * Terminal = { read = FTerminal, write = FTerminal };
   __property Boolean IncludeParentDirectory = { read = FIncludeParentDirectory, write = SetIncludeParentDirectory };
@@ -387,9 +391,9 @@ class TRemoteDirectoryCache : private TStringList
 public:
   TRemoteDirectoryCache() noexcept;
   virtual ~TRemoteDirectoryCache() noexcept;
-  bool HasFileList(UnicodeString Directory) const;
-  bool HasNewerFileList(UnicodeString Directory, const TDateTime &Timestamp) const;
-  bool GetFileList(UnicodeString Directory,
+  bool HasFileList(const UnicodeString Directory) const;
+  bool HasNewerFileList(const UnicodeString Directory, const TDateTime &Timestamp) const;
+  bool GetFileList(const UnicodeString Directory,
     TRemoteFileList *FileList) const;
   void AddFileList(TRemoteFileList *FileList);
   void ClearFileList(UnicodeString Directory, bool SubDirs);
@@ -399,7 +403,7 @@ public:
   bool GetIsEmpty() const { return GetIsEmptyPrivate(); }
 
 protected:
-  void Delete(intptr_t Index) override;
+  virtual void Delete(int32_t Index) override;
 
 private:
   TCriticalSection FSection;
@@ -412,38 +416,38 @@ class TRemoteDirectoryChangesCache : private TStringList
   CUSTOM_MEM_ALLOCATION_IMPL
 public:
   TRemoteDirectoryChangesCache() = delete;
-  explicit TRemoteDirectoryChangesCache(intptr_t MaxSize) noexcept;
+  explicit TRemoteDirectoryChangesCache(int32_t MaxSize) noexcept;
   virtual ~TRemoteDirectoryChangesCache() = default;
 
-  void AddDirectoryChange(UnicodeString SourceDir,
-    UnicodeString Change, UnicodeString TargetDir);
+  void AddDirectoryChange(const UnicodeString SourceDir,
+    const UnicodeString Change, const UnicodeString TargetDir);
   void ClearDirectoryChange(UnicodeString SourceDir);
   void ClearDirectoryChangeTarget(UnicodeString TargetDir);
-  bool GetDirectoryChange(UnicodeString SourceDir,
-    UnicodeString Change, UnicodeString &TargetDir) const;
+  bool GetDirectoryChange(const UnicodeString SourceDir,
+    const UnicodeString Change, UnicodeString &TargetDir) const;
   void Clear();
 
-  void Serialize(UnicodeString &Data) const;
-  void Deserialize(UnicodeString Data);
+  void Serialize(UnicodeString & Data) const;
+  void Deserialize(const UnicodeString Data);
 
   __property bool IsEmpty = { read = GetIsEmpty };
   bool GetIsEmpty() const { return GetIsEmptyPrivate(); }
 
 private:
-  static bool DirectoryChangeKey(UnicodeString SourceDir,
-    UnicodeString Change, UnicodeString &Key);
+  static bool DirectoryChangeKey(const UnicodeString SourceDir,
+    const UnicodeString Change, UnicodeString &Key);
   bool GetIsEmptyPrivate() const;
-  void SetValue(UnicodeString Name, UnicodeString Value);
-  UnicodeString GetValue(UnicodeString Name) const { return TStringList::GetValue(Name); }
-  UnicodeString GetValue(UnicodeString Name);
+  void SetValue(Uconst nicodeString Name, const UnicodeString Value);
+  UnicodeString GetValue(const UnicodeString Name) const { return TStringList::GetValue(Name); }
+  UnicodeString GetValue(const UnicodeString Name);
 
-  intptr_t FMaxSize{0};
+  int32_t FMaxSize{0};
 };
 
 class NB_CORE_EXPORT TRights : public TObject
 {
 public:
-  static const intptr_t TextLen = 9;
+  static const int32_t TextLen = 9;
   static const wchar_t UndefSymbol = L'$';
   static const wchar_t UnsetSymbol = L'-';
   // Used by Win32-OpenSSH for permissions that are not applicable on Windows.
@@ -453,18 +457,24 @@ public:
   static const wchar_t CombinedSymbols[];
   static const wchar_t ExtendedSymbols[];
   static const wchar_t ModeGroups[];
-
-  enum TRight
-  {
+  enum TRightLevel {
+    rlNone = -1,
+    rlRead, rlWrite, rlExec, rlSpecial,
+    rlFirst = rlRead, rlLastNormal = rlExec, rlLastWithSpecial = rlSpecial,
+    rlS3Read = rlRead, rlS3Write = rlWrite, rlS3ReadACP = rlExec, rlS3WriteACP = rlSpecial, rlLastAcl = rlLastWithSpecial,
+  };
+  enum TRightGroup {
+    rgUser, rgGroup, rgOther,
+    rgFirst = rgUser, rgLast = rgOther,
+    rgS3AllAwsUsers = rgGroup, rgS3AllUsers = rgOther,
+  };
+  enum TRight {
     rrUserIDExec, rrGroupIDExec, rrStickyBit,
     rrUserRead, rrUserWrite, rrUserExec,
     rrGroupRead, rrGroupWrite, rrGroupExec,
     rrOtherRead, rrOtherWrite, rrOtherExec,
-    rrFirst = rrUserIDExec, rrLast = rrOtherExec
-  };
-
-  enum TFlag
-  {
+    rrFirst = rrUserIDExec, rrLast = rrOtherExec };
+  enum TFlag {
     rfSetUID =    04000, rfSetGID =      02000, rfStickyBit = 01000,
     rfUserRead =  00400, rfUserWrite =   00200, rfUserExec =  00100,
     rfGroupRead = 00040, rfGroupWrite =  00020, rfGroupExec = 00010,
@@ -472,22 +482,17 @@ public:
     rfRead =      00444, rfWrite =       00222, rfExec =      00111,
     rfNo =        00000, rfDefault =     00644, rfAll =       00777,
     rfSpecials =  07000, rfAllSpecials = 07777,
-  };
-
-  enum TUnsupportedFlag
-  {
-    rfDirectory = 040000,
-  };
-
-  enum TState
-  {
-    rsNo,
-    rsYes,
-    rsUndef,
-  };
+    rfS3Read = rfOtherRead, rfS3Write = rfOtherWrite, rfS3ReadACP = rfOtherExec, rfS3WriteACP = rfStickyBit,
+     };
+  enum TUnsupportedFlag {
+    rfDirectory  = 040000 };
+  enum TState { rsNo, rsYes, rsUndef };
 
 public:
   static TFlag RightToFlag(TRight Right);
+  static TRight CalculateRight(TRightGroup Group, TRightLevel Level);
+  static TFlag CalculateFlag(TRightGroup Group, TRightLevel Level);
+  static unsigned short CalculatePermissions(TRightGroup Group, TRightLevel Level, TRightLevel Level2 = rlNone, TRightLevel Level3 = rlNone);
 
   TRights() noexcept;
   TRights(const TRights &Source) noexcept;
@@ -495,6 +500,8 @@ public:
   void Assign(const TRights *Source);
   void AddExecute();
   void AllUndef();
+  TRights Combine(const TRights & Other) const;
+  void SetTextOverride(const UnicodeString & value);
 
   bool operator==(const TRights &rhr) const;
   bool operator==(uint16_t rhr) const;
@@ -517,10 +524,11 @@ public:
   operator uint16_t() const;
   operator uint32_t() const;
 
+  UnicodeString GetChmodStr(int Directory) const;
+
   __property bool AllowUndef = { read = FAllowUndef, write = SetAllowUndef };
   __property bool IsUndef = { read = GetIsUndef };
   __property UnicodeString ModeStr = { read = GetModeStr };
-  __property UnicodeString SimplestStr = { read = GetSimplestStr };
   __property UnicodeString Octal = { read = GetOctal, write = SetOctal };
   RWProperty<UnicodeString> Octal{nb::bind(&TRights::GetOctal, this), nb::bind(&TRights::SetOctal, this)};
   __property unsigned short Number = { read = GetNumber, write = SetNumber };
@@ -545,7 +553,6 @@ private:
 public:
   bool GetIsUndef() const;
   UnicodeString GetModeStr() const;
-  UnicodeString GetSimplestStr() const;
   void SetNumber(uint16_t Value);
   UnicodeString GetText() const;
   void SetText(const UnicodeString Value);
@@ -690,7 +697,7 @@ public:
   bool IsDirectory{false};
   TFileInfo Local;
   TFileInfo Remote;
-  intptr_t ImageIndex{-1};
+  int32_t ImageIndex{-1};
   bool Checked{true};
   TRemoteFile *RemoteFile{nullptr};
 
@@ -721,7 +728,7 @@ public:
   enum TAction {
     saNone, saUploadNew, saDownloadNew, saUploadUpdate, saDownloadUpdate, saDeleteRemote, saDeleteLocal };
 #endif // #if 0
-  static const intptr_t ActionCount = saDeleteLocal;
+  static const int32_t ActionCount = saDeleteLocal;
 
 #if 0
   class TItem
@@ -791,14 +798,14 @@ protected:
 public:
   void SetMasks(UnicodeString Value);
 
-  intptr_t GetCount() const;
-  intptr_t GetCheckedCount() const;
-  const TChecklistItem *GetItem(intptr_t Index) const;
+  int32_t GetCount() const;
+  int32_t GetCheckedCount() const;
+  const TChecklistItem *GetItem(int32_t Index) const;
 
 private:
   std::unique_ptr<TList> FList;
 
-  static intptr_t Compare(const void *AItem1, const void *AItem2);
+  static int32_t Compare(const void *AItem1, const void *AItem2);
 };
 
 class TFileOperationProgressType;
@@ -809,7 +816,7 @@ public:
   explicit TSynchronizeProgress(const TSynchronizeChecklist * Checklist) noexcept;
 
   void ItemProcessed(const TChecklistItem* ChecklistItem);
-  intptr_t Progress(const TFileOperationProgressType * CurrentItemOperationProgress) const;
+  int32_t Progress(const TFileOperationProgressType * CurrentItemOperationProgress) const;
   TDateTime TimeLeft(const TFileOperationProgressType * CurrentItemOperationProgress) const;
 
 private:
