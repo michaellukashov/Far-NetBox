@@ -19,15 +19,18 @@ __removed #include <typeinfo>
 #define PERMISSIONS_SWITCH "permissions"
 #define NOPERMISSIONS_SWITCH "nopermissions"
 #define SPEED_SWITCH "speed"
-#define TRANSFER_SWITCH "transfer"
-#define FILEMASK_SWITCH "filemask"
-#define RESUMESUPPORT_SWITCH "resumesupport"
-#define NEWERONLY_SWITCH "neweronly"
-#define NONEWERONLY_SWITCH "noneweronly"
-#define DELETE_SWITCH "delete"
-#define REFRESH_SWITCH "refresh"
-#define RAWTRANSFERSETTINGS_SWITCH "rawtransfersettings"
-extern const wchar_t *TransferModeNames[];
+#define TRANSFER_SWITCH L"transfer"
+#define FILEMASK_SWITCH L"filemask"
+#define RESUMESUPPORT_SWITCH L"resumesupport"
+#define NEWERONLY_SWICH L"neweronly"
+#define NONEWERONLY_SWICH L"noneweronly"
+#define DELETE_SWITCH L"delete"
+#define REFRESH_SWITCH L"refresh"
+#define RAWTRANSFERSETTINGS_SWITCH L"rawtransfersettings"
+#define USERNAME_SWITCH L"username"
+#define PASSWORD_SWITCH L"password"
+#define PRIVATEKEY_SWITCH L"privatekey"
+extern const wchar_t * TransferModeNames[];
 extern const int TransferModeNamesCount;
 extern const wchar_t *ToggleNames[];
 enum TToggle { ToggleOff, ToggleOn };
@@ -50,6 +53,7 @@ NB_CORE_EXPORT void BusyEnd(void *Token);
 NB_CORE_EXPORT static const uint32_t GUIUpdateInterval = 100;
 NB_CORE_EXPORT void SetNoGUI();
 NB_CORE_EXPORT bool ProcessGUI(bool Force = false);
+void SystemRequired();
 NB_CORE_EXPORT UnicodeString GetAppNameString();
 NB_CORE_EXPORT UnicodeString GetSshVersionString();
 NB_CORE_EXPORT void CopyToClipboard(UnicodeString Text);
@@ -101,7 +105,7 @@ struct NB_CORE_EXPORT TQueryButtonAlias : public TObject
 {
   TQueryButtonAlias() noexcept;
 
-  uintptr_t Button{0};
+  uint32_t Button{0};
   UnicodeString Alias;
   TButtonSubmitEvent OnSubmit;
   int GroupWith{0};
@@ -126,22 +130,23 @@ __removed enum TQueryType { qtConfirmation, qtWarning, qtError, qtInformation };
 struct NB_CORE_EXPORT TQueryParams : public TObject
 {
 //  TQueryParams() noexcept = delete;
-  explicit TQueryParams(uintptr_t AParams = 0, const UnicodeString AHelpKeyword = HELP_NONE) noexcept;
+  explicit TQueryParams(uint32_t AParams = 0, const UnicodeString AHelpKeyword = HELP_NONE) noexcept;
   explicit TQueryParams(const TQueryParams &Source) noexcept;
 
   void Assign(const TQueryParams &Source);
 
   const TQueryButtonAlias *Aliases{nullptr};
-  uintptr_t AliasesCount{0};
-  uintptr_t Params{0};
-  uintptr_t Timer{0};
+  uint32_t AliasesCount{0};
+  uint32_t Params{0};
+  uint32_t Timer{0};
   TQueryParamsTimerEvent TimerEvent;
   UnicodeString TimerMessage;
   uint32_t TimerAnswers{0};
   TQueryType TimerQueryType;
-  uintptr_t Timeout{0};
-  uintptr_t TimeoutAnswer{0};
-  uintptr_t NoBatchAnswers{0};
+  uint32_t Timeout{0};
+  uint32_t TimeoutAnswer{0};
+  unsigned int TimeoutResponse{0};
+  uint32_t NoBatchAnswers{0};
   UnicodeString HelpKeyword;
 
 public:
@@ -159,6 +164,7 @@ enum TPromptKind
   pkKeybInteractive,
   pkPassword,
   pkNewPassword,
+  pkProxyAuth
 };
 
 enum TPromptUserParam { pupEcho = 0x01, pupRemember = 0x02, };
@@ -166,24 +172,15 @@ enum TPromptUserParam { pupEcho = 0x01, pupRemember = 0x02, };
 NB_CORE_EXPORT bool IsAuthenticationPrompt(TPromptKind Kind);
 NB_CORE_EXPORT bool IsPasswordOrPassphrasePrompt(TPromptKind Kind, TStrings *Prompts);
 NB_CORE_EXPORT bool IsPasswordPrompt(TPromptKind Kind, TStrings *Prompts);
+void AnswerNameAndCaption(uint32_t Answer, UnicodeString & Name, UnicodeString & Caption);
 class TTerminal;
 class TRemoteFile;
 
-#if 0
-typedef void (__closure *TFileFoundEvent)
-  (TTerminal *Terminal, const UnicodeString FileName, const TRemoteFile * File,
-  bool & Cancel);
-#endif // #if 0
 using TFileFoundEvent = nb::FastDelegate4<void,
-  TTerminal * /*Terminal*/, UnicodeString /*FileName*/,
-  const TRemoteFile * /*File*/,
+  TTerminal * /*Terminal*/, const UnicodeString /*FileName*/, const TRemoteFile * /*File*/,
   bool & /*Cancel*/>;
-#if 0
-typedef void (__closure *TFindingFileEvent)
-(TTerminal *Terminal, const UnicodeString Directory, bool &Cancel);
-#endif // #if 0
 using TFindingFileEvent = nb::FastDelegate3<void,
-  TTerminal * /*Terminal*/, UnicodeString /*ADirectory*/, bool & /*Cancel*/>;
+  TTerminal * /*Terminal*/, const UnicodeString /*ADirectory*/, bool & /*Cancel*/>;
 
 class NB_CORE_EXPORT TOperationVisualizer
 {
@@ -195,7 +192,7 @@ public:
 
 private:
   bool FUseBusyCursor{false};
-  void *FToken{nullptr};
+  void * FToken{nullptr};
 };
 
 class NB_CORE_EXPORT TInstantOperationVisualizer : public TOperationVisualizer
