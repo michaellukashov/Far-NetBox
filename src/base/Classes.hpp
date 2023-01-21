@@ -199,7 +199,7 @@ public:
   int32_t GetCount() const;
   void SetCount(int32_t NewCount);
 
-  ROProperty<intptr_t> Count{nb::bind(&TList::GetCount, this)};
+  ROProperty<int32_t> Count{nb::bind(&TList::GetCount, this)};
 
 private:
   nb::vector_t<void *> FList;

@@ -386,12 +386,12 @@ protected:
   bool FArmed{true};
 };
 
-class TAutoNestingCounter : public TValueRestorer<intptr_t>
+class TAutoNestingCounter : public TValueRestorer<int32_t>
 {
 public:
   TAutoNestingCounter() = delete;
   inline explicit TAutoNestingCounter(int32_t &Target) :
-    TValueRestorer<intptr_t>(Target)
+    TValueRestorer<int32_t>(Target)
   {
     DebugAssert(Target >= 0);
     ++Target;
