@@ -47,7 +47,7 @@ public:
 public:
   int32_t GetCount() const;
   int32_t GetCountIncludingHidden() const;
-  void Notify(void *Ptr, TListNotification Action) override;
+  virtual void Notify(void *Ptr, TListNotification Action) override;
   void SetCount(int32_t Value);
 protected:
   int32_t FHiddenCount{0};

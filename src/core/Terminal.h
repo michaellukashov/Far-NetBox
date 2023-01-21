@@ -419,7 +419,7 @@ protected:
   void AnnounceFileListOperation();
   void ReadDirectory(TRemoteFileList *AFileList);
   void CustomReadDirectory(TRemoteFileList *AFileList);
-  void DoCreateLink(const UnicodeString AFileName, UnicodeString APointTo, bool Symbolic);
+  void DoCreateLink(const UnicodeString AFileName, const UnicodeString APointTo, bool Symbolic);
   bool TerminalCreateLocalFile(const UnicodeString ATargetFileName,
     TFileOperationProgressType * OperationProgress, HANDLE *AHandle,
     bool NoConfirmation);
@@ -522,9 +522,9 @@ protected:
   virtual void DisplayBanner(const UnicodeString ABanner) override;
   virtual void Closed() override;
   virtual void ProcessGUI() override;
-  virtual void Progress(TFileOperationProgressType * OperationProgress);
+  void Progress(TFileOperationProgressType * OperationProgress);
   virtual void HandleExtendedException(Exception * E) override;
-  virtual bool IsListenerFree(uint32_t PortNumber) const;
+  bool IsListenerFree(uint32_t PortNumber) const;
   void DoProgress(TFileOperationProgressType & ProgressData);
   void DoFinished(TFileOperation Operation, TOperationSide Side, bool Temp,
     const UnicodeString AFileName, bool Success, TOnceDoneOperation &OnceDoneOperation);
@@ -902,7 +902,7 @@ public:
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TSecondaryTerminal) || TTerminal::is(Kind); }
 public:
   TSecondaryTerminal() noexcept : TTerminal(OBJECT_CLASS_TSecondaryTerminal) {}
-  explicit TSecondaryTerminal(TTerminal *MainTerminal) noexcept;
+  explicit TSecondaryTerminal(TTerminal * MainTerminal) noexcept;
   explicit TSecondaryTerminal(TObjectClassId Kind, TTerminal *MainTerminal) noexcept;
   virtual ~TSecondaryTerminal() = default;
   void Init(TSessionData * ASessionData, TConfiguration * AConfiguration,
@@ -992,6 +992,7 @@ public:
 };
 
 #if 0
+moved to FileSystems.h
 struct TOverwriteFileParams
 {
   TOverwriteFileParams();
@@ -1122,7 +1123,7 @@ public:
   void RemoveClient();
   int32_t GetNext(
     TTerminal *Terminal, UnicodeString &AFileName, TObject *&Object, UnicodeString &ATargetDir,
-    bool &Dir, bool &Recursed, bool &FirstLevel);
+    bool &Dir, bool &Recursed);
   void Done(const UnicodeString AFileName, bool Dir, bool Success);
   bool UpdateFileList(TQueueFileList * UpdateFileList);
 

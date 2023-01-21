@@ -13,6 +13,10 @@
 THttp::THttp() noexcept :
   FResponseHeaders(std::make_unique<TStringList>())
 {
+  FProxyPort = 0;
+  FOnDownload = nullptr;
+  FOnError = nullptr;
+  FResponseLimit = -1;
 }
 
 THttp::~THttp() noexcept
@@ -100,7 +104,7 @@ void THttp::SendRequest(const char *Method, const UnicodeString Request)
 
         // Exception has precedence over status as status will always be NE_ERROR,
         // as we returned 1 from NeonBodyReader
-        if (FException != nullptr)
+        if (FException.get() != nullptr)
         {
           RethrowException(FException.get());
         }

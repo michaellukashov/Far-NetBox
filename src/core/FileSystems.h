@@ -86,6 +86,7 @@ public:
   {
   }
 
+  TModificationFmt DestPrecision;
   int64_t SourceSize{0};
   int64_t DestSize{0};
   TDateTime SourceTimestamp{};
