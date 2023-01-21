@@ -7,7 +7,7 @@
 #include <cassert>
 
 #include <FormatUtils.h>
-//---------------------------------------------------------------------------
+
 #define FORMAT(S, ...) nb::Sprintf((S), __VA_ARGS__)
 #define FMTLOAD(Id, ...) nb::FmtLoadStr((Id), __VA_ARGS__)
 #ifndef LENOF
@@ -16,9 +16,13 @@
 #define FLAGSET(SET, FLAG) (((SET) & (FLAG)) == (FLAG))
 #define FLAGCLEAR(SET, FLAG) (((SET) & (FLAG)) == 0)
 #define FLAGMASK(ENABLE, FLAG) ((ENABLE) ? (FLAG) : 0)
-//---------------------------------------------------------------------------
+
 #include <System.SyncObjs.hpp>
-//---------------------------------------------------------------------------
+
+extern const UnicodeString EmptyString;
+
+UnicodeString NormalizeString(const UnicodeString & S);
+
 class NB_CORE_EXPORT TGuard
 {
   CUSTOM_MEM_ALLOCATION_IMPL
@@ -31,7 +35,7 @@ public:
 private:
   const TCriticalSection &FCriticalSection;
 };
-//---------------------------------------------------------------------------
+
 class NB_CORE_EXPORT TUnguard
 {
   CUSTOM_MEM_ALLOCATION_IMPL
@@ -44,8 +48,8 @@ public:
 private:
   TCriticalSection &FCriticalSection;
 };
-//---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
+
+
 //#include <assert.h>
 #define ACCESS_VIOLATION_TEST { (*((int*)nullptr)) = 0; }
 #if !defined(_DEBUG) || defined(DESIGN_ONLY)
@@ -58,7 +62,7 @@ NB_CORE_EXPORT void DoAssert(const wchar_t *Message, const wchar_t *Filename, ui
 #define DebugCheck(p) { bool __CHECK_RESULT__ = (p); DebugAssert(__CHECK_RESULT__); }
 #define DebugFail() DebugAssert(false)
 #endif // if !defined(_DEBUG) || defined(DESIGN_ONLY)
-//---------------------------------------------------------------------------
+
 #define DebugAlwaysTrue(p) (p)
 #define DebugAlwaysFalse(p) (p)
 #define DebugNotNull(p) (p)
@@ -66,7 +70,7 @@ NB_CORE_EXPORT void DoAssert(const wchar_t *Message, const wchar_t *Filename, ui
 #define TraceInitStr(p) (p)
 #define DebugUsedParam(p) (void)(p)
 #define DebugUsedArg(p)
-//---------------------------------------------------------------------------
+
 #if defined(_DEBUG)
 NB_CORE_EXPORT void SetTraceFile(HANDLE ATraceFile);
 NB_CORE_EXPORT void CleanupTracing();

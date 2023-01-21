@@ -1,5 +1,6 @@
 
 #include <vcl.h>
+//#pragma hdrstop
 
 #ifdef _DEBUG
 //#include <cstdio>
@@ -9,35 +10,47 @@
 #endif // ifdef _DEBUG
 
 #include <Global.h>
-//---------------------------------------------------------------------------
+
 __removed #pragma package(smart_init)
-//---------------------------------------------------------------------------
+
+const UnicodeString EmptyString(TraceInitStr(L"\1\1\1")); // magic
+
+UnicodeString NormalizeString(const UnicodeString & S)
+{
+  UnicodeString Result = S;
+  if (Result == EmptyString)
+  {
+    Result = UnicodeString();
+  }
+  return Result;
+}
+
 // TGuard
-//---------------------------------------------------------------------------
+
 TGuard::TGuard(const TCriticalSection &ACriticalSection) noexcept :
   FCriticalSection(ACriticalSection)
 {
   FCriticalSection.Enter();
 }
-//---------------------------------------------------------------------------
+
 TGuard::~TGuard() noexcept
 {
   FCriticalSection.Leave();
 }
-//---------------------------------------------------------------------------
+
 // TUnguard
-//---------------------------------------------------------------------------
+
 TUnguard::TUnguard(TCriticalSection &ACriticalSection) noexcept :
   FCriticalSection(ACriticalSection)
 {
   FCriticalSection.Leave();
 }
-//---------------------------------------------------------------------------
+
 TUnguard::~TUnguard() noexcept
 {
   FCriticalSection.Enter();
 }
-//---------------------------------------------------------------------------
+
 #ifdef _DEBUG
 
 static HANDLE TraceFile = nullptr;
