@@ -4,6 +4,7 @@
 #include <Common.h>
 
 class TConfiguration;
+extern TConfiguration *Configuration;
 class TStoredSessionList;
 NB_CORE_EXPORT extern TStoredSessionList *StoredSessions;
 extern bool AnySession;
@@ -16,6 +17,7 @@ NB_CORE_EXPORT void CoreInitialize();
 NB_CORE_EXPORT void CoreFinalize();
 NB_CORE_EXPORT void CoreSetResourceModule(void *ResourceHandle);
 NB_CORE_EXPORT void CoreMaintenanceTask();
+void CoreUpdateFinalStaticUsage();
 NB_CORE_EXPORT TConfiguration *GetConfiguration();
 
 NB_CORE_EXPORT UnicodeString NeonVersion();

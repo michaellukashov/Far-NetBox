@@ -18,7 +18,7 @@ __removed #pragma package(smart_init)
 
 __removed TConfiguration * Configuration = nullptr;
 TStoredSessionList *StoredSessions = nullptr;
-TApplicationLog * ApplicationLog = NULL;
+TApplicationLog * ApplicationLog = nullptr;
 bool AnySession = false;
 
 TQueryButtonAlias::TQueryButtonAlias() noexcept :
@@ -70,7 +70,7 @@ TQueryButtonAlias TQueryButtonAlias::CreateIgnoreAsRenameGrouppedWithNo()
   return Result;
 }
 
-TQueryParams::TQueryParams(uintptr_t AParams, const UnicodeString AHelpKeyword) noexcept :
+TQueryParams::TQueryParams(uint32_t AParams, const UnicodeString AHelpKeyword) noexcept :
   Aliases(nullptr),
   AliasesCount(0),
   Params(AParams),
