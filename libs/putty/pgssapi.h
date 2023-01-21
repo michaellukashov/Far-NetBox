@@ -16,7 +16,7 @@
  */
 #ifdef STATIC_GSSAPI
 #include <gssapi/gssapi.h>
-typedef gss_OID const_gss_OID;         /* for our prototypes below */
+typedef gss_OID const_gss_OID;	       /* for our prototypes below */
 #else /* STATIC_GSSAPI */
 
 /*******************************************************************************
@@ -26,40 +26,36 @@ typedef gss_OID const_gss_OID;         /* for our prototypes below */
 /* GSSAPI Type Definitions */
 typedef uint32 OM_uint32;
 
-typedef struct gss_OID_desc_struct
-{
-  OM_uint32 length;
-  void* elements;
+typedef struct gss_OID_desc_struct {
+    OM_uint32 length;
+    void *elements;
 } gss_OID_desc;
-typedef const gss_OID_desc* const_gss_OID;
-typedef gss_OID_desc* gss_OID;
+typedef const gss_OID_desc *const_gss_OID;
+typedef gss_OID_desc *gss_OID;
 
-typedef struct gss_OID_set_desc_struct
-{
-  size_t  count;
-  gss_OID elements;
+typedef struct gss_OID_set_desc_struct  {
+    size_t  count;
+    gss_OID elements;
 } gss_OID_set_desc;
-typedef const gss_OID_set_desc* const_gss_OID_set;
-typedef gss_OID_set_desc* gss_OID_set;
+typedef const gss_OID_set_desc *const_gss_OID_set;
+typedef gss_OID_set_desc *gss_OID_set;
 
-typedef struct gss_buffer_desc_struct
-{
-  size_t length;
-  void* value;
+typedef struct gss_buffer_desc_struct {
+    size_t length;
+    void *value;
 } gss_buffer_desc, *gss_buffer_t;
 
-typedef struct gss_channel_bindings_struct
-{
-  OM_uint32 initiator_addrtype;
-  gss_buffer_desc initiator_address;
-  OM_uint32 acceptor_addrtype;
-  gss_buffer_desc acceptor_address;
-  gss_buffer_desc application_data;
-}* gss_channel_bindings_t;
+typedef struct gss_channel_bindings_struct {
+    OM_uint32 initiator_addrtype;
+    gss_buffer_desc initiator_address;
+    OM_uint32 acceptor_addrtype;
+    gss_buffer_desc acceptor_address;
+    gss_buffer_desc application_data;
+} *gss_channel_bindings_t;
 
-typedef void* gss_ctx_id_t;
-typedef void* gss_name_t;
-typedef void* gss_cred_id_t;
+typedef void * gss_ctx_id_t;
+typedef void * gss_name_t;
+typedef void * gss_cred_id_t;
 
 typedef OM_uint32 gss_qop_t;
 
@@ -229,71 +225,70 @@ extern const gss_OID GSS_MECH_KRB5;
 #define GSS_CC
 #endif /*GSS_CC*/
 
-typedef OM_uint32 (GSS_CC* t_gss_release_cred)
-(OM_uint32*                     /*minor_status*/,
-  gss_cred_id_t*                 /*cred_handle*/);
+typedef OM_uint32 (GSS_CC *t_gss_release_cred)
+            (OM_uint32                    * /*minor_status*/,
+             gss_cred_id_t                * /*cred_handle*/);
 
-typedef OM_uint32 (GSS_CC* t_gss_init_sec_context)
-(OM_uint32*                     /*minor_status*/,
-  const gss_cred_id_t            /*initiator_cred_handle*/,
-  gss_ctx_id_t*                  /*context_handle*/,
-  const gss_name_t               /*target_name*/,
-  const gss_OID                  /*mech_type*/,
-  OM_uint32                      /*req_flags*/,
-  OM_uint32                      /*time_req*/,
-  const gss_channel_bindings_t   /*input_chan_bindings*/,
-  const gss_buffer_t             /*input_token*/,
-  gss_OID*                       /*actual_mech_type*/,
-  gss_buffer_t                   /*output_token*/,
-  OM_uint32*                     /*ret_flags*/,
-  OM_uint32*                     /*time_rec*/);
+typedef OM_uint32 (GSS_CC *t_gss_init_sec_context)
+            (OM_uint32                    * /*minor_status*/,
+             const gss_cred_id_t            /*initiator_cred_handle*/,
+             gss_ctx_id_t                 * /*context_handle*/,
+             const gss_name_t               /*target_name*/,
+             const gss_OID                  /*mech_type*/,
+             OM_uint32                      /*req_flags*/,
+             OM_uint32                      /*time_req*/,
+             const gss_channel_bindings_t   /*input_chan_bindings*/,
+             const gss_buffer_t             /*input_token*/,
+             gss_OID                      * /*actual_mech_type*/,
+             gss_buffer_t                   /*output_token*/,
+             OM_uint32                    * /*ret_flags*/,
+             OM_uint32                    * /*time_rec*/);
 
-typedef OM_uint32 (GSS_CC* t_gss_delete_sec_context)
-(OM_uint32*                     /*minor_status*/,
-  gss_ctx_id_t*                  /*context_handle*/,
-  gss_buffer_t                   /*output_token*/);
+typedef OM_uint32 (GSS_CC *t_gss_delete_sec_context)
+            (OM_uint32                    * /*minor_status*/,
+             gss_ctx_id_t                 * /*context_handle*/,
+             gss_buffer_t                   /*output_token*/);
 
-typedef OM_uint32 (GSS_CC* t_gss_get_mic)
-(OM_uint32*                     /*minor_status*/,
-  const gss_ctx_id_t             /*context_handle*/,
-  gss_qop_t                      /*qop_req*/,
-  const gss_buffer_t             /*message_buffer*/,
-  gss_buffer_t                   /*msg_token*/);
+typedef OM_uint32 (GSS_CC *t_gss_get_mic)
+            (OM_uint32                    * /*minor_status*/,
+             const gss_ctx_id_t             /*context_handle*/,
+             gss_qop_t                      /*qop_req*/,
+             const gss_buffer_t             /*message_buffer*/,
+             gss_buffer_t                   /*msg_token*/);
 
-typedef OM_uint32 (GSS_CC* t_gss_display_status)
-(OM_uint32*                    /*minor_status*/,
-  OM_uint32                     /*status_value*/,
-  int                           /*status_type*/,
-  const gss_OID                 /*mech_type*/,
-  OM_uint32*                    /*message_context*/,
-  gss_buffer_t                  /*status_string*/);
-
-
-typedef OM_uint32 (GSS_CC* t_gss_import_name)
-(OM_uint32*                    /*minor_status*/,
-  const gss_buffer_t            /*input_name_buffer*/,
-  const_gss_OID                 /*input_name_type*/,
-  gss_name_t*                   /*output_name*/);
+typedef OM_uint32 (GSS_CC *t_gss_display_status)
+            (OM_uint32                   * /*minor_status*/,
+             OM_uint32                     /*status_value*/,
+             int                           /*status_type*/,
+             const gss_OID                 /*mech_type*/,
+             OM_uint32                   * /*message_context*/,
+             gss_buffer_t                  /*status_string*/);
 
 
-typedef OM_uint32 (GSS_CC* t_gss_release_name)
-(OM_uint32*                    /*minor_status*/,
-  gss_name_t*                   /*name*/);
+typedef OM_uint32 (GSS_CC *t_gss_import_name)
+            (OM_uint32                   * /*minor_status*/,
+             const gss_buffer_t            /*input_name_buffer*/,
+             const_gss_OID                 /*input_name_type*/,
+             gss_name_t                  * /*output_name*/);
 
-typedef OM_uint32 (GSS_CC* t_gss_release_buffer)
-(OM_uint32*                    /*minor_status*/,
-  gss_buffer_t                  /*buffer*/);
 
-struct gssapi_functions
-{
-  t_gss_delete_sec_context delete_sec_context;
-  t_gss_display_status display_status;
-  t_gss_get_mic get_mic;
-  t_gss_import_name import_name;
-  t_gss_init_sec_context init_sec_context;
-  t_gss_release_buffer release_buffer;
-  t_gss_release_cred release_cred;
-  t_gss_release_name release_name;
+typedef OM_uint32 (GSS_CC *t_gss_release_name)
+            (OM_uint32                   * /*minor_status*/,
+             gss_name_t                  * /*name*/);
+
+typedef OM_uint32 (GSS_CC *t_gss_release_buffer)
+            (OM_uint32                   * /*minor_status*/,
+             gss_buffer_t                  /*buffer*/);
+
+struct gssapi_functions {
+    t_gss_delete_sec_context delete_sec_context;
+    t_gss_display_status display_status;
+    t_gss_get_mic get_mic;
+    t_gss_import_name import_name;
+    t_gss_init_sec_context init_sec_context;
+    t_gss_release_buffer release_buffer;
+    t_gss_release_cred release_cred;
+    t_gss_release_name release_name;
 };
 
 #endif /* NO_GSSAPI */

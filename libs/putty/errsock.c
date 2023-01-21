@@ -5,71 +5,72 @@
 #include <stdio.h>
 #include <assert.h>
 
-#define DEFINE_PLUG_METHOD_MACROS
 #include "tree234.h"
 #include "putty.h"
 #include "network.h"
 
-typedef struct Socket_error_tag* Error_Socket;
+typedef struct {
+    char *error;
+    Plug *plug;
 
-struct Socket_error_tag
+    Socket sock;
+} ErrorSocket;
+
+static Plug *sk_error_plug(Socket *s, Plug *p)
 {
-  const struct socket_function_table* fn;
-  /* the above variable absolutely *must* be the first in this structure */
+    ErrorSocket *es = container_of(s, ErrorSocket, sock);
+    Plug *ret = es->plug;
+    if (p)
+        es->plug = p;
+    return ret;
+}
 
-  char* error;
-  Plug plug;
+static void sk_error_close(Socket *s)
+{
+    ErrorSocket *es = container_of(s, ErrorSocket, sock);
+
+    sfree(es->error);
+    sfree(es);
+}
+
+static const char *sk_error_socket_error(Socket *s)
+{
+    ErrorSocket *es = container_of(s, ErrorSocket, sock);
+    return es->error;
+}
+
+static SocketPeerInfo *sk_error_peer_info(Socket *s)
+{
+    return NULL;
+}
+
+static const SocketVtable ErrorSocket_sockvt = {
+    // WINSCP
+    /*.plug =*/ sk_error_plug,
+    /*.close =*/ sk_error_close,
+    NULL, NULL, NULL, NULL, // WINSCP
+    /*.socket_error =*/ sk_error_socket_error,
+    /*.peer_info =*/ sk_error_peer_info,
+    /* other methods are NULL */
 };
 
-static Plug sk_error_plug(Socket s, Plug p)
+Socket *new_error_socket_consume_string(Plug *plug, char *errmsg)
 {
-  Error_Socket ps = (Error_Socket) s;
-  Plug ret = ps->plug;
-  if (p)
-    ps->plug = p;
-  return ret;
+    ErrorSocket *es = snew(ErrorSocket);
+    es->sock.vt = &ErrorSocket_sockvt;
+    es->plug = plug;
+    es->error = errmsg;
+    return &es->sock;
 }
 
-static void sk_error_close(Socket s)
+Socket *new_error_socket_fmt(Plug *plug, const char *fmt, ...)
 {
-  Error_Socket ps = (Error_Socket) s;
+    va_list ap;
+    char *msg;
 
-  sfree(ps->error);
-  sfree(ps);
-}
+    va_start(ap, fmt);
+    msg = dupvprintf(fmt, ap);
+    va_end(ap);
 
-static const char* sk_error_socket_error(Socket s)
-{
-  Error_Socket ps = (Error_Socket) s;
-  return ps->error;
-}
-
-static char* sk_error_peer_info(Socket s)
-{
-  return NULL;
-}
-
-Socket new_error_socket(const char* errmsg, Plug plug)
-{
-  static const struct socket_function_table socket_fn_table =
-  {
-    sk_error_plug,
-    sk_error_close,
-    NULL /* write */,
-    NULL /* write_oob */,
-    NULL /* write_eof */,
-    NULL /* flush */,
-    NULL /* set_frozen */,
-    sk_error_socket_error,
-    sk_error_peer_info,
-  };
-
-  Error_Socket ret;
-
-  ret = snew(struct Socket_error_tag);
-  ret->fn = &socket_fn_table;
-  ret->plug = plug;
-  ret->error = dupstr(errmsg);
-
-  return (Socket) ret;
+    return new_error_socket_consume_string(plug, msg);
 }
