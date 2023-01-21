@@ -27,12 +27,12 @@ NB_CORE_EXPORT bool EndsText(UnicodeString SubStr, UnicodeString Str)
   return EndsStr(SubStr, Str);
 }
 
-NB_CORE_EXPORT UnicodeString LeftStr(UnicodeString AStr, intptr_t Len)
+NB_CORE_EXPORT UnicodeString LeftStr(UnicodeString AStr, int32_t Len)
 {
   return AStr.SubString(Len);
 }
 
-NB_CORE_EXPORT UnicodeString EncodeBase64(const char* AStr, intptr_t Len)
+NB_CORE_EXPORT UnicodeString EncodeBase64(const char* AStr, int32_t Len)
 {
   UnicodeString Result;
   return Result;

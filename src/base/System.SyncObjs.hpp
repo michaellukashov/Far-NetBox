@@ -13,9 +13,9 @@ public:
   void Enter() const;
   void Leave() const;
 
-  intptr_t GetAcquired() const { return FAcquired; }
+  int32_t GetAcquired() const { return FAcquired; }
 
 private:
   mutable CRITICAL_SECTION FSection{};
-  mutable intptr_t FAcquired{0};
+  mutable int32_t FAcquired{0};
 };

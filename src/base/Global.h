@@ -57,7 +57,7 @@ private:
 #define DebugCheck(p)    (p)
 #define DebugFail()      (void)0
 #else // if !defined(_DEBUG) || defined(DESIGN_ONLY)
-NB_CORE_EXPORT void DoAssert(const wchar_t *Message, const wchar_t *Filename, uintptr_t LineNumber);
+NB_CORE_EXPORT void DoAssert(const wchar_t *Message, const wchar_t *Filename, uint32_t LineNumber);
 #define DebugAssert(p) ((p) ? (void)0 : DoAssert(TEXT(#p), TEXT(__FILE__), __LINE__))
 #define DebugCheck(p) { bool __CHECK_RESULT__ = (p); DebugAssert(__CHECK_RESULT__); }
 #define DebugFail() DebugAssert(false)
@@ -76,12 +76,12 @@ NB_CORE_EXPORT void SetTraceFile(HANDLE ATraceFile);
 NB_CORE_EXPORT void CleanupTracing();
 #define TRACEENV "WINSCPTRACE"
 NB_CORE_EXPORT extern bool IsTracing;
-NB_CORE_EXPORT extern const uintptr_t CallstackTlsOff;
-NB_CORE_EXPORT extern uintptr_t CallstackTls;
+NB_CORE_EXPORT extern const uint32_t CallstackTlsOff;
+NB_CORE_EXPORT extern uint32_t CallstackTls;
 extern "C" NB_CORE_EXPORT void DoTrace(const wchar_t *SourceFile, const wchar_t *Func,
-  uintptr_t Line, const wchar_t *Message);
+  uint32_t Line, const wchar_t *Message);
 NB_CORE_EXPORT void DoTraceFmt(const wchar_t *SourceFile, const wchar_t *Func,
-  uintptr_t Line, const wchar_t *AFormat, fmt::ArgList args);
+  uint32_t Line, const wchar_t *AFormat, fmt::ArgList args);
 FMT_VARIADIC_W(void, DoTraceFmt, const wchar_t *, const wchar_t *, uintptr_t, const wchar_t *)
 
 #ifdef TRACE_IN_MEMORY
@@ -92,7 +92,7 @@ NB_CORE_EXPORT void TraceInMemoryCallback(const wchar_t *Msg);
 
 #define ACCESS_VIOLATION_TEST { (*((int*)nullptr)) = 0; }
 
-inline bool DoAlwaysTrue(bool Value, const wchar_t *Message, const wchar_t *Filename, uintptr_t LineNumber)
+inline bool DoAlwaysTrue(bool Value, const wchar_t *Message, const wchar_t *Filename, uint32_t LineNumber)
 {
   if (!Value)
   {
@@ -101,7 +101,7 @@ inline bool DoAlwaysTrue(bool Value, const wchar_t *Message, const wchar_t *File
   return Value;
 }
 
-inline bool DoAlwaysFalse(bool Value, const wchar_t *Message, const wchar_t *Filename, uintptr_t LineNumber)
+inline bool DoAlwaysFalse(bool Value, const wchar_t *Message, const wchar_t *Filename, uint32_t LineNumber)
 {
   if (Value)
   {
@@ -111,7 +111,7 @@ inline bool DoAlwaysFalse(bool Value, const wchar_t *Message, const wchar_t *Fil
 }
 
 template<typename T>
-inline T *DoCheckNotNull(T *p, const wchar_t *Message, const wchar_t *Filename, uintptr_t LineNumber)
+inline T *DoCheckNotNull(T *p, const wchar_t *Message, const wchar_t *Filename, uint32_t LineNumber)
 {
   if (p == nullptr)
   {

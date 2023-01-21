@@ -55,8 +55,8 @@ TUnguard::~TUnguard() noexcept
 
 static HANDLE TraceFile = nullptr;
 bool IsTracing = false;
-const uintptr_t CallstackTlsOff = static_cast<uintptr_t>(-1);
-uintptr_t CallstackTls = CallstackTlsOff;
+const uint32_t CallstackTlsOff = static_cast<uintptr_t>(-1);
+uint32_t CallstackTls = CallstackTlsOff;
 TCriticalSection *TracingCriticalSection = nullptr;
 
 bool TracingInMemory = false;
@@ -173,7 +173,7 @@ int TraceThreadProc(void *)
 #ifdef TRACE_IN_MEMORY_NO_FORMATTING
 
 void DoTrace(const wchar_t *SourceFile, const wchar_t *Func,
-  uintptr_t Line, const wchar_t *Message)
+  uint32_t Line, const wchar_t *Message)
 {
   if (TracingCriticalSection != nullptr)
   {
@@ -199,7 +199,7 @@ void DoTrace(const wchar_t *SourceFile, const wchar_t *Func,
 }
 
 void DoTraceFmt(const wchar_t *SourceFile, const wchar_t *Func,
-  uintptr_t Line, const wchar_t *AFormat, TVarRec * /*Args*/, const int /*Args_Size*/)
+  uint32_t Line, const wchar_t *AFormat, TVarRec * /*Args*/, const int /*Args_Size*/)
 {
   DoTrace(SourceFile, Func, Line, AFormat);
 }
@@ -274,7 +274,7 @@ void TraceInMemoryCallback(const wchar_t *Msg)
 #ifndef TRACE_IN_MEMORY_NO_FORMATTING
 
 void DoTrace(const wchar_t *SourceFile, const wchar_t *Func,
-  uintptr_t Line, const wchar_t *Message)
+  uint32_t Line, const wchar_t *Message)
 {
   DebugAssert(IsTracing);
 
@@ -313,7 +313,7 @@ void DoTrace(const wchar_t *SourceFile, const wchar_t *Func,
 }
 
 void DoTraceFmt(const wchar_t *SourceFile, const wchar_t *Func,
-  uintptr_t Line, const wchar_t *AFormat, fmt::ArgList args)
+  uint32_t Line, const wchar_t *AFormat, fmt::ArgList args)
 {
   DebugAssert(IsTracing);
 
@@ -323,7 +323,7 @@ void DoTraceFmt(const wchar_t *SourceFile, const wchar_t *Func,
 
 #endif // TRACE_IN_MEMORY_NO_FORMATTING
 
-void DoAssert(const wchar_t *Message, const wchar_t *Filename, uintptr_t LineNumber)
+void DoAssert(const wchar_t *Message, const wchar_t *Filename, uint32_t LineNumber)
 {
   if (IsTracing)
   {

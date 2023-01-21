@@ -19,7 +19,7 @@ UnicodeString Sprintf(const UnicodeString fmt, fmt::ArgList args)
   return UnicodeString(w.data(), ToIntPtr(w.size()));
 }
 
-UnicodeString FmtLoadStr(intptr_t id, fmt::ArgList args)
+UnicodeString FmtLoadStr(int32_t id, fmt::ArgList args)
 {
   Expects(GetGlobals() != nullptr);
   UnicodeString Fmt = GetGlobals()->GetMsg(id);

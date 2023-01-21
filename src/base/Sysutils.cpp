@@ -69,7 +69,7 @@ Exception::Exception(TObjectClassId Kind, std::exception *E) noexcept :
 {
 }
 
-Exception::Exception(TObjectClassId Kind, const UnicodeString Msg, intptr_t AHelpContext) noexcept :
+Exception::Exception(TObjectClassId Kind, const UnicodeString Msg, int32_t AHelpContext) noexcept :
   std::runtime_error(""),
   FKind(Kind),
   Message(Msg)
@@ -78,14 +78,14 @@ Exception::Exception(TObjectClassId Kind, const UnicodeString Msg, intptr_t AHel
   (void)AHelpContext;
 }
 
-Exception::Exception(TObjectClassId Kind, Exception *E, intptr_t Ident) noexcept :
+Exception::Exception(TObjectClassId Kind, Exception *E, int32_t Ident) noexcept :
   std::runtime_error(E ? E->what() : ""),
   FKind(Kind)
 {
   Message = FMTLOAD(Ident);
 }
 
-Exception::Exception(TObjectClassId Kind, intptr_t Ident) noexcept :
+Exception::Exception(TObjectClassId Kind, int32_t Ident) noexcept :
   std::runtime_error(""),
   FKind(Kind)
 {
@@ -123,13 +123,13 @@ void Randomize()
 
 namespace Sysutils {
 
-UnicodeString IntToStr(intptr_t Value)
+UnicodeString IntToStr(int32_t Value)
 {
   UnicodeString Result = FORMAT("%d", Value);
   return Result;
 }
 
-UnicodeString UIntToStr(uintptr_t Value)
+UnicodeString UIntToStr(uint32_t Value)
 {
   UnicodeString Result = FORMAT("%u", Value);
   return Result;
@@ -141,7 +141,7 @@ UnicodeString Int64ToStr(int64_t Value)
   return Result;
 }
 
-intptr_t StrToIntPtr(const UnicodeString Value)
+int32_t StrToIntPtr(const UnicodeString Value)
 {
   int64_t Result = 0;
   if (TryStrToInt64(Value, Result))
@@ -161,7 +161,7 @@ int64_t StrToInt64(const UnicodeString Value)
   return 0;
 }
 
-intptr_t StrToIntDef(const UnicodeString Value, intptr_t DefVal)
+int32_t StrToIntDef(const UnicodeString Value, int32_t DefVal)
 {
   int64_t Result = DefVal;
   if (TryStrToInt64(Value, Result))
@@ -195,7 +195,7 @@ bool TryStrToInt64(const UnicodeString StrValue, int64_t &Value)
   return Result;
 }
 
-bool TryStrToInt(const UnicodeString StrValue, intptr_t &Value)
+bool TryStrToInt(const UnicodeString StrValue, int32_t &Value)
 {
   int64_t Val{0};
   bool res = TryStrToInt64(StrValue, Val);
@@ -212,8 +212,8 @@ UnicodeString Trim(const UnicodeString Str)
 UnicodeString TrimLeft(const UnicodeString Str)
 {
   UnicodeString Result = Str;
-  const intptr_t Len = Result.Length();
-  intptr_t Pos = 1;
+  const int32_t Len = Result.Length();
+  int32_t Pos = 1;
   while ((Pos <= Len) && (Result[Pos] == L' '))
     Pos++;
   if (Pos > 1)
@@ -224,7 +224,7 @@ UnicodeString TrimLeft(const UnicodeString Str)
 UnicodeString TrimRight(const UnicodeString Str)
 {
   UnicodeString Result = Str;
-  intptr_t Len = Result.Length();
+  int32_t Len = Result.Length();
   while (Len > 0 &&
     ((Result[Len] == L' ') || (Result[Len] == L'\n') || (Result[Len] == L'\r') || (Result[Len] == L'\x00')))
   {
@@ -260,7 +260,7 @@ UnicodeString AnsiReplaceStr(const UnicodeString Str, const UnicodeString From,
   const UnicodeString To)
 {
   UnicodeString Result = Str;
-  intptr_t Pos;
+  int32_t Pos;
   while ((Pos = Result.Pos(From)) > 0)
   {
     Result.Replace(Pos, From.Length(), To);
@@ -268,15 +268,15 @@ UnicodeString AnsiReplaceStr(const UnicodeString Str, const UnicodeString From,
   return Result;
 }
 
-intptr_t AnsiPos(const UnicodeString Str, wchar_t Ch)
+int32_t AnsiPos(const UnicodeString Str, wchar_t Ch)
 {
-  const intptr_t Result = Str.Pos(Ch);
+  const int32_t Result = Str.Pos(Ch);
   return Result;
 }
 
-intptr_t Pos(const UnicodeString Str, const UnicodeString Substr)
+int32_t Pos(const UnicodeString Str, const UnicodeString Substr)
 {
-  const intptr_t Result = Str.Pos(Substr.c_str());
+  const int32_t Result = Str.Pos(Substr.c_str());
   return Result;
 }
 
@@ -285,12 +285,12 @@ UnicodeString StringReplaceAll(const UnicodeString Str, const UnicodeString From
   return AnsiReplaceStr(Str, From, To);
 }
 
-bool IsDelimiter(const UnicodeString Delimiters, const UnicodeString Str, intptr_t AIndex)
+bool IsDelimiter(const UnicodeString Delimiters, const UnicodeString Str, int32_t AIndex)
 {
   if (AIndex <= Str.Length())
   {
     const wchar_t Ch = Str[AIndex];
-    for (intptr_t Index = 1; Index <= Delimiters.Length(); ++Index)
+    for (int32_t Index = 1; Index <= Delimiters.Length(); ++Index)
     {
       if (Delimiters[Index] == Ch)
       {
@@ -301,11 +301,11 @@ bool IsDelimiter(const UnicodeString Delimiters, const UnicodeString Str, intptr
   return false;
 }
 
-intptr_t FirstDelimiter(const UnicodeString Delimiters, const UnicodeString Str)
+int32_t FirstDelimiter(const UnicodeString Delimiters, const UnicodeString Str)
 {
   if (Str.Length())
   {
-    for (intptr_t Index = 1; Index <= Str.Length(); ++Index)
+    for (int32_t Index = 1; Index <= Str.Length(); ++Index)
     {
       if (Str.IsDelimiter(Delimiters, Index))
       {
@@ -316,11 +316,11 @@ intptr_t FirstDelimiter(const UnicodeString Delimiters, const UnicodeString Str)
   return 0;
 }
 
-intptr_t LastDelimiter(const UnicodeString Delimiters, const UnicodeString Str)
+int32_t LastDelimiter(const UnicodeString Delimiters, const UnicodeString Str)
 {
   if (Str.Length())
   {
-    for (intptr_t Index = Str.Length(); Index >= 1; --Index)
+    for (int32_t Index = Str.Length(); Index >= 1; --Index)
     {
       if (Str.IsDelimiter(Delimiters, Index))
       {
@@ -341,18 +341,18 @@ int StringCmpI(const wchar_t *S1, const wchar_t *S2)
   return ::CompareString(0, NORM_IGNORECASE | SORT_STRINGSORT, S1, -1, S2, -1) - 2;
 }
 
-intptr_t CompareText(const UnicodeString Str1, const UnicodeString Str2)
+int32_t CompareText(const UnicodeString Str1, const UnicodeString Str2)
 {
   return StringCmp(Str1.c_str(), Str2.c_str());
 }
 
-intptr_t AnsiCompare(const UnicodeString Str1, const UnicodeString Str2)
+int32_t AnsiCompare(const UnicodeString Str1, const UnicodeString Str2)
 {
   return StringCmp(Str1.c_str(), Str2.c_str());
 }
 
 // Case-sensitive compare
-intptr_t AnsiCompareStr(const UnicodeString Str1, const UnicodeString Str2)
+int32_t AnsiCompareStr(const UnicodeString Str1, const UnicodeString Str2)
 {
   return StringCmp(Str1.c_str(), Str2.c_str());
 }
@@ -367,12 +367,12 @@ bool SameText(const UnicodeString Str1, const UnicodeString Str2)
   return AnsiSameText(Str1, Str2);
 }
 
-intptr_t AnsiCompareText(const UnicodeString Str1, const UnicodeString Str2)
+int32_t AnsiCompareText(const UnicodeString Str1, const UnicodeString Str2)
 {
   return StringCmpI(Str1.c_str(), Str2.c_str());
 }
 
-intptr_t AnsiCompareIC(const UnicodeString Str1, const UnicodeString Str2)
+int32_t AnsiCompareIC(const UnicodeString Str1, const UnicodeString Str2)
 {
   return AnsiCompareText(Str1, Str2);
 }
@@ -402,16 +402,16 @@ bool ContainsText(const UnicodeString Str1, const UnicodeString Str2)
   return AnsiContainsText(Str1, Str2);
 }
 
-UnicodeString RightStr(const UnicodeString Str, intptr_t ACount)
+UnicodeString RightStr(const UnicodeString Str, int32_t ACount)
 {
   UnicodeString Result = Str.SubString(Str.Length() - ACount, ACount);
   return Result;
 }
 
-intptr_t PosEx(const UnicodeString SubStr, const UnicodeString Str, intptr_t Offset)
+int32_t PosEx(const UnicodeString SubStr, const UnicodeString Str, int32_t Offset)
 {
   UnicodeString S = Str.SubString(Offset);
-  const intptr_t Result = S.Pos(SubStr) + Offset;
+  const int32_t Result = S.Pos(SubStr) + Offset;
   return Result;
 }
 
@@ -420,14 +420,14 @@ UnicodeString UTF8ToString(const RawByteString Str)
   return UnicodeString(Str.c_str(), Str.GetLength(), CP_UTF8);
 }
 
-UnicodeString UTF8ToString(const char *Str, intptr_t Len)
+UnicodeString UTF8ToString(const char *Str, int32_t Len)
 {
   if (!Str || !*Str || !Len)
   {
     return UnicodeString(L"");
   }
 
-  const intptr_t reqLength = ::MultiByteToWideChar(CP_UTF8, 0, Str, nb::ToInt(Len), nullptr, 0);
+  const int32_t reqLength = ::MultiByteToWideChar(CP_UTF8, 0, Str, nb::ToInt(Len), nullptr, 0);
   UnicodeString Result;
   if (reqLength)
   {
@@ -552,7 +552,7 @@ UnicodeString SysUtulsFileSearch(const UnicodeString AFileName, const UnicodeStr
   const UnicodeString PathSeparators = L"/\\";
   do
   {
-    intptr_t Index = ::Pos(Temp, PathSeparators);
+    int32_t Index = ::Pos(Temp, PathSeparators);
     while ((Temp.Length() > 0) && (Index == 0))
     {
       Temp.Delete(1, 1);
@@ -683,11 +683,11 @@ NextWord(const wchar_t *Input)
   return Buffer.c_str();
 }
 
-UnicodeString WrapText(const UnicodeString Line, intptr_t MaxWidth)
+UnicodeString WrapText(const UnicodeString Line, int32_t MaxWidth)
 {
   UnicodeString Result;
 
-  intptr_t LenBuffer = 0;
+  int32_t LenBuffer = 0;
 
   if (MaxWidth == 0)
   {
@@ -703,7 +703,7 @@ UnicodeString WrapText(const UnicodeString Line, intptr_t MaxWidth)
    */
   while (Result.Length() == 0)
   {
-    intptr_t LineCount = 0;
+    int32_t LineCount = 0;
     wchar_t *w = nullptr;
 
     if (LenBuffer)
@@ -726,7 +726,7 @@ UnicodeString WrapText(const UnicodeString Line, intptr_t MaxWidth)
     const wchar_t *s = NextWord(Line.c_str());
     while (s && *s)
     {
-      intptr_t SpaceLeft = MaxWidth;
+      int32_t SpaceLeft = MaxWidth;
 
       /* force the first word to always be completely copied */
       while (s && *s)
@@ -844,18 +844,18 @@ void AppendPathDelimiterW(UnicodeString &Str)
 UnicodeString ExpandEnvVars(const UnicodeString Str)
 {
   UnicodeString Buf(nb::NB_MAX_PATH, 0);
-  const intptr_t Size = ::ExpandEnvironmentStringsW(Str.c_str(), ToWChar(Buf), nb::ToDWord(nb::NB_MAX_PATH - 1));
+  const int32_t Size = ::ExpandEnvironmentStringsW(Str.c_str(), ToWChar(Buf), nb::ToDWord(nb::NB_MAX_PATH - 1));
   UnicodeString Result = UnicodeString(Buf.c_str(), Size - 1);
   return Result;
 }
 
-UnicodeString StringOfChar(const wchar_t Ch, intptr_t Len)
+UnicodeString StringOfChar(const wchar_t Ch, int32_t Len)
 {
   UnicodeString Result;
   if (Len < 0)
     Len = 0;
   Result.SetLength(Len);
-  for (intptr_t Index = 1; Index <= Len; ++Index)
+  for (int32_t Index = 1; Index <= Len; ++Index)
   {
     Result[Index] = Ch;
   }
@@ -878,7 +878,7 @@ UnicodeString ExtractFileExt(const UnicodeString AFileName)
 UnicodeString ExpandFileName(const UnicodeString AFileName)
 {
   UnicodeString Buf(nb::NB_MAX_PATH + 1, 0);
-  intptr_t Size = ::GetFullPathNameW(ApiPath(AFileName).c_str(), nb::ToDWord(Buf.Length() - 1),
+  int32_t Size = ::GetFullPathNameW(ApiPath(AFileName).c_str(), nb::ToDWord(Buf.Length() - 1),
       reinterpret_cast<LPWSTR>(ToWChar(Buf)), nullptr);
   if (Size > Buf.Length())
   {
@@ -940,10 +940,10 @@ bool Win32Check(bool RetVal)
   return RetVal;
 }
 
-UnicodeString SysErrorMessage(intptr_t ErrorCode)
+UnicodeString SysErrorMessage(int32_t ErrorCode)
 {
   wchar_t Buffer[255];
-  intptr_t Len = ::FormatMessageW(FORMAT_MESSAGE_FROM_SYSTEM |
+  int32_t Len = ::FormatMessageW(FORMAT_MESSAGE_FROM_SYSTEM |
       FORMAT_MESSAGE_ARGUMENT_ARRAY, nullptr, nb::ToInt(ErrorCode), 0,
       static_cast<LPTSTR>(Buffer),
       _countof(Buffer), nullptr);
@@ -961,7 +961,7 @@ UnicodeString ReplaceStrAll(const UnicodeString Str, const UnicodeString What, c
   UnicodeString Result = Str;
   if (What != ByWhat)
   {
-    intptr_t Pos = Result.Pos(What);
+    int32_t Pos = Result.Pos(What);
     while (Pos > 0)
     {
       Result.Replace(Pos, What.Length(), ByWhat.c_str(), ByWhat.Length());
@@ -1006,7 +1006,7 @@ UnicodeString ExtractFilename(const UnicodeString APath, wchar_t Delimiter)
 UnicodeString ExtractFileExtension(const UnicodeString APath, wchar_t Delimiter)
 {
   UnicodeString FileName = ::ExtractFilename(APath, Delimiter);
-  const intptr_t N = FileName.RPos(L'.');
+  const int32_t N = FileName.RPos(L'.');
   if (N > 0)
   {
     return FileName.SubString(N);
@@ -1050,7 +1050,7 @@ UnicodeString ExcludeTrailingBackslash(const UnicodeString Str)
 UnicodeString IncludeTrailingBackslash(const UnicodeString Str)
 {
   UnicodeString Result = Str;
-  const intptr_t L = Result.Length();
+  const int32_t L = Result.Length();
   if ((L == 0) || ((Result[L] != L'/') && (Result[L] != L'\\')))
   {
     Result += L'\\';
@@ -1066,7 +1066,7 @@ UnicodeString IncludeTrailingPathDelimiter(const UnicodeString Str)
 UnicodeString ExtractFileDir(const UnicodeString Str)
 {
   UnicodeString Result;
-  const intptr_t Pos = Str.LastDelimiter(L"/\\");
+  const int32_t Pos = Str.LastDelimiter(L"/\\");
   // it used to return Path when no slash was found
   if (Pos > 1)
   {
@@ -1094,7 +1094,7 @@ UnicodeString GetCurrentDir()
 UnicodeString StrToHex(const UnicodeString Str, bool UpperCase, wchar_t Separator)
 {
   UnicodeString Result;
-  for (intptr_t Index = 1; Index <= Str.Length(); ++Index)
+  for (int32_t Index = 1; Index <= Str.Length(); ++Index)
   {
     Result += CharToHex(Str[Index], UpperCase);
     if ((Separator != L'\0') && (Index <= Str.Length()))
@@ -1109,13 +1109,13 @@ UnicodeString HexToStr(const UnicodeString Hex)
 {
   UnicodeString Digits = "0123456789ABCDEF";
   UnicodeString Result;
-  const intptr_t L = Hex.Length() - 1;
+  const int32_t L = Hex.Length() - 1;
   if (L % 2 == 0)
   {
-    for (intptr_t Index = 1; Index <= Hex.Length(); Index += 2)
+    for (int32_t Index = 1; Index <= Hex.Length(); Index += 2)
     {
-      const intptr_t P1 = Digits.FindFirstOf(::UpCase(Hex[Index]));
-      const intptr_t P2 = Digits.FindFirstOf(::UpCase(Hex[Index + 1]));
+      const int32_t P1 = Digits.FindFirstOf(::UpCase(Hex[Index]));
+      const int32_t P2 = Digits.FindFirstOf(::UpCase(Hex[Index + 1]));
       if ((P1 == nb::NPOS) || (P2 == nb::NPOS))
       {
         Result.Clear();
@@ -1127,14 +1127,14 @@ UnicodeString HexToStr(const UnicodeString Hex)
   return Result;
 }
 
-uintptr_t HexToIntPtr(const UnicodeString Hex, uintptr_t MinChars)
+uint32_t HexToIntPtr(const UnicodeString Hex, uint32_t MinChars)
 {
   UnicodeString Digits = "0123456789ABCDEF";
-  uintptr_t Result = 0;
-  intptr_t Index = 1;
+  uint32_t Result = 0;
+  int32_t Index = 1;
   while (Index <= Hex.Length())
   {
-    const intptr_t A = Digits.FindFirstOf(UpCase(Hex[Index]));
+    const int32_t A = Digits.FindFirstOf(UpCase(Hex[Index]));
     if (A == nb::NPOS)
     {
       if ((nb::ToIntPtr(MinChars) == nb::NPOS) || (Index <= nb::ToIntPtr(MinChars)))
@@ -1151,13 +1151,13 @@ uintptr_t HexToIntPtr(const UnicodeString Hex, uintptr_t MinChars)
   return Result;
 }
 
-UnicodeString IntToHex(uintptr_t Int, uintptr_t MinChars)
+UnicodeString IntToHex(uint32_t Int, uint32_t MinChars)
 {
   UnicodeString Result = FORMAT("%X", Int);
-  const intptr_t Pad = MinChars - Result.Length();
+  const int32_t Pad = MinChars - Result.Length();
   if (Pad > 0)
   {
-    for (intptr_t Index = 0; Index < Pad; ++Index)
+    for (int32_t Index = 0; Index < Pad; ++Index)
     {
       Result.Insert(L'0', 1);
     }
@@ -1165,19 +1165,19 @@ UnicodeString IntToHex(uintptr_t Int, uintptr_t MinChars)
   return Result;
 }
 
-char HexToChar(const UnicodeString Hex, uintptr_t MinChars)
+char HexToChar(const UnicodeString Hex, uint32_t MinChars)
 {
   return static_cast<char>(HexToIntPtr(Hex, MinChars));
 }
 
-static void ConvertError(intptr_t ErrorID)
+static void ConvertError(int32_t ErrorID)
 {
   const UnicodeString Msg = FMTLOAD(ErrorID, 0);
   throw EConvertError(Msg);
 }
 
-static void DivMod(const uintptr_t Dividend, uintptr_t Divisor,
-  uintptr_t &Result, uintptr_t &Remainder)
+static void DivMod(const uint32_t Dividend, uint32_t Divisor,
+  uint32_t &Result, uint32_t &Remainder)
 {
   Result = Dividend / Divisor;
   Remainder = Dividend % Divisor;
@@ -1202,14 +1202,14 @@ static bool DecodeDateFully(const TDateTime &DateTime,
   }
   DOW = T % 7 + 1;
   T--;
-  uintptr_t Y = 1;
+  uint32_t Y = 1;
   while (T >= D400)
   {
     T -= D400;
     Y += 400;
   }
-  uintptr_t D = 0;
-  uintptr_t I = 0;
+  uint32_t D = 0;
+  uint32_t I = 0;
   DivMod(T, D100, I, D);
   if (I == 4)
   {
@@ -1228,7 +1228,7 @@ static bool DecodeDateFully(const TDateTime &DateTime,
   Y += I;
   const bool Result = IsLeapYear(nb::ToWord(Y));
   const TDayTable *DayTable = &MonthDays[Result];
-  uintptr_t M = 1;
+  uint32_t M = 1;
   while (true)
   {
     I = (*DayTable)[M - 1];
@@ -1255,9 +1255,9 @@ void DecodeDate(const TDateTime &DateTime, uint16_t &Year,
 void DecodeTime(const TDateTime &DateTime, uint16_t &Hour,
   uint16_t &Min, uint16_t &Sec, uint16_t &MSec)
 {
-  uintptr_t MinCount, MSecCount;
+  uint32_t MinCount, MSecCount;
   DivMod(DateTimeToTimeStamp(DateTime).Time, 60000, MinCount, MSecCount);
-  uintptr_t H, M, S, MS;
+  uint32_t H, M, S, MS;
   DivMod(MinCount, 60, H, M);
   DivMod(MSecCount, 1000, S, MS);
   Hour = static_cast<uint16_t>(H);
@@ -1543,8 +1543,8 @@ Boolean IsLeapYear(Word Year)
 UnicodeString StripHotkey(const UnicodeString AText)
 {
   UnicodeString Result = AText;
-  intptr_t Len = Result.Length();
-  intptr_t Pos = 1;
+  int32_t Len = Result.Length();
+  int32_t Pos = 1;
   while (Pos <= Len)
   {
     if (Result[Pos] == L'&')
@@ -1565,9 +1565,9 @@ bool StartsText(const UnicodeString ASubText, const UnicodeString AText)
   return AText.Pos(ASubText) == 1;
 }
 
-uintptr_t StrToVersionNumber(const UnicodeString VersionMumberStr)
+uint32_t StrToVersionNumber(const UnicodeString VersionMumberStr)
 {
-  uintptr_t Result = 0;
+  uint32_t Result = 0;
   UnicodeString Version = VersionMumberStr;
   int Shift = 16;
   while (!Version.IsEmpty())
@@ -1580,7 +1580,7 @@ uintptr_t StrToVersionNumber(const UnicodeString VersionMumberStr)
   return Result;
 }
 
-UnicodeString VersionNumberToStr(uintptr_t VersionNumber)
+UnicodeString VersionNumberToStr(uint32_t VersionNumber)
 {
   const DWORD Major = (VersionNumber >> 16) & 0xFF;
   const DWORD Minor = (VersionNumber >> 8) & 0xFF;

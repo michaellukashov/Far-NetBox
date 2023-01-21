@@ -18,7 +18,7 @@ FMT_VARIADIC_W(const UnicodeString, Format, const UnicodeString)
 NB_CORE_EXPORT UnicodeString Sprintf(const UnicodeString fmt, fmt::ArgList args);
 FMT_VARIADIC_W(const UnicodeString, Sprintf, const UnicodeString)
 
-NB_CORE_EXPORT UnicodeString FmtLoadStr(intptr_t id, fmt::ArgList args);
+NB_CORE_EXPORT UnicodeString FmtLoadStr(int32_t id, fmt::ArgList args);
 FMT_VARIADIC_W(const UnicodeString, FmtLoadStr, intptr_t)
 
 } // namespace nb

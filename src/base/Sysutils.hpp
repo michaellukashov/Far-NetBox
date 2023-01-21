@@ -92,9 +92,9 @@ public:
   explicit Exception(const UnicodeString Msg) noexcept;
   explicit Exception(TObjectClassId Kind, Exception *E) noexcept;
   explicit Exception(TObjectClassId Kind, std::exception *E) noexcept;
-  explicit Exception(TObjectClassId Kind, const UnicodeString Msg, intptr_t AHelpContext) noexcept;
-  explicit Exception(TObjectClassId Kind, Exception *E, intptr_t Ident) noexcept;
-  explicit Exception(TObjectClassId Kind, intptr_t Ident) noexcept;
+  explicit Exception(TObjectClassId Kind, const UnicodeString Msg, int32_t AHelpContext) noexcept;
+  explicit Exception(TObjectClassId Kind, Exception *E, int32_t Ident) noexcept;
+  explicit Exception(TObjectClassId Kind, int32_t Ident) noexcept;
   virtual ~Exception() = default;
 
 private:
@@ -212,12 +212,12 @@ NB_CORE_EXPORT UnicodeString IncludeTrailingPathDelimiter(const UnicodeString St
 
 NB_CORE_EXPORT UnicodeString StrToHex(const UnicodeString Str, bool UpperCase = true, wchar_t Separator = L'\0');
 NB_CORE_EXPORT UnicodeString HexToStr(const UnicodeString Hex);
-NB_CORE_EXPORT uintptr_t HexToIntPtr(const UnicodeString Hex, uintptr_t MinChars = 0);
-NB_CORE_EXPORT UnicodeString IntToHex(uintptr_t Int, uintptr_t MinChars = 0);
-NB_CORE_EXPORT char HexToChar(const UnicodeString Hex, uintptr_t MinChars = 0);
+NB_CORE_EXPORT uint32_t HexToIntPtr(const UnicodeString Hex, uint32_t MinChars = 0);
+NB_CORE_EXPORT UnicodeString IntToHex(uint32_t Int, uint32_t MinChars = 0);
+NB_CORE_EXPORT char HexToChar(const UnicodeString Hex, uint32_t MinChars = 0);
 
 NB_CORE_EXPORT UnicodeString ReplaceStrAll(const UnicodeString Str, const UnicodeString What, const UnicodeString ByWhat);
-NB_CORE_EXPORT UnicodeString SysErrorMessage(intptr_t ErrorCode);
+NB_CORE_EXPORT UnicodeString SysErrorMessage(int32_t ErrorCode);
 
 NB_CORE_EXPORT bool TryStrToDateTime(const UnicodeString StrValue, TDateTime &Value, TFormatSettings &FormatSettings);
 NB_CORE_EXPORT UnicodeString DateTimeToStr(UnicodeString &Result, const UnicodeString Format,
@@ -245,43 +245,43 @@ NB_CORE_EXPORT UnicodeString LowerCase(const UnicodeString Str);
 NB_CORE_EXPORT wchar_t UpCase(const wchar_t Ch);
 NB_CORE_EXPORT wchar_t LowCase(const wchar_t Ch);
 NB_CORE_EXPORT UnicodeString AnsiReplaceStr(const UnicodeString Str, const UnicodeString From, const UnicodeString To);
-NB_CORE_EXPORT intptr_t AnsiPos(const UnicodeString Str, wchar_t Ch);
-NB_CORE_EXPORT intptr_t Pos(const UnicodeString Str, const UnicodeString Substr);
+NB_CORE_EXPORT int32_t AnsiPos(const UnicodeString Str, wchar_t Ch);
+NB_CORE_EXPORT int32_t Pos(const UnicodeString Str, const UnicodeString Substr);
 NB_CORE_EXPORT UnicodeString StringReplaceAll(const UnicodeString Str, const UnicodeString From, const UnicodeString To);
-NB_CORE_EXPORT bool IsDelimiter(const UnicodeString Delimiters, const UnicodeString Str, intptr_t AIndex);
-NB_CORE_EXPORT intptr_t FirstDelimiter(const UnicodeString Delimiters, const UnicodeString Str);
-NB_CORE_EXPORT intptr_t LastDelimiter(const UnicodeString Delimiters, const UnicodeString Str);
+NB_CORE_EXPORT bool IsDelimiter(const UnicodeString Delimiters, const UnicodeString Str, int32_t AIndex);
+NB_CORE_EXPORT int32_t FirstDelimiter(const UnicodeString Delimiters, const UnicodeString Str);
+NB_CORE_EXPORT int32_t LastDelimiter(const UnicodeString Delimiters, const UnicodeString Str);
 
-NB_CORE_EXPORT intptr_t CompareText(const UnicodeString Str1, const UnicodeString Str2);
-NB_CORE_EXPORT intptr_t AnsiCompare(const UnicodeString Str1, const UnicodeString Str2);
-NB_CORE_EXPORT intptr_t AnsiCompareStr(const UnicodeString Str1, const UnicodeString Str2);
+NB_CORE_EXPORT int32_t CompareText(const UnicodeString Str1, const UnicodeString Str2);
+NB_CORE_EXPORT int32_t AnsiCompare(const UnicodeString Str1, const UnicodeString Str2);
+NB_CORE_EXPORT int32_t AnsiCompareStr(const UnicodeString Str1, const UnicodeString Str2);
 NB_CORE_EXPORT bool AnsiSameText(const UnicodeString Str1, const UnicodeString Str2);
 NB_CORE_EXPORT bool SameText(const UnicodeString Str1, const UnicodeString Str2);
-NB_CORE_EXPORT intptr_t AnsiCompareText(const UnicodeString Str1, const UnicodeString Str2);
-NB_CORE_EXPORT intptr_t AnsiCompareIC(const UnicodeString Str1, const UnicodeString Str2);
+NB_CORE_EXPORT int32_t AnsiCompareText(const UnicodeString Str1, const UnicodeString Str2);
+NB_CORE_EXPORT int32_t AnsiCompareIC(const UnicodeString Str1, const UnicodeString Str2);
 NB_CORE_EXPORT bool AnsiSameStr(const UnicodeString Str1, const UnicodeString Str2);
 NB_CORE_EXPORT bool AnsiContainsText(const UnicodeString Str1, const UnicodeString Str2);
 NB_CORE_EXPORT bool ContainsStr(const AnsiString Str1, const AnsiString Str2);
 NB_CORE_EXPORT bool ContainsStr(const UnicodeString Str1, const UnicodeString Str2);
 NB_CORE_EXPORT bool ContainsText(const UnicodeString Str1, const UnicodeString Str2);
-NB_CORE_EXPORT UnicodeString RightStr(const UnicodeString Str, intptr_t ACount);
-NB_CORE_EXPORT intptr_t PosEx(const UnicodeString SubStr, const UnicodeString Str, intptr_t Offset = 1);
+NB_CORE_EXPORT UnicodeString RightStr(const UnicodeString Str, int32_t ACount);
+NB_CORE_EXPORT int32_t PosEx(const UnicodeString SubStr, const UnicodeString Str, int32_t Offset = 1);
 
 NB_CORE_EXPORT UnicodeString UTF8ToString(const RawByteString Str);
-NB_CORE_EXPORT UnicodeString UTF8ToString(const char *Str, intptr_t Len);
+NB_CORE_EXPORT UnicodeString UTF8ToString(const char *Str, int32_t Len);
 
 NB_CORE_EXPORT int StringCmp(const wchar_t *S1, const wchar_t *S2);
 NB_CORE_EXPORT int StringCmpI(const wchar_t *S1, const wchar_t *S2);
 
-NB_CORE_EXPORT UnicodeString IntToStr(intptr_t Value);
-NB_CORE_EXPORT UnicodeString UIntToStr(uintptr_t Value);
+NB_CORE_EXPORT UnicodeString IntToStr(int32_t Value);
+NB_CORE_EXPORT UnicodeString UIntToStr(uint32_t Value);
 NB_CORE_EXPORT UnicodeString Int64ToStr(int64_t Value);
-NB_CORE_EXPORT intptr_t StrToIntPtr(const UnicodeString Value);
-NB_CORE_EXPORT intptr_t StrToIntDef(const UnicodeString Value, intptr_t DefVal);
+NB_CORE_EXPORT int32_t StrToIntPtr(const UnicodeString Value);
+NB_CORE_EXPORT int32_t StrToIntDef(const UnicodeString Value, int32_t DefVal);
 NB_CORE_EXPORT int64_t StrToInt64(const UnicodeString Value);
 NB_CORE_EXPORT int64_t StrToInt64Def(const UnicodeString Value, int64_t DefVal);
 NB_CORE_EXPORT bool TryStrToInt64(const UnicodeString StrValue, int64_t &Value);
-NB_CORE_EXPORT bool TryStrToInt(const UnicodeString StrValue, intptr_t &Value);
+NB_CORE_EXPORT bool TryStrToInt(const UnicodeString StrValue, int32_t &Value);
 
 NB_CORE_EXPORT double StrToFloat(const UnicodeString Value);
 NB_CORE_EXPORT double StrToFloatDef(const UnicodeString Value, double DefVal);
@@ -309,7 +309,7 @@ NB_CORE_EXPORT bool SysUtulsCreateDir(const UnicodeString ADir, LPSECURITY_ATTRI
 NB_CORE_EXPORT bool SysUtulsMoveFile(const UnicodeString LocalFileName, const UnicodeString NewLocalFileName, DWORD AFlags);
 NB_CORE_EXPORT bool SysUtulsRemoveDir(const UnicodeString ADir);
 
-NB_CORE_EXPORT UnicodeString WrapText(const UnicodeString Line, intptr_t MaxWidth = 40);
+NB_CORE_EXPORT UnicodeString WrapText(const UnicodeString Line, int32_t MaxWidth = 40);
 
 NB_CORE_EXPORT UnicodeString TranslateExceptionMessage(Exception *E);
 
@@ -319,7 +319,7 @@ NB_CORE_EXPORT void AppendPathDelimiterW(UnicodeString &Str);
 
 NB_CORE_EXPORT UnicodeString ExpandEnvVars(const UnicodeString Str);
 
-NB_CORE_EXPORT UnicodeString StringOfChar(const wchar_t Ch, intptr_t Len);
+NB_CORE_EXPORT UnicodeString StringOfChar(const wchar_t Ch, int32_t Len);
 
 NB_CORE_EXPORT UnicodeString ChangeFileExt(const UnicodeString AFileName, const UnicodeString AExt,
   wchar_t Delimiter = L'/');
@@ -406,12 +406,12 @@ struct NB_CORE_EXPORT TVersionInfo
 };
 
 #define MAKEVERSIONNUMBER(major, minor, revision) ( ((major)<<16) | ((minor)<<8) | (revision))
-NB_CORE_EXPORT uintptr_t StrToVersionNumber(const UnicodeString VersionMumberStr);
-NB_CORE_EXPORT UnicodeString VersionNumberToStr(uintptr_t VersionNumber);
-NB_CORE_EXPORT uintptr_t inline GetVersionNumber219() { return MAKEVERSIONNUMBER(2, 1, 9); }
-NB_CORE_EXPORT uintptr_t inline GetVersionNumber2110() { return MAKEVERSIONNUMBER(2, 1, 10); }
-NB_CORE_EXPORT uintptr_t inline GetVersionNumber2121() { return MAKEVERSIONNUMBER(2, 1, 21); }
-NB_CORE_EXPORT uintptr_t inline GetCurrentVersionNumber() { return StrToVersionNumber(GetGlobals()->GetStrVersionNumber()); }
+NB_CORE_EXPORT uint32_t StrToVersionNumber(const UnicodeString VersionMumberStr);
+NB_CORE_EXPORT UnicodeString VersionNumberToStr(uint32_t VersionNumber);
+NB_CORE_EXPORT uint32_t inline GetVersionNumber219() { return MAKEVERSIONNUMBER(2, 1, 9); }
+NB_CORE_EXPORT uint32_t inline GetVersionNumber2110() { return MAKEVERSIONNUMBER(2, 1, 10); }
+NB_CORE_EXPORT uint32_t inline GetVersionNumber2121() { return MAKEVERSIONNUMBER(2, 1, 21); }
+NB_CORE_EXPORT uint32_t inline GetCurrentVersionNumber() { return StrToVersionNumber(GetGlobals()->GetStrVersionNumber()); }
 
 #if defined(__MINGW32__) && (__MINGW_GCC_VERSION < 50100)
 typedef struct _TIME_DYNAMIC_ZONE_INFORMATION

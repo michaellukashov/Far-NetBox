@@ -37,20 +37,20 @@ using TThreadID = DWORD;
 
 class Exception;
 
-constexpr intptr_t MonthsPerYear = 12;
-constexpr intptr_t DaysPerWeek = 7;
-constexpr intptr_t MinsPerHour = 60;
-constexpr intptr_t SecsPerMin = 60;
-constexpr intptr_t HoursPerDay = 24;
-constexpr intptr_t MSecsPerSec = 1000;
-constexpr intptr_t SecsPerHour = MinsPerHour * SecsPerMin;
-constexpr intptr_t MinsPerDay = HoursPerDay * MinsPerHour;
-constexpr intptr_t SecsPerDay = MinsPerDay * SecsPerMin;
-constexpr intptr_t MSecsPerDay = SecsPerDay * MSecsPerSec;
-constexpr intptr_t OneSecond = MSecsPerSec;
+constexpr int32_t MonthsPerYear = 12;
+constexpr int32_t DaysPerWeek = 7;
+constexpr int32_t MinsPerHour = 60;
+constexpr int32_t SecsPerMin = 60;
+constexpr int32_t HoursPerDay = 24;
+constexpr int32_t MSecsPerSec = 1000;
+constexpr int32_t SecsPerHour = MinsPerHour * SecsPerMin;
+constexpr int32_t MinsPerDay = HoursPerDay * MinsPerHour;
+constexpr int32_t SecsPerDay = MinsPerDay * SecsPerMin;
+constexpr int32_t MSecsPerDay = SecsPerDay * MSecsPerSec;
+constexpr int32_t OneSecond = MSecsPerSec;
 // Days between 1/1/0001 and 12/31/1899
-constexpr intptr_t DateDelta = 693594;
-constexpr intptr_t UnixDateDelta = 25569;
+constexpr int32_t DateDelta = 693594;
+constexpr int32_t UnixDateDelta = 25569;
 
 class TObject;
 
@@ -58,8 +58,8 @@ using TThreadMethod = nb::FastDelegate0<void>;
 using TNotifyEvent = nb::FastDelegate1<void, TObject * /*Sender*/>;
 
 NB_CORE_EXPORT void Abort();
-NB_CORE_EXPORT void Error(intptr_t Id, intptr_t ErrorId);
-NB_CORE_EXPORT void ThrowNotImplemented(intptr_t ErrorId);
+NB_CORE_EXPORT void Error(int32_t Id, int32_t ErrorId);
+NB_CORE_EXPORT void ThrowNotImplemented(int32_t ErrorId);
 
 enum class TObjectClassId {};
 #define NB_DEFINE_CLASS_ID(CLASS_ID) static constexpr TObjectClassId OBJECT_CLASS_ ## CLASS_ID = static_cast<TObjectClassId>(nb::counter_id())
@@ -165,7 +165,7 @@ enum TListNotification
   lnDeleted,
 };
 
-typedef intptr_t (CompareFunc)(const void *Item1, const void *Item2);
+typedef int32_t (CompareFunc)(const void *Item1, const void *Item2);
 
 NB_DEFINE_CLASS_ID(TList);
 class NB_CORE_EXPORT TList : public TPersistent
@@ -179,25 +179,25 @@ public:
   ~TList() override;
 
   template<class T>
-  T *GetAs(intptr_t Index) const { return get_as<T>(GetItem(Index)); }
-  void *operator[](intptr_t Index) const;
-  virtual void *GetItem(intptr_t Index) const { return FList[Index]; }
-  virtual void *GetItem(intptr_t Index) { return FList[Index]; }
-  void SetItem(intptr_t Index, void *Item);
-  intptr_t Add(void *Value);
+  T *GetAs(int32_t Index) const { return get_as<T>(GetItem(Index)); }
+  void *operator[](int32_t Index) const;
+  virtual void *GetItem(int32_t Index) const { return FList[Index]; }
+  virtual void *GetItem(int32_t Index) { return FList[Index]; }
+  void SetItem(int32_t Index, void *Item);
+  int32_t Add(void *Value);
   void *Extract(void *Item);
-  intptr_t Remove(void *Item);
-  virtual void Move(intptr_t CurIndex, intptr_t NewIndex);
-  virtual void Delete(intptr_t Index);
-  void Insert(intptr_t Index, void *Item);
-  intptr_t IndexOf(const void *Value) const;
+  int32_t Remove(void *Item);
+  virtual void Move(int32_t CurIndex, int32_t NewIndex);
+  virtual void Delete(int32_t Index);
+  void Insert(int32_t Index, void *Item);
+  int32_t IndexOf(const void *Value) const;
   virtual void Clear();
   void Sort(CompareFunc Func);
   virtual void Notify(void *Ptr, TListNotification Action);
   virtual void Sort();
 
-  intptr_t GetCount() const;
-  void SetCount(intptr_t NewCount);
+  int32_t GetCount() const;
+  void SetCount(int32_t NewCount);
 
   ROProperty<intptr_t> Count{nb::bind(&TList::GetCount, this)};
 
@@ -217,9 +217,9 @@ public:
   ~TObjectList() override;
 
   template<class T>
-  T *GetAs(intptr_t Index) const { return dyn_cast<T>(GetObj(Index)); }
-  TObject *operator[](intptr_t Index) const;
-  TObject *GetObj(intptr_t Index) const;
+  T *GetAs(int32_t Index) const { return dyn_cast<T>(GetObj(Index)); }
+  TObject *operator[](int32_t Index) const;
+  TObject *GetObj(int32_t Index) const;
   bool GetOwnsObjects() const { return FOwnsObjects; }
   void SetOwnsObjects(bool Value) { FOwnsObjects = Value; }
   void Notify(void *Ptr, TListNotification Action) override;
@@ -247,21 +247,21 @@ public:
   TStrings() noexcept;
   explicit TStrings(TObjectClassId Kind) noexcept;
   virtual ~TStrings() = default;
-  intptr_t Add(UnicodeString S, TObject *AObject = nullptr);
+  int32_t Add(UnicodeString S, TObject *AObject = nullptr);
   virtual UnicodeString GetTextStr() const;
   virtual void SetTextStr(UnicodeString Text);
   virtual void BeginUpdate();
   virtual void EndUpdate();
   virtual void SetUpdateState(bool Updating);
-  virtual intptr_t AddObject(UnicodeString S, TObject *AObject);
-  virtual void InsertObject(intptr_t Index, UnicodeString Key, TObject *AObject);
-  virtual intptr_t CompareStrings(UnicodeString S1, UnicodeString S2) const;
-  virtual intptr_t GetCount() const = 0;
-  virtual void Insert(intptr_t Index, UnicodeString AString, TObject *AObject = nullptr) = 0;
+  virtual int32_t AddObject(UnicodeString S, TObject *AObject);
+  virtual void InsertObject(int32_t Index, UnicodeString Key, TObject *AObject);
+  virtual int32_t CompareStrings(UnicodeString S1, UnicodeString S2) const;
+  virtual int32_t GetCount() const = 0;
+  virtual void Insert(int32_t Index, UnicodeString AString, TObject *AObject = nullptr) = 0;
   bool Equals(const TStrings *Value) const;
-  void Move(intptr_t CurIndex, intptr_t NewIndex) override;
-  virtual intptr_t IndexOf(UnicodeString S) const;
-  virtual intptr_t IndexOfName(UnicodeString Name) const;
+  void Move(int32_t CurIndex, int32_t NewIndex) override;
+  virtual int32_t IndexOf(UnicodeString S) const;
+  virtual int32_t IndexOfName(UnicodeString Name) const;
   UnicodeString ExtractName(UnicodeString S) const;
   void AddStrings(const TStrings *Strings);
   void Append(UnicodeString Value);
@@ -273,11 +273,11 @@ public:
   void SetQuoteChar(wchar_t Value) { FQuoteChar = Value; }
   UnicodeString GetDelimitedText() const;
   void SetDelimitedText(UnicodeString Value);
-  intptr_t GetUpdateCount() const { return FUpdateCount; }
+  int32_t GetUpdateCount() const { return FUpdateCount; }
   void Assign(const TPersistent *Source) override;
 
 public:
-  virtual void SetObj(intptr_t Index, TObject *AObject) = 0;
+  virtual void SetObj(int32_t Index, TObject *AObject) = 0;
   virtual bool GetSorted() const = 0;
   virtual void SetSorted(bool Value) = 0;
   virtual bool GetCaseSensitive() const = 0;
@@ -287,31 +287,31 @@ public:
   void SetCommaText(UnicodeString Value);
   virtual UnicodeString GetText() const;
   virtual void SetText(UnicodeString Text);
-  virtual const UnicodeString &GetStringRef(intptr_t Index) const = 0;
-  virtual const UnicodeString &GetString(intptr_t Index) const = 0;
-  virtual UnicodeString GetString(intptr_t Index) = 0;
-  virtual void SetString(intptr_t Index, UnicodeString S) = 0;
-  UnicodeString GetName(intptr_t Index) const;
-  void SetName(intptr_t Index, UnicodeString Value);
+  virtual const UnicodeString &GetStringRef(int32_t Index) const = 0;
+  virtual const UnicodeString &GetString(int32_t Index) const = 0;
+  virtual UnicodeString GetString(int32_t Index) = 0;
+  virtual void SetString(int32_t Index, UnicodeString S) = 0;
+  UnicodeString GetName(int32_t Index) const;
+  void SetName(int32_t Index, UnicodeString Value);
   UnicodeString GetValue(UnicodeString Name) const;
   void SetValue(UnicodeString Name, UnicodeString Value);
-  UnicodeString GetValueFromIndex(intptr_t Index) const;
+  UnicodeString GetValueFromIndex(int32_t Index) const;
 
 protected:
   TDuplicatesEnum FDuplicates{dupAccept};
   mutable wchar_t FDelimiter{};
   bool FStrictDelimiter{false};
   mutable wchar_t FQuoteChar{};
-  intptr_t FUpdateCount{0};
+  int32_t FUpdateCount{0};
 };
 
 class TStringList;
-typedef intptr_t (TStringListSortCompare)(TStringList *List, intptr_t Index1, intptr_t Index2);
+typedef int32_t (TStringListSortCompare)(TStringList *List, int32_t Index1, int32_t Index2);
 
 NB_DEFINE_CLASS_ID(TStringList);
 class NB_CORE_EXPORT TStringList : public TStrings
 {
-  friend intptr_t StringListCompareStrings(TStringList *List, intptr_t Index1, intptr_t Index2);
+  friend int32_t StringListCompareStrings(TStringList *List, int32_t Index1, int32_t Index2);
 public:
   static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TStringList); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TStringList) || TStrings::is(Kind); }
@@ -319,41 +319,41 @@ public:
   explicit TStringList(TObjectClassId Kind = OBJECT_CLASS_TStringList) noexcept;
   ~TStringList() override = default;
 
-  intptr_t Add(UnicodeString S);
-  intptr_t AddObject(UnicodeString S, TObject *AObject) override;
+  int32_t Add(UnicodeString S);
+  int32_t AddObject(UnicodeString S, TObject *AObject) override;
   void LoadFromFile(UnicodeString AFileName);
   TNotifyEvent GetOnChange() const { return FOnChange; }
   void SetOnChange(TNotifyEvent OnChange) { FOnChange = OnChange; }
   TNotifyEvent GetOnChanging() const { return FOnChanging; }
   void SetOnChanging(TNotifyEvent OnChanging) { FOnChanging = OnChanging; }
-  void InsertItem(intptr_t Index, UnicodeString S, TObject *AObject);
-  void QuickSort(intptr_t L, intptr_t R, TStringListSortCompare SCompare);
+  void InsertItem(int32_t Index, UnicodeString S, TObject *AObject);
+  void QuickSort(int32_t L, int32_t R, TStringListSortCompare SCompare);
 
   void Assign(const TPersistent *Source) override;
-  virtual bool Find(UnicodeString S, intptr_t &Index) const;
-  intptr_t IndexOf(UnicodeString S) const override;
-  void Delete(intptr_t Index) override;
-  void InsertObject(intptr_t Index, UnicodeString Key, TObject *AObject) override;
+  virtual bool Find(UnicodeString S, int32_t &Index) const;
+  int32_t IndexOf(UnicodeString S) const override;
+  void Delete(int32_t Index) override;
+  void InsertObject(int32_t Index, UnicodeString Key, TObject *AObject) override;
   void Sort() override;
   virtual void CustomSort(TStringListSortCompare ACompareFunc);
 
   void SetUpdateState(bool Updating) override;
   virtual void Changing();
   void Changed() override;
-  void Insert(intptr_t Index, UnicodeString S, TObject *AObject = nullptr) override;
-  intptr_t CompareStrings(UnicodeString S1, UnicodeString S2) const override;
-  intptr_t GetCount() const override;
+  void Insert(int32_t Index, UnicodeString S, TObject *AObject = nullptr) override;
+  int32_t CompareStrings(UnicodeString S1, UnicodeString S2) const override;
+  int32_t GetCount() const override;
 
 public:
-  void SetObj(intptr_t Index, TObject *AObject) override;
+  void SetObj(int32_t Index, TObject *AObject) override;
   bool GetSorted() const override { return FSorted; }
   void SetSorted(bool Value) override;
   bool GetCaseSensitive() const override { return FCaseSensitive; }
   void SetCaseSensitive(bool Value) override;
-  const UnicodeString &GetStringRef(intptr_t Index) const override;
-  const UnicodeString &GetString(intptr_t Index) const override;
-  UnicodeString GetString(intptr_t Index) override;
-  void SetString(intptr_t Index, UnicodeString S) override;
+  const UnicodeString &GetStringRef(int32_t Index) const override;
+  const UnicodeString &GetString(int32_t Index) const override;
+  UnicodeString GetString(int32_t Index) override;
+  void SetString(int32_t Index, UnicodeString S) override;
 
 private:
   TNotifyEvent FOnChange;
@@ -363,7 +363,7 @@ private:
   bool FCaseSensitive{false};
 
 private:
-  void ExchangeItems(intptr_t Index1, intptr_t Index2);
+  void ExchangeItems(int32_t Index1, int32_t Index2);
 
 private:
   TStringList(const TStringList &) = delete;
@@ -621,7 +621,7 @@ public:
   bool ReadBool(UnicodeString Name) const;
   TDateTime ReadDateTime(UnicodeString Name) const;
   double ReadFloat(UnicodeString Name) const;
-  intptr_t ReadIntPtr(UnicodeString Name) const;
+  int32_t ReadIntPtr(UnicodeString Name) const;
   int ReadInteger(UnicodeString Name) const;
   int64_t ReadInt64(UnicodeString Name) const;
   UnicodeString ReadString(UnicodeString Name) const;
@@ -634,7 +634,7 @@ public:
   void WriteFloat(UnicodeString Name, double Value);
   void WriteString(UnicodeString Name, UnicodeString Value);
   void WriteStringRaw(UnicodeString Name, UnicodeString Value);
-  void WriteIntPtr(UnicodeString Name, intptr_t Value);
+  void WriteIntPtr(UnicodeString Name, int32_t Value);
   void WriteInteger(UnicodeString Name, int Value);
   void WriteInt64(UnicodeString Name, int64_t Value);
   void WriteBinaryData(UnicodeString Name,
@@ -646,9 +646,9 @@ private:
   void SetCurrentKey(HKEY Value) { FCurrentKey = Value; }
   bool GetKeyInfo(TRegKeyInfo &Value) const;
   int GetData(UnicodeString Name, void *Buffer,
-    intptr_t ABufSize, TRegDataType &RegData) const;
+    int32_t ABufSize, TRegDataType &RegData) const;
   void PutData(UnicodeString Name, const void *Buffer,
-    intptr_t ABufSize, TRegDataType RegData);
+    int32_t ABufSize, TRegDataType RegData);
 
 public:
   void SetAccess(uint32_t Value);
@@ -677,13 +677,13 @@ class NB_CORE_EXPORT TShortCut : public TObject
 {
 public:
   explicit TShortCut() = default;
-  explicit TShortCut(intptr_t Value) noexcept;
+  explicit TShortCut(int32_t Value) noexcept;
   operator intptr_t() const;
   bool operator<(const TShortCut &rhs) const;
-  intptr_t Compare(const TShortCut &rhs) const { return FValue - rhs.FValue; }
+  int32_t Compare(const TShortCut &rhs) const { return FValue - rhs.FValue; }
 
 private:
-  intptr_t FValue{0};
+  int32_t FValue{0};
 };
 
 enum TReplaceFlag
@@ -731,7 +731,7 @@ public:
   virtual ~TGlobalsIntf() = default;
 
   virtual HINSTANCE GetInstanceHandle() const = 0;
-  virtual UnicodeString GetMsg(intptr_t Id) const = 0;
+  virtual UnicodeString GetMsg(int32_t Id) const = 0;
   virtual UnicodeString GetCurrDirectory() const = 0;
   virtual UnicodeString GetStrVersionNumber() const = 0;
   virtual bool InputDialog(UnicodeString ACaption,
