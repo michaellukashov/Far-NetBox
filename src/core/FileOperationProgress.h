@@ -6,6 +6,8 @@
 
 #include "Configuration.h"
 #include "CopyParam.h"
+#include "Exceptions.h"
+#include <vector>
 
 class TFileOperationProgressType;
 enum TFileOperation { foNone, foCopy, foMove, foDelete, foSetProperties,
@@ -33,10 +35,10 @@ class TFileOperationStatistics : public TObject
 public:
   TFileOperationStatistics() noexcept;
 
-  intptr_t FilesUploaded{0};
-  intptr_t FilesDownloaded{0};
-  intptr_t FilesDeletedLocal{0};
-  intptr_t FilesDeletedRemote{0};
+  int32_t FilesUploaded{0};
+  int32_t FilesDownloaded{0};
+  int32_t FilesDeletedLocal{0};
+  int32_t FilesDeletedRemote{0};
   int64_t TotalUploaded{0};
   int64_t TotalDownloaded{0};
 };
@@ -71,7 +73,6 @@ public:
 
 private:
   TFileOperation FOperation{foNone};
-  TOperationSide FSide{osLocal};
   UnicodeString FFileName;
   UnicodeString FFullFileName;
   UnicodeString FDirectory;
@@ -87,7 +88,7 @@ private:
   bool FDone{false};
   bool FFileInProgress{false};
   TCancelStatus FCancel;
-  intptr_t FCount{-1};
+  int32_t FCount{-1};
   int64_t FTotalTransferBase{0};
   int64_t FTotalSkipped{0};
   int64_t FTotalSize{0};
@@ -100,13 +101,13 @@ private:
   uint64_t FSuspendTime{0};
   // when current file was started being transferred
   TDateTime FFileStartTime;
-  intptr_t FFilesFinished{0};
-  intptr_t FFilesFinishedSuccessfully{0};
+  int32_t FFilesFinished{0};
+  int32_t FFilesFinishedSuccessfully{0};
   TFileOperationProgressEvent FOnProgress{nullptr};
   TFileOperationFinishedEvent FOnFinished{nullptr};
   bool FReset{false};
-  uintptr_t FLastSecond{0};
-  int64_t FRemainingCPS{0};
+  uint32_t FLastSecond{0};
+  uint64_t FRemainingCPS{0};
   TOnceDoneOperation FInitialOnceDoneOperation;
   TPersistence FPersistence;
   TCriticalSection *FSection{nullptr};
@@ -114,12 +115,12 @@ private:
 
   bool FCounterSet{false};
   bool FSkipToAll{false};
-  intptr_t FCPSLimit{0};
+  uint64_t FCPSLimit{0};
 public:
   int64_t GetTotalTransferred() const;
   int64_t  GetOperationTransferred() const;
   int64_t GetTotalSize() const;
-  intptr_t GetCPSLimit() const;
+  uint64_t GetCPSLimit() const;
   TBatchOverwrite GetBatchOverwrite() const;
   bool GetSkipToAll() const;
   TDateTime GetStartTime() const { return FPersistence.StartTime; }
@@ -128,12 +129,12 @@ public:
 protected:
   void ClearTransfer();
   void DoProgress();
-  intptr_t OperationProgress() const;
+  int32_t OperationProgress() const;
   void AddTransferredToTotals(int64_t ASize);
   void AddSkipped(int64_t ASize);
   void AddTotalSize(int64_t ASize);
   void RollbackTransferFromTotals(int64_t ATransferredSize, int64_t ASkippedSize);
-  uintptr_t GetCPS() const;
+  uint64_t GetCPS() const;
   void Init();
   static bool PassCancelToParent(TCancelStatus ACancel);
   void DoClear(bool Batch, bool Speed);
@@ -198,7 +199,7 @@ public:
   __property bool SkipToAll = { read = GetSkipToAll };
   ROProperty<bool> SkipToAll{nb::bind(&TFileOperationProgressType::GetSkipToAll, this)};
   __property unsigned long CPSLimit = { read = GetCPSLimit };
-  ROProperty<intptr_t> CPSLimit{nb::bind(&TFileOperationProgressType::GetCPSLimit, this)};
+  ROProperty<uint64_t> CPSLimit{nb::bind(&TFileOperationProgressType::GetCPSLimit, this)};
 
   __property bool TotalSizeSet = { read = FTotalSizeSet };
   const bool& TotalSizeSet{FTotalSizeSet};
@@ -220,19 +221,20 @@ public:
   void AddResumed(int64_t ASize);
   void AddSkippedFileSize(int64_t ASize);
   void Clear();
-  uintptr_t CPS() const;
+  uint64_t CPS() const;
   void Finish(const UnicodeString AFileName, bool Success,
     TOnceDoneOperation &OnceDoneOperation);
-  void Succeeded(intptr_t Count = 1);
+  void Succeeded(int32_t Count = 1);
   void Progress();
-  int64_t LocalBlockSize();
+  uint64_t LocalBlockSize();
   bool IsLocallyDone() const;
   bool IsTransferDone() const;
+  bool IsTransferDoneChecked() const;
   void SetFile(const UnicodeString AFileName, bool AFileInProgress = true);
   void SetFileInProgress();
   uint64_t TransferBlockSize();
-  int64_t AdjustToCPSLimit(int64_t Size);
-  void ThrottleToCPSLimit(int64_t Size);
+  uint64_t AdjustToCPSLimit(uint64_t Size);
+  void ThrottleToCPSLimit(uint64_t Size);
   static uint64_t StaticBlockSize();
   void Reset();
   void Resume();
@@ -242,10 +244,10 @@ public:
   void ChangeTransferSize(int64_t ASize);
   void RollbackTransfer();
   void SetTotalSize(int64_t ASize);
-  void Start(TFileOperation AOperation, TOperationSide ASide, intptr_t ACount);
+  void Start(TFileOperation AOperation, TOperationSide ASide, int32_t ACount);
   void Start(TFileOperation AOperation,
-    TOperationSide ASide, intptr_t ACount, bool ATemp, const UnicodeString ADirectory,
-    uintptr_t ACPSLimit, TOnceDoneOperation InitialOnceDoneOperation);
+    TOperationSide ASide, int32_t ACount, bool ATemp, const UnicodeString ADirectory,
+    uint64_t ACPSLimit, TOnceDoneOperation InitialOnceDoneOperation);
   void Stop();
   void SetDone();
   void Suspend();
@@ -256,16 +258,16 @@ public:
   // only current file
   TDateTime TimeExpected() const;
   TDateTime TotalTimeLeft() const;
-  intptr_t TransferProgress() const;
-  intptr_t OverallProgress() const;
-  intptr_t TotalTransferProgress() const;
+  int32_t TransferProgress() const;
+  int32_t OverallProgress() const;
+  int32_t TotalTransferProgress() const;
   void SetSpeedCounters();
   void SetTransferringFile(bool ATransferringFile);
   TCancelStatus GetCancel() const;
   void SetCancel(TCancelStatus ACancel);
   void SetCancelAtLeast(TCancelStatus ACancel);
   bool ClearCancelFile();
-  void SetCPSLimit(intptr_t ACPSLimit);
+  void SetCPSLimit(uint64_t ACPSLimit);
   void SetBatchOverwrite(TBatchOverwrite ABatchOverwrite);
   void SetSkipToAll();
   UnicodeString GetLogStr(bool Done) const;
@@ -275,6 +277,7 @@ public:
   bool IsTransfer() const;
 
   static bool IsIndeterminateOperation(TFileOperation Operation);
+  static bool IsTransferOperation(TFileOperation Operation);
 
   TFileOperation GetOperation() const { return FOperation; }
   // on what side if operation being processed (local/remote), source of copy
@@ -286,7 +289,7 @@ public:
   bool GetTransferringFile() const { return FTransferringFile; }
   bool GetTemp() const { return FTemp; }
 
-  intptr_t GetCount() const { return FCount; }
+  int32_t GetCount() const { return FCount; }
   int64_t GetLocalSize() const { return FLocalSize; }
   int64_t GetLocallyUsed() const { return FLocallyUsed; }
   int64_t GetTransferSize() const { return FTransferSize; }
@@ -297,7 +300,7 @@ public:
   bool GetDone() const { return FDone; }
   bool GetFileInProgress() const { return FFileInProgress; }
   int64_t GetTotalSkipped() const { return FTotalSkipped; }
-  intptr_t GetFilesFinishedSuccessfully() const { return FFilesFinishedSuccessfully; }
+  int32_t GetFilesFinishedSuccessfully() const { return FFilesFinishedSuccessfully; }
   bool GetTotalSizeSet() const { return FTotalSizeSet; }
   bool GetSuspended() const { return FSuspended; }
 };
