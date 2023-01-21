@@ -9,7 +9,7 @@
 
 #ifdef USE_DLMALLOC
 
-#include <dlmalloc/dlmalloc-2.8.6.h>
+#include <dlmalloc-2.8.6.h>
 
 #if defined(__cplusplus)
 
