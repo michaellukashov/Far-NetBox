@@ -34,7 +34,6 @@ extern const wchar_t TokenReplacement;
 extern const UnicodeString LocalInvalidChars;
 extern const UnicodeString PasswordMask;
 extern const UnicodeString Ellipsis;
-extern const UnicodeString EmptyString;
 
 extern const UnicodeString HttpProtocol;
 extern const UnicodeString HttpsProtocol;
@@ -123,7 +122,7 @@ NB_CORE_EXPORT bool IsLetter(wchar_t Ch);
 NB_CORE_EXPORT bool IsDigit(wchar_t Ch);
 NB_CORE_EXPORT bool IsHex(wchar_t Ch);
 NB_CORE_EXPORT UnicodeString DecodeUrlChars(UnicodeString S);
-NB_CORE_EXPORT UnicodeString EncodeUrlString(UnicodeString S, const UnicodeString DoNotEncode = UnicodeString());
+NB_CORE_EXPORT UnicodeString EncodeUrlString(UnicodeString S);
 NB_CORE_EXPORT UnicodeString EncodeUrlPath(UnicodeString S);
 NB_CORE_EXPORT UnicodeString AppendUrlParams(UnicodeString AURL, UnicodeString Params);
 NB_CORE_EXPORT UnicodeString ExtractFileNameFromUrl(const UnicodeString Url);
@@ -146,7 +145,7 @@ bool IsWinVista();
 bool IsWin7();
 bool IsWin8();
 bool IsWin10();
-bool IsWin10Build(unsigned int BuildNumber);
+bool IsWin10Build(uint32_t BuildNumber);
 bool IsWin11();
 NB_CORE_EXPORT bool IsWine();
 NB_CORE_EXPORT bool IsUWP();
@@ -188,7 +187,7 @@ NB_CORE_EXPORT void ParseCertificate(const UnicodeString Path,
 NB_CORE_EXPORT bool IsHttpUrl(const UnicodeString S);
 NB_CORE_EXPORT bool IsHttpOrHttpsUrl(const UnicodeString S);
 NB_CORE_EXPORT UnicodeString ChangeUrlProtocol(const UnicodeString S, const UnicodeString Protocol);
-NB_CORE_EXPORT void LoadScriptFromFile(const UnicodeString AFileName, TStrings *Lines);
+NB_CORE_EXPORT void LoadScriptFromFile(const UnicodeString AFileName, TStrings *Lines, bool FallbackToAnsi = false);
 NB_CORE_EXPORT UnicodeString StripEllipsis(const UnicodeString S);
 NB_CORE_EXPORT UnicodeString GetFileMimeType(const UnicodeString AFileName);
 NB_CORE_EXPORT bool IsRealFile(const UnicodeString AFileName);
@@ -202,6 +201,7 @@ struct NB_CORE_EXPORT TSearchRecSmart : public TSearchRec
 {
 public:
   TSearchRecSmart() noexcept;
+  void Clear();
   TDateTime GetLastWriteTime() const;
   bool IsRealFile() const;
   bool IsDirectory() const;
@@ -549,6 +549,7 @@ using TUnicodeStringVector = nb::vector_t<UnicodeString>;
 
 enum TModificationFmt { mfNone, mfMDHM, mfYMDHM, mfMDY, mfFull };
 
+// from RemoteFiles
 namespace base {
 
 NB_CORE_EXPORT bool IsUnixStyleWindowsPath(UnicodeString APath);
