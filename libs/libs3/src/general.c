@@ -388,7 +388,7 @@ static S3Status convertAclXmlCallback(const char *elementPath,
                 strcpy(grant->grantee.amazonCustomerByEmail.emailAddress,
                        caData->emailAddress);
             }
-            else if (caData->userId[0] && caData->userDisplayName[0]) {
+            else if (caData->userId[0]) {
                 grant->granteeType = S3GranteeTypeCanonicalUser;
                 strcpy(grant->grantee.canonicalUser.id, caData->userId);
                 strcpy(grant->grantee.canonicalUser.displayName,
@@ -521,7 +521,7 @@ int snprintf_S(char * s, size_t n, const char * format, size_t len, const char *
     }
     else
     {
-        assert(0);
+        assert(false);
         result = snprintf(s, n, format, len, data);
     }
     return result;

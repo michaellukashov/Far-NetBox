@@ -399,9 +399,13 @@ static S3Status compose_amz_headers(const RequestParams *params,
         // Add the x-amz-copy-source header
         if (params->copySourceBucketName && params->copySourceBucketName[0]
             && params->copySourceKey && params->copySourceKey[0]) {
-            char bucketKey[S3_MAX_METADATA_SIZE];
-            snprintf(bucketKey, sizeof(bucketKey), "/%s/%s",
-                     params->copySourceBucketName, params->copySourceKey);
+            // WINSCP
+            char bucketKey[1 + S3_MAX_BUCKET_NAME_SIZE + 1 + MAX_URLENCODED_KEY_SIZE + 1];
+            snprintf(bucketKey, 1 + S3_MAX_BUCKET_NAME_SIZE + 1 + 1, "/%s/", params->copySourceBucketName);
+            if (!urlEncode(bucketKey + strlen(bucketKey), params->copySourceKey, S3_MAX_KEY_SIZE, 0))
+            {
+                return S3StatusUriTooLong;
+            }
             append_amz_header(values, 0, "x-amz-copy-source", bucketKey);
         }
         // If byteCount != 0 then we're just copying a range, add header
@@ -815,9 +819,8 @@ static void sort_query_string(const char *queryString, char *result,
     const char** params = (const char **)nb_calloc(numParams, sizeof(char*)); // WINSCP (heap allocation)
 
     // Where did strdup go?!??
-    char * tokenized = (char *)nb_calloc(strlen(queryString) + 1, sizeof(char)); // WINSCP (heap allocation)
     int queryStringLen = strlen(queryString);
-    char *buf = (char *) malloc(queryStringLen + 1);
+    char *buf = (char *) nb_calloc(queryStringLen + 1, 1);
     char *tok = buf;
     strcpy(tok, queryString);
     const char *token = NULL;
@@ -851,8 +854,8 @@ static void sort_query_string(const char *queryString, char *result,
     }
 #undef append
 
-    nb_free(tokenized); // WINSCP (heap allocation)
     nb_free(params);
+    nb_free(buf);
 }
 
 
@@ -1230,6 +1233,11 @@ static S3Status setup_neon(Request *request,
     {
         ne_set_request_body_provider(request->NeonRequest, (ne_off_t)params->toS3CallbackTotalSize, neon_read_func, request);
     }
+    else if (params->httpRequestType == HttpRequestTypeCOPY)
+    {
+        // Google cloud needs "Content-Length: 0" header
+        ne_set_request_body_buffer(request->NeonRequest, "", 0);
+    }
 
     // WINSCP (Last-Modified parsed in response_headers_handler_done)
 
@@ -1280,7 +1288,15 @@ static S3Status setup_neon(Request *request,
 
     // WINSCP (hostHeader is added implicitly by neon based on uri, but for certificate check, we use base hostname
     // as the bucket name can contain dots, for which the certificate check would fail)
-    ne_set_realhost(request->NeonSession, params->bucketContext.hostName ? params->bucketContext.hostName : defaultHostNameG);
+    char * hostName = strdup(params->bucketContext.hostName ? params->bucketContext.hostName : defaultHostNameG);
+    char * colon = strchr(hostName, ':');
+    if (colon != NULL)
+    {
+        *colon = '\0';
+    }
+    ne_set_realhost(request->NeonSession, hostName);
+    free(hostName);
+
     append_standard_header(cacheControlHeader);
     append_standard_header(contentTypeHeader);
     append_standard_header(md5Header);
@@ -1633,6 +1649,7 @@ void request_perform(const RequestParams *params, S3RequestContext *context)
 
 void request_finish(Request *request, NeonCode code)
 {
+    const char * httpMessage = NULL;
     // If we haven't detected this already, we now know that the headers are
     // definitely done being read in
     request_headers_done(request);
@@ -1718,14 +1735,24 @@ void request_finish(Request *request, NeonCode code)
                 request->status = S3StatusHttpErrorUnknown;
                 break;
             }
+            httpMessage = ne_get_status(request->NeonRequest)->reason_phrase;
         }
     }
 
+    { // WINSCP
+    // WINSCP
+    S3ErrorDetails errorDetails = request->errorParser.s3ErrorDetails;
+    if (errorDetails.furtherDetails == NULL)
+    {
+        errorDetails.furtherDetails = httpMessage;
+    }
+
     (*(request->completeCallback))
-        (request->status, &(request->errorParser.s3ErrorDetails),
+        (request->status, &errorDetails, // WINSCP
          request->callbackData);
 
     request_release(request);
+    } // WINSCP
 }
 
 
@@ -1745,6 +1772,7 @@ S3Status request_neon_code_to_status(NeonCode code)
 }
 
 
+#ifndef WINSCP
 S3Status S3_generate_authenticated_query_string
     (char *buffer, const S3BucketContext *bucketContext,
      const char *key, int expires, const char *resource,
@@ -1796,3 +1824,4 @@ S3Status S3_generate_authenticated_query_string
                        bucketContext, computed.urlEncodedKey, resource,
                        queryParams);
 }
+#endif
