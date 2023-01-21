@@ -935,7 +935,8 @@ target_compile_options(atlmfc PRIVATE
 endif()
 
 target_include_directories(atlmfc PRIVATE
-  ../../libs
+#  ../../libs
+  ../../libs/dlmalloc
   ../include
   ../base
   ../../libs/atlmfc/include
@@ -1126,6 +1127,8 @@ target_compile_options(tinyxml2 PRIVATE
 )
 
 target_include_directories(tinyxml2 PRIVATE
+  ../../libs/dlmalloc
+  ../include
   ../../libs/GSL/include
 )
 
@@ -1306,6 +1309,8 @@ add_library(rdestl STATIC
 )
 
 target_include_directories(rdestl PRIVATE
+  ../../libs/dlmalloc
+  ../include
   ../base
   ../../libs/GSL/include
 )
@@ -1330,6 +1335,8 @@ add_library(tinylog STATIC
 )
 
 target_include_directories(tinylog PRIVATE
+  ../../libs/dlmalloc
+  ../include
   ../base
   ../../libs/GSL/include
 )
@@ -1358,6 +1365,8 @@ target_compile_options(fmt PRIVATE
 )
 
 target_include_directories(fmt PRIVATE
+  ../../libs/dlmalloc
+  ../include
   ../../libs/GSL/include
 )
 #endif(FALSE)
@@ -1396,6 +1405,8 @@ add_library(s3 STATIC
 )
 
 target_include_directories(s3 PRIVATE
+  ../../libs/dlmalloc
+  ../include
   ../../libs/libs3/inc
   ../../libs/libs3/inc/mingw
   ../../libs/expat/lib
@@ -1832,6 +1843,9 @@ add_library(NetBox SHARED
 )
 
 target_include_directories(NetBox PRIVATE
+  ../../libs/dlmalloc
+  ../include
+  ../../libs
   ../../libs/openssl/include
   ${OPENSSL_LIBRARYDIR}
   ../../libs/putty
