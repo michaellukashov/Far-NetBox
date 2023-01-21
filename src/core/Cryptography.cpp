@@ -57,7 +57,7 @@ __removed #include <Soap.EncdDecd.hpp>
 
 #define sha1_begin(ctx)           ctx = (&ssh_sha1)->_new_(&ssh_sha1)
 #define sha1_hash(buf, len, ctx)  put_data(ctx, buf, len)
-#define sha1_hash(buf, len, ctx)  putty_SHA_Bytes(ctx, buf, len)
+#define sha1_end(dig, ctx)        ssh_hash_final(ctx, dig); ctx = nullptr
 
 constexpr int IN_BLOCK_LENGTH     = 64;
 constexpr int OUT_BLOCK_LENGTH    = 20;
@@ -66,7 +66,7 @@ constexpr int HMAC_IN_DATA        = 0xffffffff;
 struct hmac_ctx
 {
   uint8_t key[IN_BLOCK_LENGTH];
-  sha1_ctx ctx[1];
+  ssh_hash *ctx;
   uint32_t klen;
     hmac_ctx()
     {
@@ -74,16 +74,16 @@ struct hmac_ctx
     }
     ~hmac_ctx()
     {
-        if (ctx != NULL) ssh_hash_free(ctx);
+        if (ctx != nullptr) ssh_hash_free(ctx);
     }
     void CopyFrom(hmac_ctx * Source)
     {
-        if (ctx != NULL)
+        if (ctx != nullptr)
         {
             ssh_hash_free(ctx);
         }
         memmove(this, Source, sizeof(*this));
-        if (Source->ctx != NULL)
+        if (Source->ctx != nullptr)
         {
             ctx = ssh_hash_copy(Source->ctx);
         }
@@ -99,110 +99,108 @@ static void hmac_sha1_begin(hmac_ctx cx[1])
 /* input the HMAC key (can be called multiple times)    */
 static void hmac_sha1_key(const uint8_t key[], uint32_t key_len, hmac_ctx cx[1])
 {
-  if (cx->klen + key_len > IN_BLOCK_LENGTH) /* if the key has to be hashed  */
-  {
-    if (cx->klen <= IN_BLOCK_LENGTH) /* if the hash has not yet been */
+    if(cx->klen + key_len > IN_BLOCK_LENGTH)    /* if the key has to be hashed  */
     {
-      /* started, initialise it and   */
-      sha1_begin(cx->ctx); /* hash stored key characters   */
-      sha1_hash(cx->key, cx->klen, cx->ctx);
+        if(cx->klen <= IN_BLOCK_LENGTH)         /* if the hash has not yet been */
+        {                                       /* started, initialise it and   */
+            sha1_begin(cx->ctx);                /* hash stored key characters   */
+            sha1_hash(cx->key, cx->klen, cx->ctx);
+        }
+
+        sha1_hash(const_cast<unsigned char *>(key), key_len, cx->ctx);       /* hash long key data into hash */
     }
+    else                                        /* otherwise store key data     */
+        libmemcpy_memcpy(cx->key + cx->klen, key, key_len);
 
-    sha1_hash(const_cast<uint8_t *>(key), key_len, cx->ctx); /* hash long key data into hash */
-  }
-  else /* otherwise store key data     */
-    libmemcpy_memcpy(cx->key + cx->klen, key, key_len);
-
-  cx->klen += key_len; /* update the key length count  */
+    cx->klen += key_len;                        /* update the key length count  */
 }
 
 /* input the HMAC data (can be called multiple times) - */
 /* note that this call terminates the key input phase   */
 static void hmac_sha1_data(const uint8_t data[], uint32_t data_len, hmac_ctx cx[1])
 {
-  if (cx->klen != HMAC_IN_DATA) /* if not yet in data phase */
-  {
-    if (cx->klen > IN_BLOCK_LENGTH) /* if key is being hashed   */
+
+    if (cx->klen != HMAC_IN_DATA) /* if not yet in data phase */
     {
-      /* complete the hash and    */
-      sha1_end(cx->key, cx->ctx); /* store the result as the  */
-      cx->klen = OUT_BLOCK_LENGTH; /* key and set new length   */
+        if (cx->klen != IN_BLOCK_LENGTH) /* if key is being hashed   */
+        {
+          /* complete the hash and    */
+          sha1_end(cx->key, cx->ctx); /* store the result as the  */
+          cx->klen = OUT_BLOCK_LENGTH; /* key and set new length   */
+        }
+
+        /* pad the key if necessary */
+        memset(cx->key + cx->klen, 0, IN_BLOCK_LENGTH - cx->klen);
+
+        /* xor ipad into key value  */
+        for(i = 0; i < (IN_BLOCK_LENGTH >> 2); ++i)
+            ((unsigned long*)cx->key)[i] ^= 0x36363636;
+
+        /* and start hash operation */
+        sha1_begin(cx->ctx);
+        sha1_hash(cx->key, IN_BLOCK_LENGTH, cx->ctx);
+
+        /* mark as now in data mode */
+        cx->klen = HMAC_IN_DATA;
     }
 
-    /* pad the key if necessary */
-    if (cx->klen < IN_BLOCK_LENGTH)
-    {
-      ::ZeroMemory(cx->key + cx->klen, IN_BLOCK_LENGTH - cx->klen);
-    }
-
-    /* xor ipad into key value  */
-    for (uint32 i = 0; i < (IN_BLOCK_LENGTH >> 2); ++i)
-      reinterpret_cast<uint32_t *>(cx->key)[i] ^= 0x36363636;
-
-    /* and start hash operation */
-    sha1_begin(cx->ctx);
-    sha1_hash(cx->key, IN_BLOCK_LENGTH, cx->ctx);
-
-    /* mark as now in data mode */
-    cx->klen = HMAC_IN_DATA;
-  }
-
-  /* hash the data (if any)       */
-  if (data_len)
-    sha1_hash(const_cast<uint8_t *>(data), data_len, cx->ctx);
+    /* hash the data (if any)       */
+    if(data_len)
+        sha1_hash(const_cast<unsigned char *>(data), data_len, cx->ctx);
 }
 
 /* compute and output the MAC value */
 static void hmac_sha1_end(uint8_t mac[], uint32_t mac_len, hmac_ctx cx[1])
-{
-  uint8_t dig[OUT_BLOCK_LENGTH]{};
-  uint32_t i;
+{   unsigned char dig[OUT_BLOCK_LENGTH];
+    unsigned int i;
 
-  /* if no data has been entered perform a null data phase        */
-  if (cx->klen != HMAC_IN_DATA)
-    hmac_sha1_data(static_cast<const uint8_t *>(nullptr), 0, cx);
+    /* if no data has been entered perform a null data phase        */
+    if(cx->klen != HMAC_IN_DATA)
+        hmac_sha1_data((const unsigned char*)0, 0, cx);
 
-  sha1_end(dig, cx->ctx); /* complete the inner hash      */
+    sha1_end(dig, cx->ctx);         /* complete the inner hash      */
 
-  /* set outer key value using opad and removing ipad */
-  for (i = 0; i < (IN_BLOCK_LENGTH >> 2); ++i)
-    reinterpret_cast<uint32_t *>(cx->key)[i] ^= 0x36363636 ^ 0x5c5c5c5c;
+    /* set outer key value using opad and removing ipad */
+    for(i = 0; i < (IN_BLOCK_LENGTH >> 2); ++i)
+        ((unsigned long*)cx->key)[i] ^= 0x36363636 ^ 0x5c5c5c5c;
 
-  /* perform the outer hash operation */
-  sha1_begin(cx->ctx);
-  sha1_hash(cx->key, IN_BLOCK_LENGTH, cx->ctx);
-  sha1_hash(dig, OUT_BLOCK_LENGTH, cx->ctx);
-  sha1_end(dig, cx->ctx);
+    /* perform the outer hash operation */
+    sha1_begin(cx->ctx);
+    sha1_hash(cx->key, IN_BLOCK_LENGTH, cx->ctx);
+    sha1_hash(dig, OUT_BLOCK_LENGTH, cx->ctx);
+    sha1_end(dig, cx->ctx);
 
-  /* output the hash value            */
-  for (i = 0; i < mac_len; ++i)
-    mac[i] = dig[i];
+    /* output the hash value            */
+    for(i = 0; i < mac_len; ++i)
+        mac[i] = dig[i];
 }
 
 constexpr int BLOCK_SIZE  = 16;
 
-static void aes_set_encrypt_key(const uint8_t in_key[], uint32_t klen, void *cx)
+void aes_set_encrypt_key(const unsigned char in_key[], unsigned int klen, void * cx)
 {
-  call_aes_setup(cx, BLOCK_SIZE, const_cast<uint8_t *>(in_key), klen);
+  call_aes_setup(cx, const_cast<unsigned char *>(in_key), klen);
 }
 
-void aes_encrypt_block(const uint8_t in_blk[], uint8_t out_blk[], void *cx)
+void aes_encrypt_block(const unsigned char in_blk[], unsigned char out_blk[], void * cx)
 {
-  intptr_t Index;
+  int Index;
   memmove(out_blk, in_blk, BLOCK_SIZE);
-  for (Index = 0; Index < 4; ++Index)
+  for (Index = 0; Index < 4; Index++)
   {
-    uint8_t t = out_blk[Index * 4 + 0];
+    unsigned char t;
+    t = out_blk[Index * 4 + 0];
     out_blk[Index * 4 + 0] = out_blk[Index * 4 + 3];
     out_blk[Index * 4 + 3] = t;
     t = out_blk[Index * 4 + 1];
     out_blk[Index * 4 + 1] = out_blk[Index * 4 + 2];
     out_blk[Index * 4 + 2] = t;
   }
-  call_aes_encrypt(cx, reinterpret_cast<uint32_t *>(out_blk));
-  for (Index = 0; Index < 4; ++Index)
+  call_aesold_encrypt(cx, reinterpret_cast<unsigned int*>(out_blk));
+  for (Index = 0; Index < 4; Index++)
   {
-    uint8_t t = out_blk[Index * 4 + 0];
+    unsigned char t;
+    t = out_blk[Index * 4 + 0];
     out_blk[Index * 4 + 0] = out_blk[Index * 4 + 3];
     out_blk[Index * 4 + 3] = t;
     t = out_blk[Index * 4 + 1];
@@ -212,14 +210,13 @@ void aes_encrypt_block(const uint8_t in_blk[], uint8_t out_blk[], void *cx)
 }
 
 typedef struct
-{
-  uint8_t nonce[BLOCK_SIZE]; /* the CTR nonce          */
-  uint8_t encr_bfr[BLOCK_SIZE]; /* encrypt buffer         */
-  void *encr_ctx;  /* encryption context     */
-  hmac_ctx auth_ctx; /* authentication context */
-  uint32_t encr_pos; /* block position (enc)   */
-  uint32_t pwd_len; /* password length        */
-  uint32_t mode; /* File encryption mode   */
+{   unsigned char   nonce[BLOCK_SIZE];          /* the CTR nonce          */
+    unsigned char   encr_bfr[BLOCK_SIZE];       /* encrypt buffer         */
+    AESContext *    encr_ctx;                   /* encryption context     */
+    hmac_ctx        auth_ctx;                   /* authentication context */
+    unsigned int    encr_pos;                   /* block position (enc)   */
+    unsigned int    pwd_len;                    /* password length        */
+    unsigned int    mode;                       /* File encryption mode   */
 } fcrypt_ctx;
 
 constexpr int MAX_KEY_LENGTH        = 32;
@@ -245,65 +242,65 @@ constexpr int PWD_VER_LENGTH         = 2;
 /* this could be speeded up a lot by aligning   */
 /* buffers and using 32 bit operations          */
 
-static void derive_key(const uint8_t pwd[], /* the PASSWORD     */
-  uint32_t pwd_len, /* and its length   */
-  const uint8_t salt[], /* the SALT and its */
-  uint32_t salt_len, /* length           */
-  uint32_t iter, /* the number of iterations */
-  uint8_t key[], /* space for the output key */
-  uint32_t key_len)/* and its required length  */
+static void derive_key(const unsigned char pwd[],  /* the PASSWORD     */
+               unsigned int pwd_len,        /* and its length   */
+               const unsigned char salt[],  /* the SALT and its */
+               unsigned int salt_len,       /* length           */
+               unsigned int iter,   /* the number of iterations */
+               unsigned char key[], /* space for the output key */
+               unsigned int key_len)/* and its required length  */
 {
-  uint8_t uu[OUT_BLOCK_LENGTH], ux[OUT_BLOCK_LENGTH];
-  hmac_ctx c1[1] = {0}, c2[1] = {0}, c3[1] = {0};
+    unsigned int    i, j, k, n_blk;
+    unsigned char uu[OUT_BLOCK_LENGTH], ux[OUT_BLOCK_LENGTH];
+    hmac_ctx c1[1], c2[1], c3[1];
 
-  /* set HMAC context (c1) for password               */
-  hmac_sha1_begin(c1);
-  hmac_sha1_key(pwd, pwd_len, c1);
+    /* set HMAC context (c1) for password               */
+    hmac_sha1_begin(c1);
+    hmac_sha1_key(pwd, pwd_len, c1);
 
-  /* set HMAC context (c2) for password and salt      */
-  memmove(c2, c1, sizeof(hmac_ctx));
-  hmac_sha1_data(salt, salt_len, c2);
+    /* set HMAC context (c2) for password and salt      */
+    c2->CopyFrom(c1);
+    hmac_sha1_data(salt, salt_len, c2);
 
-  /* find the number of SHA blocks in the key         */
-  uint32_t n_blk = 1 + (key_len - 1) / OUT_BLOCK_LENGTH;
+    /* find the number of SHA blocks in the key         */
+    n_blk = 1 + (key_len - 1) / OUT_BLOCK_LENGTH;
 
-  for (uint32_t i = 0; i < n_blk; ++i) /* for each block in key */
-  {
-    /* ux[] holds the running xor value             */
-    ::ZeroMemory(ux, OUT_BLOCK_LENGTH);
-
-    /* set HMAC context (c3) for password and salt  */
-    memmove(c3, c2, sizeof(hmac_ctx));
-
-    /* enter additional data for 1st block into uu  */
-    uu[0] = static_cast<uint8_t>((i + 1) >> 24);
-    uu[1] = static_cast<uint8_t>((i + 1) >> 16);
-    uu[2] = static_cast<uint8_t>((i + 1) >> 8);
-    uu[3] = static_cast<uint8_t>(i + 1);
-
-    /* this is the key mixing iteration         */
-    for (uint32_t j = 0, k = 4; j < iter; ++j)
+    for(i = 0; i < n_blk; ++i) /* for each block in key */
     {
-      /* add previous round data to HMAC      */
-      hmac_sha1_data(uu, k, c3);
+        /* ux[] holds the running xor value             */
+        memset(ux, 0, OUT_BLOCK_LENGTH);
 
-      /* obtain HMAC for uu[]                 */
-      hmac_sha1_end(uu, OUT_BLOCK_LENGTH, c3);
+        /* set HMAC context (c3) for password and salt  */
+        c3->CopyFrom(c2);
 
-      /* xor into the running xor block       */
-      for (k = 0; k < OUT_BLOCK_LENGTH; ++k)
-        ux[k] ^= uu[k];
+        /* enter additional data for 1st block into uu  */
+        uu[0] = (unsigned char)((i + 1) >> 24);
+        uu[1] = (unsigned char)((i + 1) >> 16);
+        uu[2] = (unsigned char)((i + 1) >> 8);
+        uu[3] = (unsigned char)(i + 1);
 
-      /* set HMAC context (c3) for password   */
-      memmove(c3, c1, sizeof(hmac_ctx));
+        /* this is the key mixing iteration         */
+        for(j = 0, k = 4; j < iter; ++j)
+        {
+            /* add previous round data to HMAC      */
+            hmac_sha1_data(uu, k, c3);
+
+            /* obtain HMAC for uu[]                 */
+            hmac_sha1_end(uu, OUT_BLOCK_LENGTH, c3);
+
+            /* xor into the running xor block       */
+            for(k = 0; k < OUT_BLOCK_LENGTH; ++k)
+                ux[k] ^= uu[k];
+
+            /* set HMAC context (c3) for password   */
+            c3->CopyFrom(c1);
+        }
+
+        /* compile key blocks into the key output   */
+        j = 0; k = i * OUT_BLOCK_LENGTH;
+        while(j < OUT_BLOCK_LENGTH && k < key_len)
+            key[k++] = ux[j++];
     }
-
-    /* compile key blocks into the key output   */
-    uint32_t j = 0;
-    uint32_t k = i * OUT_BLOCK_LENGTH;
-    while (j < OUT_BLOCK_LENGTH && k < key_len)
-      key[k++] = ux[j++];
-  }
 }
 
 static void encr_data(uint8_t data[], uint32_t d_len, fcrypt_ctx cx[1])
@@ -351,9 +348,9 @@ static void fcrypt_init(
   /* nonce, this is where it would have to be set     */
   ::ZeroMemory(cx->nonce, BLOCK_SIZE * sizeof(uint8_t));
 
-  /* initialise for encryption using key 1            */
-  cx->encr_ctx = call_aes_make_context();
-  aes_set_encrypt_key(kbuf, KEY_LENGTH(mode), cx->encr_ctx);
+    /* initialise for encryption using key 1            */
+    cx->encr_ctx = aesold_make_context();
+    call_aesold_setup(cx->encr_ctx, BLOCK_SIZE, kbuf, KEY_LENGTH(mode));
 
   /* initialise for authentication using key 2        */
   hmac_sha1_begin(&cx->auth_ctx);
@@ -381,7 +378,7 @@ static void fcrypt_decrypt(uint8_t data[], uint32_t data_len, fcrypt_ctx cx[1])
 static int fcrypt_end(uint8_t mac[], fcrypt_ctx cx[1])
 {
   hmac_sha1_end(mac, MAC_LENGTH(cx->mode), &cx->auth_ctx);
-  call_aes_free_context(cx->encr_ctx);
+  aesold_free_context(cx->encr_ctx);
   return MAC_LENGTH(cx->mode); /* return MAC length in bytes   */
 }
 
@@ -390,14 +387,14 @@ constexpr int PASSWORD_MANAGER_AES_MODE = 3;
 static void AES256Salt(RawByteString & Salt)
 {
   Salt.SetLength(SALT_LENGTH(PASSWORD_MANAGER_AES_MODE));
-  RAND_pseudo_bytes(reinterpret_cast<unsigned char *>(&Salt[0]), (int)Salt.Length());
+  RAND_bytes(reinterpret_cast<unsigned char *>(&Salt[0]), (int)Salt.Length());
 }
 
 RawByteString GenerateEncryptKey()
 {
   RawByteString Result;
   Result.SetLength(KEY_LENGTH(PASSWORD_MANAGER_AES_MODE));
-  RAND_pseudo_bytes(reinterpret_cast<unsigned char *>(&Result[0]), (int)Result.Length());
+  RAND_bytes(reinterpret_cast<unsigned char *>(&Result[0]), (int)Result.Length());
   return Result;
 }
 
@@ -532,12 +529,12 @@ uint8_t *UnscrambleTable{nullptr};
 
 RawByteString ScramblePassword(UnicodeString Password)
 {
-#define SCRAMBLE_LENGTH_EXTENSION 50
+  #define SCRAMBLE_LENGTH_EXTENSION 50
   UTF8String UtfPassword = UTF8String(Password);
-  intptr_t Len = UtfPassword.Length();
+  int32_t Len = UtfPassword.Length();
   char *Buf = nb::chcalloc(Len + SCRAMBLE_LENGTH_EXTENSION);
-  intptr_t Padding = (((Len + 3) / 17) * 17 + 17) - 3 - Len;
-  for (intptr_t Index = 0; Index < Padding; ++Index)
+  int32_t Padding = (((Len + 3) / 17) * 17 + 17) - 3 - Len;
+  for (int32_t Index = 0; Index < Padding; ++Index)
   {
     int P = 0;
     while ((P <= 0) || (P > 255) || IsDigit(static_cast<wchar_t>(P)))
@@ -612,7 +609,7 @@ void CryptographyInitialize()
 {
   ScrambleTable = SScrambleTable;
   UnscrambleTable = nb::calloc<uint8_t *>(1, 256);
-  for (intptr_t Index = 0; Index < 256; ++Index)
+  for (int32_t Index = 0; Index < 256; ++Index)
   {
     UnscrambleTable[SScrambleTable[Index]] = static_cast<uint8_t>(Index);
   }
@@ -627,12 +624,12 @@ void CryptographyFinalize()
   ScrambleTable = nullptr;
 }
 
-intptr_t PasswordMaxLength()
+int32_t PasswordMaxLength()
 {
   return 128;
 }
 
-intptr_t IsValidPassword(UnicodeString Password)
+int32_t IsValidPassword(UnicodeString Password)
 {
   if (Password.IsEmpty() || (Password.Length() > PasswordMaxLength()))
   {
@@ -686,11 +683,20 @@ TEncryption::TEncryption(const RawByteString AKey) noexcept
 
 TEncryption::~TEncryption() noexcept
 {
+  if (FContext != nullptr)
+  {
+    aes_free_context(FContext);
+  }
+  Shred(FKey);
+  if ((FInputHeader.Length() > 0) && (FInputHeader.Length() < GetOverhead()))
+  {
+    throw Exception(LoadStr(UNKNOWN_FILE_ENCRYPTION));
+  }
 }
 
 void TEncryption::SetSalt()
 {
-  aes_iv(FContext, reinterpret_cast<unsigned char *>(&FSalt[0]));
+  aes_iv(FContext, reinterpret_cast<const void *>(&FSalt[0]));
 }
 
 void TEncryption::NeedSalt()
@@ -707,9 +713,9 @@ constexpr int AesBlockMask = 0x0F;
 UnicodeString AesCtrExt(L".aesctr.enc");
 RawByteString AesCtrMagic("aesctr.........."); // 16 bytes fixed [to match AES block size], even for future algos
 
-intptr_t TEncryption::RoundToBlock(intptr_t Size)
+int32_t TEncryption::RoundToBlock(int32_t Size)
 {
-  intptr_t M = (Size % BLOCK_SIZE);
+  int32_t M = (Size % BLOCK_SIZE);
   if (M != 0)
   {
     Size += (BLOCK_SIZE - M);
@@ -717,25 +723,12 @@ intptr_t TEncryption::RoundToBlock(intptr_t Size)
   return Size;
 }
 
-intptr_t TEncryption::RoundToBlockDown(intptr_t Size)
+int32_t TEncryption::RoundToBlockDown(int32_t Size)
 {
   return Size - (Size % BLOCK_SIZE);
 }
 
-void TEncryption::FreeContext()
-{
-  if (FContext != nullptr)
-  {
-    call_aes_free_context(FContext);
-  }
-  Shred(FKey);
-  if ((FInputHeader.Length() > 0) && (FInputHeader.Length() < GetOverhead()))
-  {
-    throw Exception(LoadStr(UNKNOWN_FILE_ENCRYPTION));
-  }
-}
-
-void TEncryption::Aes(char * Buffer, intptr_t Size)
+void TEncryption::Aes(char * Buffer, int Size)
 {
   DebugAssert(!FSalt.IsEmpty());
   call_aes_sdctr(reinterpret_cast<unsigned char*>(Buffer), (int)Size, FContext);
@@ -749,7 +742,7 @@ void TEncryption::Aes(TFileBuffer & Buffer, bool Last)
     FOverflowBuffer.SetLength(0);
   }
 
-  intptr_t Size;
+  int32_t Size;
   if (Last)
   {
     Size = Buffer.Size;
@@ -757,7 +750,7 @@ void TEncryption::Aes(TFileBuffer & Buffer, bool Last)
   }
   else
   {
-    intptr_t RoundedSize = RoundToBlockDown(Buffer.Size);
+    int32_t RoundedSize = RoundToBlockDown(Buffer.Size);
     if (RoundedSize != Buffer.Size)
     {
       FOverflowBuffer += RawByteString(Buffer.Data + RoundedSize, Buffer.Size - RoundedSize);
@@ -791,7 +784,7 @@ void TEncryption::Decrypt(TFileBuffer & Buffer)
 {
   if (FInputHeader.Length() < GetOverhead())
   {
-    intptr_t HeaderSize = std::min<intptr_t>(GetOverhead() - FInputHeader.Length(), Buffer.Size());
+    int32_t HeaderSize = std::min<intptr_t>(GetOverhead() - FInputHeader.Length(), Buffer.Size());
     FInputHeader += RawByteString(Buffer.Data, HeaderSize);
     Buffer.Delete(0, HeaderSize);
 
@@ -825,7 +818,7 @@ bool TEncryption::DecryptEnd(TFileBuffer & Buffer)
 
 void TEncryption::Aes(RawByteString& Buffer)
 {
-  intptr_t Size = Buffer.Length();
+  int32_t Size = Buffer.Length();
   Buffer.SetLength(RoundToBlock(Buffer.Length()));
   Aes((char*)&Buffer[0], Buffer.Length());
   Buffer.SetLength(Size);
@@ -856,7 +849,7 @@ UnicodeString TEncryption::DecryptFileName(const UnicodeString AFileName)
     throw Exception("Not an encrypted file name");
   }
   UnicodeString Base64 = ReplaceChar(LeftStr(AFileName, AFileName.Length() - AesCtrExt.Length()), L'_', L'/');
-  intptr_t Padding = 4 - (Base64.Length() % 4);
+  int32_t Padding = 4 - (Base64.Length() % 4);
   if ((Padding > 0) && (Padding < 4))
   {
     Base64 += ::StringOfChar(L'=', Padding);
@@ -877,7 +870,7 @@ bool TEncryption::IsEncryptedFileName(const UnicodeString AFileName)
   return EndsStr(AesCtrExt, AFileName);
 }
 
-intptr_t TEncryption::GetOverhead()
+int32_t TEncryption::GetOverhead()
 {
   return AesCtrMagic.Length() + SALT_LENGTH(PASSWORD_MANAGER_AES_MODE);
 }

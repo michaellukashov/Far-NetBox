@@ -13,8 +13,8 @@ bool AES256DecryptWithMAC(RawByteString Input, UnicodeString Password,
   RawByteString &Output);
 void AES256CreateVerifier(UnicodeString Input, RawByteString &Verifier);
 bool AES256Verify(UnicodeString Input, RawByteString Verifier);
-intptr_t IsValidPassword(UnicodeString Password);
-intptr_t PasswordMaxLength();
+int32_t IsValidPassword(UnicodeString Password);
+int32_t PasswordMaxLength();
 RawByteString GenerateEncryptKey();
 void ValidateEncryptKey(const RawByteString AKey);
 
@@ -35,21 +35,20 @@ public:
   UnicodeString EncryptFileName(const UnicodeString AFileName);
   UnicodeString DecryptFileName(const UnicodeString AFileName);
 
-  static intptr_t GetOverhead();
-  static intptr_t RoundToBlock(intptr_t Size);
-  static intptr_t RoundToBlockDown(intptr_t Size);
+  static int32_t GetOverhead();
+  static int32_t RoundToBlock(int32_t Size);
+  static int32_t RoundToBlockDown(int32_t Size);
 
-  void FreeContext();
 private:
   RawByteString FKey;
   RawByteString FSalt;
   RawByteString FInputHeader;
   RawByteString FOverflowBuffer;
   bool FOutputtedHeader{false};
-  void * FContext{nullptr};
+  AESContext * FContext{nullptr};
 
   void Init(const RawByteString AKey, const RawByteString ASalt);
-  void Aes(char * Buffer, intptr_t Size);
+  void Aes(char * Buffer, int32_t Size);
   void Aes(RawByteString & Buffer);
   void Aes(TFileBuffer & Buffer, bool Last);
   void NeedSalt();
