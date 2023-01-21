@@ -1,6 +1,6 @@
 /* 
    Handling of compressed HTTP responses
-   Copyright (C) 2001-2006, Joe Orton <joe@manyfish.co.uk>
+   Copyright (C) 2001-2021, Joe Orton <joe@manyfish.co.uk>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -81,7 +81,7 @@ struct ne_decompress_s {
 };
 
 /* Convert 'buf' to unsigned int; 'buf' must be 'unsigned char *' */
-#define BUF2UINT(buf) (((buf)[3]<<24) + ((buf)[2]<<16) + ((buf)[1]<<8) + (buf)[0])
+#define BUF2UINT(buf) ((((unsigned int)(buf)[3])<<24) + ((buf)[2]<<16) + ((buf)[1]<<8) + (buf)[0])
 
 #define ID1 0x1f
 #define ID2 0x8b
@@ -193,7 +193,7 @@ static int do_inflate(ne_decompress *ctx, const char *buf, size_t len)
     NE_DEBUG_WINSCP_CONTEXT(ctx->session);
     int ret;
 
-    ctx->zstr.avail_in = (uint32_t)len;
+    ctx->zstr.avail_in = len;
     ctx->zstr.next_in = (unsigned char *)buf;
     ctx->zstr.total_in = 0;
     
@@ -214,8 +214,8 @@ static int do_inflate(ne_decompress *ctx, const char *buf, size_t len)
 		 ctx->outbuf);
 #endif
 	/* update checksum. */
-	ctx->checksum = crc32(ctx->checksum, (uint8_t *)ctx->outbuf,
-			      (uint32_t)ctx->zstr.total_out);
+	ctx->checksum = crc32(ctx->checksum, (unsigned char *)ctx->outbuf, 
+			      ctx->zstr.total_out);
 
 	/* pass on the inflated data, if any */
         if (ctx->zstr.total_out > 0) {
@@ -353,7 +353,7 @@ static int gz_reader(void *ud, const char *buf, size_t len)
 	}
 
 	NE_DEBUG(NE_DBG_HTTP,
-		 "compresss: skipped %" NE_FMT_SIZE_T " header bytes.\n", 
+		 "compress: skipped %" NE_FMT_SIZE_T " header bytes.\n", 
 		 zbuf - buf);
 	/* found end of string. */
 	len -= (1 + zbuf - buf);

@@ -1,6 +1,6 @@
 /* 
    WebDAV 207 multi-status response handling
-   Copyright (C) 1999-2006, Joe Orton <joe@manyfish.co.uk>
+   Copyright (C) 1999-2021, Joe Orton <joe@manyfish.co.uk>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -70,6 +70,16 @@ typedef struct ne_207_parser_s ne_207_parser;
  * relative to the base URI 'base'. */
 ne_207_parser *ne_207_create(ne_xml_parser *parser, const ne_uri *base, 
                              void *userdata);
+
+/* Enable special href escaping hacks for Microsoft SharePoint. */
+#define NE_207_MSSP_ESCAPING (0x0001)
+#ifdef WINSCP
+/* Enable any character in file name in URL */
+#define NE_207_LIBERAL_ESCAPING (0x0002)
+#endif
+
+/* Set given flags for the parser. */
+void ne_207_set_flags(ne_207_parser *p, unsigned int flags);
 
 /* Register response handling callbacks. */
 void ne_207_set_response_handlers(ne_207_parser *p,

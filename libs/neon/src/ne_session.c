@@ -1,6 +1,6 @@
 /* 
    HTTP session handling
-   Copyright (C) 1999-2009, Joe Orton <joe@manyfish.co.uk>
+   Copyright (C) 1999-2021, Joe Orton <joe@manyfish.co.uk>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -594,7 +594,8 @@ void ne__ssl_set_verify_err(ne_session *sess, int failures)
     };
     int n, flag = 0;
 
-    strcpy(sess->error, _("Server certificate verification failed: "));
+    ne_strnzcpy(sess->error, _("Server certificate verification failed: "),
+                sizeof sess->error);
 
     for (n = 0; reasons[n].bit; n++) {
 	if (failures & reasons[n].bit) {

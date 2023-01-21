@@ -1,6 +1,6 @@
 /* 
    Socket handling routines
-   Copyright (C) 1998-2011, Joe Orton <joe@manyfish.co.uk>
+   Copyright (C) 1998-2021, Joe Orton <joe@manyfish.co.uk>
    Copyright (C) 2004 Aleix Conchillo Flaque <aleix@member.fsf.org>
 
    This library is free software; you can redistribute it and/or
@@ -27,7 +27,7 @@
 #include "config.h"
 
 #include <sys/types.h>
-#ifdef HAVE_SYS_UIO_h
+#ifdef HAVE_SYS_UIO_H
 #include <sys/uio.h> /* writev(2) */
 #endif
 #ifdef HAVE_SYS_TIME_H
@@ -142,7 +142,6 @@ typedef struct in_addr ne_inet_addr;
 #include "ne_socket.h"
 #include "ne_alloc.h"
 #include "ne_sspi.h"
-#include "ne_session.h"
 
 #if defined(__BEOS__) && !defined(BONE_VERSION)
 /* pre-BONE */
@@ -201,7 +200,7 @@ struct iofns {
 static const ne_inet_addr dummy_laddr;
 
 struct ne_socket_s {
-    SOCKET fd;
+    int fd;
     unsigned int lport;
     const ne_inet_addr *laddr;
 
@@ -244,10 +243,10 @@ struct ne_sock_addr_s {
 /* Print system error message to given buffer. */
 static void print_error(int errnum, char *buffer, size_t buflen)
 {
-    if (FormatMessageA (FORMAT_MESSAGE_FROM_SYSTEM
+    if (FormatMessage (FORMAT_MESSAGE_FROM_SYSTEM
                        | FORMAT_MESSAGE_IGNORE_INSERTS,
                        NULL, (DWORD) errnum, 0, 
-                       buffer, (DWORD)buflen, NULL) == 0)
+                       buffer, buflen, NULL) == 0)
         ne_snprintf(buffer, buflen, "Socket error %d", errnum);
 }
 #define set_strerror(s, e) print_error((e), (s)->error, sizeof (s)->error)
@@ -387,7 +386,7 @@ void ne_sock_exit(void)
 /* Await readability (rdwr = 0) or writability (rdwr != 0) for socket
  * fd for secs seconds.  Returns <0 on error, zero on timeout, >0 if
  * data is available. */
-static int raw_poll(SOCKET fdno, int rdwr, int secs)
+static int raw_poll(int fdno, int rdwr, int secs)
 {
     int ret;
 #ifdef NE_USE_POLL
@@ -425,7 +424,7 @@ static int raw_poll(SOCKET fdno, int rdwr, int secs)
         tvp->tv_usec = 0;
     }
     do {
-  ret = select((int)fdno + 1, &rdfds, &wrfds, &exfds, tvp);
+	ret = select(fdno + 1, &rdfds, &wrfds, &exfds, tvp);
     } while (ret < 0 && NE_ISINTR(ne_errno));
 #endif
     return ret;
@@ -457,7 +456,7 @@ ssize_t ne_sock_read(ne_socket *sock, char *buffer, size_t buflen)
 	memcpy(buffer, sock->bufpos, buflen);
 	sock->bufpos += buflen;
 	sock->bufavail -= buflen;
-	return (ssize_t)buflen;
+	return buflen;
     } else if (buflen >= sizeof sock->buffer) {
 	/* No need for read buffer. */
 	return sock->ops->sread(sock, buffer, buflen);
@@ -472,7 +471,7 @@ ssize_t ne_sock_read(ne_socket *sock, char *buffer, size_t buflen)
 	memcpy(buffer, sock->buffer, buflen);
 	sock->bufpos = sock->buffer + buflen;
 	sock->bufavail = bytes - buflen;
-	return (ssize_t)buflen;
+	return buflen; 
     }
 }
 
@@ -482,7 +481,7 @@ ssize_t ne_sock_peek(ne_socket *sock, char *buffer, size_t buflen)
     
     if (sock->bufavail) {
 	/* just return buffered data. */
-	bytes = (ssize_t)sock->bufavail;
+	bytes = sock->bufavail;
     } else {
 	/* fill the buffer. */
 	bytes = sock->ops->sread(sock, sock->buffer, sizeof sock->buffer);
@@ -498,7 +497,7 @@ ssize_t ne_sock_peek(ne_socket *sock, char *buffer, size_t buflen)
 
     memcpy(buffer, sock->bufpos, buflen);
 
-    return (ssize_t)buflen;
+    return buflen;
 }
 
 /* Await data on raw fd in socket. */
@@ -521,7 +520,7 @@ static ssize_t read_raw(ne_socket *sock, char *buffer, size_t len)
     if (ret) return ret;
 
     do {
-	ret = recv(sock->fd, buffer, (int)len, 0);
+	ret = recv(sock->fd, buffer, len, 0);
     } while (ret == -1 && NE_ISINTR(ne_errno));
 
     if (ret == 0) {
@@ -539,6 +538,12 @@ static ssize_t read_raw(ne_socket *sock, char *buffer, size_t len)
 #define MAP_ERR(e) (NE_ISCLOSED(e) ? NE_SOCK_CLOSED : \
                     (NE_ISRESET(e) ? NE_SOCK_RESET : NE_SOCK_ERROR))
 
+#ifdef MSG_NOSIGNAL
+#define SEND_FLAGS MSG_NOSIGNAL
+#else
+#define SEND_FLAGS (0)
+#endif
+
 static ssize_t write_raw(ne_socket *sock, const char *data, size_t length) 
 {
     ssize_t ret;
@@ -550,7 +555,7 @@ static ssize_t write_raw(ne_socket *sock, const char *data, size_t length)
 #endif
 
     do {
-	ret = send(sock->fd, data, (int)length, 0);
+	ret = send(sock->fd, data, length, SEND_FLAGS);
     } while (ret == -1 && NE_ISINTR(ne_errno));
 
     if (ret < 0) {
@@ -571,7 +576,7 @@ static ssize_t writev_raw(ne_socket *sock, const struct ne_iovec *vector, int co
 
     for (i = 0; i < count; i++){
         wasvector[i].buf = vector[i].base;
-        wasvector[i].len = (ULONG)vector[i].len;
+        wasvector[i].len = vector[i].len;
     }
         
     ret = WSASend(sock->fd, wasvector, count, &total, 0, NULL, NULL);
@@ -579,6 +584,17 @@ static ssize_t writev_raw(ne_socket *sock, const struct ne_iovec *vector, int co
         ret = total;
     
     ne_free(wasvector);
+#elif defined(MSG_NOSIGNAL) && defined(HAVE_SENDMSG)
+    struct msghdr m;
+
+    memset(&m, 0, sizeof m);
+    m.msg_iov = (struct iovec *)vector;
+    m.msg_iovlen = count;
+
+    do {
+	ret = sendmsg(sock->fd, &m, MSG_NOSIGNAL);
+    } while (ret == -1 && NE_ISINTR(ne_errno));
+
 #else
     const struct iovec *vec = (const struct iovec *) vector;
 
@@ -606,12 +622,51 @@ static ssize_t writev_dummy(ne_socket *sock, const struct ne_iovec *vector, int 
 static const struct iofns iofns_raw = { read_raw, write_raw, readable_raw, writev_raw };
 
 #ifdef HAVE_OPENSSL
+static int error_ossl(ne_socket *sock, int sret);
+#endif
+
+#ifdef HAVE_OPENSSL
 /* OpenSSL I/O function implementations. */
 static int readable_ossl(ne_socket *sock, int secs)
 {
+#if defined(LIBRESSL_VERSION_NUMBER) || OPENSSL_VERSION_NUMBER < 0x10101000L
+    /* Sufficient for TLSv1.2 and earlier. */
     if (SSL_pending(sock->ssl))
 	return 0;
     return readable_raw(sock, secs);
+#else
+    /* TLSv1.3 sends a lot more handshake data so the presence of data
+     * on the socket - i.e. poll() returning 1, is an insufficient
+     * test for app-data readability. */
+    char pending;
+    int ret;
+    size_t bytes;
+
+    /* Loop while no app data is pending, each time attempting a one
+     * byte peek, and retrying the poll if that fails due to absence
+     * of app data. */
+    while (!SSL_pending(sock->ssl)) {
+	ret = readable_raw(sock, secs);
+	if (ret == NE_SOCK_TIMEOUT) {
+	    return ret;
+	}
+        
+	ret = SSL_peek_ex(sock->ssl, &pending, 1, &bytes);
+	if (ret) {
+            /* App data definitely available. */
+	    break;
+	}
+	else {
+            /* If this gave SSL_ERROR_WANT_READ, loop and probably
+             * block again, else some other error happened. */
+            ret = error_ossl(sock, ret);
+            if (ret != NE_SOCK_RETRY)
+                return ret;
+	}
+    }
+
+    return 0;
+#endif /* OPENSSL_VERSION_NUMBER < 1.1.1 */
 }
 
 /* SSL error handling, according to SSL_get_error(3). */
@@ -621,12 +676,36 @@ static int error_ossl(ne_socket *sock, int sret)
     unsigned long err;
 
     if (errnum == SSL_ERROR_ZERO_RETURN) {
-	set_error(sock, _("Connection closed"));
+        set_error(sock, _("Connection closed"));
+        NE_DEBUG(NE_DBG_SSL, "ssl: Got TLS closure.\n");
         return NE_SOCK_CLOSED;
+    }
+    else if (errnum == SSL_ERROR_WANT_READ) {
+        set_error(sock, _("Retry operation"));
+        return NE_SOCK_RETRY;
     }
     
     /* for all other errors, look at the OpenSSL error stack */
     err = ERR_get_error();
+    NE_DEBUG(NE_DBG_SSL, "ssl: Got OpenSSL error stack %lu\n", err);
+
+    if (ERR_GET_LIB(err) == ERR_LIB_SSL) {
+	int reason = ERR_GET_REASON(err);
+
+#ifdef SSL_R_UNEXPECTED_EOF_WHILE_READING
+        /* OpenSSL 3 signals truncation this way. */
+	if (reason == SSL_R_UNEXPECTED_EOF_WHILE_READING) {
+	    set_error(sock, _("Secure connection truncated"));
+	    return NE_SOCK_TRUNC;
+	}
+        else
+#endif
+	if (reason == SSL_R_PROTOCOL_IS_SHUTDOWN) {
+	    set_error(sock, _("Secure connection reset"));
+	    return NE_SOCK_RESET;
+	}
+    }
+
     if (err == 0) {
         /* Empty error stack, presume this is a system call error: */
         if (sret == 0) {
@@ -636,7 +715,7 @@ static int error_ossl(ne_socket *sock, int sret)
         } else {
             /* Other socket error. */
             errnum = ne_errno;
-            if (errnum) set_strerror(sock, errnum);
+            set_strerror(sock, errnum);
             return MAP_ERR(errnum);
         }
     }
@@ -662,19 +741,21 @@ static ssize_t read_ossl(ne_socket *sock, char *buffer, size_t len)
 {
     int ret;
 
-    ret = readable_ossl(sock, sock->rdtimeout);
-    if (ret) return ret;
-    
-    ret = SSL_read(sock->ssl, buffer, (int)CAST2INT(len));
-    if (ret <= 0)
-	ret = error_ossl(sock, ret);
-
+    do {
+        ret = readable_ossl(sock, sock->rdtimeout);
+        if (ret) return ret;
+        
+        ret = SSL_read(sock->ssl, buffer, CAST2INT(len));
+        if (ret <= 0)
+            ret = error_ossl(sock, ret);
+    } while (ret == NE_SOCK_RETRY);
+        
     return ret;
 }
 
 static ssize_t write_ossl(ne_socket *sock, const char *data, size_t len)
 {
-    int ret, ilen = (int)CAST2INT(len);
+    int ret, ilen = CAST2INT(len);
     ret = SSL_write(sock->ssl, data, ilen);
     /* ssl.h says SSL_MODE_ENABLE_PARTIAL_WRITE must be enabled to
      * have SSL_write return < length...  so, SSL_write should never
@@ -740,6 +821,10 @@ static ssize_t error_gnutls(ne_socket *sock, ssize_t sret)
 #endif
         ret = NE_SOCK_TRUNC;
         set_error(sock, _("Secure connection truncated"));
+        break;
+    case GNUTLS_E_INVALID_SESSION:
+        ret = NE_SOCK_RESET;
+        set_error(sock, ("SSL socket terminated"));
         break;
     case GNUTLS_E_PUSH_ERROR:
         ret = NE_SOCK_RESET;
@@ -829,7 +914,7 @@ int ne_sock_fullwritev(ne_socket *sock, const struct ne_iovec *vector, int count
         ret = sock->ops->swritev(sock, vector, count);
         if (ret > 0) {
             while (count && (size_t)ret >= vector[0].len) {
-                ret -= (ssize_t)vector[0].len;
+                ret -= vector[0].len;
                 count--;
                 vector++;
             }
@@ -887,7 +972,7 @@ ssize_t ne_sock_readline(ne_socket *sock, char *buf, size_t buflen)
     /* consume the line from buffer: */
     sock->bufavail -= len;
     sock->bufpos += len;
-    return (ssize_t)len;
+    return len;
 }
 
 ssize_t ne_sock_fullread(ne_socket *sock, char *buffer, size_t buflen) 
@@ -913,7 +998,7 @@ ssize_t ne_sock_fullread(ne_socket *sock, char *buffer, size_t buflen)
 extern int h_errno;
 #endif
 
-/* This implemementation does not attempt to support IPv6 using
+/* This implementation does not attempt to support IPv6 using
  * gethostbyname2 et al.  */
 ne_sock_addr *ne_addr_resolve(const char *hostname, int flags)
 {
@@ -1052,7 +1137,7 @@ char *ne_addr_error(const ne_sock_addr *addr, char *buf, size_t bufsiz)
     return buf;
 }
 
-char *ne_iaddr_print(const ne_inet_addr *ia, char *buf, socklen_t bufsiz)
+char *ne_iaddr_print(const ne_inet_addr *ia, char *buf, size_t bufsiz)
 {
 #if defined(USE_GETADDRINFO) && defined(HAVE_INET_NTOP)
     const char *ret;
@@ -1071,7 +1156,7 @@ char *ne_iaddr_print(const ne_inet_addr *ia, char *buf, socklen_t bufsiz)
 	ne_strnzcpy(buf, "[IP address]", bufsiz);
 #elif defined(USE_GETADDRINFO) && defined(NI_NUMERICHOST)
     /* use getnameinfo instead for Win32, which lacks inet_ntop: */
-    if (getnameinfo(ia->ai_addr, (socklen_t)ia->ai_addrlen, buf, bufsiz, NULL, 0,
+    if (getnameinfo(ia->ai_addr, ia->ai_addrlen, buf, bufsiz, NULL, 0,
                     NI_NUMERICHOST))
         ne_strnzcpy(buf, "[IP address]", bufsiz);
 #else /* USE_GETADDRINFO */
@@ -1157,10 +1242,10 @@ ne_inet_addr *ne_iaddr_parse(const char *addr, ne_iaddr_type type)
 #endif /* !USE_GETADDRINFO */
 }
 
-int ne_iaddr_reverse(const ne_inet_addr *ia, char *buf, socklen_t bufsiz)
+int ne_iaddr_reverse(const ne_inet_addr *ia, char *buf, size_t bufsiz)
 {
 #ifdef USE_GETADDRINFO
-    return getnameinfo(ia->ai_addr, (socklen_t)ia->ai_addrlen, buf, bufsiz,
+    return getnameinfo(ia->ai_addr, ia->ai_addrlen, buf, bufsiz,
                        NULL, 0, 0);
 #else
     struct hostent *hp;
@@ -1200,7 +1285,7 @@ static int raw_connect(int fd, const struct sockaddr *sa, size_t salen)
     int ret;
 
     do {
-        ret = connect(fd, sa, (int)salen);
+        ret = connect(fd, sa, salen);
     } while (ret < 0 && NE_ISINTR(ne_errno));
 
     return ret;
@@ -1209,7 +1294,7 @@ static int raw_connect(int fd, const struct sockaddr *sa, size_t salen)
 /* Perform a connect() for fd to address sa of length salen, with a
  * timeout if supported on this platform.  Returns zero on success or
  * NE_SOCK_* on failure, with sock->error set appropriately. */
-static int timed_connect(ne_socket *sock, SOCKET fd,
+static int timed_connect(ne_socket *sock, int fd,
                          const struct sockaddr *sa, size_t salen)
 {
     int ret;
@@ -1274,7 +1359,7 @@ static int timed_connect(ne_socket *sock, SOCKET fd,
     } else 
 #endif /* USE_NONBLOCKING_CONNECT */
     {
-        ret = raw_connect((int)fd, sa, salen);
+        ret = raw_connect(fd, sa, salen);
         
         if (ret < 0) {
             set_strerror(sock, ne_errno);
@@ -1288,7 +1373,7 @@ static int timed_connect(ne_socket *sock, SOCKET fd,
 /* Connect socket to address 'addr' on given 'port'.  Returns zero on
  * success or NE_SOCK_* on failure with sock->error set
  * appropriately. */
-static int connect_socket(ne_socket *sock, SOCKET fd,
+static int connect_socket(ne_socket *sock, int fd,
                           const ne_inet_addr *addr, unsigned int port)
 {
 #ifdef USE_GETADDRINFO
@@ -1350,21 +1435,21 @@ void ne_sock_prebind(ne_socket *sock, const ne_inet_addr *addr,
 
 /* Bind socket 'fd' to address/port 'addr' and 'port', for subsequent
  * connect() to address of family 'peer_family'. */
-static SOCKET do_bind(SOCKET fd, int peer_family,
+static int do_bind(int fd, int peer_family, 
                    const ne_inet_addr *addr, unsigned int port)
 {
 #if defined(HAVE_SETSOCKOPT) && defined(SO_REUSEADDR) && defined(SOL_SOCKET)
     {
         int flag = 1;
 
-        (void) setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, (const char*)&flag, sizeof flag);
+        (void) setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &flag, sizeof flag);
         /* An error here is not fatal, so ignore it. */
     }
 #endif        
     
 
 #if defined(USE_GETADDRINFO) && defined(AF_INET6)
-    /* Use a sockaddr_in6 if an AF_INET6 local address is specifed, or
+    /* Use a sockaddr_in6 if an AF_INET6 local address is specified, or
      * if no address is specified and the peer address is AF_INET6: */
     if ((addr != &dummy_laddr && addr->ai_family == AF_INET6)
         || (addr == &dummy_laddr && peer_family == AF_INET6)) {
@@ -1377,6 +1462,9 @@ static SOCKET do_bind(SOCKET fd, int peer_family,
         in6.sin6_port = htons(port);
         /* fill in the _family field for AIX 4.3, which forgets to do so. */
         in6.sin6_family = AF_INET6;
+#ifdef __NetBSD__
+	in6.sin6_len = sizeof in6;
+#endif
 
         return bind(fd, (struct sockaddr *)&in6, sizeof in6);
     } else
@@ -1395,6 +1483,9 @@ static SOCKET do_bind(SOCKET fd, int peer_family,
         }
         in.sin_port = htons(port);
         in.sin_family = AF_INET;
+#ifdef __NetBSD__
+	in.sin_len = sizeof in;
+#endif
 
         return bind(fd, (struct sockaddr *)&in, sizeof in);
     }
@@ -1414,8 +1505,7 @@ static int sock_cloexec = SOCK_CLOEXEC;
 int ne_sock_connect(ne_socket *sock,
                     const ne_inet_addr *addr, unsigned int port)
 {
-    SOCKET fd;
-    SOCKET ret;
+    int fd, ret;
     int type = SOCK_STREAM | sock_cloexec;
 
 #if defined(RETRY_ON_EINVAL) && defined(SOCK_NONBLOCK) \
@@ -1477,7 +1567,7 @@ int ne_sock_connect(ne_socket *sock,
 #if defined(HAVE_SETSOCKOPT) && (defined(TCP_NODELAY) || defined(WIN32))
     { /* Disable the Nagle algorithm. */
         int flag = 1;
-        setsockopt(fd, IPPROTO_TCP, TCP_NODELAY, (const char*)&flag, sizeof flag);
+        setsockopt(fd, IPPROTO_TCP, TCP_NODELAY, &flag, sizeof flag);
     }
 #endif
     
@@ -1487,7 +1577,7 @@ int ne_sock_connect(ne_socket *sock,
     else
         ne_close(fd);
 
-    return (int)ret;
+    return ret;
 }
 
 ne_inet_addr *ne_sock_peer(ne_socket *sock, unsigned int *port)
@@ -1517,7 +1607,7 @@ ne_inet_addr *ne_sock_peer(ne_socket *sock, unsigned int *port)
 
     ia = ne_calloc(sizeof *ia);
 #ifdef USE_GETADDRINFO
-    ia->ai_addr = ne_malloc(sizeof *ia);
+    ia->ai_addr = ne_malloc(len);
     ia->ai_addrlen = len;
     memcpy(ia->ai_addr, sad, len);
     ia->ai_family = saun.sa.sa_family;
@@ -1553,6 +1643,9 @@ ne_inet_addr *ne_iaddr_make(ne_iaddr_type type, const unsigned char *raw)
 	ia->ai_addr = (struct sockaddr *)in4;
 	ia->ai_addrlen = sizeof *in4;
 	in4->sin_family = AF_INET;
+#ifdef __NetBSD__
+	in4->sin_len = sizeof *in4;
+#endif
 	memcpy(&in4->sin_addr.s_addr, raw, sizeof in4->sin_addr.s_addr);
     }
 #ifdef AF_INET6
@@ -1562,6 +1655,9 @@ ne_inet_addr *ne_iaddr_make(ne_iaddr_type type, const unsigned char *raw)
 	ia->ai_addr = (struct sockaddr *)in6;
 	ia->ai_addrlen = sizeof *in6;
 	in6->sin6_family = AF_INET6;
+#ifdef __NetBSD__
+	in6->sin6_len = sizeof *in6;
+#endif
 	memcpy(&in6->sin6_addr, raw, sizeof in6->sin6_addr.s6_addr);
     }
 #endif
@@ -1616,9 +1712,9 @@ void ne_iaddr_free(ne_inet_addr *addr)
 
 int ne_sock_accept(ne_socket *sock, int listener) 
 {
-    SOCKET fd = accept(listener, NULL, NULL);
+    int fd = accept(listener, NULL, NULL);
 
-    if (fd == INVALID_SOCKET) {
+    if (fd < 0) {
         set_strerror(sock, ne_errno);
         return -1;
     }
@@ -1629,7 +1725,7 @@ int ne_sock_accept(ne_socket *sock, int listener)
 
 int ne_sock_fd(const ne_socket *sock)
 {
-    return (int)sock->fd;
+    return sock->fd;
 }
 
 void ne_sock_read_timeout(ne_socket *sock, int timeout)
@@ -1707,7 +1803,7 @@ int ne_sock_accept_ssl(ne_socket *sock, ne_ssl_context *ctx)
 #if defined(HAVE_OPENSSL)
     ssl = SSL_new(ctx->ctx);
     
-    SSL_set_fd(ssl, (int)sock->fd);
+    SSL_set_fd(ssl, sock->fd);
 
     sock->ssl = ssl;
     ret = SSL_accept(ssl);
@@ -1768,8 +1864,12 @@ int ne_sock_connect_ssl(ne_socket *sock, ne_ssl_context *ctx, void *userdata)
     }
     
     SSL_set_app_data(ssl, userdata);
+#if OPENSSL_VERSION_NUMBER < 0x10101000L
     SSL_set_mode(ssl, SSL_MODE_AUTO_RETRY);
-    SSL_set_fd(ssl, (int)sock->fd);
+#else
+    SSL_clear_mode(ssl, SSL_MODE_AUTO_RETRY);
+#endif    
+    SSL_set_fd(ssl, sock->fd);
     sock->ops = &iofns_ssl;
 
 #ifdef SSL_set_tlsext_host_name
@@ -1930,31 +2030,126 @@ void ne_sock_set_error(ne_socket *sock, const char *format, ...)
     va_end(params);
 }
 
+int ne_sock_shutdown(ne_socket *sock, unsigned int flags)
+{
+    int ret;
+
+    if (!flags) {
+        set_error(sock, _("Missing flags for socket shutdown"));
+        return NE_SOCK_ERROR;
+    }
+
+#if defined(HAVE_OPENSSL)
+    if (sock->ssl) {
+        int state = SSL_get_shutdown(sock->ssl);
+
+        NE_DEBUG(NE_DBG_SSL, "ssl: Shutdown state: %ssent | %sreceived.\n",
+                 (state & SSL_SENT_SHUTDOWN) ? "" : "not ",
+                 (state & SSL_RECEIVED_SHUTDOWN) ? "" : "not ");
+
+        if ((flags == NE_SOCK_BOTH || flags == NE_SOCK_SEND)
+            && (state & SSL_SENT_SHUTDOWN) == 0) {
+            NE_DEBUG(NE_DBG_SSL, "ssl: Sending closure.\n");
+            ret = SSL_shutdown(sock->ssl);
+
+            if (ret == 0) {
+                set_error(sock, _("Incomplete TLS closure"));
+                return NE_SOCK_RETRY;
+            }
+            else if (ret != 1) {
+                return error_ossl(sock, ret);
+            }
+        }
+
+	if (flags == NE_SOCK_RECV || flags == NE_SOCK_BOTH) {
+	    /* Returns whether the receive side is shutdown or not yet. */
+	    if ((state & SSL_RECEIVED_SHUTDOWN) == 0) {
+		set_error(sock, _("Incomplete TLS closure"));
+		return NE_SOCK_RETRY;
+	    }
+
+            /* For recv-only shutdown, must not complete TCP-level
+             * shutdown until the TLS shutdown is complete. */
+            if (flags == NE_SOCK_RECV) {
+                return 0;
+            }
+	}
+    }
+#elif defined(HAVE_GNUTLS)
+    if (sock->ssl) {
+        if (flags == NE_SOCK_RECV) {
+            /* unclear how to handle */
+            set_error(sock, _("Incomplete TLS closure"));
+            return NE_SOCK_RETRY;
+        }
+
+        ret = gnutls_bye(sock->ssl,
+                         flags == NE_SOCK_SEND ? GNUTLS_SHUT_WR : GNUTLS_SHUT_RDWR);
+        if (ret == GNUTLS_E_INTERRUPTED || ret == GNUTLS_E_AGAIN) {
+            return NE_SOCK_RETRY;
+        }
+    }
+#endif
+
+    { // WINSCP
+#ifdef _WIN32
+    int how = flags == NE_SOCK_RECV ? SD_RECEIVE : (flags == NE_SOCK_SEND ? SD_SEND : SD_BOTH);
+#else
+    int how = flags == NE_SOCK_RECV ? SHUT_RD : (flags == NE_SOCK_SEND ? SHUT_WR : SHUT_RDWR);
+#endif
+    ret = shutdown(sock->fd, how);
+    if (ret < 0) {
+	int errnum = ne_errno;
+	set_strerror(sock, errnum);
+	return MAP_ERR(errnum);
+    }
+
+    return ret;
+    } // WINSCP
+}
+
 int ne_sock_close(ne_socket *sock)
 {
     int ret;
 
-    /* Per API description - for an SSL connection, simply send the
-     * close_notify but do not wait for the peer's response. */
+    if (sock->fd != -1) {
+        /* Ignore errors. */
+        (void) ne_sock_shutdown(sock, NE_SOCK_SEND);
+    }
+
 #if defined(HAVE_OPENSSL)
     if (sock->ssl) {
-        SSL_shutdown(sock->ssl);
 	SSL_free(sock->ssl);
     }
 #elif defined(HAVE_GNUTLS)
     if (sock->ssl) {
-        do {
-            ret = gnutls_bye(sock->ssl, GNUTLS_SHUT_WR);
-        } while (ret < 0
-                 && (ret == GNUTLS_E_INTERRUPTED || ret == GNUTLS_E_AGAIN));
         gnutls_deinit(sock->ssl);
     }
 #endif
 
-    if (sock->fd == INVALID_SOCKET)
-        ret = 0;
-    else
-        ret = ne_close(sock->fd);
+    ret = sock->fd < 0 ? 0 : ne_close(sock->fd);
+
     ne_free(sock);
     return ret;
+}
+
+// WINSCP
+void do_ne_sock_sndbuf(ne_socket *sock, int opt, unsigned int buf)
+{
+    unsigned int value = 0;
+    int len = sizeof(value);
+    getsockopt(sock->fd, SOL_SOCKET, opt, &value, &len);
+    if (value < buf)
+    {
+        setsockopt(sock->fd, SOL_SOCKET, opt, &buf, sizeof(buf));
+    }
+}
+
+void ne_sock_set_buffers(ne_socket *sock, unsigned int sndbuf)
+{
+    if (sndbuf > 0)
+    {
+        do_ne_sock_sndbuf(sock, SO_SNDBUF, sndbuf);
+        do_ne_sock_sndbuf(sock, SO_RCVBUF, 4 * 1024 * 1024);
+    }
 }
