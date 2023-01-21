@@ -7,7 +7,6 @@
 /* Define if building universal (internal helper macro) */
 /* #undef AC_APPLE_UNIVERSAL_BUILD */
 
-
 /* 1234 = LILENDIAN, 4321 = BIGENDIAN */
 #define BYTEORDER 1234
 
@@ -15,7 +14,8 @@
 /* #undef HAVE_ARC4RANDOM */
 
 /* Define to 1 if you have the `arc4random_buf' function. */
-// #define HAVE_ARC4RANDOM_BUF 1
+// WINSCP
+/* #undef HAVE_ARC4RANDOM_BUF */
 
 /* Define to 1 if you have the <dlfcn.h> header file. */
 #define HAVE_DLFCN_H 1
@@ -27,7 +27,7 @@
 #define HAVE_GETPAGESIZE 1
 
 /* Define to 1 if you have the `getrandom' function. */
-// #define HAVE_GETRANDOM 1
+#undef HAVE_GETRANDOM
 
 /* Define to 1 if you have the <inttypes.h> header file. */
 #define HAVE_INTTYPES_H 1
@@ -54,7 +54,7 @@
 #define HAVE_STRING_H 1
 
 /* Define to 1 if you have `syscall' and `SYS_getrandom'. */
-// #define HAVE_SYSCALL_GETRANDOM 1
+#undef HAVE_SYSCALL_GETRANDOM
 
 /* Define to 1 if you have the <sys/param.h> header file. */
 #define HAVE_SYS_PARAM_H 1

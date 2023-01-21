@@ -720,7 +720,10 @@ XML_ParserCreate(const XML_Char *encodingName) {
 
 XML_Parser XMLCALL
 XML_ParserCreateNS(const XML_Char *encodingName, XML_Char nsSep) {
-  XML_Char tmp[2] = {nsSep, 0};
+  // WINSCP
+  XML_Char tmp[2];
+  tmp[0] = nsSep;
+  tmp[1] = 0;
   return XML_ParserCreate_MM(encodingName, NULL, tmp);
 }
 
@@ -827,6 +830,10 @@ writeRandomBytes_arc4random(void *target, size_t count) {
 
 #ifdef _WIN32
 
+// WINSCP - See writeRandomBytes_rand_s
+typedef BOOLEAN (APIENTRY *RTLGENRANDOM_FUNC)(PVOID, ULONG);
+HMODULE _Expat_LoadLibrary(LPCTSTR filename);  /* see loadlibrary.c */
+
 /* Provide declaration of rand_s() for MinGW-32 (not 64, which has it),
    as it didn't declare it in its header prior to version 5.3.0 of its
    runtime package (mingwrt, containing stdlib.h).  The upstream fix
@@ -842,22 +849,22 @@ __declspec(dllimport) int rand_s(unsigned int *);
  */
 static int
 writeRandomBytes_rand_s(void *target, size_t count) {
-  size_t bytesWrittenTotal = 0;
+  // WINSCP, we do not have rand_s in C++ Builder
+  int success = 0;  /* full count bytes written? */
+  const HMODULE advapi32 = _Expat_LoadLibrary(TEXT("ADVAPI32.DLL"));
 
-  while (bytesWrittenTotal < count) {
-    unsigned int random32 = 0;
-    size_t i = 0;
-
-    if (rand_s(&random32))
-      return 0; /* failure */
-
-    for (; (i < sizeof(random32)) && (bytesWrittenTotal < count);
-         i++, bytesWrittenTotal++) {
-      const uint8_t random8 = (uint8_t)(random32 >> (i * 8));
-      ((uint8_t *)target)[bytesWrittenTotal] = random8;
+  if (advapi32) {
+    const RTLGENRANDOM_FUNC RtlGenRandom
+        = (RTLGENRANDOM_FUNC)GetProcAddress(advapi32, "SystemFunction036");
+    if (RtlGenRandom) {
+      if (RtlGenRandom((PVOID)target, (ULONG)count) == TRUE) {
+        success = 1;
+      }
     }
+    FreeLibrary(advapi32);
   }
-  return 1; /* success */
+
+  return success;
 }
 
 #endif /* _WIN32 */
@@ -1354,7 +1361,10 @@ XML_ExternalEntityParserCreate(XML_Parser oldParser, const XML_Char *context,
      would be otherwise.
   */
   if (parser->m_ns) {
-    XML_Char tmp[2] = {parser->m_namespaceSeparator, 0};
+    // WINSCP
+    XML_Char tmp[2];
+    tmp[0] = parser->m_namespaceSeparator;
+    tmp[1] = 0;
     parser = parserCreate(encodingName, &parser->m_mem, tmp, newDtd);
   } else {
     parser = parserCreate(encodingName, &parser->m_mem, NULL, newDtd);
@@ -3476,6 +3486,7 @@ storeAtts(XML_Parser parser, const ENCODING *enc, const char *attStr,
       return XML_ERROR_NO_MEMORY;
     }
 
+    { // WINSCP
     unsigned int nsAttsSize = 1u << parser->m_nsAttsPower;
     unsigned char oldNsAttsPower = parser->m_nsAttsPower;
     /* size of hash table must be at least 2 * (# of prefixed attributes) */
@@ -3632,6 +3643,7 @@ storeAtts(XML_Parser parser, const ENCODING *enc, const char *attStr,
       } else                     /* not prefixed */
         ((XML_Char *)s)[-1] = 0; /* clear flag */
     }
+    } // WINSCP
   }
   /* clear flags for the remaining attributes */
   for (; i < attIndex; i += 2)
@@ -3937,12 +3949,14 @@ addBinding(XML_Parser parser, PREFIX *prefix, const ATTRIBUTE_ID *attId,
       }
 #endif
 
+      { // WINSCP
       XML_Char *temp = (XML_Char *)REALLOC(
           parser, b->uri, sizeof(XML_Char) * (len + EXPAND_SPARE));
       if (temp == NULL)
         return XML_ERROR_NO_MEMORY;
       b->uri = temp;
       b->uriAlloc = len + EXPAND_SPARE;
+      } // WINSCP
     }
     parser->m_freeBindingList = b->nextTagBinding;
   } else {
@@ -4643,6 +4657,7 @@ doProlog(XML_Parser parser, const ENCODING *enc, const char *s, const char *end,
   UNUSED_P(account);
 #endif
 
+  { // WINSCP
   /* save one level of indirection */
   DTD *const dtd = parser->m_dtd;
 
@@ -5295,6 +5310,7 @@ doProlog(XML_Parser parser, const ENCODING *enc, const char *s, const char *end,
               return XML_ERROR_NO_MEMORY;
             }
 
+            { // WINSCP
             char *const new_connector = (char *)REALLOC(
                 parser, parser->m_groupConnector, parser->m_groupSize *= 2);
             if (new_connector == NULL) {
@@ -5302,6 +5318,7 @@ doProlog(XML_Parser parser, const ENCODING *enc, const char *s, const char *end,
               return XML_ERROR_NO_MEMORY;
             }
             parser->m_groupConnector = new_connector;
+            } // WINSCP
           }
 
           if (dtd->scaffIndex) {
@@ -5315,11 +5332,13 @@ doProlog(XML_Parser parser, const ENCODING *enc, const char *s, const char *end,
             }
 #endif
 
+            { // WINSCP
             int *const new_scaff_index = (int *)REALLOC(
                 parser, dtd->scaffIndex, parser->m_groupSize * sizeof(int));
             if (new_scaff_index == NULL)
               return XML_ERROR_NO_MEMORY;
             dtd->scaffIndex = new_scaff_index;
+            } // WINSCP
           }
         } else {
           parser->m_groupConnector
@@ -5637,6 +5656,7 @@ doProlog(XML_Parser parser, const ENCODING *enc, const char *s, const char *end,
       tok = XmlPrologTok(enc, s, end, &next);
     }
   }
+  } // WINSCP
   /* not reached */
 }
 
@@ -6410,6 +6430,7 @@ defineAttribute(ELEMENT_TYPE *type, ATTRIBUTE_ID *attId, XML_Bool isCdata,
         return 0;
       }
 
+      { // WINSCP
       int count = type->allocDefaultAtts * 2;
 
       /* Detect and prevent integer overflow.
@@ -6428,6 +6449,7 @@ defineAttribute(ELEMENT_TYPE *type, ATTRIBUTE_ID *attId, XML_Bool isCdata,
         return 0;
       type->allocDefaultAtts = count;
       type->defaultAtts = temp;
+      } // WINSCP
     }
   }
   att = type->defaultAtts + type->nDefaultAtts;
@@ -7078,6 +7100,7 @@ lookup(XML_Parser parser, HASH_TABLE *table, KEY name, size_t createSize) {
         return NULL;
       }
 
+      { // WINSCP
       size_t newSize = (size_t)1 << newPower;
       unsigned long newMask = (unsigned long)newSize - 1;
 
@@ -7086,6 +7109,7 @@ lookup(XML_Parser parser, HASH_TABLE *table, KEY name, size_t createSize) {
         return NULL;
       }
 
+      { // WINSCP
       size_t tsize = newSize * sizeof(NAMED *);
       NAMED **newV = table->mem->malloc_fcn(tsize);
       if (! newV)
@@ -7114,6 +7138,8 @@ lookup(XML_Parser parser, HASH_TABLE *table, KEY name, size_t createSize) {
           step = PROBE_STEP(h, newMask, newPower);
         i < step ? (i += newSize - step) : (i -= step);
       }
+      } // WINSCP
+      } // WINSCP
     }
   }
   table->v[i] = table->mem->malloc_fcn(createSize);
@@ -7507,6 +7533,7 @@ build_model(XML_Parser parser) {
     return NULL;
   }
 
+  { // WINSCP
   const size_t allocsize = (dtd->scaffCount * sizeof(XML_Content)
                             + (dtd->contentStringLen * sizeof(XML_Char)));
 
@@ -7563,6 +7590,7 @@ build_model(XML_Parser parser) {
    *
    * - The algorithm repeats until all target array indices have been processed.
    */
+  { // WINSCP
   XML_Content *dest = ret; /* tree node writing location, moves upwards */
   XML_Content *const destLimit = &ret[dtd->scaffCount];
   XML_Content *jobDest = ret; /* next free writing location in target array */
@@ -7605,6 +7633,8 @@ build_model(XML_Parser parser) {
   }
 
   return ret;
+  } // WINSCP
+  } // WINSCP
 }
 
 static ELEMENT_TYPE *
@@ -7676,6 +7706,7 @@ accountingReportStats(XML_Parser originParser, const char *epilog) {
     return;
   }
 
+  { // WINSCP
   const float amplificationFactor
       = accountingGetCurrentAmplification(rootParser);
   fprintf(stderr,
@@ -7684,6 +7715,7 @@ accountingReportStats(XML_Parser originParser, const char *epilog) {
           (void *)rootParser, rootParser->m_accounting.countBytesDirect,
           rootParser->m_accounting.countBytesIndirect,
           (double)amplificationFactor, epilog);
+  } // WINSCP
 }
 
 static void
@@ -7703,6 +7735,7 @@ accountingReportDiff(XML_Parser rootParser,
           bytesMore, (account == XML_ACCOUNT_DIRECT) ? "DIR" : "EXP",
           levelsAwayFromRootParser, source_line, 10, "");
 
+  { // WINSCP
   const char ellipis[] = "[..]";
   const size_t ellipsisLength = sizeof(ellipis) /* because compile-time */ - 1;
   const unsigned int contextLength = 10;
@@ -7726,6 +7759,7 @@ accountingReportDiff(XML_Parser rootParser,
     }
   }
   fprintf(stderr, "\"\n");
+  } // WINSCP
 }
 
 static XML_Bool
@@ -7746,11 +7780,13 @@ accountingDiffTolerated(XML_Parser originParser, int tok, const char *before,
   if (account == XML_ACCOUNT_NONE)
     return XML_TRUE; /* because these bytes have been accounted for, already */
 
+  { // WINSCP
   unsigned int levelsAwayFromRootParser;
   const XML_Parser rootParser
       = getRootParserOf(originParser, &levelsAwayFromRootParser);
   assert(! rootParser->m_parentParser);
 
+  { // WINSCP
   const int isDirect
       = (account == XML_ACCOUNT_DIRECT) && (originParser == rootParser);
   const ptrdiff_t bytesMore = after - before;
@@ -7764,6 +7800,7 @@ accountingDiffTolerated(XML_Parser originParser, int tok, const char *before,
     return XML_FALSE;
   *additionTarget += bytesMore;
 
+  { // WINSCP
   const XmlBigCount countBytesOutput
       = rootParser->m_accounting.countBytesDirect
         + rootParser->m_accounting.countBytesIndirect;
@@ -7781,6 +7818,9 @@ accountingDiffTolerated(XML_Parser originParser, int tok, const char *before,
   }
 
   return tolerated;
+  } // WINSCP
+  } // WINSCP
+  } // WINSCP
 }
 
 unsigned long long
@@ -7804,6 +7844,7 @@ entityTrackingReportStats(XML_Parser rootParser, ENTITY *entity,
   if (rootParser->m_entity_stats.debugLevel < 1)
     return;
 
+  { // WINSCP
 #  if defined(XML_UNICODE)
   const char *const entityName = "[..]";
 #  else
@@ -7819,6 +7860,7 @@ entityTrackingReportStats(XML_Parser rootParser, ENTITY *entity,
       (rootParser->m_entity_stats.currentDepth - 1) * 2, "",
       entity->is_param ? "%" : "&", entityName, action, entity->textLen,
       sourceLine);
+  } // WINSCP
 }
 
 static void
@@ -8379,7 +8421,7 @@ unsignedCharToPrintable(unsigned char c) {
     assert(0); /* never gets here */
     return "dead code";
   }
-  assert(0); /* never gets here */
+  // WINSCP assert(0); /* never gets here */
 }
 
 #endif /* XML_DTD */
@@ -8390,9 +8432,11 @@ getDebugLevel(const char *variableName, unsigned long defaultDebugLevel) {
   if (valueOrNull == NULL) {
     return defaultDebugLevel;
   }
+  { // WINSCP
   const char *const value = valueOrNull;
 
   errno = 0;
+  { // WINSCP
   char *afterValue = (char *)value;
   unsigned long debugLevel = strtoul(value, &afterValue, 10);
   if ((errno != 0) || (afterValue[0] != '\0')) {
@@ -8401,4 +8445,6 @@ getDebugLevel(const char *variableName, unsigned long defaultDebugLevel) {
   }
 
   return debugLevel;
+  } // WINSCP
+  } // WINSCP
 }
