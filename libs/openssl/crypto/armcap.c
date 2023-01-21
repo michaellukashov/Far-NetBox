@@ -5,7 +5,6 @@
 #include <signal.h>
 #include <crypto.h>
 
-#include "cryptlib.h"
 #include "arm_arch.h"
 
 unsigned int OPENSSL_armcap_P = 0;

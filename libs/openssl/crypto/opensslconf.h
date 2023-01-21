@@ -11,20 +11,11 @@ extern "C" {
 #ifndef OPENSSL_DOING_MAKEDEPEND
 
 
-#ifndef OPENSSL_NO_CAMELLIA
-# define OPENSSL_NO_CAMELLIA
-#endif
-#ifndef OPENSSL_NO_CAST
-# define OPENSSL_NO_CAST
-#endif
 #ifndef OPENSSL_NO_EC_NISTP_64_GCC_128
 # define OPENSSL_NO_EC_NISTP_64_GCC_128
 #endif
 #ifndef OPENSSL_NO_GMP
 # define OPENSSL_NO_GMP
-#endif
-#ifndef OPENSSL_NO_IDEA
-# define OPENSSL_NO_IDEA
 #endif
 #ifndef OPENSSL_NO_JPAKE
 # define OPENSSL_NO_JPAKE
@@ -38,9 +29,6 @@ extern "C" {
 #ifndef OPENSSL_NO_MD2
 # define OPENSSL_NO_MD2
 #endif
-#ifndef OPENSSL_NO_RC4
-# define OPENSSL_NO_RC4
-#endif
 #ifndef OPENSSL_NO_RC5
 # define OPENSSL_NO_RC5
 #endif
@@ -49,12 +37,6 @@ extern "C" {
 #endif
 #ifndef OPENSSL_NO_SCTP
 # define OPENSSL_NO_SCTP
-#endif
-#ifndef OPENSSL_NO_SEED
-# define OPENSSL_NO_SEED
-#endif
-#ifndef OPENSSL_NO_SRP
-# define OPENSSL_NO_SRP
 #endif
 #ifndef OPENSSL_NO_SSL_TRACE
 # define OPENSSL_NO_SSL_TRACE
@@ -71,23 +53,11 @@ extern "C" {
 #ifndef OPENSSL_NO_WEAK_SSL_CIPHERS
 # define OPENSSL_NO_WEAK_SSL_CIPHERS
 #endif
-#ifndef OPENSSL_NO_WHIRLPOOL
-# define OPENSSL_NO_WHIRLPOOL
-#endif
 
 #endif /* OPENSSL_DOING_MAKEDEPEND */
 
 #ifndef OPENSSL_THREADS
 # define OPENSSL_THREADS
-#endif
-#ifndef OPENSSL_NO_ASM
-# define OPENSSL_NO_ASM
-#endif
-#ifndef OPENSSL_NO_ERR
-# define OPENSSL_NO_ERR
-#endif
-#ifndef OPENSSL_NO_HW
-# define OPENSSL_NO_HW
 #endif
 
 /* The OPENSSL_NO_* macros are also defined as NO_* if the application
@@ -95,20 +65,11 @@ extern "C" {
    who haven't had the time to do the appropriate changes in their
    applications.  */
 #ifdef OPENSSL_ALGORITHM_DEFINES
-# if defined(OPENSSL_NO_CAMELLIA) && !defined(NO_CAMELLIA)
-#  define NO_CAMELLIA
-# endif
-# if defined(OPENSSL_NO_CAST) && !defined(NO_CAST)
-#  define NO_CAST
-# endif
 # if defined(OPENSSL_NO_EC_NISTP_64_GCC_128) && !defined(NO_EC_NISTP_64_GCC_128)
 #  define NO_EC_NISTP_64_GCC_128
 # endif
 # if defined(OPENSSL_NO_GMP) && !defined(NO_GMP)
 #  define NO_GMP
-# endif
-# if defined(OPENSSL_NO_IDEA) && !defined(NO_IDEA)
-#  define NO_IDEA
 # endif
 # if defined(OPENSSL_NO_JPAKE) && !defined(NO_JPAKE)
 #  define NO_JPAKE
@@ -122,9 +83,6 @@ extern "C" {
 # if defined(OPENSSL_NO_MD2) && !defined(NO_MD2)
 #  define NO_MD2
 # endif
-# if defined(OPENSSL_NO_RC4) && !defined(NO_RC4)
-#  define NO_RC4
-# endif
 # if defined(OPENSSL_NO_RC5) && !defined(NO_RC5)
 #  define NO_RC5
 # endif
@@ -133,12 +91,6 @@ extern "C" {
 # endif
 # if defined(OPENSSL_NO_SCTP) && !defined(NO_SCTP)
 #  define NO_SCTP
-# endif
-# if defined(OPENSSL_NO_SEED) && !defined(NO_SEED)
-#  define NO_SEED
-# endif
-# if defined(OPENSSL_NO_SRP) && !defined(NO_SRP)
-#  define NO_SRP
 # endif
 # if defined(OPENSSL_NO_SSL_TRACE) && !defined(NO_SSL_TRACE)
 #  define NO_SSL_TRACE
@@ -154,9 +106,6 @@ extern "C" {
 # endif
 # if defined(OPENSSL_NO_WEAK_SSL_CIPHERS) && !defined(NO_WEAK_SSL_CIPHERS)
 #  define NO_WEAK_SSL_CIPHERS
-# endif
-# if defined(OPENSSL_NO_WHIRLPOOL) && !defined(NO_WHIRLPOOL)
-#  define NO_WHIRLPOOL
 # endif
 #endif
 
@@ -249,7 +198,7 @@ extern "C" {
 /* the following is tweaked from a config script, that is why it is a
  * protected undef/define */
 #ifndef DES_PTR
-#undef DES_PTR
+#define DES_PTR
 #endif
 
 /* This helps C compiler generate the correct code for multiple functional
@@ -318,3 +267,11 @@ extern "C" {
 #ifdef  __cplusplus
 }
 #endif
+ 
+#ifndef _timeb 
+#define _timeb timeb 
+#endif 
+ 
+#ifndef _ftime 
+#define _ftime ftime 
+#endif 

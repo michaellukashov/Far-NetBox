@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2016 The OpenSSL Project Authors. All Rights Reserved.
+ * Copyright 2015-2018 The OpenSSL Project Authors. All Rights Reserved.
  *
  * Licensed under the OpenSSL license (the "License").  You may not use
  * this file except in compliance with the License.  You can obtain a copy
@@ -11,7 +11,7 @@
 #include <openssl/ec.h>
 #include <openssl/engine.h>
 #include <openssl/err.h>
-#include "ec_lcl.h"
+#include "ec_local.h"
 
 
 static const EC_KEY_METHOD openssl_ec_key_method = {
@@ -119,7 +119,7 @@ EC_KEY *EC_KEY_new_method(ENGINE *engine)
     }
     return ret;
 
-err:
+ err:
     EC_KEY_free(ret);
     return NULL;
 }

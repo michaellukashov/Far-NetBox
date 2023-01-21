@@ -106,8 +106,6 @@ extern int OPENSSL_NONPIC_relocated;
 
 char *ossl_safe_getenv(const char *);
 
-unsigned long OPENSSL_rdtsc(void);
-
 #ifdef  __cplusplus
 }
 #endif

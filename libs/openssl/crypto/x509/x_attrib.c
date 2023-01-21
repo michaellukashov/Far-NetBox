@@ -12,7 +12,7 @@
 #include <openssl/objects.h>
 #include <openssl/asn1t.h>
 #include <openssl/x509.h>
-#include "x509_lcl.h"
+#include "x509_local.h"
 
 /*-
  * X509_ATTRIBUTE: this has the following form:
@@ -37,19 +37,22 @@ X509_ATTRIBUTE *X509_ATTRIBUTE_create(int nid, int atrtype, void *value)
 {
     X509_ATTRIBUTE *ret = NULL;
     ASN1_TYPE *val = NULL;
+    ASN1_OBJECT *oid;
 
+    if ((oid = OBJ_nid2obj(nid)) == NULL)
+        return NULL;
     if ((ret = X509_ATTRIBUTE_new()) == NULL)
-        return (NULL);
-    ret->object = OBJ_nid2obj(nid);
+        return NULL;
+    ret->object = oid;
     if ((val = ASN1_TYPE_new()) == NULL)
         goto err;
     if (!sk_ASN1_TYPE_push(ret->set, val))
         goto err;
 
     ASN1_TYPE_set(val, atrtype, value);
-    return (ret);
+    return ret;
  err:
     X509_ATTRIBUTE_free(ret);
     ASN1_TYPE_free(val);
-    return (NULL);
+    return NULL;
 }
