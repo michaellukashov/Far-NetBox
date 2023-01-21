@@ -571,7 +571,7 @@ bool TSecureShell::TryFtp()
 
           nb::ClearStruct(Address);
           Address.sin_family = AF_INET;
-          intptr_t Port = FtpPortNumber;
+          int32_t Port = FtpPortNumber;
           Address.sin_port = htons(static_cast<short>(Port));
           Address.sin_addr.s_addr = *(reinterpret_cast<uint32_t *>(*HostEntry->h_addr_list));
 
@@ -914,7 +914,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
   // on terminal console
   Instructions = Instructions.Trim();
 
-  for (intptr_t Index2 = 0; Index2 < Prompts->GetCount(); ++Index2)
+  for (int32_t Index2 = 0; Index2 < Prompts->GetCount(); ++Index2)
   {
     UnicodeString Prompt = Prompts->GetString(Index2);
     if (PromptTranslation != nullptr)
@@ -1169,7 +1169,7 @@ int32_t TSecureShell::Receive(uint8_t * Buf, int32_t Len)
        */
       if (PendLen > 0)
       {
-        intptr_t PendUsed = PendLen;
+        int32_t PendUsed = PendLen;
         if (PendUsed > OutLen)
         {
           PendUsed = OutLen;
@@ -1231,7 +1231,7 @@ UnicodeString TSecureShell::ReceiveLine()
         ++Index;
       }
       EOL = static_cast<Boolean>(Index && (Pending[Index - 1] == '\n'));
-      intptr_t PrevLen = Line.Length();
+      int32_t PrevLen = Line.Length();
       char *Buf = Line.SetLength(PrevLen + Index);
       Receive(reinterpret_cast<uint8_t *>(Buf + PrevLen), Index);
     }
@@ -1257,7 +1257,7 @@ UnicodeString TSecureShell::ReceiveLine()
   return Result;
 }
 
-UnicodeString TSecureShell::ConvertInput(const RawByteString Input, uintptr_t CodePage) const
+UnicodeString TSecureShell::ConvertInput(const RawByteString Input, uint32_t CodePage) const
 {
   UnicodeString Result;
   if (GetUtfStrings())
@@ -1272,7 +1272,7 @@ UnicodeString TSecureShell::ConvertInput(const RawByteString Input, uintptr_t Co
   return Result;
 }
 
-void TSecureShell::SendSpecial(intptr_t Code)
+void TSecureShell::SendSpecial(int32_t Code)
 {
   if (GetConfiguration()->ActualLogProtocol >= 0)
   {
@@ -1288,7 +1288,7 @@ uint32_t TSecureShell::TimeoutPrompt(TQueryParamsTimerEvent PoolEvent)
 {
   ++FWaiting;
 
-  uintptr_t Answer;
+  uint32_t Answer;
   try__finally
   {
     TQueryParams Params(qpFatalAbort | qpAllowContinueOnError | qpIgnoreAbort);
@@ -1364,7 +1364,7 @@ void TSecureShell::DispatchSendBuffer(int32_t BufSize)
     if (Now() - Start > FSessionData->GetTimeoutDT())
     {
       LogEvent("Waiting for dispatching send buffer timed out, asking user what to do.");
-      uintptr_t Answer = TimeoutPrompt(nb::bind(&TSecureShell::SendBuffer, this));
+      uint32_t Answer = TimeoutPrompt(nb::bind(&TSecureShell::SendBuffer, this));
       switch (Answer)
       {
         case qaRetry:
@@ -1389,7 +1389,7 @@ void TSecureShell::DispatchSendBuffer(int32_t BufSize)
   while (BufSize > MAX_BUFSIZE);
 }
 
-void TSecureShell::Send(const uint8_t *Buf, intptr_t Length)
+void TSecureShell::Send(const uint8_t *Buf, int32_t Length)
 {
   CheckConnection();
   backend_send(FBackendHandle, const_cast<char *>(reinterpret_cast<const char *>(Buf)), nb::ToInt(Length));
@@ -1436,11 +1436,11 @@ void TSecureShell::SendLine(const UnicodeString & Line)
 }
 
 int TSecureShell::TranslatePuttyMessage(
-  const TPuttyTranslation *Translation, intptr_t Count, UnicodeString &Message,
+  const TPuttyTranslation *Translation, int32_t Count, UnicodeString &Message,
   UnicodeString *HelpKeyword) const
 {
   int Result = -1;
-  for (intptr_t Index = 0; Index < Count; ++Index)
+  for (int32_t Index = 0; Index < Count; ++Index)
   {
     const char * Original = Translation[Index].Original;
     const char * Div = strchr(Original, '%');
@@ -1928,7 +1928,7 @@ void TSecureShell::WaitForData()
       TPoolForDataEvent Event(this, Events);
 
       LogEvent("Waiting for data timed out, asking user what to do.");
-      uintptr_t Answer = TimeoutPrompt(nb::bind(&TPoolForDataEvent::PoolForData, &Event));
+      uint32_t Answer = TimeoutPrompt(nb::bind(&TPoolForDataEvent::PoolForData, &Event));
       switch (Answer)
       {
         case qaRetry:
@@ -1977,7 +1977,7 @@ bool TSecureShell::EnumNetworkEvents(SOCKET Socket, WSANETWORKEVENTS &Events)
     noise_ultralight(NOISE_SOURCE_IOID, AEvents.lNetworkEvents);
 
     Events.lNetworkEvents |= AEvents.lNetworkEvents;
-    for (intptr_t Index = 0; Index < FD_MAX_EVENTS; ++Index)
+    for (int32_t Index = 0; Index < FD_MAX_EVENTS; ++Index)
     {
       if (AEvents.iErrorCode[Index] != 0)
       {
@@ -2171,11 +2171,11 @@ bool TSecureShell::EventSelectLoop(uint32_t MSec, bool ReadEventRequired,
     } end_try__finally
 
 
-    uintptr_t TicksAfter = ::GetTickCount();
+    uint32_t TicksAfter = ::GetTickCount();
     // ticks wraps once in 49.7 days
     if (TicksBefore < TicksAfter)
     {
-      uintptr_t Ticks = TicksAfter - TicksBefore;
+      uint32_t Ticks = TicksAfter - TicksBefore;
       if (Ticks > MSec)
       {
         MSec = 0;
@@ -2727,7 +2727,7 @@ void TSecureShell::VerifyHostKey(
   GetConfiguration()->RememberLastFingerprint(FSessionData->GetSiteKey(), SshFingerprintType, FingerprintSHA256);
 }
 
-bool TSecureShell::HaveHostKey(UnicodeString AHost, intptr_t Port, UnicodeString KeyType)
+bool TSecureShell::HaveHostKey(UnicodeString AHost, int32_t Port, UnicodeString KeyType)
 {
   // Return true, if we have any host key fingerprint of a particular type
 

@@ -80,7 +80,7 @@ void THttp::SendRequest(const char *Method, const UnicodeString Request)
       {
         if (FRequestHeaders != nullptr)
         {
-          for (intptr_t Index = 0; Index < FRequestHeaders->GetCount(); Index++)
+          for (int32_t Index = 0; Index < FRequestHeaders->GetCount(); Index++)
           {
             ne_add_request_header(
               NeonRequest, StrToNeon(FRequestHeaders->GetName(Index)), StrToNeon(FRequestHeaders->GetValueFromIndex(Index)));

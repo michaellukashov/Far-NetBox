@@ -38,7 +38,7 @@ public:
 
 private:
   void LoadLevel(THierarchicalStorage *Storage, UnicodeString Key,
-    intptr_t AIndex, TBookmarkList *BookmarkList);
+    int32_t AIndex, TBookmarkList *BookmarkList);
 };
 
 class TBookmark;
@@ -57,7 +57,7 @@ public:
 
   void Clear();
   void Add(TBookmark *Bookmark);
-  void Insert(intptr_t Index, TBookmark *Bookmark);
+  void Insert(int32_t Index, TBookmark *Bookmark);
   void InsertBefore(TBookmark *BeforeBookmark, TBookmark *Bookmark);
   void MoveTo(TBookmark *ToBookmark, TBookmark *Bookmark, bool Before);
   void Delete(TBookmark *&Bookmark);
@@ -74,8 +74,8 @@ public:
   __property bool NodeOpened[UnicodeString Index] = { read = GetNodeOpened, write = SetNodeOpened };
 
 protected:
-  intptr_t IndexOf(TBookmark *Bookmark) const;
-  void KeyChanged(intptr_t Index);
+  int32_t IndexOf(TBookmark *Bookmark) const;
+  void KeyChanged(int32_t Index);
 
   __property bool Modified = { read = FModified, write = FModified };
   bool& Modified{FModified};
@@ -88,8 +88,8 @@ private:
   bool FModified{false};
 
 public:
-  intptr_t GetCount() const;
-  TBookmark *GetBookmarks(intptr_t AIndex);
+  int32_t GetCount() const;
+  TBookmark *GetBookmarks(int32_t AIndex);
   bool GetNodeOpened(UnicodeString AIndex) const;
   void SetNodeOpened(UnicodeString AIndex, bool Value);
 };
@@ -144,6 +144,6 @@ public:
   UnicodeString GetKey() const;
 
 private:
-  void Modify(intptr_t OldIndex);
+  void Modify(int32_t OldIndex);
 };
 

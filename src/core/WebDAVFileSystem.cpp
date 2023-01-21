@@ -584,7 +584,7 @@ UnicodeString TWebDAVFileSystem::GetAbsolutePath(UnicodeString APath, bool /*Loc
   return Result;
 }
 
-bool TWebDAVFileSystem::IsCapable(intptr_t Capability) const
+bool TWebDAVFileSystem::IsCapable(int32_t Capability) const
 {
   DebugAssert(FTerminal);
   switch (Capability)
@@ -665,7 +665,7 @@ UnicodeString TWebDAVFileSystem::GetNeonError() const
   return ::GetNeonError(FNeonSession);
 }
 
-void TWebDAVFileSystem::CheckStatus(intptr_t NeonStatus)
+void TWebDAVFileSystem::CheckStatus(int32_t NeonStatus)
 {
   if ((NeonStatus == NE_ERROR) && (FCancelled || FSkipped))
   {
@@ -791,7 +791,7 @@ int TWebDAVFileSystem::ReadDirectoryInternal(
   return Result;
 }
 
-bool TWebDAVFileSystem::IsValidRedirect(intptr_t NeonStatus, UnicodeString &APath) const
+bool TWebDAVFileSystem::IsValidRedirect(int32_t NeonStatus, UnicodeString &APath) const
 {
   bool Result = (NeonStatus == NE_REDIRECT);
   if (Result)
@@ -915,7 +915,7 @@ void TWebDAVFileSystem::ParsePropResultSet(TRemoteFile *AFile,
     // we need at least a complete date
     if (Filled >= 4)
     {
-      intptr_t Month = ParseShortEngMonthName(MonthStr);
+      int32_t Month = ParseShortEngMonthName(MonthStr);
       if (Month >= 1)
       {
         TDateTime Modification =
@@ -1039,7 +1039,7 @@ void TWebDAVFileSystem::ParsePropResultSet(TRemoteFile *AFile,
   AFile->SetHumanRights(HumanRights);
 }
 
-intptr_t TWebDAVFileSystem::CustomReadFileInternal(UnicodeString AFileName,
+int32_t TWebDAVFileSystem::CustomReadFileInternal(UnicodeString AFileName,
   TRemoteFile *& AFile, TRemoteFile *ALinkedByFile)
 {
   std::unique_ptr<TRemoteFile> File(std::make_unique<TRemoteFile>(ALinkedByFile));
@@ -1064,7 +1064,7 @@ void TWebDAVFileSystem::CustomReadFile(UnicodeString AFileName,
   UnicodeString FileName = AFileName;
   TOperationVisualizer Visualizer(FTerminal->GetUseBusyCursor()); nb::used(Visualizer);
 
-  intptr_t NeonStatus = CustomReadFileInternal(AFileName, AFile, ALinkedByFile);
+  int32_t NeonStatus = CustomReadFileInternal(AFileName, AFile, ALinkedByFile);
   if (IsValidRedirect(NeonStatus, FileName))
   {
     NeonStatus = CustomReadFileInternal(FileName, AFile, ALinkedByFile);
@@ -1073,7 +1073,7 @@ void TWebDAVFileSystem::CustomReadFile(UnicodeString AFileName,
 }
 
 void TWebDAVFileSystem::RemoteDeleteFile(UnicodeString /*AFileName*/,
-  const TRemoteFile *AFile, intptr_t /*Params*/, TRmSessionAction &Action)
+  const TRemoteFile *AFile, int32_t /*Params*/, TRmSessionAction &Action)
 {
   Action.Recursive();
   ClearNeonError();
@@ -1456,7 +1456,7 @@ void TWebDAVFileSystem::Source(
 
 void TWebDAVFileSystem::CopyToLocal(TStrings *AFilesToCopy,
   UnicodeString TargetDir, const TCopyParamType *CopyParam,
-  intptr_t Params, TFileOperationProgressType *OperationProgress,
+  int32_t Params, TFileOperationProgressType *OperationProgress,
   TOnceDoneOperation &OnceDoneOperation)
 {
   Params &= ~cpAppend;
@@ -1482,11 +1482,11 @@ void TWebDAVFileSystem::NeonPreSend(
   FileSystem->FAuthorizationProtocol = "";
   UnicodeString HeaderBuf(StrFromNeon(UTF8String(Header->data, Header->used)));
   UnicodeString AuthorizationHeaderName("Authorization:");
-  intptr_t P = HeaderBuf.Pos(AuthorizationHeaderName);
+  int32_t P = HeaderBuf.Pos(AuthorizationHeaderName);
   if (P > 0)
   {
     P += AuthorizationHeaderName.Length();
-    intptr_t P2 = PosEx(L"\n", HeaderBuf, P);
+    int32_t P2 = PosEx(L"\n", HeaderBuf, P);
     if (DebugAlwaysTrue(P2 > 0))
     {
       UnicodeString AuthorizationHeader = HeaderBuf.SubString(P, P2 - P).Trim();
@@ -1741,9 +1741,9 @@ int TWebDAVFileSystem::NeonBodyReader(void *UserData, const char *Buf, size_t Le
 
 void TWebDAVFileSystem::Sink(
   UnicodeString AFileName, const TRemoteFile *AFile,
-  UnicodeString ATargetDir, UnicodeString &ADestFileName, intptr_t Attrs,
-  const TCopyParamType *CopyParam, intptr_t AParams, TFileOperationProgressType *OperationProgress,
-  uintptr_t /*AFlags*/, TDownloadSessionAction & Action)
+  UnicodeString ATargetDir, UnicodeString &ADestFileName, int32_t Attrs,
+  const TCopyParamType *CopyParam, int32_t AParams, TFileOperationProgressType *OperationProgress,
+  uint32_t /*AFlags*/, TDownloadSessionAction & Action)
 {
   UnicodeString DestFullName = ATargetDir + ADestFileName;
   if (::SysUtulsFileExists(ApiPath(DestFullName)))

@@ -27,7 +27,7 @@ public:
   void Save(THierarchicalStorage * Storage) const;
   UnicodeString Serialize(const UnicodeString & ADelimiter = "&", const UnicodeString & AFilter = "") const;
 
-  static intptr_t CalculateCounterSize(int64_t Size);
+  static int32_t CalculateCounterSize(int64_t Size);
 
   __property bool Collect = { read = FCollect, write = SetCollect };
   RWProperty<bool> Collect{nb::bind(&TUsage::GetCollect, this), nb::bind(&TUsage::SetCollect, this)};

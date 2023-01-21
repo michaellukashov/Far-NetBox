@@ -29,7 +29,7 @@ public:
   virtual ~TNamedObject() = default;
 
   bool IsSameName(const UnicodeString AName) const;
-  virtual intptr_t Compare(const TNamedObject *Other) const;
+  virtual int32_t Compare(const TNamedObject *Other) const;
   void MakeUniqueIn(TNamedObjectList *List);
 private:
   UnicodeString FName;
@@ -45,12 +45,12 @@ public:
   static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TNamedObjectList); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TNamedObjectList) || TObjectList::is(Kind); }
 public:
-  intptr_t GetCount() const;
-  intptr_t GetCountIncludingHidden() const;
+  int32_t GetCount() const;
+  int32_t GetCountIncludingHidden() const;
   void Notify(void *Ptr, TListNotification Action) override;
-  void SetCount(intptr_t Value);
+  void SetCount(int32_t Value);
 protected:
-  intptr_t FHiddenCount{0};
+  int32_t FHiddenCount{0};
   bool FAutoSort{true};
   bool FControlledAdd{false};
   void Recount();
@@ -62,14 +62,14 @@ public:
 
   explicit TNamedObjectList(TObjectClassId Kind = OBJECT_CLASS_TNamedObjectList) noexcept;
   void AlphaSort();
-  intptr_t Add(TObject *AObject);
-  virtual const TNamedObject * AtObject(intptr_t Index) const;
-  virtual TNamedObject * AtObject(intptr_t Index);
+  int32_t Add(TObject *AObject);
+  virtual const TNamedObject * AtObject(int32_t Index) const;
+  virtual TNamedObject * AtObject(int32_t Index);
   const TNamedObject * FindByName(const UnicodeString AName) const;
   TNamedObject * FindByName(const UnicodeString Name);
   __property int Count = { read = GetCount, write = SetCount };
   __property int CountIncludingHidden = { read = GetCountIncludingHidden };
 };
 
-intptr_t NamedObjectSortProc(const void *Item1, const void *Item2);
+int32_t NamedObjectSortProc(const void *Item1, const void *Item2);
 

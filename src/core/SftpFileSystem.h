@@ -85,7 +85,7 @@ public:
   virtual void RemoteDeleteFile(const UnicodeString AFileName,
     const TRemoteFile *AFile, int32_t Params, TRmSessionAction &Action) override;
   virtual void CustomCommandOnFile(const UnicodeString AFileName,
-    const TRemoteFile *AFile, UnicodeString ACommand, intptr_t AParams, TCaptureOutputEvent OutputEvent) override;
+    const TRemoteFile *AFile, UnicodeString ACommand, int32_t AParams, TCaptureOutputEvent OutputEvent) override;
   virtual void DoStartup() override;
   virtual void HomeDirectory() override;
   virtual UnicodeString GetHomeDirectory() override;
@@ -120,7 +120,7 @@ protected:
   TSecureShell *FSecureShell{nullptr};
   TFileSystemInfo FFileSystemInfo{};
   bool FFileSystemInfoValid{false};
-  intptr_t FVersion{0};
+  int32_t FVersion{0};
   UnicodeString FCurrentDirectory;
   UnicodeString FDirectoryToChangeTo;
   UnicodeString FHomeDirectory;
@@ -128,8 +128,8 @@ protected:
   std::unique_ptr<TList> FPacketReservations;
   nb::vector_t<uintptr_t> FPacketNumbers;
   SSH_FXP_TYPE FPreviousLoggedPacket{0};
-  intptr_t FNotLoggedPackets{0};
-  intptr_t FBusy{0};
+  int32_t FNotLoggedPackets{0};
+  int32_t FBusy{0};
   void * FBusyToken{nullptr};
   bool FAvoidBusy{false};
   std::unique_ptr<TStrings> FExtensions;
@@ -140,7 +140,7 @@ protected:
   TStrings *FFixedPaths{nullptr};
   uint32_t FMaxPacketSize{0};
   bool FSupportsStatVfsV2{false};
-  uintptr_t FCodePage{0};
+  uint32_t FCodePage{0};
   bool FSupportsHardlink{false};
   std::unique_ptr<TStringList> FChecksumAlgs;
   std::unique_ptr<TStringList> FChecksumSftpAlgs;
@@ -168,7 +168,7 @@ protected:
   SSH_FX_TYPE ReceivePacket(TSFTPPacket *Packet, SSH_FXP_TYPE ExpectedType = -1,
     SSH_FX_TYPE AllowStatus = -1, bool TryOnly = false);
   bool PeekPacket();
-  void RemoveReservation(intptr_t Reservation);
+  void RemoveReservation(int32_t Reservation);
   void SendPacket(const TSFTPPacket *Packet);
   SSH_FX_TYPE ReceiveResponse(const TSFTPPacket *Packet,
     TSFTPPacket *AResponse, SSH_FXP_TYPE ExpectedType = -1, SSH_FX_TYPE AllowStatus = -1, bool TryOnly = false);
@@ -191,7 +191,7 @@ protected:
     const UnicodeString TargetDir, const TCopyParamType *CopyParam, int32_t Params,
     TOpenRemoteFileParams &OpenParams,
     TOverwriteFileParams &FileParams,
-    TFileOperationProgressType *OperationProgress, uintptr_t Flags,
+    TFileOperationProgressType *OperationProgress, uint32_t Flags,
     TUploadSessionAction &Action, bool &ChildError);
   RawByteString SFTPOpenRemoteFile(const UnicodeString AFileName,
     SSH_FXF_TYPE OpenType, bool EncryptNewFiles = false, int64_t Size = -1);

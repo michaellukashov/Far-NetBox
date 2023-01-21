@@ -67,7 +67,7 @@ public:
     const TRemoteFile * AFile, UnicodeString ACommand, int32_t AParams, TCaptureOutputEvent OutputEvent) override;
   virtual void DoStartup() override;
   virtual void HomeDirectory() override;
-  virtual bool IsCapable(intptr_t Capability) const override;
+  virtual bool IsCapable(int32_t Capability) const override;
   virtual void LookupUsersGroups() override;
   virtual void ReadCurrentDirectory() override;
   virtual void ReadDirectory(TRemoteFileList * AFileList) override;
@@ -181,7 +181,7 @@ private:
 
   void CustomReadFile(UnicodeString AFileName,
     TRemoteFile *& AFile, TRemoteFile *ALinkedByFile);
-  intptr_t CustomReadFileInternal(UnicodeString AFileName,
+  int32_t CustomReadFileInternal(UnicodeString AFileName,
     TRemoteFile *& AFile, TRemoteFile *ALinkedByFile);
   bool VerifyCertificate(TNeonCertificateData &Data, bool Aux);
   void OpenUrl(UnicodeString Url);
@@ -191,7 +191,7 @@ private:
   int ReadDirectoryInternal(UnicodeString APath, TRemoteFileList *AFileList);
   int RenameFileInternal(UnicodeString AFileName, UnicodeString ANewName);
   int CopyFileInternal(UnicodeString AFileName, UnicodeString ANewName);
-  bool IsValidRedirect(intptr_t NeonStatus, UnicodeString &APath) const;
+  bool IsValidRedirect(int32_t NeonStatus, UnicodeString &APath) const;
   UnicodeString DirectoryPath(UnicodeString APath) const;
   UnicodeString FilePath(const TRemoteFile *AFile) const;
   struct ne_lock * FindLock(const RawByteString APath) const;

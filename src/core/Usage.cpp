@@ -55,7 +55,7 @@ void TUsage::Load(THierarchicalStorage * Storage)
     try__finally
     {
       Storage->GetValueNames(Names.get());
-      for (intptr_t Index = 0; Index < Names->Count; Index++)
+      for (int32_t Index = 0; Index < Names->Count; Index++)
       {
         UnicodeString Name = Names->GetString(Index);
         Set(Name, Storage->ReadString(Name, ""));
@@ -81,7 +81,7 @@ void TUsage::Load(THierarchicalStorage * Storage,
     try__finally
     {
       Storage->GetValueNames(Names.get());
-      for (intptr_t Index = 0; Index < Names->Count; Index++)
+      for (int32_t Index = 0; Index < Names->Count; Index++)
       {
         UnicodeString Name = Names->GetString(Index);
         Counters[Name] = Storage->ReadInteger(Name, 0);
@@ -134,7 +134,7 @@ void TUsage::Set(UnicodeString AKey, UnicodeString AValue)
   }
 }
 
-void TUsage::Set(UnicodeString AKey, intptr_t Value)
+void TUsage::Set(UnicodeString AKey, int32_t Value)
 {
   Set(AKey, IntToStr(Value));
 }
@@ -197,7 +197,7 @@ void TUsage::UpdateCurrentVersion()
 
 void TUsage::ResetValue(UnicodeString AKey)
 {
-  intptr_t Index = FValues->IndexOfName(AKey);
+  int32_t Index = FValues->IndexOfName(AKey);
   if (Index >= 0)
   {
     FValues->Delete(Index);
@@ -211,7 +211,7 @@ void TUsage::ResetLastExceptions()
   ResetValue(LastUpdateExceptionCounter);
 }
 
-int TUsage::Inc(UnicodeString AKey, intptr_t Increment)
+int TUsage::Inc(UnicodeString AKey, int32_t Increment)
 {
   int Result;
   if (FCollect)
@@ -227,7 +227,7 @@ int TUsage::Inc(UnicodeString AKey, intptr_t Increment)
   return Result;
 }
 
-int TUsage::Inc(const UnicodeString & AKey, TCounters & Counters, intptr_t Increment)
+int TUsage::Inc(const UnicodeString & AKey, TCounters & Counters, int32_t Increment)
 {
   int Result;
   TCounters::iterator i = Counters.find(AKey);
@@ -254,7 +254,7 @@ void TUsage::SetMax(const UnicodeString & AKey, int32_t Value)
   }
 }
 
-void TUsage::SetMax(UnicodeString AKey, intptr_t Value,
+void TUsage::SetMax(UnicodeString AKey, int32_t Value,
   TCounters & Counters)
 {
   TCounters::iterator i = Counters.find(AKey);
@@ -331,8 +331,8 @@ void TUsage::Serialize(
   }
 }
 
-intptr_t TUsage::CalculateCounterSize(int64_t Size)
+int32_t TUsage::CalculateCounterSize(int64_t Size)
 {
-  constexpr intptr_t SizeCounterFactor = 10 * 1024;
+  constexpr int32_t SizeCounterFactor = 10 * 1024;
   return (intptr_t)((Size <= 0) ? 0 : (Size < SizeCounterFactor ? 1 : Size / SizeCounterFactor));
 }

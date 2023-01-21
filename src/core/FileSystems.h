@@ -24,9 +24,9 @@ enum TFSCommand { fsNull = 0, fsVarValue, fsLastLine, fsFirstLine,
   fsAnyCommand, fsLang, fsReadSymlink, fsChangeProperties, fsMoveFile,
   fsLock };
 
-constexpr intptr_t dfNoRecursive = 0x01;
-constexpr intptr_t dfAlternative = 0x02;
-constexpr intptr_t dfForceDelete = 0x04;
+constexpr int32_t dfNoRecursive = 0x01;
+constexpr int32_t dfAlternative = 0x02;
+constexpr int32_t dfForceDelete = 0x04;
 
 __removed enum TOverwriteMode { omOverwrite, omResume, omComplete };
 enum TOverwriteMode
@@ -48,8 +48,8 @@ public:
   UnicodeString TargetDir;
   const TCopyParamType *CopyParam{nullptr};
   TFileOperationProgressType *OperationProgress{nullptr};
-  intptr_t Params{0};
-  uintptr_t Flags{0};
+  int32_t Params{0};
+  uint32_t Flags{0};
   bool Skipped{false};
 };
 
@@ -65,8 +65,8 @@ public:
   UnicodeString FileName;
   const TCopyParamType *CopyParam{nullptr};
   TDateTime Modification{};
-  intptr_t Params{0};
-  intptr_t OverwriteResult{-1};
+  int32_t Params{0};
+  int32_t OverwriteResult{-1};
   bool AutoResume{false};
 };
 
@@ -116,12 +116,12 @@ public:
     Confirmed(false)
   {
   }
-  uintptr_t LocalFileAttrs{0};
+  uint32_t LocalFileAttrs{0};
   UnicodeString FileName;
   UnicodeString RemoteFileName;
   TFileOperationProgressType *OperationProgress{nullptr};
   const TCopyParamType *CopyParam{nullptr};
-  intptr_t Params{0};
+  int32_t Params{0};
   bool Resume{false};
   bool Resuming{false};
   TOverwriteMode OverwriteMode{};
@@ -177,37 +177,37 @@ public:
     TCalculatedChecksumEvent OnCalculatedChecksum) = 0;
   virtual void CopyToLocal(TStrings *AFilesToCopy,
     UnicodeString ATargetDir, const TCopyParamType *CopyParam,
-    intptr_t AParams, TFileOperationProgressType *OperationProgress,
+    int32_t AParams, TFileOperationProgressType *OperationProgress,
     TOnceDoneOperation &OnceDoneOperation) = 0;
   virtual void CopyToRemote(TStrings *AFilesToCopy,
     UnicodeString ATargetDir, const TCopyParamType *CopyParam,
-    intptr_t AParams, TFileOperationProgressType *OperationProgress,
+    int32_t AParams, TFileOperationProgressType *OperationProgress,
     TOnceDoneOperation &OnceDoneOperation) = 0;
   virtual void TransferOnDirectory(
-    UnicodeString /*ADirectory*/, const TCopyParamType * /*CopyParam*/, intptr_t /*AParams*/) {}
+    UnicodeString /*ADirectory*/, const TCopyParamType * /*CopyParam*/, int32_t /*AParams*/) {}
   virtual void Source(
     TLocalFileHandle &AHandle, UnicodeString ATargetDir, UnicodeString &ADestFileName,
-    const TCopyParamType *CopyParam, intptr_t AParams,
-    TFileOperationProgressType *OperationProgress, uintptr_t AFlags,
+    const TCopyParamType *CopyParam, int32_t AParams,
+    TFileOperationProgressType *OperationProgress, uint32_t AFlags,
     TUploadSessionAction &Action, bool &ChildError) = 0;
   virtual void DirectorySunk(
     UnicodeString /*ADestFullName*/, const TRemoteFile * /*AFile*/, const TCopyParamType * /*ACopyParam*/) {}
   virtual void Sink(
     UnicodeString AFileName, const TRemoteFile *AFile,
-    UnicodeString ATargetDir, UnicodeString &ADestFileName, intptr_t AAttrs,
-    const TCopyParamType* CopyParam, intptr_t AParams, TFileOperationProgressType* OperationProgress,
-    uintptr_t AFlags, TDownloadSessionAction& Action) = 0;
+    UnicodeString ATargetDir, UnicodeString &ADestFileName, int32_t AAttrs,
+    const TCopyParamType* CopyParam, int32_t AParams, TFileOperationProgressType* OperationProgress,
+    uint32_t AFlags, TDownloadSessionAction& Action) = 0;
   virtual void RemoteCreateDirectory(UnicodeString ADirName, bool Encrypt) = 0;
   virtual void RemoteCreateLink(UnicodeString AFileName, UnicodeString APointTo, bool Symbolic) = 0;
   virtual void RemoteDeleteFile(UnicodeString AFileName,
-    const TRemoteFile *AFile, intptr_t AParams,
+    const TRemoteFile *AFile, int32_t AParams,
     TRmSessionAction &Action) = 0;
   virtual void CustomCommandOnFile(UnicodeString AFileName,
-    const TRemoteFile *AFile, UnicodeString ACommand, intptr_t AParams, TCaptureOutputEvent OutputEvent) = 0;
+    const TRemoteFile *AFile, UnicodeString ACommand, int32_t AParams, TCaptureOutputEvent OutputEvent) = 0;
   virtual void DoStartup() = 0;
   virtual void HomeDirectory() = 0;
   virtual UnicodeString GetHomeDirectory();
-  virtual bool IsCapable(intptr_t Capability) const = 0;
+  virtual bool IsCapable(int32_t Capability) const = 0;
   virtual void LookupUsersGroups() = 0;
   virtual void ReadCurrentDirectory() = 0;
   virtual void ReadDirectory(TRemoteFileList *FileList) = 0;

@@ -69,7 +69,7 @@ private:
   bool FSimple{false};
   bool FNoConnectionResponse{false};
   bool FCollectPrivateKeyUsage{false};
-  intptr_t FWaitingForData{0};
+  int32_t FWaitingForData{0};
   TSshImplementation FSshImplementation{sshiUnknown};
 
   int32_t PendLen{0};
@@ -116,13 +116,13 @@ public:
     WSANETWORKEVENTS *Events);
   void UpdateSessionInfo() const;
   bool GetReady() const;
-  void DispatchSendBuffer(intptr_t BufSize);
+  void DispatchSendBuffer(int32_t BufSize);
   void SendBuffer(uint32_t &Result);
   uint32_t TimeoutPrompt(TQueryParamsTimerEvent PoolEvent);
   void TimeoutAbort(unsigned int Answer);
   bool TryFtp();
-  UnicodeString ConvertInput(RawByteString Input, uintptr_t CodePage = CP_ACP) const;
-  void GetRealHost(UnicodeString &Host, intptr_t &Port) const;
+  UnicodeString ConvertInput(RawByteString Input, uint32_t CodePage = CP_ACP) const;
+  void GetRealHost(UnicodeString &Host, int32_t &Port) const;
   UnicodeString RetrieveHostKey(const UnicodeString & Host, int32_t Port, const UnicodeString & KeyType) const;
   bool HaveAcceptNewHostKeyPolicy() const;
   THierarchicalStorage * GetHostKeyStorage();
@@ -137,7 +137,7 @@ protected:
 
   void GotHostKey();
   int TranslatePuttyMessage(const TPuttyTranslation *Translation,
-    intptr_t Count, UnicodeString &Message, UnicodeString *HelpKeyword = nullptr) const;
+    int32_t Count, UnicodeString &Message, UnicodeString *HelpKeyword = nullptr) const;
   int TranslateAuthenticationMessage(UnicodeString &Message, UnicodeString *HelpKeyword = nullptr);
   int TranslateErrorMessage(UnicodeString &Message, UnicodeString *HelpKeyword = nullptr);
   void AddStdErrorLine(const UnicodeString & AStr);
@@ -154,10 +154,10 @@ public:
   void Open();
   void Close();
   void KeepAlive();
-  intptr_t Receive(uint8_t *Buf, int32_t Length);
+  int32_t Receive(uint8_t *Buf, int32_t Length);
   bool Peek(uint8_t *& Buf, int32_t Length) const;
   UnicodeString ReceiveLine();
-  void Send(const uint8_t *Buf, intptr_t Length);
+  void Send(const uint8_t *Buf, int32_t Length);
   void SendSpecial(int32_t Code);
   void Idle(uint32_t MSec = 0);
   void SendLine(const UnicodeString & Line);

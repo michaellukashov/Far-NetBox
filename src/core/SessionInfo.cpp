@@ -21,7 +21,7 @@ __removed #pragma package(smart_init)
 static UnicodeString DoXmlEscape(UnicodeString AStr, bool NewLine)
 {
   UnicodeString Str = AStr;
-  for (intptr_t Index = 1; Index <= Str.Length(); ++Index)
+  for (int32_t Index = 1; Index <= Str.Length(); ++Index)
   {
     UnicodeString Repl;
     switch (Str[Index])
@@ -168,7 +168,7 @@ public:
           Attrs = L" recursive=\"true\"";
         }
         FLog->AddIndented(FORMAT("<%s%s>", Name,  Attrs));
-        for (intptr_t Index = 0; Index < FNames->GetCount(); ++Index)
+        for (int32_t Index = 0; Index < FNames->GetCount(); ++Index)
         {
           UnicodeString Value = FValues->GetString(Index);
           if (Value.IsEmpty())
@@ -184,7 +184,7 @@ public:
         if (FFileList != nullptr)
         {
           FLog->AddIndented(L"  <files>");
-          for (intptr_t Index = 0; Index < FFileList->GetCount(); ++Index)
+          for (int32_t Index = 0; Index < FFileList->GetCount(); ++Index)
           {
             TRemoteFile *File = FFileList->GetFile(Index);
             RecordFile(L"    ", File, true);
@@ -276,7 +276,7 @@ public:
   void AddOutput(UnicodeString Output, bool StdError)
   {
     const wchar_t *Name = (StdError ? L"erroroutput" : L"output");
-    intptr_t Index = FNames->IndexOf(Name);
+    int32_t Index = FNames->IndexOf(Name);
     if (Index >= 0)
     {
       FValues->SetString(Index, FValues->GetString(Index) + L"\r\n" + Output);
@@ -844,7 +844,7 @@ void TSessionLog::DoAddToSelf(TLogLineType Type, const UnicodeString ALine)
       UnicodeString Timestamp = FormatDateTime(L" yyyy-mm-dd hh:nn:ss.zzz ", Now());
       UTF8String UtfLine = UTF8String(UnicodeString(LogLineMarks[Type]) + Timestamp + TrimRight(ALine)) + "\r\n";
 #if 0
-      for (intptr_t Index = 1; Index <= UtfLine.Length(); Index++)
+      for (int32_t Index = 1; Index <= UtfLine.Length(); Index++)
       {
         if ((UtfLine[Index] == '\n') &&
             (UtfLine[Index - 1] != '\r'))
@@ -853,7 +853,7 @@ void TSessionLog::DoAddToSelf(TLogLineType Type, const UnicodeString ALine)
         }
       }
 #endif // #if 0
-      intptr_t ToWrite = UtfLine.Length();
+      int32_t ToWrite = UtfLine.Length();
       CheckSize(ToWrite);
       FCurrentFileSize += FLogger->Write(UtfLine.c_str(), ToWrite);
     }}
@@ -865,7 +865,7 @@ void TSessionLog::DoAddToSelf(TLogLineType Type, const UnicodeString ALine)
   }
 }
 
-UnicodeString TSessionLog::LogPartFileName(const UnicodeString BaseName, intptr_t Index)
+UnicodeString TSessionLog::LogPartFileName(const UnicodeString BaseName, int32_t Index)
 {
   UnicodeString Result;
   if (Index >= 1)
@@ -889,14 +889,14 @@ void TSessionLog::CheckSize(int64_t Addition)
     CloseLogFile();
     FCurrentFileSize = 0;
 
-    intptr_t Index = 0;
+    int32_t Index = 0;
 
     while (::SysUtulsFileExists(LogPartFileName(BaseName, Index + 1)))
     {
       Index++;
     }
 
-    intptr_t MaxCount = FConfiguration->GetLogMaxCount();
+    int32_t MaxCount = FConfiguration->GetLogMaxCount();
 
     do
     {
@@ -1137,7 +1137,7 @@ UnicodeString TSessionLog::GetCmdLineLog(TConfiguration * AConfiguration) const
 template <typename T>
 UnicodeString EnumName(T Value, const UnicodeString ANames)
 {
-  intptr_t N = intptr_t(Value);
+  int32_t N = intptr_t(Value);
   UnicodeString Names = ANames;
   do
   {
@@ -1348,7 +1348,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
         Data->GetCipherList(), BooleanToEngStr(Data->GetSsh2DES()));
       ADF("KEX: %s", Data->GetKexList());
       UnicodeString Bugs;
-      for (intptr_t Index = 0; Index < BUG_COUNT; ++Index)
+      for (int32_t Index = 0; Index < BUG_COUNT; ++Index)
       {
         AddToList(Bugs, EnumName(Data->GetBug(static_cast<TSshBug>(Index)), AutoSwitchNames), L",");
       }
@@ -1371,7 +1371,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
     if ((Data->GetFSProtocol() == fsSFTP) || (Data->GetFSProtocol() == fsSFTPonly))
     {
       UnicodeString Bugs;
-      for (intptr_t Index = 0; Index < SFTP_BUG_COUNT; ++Index)
+      for (int32_t Index = 0; Index < SFTP_BUG_COUNT; ++Index)
       {
         AddToList(Bugs, EnumName(Data->GetSFTPBug(static_cast<TSftpBug>(Index)), AutoSwitchNames), L",");
       }
@@ -1476,7 +1476,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
     }
     if ((Data->GetFSProtocol() == fsSCPonly) || (Data->GetFSProtocol() == fsFTP))
     {
-      intptr_t TimeDifferenceMin = TimeToMinutes(Data->GetTimeDifference());
+      int32_t TimeDifferenceMin = TimeToMinutes(Data->GetTimeDifference());
       AddToList(TimeInfo, FORMAT("Timezone offset: %dh %dm", TimeDifferenceMin / MinsPerHour, TimeDifferenceMin % MinsPerHour), L";");
     }
     ADSTR(TimeInfo);

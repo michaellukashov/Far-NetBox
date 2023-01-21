@@ -18,25 +18,25 @@ __removed #pragma package(smart_init)
 
 __removed #define FILE_OPERATION_LOOP_TERMINAL FTerminal
 
-constexpr intptr_t coRaiseExcept = 1;
-constexpr intptr_t coExpectNoOutput = 2;
-constexpr intptr_t coWaitForLastLine = 4;
-constexpr intptr_t coOnlyReturnCode = 8;
-constexpr intptr_t coIgnoreWarnings = 16;
-constexpr intptr_t coReadProgress = 32;
-constexpr intptr_t coIgnoreStdErr = 64;
+constexpr int32_t coRaiseExcept = 1;
+constexpr int32_t coExpectNoOutput = 2;
+constexpr int32_t coWaitForLastLine = 4;
+constexpr int32_t coOnlyReturnCode = 8;
+constexpr int32_t coIgnoreWarnings = 16;
+constexpr int32_t coReadProgress = 32;
+constexpr int32_t coIgnoreStdErr = 64;
 
-constexpr intptr_t ecRaiseExcept = 1;
-constexpr intptr_t ecIgnoreWarnings = 2;
-constexpr intptr_t ecReadProgress = 4;
-constexpr intptr_t ecIgnoreStdErr = 8;
-constexpr intptr_t ecDefault = ecRaiseExcept;
+constexpr int32_t ecRaiseExcept = 1;
+constexpr int32_t ecIgnoreWarnings = 2;
+constexpr int32_t ecReadProgress = 4;
+constexpr int32_t ecIgnoreStdErr = 8;
+constexpr int32_t ecDefault = ecRaiseExcept;
 
 DERIVE_EXT_EXCEPTION(EScpFileSkipped, ESkipFile);
 //===========================================================================
 constexpr TFSCommand MaxShellCommand = fsLang;
-constexpr intptr_t ShellCommandCount = MaxShellCommand + 1;
-constexpr intptr_t MaxCommandLen = 40;
+constexpr int32_t ShellCommandCount = MaxShellCommand + 1;
+constexpr int32_t MaxCommandLen = 40;
 
 struct TCommandType
 {
@@ -294,7 +294,7 @@ UnicodeString TCommandSet::GetReturnVar() const
 UnicodeString TCommandSet::ExtractCommand(UnicodeString ACommand)
 {
   UnicodeString Command = ACommand;
-  intptr_t P = Command.Pos(L" ");
+  int32_t P = Command.Pos(L" ");
   if (P > 0)
   {
     Command.SetLength(P - 1);
@@ -305,7 +305,7 @@ UnicodeString TCommandSet::ExtractCommand(UnicodeString ACommand)
 TStrings * TCommandSet::CreateCommandList() const
 {
   TStrings *CommandList = new TStringList();
-  for (intptr_t Index = 0; Index < ShellCommandCount; ++Index)
+  for (int32_t Index = 0; Index < ShellCommandCount; ++Index)
   {
     UnicodeString Cmd = GetCommands(static_cast<TFSCommand>(Index));
     if (!Cmd.IsEmpty())
@@ -382,7 +382,7 @@ const TFileSystemInfo & TSCPFileSystem::GetFileSystemInfo(bool Retrieve)
       try
       {
         AnyCommand(L"uname -a", nullptr);
-        for (intptr_t Index = 0; Index < GetOutput()->GetCount(); ++Index)
+        for (int32_t Index = 0; Index < GetOutput()->GetCount(); ++Index)
         {
           if (Index > 0)
           {
@@ -594,7 +594,7 @@ bool TSCPFileSystem::RemoveLastLine(UnicodeString & Line,
   }
   // #55: fixed so, even when last line of command output does not
   // contain CR/LF, we can recognize last line
-  intptr_t Pos = Line.Pos(LastLine);
+  int32_t Pos = Line.Pos(LastLine);
   if (Pos)
   {
     // 2003-07-14: There must be nothing after return code number to
@@ -766,7 +766,7 @@ void TSCPFileSystem::ExecCommand(TFSCommand Cmd, const TVarRec * args,
 }
 #endif // if defined(__BORLANDC__)
 
-void TSCPFileSystem::ExecCommand(TFSCommand Cmd, intptr_t Params, fmt::ArgList args)
+void TSCPFileSystem::ExecCommand(TFSCommand Cmd, int32_t Params, fmt::ArgList args)
 {
   UnicodeString FullCommand = FCommandSet->FullCommand(Cmd, args);
   UnicodeString Command = FCommandSet->Command(Cmd, args);
@@ -912,7 +912,7 @@ void TSCPFileSystem::DetectReturnVar()
     UnicodeString ReturnVars[2] = { "status", "?" };
     UnicodeString NewReturnVar;
     FTerminal->LogEvent("Detecting variable containing return code of last command.");
-    for (intptr_t Index = 0; Index < 2; ++Index)
+    for (int32_t Index = 0; Index < 2; ++Index)
     {
       bool Success = true;
 
@@ -921,7 +921,7 @@ void TSCPFileSystem::DetectReturnVar()
         FTerminal->LogEvent(FORMAT("Trying \"$%s\".", ReturnVars[Index]));
         ExecCommand(fsVarValue, 0, ReturnVars[Index]);
         UnicodeString Str = GetOutput()->GetCount() > 0 ? GetOutput()->GetString(0) : L"";
-        intptr_t Val = ::StrToIntDef(Str, 256);
+        int32_t Val = ::StrToIntDef(Str, 256);
         if ((GetOutput()->GetCount() != 1) || Str.IsEmpty() || (Val > 255))
         {
           FTerminal->LogEvent("The response is not numerical exit code");
@@ -982,7 +982,7 @@ void TSCPFileSystem::ClearAliases()
     std::unique_ptr<TStrings> CommandList(FCommandSet->CreateCommandList());
     try__finally
     {
-      for (intptr_t Index = 0; Index < CommandList->GetCount(); ++Index)
+      for (int32_t Index = 0; Index < CommandList->GetCount(); ++Index)
       {
         ClearAlias(CommandList->GetString(Index));
       }
@@ -1003,7 +1003,7 @@ void TSCPFileSystem::UnsetNationalVars()
   try
   {
     FTerminal->LogEvent("Clearing national user variables.");
-    for (intptr_t Index = 0; Index < NationalVarCount; ++Index)
+    for (int32_t Index = 0; Index < NationalVarCount; ++Index)
     {
       ExecCommand(fsUnset, 0, UnicodeString(NationalVars[Index]));
     }
@@ -1071,7 +1071,7 @@ void TSCPFileSystem::ReadDirectory(TRemoteFileList *FileList)
     Again = false;
     try
     {
-      intptr_t Params = ecDefault | ecReadProgress |
+      int32_t Params = ecDefault | ecReadProgress |
         FLAGMASK(FTerminal->GetSessionData()->GetIgnoreLsWarnings(), ecIgnoreWarnings);
       UnicodeString Options =
         ((FLsFullTime == asAuto) || (FLsFullTime == asOn)) ? FullTimeOption : "";
@@ -1111,7 +1111,7 @@ void TSCPFileSystem::ReadDirectory(TRemoteFileList *FileList)
             OutputCopy->Delete(0);
           }
 
-          for (intptr_t Index = 0; Index < OutputCopy->GetCount(); ++Index)
+          for (int32_t Index = 0; Index < OutputCopy->GetCount(); ++Index)
           {
             UnicodeString OutputLine = OutputCopy->GetString(Index);
             if (!OutputLine.IsEmpty())
@@ -1232,7 +1232,7 @@ void TSCPFileSystem::CustomReadFile(UnicodeString AFileName,
   TRemoteFile *&File, TRemoteFile *ALinkedByFile)
 {
   File = nullptr;
-  intptr_t Params = ecDefault |
+  int32_t Params = ecDefault |
     FLAGMASK(FTerminal->GetSessionData()->GetIgnoreLsWarnings(), ecIgnoreWarnings);
   // the auto-detection of --full-time support is not implemented for fsListFile,
   // so we use it only if we already know that it is supported (asOn).
@@ -1241,7 +1241,7 @@ void TSCPFileSystem::CustomReadFile(UnicodeString AFileName,
     FTerminal->GetSessionData()->GetListingCommand(), Options, DelimitStr(AFileName));
   if (FOutput->GetCount())
   {
-    intptr_t LineIndex = 0;
+    int32_t LineIndex = 0;
     if (IsTotalListingLine(FOutput->GetString(LineIndex)) && FOutput->GetCount() > 1)
     {
       ++LineIndex;
@@ -1452,7 +1452,7 @@ void TSCPFileSystem::AnyCommand(UnicodeString Command,
 
   try__finally
   {
-    intptr_t Params =
+    int32_t Params =
       ecDefault |
       (FTerminal->SessionData->GetExitCode1IsError() ? ecIgnoreStdErr : ecIgnoreWarnings);
 
@@ -1492,7 +1492,7 @@ uint32_t TSCPFileSystem::ConfirmOverwrite(
   TQueryParams QueryParams(qpNeverAskAgainCheck);
   QueryParams.Aliases = Aliases;
   QueryParams.AliasesCount = _countof(Aliases);
-  uintptr_t Answer =
+  uint32_t Answer =
     FTerminal->ConfirmFileOverwrite(
       ASourceFullFileName, ATargetFileName, FileParams,
       qaYes | qaNo | qaCancel | qaYesToAll | qaNoToAll | qaAll,
@@ -1633,7 +1633,7 @@ void TSCPFileSystem::CopyToRemote(TStrings * AFilesToCopy,
     }
     CopyBatchStarted = true;
 
-    for (intptr_t IFile = 0; (IFile < AFilesToCopy->GetCount()) &&
+    for (int32_t IFile = 0; (IFile < AFilesToCopy->GetCount()) &&
       !OperationProgress->GetCancel(); ++IFile)
     {
       UnicodeString FileName = AFilesToCopy->GetString(IFile);
@@ -1816,7 +1816,7 @@ void TSCPFileSystem::Source(
 
 void TSCPFileSystem::SCPSource(const UnicodeString AFileName,
   const UnicodeString TargetDir, const TCopyParamType * CopyParam, int32_t AParams,
-  TFileOperationProgressType * OperationProgress, intptr_t Level)
+  TFileOperationProgressType * OperationProgress, int32_t Level)
 {
   UnicodeString RealFileName = AFileName;
   UnicodeString DestFileName =
@@ -1906,7 +1906,7 @@ void TSCPFileSystem::SCPSource(const UnicodeString AFileName,
         // Then we add current block to file buffer
         if (OperationProgress->GetAsciiTransfer())
         {
-          intptr_t ConvertParams =
+          int32_t ConvertParams =
             FLAGMASK(CopyParam->GetRemoveCtrlZ(), cpRemoveCtrlZ) |
             FLAGMASK(CopyParam->GetRemoveBOM(), cpRemoveBOM);
           BlockBuf.Convert(FTerminal->GetConfiguration()->GetLocalEOLType(),
@@ -1978,7 +1978,7 @@ void TSCPFileSystem::SCPSource(const UnicodeString AFileName,
             OperationProgress->ChangeTransferSize(AsciiBuf.GetSize());
             while (!OperationProgress->IsTransferDoneChecked())
             {
-              uintptr_t BlockSize = OperationProgress->TransferBlockSize();
+              uint32_t BlockSize = OperationProgress->TransferBlockSize();
               FSecureShell->Send(
                 reinterpret_cast<uint8_t *>(AsciiBuf.GetData() + nb::ToIntPtr(OperationProgress->GetTransferredSize())),
                 BlockSize);
@@ -2226,7 +2226,7 @@ void TSCPFileSystem::CopyToLocal(TStrings * AFilesToCopy,
 
   try__finally
   {
-    for (intptr_t IFile = 0; (IFile < AFilesToCopy->GetCount()) &&
+    for (int32_t IFile = 0; (IFile < AFilesToCopy->GetCount()) &&
       !OperationProgress->GetCancel(); ++IFile)
     {
       UnicodeString FileName = AFilesToCopy->GetString(IFile);
@@ -2329,7 +2329,7 @@ void TSCPFileSystem::CopyToLocal(TStrings * AFilesToCopy,
       }
       // Just in case, remote side already sent some more data (it's probable)
       // but we don't want to raise exception (user asked to terminate, it's not error)
-      intptr_t ECParams = coOnlyReturnCode;
+      int32_t ECParams = coOnlyReturnCode;
       if (!LastLineRead)
       {
         ECParams |= coWaitForLastLine;
@@ -2341,7 +2341,7 @@ void TSCPFileSystem::CopyToLocal(TStrings * AFilesToCopy,
 
 void TSCPFileSystem::Sink(
   const UnicodeString /*AFileName*/, const TRemoteFile * /*AFile*/,
-  const UnicodeString /*ATargetDir*/, UnicodeString & /*ADestFileName*/, intptr_t /*Attrs*/,
+  const UnicodeString /*ATargetDir*/, UnicodeString & /*ADestFileName*/, int32_t /*Attrs*/,
   const TCopyParamType * /*CopyParam*/, int32_t /*Params*/, TFileOperationProgressType * /*OperationProgress*/,
   uint32_t /*Flags*/, TDownloadSessionAction & /*Action*/)
 {
@@ -2374,7 +2374,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString TargetDir,
   struct
   {
     CUSTOM_MEM_ALLOCATION_IMPL
-    intptr_t SetTime{0};
+    int32_t SetTime{0};
     TDateTime Modification;
     TRights RemoteRights;
     DWORD LocalFileAttrs{0};
@@ -2612,7 +2612,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString TargetDir,
                   FileParams.DestTimestamp = ::UnixToDateTime(MTime,
                       FTerminal->GetSessionData()->GetDSTMode());
 
-                  uintptr_t Answer =
+                  uint32_t Answer =
                     ConfirmOverwrite(OperationProgress->GetFileName(), DestFileNameOnly, osLocal,
                       &FileParams, CopyParam, Params, OperationProgress);
 

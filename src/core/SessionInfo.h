@@ -356,8 +356,8 @@ private:
   void DoAddStartupInfoEntry(const UnicodeString & S);
 
 public:
-  UnicodeString GetLine(intptr_t Index) const;
-  TLogLineType GetType(intptr_t Index) const;
+  UnicodeString GetLine(int32_t Index) const;
+  TLogLineType GetType(int32_t Index) const;
   void DeleteUnnecessary();
   void StateChange();
 };
