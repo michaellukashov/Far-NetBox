@@ -162,7 +162,7 @@ static inline uintmax_t strtoumax(const char *nptr, char **endptr, int base)
               (p_##name = module ?                                      \
                (t_##name) GetProcAddress(module, STR(name)) : NULL))
 #define GET_WINDOWS_FUNCTION(module, name)                              \
-    TYPECHECK((t_##name)NULL == name,                                   \
+    TYPECHECK((t_##name)NULL == p_##name,                               \
               (p_##name = module ?                                      \
                (t_##name) GetProcAddress(module, #name) : NULL))
 #define GET_WINDOWS_FUNCTION_NO_TYPECHECK(module, name) \
