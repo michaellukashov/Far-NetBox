@@ -521,7 +521,7 @@ int snprintf_S(char * s, size_t n, const char * format, size_t len, const char *
     }
     else
     {
-        assert(false);
+        assert(0);
         result = snprintf(s, n, format, len, data);
     }
     return result;
