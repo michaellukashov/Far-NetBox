@@ -68,7 +68,7 @@ private:
   bool FClearArchive{false};
   bool FRemoveCtrlZ{false};
   bool FRemoveBOM{false};
-  uintptr_t FCPSLimit{0};
+  uint32_t FCPSLimit{0};
   bool FNewerOnly{false};
   bool FEncryptNewFiles{false};
   bool FExcludeHiddenFiles{false};
@@ -76,15 +76,14 @@ private:
   int64_t FSize{0};
   TOnceDoneOperation FOnceDoneOperation;
   TTransferOutEvent FOnTransferOut;
-  static const wchar_t NoReplacement = wchar_t(0);
-  static const wchar_t TokenReplacement = wchar_t(1);
+  TTransferInEvent FOnTransferIn;
 
 public:
   void SetLocalInvalidChars(const UnicodeString Value);
   bool GetReplaceInvalidChars() const;
   void SetReplaceInvalidChars(bool Value);
   UnicodeString RestoreChars(const UnicodeString AFileName) const;
-  void DoGetInfoStr(UnicodeString Separator, intptr_t Options,
+  void DoGetInfoStr(UnicodeString Separator, int32_t Options,
     UnicodeString & Result, bool & SomeAttrIncluded, const UnicodeString ALink, UnicodeString & ScriptArgs
     /*TAssemblyLanguage Language, UnicodeString & AssemblyCode*/) const;
   TStrings *GetTransferSkipList() const;
@@ -100,10 +99,10 @@ public:
   UnicodeString ChangeFileName(const UnicodeString AFileName,
     TOperationSide Side, bool FirstLevel) const;
   DWORD LocalFileAttrs(const TRights &Rights) const;
-  TRights RemoteFileRights(uintptr_t Attrs) const;
+  TRights RemoteFileRights(uint32_t Attrs) const;
   bool UseAsciiTransfer(const UnicodeString AFileName, TOperationSide Side,
     const TFileMasks::TParams &Params) const;
-  bool AllowResume(int64_t Size) const;
+  bool AllowResume(int64_t Size, const UnicodeString & FileName) const;
   bool ResumeTransfer(const UnicodeString AFileName) const;
   UnicodeString ValidLocalFileName(const UnicodeString AFileName) const;
   UnicodeString ValidLocalPath(const UnicodeString APath) const;
@@ -114,8 +113,8 @@ public:
 
   virtual void Load(THierarchicalStorage *Storage);
   virtual void Save(THierarchicalStorage * Storage, const TCopyParamType * Defaults = nullptr) const;
-  UnicodeString GetInfoStr(const UnicodeString Separator, intptr_t Attrs) const;
-  bool AnyUsableCopyParam(intptr_t Attrs) const;
+  UnicodeString GetInfoStr(const UnicodeString Separator, int32_t Attrs) const;
+  bool AnyUsableCopyParam(int32_t Attrs) const;
   UnicodeString GenerateTransferCommandArgs(int Attrs, const UnicodeString & Link) const;
   UnicodeString GenerateAssemblyCode(/*TAssemblyLanguage Language, */int Attrs) const;
 
@@ -183,6 +182,8 @@ public:
   int64_t& Size{FSize};
   __property TOnceDoneOperation OnceDoneOperation = { read = FOnceDoneOperation, write = FOnceDoneOperation };
   TOnceDoneOperation& OnceDoneOperation{FOnceDoneOperation};
+  __property TTransferOutEvent OnTransferOut = { read = FOnTransferOut, write = FOnTransferOut };
+  __property TTransferInEvent OnTransferIn = { read = FOnTransferIn, write = FOnTransferIn };
 
   const TFileMasks &GetAsciiFileMask() const { return FAsciiFileMask; }
   TFileMasks &GetAsciiFileMask() { return FAsciiFileMask; }
@@ -229,17 +230,17 @@ public:
   void SetRemoveCtrlZ(bool Value) { FRemoveCtrlZ = Value; }
   bool GetRemoveBOM() const { return FRemoveBOM; }
   void SetRemoveBOM(bool Value) { FRemoveBOM = Value; }
-  uintptr_t GetCPSLimit() const { return FCPSLimit; }
-  void SetCPSLimit(uintptr_t Value) { FCPSLimit = Value; }
+  uint32_t GetCPSLimit() const { return FCPSLimit; }
+  void SetCPSLimit(uint32_t Value) { FCPSLimit = Value; }
   bool GetNewerOnly() const { return FNewerOnly; }
   void SetNewerOnly(bool Value) { FNewerOnly = Value; }
 
 };
 
-NB_CORE_EXPORT uintptr_t GetSpeedLimit(const UnicodeString Text);
-NB_CORE_EXPORT UnicodeString SetSpeedLimit(uintptr_t Limit);
+NB_CORE_EXPORT uint32_t GetSpeedLimit(const UnicodeString Text);
+NB_CORE_EXPORT UnicodeString SetSpeedLimit(uint32_t Limit);
 NB_CORE_EXPORT void CopySpeedLimits(TStrings *Source, TStrings *Dest);
 NB_CORE_EXPORT TOperationSide ReverseOperationSide(TOperationSide Side);
-extern const unsigned long MinSpeed;
-extern const unsigned long MaxSpeed;
+extern const uint32_t MinSpeed;
+extern const uint32_t MaxSpeed;
 

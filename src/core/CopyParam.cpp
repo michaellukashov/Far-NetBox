@@ -60,12 +60,12 @@ void TCopyParamType::Default()
   ExcludeEmptyDirectories = false;
   Size = -1;
   OnceDoneOperation = odoIdle;
-  OnTransferOut = NULL;
-  OnTransferIn = NULL;
+  OnTransferOut = nullptr;
+  OnTransferIn = nullptr;
 }
 
 UnicodeString TCopyParamType::GetInfoStr(
-  UnicodeString Separator, intptr_t Attrs) const
+  UnicodeString Separator, int32_t Attrs) const
 {
   UnicodeString Result;
   bool SomeAttrIncluded{false};
@@ -77,7 +77,7 @@ UnicodeString TCopyParamType::GetInfoStr(
   return Result;
 }
 
-bool TCopyParamType::AnyUsableCopyParam(intptr_t Attrs) const
+bool TCopyParamType::AnyUsableCopyParam(int32_t Attrs) const
 {
   UnicodeString Result;
   bool SomeAttrIncluded;
@@ -115,7 +115,7 @@ UnicodeString TCopyParamType::GenerateAssemblyCode(TAssemblyLanguage Language, i
 #endif // #if 0
 
 void TCopyParamType::DoGetInfoStr(
-  UnicodeString Separator, intptr_t Options,
+  UnicodeString Separator, int32_t Options,
   UnicodeString &Result, bool &SomeAttrIncluded,
   const UnicodeString /*ALink*/, UnicodeString &/*ScriptArgs*/) const //*TAssemblyLanguage Language, UnicodeString & AssemblyCode) const
 {
@@ -225,6 +225,7 @@ void TCopyParamType::DoGetInfoStr(
       }
       ADD(FORMAT(LoadStr(COPY_INFO_PERMISSIONS), RightsStr),
         Except);
+
       if (FLAGCLEAR(Options, Except))
       {
 #if 0
@@ -309,7 +310,7 @@ void TCopyParamType::DoGetInfoStr(
   }
 
   if ((GetPreserveRights() || GetPreserveTime()) &&
-    (GetIgnorePermErrors() != Defaults.GetIgnorePermErrors()))
+      (GetIgnorePermErrors() != Defaults.GetIgnorePermErrors()))
   {
     if (DebugAlwaysTrue(GetIgnorePermErrors()))
     {
@@ -397,7 +398,7 @@ void TCopyParamType::DoGetInfoStr(
 
   if (GetCPSLimit() > 0)
   {
-    intptr_t LimitKB = intptr_t(GetCPSLimit() / 1024);
+    int32_t LimitKB = intptr_t(GetCPSLimit() / 1024);
     if (ADD(FMTLOAD(COPY_INFO_CPS_LIMIT2, (LimitKB)), cpaIncludeMaskOnly))
     {
 #if 0
@@ -461,7 +462,7 @@ void TCopyParamType::DoGetInfoStr(
   {
     UnicodeString Value;
     UnicodeString CodeState;
-    intptr_t ResumeThresholdKB = nb::ToIntPtr(GetResumeThreshold() / 1024);
+    int32_t ResumeThresholdKB = nb::ToIntPtr(GetResumeThreshold() / 1024);
     switch (GetResumeSupport())
     {
     case rsOff:
@@ -568,10 +569,10 @@ void TCopyParamType::Assign(const TCopyParamType *Source)
   DebugAssert(Source != nullptr);
   if (!Source)
     return;
-#undef COPY
-#undef COPY2
-#define COPY(Prop) Set ## Prop(Source->Get ## Prop())
-#define COPY2(Prop) F##Prop = Source->F##Prop
+  #undef COPY
+  #undef COPY2
+  #define COPY(Prop) Set ## Prop(Source->Get ## Prop())
+  #define COPY2(Prop) F##Prop = Source->F##Prop
   COPY(FileNameCase);
   COPY(PreserveReadOnly);
   COPY(PreserveTime);
@@ -647,7 +648,7 @@ UnicodeString TCopyParamType::RestoreChars(const UnicodeString AFileName) const
     wchar_t *InvalidChar = ToWChar(FileName);
     while ((InvalidChar = wcschr(InvalidChar, TokenPrefix)) != nullptr)
     {
-      intptr_t Index = InvalidChar - FileName.c_str() + 1;
+      int32_t Index = InvalidChar - FileName.c_str() + 1;
       if (FileName.Length() >= Index + 2)
       {
         UnicodeString Hex = FileName.SubString(Index + 1, 2);
@@ -757,7 +758,7 @@ bool TCopyParamType::UseAsciiTransfer(const UnicodeString AFileName,
   }
 }
 
-TRights TCopyParamType::RemoteFileRights(uintptr_t Attrs) const
+TRights TCopyParamType::RemoteFileRights(uint32_t Attrs) const
 {
   TRights R = GetRights();
   if ((Attrs & faDirectory) && GetAddXToDirectories())
@@ -814,7 +815,7 @@ DWORD TCopyParamType::LocalFileAttrs(const TRights &Rights) const
   return Result;
 }
 
-bool TCopyParamType::AllowResume(int64_t Size) const
+bool TCopyParamType::AllowResume(int64_t Size, const UnicodeString & FileName) const
 {
   bool Result;
   if (FileName.Length() + UnicodeString(PARTIAL_EXT).Length() > 255) // it's a different limit than MAX_PATH
@@ -845,6 +846,7 @@ bool TCopyParamType::AllowAnyTransfer() const
     GetIncludeFileMask().GetMasks().IsEmpty() &&
     !ExcludeHiddenFiles &&
     !ExcludeEmptyDirectories &&
+    ((FTransferSkipList.get() == nullptr) || (FTransferSkipList->Count == 0)) &&
     FTransferResumeFile.IsEmpty();
 }
 
@@ -956,8 +958,8 @@ void TCopyParamType::Load(THierarchicalStorage *Storage)
   ExcludeEmptyDirectories = Storage->ReadBool("ExcludeEmptyDirectories", ExcludeEmptyDirectories);
   Size = -1;
   OnceDoneOperation = odoIdle;
-  OnTransferOut = NULL;
-  OnTransferIn = NULL;
+  OnTransferOut = nullptr;
+  OnTransferIn = nullptr;
 }
 
 void TCopyParamType::Save(THierarchicalStorage * Storage, const TCopyParamType * Defaults) const
@@ -997,6 +999,9 @@ void TCopyParamType::Save(THierarchicalStorage * Storage, const TCopyParamType *
   WRITE_DATA(String, LocalInvalidChars);
   WRITE_DATA(Bool, CalculateSize);
   WRITE_DATA_EX(String, "IncludeFileMask", IncludeFileMask.Masks, );
+  Storage->DeleteValue(L"ExcludeFileMask"); // obsolete
+  Storage->DeleteValue(L"NegativeExclude"); // obsolete
+  DebugAssert(FTransferSkipList.get() == nullptr);
   DebugAssert(FTransferResumeFile.IsEmpty());
   WRITE_DATA(Bool, ClearArchive);
   WRITE_DATA(Bool, RemoveCtrlZ);
@@ -1008,8 +1013,8 @@ void TCopyParamType::Save(THierarchicalStorage * Storage, const TCopyParamType *
   WRITE_DATA(Bool, ExcludeEmptyDirectories);
   DebugAssert(Size < 0);
   DebugAssert(OnceDoneOperation == odoIdle);
-  DebugAssert(OnTransferOut == NULL);
-  DebugAssert(OnTransferIn == NULL);
+  DebugAssert(OnTransferOut == nullptr);
+  DebugAssert(OnTransferIn == nullptr);
 }
 
 #define C(Property) (Get ## Property() == rhp.Get ## Property())
@@ -1019,11 +1024,12 @@ bool TCopyParamType::operator==(const TCopyParamType &rhp) const
 {
   DebugAssert(FTransferSkipList.get() == nullptr);
   DebugAssert(FTransferResumeFile.IsEmpty());
+  DebugAssert(OnTransferOut == nullptr);
+  DebugAssert(OnTransferIn == nullptr);
   DebugAssert(rhp.FTransferSkipList.get() == nullptr);
-  DebugAssert(OnTransferIn == NULL);
   DebugAssert(rhp.FTransferResumeFile.IsEmpty());
-  DebugAssert(rhp.OnTransferOut == NULL);
-  DebugAssert(rhp.OnTransferIn == NULL);
+  DebugAssert(rhp.OnTransferOut == nullptr);
+  DebugAssert(rhp.OnTransferIn == nullptr);
   return
     C(AddXToDirectories) &&
     C(AsciiFileMask) &&
@@ -1059,7 +1065,7 @@ bool TCopyParamType::operator==(const TCopyParamType &rhp) const
 const unsigned long MinSpeed = 8 * 1024;
 const unsigned long MaxSpeed = 8 * 1024 * 1024;
 
-static bool TryGetSpeedLimit(const UnicodeString Text, uintptr_t &Speed)
+static bool TryGetSpeedLimit(const UnicodeString Text, uint32_t &Speed)
 {
   bool Result;
   if (AnsiSameText(Text, LoadStr(SPEED_UNLIMITED)))
@@ -1079,9 +1085,9 @@ static bool TryGetSpeedLimit(const UnicodeString Text, uintptr_t &Speed)
   return Result;
 }
 
-uintptr_t GetSpeedLimit(const UnicodeString Text)
+uint32_t GetSpeedLimit(const UnicodeString Text)
 {
-  uintptr_t Speed = 0;
+  uint32_t Speed = 0;
   if (!TryGetSpeedLimit(Text, Speed))
   {
     throw Exception(FMTLOAD(SPEED_INVALID, Text));
@@ -1089,7 +1095,7 @@ uintptr_t GetSpeedLimit(const UnicodeString Text)
   return Speed;
 }
 
-UnicodeString SetSpeedLimit(uintptr_t Limit)
+UnicodeString SetSpeedLimit(uint32_t Limit)
 {
   UnicodeString Text;
   if (Limit == 0)
@@ -1108,10 +1114,10 @@ void CopySpeedLimits(TStrings *Source, TStrings *Dest)
   std::unique_ptr<TStringList> Temp(std::make_unique<TStringList>());
 
   bool Unlimited = false;
-  for (intptr_t Index = 0; Index < Source->GetCount(); ++Index)
+  for (int32_t Index = 0; Index < Source->GetCount(); ++Index)
   {
     UnicodeString Text = Source->GetString(Index);
-    uintptr_t Speed;
+    uint32_t Speed;
     bool Valid = TryGetSpeedLimit(Text, Speed);
     if ((!Valid || (Speed == 0)) && !Unlimited)
     {
