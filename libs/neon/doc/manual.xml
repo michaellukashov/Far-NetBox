@@ -1,12 +1,12 @@
 <?xml version='1.0'?> <!-- -*- nxml -*- -->
 
-<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
-  "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd" [
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+  "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd" [
 
 <!ENTITY % isoent SYSTEM
-    "http://www.oasis-open.org/docbook/xml/4.2/ent/iso-num.ent">
+    "http://www.oasis-open.org/docbook/xml/4.5/ent/isonum.ent">
 <!ENTITY % isopub SYSTEM
-    "http://www.oasis-open.org/docbook/xml/4.2/ent/iso-pub.ent">
+    "http://www.oasis-open.org/docbook/xml/4.5/ent/isopub.ent">
 
 %isoent;
 %isopub;
@@ -65,6 +65,8 @@
 <!ENTITY refbufapp SYSTEM "ref/bufapp.xml">
 <!ENTITY refbufdest SYSTEM "ref/bufdest.xml">
 <!ENTITY refbufutil SYSTEM "ref/bufutil.xml">
+<!ENTITY refhash SYSTEM "ref/hash.xml">
+<!ENTITY refparam SYSTEM "ref/param.xml">
 <!ENTITY reftok SYSTEM "ref/tok.xml">
 <!ENTITY refshave SYSTEM "ref/shave.xml">
 <!ENTITY refvers SYSTEM "ref/vers.xml">
@@ -87,7 +89,7 @@
       </personname>
       <email>neon@lists.manyfish.co.uk</email>
     </author>
-    <copyright><year>2001-2008</year><holder>Joe Orton</holder></copyright>
+    <copyright><year>2001-2021</year><holder>Joe Orton</holder></copyright>
 
     <legalnotice>
 
@@ -170,6 +172,8 @@ ignoring the WebDAV support if desired.</para>
     &refbufutil; <!-- ne_buffer_clear -->
     &refbufcr; <!-- ne_buffer_create -->
     &refbufdest; <!-- ne_buffer_destroy -->
+    &refhash; <!-- ne_strhash -->
+    &refparam; <!-- ne_strparam -->
     &referr; <!-- ne_get_error -->
     &refgetst; <!-- ne_get_status -->
     &reffeat; <!-- ne_has_support -->
