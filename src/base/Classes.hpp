@@ -297,7 +297,8 @@ public:
   void SetValue(UnicodeString Name, UnicodeString Value);
   UnicodeString GetValueFromIndex(int32_t Index) const;
 
-  // ROProperty<TObject *> Objects{nb::bind(&TStrings::GetObj, this)};
+  // TODO: ROIndexedProperty<TObject *> Objects{nb::bind(&TStrings::GetObj, this)};
+  // TODO: ROIndexedProperty<UnicodeString> Names{nb::bind(&TList::GetName, this)};
 
 protected:
   TDuplicatesEnum FDuplicates{dupAccept};
@@ -441,6 +442,7 @@ private:
 };
 
 #define MinDateTime TDateTime(-657434.0)
+// constexpr TDateTime MinDateTime = TDateTime(-657434.0);
 
 NB_CORE_EXPORT TDateTime Now();
 NB_CORE_EXPORT TDateTime SpanOfNowAndThen(const TDateTime &ANow, const TDateTime &AThen);
