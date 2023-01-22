@@ -60,7 +60,7 @@ public:
   void SetRoots(const UnicodeString & LocalRoot, TStrings * RemoteFileList);
 
   __property UnicodeString Masks = { read = FStr, write = SetMasks };
-  RWProperty<UnicodeString> Masks{nb::bind(&TFileMasks::GetMasks, this), nb::bind(&TFileMasks::SetMasks, this)};
+  RWPropertySimple<UnicodeString> Masks{&FStr, nb::bind(&TFileMasks::SetMasks, this)};
   __property bool NoImplicitMatchWithDirExcludeMask = { read = FNoImplicitMatchWithDirExcludeMask, write = FNoImplicitMatchWithDirExcludeMask };
   __property bool AllDirsAreImplicitlyIncluded = { read = FAllDirsAreImplicitlyIncluded, write = FAllDirsAreImplicitlyIncluded };
 
@@ -112,7 +112,7 @@ private:
 
 private:
   void SetStr(const UnicodeString Value, bool SingleMask);
-  void SetMasksPrivate(const UnicodeString Value);
+  void SetMasks(const UnicodeString Value);
   void CreateMaskMask(
     const UnicodeString Mask, int32_t Start, int32_t End, bool Ex, TMask::TKind & MaskKind, Masks::TMask *& MaskMask) const;
   void CreateMask(const UnicodeString MaskStr, int32_t MaskStart,
@@ -148,7 +148,7 @@ typedef void (__closure *TCustomCommandPatternEvent)
 #endif // #if 0
 using TCustomCommandPatternEvent = nb::FastDelegate5<void,
   int32_t /*Index*/, const UnicodeString /*Pattern*/, void * /*Arg*/, UnicodeString & /*Replacement*/,
-  bool & /*LastPass*/>;
+   bool & /*LastPass*/>;
 
 class NB_CORE_EXPORT TCustomCommand : public TObject
 {
