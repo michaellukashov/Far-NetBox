@@ -319,10 +319,10 @@ private:
         }
     }
 
-    T*  _mem;
-    T   _pool[INITIAL_SIZE];
-    int _allocated;		// objects allocated
-    int _size;			// number objects in use
+    T*  _mem{nullptr};
+    T   _pool[INITIAL_SIZE]{};
+    int _allocated{0};		// objects allocated
+    int _size{0};			// number objects in use
 };
 
 
@@ -415,7 +415,7 @@ public:
     }
     void Trace( const char* name ) {
         printf( "Mempool %s watermark=%d [%dk] current=%d size=%d nAlloc=%d blocks=%d\n",
-                name, _maxAllocs, _maxAllocs * ITEM_SIZE / 1024, _currentAllocs,
+                name, _maxAllocs, (int)(_maxAllocs * ITEM_SIZE / 1024), _currentAllocs,
                 ITEM_SIZE, _nAllocs, _blockPtrs.Size() );
     }
 
