@@ -14,6 +14,10 @@
 #include "HelpCore.h"
 #include "SecureShell.h"
 #include "Cryptography.h"
+#include <WideStrUtils.hpp>
+#include <limits>
+
+#include <memory>
 
 __removed #pragma package(smart_init)
 
@@ -363,7 +367,7 @@ public:
     Add(Data, ALength);
   }
 
-  void AddStringW(UnicodeString ValueW)
+  void AddStringW(const UnicodeString ValueW)
   {
     AddString(::W2MB(ValueW.c_str(), static_cast<UINT>(FCodePage)).c_str());
   }
@@ -379,12 +383,12 @@ public:
     AddString(Value);
   }
 
-  void AddUtfString(UnicodeString Value)
+  void AddUtfString(const UnicodeString Value)
   {
     AddUtfString(UTF8String(Value));
   }
 
-  void AddString(UnicodeString Value, TAutoSwitch /*Utf*/)
+  void AddString(const UnicodeString Value, TAutoSwitch /*Utf*/)
   {
     AddStringW(Value);
 #if 0
@@ -401,7 +405,7 @@ public:
   }
 
   // now purposeless alias to AddString
-  inline void AddPathString(UnicodeString Value, TAutoSwitch Utf)
+  inline void AddPathString(const UnicodeString Value, TAutoSwitch Utf)
   {
     AddString(Value, Utf);
   }
@@ -1095,9 +1099,8 @@ public:
 
   UnicodeString GetTypeName() const
   {
-#define TYPE_CASE(TYPE) case TYPE: return MB_TEXT(#TYPE)
-    switch (GetType())
-    {
+    #define TYPE_CASE(TYPE) case TYPE: return MB_TEXT(#TYPE)
+    switch (GetType()) {
       TYPE_CASE(SSH_FXP_INIT);
       TYPE_CASE(SSH_FXP_VERSION);
       TYPE_CASE(SSH_FXP_OPEN);
@@ -1126,8 +1129,8 @@ public:
       TYPE_CASE(SSH_FXP_ATTRS);
       TYPE_CASE(SSH_FXP_EXTENDED);
       TYPE_CASE(SSH_FXP_EXTENDED_REPLY);
-    default:
-      return FORMAT("Unknown message (%d)", nb::ToInt(GetType()));
+      default:
+        return FORMAT("Unknown message (%d)", nb::ToInt(GetType()));
     }
   }
 
@@ -1437,8 +1440,8 @@ public:
   explicit TSFTPFixedLenQueue(TSFTPFileSystem *AFileSystem, uint32_t CodePage) noexcept :
     TSFTPQueue(AFileSystem, CodePage)
   {
+    FMissedRequests = 0;
   }
-
   virtual ~TSFTPFixedLenQueue() = default;
 
   bool Init(int32_t QueueLen)
@@ -1451,7 +1454,7 @@ protected:
   int32_t FMissedRequests{0};
 
   // sends as many requests as allowed by implementation
-  bool SendRequests() override
+  virtual bool SendRequests() override
   {
     bool Result = false;
     FMissedRequests++;
@@ -1479,7 +1482,7 @@ public:
     UnregisterReceiveHandler();
   }
 
-  void Dispose(SSH_FXP_TYPE ExpectedType = -1, SSH_FX_TYPE AllowStatus = -1) override
+  virtual void Dispose(SSH_FXP_TYPE ExpectedType = -1, SSH_FX_TYPE AllowStatus = -1) override
   {
     // we do not want to receive asynchronous notifications anymore,
     // while waiting synchronously for pending responses
@@ -1516,7 +1519,7 @@ protected:
   virtual bool ReceivePacketAsynchronously() = 0;
 
   // sends as many requests as allowed by implementation
-  bool SendRequests() override
+  virtual bool SendRequests() override
   {
     // noop
     return true;
@@ -1544,7 +1547,6 @@ public:
     TSFTPFixedLenQueue(AFileSystem, CodePage)
   {
   }
-
   virtual ~TSFTPDownloadQueue() = default;
 
   bool Init(int32_t QueueLen, const RawByteString AHandle, int64_t ATransferred,
@@ -1572,7 +1574,7 @@ public:
   }
 
 protected:
-  bool InitRequest(TSFTPQueuePacket *Request) override
+  virtual bool InitRequest(TSFTPQueuePacket *Request) override
   {
     uint32_t BlockSize = FFileSystem->DownloadBlockSize(OperationProgress);
     InitRequest(Request, FTransferred, BlockSize);
@@ -1590,7 +1592,7 @@ protected:
     Request->AddCardinal(Size);
   }
 
-  bool End(TSFTPPacket *Response) override
+  virtual bool End(TSFTPPacket *Response) override
   {
     return (Response->GetType() != SSH_FXP_DATA);
   }
@@ -1745,7 +1747,7 @@ protected:
     }
   }
 
-  bool ReceivePacketAsynchronously() override
+  virtual bool ReceivePacketAsynchronously() override
   {
     // do not read response to close request
     bool Result = (FRequests->GetCount() > 0);
@@ -1794,7 +1796,6 @@ public:
   {
     FIndex = 0;
   }
-
   virtual ~TSFTPLoadFilesPropertiesQueue() = default;
 
   bool Init(uint32_t QueueLen, TStrings *AFileList)
@@ -1828,8 +1829,8 @@ protected:
       bool MissingOwnerGroup =
         (FFileSystem->FSecureShell->GetSshImplementation() == sshiBitvise) ||
         ((FFileSystem->FSupport->Loaded &&
-          FLAGSET(FFileSystem->FSupport->AttributeMask, SSH_FILEXFER_ATTR_OWNERGROUP) &&
-          !File->GetFileOwner().GetIsSet()) || !File->GetFileGroup().GetIsSet());
+         FLAGSET(FFileSystem->FSupport->AttributeMask, SSH_FILEXFER_ATTR_OWNERGROUP) &&
+         !File->GetFileOwner().GetIsSet()) || !File->GetFileGroup().GetIsSet());
 
       Result = (MissingRights || MissingOwnerGroup);
       if (Result)
@@ -1857,7 +1858,7 @@ protected:
     return Result;
   }
 
-  bool End(TSFTPPacket * /*Response*/) override
+  virtual bool End(TSFTPPacket * /*Response*/) override
   {
     return (FRequests->GetCount() == 0);
   }
@@ -1879,7 +1880,7 @@ public:
   }
   virtual ~TSFTPCalculateFilesChecksumQueue() = default;
 
-  bool Init(int32_t QueueLen, UnicodeString Alg, TStrings *AFileList)
+  bool Init(int32_t QueueLen, const UnicodeString Alg, TStrings *AFileList)
   {
     FAlg = Alg;
     FFileList = AFileList;
@@ -2149,7 +2150,7 @@ const TFileSystemInfo & TSFTPFileSystem::GetFileSystemInfo(bool /*Retrieve*/)
   return FFileSystemInfo;
 }
 
-bool TSFTPFileSystem::TemporaryTransferFile(UnicodeString AFileName)
+bool TSFTPFileSystem::TemporaryTransferFile(const UnicodeString AFileName)
 {
   return ::SameText(base::UnixExtractFileExt(AFileName), PARTIAL_EXT);
 }
@@ -2321,7 +2322,7 @@ bool TSFTPFileSystem::IsCapable(int32_t Capability) const
   }
 }
 
-bool TSFTPFileSystem::SupportsExtension(UnicodeString Extension) const
+bool TSFTPFileSystem::SupportsExtension(const UnicodeString Extension) const
 {
   return FSupport->Loaded && (FSupport->Extensions->IndexOf(Extension) >= 0);
 }
@@ -2548,21 +2549,19 @@ SSH_FX_TYPE TSFTPFileSystem::GotStatusPacket(TSFTPPacket *Packet,
     UnicodeString ServerMessage;
     UnicodeString LanguageTag;
     if ((FVersion >= 3) ||
-      // if version is not decided yet (i.e. this is status response
-      // to the init request), go on, only if there are any more data
-      ((FVersion < 0) && (Packet->GetRemainingLength() > 0)))
+        // if version is not decided yet (i.e. this is status response
+        // to the init request), go on, only if there are any more data
+        ((FVersion < 0) && (Packet->GetRemainingLength() > 0)))
     {
-      if (Packet->GetRemainingLength() > 0)
-      {
-        // message is in UTF only since SFTP specification 01 (specification 00
-        // is also version 3)
-        // (in other words, always use UTF unless server is known to be buggy)
-        ServerMessage = Packet->GetString(FUtfStrings);
-      }
+      // message is in UTF only since SFTP specification 01 (specification 00
+      // is also version 3)
+      // (in other words, always use UTF unless server is known to be buggy)
+      // ServerMessage = Packet->GetString(FUtfStrings);
       // SSH-2.0-Maverick_SSHD and SSH-2.0-CIGNA SFTP Server Ready! omit the language tag
       // and I believe I've seen one more server doing the same.
       if (Packet->GetRemainingLength() > 0)
       {
+        ServerMessage = Packet->GetString(FUtfStrings);
         LanguageTag = Packet->GetAnsiString();
         if ((FVersion >= 5) && (Message == SFTP_STATUS_UNKNOWN_PRINCIPAL))
         {
@@ -2614,12 +2613,16 @@ SSH_FX_TYPE TSFTPFileSystem::GotStatusPacket(TSFTPPacket *Packet,
     FTerminal->TerminalError(nullptr, Error, HelpKeyword);
     return 0;
   }
-  if (!FNotLoggedPackets || Code)
+  else
   {
+    if (!FNotLoggedPackets || Code)
+    {
       if (FTerminal->Configuration->ActualLogProtocol >= 0)
       {
         FTerminal->Log->Add(llOutput, FORMAT("Status code: %d", Code));
       }
+    }
+    return Code;
   }
   return Code;
 }
@@ -2949,7 +2952,10 @@ UnicodeString TSFTPFileSystem::GetRealPath(const UnicodeString APath)
       {
         throw ExtException(&E, FMTLOAD(SFTP_REALPATH_ERROR, APath));
       }
-      throw;
+      else
+      {
+        throw;
+      }
     }
   }
   return UnicodeString();
@@ -3203,7 +3209,8 @@ void TSFTPFileSystem::DoStartup()
           // were added only in rev 08, while "supported2" was defined in rev 07
           FSupport->OpenBlockVector = SupportedStruct.GetSmallCardinal();
           FSupport->BlockVector = SupportedStruct.GetSmallCardinal();
-          uint32_t ExtensionCount = SupportedStruct.GetCardinal();
+          uint32_t ExtensionCount;
+          ExtensionCount = SupportedStruct.GetCardinal();
           for (uint32_t Index = 0; Index < ExtensionCount; ++Index)
           {
             FSupport->AttribExtensions->Add(SupportedStruct.GetAnsiString());
@@ -3268,6 +3275,7 @@ void TSFTPFileSystem::DoStartup()
             {
               break;
             }
+            else
             {
               uint8_t Drive = RootsPacket.GetByte();
               uint8_t MaybeType = RootsPacket.GetByte();
@@ -3514,7 +3522,7 @@ void TSFTPFileSystem::HomeDirectory()
   ChangeDirectory(GetHomeDirectory());
 }
 
-void TSFTPFileSystem::TryOpenDirectory(UnicodeString Directory)
+void TSFTPFileSystem::TryOpenDirectory(const UnicodeString Directory)
 {
   FTerminal->LogEvent(FORMAT("Trying to open directory \"%s\".", Directory));
   TRemoteFile *File = nullptr;
@@ -3543,7 +3551,7 @@ void TSFTPFileSystem::AnnounceFileListOperation()
 {
 }
 
-void TSFTPFileSystem::ChangeDirectory(UnicodeString Directory)
+void TSFTPFileSystem::ChangeDirectory(const UnicodeString Directory)
 {
   UnicodeString Current = !FDirectoryToChangeTo.IsEmpty() ? FDirectoryToChangeTo : FCurrentDirectory;
   UnicodeString Path = GetRealPath(Directory, Current);
@@ -3556,7 +3564,7 @@ void TSFTPFileSystem::ChangeDirectory(UnicodeString Directory)
   FDirectoryToChangeTo = Path;
 }
 
-void TSFTPFileSystem::CachedChangeDirectory(UnicodeString Directory)
+void TSFTPFileSystem::CachedChangeDirectory(const UnicodeString Directory)
 {
   FDirectoryToChangeTo = base::UnixExcludeTrailingBackslash(Directory);
 }
@@ -4128,7 +4136,7 @@ void TSFTPFileSystem::ChangeFileProperties(const UnicodeString AFileName,
   }) end_try__finally
 }
 
-bool TSFTPFileSystem::LoadFilesProperties(TStrings *AFileList)
+bool TSFTPFileSystem::LoadFilesProperties(const TStrings *AFileList)
 {
   bool Result = false;
   // without knowledge of server's capabilities, this all make no sense
@@ -4353,7 +4361,7 @@ void TSFTPFileSystem::CustomCommandOnFile(const UnicodeString /*AFileName*/,
   DebugFail();
 }
 
-void TSFTPFileSystem::AnyCommand(Uconst nicodeString /*Command*/,
+void TSFTPFileSystem::AnyCommand(const UnicodeString /*Command*/,
   TCaptureOutputEvent /*OutputEvent*/)
 {
   DebugFail();
@@ -5909,7 +5917,7 @@ void TSFTPFileSystem::Sink(
   } end_try__finally
 }
 
-void TSFTPFileSystem::RegisterChecksumAlg(UnicodeString Alg, UnicodeString SftpAlg)
+void TSFTPFileSystem::RegisterChecksumAlg(const UnicodeString Alg, const UnicodeString SftpAlg)
 {
   FChecksumAlgs->Add(Alg);
   FChecksumSftpAlgs->Add(SftpAlg);
@@ -5920,12 +5928,12 @@ void TSFTPFileSystem::GetSupportedChecksumAlgs(TStrings *Algs)
   Algs->AddStrings(FChecksumAlgs.get());
 }
 
-void TSFTPFileSystem::LockFile(UnicodeString /*FileName*/, const TRemoteFile * /*File*/)
+void TSFTPFileSystem::LockFile(const UnicodeString /*FileName*/, const TRemoteFile * /*File*/)
 {
   DebugFail();
 }
 
-void TSFTPFileSystem::UnlockFile(UnicodeString /*FileName*/, const TRemoteFile * /*File*/)
+void TSFTPFileSystem::UnlockFile(const UnicodeString /*FileName*/, const TRemoteFile * /*File*/)
 {
   DebugFail();
 }
@@ -5940,7 +5948,7 @@ void TSFTPFileSystem::ClearCaches()
   // noop
 }
 
-void TSFTPFileSystem::AddPathString(TSFTPPacket & Packet, UnicodeString Value, bool EncryptNewFiles)
+void TSFTPFileSystem::AddPathString(TSFTPPacket & Packet, const UnicodeString Value, bool EncryptNewFiles)
 {
   UnicodeString EncryptedPath = FTerminal->EncryptFileName(Value, EncryptNewFiles);
   Packet.AddPathString(EncryptedPath, FUtfStrings);
