@@ -195,6 +195,69 @@ public:
   }
 };
 
+template <typename T>
+class ROPropertySimple
+{
+CUSTOM_MEM_ALLOCATION_IMPL
+private:
+  const T *_value;
+public:
+  ROPropertySimple() = delete;
+  explicit ROPropertySimple(const T *Value) noexcept :
+    _value(Value)
+  {
+    Expects(_value != nullptr);
+  }
+  ROPropertySimple(const ROPropertySimple&) = default;
+  ROPropertySimple(ROPropertySimple&&) = default;
+  ROPropertySimple& operator=(const ROPropertySimple&) = default;
+  ROPropertySimple& operator=(ROPropertySimple&&) = default;
+  constexpr T operator()() const
+  {
+    Expects(_value);
+    return *_value;
+  }
+  constexpr operator T() const
+  {
+    Expects(_value);
+    return *_value;
+  }
+  constexpr const T operator->() const
+  {
+    Expects(_value);
+    return _value();
+  }
+  constexpr T operator->()
+  {
+    Expects(_value);
+    return *_value;
+  }
+  constexpr decltype(auto) operator*() const { return *_value; }
+
+  friend bool constexpr inline operator==(const ROPropertySimple &lhs, const ROPropertySimple &rhs)
+  {
+    Expects(lhs._value);
+    Expects(rhs._value);
+    return *lhs._value == *rhs._value;
+  }
+  friend bool constexpr inline operator==(const ROPropertySimple &lhs, const T &rhs)
+  {
+    Expects(lhs._value);
+    return *lhs._value == rhs;
+  }
+  friend bool constexpr inline operator!=(const ROPropertySimple &lhs, const ROPropertySimple &rhs)
+  {
+    Expects(lhs._value);
+    Expects(rhs._value);
+    return *lhs._value != *rhs._value;
+  }
+  friend bool constexpr inline operator!=(ROPropertySimple &lhs, const T &rhs)
+  {
+    Expects(lhs._value);
+    return *lhs._value != rhs;
+  }
+};
+
 // 80 bytes using fu2::function
 // 32 bytes using FastDelegate
 template <typename T>
