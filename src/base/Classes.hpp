@@ -576,11 +576,11 @@ private:
 };
 #endif // #if 0
 
-enum TSeekOrigin
+enum class TSeekOrigin
 {
-  soFromBeginning = 0,
-  soFromCurrent = 1,
-  soFromEnd = 2
+  soBeginning = 0,
+  soCurrent = 1,
+  soEnd = 2
 };
 
 class NB_CORE_EXPORT TStream : public TObject
@@ -590,7 +590,6 @@ public:
   virtual ~TStream() = default;
   virtual int64_t Read(void *Buffer, int64_t Count) = 0;
   virtual int64_t Write(const void *Buffer, int64_t Count) = 0;
-  virtual int64_t Seek(int64_t Offset, int Origin) const = 0;
   virtual int64_t Seek(const int64_t Offset, TSeekOrigin Origin) const = 0;
   void ReadBuffer(void *Buffer, int64_t Count);
   void WriteBuffer(const void *Buffer, int64_t Count);
@@ -614,7 +613,6 @@ public:
   virtual ~THandleStream() = default;
   int64_t Read(void *Buffer, int64_t Count) override;
   int64_t Write(const void *Buffer, int64_t Count) override;
-  int64_t Seek(int64_t Offset, int Origin) const override;
   int64_t Seek(const int64_t Offset, TSeekOrigin Origin) const override;
 
   HANDLE GetHandle() const { return FHandle; }
@@ -654,7 +652,6 @@ public:
   TMemoryStream() noexcept;
   virtual ~TMemoryStream() noexcept;
   int64_t Read(void *Buffer, int64_t Count) override;
-  int64_t Seek(int64_t Offset, int Origin) const override;
   int64_t Seek(const int64_t Offset, TSeekOrigin Origin) const override;
   void SaveToStream(TStream *Stream);
   void SaveToFile(UnicodeString AFileName);
