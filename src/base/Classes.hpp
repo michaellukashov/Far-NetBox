@@ -283,6 +283,7 @@ public:
   virtual bool GetCaseSensitive() const = 0;
   virtual void SetCaseSensitive(bool Value) = 0;
   void SetDuplicates(TDuplicatesEnum Value);
+  wchar_t GetNameValueSeparator() const { return FDelimiter; }
   UnicodeString GetCommaText() const;
   void SetCommaText(UnicodeString Value);
   virtual UnicodeString GetText() const;
@@ -780,7 +781,7 @@ class NB_CORE_EXPORT TShortCut : public TObject
 public:
   explicit TShortCut() = default;
   explicit TShortCut(int32_t Value) noexcept;
-  operator intptr_t() const;
+  operator int32_t() const;
   bool operator<(const TShortCut &rhs) const;
   int32_t Compare(const TShortCut &rhs) const { return FValue - rhs.FValue; }
 

@@ -2070,7 +2070,7 @@ TShortCut::TShortCut(int32_t Value) noexcept :
 {
 }
 
-TShortCut::operator intptr_t() const
+TShortCut::operator int32_t() const
 {
   return FValue;
 }
