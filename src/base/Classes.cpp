@@ -954,7 +954,7 @@ void TStringList::LoadFromFile(UnicodeString AFileName)
     bool ConvertToken = false;
     FileBuffer.Convert(eolCRLF, eolCRLF, cpRemoveCtrlZ | cpRemoveBOM, ConvertToken);
     SAFE_CLOSE_HANDLE(FileHandle);
-    UnicodeString Str(FileBuffer.GetData(), nb::ToIntPtr(FileBuffer.GetSize()));
+    UnicodeString Str(FileBuffer.Data(), nb::ToIntPtr(FileBuffer.Size()));
     SetTextStr(Str);
   }
 }

@@ -2,6 +2,7 @@
 #pragma once
 
 #include <rdestl/map.h>
+#include <rdestl/vector.h>
 
 #include <Global.h>
 #include <Exceptions.h>
@@ -501,7 +502,7 @@ public:
     }
   }
 
-  #pragma warn -inl
+  // #pragma warn -inl
   template<typename P>
   void Invoke(const P & p)
   {
@@ -512,7 +513,7 @@ public:
       ++I;
     }
   }
-  #pragma warn .inl
+  // #pragma warn .inl
 
   bool Contains(T EventHandler)
   {
@@ -524,7 +525,7 @@ public:
     return (FEventHandlers.size() > 0);
   }
 
-  bool operator==(const TMulticastEvent<T> Other) const
+  bool operator==(const TMulticastEvent<T> & Other) const
   {
     return (FEventHandlers == Other.FEventHandlers);
   }
@@ -535,10 +536,10 @@ public:
   }
 
 private:
-  typedef std::vector<T> TEventHandlers;
+  typedef rde::vector<T> TEventHandlers;
   TEventHandlers FEventHandlers;
 
-  TEventHandlers::iterator Find(T EventHandler)
+  typename TEventHandlers::iterator Find(T EventHandler)
   {
     return std::find(FEventHandlers.begin(), FEventHandlers.end(), EventHandler);
   }

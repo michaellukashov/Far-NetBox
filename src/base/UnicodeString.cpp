@@ -93,12 +93,12 @@ void AnsiString::Init(const unsigned char *Str, int32_t Length)
 
 int32_t AnsiString::Pos(const AnsiString &Str) const
 {
-  return static_cast<intptr_t>(Data.Find(Str.c_str())) + 1;
+  return static_cast<int32_t>(Data.Find(Str.c_str())) + 1;
 }
 
 int32_t AnsiString::Pos(char Ch) const
 {
-  return static_cast<intptr_t>(Data.Find(Ch)) + 1;
+  return static_cast<int32_t>(Data.Find(Ch)) + 1;
 }
 
 char AnsiString::operator[](int32_t Idx) const
@@ -675,7 +675,7 @@ int32_t UnicodeString::ToIntPtr() const
 
 int32_t UnicodeString::FindFirstOf(const wchar_t Ch) const
 {
-  return static_cast<intptr_t>(Data.Find(Ch, 0)) + 1;
+  return static_cast<int32_t>(Data.Find(Ch, 0)) + 1;
 }
 
 int32_t UnicodeString::FindFirstOf(const wchar_t *Str, size_t Offset) const

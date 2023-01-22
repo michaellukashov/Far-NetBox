@@ -133,7 +133,7 @@ public:
   int32_t Pos(wchar_t Ch) const;
   int32_t Pos(UnicodeString Str) const;
 
-  int32_t RPos(wchar_t Ch) const { return static_cast<intptr_t>(Data.ReverseFind(Ch)) + 1; }
+  int32_t RPos(wchar_t Ch) const { return static_cast<int32_t>(Data.ReverseFind(Ch)) + 1; }
   bool RPos(int32_t &nPos, wchar_t Ch, int32_t nStartPos = 0) const;
 
   UnicodeString SubStr(int32_t Pos, int32_t Len) const;

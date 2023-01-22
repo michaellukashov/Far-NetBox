@@ -14,8 +14,12 @@ enum TEOLType
 constexpr int32_t cpRemoveCtrlZ = 0x01;
 constexpr int32_t cpRemoveBOM   = 0x02;
 
-typedef void (__closure *TTransferOutEvent)(TObject * Sender, const unsigned char * Data, size_t Len);
-typedef size_t (__closure *TTransferInEvent)(TObject * Sender, unsigned char * Data, size_t Len);
+//typedef void (__closure *TTransferOutEvent)(TObject * Sender, const unsigned char * Data, size_t Len);
+//typedef size_t (__closure *TTransferInEvent)(TObject * Sender, unsigned char * Data, size_t Len);
+using TTransferOutEvent = nb::FastDelegate3<void,
+  TObject * /*Sender*/, const uint8_t * /*Data*/, size_t /*Len*/>;
+using TTransferInEvent = nb::FastDelegate3<void,
+  TObject * /*Sender*/, uint8_t * /*Data*/, size_t /*Len*/>;
 
 class NB_CORE_EXPORT TFileBuffer : public TObject
 {
@@ -44,17 +48,20 @@ public:
   RWProperty<int64_t> Position{nb::bind(&TFileBuffer::GetPosition, this), nb::bind(&TFileBuffer::SetPosition, this)};
 
 private:
-  TMemoryStream * FMemory;
-  int FSize;
+  std::unique_ptr<TMemoryStream> FMemory;
 
+  TMemoryStream * GetMemory() const { return FMemory.get(); }
   void SetMemory(TMemoryStream * value);
-  char * GetData() const { return (char *)FMemory->Memory; }
-  void SetSize(int value);
-  void SetPosition(int value);
-  int GetPosition() const;
+  char * GetData() const { return static_cast<char *>(FMemory->GetMemory()); }
+  int64_t GetSize() const { return FMemory->GetSize(); }
+  void SetSize(int64_t Value);
+  void SetPosition(int64_t Value);
+  int64_t GetPosition() const;
   void ProcessRead(DWORD Len, DWORD Result);
 };
 
+#if 0
+moved to Classes.h
 class TSafeHandleStream : public THandleStream
 {
 public:
@@ -64,6 +71,7 @@ public:
   virtual int Read(System::DynamicArray<System::Byte> Buffer, int Offset, int Count);
   virtual int Write(const System::DynamicArray<System::Byte> Buffer, int Offset, int Count);
 };
+#endif // if 0
 
 char * EOLToStr(TEOLType EOLType);
 
