@@ -2,6 +2,7 @@
 
 #include <Global.h>
 #include <Classes.hpp>
+//#include <rdestl/fixed_array.h>
 
 #define THROWOSIFFALSE(C) { if (!(C)) ::RaiseLastOSError(); }
 #define SAFE_DESTROY_EX(CLASS, OBJ) { CLASS * PObj = (OBJ); (OBJ) = nullptr; delete PObj; }
@@ -171,10 +172,14 @@ NB_CORE_EXPORT void RaiseLastOSError(DWORD LastError = 0);
 NB_CORE_EXPORT bool AppendExceptionStackTraceAndForget(TStrings *&MoreMessages);
 
 namespace Sysutils {
+//  TFormatSettings = record
+//using TMonthNameArray = rde::fixed_array<UnicodeString, 12>;
+//using TWeekNameArray = rde::fixed_array<UnicodeString, 7>;
 
 struct NB_CORE_EXPORT TFormatSettings : public TObject
 {
 public:
+  TFormatSettings() = delete;
   explicit TFormatSettings(LCID /*LCID*/) noexcept;
   static TFormatSettings Create(LCID LCID) { return TFormatSettings(LCID); }
   uint8_t CurrencyFormat{0};
@@ -190,9 +195,13 @@ public:
   UnicodeString LongDateFormat;
   UnicodeString TimeAMString;
   UnicodeString TimePMString;
-  UnicodeString ShortTimeFormat;
-  UnicodeString LongTimeFormat;
-  uint16_t TwoDigitYearCenturyWindow{0};
+  UnicodeString ShortTimeFormat{"hh:nn"};
+  UnicodeString LongTimeFormat{"hh:nn:ss"};
+  UnicodeString ShortMonthNames[12]{"Jan","Feb","Mar","Apr","May","Jun", "Jul","Aug","Sep","Oct","Nov","Dec"};
+  UnicodeString LongMonthNames[12]{"January","February","March","April","May","June", "July","August","September","October","November","December"};
+  UnicodeString ShortDayNames[7]{"Sun","Mon","Tue","Wed","Thu","Fri","Sat"};
+  UnicodeString LongDayNames[7]{"Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"};
+  uint16_t TwoDigitYearCenturyWindow{50};
 };
 
 NB_CORE_EXPORT UnicodeString ExtractShortPathName(const UnicodeString APath);
