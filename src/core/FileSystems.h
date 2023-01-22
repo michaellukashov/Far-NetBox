@@ -28,14 +28,7 @@ constexpr int32_t dfNoRecursive = 0x01;
 constexpr int32_t dfAlternative = 0x02;
 constexpr int32_t dfForceDelete = 0x04;
 
-__removed enum TOverwriteMode { omOverwrite, omResume, omComplete };
-enum TOverwriteMode
-{
-  omOverwrite,
-  omAppend,
-  omResume,
-  omComplete,
-};
+enum TOverwriteMode { omOverwrite, omResume, omComplete };
 
 NB_DEFINE_CLASS_ID(TSinkFileParams);
 struct NB_CORE_EXPORT TSinkFileParams : public TObject
@@ -47,10 +40,10 @@ public:
   TSinkFileParams() noexcept : TObject(OBJECT_CLASS_TSinkFileParams), CopyParam(nullptr), OperationProgress(nullptr), Params(0), Flags(0), Skipped(false) {}
   UnicodeString TargetDir;
   const TCopyParamType *CopyParam{nullptr};
-  TFileOperationProgressType *OperationProgress{nullptr};
   int32_t Params{0};
-  uint32_t Flags{0};
+  TFileOperationProgressType *OperationProgress{nullptr};
   bool Skipped{false};
+  uint32_t Flags{0};
 };
 
 NB_DEFINE_CLASS_ID(TFileTransferData);
@@ -86,7 +79,6 @@ public:
   {
   }
 
-  TModificationFmt DestPrecision;
   int64_t SourceSize{0};
   int64_t DestSize{0};
   TDateTime SourceTimestamp{};
@@ -117,7 +109,6 @@ public:
     Confirmed(false)
   {
   }
-  uint32_t LocalFileAttrs{0};
   UnicodeString FileName;
   UnicodeString RemoteFileName;
   TFileOperationProgressType *OperationProgress{nullptr};
@@ -133,6 +124,7 @@ public:
   bool DontRecycle{false};
   bool Recycled{false};
   TRights RecycledRights{};
+  uint32_t LocalFileAttrs{0};
 };
 
 /** @brief Interface for custom filesystems
@@ -164,46 +156,46 @@ public:
   virtual void Idle() = 0;
   virtual UnicodeString GetAbsolutePath(UnicodeString APath, bool Local) = 0;
   virtual UnicodeString GetAbsolutePath(UnicodeString APath, bool Local) const = 0;
-  virtual void AnyCommand(UnicodeString ACommand,
+  virtual void AnyCommand(const UnicodeString ACommand,
     TCaptureOutputEvent OutputEvent) = 0;
-  virtual void ChangeDirectory(UnicodeString ADirectory) = 0;
-  virtual void CachedChangeDirectory(UnicodeString ADirectory) = 0;
+  virtual void ChangeDirectory(const UnicodeString ADirectory) = 0;
+  virtual void CachedChangeDirectory(const UnicodeString ADirectory) = 0;
   virtual void AnnounceFileListOperation() = 0;
-  virtual void ChangeFileProperties(UnicodeString AFileName,
+  virtual void ChangeFileProperties(const UnicodeString AFileName,
     const TRemoteFile *AFile, const TRemoteProperties *Properties,
     TChmodSessionAction &Action) = 0;
-  virtual bool LoadFilesProperties(TStrings *AFileList) = 0;
-  virtual void CalculateFilesChecksum(UnicodeString Alg,
+  virtual bool LoadFilesProperties(const TStrings *AFileList) = 0;
+  virtual void CalculateFilesChecksum(const UnicodeString Alg,
     TStrings *AFileList, TStrings *Checksums,
     TCalculatedChecksumEvent OnCalculatedChecksum) = 0;
   virtual void CopyToLocal(TStrings *AFilesToCopy,
-    UnicodeString ATargetDir, const TCopyParamType *CopyParam,
+    const UnicodeString ATargetDir, const TCopyParamType *CopyParam,
     int32_t AParams, TFileOperationProgressType *OperationProgress,
     TOnceDoneOperation &OnceDoneOperation) = 0;
   virtual void CopyToRemote(TStrings *AFilesToCopy,
-    UnicodeString ATargetDir, const TCopyParamType *CopyParam,
+    const UnicodeString ATargetDir, const TCopyParamType *CopyParam,
     int32_t AParams, TFileOperationProgressType *OperationProgress,
     TOnceDoneOperation &OnceDoneOperation) = 0;
   virtual void TransferOnDirectory(
-    UnicodeString /*ADirectory*/, const TCopyParamType * /*CopyParam*/, int32_t /*AParams*/) {}
+    const UnicodeString /*ADirectory*/, const TCopyParamType * /*CopyParam*/, int32_t /*AParams*/) {}
   virtual void Source(
-    TLocalFileHandle &AHandle, UnicodeString ATargetDir, UnicodeString &ADestFileName,
+    TLocalFileHandle &AHandle, const UnicodeString ATargetDir, UnicodeString &ADestFileName,
     const TCopyParamType *CopyParam, int32_t AParams,
     TFileOperationProgressType *OperationProgress, uint32_t AFlags,
     TUploadSessionAction &Action, bool &ChildError) = 0;
   virtual void DirectorySunk(
-    UnicodeString /*ADestFullName*/, const TRemoteFile * /*AFile*/, const TCopyParamType * /*ACopyParam*/) {}
+    const UnicodeString /*ADestFullName*/, const TRemoteFile * /*AFile*/, const TCopyParamType * /*ACopyParam*/) {}
   virtual void Sink(
-    UnicodeString AFileName, const TRemoteFile *AFile,
-    UnicodeString ATargetDir, UnicodeString &ADestFileName, int32_t AAttrs,
+    const UnicodeString AFileName, const TRemoteFile *AFile,
+    const UnicodeString ATargetDir, UnicodeString &ADestFileName, int32_t AAttrs,
     const TCopyParamType* CopyParam, int32_t AParams, TFileOperationProgressType* OperationProgress,
     uint32_t AFlags, TDownloadSessionAction& Action) = 0;
-  virtual void RemoteCreateDirectory(UnicodeString ADirName, bool Encrypt) = 0;
-  virtual void RemoteCreateLink(UnicodeString AFileName, UnicodeString APointTo, bool Symbolic) = 0;
-  virtual void RemoteDeleteFile(UnicodeString AFileName,
+  virtual void RemoteCreateDirectory(const UnicodeString ADirName, bool Encrypt) = 0;
+  virtual void RemoteCreateLink(const UnicodeString AFileName, const UnicodeString APointTo, bool Symbolic) = 0;
+  virtual void RemoteDeleteFile(const UnicodeString AFileName,
     const TRemoteFile *AFile, int32_t AParams,
     TRmSessionAction &Action) = 0;
-  virtual void CustomCommandOnFile(UnicodeString AFileName,
+  virtual void CustomCommandOnFile(const UnicodeString AFileName,
     const TRemoteFile *AFile, UnicodeString ACommand, int32_t AParams, TCaptureOutputEvent OutputEvent) = 0;
   virtual void DoStartup() = 0;
   virtual void HomeDirectory() = 0;
@@ -212,33 +204,33 @@ public:
   virtual void LookupUsersGroups() = 0;
   virtual void ReadCurrentDirectory() = 0;
   virtual void ReadDirectory(TRemoteFileList *FileList) = 0;
-  virtual void ReadFile(UnicodeString AFileName,
+  virtual void ReadFile(const UnicodeString AFileName,
     TRemoteFile *&File) = 0;
   virtual void ReadSymlink(TRemoteFile *SymLinkFile,
     TRemoteFile *&File) = 0;
-  virtual void RemoteRenameFile(UnicodeString AFileName, const TRemoteFile *AFile,
-    UnicodeString ANewName) = 0;
-  virtual void RemoteCopyFile(UnicodeString AFileName, const TRemoteFile *AFile,
-    UnicodeString ANewName) = 0;
+  virtual void RemoteRenameFile(const UnicodeString AFileName, const TRemoteFile *AFile,
+    const UnicodeString ANewName) = 0;
+  virtual void RemoteCopyFile(const UnicodeString AFileName, const TRemoteFile *AFile,
+    const UnicodeString ANewName) = 0;
   virtual TStrings * GetFixedPaths() const = 0;
-  virtual void SpaceAvailable(UnicodeString APath,
+  virtual void SpaceAvailable(const UnicodeString APath,
     TSpaceAvailable &ASpaceAvailable) = 0;
   virtual const TSessionInfo & GetSessionInfo() const = 0;
   virtual const TFileSystemInfo & GetFileSystemInfo(bool Retrieve) = 0;
-  virtual bool TemporaryTransferFile(UnicodeString AFileName) = 0;
+  virtual bool TemporaryTransferFile(const UnicodeString AFileName) = 0;
   virtual bool GetStoredCredentialsTried() const = 0;
   virtual UnicodeString RemoteGetUserName() const = 0;
   virtual void GetSupportedChecksumAlgs(TStrings *Algs) = 0;
-  virtual void LockFile(UnicodeString AFileName, const TRemoteFile *AFile) = 0;
-  virtual void UnlockFile(UnicodeString AFileName, const TRemoteFile *AFile) = 0;
-  virtual void UpdateFromMain(TCustomFileSystem *MainFileSystem) = 0;
+  virtual void LockFile(const UnicodeString AFileName, const TRemoteFile *AFile) = 0;
+  virtual void UnlockFile(const UnicodeString AFileName, const TRemoteFile *AFile) = 0;
+  virtual void UpdateFromMain(TCustomFileSystem * MainFileSystem) = 0;
   virtual void ClearCaches() = 0;
 
   __property UnicodeString CurrentDirectory = { read = GetCurrentDirectory };
   ROProperty<UnicodeString> RemoteCurrentDirectory{nb::bind(&TCustomFileSystem::RemoteGetCurrentDirectory, this)};
 
 protected:
-  TTerminal *FTerminal{nullptr};
+  TTerminal * FTerminal{nullptr};
 
   TCustomFileSystem() = delete;
   explicit TCustomFileSystem(TObjectClassId Kind) noexcept : TObject(Kind) {}
