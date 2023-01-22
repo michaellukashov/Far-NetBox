@@ -1639,6 +1639,11 @@ UnicodeString VersionNumberToStr(uint32_t VersionNumber)
   return Result;
 }
 
+bool CheckWin32Version(int Major, int Minor)
+{
+  return (GetGlobals()->Win32MajorVersion >= Major) && (GetGlobals()->Win32MinorVersion >= Minor);
+}
+
 TFormatSettings::TFormatSettings(LCID /*LCID*/) noexcept :
   CurrencyFormat(0),
   NegCurrFormat(0),
@@ -1658,14 +1663,14 @@ UnicodeString TPath::Combine(const UnicodeString APath, const UnicodeString AFil
   return Result;
 }
 
-WORD MilliSecondOf(const TDateTime & AValue)
+uint16_t MilliSecondOf(const TDateTime & AValue)
 {
   uint16_t Hour{0}, Min{0}, Sec{0}, MSec{0};
   DecodeTime(AValue, Hour, Min, Sec, MSec);
   return MSec;
 }
 
-WORD MilliSecondOfTheSecond(const TDateTime & AValue)
+uint16_t MilliSecondOfTheSecond(const TDateTime & AValue)
 {
   return MilliSecondOf(AValue);
 }

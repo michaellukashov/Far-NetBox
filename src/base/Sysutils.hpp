@@ -394,7 +394,7 @@ NB_CORE_EXPORT TDateTime IncHour(const TDateTime &AValue, const Int64 ANumberOfH
 NB_CORE_EXPORT TDateTime IncMinute(const TDateTime &AValue, const Int64 ANumberOfMinutes = 1);
 NB_CORE_EXPORT TDateTime IncSecond(const TDateTime &AValue, const Int64 ANumberOfSeconds = 1);
 NB_CORE_EXPORT TDateTime IncMilliSecond(const TDateTime &AValue, const Int64 ANumberOfMilliSeconds = 1);
-WORD MilliSecondOfTheSecond(const TDateTime & AValue);
+uint16_t MilliSecondOfTheSecond(const TDateTime & AValue);
 int32_t MilliSecondOfTheMinute(const TDateTime & AValue);
 int32_t MilliSecondOfTheHour(const TDateTime & AValue);
 int32_t MilliSecondOfTheDay(const TDateTime & AValue);
@@ -419,6 +419,8 @@ NB_CORE_EXPORT uint32_t inline GetVersionNumber219() { return MAKEVERSIONNUMBER(
 NB_CORE_EXPORT uint32_t inline GetVersionNumber2110() { return MAKEVERSIONNUMBER(2, 1, 10); }
 NB_CORE_EXPORT uint32_t inline GetVersionNumber2121() { return MAKEVERSIONNUMBER(2, 1, 21); }
 NB_CORE_EXPORT uint32_t inline GetCurrentVersionNumber() { return StrToVersionNumber(GetGlobals()->GetStrVersionNumber()); }
+bool CheckWin32Version(int Major, int Minor);
+
 
 #if defined(__MINGW32__) && (__MINGW_GCC_VERSION < 50100)
 typedef struct _TIME_DYNAMIC_ZONE_INFORMATION
