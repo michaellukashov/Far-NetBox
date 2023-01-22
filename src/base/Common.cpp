@@ -2986,7 +2986,7 @@ UnicodeString FormatTimeZone(int32_t Sec)
   {
     Str = FORMAT("%d:%2.2d:%2.2d", -Span.Hours, abs(Span.Minutes), abs(Span.Seconds));
   }
-  Str = ((Span <= TTimeSpan::Zero) ? L"+" : L"") + Str;
+  Str = ((Span <= TTimeSpan::GetZero()) ? L"+" : L"") + Str;
   return Str;
 }
 
@@ -3704,10 +3704,11 @@ static void NeedUWPData()
   {
     GIsUWP = 0;
 
-    HINSTANCE Kernel32 = GetModuleHandle(kernel32);
-    typedef LONG WINAPI (GetCurrentPackageFamilyNameProc)(UINT32 * packageFamilyNameLength, PWSTR packageFamilyName);
+    // HINSTANCE Kernel32 = GetModuleHandle(kernel32);
+    HINSTANCE const Kernel32 = ::GetModuleHandle(L"kernel32.dll");
+    typedef LONG (WINAPI * GetCurrentPackageFamilyNameProc)(UINT32 * /*packageFamilyNameLength*/, PWSTR /*packageFamilyName*/);
     GetCurrentPackageFamilyNameProc GetCurrentPackageFamilyName =
-      (GetCurrentPackageFamilyNameProc)GetProcAddress(Kernel32, "GetCurrentPackageFamilyName");
+      (GetCurrentPackageFamilyNameProc)::GetProcAddress(Kernel32, "GetCurrentPackageFamilyName");
     UINT32 NameLen = 0;
     if ((GetCurrentPackageFamilyName != nullptr) &&
         (GetCurrentPackageFamilyName(&NameLen, nullptr) == ERROR_INSUFFICIENT_BUFFER))
@@ -3715,7 +3716,7 @@ static void NeedUWPData()
       GIsUWP = 1;
       AppLog(L"Is UWP application");
       GPackageName.SetLength(NameLen);
-      if (GetCurrentPackageFamilyName(&NameLen, GPackageName.c_str()) == ERROR_SUCCESS)
+      if (GetCurrentPackageFamilyName(&NameLen, ToWChar(GPackageName)) == ERROR_SUCCESS)
       {
         PackStr(GPackageName);
       }
@@ -3729,6 +3730,7 @@ static void NeedUWPData()
     {
       AppLog(L"Is not UWP application");
     }
+    ::FreeLibrary(Kernel32);
   }
 }
 
@@ -3924,18 +3926,29 @@ TFormatSettings GetEngFormatSettings()
   return TFormatSettings::Create(1033);
 }
 
-int ParseShortEngMonthName(const UnicodeString & MonthStr)
+template<size_t N>
+int32_t IndexStr(const UnicodeString & AText, const UnicodeString (&AValues)[N])
 {
-  TFormatSettings FormatSettings = GetEngFormatSettings();
-  return IndexStr(MonthStr, FormatSettings.ShortMonthNames, FormatSettings.ShortMonthNames.Size()) + 1;
+  for(size_t i = 0; i < N; i++)
+  {
+   if (AValues[i] == AText)
+       return i;
+  }
+  return -1;
 }
 
-TStringList * CreateSortedStringList(bool CaseSensitive, System::Types::TDuplicates Duplicates)
+int32_t ParseShortEngMonthName(const UnicodeString & MonthStr)
+{
+  TFormatSettings FormatSettings = GetEngFormatSettings();
+  return IndexStr<_countof(FormatSettings.ShortMonthNames)>(MonthStr, FormatSettings.ShortMonthNames) + 1;
+}
+
+TStringList * CreateSortedStringList(bool CaseSensitive, TDuplicatesEnum Duplicates)
 {
   TStringList * Result = new TStringList();
-  Result->CaseSensitive = CaseSensitive;
-  Result->Sorted = true;
-  Result->Duplicates = Duplicates;
+  Result->SetCaseSensitive(CaseSensitive);
+  Result->SetSorted(true);
+  Result->SetDuplicates(Duplicates);
   return Result;
 }
 
@@ -4831,19 +4844,20 @@ void SetStringValueEvenIfEmpty(TStrings * Strings, const UnicodeString & Name, c
     {
       Index = Strings->Add(L"");
     }
-    UnicodeString Line = Name + Strings->NameValueSeparator;
-    Strings->Strings[Index] = Line;
+    UnicodeString Line = Name + Strings->GetNameValueSeparator();
+    Strings->SetString(Index, Line);
   }
   else
   {
-    Strings->Values[Name] = Value;
+    Strings->SetValue(Name, Value);
   }
 }
 
 DWORD GetParentProcessId(HANDLE Snapshot, DWORD ProcessId)
 {
   DWORD Result = 0;
-
+  ThrowNotImplemented(3036);
+#if 0
   PROCESSENTRY32 ProcessEntry;
   memset(&ProcessEntry, sizeof(ProcessEntry), 0);
   ProcessEntry.dwSize = sizeof(PROCESSENTRY32);
@@ -4858,12 +4872,15 @@ DWORD GetParentProcessId(HANDLE Snapshot, DWORD ProcessId)
       }
     } while (Process32Next(Snapshot, &ProcessEntry));
   }
+#endif // #if 0
   return Result;
 }
 
 static UnicodeString GetProcessName(DWORD ProcessId)
 {
   UnicodeString Result;
+  ThrowNotImplemented(3037);
+#if 0
   HANDLE Process = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, ProcessId);
    // is common, when the parent process is installer, so we ignore it
   if (Process)
@@ -4878,6 +4895,7 @@ static UnicodeString GetProcessName(DWORD ProcessId)
     }
     CloseHandle(Process);
   }
+#endif // #if 0
   return Result;
 }
 
@@ -4886,6 +4904,8 @@ UnicodeString ParentProcessName;
 UnicodeString GetAncestorProcessName(int Levels)
 {
   UnicodeString Result;
+  ThrowNotImplemented(3038);
+#if 0
   bool Parent = (Levels == 1);
   if (Parent && !ParentProcessName.IsEmpty())
   {
@@ -4962,6 +4982,7 @@ UnicodeString GetAncestorProcessName(int Levels)
       ParentProcessName = Result;
     }
   }
+#endif // #if 0
   return Result;
 }
 
