@@ -186,16 +186,16 @@ bool ExtractCommonPath(const TStrings * AFiles, UnicodeString & APath)
   return Result;
 }
 
-static UnicodeString GetFileListItemPath(TStrings * Files, int Index)
+static UnicodeString GetFileListItemPath(const TStrings * Files, int Index)
 {
   UnicodeString Result;
-  if (Files->Objects[Index] != nullptr)
+  if (Files->GetObj(Index) != nullptr)
   {
-    Result = DebugNotNull(dynamic_cast<TRemoteFile *>(Files->Objects[Index]))->FullFileName;
+    Result = DebugNotNull(dyn_cast<TRemoteFile>(Files->GetObj(Index)))->FullFileName();
   }
   else
   {
-    Result = Files->Strings[Index];
+    Result = Files->GetString(Index);
   }
   return Result;
 }
@@ -204,14 +204,14 @@ bool UnixExtractCommonPath(const TStrings * AFiles, UnicodeString & APath)
 {
   DebugAssert(AFiles->GetCount() > 0);
 
-  APath = base::UnixExtractFilePath(GetFileListItemPath(Files, 0));
+  APath = base::UnixExtractFilePath(GetFileListItemPath(AFiles, 0));
   bool Result = !APath.IsEmpty();
   if (Result)
   {
     for (int32_t Index = 1; Index < AFiles->GetCount(); ++Index)
     {
       while (!APath.IsEmpty() &&
-        (GetFileListItemPath(AFiles, Index).SubString(1, APath.Length()) != Path))
+        (GetFileListItemPath(AFiles, Index).SubString(1, APath.Length()) != APath))
       {
         const int32_t PrevLen = APath.Length();
         APath = base::UnixExtractFilePath(base::UnixExcludeTrailingBackslash(APath));
@@ -591,37 +591,6 @@ UnicodeString FormatBytes(int64_t Bytes, bool UseOrders)
     Result = FORMAT("%.0f MiB", nb::ToDouble(Bytes / (1024 * 1024.0)));
   }
   return Result;
-}
-
-UnicodeString UnixExtractFileName(UnicodeString APath)
-{
-  const int32_t Pos = APath.LastDelimiter(L'/');
-  UnicodeString Result;
-  if (Pos > 0)
-  {
-    Result = APath.SubString(Pos + 1, APath.Length() - Pos);
-  }
-  else
-  {
-    Result = APath;
-  }
-  return Result;
-}
-
-UnicodeString UnixExtractFileExt(UnicodeString APath)
-{
-  UnicodeString FileName = base::UnixExtractFileName(APath);
-  const int32_t Pos = FileName.LastDelimiter(L".");
-  return (Pos > 0) ? APath.SubString(Pos, APath.Length() - Pos + 1) : UnicodeString();
-}
-
-UnicodeString ExtractFileName(UnicodeString APath, bool Unix)
-{
-  if (Unix)
-  {
-    return UnixExtractFileName(APath);
-  }
-  return ExtractFilename(APath, L'\\');
 }
 
 UnicodeString GetEnvVariable(UnicodeString AEnvVarName)

@@ -297,6 +297,8 @@ public:
   void SetValue(UnicodeString Name, UnicodeString Value);
   UnicodeString GetValueFromIndex(int32_t Index) const;
 
+  // ROProperty<TObject *> Objects{nb::bind(&TStrings::GetObj, this)};
+
 protected:
   TDuplicatesEnum FDuplicates{dupAccept};
   mutable wchar_t FDelimiter{};
