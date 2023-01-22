@@ -257,7 +257,7 @@ private:
     intptr_t Options, uintptr_t & AParams);
   void TerminalShowExtendedException(TTerminal *Terminal,
     Exception *E, void *Arg);
-  void TerminalDeleteLocalFile(UnicodeString AFileName, bool Alternative, intptr_t& Deleted);
+  void TerminalDeleteLocalFile(UnicodeString AFileName, bool Alternative, int32_t& Deleted);
   HANDLE TerminalCreateLocalFile(const UnicodeString ALocalFileName,
     DWORD DesiredAccess, DWORD ShareMode, DWORD CreationDisposition, DWORD FlagsAndAttributes);
   DWORD TerminalGetLocalFileAttributes(const UnicodeString ALocalFileName) const;

@@ -3162,7 +3162,7 @@ void TWinSCPFileSystem::TerminalReadDirectory(TObject * /*Sender*/,
   }
 }
 
-void TWinSCPFileSystem::TerminalDeleteLocalFile(UnicodeString AFileName, bool Alternative, intptr_t& Deleted)
+void TWinSCPFileSystem::TerminalDeleteLocalFile(UnicodeString AFileName, bool Alternative, int32_t& Deleted)
 {
   Deleted = RecursiveDeleteFileChecked(AFileName,
       (FLAGSET(GetWinSCPPlugin()->GetFarSystemSettings(), FSS_DELETETORECYCLEBIN) != Alternative));
