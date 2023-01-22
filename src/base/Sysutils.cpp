@@ -1,5 +1,6 @@
 
 #include <vcl.h>
+#include <System.ShlObj.hpp>
 
 #include <iomanip>
 #include <ctime>
@@ -246,6 +247,11 @@ UnicodeString LowerCase(const UnicodeString Str)
   return Result.MakeLower();
 }
 
+UnicodeString AnsiLowerCase(const UnicodeString Str)
+{
+  return LowerCase(Str);
+}
+
 wchar_t UpCase(const wchar_t Ch)
 {
   return static_cast<wchar_t>(::towupper(Ch));
@@ -375,6 +381,11 @@ int32_t AnsiCompareText(const UnicodeString Str1, const UnicodeString Str2)
 int32_t AnsiCompareIC(const UnicodeString Str1, const UnicodeString Str2)
 {
   return AnsiCompareText(Str1, Str2);
+}
+
+bool SameStr(const UnicodeString Str1, const UnicodeString Str2)
+{
+  return AnsiCompareIC(Str1, Str2) == 0;
 }
 
 bool AnsiSameStr(const UnicodeString Str1, const UnicodeString Str2)
@@ -985,6 +996,45 @@ UnicodeString ExtractShortPathName(const UnicodeString APath)
 UnicodeString ExtractDirectory(const UnicodeString APath, wchar_t Delimiter)
 {
   UnicodeString Result = APath.SubString(1, APath.RPos(Delimiter));
+  return Result;
+}
+
+const UnicodeString AllowDirectorySeparators = "\\/";
+const UnicodeString AllowDriveSeparators = ":";
+
+bool CharInSet(const wchar_t Ch, const UnicodeString S)
+{
+  int32_t Index = ::Pos(S, Ch);
+  return Index > 0;
+}
+
+UnicodeString ExtractFileDrive(const UnicodeString FileName)
+{
+  int32_t i,l;
+  UnicodeString Result;
+  l = FileName.Length();
+  if (l<2)
+    return Result;
+  if (CharInSet(FileName[2], AllowDriveSeparators))
+  {
+    Result = FileName.SubStr(0,2);
+  }
+  else if (CharInSet(FileName[1], AllowDirectorySeparators) &&
+          CharInSet(FileName[2], AllowDirectorySeparators))
+  {
+    i = 2;
+    // skip share
+    while ((i<l) && !CharInSet(FileName[i+1], AllowDirectorySeparators))
+    {
+      i++;
+    }
+    i++;
+   while ((i<l) && !CharInSet(FileName[i+1], AllowDirectorySeparators))
+    {
+      i++;
+    }
+    Result = FileName.SubStr(0, i);
+  }
   return Result;
 }
 

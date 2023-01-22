@@ -197,6 +197,7 @@ public:
 
 NB_CORE_EXPORT UnicodeString ExtractShortPathName(const UnicodeString APath);
 NB_CORE_EXPORT UnicodeString ExtractDirectory(const UnicodeString APath, wchar_t Delimiter = L'/');
+UnicodeString ExtractFileDrive(const UnicodeString  FileName);
 NB_CORE_EXPORT UnicodeString ExtractFilename(const UnicodeString APath, wchar_t Delimiter = L'/');
 NB_CORE_EXPORT UnicodeString ExtractFileExtension(const UnicodeString APath, wchar_t Delimiter = L'/');
 NB_CORE_EXPORT UnicodeString ExpandFileName(const UnicodeString AFileName);
@@ -242,6 +243,7 @@ NB_CORE_EXPORT UnicodeString TrimLeft(const UnicodeString Str);
 NB_CORE_EXPORT UnicodeString TrimRight(const UnicodeString Str);
 NB_CORE_EXPORT UnicodeString UpperCase(const UnicodeString Str);
 NB_CORE_EXPORT UnicodeString LowerCase(const UnicodeString Str);
+NB_CORE_EXPORT UnicodeString AnsiLowerCase(const UnicodeString Str);
 NB_CORE_EXPORT wchar_t UpCase(const wchar_t Ch);
 NB_CORE_EXPORT wchar_t LowCase(const wchar_t Ch);
 NB_CORE_EXPORT UnicodeString AnsiReplaceStr(const UnicodeString Str, const UnicodeString From, const UnicodeString To);
@@ -259,6 +261,7 @@ NB_CORE_EXPORT bool AnsiSameText(const UnicodeString Str1, const UnicodeString S
 NB_CORE_EXPORT bool SameText(const UnicodeString Str1, const UnicodeString Str2);
 NB_CORE_EXPORT int32_t AnsiCompareText(const UnicodeString Str1, const UnicodeString Str2);
 NB_CORE_EXPORT int32_t AnsiCompareIC(const UnicodeString Str1, const UnicodeString Str2);
+NB_CORE_EXPORT bool SameStr(const UnicodeString Str1, const UnicodeString Str2);
 NB_CORE_EXPORT bool AnsiSameStr(const UnicodeString Str1, const UnicodeString Str2);
 NB_CORE_EXPORT bool AnsiContainsText(const UnicodeString Str1, const UnicodeString Str2);
 NB_CORE_EXPORT bool ContainsStr(const AnsiString Str1, const AnsiString Str2);
