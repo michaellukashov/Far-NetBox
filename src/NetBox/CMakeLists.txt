@@ -1775,7 +1775,7 @@ find_program(MASM_EXECUTABLE ml)
 set(ASM_OBJECTS)
 foreach(src vc_crt_fix)
   set(ASM_SOURCE ${NETBOX_DIR}/${src}.asm)
-  set(ASM_OBJECT ${CMAKE_CURRENT_BINARY_DIR}/${src}.c)
+  set(ASM_OBJECT ${CMAKE_CURRENT_BINARY_DIR}/${src}.obj)
   set(ASM_OBJECTS ${ASM_OBJECTS} ${ASM_OBJECT})
   add_custom_command(
     OUTPUT ${ASM_OBJECT}
