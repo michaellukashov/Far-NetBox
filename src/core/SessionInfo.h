@@ -201,14 +201,14 @@ class NB_CORE_EXPORT TMkdirSessionAction : public TFileSessionAction
 {
 public:
   TMkdirSessionAction() = delete;
-  explicit TMkdirSessionAction(TActionLog *Log, const UnicodeString AFileName) noexcept;
+  explicit TMkdirSessionAction(TActionLog * Log, const UnicodeString AFileName) noexcept;
 };
 
 class NB_CORE_EXPORT TRmSessionAction : public TFileSessionAction
 {
 public:
   TRmSessionAction() = delete;
-  explicit TRmSessionAction(TActionLog *Log, const UnicodeString AFileName) noexcept;
+  explicit TRmSessionAction(TActionLog * Log, const UnicodeString AFileName) noexcept;
 
   void Recursive();
 };
@@ -218,7 +218,7 @@ class NB_CORE_EXPORT TMvSessionAction : public TFileLocationSessionAction
 public:
   TMvSessionAction() = delete;
   explicit TMvSessionAction(TActionLog *Log, const UnicodeString AFileName,
-    UnicodeString ADestination) noexcept;
+    const UnicodeString ADestination) noexcept;
 };
 
 class NB_CORE_EXPORT TCpSessionAction : public TFileLocationSessionAction
@@ -226,7 +226,7 @@ class NB_CORE_EXPORT TCpSessionAction : public TFileLocationSessionAction
 public:
   TCpSessionAction() = delete;
   explicit TCpSessionAction(TActionLog * Log, const UnicodeString AFileName,
-    UnicodeString ADestination) noexcept;
+    const UnicodeString ADestination) noexcept;
 };
 
 class NB_CORE_EXPORT TCallSessionAction : public TSessionAction
@@ -234,9 +234,9 @@ class NB_CORE_EXPORT TCallSessionAction : public TSessionAction
 public:
   TCallSessionAction() = delete;
   explicit TCallSessionAction(TActionLog *Log, const UnicodeString Command,
-    UnicodeString ADestination) noexcept;
+    const UnicodeString ADestination) noexcept;
 
-  void AddOutput(UnicodeString Output, bool StdError);
+  void AddOutput(const UnicodeString Output, bool StdError);
   void ExitCode(int ExitCode);
 };
 
@@ -434,10 +434,11 @@ public:
   void AddStartupInfo();
   void Log(const UnicodeString & S);
   __property bool Logging = { read = FLogging };
+  ROPropertySimple<bool> Logging{&FLogging};
 
 private:
-  void * FFile;
-  bool FLogging;
+  std::unique_ptr<void *> FFile;
+  bool FLogging{false};
   std::unique_ptr<TCriticalSection> FCriticalSection;
 };
 
