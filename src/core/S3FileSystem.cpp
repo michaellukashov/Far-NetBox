@@ -1672,18 +1672,18 @@ void TS3FileSystem::LoadFileProperties(const UnicodeString AFileName, const TRem
   }
 }
 
-bool TS3FileSystem::LoadFilesProperties(TStrings * /*FileList*/)
+bool TS3FileSystem::LoadFilesProperties(const TStrings * /*FileList*/)
 {
   bool Result = false;
   FTerminal->BeginTransaction();
-  try
+  try__finally
   {
     FTerminal->ProcessFiles(FileList, foGetProperties, LoadFileProperties, &Result);
-  }
+  },
   __finally
   {
     FTerminal->EndTransaction();
-  }
+  } end_try__finally
   return Result;
 }
 
