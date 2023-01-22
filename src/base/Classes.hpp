@@ -450,6 +450,104 @@ NB_CORE_EXPORT double MilliSecondSpan(const TDateTime &ANow, const TDateTime &AT
 NB_CORE_EXPORT int64_t MilliSecondsBetween(const TDateTime &ANow, const TDateTime &AThen);
 NB_CORE_EXPORT int64_t SecondsBetween(const TDateTime &ANow, const TDateTime &AThen);
 
+class TTimeSpan
+{
+private:
+  int64_t GetTicks() const;
+  int32_t GetDays() const;
+  int32_t GetHours() const;
+  int32_t GetMinutes() const;
+  int32_t GetSeconds() const;
+  int32_t GetMilliseconds() const;
+  double GetTotalDays() const;
+  double GetTotalHours() const;
+  double GetTotalMinutes() const;
+  double GetTotalSeconds() const;
+  double GetTotalMilliseconds() const;
+  static TTimeSpan GetScaledInterval(double Value, int32_t Scale);
+private:
+  static TTimeSpan FMinValue;
+  static TTimeSpan FMaxValue;
+  static TTimeSpan FZero;
+private:
+  double MillisecondsPerTick = 0.0001;
+  double SecondsPerTick = 1e-07;
+  double MinutesPerTick = 1.6666666666666667E-09;
+  double HoursPerTick = 2.7777777777777777E-11;
+  double DaysPerTick = 1.1574074074074074E-12;
+  int32_t MillisPerSecond = 1000;
+  int32_t MillisPerMinute = 60 * MillisPerSecond;
+  int32_t MillisPerHour = 60 * MillisPerMinute;
+  int32_t MillisPerDay = 24 * MillisPerHour;
+  int64_t MaxSeconds = 922337203685;
+  int64_t MinSeconds = -922337203685;
+  int64_t MaxMilliseconds = 922337203685477;
+  int64_t MinMilliseconds = -922337203685477;
+public:
+  int32_t TicksPerMillisecond = 10000;
+  int64_t TicksPerSecond = 1000 * int64_t (TicksPerMillisecond);
+  int64_t TicksPerMinute = 60 * int64_t (TicksPerSecond);
+  int64_t TicksPerHour = 60 * int64_t (TicksPerMinute);
+  int64_t TicksPerDay = 24 * TicksPerHour;
+public:
+  explicit TTimeSpan(int64_t  ATicks);
+  explicit TTimeSpan(int32_t Hours, int32_t Minutes, int32_t Seconds);
+  explicit TTimeSpan(int32_t Days, int32_t Hours, int32_t Minutes, int32_t Seconds);
+  explicit TTimeSpan(int32_t Days, int32_t Hours, int32_t Minutes, int32_t Seconds, int32_t Milliseconds);
+  TTimeSpan Add(const TTimeSpan TS) const;
+  TTimeSpan Duration() const;
+  TTimeSpan Negate() const;
+  TTimeSpan Subtract(const TTimeSpan TS);
+  UnicodeString ToString() const;
+
+  static TTimeSpan FromDays(double Value);
+  static TTimeSpan FromHours(double Value);
+  static TTimeSpan FromMinutes(double Value);
+  static TTimeSpan FromSeconds(double Value);
+  static TTimeSpan FromMilliseconds(double Value);
+  static TTimeSpan FromTicks(int64_t Value);
+  static TTimeSpan Subtract(const TDateTime D1, const TDateTime D2);
+  static TTimeSpan Parse(const UnicodeString S);
+  static bool TryParse(const UnicodeString S, const TTimeSpan &Value);
+  static TTimeSpan Add(const TTimeSpan Left, const TTimeSpan Right);
+  static TDateTime Add(const TTimeSpan Left, const TDateTime Right);
+  static TDateTime Add(const TDateTime Left, const TTimeSpan Right);
+  static TTimeSpan Subtract(const TTimeSpan Left, const TTimeSpan Right);
+  static TDateTime Subtract(const TDateTime Left, const TTimeSpan Right);
+  static bool Equal(const TTimeSpan Left, const TTimeSpan Right);
+  static bool NotEqual(const TTimeSpan Left, const TTimeSpan Right);
+  static bool GreaterThan(const TTimeSpan Left, const TTimeSpan Right);
+  static bool GreaterThanOrEqual(const TTimeSpan Left, const TTimeSpan Right);
+  static bool LessThan(const TTimeSpan Left, const TTimeSpan Right);
+  static bool LessThanOrEqual(const TTimeSpan Left, const TTimeSpan Right);
+  bool operator==(const TTimeSpan &rhs) const { return TTimeSpan::Equal(*this, rhs); }
+  bool operator!=(const TTimeSpan &rhs) const { return TTimeSpan::NotEqual(*this, rhs); }
+  bool operator>(const TTimeSpan &rhs) const { return TTimeSpan::GreaterThan(*this, rhs); }
+  bool operator>=(const TTimeSpan &rhs) const { return TTimeSpan::GreaterThanOrEqual(*this, rhs); }
+  bool operator<(const TTimeSpan &rhs) const { return TTimeSpan::LessThan(*this, rhs); }
+  bool operator<=(const TTimeSpan &rhs) const { return TTimeSpan::LessThanOrEqual(*this, rhs); }
+  static TTimeSpan Negative(const TTimeSpan Value);
+  static TTimeSpan Positive(const TTimeSpan Value);
+  static UnicodeString Implicit(const TTimeSpan Value);
+  static UnicodeString Explicit(const TTimeSpan Value);
+  ROProperty<int64_t> Ticks{nb::bind(&TTimeSpan::GetTicks, this)};
+  ROProperty<int32_t> Days{nb::bind(&TTimeSpan::GetDays, this)};
+  ROProperty<int32_t> Hours{nb::bind(&TTimeSpan::GetHours, this)};
+  ROProperty<int32_t> Minutes{nb::bind(&TTimeSpan::GetMinutes, this)};
+  ROProperty<int32_t> Seconds{nb::bind(&TTimeSpan::GetSeconds, this)};
+  ROProperty<int32_t> Milliseconds{nb::bind(&TTimeSpan::GetMilliseconds, this)};
+  ROProperty<double> TotalDays{nb::bind(&TTimeSpan::GetTotalDays, this)};
+  ROProperty<double> TotalHours{nb::bind(&TTimeSpan::GetTotalHours, this)};
+  ROProperty<double> TotalMinutes{nb::bind(&TTimeSpan::GetTotalMinutes, this)};
+  ROProperty<double> TotalSeconds{nb::bind(&TTimeSpan::GetTotalSeconds, this)};
+  ROProperty<double> TotalMilliseconds{nb::bind(&TTimeSpan::GetTotalMilliseconds, this)};
+  static TTimeSpan GetMinValue();
+  static TTimeSpan GetMaxValue();
+  static TTimeSpan GetZero();
+private:
+  int64_t FTicks{0};
+};
+
 #if 0
 class NB_CORE_EXPORT TSHFileInfo : public TObject
 {
