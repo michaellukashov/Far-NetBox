@@ -2,6 +2,7 @@
 #pragma once
 
 #include <rdestl/vector.h>
+#include <rdestl/set.h>
 #include "PuttyIntf.h"
 #include "Configuration.h"
 #include "SessionData.h"
@@ -24,17 +25,6 @@ struct ScpLogPolicy;
 struct LogContext;
 struct ScpSeat;
 
-enum TSshImplementation
-{
-  sshiUnknown,
-  sshiOpenSSH,
-  sshiProFTPD,
-  sshiBitvise,
-  sshiTitan,
-  sshiOpenVMS,
-  sshiCerberus,
-};
-
 NB_DEFINE_CLASS_ID(TSecureShell);
 class TSecureShell : public TObject
 {
@@ -43,6 +33,10 @@ class TSecureShell : public TObject
 public:
   static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TSecureShell); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TSecureShell) || TObject::is(Kind); }
+
+  mutable const uint32_t *FMinPacketSize{nullptr};
+  mutable const uint32_t *FMaxPacketSize{nullptr};
+  uint32_t MinPacketSize() const;
 private:
   SOCKET FSocket{INVALID_SOCKET};
   HANDLE FSocketEvent{};
@@ -54,9 +48,6 @@ private:
   mutable bool FSessionInfoValid{false};
   TDateTime FLastDataSent{};
   Backend * FBackendHandle{nullptr};
-  void *FBackendHandle{nullptr};
-  mutable const uint32_t *FMinPacketSize{nullptr};
-  mutable const uint32_t *FMaxPacketSize{nullptr};
   TNotifyEvent FOnReceive{nullptr};
   bool FFrozen{false};
   bool FDataWhileFrozen{false};
@@ -90,11 +81,11 @@ private:
   bool FUtfStrings{false};
   DWORD FLastSendBufferUpdate{0};
   int32_t FSendBuf{0};
-  std::auto_ptr<callback_set> FCallbackSet;
+  std::unique_ptr<callback_set> FCallbackSet;
   ScpLogPolicy * FLogPolicy;
   ScpSeat * FSeat;
   LogContext * FLogCtx;
-  std::set<UnicodeString> FLoggedKnownHostKeys;
+  rde::set<UnicodeString> FLoggedKnownHostKeys;
 
 public:
   void Init();
@@ -121,7 +112,7 @@ public:
   uint32_t TimeoutPrompt(TQueryParamsTimerEvent PoolEvent);
   void TimeoutAbort(unsigned int Answer);
   bool TryFtp();
-  UnicodeString ConvertInput(RawByteString Input, uint32_t CodePage = CP_ACP) const;
+  UnicodeString ConvertInput(const RawByteString Input, uint32_t CodePage = CP_ACP) const;
   void GetRealHost(UnicodeString &Host, int32_t &Port) const;
   UnicodeString RetrieveHostKey(const UnicodeString & Host, int32_t Port, const UnicodeString & KeyType) const;
   bool HaveAcceptNewHostKeyPolicy() const;
@@ -166,7 +157,6 @@ public:
   const TSessionInfo &GetSessionInfo() const;
   void GetHostKeyFingerprint(UnicodeString & SHA256, UnicodeString & MD5) const;
   bool SshFallbackCmd() const;
-  uint32_t MinPacketSize() const;
   uint32_t MaxPacketSize() const;
   void ClearStdError();
   bool GetStoredCredentialsTried() const;
