@@ -101,7 +101,7 @@ typedef void (__closure *TCaptureOutputEvent)(
   const UnicodeString Str, TCaptureOutputType OutputType);
 #endif // #if 0
 using TCaptureOutputEvent = nb::FastDelegate2<void,
-  const UnicodeString /*Str*/, TCaptureOutputType /*OutputType*/>;
+  const UnicodeString & /*Str*/, TCaptureOutputType /*OutputType*/>;
 #if 0
 typedef void (__closure *TCalculatedChecksumEvent)(
   const UnicodeString FileName, const UnicodeString Alg, const UnicodeString Hash);
