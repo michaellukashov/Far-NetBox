@@ -17,8 +17,10 @@ public:
 extern const wchar_t IncludeExcludeFileMasksDelimiter;
 #define MASK_INDEX(DIRECTORY, INCLUDE) ((DIRECTORY ? 2 : 0) + (INCLUDE ? 0 : 1))
 
-class NB_CORE_EXPORT TFileMasks : public TObject
+class TTerminal;
+class NB_CORE_EXPORT TFileMasks final : public TObject
 {
+friend class TTerminal;
 public:
   struct NB_CORE_EXPORT TParams : public TObject
   {
@@ -206,7 +208,6 @@ private:
   TCustomCommand *FChildCustomCommand{nullptr};
 };
 
-class TTerminal;
 class TSessionData;
 struct NB_CORE_EXPORT TCustomCommandData : public TObject
 {
