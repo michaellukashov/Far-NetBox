@@ -177,7 +177,61 @@ inline void operator_delete(void* p)
 #pragma warning(push)
 #pragma warning(disable: 4100) // unreferenced formal parameter
 
+#define NB_STATIC_ASSERT(Condition, Message) \
+  static_assert(bool(Condition), Message)
+
+#ifndef _WIN32_WINNT
+#define _WIN32_WINNT 0x0501
+#endif  //_WIN32_WINNT
+
+#ifndef _WIN32_IE
+#define _WIN32_IE 0x0501
+#endif  //_WIN32_IE
+
+// winnls.h
+#ifndef NORM_STOP_ON_NULL
+#define NORM_STOP_ON_NULL 0x10000000
+#endif
+
+#ifndef HIDESBASE
+#define HIDESBASE
+#endif
+
+#ifdef __GNUC__
+#ifndef nullptr
+#define nullptr NULL
+#endif
+#endif
+
+#if defined(_MSC_VER) && _MSC_VER<1600
+#define nullptr NULL
+#endif
+
+#ifndef NB_CONCATENATE
+#define NB_CONCATENATE_IMPL(s1, s2) s1 ## s2
+#define NB_CONCATENATE(s1, s2) NB_CONCATENATE_IMPL(s1, s2)
+#endif
+#ifdef _MSC_VER
+#define __removed NB_CONCATENATE(/, /)
+#else
+//#define PASTE2(a, b) a ## b
+//#define _PASTE2(a, b) PASTE2(a, b)
+//#define PASTE3(a, b, c) _PASTE2(PASTE2(a, b), c)
+#define __removed NB_CONCATENATE(/, /)
+#endif
+
+#undef __property
+#ifdef _MSC_VER
+#define __property NB_CONCATENATE(/, /)
+#else
+#define __property //
+#endif
+
 namespace nb {
+
+constexpr const int32_t NB_MAX_PATH = (32 * 1024);
+constexpr const int32_t NPOS  = static_cast<int32_t>(-1);
+
 namespace nballoc {
 
 inline void destruct(char*)
@@ -314,59 +368,6 @@ private: \
   Class& operator=(Class&&) = default; \
   Class(const Class&) = delete; \
   Class& operator=(const Class&) = delete;
-
-#define NB_STATIC_ASSERT(Condition, Message) \
-  static_assert(bool(Condition), Message)
-
-constexpr const intptr_t NB_MAX_PATH = (32 * 1024);
-constexpr const intptr_t NPOS  = static_cast<int32_t>(-1);
-
-#ifndef _WIN32_WINNT
-#define _WIN32_WINNT 0x0501
-#endif  //_WIN32_WINNT
-
-#ifndef _WIN32_IE
-#define _WIN32_IE 0x0501
-#endif  //_WIN32_IE
-
-// winnls.h
-#ifndef NORM_STOP_ON_NULL
-#define NORM_STOP_ON_NULL 0x10000000
-#endif
-
-#ifndef HIDESBASE
-#define HIDESBASE
-#endif
-
-#ifdef __GNUC__
-#ifndef nullptr
-#define nullptr NULL
-#endif
-#endif
-
-#if defined(_MSC_VER) && _MSC_VER<1600
-#define nullptr NULL
-#endif
-
-#ifndef NB_CONCATENATE
-#define NB_CONCATENATE_IMPL(s1, s2) s1 ## s2
-#define NB_CONCATENATE(s1, s2) NB_CONCATENATE_IMPL(s1, s2)
-#endif
-#ifdef _MSC_VER
-#define __removed NB_CONCATENATE(/, /)
-#else
-//#define PASTE2(a, b) a ## b
-//#define _PASTE2(a, b) PASTE2(a, b)
-//#define PASTE3(a, b, c) _PASTE2(PASTE2(a, b), c)
-#define __removed NB_CONCATENATE(/, /)
-#endif
-
-#undef __property
-#ifdef _MSC_VER
-#define __property NB_CONCATENATE(/, /)
-#else
-#define __property //
-#endif
 
 template <typename T1>
 inline constexpr void used(const T1&)
