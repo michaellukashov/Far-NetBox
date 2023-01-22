@@ -110,8 +110,8 @@ bool TFileZillaImpl::HandleAsyncRequestOverwrite(
   int &RequestResult)
 {
   return FFileSystem->HandleAsyncRequestOverwrite(
-      FileName1, FileName1Len, FileName2, Path1, Path2, Size1, Size2, LocalTime,
-      HasLocalTime, RemoteTime, UserData, LocalFileHandle, RequestResult);
+    FileName1, FileName1Len, FileName2, Path1, Path2, Size1, Size2, LocalTime,
+    HasLocalTime, RemoteTime, UserData, LocalFileHandle, RequestResult);
 }
 
 bool TFileZillaImpl::HandleAsyncRequestVerifyCertificate(
@@ -348,6 +348,7 @@ TFTPFileSystem::~TFTPFileSystem() noexcept
   if (FFileZillaIntf)
   {
     FFileZillaIntf->Destroying();
+
     // to release memory associated with the messages
     DiscardMessages();
   }
@@ -864,7 +865,7 @@ void TFTPFileSystem::CollectUsage()
   }
 }
 
-void TFTPFileSystem::DummyReadDirectory(UnicodeString ADirectory)
+void TFTPFileSystem::DummyReadDirectory(const UnicodeString ADirectory)
 {
   std::unique_ptr<TRemoteDirectory> Files(std::make_unique<TRemoteDirectory>(FTerminal));
   try
@@ -891,7 +892,7 @@ void TFTPFileSystem::Idle()
 
     // Keep session alive
     if ((FTerminal->GetSessionData()->GetFtpPingType() != ptOff) &&
-      ((Now() - FLastDataSent).GetValue() > FTerminal->GetSessionData()->GetFtpPingIntervalDT().GetValue() * 4))
+        ((Now() - FLastDataSent).GetValue() > FTerminal->GetSessionData()->GetFtpPingIntervalDT().GetValue() * 4))
     {
       FTerminal->LogEvent("Dummy directory read to keep session alive.");
       FLastDataSent = Now(); // probably redundant to the same statement in DoReadDirectory
@@ -950,7 +951,7 @@ UnicodeString TFTPFileSystem::GetActualCurrentDirectory() const
   return Result;
 }
 
-void TFTPFileSystem::EnsureLocation(UnicodeString ADirectory, bool Log)
+void TFTPFileSystem::EnsureLocation(const UnicodeString ADirectory, bool Log)
 {
   UnicodeString Directory = base::UnixExcludeTrailingBackslash(ADirectory);
   if (!base::UnixSamePath(GetActualCurrentDirectory(), Directory))
@@ -993,7 +994,7 @@ bool TFTPFileSystem::EnsureLocationWhenWorkFromCwd(const UnicodeString & Directo
 }
 
 
-void TFTPFileSystem::AnyCommand(UnicodeString Command,
+void TFTPFileSystem::AnyCommand(const UnicodeString Command,
   TCaptureOutputEvent OutputEvent)
 {
   // end-user has right to expect that client current directory is really
@@ -1188,7 +1189,7 @@ void TFTPFileSystem::ChangeFileProperties(const UnicodeString AFileName,
   }
 }
 
-bool TFTPFileSystem::LoadFilesProperties(TStrings * /*FileList*/)
+bool TFTPFileSystem::LoadFilesProperties(const TStrings * /*FileList*/)
 {
   DebugFail();
   return false;
@@ -1394,7 +1395,8 @@ void TFTPFileSystem::DoCalculateFilesChecksum(bool UsingHashCommand,
         FTerminal->RollbackAction(Action, OperationProgress, &E);
 
         // Error formatting expanded from inline to avoid strange exceptions
-        UnicodeString Error = FMTLOAD(CHECKSUM_ERROR,
+        UnicodeString Error =
+          FMTLOAD(CHECKSUM_ERROR,
             (File != nullptr ? File->GetFullFileName() : L""));
         FTerminal->CommandError(&E, Error);
         // Abort loop.
@@ -1406,7 +1408,7 @@ void TFTPFileSystem::DoCalculateFilesChecksum(bool UsingHashCommand,
   }
 }
 
-void TFTPFileSystem::CalculateFilesChecksum(UnicodeString Alg,
+void TFTPFileSystem::CalculateFilesChecksum(const UnicodeString Alg,
   TStrings *AFileList, TStrings *Checksums,
   TCalculatedChecksumEvent OnCalculatedChecksum)
 {
@@ -1444,11 +1446,10 @@ void TFTPFileSystem::CalculateFilesChecksum(UnicodeString Alg,
 }
 
 bool TFTPFileSystem::ConfirmOverwrite(
-  UnicodeString ASourceFullFileName, UnicodeString &ATargetFileName,
+  const UnicodeString ASourceFullFileName, UnicodeString &ATargetFileName,
   int32_t Params, TFileOperationProgressType *OperationProgress,
   bool AutoResume,
-  const TOverwriteFileParams *FileParams,
-  const TCopyParamType *CopyParam,
+  const TOverwriteFileParams *FileParams, const TCopyParamType *CopyParam,
   TOverwriteMode &OverwriteMode)
 {
   bool CanAutoResume = FLAGSET(Params, cpNoConfirmation) && AutoResume;
@@ -1501,9 +1502,9 @@ bool TFTPFileSystem::ConfirmOverwrite(
     {
       TSuspendFileOperationProgress Suspend(OperationProgress); nb::used(Suspend);
       Answer = FTerminal->ConfirmFileOverwrite(
-          ASourceFullFileName, ATargetFileName, FileParams, Answers, &QueryParams,
-          ReverseOperationSide(OperationProgress->GetSide()),
-          CopyParam, Params, OperationProgress);
+        ASourceFullFileName, ATargetFileName, FileParams, Answers, &QueryParams,
+        ReverseOperationSide(OperationProgress->GetSide()),
+        CopyParam, Params, OperationProgress);
     }
   }
 
@@ -1511,54 +1512,54 @@ bool TFTPFileSystem::ConfirmOverwrite(
 
   switch (Answer)
   {
-  // resume
-  case qaRetry:
-    OverwriteMode = omResume;
-    DebugAssert(FileParams != nullptr);
-    DebugAssert(CanResume);
-    FFileTransferResumed = FileParams ? FileParams->DestSize : 0;
-    break;
+    // resume
+    case qaRetry:
+      OverwriteMode = omResume;
+      DebugAssert(FileParams != nullptr);
+      DebugAssert(CanResume);
+      FFileTransferResumed = FileParams ? FileParams->DestSize : 0;
+      break;
 
-  // rename
-  case qaIgnore:
-  {
-    if (FTerminal->PromptUser(FTerminal->GetSessionData(), pkFileName,
-        LoadStr(RENAME_TITLE), L"", LoadStr(RENAME_PROMPT2), true, 0, ATargetFileName))
+    // rename
+    case qaIgnore:
     {
-      OverwriteMode = omOverwrite;
+      if (FTerminal->PromptUser(FTerminal->GetSessionData(), pkFileName,
+          LoadStr(RENAME_TITLE), L"", LoadStr(RENAME_PROMPT2), true, 0, ATargetFileName))
+      {
+        OverwriteMode = omOverwrite;
+      }
+      else
+      {
+        OperationProgress->SetCancelAtLeast(csCancel);
+        FFileTransferAbort = ftaCancel;
+        Result = false;
+      }
     }
-    else
-    {
+      break;
+
+    case qaYes:
+      OverwriteMode = omOverwrite;
+      break;
+
+    case qaCancel:
       OperationProgress->SetCancelAtLeast(csCancel);
       FFileTransferAbort = ftaCancel;
       Result = false;
-    }
-  }
-    break;
+      break;
 
-  case qaYes:
-    OverwriteMode = omOverwrite;
-    break;
+    case qaNo:
+      FFileTransferAbort = ftaSkip;
+      Result = false;
+      break;
 
-  case qaCancel:
-    OperationProgress->SetCancelAtLeast(csCancel);
-    FFileTransferAbort = ftaCancel;
-    Result = false;
-    break;
+    case qaSkip:
+      OverwriteMode = omComplete;
+      break;
 
-  case qaNo:
-    FFileTransferAbort = ftaSkip;
-    Result = false;
-    break;
-
-  case qaSkip:
-    OverwriteMode = omComplete;
-    break;
-
-  default:
-    DebugFail();
-    Result = false;
-    break;
+    default:
+      DebugFail();
+      Result = false;
+      break;
   }
   return Result;
 }
@@ -1669,12 +1670,12 @@ void TFTPFileSystem::FileTransfer(const UnicodeString AFileName,
 
   switch (FFileTransferAbort)
   {
-  case ftaSkip:
-    throw ESkipFile();
+    case ftaSkip:
+      throw ESkipFile();
 
-  case ftaCancel:
-    Abort();
-    break;
+    case ftaCancel:
+      Abort();
+      break;
   }
 
   if (!FFileTransferCancelled)
@@ -2502,7 +2503,7 @@ bool TFTPFileSystem::SupportsReadingFile() const
     (SupportsCommand(MdtmCommand) && SupportsCommand(SizeCommand));
 }
 
-void TFTPFileSystem::ReadFile(UnicodeString AFileName,
+void TFTPFileSystem::ReadFile(const UnicodeString AFileName,
   TRemoteFile *& AFile)
 {
   AFile = nullptr;
@@ -2656,7 +2657,9 @@ void TFTPFileSystem::RemoteCopyFile(const UnicodeString AFileName, const TRemote
   DebugAssert(SupportsSiteCommand(CopySiteCommand));
   EnsureLocation();
 
-  UnicodeString Command = FORMAT("%s CPFR %s", SiteCommand, AFileName);
+  UnicodeString Command;
+
+  Command = FORMAT("%s CPFR %s", SiteCommand, AFileName);
   SendCommand(Command);
   GotReply(WaitForCommandReply(), REPLY_3XX_CODE);
 
@@ -3835,14 +3838,14 @@ bool TFTPFileSystem::HandleStatus(const wchar_t *AStatus, int Type)
   switch (Type)
   {
     case TFileZillaIntf::LOG_STATUS:
-    {
+     {
       FTerminal->Information(Status, true);
       LogType = llMessage;
-    }
-    break;
+     }
+     break;
 
     case TFileZillaIntf::LOG_COMMAND:
-    {
+      {
       if (Status == L"SYST")
       {
         // not to trigger the assert in HandleReplyStatus,
@@ -3866,7 +3869,7 @@ bool TFTPFileSystem::HandleStatus(const wchar_t *AStatus, int Type)
       {
         LogType = llInput;
       }
-    }
+      }
       break;
 
     case TFileZillaIntf::LOG_ERROR:
@@ -4649,8 +4652,8 @@ bool TFTPFileSystem::HandleListData(const wchar_t *Path,
         UnicodeString EntryData =
           FORMAT("%s/%s/%s/%s/%s/%s/%s/%d/%d/%d/%d/%d/%d/%d/%s",
             Entry->Name, Entry->Permissions, Entry->HumanPerm, Entry->Owner, Entry->Group, Entry->OwnerGroup, ::Int64ToStr(Entry->Size),
-            int(Entry->Dir), int(Entry->Link), Entry->Time.Year, Entry->Time.Month, Entry->Time.Day,
-            Entry->Time.Hour, Entry->Time.Minute, TmStr);
+             int(Entry->Dir), int(Entry->Link), Entry->Time.Year, Entry->Time.Month, Entry->Time.Day,
+             Entry->Time.Hour, Entry->Time.Minute, TmStr);
         throw ETerminal(&E, FMTLOAD(LIST_LINE_ERROR, EntryData), HELP_LIST_LINE_ERROR);
       }
 
@@ -4877,7 +4880,7 @@ bool TFTPFileSystem::GetFileModificationTimeInUtc(const wchar_t *AFileName, stru
   return Result;
 }
 
-void TFTPFileSystem::RegisterChecksumAlgCommand(UnicodeString Alg, UnicodeString Command)
+void TFTPFileSystem::RegisterChecksumAlgCommand(const UnicodeString Alg, const UnicodeString Command)
 {
   FChecksumAlgs->Add(Alg);
   FChecksumCommands->Add(Command);
@@ -4902,22 +4905,22 @@ void TFTPFileSystem::GetSupportedChecksumAlgs(TStrings *Algs)
   }
 }
 
-bool TFTPFileSystem::SupportsSiteCommand(UnicodeString Command) const
+bool TFTPFileSystem::SupportsSiteCommand(const UnicodeString Command) const
 {
   return (FSupportedSiteCommands->IndexOf(Command) >= 0);
 }
 
-bool TFTPFileSystem::SupportsCommand(UnicodeString Command) const
+bool TFTPFileSystem::SupportsCommand(const UnicodeString Command) const
 {
   return (FSupportedCommands->IndexOf(Command) >= 0);
 }
 
-void TFTPFileSystem::LockFile(UnicodeString /*AFileName*/, const TRemoteFile * /*File*/)
+void TFTPFileSystem::LockFile(const UnicodeString /*AFileName*/, const TRemoteFile * /*File*/)
 {
   DebugFail();
 }
 
-void TFTPFileSystem::UnlockFile(UnicodeString /*AFileName*/, const TRemoteFile * /*File*/)
+void TFTPFileSystem::UnlockFile(const UnicodeString /*AFileName*/, const TRemoteFile * /*File*/)
 {
   DebugFail();
 }
