@@ -1266,7 +1266,7 @@ void DecodeTime(const TDateTime &DateTime, uint16_t &Hour,
   MSec = static_cast<uint16_t>(MS);
 }
 
-static bool TryEncodeDate(int Year, int Month, int Day, TDateTime &Date)
+static bool TryEncodeDate(uint16_t Year, uint16_t Month, uint16_t Day, TDateTime &Date)
 {
   const TDayTable *DayTable = &MonthDays[IsLeapYear(nb::ToWord(Year))];
   if ((Year >= 1) && (Year <= 9999) && (Month >= 1) && (Month <= 12) &&
@@ -1283,7 +1283,7 @@ static bool TryEncodeDate(int Year, int Month, int Day, TDateTime &Date)
   return false;
 }
 
-TDateTime EncodeDate(int Year, int Month, int Day)
+TDateTime EncodeDate(uint16_t Year, uint16_t Month, uint16_t Day)
 {
   TDateTime Result;
   if (!TryEncodeDate(Year, Month, Day, Result))
@@ -1605,6 +1605,69 @@ TFormatSettings::TFormatSettings(LCID /*LCID*/) noexcept :
 UnicodeString TPath::Combine(const UnicodeString APath, const UnicodeString AFileName)
 {
   UnicodeString Result = ::IncludeTrailingBackslash(APath) + AFileName;
+  return Result;
+}
+
+WORD MilliSecondOf(const TDateTime & AValue)
+{
+  uint16_t Hour{0}, Min{0}, Sec{0}, MSec{0};
+  DecodeTime(AValue, Hour, Min, Sec, MSec);
+  return MSec;
+}
+
+WORD MilliSecondOfTheSecond(const TDateTime & AValue)
+{
+  return MilliSecondOf(AValue);
+}
+
+int32_t MilliSecondOfTheMinute(const TDateTime &AValue)
+{
+  uint16_t Hour{0}, Min{0}, Sec{0}, MSec{0};
+  DecodeTime(AValue, Hour, Min, Sec, MSec);
+  int32_t Result = Sec*1000+MSec;
+  return Result;
+}
+
+int32_t MilliSecondOfTheHour(const TDateTime &AValue)
+{
+  uint16_t Hour{0}, Min{0}, Sec{0}, MSec{0};
+  DecodeTime(AValue, Hour, Min, Sec, MSec);
+  int32_t Result =(Min*60+Sec)*1000+MSec;
+  return Result;
+}
+
+int32_t MilliSecondOfTheDay(const TDateTime &AValue)
+{
+  uint16_t Hour{0}, Min{0}, Sec{0}, MSec{0};
+  DecodeTime(AValue, Hour, Min, Sec, MSec);
+  int32_t Result = (((Hour*60)+Min)*60+Sec)*1000+MSec;
+  return Result;
+}
+
+DWORD YearOf(const TDateTime &AValue)
+{
+  uint16_t Year{0}, Month{0}, Day{0};
+  DecodeDate(AValue, Year, Month, Day);
+  return Year;
+}
+
+TDateTime StartOfTheYear(const TDateTime &AValue)
+{
+  TDateTime Result = EncodeDate(YearOf(AValue), 1, 1);
+  return Result;
+}
+
+DWORD DayOfTheYear(const TDateTime &AValue)
+{
+  DWORD Result = Trunc(AValue - StartOfTheYear(AValue)+1);
+  return Result;
+}
+
+int64_t MilliSecondOfTheYear(const TDateTime &AValue)
+{
+  uint16_t Hour{0}, Min{0}, Sec{0}, MSec{0};
+  DecodeTime(AValue, Hour, Min, Sec, MSec);
+  WORD Result = ((Min+(Hour+((int64_t(DayOfTheYear(AValue))-1)*24))*60)*60+Sec)*1000+MSec;
   return Result;
 }
 

@@ -234,7 +234,7 @@ NB_CORE_EXPORT void DecodeTime(const TDateTime &DateTime, uint16_t &Hour,
 NB_CORE_EXPORT UnicodeString FormatDateTime(const UnicodeString Fmt, const TDateTime &ADateTime);
 NB_CORE_EXPORT TDateTime SystemTimeToDateTime(const SYSTEMTIME &SystemTime);
 
-NB_CORE_EXPORT TDateTime EncodeDate(int Year, int Month, int Day);
+NB_CORE_EXPORT TDateTime EncodeDate(uint16_t Year, uint16_t Month, uint16_t Day);
 NB_CORE_EXPORT TDateTime EncodeTime(uint32_t Hour, uint32_t Min, uint32_t Sec, uint32_t MSec);
 
 NB_CORE_EXPORT UnicodeString Trim(const UnicodeString Str);
@@ -391,7 +391,11 @@ NB_CORE_EXPORT TDateTime IncHour(const TDateTime &AValue, const Int64 ANumberOfH
 NB_CORE_EXPORT TDateTime IncMinute(const TDateTime &AValue, const Int64 ANumberOfMinutes = 1);
 NB_CORE_EXPORT TDateTime IncSecond(const TDateTime &AValue, const Int64 ANumberOfSeconds = 1);
 NB_CORE_EXPORT TDateTime IncMilliSecond(const TDateTime &AValue, const Int64 ANumberOfMilliSeconds = 1);
-
+WORD MilliSecondOfTheSecond(const TDateTime & AValue);
+int32_t MilliSecondOfTheMinute(const TDateTime & AValue);
+int32_t MilliSecondOfTheHour(const TDateTime & AValue);
+int32_t MilliSecondOfTheDay(const TDateTime & AValue);
+int64_t MilliSecondOfTheYear(const TDateTime & AValue);
 NB_CORE_EXPORT Boolean IsLeapYear(Word Year);
 
 NB_CORE_EXPORT UnicodeString StripHotkey(const UnicodeString AText);
