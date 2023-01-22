@@ -1726,6 +1726,11 @@ int64_t MilliSecondOfTheYear(const TDateTime &AValue)
   return Result;
 }
 
+int32_t Random(int32_t Max)
+{
+  return (int32_t)((int64_t)rand() / (std::numeric_limits<int>::max() / Max));
+}
+
 } // namespace Sysutils
 
 namespace base {

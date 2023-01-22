@@ -643,6 +643,8 @@ public:
   static UnicodeString Combine(const UnicodeString APath, const UnicodeString AFileName);
 };
 
+int32_t Random(int32_t Max);
+
 } // namespace Sysutils
 
 using namespace Sysutils;
