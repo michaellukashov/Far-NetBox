@@ -39,9 +39,10 @@
 #include "HelpCore.h"
 #include "CoreMain.h"
 #include "Security.h"
+#include <StrUtils.hpp>
+#include <NeonIntf.h>
 
-
-__removed #pragma package(smart_init)
+// #pragma package(smart_init)
 
 __removed #define FILE_OPERATION_LOOP_TERMINAL FTerminal
 
@@ -63,10 +64,9 @@ constexpr int HttpUnauthorized = 401;
 #define PROP_DISPLAY_NAME "displayname"
 
 
-
 // ne_path_escape returns 7-bit string, so it does not really matter if we use
 // AnsiString or UTF8String here, though UTF8String might be more safe
-static AnsiString PathEscape(const char *Path)
+static AnsiString PathEscape(const char * Path)
 {
   char * EscapedPath = ne_path_escape(Path);
   AnsiString Result = EscapedPath;
@@ -166,11 +166,13 @@ TWebDAVFileSystem::TWebDAVFileSystem(TTerminal *ATerminal) noexcept :
   TCustomFileSystem(OBJECT_CLASS_TWebDAVFileSystem, ATerminal),
   FActive(false),
   FHasTrailingSlash(false),
-  FUploading(false),
-  FDownloading(false),
   FNeonSession(nullptr),
   FNeonLockStore(nullptr),
-  FInitialHandshake(false)
+  FNeonLockStoreSection(new TCriticalSection()),
+  FUploading(false),
+  FDownloading(false),
+  FInitialHandshake(false),
+  FIgnoreAuthenticationFailure(iafNo)
 {
 }
 
@@ -178,11 +180,6 @@ void TWebDAVFileSystem::Init(void *)
 {
   FFileSystemInfo.ProtocolBaseName = CONST_WEBDAV_PROTOCOL_BASE_NAME;
   FFileSystemInfo.ProtocolName = FFileSystemInfo.ProtocolBaseName;
-}
-
-void TWebDAVFileSystem::FileTransferProgress(int64_t /*TransferSize*/, int64_t /*Bytes*/)
-{
-  TODO("implement");
 }
 
 TWebDAVFileSystem::~TWebDAVFileSystem() noexcept
@@ -261,7 +258,7 @@ UnicodeString TWebDAVFileSystem::ParsePathFromUrl(const UnicodeString & Url) con
   return Result;
 }
 
-void TWebDAVFileSystem::OpenUrl(UnicodeString Url)
+void TWebDAVFileSystem::OpenUrl(const UnicodeString Url)
 {
   UnicodeString CorrectedUrl;
   NeonClientOpenSessionInternal(CorrectedUrl, Url);
@@ -532,7 +529,7 @@ const TFileSystemInfo & TWebDAVFileSystem::GetFileSystemInfo(bool /*Retrieve*/)
   return FFileSystemInfo;
 }
 
-bool TWebDAVFileSystem::TemporaryTransferFile(UnicodeString /*AFileName*/)
+bool TWebDAVFileSystem::TemporaryTransferFile(const UnicodeString /*AFileName*/)
 {
   return false;
 }
@@ -553,12 +550,12 @@ void TWebDAVFileSystem::Idle()
   // noop
 }
 
-UnicodeString TWebDAVFileSystem::GetAbsolutePath(UnicodeString APath, bool Local)
+UnicodeString TWebDAVFileSystem::GetAbsolutePath(const UnicodeString APath, bool Local)
 {
   return static_cast<const TWebDAVFileSystem *>(this)->GetAbsolutePath(APath, Local);
 }
 
-UnicodeString TWebDAVFileSystem::GetAbsolutePath(UnicodeString APath, bool /*Local*/) const
+UnicodeString TWebDAVFileSystem::GetAbsolutePath(const UnicodeString APath, bool /*Local*/) const
 {
   bool AddTrailingBackslash;
 
@@ -744,7 +741,7 @@ void TWebDAVFileSystem::AnnounceFileListOperation()
   // noop
 }
 
-void TWebDAVFileSystem::ChangeDirectory(UnicodeString ADirectory)
+void TWebDAVFileSystem::ChangeDirectory(const UnicodeString ADirectory)
 {
   UnicodeString Path = GetAbsolutePath(ADirectory, false);
 
@@ -755,7 +752,7 @@ void TWebDAVFileSystem::ChangeDirectory(UnicodeString ADirectory)
   FCachedDirectoryChange = Path;
 }
 
-void TWebDAVFileSystem::CachedChangeDirectory(UnicodeString Directory)
+void TWebDAVFileSystem::CachedChangeDirectory(const UnicodeString Directory)
 {
   FCachedDirectoryChange = base::UnixExcludeTrailingBackslash(Directory);
 }
@@ -838,7 +835,7 @@ void TWebDAVFileSystem::ReadSymlink(TRemoteFile * /*SymlinkFile*/,
   DebugFail();
 }
 
-void TWebDAVFileSystem::ReadFile(UnicodeString AFileName,
+void TWebDAVFileSystem::ReadFile(const UnicodeString AFileName,
   TRemoteFile *&AFile)
 {
   CustomReadFile(AFileName, AFile, nullptr);
@@ -861,7 +858,6 @@ void TWebDAVFileSystem::NeonPropsResult(
     {
       File->FileName = PARENTDIRECTORY;
       File->FullFileName = UnixCombinePaths(Path, PARENTDIRECTORY);
-      // Path = base::UnixIncludeTrailingBackslash(base::UnixIncludeTrailingBackslash(Path) + PARENTDIRECTORY);
     }
 
     Data.FileList->AddFile(File.release());
@@ -882,7 +878,7 @@ const char * TWebDAVFileSystem::GetNeonProp(
 }
 
 void TWebDAVFileSystem::ParsePropResultSet(TRemoteFile *AFile,
-  UnicodeString APath, const ne_prop_result_set *Results)
+  const UnicodeString APath, const ne_prop_result_set *Results)
 {
   AFile->SetFullFileName(base::UnixExcludeTrailingBackslash(APath));
   // Some servers do not use DAV:collection tag, but indicate the folder by trailing slash only.
@@ -908,7 +904,7 @@ void TWebDAVFileSystem::ParsePropResultSet(TRemoteFile *AFile,
     int Hour = 0;
     int Min = 0;
     int Sec = 0;
-#define RFC1123_FORMAT "%3s, %02d %3s %4d %02d:%02d:%02d GMT"
+    #define RFC1123_FORMAT "%3s, %02d %3s %4d %02d:%02d:%02d GMT"
     // Keep is sync with S3
     int Filled =
       sscanf(Modified, RFC1123_FORMAT, WeekDay, &Day, MonthStr, &Year, &Hour, &Min, &Sec);
@@ -1039,7 +1035,7 @@ void TWebDAVFileSystem::ParsePropResultSet(TRemoteFile *AFile,
   AFile->SetHumanRights(HumanRights);
 }
 
-int32_t TWebDAVFileSystem::CustomReadFileInternal(UnicodeString AFileName,
+int32_t TWebDAVFileSystem::CustomReadFileInternal(const UnicodeString AFileName,
   TRemoteFile *& AFile, TRemoteFile *ALinkedByFile)
 {
   std::unique_ptr<TRemoteFile> File(std::make_unique<TRemoteFile>(ALinkedByFile));
@@ -1072,7 +1068,7 @@ void TWebDAVFileSystem::CustomReadFile(UnicodeString AFileName,
   CheckStatus(NeonStatus);
 }
 
-void TWebDAVFileSystem::RemoteDeleteFile(UnicodeString /*AFileName*/,
+void TWebDAVFileSystem::RemoteDeleteFile(const UnicodeString /*AFileName*/,
   const TRemoteFile *AFile, int32_t /*Params*/, TRmSessionAction &Action)
 {
   Action.Recursive();
@@ -1164,7 +1160,7 @@ bool TWebDAVFileSystem::LoadFilesProperties(TStrings * /*FileList*/)
   return false;
 }
 
-void TWebDAVFileSystem::CalculateFilesChecksum(const UnicodeString & /*Alg*/,
+void TWebDAVFileSystem::CalculateFilesChecksum(const UnicodeString /*Alg*/,
     TStrings * /*FileList*/, TStrings * /*Checksums*/,
     TCalculatedChecksumEvent /*OnCalculatedChecksum*/)
 {
@@ -1176,8 +1172,6 @@ void TWebDAVFileSystem::ConfirmOverwrite(
   TFileOperationProgressType * OperationProgress,
   const TOverwriteFileParams * FileParams, const TCopyParamType *CopyParam,
   int32_t Params)
-//  TOverwriteMode &OverwriteMode,
-//  uint32_t &Answer)
 {
   // all = "yes to newer"
   uint32_t Answers = qaYes | qaNo | qaCancel | qaYesToAll | qaNoToAll | qaAll;
@@ -1315,7 +1309,7 @@ void TWebDAVFileSystem::CopyToRemote(TStrings * AFilesToCopy,
 }
 
 void TWebDAVFileSystem::Source(
-  TLocalFileHandle & AHandle, const UnicodeString & ATargetDir, UnicodeString & ADestFileName,
+  TLocalFileHandle & AHandle, const UnicodeString ATargetDir, UnicodeString & ADestFileName,
   const TCopyParamType * CopyParam, int32_t AParams,
   TFileOperationProgressType * OperationProgress, uint32_t /*AFlags*/,
   TUploadSessionAction &Action, bool &ChildError)
@@ -1455,7 +1449,7 @@ void TWebDAVFileSystem::Source(
 }
 
 void TWebDAVFileSystem::CopyToLocal(TStrings *AFilesToCopy,
-  UnicodeString TargetDir, const TCopyParamType *CopyParam,
+  const UnicodeString TargetDir, const TCopyParamType *CopyParam,
   int32_t Params, TFileOperationProgressType *OperationProgress,
   TOnceDoneOperation &OnceDoneOperation)
 {
@@ -1481,7 +1475,7 @@ void TWebDAVFileSystem::NeonPreSend(
 
   FileSystem->FAuthorizationProtocol = "";
   UnicodeString HeaderBuf(StrFromNeon(UTF8String(Header->data, Header->used)));
-  UnicodeString AuthorizationHeaderName("Authorization:");
+  const UnicodeString AuthorizationHeaderName("Authorization:");
   int32_t P = HeaderBuf.Pos(AuthorizationHeaderName);
   if (P > 0)
   {
@@ -1740,8 +1734,8 @@ int TWebDAVFileSystem::NeonBodyReader(void *UserData, const char *Buf, size_t Le
 }
 
 void TWebDAVFileSystem::Sink(
-  UnicodeString AFileName, const TRemoteFile *AFile,
-  UnicodeString ATargetDir, UnicodeString &ADestFileName, int32_t Attrs,
+  const UnicodeString AFileName, const TRemoteFile *AFile,
+  const UnicodeString ATargetDir, UnicodeString &ADestFileName, int32_t Attrs,
   const TCopyParamType *CopyParam, int32_t AParams, TFileOperationProgressType *OperationProgress,
   uint32_t /*AFlags*/, TDownloadSessionAction & Action)
 {
@@ -2081,7 +2075,7 @@ void TWebDAVFileSystem::GetSupportedChecksumAlgs(TStrings * /*Algs*/)
   // NOOP
 }
 
-void TWebDAVFileSystem::LockFile(UnicodeString /*AFileName*/, const TRemoteFile *AFile)
+void TWebDAVFileSystem::LockFile(const UnicodeString /*AFileName*/, const TRemoteFile *AFile)
 {
   ClearNeonError();
   struct ne_lock *Lock = ne_lock_create();
@@ -2154,7 +2148,7 @@ void TWebDAVFileSystem::DiscardLock(const RawByteString APath)
   }
 }
 
-void TWebDAVFileSystem::UnlockFile(UnicodeString AFileName, const TRemoteFile *AFile)
+void TWebDAVFileSystem::UnlockFile(const UnicodeString AFileName, const TRemoteFile *AFile)
 {
   ClearNeonError();
   struct ne_lock *Lock = ne_lock_create();
