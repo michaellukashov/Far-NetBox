@@ -1731,6 +1731,33 @@ int32_t Random(int32_t Max)
   return (int32_t)((int64_t)rand() / (std::numeric_limits<int>::max() / Max));
 }
 
+UnicodeString ReadAllText(const UnicodeString FileName)
+{
+  UnicodeString Result;
+  DWORD m_LastError = ERROR_SUCCESS;
+
+  HANDLE m_File{INVALID_HANDLE_VALUE};
+  m_File = ::CreateFile(FileName.c_str(), GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
+  if (m_File == INVALID_HANDLE_VALUE)
+  {
+    m_LastError = ::GetLastError();
+  }
+
+  if (m_LastError != ERROR_SUCCESS)
+    Result.Clear();
+  if (m_File != INVALID_HANDLE_VALUE)
+  {
+    SAFE_CLOSE_HANDLE(m_File);
+    m_File = INVALID_HANDLE_VALUE;
+  }
+  return Result;
+}
+
+void WriteAllText(const UnicodeString FileName, const UnicodeString Text)
+{
+
+}
+
 } // namespace Sysutils
 
 namespace base {
