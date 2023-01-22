@@ -127,15 +127,18 @@ struct NB_CORE_EXPORT TIEProxyConfig : public TObject
 };
 
 class TStoredSessionList;
+class TSecondaryTerminal;
 
 NB_DEFINE_CLASS_ID(TSessionData);
 class NB_CORE_EXPORT TSessionData : public TNamedObject
 {
   friend class TStoredSessionList;
+  friend class TSecondaryTerminal;
   NB_DISABLE_COPY(TSessionData)
 public:
   static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TSessionData); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TSessionData) || TNamedObject::is(Kind); }
+  friend class TTerminal;
 private:
   UnicodeString FHostName;
   int32_t FPortNumber{0};
@@ -651,6 +654,7 @@ public:
   __property bool SynchronizeBrowsing = { read = FSynchronizeBrowsing, write = SetSynchronizeBrowsing };
   __property bool UpdateDirectories = { read = FUpdateDirectories, write = SetUpdateDirectories };
   RWProperty<bool> UpdateDirectories{nb::bind(&TSessionData::GetUpdateDirectories, this), nb::bind(&TSessionData::SetUpdateDirectories, this)};
+  __property bool RequireDirectories = { read=FRequireDirectories, write=FRequireDirectories };
   __property bool CacheDirectories = { read = FCacheDirectories, write = SetCacheDirectories };
   __property bool CacheDirectoryChanges = { read = FCacheDirectoryChanges, write = SetCacheDirectoryChanges };
   __property bool PreserveDirectoryChanges = { read = FPreserveDirectoryChanges, write = SetPreserveDirectoryChanges };
