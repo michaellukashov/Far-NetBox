@@ -58,7 +58,7 @@ public:
   virtual void Sink(
     const UnicodeString AFileName, const TRemoteFile *AFile,
     const UnicodeString ATargetDir, UnicodeString & ADestFileName, int32_t Attrs,
-    const TCopyParamType *CopyParam, iint32_t AParams, TFileOperationProgressType * OperationProgress,
+    const TCopyParamType *CopyParam, int32_t AParams, TFileOperationProgressType * OperationProgress,
     uint32_t AFlags, TDownloadSessionAction & Action) override;
   virtual void RemoteCreateDirectory(const UnicodeString ADirName, bool Encrypt) override;
   virtual void RemoteCreateLink(const UnicodeString AFileName, const UnicodeString PointTo, bool Symbolic) override;
@@ -100,8 +100,9 @@ protected:
 
   TStrings *GetOutput() const { return FOutput.get(); }
   int32_t GetReturnCode() const { return FReturnCode; }
+  UnicodeString InitOptionsStr(const TCopyParamType *CopyParam) const;
 
-  UnicodeString RemoteGetCurrentDirectory() const override;
+  virtual UnicodeString RemoteGetCurrentDirectory() const override;
 
 private:
   gsl::owner<TSecureShell*> FSecureShell{nullptr};
@@ -119,7 +120,7 @@ private:
   void DetectUtf();
   void ClearAliases();
   void ClearAlias(const UnicodeString Alias);
-  void CustomReadFile(UnicodeString AFileName,
+  void CustomReadFile(const UnicodeString AFileName,
     TRemoteFile *& AFile, TRemoteFile * ALinkedByFile);
   static UnicodeString DelimitStr(UnicodeString AStr);
   void DetectReturnVar();
@@ -163,7 +164,5 @@ private:
 
   static bool RemoveLastLine(UnicodeString &Line,
     int32_t &ReturnCode, UnicodeString ALastLine = "");
-
-  UnicodeString InitOptionsStr(const TCopyParamType *CopyParam) const;
 };
 
