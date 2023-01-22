@@ -18,7 +18,7 @@ constexpr int32_t cpRemoveBOM   = 0x02;
 //typedef size_t (__closure *TTransferInEvent)(TObject * Sender, unsigned char * Data, size_t Len);
 using TTransferOutEvent = nb::FastDelegate3<void,
   TObject * /*Sender*/, const uint8_t * /*Data*/, size_t /*Len*/>;
-using TTransferInEvent = nb::FastDelegate3<void,
+using TTransferInEvent = nb::FastDelegate3<size_t,
   TObject * /*Sender*/, uint8_t * /*Data*/, size_t /*Len*/>;
 
 class NB_CORE_EXPORT TFileBuffer : public TObject
@@ -35,9 +35,9 @@ public:
   void Delete(int64_t Index, int64_t Len);
   int64_t LoadStream(TStream * Stream, const int64_t Len, bool ForceLen);
   int64_t ReadStream(TStream * Stream, const int64_t Len, bool ForceLen);
-  DWORD LoadFromIn(TTransferInEvent OnTransferIn, TObject * Sender, DWORD Len);
+  DWORD LoadFromIn(TTransferInEvent OnTransferIn, TObject * Sender, int64_t Len);
   void WriteToStream(TStream * Stream, const int64_t Len);
-  void WriteToOut(TTransferOutEvent OnTransferOut, TObject * Sender, const DWORD Len);
+  void WriteToOut(TTransferOutEvent OnTransferOut, TObject * Sender, const int64_t Len);
   __property TMemoryStream * Memory  = { read=FMemory, write=SetMemory };
   RWProperty<TMemoryStream *> Memory{nb::bind(&TFileBuffer::GetMemory, this), nb::bind(&TFileBuffer::SetMemory, this)};
   __property char * Data = { read=GetData };

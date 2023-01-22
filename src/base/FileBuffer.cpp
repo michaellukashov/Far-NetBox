@@ -66,7 +66,7 @@ void TFileBuffer::ProcessRead(DWORD Len, DWORD Result)
   {
     Size = Size - Len + Result;
   }
-  FMemory->Seek(Result, soCurrent);
+  FMemory->Seek(Result, TSeekOrigin::soCurrent);
 }
 
 int64_t TFileBuffer::ReadStream(TStream * Stream, const int64_t Len, bool ForceLen)
@@ -95,19 +95,19 @@ int64_t TFileBuffer::ReadStream(TStream * Stream, const int64_t Len, bool ForceL
   return Result;
 }
 
-DWORD TFileBuffer::LoadStream(TStream * Stream, const DWORD Len, bool ForceLen)
+int64_t TFileBuffer::LoadStream(TStream * Stream, const int64_t Len, bool ForceLen)
 {
-  auto const res = FMemory->Seek(0, soFromBeginning);
+  auto const res = FMemory->Seek(0, TSeekOrigin::soBeginning);
   DebugAssert(res == 0);
   return ReadStream(Stream, Len, ForceLen);
 }
 
-DWORD TFileBuffer::LoadFromIn(TTransferInEvent OnTransferIn, TObject * Sender, DWORD Len)
+DWORD TFileBuffer::LoadFromIn(TTransferInEvent OnTransferIn, TObject * Sender, int64_t Len)
 {
-  FMemory->Seek(0, soFromBeginning);
-  DebugAssert(Position == 0);
-  Size = Position + Len;
-  size_t Result = OnTransferIn(Sender, reinterpret_cast<unsigned char *>(Data) + Position, Len);
+  FMemory->Seek(0, TSeekOrigin::soBeginning);
+  DebugAssert(Position() == 0);
+  Size = Position() + Len;
+  size_t Result = OnTransferIn(Sender, reinterpret_cast<unsigned char *>(Data()) + Position(), Len);
   ProcessRead(Len, Result);
   return Result;
 }
@@ -247,7 +247,7 @@ void TFileBuffer::WriteToStream(TStream * Stream, const int64_t Len)
   try
   {
     Stream->WriteBuffer(GetData() + GetPosition(), Len);
-    const int64_t res = FMemory->Seek(Len, soFromCurrent);
+    const int64_t res = FMemory->Seek(Len, TSeekOrigin::soCurrent);
     DebugAssert(res >= Len);
   }
   catch (EWriteError &)
@@ -256,18 +256,18 @@ void TFileBuffer::WriteToStream(TStream * Stream, const int64_t Len)
   }
 }
 
-void TFileBuffer::WriteToOut(TTransferOutEvent OnTransferOut, TObject * Sender, const DWORD Len)
+void TFileBuffer::WriteToOut(TTransferOutEvent OnTransferOut, TObject * Sender, const int64_t Len)
 {
-  OnTransferOut(Sender, reinterpret_cast<const unsigned char *>(Data) + Position, Len);
-  FMemory->Seek(Len, soCurrent);
+  OnTransferOut(Sender, reinterpret_cast<const unsigned char *>(Data()) + Position(), Len);
+  FMemory->Seek(Len, TSeekOrigin::soCurrent);
 }
 
-TSafeHandleStream::TSafeHandleStream(int AHandle) :
+TSafeHandleStream::TSafeHandleStream(THandle AHandle) noexcept :
   THandleStream(AHandle)
 {
 }
 
-int TSafeHandleStream::Read(void * Buffer, int Count)
+int64_t TSafeHandleStream::Read(void * Buffer, int64_t Count)
 {
   int Result = FileRead(FHandle, Buffer, Count);
   if (Result == -1)
@@ -277,7 +277,7 @@ int TSafeHandleStream::Read(void * Buffer, int Count)
   return Result;
 }
 
-int TSafeHandleStream::Write(const void * Buffer, int Count)
+int64_t TSafeHandleStream::Write(const void * Buffer, int64_t Count)
 {
   int Result = FileWrite(FHandle, Buffer, Count);
   if (Result == -1)
@@ -286,7 +286,7 @@ int TSafeHandleStream::Write(const void * Buffer, int Count)
   }
   return Result;
 }
-
+#if 0
 int TSafeHandleStream::Read(System::DynamicArray<System::Byte> Buffer, int Offset, int Count)
 {
   DebugFail(); // untested
@@ -308,3 +308,4 @@ int TSafeHandleStream::Write(const System::DynamicArray<System::Byte> Buffer, in
   }
   return Result;
 }
+#endif // #if 0
