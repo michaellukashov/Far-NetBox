@@ -1985,7 +1985,7 @@ void TRemoteDirectoryCache::DoClearFileList(const UnicodeString ADirectory, bool
     Index = GetCount() - 1;
     while (Index >= 0)
     {
-      if (UnixIsChildPath(DirectoryWithSlash, GetString(Index)))
+      if (base::UnixIsChildPath(DirectoryWithSlash, GetString(Index)))
       {
         Delete(Index);
       }
@@ -2005,7 +2005,7 @@ void TRemoteDirectoryCache::Delete(int32_t Index)
 TRemoteDirectoryChangesCache::TRemoteDirectoryChangesCache(int32_t MaxSize) noexcept :
   FMaxSize(MaxSize)
 {
-  CaseSensitive = true;
+  SetCaseSensitive(true);
 }
 
 void TRemoteDirectoryChangesCache::Clear()
