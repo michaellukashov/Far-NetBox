@@ -840,7 +840,7 @@ UnicodeString THierarchicalStorage::ExcludeTrailingBackslash(const UnicodeString
   }
 }
 
-bool THierarchicalStorage::GetTemporary()
+bool THierarchicalStorage::GetTemporary() const
 {
   return false;
 }

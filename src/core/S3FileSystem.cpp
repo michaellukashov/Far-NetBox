@@ -423,7 +423,7 @@ void TS3FileSystem::LibS3ResponseDataCallback(const char *Data, size_t Size, voi
   TS3FileSystem *FileSystem = static_cast<TS3FileSystem *>(CallbackData);
   if (FileSystem->FTerminal->GetLog()->GetLogging() && !FileSystem->FResponseIgnore)
   {
-    UnicodeString Content = UnicodeString(UTF8String(Data, static_cast<intptr_t>(Size))).Trim();
+    UnicodeString Content = UnicodeString(UTF8String(Data, static_cast<int32_t>(Size))).Trim();
     FileSystem->FResponse += Content;
   }
 }

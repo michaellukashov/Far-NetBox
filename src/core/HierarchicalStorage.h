@@ -36,7 +36,7 @@ public:
   virtual void ReadValues(TStrings *Strings, bool MaintainKeys = false);
   virtual void WriteValues(TStrings *Strings, bool MaintainKeys = false);
   virtual void ClearValues();
-  bool DeleteValue(const UnicodeString Name) = 0;
+  bool DeleteValue(const UnicodeString Name);
 
   bool ReadBool(UnicodeString Name, bool Default) const;
   template<typename T>
@@ -98,9 +98,7 @@ public:
   void SetMungeStringValues(bool Value) { FMungeStringValues = Value; }
 
   UnicodeString GetSourceConst() const { return GetSourceProtected(); }
-  UnicodeString GetSource() { return GetSourceProtected(); }
   void SetAccessMode(TStorageAccessMode Value) { SetAccessModeProtected(Value); }
-  bool GetTemporary() const { return GetTemporaryProtected(); }
 protected:
   enum THierarchicalStorageAccess { hsaRead = 0x01, hsaWrite = 0x02 };
   struct TKeyEntry
@@ -133,7 +131,7 @@ protected:
   virtual void DoCloseSubKey() = 0;
   UnicodeString MungeKeyName(const UnicodeString & Key);
   virtual UnicodeString GetSource() = 0;
-  virtual bool GetTemporary();
+  virtual bool GetTemporary() const;
   virtual void DoDeleteSubKey(const UnicodeString & SubKey) = 0;
   virtual bool DoDeleteValue(const UnicodeString & Name) = 0;
 
@@ -195,18 +193,18 @@ public:
   bool Copy(TRegistryStorage *Storage);
 
 protected:
-  virtual void SetAccessMode(TStorageAccessMode value) override;
-  virtual bool DoKeyExists(const UnicodeString & SubKey, bool ForceAnsi) override;
-  virtual bool DoValueExists(const UnicodeString & Value) override;
-  virtual bool DoOpenSubKey(const UnicodeString & SubKey, bool CanCreate) override;
-  virtual void DoCloseSubKey() override;
-  virtual UnicodeString GetSource() override;
-  virtual size_t DoBinaryDataSize(const UnicodeString & Name) override;
-  virtual void DoDeleteSubKey(const UnicodeString & SubKey) override;
-  virtual bool DoDeleteValue(const UnicodeString & Name) override;
+  virtual void SetAccessMode(TStorageAccessMode value);
+  virtual bool DoKeyExists(const UnicodeString & SubKey, bool ForceAnsi);
+  virtual bool DoValueExists(const UnicodeString & Value);
+  virtual bool DoOpenSubKey(const UnicodeString & SubKey, bool CanCreate);
+  virtual void DoCloseSubKey();
+  virtual UnicodeString GetSource() const;
+  virtual size_t DoBinaryDataSize(const UnicodeString & Name);
+  virtual void DoDeleteSubKey(const UnicodeString & SubKey);
+  virtual bool DoDeleteValue(const UnicodeString & Name);
 
-  virtual void DoGetSubKeyNames(TStrings * Strings) override;
-  virtual void DoGetValueNames(TStrings* Strings) override;
+  virtual void DoGetSubKeyNames(TStrings * Strings);
+  virtual void DoGetValueNames(TStrings* Strings);
 
   virtual void DoWriteBool(const UnicodeString & Name, bool Value) override;
   virtual void DoWriteStringRaw(const UnicodeString & Name, const UnicodeString & Value) override;

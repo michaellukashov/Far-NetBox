@@ -69,7 +69,7 @@ public:
   void ShortCuts(TShortCuts &ShortCuts);
 
   __property int Count = { read = GetCount };
-  ROProperty<intptr_t> Count{nb::bind(&TBookmarkList::GetCount, this)};
+  ROProperty<int32_t> Count{nb::bind(&TBookmarkList::GetCount, this)};
   __property TBookmark * Bookmarks[int Index] = { read = GetBookmarks };
   __property bool NodeOpened[UnicodeString Index] = { read = GetNodeOpened, write = SetNodeOpened };
 

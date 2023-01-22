@@ -169,7 +169,7 @@ public:
   __property bool RemoveBOM = { read = FRemoveBOM, write = FRemoveBOM };
   bool& RemoveBOM{FRemoveBOM};
   __property unsigned long CPSLimit = { read = FCPSLimit, write = FCPSLimit };
-  uintptr_t& CPSLimit{FCPSLimit};
+  uint32_t& CPSLimit{FCPSLimit};
   __property bool NewerOnly = { read = FNewerOnly, write = FNewerOnly };
   bool& NewerOnly{FNewerOnly};
   __property bool EncryptNewFiles = { read = FEncryptNewFiles, write = FEncryptNewFiles };

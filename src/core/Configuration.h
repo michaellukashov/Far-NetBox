@@ -338,7 +338,7 @@ public:
   ROProperty<UnicodeString> VersionStr{nb::bind(&TConfiguration::GetVersionStr, this)};
   __property UnicodeString Version = { read = GetVersion };
   __property int CompoundVersion = { read = GetCompoundVersion };
-  ROProperty<intptr_t> CompoundVersion{nb::bind(&TConfiguration::GetCompoundVersion, this)};
+  ROProperty<int32_t> CompoundVersion{nb::bind(&TConfiguration::GetCompoundVersion, this)};
   __property UnicodeString ProductVersion = { read = GetProductVersion };
   ROProperty<UnicodeString> ProductVersion{nb::bind(&TConfiguration::GetProductVersionStr, this)};
   __property UnicodeString ProductName = { read = GetProductName };
@@ -354,9 +354,9 @@ public:
   __property int64_t LogMaxSize  = { read = FLogMaxSize, write = SetLogMaxSize };
   __property int LogMaxCount  = { read = FLogMaxCount, write = SetLogMaxCount };
   __property int LogProtocol  = { read = FLogProtocol, write = SetLogProtocol };
-  RWProperty<intptr_t> LogProtocol{nb::bind(&TConfiguration::GetLogProtocol, this), nb::bind(&TConfiguration::SetLogProtocol, this)};
+  RWProperty<int32_t> LogProtocol{nb::bind(&TConfiguration::GetLogProtocol, this), nb::bind(&TConfiguration::SetLogProtocol, this)};
   __property int ActualLogProtocol  = { read = FActualLogProtocol };
-  ROProperty<intptr_t> ActualLogProtocol{nb::bind(&TConfiguration::GetActualLogProtocol, this)};
+  ROProperty<int32_t> ActualLogProtocol{nb::bind(&TConfiguration::GetActualLogProtocol, this)};
   __property bool LogActions  = { read = FLogActions, write = SetLogActions };
   __property bool LogActionsRequired  = { read = FLogActionsRequired, write = FLogActionsRequired };
   __property UnicodeString ActionsLogFileName  = { read = GetActionsLogFileName, write = SetActionsLogFileName };
@@ -384,9 +384,9 @@ public:
   __property int ParallelDurationThreshold = { read = FParallelDurationThreshold, write = SetParallelDurationThreshold };
   __property UnicodeString MimeTypes = { read = FMimeTypes, write = SetMimeTypes };
   __property int DontReloadMoreThanSessions = { read = FDontReloadMoreThanSessions, write = FDontReloadMoreThanSessions };
-  intptr_t& DontReloadMoreThanSessions{FDontReloadMoreThanSessions};
+  int32_t& DontReloadMoreThanSessions{FDontReloadMoreThanSessions};
   __property int ScriptProgressFileNameLimit = { read = FScriptProgressFileNameLimit, write = FScriptProgressFileNameLimit };
-  intptr_t& ScriptProgressFileNameLimit{FScriptProgressFileNameLimit};
+  int32_t& ScriptProgressFileNameLimit{FScriptProgressFileNameLimit};
   __property int KeyVersion = { read = FKeyVersion, write = FKeyVersion };
 
   __property UnicodeString TimeFormat = { read = GetTimeFormat };

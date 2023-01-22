@@ -136,7 +136,6 @@ public:
   void SetListingStr(UnicodeString Value);
   UnicodeString GetListingStr() const;
   UnicodeString GetRightsStr() const;
-  bool GetIsHidden() const;
   wchar_t GetType() const;
   void SetType(wchar_t AType);
   void SetTerminal(TTerminal *Value);
@@ -199,7 +198,7 @@ public:
   __property bool IsDirectory = { read = GetIsDirectory };
   ROProperty<bool> IsDirectory{nb::bind(&TRemoteFile::GetIsDirectory, this)};
   __property const TRemoteFile * LinkedFile = { read = GetLinkedFile };
-  ROProperty<TRemoteFile *> LinkedFile{nb::bind(&TRemoteFile::GetLinkedFile, this), this)};
+  ROProperty<const TRemoteFile *> LinkedFile{nb::bind(&TRemoteFile::GetLinkedFile, this)};
   __property UnicodeString LinkTo = { read = FLinkTo, write = FLinkTo };
   UnicodeString& LinkTo{FLinkTo};
   __property UnicodeString ListingStr = { read = GetListingStr, write = SetListingStr };
@@ -437,7 +436,7 @@ private:
   static bool DirectoryChangeKey(const UnicodeString SourceDir,
     const UnicodeString Change, UnicodeString &Key);
   bool GetIsEmptyPrivate() const;
-  void SetValue(Uconst nicodeString Name, const UnicodeString Value);
+  void SetValue(const UnicodeString Name, const UnicodeString Value);
   UnicodeString GetValue(const UnicodeString Name) const { return TStringList::GetValue(Name); }
   UnicodeString GetValue(const UnicodeString Name);
 
@@ -784,9 +783,9 @@ public:
   static bool IsItemSizeIrrelevant(TChecklistAction Action);
 
   __property int Count = { read = GetCount };
-  ROProperty<intptr_t> Count{nb::bind(&TSynchronizeChecklist::GetCount, this)};
+  ROProperty<int32_t> Count{nb::bind(&TSynchronizeChecklist::GetCount, this)};
   __property int CheckedCount = { read = GetCheckedCount };
-  ROProperty<intptr_t> CheckedCount{nb::bind(&TSynchronizeChecklist::GetCheckedCount, this)};
+  ROProperty<int32_t> CheckedCount{nb::bind(&TSynchronizeChecklist::GetCheckedCount, this)};
   __property const TItem * Item[int Index] = { read = GetItem };
 
 protected:

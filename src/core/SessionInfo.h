@@ -75,7 +75,7 @@ public:
   virtual uint32_t QueryUser(const UnicodeString AQuery,
     TStrings *MoreMessages, uint32_t Answers, const TQueryParams *Params,
     TQueryType QueryType = qtConfirmation) = 0;
-  virtual uint32_t QueryUserException(UnicodeString AQuery,
+  virtual uint32_t QueryUserException(const UnicodeString AQuery,
     Exception *E, uint32_t Answers, const TQueryParams *Params,
     TQueryType QueryType = qtConfirmation) = 0;
   virtual bool PromptUser(TSessionData *Data, TPromptKind Kind,
@@ -148,9 +148,9 @@ class NB_CORE_EXPORT TFileLocationSessionAction : public TFileSessionAction
 public:
   TFileLocationSessionAction() = delete;
   explicit TFileLocationSessionAction(TActionLog *Log, TLogAction Action) noexcept;
-  explicit TFileLocationSessionAction(TActionLog *Log, TLogAction Action, UnicodeString AFileName) noexcept;
+  explicit TFileLocationSessionAction(TActionLog *Log, TLogAction Action, const UnicodeString AFileName) noexcept;
 
-  void Destination(UnicodeString Destination);
+  void Destination(const UnicodeString Destination);
 };
 
 class NB_CORE_EXPORT TTransferSessionAction : public TFileLocationSessionAction
@@ -281,7 +281,10 @@ public:
   explicit TDifferenceSessionAction(TActionLog * Log, const TChecklistItem* Item) noexcept;
 };
 
-__removed typedef void (__closure *TAddLogEntryEvent)(const UnicodeString & S);
+// typedef void (__closure *TAddLogEntryEvent)(const UnicodeString & S);
+
+using TAddLogEntryEvent = nb::FastDelegate2<void,
+  const UnicodeString & /*S*/>;
 
 using TDoAddLogEvent = nb::FastDelegate2<void,
   TLogLineType /*Type*/, UnicodeString /*Line*/>;
@@ -316,19 +319,19 @@ public:
 
   bool GetLogging() const { return FLogging; }
   UnicodeString GetName() const { return FName; }
-  UnicodeString GetLogFileName() const { return FCurrentLogFileName; }
   bool LogToFile() const { return LogToFileProtected(); }
-  static void DoAddStartupInfo(TAddLogEntryEvent AddLogEntry, TConfiguration * AConfiguration, bool DoNotMaskPaswords);
 
 protected:
   void CloseLogFile();
   bool LogToFileProtected() const;
+  static void DoAddStartupInfo(TAddLogEntryEvent AddLogEntry, TConfiguration * AConfiguration, bool DoNotMaskPaswords);
 
 private:
   TConfiguration *FConfiguration{nullptr};
   TSessionLog *FParent{nullptr};
   TCriticalSection FCriticalSection;
   bool FLogging{false};
+  void * FFile;
   std::unique_ptr<tinylog::TinyLog> FLogger;
   UnicodeString FCurrentLogFileName;
   UnicodeString FCurrentFileName;
@@ -340,7 +343,7 @@ private:
   bool FClosed{false};
 
   void OpenLogFile();
-  UnicodeString GetLogFileName() const;
+  UnicodeString GetLogFileName() const { return FCurrentLogFileName; }
   void DoAdd(TLogLineType AType, const UnicodeString ALine,
     TDoAddLogEvent Event);
   __removed void (__closure *f)(TLogLineType Type, const UnicodeString &Line);

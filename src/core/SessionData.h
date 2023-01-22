@@ -592,7 +592,7 @@ public:
   __property UnicodeString HostNameSource = { read=GetHostNameSource };
   ROProperty<UnicodeString> HostNameSource{nb::bind(&TSessionData::GetHostNameSource, this)};
   __property int PortNumber = { read = FPortNumber, write = SetPortNumber };
-  RWProperty<intptr_t> PortNumber{nb::bind(&TSessionData::GetPortNumber, this), nb::bind(&TSessionData::SetPortNumber, this)};
+  RWProperty<int32_t> PortNumber{nb::bind(&TSessionData::GetPortNumber, this), nb::bind(&TSessionData::SetPortNumber, this)};
   __property UnicodeString UserName = { read = FUserName, write = SessionSetUserName };
   RWProperty<UnicodeString> UserName{nb::bind(&TSessionData::SessionGetUserName, this), nb::bind(&TSessionData::SessionSetUserName, this)};
   __property UnicodeString UserNameExpanded  = { read = GetUserNameExpanded };
@@ -778,7 +778,7 @@ public:
   __property UnicodeString OrigHostName = { read = FOrigHostName };
   const UnicodeString& OrigHostName{FOrigHostName};
   __property int OrigPortNumber = { read = FOrigPortNumber };
-  const intptr_t& OrigPortNumber{FOrigPortNumber};
+  const int32_t& OrigPortNumber{FOrigPortNumber};
   __property UnicodeString LocalName = { read = GetLocalName };
   ROProperty<UnicodeString> LocalName{nb::bind(&TSessionData::GetLocalName, this)};
   __property UnicodeString FolderName = { read = GetFolderName };
@@ -812,14 +812,12 @@ public:
   bool GetTryAgent() const { return FTryAgent; }
   bool GetAgentFwd() const { return FAgentFwd; }
   UnicodeString GetListingCommand() const { return FListingCommand; }
-  bool GetAuthTIS() const { return FAuthTIS; }
   bool GetAuthKI() const { return FAuthKI; }
   bool GetAuthKIPassword() const { return FAuthKIPassword; }
   bool GetAuthGSSAPI() const { return FAuthGSSAPI; }
   bool GetGSSAPIFwdTGT() const { return FGSSAPIFwdTGT; }
   bool GetChangeUsername() const { return FChangeUsername; }
   bool GetCompression() const { return FCompression; }
-  TSshProt GetSshProt() const { return FSshProt; }
   bool GetSsh2DES() const { return FSsh2DES; }
   bool GetSshNoUserAuth() const { return FSshNoUserAuth; }
   UnicodeString GetPublicKeyFile() const { return FPublicKeyFile; }
@@ -837,7 +835,6 @@ public:
   bool GetCacheDirectories() const { return FCacheDirectories; }
   bool GetCacheDirectoryChanges() const { return FCacheDirectoryChanges; }
   bool GetPreserveDirectoryChanges() const { return FPreserveDirectoryChanges; }
-  bool GetLockInHome() const { return FLockInHome; }
   bool GetSpecial() const { return FSpecial; }
   bool GetSelected() const { return FSelected; }
   void SetSelected(bool Value) { FSelected = Value; }
@@ -880,7 +877,6 @@ public:
   TAutoSwitch GetFtpHost() const { return FFtpHost; }
   bool GetFtpDupFF() const { return FFtpDupFF; }
   bool GetFtpUndupFF() const { return FFtpUndupFF; }
-  TAutoSwitch GetFtpDeleteFromCwd() const { return FFtpDeleteFromCwd; }
   bool GetSslSessionReuse() const { return FSslSessionReuse; }
   UnicodeString GetTlsCertificateFile() const { return FTlsCertificateFile; }
   TDSTMode GetDSTMode() const { return FDSTMode; }

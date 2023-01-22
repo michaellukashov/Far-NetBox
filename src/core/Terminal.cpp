@@ -8104,7 +8104,7 @@ void TTerminal::Sink(
 void TTerminal::UpdateTargetAttrs(
   const UnicodeString ADestFullName, const TRemoteFile *AFile, const TCopyParamType *CopyParam, int32_t Attrs)
 {
-  if (Attrs == static_cast<intptr_t>(-1))
+  if (Attrs == static_cast<int32_t>(-1))
   {
     Attrs = faArchive;
   }

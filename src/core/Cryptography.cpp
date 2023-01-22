@@ -784,7 +784,7 @@ void TEncryption::Decrypt(TFileBuffer & Buffer)
 {
   if (FInputHeader.Length() < GetOverhead())
   {
-    int32_t HeaderSize = std::min<intptr_t>(GetOverhead() - FInputHeader.Length(), Buffer.Size());
+    int32_t HeaderSize = std::min<int32_t>(GetOverhead() - FInputHeader.Length(), Buffer.Size());
     FInputHeader += RawByteString(Buffer.Data, HeaderSize);
     Buffer.Delete(0, HeaderSize);
 

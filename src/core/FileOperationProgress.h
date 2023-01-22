@@ -147,7 +147,7 @@ public:
   __property TOperationSide Side = { read = GetSide };
   ROProperty<TOperationSide> Side{nb::bind(&TFileOperationProgressType::GetSide, this)};
   __property int Count =  { read = FCount };
-  ROProperty<intptr_t> Count{nb::bind(&TFileOperationProgressType::GetCount, this)};
+  ROProperty<int32_t> Count{nb::bind(&TFileOperationProgressType::GetCount, this)};
   __property UnicodeString FileName =  { read = FFileName };
   const UnicodeString& FileName{FFileName};
   __property UnicodeString FullFileName = { read = FFullFileName };
