@@ -294,7 +294,7 @@ public:
   UnicodeString GetFileMimeType(const UnicodeString AFileName) const;
   bool RegistryPathExists(const UnicodeString & RegistryPath);
   bool HasLocalPortNumberLimits();
-  virtual UnicodeString TemporaryDir(bool Mask = false) = 0;
+  virtual UnicodeString TemporaryDir(bool Mask = false) const = 0;
 
   TStoredSessionList *SelectFilezillaSessionsForImport(
     TStoredSessionList *Sessions, UnicodeString &Error);
