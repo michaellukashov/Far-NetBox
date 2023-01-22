@@ -459,8 +459,8 @@ protected:
   virtual bool UpdateFileList(TQueueFileList * FileList) override;
 
 public:
-  TParallelOperation *GetParallelOperation() const { return FParallelOperation; }
-  TParallelOperation *GetParallelOperation() { return FParallelOperation; }
+  TParallelOperation *GetParallelOperation() const { return FParallelOperation.get(); }
+  TParallelOperation *GetParallelOperation() { return FParallelOperation.get(); }
 };
 
 NB_DEFINE_CLASS_ID(TUploadQueueItem);
