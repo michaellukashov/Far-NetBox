@@ -200,7 +200,7 @@ class ROPropertySimple
 {
 CUSTOM_MEM_ALLOCATION_IMPL
 private:
-  const T *_value;
+  const T *_value{nullptr};
 public:
   ROPropertySimple() = delete;
   explicit ROPropertySimple(const T *Value) noexcept :
@@ -339,6 +339,85 @@ public:
     return lhs._getter() != rhs;
   }
 };
+
+template <typename T>
+class RWPropertySimple
+{
+CUSTOM_MEM_ALLOCATION_IMPL
+private:
+  using TSetValueFunctor = fastdelegate::FastDelegate1<void, T>;
+  const T *_value{nullptr};
+  TSetValueFunctor _setter;
+public:
+  RWPropertySimple() = delete;
+  explicit RWPropertySimple(const T *Value, const TSetValueFunctor &Setter) noexcept :
+    _value(Value),
+    _setter(Setter)
+  {
+    Expects(_value != nullptr);
+    Expects(_setter != nullptr);
+  }
+  RWPropertySimple(const RWPropertySimple&) = default;
+  RWPropertySimple(RWPropertySimple&&) = default;
+  RWPropertySimple& operator=(const RWPropertySimple&) = default;
+  RWPropertySimple& operator=(RWPropertySimple&&) = default;
+  constexpr T operator()() const
+  {
+    Expects(_value);
+    return *_value;
+  }
+  constexpr operator T() const
+  {
+    Expects(_value);
+    return *_value;
+  }
+  constexpr const T operator->() const
+  {
+    Expects(_value);
+    return _value();
+  }
+  constexpr T operator->()
+  {
+    Expects(_value);
+    return *_value;
+  }
+  constexpr decltype(auto) operator*() const { return *_value; }
+
+  void operator()(const T &Value)
+  {
+    Expects(_setter);
+    _setter(Value);
+  }
+  void operator=(T Value)
+  {
+    Expects(_setter);
+    _setter(Value);
+  }
+
+  friend bool constexpr inline operator==(const RWPropertySimple &lhs, const RWPropertySimple &rhs)
+  {
+    Expects(lhs._value);
+    Expects(rhs._value);
+    return *lhs._value == *rhs._value;
+  }
+  friend bool constexpr inline operator==(const RWPropertySimple &lhs, const T &rhs)
+  {
+    Expects(lhs._value);
+    return *lhs._value == rhs;
+  }
+  friend bool constexpr inline operator!=(const RWPropertySimple &lhs, const RWPropertySimple &rhs)
+  {
+    Expects(lhs._value);
+    Expects(rhs._value);
+    return *lhs._value != *rhs._value;
+  }
+  friend bool constexpr inline operator!=(RWPropertySimple &lhs, const T &rhs)
+  {
+    Expects(lhs._value);
+    return *lhs._value != rhs;
+  }
+};
+
 //template<int s> struct CheckSizeT;
 //CheckSizeT<sizeof(ROProperty<int>)> checkSize;
 //template<int s> struct CheckSizeT;
