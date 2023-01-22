@@ -183,7 +183,7 @@ NB_CORE_EXPORT void CheckCertificate(const UnicodeString Path);
 typedef struct x509_st X509;
 typedef struct evp_pkey_st EVP_PKEY;
 NB_CORE_EXPORT void ParseCertificate(const UnicodeString Path,
-  UnicodeString Passphrase, X509 *&Certificate, EVP_PKEY *&PrivateKey,
+  const UnicodeString Passphrase, X509 *&Certificate, EVP_PKEY *&PrivateKey,
   bool &WrongPassphrase);
 NB_CORE_EXPORT bool IsHttpUrl(const UnicodeString S);
 NB_CORE_EXPORT bool IsHttpOrHttpsUrl(const UnicodeString S);
@@ -240,7 +240,7 @@ NB_CORE_EXPORT void ProcessLocalDirectory(UnicodeString ADirName,
   TProcessLocalFileEvent CallBackFunc, void *Param = nullptr, DWORD FindAttrs = INVALID_FILE_ATTRIBUTES);
 NB_CORE_EXPORT DWORD FileGetAttrFix(const UnicodeString AFileName);
 
-extern const wchar_t *DSTModeNames;
+extern const wchar_t * DSTModeNames;
 enum TDSTMode
 {
   dstmWin  = 0, //
