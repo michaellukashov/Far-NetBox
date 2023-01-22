@@ -105,8 +105,8 @@ typedef void (__closure *TUpdatedSynchronizationChecklistItems)(
 typedef void (__closure *TProcessedSynchronizationChecklistItem)(
   void * Token, const TSynchronizeChecklist::TItem * Item);
 #endif // #if 0
-using TSynchronizeDirectoryEvent = nb::FastDelegate6<void,
-  UnicodeString /*LocalDirectory*/, UnicodeString /*RemoteDirectory*/,
+using TSynchronizeDirectoryEvent = nb::FastDelegate5<void,
+  const UnicodeString & /*LocalDirectory*/, const UnicodeString & /*RemoteDirectory*/,
   bool & /*Continue*/, bool /*Collect*/, const TSynchronizeOptions * /*Options*/>;
 using TUpdatedSynchronizationChecklistItems = nb::FastDelegate1<void,
   const TSynchronizeChecklist::TItemList & /*Items*/>;
@@ -384,7 +384,7 @@ protected:
   bool FReadDirectoryPending{false};
   bool FTunnelOpening{false};
   std::unique_ptr<TCustomFileSystem> FFileSystem;
-  int FSecondaryTerminals;
+  int32_t FSecondaryTerminals{0};
 
   void DoStartReadDirectory();
   void DoReadDirectoryProgress(int32_t Progress, int32_t ResolvedLinks, bool & Cancel);
@@ -555,10 +555,10 @@ protected:
   void DoEndTransaction(bool Inform);
   bool VerifyCertificate(
     const UnicodeString CertificateStorageKey, const UnicodeString SiteKey,
-    const UnicodeString FingerprintSHA1, const UnicodeString & FingerprintSHA256,
+    const UnicodeString FingerprintSHA1, const UnicodeString FingerprintSHA256,
     const UnicodeString CertificateSubject, int32_t Failures);
   void CacheCertificate(const UnicodeString CertificateStorageKey,
-    const UnicodeString SiteKey, const UnicodeString FingerprintSHA1, const UnicodeString & FingerprintSHA256,
+    const UnicodeString SiteKey, const UnicodeString FingerprintSHA1, const UnicodeString FingerprintSHA256,
     int32_t Failures);
   bool ConfirmCertificate(
     TSessionInfo & SessionInfo, int32_t AFailures, const UnicodeString ACertificateStorageKey, bool CanRemember);
@@ -607,7 +607,7 @@ protected:
     const UnicodeString ADestFullName, const TRemoteFile * AFile, const TCopyParamType *CopyParam, int32_t Attrs);
   void UpdateTargetTime(HANDLE Handle, TDateTime Modification, TDSTMode DSTMode);
   TRemoteFile * CheckRights(const UnicodeString & EntryType, const UnicodeString & FileName, bool & WrongRights);
-  bool IsValidFile(TRemoteFile * File);
+  bool IsValidFile(TRemoteFile * File) const;
 
   UnicodeString EncryptFileName(const UnicodeString APath, bool EncryptNewFiles);
   UnicodeString DecryptFileName(const UnicodeString APath, bool DecryptFullPath, bool DontCache);
@@ -764,6 +764,7 @@ public:
   ROProperty<bool> Active{nb::bind(&TTerminal::GetActive, this)};
   __property TSessionStatus Status = { read = FStatus };
   __property UnicodeString CurrentDirectory = { read = GetCurrentDirectory, write = SetCurrentDirectory };
+  RWProperty<UnicodeString> CurrentDirectory{nb::bind(&TTerminal::RemoteGetCurrentDirectory, this), nb::bind(&TTerminal::TerminalSetCurrentDirectory, this)};
   __property bool ExceptionOnFail = { read = GetExceptionOnFail, write = SetExceptionOnFail };
   RWProperty<bool> ExceptionOnFail{nb::bind(&TTerminal::GetExceptionOnFail, this), nb::bind(&TTerminal::SetExceptionOnFail, this)};
   __property TRemoteDirectory * Files = { read = FFiles };
