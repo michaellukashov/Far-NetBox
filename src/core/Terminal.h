@@ -14,6 +14,7 @@
 #include "FileOperationProgress.h"
 #include "FileMasks.h"
 #include "RemoteFiles.h"
+#include "Exceptions.h"
 
 class TCopyParamType;
 class TFileOperationProgressType;
@@ -104,7 +105,7 @@ typedef void (__closure *TUpdatedSynchronizationChecklistItems)(
 typedef void (__closure *TProcessedSynchronizationChecklistItem)(
   void * Token, const TSynchronizeChecklist::TItem * Item);
 #endif // #if 0
-using TSynchronizeDirectoryEvent = nb::FastDelegate4<void,
+using TSynchronizeDirectoryEvent = nb::FastDelegate6<void,
   UnicodeString /*LocalDirectory*/, UnicodeString /*RemoteDirectory*/,
   bool & /*Continue*/, bool /*Collect*/, const TSynchronizeOptions * /*Options*/>;
 using TUpdatedSynchronizationChecklistItems = nb::FastDelegate1<void,
@@ -127,8 +128,8 @@ using TDirectoryModifiedEvent = nb::FastDelegate3<int,
 typedef void (__closure *TInformationEvent)
   (TTerminal * Terminal, const UnicodeString & Str, bool Status, int Phase, const UnicodeString & Additional);
 #endif // #if 0
-using TInformationEvent = nb::FastDelegate4<void,
-  TTerminal * /*Terminal*/, UnicodeString /*Str*/, bool /*Status*/, int32_t /*Phase*/, , const UnicodeString & /*Additional*/>;
+using TInformationEvent = nb::FastDelegate5<void,
+  TTerminal * /*Terminal*/, UnicodeString /*Str*/, bool /*Status*/, int32_t /*Phase*/, const UnicodeString & /*Additional*/>;
 #if 0
 typedef void (__closure *TCustomCommandEvent)
   (TTerminal * Terminal, const UnicodeString & Command, bool & Handled);
@@ -253,6 +254,16 @@ public:
   static constexpr int32_t spCaseSensitive = 0x2000;
   static constexpr int32_t spDefault = TTerminal::spNoConfirmation | TTerminal::spPreviewChanges;
 
+private:
+  TCheckForEscEvent FOnCheckForEsc{nullptr};
+  TCreateLocalFileEvent FOnCreateLocalFile;
+  TGetLocalFileAttributesEvent FOnGetLocalFileAttributes;
+  TSetLocalFileAttributesEvent FOnSetLocalFileAttributes;
+  TMoveLocalFileEvent FOnMoveLocalFile;
+  TRemoveLocalDirectoryEvent FOnRemoveLocalDirectory;
+  TCreateLocalDirectoryEvent FOnCreateLocalDirectory;
+  std::unique_ptr<TRemoteDirectory> FOldFiles;
+
 // for ReactOnCommand()
 friend class TSCPFileSystem;
 friend class TSFTPFileSystem;
@@ -279,12 +290,6 @@ private:
   TNotifyEvent FOnStartReadDirectory;
   TReadDirectoryProgressEvent FOnReadDirectoryProgress;
   TDeleteLocalFileEvent FOnDeleteLocalFile;
-  TCreateLocalFileEvent FOnCreateLocalFile;
-  TGetLocalFileAttributesEvent FOnGetLocalFileAttributes;
-  TSetLocalFileAttributesEvent FOnSetLocalFileAttributes;
-  TMoveLocalFileEvent FOnMoveLocalFile;
-  TRemoveLocalDirectoryEvent FOnRemoveLocalDirectory;
-  TCreateLocalDirectoryEvent FOnCreateLocalDirectory;
   TNotifyEvent FOnInitializeLog;
   TRemoteTokenList FMembership;
   TRemoteTokenList FGroups;
@@ -334,7 +339,6 @@ private:
   UnicodeString FFingerprintScannedSHA1;
   UnicodeString FFingerprintScannedMD5;
   DWORD FLastProgressLogged{0};
-  std::unique_ptr<TRemoteDirectory> FOldFiles;
   UnicodeString FDestFileName;
   bool FMultipleDestinationFiles{false};
   bool FFileTransferAny{true};
@@ -730,7 +734,6 @@ public:
   void FatalAbort();
   void ReflectSettings() const;
   void CollectUsage();
-  bool IsThisOrChild(TTerminal *Terminal) const;
   TTerminal * CreateSecondarySession(const UnicodeString Name, TSessionData * SessionData);
   void FillSessionDataForCode(TSessionData * SessionData) const;
   void UpdateSessionCredentials(TSessionData * Data);
@@ -799,6 +802,7 @@ public:
   __property TNotifyEvent OnClose = { read = FOnClose, write = FOnClose };
   __property int TunnelLocalPortNumber = { read = FTunnelLocalPortNumber };
 
+  bool IsThisOrChild(TTerminal *Terminal) const;
   bool GetIsCapable(TFSCapability Capability) const { return GetIsCapableProtected(Capability); }
   void SetMasks(UnicodeString Value);
 
