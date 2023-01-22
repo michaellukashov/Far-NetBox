@@ -176,7 +176,7 @@ BEGIN
   CERT_ERRDEPTH, "The error occurred at a depth of %d in the certificate chain."
   MASK_ERROR, "Mask is invalid near '%s'."
   FTP_CANNOT_OPEN_ACTIVE_CONNECTION2, "The server cannot open connection in active mode. If you are behind a NAT router, you may need to specify an external IP address. Alternatively, consider switching to passive mode."
-  DELETE_LOCAL_FILE_ERROR, "Error deleting file '%s'."
+  CORE_DELETE_LOCAL_FILE_ERROR, "Error deleting file '%s'."
   URL_OPTION_BOOL_VALUE_ERROR, "Invalid switch value '%s'. Valid values are 'on' and 'off'."
   CANNOT_OPEN_SESSION_FOLDER, "Cannot open site folder or workspace."
   NET_TRANSL_NO_ROUTE2, "Network error: No route to host \"%HOST%\"."
