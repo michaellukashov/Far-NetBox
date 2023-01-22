@@ -41,15 +41,15 @@ inline constexpr DWORD ToDWord(const T a) { return static_cast<DWORD>(a); }
 
 template <class T>
 inline constexpr typename std::is_convertible<T, intptr_t>::value
-ToIntPtr(T a) { return static_cast<intptr_t>(a); }
+ToIntPtr(T a) { return static_cast<int32_t>(a); }
 
 template <class T>
 inline constexpr typename std::enable_if<std::is_integral<T>::value, intptr_t>::type
-ToIntPtr(T a) { return static_cast<intptr_t>(a); }
+ToIntPtr(T a) { return static_cast<int32_t>(a); }
 
 template <class T>
 inline constexpr typename std::enable_if<std::is_enum<T>::value, intptr_t>::type
-ToIntPtr(T a) { return static_cast<intptr_t>(a); }
+ToIntPtr(T a) { return static_cast<int32_t>(a); }
 
 template <class T>
 inline constexpr typename std::enable_if<std::is_pointer<T>::value, intptr_t>::type
@@ -57,7 +57,7 @@ ToIntPtr(T a) { return (intptr_t)(a); }
 
 template <class T>
 inline constexpr typename std::enable_if<std::is_floating_point<T>::value, intptr_t>::type
-ToIntPtr(T a) { return static_cast<intptr_t>(a); }
+ToIntPtr(T a) { return static_cast<int32_t>(a); }
 
 template <class T>
 inline constexpr typename std::is_convertible<T, uintptr_t>::value

@@ -319,7 +319,7 @@ private: \
   static_assert(bool(Condition), Message)
 
 constexpr const intptr_t NB_MAX_PATH = (32 * 1024);
-constexpr const intptr_t NPOS  = static_cast<intptr_t>(-1);
+constexpr const intptr_t NPOS  = static_cast<int32_t>(-1);
 
 #ifndef _WIN32_WINNT
 #define _WIN32_WINNT 0x0501
