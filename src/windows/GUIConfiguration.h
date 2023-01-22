@@ -145,7 +145,7 @@ public:
   intptr_t IndexOfName(UnicodeString Name) const;
 
   __property int Count = { read = GetCount };
-  ROProperty<intptr_t> Count{nb::bind(&TCopyParamList::GetCount, this)};
+  ROProperty<int32_t> Count{nb::bind(&TCopyParamList::GetCount, this)};
   __property UnicodeString Names[int Index] = { read = GetName };
   __property const TCopyParamRule * Rules[int Index] = { read = GetRule };
   __property const TCopyParamType * CopyParams[int Index] = { read = GetCopyParam };

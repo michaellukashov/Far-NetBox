@@ -1559,7 +1559,7 @@ static bool GetProxyUrlFromIE(UnicodeString & Proxy)
   return Result;
 }
 
-bool AutodetectProxy(UnicodeString & HostName, intptr_t& PortNumber)
+bool AutodetectProxy(UnicodeString & HostName, int32_t& PortNumber)
 {
   bool Result = false;
 
