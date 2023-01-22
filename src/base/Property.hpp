@@ -268,7 +268,7 @@ public:
   friend bool inline operator==(const RWProperty &lhs, const RWProperty &rhs)
   {
     Expects(lhs._getter);
-    return lhs._getter == rhs._getter && lhs._setter == rhs._setter;
+    return (lhs._getter == rhs._getter) && (lhs._setter == rhs._setter);
   }
   friend bool inline operator!=(RWProperty &lhs, const T &rhs)
   {
