@@ -29,6 +29,7 @@ NB_DEFINE_CLASS_ID(TSecureShell);
 class TSecureShell : public TObject
 {
   friend class TPoolForDataEvent;
+  friend class TTerminal;
   NB_DISABLE_COPY(TSecureShell)
 public:
   static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TSecureShell); }
