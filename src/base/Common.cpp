@@ -11,7 +11,7 @@
 #include <Common.h>
 #include <Global.h>
 #include <StrUtils.hpp>
-//#include <Sysutils.hpp>
+#include <Sysutils.hpp>
 //#include <CoreMain.h>
 #include <cmath>
 #include <limits>
@@ -3738,7 +3738,7 @@ static void NeedUWPData()
     GIsUWP = 0;
 
     HINSTANCE Kernel32 = GetModuleHandle(kernel32);
-    typedef LONG WINAPI (* GetCurrentPackageFamilyNameProc)(UINT32 * packageFamilyNameLength, PWSTR packageFamilyName);
+    typedef LONG WINAPI (GetCurrentPackageFamilyNameProc)(UINT32 * packageFamilyNameLength, PWSTR packageFamilyName);
     GetCurrentPackageFamilyNameProc GetCurrentPackageFamilyName =
       (GetCurrentPackageFamilyNameProc)GetProcAddress(Kernel32, "GetCurrentPackageFamilyName");
     UINT32 NameLen = 0;
