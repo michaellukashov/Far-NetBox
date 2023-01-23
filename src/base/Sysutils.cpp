@@ -124,6 +124,8 @@ void Randomize()
 
 namespace Sysutils {
 
+UnicodeString EmptyStr;
+
 UnicodeString IntToStr(int32_t Value)
 {
   UnicodeString Result = FORMAT("%d", Value);

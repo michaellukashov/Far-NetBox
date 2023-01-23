@@ -647,6 +647,8 @@ int32_t Random(int32_t Max);
 UnicodeString ReadAllText(const UnicodeString FileName);
 void WriteAllText(const UnicodeString FileName, const UnicodeString Text);
 
+extern UnicodeString EmptyStr;
+
 } // namespace Sysutils
 
 using namespace Sysutils;
