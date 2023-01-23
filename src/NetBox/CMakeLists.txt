@@ -1,7 +1,7 @@
 message(STATUS "CMake version: ${CMAKE_VERSION}")
 cmake_minimum_required(VERSION 3.15)
 
-set(OPT_USE_UNITY_BUILD ON CACHE STRING "Default use unity build")
+set(OPT_USE_UNITY_BUILD OFF CACHE STRING "Default use unity build")
 
 project(NetBox)
 
