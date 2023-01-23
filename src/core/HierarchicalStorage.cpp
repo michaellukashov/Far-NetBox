@@ -907,9 +907,9 @@ bool TRegistryStorage::Copy(TRegistryStorage * Storage)
   return Result;
 }
 
-UnicodeString TRegistryStorage::GetSource()
+UnicodeString TRegistryStorage::GetSource() const
 {
-  return RootKeyToStr(FRegistry->RootKey) + L"\\" + Storage;
+  return RootKeyToStr(FRegistry->FRootKey) + L"\\" + Storage;
 }
 
 void TRegistryStorage::SetAccessMode(TStorageAccessMode value)

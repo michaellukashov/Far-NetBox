@@ -130,7 +130,7 @@ protected:
   virtual bool DoOpenSubKey(const UnicodeString SubKey, bool CanCreate) = 0;
   virtual void DoCloseSubKey() = 0;
   UnicodeString MungeKeyName(const UnicodeString & Key);
-  virtual UnicodeString GetSource() = 0;
+  virtual UnicodeString GetSource() const = 0;
   virtual bool GetTemporary() const;
   virtual void DoDeleteSubKey(const UnicodeString & SubKey) = 0;
   virtual bool DoDeleteValue(const UnicodeString & Name) = 0;
@@ -192,16 +192,17 @@ public:
 
   bool Copy(TRegistryStorage *Storage);
 
-protected:
+public:
   virtual void SetAccessMode(TStorageAccessMode value);
+protected:
   virtual bool DoKeyExists(const UnicodeString & SubKey, bool ForceAnsi);
-  virtual bool DoValueExists(const UnicodeString & Value);
+  virtual bool DoValueExists(const UnicodeString & Value) override;
   virtual bool DoOpenSubKey(const UnicodeString & SubKey, bool CanCreate);
-  virtual void DoCloseSubKey();
-  virtual UnicodeString GetSource() const;
-  virtual size_t DoBinaryDataSize(const UnicodeString & Name);
-  virtual void DoDeleteSubKey(const UnicodeString & SubKey);
-  virtual bool DoDeleteValue(const UnicodeString & Name);
+  virtual void DoCloseSubKey() override;
+  virtual UnicodeString GetSource() const override;
+  virtual size_t DoBinaryDataSize(const UnicodeString & Name) override;
+  virtual void DoDeleteSubKey(const UnicodeString & SubKey) override;
+  virtual bool DoDeleteValue(const UnicodeString & Name) override;
 
   virtual void DoGetSubKeyNames(TStrings * Strings);
   virtual void DoGetValueNames(TStrings* Strings);
