@@ -172,11 +172,11 @@ void TSessionData::DefaultSettings()
   SetTimeout(15);
   SetTryAgent(true);
   SetAgentFwd(false);
-  AuthKI = true;
+  FAuthKI = true;
   SetAuthKI(true);
   SetAuthKIPassword(true);
   SetAuthGSSAPI(false);
-  AuthGSSAPIKEX = false;
+  FAuthGSSAPIKEX = false;
   SetGSSAPIFwdTGT(false);
   SetLogicalHostName("");
   SetChangeUsername(false);
@@ -205,8 +205,8 @@ void TSessionData::DefaultSettings()
   SetPuttyProtocol("");
   SetTcpNoDelay(true);
   SetSendBuf(DefaultSendBuf);
-  SourceAddress = L"";
-  ProtocolFeatures = L"";
+  FSourceAddress = L"";
+  FProtocolFeatures = L"";
   SetSshSimple(true);
   FNotUtf = asAuto;
   FIsWorkspace = false;
@@ -223,10 +223,10 @@ void TSessionData::DefaultSettings()
 
   EncryptKey = UnicodeString();
 
-  WebDavLiberalEscaping = false;
+  FWebDavLiberalEscaping = false;
 
-  ProxyMethod = ::pmNone;
-  ProxyHost = L"proxy";
+  FProxyMethod = ::pmNone;
+  FProxyHost = L"proxy";
   SetProxyPort(ProxyPortNumber);
   SetProxyUsername("");
   SetProxyPassword("");
@@ -251,7 +251,7 @@ void TSessionData::DefaultSettings()
   SetRemoteDirectory("");
   SetSynchronizeBrowsing(false);
   SetUpdateDirectories(true);
-  RequireDirectories = false;
+  FRequireDirectories = false;
   SetCacheDirectories(false);
   SetCacheDirectoryChanges(false);
   SetPreserveDirectoryChanges(false);
@@ -272,7 +272,7 @@ void TSessionData::DefaultSettings()
   SetShell(""); //default shell
   SetReturnVar("");
   SetExitCode1IsError(false);
-  ClearAliases = true;
+  FClearAliases = true;
   SetUnsetNationalVars(true);
   SetListingCommand("ls -la");
   SetIgnoreLsWarnings(true);
@@ -283,11 +283,11 @@ void TSessionData::DefaultSettings()
   SetNotUtf(asOn); // asAuto
 
   // S3
-  S3DefaultRegion = L"";
-  S3SessionToken = L"";
-  S3UrlStyle = s3usVirtualHost;
-  S3MaxKeys = asAuto;
-  S3CredentialsEnv = false;
+  FS3DefaultRegion = L"";
+  FS3SessionToken = L"";
+  FS3UrlStyle = s3usVirtualHost;
+  FS3MaxKeys = asAuto;
+  FS3CredentialsEnv = false;
 
   // SFTP
   SetSftpServer("");
@@ -297,7 +297,7 @@ void TSessionData::DefaultSettings()
   SetSFTPMaxVersion(::SFTPMaxVersion);
   SetSFTPMaxPacketSize(0);
   SetSFTPMinPacketSize(0);
-  SFTPRealPath = asAuto;
+  FSFTPRealPath = asAuto;
 
   for (int32_t Index = 0; Index < nb::ToIntPtr(_countof(FSFTPBugs)); ++Index)
   {
@@ -310,7 +310,7 @@ void TSessionData::DefaultSettings()
   SetTunnelUserName("");
   SetTunnelPassword("");
   SetTunnelPublicKeyFile("");
-  TunnelPassphrase = L"";
+  FTunnelPassphrase = L"";
   SetTunnelLocalPortNumber(0);
   SetTunnelPortFwd("");
   SetTunnelHostKey("");
@@ -324,20 +324,20 @@ void TSessionData::DefaultSettings()
   SetFtpPingType(ptDummyCommand);
   SetFtpTransferActiveImmediately(asAuto);
   SetFtps(ftpsNone);
-  MinTlsVersion = tls10;
-  MaxTlsVersion = tls13;
+  FMinTlsVersion = tls10;
+  FMaxTlsVersion = tls13;
   SetFtpListAll(asAuto);
   SetFtpHost(asAuto);
   SetFtpDupFF(false);
   SetFtpUndupFF(false);
-  FtpWorkFromCwd = asAuto;
-  FtpAnyCodeForPwd = false;
+  FFtpWorkFromCwd = asAuto;
+  FFtpAnyCodeForPwd = false;
   SetSslSessionReuse(true);
   SetTlsCertificateFile("");
 
   SetFtpProxyLogonType(0); // none
 
-  PuttySettings = UnicodeString();
+  FPuttySettings = UnicodeString();
 
   SetCustomParam1("");
   SetCustomParam2("");
@@ -366,11 +366,11 @@ void TSessionData::Default()
 {
   DefaultSettings();
 
-  IsWorkspace = false;
-  Link = L"";
-  NameOverride = L"";
+  FIsWorkspace = false;
+  FLink = L"";
+  FNameOverride = L"";
 
-  Selected = false;
+  FSelected = false;
   FModified = false;
   FSource = ::ssNone;
   FSaveOnly = false;
