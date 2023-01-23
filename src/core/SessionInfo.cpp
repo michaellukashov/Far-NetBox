@@ -4,7 +4,9 @@
 
 #include <stdio.h>
 #include <lmcons.h>
+#ifndef SECURITY_WIN32
 #define SECURITY_WIN32
+#endif
 #include <sspi.h>
 #include <secext.h>
 
