@@ -9,10 +9,11 @@
 
 #include <Common.h>
 #include <nbutils.h>
-#include <Exceptions.h>
 
 #include "SessionInfo.h"
+#include "Exceptions.h"
 #include "TextsCore.h"
+#include "CoreMain.h"
 #include "Script.h"
 #include <System.IOUtils.hpp>
 
@@ -26,67 +27,67 @@ static UnicodeString DoXmlEscape(UnicodeString AStr, bool NewLine)
     UnicodeString Repl;
     switch (Str[Index])
     {
-    case L'\x00': // \0 Is not valid in XML anyway
-    case L'\x01':
-    case L'\x02':
-    case L'\x03':
-    case L'\x04':
-    case L'\x05':
-    case L'\x06':
-    case L'\x07':
-    case L'\x08':
-    // \n is handled below
-    case L'\x0B':
-    case L'\x0C':
-    // \r is handled below
-    case L'\x0E':
-    case L'\x0F':
-    case L'\x10':
-    case L'\x11':
-    case L'\x12':
-    case L'\x13':
-    case L'\x14':
-    case L'\x15':
-    case L'\x16':
-    case L'\x17':
-    case L'\x18':
-    case L'\x19':
-    case L'\x1A':
-    case L'\x1B':
-    case L'\x1C':
-    case L'\x1D':
-    case L'\x1E':
-    case L'\x1F':
-      Repl = L"#x" + ByteToHex((uint8_t)Str[Index]) + L";";
-      break;
+      case L'\x00': // \0 Is not valid in XML anyway
+      case L'\x01':
+      case L'\x02':
+      case L'\x03':
+      case L'\x04':
+      case L'\x05':
+      case L'\x06':
+      case L'\x07':
+      case L'\x08':
+      // \n is handled below
+      case L'\x0B':
+      case L'\x0C':
+      // \r is handled below
+      case L'\x0E':
+      case L'\x0F':
+      case L'\x10':
+      case L'\x11':
+      case L'\x12':
+      case L'\x13':
+      case L'\x14':
+      case L'\x15':
+      case L'\x16':
+      case L'\x17':
+      case L'\x18':
+      case L'\x19':
+      case L'\x1A':
+      case L'\x1B':
+      case L'\x1C':
+      case L'\x1D':
+      case L'\x1E':
+      case L'\x1F':
+        Repl = L"#x" + ByteToHex((uint8_t)Str[Index]) + L";";
+        break;
 
-    case L'&':
-      Repl = L"amp;";
-      break;
+      case L'&':
+        Repl = L"amp;";
+        break;
 
-    case L'>':
-      Repl = L"gt;";
-      break;
+      case L'>':
+        Repl = L"gt;";
+        break;
 
-    case L'<':
-      Repl = L"lt;";
-      break;
+      case L'<':
+        Repl = L"lt;";
+        break;
 
-    case L'"':
-      Repl = L"quot;";
-      break;
+      case L'"':
+        Repl = L"quot;";
+        break;
 
-    case L'\n':
-      if (NewLine)
-      {
-        Repl = L"#10;";
-      }
-      break;
+      case L'\n':
+        if (NewLine)
+        {
+          Repl = L"#10;";
+        }
+        break;
 
-    case L'\r':
-      Str.Delete(Index, 1);
-      --Index;
-      break;
+      case L'\r':
+        Str.Delete(Index, 1);
+        --Index;
+        break;
     }
 
     if (!Repl.IsEmpty())
@@ -253,7 +254,6 @@ public:
   }
 
   void Rights(const TRights & Rights)
-  void Rights(const TRights &Rights)
   {
     Parameter(L"permissions", Rights.GetText());
   }
@@ -388,19 +388,19 @@ protected:
   {
     switch (FAction)
     {
-    case laUpload: return L"upload";
-    case laDownload: return L"download";
-    case laTouch: return L"touch";
-    case laChmod: return L"chmod";
-    case laMkdir: return L"mkdir";
-    case laRm: return L"rm";
-    case laMv: return L"mv";
-    case laCp: return L"cp";
-    case laCall: return L"call";
-    case laLs: return L"ls";
-    case laStat: return L"stat";
-    case laChecksum: return L"checksum";
-    case laCwd: return L"cwd";
+      case laUpload: return L"upload";
+      case laDownload: return L"download";
+      case laTouch: return L"touch";
+      case laChmod: return L"chmod";
+      case laMkdir: return L"mkdir";
+      case laRm: return L"rm";
+      case laMv: return L"mv";
+      case laCp: return L"cp";
+      case laCall: return L"call";
+      case laLs: return L"ls";
+      case laStat: return L"stat";
+      case laChecksum: return L"checksum";
+      case laCwd: return L"cwd";
       case laDifference: return L"difference";
       DebugFail();
       return L"";
@@ -824,13 +824,13 @@ void TSessionLog::SetParent(TSessionLog *AParent, const UnicodeString AName)
   FName = AName;
 }
 
-void TSessionLog::DoAddToParent(TLogLineType Type, const UnicodeString ALine)
+void TSessionLog::DoAddToParent(TLogLineType Type, const UnicodeString & ALine)
 {
   DebugAssert(FParent != nullptr);
   FParent->Add(Type, ALine);
 }
 
-void TSessionLog::DoAddToSelf(TLogLineType Type, const UnicodeString ALine)
+void TSessionLog::DoAddToSelf(TLogLineType Type, const UnicodeString & ALine)
 {
   if (LogToFile()) { try
   {
@@ -1118,10 +1118,10 @@ UnicodeString TSessionLog::LogSensitive(const UnicodeString Str)
   return BooleanToEngStr(!Str.IsEmpty());
 }
 
-UnicodeString TSessionLog::GetCmdLineLog(TConfiguration * AConfiguration) const
+UnicodeString TSessionLog::GetCmdLineLog(TConfiguration * AConfiguration)
 {
   TODO("GetCmdLine()");
-  UnicodeString Result = CmdLine;
+  UnicodeString Result; // = CmdLine;
 
   if (!AConfiguration->GetLogSensitive())
   {
@@ -1152,23 +1152,24 @@ UnicodeString EnumName(T Value, const UnicodeString ANames)
 
   return L"(unknown)";
 }
-#define ADSTR(S) AddLogEntry(S)
-#define ADF(S, F) ADSTR(FORMAT(S, F));
-//#define ADSTR(S) DoAdd(llMessage, S, nb::bind(&TSessionLog::DoAddToSelf, this));
-//#define ADF(S, ...) DoAdd(llMessage, FORMAT(S, __VA_ARGS__), nb::bind(&TSessionLog::DoAddToSelf, this));
+//#define ADSTR(S) AddLogEntry(S)
+//#define ADF(S, F) ADSTR(FORMAT(S, F));
+#define ADSTR(S) DoAdd(llMessage, S, nb::bind(&TSessionLog::DoAddToSelf, this));
+#define ADF(S, ...) DoAdd(llMessage, FORMAT(S, __VA_ARGS__), nb::bind(&TSessionLog::DoAddToSelf, this));
 
 void TSessionLog::DoAddStartupInfo(TAddLogEntryEvent AddLogEntry, TConfiguration * AConfiguration, bool DoNotMaskPaswords)
 {
   ADSTR(GetEnvironmentInfo());
-  THierarchicalStorage * Storage = AConfiguration->CreateConfigStorage();
-  try
+  //THierarchicalStorage * Storage = AConfiguration->CreateConfigStorage();
+  std::unique_ptr<THierarchicalStorage> Storage(FConfiguration->CreateConfigStorage());
+  try__finally
   {
-    ADF(L"Configuration: %s", (Storage->Source));
-  }
-  __finally
-  {
+    ADF(L"Configuration: %s", Storage->Source());
+  },
+  __finally__removed
+  ({
     delete Storage;
-  }
+  }) end_try__finally
 
   wchar_t UserName[UNLEN + 1];
   unsigned long UserNameSize = LENOF(UserName);
@@ -1193,23 +1194,23 @@ void TSessionLog::DoAddStartupInfo(TAddLogEntryEvent AddLogEntry, TConfiguration
   {
     LogStr = L"Debug 2";
   }
-  if (AConfiguration->LogSensitive)
+  if (AConfiguration->FLogSensitive)
   {
     LogStr += L", Logging passwords";
   }
-  if (AConfiguration->LogMaxSize > 0)
+  if (AConfiguration->FLogMaxSize > 0)
   {
     LogStr += FORMAT(L", Rotating after: %s", (SizeToStr(AConfiguration->LogMaxSize)));
-    if (AConfiguration->LogMaxCount > 0)
+    if (AConfiguration->FLogMaxCount > 0)
     {
       LogStr += FORMAT(L", Keeping at most %d logs", (AConfiguration->LogMaxCount));
     }
   }
-  ADF(L"Log level: %s", (LogStr));
-  ADF(L"Local account: %s", (UserName));
-  ADF(L"Working directory: %s", (GetCurrentDir()));
-  ADF(L"Process ID: %d", (int(GetCurrentProcessId())));
-  ADF(L"Ancestor processes: %s", (GetAncestorProcessNames()));
+  ADF(L"Log level: %s", LogStr);
+  ADF(L"Local account: %s", UserName);
+  ADF(L"Working directory: %s", GetCurrentDir());
+  ADF(L"Process ID: %d", int(GetCurrentProcessId()));
+  ADF(L"Ancestor processes: %s", GetAncestorProcessNames());
   // This logs even passwords, contrary to a session log.
   // GetCmdLineLog requires master password, but we do not know it yet atm.
   UnicodeString ACmdLine;
@@ -1221,12 +1222,12 @@ void TSessionLog::DoAddStartupInfo(TAddLogEntryEvent AddLogEntry, TConfiguration
   {
     ACmdLine = GetCmdLineLog(AConfiguration);
   }
-  ADF(L"Command-line: %s", (ACmdLine));
+  ADF(L"Command-line: %s", ACmdLine);
   if (AConfiguration->ActualLogProtocol >= 1)
   {
     GetGlobalOptions()->LogOptions(AddLogEntry);
   }
-  ADF(L"Time zone: %s", (GetTimeZoneLogString()));
+  ADF(L"Time zone: %s", GetTimeZoneLogString());
   if (!AdjustClockForDSTEnabled())
   {
     ADSTR(L"Warning: System option \"Automatically adjust clock for Daylight Saving Time\" is disabled, timestamps will not be represented correctly");
@@ -1234,9 +1235,10 @@ void TSessionLog::DoAddStartupInfo(TAddLogEntryEvent AddLogEntry, TConfiguration
 }
 
 #undef ADSTR
-#define ADSTR(S) DoAdd(llMessage, S, DoAddToSelf);
+//#define ADSTR(S) DoAdd(llMessage, S, DoAddToSelf);
+#define ADSTR(S) DoAdd(llMessage, S, nb::bind(&TSessionLog::DoAddToSelf, this));
 
-void TSessionLog::DoAddStartupInfoEntry(const UnicodeString & S)
+void TSessionLog::DoAddStartupInfoEntry(const UnicodeString S)
 {
   ADSTR(S);
 }
@@ -1247,45 +1249,45 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
   {
     AddSeparator();
     DoAddStartupInfo(DoAddStartupInfoEntry, FConfiguration, false);
-    ADF(L"Login time: %s", (FormatDateTime(L"dddddd tt", Now())));
+    ADF(L"Login time: %s", FormatDateTime(L"dddddd tt", Now()));
     AddSeparator();
   }
   else
   {
-    ADF(L"Session name: %s (%s)", (Data->SessionName, Data->Source));
+    ADF(L"Session name: %s (%s)", Data->GetSessionName(), Data->GetSource());
     UnicodeString AddressFamily;
     if (Data->AddressFamily != afAuto)
     {
-      AddressFamily = FORMAT(L"%s, ", (Data->AddressFamily == afIPv4 ? L"IPv4" : L"IPv6"));
+      AddressFamily = FORMAT(L"%s, ", Data->AddressFamily() == afIPv4 ? L"IPv4" : L"IPv6");
     }
     UnicodeString HostName = Data->HostNameExpanded;
     if (!Data->HostNameSource.IsEmpty())
     {
-      HostName = FORMAT(L"%s [%s]", (HostName, Data->HostNameSource));
+      HostName = FORMAT(L"%s [%s]", HostName, Data->GetHostNameSource());
     }
-    ADF(L"Host name: %s (%sPort: %d)", (HostName, AddressFamily, Data->PortNumber));
+    ADF(L"Host name: %s (%sPort: %d)", HostName, AddressFamily, Data->PortNumber());
     UnicodeString UserName = Data->UserNameExpanded;
     if (!Data->UserNameSource.IsEmpty())
     {
-      UserName = FORMAT(L"%s [%s]", (UserName, Data->UserNameSource));
+      UserName = FORMAT(L"%s [%s]", UserName, Data->GetUserNameSource());
     }
     ADF(L"User name: %s (Password: %s, Key file: %s, Passphrase: %s)",
-      (UserName, LogSensitive(Data->Password),
-       LogSensitive(Data->PublicKeyFile), LogSensitive(Data->Passphrase)));
+      UserName, LogSensitive(Data->Password),
+       LogSensitive(Data->PublicKeyFile), LogSensitive(Data->Passphrase));
     if (Data->UsesSsh)
     {
-      ADF(L"Tunnel: %s", (BooleanToEngStr(Data->Tunnel)));
+      ADF(L"Tunnel: %s", BooleanToEngStr(Data->Tunnel));
       if (Data->Tunnel)
       {
-        ADF(L"Tunnel: Host name: %s (Port: %d)", (Data->TunnelHostName, Data->TunnelPortNumber));
+        ADF(L"Tunnel: Host name: %s (Port: %d)", Data->TunnelHostName, Data->TunnelPortNumber);
         ADF(L"Tunnel: User name: %s (Password: %s, Key file: %s)",
-          (Data->TunnelUserName,
+          Data->TunnelUserName,
            LogSensitive(Data->TunnelPassword),
-           LogSensitive(Data->TunnelPublicKeyFile)));
-        ADF(L"Tunnel: Local port number: %d", (Data->TunnelLocalPortNumber));
+           LogSensitive(Data->TunnelPublicKeyFile));
+        ADF(L"Tunnel: Local port number: %d", Data->TunnelLocalPortNumber);
       }
     }
-    ADF(L"Transfer Protocol: %s", (Data->FSProtocolStr));
+    ADF(L"Transfer Protocol: %s", Data->FSProtocolStr);
     if (Data->UsesSsh || (Data->FSProtocol == fsFTP))
     {
       TPingType PingType;
@@ -1306,9 +1308,9 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
         BooleanToEngStr(Data->GetTcpNoDelay()));
     }
     ADF(L"Proxy: %s",
-      ((Data->FtpProxyLogonType != 0) ?
-        FORMAT(L"FTP proxy %d", (Data->FtpProxyLogonType)) :
-        EnumName(Data->ProxyMethod, ProxyMethodNames)));
+      (Data->FtpProxyLogonType != 0) ?
+        FORMAT(L"FTP proxy %d", Data->FtpProxyLogonType) :
+        EnumName(Data->ProxyMethod, ProxyMethodNames));
     if ((Data->GetFtpProxyLogonType() != 0) || (Data->ProxyMethod != ::pmNone))
     {
       ADF("ProxyHostName: %s (Port: %d); ProxyUsername: %s; Passwd: %s",
@@ -1329,20 +1331,20 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
     }
     if (Data->UsesSsh && !Data->SourceAddress.IsEmpty())
     {
-      ADF(L"Source address: %s", (Data->SourceAddress));
+      ADF(L"Source address: %s", Data->SourceAddress);
     }
     if (Data->GetUsesSsh())
     {
-      ADF(L"Compression: %s", (BooleanToEngStr(Data->Compression)));
+      ADF(L"Compression: %s", BooleanToEngStr(Data->Compression));
       ADF(L"Bypass authentication: %s",
-       (BooleanToEngStr(Data->SshNoUserAuth)));
+       BooleanToEngStr(Data->SshNoUserAuth));
       ADF(L"Try agent: %s; Agent forwarding: %s; KI: %s; GSSAPI: %s",
-        (BooleanToEngStr(Data->TryAgent), BooleanToEngStr(Data->AgentFwd),
-         BooleanToEngStr(Data->AuthKI), BooleanToEngStr(Data->AuthGSSAPI)));
+        BooleanToEngStr(Data->TryAgent), BooleanToEngStr(Data->AgentFwd),
+         BooleanToEngStr(Data->AuthKI), BooleanToEngStr(Data->AuthGSSAPI));
       if (Data->AuthGSSAPI)
       {
         ADF(L"GSSAPI: KEX: %s; Forwarding: %s; Libs: %s; Custom: %s",
-          (BooleanToEngStr(Data->AuthGSSAPIKEX), BooleanToEngStr(Data->GSSAPIFwdTGT), Data->GssLibList, Data->GssLibCustom));
+          BooleanToEngStr(Data->AuthGSSAPIKEX), BooleanToEngStr(Data->GSSAPIFwdTGT), Data->GssLibList, Data->GssLibCustom);
       }
       ADF("Ciphers: %s; Ssh2DES: %s",
         Data->GetCipherList(), BooleanToEngStr(Data->GetSsh2DES()));
@@ -1379,7 +1381,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
       ADF("SFTP Server: %s", Data->GetSftpServer().IsEmpty() ? UnicodeString(L"default") : Data->GetSftpServer());
       if (Data->SFTPRealPath != asAuto)
       {
-        ADF(L"SFTP Real Path: %s", (EnumName(Data->SFTPRealPath, AutoSwitchNames)));
+        ADF(L"SFTP Real Path: %s", EnumName(Data->SFTPRealPath, AutoSwitchNames));
       }
     }
     bool FtpsOn = false;
@@ -1434,14 +1436,14 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
     {
       FtpsOn = (Data->GetFtps() != ftpsNone);
       ADF(L"HTTPS: %s", BooleanToEngStr(FtpsOn));
-      ADF(L"S3: URL Style: %s", (EnumName(Data->S3UrlStyle, L"Virtual Host;Path")));
+      ADF(L"S3: URL Style: %s", EnumName(Data->S3UrlStyle, L"Virtual Host;Path"));
       if (!Data->GetS3DefaultRegion().IsEmpty())
       {
         ADF(L"S3: Default region: %s", Data->GetS3DefaultRegion());
       }
       if (!Data->S3SessionToken.IsEmpty())
       {
-        ADF(L"S3: Session token: %s", (Data->S3SessionToken));
+        ADF(L"S3: Session token: %s", Data->S3SessionToken);
       }
     }
     if (FtpsOn)
@@ -1841,6 +1843,6 @@ void TApplicationLog::Log(const UnicodeString & S)
     UTF8String UtfLine = UTF8String(Line);
     int Writting = UtfLine.Length();
     TGuard Guard(FCriticalSection.get());
-    fwrite(UtfLine.c_str(), 1, Writting, static_cast<FILE *>(FFile));
+    fwrite(UtfLine.c_str(), 1, Writting, static_cast<FILE *>(FFile.get()));
   }
 }

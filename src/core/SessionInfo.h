@@ -96,16 +96,8 @@ enum TLogAction
 };
 
 enum TCaptureOutputType { cotOutput, cotError, cotExitCode };
-#if 0
-typedef void (__closure *TCaptureOutputEvent)(
-  const UnicodeString Str, TCaptureOutputType OutputType);
-#endif // #if 0
 using TCaptureOutputEvent = nb::FastDelegate2<void,
   const UnicodeString & /*Str*/, TCaptureOutputType /*OutputType*/>;
-#if 0
-typedef void (__closure *TCalculatedChecksumEvent)(
-  const UnicodeString FileName, const UnicodeString Alg, const UnicodeString Hash);
-#endif // #if 0
 using TCalculatedChecksumEvent = nb::FastDelegate3<void,
   UnicodeString /*FileName*/, UnicodeString /*Alg*/, UnicodeString /*Hash*/>;
 
@@ -183,7 +175,7 @@ public:
   TChmodSessionAction() = delete;
   explicit TChmodSessionAction(TActionLog *Log, const UnicodeString AFileName) noexcept;
   explicit TChmodSessionAction(TActionLog *Log, const UnicodeString AFileName,
-    const TRights &ARights) noexcept;
+    const TRights & ARights) noexcept;
 
   void Rights(const TRights &Rights);
   void Recursive();
@@ -193,8 +185,8 @@ class NB_CORE_EXPORT TTouchSessionAction : public TFileSessionAction
 {
 public:
   TTouchSessionAction() = delete;
-  explicit TTouchSessionAction(TActionLog *Log, const UnicodeString AFileName,
-    const TDateTime &Modification) noexcept;
+  explicit TTouchSessionAction(TActionLog * Log, const UnicodeString AFileName,
+    const TDateTime & Modification) noexcept;
 };
 
 class NB_CORE_EXPORT TMkdirSessionAction : public TFileSessionAction
@@ -283,11 +275,11 @@ public:
 
 // typedef void (__closure *TAddLogEntryEvent)(const UnicodeString & S);
 
-using TAddLogEntryEvent = nb::FastDelegate2<void,
+using TAddLogEntryEvent = nb::FastDelegate1<void,
   const UnicodeString & /*S*/>;
 
 using TDoAddLogEvent = nb::FastDelegate2<void,
-  TLogLineType /*Type*/, UnicodeString /*Line*/>;
+  TLogLineType /*Type*/, const UnicodeString & /*Line*/>;
 
 class NB_CORE_EXPORT TSessionLog
 {
@@ -324,7 +316,7 @@ public:
 protected:
   void CloseLogFile();
   bool LogToFileProtected() const;
-  static void DoAddStartupInfo(TAddLogEntryEvent AddLogEntry, TConfiguration * AConfiguration, bool DoNotMaskPaswords);
+  void DoAddStartupInfo(TAddLogEntryEvent AddLogEntry, TConfiguration * AConfiguration, bool DoNotMaskPaswords);
 
 private:
   TConfiguration *FConfiguration{nullptr};
@@ -347,8 +339,8 @@ private:
   void DoAdd(TLogLineType AType, const UnicodeString ALine,
     TDoAddLogEvent Event);
   __removed void (__closure *f)(TLogLineType Type, const UnicodeString &Line);
-  void DoAddToParent(TLogLineType AType, const UnicodeString ALine);
-  void DoAddToSelf(TLogLineType AType, const UnicodeString ALine);
+  void DoAddToParent(TLogLineType AType, const UnicodeString & ALine);
+  void DoAddToSelf(TLogLineType AType, const UnicodeString & ALine);
   void AddStartupInfo(bool System);
   void DoAddStartupInfo(TSessionData *Data);
   UnicodeString GetTlsVersionName(TTlsVersion TlsVersion) const;
@@ -356,7 +348,7 @@ private:
   static UnicodeString GetCmdLineLog(TConfiguration * AConfiguration);
   void CheckSize(int64_t Addition);
   UnicodeString LogPartFileName(const UnicodeString BaseName, int32_t Index);
-  void DoAddStartupInfoEntry(const UnicodeString & S);
+  void DoAddStartupInfoEntry(const UnicodeString S);
 
 public:
   UnicodeString GetLine(int32_t Index) const;
