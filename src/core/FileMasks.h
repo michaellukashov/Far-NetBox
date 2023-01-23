@@ -45,7 +45,7 @@ public:
   explicit TFileMasks(const UnicodeString AMasks) noexcept;
   virtual ~TFileMasks() noexcept;
   TFileMasks &operator=(const TFileMasks &rhm);
-  TFileMasks &operator=(const UnicodeString rhs);
+  TFileMasks &operator=(const UnicodeString & rhs);
   bool operator==(const TFileMasks &rhm) const;
   bool operator==(const UnicodeString rhs) const;
 
@@ -86,10 +86,10 @@ private:
     enum TKind { Any, NoExt, Regular };
 
     TKind FileNameMaskKind;
-    Masks::TMask * FileNameMask;
+    Masks::TMask * FileNameMask{nullptr};
     TKind DirectoryMaskKind;
-    Masks::TMask * RemoteDirectoryMask;
-    Masks::TMask * LocalDirectoryMask;
+    Masks::TMask * RemoteDirectoryMask{nullptr};
+    Masks::TMask * LocalDirectoryMask{nullptr};
 
     enum TMaskBoundary { None, Open, Close };
 
@@ -110,7 +110,7 @@ private:
 
   typedef nb::vector_t<TMask> TMasks;
   TMasks FMasks[4];
-  mutable TStrings *FMasksStr[4];
+  mutable TStrings *FMasksStr[4]{};
 
 private:
   void SetStr(const UnicodeString Value, bool SingleMask);
@@ -130,7 +130,7 @@ private:
   static bool MatchesMasks(
     const UnicodeString AFileName, bool Local, bool Directory,
     const UnicodeString APath, const TParams * Params, const TMasks & Masks, bool Recurse);
-  static inline bool MatchesMaskMask(TMask::TKind MaskKind, Masks::TMask * MaskMask, const UnicodeString Str);
+  static bool MatchesMaskMask(TMask::TKind MaskKind, Masks::TMask * MaskMask, const UnicodeString Str);
   static Masks::TMask * DoCreateMaskMask(const UnicodeString & Str);
   void ThrowError(int32_t Start, int32_t End) const;
   bool DoMatches(
@@ -143,13 +143,8 @@ bool IsFileNameMask(const UnicodeString AMask);
 bool IsEffectiveFileNameMask(const UnicodeString AMask);
 UnicodeString DelimitFileNameMask(UnicodeString AMask);
 
-#if 0
-typedef void (__closure *TCustomCommandPatternEvent)
-(int Index, UnicodeString Pattern, void *Arg, UnicodeString &Replacement,
-  bool &LastPass);
-#endif // #if 0
 using TCustomCommandPatternEvent = nb::FastDelegate5<void,
-  int32_t /*Index*/, const UnicodeString /*Pattern*/, void * /*Arg*/, UnicodeString & /*Replacement*/,
+  int32_t /*Index*/, UnicodeString /*Pattern*/, void * /*Arg*/, UnicodeString & /*Replacement*/,
    bool & /*LastPass*/>;
 
 class NB_CORE_EXPORT TCustomCommand : public TObject

@@ -324,17 +324,17 @@ void TFileMasks::Clear(TMasks & Masks)
   TMasks::iterator it = Masks.begin();
   while (it != Masks.end())
   {
-    delete (*I).FileNameMask;
-    delete (*I).RemoteDirectoryMask;
-    delete (*I).LocalDirectoryMask;
+    delete (*it).FileNameMask;
+    delete (*it).RemoteDirectoryMask;
+    delete (*it).LocalDirectoryMask;
     ++it;
   }
   Masks.clear();
 }
 
 bool TFileMasks::MatchesMasks(
-  const UnicodeString & FileName, bool Local, bool Directory,
-  const UnicodeString & Path, const TParams * Params, const TMasks & Masks, bool Recurse)
+  const UnicodeString FileName, bool Local, bool Directory,
+  const UnicodeString Path, const TParams * Params, const TMasks & Masks, bool Recurse)
 {
   bool Result = false;
 
@@ -426,10 +426,10 @@ bool TFileMasks::MatchesMasks(
     ++it;
   }
 
-  if (!Result && Directory && !base::IsUnixRootPath(APath) && Recurse)
+  if (!Result && Directory && !base::IsUnixRootPath(Path) && Recurse)
   {
-    UnicodeString ParentFileName = base::UnixExtractFileName(APath);
-    UnicodeString ParentPath = base::SimpleUnixExcludeTrailingBackslash(base::UnixExtractFilePath(APath));
+    UnicodeString ParentFileName = base::UnixExtractFileName(Path);
+    UnicodeString ParentPath = base::SimpleUnixExcludeTrailingBackslash(base::UnixExtractFilePath(Path));
     // Pass Params down or not?
     // Currently it includes Size/Time only, what is not used for directories.
     // So it depends on future use. Possibly we should make a copy
@@ -459,7 +459,7 @@ bool TFileMasks::Matches(const UnicodeString FileName, bool Local,
   bool Directory, const TParams * Params) const
 {
   bool ImplicitMatch;
-  return Matches(AFileName, Local, Directory, Params, true, ImplicitMatch);
+  return Matches(FileName, Local, Directory, Params, true, ImplicitMatch);
 }
 
 bool TFileMasks::Matches(const UnicodeString FileName, bool Local,
@@ -468,18 +468,18 @@ bool TFileMasks::Matches(const UnicodeString FileName, bool Local,
   bool Result;
   if (Local)
   {
-    UnicodeString Path = ::ExtractFilePath(AFileName);
+    UnicodeString Path = ::ExtractFilePath(FileName);
     if (!Path.IsEmpty())
     {
       Path = base::ToUnixPath(::ExcludeTrailingBackslash(Path));
     }
-    Result = DoMatches(ExtractFileName(FileName), Local, Directory, Path, Params,
+    Result = DoMatches(base::ExtractFileName(FileName, false), Local, Directory, Path, Params,
       RecurseInclude, ImplicitMatch);
   }
   else
   {
-    Result = DoMatches(UnixExtractFileName(FileName), Local, Directory,
-      SimpleUnixExcludeTrailingBackslash(UnixExtractFilePath(FileName)), Params,
+    Result = DoMatches(base::UnixExtractFileName(FileName), Local, Directory,
+      base::SimpleUnixExcludeTrailingBackslash(base::UnixExtractFilePath(FileName)), Params,
       RecurseInclude, ImplicitMatch);
   }
   return Result;
@@ -493,7 +493,7 @@ bool TFileMasks::MatchesFileName(const UnicodeString & FileName, bool Directory,
 
 bool TFileMasks::operator ==(const TFileMasks & rhm) const
 {
-  return (GetMasks() == rhm.GetMasks());
+  return (Masks() == rhm.Masks());
 }
 
 TFileMasks & TFileMasks::operator =(const UnicodeString & rhs)
@@ -755,7 +755,7 @@ void TFileMasks::TrimEx(UnicodeString &Str, int32_t &Start, int32_t &End)
   End -= Buf.Length() - Str.Length();
 }
 
-bool TFileMasks::MatchesMaskMask(TMask::TKind MaskKind, Masks::TMask * MaskMask, const UnicodeString & Str)
+bool TFileMasks::MatchesMaskMask(TMask::TKind MaskKind, Masks::TMask * MaskMask, const UnicodeString Str)
 {
   bool Result;
   if (MaskKind == TMask::TKind::Any)
