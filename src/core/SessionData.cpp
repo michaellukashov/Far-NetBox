@@ -568,8 +568,6 @@ void TSessionData::DoCopyData(const TSessionData * SourceData, bool NoRecrypt)
       P = SourceData->P; \
     }
 */
-  #undef PROPERTY
-  #undef PROPERTY2
   #define PROPERTY(P) Set ## P(SourceData->Get ## P())
   #define PROPERTY2(P) F##P = SourceData->F##P;
   #define PROPERTY_HANDLER(P, F) F##P = SourceData->F##P;
@@ -653,8 +651,6 @@ bool TSessionData::IsSame(
   const TSessionData * Default, bool AdvancedOnly, TStrings * DifferentProperties, bool Decrypted) const
 {
   bool Result = true;
-  #undef PROPERTY
-  #undef PROPERTY2
   #define PROPERTY(P) if (Get ## P() != Default->Get ## P()) { if (DifferentProperties != nullptr) { DifferentProperties->Add(# P); Result = false; } }
   #define PROPERTY2(P) if (F##P != Default->F##P) { if (DifferentProperties != nullptr) { DifferentProperties->Add(# P); Result = false; } }
   #define PROPERTY_HANDLER(P, F) \
@@ -1153,7 +1149,6 @@ void TSessionData::DoSave(THierarchicalStorage *Storage,
 #define WRITE_DATA(TYPE, PROPERTY) WRITE_DATA_EX(TYPE, MB_TEXT(#PROPERTY), Get ## PROPERTY(), )
 #define WRITE_DATA2(TYPE, PROPERTY) WRITE_DATA_EX2(TYPE, MB_TEXT(#PROPERTY), Get ## PROPERTY(), nb::ToInt)
 #define WRITE_DATA3(TYPE, PROPERTY) WRITE_DATA_EX2(TYPE, MB_TEXT(#PROPERTY), F ## PROPERTY, nb::ToInt)
-#define WRITE_DATA4(TYPE, PROPERTY) WRITE_DATA_EX(TYPE, MB_TEXT(#PROPERTY), F ## PROPERTY)
 
   Storage->WriteString("Version", ::VersionNumberToStr(::GetCurrentVersionNumber()));
   WRITE_DATA(String, HostName);
@@ -1264,15 +1259,15 @@ void TSessionData::DoSave(THierarchicalStorage *Storage,
     WRITE_DATA3(Bool, VMSAllRevisions);
     Storage->DeleteValue("SFTPUtfBug");
     WRITE_DATA_EX(Integer, "Utf", GetNotUtf(), );
-    WRITE_DATA3(Integer, InternalEditorEncoding);
-    WRITE_DATA4(String, S3DefaultRegion);
-    WRITE_DATA4(String, S3SessionToken);
+    WRITE_DATA2(Integer, InternalEditorEncoding);
+    WRITE_DATA(String, S3DefaultRegion);
+    WRITE_DATA3(String, S3SessionToken);
     WRITE_DATA3(Integer, S3UrlStyle);
     WRITE_DATA3(Integer, S3MaxKeys);
-    WRITE_DATA4(Bool, S3CredentialsEnv);
-    WRITE_DATA4(Integer, SendBuf);
-    WRITE_DATA4(String, SourceAddress);
-    WRITE_DATA4(String, ProtocolFeatures);
+    WRITE_DATA3(Bool, S3CredentialsEnv);
+    WRITE_DATA(Integer, SendBuf);
+    WRITE_DATA3(String, SourceAddress);
+    WRITE_DATA3(String, ProtocolFeatures);
     WRITE_DATA(Bool, SshSimple);
   }
 
@@ -1344,7 +1339,7 @@ void TSessionData::DoSave(THierarchicalStorage *Storage,
     WRITE_DATA(String, TunnelUserName);
     WRITE_DATA(String, TunnelPublicKeyFile);
     WRITE_DATA2(Integer, TunnelLocalPortNumber);
-    WRITE_DATA4(String, TunnelHostKey);
+    WRITE_DATA2(String, TunnelHostKey);
 
     WRITE_DATA(Bool, FtpPasvMode);
     WRITE_DATA_EX(Integer, "FtpForcePasvIp2", GetFtpForcePasvIp(), );
@@ -1376,7 +1371,7 @@ void TSessionData::DoSave(THierarchicalStorage *Storage,
     WRITE_DATA(String, NameOverride);
 #endif // #if 0
 
-    WRITE_DATA4(String, PuttySettings);
+    WRITE_DATA3(String, PuttySettings);
 
     WRITE_DATA(String, CustomParam1);
     WRITE_DATA(String, CustomParam2);
@@ -6018,7 +6013,7 @@ void TStoredSessionList::DoGetFolderOrWorkspace(const UnicodeString & Name, TLis
 
     if (Data != nullptr)
     {
-      std::unique_ptr<TSessionData> Data2(std::make_unique<TSessionData>(L""));
+      TSessionData * Data2 = new TSessionData(L"");
       if (NoRecrypt)
       {
         Data2->CopyDataNoRecrypt(Data);
@@ -6214,7 +6209,7 @@ void TStoredSessionList::Load(UnicodeString AKey, bool UseDefaults)
   }
 }
 #endif // #if 0
-
+//===========================================================================
 UnicodeString GetExpandedLogFileName(UnicodeString LogFileName, TDateTime Started, TSessionData *SessionData)
 {
   // StripPathQuotes should not be needed as we do not feed quotes anymore
