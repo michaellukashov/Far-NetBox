@@ -341,16 +341,91 @@ public:
 };
 
 template <typename T>
+class RWProperty2
+{
+CUSTOM_MEM_ALLOCATION_IMPL
+private:
+  T *_value{nullptr};
+public:
+  RWProperty2() = delete;
+  explicit RWProperty2(T *Value) noexcept :
+    _value(Value)
+  {
+    Expects(_value != nullptr);
+  }
+  RWProperty2(const RWProperty2&) = default;
+  RWProperty2(RWProperty2&&) = default;
+  RWProperty2& operator=(const RWProperty2&) = default;
+  RWProperty2& operator=(RWProperty2&&) = default;
+  constexpr T operator()() const
+  {
+    Expects(_value);
+    return *_value;
+  }
+  constexpr operator T() const
+  {
+    Expects(_value);
+    return *_value;
+  }
+  constexpr const T operator->() const
+  {
+    Expects(_value);
+    return _value();
+  }
+  constexpr T operator->()
+  {
+    Expects(_value);
+    return *_value;
+  }
+  constexpr decltype(auto) operator*() const { return *_value; }
+
+  void operator()(const T &Value)
+  {
+    Expects(_value);
+    *_value = Value;
+  }
+  RWProperty2& operator=(const T Value)
+  {
+    Expects(_value);
+    *_value = Value;
+    return *this;
+  }
+
+  friend bool constexpr inline operator==(const RWProperty2 &lhs, const RWProperty2 &rhs)
+  {
+    Expects(lhs._value);
+    Expects(rhs._value);
+    return *lhs._value == *rhs._value;
+  }
+  friend bool constexpr inline operator==(const RWProperty2 &lhs, const T &rhs)
+  {
+    Expects(lhs._value);
+    return *lhs._value == rhs;
+  }
+  friend bool constexpr inline operator!=(const RWProperty2 &lhs, const RWProperty2 &rhs)
+  {
+    Expects(lhs._value);
+    Expects(rhs._value);
+    return *lhs._value != *rhs._value;
+  }
+  friend bool constexpr inline operator!=(RWProperty2 &lhs, const T &rhs)
+  {
+    Expects(lhs._value);
+    return *lhs._value != rhs;
+  }
+};
+
+template <typename T>
 class RWPropertySimple
 {
 CUSTOM_MEM_ALLOCATION_IMPL
 private:
   using TSetValueFunctor = fastdelegate::FastDelegate1<void, T>;
-  const T *_value{nullptr};
+  T *_value{nullptr};
   TSetValueFunctor _setter;
 public:
   RWPropertySimple() = delete;
-  explicit RWPropertySimple(const T *Value, const TSetValueFunctor &Setter) noexcept :
+  explicit RWPropertySimple(T *Value, const TSetValueFunctor &Setter) noexcept :
     _value(Value),
     _setter(Setter)
   {
