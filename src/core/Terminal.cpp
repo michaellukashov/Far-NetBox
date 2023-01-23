@@ -511,7 +511,7 @@ bool TRobustOperationLoop::TryReopen(Exception & E)
   {
     FRetry = false;
   }
-  else if (dyn_cast<ESkipFile *>(&E) != nullptr)
+  else if (dyn_cast<ESkipFile>(&E) != nullptr)
   {
     FRetry = false;
   }
@@ -1637,7 +1637,7 @@ void TTerminal::OpenTunnel()
 
   try
   {
-    FTunnelData = std::make_unique<TSessionData>(FSessionData->CreateTunnelData(FTunnelLocalPortNumber));
+    FTunnelData.reset(FSessionData->CreateTunnelData(FTunnelLocalPortNumber));
     FTunnelData->Assign(StoredSessions->GetDefaultSettings());
     FTunnelData->SetName(FMTLOAD(TUNNEL_SESSION_NAME, FSessionData->GetSessionName()));
     FTunnelData->SetTunnel(false);
