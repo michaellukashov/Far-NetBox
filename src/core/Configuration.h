@@ -28,6 +28,7 @@ enum TFtpEncryptionSwitch_219
 class TStoredSessionList;
 class TCopyParamType;
 class TTerminal;
+class TSessionData;
 class TSessionLog;
 
 NB_DEFINE_CLASS_ID(TConfiguration);
@@ -35,6 +36,7 @@ class NB_CORE_EXPORT TConfiguration : public TObject
 {
   NB_DISABLE_COPY(TConfiguration)
   friend class TTerminal;
+  friend class TSessionData;
   friend class TSessionLog;
 public:
   static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TConfiguration); }
