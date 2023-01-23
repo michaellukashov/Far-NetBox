@@ -128,6 +128,8 @@ struct NB_CORE_EXPORT TIEProxyConfig : public TObject
 
 class TStoredSessionList;
 class TSecondaryTerminal;
+class TSecureShell;
+class TSessionLog;
 
 NB_DEFINE_CLASS_ID(TSessionData);
 class NB_CORE_EXPORT TSessionData : public TNamedObject
@@ -140,6 +142,7 @@ public:
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TSessionData) || TNamedObject::is(Kind); }
   friend class TTerminal;
   friend class TSecureShell;
+  friend class TSessionLog;
   void SessionSetUserName(UnicodeString value);
 private:
   UnicodeString FHostName;
@@ -647,6 +650,7 @@ public:
   __property UnicodeString DefaultSessionName  = { read = GetDefaultSessionName };
   ROProperty<UnicodeString> DefaultSessionName{nb::bind(&TSessionData::GetDefaultSessionName, this)};
   __property UnicodeString LocalDirectory  = { read = FLocalDirectory, write = SetLocalDirectory };
+  RWPropertySimple<UnicodeString> LocalDirectory{&FLocalDirectory, nb::bind(&TSessionData::SetLocalDirectory, this) };
   __property UnicodeString LocalDirectoryExpanded = { read = GetLocalDirectoryExpanded };
   __property UnicodeString RemoteDirectory  = { read = FRemoteDirectory, write = SetRemoteDirectory };
   RWProperty<UnicodeString> RemoteDirectory{nb::bind(&TSessionData::GetRemoteDirectory, this), nb::bind(&TSessionData::SetRemoteDirectory, this)};
@@ -665,7 +669,9 @@ public:
   __property bool DetectReturnVar = { read = GetDetectReturnVar, write = SetDetectReturnVar };
   __property TEOLType EOLType = { read = FEOLType, write = SetEOLType };
   __property bool TrimVMSVersions = { read = FTrimVMSVersions, write = SetTrimVMSVersions };
+  RWPropertySimple<bool> TrimVMSVersions{&FTrimVMSVersions, nb::bind(&TSessionData::SetTrimVMSVersions, this) };
   __property bool VMSAllRevisions = { read = FVMSAllRevisions, write = SetVMSAllRevisions };
+  RWPropertySimple<bool> VMSAllRevisions{&FVMSAllRevisions, nb::bind(&TSessionData::SetVMSAllRevisions, this) };
   __property TAutoSwitch LookupUserGroups = { read = FLookupUserGroups, write = SetLookupUserGroups };
   __property UnicodeString ReturnVar = { read = FReturnVar, write = SetReturnVar };
   __property bool ExitCode1IsError = { read = FExitCode1IsError, write = SetExitCode1IsError };
