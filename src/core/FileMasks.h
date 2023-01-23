@@ -47,7 +47,7 @@ public:
   TFileMasks &operator=(const TFileMasks &rhm);
   TFileMasks &operator=(const UnicodeString & rhs);
   bool operator==(const TFileMasks &rhm) const;
-  bool operator==(const UnicodeString rhs) const;
+  bool operator==(const UnicodeString & rhs) const;
 
   void SetMask(const UnicodeString Mask);
 
@@ -116,7 +116,7 @@ private:
   void SetStr(const UnicodeString Value, bool SingleMask);
   void SetMasks(const UnicodeString Value);
   void CreateMaskMask(
-    const UnicodeString Mask, int32_t Start, int32_t End, bool Ex, TMask::TKind & MaskKind, Masks::TMask *& MaskMask) const;
+    const UnicodeString Mask, int32_t Start, int32_t End, bool Ex, TMask::TKind & MaskKind, Masks::TMask *& MaskMask);
   void CreateMask(const UnicodeString MaskStr, int32_t MaskStart,
     int32_t MaskEnd, bool Include);
   TStrings *GetMasksStr(int32_t Index) const;
@@ -248,7 +248,7 @@ public:
   virtual bool IsFileCommand(const UnicodeString Command) const;
   bool IsRemoteFileCommand(const UnicodeString Command) const;
   bool IsSiteCommand(const UnicodeString Command) const;
-  bool IsSessionCommand(const UnicodeString & Command) const;
+  bool IsSessionCommand(const UnicodeString Command) const;
   bool IsPasswordCommand(const UnicodeString Command) const;
 
 protected:
