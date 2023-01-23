@@ -73,7 +73,7 @@ void TUsage::Load(THierarchicalStorage * Storage)
 }
 
 void TUsage::Load(THierarchicalStorage * Storage,
-  UnicodeString AName, TCounters & Counters)
+  const UnicodeString AName, TCounters & Counters)
 {
   if (Storage->OpenSubKey(AName, false))
   {
@@ -110,7 +110,7 @@ void TUsage::Save(THierarchicalStorage * Storage) const
 }
 
 void TUsage::Save(THierarchicalStorage * Storage,
-  UnicodeString AName, const TCounters & Counters) const
+  const UnicodeString AName, const TCounters & Counters) const
 {
   if (Storage->OpenSubKey(AName, true))
   {
@@ -139,12 +139,12 @@ void TUsage::Set(UnicodeString AKey, int32_t Value)
   Set(AKey, IntToStr(Value));
 }
 
-void TUsage::Set(UnicodeString AKey, bool Value)
+void TUsage::Set(const UnicodeString AKey, bool Value)
 {
   Set(AKey, intptr_t(Value ? 1 : 0));
 }
 
-UnicodeString TUsage::Get(UnicodeString AKey) const
+UnicodeString TUsage::Get(const UnicodeString AKey) const
 {
   TGuard Guard(*FCriticalSection); nb::used(Guard);
   UnicodeString Result = FValues->GetValue(AKey);

@@ -46,9 +46,9 @@ public:
   void SetCollect(bool value);
   void UpdateLastReport();
   void Load(THierarchicalStorage * Storage,
-    const UnicodeString & AName, TCounters & Counters);
+    const UnicodeString AName, TCounters & Counters);
   void Save(THierarchicalStorage * Storage,
-    const UnicodeString & AName, const TCounters & Counters) const;
+    const UnicodeString AName, const TCounters & Counters) const;
   int Inc(const UnicodeString & AKey, TCounters & Counters, int32_t Increment);
   void SetMax(const UnicodeString & AKey, int32_t Value, TCounters & Counters);
   void Serialize(
