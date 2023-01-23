@@ -59,7 +59,7 @@ constexpr bool True = true;
 constexpr bool False = false;
 #endif
 #ifndef Integer
-using Integer = intptr_t;
+using Integer = int32_t;
 #endif
 #ifndef Int64
 using Int64 = int64_t;
