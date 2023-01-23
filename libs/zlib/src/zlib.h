@@ -745,7 +745,7 @@ ZEXTERN int ZEXPORT deflateTune(z_stream *strm, int good_length, int max_lazy, i
    returns Z_OK on success, or Z_STREAM_ERROR for an invalid deflate stream.
  */
 
-ZEXTERN unsigned long ZEXPORT deflateBound(z_stream *strm, uint64_t sourceLen);
+ZEXTERN uint64_t ZEXPORT deflateBound(z_stream *strm, uint64_t sourceLen);
 /*
      deflateBound() returns an upper bound on the compressed size after
    deflation of sourceLen bytes.  It must be called after deflateInit() or
@@ -1831,7 +1831,7 @@ ZEXTERN int              ZEXPORT inflateSyncPoint (z_stream *);
 ZEXTERN const uint32_t * ZEXPORT get_crc_table    (void);
 ZEXTERN int              ZEXPORT inflateUndermine (z_stream *, int);
 ZEXTERN int              ZEXPORT inflateValidate  (z_stream *, int);
-ZEXTERN unsigned long    ZEXPORT inflateCodesUsed (z_stream *);
+ZEXTERN uint64_t         ZEXPORT inflateCodesUsed (z_stream *);
 ZEXTERN int              ZEXPORT inflateResetKeep (z_stream *);
 ZEXTERN int              ZEXPORT deflateResetKeep (z_stream *);
 
