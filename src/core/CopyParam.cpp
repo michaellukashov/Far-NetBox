@@ -37,8 +37,8 @@ void TCopyParamType::Default()
   FRights.SetNumber(TRights::rfDefault);
   SetPreserveRights(false); // Was True until #106
   SetIgnorePermErrors(false);
-  FAsciiFileMask.SetMasks(UnicodeString("*.*html; *.htm; *.txt; *.php; *.php3; *.cgi; *.c; *.cpp; *.h; *.pas; "
-      "*.bas; *.tex; *.pl; *.js; .htaccess; *.xtml; *.css; *.cfg; *.ini; *.sh; *.xml"));
+  FAsciiFileMask.Masks(UnicodeString("*.*html; *.htm; *.txt; *.php; *.php3; *.cgi; *.c; *.cpp; *.h; *.pas; "
+    "*.bas; *.tex; *.pl; *.js; .htaccess; *.xtml; *.css; *.cfg; *.ini; *.sh; *.xml"));
   SetTransferMode(tmBinary);
   SetAddXToDirectories(true);
   SetResumeSupport(rsSmart);
@@ -47,7 +47,7 @@ void TCopyParamType::Default()
   SetLocalInvalidChars(::LocalInvalidChars);
   SetCalculateSize(true);
   SetFileMask(AnyMask);
-  GetIncludeFileMask().SetMasks("");
+  GetIncludeFileMask().Masks("");
   SetTransferSkipList(nullptr);
   SetTransferResumeFile("");
   SetClearArchive(false);
@@ -60,8 +60,8 @@ void TCopyParamType::Default()
   ExcludeEmptyDirectories = false;
   Size = -1;
   OnceDoneOperation = odoIdle;
-  OnTransferOut = nullptr;
-  OnTransferIn = nullptr;
+  FOnTransferOut = nullptr;
+  FOnTransferIn = nullptr;
 }
 
 UnicodeString TCopyParamType::GetInfoStr(
@@ -112,6 +112,7 @@ UnicodeString TCopyParamType::GenerateAssemblyCode(TAssemblyLanguage Language, i
   DoGetInfoStr(";", Attrs, Result, SomeAttrIncluded, UnicodeString(), ScriptArgs, Language, AssemblyCode);
   return Result;
 }
+
 #endif // #if 0
 
 void TCopyParamType::DoGetInfoStr(
@@ -138,25 +139,25 @@ void TCopyParamType::DoGetInfoStr(
     int Ident;
     switch (GetTransferMode())
     {
-    case tmBinary:
-      FormatMask = false;
-      Ident = 2;
-      break;
-    case tmAscii:
-      FormatMask = false;
-      Ident = 3;
-      break;
-    case tmAutomatic:
-    default:
-      FormatMask = !(GetAsciiFileMask() == Defaults.GetAsciiFileMask());
-      Ident = FormatMask ? 4 : 5;
-      break;
+      case tmBinary:
+        FormatMask = false;
+        Ident = 2;
+        break;
+      case tmAscii:
+        FormatMask = false;
+        Ident = 3;
+        break;
+      case tmAutomatic:
+      default:
+        FormatMask = !(GetAsciiFileMask() == Defaults.GetAsciiFileMask());
+        Ident = FormatMask ? 4 : 5;
+        break;
     }
     UnicodeString S = FORMAT(LoadStrPart(COPY_INFO_TRANSFER_TYPE2, 1),
         LoadStrPart(COPY_INFO_TRANSFER_TYPE2, Ident));
     if (FormatMask)
     {
-      S = FORMAT(S, GetAsciiFileMask().GetMasks());
+      S = FORMAT(S, GetAsciiFileMask().Masks());
     }
     AddToList(Result, S, Separator);
 
@@ -602,8 +603,8 @@ void TCopyParamType::Assign(const TCopyParamType *Source)
   COPY2(ExcludeEmptyDirectories);
   COPY2(Size);
   COPY2(OnceDoneOperation);
-  COPY(OnTransferOut);
-  COPY(OnTransferIn);
+  COPY2(OnTransferOut);
+  COPY2(OnTransferIn);
 #undef COPY
 }
 
@@ -795,7 +796,7 @@ UnicodeString TCopyParamType::GetLogStr() const
       BooleanToEngStr(GetClearArchive()),
       BooleanToEngStr(GetRemoveCtrlZ()),
       BooleanToEngStr(GetRemoveBOM()),
-      int(GetCPSLimit()),
+      uint32_t(GetCPSLimit()),
       BooleanToEngStr(GetNewerOnly()),
       BooleanToEngStr(EncryptNewFiles),
       BooleanToEngStr(ExcludeHiddenFiles),
@@ -843,7 +844,7 @@ bool TCopyParamType::AllowResume(int64_t Size, const UnicodeString & FileName) c
 bool TCopyParamType::AllowAnyTransfer() const
 {
   return
-    GetIncludeFileMask().GetMasks().IsEmpty() &&
+    GetIncludeFileMask().Masks().IsEmpty() &&
     !ExcludeHiddenFiles &&
     !ExcludeEmptyDirectories &&
     ((FTransferSkipList.get() == nullptr) || (FTransferSkipList->Count == 0)) &&
@@ -910,7 +911,7 @@ void TCopyParamType::SetTransferSkipList(TStrings *Value)
 void TCopyParamType::Load(THierarchicalStorage *Storage)
 {
   SetAddXToDirectories(Storage->ReadBool("AddXToDirectories", GetAddXToDirectories()));
-  GetAsciiFileMask().SetMasks(Storage->ReadString("Masks", GetAsciiFileMask().GetMasks()));
+  GetAsciiFileMask().Masks(Storage->ReadString("Masks", GetAsciiFileMask().Masks()));
   SetFileNameCase(static_cast<TFileNameCase>(Storage->ReadInteger("FileNameCase", GetFileNameCase())));
   SetPreserveReadOnly(Storage->ReadBool("PreserveReadOnly", GetPreserveReadOnly()));
   SetPreserveTime(Storage->ReadBool("PreserveTime", GetPreserveTime()));
@@ -927,7 +928,7 @@ void TCopyParamType::Load(THierarchicalStorage *Storage)
   SetCalculateSize(Storage->ReadBool("CalculateSize", GetCalculateSize()));
   if (Storage->ValueExists("IncludeFileMask"))
   {
-    GetIncludeFileMask().SetMasks(Storage->ReadString("IncludeFileMask", GetIncludeFileMask().GetMasks()));
+    GetIncludeFileMask().Masks(Storage->ReadString("IncludeFileMask", GetIncludeFileMask().Masks()));
   }
   else if (Storage->ValueExists("ExcludeFileMask"))
   {
@@ -937,12 +938,12 @@ void TCopyParamType::Load(THierarchicalStorage *Storage)
       bool NegativeExclude = Storage->ReadBool("NegativeExclude", false);
       if (NegativeExclude)
       {
-        GetIncludeFileMask().SetMasks(ExcludeFileMask);
+        GetIncludeFileMask().Masks(ExcludeFileMask);
       }
       // convert at least simple cases to new format
       else if (ExcludeFileMask.Pos(IncludeExcludeFileMasksDelimiter) == 0)
       {
-        GetIncludeFileMask().SetMasks(UnicodeString(IncludeExcludeFileMasksDelimiter) + ExcludeFileMask);
+        GetIncludeFileMask().Masks(UnicodeString(IncludeExcludeFileMasksDelimiter) + ExcludeFileMask);
       }
     }
   }
@@ -951,15 +952,15 @@ void TCopyParamType::Load(THierarchicalStorage *Storage)
   SetClearArchive(Storage->ReadBool("ClearArchive", GetClearArchive()));
   SetRemoveCtrlZ(Storage->ReadBool("RemoveCtrlZ", GetRemoveCtrlZ()));
   SetRemoveBOM(Storage->ReadBool("RemoveBOM", GetRemoveBOM()));
-  SetCPSLimit(Storage->ReadIntPtr("CPSLimit", GetCPSLimit()));
+  SetCPSLimit(Storage->ReadInteger("CPSLimit", GetCPSLimit()));
   SetNewerOnly(Storage->ReadBool("NewerOnly", GetNewerOnly()));
   EncryptNewFiles = Storage->ReadBool("EncryptNewFiles", EncryptNewFiles);
   ExcludeHiddenFiles = Storage->ReadBool("ExcludeHiddenFiles", ExcludeHiddenFiles);
   ExcludeEmptyDirectories = Storage->ReadBool("ExcludeEmptyDirectories", ExcludeEmptyDirectories);
   Size = -1;
   OnceDoneOperation = odoIdle;
-  OnTransferOut = nullptr;
-  OnTransferIn = nullptr;
+  FOnTransferOut = nullptr;
+  FOnTransferIn = nullptr;
 }
 
 void TCopyParamType::Save(THierarchicalStorage * Storage, const TCopyParamType * Defaults) const
@@ -1006,15 +1007,15 @@ void TCopyParamType::Save(THierarchicalStorage * Storage, const TCopyParamType *
   WRITE_DATA(Bool, ClearArchive);
   WRITE_DATA(Bool, RemoveCtrlZ);
   WRITE_DATA(Bool, RemoveBOM);
-  WRITE_DATA(IntPtr, CPSLimit);
+  WRITE_DATA(Integer, CPSLimit);
   WRITE_DATA(Bool, NewerOnly);
   WRITE_DATA(Bool, EncryptNewFiles);
   WRITE_DATA(Bool, ExcludeHiddenFiles);
   WRITE_DATA(Bool, ExcludeEmptyDirectories);
   DebugAssert(Size < 0);
   DebugAssert(OnceDoneOperation == odoIdle);
-  DebugAssert(OnTransferOut == nullptr);
-  DebugAssert(OnTransferIn == nullptr);
+  DebugAssert(FOnTransferOut.empty());
+  DebugAssert(FOnTransferIn.empty());
 }
 
 #define C(Property) (Get ## Property() == rhp.Get ## Property())
@@ -1024,12 +1025,12 @@ bool TCopyParamType::operator==(const TCopyParamType &rhp) const
 {
   DebugAssert(FTransferSkipList.get() == nullptr);
   DebugAssert(FTransferResumeFile.IsEmpty());
-  DebugAssert(OnTransferOut == nullptr);
-  DebugAssert(OnTransferIn == nullptr);
+  DebugAssert(FOnTransferOut.empty());
+  DebugAssert(FOnTransferIn.empty());
   DebugAssert(rhp.FTransferSkipList.get() == nullptr);
   DebugAssert(rhp.FTransferResumeFile.IsEmpty());
-  DebugAssert(rhp.OnTransferOut == nullptr);
-  DebugAssert(rhp.OnTransferIn == nullptr);
+  DebugAssert(rhp.FOnTransferOut.empty());
+  DebugAssert(rhp.FOnTransferIn.empty());
   return
     C(AddXToDirectories) &&
     C(AsciiFileMask) &&
@@ -1062,8 +1063,8 @@ bool TCopyParamType::operator==(const TCopyParamType &rhp) const
 #undef C2
 #undef C
 
-const unsigned long MinSpeed = 8 * 1024;
-const unsigned long MaxSpeed = 8 * 1024 * 1024;
+const uint32_t MinSpeed = 8 * 1024;
+const uint32_t MaxSpeed = 8 * 1024 * 1024;
 
 static bool TryGetSpeedLimit(const UnicodeString Text, uint32_t &Speed)
 {
@@ -1143,19 +1144,19 @@ TOperationSide ReverseOperationSide(TOperationSide Side)
   TOperationSide Result;
   switch (Side)
   {
-  case osLocal:
-    Result = osRemote;
-    break;
+    case osLocal:
+      Result = osRemote;
+      break;
 
-  case osRemote:
-    Result = osLocal;
-    break;
+    case osRemote:
+      Result = osLocal;
+      break;
 
-  default:
-  case osCurrent:
-    DebugFail();
-    Result = Side;
-    break;
+    default:
+    case osCurrent:
+      DebugFail();
+      Result = Side;
+      break;
   }
   return Result;
 }
