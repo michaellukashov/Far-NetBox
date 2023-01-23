@@ -3069,27 +3069,27 @@ void TQueueFileList::Clear()
   FLastParallelOperationVersion = -1;
 }
 
-void TQueueFileList::Add(const UnicodeString & FileName, int State)
+void TQueueFileList::Add(const UnicodeString & FileName, int32_t State)
 {
   FList->AddObject(FileName, reinterpret_cast<TObject *>(State));
 }
 
-UnicodeString TQueueFileList::GetFileName(int Index) const
+UnicodeString TQueueFileList::GetFileName(int32_t Index) const
 {
   return FList->GetString(Index);
 }
 
-int TQueueFileList::GetState(int Index) const
+int32_t TQueueFileList::GetState(int32_t Index) const
 {
-  return reinterpret_cast<int>(FList->GetObj(Index));
+  return reinterpret_cast<int32_t>(FList->GetObj(Index));
 }
 
-void TQueueFileList::SetState(int Index, int State)
+void TQueueFileList::SetState(int32_t Index, int32_t State)
 {
   FList->SetObj(Index, reinterpret_cast<TObject *>(State));
 }
 
-int TQueueFileList::GetCount() const
+int32_t TQueueFileList::GetCount() const
 {
   return FList->Count();
 }

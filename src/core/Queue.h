@@ -570,11 +570,11 @@ friend class TParallelOperation;
 public:
   TQueueFileList();
   void Clear();
-  void Add(const UnicodeString & FileName, int State);
-  UnicodeString GetFileName(int Index) const;
-  int GetState(int Index) const;
-  void SetState(int Index, int State);
-  int GetCount() const;
+  void Add(const UnicodeString & FileName, int32_t State);
+  UnicodeString GetFileName(int32_t Index) const;
+  int32_t GetState(int32_t Index) const;
+  void SetState(int32_t Index, int32_t State);
+  int32_t GetCount() const;
 private:
   std::unique_ptr<TStrings> FList;
   TParallelOperation * FLastParallelOperation;
