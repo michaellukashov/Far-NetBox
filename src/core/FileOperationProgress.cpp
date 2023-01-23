@@ -22,12 +22,12 @@ TFileOperationProgressType::TPersistence::TPersistence() noexcept
   Clear(true, true);
 }
 
-bool TFileOperationProgressType::IsIndeterminateOperation(TFileOperation Operation) const
+bool TFileOperationProgressType::IsIndeterminateOperation(TFileOperation Operation)
 {
   return (Operation == foCalculateSize);
 }
 
-bool TFileOperationProgressType::IsTransferOperation(TFileOperation Operation) const
+bool TFileOperationProgressType::IsTransferOperation(TFileOperation Operation)
 {
   return (Operation == foCopy) || (Operation == foMove);
 }
@@ -66,6 +66,10 @@ TFileOperationProgressType::TFileOperationProgressType(
   FOnProgress(AOnProgress),
   FOnFinished(AOnFinished)
 {
+  FOnProgress = AOnProgress;
+  FOnFinished = AOnFinished;
+  FParent = Parent;
+  FReset = false;
   Init();
   Clear();
 }
@@ -77,53 +81,6 @@ TFileOperationProgressType::~TFileOperationProgressType() noexcept
   SAFE_DESTROY_EX(TCriticalSection, FSection);
   SAFE_DESTROY_EX(TCriticalSection, FUserSelectionsSection);
 }
-
-TFileOperationProgressType&TFileOperationProgressType::operator=(const TFileOperationProgressType& rhs)
-{
-  FFileName = rhs.FFileName;
-  FFullFileName = rhs.FFullFileName;
-  FDirectory = rhs.FDirectory;
-  FAsciiTransfer = rhs.FAsciiTransfer;
-  FCount = rhs.FCount;
-  FFilesFinished = rhs.FFilesFinished;
-  FFilesFinishedSuccessfully = rhs.FFilesFinishedSuccessfully;
-  FSuspended = rhs.FSuspended;
-  FSuspendTime = rhs.FSuspendTime;
-  FInProgress = rhs.FInProgress;
-  FDone = rhs.FDone;
-  FFileInProgress = rhs.FFileInProgress;
-  FTotalSkipped = rhs.FTotalSkipped;
-  FTotalSize = rhs.FTotalSize;
-  FSkippedSize = rhs.FSkippedSize;
-  FTotalSizeSet = rhs.FTotalSizeSet;
-  FFileStartTime = rhs.FFileStartTime;
-  FFilesFinished = rhs.FFilesFinished;
-  FReset = rhs.FReset;
-  FLastSecond = rhs.FLastSecond;
-  FRemainingCPS = rhs.FRemainingCPS;
-  FCounterSet = rhs.FCounterSet;
-  FOperation = rhs.FOperation;
-  FSide = rhs.FSide;
-  FLocalSize = rhs.FLocalSize;
-  FLocallyUsed = rhs.FLocallyUsed;
-  FOperation = rhs.FOperation;
-  FTemp = rhs.FTemp;
-  FPersistence = rhs.FPersistence;
-  FTransferSize = rhs.FTransferSize;
-
-  FTransferredSize = rhs.FTransferredSize;
-  FCancel = rhs.FCancel;
-  FCount = rhs.FCount;
-
-  FCPSLimit = rhs.FCPSLimit;
-  FSuspended = rhs.FSuspended;
-
-  FTransferringFile = rhs.FTransferringFile;
-  FLastSecond = rhs.FLastSecond;
-
-  return *this;
-}
-
 
 void TFileOperationProgressType::Init()
 {
@@ -177,7 +134,6 @@ void TFileOperationProgressType::DoClear(bool Batch, bool Speed)
   FRemainingCPS = 0;
   FCounterSet = false;
   FOperation = foNone;
-  FSide = osLocal;
   FFileName.Clear();
   FDirectory.Clear();
   FAsciiTransfer = false;
@@ -229,7 +185,7 @@ void TFileOperationProgressType::Start(TFileOperation AOperation,
 
 void TFileOperationProgressType::Start(TFileOperation AOperation,
   TOperationSide ASide, int32_t ACount, bool ATemp,
-  const UnicodeString ADirectory, uint32_t ACPSLimit, TOnceDoneOperation InitialOnceDoneOperation)
+  const UnicodeString ADirectory, uint64_t ACPSLimit, TOnceDoneOperation InitialOnceDoneOperation)
 {
 
   {
@@ -386,7 +342,7 @@ void TFileOperationProgressType::Finish(const UnicodeString AFileName,
   DebugAssert(FInProgress);
 
   // Cancel reader is guarded
-  FOnFinished(FOperation, FSide, FTemp, AFileName,
+  FOnFinished(FOperation, Side(), FTemp, AFileName,
     Success && (FCancel == csContinue), OnceDoneOperation);
   FFilesFinished++;
   if (Success)
@@ -428,10 +384,10 @@ void TFileOperationProgressType::Succeeded(int32_t Count)
   }
 }
 
-void TFileOperationProgressType::SetFile(UnicodeString AFileName, bool AFileInProgress)
+void TFileOperationProgressType::SetFile(const UnicodeString AFileName, bool AFileInProgress)
 {
   UnicodeString FileName = AFileName;
-  FFullFileName = FileName;
+  FFullFileName = AFileName;
   if (Side() == osRemote)
   {
     // historically set were passing filename-only for remote site operations,
@@ -879,7 +835,7 @@ uint64_t TFileOperationProgressType::TransferBlockSize()
   return Result;
 }
 
-uint64_t TFileOperationProgressType::StaticBlockSize() const
+uint64_t TFileOperationProgressType::StaticBlockSize()
 {
   return TRANSFER_BUF_SIZE;
 }
@@ -907,10 +863,10 @@ TDateTime TFileOperationProgressType::TimeElapsed() const
   return Now() - GetStartTime();
 }
 
-uint32_t TFileOperationProgressType::CPS() const
+uint64_t TFileOperationProgressType::CPS() const
 {
   TGuard Guard(*FSection); nb::used(Guard);
-  return nb::ToUIntPtr(GetCPS());
+  return nb::ToUInt64(GetCPS());
 }
 
 inline static unsigned int CalculateCPS(int64_t Transferred, uint32_t MSecElapsed)
@@ -1076,4 +1032,50 @@ bool TFileOperationProgressType::IsIndeterminate() const
 bool TFileOperationProgressType::IsTransfer() const
 {
   return IsTransferOperation(Operation);
+}
+
+TFileOperationProgressType&TFileOperationProgressType::operator=(const TFileOperationProgressType& rhs)
+{
+  FFileName = rhs.FFileName;
+  FFullFileName = rhs.FFullFileName;
+  FDirectory = rhs.FDirectory;
+  FAsciiTransfer = rhs.FAsciiTransfer;
+  FCount = rhs.FCount;
+  FFilesFinished = rhs.FFilesFinished;
+  FFilesFinishedSuccessfully = rhs.FFilesFinishedSuccessfully;
+  FSuspended = rhs.FSuspended;
+  FSuspendTime = rhs.FSuspendTime;
+  FInProgress = rhs.FInProgress;
+  FDone = rhs.FDone;
+  FFileInProgress = rhs.FFileInProgress;
+  FTotalSkipped = rhs.FTotalSkipped;
+  FTotalSize = rhs.FTotalSize;
+  FSkippedSize = rhs.FSkippedSize;
+  FTotalSizeSet = rhs.FTotalSizeSet;
+  FFileStartTime = rhs.FFileStartTime;
+  FFilesFinished = rhs.FFilesFinished;
+  FReset = rhs.FReset;
+  FLastSecond = rhs.FLastSecond;
+  FRemainingCPS = rhs.FRemainingCPS;
+  FCounterSet = rhs.FCounterSet;
+  FOperation = rhs.FOperation;
+  FPersistence.Side = rhs.Side();
+  FLocalSize = rhs.FLocalSize;
+  FLocallyUsed = rhs.FLocallyUsed;
+  FOperation = rhs.FOperation;
+  FTemp = rhs.FTemp;
+  FPersistence = rhs.FPersistence;
+  FTransferSize = rhs.FTransferSize;
+
+  FTransferredSize = rhs.FTransferredSize;
+  FCancel = rhs.FCancel;
+  FCount = rhs.FCount;
+
+  FCPSLimit = rhs.FCPSLimit;
+  FSuspended = rhs.FSuspended;
+
+  FTransferringFile = rhs.FTransferringFile;
+  FLastSecond = rhs.FLastSecond;
+
+  return *this;
 }

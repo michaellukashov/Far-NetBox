@@ -212,8 +212,6 @@ public:
     TFileOperationProgressEvent AOnProgress, TFileOperationFinishedEvent AOnFinished,
     TFileOperationProgressType *Parent = nullptr) noexcept;
   virtual ~TFileOperationProgressType() noexcept;
-  TFileOperationProgressType(const TFileOperationProgressType&) = default;
-  TFileOperationProgressType& operator=(const TFileOperationProgressType&);
   void Assign(const TFileOperationProgressType &Other);
   void AssignButKeepSuspendState(const TFileOperationProgressType &Other);
   void AddLocallyUsed(int64_t ASize);
@@ -279,6 +277,8 @@ public:
   static bool IsIndeterminateOperation(TFileOperation Operation);
   static bool IsTransferOperation(TFileOperation Operation);
 
+  TFileOperationProgressType(const TFileOperationProgressType&) = default;
+  TFileOperationProgressType& operator=(const TFileOperationProgressType&);
   TFileOperation GetOperation() const { return FOperation; }
   // on what side if operation being processed (local/remote), source of copy
   UnicodeString GetFileName() const { return FFileName; }
