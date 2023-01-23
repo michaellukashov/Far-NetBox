@@ -2679,9 +2679,9 @@ void TSessionData::RollbackTunnel()
   }
 }
 //---------------------------------------------------------------------
-TSessionData * TSessionData::CreateTunnelData(int TunnelLocalPortNumber)
+TSessionData * TSessionData::CreateTunnelData(int32_t TunnelLocalPortNumber)
 {
-  std::unique_ptr<TSessionData> TunnelData(new TSessionData(EmptyStr));
+  std::unique_ptr<TSessionData> TunnelData(std::make_unique<TSessionData>(EmptyStr));
   TunnelData->Assign(StoredSessions->DefaultSettings);
   TunnelData->Name = FMTLOAD(TUNNEL_SESSION_NAME, (SessionName));
   TunnelData->Tunnel = false;

@@ -139,6 +139,7 @@ public:
   static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TSessionData); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TSessionData) || TNamedObject::is(Kind); }
   friend class TTerminal;
+  void SessionSetUserName(UnicodeString value);
 private:
   UnicodeString FHostName;
   int32_t FPortNumber{0};
@@ -220,7 +221,7 @@ private:
   int32_t FSFTPUploadQueue{0};
   int32_t FSFTPListingQueue{0};
   int32_t FSFTPMaxVersion{0};
-  int32_t FSFTPMaxPacketSize{0};
+  uint32_t FSFTPMaxPacketSize{0};
   TAutoSwitch FSFTPRealPath;
   TDSTMode FDSTMode{dstmKeep};
   TAutoSwitch FSFTPBugs[SFTP_BUG_COUNT]{};
@@ -290,7 +291,6 @@ public:
   UnicodeString GetHostNameSource() const;
   void SetPortNumber(int32_t value);
   void SetUserName(UnicodeString value);
-  void SessionSetUserName(UnicodeString value);
   UnicodeString GetUserNameExpanded() const;
   UnicodeString GetUserNameSource() const;
   void SetPassword(UnicodeString value);
@@ -401,7 +401,7 @@ public:
   void SetSFTPUploadQueue(int32_t value);
   void SetSFTPListingQueue(int32_t value);
   void SetSFTPMaxVersion(int32_t value);
-  void SetSFTPMaxPacketSize(int32_t value);
+  void SetSFTPMaxPacketSize(uint32_t value);
   void SetSFTPRealPath(TAutoSwitch value);
   void SetSFTPBug(TSftpBug Bug, TAutoSwitch value);
   TAutoSwitch GetSFTPBug(TSftpBug Bug) const;
@@ -492,35 +492,33 @@ public:
   static RawByteString StronglyRecryptPassword(const RawByteString Password, UnicodeString Key);
   static bool DoIsProtocolUrl(const UnicodeString AUrl, const UnicodeString AProtocol, int32_t & ProtocolLen);
   static bool IsProtocolUrl(const UnicodeString AUrl, const UnicodeString Protocol, int32_t & ProtocolLen);
-  static void AddSwitch(UnicodeString &Result, const UnicodeString Name, bool Rtf);
-  static void AddSwitch(UnicodeString &Result, const UnicodeString Switch);
+  static void AddSwitch(UnicodeString & Result, const UnicodeString & Name, bool Rtf);
   static void AddSwitch(
-    UnicodeString &Result, const UnicodeString Name, const UnicodeString & Value, bool Rtf);
+    UnicodeString &Result, const UnicodeString & Name, const UnicodeString & Value, bool Rtf);
   static void AddSwitch(UnicodeString &Result, const UnicodeString AName, int32_t Value, bool Rtf);
 #if 0
   static void AddAssemblyProperty(
     UnicodeString &Result, TAssemblyLanguage Language,
     const UnicodeString &Name, const UnicodeString &Value);
   static void AddAssemblyProperty(
-    const UnicodeString &Result, TAssemblyLanguage Language,
+    UnicodeString &Result, TAssemblyLanguage Language,
     const UnicodeString &Name, const UnicodeString &Type,
     const UnicodeString &Member);
   static void AddAssemblyProperty(
-    const UnicodeString &Result, TAssemblyLanguage Language,
+    UnicodeString &Result, TAssemblyLanguage Language,
     const UnicodeString &Name, int Value);
   void AddAssemblyProperty(
     UnicodeString &Result, TAssemblyLanguage Language,
     const UnicodeString &Name, bool Value);
 #endif // #if 0
   TStrings * SaveToOptions(const TSessionData * Default);
-  void ApplyRawSettings(TStrings * RawSettings);
   TStrings * GetRawSettingsForUrl();
   void DoCopyData(TSessionData * SourceData, bool NoRecrypt);
   bool HasS3AutoCredentials() const;
   template<class AlgoT>
   void SetAlgoList(AlgoT * List, const AlgoT * DefaultList, const UnicodeString * Names,
     int32_t Count, AlgoT WarnAlgo, UnicodeString AValue);
-  static void Remove(THierarchicalStorage * Storage, UnicodeString Name);
+  static void Remove(THierarchicalStorage * Storage, const UnicodeString Name);
 
   __property UnicodeString InternalStorageKey = { read = GetInternalStorageKey };
 
@@ -554,12 +552,12 @@ public:
   void CopyDataNoRecrypt(TSessionData * SourceData);
   void CopyDirectoriesStateData(TSessionData * SourceData);
   bool ParseUrl(UnicodeString Url, TOptions * Options,
-    TStoredSessionList *AStoredSessions, bool &DefaultsOnly,
-    UnicodeString *AFileName, bool *AProtocolDefined, UnicodeString *MaskedUrl, int32_t Flags);
+    TStoredSessionList * AStoredSessions, bool &DefaultsOnly,
+    UnicodeString * AFileName, bool * AProtocolDefined, UnicodeString *MaskedUrl, int32_t Flags);
   TStrings * SaveToOptions(const TSessionData * Default, bool SaveName, bool PuttyExport);
   void ConfigureTunnel(int32_t PortNumber);
   void RollbackTunnel();
-  TSessionData * CreateTunnelData(int TunnelLocalPortNumber);
+  TSessionData * CreateTunnelData(int32_t TunnelLocalPortNumber);
   void ExpandEnvironmentVariables();
   void DisableAuthenticationsExceptPassword();
   bool IsSame(const TSessionData * Default, bool AdvancedOnly) const;
@@ -1047,8 +1045,8 @@ private:
 NB_CORE_EXPORT UnicodeString GetExpandedLogFileName(UnicodeString LogFileName, TDateTime Started, TSessionData *SessionData);
 NB_CORE_EXPORT bool GetIsSshProtocol(TFSProtocol FSProtocol);
 NB_CORE_EXPORT int32_t GetDefaultPort(TFSProtocol FSProtocol, TFtps Ftps);
-NB_CORE_EXPORT bool IsIPv6Literal(UnicodeString HostName);
-NB_CORE_EXPORT UnicodeString EscapeIPv6Literal(UnicodeString IP);
+NB_CORE_EXPORT bool IsIPv6Literal(const UnicodeString HostName);
+NB_CORE_EXPORT UnicodeString EscapeIPv6Literal(const UnicodeString IP);
 NB_CORE_EXPORT TFSProtocol NormalizeFSProtocol(TFSProtocol FSProtocol);
 
 NB_CORE_EXPORT bool GetCodePageInfo(UINT CodePage, CPINFOEX &CodePageInfoEx);
