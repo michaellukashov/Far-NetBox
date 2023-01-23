@@ -3079,12 +3079,12 @@ UnicodeString TQueueFileList::GetFileName(int32_t Index) const
   return FList->GetString(Index);
 }
 
-int32_t TQueueFileList::GetState(int32_t Index) const
+int64_t TQueueFileList::GetState(int32_t Index) const
 {
-  return reinterpret_cast<int32_t>(FList->GetObj(Index));
+  return reinterpret_cast<int64_t>(FList->GetObj(Index));
 }
 
-void TQueueFileList::SetState(int32_t Index, int32_t State)
+void TQueueFileList::SetState(int32_t Index, int64_t State)
 {
   FList->SetObj(Index, reinterpret_cast<TObject *>(State));
 }

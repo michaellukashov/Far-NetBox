@@ -572,8 +572,8 @@ public:
   void Clear();
   void Add(const UnicodeString & FileName, int32_t State);
   UnicodeString GetFileName(int32_t Index) const;
-  int32_t GetState(int32_t Index) const;
-  void SetState(int32_t Index, int32_t State);
+  int64_t GetState(int32_t Index) const;
+  void SetState(int32_t Index, int64_t State);
   int32_t GetCount() const;
 private:
   std::unique_ptr<TStrings> FList;
