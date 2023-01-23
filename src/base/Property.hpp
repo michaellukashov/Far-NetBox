@@ -196,7 +196,7 @@ public:
 };
 
 template <typename T>
-class ROPropertySimple
+class ROPropertySimple //8 bytes
 {
 CUSTOM_MEM_ALLOCATION_IMPL
 private:
@@ -421,4 +421,4 @@ public:
 //template<int s> struct CheckSizeT;
 //CheckSizeT<sizeof(ROProperty<int>)> checkSize;
 //template<int s> struct CheckSizeT;
-//CheckSizeT<sizeof(RWProperty<double>)> checkSize;
+//CheckSizeT<sizeof(ROPropertySimple<double>)> checkSize;
