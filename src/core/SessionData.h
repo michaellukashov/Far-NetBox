@@ -139,6 +139,7 @@ public:
   static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TSessionData); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TSessionData) || TNamedObject::is(Kind); }
   friend class TTerminal;
+  friend class TSecureShell;
   void SessionSetUserName(UnicodeString value);
 private:
   UnicodeString FHostName;

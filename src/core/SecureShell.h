@@ -10,8 +10,8 @@
 
 #ifndef PuttyIntfH
 __removed struct Backend_vtable;
+__removed struct Backend;
 __removed struct Conf;
-struct Backend;
 #endif
 
 struct _WSANETWORKEVENTS;
@@ -115,7 +115,7 @@ public:
   bool TryFtp();
   UnicodeString ConvertInput(const RawByteString Input, uint32_t CodePage = CP_ACP) const;
   void GetRealHost(UnicodeString &Host, int32_t &Port) const;
-  UnicodeString RetrieveHostKey(const UnicodeString & Host, int32_t Port, const UnicodeString & KeyType) const;
+  UnicodeString RetrieveHostKey(const UnicodeString & Host, int32_t Port, const UnicodeString & KeyType);
   bool HaveAcceptNewHostKeyPolicy() const;
   THierarchicalStorage * GetHostKeyStorage();
   bool VerifyCachedHostKey(
