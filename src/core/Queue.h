@@ -41,8 +41,8 @@ class NB_CORE_EXPORT TSignalThread : public TSimpleThread
 public:
   static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TSignalThread); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TSignalThread) || TSimpleThread::is(Kind); }
-public:
   void InitSignalThread(bool LowPriority, HANDLE Event = nullptr);
+public:
   virtual void Start() override;
   virtual void Terminate() override;
   void TriggerEvent() const;
@@ -68,31 +68,11 @@ class TQueueItemProxy;
 class TTerminalQueueStatus;
 class TQueueFileList;
 
-#if 0
-typedef void (__closure *TQueueListUpdate)
-  (TTerminalQueue *Queue);
-#endif // #if 0
 using TQueueListUpdateEvent = nb::FastDelegate1<void,
   TTerminalQueue * /*Queue*/>;
-#if 0
-typedef void (__closure *TQueueItemUpdateEvent)
-  (TTerminalQueue *Queue, TQueueItem *Item);
-enum TQueueEvent { qeEmpty, qeEmptyButMonitored, qePendingUserAction };
-#endif // #if 0
 using TQueueItemUpdateEvent = nb::FastDelegate2<void,
   TTerminalQueue * /*Queue*/, TQueueItem * /*Item*/>;
-
-enum TQueueEvent
-{
-  qeEmpty,
-  qeEmptyButMonitored,
-  qePendingUserAction,
-};
-
-#if 0
-typedef void (__closure *TQueueEventEvent)
-(TTerminalQueue *Queue, TQueueEvent Event);
-#endif // #if 0
+enum TQueueEvent { qeEmpty, qeEmptyButMonitored, qePendingUserAction };
 using TQueueEventEvent = nb::FastDelegate2<void,
   TTerminalQueue * /*Queue*/, TQueueEvent /*Event*/>;
 
@@ -109,8 +89,8 @@ class NB_CORE_EXPORT TTerminalQueue : public TSignalThread
 public:
   explicit TTerminalQueue(TTerminal *ATerminal, TConfiguration *AConfiguration) noexcept;
   virtual ~TTerminalQueue() noexcept;
-
   void InitTerminalQueue();
+
   void AddItem(TQueueItem *Item);
   TTerminalQueueStatus *CreateStatus(TTerminalQueueStatus *&Current);
   void Idle();
@@ -224,12 +204,9 @@ public:
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TQueueItem) || TObject::is(Kind); }
 
 public:
-  enum TStatus
-  {
+  enum TStatus {
     qsPending, qsConnecting, qsProcessing, qsPrompt, qsQuery, qsError,
-    qsPaused, qsDone,
-  };
-
+    qsPaused, qsDone };
   struct TInfo : public TObject
   {
     TInfo() = default;
@@ -251,6 +228,7 @@ public:
 
   HANDLE GetCompleteEvent() const { return FCompleteEvent; }
   void SetCompleteEvent(HANDLE Value) { FCompleteEvent = Value; }
+  void SetMasks(const UnicodeString Value);
 
 protected:
   TStatus FStatus{qsPending};
@@ -266,9 +244,6 @@ protected:
   explicit TQueueItem(TObjectClassId Kind) noexcept;
   virtual ~TQueueItem() noexcept;
 
-public:
-  void SetMasks(const UnicodeString Value);
-public:
   void SetStatus(TStatus Status);
   TStatus GetStatus() const;
   void Execute(TTerminalItem *TerminalItem);
@@ -336,7 +311,6 @@ private:
 
   explicit TQueueItemProxy(TTerminalQueue *Queue, TQueueItem *QueueItem) noexcept;
   virtual ~TQueueItemProxy() noexcept;
-
 public:
   int32_t GetIndex() const;
   TFileOperationProgressType *GetProgressData() const;

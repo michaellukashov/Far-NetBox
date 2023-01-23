@@ -2250,7 +2250,7 @@ void TTransferQueueItem::DoExecute(TTerminal *Terminal)
   TLocatedQueueItem::DoExecute(Terminal);
 
   DebugAssert(Terminal != nullptr);
-  FParallelOperation.reset(std::make_unique<TParallelOperation>(FInfo->Side));
+  FParallelOperation.reset(new TParallelOperation(FInfo->Side));
   try__finally
   {
     DoTransferExecute(Terminal, FParallelOperation.get());
@@ -2641,40 +2641,40 @@ void TTerminalThread::RunAction(TNotifyEvent Action)
       {
         switch (WaitForSingleObject(FActionEvent, Wait))
         {
-        case WAIT_OBJECT_0:
-          Done = true;
+          case WAIT_OBJECT_0:
+            Done = true;
+            break;
+
+          case WAIT_TIMEOUT:
+          {
+            if (FUserAction != nullptr)
+            {
+              try
+              {
+                FUserAction->Execute(nullptr);
+              }
+              catch (Exception &E)
+              {
+                SaveException(E, FException);
+              }
+
+              FUserAction = nullptr;
+              TriggerEvent();
+              Wait = 0;
+            }
+            else
+            {
+              if (FOnIdle != nullptr)
+              {
+                FOnIdle(nullptr);
+              }
+              Wait = nb::Min(Wait + 10, MaxWait);
+            }
+          }
           break;
 
-        case WAIT_TIMEOUT:
-        {
-          if (FUserAction != nullptr)
-          {
-            try
-            {
-              FUserAction->Execute(nullptr);
-            }
-            catch (Exception &E)
-            {
-              SaveException(E, FException);
-            }
-
-            FUserAction = nullptr;
-            TriggerEvent();
-            Wait = 0;
-          }
-          else
-          {
-            if (FOnIdle != nullptr)
-            {
-              FOnIdle(nullptr);
-            }
-            Wait = nb::Min(Wait + 10, MaxWait);
-          }
-        }
-        break;
-
-        default:
-          throw Exception("Error waiting for background session task to complete");
+          default:
+            throw Exception("Error waiting for background session task to complete");
         }
 
         if (FAllowAbandon && !Done && FCancel && (Now() >= FCancelAfter))
@@ -2702,7 +2702,7 @@ void TTerminalThread::RunAction(TNotifyEvent Action)
       SAFE_DESTROY_EX(Exception, FException);
     } end_try__finally
   }
-  catch (...)
+  catch(...)
   {
     if (FCancelled)
     {
@@ -2737,7 +2737,7 @@ void TTerminalThread::ProcessEvent()
   {
     FAction(nullptr);
   }
-  catch (Exception &E)
+  catch(Exception & E)
   {
     SaveException(E, FException);
   }
@@ -2893,7 +2893,7 @@ void TTerminalThread::WaitForUserAction(TUserAction *UserAction)
 }
 
 void TTerminalThread::TerminalInformation(
-  TTerminal *Terminal, const UnicodeString AStr, bool Status, int32_t Phase, const UnicodeString Additional)
+  TTerminal *Terminal, const UnicodeString AStr, bool Status, int32_t Phase, const UnicodeString & Additional)
 {
   TInformationUserAction Action(FOnInformation);
   Action.Terminal = Terminal;
@@ -3076,20 +3076,20 @@ void TQueueFileList::Add(const UnicodeString & FileName, int State)
 
 UnicodeString TQueueFileList::GetFileName(int Index) const
 {
-  return FList->Strings[Index];
+  return FList->GetString(Index);
 }
 
 int TQueueFileList::GetState(int Index) const
 {
-  return reinterpret_cast<int>(FList->Objects[Index]);
+  return reinterpret_cast<int>(FList->GetObj(Index));
 }
 
 void TQueueFileList::SetState(int Index, int State)
 {
-  FList->Objects[Index] = reinterpret_cast<TObject *>(State);
+  FList->SetObj(Index, reinterpret_cast<TObject *>(State));
 }
 
 int TQueueFileList::GetCount() const
 {
-  return FList->Count;
+  return FList->Count();
 }
