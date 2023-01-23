@@ -149,7 +149,8 @@ private:
   int32_t FPortNumber{0};
   UnicodeString FUserName;
   RawByteString FPassword;
-  RawByteString FNewPassword;
+  //RawByteString FNewPassword;
+  UnicodeString FNewPassword;
   bool FChangePassword{false};
   int32_t FPingInterval{0};
   TPingType FPingType{ptOff};
@@ -496,9 +497,9 @@ public:
   static RawByteString StronglyRecryptPassword(const RawByteString Password, UnicodeString Key);
   static bool DoIsProtocolUrl(const UnicodeString AUrl, const UnicodeString AProtocol, int32_t & ProtocolLen);
   static bool IsProtocolUrl(const UnicodeString AUrl, const UnicodeString Protocol, int32_t & ProtocolLen);
-  static void AddSwitch(UnicodeString & Result, const UnicodeString & Name, bool Rtf);
+  static void AddSwitch(UnicodeString & Result, const UnicodeString Name, bool Rtf);
   static void AddSwitch(
-    UnicodeString &Result, const UnicodeString & Name, const UnicodeString & Value, bool Rtf);
+    UnicodeString &Result, const UnicodeString Name, const UnicodeString Value, bool Rtf);
   static void AddSwitch(UnicodeString &Result, const UnicodeString AName, int32_t Value, bool Rtf);
 #if 0
   static void AddAssemblyProperty(
@@ -517,7 +518,7 @@ public:
 #endif // #if 0
   TStrings * SaveToOptions(const TSessionData * Default);
   TStrings * GetRawSettingsForUrl();
-  void DoCopyData(TSessionData * SourceData, bool NoRecrypt);
+  void DoCopyData(const TSessionData * SourceData, bool NoRecrypt);
   bool HasS3AutoCredentials() const;
   template<class AlgoT>
   void SetAlgoList(AlgoT * List, const AlgoT * DefaultList, const UnicodeString * Names,
@@ -553,7 +554,7 @@ public:
   virtual void Assign(const TPersistent * Source);
   virtual int32_t Compare(const TNamedObject * Other) const override;
   void CopyData(const TSessionData * Source);
-  void CopyDataNoRecrypt(TSessionData * SourceData);
+  void CopyDataNoRecrypt(const TSessionData * SourceData);
   void CopyDirectoriesStateData(TSessionData * SourceData);
   bool ParseUrl(UnicodeString Url, TOptions * Options,
     TStoredSessionList * AStoredSessions, bool &DefaultsOnly,
@@ -572,7 +573,7 @@ public:
   bool HasRawSettingsForUrl();
   bool HasSessionName() const;
   bool HasAutoCredentials() const;
-  int GetDefaultPort() const;
+  int32_t GetDefaultPort() const;
 
   UnicodeString GenerateOpenCommandArgs(bool Rtf) const;
   __removed void GenerateAssemblyCode(TAssemblyLanguage Language, UnicodeString & Head, UnicodeString & Tail, int & Indent);
@@ -605,8 +606,11 @@ public:
   __property UnicodeString Password  = { read = GetPassword, write = SetPassword };
   RWProperty<UnicodeString> Password{nb::bind(&TSessionData::GetPassword, this), nb::bind(&TSessionData::SetPassword, this)};
   __property UnicodeString NewPassword  = { read = GetNewPassword, write = SetNewPassword };
+  RWPropertySimple<UnicodeString> NewPassword{&FNewPassword, nb::bind(&TSessionData::SetNewPassword, this)};
   __property bool ChangePassword  = { read = FChangePassword, write = SetChangePassword };
+  RWPropertySimple<bool> ChangePassword{&FChangePassword, nb::bind(&TSessionData::SetChangePassword, this)};
   __property int PingInterval  = { read = FPingInterval, write = SetPingInterval };
+  RWPropertySimple<int32_t> PingInterval{&FPingInterval, nb::bind(&TSessionData::SetPingInterval, this)};
   __property bool TryAgent  = { read = FTryAgent, write = SetTryAgent };
   RWProperty<bool> TryAgent{nb::bind(&TSessionData::GetTryAgent, this), nb::bind(&TSessionData::SetTryAgent, this)};
   __property bool AgentFwd  = { read = FAgentFwd, write = SetAgentFwd };
@@ -618,16 +622,20 @@ public:
   __property bool AuthGSSAPIKEX  = { read=FAuthGSSAPIKEX, write=SetAuthGSSAPIKEX };
   __property bool GSSAPIFwdTGT = { read = FGSSAPIFwdTGT, write = SetGSSAPIFwdTGT };
   __property bool ChangeUsername  = { read = FChangeUsername, write = SetChangeUsername };
+  RWPropertySimple<bool> ChangeUsername{&FChangeUsername, nb::bind(&TSessionData::SetChangeUsername, this)};
   __property bool Compression  = { read = FCompression, write = SetCompression };
   RWProperty<bool> Compression{nb::bind(&TSessionData::GetCompression, this), nb::bind(&TSessionData::SetCompression, this)};
   __property bool UsesSsh = { read = GetUsesSsh };
   __property bool Ssh2DES  = { read = FSsh2DES, write = SetSsh2DES };
+  RWPropertySimple<bool> Ssh2DES{&FSsh2DES, nb::bind(&TSessionData::SetSsh2DES, this)};
   __property bool SshNoUserAuth  = { read = FSshNoUserAuth, write = SetSshNoUserAuth };
+  RWPropertySimple<bool> SshNoUserAuth{&FSshNoUserAuth, nb::bind(&TSessionData::SetSshNoUserAuth, this)};
   __property TCipher Cipher[int Index] = { read = GetCipher, write = SetCipher };
   __property TKex Kex[int Index] = { read = GetKex, write = SetKex };
   __property THostKey HostKeys[int Index] = { read = GetHostKeys, write = SetHostKeys };
   __property TGssLib GssLib[int Index] = { read = GetGssLib, write = SetGssLib };
   __property UnicodeString GssLibCustom = { read = FGssLibCustom, write = SetGssLibCustom };
+  RWPropertySimple<UnicodeString> GssLibCustom{&FGssLibCustom, nb::bind(&TSessionData::SetGssLibCustom, this)};
   __property UnicodeString PublicKeyFile  = { read = FPublicKeyFile, write = SetPublicKeyFile };
   RWProperty<UnicodeString> PublicKeyFile{nb::bind(&TSessionData::GetPublicKeyFile, this), nb::bind(&TSessionData::SetPublicKeyFile, this)};
   __property UnicodeString Passphrase  = { read = GetPassphrase, write = SetPassphrase };
@@ -641,10 +649,12 @@ public:
   __property bool Modified  = { read = FModified, write = FModified };
   __property bool CanLogin  = { read = GetCanLogin };
   __property bool ClearAliases = { read = FClearAliases, write = SetClearAliases };
+  RWPropertySimple<bool> ClearAliases{&FClearAliases, nb::bind(&TSessionData::SetClearAliases, this)};
   __property TDateTime PingIntervalDT = { read = GetPingIntervalDT, write = SetPingIntervalDT };
   __property TDateTime TimeDifference = { read = FTimeDifference, write = SetTimeDifference };
   __property bool TimeDifferenceAuto = { read = FTimeDifferenceAuto, write = SetTimeDifferenceAuto };
   __property TPingType PingType = { read = FPingType, write = SetPingType };
+  RWPropertySimple<TPingType> PingType{&FPingType, nb::bind(&TSessionData::SetPingType, this)};
   __property UnicodeString SessionName  = { read = GetSessionName };
   ROProperty<UnicodeString> SessionName{nb::bind(&TSessionData::GetSessionName, this)};
   __property UnicodeString DefaultSessionName  = { read = GetDefaultSessionName };
@@ -658,39 +668,55 @@ public:
   __property bool UpdateDirectories = { read = FUpdateDirectories, write = SetUpdateDirectories };
   RWProperty<bool> UpdateDirectories{nb::bind(&TSessionData::GetUpdateDirectories, this), nb::bind(&TSessionData::SetUpdateDirectories, this)};
   __property bool RequireDirectories = { read=FRequireDirectories, write=FRequireDirectories };
+  RWProperty2<bool> RequireDirectories{&FRequireDirectories};
   __property bool CacheDirectories = { read = FCacheDirectories, write = SetCacheDirectories };
+  RWPropertySimple<bool> CacheDirectories{&FCacheDirectories, nb::bind(&TSessionData::SetCacheDirectories, this)};
   __property bool CacheDirectoryChanges = { read = FCacheDirectoryChanges, write = SetCacheDirectoryChanges };
+  RWPropertySimple<bool> CacheDirectoryChanges{&FCacheDirectoryChanges, nb::bind(&TSessionData::SetCacheDirectoryChanges, this)};
   __property bool PreserveDirectoryChanges = { read = FPreserveDirectoryChanges, write = SetPreserveDirectoryChanges };
+  RWPropertySimple<bool> PreserveDirectoryChanges{&FPreserveDirectoryChanges, nb::bind(&TSessionData::SetPreserveDirectoryChanges, this)};
   __property bool Special = { read = FSpecial, write = SetSpecial };
+  RWPropertySimple<bool> Special{&FSpecial, nb::bind(&TSessionData::SetSpecial, this)};
   __property bool Selected  = { read = FSelected, write = FSelected };
-  bool& Selected{FSelected};
+  RWProperty2<bool> Selected{&FSelected};
   __property UnicodeString InfoTip  = { read = GetInfoTip };
   __property bool DefaultShell = { read = GetDefaultShell, write = SetDefaultShell };
   __property bool DetectReturnVar = { read = GetDetectReturnVar, write = SetDetectReturnVar };
   __property TEOLType EOLType = { read = FEOLType, write = SetEOLType };
+  RWPropertySimple<TEOLType> EOLType{&FEOLType, nb::bind(&TSessionData::SetEOLType, this)};
   __property bool TrimVMSVersions = { read = FTrimVMSVersions, write = SetTrimVMSVersions };
   RWPropertySimple<bool> TrimVMSVersions{&FTrimVMSVersions, nb::bind(&TSessionData::SetTrimVMSVersions, this) };
   __property bool VMSAllRevisions = { read = FVMSAllRevisions, write = SetVMSAllRevisions };
   RWPropertySimple<bool> VMSAllRevisions{&FVMSAllRevisions, nb::bind(&TSessionData::SetVMSAllRevisions, this) };
   __property TAutoSwitch LookupUserGroups = { read = FLookupUserGroups, write = SetLookupUserGroups };
+  RWPropertySimple<TAutoSwitch> LookupUserGroups{&FLookupUserGroups, nb::bind(&TSessionData::SetLookupUserGroups, this)};
   __property UnicodeString ReturnVar = { read = FReturnVar, write = SetReturnVar };
+  RWPropertySimple<UnicodeString> ReturnVar{&FReturnVar, nb::bind(&TSessionData::SetReturnVar, this)};
   __property bool ExitCode1IsError = { read = FExitCode1IsError, write = SetExitCode1IsError };
+  RWPropertySimple<bool> ExitCode1IsError{&FExitCode1IsError, nb::bind(&TSessionData::SetExitCode1IsError, this)};
   __property bool Scp1Compatibility = { read = FScp1Compatibility, write = SetScp1Compatibility };
+  RWPropertySimple<bool> Scp1Compatibility {&FScp1Compatibility, nb::bind(&TSessionData::SetScp1Compatibility, this)};
   __property UnicodeString Shell = { read = FShell, write = SetShell };
+  RWPropertySimple<UnicodeString> Shell{&FShell, nb::bind(&TSessionData::SetShell, this)};
   __property UnicodeString SftpServer = { read = FSftpServer, write = SetSftpServer };
   __property int Timeout = { read = FTimeout, write = SetTimeout };
+  RWPropertySimple<int32_t> Timeout{&FTimeout, nb::bind(&TSessionData::SetTimeout, this)};
   __property TDateTime TimeoutDT = { read = GetTimeoutDT };
   __property bool UnsetNationalVars = { read = FUnsetNationalVars, write = SetUnsetNationalVars };
-  __property bool IgnoreLsWarnings  = { read = FIgnoreLsWarnings, write = SetIgnoreLsWarnings };
+  __property bool IgnoreLsWarnings = { read = FIgnoreLsWarnings, write = SetIgnoreLsWarnings };
   __property bool TcpNoDelay  = { read = FTcpNoDelay, write = SetTcpNoDelay };
   __property int SendBuf  = { read = FSendBuf, write = SetSendBuf };
   __property UnicodeString SourceAddress = { read=FSourceAddress, write=SetSourceAddress };
   __property UnicodeString ProtocolFeatures = { read=FProtocolFeatures, write=SetProtocolFeatures };
-  __property bool SshSimple  = { read = FSshSimple, write = SetSshSimple };
-  __property UnicodeString CipherList  = { read = GetCipherList, write = SetCipherList };
+  __property bool SshSimple = { read = FSshSimple, write = SetSshSimple };
+  __property UnicodeString CipherList = { read = GetCipherList, write = SetCipherList };
+  RWProperty<UnicodeString> CipherList{nb::bind(&TSessionData::GetCipherList, this), nb::bind(&TSessionData::SetCipherList, this)};
   __property UnicodeString KexList  = { read = GetKexList, write = SetKexList };
+  RWProperty<UnicodeString> KexList{nb::bind(&TSessionData::GetKexList, this), nb::bind(&TSessionData::SetKexList, this)};
   __property UnicodeString HostKeyList  = { read = GetHostKeyList, write = SetHostKeyList };
+  RWProperty<UnicodeString> HostKeyList{nb::bind(&TSessionData::GetHostKeyList, this), nb::bind(&TSessionData::SetHostKeyList, this)};
   __property UnicodeString GssLibList  = { read = GetGssLibList, write = SetGssLibList };
+  RWProperty<UnicodeString> GssLibList{nb::bind(&TSessionData::GetGssLibList, this), nb::bind(&TSessionData::SetGssLibList, this)};
   __property TProxyMethod ProxyMethod  = { read = FProxyMethod, write = SetProxyMethod };
   __property UnicodeString ProxyHost  = { read = FProxyHost, write = SetProxyHost };
   __property int ProxyPort  = { read = FProxyPort, write = SetProxyPort };
@@ -707,7 +733,9 @@ public:
   __property UnicodeString CustomParam2 = { read = FCustomParam2, write = SetCustomParam2 };
   __property UnicodeString SessionKey = { read = GetSessionKey };
   __property bool ResolveSymlinks = { read = FResolveSymlinks, write = SetResolveSymlinks };
+  RWPropertySimple<bool> ResolveSymlinks{&FResolveSymlinks, nb::bind(&TSessionData::SetResolveSymlinks, this)};
   __property bool FollowDirectorySymlinks = { read = FFollowDirectorySymlinks, write = SetFollowDirectorySymlinks };
+  RWPropertySimple<bool> FollowDirectorySymlinks{&FFollowDirectorySymlinks, nb::bind(&TSessionData::SetFollowDirectorySymlinks, this)};
   __property int SFTPDownloadQueue = { read = FSFTPDownloadQueue, write = SetSFTPDownloadQueue };
   __property int SFTPUploadQueue = { read = FSFTPUploadQueue, write = SetSFTPUploadQueue };
   __property int SFTPListingQueue = { read = FSFTPListingQueue, write = SetSFTPListingQueue };
@@ -724,6 +752,7 @@ public:
   __property UnicodeString TlsCertificateFile = { read = FTlsCertificateFile, write = SetTlsCertificateFile };
   RWProperty<UnicodeString> TlsCertificateFile{nb::bind(&TSessionData::GetTlsCertificateFile, this), nb::bind(&TSessionData::SetTlsCertificateFile, this)};
   __property TDSTMode DSTMode = { read = FDSTMode, write = SetDSTMode };
+  RWPropertySimple<TDSTMode> DSTMode{&FDSTMode, nb::bind(&TSessionData::SetDSTMode, this)};
   __property bool DeleteToRecycleBin = { read = FDeleteToRecycleBin, write = SetDeleteToRecycleBin };
   __property bool OverwrittenToRecycleBin = { read = FOverwrittenToRecycleBin, write = SetOverwrittenToRecycleBin };
   __property UnicodeString RecycleBinPath = { read = FRecycleBinPath, write = SetRecycleBinPath };
@@ -731,7 +760,9 @@ public:
   __property TAddressFamily AddressFamily = { read = FAddressFamily, write = SetAddressFamily };
   RWProperty<TAddressFamily> AddressFamily{nb::bind(&TSessionData::GetAddressFamily, this), nb::bind(&TSessionData::SetAddressFamily, this)};
   __property UnicodeString RekeyData = { read = FRekeyData, write = SetRekeyData };
+  RWPropertySimple<UnicodeString> RekeyData{&FRekeyData, nb::bind(&TSessionData::SetRekeyData, this)};
   __property uint32_t RekeyTime = { read = FRekeyTime, write = SetRekeyTime };
+  RWPropertySimple<uint32_t> RekeyTime{&FRekeyTime, nb::bind(&TSessionData::SetRekeyTime, this)};
   __property int Color = { read = FColor, write = SetColor };
   __property bool Tunnel = { read = FTunnel, write = SetTunnel };
   __property UnicodeString TunnelHostName = { read = FTunnelHostName, write = SetTunnelHostName };
@@ -760,6 +791,7 @@ public:
   RWProperty<UnicodeString> LogicalHostName{nb::bind(&TSessionData::GetLogicalHostName, this), nb::bind(&TSessionData::SetLogicalHostName, this)};
   __property TAutoSwitch NotUtf = { read = FNotUtf, write = SetNotUtf };
   __property int InternalEditorEncoding = { read = FInternalEditorEncoding, write = SetInternalEditorEncoding };
+  RWPropertySimple<int32_t> InternalEditorEncoding{&FInternalEditorEncoding, nb::bind(&TSessionData::SetInternalEditorEncoding, this)};
   __property UnicodeString S3DefaultRegion = { read = FS3DefaultRegion, write = SetS3DefaultRegion };
   RWProperty<UnicodeString> S3DefaultRegion{nb::bind(&TSessionData::GetS3DefaultRegion, this), nb::bind(&TSessionData::SetS3DefaultRegion, this)};
   __property UnicodeString S3SessionToken = { read = FS3SessionToken, write = SetS3SessionToken };
@@ -773,6 +805,7 @@ public:
   __property UnicodeString HostKey = { read = FHostKey, write = SetHostKey };
   RWProperty<UnicodeString> HostKey{nb::bind(&TSessionData::GetHostKey, this), nb::bind(&TSessionData::SetHostKey, this)};
   __property bool FingerprintScan = { read = FFingerprintScan, write = FFingerprintScan };
+  RWProperty2<bool> FingerprintScan{&FFingerprintScan};
   __property bool OverrideCachedHostKey = { read = FOverrideCachedHostKey };
   __property UnicodeString Note = { read = FNote, write = SetNote };
   __property UnicodeString WinTitle = { read = FWinTitle, write = SetWinTitle };
@@ -1051,7 +1084,7 @@ private:
 
 NB_CORE_EXPORT UnicodeString GetExpandedLogFileName(UnicodeString LogFileName, TDateTime Started, TSessionData *SessionData);
 NB_CORE_EXPORT bool GetIsSshProtocol(TFSProtocol FSProtocol);
-NB_CORE_EXPORT int32_t GetDefaultPort(TFSProtocol FSProtocol, TFtps Ftps);
+NB_CORE_EXPORT int32_t DefaultPort(TFSProtocol FSProtocol, TFtps Ftps);
 NB_CORE_EXPORT bool IsIPv6Literal(const UnicodeString HostName);
 NB_CORE_EXPORT UnicodeString EscapeIPv6Literal(const UnicodeString IP);
 NB_CORE_EXPORT TFSProtocol NormalizeFSProtocol(TFSProtocol FSProtocol);
@@ -1060,3 +1093,5 @@ NB_CORE_EXPORT bool GetCodePageInfo(UINT CodePage, CPINFOEX &CodePageInfoEx);
 NB_CORE_EXPORT uint32_t GetCodePageAsNumber(UnicodeString CodePage);
 NB_CORE_EXPORT UnicodeString GetCodePageAsString(uint32_t CodePage);
 
+//template<int s> struct CheckSizeT;
+//CheckSizeT<sizeof(TSessionData)> checkSize;
