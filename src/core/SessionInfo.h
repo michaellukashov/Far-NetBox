@@ -276,10 +276,10 @@ public:
 // typedef void (__closure *TAddLogEntryEvent)(const UnicodeString & S);
 
 using TAddLogEntryEvent = nb::FastDelegate1<void,
-  const UnicodeString & /*S*/>;
+  UnicodeString /*S*/>;
 
 using TDoAddLogEvent = nb::FastDelegate2<void,
-  TLogLineType /*Type*/, const UnicodeString & /*Line*/>;
+  TLogLineType /*Type*/, UnicodeString /*Line*/>;
 
 class NB_CORE_EXPORT TSessionLog
 {
@@ -323,7 +323,7 @@ private:
   TSessionLog *FParent{nullptr};
   TCriticalSection FCriticalSection;
   bool FLogging{false};
-  void * FFile;
+  void * FFile{nullptr};
   std::unique_ptr<tinylog::TinyLog> FLogger;
   UnicodeString FCurrentLogFileName;
   UnicodeString FCurrentFileName;
@@ -339,8 +339,8 @@ private:
   void DoAdd(TLogLineType AType, const UnicodeString ALine,
     TDoAddLogEvent Event);
   __removed void (__closure *f)(TLogLineType Type, const UnicodeString &Line);
-  void DoAddToParent(TLogLineType AType, const UnicodeString & ALine);
-  void DoAddToSelf(TLogLineType AType, const UnicodeString & ALine);
+  void DoAddToParent(TLogLineType AType, UnicodeString ALine);
+  void DoAddToSelf(TLogLineType AType, UnicodeString ALine);
   void AddStartupInfo(bool System);
   void DoAddStartupInfo(TSessionData *Data);
   UnicodeString GetTlsVersionName(TTlsVersion TlsVersion) const;
@@ -348,7 +348,7 @@ private:
   static UnicodeString GetCmdLineLog(TConfiguration * AConfiguration);
   void CheckSize(int64_t Addition);
   UnicodeString LogPartFileName(const UnicodeString BaseName, int32_t Index);
-  void DoAddStartupInfoEntry(const UnicodeString S);
+  void DoAddStartupInfoEntry(UnicodeString S);
 
 public:
   UnicodeString GetLine(int32_t Index) const;
@@ -398,6 +398,7 @@ private:
   TConfiguration *FConfiguration{nullptr};
   TCriticalSection FCriticalSection;
   bool FLogging{false};
+  void * FFile{nullptr};
   std::unique_ptr<tinylog::TinyLog> FLogger;
   UnicodeString FCurrentLogFileName;
   UnicodeString FCurrentFileName;
@@ -424,12 +425,12 @@ public:
   ~TApplicationLog();
   void Enable(const UnicodeString & Path);
   void AddStartupInfo();
-  void Log(const UnicodeString & S);
+  void Log(UnicodeString S);
   __property bool Logging = { read = FLogging };
   ROPropertySimple<bool> Logging{&FLogging};
 
 private:
-  std::unique_ptr<void *> FFile;
+  void * FFile{nullptr};
   bool FLogging{false};
   std::unique_ptr<TCriticalSection> FCriticalSection;
 };
