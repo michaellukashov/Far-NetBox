@@ -74,9 +74,9 @@ public:
 private:
   int32_t FForceDirectoryMasks{0};
   UnicodeString FStr;
-  bool FNoImplicitMatchWithDirExcludeMask;
-  bool FAllDirsAreImplicitlyIncluded;
-  bool FAnyRelative;
+  bool FNoImplicitMatchWithDirExcludeMask{false};
+  bool FAllDirsAreImplicitlyIncluded{false};
+  bool FAnyRelative{false};
   UnicodeString FLocalRoot;
   UnicodeString FRemoteRoot;
 
