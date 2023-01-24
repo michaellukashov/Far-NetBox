@@ -188,7 +188,7 @@ void TConfiguration::UpdateStaticUsage()
 THierarchicalStorage * TConfiguration::CreateConfigStorage()
 {
   bool SessionList = false;
-  return CreateStorage(SessionList);
+  return CreateScpStorage(SessionList);
 }
 
 THierarchicalStorage * TConfiguration::CreateConfigRegistryStorage()
@@ -242,7 +242,7 @@ THierarchicalStorage * TConfiguration::CreateScpStorage(bool & SessionList)
   return Result;
 }
 
-UnicodeString TConfiguration::PropertyToKey(const UnicodeString AProperty)
+UnicodeString TConfiguration::PropertyToKey(const UnicodeString Property)
 {
   // no longer useful
   int P = Property.LastDelimiter(L".>");
