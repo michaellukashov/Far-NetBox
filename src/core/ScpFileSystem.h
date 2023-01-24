@@ -130,7 +130,7 @@ private:
   void ExecCommand(const UnicodeString ACmd, int32_t AParams,
     const UnicodeString CmdString);
   void ExecCommand(TFSCommand Cmd, int32_t Params, fmt::ArgList args);
-  FMT_VARIADIC_W(void, ExecCommand, TFSCommand, intptr_t)
+  FMT_VARIADIC_W(void, ExecCommand, TFSCommand, int32_t)
 
   __removed void ExecCommand(TFSCommand Cmd, const TVarRec *args = nullptr, int size = 0, int Params = -1);
   void ReadCommandOutput(int32_t Params, const UnicodeString *Cmd = nullptr);
@@ -153,13 +153,13 @@ private:
   void UnsetNationalVars();
   TRemoteFile * CreateRemoteFile(const UnicodeString ListingStr,
     TRemoteFile * LinkedByFile = nullptr);
-  void CaptureOutput(const UnicodeString AddedLine, TCaptureOutputType OutputType);
+  void CaptureOutput(const UnicodeString & AddedLine, TCaptureOutputType OutputType);
   void ChangeFileToken(const UnicodeString DelimitedName,
     const TRemoteToken &Token, TFSCommand Cmd, const UnicodeString RecursiveStr);
   uint32_t ConfirmOverwrite(
     const UnicodeString ASourceFullFileName, const UnicodeString ATargetFileName,
     TOperationSide Side,
-    const TOverwriteFileParams *FileParams, const TCopyParamType *CopyParam,
+    const TOverwriteFileParams *FileParams, const TCopyParamType * CopyParam,
     int32_t Params, TFileOperationProgressType *OperationProgress);
 
   static bool RemoveLastLine(UnicodeString &Line,

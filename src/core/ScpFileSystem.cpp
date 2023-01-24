@@ -603,7 +603,7 @@ bool TSCPFileSystem::RemoveLastLine(UnicodeString & Line,
     UnicodeString ReturnCodeStr = Line.SubString(Pos + LastLine.Length() + 1,
         Line.Length() - Pos + LastLine.Length());
     int64_t Code = 0;
-    if (::TryStrToInt64(ReturnCodeStr, ReturnCode))
+    if (::TryStrToInt64(ReturnCodeStr, Code))
     {
       IsLastLine = true;
       Line.SetLength(Pos - 1);
@@ -710,7 +710,7 @@ void TSCPFileSystem::ReadCommandOutput(int32_t Params, const UnicodeString * Cmd
           }
           else
           {
-            throw ETerminal(MainInstructions(FMTLOAD(COMMAND_FAILED2, *Cmd, ReturnCode)), Message);
+            throw ETerminal(nullptr, MainInstructions(FMTLOAD(COMMAND_FAILED2, *Cmd, FReturnCode)), Message);
           }
         }
       }
@@ -722,8 +722,8 @@ void TSCPFileSystem::ReadCommandOutput(int32_t Params, const UnicodeString * Cmd
   } end_try__finally
 }
 
-void TSCPFileSystem::ExecCommand(const UnicodeString & Cmd, int32_t Params,
-  const UnicodeString & CmdString)
+void TSCPFileSystem::ExecCommand(const UnicodeString Cmd, int32_t Params,
+  const UnicodeString CmdString)
 {
   if (Params < 0)
   {
@@ -1116,7 +1116,7 @@ void TSCPFileSystem::ReadDirectory(TRemoteFileList *FileList)
             UnicodeString OutputLine = OutputCopy->GetString(Index);
             if (!OutputLine.IsEmpty())
             {
-              std::unique_ptr<TRemoteFile> File(CreateRemoteFile(OutputCopy->Strings[Index]));
+              std::unique_ptr<TRemoteFile> File(CreateRemoteFile(OutputCopy->GetString(Index)));
               if (FTerminal->IsValidFile(File.get()))
               {
                 FileList->AddFile(File.release());
@@ -1209,7 +1209,7 @@ void TSCPFileSystem::ReadFile(const UnicodeString AFileName,
 }
 
 TRemoteFile * TSCPFileSystem::CreateRemoteFile(
-  const UnicodeString & ListingStr, TRemoteFile * LinkedByFile)
+  const UnicodeString ListingStr, TRemoteFile * LinkedByFile)
 {
   std::unique_ptr<TRemoteFile> File(std::make_unique<TRemoteFile>(LinkedByFile));
   try__catch
@@ -1382,7 +1382,7 @@ void TSCPFileSystem::ChangeFileProperties(UnicodeString AFileName,
   DebugAssert(!Properties->Valid.Contains(vpModification));
 }
 
-bool TSCPFileSystem::LoadFilesProperties(TStrings * /*FileList*/)
+bool TSCPFileSystem::LoadFilesProperties(const TStrings * /*FileList*/)
 {
   DebugFail();
   return false;
@@ -1479,7 +1479,7 @@ void TSCPFileSystem::SpaceAvailable(UnicodeString /*APath*/,
 // transfer protocol
 
 uint32_t TSCPFileSystem::ConfirmOverwrite(
-  const UnicodeString & ASourceFullFileName, const UnicodeString & ATargetFileName, TOperationSide Side,
+  const UnicodeString ASourceFullFileName, const UnicodeString ATargetFileName, TOperationSide Side,
   const TOverwriteFileParams *FileParams, const TCopyParamType * CopyParam,
   int32_t Params, TFileOperationProgressType * OperationProgress)
 {
@@ -1500,7 +1500,7 @@ uint32_t TSCPFileSystem::ConfirmOverwrite(
   return Answer;
 }
 
-void TSCPFileSystem::SCPResponse(bool *GotLastLine)
+void TSCPFileSystem::SCPResponse(bool * GotLastLine)
 {
   // Taken from scp.c response() and modified
 
@@ -1858,10 +1858,10 @@ void TSCPFileSystem::SCPSource(const UnicodeString AFileName,
     OperationProgress->SetTransferSize(OperationProgress->GetLocalSize());
     OperationProgress->SetTransferringFile(false);
 
-    if (Handle.Size > 512*1024*1024)
+    if (LocalFileHandle.Size > 512*1024*1024)
     {
       OperationProgress->SetAsciiTransfer(false);
-      FTerminal->LogEvent(FORMAT(L"Binary transfer mode selected as the file is too large (%s) to be uploaded in Ascii mode using SCP protocol.", (IntToStr(Handle.Size))));
+      FTerminal->LogEvent(FORMAT(L"Binary transfer mode selected as the file is too large (%s) to be uploaded in Ascii mode using SCP protocol.", (IntToStr(LocalFileHandle.Size))));
     }
     else
     {
@@ -1912,7 +1912,7 @@ void TSCPFileSystem::SCPSource(const UnicodeString AFileName,
           BlockBuf.Convert(FTerminal->GetConfiguration()->GetLocalEOLType(),
             FTerminal->GetSessionData()->GetEOLType(),
             ConvertParams, ConvertToken);
-          BlockBuf.GetMemory()->Seek(0, soFromBeginning);
+          BlockBuf.GetMemory()->Seek(0, TSeekOrigin::soFromBeginning);
           AsciiBuf.ReadStream(BlockBuf.GetMemory(), BlockBuf.GetSize(), true);
           // We don't need it any more
           BlockBuf.GetMemory()->Clear();
