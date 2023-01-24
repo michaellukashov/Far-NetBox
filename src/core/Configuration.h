@@ -1,15 +1,18 @@
 ﻿#pragma once
 
-#include <FileBuffer.h>
-
 #include "RemoteFiles.h"
+#include "FileBuffer.h"
 #include "HierarchicalStorage.h"
 #include "Usage.h"
 
 #define SET_CONFIG_PROPERTY_EX(PROPERTY, APPLY) \
   if (Get ## PROPERTY() != Value) { F ## PROPERTY = Value; Changed(); APPLY; }
+#define SET_CONFIG_PROPERTY_EX2(PROPERTY, APPLY) \
+  if (F ## PROPERTY != Value) { F ## PROPERTY = Value; Changed(); APPLY; }
 #define SET_CONFIG_PROPERTY(PROPERTY) \
   SET_CONFIG_PROPERTY_EX(PROPERTY, )
+#define SET_CONFIG_PROPERTY2(PROPERTY) \
+  SET_CONFIG_PROPERTY_EX2(PROPERTY, )
 
 #define CONST_DEFAULT_NUMBER_OF_RETRIES 2
 
@@ -79,9 +82,9 @@ private:
   int32_t FSessionReopenAutoStall{0};
   UnicodeString FCustomIniFileStorageName;
   UnicodeString FIniFileStorageName;
-  UnicodeString FVirtualIniFileStorageName;
+  mutable UnicodeString FVirtualIniFileStorageName;
   std::unique_ptr<TStrings> FOptionsStorage;
-  int32_t FProgramIniPathWritable{0};
+  mutable int32_t FProgramIniPathWritable{0};
   int32_t FTunnelLocalPortNumberLow{0};
   int32_t FTunnelLocalPortNumberHigh{0};
   int32_t FCacheDirectoryChangesMaxSize{0};
@@ -151,7 +154,7 @@ public:
   UnicodeString GetRegistryStorageKey() const;
   UnicodeString GetIniFileStorageNameForReadingWriting() const;
   UnicodeString GetIniFileStorageNameForReading();
-  UnicodeString GetIniFileStorageName(bool ReadingOnly);
+  UnicodeString GetIniFileStorageName(bool ReadingOnly) const;
   void SetOptionsStorage(TStrings *Value);
   TStrings *GetOptionsStorage();
   UnicodeString GetPartialExt() const;
@@ -170,8 +173,8 @@ public:
   void SetTryFtpWhenSshFails(bool Value);
   void SetParallelDurationThreshold(int32_t Value);
   void SetMimeTypes(UnicodeString Value);
-  void SetCertificateStorage(const UnicodeString & value);
-  UnicodeString GetCertificateStorageExpanded();
+  void SetCertificateStorage(const UnicodeString value);
+  UnicodeString GetCertificateStorageExpanded() const;
   bool GetCollectUsage() const;
   void SetCollectUsage(bool Value);
   bool GetIsUnofficial() const;
@@ -209,7 +212,7 @@ public:
   UnicodeString FormatFingerprintKey(const UnicodeString ASiteKey, const UnicodeString AFingerprintType) const;
   THierarchicalStorage * OpenDirectoryStatisticsCache(bool CanCreate);
   UnicodeString GetDirectoryStatisticsCacheKey(
-    const UnicodeString & SessionKey, const UnicodeString & Path, const TCopyParamType & CopyParam);
+    const UnicodeString SessionKey, const UnicodeString Path, const TCopyParamType & CopyParam);
 
   virtual bool GetConfirmOverwriting() const;
   virtual void SetConfirmOverwriting(bool Value);
@@ -222,7 +225,7 @@ public:
   UnicodeString LoadCustomIniFileStorageName();
   void SaveCustomIniFileStorageName();
   UnicodeString GetRegistryStorageOverrideKey() const;
-  TStrings * GetCaches();
+  TStrings * GetCaches() const;
 
   virtual UnicodeString ModuleFileName() const;
 
@@ -252,11 +255,11 @@ public:
   void Save();
   void SaveExplicit();
   void MoveStorage(TStorage AStorage, const UnicodeString ACustomIniFileStorageName);
-  void ScheduleCustomIniFileStorageUse(const UnicodeString & ACustomIniFileStorageName);
-  void SetExplicitIniFileStorageName(const UnicodeString & FileName);
+  void ScheduleCustomIniFileStorageUse(const UnicodeString ACustomIniFileStorageName);
+  void SetExplicitIniFileStorageName(const UnicodeString FileName);
   void SetNulStorage();
-  UnicodeString GetAutomaticIniFileStorageName(bool ReadingOnly);
-  UnicodeString GetDefaultIniFileExportPath();
+  UnicodeString GetAutomaticIniFileStorageName(bool ReadingOnly) const;
+  UnicodeString GetDefaultIniFileExportPath() const;
   UnicodeString GetIniFileParamValue() const;
   void Export(const UnicodeString AFileName);
   void Import(const UnicodeString AFileName);
@@ -296,8 +299,8 @@ public:
   UnicodeString GetFileDescription(const UnicodeString AFileName) const;
   UnicodeString GetFileVersion(const UnicodeString AFileName) const;
   UnicodeString GetFileMimeType(const UnicodeString AFileName) const;
-  bool RegistryPathExists(const UnicodeString & RegistryPath);
-  bool HasLocalPortNumberLimits();
+  bool RegistryPathExists(const UnicodeString RegistryPath) const;
+  bool HasLocalPortNumberLimits() const;
   virtual UnicodeString TemporaryDir(bool Mask = false) const = 0;
 
   TStoredSessionList *SelectFilezillaSessionsForImport(
@@ -403,8 +406,8 @@ public:
   ROProperty<UnicodeString> RegistryStorageKey{nb::bind(&TConfiguration::GetRegistryStorageKey, this)};
   __property UnicodeString CustomIniFileStorageName  = { read = FCustomIniFileStorageName };
   __property UnicodeString ExplicitIniFileStorageName  = { read=FIniFileStorageName };
-  __property UnicodeString IniFileStorageName  = { read=GetIniFileStorageNameForReadingWriting };
-  __property UnicodeString IniFileStorageNameForReading  = { read=GetIniFileStorageNameForReading };
+  __property UnicodeString IniFileStorageName = { read=GetIniFileStorageNameForReadingWriting };
+  __property UnicodeString IniFileStorageNameForReading = { read=GetIniFileStorageNameForReading };
   __property TStrings * OptionsStorage = { read = GetOptionsStorage, write = SetOptionsStorage };
   RWProperty<TStrings*> OptionsStorage{nb::bind(&TConfiguration::GetOptionsStorage, this), nb::bind(&TConfiguration::SetOptionsStorage, this)};
   __property bool Persistent = { read = GetPersistent };

@@ -268,6 +268,7 @@ UnicodeString TConfiguration::PropertyToKey(const UnicodeString Property)
 #define KEY2(TYPE, VAR) KEYEX2(TYPE, VAR, VAR)
 #define KEY3(TYPE, VAR) KEYEX3(TYPE, VAR, VAR)
 #define KEY4(TYPE, VAR) KEYEX4(TYPE, VAR, VAR)
+#define KEY5(TYPE, VAR) KEYEX5(TYPE, VAR, VAR)
 #undef REGCONFIG
 #define REGCONFIG(CANCREATE) \
   BLOCK("Interface", CANCREATE, \
@@ -285,18 +286,18 @@ UnicodeString TConfiguration::PropertyToKey(const UnicodeString Property)
     KEY3(Integer,  CacheDirectoryChangesMaxSize); \
     KEY(Bool,     ShowFtpWelcomeMessage); \
     KEY(String,   ExternalIpAddress); \
-    KEY(Integer,  LocalPortNumberMin); \
-    KEY(Integer,  LocalPortNumberMax); \
+    KEY4(Integer,  LocalPortNumberMin); \
+    KEY4(Integer,  LocalPortNumberMax); \
     KEY(Bool,     TryFtpWhenSshFails); \
     KEY3(Integer,  ParallelDurationThreshold); \
     KEY(String,   MimeTypes); \
     KEY4(Integer,  DontReloadMoreThanSessions); \
     KEY4(Integer,  ScriptProgressFileNameLimit); \
-    KEY(Integer,  KeyVersion); \
+    KEY4(Integer,  KeyVersion); \
     KEY(Bool,     CollectUsage); \
     KEY3(Integer,  SessionReopenAutoMaximumNumberOfRetries); \
-    KEY(String,   CertificateStorage); \
-    KEY(Bool,     ExperimentalFeatures); \
+    KEY5(String,   CertificateStorage); \
+    KEY4(Bool,     ExperimentalFeatures); \
   ); \
   BLOCK("Logging", CANCREATE, \
     KEYEX(Bool,  PermanentLogging, Logging); \
@@ -313,10 +314,12 @@ UnicodeString TConfiguration::PropertyToKey(const UnicodeString Property)
 void TConfiguration::SaveData(THierarchicalStorage *Storage, bool /*All*/)
 {
 #define KEYEX(TYPE, NAME, VAR) Storage->Write ## TYPE(LASTELEM(UnicodeString(#NAME)), Get ## VAR())
-#define KEYEX2(TYPE, NAME, VAR) Storage->Write ## TYPE(LASTELEM(UnicodeString(#NAME)), VAR)
+#define KEYEX2(TYPE, NAME, VAR) Storage->Write ## TYPE(LASTELEM(UnicodeString(#NAME)), F ## VAR)
 #define KEYEX3(TYPE, NAME, VAR) Storage->Write ## TYPE(LASTELEM(UnicodeString(#NAME)), nb::ToInt(Get ## VAR()))
-#define KEYEX4(TYPE, NAME, VAR) Storage->Write ## TYPE(LASTELEM(UnicodeString(#NAME)), nb::ToInt(VAR))
+#define KEYEX4(TYPE, NAME, VAR) Storage->Write ## TYPE(LASTELEM(UnicodeString(#NAME)), nb::ToInt(F ## VAR))
+#define KEYEX5(TYPE, NAME, VAR) Storage->Write ## TYPE(LASTELEM(UnicodeString(#NAME)), F ## VAR)
   REGCONFIG(true);
+#undef KEYEX5
 #undef KEYEX4
 #undef KEYEX3
 #undef KEYEX2
@@ -358,7 +361,7 @@ void TConfiguration::DoSave(bool All, bool Explicit)
     {
       // if saving to TOptionsStorage, make sure we save everything so that
       // all configuration is properly transferred to the master storage
-      bool ConfigAll = All || Storage->GetTemporary();
+      bool ConfigAll = All || Storage->Temporary();
       SaveData(Storage.get(), ConfigAll);
     }
   },
@@ -484,10 +487,12 @@ void TConfiguration::Import(const UnicodeString /*AFileName*/)
 void TConfiguration::LoadData(THierarchicalStorage * Storage)
 {
 #define KEYEX(TYPE, NAME, VAR) Set ## VAR(Storage->Read ## TYPE(LASTELEM(UnicodeString(#NAME)), Get ## VAR()))
-#define KEYEX2(TYPE, NAME, VAR) VAR = Storage->Read ## TYPE(LASTELEM(UnicodeString(#NAME)), VAR)
+#define KEYEX2(TYPE, NAME, VAR) VAR = Storage->Read ## TYPE(LASTELEM(UnicodeString(#NAME)), F ## VAR)
 #define KEYEX3(TYPE, NAME, VAR) Set ## VAR(Storage->Read ## TYPE(LASTELEM(UnicodeString(#NAME)), nb::ToInt(Get ## VAR())))
-#define KEYEX4(TYPE, NAME, VAR) VAR = Storage->Read ## TYPE(LASTELEM(UnicodeString(#NAME)), nb::ToInt(VAR))
+#define KEYEX4(TYPE, NAME, VAR) F ## VAR = Storage->Read ## TYPE(LASTELEM(UnicodeString(#NAME)), nb::ToInt(F ## VAR))
+#define KEYEX5(TYPE, NAME, VAR) F ## VAR = Storage->Read ## TYPE(LASTELEM(UnicodeString(#NAME)), F ## VAR)
   REGCONFIG(false);
+#undef KEYEX5
 #undef KEYEX4
 #undef KEYEX3
 #undef KEYEX2
@@ -581,10 +586,10 @@ void TConfiguration::CopyAllStringsInSubKey(
     std::unique_ptr<TStrings> Names(new TStringList());
     Source->GetValueNames(Names.get());
 
-    for (int Index = 0; Index < Names->Count; Index++)
+    for (int32_t Index = 0; Index < Names->Count; Index++)
     {
-      UnicodeString Buf = Source->ReadStringRaw(Names->Strings[Index], UnicodeString());
-      Target->WriteStringRaw(Names->Strings[Index], Buf);
+      UnicodeString Buf = Source->ReadStringRaw(Names->GetString(Index), UnicodeString());
+      Target->WriteStringRaw(Names->GetString(Index), Buf);
     }
 
     Target->CloseSubKey();
@@ -604,7 +609,7 @@ void TConfiguration::CopyData(THierarchicalStorage * Source,
 
       for (int32_t Index = 0; Index < Names->GetCount(); ++Index)
       {
-        Target->WriteBinaryData(Names->Strings[Index], Source->ReadBinaryData(Names->Strings[Index]));
+        Target->WriteBinaryData(Names->GetString(Index), Source->ReadBinaryData(Names->GetString(Index)));
       }
 
       Target->CloseSubKey();
@@ -826,12 +831,12 @@ void TConfiguration::CleanupConfiguration()
   }
 }
 
-bool TConfiguration::RegistryPathExists(const UnicodeString & RegistryPath)
+bool TConfiguration::RegistryPathExists(const UnicodeString RegistryPath) const
 {
   std::unique_ptr<TRegistryStorage> Registry(std::make_unique<TRegistryStorage>(GetRegistryStorageKey()));
   Registry->Init();
   UnicodeString ParentKey = ExtractFileDir(RegistryPath);
-  UnicodeString SubKey = ExtractFileName(RegistryPath);
+  UnicodeString SubKey = base::ExtractFileName(RegistryPath, false);
   return
     Registry->OpenRootKey(false) &&
     (ParentKey.IsEmpty() ||
@@ -839,22 +844,22 @@ bool TConfiguration::RegistryPathExists(const UnicodeString & RegistryPath)
     Registry->KeyExists(SubKey);
 }
 
-void TConfiguration::CleanupRegistry(const UnicodeString & RegistryPath)
+void TConfiguration::CleanupRegistry(const UnicodeString RegistryPath)
 {
-  std::unique_ptr<TRegistryStorage> Registry(new TRegistryStorage(RegistryStorageKey));
+  std::unique_ptr<TRegistryStorage> Registry(new TRegistryStorage(RegistryStorageKey()));
 
   UnicodeString ParentKey = ExtractFileDir(RegistryPath);
   if (ParentKey.IsEmpty() ||
       Registry->OpenSubKeyPath(ParentKey, false))
   {
-    UnicodeString SubKey = ExtractFileName(RegistryPath);
+    UnicodeString SubKey = base::ExtractFileName(RegistryPath, false);
     Registry->RecursiveDeleteSubKey(SubKey);
   }
 }
 
-TStrings * TConfiguration::GetCaches()
+TStrings * TConfiguration::GetCaches() const
 {
-  std::unique_ptr<TStrings> Result(new TStringList());
+  std::unique_ptr<TStrings> Result(std::make_unique<TStringList>());
   Result->Add(SshHostKeysSubKey);
   Result->Add(FtpsCertificateStorageKey);
   Result->Add(HttpsCertificateStorageKey);
@@ -865,13 +870,13 @@ TStrings * TConfiguration::GetCaches()
   return Result.release();
 }
 
-bool TConfiguration::HasAnyCache()
+bool TConfiguration::HasAnyCache() const
 {
   bool Result = false;
   std::unique_ptr<TStrings> Caches(GetCaches());
-  for (int Index = 0; Index < Caches->Count; Index++)
+  for (int32_t Index = 0; Index < Caches->Count(); Index++)
   {
-    if (RegistryPathExists(Caches->Strings[Index]))
+    if (RegistryPathExists(Caches->GetString(Index)))
     {
       Result = true;
       break;
@@ -885,9 +890,9 @@ void TConfiguration::CleanupCaches()
   try
   {
     std::unique_ptr<TStrings> Caches(GetCaches());
-    for (int Index = 0; Index < Caches->Count; Index++)
+    for (int32_t Index = 0; Index < Caches->Count(); Index++)
     {
-      CleanupRegistry(Caches->Strings[Index]);
+      CleanupRegistry(Caches->GetString(Index));
     }
   }
   catch (Exception & E)
@@ -917,7 +922,7 @@ void TConfiguration::CleanupIniFile()
 #if 0
   try
   {
-    if (FileExists(ApiPath(IniFileStorageNameForReading)))
+    if (SysUtulsFileExists(ApiPath(IniFileStorageNameForReading)))
     {
       DeleteFileChecked(IniFileStorageNameForReading);
     }
@@ -976,7 +981,7 @@ int32_t TConfiguration::GetCompoundVersion() const
   {
     return CalculateCompoundVersion(
       HIWORD(FileInfo->dwFileVersionMS), LOWORD(FileInfo->dwFileVersionMS),
-      HIWORD(FileInfo->dwFileVersionLS), LOWORD(FileInfo->dwFileVersionLS));
+      HIWORD(FileInfo->dwFileVersionLS));
   }
   return 0;
 }
@@ -1277,17 +1282,17 @@ void TConfiguration::SetNulStorage()
   FStorage = stNul;
 }
 
-void TConfiguration::SetExplicitIniFileStorageName(const UnicodeString & FileName)
+void TConfiguration::SetExplicitIniFileStorageName(const UnicodeString FileName)
 {
   FIniFileStorageName = FileName;
   FStorage = stIniFile;
 }
 
-UnicodeString TConfiguration::GetDefaultIniFileExportPath()
+UnicodeString TConfiguration::GetDefaultIniFileExportPath() const
 {
   UnicodeString PersonalDirectory = GetPersonalFolder();
   UnicodeString FileName = IncludeTrailingBackslash(PersonalDirectory) +
-    ExtractFileName(ExpandEnvironmentVariables(IniFileStorageName));
+    base::ExtractFileName(ExpandEnvironmentVariables(GetIniFileStorageNameForReadingWriting()), false);
   return FileName;
 }
 
@@ -1296,19 +1301,19 @@ UnicodeString TConfiguration::GetIniFileStorageNameForReading()
   return GetIniFileStorageName(true);
 }
 
-UnicodeString TConfiguration::GetIniFileStorageNameForReadingWriting()
+UnicodeString TConfiguration::GetIniFileStorageNameForReadingWriting() const
 {
   return GetIniFileStorageName(false);
 }
 
-UnicodeString TConfiguration::GetAutomaticIniFileStorageName(bool ReadingOnly)
+UnicodeString TConfiguration::GetAutomaticIniFileStorageName(bool ReadingOnly) const
 {
-  UnicodeString ProgramPath = ParamStr(0);
+  UnicodeString ProgramPath = ""; // TODO: ParamStr(0);
 
   UnicodeString ProgramIniPath = ChangeFileExt(ProgramPath, L".ini");
 
   UnicodeString IniPath;
-  if (::FileExists(ApiPath(ProgramIniPath)))
+  if (::SysUtulsFileExists(ApiPath(ProgramIniPath)))
   {
     IniPath = ProgramIniPath;
   }
@@ -1316,8 +1321,8 @@ UnicodeString TConfiguration::GetAutomaticIniFileStorageName(bool ReadingOnly)
   {
     UnicodeString AppDataIniPath =
       IncludeTrailingBackslash(GetShellFolderPath(CSIDL_APPDATA)) +
-      ::ExtractFileName(ProgramIniPath);
-    if (::FileExists(ApiPath(AppDataIniPath)))
+      base::ExtractFileName(ProgramIniPath, false);
+    if (::SysUtulsFileExists(ApiPath(AppDataIniPath)))
     {
       IniPath = AppDataIniPath;
     }
@@ -1353,7 +1358,7 @@ UnicodeString TConfiguration::GetAutomaticIniFileStorageName(bool ReadingOnly)
   }
 
   if (!FVirtualIniFileStorageName.IsEmpty() &&
-      ::FileExists(ApiPath(FVirtualIniFileStorageName)))
+      ::SysUtulsFileExists(ApiPath(FVirtualIniFileStorageName)))
   {
     return FVirtualIniFileStorageName;
   }
@@ -1363,7 +1368,7 @@ UnicodeString TConfiguration::GetAutomaticIniFileStorageName(bool ReadingOnly)
   }
 }
 
-UnicodeString TConfiguration::GetIniFileParamValue()
+UnicodeString TConfiguration::GetIniFileParamValue() const
 {
   UnicodeString Result;
   if (Storage == stNul)
@@ -1377,7 +1382,7 @@ UnicodeString TConfiguration::GetIniFileParamValue()
   return Result;
 }
 
-UnicodeString TConfiguration::GetIniFileStorageName(bool ReadingOnly)
+UnicodeString TConfiguration::GetIniFileStorageName(bool ReadingOnly) const
 {
   UnicodeString Result;
   if (!FIniFileStorageName.IsEmpty())
@@ -1394,7 +1399,6 @@ UnicodeString TConfiguration::GetIniFileStorageName(bool ReadingOnly)
   }
   return Result;
 }
-#endif // #if 0
 
 void TConfiguration::SetOptionsStorage(TStrings * Value)
 {
@@ -1416,9 +1420,9 @@ UnicodeString TConfiguration::GetPuttySessionsSubKey() const
   return StoredSessionsSubKey;
 }
 
-UnicodeString TConfiguration::GetPuttySessionsKey()
+UnicodeString TConfiguration::GetPuttySessionsKey() const
 {
-  return PuttyRegistryStorageKey + L"\\" + PuttySessionsSubKey;
+  return GetPuttyRegistryStorageKey() + L"\\" + GetPuttySessionsSubKey();
 }
 
 UnicodeString TConfiguration::GetStoredSessionsSubKey() const
@@ -1635,7 +1639,7 @@ TStoredSessionList * TConfiguration::SelectOpensshSessionsForImport(
 
   try
   {
-    if (FileExists(ApiPath(ConfigFile)))
+    if (::SysUtulsFileExists(ApiPath(ConfigFile)))
     {
       std::unique_ptr<TStrings> Lines(new TStringList());
       LoadScriptFromFile(ConfigFile, Lines.get(), true);
@@ -1663,7 +1667,7 @@ TStoredSessionList * TConfiguration::SelectOpensshSessionsForImport(
   return ImportSessionList.release();
 }
 
-void TConfiguration::SetRandomSeedFile(UnicodeString value)
+void TConfiguration::SetRandomSeedFile(UnicodeString Value)
 {
   if (GetRandomSeedFile() != Value)
   {
@@ -1688,22 +1692,24 @@ void TConfiguration::SetRandomSeedFile(UnicodeString value)
 }
 
 UnicodeString TConfiguration::GetDirectoryStatisticsCacheKey(
-  const UnicodeString & SessionKey, const UnicodeString & Path, const TCopyParamType & CopyParam)
+  const UnicodeString SessionKey, const UnicodeString Path, const TCopyParamType & CopyParam)
 {
-  std::unique_ptr<TStringList> RawOptions(new TStringList());
+  std::unique_ptr<TStringList> RawOptions(std::make_unique<TStringList>());
   RawOptions->Add(SessionKey);
-  RawOptions->Add(UnixExcludeTrailingBackslash(Path));
+  RawOptions->Add(base::UnixExcludeTrailingBackslash(Path));
 
+#if 0
   TCopyParamType Defaults;
   TCopyParamType FilterCopyParam;
   FilterCopyParam.IncludeFileMask = CopyParam.IncludeFileMask;
   FilterCopyParam.ExcludeHiddenFiles = CopyParam.ExcludeHiddenFiles;
   FilterCopyParam.ExcludeEmptyDirectories = CopyParam.ExcludeEmptyDirectories;
 
-  std::unique_ptr<TOptionsStorage> OptionsStorage(new TOptionsStorage(RawOptions.get(), true));
+  std::unique_ptr<TOptionsStorage> OptionsStorage(std::make_unique<TOptionsStorage>(RawOptions.get(), true));
   FilterCopyParam.Save(OptionsStorage.get(), &Defaults);
 
-  UTF8String RawOptionsBuf(RawOptions->CommaText.LowerCase());
+#endif // if 0
+  UTF8String RawOptionsBuf(RawOptions->GetCommaText().LowerCase());
   UnicodeString Result = Sha256(RawOptionsBuf.c_str(), RawOptionsBuf.Length());
   return Result;
 }
@@ -1728,7 +1734,7 @@ TStrings * TConfiguration::LoadDirectoryStatisticsCache(
   {
     UnicodeString Key = GetDirectoryStatisticsCacheKey(SessionKey, Path, CopyParam);
     UnicodeString Buf = Storage->ReadString(Key, UnicodeString());
-    Result->CommaText = Buf;
+    Result->SetCommaText(Buf);
   }
   return Result.release();
 }
@@ -1740,7 +1746,7 @@ void TConfiguration::SaveDirectoryStatisticsCache(
   if (Storage.get() != nullptr)
   {
     UnicodeString Key = GetDirectoryStatisticsCacheKey(SessionKey, Path, CopyParam);
-    UnicodeString Buf = DataList->CommaText;
+    UnicodeString Buf = DataList->GetCommaText();
     Storage->WriteString(Key, Buf);
   }
 }
@@ -1756,38 +1762,38 @@ void TConfiguration::SetExternalIpAddress(UnicodeString Value)
   SET_CONFIG_PROPERTY(ExternalIpAddress);
 }
 
-bool TConfiguration::HasLocalPortNumberLimits()
+bool TConfiguration::HasLocalPortNumberLimits() const
 {
-  return (LocalPortNumberMin > 0) && (LocalPortNumberMax >= LocalPortNumberMin);
+  return (FLocalPortNumberMin > 0) && (FLocalPortNumberMax >= FLocalPortNumberMin);
 }
 
-void TConfiguration::SetLocalPortNumberMin(int value)
+void TConfiguration::SetLocalPortNumberMin(int32_t Value)
 {
-  SET_CONFIG_PROPERTY(LocalPortNumberMin);
+  SET_CONFIG_PROPERTY2(LocalPortNumberMin);
 }
 
-void TConfiguration::SetLocalPortNumberMax(int value)
+void TConfiguration::SetLocalPortNumberMax(int32_t Value)
 {
-  SET_CONFIG_PROPERTY(LocalPortNumberMax);
+  SET_CONFIG_PROPERTY2(LocalPortNumberMax);
 }
 
-void TConfiguration::SetMimeTypes(UnicodeString value)
+void TConfiguration::SetMimeTypes(UnicodeString Value)
 {
   SET_CONFIG_PROPERTY(MimeTypes);
 }
 
-void TConfiguration::SetCertificateStorage(const UnicodeString & value)
+void TConfiguration::SetCertificateStorage(const UnicodeString Value)
 {
-  SET_CONFIG_PROPERTY(CertificateStorage);
+  SET_CONFIG_PROPERTY2(CertificateStorage);
 }
 
-UnicodeString TConfiguration::GetCertificateStorageExpanded()
+UnicodeString TConfiguration::GetCertificateStorageExpanded() const
 {
   UnicodeString Result = FCertificateStorage;
   if (Result.IsEmpty())
   {
     UnicodeString DefaultCertificateStorage = TPath::Combine(ExtractFilePath(ModuleFileName()), L"cacert.pem");
-    if (FileExists(DefaultCertificateStorage))
+    if (::SysUtulsFileExists(DefaultCertificateStorage))
     {
       Result = DefaultCertificateStorage;
     }
@@ -1795,7 +1801,7 @@ UnicodeString TConfiguration::GetCertificateStorageExpanded()
   return Result;
 }
 
-void TConfiguration::SetTryFtpWhenSshFails(bool value)
+void TConfiguration::SetTryFtpWhenSshFails(bool Value)
 {
   SET_CONFIG_PROPERTY(TryFtpWhenSshFails);
 }
@@ -2113,16 +2119,15 @@ void TConfiguration::SetShowFtpWelcomeMessage(bool Value)
   SET_CONFIG_PROPERTY(ShowFtpWelcomeMessage);
 }
 
-void TConfiguration::SetSessionReopenAutoMaximumNumberOfRetries(int32_t Value)
-{
-  SET_CONFIG_PROPERTY(SessionReopenAutoMaximumNumberOfRetries);
-}
-
 bool TConfiguration::GetPersistent() const
 {
   return (FStorage != stNul) && !FDontSave;
 }
 
+void TConfiguration::SetSessionReopenAutoMaximumNumberOfRetries(int32_t Value)
+{
+  SET_CONFIG_PROPERTY(SessionReopenAutoMaximumNumberOfRetries);
+}
 
 void TShortCuts::Add(const TShortCut &ShortCut)
 {
