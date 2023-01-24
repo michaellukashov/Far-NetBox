@@ -4,8 +4,7 @@
 #include <Classes.hpp>
 
 extern const wchar_t * EOLTypeNames;
-enum TEOLType
-{
+enum TEOLType {
   eolLF,    // \n
   eolCRLF,  // \r\n
   eolCR     // \r
@@ -14,12 +13,8 @@ enum TEOLType
 constexpr int32_t cpRemoveCtrlZ = 0x01;
 constexpr int32_t cpRemoveBOM   = 0x02;
 
-//typedef void (__closure *TTransferOutEvent)(TObject * Sender, const unsigned char * Data, size_t Len);
-//typedef size_t (__closure *TTransferInEvent)(TObject * Sender, unsigned char * Data, size_t Len);
-using TTransferOutEvent = nb::FastDelegate3<void,
-  TObject * /*Sender*/, const uint8_t * /*Data*/, size_t /*Len*/>;
-using TTransferInEvent = nb::FastDelegate3<size_t,
-  TObject * /*Sender*/, uint8_t * /*Data*/, size_t /*Len*/>;
+using TTransferOutEvent = nb::FastDelegate3<void, TObject * /*Sender*/, const uint8_t * /*Data*/, size_t /*Len*/>;
+using TTransferInEvent = nb::FastDelegate3<size_t, TObject * /*Sender*/, uint8_t * /*Data*/, size_t /*Len*/>;
 
 class NB_CORE_EXPORT TFileBuffer : public TObject
 {
@@ -49,7 +44,9 @@ public:
 
 private:
   std::unique_ptr<TMemoryStream> FMemory;
+  // int FSize;
 
+public:
   TMemoryStream * GetMemory() const { return FMemory.get(); }
   void SetMemory(TMemoryStream * value);
   char * GetData() const { return static_cast<char *>(FMemory->GetMemory()); }
