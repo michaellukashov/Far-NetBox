@@ -85,8 +85,8 @@ private:
       BASE(Kind, E, Msg, HelpKeyword) \
     { \
     } \
-    inline NAME(TObjectClassId Kind, const UnicodeString & Msg, const UnicodeString & MoreMessages, const UnicodeString & HelpKeyword = UnicodeString()) : \
-      BASE(Msg, MoreMessages, HelpKeyword) \
+    inline NAME(TObjectClassId Kind, const UnicodeString Msg, const UnicodeString MoreMessages, const UnicodeString HelpKeyword = UnicodeString()) : \
+      BASE(Kind, Msg, MoreMessages, HelpKeyword) \
     { \
     } \
     virtual inline ~NAME(void) \
@@ -234,4 +234,4 @@ NB_CORE_EXPORT void RethrowException(Exception *E);
 NB_CORE_EXPORT UnicodeString GetExceptionHelpKeyword(const Exception* E);
 NB_CORE_EXPORT UnicodeString MergeHelpKeyword(const UnicodeString PrimaryHelpKeyword, const UnicodeString SecondaryHelpKeyword);
 NB_CORE_EXPORT bool IsInternalErrorHelpKeyword(const UnicodeString HelpKeyword);
-UnicodeString AddContextToExceptionMessage(const Exception & E, const UnicodeString & NewContext);
+UnicodeString AddContextToExceptionMessage(const Exception & E, const UnicodeString NewContext);
