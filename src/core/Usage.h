@@ -12,12 +12,12 @@ public:
   explicit TUsage(TConfiguration * Configuration) noexcept;
   virtual ~TUsage() noexcept;
 
-  void Set(const UnicodeString & AKey, const UnicodeString & AValue);
-  void Set(const UnicodeString & AKey, int32_t Value);
-  void Set(const UnicodeString & AKey, bool Value);
-  int Inc(const UnicodeString & AKey, int32_t Increment = 1);
-  void SetMax(const UnicodeString & AKey, int32_t Value);
-  UnicodeString Get(const UnicodeString & AKey) const;
+  void Set(const UnicodeString AKey, const UnicodeString AValue);
+  void Set(const UnicodeString AKey, int32_t Value);
+  void Set(const UnicodeString AKey, bool Value);
+  int32_t Inc(const UnicodeString AKey, int32_t Increment = 1);
+  void SetMax(const UnicodeString AKey, int32_t Value);
+  UnicodeString Get(const UnicodeString AKey) const;
 
   void UpdateCurrentVersion();
   void Reset();
@@ -25,7 +25,7 @@ public:
   void Default();
   void Load(THierarchicalStorage * Storage);
   void Save(THierarchicalStorage * Storage) const;
-  UnicodeString Serialize(const UnicodeString & ADelimiter = "&", const UnicodeString & AFilter = "") const;
+  UnicodeString Serialize(const UnicodeString ADelimiter = "&", const UnicodeString AFilter = "") const;
 
   static int32_t CalculateCounterSize(int64_t Size);
 
@@ -33,7 +33,7 @@ public:
   RWProperty<bool> Collect{nb::bind(&TUsage::GetCollect, this), nb::bind(&TUsage::SetCollect, this)};
 
 private:
-  using TCounters = nb::map_t<UnicodeString, intptr_t>;
+  using TCounters = nb::map_t<UnicodeString, int32_t>;
   std::unique_ptr<TCriticalSection> FCriticalSection;
   gsl::not_null<TConfiguration *> FConfiguration;
   TCounters FPeriodCounters;
@@ -49,16 +49,16 @@ public:
     const UnicodeString AName, TCounters & Counters);
   void Save(THierarchicalStorage * Storage,
     const UnicodeString AName, const TCounters & Counters) const;
-  int Inc(const UnicodeString & AKey, TCounters & Counters, int32_t Increment);
-  void SetMax(const UnicodeString & AKey, int32_t Value, TCounters & Counters);
+  int32_t Inc(const UnicodeString AKey, TCounters & Counters, int32_t Increment);
+  void SetMax(const UnicodeString AKey, int32_t Value, TCounters & Counters);
   void Serialize(
-    UnicodeString& AList, const UnicodeString & AName, const TCounters & Counters,
-    const UnicodeString & ADelimiter, const UnicodeString & AFilterUpper) const;
+    UnicodeString& AList, const UnicodeString AName, const TCounters & Counters,
+    const UnicodeString ADelimiter, const UnicodeString AFilterUpper) const;
   void Serialize(
-    UnicodeString & List, const UnicodeString & AName, const UnicodeString & AValue,
-    const UnicodeString & ADelimiter, const UnicodeString & AFilterUpper) const;
+    UnicodeString & List, const UnicodeString AName, const UnicodeString AValue,
+    const UnicodeString ADelimiter, const UnicodeString AFilterUpper) const;
   void ResetLastExceptions();
-  void ResetValue(const UnicodeString & AKey);
+  void ResetValue(const UnicodeString AKey);
 };
 
 extern const UnicodeString LastInternalExceptionCounter;

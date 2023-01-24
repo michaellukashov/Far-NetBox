@@ -6,6 +6,7 @@ __removed #pragma hdrstop
 #include <CoreMain.h>
 #include <Common.h>
 #include <Usage.h>
+#include <FileInfo.h>
 
 __removed #pragma package(smart_init)
 
@@ -125,7 +126,7 @@ void TUsage::Save(THierarchicalStorage * Storage,
   }
 }
 
-void TUsage::Set(UnicodeString AKey, UnicodeString AValue)
+void TUsage::Set(const UnicodeString AKey, const UnicodeString AValue)
 {
   if (FCollect)
   {
@@ -134,14 +135,14 @@ void TUsage::Set(UnicodeString AKey, UnicodeString AValue)
   }
 }
 
-void TUsage::Set(UnicodeString AKey, int32_t Value)
+void TUsage::Set(const UnicodeString AKey, int32_t Value)
 {
   Set(AKey, IntToStr(Value));
 }
 
 void TUsage::Set(const UnicodeString AKey, bool Value)
 {
-  Set(AKey, intptr_t(Value ? 1 : 0));
+  Set(AKey, int32_t(Value ? 1 : 0));
 }
 
 UnicodeString TUsage::Get(const UnicodeString AKey) const
@@ -195,7 +196,7 @@ void TUsage::UpdateCurrentVersion()
   Set("CurrentVersion", CompoundVersion);
 }
 
-void TUsage::ResetValue(UnicodeString AKey)
+void TUsage::ResetValue(const UnicodeString AKey)
 {
   int32_t Index = FValues->IndexOfName(AKey);
   if (Index >= 0)
@@ -211,7 +212,7 @@ void TUsage::ResetLastExceptions()
   ResetValue(LastUpdateExceptionCounter);
 }
 
-int TUsage::Inc(UnicodeString AKey, int32_t Increment)
+int32_t TUsage::Inc(const UnicodeString AKey, int32_t Increment)
 {
   int Result;
   if (FCollect)
@@ -227,7 +228,7 @@ int TUsage::Inc(UnicodeString AKey, int32_t Increment)
   return Result;
 }
 
-int TUsage::Inc(const UnicodeString & AKey, TCounters & Counters, int32_t Increment)
+int32_t TUsage::Inc(const UnicodeString AKey, TCounters & Counters, int32_t Increment)
 {
   int Result;
   TCounters::iterator i = Counters.find(AKey);
@@ -244,7 +245,7 @@ int TUsage::Inc(const UnicodeString & AKey, TCounters & Counters, int32_t Increm
   return Result;
 }
 
-void TUsage::SetMax(const UnicodeString & AKey, int32_t Value)
+void TUsage::SetMax(const UnicodeString AKey, int32_t Value)
 {
   if (FCollect)
   {
@@ -254,7 +255,7 @@ void TUsage::SetMax(const UnicodeString & AKey, int32_t Value)
   }
 }
 
-void TUsage::SetMax(UnicodeString AKey, int32_t Value,
+void TUsage::SetMax(const UnicodeString AKey, int32_t Value,
   TCounters & Counters)
 {
   TCounters::iterator i = Counters.find(AKey);
@@ -290,7 +291,7 @@ void TUsage::SetCollect(bool Value)
   }
 }
 
-UnicodeString TUsage::Serialize(UnicodeString ADelimiter, UnicodeString AFilter) const
+UnicodeString TUsage::Serialize(const UnicodeString ADelimiter, const UnicodeString AFilter) const
 {
   TGuard Guard(*FCriticalSection); nb::used(Guard);
   UnicodeString Result;
@@ -308,8 +309,8 @@ UnicodeString TUsage::Serialize(UnicodeString ADelimiter, UnicodeString AFilter)
 }
 
 void TUsage::Serialize(
-  UnicodeString & List, UnicodeString AName, const TCounters & Counters,
-  UnicodeString ADelimiter, UnicodeString AFilterUpper) const
+  UnicodeString & List, const UnicodeString AName, const TCounters & Counters,
+  const UnicodeString ADelimiter, const UnicodeString AFilterUpper) const
 {
   TCounters::const_iterator i = Counters.begin();
   while (i != Counters.end())
@@ -320,8 +321,8 @@ void TUsage::Serialize(
 }
 
 void TUsage::Serialize(
-  UnicodeString & AList, UnicodeString AName, UnicodeString AValue,
-  UnicodeString ADelimiter, UnicodeString AFilterUpper) const
+  UnicodeString & AList, const UnicodeString AName, const UnicodeString AValue,
+  const UnicodeString ADelimiter, const UnicodeString AFilterUpper) const
 {
   if (AFilterUpper.IsEmpty() ||
       (UpperCase(AName).Pos(AFilterUpper) > 0) ||
