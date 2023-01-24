@@ -641,6 +641,7 @@ class NB_CORE_EXPORT TPath : public TObject
 {
 public:
   static UnicodeString Combine(const UnicodeString APath, const UnicodeString AFileName);
+  static bool IsDriveRooted(const UnicodeString APath) { return false; } // TODO: implement
 };
 
 int32_t Random(int32_t Max);

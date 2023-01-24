@@ -1733,6 +1733,7 @@ int32_t Random(int32_t Max)
   return (int32_t)((int64_t)rand() / (std::numeric_limits<int>::max() / Max));
 }
 
+// TODO: implement
 UnicodeString ReadAllText(const UnicodeString FileName)
 {
   UnicodeString Result;
@@ -1755,6 +1756,7 @@ UnicodeString ReadAllText(const UnicodeString FileName)
   return Result;
 }
 
+// TODO: implement
 void WriteAllText(const UnicodeString FileName, const UnicodeString Text)
 {
 
