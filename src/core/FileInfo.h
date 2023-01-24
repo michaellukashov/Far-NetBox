@@ -29,7 +29,7 @@ NB_CORE_EXPORT UnicodeString GetLanguage(Word Language);
 NB_CORE_EXPORT UnicodeString GetFileInfoString(void *FileInfo,
   TTranslation Translation, UnicodeString StringName, bool AllowEmpty = false);
 
-NB_CORE_EXPORT int32_t CalculateCompoundVersion(int32_t MajorVer, , int MinorVer, int Release);
+NB_CORE_EXPORT int32_t CalculateCompoundVersion(int32_t MajorVer, int32_t MinorVer, int32_t Release);
 int32_t ZeroBuildNumber(int32_t CompoundVersion);
 
 NB_CORE_EXPORT int32_t StrToCompoundVersion(UnicodeString AStr);

@@ -221,7 +221,7 @@ TTranslation GetTranslation(void *FileInfo, int32_t I)
 // Return the name of the specified language
 UnicodeString GetLanguage(Word Language)
 {
-  wchar_t P[256];
+  wchar_t P[256]{};
 
   uint32_t Len = ::VerLanguageName(Language, P, _countof(P));
   if (Len > _countof(P))
@@ -257,22 +257,22 @@ UnicodeString GetFileInfoString(void *FileInfo,
   return Result;
 }
 
-int CalculateCompoundVersion(int MajorVer, int MinorVer, int Release)
+int32_t CalculateCompoundVersion(int32_t MajorVer, int32_t MinorVer, int32_t Release)
 {
   int CompoundVer = 10000 * (Release + 100 * (MinorVer + 100 * MajorVer));
   return CompoundVer;
 }
 
-int ZeroBuildNumber(int CompoundVersion)
+int32_t ZeroBuildNumber(int32_t CompoundVersion)
 {
   return (CompoundVersion / 10000 * 10000);
 }
 
-int StrToCompoundVersion(UnicodeString S)
+int32_t StrToCompoundVersion(UnicodeString S)
 {
-  int MajorVer = Min(StrToInt(CutToChar(S, L'.', false)), 99);
-  int MinorVer = Min(StrToInt(CutToChar(S, L'.', false)), 99);
-  int Release = S.IsEmpty() ? 0 : Min(StrToInt(CutToChar(S, L'.', false)), 99);
+  int32_t MajorVer = Min(StrToInt(CutToChar(S, L'.', false)), 99);
+  int32_t MinorVer = Min(StrToInt(CutToChar(S, L'.', false)), 99);
+  int32_t Release = S.IsEmpty() ? 0 : Min(StrToInt(CutToChar(S, L'.', false)), 99);
   return CalculateCompoundVersion(MajorVer, MinorVer, Release);
 }
 
