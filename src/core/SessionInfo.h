@@ -323,7 +323,7 @@ private:
   TSessionLog *FParent{nullptr};
   TCriticalSection FCriticalSection;
   bool FLogging{false};
-  void * FFile{nullptr};
+  //void * FFile{nullptr};
   std::unique_ptr<tinylog::TinyLog> FLogger;
   UnicodeString FCurrentLogFileName;
   UnicodeString FCurrentFileName;
