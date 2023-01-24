@@ -654,6 +654,9 @@ bool TSessionData::IsSame(
   const TSessionData * Default, bool AdvancedOnly, TStrings * DifferentProperties, bool Decrypted) const
 {
   bool Result = true;
+  #undef PROPERTY
+  #undef PROPERTY2
+  #undef PROPERTY_HANDLER
   #define PROPERTY(P) if (Get ## P() != Default->Get ## P()) { if (DifferentProperties != nullptr) { DifferentProperties->Add(# P); Result = false; } }
   #define PROPERTY2(P) if (F##P != Default->F##P) { if (DifferentProperties != nullptr) { DifferentProperties->Add(# P); Result = false; } }
   #define PROPERTY_HANDLER(P, F) \
@@ -1152,7 +1155,7 @@ void TSessionData::DoSave(THierarchicalStorage *Storage,
 #define WRITE_DATA(TYPE, PROPERTY) WRITE_DATA_EX(TYPE, MB_TEXT(#PROPERTY), Get ## PROPERTY(), )
 #define WRITE_DATA2(TYPE, PROPERTY) WRITE_DATA_EX2(TYPE, MB_TEXT(#PROPERTY), Get ## PROPERTY(), nb::ToInt)
 #define WRITE_DATA3(TYPE, PROPERTY) WRITE_DATA_EX2(TYPE, MB_TEXT(#PROPERTY), F ## PROPERTY, nb::ToInt)
-#define WRITE_DATA4(TYPE, PROPERTY) WRITE_DATA_EX(TYPE, MB_TEXT(#PROPERTY), F ## PROPERTY)
+#define WRITE_DATA4(TYPE, PROPERTY) WRITE_DATA_EX(TYPE, MB_TEXT(#PROPERTY), F ## PROPERTY, )
 
   Storage->WriteString("Version", ::VersionNumberToStr(::GetCurrentVersionNumber()));
   WRITE_DATA(String, HostName);
