@@ -1289,21 +1289,21 @@ void TStream::WriteBuffer(const void *Buffer, int64_t Count)
 
 int64_t TStream::GetPosition() const
 {
-  return Seek(0, TSeekOrigin::soCurrent);
+  return Seek(0, TSeekOrigin::soFromCurrent);
 }
 
 int64_t TStream::GetSize() const
 {
-  const int64_t Pos = Seek(0, TSeekOrigin::soCurrent);
-  const int64_t Result = Seek(0, TSeekOrigin::soEnd);
-  const auto res = Seek(Pos, TSeekOrigin::soBeginning);
+  const int64_t Pos = Seek(0, TSeekOrigin::soFromCurrent);
+  const int64_t Result = Seek(0, TSeekOrigin::soFromEnd);
+  const auto res = Seek(Pos, TSeekOrigin::soFromBeginning);
   DebugAssert(res == Pos);
   return Result;
 }
 
 void TStream::SetPosition(const int64_t Pos)
 {
-  const auto res = Seek(Pos, TSeekOrigin::soBeginning);
+  const auto res = Seek(Pos, TSeekOrigin::soFromBeginning);
   DebugAssert(res == Pos);
 }
 
@@ -1342,13 +1342,13 @@ int64_t THandleStream::Seek(const int64_t Offset, TSeekOrigin Origin) const
   DWORD origin = FILE_BEGIN;
   switch (Origin)
   {
-  case TSeekOrigin::soBeginning:
+  case TSeekOrigin::soFromBeginning:
     origin = FILE_BEGIN;
     break;
-  case TSeekOrigin::soCurrent:
+  case TSeekOrigin::soFromCurrent:
     origin = FILE_CURRENT;
     break;
-  case TSeekOrigin::soEnd:
+  case TSeekOrigin::soFromEnd:
     origin = FILE_END;
     break;
   }
@@ -1358,7 +1358,7 @@ int64_t THandleStream::Seek(const int64_t Offset, TSeekOrigin Origin) const
 
 void THandleStream::SetSize(const int64_t NewSize)
 {
-  const auto res = Seek(NewSize, TSeekOrigin::soBeginning);
+  const auto res = Seek(NewSize, TSeekOrigin::soFromBeginning);
   DebugAssert(res == NewSize);
   // LARGE_INTEGER li;
   // li.QuadPart = size;
@@ -1430,13 +1430,13 @@ int64_t TMemoryStream::Seek(const int64_t Offset, TSeekOrigin Origin) const
 {
   switch (Origin)
   {
-  case TSeekOrigin::soBeginning:
+  case TSeekOrigin::soFromBeginning:
     FPosition = Offset;
     break;
-  case TSeekOrigin::soCurrent:
+  case TSeekOrigin::soFromCurrent:
     FPosition += Offset;
     break;
-  case TSeekOrigin::soEnd:
+  case TSeekOrigin::soFromEnd:
     FPosition = FSize + Offset;
     break;
   }
@@ -1473,7 +1473,7 @@ void TMemoryStream::SetSize(const int64_t NewSize)
   FSize = NewSize;
   if (OldPosition > NewSize)
   {
-    const auto res = Seek(0, TSeekOrigin::soEnd);
+    const auto res = Seek(0, TSeekOrigin::soFromEnd);
     DebugAssert(res == NewSize);
   }
 }

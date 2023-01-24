@@ -66,7 +66,7 @@ void TFileBuffer::ProcessRead(DWORD Len, DWORD Result)
   {
     Size = Size - Len + Result;
   }
-  FMemory->Seek(Result, TSeekOrigin::soCurrent);
+  FMemory->Seek(Result, TSeekOrigin::soFromCurrent);
 }
 
 int64_t TFileBuffer::ReadStream(TStream * Stream, const int64_t Len, bool ForceLen)
@@ -97,14 +97,14 @@ int64_t TFileBuffer::ReadStream(TStream * Stream, const int64_t Len, bool ForceL
 
 int64_t TFileBuffer::LoadStream(TStream * Stream, const int64_t Len, bool ForceLen)
 {
-  auto const res = FMemory->Seek(0, TSeekOrigin::soBeginning);
+  auto const res = FMemory->Seek(0, TSeekOrigin::soFromBeginning);
   DebugAssert(res == 0);
   return ReadStream(Stream, Len, ForceLen);
 }
 
 DWORD TFileBuffer::LoadFromIn(TTransferInEvent OnTransferIn, TObject * Sender, int64_t Len)
 {
-  FMemory->Seek(0, TSeekOrigin::soBeginning);
+  FMemory->Seek(0, TSeekOrigin::soFromBeginning);
   DebugAssert(Position() == 0);
   Size = Position() + Len;
   size_t Result = OnTransferIn(Sender, reinterpret_cast<unsigned char *>(Data()) + Position(), Len);
@@ -247,7 +247,7 @@ void TFileBuffer::WriteToStream(TStream * Stream, const int64_t Len)
   try
   {
     Stream->WriteBuffer(GetData() + GetPosition(), Len);
-    const int64_t res = FMemory->Seek(Len, TSeekOrigin::soCurrent);
+    const int64_t res = FMemory->Seek(Len, TSeekOrigin::soFromCurrent);
     DebugAssert(res >= Len);
   }
   catch (EWriteError &)
@@ -259,7 +259,7 @@ void TFileBuffer::WriteToStream(TStream * Stream, const int64_t Len)
 void TFileBuffer::WriteToOut(TTransferOutEvent OnTransferOut, TObject * Sender, const int64_t Len)
 {
   OnTransferOut(Sender, reinterpret_cast<const unsigned char *>(Data()) + Position(), Len);
-  FMemory->Seek(Len, TSeekOrigin::soCurrent);
+  FMemory->Seek(Len, TSeekOrigin::soFromCurrent);
 }
 
 TSafeHandleStream::TSafeHandleStream(THandle AHandle) noexcept :

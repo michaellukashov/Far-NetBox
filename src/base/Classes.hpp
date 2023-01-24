@@ -578,9 +578,9 @@ private:
 
 enum class TSeekOrigin
 {
-  soBeginning = 0,
-  soCurrent = 1,
-  soEnd = 2
+  soFromBeginning = 0,
+  soFromCurrent = 1,
+  soFromEnd = 2
 };
 
 class NB_CORE_EXPORT TStream : public TObject
