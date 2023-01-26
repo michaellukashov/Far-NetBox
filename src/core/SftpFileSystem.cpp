@@ -5848,7 +5848,7 @@ void TSFTPFileSystem::Sink(
 
     if (CopyParam->FOnTransferOut.empty())
     {
-      DebugAssert(LocalHandle);
+      DebugAssert(LocalFileHandle != INVALID_HANDLE_VALUE);
       if (CopyParam->GetPreserveTime())
       {
         FTerminal->UpdateTargetTime(LocalFileHandle, Modification, FTerminal->GetSessionData()->GetDSTMode());
