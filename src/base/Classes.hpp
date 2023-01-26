@@ -757,6 +757,9 @@ public:
   void SetRootKey(HKEY ARootKey);
   UnicodeString GetCurrentPath() const { return FCurrentPath; }
 
+  HKEY& RootKey{FRootKey};
+  uint32_t& Access{FAccess};
+
 private:
   HKEY FCurrentKey{};
   HKEY FRootKey{};
