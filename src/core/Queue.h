@@ -244,6 +244,7 @@ protected:
   explicit TQueueItem(TObjectClassId Kind) noexcept;
   virtual ~TQueueItem() noexcept;
 
+public:
   void SetStatus(TStatus Status);
   TStatus GetStatus() const;
   void Execute(TTerminalItem *TerminalItem);
@@ -253,6 +254,7 @@ protected:
   virtual bool UpdateFileList(TQueueFileList * FileList);
   void SetCPSLimit(int32_t CPSLimit);
   int32_t GetCPSLimit() const;
+protected:
   virtual int32_t DefaultCPSLimit() const;
   virtual UnicodeString GetStartupDirectory() const = 0;
   virtual void ProgressUpdated();
