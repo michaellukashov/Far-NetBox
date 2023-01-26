@@ -4136,7 +4136,7 @@ void TSFTPFileSystem::ChangeFileProperties(const UnicodeString AFileName,
   }) end_try__finally
 }
 
-bool TSFTPFileSystem::LoadFilesProperties(const TStrings *AFileList)
+bool TSFTPFileSystem::LoadFilesProperties(TStrings *AFileList)
 {
   bool Result = false;
   // without knowledge of server's capabilities, this all make no sense

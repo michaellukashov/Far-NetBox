@@ -1382,7 +1382,7 @@ void TSCPFileSystem::ChangeFileProperties(UnicodeString AFileName,
   DebugAssert(!Properties->Valid.Contains(vpModification));
 }
 
-bool TSCPFileSystem::LoadFilesProperties(const TStrings * /*FileList*/)
+bool TSCPFileSystem::LoadFilesProperties(TStrings * /*FileList*/)
 {
   DebugFail();
   return false;

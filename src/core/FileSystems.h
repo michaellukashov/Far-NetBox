@@ -164,7 +164,7 @@ public:
   virtual void ChangeFileProperties(const UnicodeString AFileName,
     const TRemoteFile *AFile, const TRemoteProperties *Properties,
     TChmodSessionAction &Action) = 0;
-  virtual bool LoadFilesProperties(const TStrings *AFileList) = 0;
+  virtual bool LoadFilesProperties(TStrings *AFileList) = 0;
   virtual void CalculateFilesChecksum(const UnicodeString Alg,
     TStrings *AFileList, TStrings *Checksums,
     TCalculatedChecksumEvent OnCalculatedChecksum) = 0;

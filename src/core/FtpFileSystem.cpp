@@ -1185,7 +1185,7 @@ void TFTPFileSystem::ChangeFileProperties(const UnicodeString AFileName,
   }
 }
 
-bool TFTPFileSystem::LoadFilesProperties(const TStrings * /*FileList*/)
+bool TFTPFileSystem::LoadFilesProperties(TStrings * /*FileList*/)
 {
   DebugFail();
   return false;

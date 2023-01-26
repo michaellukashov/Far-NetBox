@@ -38,7 +38,7 @@ public:
   virtual void ChangeFileProperties(const UnicodeString AFileName,
     const TRemoteFile * AFile, const TRemoteProperties * Properties,
     TChmodSessionAction & Action) override;
-  virtual bool LoadFilesProperties(const TStrings *AFileList) override;
+  virtual bool LoadFilesProperties(TStrings *AFileList) override;
   virtual void CalculateFilesChecksum(const UnicodeString Alg,
     TStrings * AFileList, TStrings * Checksums,
     TCalculatedChecksumEvent OnCalculatedChecksum) override;
