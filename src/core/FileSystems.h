@@ -154,8 +154,8 @@ public:
   virtual bool GetActive() const = 0;
   virtual void CollectUsage() = 0;
   virtual void Idle() = 0;
-  virtual UnicodeString GetAbsolutePath(UnicodeString APath, bool Local) = 0;
-  virtual UnicodeString GetAbsolutePath(UnicodeString APath, bool Local) const = 0;
+  virtual UnicodeString GetAbsolutePath(const UnicodeString APath, bool Local) = 0;
+  virtual UnicodeString GetAbsolutePath(const UnicodeString APath, bool Local) const = 0;
   virtual void AnyCommand(const UnicodeString ACommand,
     TCaptureOutputEvent OutputEvent) = 0;
   virtual void ChangeDirectory(const UnicodeString ADirectory) = 0;

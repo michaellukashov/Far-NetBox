@@ -3056,12 +3056,12 @@ UnicodeString TSFTPFileSystem::Canonify(const UnicodeString APath)
   return Result;
 }
 
-UnicodeString TSFTPFileSystem::GetAbsolutePath(UnicodeString APath, bool Local) const
+UnicodeString TSFTPFileSystem::GetAbsolutePath(const UnicodeString APath, bool Local) const
 {
   return const_cast<TSFTPFileSystem *>(this)->GetAbsolutePath(APath, Local);
 }
 
-UnicodeString TSFTPFileSystem::GetAbsolutePath(UnicodeString APath, bool Local)
+UnicodeString TSFTPFileSystem::GetAbsolutePath(const UnicodeString APath, bool Local)
 {
   if (Local)
   {

@@ -40,7 +40,7 @@ public:
   static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TS3FileSystem); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TS3FileSystem) || TObject::is(Kind); }
 
-  virtual UnicodeString GetAbsolutePath(UnicodeString APath, bool Local) const override;
+  virtual UnicodeString GetAbsolutePath(const UnicodeString APath, bool Local) const override;
 public:
   explicit TS3FileSystem(TTerminal *ATerminal) noexcept;
   ~TS3FileSystem() noexcept override;
@@ -50,7 +50,7 @@ public:
   virtual bool GetActive() const override;
   virtual void CollectUsage() override;
   virtual void Idle() override;
-  virtual UnicodeString GetAbsolutePath(UnicodeString APath, bool Local) override;
+  virtual UnicodeString GetAbsolutePath(const UnicodeString APath, bool Local) override;
   virtual void AnyCommand(const UnicodeString ACommand,
     TCaptureOutputEvent OutputEvent) override;
   virtual void ChangeDirectory(const UnicodeString ADirectory) override;
