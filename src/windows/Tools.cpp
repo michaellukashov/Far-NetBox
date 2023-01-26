@@ -1329,7 +1329,7 @@ void DoVerifyKey(UnicodeString & FileName, bool Convert, UnicodeString & Message
           if (Convert)
           {
             GetConfiguration()->Usage->Inc(L"PrivateKeyConvertSuggestionsNative");
-            UnicodeString ConvertMessage = FMTLOAD(KEY_TYPE_CONVERT3, TypeName, RemoveMainInstructionsTag(Message));
+            UnicodeString ConvertMessage = FMTLOAD(KEY_TYPE_CONVERT4, TypeName, RemoveMainInstructionsTag(Message));
             Message = EmptyStr;
             if (MoreMessageDialog(ConvertMessage, nullptr, qtConfirmation, qaOK | qaCancel, HelpKeyword) == qaOK)
             {
