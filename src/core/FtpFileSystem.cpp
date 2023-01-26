@@ -205,7 +205,7 @@ struct TFileTransferData
     Params = 0;
     AutoResume = false;
     OverwriteResult = -1;
-    CopyParam = NULL;
+    CopyParam = nullptr;
   }
 
   UnicodeString FileName;
@@ -266,7 +266,7 @@ TFTPFileSystem::TFTPFileSystem(TTerminal *ATerminal) noexcept :
   FLastCommand(CMD_UNKNOWN),
   FPasswordFailed(false),
   FStoredPasswordTried(false),
-  FMultilineResponse(false),
+  FMultiLineResponse(false),
   FLastCode(0),
   FLastCodeClass(0),
   FLastReadDirectoryProgress(0),
@@ -314,7 +314,7 @@ void TFTPFileSystem::Init(void *)
   ResetReply();
 
   FListAll = FTerminal->GetSessionData()->GetFtpListAll();
-  FWorkFromCwd = FTerminal->SessionData->FtpWorkFromCwd;
+  FWorkFromCwd = FTerminal->SessionData->FFtpWorkFromCwd;
   FFileSystemInfo.ProtocolBaseName = "FTP";
   FFileSystemInfo.ProtocolName = FFileSystemInfo.ProtocolBaseName;
   FTimeoutStatus = LoadStr(IDS_ERRORMSG_TIMEOUT);
@@ -357,30 +357,30 @@ TFTPFileSystem::~TFTPFileSystem() noexcept
 
 #if 0
   delete FFileZillaIntf;
-  FFileZillaIntf = NULL;
+  FFileZillaIntf = nullptr;
 
   delete FQueue;
-  FQueue = NULL;
+  FQueue = nullptr;
 #endif // #if 0
 
   SAFE_CLOSE_HANDLE(FQueueEvent);
 
 #if 0
   delete FQueueCriticalSection;
-  FQueueCriticalSection = NULL;
+  FQueueCriticalSection = nullptr;
   delete FTransferStatusCriticalSection;
-  FTransferStatusCriticalSection = NULL;
+  FTransferStatusCriticalSection = nullptr;
 
   delete FLastResponse;
-  FLastResponse = NULL;
+  FLastResponse = nullptr;
   delete FLastErrorResponse;
-  FLastErrorResponse = NULL;
+  FLastErrorResponse = nullptr;
   delete FLastError;
-  FLastError = NULL;
+  FLastError = nullptr;
   delete FFeatures;
-  FFeatures = NULL;
+  FFeatures = nullptr;
   delete FServerCapabilities;
-  FServerCapabilities = NULL;
+  FServerCapabilities = nullptr;
 #endif // #if 0
 
   ResetCaches();
@@ -566,15 +566,11 @@ void TFTPFileSystem::Open()
     TAutoFlag OpeningFlag(FOpening); nb::used(OpeningFlag);
 
     FActive = FFileZillaIntf->Connect(
-        HostName.c_str(), nb::ToInt(Data->GetPortNumber()), UserName.c_str(),
-        Password.c_str(), Account.c_str(), Path.c_str(),
-        ServerType, nb::ToInt(Pasv), nb::ToInt(TimeZoneOffset), UTF8, Data->FtpForcePasvIp,
-        nb::ToInt(CodePage),
-        nb::ToInt(Data->GetFtpForcePasvIp()),
-        nb::ToInt(Data->GetFtpUseMlsd()),
-        nb::ToInt(Data->GetFtpDupFF()),
-        nb::ToInt(Data->GetFtpUndupFF()),
-        Data->FtpUseMlsd, FCertificate, FPrivateKey);
+      HostName.c_str(), nb::ToInt(Data->GetPortNumber()), UserName.c_str(),
+      Password.c_str(), Account.c_str(), Path.c_str(),
+      ServerType, nb::ToInt(Pasv), nb::ToInt(TimeZoneOffset), UTF8, Data->FFtpForcePasvIp,
+      nb::ToInt(Data->GetFtpUseMlsd()), FCertificate, FPrivateKey,
+      nb::ToInt(CodePage), nb::ToInt(Data->GetFtpDupFF()), nb::ToInt(Data->GetFtpUndupFF()));
 
     DebugAssert(FActive);
 
@@ -594,7 +590,7 @@ void TFTPFileSystem::Open()
     {
       if (FPasswordFailed)
       {
-        FTerminal->Information(LoadStr(Password.IsEmpty() ? FTP_ACCESS_DENIED_EMPTY_PASSWORD : FTP_ACCESS_DENIED), false);
+        FTerminal->Information(LoadStr(FTP_ACCESS_DENIED), false);
       }
       else
       {
@@ -1048,28 +1044,28 @@ void TFTPFileSystem::DoChangeDirectory(const UnicodeString Directory)
 {
   if (FWorkFromCwd == asOn)
   {
-    UnicodeString ADirectory = UnixIncludeTrailingBackslash(AbsolutePath(Directory, false));
+    UnicodeString ADirectory = base::UnixIncludeTrailingBackslash(GetAbsolutePath(Directory, false));
 
-    UnicodeString Actual = UnixIncludeTrailingBackslash(ActualCurrentDirectory());
-    while (!UnixSamePath(Actual, ADirectory))
+    UnicodeString Actual = base::UnixIncludeTrailingBackslash(GetActualCurrentDirectory());
+    while (!base::UnixSamePath(Actual, ADirectory))
     {
-      if (UnixIsChildPath(Actual, ADirectory))
+      if (base::UnixIsChildPath(Actual, ADirectory))
       {
-        UnicodeString SubDirectory = UnixExcludeTrailingBackslash(ADirectory);
+        UnicodeString SubDirectory = base::UnixExcludeTrailingBackslash(ADirectory);
         SubDirectory.Delete(1, Actual.Length());
-        int P = SubDirectory.Pos(L'/');
+        int32_t P = SubDirectory.Pos(L'/');
         if (P > 0)
         {
           SubDirectory.SetLength(P - 1);
         }
         SendCwd(SubDirectory);
-        Actual = UnixIncludeTrailingBackslash(Actual + SubDirectory);
+        Actual = base::UnixIncludeTrailingBackslash(Actual + SubDirectory);
       }
       else
       {
         SendCommand(L"CDUP");
         GotReply(WaitForCommandReply(), REPLY_2XX_CODE);
-        Actual = UnixExtractFilePath(UnixExcludeTrailingBackslash(Actual));
+        Actual = base::UnixExtractFilePath(base::UnixExcludeTrailingBackslash(Actual));
       }
     }
   }
@@ -1172,7 +1168,7 @@ void TFTPFileSystem::ChangeFileProperties(const UnicodeString AFileName,
       Action.Rights(Rights);
 
       UnicodeString FileNameOnly = base::UnixExtractFileName(FileName);
-      UnicodeString FilePath = base::RemoteExtractFilePath(FileName);
+      UnicodeString FilePath = RemoteExtractFilePath(FileName);
       // FZAPI wants octal number represented as decadic
       FFileZillaIntf->Chmod(Rights.GetNumberDecadic(), FileNameOnly.c_str(), FilePath.c_str());
 
@@ -1255,7 +1251,7 @@ UnicodeString TFTPFileSystem::DoCalculateFileChecksum(
     // ProFTPD response has this format:
     // 213-Computing MD5 digest
     // 213 MD5 0-687104 b359479cfda703b7fd473c7e09f39049 filename
-    ResponseText = Response->Strings[Response->Count - 1];
+    ResponseText = Response->GetString(Response->Count() - 1);
   }
   delete Response;
 
@@ -1306,7 +1302,7 @@ UnicodeString TFTPFileSystem::DoCalculateFileChecksum(
 
   if (Hash.IsEmpty())
   {
-    throw Exception(FMTLOAD(FTP_RESPONSE_ERROR, CommandName, FLastResponse->Text));
+    throw Exception(FMTLOAD(FTP_RESPONSE_ERROR, CommandName, FLastResponse->GetText()));
   }
 
   return LowerCase(Hash);
@@ -1660,7 +1656,7 @@ void TFTPFileSystem::FileTransfer(const UnicodeString AFileName,
   {
     FFileZillaIntf->FileTransfer(
       ApiPath(LocalFile).c_str(), RemoteFile.c_str(), RemotePath.c_str(),
-      Get, Size, nb::ToInt(Type), &UserData, UserData.CopyParam->OnTransferOut, UserData.CopyParam->OnTransferIn);
+      Get, Size, nb::ToInt(Type), &UserData, UserData.CopyParam->FOnTransferOut, UserData.CopyParam->FOnTransferIn);
     // we may actually catch response code of the listing
     // command (when checking for existence of the remote file)
     uint32_t Reply = WaitForCommandReply();

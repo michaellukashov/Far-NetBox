@@ -251,7 +251,7 @@ private:
   TCommand FLastCommand{CMD_UNKNOWN};
   bool FPasswordFailed{false};
   bool FStoredPasswordTried{false};
-  bool FMultilineResponse{false};
+  bool FMultiLineResponse{false};
   int32_t FLastCode{0};
   int32_t FLastCodeClass{0};
   int32_t FLastReadDirectoryProgress{0};
@@ -308,8 +308,11 @@ private:
   bool FBytesAvailableSupported{false};
   bool FMVS{false};
   bool FVMS{false};
+  bool FFileZilla{false};
   bool FFileTransferAny{false};
   bool FLoggedIn{false};
+  bool FVMSAllRevisions{false};
+  bool FForceReadSymlink{false};
   mutable UnicodeString FOptionScratch;
 private:
   bool DoQuit();

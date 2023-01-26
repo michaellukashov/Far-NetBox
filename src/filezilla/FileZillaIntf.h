@@ -184,10 +184,10 @@ public:
 
   bool Connect(const wchar_t * Host, int Port, const wchar_t * User,
     const wchar_t * Pass, const wchar_t * Account,
-    const wchar_t * Path, int ServerType, int Pasv, int TimeZoneOffset, int UTF8, int CodePage,
+    const wchar_t * Path, int ServerType, int Pasv, int TimeZoneOffset, int UTF8,
     int iForcePasvIp, int iUseMlsd,
-    int iDupFF, int iUndupFF,
-    X509 * Certificate, EVP_PKEY * PrivateKey);
+    X509 * Certificate, EVP_PKEY * PrivateKey,
+    int CodePage, int iDupFF, int iUndupFF);
   bool Close(bool AllowBusy);
 
   bool List(const wchar_t * APath);

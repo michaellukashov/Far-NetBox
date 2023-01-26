@@ -148,7 +148,8 @@ bool TFileZillaIntf::Connect(const wchar_t * Host, int Port, const wchar_t * Use
   const wchar_t * Pass, const wchar_t * Account,
   const wchar_t * Path, int ServerType, int Pasv, int TimeZoneOffset, int UTF8,
   int iForcePasvIp, int iUseMlsd,
-  X509 * Certificate, EVP_PKEY * PrivateKey)
+  X509 * Certificate, EVP_PKEY * PrivateKey,
+  int CodePage, int iDupFF, int iUndupFF)
 {
   DebugAssert(FFileZillaApi != nullptr);
   DebugAssert((ServerType & FZ_SERVERTYPE_HIGHMASK) == FZ_SERVERTYPE_FTP);
