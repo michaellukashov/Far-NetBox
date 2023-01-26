@@ -202,7 +202,7 @@ static int neon_header_func(void * userdata, ne_request * NeonRequest, const ne_
 
 
 // WINSCP (neon)
-static int neon_read_func(void * userdata, char * buf, size_t len)
+static ssize_t neon_read_func(void * userdata, char * buf, size_t len)
 {
     Request *request = (Request *) userdata;
 
@@ -687,7 +687,7 @@ static void canonicalize_signature_headers(RequestComputedValues *values)
     // Make a copy of the headers that will be sorted
     const char *sortedHeaders[S3_MAX_METADATA_COUNT + 3];
 
-    memcpy(sortedHeaders, values->amzHeaders,
+    memcpy((void*)sortedHeaders, (void const*)values->amzHeaders,
            (values->amzHeadersCount * sizeof(sortedHeaders[0])));
 
     // add the content-type header and host header
