@@ -5,8 +5,8 @@
 #include "Configuration.h"
 #include "Exceptions.h"
 #include <ComCtrls.hpp>
-#include <HistoryComboBox.hpp>
 #if 0
+#include <HistoryComboBox.hpp>
 
 const TColor LinkColor = clBlue;
 
