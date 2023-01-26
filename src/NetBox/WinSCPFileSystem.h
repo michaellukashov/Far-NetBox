@@ -109,16 +109,16 @@ protected:
     int &StartSortMode, bool &StartSortOrder, TFarKeyBarTitles *KeyBarTitles,
     UnicodeString &ShortcutData) override;
   bool GetFindDataEx(TObjectList *PanelItems, int OpMode) override;
-  bool ProcessKeyEx(intptr_t Key, uintptr_t ControlState) override;
+  bool ProcessKeyEx(int32_t Key, uint32_t ControlState) override;
   bool SetDirectoryEx(UnicodeString Dir, int OpMode) override;
-  intptr_t MakeDirectoryEx(UnicodeString &Name, int OpMode) override;
+  int32_t MakeDirectoryEx(UnicodeString &Name, int OpMode) override;
   bool DeleteFilesEx(TObjectList *PanelItems, int OpMode) override;
-  intptr_t GetFilesEx(TObjectList *PanelItems, bool Move,
+  int32_t GetFilesEx(TObjectList *PanelItems, bool Move,
     UnicodeString &DestPath, int OpMode) override;
-  intptr_t PutFilesEx(TObjectList *PanelItems, bool Move, int OpMode) override;
-  bool ProcessEventEx(intptr_t Event, void *Param) override;
+  int32_t PutFilesEx(TObjectList *PanelItems, bool Move, int OpMode) override;
+  bool ProcessEventEx(int32_t Event, void *Param) override;
 
-  void ProcessEditorEvent(intptr_t Event, void *Param);
+  void ProcessEditorEvent(int32_t Event, void *Param);
 
   void HandleException(Exception *E, int OpMode = 0) override;
   void KeepaliveThreadCallback();
@@ -160,12 +160,12 @@ protected:
   bool PropertiesDialog(TStrings *AFileList,
     UnicodeString Directory,
     const TRemoteTokenList *GroupList, const TRemoteTokenList *UserList,
-    TRemoteProperties *Properties, intptr_t AllowedChanges);
+    TRemoteProperties *Properties, int32_t AllowedChanges);
   bool ExecuteCommand(const UnicodeString Command);
-  void TerminalCaptureLog(const UnicodeString AddedLine, TCaptureOutputType OutputEvent);
+  void TerminalCaptureLog(const UnicodeString & AddedLine, TCaptureOutputType OutputEvent);
   bool CopyDialog(bool ToRemote, bool Move, const TStrings *AFileList,
-    intptr_t Options,
-    intptr_t CopyParamAttrs,
+    int32_t Options,
+    int32_t CopyParamAttrs,
     UnicodeString &TargetDirectory,
     TGUICopyParamType *Params);
   bool LinkDialog(UnicodeString &AFileName, UnicodeString &PointTo, bool &Symbolic,
@@ -175,13 +175,13 @@ protected:
     TGetSpaceAvailableEvent OnGetSpaceAvailable);
   bool OpenDirectoryDialog(bool Add, UnicodeString &Directory,
     TBookmarkList *BookmarkList);
-  bool ApplyCommandDialog(UnicodeString &Command, intptr_t &Params) const;
+  bool ApplyCommandDialog(UnicodeString &Command, int32_t &Params) const;
   bool FullSynchronizeDialog(TTerminal::TSynchronizeMode &Mode,
-    intptr_t &Params, UnicodeString &LocalDirectory, UnicodeString &RemoteDirectory,
-    TCopyParamType *CopyParams, bool &SaveSettings, bool &SaveMode, intptr_t Options,
+    int32_t &Params, UnicodeString &LocalDirectory, UnicodeString &RemoteDirectory,
+    TCopyParamType *CopyParams, bool &SaveSettings, bool &SaveMode, int32_t Options,
     const TUsableCopyParamAttrs &CopyParamAttrs) const;
   bool SynchronizeChecklistDialog(TSynchronizeChecklist *Checklist,
-    TTerminal::TSynchronizeMode Mode, intptr_t Params,
+    TTerminal::TSynchronizeMode Mode, int32_t Params,
     const UnicodeString LocalDirectory, const UnicodeString RemoteDirectory);
   bool RemoteTransferDialog(TStrings *AFileList, UnicodeString &Target,
     UnicodeString &FileMask, bool Move);
@@ -192,16 +192,16 @@ protected:
     TPromptKind Kind, const UnicodeString Name, const UnicodeString Instructions, TStrings *Prompts,
     TStrings *Results, bool StoredCredentialsTried);
   bool BannerDialog(const UnicodeString SessionName, const UnicodeString Banner,
-    bool &NeverShowAgain, intptr_t Options);
+    bool &NeverShowAgain, int32_t Options);
   bool CreateDirectoryDialog(UnicodeString &Directory,
     TRemoteProperties *Properties, bool &SaveSettings);
   bool QueueDialog(TTerminalQueueStatus *Status, bool ClosingPlugin);
   bool SynchronizeDialog(TSynchronizeParamType &Params,
     const TCopyParamType *CopyParams, TSynchronizeStartStopEvent OnStartStop,
-    bool &SaveSettings, uintptr_t Options, intptr_t CopyParamAttrs,
+    bool &SaveSettings, uint32_t Options, int32_t CopyParamAttrs,
     TGetSynchronizeOptionsEvent OnGetOptions);
   bool SynchronizeAllowSelectedOnly();
-  void RequireCapability(intptr_t Capability);
+  void RequireCapability(int32_t Capability);
   void RequireLocalPanel(TFarPanelInfo *Panel, const UnicodeString Message);
   bool AreCachesEmpty() const;
   void ClearCaches();
@@ -212,7 +212,7 @@ protected:
   void ConnectTerminal(TTerminal *Terminal);
   void TemporarilyDownloadFiles(TStrings *AFileList,
     TCopyParamType &CopyParam, UnicodeString &TempDir);
-  intptr_t UploadFiles(bool Move, int OpMode, bool Edit, UnicodeString &DestPath);
+  int32_t UploadFiles(bool Move, int OpMode, bool Edit, UnicodeString &DestPath);
   void UploadOnSave(bool NoReload);
   void UploadFromEditor(bool NoReload, const UnicodeString AFileName,
     UnicodeString RealFileName, UnicodeString &DestPath);
@@ -223,7 +223,7 @@ protected:
   bool SynchronizeBrowsing(const UnicodeString NewPath);
   bool IsEditHistoryEmpty() const;
   void EditHistory();
-  UnicodeString ProgressBar(intptr_t Percentage, intptr_t Width);
+  UnicodeString ProgressBar(int32_t Percentage, int32_t Width);
   bool IsLogging() const;
   void ShowLog();
 
@@ -241,10 +241,10 @@ private:
   void TerminalChangeDirectory(TObject *Sender);
   void TerminalReadDirectory(TObject *Sender, bool ReloadOnly);
   void TerminalStartReadDirectory(TObject *Sender);
-  void TerminalReadDirectoryProgress(TObject *Sender, intptr_t Progress,
-    intptr_t ResolvedLinks, bool &Cancel);
+  void TerminalReadDirectoryProgress(TObject *Sender, int32_t Progress,
+    int32_t ResolvedLinks, bool &Cancel);
   void TerminalInformation(TTerminal *Terminal,
-    const UnicodeString AStr, bool Status, intptr_t Phase);
+    const UnicodeString AStr, bool Status, int32_t Phase, const UnicodeString &Additional);
   void TerminalQueryUser(TObject *Sender,
     const UnicodeString AQuery, TStrings *MoreMessages, uint32_t Answers,
     const TQueryParams *AParams, uint32_t &Answer, TQueryType Type, void *Arg);
@@ -254,7 +254,7 @@ private:
     void *Arg);
   void TerminalDisplayBanner(TTerminal *Terminal,
     const UnicodeString ASessionName, const UnicodeString ABanner, bool &NeverShowAgain,
-    intptr_t Options, uintptr_t & AParams);
+    int32_t Options, uint32_t & AParams);
   void TerminalShowExtendedException(TTerminal *Terminal,
     Exception *E, void *Arg);
   void TerminalDeleteLocalFile(UnicodeString AFileName, bool Alternative, int32_t& Deleted);
@@ -281,8 +281,8 @@ private:
   void CustomCommandGetParamValue(
     const UnicodeString AName, UnicodeString &Value);
   void HandleErrorList(TStringList *& ErrorList);
-  void TerminalSynchronizeDirectory(UnicodeString LocalDirectory,
-    UnicodeString RemoteDirectory, bool & Continue, bool Collect);
+  void TerminalSynchronizeDirectory(const UnicodeString &LocalDirectory,
+    const UnicodeString &RemoteDirectory, bool & Continue, bool Collect, const TSynchronizeOptions *SynchronizeOptions);
   void DoSynchronize(TSynchronizeController * Sender,
     UnicodeString LocalDirectory, UnicodeString RemoteDirectory,
     const TCopyParamType & CopyParam, const TSynchronizeParamType & Params,
@@ -290,13 +290,13 @@ private:
   void DoSynchronizeInvalid(TSynchronizeController * Sender,
     UnicodeString Directory, UnicodeString ErrorStr);
   void DoSynchronizeTooManyDirectories(TSynchronizeController * Sender,
-    intptr_t & MaxDirectories);
+    int32_t & MaxDirectories);
   void Synchronize(UnicodeString LocalDirectory,
     UnicodeString RemoteDirectory, TTerminal::TSynchronizeMode Mode,
-    const TCopyParamType & CopyParam, intptr_t Params, TSynchronizeChecklist ** Checklist,
+    const TCopyParamType & CopyParam, int32_t Params, TSynchronizeChecklist ** Checklist,
     TSynchronizeOptions * Options);
   void SynchronizeSessionLog(const UnicodeString & Message);
-  void GetSynchronizeOptions(intptr_t Params, TSynchronizeOptions & Options);
+  void GetSynchronizeOptions(int32_t Params, TSynchronizeOptions & Options);
   void QueueListUpdate(TTerminalQueue *Queue);
   void QueueItemUpdate(TTerminalQueue *Queue, TQueueItem *Item);
   void QueueEvent(TTerminalQueue *Queue, TQueueEvent Event);
@@ -304,7 +304,7 @@ private:
     TSpaceAvailable &ASpaceAvailable, bool &Close);
   void QueueAddItem(TQueueItem *Item);
   UnicodeString GetFileNameHash(const UnicodeString AFileName) const;
-  intptr_t GetFilesRemote(TObjectList *PanelItems, bool Move,
+  int32_t GetFilesRemote(TObjectList *PanelItems, bool Move,
     UnicodeString &DestPath, int OpMode);
 
 private:
@@ -329,7 +329,7 @@ private:
   UnicodeString FLastMultipleEditFile;
   UnicodeString FLastMultipleEditFileTitle;
   UnicodeString FLastMultipleEditDirectory;
-  intptr_t FLastEditorID{-1};
+  int32_t FLastEditorID{-1};
   TGUICopyParamType FLastEditCopyParam;
   TKeepAliveThread *FKeepaliveThread{nullptr};
   TSynchronizeController *FSynchronizeController{nullptr};

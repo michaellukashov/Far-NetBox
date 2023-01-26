@@ -19,14 +19,14 @@ public:
   TWinSCPPlugin() = delete;
   explicit TWinSCPPlugin(HINSTANCE HInst) noexcept;
   virtual ~TWinSCPPlugin() noexcept;
-  intptr_t GetMinFarVersion() const override;
+  int32_t GetMinFarVersion() const override;
 
   void HandleException(Exception *E, int OpMode = 0) override;
   uint32_t MoreMessageDialog(const UnicodeString Str, TStrings *MoreMessages,
     TQueryType Type, uint32_t Answers, const TMessageParams *Params = nullptr);
   void ShowExtendedException(Exception *E);
   bool CopyParamCustomDialog(TCopyParamType &CopyParam,
-    intptr_t CopyParamAttrs);
+    int32_t CopyParamAttrs);
   void SetStartupInfo(const struct PluginStartupInfo *Info) override;
 
 protected:
@@ -34,14 +34,14 @@ protected:
   void GetPluginInfoEx(DWORD &Flags, TStrings *DiskMenuStrings,
     TStrings *PluginMenuStrings, TStrings *PluginConfigStrings,
     TStrings *CommandPrefixes) override;
-  TCustomFarFileSystem *OpenPluginEx(intptr_t OpenFrom, intptr_t Item) override;
-  bool ConfigureEx(intptr_t Item) override;
-  intptr_t ProcessEditorEventEx(intptr_t Event, void *Param) override;
-  intptr_t ProcessEditorInputEx(const INPUT_RECORD *Rec) override;
+  TCustomFarFileSystem *OpenPluginEx(int32_t OpenFrom, int32_t Item) override;
+  bool ConfigureEx(int32_t Item) override;
+  int32_t ProcessEditorEventEx(int32_t Event, void *Param) override;
+  int32_t ProcessEditorInputEx(const INPUT_RECORD *Rec) override;
 
   bool CopyParamDialog(const UnicodeString Caption, TCopyParamType &CopyParam,
-    intptr_t CopyParamAttrs);
-  void MessageClick(void *Token, uintptr_t Result, bool &Close);
+    int32_t CopyParamAttrs);
+  void MessageClick(void *Token, uint32_t Result, bool &Close);
   void CommandsMenu(bool FromFileSystem);
   bool ConfigurationDialog();
   bool PanelConfigurationDialog();

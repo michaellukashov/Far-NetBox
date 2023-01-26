@@ -20,7 +20,7 @@ public:
   virtual void Load();
   virtual void Save(bool All, bool Explicit);
   virtual void Default() override;
-  virtual THierarchicalStorage *CreateStorage(bool &SessionList) override;
+  virtual THierarchicalStorage *CreateScpStorage(bool &SessionList) override;
   void CacheFarSettings();
 
   const TCustomFarPlugin *GetPlugin() const { return FFarPlugin; }
@@ -33,8 +33,8 @@ public:
   void SetConfirmSynchronizedBrowsing(bool Value) { FConfirmSynchronizedBrowsing = Value; }
   bool GetDisksMenu() const { return FDisksMenu; }
   void SetDisksMenu(bool Value) { FDisksMenu = Value; }
-  intptr_t GetDisksMenuHotKey() const { return FDisksMenuHotKey; }
-  void SetDisksMenuHotKey(intptr_t Value) { FDisksMenuHotKey = Value; }
+  int32_t GetDisksMenuHotKey() const { return FDisksMenuHotKey; }
+  void SetDisksMenuHotKey(int32_t Value) { FDisksMenuHotKey = Value; }
   bool GetPluginsMenu() const { return FPluginsMenu; }
   void SetPluginsMenu(bool Value) { FPluginsMenu = Value; }
   bool GetPluginsMenuCommands() const { return FPluginsMenuCommands; }
@@ -69,8 +69,8 @@ public:
 
   UnicodeString GetApplyCommandCommand() const { return FApplyCommandCommand; }
   void SetApplyCommandCommand(UnicodeString Value) { FApplyCommandCommand = Value; }
-  intptr_t GetApplyCommandParams() const { return FApplyCommandParams; }
-  void SetApplyCommandParams(intptr_t Value) { FApplyCommandParams = Value; }
+  int32_t GetApplyCommandParams() const { return FApplyCommandParams; }
+  void SetApplyCommandParams(int32_t Value) { FApplyCommandParams = Value; }
 
   UnicodeString GetPageantPath() const { return FPageantPath; }
   void SetPageantPath(UnicodeString Value) { FPageantPath = Value; }
@@ -92,12 +92,12 @@ protected:
 private:
   TCustomFarPlugin *FFarPlugin{nullptr};
   std::unique_ptr<TBookmarks> FBookmarks;
-  intptr_t FFarConfirmations{0};
+  int32_t FFarConfirmations{0};
   bool FConfirmOverwritingOverride{false};
   bool FConfirmSynchronizedBrowsing{false};
   bool FForceInheritance{false};
   bool FDisksMenu{false};
-  intptr_t FDisksMenuHotKey{0};
+  int32_t FDisksMenuHotKey{0};
   bool FPluginsMenu{false};
   bool FPluginsMenuCommands{false};
   UnicodeString FCommandPrefixes;
@@ -110,7 +110,7 @@ private:
   UnicodeString FPageantPath;
   UnicodeString FPuttygenPath;
   UnicodeString FApplyCommandCommand;
-  intptr_t FApplyCommandParams{0};
+  int32_t FApplyCommandParams{0};
 
   bool FCustomPanelModeDetailed{false};
   bool FFullScreenDetailed{false};
@@ -120,7 +120,7 @@ private:
   UnicodeString FStatusColumnWidthsDetailed;
 
 private:
-  intptr_t FarConfirmations() const;
+  int32_t FarConfirmations() const;
 };
 
 NB_CORE_EXPORT TFarConfiguration *GetFarConfiguration();

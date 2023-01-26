@@ -186,7 +186,7 @@ void TFarConfiguration::CacheFarSettings()
   }
 }
 
-intptr_t TFarConfiguration::FarConfirmations() const
+int32_t TFarConfiguration::FarConfirmations() const
 {
   if (GetPlugin() && (GetCurrentThreadId() == GetPlugin()->GetFarThreadId()))
   {
