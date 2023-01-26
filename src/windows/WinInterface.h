@@ -68,6 +68,7 @@ struct NB_CORE_EXPORT TMessageParams : public TObject
 public:
   explicit TMessageParams(uint32_t AParams) noexcept;
   explicit TMessageParams(const TQueryParams * AParams) noexcept;
+  void Assign(const TMessageParams *AParams);
   void Assign(const TQueryParams *AParams);
 
   const TQueryButtonAlias *Aliases{nullptr};

@@ -59,6 +59,43 @@ TMessageParams::TMessageParams(const TQueryParams * AParams) noexcept
   Assign(AParams);
 }
 
+void TMessageParams::Assign(const TMessageParams *AParams)
+{
+  Reset();
+
+  if (AParams != nullptr)
+  {
+    Aliases = AParams->Aliases;
+    AliasesCount = AParams->AliasesCount;
+    Timer = AParams->Timer;
+    TimerEvent = AParams->TimerEvent;
+    TimerMessage = AParams->TimerMessage;
+    TimerAnswers = AParams->TimerAnswers;
+    TimerQueryType = AParams->TimerQueryType;
+    Timeout = AParams->Timeout;
+    TimeoutAnswer = AParams->TimeoutAnswer;
+    TimeoutResponse = AParams->TimeoutResponse;
+
+    NeverAskAgainTitle = AParams->NeverAskAgainTitle;
+    NeverAskAgainAnswer = AParams->NeverAskAgainAnswer;
+    NeverAskAgainCheckedInitially = AParams->NeverAskAgainCheckedInitially;
+    AllowHelp = AParams->AllowHelp;
+    ImageName = AParams->ImageName;
+    MoreMessagesUrl = AParams->MoreMessagesUrl;
+    MoreMessagesSize = AParams->MoreMessagesSize;
+    CustomCaption = AParams->CustomCaption;
+
+    if (FLAGSET(AParams->Params, qpNeverAskAgainCheck))
+    {
+      Params |= mpNeverAskAgainCheck;
+    }
+    if (FLAGSET(AParams->Params, qpAllowContinueOnError))
+    {
+      Params |= mpAllowContinueOnError;
+    }
+  }
+}
+
 void TMessageParams::Assign(const TQueryParams * AParams)
 {
   Reset();
