@@ -42,42 +42,66 @@
 
 #endif // #if 0
 
-__removed #pragma package(smart_init)
+//#pragma package(smart_init)
 
-extern const UnicodeString PageantTool = L"pageant.exe";
-extern const UnicodeString PuttygenTool = L"puttygen.exe";
+const UnicodeString PageantTool = L"pageant.exe";
+const UnicodeString PuttygenTool = L"puttygen.exe";
 
-bool FindFile(UnicodeString &APath)
+bool DoExists(bool R, UnicodeString Path)
 {
-  bool Result = ::SysUtulsFileExists(FileExistsFix(APath));
+  int32_t Error;
+  bool Result = R;
   if (!Result)
   {
-    UnicodeString ProgramFiles32 = ::IncludeTrailingBackslash(base::GetEnvironmentVariable(L"ProgramFiles"));
-    UnicodeString ProgramFiles64 = ::IncludeTrailingBackslash(base::GetEnvironmentVariable(L"ProgramW6432"));
+    Error = GetLastError();
+    if ((Error = ERROR_CANT_ACCESS_FILE) || // returned when resolving symlinks in %LOCALAPPDATA%\Microsoft\WindowsApps
+       (Error = ERROR_ACCESS_DENIED)) // returned for %USERPROFILE%\Application Data symlink
+    {
+      Result = SysUtulsDirectoryExists(ApiPath(ExtractFileDir(Path)));
+    }
+  }
+  return Result;
+}
+
+bool FileExistsFix(const UnicodeString Path)
+{
+  // WORKAROUND
+  SetLastError(ERROR_SUCCESS);
+  bool Result = DoExists(SysUtulsFileExists(ApiPath(Path)), Path);
+  return Result;
+}
+
+bool FindFile(UnicodeString &Path)
+{
+  bool Result = ::SysUtulsFileExists(FileExistsFix(Path));
+  if (!Result)
+  {
+    UnicodeString ProgramFiles32 = ::IncludeTrailingBackslash(base::GetEnvVariable(L"ProgramFiles"));
+    UnicodeString ProgramFiles64 = ::IncludeTrailingBackslash(base::GetEnvVariable(L"ProgramW6432"));
     if (!ProgramFiles32.IsEmpty() &&
-        SameText(APath.SubString(1, ProgramFiles32.Length()), ProgramFiles32) &&
+        SameText(Path.SubString(1, ProgramFiles32.Length()), ProgramFiles32) &&
         !ProgramFiles64.IsEmpty())
     {
       UnicodeString Path64 =
-        ProgramFiles64 + APath.SubString(ProgramFiles32.Length() + 1, APath.Length() - ProgramFiles32.Length());
+        ProgramFiles64 + Path.SubString(ProgramFiles32.Length() + 1, Path.Length() - ProgramFiles32.Length());
       if (::SysUtulsFileExists(ApiPath(Path64)))
       {
-        APath = Path64;
+        Path = Path64;
         Result = true;
       }
     }
   }
 
-  if (!Result && SameText(ExtractFileName(Path), Path))
+  if (!Result && SameText(base::ExtractFileName(Path, false), Path))
   {
-    UnicodeString Paths = base::GetEnvironmentVariable("PATH");
+    UnicodeString Paths = base::GetEnvVariable("PATH");
     if (!Paths.IsEmpty())
     {
-      UnicodeString NewPath = ::SysUtulsFileSearch(base::ExtractFileName(APath, false), Paths);
+      UnicodeString NewPath = ::SysUtulsFileSearch(base::ExtractFileName(Path, false), Paths);
       Result = !NewPath.IsEmpty();
       if (Result)
       {
-        APath = NewPath;
+        Path = NewPath;
       }
       else
       {
@@ -129,22 +153,22 @@ bool ExportSessionToPutty(TSessionData * SessionData, bool ReuseExisting, const 
 
       std::unique_ptr<TSessionData> ExportData(new TSessionData(L""));
       ExportData->Assign(SessionData);
-      ExportData->Modified = true;
-      ExportData->Name = SessionName;
-      ExportData->WinTitle = SessionData->SessionName;
-      ExportData->Password = L"";
+      ExportData->SetModified(true);
+      ExportData->SetName(SessionName);
+      ExportData->SetWinTitle(SessionData->GetSessionName());
+      ExportData->SetPassword(L"");
 
-      if (SessionData->FSProtocol == fsFTP)
+      if (SessionData->FSProtocol() == fsFTP)
       {
-        if (GUIConfiguration->TelnetForFtpInPutty)
+        if (GetGUIConfiguration()->TelnetForFtpInPutty)
         {
-          ExportData->PuttyProtocol = PuttyTelnetProtocol;
-          ExportData->PortNumber = TelnetPortNumber;
+          ExportData->SetPuttyProtocol(PuttyTelnetProtocol);
+          ExportData->SetPortNumber(TelnetPortNumber);
         }
         else
         {
-          ExportData->PuttyProtocol = PuttySshProtocol;
-          ExportData->PortNumber = SshPortNumber;
+          ExportData->SetPuttyProtocol(PuttySshProtocol);
+          ExportData->SetPortNumber(SshPortNumber);
         }
       }
 
@@ -158,13 +182,13 @@ void OpenSessionInPutty(const UnicodeString PuttyPath,
   TSessionData * SessionData)
 {
   // See also TSiteAdvancedDialog::PuttySettingsButtonClick
-  UnicodeString Program, AParams, Dir;
-  SplitCommand(PuttyPath, Program, AParams, Dir);
+  UnicodeString Program, Params, Dir;
+  SplitCommand(PuttyPath, Program, Params, Dir);
   Program = ::ExpandEnvironmentVariables(Program);
   if (FindFile(Program))
   {
 
-    Params = ::ExpandEnvironmentVariables(Params);
+    Params = ::ExpandEnvVars(Params);
     UnicodeString Password;
     if (GetGUIConfiguration()->PuttyPassword)
     {
@@ -184,14 +208,14 @@ void OpenSessionInPutty(const UnicodeString PuttyPath,
       &LocalCustomCommand, L"PuTTY", UnicodeString());
 
     UnicodeString Params =
-      LocalCustomCommand.Complete(InteractiveCustomCommand.Complete(AParams, false), true);
+      LocalCustomCommand.Complete(InteractiveCustomCommand.Complete(Params, false), true);
     UnicodeString PuttyParams;
 
-    if (!LocalCustomCommand.IsSiteCommand(AParams))
+    if (!LocalCustomCommand.IsSiteCommand(Params))
     {
       {
         bool SessionList = false;
-        std::unique_ptr<THierarchicalStorage> SourceHostKeyStorage(GetConfiguration()->CreateStorage(SessionList));
+        std::unique_ptr<THierarchicalStorage> SourceHostKeyStorage(GetConfiguration()->CreateScpStorage(SessionList));
         SourceHostKeyStorage->Init();
         std::unique_ptr<THierarchicalStorage> TargetHostKeyStorage(std::make_unique<TRegistryStorage>(GetConfiguration()->PuttyRegistryStorageKey()));
         TargetHostKeyStorage->Init();
@@ -256,15 +280,15 @@ void OpenSessionInPutty(const UnicodeString PuttyPath,
       else
       {
         UnicodeString SessionName;
-        if (ExportSessionToPutty(SessionData, true, GUIConfiguration->PuttySession))
+        if (ExportSessionToPutty(SessionData, true, GetGUIConfiguration()->PuttySession))
         {
           SessionName = SessionData->SessionName;
         }
         else
         {
-          SessionName = GUIConfiguration->PuttySession;
+          SessionName = GetGUIConfiguration()->PuttySession;
           if ((SessionData->FSProtocol == fsFTP) &&
-              GUIConfiguration->TelnetForFtpInPutty)
+              GetGUIConfiguration()->TelnetForFtpInPutty)
           {
             // PuTTY  does not allow -pw for telnet
             Password = L"";
@@ -280,7 +304,7 @@ void OpenSessionInPutty(const UnicodeString PuttyPath,
       }
     }
 
-    if (!Password.IsEmpty() && !LocalCustomCommand.IsPasswordCommand(AParams))
+    if (!Password.IsEmpty() && !LocalCustomCommand.IsPasswordCommand(Params))
     {
       Password = NormalizeString(Password); // if password is empty, we should quote it always
       AddToList(PuttyParams, FORMAT(L"-pw %s", EscapePuttyCommandParam(Password)), L" ");
@@ -1462,9 +1486,10 @@ int32_t TLocalCustomCommand::PatternLen(const UnicodeString & Command, int32_t I
 }
 
 bool TLocalCustomCommand::PatternReplacement(
-  int32_t Index, const UnicodeString & Pattern, const UnicodeString & Replacement, bool & Delimit) const
+  int32_t Index, const UnicodeString & Pattern, const UnicodeString & AReplacement, bool & Delimit) const
 {
   bool Result;
+  UnicodeString Replacement = AReplacement;
   if (Pattern == L"!\\")
   {
     // When used as "!\" in an argument to PowerShell, the trailing \ would escape the ",
@@ -2116,8 +2141,6 @@ void TNewRichEdit::DestroyWnd()
     FreeLibrary(FLibrary);
   }
 }
-
-#if 0
 
 static int HideAccelFlag(TControl * Control)
 {

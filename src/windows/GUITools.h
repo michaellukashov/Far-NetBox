@@ -90,8 +90,8 @@ public:
 
 protected:
   virtual int32_t PatternLen(const UnicodeString & Command, int32_t Index) const;
-  virtual bool PatternReplacement(intptr_t Index, const UnicodeString & Pattern,
-    UnicodeString & Replacement, bool & Delimit) const;
+  virtual bool PatternReplacement(int32_t Index, const UnicodeString & Pattern,
+    const UnicodeString & Replacement, bool & Delimit) const;
   virtual void DelimitReplacement(UnicodeString & Replacement, wchar_t Quote);
 
 private:
@@ -195,7 +195,7 @@ private:
 #endif // #if 0
 
 NB_CORE_EXPORT UnicodeString ItemsFormatString(UnicodeString SingleItemFormat,
-  UnicodeString MultiItemsFormat, intptr_t Count, UnicodeString FirstItem);
+  UnicodeString MultiItemsFormat, int32_t Count, UnicodeString FirstItem);
 NB_CORE_EXPORT UnicodeString GetPersonalFolder();
 NB_CORE_EXPORT UnicodeString ItemsFormatString(UnicodeString SingleItemFormat,
   UnicodeString MultiItemsFormat, const TStrings *Items);
@@ -231,5 +231,5 @@ void FindComponentClass(
 
 #endif // #if 0
 
-NB_CORE_EXPORT extern UnicodeString PageantTool;
-NB_CORE_EXPORT extern UnicodeString PuttygenTool;
+NB_CORE_EXPORT extern const UnicodeString PageantTool;
+NB_CORE_EXPORT extern const UnicodeString PuttygenTool;
