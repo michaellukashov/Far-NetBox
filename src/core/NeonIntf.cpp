@@ -56,7 +56,7 @@ struct TProxyAuthData
   UnicodeString UserName;
   UnicodeString Password;
 };
----
+
 static int NeonProxyAuth(
   void *UserData, const char * /*Realm*/, int Attempt, char *UserName, char *Password)
 {
@@ -118,13 +118,13 @@ void InitNeonSession(ne_session *Session, TProxyMethod ProxyMethod, const Unicod
 
   ne_redirect_register(Session);
   ne_set_useragent(Session, StrToNeon(FORMAT("%s/%s", GetAppNameString(), GetConfiguration()->GetVersion())));
-  UnicodeString CertificateStorage = Configuration->CertificateStorageExpanded;
+  UnicodeString CertificateStorage = Configuration->GetCertificateStorageExpanded();
   if (!CertificateStorage.IsEmpty())
   {
     ne_ssl_set_certificates_storage(Session, StrToNeon(CertificateStorage));
     if (Terminal != nullptr)
     {
-      Terminal->LogEvent(FORMAT(L"Using certificate store \"%s\"", (CertificateStorage)));
+      Terminal->LogEvent(FORMAT(L"Using certificate store \"%s\"", CertificateStorage));
     }
   }
 
@@ -251,12 +251,9 @@ extern "C"
 
 void ne_init_ssl_session(struct ssl_st * Ssl, ne_session * Session)
 {
-#if 0
-  void * Code = ne_get_session_private(Session, SESSION_TLS_INIT_KEY);
-  void * Data = ne_get_session_private(Session, SESSION_TLS_INIT_DATA_KEY);
-#endif // if 0
-
-  TNeonTlsInit OnNeonTlsInit = MakeMethod<TNeonTlsInit>(Data, Code);
+  // void * Code = ne_get_session_private(Session, SESSION_TLS_INIT_KEY);
+  // void * Data = ne_get_session_private(Session, SESSION_TLS_INIT_DATA_KEY);
+  //TNeonTlsInit OnNeonTlsInit = MakeMethod<TNeonTlsInit>(Data, Code);
   TNeonTlsInit OnNeonTlsInit =
     reinterpret_cast<TNeonTlsInit>(ne_get_session_private(Session, SESSION_TLS_INIT_KEY));
   if (DebugAlwaysTrue(OnNeonTlsInit != nullptr))
@@ -269,12 +266,10 @@ void ne_init_ssl_session(struct ssl_st * Ssl, ne_session * Session)
 
 void SetNeonTlsInit(ne_session *Session, TNeonTlsInit OnNeonTlsInit)
 {
+  // TMethod &Method = *(TMethod*)&OnNeonTlsInit;
+  // ne_set_session_private(Session, SESSION_TLS_INIT_KEY, Method.Code);
+  // ne_set_session_private(Session, SESSION_TLS_INIT_DATA_KEY, Method.Data);
   ne_set_session_private(Session, SESSION_TLS_INIT_KEY, nb::ToPtr(OnNeonTlsInit));
-#if 0
-  TMethod &Method = *(TMethod*)&OnNeonTlsInit;
-  ne_set_session_private(Session, SESSION_TLS_INIT_KEY, Method.Code);
-  ne_set_session_private(Session, SESSION_TLS_INIT_DATA_KEY, Method.Data);
-#endif // if 0
 }
 
 AnsiString NeonExportCertificate(const ne_ssl_certificate *Certificate)
@@ -563,7 +558,6 @@ void SetupSsl(ssl_st * Ssl, TTlsVersion MinTlsVersion, TTlsVersion MaxTlsVersion
 {
   #define MASK_TLS_VERSION(VERSION, FLAG) ((MinTlsVersion > (VERSION)) || (MaxTlsVersion < (VERSION)) ? (FLAG) : 0)
   int32_t Options =
-    MASK_TLS_VERSION(ssl2, SSL_OP_NO_SSLv2) |
     MASK_TLS_VERSION(ssl3, SSL_OP_NO_SSLv3) |
     MASK_TLS_VERSION(tls10, SSL_OP_NO_TLSv1) |
     MASK_TLS_VERSION(tls11, SSL_OP_NO_TLSv1_1) |
