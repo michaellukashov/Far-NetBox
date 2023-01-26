@@ -165,9 +165,9 @@ protected:
   struct t_ActiveList
   {
   CUSTOM_MEM_ALLOCATION_IMPL
-    CFtpControlSocket * pOwner;
-    int64_t nBytesAvailable;
-    int64_t nBytesTransferred;
+    CFtpControlSocket * pOwner{nullptr};
+    int64_t nBytesAvailable{0};
+    int64_t nBytesTransferred{0};
   };
   static nb::list_t<t_ActiveList> m_InstanceList[2];
   static CTime m_CurrentTransferTime[2];
@@ -180,13 +180,13 @@ protected:
   int CheckOverwriteFile();
   int CheckOverwriteFileAndCreateTarget();
   int FileTransferHandleDirectoryListing(t_directory * pDirectory);
-  t_directory * m_pDirectoryListing;
+  t_directory * m_pDirectoryListing{nullptr};
 
-  CMainThread * m_pOwner;
-  CFileZillaTools * m_pTools;
+  CMainThread * m_pOwner{nullptr};
+  CFileZillaTools * m_pTools{nullptr};
 
-  CFile * m_pDataFile;
-  CTransferSocket * m_pTransferSocket;
+  CFile * m_pDataFile{nullptr};
+  CTransferSocket * m_pTransferSocket{nullptr};
   CStringA m_MultiLine;
   CTime m_LastSendTime;
 
@@ -205,31 +205,31 @@ protected:
   int m_zlibLevel;
 #endif
 
-  bool m_bUTF8;
-  bool m_bAnnouncesUTF8;
-  int m_nCodePage;
-  bool m_hasClntCmd;
+  bool m_bUTF8{false};
+  int m_nCodePage{0};
+  bool m_bAnnouncesUTF8{false};
+  bool m_hasClntCmd{false};
   TFTPServerCapabilities m_serverCapabilities;
   CStringA m_ListFile;
-  int64_t m_ListFileSize;
-  bool m_isFileZilla;
+  int64_t m_ListFileSize{0};
+  bool m_isFileZilla{false};
 
-  bool m_awaitsReply;
-  bool m_skipReply;
+  bool m_awaitsReply{false};
+  bool m_skipReply{false};
 
-  char * m_sendBuffer;
-  size_t m_sendBufferLen;
+  char * m_sendBuffer{nullptr};
+  size_t m_sendBufferLen{0};
 
-  bool m_bProtP;
+  bool m_bProtP{false};
 
-  bool m_mayBeMvsFilesystem;
-  bool m_mayBeBS2000Filesystem;
+  bool m_mayBeMvsFilesystem{false};
+  bool m_mayBeBS2000Filesystem{false};
 
   struct t_operation
   {
   CUSTOM_MEM_ALLOCATION_IMPL
-    int nOpMode;
-    int nOpState;
+    int nOpMode{0};
+    int nOpState{0};
     class COpData //: public TObject //Base class which will store operation specific parameters.
     {
     CUSTOM_MEM_ALLOCATION_IMPL
@@ -237,20 +237,20 @@ protected:
       COpData() {}
       virtual ~COpData() {}
     };
-    COpData * pData;
+    COpData * pData{nullptr};
   public:
   };
 
   t_operation m_Operation;
 
-  CAsyncProxySocketLayer * m_pProxyLayer;
-  CAsyncSslSocketLayer * m_pSslLayer;
+  CAsyncProxySocketLayer * m_pProxyLayer{nullptr};
+  CAsyncSslSocketLayer * m_pSslLayer{nullptr};
 #ifndef MPEXT_NO_GSS
   CAsyncGssSocketLayer * m_pGssLayer;
 #endif
   t_server m_CurrentServer;
 
 private:
-  BOOL m_bCheckForTimeout;
+  BOOL m_bCheckForTimeout{FALSE};
 };
 

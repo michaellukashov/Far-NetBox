@@ -5102,7 +5102,7 @@ int CFtpControlSocket::CheckOverwriteFile()
         pOverwriteData->localtime = localtime;
         pOverwriteData->remotetime = remotetime;
         pOverwriteData->nRequestID = m_pOwner->GetNextAsyncRequestID();
-        if (!GetIntern()->PostMessage(FZ_MSG_MAKEMSG(FZ_MSG_ASYNCREQUEST, FZ_ASYNCREQUEST_OVERWRITE), (LPARAM)pOverwriteData))
+        if (!GetIntern()->FZPostMessage(FZ_MSG_MAKEMSG(FZ_MSG_ASYNCREQUEST, FZ_ASYNCREQUEST_OVERWRITE), (LPARAM)pOverwriteData))
         {
           delete pOverwriteData;
           nReplyError = FZ_REPLY_ERROR;
@@ -5142,13 +5142,14 @@ void CFtpControlSocket::SetFileExistsAction(int nAction, COverwriteRequestData *
   int nReplyError = 0;
   switch (nAction)
   {
-  case FILEEXISTS_SKIP:
+  case TFileZillaIntf::FILEEXISTS_SKIP:
     nReplyError = FZ_REPLY_OK;
     break;
-  case FILEEXISTS_OVERWRITE:
+  case TFileZillaIntf::FILEEXISTS_OVERWRITE:
     pTransferData->nWaitNextOpState = FILETRANSFER_TYPE;
+    pTransferData->transferdata.localFileHandle = pData->localFileHandle;
     break;
-  case FILEEXISTS_RENAME:
+  case TFileZillaIntf::FILEEXISTS_RENAME:
     if (pTransferData->transferfile.get)
     {
       CFileStatus64 status;
@@ -5912,7 +5913,7 @@ _int64 CFtpControlSocket::GetSpeedLimit(enum transferDirection direction, CTime 
   return ( _int64)1000000000000;
 }
 
-_int64 CFtpControlSocket::GetAbleToUDSize( bool &beenWaiting, CTime &curTime, _int64 &curLimit, std::list<CFtpControlSocket::t_ActiveList>::iterator &iter, enum transferDirection direction, int nBufSize)
+_int64 CFtpControlSocket::GetAbleToUDSize( bool &beenWaiting, CTime &curTime, _int64 &curLimit, nb::list_t<CFtpControlSocket::t_ActiveList>::iterator &iter, enum transferDirection direction, int nBufSize)
 {
   beenWaiting = false;
 
@@ -6268,7 +6269,7 @@ CString CFtpControlSocket::GetReply()
   if (m_bUTF8)
   {
     // convert from UTF-8 to ANSI
-    if (DetectUTF8Encoding(RawByteString(line)) == etANSI)
+    if (nb::DetectUTF8Encoding((const uint8_t *)line, strlen(line)) == nb::etANSI)
     {
       if (m_CurrentServer.nUTF8 != 1)
       {
@@ -6436,7 +6437,7 @@ CFtpListResult * CFtpControlSocket::CreateListResult(bool mlst)
 {
   CFtpListResult * Result =
     new CFtpListResult(
-      m_CurrentServer, mlst, &m_bUTF8, GetOptionVal(OPTION_VMSALLREVISIONS), GetOptionVal(OPTION_DEBUGSHOWLISTING));
+      m_CurrentServer, mlst, &m_bUTF8, &m_nCodePage, GetOptionVal(OPTION_VMSALLREVISIONS), GetOptionVal(OPTION_DEBUGSHOWLISTING));
   Result->InitIntern(GetIntern());
   return Result;
 }

@@ -63,16 +63,16 @@ class t_ffam_statusmessage
 CUSTOM_MEM_ALLOCATION_IMPL
 public:
   CString status;
-  int type;
-  BOOL post;
+  int type{0};
+  BOOL post{FALSE};
 };
 
 struct t_ffam_transferstatus
 {
 CUSTOM_MEM_ALLOCATION_IMPL
-  int64_t bytes;
-  int64_t transfersize;
-  BOOL bFileTransfer;
+  int64_t bytes{0};
+  int64_t transfersize{0};
+  BOOL bFileTransfer{FALSE};
 };
 
 #undef CFile

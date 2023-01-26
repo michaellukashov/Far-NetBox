@@ -33,7 +33,7 @@ class CFtpListResult : public CApiLog
 public:
   t_server m_server;
   void AddData(const char * data,int size);
-  CFtpListResult(t_server server, bool mlst, bool * bUTF8, bool vmsAllRevisions, bool debugShowListing);
+  CFtpListResult(t_server server, bool mlst, bool * bUTF8, int *nCodePage, bool vmsAllRevisions, bool debugShowListing);
   t_directory::t_direntry * getList(int & num);
 
 private:
@@ -72,12 +72,13 @@ private:
   // Month names map
   rde::map<CString, int> m_MonthNamesMap;
 
-  bool m_vmsAllRevisions;
-  bool m_debugShowListing;
+  bool m_vmsAllRevisions{false};
+  bool m_debugShowListing{false};
 
 protected:
-  bool m_mlst;
-  bool * m_bUTF8;
+  bool m_mlst{false};
+  bool * m_bUTF8{nullptr};
+  int * m_nCodePage{nullptr};
   void copyStr(CString & target, int pos, const char * source, int len, bool mayInvalidateUTF8 = false);
   const char * strnchr(const char * str, int len, char c) const;
   const char * strnstr(const char * str, int len, const char * c) const;

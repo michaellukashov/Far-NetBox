@@ -1,15 +1,17 @@
 ﻿
 #include "stdafx.h"
+#include <rdestl/map.h>
 #include <nbutils.h>
 #include "FtpListResult.h"
 #include "FileZillaApi.h"
 #include <WideStrUtils.hpp>
 
-CFtpListResult::CFtpListResult(t_server server, bool mlst, bool *bUTF8, bool vmsAllRevisions, bool debugShowListing)
+CFtpListResult::CFtpListResult(t_server server, bool mlst, bool *bUTF8, int *nCodePage, bool vmsAllRevisions, bool debugShowListing)
 {
   m_mlst = mlst;
   m_server = server;
   m_bUTF8 = bUTF8;
+  m_nCodePage = nCodePage;
   m_vmsAllRevisions = vmsAllRevisions;
   m_debugShowListing = debugShowListing;
 
@@ -73,7 +75,7 @@ CFtpListResult::CFtpListResult(t_server server, bool mlst, bool *bUTF8, bool vms
 
   //French month names
   m_MonthNamesMap[L"janv"] = 1;
-  m_MonthNamesMap[L"f\xE9"L"b"] = 1;
+  m_MonthNamesMap[L"f\xE9" L"b"] = 1;
   m_MonthNamesMap[L"f\xE9v"] = 2;
   m_MonthNamesMap[L"fev"] = 2;
   m_MonthNamesMap[L"f\xE9vr"] = 2;
@@ -87,7 +89,7 @@ CFtpListResult::CFtpListResult(t_server server, bool mlst, bool *bUTF8, bool vms
   m_MonthNamesMap[L"ao\xFB"] = 8;
   m_MonthNamesMap[L"ao\xFBt"] = 8;
   m_MonthNamesMap[L"aout"] = 8;
-  m_MonthNamesMap[L"d\xE9"L"c"] = 12;
+  m_MonthNamesMap[L"d\xE9" L"c"] = 12;
   m_MonthNamesMap[L"dec"] = 12;
 
   //Italian month names
@@ -353,7 +355,7 @@ void CFtpListResult::AddData(const char * Data, int Size)
       Restart = false;
     }
 
-    std::vector<RawByteString> Lines;
+    nb::vector_t<RawByteString> Lines;
     while ((Pos <= FBuffer.Length()) && !IsNewLineChar(FBuffer[Pos]))
     {
       Pos++;
@@ -419,7 +421,7 @@ void CFtpListResult::SendLineToMessageLog(const RawByteString & Line)
     Status->post = TRUE;
     Status->status = Line.c_str();
     Status->type = FZ_LOG_INFO;
-    if (!GetIntern()->PostMessage(FZ_MSG_MAKEMSG(FZ_MSG_STATUS, 0), (LPARAM)Status))
+    if (!GetIntern()->FZPostMessage(FZ_MSG_MAKEMSG(FZ_MSG_STATUS, 0), (LPARAM)Status))
     {
       delete Status;
     }
@@ -557,16 +559,14 @@ bool CFtpListResult::ParseShortDate(const char *str, int len, t_directory::t_dir
 
   if (!numeric)
   {
-    std::map<CString, int>::const_iterator iter;
-
-    char *tmpstr = new char[i + 1];
+    char *tmpstr =  nb::chcalloc(i + 1);
     strncpy(tmpstr, str, i);
     tmpstr[i] = 0;
     strlwr(tmpstr);
 
     USES_CONVERSION;
-    iter = m_MonthNamesMap.find(A2T(tmpstr));
-    delete [] tmpstr;
+    rde::map<CString, int>::const_iterator iter = const_cast<CFtpListResult *>(this)->m_MonthNamesMap.find(A2T(tmpstr));
+    nb_free(tmpstr);
     if (iter == m_MonthNamesMap.end())
       return false;
 
@@ -692,7 +692,7 @@ BOOL CFtpListResult::parseAsVMS(const char *line, const int linelen, t_directory
   int pos = 0;
   USES_CONVERSION;
 
-  std::map<CString, int>::const_iterator iter;
+  // rde::map<CString, int>::const_iterator iter;
   t_directory::t_direntry dir;
 
   dir.bUnsure = FALSE;
@@ -1333,19 +1333,19 @@ BOOL CFtpListResult::parseAsUnix(const char *line, const int linelen, t_director
   int prevstrlen = 0;
 
   __int64 tmp = 0;
-  std::map<CString, int>::const_iterator iter;
+  //rde::map<CString, int>::const_iterator iter;
   while (str && !ParseSize(str, tokenlen, tmp) && !IsNumeric(skipped, skippedlen))
   {
     //Maybe the server has left no space between the group and the size
     //because of stupid alignment
-    char *tmpstr = new char[tokenlen + 1];
+    char *tmpstr = nb::chcalloc(tokenlen + 1);
     strncpy(tmpstr, str, tokenlen);
     tmpstr[tokenlen] = 0;
     strlwr(tmpstr);
 
     USES_CONVERSION;
-    iter = m_MonthNamesMap.find(A2T(tmpstr));
-    delete [] tmpstr;
+    rde::map<CString, int>::const_iterator iter = m_MonthNamesMap.find(A2T(tmpstr));
+    nb_free(tmpstr);
     if (iter != m_MonthNamesMap.end())
     {
       BOOL bRightNumeric = true;
@@ -1699,8 +1699,8 @@ BOOL CFtpListResult::parseAsUnix(const char *line, const int linelen, t_director
   {
     //Try if we can recognize the month name
     USES_CONVERSION;
-    iter = m_MonthNamesMap.find(A2T(lwr));
-    delete [] lwr;
+    rde::map<CString, int>::const_iterator iter = m_MonthNamesMap.find(A2T(lwr));
+    nb_free(lwr);
     if (iter == m_MonthNamesMap.end())
     {
       int i;
@@ -2022,7 +2022,7 @@ BOOL CFtpListResult::parseAsOther(const char *line, const int linelen, t_directo
   }
   else
   {
-    std::map<CString, int>::const_iterator iter;
+    // rde::map<CString, int>::const_iterator iter;
 
     //Get size
     direntry.size = strntoi64(skipped, skippedtokenlen);
@@ -2277,7 +2277,7 @@ void CFtpListResult::copyStr(CString &target, int pos, const char *source, int l
   if (m_bUTF8 && *m_bUTF8)
   {
     // convert from UTF-8 to ANSI
-    if (DetectUTF8Encoding(RawByteString(p, len)) == etANSI)
+    if (nb::DetectUTF8Encoding((const uint8_t *)p, len) == nb::etANSI)
     {
       if (mayInvalidateUTF8 && m_server.nUTF8 != 1)
       {

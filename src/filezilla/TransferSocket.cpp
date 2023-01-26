@@ -8,11 +8,16 @@
 #include "AsyncGssSocketLayer.h"
 #endif
 
-#define BUFSIZE 16384
+constexpr int32_t BUFSIZE = 16384;
 
-#define STATE_WAITING    0
-#define STATE_STARTING    1
-#define STATE_STARTED    2
+constexpr int STATE_WAITING = 0;
+constexpr int STATE_STARTING = 1;
+constexpr int STATE_STARTED = 2;
+
+#ifndef SIO_IDEAL_SEND_BACKLOG_QUERY
+#define SIO_IDEAL_SEND_BACKLOG_QUERY   _IOR('t', 123, ULONG)
+#define SIO_IDEAL_SEND_BACKLOG_CHANGE   _IO('t', 122)
+#endif
 
 /////////////////////////////////////////////////////////////////////////////
 // CTransferSocket
@@ -117,8 +122,8 @@ void CTransferSocket::OnReceive(int nErrorCode)
     if (m_nTransferState == STATE_STARTING)
       OnConnect(0);
 
-    char *buffer = nb::chcalloc(BUFSIZE);
-    int numread = CAsyncSocketEx::Receive(buffer, BUFSIZE);
+    nb::vector_t<char> Buffer(BUFSIZE);
+    int numread = CAsyncSocketEx::Receive(&Buffer[0], BUFSIZE);
     if (numread != SOCKET_ERROR && numread)
     {
       m_LastActiveTime = CTime::GetCurrentTime();
@@ -126,36 +131,32 @@ void CTransferSocket::OnReceive(int nErrorCode)
 #ifndef MPEXT_NO_ZLIB
       if (m_useZlib)
       {
-        m_zlibStream.next_in = (Bytef *)buffer;
+        m_zlibStream.next_in = (Bytef *)&Buffer[0];
         m_zlibStream.avail_in = numread;
-        char *out = nb::calloc(BUFSIZE);
-        m_zlibStream.next_out = (Bytef *)out;
+        std::unique_ptr<char []> out(nb::calloc(BUFSIZE));
+        m_zlibStream.next_out = (Bytef *)&out[0];
         m_zlibStream.avail_out = BUFSIZE;
         int res = inflate(&m_zlibStream, 0);
         while (res == Z_OK)
         {
-          m_pListResult->AddData(out, BUFSIZE - m_zlibStream.avail_out);
-          out = nb::calloc(BUFSIZE);
-          m_zlibStream.next_out = (Bytef *)out;
+          m_pListResult->AddData(&out[0], BUFSIZE - m_zlibStream.avail_out);
+          out.reset(nb::calloc(BUFSIZE));
+          m_zlibStream.next_out = (Bytef *)&out[0];
           m_zlibStream.avail_out = BUFSIZE;
           res = inflate(&m_zlibStream, 0);
         }
-        nb_free(buffer);
         if (res == Z_STREAM_END)
-          m_pListResult->AddData(out, BUFSIZE - m_zlibStream.avail_out);
+          m_pListResult->AddData(&out[0], BUFSIZE - m_zlibStream.avail_out);
         else if (res != Z_OK && res != Z_BUF_ERROR)
         {
-          nb_free(out);
           CloseAndEnsureSendClose(CSMODE_TRANSFERERROR);
           return;
         }
-        else
-          nb_free(out);
       }
       else
 #endif
       {
-        m_pListResult->AddData(&buffer, numread);
+        m_pListResult->AddData(&Buffer[0], numread);
       }
       m_transferdata.transfersize += numread;
       t_ffam_transferstatus *status = new t_ffam_transferstatus();
@@ -1044,7 +1045,7 @@ int CTransferSocket::OnLayerCallback(nb::list_t<t_callbackMsg>& callbacks)
           break;
         case SSL_VERIFY_CERT:
           t_SslCertData data;
-          LPTSTR CertError = nullptr;
+          LPCTSTR CertError = nullptr;
           if (m_pSslLayer->GetPeerCertificateData(data, CertError))
             m_pSslLayer->SetNotifyReply(data.priv_data, SSL_VERIFY_CERT, 1);
           else
@@ -1109,7 +1110,7 @@ void CTransferSocket::WriteData(const char * buffer, int len)
 {
   if (m_OnTransferOut != nullptr)
   {
-    m_OnTransferOut(nullptr, m_pBuffer, len);
+    m_OnTransferOut(nullptr, (const uint8_t *)m_pBuffer, len);
   }
   else
   {
@@ -1122,7 +1123,7 @@ int CTransferSocket::ReadData(char * buffer, int len)
   int result;
   if (m_OnTransferIn != nullptr)
   {
-    result = m_OnTransferIn(nullptr, buffer, len);
+    result = m_OnTransferIn(nullptr, (uint8_t *)buffer, len);
   }
   else
   {
@@ -1217,20 +1218,5 @@ void CTransferSocket::CloseOnShutDownOrError(int Mode)
       LogError(Error);
       CloseAndEnsureSendClose(Mode);
     }
-  }
-}
-
-void CTransferSocket::LogError(int Error)
-{
-  wchar_t * Buffer;
-  int Len = FormatMessage(
-    FORMAT_MESSAGE_FROM_SYSTEM |
-    FORMAT_MESSAGE_IGNORE_INSERTS |
-    FORMAT_MESSAGE_ARGUMENT_ARRAY |
-    FORMAT_MESSAGE_ALLOCATE_BUFFER, nullptr, Error, 0, (LPTSTR)&Buffer, 0, nullptr);
-  if (Len > 0)
-  {
-    m_pOwner->ShowStatus(Buffer, FZ_LOG_ERROR);
-    LocalFree(Buffer);
   }
 }

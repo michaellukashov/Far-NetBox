@@ -102,34 +102,34 @@ CUSTOM_MEM_ALLOCATION_IMPL
 
   struct t_Contact
   {
-    TCHAR Organization[256];
-    TCHAR Unit[256];
-    TCHAR CommonName[256];
-    TCHAR Mail[256];
-    TCHAR Country[256];
-    TCHAR StateProvince[256];
-    TCHAR Town[256];
-    TCHAR Other[1024];
+    TCHAR Organization[256]{};
+    TCHAR Unit[256]{};
+    TCHAR CommonName[256]{};
+    TCHAR Mail[256]{};
+    TCHAR Country[256]{};
+    TCHAR StateProvince[256]{};
+    TCHAR Town[256]{0};
+    TCHAR Other[1024]{0};
   } subject, issuer;
 
   struct t_validTime
   {
     // Year, Month, day, hour, minute, second
-    int y, M, d, h, m, s;
+    int y{0}, M{0}, d{0}, h{0}, m{0}, s{0};
   } validFrom, validUntil;
 
-  TCHAR subjectAltName[10240];
+  TCHAR subjectAltName[10240]{};
 
-  uint8_t hashSha1[20];
-  uint8_t hashSha256[32];
+  uint8_t hashSha1[20]{};
+  uint8_t hashSha256[32]{};
 
-  uint8_t * certificate;
-  size_t certificateLen;
+  uint8_t * certificate{nullptr};
+  size_t certificateLen{0};
 
-  int verificationResult;
-  int verificationDepth;
+  int verificationResult{0};
+  int verificationDepth{0};
 
-  int priv_data; //Internal data, do not modify
+  int priv_data{0}; //Internal data, do not modify
 };
 
 class CCriticalSectionWrapper;
@@ -190,8 +190,8 @@ private:
   static int NewSessionCallback(struct ssl_st * Ssl, SSL_SESSION * Session);
   static CAsyncSslSocketLayer * LookupLayer(SSL * Ssl);
 
-  bool m_bUseSSL;
-  BOOL m_bFailureSent;
+  bool m_bUseSSL{false};
+  BOOL m_bFailureSent{FALSE};
 
   // Critical section for thread synchronization
   static CCriticalSectionWrapper m_sCriticalSection;
