@@ -401,7 +401,8 @@ public:
   int32_t& DontReloadMoreThanSessions{FDontReloadMoreThanSessions};
   __property int ScriptProgressFileNameLimit = { read = FScriptProgressFileNameLimit, write = FScriptProgressFileNameLimit };
   int32_t& ScriptProgressFileNameLimit{FScriptProgressFileNameLimit};
-  __property int KeyVersion = { read = FKeyVersion, write = FKeyVersion };
+  __property int32_t KeyVersion = { read = FKeyVersion, write = FKeyVersion };
+  int32_t& KeyVersion{FKeyVersion};
 
   __property UnicodeString TimeFormat = { read = GetTimeFormat };
   ROProperty<UnicodeString> TimeFormat{nb::bind(&TConfiguration::GetConfigurationTimeFormat, this)};
