@@ -18,18 +18,7 @@ using TSynchronizeAbortEvent = nb::FastDelegate2<void,
   TObject * /*Sender*/, bool /*Close*/>;
 using TSynchronizeThreadsEvent = nb::FastDelegate2<void,
   TObject * /*Sender*/, TThreadMethod /*Method*/>;
-
-enum TSynchronizeLogEntry
-{
-  slScan,
-  slStart,
-  slChange,
-  slUpload,
-  slDelete,
-  slDirChange,
-  slContinuedError,
-};
-
+enum TSynchronizeLogEntry { slScan, slStart, slChange, slUpload, slDelete, slDirChange, slContinuedError, };
 using TSynchronizeLogEvent = nb::FastDelegate3<void,
   TSynchronizeController * /*Controller*/, TSynchronizeLogEntry /*Entry*/,
   UnicodeString /*Message*/>;
@@ -48,7 +37,7 @@ using TSynchronizeInvalidEvent = nb::FastDelegate3<void,
   UnicodeString /*ErrorStr*/>;
 using TSynchronizeTooManyDirectoriesEvent = nb::FastDelegate2<void,
   TSynchronizeController * /*Sender*/,
-  intptr_t & /*MaxDirectories*/>;
+  int32_t & /*MaxDirectories*/>;
 
 namespace Discmon
 {
@@ -97,5 +86,5 @@ private:
   void SynchronizeDirectoriesChange(TObject * Sender, int32_t Directories);
 };
 
-void LogSynchronizeEvent(TTerminal * Terminal, const UnicodeString ? Message);
+void LogSynchronizeEvent(TTerminal * Terminal, const UnicodeString Message);
 

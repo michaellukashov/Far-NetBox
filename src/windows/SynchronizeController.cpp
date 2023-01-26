@@ -150,21 +150,21 @@ void TSynchronizeController::SynchronizeChange(
         FSynchronizeParams, &Checklist, Options, false);
       if (Checklist != nullptr)
       {
-        try
+        try__finally
         {
           if (FLAGSET(FSynchronizeParams.Options, soRecurse))
           {
             SubdirsChanged = false;
             DebugAssert(Checklist != nullptr);
-            for (int Index = 0; Index < Checklist->Count; Index++)
+            for (int32_t Index = 0; Index < Checklist->Count(); Index++)
             {
-              const TSynchronizeChecklist::TItem * Item = Checklist->Item[Index];
+              const TChecklistItem * Item = Checklist->GetItem(Index);
               // note that there may be action saDeleteRemote even if nothing has changed
               // so this is sub-optimal
               if (Item->IsDirectory)
               {
-                if ((Item->Action == TSynchronizeChecklist::saUploadNew) ||
-                    (Item->Action == TSynchronizeChecklist::saDeleteRemote))
+                if ((Item->Action == saUploadNew) ||
+                    (Item->Action == saDeleteRemote))
                 {
                   SubdirsChanged = true;
                   break;
@@ -180,11 +180,11 @@ void TSynchronizeController::SynchronizeChange(
           {
             SubdirsChanged = false;
           }
-        }
-        __finally
-        {
+        },
+        __finally__removed
+        ({
           delete Checklist;
-        }
+        }) end_try__finally
       }
     }
   }
@@ -246,7 +246,7 @@ void TSynchronizeController::SynchronizeFilter(TObject * /*Sender*/,
     if (::IncludeTrailingBackslash(::ExtractFilePath(DirectoryName)) ==
           ::IncludeTrailingBackslash(FSynchronizeParams.LocalDirectory))
     {
-      intptr_t FoundIndex;
+      int32_t FoundIndex;
       Add = FOptions->Filter->Find(base::ExtractFileName(DirectoryName, /*Unix=*/true), FoundIndex);
     }
   }
@@ -286,7 +286,7 @@ void TSynchronizeController::SynchronizeDirectoriesChange(
   SynchronizeLog(slDirChange, FMTLOAD(SYNCHRONIZE_START, Directories));
 }
 
-void LogSynchronizeEvent(TTerminal * Terminal, const UnicodeString & Message)
+void LogSynchronizeEvent(TTerminal * Terminal, const UnicodeString Message)
 {
   if (Terminal != nullptr)
   {
