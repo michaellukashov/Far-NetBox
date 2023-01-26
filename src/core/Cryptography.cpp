@@ -133,7 +133,7 @@ static void hmac_sha1_data(const uint8_t data[], uint32_t data_len, hmac_ctx cx[
         memset(cx->key + cx->klen, 0, IN_BLOCK_LENGTH - cx->klen);
 
         /* xor ipad into key value  */
-        for(i = 0; i < (IN_BLOCK_LENGTH >> 2); ++i)
+        for(int i = 0; i < (IN_BLOCK_LENGTH >> 2); ++i)
             ((unsigned long*)cx->key)[i] ^= 0x36363636;
 
         /* and start hash operation */
