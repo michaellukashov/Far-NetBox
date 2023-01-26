@@ -5,7 +5,7 @@
 #include <Common.h>
 #include "ProgParams.h"
 
-__removed #pragma package(smart_init)
+// #pragma package(smart_init)
 
 std::unique_ptr<TProgramParams> ProgramParamsOwner;
 
@@ -20,10 +20,10 @@ TProgramParams * TProgramParams::Instance()
 
 TProgramParams::TProgramParams() noexcept
 {
-  Init(CmdLine);
+  Init(""); // (CmdLine);
 }
 
-TProgramParams::TProgramParams(const UnicodeString & CmdLine)
+TProgramParams::TProgramParams(const UnicodeString & CmdLine) noexcept
 {
   Init(CmdLine);
 }
