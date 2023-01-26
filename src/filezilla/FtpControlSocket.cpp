@@ -1265,7 +1265,7 @@ void CFtpControlSocket::OnReceive(int nErrorCode)
         {
           // convert from UTF-8 to ANSI
           LPCSTR utf8 = (LPCSTR)m_RecvBuffer.back();
-          if (DetectUTF8Encoding(RawByteString(utf8)) == etANSI)
+          if (nb::DetectUTF8Encoding((const uint8_t *)utf8, strlen(utf8)) == nb::etANSI)
           {
             if (m_CurrentServer.nUTF8 != 1)
             {
@@ -1286,6 +1286,20 @@ void CFtpControlSocket::OnReceive(int nErrorCode)
               ShowStatus(W2CT(p1), FZ_LOG_REPLY);
               nb_free(p1);
             }
+          }
+        }
+        else if (m_nCodePage)
+        {
+          LPCSTR str = (LPCSTR)m_RecvBuffer.back();
+          int len = MultiByteToWideChar(m_nCodePage, 0, str, -1, NULL, 0);
+          if (!len)
+            m_RecvBuffer.back() = "";
+          else
+          {
+            LPWSTR p1 = nb::wchcalloc(len + 1);
+            MultiByteToWideChar(m_nCodePage, 0, str, -1 , (LPWSTR)p1, len + 1);
+            ShowStatus(W2CT(p1), FZ_LOG_REPLY);
+            nb_free(p1);
           }
         }
         else
@@ -1581,18 +1595,6 @@ int CFtpControlSocket::GetReplyCode()
   {
     return str[0]-'0';
   }
-}
-
-int CFtpControlSocket::GetReplyCode()
-{
-  int Result = TryGetReplyCode();
-  if (Result < 0)
-  {
-    UnicodeString Error = FMTLOAD(FTP_MALFORMED_RESPONSE, (UnicodeString()));
-    LogMessageRaw(FZ_LOG_WARNING, Error.c_str());
-    Result = 0;
-  }
-  return Result;
 }
 
 void CFtpControlSocket::DoClose(int nError /*=0*/)

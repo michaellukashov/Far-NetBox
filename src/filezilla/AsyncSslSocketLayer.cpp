@@ -934,7 +934,7 @@ void CAsyncSslSocketLayer::ResetSslSession()
       if (iter->second <= 1)
       {
         SSL_CTX_free(m_ssl_ctx);
-        m_contextRefCount.erase(iter);
+        m_contextRefCount.erase(m_ssl_ctx);
       }
       else
         iter->second--;

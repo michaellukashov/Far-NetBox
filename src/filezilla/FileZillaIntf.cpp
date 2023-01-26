@@ -392,13 +392,13 @@ bool TFileZillaIntf::HandleMessage(WPARAM wParam, LPARAM lParam)
           FileName1[LENOF(FileName1) - 1] = L'\0';
           TRemoteFileTime RemoteTime;
           CopyFileTime(RemoteTime, Data->remotetime);
-          Result = HandleAsynchRequestOverwrite(
+          Result = HandleAsyncRequestOverwrite(
             FileName1, LENOF(FileName1), Data->FileName2, Data->path1, Data->path2,
             Data->size1, Data->size2,
             (Data->localtime != nullptr) ? Data->localtime->GetTime() : 0,
             (Data->localtime != nullptr) && ((Data->localtime->GetHour() != 0) || (Data->localtime->GetMinute() != 0)),
             RemoteTime,
-            reinterpret_cast<void*>(Data->pTransferFile->nUserData), RequestResult);
+            reinterpret_cast<void*>(Data->pTransferFile->nUserData), Data->localFileHandle, RequestResult);
         }
         catch(...)
         {
