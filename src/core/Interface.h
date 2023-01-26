@@ -145,7 +145,7 @@ struct NB_CORE_EXPORT TQueryParams : public TObject
   TQueryType TimerQueryType;
   uint32_t Timeout{0};
   uint32_t TimeoutAnswer{0};
-  unsigned int TimeoutResponse{0};
+  uint32_t TimeoutResponse{0};
   uint32_t NoBatchAnswers{0};
   UnicodeString HelpKeyword;
 
