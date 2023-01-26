@@ -114,7 +114,7 @@ protected:
   static void NeonPropsResult(
     void * UserData, const ne_uri * Uri, const ne_prop_result_set_s * Results);
   void ParsePropResultSet(TRemoteFile * AFile,
-    const UnicodeString & APath, const ne_prop_result_set_s * Results);
+    const UnicodeString APath, const ne_prop_result_set_s * Results);
   void TryOpenDirectory(UnicodeString ADirectory);
   static int NeonBodyReader(void * UserData, const char * Buf , size_t Len);
   static void NeonPreSend(ne_request * Request, void * UserData, ne_buffer * Header);

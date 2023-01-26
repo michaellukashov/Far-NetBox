@@ -131,6 +131,7 @@ class TSecondaryTerminal;
 class TFileZillaImpl;
 class TFTPFileSystem;
 class TSFTPFileSystem;
+class TWebDAVFileSystem;
 class TSecureShell;
 class TSessionLog;
 
@@ -142,6 +143,7 @@ class NB_CORE_EXPORT TSessionData : public TNamedObject
   friend class TFileZillaImpl;
   friend class TFTPFileSystem;
   friend class TSFTPFileSystem;
+  friend class TWebDAVFileSystem;
   NB_DISABLE_COPY(TSessionData)
 public:
   static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TSessionData); }

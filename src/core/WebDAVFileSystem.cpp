@@ -46,8 +46,8 @@
 
 __removed #define FILE_OPERATION_LOOP_TERMINAL FTerminal
 
-__removed #define SESSION_FS_KEY "filesystem"
-static const UnicodeString CONST_WEBDAV_PROTOCOL_BASE_NAME = "WebDAV";
+constexpr const char * SESSION_FS_KEY = "filesystem";
+constexpr const char * CONST_WEBDAV_PROTOCOL_BASE_NAME = "WebDAV";
 constexpr int HttpUnauthorized = 401;
 
 #define DAV_PROP_NAMESPACE "DAV:"
@@ -168,7 +168,7 @@ TWebDAVFileSystem::TWebDAVFileSystem(TTerminal *ATerminal) noexcept :
   FHasTrailingSlash(false),
   FNeonSession(nullptr),
   FNeonLockStore(nullptr),
-  FNeonLockStoreSection(new TCriticalSection()),
+  FNeonLockStoreSection(),
   FUploading(false),
   FDownloading(false),
   FInitialHandshake(false),
@@ -246,7 +246,7 @@ void TWebDAVFileSystem::Open()
   FActive = true;
 }
 
-UnicodeString TWebDAVFileSystem::ParsePathFromUrl(const UnicodeString & Url) const
+UnicodeString TWebDAVFileSystem::ParsePathFromUrl(const UnicodeString Url) const
 {
   UnicodeString Result;
   ne_uri ParsedUri{};
@@ -327,7 +327,7 @@ void TWebDAVFileSystem::InitSession(ne_session_s *Session)
   ne_set_session_private(Session, SESSION_FS_KEY, this);
 
   // Allow ^-escaping in OneDrive
-  ne_set_session_flag(Session, NE_SESSFLAG_LIBERAL_ESCAPING, Data->WebDavLiberalEscaping || FOneDrive);
+  ne_set_session_flag(Session, NE_SESSFLAG_LIBERAL_ESCAPING, Data->FWebDavLiberalEscaping || FOneDrive);
 }
 
 void TWebDAVFileSystem::NeonOpen(UnicodeString & CorrectedUrl, const UnicodeString & Url)
@@ -857,7 +857,7 @@ void TWebDAVFileSystem::NeonPropsResult(
     if (base::UnixSamePath(File->FullFileName, FileListPath))
     {
       File->FileName = PARENTDIRECTORY;
-      File->FullFileName = UnixCombinePaths(Path, PARENTDIRECTORY);
+      File->FullFileName = base::UnixCombinePaths(Path, PARENTDIRECTORY);
     }
 
     Data.FileList->AddFile(File.release());
@@ -923,12 +923,12 @@ void TWebDAVFileSystem::ParsePropResultSet(TRemoteFile *AFile,
       }
       else
       {
-        File->ModificationFmt = mfNone;
+        AFile->SetModificationFmt(mfNone);
       }
     }
     else
     {
-      File->ModificationFmt = mfNone;
+      AFile->SetModificationFmt(mfNone);
     }
   }
 
@@ -975,10 +975,10 @@ void TWebDAVFileSystem::ParsePropResultSet(TRemoteFile *AFile,
     // and the * (and others) is removed from file names.
     // Filenames with commas (,) get as many additional characters at the end of the filename as there are commas.
     if (FOneDrive &&
-        (ContainsText(File->FileName, L"^") || ContainsText(File->FileName, L",") || (wcspbrk(File->DisplayName.c_str(), L"&,+#[]%*") != nullptr)))
+        (ContainsText(AFile->FileName, L"^") || ContainsText(AFile->FileName, L",") || (wcspbrk(AFile->GetDisplayName().c_str(), L"&,+#[]%*") != nullptr)))
     {
-      File->FileName = File->DisplayName;
-      File->FullFileName = UnixCombinePaths(UnixExtractFileDir(File->FullFileName), File->FileName);
+      AFile->FileName = AFile->GetDisplayName();
+      AFile->FullFileName = base::UnixCombinePaths(base::UnixExtractFileDir(AFile->FullFileName), AFile->FileName);
     }
   }
 
@@ -1086,8 +1086,8 @@ void TWebDAVFileSystem::RemoteDeleteFile(const UnicodeString /*AFileName*/,
   DiscardLock(Path);
 }
 
-int TWebDAVFileSystem::RenameFileInternal(const UnicodeString & AFileName,
-  const UnicodeString & ANewName)
+int TWebDAVFileSystem::RenameFileInternal(const UnicodeString AFileName,
+  const UnicodeString ANewName)
 {
   // 0 = no overwrite
   return ne_move(FNeonSession, 0, PathToNeon(AFileName), PathToNeon(ANewName));
@@ -1110,8 +1110,8 @@ void TWebDAVFileSystem::RemoteRenameFile(const UnicodeString AFileName, const TR
   DiscardLock(PathToNeon(Path));
 }
 
-int TWebDAVFileSystem::CopyFileInternal(const UnicodeString & AFileName,
-  const UnicodeString & ANewName)
+int TWebDAVFileSystem::CopyFileInternal(const UnicodeString AFileName,
+  const UnicodeString ANewName)
 {
   // 0 = no overwrite
   return ne_copy(FNeonSession, 0, NE_DEPTH_INFINITE, PathToNeon(AFileName), PathToNeon(ANewName));
@@ -1132,7 +1132,7 @@ void TWebDAVFileSystem::RemoteCopyFile(const UnicodeString AFileName, const TRem
   CheckStatus(NeonStatus);
 }
 
-void TWebDAVFileSystem::RemoteCreateDirectory(const UnicodeString & ADirName, bool /*Encrypt*/)
+void TWebDAVFileSystem::RemoteCreateDirectory(const UnicodeString ADirName, bool /*Encrypt*/)
 {
   ClearNeonError();
   TOperationVisualizer Visualizer(FTerminal->GetUseBusyCursor()); nb::used(Visualizer);
@@ -1303,7 +1303,6 @@ void TWebDAVFileSystem::CopyToRemote(TStrings * AFilesToCopy,
   if (!AFilesToCopy)
     return;
   Params &= ~cpAppend;
-  Params |= FLAGSET(Params, cpFirstLevel) ? tfFirstLevel : 0;
 
   FTerminal->DoCopyToRemote(AFilesToCopy, TargetDir, CopyParam, Params, OperationProgress, tfPreCreateDir, OnceDoneOperation);
 }
