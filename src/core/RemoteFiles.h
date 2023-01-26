@@ -666,16 +666,8 @@ public:
   TRemoteProperties &operator=(const TRemoteProperties &other);
 };
 
-enum TChecklistAction
-{
-  saNone,
-  saUploadNew,
-  saDownloadNew,
-  saUploadUpdate,
-  saDownloadUpdate,
-  saDeleteRemote,
-  saDeleteLocal,
-};
+enum TChecklistAction {
+  saNone, saUploadNew, saDownloadNew, saUploadUpdate, saDownloadUpdate, saDeleteRemote, saDeleteLocal };
 
 class TSynchronizeChecklist;
 NB_DEFINE_CLASS_ID(TChecklistItem);
@@ -729,10 +721,8 @@ class NB_CORE_EXPORT TSynchronizeChecklist : public TObject
   friend class TTerminal;
 
 public:
-#if 0
-  enum TAction {
-    saNone, saUploadNew, saDownloadNew, saUploadUpdate, saDownloadUpdate, saDeleteRemote, saDeleteLocal };
-#endif // #if 0
+  //enum TAction {
+  //  saNone, saUploadNew, saDownloadNew, saUploadUpdate, saDownloadUpdate, saDeleteRemote, saDeleteLocal };
   static const int32_t ActionCount = saDeleteLocal;
 
 #if 0
