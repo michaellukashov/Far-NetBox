@@ -33,6 +33,7 @@ class TCopyParamType;
 class TTerminal;
 class TSessionData;
 class TSessionLog;
+class TFTPFileSystem;
 
 NB_DEFINE_CLASS_ID(TConfiguration);
 class NB_CORE_EXPORT TConfiguration : public TObject
@@ -41,6 +42,7 @@ class NB_CORE_EXPORT TConfiguration : public TObject
   friend class TTerminal;
   friend class TSessionData;
   friend class TSessionLog;
+  friend class TFTPFileSystem;
 public:
   static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TConfiguration); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TConfiguration) || TObject::is(Kind); }
@@ -93,8 +95,8 @@ private:
   UnicodeString FRandomSeedFile;
   UnicodeString FPuttyRegistryStorageKey;
   UnicodeString FExternalIpAddress;
-  int FLocalPortNumberMin;
-  int FLocalPortNumberMax;
+  int32_t FLocalPortNumberMin{0};
+  int32_t FLocalPortNumberMax{0};
   bool FTryFtpWhenSshFails{false};
   int32_t FParallelDurationThreshold{0};
   bool FScripting{false};

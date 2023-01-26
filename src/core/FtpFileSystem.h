@@ -175,10 +175,9 @@ protected:
     TFileOperationProgressType *OperationProgress, uint32_t AFlags,
     TDownloadSessionAction &Action);
   bool ConfirmOverwrite(const UnicodeString ASourceFullFileName, UnicodeString &ATargetFileName,
-    int32_t AParams, TFileOperationProgressType *OperationProgress,
-    bool AutoResume,
+    TOverwriteMode &OverwriteMode, TFileOperationProgressType *OperationProgress,
     const TOverwriteFileParams *FileParams, const TCopyParamType *CopyParam,
-    TOverwriteMode &OverwriteMode);
+    int32_t AParams, bool AutoResume);
   void ReadDirectoryProgress(int64_t Bytes);
   void ResetFileTransfer();
   void DoFileTransferProgress(int64_t TransferSize, int64_t Bytes);
