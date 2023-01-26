@@ -162,10 +162,10 @@ private:
   bool FModified{false};
 
 public:
-  intptr_t GetCount() const;
-  UnicodeString GetName(intptr_t Index) const;
-  const TCopyParamRule *GetRule(intptr_t Index) const;
-  const TCopyParamType *GetCopyParam(intptr_t Index) const;
+  int32_t GetCount() const;
+  UnicodeString GetName(int32_t Index) const;
+  const TCopyParamRule *GetRule(int32_t Index) const;
+  const TCopyParamType *GetCopyParam(int32_t Index) const;
   bool GetModified() const { return FModified; }
   TStrings *GetNameList() const;
   bool GetAnyRule() const;
@@ -290,15 +290,15 @@ public:
 
   __property bool ContinueOnError = { read = FContinueOnError, write = FContinueOnError };
   __property bool ConfirmCommandSession = { read = FConfirmCommandSession, write = FConfirmCommandSession };
-  __property intptr_t SynchronizeParams = { read = FSynchronizeParams, write = FSynchronizeParams };
-  __property intptr_t SynchronizeOptions = { read = FSynchronizeOptions, write = FSynchronizeOptions };
-  __property intptr_t SynchronizeModeAuto = { read = FSynchronizeModeAuto, write = FSynchronizeModeAuto };
-  __property intptr_t SynchronizeMode = { read = FSynchronizeMode, write = FSynchronizeMode };
-  __property intptr_t MaxWatchDirectories = { read = FMaxWatchDirectories, write = FMaxWatchDirectories };
-  __property intptr_t QueueTransfersLimit = { read = FQueueTransfersLimit, write = SetQueueTransfersLimit };
+  __property int SynchronizeParams = { read = FSynchronizeParams, write = FSynchronizeParams };
+  __property int SynchronizeOptions = { read = FSynchronizeOptions, write = FSynchronizeOptions };
+  __property int SynchronizeModeAuto = { read = FSynchronizeModeAuto, write = FSynchronizeModeAuto };
+  __property int SynchronizeMode = { read = FSynchronizeMode, write = FSynchronizeMode };
+  __property int MaxWatchDirectories = { read = FMaxWatchDirectories, write = FMaxWatchDirectories };
+  __property int QueueTransfersLimit = { read = FQueueTransfersLimit, write = SetQueueTransfersLimit };
   __property bool QueueBootstrap = { read = FQueueBootstrap, write = SetQueueBootstrap };
   __property bool QueueKeepDoneItems = { read = FQueueKeepDoneItems, write = SetQueueKeepDoneItems };
-  __property intptr_t QueueKeepDoneItemsFor = { read = FQueueKeepDoneItemsFor, write = SetQueueKeepDoneItemsFor };
+  __property int QueueKeepDoneItemsFor = { read = FQueueKeepDoneItemsFor, write = SetQueueKeepDoneItemsFor };
   __property bool QueueAutoPopup = { read = FQueueAutoPopup, write = FQueueAutoPopup };
   __property bool SessionRememberPassword = { read = FSessionRememberPassword, write = FSessionRememberPassword };
   bool& SessionRememberPassword{FSessionRememberPassword};
