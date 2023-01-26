@@ -127,9 +127,9 @@ namespace Tbx { class TTBXSeparatorItem; }
 Tbx::TTBXSeparatorItem * AddMenuSeparator(Tb2item::TTBCustomItem * Menu);
 void AddMenuLabel(Tb2item::TTBCustomItem * Menu, const UnicodeString & Label);
 void ClickToolbarItem(Tb2item::TTBCustomItem * Item, bool PositionCursor);
-#endif // #if 0
 
 void InitiateDialogTimeout(TForm * Dialog, uint32_t Timeout, TButton * Button, uint32_t Answer = 0);
+#endif // #if 0
 
 // windows\WinHelp.cpp
 void InitializeWinHelp();
@@ -180,8 +180,8 @@ bool DoChangeMasterPasswordDialog(UnicodeString & NewPassword);
 // windows\WinMain.cpp
 int Execute();
 void GetLoginData(UnicodeString SessionName, TOptions * Options,
-  TObjectList * DataList, UnicodeString & DownloadFile, bool NeedSession, TForm * LinkedForm, int Flags = 0);
-int GetCommandLineParseUrlFlags(TProgramParams * Params);
+  TObjectList * DataList, UnicodeString & DownloadFile, bool NeedSession, /*TForm * LinkedForm,*/ int32_t Flags = 0);
+int32_t GetCommandLineParseUrlFlags(TProgramParams * Params);
 
 #if 0
 // forms\InputDlg.cpp
@@ -202,7 +202,7 @@ struct TRegistration
 {
   bool Registered{false};
   UnicodeString Subject;
-  int Licenses{0};
+  int32_t Licenses{0};
   UnicodeString ProductId;
   bool NeverExpires{false};
   TDateTime Expiration;
@@ -432,8 +432,8 @@ using TSynchronizeChecklistCalculateSizeEvent = nb::FastDelegate3<void,
   TSynchronizeChecklist * /*Checklist*/, const TSynchronizeChecklist::TItemList & /*Items*/, void * /*Token*/>;
 using TSynchronizeMoveEvent = nb::FastDelegate4<void,
   TOperationSide /*Side*/, UnicodeString /*FileName*/, UnicodeString /*NewFileName*/, TRemoteFile * /*RemoteFile*/>;
-typedef void (__closure *TSynchronizeBrowseEvent)(
-  TOperationSide Side, TSynchronizeChecklist::TAction Action, const TSynchronizeChecklist::TItem * Item);
+using TSynchronizeBrowseEvent = nb::FastDelegate3<void,
+  TOperationSide /*Side*/, TChecklistAction /*Action*/, const TChecklistItem * /*Item*/>;
 bool DoSynchronizeChecklistDialog(TSynchronizeChecklist * Checklist,
   TTerminal::TSynchronizeMode Mode, int32_t Params,
   const UnicodeString LocalDirectory, const UnicodeString RemoteDirectory,
@@ -743,7 +743,7 @@ public:
   virtual bool PendingAbort() = 0;
   virtual void SetTitle(UnicodeString Title) = 0;
   virtual void WaitBeforeExit() = 0;
-  virtual void Progress(TScriptProgress & Progress) = 0;
+  // virtual void Progress(TScriptProgress & Progress) = 0;
   virtual void TransferOut(const unsigned char * Data, size_t Len) = 0;
   virtual size_t TransferIn(unsigned char * Data, size_t Len) = 0;
   virtual UnicodeString FinalLogMessage() = 0;
