@@ -305,13 +305,19 @@ public:
   void ReflectSettings();
 
   __property bool Logging = { read = FLogging };
-  const bool& Logging{FLogging};
   __property UnicodeString Name = { read = FName };
+
+  const bool& Logging{FLogging};
   const UnicodeString& Name{FName};
 
   bool GetLogging() const { return FLogging; }
   UnicodeString GetName() const { return FName; }
+  UnicodeString GetLogFileName() const { return FCurrentLogFileName; }
   bool LogToFile() const { return LogToFileProtected(); }
+  UnicodeString GetLine(int32_t Index) const;
+  TLogLineType GetType(int32_t Index) const;
+  void DeleteUnnecessary();
+  void StateChange();
 
 protected:
   void CloseLogFile();
@@ -323,8 +329,7 @@ private:
   TSessionLog *FParent{nullptr};
   TCriticalSection FCriticalSection;
   bool FLogging{false};
-  //void * FFile{nullptr};
-  std::unique_ptr<tinylog::TinyLog> FLogger;
+  std::unique_ptr<tinylog::TinyLog> FLogger; //void * FFile{nullptr};
   UnicodeString FCurrentLogFileName;
   UnicodeString FCurrentFileName;
   int64_t FCurrentFileSize{0};
@@ -335,12 +340,12 @@ private:
   bool FClosed{false};
 
   void OpenLogFile();
-  UnicodeString GetLogFileName() const { return FCurrentLogFileName; }
+  UnicodeString GetLogFileNamePrivate() const { return GetLogFileName(); }
   void DoAdd(TLogLineType AType, const UnicodeString ALine,
     TDoAddLogEvent Event);
   __removed void (__closure *f)(TLogLineType Type, const UnicodeString &Line);
-  void DoAddToParent(TLogLineType AType, UnicodeString ALine);
-  void DoAddToSelf(TLogLineType AType, UnicodeString ALine);
+  void DoAddToParent(TLogLineType AType, const UnicodeString ALine);
+  void DoAddToSelf(TLogLineType AType, const UnicodeString ALine);
   void AddStartupInfo(bool System);
   void DoAddStartupInfo(TSessionData *Data);
   UnicodeString GetTlsVersionName(TTlsVersion TlsVersion) const;
@@ -348,13 +353,7 @@ private:
   static UnicodeString GetCmdLineLog(TConfiguration * AConfiguration);
   void CheckSize(int64_t Addition);
   UnicodeString LogPartFileName(const UnicodeString BaseName, int32_t Index);
-  void DoAddStartupInfoEntry(UnicodeString S);
-
-public:
-  UnicodeString GetLine(int32_t Index) const;
-  TLogLineType GetType(int32_t Index) const;
-  void DeleteUnnecessary();
-  void StateChange();
+  void DoAddStartupInfoEntry(const UnicodeString S);
 };
 
 class NB_CORE_EXPORT TActionLog : public TObject
@@ -377,10 +376,10 @@ public:
   void EndGroup();
 
   __property UnicodeString CurrentFileName = { read = FCurrentFileName };
-  const UnicodeString& CurrentFileName{FCurrentFileName};
   __property bool Enabled = { read = FEnabled, write = SetEnabled };
-  RWProperty<bool> Enabled{nb::bind(&TActionLog::GetEnabled, this), nb::bind(&TActionLog::SetEnabled, this)};
 
+  const UnicodeString& CurrentFileName{FCurrentFileName};
+  RWProperty<bool> Enabled{nb::bind(&TActionLog::GetEnabled, this), nb::bind(&TActionLog::SetEnabled, this)};
   UnicodeString GetCurrentFileName() const { return FCurrentFileName; }
   bool GetEnabled() const { return FEnabled; }
 
@@ -425,8 +424,9 @@ public:
   ~TApplicationLog();
   void Enable(const UnicodeString & Path);
   void AddStartupInfo();
-  void Log(UnicodeString S);
+  void Log(const UnicodeString S);
   __property bool Logging = { read = FLogging };
+
   ROPropertySimple<bool> Logging{&FLogging};
 
 private:
