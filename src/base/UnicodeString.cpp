@@ -338,6 +338,21 @@ unsigned char RawByteString::operator[](int32_t Idx) const
   return Data.operator[](nb::ToInt(Idx) - 1);
 }
 
+RawByteString RawByteString::Trim() const
+{
+  return ::Trim(*this);
+}
+
+RawByteString RawByteString::TrimLeft() const
+{
+  return ::TrimLeft(*this);
+}
+
+RawByteString RawByteString::TrimRight() const
+{
+  return ::TrimRight(*this);
+}
+
 unsigned char &RawByteString::operator[](int32_t Idx)
 {
   ThrowIfOutOfRange(Idx); // Should Range-checking be optional to avoid overhead ??

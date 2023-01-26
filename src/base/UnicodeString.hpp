@@ -323,6 +323,9 @@ public:
   unsigned char operator[](int32_t Idx) const;
   unsigned char &operator[](int32_t Idx);
 
+  RawByteString Trim() const;
+  RawByteString TrimLeft() const;
+  RawByteString TrimRight() const;
   void Unique() {}
 
 public:
