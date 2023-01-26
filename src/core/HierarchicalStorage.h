@@ -98,7 +98,7 @@ public:
   bool GetMungeStringValues() const { return FMungeStringValues; }
   void SetMungeStringValues(bool Value) { FMungeStringValues = Value; }
 
-  UnicodeString GetSourceConst() const { return GetSourceProtected(); }
+  UnicodeString GetSourceConst() const { return GetSource(); }
   void SetAccessMode(TStorageAccessMode Value) { SetAccessModeProtected(Value); }
 protected:
   enum THierarchicalStorageAccess { hsaRead = 0x01, hsaWrite = 0x02 };
@@ -125,7 +125,7 @@ protected:
   UnicodeString GetCurrentSubKeyMunged() const;
   virtual void SetAccessModeProtected(TStorageAccessMode Value);
   virtual bool DoKeyExists(const UnicodeString SubKey, bool ForceAnsi) = 0;
-  virtual bool DoValueExists(const UnicodeString & Value) = 0;
+  virtual bool DoValueExists(const UnicodeString Value) = 0;
   static UnicodeString IncludeTrailingBackslash(const UnicodeString S);
   static UnicodeString ExcludeTrailingBackslash(const UnicodeString S);
   virtual bool DoOpenSubKey(const UnicodeString SubKey, bool CanCreate) = 0;
@@ -133,30 +133,26 @@ protected:
   UnicodeString MungeKeyName(const UnicodeString Key);
   virtual UnicodeString GetSource() const = 0;
   virtual bool GetTemporary() const;
-  virtual void DoDeleteSubKey(const UnicodeString & SubKey) = 0;
-  virtual bool DoDeleteValue(const UnicodeString & Name) = 0;
+  virtual void DoDeleteSubKey(const UnicodeString SubKey) = 0;
+  virtual bool DoDeleteValue(const UnicodeString Name) = 0;
 
   virtual void DoGetSubKeyNames(TStrings * Strings) = 0;
   virtual void DoGetValueNames(TStrings * Strings) = 0;
 
   virtual void DoWriteBool(const UnicodeString & Name, bool Value) = 0;
   virtual void DoWriteStringRaw(const UnicodeString & Name, const UnicodeString & Value) = 0;
-  virtual void DoWriteInteger(const UnicodeString & Name, int Value) = 0;
-  virtual void DoWriteInt64(const UnicodeString & Name, __int64 Value) = 0;
-  virtual void DoWriteBinaryData(const UnicodeString & Name, const void * Buffer, int Size) = 0;
+  virtual void DoWriteInteger(const UnicodeString & Name, int32_t Value) = 0;
+  virtual void DoWriteInt64(const UnicodeString & Name, int64_t Value) = 0;
+  virtual void DoWriteBinaryData(const UnicodeString & Name, const void * Buffer, size_t Size) = 0;
 
   virtual bool DoReadBool(const UnicodeString & Name, bool Default) = 0;
   virtual UnicodeString DoReadStringRaw(const UnicodeString & Name, const UnicodeString & Default) = 0;
   int32_t ReadIntegerWithMapping(const UnicodeString & Name, int32_t Default, const TIntMapping * Mapping);
-  virtual int DoReadInteger(const UnicodeString & Name, int32_t Default, const TIntMapping * Mapping) = 0;
-  virtual __int64 DoReadInt64(const UnicodeString & Name, __int64 Default) = 0;
+  virtual int32_t DoReadInteger(const UnicodeString & Name, int32_t Default, const TIntMapping * Mapping) = 0;
+  virtual int64_t DoReadInt64(const UnicodeString & Name, int64_t Default) = 0;
   virtual TDateTime DoReadDateTime(const UnicodeString & Name, TDateTime Default) = 0;
   virtual double DoReadFloat(const UnicodeString & Name, double Default) = 0;
   virtual size_t DoReadBinaryData(const UnicodeString & Name, void * Buffer, size_t Size) = 0;
-
-  virtual UnicodeString GetSourceProtected() const = 0;
-  virtual UnicodeString GetSourceProtected() = 0;
-  virtual bool GetTemporaryProtected() const;
 
   virtual size_t DoBinaryDataSize(const UnicodeString & Name) = 0;
 
@@ -188,22 +184,24 @@ public:
   TRegistryStorage() = delete;
   explicit TRegistryStorage(const UnicodeString AStorage, HKEY ARootKey, REGSAM WowMode = 0) noexcept;
   explicit TRegistryStorage(const UnicodeString AStorage) noexcept;
-  virtual void Init() override;
   virtual ~TRegistryStorage() noexcept;
 
   bool Copy(TRegistryStorage *Storage);
 
 public:
+  int32_t GetFailed() const { return FFailed; }
+  void SetFailed(int32_t Value) { FFailed = Value; }
   virtual void SetAccessMode(TStorageAccessMode value);
+
 protected:
-  virtual bool DoKeyExists(const UnicodeString & SubKey, bool ForceAnsi);
-  virtual bool DoValueExists(const UnicodeString & Value) override;
-  virtual bool DoOpenSubKey(const UnicodeString & SubKey, bool CanCreate);
+  virtual bool DoKeyExists(const UnicodeString SubKey, bool ForceAnsi);
+  virtual bool DoValueExists(const UnicodeString Value) override;
+  virtual bool DoOpenSubKey(const UnicodeString SubKey, bool CanCreate);
   virtual void DoCloseSubKey() override;
   virtual UnicodeString GetSource() const override;
   virtual size_t DoBinaryDataSize(const UnicodeString & Name) override;
-  virtual void DoDeleteSubKey(const UnicodeString & SubKey) override;
-  virtual bool DoDeleteValue(const UnicodeString & Name) override;
+  virtual void DoDeleteSubKey(const UnicodeString SubKey) override;
+  virtual bool DoDeleteValue(const UnicodeString Name) override;
 
   virtual void DoGetSubKeyNames(TStrings * Strings);
   virtual void DoGetValueNames(TStrings* Strings);
@@ -212,34 +210,23 @@ protected:
   virtual void DoWriteStringRaw(const UnicodeString & Name, const UnicodeString & Value) override;
   virtual void DoWriteInteger(const UnicodeString & Name, int32_t Value) override;
   virtual void DoWriteInt64(const UnicodeString & Name, int64_t Value) override;
-  virtual void DoWriteBinaryData(const UnicodeString & Name, const void * Buffer, int32_t Size) override;
+  virtual void DoWriteBinaryData(const UnicodeString & Name, const void * Buffer, size_t Size) override;
 
   virtual bool DoReadBool(const UnicodeString & Name, bool Default) override;
-  virtual int DoReadInteger(const UnicodeString & Name, int Default, const TIntMapping * Mapping) override;
+  virtual int32_t DoReadInteger(const UnicodeString & Name, int32_t Default, const TIntMapping * Mapping) override;
   virtual int64_t DoReadInt64(const UnicodeString & Name, int64_t Default) override;
   virtual TDateTime DoReadDateTime(const UnicodeString & Name, TDateTime Default) override;
   virtual double DoReadFloat(const UnicodeString & Name, double Default) override;
   virtual UnicodeString DoReadStringRaw(const UnicodeString & Name, const UnicodeString & Default) override;
   virtual size_t DoReadBinaryData(const UnicodeString & Name, void * Buffer, size_t Size) override;
 
-protected:
-  int32_t GetFailedProtected() const;
-  void SetAccessModeProtected(TStorageAccessMode Value) override;
-  bool DoKeyExists(const UnicodeString SubKey, bool AForceAnsi) override;
-  bool DoOpenSubKey(const UnicodeString SubKey, bool CanCreate) override;
-  UnicodeString GetSourceProtected() const override;
-  UnicodeString GetSourceProtected() override;
-
-  __property int Failed  = { read = GetFailed, write = FFailed };
-
-public:
-  int32_t GetFailed() const { return GetFailedProtected(); }
-  void SetFailed(int32_t Value) { FFailed = Value; }
-
 private:
   std::unique_ptr<TRegistry> FRegistry;
   mutable int32_t FFailed{0};
   REGSAM FWowMode{0};
+
+public:
+  virtual void Init() override;
 };
 
 #if 0

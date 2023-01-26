@@ -931,7 +931,7 @@ void TRegistryStorage::SetAccessMode(TStorageAccessMode value)
   }
 }
 
-bool TRegistryStorage::DoOpenSubKey(const UnicodeString & SubKey, bool CanCreate)
+bool TRegistryStorage::DoOpenSubKey(const UnicodeString SubKey, bool CanCreate)
 {
   UnicodeString PrevPath;
   bool WasOpened = (FRegistry->GetCurrentKey() != nullptr);
@@ -959,7 +959,7 @@ void TRegistryStorage::DoCloseSubKey()
   }
 }
 
-void TRegistryStorage::DoDeleteSubKey(const UnicodeString & SubKey)
+void TRegistryStorage::DoDeleteSubKey(const UnicodeString SubKey)
 {
   UnicodeString K;
   if (FKeyHistory.empty())
@@ -984,19 +984,19 @@ void TRegistryStorage::DoGetValueNames(TStrings *Strings)
   FRegistry->GetValueNames(Strings);
 }
 
-bool TRegistryStorage::DoDeleteValue(const UnicodeString & Name)
+bool TRegistryStorage::DoDeleteValue(const UnicodeString Name)
 {
   return FRegistry->DeleteValue(Name);
 }
 
-bool TRegistryStorage::DoKeyExists(const UnicodeString & SubKey, bool AForceAnsi)
+bool TRegistryStorage::DoKeyExists(const UnicodeString SubKey, bool AForceAnsi)
 {
   UnicodeString Key = MungeStr(SubKey, AForceAnsi, false);
   bool Result = FRegistry->KeyExists(Key);
   return Result;
 }
 
-bool TRegistryStorage::DoValueExists(const UnicodeString & Value)
+bool TRegistryStorage::DoValueExists(const UnicodeString Value)
 {
   bool Result = FRegistry->ValueExists(Value);
   return Result;
@@ -1025,7 +1025,7 @@ double TRegistryStorage::DoReadFloat(const UnicodeString & Name, double Default)
   READ_REGISTRY(ReadFloat);
 }
 
-int TRegistryStorage::DoReadInteger(const UnicodeString & Name, int Default, const TIntMapping *)
+int32_t TRegistryStorage::DoReadInteger(const UnicodeString & Name, int32_t Default, const TIntMapping *)
 {
   READ_REGISTRY(ReadInteger);
 }
@@ -1086,7 +1086,7 @@ void TRegistryStorage::DoWriteInt64(const UnicodeString & Name, __int64 Value)
   WriteBinaryData(Name, &Value, sizeof(Value));
 }
 
-void TRegistryStorage::DoWriteBinaryData(const UnicodeString & Name, const void * Buffer, int32_t Size)
+void TRegistryStorage::DoWriteBinaryData(const UnicodeString & Name, const void * Buffer, size_t Size)
 {
   try
   {
