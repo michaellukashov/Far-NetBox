@@ -3,11 +3,12 @@
 
 #include <registry.hpp>
 #include <memory>
-#include <map>
+#include <rdestl/map.h>
+#include <rdestl/vector.h>
 
 enum TStorage { stDetect, stRegistry, stIniFile, stNul };
 enum TStorageAccessMode { smRead, smReadWrite };
-typedef std::map<UnicodeString, int> TIntMapping;
+using TIntMapping = rde::map<UnicodeString, int32_t>;
 
 class NB_CORE_EXPORT THierarchicalStorage : public TObject
 {
@@ -27,10 +28,10 @@ public:
   bool OpenSubKeyPath(const UnicodeString & KeyPath, bool CanCreate);
   void CloseSubKeyPath();
   void GetSubKeyNames(TStrings * Strings);
-  void GetValueNames(TStrings *Strings) const;
-  bool HasSubKeys() const;
+  void GetValueNames(TStrings *Strings);
+  bool HasSubKeys();
   bool KeyExists(const UnicodeString SubKey);
-  bool ValueExists(const UnicodeString Value) const;
+  bool ValueExists(const UnicodeString Value);
   virtual void RecursiveDeleteSubKey(const UnicodeString Key);
   virtual void ClearSubKeys();
   virtual void ReadValues(TStrings *Strings, bool MaintainKeys = false);
@@ -38,18 +39,18 @@ public:
   virtual void ClearValues();
   bool DeleteValue(const UnicodeString Name);
 
-  bool ReadBool(UnicodeString Name, bool Default) const;
+  bool ReadBool(UnicodeString Name, bool Default);
   template<typename T>
   typename T ReadEnum(
-    const UnicodeString & Name, const T & Default, const TIntMapping & Mapping = TIntMapping());
-  int32_t ReadInteger(const UnicodeString Name, int32_t Default) const;
-  int64_t ReadInt64(const UnicodeString Name, int64_t Default) const;
+    const UnicodeString Name, const T Default, const TIntMapping & Mapping = TIntMapping());
+  int32_t ReadInteger(const UnicodeString Name, int32_t Default);
+  int64_t ReadInt64(const UnicodeString Name, int64_t Default);
 
-  TDateTime ReadDateTime(const UnicodeString Name, const TDateTime &Default) const;
+  TDateTime ReadDateTime(const UnicodeString Name, TDateTime Default);
 
-  double ReadFloat(const UnicodeString Name, double Default) const;
+  double ReadFloat(const UnicodeString Name, double Default);
   UnicodeString ReadStringRaw(const UnicodeString & Name, const UnicodeString & Default);
-  size_t ReadBinaryData(const UnicodeString Name, void *Buffer, size_t Size) const;
+  size_t ReadBinaryData(const UnicodeString Name, void *Buffer, size_t Size);
 
   virtual UnicodeString ReadString(const UnicodeString & Name, const UnicodeString & Default);
   RawByteString ReadBinaryData(const UnicodeString & Name);
@@ -59,7 +60,7 @@ public:
   void WriteStringRaw(const UnicodeString Name, const UnicodeString Value);
   void WriteInteger(const UnicodeString Name, int32_t Value);
   void WriteInt64(const UnicodeString Name, int64_t Value);
-  void WriteDateTime(const UnicodeString Name, const TDateTime &Value);
+  void WriteDateTime(const UnicodeString Name, const TDateTime Value);
   void WriteFloat(const UnicodeString Name, double Value);
   void WriteBinaryData(const UnicodeString Name, const void *Buffer, size_t Size);
 
@@ -104,19 +105,19 @@ protected:
   struct TKeyEntry
   {
     UnicodeString Key;
-    int Levels;
-    unsigned int Access;
+    int32_t Levels{0};
+    uint32_t Access{0};
   };
 
   UnicodeString FStorage;
-  std::unique_ptr<TStrings> FKeyHistory;
+  rde::vector<TKeyEntry> FKeyHistory;
   TStorageAccessMode FAccessMode;
   bool FExplicit{false};
   bool FForceSave{false};
   bool FMungeStringValues{false};
   bool FForceAnsi{false};
-  int FFakeReadOnlyOpens{0};
-  int FRootAccess{0};
+  int32_t FFakeReadOnlyOpens{0};
+  mutable int32_t FRootAccess{0};
 
   __property bool ForceAnsi = { read = FForceAnsi, write = FForceAnsi };
 
@@ -129,7 +130,7 @@ protected:
   static UnicodeString ExcludeTrailingBackslash(const UnicodeString S);
   virtual bool DoOpenSubKey(const UnicodeString SubKey, bool CanCreate) = 0;
   virtual void DoCloseSubKey() = 0;
-  UnicodeString MungeKeyName(const UnicodeString & Key);
+  UnicodeString MungeKeyName(const UnicodeString Key);
   virtual UnicodeString GetSource() const = 0;
   virtual bool GetTemporary() const;
   virtual void DoDeleteSubKey(const UnicodeString & SubKey) = 0;
@@ -146,8 +147,8 @@ protected:
 
   virtual bool DoReadBool(const UnicodeString & Name, bool Default) = 0;
   virtual UnicodeString DoReadStringRaw(const UnicodeString & Name, const UnicodeString & Default) = 0;
-  int ReadIntegerWithMapping(const UnicodeString & Name, int Default, const TIntMapping * Mapping);
-  virtual int DoReadInteger(const UnicodeString & Name, int Default, const TIntMapping * Mapping) = 0;
+  int32_t ReadIntegerWithMapping(const UnicodeString & Name, int32_t Default, const TIntMapping * Mapping);
+  virtual int DoReadInteger(const UnicodeString & Name, int32_t Default, const TIntMapping * Mapping) = 0;
   virtual __int64 DoReadInt64(const UnicodeString & Name, __int64 Default) = 0;
   virtual TDateTime DoReadDateTime(const UnicodeString & Name, TDateTime Default) = 0;
   virtual double DoReadFloat(const UnicodeString & Name, double Default) = 0;
@@ -163,21 +164,21 @@ protected:
 
   size_t BinaryDataSize(const UnicodeString & Name);
   UnicodeString ReadAccessString();
-  int32_t ReadAccess(int32_t CurrentAccess);
-  bool HasAccess(int32_t  Access) const;
-  bool CanRead() const;
-  bool CanWrite() const;
-  int32_t GetCurrentAccess() const;
+  uint32_t ReadAccess(uint32_t CurrentAccess);
+  bool HasAccess(uint32_t Access);
+  bool CanRead();
+  bool CanWrite();
+  uint32_t GetCurrentAccess();
 };
 
 extern TIntMapping AutoSwitchMapping;
 extern TIntMapping AutoSwitchReversedMapping;
 
 template<typename T>
-T THierarchicalStorage::ReadEnum(const UnicodeString & Name, const T & Default, const TIntMapping & Mapping)
+T THierarchicalStorage::ReadEnum(const UnicodeString Name, const T Default, const TIntMapping & Mapping)
 {
-  const TIntMapping * AMapping = (Mapping == TIntMapping()) ? nullptr : &Mapping;
-  return T(ReadIntegerWithMapping(Name, int(Default), AMapping));
+  const TIntMapping * AMapping = (Mapping.empty()) ? nullptr : &Mapping;
+  return T(ReadIntegerWithMapping(Name, (int32_t)(Default), AMapping));
 }
 
 class NB_CORE_EXPORT TRegistryStorage : public THierarchicalStorage
@@ -187,7 +188,7 @@ public:
   TRegistryStorage() = delete;
   explicit TRegistryStorage(const UnicodeString AStorage, HKEY ARootKey, REGSAM WowMode = 0) noexcept;
   explicit TRegistryStorage(const UnicodeString AStorage) noexcept;
-  void Init() override;
+  virtual void Init() override;
   virtual ~TRegistryStorage() noexcept;
 
   bool Copy(TRegistryStorage *Storage);
