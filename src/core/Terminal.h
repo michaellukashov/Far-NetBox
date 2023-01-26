@@ -83,18 +83,10 @@ typedef void (__closure *TProcessFileEvent)
 #endif // #if 0
 using TProcessFileEvent = nb::FastDelegate3<void,
   UnicodeString /*AFileName*/, const TRemoteFile * /*AFile*/, void * /*AParam*/>;
-#if 0
-typedef void (__closure *TProcessFileEventEx)
-  (const UnicodeString FileName, const TRemoteFile * File, void * Param, int Index);
-#endif // #if 0
 using TProcessFileEventEx = nb::FastDelegate4<void,
   const UnicodeString /*AFileName*/, const TRemoteFile * /*File*/,
   void * /*Param*/, int32_t /*Index*/>;
-#if 0
-typedef int (__closure *TFileOperationEvent)
-  (void * Param1, void * Param2);
-#endif // #if 0
-using TFileOperationEvent = nb::FastDelegate2<intptr_t,
+using TFileOperationEvent = nb::FastDelegate2<int32_t,
   void * /*Param1*/, void * /*Param2*/>;
 #if 0
 typedef void (__closure *TSynchronizeDirectory)

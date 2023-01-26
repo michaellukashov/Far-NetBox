@@ -28,7 +28,7 @@ constexpr int32_t dfNoRecursive = 0x01;
 constexpr int32_t dfAlternative = 0x02;
 constexpr int32_t dfForceDelete = 0x04;
 
-enum TOverwriteMode { omOverwrite, omResume, omComplete };
+enum TOverwriteMode { omOverwrite, omAppend, omResume, omComplete };
 
 NB_DEFINE_CLASS_ID(TSinkFileParams);
 struct NB_CORE_EXPORT TSinkFileParams : public TObject

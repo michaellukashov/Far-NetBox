@@ -39,12 +39,14 @@ struct TUsableCopyParamAttrs
 
 class TTerminal;
 class TFTPFileSystem;
+class TSFTPFileSystem;
 
 NB_DEFINE_CLASS_ID(TCopyParamType);
 class NB_CORE_EXPORT TCopyParamType : public TObject
 {
 friend class TTerminal;
 friend class TFTPFileSystem;
+friend class TSFTPFileSystem;
 public:
   static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TCopyParamType); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TCopyParamType) || TObject::is(Kind); }

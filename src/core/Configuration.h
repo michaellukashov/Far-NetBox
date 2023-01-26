@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+//#include <rdestl/set.h>
 #include "RemoteFiles.h"
 #include "FileBuffer.h"
 #include "HierarchicalStorage.h"
@@ -34,6 +35,7 @@ class TTerminal;
 class TSessionData;
 class TSessionLog;
 class TFTPFileSystem;
+class TSTSFTPFileSystemFTPFileSystem;
 
 NB_DEFINE_CLASS_ID(TConfiguration);
 class NB_CORE_EXPORT TConfiguration : public TObject
@@ -43,6 +45,7 @@ class NB_CORE_EXPORT TConfiguration : public TObject
   friend class TSessionData;
   friend class TSessionLog;
   friend class TFTPFileSystem;
+  friend class TSFTPFileSystem;
 public:
   static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TConfiguration); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TConfiguration) || TObject::is(Kind); }
@@ -104,7 +107,7 @@ private:
   int32_t FDontReloadMoreThanSessions{0};
   int32_t FScriptProgressFileNameLimit{0};
   int32_t FSessionReopenAutoMaximumNumberOfRetries{0};
-  int FKeyVersion;
+  int32_t FKeyVersion{0};
   UnicodeString FCertificateStorage;
   bool FExperimentalFeatures{false};
 

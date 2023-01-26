@@ -24,12 +24,14 @@ enum TSshImplementation { sshiUnknown, sshiOpenSSH, sshiProFTPD, sshiBitvise, ss
 struct ScpLogPolicy;
 struct LogContext;
 struct ScpSeat;
+class TSFTPFileSystem;
 
 NB_DEFINE_CLASS_ID(TSecureShell);
 class TSecureShell : public TObject
 {
   friend class TPoolForDataEvent;
   friend class TTerminal;
+  friend class TSFTPFileSystem;
   NB_DISABLE_COPY(TSecureShell)
 public:
   static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TSecureShell); }
@@ -83,9 +85,9 @@ private:
   DWORD FLastSendBufferUpdate{0};
   int32_t FSendBuf{0};
   std::unique_ptr<callback_set> FCallbackSet;
-  ScpLogPolicy * FLogPolicy;
-  ScpSeat * FSeat;
-  LogContext * FLogCtx;
+  ScpLogPolicy * FLogPolicy{nullptr};
+  ScpSeat * FSeat{nullptr};
+  LogContext * FLogCtx{nullptr};
   rde::set<UnicodeString> FLoggedKnownHostKeys;
 
 public:
