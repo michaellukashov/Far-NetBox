@@ -8,17 +8,17 @@ class TGUIConfiguration;
 class TStoredSessionList;
 enum TInterface { ifCommander, ifExplorer };
 
-extern const intptr_t ccLocal;
-extern const intptr_t ccShowResults;
-extern const intptr_t ccCopyResults;
-extern const intptr_t ccSet;
-extern const intptr_t ccRemoteFiles;
-extern const intptr_t ccShowResultsInMsgBox;
+extern const int32_t ccLocal;
+extern const int32_t ccShowResults;
+extern const int32_t ccCopyResults;
+extern const int32_t ccSet;
+extern const int32_t ccRemoteFiles;
+extern const int32_t ccShowResultsInMsgBox;
 
-constexpr intptr_t soRecurse =         0x01;
-constexpr intptr_t soSynchronize =     0x02;
-constexpr intptr_t soSynchronizeAsk =  0x04;
-constexpr intptr_t soContinueOnError = 0x08;
+constexpr int32_t soRecurse =         0x01;
+constexpr int32_t soSynchronize =     0x02;
+constexpr int32_t soSynchronizeAsk =  0x04;
+constexpr int32_t soContinueOnError = 0x08;
 
 NB_DEFINE_CLASS_ID(TGUICopyParamType);
 class NB_CORE_EXPORT TGUICopyParamType : public TCopyParamType
@@ -26,11 +26,11 @@ class NB_CORE_EXPORT TGUICopyParamType : public TCopyParamType
 public:
   static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TGUICopyParamType); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TGUICopyParamType) || TCopyParamType::is(Kind); }
+  virtual ~TGUICopyParamType() = default;
 public:
   TGUICopyParamType() noexcept;
   TGUICopyParamType(const TCopyParamType & Source) noexcept;
   explicit TGUICopyParamType(const TGUICopyParamType &Source) noexcept;
-  virtual ~TGUICopyParamType() = default;
 
   virtual void Load(THierarchicalStorage * Storage);
   virtual void Save(THierarchicalStorage * Storage, const TCopyParamType * Defaults = nullptr) const;
@@ -101,8 +101,8 @@ public:
 private:
   TCopyParamRuleData FData;
 
-  bool Match(UnicodeString Mask,
-    UnicodeString Value, bool Path, bool Local, int ForceDirectoryMasks) const;
+  bool Match(const UnicodeString Mask,
+    const UnicodeString Value, bool Path, bool Local, int ForceDirectoryMasks) const;
 public:
   bool GetEmpty() const;
 };
@@ -123,26 +123,26 @@ public:
   explicit TCopyParamList(const TCopyParamList &other) noexcept;
 
   virtual ~TCopyParamList() noexcept;
-  intptr_t Find(const TCopyParamRuleData & Value) const;
+  int32_t Find(const TCopyParamRuleData & Value) const;
 
-  void Load(THierarchicalStorage * Storage, intptr_t Count);
+  void Load(THierarchicalStorage * Storage, int32_t Count);
   void Save(THierarchicalStorage * Storage) const;
 
-  static void ValidateName(UnicodeString Name);
+  static void ValidateName(const UnicodeString Name);
 
   TCopyParamList & operator=(const TCopyParamList & rhl);
   bool operator==(const TCopyParamList & rhl) const;
 
   void Clear();
-  void Add(UnicodeString Name,
+  void Add(const UnicodeString Name,
     TCopyParamType * CopyParam, TCopyParamRule * Rule);
-  void Insert(intptr_t Index, UnicodeString Name,
+  void Insert(int32_t Index, const UnicodeString Name,
     TCopyParamType * CopyParam, TCopyParamRule * Rule);
-  void Change(intptr_t Index, UnicodeString Name,
+  void Change(int32_t Index, const UnicodeString Name,
     TCopyParamType * CopyParam, TCopyParamRule * Rule);
-  void Move(intptr_t CurIndex, intptr_t NewIndex);
-  void Delete(intptr_t Index);
-  intptr_t IndexOfName(UnicodeString Name) const;
+  void Move(int32_t CurIndex, int32_t NewIndex);
+  void Delete(int32_t Index);
+  int32_t IndexOfName(const UnicodeString Name) const;
 
   __property int Count = { read = GetCount };
   ROProperty<int32_t> Count{nb::bind(&TCopyParamList::GetCount, this)};
@@ -163,18 +163,18 @@ private:
 
 public:
   int32_t GetCount() const;
-  UnicodeString GetName(int32_t Index) const;
   const TCopyParamRule *GetRule(int32_t Index) const;
   const TCopyParamType *GetCopyParam(int32_t Index) const;
-  bool GetModified() const { return FModified; }
+  UnicodeString GetName(int32_t Index) const;
   TStrings *GetNameList() const;
   bool GetAnyRule() const;
 
+  bool GetModified() const { return FModified; }
 private:
   void Init();
   void Reset();
   void Modify();
-  bool CompareItem(intptr_t Index, const TCopyParamType * CopyParam,
+  bool CompareItem(int32_t Index, const TCopyParamType * CopyParam,
     const TCopyParamRule * Rule) const;
 };
 
@@ -194,18 +194,18 @@ private:
   bool FPuttyPassword{false};
   bool FTelnetForFtpInPutty{false};
   UnicodeString FPuttySession;
-  intptr_t FSynchronizeParams{0};
-  intptr_t FSynchronizeOptions{0};
-  intptr_t FSynchronizeModeAuto{0};
-  intptr_t FSynchronizeMode{0};
-  intptr_t FMaxWatchDirectories{0};
+  int32_t FSynchronizeParams{0};
+  int32_t FSynchronizeOptions{0};
+  int32_t FSynchronizeModeAuto{0};
+  int32_t FSynchronizeMode{0};
+  int32_t FMaxWatchDirectories{0};
   TDateTime FIgnoreCancelBeforeFinish;
   bool FQueueAutoPopup{false};
   bool FSessionRememberPassword{false};
-  intptr_t FQueueTransfersLimit{0};
+  int32_t FQueueTransfersLimit{0};
   bool FQueueBootstrap{false};
   bool FQueueKeepDoneItems{false};
-  intptr_t FQueueKeepDoneItemsFor{0};
+  int32_t FQueueKeepDoneItemsFor{0};
   TGUICopyParamType FDefaultCopyParam;
   bool FBeepOnFinish{false};
   TDateTime FBeepOnFinishAfter;
@@ -216,9 +216,9 @@ private:
   bool FCopyParamListDefaults{false};
   UnicodeString FCopyParamCurrent;
   TRemoteProperties FNewDirectoryProperties;
-  intptr_t FKeepUpToDateChangeDelay{0};
+  int32_t FKeepUpToDateChangeDelay{0};
   UnicodeString FChecksumAlg;
-  intptr_t FSessionReopenAutoIdle{0};
+  int32_t FSessionReopenAutoIdle{0};
   LCID FAppliedLocale{0};
   // Corresponds to FAppliedLocale
   UnicodeString FLocaleModuleName;
@@ -231,7 +231,6 @@ public:
   virtual void LoadData(THierarchicalStorage * Storage) override;
   virtual LCID GetLocale() const;
   void SetLocale(LCID Value);
-  LCID GetLocaleSafe() const { return GetLocale(); }
   void SetLocaleSafe(LCID Value);
   UnicodeString GetAppliedLocaleHex() const;
   virtual HINSTANCE LoadNewResourceModule(LCID Locale,
@@ -239,42 +238,43 @@ public:
   HANDLE GetResourceModule();
   void SetResourceModule(HINSTANCE Instance);
   TObjectList * GetLocales();
-  void AddLocale(LCID Locale, UnicodeString Name);
+  void AddLocale(LCID Locale, const UnicodeString Name);
   void FreeResourceModule(HANDLE Instance);
   void SetDefaultCopyParam(const TGUICopyParamType &Value);
   virtual bool GetRememberPassword() const override;
   const TCopyParamList * GetCopyParamList() const;
   void SetCopyParamList(const TCopyParamList *Value);
   virtual void DefaultLocalized();
-  intptr_t GetCopyParamIndex() const;
+  int32_t GetCopyParamIndex() const;
   TGUICopyParamType GetCurrentCopyParam() const;
   TGUICopyParamType GetCopyParamPreset(UnicodeString Name) const;
   bool GetHasCopyParamPreset(UnicodeString Name) const;
-  void SetCopyParamIndex(intptr_t Value);
+  void SetCopyParamIndex(int32_t Value);
   void SetCopyParamCurrent(UnicodeString Value);
   void SetNewDirectoryProperties(const TRemoteProperties & Value);
   virtual void Saved() override;
-  void SetQueueTransfersLimit(intptr_t Value);
+  void SetQueueTransfersLimit(int32_t Value);
   void SetQueueBootstrap(bool Value);
   void SetQueueKeepDoneItems(bool Value);
-  void SetQueueKeepDoneItemsFor(intptr_t Value);
+  void SetQueueKeepDoneItemsFor(int32_t Value);
   void SetLocaleInternal(LCID Value, bool Safe, bool CompleteOnly);
-  void SetInitialLocale(LCID Value);
-  void SetAppliedLocale(LCID AppliedLocale, UnicodeString LocaleModuleName);
+  void SetAppliedLocale(LCID AppliedLocale, const UnicodeString LocaleModuleName);
   bool GetCanApplyLocaleImmediately() const;
-  UnicodeString GetTranslationModule(UnicodeString Path) const;
-  UnicodeString AddTranslationsSubFolder(UnicodeString Path) const;
-  void FindLocales(UnicodeString LocalesMask, TStrings * Exts, UnicodeString & LocalesExts);
+  UnicodeString GetTranslationModule(const UnicodeString Path) const;
+  UnicodeString AddTranslationsSubFolder(const UnicodeString Path) const;
+  void FindLocales(const UnicodeString LocalesMask, TStrings * Exts, UnicodeString & LocalesExts);
   virtual int GetResourceModuleCompleteness(HINSTANCE Module);
   virtual bool IsTranslationComplete(HINSTANCE Module);
   static int32_t LocalesCompare(void * Item1, void * Item2);
   LCID InternalLocale();
   bool DoSaveCopyParam(THierarchicalStorage * Storage, const TCopyParamType * CopyParam, const TCopyParamType * Defaults);
 
+  LCID GetLocaleSafe() const { return GetLocale(); }
+  void SetInitialLocale(LCID Value);
+  void ConfigurationInit() override;
 public:
   explicit TGUIConfiguration(TObjectClassId Kind) noexcept;
   virtual ~TGUIConfiguration() noexcept;
-  void ConfigurationInit() override;
   virtual void Default() override;
   virtual void UpdateStaticUsage() override;
   bool LoadCopyParam(THierarchicalStorage * Storage, TCopyParamType * CopyParam);
@@ -341,20 +341,20 @@ public:
   void SetContinueOnError(bool Value) { FContinueOnError = Value; }
   bool GetConfirmCommandSession() const { return FConfirmCommandSession; }
   void SetConfirmCommandSession(bool Value) { FConfirmCommandSession = Value; }
-  intptr_t GetSynchronizeParams() const { return FSynchronizeParams; }
-  void SetSynchronizeParams(intptr_t Value) { FSynchronizeParams = Value; }
-  intptr_t GetSynchronizeOptions() const { return FSynchronizeOptions; }
-  void SetSynchronizeOptions(intptr_t Value) { FSynchronizeOptions = Value; }
-  intptr_t GetSynchronizeModeAuto() const { return FSynchronizeModeAuto; }
-  void SetSynchronizeModeAuto(intptr_t Value) { FSynchronizeModeAuto = Value; }
-  intptr_t GetSynchronizeMode() const { return FSynchronizeMode; }
-  void SetSynchronizeMode(intptr_t Value) { FSynchronizeMode = Value; }
-  intptr_t GetMaxWatchDirectories() const { return FMaxWatchDirectories; }
-  void SetMaxWatchDirectories(intptr_t Value) { FMaxWatchDirectories = Value; }
-  intptr_t GetQueueTransfersLimit() const { return FQueueTransfersLimit; }
+  int32_t GetSynchronizeParams() const { return FSynchronizeParams; }
+  void SetSynchronizeParams(int32_t Value) { FSynchronizeParams = Value; }
+  int32_t GetSynchronizeOptions() const { return FSynchronizeOptions; }
+  void SetSynchronizeOptions(int32_t Value) { FSynchronizeOptions = Value; }
+  int32_t GetSynchronizeModeAuto() const { return FSynchronizeModeAuto; }
+  void SetSynchronizeModeAuto(int32_t Value) { FSynchronizeModeAuto = Value; }
+  int32_t GetSynchronizeMode() const { return FSynchronizeMode; }
+  void SetSynchronizeMode(int32_t Value) { FSynchronizeMode = Value; }
+  int32_t GetMaxWatchDirectories() const { return FMaxWatchDirectories; }
+  void SetMaxWatchDirectories(int32_t Value) { FMaxWatchDirectories = Value; }
+  int32_t GetQueueTransfersLimit() const { return FQueueTransfersLimit; }
   bool GetQueueBootstrap() const { return FQueueBootstrap; }
   bool GetQueueKeepDoneItems() const { return FQueueKeepDoneItems; }
-  intptr_t GetQueueKeepDoneItemsFor() const { return FQueueKeepDoneItemsFor; }
+  int32_t GetQueueKeepDoneItemsFor() const { return FQueueKeepDoneItemsFor; }
   bool GetQueueAutoPopup() const { return FQueueAutoPopup; }
   void SetQueueAutoPopup(bool Value) { FQueueAutoPopup = Value; }
   bool GetSessionRememberPassword() const { return FSessionRememberPassword; }
@@ -379,12 +379,12 @@ public:
   void SetBeepOnFinishAfter(const TDateTime &Value) { FBeepOnFinishAfter = Value; }
   UnicodeString GetCopyParamCurrent() const;
   const TRemoteProperties &GetNewDirectoryProperties() const { return FNewDirectoryProperties; }
-  intptr_t GetKeepUpToDateChangeDelay() const { return FKeepUpToDateChangeDelay; }
-  void SetKeepUpToDateChangeDelay(intptr_t Value) { FKeepUpToDateChangeDelay = Value; }
+  int32_t GetKeepUpToDateChangeDelay() const { return FKeepUpToDateChangeDelay; }
+  void SetKeepUpToDateChangeDelay(int32_t Value) { FKeepUpToDateChangeDelay = Value; }
   UnicodeString GetChecksumAlg() const;
   void SetChecksumAlg(UnicodeString Value);
-  intptr_t GetSessionReopenAutoIdle() const { return FSessionReopenAutoIdle; }
-  void SetSessionReopenAutoIdle(intptr_t Value) { FSessionReopenAutoIdle = Value; }
+  int32_t GetSessionReopenAutoIdle() const { return FSessionReopenAutoIdle; }
+  void SetSessionReopenAutoIdle(int32_t Value) { FSessionReopenAutoIdle = Value; }
   LCID GetAppliedLocale() const { return FAppliedLocale; }
 };
 
