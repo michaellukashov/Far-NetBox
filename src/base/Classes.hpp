@@ -35,6 +35,8 @@ namespace nb {
 using THandle = HANDLE;
 using TThreadID = DWORD;
 
+using TSize = size_t;
+
 class Exception;
 
 constexpr int32_t MonthsPerYear = 12;
