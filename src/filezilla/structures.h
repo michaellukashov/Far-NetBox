@@ -12,7 +12,6 @@ public:
   t_directory();
   t_directory(const t_directory &a);
   ~t_directory();
-  t_server server;
   CServerPath path;
   int num;
   class t_direntry // : public TObject

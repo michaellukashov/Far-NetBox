@@ -86,7 +86,8 @@ CUSTOM_MEM_ALLOCATION_IMPL
     nb::ClearStruct(validFrom);
     nb::ClearStruct(validUntil);
     nb::ClearArray(subjectAltName);
-    nb::ClearArray(hash);
+    nb::ClearArray(hashSha1);
+    nb::ClearArray(hashSha256);
     certificate = 0;
     certificateLen = 0;
     verificationResult = 0;
