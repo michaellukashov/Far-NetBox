@@ -128,6 +128,7 @@ struct NB_CORE_EXPORT TIEProxyConfig : public TObject
 
 class TStoredSessionList;
 class TSecondaryTerminal;
+class TFileZillaImpl;
 class TSecureShell;
 class TSessionLog;
 
@@ -136,6 +137,7 @@ class NB_CORE_EXPORT TSessionData : public TNamedObject
 {
   friend class TStoredSessionList;
   friend class TSecondaryTerminal;
+  friend class TFileZillaImpl;
   NB_DISABLE_COPY(TSessionData)
 public:
   static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TSessionData); }

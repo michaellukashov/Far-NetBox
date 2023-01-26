@@ -175,7 +175,7 @@ std::wstring TFileZillaImpl::GetClientString() const
 
 void TFileZillaImpl::SetupSsl(ssl_st * Ssl)
 {
-  ::SetupSsl(Ssl, FFileSystem->FTerminal->SessionData->MinTlsVersion, FFileSystem->FTerminal->SessionData->MaxTlsVersion);
+  ::SetupSsl(Ssl, FFileSystem->FTerminal->SessionData->FMinTlsVersion, FFileSystem->FTerminal->SessionData->FMaxTlsVersion);
 }
 
 struct message_t
