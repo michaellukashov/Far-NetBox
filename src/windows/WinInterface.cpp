@@ -28,17 +28,17 @@ __removed #include "JclHookExcept.hpp"
 #include <StrUtils.hpp>
 __removed #include <WinApi.h>
 #include "Tools.h"
-#include <Vcl.AppEvnts.hpp>
+//#include <Vcl.AppEvnts.hpp>
 #if 0
 
 #pragma package(smart_init)
 
 #define WM_TRAY_ICON (WM_WINSCP_USER + 5)
-//---------------------------------------------------------------------
+
 TNotifyEvent GlobalOnMinimize = nullptr;
-//---------------------------------------------------------------------
+
 const IID IID_IListView_Win7 = {0xE5B16AF2, 0x3990, 0x4681, {0xA6, 0x09, 0x1F, 0x06, 0x0C, 0xD1, 0x42, 0x69}};
-//---------------------------------------------------------------------
+
 void FormHelp(TCustomForm * Form)
 {
   InvokeHelp(Form->ActiveControl != nullptr ? Form->ActiveControl : Form);
@@ -53,10 +53,10 @@ TMessageParams::TMessageParams(uint32_t AParams) noexcept
   Params = AParams;
 }
 
-void TMessageParams::TMessageParams(const TQueryParams * AParams)
+TMessageParams::TMessageParams(const TQueryParams * AParams) noexcept
 {
   Reset();
-  Assign(AParams)
+  Assign(AParams);
 }
 
 void TMessageParams::Assign(const TQueryParams * AParams)
@@ -75,14 +75,14 @@ void TMessageParams::Assign(const TQueryParams * AParams)
     Timeout = AParams->Timeout;
     TimeoutAnswer = AParams->TimeoutAnswer;
     TimeoutResponse = AParams->TimeoutResponse;
-    NeverAskAgainTitle = AParams->NeverAskAgainTitle;
+    /*NeverAskAgainTitle = AParams->NeverAskAgainTitle;
     NeverAskAgainAnswer = AParams->NeverAskAgainAnswer;
     NeverAskAgainCheckedInitially = AParams->NeverAskAgainCheckedInitially;
     AllowHelp = AParams->AllowHelp;
     ImageName = AParams->ImageName;
     MoreMessagesUrl = AParams->MoreMessagesUrl;
     MoreMessagesSize = AParams->MoreMessagesSize;
-    CustomCaption = AParams->CustomCaption;
+    CustomCaption = AParams->CustomCaption;*/
 
     if (FLAGSET(AParams->Params, qpNeverAskAgainCheck))
     {
@@ -114,11 +114,11 @@ void TMessageParams::Reset()
   AllowHelp = true;
   ImageName = L"";
   MoreMessagesUrl = L"";
-  MoreMessagesSize = 0; //TSize();
+  MoreMessagesSize = TSize();
   CustomCaption = L"";
 }
 
-static bool IsPositiveAnswer(uintptr_t Answer)
+static bool IsPositiveAnswer(uint32_t Answer)
 {
   return (Answer == qaYes) || (Answer == qaOK) || (Answer == qaYesToAll);
 }
@@ -131,7 +131,7 @@ static void NeverAskAgainCheckClick(void * /*Data*/, TObject * Sender)
   TForm * Dialog = dynamic_cast<TForm *>(CheckBox->Owner);
   DebugAssert(Dialog != nullptr);
 
-  unsigned int PositiveAnswer = 0;
+  uint32_t PositiveAnswer = 0;
 
   if (CheckBox->Checked)
   {
@@ -186,7 +186,7 @@ static TCheckBox * FindNeverAskAgainCheck(TForm * Dialog)
 }
 
 TForm * CreateMessageDialogEx(const UnicodeString Msg,
-  TStrings * MoreMessages, TQueryType Type, unsigned int Answers, UnicodeString HelpKeyword,
+  TStrings * MoreMessages, TQueryType Type, uint32_t Answers, UnicodeString HelpKeyword,
   const TMessageParams * Params, TButton *& TimeoutButton)
 {
   TMsgDlgType DlgType;
@@ -198,9 +198,9 @@ TForm * CreateMessageDialogEx(const UnicodeString Msg,
     default: DebugFail();
   }
 
-  unsigned int TimeoutAnswer = (Params != nullptr) ? Params->TimeoutAnswer : 0;
+  uint32_t TimeoutAnswer = (Params != nullptr) ? Params->TimeoutAnswer : 0;
 
-  unsigned int ActualAnswers = Answers;
+  uint32_t ActualAnswers = Answers;
   if ((Params == nullptr) || Params->AllowHelp)
   {
     Answers = Answers | qaHelp;
@@ -229,7 +229,7 @@ TForm * CreateMessageDialogEx(const UnicodeString Msg,
   }
 
   const TQueryButtonAlias * Aliases = (Params != nullptr) ? Params->Aliases : nullptr;
-  unsigned int AliasesCount = (Params != nullptr) ? Params->AliasesCount : 0;
+  uint32_t AliasesCount = (Params != nullptr) ? Params->AliasesCount : 0;
 
   UnicodeString NeverAskAgainCaption;
   bool HasNeverAskAgain = (Params != nullptr) && FLAGSET(Params->Params, mpNeverAskAgainCheck);
@@ -277,10 +277,10 @@ TForm * CreateMessageDialogEx(const UnicodeString Msg,
   return Dialog;
 }
 
-unsigned int ExecuteMessageDialog(TForm * Dialog, unsigned int Answers, const TMessageParams * Params)
+uint32_t ExecuteMessageDialog(TForm * Dialog, uint32_t Answers, const TMessageParams * Params)
 {
   FlashOnBackground();
-  unsigned int Answer = Dialog->ShowModal();
+  uint32_t Answer = Dialog->ShowModal();
   // mrCancel is returned always when X button is pressed, despite
   // no Cancel button was on the dialog. Find valid "cancel" answer.
   // mrNone is returned when Windows session is closing (log off)
@@ -332,7 +332,7 @@ void TMessageTimer::DoTimer(TObject * /*Sender*/)
 {
   if (Event != nullptr)
   {
-    unsigned int Result = 0;
+    uint32_t Result = 0;
     Event(Result);
     if (Result != 0)
     {
@@ -347,8 +347,8 @@ public:
   TMessageTimeout(TComponent * AOwner, uint32_t Timeout, TButton * Button, uint32_t Answer);
 
 protected:
-  unsigned int FOrigTimeout;
-  unsigned int FTimeout;
+  uint32_t FOrigTimeout;
+  uint32_t FTimeout;
   TButton * FButton;
   UnicodeString FOrigCaption;
   TPoint FOrigCursorPos;
@@ -402,7 +402,7 @@ void TMessageTimeout::MouseMove()
   if (Delta > Threshold)
   {
     FOrigCursorPos = CursorPos;
-    const unsigned int SuspendTime = 30 * MSecsPerSec;
+    const uint32_t SuspendTime = 30 * MSecsPerSec;
     FTimeout = std::max(FOrigTimeout, SuspendTime);
     UpdateButton();
   }
@@ -450,13 +450,13 @@ void TMessageTimeout::DoTimer(TObject * /*Sender*/)
   }
 }
 
-void InitiateDialogTimeout(TForm * Dialog, unsigned int Timeout, TButton * Button, unsigned int Answer)
+void InitiateDialogTimeout(TForm * Dialog, uint32_t Timeout, TButton * Button, uint32_t Answer)
 {
   TMessageTimeout * MessageTimeout = new TMessageTimeout(Application, Timeout, Button, Answer);
   MessageTimeout->Name = L"MessageTimeout";
   Dialog->InsertComponent(MessageTimeout);
 }
-//---------------------------------------------------------------------
+
 class TPublicControl : public TControl
 {
 friend void MenuPopup(TObject * Sender, const TPoint & MousePos, bool & Handled);
@@ -464,7 +464,7 @@ friend void MenuPopup(TObject * Sender, const TPoint & MousePos, bool & Handled)
 
 // Merge with CreateMessageDialogEx
 TForm * CreateMoreMessageDialogEx(const UnicodeString Message, TStrings * MoreMessages,
-  TQueryType Type, unsigned int Answers, UnicodeString HelpKeyword, const TMessageParams * Params)
+  TQueryType Type, uint32_t Answers, UnicodeString HelpKeyword, const TMessageParams * Params)
 {
   std::unique_ptr<TForm> Dialog;
   UnicodeString AMessage = Message;
@@ -512,23 +512,23 @@ TForm * CreateMoreMessageDialogEx(const UnicodeString Message, TStrings * MoreMe
   return Dialog.release();
 }
 
-unsigned int MoreMessageDialog(const UnicodeString Message, TStrings * MoreMessages,
-  TQueryType Type, unsigned int Answers, UnicodeString HelpKeyword, const TMessageParams * Params)
+uint32_t MoreMessageDialog(const UnicodeString Message, TStrings * MoreMessages,
+  TQueryType Type, uint32_t Answers, UnicodeString HelpKeyword, const TMessageParams * Params)
 {
   std::unique_ptr<TForm> Dialog(CreateMoreMessageDialogEx(Message, MoreMessages, Type, Answers, HelpKeyword, Params));
-  unsigned int Result = ExecuteMessageDialog(Dialog.get(), Answers, Params);
+  uint32_t Result = ExecuteMessageDialog(Dialog.get(), Answers, Params);
   return Result;
 }
 
-unsigned int MessageDialog(const UnicodeString Msg, TQueryType Type,
-  unsigned int Answers, UnicodeString HelpKeyword, const TMessageParams * Params)
+uint32_t MessageDialog(const UnicodeString Msg, TQueryType Type,
+  uint32_t Answers, UnicodeString HelpKeyword, const TMessageParams * Params)
 {
   return MoreMessageDialog(Msg, nullptr, Type, Answers, HelpKeyword, Params);
 }
 
-unsigned int SimpleErrorDialog(const UnicodeString Msg, const UnicodeString MoreMessages)
+uint32_t SimpleErrorDialog(const UnicodeString Msg, const UnicodeString MoreMessages)
 {
-  unsigned int Result;
+  uint32_t Result;
   TStrings * More = nullptr;
   try
   {
@@ -1087,7 +1087,7 @@ TWinInteractiveCustomCommand::TWinInteractiveCustomCommand(
   FHelpKeyword = HelpKeyword;
 }
 
-void TWinInteractiveCustomCommand::PatternHint(intptr_t Index, const UnicodeString Pattern)
+void TWinInteractiveCustomCommand::PatternHint(int32_t Index, const UnicodeString Pattern)
 {
   if (IsPromptPattern(Pattern))
   {
@@ -1104,7 +1104,7 @@ void TWinInteractiveCustomCommand::PatternHint(intptr_t Index, const UnicodeStri
 }
 
 void TWinInteractiveCustomCommand::Prompt(
-  intptr_t /*Index*/, const UnicodeString /*Prompt*/, UnicodeString &/*Value*/) const
+  int32_t /*Index*/, const UnicodeString /*Prompt*/, UnicodeString &/*Value*/) const
 {
 #if 0
   if (DebugAlwaysTrue(FIndexes.find(Index) != FIndexes.end()))
@@ -1523,7 +1523,7 @@ bool IsApplicationMinimized()
 bool HandleMinimizeSysCommand(TMessage & Message)
 {
   TWMSysCommand & SysCommand = reinterpret_cast<TWMSysCommand &>(Message);
-  unsigned int Cmd = (SysCommand.CmdType & 0xFFF0);
+  uint32_t Cmd = (SysCommand.CmdType & 0xFFF0);
   bool Result = (Cmd == SC_MINIMIZE);
   if (Result)
   {
@@ -1691,7 +1691,7 @@ void WinFinalize()
 }
 #if 0
 
-::TTrayIcon::TTrayIcon(unsigned int Id)
+::TTrayIcon::TTrayIcon(uint32_t Id)
 {
   FVisible = false;
   FOnClick = nullptr;
@@ -1739,7 +1739,7 @@ void WinFinalize()
 }
 
 void ::TTrayIcon::PopupBalloon(UnicodeString Title,
-  const UnicodeString & Str, TQueryType QueryType, unsigned int Timeout,
+  const UnicodeString & Str, TQueryType QueryType, uint32_t Timeout,
   TNotifyEvent OnBalloonClick, TObject * BalloonUserData)
 {
   if (Timeout > 30000)
@@ -1821,7 +1821,7 @@ void ::TTrayIcon::CancelBalloon()
   BalloonCancelled();
 }
 
-bool ::TTrayIcon::Notify(unsigned int Message)
+bool ::TTrayIcon::Notify(uint32_t Message)
 {
   bool Result = SUCCEEDED(Shell_NotifyIcon(Message, (NOTIFYICONDATA*)FTrayIcon));
   if (Result && (Message == NIM_ADD))
@@ -1954,7 +1954,7 @@ void ::TTrayIcon::SetHint(UnicodeString value)
 {
   if (Hint != value)
   {
-    unsigned int Max = LENOF(FTrayIcon->szTip);
+    uint32_t Max = LENOF(FTrayIcon->szTip);
     StrPLCopy(FTrayIcon->szTip, value, Max - 1);
     Update();
   }
@@ -1979,7 +1979,7 @@ uint32_t MessageDialog(UnicodeString Msg, TQueryType Type,
   return Result;
 }
 
-uint32_t MessageDialog(intptr_t Ident, TQueryType Type,
+uint32_t MessageDialog(int32_t Ident, TQueryType Type,
   uint32_t Answers, UnicodeString HelpKeyword, const TMessageParams *Params)
 {
   DebugUsedParam(HelpKeyword);

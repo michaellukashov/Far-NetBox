@@ -25,8 +25,8 @@ class TStoredSessionList;
 class TConfiguration;
 class TTerminal;
 
-constexpr uintptr_t mpNeverAskAgainCheck =   0x01;
-constexpr uintptr_t mpAllowContinueOnError = 0x02;
+constexpr uint32_t mpNeverAskAgainCheck =   0x01;
+constexpr uint32_t mpAllowContinueOnError = 0x02;
 
 extern HINSTANCE HInstance;
 
@@ -68,7 +68,7 @@ struct NB_CORE_EXPORT TMessageParams : public TObject
 public:
   explicit TMessageParams(uint32_t AParams) noexcept;
   explicit TMessageParams(const TQueryParams * AParams) noexcept;
-  void Assign(const TMessageParams *AParams);
+  void Assign(const TQueryParams *AParams);
 
   const TQueryButtonAlias *Aliases{nullptr};
   uint32_t AliasesCount{0};
@@ -87,7 +87,7 @@ public:
   bool AllowHelp{false};
   UnicodeString ImageName;
   UnicodeString MoreMessagesUrl;
-  TSize MoreMessagesSize{};
+  TSize MoreMessagesSize{0};
   UnicodeString CustomCaption;
 
 private:
@@ -222,22 +222,22 @@ void DoConsoleDialog(TTerminal * Terminal,
     const UnicodeString Command = "", const TStrings * Log = nullptr);
 
 // forms\Copy.cpp
-constexpr intptr_t coTemp                = 0x001;
-constexpr intptr_t coDisableQueue        = 0x002;
-constexpr intptr_t coDisableDirectory    = 0x008; // not used anymore
-constexpr intptr_t coDoNotShowAgain      = 0x020;
-constexpr intptr_t coDisableSaveSettings = 0x040; // not used anymore
-constexpr intptr_t coDoNotUsePresets     = 0x080; // not used anymore
-constexpr intptr_t coAllowRemoteTransfer = 0x100;
-constexpr intptr_t coNoQueue             = 0x200;
-constexpr intptr_t coShortCutHint        = 0x800;
-constexpr intptr_t coAllFiles            = 0x1000;
-constexpr intptr_t cooDoNotShowAgain     = 0x01;
-constexpr intptr_t cooRemoteTransfer     = 0x02;
-constexpr intptr_t cooSaveSettings       = 0x04;
+constexpr int32_t coTemp                = 0x001;
+constexpr int32_t coDisableQueue        = 0x002;
+constexpr int32_t coDisableDirectory    = 0x008; // not used anymore
+constexpr int32_t coDoNotShowAgain      = 0x020;
+constexpr int32_t coDisableSaveSettings = 0x040; // not used anymore
+constexpr int32_t coDoNotUsePresets     = 0x080; // not used anymore
+constexpr int32_t coAllowRemoteTransfer = 0x100;
+constexpr int32_t coNoQueue             = 0x200;
+constexpr int32_t coShortCutHint        = 0x800;
+constexpr int32_t coAllFiles            = 0x1000;
+constexpr int32_t cooDoNotShowAgain     = 0x01;
+constexpr int32_t cooRemoteTransfer     = 0x02;
+constexpr int32_t cooSaveSettings       = 0x04;
 
-constexpr int coTempTransfer        = 0x08;
-constexpr int coDisableNewerOnly    = 0x10;
+constexpr int32_t coTempTransfer        = 0x08;
+constexpr int32_t coDisableNewerOnly    = 0x10;
 
 bool DoCopyDialog(
   bool ToRemote, bool Move, TStrings * FileList, UnicodeString & TargetDirectory,
@@ -288,8 +288,8 @@ class TCustomCommandList;
 class TCustomCommandType;
 class TShortCuts;
 enum TCustomCommandsMode { ccmAdd, ccmEdit, ccmAdHoc };
-constexpr int ccoDisableRemote = 0x01;
-constexpr int ccoDisableRemoteFiles = 0x02;
+constexpr int32_t ccoDisableRemote = 0x01;
+constexpr int32_t ccoDisableRemoteFiles = 0x02;
 #if 0
 typedef void (__closure *TCustomCommandValidate)
   (const TCustomCommandType & Command);
@@ -317,10 +317,10 @@ bool DoCopyParamCustomDialog(TCopyParamType & CopyParam,
 class TRemoteProperties;
 class TRemoteTokenList;
 struct TCalculateSizeStats;
-constexpr int cpMode =  0x01;
-constexpr int cpOwner = 0x02;
-constexpr int cpGroup = 0x04;
-constexpr int cpAcl =   0x08;
+constexpr int32_t cpMode =  0x01;
+constexpr int32_t cpOwner = 0x02;
+constexpr int32_t cpGroup = 0x04;
+constexpr int32_t cpAcl =   0x08;
 #if 0
 typedef void (__closure *TCalculateSizeEvent)
   (TStrings * FileList, __int64 & Size, TCalculateSizeStats & Stats,
@@ -374,7 +374,7 @@ typedef void (__closure *TGetSynchronizeOptionsEvent)
   (int Params, TSynchronizeOptions & Options);
 #endif // #if 0
 using TGetSynchronizeOptionsEvent = nb::FastDelegate2<void,
-  intptr_t /*Params*/,
+  int32_t /*Params*/,
   TSynchronizeOptions & /*Options*/>;
 using TSynchronizeSessionLogEvent = nb::FastDelegate1<void,
   UnicodeString /*Message*/>;
@@ -397,9 +397,9 @@ bool DoSynchronizeDialog(TSynchronizeParamType & Params,
 // forms\FullSynchronize.cpp
 struct TUsableCopyParamAttrs;
 __removed enum TSynchronizeMode { smRemote, smLocal, smBoth };
-constexpr intptr_t fsoDisableTimestamp = 0x01;
-constexpr intptr_t fsoDoNotUsePresets =  0x02;
-constexpr intptr_t fsoAllowSelectedOnly = 0x04;
+constexpr int32_t fsoDisableTimestamp = 0x01;
+constexpr int32_t fsoDoNotUsePresets =  0x02;
+constexpr int32_t fsoAllowSelectedOnly = 0x04;
 using TFullSynchronizeInNewWindowEvent = nb::FastDelegate5<void,
   TTerminal::TSynchronizeMode /*Mode*/, int32_t /*Params*/, UnicodeString /*LocalDirectory*/, UnicodeString /*RemoteDirectory*/,
    const TCopyParamType * /*CopyParams*/>;
@@ -558,7 +558,7 @@ void DoGenerateUrlDialog(TSessionData * Data, TStrings * Paths);
 enum TFilesSelected { fsList, fsAll };
 void DoGenerateTransferCodeDialog(
   bool ToRemote, bool Move, int CopyParamAttrs, TSessionData * Data, TFilesSelected FilesSelected,
-  TStrings * FileList, UnicodeString Path, const TCopyParamType & CopyParam);
+  TStrings * FileList, const UnicodeString Path, const TCopyParamType & CopyParam);
 
 void CopyParamListButton(TButton * Button);
 const int cplNone =             0x00;
