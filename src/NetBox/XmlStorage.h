@@ -13,43 +13,40 @@ public:
 
   bool Copy(TXmlStorage *Storage);
 
-  void CloseSubKey() override;
-  bool DeleteSubKey(const UnicodeString SubKey) override;
-  void GetSubKeyNames(TStrings *Strings) override;
-  bool ValueExists(const UnicodeString Value) const override;
-  bool DeleteValue(const UnicodeString Name) override;
-  size_t BinaryDataSize(const UnicodeString Name) const override;
-
-  bool ReadBool(const UnicodeString Name, bool Default) const override;
-  intptr_t ReadIntPtr(const UnicodeString Name, intptr_t Default) const override;
-  int ReadInteger(const UnicodeString Name, int Default) const override;
-  int64_t ReadInt64(const UnicodeString Name, int64_t Default) const override;
-  TDateTime ReadDateTime(const UnicodeString Name, const TDateTime &Default) const override;
-  double ReadFloat(const UnicodeString Name, double Default) const override;
-  UnicodeString ReadStringRaw(const UnicodeString Name, const UnicodeString Default) const override;
-  size_t ReadBinaryData(const UnicodeString Name, void *Buffer, size_t Size) const override;
-
-  void WriteBool(const UnicodeString Name, bool Value) override;
-  void WriteIntPtr(const UnicodeString Name, intptr_t Value) override;
-  void WriteInteger(const UnicodeString Name, int Value) override;
-  void WriteInt64(const UnicodeString Name, int64_t Value) override;
-  void WriteDateTime(const UnicodeString Name, const TDateTime &Value) override;
-  void WriteFloat(const UnicodeString Name, double Value) override;
-  void WriteStringRaw(const UnicodeString Name, const UnicodeString Value) override;
-  void WriteBinaryData(const UnicodeString Name, const void *Buffer, size_t Size) override;
-
-  void GetValueNames(TStrings *Strings) const override;
-
 protected:
   void SetAccessModeProtected(TStorageAccessMode Value) override;
   bool DoKeyExists(const UnicodeString SubKey, bool ForceAnsi) override;
   bool DoOpenSubKey(const UnicodeString MungedSubKey, bool CanCreate) override;
+  void DoCloseSubKey() override;
+  void DoDeleteSubKey(const UnicodeString SubKey) override;
+  void DoGetSubKeyNames(TStrings *Strings) override;
+  bool DoValueExists(const UnicodeString Value) override;
+  bool DoDeleteValue(const UnicodeString Name) override;
+  size_t DoBinaryDataSize(const UnicodeString & Name) override;
 
-  UnicodeString GetSourceProtected() const override;
-  UnicodeString GetSourceProtected() override;
+  void DoWriteBool(const UnicodeString & Name, bool Value) override;
+  void DoWriteInteger(const UnicodeString & Name, int32_t Value) override;
+  void DoWriteInt64(const UnicodeString & Name, int64_t Value) override;
+//  void DoWriteDateTime(const UnicodeString & Name, TDateTime Value) override;
+//  void DoWriteFloat(const UnicodeString & Name, double Value) override;
+  void DoWriteStringRaw(const UnicodeString & Name, const UnicodeString & Value) override;
+  void DoWriteBinaryData(const UnicodeString & Name, const void *Buffer, size_t Size) override;
+
+  bool DoReadBool(const UnicodeString & Name, bool Default) override;
+  int32_t DoReadInteger(const UnicodeString & Name, int32_t Default, const TIntMapping * Mapping) override;
+  int64_t DoReadInt64(const UnicodeString & Name, int64_t Default) override;
+  TDateTime DoReadDateTime(const UnicodeString & Name, TDateTime Default) override;
+  double DoReadFloat(const UnicodeString & Name, double Default) override;
+  UnicodeString DoReadStringRaw(const UnicodeString & Name, const UnicodeString & Default) override;
+  size_t DoReadBinaryData(const UnicodeString & Name, void *Buffer, size_t Size) override;
+
+  void DoGetValueNames(TStrings *Strings) override;
+
+  UnicodeString GetSource() const override;
+  UnicodeString GetSource();
 protected:
-  intptr_t GetFailed() const;
-  void SetFailed(intptr_t Value) { FFailed = Value; }
+  int32_t GetFailed() const;
+  void SetFailed(int32_t Value) { FFailed = Value; }
 
 private:
   UnicodeString GetSubKeyText(const UnicodeString Name) const;
@@ -69,6 +66,6 @@ private:
   nb::vector_t<tinyxml2::XMLElement *> FSubElements;
   tinyxml2::XMLElement *FCurrentElement{nullptr};
   UnicodeString FStoredSessionsSubKey;
-  mutable intptr_t FFailed{0};
+  mutable int32_t FFailed{0};
   bool FStoredSessionsOpened{false};
 };
