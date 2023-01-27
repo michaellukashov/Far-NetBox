@@ -116,9 +116,9 @@ private:
   bool FDisableAcceptingHostKeys{false};
   bool FDefaultCollectUsage{false};
 
+public:
   virtual UnicodeString GetProductVersion() const;
   virtual UnicodeString GetProductVersionStr() const;
-public:
   TVSFixedFileInfo *GetFixedApplicationInfo() const;
   void * GetApplicationInfo() const;
   virtual UnicodeString GetVersionStr() const;
@@ -186,10 +186,6 @@ public:
   bool GetPersistent() const;
   void SetLocalPortNumberMin(int32_t value);
   void SetLocalPortNumberMax(int32_t value);
-
-  bool GetScripting() const { return FScripting; }
-  void SetScripting(bool Value) { FScripting = Value; }
-  void SetStorage(TStorage Value);
 
 protected:
   mutable TStorage FStorage{stDetect};
@@ -432,6 +428,10 @@ public:
   const bool& ForceBanners{FForceBanners};
   __property bool DisableAcceptingHostKeys = { read = FDisableAcceptingHostKeys };
   const bool& DisableAcceptingHostKeys{FDisableAcceptingHostKeys};
+
+  bool GetScripting() const { return FScripting; }
+  void SetScripting(bool Value) { FScripting = Value; }
+  void SetStorage(TStorage Value);
 
   TUsage * GetUsage() { return FUsage.get(); }
   UnicodeString GetPuttyRegistryStorageKey() const { return FPuttyRegistryStorageKey; }
