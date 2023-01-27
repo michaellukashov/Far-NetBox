@@ -956,14 +956,14 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool PuttyImport, bool
   // must be loaded after TunnelUserName,
   // because TunnelHostName may be in format user@host
   SetTunnelHostName(Storage->ReadString("TunnelHostName", GetTunnelHostName()));
-  if (!Configuration->DisablePasswordStoring)
+  if (!GetConfiguration()->DisablePasswordStoring)
   {
     LOAD_PASSWORD(TunnelPassword, L"TunnelPasswordPlain");
   }
   FTunnelPublicKeyFile = Storage->ReadString(L"TunnelPublicKeyFile", FTunnelPublicKeyFile);
   // Contrary to main session passphrase (which has -passphrase switch in scripting),
   // we are loading tunnel passphrase, as there's no other way to provide it in scripting
-  if (!Configuration->FDisablePasswordStoring)
+  if (!GetConfiguration()->FDisablePasswordStoring)
   {
     LOAD_PASSWORD(TunnelPassphrase, L"TunnelPassphrasePlain");
   }
@@ -1888,7 +1888,7 @@ void TSessionData::ImportFromOpenssh(TStrings * Lines)
 void TSessionData::SavePasswords(THierarchicalStorage * Storage, bool PuttyExport, bool DoNotEncryptPasswords, bool SaveAll)
 {
   // It's probably safe to replace this with if (!PuttyExport) { SAVE_PASSWORD(...) }
-  if (!Configuration->DisablePasswordStoring && !PuttyExport && (!FPassword.IsEmpty() || SaveAll))
+  if (!GetConfiguration()->DisablePasswordStoring && !PuttyExport && (!FPassword.IsEmpty() || SaveAll))
   {
     if (DoNotEncryptPasswords)
     {
@@ -1939,7 +1939,7 @@ void TSessionData::SavePasswords(THierarchicalStorage * Storage, bool PuttyExpor
         } \
         Storage->DeleteValue(PLAIN_NAME); \
       }
-    #define SAVE_PASSWORD(PROP, PLAIN_NAME, ENC_KEY) SAVE_PASSWORD_EX(PROP, PLAIN_NAME, TEXT(#PROP), ENC_KEY, !Configuration->DisablePasswordStoring)
+    #define SAVE_PASSWORD(PROP, PLAIN_NAME, ENC_KEY) SAVE_PASSWORD_EX(PROP, PLAIN_NAME, TEXT(#PROP), ENC_KEY, !GetConfiguration()->DisablePasswordStoring)
 
     SAVE_PASSWORD_EX(ProxyPassword, L"ProxyPassword", L"ProxyPasswordEnc", FProxyUsername + FProxyHost, true);
     SAVE_PASSWORD(TunnelPassword, L"TunnelPasswordPlain", FTunnelUserName + FTunnelHostName);
@@ -3791,9 +3791,9 @@ void TSessionData::LookupLastFingerprint()
   if (FTunnel)
   {
     // not used anyway
-    int32_t TunnelPortNumber = std::max(FTunnelLocalPortNumber, Configuration->FTunnelLocalPortNumberLow);
+    int32_t TunnelPortNumber = std::max(FTunnelLocalPortNumber, GetConfiguration()->FTunnelLocalPortNumberLow);
     std::unique_ptr<TSessionData> TunnelData(CreateTunnelData(TunnelPortNumber));
-    FTunnelHostKey = Configuration->GetLastFingerprint(TunnelData->GetSiteKey(), SshFingerprintType);
+    FTunnelHostKey = GetConfiguration()->GetLastFingerprint(TunnelData->GetSiteKey(), SshFingerprintType);
   }
 }
 
@@ -5754,20 +5754,20 @@ void TStoredSessionList::UpdateStaticUsage()
     }
   }
 
-  Configuration->Usage->Set(L"StoredSessionsCountSCP", SCP);
-  Configuration->Usage->Set(L"StoredSessionsCountSFTP", SFTP);
-  Configuration->Usage->Set(L"StoredSessionsCountFTP", FTP);
-  Configuration->Usage->Set(L"StoredSessionsCountFTPS", FTPS);
-  Configuration->Usage->Set(L"StoredSessionsCountWebDAV", WebDAV);
-  Configuration->Usage->Set(L"StoredSessionsCountWebDAVS", WebDAVS);
-  Configuration->Usage->Set(L"StoredSessionsCountS3", S3);
-  Configuration->Usage->Set(L"StoredSessionsCountPassword", Password);
-  Configuration->Usage->Set(L"StoredSessionsCountColor", Color);
-  Configuration->Usage->Set(L"StoredSessionsCountNote", Note);
-  Configuration->Usage->Set(L"StoredSessionsCountAdvanced", Advanced);
+  GetConfiguration()->Usage->Set(L"StoredSessionsCountSCP", SCP);
+  GetConfiguration()->Usage->Set(L"StoredSessionsCountSFTP", SFTP);
+  GetConfiguration()->Usage->Set(L"StoredSessionsCountFTP", FTP);
+  GetConfiguration()->Usage->Set(L"StoredSessionsCountFTPS", FTPS);
+  GetConfiguration()->Usage->Set(L"StoredSessionsCountWebDAV", WebDAV);
+  GetConfiguration()->Usage->Set(L"StoredSessionsCountWebDAVS", WebDAVS);
+  GetConfiguration()->Usage->Set(L"StoredSessionsCountS3", S3);
+  GetConfiguration()->Usage->Set(L"StoredSessionsCountPassword", Password);
+  GetConfiguration()->Usage->Set(L"StoredSessionsCountColor", Color);
+  GetConfiguration()->Usage->Set(L"StoredSessionsCountNote", Note);
+  GetConfiguration()->Usage->Set(L"StoredSessionsCountAdvanced", Advanced);
   DifferentAdvancedProperties->Delimiter = L',';
-  Configuration->Usage->Set(L"StoredSessionsAdvancedSettings", DifferentAdvancedProperties->DelimitedText);
-  Configuration->Usage->Set(L"StoredSessionsCountTunnel", Tunnel);
+  GetConfiguration()->Usage->Set(L"StoredSessionsAdvancedSettings", DifferentAdvancedProperties->DelimitedText);
+  GetConfiguration()->Usage->Set(L"StoredSessionsCountTunnel", Tunnel);
 
   // actually default might be true, see below for when the default is actually used
   bool CustomDefaultStoredSession = false;
@@ -5782,10 +5782,10 @@ void TStoredSessionList::UpdateStaticUsage()
   catch (...)
   {
   }
-  Configuration->Usage->Set(L"UsingDefaultStoredSession", CustomDefaultStoredSession);
+  GetConfiguration()->Usage->Set(L"UsingDefaultStoredSession", CustomDefaultStoredSession);
 
-  Configuration->Usage->Set(L"UsingStoredSessionsFolders", Folders);
-  Configuration->Usage->Set(L"UsingWorkspaces", Workspaces);
+  GetConfiguration()->Usage->Set(L"UsingStoredSessionsFolders", Folders);
+  GetConfiguration()->Usage->Set(L"UsingWorkspaces", Workspaces);
 #endif // #if 0
 }
 
@@ -6192,7 +6192,6 @@ bool TStoredSessionList::CanLogin(TSessionData *Data)
   return (Data != nullptr) && Data->GetCanLogin();
 }
 
-#if 0
 const TSessionData *TStoredSessionList::GetSessionByName(UnicodeString SessionName) const
 {
   for (int32_t Index = 0; Index < GetCount(); ++Index)
@@ -6205,7 +6204,7 @@ const TSessionData *TStoredSessionList::GetSessionByName(UnicodeString SessionNa
   }
   return nullptr;
 }
-
+#if 0
 void TStoredSessionList::Load(UnicodeString AKey, bool UseDefaults)
 {
   std::unique_ptr<TRegistryStorage> Storage(std::make_unique<TRegistryStorage>(AKey));
@@ -6215,7 +6214,7 @@ void TStoredSessionList::Load(UnicodeString AKey, bool UseDefaults)
     Load(Storage.get(), false, UseDefaults);
   }
 }
-#endif // #if 0
+#endif // if 0
 //===========================================================================
 UnicodeString GetExpandedLogFileName(UnicodeString LogFileName, TDateTime Started, TSessionData *SessionData)
 {
@@ -6383,3 +6382,4 @@ UnicodeString GetCodePageAsString(uint32_t CodePage)
   }
   return ::IntToStr(CONST_DEFAULT_CODEPAGE);
 }
+
