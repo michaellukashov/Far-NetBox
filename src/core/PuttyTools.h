@@ -28,8 +28,8 @@ NB_CORE_EXPORT bool HasGSSAPI(const UnicodeString CustomPath);
 NB_CORE_EXPORT void AES256EncodeWithMAC(char *Data, size_t Len, const char *Password,
   size_t PasswordLen, const char *Salt);
 
-NB_CORE_EXPORT UnicodeString NormalizeFingerprint(const UnicodeString AFingerprint, UnicodeString & KeyName);
-NB_CORE_EXPORT UnicodeString GetKeyTypeFromFingerprint(const UnicodeString AFingerprint);
+NB_CORE_EXPORT void NormalizeFingerprint(UnicodeString & AFingerprint, UnicodeString & KeyName);
+NB_CORE_EXPORT UnicodeString KeyTypeFromFingerprint(UnicodeString AFingerprint);
 
 NB_CORE_EXPORT UnicodeString GetPuTTYVersion();
 
