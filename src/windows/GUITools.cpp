@@ -126,7 +126,7 @@ bool FindFile(UnicodeString &Path)
 
 bool DoesSessionExistInPutty(TSessionData * SessionData)
 {
-  std::unique_ptr<TRegistryStorage> Storage(new TRegistryStorage(Configuration->PuttySessionsKey));
+  std::unique_ptr<TRegistryStorage> Storage(new TRegistryStorage(GetConfiguration()->PuttySessionsKey));
   Storage->ConfigureForPutty();
   return Storage->OpenRootKey(true) && Storage->KeyExists(SessionData->StorageKey);
 }
@@ -134,7 +134,7 @@ bool DoesSessionExistInPutty(TSessionData * SessionData)
 bool ExportSessionToPutty(TSessionData * SessionData, bool ReuseExisting, const UnicodeString & SessionName)
 {
   bool Result = true;
-  std::unique_ptr<TRegistryStorage> Storage(new TRegistryStorage(Configuration->PuttySessionsKey));
+  std::unique_ptr<TRegistryStorage> Storage(new TRegistryStorage(GetConfiguration()->PuttySessionsKey));
   Storage->AccessMode = smReadWrite;
   Storage->ConfigureForPutty();
   if (Storage->OpenRootKey(true))
@@ -142,7 +142,7 @@ bool ExportSessionToPutty(TSessionData * SessionData, bool ReuseExisting, const 
     Result = ReuseExisting && Storage->KeyExists(SessionData->StorageKey);
     if (!Result)
     {
-      std::unique_ptr<TRegistryStorage> SourceStorage(new TRegistryStorage(Configuration->PuttySessionsKey));
+      std::unique_ptr<TRegistryStorage> SourceStorage(new TRegistryStorage(GetConfiguration()->PuttySessionsKey));
       SourceStorage->ConfigureForPutty();
       if (SourceStorage->OpenSubKey(StoredSessions->DefaultSettings->Name, false) &&
           Storage->OpenSubKey(SessionName, true))
@@ -2284,3 +2284,39 @@ void GUIFinalize()
 }
 
 #endif // #if 0
+
+UnicodeString ItemsFormatString(UnicodeString SingleItemFormat,
+  UnicodeString MultiItemsFormat, int32_t Count, UnicodeString FirstItem)
+{
+  UnicodeString Result;
+  if (Count == 1)
+  {
+    Result = FORMAT(SingleItemFormat, FirstItem);
+  }
+  else
+  {
+    Result = FORMAT(MultiItemsFormat, Count);
+  }
+  return Result;
+}
+
+UnicodeString ItemsFormatString(UnicodeString SingleItemFormat,
+  UnicodeString MultiItemsFormat, const TStrings *Items)
+{
+  return ItemsFormatString(SingleItemFormat, MultiItemsFormat,
+      Items->GetCount(), (Items->GetCount() > 0 ? Items->GetString(0) : UnicodeString()));
+}
+
+UnicodeString FileNameFormatString(UnicodeString SingleFileFormat,
+  UnicodeString MultiFilesFormat, const TStrings *AFiles, bool Remote)
+{
+  DebugAssert(AFiles != nullptr);
+  UnicodeString Item;
+  if (AFiles && (AFiles->GetCount() > 0))
+  {
+    Item = Remote ? base::UnixExtractFileName(AFiles->GetString(0)) :
+      base::ExtractFileName(AFiles->GetString(0), true);
+  }
+  return ItemsFormatString(SingleFileFormat, MultiFilesFormat,
+      AFiles ? AFiles->GetCount() : 0, Item);
+}

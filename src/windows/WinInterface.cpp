@@ -2004,10 +2004,10 @@ void ::TTrayIcon::SetHint(UnicodeString value)
 }
 #endif // #if 0
 
-bool InputDialog(UnicodeString ACaption,
-  UnicodeString APrompt, UnicodeString &Value, UnicodeString HelpKeyword,
+bool InputDialog(const UnicodeString ACaption,
+  const UnicodeString APrompt, UnicodeString &Value, UnicodeString HelpKeyword,
   TStrings *History, bool PathInput,
-  TInputDialogInitializeEvent OnInitialize, bool Echo)
+  TInputDialogInitializeEvent OnInitialize, bool Echo, int32_t Width)
 {
   bool Result = GetGlobals()->InputDialog(ACaption, APrompt, Value, HelpKeyword,
     History, PathInput, OnInitialize, Echo);

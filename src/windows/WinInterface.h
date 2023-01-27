@@ -197,7 +197,7 @@ typedef void (__closure *TInputDialogInitialize)
 bool InputDialog(const UnicodeString ACaption,
   const UnicodeString APrompt, UnicodeString & Value, UnicodeString HelpKeyword = HELP_NONE,
   TStrings * History = nullptr, bool PathInput = false,
-  TInputDialogInitializeEvent OnInitialize = nullptr, bool Echo = true, int Width = 275);
+  TInputDialogInitializeEvent OnInitialize = nullptr, bool Echo = true, int32_t Width = 275);
 
 // forms\About.cpp
 struct TRegistration

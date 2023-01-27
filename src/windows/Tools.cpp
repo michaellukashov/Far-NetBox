@@ -1075,12 +1075,14 @@ bool FontDialog(TFont * Font)
   }
   return Result;
 }
+#endif // #if 0
 
 bool SaveDialog(UnicodeString Title, UnicodeString Filter,
   UnicodeString DefaultExt, UnicodeString & FileName)
 {
-  bool Result;
-  #if 0
+  TODO("implement");
+  bool Result = false;
+#if 0
   TFileSaveDialog * Dialog = new TFileSaveDialog(Application);
   try
   {
@@ -1105,7 +1107,6 @@ bool SaveDialog(UnicodeString Title, UnicodeString Filter,
   {
     delete Dialog;
   }
-  #else
   TSaveDialog * Dialog = new TSaveDialog(Application);
   try
   {
@@ -1130,11 +1131,10 @@ bool SaveDialog(UnicodeString Title, UnicodeString Filter,
   {
     delete Dialog;
   }
-  #endif // #if 0
+#endif // #if 0
   return Result;
 }
 
-#endif //if 0
 #if 0
 
 void CopyToClipboard(UnicodeString Text)
