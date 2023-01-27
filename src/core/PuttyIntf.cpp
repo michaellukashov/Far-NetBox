@@ -317,7 +317,7 @@ size_t banner(Seat * seat, const void * data, size_t len)
   return 0; // PuTTY never uses the value
 }
 
-uintmax_t strtoumax(const char *nptr, char **endptr, int base)
+uintmax_t strtoumax_(const char *nptr, char **endptr, int base)
 {
   if (DebugAlwaysFalse(endptr != nullptr) ||
       DebugAlwaysFalse(base != 10))
@@ -974,7 +974,7 @@ void DllHijackingProtection()
   dll_hijacking_protection();
 }
 
-UnicodeString ParseOpenSshPubLine(const UnicodeString & Line, const struct ssh_keyalg *& Algorithm)
+UnicodeString ParseOpenSshPubLine(const UnicodeString Line, const struct ssh_keyalg *& Algorithm)
 {
   UTF8String UtfLine = UTF8String(Line);
   char * AlgorithmName = nullptr;
@@ -1019,7 +1019,7 @@ UnicodeString ParseOpenSshPubLine(const UnicodeString & Line, const struct ssh_k
   return Result;
 }
 
-UnicodeString GetKeyTypeHuman(const UnicodeString & KeyType)
+UnicodeString GetKeyTypeHuman(const UnicodeString KeyType)
 {
   UnicodeString Result;
   if (KeyType == ssh_dsa.cache_id)
@@ -1055,7 +1055,7 @@ UnicodeString GetKeyTypeHuman(const UnicodeString & KeyType)
   return Result;
 }
 
-bool IsOpenSSH(const UnicodeString & SshImplementation)
+bool IsOpenSSH(const UnicodeString SshImplementation)
 {
   return
     // e.g. "OpenSSH_5.3"
