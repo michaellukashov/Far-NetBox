@@ -110,7 +110,7 @@ protected:
   };
 
   UnicodeString FStorage;
-  rde::vector<TKeyEntry> FKeyHistory;
+  nb::vector_t<TKeyEntry> FKeyHistory;
   TStorageAccessMode FAccessMode;
   bool FExplicit{false};
   bool FForceSave{false};
