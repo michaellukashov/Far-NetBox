@@ -52,9 +52,9 @@ public:
   public:
     TPersistence() noexcept;
     TPersistence(const TPersistence&) = default;
-    TPersistence& operator=(const TPersistence&);
+    TPersistence& operator=(const TPersistence&) = default;
     __property TFileOperationStatistics * Statistics = { read = FStatistics, write = FStatistics };
-    TFileOperationStatistics *& Statistics{FStatistics};
+    TFileOperationStatistics * Statistics{FStatistics};
 
   private:
     void Clear(bool Batch, bool Speed);
