@@ -148,7 +148,6 @@ add_definitions(-DFARPLUGIN)
 add_definitions(${fmt_DEFINES})
 
 set(NETBOX_DLL_LINK_FLAGS
-  "
   /NODEFAULTLIB:MSVCURT.LIB
   /NODEFAULTLIB:MSVCURTD.LIB
   /NODEFAULTLIB:MSVCPRT.LIB
@@ -179,14 +178,15 @@ set(NETBOX_DLL_LINK_FLAGS
   /DELAYLOAD:shell32.dll
   /DELAYLOAD:shlwapi.dll
   /DELAYLOAD:crypt32.dll
+  /DELAYLOAD:secur32.dll
   /MANIFEST:NO
+  /TLBID:1 /DYNAMICBASE /SUBSYSTEM:WINDOWS
   /TLBID:1 /DYNAMICBASE /SUBSYSTEM:WINDOWS /NOLOGO
   /MAP
   /INCREMENTAL:NO
   /ignore:4099
   /ignore:4197
   /ignore:4199
-"
 )
 #/DELAYLOAD:gdi32.dll
 
@@ -1817,6 +1817,7 @@ set(NETBOX_LIBRARIES
   winhttp.lib
   winspool.lib
   Crypt32.lib
+  secur32.lib
   shell32.lib
   shlwapi.lib
   delayimp.lib
