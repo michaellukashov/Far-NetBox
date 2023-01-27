@@ -1819,7 +1819,7 @@ void TSecureShell::Close()
   Discard();
 }
 
-void inline TSecureShell::CheckConnection(int Message)
+void TSecureShell::CheckConnection(int Message)
 {
   if (!FActive || (backend_exitcode(FBackendHandle) >= 0))
   {
@@ -2743,7 +2743,7 @@ bool TSecureShell::HaveHostKey(UnicodeString AHost, int32_t Port, UnicodeString 
     while (!Result && !Buf.IsEmpty())
     {
       UnicodeString ExpectedKey = CutToChar(Buf, HostKeyDelimiter, false);
-      UnicodeString ExpectedKeyType = GetKeyTypeFromFingerprint(ExpectedKey);
+      UnicodeString ExpectedKeyType = KeyTypeFromFingerprint(ExpectedKey);
       Result = SameText(ExpectedKeyType, KeyType);
     }
   }
@@ -2897,3 +2897,17 @@ bool TSecureShell::CanChangePassword() const
     (GetSshImplementation() != sshiProFTPD); // See sftp_auth_password
 }
 
+void TSecureShell::SetActive(bool Value)
+{
+  if (FActive != Value)
+  {
+    if (Value)
+    {
+      Open();
+    }
+    else
+    {
+      Close();
+    }
+  }
+}

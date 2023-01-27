@@ -93,7 +93,7 @@ private:
 public:
   void Init();
   void SetActive(bool Value);
-  void inline CheckConnection(int Message = -1);
+  void CheckConnection(int Message = -1);
   void WaitForData();
   void Discard();
   void FreeBackend();
