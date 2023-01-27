@@ -3213,7 +3213,7 @@ uint32_t TWinSCPFileSystem::MoreMessageDialog(const UnicodeString Str,
       Params.Assign(AParams);
     }
     AParams = &Params;
-    // Params.Flags |= FMSG_WARNING;
+    Params.Flags |= FMSG_WARNING;
   }
 
   return GetWinSCPPlugin()->MoreMessageDialog(Str, MoreMessages, Type,

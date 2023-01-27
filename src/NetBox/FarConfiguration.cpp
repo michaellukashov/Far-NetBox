@@ -59,9 +59,9 @@ void TFarConfiguration::Default()
   FBookmarks->Clear();
 }
 
-THierarchicalStorage *TFarConfiguration::CreateStorage(bool &SessionList)
+THierarchicalStorage *TFarConfiguration::CreateScpStorage(bool &SessionList)
 {
-  return TGUIConfiguration::CreateStorage(SessionList);
+  return TGUIConfiguration::CreateScpStorage(SessionList);
 }
 
 void TFarConfiguration::Saved()
@@ -75,9 +75,9 @@ void TFarConfiguration::Saved()
 #define LASTELEM(ELEM) \
   ELEM.SubString(ELEM.LastDelimiter(L".>")+1, ELEM.Length() - ELEM.LastDelimiter(L".>"))
 #define BLOCK(KEY, CANCREATE, BLOCK) \
-  if (Storage->OpenSubKey(KEY, CANCREATE, true)) \
+  if (Storage->OpenSubKeyPath(KEY, CANCREATE)) \
   { \
-    SCOPE_EXIT { Storage->CloseSubKey(); }; \
+    SCOPE_EXIT { Storage->CloseSubKeyPath(); }; \
     BLOCK \
   }
 #define REGCONFIG(CANCREATE) \
@@ -115,12 +115,12 @@ void TFarConfiguration::SaveData(THierarchicalStorage *Storage, bool All)
 #undef KEY
 #undef KEY2
 #define KEY(TYPE, VAR) Storage->Write ## TYPE(LASTELEM(MB2W(#VAR)), Get##VAR())
-#define KEY2(TYPE, VAR) Storage->Write ## TYPE(LASTELEM(MB2W(#VAR)), nb::ToInt(Get##VAR()))
+#define KEY2(TYPE, VAR) Storage->Write ## TYPE(LASTELEM(MB2W(#VAR)), nb::ToUIntPtr(Get##VAR()))
   REGCONFIG(true);
 #undef KEY2
 #undef KEY
 
-  if (Storage->OpenSubKey("Bookmarks", /*CanCreate=*/true))
+  if (Storage->OpenSubKeyPath("Bookmarks", /*CanCreate=*/true))
   {
     FBookmarks->Save(Storage, All);
 
@@ -141,7 +141,7 @@ void TFarConfiguration::LoadData(THierarchicalStorage *Storage)
 #undef KEY2
 #undef KEY
 
-  if (Storage->OpenSubKey("Bookmarks", false))
+  if (Storage->OpenSubKeyPath("Bookmarks", false))
   {
     FBookmarks->Load(Storage);
     Storage->CloseSubKey();

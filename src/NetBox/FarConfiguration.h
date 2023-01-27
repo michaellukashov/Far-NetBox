@@ -79,15 +79,17 @@ public:
   TBookmarkList *GetBookmarks(UnicodeString Key);
   void SetBookmarks(UnicodeString Key, TBookmarkList *Value);
 
+public:
+  virtual UnicodeString TemporaryDir(bool Mask = false) const override { return ""; }
 protected:
-  bool GetConfirmOverwriting() const override;
-  void SetConfirmOverwriting(bool Value) override;
+  virtual bool GetConfirmOverwriting() const override;
+  virtual void SetConfirmOverwriting(bool Value) override;
 
-  void SaveData(THierarchicalStorage *Storage, bool All) override;
-  void LoadData(THierarchicalStorage *Storage) override;
+  virtual void SaveData(THierarchicalStorage *Storage, bool All) override;
+  virtual void LoadData(THierarchicalStorage *Storage) override;
 
-  UnicodeString ModuleFileName() const override;
-  void Saved() override;
+  virtual UnicodeString ModuleFileName() const override;
+  virtual void Saved() override;
 
 private:
   TCustomFarPlugin *FFarPlugin{nullptr};
