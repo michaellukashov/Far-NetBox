@@ -73,6 +73,7 @@ public:
 
   const TQueryButtonAlias *Aliases{nullptr};
   uint32_t AliasesCount{0};
+  uint32_t Flags{0};
   uint32_t Params{0};
   uint32_t Timer{0};
   TQueryParamsTimerEvent TimerEvent;
