@@ -39,7 +39,7 @@ public:
 
   mutable const uint32_t *FMinPacketSize{nullptr};
   mutable const uint32_t *FMaxPacketSize{nullptr};
-  uint32_t MinPacketSize() const;
+  //uint32_t MinPacketSize() const;
 private:
   SOCKET FSocket{INVALID_SOCKET};
   HANDLE FSocketEvent{};

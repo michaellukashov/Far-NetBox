@@ -2237,9 +2237,7 @@ void TSecureShell::KeepAlive()
   }
 }
 
-constexpr uint32_t minPacketSize = 0;
-
-uint32_t TSecureShell::MinPacketSize() const
+uint32_t TSecureShell::MaxPacketSize() const
 {
   if (!FSessionInfoValid)
   {
@@ -2291,13 +2289,13 @@ bool TSecureShell::HaveAcceptNewHostKeyPolicy() const
 
 THierarchicalStorage * TSecureShell::GetHostKeyStorage()
 {
-  if (!Configuration->Persistent && HaveAcceptNewHostKeyPolicy())
+  if (!GetConfiguration()->Persistent && HaveAcceptNewHostKeyPolicy())
   {
-    return Configuration->CreateConfigRegistryStorage();
+    return GetConfiguration()->CreateConfigRegistryStorage();
   }
   else
   {
-    return Configuration->CreateConfigStorage();
+    return GetConfiguration()->CreateConfigStorage();
   }
 }
 
@@ -2449,7 +2447,7 @@ bool TSecureShell::VerifyCachedHostKey(
     }
     else
     {
-      if (Configuration->ActualLogProtocol >= 1)
+      if (GetConfiguration()->ActualLogProtocol >= 1)
       {
         UnicodeString FormattedKey = Fingerprint ? StoredKey : FormatKeyStr(StoredKey);
         LogEvent(FORMAT(L"Host key does not match cached key %s", (FormattedKey)));
@@ -2592,7 +2590,7 @@ void TSecureShell::VerifyHostKey(
       {
         throw Exception(UnicodeString());
       }
-      Configuration->Usage->Inc(L"HostKeyNewAccepted");
+      GetConfiguration()->Usage->Inc(L"HostKeyNewAccepted");
       LogEvent(FORMAT(L"Warning: Stored new host key to %s - This should occur only on the first connection", (StorageSource)));
       Result = true;
     }
@@ -2616,7 +2614,7 @@ void TSecureShell::VerifyHostKey(
     }
     else
     {
-      // We should not offer caching if !Configuration->Persistent,
+      // We should not offer caching if !GetConfiguration()->Persistent,
       // but as scripting mode is handled earlier and in GUI it hardly happens,
       // it's a small issue.
       TClipboardHandler ClipboardHandler;
@@ -2665,7 +2663,7 @@ void TSecureShell::VerifyHostKey(
       UnicodeString KeyTypeHuman = GetKeyTypeHuman(KeyType);
       UnicodeString KeyDetails = FMTLOAD(KEY_DETAILS, SignKeyType, SHA256, MD5);
       UnicodeString Message = FMTLOAD((Unknown ? UNKNOWN_KEY4 : DIFFERENT_KEY5), KeyTypeHuman, KeyDetails);
-      if (Configuration->Scripting)
+      if (GetConfiguration()->Scripting)
       {
         AddToList(Message, LoadStr(SCRIPTING_USE_HOSTKEY), L"\n");
       }
@@ -2696,7 +2694,7 @@ void TSecureShell::VerifyHostKey(
 
     if (!Verified)
     {
-      __removed Configuration->Usage->Inc("HostNotVerified");
+      __removed GetConfiguration()->Usage->Inc("HostNotVerified");
 
       UnicodeString Message;
       if (ConfiguredKeyNotMatch)
@@ -2813,78 +2811,78 @@ void TSecureShell::CollectUsage()
 #if 0
   if (FCollectPrivateKeyUsage)
   {
-    Configuration->Usage->Inc("OpenedSessionsPrivateKey2");
+    GetConfiguration()->Usage->Inc("OpenedSessionsPrivateKey2");
   }
 
-  Configuration->Usage->Inc("OpenedSessionsSSH2");
+  GetConfiguration()->Usage->Inc("OpenedSessionsSSH2");
 
   if (SshImplementation == sshiOpenSSH)
   {
-    Configuration->Usage->Inc("OpenedSessionsSSHOpenSSH");
+    GetConfiguration()->Usage->Inc("OpenedSessionsSSHOpenSSH");
   }
   else if (SshImplementation == sshiProFTPD)
   {
-    Configuration->Usage->Inc("OpenedSessionsSSHProFTPD");
+    GetConfiguration()->Usage->Inc("OpenedSessionsSSHProFTPD");
   }
   else if (SshImplementation == sshiBitvise)
   {
-    Configuration->Usage->Inc("OpenedSessionsSSHBitvise");
+    GetConfiguration()->Usage->Inc("OpenedSessionsSSHBitvise");
   }
   else if (SshImplementation == sshiTitan)
   {
-    Configuration->Usage->Inc("OpenedSessionsSSHTitan");
+    GetConfiguration()->Usage->Inc("OpenedSessionsSSHTitan");
   }
   else if (SshImplementation == sshiOpenVMS)
   {
-    Configuration->Usage->Inc("OpenedSessionsSSHOpenVMS");
+    GetConfiguration()->Usage->Inc("OpenedSessionsSSHOpenVMS");
   }
   else if (ContainsText(FSessionInfo.SshImplementation, "Serv-U"))
   {
-    Configuration->Usage->Inc("OpenedSessionsSSHServU");
+    GetConfiguration()->Usage->Inc("OpenedSessionsSSHServU");
   }
   else if (SshImplementation == sshiCerberus)
   {
     // Ntb, Cerberus can also be detected using vendor-id extension
     // Cerberus FTP Server 7.0.5.3 (70005003) by Cerberus, LLC
-    Configuration->Usage->Inc("OpenedSessionsSSHCerberus");
+    GetConfiguration()->Usage->Inc("OpenedSessionsSSHCerberus");
   }
   else if (ContainsText(FSessionInfo.SshImplementation, "WS_FTP"))
   {
-    Configuration->Usage->Inc("OpenedSessionsSSHWSFTP");
+    GetConfiguration()->Usage->Inc("OpenedSessionsSSHWSFTP");
   }
   // SSH-2.0-1.36_sshlib GlobalSCAPE
   else if (ContainsText(FSessionInfo.SshImplementation, "GlobalSCAPE"))
   {
-    Configuration->Usage->Inc("OpenedSessionsSSHGlobalScape");
+    GetConfiguration()->Usage->Inc("OpenedSessionsSSHGlobalScape");
   }
   // SSH-2.0-CompleteFTP-8.1.3
   else if (ContainsText(FSessionInfo.SshImplementation, "CompleteFTP"))
   {
-    Configuration->Usage->Inc("OpenedSessionsSSHComplete");
+    GetConfiguration()->Usage->Inc("OpenedSessionsSSHComplete");
   }
   // SSH-2.0-CoreFTP-0.3.3
   else if (ContainsText(FSessionInfo.SshImplementation, "CoreFTP"))
   {
-    Configuration->Usage->Inc("OpenedSessionsSSHCore");
+    GetConfiguration()->Usage->Inc("OpenedSessionsSSHCore");
   }
   // SSH-2.0-SSHD-CORE-0.11.0 (value is configurable, this is a default)
   // (Apache Mina SSHD, e.g. on brickftp.com)
   else if (ContainsText(FSessionInfo.SshImplementation, "SSHD-CORE"))
   {
-    Configuration->Usage->Inc("OpenedSessionsSSHApache");
+    GetConfiguration()->Usage->Inc("OpenedSessionsSSHApache");
   }
   // SSH-2.0-Syncplify_Me_Server
   else if (ContainsText(FSessionInfo.SshImplementation, "Syncplify"))
   {
-    Configuration->Usage->Inc("OpenedSessionsSSHSyncplify");
+    Usage->Inc("OpenedSessionsSSHSyncplify");
   }
   else if (ContainsText(FSessionInfo.SshImplementation, "zFTPServer"))
   {
-    Configuration->Usage->Inc("OpenedSessionsSSHzFTP");
+    Usage->Inc("OpenedSessionsSSHzFTP");
   }
   else
   {
-    Configuration->Usage->Inc("OpenedSessionsSSHOther");
+    Usage->Inc("OpenedSessionsSSHOther");
   }
 #endif // #if 0
 }
@@ -2911,3 +2909,16 @@ void TSecureShell::SetActive(bool Value)
     }
   }
 }
+
+/*constexpr uint32_t minPacketSize = 0;
+
+uint32_t TSecureShell::MinPacketSize() const
+{
+  if (!FSessionInfoValid)
+  {
+    UpdateSessionInfo();
+  }
+
+  return winscp_query(FBackendHandle, WINSCP_QUERY_REMMAXPKT);
+}*/
+
