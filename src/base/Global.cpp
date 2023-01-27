@@ -332,4 +332,10 @@ void DoAssert(const wchar_t *Message, const wchar_t *Filename, uint32_t LineNumb
   _wassert(Message, Filename, static_cast<unsigned int>(LineNumber));
 }
 
+NB_CORE_EXPORT extern "C" void DoAssertC(char *Message, char *Filename, int LineNumber)
+{
+  DoTrace(UnicodeString(Filename).c_str(), L"assert", LineNumber, UnicodeString(Message).c_str());
+  _wassert(UnicodeString(Message).c_str(), UnicodeString(Filename).c_str(), static_cast<unsigned int>(LineNumber));
+}
+
 #endif // _DEBUG
