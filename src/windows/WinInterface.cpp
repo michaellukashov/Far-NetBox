@@ -841,6 +841,12 @@ bool ProcessGUI(bool Force)
 #endif // #if 0
   return Result;
 }
+
+void SystemRequired()
+{
+
+}
+
 #if 0
 
 void CopyParamListButton(TButton * Button)
