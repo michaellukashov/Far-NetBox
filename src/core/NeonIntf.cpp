@@ -118,7 +118,7 @@ void InitNeonSession(ne_session *Session, TProxyMethod ProxyMethod, const Unicod
 
   ne_redirect_register(Session);
   ne_set_useragent(Session, StrToNeon(FORMAT("%s/%s", GetAppNameString(), GetConfiguration()->GetVersion())));
-  UnicodeString CertificateStorage = Configuration->GetCertificateStorageExpanded();
+  UnicodeString CertificateStorage = GetConfiguration()->GetCertificateStorageExpanded();
   if (!CertificateStorage.IsEmpty())
   {
     ne_ssl_set_certificates_storage(Session, StrToNeon(CertificateStorage));
