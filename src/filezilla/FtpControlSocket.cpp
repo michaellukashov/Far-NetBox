@@ -1576,7 +1576,7 @@ BOOL CFtpControlSocket::Send(CString str)
   return TRUE;
 }
 
-int CFtpControlSocket::GetReplyCode()
+int CFtpControlSocket::TryGetReplyCode()
 {
   if (m_RecvBuffer.empty())
     return 0;
@@ -1595,6 +1595,18 @@ int CFtpControlSocket::GetReplyCode()
   {
     return str[0]-'0';
   }
+}
+
+int CFtpControlSocket::GetReplyCode()
+{
+  int Result = TryGetReplyCode();
+  if (Result < 0)
+  {
+    UnicodeString Error = FMTLOAD(FTP_MALFORMED_RESPONSE, (UnicodeString()));
+    LogMessageRaw(FZ_LOG_WARNING, Error.c_str());
+    Result = 0;
+  }
+  return Result;
 }
 
 void CFtpControlSocket::DoClose(int nError /*=0*/)
