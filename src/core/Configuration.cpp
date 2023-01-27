@@ -583,7 +583,7 @@ void TConfiguration::CopyAllStringsInSubKey(
 {
   if (CopySubKey(Source, Target, Name))
   {
-    std::unique_ptr<TStrings> Names(new TStringList());
+    std::unique_ptr<TStrings> Names(std::make_unique<TStringList>());
     Source->GetValueNames(Names.get());
 
     for (int32_t Index = 0; Index < Names->Count; Index++)
@@ -604,7 +604,7 @@ void TConfiguration::CopyData(THierarchicalStorage * Source,
   {
     if (CopySubKey(Source, Target, CDCacheKey))
     {
-      std::unique_ptr<TStrings> Names(new TStringList());
+      std::unique_ptr<TStrings> Names(std::make_unique<TStringList>());
       Source->GetValueNames(Names.get());
 
       for (int32_t Index = 0; Index < Names->GetCount(); ++Index)
@@ -1598,7 +1598,7 @@ TStoredSessionList * TConfiguration::SelectKnownHostsSessionsForImport(
     if (::SysUtulsFileExists(ApiPath(KnownHostsFile)))
     {
       std::unique_ptr<TStrings> Lines(std::make_unique<TStringList>());
-      __removed LoadScriptFromFile(KnownHostsFile, Lines.get(), true);
+      // LoadScriptFromFile(KnownHostsFile, Lines.get(), true);
       ImportSessionList->ImportFromKnownHosts(Lines.get());
     }
     else
@@ -1641,8 +1641,8 @@ TStoredSessionList * TConfiguration::SelectOpensshSessionsForImport(
   {
     if (::SysUtulsFileExists(ApiPath(ConfigFile)))
     {
-      std::unique_ptr<TStrings> Lines(new TStringList());
-      LoadScriptFromFile(ConfigFile, Lines.get(), true);
+      std::unique_ptr<TStrings> Lines(std::make_unique<TStringList>());
+      // LoadScriptFromFile(ConfigFile, Lines.get(), true);
       ImportSessionList->ImportFromOpenssh(Lines.get());
 
       if (ImportSessionList->Count > 0)
@@ -1716,7 +1716,7 @@ UnicodeString TConfiguration::GetDirectoryStatisticsCacheKey(
 
 THierarchicalStorage * TConfiguration::OpenDirectoryStatisticsCache(bool CanCreate)
 {
-  std::unique_ptr<THierarchicalStorage> Storage(Configuration->CreateConfigStorage());
+  std::unique_ptr<THierarchicalStorage> Storage(GetConfiguration()->CreateConfigStorage());
   Storage->AccessMode = CanCreate ? smReadWrite : smRead;
   if (!Storage->OpenSubKey(DirectoryStatisticsCacheKey, CanCreate))
   {
@@ -1729,7 +1729,7 @@ TStrings * TConfiguration::LoadDirectoryStatisticsCache(
   const UnicodeString & SessionKey, const UnicodeString & Path, const TCopyParamType & CopyParam)
 {
   std::unique_ptr<THierarchicalStorage> Storage(OpenDirectoryStatisticsCache(false));
-  std::unique_ptr<TStringList> Result(new TStringList());
+  std::unique_ptr<TStringList> Result(std::make_unique<TStringList>());
   if (Storage.get() != nullptr)
   {
     UnicodeString Key = GetDirectoryStatisticsCacheKey(SessionKey, Path, CopyParam);

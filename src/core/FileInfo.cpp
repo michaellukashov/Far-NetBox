@@ -202,7 +202,7 @@ uint32_t GetTranslationCount(void *FileInfo)
 }
 
 // Return i-th translation in the file version info translation list
-TTranslation GetTranslation(void *FileInfo, int32_t I)
+TTranslation GetTranslation(void *FileInfo, uint32_t I)
 {
   PTranslations P = nullptr;
   UINT Len;

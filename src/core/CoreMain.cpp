@@ -260,7 +260,7 @@ void CoreUpdateFinalStaticUsage()
 {
   if (!AnySession)
   {
-    Configuration->Usage->Inc(L"RunsWithoutSession");
+    GetConfiguration()->Usage->Inc(L"RunsWithoutSession");
   }
 }
 
