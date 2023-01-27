@@ -1628,6 +1628,7 @@ set(NetBox_SOURCES
   FarInterface.cpp
   XmlStorage.cpp
   FarPluginStrings.cpp
+  MessageDlg.cpp
 )
 
 set(NetBox_HEADERS
