@@ -14,8 +14,7 @@ static ssh_cipher *aes_select(const ssh_cipheralg *alg)
     const ssh_cipheralg *const *real_algs = (const ssh_cipheralg **)alg->extra;
 
     { // WINSCP
-    size_t i;
-    for (i = 0; real_algs[i]; i++) {
+    for (size_t i = 0; real_algs[i]; i++) {
         const ssh_cipheralg *alg = real_algs[i];
         const struct aes_extra *alg_extra =
             (const struct aes_extra *)alg->extra;
@@ -52,17 +51,14 @@ static ssh_cipher *aes_select(const ssh_cipheralg *alg)
     };                                                                  \
     const ssh_cipheralg ssh_aes ## bits ## _ ## mode_c = {              \
         /* WINSCP */ \
-        /*.new =*/ aes_select,                                              \
-        NULL, NULL, NULL, NULL, NULL, NULL, NULL, \
-        /*.ssh2_id =*/ "aes" #bits "-" mode_protocol,                       \
-        /*.blksize =*/ 16,                                                  \
-        /*.real_keybits =*/ bits,                                           \
-        /*.padded_keybytes =*/ bits/8,                                      \
-        0, \
-        /*.text_name =*/ "AES-" #bits " " mode_display                      \
+        .new = aes_select,                                              \
+        .ssh2_id = "aes" #bits "-" mode_protocol,                       \
+        .blksize = 16,                                                  \
+        .real_keybits = bits,                                           \
+        .padded_keybytes = bits/8,                                      \
+        .text_name = "AES-" #bits " " mode_display                      \
         " (dummy selector vtable)",                                     \
-        NULL, \
-        /*.extra =*/ ssh_aes ## bits ## _ ## mode_c ## _impls,              \
+        .extra = ssh_aes ## bits ## _ ## mode_c ## _impls,              \
     }
 
 AES_SELECTOR_VTABLE(cbc, "cbc", "CBC", 128);
