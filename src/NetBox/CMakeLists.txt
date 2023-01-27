@@ -199,6 +199,40 @@ set(NETBOX_DLL_LINK_FLAGS_RELEASE "${NETBOX_DLL_LINK_FLAGS}")
 set(NETBOX_DLL_LINK_FLAGS_DEBUG "${NETBOX_DLL_LINK_FLAGS}")
 endif()
 
+if(MSVC)
+
+#find_program(NASM_EXECUTABLE nasm)
+# message("nasm: ${NASM_EXECUTABLE}")
+set(NASM_EXECUTABLE ${CMAKE_CURRENT_SOURCE_DIR}/../../buildtools/tools/nasm.exe)
+
+macro(compile_asm_files obj_files asm_files)
+  set(${obj_files} )
+  foreach(_asm_file ${asm_files})
+#    message("asm_file: ${_asm_file}")
+    set(_asm_source ${CMAKE_CURRENT_SOURCE_DIR}/${_asm_file})
+    get_filename_component(_asm_source_fn ${_asm_source} NAME)
+#    message("_asm_source_fn: ${_asm_source_fn}")
+    # file(TO_NATIVE_PATH "${CMAKE_CURRENT_BINARY_DIR}/${_asm_source_fn}" _asm_file_name)
+    # message("_asm_file_name: ${_asm_file_name}")
+    set(_asm_object ${CMAKE_CURRENT_BINARY_DIR}/${_asm_source_fn}.obj)
+    add_custom_command(
+      OUTPUT ${_asm_object}
+      COMMAND ${NASM_EXECUTABLE}
+      ARGS -f win32 -o ${_asm_object} ${_asm_source}
+      DEPENDS ${_asm_source}
+    )
+    #-d__omf__
+    set(${obj_files} ${${obj_files}} ${_asm_object})
+  endforeach(_asm_file)
+endmacro()
+
+set(NETBOX_SOURCES ${NETBOX_SOURCES}
+  vc_crt_fix_impl.cpp
+  ${ASM_OBJECTS}
+)
+
+endif(MSVC)
+
 #-------------------------------------------------------------------------------
 #openssl
 
@@ -299,6 +333,25 @@ target_include_directories(ssleay32 SYSTEM BEFORE PRIVATE
   ../../libs/openssl-1.1.1/crypto/ec/curve448
   ../../libs/openssl-1.1.1
 )
+
+set(libeay32_asm_files
+  ../../libs/openssl-1.1.1/crypto/des/asm/d_win32.asm
+  ../../libs/openssl-1.1.1/crypto/des/asm/y_win32.asm
+)
+
+set(libeay32_obj_files )
+compile_asm_files(libeay32_obj_files
+  ../../libs/openssl-1.1.1/crypto/des/asm/d_win32.asm
+  ../../libs/openssl-1.1.1/crypto/des/asm/y_win32.asm
+#  ../../libs/openssl-1.1.1/crypto/des/asm/des_586.asm
+#  ../../libs/openssl-1.1.1/crypto/des/asm/crypt586.asm
+#  ../../libs/openssl-1.1.1/crypto/bf/asm/bf_586.asm
+#  ../../libs/openssl-1.1.1/crypto/cast/asm/cast_586.asm
+#  ../../libs/openssl-1.1.1/crypto/md5/asm/md5_586.asm
+#  ../../libs/openssl-1.1.1/crypto/sha/asm/sha1_586.asm
+)
+message("libeay32_obj_files: ${libeay32_obj_files}")
+
 
 add_library(libeay32 STATIC
   ../../libs/openssl-1.1.1/crypto/cryptlib.c
@@ -847,12 +900,8 @@ add_library(libeay32 STATIC
   ../../libs/openssl-1.1.1/crypto/sm2/sm2_crypt.c
   ../../libs/openssl-1.1.1/crypto/sm2/sm2_sign.c
   ../../libs/openssl-1.1.1/crypto/chacha/chacha_enc.c
-  ../../libs/openssl-1.1.1/crypto/des/asm/des_586.asm
-  ../../libs/openssl-1.1.1/crypto/des/asm/crypt586.asm
-  ../../libs/openssl-1.1.1/crypto/bf/asm/bf_586.asm
-  ../../libs/openssl-1.1.1/crypto/cast/asm/cast_586.asm
-  ../../libs/openssl-1.1.1/crypto/md5/asm/md5_586.asm
-  ../../libs/openssl-1.1.1/crypto/sha/asm/sha1_586.asm
+#  ${libeay32_obj_files}
+#  ../../libs/openssl-1.1.1/crypto/des/des.c
 )
 
 target_compile_options(libeay32 PRIVATE
