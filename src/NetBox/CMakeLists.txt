@@ -1114,6 +1114,26 @@ target_include_directories(putty PRIVATE
   ../../libs/putty/windows
 )
 
+#puttyvs
+
+add_library(puttyvs STATIC
+  ../../libs/putty/crypto/aes-ni.c
+  ../../libs/putty/crypto/aes-sw.c
+  ../../libs/putty/crypto/argon2.c
+  ../../libs/putty/crypto/sha256-sw.c
+)
+
+target_include_directories(puttyvs PRIVATE
+  ../../libs/putty
+  ../../libs/putty/windows
+)
+
+target_compile_options(puttyvs PRIVATE
+  ${PUTTY_COMPILE_FLAGS}
+  -Dssize_t=size_t
+  -DWINSCP_VS
+)
+
 #-------------------------------------------------------------------------------
 #tinyxml2
 
@@ -1795,6 +1815,7 @@ endif(MSVC)
 
 set(NETBOX_LIBRARIES
   putty
+  puttyvs
   atlmfc
   zlib
   tinyxml2
