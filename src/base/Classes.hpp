@@ -456,22 +456,22 @@ NB_CORE_EXPORT int64_t SecondsBetween(const TDateTime &ANow, const TDateTime &AT
 class TTimeSpan
 {
 private:
-  int64_t GetTicks() const;
-  int32_t GetDays() const;
-  int32_t GetHours() const;
-  int32_t GetMinutes() const;
-  int32_t GetSeconds() const;
-  int32_t GetMilliseconds() const;
-  double GetTotalDays() const;
-  double GetTotalHours() const;
-  double GetTotalMinutes() const;
-  double GetTotalSeconds() const;
-  double GetTotalMilliseconds() const;
+  int64_t GetTicks() const { return FTicks; }
+  int32_t GetDays() const { return FTicks / TicksPerDay; }
+  int32_t GetHours() const { return (FTicks / TicksPerHour) % HoursPerDay; }
+  int32_t GetMinutes() const { return (FTicks / TicksPerMinute) % MinsPerHour; }
+  int32_t GetSeconds() const { return (FTicks / TicksPerSecond) % SecsPerMin; }
+  int32_t GetMilliseconds() const { return (FTicks / TicksPerMillisecond) % MillisPerSecond; }
+  double GetTotalDays() const { return (double)FTicks / TicksPerDay; }
+  double GetTotalHours() const { return (double)FTicks / TicksPerHour; }
+  double GetTotalMinutes() const { return (double)FTicks / TicksPerMinute; }
+  double GetTotalSeconds() const { return (double)FTicks / TicksPerSecond; }
+  double GetTotalMilliseconds() const { return (double)FTicks / TicksPerMillisecond; }
   static TTimeSpan GetScaledInterval(double Value, int32_t Scale);
 private:
-  static TTimeSpan FMinValue;
-  static TTimeSpan FMaxValue;
-  static TTimeSpan FZero;
+  static const int64_t FMinValue = -9223372036854775808;
+  static const int64_t FMaxValue = 0x7FFFFFFFFFFFFFFF;
+  static const int64_t FZero = 0;
 private:
   double MillisecondsPerTick = 0.0001;
   double SecondsPerTick = 1e-07;
@@ -487,13 +487,13 @@ private:
   int64_t MaxMilliseconds = 922337203685477;
   int64_t MinMilliseconds = -922337203685477;
 public:
-  int32_t TicksPerMillisecond = 10000;
-  int64_t TicksPerSecond = 1000 * int64_t (TicksPerMillisecond);
-  int64_t TicksPerMinute = 60 * int64_t (TicksPerSecond);
-  int64_t TicksPerHour = 60 * int64_t (TicksPerMinute);
-  int64_t TicksPerDay = 24 * TicksPerHour;
+  static const int32_t TicksPerMillisecond = 10000;
+  static const int64_t TicksPerSecond = 1000 * int64_t(TicksPerMillisecond);
+  static const int64_t TicksPerMinute = 60 * int64_t(TicksPerSecond);
+  static const int64_t TicksPerHour = 60 * int64_t(TicksPerMinute);
+  static const int64_t TicksPerDay = 24 * TicksPerHour;
 public:
-  explicit TTimeSpan(int64_t  ATicks);
+  explicit TTimeSpan(int64_t ATicks);
   explicit TTimeSpan(int32_t Hours, int32_t Minutes, int32_t Seconds);
   explicit TTimeSpan(int32_t Days, int32_t Hours, int32_t Minutes, int32_t Seconds);
   explicit TTimeSpan(int32_t Days, int32_t Hours, int32_t Minutes, int32_t Seconds, int32_t Milliseconds);
@@ -522,7 +522,7 @@ public:
   static bool GreaterThan(const TTimeSpan Left, const TTimeSpan Right);
   static bool GreaterThanOrEqual(const TTimeSpan Left, const TTimeSpan Right);
   static bool LessThan(const TTimeSpan Left, const TTimeSpan Right);
-  static bool LessThanOrEqual(const TTimeSpan Left, const TTimeSpan Right);
+  static bool LessThanOrEqual(const TTimeSpan Left, const TTimeSpan Right) { return Left.FTicks <= Right.FTicks; }
   bool operator==(const TTimeSpan &rhs) const { return TTimeSpan::Equal(*this, rhs); }
   bool operator!=(const TTimeSpan &rhs) const { return TTimeSpan::NotEqual(*this, rhs); }
   bool operator>(const TTimeSpan &rhs) const { return TTimeSpan::GreaterThan(*this, rhs); }
@@ -544,9 +544,9 @@ public:
   ROProperty<double> TotalMinutes{nb::bind(&TTimeSpan::GetTotalMinutes, this)};
   ROProperty<double> TotalSeconds{nb::bind(&TTimeSpan::GetTotalSeconds, this)};
   ROProperty<double> TotalMilliseconds{nb::bind(&TTimeSpan::GetTotalMilliseconds, this)};
-  static TTimeSpan GetMinValue();
-  static TTimeSpan GetMaxValue();
-  static TTimeSpan GetZero();
+  static TTimeSpan GetMinValue() { return TTimeSpan(FMinValue); }
+  static TTimeSpan GetMaxValue() { return TTimeSpan(FMaxValue); }
+  static TTimeSpan GetZero() { return TTimeSpan(FZero); }
 private:
   int64_t FTicks{0};
 };

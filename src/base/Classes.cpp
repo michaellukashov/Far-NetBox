@@ -2096,3 +2096,14 @@ void TGlobals::InitPlatformId()
     libmemcpy_memcpy(Win32CSDVersion, OSVersionInfo.szCSDVersion, sizeof(OSVersionInfo.szCSDVersion));
   }
 }
+
+TTimeSpan::TTimeSpan(int64_t ATicks) : FTicks(ATicks)
+{
+}
+
+TTimeSpan TTimeSpan::FromSeconds(double Value)
+{
+  TTimeSpan Result(0);
+  Result.FTicks = round(Value * TicksPerSecond);
+  return Result;
+}
