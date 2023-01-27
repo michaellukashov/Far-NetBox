@@ -590,7 +590,7 @@ void RethrowException(Exception *E)
   }
 }
 
-UnicodeString AddContextToExceptionMessage(const Exception & E, const UnicodeString & NewContext)
+UnicodeString AddContextToExceptionMessage(const Exception & E, const UnicodeString NewContext)
 {
   UnicodeString MainMessage;
   UnicodeString Context = E.Message;

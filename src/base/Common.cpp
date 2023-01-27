@@ -1092,7 +1092,7 @@ bool SameChecksum(const UnicodeString & AChecksum1, const UnicodeString & ACheck
   return Result;
 }
 
-UnicodeString GetSystemTemporaryDirectory()
+UnicodeString SystemTemporaryDirectory()
 {
   UnicodeString TempDir;
   TempDir.SetLength(nb::NB_MAX_PATH);
@@ -1496,7 +1496,7 @@ UnicodeString GetCanonicalPath(const UnicodeString & Path)
   return Result;
 }
 
-bool IsPathToSameFile(const UnicodeString & Path1, const UnicodeString & Path2)
+bool IsPathToSameFile(const UnicodeString Path1, const UnicodeString Path2)
 {
   UnicodeString CanonicalPath1 = GetCanonicalPath(Path1);
   UnicodeString CanonicalPath2 = GetCanonicalPath(Path2);
@@ -1511,8 +1511,8 @@ bool SamePaths(const UnicodeString Path1, const UnicodeString Path2)
   return AnsiSameText(IncludeTrailingBackslash(Path1), IncludeTrailingBackslash(Path2));
 }
 
-int CompareLogicalText(
-  const UnicodeString & S1, const UnicodeString & S2, bool NaturalOrderNumericalSorting)
+int32_t CompareLogicalText(
+  const UnicodeString S1, const UnicodeString S2, bool NaturalOrderNumericalSorting)
 {
   // Keep in sync with CompareLogicalTextPas
 
@@ -1551,7 +1551,7 @@ int CompareNumber(__int64 Value1, __int64 Value2)
   return Result;
 }
 
-bool ContainsTextSemiCaseSensitive(const UnicodeString & Text, const UnicodeString & SubText)
+bool ContainsTextSemiCaseSensitive(const UnicodeString Text, const UnicodeString SubText)
 {
   bool Result;
   if (AnsiLowerCase(SubText) == SubText)
@@ -3937,7 +3937,7 @@ int32_t IndexStr(const UnicodeString & AText, const UnicodeString (&AValues)[N])
   return -1;
 }
 
-int32_t ParseShortEngMonthName(const UnicodeString & MonthStr)
+int32_t ParseShortEngMonthName(const UnicodeString MonthStr)
 {
   TFormatSettings FormatSettings = GetEngFormatSettings();
   return IndexStr<_countof(FormatSettings.ShortMonthNames)>(MonthStr, FormatSettings.ShortMonthNames) + 1;
@@ -4195,7 +4195,7 @@ void ParseCertificate(const UnicodeString Path,
   }
 }
 
-void CheckCertificate(const UnicodeString & Path)
+void CheckCertificate(const UnicodeString Path)
 {
   X509 * Certificate;
   EVP_PKEY * PrivateKey;
