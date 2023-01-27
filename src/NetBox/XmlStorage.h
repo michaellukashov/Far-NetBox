@@ -44,8 +44,9 @@ protected:
 
   UnicodeString GetSource() const override;
   UnicodeString GetSource();
+
 protected:
-  int32_t GetFailed() const;
+  int32_t GetFailed();
   void SetFailed(int32_t Value) { FFailed = Value; }
 
 private:
