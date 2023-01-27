@@ -2243,3 +2243,7 @@ void TWebDAVFileSystem::ClearCaches()
   // noop
 }
 
+void TWebDAVFileSystem::FileTransferProgress(int64_t /*TransferSize*/, int64_t /*Bytes*/)
+{
+  TODO("implement");
+}
