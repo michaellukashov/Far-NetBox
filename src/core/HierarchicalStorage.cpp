@@ -73,7 +73,7 @@ UnicodeString UnMungeStr(const UnicodeString Str)
   return Result;
 }
 
-AnsiString PuttyStr(const UnicodeString & Str)
+AnsiString PuttyStr(const UnicodeString Str)
 {
   return AnsiString(Str);
 }
@@ -88,7 +88,7 @@ UnicodeString PuttyUnMungeStr(UnicodeString Str)
   return UnMungeStr(Str);
 }
 
-UnicodeString MungeIniName(const UnicodeString & Str)
+UnicodeString MungeIniName(const UnicodeString Str)
 {
   int P = Str.Pos(L"=");
   // make this fast for now
@@ -102,7 +102,7 @@ UnicodeString MungeIniName(const UnicodeString & Str)
   }
 }
 
-UnicodeString UnMungeIniName(const UnicodeString & Str)
+UnicodeString UnMungeIniName(const UnicodeString Str)
 {
   int P = Str.Pos(L"%3D");
   // make this fast for now
@@ -116,16 +116,6 @@ UnicodeString UnMungeIniName(const UnicodeString & Str)
   }
 }
 
-UnicodeString UnMungeIniName(UnicodeString Str)
-{
-  int32_t P = Str.Pos(L"%3D");
-  // make this fast for now
-  if (P > 0)
-  {
-    return ReplaceStr(Str, L"%3D", L"=");
-  }
-  return Str;
-}
 template<typename T>
 void AddIntMapping(TIntMapping & Mapping, const wchar_t * Name, const T & Value)
 {
