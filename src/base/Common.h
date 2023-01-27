@@ -141,7 +141,7 @@ NB_CORE_EXPORT bool CutToken(UnicodeString &AStr, UnicodeString &AToken,
   UnicodeString *ARawToken = nullptr, UnicodeString *ASeparator = nullptr);
 NB_CORE_EXPORT bool CutTokenEx(UnicodeString &Str, UnicodeString &Token,
   UnicodeString *RawToken = nullptr, UnicodeString *Separator = nullptr);
-NB_CORE_EXPORT void AddToList(const UnicodeString &List, const UnicodeString Value, const UnicodeString Delimiter);
+NB_CORE_EXPORT void AddToList(UnicodeString &List, const UnicodeString Value, const UnicodeString Delimiter);
 bool IsWinVista();
 bool IsWin7();
 bool IsWin8();
