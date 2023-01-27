@@ -1174,8 +1174,8 @@ void TSessionLog::DoAddStartupInfo(TAddLogEntryEvent AddLogEntry, TConfiguration
   }) end_try__finally
 
   wchar_t UserName[UNLEN + 1];
-  unsigned long UserNameSize = LENOF(UserName);
-  if (DebugAlwaysFalse(!GetUserNameEx(NameSamCompatible, UserName, &UserNameSize)))
+  ULONG UserNameSize = LENOF(UserName);
+  if (DebugAlwaysFalse(!::GetUserNameEx(NameSamCompatible, UserName, &UserNameSize)))
   {
     wcscpy(UserName, L"<Failed to retrieve username>");
   }
@@ -1493,10 +1493,10 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
 
     if ((Data->FSProtocol == fsFTP) && !Data->FFtpPasvMode)
     {
-      if (!Configuration->FExternalIpAddress.IsEmpty() || Configuration->HasLocalPortNumberLimits())
+      if (!FConfiguration->FExternalIpAddress.IsEmpty() || FConfiguration->HasLocalPortNumberLimits())
       {
         AddSeparator();
-        ADF(L"FTP active mode interface: %s:%d-%d", DefaultStr(Configuration->FExternalIpAddress, L"<system address>"), Configuration->FLocalPortNumberMin, Configuration->FLocalPortNumberMax);
+        ADF(L"FTP active mode interface: %s:%d-%d", DefaultStr(FConfiguration->FExternalIpAddress, L"<system address>"), FConfiguration->FLocalPortNumberMin, FConfiguration->FLocalPortNumberMax);
       }
     }
     AddSeparator();
