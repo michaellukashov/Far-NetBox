@@ -44,7 +44,7 @@ void PuttyInitialize()
 
   InitializeCriticalSection(&putty_section);
 
-  HadRandomSeed = SysUtulsFileExists(ApiPath(Configuration->GetRandomSeedFileName()));
+  HadRandomSeed = SysUtulsFileExists(ApiPath(GetConfiguration()->GetRandomSeedFileName()));
   // make sure random generator is initialised, so random_save_seed()
   // in destructor can proceed
   random_ref();
@@ -74,7 +74,7 @@ void PuttyFinalize()
   // random_ref in PuttyInitialize creates the seed file. Delete it, if we didn't want to create it.
   if (DeleteRandomSeedOnExit())
   {
-    SysUtulsRemoveFile(ApiPath(Configuration->GetRandomSeedFileName()));
+    SysUtulsRemoveFile(ApiPath(GetConfiguration()->GetRandomSeedFileName()));
   }
 
   sk_cleanup();
@@ -94,7 +94,7 @@ bool RandomSeedExists()
 {
   return
     !DeleteRandomSeedOnExit() &&
-    SysUtulsFileExists(ApiPath(Configuration->GetRandomSeedFileName()));
+    SysUtulsFileExists(ApiPath(GetConfiguration()->GetRandomSeedFileName()));
 }
 
 TSecureShell * GetSeatSecureShell(Seat * seat)
@@ -543,7 +543,7 @@ long reg_query_winscp_value_ex(HKEY Key, const char * ValueName, unsigned long *
 
   DebugAssert(PuttyRegistryMode == prmRedirect);
   long R;
-  DebugAssert(Configuration != nullptr);
+  DebugAssert(GetConfiguration() != nullptr);
 
   THierarchicalStorage * Storage = reinterpret_cast<THierarchicalStorage *>(Key);
   AnsiString Value;
@@ -551,7 +551,7 @@ long reg_query_winscp_value_ex(HKEY Key, const char * ValueName, unsigned long *
   {
     if (UnicodeString(ValueName) == L"RandSeedFile")
     {
-      Value = AnsiString(Configuration->GetRandomSeedFileName());
+      Value = AnsiString(GetConfiguration()->GetRandomSeedFileName());
       R = ERROR_SUCCESS;
     }
     else
@@ -628,7 +628,7 @@ long reg_close_winscp_key(HKEY Key)
   return ERROR_SUCCESS;
 }
 
-TKeyType KeyType(UnicodeString FileName)
+TKeyType GetKeyType(const UnicodeString FileName)
 {
   DebugAssert(ktUnopenable == SSH_KEYTYPE_UNOPENABLE);
   DebugAssert(ktSSHCom == SSH_KEYTYPE_SSHCOM);
@@ -640,7 +640,7 @@ TKeyType KeyType(UnicodeString FileName)
   return Result;
 }
 
-bool IsKeyEncrypted(TKeyType KeyType, const UnicodeString & FileName, UnicodeString & Comment)
+bool IsKeyEncrypted(TKeyType KeyType, const UnicodeString FileName, UnicodeString &Comment)
 {
   UTF8String UtfFileName = UTF8String(FileName);
   bool Result;
@@ -734,7 +734,7 @@ TPrivateKey * LoadKey(TKeyType KeyType, const UnicodeString & FileName, const Un
   return reinterpret_cast<TPrivateKey *>(Ssh2Key);
 }
 
-TPrivateKey * LoadKey(TKeyType KeyType, const UnicodeString & FileName, const UnicodeString & Passphrase)
+TPrivateKey * LoadKey(TKeyType KeyType, const UnicodeString FileName, const UnicodeString Passphrase)
 {
   UnicodeString Error;
   TPrivateKey * Result = LoadKey(KeyType, FileName, Passphrase, Error);
@@ -771,8 +771,8 @@ void ChangeKeyComment(TPrivateKey * PrivateKey, const UnicodeString & Comment)
   Ssh2Key->comment = dupstr(AnsiComment.c_str());
 }
 
-void SaveKey(TKeyType KeyType, const UnicodeString & FileName,
-  const UnicodeString & Passphrase, TPrivateKey * PrivateKey)
+void SaveKey(TKeyType KeyType, const UnicodeString FileName,
+  const UnicodeString Passphrase, TPrivateKey * PrivateKey)
 {
   UTF8String UtfFileName = UTF8String(FileName);
   Filename * KeyFile = filename_from_str(UtfFileName.c_str());
@@ -786,9 +786,9 @@ void SaveKey(TKeyType KeyType, const UnicodeString & FileName,
       case ktSSH2:
         {
           ppk_save_parameters Params = ppk_save_default_parameters;
-          if (Configuration->KeyVersion != 0)
+          if (GetConfiguration()->KeyVersion != 0)
           {
-            Params.fmt_version = Configuration->KeyVersion;
+            Params.fmt_version = GetConfiguration()->KeyVersion;
           }
           if (!ppk_save_f(KeyFile, Ssh2Key, PassphrasePtr, &Params))
           {
