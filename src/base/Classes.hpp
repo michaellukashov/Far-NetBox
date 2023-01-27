@@ -323,10 +323,10 @@ public:
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TStringList) || TStrings::is(Kind); }
 public:
   explicit TStringList(TObjectClassId Kind = OBJECT_CLASS_TStringList) noexcept;
-  ~TStringList() override = default;
+  virtual ~TStringList() override = default;
 
   int32_t Add(UnicodeString S);
-  int32_t AddObject(UnicodeString S, TObject *AObject) override;
+  virtual int32_t AddObject(UnicodeString S, TObject *AObject) override;
   void LoadFromFile(UnicodeString AFileName);
   TNotifyEvent GetOnChange() const { return FOnChange; }
   void SetOnChange(TNotifyEvent OnChange) { FOnChange = OnChange; }
@@ -335,31 +335,31 @@ public:
   void InsertItem(int32_t Index, UnicodeString S, TObject *AObject);
   void QuickSort(int32_t L, int32_t R, TStringListSortCompare SCompare);
 
-  void Assign(const TPersistent *Source) override;
+  virtual void Assign(const TPersistent *Source) override;
   virtual bool Find(UnicodeString S, int32_t &Index) const;
-  int32_t IndexOf(UnicodeString S) const override;
-  void Delete(int32_t Index) override;
-  void InsertObject(int32_t Index, UnicodeString Key, TObject *AObject) override;
+  virtual int32_t IndexOf(UnicodeString S) const override;
+  virtual void Delete(int32_t Index) override;
+  virtual void InsertObject(int32_t Index, UnicodeString Key, TObject *AObject) override;
   void Sort() override;
   virtual void CustomSort(TStringListSortCompare ACompareFunc);
 
-  void SetUpdateState(bool Updating) override;
+  virtual void SetUpdateState(bool Updating) override;
   virtual void Changing();
-  void Changed() override;
-  void Insert(int32_t Index, UnicodeString S, TObject *AObject = nullptr) override;
-  int32_t CompareStrings(UnicodeString S1, UnicodeString S2) const override;
-  int32_t GetCount() const override;
+  virtual void Changed() override;
+  virtual void Insert(int32_t Index, UnicodeString S, TObject *AObject = nullptr) override;
+  virtual int32_t CompareStrings(UnicodeString S1, UnicodeString S2) const override;
+  virtual int32_t GetCount() const override;
 
 public:
-  void SetObj(int32_t Index, TObject *AObject) override;
-  bool GetSorted() const override { return FSorted; }
-  void SetSorted(bool Value) override;
-  bool GetCaseSensitive() const override { return FCaseSensitive; }
-  void SetCaseSensitive(bool Value) override;
-  const UnicodeString &GetStringRef(int32_t Index) const override;
-  const UnicodeString &GetString(int32_t Index) const override;
-  UnicodeString GetString(int32_t Index) override;
-  void SetString(int32_t Index, UnicodeString S) override;
+  virtual void SetObj(int32_t Index, TObject *AObject) override;
+  virtual bool GetSorted() const override { return FSorted; }
+  virtual void SetSorted(bool Value) override;
+  virtual bool GetCaseSensitive() const override { return FCaseSensitive; }
+  virtual void SetCaseSensitive(bool Value) override;
+  virtual const UnicodeString &GetStringRef(int32_t Index) const override;
+  virtual const UnicodeString &GetString(int32_t Index) const override;
+  virtual UnicodeString GetString(int32_t Index) override;
+  virtual void SetString(int32_t Index, UnicodeString S) override;
 
 private:
   TNotifyEvent FOnChange;
