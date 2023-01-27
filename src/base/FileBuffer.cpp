@@ -262,6 +262,8 @@ void TFileBuffer::WriteToOut(TTransferOutEvent OnTransferOut, TObject * Sender, 
   FMemory->Seek(Len, TSeekOrigin::soFromCurrent);
 }
 
+#if 0
+moved to Classes.cpp
 TSafeHandleStream::TSafeHandleStream(THandle AHandle) noexcept :
   THandleStream(AHandle)
 {
@@ -286,7 +288,7 @@ int64_t TSafeHandleStream::Write(const void * Buffer, int64_t Count)
   }
   return Result;
 }
-#if 0
+
 int TSafeHandleStream::Read(System::DynamicArray<System::Byte> Buffer, int Offset, int Count)
 {
   DebugFail(); // untested
