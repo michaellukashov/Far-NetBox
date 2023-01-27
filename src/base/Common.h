@@ -60,7 +60,7 @@ NB_CORE_EXPORT UnicodeString CutToChar(UnicodeString &Str, wchar_t Ch, bool Trim
 NB_CORE_EXPORT UnicodeString CopyToChars(const UnicodeString Str, int32_t &From, UnicodeString Chs, bool Trim,
   wchar_t *Delimiter = nullptr, bool DoubleDelimiterEscapes = false);
 NB_CORE_EXPORT UnicodeString CopyToChar(const UnicodeString Str, wchar_t Ch, bool Trim);
-NB_CORE_EXPORT UnicodeString RemoveSuffix(const UnicodeString & Str, const UnicodeString & Suffix, bool RemoveNumbersAfterSuffix = false);
+NB_CORE_EXPORT UnicodeString RemoveSuffix(const UnicodeString Str, const UnicodeString Suffix, bool RemoveNumbersAfterSuffix = false);
 NB_CORE_EXPORT UnicodeString DelimitStr(const UnicodeString Str, const UnicodeString Chars);
 NB_CORE_EXPORT UnicodeString ShellDelimitStr(UnicodeString Str, wchar_t Quote);
 NB_CORE_EXPORT UnicodeString ExceptionLogString(Exception *E);

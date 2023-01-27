@@ -851,13 +851,13 @@ UnicodeString CopyToChars(const UnicodeString Str, int32_t &From, const UnicodeS
   return Result;
 }
 
-UnicodeString CopyToChar(const UnicodeString & Str, wchar_t Ch, bool Trim)
+UnicodeString CopyToChar(const UnicodeString Str, wchar_t Ch, bool Trim)
 {
   int From = 1;
   return CopyToChars(Str, From, UnicodeString(Ch), Trim);
 }
 
-UnicodeString RemoveSuffix(const UnicodeString & Str, const UnicodeString & Suffix, bool RemoveNumbersAfterSuffix)
+UnicodeString RemoveSuffix(const UnicodeString Str, const UnicodeString Suffix, bool RemoveNumbersAfterSuffix)
 {
   UnicodeString Result = Str;
   UnicodeString Buf = Str;
@@ -1505,7 +1505,7 @@ bool IsPathToSameFile(const UnicodeString & Path1, const UnicodeString & Path2)
   return Result;
 }
 
-bool SamePaths(const UnicodeString & Path1, const UnicodeString & Path2)
+bool SamePaths(const UnicodeString Path1, const UnicodeString Path2)
 {
   // TODO: ExpandUNCFileName
   return AnsiSameText(IncludeTrailingBackslash(Path1), IncludeTrailingBackslash(Path2));
