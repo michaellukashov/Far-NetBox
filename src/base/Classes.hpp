@@ -151,7 +151,7 @@ public:
 public:
   TPersistent() noexcept : TObject(OBJECT_CLASS_TPersistent) {}
   explicit TPersistent(TObjectClassId Kind);
-  ~TPersistent() override = default;
+  virtual ~TPersistent() override = default;
   virtual void Assign(const TPersistent *Source);
   virtual TPersistent *GetOwner();
 protected:
@@ -178,7 +178,7 @@ public:
 public:
   TList();
   explicit TList(TObjectClassId Kind);
-  ~TList() override;
+  virtual ~TList() override;
 
   template<class T>
   T *GetAs(int32_t Index) const { return get_as<T>(GetItem(Index)); }
@@ -216,7 +216,7 @@ public:
 public:
   TObjectList();
   explicit TObjectList(TObjectClassId Kind);
-  ~TObjectList() override;
+  virtual ~TObjectList() override;
 
   template<class T>
   T *GetAs(int32_t Index) const { return dyn_cast<T>(GetObj(Index)); }
@@ -224,7 +224,7 @@ public:
   TObject *GetObj(int32_t Index) const;
   bool GetOwnsObjects() const { return FOwnsObjects; }
   void SetOwnsObjects(bool Value) { FOwnsObjects = Value; }
-  void Notify(void *Ptr, TListNotification Action) override;
+  virtual void Notify(void *Ptr, TListNotification Action) override;
 
 private:
   bool FOwnsObjects{true};
@@ -261,7 +261,7 @@ public:
   virtual int32_t GetCount() const = 0;
   virtual void Insert(int32_t Index, UnicodeString AString, TObject *AObject = nullptr) = 0;
   bool Equals(const TStrings *Value) const;
-  void Move(int32_t CurIndex, int32_t NewIndex) override;
+  virtual void Move(int32_t CurIndex, int32_t NewIndex) override;
   virtual int32_t IndexOf(UnicodeString S) const;
   virtual int32_t IndexOfName(UnicodeString Name) const;
   UnicodeString ExtractName(UnicodeString S) const;
@@ -276,7 +276,7 @@ public:
   UnicodeString GetDelimitedText() const;
   void SetDelimitedText(UnicodeString Value);
   int32_t GetUpdateCount() const { return FUpdateCount; }
-  void Assign(const TPersistent *Source) override;
+  virtual void Assign(const TPersistent *Source) override;
 
 public:
   virtual void SetObj(int32_t Index, TObject *AObject) = 0;
@@ -340,7 +340,7 @@ public:
   virtual int32_t IndexOf(UnicodeString S) const override;
   virtual void Delete(int32_t Index) override;
   virtual void InsertObject(int32_t Index, UnicodeString Key, TObject *AObject) override;
-  void Sort() override;
+  virtual void Sort() override;
   virtual void CustomSort(TStringListSortCompare ACompareFunc);
 
   virtual void SetUpdateState(bool Updating) override;
@@ -613,14 +613,14 @@ class NB_CORE_EXPORT THandleStream : public TStream
 public:
   explicit THandleStream(HANDLE AHandle) noexcept;
   virtual ~THandleStream() = default;
-  int64_t Read(void *Buffer, int64_t Count) override;
-  int64_t Write(const void *Buffer, int64_t Count) override;
-  int64_t Seek(const int64_t Offset, TSeekOrigin Origin) const override;
+  virtual int64_t Read(void *Buffer, int64_t Count) override;
+  virtual int64_t Write(const void *Buffer, int64_t Count) override;
+  virtual int64_t Seek(const int64_t Offset, TSeekOrigin Origin) const override;
 
   HANDLE GetHandle() const { return FHandle; }
 
 protected:
-  void SetSize(const int64_t NewSize) override;
+  virtual void SetSize(const int64_t NewSize) override;
 
 protected:
   HANDLE FHandle{};
@@ -631,8 +631,8 @@ class NB_CORE_EXPORT TSafeHandleStream : public THandleStream
 public:
   explicit TSafeHandleStream(THandle AHandle) noexcept;
   virtual ~TSafeHandleStream() = default;
-  int64_t Read(void *Buffer, int64_t Count) override;
-  int64_t Write(const void *Buffer, int64_t Count) override;
+  virtual int64_t Read(void *Buffer, int64_t Count) override;
+  virtual int64_t Write(const void *Buffer, int64_t Count) override;
 };
 
 class NB_CORE_EXPORT EReadError : public std::runtime_error
@@ -653,17 +653,17 @@ class NB_CORE_EXPORT TMemoryStream : public TStream
 public:
   TMemoryStream() noexcept;
   virtual ~TMemoryStream() noexcept;
-  int64_t Read(void *Buffer, int64_t Count) override;
-  int64_t Seek(const int64_t Offset, TSeekOrigin Origin) const override;
+  virtual int64_t Read(void *Buffer, int64_t Count) override;
+  virtual int64_t Seek(const int64_t Offset, TSeekOrigin Origin) const override;
   void SaveToStream(TStream *Stream);
   void SaveToFile(UnicodeString AFileName);
 
   void Clear();
   void LoadFromStream(TStream *Stream);
   __removed void LoadFromFile(UnicodeString AFileName);
-  int64_t GetSize() const override { return FSize; }
-  void SetSize(const int64_t NewSize) override;
-  int64_t Write(const void *Buffer, int64_t Count) override;
+  virtual int64_t GetSize() const override { return FSize; }
+  virtual void SetSize(const int64_t NewSize) override;
+  virtual int64_t Write(const void *Buffer, int64_t Count) override;
 
   void *GetMemory() const { return FMemory; }
 
