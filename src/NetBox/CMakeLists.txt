@@ -49,6 +49,7 @@ message("OPENSSL_LIBRARYDIR: ${OPENSSL_LIBRARYDIR}")
 
 #-------------------------------------------------------------------------------
 
+include(CMakeParseArguments)
 include(${CMAKE_ROOT}/Modules/CMakeDetermineSystem.cmake)
 include(${CMAKE_SOURCE_DIR}/cmake/ucm.cmake)
 #include(CMakeDetermineCXXCompiler)
@@ -205,9 +206,14 @@ if(MSVC)
 # message("nasm: ${NASM_EXECUTABLE}")
 set(NASM_EXECUTABLE ${CMAKE_CURRENT_SOURCE_DIR}/../../buildtools/tools/nasm.exe)
 
-macro(compile_asm_files obj_files asm_files)
-  set(${obj_files} )
-  foreach(_asm_file ${asm_files})
+macro(compile_asm_files)
+  cmake_parse_arguments(ARG "" "RESULT" "ASM_FILES" ${ARGN})
+  if(NOT ARG_ASM_FILES)
+      set(ARG_ASM_FILES " ")
+  endif()
+#  message("ARG_ASM_FILES: ${ARG_ASM_FILES}")
+  set(${ARG_RESULT} )
+  foreach(_asm_file ${ARG_ASM_FILES})
 #    message("asm_file: ${_asm_file}")
     set(_asm_source ${CMAKE_CURRENT_SOURCE_DIR}/${_asm_file})
     get_filename_component(_asm_source_fn ${_asm_source} NAME)
@@ -218,11 +224,10 @@ macro(compile_asm_files obj_files asm_files)
     add_custom_command(
       OUTPUT ${_asm_object}
       COMMAND ${NASM_EXECUTABLE}
-      ARGS -f win32 -o ${_asm_object} ${_asm_source}
+      ARGS -f win64 -o ${_asm_object} ${_asm_source}
       DEPENDS ${_asm_source}
     )
-    #-d__omf__
-    set(${obj_files} ${${obj_files}} ${_asm_object})
+    set(${ARG_RESULT} ${${ARG_RESULT}} ${_asm_object})
   endforeach(_asm_file)
 endmacro()
 
@@ -340,18 +345,11 @@ set(libeay32_asm_files
 )
 
 set(libeay32_obj_files )
-compile_asm_files(libeay32_obj_files
-  ../../libs/openssl-1.1.1/crypto/des/asm/d_win32.asm
-  ../../libs/openssl-1.1.1/crypto/des/asm/y_win32.asm
-#  ../../libs/openssl-1.1.1/crypto/des/asm/des_586.asm
-#  ../../libs/openssl-1.1.1/crypto/des/asm/crypt586.asm
-#  ../../libs/openssl-1.1.1/crypto/bf/asm/bf_586.asm
-#  ../../libs/openssl-1.1.1/crypto/cast/asm/cast_586.asm
-#  ../../libs/openssl-1.1.1/crypto/md5/asm/md5_586.asm
-#  ../../libs/openssl-1.1.1/crypto/sha/asm/sha1_586.asm
+compile_asm_files(RESULT libeay32_obj_files ASM_FILES
+  ../../libs/openssl-1.1.1/crypto/sha/asm/sha1-x86_64.asm
+  ../../libs/openssl-1.1.1/crypto/md5/asm/md5-x86_64.asm
 )
-message("libeay32_obj_files: ${libeay32_obj_files}")
-
+#message("libeay32_obj_files: ${libeay32_obj_files}")
 
 add_library(libeay32 STATIC
   ../../libs/openssl-1.1.1/crypto/cryptlib.c
@@ -900,8 +898,11 @@ add_library(libeay32 STATIC
   ../../libs/openssl-1.1.1/crypto/sm2/sm2_crypt.c
   ../../libs/openssl-1.1.1/crypto/sm2/sm2_sign.c
   ../../libs/openssl-1.1.1/crypto/chacha/chacha_enc.c
-#  ${libeay32_obj_files}
-#  ../../libs/openssl-1.1.1/crypto/des/des.c
+#x86-64
+  ../../libs/openssl-1.1.1/crypto/des/des_enc.c
+  ../../libs/openssl-1.1.1/crypto/bf/bf_enc.c
+  ../../libs/openssl-1.1.1/crypto/cast/c_enc.c
+  ${libeay32_obj_files}
 )
 
 target_compile_options(libeay32 PRIVATE
