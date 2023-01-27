@@ -2062,7 +2062,7 @@ void TSessionData::Remove()
 
 void TSessionData::CacheHostKeyIfNotCached()
 {
-  UnicodeString KeyType = GetKeyTypeFromFingerprint(GetHostKey());
+  UnicodeString KeyType = KeyTypeFromFingerprint(GetHostKey());
 
   // Should allow importing to INI file as ImportHostKeys
   UnicodeString TargetKey = GetConfiguration()->GetRegistryStorageKey() + L"\\" + GetConfiguration()->GetSshHostKeysSubKey();
