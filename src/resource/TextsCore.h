@@ -498,13 +498,16 @@
 
 #define CORE_VARIABLE_STRINGS   600
 #define PUTTY_BASED_ON          601
+#define PUTTY_VERSION           602
 #define PUTTY_COPYRIGHT         603
 #define PUTTY_URL               604
 #define FILEZILLA_BASED_ON2     605
+#define FILEZILLA_VERSION       606
 #define FILEZILLA_COPYRIGHT2    607
 #define FILEZILLA_URL           608
 #define OPENSSL_BASED_ON        609
 #define OPENSSL_COPYRIGHT2      610
+#define OPENSSL_VERSION2        611
 #define OPENSSL_URL             612
 #define NEON_BASED_ON2          613
 #define NEON_COPYRIGHT          614
@@ -520,3 +523,14 @@
 #define S3_LICENSE_URL          636
 
 // 7xxx used by errors as secondary sequence
+
+#define WINSCPFAR_NAME              740
+#define WINSCP_VERSION              741
+#define WINSCPFAR_VERSION           742
+#define WINSCPFAR_BASED_ON          743
+#define WINSCPFAR_BASED_VERSION     744
+#define WINSCPFAR_BASED_COPYRIGHT   745
+
+#define CONVERTKEY_SAVE_TITLE   1945
+#define CONVERTKEY_SAVE_FILTER  1946
+#define CONVERTKEY_SAVED        1947
