@@ -57,7 +57,7 @@ int WINAPI ConfigureW(int item)
   return nb::ToInt(FarPlugin->Configure(nb::ToIntPtr(item)));
 }
 
-HANDLE WINAPI OpenPluginW(int openFrom, intptr_t item)
+HANDLE WINAPI OpenPluginW(int openFrom, INT_PTR item)
 {
   SELF_TEST(
     UnicodeString Text = L"text, text text, text text1\ntext text text, text text2\n";
