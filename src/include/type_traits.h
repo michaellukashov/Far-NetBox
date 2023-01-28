@@ -32,7 +32,7 @@ namespace nb {
 /// the value may therefore need to be explicitly converted before being used.
 template <typename T> class is_integral_or_enum
 {
-  using UnderlyingT = typename std::remove_reference<T>::type;
+  using UnderlyingT = std::remove_reference_t<T>;
 
 public:
   static const bool value =
@@ -40,7 +40,7 @@ public:
     !std::is_pointer<UnderlyingT>::value &&
     !std::is_floating_point<UnderlyingT>::value &&
     (std::is_enum<UnderlyingT>::value ||
-     std::is_convertible<UnderlyingT, unsigned long long>::value);
+      std::is_convertible<UnderlyingT, unsigned long long>::value);
 };
 
 /// If T is a pointer, just return it. If it is not, return T&.
@@ -49,7 +49,7 @@ struct add_lvalue_reference_if_not_pointer { using type = T &; };
 
 template <typename T>
 struct add_lvalue_reference_if_not_pointer<
-  T, typename std::enable_if<std::is_pointer<T>::value>::type>
+  T, std::enable_if_t<std::is_pointer<T>::value>>
 {
   using type = T;
 };
@@ -60,10 +60,9 @@ template<typename T, typename Enable = void>
 struct add_const_past_pointer { using type = const T; };
 
 template <typename T>
-struct add_const_past_pointer<
-  T, typename std::enable_if<std::is_pointer<T>::value>::type>
+struct add_const_past_pointer<T, std::enable_if_t<std::is_pointer<T>::value>>
 {
-  using type = const typename std::remove_pointer<T>::type *;
+  using type = const std::remove_pointer_t<T>* ;
 };
 
 template <typename T, typename Enable = void>
@@ -72,8 +71,8 @@ struct const_pointer_or_const_ref
   using type = const T &;
 };
 template <typename T>
-struct const_pointer_or_const_ref<
-  T, typename std::enable_if<std::is_pointer<T>::value>::type>
+struct const_pointer_or_const_ref<T,
+         std::enable_if_t<std::is_pointer<T>::value>>
 {
   using type = typename add_const_past_pointer<T>::type;
 };
@@ -108,23 +107,23 @@ union trivial_helper
 /// users with STLs that don't yet include it.
 template <typename T>
 struct is_trivially_copy_constructible
-  : std::is_copy_constructible<
-    ::nb::detail::copy_construction_triviality_helper<T>> {};
+  : std::is_copy_constructible <
+    ::nb::detail::copy_construction_triviality_helper<T >> {};
 template <typename T>
 struct is_trivially_copy_constructible<T&> : std::true_type {};
 template <typename T>
-struct is_trivially_copy_constructible<T&&> : std::false_type {};
+struct is_trivially_copy_constructible < T&& > : std::false_type {};
 
 /// An implementation of `std::is_trivially_move_constructible` since we have
 /// users with STLs that don't yet include it.
 template <typename T>
 struct is_trivially_move_constructible
-  : std::is_move_constructible<
-    ::nb::detail::move_construction_triviality_helper<T>> {};
+  : std::is_move_constructible <
+    ::nb::detail::move_construction_triviality_helper<T >> {};
 template <typename T>
 struct is_trivially_move_constructible<T&> : std::true_type {};
 template <typename T>
-struct is_trivially_move_constructible<T&&> : std::true_type {};
+struct is_trivially_move_constructible < T&& > : std::true_type {};
 
 
 template <typename T>
@@ -140,7 +139,7 @@ template <typename T>
 struct is_move_assignable
 {
   template<class F>
-  static auto get(F*) -> decltype(std::declval<F&>() = std::declval<F &&>(), std::true_type {});
+  static auto get(F*) -> decltype(std::declval<F&>() = std::declval < F && > (), std::true_type {});
   static std::false_type get(...);
   static constexpr bool value = decltype(get((T*)nullptr))::value;
 };
@@ -193,7 +192,7 @@ public:
 
 #ifdef HAVE_STD_IS_TRIVIALLY_COPYABLE
   static_assert(value == std::is_trivially_copyable<T>::value,
-                "inconsistent behavior between llvm:: and std:: implementation of is_trivially_copyable");
+    "inconsistent behavior between llvm:: and std:: implementation of is_trivially_copyable");
 #endif
 };
 template <typename T>
