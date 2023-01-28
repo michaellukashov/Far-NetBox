@@ -1,4 +1,4 @@
-// CAsyncSocketEx by Tim Kosse (Tim.Kosse@gmx.de)
+﻿// CAsyncSocketEx by Tim Kosse (Tim.Kosse@gmx.de)
 //                 Version 1.3 (2003-04-26)
 
 // Feel free to use this class, as long as you don't claim that you wrote it
@@ -10,6 +10,7 @@
 #include "AsyncSocketEx.h"
 
 #include "AsyncSocketExLayer.h"
+#include "FileZillaApi.h"
 
 #ifndef GWL_USERDATA
 #define GWL_USERDATA        (-21)
@@ -112,7 +113,7 @@ public:
         m_nWindowDataSize=MAX_SOCKETS;
       t_AsyncSocketExWindowData *tmp=m_pAsyncSocketExWindowData;
       m_pAsyncSocketExWindowData = nb::calloc<t_AsyncSocketExWindowData*>(m_nWindowDataSize, sizeof(t_AsyncSocketExWindowData));
-      memcpy(m_pAsyncSocketExWindowData, tmp, nOldWindowDataSize * sizeof(t_AsyncSocketExWindowData));
+      libmemcpy_memcpy(m_pAsyncSocketExWindowData, tmp, nOldWindowDataSize * sizeof(t_AsyncSocketExWindowData));
       memset(m_pAsyncSocketExWindowData+nOldWindowDataSize, 0, (m_nWindowDataSize-nOldWindowDataSize)*sizeof(t_AsyncSocketExWindowData));
       nb_free(tmp);
     }
@@ -159,7 +160,7 @@ public:
   void RemoveLayers(CAsyncSocketEx *pOrigSocket)
   {
     // Remove all layer messages from old socket
-    rde::list<MSG> msgList;
+    nb::list_t<MSG> msgList;
     MSG msg;
     while (PeekMessage(&msg, m_hWnd, WM_USER, WM_USER, PM_REMOVE))
     {
@@ -179,7 +180,7 @@ public:
       msgList.push_back(msg);
     }
 
-    for (rde::list<MSG>::iterator iter = msgList.begin(); iter != msgList.end(); iter++)
+    for (nb::list_t<MSG>::iterator iter = msgList.begin(); iter != msgList.end(); iter++)
     {
       ::PostMessage(m_hWnd, iter->message, iter->wParam, iter->lParam);
     }
@@ -530,7 +531,7 @@ public:
       CAsyncSocketExHelperWindow *pWnd = (CAsyncSocketExHelperWindow *)GetWindowLongPtr(hWnd, GWL_USERDATA);
       DebugAssert(pWnd);
 
-      CAsyncSocketEx *pSocket = NULL;
+      CAsyncSocketEx *pSocket = nullptr;
       for (int i = 0; i < pWnd->m_nWindowDataSize; i++)
       {
         pSocket = pWnd->m_pAsyncSocketExWindowData[i].m_pSocket;
@@ -576,7 +577,7 @@ public:
         return 0;
 
       // Process pending callbacks
-      rde::list<t_callbackMsg> tmp;
+      nb::list_t<t_callbackMsg> tmp;
       rde::swap(tmp, pSocket->m_pendingCallbacks);
       pSocket->OnLayerCallback(tmp);
     }
@@ -638,8 +639,8 @@ CAsyncSocketEx::CAsyncSocketEx()
   m_pFirstLayer = 0;
   m_pLastLayer = 0;
   m_lEvent = 0;
-  m_pAsyncGetHostByNameBuffer = NULL;
-  m_hAsyncGetHostByNameHandle = NULL;
+  m_pAsyncGetHostByNameBuffer = nullptr;
+  m_hAsyncGetHostByNameHandle = nullptr;
   m_nAsyncGetHostByNamePort = 0;
 
   m_nSocketPort = 0;
@@ -655,7 +656,7 @@ CAsyncSocketEx::~CAsyncSocketEx()
   FreeAsyncSocketExInstance();
 }
 
-BOOL CAsyncSocketEx::Create(UINT nSocketPort /*=0*/, int nSocketType /*=SOCK_STREAM*/, long lEvent /*=FD_READ | FD_WRITE | FD_OOB | FD_ACCEPT | FD_CONNECT | FD_CLOSE*/, LPCTSTR lpszSocketAddress /*=NULL*/, int nFamily /*=AF_INET*/)
+BOOL CAsyncSocketEx::Create(UINT nSocketPort /*=0*/, int nSocketType /*=SOCK_STREAM*/, long lEvent /*=FD_READ | FD_WRITE | FD_OOB | FD_ACCEPT | FD_CONNECT | FD_CLOSE*/, LPCTSTR lpszSocketAddress /*=nullptr*/, int nFamily /*=AF_INET*/)
 {
   DebugAssert(GetSocketHandle() == INVALID_SOCKET);
 
@@ -799,7 +800,7 @@ BOOL CAsyncSocketEx::Bind(UINT nSocketPort, LPCTSTR lpszSocketAddress)
       return FALSE;
 
     for (res = res0; res; res = res->ai_next)
-      if (Bind(res->ai_addr, (int)res->ai_addrlen))
+      if (BindToAddr(res->ai_addr, (int)res->ai_addrlen))
       {
         ret = TRUE;
         break;
@@ -820,7 +821,7 @@ BOOL CAsyncSocketEx::Bind(UINT nSocketPort, LPCTSTR lpszSocketAddress)
     sockAddr6.sin6_addr = in6addr_any ;
     sockAddr6.sin6_port = htons((u_short)nSocketPort);
 
-    return Bind((SOCKADDR*)&sockAddr6, sizeof(sockAddr6));
+    return BindToAddr((SOCKADDR*)&sockAddr6, sizeof(sockAddr6));
   }
   else if (!lpszAscii && m_SocketData.nFamily == AF_INET)
   {
@@ -831,13 +832,13 @@ BOOL CAsyncSocketEx::Bind(UINT nSocketPort, LPCTSTR lpszSocketAddress)
     sockAddr.sin_addr.s_addr = INADDR_ANY ;
     sockAddr.sin_port = htons((u_short)nSocketPort);
 
-    return Bind((SOCKADDR*)&sockAddr, sizeof(sockAddr));
+    return BindToAddr((SOCKADDR*)&sockAddr, sizeof(sockAddr));
   }
   else
     return FALSE ;
 }
 
-BOOL CAsyncSocketEx::Bind(const SOCKADDR* lpSockAddr, int nSockAddrLen)
+BOOL CAsyncSocketEx::BindToAddr(const SOCKADDR* lpSockAddr, int nSockAddrLen)
 {
   if (!bind(m_SocketData.hSocket, lpSockAddr, nSockAddrLen))
     return TRUE;
@@ -887,10 +888,10 @@ void CAsyncSocketEx::Close()
   m_nSocketPort = 0;
   RemoveAllLayers();
   nb_free(m_pAsyncGetHostByNameBuffer);
-  m_pAsyncGetHostByNameBuffer = NULL;
+  m_pAsyncGetHostByNameBuffer = nullptr;
   if (m_hAsyncGetHostByNameHandle)
     ::WSACancelAsyncRequest(m_hAsyncGetHostByNameHandle);
-  m_hAsyncGetHostByNameHandle = NULL;
+  m_hAsyncGetHostByNameHandle = nullptr;
   m_SocketData.onCloseCalled = false;
 }
 
@@ -955,7 +956,7 @@ void CAsyncSocketEx::FreeAsyncSocketExInstance()
   if (!m_pLocalAsyncSocketExThreadData)
     return;
 
-  for (rde::list<CAsyncSocketEx*>::iterator iter = m_pLocalAsyncSocketExThreadData->layerCloseNotify.begin(); iter != m_pLocalAsyncSocketExThreadData->layerCloseNotify.end(); iter++)
+  for (nb::list_t<CAsyncSocketEx*>::iterator iter = m_pLocalAsyncSocketExThreadData->layerCloseNotify.begin(); iter != m_pLocalAsyncSocketExThreadData->layerCloseNotify.end(); iter++)
   {
     if (*iter != this)
       continue;
@@ -1063,7 +1064,7 @@ BOOL CAsyncSocketEx::Connect(LPCTSTR lpszHostAddress, UINT nHostPort)
   {
     USES_CONVERSION;
 
-    DebugAssert(lpszHostAddress != NULL);
+    DebugAssert(lpszHostAddress != nullptr);
 
     SOCKADDR_IN sockAddr;
     memset(&sockAddr,0,sizeof(sockAddr));
@@ -1097,7 +1098,7 @@ BOOL CAsyncSocketEx::Connect(LPCTSTR lpszHostAddress, UINT nHostPort)
   {
     USES_CONVERSION;
 
-    DebugAssert( lpszHostAddress != NULL );
+    DebugAssert( lpszHostAddress != nullptr );
 
     if (m_SocketData.addrInfo)
     {
@@ -1229,7 +1230,7 @@ BOOL CAsyncSocketEx::GetPeerName( CString& rPeerAddress, UINT& rPeerPort )
   if (m_pFirstLayer)
     return m_pFirstLayer->GetPeerName(rPeerAddress, rPeerPort);
 
-  SOCKADDR* sockAddr = NULL;
+  SOCKADDR* sockAddr = nullptr;
   int nSockAddrLen = 0;
 
   if (m_SocketData.nFamily == AF_INET6)
@@ -1293,7 +1294,7 @@ BOOL CAsyncSocketEx::GetPeerName( SOCKADDR* lpSockAddr, int* lpSockAddrLen )
 
 BOOL CAsyncSocketEx::GetSockName(CString& rSocketAddress, UINT& rSocketPort)
 {
-  SOCKADDR* sockAddr = NULL;
+  SOCKADDR* sockAddr = nullptr;
   int nSockAddrLen = 0;
 
   if (m_SocketData.nFamily == AF_INET6)
@@ -1425,7 +1426,7 @@ BOOL CAsyncSocketEx::Listen( int nConnectionBacklog /*=5*/ )
     return FALSE;
 }
 
-BOOL CAsyncSocketEx::Accept( CAsyncSocketEx& rConnectedSocket, SOCKADDR* lpSockAddr /*=NULL*/, int* lpSockAddrLen /*=NULL*/ )
+BOOL CAsyncSocketEx::Accept( CAsyncSocketEx& rConnectedSocket, SOCKADDR* lpSockAddr /*=nullptr*/, int* lpSockAddrLen /*=nullptr*/ )
 {
   DebugAssert(rConnectedSocket.m_SocketData.hSocket == INVALID_SOCKET);
   if (m_pFirstLayer)
@@ -1524,7 +1525,7 @@ BOOL CAsyncSocketEx::AddLayer(CAsyncSocketExLayer *pLayer)
 
 void CAsyncSocketEx::RemoveAllLayers()
 {
-  for (rde::list<t_callbackMsg>::iterator iter = m_pendingCallbacks.begin(); iter != m_pendingCallbacks.end(); iter++)
+  for (nb::list_t<t_callbackMsg>::iterator iter = m_pendingCallbacks.begin(); iter != m_pendingCallbacks.end(); iter++)
     nb_free(iter->str);
   m_pendingCallbacks.clear();
 
@@ -1538,9 +1539,9 @@ void CAsyncSocketEx::RemoveAllLayers()
   m_pLocalAsyncSocketExThreadData->m_pHelperWindow->RemoveLayers(this);
 }
 
-int CAsyncSocketEx::OnLayerCallback(rde::list<t_callbackMsg>& callbacks)
+int CAsyncSocketEx::OnLayerCallback(nb::list_t<t_callbackMsg>& callbacks)
 {
-  for (rde::list<t_callbackMsg>::iterator iter = callbacks.begin(); iter != callbacks.end(); iter++)
+  for (nb::list_t<t_callbackMsg>::iterator iter = callbacks.begin(); iter != callbacks.end(); iter++)
   {
     nb_free(iter->str);
   }
@@ -1700,7 +1701,7 @@ void CAsyncSocketEx::AddCallbackNotification(const t_callbackMsg& msg)
 
 void CAsyncSocketEx::ResendCloseNotify()
 {
-  for (rde::list<CAsyncSocketEx*>::iterator iter = m_pLocalAsyncSocketExThreadData->layerCloseNotify.begin(); iter != m_pLocalAsyncSocketExThreadData->layerCloseNotify.end(); iter++)
+  for (nb::list_t<CAsyncSocketEx*>::iterator iter = m_pLocalAsyncSocketExThreadData->layerCloseNotify.begin(); iter != m_pLocalAsyncSocketExThreadData->layerCloseNotify.end(); iter++)
   {
     if (*iter == this)
       return;

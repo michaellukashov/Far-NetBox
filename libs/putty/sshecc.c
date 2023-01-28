@@ -160,14 +160,14 @@ static struct ec_curve *ec_p256(void)
     static struct ec_curve curve = { 0 };
     static unsigned char initialised = 0;
 
-#ifdef MPEXT
+    #ifdef MPEXT
     if (ec_curve_cleanup)
     {
         if (initialised) finalize_wcurve(&curve);
         initialised = 0;
         return NULL;
     }
-#endif
+    #endif
 
     if (!initialised)
     {
@@ -223,14 +223,14 @@ static struct ec_curve *ec_p384(void)
     static struct ec_curve curve = { 0 };
     static unsigned char initialised = 0;
 
-#ifdef MPEXT
+    #ifdef MPEXT
     if (ec_curve_cleanup)
     {
         if (initialised) finalize_wcurve(&curve);
         initialised = 0;
         return NULL;
     }
-#endif
+    #endif
 
     if (!initialised)
     {
@@ -298,14 +298,14 @@ static struct ec_curve *ec_p521(void)
     static struct ec_curve curve = { 0 };
     static unsigned char initialised = 0;
 
-#ifdef MPEXT
+    #ifdef MPEXT
     if (ec_curve_cleanup)
     {
         if (initialised) finalize_wcurve(&curve);
         initialised = 0;
         return NULL;
     }
-#endif
+    #endif
 
     if (!initialised)
     {
@@ -391,14 +391,14 @@ static struct ec_curve *ec_curve25519(void)
     static struct ec_curve curve = { 0 };
     static unsigned char initialised = 0;
 
-#ifdef MPEXT
+    #ifdef MPEXT
     if (ec_curve_cleanup)
     {
         if (initialised) finalize_mcurve(&curve);
         initialised = 0;
         return NULL;
     }
-#endif
+    #endif
 
     if (!initialised)
     {
@@ -445,14 +445,14 @@ static struct ec_curve *ec_ed25519(void)
     static struct ec_curve curve = { 0 };
     static unsigned char initialised = 0;
 
-#ifdef MPEXT
+    #ifdef MPEXT
     if (ec_curve_cleanup)
     {
         if (initialised) finalize_ecurve(&curve);
         initialised = 0;
         return NULL;
     }
-#endif
+    #endif
 
     if (!initialised)
     {
@@ -1096,7 +1096,7 @@ static struct ec_point *ecp_addw(const struct ec_point *a,
             outz = modmul(H, a->z, a->curve->p);
             freebn(H);
         } else if (b->z) {
-            outz = modmul(H, b->z, b->curve->p);
+            outz = modmul(H, b->z, a->curve->p);
             freebn(H);
         } else {
             outz = H;
@@ -1502,14 +1502,14 @@ struct ec_point *ec_public(const Bignum privateKey, const struct ec_curve *curve
         Bignum a;
         int i, keylen;
         SHA512_State s;
-        putty_SHA512_Init(&s);
+        SHA512_Init(&s);
 
         keylen = curve->fieldBits / 8;
         for (i = 0; i < keylen; ++i) {
             unsigned char b = bignum_byte(privateKey, i);
-            putty_SHA512_Bytes(&s, &b, 1);
+            SHA512_Bytes(&s, &b, 1);
         }
-        putty_SHA512_Final(&s, hash);
+        SHA512_Final(&s, hash);
 
         /* The second part is simply turning the hash into a Bignum,
          * however the 2^(b-2) bit *must* be set, and the bottom 3
@@ -1633,7 +1633,7 @@ static void _ecdsa_sign(const Bignum privateKey, const struct ec_curve *curve,
 
     /* Generate k between 1 and curve->n, using the same deterministic
      * k generation system we use for conventional DSA. */
-    putty_SHA_Simple(data, dataLen, digest);
+    SHA_Simple(data, dataLen, digest);
     k = dss_gen_k("ECDSA deterministic k generator", curve->w.n, privateKey,
                   digest, sizeof(digest));
 
@@ -1710,7 +1710,7 @@ static Bignum getmp(const char **data, int *datalen)
 static Bignum getmp_le(const char **data, int *datalen)
 {
     const char *p;
-    int length = 0;
+    int length;
 
     getstring(data, datalen, &p, &length);
     if (!p)
@@ -1798,7 +1798,7 @@ static int decodepoint(const char *p, int length, struct ec_point *point)
 static int getmppoint(const char **data, int *datalen, struct ec_point *point)
 {
     const char *p;
-    int length = 0;
+    int length;
 
     getstring(data, datalen, &p, &length);
     if (!p) return 0;
@@ -1895,7 +1895,7 @@ static char *ecdsa_fmtkey(void *key)
 
     len = 4 + 2 + 1;                  /* 2 x "0x", punctuation, \0 */
     if (ec->publicKey.curve->name)
-        len += (int)strlen(ec->publicKey.curve->name); /* Curve name */
+        len += strlen(ec->publicKey.curve->name); /* Curve name */
     len += 4 * (bignum_bitcount(ec->publicKey.x) + 15) / 16;
     len += 4 * (bignum_bitcount(ec->publicKey.y) + 15) / 16;
     p = snewn(len, char);
@@ -1930,7 +1930,7 @@ static unsigned char *ecdsa_public_blob(void *key, int *len)
     int i;
     unsigned char *blob, *p;
 
-    fullnamelen = (int)strlen(ec->signalg->name);
+    fullnamelen = strlen(ec->signalg->name);
 
     if (ec->publicKey.curve->type == EC_EDWARDS) {
         /* Edwards compressed form "ssh-ed25519" point y[:-1] + x[0:1] */
@@ -1960,7 +1960,7 @@ static unsigned char *ecdsa_public_blob(void *key, int *len)
         *p++ |= bignum_bit(ec->publicKey.x, 0) << 7;
     } else if (ec->publicKey.curve->type == EC_WEIERSTRASS) {
         assert(ec->publicKey.curve->name);
-        namelen = (int)strlen(ec->publicKey.curve->name);
+        namelen = strlen(ec->publicKey.curve->name);
 
         pointlen = (bignum_bitcount(ec->publicKey.curve->p) + 7) / 8;
 
@@ -2088,7 +2088,7 @@ static void *ed25519_openssh_createkey(const struct ssh_signkey *self,
     struct ec_key *ec;
     struct ec_point *publicKey;
     const char *p, *q;
-    int plen = 0, qlen = 0;
+    int plen, qlen;
 
     getstring((const char**)blob, len, &p, &plen);
     if (!p)
@@ -2280,7 +2280,7 @@ static int ecdsa_openssh_fmtkey(void *key, unsigned char *blob, int len)
     }
 
     pointlen = (bignum_bitcount(ec->publicKey.curve->p) + 7) / 8;
-    namelen = (int)strlen(ec->publicKey.curve->name);
+    namelen = strlen(ec->publicKey.curve->name);
     bloblen =
         4 + namelen /* <LEN> nistpXXX */
         + 4 + 1 + (pointlen * 2) /* <LEN> 0x04 pX pY */
@@ -2385,27 +2385,27 @@ static int ecdsa_verifysig(void *key, const char *sig, int siglen,
             unsigned char b;
             unsigned char digest[512 / 8];
             SHA512_State hs;
-            putty_SHA512_Init(&hs);
+            SHA512_Init(&hs);
 
             /* Add encoded r (no need to encode it again, it was in the signature) */
-            putty_SHA512_Bytes(&hs, p, ec->publicKey.curve->fieldBits / 8);
+            SHA512_Bytes(&hs, p, ec->publicKey.curve->fieldBits / 8);
 
             /* Encode pk and add it */
             pointlen = ec->publicKey.curve->fieldBits / 8;
             for (i = 0; i < pointlen - 1; ++i) {
                 b = bignum_byte(ec->publicKey.y, i);
-                putty_SHA512_Bytes(&hs, &b, 1);
+                SHA512_Bytes(&hs, &b, 1);
             }
             /* Unset last bit of y and set first bit of x in its place */
             b = bignum_byte(ec->publicKey.y, i) & 0x7f;
             b |= bignum_bit(ec->publicKey.x, 0) << 7;
-            putty_SHA512_Bytes(&hs, &b, 1);
+            SHA512_Bytes(&hs, &b, 1);
 
             /* Add the message itself */
-            putty_SHA512_Bytes(&hs, data, datalen);
+            SHA512_Bytes(&hs, data, datalen);
 
             /* Get the hash */
-            putty_SHA512_Final(&hs, digest);
+            SHA512_Final(&hs, digest);
 
             /* Convert to Bignum */
             h = bignum_from_bytes_le(digest, sizeof(digest));
@@ -2512,14 +2512,14 @@ static unsigned char *ecdsa_sign(void *key, const char *data, int datalen,
             unsigned char b;
             Bignum a;
             SHA512_State hs;
-            putty_SHA512_Init(&hs);
+            SHA512_Init(&hs);
 
             for (i = 0; i < pointlen; ++i) {
                 unsigned char b = (unsigned char)bignum_byte(ec->privateKey, i);
-                putty_SHA512_Bytes(&hs, &b, 1);
+                SHA512_Bytes(&hs, &b, 1);
             }
 
-            putty_SHA512_Final(&hs, hash);
+            SHA512_Final(&hs, hash);
 
             /* The second part is simply turning the hash into a
              * Bignum, however the 2^(b-2) bit *must* be set, and the
@@ -2530,13 +2530,13 @@ static unsigned char *ecdsa_sign(void *key, const char *data, int datalen,
             /* Chop off the top part and convert to int */
             a = bignum_from_bytes_le(hash, 32);
 
-            putty_SHA512_Init(&hs);
-            putty_SHA512_Bytes(&hs,
+            SHA512_Init(&hs);
+            SHA512_Bytes(&hs,
                          hash+(ec->publicKey.curve->fieldBits / 8),
                          (ec->publicKey.curve->fieldBits / 4)
                          - (ec->publicKey.curve->fieldBits / 8));
-            putty_SHA512_Bytes(&hs, data, datalen);
-            putty_SHA512_Final(&hs, hash);
+            SHA512_Bytes(&hs, data, datalen);
+            SHA512_Final(&hs, hash);
 
             r = bignum_from_bytes_le(hash, 512/8);
             rp = ecp_mul(&ec->publicKey.curve->e.B, r);
@@ -2547,30 +2547,30 @@ static unsigned char *ecdsa_sign(void *key, const char *data, int datalen,
             }
 
             /* Now calculate s */
-            putty_SHA512_Init(&hs);
+            SHA512_Init(&hs);
             /* Encode the point R */
             for (i = 0; i < pointlen - 1; ++i) {
                 b = bignum_byte(rp->y, i);
-                putty_SHA512_Bytes(&hs, &b, 1);
+                SHA512_Bytes(&hs, &b, 1);
             }
             /* Unset last bit of y and set first bit of x in its place */
             b = bignum_byte(rp->y, i) & 0x7f;
             b |= bignum_bit(rp->x, 0) << 7;
-            putty_SHA512_Bytes(&hs, &b, 1);
+            SHA512_Bytes(&hs, &b, 1);
 
             /* Encode the point pk */
             for (i = 0; i < pointlen - 1; ++i) {
                 b = bignum_byte(ec->publicKey.y, i);
-                putty_SHA512_Bytes(&hs, &b, 1);
+                SHA512_Bytes(&hs, &b, 1);
             }
             /* Unset last bit of y and set first bit of x in its place */
             b = bignum_byte(ec->publicKey.y, i) & 0x7f;
             b |= bignum_bit(ec->publicKey.x, 0) << 7;
-            putty_SHA512_Bytes(&hs, &b, 1);
+            SHA512_Bytes(&hs, &b, 1);
 
             /* Add the message */
-            putty_SHA512_Bytes(&hs, data, datalen);
-            putty_SHA512_Final(&hs, hash);
+            SHA512_Bytes(&hs, data, datalen);
+            SHA512_Final(&hs, hash);
 
             {
                 Bignum tmp, tmp2;
@@ -2588,7 +2588,7 @@ static unsigned char *ecdsa_sign(void *key, const char *data, int datalen,
         }
 
         /* Format the output */
-        namelen = (int)strlen(ec->signalg->name);
+        namelen = strlen(ec->signalg->name);
         *siglen = 4+namelen+4+((ec->publicKey.curve->fieldBits / 8)*2);
         buf = snewn(*siglen, unsigned char);
         p = buf;
@@ -2634,7 +2634,7 @@ static unsigned char *ecdsa_sign(void *key, const char *data, int datalen,
         rlen = (bignum_bitcount(r) + 8) / 8;
         slen = (bignum_bitcount(s) + 8) / 8;
 
-        namelen = (int)strlen(ec->signalg->name);
+        namelen = strlen(ec->signalg->name);
 
         /* Format the output */
         *siglen = 8+namelen+rlen+slen+8;

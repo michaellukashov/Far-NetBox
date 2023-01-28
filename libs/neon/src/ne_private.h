@@ -1,6 +1,6 @@
 /* 
    HTTP Request Handling
-   Copyright (C) 1999-2009, Joe Orton <joe@manyfish.co.uk>
+   Copyright (C) 1999-2021, Joe Orton <joe@manyfish.co.uk>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -113,6 +113,10 @@ struct ne_session_s {
         *close_conn_hooks, *private;
 
     char *user_agent; /* full User-Agent: header field */
+
+#ifdef WINSCP
+    char *realhost;
+#endif
 
 #ifdef NE_HAVE_SSL
     ne_ssl_client_cert *client_cert;

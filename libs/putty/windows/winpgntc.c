@@ -95,7 +95,7 @@ agent_pending_query *agent_query(
     p = MapViewOfFile(filemap, FILE_MAP_WRITE, 0, 0, 0);
     memcpy(p, in, inlen);
     cds.dwData = AGENT_COPYDATA_ID;
-    cds.cbData = 1 + (DWORD)strlen(mapname);
+    cds.cbData = 1 + strlen(mapname);
     cds.lpData = mapname;
 
     /*
@@ -103,15 +103,26 @@ agent_pending_query *agent_query(
      * query is required to be synchronous) or CreateThread failed.
      * Either way, we need a synchronous request.
      */
-    id = (int)SendMessage(hwnd, WM_COPYDATA, (WPARAM) NULL, (LPARAM) &cds);
+    id = SendMessage(hwnd, WM_COPYDATA, (WPARAM) NULL, (LPARAM) &cds);
     if (id > 0) {
-	retlen = 4 + GET_32BIT(p);
-	ret = snewn(retlen, unsigned char);
-	if (ret) {
+        unsigned int length_field = GET_32BIT(p);
+        if (length_field > 0 && length_field <= AGENT_MAX_MSGLEN - 4) {
+	    retlen = length_field + 4;
+	    ret = snewn(retlen, unsigned char);
 	    memcpy(ret, p, retlen);
 	    *out = ret;
 	    *outlen = retlen;
-	}
+        } else {
+            /*
+             * If we get here, we received an out-of-range length
+             * field, either without space for a message type code or
+             * overflowing the FileMapping.
+             *
+             * Treat this as if Pageant didn't answer at all - which
+             * actually means we do nothing, and just don't fill in
+             * out and outlen.
+             */
+        }
     }
     UnmapViewOfFile(p);
     CloseHandle(filemap);

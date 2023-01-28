@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #include "Buffer.h"
 #include "Utils.h"
 
@@ -9,7 +10,7 @@ class LogStream
 {
   CUSTOM_MEM_ALLOCATION_IMPL
 public:
-
+  LogStream() = delete;
   explicit LogStream(FILE *file, pthread_mutex_t &mutex, pthread_cond_t &cond, bool &already_swap);
   ~LogStream();
 
@@ -35,17 +36,16 @@ private:
 
   intptr_t InternalWrite(const void *data, intptr_t ToWrite);
 
-  Buffer *pt_front_buff_;
-  Buffer *pt_back_buff_;
-  FILE *file_;
-  const char *pt_file_;
-  int i_line_;
-  const char *pt_func_;
+  std::unique_ptr<Buffer> pt_front_buff_;
+  std::unique_ptr<Buffer> pt_back_buff_;
+  FILE *file_{nullptr}; // TODO: gsl::not_null
+  int i_line_{0};
+  const char *pt_func_{nullptr};
 #if 0
   std::string str_log_level_;
 #endif // #if 0
-  struct timeval tv_base_;
-  struct tm *pt_tm_base_;
+  struct timeval tv_base_{};
+  struct tm *pt_tm_base_{nullptr};
   pthread_mutex_t &mutex_;
   pthread_cond_t &cond_;
   bool &already_swap_;
@@ -55,7 +55,6 @@ private:
 inline
 void LogStream::SetPrefix(const char *pt_file, int i_line, const char *pt_func, Utils::LogLevel e_log_level)
 {
-  pt_file_ = pt_file;
   i_line_  = i_line;
   pt_func_ = pt_func;
 

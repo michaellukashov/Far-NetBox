@@ -1,3 +1,4 @@
+
 #pragma once
 #define ProgParamsH
 
@@ -6,12 +7,14 @@
 class NB_CORE_EXPORT TProgramParams : public TOptions
 {
 public:
-  // static TProgramParams * Instance();
+  static TProgramParams * Instance();
 
-  explicit TProgramParams();
-  explicit TProgramParams(UnicodeString CmdLine);
+  explicit TProgramParams() noexcept;
+  explicit TProgramParams(const UnicodeString & CmdLine) noexcept;
+
+  static UnicodeString FormatSwitch(const UnicodeString & Switch);
 
 private:
-  void Init(UnicodeString CmdLine);
+  void Init(const UnicodeString & CmdLine);
 };
 

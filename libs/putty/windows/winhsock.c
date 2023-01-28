@@ -92,7 +92,9 @@ static int handle_stderr(struct handle *h, void *data, int len)
     Handle_Socket ps = (Handle_Socket) handle_get_privdata(h);
 
     if (len > 0)
+    {
         log_proxy_stderr(ps->plug, &ps->stderrdata, data, len);
+    }
 
     return 0;
 }
@@ -130,21 +132,26 @@ static void sk_handle_close(Socket s)
         return;
     }
 
-#ifdef MPEXT
+    #ifdef MPEXT
     // WinSCP core uses do_select as signalization of connection up/down
     do_select(ps->plug, INVALID_SOCKET, 0);
-#endif
-
-    if (ps->defer_close) {
-        ps->deferred_close = TRUE;
-        return;
-    }
+    #endif
 
     handle_free(ps->send_h);
     handle_free(ps->recv_h);
     CloseHandle(ps->send_H);
     if (ps->recv_H != ps->send_H)
         CloseHandle(ps->recv_H);
+#ifdef MPEXT
+    if (ps->stderr_h)
+    {
+        handle_free(ps->stderr_h);
+    }
+    if (ps->stderr_H)
+    {
+        CloseHandle(ps->stderr_H);
+    }
+#endif
     bufchain_clear(&ps->inputdata);
     bufchain_clear(&ps->stderrdata);
 
@@ -293,20 +300,20 @@ static char *sk_handle_peer_info(Socket s)
     Handle_Socket ps = (Handle_Socket) s;
     ULONG pid;
     static HMODULE kernel32_module;
-    PUTTY_DECL_WINDOWS_FUNCTION(static, BOOL, GetNamedPipeClientProcessId,
+    DECL_WINDOWS_FUNCTION(static, BOOL, GetNamedPipeClientProcessId,
                           (HANDLE, PULONG));
 
     if (!kernel32_module) {
         kernel32_module = load_system32_dll("kernel32.dll");
-#if (defined _MSC_VER && _MSC_VER < 1900) || defined __MINGW32__ || defined COVERITY || defined MPEXT
+#if (defined _MSC_VER && _MSC_VER < 1900) || defined __MINGW32__ || defined COVERITY
         /* For older Visual Studio, and MinGW too (at least as of
          * Ubuntu 16.04), this function isn't available in the header
          * files to type-check. Ditto the toolchain I use for
          * Coveritying the Windows code. */
-        PUTTY_GET_WINDOWS_FUNCTION_NO_TYPECHECK(
+        GET_WINDOWS_FUNCTION_NO_TYPECHECK(
             kernel32_module, GetNamedPipeClientProcessId);
 #else
-        PUTTY_GET_WINDOWS_FUNCTION(
+        GET_WINDOWS_FUNCTION(
             kernel32_module, GetNamedPipeClientProcessId);
 #endif
     }
@@ -360,12 +367,10 @@ Socket make_handle_socket(HANDLE send_H, HANDLE recv_H, HANDLE stderr_H,
 
     ret->defer_close = ret->deferred_close = FALSE;
 
-#ifdef MPEXT
+    #ifdef MPEXT
     // WinSCP core uses do_select as signalization of connection up/down
     do_select(plug, INVALID_SOCKET, 1);
-#endif
-
-    ret->defer_close = ret->deferred_close = FALSE;
+    #endif
 
     return (Socket) ret;
 }

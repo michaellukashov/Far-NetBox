@@ -1,9 +1,9 @@
-
-#ifndef FileZillaToolsH
-#define FileZillaToolsH
+﻿
+#pragma once
 
 #include <ctime>
-#include <headers.hpp>
+#include <nbsystem.h>
+#include <openssl/ssl.h>
 
 class CFileZillaTools //: public TObject
 {
@@ -14,6 +14,6 @@ public:
   virtual bool GetFileModificationTimeInUtc(const wchar_t * FileName, struct tm & Time) = 0;
   virtual wchar_t * LastSysErrorMessage() const = 0;
   virtual std::wstring GetClientString() const = 0;
+  virtual void SetupSsl(ssl_st * Ssl) = 0;
 };
 
-#endif // FileZillaToolsH

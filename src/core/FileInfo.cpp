@@ -1,3 +1,4 @@
+﻿
 #include <vcl.h>
 #pragma hdrstop
 
@@ -8,10 +9,12 @@
 #include <Windows.hpp>
 #include <Math.hpp>
 #include "FileInfo.h"
+#include "FileBuffer.h"
+
+__removed #pragma package(smart_init)
 
 #define DWORD_ALIGN( base, ptr ) \
     ( (LPBYTE)(base) + ((((LPBYTE)(ptr) - (LPBYTE)(base)) + 3) & ~3) )
-
 struct VS_VERSION_INFO_STRUCT32
 {
   WORD wLength;
@@ -20,9 +23,9 @@ struct VS_VERSION_INFO_STRUCT32
   WCHAR szKey[1];
 };
 
-static uintptr_t VERSION_GetFileVersionInfo_PE(const wchar_t *FileName, uintptr_t DataSize, void *Data)
+static uint32_t VERSION_GetFileVersionInfo_PE(const wchar_t *FileName, uint32_t DataSize, void *Data)
 {
-  uintptr_t Len = 0;
+  uint32_t Len = 0;
 
   bool NeedFree = false;
   HMODULE Module = ::GetModuleHandle(FileName);
@@ -39,32 +42,15 @@ static uintptr_t VERSION_GetFileVersionInfo_PE(const wchar_t *FileName, uintptr_
   {
     try__finally
     {
-      SCOPE_EXIT
-      {
-        if (NeedFree)
-        {
-          ::FreeLibrary(Module);
-        }
-      };
       HRSRC Rsrc = ::FindResource(Module, MAKEINTRESOURCE(VS_VERSION_INFO), VS_FILE_INFO);
-      if (Rsrc == nullptr)
-      {
-      }
-      else
+      if (Rsrc != nullptr)
       {
         Len = ::SizeofResource(Module, static_cast<HRSRC>(Rsrc));
         HANDLE Mem = ::LoadResource(Module, static_cast<HRSRC>(Rsrc));
-        if (Mem == nullptr)
-        {
-        }
-        else
+        if (Mem != nullptr)
         {
           try__finally
           {
-            SCOPE_EXIT
-            {
-              ::FreeResource(Mem);
-            };
             VS_VERSION_INFO_STRUCT32 *VersionInfo = static_cast<VS_VERSION_INFO_STRUCT32 *>(LockResource(Mem));
             const VS_FIXEDFILEINFO *FixedInfo =
               reinterpret_cast<VS_FIXEDFILEINFO *>(DWORD_ALIGN(VersionInfo, VersionInfo->szKey + nb::StrLength(VersionInfo->szKey) + 1));
@@ -87,33 +73,29 @@ static uintptr_t VERSION_GetFileVersionInfo_PE(const wchar_t *FileName, uintptr_
                 }
               }
             }
-          }
+          },
           __finally
           {
-#if 0
-            FreeResource(Mem);
-#endif // #if 0
-          };
+            ::FreeResource(Mem);
+          } end_try__finally
         }
       }
-    }
+    },
     __finally
     {
-#if 0
       if (NeedFree)
       {
-        FreeLibrary(Module);
+        ::FreeLibrary(Module);
       }
-#endif // #if 0
-    };
+    } end_try__finally
   }
 
   return Len;
 }
 
-static uintptr_t GetFileVersionInfoSizeFix(const wchar_t *FileName, DWORD *AHandle)
+static uint32_t GetFileVersionInfoSizeFix(const wchar_t *FileName, DWORD *AHandle)
 {
-  uintptr_t Len;
+  uint32_t Len;
   if (IsWin7())
   {
     *AHandle = 0;
@@ -132,8 +114,8 @@ static uintptr_t GetFileVersionInfoSizeFix(const wchar_t *FileName, DWORD *AHand
   return Len;
 }
 
-bool GetFileVersionInfoFix(const wchar_t *FileName, uint32_t Handle,
-  uintptr_t DataSize, void *Data)
+bool GetFileVersionInfoFix(const wchar_t *FileName, DWORD Handle,
+  uint32_t DataSize, void *Data)
 {
   bool Result;
 
@@ -141,24 +123,24 @@ bool GetFileVersionInfoFix(const wchar_t *FileName, uint32_t Handle,
   {
     VS_VERSION_INFO_STRUCT32 *VersionInfo = static_cast<VS_VERSION_INFO_STRUCT32 *>(Data);
 
-    uintptr_t Len = VERSION_GetFileVersionInfo_PE(FileName, DataSize, Data);
+    uint32_t Len = VERSION_GetFileVersionInfo_PE(FileName, DataSize, Data);
 
     Result = (Len != 0);
     if (Result)
     {
       static const char Signature[] = "FE2X";
-      uintptr_t BufSize = static_cast<uintptr_t>(VersionInfo->wLength + NBChTraitsCRT<char>::SafeStringLen(Signature));
+      uint32_t BufSize = nb::ToUIntPtr(VersionInfo->wLength + NBChTraitsCRT<char>::SafeStringLen(Signature));
 
       if (DataSize >= BufSize)
       {
-        uintptr_t ConvBuf = DataSize - VersionInfo->wLength;
+        uint32_t ConvBuf = DataSize - VersionInfo->wLength;
         memmove((static_cast<char *>(Data)) + VersionInfo->wLength, Signature, ConvBuf > 4 ? 4 : ConvBuf);
       }
     }
   }
   else
   {
-    Result = ::GetFileVersionInfo(FileName, Handle, ToDWord(DataSize), Data) != 0;
+    Result = ::GetFileVersionInfo(FileName, Handle, nb::ToDWord(DataSize), Data) != 0;
   }
 
   return Result;
@@ -169,22 +151,18 @@ void *CreateFileInfo(UnicodeString AFileName)
 {
   DWORD Handle;
   void *Result = nullptr;
-
   // Get file version info block size
-  uintptr_t Size = GetFileVersionInfoSizeFix(AFileName.c_str(), &Handle);
+  uint32_t Size = GetFileVersionInfoSizeFix(AFileName.c_str(), &Handle);
   // If size is valid
   if (Size > 0)
   {
-    Result = nb::calloc<void *>(1, Size);
+    Result = nb::calloc<void *>(Size, 1);
     // Get file version info block
     if (!GetFileVersionInfoFix(AFileName.c_str(), Handle, Size, Result))
     {
       nb_free(Result);
       Result = nullptr;
     }
-  }
-  else
-  {
   }
   return Result;
 }
@@ -206,7 +184,7 @@ PVSFixedFileInfo GetFixedFileInfo(void *FileInfo)
   PVSFixedFileInfo Result = nullptr;
   if (FileInfo && !::VerQueryValue(FileInfo, L"\\", reinterpret_cast<void **>(&Result), &Len))
   {
-    throw Exception(L"Fixed file info not available");
+    throw Exception("Fixed file info not available");
   }
   return Result;
 }
@@ -217,31 +195,39 @@ uint32_t GetTranslationCount(void *FileInfo)
   PTranslations P;
   UINT Len;
   if (!::VerQueryValue(FileInfo, L"\\VarFileInfo\\Translation", reinterpret_cast<void **>(&P), &Len))
-    throw Exception(L"File info translations not available");
+  {
+    throw Exception("File info translations not available");
+  }
   return Len / 4;
 }
 
 // Return i-th translation in the file version info translation list
-TTranslation GetTranslation(void *FileInfo, intptr_t I)
+TTranslation GetTranslation(void *FileInfo, uint32_t I)
 {
   PTranslations P = nullptr;
   UINT Len;
 
   if (!::VerQueryValue(FileInfo, L"\\VarFileInfo\\Translation", reinterpret_cast<void **>(&P), &Len))
-    throw Exception(L"File info translations not available");
+  {
+    throw Exception("File info translations not available");
+  }
   if (I * sizeof(TTranslation) >= Len)
-    throw Exception(L"Specified translation not available");
+  {
+    throw Exception("Specified translation not available");
+  }
   return P[I];
 }
 
 // Return the name of the specified language
 UnicodeString GetLanguage(Word Language)
 {
-  wchar_t P[256];
+  wchar_t P[256]{};
 
-  uintptr_t Len = ::VerLanguageName(Language, P, _countof(P));
+  uint32_t Len = ::VerLanguageName(Language, P, _countof(P));
   if (Len > _countof(P))
-    throw Exception(L"Language not available");
+  {
+    throw Exception("Language not available");
+  }
   return UnicodeString(P, Len);
 }
 
@@ -254,14 +240,13 @@ UnicodeString GetFileInfoString(void *FileInfo,
   wchar_t *P;
   UINT Len;
 
-  if (!::VerQueryValue(FileInfo, (UnicodeString(L"\\StringFileInfo\\") +
-        ::IntToHex(Translation.Language, 4) +
-        ::IntToHex(Translation.CharSet, 4) +
-        L"\\" + StringName).c_str(), reinterpret_cast<void **>(&P), &Len))
+  UnicodeString SubBlock =
+    UnicodeString(L"\\StringFileInfo\\") + IntToHex(Translation.Language, 4) + IntToHex(Translation.CharSet, 4) + L"\\" + StringName;
+  if (!VerQueryValue(FileInfo, SubBlock.c_str(), (void**)&P, &Len))
   {
     if (!AllowEmpty)
     {
-      throw Exception(L"Specified file info string not available");
+      throw Exception("Specified file info string not available");
     }
   }
   else
@@ -272,31 +257,33 @@ UnicodeString GetFileInfoString(void *FileInfo,
   return Result;
 }
 
-intptr_t CalculateCompoundVersion(intptr_t MajorVer,
-  intptr_t MinorVer, intptr_t Release, intptr_t Build)
+int32_t CalculateCompoundVersion(int32_t MajorVer, int32_t MinorVer, int32_t Release)
 {
-  intptr_t CompoundVer = Build + 10000 * (Release + 100 * (MinorVer +
-        100 * MajorVer));
+  int CompoundVer = 10000 * (Release + 100 * (MinorVer + 100 * MajorVer));
   return CompoundVer;
 }
 
-intptr_t StrToCompoundVersion(UnicodeString AStr)
+int32_t ZeroBuildNumber(int32_t CompoundVersion)
 {
-  UnicodeString S(AStr);
-  int64_t MajorVer = StrToInt64(CutToChar(S, L'.', false));
-  int64_t MinorVer = StrToInt64(CutToChar(S, L'.', false));
-  int64_t Release = S.IsEmpty() ? 0 : StrToInt64(CutToChar(S, L'.', false));
-  int64_t Build = S.IsEmpty() ? 0 : StrToInt64(CutToChar(S, L'.', false));
-  return CalculateCompoundVersion(static_cast<intptr_t>(MajorVer), static_cast<intptr_t>(MinorVer), static_cast<intptr_t>(Release), static_cast<intptr_t>(Build));
+  return (CompoundVersion / 10000 * 10000);
 }
 
-intptr_t CompareVersion(UnicodeString V1, UnicodeString V2)
+int32_t StrToCompoundVersion(UnicodeString S)
 {
-  intptr_t Result = 0;
-  while ((Result == 0) && (!V1.IsEmpty() || !V2.IsEmpty()))
+  int32_t MajorVer = nb::Min(StrToIntPtr(CutToChar(S, L'.', false)), 99);
+  int32_t MinorVer = nb::Min(StrToIntPtr(CutToChar(S, L'.', false)), (int32_t)99);
+  int32_t Release = S.IsEmpty() ? 0 : nb::Min(StrToIntPtr(CutToChar(S, L'.', false)), (int32_t)99);
+  return CalculateCompoundVersion(MajorVer, MinorVer, Release);
+}
+
+int32_t CompareVersion(UnicodeString V1, UnicodeString V2)
+{
+  int32_t Result = 0;
+  UnicodeString _V1(V1), _V2(V2);
+  while ((Result == 0) && (!_V1.IsEmpty() || !_V2.IsEmpty()))
   {
-    intptr_t C1 = StrToIntDef(CutToChar(V1, L'.', false), 0);
-    intptr_t C2 = StrToIntDef(CutToChar(V2, L'.', false), 0);
+    int32_t C1 = StrToIntDef(CutToChar(_V1, L'.', false), 0);
+    int32_t C2 = StrToIntDef(CutToChar(_V2, L'.', false), 0);
     // Result = CompareValue(C1, C2);
     if (C1 < C2)
     {

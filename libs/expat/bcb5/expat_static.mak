@@ -16,9 +16,9 @@ VERSION = BCB.05.03
 PROJECT = Release\libexpats_mtd.lib
 OBJFILES = Release\obj\libexpat_static\xmlparse.obj \
     Release\obj\libexpat_static\xmlrole.obj \
-    Release\obj\libexpat_static\xmltok.obj
+    Release\obj\libexpat_static\xmltok.obj \
+    Release\obj\libexpat_static\loadlibrary.obj
 RESFILES = 
-MAINSOURCE = expat_static.bpf
 RESDEPEN = $(RESFILES)
 LIBFILES = 
 IDLFILES = 
@@ -35,9 +35,9 @@ PATHRC = .;
 LINKER = TLib
 DEBUGLIBPATH = $(BCB)\lib\debug
 RELEASELIBPATH = $(BCB)\lib\release
-USERDEFINES = _WINDOWS;WIN32;NDEBUG;_LIB;XML_STATIC
+USERDEFINES = _WINDOWS;WIN32;NDEBUG;_LIB;XML_STATIC;WINSCP
 SYSDEFINES = _NO_VCL;_ASSERTE;NO_STRICT;_RTLDLL
-INCLUDEPATH = ..\lib;$(BCB)\include
+INCLUDEPATH = ..;..\lib;$(BCB)\include
 LIBPATH = ..\lib;$(BCB)\lib;$(RELEASELIBPATH)
 WARNINGS = -w-rch -w-par -w-8027 -w-8026 -w-ccc -w-8012
 LISTFILE = 

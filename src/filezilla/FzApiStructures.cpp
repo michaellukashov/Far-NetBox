@@ -14,8 +14,8 @@ t_server::t_server()
   iUseMlsd = -1;
   iDupFF = 0;
   iUndupFF = 0;
-  Certificate = NULL;
-  PrivateKey = NULL;
+  Certificate = nullptr;
+  PrivateKey = nullptr;
 }
 
 t_server::~t_server()

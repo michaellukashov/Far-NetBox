@@ -6,94 +6,45 @@ struct NB_CORE_EXPORT TSynchronizeParamType : public TObject
 {
   UnicodeString LocalDirectory;
   UnicodeString RemoteDirectory;
-  intptr_t Params;
-  intptr_t Options;
+  int32_t Params{0};
+  int32_t Options{0};
 };
 
 class TSynchronizeController;
 struct TSynchronizeOptions;
 class TSynchronizeChecklist;
 
-#if 0
-typedef void (__closure * TSynchronizeAbortEvent)
-  (System::TObject * Sender, bool Close);
-#endif // #if 0
-typedef nb::FastDelegate2<void,
-  TObject * /*Sender*/, bool /*Close*/> TSynchronizeAbortEvent;
-#if 0
-typedef void (__closure * TSynchronizeThreadsEvent)
-  (TObject* Sender, TThreadMethod Method);
-enum TSynchronizeLogEntry { slScan, slStart, slChange, slUpload, slDelete, slDirChange, slContinuedError };
-#endif // #if 0
-typedef nb::FastDelegate2<void,
-  TObject * /*Sender*/, TThreadMethod /*Method*/> TSynchronizeThreadsEvent;
-
-enum TSynchronizeLogEntry
-{
-  slScan,
-  slStart,
-  slChange,
-  slUpload,
-  slDelete,
-  slDirChange,
-  slContinuedError,
-};
-
-#if 0
-typedef void (__closure * TSynchronizeLog)
-  (TSynchronizeController * Controller, TSynchronizeLogEntry Entry, const UnicodeString Message);
-#endif // #if 0
-typedef nb::FastDelegate3<void,
+using TSynchronizeAbortEvent = nb::FastDelegate2<void,
+  TObject * /*Sender*/, bool /*Close*/>;
+using TSynchronizeThreadsEvent = nb::FastDelegate2<void,
+  TObject * /*Sender*/, TThreadMethod /*Method*/>;
+enum TSynchronizeLogEntry { slScan, slStart, slChange, slUpload, slDelete, slDirChange, slContinuedError, };
+using TSynchronizeLogEvent = nb::FastDelegate3<void,
   TSynchronizeController * /*Controller*/, TSynchronizeLogEntry /*Entry*/,
-  UnicodeString /*Message*/> TSynchronizeLogEvent;
-#if 0
-typedef void (__closure * TSynchronizeStartStopEvent)
-  (System::TObject * Sender, bool Start, const TSynchronizeParamType & Params,
-   const TCopyParamType & CopyParam, TSynchronizeOptions * Options,
-   TSynchronizeAbortEvent OnAbort, TSynchronizeThreadsEvent OnSynchronizeThreads,
-   TSynchronizeLog OnSynchronizeLog);
-#endif // #if 0
-typedef nb::FastDelegate8<void,
+  UnicodeString /*Message*/>;
+using TSynchronizeStartStopEvent = nb::FastDelegate8<void,
   TObject * /*Sender*/, bool /*Start*/, const TSynchronizeParamType & /*Params*/,
   const TCopyParamType & /*CopyParam*/, TSynchronizeOptions * /*Options*/,
   TSynchronizeAbortEvent /*OnAbort*/, TSynchronizeThreadsEvent /*OnSynchronizeThreads*/,
-  TSynchronizeLogEvent /*OnSynchronizeLog*/> TSynchronizeStartStopEvent;
-#if 0
-typedef void (__closure * TSynchronizeEvent)
-  (TSynchronizeController * Sender, const UnicodeString LocalDirectory,
-   const UnicodeString RemoteDirectory, const TCopyParamType & CopyParam,
-   const TSynchronizeParamType & Params, TSynchronizeChecklist ** Checklist,
-   TSynchronizeOptions * Options, bool Full);
-#endif // #if 0
-typedef nb::FastDelegate8<void,
+  TSynchronizeLogEvent /*OnSynchronizeLog*/>;
+using TSynchronizeEvent = nb::FastDelegate8<void,
   TSynchronizeController * /*Sender*/, UnicodeString /*LocalDirectory*/,
   UnicodeString /*RemoteDirectory*/, const TCopyParamType & /*CopyParam*/,
   const TSynchronizeParamType & /*Params*/, TSynchronizeChecklist ** /*Checklist*/,
-  TSynchronizeOptions * /*Options*/, bool /*Full*/> TSynchronizeEvent;
-#if 0
-typedef void (__closure * TSynchronizeInvalidEvent)
-  (TSynchronizeController * Sender, const UnicodeString Directory, const UnicodeString ErrorStr);
-#endif // #if 0
-typedef nb::FastDelegate3<void,
+  TSynchronizeOptions * /*Options*/, bool /*Full*/>;
+using TSynchronizeInvalidEvent = nb::FastDelegate3<void,
   TSynchronizeController * /*Sender*/, UnicodeString /*Directory*/,
-  UnicodeString /*ErrorStr*/> TSynchronizeInvalidEvent;
-#if 0
-typedef void (__closure * TSynchronizeTooManyDirectories)
-  (TSynchronizeController * Sender, int & MaxDirectories);
-#endif // #if 0
-typedef nb::FastDelegate2<void,
+  UnicodeString /*ErrorStr*/>;
+using TSynchronizeTooManyDirectoriesEvent = nb::FastDelegate2<void,
   TSynchronizeController * /*Sender*/,
-  intptr_t & /*MaxDirectories*/> TSynchronizeTooManyDirectoriesEvent;
+  int32_t & /*MaxDirectories*/>;
 
-namespace Discmon {
+namespace Discmon
+{
 class TDiscMonitor;
 }
 
-enum TSynchronizeOperation
-{
-  soUpload,
-  soDelete
-};
+enum TSynchronizeOperation { soUpload, soDelete };
 
 class NB_CORE_EXPORT TSynchronizeController : public TObject
 {
@@ -101,37 +52,39 @@ class NB_CORE_EXPORT TSynchronizeController : public TObject
 public:
   explicit TSynchronizeController(TSynchronizeEvent AOnSynchronize,
     TSynchronizeInvalidEvent AOnSynchronizeInvalid,
-    TSynchronizeTooManyDirectoriesEvent AOnTooManyDirectories);
-  virtual ~TSynchronizeController();
+    TSynchronizeTooManyDirectoriesEvent AOnTooManyDirectories) noexcept;
+  virtual ~TSynchronizeController() noexcept;
 
-  void StartStop(TObject *Sender, bool Start,
-    const TSynchronizeParamType &Params, const TCopyParamType &CopyParam,
-    TSynchronizeOptions *Options,
+  void StartStop(TObject * Sender, bool Start,
+    const TSynchronizeParamType & Params, const TCopyParamType &CopyParam,
+    TSynchronizeOptions * Options,
     TSynchronizeAbortEvent OnAbort, TSynchronizeThreadsEvent OnSynchronizeThreads,
     TSynchronizeLogEvent OnSynchronizeLog);
-  void LogOperation(TSynchronizeOperation Operation, UnicodeString AFileName);
+  void LogOperation(TSynchronizeOperation Operation, const UnicodeString AFileName);
 
 private:
   TSynchronizeEvent FOnSynchronize;
   TSynchronizeParamType FSynchronizeParams;
-  TSynchronizeOptions *FOptions;
+  TSynchronizeOptions * FOptions{nullptr};
   TSynchronizeThreadsEvent FOnSynchronizeThreads;
-  Discmon::TDiscMonitor *FSynchronizeMonitor;
+  Discmon::TDiscMonitor * FSynchronizeMonitor{nullptr};
   TSynchronizeAbortEvent FSynchronizeAbort;
   TSynchronizeInvalidEvent FOnSynchronizeInvalid;
   TSynchronizeTooManyDirectoriesEvent FOnTooManyDirectories;
   TSynchronizeLogEvent FSynchronizeLog;
   TCopyParamType FCopyParam;
 
-  void SynchronizeChange(TObject *Sender, UnicodeString Directory,
-    bool &SubdirsChanged);
+  void SynchronizeChange(TObject * Sender, const UnicodeString Directory,
+    bool & SubdirsChanged);
   void SynchronizeAbort(bool Close);
-  void SynchronizeLog(TSynchronizeLogEntry Entry, UnicodeString Message);
-  void SynchronizeInvalid(TObject *Sender, UnicodeString Directory,
-    UnicodeString ErrorStr);
-  void SynchronizeFilter(TObject *Sender, UnicodeString DirectoryName,
-    bool &Add);
-  void SynchronizeTooManyDirectories(TObject *Sender, intptr_t &MaxDirectories);
-  void SynchronizeDirectoriesChange(TObject *Sender, intptr_t Directories);
+  void SynchronizeLog(TSynchronizeLogEntry Entry, const UnicodeString Message);
+  void SynchronizeInvalid(TObject * Sender, const UnicodeString Directory,
+    const UnicodeString ErrorStr);
+  void SynchronizeFilter(TObject * Sender, const UnicodeString DirectoryName,
+    bool & Add);
+  void SynchronizeTooManyDirectories(TObject * Sender, int32_t & MaxDirectories);
+  void SynchronizeDirectoriesChange(TObject * Sender, int32_t Directories);
 };
+
+void LogSynchronizeEvent(TTerminal * Terminal, const UnicodeString Message);
 

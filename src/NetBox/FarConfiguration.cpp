@@ -1,4 +1,4 @@
-#include <vcl.h>
+﻿#include <vcl.h>
 #pragma hdrstop
 
 #include <Common.h>
@@ -25,19 +25,19 @@ enum NetBoxConfirmationsSettings
   // NBCS_OVERWRITEDELETEROFILES         = 0x00000400,
 };
 
-TFarConfiguration::TFarConfiguration(TCustomFarPlugin *APlugin) :
+TFarConfiguration::TFarConfiguration(TCustomFarPlugin *APlugin) noexcept :
   TGUIConfiguration(OBJECT_CLASS_TFarConfiguration),
   FFarPlugin(APlugin),
-  FBookmarks(new TBookmarks()),
+  FBookmarks(std::make_unique<TBookmarks>()),
   FFarConfirmations(-1)
 {
-  TFarConfiguration::Default();
+//  TFarConfiguration::Default();
   CacheFarSettings();
 }
 
-TFarConfiguration::~TFarConfiguration()
+TFarConfiguration::~TFarConfiguration() noexcept
 {
-  SAFE_DESTROY(FBookmarks);
+//  SAFE_DESTROY(FBookmarks);
 }
 
 void TFarConfiguration::Default()
@@ -67,18 +67,18 @@ void TFarConfiguration::Default()
   SetStatusColumnTypesDetailed("NR");
   SetStatusColumnWidthsDetailed("0");
 
-  SetApplyCommandCommand(L"");
+  SetApplyCommandCommand("");
   SetApplyCommandParams(0);
 
-  SetPuttygenPath(FormatCommand(::ExtractFilePath(ModuleFileName()) + "putty\\puttygen.exe", L""));
-  SetPageantPath(FormatCommand(::ExtractFilePath(ModuleFileName()) + "putty\\pageant.exe", L""));
+  SetPuttygenPath(FormatCommand(::ExtractFilePath(ModuleFileName()) + "putty\\puttygen.exe", ""));
+  SetPageantPath(FormatCommand(::ExtractFilePath(ModuleFileName()) + "putty\\pageant.exe", ""));
 
   FBookmarks->Clear();
 }
 
-THierarchicalStorage *TFarConfiguration::CreateStorage(bool & /*SessionList*/)
+THierarchicalStorage *TFarConfiguration::CreateScpStorage(bool &SessionList)
 {
-  DebugAssert(FFarPlugin);
+  return TGUIConfiguration::CreateScpStorage(SessionList);
   return FFarPlugin ? new TFar3Storage(GetRegistryStorageKey(), MainGuid, FFarPlugin->GetStartupInfo()->SettingsControl) : nullptr;
 }
 
@@ -89,18 +89,19 @@ void TFarConfiguration::Saved()
 }
 
 // duplicated from core\configuration.cpp
+#undef LASTELEM
 #define LASTELEM(ELEM) \
   ELEM.SubString(ELEM.LastDelimiter(L".>")+1, ELEM.Length() - ELEM.LastDelimiter(L".>"))
 #define BLOCK(KEY, CANCREATE, BLOCK) \
-  if (Storage->OpenSubKey(KEY, CANCREATE, true)) \
+  if (Storage->OpenSubKeyPath(KEY, CANCREATE)) \
   { \
-    SCOPE_EXIT { Storage->CloseSubKey(); }; \
+    SCOPE_EXIT { Storage->CloseSubKeyPath(); }; \
     BLOCK \
   }
 #define REGCONFIG(CANCREATE) \
-  BLOCK(L"Far", CANCREATE, \
+  BLOCK("Far", CANCREATE, \
     KEY(Bool,     DisksMenu); \
-    KEY(Integer,  DisksMenuHotKey); \
+    KEY2(Integer,  DisksMenuHotKey); \
     KEY(Bool,     PluginsMenu); \
     KEY(Bool,     PluginsMenuCommands); \
     KEY(String,   CommandPrefixes); \
@@ -120,7 +121,7 @@ void TFarConfiguration::Saved()
     KEY(String,   PuttygenPath); \
     KEY(String,   PageantPath); \
     KEY(String,   ApplyCommandCommand); \
-    KEY(Integer,  ApplyCommandParams); \
+    KEY2(Integer,  ApplyCommandParams); \
     KEY(Bool,     ConfirmSynchronizedBrowsing); \
   )
 
@@ -129,11 +130,15 @@ void TFarConfiguration::SaveData(THierarchicalStorage *Storage, bool All)
   TGUIConfiguration::SaveData(Storage, All);
 
   // duplicated from core\configuration.cpp
+#undef KEY
+#undef KEY2
 #define KEY(TYPE, VAR) Storage->Write ## TYPE(LASTELEM(MB2W(#VAR)), Get##VAR())
+#define KEY2(TYPE, VAR) Storage->Write ## TYPE(LASTELEM(MB2W(#VAR)), nb::ToUIntPtr(Get##VAR()))
   REGCONFIG(true);
+#undef KEY2
 #undef KEY
 
-  if (Storage->OpenSubKey(L"Bookmarks", /*CanCreate=*/true))
+  if (Storage->OpenSubKeyPath("Bookmarks", /*CanCreate=*/true))
   {
     FBookmarks->Save(Storage, All);
 
@@ -146,11 +151,15 @@ void TFarConfiguration::LoadData(THierarchicalStorage *Storage)
   TGUIConfiguration::LoadData(Storage);
 
   // duplicated from core\configuration.cpp
+#undef KEY2
+#undef KEY
 #define KEY(TYPE, VAR) Set##VAR(Storage->Read ## TYPE(LASTELEM(MB2W(#VAR)), Get##VAR()))
+#define KEY2(TYPE, VAR) Set##VAR(Storage->Read ## TYPE(LASTELEM(MB2W(#VAR)), nb::ToInt(Get##VAR())))
   REGCONFIG(false);
+#undef KEY2
 #undef KEY
 
-  if (Storage->OpenSubKey(L"Bookmarks", false))
+  if (Storage->OpenSubKeyPath("Bookmarks", false))
   {
     FBookmarks->Load(Storage);
     Storage->CloseSubKey();
@@ -252,7 +261,7 @@ void TFarConfiguration::CacheFarSettings()
   FFarConfirmations = GetConfirmationsSettings();
 }
 
-intptr_t TFarConfiguration::FarConfirmations() const
+int32_t TFarConfiguration::FarConfirmations() const
 {
   if (GetPlugin() && (GetCurrentThreadId() == GetPlugin()->GetFarThreadId()))
   {

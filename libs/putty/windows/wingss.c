@@ -4,26 +4,18 @@
 
 #define SECURITY_WIN32
 #include <security.h>
-#include <winnt.h>
 
 #include "pgssapi.h"
 #include "sshgss.h"
 #include "sshgssc.h"
 
 #include "misc.h"
-#include "winstuff.h"
 
 /* Windows code to set up the GSSAPI library list. */
 
-#ifdef _WIN64
-#define MIT_KERB_SUFFIX "64"
-#else
-#define MIT_KERB_SUFFIX "32"
-#endif
-
 const int ngsslibs = 3;
 const char *const gsslibnames[3] = {
-    "MIT Kerberos GSSAPI"MIT_KERB_SUFFIX".DLL",
+    "MIT Kerberos GSSAPI32.DLL",
     "Microsoft SSPI SECUR32.DLL",
     "User-specified GSSAPI DLL",
 };
@@ -33,31 +25,31 @@ const struct keyvalwhere gsslibkeywords[] = {
     { "custom", 2, -1, -1 },
 };
 
-PUTTY_DECL_WINDOWS_FUNCTION(static, SECURITY_STATUS,
+DECL_WINDOWS_FUNCTION(static, SECURITY_STATUS,
 		      AcquireCredentialsHandleA,
 		      (SEC_CHAR *, SEC_CHAR *, ULONG, PLUID,
 		       PVOID, SEC_GET_KEY_FN, PVOID, PCredHandle, PTimeStamp));
-PUTTY_DECL_WINDOWS_FUNCTION(static, SECURITY_STATUS,
+DECL_WINDOWS_FUNCTION(static, SECURITY_STATUS,
 		      InitializeSecurityContextA,
 		      (PCredHandle, PCtxtHandle, SEC_CHAR *, ULONG, ULONG,
 		       ULONG, PSecBufferDesc, ULONG, PCtxtHandle,
 		       PSecBufferDesc, PULONG, PTimeStamp));
-PUTTY_DECL_WINDOWS_FUNCTION(static, SECURITY_STATUS,
+DECL_WINDOWS_FUNCTION(static, SECURITY_STATUS,
 		      FreeContextBuffer,
 		      (PVOID));
-PUTTY_DECL_WINDOWS_FUNCTION(static, SECURITY_STATUS,
+DECL_WINDOWS_FUNCTION(static, SECURITY_STATUS,
 		      FreeCredentialsHandle,
 		      (PCredHandle));
-PUTTY_DECL_WINDOWS_FUNCTION(static, SECURITY_STATUS,
+DECL_WINDOWS_FUNCTION(static, SECURITY_STATUS,
 		      DeleteSecurityContext,
 		      (PCtxtHandle));
-PUTTY_DECL_WINDOWS_FUNCTION(static, SECURITY_STATUS,
+DECL_WINDOWS_FUNCTION(static, SECURITY_STATUS,
 		      QueryContextAttributesA,
 		      (PCtxtHandle, ULONG, PVOID));
-PUTTY_DECL_WINDOWS_FUNCTION(static, SECURITY_STATUS,
+DECL_WINDOWS_FUNCTION(static, SECURITY_STATUS,
 		      MakeSignature,
 		      (PCtxtHandle, ULONG, PSecBufferDesc, ULONG));
-PUTTY_DECL_WINDOWS_FUNCTION(static, PVOID,
+DECL_WINDOWS_FUNCTION(static, DLL_DIRECTORY_COOKIE,
                       AddDllDirectory,
                       (PCWSTR));
 
@@ -80,7 +72,7 @@ const char *gsslogmsg = NULL;
 
 static void ssh_sspi_bind_fns(struct ssh_gss_library *lib);
 
-struct ssh_gss_liblist *ssh_gss_setup(Conf *conf)
+struct ssh_gss_liblist *ssh_gss_setup(Conf *conf, void *frontend) // MPEXT
 {
     HMODULE module;
     HKEY regkey;
@@ -92,15 +84,16 @@ struct ssh_gss_liblist *ssh_gss_setup(Conf *conf)
     }
 #if (defined _MSC_VER && _MSC_VER < 1900) || defined MPEXT
     /* Omit the type-check because older MSVCs don't have this function */
-    PUTTY_GET_WINDOWS_FUNCTION_NO_TYPECHECK(kernel32_module, AddDllDirectory);
+    GET_WINDOWS_FUNCTION_NO_TYPECHECK(kernel32_module, AddDllDirectory);
 #else
-    PUTTY_GET_WINDOWS_FUNCTION(kernel32_module, AddDllDirectory);
+    GET_WINDOWS_FUNCTION(kernel32_module, AddDllDirectory);
 #endif
 
     list->libraries = snewn(3, struct ssh_gss_library);
     list->nlibraries = 0;
 
     /* MIT Kerberos GSSAPI implementation */
+    /* TODO: For 64-bit builds, check for gssapi64.dll */
     module = NULL;
     if (RegOpenKey(HKEY_LOCAL_MACHINE, "SOFTWARE\\MIT\\Kerberos", &regkey)
 	== ERROR_SUCCESS) {
@@ -125,7 +118,7 @@ struct ssh_gss_liblist *ssh_gss_setup(Conf *conf)
                     p_AddDllDirectory(dllPath);
                     sfree(dllPath);
                 }
-                strcat (buffer, "\\gssapi"MIT_KERB_SUFFIX".dll");
+                strcat (buffer, "\\gssapi32.dll");
                 module = LoadLibraryEx (buffer, NULL,
                                         LOAD_LIBRARY_SEARCH_SYSTEM32 |
                                         LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR |
@@ -140,7 +133,7 @@ struct ssh_gss_liblist *ssh_gss_setup(Conf *conf)
 	    &list->libraries[list->nlibraries++];
 
 	lib->id = 0;
-	lib->gsslogmsg = "Using GSSAPI from GSSAPI"MIT_KERB_SUFFIX".DLL";
+	lib->gsslogmsg = "Using GSSAPI from GSSAPI32.DLL";
 	lib->handle = (void *)module;
 
 #define BIND_GSS_FN(name) \
@@ -170,13 +163,15 @@ struct ssh_gss_liblist *ssh_gss_setup(Conf *conf)
 	lib->gsslogmsg = "Using SSPI from SECUR32.DLL";
 	lib->handle = (void *)module;
 
-	PUTTY_GET_WINDOWS_FUNCTION(module, AcquireCredentialsHandleA);
-	PUTTY_GET_WINDOWS_FUNCTION(module, InitializeSecurityContextA);
-	PUTTY_GET_WINDOWS_FUNCTION(module, FreeContextBuffer);
-	PUTTY_GET_WINDOWS_FUNCTION(module, FreeCredentialsHandle);
-	PUTTY_GET_WINDOWS_FUNCTION(module, DeleteSecurityContext);
-	PUTTY_GET_WINDOWS_FUNCTION(module, QueryContextAttributesA);
-	PUTTY_GET_WINDOWS_FUNCTION(module, MakeSignature);
+#pragma option push -w-cpt
+	GET_WINDOWS_FUNCTION(module, AcquireCredentialsHandleA);
+#pragma option pop
+	GET_WINDOWS_FUNCTION(module, InitializeSecurityContextA);
+	GET_WINDOWS_FUNCTION(module, FreeContextBuffer);
+	GET_WINDOWS_FUNCTION(module, FreeCredentialsHandle);
+	GET_WINDOWS_FUNCTION(module, DeleteSecurityContext);
+	GET_WINDOWS_FUNCTION(module, QueryContextAttributesA);
+	GET_WINDOWS_FUNCTION(module, MakeSignature);
 
 	ssh_sspi_bind_fns(lib);
     }
@@ -191,7 +186,7 @@ struct ssh_gss_liblist *ssh_gss_setup(Conf *conf)
             /* Add the custom directory as well in case it chainloads
              * some other DLLs (e.g a non-installed MIT Kerberos
              * instance) */
-            int pathlen = (int)strlen(path);
+            int pathlen = strlen(path);
 
             while (pathlen > 0 && path[pathlen-1] != ':' &&
                    path[pathlen-1] != '\\')
@@ -213,6 +208,12 @@ struct ssh_gss_liblist *ssh_gss_setup(Conf *conf)
                                LOAD_LIBRARY_SEARCH_SYSTEM32 |
                                LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR |
                                LOAD_LIBRARY_SEARCH_USER_DIRS);
+        // MPEXT
+        if (!module && frontend) {
+            char *buf = dupprintf("Cannot load GSSAPI from user-specified library '%s': %s", path, win_strerror(GetLastError()));
+            logevent(frontend, buf);
+            sfree(buf);
+        }
     }
     if (module) {
 	struct ssh_gss_library *lib =
@@ -278,7 +279,7 @@ static Ssh_gss_stat ssh_sspi_indicate_mech(struct ssh_gss_library *lib,
 
 
 static Ssh_gss_stat ssh_sspi_import_name(struct ssh_gss_library *lib,
-					 const char *host, Ssh_gss_name *srv_name)
+					 char *host, Ssh_gss_name *srv_name)
 {
     char *pStr;
 
@@ -362,8 +363,8 @@ static Ssh_gss_stat ssh_sspi_init_sec_context(struct ssh_gss_library *lib,
 					      Ssh_gss_buf *send_tok)
 {
     winSsh_gss_ctx *winctx = (winSsh_gss_ctx *) *ctx;
-    SecBuffer wsend_tok = MPEXT_INIT_SEC_BUFFER((unsigned long)send_tok->length,SECBUFFER_TOKEN,send_tok->value);
-    SecBuffer wrecv_tok = MPEXT_INIT_SEC_BUFFER((unsigned long)recv_tok->length,SECBUFFER_TOKEN,recv_tok->value);
+    SecBuffer wsend_tok = MPEXT_INIT_SEC_BUFFER(send_tok->length,SECBUFFER_TOKEN,send_tok->value);
+    SecBuffer wrecv_tok = MPEXT_INIT_SEC_BUFFER(recv_tok->length,SECBUFFER_TOKEN,recv_tok->value);
     SecBufferDesc output_desc= MPEXT_INIT_SEC_BUFFERDESC(SECBUFFER_VERSION,1,&wsend_tok);
     SecBufferDesc input_desc = MPEXT_INIT_SEC_BUFFERDESC(SECBUFFER_VERSION,1,&wrecv_tok);
     unsigned long flags=ISC_REQ_MUTUAL_AUTH|ISC_REQ_REPLAY_DETECT|
@@ -420,9 +421,9 @@ static Ssh_gss_stat ssh_sspi_release_cred(struct ssh_gss_library *lib,
 
     /* free Windows data */
     p_FreeCredentialsHandle(&winctx->cred_handle);
-#ifdef MPEXT
+    #ifdef MPEXT
     if (winctx->context_handle != NULL)
-#endif
+    #endif
     p_DeleteSecurityContext(&winctx->context);
 
     /* delete our "wrapper" structure */
@@ -523,7 +524,7 @@ static Ssh_gss_stat ssh_sspi_get_mic(struct ssh_gss_library *lib,
     InputBufferDescriptor.pBuffers = InputSecurityToken;
     InputBufferDescriptor.ulVersion = SECBUFFER_VERSION;
     InputSecurityToken[0].BufferType = SECBUFFER_DATA;
-    InputSecurityToken[0].cbBuffer = (unsigned long)buf->length;
+    InputSecurityToken[0].cbBuffer = buf->length;
     InputSecurityToken[0].pvBuffer = buf->value;
     InputSecurityToken[1].BufferType = SECBUFFER_TOKEN;
     InputSecurityToken[1].cbBuffer = ContextSizes.cbMaxSignature;

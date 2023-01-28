@@ -49,7 +49,7 @@
 #include <stdlib.h>                              // For exit in Error function
 #include <stdio.h>                               // Needed for example only
 
-#include <headers.hpp>
+#include <nbsystem.h>
 
 
 // Class DynamicQueue makes a dynamic array which can grow as new data are added

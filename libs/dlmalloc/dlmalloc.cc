@@ -4484,7 +4484,7 @@ void malloc_state::dispose_chunk(mchunkptr p, size_t psize) {
             }
             else if ((next->_head & INUSE_BITS) == INUSE_BITS) {
                 _dvsize = psize;
-                p->set_free_with_pinuse(psize, next);
+                if (p) p->set_free_with_pinuse(psize, next);
                 return;
             }
         }

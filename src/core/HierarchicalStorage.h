@@ -1,88 +1,94 @@
-
+﻿
 #pragma once
 
 #include <registry.hpp>
 #include <memory>
+#include <rdestl/map.h>
+#include <rdestl/vector.h>
 
-enum TStorage
-{
-  stDetect,
-  stRegistry,
-  stIniFile,
-  stNul,
-  stXmlFile,
+enum TStorage { stDetect, stRegistry, stIniFile, stNul };
+enum TStorageAccessMode { smRead, smReadWrite };
+using TIntMapping = rde::map<UnicodeString, int32_t>;
   stFar3Storage
-};
-
-enum TStorageAccessMode
-{
-  smRead,
-  smReadWrite,
-};
 
 class NB_CORE_EXPORT THierarchicalStorage : public TObject
 {
   NB_DISABLE_COPY(THierarchicalStorage)
+friend class TCustomIniFileStorage;
 
 public:
-  explicit THierarchicalStorage(UnicodeString AStorage);
-  virtual ~THierarchicalStorage();
+  THierarchicalStorage() = delete;
+  explicit THierarchicalStorage(const UnicodeString AStorage) noexcept;
+  virtual ~THierarchicalStorage() noexcept;
   virtual void Init() {}
+  void ConfigureForPutty();
   virtual bool OpenRootKey(bool CanCreate);
-  virtual bool OpenSubKey(UnicodeString ASubKey, bool CanCreate, bool Path = false);
+  virtual bool OpenSubKey(const UnicodeString ASubKey, bool CanCreate);
   virtual void CloseSubKey();
   void CloseAll();
-  virtual bool DeleteSubKey(UnicodeString SubKey) = 0;
-  virtual void GetSubKeyNames(TStrings *Strings) = 0;
-  virtual void GetValueNames(TStrings *Strings) const = 0;
+  bool OpenSubKeyPath(const UnicodeString & KeyPath, bool CanCreate);
+  void CloseSubKeyPath();
+  void GetSubKeyNames(TStrings * Strings);
+  void GetValueNames(TStrings *Strings);
   bool HasSubKeys();
-  bool HasSubKey(UnicodeString SubKey);
-  bool KeyExists(UnicodeString SubKey);
-  virtual bool ValueExists(UnicodeString Value) const = 0;
-  virtual void RecursiveDeleteSubKey(UnicodeString Key);
+  bool KeyExists(const UnicodeString SubKey);
+  bool ValueExists(const UnicodeString Value);
+  virtual void RecursiveDeleteSubKey(const UnicodeString Key);
   virtual void ClearSubKeys();
   virtual void ReadValues(TStrings *Strings, bool MaintainKeys = false);
   virtual void WriteValues(TStrings *Strings, bool MaintainKeys = false);
   virtual void ClearValues();
-  virtual bool DeleteValue(UnicodeString Name) = 0;
-  virtual size_t BinaryDataSize(UnicodeString Name) const = 0;
+  bool DeleteValue(const UnicodeString Name);
 
-  virtual bool ReadBool(UnicodeString Name, bool Default) const = 0;
-  virtual intptr_t ReadInteger(UnicodeString Name, intptr_t Default) const = 0;
-  virtual int64_t ReadInt64(UnicodeString Name, int64_t Default) const = 0;
-  virtual TDateTime ReadDateTime(UnicodeString Name, const TDateTime &Default) const = 0;
-  virtual double ReadFloat(UnicodeString Name, double Default) const = 0;
-  virtual UnicodeString ReadStringRaw(UnicodeString Name, UnicodeString Default) const = 0;
-  virtual size_t ReadBinaryData(UnicodeString Name, void *Buffer, size_t Size) const = 0;
+  bool ReadBool(UnicodeString Name, bool Default);
+  template<typename T>
+  typename T ReadEnum(
+    const UnicodeString Name, const T Default, const TIntMapping & Mapping = TIntMapping());
+  int32_t ReadInteger(const UnicodeString Name, int32_t Default);
+  int64_t ReadInt64(const UnicodeString Name, int64_t Default);
 
-  virtual UnicodeString ReadString(UnicodeString Name, UnicodeString Default) const;
-  RawByteString ReadBinaryData(UnicodeString Name) const;
-  virtual RawByteString ReadStringAsBinaryData(UnicodeString Name, RawByteString Default) const;
+  TDateTime ReadDateTime(const UnicodeString Name, TDateTime Default);
 
-  virtual void WriteBool(UnicodeString Name, bool Value) = 0;
-  virtual void WriteStringRaw(UnicodeString Name, UnicodeString Value) = 0;
-  virtual void WriteInteger(UnicodeString Name, intptr_t Value) = 0;
-  virtual void WriteInt64(UnicodeString Name, int64_t Value) = 0;
-  virtual void WriteDateTime(UnicodeString Name, const TDateTime &Value) = 0;
-  virtual void WriteFloat(UnicodeString Name, double Value) = 0;
-  virtual void WriteBinaryData(UnicodeString Name, const void *Buffer, size_t Size) = 0;
+  double ReadFloat(const UnicodeString Name, double Default);
+  UnicodeString ReadStringRaw(const UnicodeString & Name, const UnicodeString & Default);
+  size_t ReadBinaryData(const UnicodeString Name, void *Buffer, size_t Size);
 
-  virtual void WriteString(UnicodeString Name, UnicodeString Value);
-  void WriteBinaryData(UnicodeString Name, RawByteString Value);
-  virtual void WriteBinaryDataAsString(UnicodeString Name, RawByteString Value);
+  virtual UnicodeString ReadString(const UnicodeString & Name, const UnicodeString & Default);
+  RawByteString ReadBinaryData(const UnicodeString & Name);
+  RawByteString ReadStringAsBinaryData(const UnicodeString & Name, const RawByteString & Default);
+
+  void WriteBool(const UnicodeString Name, bool Value);
+  void WriteStringRaw(const UnicodeString Name, const UnicodeString Value);
+  void WriteInteger(const UnicodeString Name, int32_t Value);
+  void WriteInt64(const UnicodeString Name, int64_t Value);
+  void WriteDateTime(const UnicodeString Name, const TDateTime Value);
+  void WriteFloat(const UnicodeString Name, double Value);
+  void WriteBinaryData(const UnicodeString Name, const void *Buffer, size_t Size);
+
+  void WriteString(const UnicodeString Name, const UnicodeString Value);
+  void WriteBinaryData(const UnicodeString Name, const RawByteString Value);
+  void WriteBinaryDataAsString(const UnicodeString Name, const RawByteString Value);
 
   virtual void Flush();
 
-#if 0
-  __property UnicodeString Storage  = { read=FStorage };
-  __property UnicodeString CurrentSubKey  = { read=GetCurrentSubKey };
-  __property TStorageAccessMode AccessMode  = { read=FAccessMode, write=SetAccessMode };
+  __property UnicodeString Storage  = { read = FStorage };
+  ROProperty<UnicodeString> Storage{nb::bind(&THierarchicalStorage::GetStorage, this)};
+  __property UnicodeString CurrentSubKey  = { read = GetCurrentSubKey };
+  ROProperty<UnicodeString> CurrentSubKey{nb::bind(&THierarchicalStorage::GetCurrentSubKey, this)};
+  __property TStorageAccessMode AccessMode  = { read = FAccessMode, write = SetAccessMode };
+  RWProperty<TStorageAccessMode> AccessMode{nb::bind(&THierarchicalStorage::GetAccessMode, this), nb::bind(&THierarchicalStorage::SetAccessMode, this) };
   __property bool Explicit = { read = FExplicit, write = FExplicit };
+  bool& Explicit{FExplicit};
+  __property bool ForceSave = { read = FForceSave, write = FForceSave };
+  bool& ForceSave{FForceSave};
   __property bool ForceAnsi = { read = FForceAnsi, write = FForceAnsi };
+  bool& ForceAnsi{FForceAnsi};
   __property bool MungeStringValues = { read = FMungeStringValues, write = FMungeStringValues };
+  bool& MungeStringValues{FMungeStringValues};
   __property UnicodeString Source = { read = GetSource };
+  ROProperty<UnicodeString> Source{nb::bind(&THierarchicalStorage::GetSourceConst, this)};
   __property bool Temporary = { read = GetTemporary };
-#endif // #if 0
+  ROProperty<bool> Temporary{nb::bind(&THierarchicalStorage::GetTemporary, this)};
 
   UnicodeString GetStorage() const { return FStorage; }
   TStorageAccessMode GetAccessMode() const { return FAccessMode; }
@@ -93,169 +99,224 @@ public:
   bool GetMungeStringValues() const { return FMungeStringValues; }
   void SetMungeStringValues(bool Value) { FMungeStringValues = Value; }
 
-  virtual void SetAccessMode(TStorageAccessMode Value);
-
+  UnicodeString GetSourceConst() const { return GetSource(); }
+  void SetAccessMode(TStorageAccessMode Value) { SetAccessModeProtected(Value); }
 protected:
-  UnicodeString FStorage;
-  TStrings *FKeyHistory;
-  TStorageAccessMode FAccessMode;
-  bool FExplicit;
-  bool FMungeStringValues;
-  bool FForceAnsi;
+  enum THierarchicalStorageAccess { hsaRead = 0x01, hsaWrite = 0x02 };
+  struct TKeyEntry
+  {
+    UnicodeString Key;
+    int32_t Levels{0};
+    uint32_t Access{0};
+  };
 
-public:
+  UnicodeString FStorage;
+  nb::vector_t<TKeyEntry> FKeyHistory;
+  TStorageAccessMode FAccessMode;
+  bool FExplicit{false};
+  bool FForceSave{false};
+  bool FMungeStringValues{false};
+  bool FForceAnsi{false};
+  int32_t FFakeReadOnlyOpens{0};
+  mutable int32_t FRootAccess{0};
+
+  __property bool ForceAnsi = { read = FForceAnsi, write = FForceAnsi };
+
   UnicodeString GetCurrentSubKey() const;
   UnicodeString GetCurrentSubKeyMunged() const;
-  virtual bool DoKeyExists(UnicodeString SubKey, bool ForceAnsi) = 0;
-  static UnicodeString IncludeTrailingBackslash(UnicodeString S);
-  static UnicodeString ExcludeTrailingBackslash(UnicodeString S);
-  virtual bool DoOpenSubKey(UnicodeString SubKey, bool CanCreate) = 0;
-  UnicodeString MungeKeyName(UnicodeString Key);
+  virtual void SetAccessModeProtected(TStorageAccessMode Value);
+  virtual bool DoKeyExists(const UnicodeString SubKey, bool ForceAnsi) = 0;
+  virtual bool DoValueExists(const UnicodeString Value) = 0;
+  static UnicodeString IncludeTrailingBackslash(const UnicodeString S);
+  static UnicodeString ExcludeTrailingBackslash(const UnicodeString S);
+  virtual bool DoOpenSubKey(const UnicodeString SubKey, bool CanCreate) = 0;
+  virtual void DoCloseSubKey() = 0;
+  UnicodeString MungeKeyName(const UnicodeString Key);
   virtual UnicodeString GetSource() const = 0;
-  virtual UnicodeString GetSource() = 0;
   virtual bool GetTemporary() const;
+  virtual void DoDeleteSubKey(const UnicodeString SubKey) = 0;
+  virtual bool DoDeleteValue(const UnicodeString Name) = 0;
+
+  virtual void DoGetSubKeyNames(TStrings * Strings) = 0;
+  virtual void DoGetValueNames(TStrings * Strings) = 0;
+
+  virtual void DoWriteBool(const UnicodeString & Name, bool Value) = 0;
+  virtual void DoWriteStringRaw(const UnicodeString & Name, const UnicodeString & Value) = 0;
+  virtual void DoWriteInteger(const UnicodeString & Name, int32_t Value) = 0;
+  virtual void DoWriteInt64(const UnicodeString & Name, int64_t Value) = 0;
+  virtual void DoWriteBinaryData(const UnicodeString & Name, const void * Buffer, size_t Size) = 0;
+
+  virtual bool DoReadBool(const UnicodeString & Name, bool Default) = 0;
+  virtual UnicodeString DoReadStringRaw(const UnicodeString & Name, const UnicodeString & Default) = 0;
+  int32_t ReadIntegerWithMapping(const UnicodeString & Name, int32_t Default, const TIntMapping * Mapping);
+  virtual int32_t DoReadInteger(const UnicodeString & Name, int32_t Default, const TIntMapping * Mapping) = 0;
+  virtual int64_t DoReadInt64(const UnicodeString & Name, int64_t Default) = 0;
+  virtual TDateTime DoReadDateTime(const UnicodeString & Name, TDateTime Default) = 0;
+  virtual double DoReadFloat(const UnicodeString & Name, double Default) = 0;
+  virtual size_t DoReadBinaryData(const UnicodeString & Name, void * Buffer, size_t Size) = 0;
+
+  virtual size_t DoBinaryDataSize(const UnicodeString & Name) = 0;
+
+  virtual UnicodeString DoReadRootAccessString();
+
+  size_t BinaryDataSize(const UnicodeString & Name);
+  UnicodeString ReadAccessString();
+  uint32_t ReadAccess(uint32_t CurrentAccess);
+  bool HasAccess(uint32_t Access);
+  bool CanRead();
+  bool CanWrite();
+  uint32_t GetCurrentAccess();
 };
+
+extern TIntMapping AutoSwitchMapping;
+extern TIntMapping AutoSwitchReversedMapping;
+
+template<typename T>
+T THierarchicalStorage::ReadEnum(const UnicodeString Name, const T Default, const TIntMapping & Mapping)
+{
+  const TIntMapping * AMapping = (Mapping.empty()) ? nullptr : &Mapping;
+  return T(ReadIntegerWithMapping(Name, (int32_t)(Default), AMapping));
+}
 
 class NB_CORE_EXPORT TRegistryStorage : public THierarchicalStorage
 {
   NB_DISABLE_COPY(TRegistryStorage)
 public:
-  explicit TRegistryStorage(UnicodeString AStorage, HKEY ARootKey);
-  explicit TRegistryStorage(UnicodeString AStorage);
-  virtual void Init();
-  virtual ~TRegistryStorage();
+  TRegistryStorage() = delete;
+  explicit TRegistryStorage(const UnicodeString AStorage, HKEY ARootKey, REGSAM WowMode = 0) noexcept;
+  explicit TRegistryStorage(const UnicodeString AStorage) noexcept;
+  virtual ~TRegistryStorage() noexcept;
 
   bool Copy(TRegistryStorage *Storage);
 
-  virtual void CloseSubKey();
-  virtual bool DeleteSubKey(UnicodeString SubKey);
-  virtual bool DeleteValue(UnicodeString Name);
-  virtual void GetSubKeyNames(TStrings *Strings);
-  virtual bool ValueExists(UnicodeString Value) const;
-
-  virtual size_t BinaryDataSize(UnicodeString Name) const;
-
-  virtual bool ReadBool(UnicodeString Name, bool Default) const;
-  virtual intptr_t ReadInteger(UnicodeString Name, intptr_t Default) const;
-  virtual int64_t ReadInt64(UnicodeString Name, int64_t Default) const;
-  virtual TDateTime ReadDateTime(UnicodeString Name, const TDateTime &Default) const;
-  virtual double ReadFloat(UnicodeString Name, double Default) const;
-  virtual UnicodeString ReadStringRaw(UnicodeString Name, UnicodeString Default) const;
-  size_t ReadBinaryData(UnicodeString Name, void *Buffer, size_t Size) const;
-
-  virtual void WriteBool(UnicodeString Name, bool Value);
-  virtual void WriteInteger(UnicodeString Name, intptr_t Value);
-  virtual void WriteInt64(UnicodeString Name, int64_t Value);
-  virtual void WriteDateTime(UnicodeString Name, const TDateTime &Value);
-  virtual void WriteFloat(UnicodeString Name, double Value);
-  virtual void WriteStringRaw(UnicodeString Name, UnicodeString Value);
-  void WriteBinaryData(UnicodeString Name, const void *Buffer, size_t Size);
-
-  virtual void GetValueNames(TStrings *Strings) const;
+public:
+  int32_t GetFailed() const { return FFailed; }
+  void SetFailed(int32_t Value) { FFailed = Value; }
+  virtual void SetAccessMode(TStorageAccessMode value);
 
 protected:
-  virtual bool DoKeyExists(UnicodeString SubKey, bool AForceAnsi);
-  virtual bool DoOpenSubKey(UnicodeString SubKey, bool CanCreate);
-  virtual UnicodeString GetSource() const;
-  virtual UnicodeString GetSource();
+  virtual bool DoKeyExists(const UnicodeString SubKey, bool ForceAnsi);
+  virtual bool DoValueExists(const UnicodeString Value) override;
+  virtual bool DoOpenSubKey(const UnicodeString SubKey, bool CanCreate);
+  virtual void DoCloseSubKey() override;
+  virtual UnicodeString GetSource() const override;
+  virtual size_t DoBinaryDataSize(const UnicodeString & Name) override;
+  virtual void DoDeleteSubKey(const UnicodeString SubKey) override;
+  virtual bool DoDeleteValue(const UnicodeString Name) override;
 
-#if 0
-  __property int Failed  = { read=GetFailed, write=FFailed };
-#endif // #if 0
-public:
-  intptr_t GetFailed() const;
-  void SetFailed(intptr_t Value) { FFailed = Value; }
-  virtual void SetAccessMode(TStorageAccessMode Value);
+  virtual void DoGetSubKeyNames(TStrings * Strings);
+  virtual void DoGetValueNames(TStrings* Strings);
+
+  virtual void DoWriteBool(const UnicodeString & Name, bool Value) override;
+  virtual void DoWriteStringRaw(const UnicodeString & Name, const UnicodeString & Value) override;
+  virtual void DoWriteInteger(const UnicodeString & Name, int32_t Value) override;
+  virtual void DoWriteInt64(const UnicodeString & Name, int64_t Value) override;
+  virtual void DoWriteBinaryData(const UnicodeString & Name, const void * Buffer, size_t Size) override;
+
+  virtual bool DoReadBool(const UnicodeString & Name, bool Default) override;
+  virtual int32_t DoReadInteger(const UnicodeString & Name, int32_t Default, const TIntMapping * Mapping) override;
+  virtual int64_t DoReadInt64(const UnicodeString & Name, int64_t Default) override;
+  virtual TDateTime DoReadDateTime(const UnicodeString & Name, TDateTime Default) override;
+  virtual double DoReadFloat(const UnicodeString & Name, double Default) override;
+  virtual UnicodeString DoReadStringRaw(const UnicodeString & Name, const UnicodeString & Default) override;
+  virtual size_t DoReadBinaryData(const UnicodeString & Name, void * Buffer, size_t Size) override;
 
 private:
-  TRegistry *FRegistry;
-  mutable intptr_t FFailed;
+  std::unique_ptr<TRegistry> FRegistry;
+  mutable int32_t FFailed{0};
+  REGSAM FWowMode{0};
+
+public:
+  virtual void Init() override;
 };
 
 #if 0
+
 class TCustomIniFileStorage : public THierarchicalStorage
 {
 public:
-  __fastcall TCustomIniFileStorage(const UnicodeString Storage, TCustomIniFile *IniFile);
-  virtual __fastcall ~TCustomIniFileStorage();
+  TCustomIniFileStorage(const UnicodeString & Storage, TCustomIniFile * IniFile);
+  virtual ~TCustomIniFileStorage();
 
-  virtual bool __fastcall OpenRootKey(bool CanCreate);
-  virtual bool __fastcall OpenSubKey(UnicodeString SubKey, bool CanCreate, bool Path = false);
-  virtual void __fastcall CloseSubKey();
-  virtual bool __fastcall DeleteSubKey(const UnicodeString SubKey);
-  virtual bool __fastcall DeleteValue(const UnicodeString Name);
-  virtual void __fastcall GetSubKeyNames(Classes::TStrings *Strings);
-  virtual bool __fastcall ValueExists(const UnicodeString Value);
-
-  virtual size_t __fastcall BinaryDataSize(const UnicodeString Name);
-
-  virtual bool __fastcall ReadBool(const UnicodeString Name, bool Default);
-  virtual int __fastcall ReadInteger(const UnicodeString Name, int Default);
-  virtual __int64 __fastcall ReadInt64(const UnicodeString Name, __int64 Default);
-  virtual TDateTime __fastcall ReadDateTime(const UnicodeString Name, TDateTime Default);
-  virtual double __fastcall ReadFloat(const UnicodeString Name, double Default);
-  virtual UnicodeString __fastcall ReadStringRaw(const UnicodeString Name, const UnicodeString Default);
-  virtual size_t __fastcall ReadBinaryData(const UnicodeString Name, void *Buffer, size_t Size);
-
-  virtual void __fastcall WriteBool(const UnicodeString Name, bool Value);
-  virtual void __fastcall WriteInteger(const UnicodeString Name, int Value);
-  virtual void __fastcall WriteInt64(const UnicodeString Name, __int64 Value);
-  virtual void __fastcall WriteDateTime(const UnicodeString Name, TDateTime Value);
-  virtual void __fastcall WriteFloat(const UnicodeString Name, double Value);
-  virtual void __fastcall WriteStringRaw(const UnicodeString Name, const UnicodeString Value);
-  virtual void __fastcall WriteBinaryData(const UnicodeString Name, const void *Buffer, int Size);
-
-  virtual void __fastcall GetValueNames(Classes::TStrings *Strings);
+  virtual bool OpenRootKey(bool CanCreate);
+  virtual bool OpenSubKey(const UnicodeString & SubKey, bool CanCreate);
 
 private:
-  UnicodeString __fastcall GetCurrentSection();
-  inline bool __fastcall HandleByMasterStorage();
-  inline bool __fastcall HandleReadByMasterStorage(UnicodeString Name);
-  inline bool __fastcall DoValueExists(UnicodeString Value);
-  void __fastcall DoWriteStringRaw(UnicodeString Name, UnicodeString Value);
-  void __fastcall DoWriteBinaryData(UnicodeString Name, const void *Buffer, int Size);
+  UnicodeString GetCurrentSection();
+  inline bool HandleByMasterStorage();
+  inline bool HandleReadByMasterStorage(const UnicodeString & Name);
+  inline bool DoValueExistsInternal(const UnicodeString & Value);
+  void DoWriteStringRawInternal(const UnicodeString & Name, const UnicodeString & Value);
+  int DoReadIntegerWithMapping(const UnicodeString & Name, int Default, const TIntMapping * Mapping);
 
 protected:
-  TCustomIniFile *FIniFile;
+  TCustomIniFile * FIniFile;
   std::unique_ptr<TStringList> FSections;
   std::unique_ptr<THierarchicalStorage> FMasterStorage;
   int FMasterStorageOpenFailures;
   bool FOpeningSubKey;
 
-  __property UnicodeString CurrentSection  = { read=GetCurrentSection };
-  virtual void __fastcall SetAccessMode(TStorageAccessMode value);
-  virtual bool __fastcall DoKeyExists(const UnicodeString SubKey, bool ForceAnsi);
-  virtual bool __fastcall DoOpenSubKey(const UnicodeString SubKey, bool CanCreate);
-  virtual UnicodeString __fastcall GetSource();
-  void __fastcall CacheSections();
-  void __fastcall ResetCache();
+  __property UnicodeString CurrentSection = { read = GetCurrentSection };
+  virtual void SetAccessMode(TStorageAccessMode value);
+  virtual bool DoKeyExists(const UnicodeString & SubKey, bool ForceAnsi);
+  virtual bool DoValueExists(const UnicodeString & Value);
+  virtual bool DoOpenSubKey(const UnicodeString & SubKey, bool CanCreate);
+  virtual void DoCloseSubKey();
+  virtual UnicodeString GetSource();
+  virtual size_t DoBinaryDataSize(const UnicodeString & Name);
+  virtual void DoDeleteSubKey(const UnicodeString & SubKey);
+  virtual bool DoDeleteValue(const UnicodeString & Name);
+
+  virtual void DoGetSubKeyNames(TStrings * Strings);
+  virtual void DoGetValueNames(TStrings * Strings);
+
+  virtual void DoWriteBool(const UnicodeString & Name, bool Value);
+  virtual void DoWriteStringRaw(const UnicodeString & Name, const UnicodeString & Value);
+  virtual void DoWriteInteger(const UnicodeString & Name, int Value);
+  virtual void DoWriteInt64(const UnicodeString & Name, __int64 Value);
+  virtual void DoWriteBinaryData(const UnicodeString & Name, const void * Buffer, int Size);
+
+  virtual bool DoReadBool(const UnicodeString & Name, bool Default);
+  virtual int DoReadInteger(const UnicodeString & Name, int Default, const TIntMapping * Mapping);
+  virtual __int64 DoReadInt64(const UnicodeString & Name, __int64 Default);
+  virtual TDateTime DoReadDateTime(const UnicodeString & Name, TDateTime Default);
+  virtual double DoReadFloat(const UnicodeString & Name, double Default);
+  virtual UnicodeString DoReadStringRaw(const UnicodeString & Name, const UnicodeString & Default);
+  virtual size_t DoReadBinaryData(const UnicodeString & Name, void * Buffer, size_t Size);
+
+  virtual UnicodeString DoReadRootAccessString();
+
+  void CacheSections();
+  void ResetCache();
+  bool DoKeyExistsInternal(const UnicodeString & SubKey);
 };
-//---------------------------------------------------------------------------
+
 class TIniFileStorage : public TCustomIniFileStorage
 {
 public:
-  static TIniFileStorage *__fastcall CreateFromPath(const UnicodeString AStorage);
-  virtual __fastcall ~TIniFileStorage();
+  static TIniFileStorage * CreateFromPath(const UnicodeString & AStorage);
+  virtual ~TIniFileStorage();
 
-  virtual void __fastcall Flush();
+  virtual void Flush();
 
 private:
-  __fastcall TIniFileStorage(const UnicodeString FileName, TCustomIniFile *IniFile);
-  TStrings *FOriginal;
-  void __fastcall ApplyOverrides();
+  TIniFileStorage(const UnicodeString & FileName, TCustomIniFile * IniFile);
+  TStrings * FOriginal;
+  void ApplyOverrides();
 };
-//---------------------------------------------------------------------------
+
 class TOptionsStorage : public TCustomIniFileStorage
 {
 public:
-  __fastcall TOptionsStorage(TStrings *Options, bool AllowWrite);
-  __fastcall TOptionsStorage(TStrings *Options, UnicodeString RootKey, THierarchicalStorage *MasterStorage);
+  TOptionsStorage(TStrings * Options, bool AllowWrite);
+  TOptionsStorage(TStrings * Options, const UnicodeString & RootKey, THierarchicalStorage * MasterStorage);
 
 protected:
-  virtual bool __fastcall GetTemporary();
+  virtual bool GetTemporary();
 };
+
 #endif // #if 0
 
 NB_CORE_EXPORT UnicodeString PuttyMungeStr(const UnicodeString Str);
 NB_CORE_EXPORT UnicodeString PuttyUnMungeStr(const UnicodeString Str);
-
+NB_CORE_EXPORT AnsiString PuttyStr(const UnicodeString Str);

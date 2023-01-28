@@ -3,8 +3,11 @@
 
 #include "FileZillaIntern.h"
 #include "FileZillaIntf.h"
+#include "FileZillaApi.h"
 
-TFileZillaIntern::TFileZillaIntern(TFileZillaIntf * AOwner) :
+__removed #pragma package(smart_init)
+
+TFileZillaIntern::TFileZillaIntern(TFileZillaIntf * AOwner) noexcept :
   // TObject(OBJECT_CLASS_TFileZillaIntern),
   FOwner(AOwner)
 {
@@ -43,7 +46,7 @@ CString TFileZillaIntern::GetOption(int OptionID) const
 
 int TFileZillaIntern::GetOptionVal(int OptionID) const
 {
-  return (int)FOwner->OptionVal(OptionID);
+  return nb::ToInt(FOwner->OptionVal(OptionID));
 }
 
 int TFileZillaIntern::GetDebugLevel() const

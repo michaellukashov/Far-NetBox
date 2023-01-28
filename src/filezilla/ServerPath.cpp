@@ -2,6 +2,7 @@
 #include "stdafx.h"
 #include "ServerPath.h"
 #include "structures.h"
+#include "FileZillaApi.h"
 
 #define FTP_MVS_DOUBLE_QUOTA (TCHAR)0xDC
 
@@ -462,8 +463,6 @@ const BOOL CServerPath::IsEmpty() const
 
 BOOL CServerPath::AddSubdir(CString subdir)
 {
-  subdir.TrimLeft( L" " );
-  subdir.TrimRight( L" " );
   if (subdir == L"")
     return FALSE;
 

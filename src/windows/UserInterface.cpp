@@ -1,12 +1,9 @@
-
+﻿
 #include <vcl.h>
 #pragma hdrstop
 
-#if 0
-#include "ScpCommander.h"
-#include "ScpExplorer.h"
-#include "TerminalManager.h"
-#endif // #if 0
+__removed #include "ScpCommander.h"
+__removed #include "ScpExplorer.h"
 
 #include <CoreMain.h>
 #include <Common.h>
@@ -15,14 +12,13 @@
 #include "ProgParams.h"
 #include "VCLCommon.h"
 #include "WinConfiguration.h"
+__removed #include "TerminalManager.h"
 #include "TextsWin.h"
 #include "WinInterface.h"
+__removed #include "PasswordEdit.hpp"
 #include "ProgParams.h"
 #include "Tools.h"
-#if 0
-#include "PasswordEdit.hpp"
-#include "Custom.h"
-#endif // #if 0
+__removed #include "Custom.h"
 #include "HelpWin.h"
 #include <Math.hpp>
 #include <PasTools.hpp>
@@ -33,13 +29,13 @@
 
 const UnicodeString AppName = L"WinSCP";
 
-TConfiguration *CreateConfiguration()
+TConfiguration * CreateConfiguration()
 {
   WinConfiguration = new TWinConfiguration();
   CustomWinConfiguration = WinConfiguration;
   GUIConfiguration = CustomWinConfiguration;
 
-  TProgramParams *Params = TProgramParams::Instance();
+  TProgramParams * Params = TProgramParams::Instance();
   UnicodeString IniFileName = Params->SwitchValue(INI_SWITCH);
   if (!IniFileName.IsEmpty())
   {
@@ -50,14 +46,14 @@ TConfiguration *CreateConfiguration()
     else if (CheckSafe(Params))
     {
       IniFileName = ExpandFileName(ExpandEnvironmentVariables(IniFileName));
-      WinConfiguration->IniFileStorageName = IniFileName;
+      WinConfiguration->SetExplicitIniFileStorageName(IniFileName);
     }
   }
 
   if (CheckSafe(Params))
   {
-    std::unique_ptr<TStrings> RawConfig(new TStringList());
-    if (Params->FindSwitch(L"rawconfig", RawConfig.get()))
+    std::unique_ptr<TStrings> RawConfig(std::make_unique<TStringList>());
+    if (Params->FindSwitch(RAW_CONFIG_SWITCH, RawConfig.get()))
     {
       WinConfiguration->OptionsStorage = RawConfig.get();
     }
@@ -67,16 +63,15 @@ TConfiguration *CreateConfiguration()
 }
 #endif // #if 0
 
-TOptions *GetGlobalOptions()
+TOptions * GetGlobalOptions()
 {
   return nullptr; // TProgramParams::Instance();
 }
-
 #if 0
 
-TCustomScpExplorerForm *CreateScpExplorer()
+TCustomScpExplorerForm * CreateScpExplorer()
 {
-  TCustomScpExplorerForm *ScpExplorer;
+  TCustomScpExplorerForm * ScpExplorer;
   if (WinConfiguration->Interface == ifExplorer)
   {
     ScpExplorer = SafeFormCreate<TScpExplorerForm>();
@@ -90,7 +85,7 @@ TCustomScpExplorerForm *CreateScpExplorer()
 
 UnicodeString SshVersionString()
 {
-  return FORMAT(L"WinSCP-release-%s", Configuration->GetVersion());
+  return FORMAT("WinSCP-release-%s", Configuration->Version);
 }
 
 UnicodeString AppNameString()
@@ -117,7 +112,7 @@ void SetOnForeground(bool OnForeground)
 void FlashOnBackground()
 {
   DebugAssert(Application);
-  if (!ForcedOnForeground && !ForegroundTask())
+  if (WinConfiguration->FlashTaskbar && !ForcedOnForeground && !ForegroundTask())
   {
     FlashWindow(Application->MainFormHandle, true);
   }
@@ -128,9 +123,9 @@ void LocalSystemSettings(TCustomForm * /*Control*/)
   // noop
 }
 
-void ShowExtendedException(Exception *E)
+void ShowExtendedException(Exception * E)
 {
-  ShowExtendedExceptionEx(NULL, E);
+  ShowExtendedExceptionEx(nullptr, E);
 }
 
 void TerminateApplication()
@@ -143,14 +138,14 @@ struct TOpenLocalPathHandler
   UnicodeString LocalPath;
   UnicodeString LocalFileName;
 
-  void Open(TObject *Sender)
+  void Open(TObject * Sender, unsigned int & /*Answer*/)
   {
-    TButton *Button = DebugNotNull(dynamic_cast<TButton *>(Sender));
+    TButton * Button = DebugNotNull(dynamic_cast<TButton *>(Sender));
     // Reason for separate AMenu variable is given in TPreferencesDialog::EditorFontColorButtonClick
-    TPopupMenu *AMenu = new TPopupMenu(Application);
+    TPopupMenu * AMenu = new TPopupMenu(Application);
     // Popup menu has to survive the popup as TBX calls click handler asynchronously (post).
     Menu.reset(AMenu);
-    TMenuItem *Item;
+    TMenuItem * Item;
 
     Item = new TMenuItem(Menu.get());
     Menu->Items->Add(Item);
@@ -189,8 +184,8 @@ private:
   }
 };
 
-void ShowExtendedExceptionEx(TTerminal *Terminal,
-  Exception *E)
+void ShowExtendedExceptionEx(TTerminal * Terminal,
+  Exception * E)
 {
   bool Show = ShouldDisplayException(E);
   bool DoNotDisplay = false;
@@ -200,42 +195,43 @@ void ShowExtendedExceptionEx(TTerminal *Terminal,
     // This is special case used particularly when called from .NET assembly
     // (which always uses /nointeractiveinput),
     // but can be useful for other console runs too
-    TProgramParams *Params = TProgramParams::Instance();
-    if (Params->FindSwitch(L"nointeractiveinput"))
+    TProgramParams * Params = TProgramParams::Instance();
+    if (Params->FindSwitch(NOINTERACTIVEINPUT_SWITCH))
     {
       DoNotDisplay = true;
       if (Show && CheckXmlLogParam(Params))
       {
         // The Started argument won't be used with .NET assembly, as it never uses patterns in XML log file name.
         // But it theoretically can be used, when started manually.
-        std::unique_ptr<TActionLog> ActionLog(new TActionLog(Now(), Configuration));
+        std::unique_ptr<TActionLog> ActionLog(std::make_unique<TActionLog>(Now(), Configuration));
         ActionLog->AddFailure(E);
         // unnecessary explicit release
-        ActionLog.reset(NULL);
+        ActionLog.reset(nullptr);
       }
     }
   }
-  catch (Exception &E)
+  catch (Exception & E)
   {
     // swallow
   }
 
   if (!DoNotDisplay)
   {
-    TTerminalManager *Manager = TTerminalManager::Instance(false);
+    TTerminalManager * Manager = TTerminalManager::Instance(false);
 
-    ESshTerminate *Terminate = dynamic_cast<ESshTerminate *>(E);
-    bool CloseOnCompletion = (Terminate != NULL);
+    ESshTerminate * Terminate = dynamic_cast<ESshTerminate*>(E);
+    bool CloseOnCompletion = (Terminate != nullptr);
 
     bool ForActiveTerminal =
-      E->InheritsFrom(__classid(EFatal)) && (Terminal != NULL) &&
-      (Manager != NULL) && (Manager->ActiveTerminal == Terminal);
+      E->InheritsFrom(__classid(EFatal)) && (Terminal != nullptr) &&
+      (Manager != nullptr) && (Manager->ActiveTerminal == Terminal);
 
     unsigned int Result;
     if (CloseOnCompletion)
     {
       if (ForActiveTerminal)
       {
+        DebugAssert(!Terminal->Active);
         Manager->DisconnectActiveTerminal();
       }
 
@@ -248,7 +244,7 @@ void ShowExtendedExceptionEx(TTerminal *Terminal,
       DebugAssert(Show);
       bool ConfirmExitOnCompletion =
         CloseOnCompletion &&
-        ((Terminate->Operation == odoDisconnect) || (Terminate->Operation == odoSuspend)) &&
+        ((Terminate->Operation() == odoDisconnect) || (Terminate->Operation() == odoSuspend)) &&
         WinConfiguration->ConfirmExitOnCompletion;
 
       if (ConfirmExitOnCompletion)
@@ -264,7 +260,7 @@ void ShowExtendedExceptionEx(TTerminal *Terminal,
 
           Aliases[0].Button = qaIgnore;
           Aliases[0].Alias = LoadStr(OPEN_BUTTON);
-          Aliases[0].OnClick = OpenLocalPathHandler.Open;
+          Aliases[0].OnSubmit = OpenLocalPathHandler.Open;
           Aliases[0].MenuButton = true;
           Answers |= Aliases[0].Button;
           Params.Aliases = Aliases;
@@ -274,12 +270,15 @@ void ShowExtendedExceptionEx(TTerminal *Terminal,
         if (ForActiveTerminal)
         {
           UnicodeString MessageFormat =
-            MainInstructions((Manager->Count > 1) ?
-              FMTLOAD(DISCONNECT_ON_COMPLETION, Manager->Count - 1) :
-              LoadStr(EXIT_ON_COMPLETION));
+            (Manager->Count > 1) ?
+              FMTLOAD(DISCONNECT_ON_COMPLETION, (Manager->Count - 1)) :
+              LoadStr(EXIT_ON_COMPLETION);
+          // Remove the leading "%s\n\n" (not to change the translation originals - previously the error message was prepended)
+          MessageFormat = FORMAT(MessageFormat, (UnicodeString())).Trim();
+          MessageFormat = MainInstructions(MessageFormat) + L"\n\n%s";
           Result = FatalExceptionMessageDialog(E, qtInformation, 0,
-              MessageFormat,
-              Answers | qaYes | qaNo, HELP_NONE, &Params);
+            MessageFormat,
+            Answers | qaYes | qaNo, HELP_NONE, &Params);
         }
         else
         {
@@ -299,11 +298,10 @@ void ShowExtendedExceptionEx(TTerminal *Terminal,
         if (ForActiveTerminal)
         {
           int SessionReopenTimeout = 0;
-          TManagedTerminal *ManagedTerminal = dynamic_cast<TManagedTerminal *>(Manager->ActiveTerminal);
-          if ((ManagedTerminal != NULL) &&
-            ((Configuration->SessionReopenTimeout == 0) ||
-              ((double)ManagedTerminal->ReopenStart == 0) ||
-              (int(double(Now() - ManagedTerminal->ReopenStart) * MSecsPerDay) < Configuration->SessionReopenTimeout)))
+          if (DebugAlwaysTrue(Manager->ActiveTerminal != nullptr) &&
+              ((Configuration->SessionReopenTimeout == 0) ||
+               ((double)Manager->ActiveTerminal->ReopenStart == 0) ||
+               (int(double(Now() - Manager->ActiveTerminal->ReopenStart) * MSecsPerDay) < Configuration->SessionReopenTimeout)))
           {
             SessionReopenTimeout = GUIConfiguration->SessionReopenAutoIdle;
           }
@@ -330,25 +328,25 @@ void ShowExtendedExceptionEx(TTerminal *Terminal,
     if (Result == qaYes)
     {
       DebugAssert(CloseOnCompletion);
-      DebugAssert(Terminate != NULL);
+      DebugAssert(Terminate != nullptr);
       DebugAssert(Terminate->Operation != odoIdle);
       TerminateApplication();
 
       switch (Terminate->Operation)
       {
-      case odoDisconnect:
-        break;
+        case odoDisconnect:
+          break;
 
-      case odoSuspend:
-        // suspended before already
-        break;
+        case odoSuspend:
+          // suspended before already
+          break;
 
-      case odoShutDown:
-        ShutDownWindows();
-        break;
+        case odoShutDown:
+          ShutDownWindows();
+          break;
 
-      default:
-        DebugFail();
+        default:
+          DebugFail();
       }
     }
     else if (Result == qaRetry)
@@ -363,17 +361,17 @@ void ShowExtendedExceptionEx(TTerminal *Terminal,
     {
       if (ForActiveTerminal)
       {
-        Manager->FreeActiveTerminal();
+        Manager->DisconnectActiveTerminalIfPermanentFreeOtherwise();
       }
     }
   }
 }
 
-void ShowNotification(TTerminal *Terminal, UnicodeString Str,
+void ShowNotification(TTerminal * Terminal, const UnicodeString & Str,
   TQueryType Type)
 {
-  TTerminalManager *Manager = TTerminalManager::Instance(false);
-  DebugAssert(Manager != NULL);
+  TTerminalManager * Manager = TTerminalManager::Instance(false);
+  DebugAssert(Manager != nullptr);
 
   Manager->ScpExplorer->PopupTrayBalloon(Terminal, Str, Type);
 }
@@ -384,22 +382,22 @@ void ConfigureInterface()
     AdjustLocaleFlag(LoadStr(BIDI_MODE), WinConfiguration->BidiModeOverride, false, bdRightToLeft, bdLeftToRight);
   Application->BiDiMode = static_cast<TBiDiMode>(BidiModeFlag);
   SetTBXSysParam(TSP_XPVISUALSTYLE, XPVS_AUTOMATIC);
+  if (WinConfiguration != nullptr)
+  {
+    UnicodeString Theme = WinConfiguration->UseDarkTheme() ? L"DarkOfficeXP" : L"OfficeXP";
+    if (!SameText(TBXCurrentTheme(), Theme))
+    {
+      TBXSetTheme(Theme);
+    }
+  }
   // Has any effect on Wine only
   // (otherwise initial UserDocumentDirectory is equivalent to GetPersonalFolder())
   UserDocumentDirectory = GetPersonalFolder();
 }
 
-#ifdef _DEBUG
-void ForceTracing()
-{
-  Tracing::ForceTraceOn();
-  SetTraceFile((HANDLE)Tracing::GetTraceFile());
-}
-#endif
-
 void DoAboutDialog(TConfiguration *Configuration)
 {
-  DoAboutDialog(Configuration, true, NULL);
+  DoAboutDialog(Configuration, true, nullptr);
 }
 //---------------------------------------------------------------------
 void DoProductLicense()
@@ -409,7 +407,7 @@ void DoProductLicense()
 
 const UnicodeString PixelsPerInchKey = L"PixelsPerInch";
 //---------------------------------------------------------------------
-int GetToolbarLayoutPixelsPerInch(TStrings *Storage, TControl *Control)
+int GetToolbarLayoutPixelsPerInch(TStrings * Storage, TControl * Control)
 {
   int Result;
   if (Storage->IndexOfName(PixelsPerInchKey))
@@ -423,24 +421,25 @@ int GetToolbarLayoutPixelsPerInch(TStrings *Storage, TControl *Control)
   return Result;
 }
 //---------------------------------------------------------------------
-static inline void GetToolbarKey(UnicodeString ToolbarName,
-  UnicodeString Value, UnicodeString &ToolbarKey)
+UnicodeString GetToolbarKey(const UnicodeString & ToolbarName)
 {
-  int ToolbarNameLen;
-  if ((ToolbarName.Length() > 7) &&
-    (ToolbarName.SubString(ToolbarName.Length() - 7 + 1, 7) == L"Toolbar"))
+  UnicodeString Result = ToolbarName;
+  Result = RemoveSuffix(Result, L"Toolbar");
+  return Result;
+}
+//---------------------------------------------------------------------
+static inline void GetToolbarKey(const UnicodeString & ToolbarName,
+  const UnicodeString & Value, UnicodeString & ToolbarKey)
+{
+  ToolbarKey = GetToolbarKey(ToolbarName);
+  if (!Value.IsEmpty())
   {
-    ToolbarNameLen = ToolbarName.Length() - 7;
+    ToolbarKey += L"_" + Value;
   }
-  else
-  {
-    ToolbarNameLen = ToolbarName.Length();
-  }
-  ToolbarKey = ToolbarName.SubString(1, ToolbarNameLen) + L"_" + Value;
 }
 
 static int ToolbarReadInt(const UnicodeString ToolbarName,
-  const UnicodeString Value, const int Default, const void *ExtraData)
+  const UnicodeString Value, const int Default, const void * ExtraData)
 {
   int Result;
   if (Value == L"Rev")
@@ -449,13 +448,13 @@ static int ToolbarReadInt(const UnicodeString ToolbarName,
   }
   else
   {
-    TStrings *Storage = static_cast<TStrings *>(const_cast<void *>(ExtraData));
+    TStrings * Storage = static_cast<TStrings *>(const_cast<void*>(ExtraData));
     UnicodeString ToolbarKey;
     GetToolbarKey(ToolbarName, Value, ToolbarKey);
     if (Storage->IndexOfName(ToolbarKey) >= 0)
     {
       Result = StrToIntDef(Storage->Values[ToolbarKey], Default);
-#if 0
+      #if 0
       // this does not work well, as it scales down the stretched
       // toolbars (path toolbars) too much, it has to be reimplemented smarter
       if (Value == L"DockPos")
@@ -476,7 +475,7 @@ static int ToolbarReadInt(const UnicodeString ToolbarName,
           Result = LoadDimension(Result, PixelsPerInch);
         }
       }
-#endif
+      #endif
     }
     else
     {
@@ -487,10 +486,10 @@ static int ToolbarReadInt(const UnicodeString ToolbarName,
 }
 
 static UnicodeString ToolbarReadString(const UnicodeString ToolbarName,
-  const UnicodeString Value, const UnicodeString Default, const void *ExtraData)
+  const UnicodeString Value, const UnicodeString Default, const void * ExtraData)
 {
   UnicodeString Result;
-  TStrings *Storage = static_cast<TStrings *>(const_cast<void *>(ExtraData));
+  TStrings * Storage = static_cast<TStrings *>(const_cast<void*>(ExtraData));
   UnicodeString ToolbarKey;
   GetToolbarKey(ToolbarName, Value, ToolbarKey);
   if (Storage->IndexOfName(ToolbarKey) >= 0)
@@ -505,11 +504,12 @@ static UnicodeString ToolbarReadString(const UnicodeString ToolbarName,
 }
 
 static void ToolbarWriteInt(const UnicodeString ToolbarName,
-  const UnicodeString Value, const int Data, const void *ExtraData)
+  const UnicodeString Value, const int Data, const void * ExtraData)
 {
+  DebugFail();
   if (Value != L"Rev")
   {
-    TStrings *Storage = static_cast<TStrings *>(const_cast<void *>(ExtraData));
+    TStrings * Storage = static_cast<TStrings *>(const_cast<void*>(ExtraData));
     UnicodeString ToolbarKey;
     GetToolbarKey(ToolbarName, Value, ToolbarKey);
     DebugAssert(Storage->IndexOfName(ToolbarKey) < 0);
@@ -518,19 +518,20 @@ static void ToolbarWriteInt(const UnicodeString ToolbarName,
 }
 
 static void ToolbarWriteString(const UnicodeString ToolbarName,
-  const UnicodeString Value, const UnicodeString Data, const void *ExtraData)
+  const UnicodeString Value, const UnicodeString Data, const void * ExtraData)
 {
-  TStrings *Storage = static_cast<TStrings *>(const_cast<void *>(ExtraData));
+  DebugAssert(Value.IsEmpty());
+  TStrings * Storage = static_cast<TStrings *>(const_cast<void*>(ExtraData));
   UnicodeString ToolbarKey;
   GetToolbarKey(ToolbarName, Value, ToolbarKey);
   DebugAssert(Storage->IndexOfName(ToolbarKey) < 0);
   Storage->Values[ToolbarKey] = Data;
 }
 
-UnicodeString GetToolbarsLayoutStr(TControl *OwnerControl)
+UnicodeString GetToolbarsLayoutStr(TControl * OwnerControl)
 {
   UnicodeString Result;
-  TStrings *Storage = new TStringList();
+  TStrings * Storage = new TStringList();
   try
   {
     TBCustomSavePositions(OwnerControl, ToolbarWriteInt, ToolbarWriteString,
@@ -545,9 +546,9 @@ UnicodeString GetToolbarsLayoutStr(TControl *OwnerControl)
   return Result;
 }
 
-void LoadToolbarsLayoutStr(TControl *OwnerControl, UnicodeString LayoutStr)
+void LoadToolbarsLayoutStr(TControl * OwnerControl, UnicodeString LayoutStr)
 {
-  TStrings *Storage = new TStringList();
+  TStrings * Storage = new TStringList();
   try
   {
     Storage->CommaText = LayoutStr;
@@ -559,29 +560,29 @@ void LoadToolbarsLayoutStr(TControl *OwnerControl, UnicodeString LayoutStr)
     {
       for (int Index = 0; Index < OwnerControl->ComponentCount; Index++)
       {
-        TTBXToolbar *Toolbar =
+        TTBXToolbar * Toolbar =
           dynamic_cast<TTBXToolbar *>(OwnerControl->Components[Index]);
-        if ((Toolbar != NULL) && Toolbar->Stretch &&
-          (Toolbar->OnGetBaseSize != NULL) &&
-          // we do not support floating of stretched toolbars
-          DebugAlwaysTrue(!Toolbar->Floating))
+        if ((Toolbar != nullptr) && Toolbar->Stretch &&
+            (Toolbar->OnGetBaseSize != nullptr) &&
+            // we do not support floating of stretched toolbars
+            DebugAlwaysTrue(!Toolbar->Floating))
         {
-          TTBXToolbar *FollowingToolbar = NULL;
+          TTBXToolbar * FollowingToolbar = nullptr;
           for (int Index2 = 0; Index2 < OwnerControl->ComponentCount; Index2++)
           {
-            TTBXToolbar *Toolbar2 =
+            TTBXToolbar * Toolbar2 =
               dynamic_cast<TTBXToolbar *>(OwnerControl->Components[Index2]);
-            if ((Toolbar2 != NULL) && !Toolbar2->Floating &&
-              (Toolbar2->Parent == Toolbar->Parent) &&
-              (Toolbar2->DockRow == Toolbar->DockRow) &&
-              (Toolbar2->DockPos > Toolbar->DockPos) &&
-              ((FollowingToolbar == NULL) || (FollowingToolbar->DockPos > Toolbar2->DockPos)))
+            if ((Toolbar2 != nullptr) && !Toolbar2->Floating &&
+                (Toolbar2->Parent == Toolbar->Parent) &&
+                (Toolbar2->DockRow == Toolbar->DockRow) &&
+                (Toolbar2->DockPos > Toolbar->DockPos) &&
+                ((FollowingToolbar == nullptr) || (FollowingToolbar->DockPos > Toolbar2->DockPos)))
             {
               FollowingToolbar = Toolbar2;
             }
           }
 
-          if (FollowingToolbar != NULL)
+          if (FollowingToolbar != nullptr)
           {
             int NewWidth = LoadDimension(Toolbar->Width, PixelsPerInch, Toolbar);
             FollowingToolbar->DockPos += NewWidth - Toolbar->Width;
@@ -596,28 +597,28 @@ void LoadToolbarsLayoutStr(TControl *OwnerControl, UnicodeString LayoutStr)
   }
 }
 
-TTBXSeparatorItem *AddMenuSeparator(TTBCustomItem *Menu)
+TTBXSeparatorItem * AddMenuSeparator(TTBCustomItem * Menu)
 {
-  TTBXSeparatorItem *Item = new TTBXSeparatorItem(Menu);
+  TTBXSeparatorItem * Item = new TTBXSeparatorItem(Menu);
   Menu->Add(Item);
   return Item;
 }
 
-static TComponent *LastPopupComponent = NULL;
+static TComponent * LastPopupComponent = nullptr;
 static TRect LastPopupRect(-1, -1, -1, -1);
 static TDateTime LastCloseUp;
 
-static void ConvertMenu(TMenuItem *AItems, TTBCustomItem *Items)
+static void ConvertMenu(TMenuItem * AItems, TTBCustomItem * Items)
 {
   for (int Index = 0; Index < AItems->Count; Index++)
   {
-    TMenuItem *AItem = AItems->Items[Index];
-    TTBCustomItem *Item;
+    TMenuItem * AItem = AItems->Items[Index];
+    TTBCustomItem * Item;
 
-    if (!AItem->Enabled && !AItem->Visible && (AItem->Action == NULL) &&
-      (AItem->OnClick == NULL) && DebugAlwaysTrue(AItem->Count == 0))
+    if (!AItem->Enabled && !AItem->Visible && (AItem->Action == nullptr) &&
+        (AItem->OnClick == nullptr) && DebugAlwaysTrue(AItem->Count == 0))
     {
-      TTBXLabelItem *LabelItem = new TTBXLabelItem(Items->Owner);
+      TTBXLabelItem * LabelItem = new TTBXLabelItem(Items->Owner);
       // TTBXLabelItem has it's own Caption
       LabelItem->Caption = AItem->Caption;
       LabelItem->SectionHeader = true;
@@ -672,8 +673,8 @@ static void ConvertMenu(TMenuItem *AItems, TTBCustomItem *Items)
   }
 }
 
-void MenuPopup(TPopupMenu *AMenu, TRect Rect,
-  TComponent *PopupComponent)
+void MenuPopup(TPopupMenu * AMenu, TRect Rect,
+  TComponent * PopupComponent)
 {
   // Pressing the same button within 200ms after closing its popup menu
   // does nothing.
@@ -686,15 +687,15 @@ void MenuPopup(TPopupMenu *AMenu, TRect Rect,
   TDateTime N = Now();
   TDateTime Diff = N - LastCloseUp;
   if ((PopupComponent == LastPopupComponent) &&
-    (Rect == LastPopupRect) &&
-    (Diff < TDateTime(0, 0, 0, 200)))
+      (Rect == LastPopupRect) &&
+      (Diff < TDateTime(0, 0, 0, 200)))
   {
-    LastPopupComponent = NULL;
+    LastPopupComponent = nullptr;
   }
   else
   {
-    TTBXPopupMenu *Menu = dynamic_cast<TTBXPopupMenu *>(AMenu);
-    if (Menu == NULL)
+    TTBXPopupMenu * Menu = dynamic_cast<TTBXPopupMenu *>(AMenu);
+    if (Menu == nullptr)
     {
       Menu = CreateTBXPopupMenu(AMenu->Owner);
       Menu->OnPopup = AMenu->OnPopup;
@@ -720,9 +721,9 @@ const int UserColorCount = UserColorRows * ColorCols;
 const wchar_t ColorSeparator = L',';
 
 static void GetStandardSessionColorInfo(
-  int Col, int Row, TColor &Color, UnicodeString &Name)
+  int Col, int Row, TColor & Color, UnicodeString & Name)
 {
-#define COLOR_INFO(COL, ROW, NAME, COLOR) \
+  #define COLOR_INFO(COL, ROW, NAME, COLOR) \
     if ((Col == COL) && (Row == ROW)) { Name = NAME; Color = TColor(COLOR); } else
   // bottom row of default TBX color set
   COLOR_INFO(0, 0, L"Rose",              0xCC99FF)
@@ -746,46 +747,54 @@ static void GetStandardSessionColorInfo(
   COLOR_INFO(7, 1, L"Light Aqua",        0xE8DDB7)
 
   DebugFail();
-#undef COLOR_INFO
+  #undef COLOR_INFO
 }
 
 static void SessionColorSetGetColorInfo(
-  void * /*Data*/, TTBXCustomColorSet * /*Sender*/, int Col, int Row, TColor &Color, UnicodeString &Name)
+  void * /*Data*/, TTBXCustomColorSet * /*Sender*/, int Col, int Row, TColor & Color, UnicodeString & Name)
 {
   GetStandardSessionColorInfo(Col, Row, Color, Name);
 }
 
-static TColor RestoreColor(UnicodeString CStr)
+TColor RestoreColor(const UnicodeString & CStr)
 {
-  return TColor(StrToInt64(UnicodeString(L"$") + CStr));
+  return TColor(StrToInt(UnicodeString(L"$") + CStr));
 }
 
-static UnicodeString StoreColor(TColor Color)
+UnicodeString StoreColor(TColor Color)
 {
   return IntToHex(Color, 6);
 }
 
-static UnicodeString ExtractColorStr(UnicodeString &Colors)
+static UnicodeString ExtractColorStr(UnicodeString & Colors)
 {
   return CutToChar(Colors, ColorSeparator, true);
 }
 
-static bool IsStandardColor(TColor Color)
+static bool IsStandardColor(bool SessionColors, TColor Color)
 {
-  for (int Row = 0; Row < StandardColorRows; Row++)
+  if (SessionColors)
   {
-    for (int Col = 0; Col < ColorCols; Col++)
+    for (int Row = 0; Row < StandardColorRows; Row++)
     {
-      TColor StandardColor;
-      UnicodeString Name; // unused
-      GetStandardSessionColorInfo(Col, Row, StandardColor, Name);
-      if (StandardColor == Color)
+      for (int Col = 0; Col < ColorCols; Col++)
       {
-        return true;
+        TColor StandardColor;
+        UnicodeString Name; // unused
+        GetStandardSessionColorInfo(Col, Row, StandardColor, Name);
+        if (StandardColor == Color)
+        {
+          return true;
+        }
       }
     }
+    return false;
   }
-  return false;
+  else
+  {
+    std::unique_ptr<TTBXColorPalette> DefaultColorPalette(new TTBXColorPalette(nullptr));
+    return (DefaultColorPalette->FindCell(Color).X >= 0);
+  }
 }
 
 class TColorChangeData : public TComponent
@@ -793,7 +802,7 @@ class TColorChangeData : public TComponent
 public:
   TColorChangeData(TColorChangeEvent OnColorChange, TColor Color, bool SessionColors);
 
-  static TColorChangeData *Retrieve(TObject *Object);
+  static TColorChangeData * Retrieve(TObject * Object);
 
   void ColorChange(TColor Color);
 
@@ -808,8 +817,8 @@ private:
 };
 
 TColorChangeData::TColorChangeData(
-  TColorChangeEvent OnColorChange, TColor Color, bool SessionColors) :
-  TComponent(NULL)
+    TColorChangeEvent OnColorChange, TColor Color, bool SessionColors) :
+  TComponent(nullptr)
 {
   Name = QualifiedClassName();
   FOnColorChange = OnColorChange;
@@ -817,11 +826,28 @@ TColorChangeData::TColorChangeData(
   FSessionColors = SessionColors;
 }
 
-TColorChangeData *TColorChangeData::Retrieve(TObject *Object)
+TColorChangeData * TColorChangeData::Retrieve(TObject * Object)
 {
-  TComponent *Component = DebugNotNull(dynamic_cast<TComponent *>(Object));
-  TComponent *ColorChangeDataComponent = Component->FindComponent(QualifiedClassName());
+  TComponent * Component = DebugNotNull(dynamic_cast<TComponent *>(Object));
+  TComponent * ColorChangeDataComponent = Component->FindComponent(QualifiedClassName());
   return DebugNotNull(dynamic_cast<TColorChangeData *>(ColorChangeDataComponent));
+}
+
+static void SaveCustomColors(bool SessionColors, const UnicodeString & Colors)
+{
+  if (SessionColors)
+  {
+    CustomWinConfiguration->SessionColors = Colors;
+  }
+  else
+  {
+    CustomWinConfiguration->FontColors = Colors;
+  }
+}
+
+static UnicodeString LoadCustomColors(bool SessionColors)
+{
+  return SessionColors ? CustomWinConfiguration->SessionColors : CustomWinConfiguration->FontColors;
 }
 
 void TColorChangeData::ColorChange(TColor Color)
@@ -834,34 +860,33 @@ void TColorChangeData::ColorChange(TColor Color)
     Color = TColor(0);
   }
 
-  if (SessionColors &&
-    (Color != TColor(0)) &&
-    !IsStandardColor(Color))
+  if ((Color != TColor(0)) &&
+      !IsStandardColor(SessionColors, Color))
   {
-    UnicodeString SessionColors = StoreColor(Color);
-    UnicodeString Temp = CustomWinConfiguration->SessionColors;
+    UnicodeString Colors = StoreColor(Color);
+    UnicodeString Temp = LoadCustomColors(SessionColors);
     while (!Temp.IsEmpty())
     {
       UnicodeString CStr = ExtractColorStr(Temp);
       if (RestoreColor(CStr) != Color)
       {
-        SessionColors += UnicodeString(ColorSeparator) + CStr;
+        Colors += UnicodeString(ColorSeparator) + CStr;
       }
     }
-    CustomWinConfiguration->SessionColors = SessionColors;
+    SaveCustomColors(SessionColors, Colors);
   }
 
   FOnColorChange(Color);
 }
 
-static void ColorDefaultClick(void * /*Data*/, TObject *Sender)
+static void ColorDefaultClick(void * /*Data*/, TObject * Sender)
 {
   TColorChangeData::Retrieve(Sender)->ColorChange(TColor(0));
 }
 
-static void ColorPaletteChange(void * /*Data*/, TObject *Sender)
+static void ColorPaletteChange(void * /*Data*/, TObject * Sender)
 {
-  TTBXColorPalette *ColorPalette = DebugNotNull(dynamic_cast<TTBXColorPalette *>(Sender));
+  TTBXColorPalette * ColorPalette = DebugNotNull(dynamic_cast<TTBXColorPalette *>(Sender));
   TColorChangeData::Retrieve(Sender)->ColorChange(GetNonZeroColor(ColorPalette->Color));
 }
 
@@ -870,60 +895,68 @@ static UnicodeString CustomColorName(int Index)
   return UnicodeString(L"Color") + wchar_t(L'A' + Index);
 }
 
-static void ColorPickClick(void * /*Data*/, TObject *Sender)
+static void ColorPickClick(void * /*Data*/, TObject * Sender)
 {
-  TColorChangeData *ColorChangeData = TColorChangeData::Retrieve(Sender);
+  TColorChangeData * ColorChangeData = TColorChangeData::Retrieve(Sender);
 
   std::unique_ptr<TColorDialog> Dialog(new TColorDialog(Application));
   Dialog->Options = Dialog->Options << cdFullOpen << cdAnyColor;
   Dialog->Color = (ColorChangeData->Color != 0 ? ColorChangeData->Color : clSkyBlue);
 
-  if (ColorChangeData->SessionColors)
+  UnicodeString Temp = LoadCustomColors(ColorChangeData->SessionColors);
+  int StandardColorIndex = 0;
+  for (int Index = 0; Index < MaxCustomColors; Index++)
   {
-    UnicodeString Temp = CustomWinConfiguration->SessionColors;
-    int StandardColorIndex = 0;
-    int CustomColors = Min(MaxCustomColors, StandardColorCount);
-    for (int Index = 0; Index < CustomColors; Index++)
+    TColor CustomColor;
+    if (!Temp.IsEmpty())
     {
-      TColor CustomColor;
-      if (!Temp.IsEmpty())
+      CustomColor = RestoreColor(ExtractColorStr(Temp));
+    }
+    else
+    {
+      if (ColorChangeData->SessionColors)
       {
-        CustomColor = RestoreColor(ExtractColorStr(Temp));
+        if (StandardColorIndex < StandardColorCount)
+        {
+          UnicodeString Name; // not used
+          GetStandardSessionColorInfo(
+            StandardColorIndex % ColorCols, StandardColorIndex / ColorCols,
+            CustomColor, Name);
+          StandardColorIndex++;
+        }
+        else
+        {
+          break;
+        }
       }
       else
       {
-        UnicodeString Name; // not used
-        DebugAssert(StandardColorIndex < StandardColorCount);
-        GetStandardSessionColorInfo(
-          StandardColorIndex % ColorCols, StandardColorIndex / ColorCols,
-          CustomColor, Name);
-        StandardColorIndex++;
+        // no standard font colors
+        break;
       }
-      Dialog->CustomColors->Values[CustomColorName(Index)] = StoreColor(CustomColor);
     }
+    Dialog->CustomColors->Values[CustomColorName(Index)] = StoreColor(CustomColor);
   }
 
   if (Dialog->Execute())
   {
-    if (ColorChangeData->SessionColors)
+    // so that we do not have to try to preserve the excess colors
+    DebugAssert(UserColorCount <= MaxCustomColors);
+    UnicodeString Colors;
+    for (int Index = 0; Index < MaxCustomColors; Index++)
     {
-      // so that we do not have to try to preserve the excess colors
-      DebugAssert(UserColorCount <= MaxCustomColors);
-      UnicodeString SessionColors;
-      for (int Index = 0; Index < MaxCustomColors; Index++)
+      UnicodeString CStr = Dialog->CustomColors->Values[CustomColorName(Index)];
+      if (!CStr.IsEmpty())
       {
-        UnicodeString CStr = Dialog->CustomColors->Values[CustomColorName(Index)];
-        if (!CStr.IsEmpty())
+        TColor CustomColor = RestoreColor(CStr);
+        if ((CustomColor != static_cast<TColor>(-1)) &&
+            !IsStandardColor(ColorChangeData->SessionColors, CustomColor))
         {
-          TColor CustomColor = RestoreColor(CStr);
-          if (!IsStandardColor(CustomColor))
-          {
-            AddToList(SessionColors, StoreColor(CustomColor), ColorSeparator);
-          }
+          AddToList(Colors, StoreColor(CustomColor), ColorSeparator);
         }
       }
-      CustomWinConfiguration->SessionColors = SessionColors;
     }
+    SaveCustomColors(ColorChangeData->SessionColors, Colors);
 
     // call color change only after copying custom colors back,
     // so that it can add selected color to the user list
@@ -931,7 +964,7 @@ static void ColorPickClick(void * /*Data*/, TObject *Sender)
   }
 }
 
-TPopupMenu *CreateSessionColorPopupMenu(TColor Color,
+TPopupMenu * CreateSessionColorPopupMenu(TColor Color,
   TColorChangeEvent OnColorChange)
 {
   std::unique_ptr<TTBXPopupMenu> PopupMenu(new TTBXPopupMenu(Application));
@@ -939,11 +972,12 @@ TPopupMenu *CreateSessionColorPopupMenu(TColor Color,
   return PopupMenu.release();
 }
 
-static void UserSessionColorSetGetColorInfo(
-  void * /*Data*/, TTBXCustomColorSet *Sender, int Col, int Row, TColor &Color, UnicodeString & /*Name*/)
+static void UserCustomColorSetGetColorInfo(
+  void * /*Data*/, TTBXCustomColorSet * Sender, int Col, int Row, TColor & Color, UnicodeString & /*Name*/)
 {
   int Index = (Row * Sender->ColCount) + Col;
-  UnicodeString Temp = CustomWinConfiguration->SessionColors;
+  bool SessionColors = static_cast<bool>(Sender->Tag);
+  UnicodeString Temp = LoadCustomColors(SessionColors);
   while ((Index > 0) && !Temp.IsEmpty())
   {
     ExtractColorStr(Temp);
@@ -961,14 +995,14 @@ static void UserSessionColorSetGetColorInfo(
   }
 }
 
-void CreateColorPalette(TTBCustomItem *Owner, TColor Color, int Rows,
+void CreateColorPalette(TTBCustomItem * Owner, TColor Color, int Rows,
   TCSGetColorInfo OnGetColorInfo, TColorChangeEvent OnColorChange, bool SessionColors)
 {
-  TTBXColorPalette *ColorPalette = new TTBXColorPalette(Owner);
+  TTBXColorPalette * ColorPalette = new TTBXColorPalette(Owner);
 
-  if (OnGetColorInfo != NULL)
+  if (OnGetColorInfo != nullptr)
   {
-    TTBXCustomColorSet *ColorSet = new TTBXCustomColorSet(Owner);
+    TTBXCustomColorSet * ColorSet = new TTBXCustomColorSet(Owner);
     ColorPalette->InsertComponent(ColorSet);
     ColorPalette->ColorSet = ColorSet;
 
@@ -976,69 +1010,70 @@ void CreateColorPalette(TTBCustomItem *Owner, TColor Color, int Rows,
     ColorSet->ColCount = ColorCols;
     ColorSet->RowCount = Rows;
     ColorSet->OnGetColorInfo = OnGetColorInfo;
+    ColorSet->Tag = static_cast<int>(SessionColors);
   }
 
   // clNone = no selection, see also ColorChange
   ColorPalette->Color = (Color != 0) ? Color : Vcl::Graphics::clNone;
-  ColorPalette->OnChange = MakeMethod<TNotifyEvent>(NULL, ColorPaletteChange);
+  ColorPalette->OnChange = MakeMethod<TNotifyEvent>(nullptr, ColorPaletteChange);
   ColorPalette->InsertComponent(new TColorChangeData(OnColorChange, Color, SessionColors));
   Owner->Add(ColorPalette);
 
   Owner->Add(new TTBXSeparatorItem(Owner));
 }
 
-static void CreateColorMenu(TComponent *AOwner, TColor Color,
+static void CreateColorMenu(TComponent * AOwner, TColor Color,
   TColorChangeEvent OnColorChange, bool SessionColors,
-  UnicodeString DefaultColorCaption, UnicodeString DefaultColorHint,
-  UnicodeString HelpKeyword,
-  UnicodeString ColorPickHint)
+  const UnicodeString & DefaultColorCaption, const UnicodeString & DefaultColorHint,
+  const UnicodeString & HelpKeyword,
+  const UnicodeString & ColorPickHint)
 {
-  TTBCustomItem *Owner = dynamic_cast<TTBCustomItem *>(AOwner);
-  if (DebugAlwaysTrue(Owner != NULL))
+  TTBCustomItem * Owner = dynamic_cast<TTBCustomItem *>(AOwner);
+  if (DebugAlwaysTrue(Owner != nullptr))
   {
     Owner->Clear();
 
-    TTBCustomItem *Item;
+    TTBCustomItem * Item;
 
     Item = new TTBXItem(Owner);
     Item->Caption = DefaultColorCaption;
     Item->Hint = DefaultColorHint;
     Item->HelpKeyword = HelpKeyword;
-    Item->OnClick = MakeMethod<TNotifyEvent>(NULL, ColorDefaultClick);
+    Item->OnClick = MakeMethod<TNotifyEvent>(nullptr, ColorDefaultClick);
     Item->Checked = (Color == TColor(0));
     Item->InsertComponent(new TColorChangeData(OnColorChange, Color, SessionColors));
     Owner->Add(Item);
 
     Owner->Add(new TTBXSeparatorItem(Owner));
 
+    int CustomColorCount = 0;
+    UnicodeString Temp = LoadCustomColors(SessionColors);
+    while (!Temp.IsEmpty())
+    {
+      CustomColorCount++;
+      ExtractColorStr(Temp);
+    }
+
+    if (CustomColorCount > 0)
+    {
+      CustomColorCount = Min(CustomColorCount, UserColorCount);
+      int RowCount = ((CustomColorCount + ColorCols - 1) / ColorCols);
+      DebugAssert(RowCount <= UserColorRows);
+
+      CreateColorPalette(Owner, Color, RowCount,
+        MakeMethod<TCSGetColorInfo>(nullptr, UserCustomColorSetGetColorInfo),
+        OnColorChange, SessionColors);
+    }
+
     if (SessionColors)
     {
-      int SessionColorCount = 0;
-      UnicodeString Temp = CustomWinConfiguration->SessionColors;
-      while (!Temp.IsEmpty())
-      {
-        SessionColorCount++;
-        ExtractColorStr(Temp);
-      }
-
-      if (SessionColorCount > 0)
-      {
-        SessionColorCount = Min(SessionColorCount, UserColorCount);
-        int RowCount = ((SessionColorCount + ColorCols - 1) / ColorCols);
-        DebugAssert(RowCount <= UserColorRows);
-
-        CreateColorPalette(Owner, Color, RowCount,
-          MakeMethod<TCSGetColorInfo>(NULL, UserSessionColorSetGetColorInfo),
-          OnColorChange, SessionColors);
-      }
-
       CreateColorPalette(Owner, Color, StandardColorRows,
-        MakeMethod<TCSGetColorInfo>(NULL, SessionColorSetGetColorInfo),
+        MakeMethod<TCSGetColorInfo>(nullptr, SessionColorSetGetColorInfo),
         OnColorChange, SessionColors);
     }
     else
     {
-      CreateColorPalette(Owner, Color, -1, NULL, OnColorChange, SessionColors);
+      CreateColorPalette(Owner, Color, -1, nullptr, OnColorChange, SessionColors);
     }
 
     Owner->Add(new TTBXSeparatorItem(Owner));
@@ -1047,13 +1082,13 @@ static void CreateColorMenu(TComponent *AOwner, TColor Color,
     Item->Caption = LoadStr(COLOR_PICK_CAPTION);
     Item->Hint = ColorPickHint;
     Item->HelpKeyword = HelpKeyword;
-    Item->OnClick = MakeMethod<TNotifyEvent>(NULL, ColorPickClick);
+    Item->OnClick = MakeMethod<TNotifyEvent>(nullptr, ColorPickClick);
     Item->InsertComponent(new TColorChangeData(OnColorChange, Color, SessionColors));
     Owner->Add(Item);
   }
 }
 
-void CreateSessionColorMenu(TComponent *AOwner, TColor Color,
+void CreateSessionColorMenu(TComponent * AOwner, TColor Color,
   TColorChangeEvent OnColorChange)
 {
   CreateColorMenu(
@@ -1062,7 +1097,7 @@ void CreateSessionColorMenu(TComponent *AOwner, TColor Color,
     HELP_COLOR, LoadStr(COLOR_PICK_HINT));
 }
 
-void CreateEditorBackgroundColorMenu(TComponent *AOwner, TColor Color,
+void CreateEditorBackgroundColorMenu(TComponent * AOwner, TColor Color,
   TColorChangeEvent OnColorChange)
 {
   CreateColorMenu(
@@ -1071,7 +1106,7 @@ void CreateEditorBackgroundColorMenu(TComponent *AOwner, TColor Color,
     HELP_COLOR, LoadStr(EDITOR_BACKGROUND_COLOR_PICK_HINT));
 }
 
-TPopupMenu *CreateColorPopupMenu(TColor Color,
+TPopupMenu * CreateColorPopupMenu(TColor Color,
   TColorChangeEvent OnColorChange)
 {
   std::unique_ptr<TTBXPopupMenu> PopupMenu(new TTBXPopupMenu(Application));
@@ -1090,49 +1125,51 @@ void UpgradeSpeedButton(TSpeedButton * /*Button*/)
 struct TThreadParam
 {
   TThreadFunc ThreadFunc;
-  void *Parameter;
+  void * Parameter;
 };
 
-static int ThreadProc(void *AParam)
+static int ThreadProc(void * AParam)
 {
-  TThreadParam *Param = reinterpret_cast<TThreadParam *>(AParam);
+  TThreadParam * Param = reinterpret_cast<TThreadParam *>(AParam);
   unsigned int Result = Param->ThreadFunc(Param->Parameter);
   delete Param;
   EndThread(Result);
   return Result;
 }
 
-int StartThread(void *SecurityAttributes, unsigned StackSize,
-  TThreadFunc ThreadFunc, void *Parameter, unsigned CreationFlags,
-  TThreadID &ThreadId)
+int StartThread(void * SecurityAttributes, unsigned StackSize,
+  TThreadFunc ThreadFunc, void * Parameter, unsigned CreationFlags,
+  TThreadID & ThreadId)
 {
-  TThreadParam *Param = new TThreadParam;
+  TThreadParam * Param = new TThreadParam;
   Param->ThreadFunc = ThreadFunc;
   Param->Parameter = Parameter;
   return BeginThread(SecurityAttributes, StackSize, ThreadProc, Param,
-      CreationFlags, ThreadId);
+    CreationFlags, ThreadId);
 }
 
 static TShortCut FirstCtrlNumberShortCut = ShortCut(L'0', TShiftState() << ssCtrl);
 static TShortCut LastCtrlNumberShortCut = ShortCut(L'9', TShiftState() << ssCtrl);
+static TShortCut FirstCtrlKeyPadShortCut = ShortCut(VK_NUMPAD0, TShiftState() << ssCtrl);
+static TShortCut LastCtrlKeyPadShortCut = ShortCut(VK_NUMPAD9, TShiftState() << ssCtrl);
 static TShortCut FirstShiftCtrlAltLetterShortCut = ShortCut(L'A', TShiftState() << ssShift << ssCtrl << ssAlt);
 static TShortCut LastShiftCtrlAltLetterShortCut = ShortCut(L'Z', TShiftState() << ssShift << ssCtrl << ssAlt);
 
-void InitializeShortCutCombo(TComboBox *ComboBox,
-  const TShortCuts &ShortCuts)
+void InitializeShortCutCombo(TComboBox * ComboBox,
+  const TShortCuts & ShortCuts)
 {
   ComboBox->Items->BeginUpdate();
   try
   {
     ComboBox->Items->Clear();
 
-    ComboBox->Items->AddObject(LoadStr(SHORTCUT_NONE), reinterpret_cast<TObject * >(0));
+    ComboBox->Items->AddObject(LoadStr(SHORTCUT_NONE), reinterpret_cast<TObject* >(0));
 
     for (TShortCut AShortCut = FirstCtrlNumberShortCut; AShortCut <= LastCtrlNumberShortCut; AShortCut++)
     {
       if (!ShortCuts.Has(AShortCut))
       {
-        ComboBox->Items->AddObject(ShortCutToText(AShortCut), reinterpret_cast<TObject * >(AShortCut));
+        ComboBox->Items->AddObject(ShortCutToText(AShortCut), reinterpret_cast<TObject* >(AShortCut));
       }
     }
 
@@ -1140,7 +1177,7 @@ void InitializeShortCutCombo(TComboBox *ComboBox,
     {
       if (!ShortCuts.Has(AShortCut))
       {
-        ComboBox->Items->AddObject(ShortCutToText(AShortCut), reinterpret_cast<TObject * >(AShortCut));
+        ComboBox->Items->AddObject(ShortCutToText(AShortCut), reinterpret_cast<TObject* >(AShortCut));
       }
     }
   }
@@ -1153,7 +1190,7 @@ void InitializeShortCutCombo(TComboBox *ComboBox,
   ComboBox->DropDownCount = Max(ComboBox->DropDownCount, 16);
 }
 
-void SetShortCutCombo(TComboBox *ComboBox, TShortCut Value)
+void SetShortCutCombo(TComboBox * ComboBox, TShortCut Value)
 {
   for (int Index = ComboBox->Items->Count - 1; Index >= 0; Index--)
   {
@@ -1167,7 +1204,7 @@ void SetShortCutCombo(TComboBox *ComboBox, TShortCut Value)
     {
       DebugAssert(Value != 0);
       ComboBox->Items->InsertObject(Index + 1, ShortCutToText(Value),
-        reinterpret_cast<TObject * >(Value));
+        reinterpret_cast<TObject* >(Value));
       ComboBox->ItemIndex = Index + 1;
       break;
     }
@@ -1175,9 +1212,18 @@ void SetShortCutCombo(TComboBox *ComboBox, TShortCut Value)
   }
 }
 
-TShortCut GetShortCutCombo(TComboBox *ComboBox)
+TShortCut GetShortCutCombo(TComboBox * ComboBox)
 {
   return TShortCut(ComboBox->Items->Objects[ComboBox->ItemIndex]);
+}
+
+TShortCut NormalizeCustomShortCut(TShortCut ShortCut)
+{
+  if ((FirstCtrlKeyPadShortCut <= ShortCut) && (ShortCut <= LastCtrlKeyPadShortCut))
+  {
+    ShortCut = FirstCtrlNumberShortCut + (ShortCut - FirstCtrlKeyPadShortCut);
+  }
+  return ShortCut;
 }
 
 bool IsCustomShortCut(TShortCut ShortCut)
@@ -1193,16 +1239,16 @@ class TMasterPasswordDialog : public TCustomDialog
 public:
   TMasterPasswordDialog(bool Current);
 
-  bool Execute(UnicodeString &CurrentPassword, UnicodeString &NewPassword);
+  bool Execute(UnicodeString & CurrentPassword, UnicodeString & NewPassword);
 
 protected:
   virtual void DoValidate();
-  virtual void DoChange(bool &CanSubmit);
+  virtual void DoChange(bool & CanSubmit);
 
 private:
-  TPasswordEdit *CurrentEdit;
-  TPasswordEdit *NewEdit;
-  TPasswordEdit *ConfirmEdit;
+  TPasswordEdit * CurrentEdit;
+  TPasswordEdit * NewEdit;
+  TPasswordEdit * ConfirmEdit;
 };
 
 TMasterPasswordDialog::TMasterPasswordDialog(bool Current) :
@@ -1232,13 +1278,13 @@ TMasterPasswordDialog::TMasterPasswordDialog(bool Current) :
   }
   else
   {
-    NewEdit = NULL;
-    ConfirmEdit = NULL;
+    NewEdit = nullptr;
+    ConfirmEdit = nullptr;
   }
 }
 
 bool TMasterPasswordDialog::Execute(
-  UnicodeString &CurrentPassword, UnicodeString &NewPassword)
+  UnicodeString & CurrentPassword, UnicodeString & NewPassword)
 {
   bool Result = TCustomDialog::Execute();
   if (Result)
@@ -1247,7 +1293,7 @@ bool TMasterPasswordDialog::Execute(
     {
       CurrentPassword = CurrentEdit->Text;
     }
-    if (NewEdit != NULL)
+    if (NewEdit != nullptr)
     {
       NewPassword = NewEdit->Text;
     }
@@ -1255,12 +1301,12 @@ bool TMasterPasswordDialog::Execute(
   return Result;
 }
 
-void TMasterPasswordDialog::DoChange(bool &CanSubmit)
+void TMasterPasswordDialog::DoChange(bool & CanSubmit)
 {
   CanSubmit =
     (!WinConfiguration->UseMasterPassword || (IsValidPassword(CurrentEdit->Text) >= 0)) &&
-    ((NewEdit == NULL) || (IsValidPassword(NewEdit->Text) >= 0)) &&
-    ((ConfirmEdit == NULL) || (IsValidPassword(ConfirmEdit->Text) >= 0));
+    ((NewEdit == nullptr) || (IsValidPassword(NewEdit->Text) >= 0)) &&
+    ((ConfirmEdit == nullptr) || (IsValidPassword(ConfirmEdit->Text) >= 0));
   TCustomDialog::DoChange(CanSubmit);
 }
 
@@ -1269,14 +1315,14 @@ void TMasterPasswordDialog::DoValidate()
   TCustomDialog::DoValidate();
 
   if (WinConfiguration->UseMasterPassword &&
-    !WinConfiguration->ValidateMasterPassword(CurrentEdit->Text))
+      !WinConfiguration->ValidateMasterPassword(CurrentEdit->Text))
   {
     CurrentEdit->SetFocus();
     CurrentEdit->SelectAll();
     throw Exception(MainInstructions(LoadStr(MASTER_PASSWORD_INCORRECT)));
   }
 
-  if (NewEdit != NULL)
+  if (NewEdit != nullptr)
   {
     if (NewEdit->Text != ConfirmEdit->Text)
     {
@@ -1290,7 +1336,7 @@ void TMasterPasswordDialog::DoValidate()
     {
       DebugAssert(Valid == 0);
       if (MessageDialog(LoadStr(MASTER_PASSWORD_SIMPLE2), qtWarning,
-          qaOK | qaCancel, HELP_MASTER_PASSWORD_SIMPLE) == qaCancel)
+            qaOK | qaCancel, HELP_MASTER_PASSWORD_SIMPLE) == qaCancel)
       {
         NewEdit->SetFocus();
         NewEdit->SelectAll();
@@ -1301,10 +1347,10 @@ void TMasterPasswordDialog::DoValidate()
 }
 
 static bool DoMasterPasswordDialog(bool Current,
-  UnicodeString &NewPassword)
+  UnicodeString & NewPassword)
 {
   bool Result;
-  TMasterPasswordDialog *Dialog = new TMasterPasswordDialog(Current);
+  TMasterPasswordDialog * Dialog = new TMasterPasswordDialog(Current);
   try
   {
     UnicodeString CurrentPassword;
@@ -1312,7 +1358,7 @@ static bool DoMasterPasswordDialog(bool Current,
     if (Result)
     {
       if ((Current || WinConfiguration->UseMasterPassword) &&
-        DebugAlwaysTrue(!CurrentPassword.IsEmpty()))
+          DebugAlwaysTrue(!CurrentPassword.IsEmpty()))
       {
         WinConfiguration->SetMasterPassword(CurrentPassword);
       }
@@ -1333,24 +1379,24 @@ bool DoMasterPasswordDialog()
   return Result;
 }
 
-bool DoChangeMasterPasswordDialog(UnicodeString &NewPassword)
+bool DoChangeMasterPasswordDialog(UnicodeString & NewPassword)
 {
   bool Result = DoMasterPasswordDialog(false, NewPassword);
   return Result;
 }
 
-void MessageWithNoHelp(UnicodeString Message)
+void MessageWithNoHelp(const UnicodeString & Message)
 {
   TMessageParams Params;
   Params.AllowHelp = false; // to avoid recursion
   if (MessageDialog(LoadStr(HELP_SEND_MESSAGE2), qtConfirmation,
-      qaOK | qaCancel, HELP_NONE, &Params) == qaOK)
+        qaOK | qaCancel, HELP_NONE, &Params) == qaOK)
   {
     SearchHelp(Message);
   }
 }
 
-void CheckLogParam(TProgramParams *Params)
+void CheckLogParam(TProgramParams * Params)
 {
   UnicodeString LogFile;
   if (Params->FindSwitch(LOG_SWITCH, LogFile) && CheckSafe(Params))
@@ -1360,7 +1406,7 @@ void CheckLogParam(TProgramParams *Params)
   }
 }
 
-bool CheckXmlLogParam(TProgramParams *Params)
+bool CheckXmlLogParam(TProgramParams * Params)
 {
   UnicodeString LogFile;
   bool Result =
@@ -1379,7 +1425,7 @@ bool CheckXmlLogParam(TProgramParams *Params)
   return Result;
 }
 
-bool CheckSafe(TProgramParams *Params)
+bool CheckSafe(TProgramParams * Params)
 {
   // Originally we warned when the test didn't pass,
   // but it would actually be helping hackers, so let's be silent.

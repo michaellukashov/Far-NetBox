@@ -8,6 +8,7 @@
  * OUT assertion: the match length is not greater than s->lookahead
  */
 
+#include "zbuild.h"
 #include "deflate.h"
 
 #if (defined(UNALIGNED_OK) && MAX_MATCH == 258)
@@ -147,7 +148,7 @@ ZLIB_INTERNAL uint32_t longest_match(deflate_state *const s, IPos cur_match) {
              * is pretty low, so for performance it's best to
              * outright stop here for the lower compression levels
              */
-            if (s->level < 6)
+            if (s->level < TRIGGER_LEVEL)
                 break;
         }
     } while ((cur_match = prev[cur_match & wmask]) > limit && --chain_length);
@@ -270,7 +271,7 @@ ZLIB_INTERNAL uint32_t longest_match(deflate_state *const s, IPos cur_match) {
              * is pretty low, so for performance it's best to
              * outright stop here for the lower compression levels
              */
-            if (s->level < 6)
+            if (s->level < TRIGGER_LEVEL)
                 break;
         }
     } while (--chain_length && (cur_match = prev[cur_match & wmask]) > limit);
@@ -289,7 +290,7 @@ ZLIB_INTERNAL uint32_t longest_match(deflate_state *const s, IPos cur_match) {
  * then-clause of the "#ifdef UNALIGNED_OK"-directive)
  *
  * ------------------------------------------------------------
- * uint32_t longest_match(...) {
+ * unsigned int longest_match(...) {
  *    ...
  *    do {
  *        match = s->window + cur_match;                //s0
@@ -329,11 +330,11 @@ ZLIB_INTERNAL uint32_t longest_match(deflate_state *const s, IPos cur_match) {
  *       lot easier for compiler to promote this quantity to register and keep
  *       its value throughout the entire small loop.
  *
- * 2) Transfrom s3 such that it examines sizeof(int64_t)-byte-match at a time.
+ * 2) Transfrom s3 such that it examines sizeof(long)-byte-match at a time.
  *    This is done by:
  *        ------------------------------------------------
- *        v1 = load from "scan" by sizeof(int64_t) bytes
- *        v2 = load from "match" by sizeof(int64_t) bytes
+ *        v1 = load from "scan" by sizeof(long) bytes
+ *        v2 = load from "match" by sizeof(lnog) bytes
  *        v3 = v1 xor v2
  *        match-bit = little-endian-machine(yes-for-x86) ?
  *                     count-trailing-zero(v3) :
@@ -361,8 +362,11 @@ ZLIB_INTERNAL uint32_t longest_match(deflate_state *const s, IPos cur_match) {
     uint32_t wmask = s->w_mask;
 
     register uint8_t *strend = s->window + s->strstart + MAX_MATCH;
-    register uint16_t scan_start = *(uint16_t*)scan;
-    register uint16_t scan_end   = *(uint16_t*)(scan+best_len-1);
+
+    uint16_t scan_start, scan_end;
+
+    memcpy(&scan_start, scan, sizeof(scan_start));
+    memcpy(&scan_end, scan+best_len-1, sizeof(scan_end));
 
     /* The code is optimized for HASH_BITS >= 8 and MAX_MATCH-2 multiple of 16.
      * It is easy to get rid of this optimization if necessary.
@@ -397,7 +401,7 @@ ZLIB_INTERNAL uint32_t longest_match(deflate_state *const s, IPos cur_match) {
         int cont = 1;
         do {
             match = win + cur_match;
-            if (likely(*(uint16_t*)(match+best_len-1) != scan_end)) {
+            if (likely(memcmp(match+best_len-1, &scan_end, sizeof(scan_end)) != 0)) {
                 if ((cur_match = prev[cur_match & wmask]) > limit
                     && --chain_length != 0) {
                     continue;
@@ -411,7 +415,7 @@ ZLIB_INTERNAL uint32_t longest_match(deflate_state *const s, IPos cur_match) {
         if (!cont)
             break;
 
-        if (*(uint16_t*)match != scan_start)
+        if (memcmp(match, &scan_start, sizeof(scan_start)) != 0)
             continue;
 
         /* It is not necessary to compare scan[2] and match[2] since they are
@@ -426,13 +430,16 @@ ZLIB_INTERNAL uint32_t longest_match(deflate_state *const s, IPos cur_match) {
         scan += 2, match+=2;
         Assert(*scan == *match, "match[2]?");
         do {
-            uint64_t sv = *(uint64_t*)(void*)scan;
-            uint64_t mv = *(uint64_t*)(void*)match;
-            uint64_t xor = sv ^ mv;
+            uint64_t sv, mv, xor;
+
+            memcpy(&sv, scan, sizeof(sv));
+            memcpy(&mv, match, sizeof(mv));
+
+            xor = sv ^ mv;
+
             if (xor) {
                 int match_byte = __builtin_ctzl(xor) / 8;
                 scan += match_byte;
-                match += match_byte;
                 break;
             } else {
                 scan += sizeof(uint64_t);
@@ -453,14 +460,14 @@ ZLIB_INTERNAL uint32_t longest_match(deflate_state *const s, IPos cur_match) {
             best_len = len;
             if (len >= nice_match)
                 break;
-            scan_end = *(uint16_t*)(scan+best_len-1);
+            memcpy(&scan_end, scan+best_len-1, sizeof(scan_end));
         } else {
             /*
              * The probability of finding a match later if we here
              * is pretty low, so for performance it's best to
              * outright stop here for the lower compression levels
              */
-            if (s->level < 6)
+            if (s->level < TRIGGER_LEVEL)
                 break;
         }
     } while ((cur_match = prev[cur_match & wmask]) > limit && --chain_length != 0);

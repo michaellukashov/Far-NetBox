@@ -1,7 +1,7 @@
 #include "stdafx.h"
 
-#define BLOCK_ALLOCATED 0xABBABABA
-#define BLOCK_FREED   0xDEADBEEF
+constexpr uint32_t BLOCK_ALLOCATED = 0xABBABABA;
+constexpr uint32_t BLOCK_FREED = 0xDEADBEEF;
 
 static int CheckBlock(void *blk)
 {
@@ -12,7 +12,7 @@ static int CheckBlock(void *blk)
   __try
 #endif // defined(__MINGW32__)
   {
-    uint32_t size = *reinterpret_cast<uint32_t *>(p);
+    const uint32_t size = *reinterpret_cast<uint32_t *>(p);
     uint32_t *b = reinterpret_cast<uint32_t *>(&p[sizeof(uint32_t)]);
     uint32_t *e = reinterpret_cast<uint32_t *>(&p[sizeof(uint32_t) * 2 + size]);
 
@@ -58,7 +58,7 @@ NB_C_CORE_DLL(void *) nbcore_alloc(size_t size)
     return nullptr;
   }
 
-  *reinterpret_cast<uint32_t *>(p) = static_cast<uint32_t>(size);
+  *reinterpret_cast<uint32_t *>(p) = nb::ToUInt32(size);
   *reinterpret_cast<uint32_t *>(&p[sizeof(uint32_t)]) = BLOCK_ALLOCATED;
   *reinterpret_cast<uint32_t *>(&p[size + sizeof(uint32_t) * 2]) = BLOCK_ALLOCATED;
   return p + sizeof(uint32_t) * 2;
@@ -98,7 +98,7 @@ NB_C_CORE_DLL(void *) nbcore_realloc(void *ptr, size_t size)
     return nullptr;
   }
 
-  *reinterpret_cast<uint32_t *>(p) = static_cast<uint32_t>(size);
+  *reinterpret_cast<uint32_t *>(p) = nb::ToUInt32(size);
   *reinterpret_cast<uint32_t *>(&p[sizeof(uint32_t)]) = BLOCK_ALLOCATED;
   *reinterpret_cast<uint32_t *>(&p[size + sizeof(uint32_t) * 2]) = BLOCK_ALLOCATED;
   return p + sizeof(uint32_t) * 2;
@@ -114,7 +114,7 @@ NB_C_CORE_DLL(void) nbcore_free(void *ptr)
     return;
 
   char *p = static_cast<char *>(ptr) - sizeof(uint32_t) * 2;
-  uint32_t size = *reinterpret_cast<uint32_t *>(p);
+  const uint32_t size = *reinterpret_cast<uint32_t *>(p);
 
   *reinterpret_cast<uint32_t *>(&p[sizeof(uint32_t)]) = BLOCK_FREED;
   *reinterpret_cast<uint32_t *>(&p[size + sizeof(uint32_t) * 2]) = BLOCK_FREED;
@@ -155,7 +155,7 @@ NB_CORE_DLL(char *) nbcore_strndup(const char *str, size_t len)
   char *p = static_cast<char *>(nbcore_alloc(len + 1));
   if (p)
   {
-    memcpy(p, str, len);
+    libmemcpy_memcpy(p, str, len);
     p[len] = 0;
   }
   return p;
@@ -169,7 +169,7 @@ NB_CORE_DLL(wchar_t *) nbcore_wstrndup(const wchar_t *str, size_t len)
   wchar_t *p = static_cast<wchar_t *>(nbcore_alloc(sizeof(wchar_t) * (len + 1)));
   if (p)
   {
-    memcpy(p, str, sizeof(wchar_t) * len);
+    libmemcpy_memcpy(p, str, sizeof(wchar_t) * len);
     p[len] = 0;
   }
   return p;
@@ -181,7 +181,7 @@ NB_CORE_DLL(int) nbcore_snprintf(char *buffer, size_t count, const char *fmt, ..
 {
   va_list va;
   va_start(va, fmt);
-  int len = _vsnprintf(buffer, count - 1, fmt, va);
+  const int len = _vsnprintf(buffer, count - 1, fmt, va);
   va_end(va);
   buffer[count - 1] = 0;
   return len;
@@ -193,7 +193,7 @@ NB_CORE_DLL(int) nbcore_snwprintf(wchar_t *buffer, size_t count, const wchar_t *
 {
   va_list va;
   va_start(va, fmt);
-  int len = _vsntprintf(buffer, count - 1, fmt, va);
+  const int len = _vsnwprintf(buffer, count - 1, fmt, va);
   va_end(va);
   buffer[count - 1] = 0;
   return len;
@@ -203,7 +203,7 @@ NB_CORE_DLL(int) nbcore_snwprintf(wchar_t *buffer, size_t count, const wchar_t *
 
 NB_CORE_DLL(int) nbcore_vsnprintf(char *buffer, size_t count, const char *fmt, va_list va)
 {
-  int len = _vsnprintf(buffer, count - 1, fmt, va);
+  const int len = _vsnprintf(buffer, count - 1, fmt, va);
   buffer[count - 1] = 0;
   return len;
 }
@@ -212,7 +212,7 @@ NB_CORE_DLL(int) nbcore_vsnprintf(char *buffer, size_t count, const char *fmt, v
 
 NB_CORE_DLL(int) nbcore_vsnwprintf(wchar_t *buffer, size_t count, const wchar_t *fmt, va_list va)
 {
-  int len = _vsntprintf(buffer, count - 1, fmt, va);
+  const int len = _vsnwprintf(buffer, count - 1, fmt, va);
   buffer[count - 1] = 0;
   return len;
 }
@@ -224,7 +224,7 @@ NB_CORE_DLL(wchar_t *) nbcore_a2u_cp(const char *src, int codepage)
   if (src == nullptr)
     return nullptr;
 
-  int cbLen = ::MultiByteToWideChar(codepage, 0, src, -1, nullptr, 0);
+  const int cbLen = ::MultiByteToWideChar(codepage, 0, src, -1, nullptr, 0);
   wchar_t *result = static_cast<wchar_t *>(nbcore_alloc(sizeof(wchar_t) * (cbLen + 1)));
   if (result == nullptr)
     return nullptr;
@@ -248,7 +248,7 @@ NB_CORE_DLL(char *) nbcore_u2a_cp(const wchar_t *src, int codepage)
   if (src == nullptr)
     return nullptr;
 
-  int cbLen = WideCharToMultiByte(codepage, 0, src, -1, nullptr, 0, nullptr, nullptr);
+  const int cbLen = WideCharToMultiByte(codepage, 0, src, -1, nullptr, 0, nullptr, nullptr);
   char *result = static_cast<char *>(nbcore_alloc(cbLen + 1));
   if (result == nullptr)
     return nullptr;

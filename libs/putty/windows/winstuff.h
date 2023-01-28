@@ -5,10 +5,6 @@
 #ifndef PUTTY_WINSTUFF_H
 #define PUTTY_WINSTUFF_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* C++ */
-
 #ifndef AUTO_WINSOCK
 #include <winsock2.h>
 #endif
@@ -129,11 +125,11 @@ struct FontSpec *fontspec_new(const char *name,
 /*
  * Dynamically linked functions. These come in two flavours:
  *
- *  - PUTTY_GET_WINDOWS_FUNCTION does not expose "name" to the preprocessor,
+ *  - GET_WINDOWS_FUNCTION does not expose "name" to the preprocessor,
  *    so will always dynamically link against exactly what is specified
  *    in "name". If you're not sure, use this one.
  *
- *  - PUTTY_GET_WINDOWS_FUNCTION_PP allows "name" to be redirected via
+ *  - GET_WINDOWS_FUNCTION_PP allows "name" to be redirected via
  *    preprocessor definitions like "#define foo bar"; this is principally
  *    intended for the ANSI/Unicode DoSomething/DoSomethingA/DoSomethingW.
  *    If your function has an argument of type "LPTSTR" or similar, this
@@ -141,26 +137,26 @@ struct FontSpec *fontspec_new(const char *name,
  *    (However, it can't always be used, as it trips over more complicated
  *    macro trickery such as the WspiapiGetAddrInfo wrapper for getaddrinfo.)
  *
- * (PUTTY_DECL_WINDOWS_FUNCTION works with both these variants.)
+ * (DECL_WINDOWS_FUNCTION works with both these variants.)
  */
-#define PUTTY_TYPECHECK(to_check, to_return)          \
+#define TYPECHECK(to_check, to_return)          \
     (sizeof(to_check) ? to_return : to_return)
-#define PUTTY_DECL_WINDOWS_FUNCTION(flinkage, frettype, fname, fparams)   \
-    typedef frettype (WINAPI *t_##fname) fparams;                  \
-    flinkage t_##fname p_##fname
+#define DECL_WINDOWS_FUNCTION(linkage, rettype, name, params)   \
+    typedef rettype (WINAPI *t_##name) params;                  \
+    linkage t_##name p_##name
 #define STR1(x) #x
 #define STR(x) STR1(x)
-#define PUTTY_GET_WINDOWS_FUNCTION_PP(module, fname)                           \
-    PUTTY_TYPECHECK((t_##fname)NULL == fname,                                   \
-              (p_##fname = module ?                                      \
-               (t_##fname) GetProcAddress(module, STR(fname)) : NULL))
-#define PUTTY_GET_WINDOWS_FUNCTION(module, fname)                              \
-    PUTTY_TYPECHECK((t_##fname)NULL == fname,                                   \
-              (p_##fname = module ?                                      \
-               (t_##fname) GetProcAddress(module, #fname) : NULL))
-#define PUTTY_GET_WINDOWS_FUNCTION_NO_TYPECHECK(module, fname) \
-    (p_##fname = module ?                                \
-     (t_##fname) GetProcAddress(module, #fname) : NULL)
+#define GET_WINDOWS_FUNCTION_PP(module, name)                           \
+    TYPECHECK((t_##name)NULL == name,                                   \
+              (p_##name = module ?                                      \
+               (t_##name) GetProcAddress(module, STR(name)) : NULL))
+#define GET_WINDOWS_FUNCTION(module, name)                              \
+    TYPECHECK((t_##name)NULL == name,                                   \
+              (p_##name = module ?                                      \
+               (t_##name) GetProcAddress(module, #name) : NULL))
+#define GET_WINDOWS_FUNCTION_NO_TYPECHECK(module, name) \
+    (p_##name = module ?                                \
+     (t_##name) GetProcAddress(module, #name) : NULL)
 
 /*
  * Global variables. Most modules declare these `extern', but
@@ -307,12 +303,12 @@ extern void select_result(WPARAM, LPARAM);
  * that module must be exported from it as function pointers. So
  * here they are.
  */
-PUTTY_DECL_WINDOWS_FUNCTION(GLOBAL, int, WSAAsyncSelect,
+DECL_WINDOWS_FUNCTION(GLOBAL, int, WSAAsyncSelect,
 		      (SOCKET, HWND, u_int, long));
-PUTTY_DECL_WINDOWS_FUNCTION(GLOBAL, int, WSAEventSelect,
+DECL_WINDOWS_FUNCTION(GLOBAL, int, WSAEventSelect,
 		      (SOCKET, WSAEVENT, long));
-PUTTY_DECL_WINDOWS_FUNCTION(GLOBAL, int, WSAGetLastError, (void));
-PUTTY_DECL_WINDOWS_FUNCTION(GLOBAL, int, WSAEnumNetworkEvents,
+DECL_WINDOWS_FUNCTION(GLOBAL, int, WSAGetLastError, (void));
+DECL_WINDOWS_FUNCTION(GLOBAL, int, WSAEnumNetworkEvents,
 		      (SOCKET, WSAEVENT, LPWSANETWORKEVENTS));
 #ifdef NEED_DECLARATION_OF_SELECT
 /* This declaration is protected by an ifdef for the sake of building
@@ -322,7 +318,7 @@ PUTTY_DECL_WINDOWS_FUNCTION(GLOBAL, int, WSAEnumNetworkEvents,
  * only a modules actually needing to use (or define, or initialise)
  * this function pointer will see its declaration, and _those_ modules
  * - which will be Windows-specific anyway - can take more care. */
-PUTTY_DECL_WINDOWS_FUNCTION(GLOBAL, int, select,
+DECL_WINDOWS_FUNCTION(GLOBAL, int, select,
 		      (int, fd_set FAR *, fd_set FAR *,
 		       fd_set FAR *, const struct timeval FAR *));
 #endif
@@ -350,9 +346,7 @@ void init_common_controls(void);       /* also does some DLL-loading */
  * Exports from winutils.c.
  */
 typedef struct filereq_tag filereq; /* cwd for file requester */
-#ifndef MPEXT
 BOOL request_file(filereq *state, OPENFILENAME *of, int preserve, int save);
-#endif
 filereq *filereq_new(void);
 void filereq_free(filereq *state);
 int message_box(LPCTSTR text, LPCTSTR caption, DWORD style, DWORD helpctxid);
@@ -555,42 +549,6 @@ typedef PVOID DLL_DIRECTORY_COOKIE;
 DECLSPEC_IMPORT DLL_DIRECTORY_COOKIE WINAPI AddDllDirectory (PCWSTR NewDirectory);
 #endif
 
-/* A few pieces of up-to-date Windows API definition needed for older
- * compilers. */
-#ifndef LOAD_LIBRARY_SEARCH_SYSTEM32
-#define LOAD_LIBRARY_SEARCH_SYSTEM32 0x00000800
-#endif
-#ifndef LOAD_LIBRARY_SEARCH_USER_DIRS
-#define LOAD_LIBRARY_SEARCH_USER_DIRS 0x00000400
-#endif
-#ifndef LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR
-#define LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR 0x00000100
-#endif
-#if _MSC_VER < 1400
-#ifndef DLL_DIRECTORY_COOKIE
-typedef PVOID DLL_DIRECTORY_COOKIE;
-DECLSPEC_IMPORT DLL_DIRECTORY_COOKIE WINAPI AddDllDirectory (PCWSTR NewDirectory);
-#endif
-#endif
-
-/* A few pieces of up-to-date Windows API definition needed for older
- * compilers. */
-#ifndef LOAD_LIBRARY_SEARCH_SYSTEM32
-#define LOAD_LIBRARY_SEARCH_SYSTEM32 0x00000800
-#endif
-#ifndef LOAD_LIBRARY_SEARCH_USER_DIRS
-#define LOAD_LIBRARY_SEARCH_USER_DIRS 0x00000400
-#endif
-#ifndef LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR
-#define LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR 0x00000100
-#endif
-#ifndef DLL_DIRECTORY_COOKIE
-DECLSPEC_IMPORT DLL_DIRECTORY_COOKIE WINAPI AddDllDirectory (PCWSTR NewDirectory);
-#endif
-#if _MSC_VER <= 1600
-typedef PVOID DLL_DIRECTORY_COOKIE;
-#endif
-
 /*
  * Exports from sizetip.c.
  */
@@ -644,14 +602,6 @@ void agent_schedule_callback(void (*callback)(void *, void *, int),
 #define FLAG_SYNCAGENT 0x1000
 
 /*
- * winpgntc.c also exports these two functions which are used by the
- * server side of Pageant as well, to get the user SID for comparing
- * with clients'.
- */
-int init_advapi(void);  /* initialises everything needed by get_user_sid */
-PSID get_user_sid(void);
-
-/*
  * Exports from winser.c.
  */
 extern Backend serial_backend;
@@ -659,9 +609,7 @@ extern Backend serial_backend;
 /*
  * Exports from winjump.c.
  */
-#if 0
 #define JUMPLIST_SUPPORTED             /* suppress #defines in putty.h */
-#endif
 void add_session_to_jumplist(const char * const sessionname);
 void remove_session_from_jumplist(const char * const sessionname);
 void clear_jumplist(void);
@@ -689,9 +637,5 @@ int remove_from_jumplist_registry(const char *item);
  * sequence of NUL-terminated strings in memory, terminated with an
  * empty one. */
 char *get_jumplist_registry_entries(void);
-
-#ifdef __cplusplus
-}
-#endif /* C++ */
 
 #endif

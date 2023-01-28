@@ -1,7 +1,6 @@
-#pragma once
 /* 
    Standard definitions for neon headers
-   Copyright (C) 2003-2008, 2010, Joe Orton <joe@manyfish.co.uk>
+   Copyright (C) 2003-2021, Joe Orton <joe@manyfish.co.uk>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -49,7 +48,11 @@ typedef off_t ne_off_t;
 
 /* define ssize_t for Win32 */
 #if defined(WIN32) && !defined(ssize_t)
+#ifdef _WIN64
+#define ssize_t __int64
+#else
 #define ssize_t int
+#endif
 #endif
 
 #ifdef __NETWARE__
@@ -62,8 +65,10 @@ typedef off_t ne_off_t;
 #define NE_PRIVATE __attribute__((visibility ("hidden")))
 #endif
 #define ne_attribute_malloc __attribute__((malloc))
+#define ne_attribute_alloc_size(x) __attribute__((alloc_size(x)))
 #else
 #define ne_attribute_malloc
+#define ne_attribute_alloc_size(x)
 #endif
 #if __GNUC__ > 3
 #define ne_attribute_sentinel __attribute__((sentinel))
@@ -74,6 +79,7 @@ typedef off_t ne_off_t;
 #else
 #define ne_attribute(x)
 #define ne_attribute_malloc
+#define ne_attribute_alloc_size(x)
 #define ne_attribute_sentinel
 #endif
 
@@ -83,6 +89,18 @@ typedef off_t ne_off_t;
 
 #ifndef NE_BUFSIZ
 #define NE_BUFSIZ 8192
+#endif
+
+#ifndef NE_VAR
+# if defined(_MSC_VER) && defined(NE_DLL)
+#  ifdef BUILDING_NEON
+#   define NE_VAR extern __declspec(dllexport)
+#  else
+#   define NE_VAR extern __declspec(dllimport)
+#  endif
+# else
+#  define NE_VAR extern
+# endif
 #endif
 
 #endif /* NE_DEFS_H */

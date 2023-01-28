@@ -1,6 +1,6 @@
 /* 
    HTTP session handling
-   Copyright (C) 1999-2009, Joe Orton <joe@manyfish.co.uk>
+   Copyright (C) 1999-2021, Joe Orton <joe@manyfish.co.uk>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -99,6 +99,15 @@ typedef enum ne_session_flag_e {
 
     NE_SESSFLAG_EXPECT100, /* enable this flag to enable the flag
                             * NE_REQFLAG_EXPECT100 for new requests. */
+
+    NE_SESSFLAG_SHAREPOINT, /* this flag enables various workarounds
+                             * to improve interoperability with
+                             * SharePoint */
+
+    #ifdef WINSCP
+    NE_SESSFLAG_LIBERAL_ESCAPING,
+    SE_SESSFLAG_SNDBUF,
+    #endif
 
     NE_SESSFLAG_LAST /* enum sentinel value */
 } ne_session_flag;
@@ -312,11 +321,16 @@ void ne_set_connect_timeout(ne_session *sess, int timeout);
 /* Sets the user-agent string. neon/VERSION will be appended, to make
  * the full header "User-Agent: product neon/VERSION".
  * If this function is not called, the User-Agent header is not sent.
- * The product string must follow the RFC2616 format, i.e.
+ * The product string must follow the RFC 7231§5.5.3 format, i.e.
  *       product         = token ["/" product-version]
  *       product-version = token
- * where token is any alpha-numeric-y string [a-zA-Z0-9]* */
+ * where token is an alphanumeric string. */
 void ne_set_useragent(ne_session *sess, const char *product);
+
+#ifdef WINSCP
+void ne_set_realhost(ne_session *sess, const char *realhost);
+void ne_ssl_set_certificates_storage(ne_session *sess, const char * filename);
+#endif
 
 /* Returns non-zero if next-hop server does not claim compliance to
  * HTTP/1.1 or later. */

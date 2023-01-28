@@ -13,11 +13,11 @@ CMainThread::CMainThread()
 {
   m_LastCommand.id = 0;
   m_LastCommand.param4 = 0;
-  m_pTools = NULL;
+  m_pTools = nullptr;
   m_nInternalMessageID = 0;
   m_pPostKeepAliveCommand = 0;
   m_nTimerID = 0;
-  m_pControlSocket = NULL;
+  m_pControlSocket = nullptr;
   m_bBusy = FALSE;
   m_bConnected = FALSE;
   m_pWorkingDir = 0;
@@ -380,7 +380,7 @@ CMainThread* CMainThread::Create(int nPriority, DWORD dwCreateFlags)
   if (!pMainThread->m_hThread)
   {
     delete pMainThread;
-    return NULL;
+    return nullptr;
   }
   ::SetThreadPriority(pMainThread->m_hThread, nPriority);
   return pMainThread;
@@ -393,11 +393,14 @@ BOOL CMainThread::PostThreadMessage(UINT message, WPARAM wParam, LPARAM lParam)
 
 DWORD CMainThread::ResumeThread()
 {
+  m_Started = false;
   BOOL res=::ResumeThread(m_hThread);
   if (res)
   {
-    m_EventStarted.Lock();
-    m_EventStarted.Unlock();
+    while (!m_Started)
+    {
+      Sleep(10);
+    }
   }
   return res;
 }
@@ -411,7 +414,7 @@ DWORD CMainThread::Run()
 {
   ECS;
   InitInstance();
-  m_EventStarted.SetEvent();
+  m_Started = true;
   LCS;
   MSG msg;
   while (GetMessage(&msg, 0, 0, 0))

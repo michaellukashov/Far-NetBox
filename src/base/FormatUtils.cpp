@@ -1,48 +1,35 @@
 
 #include <vcl.h>
-#pragma hdrstop
 
 #include "FormatUtils.h"
 
 namespace nb {
 
-UnicodeString Format(UnicodeString format_str, fmt::ArgList args)
+UnicodeString Format(const UnicodeString fmt, fmt::ArgList args)
 {
   fmt::WMemoryWriter w;
-  w.write(format_str.c_str(), args);
-  return UnicodeString(w.c_str(), w.size());
+  w.write(fmt.data(), args);
+  return UnicodeString(w.data(), ToIntPtr(w.size()));
 }
 
-UnicodeString Sprintf(UnicodeString format, fmt::ArgList args)
+UnicodeString Sprintf(const UnicodeString fmt, fmt::ArgList args)
 {
   fmt::WMemoryWriter w;
-  fmt::printf(w, format.c_str(), args);
-  return UnicodeString(w.c_str(), w.size());
+  fmt::printf(w, fmt.data(), args);
+  return UnicodeString(w.data(), ToIntPtr(w.size()));
 }
 
-UnicodeString FmtLoadStr(intptr_t Id, fmt::ArgList args)
+UnicodeString FmtLoadStr(int32_t id, fmt::ArgList args)
 {
-  UnicodeString Fmt = GetGlobals()->GetMsg(Id);
+  Expects(GetGlobals() != nullptr);
+  UnicodeString Fmt = GetGlobals()->GetMsg(id);
   if (!Fmt.IsEmpty())
   {
     UnicodeString Result = Sprintf(Fmt, args);
     return Result;
   }
-  DEBUG_PRINTF("Unknown resource string id: %d\n", Id);
+  DEBUG_PRINTF("Unknown resource string id: %d\n", id);
   return UnicodeString();
 }
 
 } // namespace nb
-
-std::basic_ostream<wchar_t> &operator<<(std::basic_ostream<wchar_t> &os, const UnicodeString &value)
-{
-  os << value.c_str();
-  return os;
-}
-
-std::basic_ostream<char> &operator<<(std::basic_ostream<char> &os, const AnsiString &value)
-{
-  os << value.c_str();
-  return os;
-}
-

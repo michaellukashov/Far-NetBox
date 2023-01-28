@@ -8,9 +8,7 @@
 
 #ifndef MPEXT
 
-#if 0
 #include "terminal.h"
-#endif // #if 0
 #include "misc.h"
 
 /* Character conversion arrays; they are usually taken from windows,
@@ -1031,7 +1029,7 @@ int decode_codepage(char *cp_name)
                 if (codepage == -1)
                     return codepage;
                 if (codepage == 0) {
-                    codepage = 65536 + (int)(cpi - cp_list);
+                    codepage = 65536 + (cpi - cp_list);
                     goto break_break;
                 }
 
@@ -1193,7 +1191,7 @@ int wc_to_mb(int codepage, int flags, const wchar_t *wcstr, int wclen,
 #endif
 	    assert(p - mbstr < mblen);
 	}
-	return (int)(p - mbstr);
+	return p - mbstr;
     } else
 	return WideCharToMultiByte(codepage, flags, wcstr, wclen,
 				   mbstr, mblen, defchr, defused);

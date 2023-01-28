@@ -207,7 +207,7 @@ static void bigval_export_le(const bigval *r, void *vdata, int len)
     unsigned char *data = (unsigned char *)vdata;
     int i;
     for (i = 0; i < len; i++)
-        data[i] = (unsigned char)(r->w[i / BIGNUM_INT_BYTES] >> (8 * (i % BIGNUM_INT_BYTES)));
+        data[i] = r->w[i / BIGNUM_INT_BYTES] >> (8 * (i % BIGNUM_INT_BYTES));
 }
 
 /*

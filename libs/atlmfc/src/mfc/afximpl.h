@@ -108,18 +108,6 @@ public:
 #undef AFX_DATA
 #define AFX_DATA AFX_CORE_DATA
 
-class _AFX_RICHEDIT_STATE : public _AFX_EDIT_STATE
-{
-public:
-	HINSTANCE m_hInstRichEdit;      // handle to RICHED32.DLL
-	HINSTANCE m_hInstRichEdit2;      // handle to RICHED20.DLL
-	virtual ~_AFX_RICHEDIT_STATE();
-};
-
-AFX_DATA EXTERN_PROCESS_LOCAL(_AFX_RICHEDIT_STATE, _afxRichEditState)
-
-_AFX_RICHEDIT_STATE* AFX_CDECL AfxGetRichEditState();
-
 /////////////////////////////////////////////////////////////////////////////
 // _AFX_HTMLHELP_STATE
 
@@ -142,10 +130,6 @@ _AFX_RICHEDIT_STATE* AFX_CDECL AfxGetRichEditState();
 
 // from wincore.cpp
 extern const TCHAR _afxWnd[];           // simple child windows/controls
-extern const TCHAR _afxWndControlBar[]; // controls with gray backgrounds
-extern const TCHAR _afxWndMDIFrame[];
-extern const TCHAR _afxWndFrameOrView[];
-extern const TCHAR _afxWndOleControl[];
 
 #define AFX_WND_REG                     0x00001
 #define AFX_WNDCONTROLBAR_REG           0x00002
@@ -480,14 +464,14 @@ class AFX_COM
 {
 public:
 	HRESULT CreateInstance(REFCLSID rclsid, LPUNKNOWN pUnkOuter,
-		REFIID riid, LPVOID* ppv);
+	  REFIID riid, LPVOID* ppv);
 	HRESULT GetClassObject(REFCLSID rclsid, REFIID riid, LPVOID* ppv);
 };
 
 CString AFXAPI AfxStringFromCLSID(REFCLSID rclsid);
 BOOL AFXAPI AfxGetInProcServer(LPCTSTR lpszCLSID, CString& str);
 BOOL AFXAPI AfxResolveShortcut(CWnd* pWnd, LPCTSTR pszShortcutFile,
-	_Out_cap_(cchPath) LPTSTR pszPath, int cchPath);
+  _Out_cap_(cchPath) LPTSTR pszPath, int cchPath);
 #endif // _AFX_NO_OLE_SUPPORT
 
 #define NULL_TLS ((DWORD)-1)
@@ -497,7 +481,7 @@ BOOL AFXAPI AfxResolveShortcut(CWnd* pWnd, LPCTSTR pszShortcutFile,
 
 const AFX_MSGMAP_ENTRY* AFXAPI
 AfxFindMessageEntry(const AFX_MSGMAP_ENTRY* lpEntry,
-	UINT nMsg, UINT nCode, UINT nID);
+  UINT nMsg, UINT nCode, UINT nID);
 
 union MessageMapFunctions
 {

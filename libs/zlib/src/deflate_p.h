@@ -20,8 +20,7 @@ void check_match(deflate_state *s, IPos start, IPos match, int length);
 #else
 #define check_match(s, start, match, length)
 #endif
-void fill_window(deflate_state *s);
-void flush_pending(z_stream *strm);
+void flush_pending(PREFIX3(stream) *strm);
 
 /* ===========================================================================
  * Insert string str in the dictionary and set match_head to the previous head
@@ -32,73 +31,51 @@ void flush_pending(z_stream *strm);
  *    (except for the last MIN_MATCH-1 bytes of the input file).
  */
 
-#ifdef X86_SSE4_2_CRC_HASH
-extern Pos insert_string_sse(deflate_state *const s, const Pos str, uint32_t count);
-#elif defined(ARM_ACLE_CRC_HASH)
-extern Pos insert_string_acle(deflate_state *const s, const Pos str, uint32_t count);
-#endif
-
-static inline Pos insert_string_c(deflate_state *const s, const Pos str, uint32_t count)
-{
+static inline Pos insert_string_c(deflate_state *const s, const Pos str, unsigned int count) {
     Pos ret = 0;
-    uint32_t idx;
+    unsigned int idx;
 
     for (idx = 0; idx < count; idx++) {
         UPDATE_HASH(s, s->ins_h, str+idx);
-        if (s->head[s->ins_h] != str+idx) {
-            s->prev[(str+idx) & s->w_mask] = s->head[s->ins_h];
-            s->head[s->ins_h] = str+idx;
+
+        Pos head = s->head[s->ins_h];
+        if (head != str+idx) {
+          s->prev[(str+idx) & s->w_mask] = head;
+          s->head[s->ins_h] = str+idx;
+          if (idx == count - 1)
+            ret = head;
+        } else if (idx == count - 1) {
+          ret = str + idx;
         }
     }
-    ret = s->prev[(str+count-1) & s->w_mask];
     return ret;
 }
-
-static inline Pos insert_string(deflate_state *const s, const Pos str, uint32_t count)
-{
-#ifdef X86_SSE4_2_CRC_HASH
-    if (x86_cpu_has_sse42)
-        return insert_string_sse(s, str, count);
-#endif
-#if defined(ARM_ACLE_CRC_HASH)
-    return insert_string_acle(s, str, count);
-#else
-    return insert_string_c(s, str, count);
-#endif
-}
-
-#ifndef NOT_TWEAK_COMPILER
-static inline void bulk_insert_str(deflate_state *const s, Pos startpos, uint32_t count) {
-# ifdef X86_SSE4_2_CRC_HASH
-    if (x86_cpu_has_sse42) {
-        insert_string_sse(s, startpos, count);
-    } else
-# endif
-    {
-        insert_string_c(s, startpos, count);
-    }
-}
-#endif /* NOT_TWEAK_COMPILER */
 
 /* ===========================================================================
  * Flush the current block, with given end-of-file flag.
  * IN assertion: strstart is set to the end of the current match.
  */
 #define FLUSH_BLOCK_ONLY(s, last) { \
-   _tr_flush_block(s, (s->block_start >= 0L ? \
+    _tr_flush_block(s, (s->block_start >= 0L ? \
                    (char *)&s->window[(uint32_t)s->block_start] : \
-                   (char *)Z_NULL), \
+                   NULL), \
                    (uint64_t)((int64_t)s->strstart - s->block_start), \
-                (last)); \
-   s->block_start = s->strstart; \
-   flush_pending(s->strm); \
-   Tracev((stderr,"[FLUSH]")); \
+                   (last)); \
+    s->block_start = s->strstart; \
+    flush_pending(s->strm); \
+    Tracev((stderr, "[FLUSH]")); \
 }
 
 /* Same but force premature exit if necessary. */
 #define FLUSH_BLOCK(s, last) { \
-   FLUSH_BLOCK_ONLY(s, last); \
-   if (s->strm->avail_out == 0) return (last) ? finish_started : need_more; \
+    FLUSH_BLOCK_ONLY(s, last); \
+    if (s->strm->avail_out == 0) return (last) ? finish_started : need_more; \
 }
+
+/* Maximum stored block length in deflate format (not including header). */
+#define MAX_STORED 65535
+
+/* Minimum of a and b. */
+#define MIN(a, b) ((a) > (b) ? (b) : (a))
 
 #endif

@@ -1,6 +1,5 @@
 
 #include <vcl.h>
-#pragma hdrstop
 
 #include <Common.h>
 #include <StrUtils.hpp>
@@ -11,19 +10,21 @@
 #endif // FARPLUGIN
 #include "rtlconsts.h"
 
+__removed #pragma package(smart_init)
+
 #if 0
-static std::unique_ptr<TCriticalSection> IgnoredExceptionsCriticalSection(new TCriticalSection());
-typedef rde::set<UnicodeString> TIgnoredExceptions;
+static std::unique_ptr<TCriticalSection> IgnoredExceptionsCriticalSection(std::make_unique<TCriticalSection>());
+typedef nb::set_t<UnicodeString> TIgnoredExceptions;
 static TIgnoredExceptions IgnoredExceptions;
 
-static UnicodeString NormalizeClassName(UnicodeString ClassName)
+static UnicodeString NormalizeClassName(const UnicodeString ClassName)
 {
   return ReplaceStr(ClassName, L".", L"::").LowerCase();
 }
 
 void IgnoreException(const std::type_info &ExceptionType)
 {
-  TGuard Guard(*IgnoredExceptionsCriticalSection.get());
+  TGuard Guard(*IgnoredExceptionsCriticalSection.get()); nb::used(Guard);
   // We should better use type_index as a key, instead of a class name,
   // but type_index is not available in 32-bit version of STL in XE6.
   IgnoredExceptions.insert(NormalizeClassName(UnicodeString(AnsiString(ExceptionType.name()))));
@@ -39,12 +40,12 @@ static bool WellKnownException(
 
 
   bool Result = true;
-  bool IgnoreException = false;
+  const bool IgnoreException = false;
 
 #if 0
   if (!IgnoredExceptions.empty())
   {
-    TGuard Guard(*IgnoredExceptionsCriticalSection.get());
+    TGuard Guard(*IgnoredExceptionsCriticalSection.get()); nb::used(Guard);
     UnicodeString ClassName = ""; // NormalizeClassName(E->QualifiedClassName());
     IgnoreException = (IgnoredExceptions.find(ClassName) != IgnoredExceptions.end());
   }
@@ -61,9 +62,15 @@ static bool WellKnownException(
     {
       throw EAccessViolation(E->Message);
     }
-    Message = MainInstructions(LoadStr(ACCESS_VIOLATION_ERROR3));
+    UnicodeString S = E->Message;
+    UnicodeString Dummy;
+    if (!ExtractMainInstructions(S, Dummy))
+    {
+      S = UnicodeString();
+    }
+    Message = MainInstructions(LoadStr(ACCESS_VIOLATION_ERROR3)) + S;
     CounterName = L"AccessViolations";
-    Clone.reset(new EAccessViolation(E->Message));
+    Clone = std::make_unique<EAccessViolation>(E->Message);
   }
 #if 0
   // EIntError and EMathError are EExternal
@@ -111,8 +118,8 @@ static bool WellKnownException(
   }
 
   if (Result)
-{
-  if (AMessage != nullptr)
+  {
+    if (AMessage != nullptr)
     {
       (*AMessage) = Message;
     }
@@ -218,7 +225,7 @@ TStrings *ExceptionToMoreMessages(Exception *E)
 
 bool ExceptionFullMessage(Exception *E, UnicodeString &Message)
 {
-  bool Result = ExceptionMessage(E, Message);
+  const bool Result = ExceptionMessage(E, Message);
   if (Result)
   {
     Message += L"\n";
@@ -242,7 +249,7 @@ UnicodeString GetExceptionHelpKeyword(const Exception *E)
     HelpKeyword = ExtE->GetHelpKeyword();
   }
   else if ((E != nullptr) && ExceptionMessage(E, false, false, Message, InternalError) &&
-    InternalError)
+           InternalError)
   {
 #if defined(FARPLUGIN)
     HelpKeyword = HELP_INTERNAL_ERROR;
@@ -251,10 +258,10 @@ UnicodeString GetExceptionHelpKeyword(const Exception *E)
   return HelpKeyword;
 }
 
-UnicodeString MergeHelpKeyword(UnicodeString PrimaryHelpKeyword, UnicodeString SecondaryHelpKeyword)
+UnicodeString MergeHelpKeyword(const UnicodeString PrimaryHelpKeyword, const UnicodeString SecondaryHelpKeyword)
 {
   if (!PrimaryHelpKeyword.IsEmpty() &&
-    !IsInternalErrorHelpKeyword(SecondaryHelpKeyword))
+      !IsInternalErrorHelpKeyword(SecondaryHelpKeyword))
   {
     // we have to yet decide what we have both
     // PrimaryHelpKeyword and SecondaryHelpKeyword
@@ -263,7 +270,7 @@ UnicodeString MergeHelpKeyword(UnicodeString PrimaryHelpKeyword, UnicodeString S
   return SecondaryHelpKeyword;
 }
 
-bool IsInternalErrorHelpKeyword(UnicodeString HelpKeyword)
+bool IsInternalErrorHelpKeyword(const UnicodeString HelpKeyword)
 {
 #if defined(FARPLUGIN)
   return
@@ -273,58 +280,42 @@ bool IsInternalErrorHelpKeyword(UnicodeString HelpKeyword)
 #endif // FARPLUGIN
 }
 
-ExtException::ExtException(Exception *E) :
-  Exception(OBJECT_CLASS_ExtException, L""),
-  FMoreMessages(nullptr)
+ExtException::ExtException(const Exception *E) :
+  Exception(OBJECT_CLASS_ExtException, L"")
 {
   AddMoreMessages(E);
   FHelpKeyword = GetExceptionHelpKeyword(E);
 }
 
-ExtException::ExtException(TObjectClassId Kind, Exception *E) :
-  Exception(Kind, L""),
-  FMoreMessages(nullptr)
+ExtException::ExtException(TObjectClassId Kind, const Exception *E) :
+  Exception(Kind, L"")
 {
   AddMoreMessages(E);
   FHelpKeyword = GetExceptionHelpKeyword(E);
 }
 
-ExtException::ExtException(const Exception *E, UnicodeString Msg, UnicodeString HelpKeyword) :
-  Exception(OBJECT_CLASS_ExtException, Msg),
-  FMoreMessages(nullptr)
+ExtException::ExtException(const Exception *E, const UnicodeString Msg, const UnicodeString HelpKeyword) :
+  Exception(OBJECT_CLASS_ExtException, Msg)
 {
   AddMoreMessages(E);
   FHelpKeyword = MergeHelpKeyword(HelpKeyword, GetExceptionHelpKeyword(E));
 }
 
-ExtException::ExtException(TObjectClassId Kind, const Exception *E, UnicodeString Msg, UnicodeString HelpKeyword) :
-  Exception(Kind, Msg),
-  FMoreMessages(nullptr)
+ExtException::ExtException(TObjectClassId Kind, const Exception *E, const UnicodeString Msg, const UnicodeString HelpKeyword) :
+  Exception(Kind, Msg)
 {
   AddMoreMessages(E);
   FHelpKeyword = MergeHelpKeyword(HelpKeyword, GetExceptionHelpKeyword(E));
 }
 
-#if 0
-ExtException::ExtException(TObjectClassId Kind, ExtException *E, UnicodeString Msg, UnicodeString HelpKeyword) :
-  Exception(Kind, Msg),
-  FMoreMessages(nullptr),
-  FHelpKeyword()
-{
-  AddMoreMessages(E);
-}
-#endif // #if 0
-
-ExtException::ExtException(TObjectClassId Kind, Exception *E, intptr_t Ident) :
+ExtException::ExtException(TObjectClassId Kind, Exception *E, int32_t Ident, const UnicodeString HelpKeyword) :
   Exception(Kind, E, Ident),
-  FMoreMessages(nullptr),
-  FHelpKeyword()
+  FHelpKeyword(HelpKeyword)
 {
 }
 
-ExtException::ExtException(TObjectClassId Kind, UnicodeString Msg, const Exception *E, UnicodeString HelpKeyword) :
-  Exception(Kind, L""),
-  FMoreMessages(nullptr)
+ExtException::ExtException(TObjectClassId Kind, const UnicodeString Msg, const Exception *E, const UnicodeString HelpKeyword) :
+  Exception(Kind, L"")
 {
   // "copy exception"
   AddMoreMessages(E);
@@ -347,11 +338,10 @@ ExtException::ExtException(TObjectClassId Kind, UnicodeString Msg, const Excepti
   FHelpKeyword = MergeHelpKeyword(GetExceptionHelpKeyword(E), HelpKeyword);
 }
 
-ExtException::ExtException(UnicodeString Msg, UnicodeString MoreMessages,
-  UnicodeString HelpKeyword) :
+ExtException::ExtException(const UnicodeString Msg, const UnicodeString MoreMessages,
+  const UnicodeString HelpKeyword) :
   Exception(OBJECT_CLASS_ExtException, Msg),
-  FMoreMessages(nullptr),
-  FHelpKeyword(HelpKeyword)
+  FHelpKeyword(std::move(HelpKeyword))
 {
   if (!MoreMessages.IsEmpty())
   {
@@ -359,10 +349,9 @@ ExtException::ExtException(UnicodeString Msg, UnicodeString MoreMessages,
   }
 }
 
-ExtException::ExtException(TObjectClassId Kind, UnicodeString Msg, UnicodeString MoreMessages,
-  UnicodeString HelpKeyword) :
+ExtException::ExtException(TObjectClassId Kind, const UnicodeString Msg, const UnicodeString MoreMessages,
+  const UnicodeString HelpKeyword) :
   Exception(Kind, Msg),
-  FMoreMessages(nullptr),
   FHelpKeyword(HelpKeyword)
 {
   if (!MoreMessages.IsEmpty())
@@ -371,10 +360,9 @@ ExtException::ExtException(TObjectClassId Kind, UnicodeString Msg, UnicodeString
   }
 }
 
-ExtException::ExtException(UnicodeString Msg, TStrings *MoreMessages,
-  bool Own, UnicodeString HelpKeyword) :
+ExtException::ExtException(const UnicodeString Msg, TStrings *MoreMessages,
+  bool Own, const UnicodeString HelpKeyword) :
   Exception(OBJECT_CLASS_ExtException, Msg),
-  FMoreMessages(nullptr),
   FHelpKeyword(HelpKeyword)
 {
   if (Own)
@@ -452,7 +440,7 @@ void ExtException::Rethrow()
   throw ExtException(this, L"");
 }
 
-UnicodeString SysErrorMessageForError(intptr_t LastError)
+UnicodeString SysErrorMessageForError(int32_t LastError)
 {
   UnicodeString Result;
   if (LastError != 0)
@@ -473,38 +461,33 @@ EOSExtException::EOSExtException() :
 {
 }
 
-EOSExtException::EOSExtException(UnicodeString Msg) :
+EOSExtException::EOSExtException(const UnicodeString Msg) :
   ExtException(OBJECT_CLASS_EOSExtException, Msg, LastSysErrorMessage())
 {
 }
 
-EOSExtException::EOSExtException(UnicodeString Msg, intptr_t LastError) :
+EOSExtException::EOSExtException(const UnicodeString Msg, int32_t LastError) :
   ExtException(OBJECT_CLASS_EOSExtException, Msg, SysErrorMessageForError(LastError))
 {
 }
 
-EOSExtException::EOSExtException(TObjectClassId Kind, UnicodeString Msg, intptr_t LastError) :
+EOSExtException::EOSExtException(TObjectClassId Kind, const UnicodeString Msg, int32_t LastError) :
   ExtException(Kind, Msg, SysErrorMessageForError(LastError))
 {
 }
 
-EFatal::EFatal(const Exception *E, UnicodeString Msg, UnicodeString HelpKeyword) :
+EFatal::EFatal(const Exception *E, const UnicodeString Msg, const UnicodeString HelpKeyword) :
   ExtException(OBJECT_CLASS_EFatal, Msg, E, HelpKeyword),
   FReopenQueried(false)
 {
   Init(E);
 }
 
-EFatal::EFatal(TObjectClassId Kind, const Exception *E, UnicodeString Msg, UnicodeString HelpKeyword) :
+EFatal::EFatal(TObjectClassId Kind, const Exception *E, const UnicodeString Msg, const UnicodeString HelpKeyword) :
   ExtException(Kind, Msg, E, HelpKeyword),
   FReopenQueried(false)
 {
   Init(E);
-}
-
-ExtException *EFatal::Clone() const
-{
-  return new EFatal(OBJECT_CLASS_EFatal, this, L"");
 }
 
 void EFatal::Init(const Exception *E)
@@ -516,9 +499,19 @@ void EFatal::Init(const Exception *E)
   }
 }
 
-ECRTExtException::ECRTExtException(UnicodeString Msg) :
+ECRTExtException::ECRTExtException(const UnicodeString Msg) :
   EOSExtException(OBJECT_CLASS_ECRTExtException, Msg, errno)
 {
+}
+
+ExtException *EFatal::Clone() const
+{
+  return new EFatal(OBJECT_CLASS_EFatal, this, L"");
+}
+
+void EFatal::Rethrow()
+{
+  throw EFatal(this, L"");
 }
 
 ExtException *ESshTerminate::Clone() const
@@ -575,25 +568,21 @@ Exception *CloneException(Exception *E)
 void RethrowException(Exception *E)
 {
   // this list has to be in sync with ExceptionMessage
-  if (isa<EFatal>(E))
+  if (isa<ExtException>(E))
   {
-    throw EFatal(E, L"");
+    dyn_cast<ExtException>(E)->Rethrow();
   }
-  if (isa<ECallbackGuardAbort>(E))
+  else if (isa<ECallbackGuardAbort>(E))
   {
     throw ECallbackGuardAbort();
   }
-  if (isa<EAbort>(E))
+  else if (isa<EAbort>(E))
   {
     throw EAbort(E->Message);
   }
-  if (WellKnownException(E, nullptr, nullptr, nullptr, true))
+  else if (WellKnownException(E, nullptr, nullptr, nullptr, true))
   {
     // noop, should never get here
-  }
-  else if (isa<ExtException>(E))
-  {
-    dyn_cast<ExtException>(E)->Rethrow();
   }
   else
   {
@@ -601,3 +590,19 @@ void RethrowException(Exception *E)
   }
 }
 
+UnicodeString AddContextToExceptionMessage(const Exception & E, const UnicodeString NewContext)
+{
+  UnicodeString MainMessage;
+  UnicodeString Context = E.Message;
+  if (!ExtractMainInstructions(Context, MainMessage))
+  {
+    MainMessage = E.Message;
+    Context = NewContext;
+  }
+  else
+  {
+    Context += L"\n" + NewContext;
+  }
+  UnicodeString Result = MainInstructions(MainMessage) + L"\n" + Context;
+  return Result;
+}

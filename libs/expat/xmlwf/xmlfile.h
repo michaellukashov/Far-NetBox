@@ -7,7 +7,10 @@
                                  |_| XML parser
 
    Copyright (c) 1997-2000 Thai Open Source Software Center Ltd
-   Copyright (c) 2000-2017 Expat development team
+   Copyright (c) 2000      Clark Cooper <coopercc@users.sourceforge.net>
+   Copyright (c) 2002      Fred L. Drake, Jr. <fdrake@users.sourceforge.net>
+   Copyright (c) 2005      Karl Waclawek <karl@waclawek.net>
+   Copyright (c) 2016-2019 Sebastian Pipping <sebastian@pipping.org>
    Licensed under the MIT license:
 
    Permission is  hereby granted,  free of charge,  to any  person obtaining
@@ -34,15 +37,10 @@
 #define XML_EXTERNAL_ENTITIES 02
 
 #ifdef XML_LARGE_SIZE
-#if defined(XML_USE_MSC_EXTENSIONS) && _MSC_VER < 1400
-#define XML_FMT_INT_MOD "I64"
+#  define XML_FMT_INT_MOD "ll"
 #else
-#define XML_FMT_INT_MOD "ll"
-#endif
-#else
-#define XML_FMT_INT_MOD "l"
+#  define XML_FMT_INT_MOD "l"
 #endif
 
-extern int XML_ProcessFile(XML_Parser parser,
-                           const XML_Char *filename,
+extern int XML_ProcessFile(XML_Parser parser, const XML_Char *filename,
                            unsigned flags);

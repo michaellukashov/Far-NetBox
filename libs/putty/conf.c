@@ -280,7 +280,7 @@ int conf_get_int_int(Conf *conf, int primary, int secondary)
     key.secondary.i = secondary;
     entry = find234(conf->tree, &key, NULL);
     assert(entry);
-    return entry ? entry->value.u.intval : 0;
+    return entry->value.u.intval;
 }
 
 char *conf_get_str(Conf *conf, int primary)
@@ -293,7 +293,7 @@ char *conf_get_str(Conf *conf, int primary)
     key.primary = primary;
     entry = find234(conf->tree, &key, NULL);
     assert(entry);
-    return entry ? entry->value.u.stringval : NULL;
+    return entry->value.u.stringval;
 }
 
 char *conf_get_str_str_opt(Conf *conf, int primary, const char *secondary)
@@ -482,7 +482,7 @@ int conf_serialised_size(Conf *conf)
 	    size += 4;
 	    break;
 	  case TYPE_STR:
-	    size += 1 + (int)strlen(entry->key.secondary.s);
+	    size += 1 + strlen(entry->key.secondary.s);
 	    break;
 	}
 	switch (valuetypes[entry->key.primary]) {
@@ -490,7 +490,7 @@ int conf_serialised_size(Conf *conf)
 	    size += 4;
 	    break;
 	  case TYPE_STR:
-	    size += 1 + (int)strlen(entry->value.u.stringval);
+	    size += 1 + strlen(entry->value.u.stringval);
 	    break;
 	  case TYPE_FILENAME:
 	    size += filename_serialise(entry->value.u.fileval, NULL);
@@ -522,7 +522,7 @@ void conf_serialise(Conf *conf, void *vdata)
 	    data += 4;
 	    break;
 	  case TYPE_STR:
-	    len = (int)strlen(entry->key.secondary.s);
+	    len = strlen(entry->key.secondary.s);
 	    memcpy(data, entry->key.secondary.s, len);
 	    data += len;
 	    *data++ = 0;
@@ -534,7 +534,7 @@ void conf_serialise(Conf *conf, void *vdata)
 	    data += 4;
 	    break;
 	  case TYPE_STR:
-	    len = (int)strlen(entry->value.u.stringval);
+	    len = strlen(entry->value.u.stringval);
 	    memcpy(data, entry->value.u.stringval, len);
 	    data += len;
 	    *data++ = 0;
@@ -586,7 +586,7 @@ int conf_deserialise(Conf *conf, void *vdata, int maxsize)
 		goto done;
 	    }
 	    entry->key.secondary.s = dupstr((char *)data);
-	    maxsize -= (int)(zero + 1 - data);
+	    maxsize -= (zero + 1 - data);
 	    data = zero + 1;
 	    break;
 	}
@@ -611,7 +611,7 @@ int conf_deserialise(Conf *conf, void *vdata, int maxsize)
 		goto done;
 	    }
 	    entry->value.u.stringval = dupstr((char *)data);
-	    maxsize -= (int)(zero + 1 - data);
+	    maxsize -= (zero + 1 - data);
 	    data = zero + 1;
 	    break;
 	  case TYPE_FILENAME:

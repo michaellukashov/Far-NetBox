@@ -1,6 +1,6 @@
 /* 
    HTTP session handling
-   Copyright (C) 1999-2009, Joe Orton <joe@manyfish.co.uk>
+   Copyright (C) 1999-2021, Joe Orton <joe@manyfish.co.uk>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -112,6 +112,9 @@ void ne_session_destroy(ne_session *sess)
     free_proxies(sess);
 
     if (sess->user_agent) ne_free(sess->user_agent);
+#ifdef WINSCP
+    if (sess->realhost) ne_free(sess->realhost);
+#endif
     if (sess->socks_user) ne_free(sess->socks_user);
     if (sess->socks_password) ne_free(sess->socks_password);
 
@@ -455,6 +458,25 @@ void ne_fill_server_uri(ne_session *sess, ne_uri *uri)
     uri->scheme = ne_strdup(sess->scheme);
 }
 
+#ifdef WINSCP
+void ne_set_realhost(ne_session *sess, const char *realhost)
+{
+    if (sess->realhost) ne_free(sess->realhost);
+    sess->realhost = ne_strdup(realhost);
+}
+
+void ne_fill_real_server_uri(ne_session *sess, ne_uri *uri)
+{
+    ne_fill_server_uri(sess, uri);
+
+    if (sess->realhost)
+    {
+        ne_free(uri->host);
+        uri->host = ne_strdup(sess->realhost);
+    }
+}
+#endif
+
 void ne_fill_proxy_uri(ne_session *sess, ne_uri *uri)
 {
     if (sess->proxies) {
@@ -572,7 +594,8 @@ void ne__ssl_set_verify_err(ne_session *sess, int failures)
     };
     int n, flag = 0;
 
-    strcpy(sess->error, _("Server certificate verification failed: "));
+    ne_strnzcpy(sess->error, _("Server certificate verification failed: "),
+                sizeof sess->error);
 
     for (n = 0; reasons[n].bit; n++) {
 	if (failures & reasons[n].bit) {
@@ -589,7 +612,7 @@ int ne__ssl_match_hostname(const char *cn, size_t cnlen, const char *hostname)
 {
     const char *dot;
 
-    NE_DEBUG(NE_DBG_SSL, "ssl: Match common name '%s' against '%s'\n",
+    NE_DEBUG(NE_DBG_WINSCP_HTTP_DETAIL, "ssl: Match common name '%s' against '%s'\n",
              cn, hostname);
 
     if (strncmp(cn, "*.", 2) == 0 && cnlen > 2

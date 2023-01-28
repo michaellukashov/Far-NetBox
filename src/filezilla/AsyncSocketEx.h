@@ -1,4 +1,4 @@
-/*CAsyncSocketEx by Tim Kosse (Tim.Kosse@gmx.de)
+﻿/*CAsyncSocketEx by Tim Kosse (Tim.Kosse@gmx.de)
             Version 1.3 (2003-04-26)
 --------------------------------------------------------
 
@@ -61,14 +61,13 @@ If you use this class in commercial applications, please send a short message
 to tim.kosse@gmx.de
 */
 
-#ifndef AsyncSocketExH
-#define AsyncSocketExH
+#pragma once
 
 #define FD_FORCEREAD (1<<15)
 
 #include <winsock2.h>
 #include <Ws2tcpip.h>
-#include <headers.hpp>
+#include <nbsystem.h>
 
 class CAsyncSocketExHelperWindow;
 class CAsyncSocketExLayer;
@@ -78,10 +77,10 @@ struct t_callbackMsg
 {
 CUSTOM_MEM_ALLOCATION_IMPL
   CAsyncSocketExLayer* pLayer;
-  int nType;
-  intptr_t nParam1;
-  intptr_t nParam2;
-  char *str;
+  int32_t nType;
+  int32_t nParam1;
+  int32_t nParam2;
+  char* str;
 };
 
 class CAsyncSocketEx
@@ -92,7 +91,7 @@ public:
 
   BOOL Create(UINT nSocketPort = 0, int nSocketType = SOCK_STREAM,
      long lEvent = FD_READ | FD_WRITE | FD_OOB | FD_ACCEPT |  FD_CONNECT | FD_CLOSE,
-     LPCTSTR lpszSocketAddress = NULL, int nFamily = AF_INET);
+     LPCTSTR lpszSocketAddress = nullptr, int nFamily = AF_INET);
 
   // Attaches a socket handle to a CAsyncSocketEx object.
   BOOL Attach(SOCKET hSocket,
@@ -113,10 +112,10 @@ public:
   BOOL GetSockName(SOCKADDR* lpSockAddr, int* lpSockAddrLen);
 
   // Retrieves a socket option.
-  BOOL GetSockOpt(int nOptionName, void * lpOptionValue, int* lpOptionLen, int nLevel = SOL_SOCKET);
+  BOOL GetSockOpt(int nOptionName, void* lpOptionValue, int* lpOptionLen, int nLevel = SOL_SOCKET);
 
   // Sets a socket option.
-  BOOL SetSockOpt(int nOptionName, const void * lpOptionValue, int nOptionLen, int nLevel = SOL_SOCKET);
+  BOOL SetSockOpt(int nOptionName, const void* lpOptionValue, int nOptionLen, int nLevel = SOL_SOCKET);
 
   // Gets the socket family
   int GetFamily() const;
@@ -127,14 +126,14 @@ public:
   // Operations
 
   // Accepts a connection on the socket.
-  virtual BOOL Accept(CAsyncSocketEx& rConnectedSocket, SOCKADDR * lpSockAddr = NULL, int * lpSockAddrLen = NULL);
+  virtual BOOL Accept(CAsyncSocketEx& rConnectedSocket, SOCKADDR * lpSockAddr = nullptr, int * lpSockAddrLen = nullptr);
 
   // Requests event notification for the socket.
   BOOL AsyncSelect(long lEvent = FD_READ | FD_WRITE | FD_OOB | FD_ACCEPT | FD_CONNECT | FD_CLOSE);
 
   // Associates a local address with the socket.
-  BOOL Bind(UINT nSocketPort, LPCTSTR lpszSocketAddress);
-  BOOL Bind(const SOCKADDR* lpSockAddr, int nSockAddrLen);
+  virtual BOOL Bind(UINT nSocketPort, LPCTSTR lpszSocketAddress);
+  BOOL BindToAddr(const SOCKADDR* lpSockAddr, int nSockAddrLen);
 
   // Closes the socket.
   virtual void Close();
@@ -234,7 +233,7 @@ protected:
     CAsyncSocketExHelperWindow * m_pHelperWindow;
     int nInstanceCount;
     DWORD nThreadId;
-    rde::list<CAsyncSocketEx *> layerCloseNotify;
+    nb::list_t<CAsyncSocketEx *> layerCloseNotify;
   } * m_pLocalAsyncSocketExThreadData;
 
   // List of the data structures for all threads
@@ -275,7 +274,7 @@ protected:
   friend class CAsyncSocketExLayer;
 
   // Called by the layers to notify application of some events
-  virtual int OnLayerCallback(rde::list<t_callbackMsg> & callbacks);
+  virtual int OnLayerCallback(nb::list_t<t_callbackMsg> & callbacks);
 
   // Used by Bind with AF_UNSPEC sockets
   UINT m_nSocketPort;
@@ -284,10 +283,11 @@ protected:
   friend class CAsyncSocketExHelperWindow;
 
   // Pending callbacks
-  rde::list<t_callbackMsg> m_pendingCallbacks;
+  nb::list_t<t_callbackMsg> m_pendingCallbacks;
 
   virtual void LogSocketMessageRaw(int nMessageType, LPCTSTR pMsg) {}
   virtual bool LoggingSocketMessage(int nMessageType) { return true; }
+  virtual int GetSocketOptionVal(int OptionID) const { DebugFail(); return 0; };
   virtual void ConfigureSocket() {}
 };
 
@@ -351,4 +351,3 @@ protected:
   BOOL m_bInitialized;
 };
 
-#endif // AsyncSocketExH

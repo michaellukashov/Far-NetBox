@@ -4,9 +4,11 @@
  * For conditions of distribution and use, see copyright notice in zlib.h
  */
 
+#include "zbuild.h"
 #include "deflate.h"
 #include "deflate_p.h"
 #include "match.h"
+#include "functable.h"
 
 /* ===========================================================================
  * Compress as much as possible from the input stream, return the current
@@ -15,7 +17,7 @@
  * new strings in the dictionary only for unmatched strings or for short
  * matches. It is used only for the fast compression options.
  */
-block_state deflate_fast(deflate_state *s, int flush) {
+ZLIB_INTERNAL block_state deflate_fast(deflate_state *s, int flush) {
     IPos hash_head;       /* head of the hash chain */
     int bflush;           /* set if current block must be flushed */
 
@@ -26,7 +28,7 @@ block_state deflate_fast(deflate_state *s, int flush) {
          * string following the next match.
          */
         if (s->lookahead < MIN_LOOKAHEAD) {
-            fill_window(s);
+            functable.fill_window(s);
             if (s->lookahead < MIN_LOOKAHEAD && flush == Z_NO_FLUSH) {
                 return need_more;
             }
@@ -39,7 +41,7 @@ block_state deflate_fast(deflate_state *s, int flush) {
          */
         hash_head = NIL;
         if (s->lookahead >= MIN_MATCH) {
-            hash_head = insert_string(s, s->strstart, 1);
+            hash_head = functable.insert_string(s, s->strstart, 1);
         }
 
         /* Find the longest match, discarding those <= prev_length.
@@ -68,7 +70,7 @@ block_state deflate_fast(deflate_state *s, int flush) {
                 s->strstart++;
 #ifdef NOT_TWEAK_COMPILER
                 do {
-                    insert_string(s, s->strstart);
+                    functable.insert_string(s, s->strstart, 1);
                     s->strstart++;
                     /* strstart never exceeds WSIZE-MAX_MATCH, so there are
                      * always MIN_MATCH bytes ahead.
@@ -76,7 +78,7 @@ block_state deflate_fast(deflate_state *s, int flush) {
                 } while (--s->match_length != 0);
 #else
                 {
-                    bulk_insert_str(s, s->strstart, s->match_length);
+                    functable.insert_string(s, s->strstart, s->match_length);
                     s->strstart += s->match_length;
                     s->match_length = 0;
                 }
@@ -85,9 +87,13 @@ block_state deflate_fast(deflate_state *s, int flush) {
                 s->strstart += s->match_length;
                 s->match_length = 0;
                 s->ins_h = s->window[s->strstart];
-                UPDATE_HASH(s, s->ins_h, s->strstart+2 - (MIN_MATCH));
+#ifndef NOT_TWEAK_COMPILER
+                functable.insert_string(s, s->strstart + 2 - MIN_MATCH, MIN_MATCH - 2);
+#else
+                functable.insert_string(s, s->strstart + 2 - MIN_MATCH, 1);
 #if MIN_MATCH != 3
-                Call UPDATE_HASH() MIN_MATCH-3 more times
+#warning        Call insert_string() MIN_MATCH-3 more times
+#endif
 #endif
                 /* If lookahead < MIN_MATCH, ins_h is garbage, but it does not
                  * matter since it will be recomputed at next deflate call.
@@ -108,7 +114,7 @@ block_state deflate_fast(deflate_state *s, int flush) {
         FLUSH_BLOCK(s, 1);
         return finish_done;
     }
-    if (s->last_lit)
+    if (s->sym_next)
         FLUSH_BLOCK(s, 0);
     return block_done;
 }

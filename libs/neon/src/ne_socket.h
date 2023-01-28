@@ -1,6 +1,6 @@
 /* 
    socket handling interface
-   Copyright (C) 1999-2010, Joe Orton <joe@manyfish.co.uk>
+   Copyright (C) 1999-2021, Joe Orton <joe@manyfish.co.uk>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -42,6 +42,8 @@ NE_BEGIN_DECLS
 #define NE_SOCK_RESET (-4)
 /* Secure connection was closed without proper SSL shutdown. */
 #define NE_SOCK_TRUNC (-5)
+/* Retry operation later. */
+#define NE_SOCK_RETRY (-6)
 
 /* ne_socket represents a TCP socket. */
 typedef struct ne_socket_s ne_socket;
@@ -66,7 +68,7 @@ void ne_sock_exit(void);
 /* Resolve the given hostname. Hex string IPv6 addresses (e.g. `::1')
  * may be enclosed in brackets (e.g. `[::1]').  'flags' should be
  * zero, or if NE_ADDR_CANON is passed, the canonical name for the
- * hostname will be determind. */
+ * hostname will be determined. */
 ne_sock_addr *ne_addr_resolve(const char *hostname, int flags);
 
 /* Returns zero if name resolution was successful, non-zero on
@@ -119,7 +121,7 @@ ne_iaddr_type ne_iaddr_typeof(const ne_inet_addr *ia);
 
 /* Print the string representation of network address 'ia' into the
  * buffer 'buffer', which is of length 'bufsiz'.  Returns 'buffer'. */
-char *ne_iaddr_print(const ne_inet_addr *ia, char *buffer, socklen_t bufsiz);
+char *ne_iaddr_print(const ne_inet_addr *ia, char *buffer, size_t bufsiz);
 
 /* Dump the raw byte representation (in network byte order) of address
  * 'ia' into the buffer 'buffer', which must be of a suitable length
@@ -130,7 +132,7 @@ unsigned char *ne_iaddr_raw(const ne_inet_addr *ia, unsigned char *buffer);
 /* Perform the reverse name lookup on network address 'ia', placing
  * the returned name in the 'buf' buffer (of length 'bufsiz') if
  * successful.  Returns zero on success, or non-zero on error. */
-int ne_iaddr_reverse(const ne_inet_addr *ia, char *buf, socklen_t bufsiz);
+int ne_iaddr_reverse(const ne_inet_addr *ia, char *buf, size_t bufsiz);
 
 /* Convert network address string 'addr' (for example, "127.0.0.1")
  * into a network address object.  Returns NULL on parse error.  If
@@ -160,7 +162,7 @@ void ne_sock_prebind(ne_socket *sock, const ne_inet_addr *addr,
  * Returns zero on success, NE_SOCK_TIMEOUT if a timeout occurs when a
  * non-zero connect timeout is configured (and is supported), or
  * NE_SOCK_ERROR on failure.  */
-int ne_sock_connect(ne_socket *sock, const ne_inet_addr *addr,
+int ne_sock_connect(ne_socket *sock, const ne_inet_addr *addr, 
                     unsigned int port);
 
 /* Read up to 'count' bytes from socket into 'buffer'.  Returns:
@@ -226,10 +228,31 @@ int ne_sock_fd(const ne_socket *sock);
  * must be destroyed by caller using ne_iaddr_free. */
 ne_inet_addr *ne_sock_peer(ne_socket *sock, unsigned int *port);
 
-/* Close the socket and destroy the socket object.  If SSL is in use
- * for the socket, a closure alert is sent to initiate a clean
- * shutdown, but this function does not wait for the peer's response.
- * Returns zero on success, or non-zero on failure. */
+/* Flags for ne_sock_shutdown():  */
+#define NE_SOCK_RECV (1)
+#define NE_SOCK_SEND (2)
+#define NE_SOCK_BOTH (3)
+
+/* Shut down the socket in one or both directions, without destroying
+ * the socket object.  Flags must be one of NE_SOCK_RECV/SEND/BOTH.
+ * For a non-TLS socket, performs the directional shutdown according
+ * to flags.
+ * For a TLS socket:
+ * - if flags are NE_SOCK_SEND or NE_SOCK_BOTH, sends the TLS
+ *   close_notify.  Returns NE_SOCK_RETRY if the TLS connection has
+ *   not been closed by the peer.
+ * - if flags are NE_SOCK_RECV, returns NE_SOCK_RETRY if the 
+ *   TLS close_notify has not been closed by the peer.
+ * In NE_SOCK_SEND or NE_SOCK_BOTH is specified, and the bidirectional
+ * TLS shutdown has completed, the TCP shutdown will also be completed 
+ * as for a non-TLS socket. 
+*/
+int ne_sock_shutdown(ne_socket *sock, unsigned int flags);
+
+/* Close the socket if it is open, and destroy the socket object.  If
+ * SSL is in use for the socket, a closure alert is sent to initiate a
+ * clean shutdown, but this function does not wait for the peer's
+ * response.  Returns zero on success, or non-zero on failure. */
 int ne_sock_close(ne_socket *sock);
 
 /* Return current error string for socket. */
@@ -305,6 +328,9 @@ int ne_sock_proxy(ne_socket *sock, enum ne_sock_sversion vers,
                   const ne_inet_addr *addr, const char *hostname, 
                   unsigned int port,
                   const char *username, const char *password);
+
+// WINSCP
+void ne_sock_set_buffers(ne_socket *sock, unsigned int sndbuf);
 
 NE_END_DECLS
 

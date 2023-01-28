@@ -1,6 +1,6 @@
 /* 
    HTTP Request Handling
-   Copyright (C) 1999-2006, 2008, Joe Orton <joe@manyfish.co.uk>
+   Copyright (C) 1999-2021, Joe Orton <joe@manyfish.co.uk>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -38,6 +38,7 @@ NE_BEGIN_DECLS
 #define NE_FAILED (7) /* The precondition failed */
 #define NE_RETRY (8) /* Retry request (ne_end_request ONLY) */
 #define NE_REDIRECT (9) /* See ne_redirect.h */
+#define NE_SOCKET (10) /* Socket error - WINSCP */
 
 /* Opaque object representing a single HTTP request. */
 typedef struct ne_request_s ne_request;
@@ -48,16 +49,19 @@ typedef struct ne_request_s ne_request;
  * 'path' must conform to the 'abs_path' grammar in RFC2396, with an
  * optional "? query" part, and MUST be URI-escaped by the caller. */
 ne_request *ne_request_create(ne_session *sess,
-			      const char *method, const char *path);
+                              const char *method, const char *path)
+    ne_attribute((nonnull));
 
 /* The request body will be taken from 'size' bytes of 'buffer'. */
 void ne_set_request_body_buffer(ne_request *req, const char *buffer,
-				size_t size);
+                                size_t size)
+    ne_attribute((nonnull));
 
 /* The request body will be taken from 'length' bytes read from the
  * file descriptor 'fd', starting from file offset 'offset'. */
 void ne_set_request_body_fd(ne_request *req, int fd,
-                            ne_off_t offset, ne_off_t length);
+                            ne_off_t offset, ne_off_t length)
+    ne_attribute((nonnull));
 
 /* "Pull"-based request body provider: a callback which is invoked to
  * provide blocks of request body on demand.
@@ -80,9 +84,10 @@ typedef ssize_t (*ne_provide_body)(void *userdata,
  * body is 'length'; the callback must ensure that it returns no more
  * than 'length' bytes in total.  If 'length' is set to -1, then the
  * total size of the request is unknown by the caller and chunked 
- * tranfer will be used. */
+ * transfer will be used. */
 void ne_set_request_body_provider(ne_request *req, ne_off_t length,
-                                  ne_provide_body provider, void *userdata);
+                                  ne_provide_body provider, void *userdata)
+    ne_attribute((nonnull (1)));
 
 #ifdef WINSCP
 void ne_set_request_body_provider_pre(ne_request *req,
@@ -242,12 +247,11 @@ int ne_get_request_flag(ne_request *req, ne_request_flag flag);
 
 typedef void (*ne_free_hooks)(void *cookie);
 
-/* Hook called when a request is created; passed the request method,
- * and the string used as the Request-URI (note that this may be a
- * absolute URI if a proxy is in use, an absolute path, a "*", etc).
- * A create_request hook is called exactly once per request. */
+/* Hook called when a request is created; passed the method and
+ * request-target as used in the request-line (RFC7230§5.3).  The
+ * create_request hook is called exactly once per request. */
 typedef void (*ne_create_request_fn)(ne_request *req, void *userdata,
-				     const char *method, const char *requri);
+				     const char *method, const char *target);
 void ne_hook_create_request(ne_session *sess, 
 			    ne_create_request_fn fn, void *userdata);
 

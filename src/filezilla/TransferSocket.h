@@ -1,3 +1,4 @@
+
 #pragma once
 
 #include "FtpListResult.h"
@@ -29,9 +30,12 @@ public:
   int m_nInternalMessageID;
   virtual void Close();
   virtual BOOL Create(BOOL bUseSsl);
-  BOOL m_bListening;
-  CFile * m_pFile;
+  BOOL m_bListening{FALSE};
+  CFile * m_pFile{nullptr};
+  TTransferOutEvent m_OnTransferOut;
+  TTransferInEvent m_OnTransferIn;
   t_transferdata m_transferdata;
+  int64_t m_uploaded{0};
   void SetActive();
   int CheckForTimeout(int delay);
 #ifndef MPEXT_NO_GSS
@@ -50,9 +54,12 @@ public:
   virtual void SetState(int nState);
 
 protected:
-  virtual int OnLayerCallback(rde::list<t_callbackMsg> & callbacks);
+  virtual int OnLayerCallback(nb::list_t<t_callbackMsg> & callbacks);
   int ReadDataFromFile(char * buffer, int len);
+  int ReadData(char * buffer, int len);
+  void WriteData(const char * buffer, int len);
   virtual void LogSocketMessageRaw(int nMessageType, LPCTSTR pMsg);
+  virtual int GetSocketOptionVal(int OptionID) const;
   virtual void ConfigureSocket();
   bool Activate();
   void Start();
@@ -64,28 +71,27 @@ protected:
   CAsyncGssSocketLayer * m_pGssLayer;
 #endif
   void UpdateStatusBar(bool forceUpdate);
-  BOOL m_bSentClose;
-  int m_bufferpos;
-  char * m_pBuffer;
+  BOOL m_bSentClose{FALSE};
+  int m_bufferpos{0};
+  char * m_pBuffer{nullptr};
 #ifndef MPEXT_NO_ZLIB
   char * m_pBuffer2; // Used by zlib transfers
 #endif
-  BOOL m_bCheckTimeout;
+  BOOL m_bCheckTimeout{FALSE};
   CTime m_LastActiveTime;
-  int m_nTransferState;
-  int m_nMode;
-  int m_nNotifyWaiting;
-  bool m_bActivationPending;
+  int m_nTransferState{0};
+  int m_nMode{0};
+  int m_nNotifyWaiting{0};
+  bool m_bActivationPending{false};
 
   void CloseAndEnsureSendClose(int Mode);
   void EnsureSendClose(int Mode);
   void CloseOnShutDownOrError(int Mode);
-  void LogError(int Error);
   void SetBuffers();
 
-  LARGE_INTEGER m_LastUpdateTime;
-  unsigned int m_LastSendBufferUpdate;
-  DWORD m_SendBuf;
+  LARGE_INTEGER m_LastUpdateTime{};
+  unsigned int m_LastSendBufferUpdate{0};
+  DWORD m_SendBuf{0};
 
 #ifndef MPEXT_NO_ZLIB
   z_stream m_zlibStream;

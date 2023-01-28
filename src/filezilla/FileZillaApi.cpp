@@ -158,7 +158,7 @@ int CFileZillaApi::List(const CServerPath& path)
     return FZ_REPLY_NOTINITIALIZED;
   if (IsConnected()==FZ_REPLY_NOTCONNECTED)
     return FZ_REPLY_NOTCONNECTED;
-  if (path.IsEmpty())
+  if (path.IsEmpty() && !m_pMainThread->GetIntern()->GetOptionVal(OPTION_MPEXT_WORK_FROM_CWD))
     return FZ_REPLY_INVALIDPARAM;
 
   if (m_pMainThread->IsBusy())
@@ -171,7 +171,7 @@ int CFileZillaApi::List(const CServerPath& path)
   return m_pMainThread->LastOperationSuccessful()?FZ_REPLY_OK:FZ_REPLY_ERROR;
 }
 
-int CFileZillaApi::ListFile(const CString & FileName, const CServerPath & path)
+int CFileZillaApi::ListFile(CString FileName, const CServerPath & path)
 {
   //Check if call allowed
   if (!m_bInitialized)
@@ -200,7 +200,7 @@ int CFileZillaApi::FileTransfer(const t_transferfile &TransferFile)
     return FZ_REPLY_NOTINITIALIZED;
   if (IsConnected()==FZ_REPLY_NOTCONNECTED)
     return FZ_REPLY_NOTCONNECTED;
-  if (TransferFile.remotefile==L"" || TransferFile.localfile==L"" || TransferFile.remotepath.IsEmpty())
+  if (TransferFile.remotefile==L"" || TransferFile.localfile==L"" || (TransferFile.remotepath.IsEmpty() && !m_pMainThread->GetIntern()->GetOptionVal(OPTION_MPEXT_WORK_FROM_CWD)))
     return FZ_REPLY_INVALIDPARAM;
   if (IsBusy()==FZ_REPLY_BUSY)
     return FZ_REPLY_BUSY;
@@ -285,7 +285,7 @@ std::string CFileZillaApi::GetCipherName()
   return m_pMainThread->GetCipherName();
 }
 
-int CFileZillaApi::CustomCommand(CString ACommand)
+int CFileZillaApi::CustomCommand(CString CustomCommand)
 {
   //Check if call allowed
   if (!m_bInitialized)
@@ -298,12 +298,12 @@ int CFileZillaApi::CustomCommand(CString ACommand)
   int res=GetCurrentServer(server);
   if (res!=FZ_REPLY_OK)
     return res;
-  if (ACommand==L"")
+  if (CustomCommand==L"")
     return FZ_REPLY_INVALIDPARAM;
 
   t_command command;
   command.id=FZ_COMMAND_CUSTOMCOMMAND;
-  command.param1=ACommand;
+  command.param1=CustomCommand;
   m_pMainThread->Command(command);
   return m_pMainThread->LastOperationSuccessful()?FZ_REPLY_OK:FZ_REPLY_ERROR;
 }
@@ -468,7 +468,7 @@ int CFileZillaApi::SetAsyncRequestResult(int nAction, CAsyncRequestData *pData)
   return FZ_REPLY_OK;
 }
 
-int CFileZillaApi::Chmod(int nValue, const CString & FileName, const CServerPath & path /*=CServerPath()*/ )
+int CFileZillaApi::Chmod(int nValue, CString FileName, const CServerPath & path /*=CServerPath()*/ )
 {
   //Check if call allowed
   if (!m_bInitialized)

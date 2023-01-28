@@ -15,8 +15,8 @@
 
 #ifdef _DEBUG       // most of this file is for debugging
 
-void* __cdecl operator new(size_t nSize, int nType, LPCSTR lpszFileName, int nLine) throw(std::bad_alloc);
-void* __cdecl operator new[](size_t nSize, int nType, LPCSTR lpszFileName, int nLine) throw(std::bad_alloc);
+void* __cdecl operator new(size_t nSize, int nType, LPCSTR lpszFileName, int nLine) noexcept(false);
+void* __cdecl operator new[](size_t nSize, int nType, LPCSTR lpszFileName, int nLine) noexcept(false);
 
 /////////////////////////////////////////////////////////////////////////////
 // test allocation routines
@@ -50,12 +50,12 @@ void PASCAL CObject::operator delete(void* p, void*)
 
 #ifndef _AFX_NO_DEBUG_CRT
 
-void* __cdecl operator new(size_t nSize, LPCSTR lpszFileName, int nLine) throw(std::bad_alloc)
+void* __cdecl operator new(size_t nSize, LPCSTR lpszFileName, int nLine) noexcept(false)
 {
 	return ::operator new(nSize, _NORMAL_BLOCK, lpszFileName, nLine);
 }
 
-void* __cdecl operator new[](size_t nSize, LPCSTR lpszFileName, int nLine) throw(std::bad_alloc)
+void* __cdecl operator new[](size_t nSize, LPCSTR lpszFileName, int nLine) noexcept(false)
 {
 	return ::operator new[](nSize, _NORMAL_BLOCK, lpszFileName, nLine);
 }
@@ -353,7 +353,7 @@ void __cdecl operator delete(void* p)
 }
 
 #if !defined(__MINGW32__)
-void* __cdecl operator new[](size_t nSize) throw(std::bad_alloc)
+void* __cdecl operator new[](size_t nSize) noexcept(false)
 {
 	return ::operator new(nSize);
 }
@@ -367,7 +367,7 @@ void __cdecl operator delete[](void* p) throw()
 #ifdef _DEBUG
 
 //#if !defined(__MINGW32__)
-void* __cdecl operator new(size_t nSize, int nType, LPCSTR lpszFileName, int nLine) throw(std::bad_alloc)
+void* __cdecl operator new(size_t nSize, int nType, LPCSTR lpszFileName, int nLine) noexcept(false)
 {
 #ifdef _AFX_NO_DEBUG_CRT
 	UNUSED_ALWAYS(nType);
@@ -411,7 +411,7 @@ void __cdecl operator delete(void* p, int nType, LPCSTR /* lpszFileName */, int 
 #endif
 }
 
-void* __cdecl operator new[](size_t nSize, int nType, LPCSTR lpszFileName, int nLine) throw(std::bad_alloc)
+void* __cdecl operator new[](size_t nSize, int nType, LPCSTR lpszFileName, int nLine) noexcept(false)
 {
 	return ::operator new(nSize, nType, lpszFileName, nLine);
 }

@@ -10,14 +10,10 @@ static const char *CONST_SESSION_NODE = "Session";
 static const char *CONST_VERSION_ATTR = "version";
 static const char *CONST_NAME_ATTR = "name";
 
-TXmlStorage::TXmlStorage(UnicodeString AStorage,
-  UnicodeString StoredSessionsSubKey) :
+TXmlStorage::TXmlStorage(const UnicodeString AStorage,
+  const UnicodeString StoredSessionsSubKey) noexcept :
   THierarchicalStorage(::ExcludeTrailingBackslash(AStorage)),
-  FXmlDoc(nullptr),
-  FCurrentElement(nullptr),
-  FStoredSessionsSubKey(StoredSessionsSubKey),
-  FFailed(0),
-  FStoredSessionsOpened(false)
+  FStoredSessionsSubKey(StoredSessionsSubKey)
 {
 }
 
@@ -27,7 +23,7 @@ void TXmlStorage::Init()
   FXmlDoc = new tinyxml2::XMLDocument();
 }
 
-TXmlStorage::~TXmlStorage()
+TXmlStorage::~TXmlStorage() noexcept
 {
   if (GetAccessMode() == smReadWrite)
   {
@@ -43,7 +39,7 @@ bool TXmlStorage::ReadXml()
   {
     return false;
   }
-  size_t buffSize = static_cast<size_t>(xmlFile.GetFileSize() + 1);
+  size_t buffSize = nb::ToSizeT(xmlFile.GetFileSize() + 1);
   if (buffSize > 1000000)
   {
     return false;
@@ -72,7 +68,7 @@ bool TXmlStorage::ReadXml()
   const char *Attr = xmlRoot->Attribute(CONST_VERSION_ATTR);
   if (!Attr)
     return false;
-  uintptr_t Version = ::StrToVersionNumber(UnicodeString(Attr));
+  uint32_t Version = ::StrToVersionNumber(UnicodeString(Attr));
   if (Version < MAKEVERSIONNUMBER(2, 0, 0))
     return false;
   tinyxml2::XMLElement *Element = xmlRoot->FirstChildElement(AnsiString(FStoredSessionsSubKey).c_str());
@@ -106,9 +102,9 @@ bool TXmlStorage::Copy(TXmlStorage * /*Storage*/)
   return Result;
 }
 
-void TXmlStorage::SetAccessMode(TStorageAccessMode Value)
+void TXmlStorage::SetAccessModeProtected(TStorageAccessMode Value)
 {
-  THierarchicalStorage::SetAccessMode(Value);
+  THierarchicalStorage::SetAccessModeProtected(Value);
   switch (GetAccessMode())
   {
   case smRead:
@@ -126,7 +122,7 @@ void TXmlStorage::SetAccessMode(TStorageAccessMode Value)
   }
 }
 
-bool TXmlStorage::DoKeyExists(UnicodeString SubKey, bool /*ForceAnsi*/)
+bool TXmlStorage::DoKeyExists(const UnicodeString SubKey, bool /*ForceAnsi*/)
 {
   UnicodeString K = PuttyMungeStr(SubKey);
   const tinyxml2::XMLElement *Element = FindChildElement(AnsiString(K));
@@ -134,7 +130,7 @@ bool TXmlStorage::DoKeyExists(UnicodeString SubKey, bool /*ForceAnsi*/)
   return Result;
 }
 
-bool TXmlStorage::DoOpenSubKey(UnicodeString MungedSubKey, bool CanCreate)
+bool TXmlStorage::DoOpenSubKey(const UnicodeString MungedSubKey, bool CanCreate)
 {
   tinyxml2::XMLElement *OldCurrentElement = FCurrentElement;
   tinyxml2::XMLElement *Element = nullptr;
@@ -166,10 +162,10 @@ bool TXmlStorage::DoOpenSubKey(UnicodeString MungedSubKey, bool CanCreate)
   return Result;
 }
 
-void TXmlStorage::CloseSubKey()
+void TXmlStorage::DoCloseSubKey()
 {
   THierarchicalStorage::CloseSubKey();
-  if (FKeyHistory->GetCount() && !FSubElements.empty())
+  if (!FKeyHistory.empty() && !FSubElements.empty())
   {
     FCurrentElement = FSubElements.back();
     FSubElements.pop_back();
@@ -180,19 +176,16 @@ void TXmlStorage::CloseSubKey()
   }
 }
 
-bool TXmlStorage::DeleteSubKey(UnicodeString SubKey)
+void TXmlStorage::DoDeleteSubKey(const UnicodeString SubKey)
 {
-  bool Result = false;
   tinyxml2::XMLElement *Element = FindElement(SubKey);
   if (Element != nullptr)
   {
     FCurrentElement->DeleteChild(Element);
-    Result = true;
   }
-  return Result;
 }
 
-void TXmlStorage::GetSubKeyNames(TStrings *Strings)
+void TXmlStorage::DoGetSubKeyNames(TStrings *Strings)
 {
   for (tinyxml2::XMLElement *Element = FCurrentElement->FirstChildElement();
     Element != nullptr; Element = Element->NextSiblingElement())
@@ -202,13 +195,13 @@ void TXmlStorage::GetSubKeyNames(TStrings *Strings)
   }
 }
 
-void TXmlStorage::GetValueNames(TStrings * /*Strings*/) const
+void TXmlStorage::DoGetValueNames(TStrings * /*Strings*/)
 {
   ThrowNotImplemented(3022);
   // FRegistry->GetValueNames(Strings);
 }
 
-bool TXmlStorage::DeleteValue(UnicodeString Name)
+bool TXmlStorage::DoDeleteValue(const UnicodeString Name)
 {
   bool Result = false;
   tinyxml2::XMLElement *Element = FindElement(Name);
@@ -220,7 +213,7 @@ bool TXmlStorage::DeleteValue(UnicodeString Name)
   return Result;
 }
 
-void TXmlStorage::RemoveIfExists(UnicodeString Name)
+void TXmlStorage::RemoveIfExists(const UnicodeString Name)
 {
   tinyxml2::XMLElement *Element = FindElement(Name);
   if (Element != nullptr)
@@ -229,7 +222,7 @@ void TXmlStorage::RemoveIfExists(UnicodeString Name)
   }
 }
 
-void TXmlStorage::AddNewElement(UnicodeString Name, UnicodeString Value)
+void TXmlStorage::AddNewElement(const UnicodeString Name, const UnicodeString Value)
 {
   AnsiString StrName(Name);
   AnsiString StrValue(Value);
@@ -238,7 +231,7 @@ void TXmlStorage::AddNewElement(UnicodeString Name, UnicodeString Value)
   FCurrentElement->LinkEndChild(Element);
 }
 
-UnicodeString TXmlStorage::GetSubKeyText(UnicodeString Name) const
+UnicodeString TXmlStorage::GetSubKeyText(const UnicodeString Name) const
 {
   tinyxml2::XMLElement *Element = FindElement(Name);
   if (!Element)
@@ -252,7 +245,7 @@ UnicodeString TXmlStorage::GetSubKeyText(UnicodeString Name) const
   return ToUnicodeString(Element->GetText());
 }
 
-tinyxml2::XMLElement *TXmlStorage::FindElement(UnicodeString Name) const
+tinyxml2::XMLElement *TXmlStorage::FindElement(const UnicodeString Name) const
 {
   for (const tinyxml2::XMLElement *Element = FCurrentElement->FirstChildElement();
     Element != nullptr; Element = Element->NextSiblingElement())
@@ -300,7 +293,7 @@ UnicodeString TXmlStorage::GetValue(tinyxml2::XMLElement *Element) const
   return Result;
 }
 
-bool TXmlStorage::ValueExists(UnicodeString Value) const
+bool TXmlStorage::DoValueExists(const UnicodeString Value)
 {
   bool Result = false;
   tinyxml2::XMLElement *Element = FindElement(Value);
@@ -311,7 +304,7 @@ bool TXmlStorage::ValueExists(UnicodeString Value) const
   return Result;
 }
 
-size_t TXmlStorage::BinaryDataSize(UnicodeString /*Name*/) const
+size_t TXmlStorage::DoBinaryDataSize(const UnicodeString & /*Name*/)
 {
   ThrowNotImplemented(3026);
   size_t Result = 0; // FRegistry->GetDataSize(Name);
@@ -328,7 +321,7 @@ UnicodeString TXmlStorage::GetSource()
   return GetStorage();
 }
 
-bool TXmlStorage::ReadBool(UnicodeString Name, bool Default) const
+bool TXmlStorage::DoReadBool(const UnicodeString & Name, bool Default)
 {
   UnicodeString Result = ReadString(Name, L"");
   if (Result.IsEmpty())
@@ -338,85 +331,80 @@ bool TXmlStorage::ReadBool(UnicodeString Name, bool Default) const
   return AnsiCompareIC(Result, BooleanToEngStr(true)) == 0;
 }
 
-TDateTime TXmlStorage::ReadDateTime(UnicodeString Name, const TDateTime &Default) const
+int32_t TXmlStorage::DoReadInteger(const UnicodeString & Name, int32_t Default, const TIntMapping * Mapping)
+{
+  return ::StrToIntDef(GetSubKeyText(Name), Default);
+}
+
+int64_t TXmlStorage::DoReadInt64(const UnicodeString & Name, int64_t Default)
+{
+  return ::StrToInt64Def(GetSubKeyText(Name), Default);
+}
+
+TDateTime TXmlStorage::DoReadDateTime(const UnicodeString & Name, TDateTime Default)
 {
   double Result = ReadFloat(Name, Default.GetValue());
   return TDateTime(Result);
 }
 
-double TXmlStorage::ReadFloat(UnicodeString Name, double Default) const
+double TXmlStorage::DoReadFloat(const UnicodeString & Name, double Default)
 {
   return ::StrToFloatDef(GetSubKeyText(Name), Default);
 }
 
-intptr_t TXmlStorage::ReadInteger(UnicodeString Name, intptr_t Default) const
-{
-  return ::StrToIntDef(GetSubKeyText(Name), Default);
-}
-
-int64_t TXmlStorage::ReadInt64(UnicodeString Name, int64_t Default) const
-{
-  return ::StrToInt64Def(GetSubKeyText(Name), Default);
-}
-
-UnicodeString TXmlStorage::ReadStringRaw(UnicodeString Name, UnicodeString Default) const
+UnicodeString TXmlStorage::DoReadStringRaw(const UnicodeString & Name, const UnicodeString & Default)
 {
   UnicodeString Result = GetSubKeyText(Name);
   return Result.IsEmpty() ? Default : Result;
 }
 
-size_t TXmlStorage::ReadBinaryData(UnicodeString /*Name*/,
-  void * /*Buffer*/, size_t /*Size*/) const
+size_t TXmlStorage::DoReadBinaryData(const UnicodeString & /*Name*/,
+  void * /*Buffer*/, size_t /*Size*/)
 {
   ThrowNotImplemented(3028);
   size_t Result = 0;
   return Result;
 }
 
-void TXmlStorage::WriteBool(UnicodeString Name, bool Value)
+void TXmlStorage::DoWriteBool(const UnicodeString & Name, bool Value)
 {
   WriteString(Name, ::BooleanToEngStr(Value));
 }
 
-void TXmlStorage::WriteDateTime(UnicodeString Name, const TDateTime &Value)
-{
-  WriteFloat(Name, Value);
-}
-
-void TXmlStorage::WriteFloat(UnicodeString Name, double Value)
-{
-  RemoveIfExists(Name);
-  AddNewElement(Name, FORMAT("%.5f", Value));
-}
-
-void TXmlStorage::WriteStringRaw(UnicodeString Name, UnicodeString Value)
-{
-  RemoveIfExists(Name);
-  AddNewElement(Name, Value);
-}
-
-void TXmlStorage::WriteInteger(UnicodeString Name, intptr_t Value)
+void TXmlStorage::DoWriteInteger(const UnicodeString & Name, int32_t Value)
 {
   RemoveIfExists(Name);
   AddNewElement(Name, ::IntToStr(Value));
 }
 
-void TXmlStorage::WriteInt64(UnicodeString Name, int64_t Value)
+void TXmlStorage::DoWriteInt64(const UnicodeString & Name, int64_t Value)
 {
   RemoveIfExists(Name);
   AddNewElement(Name, ::Int64ToStr(Value));
 }
 
-void TXmlStorage::WriteBinaryData(UnicodeString Name,
+/*void TXmlStorage::DoWriteFloat(const UnicodeString & Name, double Value)
+{
+  RemoveIfExists(Name);
+  AddNewElement(Name, FORMAT("%.5f", Value));
+}*/
+
+void TXmlStorage::DoWriteStringRaw(const UnicodeString & Name, const UnicodeString & Value)
+{
+  RemoveIfExists(Name);
+  AddNewElement(Name, Value);
+}
+
+void TXmlStorage::DoWriteBinaryData(const UnicodeString & Name,
   const void *Buffer, size_t Size)
 {
   RemoveIfExists(Name);
   AddNewElement(Name, ::StrToHex(UnicodeString(reinterpret_cast<const wchar_t *>(Buffer), Size), true));
 }
 
-intptr_t TXmlStorage::GetFailed()
+int32_t TXmlStorage::GetFailed()
 {
-  intptr_t Result = FFailed;
+  int32_t Result = FFailed;
   FFailed = 0;
   return Result;
 }

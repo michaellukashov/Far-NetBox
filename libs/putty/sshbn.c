@@ -509,16 +509,16 @@ static void internal_add_shifted(BignumInt *number,
     addendl = n << bshift;
     addendh = (bshift == 0 ? 0 : n >> (BIGNUM_INT_BITS - bshift));
 
-    assert((unsigned int)word <= number[0]);
+    assert(word <= number[0]);
     BignumADC(number[word], carry, number[word], addendl, 0);
     word++;
     if (!addendh && !carry)
         return;
-    assert((unsigned int)word <= number[0]);
+    assert(word <= number[0]);
     BignumADC(number[word], carry, number[word], addendh, carry);
     word++;
     while (carry) {
-        assert((unsigned int)word <= number[0]);
+        assert(word <= number[0]);
         BignumADC(number[word], carry, number[word], 0, carry);
 	word++;
     }
@@ -804,7 +804,7 @@ static void internal_mod(BignumInt *a, int alen,
             }
         } else {
             BignumInt add_word = 0;
-            BignumCarry c = 1;
+            BignumInt c = 1;
             BignumInt prev_hi_word = 0;
             for (k = mlen - 1; wordoffset+k >= i; k--) {
                 BignumInt mword = k<0 ? 0 : m[k];
@@ -960,24 +960,24 @@ Bignum modpow_simple(Bignum base_in, Bignum exp, Bignum mod)
 
     /* Allocate m of size mlen, copy mod to m */
     /* We use big endian internally */
-    mlen = (int)mod[0];
+    mlen = mod[0];
     m = snewn(mlen, BignumInt);
     for (j = 0; j < mlen; j++)
 	m[j] = mod[mod[0] - j];
 
     /* Allocate n of size mlen, copy base to n */
     n = snewn(mlen, BignumInt);
-    i = mlen - (int)base[0];
+    i = mlen - base[0];
     for (j = 0; j < i; j++)
-      n[j] = 0;
+	n[j] = 0;
     for (j = 0; j < (int)base[0]; j++)
-      n[i + j] = base[base[0] - j];
+	n[i + j] = base[base[0] - j];
 
     /* Allocate a and b of size 2*mlen. Set a = 1 */
     a = snewn(2 * mlen, BignumInt);
     b = snewn(2 * mlen, BignumInt);
     for (i = 0; i < 2 * mlen; i++)
-      a[i] = 0;
+	a[i] = 0;
     a[2 * mlen - 1] = 1;
 
     /* Scratch space for multiplies */
@@ -1028,7 +1028,7 @@ Bignum modpow_simple(Bignum base_in, Bignum exp, Bignum mod)
     }
 
     /* Copy result to buffer */
-    result = newbn((int)mod[0]);
+    result = newbn(mod[0]);
     for (i = 0; i < mlen; i++)
 	result[result[0] - i] = a[i + mlen];
     while (result[0] > 1 && result[result[0]] == 0)
@@ -1085,7 +1085,7 @@ Bignum modpow(Bignum base_in, Bignum exp, Bignum mod)
      * want the inverse of _minus_ n mod r, but we'll sort that out
      * below.)
      */
-    len = (int)mod[0];
+    len = mod[0];
     r = bn_power_2(BIGNUM_INT_BITS * len);
     inv = modinv(mod, r);
     assert(inv); /* cannot fail, since mod is odd and r is a power of 2 */
@@ -1174,7 +1174,7 @@ Bignum modpow(Bignum base_in, Bignum exp, Bignum mod)
     monty_reduce(a, n, mninv, scratch, len);
 
     /* Copy result to buffer */
-    result = newbn((int)mod[0]);
+    result = newbn(mod[0]);
     for (i = 0; i < len; i++)
 	result[result[0] - i] = a[i + len];
     while (result[0] > 1 && result[result[0]] == 0)
@@ -1218,12 +1218,12 @@ Bignum modmul(Bignum p, Bignum q, Bignum mod)
 
     /* Allocate m of size mlen, copy mod to m */
     /* We use big endian internally */
-    mlen = (int)mod[0];
+    mlen = mod[0];
     m = snewn(mlen, BignumInt);
     for (j = 0; j < mlen; j++)
 	m[j] = mod[mod[0] - j];
 
-    pqlen = (int)(p[0] > q[0] ? p[0] : q[0]);
+    pqlen = (p[0] > q[0] ? p[0] : q[0]);
 
     /*
      * Make sure that we're allowing enough space. The shifting below
@@ -1234,7 +1234,7 @@ Bignum modmul(Bignum p, Bignum q, Bignum mod)
 
     /* Allocate n of size pqlen, copy p to n */
     n = snewn(pqlen, BignumInt);
-    i = (int)(pqlen - p[0]);
+    i = pqlen - p[0];
     for (j = 0; j < i; j++)
 	n[j] = 0;
     for (j = 0; j < (int)p[0]; j++)
@@ -1242,7 +1242,7 @@ Bignum modmul(Bignum p, Bignum q, Bignum mod)
 
     /* Allocate o of size pqlen, copy q to o */
     o = snewn(pqlen, BignumInt);
-    i = (int)(pqlen - q[0]);
+    i = pqlen - q[0];
     for (j = 0; j < i; j++)
 	o[j] = 0;
     for (j = 0; j < (int)q[0]; j++)
@@ -1345,12 +1345,12 @@ static void bigdivmod(Bignum p, Bignum mod, Bignum result, Bignum quotient)
 
     /* Allocate m of size mlen, copy mod to m */
     /* We use big endian internally */
-    mlen = (int)mod[0];
+    mlen = mod[0];
     m = snewn(mlen, BignumInt);
     for (j = 0; j < mlen; j++)
 	m[j] = mod[mod[0] - j];
 
-    plen = (int)p[0];
+    plen = p[0];
     /* Ensure plen > mlen */
     if (plen <= mlen)
 	plen = mlen + 1;
@@ -1531,7 +1531,7 @@ int ssh1_read_bignum(const unsigned char *data, int len, Bignum * result)
 
     *result = bignum_from_bytes(p, b);
 
-    return (int)(p + b - data);
+    return p + b - data;
 }
 
 /*
@@ -1539,7 +1539,7 @@ int ssh1_read_bignum(const unsigned char *data, int len, Bignum * result)
  */
 int bignum_bitcount(Bignum bn)
 {
-    int bitcount = (int)(bn[0] * BIGNUM_INT_BITS - 1);
+    int bitcount = bn[0] * BIGNUM_INT_BITS - 1;
     while (bitcount >= 0
 	   && (bn[bitcount / BIGNUM_INT_BITS + 1] >> (bitcount % BIGNUM_INT_BITS)) == 0) bitcount--;
     return bitcount + 1;
@@ -1624,7 +1624,7 @@ int ssh1_write_bignum(void *data, Bignum bn)
  */
 int bignum_cmp(Bignum a, Bignum b)
 {
-    int amax = (int)a[0], bmax = (int)b[0];
+    int amax = a[0], bmax = b[0];
     int i;
 
     /* Annoyingly we have two representations of zero */
@@ -1722,7 +1722,7 @@ Bignum bignum_lshift(Bignum a, int shift)
  */
 Bignum bigmuladd(Bignum a, Bignum b, Bignum addend)
 {
-    int alen = (int)a[0], blen = (int)b[0];
+    int alen = a[0], blen = b[0];
     int mlen = (alen > blen ? alen : blen);
     int rlen, i, maxspot;
     int wslen;
@@ -1744,8 +1744,8 @@ Bignum bigmuladd(Bignum a, Bignum b, Bignum addend)
     /* now just copy the result back */
     rlen = alen + blen + 1;
     if (addend && rlen <= (int)addend[0])
-      rlen = (int)addend[0] + 1;
-    ret = newbn((int)rlen);
+	rlen = addend[0] + 1;
+    ret = newbn(rlen);
     maxspot = 0;
     for (i = 1; i <= (int)ret[0]; i++) {
 	ret[i] = (i <= 2 * mlen ? workspace[4 * mlen - i] : 0);
@@ -1785,7 +1785,7 @@ Bignum bigmul(Bignum a, Bignum b)
  */
 Bignum bigadd(Bignum a, Bignum b)
 {
-    int alen = (int)a[0], blen = (int)b[0];
+    int alen = a[0], blen = b[0];
     int rlen = (alen > blen ? alen : blen) + 1;
     int i, maxspot;
     Bignum ret;
@@ -1814,7 +1814,7 @@ Bignum bigadd(Bignum a, Bignum b)
  */
 Bignum bigsub(Bignum a, Bignum b)
 {
-    int alen = (int)a[0], blen = (int)b[0];
+    int alen = a[0], blen = b[0];
     int rlen = (alen > blen ? alen : blen);
     int i, maxspot;
     Bignum ret;
@@ -1852,7 +1852,7 @@ Bignum bignum_bitmask(Bignum n)
     int i;
     BignumInt j;
 
-    i = (int)ret[0];
+    i = ret[0];
     while (n[i] == 0 && i > 0)
 	i--;
     if (i <= 0)
@@ -1898,7 +1898,7 @@ Bignum bignum_add_long(Bignum number, unsigned long n)
     int words, i;
     BignumCarry carry;
 
-    words = (int)number[0];
+    words = number[0];
     if (words < maxwords)
         words = maxwords;
     words++;
@@ -1908,7 +1908,7 @@ Bignum bignum_add_long(Bignum number, unsigned long n)
     ret[0] = 0;
     for (i = 0; i < words; i++) {
         BignumInt nword = (i < maxwords ? n >> (i * BIGNUM_INT_BITS) : 0);
-        BignumInt numword = ((BignumInt)i < number[0] ? number[i+1] : 0);
+        BignumInt numword = (i < number[0] ? number[i+1] : 0);
         BignumADC(ret[i+1], carry, numword, nword, carry);
 	if (ret[i+1] != 0)
             ret[0] = i+1;
@@ -1926,7 +1926,7 @@ unsigned short bignum_mod_short(Bignum number, unsigned short modulus)
     unsigned long base_r = (BIGNUM_INT_MASK - modulus + 1) % mod;
     int i;
 
-    for (i = (int)number[0]; i > 0; i--) {
+    for (i = number[0]; i > 0; i--) {
         /*
          * Conceptually, ((r << BIGNUM_INT_BITS) + number[i]) % mod
          */
@@ -1946,7 +1946,7 @@ void diagbn(char *prefix, Bignum md)
     nibbles = (3 + bignum_bitcount(md)) / 4;
     if (nibbles < 1)
 	nibbles = 1;
-    morenibbles = (int)(4 * md[0] - nibbles);
+    morenibbles = 4 * md[0] - nibbles;
     for (i = 0; i < morenibbles; i++)
 	debug(("-"));
     for (i = nibbles; i--;)
@@ -1963,7 +1963,7 @@ void diagbn(char *prefix, Bignum md)
  */
 Bignum bigdiv(Bignum a, Bignum b)
 {
-    Bignum q = newbn((int)a[0]);
+    Bignum q = newbn(a[0]);
     bigdivmod(a, b, NULL, q);
     while (q[0] > 1 && q[q[0]] == 0)
         q[0]--;
@@ -1975,7 +1975,7 @@ Bignum bigdiv(Bignum a, Bignum b)
  */
 Bignum bigmod(Bignum a, Bignum b)
 {
-    Bignum r = newbn((int)b[0]);
+    Bignum r = newbn(b[0]);
     bigdivmod(a, b, r, NULL);
     while (r[0] > 1 && r[r[0]] == 0)
         r[0]--;
@@ -1991,7 +1991,7 @@ Bignum biggcd(Bignum av, Bignum bv)
     Bignum b = copybn(bv);
 
     while (bignum_cmp(b, Zero) != 0) {
-	Bignum t = newbn((int)b[0]);
+	Bignum t = newbn(b[0]);
 	bigdivmod(a, b, t, NULL);
 	while (t[0] > 1 && t[t[0]] == 0)
 	    t[0]--;
@@ -2033,8 +2033,8 @@ Bignum modinv(Bignum number, Bignum modulus)
             return NULL;
         }
 
-        t = newbn((int)b[0]);
-	q = newbn((int)a[0]);
+        t = newbn(b[0]);
+	q = newbn(a[0]);
 	bigdivmod(a, b, t, q);
 	while (t[0] > 1 && t[t[0]] == 0)
 	    t[0]--;
@@ -2058,7 +2058,7 @@ Bignum modinv(Bignum number, Bignum modulus)
     /* now we know that sign * x == 1, and that x < modulus */
     if (sign < 0) {
 	/* set a new x to be modulus - x */
-	Bignum newx = newbn((int)modulus[0]);
+	Bignum newx = newbn(modulus[0]);
 	BignumInt carry = 0;
 	int maxspot = 1;
 	int i;

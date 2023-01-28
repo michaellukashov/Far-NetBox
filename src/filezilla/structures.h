@@ -1,6 +1,7 @@
+
 #pragma once
 
-#include <headers.hpp>
+#include <nbsystem.h>
 
 class CServerPath;
 
@@ -11,7 +12,6 @@ public:
   t_directory();
   t_directory(const t_directory &a);
   ~t_directory();
-  t_server server;
   CServerPath path;
   int num;
   class t_direntry // : public TObject
@@ -19,7 +19,7 @@ public:
   CUSTOM_MEM_ALLOCATION_IMPL
   public:
     t_direntry();
-    CString linkTarget;
+    bool bUnsure; // Set by CFtpControlSocket::FileTransfer when uploads fail after sending STOR/APPE
     CString name;
     CString permissionstr;
     CString humanpermstr; // RFC format
@@ -27,7 +27,6 @@ public:
     CString owner;
     CString group;
     int64_t size;
-    bool bUnsure; // Set by CFtpControlSocket::FileTransfer when uploads fail after sending STOR/APPE
     bool dir;
     bool bLink;
     class t_date // : public TObject
@@ -37,11 +36,14 @@ public:
       t_date();
       int year,month,day,hour,minute,second;
       bool hastime;
+      bool hasyear; // ignored and assumed true when hasseconds
       bool hasseconds;
       bool hasdate;
       bool utc;
     } date;
+    CString linkTarget;
   } * direntry;
+  t_server server;
   t_directory & operator=(const t_directory & a);
 };
 

@@ -7,8 +7,8 @@ namespace Masks {
 class NB_CORE_EXPORT TMask : public TObject
 {
 public:
-  explicit TMask(UnicodeString Mask);
-  bool Matches(UnicodeString Str) const;
+  explicit TMask(const UnicodeString Mask) noexcept;
+  bool Matches(const UnicodeString Str) const;
 
 private:
   UnicodeString FMask;

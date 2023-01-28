@@ -1,11 +1,13 @@
 #include "stdafx.h"
 
+#ifdef _MSC_VER
 #include <WinUser.h>
-#pragma hdrstop
+#endif
 
 namespace nb {
 
-intptr_t __cdecl StrLength(const wchar_t *str) { return wcslen(NullToEmpty(str)); }
+int32_t __cdecl StrLength(const wchar_t *str) { return wcslen(NullToEmpty(str)); }
+int32_t __cdecl StrLength(const char *str) { return strlen(NullToEmptyA(str)); }
 
 wchar_t __cdecl Upper(wchar_t Ch)
 {
@@ -19,28 +21,28 @@ wchar_t __cdecl Lower(wchar_t Ch)
   return Ch;
 }
 
-intptr_t __cdecl StrCmpNNI(const wchar_t *s1, intptr_t n1, const wchar_t *s2, intptr_t n2)
+int32_t __cdecl StrCmpNNI(const wchar_t *s1, int32_t n1, const wchar_t *s2, int32_t n2)
 {
   return ::CompareString(0, NORM_IGNORECASE | NORM_STOP_ON_NULL | SORT_STRINGSORT, s1, ToInt(n1), s2, ToInt(n2)) - 2;
 }
 
-intptr_t __cdecl StrLIComp(const wchar_t *s1, const wchar_t *s2, intptr_t n)
+int32_t __cdecl StrLIComp(const wchar_t *s1, const wchar_t *s2, int32_t n)
 {
   return StrCmpNNI(s1, n, s2, n);
 }
 
-intptr_t __cdecl FarStrCmpI(const wchar_t *s1, const wchar_t *s2)
+int32_t __cdecl FarStrCmpI(const wchar_t *s1, const wchar_t *s2)
 {
   return ::CompareString(0, NORM_IGNORECASE | SORT_STRINGSORT, s1, -1, s2, -1) - 2;
 }
 
-intptr_t __cdecl StrCmpNN(const wchar_t *s1, intptr_t n1, const wchar_t *s2, intptr_t n2)
+int32_t __cdecl StrCmpNN(const wchar_t *s1, int32_t n1, const wchar_t *s2, int32_t n2)
 {
   return ::CompareString(0, NORM_STOP_ON_NULL | SORT_STRINGSORT, s1, ToInt(n1), s2, ToInt(n2)) - 2;
 }
 
 
-TEncodeType DetectUTF8Encoding(const uint8_t *str, intptr_t len)
+TEncodeType DetectUTF8Encoding(const uint8_t *str, int32_t len)
 {
   const uint8_t *buf = str;
   const uint8_t *endbuf = buf + len;
@@ -49,24 +51,8 @@ TEncodeType DetectUTF8Encoding(const uint8_t *str, intptr_t len)
 
   while (buf != endbuf)
   {
-    uint8_t c = *buf++;
-    if (trailing)
-    {
-      if ((c & 0xC0) == 0x80) // Does trailing byte follow UTF-8 format?
-      {
-        if (byte2mask) // Need to check 2nd byte for proper range?
-        {
-          if (c & byte2mask) // Are appropriate bits set?
-            byte2mask = 0x00;
-          else
-            return etANSI;
-        }
-        trailing--;
-      }
-      else
-        return etANSI;
-    }
-    else
+    const uint8_t c = *buf++;
+    if (!trailing)
     {
       if ((c & 0x80) == 0x00)
         continue; // valid 1 byte UTF-8
@@ -116,8 +102,29 @@ TEncodeType DetectUTF8Encoding(const uint8_t *str, intptr_t len)
       else
         return etANSI;
     }
+    else
+    {
+      if ((c & 0xC0) == 0x80) // Does trailing byte follow UTF-8 format?
+      {
+        if (byte2mask) // Need to check 2nd byte for proper range?
+        {
+          if (c & byte2mask) // Are appropriate bits set?
+            byte2mask = 0x00;
+          else
+            return etANSI;
+        }
+        trailing--;
+      }
+      else
+        return etANSI;
+    }
   }
   return trailing == 0 ? etUTF8 : etANSI;
 }
+
+/*TEncodeType DetectUTF8Encoding(RawByteString& str, int32_t len)
+{
+  return DetectUTF8Encoding(str.c_str(), len);
+}*/
 
 } // namespace nb

@@ -45,10 +45,10 @@
 #  define WIN32_LEAN_AND_MEAN
 # endif
 # if defined(NOMINMAX) || defined(FMT_WIN_MINMAX)
-#  include <windows.h>
+#  include <Windows.h>
 # else
 #  define NOMINMAX
-#  include <windows.h>
+#  include <Windows.h>
 #  undef NOMINMAX
 # endif
 #endif
@@ -161,7 +161,7 @@ int safe_strerror(
             ERANGE : result;
     }
 
-#ifdef __c2__
+#ifdef __clang__
 # pragma clang diagnostic push
 # pragma clang diagnostic ignored "-Wdeprecated-declarations"
 #endif
@@ -173,7 +173,7 @@ int safe_strerror(
       return errno;
     }
 
-#ifdef __c2__
+#ifdef __clang__
 # pragma clang diagnostic pop
 #endif
 

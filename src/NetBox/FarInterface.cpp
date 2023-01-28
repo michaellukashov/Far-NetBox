@@ -12,7 +12,10 @@
 
 TConfiguration *CreateConfiguration()
 {
-  return new TFarConfiguration(FarPlugin);
+  TConfiguration *Result = new TFarConfiguration(FarPlugin);
+  Result->ConfigurationInit();
+  Result->Default();
+  return Result;
 }
 
 void ShowExtendedException(Exception *E)
@@ -45,7 +48,7 @@ UnicodeString GetSshVersionString()
 
 DWORD WINAPI threadstartroutine(void *Parameter)
 {
-  TSimpleThread *SimpleThread = get_as<TSimpleThread>(Parameter);
+  TSimpleThread *SimpleThread = cast_to<TSimpleThread>(Parameter);
   return TSimpleThread::ThreadProc(SimpleThread);
 }
 
@@ -54,7 +57,7 @@ HANDLE BeginThread(void *SecurityAttributes, DWORD StackSize,
   DWORD &ThreadId)
 {
   HANDLE Result = ::CreateThread(static_cast<LPSECURITY_ATTRIBUTES>(SecurityAttributes),
-      static_cast<size_t>(StackSize),
+      nb::ToSizeT(StackSize),
       static_cast<LPTHREAD_START_ROUTINE>(&threadstartroutine),
       Parameter,
       CreationFlags, &ThreadId);
@@ -82,7 +85,7 @@ void CopyToClipboard(UnicodeString AText)
 
 //from windows/GUITools.cpp
 template <class TEditControl>
-void ValidateMaskEditT(UnicodeString Mask, TEditControl *Edit, int ForceDirectoryMasks)
+void ValidateMaskEditT(const UnicodeString Mask, TEditControl *Edit, int ForceDirectoryMasks)
 {
   DebugAssert(Edit != nullptr);
   TFileMasks Masks(ForceDirectoryMasks);

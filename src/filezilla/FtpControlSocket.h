@@ -1,4 +1,4 @@
-
+﻿
 #pragma once
 
 #include "structures.h"
@@ -10,7 +10,7 @@ class CTransferSocket;
 class CMainThread;
 
 class CAsyncProxySocketLayer;
-class CMainThread;
+class CFtpListResult;
 
 #define CSMODE_NONE             0x0000
 #define CSMODE_CONNECT          0x0001
@@ -52,28 +52,27 @@ public:
   virtual ~CFtpControlSocket();
 
 public:
-  virtual void Connect(t_server & server);
+  void Connect(t_server & server);
   virtual void OnTimer();
-  virtual BOOL IsReady();
-  virtual void List(BOOL bFinish, int nError = 0, CServerPath path = CServerPath(), CString subdir = L"", int nListMode = 0);
-  virtual void ListFile(const CString & filename, const CServerPath & path);
-  virtual void FtpCommand(LPCTSTR pCommand);
-  virtual void Disconnect();
-  virtual void FileTransfer(t_transferfile * transferfile = 0, BOOL bFinish = FALSE, int nError = 0);
-  virtual void Delete(const CString & filename, const CServerPath & path, bool filenameOnly);
-  virtual void Rename(const CString & oldName, const CString & newName, const CServerPath & path, const CServerPath & newPath);
-  virtual void MakeDir(const CServerPath & path);
-  virtual void RemoveDir(const CString & dirname, const CServerPath & path);
-  virtual void Chmod(const CString & filename, const CServerPath & path, int nValue);
+  BOOL IsReady();
+  void List(BOOL bFinish, int nError = 0, CServerPath path = CServerPath(), CString subdir = L"");
+  void ListFile(CString filename, const CServerPath & path);
+  void FtpCommand(LPCTSTR pCommand);
+  void Disconnect();
+  void FileTransfer(t_transferfile * transferfile = 0, BOOL bFinish = FALSE, int nError = 0);
+  void Delete(CString filename, const CServerPath & path, bool filenameOnly);
+  void Rename(CString oldName, CString newName, const CServerPath & path, const CServerPath & newPath);
+  void MakeDir(const CServerPath & path);
+  void RemoveDir(CString dirname, const CServerPath & path);
+  void Chmod(CString filename, const CServerPath & path, int nValue);
 
-  virtual void ProcessReply();
-  virtual void TransferEnd(int nMode);
-  virtual void Cancel(BOOL bQuit = FALSE);
+  void ProcessReply();
+  void TransferEnd(int nMode);
+  void Cancel(BOOL bQuit = FALSE);
 
-  virtual void SetAsyncRequestResult(int nAction, CAsyncRequestData * pData);
-  
-  int CheckOverwriteFile();
-  virtual BOOL Create();
+  void SetAsyncRequestResult(int nAction, CAsyncRequestData * pData);
+
+  BOOL Create();
   void TransfersocketListenFinished(unsigned int ip, unsigned short port);
 
   BOOL m_bKeepAliveActive;
@@ -84,10 +83,10 @@ public:
   // Other servers return "550 No files found."
   bool IsMisleadingListResponse();
 
-  virtual bool UsingMlsd();
-  virtual bool UsingUtf8();
-  virtual std::string GetTlsVersionStr();
-  virtual std::string GetCipherName();
+  bool UsingMlsd();
+  bool UsingUtf8();
+  std::string GetTlsVersionStr();
+  std::string GetCipherName();
   bool HandleSize(int code, int64_t & size);
   bool HandleMdtm(int code, t_directory::t_direntry::t_date & date);
   void TransferHandleListError();
@@ -106,6 +105,7 @@ public:
   _int64 GetAbleToTransferSize(enum transferDirection direction, bool &beenWaiting, int nBufSize = 0);
 
   t_server GetCurrentServer();
+  CFtpListResult * CreateListResult(bool mlst);
 
 public:
   virtual void OnReceive(int nErrorCode);
@@ -119,12 +119,14 @@ protected:
   void CheckForTimeout();
   void SendKeepAliveCommand();
 
-  virtual int OnLayerCallback(rde::list<t_callbackMsg> & callbacks);
+  virtual int OnLayerCallback(nb::list_t<t_callbackMsg> & callbacks);
   void SetFileExistsAction(int nAction, COverwriteRequestData * pData);
   void SetVerifyCertResult(int nResult, t_SslCertData * pData);
   void ResetOperation(int nSuccessful = -1);
+  void ResetTransferSocket(int Error);
 
   virtual void DoClose(int nError = 0);
+  int TryGetReplyCode();
   int GetReplyCode();
   CString GetReply();
   void LogOnToServer(BOOL bSkipReply = FALSE);
@@ -149,6 +151,7 @@ protected:
 
   virtual void LogSocketMessageRaw(int nMessageType, LPCTSTR pMsg);
   virtual bool LoggingSocketMessage(int nMessageType);
+  virtual int GetSocketOptionVal(int OptionID) const;
 
   void ShowStatus(UINT nID, int type) const;
   void ShowStatus(CString status,int type) const;
@@ -162,30 +165,33 @@ protected:
   struct t_ActiveList
   {
   CUSTOM_MEM_ALLOCATION_IMPL
-    CFtpControlSocket * pOwner;
-    int64_t nBytesAvailable;
-    int64_t nBytesTransferred;
+    CFtpControlSocket * pOwner{nullptr};
+    int64_t nBytesAvailable{0};
+    int64_t nBytesTransferred{0};
   };
-  static rde::list<t_ActiveList> m_InstanceList[2];
+  static nb::list_t<t_ActiveList> m_InstanceList[2];
   static CTime m_CurrentTransferTime[2];
   static _int64 m_CurrentTransferLimit[2];
-  static CCriticalSection m_SpeedLimitSync;
-  _int64 GetAbleToUDSize(bool & beenWaiting, CTime & curTime, _int64 & curLimit, rde::list<t_ActiveList>::iterator & iter, enum transferDirection direction, int nBufSize);
+  static CCriticalSectionWrapper m_SpeedLimitSync;
+  _int64 GetAbleToUDSize(bool & beenWaiting, CTime & curTime, _int64 & curLimit, nb::list_t<t_ActiveList>::iterator & iter, enum transferDirection direction, int nBufSize);
   _int64 GetSpeedLimit(CTime & time, int valType, int valValue);
 
   void SetDirectoryListing(t_directory * pDirectory, bool bSetWorkingDir = true);
-  t_directory * m_pDirectoryListing;
+  int CheckOverwriteFile();
+  int CheckOverwriteFileAndCreateTarget();
+  int FileTransferHandleDirectoryListing(t_directory * pDirectory);
+  t_directory * m_pDirectoryListing{nullptr};
 
-  CMainThread * m_pOwner;
-  CFileZillaTools * m_pTools;
+  CMainThread * m_pOwner{nullptr};
+  CFileZillaTools * m_pTools{nullptr};
 
-  CFile * m_pDataFile;
-  CTransferSocket * m_pTransferSocket;
+  CFile * m_pDataFile{nullptr};
+  CTransferSocket * m_pTransferSocket{nullptr};
   CStringA m_MultiLine;
   CTime m_LastSendTime;
 
   CString m_ServerName;
-  rde::list<CStringA> m_RecvBuffer;
+  nb::list_t<CStringA> m_RecvBuffer;
   CTime m_LastRecvTime;
   class CLogonData;
   class CListData;
@@ -199,31 +205,31 @@ protected:
   int m_zlibLevel;
 #endif
 
-  bool m_bUTF8;
-  bool m_bAnnouncesUTF8;
-  int m_nCodePage;
-  bool m_hasClntCmd;
+  bool m_bUTF8{false};
+  int m_nCodePage{0};
+  bool m_bAnnouncesUTF8{false};
+  bool m_hasClntCmd{false};
   TFTPServerCapabilities m_serverCapabilities;
   CStringA m_ListFile;
-  int64_t m_ListFileSize;
-  bool m_isFileZilla;
+  int64_t m_ListFileSize{0};
+  bool m_isFileZilla{false};
 
-  bool m_awaitsReply;
-  bool m_skipReply;
+  bool m_awaitsReply{false};
+  bool m_skipReply{false};
 
-  char * m_sendBuffer;
-  size_t m_sendBufferLen;
+  char * m_sendBuffer{nullptr};
+  size_t m_sendBufferLen{0};
 
-  bool m_bProtP;
+  bool m_bProtP{false};
 
-  bool m_mayBeMvsFilesystem;
-  bool m_mayBeBS2000Filesystem;
+  bool m_mayBeMvsFilesystem{false};
+  bool m_mayBeBS2000Filesystem{false};
 
   struct t_operation
   {
   CUSTOM_MEM_ALLOCATION_IMPL
-    int nOpMode;
-    int nOpState;
+    int nOpMode{0};
+    int nOpState{0};
     class COpData //: public TObject //Base class which will store operation specific parameters.
     {
     CUSTOM_MEM_ALLOCATION_IMPL
@@ -231,19 +237,20 @@ protected:
       COpData() {}
       virtual ~COpData() {}
     };
-    COpData * pData;
+    COpData * pData{nullptr};
+  public:
   };
 
   t_operation m_Operation;
 
-  CAsyncProxySocketLayer * m_pProxyLayer;
-  CAsyncSslSocketLayer * m_pSslLayer;
+  CAsyncProxySocketLayer * m_pProxyLayer{nullptr};
+  CAsyncSslSocketLayer * m_pSslLayer{nullptr};
 #ifndef MPEXT_NO_GSS
   CAsyncGssSocketLayer * m_pGssLayer;
 #endif
   t_server m_CurrentServer;
 
 private:
-  BOOL m_bCheckForTimeout;
+  BOOL m_bCheckForTimeout{FALSE};
 };
 

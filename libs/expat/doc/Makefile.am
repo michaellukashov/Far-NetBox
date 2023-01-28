@@ -6,7 +6,9 @@
 #                      \___/_/\_\ .__/ \__,_|\__|
 #                               |_| XML parser
 #
-# Copyright (c) 2017 Expat development team
+# Copyright (c) 2017-2022 Sebastian Pipping <sebastian@pipping.org>
+# Copyright (c) 2017      Stephen Groat <stephen@groat.us>
+# Copyright (c) 2017      Joe Orton <jorton@redhat.com>
 # Licensed under the MIT license:
 #
 # Permission is  hereby granted,  free of charge,  to any  person obtaining
@@ -28,13 +30,17 @@
 # OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
 # USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+.PHONY: dist-hook  # not inside conditional to avoid automake warning
+
+if WITH_DOCBOOK
 dist_man_MANS = xmlwf.1
 
 xmlwf.1: xmlwf.xml
-if WITH_DOCBOOK
+	-rm -f $@
 	$(DOCBOOK_TO_MAN) $<
-	mv XMLWF.1 $@
+	test -f $@ || mv XMLWF.1 $@
 else
+dist-hook:
 	@echo 'ERROR: Configure with --with-docbook for "make dist".' 1>&2
 	@false
 endif
@@ -48,8 +54,7 @@ clean-local-check:
 	$(RM) xmlwf.1
 
 EXTRA_DIST = \
-    expat.png \
+    ok.min.css \
     reference.html \
     style.css \
-    valid-xhtml10.png \
     xmlwf.xml

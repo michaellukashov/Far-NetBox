@@ -1,6 +1,6 @@
 /* 
    Basic HTTP and WebDAV methods
-   Copyright (C) 1999-2008, Joe Orton <joe@manyfish.co.uk>
+   Copyright (C) 1999-2021, Joe Orton <joe@manyfish.co.uk>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -258,7 +258,7 @@ int ne_post(ne_session *sess, const char *uri, int fd, const char *buffer)
 int ne_get_content_type(ne_request *req, ne_content_type *ct)
 {
     const char *value;
-    char *sep = NULL, *stype;
+    char *sep, *stype;
 
     value = ne_get_response_header(req, "Content-Type");
     if (value == NULL || strchr(value, '/') == NULL) {
@@ -269,11 +269,11 @@ int ne_get_content_type(ne_request *req, ne_content_type *ct)
     
     stype = strchr(ct->value, '/');
 
-    if (stype) *stype++ = '\0';
+    *stype++ = '\0';
     ct->type = ct->value;
     ct->charset = NULL;
     
-    if (stype) sep = strchr(stype, ';');
+    sep = strchr(stype, ';');
 
     if (sep) {
 	char *tok;

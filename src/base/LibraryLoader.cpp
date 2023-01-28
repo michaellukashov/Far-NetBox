@@ -1,27 +1,26 @@
 
 #include <vcl.h>
-#pragma hdrstop
 
 #include "LibraryLoader.hpp"
 
 
-TLibraryLoader::TLibraryLoader(UnicodeString LibraryName, bool AllowFailure) :
+TLibraryLoader::TLibraryLoader(const UnicodeString LibraryName, bool AllowFailure) noexcept :
   FHModule(nullptr)
 {
   Load(LibraryName, AllowFailure);
 }
 
-TLibraryLoader::TLibraryLoader() :
+TLibraryLoader::TLibraryLoader() noexcept :
   FHModule(nullptr)
 {
 }
 
-TLibraryLoader::~TLibraryLoader()
+TLibraryLoader::~TLibraryLoader() noexcept
 {
   Unload();
 }
 
-void TLibraryLoader::Load(UnicodeString LibraryName, bool AllowFailure)
+void TLibraryLoader::Load(const UnicodeString LibraryName, bool AllowFailure)
 {
   DebugAssert(FHModule == nullptr);
 
@@ -50,7 +49,7 @@ FARPROC TLibraryLoader::GetProcAddress(AnsiString ProcedureName) const
 }
 
 // Get procedure address from loaded library by ordinal value
-FARPROC TLibraryLoader::GetProcAddress(intptr_t ProcedureOrdinal) const
+FARPROC TLibraryLoader::GetProcAddress(int32_t ProcedureOrdinal) const
 {
   return ::GetProcAddress(FHModule, static_cast<LPCSTR>(nullptr) + ProcedureOrdinal);
 }

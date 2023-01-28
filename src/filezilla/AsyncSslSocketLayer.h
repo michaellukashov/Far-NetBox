@@ -1,4 +1,4 @@
-/*           CAsyncSslSocketLayer by Tim Kosse 
+﻿/*           CAsyncSslSocketLayer by Tim Kosse
           mailto: tim.kosse@filezilla-project.org)
                  Version 2.0 (2005-02-27)
 -------------------------------------------------------------
@@ -42,12 +42,11 @@ Valid notification IDs are:
 - SSL_FAILURE 1
   This notification is sent if the SSL connection could not be established or if an existing
   connection failed. Valid values for param2 are:
-  - SSL_FAILURE_NONE 0 - Everything OK
-  - SSL_FAILURE_UNKNOWN 1 - Details may have been sent with a SSL_VERBOSE_* notification.
-  - SSL_FAILURE_ESTABLISH 2 - Problem during SSL negotiation
-  - SSL_FAILURE_INITSSL 8
-  - SSL_FAILURE_VERIFYCERT 16 - The remote SSL certificate was invalid
-  - SSL_FAILURE_CERTREJECTED 32 - The remote SSL certificate was rejected by user
+  - SSL_FAILURE_UNKNOWN 0 - Details may have been sent with a SSL_VERBOSE_* notification.
+  - SSL_FAILURE_ESTABLISH 1 - Problem during SSL negotiation
+  - SSL_FAILURE_INITSSL 4
+  - SSL_FAILURE_VERIFYCERT 8 - The remote SSL certificate was invalid
+  - SSL_FAILURE_CERTREJECTED 16 - The remote SSL certificate was rejected by user
 - SSL_VERIFY_CERT 2
   This notification is sent each time a remote certificate has to be verified.
   param2 is a pointer to a t_SslCertData structure which contains some information
@@ -70,8 +69,7 @@ This product includes software developed by the OpenSSL Project
 for use in the OpenSSL Toolkit. (https://www.openssl.org/)
 */
 
-#ifndef AsyncSslSocketLayerH
-#define AsyncSslSocketLayerH
+#pragma once
 
 #include "AsyncSocketExLayer.h"
 #include <openssl/ssl.h>
@@ -83,12 +81,13 @@ CUSTOM_MEM_ALLOCATION_IMPL
 
   t_SslCertData()
   {
-    ClearStruct(subject);
-    ClearStruct(issuer);
-    ClearStruct(validFrom);
-    ClearStruct(validUntil);
-    ClearArray(subjectAltName);
-    ClearArray(hash);
+    nb::ClearStruct(subject);
+    nb::ClearStruct(issuer);
+    nb::ClearStruct(validFrom);
+    nb::ClearStruct(validUntil);
+    nb::ClearArray(subjectAltName);
+    nb::ClearArray(hashSha1);
+    nb::ClearArray(hashSha256);
     certificate = 0;
     certificateLen = 0;
     verificationResult = 0;
@@ -103,36 +102,38 @@ CUSTOM_MEM_ALLOCATION_IMPL
 
   struct t_Contact
   {
-    TCHAR Organization[256];
-    TCHAR Unit[256];
-    TCHAR CommonName[256];
-    TCHAR Mail[256];
-    TCHAR Country[256];
-    TCHAR StateProvince[256];
-    TCHAR Town[256];
-    TCHAR Other[1024];
+    TCHAR Organization[256]{};
+    TCHAR Unit[256]{};
+    TCHAR CommonName[256]{};
+    TCHAR Mail[256]{};
+    TCHAR Country[256]{};
+    TCHAR StateProvince[256]{};
+    TCHAR Town[256]{0};
+    TCHAR Other[1024]{0};
   } subject, issuer;
 
   struct t_validTime
   {
     // Year, Month, day, hour, minute, second
-    int y, M, d, h, m, s;
+    int y{0}, M{0}, d{0}, h{0}, m{0}, s{0};
   } validFrom, validUntil;
 
-  TCHAR subjectAltName[10240];
+  TCHAR subjectAltName[10240]{};
 
-  uint8_t hash[20];
+  uint8_t hashSha1[20]{};
+  uint8_t hashSha256[32]{};
 
-  uint8_t * certificate;
-  size_t certificateLen;
+  uint8_t * certificate{nullptr};
+  size_t certificateLen{0};
 
-  int verificationResult;
-  int verificationDepth;
+  int verificationResult{0};
+  int verificationDepth{0};
 
-  int priv_data; //Internal data, do not modify
+  int priv_data{0}; //Internal data, do not modify
 };
 
 class CCriticalSectionWrapper;
+class CFileZillaTools;
 
 class CAsyncSslSocketLayer : public CAsyncSocketExLayer
 {
@@ -150,14 +151,14 @@ public:
   bool IsUsingSSL();
   int InitSSLConnection(bool clientMode,
     CAsyncSslSocketLayer * main,
-    bool sessionreuse, int minTlsVersion, int maxTlsVersion,
-    void * pContext = 0);
+    bool sessionreuse, const CString & host, CFileZillaTools * tools,
+    void* pContext = 0);
 
   // Send raw text, useful to send a confirmation after the ssl connection
   // has been initialized
   int SendRaw(const void * lpBuf, int nBufLen, int nFlags = 0);
 
-  void * GetContext() { return m_ssl_ctx; }
+  void* GetContext() { return m_ssl_ctx; }
 
 private:
   virtual void Close();
@@ -177,6 +178,7 @@ private:
   int InitSSL();
   void UnloadSSL();
   void PrintLastErrorMsg();
+  bool HandleSession(SSL_SESSION * Session);
 
   void TriggerEvents();
 
@@ -185,10 +187,11 @@ private:
   static int verify_callback(int preverify_ok, X509_STORE_CTX * ctx);
   static int ProvideClientCert(
     SSL * Ssl, X509 ** Certificate, EVP_PKEY ** PrivateKey);
+  static int NewSessionCallback(struct ssl_st * Ssl, SSL_SESSION * Session);
   static CAsyncSslSocketLayer * LookupLayer(SSL * Ssl);
 
-  bool m_bUseSSL;
-  BOOL m_bFailureSent;
+  bool m_bUseSSL{false};
+  BOOL m_bFailureSent{FALSE};
 
   // Critical section for thread synchronization
   static CCriticalSectionWrapper m_sCriticalSection;
@@ -214,10 +217,11 @@ private:
 
   // SSL data
   SSL_CTX* m_ssl_ctx;  // SSL context
-  static rde::map<SSL_CTX *, int> m_contextRefCount;
+  static nb::map_t<SSL_CTX *, int> m_contextRefCount;
   SSL* m_ssl;      // current session handle
   SSL_SESSION * m_sessionid;
   bool m_sessionreuse;
+  bool m_sessionreuse_failed;
   CAsyncSslSocketLayer * m_Main;
 
   // Data channels for encrypted/unencrypted data
@@ -226,11 +230,11 @@ private:
   BIO* m_sslbio; // The data to encrypt / the decrypted data has to go though this bio
 
   // Send buffer
-  char *m_pNetworkSendBuffer;
+  char* m_pNetworkSendBuffer;
   int m_nNetworkSendBufferLen;
   int m_nNetworkSendBufferMaxLen;
 
-  char *m_pRetrySendBuffer;
+  char* m_pRetrySendBuffer;
   int m_nRetrySendBufferLen;
 
   bool m_mayTriggerRead;
@@ -258,12 +262,6 @@ private:
 #define SSL_FAILURE_ESTABLISH 1
 #define SSL_FAILURE_INITSSL 4
 #define SSL_FAILURE_VERIFYCERT 8
-#define SSL_FAILURE_CERTREJECTED 0x10
+#define SSL_FAILURE_CERTREJECTED 16
 
-#define SSL_VERSION_SSL2 2
-#define SSL_VERSION_SSL3 3
-#define SSL_VERSION_TLS10 10
-#define SSL_VERSION_TLS11 11
-#define SSL_VERSION_TLS12 12
 
-#endif // AsyncSslSocketLayerH

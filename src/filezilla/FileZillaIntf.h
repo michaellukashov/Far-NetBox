@@ -1,6 +1,5 @@
-
-#ifndef FileZillaIntfH
-#define FileZillaIntfH
+﻿
+#pragma once
 
 #include <rdestl/map.h>
 
@@ -21,6 +20,7 @@ CUSTOM_MEM_ALLOCATION_IMPL
   WORD Minute;
   WORD Second;
   bool HasTime;
+  bool HasYear;
   bool HasSeconds;
   bool HasDate;
   bool Utc;
@@ -29,17 +29,17 @@ CUSTOM_MEM_ALLOCATION_IMPL
 struct TListDataEntry
 {
 CUSTOM_MEM_ALLOCATION_IMPL
-  TRemoteFileTime Time;
-  int64_t Size;
-  const wchar_t * LinkTarget;
   const wchar_t * Name;
   const wchar_t * Permissions;
   const wchar_t * HumanPerm;
   const wchar_t * OwnerGroup; // deprecated, to be replaced with Owner/Group
   const wchar_t * Owner;
   const wchar_t * Group;
+  int64_t Size;
   bool Dir;
   bool Link;
+  TRemoteFileTime Time;
+  const wchar_t * LinkTarget;
 };
 
 struct TFtpsCertificateData
@@ -77,8 +77,10 @@ CUSTOM_MEM_ALLOCATION_IMPL
 
   const wchar_t * SubjectAltName;
 
-  const uint8_t * Hash;
-  static const size_t HashLen = 20;
+  const uint8_t * HashSha1;
+  static const size_t HashSha1Len = 20;
+  const uint8_t * HashSha256;
+  static const size_t HashSha256Len = 32;
 
   const uint8_t * Certificate;
   size_t CertificateLen;
@@ -90,7 +92,7 @@ CUSTOM_MEM_ALLOCATION_IMPL
 struct TNeedPassRequestData
 {
 CUSTOM_MEM_ALLOCATION_IMPL
-  wchar_t * Password;
+    wchar_t * Password;
 };
 
 class t_server;
@@ -164,8 +166,8 @@ public:
   static void Finalize();
   static void SetResourceModule(void * ResourceHandle);
 
-  explicit TFileZillaIntf();
-  virtual ~TFileZillaIntf();
+  explicit TFileZillaIntf() noexcept;
+  virtual ~TFileZillaIntf() noexcept;
 
   bool Init();
   void Destroying();
@@ -182,10 +184,10 @@ public:
 
   bool Connect(const wchar_t * Host, int Port, const wchar_t * User,
     const wchar_t * Pass, const wchar_t * Account,
-    const wchar_t * Path, int ServerType, int Pasv, int TimeZoneOffset, int UTF8, int CodePage,
+    const wchar_t * Path, int ServerType, int Pasv, int TimeZoneOffset, int UTF8,
     int iForcePasvIp, int iUseMlsd,
-    int iDupFF, int iUndupFF,
-    X509 * Certificate, EVP_PKEY * PrivateKey);
+    X509 * Certificate, EVP_PKEY * PrivateKey,
+    int CodePage, int iDupFF, int iUndupFF);
   bool Close(bool AllowBusy);
 
   bool List(const wchar_t * APath);
@@ -200,11 +202,13 @@ public:
   bool Rename(const wchar_t* OldName, const wchar_t* NewName,
     const wchar_t* APath, const wchar_t* ANewPath);
 
-  bool FileTransfer(const wchar_t * LocalFile, const wchar_t * RemoteFile,
-    const wchar_t * RemotePath, bool Get, int64_t Size, int Type, void * UserData);
+  bool FileTransfer(
+    const wchar_t * LocalFile, const wchar_t * RemoteFile,
+    const wchar_t * RemotePath, bool Get, int64_t Size, int Type, void * UserData,
+    TTransferOutEvent OnTransferOut, TTransferInEvent OnTransferIn);
 
-  virtual const wchar_t * Option(intptr_t OptionID) const = 0;
-  virtual intptr_t OptionVal(intptr_t OptionID) const = 0;
+  virtual const wchar_t * Option(int32_t OptionID) const = 0;
+  virtual int32_t OptionVal(int32_t OptionID) const = 0;
 
   void SetDebugLevel(TLogLevel Level);
   bool HandleMessage(WPARAM wParam, LPARAM lParam);
@@ -214,31 +218,31 @@ protected:
   virtual bool DoPostMessage(TMessageType Type, WPARAM wParam, LPARAM lParam) = 0;
 
   virtual bool HandleStatus(const wchar_t * Status, int Type) = 0;
-  virtual bool HandleAsynchRequestOverwrite(
+  virtual bool HandleAsyncRequestOverwrite(
     wchar_t * FileName1, size_t FileName1Len, const wchar_t * FileName2,
     const wchar_t * Path1, const wchar_t * Path2,
     int64_t Size1, int64_t Size2, time_t LocalTime,
     bool HasLocalTime1, const TRemoteFileTime & RemoteTime, void * UserData,
     HANDLE & LocalFileHandle,
     int & RequestResult) = 0;
-  virtual bool HandleAsynchRequestVerifyCertificate(
+  virtual bool HandleAsyncRequestVerifyCertificate(
     const TFtpsCertificateData & Data, int & RequestResult) = 0;
-  virtual bool HandleAsynchRequestNeedPass(
+  virtual bool HandleAsyncRequestNeedPass(
     struct TNeedPassRequestData & Data, int & RequestResult) = 0;
   virtual bool HandleListData(const wchar_t * Path, const TListDataEntry * Entries,
-    uintptr_t Count) = 0;
+    uint32_t Count) = 0;
   virtual bool HandleTransferStatus(bool Valid, int64_t TransferSize,
     int64_t Bytes, bool FileTransfer) = 0;
-  virtual bool HandleReply(intptr_t Command, uintptr_t Reply) = 0;
+  virtual bool HandleReply(int32_t Command, uint32_t Reply) = 0;
   virtual bool HandleCapabilities(TFTPServerCapabilities * ServerCapabilities) = 0;
-  virtual bool CheckError(intptr_t ReturnCode, const wchar_t * Context);
+  virtual bool CheckError(int32_t ReturnCode, const wchar_t * Context);
 
-  inline bool Check(intptr_t ReturnCode, const wchar_t * Context, intptr_t Expected = -1);
+  inline bool Check(int32_t ReturnCode, const wchar_t * Context, int32_t Expected = -1);
 
 private:
-  CFileZillaApi * FFileZillaApi;
-  TFileZillaIntern * FIntern;
-  t_server * FServer;
+  CFileZillaApi * FFileZillaApi{nullptr};
+  TFileZillaIntern * FIntern{nullptr};
+  t_server * FServer{nullptr};
 };
 
 enum ftp_capabilities_t
@@ -259,7 +263,6 @@ enum ftp_capability_names_t
   mfmt_command,
   pret_command,
   mdtm_command,
-  size_command,
   mode_z_support,
   tvfs_support, // Trivial virtual file store (RFC 3659)
   list_hidden_support, // LIST -a command
@@ -273,16 +276,16 @@ NB_DISABLE_COPY(TFTPServerCapabilities)
 public:
   TFTPServerCapabilities(){}
   ftp_capabilities_t GetCapability(ftp_capability_names_t Name) const;
-  ftp_capabilities_t GetCapabilityString(ftp_capability_names_t Name, std::string * Option = NULL) const;
+  ftp_capabilities_t GetCapabilityString(ftp_capability_names_t Name, std::string * Option = nullptr) const;
   void SetCapability(ftp_capability_names_t Name, ftp_capabilities_t Cap);
   void SetCapability(ftp_capability_names_t Name, ftp_capabilities_t Cap, const std::string & Option);
   void Clear() { FCapabilityMap.clear(); }
   void Assign(TFTPServerCapabilities * Source)
   {
     FCapabilityMap.clear();
-    if (Source != NULL)
+    if (Source != nullptr)
     {
-      for (rde::map<ftp_capability_names_t, t_cap>::iterator it = Source->FCapabilityMap.begin();
+      for (nb::map_t<ftp_capability_names_t, t_cap>::iterator it = Source->FCapabilityMap.begin();
         it != Source->FCapabilityMap.end(); ++it)
       {
         FCapabilityMap.insert(*it);
@@ -297,14 +300,13 @@ protected:
       cap(unknown),
       option(),
       number(0)
-    {
-    }
+    {}
     ftp_capabilities_t cap;
     std::string option;
     int number;
   };
 
-  mutable rde::map<ftp_capability_names_t, t_cap> FCapabilityMap;
+  mutable nb::map_t<ftp_capability_names_t, t_cap> FCapabilityMap;
 };
 
-#endif // FileZillaIntfH
+

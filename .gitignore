@@ -1,4 +1,4 @@
-*.log
+﻿*.log
 build/
 /src/NetBox-build/
 build-CMakeLists.txt-*
@@ -60,3 +60,4 @@ cov-int/
 *.VC.db
 *.VC.opendb
 ReSharper.DotSettings
+*.PVS-Studio.*

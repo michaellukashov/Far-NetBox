@@ -1,4 +1,4 @@
-
+﻿
 #pragma once
 
 #include <Classes.hpp>
@@ -10,29 +10,49 @@ enum TKeyType
   ktOpenSSHAuto, ktOpenSSHPEM, ktOpenSSHNew, ktSSHCom,
   ktSSH1Public, ktSSH2PublicRFC4716, ktSSH2PublicOpenSSH,
 };
-
-NB_CORE_EXPORT TKeyType GetKeyType(UnicodeString AFileName);
+NB_CORE_EXPORT TKeyType GetKeyType(const UnicodeString AFileName);
 NB_CORE_EXPORT UnicodeString GetKeyTypeName(TKeyType KeyType);
-NB_CORE_EXPORT bool IsKeyEncrypted(TKeyType KeyType, UnicodeString FileName, UnicodeString &Comment);
+NB_CORE_EXPORT bool IsKeyEncrypted(TKeyType KeyType, const UnicodeString FileName, UnicodeString &Comment);
 struct TPrivateKey;
-NB_CORE_EXPORT TPrivateKey *LoadKey(TKeyType KeyType, UnicodeString FileName, UnicodeString Passphrase);
-NB_CORE_EXPORT void ChangeKeyComment(TPrivateKey *PrivateKey, UnicodeString Comment);
-NB_CORE_EXPORT void SaveKey(TKeyType KeyType, UnicodeString FileName,
-  UnicodeString Passphrase, TPrivateKey *PrivateKey);
+NB_CORE_EXPORT TPrivateKey *LoadKey(TKeyType KeyType, const UnicodeString FileName, const UnicodeString Passphrase);
+UnicodeString TestKey(TKeyType KeyType, const UnicodeString & FileName);
+NB_CORE_EXPORT void ChangeKeyComment(TPrivateKey *PrivateKey, const UnicodeString Comment);
+NB_CORE_EXPORT void SaveKey(TKeyType KeyType, const UnicodeString FileName,
+  const UnicodeString Passphrase, TPrivateKey *PrivateKey);
 NB_CORE_EXPORT void FreeKey(TPrivateKey *PrivateKey);
+UnicodeString GetPublicKeyLine(const UnicodeString & FileName, UnicodeString & Comment);
+extern const UnicodeString PuttyKeyExt;
 
-NB_CORE_EXPORT int64_t ParseSize(UnicodeString SizeStr);
-
-NB_CORE_EXPORT bool HasGSSAPI(UnicodeString CustomPath);
+NB_CORE_EXPORT bool HasGSSAPI(const UnicodeString CustomPath);
 
 NB_CORE_EXPORT void AES256EncodeWithMAC(char *Data, size_t Len, const char *Password,
   size_t PasswordLen, const char *Salt);
 
-NB_CORE_EXPORT UnicodeString NormalizeFingerprint(UnicodeString AFingerprint);
-NB_CORE_EXPORT UnicodeString GetKeyTypeFromFingerprint(UnicodeString AFingerprint);
+NB_CORE_EXPORT void NormalizeFingerprint(UnicodeString & AFingerprint, UnicodeString & KeyName);
+NB_CORE_EXPORT UnicodeString KeyTypeFromFingerprint(UnicodeString AFingerprint);
 
 NB_CORE_EXPORT UnicodeString GetPuTTYVersion();
 
 NB_CORE_EXPORT UnicodeString Sha256(const char *Data, size_t Size);
 
 NB_CORE_EXPORT void DllHijackingProtection();
+
+UnicodeString ParseOpenSshPubLine(const UnicodeString ALine, const struct ssh_keyalg *& Algorithm);
+
+UnicodeString GetKeyTypeHuman(const UnicodeString AKeyType);
+
+bool IsOpenSSH(const UnicodeString SshImplementation);
+
+TStrings * SshCipherList();
+TStrings * SshKexList();
+TStrings * SshHostKeyList();
+TStrings * SshMacList();
+
+class TSessionData;
+void SaveAsPutty(const UnicodeString & Name, TSessionData * Data);
+class THierarchicalStorage;
+void WritePuttySettings(THierarchicalStorage * Storage, const UnicodeString & Settings);
+void SavePuttyDefaults(const UnicodeString & Name);
+
+bool RandomSeedExists();
+
