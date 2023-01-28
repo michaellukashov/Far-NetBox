@@ -9,9 +9,9 @@
 static inline uint64_t rol(uint64_t x, unsigned shift)
 {
     unsigned L = (+shift) & 63;
-#pragma option push -w-ngu // WINSCP
+//#pragma option push -w-ngu // WINSCP
     unsigned R = (-shift) & 63;
-#pragma option pop // WINSCP
+//#pragma option pop // WINSCP
     return (x << L) | (x >> R);
 }
 

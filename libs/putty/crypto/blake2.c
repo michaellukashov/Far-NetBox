@@ -11,9 +11,9 @@
 
 static inline uint64_t ror(uint64_t x, unsigned rotation)
 {
-#pragma option push -w-ngu // WINSCP
+//#pragma option push -w-ngu // WINSCP
     unsigned lshift = 63 & -rotation, rshift = 63 & rotation;
-#pragma option pop // WINSCP
+//#pragma option pop // WINSCP
     return (x << lshift) | (x >> rshift);
 }
 

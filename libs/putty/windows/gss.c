@@ -3,7 +3,9 @@
 #include <limits.h>
 #include "putty.h"
 
+#ifndef SECURITY_WIN32
 #define SECURITY_WIN32
+#endif //SECURITY_WIN32
 #include <security.h>
 
 #include "ssh/pgssapi.h"
@@ -230,9 +232,9 @@ struct ssh_gss_liblist *ssh_gss_setup(Conf *conf, LogContext *logctx) // MPEXT
         lib->gsslogmsg = "Using SSPI from SECUR32.DLL";
         lib->handle = (void *)module;
 
-#pragma option push -w-cpt
+//#pragma option push -w-cpt
         GET_WINDOWS_FUNCTION(module, AcquireCredentialsHandleA);
-#pragma option pop
+//#pragma option pop
         GET_WINDOWS_FUNCTION(module, InitializeSecurityContextA);
         GET_WINDOWS_FUNCTION(module, FreeContextBuffer);
         GET_WINDOWS_FUNCTION(module, FreeCredentialsHandle);

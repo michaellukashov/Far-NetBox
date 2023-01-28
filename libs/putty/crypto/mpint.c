@@ -13,7 +13,7 @@
 #include "mpint.h"
 #include "mpint_i.h"
 
-#pragma warn -ngu // WINSCP
+//#pragma warn -ngu // WINSCP
 
 #define SIZE_T_BITS (CHAR_BIT * sizeof(size_t))
 
