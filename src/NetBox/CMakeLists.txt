@@ -70,7 +70,7 @@ if (MSVC_VERSION GREATER 1899)
 set(NETBOX_DEFS ${NETBOX_DEFS} /Zc:threadSafeInit- /bigobj)
 endif()
 
-set(NETBOX_C_FLAGS "")
+set(NETBOX_C_FLAGS )
 
 if(x64)
 set(NETBOX_PLATFORM_FLAGS ${NETBOX_PLATFORM_FLAGS} -DWIN64 -D_WIN64 -D_AMD64_)
@@ -81,13 +81,13 @@ endif()
 endif()
 
 if(MSVC)
-set(NETBOX_C_FLAGS "${NETBOX_C_FLAGS} /TC")
+set(NETBOX_C_FLAGS ${NETBOX_C_FLAGS} /TC)
 elseif(CMAKE_COMPILER_IS_MINGW)
-set(NETBOX_C_FLAGS "${NETBOX_C_FLAGS} -x c --std=c99")
+set(NETBOX_C_FLAGS ${NETBOX_C_FLAGS} -x c --std=c99)
 endif()
 
-set(NETBOX_FLAGS_RELEASE "-U_DEBUG -DNDEBUG")
-set(NETBOX_FLAGS_DEBUG "-D_DEBUG -DDEBUG")
+set(NETBOX_FLAGS_RELEASE -U_DEBUG -DNDEBUG)
+set(NETBOX_FLAGS_DEBUG -D_DEBUG -DDEBUG)
 
 set(NETBOX_UNICODE_FLAGS -D_UNICODE -DUNICODE)
 
@@ -107,18 +107,13 @@ set(NETBOX_CXX_FLAGS ${NETBOX_CXX_FLAGS} -Woverloaded-virtual -Wnon-virtual-dtor
 set(NETBOX_C_FLAGS ${NETBOX_C_FLAGS} -static -s -Wall -Wextra -pedantic -Wconversion -Wsign-conversion -Winit-self -Wunreachable-code)
 #-O2
 #-Weffc++
-set(NETBOX_FLAGS_RELEASE "${NETBOX_FLAGS_RELEASE}")
-set(NETBOX_FLAGS_DEBUG "${NETBOX_FLAGS_DEBUG}")
+set(NETBOX_FLAGS_RELEASE ${NETBOX_FLAGS_RELEASE})
+set(NETBOX_FLAGS_DEBUG ${NETBOX_FLAGS_DEBUG})
 
 endif()
 
 set(NETBOX_C_FLAGS ${NETBOX_DEFS} ${NETBOX_C_FLAGS} ${NETBOX_PLATFORM_FLAGS} ${NETBOX_C_WARNING_FLAGS})
 set(NETBOX_CXX_FLAGS ${NETBOX_DEFS} ${NETBOX_CXX_FLAGS} ${NETBOX_PLATFORM_FLAGS} ${NETBOX_CXX_WARNING_FLAGS})
-
-set(CMAKE_CXX_FLAGS_RELEASE ${NETBOX_CXX_FLAGS} ${NETBOX_FLAGS_RELEASE})
-set(CMAKE_C_FLAGS_RELEASE ${NETBOX_C_FLAGS} ${NETBOX_FLAGS_RELEASE})
-set(CMAKE_CXX_FLAGS_DEBUG ${NETBOX_CXX_FLAGS} ${NETBOX_FLAGS_DEBUG})
-set(CMAKE_C_FLAGS_DEBUG ${NETBOX_C_FLAGS} ${NETBOX_FLAGS_DEBUG})
 
 function(nb_replace_compiler_option var old new)
   # Replaces a compiler option or switch `old' in `var' by `new'.
@@ -140,13 +135,13 @@ endfunction(nb_replace_compiler_option)
 
 if(MSVC)
 
-add_definitions(-DWINSCP -DFARPLUGIN)
+#[[add_definitions(-DWINSCP -DFARPLUGIN)
 add_definitions(-DFASTDELEGATE_ALLOW_FUNCTION_TYPE_SYNTAX)
 add_definitions(-DUSE_DLMALLOC -DUSE_DL_PREFIX -DNO_MALLINFO -DUSE_LOCKS=1)
 add_definitions(-DHIDE_TODO)
 add_definitions(-DNEED_LIBS3)
 add_definitions(-DFARPLUGIN)
-add_definitions(${fmt_DEFINES})
+add_definitions(${fmt_DEFINES})]]
 
 set(NETBOX_DLL_LINK_FLAGS
   /NODEFAULTLIB:MSVCURT.LIB
@@ -262,7 +257,6 @@ set(OPENSSL_COMPILE_FLAGS ${OPENSSL_COMPILE_FLAGS}
   -DOPENSSL_PIC -DOPENSSL_NO_ERR
 )
 set(OPENSSL_COMPILE_FLAGS ${OPENSSL_COMPILE_FLAGS}
-#  -DOPENSSLDIR="" -DENGINESDIR=""
   -DNB_COMPILE_OPENSSL
 )
 set(OPENSSL_COMPILE_FLAGS ${OPENSSL_COMPILE_FLAGS}
@@ -1248,9 +1242,13 @@ set(NEON_COMPILE_FLAGS ${NEON_COMPILE_FLAGS}
 )
 endif()
 
-target_compile_options(neon PRIVATE
+#target_compile_options(neon PRIVATE
+#)
+
+target_compile_definitions(neon PRIVATE
   ${NEON_COMPILE_FLAGS}
   ${NETBOX_UNICODE_FLAGS}
+  -DWINSCP
 )
 
 target_include_directories(neon PRIVATE
@@ -2013,10 +2011,11 @@ ucm_add_flags(CXX C /GS- /fp:fast /Oy /GA /GF /Gw /GL CONFIG Release)
 #/O2 release
 #/Oy - omit frame pointers
 #/Oi - enable intrinsic functions
-ucm_add_flags(CXX C /Gm- -Ox -Ob1 -Oi -Os -GF CONFIG Release)
+ucm_add_flags(CXX C /Gm- -Ox -Oi -Os CONFIG Release)
+#-Ob1
 # static runtime settings
-ucm_add_flags(CXX C /MT CONFIG Release)
-ucm_add_flags(CXX C /MTd CONFIG Debug)
+#ucm_add_flags(CXX C /MT CONFIG Release)
+#ucm_add_flags(CXX C /MTd CONFIG Debug)
 # linker settings
 ucm_add_linker_flags(MODULE SHARED EXE /DEBUG /OPT:REF /OPT:ICF=6 /NXCOMPAT /DYNAMICBASE /MANIFEST:NO CONFIG Release)
 ucm_add_linker_flags(MODULE STATIC SHARED EXE /LTCG CONFIG Release)
