@@ -681,7 +681,7 @@ TEncryption::TEncryption(const RawByteString AKey) noexcept
   }
 }
 
-TEncryption::~TEncryption() noexcept
+TEncryption::~TEncryption()
 {
   if (FContext != nullptr)
   {
