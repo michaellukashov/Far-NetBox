@@ -203,6 +203,11 @@ macro(compile_asm_files)
       set(ARG_ASM_FILES " ")
   endif()
 #  message("ARG_ASM_FILES: ${ARG_ASM_FILES}")
+  if(x64)
+    set(_nasm_args win64)
+  else()
+    set(_nasm_args win32)
+  endif()
   set(${ARG_RESULT} )
   foreach(_asm_file ${ARG_ASM_FILES})
 #    message("asm_file: ${_asm_file}")
@@ -215,17 +220,17 @@ macro(compile_asm_files)
     add_custom_command(
       OUTPUT ${_asm_object}
       COMMAND ${NASM_EXECUTABLE}
-      ARGS -f win64 -o ${_asm_object} ${_asm_source}
+      ARGS -f ${_nasm_args} -o ${_asm_object} ${_asm_source}
       DEPENDS ${_asm_source}
     )
     set(${ARG_RESULT} ${${ARG_RESULT}} ${_asm_object})
   endforeach(_asm_file)
 endmacro()
 
-set(NETBOX_SOURCES ${NETBOX_SOURCES}
+#[[set(NETBOX_SOURCES ${NETBOX_SOURCES}
   vc_crt_fix_impl.cpp
   ${ASM_OBJECTS}
-)
+)]]
 
 endif(MSVC)
 
@@ -337,10 +342,17 @@ set(libeay32_asm_files
 )
 
 set(libeay32_obj_files )
+if(x64)
 compile_asm_files(RESULT libeay32_obj_files ASM_FILES
   ../../libs/openssl-1.1.1/crypto/sha/asm/sha1-x86_64.asm
   ../../libs/openssl-1.1.1/crypto/md5/asm/md5-x86_64.asm
 )
+else()
+compile_asm_files(RESULT libeay32_obj_files ASM_FILES
+  ../../libs/openssl-1.1.1/crypto/sha/asm/sha1-586.asm
+  ../../libs/openssl-1.1.1/crypto/md5/asm/md5-586.asm
+)
+endif()
 #message("libeay32_obj_files: ${libeay32_obj_files}")
 
 add_library(libeay32 STATIC
@@ -890,10 +902,10 @@ add_library(libeay32 STATIC
   ../../libs/openssl-1.1.1/crypto/sm2/sm2_crypt.c
   ../../libs/openssl-1.1.1/crypto/sm2/sm2_sign.c
   ../../libs/openssl-1.1.1/crypto/chacha/chacha_enc.c
-#x86-64
   ../../libs/openssl-1.1.1/crypto/des/des_enc.c
   ../../libs/openssl-1.1.1/crypto/bf/bf_enc.c
   ../../libs/openssl-1.1.1/crypto/cast/c_enc.c
+
   ${libeay32_obj_files}
 )
 
@@ -1877,7 +1889,7 @@ add_custom_target(NETBOX_SOURCES SOURCES
 if(MSVC)
 if(NOT x64)
 
-#find_program(MASM_EXECUTABLE ml)
+#[[find_program(MASM_EXECUTABLE ml)
 # message("masm: ${MASM_EXECUTABLE}")
 set(ASM_OBJECTS)
 foreach(src vc_crt_fix)
@@ -1895,7 +1907,7 @@ endforeach(src)
 set(NETBOX_SOURCES ${NETBOX_SOURCES}
   vc_crt_fix_impl.cpp
   ${ASM_OBJECTS}
-)
+)]]
 
 endif(NOT x64)
 endif(MSVC)
