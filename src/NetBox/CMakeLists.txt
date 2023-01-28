@@ -62,6 +62,10 @@ message("CMAKE_CXX_COMPILER: ${CMAKE_CXX_COMPILER}")
 set(LIBNEON_DEFS -DNE_LFS -DNOCRYPT -DNE_HAVE_SSL -DHAVE_OPENSSL -DNE_HAVE_DAV -DNE_HAVE_ZLIB -DZLIB_COMPAT -DHAVE_EXPAT -DHAVE_EXPAT_H) #" -DUSE_GETADDRINFO")
 set(LIBEXPAT_DEFS -DCOMPILED_FROM_DSP -DXML_STATIC)
 set(NETBOX_DEFS -DNOMINMAX -DMPEXT -DWINSCP -DFARPLUGIN)
+set(NETBOX_DEFS ${NETBOX_DEFS} -DFASTDELEGATE_ALLOW_FUNCTION_TYPE_SYNTAX)
+set(NETBOX_DEFS ${NETBOX_DEFS} -DUSE_DLMALLOC -DUSE_DL_PREFIX -DNO_MALLINFO -DUSE_LOCKS=1)
+set(NETBOX_DEFS ${NETBOX_DEFS} -DHIDE_TODO)
+set(NETBOX_DEFS ${NETBOX_DEFS} -DNEED_LIBS3)
 set(NETBOX_DEFS ${NETBOX_DEFS} -DNO_GZIP -DSTRICT -DNOCRYPT -DOPENSSL_NO_LOCKING)
 set(NETBOX_DEFS ${NETBOX_DEFS} -D_WIN32_WINNT=0x0501 -D_LIB -D_WINDOWS -DWIN32 -D_SCL_SECURE_NO_WARNINGS -D_CRT_SECURE_NO_WARNINGS -D_WINSOCK_DEPRECATED_NO_WARNINGS)
 set(NETBOX_DEFS ${NETBOX_DEFS} -DCOM_NO_WINDOWS_H)
@@ -135,14 +139,6 @@ endfunction(nb_replace_compiler_option)
 
 if(MSVC)
 
-#[[add_definitions(-DWINSCP -DFARPLUGIN)
-add_definitions(-DFASTDELEGATE_ALLOW_FUNCTION_TYPE_SYNTAX)
-add_definitions(-DUSE_DLMALLOC -DUSE_DL_PREFIX -DNO_MALLINFO -DUSE_LOCKS=1)
-add_definitions(-DHIDE_TODO)
-add_definitions(-DNEED_LIBS3)
-add_definitions(-DFARPLUGIN)
-add_definitions(${fmt_DEFINES})]]
-
 set(NETBOX_DLL_LINK_FLAGS
   /NODEFAULTLIB:MSVCURT.LIB
   /NODEFAULTLIB:MSVCURTD.LIB
@@ -186,13 +182,13 @@ set(NETBOX_DLL_LINK_FLAGS
 )
 #/DELAYLOAD:gdi32.dll
 
-set(NETBOX_DLL_LINK_FLAGS_RELEASE "/OPT:REF")
-set(NETBOX_DLL_LINK_FLAGS_DEBUG "/DEBUG")
+set(NETBOX_DLL_LINK_FLAGS_RELEASE /OPT:REF)
+set(NETBOX_DLL_LINK_FLAGS_DEBUG /DEBUG)
 
 elseif(CMAKE_COMPILER_IS_MINGW)
-set(NETBOX_DLL_LINK_FLAGS "")
-set(NETBOX_DLL_LINK_FLAGS_RELEASE "${NETBOX_DLL_LINK_FLAGS}")
-set(NETBOX_DLL_LINK_FLAGS_DEBUG "${NETBOX_DLL_LINK_FLAGS}")
+set(NETBOX_DLL_LINK_FLAGS )
+set(NETBOX_DLL_LINK_FLAGS_RELEASE ${NETBOX_DLL_LINK_FLAGS})
+set(NETBOX_DLL_LINK_FLAGS_DEBUG ${NETBOX_DLL_LINK_FLAGS})
 endif()
 
 if(MSVC)
@@ -930,6 +926,11 @@ add_library(${LIBMEMCPY_LIB}
   ${LIBMEMCPY_LIB_SOURCES}
 )
 
+target_compile_definitions(${LIBMEMCPY_LIB} PRIVATE
+  ${NETBOX_C_FLAGS}
+  ${NETBOX_UNICODE_FLAGS}
+)
+
 set_source_files_properties(${LIBMEMCPY_LIB_SOURCES} PROPERTIES LANGUAGE C)
 #-------------------------------------------------------------------------------
 #atlmfc
@@ -973,13 +974,17 @@ add_library(atlmfc STATIC
 
 target_compile_options(atlmfc PRIVATE
   ${ATLMFC_COMPILE_FLAGS}
-  ${NETBOX_UNICODE_FLAGS}
 )
 if(MSVC)
 target_compile_options(atlmfc PRIVATE
   -wd4995 -wd4996 -wd4101 -wd4290
 )
 endif()
+
+target_compile_definitions(atlmfc PRIVATE
+  ${NETBOX_CXX_FLAGS}
+  ${NETBOX_UNICODE_FLAGS}
+)
 
 target_include_directories(atlmfc PRIVATE
   ../../libs
@@ -1141,6 +1146,11 @@ add_library(putty STATIC
 #  ../../libs/putty/ldisc.c
 )
 
+target_include_directories(putty PRIVATE
+  ../../libs/putty
+  ../../libs/putty/windows
+)
+
 set(PUTTY_COMPILE_FLAGS
   -DLibrary -D_MT -DMPEXT -DNET_SETUP_DIAGNOSTICS
   -DSECURITY_WIN32 -DWINSCP -DMPEXT -DPLATFORM_HAS_SMEMCLR -D_WINDOWS
@@ -1156,9 +1166,9 @@ target_compile_options(putty PRIVATE
   -Dssize_t=size_t
 )
 
-target_include_directories(putty PRIVATE
-  ../../libs/putty
-  ../../libs/putty/windows
+target_compile_definitions(putty PRIVATE
+  ${NETBOX_C_FLAGS}
+  ${NETBOX_UNICODE_FLAGS}
 )
 
 #puttyvs
@@ -1181,6 +1191,11 @@ target_compile_options(puttyvs PRIVATE
   -DWINSCP_VS
 )
 
+target_compile_definitions(puttyvs PRIVATE
+  ${NETBOX_C_FLAGS}
+  ${NETBOX_UNICODE_FLAGS}
+)
+
 #-------------------------------------------------------------------------------
 #tinyxml2
 
@@ -1188,15 +1203,21 @@ add_library(tinyxml2 STATIC
   ../../libs/tinyxml2/tinyxml2.cpp
 )
 
-target_compile_options(tinyxml2 PRIVATE
-  -DTINYXML2_EXPORT
-)
-
 target_include_directories(tinyxml2 PRIVATE
   ../../libs
   ../include
   ../../libs/GSL/include
 )
+
+target_compile_options(tinyxml2 PRIVATE
+)
+
+target_compile_definitions(tinyxml2 PRIVATE
+  ${NETBOX_CXX_FLAGS}
+  ${NETBOX_UNICODE_FLAGS}
+  -DTINYXML2_EXPORT
+)
+
 
 #-------------------------------------------------------------------------------
 #neon
@@ -1233,6 +1254,13 @@ add_library(neon STATIC
   ${NEON_LIB_SOURCES}
 )
 
+target_include_directories(neon PRIVATE
+  ../../libs/zlib/src
+  ../../libs/expat/lib
+  ../../libs/openssl-1.1.1/include
+#  ${OPENSSL_LIBRARYDIR}
+)
+
 #set_source_files_properties(${NEON_LIB_SOURCES} PROPERTIES LANGUAGE CXX)
 
 set(NEON_COMPILE_FLAGS ${LIBNEON_DEFS} ${LIBEXPAT_DEFS})
@@ -1246,16 +1274,10 @@ endif()
 #)
 
 target_compile_definitions(neon PRIVATE
-  ${NEON_COMPILE_FLAGS}
+  ${NETBOX_C_FLAGS}
   ${NETBOX_UNICODE_FLAGS}
+  ${NEON_COMPILE_FLAGS}
   -DWINSCP
-)
-
-target_include_directories(neon PRIVATE
-  ../../libs/zlib/src
-  ../../libs/expat/lib
-  ../../libs/openssl-1.1.1/include
-#  ${OPENSSL_LIBRARYDIR}
 )
 
 #-------------------------------------------------------------------------------
@@ -1271,14 +1293,16 @@ add_library(expat STATIC
   ../../libs/expat/lib/loadlibrary.c
 )
 
-target_compile_options(expat PRIVATE
-  ${LIBEXPAT_DEFS}
-  ${NETBOX_UNICODE_FLAGS}
-)
-
 target_include_directories(expat PRIVATE
   ../../libs/expat
 )
+
+target_compile_definitions(expat PRIVATE
+  ${NETBOX_C_FLAGS}
+  ${NETBOX_UNICODE_FLAGS}
+  ${LIBEXPAT_DEFS}
+)
+
 
 #-------------------------------------------------------------------------------
 #zlib
@@ -1308,13 +1332,17 @@ add_library(zlib STATIC
   ${ZLIB_SOURCES}
 )
 
-target_compile_options(zlib PRIVATE
-  -DUNALIGNED_OK -DZLIB_COMPAT
-  ${NETBOX_UNICODE_FLAGS}
-)
-
 target_include_directories(zlib PRIVATE
   ../../libs/zlib/src
+)
+
+target_compile_options(zlib PRIVATE
+)
+
+target_compile_definitions(zlib PRIVATE
+  ${NETBOX_C_FLAGS}
+  ${NETBOX_UNICODE_FLAGS}
+  -DUNALIGNED_OK -DZLIB_COMPAT
 )
 
 #-------------------------------------------------------------------------------
@@ -1325,7 +1353,8 @@ add_library(dlmalloc STATIC
   ../../libs/dlmalloc/dlmalloc-2.8.6.h
 )
 
-target_compile_options(dlmalloc PRIVATE
+target_compile_definitions(dlmalloc PRIVATE
+  ${NETBOX_C_FLAGS}
   ${NETBOX_UNICODE_FLAGS}
 )
 
@@ -1385,7 +1414,9 @@ target_include_directories(rdestl PRIVATE
   ../../libs/GSL/include
 )
 
-target_compile_options(rdestl PRIVATE
+target_compile_definitions(rdestl PRIVATE
+  ${NETBOX_CXX_FLAGS}
+  ${NETBOX_UNICODE_FLAGS}
 )
 
 #-------------------------------------------------------------------------------
@@ -1411,14 +1442,19 @@ target_include_directories(tinylog PRIVATE
   ../../libs/GSL/include
 )
 
-target_compile_options(tinylog PRIVATE
-  -DTINYLOG_EXPORT
+target_compile_definitions(tinylog PRIVATE
   ${NETBOX_CXX_FLAGS}
   ${NETBOX_UNICODE_FLAGS}
+  -DTINYLOG_EXPORT
 )
 
 #-------------------------------------------------------------------------------
 #fmt
+
+set(fmt_DEFINES
+  -DFMT_EXPORT #-DFMT_HEADER_ONLY
+)
+
 #if(FALSE)
 add_library(fmt STATIC
   ../../libs/fmt/fmt/format.cc
@@ -1430,21 +1466,19 @@ add_library(fmt STATIC
   ../../libs/fmt/fmt/string.h
 )
 
-target_compile_options(fmt PRIVATE
-  ${fmt_DEFINES}
-  ${NETBOX_UNICODE_FLAGS}
-)
-
 target_include_directories(fmt PRIVATE
   ../../libs
   ../include
   ../../libs/GSL/include
 )
-#endif(FALSE)
 
-set(fmt_DEFINES
-  -DFMT_EXPORT #-DFMT_HEADER_ONLY
+target_compile_definitions(fmt PRIVATE
+  ${NETBOX_CXX_FLAGS}
+  ${NETBOX_UNICODE_FLAGS}
+  ${fmt_DEFINES}
 )
+
+#endif(FALSE)
 
 #-------------------------------------------------------------------------------
 #libs3
@@ -1486,10 +1520,11 @@ target_include_directories(s3 PRIVATE
   ${OPENSSL_LIBRARYDIR}
 )
 
-target_compile_options(s3 PRIVATE
-  -DS3_EXPORT -DWIN32 -DWINSCP -DNE_LFS -DNEED_LIBS3
-  ${LIBEXPAT_DEFS}
+target_compile_definitions(s3 PRIVATE
+  ${NETBOX_C_FLAGS}
   ${NETBOX_UNICODE_FLAGS}
+  ${LIBEXPAT_DEFS}
+  -DS3_EXPORT -DWIN32 -DWINSCP -DNE_LFS -DNEED_LIBS3
 )
 
 #-------------------------------------------------------------------------------
@@ -1943,12 +1978,12 @@ target_include_directories(NetBox PRIVATE
   ../PluginSDK/${FAR_VERSION}
 )
 
-set_target_properties(NetBox
+#[[set_target_properties(NetBox
   PROPERTIES
-  LINK_FLAGS "${NETBOX_DLL_LINK_FLAGS}"
-  LINK_FLAGS_RELEASE "${NETBOX_DLL_LINK_FLAGS_RELEASE}"
-  LINK_FLAGS_DEBUG "${NETBOX_DLL_LINK_FLAGS_DEBUG}"
-)
+  LINK_FLAGS ${NETBOX_DLL_LINK_FLAGS}
+  LINK_FLAGS_RELEASE ${NETBOX_DLL_LINK_FLAGS_RELEASE}
+  LINK_FLAGS_DEBUG ${NETBOX_DLL_LINK_FLAGS_DEBUG}
+)]]
 
 #TODO: COMMAND create_ver.py
 
@@ -2017,7 +2052,8 @@ ucm_add_flags(CXX C /Gm- -Ox -Oi -Os CONFIG Release)
 #ucm_add_flags(CXX C /MT CONFIG Release)
 #ucm_add_flags(CXX C /MTd CONFIG Debug)
 # linker settings
-ucm_add_linker_flags(MODULE SHARED EXE /DEBUG /OPT:REF /OPT:ICF=6 /NXCOMPAT /DYNAMICBASE /MANIFEST:NO CONFIG Release)
+ucm_add_linker_flags(MODULE SHARED EXE ${NETBOX_DLL_LINK_FLAGS} /OPT:REF /OPT:ICF=6 /NXCOMPAT /DYNAMICBASE /MANIFEST:NO CONFIG Release)
+ucm_add_linker_flags(MODULE SHARED EXE ${NETBOX_DLL_LINK_FLAGS} /DEBUG CONFIG Debug)
 ucm_add_linker_flags(MODULE STATIC SHARED EXE /LTCG CONFIG Release)
 ucm_print_flags()
 #-------------------------------------------------------------------------------
