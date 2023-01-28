@@ -3075,8 +3075,8 @@ void TSynchronizeChecklist::Add(TChecklistItem* Item)
 
 int32_t TSynchronizeChecklist::Compare(const void * AItem1, const void * AItem2)
 {
-  const TChecklistItem *Item1 = get_as<TChecklistItem>(AItem1);
-  const TChecklistItem *Item2 = get_as<TChecklistItem>(AItem2);
+  const TChecklistItem *Item1 = cast_to<TChecklistItem>(AItem1);
+  const TChecklistItem *Item2 = cast_to<TChecklistItem>(AItem2);
 
   int32_t Result;
   if (!Item1->Local.Directory.IsEmpty())

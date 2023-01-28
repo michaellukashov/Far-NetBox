@@ -4362,7 +4362,7 @@ bool TTerminal::DeleteLocalFiles(TStrings *AFileList, int32_t Params)
 void TTerminal::CustomCommandOnFile(UnicodeString AFileName,
   const TRemoteFile *AFile, void *AParams)
 {
-  TCustomCommandParams *Params = get_as<TCustomCommandParams>(AParams);
+  TCustomCommandParams *Params = cast_to<TCustomCommandParams>(AParams);
   UnicodeString LocalFileName = AFileName;
   if (AFileName.IsEmpty() && AFile)
   {
@@ -4479,7 +4479,7 @@ bool TTerminal::DoOnCustomCommand(UnicodeString Command)
 void TTerminal::ChangeFileProperties(UnicodeString AFileName,
   const TRemoteFile *AFile, /*const TRemoteProperties*/ void *Properties)
 {
-  TRemoteProperties *RProperties = get_as<TRemoteProperties>(Properties);
+  TRemoteProperties *RProperties = cast_to<TRemoteProperties>(Properties);
   DebugAssert(RProperties && !RProperties->Valid.Empty());
   UnicodeString LocalFileName = AFileName;
   if (AFileName.IsEmpty() && AFile)
@@ -4586,7 +4586,7 @@ void TTerminal::DoCalculateFileSize(UnicodeString AFileName,
   const TRemoteFile *AFile, /*TCalculateSizeParams*/ void *AParam)
 {
   // This is called for top-level entries only
-  TCalculateSizeParams *AParams = get_as<TCalculateSizeParams>(AParam);
+  TCalculateSizeParams *AParams = cast_to<TCalculateSizeParams>(AParam);
   Expects(AParams && AParams->Stats);
 
   if (AParams->Stats->FoundFiles != nullptr)
@@ -4617,7 +4617,7 @@ void TTerminal::CalculateFileSize(UnicodeString AFileName,
   DebugAssert(AParam);
   DebugAssert(AFile);
   UnicodeString FileName = AFileName;
-  TCalculateSizeParams *Params = get_as<TCalculateSizeParams>(AParam);
+  TCalculateSizeParams *Params = cast_to<TCalculateSizeParams>(AParam);
   Expects(Params != nullptr);
   if (FileName.IsEmpty())
   {
@@ -4841,7 +4841,7 @@ bool TTerminal::DoMoveFile(const UnicodeString & AFileName, const TRemoteFile * 
 {
   StartOperationWithFile(AFileName, foRemoteMove, foDelete);
   DebugAssert(Param != nullptr);
-  const TMoveFileParams &Params = *get_as<TMoveFileParams>(Param);
+  const TMoveFileParams &Params = *cast_to<TMoveFileParams>(Param);
   UnicodeString NewName = base::UnixIncludeTrailingBackslash(Params.Target) +
     MaskFileName(base::UnixExtractFileName(AFileName), Params.FileMask);
   LogEvent(FORMAT("Moving file \"%s\" to \"%s\".", AFileName, NewName));
@@ -4956,7 +4956,7 @@ void TTerminal::TerminalCopyFile(const UnicodeString AFileName,
 {
   StartOperationWithFile(AFileName, foRemoteCopy);
   DebugAssert(Param != nullptr);
-  const TMoveFileParams &Params = *get_as<TMoveFileParams>(Param);
+  const TMoveFileParams &Params = *cast_to<TMoveFileParams>(Param);
   UnicodeString NewName = base::UnixIncludeTrailingBackslash(Params.Target) +
     MaskFileName(base::UnixExtractFileName(AFileName), Params.FileMask);
   LogEvent(FORMAT("Copying file \"%s\" to \"%s\".", AFileName, NewName));
@@ -5712,7 +5712,7 @@ bool TTerminal::AllowLocalFileTransfer(
 void TTerminal::MakeLocalFileList(
   const UnicodeString AFileName, const TSearchRecSmart & Rec, void * Param)
 {
-  TMakeLocalFileListParams &Params = *get_as<TMakeLocalFileListParams>(Param);
+  TMakeLocalFileListParams &Params = *cast_to<TMakeLocalFileListParams>(Param);
   Expects(Params.FileList != nullptr);
 
   if (Rec.IsDirectory() && Params.Recursive)
@@ -5733,7 +5733,7 @@ void TTerminal::MakeLocalFileList(
 void TTerminal::CalculateLocalFileSize(
   UnicodeString AFileName, const TSearchRecSmart & Rec, /*TCalculateSizeParams*/ void * AParams)
 {
-  TCalculateSizeParams *Params = get_as<TCalculateSizeParams>(AParams);
+  TCalculateSizeParams *Params = cast_to<TCalculateSizeParams>(AParams);
   Expects(Params != nullptr);
 
   if (!TryStartOperationWithFile(AFileName, foCalculateSize))
@@ -6283,7 +6283,7 @@ bool TTerminal::IsEmptyRemoteDirectory(
 void TTerminal::DoSynchronizeCollectFile(const UnicodeString AFileName,
   const TRemoteFile * AFile, /*TSynchronizeData*/ void * Param)
 {
-  TSynchronizeData * Data = get_as<TSynchronizeData>(Param);
+  TSynchronizeData * Data = cast_to<TSynchronizeData>(Param);
   Expects(Data != nullptr);
 
   // Can be nullptr in scripting
@@ -6807,7 +6807,7 @@ void TTerminal::FileFind(UnicodeString AFileName,
 
   DebugAssert(Param);
   DebugAssert(AFile);
-  TFilesFindParams * AParams = get_as<TFilesFindParams>(Param);
+  TFilesFindParams * AParams = cast_to<TFilesFindParams>(Param);
 
   if (!AParams->Cancel)
   {
@@ -8128,7 +8128,7 @@ void TTerminal::UpdateTargetTime(HANDLE Handle, TDateTime Modification, TDSTMode
 
 void TTerminal::SinkFile(UnicodeString AFileName, const TRemoteFile *AFile, void *AParam)
 {
-  TSinkFileParams * Params = get_as<TSinkFileParams>(AParam);
+  TSinkFileParams * Params = cast_to<TSinkFileParams>(AParam);
   DebugAssert(Params->OperationProgress != nullptr);
   try
   {

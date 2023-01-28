@@ -1807,7 +1807,7 @@ public:
   {
     void *Token{nullptr};
     bool Result = TSFTPFixedLenQueue::ReceivePacket(Packet, SSH_FXP_ATTRS, asAll, &Token);
-    File = get_as<TRemoteFile>(Token);
+    File = cast_to<TRemoteFile>(Token);
     return Result;
   }
 
@@ -1896,7 +1896,7 @@ public:
     },
     __finally
     {
-       File = get_as<TRemoteFile>(Token);
+       File = cast_to<TRemoteFile>(Token);
     } end_try__finally
     return Result;
   }
@@ -2006,7 +2006,7 @@ TSFTPFileSystem::TSFTPFileSystem(TTerminal *ATerminal) noexcept :
 
 void TSFTPFileSystem::Init(void * Data /* TSecureShell*/)
 {
-  FSecureShell = get_as<TSecureShell>(Data);
+  FSecureShell = cast_to<TSecureShell>(Data);
   DebugAssert(FSecureShell);
   FFileSystemInfoValid = false;
   FVersion = nb::NPOS;
@@ -5175,7 +5175,7 @@ RawByteString TSFTPFileSystem::SFTPOpenRemoteFile(
 
 int32_t TSFTPFileSystem::SFTPOpenRemote(void *AOpenParams, void * /*Param2*/)
 {
-  TOpenRemoteFileParams *OpenParams = get_as<TOpenRemoteFileParams>(AOpenParams);
+  TOpenRemoteFileParams *OpenParams = cast_to<TOpenRemoteFileParams>(AOpenParams);
   DebugAssert(OpenParams);
   TFileOperationProgressType *OperationProgress = OpenParams->OperationProgress;
 

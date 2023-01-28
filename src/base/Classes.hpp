@@ -87,9 +87,9 @@ inline O as_object(T p) { return static_cast<O>(p); }
 inline TObject *as_object(void *p) { return as_object<TObject *, void *>(p); }
 inline const TObject *as_object(const void *p) { return as_object<const TObject *, const void *>(p); }
 template<class O, class T>
-inline O *get_as(T p) { return dyn_cast<O>(as_object(p)); }
-template<class O> inline O *get_as(void *p) { return get_as<O, void *>(p); }
-template<class O> inline const O *get_as(const void *p) { return get_as<const O, const void *>(p); }
+inline O *cast_to(T p) { return dyn_cast<O>(as_object(p)); }
+template<class O> inline O *cast_to(void *p) { return cast_to<O, void *>(p); }
+template<class O> inline const O *cast_to(const void *p) { return cast_to<const O, const void *>(p); }
 template <class T>
 inline TObject *ToObj(const T &a) { return reinterpret_cast<TObject *>(nb::ToSizeT(a)); }
 
@@ -181,7 +181,7 @@ public:
   virtual ~TList() override;
 
   template<class T>
-  T *GetAs(int32_t Index) const { return get_as<T>(GetItem(Index)); }
+  T *GetAs(int32_t Index) const { return cast_to<T>(GetItem(Index)); }
   void *operator[](int32_t Index) const;
   virtual void *GetItem(int32_t Index) const { return FList[Index]; }
   virtual void *GetItem(int32_t Index) { return FList[Index]; }

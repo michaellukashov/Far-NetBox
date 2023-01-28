@@ -325,7 +325,7 @@ TSCPFileSystem::TSCPFileSystem(TTerminal *ATerminal) noexcept :
 
 void TSCPFileSystem::Init(void *Data)
 {
-  FSecureShell = get_as<TSecureShell>(Data);
+  FSecureShell = cast_to<TSecureShell>(Data);
   DebugAssert(FSecureShell);
   FCommandSet = std::make_unique<TCommandSet>(FTerminal->GetSessionData());
   FLsFullTime = FTerminal->GetSessionData()->GetSCPLsFullTime();

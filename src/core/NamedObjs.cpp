@@ -11,7 +11,7 @@ __removed #pragma package(smart_init)
 
 static int32_t NamedObjectSortProc(const void *Item1, const void *Item2)
 {
-  return get_as<TNamedObject>(Item1)->Compare(get_as<TNamedObject>(Item2));
+  return cast_to<TNamedObject>(Item1)->Compare(cast_to<TNamedObject>(Item2));
 }
 //--- TNamedObject ----------------------------------------------------------
 TNamedObject::TNamedObject(TObjectClassId Kind, const UnicodeString AName) noexcept :

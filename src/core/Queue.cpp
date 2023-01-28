@@ -296,7 +296,7 @@ protected:
 
 int TSimpleThread::ThreadProc(void *Thread)
 {
-  TSimpleThread *SimpleThread = get_as<TSimpleThread>(Thread);
+  TSimpleThread *SimpleThread = cast_to<TSimpleThread>(Thread);
   DebugAssert(SimpleThread != nullptr);
   if (!SimpleThread)
     return 0;

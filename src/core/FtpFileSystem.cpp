@@ -3975,7 +3975,7 @@ bool TFTPFileSystem::HandleAsyncRequestOverwrite(
   }
   else
   {
-    TFileTransferData &UserData = *get_as<TFileTransferData>(AUserData);
+    TFileTransferData &UserData = *cast_to<TFileTransferData>(AUserData);
     if (UserData.OverwriteResult >= 0)
     {
       // on retry, use the same answer as on the first attempt
@@ -4815,7 +4815,7 @@ bool TFTPFileSystem::Unquote(UnicodeString &Str)
 
 void TFTPFileSystem::PreserveDownloadFileTime(HANDLE AHandle, void *UserData) const
 {
-  TFileTransferData *Data = get_as<TFileTransferData>(UserData);
+  TFileTransferData *Data = cast_to<TFileTransferData>(UserData);
   DebugAssert(Data->CopyParam->FOnTransferOut.empty());
   FTerminal->UpdateTargetTime(AHandle, Data->Modification, dstmUnix);
 }
