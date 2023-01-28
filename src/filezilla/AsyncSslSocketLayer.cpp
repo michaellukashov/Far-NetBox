@@ -1860,7 +1860,7 @@ BOOL CAsyncSslSocketLayer::SetCertStorage(CString file)
 void CAsyncSslSocketLayer::OnClose(int nErrorCode)
 {
   m_onCloseCalled = true;
-  if (m_bUseSSL && BIO_ctrl)
+  if (m_bUseSSL)
   {
     size_t pending = BIO_ctrl_pending(m_sslbio);
     if (pending > 0)
