@@ -197,7 +197,7 @@ int OPENSSL_isservice(void)
     WCHAR *name;
     static union {
         void *p;
-        int (*f) (void);
+        int (FAR WINAPI *f) (void);
     } _OPENSSL_isservice = {
         NULL
     };
