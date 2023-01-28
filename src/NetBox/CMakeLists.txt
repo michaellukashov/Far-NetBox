@@ -59,13 +59,13 @@ message("CMAKE_CXX_COMPILER: ${CMAKE_CXX_COMPILER}")
 
 #-------------------------------------------------------------------------------
 
-set(LIBNEON_DEFS -DNE_LFS -DNE_HAVE_SSL -DHAVE_OPENSSL -DHAVE_EXPAT -DHAVE_EXPAT_H -DNE_HAVE_DAV -DNE_HAVE_ZLIB -DZLIB_COMPAT) #" -DUSE_GETADDRINFO")
+set(LIBNEON_DEFS -DNE_LFS -DNOCRYPT -DNE_HAVE_SSL -DHAVE_OPENSSL -DNE_HAVE_DAV -DNE_HAVE_ZLIB -DZLIB_COMPAT -DHAVE_EXPAT -DHAVE_EXPAT_H) #" -DUSE_GETADDRINFO")
 set(LIBEXPAT_DEFS -DCOMPILED_FROM_DSP -DXML_STATIC)
-set(NETBOX_DEFS "-DNOMINMAX -DMPEXT -DWINSCP -DFARPLUGIN")
-set(NETBOX_DEFS "${NETBOX_DEFS} -DNO_GZIP -DSTRICT -DNOCRYPT -DOPENSSL_NO_LOCKING")
-set(NETBOX_DEFS "${NETBOX_DEFS} -D_CRTIMP= -D_LIB -D_WINDOWS -DWIN32 -D_WIN32_WINNT=0x0501")
-set(NETBOX_DEFS "${NETBOX_DEFS} -D_SCL_SECURE_NO_WARNINGS  -D_CRT_SECURE_NO_WARNINGS -D_WINSOCK_DEPRECATED_NO_WARNINGS")
-set(NETBOX_DEFS "${NETBOX_DEFS} -DCOM_NO_WINDOWS_H")
+set(NETBOX_DEFS -DNOMINMAX -DMPEXT -DWINSCP -DFARPLUGIN)
+set(NETBOX_DEFS ${NETBOX_DEFS} -DNO_GZIP -DSTRICT -DNOCRYPT -DOPENSSL_NO_LOCKING)
+set(NETBOX_DEFS ${NETBOX_DEFS} -D_CRTIMP= -D_LIB -D_WINDOWS -DWIN32 -D_WIN32_WINNT=0x0501)
+set(NETBOX_DEFS ${NETBOX_DEFS} -D_SCL_SECURE_NO_WARNINGS  -D_CRT_SECURE_NO_WARNINGS -D_WINSOCK_DEPRECATED_NO_WARNINGS)
+set(NETBOX_DEFS ${NETBOX_DEFS} -DCOM_NO_WINDOWS_H)
 #-D_WINDLL -D_USRDLL
 if (MSVC_VERSION GREATER 1899)
 set(NETBOX_DEFS "${NETBOX_DEFS} /Zc:threadSafeInit- /bigobj")
@@ -105,7 +105,8 @@ elseif(CMAKE_COMPILER_IS_MINGW)
 set(NETBOX_C_WARNING_FLAGS "-Wno-unknown-pragmas")
 set(NETBOX_CXX_WARNING_FLAGS "${NETBOX_C_WARNING_FLAGS} -Wno-attributes -Wno-write-strings -Wno-old-style-cast -Wno-effc++ -Wno-unknown-pragmas -Wno-unused-value")
 set(NETBOX_CXX_FLAGS "${NETBOX_CXX_FLAGS} -Woverloaded-virtual -Wnon-virtual-dtor")
-set(NETBOX_C_FLAGS "${NETBOX_C_FLAGS} -static -s -O2 -Wall -Wextra -pedantic -Wconversion -Wsign-conversion -Winit-self -Wunreachable-code")
+set(NETBOX_C_FLAGS "${NETBOX_C_FLAGS} -static -s -Wall -Wextra -pedantic -Wconversion -Wsign-conversion -Winit-self -Wunreachable-code")
+#-O2
 #-Weffc++
 set(NETBOX_FLAGS_RELEASE "${NETBOX_FLAGS_RELEASE}")
 set(NETBOX_FLAGS_DEBUG "${NETBOX_FLAGS_DEBUG}")
@@ -267,13 +268,14 @@ set(OPENSSL_COMPILE_FLAGS ${OPENSSL_COMPILE_FLAGS}
 )
 set(OPENSSL_COMPILE_FLAGS ${OPENSSL_COMPILE_FLAGS}
   -DWIN32_LEAN_AND_MEAN
-  -DL_ENDIAN -DDSO_WIN32 -D_stricmp=stricmp -D_strnicmp=strnicmp -O2
+  -DL_ENDIAN -DDSO_WIN32 -D_stricmp=stricmp -D_strnicmp=strnicmp
   -DBN_ASM -DMD5_ASM -DSHA1_ASM -DOPENSSL_NO_CAMELLIA -DOPENSSL_NO_SEED -DOPENSSL_NO_RC5 -DOPENSSL_NO_MDC2
   -DOPENSSL_NO_CAPIENG -DOPENSSL_NO_KRB5 -DOPENSSL_NO_ENGINE -DOPENSSL_NO_DYNAMIC_ENGINE
   -DOPENSSL_DISABLE_OLD_DES_SUPPORT -DNO_CHMOD -DOPENSSL_NO_DGRAM -DDOPENSSL_NO_EC_NISTP_64_GCC_128
   -DOPENSSL_NO_WHIRLPOOL -DWINSCP -DMK1MF_BUILD -DMK1MF_PLATFORM_BC_NT
   -DOPENSSL_NO_CRYPTO_MDEBUG_BACKTRACE
 )
+#-O2
 if(MSVC)
 set(OPENSSL_COMPILE_FLAGS ${OPENSSL_COMPILE_FLAGS}
   /Zi /Zl
@@ -1254,7 +1256,7 @@ target_include_directories(neon PRIVATE
   ../../libs/zlib/src
   ../../libs/expat/lib
   ../../libs/openssl-1.1.1/include
-  ${OPENSSL_LIBRARYDIR}
+#  ${OPENSSL_LIBRARYDIR}
 )
 
 #-------------------------------------------------------------------------------
@@ -2002,7 +2004,9 @@ ucm_add_flags(CXX /EHsc)
 ucm_add_flags(CXX C /Zi CONFIG Debug)
 ucm_add_flags(CXX C /MP /Gy /Zi CONFIG Release)
 #/Ob2 /GR
-ucm_add_flags(CXX C /GS- /fp:fast /O2 /Oy /GA /GF /Gw /GL CONFIG Release)
+ucm_add_flags(CXX C /GS- /fp:fast /Oy /GA /GF /Gw /GL CONFIG Release)
+#/O1 release min size
+#/O2 release
 #/Oy - omit frame pointers
 #/Oi - enable intrinsic functions
 ucm_add_flags(CXX C /Gm- -Ox -Ob1 -Oi -Os -GF CONFIG Release)
