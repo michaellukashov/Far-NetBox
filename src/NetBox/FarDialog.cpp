@@ -1529,11 +1529,11 @@ void TFarDialogItem::SetCoordinate(int32_t Index, int32_t Value)
 
 int32_t TFarDialogItem::GetCoordinate(int32_t Index) const
 {
-  assert(sizeof(TRect) == sizeof(intptr_t) * 4);
+  assert(sizeof(TRect) == sizeof(int32_t) * 4);
   TRect R = GetBounds();
   int32_t *D = reinterpret_cast<int32_t *>(&R);
   D += Index;
-  return nb::ToIntPtr(*D);
+  return nb::ToInt32(*D);
 }
 
 void TFarDialogItem::SetWidth(int32_t Value)
