@@ -1866,6 +1866,8 @@ set(NETBOX_SOURCES
   ../PluginSDK/${FAR_VERSION}/PluginSettings.hpp
 
   ../resource/TextsFileZilla.rc
+  ../resource/TextsCore1.rc
+#  ../resource/TextsWin1.rc
   NetBox.rc
   NetBox.def
 )
