@@ -1519,17 +1519,17 @@ void TFarDialogItem::MoveAt(int32_t X, int32_t Y)
 
 void TFarDialogItem::SetCoordinate(int32_t Index, int32_t Value)
 {
-  assert(sizeof(TRect) == sizeof(intptr_t) * 4);
+  static_assert(sizeof(TRect) == sizeof(int32_t) * 4);
   TRect R = GetBounds();
   int32_t *D = reinterpret_cast<int32_t *>(&R);
   D += Index;
-  *D = nb::ToInt(Value);
+  *D = nb::ToInt32(Value);
   SetBounds(R);
 }
 
 int32_t TFarDialogItem::GetCoordinate(int32_t Index) const
 {
-  assert(sizeof(TRect) == sizeof(int32_t) * 4);
+  static_assert(sizeof(TRect) == sizeof(int32_t) * 4);
   TRect R = GetBounds();
   int32_t *D = reinterpret_cast<int32_t *>(&R);
   D += Index;

@@ -1602,9 +1602,9 @@ private:
   TFarEdit *TunnelPasswordEdit{nullptr};
   TFarEdit *TunnelPrivateKeyEdit{nullptr};
   TFarComboBox *TunnelLocalPortNumberEdit{nullptr};
-  TFarComboBox *BugIgnore1Combo{nullptr};
-  TFarComboBox *BugPlainPW1Combo{nullptr};
-  TFarComboBox *BugRSA1Combo{nullptr};
+//  TFarComboBox *BugIgnore1Combo{nullptr};
+//  TFarComboBox *BugPlainPW1Combo{nullptr};
+//  TFarComboBox *BugRSA1Combo{nullptr};
   TFarComboBox *BugHMAC2Combo{nullptr};
   TFarComboBox *BugDeriveKey2Combo{nullptr};
   TFarComboBox *BugRSAPad2Combo{nullptr};
@@ -2766,9 +2766,9 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin *AFarPlugin, TSessionActionEnum 
 
   BUGS();
 
-  BugIgnore1Combo->SetEnabledDependencyNegative(SshProt2onlyButton);
-  BugPlainPW1Combo->SetEnabledDependencyNegative(SshProt2onlyButton);
-  BugRSA1Combo->SetEnabledDependencyNegative(SshProt2onlyButton);
+//  BugIgnore1Combo->SetEnabledDependencyNegative(SshProt2onlyButton);
+  //BugPlainPW1Combo->SetEnabledDependencyNegative(SshProt2onlyButton);
+  //BugRSA1Combo->SetEnabledDependencyNegative(SshProt2onlyButton);
   BugHMAC2Combo->SetEnabledDependencyNegative(SshProt1onlyButton);
   BugDeriveKey2Combo->SetEnabledDependencyNegative(SshProt1onlyButton);
   BugRSAPad2Combo->SetEnabledDependencyNegative(SshProt1onlyButton);
