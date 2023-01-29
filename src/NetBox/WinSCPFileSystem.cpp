@@ -2729,7 +2729,6 @@ int32_t TWinSCPFileSystem::PutFilesEx(TObjectList *PanelItems, bool Move, OPERAT
     SCOPE_EXIT
     {
       FPanelItems = nullptr;
-      FFileList.reset();
     };
     FPanelItems = PanelItems;
 
@@ -4035,7 +4034,7 @@ void TWinSCPFileSystem::MultipleEdit(const UnicodeString Directory,
 
   UnicodeString FullFileName = base::UnixIncludeTrailingBackslash(Directory) + AFileName;
 
-  std::unique_ptr<TRemoteFile> FileDuplicate(AFile ? AFile->Duplicate() : nullptr);
+  std::unique_ptr<TRemoteFile> FileDuplicate(AFile ? AFile->Duplicate() : new TRemoteFile());
   UnicodeString NewFileName = AFileName; // FullFileName;
   FileDuplicate->SetFileName(NewFileName);
 

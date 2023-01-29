@@ -120,7 +120,7 @@ void TUsage::Save(THierarchicalStorage * Storage,
     while (i != Counters.end())
     {
       Storage->WriteInteger(i->first, (int)i->second);
-      i++;
+      ++i;
     }
     Storage->CloseSubKey();
   }
@@ -316,7 +316,7 @@ void TUsage::Serialize(
   while (i != Counters.end())
   {
     Serialize(List, AName + i->first, IntToStr(i->second), ADelimiter, AFilterUpper);
-    i++;
+    ++i;
   }
 }
 

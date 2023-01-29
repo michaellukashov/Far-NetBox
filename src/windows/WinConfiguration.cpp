@@ -68,7 +68,7 @@ void TFileColorData::LoadList(const UnicodeString & S, TList & List)
 UnicodeString TFileColorData::SaveList(const TList & List)
 {
   std::unique_ptr<TStringList> Strings(std::make_unique<TStringList>());
-  for (TFileColorData::TList::const_iterator Iter = List.begin(); Iter != List.end(); Iter++)
+  for (TFileColorData::TList::const_iterator Iter = List.begin(); Iter != List.end(); ++Iter)
   {
     Strings->Add((*Iter).Save());
   }
