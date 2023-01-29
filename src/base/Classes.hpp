@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include <nbsystem.h>
 
@@ -107,8 +107,8 @@ struct TRect
   int Top{0};
   int Right{0};
   int Bottom{0};
-  intptr_t Width() const { return Right - Left; }
-  intptr_t Height() const { return Bottom - Top; }
+  int Width() const { return Right - Left; }
+  int Height() const { return Bottom - Top; }
   TRect() = default;
   TRect(int left, int top, int right, int bottom) noexcept :
     Left(left),
@@ -813,10 +813,6 @@ struct TInputDialogData
   void *Edit{nullptr};
 };
 
-#if 0
-typedef void (__closure *TInputDialogInitialize)
-  (TObject *Sender, TInputDialogData *Data);
-#endif // #if 0
 using TInputDialogInitializeEvent = nb::FastDelegate2<void,
   TObject * /*Sender*/, TInputDialogData * /*Data*/>;
 
@@ -867,3 +863,20 @@ private:
 
 NB_CORE_EXPORT TGlobals *GetGlobals();
 NB_CORE_EXPORT void SetGlobals(TGlobals *Value);
+
+template<typename T>
+class TGlobalsIntfInitializer
+{
+public:
+  TGlobalsIntfInitializer()
+  {
+    ::SetGlobals(new T());
+  }
+
+  ~TGlobalsIntfInitializer()
+  {
+    TGlobalsIntf *Intf = GetGlobals();
+    delete Intf;
+    ::SetGlobals(nullptr);
+  }
+};
