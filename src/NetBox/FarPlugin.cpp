@@ -20,7 +20,6 @@ TCustomFarPlugin *FarPlugin = nullptr;
 TCustomFarPlugin::TCustomFarPlugin(TObjectClassId Kind, HINSTANCE HInst) noexcept :
   TObject(Kind),
   FOpenedPlugins(std::make_unique<TList>()),
-  FTopDialog(nullptr),
   FSavedTitles(std::make_unique<TStringList>())
 {
   FFarThreadId = GetCurrentThreadId();
@@ -1802,14 +1801,14 @@ int32_t TCustomFarPlugin::InputRecordToKey(const INPUT_RECORD * /*Rec*/)
 
 void TCustomFarPlugin::Initialize()
 {
-  ::SetGlobals(new TGlobalFunctions());
+//  ::SetGlobals(new TGlobalFunctions());
 }
 
 void TCustomFarPlugin::Finalize()
 {
-  TGlobalsIntf *Intf = GetGlobals();
-  delete Intf;
-  ::SetGlobals(nullptr);
+//  TGlobalsIntf *Intf = GetGlobals();
+//  delete Intf;
+//  ::SetGlobals(nullptr);
 }
 
 #ifdef NETBOX_DEBUG
