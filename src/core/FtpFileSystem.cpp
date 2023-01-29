@@ -3727,7 +3727,7 @@ void TFTPFileSystem::ProcessFeatures()
   else
   {
     std::unique_ptr<TStrings> DeleteFeatures(CreateSortedStringList());
-    std::unique_ptr<TStrings> AddFeatures(new TStringList());
+    std::unique_ptr<TStrings> AddFeatures(std::make_unique<TStringList>());
     while (!FeaturesOverride.IsEmpty())
     {
       UnicodeString Feature = CutFeature(FeaturesOverride);

@@ -304,7 +304,7 @@ UnicodeString TCommandSet::ExtractCommand(UnicodeString ACommand)
 
 TStrings * TCommandSet::CreateCommandList() const
 {
-  TStrings *CommandList = new TStringList();
+  std::unique_ptr<TStrings> CommandList(std::make_unique<TStringList>());
   for (int32_t Index = 0; Index < ShellCommandCount; ++Index)
   {
     UnicodeString Cmd = GetCommands(static_cast<TFSCommand>(Index));
@@ -315,7 +315,7 @@ TStrings * TCommandSet::CreateCommandList() const
         CommandList->Add(Cmd);
     }
   }
-  return CommandList;
+  return CommandList.release();
 }
 //===========================================================================
 TSCPFileSystem::TSCPFileSystem(TTerminal *ATerminal) noexcept :
