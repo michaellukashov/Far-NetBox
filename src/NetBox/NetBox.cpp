@@ -232,7 +232,7 @@ HANDLE WINAPI OpenW(const struct OpenInfo * Info)
   return Handle;
 }
 
-static int Processes = 0;
+static int32_t Processes = 0;
 
 BOOL DllProcessAttach(HINSTANCE HInstance)
 {

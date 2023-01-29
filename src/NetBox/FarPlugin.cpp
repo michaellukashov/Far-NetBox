@@ -1601,7 +1601,15 @@ UnicodeString TCustomFarPlugin::GetMsg(int32_t MsgId) const
   TFarEnvGuard Guard; nb::used(Guard);
   UnicodeString Result;
   if (FStartupInfo.GetMsg)
+  try
+  {
     Result = FStartupInfo.GetMsg(&MainGuid, nb::ToInt(MsgId));
+  }
+  catch(...)
+  {
+    // TODO: report error
+  }
+
   return Result;
 }
 
