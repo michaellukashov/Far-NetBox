@@ -88,6 +88,7 @@ void TConfiguration::Default()
   FForceBanners = false;
   FDisableAcceptingHostKeys = false;
 
+  // TODO: use TFar3Storage
   std::unique_ptr<TRegistryStorage> AdminStorage(std::make_unique<TRegistryStorage>(GetRegistryStorageKey(), HKEY_LOCAL_MACHINE));
   AdminStorage->Init();
   try__finally
@@ -1003,7 +1004,7 @@ UnicodeString TConfiguration::ModuleFileName() const
 
 void * TConfiguration::GetFileApplicationInfo(const UnicodeString AFileName) const
 {
-  void * Result;
+  void * Result{nullptr};
   if (AFileName.IsEmpty())
   {
     if (!FApplicationInfo)
