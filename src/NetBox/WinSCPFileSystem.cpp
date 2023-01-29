@@ -780,7 +780,7 @@ bool TWinSCPFileSystem::ProcessPanelEventEx(intptr_t Event, void *Param)
 }
 
 void TWinSCPFileSystem::TerminalCaptureLog(
-  UnicodeString AddedLine, TCaptureOutputType OutputEvent)
+  const UnicodeString & AddedLine, TCaptureOutputType OutputEvent)
 {
   if (OutputEvent == cotExitCode)
     return;
@@ -1885,7 +1885,7 @@ void TWinSCPFileSystem::InsertTokenOnCommandLine(const UnicodeString Token, bool
       Token2 += L" ";
     }
 
-    FarControl(FCTL_INSERTCMDLINE, 0, ToPtr(ToWChar(Token2)));
+    FarControl(FCTL_INSERTCMDLINE, 0, nb::ToPtr(ToWChar(Token2)));
   }
 }
 
@@ -2130,7 +2130,7 @@ bool TWinSCPFileSystem::SynchronizeBrowsing(const UnicodeString NewPath)
   // IncludeTrailingBackslash to expand C: to C:\.
   UnicodeString LocalPath = ::IncludeTrailingBackslash(NewPath);
   FarPanelDirectory fpd;
-  ClearStruct(fpd);
+  nb::ClearStruct(fpd);
   fpd.StructSize = sizeof(fpd);
   fpd.Name = LocalPath.c_str();
   if (!FarControl(FCTL_SETPANELDIRECTORY, 0, &fpd, reinterpret_cast<HANDLE>(PANEL_PASSIVE)))
@@ -2147,7 +2147,7 @@ bool TWinSCPFileSystem::SynchronizeBrowsing(const UnicodeString NewPath)
       // If FCTL_SETPANELDIR above fails, Far default current
       // directory to initial (?) one. So move this back to
       // previous directory.
-      ClearStruct(fpd);
+      nb::ClearStruct(fpd);
       fpd.StructSize = sizeof(fpd);
       fpd.Name = OldPath.c_str();
       FarControl(FCTL_SETPANELDIRECTORY, sizeof(fpd), &fpd, reinterpret_cast<HANDLE>(PANEL_PASSIVE));
@@ -2319,7 +2319,7 @@ bool TWinSCPFileSystem::SetDirectoryEx(UnicodeString Dir, OPERATION_MODES OpMode
   return true;
 }
 
-intptr_t TWinSCPFileSystem::MakeDirectoryEx(UnicodeString &Name, OPERATION_MODES OpMode)
+int32_t TWinSCPFileSystem::MakeDirectoryEx(UnicodeString &Name, OPERATION_MODES OpMode)
 {
   if (Connected())
   {
@@ -2643,7 +2643,7 @@ void TWinSCPFileSystem::ExportSession(TSessionData *Data, void *AParam)
   }
 }
 
-intptr_t TWinSCPFileSystem::UploadFiles(bool Move, OPERATION_MODES OpMode, bool Edit,
+int32_t TWinSCPFileSystem::UploadFiles(bool Move, OPERATION_MODES OpMode, bool Edit,
   UnicodeString &DestPath)
 {
   int32_t Result = 1;
@@ -2720,7 +2720,7 @@ intptr_t TWinSCPFileSystem::UploadFiles(bool Move, OPERATION_MODES OpMode, bool 
   return Result;
 }
 
-intptr_t TWinSCPFileSystem::PutFilesEx(TObjectList *PanelItems, bool Move, OPERATION_MODES OpMode)
+int32_t TWinSCPFileSystem::PutFilesEx(TObjectList *PanelItems, bool Move, OPERATION_MODES OpMode)
 {
   int32_t Result;
   if (Connected())
@@ -3206,11 +3206,11 @@ HANDLE TWinSCPFileSystem::TerminalCreateLocalFile(const UnicodeString ALocalFile
 {
   if (!GetWinSCPPlugin()->GetSystemFunctions())
   {
-    return ::CreateFile(ApiPath(LocalFileName).c_str(), DesiredAccess, ShareMode, nullptr, CreationDisposition, FlagsAndAttributes, nullptr);
+    return ::CreateFile(ApiPath(ALocalFileName).c_str(), DesiredAccess, ShareMode, nullptr, CreationDisposition, FlagsAndAttributes, nullptr);
   }
   else
   {
-    return GetWinSCPPlugin()->CreateLocalFile(LocalFileName, DesiredAccess,
+    return GetWinSCPPlugin()->CreateLocalFile(ALocalFileName, DesiredAccess,
         ShareMode, CreationDisposition, FlagsAndAttributes);
   }
 }
@@ -3219,11 +3219,11 @@ DWORD TWinSCPFileSystem::TerminalGetLocalFileAttributes(const UnicodeString ALoc
 {
   if (!GetWinSCPPlugin()->GetSystemFunctions())
   {
-    return ::FileGetAttrFix(LocalFileName);
+    return ::FileGetAttrFix(ALocalFileName);
   }
   else
   {
-    return GetWinSCPPlugin()->GetLocalFileAttributes(LocalFileName);
+    return GetWinSCPPlugin()->GetLocalFileAttributes(ALocalFileName);
   }
 }
 
@@ -3231,11 +3231,11 @@ bool TWinSCPFileSystem::TerminalSetLocalFileAttributes(const UnicodeString ALoca
 {
   if (!GetWinSCPPlugin()->GetSystemFunctions())
   {
-    return ::SetFileAttributesW(ApiPath(LocalFileName).c_str(), FileAttributes) != FALSE;
+    return ::SetFileAttributesW(ApiPath(ALocalFileName).c_str(), FileAttributes) != FALSE;
   }
   else
   {
-    return GetWinSCPPlugin()->SetLocalFileAttributes(LocalFileName, FileAttributes);
+    return GetWinSCPPlugin()->SetLocalFileAttributes(ALocalFileName, FileAttributes);
   }
 }
 
@@ -3243,11 +3243,11 @@ bool TWinSCPFileSystem::TerminalMoveLocalFile(const UnicodeString ALocalFileName
 {
   if (!GetWinSCPPlugin()->GetSystemFunctions())
   {
-    return ::MoveFileExW(ApiPath(LocalFileName).c_str(), ApiPath(NewLocalFileName).c_str(), Flags) != 0;
+    return ::MoveFileExW(ApiPath(ALocalFileName).c_str(), ApiPath(ANewLocalFileName).c_str(), Flags) != 0;
   }
   else
   {
-    return GetWinSCPPlugin()->MoveLocalFile(LocalFileName, NewLocalFileName, Flags);
+    return GetWinSCPPlugin()->MoveLocalFile(ALocalFileName, ANewLocalFileName, Flags);
   }
 }
 
@@ -3255,22 +3255,22 @@ bool TWinSCPFileSystem::TerminalRemoveLocalDirectory(const UnicodeString ALocalD
 {
   if (!GetWinSCPPlugin()->GetSystemFunctions())
   {
-    return ::RemoveDirectory(ApiPath(LocalDirName).c_str()) != 0;
+    return ::RemoveDirectory(ApiPath(ALocalDirName).c_str()) != 0;
   }
   else
   {
-    return GetWinSCPPlugin()->RemoveLocalDirectory(LocalDirName);
+    return GetWinSCPPlugin()->RemoveLocalDirectory(ALocalDirName);
   }
 }
 bool TWinSCPFileSystem::TerminalCreateLocalDirectory(const UnicodeString ALocalDirName, LPSECURITY_ATTRIBUTES SecurityAttributes)
 {
   if (!GetWinSCPPlugin()->GetSystemFunctions())
   {
-    return ::CreateDirectory(ApiPath(LocalDirName).c_str(), SecurityAttributes) != 0;
+    return ::CreateDirectory(ApiPath(ALocalDirName).c_str(), SecurityAttributes) != 0;
   }
   else
   {
-    return GetWinSCPPlugin()->CreateLocalDirectory(LocalDirName, SecurityAttributes);
+    return GetWinSCPPlugin()->CreateLocalDirectory(ALocalDirName, SecurityAttributes);
   }
 }
 
@@ -3854,6 +3854,7 @@ void TWinSCPFileSystem::ProcessEditorEvent(int32_t Event, void * /*Param*/)
             it->second.FileTitle;
           GetWinSCPPlugin()->FarEditorControl(ECTL_SETTITLE,
             FullFileName.Length(),
+            nb::ToPtr(ToWChar(FullFileName)));
         }
       }
     }
@@ -3974,6 +3975,7 @@ void TWinSCPFileSystem::ProcessEditorEvent(int32_t Event, void * /*Param*/)
           // note that we need to reset the title periodically (see EE_REDRAW)
           GetWinSCPPlugin()->FarEditorControl(ECTL_SETTITLE,
             FullFileName.Length(),
+            nb::ToPtr(ToWChar(FullFileName)));
         }
 
         if (GetFarConfiguration()->GetEditorUploadOnSave())

@@ -15,33 +15,33 @@ class TWinSCPPlugin : public TCustomFarPlugin
 public:
   static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TWinSCPPlugin); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TWinSCPPlugin) || TCustomFarPlugin::is(Kind); }
-public:
   TWinSCPPlugin() = delete;
+public:
   explicit TWinSCPPlugin(HINSTANCE HInst) noexcept;
   virtual ~TWinSCPPlugin() noexcept;
-  int32_t GetMinFarVersion() const override;
+  virtual VersionInfo GetMinFarVersion() const override;
 
-  void HandleException(Exception *E, int OpMode = 0) override;
+  virtual void HandleException(Exception *E, OPERATION_MODES OpMode = 0) override;
   uint32_t MoreMessageDialog(const UnicodeString Str, TStrings *MoreMessages,
     TQueryType Type, uint32_t Answers, const TMessageParams *Params = nullptr);
   void ShowExtendedException(Exception *E);
   bool CopyParamCustomDialog(TCopyParamType &CopyParam,
     int32_t CopyParamAttrs);
-  void SetStartupInfo(const struct PluginStartupInfo *Info) override;
+  virtual void SetStartupInfo(const struct PluginStartupInfo *Info) override;
 
 protected:
-  bool HandlesFunction(THandlesFunction Function) const override;
-  void GetPluginInfoEx(DWORD &Flags, TStrings *DiskMenuStrings,
+  virtual bool HandlesFunction(THandlesFunction Function) const override;
+  virtual void GetPluginInfoEx(PLUGIN_FLAGS &Flags, TStrings *DiskMenuStrings,
     TStrings *PluginMenuStrings, TStrings *PluginConfigStrings,
     TStrings *CommandPrefixes) override;
-  TCustomFarFileSystem *OpenPluginEx(int32_t OpenFrom, int32_t Item) override;
-  bool ConfigureEx(int32_t Item) override;
-  int32_t ProcessEditorEventEx(int32_t Event, void *Param) override;
-  int32_t ProcessEditorInputEx(const INPUT_RECORD *Rec) override;
-
+  virtual TCustomFarFileSystem *OpenPluginEx(OPENFROM OpenFrom, int32_t Item) override;
+  virtual bool ConfigureEx(const GUID *Guid) override;
+  virtual int32_t ProcessEditorEventEx(const struct ProcessEditorEventInfo *Info) override;
+  virtual int32_t ProcessEditorInputEx(const INPUT_RECORD *Rec) override;
   bool CopyParamDialog(const UnicodeString Caption, TCopyParamType &CopyParam,
-    int32_t CopyParamAttrs);
+    uint32_t CopyParamAttrs);
   void MessageClick(void *Token, uint32_t Result, bool &Close);
+
   void CommandsMenu(bool FromFileSystem);
   bool ConfigurationDialog();
   bool PanelConfigurationDialog();

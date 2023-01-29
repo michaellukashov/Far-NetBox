@@ -75,9 +75,6 @@ struct TEditHistory : public TObject
   bool operator==(const TEditHistory &rh) const { return (FileName == rh.FileName) && (Directory == rh.Directory); }
 };
 
-#if 0
-typedef void (__closure *TProcessSessionEvent)(TSessionData *Data, void *Param);
-#endif // #if 0
 using TProcessSessionEvent = nb::FastDelegate2<void, TSessionData * /*Data*/, void * /*Param*/>;
 
 NB_DEFINE_CLASS_ID(TWinSCPFileSystem);
@@ -96,31 +93,31 @@ public:
   virtual ~TWinSCPFileSystem() noexcept;
   void Init(TSecureShell *SecureShell);
 
-  void Close() override;
+  virtual void Close() override;
 
 protected:
   bool Connect(TSessionData *Data);
   void Disconnect();
   void SaveSession();
 
-  void GetOpenPluginInfoEx(DWORD &Flags,
+  virtual void GetOpenPanelInfoEx(OPENPANELINFO_FLAGS &Flags,
     UnicodeString &HostFile, UnicodeString &CurDir, UnicodeString &AFormat,
     UnicodeString &PanelTitle, TFarPanelModes *PanelModes, intptr_t &StartPanelMode,
     OPENPANELINFO_SORTMODES &StartSortMode, bool &StartSortOrder, TFarKeyBarTitles *KeyBarTitles,
     UnicodeString &ShortcutData) override;
-  bool GetFindDataEx(TObjectList *PanelItems, int OpMode) override;
-  bool ProcessKeyEx(int32_t Key, uint32_t ControlState) override;
-  bool SetDirectoryEx(UnicodeString Dir, int OpMode) override;
-  int32_t MakeDirectoryEx(UnicodeString &Name, int OpMode) override;
-  bool DeleteFilesEx(TObjectList *PanelItems, int OpMode) override;
-  int32_t GetFilesEx(TObjectList *PanelItems, bool Move,
+  virtual bool GetFindDataEx(TObjectList *PanelItems, OPERATION_MODES OpMode) override;
+  virtual bool ProcessKeyEx(int32_t Key, uint32_t ControlState) override;
+  virtual bool SetDirectoryEx(UnicodeString Dir, OPERATION_MODES OpMode) override;
+  virtual int32_t MakeDirectoryEx(UnicodeString &Name, OPERATION_MODES OpMode) override;
+  virtual bool DeleteFilesEx(TObjectList *PanelItems, OPERATION_MODES OpMode) override;
+  virtual int32_t GetFilesEx(TObjectList *PanelItems, bool Move,
     UnicodeString &DestPath, OPERATION_MODES OpMode) override;
-  int32_t PutFilesEx(TObjectList *PanelItems, bool Move, int OpMode) override;
-  bool ProcessEventEx(int32_t Event, void *Param) override;
+  virtual int32_t PutFilesEx(TObjectList *PanelItems, bool Move, OPERATION_MODES OpMode) override;
+  virtual bool ProcessPanelEventEx(intptr_t Event, void *Param) override;
 
   void ProcessEditorEvent(int32_t Event, void *Param);
 
-  void HandleException(Exception *E, int OpMode = 0) override;
+  virtual void HandleException(Exception *E, OPERATION_MODES OpMode = 0) override;
   void KeepaliveThreadCallback();
 
   bool IsSessionList() const;
@@ -213,7 +210,7 @@ protected:
   void ConnectTerminal(TTerminal *Terminal);
   void TemporarilyDownloadFiles(TStrings *AFileList,
     TCopyParamType &CopyParam, UnicodeString &TempDir);
-  int32_t UploadFiles(bool Move, int OpMode, bool Edit, UnicodeString &DestPath);
+  int32_t UploadFiles(bool Move, OPERATION_MODES OpMode, bool Edit, UnicodeString &DestPath);
   void UploadOnSave(bool NoReload);
   void UploadFromEditor(bool NoReload, const UnicodeString AFileName,
     UnicodeString RealFileName, UnicodeString &DestPath);
@@ -233,12 +230,12 @@ protected:
   TSessionData *GetSessionData() { return FTerminal ? FTerminal->GetSessionData() : nullptr; }
 
 protected:
-  UnicodeString GetCurrDirectory() const override { return FTerminal ? FTerminal->RemoteGetCurrentDirectory() : UnicodeString(); }
+  virtual UnicodeString GetCurrDirectory() const override { return FTerminal ? FTerminal->RemoteGetCurrentDirectory() : UnicodeString(); }
 
 private:
   bool TerminalCheckForEsc();
   void TerminalClose(TObject *Sender);
-  // void TerminalUpdateStatus(TTerminal *Terminal, bool Active);
+  void TerminalUpdateStatus(TTerminal *Terminal, bool Active);
   void TerminalChangeDirectory(TObject *Sender);
   void TerminalReadDirectory(TObject *Sender, bool ReloadOnly);
   void TerminalStartReadDirectory(TObject *Sender);
@@ -285,15 +282,15 @@ private:
   void TerminalSynchronizeDirectory(const UnicodeString &LocalDirectory,
     const UnicodeString &RemoteDirectory, bool & Continue, bool Collect, const TSynchronizeOptions *SynchronizeOptions);
   void DoSynchronize(TSynchronizeController * Sender,
-    UnicodeString LocalDirectory, UnicodeString RemoteDirectory,
+    const UnicodeString LocalDirectory, const UnicodeString RemoteDirectory,
     const TCopyParamType & CopyParam, const TSynchronizeParamType & Params,
     TSynchronizeChecklist ** Checklist, TSynchronizeOptions * Options, bool Full);
   void DoSynchronizeInvalid(TSynchronizeController * Sender,
-    UnicodeString Directory, UnicodeString ErrorStr);
+    const UnicodeString Directory, UnicodeString ErrorStr);
   void DoSynchronizeTooManyDirectories(TSynchronizeController * Sender,
     int32_t & MaxDirectories);
   void Synchronize(UnicodeString LocalDirectory,
-    UnicodeString RemoteDirectory, TTerminal::TSynchronizeMode Mode,
+    const UnicodeString RemoteDirectory, TTerminal::TSynchronizeMode Mode,
     const TCopyParamType & CopyParam, int32_t Params, TSynchronizeChecklist ** Checklist,
     TSynchronizeOptions * Options);
   void SynchronizeSessionLog(const UnicodeString & Message);
@@ -336,7 +333,7 @@ private:
   TSynchronizeController *FSynchronizeController{nullptr};
   std::unique_ptr<TStrings> FCapturedLog;
   std::unique_ptr<TStrings> FAuthenticationLog;
-  typedef nb::map_t<intptr_t, TMultipleEdit> TMultipleEdits;
+  typedef nb::map_t<int32_t, TMultipleEdit> TMultipleEdits;
   TMultipleEdits FMultipleEdits;
   typedef nb::vector_t<TEditHistory> TEditHistories;
   TEditHistories FEditHistories;
@@ -375,7 +372,7 @@ protected:
   UnicodeString FPath;
   const TSessionData *FSessionData{nullptr};
 
-  void GetData(
+  virtual void GetData(
     PLUGINPANELITEMFLAGS &Flags, UnicodeString &AFileName, int64_t &Size,
     uintptr_t &FileAttributes,
     TDateTime &LastWriteTime, TDateTime &LastAccess,
@@ -392,12 +389,12 @@ public:
 protected:
   UnicodeString FFolder;
 
-  void GetData(
+  virtual void GetData(
     PLUGINPANELITEMFLAGS &Flags, UnicodeString &AFileName, int64_t &Size,
     uintptr_t &FileAttributes,
     TDateTime &LastWriteTime, TDateTime &LastAccess,
     uintptr_t &NumberOfLinks, UnicodeString &Description,
-    UnicodeString &Owner, void *&UserData, int &CustomColumnNumber) override;
+    UnicodeString &Owner, void *&UserData, size_t &CustomColumnNumber) override;
 };
 
 NB_DEFINE_CLASS_ID(TRemoteFilePanelItem);
@@ -412,13 +409,13 @@ public:
 protected:
   TRemoteFile *FRemoteFile{nullptr};
 
-  void GetData(
+  virtual void GetData(
     PLUGINPANELITEMFLAGS &Flags, UnicodeString &AFileName, int64_t &Size,
     uintptr_t &FileAttributes,
     TDateTime &LastWriteTime, TDateTime &LastAccess,
     uintptr_t &NumberOfLinks, UnicodeString &Description,
-    UnicodeString &Owner, void *&UserData, int &CustomColumnNumber) override;
-  UnicodeString GetCustomColumnData(size_t Column) override;
+    UnicodeString &Owner, void *&UserData, size_t &CustomColumnNumber) override;
+  virtual UnicodeString GetCustomColumnData(size_t Column) override;
   static void TranslateColumnTypes(UnicodeString &AColumnTypes,
     TStrings *ColumnTitles);
 };

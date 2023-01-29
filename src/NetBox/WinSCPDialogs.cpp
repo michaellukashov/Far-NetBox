@@ -5736,7 +5736,7 @@ bool TWinSCPFileSystem::CopyDialog(bool ToRemote,
 }
 
 bool TWinSCPPlugin::CopyParamDialog(const UnicodeString Caption,
-  TCopyParamType &CopyParam, int32_t CopyParamAttrs)
+  TCopyParamType &CopyParam, uint32_t CopyParamAttrs)
 {
   std::unique_ptr<TWinSCPDialog> DialogPtr(std::make_unique<TWinSCPDialog>(this));
   TWinSCPDialog *Dialog = DialogPtr.get();
@@ -6559,7 +6559,7 @@ bool TWinSCPFileSystem::OpenDirectoryDialog(
       }
       else if (BreakCode == 2)
       {
-        FarControl(FCTL_INSERTCMDLINE, 0, ToPtr(ToWChar(BookmarkPaths->GetString(ItemFocused))));
+        FarControl(FCTL_INSERTCMDLINE, 0, nb::ToPtr(ToWChar(BookmarkPaths->GetString(ItemFocused))));
       }
       else if (BreakCode == 3 || BreakCode == 4)
       {

@@ -23,21 +23,12 @@ enum TItemPosition
   ipRight
 };
 
-#if 0
-typedef void __fastcall (__closure *TFarKeyEvent)(TFarDialog *Sender, TFarDialogItem *Item, long KeyCode, bool &Handled);
-#endif // #if 0
 using TFarKeyEvent = nb::FastDelegate4<void,
-  TFarDialog * /*Sender*/, TFarDialogItem * /*Item*/, long /*KeyCode*/, bool & /*Handled*/> TFarKeyEvent;
-#if 0
-typedef void __fastcall (__closure *TFarMouseClickEvent)(TFarDialogItem *Item, MOUSE_EVENT_RECORD *Event);
-#endif // #if 0
+  TFarDialog * /*Sender*/, TFarDialogItem * /*Item*/, long /*KeyCode*/, bool & /*Handled*/>;
 using TFarMouseClickEvent = nb::FastDelegate2<void,
-  TFarDialogItem * /*Item*/, MOUSE_EVENT_RECORD * /*Event*/> TFarMouseClickEvent;
-#if 0
-typedef void __fastcall (__closure *TFarProcessGroupEvent)(TFarDialogItem *Item, void *Arg);
-#endif // #if 0
+  TFarDialogItem * /*Item*/, MOUSE_EVENT_RECORD * /*Event*/>;
 using TFarProcessGroupEvent = nb::FastDelegate2<void,
-  TFarDialogItem * /*Item*/, void * /*Arg*/> TFarProcessGroupEvent;
+  TFarDialogItem * /*Item*/, void * /*Arg*/>;
 
 NB_DEFINE_CLASS_ID(TFarDialog);
 class TFarDialog : public TObject
@@ -103,7 +94,7 @@ public:
   void LockChanges();
   void UnlockChanges();
   FarColor GetSystemColor(PaletteColors colorId);
-  bool HotKey(uintptr_t Key, uintptr_t ControlState) const;
+  bool HotKey(uint32_t Key, uint32_t ControlState) const;
 
 protected:
   TCustomFarPlugin *GetFarPlugin() const { return FFarPlugin; }
@@ -112,10 +103,10 @@ protected:
   TObjectList *GetItems() { return FItems.get(); }
   void Add(TFarDialogItem *DialogItem);
   void Add(TFarDialogContainer *Container);
-  intptr_t SendDlgMessage(intptr_t Msg, intptr_t Param1, void *Param2);
+  int32_t SendDlgMessage(int32_t Msg, int32_t Param1, void *Param2);
   virtual intptr_t DialogProc(intptr_t Msg, intptr_t Param1, void *Param2);
   virtual intptr_t FailDialogProc(intptr_t Msg, intptr_t Param1, void *Param2);
-  intptr_t DefaultDialogProc(intptr_t Msg, intptr_t Param1, void *Param2);
+  int32_t DefaultDialogProc(int32_t Msg, int32_t Param1, void *Param2);
   virtual bool MouseEvent(MOUSE_EVENT_RECORD *Event);
   virtual bool Key(TFarDialogItem *Item, LONG_PTR KeyCode);
   virtual void Change();
@@ -322,12 +313,12 @@ protected:
 
   virtual void Detach();
   void DialogResized();
-  intptr_t SendDialogMessage(intptr_t Msg, void *Param);
-  intptr_t SendDialogMessage(intptr_t Msg, intptr_t Param1, void *Param2);
-  virtual intptr_t ItemProc(intptr_t Msg, void *Param);
-  intptr_t DefaultItemProc(intptr_t Msg, void *Param);
-  intptr_t DefaultDialogProc(intptr_t Msg, intptr_t Param1, void *Param2);
-  virtual intptr_t FailItemProc(intptr_t Msg, void *Param);
+  int32_t SendDialogMessage(int32_t Msg, void *Param);
+  int32_t SendDialogMessage(int32_t Msg, int32_t Param1, void *Param2);
+  virtual int32_t ItemProc(int32_t Msg, void *Param);
+  int32_t DefaultItemProc(int32_t Msg, void *Param);
+  int32_t DefaultDialogProc(int32_t Msg, int32_t Param1, void *Param2);
+  virtual int32_t FailItemProc(int32_t Msg, void *Param);
   virtual void Change();
   void DialogChange();
   bool GetAlterType(FARDIALOGITEMTYPES Index) const;
@@ -340,7 +331,7 @@ protected:
   virtual bool MouseMove(int32_t X, int32_t Y, MOUSE_EVENT_RECORD *Event);
   virtual bool MouseClick(MOUSE_EVENT_RECORD *Event);
   TPoint MouseClientPosition(MOUSE_EVENT_RECORD *Event);
-  void Text(intptr_t X, intptr_t Y, const FarColor &Color, UnicodeString Str);
+  void Text(int32_t X, int32_t Y, const FarColor &Color, UnicodeString Str);
   void Redraw();
   virtual bool HotKey(char HotKey);
 
@@ -375,7 +366,7 @@ public:
 };
 
 using TFarButtonClickEvent = nb::FastDelegate2<void,
-  TFarButton * /*Sender*/, bool & /*Close*/> TFarButtonClickEvent;
+  TFarButton * /*Sender*/, bool & /*Close*/>;
 
 enum TFarButtonBrackets
 {
@@ -414,7 +405,7 @@ public:
 
 protected:
   virtual void SetDataInternal(const UnicodeString AValue) override;
-  virtual intptr_t ItemProc(intptr_t Msg, void *Param) override;
+  virtual int32_t ItemProc(int32_t Msg, void *Param) override;
   virtual bool HotKey(char HotKey) override;
 
 private:
@@ -424,7 +415,7 @@ private:
 };
 
 using TFarAllowChangeEvent = nb::FastDelegate3<void,
-  TFarDialogItem * /*Sender*/, void * /*NewState*/, bool & /*AllowChange*/> TFarAllowChangeEvent;
+  TFarDialogItem * /*Sender*/, void * /*NewState*/, bool & /*AllowChange*/>;
 
 NB_DEFINE_CLASS_ID(TFarCheckBox);
 class TFarCheckBox : public TFarDialogItem
@@ -449,7 +440,7 @@ public:
 
 protected:
   TFarAllowChangeEvent FOnAllowChange;
-  virtual intptr_t ItemProc(intptr_t Msg, void *Param) override;
+  virtual int32_t ItemProc(int32_t Msg, void *Param) override;
   virtual bool GetIsEmpty() const override;
   virtual void SetData(const UnicodeString Value) override;
 };
@@ -469,7 +460,7 @@ public:
 
 protected:
   TFarAllowChangeEvent FOnAllowChange;
-  virtual intptr_t ItemProc(intptr_t Msg, void *Param) override;
+  virtual int32_t ItemProc(int32_t Msg, void *Param) override;
   virtual bool GetIsEmpty() const override;
   virtual void SetData(UnicodeString Value) override;
 };
@@ -503,7 +494,7 @@ public:
   void SetReadOnly(bool Value) { SetFlag(DIF_READONLY, Value); }
 
 protected:
-  virtual intptr_t ItemProc(intptr_t Msg, void *Param) override;
+  virtual int32_t ItemProc(int32_t Msg, void *Param) override;
   virtual void Detach() override;
 
 private:
@@ -522,7 +513,7 @@ public:
   virtual UnicodeString GetCaption() { return GetData(); }
   virtual void SetCaption(const UnicodeString Value) { SetData(Value); }
   void SetPosition(int32_t Value);
-  intptr_t GetPosition() const;
+  int32_t GetPosition() const;
 
 protected:
   virtual void ResetBounds() override;
@@ -573,10 +564,10 @@ public:
   int32_t GetTopIndex() const;
   void SetTopIndex(int32_t Value);
   inline int32_t GetSelectedInt(bool Init) const;
-  bool GetFlag(intptr_t Index, LISTITEMFLAGS Flag) const;
-  void SetFlag(intptr_t Index, LISTITEMFLAGS Flag, bool Value);
-  LISTITEMFLAGS GetFlags(intptr_t Index) const;
-  void SetFlags(intptr_t Index, LISTITEMFLAGS Value);
+  bool GetFlag(int32_t Index, LISTITEMFLAGS Flag) const;
+  void SetFlag(int32_t Index, LISTITEMFLAGS Flag, bool Value);
+  LISTITEMFLAGS GetFlags(int32_t Index) const;
+  void SetFlags(int32_t Index, LISTITEMFLAGS Value);
   int32_t GetMaxLength() const;
   int32_t GetVisibleCount() const;
   bool GetDisabled(int32_t Index) const { return GetFlag(Index, LIF_DISABLE); }
@@ -586,7 +577,7 @@ public:
 
 protected:
   virtual void Changed() override;
-  virtual intptr_t ItemProc(intptr_t Msg, void *Param);
+  virtual int32_t ItemProc(int32_t Msg, void *Param);
   virtual void Init();
   void UpdatePosition(int32_t Position);
   int32_t GetPosition() const;
@@ -640,7 +631,7 @@ public:
   void SetAutoSelect(TFarListBoxAutoSelect Value);
 
 protected:
-  virtual intptr_t ItemProc(intptr_t Msg, void *Param) override;
+  virtual int32_t ItemProc(int32_t Msg, void *Param) override;
   virtual void Init() override;
   virtual bool CloseQuery() override;
 
@@ -680,7 +671,7 @@ public:
   void SetItemIndex(int32_t Index) { FList->SetSelected(Index); }
 
 protected:
-  virtual intptr_t ItemProc(intptr_t Msg, void *Param) override;
+  virtual int32_t ItemProc(int32_t Msg, void *Param) override;
   virtual void Init() override;
 
 private:
@@ -703,7 +694,7 @@ public:
   bool GetScrollBar() const;
 
 protected:
-  virtual intptr_t ItemProc(intptr_t Msg, void *Param) override;
+  virtual int32_t ItemProc(int32_t Msg, void *Param) override;
   virtual void DoFocus() override;
 
 private:
