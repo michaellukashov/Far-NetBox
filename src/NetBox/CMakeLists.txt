@@ -1171,7 +1171,7 @@ target_compile_options(putty PRIVATE
 
 target_compile_definitions(putty PRIVATE
   ${NETBOX_C_FLAGS}
-  ${NETBOX_UNICODE_FLAGS}
+#  ${NETBOX_UNICODE_FLAGS}
 )
 
 #puttyvs
