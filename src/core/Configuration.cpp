@@ -971,7 +971,16 @@ RawByteString TConfiguration::StronglyRecryptPassword(const RawByteString Passwo
 
 TVSFixedFileInfo *TConfiguration::GetFixedApplicationInfo() const
 {
-  return GetFixedFileInfo(GetApplicationInfo());
+  TVSFixedFileInfo * Result{nullptr};
+  try
+  {
+    Result = GetFixedFileInfo(GetApplicationInfo());
+  }
+  catch (const Exception&)
+  {
+    Result = nullptr;
+  }
+  return Result;
 }
 
 int32_t TConfiguration::GetCompoundVersion() const
