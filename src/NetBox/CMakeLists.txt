@@ -37,16 +37,6 @@ if(NOT DEFINED BUILD_DIR OR BUILD_DIR STREQUAL "")
 string(REPLACE "/" "\\" BUILD_DIR ${CMAKE_CURRENT_BINARY_DIR})
 endif()
 
-if(MSVC)
-  set(OPENSSL_LIB_DIR "${PROJECT_PLATFORM}-${CMAKE_BUILD_TYPE}")
-endif(MSVC)
-
-if(NOT DEFINED OPENSSL_LIBRARYDIR)
-  set(OPENSSL_LIBRARYDIR ${PROJECT_ROOT}/libs/openssl-1.1.1/${OPENSSL_LIB_DIR})
-endif()
-
-message("OPENSSL_LIBRARYDIR: ${OPENSSL_LIBRARYDIR}")
-
 #-------------------------------------------------------------------------------
 
 include(CMakeParseArguments)
@@ -1271,7 +1261,6 @@ target_include_directories(neon PRIVATE
   ../../libs/zlib/src
   ../../libs/expat/lib
   ../../libs/openssl-1.1.1/include
-#  ${OPENSSL_LIBRARYDIR}
 )
 
 #set_source_files_properties(${NEON_LIB_SOURCES} PROPERTIES LANGUAGE CXX)
@@ -1530,7 +1519,6 @@ target_include_directories(s3 PRIVATE
   ../../libs/expat/lib
   ../../libs/neon/src
   ../../libs/openssl-1.1.1/include
-  ${OPENSSL_LIBRARYDIR}
 )
 
 target_compile_definitions(s3 PRIVATE
@@ -1971,7 +1959,6 @@ target_include_directories(NetBox PRIVATE
   ../include
   ../../libs
   ../../libs/openssl-1.1.1/include
-  ${OPENSSL_LIBRARYDIR}
   ../../libs/putty
   ../../libs/putty/windows
   ../../libs/neon/src
