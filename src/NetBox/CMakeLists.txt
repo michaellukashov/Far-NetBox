@@ -9,7 +9,7 @@ if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Debug CACHE STRING "Default build type to Debug")
 endif()
 message("Build type: ${CMAKE_BUILD_TYPE}")
-message("CMAKE_CL_64: ${CMAKE_CL_64}")
+#message("CMAKE_CL_64: ${CMAKE_CL_64}")
 
 if(NOT DEFINED FAR_VERSION OR FAR_VERSION STREQUAL "")
   set(FAR_VERSION Far3)
@@ -44,8 +44,8 @@ include(${CMAKE_ROOT}/Modules/CMakeDetermineSystem.cmake)
 include(${CMAKE_SOURCE_DIR}/cmake/ucm.cmake)
 #include(CMakeDetermineCXXCompiler)
 message("System: ${CMAKE_SYSTEM_NAME}, PROJECT_PLATFORM: ${PROJECT_PLATFORM}, BUILD_DIR: ${BUILD_DIR}, CMAKE_COMPILER_IS_MINGW = ${CMAKE_COMPILER_IS_MINGW}")
-message("MSVC_VERSION: ${MSVC_VERSION}")
-message("CMAKE_CXX_COMPILER: ${CMAKE_CXX_COMPILER}")
+#message("MSVC_VERSION: ${MSVC_VERSION}")
+#message("CMAKE_CXX_COMPILER: ${CMAKE_CXX_COMPILER}")
 
 #-------------------------------------------------------------------------------
 
@@ -2018,10 +2018,12 @@ add_custom_command(TARGET create_plugin_dir POST_BUILD
 )
 
 file(GLOB DIST_FILES
-  ${NETBOX_DIR}\\*.lng
+  ${NETBOX_DIR}/*.lng
 )
 
 add_custom_target(copy_to_plugin_dir)
+#message("NETBOX_DIR: ${NETBOX_DIR}")
+#message("DIST_FILES: ${DIST_FILES}")
 foreach(DIST_FILE ${DIST_FILES})
   add_custom_command(TARGET copy_to_plugin_dir POST_BUILD
 #    COMMAND echo DIST_FILE: ${DIST_FILE}
@@ -2030,9 +2032,9 @@ foreach(DIST_FILE ${DIST_FILES})
 endforeach()
 
 add_custom_command(TARGET NetBox POST_BUILD
-  COMMAND if exist "$<TARGET_FILE_DIR:NetBox>\\NetBox.dll" ( ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE_DIR:NetBox>\\NetBox.dll" ${NETBOX_PLUGIN_DIR} )
-  COMMAND if exist "$<TARGET_FILE_DIR:NetBox>\\NetBox.pdb" ( ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE_DIR:NetBox>\\NetBox.pdb" ${NETBOX_PLUGIN_DIR} )
-  COMMAND if exist "$<TARGET_FILE_DIR:NetBox>\\NetBox.map" ( ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE_DIR:NetBox>\\NetBox.map" ${NETBOX_PLUGIN_DIR} )
+  COMMAND if exist "${CMAKE_CURRENT_BINARY_DIR}/NetBox.dll" ( ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_CURRENT_BINARY_DIR}/NetBox.dll" ${NETBOX_PLUGIN_DIR} )
+  COMMAND if exist "${CMAKE_CURRENT_BINARY_DIR}/NetBox.pdb" ( ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_CURRENT_BINARY_DIR}/NetBox.pdb" ${NETBOX_PLUGIN_DIR} )
+  COMMAND if exist "${CMAKE_CURRENT_BINARY_DIR}/NetBox.map" ( ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_CURRENT_BINARY_DIR}/NetBox.map" ${NETBOX_PLUGIN_DIR} )
 )
 
 add_dependencies(copy_to_plugin_dir create_plugin_dir )
@@ -2057,5 +2059,5 @@ ucm_add_flags(CXX C /Gm- -Ox -Oi -Os CONFIG Release)
 ucm_add_linker_flags(MODULE SHARED EXE ${NETBOX_DLL_LINK_FLAGS} /OPT:REF /OPT:ICF=6 /NXCOMPAT /DYNAMICBASE /MANIFEST:NO CONFIG Release)
 ucm_add_linker_flags(MODULE SHARED EXE ${NETBOX_DLL_LINK_FLAGS} /DEBUG CONFIG Debug)
 ucm_add_linker_flags(MODULE STATIC SHARED EXE /LTCG CONFIG Release)
-ucm_print_flags()
+#ucm_print_flags()
 #-------------------------------------------------------------------------------
