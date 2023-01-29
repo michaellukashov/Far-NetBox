@@ -975,8 +975,10 @@ LCID TGUIConfiguration::InternalLocale()
   if (GetTranslationCount(GetApplicationInfo()) > 0)
   {
     TTranslation Translation;
-    Translation = GetTranslation(GetApplicationInfo(), 0);
+    void *FileInfo = GetApplicationInfo();
+    Translation = GetTranslation(FileInfo, 0);
     Result = MAKELANGID(PRIMARYLANGID(Translation.Language), SUBLANG_DEFAULT);
+    nb_free(FileInfo);
   }
   else
   {
