@@ -89,7 +89,7 @@ int CApiLog::GetOptionVal(int OptionID) const
 
 void CApiLog::LogError(int Error)
 {
-  wchar_t * Buffer;
+  wchar_t * Buffer{nullptr};
   int Len = FormatMessage(
     FORMAT_MESSAGE_FROM_SYSTEM |
     FORMAT_MESSAGE_IGNORE_INSERTS |

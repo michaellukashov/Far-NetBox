@@ -248,7 +248,7 @@ t_directory::t_direntry * CFtpListResult::getList(int & Num)
   {
     Result = new t_directory::t_direntry[Num];
     int I = 0;
-    for (tEntryList::iterator Iter = m_EntryList.begin(); Iter != m_EntryList.end(); Iter++, I++)
+    for (tEntryList::iterator Iter = m_EntryList.begin(); Iter != m_EntryList.end(); ++Iter, ++I)
     {
       Result[I] = *Iter;
     }
@@ -484,8 +484,8 @@ void CFtpListResult::AddLine(t_directory::t_direntry & direntry)
         }
         break;
       }
-      entryiter++;
-      dataiter++;
+      ++entryiter;
+      ++dataiter;
     }
     if (bContinue)
       return;

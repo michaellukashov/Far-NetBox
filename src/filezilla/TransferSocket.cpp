@@ -8,7 +8,7 @@
 #include "AsyncGssSocketLayer.h"
 #endif
 
-constexpr int32_t BUFSIZE = 16384;
+constexpr int32_t BUFSIZE = 16 * 1024;
 
 constexpr int STATE_WAITING = 0;
 constexpr int STATE_STARTING = 1;

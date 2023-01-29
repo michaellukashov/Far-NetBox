@@ -180,7 +180,7 @@ public:
       msgList.push_back(msg);
     }
 
-    for (nb::list_t<MSG>::iterator iter = msgList.begin(); iter != msgList.end(); iter++)
+    for (nb::list_t<MSG>::iterator iter = msgList.begin(); iter != msgList.end(); ++iter)
     {
       ::PostMessage(m_hWnd, iter->message, iter->wParam, iter->lParam);
     }
@@ -956,7 +956,7 @@ void CAsyncSocketEx::FreeAsyncSocketExInstance()
   if (!m_pLocalAsyncSocketExThreadData)
     return;
 
-  for (nb::list_t<CAsyncSocketEx*>::iterator iter = m_pLocalAsyncSocketExThreadData->layerCloseNotify.begin(); iter != m_pLocalAsyncSocketExThreadData->layerCloseNotify.end(); iter++)
+  for (nb::list_t<CAsyncSocketEx*>::iterator iter = m_pLocalAsyncSocketExThreadData->layerCloseNotify.begin(); iter != m_pLocalAsyncSocketExThreadData->layerCloseNotify.end(); ++iter)
   {
     if (*iter != this)
       continue;
@@ -1525,7 +1525,7 @@ BOOL CAsyncSocketEx::AddLayer(CAsyncSocketExLayer *pLayer)
 
 void CAsyncSocketEx::RemoveAllLayers()
 {
-  for (nb::list_t<t_callbackMsg>::iterator iter = m_pendingCallbacks.begin(); iter != m_pendingCallbacks.end(); iter++)
+  for (nb::list_t<t_callbackMsg>::iterator iter = m_pendingCallbacks.begin(); iter != m_pendingCallbacks.end(); ++iter)
     nb_free(iter->str);
   m_pendingCallbacks.clear();
 
@@ -1541,7 +1541,7 @@ void CAsyncSocketEx::RemoveAllLayers()
 
 int CAsyncSocketEx::OnLayerCallback(nb::list_t<t_callbackMsg>& callbacks)
 {
-  for (nb::list_t<t_callbackMsg>::iterator iter = callbacks.begin(); iter != callbacks.end(); iter++)
+  for (nb::list_t<t_callbackMsg>::iterator iter = callbacks.begin(); iter != callbacks.end(); ++iter)
   {
     nb_free(iter->str);
   }
@@ -1701,7 +1701,7 @@ void CAsyncSocketEx::AddCallbackNotification(const t_callbackMsg& msg)
 
 void CAsyncSocketEx::ResendCloseNotify()
 {
-  for (nb::list_t<CAsyncSocketEx*>::iterator iter = m_pLocalAsyncSocketExThreadData->layerCloseNotify.begin(); iter != m_pLocalAsyncSocketExThreadData->layerCloseNotify.end(); iter++)
+  for (nb::list_t<CAsyncSocketEx*>::iterator iter = m_pLocalAsyncSocketExThreadData->layerCloseNotify.begin(); iter != m_pLocalAsyncSocketExThreadData->layerCloseNotify.end(); ++iter)
   {
     if (*iter == this)
       return;
