@@ -915,7 +915,7 @@ TCollectedFileList * TParallelOperation::GetFileList(int Index)
   return DebugNotNull(dyn_cast<TCollectedFileList>(FFileList->GetObj(Index)));
 }
 
-int32_t TParallelOperation::GetNext(TTerminal * Terminal, UnicodeString & FileName, TObject *&Object, UnicodeString &TargetDir, bool & Dir, bool & Recursed)
+int32_t TParallelOperation::GetNext(TTerminal * Terminal, UnicodeString & FileName, TObject *&Object, UnicodeString &TargetDir, bool & Dir, bool & Recursed, bool &FirstLevel)
 {
   TGuard Guard(*FSection.get()); nb::used(Guard);
   int32_t Result = 1;
@@ -968,11 +968,11 @@ int32_t TParallelOperation::GetNext(TTerminal * Terminal, UnicodeString & FileNa
     {
       UnicodeString DirPath_nobs = Sysutils::ExcludeTrailingBackslash(DirPath);
       TDirectories::const_iterator DirectoryIterator = FDirectories.find(DirPath);
-      if (DirectoryIterator == FDirectories.end())
+      if (DebugAlwaysFalse(DirectoryIterator == FDirectories.end()))
       {
         DirectoryIterator = FDirectories.find(DirPath_nobs);
-		if (DirectoryIterator == FDirectories.end())
-			throw EInvalidOperation(L"Parent path not known");
+     		if (DirectoryIterator == FDirectories.end())
+          throw EInvalidOperation(L"Parent path not known");
       }
       const TDirectoryData &DirectoryData = DirectoryIterator->second;
       if (!DirectoryData.Exists)
@@ -1023,7 +1023,7 @@ int32_t TParallelOperation::GetNext(TTerminal * Terminal, UnicodeString & FileNa
     }
   }
 
-  FProbablyEmpty = (FFileList->GetCount() == 0);
+  FProbablyEmpty = (FFileList->GetCount() == FListIndex);
 
   return Result;
 }
@@ -5157,7 +5157,7 @@ TTerminal * TTerminal::CreateSecondarySession(const UnicodeString Name, TSession
 
   Result->SetAutoReadDirectory(false);
 
-  Result->FExceptionOnFail=FExceptionOnFail;
+  Result->FExceptionOnFail = FExceptionOnFail;
 
   Result->SetOnQueryUser(GetOnQueryUser());
   Result->SetOnPromptUser(GetOnPromptUser());
@@ -5226,7 +5226,7 @@ TTerminal * TTerminal::GetCommandSession()
 
     CommandSession->SetAutoReadDirectory(false);
 
-    CommandSession->SetExceptionOnFail(FExceptionOnFail);
+    CommandSession->FExceptionOnFail = FExceptionOnFail;
 
     CommandSession->SetOnQueryUser(GetOnQueryUser());
     CommandSession->SetOnPromptUser(GetOnPromptUser());
@@ -5890,7 +5890,7 @@ public:
   FILETIME LocalLastWriteTime;
 };
 
-const int32_t sfFirstLevel = 0x01;
+constexpr const int32_t sfFirstLevel = 0x01;
 NB_DEFINE_CLASS_ID(TSynchronizeData);
 struct TSynchronizeData : public TObject
 {
@@ -7062,13 +7062,13 @@ bool TTerminal::GetStoredCredentialsTried() const
 int32_t TTerminal::CopyToParallel(TParallelOperation * ParallelOperation, TFileOperationProgressType * OperationProgress)
 {
   UnicodeString FileName;
-  TObject * Object;
+  TObject * Object{nullptr};
   UnicodeString TargetDir;
-  bool Dir;
-  bool Recursed;
-  bool FirstLevel;
+  bool Dir{false};
+  bool Recursed{false};
+  bool FirstLevel{0};
 
-  int32_t Result = ParallelOperation->GetNext(this, FileName, Object, TargetDir, Dir, Recursed);
+  int32_t Result = ParallelOperation->GetNext(this, FileName, Object, TargetDir, Dir, Recursed, FirstLevel);
   if (Result > 0)
   {
     std::unique_ptr<TStrings> FilesToCopy(std::make_unique<TStringList>());
@@ -7364,7 +7364,7 @@ void TTerminal::DoCopyToRemote(
             DirectoryModified(FullTargetDir + FileNameOnly, true);
           }
         }
-        SourceRobust(FileName, SearchRec, FullTargetDir, CopyParam, AParams, OperationProgress, AFlags | tfFirstLevel);
+        SourceRobust(FileName, SearchRec, FullTargetDir, CopyParam, AParams, OperationProgress, FLAGSET(AParams, cpFirstLevel) ? (AFlags | tfFirstLevel) : AFlags);
         Success = true;
       }
       catch (ESkipFile &E)
@@ -7859,7 +7859,7 @@ void TTerminal::DoCopyToLocal(
       try
       {
         UnicodeString AbsoluteFileName = GetAbsolutePath(FileName, true);
-        SinkRobust(AbsoluteFileName, File, FullTargetDir, CopyParam, AParams, OperationProgress, AFlags | tfFirstLevel);
+        SinkRobust(AbsoluteFileName, File, FullTargetDir, CopyParam, AParams, OperationProgress, FLAGSET(AParams, cpFirstLevel) ? (AFlags | tfFirstLevel) : AFlags);
         Success = true;
       }
       catch (ESkipFile &E)

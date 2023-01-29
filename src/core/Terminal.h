@@ -135,7 +135,6 @@ NB_CORE_EXPORT void FileOperationLoopCustom(TTerminal *Terminal,
   UnicodeString HelpKeyword,
   std::function<void()> Operation);
 
-const int cpFirstLevel = 0x100;
 
 enum TCurrentFSProtocol { cfsUnknown, cfsSCP, cfsSFTP, cfsFTP, cfsFTPS, cfsWebDAV, cfsS3 };
 
@@ -145,7 +144,8 @@ constexpr int32_t cpNoConfirmation = 0x08;
 constexpr int32_t cpAppend = 0x20;
 constexpr int32_t cpResume = 0x40;
 constexpr int32_t cpNoRecurse = 0x80;
-constexpr int32_t cpNewerOnly = 0x200;
+constexpr int32_t cpNewerOnly = 0x100;
+constexpr int32_t cpFirstLevel = 0x200;
 
 constexpr int32_t ccApplyToDirectories = 0x01;
 constexpr int32_t ccRecursive = 0x02;

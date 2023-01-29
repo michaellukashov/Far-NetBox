@@ -95,9 +95,6 @@ const int qpIgnoreAbort =          0x08;
 const int qpWaitInBatch =          0x10;
 #endif // #if 0
 
-#if 0
-typedef void (__closure *TButtonSubmitEvent)(TObject * Sender, unsigned int & Answer);
-#endif // #if 0
 using TButtonSubmitEvent = nb::FastDelegate2<void,
   TObject * /*Sender*/, uint32_t & /*Answer*/>;
 

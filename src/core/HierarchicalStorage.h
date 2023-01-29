@@ -6,10 +6,9 @@
 #include <rdestl/map.h>
 #include <rdestl/vector.h>
 
-enum TStorage { stDetect, stRegistry, stIniFile, stNul };
+enum TStorage { stDetect, stRegistry, stIniFile, stXmlFile, stFar3Storage, stNul };
 enum TStorageAccessMode { smRead, smReadWrite };
 using TIntMapping = rde::map<UnicodeString, int32_t>;
-  stFar3Storage
 
 class NB_CORE_EXPORT THierarchicalStorage : public TObject
 {
@@ -223,7 +222,7 @@ protected:
 
 private:
   std::unique_ptr<TRegistry> FRegistry;
-  mutable int32_t FFailed{0};
+  int32_t FFailed{0};
   REGSAM FWowMode{0};
 
 public:

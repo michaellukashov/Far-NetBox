@@ -1085,7 +1085,7 @@ void TSCPFileSystem::ReadDirectory(TRemoteFileList *FileList)
       else
       {
         FTerminal->LogEvent(FORMAT("Listing directory \"%s\".",
-            FileList->GetDirectory()));
+          FileList->GetDirectory()));
         ExecCommand(fsListDirectory, Params,
           FTerminal->GetSessionData()->GetListingCommand(), Options,
           DelimitStr(FileList->GetDirectory()));
@@ -2507,13 +2507,6 @@ void TSCPFileSystem::SCPSink(const UnicodeString TargetDir,
           if (Line != OnlyFileName)
           {
             FTerminal->LogEvent(FORMAT("Warning: Remote host set a compound pathname '%s'", Line));
-          }
-
-          // Security fix: CVE-2019-6111
-          // backport of https://winscp.net/tracker/1675
-          if ((Level == 0) && (OnlyFileName != base::UnixExtractFileName(AFileName)))
-          {
-            SCPError(LoadStr(UNREQUESTED_FILE), False);
           }
           if ((Level == 0) && (OnlyFileName != base::UnixExtractFileName(AFileName)))
           {
