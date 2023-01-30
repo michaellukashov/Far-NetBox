@@ -1349,6 +1349,8 @@ void TTerminal::Open()
     },
     __finally
     {
+      // This does not make it through, if terminal thread is abandonded,
+      // see also TTerminalManager::DoConnectTerminal
       DoInformation("", true, 0);
     } end_try__finally
   }
@@ -1575,9 +1577,6 @@ void TTerminal::InitFileSystem()
     __finally
     {
       FSecureShell = nullptr;
-      // This does not make it through, if terminal thread is abandonded,
-      // see also TTerminalManager::DoConnectTerminal
-      DoInformation("", true, 0);
     } end_try__finally
   }
 }
@@ -1641,50 +1640,6 @@ void TTerminal::OpenTunnel()
   try
   {
     FTunnelData.reset(FSessionData->CreateTunnelData(FTunnelLocalPortNumber));
-    FTunnelData->Assign(StoredSessions->GetDefaultSettings());
-    FTunnelData->SetName(FMTLOAD(TUNNEL_SESSION_NAME, FSessionData->GetSessionName()));
-    FTunnelData->SetTunnel(false);
-    FTunnelData->SetHostName(FSessionData->GetTunnelHostName());
-    FTunnelData->SetPortNumber(FSessionData->GetTunnelPortNumber());
-    FTunnelData->SessionSetUserName(FSessionData->GetTunnelUserName());
-    FTunnelData->SetPassword(FSessionData->GetTunnelPassword());
-    FTunnelData->SetPublicKeyFile(FSessionData->GetTunnelPublicKeyFile());
-    UnicodeString HostName = FSessionData->GetHostNameExpanded();
-    if (IsIPv6Literal(HostName))
-    {
-      HostName = EscapeIPv6Literal(HostName);
-    }
-    FTunnelData->SetTunnelPortFwd(FORMAT("L%d\t%s:%d",
-      FTunnelLocalPortNumber, HostName, FSessionData->GetPortNumber()));
-    FTunnelData->SetHostKey(FSessionData->GetTunnelHostKey());
-
-    // inherit proxy options on the main session
-    FTunnelData->SetProxyMethod(FSessionData->GetProxyMethod());
-    FTunnelData->SetProxyHost(FSessionData->GetProxyHost());
-    FTunnelData->SetProxyPort(FSessionData->GetProxyPort());
-    FTunnelData->SetProxyUsername(FSessionData->GetProxyUsername());
-    FTunnelData->SetProxyPassword(FSessionData->GetProxyPassword());
-    FTunnelData->SetProxyTelnetCommand(FSessionData->GetProxyTelnetCommand());
-    FTunnelData->SetProxyLocalCommand(FSessionData->GetProxyLocalCommand());
-    FTunnelData->SetProxyDNS(FSessionData->GetProxyDNS());
-    FTunnelData->SetProxyLocalhost(FSessionData->GetProxyLocalhost());
-
-    // inherit most SSH options of the main session (except for private key and bugs)
-    FTunnelData->SetCompression(FSessionData->GetCompression());
-    FTunnelData->SetCipherList(FSessionData->GetCipherList());
-    FTunnelData->SetSsh2DES(FSessionData->GetSsh2DES());
-
-    FTunnelData->SetKexList(FSessionData->GetKexList());
-    FTunnelData->SetRekeyData(FSessionData->GetRekeyData());
-    FTunnelData->SetRekeyTime(FSessionData->GetRekeyTime());
-
-    FTunnelData->SetSshNoUserAuth(FSessionData->GetSshNoUserAuth());
-    FTunnelData->SetAuthGSSAPI(FSessionData->GetAuthGSSAPI());
-    FTunnelData->SetGSSAPIFwdTGT(FSessionData->GetGSSAPIFwdTGT());
-    FTunnelData->SetTryAgent(FSessionData->GetTryAgent());
-    FTunnelData->SetAgentFwd(FSessionData->GetAgentFwd());
-    FTunnelData->SetAuthKI(FSessionData->GetAuthKI());
-    FTunnelData->SetAuthKIPassword(FSessionData->GetAuthKIPassword());
 
     // The Started argument is not used with Parent being set
     FTunnelLog = std::make_unique<TSessionLog>(this, TDateTime(), FTunnelData.get(), FConfiguration);
