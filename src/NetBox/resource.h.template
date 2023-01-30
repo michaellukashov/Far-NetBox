@@ -4,7 +4,7 @@
 #define PLUGIN_VERSION_TXT "${file.ver.major}.${file.ver.minor}.${file.ver.version_patch}"
 #define PLUGIN_VERSION_WTXT L"${file.ver.major}.${file.ver.minor}.${file.ver.version_patch}"
 
-#define PLUGIN_AUTHOR       L"Mikhael Lukashov"
+#define PLUGIN_AUTHOR       L"Mikhail Lukashov"
 #define PLUGIN_DESCR        L"SFTP/FTP(S)/SCP/WebDAV client for FAR 3.0 x86/x64"
 #define PLUGIN_FILENAME     L"NetBox.dll"
 
