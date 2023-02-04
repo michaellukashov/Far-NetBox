@@ -1620,8 +1620,8 @@ void TTerminal::SetupTunnelLocalPortNumber()
         FatalError(nullptr, FMTLOAD(TUNNEL_NO_FREE_PORT,
           FConfiguration->GetTunnelLocalPortNumberLow(), FConfiguration->GetTunnelLocalPortNumberHigh()));
       }
-      int Index = Random(Ports.size());
-      int Port = Ports[Index];
+      int32_t Index = Random(Ports.size());
+      int32_t Port = Ports[Index];
       Ports.erase(&Ports.at(Index));
       if (IsListenerFree(Port))
       {
