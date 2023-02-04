@@ -37,24 +37,23 @@ using TThreadID = DWORD;
 
 using TSize = size_t;
 
-class Exception;
-
-constexpr int32_t MonthsPerYear = 12;
-constexpr int32_t DaysPerWeek = 7;
-constexpr int32_t MinsPerHour = 60;
-constexpr int32_t SecsPerMin = 60;
-constexpr int32_t HoursPerDay = 24;
-constexpr int32_t MSecsPerSec = 1000;
-constexpr int32_t SecsPerHour = MinsPerHour * SecsPerMin;
-constexpr int32_t MinsPerDay = HoursPerDay * MinsPerHour;
-constexpr int32_t SecsPerDay = MinsPerDay * SecsPerMin;
-constexpr int32_t MSecsPerDay = SecsPerDay * MSecsPerSec;
-constexpr int32_t OneSecond = MSecsPerSec;
+constexpr const int32_t MonthsPerYear = 12;
+constexpr const int32_t DaysPerWeek = 7;
+constexpr const int32_t MinsPerHour = 60;
+constexpr const int32_t SecsPerMin = 60;
+constexpr const int32_t HoursPerDay = 24;
+constexpr const int32_t MSecsPerSec = 1000;
+constexpr const int32_t SecsPerHour = MinsPerHour * SecsPerMin;
+constexpr const int32_t MinsPerDay = HoursPerDay * MinsPerHour;
+constexpr const int32_t SecsPerDay = MinsPerDay * SecsPerMin;
+constexpr const int32_t MSecsPerDay = SecsPerDay * MSecsPerSec;
+constexpr const int32_t OneSecond = MSecsPerSec;
 // Days between 1/1/0001 and 12/31/1899
-constexpr int32_t DateDelta = 693594;
-constexpr int32_t UnixDateDelta = 25569;
+constexpr const int32_t DateDelta = 693594;
+constexpr const int32_t UnixDateDelta = 25569;
 
 class TObject;
+class Exception;
 
 using TThreadMethod = nb::FastDelegate0<void>;
 using TNotifyEvent = nb::FastDelegate1<void, TObject * /*Sender*/>;
@@ -64,7 +63,7 @@ NB_CORE_EXPORT void Error(int32_t Id, int32_t ErrorId);
 NB_CORE_EXPORT void ThrowNotImplemented(int32_t ErrorId);
 
 enum class TObjectClassId {};
-#define NB_DEFINE_CLASS_ID(CLASS_ID) static constexpr TObjectClassId OBJECT_CLASS_ ## CLASS_ID = static_cast<TObjectClassId>(nb::counter_id())
+#define NB_DEFINE_CLASS_ID(CLASS_ID) static constexpr const TObjectClassId OBJECT_CLASS_ ## CLASS_ID = static_cast<TObjectClassId>(nb::counter_id())
 
 NB_DEFINE_CLASS_ID(TObject);
 class NB_CORE_EXPORT TObject
@@ -95,22 +94,22 @@ inline TObject *ToObj(const T &a) { return reinterpret_cast<TObject *>(nb::ToSiz
 
 struct TPoint
 {
-  int x{0};
-  int y{0};
+  int32_t x{0};
+  int32_t y{0};
   TPoint() = default;
-  TPoint(int ax, int ay) noexcept : x(ax), y(ay) {}
+  TPoint(int32_t ax, int32_t ay) noexcept : x(ax), y(ay) {}
 };
 
 struct TRect
 {
-  int Left{0};
-  int Top{0};
-  int Right{0};
-  int Bottom{0};
-  int Width() const { return Right - Left; }
-  int Height() const { return Bottom - Top; }
+  int32_t Left{0};
+  int32_t Top{0};
+  int32_t Right{0};
+  int32_t Bottom{0};
+  int32_t Width() const { return Right - Left; }
+  int32_t Height() const { return Bottom - Top; }
   TRect() = default;
-  TRect(int left, int top, int right, int bottom) noexcept :
+  TRect(int32_t left, int32_t top, int32_t right, int32_t bottom) noexcept :
     Left(left),
     Top(top),
     Right(right),

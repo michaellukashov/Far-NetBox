@@ -2,7 +2,6 @@
 
 #include <Global.h>
 #include <Classes.hpp>
-//#include <rdestl/fixed_array.h>
 
 #define THROWOSIFFALSE(C) { if (!(C)) ::RaiseLastOSError(); }
 #define SAFE_DESTROY_EX(CLASS, OBJ) { CLASS * PObj = (OBJ); (OBJ) = nullptr; delete PObj; }
@@ -163,8 +162,8 @@ public:
   }
 };
 
-extern int RandSeed;
-extern int random(int range);
+extern int32_t RandSeed;
+extern int32_t random(int32_t range);
 extern void Randomize();
 
 NB_CORE_EXPORT void RaiseLastOSError(DWORD LastError = 0);
@@ -197,10 +196,10 @@ public:
   UnicodeString TimePMString;
   UnicodeString ShortTimeFormat{"hh:nn"};
   UnicodeString LongTimeFormat{"hh:nn:ss"};
-  UnicodeString ShortMonthNames[12]{"Jan","Feb","Mar","Apr","May","Jun", "Jul","Aug","Sep","Oct","Nov","Dec"};
-  UnicodeString LongMonthNames[12]{"January","February","March","April","May","June", "July","August","September","October","November","December"};
-  UnicodeString ShortDayNames[7]{"Sun","Mon","Tue","Wed","Thu","Fri","Sat"};
-  UnicodeString LongDayNames[7]{"Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"};
+  UnicodeString ShortMonthNames[12]{"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+  UnicodeString LongMonthNames[12]{"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
+  UnicodeString ShortDayNames[7]{"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
+  UnicodeString LongDayNames[7]{"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
   uint16_t TwoDigitYearCenturyWindow{50};
 };
 

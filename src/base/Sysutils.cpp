@@ -109,11 +109,11 @@ void RaiseLastOSError(DWORD LastError)
   throw EOSError(ErrorMsg, LastError);
 }
 
-int RandSeed = 0;
+int32_t RandSeed = 0;
 
-int random(int range)
+int32_t random(int32_t range)
 {
-  return nb::ToInt(nb::ToDouble(rand()) / (nb::ToDouble(RAND_MAX) / range));
+  return nb::ToInt32(nb::ToDouble(rand()) / (nb::ToDouble(RAND_MAX) / range));
 }
 
 void Randomize()

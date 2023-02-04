@@ -53,10 +53,10 @@
 #include "disable_warnings_in_std_end.hpp"
 
 #ifndef True
-constexpr bool True = true;
+constexpr const bool True = true;
 #endif
 #ifndef False
-constexpr bool False = false;
+constexpr const bool False = false;
 #endif
 #ifndef Integer
 using Integer = int32_t;
