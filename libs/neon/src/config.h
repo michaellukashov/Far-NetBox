@@ -25,7 +25,7 @@
 
 #ifdef WIN32
 
-#define NEON_VERSION "0.32.4"
+#define NEON_VERSION "0.32.5"
 #define NE_VERSION_MAJOR (0)
 #define NE_VERSION_MINOR (32)
 
@@ -38,6 +38,8 @@
 #define HAVE_SETSOCKOPT
 
 #define HAVE_SSPI
+#define HAVE_SOCKLEN_T
+#define HAVE_WSPIAPI_H
 
 #define NE_HAVE_TS_SSL 1
 

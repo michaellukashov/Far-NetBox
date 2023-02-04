@@ -1809,7 +1809,8 @@ static void insert_challenge(struct auth_challenge **list, struct auth_challenge
         if (chall->protocol->strength > cur->protocol->strength
             || (cur->protocol->id == NE_AUTH_DIGEST
                 && chall->protocol->id == NE_AUTH_DIGEST
-                && chall->alg > cur->alg)) {
+                && chall->alg && cur->alg
+                && chall->alg->hash > cur->alg->hash)) {
             break;
         }
     }
