@@ -1,6 +1,8 @@
 /* opensslconf.h */
 /* WARNING: Generated automatically from opensslconf.h.in by Configure. */
 
+#include <openssl/opensslv.h>
+
 #ifdef  __cplusplus
 extern "C" {
 #endif
