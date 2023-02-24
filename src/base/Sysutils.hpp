@@ -74,7 +74,7 @@ enum FileAttributesEnum
 NB_CORE_EXPORT UnicodeString MB2W(const char *src, const UINT cp = CP_ACP);
 NB_CORE_EXPORT AnsiString W2MB(const wchar_t *src, const UINT cp = CP_ACP);
 
-typedef int TDayTable[12];
+typedef int32_t TDayTable[12];
 extern const TDayTable MonthDays[];
 
 NB_DEFINE_CLASS_ID(Exception);
