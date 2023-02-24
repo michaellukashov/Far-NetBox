@@ -8194,6 +8194,11 @@ void TTerminal::CollectUsage()
     Configuration->Usage->Inc("OpenedSessionsEncrypted");
   }
 
+  if (GetSessionData()->GetSendBuf() == 0)
+  {
+    Configuration->Usage->Inc(L"OpenedSessionsNoSendBuf");
+  }
+
   FCollectFileSystemUsage = true;
 }
 
