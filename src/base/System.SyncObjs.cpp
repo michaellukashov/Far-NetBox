@@ -7,7 +7,7 @@
 TCriticalSection::TCriticalSection() noexcept
 {
   //OutputDebugStringA(LOCATION_STR.c_str());
-  //TINYLOG_TRACE_ENTER;
+  TINYLOG_TRACE_ENTER();
   InitializeCriticalSection(&FSection);
 }
 

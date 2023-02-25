@@ -1167,19 +1167,21 @@ UnicodeString TConfiguration::GetFileVersion(const UnicodeString AFileName) cons
 UnicodeString TConfiguration::GetFileVersion(TVSFixedFileInfo * Info) const
 {
   TGuard Guard(FCriticalSection); nb::used(Guard);
+  UnicodeString Result;
+  if (Info)
   try
   {
-    UnicodeString Result =
+    Result =
       FormatVersion(
         HIWORD(Info->dwFileVersionMS),
         LOWORD(Info->dwFileVersionMS),
         HIWORD(Info->dwFileVersionLS));
-    return Result;
   }
   catch (Exception &E)
   {
     throw ExtException(&E, "Can't get file version");
   }
+  return Result;
 }
 
 UnicodeString TConfiguration::GetProductVersion() const

@@ -184,7 +184,9 @@ PVSFixedFileInfo GetFixedFileInfo(void *FileInfo)
   PVSFixedFileInfo Result = nullptr;
   if (FileInfo && !::VerQueryValue(FileInfo, L"\\", reinterpret_cast<void **>(&Result), &Len))
   {
+#ifdef NDEBUG
     throw Exception("Fixed file info not available");
+#endif
   }
   return Result;
 }
