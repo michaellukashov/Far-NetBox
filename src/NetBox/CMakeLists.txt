@@ -1423,6 +1423,40 @@ target_compile_definitions(rdestl PRIVATE
 )
 
 #-------------------------------------------------------------------------------
+#StackWalker
+
+add_library(StackWalker STATIC
+  ../../libs/StackWalker/StackWalker.cpp
+  ../../libs/StackWalker/StackWalker.h
+)
+
+target_include_directories(StackWalker PRIVATE
+  ../../libs
+#  ../../libs/fmt
+#  ../../libs/tinylog
+#  ../include
+#  ../base
+#  ../../libs/GSL/include
+)
+
+target_compile_options(StackWalker PRIVATE
+  /W4
+  -Zi
+  /wd4740
+)
+
+target_compile_definitions(StackWalker PRIVATE
+  ${NETBOX_CXX_FLAGS}
+  ${NETBOX_UNICODE_FLAGS}
+  ${NETBOX_PLATFORM_FLAGS}
+  -DTINYLOG_EXPORT
+  -D_SECURE_SCL=0
+  -D_CRT_SECURE_NO_DEPRECATE
+  -D_CRT_NONSTDC_NO_DEPRECATE
+  -D_SCL_SECURE_NO_DEPRECATE
+)
+
+#-------------------------------------------------------------------------------
 #tinylog
 
 add_library(tinylog STATIC
@@ -1927,6 +1961,7 @@ set(NETBOX_LIBRARIES
   fmt
   s3
   tinylog
+  StackWalker
   ${LIBMEMCPY_LIB}
 
   Ws2_32.lib
