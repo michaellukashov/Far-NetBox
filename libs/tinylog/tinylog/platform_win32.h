@@ -23,8 +23,10 @@
 #define NOMINMAX
 #endif
 
-#include <winsock2.h>
-#include <windows.h>
+#define WIN32_LEAN_AND_MEAN
+#include <WinSock2.h>
+#include <Windows.h>
+#include <stdint.h> // portable: uint64_t   MSVC: __int64
 #include <process.h>
 #include <intrin.h>
 #include <stdio.h>
@@ -83,9 +85,9 @@ static int pthread_join(pthread_t th, void **p)
 static void *atomic_exchange_acq_rel_ptr(void **p, void *xchg)
 {
 #if defined(WIN64)
-  return (void *)_InterlockedExchange64((int64_t *)p, (int64_t)xchg);
+  return (void *)_InterlockedExchange64((int64_t volatile *)p, (int64_t)xchg);
 #else
-  return (void *)InterlockedExchange((long *)p, (long)xchg);
+  return (void *)InterlockedExchange((int64_t volatile *)p, (int64_t)xchg);
 #endif
 }
 
@@ -338,6 +340,37 @@ inline int pthread_cond_destroy(pthread_cond_t *cv)
   CloseHandle(cv->events_[pthread_cond_t_::E_SIGNAL]);
   CloseHandle(cv->events_[pthread_cond_t_::E_BROADCAST]);
   return 0;
+}
+
+#ifndef _WINSOCK2API_
+
+// MSVC defines this in winsock2.h!?
+typedef struct timeval {
+    long tv_sec;
+    long tv_usec;
+} timeval;
+
+#endif //ifndef _WINSOCK2API_
+
+inline int gettimeofday(struct timeval * tp, struct timezone * tzp)
+{
+    // Note: some broken versions only have 8 trailing zero's, the correct epoch has 9 trailing zero's
+    // This magic number is the number of 100 nanosecond intervals since January 1, 1601 (UTC)
+    // until 00:00:00 January 1, 1970
+    static const uint64_t EPOCH = ((uint64_t) 116444736000000000ULL);
+
+    SYSTEMTIME system_time;
+    FILETIME file_time;
+    uint64_t time;
+
+    GetSystemTime( &system_time );
+    SystemTimeToFileTime( &system_time, &file_time );
+    time =  ((uint64_t)file_time.dwLowDateTime );
+    time += ((uint64_t)file_time.dwHighDateTime) << 32;
+
+    tp->tv_sec  = (long)((time - EPOCH) / 10000000L);
+    tp->tv_usec = (long)(system_time.wMilliseconds * 1000);
+    return 0;
 }
 
 #ifdef _MSC_VER

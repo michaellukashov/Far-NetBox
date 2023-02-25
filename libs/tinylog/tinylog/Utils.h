@@ -17,8 +17,8 @@ public:
     LEVEL_ERROR   = 4,
     LEVEL_FATAL   = 5;
 
-//  static std::string CurrentTime();
-//  static void CurrentTime(std::string &ref_time);
+  static std::string CurrentTime();
+  static void CurrentTime(std::string &ref_time);
   static void CurrentTime(struct timeval *tv, struct tm **tm);
 };
 

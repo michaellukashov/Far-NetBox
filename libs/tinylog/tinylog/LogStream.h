@@ -1,31 +1,35 @@
 #pragma once
 
+#include <cstdlib>
 #include <memory>
+#include <WinSock2.h>
+#include "platform_win32.h"
 #include "Buffer.h"
 #include "Utils.h"
+#include "LockFreeQueue.h"
 
 namespace tinylog {
 
 class LogStream
 {
   CUSTOM_MEM_ALLOCATION_IMPL
+  friend class TinyLog;
 public:
   LogStream() = delete;
   explicit LogStream(FILE *file, pthread_mutex_t &mutex, pthread_cond_t &cond, bool &already_swap);
   ~LogStream();
 
-  intptr_t Write(const void *data, intptr_t ToWrite);
+  int64_t Write(const char * data, int64_t ToWrite);
 
   void SwapBuffer();
   void WriteBuffer();
-#if 0
-  void SetPrefix(const char *pt_file, int i_line, const char *pt_func, Utils::LogLevel e_log_level);
-#endif // #if 0
-  LogStream &operator<<(const char *pt_log);
+  void SetPrefix(const char *file_name, int32_t line, const char *func_name, Utils::LogLevel log_level);
+  LogStream &operator<<(const std::string &log_data);
+  LogStream &operator<<(const char *log_data);
   template<typename StringType>
-  LogStream &operator<<(const StringType &ref_log)
+  LogStream &operator<<(const StringType &log_data)
   {
-    return this->operator<<(ref_log.c_str());
+    return this->operator<<(log_data.c_str());
   }
 
   void UpdateBaseTime();
@@ -34,31 +38,31 @@ private:
   LogStream(const LogStream &);
   LogStream &operator=(const LogStream &);
 
-  intptr_t InternalWrite(const void *data, intptr_t ToWrite);
+  int64_t InternalWrite(const char * log_data, int64_t ToWrite);
 
-  std::unique_ptr<Buffer> pt_front_buff_;
-  std::unique_ptr<Buffer> pt_back_buff_;
-  FILE *file_{nullptr}; // TODO: gsl::not_null
-  int i_line_{0};
-  const char *pt_func_{nullptr};
-#if 0
+  std::unique_ptr<Buffer> front_buff_;
+  std::unique_ptr<Buffer> back_buff_;
+//  std::unique_ptr<LockFreeQueue> queue_;
+  FILE *file_{nullptr}; // TODO: use gsl::not_null
+  const char *file_name_{nullptr}; // TODO: use gsl::not_null
+  int line_{0};
+  const char *func_name_{nullptr};
   std::string str_log_level_;
-#endif // #if 0
-  struct timeval tv_base_{};
-  struct tm *pt_tm_base_{nullptr};
+  timeval tv_base_{};
+  struct tm *tm_base_{nullptr};
   pthread_mutex_t &mutex_;
   pthread_cond_t &cond_;
   bool &already_swap_;
 };
 
-#if 0
 inline
-void LogStream::SetPrefix(const char *pt_file, int i_line, const char *pt_func, Utils::LogLevel e_log_level)
+void LogStream::SetPrefix(const char *file_name, int32_t line, const char *func_name, Utils::LogLevel log_level)
 {
-  i_line_  = i_line;
-  pt_func_ = pt_func;
+  file_name_ = file_name;
+  line_  = line;
+  func_name_ = func_name;
 
-  switch (e_log_level)
+  switch (log_level)
   {
   case Utils::LEVEL_DEBUG:
     str_log_level_ = "[DEBUG  ]";
@@ -80,6 +84,5 @@ void LogStream::SetPrefix(const char *pt_file, int i_line, const char *pt_func, 
     break;
   }
 }
-#endif // #if 0
 
 } // namespace tinylog
