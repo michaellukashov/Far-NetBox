@@ -1,6 +1,8 @@
 #ifndef __STACKWALKER_H__
 #define __STACKWALKER_H__
 
+#include <string>
+
 #if defined(_MSC_VER)
 
 /**********************************************************************
@@ -187,7 +189,11 @@ protected:
                             ULONGLONG fileVersion);
   virtual void OnCallstackEntry(CallstackEntryType eType, CallstackEntry& entry);
   virtual void OnDbgHelpErr(LPCSTR szFuncName, DWORD gle, DWORD64 addr);
+  virtual std::string OnFormatEntry(CallstackEntry& entry);
   virtual void OnOutput(LPCSTR szText);
+  virtual void OnEmptyOutput(LPCSTR szText);
+  virtual void OnInfoOutput(LPCSTR szText);
+  virtual void OnErrorOutput(LPCSTR szText);
 
   StackWalkerInternal* m_sw;
   HANDLE               m_hProcess;

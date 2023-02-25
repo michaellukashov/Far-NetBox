@@ -908,7 +908,7 @@ bool StackWalker::Init(ExceptType extype, int options, LPCSTR szSymPath, DWORD d
   this->m_options = options;
   this->m_modulesLoaded = FALSE;
   this->m_szSymPath = NULL;
-  this->m_MaxRecursionCount = 1000;
+  this->m_MaxRecursionCount = 100;
   this->m_sw = NULL;
   SetTargetProcess(dwProcessId, hProcess);
   SetSymPath(szSymPath);
@@ -1450,12 +1450,12 @@ void StackWalker::OnLoadModule(LPCSTR    img,
         img, mod, (LPVOID)baseAddr, size, result, symType, pdbName, v1, v2, v3, v4);
   }
   buffer[STACKWALK_MAX_NAMELEN - 1] = 0; // be sure it is NULL terminated
-  OnOutput(buffer);
+  OnInfoOutput(buffer);
 }
 
 void StackWalker::OnCallstackEntry(CallstackEntryType eType, CallstackEntry& entry)
 {
-  CHAR   buffer[STACKWALK_MAX_NAMELEN];
+  CHAR buffer[STACKWALK_MAX_NAMELEN];
   size_t maxLen = STACKWALK_MAX_NAMELEN;
 #if _MSC_VER >= 1400
   maxLen = _TRUNCATE;
@@ -1475,12 +1475,14 @@ void StackWalker::OnCallstackEntry(CallstackEntryType eType, CallstackEntry& ent
         MyStrCpy(entry.moduleName, STACKWALK_MAX_NAMELEN, "(module-name not available)");
       _snprintf_s(buffer, maxLen, "%p (%s): %s: %s\n", (LPVOID)entry.offset, entry.moduleName,
                   entry.lineFileName, entry.name);
+      buffer[STACKWALK_MAX_NAMELEN - 1] = 0;
+      OnEmptyOutput(buffer);
     }
     else
-      _snprintf_s(buffer, maxLen, "%s (%d): %s\n", entry.lineFileName, entry.lineNumber,
-                  entry.name);
-    buffer[STACKWALK_MAX_NAMELEN - 1] = 0;
-    OnOutput(buffer);
+    {
+      std::string str = OnFormatEntry(entry);
+      OnOutput(str.c_str());
+    }
   }
 }
 
@@ -1494,7 +1496,17 @@ void StackWalker::OnDbgHelpErr(LPCSTR szFuncName, DWORD gle, DWORD64 addr)
   _snprintf_s(buffer, maxLen, "ERROR: %s, GetLastError: %d (Address: %p)\n", szFuncName, gle,
               (LPVOID)addr);
   buffer[STACKWALK_MAX_NAMELEN - 1] = 0;
-  OnOutput(buffer);
+  OnErrorOutput(buffer);
+}
+
+std::string StackWalker::OnFormatEntry(CallstackEntry & entry)
+{
+  CHAR buffer[STACKWALK_MAX_NAMELEN]{};
+  size_t maxLen = STACKWALK_MAX_NAMELEN;
+  int len = _snprintf_s(buffer, maxLen, "%s (%d): %s\n", entry.lineFileName, entry.lineNumber,
+    entry.name);
+  buffer[STACKWALK_MAX_NAMELEN - 1] = 0;
+  return std::string(buffer, len);
 }
 
 void StackWalker::OnSymInit(LPCSTR szSearchPath, DWORD symOptions, LPCSTR szUserName)
@@ -1507,7 +1519,7 @@ void StackWalker::OnSymInit(LPCSTR szSearchPath, DWORD symOptions, LPCSTR szUser
   _snprintf_s(buffer, maxLen, "SymInit: Symbol-SearchPath: '%s', symOptions: %d, UserName: '%s'\n",
               szSearchPath, symOptions, szUserName);
   buffer[STACKWALK_MAX_NAMELEN - 1] = 0;
-  OnOutput(buffer);
+  OnInfoOutput(buffer);
   // Also display the OS-version
 #if _MSC_VER <= 1200
   OSVERSIONINFOA ver;
@@ -1518,7 +1530,7 @@ void StackWalker::OnSymInit(LPCSTR szSearchPath, DWORD symOptions, LPCSTR szUser
     _snprintf_s(buffer, maxLen, "OS-Version: %d.%d.%d (%s)\n", ver.dwMajorVersion,
                 ver.dwMinorVersion, ver.dwBuildNumber, ver.szCSDVersion);
     buffer[STACKWALK_MAX_NAMELEN - 1] = 0;
-    OnOutput(buffer);
+    OnInfoOutput(buffer);
   }
 #else
   OSVERSIONINFOEXA ver;
@@ -1534,7 +1546,7 @@ void StackWalker::OnSymInit(LPCSTR szSearchPath, DWORD symOptions, LPCSTR szUser
                 ver.dwMinorVersion, ver.dwBuildNumber, ver.szCSDVersion, ver.wSuiteMask,
                 ver.wProductType);
     buffer[STACKWALK_MAX_NAMELEN - 1] = 0;
-    OnOutput(buffer);
+    OnInfoOutput(buffer);
   }
 #if _MSC_VER >= 1900
 #pragma warning(pop)
@@ -1542,7 +1554,22 @@ void StackWalker::OnSymInit(LPCSTR szSearchPath, DWORD symOptions, LPCSTR szUser
 #endif
 }
 
-void StackWalker::OnOutput(LPCSTR buffer)
+void StackWalker::OnOutput(LPCSTR szText)
 {
-  OutputDebugStringA(buffer);
+  OutputDebugStringA(szText);
+}
+
+void StackWalker::OnEmptyOutput(LPCSTR szText)
+{
+  OutputDebugStringA(szText);
+}
+
+void StackWalker::OnInfoOutput(LPCSTR szText)
+{
+  OutputDebugStringA(szText);
+}
+
+void StackWalker::OnErrorOutput(LPCSTR szText)
+{
+  OutputDebugStringA(szText);
 }
