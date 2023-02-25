@@ -1,6 +1,5 @@
 #include <vcl.h>
 
-#include <tinylog/TinyLog.h>
 #include "System.SyncObjs.hpp"
 
 // TCriticalSection
