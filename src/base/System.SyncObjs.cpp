@@ -15,6 +15,11 @@ TCriticalSection::~TCriticalSection() noexcept
 {
 //  DEBUG_PRINTF("FAcquired: %d", FAcquired);
 //  OutputDebugStringA(LOCATION_STR.c_str());
+  if (FAcquired > 0)
+  {
+    tinylog::StackWalker sw;
+    sw.ShowCallstack();
+  }
   DebugAssert(FAcquired == 0);
   DeleteCriticalSection(&FSection);
 }
