@@ -102,14 +102,14 @@ std::string to_str(const T &t)
         constexpr const char * sfn{tinylog::past_last_slash(__FILE__)}; \
         return tinylog::repr("%s:%d", sfn, __LINE__); \
     }()
-#define FUNC_NAME __FUNCTION__ // __PRETTY_FUNCTION__
+#define FUNC_NAME __func__ // __FUNCTION__ // __PRETTY_FUNCTION__
 #define LOCATION_STR tinylog::repr("[%s] %s", SHORT_FILE_NAME_AND_LINE, FUNC_NAME)
 #define LOCATION_STR_SHORT tinylog::repr("%s", SHORT_FILE_NAME_AND_LINE)
 
 #ifndef NDEBUG
-#define TINYLOG_TRACE_ENTER tinylog::TraceLogger traceLogger(__FILE__, __func__, __LINE__); (void)traceLogger;
+#define TINYLOG_TRACE_ENTER() tinylog::TraceLogger traceLogger(__FILE__, __func__, __LINE__); (void)traceLogger;
 #else
-#define TINYLOG_TRACE_ENTER
+#define TINYLOG_TRACE_ENTER()
 #endif //ifndef NDEBUG
 
 } // namespace tinylog
