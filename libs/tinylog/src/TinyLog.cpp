@@ -8,13 +8,13 @@
 
 namespace tinylog {
 
-std::string Format(const std::string& fmt, fmt::ArgList args)
+/*std::string Format(const std::string& fmt, fmt::ArgList args)
 {
   fmt::MemoryWriter w;
   w.write(fmt.data(), args);
   return std::string(w.data(), w.size());
 }
-FMT_VARIADIC_W(const std::string, Format, const std::string&)
+FMT_VARIADIC_W(const std::string, Format, const std::string&)*/
 
 class TinyLogImpl
 {
@@ -193,6 +193,11 @@ void TinyLog::Close()
   impl_->Close();
 }
 
+template<typename... Args>
+static inline std::string repr(const char *fmt, Args &&... args)
+{
+  return fmt::format(fmt, std::forward<Args>(args)...);
+}
 
 std::string TraceLogger::indent_;
 
@@ -201,14 +206,15 @@ TraceLogger::TraceLogger(const char* fileName, const char* funcName, int32_t lin
   funcName_(funcName),
   lineNumber_(lineNumber)
 {
-  TINYLOG_TRACE(g_tinylog) << Format("%sEntering %s() - (%s:%d)", indent_, funcName_, fileName_, lineNumber_);
+//  TINYLOG_TRACE(g_tinylog) << Format("%sEntering %s() - (%s:%d)", indent_, funcName_, fileName_, lineNumber_);
+  TINYLOG_TRACE(g_tinylog) << repr("%sEntering %s() - (%s:%d)", indent_, funcName_, fileName_, lineNumber_);
   indent_.append("  ");
 }
 
 TraceLogger::~TraceLogger()
 {
   indent_.resize(indent_.length() - 2);
-  TINYLOG_TRACE(g_tinylog) << Format("%sLeaving %s() - (%s)", indent_, funcName_, fileName_);
+  TINYLOG_TRACE(g_tinylog) << repr("%sLeaving %s() - (%s)", indent_, funcName_, fileName_);
 }
 
 } // namespace tinylog
