@@ -9,6 +9,9 @@
 #define TINYLOG_API
 #endif
 
+#include <fmt/format.h>
+#include <fmt/printf.h>
+
 #include "Utils.h"
 #include "LogStream.h"
 
@@ -37,6 +40,8 @@ public:
   int64_t Write(const char * data, int64_t ToWrite);
   void Close();
 
+  // TODO: group / groupEnd
+
 private:
   std::unique_ptr<TinyLogImpl> impl_;
 
@@ -62,9 +67,47 @@ private:
 
 #endif //ifndef NDEBUG
 
+template<typename... Args>
+static inline std::string repr(const char *fmt, Args &&... args)
+{
+  return fmt::sprintf(fmt, std::forward<Args>(args)...);
+}
+
+static constexpr const char * past_last_slash(const char * str, const char * last_slash)
+{
+  return *str == '\0' ? last_slash
+    : ((*str == '/') || (*str == '\\')) ? past_last_slash(str + 1, str + 1) : past_last_slash(str + 1, last_slash);
+}
+
+static constexpr const char * past_last_slash(const char * str)
+{
+  return past_last_slash(str, str);
+}
+
+template<class T>
+std::string to_str(const T &t)
+{
+    std::ostringstream out;
+    out << t;
+    return out.str();
+}
+
+#define SHORT_FILE_NAME \
+    [](){ \
+        constexpr const char * sfn{tinylog::past_last_slash(__FILE__)}; \
+        return sfn; \
+    }()
+#define SHORT_FILE_NAME_AND_LINE \
+    [](){ \
+        constexpr const char * sfn{tinylog::past_last_slash(__FILE__)}; \
+        return tinylog::repr("%s:%d", sfn, __LINE__); \
+    }()
+#define FUNC_NAME __FUNCTION__ // __PRETTY_FUNCTION__
+#define LOCATION_STR tinylog::repr("[%s] %s", SHORT_FILE_NAME_AND_LINE, FUNC_NAME)
+#define LOCATION_STR_SHORT tinylog::repr("%s", SHORT_FILE_NAME_AND_LINE)
 
 #ifndef NDEBUG
-#define TINYLOG_TRACE_ENTER TraceLogger traceLogger(__FILE__, __func__, __LINE__);
+#define TINYLOG_TRACE_ENTER tinylog::TraceLogger traceLogger(__FILE__, __func__, __LINE__); (void)traceLogger;
 #else
 #define TINYLOG_TRACE_ENTER
 #endif //ifndef NDEBUG

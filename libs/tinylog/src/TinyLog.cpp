@@ -3,8 +3,6 @@
 #include <tinylog/TinyLog.h>
 #include <tinylog/LogStream.h>
 #include <tinylog/Config.h>
-#include <fmt/format.h>
-#include <fmt/printf.h>
 
 namespace tinylog {
 
@@ -193,28 +191,23 @@ void TinyLog::Close()
   impl_->Close();
 }
 
-template<typename... Args>
-static inline std::string repr(const char *fmt, Args &&... args)
-{
-  return fmt::format(fmt, std::forward<Args>(args)...);
-}
-
 std::string TraceLogger::indent_;
 
 TraceLogger::TraceLogger(const char* fileName, const char* funcName, int32_t lineNumber) :
-  fileName_(fileName),
+  fileName_(tinylog::past_last_slash(fileName)),
   funcName_(funcName),
   lineNumber_(lineNumber)
 {
-//  TINYLOG_TRACE(g_tinylog) << Format("%sEntering %s() - (%s:%d)", indent_, funcName_, fileName_, lineNumber_);
-  TINYLOG_TRACE(g_tinylog) << repr("%sEntering %s() - (%s:%d)", indent_, funcName_, fileName_, lineNumber_);
+  TINYLOG_TRACE(g_tinylog) << repr("%s [%s:%d] Entering %s()", indent_, fileName_, lineNumber_, funcName_);
+//  OutputDebugStringA(repr("%s [%s:%d] Entering %s()", indent_, fileName_, lineNumber_, funcName_).c_str());
   indent_.append("  ");
 }
 
 TraceLogger::~TraceLogger()
 {
   indent_.resize(indent_.length() - 2);
-  TINYLOG_TRACE(g_tinylog) << repr("%sLeaving %s() - (%s)", indent_, funcName_, fileName_);
+  TINYLOG_TRACE(g_tinylog) << repr("%s [%s] Leaving %s() - (%s)", indent_, fileName_, funcName_);
+//  OutputDebugStringA(repr("%s [%s] Leaving %s()", indent_, fileName_, funcName_).c_str());
 }
 
 } // namespace tinylog
