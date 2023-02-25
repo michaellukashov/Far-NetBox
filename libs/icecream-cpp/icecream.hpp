@@ -2682,7 +2682,7 @@ namespace icecream{ namespace detail
         std::string const function;
         std::string const arg_names;
 
-        // Used by compilers that expand an empyt __VA_ARGS__ in
+        // Used by compilers that expand an empty __VA_ARGS__ in
         // Dispatcher{bla, #__VA_ARGS__} to Dispatcher{bla, ""}
         Dispatcher(
             std::string const& file_,
@@ -2696,7 +2696,7 @@ namespace icecream{ namespace detail
             , arg_names {arg_names_}
         {}
 
-        // Used by compilers that expand an empyt __VA_ARGS__ in
+        // Used by compilers that expand an empty __VA_ARGS__ in
         // Dispatcher{bla, #__VA_ARGS__} to Dispatcher{bla, }
         Dispatcher(
             std::string const& file_,
