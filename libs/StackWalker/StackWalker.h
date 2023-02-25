@@ -55,6 +55,8 @@ typedef unsigned long SIZE_T, *PSIZE_T;
 #endif
 #endif // _MSC_VER < 1300
 
+namespace sw {
+
 class StackWalkerInternal; // forward
 class StackWalker
 {
@@ -275,5 +277,7 @@ protected:
 #endif
 
 #endif //defined(_MSC_VER)
+
+} //namespace sw
 
 #endif // __STACKWALKER_H__

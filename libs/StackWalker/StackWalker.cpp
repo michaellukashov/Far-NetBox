@@ -90,6 +90,8 @@
 #include <windows.h>
 #include <new>
 
+namespace sw {
+
 #pragma comment(lib, "version.lib") // for "VerQueryValue"
 
 #pragma warning(disable : 4826)
@@ -1573,3 +1575,5 @@ void StackWalker::OnErrorOutput(LPCSTR szText)
 {
   OutputDebugStringA(szText);
 }
+
+} // namespace sw
