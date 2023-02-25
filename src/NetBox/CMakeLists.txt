@@ -1426,20 +1426,24 @@ target_compile_definitions(rdestl PRIVATE
 #tinylog
 
 add_library(tinylog STATIC
-  ../../libs/tinylog/tinylog/TinyLog.cpp
-  ../../libs/tinylog/tinylog/Utils.cpp
-  ../../libs/tinylog/tinylog/LogStream.cpp
-  ../../libs/tinylog/tinylog/Buffer.cpp
+  ../../libs/tinylog/src/TinyLog.cpp
+  ../../libs/tinylog/src/Utils.cpp
+  ../../libs/tinylog/src/LogStream.cpp
+  ../../libs/tinylog/src/Buffer.cpp
+  ../../libs/tinylog/src/LockFreeQueue.cpp
 
   ../../libs/tinylog/tinylog/TinyLog.h
   ../../libs/tinylog/tinylog/Utils.h
   ../../libs/tinylog/tinylog/LogStream.h
   ../../libs/tinylog/tinylog/Config.h
   ../../libs/tinylog/tinylog/Buffer.h
+  ../../libs/tinylog/tinylog/LockFreeQueue.h
 )
 
 target_include_directories(tinylog PRIVATE
   ../../libs
+  ../../libs/fmt
+  ../../libs/tinylog
   ../include
   ../base
   ../../libs/GSL/include
@@ -1448,6 +1452,7 @@ target_include_directories(tinylog PRIVATE
 target_compile_definitions(tinylog PRIVATE
   ${NETBOX_CXX_FLAGS}
   ${NETBOX_UNICODE_FLAGS}
+  ${NETBOX_PLATFORM_FLAGS}
   -DTINYLOG_EXPORT
 )
 
@@ -1478,6 +1483,7 @@ target_include_directories(fmt PRIVATE
 target_compile_definitions(fmt PRIVATE
   ${NETBOX_CXX_FLAGS}
   ${NETBOX_UNICODE_FLAGS}
+  ${NETBOX_PLATFORM_FLAGS}
   ${fmt_DEFINES}
 )
 
@@ -2005,6 +2011,7 @@ target_compile_options(NetBox PRIVATE
   ${PUTTY_COMPILE_FLAGS}
   ${NETBOX_DEFS}
   ${NETBOX_UNICODE_FLAGS}
+  ${NETBOX_PLATFORM_FLAGS}
   -DGSL_THROW_ON_CONTRACT_VIOLATION
   -DNOMINMAX
   -D_CRTIMP=
