@@ -1723,6 +1723,10 @@ void WinInitialize()
 __removed #pragma warn -8111
 __removed #pragma warn .8111
 
+  // TODO: setup tinylog ; setup icescream
+  //auto sstr = std::ostringstream{};
+  //icecream::ic.output(sstr);
+  //IC();
 }
 
 void WinFinalize()
