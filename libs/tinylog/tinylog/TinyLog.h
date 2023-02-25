@@ -11,6 +11,8 @@
 
 #include <fmt/format.h>
 #include <fmt/printf.h>
+#include <StackWalker/StackWalker.h>
+#include <icecream-cpp/icecream.hpp>
 
 #include "Utils.h"
 #include "LogStream.h"
@@ -111,6 +113,19 @@ std::string to_str(const T &t)
 #else
 #define TINYLOG_TRACE_ENTER()
 #endif //ifndef NDEBUG
+
+class StackWalker : public sw::StackWalker
+{
+public:
+  explicit StackWalker(int options = StackWalker::RetrieveSymbol|StackWalker::RetrieveLine);
+protected:
+  virtual void OnDbgHelpErr(LPCSTR szFuncName, DWORD gle, DWORD64 addr) override;
+  virtual std::string OnFormatEntry(CallstackEntry& entry) override;
+  virtual void OnOutput(LPCSTR szText) override;
+  virtual void OnEmptyOutput(LPCSTR szText) override;
+  virtual void OnInfoOutput(LPCSTR szText) override;
+  virtual void OnErrorOutput(LPCSTR szText) override;
+};
 
 } // namespace tinylog
 

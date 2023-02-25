@@ -207,7 +207,39 @@ TraceLogger::~TraceLogger()
 {
   indent_.resize(indent_.length() - 2);
   TINYLOG_TRACE(g_tinylog) << repr("%s [%s] Leaving %s() - (%s)", indent_, fileName_, funcName_);
-//  OutputDebugStringA(repr("%s [%s] Leaving %s()", indent_, fileName_, funcName_).c_str());
+  //  OutputDebugStringA(repr("%s [%s] Leaving %s()", indent_, fileName_, funcName_).c_str());
+}
+
+StackWalker::StackWalker(int options) : sw::StackWalker(options)
+{
+  m_MaxRecursionCount = 10;
+}
+
+void StackWalker::OnDbgHelpErr(LPCSTR szFuncName, DWORD gle, DWORD64 addr)
+{
+}
+
+std::string StackWalker::OnFormatEntry(CallstackEntry & entry)
+{
+  return repr("[%s:%d] %s", past_last_slash(entry.lineFileName), entry.lineNumber, entry.name);
+}
+
+void StackWalker::OnOutput(LPCSTR szText)
+{
+  TINYLOG_TRACE(g_tinylog) << szText;
+  OutputDebugStringA(szText);
+}
+
+void StackWalker::OnEmptyOutput(LPCSTR szText)
+{
+}
+
+void StackWalker::OnInfoOutput(LPCSTR szText)
+{
+}
+
+void StackWalker::OnErrorOutput(LPCSTR szText)
+{
 }
 
 } // namespace tinylog
