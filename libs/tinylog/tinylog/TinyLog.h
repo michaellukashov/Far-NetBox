@@ -27,10 +27,10 @@ public:
   explicit TinyLog(FILE * file) noexcept;
   ~TinyLog() noexcept;
 
-  static TinyLog& GetInstance()
+  static auto instance() -> TinyLog&
   {
-    static TinyLog instance;
-    return instance;
+    static TinyLog instance_;
+    return instance_;
   }
 
   void SetLogLevel(Utils::LogLevel e_log_level);
@@ -114,7 +114,7 @@ std::string to_str(const T &t)
 
 } // namespace tinylog
 
-#define g_tinylog (tinylog::TinyLog::GetInstance())
+#define g_tinylog (tinylog::TinyLog::instance())
 
 #define TINYLOG_TRACE(logger) if (logger.GetLogLevel() <= Utils::LEVEL_TRACE) \
   logger.GetLogStream(__FILE__, __LINE__, __func__, Utils::LEVEL_TRACE)
