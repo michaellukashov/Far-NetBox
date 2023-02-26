@@ -53,9 +53,15 @@ TWinSCPPlugin::TWinSCPPlugin(HINSTANCE HInst) noexcept :
   TCustomFarPlugin(OBJECT_CLASS_TWinSCPPlugin, HInst),
   FInitialized(false)
 {
+#ifndef NDEBUG
   // setup debug handlers
   UnicodeString DbgFileName = GetDbgPath("NETBOX_DBG");
   GetGlobals()->SetupDbgHandles(DbgFileName);
+  // setup tinylog
+  g_tinylog.level(tinylog::Utils::LEVEL_TRACE); // TODO: read from config file
+  FILE *logFile = base::LocalOpenFileForWriting("%TEMP%/netbox-dbglog.txt"); // TODO: read from config file
+  g_tinylog.file(logFile);
+#endif //ifndef NDEBUG
 }
 
 TWinSCPPlugin::~TWinSCPPlugin() noexcept
