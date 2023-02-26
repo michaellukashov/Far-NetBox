@@ -22,7 +22,8 @@ public:
   explicit TinyLogImpl(FILE * file) noexcept;
   ~TinyLogImpl() noexcept;
 
-  void SetLogLevel(Utils::LogLevel e_log_level);
+  void SetFile(FILE *file) noexcept;
+  void SetLogLevel(Utils::LogLevel log_level);
   Utils::LogLevel GetLogLevel() const;
   LogStream &GetLogStream(const char *file_name, int32_t line, const char *func_name, Utils::LogLevel log_level);
 
@@ -39,7 +40,7 @@ private:
   int32_t MainLoop();
 
   std::unique_ptr<LogStream> logstream_;
-  Utils::LogLevel log_level_{};
+  Utils::LogLevel log_level_{Utils::LEVEL_INFO};
 
   pthread_t thrd_{INVALID_HANDLE_VALUE};
   DWORD ThreadId_{0};
@@ -75,9 +76,14 @@ TinyLogImpl::~TinyLogImpl() noexcept
   pthread_mutex_destroy(&mutex_);
 }
 
-void TinyLogImpl::SetLogLevel(Utils::LogLevel e_log_level)
+void TinyLogImpl::SetFile(FILE * file) noexcept
 {
-  log_level_ = e_log_level;
+  logstream_->SetFile(file);
+}
+
+void TinyLogImpl::SetLogLevel(Utils::LogLevel log_level)
+{
+  log_level_ = log_level;
 }
 
 Utils::LogLevel TinyLogImpl::GetLogLevel() const
@@ -150,24 +156,29 @@ int32_t TinyLogImpl::MainLoop()
   return 0;
 }
 
-TinyLog::TinyLog() :
+TinyLog::TinyLog() noexcept :
   impl_(std::make_unique<TinyLogImpl>(nullptr))
 {
 }
 
-TinyLog::TinyLog(FILE *file) noexcept :
+/*TinyLog::TinyLog(FILE *file) noexcept :
   impl_(std::make_unique<TinyLogImpl>(file))
 {
   assert(file != nullptr);
-}
+}*/
 
 TinyLog::~TinyLog() noexcept
 {
 }
 
-void TinyLog::SetLogLevel(Utils::LogLevel e_log_level)
+void TinyLog::level(Utils::LogLevel log_level)
 {
-  impl_->SetLogLevel(e_log_level);
+  impl_->SetLogLevel(log_level);
+}
+
+void TinyLog::file(FILE * file) noexcept
+{
+  impl_->SetFile(file);
 }
 
 Utils::LogLevel TinyLog::GetLogLevel() const
@@ -198,7 +209,7 @@ TraceLogger::TraceLogger(const char* fileName, const char* funcName, int32_t lin
   funcName_(funcName),
   lineNumber_(lineNumber)
 {
-  TINYLOG_TRACE(g_tinylog) << repr("%s [%s:%d] Entering %s()", indent_, fileName_, lineNumber_, funcName_);
+  TINYLOG_TRACE(g_tinylog) << repr("%s [%10s:%3d] Entering %s()", indent_, fileName_, lineNumber_, funcName_);
 //  OutputDebugStringA(repr("%s [%s:%d] Entering %s()", indent_, fileName_, lineNumber_, funcName_).c_str());
   indent_.append("  ");
 }
@@ -206,7 +217,7 @@ TraceLogger::TraceLogger(const char* fileName, const char* funcName, int32_t lin
 TraceLogger::~TraceLogger()
 {
   indent_.resize(indent_.length() - 2);
-  TINYLOG_TRACE(g_tinylog) << repr("%s [%s] Leaving %s() - (%s)", indent_, fileName_, funcName_);
+  TINYLOG_TRACE(g_tinylog) << repr("%s [%10s    ] Leaving %s()", indent_, fileName_, funcName_);
   //  OutputDebugStringA(repr("%s [%s] Leaving %s()", indent_, fileName_, funcName_).c_str());
 }
 

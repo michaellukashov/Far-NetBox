@@ -22,4 +22,15 @@ public:
   static void CurrentTime(struct timeval *tv, struct tm **tm);
 };
 
+static constexpr const char * past_last_slash(const char * str, const char * last_slash)
+{
+  return *str == '\0' ? last_slash
+    : ((*str == '/') || (*str == '\\')) ? past_last_slash(str + 1, str + 1) : past_last_slash(str + 1, last_slash);
+}
+
+static constexpr const char * past_last_slash(const char * str)
+{
+  return past_last_slash(str, str);
+}
+
 } // namespace tinylog

@@ -25,8 +25,8 @@ class TinyLog
 {
   CUSTOM_MEM_ALLOCATION_IMPL
 public:
-  TinyLog();
-  explicit TinyLog(FILE * file) noexcept;
+  TinyLog() noexcept;
+  // explicit TinyLog(FILE * file) noexcept;
   ~TinyLog() noexcept;
 
   static auto instance() -> TinyLog&
@@ -35,7 +35,8 @@ public:
     return instance_;
   }
 
-  void SetLogLevel(Utils::LogLevel e_log_level);
+  void level(Utils::LogLevel log_level);
+  void file(FILE *file) noexcept;
   Utils::LogLevel GetLogLevel() const;
   LogStream &GetLogStream(const char *file_name, int32_t line_num, const char *func_name, Utils::LogLevel log_level);
 
@@ -73,17 +74,6 @@ template<typename... Args>
 static inline std::string repr(const char *fmt, Args &&... args)
 {
   return fmt::sprintf(fmt, std::forward<Args>(args)...);
-}
-
-static constexpr const char * past_last_slash(const char * str, const char * last_slash)
-{
-  return *str == '\0' ? last_slash
-    : ((*str == '/') || (*str == '\\')) ? past_last_slash(str + 1, str + 1) : past_last_slash(str + 1, last_slash);
-}
-
-static constexpr const char * past_last_slash(const char * str)
-{
-  return past_last_slash(str, str);
 }
 
 template<class T>

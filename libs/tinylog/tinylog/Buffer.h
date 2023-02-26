@@ -1,6 +1,6 @@
 #pragma once
 
-#include <stdio.h>
+//#include <stdio.h>
 #include <string>
 
 #include "Utils.h"
@@ -28,7 +28,7 @@ private:
   Buffer(const Buffer&);
   Buffer& operator=(const Buffer&);
 
-  char* pt_data_{nullptr};
+  char* data_{nullptr};
   uint64_t size_{0};
   uint64_t capacity_{0};
 };

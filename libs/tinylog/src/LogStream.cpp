@@ -19,7 +19,6 @@ LogStream::LogStream(FILE *file, pthread_mutex_t &mutex, pthread_cond_t &cond, b
   cond_(cond),
   already_swap_(already_swap)
 {
-
   Utils::CurrentTime(&tv_base_, &tm_base_);
 }
 
@@ -55,6 +54,8 @@ void LogStream::SwapBuffer()
  */
 void LogStream::WriteBuffer()
 {
+  if (!file_)
+    return;
   back_buff_->Flush(file_);
   back_buff_->Clear();
 
@@ -84,20 +85,16 @@ void LogStream::WriteBuffer()
   }*/
 }
 
+void LogStream::SetFile(FILE * file)
+{
+  assert(file_ == nullptr);
+  file_ = file;
+}
+
 int64_t LogStream::InternalWrite(const char *log_data, int64_t ToWrite)
 {
   int64_t Result = ToWrite;
   UpdateBaseTime();
-/*
-  char buff[256]{};
-  int n_append = sprintf_s(buff, sizeof(buff), "%d-%02d-%02d %02d:%02d:%02d.%.03ld %s %d %s %s %s\n",
-      tm_base_->tm_year + 1900, tm_base_->tm_mon + 1, tm_base_->tm_mday,
-      tm_base_->tm_hour, tm_base_->tm_min, tm_base_->tm_sec, (long)tv_base_.tv_usec / 1000,
-      file_name_, line_, func_name_, str_log_level_.c_str(),
-      log_data);
-
-  std::string log(buff, n_append);
-*/
   // queue_->Push(log);
 
   pthread_mutex_lock(&mutex_);
@@ -115,9 +112,9 @@ int64_t LogStream::InternalWrite(const char *log_data, int64_t ToWrite)
   return Result;
 }
 
-LogStream &LogStream::operator<<(const char *pt_log)
+LogStream &LogStream::operator<<(const char *log_data)
 {
-  InternalWrite(pt_log, strlen(pt_log));
+  InternalWrite(log_data, strlen(log_data));
 
   return *this;
 }
@@ -188,4 +185,34 @@ void LogStream::UpdateBaseTime()
     tv_base_.tv_usec = tv_now.tv_usec;
   }
 }
+
+void LogStream::SetPrefix(const char *file_name, int32_t line, const char *func_name, Utils::LogLevel log_level)
+{
+  file_name_ = tinylog::past_last_slash(file_name);
+  line_  = line;
+  func_name_ = func_name;
+
+  switch (log_level)
+  {
+  case Utils::LEVEL_DEBUG:
+    str_log_level_ = "[DEBUG  ]";
+    break;
+  case Utils::LEVEL_INFO:
+    str_log_level_ = "[INFO   ]";
+    break;
+  case Utils::LEVEL_WARNING:
+    str_log_level_ = "[WARNING]";
+    break;
+  case Utils::LEVEL_ERROR:
+    str_log_level_ = "[ERROR  ]";
+    break;
+  case Utils::LEVEL_FATAL:
+    str_log_level_ = "[FATAL  ]";
+    break;
+  default:
+    str_log_level_ = "[INFO   ]";
+    break;
+  }
+}
+
 } // namespace tinylog

@@ -23,6 +23,7 @@ public:
 
   void SwapBuffer();
   void WriteBuffer();
+  void SetFile(FILE *file);
   void SetPrefix(const char *file_name, int32_t line, const char *func_name, Utils::LogLevel log_level);
   LogStream &operator<<(const std::string &log_data);
   LogStream &operator<<(const char *log_data);
@@ -54,35 +55,5 @@ private:
   pthread_cond_t &cond_;
   bool &already_swap_;
 };
-
-inline
-void LogStream::SetPrefix(const char *file_name, int32_t line, const char *func_name, Utils::LogLevel log_level)
-{
-  file_name_ = file_name;
-  line_  = line;
-  func_name_ = func_name;
-
-  switch (log_level)
-  {
-  case Utils::LEVEL_DEBUG:
-    str_log_level_ = "[DEBUG  ]";
-    break;
-  case Utils::LEVEL_INFO:
-    str_log_level_ = "[INFO   ]";
-    break;
-  case Utils::LEVEL_WARNING:
-    str_log_level_ = "[WARNING]";
-    break;
-  case Utils::LEVEL_ERROR:
-    str_log_level_ = "[ERROR  ]";
-    break;
-  case Utils::LEVEL_FATAL:
-    str_log_level_ = "[FATAL  ]";
-    break;
-  default:
-    str_log_level_ = "[INFO   ]";
-    break;
-  }
-}
 
 } // namespace tinylog
