@@ -351,6 +351,14 @@ bool CheckNullOrStructSize(const T* s) { return !s || (s->StructSize >= sizeof(T
 template<typename T>
 bool CheckStructSize(const T* s) { return s && (s->StructSize >= sizeof(T)); }
 
+// from Global.h
+#define NB__TEXT(quote) L##quote      // r_winnt
+#define NB_TEXT(quote) NB__TEXT(quote)
+extern void DoAssert(const wchar_t *Message, const wchar_t *Filename, uint32_t LineNumber);
+extern "C" void DoAssertC(char *Message, char *Filename, int LineNumber);
+#define DebugAssert(p) ((p) ? (void)0 : DoAssert(NB_TEXT(#p), NB_TEXT(__FILE__), __LINE__))
+#define DebugCheck(p) { bool __CHECK_RESULT__ = (p); DebugAssert(__CHECK_RESULT__); }
+
 #ifdef _DEBUG
 #define SELF_TEST(code) \
 struct SelfTest {       \
