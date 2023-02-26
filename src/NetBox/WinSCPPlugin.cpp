@@ -27,10 +27,35 @@ void DestroyFarPlugin(TCustomFarPlugin *& Plugin)
   SAFE_DESTROY(Plugin);
 }
 
+constexpr const char * DEVNULL = "";
+
+static UnicodeString GetDbgPath(const char *env) noexcept
+{
+  const char *path = getenv(env);
+  if (path)
+  {
+    UnicodeString s;
+    if (*path == '~')
+    {
+      const char *home = getenv("HOME");
+      s = home ? home : getenv("TEMP");
+      s += path + 1;
+    } else
+      s = path;
+
+    return s;
+  }
+
+  return DEVNULL;
+}
+
 TWinSCPPlugin::TWinSCPPlugin(HINSTANCE HInst) noexcept :
   TCustomFarPlugin(OBJECT_CLASS_TWinSCPPlugin, HInst),
   FInitialized(false)
 {
+  // setup debug handlers
+  UnicodeString DbgFileName = GetDbgPath("NETBOX_DBG");
+  GetGlobals()->SetupDbgHandles(DbgFileName);
 }
 
 TWinSCPPlugin::~TWinSCPPlugin() noexcept
