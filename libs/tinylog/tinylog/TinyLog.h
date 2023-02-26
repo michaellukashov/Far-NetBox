@@ -37,8 +37,8 @@ public:
 
   void level(Utils::LogLevel log_level);
   void file(FILE *file) noexcept;
-  Utils::LogLevel GetLogLevel() const;
-  LogStream &GetLogStream(const char *file_name, int32_t line_num, const char *func_name, Utils::LogLevel log_level);
+  tinylog::Utils::LogLevel GetLogLevel() const;
+  LogStream &GetLogStream(const char *file_name, int32_t line_num, const char *func_name, tinylog::Utils::LogLevel log_level);
 
   int64_t Write(const char * data, int64_t ToWrite);
   void Close();
@@ -69,20 +69,6 @@ private:
 };
 
 #endif //ifndef NDEBUG
-
-template<typename... Args>
-static inline std::string repr(const char *fmt, Args &&... args)
-{
-  return fmt::sprintf(fmt, std::forward<Args>(args)...);
-}
-
-template<class T>
-std::string to_str(const T &t)
-{
-    std::ostringstream out;
-    out << t;
-    return out.str();
-}
 
 #define SHORT_FILE_NAME \
     [](){ \
@@ -121,21 +107,34 @@ protected:
 
 #define g_tinylog (tinylog::TinyLog::instance())
 
-#define TINYLOG_TRACE(logger) if (logger.GetLogLevel() <= Utils::LEVEL_TRACE) \
-  logger.GetLogStream(__FILE__, __LINE__, __func__, Utils::LEVEL_TRACE)
+#define TINYLOG_TRACE(logger) if (logger.GetLogLevel() <= tinylog::Utils::LEVEL_TRACE) \
+  logger.GetLogStream(__FILE__, __LINE__, __func__, tinylog::Utils::LEVEL_TRACE)
 
-#define TINYLOG_DEBUG(logger) if (logger.GetLogLevel() <= Utils::LEVEL_DEBUG) \
-  logger.GetLogStream(__FILE__, __LINE__, __func__, Utils::LEVEL_DEBUG)
+#define TINYLOG_DEBUG(logger) if (logger.GetLogLevel() <= tinylog::Utils::LEVEL_DEBUG) \
+  logger.GetLogStream(__FILE__, __LINE__, __func__, tinylog::Utils::LEVEL_DEBUG)
 
-#define TINYLOG_INFO(logger) if (logger.GetLogLevel() <= Utils::LEVEL_INFO) \
-  logger.GetLogStream(__FILE__, __LINE__, __func__, Utils::LEVEL_INFO)
+#define TINYLOG_INFO(logger) if (logger.GetLogLevel() <= tinylog::Utils::LEVEL_INFO) \
+  logger.GetLogStream(__FILE__, __LINE__, __func__, tinylog::Utils::LEVEL_INFO)
 
-#define TINYLOG_WARNING(logger) if (logger.GetLogLevel() <= Utils::LEVEL_WARNING) \
-  logger.GetLogStream(__FILE__, __LINE__, __func__, Utils::LEVEL_WARNING)
+#define TINYLOG_WARNING(logger) if (logger.GetLogLevel() <= tinylog::Utils::LEVEL_WARNING) \
+  logger.GetLogStream(__FILE__, __LINE__, __func__, tinylog::Utils::LEVEL_WARNING)
 
-#define TINYLOG_ERROR(logger) if (logger.GetLogLevel() <= Utils::LEVEL_ERROR) \
-  logger.GetLogStream(__FILE__, __LINE__, __func__, Utils::LEVEL_ERROR)
+#define TINYLOG_ERROR(logger) if (logger.GetLogLevel() <= tinylog::Utils::LEVEL_ERROR) \
+  logger.GetLogStream(__FILE__, __LINE__, __func__, tinylog::Utils::LEVEL_ERROR)
 
-#define TINYLOG_FATAL(logger) if (logger.GetLogLevel() <= Utils::LEVEL_FATAL) \
-  logger.GetLogStream(__FILE__, __LINE__, __func__, Utils::LEVEL_FATAL)
+#define TINYLOG_FATAL(logger) if (logger.GetLogLevel() <= tinylog::Utils::LEVEL_FATAL) \
+  logger.GetLogStream(__FILE__, __LINE__, __func__, tinylog::Utils::LEVEL_FATAL)
 
+template<typename... Args>
+static inline std::string repr(const char *fmt, Args &&... args)
+{
+  return fmt::sprintf(fmt, std::forward<Args>(args)...);
+}
+
+template<class T>
+static inline std::string to_str(const T &t)
+{
+    std::ostringstream out;
+    out << t;
+    return out.str();
+}
