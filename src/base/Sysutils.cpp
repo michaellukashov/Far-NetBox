@@ -1761,33 +1761,9 @@ void WriteAllText(const UnicodeString FileName, const UnicodeString Text)
   FILE *file = base::LocalOpenFileForWriting(FileName);
   if (file)
   {
-    //size_t res = fwrite(Text.data(), 1, , file);
-    size_t n_write = 0;
     void const *data = static_cast<void const *>(Text.data());
     size_t size = Text.GetLength();
-    while ((n_write = fwrite(data, 1, size - n_write, file)) != 0)
-    {
-      if ((n_write < 0) && (errno != EINTR))
-      {
-        // error
-        break;
-      }
-      else if (n_write == size)
-      {
-        // All write
-        break;
-      }
-      else if (n_write > 0)
-      {
-        // Half write
-      }
-    }
-
-    // error
-    if (n_write < 0)
-      return; // TODO: throw exception
-
-    fflush(file);
+    base::WriteAndFlush(file, data, size);
     fclose(file);
   }
 }
@@ -1805,6 +1781,37 @@ FILE *LocalOpenFileForWriting(const UnicodeString LogFileName, bool Append)
     setvbuf(Result, nullptr, _IONBF, BUFSIZ);
   }
   return Result;
+}
+
+bool WriteAndFlush(FILE *file, void const *data, size_t size)
+{
+  assert(file);
+  assert(data);
+  size_t n_write = 0;
+  while ((n_write = fwrite(data, 1, size - n_write, file)) != 0)
+  {
+    if ((n_write < 0) && (errno != EINTR))
+    {
+      // error
+      break;
+    }
+    else if (n_write == size)
+    {
+      // All write
+      break;
+    }
+    else if (n_write > 0)
+    {
+      // Half write
+    }
+  }
+
+  // error
+  if (n_write < 0)
+    return false; // TODO: throw exception
+
+  fflush(file);
+  return true;
 }
 
 DWORD FindFirst(const UnicodeString AFileName, DWORD LocalFileAttrs, TSearchRec &Rec)

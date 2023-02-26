@@ -655,6 +655,7 @@ using namespace Sysutils;
 namespace base {
 
 FILE *LocalOpenFileForWriting(const UnicodeString LogFileName, bool Append = false);
+bool WriteAndFlush(FILE *file, void const *data, size_t size);
 
 DWORD FindFirst(const UnicodeString AFileName, DWORD LocalFileAttrs, TSearchRec &Rec);
 DWORD FindNext(TSearchRec &Rec);
