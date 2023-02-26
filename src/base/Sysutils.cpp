@@ -891,12 +891,12 @@ UnicodeString ExtractFileExt(const UnicodeString AFileName)
 UnicodeString ExpandFileName(const UnicodeString AFileName)
 {
   UnicodeString Buf(nb::NB_MAX_PATH + 1, 0);
-  int32_t Size = ::GetFullPathNameW(ApiPath(AFileName).c_str(), nb::ToDWord(Buf.Length() - 1),
+  int32_t Size = ::GetFullPathNameW(AFileName.c_str(), nb::ToDWord(Buf.Length() - 1),
       reinterpret_cast<LPWSTR>(ToWChar(Buf)), nullptr);
   if (Size > Buf.Length())
   {
     Buf.SetLength(Size);
-    Size = ::GetFullPathNameW(ApiPath(AFileName).c_str(), nb::ToDWord(Buf.Length() - 1),
+    Size = ::GetFullPathNameW(AFileName.c_str(), nb::ToDWord(Buf.Length() - 1),
         reinterpret_cast<LPWSTR>(ToWChar(Buf)), nullptr);
   }
   UnicodeString Result = UnicodeString(Buf.c_str(), Size);
@@ -1756,15 +1756,56 @@ UnicodeString ReadAllText(const UnicodeString FileName)
   return Result;
 }
 
-// TODO: implement
 void WriteAllText(const UnicodeString FileName, const UnicodeString Text)
 {
+  FILE *file = base::LocalOpenFileForWriting(FileName);
+  if (file)
+  {
+    //size_t res = fwrite(Text.data(), 1, , file);
+    size_t n_write = 0;
+    void const *data = static_cast<void const *>(Text.data());
+    size_t size = Text.GetLength();
+    while ((n_write = fwrite(data, 1, size - n_write, file)) != 0)
+    {
+      if ((n_write < 0) && (errno != EINTR))
+      {
+        // error
+        break;
+      }
+      else if (n_write == size)
+      {
+        // All write
+        break;
+      }
+      else if (n_write > 0)
+      {
+        // Half write
+      }
+    }
 
+    // error
+    if (n_write < 0)
+      return; // TODO: throw exception
+
+    fflush(file);
+    fclose(file);
+  }
 }
 
 } // namespace Sysutils
 
 namespace base {
+
+FILE *LocalOpenFileForWriting(const UnicodeString LogFileName, bool Append)
+{
+  UnicodeString NewFileName = StripPathQuotes(::ExpandEnvironmentVariables(LogFileName));
+  FILE *Result = _wfsopen(ApiPath(NewFileName).c_str(), Append ? L"ab" : L"wb", SH_DENYWR);
+  if (Result != nullptr)
+  {
+    setvbuf(Result, nullptr, _IONBF, BUFSIZ);
+  }
+  return Result;
+}
 
 DWORD FindFirst(const UnicodeString AFileName, DWORD LocalFileAttrs, TSearchRec &Rec)
 {

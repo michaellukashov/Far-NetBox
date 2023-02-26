@@ -78,7 +78,7 @@ std::unique_ptr<TCriticalSection> TracesInMemoryListsSection;
 #define MemoryTracingTrace(MESSAGE)
 
 inline static UTF8String TraceFormat(TDateTime Time, DWORD Thread, const wchar_t *SourceFile,
-  const wchar_t *Func, int Line, const wchar_t *Message)
+  const wchar_t *Func, int32_t Line, const wchar_t *Message)
 {
   const UnicodeString TimeString = DateTimeToString(Time); // TimeString, L"hh:mm:ss.zzz", Time);
   const wchar_t *Slash = wcsrchr(SourceFile, L'\\');
@@ -99,7 +99,7 @@ inline static void WriteTraceBuffer(const char *Buffer, size_t Length)
 }
 
 inline static void DoDirectTrace(DWORD Thread, const wchar_t *SourceFile,
-  const wchar_t *Func, int Line, const wchar_t *Message)
+  const wchar_t *Func, int32_t Line, const wchar_t *Message)
 {
   UTF8String Buf = TraceFormat(Now(), Thread, SourceFile, Func, Line, Message);
   WriteTraceBuffer(Buf.c_str(), Buf.Length());

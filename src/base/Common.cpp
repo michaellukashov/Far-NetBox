@@ -1859,7 +1859,7 @@ UnicodeString ApiPath(const UnicodeString APath)
   }
 
   // Max path for directories is 12 characters shorter than max path for files
-  if (Path.Length() >= nb::NB_MAX_PATH - 12)
+  if (Path.Length() >= (nb::NB_MAX_PATH - 12))
   {
     /*if (GetConfiguration() != nullptr)
     {

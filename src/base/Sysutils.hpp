@@ -52,14 +52,13 @@ enum FileAttributesEnum
   faAnyFile = 0x0000003f,
 };
 
-#define NB_TEXT(T) L#T
 #ifndef NDEBUG
 #if defined(_MSC_VER)
 #if (_MSC_VER >= 1900)
 #define DEBUG_PRINTF(format, ...) OutputDebugStringW(nb::Sprintf("Plugin: [%s:%d] %s: " format L"\n", ::ExtractFilename(__FILEW__, L'\\'), __LINE__, ::MB2W(__FUNCTION__), __VA_ARGS__).c_str())
 #define DEBUG_PRINTFA(format, ...) OutputDebugStringW(nb::Sprintf("Plugin: [%s:%d] %s: " format "\n", W2MB(::ExtractFilename(__FILEW__, '\\')), __LINE__, __FUNCTION__, __VA_ARGS__).c_str())
 #else
-#define DEBUG_PRINTF(format, ...) OutputDebugStringW(nb::Sprintf("Plugin: [%s:%d] %s: "NB_TEXT(format) L"\n", ::ExtractFilename(__FILEW__, L'\\'), __LINE__, ::MB2W(__FUNCTION__), __VA_ARGS__).c_str())
+#define DEBUG_PRINTF(format, ...) OutputDebugStringW(nb::Sprintf("Plugin: [%s:%d] %s: "TEXT(format) L"\n", ::ExtractFilename(__FILEW__, L'\\'), __LINE__, ::MB2W(__FUNCTION__), __VA_ARGS__).c_str())
 #define DEBUG_PRINTFA(format, ...) OutputDebugStringW(nb::Sprintf("Plugin: [%s:%d] %s: "format "\n", W2MB(::ExtractFilename(__FILEW__, '\\')), __LINE__, __FUNCTION__, __VA_ARGS__).c_str())
 #endif
 #else
@@ -654,6 +653,8 @@ extern UnicodeString EmptyStr;
 using namespace Sysutils;
 
 namespace base {
+
+FILE *LocalOpenFileForWriting(const UnicodeString LogFileName, bool Append = false);
 
 DWORD FindFirst(const UnicodeString AFileName, DWORD LocalFileAttrs, TSearchRec &Rec);
 DWORD FindNext(TSearchRec &Rec);
