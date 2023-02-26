@@ -1,5 +1,6 @@
 
 #include <vcl.h>
+#pragma hdrstop
 
 #include <Classes.hpp>
 #include <Common.h>
@@ -2081,6 +2082,21 @@ void GetLocaleFormatSettings(int LCID, TFormatSettings &FormatSettings)
 TGlobals::TGlobals() noexcept
 {
   InitPlatformId();
+}
+
+void TGlobals::SetupDbgHandles(UnicodeString DbgFileName)
+{
+  if (!DbgFileName.IsEmpty() && DbgFileName != "-")
+  {
+    /*if (freopen(err.c_str(), "a", stderr))
+    {
+      setvbuf(stderr, NULL, _IONBF, 0);
+    } else
+      perror("freopen stderr");*/
+    dbgstream_.open(DbgFileName.c_str(), std::ios_base::out|std::ios_base::trunc);
+    if (!dbgstream_.bad())
+      icecream::ic.output(dbgstream_);
+  }
 }
 
 void TGlobals::InitPlatformId()

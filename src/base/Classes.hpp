@@ -6,6 +6,7 @@
 #include <limits>
 #include <stdarg.h>
 #include <math.h>
+#include <fstream>
 
 #include <FastDelegate.h>
 #include <FastDelegateBind.h>
@@ -834,6 +835,7 @@ public:
   virtual UnicodeString GetMsg(int32_t Id) const = 0;
   virtual UnicodeString GetCurrDirectory() const = 0;
   virtual UnicodeString GetStrVersionNumber() const = 0;
+  virtual void SetupDbgHandles(UnicodeString DbgFileName) = 0;
   virtual bool InputDialog(UnicodeString ACaption,
     UnicodeString APrompt, UnicodeString &Value, UnicodeString HelpKeyword,
     TStrings *History, bool PathInput,
@@ -849,15 +851,19 @@ public:
   TGlobals() noexcept;
   virtual ~TGlobals() = default;
 
+  virtual void SetupDbgHandles(UnicodeString DbgFileName) override;
+
 public:
   wchar_t Win32CSDVersion[128]{};
-  int Win32Platform{0};
-  int Win32MajorVersion{0};
-  int Win32MinorVersion{0};
-  int Win32BuildNumber{0};
+  int32_t Win32Platform{0};
+  int32_t Win32MajorVersion{0};
+  int32_t Win32MinorVersion{0};
+  int32_t Win32BuildNumber{0};
 
 private:
   void InitPlatformId();
+private:
+  std::ofstream dbgstream_;
 };
 
 NB_CORE_EXPORT TGlobals *GetGlobals();
