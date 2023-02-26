@@ -163,6 +163,7 @@ TConfiguration::~TConfiguration() noexcept
   if (FApplicationInfo)
   {
     FreeFileInfo(FApplicationInfo);
+    FApplicationInfo = nullptr;
   }
   __removed delete FCriticalSection;
   __removed delete FUsage;

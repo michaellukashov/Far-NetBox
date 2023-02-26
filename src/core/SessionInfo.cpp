@@ -1026,7 +1026,8 @@ void TSessionLog::OpenLogFile()
     DebugAssert(FLogger == nullptr);
     FCurrentLogFileName = FConfiguration->GetLogFileName();
     FILE *file = LocalOpenLogFile(FCurrentLogFileName, FStarted, FSessionData, FConfiguration->GetLogFileAppend(), FCurrentFileName);
-    FLogger = std::make_unique<tinylog::TinyLog>(file);
+    FLogger = std::make_unique<tinylog::TinyLog>();
+    FLogger->file(file);
     TSearchRec SearchRec;
     if (FileSearchRec(FCurrentFileName, SearchRec))
     {
@@ -1724,7 +1725,8 @@ void TActionLog::OpenLogFile()
     DebugAssert(FLogger == nullptr);
     FCurrentLogFileName = FConfiguration->GetActionsLogFileName();
     FILE *file = LocalOpenLogFile(FCurrentLogFileName, FStarted, FSessionData, false, FCurrentFileName);
-    FLogger = std::make_unique<tinylog::TinyLog>(file);
+    FLogger = std::make_unique<tinylog::TinyLog>();
+    FLogger->file(file);
   }
   catch (Exception &E)
   {
