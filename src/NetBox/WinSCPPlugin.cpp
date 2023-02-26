@@ -27,8 +27,6 @@ void DestroyFarPlugin(TCustomFarPlugin *& Plugin)
   SAFE_DESTROY(Plugin);
 }
 
-constexpr const char * DEVNULL = "";
-
 static UnicodeString GetDbgPath(const char *env) noexcept
 {
   const char *path = getenv(env);
@@ -43,10 +41,11 @@ static UnicodeString GetDbgPath(const char *env) noexcept
     } else
       s = path;
 
-    return s;
+    UnicodeString DbgLogFileName = StripPathQuotes(::ExpandEnvironmentVariables(s));
+    return DbgLogFileName;
   }
 
-  return DEVNULL;
+  return UnicodeString();
 }
 
 TWinSCPPlugin::TWinSCPPlugin(HINSTANCE HInst) noexcept :
@@ -61,6 +60,7 @@ TWinSCPPlugin::TWinSCPPlugin(HINSTANCE HInst) noexcept :
   g_tinylog.level(tinylog::Utils::LEVEL_TRACE); // TODO: read from config file
   FILE *logFile = base::LocalOpenFileForWriting("%TEMP%/netbox-dbglog.txt"); // TODO: read from config file
   g_tinylog.file(logFile);
+  IC();
 #endif //ifndef NDEBUG
 }
 
