@@ -238,7 +238,7 @@ std::string StackWalker::OnFormatEntry(CallstackEntry & entry)
 void StackWalker::OnOutput(LPCSTR szText)
 {
   TINYLOG_TRACE(g_tinylog) << szText;
-  OutputDebugStringA(szText);
+  // OutputDebugStringA(szText);
 }
 
 void StackWalker::OnEmptyOutput(LPCSTR szText)
