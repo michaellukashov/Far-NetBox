@@ -1480,7 +1480,7 @@ void StackWalker::OnCallstackEntry(CallstackEntryType eType, CallstackEntry& ent
       buffer[STACKWALK_MAX_NAMELEN - 1] = 0;
       OnEmptyOutput(buffer);
     }
-    else
+    else if (strcmp(entry.name, "sw::StackWalker::ShowCallstack") != 0)
     {
       std::string str = OnFormatEntry(entry);
       OnOutput(str.c_str());
