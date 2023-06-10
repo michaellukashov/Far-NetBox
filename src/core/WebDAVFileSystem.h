@@ -43,9 +43,9 @@ public:
     const TRemoteFile * AFile, const TRemoteProperties * Properties,
     TChmodSessionAction & Action) override;
   virtual bool LoadFilesProperties(TStrings * AFileList) override;
-  virtual void CalculateFilesChecksum(const UnicodeString Alg,
-    TStrings * AFileList, TStrings * Checksums,
-    TCalculatedChecksumEvent OnCalculatedChecksum) override;
+  virtual void CalculateFilesChecksum(
+    const UnicodeString Alg, TStrings * AFileList, TStrings * Checksums, TCalculatedChecksumEvent OnCalculatedChecksum,
+    TFileOperationProgressType * OperationProgress, bool FirstLevel) override;
   virtual void CopyToLocal(TStrings * AFilesToCopy,
     const UnicodeString TargetDir, const TCopyParamType * CopyParam,
     int32_t AParams, TFileOperationProgressType * OperationProgress,
@@ -109,7 +109,9 @@ protected:
     TFileOperationProgressType * OperationProgress,
     const TOverwriteFileParams * FileParams, const TCopyParamType * CopyParam,
     int32_t Params);
-  void CheckStatus(int32_t NeonStatus);
+  void CheckStatus(int NeonStatus);
+  struct TSessionContext;
+  void CheckStatus(TSessionContext * SessionContext, int NeonStatus);
   void ClearNeonError();
   static void NeonPropsResult(
     void * UserData, const ne_uri * Uri, const ne_prop_result_set_s * Results);
@@ -121,7 +123,7 @@ protected:
   static int NeonBodyAccepter(void * UserData, ne_request * Request, const ne_status * Status);
   static void NeonCreateRequest(ne_request * Request, void * UserData, const char * Method, const char * Uri);
   static int NeonRequestAuth(void * UserData, const char * Realm, int Attempt, char * UserName, char * Password);
-  void NeonOpen(UnicodeString & CorrectedUrl, const UnicodeString & AUrl);
+  TSessionContext * NeonOpen(const UnicodeString & Url, UTF8String & Path, UTF8String & Query);
   void NeonClientOpenSessionInternal(UnicodeString & CorrectedUrl, UnicodeString Url);
   static void NeonNotifier(void * UserData, ne_session_status Status, const ne_session_status_info * StatusInfo);
   static ssize_t NeonUploadBodyProvider(void * UserData, char * Buffer, size_t BufLen);
@@ -142,8 +144,8 @@ protected:
    const ne_uri * Uri, const ne_status * Status);
   void RequireLockStore();
   static void InitSslSession(ssl_st * Ssl, ne_session * Session);
-  void NeonAddAuthentication(bool UseNegotiate);
-  void HttpAuthenticationFailed();
+  void NeonAddAuthentication(TSessionContext * SessionContext, bool UseNegotiate);
+  void HttpAuthenticationFailed(TSessionContext * SessionContext);
 
   void InitSslSessionImpl(ssl_st *Ssl) const;
 private:
@@ -160,7 +162,6 @@ private:
   bool FUploading{false};
   bool FDownloading{false};
   UnicodeString FUploadMimeType;
-  ne_session_s *FNeonSession{nullptr};
   ne_lock_store_s * FNeonLockStore{nullptr};
   TCriticalSection FNeonLockStoreSection;
   bool FInitialHandshake{false};
@@ -169,20 +170,28 @@ private:
   RawByteString FPassword;
   UnicodeString FTlsVersionStr;
   uint32_t FCapabilities{0};
-  UnicodeString FHostName;
-  int32_t FPortNumber{0};
+  struct TSessionContext
+  {
+    ~TSessionContext();
+    TWebDAVFileSystem * FileSystem{nullptr};
+    ne_session_s * NeonSession{nullptr}; // The main one (there might be aux session for the same context)
+    UnicodeString HostName;
+    int32_t PortNumber{0};
+    bool NtlmAuthenticationFailed{false};
+    UnicodeString AuthorizationProtocol;
+  };
+  TSessionContext * FSessionContext{nullptr};
   enum TIgnoreAuthenticationFailure { iafNo, iafWaiting, iafPasswordFailed } FIgnoreAuthenticationFailure{iafNo};
   UnicodeString FAuthorizationProtocol;
   UnicodeString FLastAuthorizationProtocol;
   bool FAuthenticationRetry{false};
-  bool FNtlmAuthenticationFailed{false};
   bool FOneDrive{false};
 
   void CustomReadFile(UnicodeString AFileName,
     TRemoteFile *& AFile, TRemoteFile * ALinkedByFile);
   int32_t CustomReadFileInternal(const UnicodeString AFileName,
     TRemoteFile *& AFile, TRemoteFile * ALinkedByFile);
-  bool VerifyCertificate(TNeonCertificateData &Data, bool Aux);
+  bool VerifyCertificate(TSessionContext * SessionContext, TNeonCertificateData & Data, bool Aux);
   void OpenUrl(const UnicodeString Url);
   void CollectTLSSessionInfo();
   UnicodeString GetRedirectUrl() const;
@@ -195,9 +204,10 @@ private:
   UnicodeString FilePath(const TRemoteFile *AFile) const;
   struct ne_lock * FindLock(const RawByteString APath) const;
   void DiscardLock(const RawByteString APath);
-  bool IsNtlmAuthentication() const;
-  static void NeonAuxRequestInit(ne_session_s *Session, ne_request *Request, void *UserData);
-  void SetSessionTls(ne_session_s *Session, bool Aux);
-  void InitSession(ne_session_s *Session);
+  bool IsNtlmAuthentication(TSessionContext * SessionContext) const;
+  static void NeonAuxRequestInit(ne_session_s * Session, ne_request * Request, void * UserData);
+  void SetSessionTls(TSessionContext * SessionContext, ne_session_s * Session, bool Aux);
+  void InitSession(TSessionContext * SessionContext, ne_session_s * Session);
+  bool IsTlsSession(ne_session * Session) const;
 };
 
