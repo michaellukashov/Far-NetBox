@@ -31,6 +31,7 @@ static const PacketProtocolLayerVtable ssh2_connection_vtable = {
     /*.special_cmd =*/ ssh2_connection_special_cmd,
     /*.reconfigure =*/ ssh2_connection_reconfigure,
     /*.queued_data_size =*/ ssh_ppl_default_queued_data_size,
+    /*.final_output =*/ ssh_ppl_default_final_output,
     /*.name =*/ "ssh-connection",
     ssh2_connection_winscp_query,
 };
@@ -1006,7 +1007,7 @@ static void ssh2_connection_process_queue(PacketProtocolLayer *ppl)
      */
     if (ssh2_connection_need_antispoof_prompt(s)) {
         s->antispoof_prompt = ssh_ppl_new_prompts(&s->ppl);
-        s->antispoof_prompt->to_server = true;
+        s->antispoof_prompt->to_server = false;
         s->antispoof_prompt->from_server = false;
         s->antispoof_prompt->name = dupstr("Authentication successful");
         add_prompt(
@@ -1605,8 +1606,8 @@ static void ssh2_delete_sharing_channel(ConnectionLayer *cl, unsigned localid)
 }
 
 static void ssh2_send_packet_from_downstream(
-        ConnectionLayer *cl, unsigned id, int type,
-        const void *data, int datalen, const char *additional_log_text)
+    ConnectionLayer *cl, unsigned id, int type,
+    const void *data, int datalen, const char *additional_log_text)
 {
     struct ssh2_connection_state *s =
         container_of(cl, struct ssh2_connection_state, cl);

@@ -101,9 +101,9 @@ static inline void md5_block_pad(md5_block *blk, BinarySink *bs)
 
 static inline uint32_t rol(uint32_t x, unsigned y)
 {
-//#pragma option push -w-ngu // WINSCP
+#pragma option push -w-ngu // WINSCP
     return (x << (31 & y)) | (x >> (31 & -y));
-//#pragma option pop // WINSCP
+#pragma option pop // WINSCP
 }
 
 static inline uint32_t Ch(uint32_t ctrl, uint32_t if1, uint32_t if0)

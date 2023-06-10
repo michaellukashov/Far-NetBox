@@ -13,9 +13,9 @@ static bool sha512_sw_available(void)
 
 static inline uint64_t ror(uint64_t x, unsigned y)
 {
-//#pragma option push -w-ngu // WINSCP
+#pragma option push -w-ngu // WINSCP
     return (x << (63 & -y)) | (x >> (63 & y));
-//#pragma option pop // WINSCP
+#pragma option pop // WINSCP
 }
 
 static inline uint64_t Ch(uint64_t ctrl, uint64_t if1, uint64_t if0)

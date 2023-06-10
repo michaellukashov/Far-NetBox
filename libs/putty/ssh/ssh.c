@@ -254,8 +254,10 @@ static void ssh_got_ssh_version(struct ssh_version_receiver *rcv,
                 char *username = get_remote_username(ssh->conf);
 
                 userauth_layer = ssh2_userauth_new(
-                    connection_layer, ssh->savedhost, ssh->fullhostname,
+                    connection_layer, ssh->savedhost, ssh->savedport,
+                    ssh->fullhostname,
                     conf_get_filename(ssh->conf, CONF_keyfile),
+                    conf_get_filename(ssh->conf, CONF_detached_cert),
                     conf_get_bool(ssh->conf, CONF_ssh_show_banner),
                     conf_get_bool(ssh->conf, CONF_tryagent),
                     conf_get_bool(ssh->conf, CONF_ssh_no_trivial_userauth),
@@ -266,14 +268,15 @@ static void ssh_got_ssh_version(struct ssh_version_receiver *rcv,
                     conf_get_bool(ssh->conf, CONF_try_gssapi_auth),
                     conf_get_bool(ssh->conf, CONF_try_gssapi_kex),
                     conf_get_bool(ssh->conf, CONF_gssapifwd),
-                    &ssh->gss_state
+                    &ssh->gss_state,
 #else
                     false,
                     false,
                     false,
-                    NULL
+                    NULL,
 #endif
-                    ,conf_get_str(ssh->conf, CONF_loghost),
+                    conf_get_str(ssh->conf, CONF_auth_plugin),
+                    conf_get_str(ssh->conf, CONF_loghost),
                     conf_get_bool(ssh->conf, CONF_change_password), // WINSCP
                     ssh->seat
                     );
@@ -465,6 +468,9 @@ void ssh_remote_error(Ssh *ssh, const char *fmt, ...)
     if (ssh->base_layer || !ssh->session_started) {
         GET_FORMATTED_MSG;
 
+        if (ssh->base_layer)
+            ssh_ppl_final_output(ssh->base_layer);
+
         /* Error messages sent by the remote don't count as clean exits */
         ssh->exitcode = 128;
 
@@ -482,6 +488,9 @@ void ssh_remote_eof(Ssh *ssh, const char *fmt, ...)
 {
     if (ssh->base_layer || !ssh->session_started) {
         GET_FORMATTED_MSG;
+
+        if (ssh->base_layer)
+            ssh_ppl_final_output(ssh->base_layer);
 
         /* EOF from the remote, if we were expecting it, does count as
          * a clean exit */
@@ -506,6 +515,9 @@ void ssh_proto_error(Ssh *ssh, const char *fmt, ...)
     if (ssh->base_layer || !ssh->session_started) {
         GET_FORMATTED_MSG;
 
+        if (ssh->base_layer)
+            ssh_ppl_final_output(ssh->base_layer);
+
         ssh->exitcode = 128;
 
         ssh_bpp_queue_disconnect(ssh->bpp, msg,
@@ -523,6 +535,9 @@ void ssh_sw_abort(Ssh *ssh, const char *fmt, ...)
     if (ssh->base_layer || !ssh->session_started) {
         GET_FORMATTED_MSG;
 
+        if (ssh->base_layer)
+            ssh_ppl_final_output(ssh->base_layer);
+
         ssh->exitcode = 128;
 
         ssh_initiate_connection_close(ssh);
@@ -539,6 +554,9 @@ void ssh_user_close(Ssh *ssh, const char *fmt, ...)
 {
     if (ssh->base_layer || !ssh->session_started) {
         GET_FORMATTED_MSG;
+
+        if (ssh->base_layer)
+            ssh_ppl_final_output(ssh->base_layer);
 
         /* Closing the connection due to user action, even if the
          * action is the user aborting during authentication prompts,
@@ -1046,7 +1064,8 @@ static void ssh_reconfig(Backend *be, Conf *conf)
     if (ssh->pinger)
         pinger_reconfig(ssh->pinger, ssh->conf, conf);
 
-    ssh_ppl_reconfigure(ssh->base_layer, conf);
+    if (ssh->base_layer)
+        ssh_ppl_reconfigure(ssh->base_layer, conf);
 
     conf_free(ssh->conf);
     ssh->conf = conf_copy(conf);

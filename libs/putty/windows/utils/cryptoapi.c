@@ -8,7 +8,6 @@
 #include "ssh.h"
 
 #include "cryptoapi.h"
-#include <Wincrypt.h>
 
 DEF_WINDOWS_FUNCTION(CryptProtectMemory);
 

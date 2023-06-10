@@ -33,9 +33,7 @@
 #include <stdio.h>
 #include "putty.h"
 
-#if 0
 const char *const appname = STR(APPNAME);
-#endif // if 0
 
 /*
  * Define the default protocol for the application. This is always a

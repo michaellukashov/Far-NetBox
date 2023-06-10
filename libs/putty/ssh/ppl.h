@@ -19,6 +19,7 @@ struct PacketProtocolLayerVtable {
         PacketProtocolLayer *ppl, SessionSpecialCode code, int arg);
     void (*reconfigure)(PacketProtocolLayer *ppl, Conf *conf);
     size_t (*queued_data_size)(PacketProtocolLayer *ppl);
+    void (*final_output)(PacketProtocolLayer *ppl);
 
     /* Protocol-level name of this layer. */
     const char *name;
@@ -70,6 +71,8 @@ static inline void ssh_ppl_reconfigure(PacketProtocolLayer *ppl, Conf *conf)
 { ppl->vt->reconfigure(ppl, conf); }
 static inline size_t ssh_ppl_queued_data_size(PacketProtocolLayer *ppl)
 { return ppl->vt->queued_data_size(ppl); }
+static inline void ssh_ppl_final_output(PacketProtocolLayer *ppl)
+{ ppl->vt->final_output(ppl); }
 static inline unsigned int ssh_ppl_winscp_query(PacketProtocolLayer *ppl, int query)
 { return ppl->vt->winscp_query(ppl, query); }
 
@@ -97,6 +100,9 @@ void ssh_ppl_replace(PacketProtocolLayer *old, PacketProtocolLayer *new);
  * has other things to take into account as well. */
 size_t ssh_ppl_default_queued_data_size(PacketProtocolLayer *ppl);
 
+/* Default implementation of final_output which outputs nothing. */
+void ssh_ppl_default_final_output(PacketProtocolLayer *ppl);
+
 PacketProtocolLayer *ssh1_login_new(
     Conf *conf, const char *host, int port,
     PacketProtocolLayer *successor_layer);
@@ -113,12 +119,13 @@ PacketProtocolLayer *ssh2_transport_new(
     const SshServerConfig *ssc);
 PacketProtocolLayer *ssh2_userauth_new(
     PacketProtocolLayer *successor_layer,
-    const char *hostname, const char *fullhostname,
-    Filename *keyfile, bool show_banner, bool tryagent, bool notrivialauth,
+    const char *hostname, int port, const char *fullhostname,
+    Filename *keyfile, Filename *detached_cert,
+    bool show_banner, bool tryagent, bool notrivialauth,
     const char *default_username, bool change_username,
-    bool try_ki_auth,
-    bool try_gssapi_auth, bool try_gssapi_kex_auth,
+    bool try_ki_auth, bool try_gssapi_auth, bool try_gssapi_kex_auth,
     bool gssapi_fwd, struct ssh_connection_shared_gss_state *shgss,
+    const char *auth_plugin,
     const char * loghost, bool change_password, Seat *seat); // WINSCP
 PacketProtocolLayer *ssh2_connection_new(
     Ssh *ssh, ssh_sharing_state *connshare, bool is_simple,
